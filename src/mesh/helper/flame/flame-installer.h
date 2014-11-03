@@ -34,9 +34,7 @@ namespace ns3 {
 class FlameStack : public MeshStack
 {
 public:
-  /*
-   * \internal
-   */
+
   static TypeId GetTypeId ();
 
   /**
@@ -50,7 +48,6 @@ public:
   ~FlameStack ();
 
   /**
-   * \internal
    * Break any reference cycles in the installer helper.  Required for ns-3
    * Object support.
    */

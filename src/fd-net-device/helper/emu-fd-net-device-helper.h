@@ -62,9 +62,7 @@ public:
   void SetDeviceName (std::string deviceName);
 
 protected:
-  /*
-   * \internal
-   */
+
   Ptr<NetDevice> InstallPriv (Ptr<Node> node) const;
 
   /**
@@ -79,10 +77,8 @@ protected:
   virtual int CreateFileDescriptor (void) const;
 
   /**
-  * \internal
-  *
-  * The unix/linux name of the underlying device (e.g., eth0)
-  */
+   * The unix/linux name of the underlying device (e.g., eth0)
+   */
   std::string m_deviceName;
 };
 

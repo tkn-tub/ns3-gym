@@ -193,14 +193,8 @@ public:
   void Open (std::string const& name);
 
 private:
-  /**
-   * @internal
-   */
-  void WriteStats ();
 
-  /**
-   * @internal
-   */
+  void WriteStats ();
   void ResetCounters ();
 
   uint32_t m_txCount;

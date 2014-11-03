@@ -56,7 +56,6 @@ public:
    */
   DsrHelper (const DsrHelper &);
   /**
-   * \internal
    * \returns pointer to clone of this DsrHelper
    *
    * This method is mainly for internal use by the other helpers;
@@ -71,7 +70,6 @@ public:
   void Set (std::string name, const AttributeValue &value);
 private:
   /**
-   * \internal
    * \brief Assignment operator declared private and not implemented to disallow
    * assignment and prevent the compiler from happily inserting its own.
    */

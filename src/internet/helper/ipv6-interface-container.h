@@ -203,13 +203,11 @@ public:
 
 private:
   /**
-   * \internal
    * \brief Container for pairs of Ipv6 smart pointer / Interface Index.
    */
   typedef std::vector<std::pair<Ptr<Ipv6>, uint32_t> > InterfaceVector;
 
   /**
-   * \internal
    * \brief List of IPv6 stack and interfaces index.
    */
   InterfaceVector m_interfaces;

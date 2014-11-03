@@ -205,14 +205,11 @@ public:
   int64_t AssignStreams (NetDeviceContainer c, int64_t stream);
 
 private:
-  /*
-   * \internal
-   */
+
   Ptr<NetDevice> InstallPriv (Ptr<Node> node, Ptr<CsmaChannel> channel) const;
 
   /**
    * \brief Enable pcap output on the indicated net device.
-   * \internal
    *
    * NetDevice-specific implementation mechanism for hooking the trace and
    * writing to the trace file.
@@ -226,7 +223,6 @@ private:
 
   /**
    * \brief Enable ascii trace output on the indicated net device.
-   * \internal
    *
    * NetDevice-specific implementation mechanism for hooking the trace and
    * writing to the trace file.

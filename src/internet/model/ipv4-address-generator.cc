@@ -28,7 +28,6 @@ namespace ns3 {
 NS_LOG_COMPONENT_DEFINE ("Ipv4AddressGenerator");
 
 /**
- * \internal
  * \ingroup address
  *
  * \brief Implementation class of Ipv4AddressGenerator
@@ -43,7 +42,6 @@ public:
   virtual ~Ipv4AddressGeneratorImpl ();
 
   /**
-   * \internal
    * \brief Initialise the base network, mask and address for the generator
    *
    * The first call to NextAddress() or GetAddress() will return the
@@ -57,7 +55,6 @@ public:
              const Ipv4Address addr);
 
   /**
-   * \internal
    * \brief Get the current network of the given Ipv4Mask
    *
    * Does not change the internal state; this just peeks at the current
@@ -69,7 +66,6 @@ public:
   Ipv4Address GetNetwork (const Ipv4Mask mask) const;
 
   /**
-   * \internal
    * \brief Get the next network according to the given Ipv4Mask
    *
    * This operation is a pre-increment, meaning that the internal state
@@ -84,7 +80,6 @@ public:
   Ipv4Address NextNetwork (const Ipv4Mask mask);
 
   /**
-   * \internal
    * \brief Set the address for the given mask
    *
    * \param addr The address to set for the current mask
@@ -93,7 +88,6 @@ public:
   void InitAddress (const Ipv4Address addr, const Ipv4Mask mask);
 
   /**
-   * \internal
    * \brief Allocate the next Ipv4Address for the configured network and mask
    *
    * This operation is a post-increment, meaning that the first address
@@ -105,7 +99,6 @@ public:
   Ipv4Address NextAddress (const Ipv4Mask mask);
 
   /**
-   * \internal
    * \brief Get the Ipv4Address that will be allocated upon NextAddress ()
    *
    * Does not change the internal state; just is used to peek the next
@@ -117,13 +110,11 @@ public:
   Ipv4Address GetAddress (const Ipv4Mask mask) const;
 
   /**
-   * \internal
    * \brief Reset the networks and Ipv4Address to zero
    */
   void Reset (void);
 
   /**
-   * \internal
    * \brief Add the Ipv4Address to the list of IPv4 entries
    *
    * Typically, this is used by external address allocators that want
@@ -136,16 +127,14 @@ public:
   bool AddAllocated (const Ipv4Address addr);
 
   /**
-   * \internal
    * \brief Used to turn off fatal errors and assertions, for testing
    */
   void TestMode (void);
 private:
-  static const uint32_t N_BITS = 32;  //!< /internal the number of bits in the address
-  static const uint32_t MOST_SIGNIFICANT_BIT = 0x80000000; //!< /internal MSB set to 1
+  static const uint32_t N_BITS = 32;  //!< the number of bits in the address
+  static const uint32_t MOST_SIGNIFICANT_BIT = 0x80000000; //!< MSB set to 1
 
   /**
-   * \internal
    * \brief Create an index number for the network mask
    * \param mask the mask to index
    * \returns an index
@@ -153,34 +142,32 @@ private:
   uint32_t MaskToIndex (Ipv4Mask mask) const;
 
   /**
-   * \internal
    * \brief This class holds the state for a given network
    */
   class NetworkState
   {
 public:
-    uint32_t mask;      //!< /internal the network mask
-    uint32_t shift;     //!< /internal a shift
-    uint32_t network;   //!< /internal the network
-    uint32_t addr;      //!< /internal the address
-    uint32_t addrMax;   //!< /internal the maximum address
+    uint32_t mask;      //!< the network mask
+    uint32_t shift;     //!< a shift
+    uint32_t network;   //!< the network
+    uint32_t addr;      //!< the address
+    uint32_t addrMax;   //!< the maximum address
   };
 
-  NetworkState m_netTable[N_BITS]; //!< /internal the available networks
+  NetworkState m_netTable[N_BITS]; //!< the available networks
 
   /**
-   * \internal
    * \brief This class holds the allocated addresses
    */
   class Entry
   {
 public:
-    uint32_t addrLow;  //!< /internal the lowest allocated address
-    uint32_t addrHigh; //!< /internal the highest allocated address
+    uint32_t addrLow;  //!< the lowest allocated address
+    uint32_t addrHigh; //!< the highest allocated address
   };
 
-  std::list<Entry> m_entries; //!< /internal contained of allocated addresses
-  bool m_test; //!< /internal test mode (if true)
+  std::list<Entry> m_entries; //!< contained of allocated addresses
+  bool m_test; //!< test mode (if true)
 };
 
 Ipv4AddressGeneratorImpl::Ipv4AddressGeneratorImpl () 

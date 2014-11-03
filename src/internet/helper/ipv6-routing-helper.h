@@ -45,7 +45,6 @@ class Ipv6RoutingHelper
 public:
 
   /**
-   * \internal
    * \brief Destroy an Ipv6 Ipv6RoutingHelper.
    */
   virtual ~Ipv6RoutingHelper ();
@@ -187,8 +186,6 @@ public:
   
 private:
   /**
-   * \internal
-   *
    * \brief prints the routing tables of a node.
    * \param node The node ptr for which we need the routing table to be printed
    * \param stream The output stream object to use
@@ -200,8 +197,6 @@ private:
   static void Print (Ptr<Node> node, Ptr<OutputStreamWrapper> stream);
 
   /**
-   * \internal
-   *
    * \brief prints the routing tables of a node at regular intervals specified by user.
    * \param printInterval the time interval for which the routing table is supposed to be printed.
    * \param node The node ptr for which we need the routing table to be printed
@@ -214,8 +209,6 @@ private:
   static void PrintEvery (Time printInterval, Ptr<Node> node, Ptr<OutputStreamWrapper> stream);
 
   /**
-   * \internal
-   *
    * \brief prints the neighbor cache of a node.
    * \param node The node ptr for which we need the neighbor cache to be printed
    * \param stream The output stream object to use
@@ -231,8 +224,6 @@ private:
   static void PrintNdiscCache (Ptr<Node> node, Ptr<OutputStreamWrapper> stream);
 
   /**
-   * \internal
-   *
    * \brief prints the neighbor cache of a node at regular intervals specified by user.
    * \param printInterval the time interval for which the neighbor cache is supposed to be printed.
    * \param node The node ptr for which we need the neighbor cache to be printed

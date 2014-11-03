@@ -53,15 +53,12 @@ public:
 /**
  * @brief Build the routing database by gathering Link State Advertisements
  * from each node exporting a GlobalRouter interface.
- * @internal
- *
  */
   static void BuildGlobalRoutingDatabase ();
 
 /**
  * @brief Compute routes using a Dijkstra SPF computation and populate
  * per-node forwarding tables
- * @internal
  */
   static void InitializeRoutes ();
 

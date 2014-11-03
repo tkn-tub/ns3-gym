@@ -366,8 +366,6 @@ public:
 
 private:
   /**
-   * \internal
-   *
    * \brief Non-templated internal version of Names::Find
    *
    * \param path A string containing the path of the object to look for.
@@ -377,8 +375,6 @@ private:
   static Ptr<Object> FindInternal (std::string path);
 
   /**
-   * \internal
-   *
    * \brief Non-templated internal version of Names::Find
    *
    * \param path A string containing the path to search for the object in.
@@ -389,8 +385,6 @@ private:
   static Ptr<Object> FindInternal (std::string path, std::string name);
 
   /**
-   * \internal
-   *
    * \brief Non-templated internal version of Names::Find
    *
    * \param context A smart pointer to an object under which you want to look 

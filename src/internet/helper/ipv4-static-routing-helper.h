@@ -53,7 +53,6 @@ public:
   Ipv4StaticRoutingHelper (const Ipv4StaticRoutingHelper &);
 
   /**
-   * \internal
    * \returns pointer to clone of this Ipv4StaticRoutingHelper
    *
    * This method is mainly for internal use by the other helpers;
@@ -158,7 +157,6 @@ public:
   void SetDefaultMulticastRoute (std::string nName, std::string ndName);
 private:
   /**
-   * \internal
    * \brief Assignment operator declared private and not implemented to disallow
    * assignment and prevent the compiler from happily inserting its own.
    * \returns

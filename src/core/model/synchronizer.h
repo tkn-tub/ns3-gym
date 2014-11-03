@@ -183,8 +183,6 @@ protected:
  * @brief Establish a correspondence between a simulation time and a 
  * wall-clock (real) time.
  *
- * @internal
- *
  * There are three timelines involved here:  the simulation time, the 
  * (absolute) wall-clock time and the (relative) synchronizer real time.
  * Calling this method makes a correspondence between the origin of the
@@ -212,8 +210,6 @@ protected:
  * @brief Return true if this synchronizer is actually synchronizing to a
  * realtime clock.  The simulator sometimes needs to know this.
  *
- * @internal
- *
  * Subclasses are expected to implement this method to tell the outside world
  * whether or not they are synchronizing to a realtime clock.
  *
@@ -224,8 +220,6 @@ protected:
 /**
  * @brief Retrieve the value of the origin of the underlying normalized wall
  * clock time in simulator timestep units.
- *
- * @internal
  *
  * Subclasses are expected to implement this method to do the actual
  * real-time-clock-specific work of getting the current time.
@@ -239,8 +233,6 @@ protected:
 /**
  * @brief Wait until the real time is in sync with the specified simulation
  * time.
- *
- * @internal
  *
  * This is where the real work of synchronization is done.  The Time passed
  * in as a parameter is the simulation time.  The job of Synchronize is to
@@ -286,8 +278,6 @@ protected:
  * @brief Declaration of method used to retrieve drift between the real time
  * clock used to synchronize the simulation and the current simulation time.
  *
- * @internal
- *
  * @param ns Simulation timestep from the simulator normalized to nanosecond 
  * steps.
  * @returns Drift in nanosecond units.
@@ -308,8 +298,6 @@ private:
  * @brief Convert a simulator time step (which can be steps of time in a 
  * user-specified unit) to a normalized time step in nanosecond units.
  *
- * @internal
- *
  * @param ts The simulation time step to be normalized.
  * @returns The simulation time step normalized to nanosecond units.
  * @see TimeStepPrecision::Get
@@ -319,8 +307,6 @@ private:
 /**
  * @brief Convert a normalized nanosecond count into a simulator time step
  * (which can be steps of time in a user-specified unit).
- *
- * @internal
  *
  * @param ns The nanosecond count step to be converted
  * @returns The simulation time step to be interpreted in appropriate units.

@@ -41,9 +41,6 @@
   NS_TEST_ASSERT_MSG_SPECTRUM_MODEL_EQ_TOL_INTERNAL (actual, expected, tol, msg, __FILE__, __LINE__)
 
 
-/**
- * \internal
- */
 #define NS_TEST_ASSERT_MSG_SPECTRUM_MODEL_EQ_TOL_INTERNAL(actual, expected, tol, msg, file, line) \
   do                                                                           \
     {                                                                          \
@@ -105,9 +102,6 @@
   NS_TEST_ASSERT_MSG_SPECTRUM_VALUE_EQ_TOL_INTERNAL (actual, expected, tol, msg, __FILE__, __LINE__)
 
 
-/**
- * \internal
- */
 #define NS_TEST_ASSERT_MSG_SPECTRUM_VALUE_EQ_TOL_INTERNAL(actual, expected, tol, msg, file, line) \
   do                                                                           \
     {                                                                          \

@@ -29,7 +29,6 @@ namespace ns3 {
 NS_LOG_COMPONENT_DEFINE ("Ipv6AddressGenerator");
 
 /**
- * \internal
  * \ingroup address
  *
  * \brief Implementation class of Ipv6AddressGenerator
@@ -45,7 +44,6 @@ public:
   virtual ~Ipv6AddressGeneratorImpl ();
 
   /**
-   * \internal
    * \brief Initialise the base network and interfaceId for the generator
    *
    * The first call to NextAddress() or GetAddress() will return the
@@ -59,7 +57,6 @@ public:
              const Ipv6Address interfaceId);
 
   /**
-   * \internal
    * \brief Get the next network according to the given Ipv6Prefix
    *
    * This operation is a pre-increment, meaning that the internal state
@@ -74,7 +71,6 @@ public:
   Ipv6Address NextNetwork (const Ipv6Prefix prefix);
 
   /**
-   * \internal
    * \brief Get the current network of the given Ipv6Prefix
    *
    * Does not change the internal state; this just peeks at the current
@@ -86,7 +82,6 @@ public:
   Ipv6Address GetNetwork (const Ipv6Prefix prefix) const;
 
   /**
-   * \internal
    * \brief Set the interfaceId for the given Ipv6Prefix
    *
    * \param interfaceId The interfaceId to set for the current Ipv6Prefix
@@ -95,7 +90,6 @@ public:
   void InitAddress (const Ipv6Address interfaceId, const Ipv6Prefix prefix);
 
   /**
-   * \internal
    * \brief Get the Ipv6Address that will be allocated upon NextAddress ()
    *
    * Does not change the internal state; just is used to peek the next
@@ -107,7 +101,6 @@ public:
   Ipv6Address GetAddress (const Ipv6Prefix prefix) const;
 
   /**
-   * \internal
    * \brief Allocate the next Ipv6Address for the configured network and prefix
    *
    * This operation is a post-increment, meaning that the first address
@@ -119,13 +112,11 @@ public:
   Ipv6Address NextAddress (const Ipv6Prefix prefix);
 
   /**
-   * \internal
    * \brief Reset the networks and Ipv6Address to zero
    */
   void Reset (void);
 
   /**
-   * \internal
    * \brief Add the Ipv6Address to the list of IPv6 entries
    *
    * Typically, this is used by external address allocators that want
@@ -138,17 +129,15 @@ public:
   bool AddAllocated (const Ipv6Address addr);
 
   /**
-   * \internal
    * \brief Used to turn off fatal errors and assertions, for testing
    */
   void TestMode (void);
 
 private:
-  static const uint32_t N_BITS = 128; //!< /internal the number of bits in the address
-  static const uint32_t MOST_SIGNIFICANT_BIT = 0x80; //!< /internal MSB set to 1
+  static const uint32_t N_BITS = 128; //!< the number of bits in the address
+  static const uint32_t MOST_SIGNIFICANT_BIT = 0x80; //!< MSB set to 1
 
   /**
-   * \internal
    * \brief Create an index number for the prefix
    * \param prefix the prefix to index
    * \returns an index
@@ -156,35 +145,33 @@ private:
   uint32_t PrefixToIndex (Ipv6Prefix prefix) const;
 
   /**
-   * \internal
    * \brief This class holds the state for a given network
    */
   class NetworkState
   {
 public:
-    uint8_t prefix[16];  //!< /internal the network prefix
-    uint32_t shift;      //!< /internal a shift
-    uint8_t network[16]; //!< /internal the network
-    uint8_t addr[16];    //!< /internal the address
-    uint8_t addrMax[16]; //!< /internal the maximum address
+    uint8_t prefix[16];  //!< the network prefix
+    uint32_t shift;      //!< a shift
+    uint8_t network[16]; //!< the network
+    uint8_t addr[16];    //!< the address
+    uint8_t addrMax[16]; //!< the maximum address
   };
 
-  NetworkState m_netTable[N_BITS]; //!< /internal the available networks
+  NetworkState m_netTable[N_BITS]; //!< the available networks
 
   /**
-   * \internal
    * \brief This class holds the allocated addresses
    */
   class Entry
   {
 public:
-    uint8_t addrLow[16];  //!< /internal the lowest allocated address
-    uint8_t addrHigh[16]; //!< /internal the highest allocated address
+    uint8_t addrLow[16];  //!< the lowest allocated address
+    uint8_t addrHigh[16]; //!< the highest allocated address
   };
 
-  std::list<Entry> m_entries; //!< /internal contained of allocated addresses
-  Ipv6Address m_base; //!< /internal base address
-  bool m_test; //!< /internal test mode (if true)
+  std::list<Entry> m_entries; //!< contained of allocated addresses
+  Ipv6Address m_base; //!< base address
+  bool m_test; //!< test mode (if true)
 };
 
 Ipv6AddressGeneratorImpl::Ipv6AddressGeneratorImpl ()

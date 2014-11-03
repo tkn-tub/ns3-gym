@@ -182,29 +182,21 @@ private:
   FdNetDevice (FdNetDevice const &);
 
   /**
-   * \internal
-   *
    * Spin up the device
    */
   void StartDevice (void);
 
   /**
-   * \internal
-   *
    * Tear down the device
    */
   void StopDevice (void);
 
   /**
-   * \internal
-   *
    * Callback to invoke when a new frame is received
    */
   void ReceiveCallback (uint8_t *buf, ssize_t len);
 
   /**
-   * \internal
-   *
    * Forward the frame to the appropriate callback for processing
    */
   void ForwardUp (uint8_t *buf, ssize_t len);
@@ -219,15 +211,11 @@ private:
   void NotifyLinkUp (void);
 
   /**
-   * \internal
-   *
    * The ns-3 node associated to the net device.
    */
   Ptr<Node> m_node;
 
   /*
-   * \internal
-   *
    * a copy of the node id so the read thread doesn't have to GetNode() in
    * in order to find the node ID.  Thread unsafe reference counting in
    * multithreaded apps is not a good thing.
@@ -235,110 +223,80 @@ private:
   uint32_t m_nodeId;
 
   /**
-   * \internal
-   *
    * The ns-3 interface index (in the sense of net device index) that has been assigned to this network device.
    */
   uint32_t m_ifIndex;
 
   /**
-   * \internal
-   *
    * The MTU associated to the file descriptor technology
    */
   uint16_t m_mtu;
 
   /**
-   * \internal
-   *
    * The file descriptor used for receive/send network traffic.
    */
   int m_fd;
 
   /**
-   * \internal
-   *
    * Reader for the file descriptor.
    */
   Ptr<FdNetDeviceFdReader> m_fdReader;
 
   /**
-   * \internal
-   *
    * The net device mac address.
    */
   Mac48Address m_address;
 
   /**
-   * \internal
-   *
    * The typ of encapsulation of the received/transmited frames.
    */
   EncapsulationMode m_encapMode;
 
   /**
-   * \internal
-   *
    * Flag indicating whether or not the link is up.  In this case,
    * whether or not the device is connected to a channel.
    */
   bool m_linkUp;
 
   /**
-   * \internal
-   *
    * Callbacks to fire if the link changes state (up or down).
    */
   TracedCallback<> m_linkChangeCallbacks;
 
   /**
-   * \internal
-   *
    * Flag indicating whether or not the underlying net device supports
    * broadcast.
    */
   bool m_isBroadcast;
 
   /**
-   * \internal
-   *
    * Flag indicating whether or not the underlying net device supports
    * multicast.
    */
   bool m_isMulticast;
 
   /**
-   * \internal
-   *
    * Number of packets that were received and scheduled for read but not yeat read.
    */
   uint32_t m_pendingReadCount;
   
   /**
-   * \internal
-   *
    * Maximum number of packets that can be received and scheduled for read but not yeat read.
    */
   uint32_t m_maxPendingReads;
   
    
   /**
-   * \internal
-   *
    * Mutex to increase pending read counter.
    */
   SystemMutex m_pendingReadMutex;
 
   /**
-   * \internal
-   *
    * Time to start spinning up the device
    */
   Time m_tStart;
 
   /**
-   * \internal
-   *
    * Time to start tearing down the device
    */
   Time m_tStop;

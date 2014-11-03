@@ -62,7 +62,6 @@ public:
 protected:
 
   /**
-   * \internal
    * \brief A structure representing data read.
    */
   struct Data
@@ -74,7 +73,6 @@ protected:
   };
 
   /**
-   * \internal
    * \brief The read implementation.
    *
    * The value of \p m_len returned controls further processing.  The
@@ -90,7 +88,6 @@ protected:
   virtual FdReader::Data DoRead (void) = 0;
 
   /**
-   * \internal
    * \brief The file descriptor to read from.
    */
   int m_fd;

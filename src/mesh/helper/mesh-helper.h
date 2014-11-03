@@ -206,7 +206,6 @@ public:
 
 private:
   /**
-   * \internal
    * \returns a WifiNetDevice with ready-to-use interface
    */
   Ptr<WifiNetDevice> CreateInterface (const WifiPhyHelper &phyHelper, Ptr<Node> node, uint16_t channelId) const;

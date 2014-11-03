@@ -103,8 +103,6 @@ private:
    * \param packet the traced packet
    * \param ipv6 the IPv6 object for the traced packet
    * \param interface the IPv6 interface for the traced packet
-   *
-   * \internal
    */
   void TraceSink (Ptr<const Packet> packet, Ptr<Ipv6> ipv6, uint32_t interface);
 

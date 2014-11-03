@@ -180,7 +180,6 @@ public:
 
 private:
   /**
-   * @internal
    * \brief Returns the number of address bits (hostpart) for a given netmask
    * \param maskbits the netmask
    * \returns the number of bits in the hostpart

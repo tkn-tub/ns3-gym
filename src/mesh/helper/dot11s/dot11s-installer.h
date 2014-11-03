@@ -31,9 +31,7 @@ namespace ns3 {
 class Dot11sStack : public MeshStack
 {
 public:
-  /**
-   * \internal
-   */
+  
   static TypeId GetTypeId ();
 
   /**

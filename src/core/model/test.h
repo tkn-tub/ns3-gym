@@ -49,7 +49,6 @@
 /**
  * \ingroup testing
  * \brief Check if we should assert on errors, and do so
- * \internal
  */
 #define ASSERT_ON_FAILURE                       \
   do {                                          \
@@ -62,7 +61,6 @@
 /**
  * \ingroup testing
  * \brief If we shouldn't continue on errors, return
- * \internal
  */
 #define CONTINUE_ON_FAILURE                                             \
   do {                                                                  \
@@ -75,7 +73,6 @@
 /**
  * \ingroup testing
  * \brief If we shouldn't continue on errors, return test status
- * \internal
  */
 #define CONTINUE_ON_FAILURE_RETURNS_BOOL                                \
   do {                                                                  \
@@ -95,7 +92,6 @@
  * \ingroup testing
  * \brief Test that an actual and expected (limit) value are equal and report
  * and abort if not.
- * \internal
  */
 #define NS_TEST_ASSERT_MSG_EQ_INTERNAL(actual, limit, msg, file, line)  \
   do {                                                                  \
@@ -151,7 +147,6 @@
  * \ingroup testing
  * \brief Test that an actual and expected (limit) value are equal and report
  * and abort if not.
- * \internal
  */
 #define NS_TEST_ASSERT_MSG_EQ_RETURNS_BOOL_INTERNAL(actual, limit, msg, file, line) \
   do {                                                                  \
@@ -213,7 +208,6 @@
  * 
  * Required to avoid use of return statement which allows use in methods 
  * (esp. callbacks) returning void.
- * \internal
  */
 #define NS_TEST_EXPECT_MSG_EQ_INTERNAL(actual, limit, msg, file, line)  \
   do {                                                                  \
@@ -273,7 +267,6 @@
  * \ingroup testing
  * \brief Test that actual and expected (limit) values are equal to plus
  * or minus some tolerance and report and abort if not.
- * \internal
  */
 #define NS_TEST_ASSERT_MSG_EQ_TOL_INTERNAL(actual, limit, tol, msg, file, line) \
   do {                                                                  \
@@ -358,7 +351,6 @@
  * \ingroup testing
  * \brief Test that actual and expected (limit) values are equal to plus
  * or minus some tolerance and report and abort if not.
- * \internal
  */
 #define NS_TEST_ASSERT_MSG_EQ_TOL_RETURNS_BOOL_INTERNAL(actual, limit, tol, msg, file, line) \
   do {                                                                  \
@@ -449,7 +441,6 @@
  * 
  * Required to avoid use of return statement which allows use in methods 
  * (esp. callbacks) returning void.
- * \internal
  */
 #define NS_TEST_EXPECT_MSG_EQ_TOL_INTERNAL(actual, limit, tol, msg, file, line) \
   do {                                                                  \
@@ -537,7 +528,6 @@
  * \ingroup testing
  * \brief Test that an actual and expected (limit) value are not equal and 
  * report and abort if not.
- * \internal
  */
 #define NS_TEST_ASSERT_MSG_NE_INTERNAL(actual, limit, msg, file, line)  \
   do {                                                                  \
@@ -592,7 +582,6 @@
  * \ingroup testing
  * \brief Test that an actual and expected (limit) value are not equal and 
  * report and abort if not.
- * \internal
  */
 #define NS_TEST_ASSERT_MSG_NE_RETURNS_BOOL_INTERNAL(actual, limit, msg, file, line) \
   do {                                                                  \
@@ -653,7 +642,6 @@
  * 
  * Required to avoid use of return statement which allows use in methods 
  * (callbacks) returning void.
- * \internal
  */
 #define NS_TEST_EXPECT_MSG_NE_INTERNAL(actual, limit, msg, file, line)  \
   do {                                                                  \
@@ -711,7 +699,6 @@
  * \ingroup testing
  * \brief Test that an actual value is less than a limit and report and abort
  * if not.
- * \internal
  */
 #define NS_TEST_ASSERT_MSG_LT_INTERNAL(actual, limit, msg, file, line)  \
   do {                                                                  \
@@ -736,7 +723,6 @@
  * \ingroup testing
  * \brief Test that an actual value is less than or equal to a limit and report
  * and abort if not.
- * \internal
  */
 #define NS_TEST_ASSERT_MSG_LT_OR_EQ_INTERNAL(actual, limit, msg, file, line)  \
   do {                                                                  \
@@ -803,7 +789,6 @@
  * 
  * Required to avoid use of return statement which allows use in methods 
  * (callbacks) returning void.
- * \internal
  */
 #define NS_TEST_EXPECT_MSG_LT_INTERNAL(actual, limit, msg, file, line)  \
   do {                                                                  \
@@ -830,7 +815,6 @@
  *
  * Required to avoid use of return statement which allows use in methods
  * (callbacks) returning void.
- * \internal
  */
 #define NS_TEST_EXPECT_MSG_LT_OR_EQ_INTERNAL(actual, limit, msg, file, line)  \
   do {                                                                  \
@@ -897,7 +881,6 @@
  * \ingroup testing
  * \brief Test that an actual value is greater than a limit and report and abort
  * if not.
- * \internal
  */
 #define NS_TEST_ASSERT_MSG_GT_INTERNAL(actual, limit, msg, file, line)  \
   do {                                                                  \
@@ -922,7 +905,6 @@
  * \ingroup testing
  * \brief Test that an actual value is greater than or equal to a limit and
  * report and abort if not.
- * \internal
  */
 #define NS_TEST_ASSERT_MSG_GT_OR_EQ_INTERNAL(actual, limit, msg, file, line)  \
   do {                                                                  \
@@ -989,7 +971,6 @@
  * 
  * Required to avoid use of return statement which allows use in methods 
  * (callbacks) returning void.
- * \internal
  */
 #define NS_TEST_EXPECT_MSG_GT_INTERNAL(actual, limit, msg, file, line)  \
   do {                                                                  \
@@ -1016,7 +997,6 @@
  *
  * Required to avoid use of return statement which allows use in methods
  * (callbacks) returning void.
- * \internal
  */
 #define NS_TEST_EXPECT_MSG_GT_OR_EQ_INTERNAL(actual, limit, msg, file, line)  \
   do {                                                                  \
@@ -1176,7 +1156,6 @@ protected:
 
   /**
    * @{
-   * \internal
    * The methods below are used only by test macros and should not
    * be used by normal users.
    */
