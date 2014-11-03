@@ -21,23 +21,15 @@
 
 namespace ns3 {
 
-#define DEF_TYPE(x)                             \
-  template <>                                   \
-  std::string TypeNameGet<x> (void)             \
-  {                                             \
-    return # x;                                  \
-  }
-
-DEF_TYPE (uint8_t);
-DEF_TYPE (uint16_t);
-DEF_TYPE (uint32_t);
-DEF_TYPE (uint64_t);
-DEF_TYPE (int8_t);
-DEF_TYPE (int16_t);
-DEF_TYPE (int32_t);
-DEF_TYPE (int64_t);
-DEF_TYPE (float);
-DEF_TYPE (double);
-
-
+template <> std::string TypeNameGet< int8_t  > (void) { return "int8_t"  ; }
+template <> std::string TypeNameGet< int16_t > (void) { return "int16_t" ; }
+template <> std::string TypeNameGet< int32_t > (void) { return "int32_t" ; }
+template <> std::string TypeNameGet< int64_t > (void) { return "int64_t" ; }
+template <> std::string TypeNameGet< uint8_t > (void) { return "uint8_t" ; }
+template <> std::string TypeNameGet< uint16_t> (void) { return "uint16_t"; }
+template <> std::string TypeNameGet< uint32_t> (void) { return "uint32_t"; }
+template <> std::string TypeNameGet< uint64_t> (void) { return "uint64_t"; }
+template <> std::string TypeNameGet< float   > (void) { return "float"   ; }
+template <> std::string TypeNameGet< double  > (void) { return "double"  ; }
+  
 } // namespace ns3

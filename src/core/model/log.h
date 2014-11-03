@@ -165,6 +165,9 @@ void LogComponentDisableAll (enum LogLevel level);
  * ns3::LogComponentDisable functions or with the NS_LOG
  * environment variable.
  *
+ * LogComponent names should be simple string tokens, _i.e._,
+ * "ArfWifiManager", not "ns3::ArfWifiManager".
+ *
  * This macro should be placed within namespace ns3.  If functions
  * outside of namespace ns3 require access to logging, the preferred
  * solution is to add the following 'using' directive at file scope,

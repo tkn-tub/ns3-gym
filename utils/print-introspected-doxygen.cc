@@ -538,6 +538,10 @@ PrintAllLogComponents (std::ostream & os)
   os << "This is a list of all" << reference << "ns3::LogComponent instances.\n"
      << std::endl;
 
+  /**
+   * \todo Switch to a border-less table, so the file links align
+   * See http://www.stack.nl/~dimitri/doxygen/manual/htmlcmds.html
+   */
   os << listStart << std::endl;
   LogComponent::ComponentList * logs = LogComponent::GetComponentList ();
   LogComponent::ComponentList::const_iterator it;
@@ -545,6 +549,7 @@ PrintAllLogComponents (std::ostream & os)
     {
       std::string file = it->second->File ();
       // Strip leading "../" related to depth in build directory
+      // since doxygen only sees the path starting with "src/", etc.
       while (file.find ("../") == 0)
         {
           file = file.substr (3);

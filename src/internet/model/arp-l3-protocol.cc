@@ -187,9 +187,10 @@ ArpL3Protocol::Receive (Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t pro
       NS_LOG_LOGIC (cache->GetInterface ()->GetAddress (i).GetLocal () << ", ");
     }
 
-  /** \internal
+  /**
+   * \internal
    * Note: we do not update the ARP cache when we receive an ARP request
-   *  from an unknown node. See \bugid{107}
+   * from an unknown node. See \bugid{107}
    */
   bool found = false;
   for (uint32_t i = 0; i < cache->GetInterface ()->GetNAddresses (); i++)

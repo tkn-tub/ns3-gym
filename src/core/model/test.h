@@ -34,6 +34,15 @@
  * \ingroup core
  * \defgroup testing Testing
  * \brief Tools to define and execute unit tests.
+ *
+ * This module lists the normal Testing API.  Most of these
+ * macros forward to the implementation macros in testingimpl.
+ * You should generally use these macros only.
+ */
+/**
+ * \ingroup testing
+ * \defgroup testingimpl Testing Implementation
+ * \brief Internal implementation of the Testing system.
  */
 
 // 
@@ -89,7 +98,7 @@
 // ===========================================================================
 
 /**
- * \ingroup testing
+ * \ingroup testingimpl
  * \brief Test that an actual and expected (limit) value are equal and report
  * and abort if not.
  */
@@ -144,7 +153,7 @@
   NS_TEST_ASSERT_MSG_EQ_INTERNAL (actual, limit, msg, __FILE__, __LINE__)
 
 /**
- * \ingroup testing
+ * \ingroup testingimpl
  * \brief Test that an actual and expected (limit) value are equal and report
  * and abort if not.
  */
@@ -202,7 +211,7 @@
   NS_TEST_ASSERT_MSG_EQ_RETURNS_BOOL_INTERNAL (actual, limit, msg, __FILE__, __LINE__)
 
 /**
- * \ingroup testing
+ * \ingroup testingimpl
  * \brief Test that an actual and expected (limit) value are equal and report
  * if not.
  * 
@@ -264,7 +273,7 @@
 // ===========================================================================
 
 /**
- * \ingroup testing
+ * \ingroup testingimpl
  * \brief Test that actual and expected (limit) values are equal to plus
  * or minus some tolerance and report and abort if not.
  */
@@ -348,7 +357,7 @@
   NS_TEST_ASSERT_MSG_EQ_TOL_INTERNAL (actual, limit, tol, msg, __FILE__, __LINE__)
 
 /**
- * \ingroup testing
+ * \ingroup testingimpl
  * \brief Test that actual and expected (limit) values are equal to plus
  * or minus some tolerance and report and abort if not.
  */
@@ -435,7 +444,7 @@
   NS_TEST_ASSERT_MSG_EQ_TOL_RETURNS_BOOL_INTERNAL (actual, limit, tol, msg, __FILE__, __LINE__)
 
 /**
- * \ingroup testing
+ * \ingroup testingimpl
  * \brief Test that actual and expected (limit) values are equal to plus or minus
  * some tolerance and report if not.
  * 
@@ -525,7 +534,7 @@
 // ===========================================================================
 
 /**
- * \ingroup testing
+ * \ingroup testingimpl
  * \brief Test that an actual and expected (limit) value are not equal and 
  * report and abort if not.
  */
@@ -579,7 +588,7 @@
   NS_TEST_ASSERT_MSG_NE_INTERNAL (actual, limit, msg, __FILE__, __LINE__)
 
 /**
- * \ingroup testing
+ * \ingroup testingimpl
  * \brief Test that an actual and expected (limit) value are not equal and 
  * report and abort if not.
  */
@@ -636,7 +645,7 @@
   NS_TEST_ASSERT_MSG_NE_RETURNS_BOOL_INTERNAL (actual, limit, msg, __FILE__, __LINE__)
 
 /**
- * \ingroup testing
+ * \ingroup testingimpl
  * \brief Test that an actual and expected (limit) value are not equal and 
  * report if not.
  * 
@@ -696,7 +705,7 @@
 // ===========================================================================
 
 /**
- * \ingroup testing
+ * \ingroup testingimpl
  * \brief Test that an actual value is less than a limit and report and abort
  * if not.
  */
@@ -720,7 +729,7 @@
   } while (false)
 
 /**
- * \ingroup testing
+ * \ingroup testingimpl
  * \brief Test that an actual value is less than or equal to a limit and report
  * and abort if not.
  */
@@ -784,7 +793,7 @@
   NS_TEST_ASSERT_MSG_LT_OR_EQ_INTERNAL (actual, limit, msg, __FILE__, __LINE__)
 
 /**
- * \ingroup testing
+ * \ingroup testingimpl
  * \brief Test that an actual value is less than a limit and report if not.
  * 
  * Required to avoid use of return statement which allows use in methods 
@@ -809,7 +818,7 @@
   } while (false)
 
 /**
- * \ingroup testing
+ * \ingroup testingimpl
  * \brief Test that an actual value is less than or equal to a limit and report
  * if not.
  *
@@ -878,7 +887,7 @@
 // ===========================================================================
 
 /**
- * \ingroup testing
+ * \ingroup testingimpl
  * \brief Test that an actual value is greater than a limit and report and abort
  * if not.
  */
@@ -902,7 +911,7 @@
   } while (false)
 
 /**
- * \ingroup testing
+ * \ingroup testingimpl
  * \brief Test that an actual value is greater than or equal to a limit and
  * report and abort if not.
  */
@@ -966,7 +975,7 @@
   NS_TEST_ASSERT_MSG_GT_OR_EQ_INTERNAL (actual, limit, msg, __FILE__, __LINE__)
 
 /**
- * \ingroup testing
+ * \ingroup testingimpl
  * \brief Test that an actual value is greater than a limit and report if not.
  * 
  * Required to avoid use of return statement which allows use in methods 
@@ -991,7 +1000,7 @@
   } while (false)
 
 /**
- * \ingroup testing
+ * \ingroup testingimpl
  * \brief Test that an actual value is greater than a or equal to limit and
  * report if not.
  *
@@ -1058,6 +1067,7 @@
 namespace ns3 {
 
 /**
+ * \ingroup testing
  * \brief Compare two double precision floating point numbers and declare them
  * equal if they are within some epsilon of each other.
  *
@@ -1156,11 +1166,19 @@ protected:
 
   /**
    * @{
+   * \internal
    * The methods below are used only by test macros and should not
    * be used by normal users.
    */
   /**
    * Log the failure of this TestCase.
+   *
+   * \param cond The test condition.
+   * \param actual Actual value of the test.
+   * \param limit Expected value of the test.
+   * \param message Message indicating the type of failure.
+   * \param file The file where the test failed.
+   * \param line The line number in \p file where the test failed.
    */
   void ReportTestFailure (std::string cond, std::string actual, 
                       std::string limit, std::string message, 
@@ -1288,7 +1306,7 @@ private:
 };
 
 /**
- * \ingroup testing
+ * \ingroup testingimpl
  *
  * \brief A runner to execute tests.
  */

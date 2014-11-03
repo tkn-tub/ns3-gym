@@ -31,17 +31,26 @@ namespace ns3 {
 
 /**
  * \ingroup wimax
- * \brief This class handles the  SNR to BlcER traces.  A path to a repository containing trace files should be provided.
- * If no repository is provided the traces form default-traces.h will be loaded.
- * A valid repository should contain 7 files, one for each modulation and coding scheme.
- * The names of the files should respect the following format: modulation0.txt for modulation 0, modulation1.txt for
- * modulation 1 and so on...
- * The files format should be as follows
- * SNR_value(1)   BER(1)    Blc_ER(1)    STANDARD_DEVIATION(1)    CONFIDENCE_INTERVAL1(1)    CONFIDENCE_INTERVAL2(1)
- * SNR_value(2)   BER(2)    Blc_ER(2)    STANDARD_DEVIATION(2)    CONFIDENCE_INTERVAL1(2)    CONFIDENCE_INTERVAL2(2)
- *  ...           ...       ...          ...                      ...                        ...
- *  ...           ...       ...          ...                      ...                        ...
- * SNR_value(n)   BER(n)    Blc_ER(n)    STANDARD_DEVIATION(n)    CONFIDENCE_INTERVAL1(n)    CONFIDENCE_INTERVAL2(n)
+ * \brief This class handles the  SNR to BlcER traces.
+ *
+ * A path to a repository containing trace files should be provided.
+ * If no repository is provided the traces from default-traces.h will be loaded.
+ * A valid repository should contain 7 files, one for each modulation
+ * and coding scheme.
+ *
+ * The names of the files should respect the following format:
+ * \c modulation<modulation-and-conding-index>.txt, _e.g._
+ * \c modulation0.txt, \c modulation1.txt, _etc._ for
+ * modulation 0, modulation 1, and so on...
+ * 
+ * The file format is ASCII with six columns as follows:
+ *
+ * -#  The SNR value,
+ * -#  The bit error rate BER,
+ * -#  The block error rate BlcERm,
+ * -#  The standard deviation on block error rate,
+ * -#  The lower bound confidence interval for a given modulation, and
+ * -#  The upper bound confidence interval for a given modulation.
  */
 class SNRToBlockErrorRateManager
 {

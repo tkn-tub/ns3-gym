@@ -28,20 +28,29 @@ namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("SystemWallClockMsPrivate");
 
+/**
+ * \ingroup testingimpl
+ * \brief System-dependent implementation for SystemWallClockMs
+ */
 class SystemWallClockMsPrivate {
 public:
+  /** \copydoc SystemWallClockMs::Start() */
   void Start (void);
+  /** \copydoc SystemWallClockMs::End() */
   int64_t End (void);
+  /** \copydoc SystemWallClockMs::GetElapsedReal() */
   int64_t GetElapsedReal (void) const;
+  /** \copydoc SystemWallClockMs::GetElapsedUser() */
   int64_t GetElapsedUser (void) const;
+  /** \copydoc SystemWallClockMs::GetElapsedSystem() */
   int64_t GetElapsedSystem (void) const;
 
 private:
-  struct tms m_startTimes;
-  clock_t m_startTime;
-  int64_t m_elapsedReal;
-  int64_t m_elapsedUser;
-  int64_t m_elapsedSystem;
+  struct tms m_startTimes;  //!< The native time structure.
+  clock_t m_startTime;      //!< Native real time.
+  int64_t m_elapsedReal;    //!< Elapsed real time, in ms.
+  int64_t m_elapsedUser;    //!< Elapsed user time, in ms.
+  int64_t m_elapsedSystem;  //!< Elapsed system time, in ms.
 };
 
 void 
