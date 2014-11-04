@@ -478,6 +478,29 @@ the |ns3| programs by simply typing
 Okay, sorry, I made you build the |ns3| part of the system twice,
 but now you know how to change the configuration and build optimized code.
 
+The build.py script discussed above supports also the ``--enable-examples``
+and ``enable-tests`` arguments, but in general, does not directly support
+other waf options; for example, this will not work:
+
+::
+
+  $ ./build.py --disable-python
+
+will result in
+
+::
+
+  build.py: error: no such option: --disable-python
+
+However, the special operator ``--`` can be used to pass additional
+options through to waf, so instead of the above, the following will work:
+
+::
+
+  $ ./build.py -- --disable-python   
+
+as it generates the underlying command ``./waf configure --disable-python``.
+
 Here are a few more introductory tips about Waf.
 
 Configure vs. Build
