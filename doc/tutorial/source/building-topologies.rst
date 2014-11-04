@@ -413,7 +413,7 @@ You should see the contents of the pcap file displayed:
 
   reading from file second-0-0.pcap, link-type PPP (PPP)
   2.000000 IP 10.1.1.1.49153 > 10.1.2.4.9: UDP, length 1024
-  2.007602 IP 10.1.2.4.9 > 10.1.1.1.49153: UDP, length 1024
+  2.017607 IP 10.1.2.4.9 > 10.1.1.1.49153: UDP, length 1024
 
 The first line of the dump indicates that the link type is PPP (point-to-point)
 which we expect.  You then see the echo packet leaving node zero via the 
@@ -433,7 +433,7 @@ link:
 
   reading from file second-1-0.pcap, link-type PPP (PPP)
   2.003686 IP 10.1.1.1.49153 > 10.1.2.4.9: UDP, length 1024
-  2.003915 IP 10.1.2.4.9 > 10.1.1.1.49153: UDP, length 1024
+  2.013921 IP 10.1.2.4.9 > 10.1.1.1.49153: UDP, length 1024
 
 Here we see that the link type is also PPP as we would expect.  You see the
 packet from IP address 10.1.1.1 (that was sent at 2.000000 seconds) headed 
@@ -453,12 +453,12 @@ You should now see the promiscuous dump of node two, device zero:
 .. sourcecode:: text
 
   reading from file second-2-0.pcap, link-type EN10MB (Ethernet)
-  2.003696 arp who-has 10.1.2.4 (ff:ff:ff:ff:ff:ff) tell 10.1.2.1
-  2.003707 arp reply 10.1.2.4 is-at 00:00:00:00:00:06
-  2.003801 IP 10.1.1.1.49153 > 10.1.2.4.9: UDP, length 1024
-  2.003811 arp who-has 10.1.2.1 (ff:ff:ff:ff:ff:ff) tell 10.1.2.4
-  2.003822 arp reply 10.1.2.1 is-at 00:00:00:00:00:03
-  2.003915 IP 10.1.2.4.9 > 10.1.1.1.49153: UDP, length 1024
+  2.007698 ARP, Request who-has 10.1.2.4 (ff:ff:ff:ff:ff:ff) tell 10.1.2.1, length 50
+  2.007710 ARP, Reply 10.1.2.4 is-at 00:00:00:00:00:06, length 50
+  2.007803 IP 10.1.1.1.49153 > 10.1.2.4.9: UDP, length 1024
+  2.013815 ARP, Request who-has 10.1.2.1 (ff:ff:ff:ff:ff:ff) tell 10.1.2.4, length 50
+  2.013828 ARP, Reply 10.1.2.1 is-at 00:00:00:00:00:03, length 50
+  2.013921 IP 10.1.2.4.9 > 10.1.1.1.49153: UDP, length 1024
 
 As you can see, the link type is now "Ethernet".  Something new has appeared,
 though.  The bus network needs ``ARP``, the Address Resolution Protocol.
@@ -473,15 +473,15 @@ This exchange is seen in the following lines,
 
 .. sourcecode:: text
 
-  2.003696 arp who-has 10.1.2.4 (ff:ff:ff:ff:ff:ff) tell 10.1.2.1
-  2.003707 arp reply 10.1.2.4 is-at 00:00:00:00:00:06
+  2.007698 ARP, Request who-has 10.1.2.4 (ff:ff:ff:ff:ff:ff) tell 10.1.2.1, length 50
+  2.007710 ARP, Reply 10.1.2.4 is-at 00:00:00:00:00:06, length 50
 
 Then node one, device one goes ahead and sends the echo packet to the UDP echo
 server at IP address 10.1.2.4. 
 
 .. sourcecode:: text
 
-  2.003801 IP 10.1.1.1.49153 > 10.1.2.4.9: UDP, length 1024
+  2.007803 IP 10.1.1.1.49153 > 10.1.2.4.9: UDP, length 1024
 
 The server receives the echo request and turns the packet around trying to send
 it back to the source.  The server knows that this address is on another network
@@ -492,14 +492,14 @@ just like the first CSMA node had to do.
 
 .. sourcecode:: text
 
-  2.003811 arp who-has 10.1.2.1 (ff:ff:ff:ff:ff:ff) tell 10.1.2.4
-  2.003822 arp reply 10.1.2.1 is-at 00:00:00:00:00:03
+  2.013815 ARP, Request who-has 10.1.2.1 (ff:ff:ff:ff:ff:ff) tell 10.1.2.4, length 50
+  2.013828 ARP, Reply 10.1.2.1 is-at 00:00:00:00:00:03, length 50
 
 The server then sends the echo back to the forwarding node.
 
 .. sourcecode:: text
 
-  2.003915 IP 10.1.2.4.9 > 10.1.1.1.49153: UDP, length 1024
+  2.013921 IP 10.1.2.4.9 > 10.1.1.1.49153: UDP, length 1024
 
 Looking back at the rightmost node of the point-to-point link,
 
@@ -514,7 +514,7 @@ the last line of the trace dump.
 
   reading from file second-1-0.pcap, link-type PPP (PPP)
   2.003686 IP 10.1.1.1.49153 > 10.1.2.4.9: UDP, length 1024
-  2.003915 IP 10.1.2.4.9 > 10.1.1.1.49153: UDP, length 1024
+  2.013921 IP 10.1.2.4.9 > 10.1.1.1.49153: UDP, length 1024
 
 Lastly, you can look back at the node that originated the echo
 
@@ -528,7 +528,7 @@ and see that the echoed packet arrives back at the source at 2.007602 seconds,
 
   reading from file second-0-0.pcap, link-type PPP (PPP)
   2.000000 IP 10.1.1.1.49153 > 10.1.2.4.9: UDP, length 1024
-  2.007602 IP 10.1.2.4.9 > 10.1.1.1.49153: UDP, length 1024
+  2.017607 IP 10.1.2.4.9 > 10.1.1.1.49153: UDP, length 1024
 
 Finally, recall that we added the ability to control the number of CSMA devices
 in the simulation by command line argument.  You can change this argument in
@@ -547,9 +547,10 @@ You should now see,
   Waf: Entering directory `/home/craigdo/repos/ns-3-allinone/ns-3-dev/build'
   Waf: Leaving directory `/home/craigdo/repos/ns-3-allinone/ns-3-dev/build'
   'build' finished successfully (0.405s)
-  Sent 1024 bytes to 10.1.2.5
-  Received 1024 bytes from 10.1.1.1
-  Received 1024 bytes from 10.1.2.5
+  At time 2s client sent 1024 bytes to 10.1.2.5 port 9
+  At time 2.0118s server received 1024 bytes from 10.1.1.1 port 49153
+  At time 2.0118s server sent 1024 bytes to 10.1.1.1 port 49153
+  At time 2.02461s client received 1024 bytes from 10.1.2.5 port 9
 
 Notice that the echo server has now been relocated to the last of the CSMA
 nodes, which is 10.1.2.5 instead of the default case, 10.1.2.4.
@@ -621,9 +622,10 @@ you will see the following output:
   Waf: Entering directory `/home/craigdo/repos/ns-3-allinone/ns-3-dev/build'
   Waf: Leaving directory `/home/craigdo/repos/ns-3-allinone/ns-3-dev/build'
   'build' finished successfully (0.407s)
-  Sent 1024 bytes to 10.1.2.101
-  Received 1024 bytes from 10.1.1.1
-  Received 1024 bytes from 10.1.2.101
+  At time 2s client sent 1024 bytes to 10.1.2.101 port 9
+  At time 2.0068s server received 1024 bytes from 10.1.1.1 port 49153
+  At time 2.0068s server sent 1024 bytes to 10.1.1.1 port 49153
+  At time 2.01761s client received 1024 bytes from 10.1.2.101 port 9
 
 Note that the echo server is now located at 10.1.2.101 which corresponds to
 having 100 "extra" CSMA nodes with the echo server on the last one.  If you
@@ -655,8 +657,8 @@ entire CSMA network.
 .. sourcecode:: text
 
   reading from file second-100-0.pcap, link-type EN10MB (Ethernet)
-  2.003696 arp who-has 10.1.2.101 (ff:ff:ff:ff:ff:ff) tell 10.1.2.1
-  2.003811 arp who-has 10.1.2.1 (ff:ff:ff:ff:ff:ff) tell 10.1.2.101
+  2.006698 ARP, Request who-has 10.1.2.101 (ff:ff:ff:ff:ff:ff) tell 10.1.2.1, length 50
+  2.013815 ARP, Request who-has 10.1.2.1 (ff:ff:ff:ff:ff:ff) tell 10.1.2.101, length 50
 
 Now take a look at the ``tcpdump`` for ``second-101-0.pcap``.
 
@@ -669,12 +671,12 @@ You can now see that node 101 is really the participant in the echo exchange.
 .. sourcecode:: text
 
   reading from file second-101-0.pcap, link-type EN10MB (Ethernet)
-  2.003696 arp who-has 10.1.2.101 (ff:ff:ff:ff:ff:ff) tell 10.1.2.1
-  2.003696 arp reply 10.1.2.101 is-at 00:00:00:00:00:67
-  2.003801 IP 10.1.1.1.49153 > 10.1.2.101.9: UDP, length 1024
-  2.003801 arp who-has 10.1.2.1 (ff:ff:ff:ff:ff:ff) tell 10.1.2.101
-  2.003822 arp reply 10.1.2.1 is-at 00:00:00:00:00:03
-  2.003822 IP 10.1.2.101.9 > 10.1.1.1.49153: UDP, length 1024
+  2.006698 ARP, Request who-has 10.1.2.101 (ff:ff:ff:ff:ff:ff) tell 10.1.2.1, length 50
+  2.006698 ARP, Reply 10.1.2.101 is-at 00:00:00:00:00:67, length 50
+  2.006803 IP 10.1.1.1.49153 > 10.1.2.101.9: UDP, length 1024
+  2.013803 ARP, Request who-has 10.1.2.1 (ff:ff:ff:ff:ff:ff) tell 10.1.2.101, length 50
+  2.013828 ARP, Reply 10.1.2.1 is-at 00:00:00:00:00:03, length 50
+  2.013828 IP 10.1.2.101.9 > 10.1.1.1.49153: UDP, length 1024
 
 Models, Attributes and Reality
 ******************************
