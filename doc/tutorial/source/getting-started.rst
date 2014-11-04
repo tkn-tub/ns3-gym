@@ -596,6 +596,46 @@ More info on ``distcc`` and distributed compilation can be found on it's
 <http://code.google.com/p/distcc/>`_
 under Documentation section.
 
+Install
+=======
+
+Waf may be used to install libraries in various places on the system.
+The default location where libraries and executables are built is
+in the ``build`` directory, and because Waf knows the location of these
+libraries and executables, it is not necessary to install the libraries
+elsewhere.
+
+If users choose to install things outside of the build directory, users
+may issue the ``./waf install`` command.  By default, the prefix for
+installation is ``/usr/local``, so ``./waf install`` will install programs
+into ``/usr/local/bin``, libraries into ``/usr/local/lib``, and headers
+into ``/usr/local/include``.  Superuser privileges are typically needed
+to install to the default prefix, so the typical command would be
+``sudo ./waf install``.  When running programs with Waf, Waf will
+first prefer to use shared libraries in the build directory, then 
+will look for libraries in the library path configured in the local
+environment.  So when installing libraries to the system, it is good
+practice to check that the intended libraries are being used.
+
+Users may choose to install to a different prefix by passing the ``--prefix``
+option at configure time, such as:
+
+::
+
+  ./waf configure --prefix=/opt/local
+
+If later after the build the user issues the ``./waf install`` command, the 
+prefix ``/opt/local`` will be used.
+
+The ``./waf clean`` command should be used prior to reconfiguring 
+the project if Waf will be used to install things at a different prefix.
+
+In summary, it is not necessary to call ``./waf install`` to use |ns3|.
+Most users will not need this command since Waf will pick up the
+current libraries from the ``build`` directory, but some users may find 
+it useful if their use case involves working with programs outside
+of the |ns3| directory.
+
 One Waf
 =======
 
