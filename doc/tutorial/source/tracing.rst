@@ -1995,14 +1995,15 @@ to run.
   Waf: Entering directory `/home/craigdo/repos/ns-3-allinone-dev/ns-3-dev/build'
   Waf: Leaving directory `/home/craigdo/repos/ns-3-allinone-dev/ns-3-dev/build'
   'build' finished successfully (0.684s)
-  1.20919 1072
-  1.21511 1608
-  1.22103 2144
+  1       536
+  1.0093  1072
+  1.01528 1608
+  1.02167 2144
   ...
-  1.2471  8040
-  1.24895 8576
-  1.2508  9112
-  RxDrop at 1.25151
+  1.11319 8040
+  1.12151 8576
+  1.12983 9112
+  RxDrop at 1.13696
   ...
 
 You can probably see immediately a downside of using prints of any
