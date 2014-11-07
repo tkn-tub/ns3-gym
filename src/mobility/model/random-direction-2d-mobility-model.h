@@ -60,7 +60,6 @@ private:
   virtual Vector DoGetVelocity (void) const;
   virtual int64_t DoAssignStreams (int64_t);
 
-  static const double PI;
   Ptr<UniformRandomVariable> m_direction;
   Rectangle m_bounds;
   Ptr<RandomVariableStream> m_speed;

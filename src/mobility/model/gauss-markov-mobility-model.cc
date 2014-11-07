@@ -168,7 +168,7 @@ GaussMarkovMobilityModel::DoWalk (Time delayLeft)
       if (nextPosition.x > m_bounds.xMax || nextPosition.x < m_bounds.xMin) 
         {
           speed.x = -speed.x;
-          m_meanDirection = 3.14159265 - m_meanDirection;
+          m_meanDirection = M_PI - m_meanDirection;
         }
 
       if (nextPosition.y > m_bounds.yMax || nextPosition.y < m_bounds.yMin) 

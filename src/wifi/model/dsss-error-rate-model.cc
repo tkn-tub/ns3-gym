@@ -35,7 +35,7 @@ double
 DsssErrorRateModel::DqpskFunction (double x)
 {
   NS_LOG_FUNCTION_NOARGS ();
-  return ((std::sqrt (2.0) + 1.0) / std::sqrt (8.0 * 3.1415926 * std::sqrt (2.0)))
+  return ((std::sqrt (2.0) + 1.0) / std::sqrt (8.0 * M_PI * std::sqrt (2.0)))
     * (1.0 / std::sqrt (x)) * std::exp ( -(2.0 - std::sqrt (2.0)) * x);
 }
 
