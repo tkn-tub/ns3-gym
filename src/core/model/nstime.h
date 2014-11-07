@@ -27,7 +27,6 @@
 #include "unused.h"
 #include <stdint.h>
 #include <limits>
-#include <cmath>
 #include <ostream>
 #include <set>
 
