@@ -32,6 +32,7 @@ Bugs fixed
 ----------
 - Bug 1551 - NS_LOG_COMPONENT_DEFINE inside or outside of ns3 namespace?
 - Bug 1791 - TCP Endpoint never deallocates when closing
+- Bug 1906 - 802.11n PHY configuration for 2.4GHz and 5GHz devices
 - Bug 1957 - UdpSocketImpl is stuck after a Close()
 - Bug 1968 - Missing supported 802.11n HT rates in the WifiPhy constructor
 - Bug 1970 - Missing NotifyAckTimeoutStartNow in MacLow::StartDataTxTimers
