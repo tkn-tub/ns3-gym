@@ -20,6 +20,7 @@ def configure(conf):
         brite_dir = Options.options.with_brite
         if os.path.exists(os.path.join(brite_dir, lib_to_check)):
             conf.env['WITH_BRITE'] = os.path.abspath(Options.options.with_brite)
+            conf.env['ENABLE_BRITE'] = True
         else:
             conf.report_optional_feature("brite", "BRITE Integration", False,
                                  "BRITE not found at requested location")
@@ -29,13 +30,14 @@ def configure(conf):
             return
     else:
         # No user specified '--with-brite' option, try to guess
-        # bake.py uses ../../build, while ns-3-dev uses ../click
+        # bake.py uses ../../build, while ns-3-dev uses ../BRITE
         brite_dir = os.path.join('..','BRITE')
         brite_bake_build_dir = os.path.join('..', '..', 'build') 
         brite_bake_lib_dir = os.path.join(brite_bake_build_dir, 'lib')
         if os.path.exists(os.path.join(brite_dir, lib_to_check)):
             conf.msg("Checking for BRITE location", ("%s (guessed)" % brite_dir))
             conf.env['WITH_BRITE'] = os.path.abspath(brite_dir)
+            conf.env['ENABLE_BRITE'] = True
 # Below is not yet ready (bake does not install BRITE yet, just builds it)
 #        elif os.path.exists(os.path.join(brite_bake_lib_dir, lib_to_check)):
 #            conf.msg("Checking for BRITE location", ("%s (guessed)" % brite_bake_lib_dir))
@@ -57,29 +59,25 @@ int main()
 }
 '''
 
-    conf.env['DL'] = conf.check(mandatory=True, lib='dl', define_name='DL', uselib='DL')
+    conf.env['DL'] = conf.check(mandatory=True, lib='dl', define_name='DL', uselib_store='DL')
 
-    conf.env.append_value('NS3_MODULE_PATH',os.path.abspath(os.path.join(conf.env['WITH_BRITE'], '.')))
+    conf.env['LIBPATH_BRITE'] = [os.path.abspath(os.path.join(conf.env['WITH_BRITE'], '.'))]
 
-    conf.env['INCLUDES_BRITE'] = os.path.abspath(os.path.join(conf.env['WITH_BRITE'],'.'))
-
-    conf.env['CPPPATH_BRITE'] = [
+    conf.env['INCLUDES_BRITE'] = [
             os.path.abspath(os.path.join(conf.env['WITH_BRITE'],'.')),
             os.path.abspath(os.path.join(conf.env['WITH_BRITE'],'Models'))
             ]
-    conf.env['LIBPATH_BRITE'] = [os.path.abspath(os.path.join(conf.env['WITH_BRITE'], '.'))]
 
-    conf.env.append_value('CXXDEFINES', 'NS3_BRITE')
-    conf.env.append_value('CPPPATH', conf.env['CPPPATH_BRITE'])
+    conf.env['DEFINES_BRITE'] = ['NS3_BRITE']
 
-    conf.env['BRITE'] = conf.check(fragment=test_code, lib='brite', libpath=conf.env['LIBPATH_BRITE'], use='BRITE DL')
+    conf.env['BRITE'] = conf.check(fragment=test_code, lib='brite', libpath=conf.env['LIBPATH_BRITE'], uselib='BRITE')
+
+    # This statement will get LD_LIBRARY_PATH set correctly when waf needs
+    # to load the brite shared library.
+    conf.env.append_value('NS3_MODULE_PATH',os.path.abspath(os.path.join(conf.env['WITH_BRITE'], '.')))
+
     conf.report_optional_feature("brite", "BRITE Integration",
                                           conf.env['BRITE'], "BRITE library not found")
-
-    if conf.env['BRITE']:
-        conf.env['ENABLE_BRITE'] = True
-        conf.env.append_value('CXXDEFINES', 'NS3_BRITE')
-        conf.env.append_value('CPPPATH', conf.env['CPPPATH_BRITE'])
 
 def build(bld):
     # Don't do anything for this module if brite's not enabled.
@@ -95,7 +93,8 @@ def build(bld):
         ]
 
     if bld.env['BRITE'] and bld.env['DL']:
-        module.uselib = 'BRITE DL'
+        module.use.extend(['BRITE', 'DL'])
+        module_test.use.extend(['BRITE', 'DL'])
 
     headers = bld(features='ns3header')
     headers.module = 'brite'
@@ -108,4 +107,4 @@ def build(bld):
         module_test.source.append('test/brite-test-topology.cc')
 
     if bld.env['ENABLE_EXAMPLES'] and bld.env['ENABLE_BRITE']:
-      bld.recurse('examples')
+        bld.recurse('examples')
