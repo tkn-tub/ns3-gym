@@ -27,6 +27,7 @@
 #include "ns3/double.h"
 #include "ns3/uinteger.h"
 #include "ns3/wifi-phy.h"
+#include "ns3/wifi-mac.h"
 #include "ns3/trace-source-accessor.h"
 #include "wifi-mac-header.h"
 #include "wifi-mac-trailer.h"
@@ -352,6 +353,14 @@ WifiRemoteStationManager::SetupPhy (Ptr<WifiPhy> phy)
     {
       m_defaultTxMcs = 0;
     }
+  Reset ();
+}
+void
+WifiRemoteStationManager::SetupMac (Ptr<WifiMac> mac)
+{
+  // We need to track our MAC because it is the object that knows the
+  // full set of interframe spaces.
+  m_wifiMac = mac;
   Reset ();
 }
 void
@@ -1360,6 +1369,18 @@ WifiRemoteStationManager::GetShortRetryCount (const WifiRemoteStation *station) 
 {
   return station->m_ssrc;
 }
+
+Ptr<WifiPhy>
+WifiRemoteStationManager::GetPhy (void) const
+{
+  return m_wifiPhy;
+}
+Ptr<WifiMac>
+WifiRemoteStationManager::GetMac (void) const
+{
+  return m_wifiMac;
+}
+
 uint32_t 
 WifiRemoteStationManager::GetLongRetryCount (const WifiRemoteStation *station) const
 {

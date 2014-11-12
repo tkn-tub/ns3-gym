@@ -31,6 +31,7 @@ New user-visible features
 Bugs fixed
 ----------
 - Bug 1551 - NS_LOG_COMPONENT_DEFINE inside or outside of ns3 namespace?
+- Bug 1726 - WiFi Minstrel rate control algorithm doesn't save state
 - Bug 1791 - TCP Endpoint never deallocates when closing
 - Bug 1906 - 802.11n PHY configuration for 2.4GHz and 5GHz devices
 - Bug 1957 - UdpSocketImpl is stuck after a Close()
