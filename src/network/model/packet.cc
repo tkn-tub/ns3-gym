@@ -412,6 +412,14 @@ Packet::PrintByteTags (std::ostream &os) const
     }
 }
 
+std::string
+Packet::ToString() const
+{
+  std::ostringstream oss;
+  Print (oss);
+  return oss.str();
+}
+
 void 
 Packet::Print (std::ostream &os) const
 {

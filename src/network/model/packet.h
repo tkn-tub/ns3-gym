@@ -454,6 +454,15 @@ public:
   void Print (std::ostream &os) const;
 
   /**
+   * \brief Return a string representation of the packet
+   *
+   * An empty string is returned if you haven't called EnablePrinting ()
+   *
+   * \return String representation
+   */
+  std::string ToString (void) const;
+
+  /**
    * \brief Returns an iterator which points to the first 'item'
    * stored in this buffer.
    *
