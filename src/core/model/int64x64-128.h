@@ -38,19 +38,20 @@ namespace ns3 {
  */
 class int64x64_t
 {
-  /// uint128_t high bit (sign bit)
+  /// uint128_t high bit (sign bit).
   static const uint128_t   HP128_MASK_HI_BIT = (((int128_t)1)<<127);
-  /// Mask for fraction part
+  /// Mask for fraction part.
   static const uint64_t    HP_MASK_LO = 0xffffffffffffffffULL;
-  /// Mask for sign + integer part
+  /// Mask for sign + integer part.
   static const uint64_t    HP_MASK_HI = ~HP_MASK_LO;
   /**
-   * Floating point value of HP_MASK_LO + 1
+   * Floating point value of HP_MASK_LO + 1.
    * We really want:
    * \code
    *   static const long double HP_MAX_64 = std:pow (2.0L, 64);
    * \endcode
-   * but we can't call functions in const definitions,
+   * but we can't call functions in const definitions.
+   *
    * We could make this a static and initialize in int64x64-128.cc or
    * int64x64.cc, but this requires handling static initialization order
    * when most of the implementation is inline.  Instead, we resort to
@@ -67,22 +68,22 @@ public:
    * we expose the underlying implementation type here.
    */
   enum impl_type {
-    int128_impl,  //!< Native int128_t implementation.
-    cairo_impl,   //!< cairo wideint implementation
-    ld_impl,      //!< long double implementation
+    int128_impl,  //!< Native \c int128_t implementation.
+    cairo_impl,   //!< Cairo wideint implementation.
+    ld_impl,      //!< `long double` implementation.
   };
 
   /// Type tag for this implementation.
   static const enum impl_type implementation = int128_impl;
 
-  /// Default constructor
+  /// Default constructor.
   inline int64x64_t ()
     : _v (0)  {}
   /**@{*/
   /**
    * Construct from a floating point value.
    *
-   * \param [in] value floating value to represent
+   * \param [in] value Floating value to represent.
    */
   inline int64x64_t (const double value)
   {
@@ -123,7 +124,7 @@ public:
   /**
    * Construct from an integral type.
    *
-   * \param [in] v integer value to represent
+   * \param [in] v Integer value to represent.
    */
   inline int64x64_t (const int v)
     : _v (v)
@@ -179,6 +180,7 @@ public:
    * Assignment.
    *
    * \param [in] o Value to assign to this int64x64_t.
+   * \returns This int64x64_t.
    */
   inline int64x64_t & operator = (const int64x64_t & o)
   {
@@ -229,7 +231,7 @@ public:
    *
    * \param [in] o The inverse operand.
    *
-   * \see Invert
+   * \see Invert()
    */
   void MulByInvert (const int64x64_t & o);
 
@@ -249,6 +251,7 @@ public:
   static int64x64_t Invert (const uint64_t v);
 
 private:
+
   friend bool         operator == (const int64x64_t & lhs, const int64x64_t & rhs);
 
   friend bool         operator <  (const int64x64_t & lhs, const int64x64_t & rhs);
@@ -304,7 +307,7 @@ private:
    *
    * \param [in] a Numerator.
    * \param [in] b Denominator.
-   * \return The Q64.64 representation of `a / b`
+   * \return The Q64.64 representation of `a / b`.
    */
   static uint128_t Udiv         (const uint128_t a, const uint128_t b);
   /**
@@ -312,16 +315,16 @@ private:
    *
    * \param [in] a The numerator, a Q64.64 value.
    * \param [in] b The inverse of the denominator, a Q0.128 value
-   * \return The product `a * b`, representing the ration `a / b^-1`
+   * \return The product `a * b`, representing the ration `a / b^-1`.
    *
-   * \see Invert
+   * \see Invert()
    */
   static uint128_t UmulByInvert (const uint128_t a, const uint128_t b);
 
   /**
    * Construct from an integral type.
    *
-   * \param [in] v integer value to represent
+   * \param [in] v Integer value to represent.
    */
   inline int64x64_t (const int128_t v)
     : _v (v) {}
@@ -341,7 +344,7 @@ inline bool operator == (const int64x64_t & lhs, const int64x64_t & rhs)
 }
 /**
  * \ingroup highprec
- * Less than operator
+ * Less than operator.
  */
 inline bool operator < (const int64x64_t & lhs, const int64x64_t & rhs)
 {
@@ -349,7 +352,7 @@ inline bool operator < (const int64x64_t & lhs, const int64x64_t & rhs)
 }
 /**
  * \ingroup highprec
- * Greater operator
+ * Greater operator.
  */
 inline bool operator > (const int64x64_t & lhs, const int64x64_t & rhs)
 {
@@ -358,7 +361,7 @@ inline bool operator > (const int64x64_t & lhs, const int64x64_t & rhs)
 
 /**
  * \ingroup highprec
- * Compound addition operator
+ * Compound addition operator.
  */
 inline int64x64_t & operator += (int64x64_t & lhs, const int64x64_t & rhs)
 {
@@ -367,7 +370,7 @@ inline int64x64_t & operator += (int64x64_t & lhs, const int64x64_t & rhs)
 }
 /**
  * \ingroup highprec
- * Compound subtraction operator
+ * Compound subtraction operator.
  */
 inline int64x64_t & operator -= (int64x64_t & lhs, const int64x64_t & rhs)
 {
@@ -376,7 +379,7 @@ inline int64x64_t & operator -= (int64x64_t & lhs, const int64x64_t & rhs)
 }
 /**
  * \ingroup highprec
- * Compound multiplication operator
+ * Compound multiplication operator.
  */
 inline int64x64_t & operator *= (int64x64_t & lhs, const int64x64_t & rhs)
 {
@@ -385,7 +388,7 @@ inline int64x64_t & operator *= (int64x64_t & lhs, const int64x64_t & rhs)
 }
 /**
  * \ingroup highprec
- * Compound division operator
+ * Compound division operator.
  */
 inline int64x64_t & operator /= (int64x64_t & lhs, const int64x64_t & rhs)
 {
@@ -395,7 +398,7 @@ inline int64x64_t & operator /= (int64x64_t & lhs, const int64x64_t & rhs)
 
 /**
  * \ingroup highprec
- * Unary plus operator
+ * Unary plus operator.
  */
 inline int64x64_t operator + (const int64x64_t & lhs)
 {
@@ -403,7 +406,7 @@ inline int64x64_t operator + (const int64x64_t & lhs)
 }
 /**
  * \ingroup highprec
- * Unary negation operator (change sign operator)
+ * Unary negation operator (change sign operator).
  */
 inline int64x64_t operator - (const int64x64_t & lhs)
 {
@@ -411,7 +414,7 @@ inline int64x64_t operator - (const int64x64_t & lhs)
 }
 /**
  * \ingroup highprec
- * Logical not operator
+ * Logical not operator.
  */
 inline int64x64_t operator ! (const int64x64_t & lhs)
 {
