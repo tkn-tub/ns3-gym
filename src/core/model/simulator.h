@@ -48,7 +48,7 @@ class Scheduler;
  *
  * The internal simulation clock is maintained
  * as a 64-bit integer in a unit specified by the user
- * through the TimeStepPrecision::Set function. This means that it is
+ * through the Time::SetResolution function. This means that it is
  * not possible to specify event expiration times with anything better
  * than this user-specified accuracy. Events whose expiration time is
  * the same modulo this accuracy are scheduled in FIFO order: the 
@@ -56,14 +56,16 @@ class Scheduler;
  * expire first.
  * 
  * A simple example of how to use the Simulator class to schedule events
- * is shown below:
+ * is shown in sample-simulator.cc ::
  * \include src/core/examples/sample-simulator.cc
+ *
+ * \todo Define what the simulation or event context means.
  */
 class Simulator 
 {
 public:
   /**
-   * \param impl a new simulator implementation
+   * \param impl A new simulator implementation.
    *
    * The simulator provides a mechanism to swap out different implementations.
    * For example, the default implementation is a single-threaded simulator
@@ -76,6 +78,23 @@ public:
    */
   static void SetImplementation (Ptr<SimulatorImpl> impl);
 
+  /**
+   * \brief Get the SimulatorImpl singleton.
+   *
+   * \internal
+   * If the SimulatorImpl singleton hasn't been created yet,
+   * this function does so.  At the same time it also creates
+   * the Scheduler.  Both of these respect the global values
+   * which may have been set from the command line or through
+   * the Config system.
+   *
+   * As a side effect we also call LogSetTimePrinter() and
+   * LogSetNodePrinter() with the default implementations
+   * since we can't really do any logging until we have
+   * a SimulatorImpl and Scheduler.
+   
+   * \return The SimulatorImpl singleton.
+   */
   static Ptr<SimulatorImpl> GetImplementation (void);
 
   /**
@@ -87,51 +106,25 @@ public:
    */
   static void SetScheduler (ObjectFactory schedulerFactory);
 
-  /**
-   * Every event scheduled by the Simulator::insertAtDestroy method is
-   * invoked. Then, we ensure that any memory allocated by the 
-   * Simulator is freed.
-   * This method is typically invoked at the end of a simulation
-   * to avoid false-positive reports by a leak checker.
-   * After this method has been invoked, it is actually possible
-   * to restart a new simulation with a set of calls to Simulator::run
-   * and Simulator::insert_*.
-   */
+  /**  \copydoc SimulatorImpl::Destroy   */
   static void Destroy (void);
 
-  /**
-   * If there are no more events lefts to be scheduled, or if simulation
-   * time has already reached the "stop time" (see Simulator::Stop()),
-   * return true. Return false otherwise.
-   */
+  /** \copydoc SimulatorImpl::IsFinished */
   static bool IsFinished (void);
 
-  /**
-   * Run the simulation until one of:
-   *   - no events are present anymore
-   *   - the user called Simulator::Stop()
-   *   - the user called Simulator::Stop(Time const &time) and the
-   *     expiration time of the next event to be processed
-   *     is greater than or equal to the stop time.
-   */
+  /** \copydoc SimulatorImpl::Run */
   static void Run (void);
 
-  /**
-   * If an event invokes this method, it will be the last
-   * event scheduled by the Simulator::run method before
-   * returning to the caller.
-   */
+  /** \copydoc SimulatorImpl::Stop(void) */
   static void Stop (void);
 
-  /**
-   * Force the Simulator::run method to return to the caller when the
-   * expiration time of the next event to be processed is greater than
-   * or equal to the stop time.  The stop time is relative to the
-   * current simulation time.
-   * @param time the stop time, relative to the current time.
-   */
+  /** \copydoc SimulatorImpl::Stop(Time const &) */
   static void Stop (Time const &time);
 
+  /**
+   * \name Schedule events (in the same context) to run at a future time.
+   */
+  /** @{ */
   /**
    * Schedule an event to expire at the relative time "time"
    * is reached.  This can be thought of as scheduling an event
@@ -276,6 +269,14 @@ public:
             typename T1, typename T2, typename T3, typename T4, typename T5>
   static EventId Schedule (Time const &time, void (*f)(U1,U2,U3,U4,U5), T1 a1, T2 a2, T3 a3, T4 a4, T5 a5);
 
+  /** @} */
+
+  /**
+   * \name Schedule events (in a different context) to run at a particular time.
+   *
+   * See \ref main-test-sync.cc for example usage.
+   */
+  /** @{ */
   /**
    * Schedule an event with the given context.
    * A context of 0xffffffff means no context is specified.
@@ -438,6 +439,12 @@ public:
             typename T1, typename T2, typename T3, typename T4, typename T5>
   static void ScheduleWithContext (uint32_t context, Time const &time, void (*f)(U1,U2,U3,U4,U5), T1 a1, T2 a2, T3 a3, T4 a4, T5 a5);
 
+  /** @} */
+  
+  /**
+   * \name Schedule events (in the same context) to run now.
+   */
+  /** @{ */
   /**
    * Schedule an event to expire Now. All events scheduled to
    * to expire "Now" are scheduled FIFO, after all normal events
@@ -445,6 +452,7 @@ public:
    *
    * @param mem_ptr member method pointer to invoke
    * @param obj the object on which to invoke the member method
+   * @return The EventId of the scheduled event.
    */
   template <typename MEM, typename OBJ>
   static EventId ScheduleNow (MEM mem_ptr, OBJ obj);
@@ -453,6 +461,7 @@ public:
    * @param mem_ptr member method pointer to invoke
    * @param obj the object on which to invoke the member method
    * @param a1 the first argument to pass to the invoked method
+   * @return The EventId of the scheduled event.
    */
   template <typename MEM, typename OBJ, 
             typename T1>
@@ -463,6 +472,7 @@ public:
    * @param obj the object on which to invoke the member method
    * @param a1 the first argument to pass to the invoked method
    * @param a2 the second argument to pass to the invoked method
+   * @return The EventId of the scheduled event.
    */
   template <typename MEM, typename OBJ, 
             typename T1, typename T2>
@@ -474,6 +484,7 @@ public:
    * @param a1 the first argument to pass to the invoked method
    * @param a2 the second argument to pass to the invoked method
    * @param a3 the third argument to pass to the invoked method
+   * @return The EventId of the scheduled event.
    */
   template <typename MEM, typename OBJ, 
             typename T1, typename T2, typename T3>
@@ -486,6 +497,7 @@ public:
    * @param a2 the second argument to pass to the invoked method
    * @param a3 the third argument to pass to the invoked method
    * @param a4 the fourth argument to pass to the invoked method
+   * @return The EventId of the scheduled event.
    */
   template <typename MEM, typename OBJ, 
             typename T1, typename T2, typename T3, typename T4>
@@ -499,6 +511,7 @@ public:
    * @param a3 the third argument to pass to the invoked method
    * @param a4 the fourth argument to pass to the invoked method
    * @param a5 the fifth argument to pass to the invoked method
+   * @return The EventId of the scheduled event.
    */
   template <typename MEM, typename OBJ, 
             typename T1, typename T2, typename T3, typename T4, typename T5>
@@ -506,12 +519,14 @@ public:
                               T1 a1, T2 a2, T3 a3, T4 a4, T5 a5);
   /**
    * @param f the function to invoke
+   * @return The EventId of the scheduled event.
    */
   static EventId ScheduleNow (void (*f)(void));
 
   /**
    * @param f the function to invoke
    * @param a1 the first argument to pass to the function to invoke
+   * @return The EventId of the scheduled event.
    */
   template <typename U1,
             typename T1>
@@ -521,6 +536,7 @@ public:
    * @param f the function to invoke
    * @param a1 the first argument to pass to the function to invoke
    * @param a2 the second argument to pass to the function to invoke
+   * @return The EventId of the scheduled event.
    */
   template <typename U1, typename U2,
             typename T1, typename T2>
@@ -531,6 +547,7 @@ public:
    * @param a1 the first argument to pass to the function to invoke
    * @param a2 the second argument to pass to the function to invoke
    * @param a3 the third argument to pass to the function to invoke
+   * @return The EventId of the scheduled event.
    */
   template <typename U1, typename U2, typename U3,
             typename T1, typename T2, typename T3>
@@ -542,6 +559,7 @@ public:
    * @param a2 the second argument to pass to the function to invoke
    * @param a3 the third argument to pass to the function to invoke
    * @param a4 the fourth argument to pass to the function to invoke
+   * @return The EventId of the scheduled event.
    */
   template <typename U1, typename U2, typename U3, typename U4,
             typename T1, typename T2, typename T3, typename T4>
@@ -554,11 +572,18 @@ public:
    * @param a3 the third argument to pass to the function to invoke
    * @param a4 the fourth argument to pass to the function to invoke
    * @param a5 the fifth argument to pass to the function to invoke
+   * @return The EventId of the scheduled event.
    */
   template <typename U1, typename U2, typename U3, typename U4, typename U5,
             typename T1, typename T2, typename T3, typename T4, typename T5>
   static EventId ScheduleNow (void (*f)(U1,U2,U3,U4,U5), T1 a1, T2 a2, T3 a3, T4 a4, T5 a5);
 
+  /** @} */
+
+  /**
+   * \name Schedule events to run at the end of the simulation.
+   */
+  /** @{ */
   /**
    * Schedule an event to expire at Destroy time. All events 
    * scheduled to expire at "Destroy" time are scheduled FIFO, 
@@ -567,6 +592,7 @@ public:
    *
    * @param mem_ptr member method pointer to invoke
    * @param obj the object on which to invoke the member method
+   * @return The EventId of the scheduled event.
    */
   template <typename MEM, typename OBJ>
   static EventId ScheduleDestroy (MEM mem_ptr, OBJ obj);
@@ -575,6 +601,7 @@ public:
    * @param mem_ptr member method pointer to invoke
    * @param obj the object on which to invoke the member method
    * @param a1 the first argument to pass to the invoked method
+   * @return The EventId of the scheduled event.
    */
   template <typename MEM, typename OBJ, 
             typename T1>
@@ -585,6 +612,7 @@ public:
    * @param obj the object on which to invoke the member method
    * @param a1 the first argument to pass to the invoked method
    * @param a2 the second argument to pass to the invoked method
+   * @return The EventId of the scheduled event.
    */
   template <typename MEM, typename OBJ,
             typename T1, typename T2>
@@ -596,6 +624,7 @@ public:
    * @param a1 the first argument to pass to the invoked method
    * @param a2 the second argument to pass to the invoked method
    * @param a3 the third argument to pass to the invoked method
+   * @return The EventId of the scheduled event.
    */
   template <typename MEM, typename OBJ, 
             typename T1, typename T2, typename T3>
@@ -608,6 +637,7 @@ public:
    * @param a2 the second argument to pass to the invoked method
    * @param a3 the third argument to pass to the invoked method
    * @param a4 the fourth argument to pass to the invoked method
+   * @return The EventId of the scheduled event.
    */
   template <typename MEM, typename OBJ, 
             typename T1, typename T2, typename T3, typename T4>
@@ -621,6 +651,7 @@ public:
    * @param a3 the third argument to pass to the invoked method
    * @param a4 the fourth argument to pass to the invoked method
    * @param a5 the fifth argument to pass to the invoked method
+   * @return The EventId of the scheduled event.
    */
   template <typename MEM, typename OBJ, 
             typename T1, typename T2, typename T3, typename T4, typename T5>
@@ -628,12 +659,14 @@ public:
                                   T1 a1, T2 a2, T3 a3, T4 a4, T5 a5);
   /**
    * @param f the function to invoke
+   * @return The EventId of the scheduled event.
    */
   static EventId ScheduleDestroy (void (*f)(void));
 
   /**
    * @param f the function to invoke
    * @param a1 the first argument to pass to the function to invoke
+   * @return The EventId of the scheduled event.
    */
   template <typename U1,
             typename T1>
@@ -643,6 +676,7 @@ public:
    * @param f the function to invoke
    * @param a1 the first argument to pass to the function to invoke
    * @param a2 the second argument to pass to the function to invoke
+   * @return The EventId of the scheduled event.
    */
   template <typename U1, typename U2,
             typename T1, typename T2>
@@ -653,6 +687,7 @@ public:
    * @param a1 the first argument to pass to the function to invoke
    * @param a2 the second argument to pass to the function to invoke
    * @param a3 the third argument to pass to the function to invoke
+   * @return The EventId of the scheduled event.
    */
   template <typename U1, typename U2, typename U3,
             typename T1, typename T2, typename T3>
@@ -664,6 +699,7 @@ public:
    * @param a2 the second argument to pass to the function to invoke
    * @param a3 the third argument to pass to the function to invoke
    * @param a4 the fourth argument to pass to the function to invoke
+   * @return The EventId of the scheduled event.
    */
   template <typename U1, typename U2, typename U3, typename U4,
             typename T1, typename T2, typename T3, typename T4>
@@ -676,130 +712,76 @@ public:
    * @param a3 the third argument to pass to the function to invoke
    * @param a4 the fourth argument to pass to the function to invoke
    * @param a5 the fifth argument to pass to the function to invoke
+   * @return The EventId of the scheduled event.
    */
   template <typename U1, typename U2, typename U3, typename U4, typename U5,
             typename T1, typename T2, typename T3, typename T4, typename T5>
   static EventId ScheduleDestroy (void (*f)(U1,U2,U3,U4,U5), T1 a1, T2 a2, T3 a3, T4 a4, T5 a5);
 
-  /**
-   * Remove an event from the event list. 
-   * This method has the same visible effect as the 
-   * ns3::EventId::Cancel method
-   * but its algorithmic complexity is much higher: it has often 
-   * O(log(n)) complexity, sometimes O(n), sometimes worse.
-   * Note that it is not possible to remove events which were scheduled
-   * for the "destroy" time. Doing so will result in a program error (crash).
-   *
-   * @param id the event to remove from the list of scheduled events.
-   */
+  /** @} */
+
+  /** \copydoc SimulatorImpl::Remove */
   static void Remove (const EventId &id);
 
-  /**
-   * Set the cancel bit on this event: the event's associated function
-   * will not be invoked when it expires. 
-   * This method has the same visible effect as the 
-   * ns3::Simulator::remove method but its algorithmic complexity is 
-   * much lower: it has O(1) complexity.
-   * This method has the exact same semantics as ns3::EventId::cancel.
-   * Note that it is not possible to cancel events which were scheduled
-   * for the "destroy" time. Doing so will result in a program error (crash).
-   * 
-   * @param id the event to cancel
-   */
+  /** \copydoc SimulatorImpl::Cancel */
   static void Cancel (const EventId &id);
 
-  /**
-   * This method has O(1) complexity.
-   * Note that it is not possible to test for the expiration of
-   * events which were scheduled for the "destroy" time. Doing so
-   * will result in a program error (crash).
-   * An event is said to "expire" when it starts being scheduled
-   * which means that if the code executed by the event calls
-   * this function, it will get true.
-   *
-   * @param id the event to test for expiration
-   * @returns true if the event has expired, false otherwise.
-   */
+  /** \copydoc SimulatorImpl::IsExpired */
   static bool IsExpired (const EventId &id);
 
-  /**
-   * Return the "current simulation time".
-   */
+  /** \copydoc SimulatorImpl::Now */
   static Time Now (void);
 
-  /**
-   * \param id the event id to analyse
-   * \returns the delay left until the input event id expires.
-   *          if the event is not running, this method returns
-   *          zero.
-   */
+  /** \copydoc SimulatorImpl::GetDelayLeft */
   static Time GetDelayLeft (const EventId &id);
 
-  /**
-   * \returns the maximum simulation time at which an event 
-   *          can be scheduled.
-   *
-   * The returned value will always be bigger than or equal to Simulator::Now.
-   */
+  /** \copydoc SimulatorImpl::GetMaximumSimulationTime */
   static Time GetMaximumSimulationTime (void);
 
-  /**
-   * \returns the current simulation context
-   */
+  /** \copydoc SimulatorImpl::GetContext */
   static uint32_t GetContext (void);
 
-  /**
-   * \param time delay until the event expires
-   * \param event the event to schedule
-   * \returns a unique identifier for the newly-scheduled event.
-   *
-   * This method will be typically used by language bindings
-   * to delegate events to their own subclass of the EventImpl base class.
-   */
+  /** \copydoc SimulatorImpl::Schedule */
   static EventId Schedule (Time const &time, const Ptr<EventImpl> &event);
 
-  /**
+  /** \copydoc SimulatorImpl::ScheduleWithContext
    * This method is thread-safe: it can be called from any thread.
-   *
-   * \param time delay until the event expires
-   * \param context event context
-   * \param event the event to schedule
-   * \returns a unique identifier for the newly-scheduled event.
-   *
-   * This method will be typically used by language bindings
-   * to delegate events to their own subclass of the EventImpl base class.
    */
   static void ScheduleWithContext (uint32_t context, const Time &time, EventImpl *event);
 
-  /**
-   * \param event the event to schedule
-   * \returns a unique identifier for the newly-scheduled event.
-   *
-   * This method will be typically used by language bindings
-   * to delegate events to their own subclass of the EventImpl base class.
-   */
+  /** \copydoc SimulatorImpl::ScheduleDestroy */
   static EventId ScheduleDestroy (const Ptr<EventImpl> &event);
 
-  /**
-   * \param event the event to schedule
-   * \returns a unique identifier for the newly-scheduled event.
-   *
-   * This method will be typically used by language bindings
-   * to delegate events to their own subclass of the EventImpl base class.
-   */
+  /** \copydoc SimulatorImpl::ScheduleNow */
   static EventId ScheduleNow (const Ptr<EventImpl> &event);
 
-  /**
-   * \returns the system id for this simulator; used for 
-   *          MPI or other distributed simulations
-   */
+  /** \copydoc SimulatorImpl::GetSystemId */
   static uint32_t GetSystemId (void);
+  
 private:
+  /** Default constructor. */
   Simulator ();
+  /** Destructor. */
   ~Simulator ();
 
+  /**
+   * Implementation of the various Schedule methods.
+   * \param [in] time Delay until the event should execute.
+   * \param [in] event The event to execute.
+   * \return The EventId.
+   */
   static EventId DoSchedule (Time const &time, EventImpl *event);
+  /**
+   * Implementation of the various ScheduleNow methods.
+   * \param [in] event The event to execute.
+   * \return The EventId.
+   */
   static EventId DoScheduleNow (EventImpl *event);
+  /**
+   * Implementation of the various ScheduleDestroy methods.
+   * \param [in] event The event to execute.
+   * \return The EventId.
+   */
   static EventId DoScheduleDestroy (EventImpl *event);
 };
 
@@ -811,8 +793,9 @@ private:
  * It is typically used as shown below to schedule an event
  * which expires at the absolute time "2 seconds":
  * \code
- * Simulator::Schedule (Seconds (2.0) - Now (), &my_function);
+ *   Simulator::Schedule (Seconds (2.0) - Now (), &my_function);
  * \endcode
+ * \return The current simulation time.
  */
 Time Now (void);
 

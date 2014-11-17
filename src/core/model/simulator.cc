@@ -44,22 +44,47 @@ namespace ns3 {
 // of causing recursions leading to stack overflow
 NS_LOG_COMPONENT_DEFINE ("Simulator");
 
-static GlobalValue g_simTypeImpl = GlobalValue ("SimulatorImplementationType",
-                                                "The object class to use as the simulator implementation",
-                                                StringValue ("ns3::DefaultSimulatorImpl"),
-                                                MakeStringChecker ());
+/**
+ * \ingroup simulator
+ * The specific simulator implementation to use.
+ *
+ * Must be derived from SimulatorImpl.
+ */
+static GlobalValue g_simTypeImpl = GlobalValue
+  ("SimulatorImplementationType",
+   "The object class to use as the simulator implementation",
+   StringValue ("ns3::DefaultSimulatorImpl"),
+   MakeStringChecker ());
 
+/**
+ * \ingroup scheduler
+ * The specific event scheduler implementation to use.
+ *
+ * Must be derived from Scheduler.
+ */
 static GlobalValue g_schedTypeImpl = GlobalValue ("SchedulerType",
                                                   "The object class to use as the scheduler implementation",
                                                   TypeIdValue (MapScheduler::GetTypeId ()),
                                                   MakeTypeIdChecker ());
 
+/**
+ * \ingroup logging
+ * Default TimePrinter implementation.
+ *
+ * \param [in] os The output stream to print the time on.
+ */
 static void
 TimePrinter (std::ostream &os)
 {
   os << Simulator::Now ().GetSeconds () << "s";
 }
 
+/**
+ * \ingroup logging
+ * Default node id printer implementation.
+ * 
+ * \param [in] os The output stream to print the node id on.
+ */
 static void
 NodePrinter (std::ostream &os)
 {
@@ -73,12 +98,23 @@ NodePrinter (std::ostream &os)
     }
 }
 
+/**
+ * \ingroup simulator
+ * \brief Get the static SimulatorImpl instance.
+ * \return The SimulatorImpl instance pointer.
+ */
 static SimulatorImpl **PeekImpl (void)
 {
   static SimulatorImpl *impl = 0;
   return &impl;
 }
 
+/**
+ * \ingroup simulator
+ * \brief Get the SimulatorImpl singleton.
+ * \return The singleton pointer.
+ * \see Simulator::GetImplementation()
+ */
 static SimulatorImpl * GetImpl (void)
 {
   SimulatorImpl **pimpl = PeekImpl ();
@@ -254,23 +290,23 @@ Simulator::ScheduleDestroy (void (*f)(void))
 }
 
 void
-Simulator::Remove (const EventId &ev)
+Simulator::Remove (const EventId &id)
 {
   if (*PeekImpl () == 0)
     {
       return;
     }
-  return GetImpl ()->Remove (ev);
+  return GetImpl ()->Remove (id);
 }
 
 void
-Simulator::Cancel (const EventId &ev)
+Simulator::Cancel (const EventId &id)
 {
   if (*PeekImpl () == 0)
     {
       return;
     }
-  return GetImpl ()->Cancel (ev);
+  return GetImpl ()->Cancel (id);
 }
 
 bool 
@@ -341,6 +377,7 @@ Simulator::SetImplementation (Ptr<SimulatorImpl> impl)
   LogSetTimePrinter (&TimePrinter);
   LogSetNodePrinter (&NodePrinter);
 }
+
 Ptr<SimulatorImpl>
 Simulator::GetImplementation (void)
 {
