@@ -155,12 +155,12 @@ TopologyReader::Link::SetAttribute (const std::string &name, const std::string &
 }
 
 TopologyReader::Link::ConstAttributesIterator
-TopologyReader::Link::AttributesBegin (void)
+TopologyReader::Link::AttributesBegin (void) const
 {
   return m_linkAttr.begin ();
 }
 TopologyReader::Link::ConstAttributesIterator
-TopologyReader::Link::AttributesEnd (void)
+TopologyReader::Link::AttributesEnd (void) const
 {
   return m_linkAttr.end ();
 }

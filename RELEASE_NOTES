@@ -43,6 +43,7 @@ Bugs fixed
 - Bug 1997 - Fix PlotProbe() documentation and usage for GnuplotHelper and FileHelper
 - Bug 2011 - Default Speed attribute in ConstantSpeedPropagationDelayModel
 - Bug 2016 - Radvd do not consider the SendAdvert option and don't reply to RS
+- Bug 2021 - Missing const qualifier in TopologyReader::Link::Attributes{Begin,End}()
 
 Known issues
 ------------
