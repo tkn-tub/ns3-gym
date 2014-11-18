@@ -50,6 +50,7 @@ RadvdInterface::RadvdInterface (uint32_t interface)
   m_homeAgentPreference = 0;
   m_mobRtrSupportFlag = false;
   m_intervalOpt = false;
+  m_initialRtrAdvertisementsLeft = 3;
 }
 
 RadvdInterface::RadvdInterface (uint32_t interface, uint32_t maxRtrAdvInterval, uint32_t minRtrAdvInterval)
@@ -76,6 +77,7 @@ RadvdInterface::RadvdInterface (uint32_t interface, uint32_t maxRtrAdvInterval, 
   m_homeAgentPreference = 0;
   m_mobRtrSupportFlag = false;
   m_intervalOpt = false;
+  m_initialRtrAdvertisementsLeft = 3;
 }
 
 RadvdInterface::~RadvdInterface ()
@@ -335,5 +337,25 @@ void RadvdInterface::SetIntervalOpt (bool intervalOpt)
   NS_LOG_FUNCTION (this << intervalOpt);
   m_intervalOpt = intervalOpt;
 }
+
+Time RadvdInterface::GetLastRaTxTime ()
+{
+  return m_lastSendTime;
+}
+
+void RadvdInterface::SetLastRaTxTime (Time now)
+{
+  m_lastSendTime = now;
+  if (m_initialRtrAdvertisementsLeft)
+    {
+      m_initialRtrAdvertisementsLeft --;
+    }
+}
+
+bool RadvdInterface::IsInitialRtrAdv ()
+{
+  return m_initialRtrAdvertisementsLeft;
+}
+
 } /* namespace ns3 */
 

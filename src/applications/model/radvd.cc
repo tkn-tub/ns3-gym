@@ -21,6 +21,7 @@
  */
 
 #include "ns3/log.h"
+#include "ns3/abort.h"
 #include "ns3/ipv6-address.h"
 #include "ns3/nstime.h"
 #include "ns3/simulator.h"
@@ -29,7 +30,10 @@
 #include "ns3/uinteger.h"
 #include "ns3/inet6-socket-address.h"
 #include "ns3/ipv6.h"
+#include "ns3/ipv6-l3-protocol.h"
+#include "ns3/ipv6-interface.h"
 #include "ns3/ipv6-raw-socket-factory.h"
+#include "ns3/ipv6-packet-info-tag.h"
 #include "ns3/ipv6-header.h"
 #include "ns3/icmpv6-header.h"
 #include "ns3/string.h"
@@ -71,12 +75,22 @@ Radvd::~Radvd ()
       *it = 0;
     }
   m_configurations.clear ();
-  m_socket = 0;
+  m_recvSocket = 0;
 }
 
 void Radvd::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
+
+  m_recvSocket->Close ();
+  m_recvSocket = 0;
+
+  for (SocketMapI it = m_sendSockets.begin (); it != m_sendSockets.end (); ++it)
+    {
+      it->second->Close ();
+      it->second = 0;
+    }
+
   Application::DoDispose ();
 }
 
@@ -84,23 +98,39 @@ void Radvd::StartApplication ()
 {
   NS_LOG_FUNCTION (this);
 
-  if (!m_socket)
+  TypeId tid = TypeId::LookupByName ("ns3::Ipv6RawSocketFactory");
+
+  if (!m_recvSocket)
     {
-      TypeId tid = TypeId::LookupByName ("ns3::Ipv6RawSocketFactory");
-      m_socket = Socket::CreateSocket (GetNode (), tid);
+      m_recvSocket = Socket::CreateSocket (GetNode (), tid);
 
-      NS_ASSERT (m_socket);
+      NS_ASSERT (m_recvSocket);
 
-      /*    m_socket->Bind (Inet6SocketAddress (m_localAddress, 0)); */
-      /*    m_socket->Connect (Inet6SocketAddress (Ipv6Address::GetAllNodesMulticast (), 0)); */
-      m_socket->SetAttribute ("Protocol", UintegerValue (Ipv6Header::IPV6_ICMPV6));
-      m_socket->SetRecvCallback (MakeCallback (&Radvd::HandleRead, this));
+      m_recvSocket->Bind (Inet6SocketAddress (Ipv6Address::GetAllRoutersMulticast (), 0));
+      m_recvSocket->SetAttribute ("Protocol", UintegerValue (Ipv6Header::IPV6_ICMPV6));
+      m_recvSocket->SetRecvCallback (MakeCallback (&Radvd::HandleRead, this));
+      m_recvSocket->ShutdownSend ();
+      m_recvSocket->SetRecvPktInfo (true);
     }
 
   for (RadvdInterfaceListCI it = m_configurations.begin (); it != m_configurations.end (); it++)
     {
-      m_eventIds[(*it)->GetInterface ()] = EventId ();
-      ScheduleTransmit (Seconds (0.), (*it), m_eventIds[(*it)->GetInterface ()], Ipv6Address::GetAllNodesMulticast (), true); 
+      if ((*it)->IsSendAdvert ())
+        {
+          m_unsolicitedEventIds[(*it)->GetInterface ()] = Simulator::Schedule (Seconds (0.), &Radvd::Send,
+                                                                               this, (*it), Ipv6Address::GetAllNodesMulticast (), true);
+        }
+
+      if (m_sendSockets.find ((*it)->GetInterface ()) == m_sendSockets.end ())
+        {
+          Ptr<Ipv6L3Protocol> ipv6 = GetNode ()->GetObject<Ipv6L3Protocol> ();
+          Ptr<Ipv6Interface> iFace = ipv6->GetInterface ((*it)->GetInterface ());
+
+          m_sendSockets[(*it)->GetInterface ()] = Socket::CreateSocket (GetNode (), tid);
+          m_sendSockets[(*it)->GetInterface ()]->Bind (Inet6SocketAddress (iFace->GetLinkLocalAddress ().GetAddress (), 0));
+          m_sendSockets[(*it)->GetInterface ()]->SetAttribute ("Protocol", UintegerValue (Ipv6Header::IPV6_ICMPV6));
+          m_sendSockets[(*it)->GetInterface ()]->ShutdownRecv ();
+        }
     }
 }
 
@@ -108,16 +138,22 @@ void Radvd::StopApplication ()
 {
   NS_LOG_FUNCTION (this);
 
-  if (m_socket)
+  if (m_recvSocket)
     {
-      m_socket->SetRecvCallback (MakeNullCallback<void, Ptr<Socket> > ());
+      m_recvSocket->SetRecvCallback (MakeNullCallback<void, Ptr<Socket> > ());
     }
 
-  for (EventIdMapI it = m_eventIds.begin (); it != m_eventIds.end (); ++it)
+  for (EventIdMapI it = m_unsolicitedEventIds.begin (); it != m_unsolicitedEventIds.end (); ++it)
     {
       Simulator::Cancel ((*it).second);
     }
-  m_eventIds.clear ();
+  m_unsolicitedEventIds.clear ();
+
+  for (EventIdMapI it = m_solicitedEventIds.begin (); it != m_solicitedEventIds.end (); ++it)
+    {
+      Simulator::Cancel ((*it).second);
+    }
+  m_solicitedEventIds.clear ();
 }
 
 void Radvd::AddConfiguration (Ptr<RadvdInterface> routerInterface)
@@ -134,25 +170,19 @@ Radvd:: AssignStreams (int64_t stream)
   return 1;
 }
 
-void Radvd::ScheduleTransmit (Time dt, Ptr<RadvdInterface> config, EventId& eventId, Ipv6Address dst, bool reschedule)
-{
-  NS_LOG_FUNCTION (this << dt << config << &eventId << dst << reschedule);
-  eventId = Simulator::Schedule (dt, &Radvd::Send, this, config, dst, reschedule);
-}
-
 void Radvd::Send (Ptr<RadvdInterface> config, Ipv6Address dst, bool reschedule)
 {
   NS_LOG_FUNCTION (this << dst << reschedule);
-  NS_ASSERT (m_eventIds[config->GetInterface ()].IsExpired ());
+
+  if (reschedule == true)
+    {
+      config->SetLastRaTxTime (Simulator::Now ());
+    }
+
   Icmpv6RA raHdr;
   Icmpv6OptionLinkLayerAddress llaHdr;
   Icmpv6OptionMtu mtuHdr;
   Icmpv6OptionPrefixInformation prefixHdr;
-
-  if (m_eventIds.size () == 0)
-    {
-      return;
-    }
 
   std::list<Ptr<RadvdPrefix> > prefixes = config->GetPrefixes ();
   Ptr<Packet> p = Create<Packet> ();
@@ -212,9 +242,9 @@ void Radvd::Send (Ptr<RadvdInterface> config, Ipv6Address dst, bool reschedule)
       p->AddHeader (prefixHdr);
     }
 
-  Ipv6Address src = ipv6->GetAddress (config->GetInterface (), 0).GetAddress ();
-  m_socket->Bind (Inet6SocketAddress (src, 0));
-  m_socket->Connect (Inet6SocketAddress (dst, 0));
+  Address sockAddr;
+  m_sendSockets[config->GetInterface ()]->GetSockName (sockAddr);
+  Ipv6Address src = Inet6SocketAddress::ConvertFrom (sockAddr).GetIpv6 ();
 
   /* as we know interface index that will be used to send RA and 
    * we always send RA with router's link-local address, we can 
@@ -231,15 +261,21 @@ void Radvd::Send (Ptr<RadvdInterface> config, Ipv6Address dst, bool reschedule)
   p->AddPacketTag (ttl);
 
   /* send RA */
-  NS_LOG_LOGIC ("Send RA");
-  m_socket->Send (p, 0);
+  NS_LOG_LOGIC ("Send RA to " << dst);
+  m_sendSockets[config->GetInterface ()]->SendTo (p, 0, Inet6SocketAddress (dst, 0));
 
   if (reschedule)
     {
       uint64_t delay = static_cast<uint64_t> (m_jitter->GetValue (config->GetMinRtrAdvInterval (), config->GetMaxRtrAdvInterval ()) + 0.5);
+      if (config->IsInitialRtrAdv ())
+        {
+          if (delay > MAX_INITIAL_RTR_ADVERT_INTERVAL)
+            delay = MAX_INITIAL_RTR_ADVERT_INTERVAL;
+        }
+
       NS_LOG_INFO ("Reschedule in " << delay);
       Time t = MilliSeconds (delay);
-      ScheduleTransmit (t, config, m_eventIds[config->GetInterface ()], Ipv6Address::GetAllNodesMulticast (), reschedule);
+      m_unsolicitedEventIds[config->GetInterface ()] = Simulator::Schedule (t, &Radvd::Send, this, config, Ipv6Address::GetAllNodesMulticast (), true);
     }
 }
 
@@ -253,9 +289,18 @@ void Radvd::HandleRead (Ptr<Socket> socket)
     {
       if (Inet6SocketAddress::IsMatchingType (from))
         {
+          Ipv6PacketInfoTag interfaceInfo;
+          if (!packet->RemovePacketTag (interfaceInfo))
+            {
+              NS_ABORT_MSG ("No incoming interface on RADVD message, aborting.");
+            }
+          uint32_t incomingIf = interfaceInfo.GetRecvIf ();
+          Ptr<NetDevice> dev = GetNode ()->GetDevice (incomingIf);
+          Ptr<Ipv6> ipv6 = GetNode ()->GetObject<Ipv6> ();
+          uint32_t ipInterfaceIndex = ipv6->GetInterfaceForDevice (dev);
+
           Ipv6Header hdr;
           Icmpv6RS rsHdr;
-          Inet6SocketAddress address = Inet6SocketAddress::ConvertFrom (from);
           uint64_t delay = 0;
           Time t;
 
@@ -269,20 +314,44 @@ void Radvd::HandleRead (Ptr<Socket> socket)
               packet->RemoveHeader (rsHdr);
               NS_LOG_INFO ("Received ICMPv6 Router Solicitation from " << hdr.GetSourceAddress () << " code = " << (uint32_t)rsHdr.GetCode ());
 
-              /* XXX advertise just prefix(es) for the interface not all */
               for (RadvdInterfaceListCI it = m_configurations.begin (); it != m_configurations.end (); it++)
                 {
-                  /* calculate minimum delay between RA */
-                  delay = static_cast<uint64_t> (m_jitter->GetValue (0, MAX_RA_DELAY_TIME) + 0.5); 
-                  t = Simulator::Now () + MilliSeconds (delay); /* absolute time of solicited RA */
-
-                  /* if our solicited RA is before the next periodic RA, we schedule it */
-                  if (t.GetTimeStep () < static_cast<int64_t> (m_eventIds[(*it)->GetInterface ()].GetTs ()))
+                  if (ipInterfaceIndex == (*it)->GetInterface ())
                     {
-                      NS_LOG_INFO ("schedule new RA");
-                      EventId ei;
+                      /* calculate minimum delay between RA */
+                      delay = static_cast<uint64_t> (m_jitter->GetValue (0, MAX_RA_DELAY_TIME) + 0.5);
+                      t = Simulator::Now () + MilliSeconds (delay); /* absolute time of solicited RA */
 
-                      ScheduleTransmit (MilliSeconds (delay), (*it), ei, address.GetIpv6 (), false);
+                      if (Simulator::Now () < (*it)->GetLastRaTxTime () + MilliSeconds (MIN_DELAY_BETWEEN_RAS) )
+                        {
+                          t += MilliSeconds (MIN_DELAY_BETWEEN_RAS);
+                        }
+
+                      /* if our solicited RA is before the next periodic RA, we schedule it */
+                      bool scheduleSingle = true;
+
+                      if (m_solicitedEventIds.find ((*it)->GetInterface ()) != m_solicitedEventIds.end ())
+                        {
+                          if (m_solicitedEventIds[(*it)->GetInterface ()].IsRunning ())
+                            {
+                              scheduleSingle = false;
+                            }
+                        }
+
+                      if (m_unsolicitedEventIds.find ((*it)->GetInterface ()) != m_unsolicitedEventIds.end ())
+                        {
+                          if (t.GetTimeStep () > static_cast<int64_t> (m_unsolicitedEventIds[(*it)->GetInterface ()].GetTs ()))
+                            {
+                              scheduleSingle = false;
+                            }
+                        }
+
+                      if (scheduleSingle)
+                        {
+                          NS_LOG_INFO ("schedule new RA");
+                          m_solicitedEventIds[(*it)->GetInterface ()] = Simulator::Schedule (MilliSeconds (delay), &Radvd::Send,
+                                                                                             this, (*it), Ipv6Address::GetAllNodesMulticast (), false);
+                        }
                     }
                 }
               break;
