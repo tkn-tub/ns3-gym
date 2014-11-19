@@ -61,7 +61,6 @@ us a note on ns-developers mailing list.</p>
        the stats module, enabling TracedValues emitting values of type 
        ns3::Time to be handled by the framework.
   </li>
-
 </ul>
 
 <h2>Changes to existing API:</h2>
@@ -73,6 +72,9 @@ us a note on ns-developers mailing list.</p>
   <li>PointerValue attribute types in class UanChannel (NoiseModel), UanPhyGen (PerModel and SinrModel), UanPhyDual (PerModelPhy1, PerModelPhy2, SinrModelPhy1, and SinrModelPhy2), and SimpleNetDevice (TxQueue), were changed from PointerValue type to StringValue type, making them configurable via the Config subsystem. 
   </li>
   <li> WifiPhy::CalculateTxDuration() and WifiPhy::GetPayloadDurationMicroSeconds () now take an additional frequency parameter.
+  </li>
+  <li> The attribute 'Recievers' in class YansWifiPhy was misspelled, so
+       this has been corrected to 'Receivers'.
   </li>
 </ul>
 

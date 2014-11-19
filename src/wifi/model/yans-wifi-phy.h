@@ -477,7 +477,7 @@ private:
   bool     m_stbc;                  //!< Flag if STBC is used      
   bool     m_greenfield;            //!< Flag if GreenField format is supported
   bool     m_guardInterval;         //!< Flag if short guard interval is used
-  bool     m_channelBonding;        //!< Flag if channel conding is used
+  bool     m_channelBonding;        //!< Flag if channel bonding is used
 
 
   /**
