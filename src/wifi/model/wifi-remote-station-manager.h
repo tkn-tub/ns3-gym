@@ -1011,9 +1011,13 @@ struct WifiRemoteStationState
  * of association status if we are in an infrastructure
  * network and to perform the selection of tx parameters
  * on a per-packet basis.
+ *
+ * This class is typically subclassed and extended by 
+ * rate control implementations
  */
 struct WifiRemoteStation
 {
+  virtual ~WifiRemoteStation ();
   WifiRemoteStationState *m_state; //!< Remote station state
   uint32_t m_ssrc; //!< STA short retry count
   uint32_t m_slrc; //!< STA long retry count
