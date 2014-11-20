@@ -1234,12 +1234,22 @@ GetTypicalAggregations ()
   info.RecordAggregationInfo ("ns3::Node", "ns3::olsr::RoutingProtocol");
   info.RecordAggregationInfo ("ns3::Node", "ns3::MobilityModel");
   info.RecordAggregationInfo ("ns3::Node", "ns3::Ipv4L3Protocol");
+  info.RecordAggregationInfo ("ns3::Node", "ns3::Ipv4NixVectorRouting");
+  info.RecordAggregationInfo ("ns3::Node", "ns3::Icmpv4L4Protocol");
   info.RecordAggregationInfo ("ns3::Node", "ns3::ArpL3Protocol");
   info.RecordAggregationInfo ("ns3::Node", "ns3::Icmpv4L4Protocol");
   info.RecordAggregationInfo ("ns3::Node", "ns3::UdpL4Protocol");
   info.RecordAggregationInfo ("ns3::Node", "ns3::Ipv6L3Protocol");
   info.RecordAggregationInfo ("ns3::Node", "ns3::Icmpv6L4Protocol");
   info.RecordAggregationInfo ("ns3::Node", "ns3::TcpL4Protocol");
+  info.RecordAggregationInfo ("ns3::Node", "ns3::RipNg");
+  info.RecordAggregationInfo ("ns3::Node", "ns3::GlobalRouter");
+  info.RecordAggregationInfo ("ns3::Node", "ns3::aodv::RoutingProtocol");
+  info.RecordAggregationInfo ("ns3::Node", "ns3::dsdv::RoutingProtocol");
+  info.RecordAggregationInfo ("ns3::Node", "ns3::dsr::DsrRouting");
+  info.RecordAggregationInfo ("ns3::Node", "ns3::olsr::RoutingProtocol");
+  info.RecordAggregationInfo ("ns3::Node", "ns3::EnergyHarvesterContainer");
+  info.RecordAggregationInfo ("ns3::Node", "ns3::EnergySourceContainer");
 
   // Create a channel object so that channels appear in the namespace
   // paths that will be generated here.
