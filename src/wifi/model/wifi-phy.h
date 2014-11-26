@@ -205,7 +205,6 @@ public:
 
   /**
    * \param packet the packet to send
-   * \param mode the transmission mode to use to send this packet
    * \param txvector the txvector that has tx parameters such as mode, the transmission mode to use to send
    *        this packet, and txPowerLevel, a power level to use to send this packet. The real transmission
    *        power is calculated as txPowerMin + txPowerLevel * (txPowerMax - txPowerMin) / nTxLevels
