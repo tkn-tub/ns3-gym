@@ -182,15 +182,20 @@ bake works by downloading source packages into a source directory,
 and installing libraries into a build directory.  bake can be run
 by referencing the binary, but if one chooses to run bake from
 outside of the directory it was downloaded into, it is advisable
-to put bake into your path, such as follows (Linux bash shell example)::
+to put bake into your path, such as follows (Linux bash shell example).
+First, change into the 'bake' directory, and then set the following
+environment variables
 
-  $ export BAKE_HOME=`pwd`/bake
-  $ export PATH=$PATH:$BAKE_HOME
-  $ export PYTHONPATH=$PYTHONPATH:$BAKE_HOME
+::
 
-However, setting environment variables is not strictly necessary to
-complete this tutorial, so we'll call bake directly by specifying the path 
-to it in our shell commands.
+  $ export BAKE_HOME=`pwd`
+  $ export PATH=$PATH:$BAKE_HOME:$BAKE_HOME/build/bin
+  $ export PYTHONPATH=$PYTHONPATH:$BAKE_HOME:$BAKE_HOME/build/lib
+
+This will put the bake.py program into the shell's path, and will allow
+other programs to find executables and libraries created by bake.  Although
+several bake use cases do not require setting PATH and PYTHONPATH as above,
+full builds of ns-3-allinone (with the optional packages) typically do.
 
 Step into the workspace directory and type the following into your shell::
 
