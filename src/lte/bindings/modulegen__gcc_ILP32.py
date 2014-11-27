@@ -2878,6 +2878,11 @@ def register_Ns3EpcEnbS1SapProvider_methods(root_module, cls):
                    'void', 
                    [param('uint16_t', 'rnti')], 
                    is_pure_virtual=True, is_virtual=True)
+    ## epc-enb-s1-sap.h (module 'lte'): void ns3::EpcEnbS1SapProvider::DoSendReleaseIndication(uint64_t imsi, uint16_t rnti, uint8_t bearerId) [member function]
+    cls.add_method('DoSendReleaseIndication', 
+                   'void', 
+                   [param('uint64_t', 'imsi'), param('uint16_t', 'rnti'), param('uint8_t', 'bearerId')], 
+                   is_pure_virtual=True, is_virtual=True)    
     return
 
 def register_Ns3EpcEnbS1SapProviderBearerToBeSwitched_methods(root_module, cls):
@@ -3000,6 +3005,11 @@ def register_Ns3EpcS11SapMme_methods(root_module, cls):
                    'void', 
                    [param('ns3::EpcS11SapMme::ModifyBearerResponseMessage', 'msg')], 
                    is_pure_virtual=True, is_virtual=True)
+    ## epc-s11-sap.h (module 'lte'): void ns3::EpcS11SapMme::DeleteBearerRequest(ns3::EpcS11SapMme::DeleteBearerRequestMessage msg) [member function]
+    cls.add_method('DeleteBearerRequest', 
+                   'void', 
+                   [param('ns3::EpcS11SapMme::DeleteBearerRequestMessage', 'msg')], 
+                   is_pure_virtual=True, is_virtual=True)     
     return
 
 def register_Ns3EpcS11SapMmeBearerContextCreated_methods(root_module, cls):
@@ -3050,6 +3060,16 @@ def register_Ns3EpcS11SapSgw_methods(root_module, cls):
                    'void', 
                    [param('ns3::EpcS11SapSgw::ModifyBearerRequestMessage', 'msg')], 
                    is_pure_virtual=True, is_virtual=True)
+    ## epc-s11-sap.h (module 'lte'): void ns3::EpcS11SapSgw::DeleteBearerCommand(ns3::EpcS11SapSgw::DeleteBearerCommandMessage msg) [member function]
+    cls.add_method('DeleteBearerCommand', 
+                   'void', 
+                   [param('ns3::EpcS11SapSgw::DeleteBearerCommandMessage', 'msg')], 
+                   is_pure_virtual=True, is_virtual=True)
+    ## epc-s11-sap.h (module 'lte'): void ns3::EpcS11SapSgw::DeleteBearerResponse(ns3::EpcS11SapSgw::DeleteBearerResponseMessage msg) [member function]
+    cls.add_method('DeleteBearerResponse', 
+                   'void', 
+                   [param('ns3::EpcS11SapSgw::DeleteBearerResponseMessage', 'msg')], 
+                   is_pure_virtual=True, is_virtual=True)        
     return
 
 def register_Ns3EpcS11SapSgwBearerContextToBeCreated_methods(root_module, cls):
@@ -3161,6 +3181,11 @@ def register_Ns3EpcS1apSapMme_methods(root_module, cls):
                    'void', 
                    [param('uint64_t', 'enbUeS1Id'), param('uint64_t', 'mmeUeS1Id'), param('uint16_t', 'gci'), param('std::list< ns3::EpcS1apSapMme::ErabSwitchedInDownlinkItem >', 'erabToBeSwitchedInDownlinkList')], 
                    is_pure_virtual=True, is_virtual=True)
+    ## epc-s1ap-sap.h (module 'lte'): void ns3::EpcS1apSapMme::ErabReleaseIndication(uint64_t enbUeS1Id, uint64_t mmeUeS1Id, std::list<ErabToBeReleasedIndication> erabToBeReleaseIndication) [member function]
+    cls.add_method('ErabReleaseIndication', 
+                   'void', 
+                   [param('uint64_t', 'mmeUeS1Id'), param('uint16_t', 'enbUeS1Id'), param('std::list<ns3::EpcS1apSapMme::ErabToBeReleasedIndication>', 'erabToBeReleaseIndication')], 
+                   is_pure_virtual=True, is_virtual=True)     
     return
 
 def register_Ns3EpcS1apSapMmeErabSetupItem_methods(root_module, cls):

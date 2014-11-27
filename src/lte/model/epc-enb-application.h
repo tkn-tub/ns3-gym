@@ -150,6 +150,15 @@ private:
   void DoPathSwitchRequestAcknowledge (uint64_t enbUeS1Id, uint64_t mmeUeS1Id, uint16_t cgi, std::list<EpcS1apSapEnb::ErabSwitchedInUplinkItem> erabToBeSwitchedInUplinkList);
 
   /** 
+   * \brief This function accepts bearer id corresponding to a particular UE and schedules indication of bearer release towards MME
+   * \param imsi maps to mmeUeS1Id
+   * \param rnti maps to enbUeS1Id
+   * \param bearerId Bearer Identity which is to be de-activated
+   */
+  void DoReleaseIndication (uint64_t imsi, uint16_t rnti, uint8_t bearerId);
+
+
+  /**
    * Send a packet to the UE via the LTE radio interface of the eNB
    * 
    * \param packet t

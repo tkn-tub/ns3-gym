@@ -155,6 +155,7 @@ def build(bld):
         'test/lte-test-cell-selection.cc',
         'test/test-lte-handover-delay.cc',
         'test/test-lte-handover-target.cc',
+        'test/lte-test-deactivate-bearer.cc',
         ]
 
     headers = bld(features='ns3header')

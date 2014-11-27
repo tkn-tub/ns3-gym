@@ -813,8 +813,8 @@ DrbActivator::ActivateDrb (uint64_t imsi, uint16_t cellId, uint16_t rnti)
       Ptr<LteEnbRrc> enbRrc = enbLteDevice->GetObject<LteEnbNetDevice> ()->GetRrc ();
       NS_ASSERT (ueRrc->GetCellId () == enbLteDevice->GetCellId ());
       Ptr<UeManager> ueManager = enbRrc->GetUeManager (rnti);
-      NS_ASSERT (ueManager->GetState () == UeManager::CONNECTED_NORMALLY ||
-                 ueManager->GetState () == UeManager::CONNECTION_RECONFIGURATION);
+      NS_ASSERT (ueManager->GetState () == UeManager::CONNECTED_NORMALLY
+                 || ueManager->GetState () == UeManager::CONNECTION_RECONFIGURATION);
       EpcEnbS1SapUser::DataRadioBearerSetupRequestParameters params;
       params.rnti = rnti;
       params.bearer = m_bearer;
@@ -892,8 +892,30 @@ LteHelper::DoHandoverRequest (Ptr<NetDevice> ueDev, Ptr<NetDevice> sourceEnbDev,
   sourceRrc->SendHandoverRequest (rnti, targetCellId);
 }
 
+void
+LteHelper::DeActivateDedicatedEpsBearer (Time deActivateTime, Ptr<NetDevice> ueDevice,Ptr<NetDevice> enbDevice, uint8_t bearerId)
+{
+  NS_LOG_FUNCTION (this << ueDevice << bearerId);
+  NS_ASSERT_MSG (m_epcHelper != 0, "Dedicated EPS bearers cannot be de-activated when the EPC is not used");
+  NS_ASSERT_MSG (bearerId != 1, "Default bearer cannot be de-activated until and unless and UE is released");
+
+  Simulator::Schedule (deActivateTime, &LteHelper::DoDeActivateDedicatedEpsBearer, this, ueDevice, enbDevice, bearerId);
+}
+
+void
+LteHelper::DoDeActivateDedicatedEpsBearer (Ptr<NetDevice> ueDevice, Ptr<NetDevice> enbDevice, uint8_t bearerId)
+{
+  NS_LOG_FUNCTION (this << ueDevice << bearerId);
+
+  //Extract IMSI and rnti
+  uint64_t imsi = ueDevice->GetObject<LteUeNetDevice> ()->GetImsi ();
+  uint16_t rnti = ueDevice->GetObject<LteUeNetDevice> ()->GetRrc ()->GetRnti ();
 
 
+  Ptr<LteEnbRrc> enbRrc = enbDevice->GetObject<LteEnbNetDevice> ()->GetRrc ();
+
+  enbRrc->DoSendReleaseDataRadioBearer (imsi,rnti,bearerId);
+}
 
 
 void 

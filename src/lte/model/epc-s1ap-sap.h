@@ -61,6 +61,24 @@ public:
 
 
   /**
+   *  E-RAB Release Indication Item IEs, 3GPP TS 36.413 version 9.8.0 section 9.1.3.7
+   *
+   */
+  struct ErabToBeReleasedIndication
+  {
+    uint8_t erabId;
+  };
+
+  /**
+    * \brief As per 3GPP TS 23.401 Release 9 V9.5.0 Figure 5.4.4.2-1  eNB sends indication of Bearer Release to MME
+    * \param mmeUeS1Id in practice, we use the IMSI
+    * \param enbUeS1Id in practice, we use the RNTI
+    * \param erabToBeReleaseIndication, List of bearers to be deactivated
+    *
+    */
+  virtual void ErabReleaseIndication (uint64_t mmeUeS1Id, uint16_t enbUeS1Id, std::list<ErabToBeReleasedIndication> erabToBeReleaseIndication ) = 0;
+
+  /**
    *  E-RAB Setup Item IEs, see 3GPP TS 36.413 9.1.4.2 
    * 
    */
@@ -174,6 +192,8 @@ public:
 
   // inherited from EpcS1apSapMme
   virtual void InitialUeMessage (uint64_t mmeUeS1Id, uint16_t enbUeS1Id, uint64_t imsi, uint16_t ecgi);
+  virtual void ErabReleaseIndication (uint64_t mmeUeS1Id, uint16_t enbUeS1Id, std::list<ErabToBeReleasedIndication> erabToBeReleaseIndication );
+
   virtual void InitialContextSetupResponse (uint64_t mmeUeS1Id, uint16_t enbUeS1Id, std::list<ErabSetupItem> erabSetupList);
   virtual void PathSwitchRequest (uint64_t enbUeS1Id, uint64_t mmeUeS1Id, uint16_t cgi, std::list<ErabSwitchedInDownlinkItem> erabToBeSwitchedInDownlinkList);
 
@@ -197,6 +217,12 @@ template <class C>
 void MemberEpcS1apSapMme<C>::InitialUeMessage (uint64_t mmeUeS1Id, uint16_t enbUeS1Id, uint64_t imsi, uint16_t ecgi)
 {
   m_owner->DoInitialUeMessage (mmeUeS1Id, enbUeS1Id, imsi, ecgi);
+}
+
+template <class C>
+void MemberEpcS1apSapMme<C>::ErabReleaseIndication (uint64_t mmeUeS1Id, uint16_t enbUeS1Id, std::list<ErabToBeReleasedIndication> erabToBeReleaseIndication)
+{
+  m_owner->DoErabReleaseIndication (mmeUeS1Id, enbUeS1Id, erabToBeReleaseIndication);
 }
 
 template <class C>

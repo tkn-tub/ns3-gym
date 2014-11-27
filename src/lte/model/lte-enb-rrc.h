@@ -687,6 +687,14 @@ public:
   void SendHandoverRequest (uint16_t rnti, uint16_t cellId);
 
   /**
+   *  \brief This function acts as an interface to trigger Release indication messages towards eNB and EPC
+   *  \param imsi the IMSI
+   *  \param rnti the RNTI
+   *  \param bearerId Bearer Identity which is to be de-activated
+   */
+  void DoSendReleaseDataRadioBearer (uint64_t imsi, uint16_t rnti, uint8_t bearerId);
+
+  /**
    * Identifies how EPS Bearer parameters are mapped to different RLC types
    * 
    */

@@ -325,6 +325,17 @@ public:
    */
   void ActivateDedicatedEpsBearer (Ptr<NetDevice> ueDevice, EpsBearer bearer, Ptr<EpcTft> tft);
 
+  /**
+   *  \brief Manually trigger dedicated bearer de-activation at specific simulation time
+   *  \param deActivateTime when the dedicated bearer de-activation to be initiated
+   *  \param ueDevice the UE on which dedicated bearer to be de-activated must be of the type LteUeNetDevice
+   *  \param enbDevice eNB, must be of the type LteEnbNetDevice
+   *  \param bearerId Bearer Identity which is to be de-activated
+   *
+   *  \warning Requires the use of EPC mode. See SetEpcHelper() method.
+   */
+
+  void DeActivateDedicatedEpsBearer (Time deActivateTime, Ptr<NetDevice> ueDevice, Ptr<NetDevice> enbDevice, uint8_t bearerId);
 
   /**
    * Create an X2 interface between all the eNBs in a given set
@@ -479,10 +490,13 @@ public:
    */
   Ptr<RadioBearerStatsCalculator> GetPdcpStats (void);
 
-  enum LteEpsBearerToRlcMapping_t {RLC_SM_ALWAYS = 1,
+  enum LteEpsBearerToRlcMapping_t
+  {
+    RLC_SM_ALWAYS = 1,
                                    RLC_UM_ALWAYS = 2,
                                    RLC_AM_ALWAYS = 3,
-                                   PER_BASED = 4};
+    PER_BASED = 4
+  };
 
   /**
   * Assign a fixed random variable stream number to the random variables
@@ -530,6 +544,19 @@ private:
   void DoHandoverRequest (Ptr<NetDevice> ueDev,
                           Ptr<NetDevice> sourceEnbDev,
                           Ptr<NetDevice> targetEnbDev);
+
+
+  /**
+   *  \brief The actual function to trigger a manual bearer de-activation
+   *  \param ueDevice the UE on which bearer to be de-activated must be of the type LteUeNetDevice
+   *  \param enbDevice eNB, must be of the type LteEnbNetDevice
+   *  \param bearerId Bearer Identity which is to be de-activated
+   *
+   *  This method is normally scheduled by DeActivateDedicatedEpsBearer() to run at a specific
+   *  time when a manual bearer de-activation is desired by the simulation user.
+   */
+  void DoDeActivateDedicatedEpsBearer (Ptr<NetDevice> ueDevice, Ptr<NetDevice> enbDevice, uint8_t bearerId);
+
 
   Ptr<SpectrumChannel> m_downlinkChannel;
   Ptr<SpectrumChannel> m_uplinkChannel;

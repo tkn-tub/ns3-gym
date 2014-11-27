@@ -544,13 +544,13 @@ LteEnbMac::DoSubframeIndication (uint32_t frameNo, uint32_t subframeNo)
   std::vector <FfMacSchedSapProvider::SchedUlCqiInfoReqParameters>::iterator itCqi;
   for (uint16_t i = 0; i < m_ulCqiReceived.size (); i++)
     {
-      if (subframeNo>1)
+      if (subframeNo > 1)
         {        
           m_ulCqiReceived.at (i).m_sfnSf = ((0x3FF & frameNo) << 4) | (0xF & (subframeNo - 1));
         }
       else
         {
-          m_ulCqiReceived.at (i).m_sfnSf = ((0x3FF & (frameNo-1)) << 4) | (0xF & 10);
+          m_ulCqiReceived.at (i).m_sfnSf = ((0x3FF & (frameNo - 1)) << 4) | (0xF & 10);
         }
       m_schedSapProvider->SchedUlCqiInfoReq (m_ulCqiReceived.at (i));
     }
@@ -571,14 +571,14 @@ LteEnbMac::DoSubframeIndication (uint32_t frameNo, uint32_t subframeNo)
   uint32_t ulSchedFrameNo = m_frameNo;
   uint32_t ulSchedSubframeNo = m_subframeNo;
   //   NS_LOG_DEBUG (this << " sfn " << frameNo << " sbfn " << subframeNo);
-  if (ulSchedSubframeNo + (m_macChTtiDelay+UL_PUSCH_TTIS_DELAY) > 10)
+  if (ulSchedSubframeNo + (m_macChTtiDelay + UL_PUSCH_TTIS_DELAY) > 10)
     {
       ulSchedFrameNo++;
-      ulSchedSubframeNo = (ulSchedSubframeNo + (m_macChTtiDelay+UL_PUSCH_TTIS_DELAY)) % 10;
+      ulSchedSubframeNo = (ulSchedSubframeNo + (m_macChTtiDelay + UL_PUSCH_TTIS_DELAY)) % 10;
     }
   else
     {
-      ulSchedSubframeNo = ulSchedSubframeNo + (m_macChTtiDelay+UL_PUSCH_TTIS_DELAY);
+      ulSchedSubframeNo = ulSchedSubframeNo + (m_macChTtiDelay + UL_PUSCH_TTIS_DELAY);
     }
   FfMacSchedSapProvider::SchedUlTriggerReqParameters ulparams;
   ulparams.m_sfnSf = ((0x3FF & ulSchedFrameNo) << 4) | (0xF & ulSchedSubframeNo);
@@ -711,9 +711,13 @@ LteEnbMac::DoReceivePhyPdu (Ptr<Packet> p)
   std::map <uint16_t, std::map<uint8_t, LteMacSapUser*> >::iterator rntiIt = m_rlcAttached.find (rnti);
   NS_ASSERT_MSG (rntiIt != m_rlcAttached.end (), "could not find RNTI" << rnti);
   std::map<uint8_t, LteMacSapUser*>::iterator lcidIt = rntiIt->second.find (lcid);
-  NS_ASSERT_MSG (lcidIt != rntiIt->second.end (), "could not find LCID" << lcid);
-  (*lcidIt).second->ReceivePdu (p);
+  //NS_ASSERT_MSG (lcidIt != rntiIt->second.end (), "could not find LCID" << lcid);
 
+  //Receive PDU only if LCID is found
+  if (lcidIt != rntiIt->second.end ())
+    {
+      (*lcidIt).second->ReceivePdu (p);
+    }
 }
 
 
@@ -840,7 +844,16 @@ LteEnbMac::DoReconfigureLc (LteEnbCmacSapProvider::LcInfo lcinfo)
 void
 LteEnbMac::DoReleaseLc (uint16_t rnti, uint8_t lcid)
 {
-  NS_FATAL_ERROR ("not implemented");
+  NS_LOG_FUNCTION (this);
+
+  //Find user based on rnti and then erase lcid stored against the same
+  std::map <uint16_t, std::map<uint8_t, LteMacSapUser*> >::iterator rntiIt = m_rlcAttached.find (rnti);
+  rntiIt->second.erase (lcid);
+
+  struct FfMacCschedSapProvider::CschedLcReleaseReqParameters params;
+  params.m_rnti = rnti;
+  params.m_logicalChannelIdentity.push_back (lcid);
+  m_cschedSapProvider->CschedLcReleaseReq (params);
 }
 
 void
@@ -919,8 +932,8 @@ LteEnbMac::DoTransmitPdu (LteMacSapProvider::TransmitPduParameters params)
   params.pdu->AddPacketTag (tag);
   // Store pkt in HARQ buffer
   std::map <uint16_t, DlHarqProcessesBuffer_t>::iterator it =  m_miDlHarqProcessesPackets.find (params.rnti);
-  NS_ASSERT (it!=m_miDlHarqProcessesPackets.end ());
-  NS_LOG_DEBUG (this << " LAYER " <<(uint16_t)tag.GetLayer () << " HARQ ID " << (uint16_t)params.harqProcessId);
+  NS_ASSERT (it != m_miDlHarqProcessesPackets.end ());
+  NS_LOG_DEBUG (this << " LAYER " << (uint16_t)tag.GetLayer () << " HARQ ID " << (uint16_t)params.harqProcessId);
   
   //(*it).second.at (params.layer).at (params.harqProcessId) = params.pdu;//->Copy ();
   (*it).second.at (params.layer).at (params.harqProcessId)->AddPacket (params.pdu);
@@ -966,8 +979,8 @@ LteEnbMac::DoSchedDlConfigInd (FfMacSchedSapUser::SchedDlConfigIndParameters ind
             {
               // new data -> force emptying correspondent harq pkt buffer
               std::map <uint16_t, DlHarqProcessesBuffer_t>::iterator it = m_miDlHarqProcessesPackets.find (ind.m_buildDataList.at (i).m_rnti);
-              NS_ASSERT(it!=m_miDlHarqProcessesPackets.end());
-              for (uint16_t lcId = 0; lcId < (*it).second.size (); lcId ++)
+              NS_ASSERT (it != m_miDlHarqProcessesPackets.end ());
+              for (uint16_t lcId = 0; lcId < (*it).second.size (); lcId++)
                 {
                   Ptr<PacketBurst> pb = CreateObject <PacketBurst> ();
                   (*it).second.at (lcId).at (ind.m_buildDataList.at (i).m_dci.m_harqProcess) = pb;
@@ -992,11 +1005,11 @@ LteEnbMac::DoSchedDlConfigInd (FfMacSchedSapUser::SchedDlConfigIndParameters ind
                 }
               else
                 {
-                  if (ind.m_buildDataList.at (i).m_dci.m_tbsSize.at (k)>0)
+                  if (ind.m_buildDataList.at (i).m_dci.m_tbsSize.at (k) > 0)
                     {
                       // HARQ retransmission -> retrieve TB from HARQ buffer
                       std::map <uint16_t, DlHarqProcessesBuffer_t>::iterator it = m_miDlHarqProcessesPackets.find (ind.m_buildDataList.at (i).m_rnti);
-                      NS_ASSERT(it!=m_miDlHarqProcessesPackets.end());
+                      NS_ASSERT (it != m_miDlHarqProcessesPackets.end ());
                       Ptr<PacketBurst> pb = (*it).second.at (k).at ( ind.m_buildDataList.at (i).m_dci.m_harqProcess);
                       for (std::list<Ptr<Packet> >::const_iterator j = pb->Begin (); j != pb->End (); ++j)
                         {
@@ -1171,17 +1184,17 @@ LteEnbMac::DoDlInfoListElementHarqFeeback (DlInfoListElement_s params)
   NS_LOG_FUNCTION (this);
   // Update HARQ buffer
   std::map <uint16_t, DlHarqProcessesBuffer_t>::iterator it =  m_miDlHarqProcessesPackets.find (params.m_rnti);
-  NS_ASSERT (it!=m_miDlHarqProcessesPackets.end ());
+  NS_ASSERT (it != m_miDlHarqProcessesPackets.end ());
   for (uint8_t layer = 0; layer < params.m_harqStatus.size (); layer++)
     {
-      if (params.m_harqStatus.at (layer)==DlInfoListElement_s::ACK)
+      if (params.m_harqStatus.at (layer) == DlInfoListElement_s::ACK)
         {
           // discard buffer
           Ptr<PacketBurst> emptyBuf = CreateObject <PacketBurst> ();
           (*it).second.at (layer).at (params.m_harqProcessId) = emptyBuf;
           NS_LOG_DEBUG (this << " HARQ-ACK UE " << params.m_rnti << " harqId " << (uint16_t)params.m_harqProcessId << " layer " << (uint16_t)layer);
         }
-      else if (params.m_harqStatus.at (layer)==DlInfoListElement_s::NACK)
+      else if (params.m_harqStatus.at (layer) == DlInfoListElement_s::NACK)
         {
           NS_LOG_DEBUG (this << " HARQ-NACK UE " << params.m_rnti << " harqId " << (uint16_t)params.m_harqProcessId << " layer " << (uint16_t)layer);
         }

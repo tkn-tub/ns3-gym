@@ -48,6 +48,11 @@ New user-visible features
 - Fixes to support Python >= 3.3 in ns3 Python bindings
 - Enable selection of high precision int64x64_t implementation
   at configure time, for debugging purposes.
+- In LENA NS3.20, bearer release functionality is partially present. 
+  As an enhancement, complete release bearer functionality is provided on access and core side(3GPP compliant).
+  A new procedure 'DeActivateDedicatedEpsBearer' is defined in LTEHelper for the same.
+  Related output can be seen through the stats collected at different layers like PDCP, RLC, MAC, PHY.
+  To support the implementation, example and test suite is added under examples and tests folder. 
 
 Bugs fixed
 ----------

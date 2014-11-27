@@ -156,12 +156,16 @@ private:
   void DoCreateSessionRequest (EpcS11SapSgw::CreateSessionRequestMessage msg);
   void DoModifyBearerRequest (EpcS11SapSgw::ModifyBearerRequestMessage msg);  
 
+  void DoDeleteBearerCommand (EpcS11SapSgw::DeleteBearerCommandMessage req);
+  void DoDeleteBearerResponse (EpcS11SapSgw::DeleteBearerResponseMessage req);
+
+
   /**
    * store info for each UE connected to this SGW
    */
   class UeInfo : public SimpleRefCount<UeInfo>
   {
-  public:
+public:
     UeInfo ();  
 
     /** 
@@ -173,6 +177,12 @@ private:
     void AddBearer (Ptr<EpcTft> tft, uint8_t epsBearerId, uint32_t teid);
 
     /** 
+     * \brief Function, deletes contexts of bearer on SGW and PGW side
+     * \param bearerId, the Bearer Id whose contexts to be removed
+     */
+    void RemoveBearer (uint8_t bearerId);
+
+    /**
      * 
      * 
      * \param p the IP packet from the internet to be classified

@@ -26,8 +26,7 @@
 #include <vector>
 #include <algorithm>
 
-namespace ns3
-{
+namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("RadioBearerStatsCalculator");
 
