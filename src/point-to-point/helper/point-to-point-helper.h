@@ -25,7 +25,6 @@
 #include "ns3/object-factory.h"
 #include "ns3/net-device-container.h"
 #include "ns3/node-container.h"
-#include "ns3/deprecated.h"
 
 #include "ns3/trace-helper.h"
 
@@ -168,7 +167,6 @@ private:
 
   /**
    * \brief Enable ascii trace output on the indicated net device.
-   * \internal
    *
    * NetDevice-specific implementation mechanism for hooking the trace and
    * writing to the trace file.

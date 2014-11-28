@@ -25,29 +25,37 @@
 
 namespace ns3 {
 
+/**
+ * \ingroup attributeimpl
+ * Type name strings for numeric AttributeValue types.
+ *
+ * \tparam T The numeric type.
+ * \returns The numeric type name as a string.
+ */
 template <typename T>
 std::string TypeNameGet (void)
 {
   return "unknown";
 }
 
-#define DEF_TYPE(x)                             \
-  template <>                                   \
-  std::string TypeNameGet<x> (void)
-
-DEF_TYPE (uint8_t);
-DEF_TYPE (uint16_t);
-DEF_TYPE (uint32_t);
-DEF_TYPE (uint64_t);
-DEF_TYPE (int8_t);
-DEF_TYPE (int16_t);
-DEF_TYPE (int32_t);
-DEF_TYPE (int64_t);
-DEF_TYPE (float);
-DEF_TYPE (double);
-
-#undef DEF_TYPE
-
+/**
+ * \ingroup attributeimpl
+ * ns3::TypeNameGet(void) specializaton.
+ * \returns The numeric type name as a string.
+ * @{
+ */
+template <> std::string TypeNameGet< int8_t  > (void);
+template <> std::string TypeNameGet< int16_t > (void);
+template <> std::string TypeNameGet< int32_t > (void);
+template <> std::string TypeNameGet< int64_t > (void);
+template <> std::string TypeNameGet< uint8_t > (void);
+template <> std::string TypeNameGet< uint16_t> (void);
+template <> std::string TypeNameGet< uint32_t> (void);
+template <> std::string TypeNameGet< uint64_t> (void);
+template <> std::string TypeNameGet< float   > (void);
+template <> std::string TypeNameGet< double  > (void);
+/**@}*/
+  
 } // namespace ns3
 
 #endif /* TYPE_NAME_H */

@@ -29,6 +29,7 @@ namespace ns3 {
 /**
  * \ingroup mobility
  * \brief a 2d rectangle
+ * \see attribute_Rectangle
  */
 class Rectangle
 {

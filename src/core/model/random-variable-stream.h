@@ -87,6 +87,10 @@ class RngStream;
 class RandomVariableStream : public Object
 {
 public:
+  /**
+   * \brief Register this type.
+   * \return The object TypeId.
+   */
   static TypeId GetTypeId (void);
   RandomVariableStream ();
   virtual ~RandomVariableStream();

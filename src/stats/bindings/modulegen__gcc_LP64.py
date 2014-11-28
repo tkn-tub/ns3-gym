@@ -176,6 +176,8 @@ def register_types(module):
     module.add_class('SqliteDataOutput', parent=root_module['ns3::DataOutputInterface'])
     ## time-data-calculators.h (module 'stats'): ns3::TimeMinMaxAvgTotalCalculator [class]
     module.add_class('TimeMinMaxAvgTotalCalculator', parent=root_module['ns3::DataCalculator'])
+    ## time-probe.h (module 'stats'): ns3::TimeProbe [class]
+    module.add_class('TimeProbe', parent=root_module['ns3::Probe'])
     ## time-series-adaptor.h (module 'stats'): ns3::TimeSeriesAdaptor [class]
     module.add_class('TimeSeriesAdaptor', parent=root_module['ns3::DataCollectionObject'])
     ## nstime.h (module 'core'): ns3::TimeValue [class]
@@ -330,6 +332,7 @@ def register_methods(root_module):
     register_Ns3Probe_methods(root_module, root_module['ns3::Probe'])
     register_Ns3SqliteDataOutput_methods(root_module, root_module['ns3::SqliteDataOutput'])
     register_Ns3TimeMinMaxAvgTotalCalculator_methods(root_module, root_module['ns3::TimeMinMaxAvgTotalCalculator'])
+    register_Ns3TimeProbe_methods(root_module, root_module['ns3::TimeProbe'])
     register_Ns3TimeSeriesAdaptor_methods(root_module, root_module['ns3::TimeSeriesAdaptor'])
     register_Ns3TimeValue_methods(root_module, root_module['ns3::TimeValue'])
     register_Ns3TypeIdChecker_methods(root_module, root_module['ns3::TypeIdChecker'])
@@ -499,10 +502,6 @@ def register_Ns3FileHelper_methods(root_module, cls):
     cls.add_method('AddAggregator', 
                    'void', 
                    [param('std::string const &', 'aggregatorName'), param('std::string const &', 'outputFileName'), param('bool', 'onlyOneAggregator')])
-    ## file-helper.h (module 'stats'): void ns3::FileHelper::AddProbe(std::string const & typeId, std::string const & probeName, std::string const & path) [member function]
-    cls.add_method('AddProbe', 
-                   'void', 
-                   [param('std::string const &', 'typeId'), param('std::string const &', 'probeName'), param('std::string const &', 'path')])
     ## file-helper.h (module 'stats'): void ns3::FileHelper::AddTimeSeriesAdaptor(std::string const & adaptorName) [member function]
     cls.add_method('AddTimeSeriesAdaptor', 
                    'void', 
@@ -681,10 +680,6 @@ def register_Ns3GnuplotHelper_methods(root_module, cls):
     cls.add_constructor([])
     ## gnuplot-helper.h (module 'stats'): ns3::GnuplotHelper::GnuplotHelper(std::string const & outputFileNameWithoutExtension, std::string const & title, std::string const & xLegend, std::string const & yLegend, std::string const & terminalType="png") [constructor]
     cls.add_constructor([param('std::string const &', 'outputFileNameWithoutExtension'), param('std::string const &', 'title'), param('std::string const &', 'xLegend'), param('std::string const &', 'yLegend'), param('std::string const &', 'terminalType', default_value='"png"')])
-    ## gnuplot-helper.h (module 'stats'): void ns3::GnuplotHelper::AddProbe(std::string const & typeId, std::string const & probeName, std::string const & path) [member function]
-    cls.add_method('AddProbe', 
-                   'void', 
-                   [param('std::string const &', 'typeId'), param('std::string const &', 'probeName'), param('std::string const &', 'path')])
     ## gnuplot-helper.h (module 'stats'): void ns3::GnuplotHelper::AddTimeSeriesAdaptor(std::string const & adaptorName) [member function]
     cls.add_method('AddTimeSeriesAdaptor', 
                    'void', 
@@ -1236,6 +1231,11 @@ def register_Ns3TypeId_methods(root_module, cls):
                    'uint32_t', 
                    [], 
                    is_static=True)
+    ## type-id.h (module 'core'): std::size_t ns3::TypeId::GetSize() const [member function]
+    cls.add_method('GetSize', 
+                   'std::size_t', 
+                   [], 
+                   is_const=True)
     ## type-id.h (module 'core'): ns3::TypeId::TraceSourceInformation ns3::TypeId::GetTraceSource(uint32_t i) const [member function]
     cls.add_method('GetTraceSource', 
                    'ns3::TypeId::TraceSourceInformation', 
@@ -1312,6 +1312,10 @@ def register_Ns3TypeId_methods(root_module, cls):
     cls.add_method('SetParent', 
                    'ns3::TypeId', 
                    [param('ns3::TypeId', 'tid')])
+    ## type-id.h (module 'core'): ns3::TypeId ns3::TypeId::SetSize(std::size_t size) [member function]
+    cls.add_method('SetSize', 
+                   'ns3::TypeId', 
+                   [param('std::size_t', 'size')])
     ## type-id.h (module 'core'): void ns3::TypeId::SetUid(uint16_t tid) [member function]
     cls.add_method('SetUid', 
                    'void', 
@@ -2820,6 +2824,42 @@ def register_Ns3TimeMinMaxAvgTotalCalculator_methods(root_module, cls):
                    'void', 
                    [], 
                    visibility='protected', is_virtual=True)
+    return
+
+def register_Ns3TimeProbe_methods(root_module, cls):
+    ## time-probe.h (module 'stats'): ns3::TimeProbe::TimeProbe(ns3::TimeProbe const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::TimeProbe const &', 'arg0')])
+    ## time-probe.h (module 'stats'): ns3::TimeProbe::TimeProbe() [constructor]
+    cls.add_constructor([])
+    ## time-probe.h (module 'stats'): bool ns3::TimeProbe::ConnectByObject(std::string traceSource, ns3::Ptr<ns3::Object> obj) [member function]
+    cls.add_method('ConnectByObject', 
+                   'bool', 
+                   [param('std::string', 'traceSource'), param('ns3::Ptr< ns3::Object >', 'obj')], 
+                   is_virtual=True)
+    ## time-probe.h (module 'stats'): void ns3::TimeProbe::ConnectByPath(std::string path) [member function]
+    cls.add_method('ConnectByPath', 
+                   'void', 
+                   [param('std::string', 'path')], 
+                   is_virtual=True)
+    ## time-probe.h (module 'stats'): static ns3::TypeId ns3::TimeProbe::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## time-probe.h (module 'stats'): double ns3::TimeProbe::GetValue() const [member function]
+    cls.add_method('GetValue', 
+                   'double', 
+                   [], 
+                   is_const=True)
+    ## time-probe.h (module 'stats'): void ns3::TimeProbe::SetValue(ns3::Time value) [member function]
+    cls.add_method('SetValue', 
+                   'void', 
+                   [param('ns3::Time', 'value')])
+    ## time-probe.h (module 'stats'): static void ns3::TimeProbe::SetValueByPath(std::string path, ns3::Time value) [member function]
+    cls.add_method('SetValueByPath', 
+                   'void', 
+                   [param('std::string', 'path'), param('ns3::Time', 'value')], 
+                   is_static=True)
     return
 
 def register_Ns3TimeSeriesAdaptor_methods(root_module, cls):

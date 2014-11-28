@@ -23,7 +23,6 @@
 #include "wifi-helper.h"
 #include "ns3/trace-helper.h"
 #include "ns3/yans-wifi-channel.h"
-#include "ns3/deprecated.h"
 
 namespace ns3 {
 
@@ -272,7 +271,6 @@ private:
 
   /**
    * \brief Enable ascii trace output on the indicated net device.
-   * \internal
    *
    * NetDevice-specific implementation mechanism for hooking the trace and
    * writing to the trace file.

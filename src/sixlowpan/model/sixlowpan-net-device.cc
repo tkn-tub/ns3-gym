@@ -29,7 +29,6 @@
 #include "ns3/uinteger.h"
 #include "ns3/icmpv6-header.h"
 #include "ns3/ipv6-header.h"
-#include "ns3/random-variable.h"
 #include "ns3/mac16-address.h"
 #include "ns3/mac48-address.h"
 #include "ns3/mac64-address.h"

@@ -28,7 +28,6 @@
 #include "ns3/simple-ref-count.h"
 
 #include "ns3/ipv6-address.h"
-#include "ns3/deprecated.h"
 
 namespace ns3
 {
@@ -202,14 +201,6 @@ public:
    * \param ttl time-to-live for this route
    */
   void SetOutputTtl (uint32_t oif, uint32_t ttl);
-
-  /**
-   * \brief Get output TTL for this route.
-   * \param oif outgoing interface
-   * \return TTL for this route
-   * \deprecated
-   */
-  uint32_t GetOutputTtl (uint32_t oif) NS_DEPRECATED;
 
   /**
    * \return map of output interface Ids and TTLs for this route

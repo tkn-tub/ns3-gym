@@ -53,7 +53,6 @@ public:
   Ipv6StaticRoutingHelper (const Ipv6StaticRoutingHelper &);
 
   /**
-   * \internal
    * \returns pointer to clone of this Ipv6StaticRoutingHelper
    *
    * This method is mainly for internal use by the other helpers;
@@ -118,7 +117,6 @@ public:
 #endif
 private:
   /**
-   * \internal
    * \brief Assignment operator declared private and not implemented to disallow
    * assignment and prevent the compiler from happily inserting its own.
    * \param o object to copy from

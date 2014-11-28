@@ -44,7 +44,6 @@ public:
   Ipv6ListRoutingHelper ();
 
   /**
-   * \internal
    * \brief Destroy an Ipv6 Ipv6ListRoutingHelper.
    */
   virtual ~Ipv6ListRoutingHelper ();
@@ -83,7 +82,6 @@ public:
   virtual Ptr<Ipv6RoutingProtocol> Create (Ptr<Node> node) const;
 private:
   /**
-   * \internal
    * \brief Assignment operator declared private and not implemented to disallow
    * assignment and prevent the compiler from happily inserting its own.
    * \param o object to copy from
@@ -92,7 +90,6 @@ private:
   Ipv6ListRoutingHelper &operator = (const Ipv6ListRoutingHelper &o);
 
   /**
-   * \internal
    * \brief Container for pairs of Ipv6RoutingHelper pointer / priority.
    */
   std::list<std::pair<const Ipv6RoutingHelper *,int16_t> > m_list;

@@ -181,12 +181,6 @@ TestCase::~TestCase ()
 }
 
 void
-TestCase::AddTestCase (TestCase *testCase)
-{
-  AddTestCase (testCase, TestCase::QUICK);
-}
-
-void
 TestCase::AddTestCase (TestCase *testCase, enum TestCase::TestDuration duration)
 {
   // Record this for use later when all test cases are run.
@@ -330,12 +324,6 @@ TestCase::CreateTempDirFilename (std::string filename)
       SystemPath::MakeDirectories (tempDir);
       return SystemPath::Append (tempDir, filename);
     }
-}
-bool 
-TestCase::GetErrorStatus (void) const
-{
-  NS_LOG_FUNCTION (this);
-  return IsStatusFailure ();
 }
 bool 
 TestCase::IsStatusFailure (void) const

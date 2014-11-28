@@ -36,7 +36,6 @@ class Header;
 class Trailer;
 
 /**
- * \internal
  * \ingroup packet
  * \brief Handle packet metadata about packet headers and trailers
  *

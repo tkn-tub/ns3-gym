@@ -114,12 +114,12 @@ public:
      * \brief Returns an iterator to the begin of the attributes.
      * \return a const iterator to the first attribute of a link.
      */
-    ConstAttributesIterator AttributesBegin (void);
+    ConstAttributesIterator AttributesBegin (void) const;
     /**
      * \brief Returns an iterator to the end of the attributes.
      * \return a const iterator to the last attribute of a link.
      */
-    ConstAttributesIterator AttributesEnd (void);
+    ConstAttributesIterator AttributesEnd (void) const;
 
 private:
     Link ();

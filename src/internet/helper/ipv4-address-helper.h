@@ -172,7 +172,7 @@ public:
  * @param c The NetDeviceContainer holding the collection of net devices we
  * are asked to assign Ipv4 addresses to.
  *
- * @returns Nothing
+ * @returns A container holding the added NetDevices
  * @see SetBase
  * @see NewNetwork
  */
@@ -180,7 +180,6 @@ public:
 
 private:
   /**
-   * @internal
    * \brief Returns the number of address bits (hostpart) for a given netmask
    * \param maskbits the netmask
    * \returns the number of bits in the hostpart

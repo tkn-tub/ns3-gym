@@ -95,8 +95,6 @@ private:
    * arguments of type Ptr<const Packet>
    *
    * \param packet the traced packet
-   *
-   * \internal
    */
   void TraceSink (Ptr<const Packet> packet);
 

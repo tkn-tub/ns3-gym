@@ -128,6 +128,7 @@ HwmpProactiveRegressionTest::CreateDevices ()
   // 3. setup TCP/IP
   InternetStackHelper internetStack;
   internetStack.Install (*m_nodes);
+  streamsUsed += internetStack.AssignStreams (*m_nodes, streamsUsed);
   Ipv4AddressHelper address;
   address.SetBase ("10.1.1.0", "255.255.255.0");
   m_interfaces = address.Assign (meshDevices);

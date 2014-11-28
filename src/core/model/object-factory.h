@@ -35,6 +35,8 @@ class AttributeValue;
  *
  * This class can also hold a set of attributes to set
  * automatically during the object construction.
+ *
+ * \see attribute_ObjectFactory
  */
 class ObjectFactory
 {
@@ -128,13 +130,6 @@ CreateObjectWithAttributes (std::string n1 = "", const AttributeValue & v1 = Emp
                             std::string n8 = "", const AttributeValue & v8 = EmptyAttributeValue (),
                             std::string n9 = "", const AttributeValue & v9 = EmptyAttributeValue ());
 
-
-
-
-/**
- * \class ns3::ObjectFactoryValue
- * \brief hold objects of type ns3::ObjectFactory
- */
 
 ATTRIBUTE_HELPER_HEADER (ObjectFactory);
 

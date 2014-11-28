@@ -26,18 +26,34 @@
 namespace ns3 {
 
 /**
- * \brief Encapsulate OS-specific functions to manipulate file and directory paths.
+ * \ingroup testing
+ * \defgroup systempath Host Filesystem
+ * \brief Encapsulate OS-specific functions to manipulate file
+ * and directory paths.
  *
- * The functions provided here are used mostly to implement the ns-3 test framework.
+ * The functions provided here are used mostly to implement
+ * the ns-3 test framework.
+ */
+
+/**
+ * \addtogroup core
+ * \see systempath
+ */
+
+/**
+ * \ingroup systempath
+ * \brief Namespace for various file and directory path functions.
  */
 namespace SystemPath {
 
   /**
+   * \ingroup systempath
    * \return the directory in which the currently-executing binary is located
    */
   std::string FindSelfDirectory (void);
   
   /**
+   * \ingroup systempath
    * \param left a path element
    * \param right a path element
    * \return a concatenation of the two input paths
@@ -45,6 +61,7 @@ namespace SystemPath {
   std::string Append (std::string left, std::string right);
 
   /**
+   * \ingroup systempath
    * \param path a path
    * \return a list of path elements that can be joined together again with
    *         the Join function.
@@ -53,6 +70,7 @@ namespace SystemPath {
   std::list<std::string> Split (std::string path);
 
   /**
+   * \ingroup systempath
    * \param begin iterator to first element to join
    * \param end iterator to last element to join
    * \return a path that is a concatenation of all the input elements.
@@ -61,12 +79,14 @@ namespace SystemPath {
 		    std::list<std::string>::const_iterator end);
   
   /**
+   * \ingroup systempath
    * \param path a path which identifies a directory
    * \return a list of the filenames which are located in the input directory
    */
   std::list<std::string> ReadFiles (std::string path);
 
   /**
+   * \ingroup systempath
    * \return a path which identifies a temporary directory.
    *
    * The returned path identifies a directory which does not exist yet
@@ -76,6 +96,7 @@ namespace SystemPath {
   std::string MakeTemporaryDirectoryName (void);
 
   /**
+   * \ingroup systempath
    * \param path a path to a directory
    *
    * Create all the directories leading to path.

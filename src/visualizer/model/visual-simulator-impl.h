@@ -36,7 +36,6 @@ namespace ns3 {
  * \ingroup simulator
  *
  * \brief A replacement simulator that starts the visualizer
- * \internal
  *
  * To use this class, run any ns-3 simulation with the command-line
  * argument --SimulatorImplementationType=ns3::VisualSimulatorImpl.

@@ -469,6 +469,7 @@ std::istream & operator >> (std::istream &is, const SequenceNumber<NUMERIC_TYPE,
 typedef SequenceNumber<uint32_t, int32_t> SequenceNumber32;
 /// 16 bit Sequence number
 typedef SequenceNumber<uint16_t, int16_t> SequenceNumber16;
+/// 8 bit Sequence number
 typedef SequenceNumber<uint8_t, int8_t> SequenceNumber8;
 
 /**

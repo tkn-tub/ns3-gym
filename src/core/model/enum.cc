@@ -27,26 +27,26 @@ namespace ns3 {
 NS_LOG_COMPONENT_DEFINE ("Enum");
 
 EnumValue::EnumValue ()
-  : m_v ()
+  : m_value ()
 {
   NS_LOG_FUNCTION (this);
 }
-EnumValue::EnumValue (int v)
-  : m_v (v)
+EnumValue::EnumValue (int value)
+  : m_value (value)
 {
-  NS_LOG_FUNCTION (this << v);
+  NS_LOG_FUNCTION (this << value);
 }
 void
-EnumValue::Set (int v)
+EnumValue::Set (int value)
 {
-  NS_LOG_FUNCTION (this << v);
-  m_v = v;
+  NS_LOG_FUNCTION (this << value);
+  m_value = value;
 }
 int
 EnumValue::Get (void) const
 {
   NS_LOG_FUNCTION (this);
-  return m_v;
+  return m_value;
 }
 Ptr<AttributeValue>
 EnumValue::Copy (void) const
@@ -62,7 +62,7 @@ EnumValue::SerializeToString (Ptr<const AttributeChecker> checker) const
   NS_ASSERT (p != 0);
   for (EnumChecker::ValueSet::const_iterator i = p->m_valueSet.begin (); i != p->m_valueSet.end (); i++)
     {
-      if (i->first == m_v)
+      if (i->first == m_value)
         {
           return i->second;
         }
@@ -82,7 +82,7 @@ EnumValue::DeserializeFromString (std::string value, Ptr<const AttributeChecker>
     {
       if (i->second == value)
         {
-          m_v = i->first;
+          m_value = i->first;
           return true;
         }
     }
@@ -95,16 +95,16 @@ EnumChecker::EnumChecker ()
 }
 
 void
-EnumChecker::AddDefault (int v, std::string name)
+EnumChecker::AddDefault (int value, std::string name)
 {
-  NS_LOG_FUNCTION (this << v << name);
-  m_valueSet.push_front (std::make_pair (v, name));
+  NS_LOG_FUNCTION (this << value << name);
+  m_valueSet.push_front (std::make_pair (value, name));
 }
 void
-EnumChecker::Add (int v, std::string name)
+EnumChecker::Add (int value, std::string name)
 {
-  NS_LOG_FUNCTION (this << v << name);
-  m_valueSet.push_back (std::make_pair (v, name));
+  NS_LOG_FUNCTION (this << value << name);
+  m_valueSet.push_back (std::make_pair (value, name));
 }
 bool
 EnumChecker::Check (const AttributeValue &value) const

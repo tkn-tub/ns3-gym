@@ -544,7 +544,6 @@ public:
 
   /**
    * @brief Enable pcap output the indicated net device.
-   * @internal
    *
    * @param prefix Filename prefix to use for pcap files.
    * @param nd Net device for which you want to enable tracing.
@@ -634,7 +633,6 @@ public:
 
   /**
    * @brief Enable ascii trace output on the indicated net device.
-   * @internal
    *
    * The implementation is expected to use a provided Ptr<OutputStreamWrapper>
    * if it is non-null.  If the OutputStreamWrapper is null, the implementation
@@ -794,9 +792,7 @@ private:
    *               ascii tracing
    * @param explicitFilename Treat the prefix as an explicit filename if true
    */
-  /**
-   * @internal Avoid code duplication.
-   */
+
   void EnableAsciiImpl (Ptr<OutputStreamWrapper> stream, 
                         std::string prefix, 
                         uint32_t nodeid, 

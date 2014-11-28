@@ -95,7 +95,7 @@ public:
 
   /**
    * \param typeId the type ID for the probe used when it is created.
-   * \param path Config path to access the probe.
+   * \param path Config path for underlying trace source to be probed
    * \param probeTraceSource the probe trace source to access.
    * \param title the title to be associated to this dataset
    * \param keyLocation the location of the key in the plot.
@@ -104,6 +104,11 @@ public:
    * probe, and then plot the values from the probeTraceSource. The dataset
    * will have the provided title, and will consist of the 'newValue'
    * at each timestamp.
+   *
+   * This method will create one or more probes according to the TypeId 
+   * provided, connect the probe(s) to the trace source specified by
+   * the config path, and hook the probeTraceSource(s) to the downstream 
+   * aggregator.
    *
    * If the config path has more than one match in the system
    * (e.g. there is a wildcard), then one dataset for each match will
@@ -119,17 +124,6 @@ public:
                   const std::string &probeTraceSource,
                   const std::string &title,
                   enum GnuplotAggregator::KeyLocation keyLocation = GnuplotAggregator::KEY_INSIDE);
-
-  /**
-   * \param typeId the type ID for the probe used when it is created.
-   * \param probeName the probe's name.
-   * \param path Config path to access the probe.
-   *
-   * \brief Adds a probe to be used to make the plot.
-   */
-  void AddProbe (const std::string &typeId,
-                 const std::string &probeName,
-                 const std::string &path);
 
   /**
    * \param adaptorName the timeSeriesAdaptor's name.
@@ -155,6 +149,18 @@ public:
   Ptr<GnuplotAggregator> GetAggregator ();
 
 private:
+
+  /**
+   * \param typeId the type ID for the probe used when it is created.
+   * \param probeName the probe's name.
+   * \param path Config path to access the probe.
+   *
+   * \brief Adds a probe to be used to make the plot.
+   */
+  void AddProbe (const std::string &typeId,
+                 const std::string &probeName,
+                 const std::string &path);
+
   /**
    * \brief Constructs the aggregator.
    */

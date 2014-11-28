@@ -21,8 +21,8 @@
  * Modified by: Mitch Watrous (watrous@u.washington.edu)
  */
 
-#ifndef BOOL_PROBE_H
-#define BOOL_PROBE_H
+#ifndef TIME_PROBE_H
+#define TIME_PROBE_H
 
 #include "ns3/probe.h"
 #include "ns3/object.h"
@@ -30,6 +30,7 @@
 #include "ns3/boolean.h"
 #include "ns3/traced-value.h"
 #include "ns3/simulator.h"
+#include "ns3/nstime.h"
 
 namespace ns3 {
 
@@ -37,14 +38,14 @@ namespace ns3 {
  * \ingroup probes
  *
  * This class is designed to probe an underlying ns3 TraceSource exporting
- * a bool.  This probe exports a trace source "Output" of type bool.
- * The Output trace source emits a value when either the trace source
- * emits a new value, or when SetValue () is called.
+ * an ns3::Time.  This probe exports a trace source "Output" of type 
+ * double, in units of seconds. The Output trace source emits a value when 
+ * either the trace source emits a new value, or when SetValue () is called.
  *
  * The current value of the probe can be polled with the GetValue ()
  * method.
  */
-class BooleanProbe : public Probe
+class TimeProbe : public Probe
 {
 public:
   /**
@@ -52,26 +53,26 @@ public:
    * \return the object TypeId
    */
   static TypeId GetTypeId ();
-  BooleanProbe ();
-  virtual ~BooleanProbe ();
+  TimeProbe ();
+  virtual ~TimeProbe ();
 
   /**
-   * \return the most recent value
+   * \return the most recent value (units of seconds)
    */
-  bool GetValue (void) const;
+  double GetValue (void) const;
 
   /**
-   * \param value set the traced bool to a new value
+   * \param value set the traced Time to a new value
    */
-  void SetValue (bool value);
+  void SetValue (Time value);
 
   /**
    * \brief Set a probe value by its name in the Config system
    *
    * \param path Config path to access the probe
-   * \param value set the traced bool to a new value
+   * \param value set the traced Time to a new value
    */
-  static void SetValueByPath (std::string path, bool value);
+  static void SetValueByPath (std::string path, Time value);
 
   /**
    * \brief connect to a trace source attribute provided by a given object
@@ -94,16 +95,16 @@ public:
 
 private:
   /**
-   * \brief Method to connect to an underlying ns3::TraceSource of type bool
+   * \brief Method to connect to an underlying ns3::TraceSource of type Time 
    *
-   * \param oldData previous value of the bool
-   * \param newData new value of the bool
+   * \param oldData previous value of the Time 
+   * \param newData new value of the Time 
    */
-  void TraceSink (bool oldData, bool newData);
+  void TraceSink (Time oldData, Time newData);
 
-  TracedValue<bool> m_output; //!< Output trace source.
+  TracedValue<double> m_output; //!< Output trace source.
 };
 
 } // namespace ns3
 
-#endif // BOOL_PROBE_H
+#endif // TIME_PROBE_H

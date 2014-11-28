@@ -115,10 +115,15 @@ int main (int argc, char** argv)
 
   /* radvd configuration */
   RadvdHelper radvdHelper;
+
   /* R interface (n0 - R) */
-  radvdHelper.AddAnnouncedPrefix(iic1.GetInterfaceIndex (1), Ipv6Address("2001:1::0"), 64);
+  /* n0 will receive unsolicited (periodic) RA */
+  radvdHelper.AddAnnouncedPrefix (iic1.GetInterfaceIndex (1), Ipv6Address("2001:1::0"), 64);
+
   /* R interface (R - n1) */
+  /* n1 will have to use RS, as RA are not sent automatically */
   radvdHelper.AddAnnouncedPrefix(iic2.GetInterfaceIndex (1), Ipv6Address("2001:2::0"), 64);
+  radvdHelper.GetRadvdInterface (iic2.GetInterfaceIndex (1))->SetSendAdvert (false);
 
   ApplicationContainer radvdApps = radvdHelper.Install (r);
   radvdApps.Start (Seconds (1.0));

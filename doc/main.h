@@ -13,8 +13,7 @@
  *
  * \section install-sec Building the Documentation
  * 
- * ns-3 requires Doxygen version 1.5.4 or greater to fully build all items,
- * although earlier versions of Doxygen will mostly work.
+ * ns-3 requires Doxygen version 1.8.3.1 or greater.
  * 
  * Type "./waf --doxygen" or "./waf --doxygen-no-build" to build the 
  *  documentation.  The doc/ directory contains

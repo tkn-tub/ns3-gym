@@ -255,6 +255,8 @@ int main ()
                             "import pygccxml; print pygccxml.__version__"],
                             stdout=subprocess.PIPE).communicate()[0]
     pygccxml_version_str = out.strip()
+    # Bug 2013:  pygccxml versions > 1.0.0 prepend a 'v' to version number
+    pygccxml_version_str = pygccxml_version_str.lstrip('v')
     pygccxml_version = tuple([int(x) for x in pygccxml_version_str.split('.')])
     conf.msg('Checking for pygccxml version', pygccxml_version_str)
     if not (pygccxml_version >= REQUIRED_PYGCCXML_VERSION):

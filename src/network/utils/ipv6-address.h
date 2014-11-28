@@ -42,6 +42,7 @@ class Mac64Address;
  * \class Ipv6Address
  * \brief Describes an IPv6 address.
  * \see Ipv6Prefix
+ * \see attribute_Ipv6Address
  */
 class Ipv6Address
 {
@@ -383,6 +384,7 @@ private:
  * \class Ipv6Prefix
  * \brief Describes an IPv6 prefix. It is just a bitmask like Ipv4Mask.
  * \see Ipv6Address
+ * \see attribute_Ipv6Prefix
  */
 class Ipv6Prefix
 {

@@ -19,9 +19,10 @@
  *          Tiago G. Rodrigues (tgr002@bucknell.edu)
  *
  * Modified by: Mitch Watrous (watrous@u.washington.edu)
+ *
  */
 
-#include "ns3/double-probe.h"
+#include "ns3/time-probe.h"
 #include "ns3/object.h"
 #include "ns3/log.h"
 #include "ns3/names.h"
@@ -30,81 +31,80 @@
 
 namespace ns3 {
 
-NS_LOG_COMPONENT_DEFINE ("DoubleProbe");
+NS_LOG_COMPONENT_DEFINE ("TimeProbe");
 
-NS_OBJECT_ENSURE_REGISTERED (DoubleProbe);
+NS_OBJECT_ENSURE_REGISTERED (TimeProbe);
 
 TypeId
-DoubleProbe::GetTypeId ()
+TimeProbe::GetTypeId ()
 {
-  static TypeId tid = TypeId ("ns3::DoubleProbe")
+  static TypeId tid = TypeId ("ns3::TimeProbe")
     .SetParent<Probe> ()
-    .AddConstructor<DoubleProbe> ()
-    .AddTraceSource ( "Output",
-                      "The double that serves as output for this probe",
-                      MakeTraceSourceAccessor (&DoubleProbe::m_output),
-                     "ns3::TracedValue::DoubleCallback")
+    .AddConstructor<TimeProbe> ()
+    .AddTraceSource ("Output",
+                     "The double valued (units of seconds) probe output",
+                     MakeTraceSourceAccessor (&TimeProbe::m_output))
   ;
   return tid;
 }
 
-DoubleProbe::DoubleProbe ()
+TimeProbe::TimeProbe ()
 {
   NS_LOG_FUNCTION (this);
   m_output = 0;
 }
 
-DoubleProbe::~DoubleProbe ()
+TimeProbe::~TimeProbe ()
 {
   NS_LOG_FUNCTION (this);
 }
 
 double
-DoubleProbe::GetValue (void) const
+TimeProbe::GetValue (void) const
 {
   NS_LOG_FUNCTION (this);
   return m_output;
 }
 void
-DoubleProbe::SetValue (double newVal)
+TimeProbe::SetValue (Time newVal)
 {
-  NS_LOG_FUNCTION (this << newVal);
-  m_output = newVal;
+  NS_LOG_FUNCTION (this << newVal.GetSeconds ());
+  m_output = newVal.GetSeconds ();
 }
 
 void
-DoubleProbe::SetValueByPath (std::string path, double newVal)
+TimeProbe::SetValueByPath (std::string path, Time newVal)
 {
-  NS_LOG_FUNCTION (path << newVal);
-  Ptr<DoubleProbe> probe = Names::Find<DoubleProbe> (path);
+  NS_LOG_FUNCTION (path << newVal.GetSeconds ());
+  Ptr<TimeProbe> probe = Names::Find<TimeProbe> (path);
   NS_ASSERT_MSG (probe, "Error:  Can't find probe for path " << path);
   probe->SetValue (newVal);
 }
 
 bool
-DoubleProbe::ConnectByObject (std::string traceSource, Ptr<Object> obj)
+TimeProbe::ConnectByObject (std::string traceSource, Ptr<Object> obj)
 {
   NS_LOG_FUNCTION (this << traceSource << obj);
   NS_LOG_DEBUG ("Name of trace source (if any) in names database: " << Names::FindPath (obj));
-  bool connected = obj->TraceConnectWithoutContext (traceSource, MakeCallback (&ns3::DoubleProbe::TraceSink, this));
+  bool connected = obj->TraceConnectWithoutContext (traceSource, MakeCallback (&ns3::TimeProbe::TraceSink, this));
   return connected;
 }
 
 void
-DoubleProbe::ConnectByPath (std::string path)
+TimeProbe::ConnectByPath (std::string path)
 {
   NS_LOG_FUNCTION (this << path);
   NS_LOG_DEBUG ("Name of trace source to search for in config database: " << path);
-  Config::ConnectWithoutContext (path, MakeCallback (&ns3::DoubleProbe::TraceSink, this));
+  Config::ConnectWithoutContext (path, MakeCallback (&ns3::TimeProbe::TraceSink, this));
 }
 
 void
-DoubleProbe::TraceSink (double oldData, double newData)
+TimeProbe::TraceSink (Time oldData, Time newData)
 {
-  NS_LOG_FUNCTION (this << oldData << newData);
+  NS_LOG_FUNCTION (this << oldData.GetSeconds () << newData.GetSeconds ());
   if (IsEnabled ())
     {
-      m_output = newData;
+      m_output = newData.GetSeconds ();
     }
 }
 

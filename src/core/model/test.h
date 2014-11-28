@@ -29,12 +29,20 @@
 #include <stdint.h>
 
 #include "system-wall-clock-ms.h"
-#include "deprecated.h"
 
 /**
  * \ingroup core
  * \defgroup testing Testing
  * \brief Tools to define and execute unit tests.
+ *
+ * This module lists the normal Testing API.  Most of these
+ * macros forward to the implementation macros in testingimpl.
+ * You should generally use these macros only.
+ */
+/**
+ * \ingroup testing
+ * \defgroup testingimpl Testing Implementation
+ * \brief Internal implementation of the Testing system.
  */
 
 // 
@@ -50,7 +58,6 @@
 /**
  * \ingroup testing
  * \brief Check if we should assert on errors, and do so
- * \internal
  */
 #define ASSERT_ON_FAILURE                       \
   do {                                          \
@@ -63,7 +70,6 @@
 /**
  * \ingroup testing
  * \brief If we shouldn't continue on errors, return
- * \internal
  */
 #define CONTINUE_ON_FAILURE                                             \
   do {                                                                  \
@@ -76,7 +82,6 @@
 /**
  * \ingroup testing
  * \brief If we shouldn't continue on errors, return test status
- * \internal
  */
 #define CONTINUE_ON_FAILURE_RETURNS_BOOL                                \
   do {                                                                  \
@@ -93,10 +98,9 @@
 // ===========================================================================
 
 /**
- * \ingroup testing
+ * \ingroup testingimpl
  * \brief Test that an actual and expected (limit) value are equal and report
  * and abort if not.
- * \internal
  */
 #define NS_TEST_ASSERT_MSG_EQ_INTERNAL(actual, limit, msg, file, line)  \
   do {                                                                  \
@@ -149,10 +153,9 @@
   NS_TEST_ASSERT_MSG_EQ_INTERNAL (actual, limit, msg, __FILE__, __LINE__)
 
 /**
- * \ingroup testing
+ * \ingroup testingimpl
  * \brief Test that an actual and expected (limit) value are equal and report
  * and abort if not.
- * \internal
  */
 #define NS_TEST_ASSERT_MSG_EQ_RETURNS_BOOL_INTERNAL(actual, limit, msg, file, line) \
   do {                                                                  \
@@ -208,13 +211,12 @@
   NS_TEST_ASSERT_MSG_EQ_RETURNS_BOOL_INTERNAL (actual, limit, msg, __FILE__, __LINE__)
 
 /**
- * \ingroup testing
+ * \ingroup testingimpl
  * \brief Test that an actual and expected (limit) value are equal and report
  * if not.
  * 
  * Required to avoid use of return statement which allows use in methods 
  * (esp. callbacks) returning void.
- * \internal
  */
 #define NS_TEST_EXPECT_MSG_EQ_INTERNAL(actual, limit, msg, file, line)  \
   do {                                                                  \
@@ -271,10 +273,9 @@
 // ===========================================================================
 
 /**
- * \ingroup testing
+ * \ingroup testingimpl
  * \brief Test that actual and expected (limit) values are equal to plus
  * or minus some tolerance and report and abort if not.
- * \internal
  */
 #define NS_TEST_ASSERT_MSG_EQ_TOL_INTERNAL(actual, limit, tol, msg, file, line) \
   do {                                                                  \
@@ -356,10 +357,9 @@
   NS_TEST_ASSERT_MSG_EQ_TOL_INTERNAL (actual, limit, tol, msg, __FILE__, __LINE__)
 
 /**
- * \ingroup testing
+ * \ingroup testingimpl
  * \brief Test that actual and expected (limit) values are equal to plus
  * or minus some tolerance and report and abort if not.
- * \internal
  */
 #define NS_TEST_ASSERT_MSG_EQ_TOL_RETURNS_BOOL_INTERNAL(actual, limit, tol, msg, file, line) \
   do {                                                                  \
@@ -444,13 +444,12 @@
   NS_TEST_ASSERT_MSG_EQ_TOL_RETURNS_BOOL_INTERNAL (actual, limit, tol, msg, __FILE__, __LINE__)
 
 /**
- * \ingroup testing
+ * \ingroup testingimpl
  * \brief Test that actual and expected (limit) values are equal to plus or minus
  * some tolerance and report if not.
  * 
  * Required to avoid use of return statement which allows use in methods 
  * (esp. callbacks) returning void.
- * \internal
  */
 #define NS_TEST_EXPECT_MSG_EQ_TOL_INTERNAL(actual, limit, tol, msg, file, line) \
   do {                                                                  \
@@ -535,10 +534,9 @@
 // ===========================================================================
 
 /**
- * \ingroup testing
+ * \ingroup testingimpl
  * \brief Test that an actual and expected (limit) value are not equal and 
  * report and abort if not.
- * \internal
  */
 #define NS_TEST_ASSERT_MSG_NE_INTERNAL(actual, limit, msg, file, line)  \
   do {                                                                  \
@@ -590,10 +588,9 @@
   NS_TEST_ASSERT_MSG_NE_INTERNAL (actual, limit, msg, __FILE__, __LINE__)
 
 /**
- * \ingroup testing
+ * \ingroup testingimpl
  * \brief Test that an actual and expected (limit) value are not equal and 
  * report and abort if not.
- * \internal
  */
 #define NS_TEST_ASSERT_MSG_NE_RETURNS_BOOL_INTERNAL(actual, limit, msg, file, line) \
   do {                                                                  \
@@ -648,13 +645,12 @@
   NS_TEST_ASSERT_MSG_NE_RETURNS_BOOL_INTERNAL (actual, limit, msg, __FILE__, __LINE__)
 
 /**
- * \ingroup testing
+ * \ingroup testingimpl
  * \brief Test that an actual and expected (limit) value are not equal and 
  * report if not.
  * 
  * Required to avoid use of return statement which allows use in methods 
  * (callbacks) returning void.
- * \internal
  */
 #define NS_TEST_EXPECT_MSG_NE_INTERNAL(actual, limit, msg, file, line)  \
   do {                                                                  \
@@ -709,10 +705,9 @@
 // ===========================================================================
 
 /**
- * \ingroup testing
+ * \ingroup testingimpl
  * \brief Test that an actual value is less than a limit and report and abort
  * if not.
- * \internal
  */
 #define NS_TEST_ASSERT_MSG_LT_INTERNAL(actual, limit, msg, file, line)  \
   do {                                                                  \
@@ -734,10 +729,9 @@
   } while (false)
 
 /**
- * \ingroup testing
+ * \ingroup testingimpl
  * \brief Test that an actual value is less than or equal to a limit and report
  * and abort if not.
- * \internal
  */
 #define NS_TEST_ASSERT_MSG_LT_OR_EQ_INTERNAL(actual, limit, msg, file, line)  \
   do {                                                                  \
@@ -799,12 +793,11 @@
   NS_TEST_ASSERT_MSG_LT_OR_EQ_INTERNAL (actual, limit, msg, __FILE__, __LINE__)
 
 /**
- * \ingroup testing
+ * \ingroup testingimpl
  * \brief Test that an actual value is less than a limit and report if not.
  * 
  * Required to avoid use of return statement which allows use in methods 
  * (callbacks) returning void.
- * \internal
  */
 #define NS_TEST_EXPECT_MSG_LT_INTERNAL(actual, limit, msg, file, line)  \
   do {                                                                  \
@@ -825,13 +818,12 @@
   } while (false)
 
 /**
- * \ingroup testing
+ * \ingroup testingimpl
  * \brief Test that an actual value is less than or equal to a limit and report
  * if not.
  *
  * Required to avoid use of return statement which allows use in methods
  * (callbacks) returning void.
- * \internal
  */
 #define NS_TEST_EXPECT_MSG_LT_OR_EQ_INTERNAL(actual, limit, msg, file, line)  \
   do {                                                                  \
@@ -895,10 +887,9 @@
 // ===========================================================================
 
 /**
- * \ingroup testing
+ * \ingroup testingimpl
  * \brief Test that an actual value is greater than a limit and report and abort
  * if not.
- * \internal
  */
 #define NS_TEST_ASSERT_MSG_GT_INTERNAL(actual, limit, msg, file, line)  \
   do {                                                                  \
@@ -920,10 +911,9 @@
   } while (false)
 
 /**
- * \ingroup testing
+ * \ingroup testingimpl
  * \brief Test that an actual value is greater than or equal to a limit and
  * report and abort if not.
- * \internal
  */
 #define NS_TEST_ASSERT_MSG_GT_OR_EQ_INTERNAL(actual, limit, msg, file, line)  \
   do {                                                                  \
@@ -985,12 +975,11 @@
   NS_TEST_ASSERT_MSG_GT_OR_EQ_INTERNAL (actual, limit, msg, __FILE__, __LINE__)
 
 /**
- * \ingroup testing
+ * \ingroup testingimpl
  * \brief Test that an actual value is greater than a limit and report if not.
  * 
  * Required to avoid use of return statement which allows use in methods 
  * (callbacks) returning void.
- * \internal
  */
 #define NS_TEST_EXPECT_MSG_GT_INTERNAL(actual, limit, msg, file, line)  \
   do {                                                                  \
@@ -1011,13 +1000,12 @@
   } while (false)
 
 /**
- * \ingroup testing
+ * \ingroup testingimpl
  * \brief Test that an actual value is greater than a or equal to limit and
  * report if not.
  *
  * Required to avoid use of return statement which allows use in methods
  * (callbacks) returning void.
- * \internal
  */
 #define NS_TEST_EXPECT_MSG_GT_OR_EQ_INTERNAL(actual, limit, msg, file, line)  \
   do {                                                                  \
@@ -1079,6 +1067,7 @@
 namespace ns3 {
 
 /**
+ * \ingroup testing
  * \brief Compare two double precision floating point numbers and declare them
  * equal if they are within some epsilon of each other.
  *
@@ -1140,16 +1129,6 @@ protected:
   TestCase (std::string name);
 
   /**
-   * \brief Add an individual child TestCase case to this TestCase.
-   *
-   * \param testCase Pointer to the TestCase object to be added.
-   *
-   * \deprecated this method will go away in future versions of 
-   * ns-3. Please use instead AddTestCase (TestCase, TestDuration)  
-   */
-  void AddTestCase (TestCase *testCase) NS_DEPRECATED;
-
-  /**
    * \brief Add an individual child TestCase to this test suite.
    *
    * \param testCase Pointer to the TestCase object to be added.
@@ -1172,11 +1151,6 @@ protected:
   void SetDataDir (std::string directory);
 
   /**
-   * \deprecated
-   * This method is deprecated. IsStatusFailure replaces it.
-   */
-  bool GetErrorStatus (void) const NS_DEPRECATED;
-  /**
    * \return true if the tests have failed, false otherwise.
    */
   bool IsStatusFailure (void) const;
@@ -1198,6 +1172,13 @@ protected:
    */
   /**
    * Log the failure of this TestCase.
+   *
+   * \param cond The test condition.
+   * \param actual Actual value of the test.
+   * \param limit Expected value of the test.
+   * \param message Message indicating the type of failure.
+   * \param file The file where the test failed.
+   * \param line The line number in \p file where the test failed.
    */
   void ReportTestFailure (std::string cond, std::string actual, 
                       std::string limit, std::string message, 
@@ -1325,7 +1306,7 @@ private:
 };
 
 /**
- * \ingroup testing
+ * \ingroup testingimpl
  *
  * \brief A runner to execute tests.
  */

@@ -3,7 +3,14 @@
 // Include a header file from your module to test.
 #include "ns3/double-probe.h"
 #include "ns3/test.h"
-#include "ns3/core-module.h"
+#include "ns3/random-variable-stream.h"
+#include "ns3/trace-source-accessor.h"
+#include "ns3/traced-value.h"
+#include "ns3/nstime.h"
+#include "ns3/simulator.h"
+#include "ns3/object.h"
+#include "ns3/type-id.h"
+#include "ns3/names.h"
 
 using namespace ns3;
 
@@ -13,6 +20,7 @@ public:
   static TypeId GetTypeId (void);
   SampleEmitter ()
   {
+    m_var = CreateObject<ExponentialRandomVariable> ();
   }
   virtual ~SampleEmitter ()
   {
@@ -23,7 +31,7 @@ public:
   }
   void Reschedule ()
   {
-    m_time = m_var.GetValue ();
+    m_time = m_var->GetValue ();
     Simulator::Schedule (Seconds (m_time), &SampleEmitter::Report, this);
     m_time += Simulator::Now ().GetSeconds ();
   }
@@ -38,11 +46,11 @@ public:
 private:
   void Report ()
   {
-    aux = m_var.GetValue ();
+    aux = m_var->GetValue ();
     m_trace = aux;
     Reschedule ();
   }
-  ExponentialVariable m_var;
+  Ptr<ExponentialRandomVariable> m_var;
   double m_time;
   TracedValue<double> m_trace;
   double aux;

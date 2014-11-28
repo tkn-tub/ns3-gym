@@ -43,7 +43,6 @@ public:
   QosWifiMacHelper ();
 
   /**
-   * \internal
    * Destroy a QosWifiMacHelper
    */
   virtual ~QosWifiMacHelper ();
@@ -135,7 +134,6 @@ protected:
   ObjectFactory m_mac;
 private:
   /**
-   * \internal
    * \returns a newly-created MAC object.
    *
    * This method implements the pure virtual method defined in \ref ns3::WifiMacHelper.

@@ -817,17 +817,12 @@ TcpSocketBase::CloseAndNotify (void)
   if (!m_closeNotified)
     {
       NotifyNormalClose ();
+      m_closeNotified = true;
     }
 
-  if (m_state != TIME_WAIT)
-    {
-      DeallocateEndPoint ();
-    }
-    
-  m_closeNotified = true;
   NS_LOG_INFO (TcpStateName[m_state] << " -> CLOSED");
-  CancelAllTimers ();
   m_state = CLOSED;
+  DeallocateEndPoint ();  
 }
 
 
@@ -1751,6 +1746,7 @@ TcpSocketBase::DeallocateEndPoint (void)
 {
   if (m_endPoint != 0)
     {
+      CancelAllTimers ();
       m_endPoint->SetDestroyCallback (MakeNullCallback<void> ());
       m_tcp->DeAllocate (m_endPoint);
       m_endPoint = 0;
@@ -1760,10 +1756,10 @@ TcpSocketBase::DeallocateEndPoint (void)
         {
           m_tcp->m_sockets.erase (it);
         }
-      CancelAllTimers ();
     }
-  if (m_endPoint6 != 0)
+  else if (m_endPoint6 != 0)
     {
+      CancelAllTimers ();
       m_endPoint6->SetDestroyCallback (MakeNullCallback<void> ());
       m_tcp->DeAllocate (m_endPoint6);
       m_endPoint6 = 0;
@@ -1773,7 +1769,6 @@ TcpSocketBase::DeallocateEndPoint (void)
         {
           m_tcp->m_sockets.erase (it);
         }
-      CancelAllTimers ();
     }
 }
 

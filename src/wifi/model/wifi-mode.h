@@ -87,6 +87,8 @@ enum WifiCodeRate
  * to lookup in a global array the characteristics of the
  * associated transmission mode. It is thus extremely cheap to
  * keep a WifiMode variable around.
+ *
+ * \see attribute_WifiMode
  */
 class WifiMode
 {

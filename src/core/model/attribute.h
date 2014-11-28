@@ -39,8 +39,13 @@ class ObjectBase;
  *
  * The \c ns-3 attribute system is the mechanism used in \c ns-3 to
  * organize, document, and modify the *values* used by the various
- * component models.  Attributes also enable the tracing and statistics
- * gathering in the simulator.
+ * component models.
+ *
+ * Attributes also enable the tracing and statistics gathering
+ * in the simulator.
+ *
+ * See \ref attributehelper for macros to ease the declaration
+ * and definition of Attributes.
  */
 
 /**
@@ -214,14 +219,11 @@ public:
   
 };
 
-/**
- * \brief A class for an empty attribute value
- *
- * \ingroup attribute
- */
+/** A class for an empty attribute value. */
 class EmptyAttributeValue : public AttributeValue
 {
 public:
+  /** Default constructor. */
   EmptyAttributeValue ();
 private:
   /**

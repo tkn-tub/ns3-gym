@@ -23,6 +23,7 @@
 
 #include <list>
 #include "ns3/simple-ref-count.h"
+#include "ns3/nstime.h"
 #include "radvd-prefix.h"
 
 namespace ns3
@@ -308,6 +309,24 @@ public:
    */
   void SetIntervalOpt (bool intervalOpt);
 
+  /**
+   * \brief Get the last time a RA has been sent.
+   * \returns the last RA send time
+   */
+  Time GetLastRaTxTime ();
+
+  /**
+   * \brief Set the last RA send time. It also decrements the initial Rtr Advertisements counter.
+   * \param the last RA send time
+   */
+  void SetLastRaTxTime (Time now);
+
+  /**
+   * \brief Checks if the interface is subject to the initial Rtr Advertisements rule.
+   * \returns true if the initial Rtr Advertisements counter is greater than zero.
+   */
+  bool IsInitialRtrAdv ();
+
 private:
 
   /**
@@ -418,6 +437,17 @@ private:
    * \brief Flag to add Advertisement Interval option in RA.
    */
   bool m_intervalOpt;
+
+  /**
+   * \brief Last RA send time.
+   */
+  Time m_lastSendTime;
+
+  /**
+   * \brief Number of fast announcement to do
+   */
+  uint8_t m_initialRtrAdvertisementsLeft;
+
 };
 
 } /* namespace ns3 */

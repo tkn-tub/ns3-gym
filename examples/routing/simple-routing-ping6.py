@@ -70,12 +70,14 @@ def main(argv):
     # Create networks and assign IPv6 Addresses
     print "Addressing"
     ipv6 = ns.internet.Ipv6AddressHelper();
-    ipv6.NewNetwork(ns.network.Ipv6Address("2001:1::"), ns.network.Ipv6Prefix(64));
+    ipv6.SetBase(ns.network.Ipv6Address("2001:1::"), ns.network.Ipv6Prefix(64));
     i1 = ipv6.Assign(d1);
-    i1.SetRouter(1, True);
-    ipv6.NewNetwork(ns.network.Ipv6Address("2001:2::"), ns.network.Ipv6Prefix(64));
+    i1.SetForwarding(1, True);
+    i1.SetDefaultRouteInAllNodes(1);
+    ipv6.SetBase(ns.network.Ipv6Address("2001:2::"), ns.network.Ipv6Prefix(64));
     i2 = ipv6.Assign(d2);
-    i2.SetRouter(0, True);
+    i2.SetForwarding(0, True);
+    i2.SetDefaultRouteInAllNodes(0);
 
     # Create a Ping6 application to send ICMPv6 echo request from n0 to n1 via r 
     print "Application"

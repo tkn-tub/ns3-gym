@@ -131,7 +131,7 @@ YansWifiPhy::GetTypeId (void)
                    MakeUintegerAccessor (&YansWifiPhy::GetNumberOfTransmitAntennas,
                                         &YansWifiPhy::SetNumberOfTransmitAntennas),
                    MakeUintegerChecker<uint32_t> ())
-    .AddAttribute ("Recievers", "The number of recievers.",
+    .AddAttribute ("Receivers", "The number of receivers.",
                    UintegerValue (1),
                    MakeUintegerAccessor (&YansWifiPhy::GetNumberOfReceiveAntennas,
                                         &YansWifiPhy::SetNumberOfReceiveAntennas),
@@ -506,7 +506,7 @@ YansWifiPhy::StartReceivePacket (Ptr<Packet> packet,
   NS_LOG_FUNCTION (this << packet << rxPowerDbm << txVector.GetMode()<< preamble);
   rxPowerDbm += m_rxGainDb;
   double rxPowerW = DbmToW (rxPowerDbm);
-  Time rxDuration = CalculateTxDuration (packet->GetSize (), txVector, preamble);
+  Time rxDuration = CalculateTxDuration (packet->GetSize (), txVector, preamble, GetFrequency());
   WifiMode txMode = txVector.GetMode();
   Time endRx = Simulator::Now () + rxDuration;
 
@@ -631,7 +631,7 @@ YansWifiPhy::SendPacket (Ptr<const Packet> packet, WifiTxVector txVector, WifiPr
       return;
     }
 
-  Time txDuration = CalculateTxDuration (packet->GetSize (), txVector, preamble);
+  Time txDuration = CalculateTxDuration (packet->GetSize (), txVector, preamble, GetFrequency());
   if (m_state->IsStateRx ())
     {
       m_endRxEvent.Cancel ();
@@ -1022,13 +1022,22 @@ void
 YansWifiPhy::Configure80211n (void)
 {
   NS_LOG_FUNCTION (this);
-  m_deviceRateSet.push_back (WifiPhy::GetDsssRate1Mbps ());
-  m_deviceRateSet.push_back (WifiPhy::GetDsssRate2Mbps ());
-  m_deviceRateSet.push_back (WifiPhy::GetDsssRate5_5Mbps ());
-  m_deviceRateSet.push_back (WifiPhy::GetErpOfdmRate6Mbps ());
-  m_deviceRateSet.push_back (WifiPhy::GetDsssRate11Mbps ());
-  m_deviceRateSet.push_back (WifiPhy::GetErpOfdmRate12Mbps ());
-  m_deviceRateSet.push_back (WifiPhy::GetErpOfdmRate24Mbps ());
+  if (m_channelStartingFrequency>=2400 && m_channelStartingFrequency<=2500) //@ 2.4 GHz
+    {
+      m_deviceRateSet.push_back (WifiPhy::GetDsssRate1Mbps ());
+      m_deviceRateSet.push_back (WifiPhy::GetDsssRate2Mbps ());
+      m_deviceRateSet.push_back (WifiPhy::GetDsssRate5_5Mbps ());
+      m_deviceRateSet.push_back (WifiPhy::GetErpOfdmRate6Mbps ());
+      m_deviceRateSet.push_back (WifiPhy::GetDsssRate11Mbps ());
+      m_deviceRateSet.push_back (WifiPhy::GetErpOfdmRate12Mbps ());
+      m_deviceRateSet.push_back (WifiPhy::GetErpOfdmRate24Mbps ());
+    }
+  if (m_channelStartingFrequency>=5000 && m_channelStartingFrequency<=6000) //@ 5 GHz
+    {
+      m_deviceRateSet.push_back (WifiPhy::GetOfdmRate6Mbps ());
+      m_deviceRateSet.push_back (WifiPhy::GetOfdmRate12Mbps ());
+      m_deviceRateSet.push_back (WifiPhy::GetOfdmRate24Mbps ());
+    }
   m_bssMembershipSelectorSet.push_back(HT_PHY);
   for (uint8_t i=0; i <8; i++)
     {

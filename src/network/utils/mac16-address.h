@@ -35,6 +35,8 @@ class Address;
  * \ingroup address
  *
  * This class can contain 16 bit addresses.
+ *
+ * \see attribute_Mac16Address
  */
 class Mac16Address
 {

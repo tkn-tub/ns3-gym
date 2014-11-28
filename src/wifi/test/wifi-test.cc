@@ -214,7 +214,6 @@ public:
 
 //-----------------------------------------------------------------------------
 /**
- * \internal
  * See \bugid{991}
  */
 class InterferenceHelperSequenceTest : public TestCase
@@ -352,7 +351,6 @@ InterferenceHelperSequenceTest::DoRun (void)
  * since that would require two successions of 0 backoff (one that generates the virtual collision and
  * one after the virtual collision).
  *
- * \internal
  * See \bugid{555}
  */
 

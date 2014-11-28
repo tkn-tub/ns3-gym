@@ -101,8 +101,6 @@ private:
    * \param packet the traced packet
    * \param ipv4 the IPv4 object for the traced packet
    * \param interface the IPv4 interface for the traced packet
-   *
-   * \internal
    */
   void TraceSink (Ptr<const Packet> packet, Ptr<Ipv4> ipv4, uint32_t interface);
 

@@ -180,13 +180,11 @@ public:
 
 private:
   /**
-   * \internal
    * \brief Container for pairs of Ipv4 smart pointer / Interface Index.
    */
   typedef std::vector<std::pair<Ptr<Ipv4>,uint32_t> > InterfaceVector;
 
   /**
-   * \internal
    * \brief List of IPv4 stack and interfaces index.
    */
   InterfaceVector m_interfaces;

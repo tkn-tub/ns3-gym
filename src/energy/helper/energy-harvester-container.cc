@@ -27,7 +27,9 @@
 namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("EnergyHarvesterContainer");
-    
+
+NS_OBJECT_ENSURE_REGISTERED (EnergyHarvesterContainer);
+
 TypeId
 EnergyHarvesterContainer::GetTypeId (void)
 {

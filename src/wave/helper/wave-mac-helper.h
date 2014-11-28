@@ -38,7 +38,6 @@ public:
   NqosWaveMacHelper (void);
 
   /**
-   * \internal
    * Destroy a NqosWaveMacHelper.
    */
   virtual ~NqosWaveMacHelper (void);
@@ -93,7 +92,6 @@ public:
   QosWaveMacHelper (void);
 
   /**
-   * \internal
    * Destroy a QosWaveMacHelper
    */
   virtual ~QosWaveMacHelper (void);

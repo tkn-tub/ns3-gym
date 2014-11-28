@@ -48,7 +48,6 @@ public:
   DsdvHelper ();
   ~DsdvHelper ();
   /**
-   * \internal
    * \returns pointer to clone of this DsdvHelper
    *
    * This method is mainly for internal use by the other helpers;

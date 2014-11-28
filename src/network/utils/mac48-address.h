@@ -37,6 +37,8 @@ class Address;
  * \brief an EUI-48 address
  *
  * This class can contain 48 bit IEEE addresses.
+ *
+ * \see attribute_Mac48Address
  */
 class Mac48Address
 {

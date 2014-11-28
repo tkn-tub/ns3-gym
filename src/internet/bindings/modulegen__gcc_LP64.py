@@ -2810,46 +2810,46 @@ def register_Ns3Ipv4RoutingHelper_methods(root_module, cls):
                    'ns3::Ptr< ns3::Ipv4RoutingProtocol >', 
                    [param('ns3::Ptr< ns3::Node >', 'node')], 
                    is_pure_virtual=True, is_const=True, is_virtual=True)
-    ## ipv4-routing-helper.h (module 'internet'): void ns3::Ipv4RoutingHelper::PrintNeighborCacheAllAt(ns3::Time printTime, ns3::Ptr<ns3::OutputStreamWrapper> stream) const [member function]
+    ## ipv4-routing-helper.h (module 'internet'): static void ns3::Ipv4RoutingHelper::PrintNeighborCacheAllAt(ns3::Time printTime, ns3::Ptr<ns3::OutputStreamWrapper> stream) [member function]
     cls.add_method('PrintNeighborCacheAllAt', 
                    'void', 
                    [param('ns3::Time', 'printTime'), param('ns3::Ptr< ns3::OutputStreamWrapper >', 'stream')], 
-                   is_const=True)
-    ## ipv4-routing-helper.h (module 'internet'): void ns3::Ipv4RoutingHelper::PrintNeighborCacheAllEvery(ns3::Time printInterval, ns3::Ptr<ns3::OutputStreamWrapper> stream) const [member function]
+                   is_static=True)
+    ## ipv4-routing-helper.h (module 'internet'): static void ns3::Ipv4RoutingHelper::PrintNeighborCacheAllEvery(ns3::Time printInterval, ns3::Ptr<ns3::OutputStreamWrapper> stream) [member function]
     cls.add_method('PrintNeighborCacheAllEvery', 
                    'void', 
                    [param('ns3::Time', 'printInterval'), param('ns3::Ptr< ns3::OutputStreamWrapper >', 'stream')], 
-                   is_const=True)
-    ## ipv4-routing-helper.h (module 'internet'): void ns3::Ipv4RoutingHelper::PrintNeighborCacheAt(ns3::Time printTime, ns3::Ptr<ns3::Node> node, ns3::Ptr<ns3::OutputStreamWrapper> stream) const [member function]
+                   is_static=True)
+    ## ipv4-routing-helper.h (module 'internet'): static void ns3::Ipv4RoutingHelper::PrintNeighborCacheAt(ns3::Time printTime, ns3::Ptr<ns3::Node> node, ns3::Ptr<ns3::OutputStreamWrapper> stream) [member function]
     cls.add_method('PrintNeighborCacheAt', 
                    'void', 
                    [param('ns3::Time', 'printTime'), param('ns3::Ptr< ns3::Node >', 'node'), param('ns3::Ptr< ns3::OutputStreamWrapper >', 'stream')], 
-                   is_const=True)
-    ## ipv4-routing-helper.h (module 'internet'): void ns3::Ipv4RoutingHelper::PrintNeighborCacheEvery(ns3::Time printInterval, ns3::Ptr<ns3::Node> node, ns3::Ptr<ns3::OutputStreamWrapper> stream) const [member function]
+                   is_static=True)
+    ## ipv4-routing-helper.h (module 'internet'): static void ns3::Ipv4RoutingHelper::PrintNeighborCacheEvery(ns3::Time printInterval, ns3::Ptr<ns3::Node> node, ns3::Ptr<ns3::OutputStreamWrapper> stream) [member function]
     cls.add_method('PrintNeighborCacheEvery', 
                    'void', 
                    [param('ns3::Time', 'printInterval'), param('ns3::Ptr< ns3::Node >', 'node'), param('ns3::Ptr< ns3::OutputStreamWrapper >', 'stream')], 
-                   is_const=True)
-    ## ipv4-routing-helper.h (module 'internet'): void ns3::Ipv4RoutingHelper::PrintRoutingTableAllAt(ns3::Time printTime, ns3::Ptr<ns3::OutputStreamWrapper> stream) const [member function]
+                   is_static=True)
+    ## ipv4-routing-helper.h (module 'internet'): static void ns3::Ipv4RoutingHelper::PrintRoutingTableAllAt(ns3::Time printTime, ns3::Ptr<ns3::OutputStreamWrapper> stream) [member function]
     cls.add_method('PrintRoutingTableAllAt', 
                    'void', 
                    [param('ns3::Time', 'printTime'), param('ns3::Ptr< ns3::OutputStreamWrapper >', 'stream')], 
-                   is_const=True)
-    ## ipv4-routing-helper.h (module 'internet'): void ns3::Ipv4RoutingHelper::PrintRoutingTableAllEvery(ns3::Time printInterval, ns3::Ptr<ns3::OutputStreamWrapper> stream) const [member function]
+                   is_static=True)
+    ## ipv4-routing-helper.h (module 'internet'): static void ns3::Ipv4RoutingHelper::PrintRoutingTableAllEvery(ns3::Time printInterval, ns3::Ptr<ns3::OutputStreamWrapper> stream) [member function]
     cls.add_method('PrintRoutingTableAllEvery', 
                    'void', 
                    [param('ns3::Time', 'printInterval'), param('ns3::Ptr< ns3::OutputStreamWrapper >', 'stream')], 
-                   is_const=True)
-    ## ipv4-routing-helper.h (module 'internet'): void ns3::Ipv4RoutingHelper::PrintRoutingTableAt(ns3::Time printTime, ns3::Ptr<ns3::Node> node, ns3::Ptr<ns3::OutputStreamWrapper> stream) const [member function]
+                   is_static=True)
+    ## ipv4-routing-helper.h (module 'internet'): static void ns3::Ipv4RoutingHelper::PrintRoutingTableAt(ns3::Time printTime, ns3::Ptr<ns3::Node> node, ns3::Ptr<ns3::OutputStreamWrapper> stream) [member function]
     cls.add_method('PrintRoutingTableAt', 
                    'void', 
                    [param('ns3::Time', 'printTime'), param('ns3::Ptr< ns3::Node >', 'node'), param('ns3::Ptr< ns3::OutputStreamWrapper >', 'stream')], 
-                   is_const=True)
-    ## ipv4-routing-helper.h (module 'internet'): void ns3::Ipv4RoutingHelper::PrintRoutingTableEvery(ns3::Time printInterval, ns3::Ptr<ns3::Node> node, ns3::Ptr<ns3::OutputStreamWrapper> stream) const [member function]
+                   is_static=True)
+    ## ipv4-routing-helper.h (module 'internet'): static void ns3::Ipv4RoutingHelper::PrintRoutingTableEvery(ns3::Time printInterval, ns3::Ptr<ns3::Node> node, ns3::Ptr<ns3::OutputStreamWrapper> stream) [member function]
     cls.add_method('PrintRoutingTableEvery', 
                    'void', 
                    [param('ns3::Time', 'printInterval'), param('ns3::Ptr< ns3::Node >', 'node'), param('ns3::Ptr< ns3::OutputStreamWrapper >', 'stream')], 
-                   is_const=True)
+                   is_static=True)
     return
 
 def register_Ns3Ipv4RoutingTableEntry_methods(root_module, cls):
@@ -3264,11 +3264,6 @@ def register_Ns3Ipv6AddressHelper_methods(root_module, cls):
     cls.add_method('NewAddress', 
                    'ns3::Ipv6Address', 
                    [])
-    ## ipv6-address-helper.h (module 'internet'): void ns3::Ipv6AddressHelper::NewNetwork(ns3::Ipv6Address network, ns3::Ipv6Prefix prefix) [member function]
-    cls.add_method('NewNetwork', 
-                   'void', 
-                   [param('ns3::Ipv6Address', 'network'), param('ns3::Ipv6Prefix', 'prefix')], 
-                   deprecated=True)
     ## ipv6-address-helper.h (module 'internet'): void ns3::Ipv6AddressHelper::NewNetwork() [member function]
     cls.add_method('NewNetwork', 
                    'void', 
@@ -3409,11 +3404,6 @@ def register_Ns3Ipv6InterfaceContainer_methods(root_module, cls):
     cls.add_method('SetForwarding', 
                    'void', 
                    [param('uint32_t', 'i'), param('bool', 'state')])
-    ## ipv6-interface-container.h (module 'internet'): void ns3::Ipv6InterfaceContainer::SetRouter(uint32_t i, bool router) [member function]
-    cls.add_method('SetRouter', 
-                   'void', 
-                   [param('uint32_t', 'i'), param('bool', 'router')], 
-                   deprecated=True)
     return
 
 def register_Ns3Ipv6MulticastRoutingTableEntry_methods(root_module, cls):
@@ -3534,46 +3524,46 @@ def register_Ns3Ipv6RoutingHelper_methods(root_module, cls):
                    'ns3::Ptr< ns3::Ipv6RoutingProtocol >', 
                    [param('ns3::Ptr< ns3::Node >', 'node')], 
                    is_pure_virtual=True, is_const=True, is_virtual=True)
-    ## ipv6-routing-helper.h (module 'internet'): void ns3::Ipv6RoutingHelper::PrintNeighborCacheAllAt(ns3::Time printTime, ns3::Ptr<ns3::OutputStreamWrapper> stream) const [member function]
+    ## ipv6-routing-helper.h (module 'internet'): static void ns3::Ipv6RoutingHelper::PrintNeighborCacheAllAt(ns3::Time printTime, ns3::Ptr<ns3::OutputStreamWrapper> stream) [member function]
     cls.add_method('PrintNeighborCacheAllAt', 
                    'void', 
                    [param('ns3::Time', 'printTime'), param('ns3::Ptr< ns3::OutputStreamWrapper >', 'stream')], 
-                   is_const=True)
-    ## ipv6-routing-helper.h (module 'internet'): void ns3::Ipv6RoutingHelper::PrintNeighborCacheAllEvery(ns3::Time printInterval, ns3::Ptr<ns3::OutputStreamWrapper> stream) const [member function]
+                   is_static=True)
+    ## ipv6-routing-helper.h (module 'internet'): static void ns3::Ipv6RoutingHelper::PrintNeighborCacheAllEvery(ns3::Time printInterval, ns3::Ptr<ns3::OutputStreamWrapper> stream) [member function]
     cls.add_method('PrintNeighborCacheAllEvery', 
                    'void', 
                    [param('ns3::Time', 'printInterval'), param('ns3::Ptr< ns3::OutputStreamWrapper >', 'stream')], 
-                   is_const=True)
-    ## ipv6-routing-helper.h (module 'internet'): void ns3::Ipv6RoutingHelper::PrintNeighborCacheAt(ns3::Time printTime, ns3::Ptr<ns3::Node> node, ns3::Ptr<ns3::OutputStreamWrapper> stream) const [member function]
+                   is_static=True)
+    ## ipv6-routing-helper.h (module 'internet'): static void ns3::Ipv6RoutingHelper::PrintNeighborCacheAt(ns3::Time printTime, ns3::Ptr<ns3::Node> node, ns3::Ptr<ns3::OutputStreamWrapper> stream) [member function]
     cls.add_method('PrintNeighborCacheAt', 
                    'void', 
                    [param('ns3::Time', 'printTime'), param('ns3::Ptr< ns3::Node >', 'node'), param('ns3::Ptr< ns3::OutputStreamWrapper >', 'stream')], 
-                   is_const=True)
-    ## ipv6-routing-helper.h (module 'internet'): void ns3::Ipv6RoutingHelper::PrintNeighborCacheEvery(ns3::Time printInterval, ns3::Ptr<ns3::Node> node, ns3::Ptr<ns3::OutputStreamWrapper> stream) const [member function]
+                   is_static=True)
+    ## ipv6-routing-helper.h (module 'internet'): static void ns3::Ipv6RoutingHelper::PrintNeighborCacheEvery(ns3::Time printInterval, ns3::Ptr<ns3::Node> node, ns3::Ptr<ns3::OutputStreamWrapper> stream) [member function]
     cls.add_method('PrintNeighborCacheEvery', 
                    'void', 
                    [param('ns3::Time', 'printInterval'), param('ns3::Ptr< ns3::Node >', 'node'), param('ns3::Ptr< ns3::OutputStreamWrapper >', 'stream')], 
-                   is_const=True)
-    ## ipv6-routing-helper.h (module 'internet'): void ns3::Ipv6RoutingHelper::PrintRoutingTableAllAt(ns3::Time printTime, ns3::Ptr<ns3::OutputStreamWrapper> stream) const [member function]
+                   is_static=True)
+    ## ipv6-routing-helper.h (module 'internet'): static void ns3::Ipv6RoutingHelper::PrintRoutingTableAllAt(ns3::Time printTime, ns3::Ptr<ns3::OutputStreamWrapper> stream) [member function]
     cls.add_method('PrintRoutingTableAllAt', 
                    'void', 
                    [param('ns3::Time', 'printTime'), param('ns3::Ptr< ns3::OutputStreamWrapper >', 'stream')], 
-                   is_const=True)
-    ## ipv6-routing-helper.h (module 'internet'): void ns3::Ipv6RoutingHelper::PrintRoutingTableAllEvery(ns3::Time printInterval, ns3::Ptr<ns3::OutputStreamWrapper> stream) const [member function]
+                   is_static=True)
+    ## ipv6-routing-helper.h (module 'internet'): static void ns3::Ipv6RoutingHelper::PrintRoutingTableAllEvery(ns3::Time printInterval, ns3::Ptr<ns3::OutputStreamWrapper> stream) [member function]
     cls.add_method('PrintRoutingTableAllEvery', 
                    'void', 
                    [param('ns3::Time', 'printInterval'), param('ns3::Ptr< ns3::OutputStreamWrapper >', 'stream')], 
-                   is_const=True)
-    ## ipv6-routing-helper.h (module 'internet'): void ns3::Ipv6RoutingHelper::PrintRoutingTableAt(ns3::Time printTime, ns3::Ptr<ns3::Node> node, ns3::Ptr<ns3::OutputStreamWrapper> stream) const [member function]
+                   is_static=True)
+    ## ipv6-routing-helper.h (module 'internet'): static void ns3::Ipv6RoutingHelper::PrintRoutingTableAt(ns3::Time printTime, ns3::Ptr<ns3::Node> node, ns3::Ptr<ns3::OutputStreamWrapper> stream) [member function]
     cls.add_method('PrintRoutingTableAt', 
                    'void', 
                    [param('ns3::Time', 'printTime'), param('ns3::Ptr< ns3::Node >', 'node'), param('ns3::Ptr< ns3::OutputStreamWrapper >', 'stream')], 
-                   is_const=True)
-    ## ipv6-routing-helper.h (module 'internet'): void ns3::Ipv6RoutingHelper::PrintRoutingTableEvery(ns3::Time printInterval, ns3::Ptr<ns3::Node> node, ns3::Ptr<ns3::OutputStreamWrapper> stream) const [member function]
+                   is_static=True)
+    ## ipv6-routing-helper.h (module 'internet'): static void ns3::Ipv6RoutingHelper::PrintRoutingTableEvery(ns3::Time printInterval, ns3::Ptr<ns3::Node> node, ns3::Ptr<ns3::OutputStreamWrapper> stream) [member function]
     cls.add_method('PrintRoutingTableEvery', 
                    'void', 
                    [param('ns3::Time', 'printInterval'), param('ns3::Ptr< ns3::Node >', 'node'), param('ns3::Ptr< ns3::OutputStreamWrapper >', 'stream')], 
-                   is_const=True)
+                   is_static=True)
     return
 
 def register_Ns3Ipv6RoutingTableEntry_methods(root_module, cls):
@@ -5198,6 +5188,11 @@ def register_Ns3TypeId_methods(root_module, cls):
                    'uint32_t', 
                    [], 
                    is_static=True)
+    ## type-id.h (module 'core'): std::size_t ns3::TypeId::GetSize() const [member function]
+    cls.add_method('GetSize', 
+                   'std::size_t', 
+                   [], 
+                   is_const=True)
     ## type-id.h (module 'core'): ns3::TypeId::TraceSourceInformation ns3::TypeId::GetTraceSource(uint32_t i) const [member function]
     cls.add_method('GetTraceSource', 
                    'ns3::TypeId::TraceSourceInformation', 
@@ -5274,6 +5269,10 @@ def register_Ns3TypeId_methods(root_module, cls):
     cls.add_method('SetParent', 
                    'ns3::TypeId', 
                    [param('ns3::TypeId', 'tid')])
+    ## type-id.h (module 'core'): ns3::TypeId ns3::TypeId::SetSize(std::size_t size) [member function]
+    cls.add_method('SetSize', 
+                   'ns3::TypeId', 
+                   [param('std::size_t', 'size')])
     ## type-id.h (module 'core'): void ns3::TypeId::SetUid(uint16_t tid) [member function]
     cls.add_method('SetUid', 
                    'void', 
@@ -12542,11 +12541,6 @@ def register_Ns3Ipv4MulticastRoute_methods(root_module, cls):
                    'ns3::Ipv4Address', 
                    [], 
                    is_const=True)
-    ## ipv4-route.h (module 'internet'): uint32_t ns3::Ipv4MulticastRoute::GetOutputTtl(uint32_t oif) [member function]
-    cls.add_method('GetOutputTtl', 
-                   'uint32_t', 
-                   [param('uint32_t', 'oif')], 
-                   deprecated=True)
     ## ipv4-route.h (module 'internet'): std::map<unsigned int, unsigned int, std::less<unsigned int>, std::allocator<std::pair<unsigned int const, unsigned int> > > ns3::Ipv4MulticastRoute::GetOutputTtlMap() const [member function]
     cls.add_method('GetOutputTtlMap', 
                    'std::map< unsigned int, unsigned int >', 
@@ -14051,11 +14045,6 @@ def register_Ns3Ipv6MulticastRoute_methods(root_module, cls):
                    'ns3::Ipv6Address', 
                    [], 
                    is_const=True)
-    ## ipv6-route.h (module 'internet'): uint32_t ns3::Ipv6MulticastRoute::GetOutputTtl(uint32_t oif) [member function]
-    cls.add_method('GetOutputTtl', 
-                   'uint32_t', 
-                   [param('uint32_t', 'oif')], 
-                   deprecated=True)
     ## ipv6-route.h (module 'internet'): std::map<unsigned int, unsigned int, std::less<unsigned int>, std::allocator<std::pair<unsigned int const, unsigned int> > > ns3::Ipv6MulticastRoute::GetOutputTtlMap() const [member function]
     cls.add_method('GetOutputTtlMap', 
                    'std::map< unsigned int, unsigned int >', 
@@ -15190,11 +15179,6 @@ def register_Ns3Packet_methods(root_module, cls):
                    'uint64_t', 
                    [], 
                    is_const=True)
-    ## packet.h (module 'network'): uint8_t const * ns3::Packet::PeekData() const [member function]
-    cls.add_method('PeekData', 
-                   'uint8_t const *', 
-                   [], 
-                   deprecated=True, is_const=True)
     ## packet.h (module 'network'): uint32_t ns3::Packet::PeekHeader(ns3::Header & header) const [member function]
     cls.add_method('PeekHeader', 
                    'uint32_t', 

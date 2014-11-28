@@ -28,11 +28,28 @@ namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("RngSeedManager");
 
+/**
+ * \relates RngSeedManager
+ * The next random number generator stream number to use
+ * for automatic assignment.
+ */
 static uint64_t g_nextStreamIndex = 0;
+/**
+ * \relates RngSeedManager
+ * The random number generator seed number global value.
+ *
+ * This is accessible as "--RngSeed" from CommandLine.
+ */
 static ns3::GlobalValue g_rngSeed ("RngSeed", 
                                    "The global seed of all rng streams",
                                    ns3::IntegerValue(1),
                                    ns3::MakeIntegerChecker<uint32_t> ());
+/**
+ * \relates RngSeedManager
+ * The random number generator run number global value.
+ *
+ * This is accessible as "--RngRun" from CommandLine.
+ */
 static ns3::GlobalValue g_rngRun ("RngRun", 
                                   "The run number used to modify the global seed",
                                   ns3::IntegerValue (1),

@@ -37,6 +37,8 @@ class Address;
  * \brief an EUI-64 address
  *
  * This class can contain 64 bit IEEE addresses.
+ *
+ * \see attribute_Mac64Address
  */
 class Mac64Address
 {

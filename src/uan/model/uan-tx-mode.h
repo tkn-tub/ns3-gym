@@ -251,6 +251,8 @@ private:
  * \ingroup uan
  *
  * Container for UanTxModes.
+ *
+ * \see attribute_UanModesList
  */
 class UanModesList
 {

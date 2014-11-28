@@ -75,8 +75,6 @@ protected:
  * @brief Return true if this synchronizer is actually synchronizing to a
  * realtime clock.  The simulator sometimes needs to know this.
  *
- * @internal
- *
  * Subclasses are expected to implement this method to tell the outside world
  * whether or not they are synchronizing to a realtime clock.
  *
@@ -87,8 +85,6 @@ protected:
 /**
  * @brief Retrieve the value of the origin of the underlying normalized wall
  * clock time in nanosecond units.
- *
- * @internal
  *
  * Subclasses are expected to implement this method to do the actual
  * real-time-clock-specific work of getting the current time.
@@ -102,8 +98,6 @@ protected:
 /**
  * @brief Establish a correspondence between a simulation time and a 
  * wall-clock (real) time.
- *
- * @internal
  *
  * There are three timelines involved here:  the simulation time, the 
  * (absolute) wall-clock time and the (relative) synchronizer real time.
@@ -130,8 +124,6 @@ protected:
  * @brief Declaration of method used to retrieve drift between the real time
  * clock used to synchronize the simulation and the current simulation time.
  *
- * @internal
- *
  * @param ns Simulation timestep from the simulator normalized to nanosecond 
  * steps.
  * @returns Drift in nanosecond units.
@@ -144,8 +136,6 @@ protected:
 /**
  * @brief Wait until the real time is in sync with the specified simulation
  * time.
- *
- * @internal
  *
  * This is where the real work of synchronization is done.  The Time passed
  * in as a parameter is the simulation time.  The job of Synchronize is to

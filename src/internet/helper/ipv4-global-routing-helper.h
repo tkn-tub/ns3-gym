@@ -44,7 +44,6 @@ public:
   Ipv4GlobalRoutingHelper (const Ipv4GlobalRoutingHelper &);
 
   /**
-   * \internal
    * \returns pointer to clone of this Ipv4GlobalRoutingHelper
    *
    * This method is mainly for internal use by the other helpers;
@@ -85,7 +84,6 @@ public:
   static void RecomputeRoutingTables (void);
 private:
   /**
-   * \internal
    * \brief Assignment operator declared private and not implemented to disallow
    * assignment and prevent the compiler from happily inserting its own.
    * \return

@@ -25,11 +25,9 @@
 
 namespace ns3 {
 
+//  Additional docs for class DoubleValue:
 /**
- * \ingroup attribute
- *
- * \class ns3::StringValue
- * \brief hold variables of type string
+ * Hold variables of type string
  *
  * This class can be used to hold variables of type string,
  * that is, either char * or std::string.

@@ -27,16 +27,9 @@
 
 namespace ns3 {
 
+//  Additional docs for class DoubleValue:
 /**
- * \ingroup attribute
- *
- * \class ns3::UintegerValue
- * \brief Hold an unsigned integer type
- *
- * \anchor uint8_t
- * \anchor uint16_t
- * \anchor uint32_t
- * \anchor uint64_t
+ * Hold an unsigned integer type.
  *
  * This class can be used to hold variables of unsigned integer
  * type such as uint8_t, uint16_t, uint32_t, uint64_t, or,
@@ -49,9 +42,28 @@ ATTRIBUTE_ACCESSOR_DEFINE (Uinteger);
 template <typename T>
 Ptr<const AttributeChecker> MakeUintegerChecker (void);
 
+/**
+ * Make a checker with a minimum value.
+ *
+ * The minimum value is included in the allowed range.
+ *
+ * \param [in] min The minimum value.
+ * \returns The AttributeChecker.
+ * \see AttributeChecker
+ */
 template <typename T>
 Ptr<const AttributeChecker> MakeUintegerChecker (uint64_t min);
 
+/**
+ * Make a checker with a minimum and a maximum value.
+ *
+ * The minimum and maximum values are included in the allowed range.
+ *
+ * \param [in] min The minimum value.
+ * \param [in] max The maximum value.
+ * \returns The AttributeChecker.
+ * \see AttributeChecker
+ */
 template <typename T>
 Ptr<const AttributeChecker> MakeUintegerChecker (uint64_t min, uint64_t max);
 

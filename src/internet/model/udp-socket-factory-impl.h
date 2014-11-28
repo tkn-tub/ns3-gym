@@ -46,7 +46,6 @@ class UdpL4Protocol;
 /**
  * \ingroup udp
  * \brief Object to create UDP socket instances 
- * \internal
  *
  * This class implements the API for creating UDP sockets.
  * It is a socket factory (deriving from class SocketFactory).
@@ -66,7 +65,6 @@ public:
   /**
    * \brief Implements a method to create a Udp-based socket and return
    * a base class smart pointer to the socket.
-   * \internal
    *
    * \return smart pointer to Socket
    */

@@ -398,8 +398,6 @@ public:
 
 protected:
   /**
-   * \internal
-   *
    * However the controller is implemented, this method is to
    * be used to pass a message on to a switch.
    *
@@ -410,8 +408,6 @@ protected:
   virtual void SendToSwitch (Ptr<OpenFlowSwitchNetDevice> swtch, void * msg, size_t length);
 
   /**
-   * \internal
-   *
    * Construct flow data from a matching key to build a flow
    * entry for adding, modifying, or deleting a flow.
    *
@@ -427,8 +423,6 @@ protected:
   ofp_flow_mod* BuildFlow (sw_flow_key key, uint32_t buffer_id, uint16_t command, void* acts, size_t actions_len, int idle_timeout, int hard_timeout);
 
   /**
-   * \internal
-   *
    * Get the packet type on the buffer, which can then be used
    * to determine how to handle the buffer.
    *

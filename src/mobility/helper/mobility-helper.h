@@ -49,7 +49,6 @@ public:
   MobilityHelper ();
 
   /**
-   * \internal
    * Destroy a Mobility Helper
    */
   ~MobilityHelper ();
@@ -262,9 +261,7 @@ public:
   int64_t AssignStreams (NodeContainer c, int64_t stream);
 
 private:
-  /**
-   * \internal
-   */
+
   static void CourseChanged (Ptr<OutputStreamWrapper> stream, Ptr<const MobilityModel> mobility);
   std::vector<Ptr<MobilityModel> > m_mobilityStack;
   ObjectFactory m_mobility;

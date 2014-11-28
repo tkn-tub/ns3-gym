@@ -49,7 +49,6 @@ public:
   Ipv4NixVectorHelper (const Ipv4NixVectorHelper &);
 
   /**
-   * \internal
    * \returns pointer to clone of this Ipv4NixVectorHelper 
    * 
    * This method is mainly for internal use by the other helpers;
@@ -67,7 +66,6 @@ public:
 
 private:
   /**
-   * \internal
    * \brief Assignment operator declared private and not implemented to disallow
    * assignment and prevent the compiler from happily inserting its own.
    */

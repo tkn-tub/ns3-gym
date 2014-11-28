@@ -25,6 +25,8 @@
 
 namespace ns3 {
 
+NS_OBJECT_ENSURE_REGISTERED (EnergySourceContainer);
+
 TypeId
 EnergySourceContainer::GetTypeId (void)
 {

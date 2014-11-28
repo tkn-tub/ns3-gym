@@ -413,7 +413,7 @@ You should see the contents of the pcap file displayed:
 
   reading from file second-0-0.pcap, link-type PPP (PPP)
   2.000000 IP 10.1.1.1.49153 > 10.1.2.4.9: UDP, length 1024
-  2.007602 IP 10.1.2.4.9 > 10.1.1.1.49153: UDP, length 1024
+  2.017607 IP 10.1.2.4.9 > 10.1.1.1.49153: UDP, length 1024
 
 The first line of the dump indicates that the link type is PPP (point-to-point)
 which we expect.  You then see the echo packet leaving node zero via the 
@@ -433,7 +433,7 @@ link:
 
   reading from file second-1-0.pcap, link-type PPP (PPP)
   2.003686 IP 10.1.1.1.49153 > 10.1.2.4.9: UDP, length 1024
-  2.003915 IP 10.1.2.4.9 > 10.1.1.1.49153: UDP, length 1024
+  2.013921 IP 10.1.2.4.9 > 10.1.1.1.49153: UDP, length 1024
 
 Here we see that the link type is also PPP as we would expect.  You see the
 packet from IP address 10.1.1.1 (that was sent at 2.000000 seconds) headed 
@@ -453,12 +453,12 @@ You should now see the promiscuous dump of node two, device zero:
 .. sourcecode:: text
 
   reading from file second-2-0.pcap, link-type EN10MB (Ethernet)
-  2.003696 arp who-has 10.1.2.4 (ff:ff:ff:ff:ff:ff) tell 10.1.2.1
-  2.003707 arp reply 10.1.2.4 is-at 00:00:00:00:00:06
-  2.003801 IP 10.1.1.1.49153 > 10.1.2.4.9: UDP, length 1024
-  2.003811 arp who-has 10.1.2.1 (ff:ff:ff:ff:ff:ff) tell 10.1.2.4
-  2.003822 arp reply 10.1.2.1 is-at 00:00:00:00:00:03
-  2.003915 IP 10.1.2.4.9 > 10.1.1.1.49153: UDP, length 1024
+  2.007698 ARP, Request who-has 10.1.2.4 (ff:ff:ff:ff:ff:ff) tell 10.1.2.1, length 50
+  2.007710 ARP, Reply 10.1.2.4 is-at 00:00:00:00:00:06, length 50
+  2.007803 IP 10.1.1.1.49153 > 10.1.2.4.9: UDP, length 1024
+  2.013815 ARP, Request who-has 10.1.2.1 (ff:ff:ff:ff:ff:ff) tell 10.1.2.4, length 50
+  2.013828 ARP, Reply 10.1.2.1 is-at 00:00:00:00:00:03, length 50
+  2.013921 IP 10.1.2.4.9 > 10.1.1.1.49153: UDP, length 1024
 
 As you can see, the link type is now "Ethernet".  Something new has appeared,
 though.  The bus network needs ``ARP``, the Address Resolution Protocol.
@@ -473,15 +473,15 @@ This exchange is seen in the following lines,
 
 .. sourcecode:: text
 
-  2.003696 arp who-has 10.1.2.4 (ff:ff:ff:ff:ff:ff) tell 10.1.2.1
-  2.003707 arp reply 10.1.2.4 is-at 00:00:00:00:00:06
+  2.007698 ARP, Request who-has 10.1.2.4 (ff:ff:ff:ff:ff:ff) tell 10.1.2.1, length 50
+  2.007710 ARP, Reply 10.1.2.4 is-at 00:00:00:00:00:06, length 50
 
 Then node one, device one goes ahead and sends the echo packet to the UDP echo
 server at IP address 10.1.2.4. 
 
 .. sourcecode:: text
 
-  2.003801 IP 10.1.1.1.49153 > 10.1.2.4.9: UDP, length 1024
+  2.007803 IP 10.1.1.1.49153 > 10.1.2.4.9: UDP, length 1024
 
 The server receives the echo request and turns the packet around trying to send
 it back to the source.  The server knows that this address is on another network
@@ -492,14 +492,14 @@ just like the first CSMA node had to do.
 
 .. sourcecode:: text
 
-  2.003811 arp who-has 10.1.2.1 (ff:ff:ff:ff:ff:ff) tell 10.1.2.4
-  2.003822 arp reply 10.1.2.1 is-at 00:00:00:00:00:03
+  2.013815 ARP, Request who-has 10.1.2.1 (ff:ff:ff:ff:ff:ff) tell 10.1.2.4, length 50
+  2.013828 ARP, Reply 10.1.2.1 is-at 00:00:00:00:00:03, length 50
 
 The server then sends the echo back to the forwarding node.
 
 .. sourcecode:: text
 
-  2.003915 IP 10.1.2.4.9 > 10.1.1.1.49153: UDP, length 1024
+  2.013921 IP 10.1.2.4.9 > 10.1.1.1.49153: UDP, length 1024
 
 Looking back at the rightmost node of the point-to-point link,
 
@@ -514,7 +514,7 @@ the last line of the trace dump.
 
   reading from file second-1-0.pcap, link-type PPP (PPP)
   2.003686 IP 10.1.1.1.49153 > 10.1.2.4.9: UDP, length 1024
-  2.003915 IP 10.1.2.4.9 > 10.1.1.1.49153: UDP, length 1024
+  2.013921 IP 10.1.2.4.9 > 10.1.1.1.49153: UDP, length 1024
 
 Lastly, you can look back at the node that originated the echo
 
@@ -528,7 +528,7 @@ and see that the echoed packet arrives back at the source at 2.007602 seconds,
 
   reading from file second-0-0.pcap, link-type PPP (PPP)
   2.000000 IP 10.1.1.1.49153 > 10.1.2.4.9: UDP, length 1024
-  2.007602 IP 10.1.2.4.9 > 10.1.1.1.49153: UDP, length 1024
+  2.017607 IP 10.1.2.4.9 > 10.1.1.1.49153: UDP, length 1024
 
 Finally, recall that we added the ability to control the number of CSMA devices
 in the simulation by command line argument.  You can change this argument in
@@ -547,9 +547,10 @@ You should now see,
   Waf: Entering directory `/home/craigdo/repos/ns-3-allinone/ns-3-dev/build'
   Waf: Leaving directory `/home/craigdo/repos/ns-3-allinone/ns-3-dev/build'
   'build' finished successfully (0.405s)
-  Sent 1024 bytes to 10.1.2.5
-  Received 1024 bytes from 10.1.1.1
-  Received 1024 bytes from 10.1.2.5
+  At time 2s client sent 1024 bytes to 10.1.2.5 port 9
+  At time 2.0118s server received 1024 bytes from 10.1.1.1 port 49153
+  At time 2.0118s server sent 1024 bytes to 10.1.1.1 port 49153
+  At time 2.02461s client received 1024 bytes from 10.1.2.5 port 9
 
 Notice that the echo server has now been relocated to the last of the CSMA
 nodes, which is 10.1.2.5 instead of the default case, 10.1.2.4.
@@ -621,9 +622,10 @@ you will see the following output:
   Waf: Entering directory `/home/craigdo/repos/ns-3-allinone/ns-3-dev/build'
   Waf: Leaving directory `/home/craigdo/repos/ns-3-allinone/ns-3-dev/build'
   'build' finished successfully (0.407s)
-  Sent 1024 bytes to 10.1.2.101
-  Received 1024 bytes from 10.1.1.1
-  Received 1024 bytes from 10.1.2.101
+  At time 2s client sent 1024 bytes to 10.1.2.101 port 9
+  At time 2.0068s server received 1024 bytes from 10.1.1.1 port 49153
+  At time 2.0068s server sent 1024 bytes to 10.1.1.1 port 49153
+  At time 2.01761s client received 1024 bytes from 10.1.2.101 port 9
 
 Note that the echo server is now located at 10.1.2.101 which corresponds to
 having 100 "extra" CSMA nodes with the echo server on the last one.  If you
@@ -655,8 +657,8 @@ entire CSMA network.
 .. sourcecode:: text
 
   reading from file second-100-0.pcap, link-type EN10MB (Ethernet)
-  2.003696 arp who-has 10.1.2.101 (ff:ff:ff:ff:ff:ff) tell 10.1.2.1
-  2.003811 arp who-has 10.1.2.1 (ff:ff:ff:ff:ff:ff) tell 10.1.2.101
+  2.006698 ARP, Request who-has 10.1.2.101 (ff:ff:ff:ff:ff:ff) tell 10.1.2.1, length 50
+  2.013815 ARP, Request who-has 10.1.2.1 (ff:ff:ff:ff:ff:ff) tell 10.1.2.101, length 50
 
 Now take a look at the ``tcpdump`` for ``second-101-0.pcap``.
 
@@ -669,12 +671,12 @@ You can now see that node 101 is really the participant in the echo exchange.
 .. sourcecode:: text
 
   reading from file second-101-0.pcap, link-type EN10MB (Ethernet)
-  2.003696 arp who-has 10.1.2.101 (ff:ff:ff:ff:ff:ff) tell 10.1.2.1
-  2.003696 arp reply 10.1.2.101 is-at 00:00:00:00:00:67
-  2.003801 IP 10.1.1.1.49153 > 10.1.2.101.9: UDP, length 1024
-  2.003801 arp who-has 10.1.2.1 (ff:ff:ff:ff:ff:ff) tell 10.1.2.101
-  2.003822 arp reply 10.1.2.1 is-at 00:00:00:00:00:03
-  2.003822 IP 10.1.2.101.9 > 10.1.1.1.49153: UDP, length 1024
+  2.006698 ARP, Request who-has 10.1.2.101 (ff:ff:ff:ff:ff:ff) tell 10.1.2.1, length 50
+  2.006698 ARP, Reply 10.1.2.101 is-at 00:00:00:00:00:67, length 50
+  2.006803 IP 10.1.1.1.49153 > 10.1.2.101.9: UDP, length 1024
+  2.013803 ARP, Request who-has 10.1.2.1 (ff:ff:ff:ff:ff:ff) tell 10.1.2.101, length 50
+  2.013828 ARP, Reply 10.1.2.1 is-at 00:00:00:00:00:03, length 50
+  2.013828 IP 10.1.2.101.9 > 10.1.1.1.49153: UDP, length 1024
 
 Models, Attributes and Reality
 ******************************
@@ -1183,7 +1185,7 @@ repository you would type,
 
 .. sourcecode:: bash
 
-  $ cp examples/third.cc scratch/mythird.cc
+  $ cp examples/tutorial/third.cc scratch/mythird.cc
   $ ./waf
   $ ./waf --run scratch/mythird
 
@@ -1195,9 +1197,10 @@ Again, since we have set up the UDP echo applications just as we did in the
   Waf: Entering directory `/home/craigdo/repos/ns-3-allinone/ns-3-dev/build'
   Waf: Leaving directory `/home/craigdo/repos/ns-3-allinone/ns-3-dev/build'
   'build' finished successfully (0.407s)
-  Sent 1024 bytes to 10.1.2.4
-  Received 1024 bytes from 10.1.3.3
-  Received 1024 bytes from 10.1.2.4
+  At time 2s client sent 1024 bytes to 10.1.2.4 port 9
+  At time 2.01796s server received 1024 bytes from 10.1.3.3 port 49153
+  At time 2.01796s server sent 1024 bytes to 10.1.3.3 port 49153
+  At time 2.03364s client received 1024 bytes from 10.1.2.4 port 9
 
 Recall that the first message, ``Sent 1024 bytes to 10.1.2.4``," is the 
 UDP echo client sending a packet to the server.  In this case, the client
@@ -1235,19 +1238,18 @@ You should see some wifi-looking contents you haven't seen here before:
 
   reading from file third-0-1.pcap, link-type IEEE802_11 (802.11)
   0.000025 Beacon (ns-3-ssid) [6.0* 9.0 12.0 18.0 24.0 36.0 48.0 54.0 Mbit] IBSS
-  0.000263 Assoc Request (ns-3-ssid) [6.0 9.0 12.0 18.0 24.0 36.0 48.0 54.0 Mbit]
-  0.000279 Acknowledgment RA:00:00:00:00:00:09 
-  0.000552 Assoc Request (ns-3-ssid) [6.0 9.0 12.0 18.0 24.0 36.0 48.0 54.0 Mbit]
-  0.000568 Acknowledgment RA:00:00:00:00:00:07 
-  0.000664 Assoc Response AID(0) :: Succesful
-  0.001001 Assoc Response AID(0) :: Succesful
-  0.001145 Acknowledgment RA:00:00:00:00:00:0a 
-  0.001233 Assoc Response AID(0) :: Succesful
-  0.001377 Acknowledgment RA:00:00:00:00:00:0a 
-  0.001597 Assoc Request (ns-3-ssid) [6.0 9.0 12.0 18.0 24.0 36.0 48.0 54.0 Mbit]
-  0.001613 Acknowledgment RA:00:00:00:00:00:08 
-  0.001691 Assoc Response AID(0) :: Succesful
-  0.001835 Acknowledgment RA:00:00:00:00:00:0a 
+  0.000308 Assoc Request (ns-3-ssid) [6.0 9.0 12.0 18.0 24.0 36.0 48.0 54.0 Mbit]
+  0.000324 Acknowledgment RA:00:00:00:00:00:08 
+  0.000402 Assoc Response AID(0) :: Successful
+  0.000546 Acknowledgment RA:00:00:00:00:00:0a 
+  0.000721 Assoc Request (ns-3-ssid) [6.0 9.0 12.0 18.0 24.0 36.0 48.0 54.0 Mbit]
+  0.000737 Acknowledgment RA:00:00:00:00:00:07 
+  0.000824 Assoc Response AID(0) :: Successful
+  0.000968 Acknowledgment RA:00:00:00:00:00:0a 
+  0.001134 Assoc Request (ns-3-ssid) [6.0 9.0 12.0 18.0 24.0 36.0 48.0 54.0 Mbit]
+  0.001150 Acknowledgment RA:00:00:00:00:00:09 
+  0.001273 Assoc Response AID(0) :: Successful
+  0.001417 Acknowledgment RA:00:00:00:00:00:0a 
   0.102400 Beacon (ns-3-ssid) [6.0* 9.0 12.0 18.0 24.0 36.0 48.0 54.0 Mbit] IBSS
   0.204800 Beacon (ns-3-ssid) [6.0* 9.0 12.0 18.0 24.0 36.0 48.0 54.0 Mbit] IBSS
   0.307200 Beacon (ns-3-ssid) [6.0* 9.0 12.0 18.0 24.0 36.0 48.0 54.0 Mbit] IBSS
@@ -1268,8 +1270,8 @@ Again, you should see some familiar looking contents:
 .. sourcecode:: text
 
   reading from file third-0-0.pcap, link-type PPP (PPP)
-  2.002160 IP 10.1.3.3.49153 > 10.1.2.4.9: UDP, length 1024
-  2.009767 IP 10.1.2.4.9 > 10.1.3.3.49153: UDP, length 1024
+  2.008151 IP 10.1.3.3.49153 > 10.1.2.4.9: UDP, length 1024
+  2.026758 IP 10.1.2.4.9 > 10.1.3.3.49153: UDP, length 1024
 
 This is the echo packet going from left to right (from Wifi to CSMA) and back
 again across the point-to-point link.
@@ -1285,8 +1287,8 @@ Again, you should see some familiar looking contents:
 .. sourcecode:: text
 
   reading from file third-1-0.pcap, link-type PPP (PPP)
-  2.005846 IP 10.1.3.3.49153 > 10.1.2.4.9: UDP, length 1024
-  2.006081 IP 10.1.2.4.9 > 10.1.3.3.49153: UDP, length 1024
+  2.011837 IP 10.1.3.3.49153 > 10.1.2.4.9: UDP, length 1024
+  2.023072 IP 10.1.2.4.9 > 10.1.3.3.49153: UDP, length 1024
 
 This is also the echo packet going from left to right (from Wifi to CSMA) and 
 back again across the point-to-point link with slightly different timings
@@ -1304,12 +1306,12 @@ You should see some familiar looking contents:
 .. sourcecode:: text
 
   reading from file third-1-1.pcap, link-type EN10MB (Ethernet)
-  2.005846 ARP, Request who-has 10.1.2.4 (ff:ff:ff:ff:ff:ff) tell 10.1.2.1, length 50
-  2.005870 ARP, Reply 10.1.2.4 is-at 00:00:00:00:00:06, length 50
-  2.005870 IP 10.1.3.3.49153 > 10.1.2.4.9: UDP, length 1024
-  2.005975 ARP, Request who-has 10.1.2.1 (ff:ff:ff:ff:ff:ff) tell 10.1.2.4, length 50
-  2.005975 ARP, Reply 10.1.2.1 is-at 00:00:00:00:00:03, length 50
-  2.006081 IP 10.1.2.4.9 > 10.1.3.3.49153: UDP, length 1024
+  2.017837 ARP, Request who-has 10.1.2.4 (ff:ff:ff:ff:ff:ff) tell 10.1.2.1, length 50
+  2.017861 ARP, Reply 10.1.2.4 is-at 00:00:00:00:00:06, length 50
+  2.017861 IP 10.1.3.3.49153 > 10.1.2.4.9: UDP, length 1024
+  2.022966 ARP, Request who-has 10.1.2.1 (ff:ff:ff:ff:ff:ff) tell 10.1.2.4, length 50
+  2.022966 ARP, Reply 10.1.2.1 is-at 00:00:00:00:00:03, length 50
+  2.023072 IP 10.1.2.4.9 > 10.1.3.3.49153: UDP, length 1024
 
 This should be easily understood.  If you've forgotten, go back and look at
 the discussion in ``second.cc``.  This is the same sequence.
@@ -1385,37 +1387,39 @@ they happen.
 
 .. sourcecode:: text
 
-  Build finished successfully (00:00:01)
+  'build' finished successfully (5.989s)
   /NodeList/7/$ns3::MobilityModel/CourseChange x = 10, y = 0
-  /NodeList/7/$ns3::MobilityModel/CourseChange x = 9.41539, y = -0.811313
-  /NodeList/7/$ns3::MobilityModel/CourseChange x = 8.46199, y = -1.11303
-  /NodeList/7/$ns3::MobilityModel/CourseChange x = 7.52738, y = -1.46869
-  /NodeList/7/$ns3::MobilityModel/CourseChange x = 6.67099, y = -1.98503
-  /NodeList/7/$ns3::MobilityModel/CourseChange x = 5.6835, y = -2.14268
-  /NodeList/7/$ns3::MobilityModel/CourseChange x = 4.70932, y = -1.91689
-  Sent 1024 bytes to 10.1.2.4
-  Received 1024 bytes from 10.1.3.3
-  Received 1024 bytes from 10.1.2.4
-  /NodeList/7/$ns3::MobilityModel/CourseChange x = 5.53175, y = -2.48576
-  /NodeList/7/$ns3::MobilityModel/CourseChange x = 4.58021, y = -2.17821
-  /NodeList/7/$ns3::MobilityModel/CourseChange x = 4.18915, y = -1.25785
-  /NodeList/7/$ns3::MobilityModel/CourseChange x = 4.7572, y = -0.434856
-  /NodeList/7/$ns3::MobilityModel/CourseChange x = 4.62404, y = 0.556238
-  /NodeList/7/$ns3::MobilityModel/CourseChange x = 4.74127, y = 1.54934
-  /NodeList/7/$ns3::MobilityModel/CourseChange x = 5.73934, y = 1.48729
-  /NodeList/7/$ns3::MobilityModel/CourseChange x = 6.18521, y = 0.59219
-  /NodeList/7/$ns3::MobilityModel/CourseChange x = 6.58121, y = 1.51044
-  /NodeList/7/$ns3::MobilityModel/CourseChange x = 7.27897, y = 2.22677
-  /NodeList/7/$ns3::MobilityModel/CourseChange x = 6.42888, y = 1.70014
-  /NodeList/7/$ns3::MobilityModel/CourseChange x = 7.40519, y = 1.91654
-  /NodeList/7/$ns3::MobilityModel/CourseChange x = 6.51981, y = 1.45166
-  /NodeList/7/$ns3::MobilityModel/CourseChange x = 7.34588, y = 2.01523
-  /NodeList/7/$ns3::MobilityModel/CourseChange x = 7.81046, y = 2.90077
-  /NodeList/7/$ns3::MobilityModel/CourseChange x = 6.89186, y = 3.29596
-  /NodeList/7/$ns3::MobilityModel/CourseChange x = 7.46617, y = 2.47732
-  /NodeList/7/$ns3::MobilityModel/CourseChange x = 7.05492, y = 1.56579
-  /NodeList/7/$ns3::MobilityModel/CourseChange x = 8.00393, y = 1.25054
-  /NodeList/7/$ns3::MobilityModel/CourseChange x = 7.00968, y = 1.35768
-  /NodeList/7/$ns3::MobilityModel/CourseChange x = 7.33503, y = 2.30328
-  /NodeList/7/$ns3::MobilityModel/CourseChange x = 7.18682, y = 3.29223
-  /NodeList/7/$ns3::MobilityModel/CourseChange x = 7.96865, y = 2.66873
+  /NodeList/7/$ns3::MobilityModel/CourseChange x = 10.3841, y = 0.923277
+  /NodeList/7/$ns3::MobilityModel/CourseChange x = 10.2049, y = 1.90708
+  /NodeList/7/$ns3::MobilityModel/CourseChange x = 10.8136, y = 1.11368
+  /NodeList/7/$ns3::MobilityModel/CourseChange x = 10.8452, y = 2.11318
+  /NodeList/7/$ns3::MobilityModel/CourseChange x = 10.9797, y = 3.10409
+  At time 2s client sent 1024 bytes to 10.1.2.4 port 9
+  At time 2.01796s server received 1024 bytes from 10.1.3.3 port 49153
+  At time 2.01796s server sent 1024 bytes to 10.1.3.3 port 49153
+  At time 2.03364s client received 1024 bytes from 10.1.2.4 port 9
+  /NodeList/7/$ns3::MobilityModel/CourseChange x = 11.3273, y = 4.04175
+  /NodeList/7/$ns3::MobilityModel/CourseChange x = 12.013, y = 4.76955
+  /NodeList/7/$ns3::MobilityModel/CourseChange x = 12.4317, y = 5.67771
+  /NodeList/7/$ns3::MobilityModel/CourseChange x = 11.4607, y = 5.91681
+  /NodeList/7/$ns3::MobilityModel/CourseChange x = 12.0155, y = 6.74878
+  /NodeList/7/$ns3::MobilityModel/CourseChange x = 13.0076, y = 6.62336
+  /NodeList/7/$ns3::MobilityModel/CourseChange x = 12.6285, y = 5.698
+  /NodeList/7/$ns3::MobilityModel/CourseChange x = 13.32, y = 4.97559
+  /NodeList/7/$ns3::MobilityModel/CourseChange x = 13.1134, y = 3.99715
+  /NodeList/7/$ns3::MobilityModel/CourseChange x = 13.8359, y = 4.68851
+  /NodeList/7/$ns3::MobilityModel/CourseChange x = 13.5953, y = 3.71789
+  /NodeList/7/$ns3::MobilityModel/CourseChange x = 12.7595, y = 4.26688
+  /NodeList/7/$ns3::MobilityModel/CourseChange x = 11.7629, y = 4.34913
+  /NodeList/7/$ns3::MobilityModel/CourseChange x = 11.2292, y = 5.19485
+  /NodeList/7/$ns3::MobilityModel/CourseChange x = 10.2344, y = 5.09394
+  /NodeList/7/$ns3::MobilityModel/CourseChange x = 9.3601, y = 4.60846
+  /NodeList/7/$ns3::MobilityModel/CourseChange x = 8.40025, y = 4.32795
+  /NodeList/7/$ns3::MobilityModel/CourseChange x = 9.14292, y = 4.99761
+  /NodeList/7/$ns3::MobilityModel/CourseChange x = 9.08299, y = 5.99581
+  /NodeList/7/$ns3::MobilityModel/CourseChange x = 8.26068, y = 5.42677
+  /NodeList/7/$ns3::MobilityModel/CourseChange x = 8.35917, y = 6.42191
+  /NodeList/7/$ns3::MobilityModel/CourseChange x = 7.66805, y = 7.14466
+  /NodeList/7/$ns3::MobilityModel/CourseChange x = 6.71414, y = 6.84456
+  /NodeList/7/$ns3::MobilityModel/CourseChange x = 6.42489, y = 7.80181
+

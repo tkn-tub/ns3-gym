@@ -1995,14 +1995,15 @@ to run.
   Waf: Entering directory `/home/craigdo/repos/ns-3-allinone-dev/ns-3-dev/build'
   Waf: Leaving directory `/home/craigdo/repos/ns-3-allinone-dev/ns-3-dev/build'
   'build' finished successfully (0.684s)
-  1.20919 1072
-  1.21511 1608
-  1.22103 2144
+  1       536
+  1.0093  1072
+  1.01528 1608
+  1.02167 2144
   ...
-  1.2471  8040
-  1.24895 8576
-  1.2508  9112
-  RxDrop at 1.25151
+  1.11319 8040
+  1.12151 8576
+  1.12983 9112
+  RxDrop at 1.13696
   ...
 
 You can probably see immediately a downside of using prints of any
@@ -2246,11 +2247,13 @@ or your favorite file viewer.
 
 .. sourcecode:: bash
 
-  1.20919 536     1072
-  1.21511 1072    1608
+  1       0       536
+  1.0093  536     1072
+  1.01528 1072    1608
+  1.02167 1608    2144
   ...
-  9.30922 8893    8925
-  9.31754 8925    8957
+  9.69256 5149	  5204
+  9.89311 5204	  5259
 
 You have a tab separated file with a timestamp, an old congestion
 window and a new congestion window suitable for directly importing
@@ -2261,12 +2264,12 @@ Since "sixth.pcap" is a pcap file, you can fiew it with ``tcpdump``.
 
 .. sourcecode:: bash
 
-  reading from file ../../sixth.pcap, link-type PPP (PPP)
-  1.251507 IP 10.1.1.1.49153 > 10.1.1.2.8080: . 17689:18225(536) ack 1 win 65535
-  1.411478 IP 10.1.1.1.49153 > 10.1.1.2.8080: . 33808:34312(504) ack 1 win 65535
+  reading from file sixth.pcap, link-type PPP (PPP)
+  1.136956 IP 10.1.1.1.49153 > 10.1.1.2.8080: Flags [.], seq 17177:17681, ack 1, win 32768, options [TS val 1133 ecr 1127,eol], length 504
+  1.403196 IP 10.1.1.1.49153 > 10.1.1.2.8080: Flags [.], seq 33280:33784, ack 1, win 32768, options [TS val 1399 ecr 1394,eol], length 504
   ...
-  7.393557 IP 10.1.1.1.49153 > 10.1.1.2.8080: . 781568:782072(504) ack 1 win 65535
-  8.141483 IP 10.1.1.1.49153 > 10.1.1.2.8080: . 874632:875168(536) ack 1 win 65535
+  7.426220 IP 10.1.1.1.49153 > 10.1.1.2.8080: Flags [.], seq 785704:786240, ack 1, win 32768, options [TS val 7423 ecr 7421,eol], length 536
+  9.630693 IP 10.1.1.1.49153 > 10.1.1.2.8080: Flags [.], seq 882688:883224, ack 1, win 32768, options [TS val 9620 ecr 9618,eol], length 536
 
 You have a pcap file with the packets that were dropped in the
 simulation.  There are no other packets present in the file and there

@@ -68,7 +68,6 @@ class SPFVertex
 public:
 /**
  * @brief Enumeration of the possible types of SPFVertex objects.
- * @internal
  *
  * Currently we use VertexRouter to identify objects that represent a router 
  * in the simulation topology, and VertexNetwork to identify objects that 
@@ -83,7 +82,6 @@ public:
 /**
  * @brief Construct an empty ("uninitialized") SPFVertex (Shortest Path First 
  * Vertex).
- * @internal
  *
  * The Vertex Type is set to VertexUnknown, the Vertex ID is set to 
  * 255.255.255.255, and the distance from root is set to infinity 
@@ -98,7 +96,6 @@ public:
 
 /**
  * @brief Construct an initialized SPFVertex (Shortest Path First Vertex).
- * @internal
  *
  * The Vertex Type is initialized to VertexRouter and the Vertex ID is found
  * from the Link State ID of the Link State Advertisement (LSA) passed as a
@@ -116,7 +113,6 @@ public:
 
 /**
  * @brief Destroy an SPFVertex (Shortest Path First Vertex).
- * @internal
  *
  * The children vertices of the SPFVertex are recursively deleted.
  *
@@ -126,7 +122,6 @@ public:
 
 /**
  * @brief Get the Vertex Type field of a SPFVertex object.
- * @internal
  *
  * The Vertex Type describes the kind of simulation object a given SPFVertex
  * represents.
@@ -138,7 +133,6 @@ public:
 
 /**
  * @brief Set the Vertex Type field of a SPFVertex object.
- * @internal
  *
  * The Vertex Type describes the kind of simulation object a given SPFVertex
  * represents.
@@ -150,7 +144,6 @@ public:
 
 /**
  * @brief Get the Vertex ID field of a SPFVertex object.
- * @internal
  *
  * The Vertex ID uniquely identifies the simulation object a given SPFVertex
  * represents.  Typically, this is the Router ID for SPFVertex objects 
@@ -166,7 +159,6 @@ public:
 
 /**
  * @brief Set the Vertex ID field of a SPFVertex object.
- * @internal
  *
  * The Vertex ID uniquely identifies the simulation object a given SPFVertex
  * represents.  Typically, this is the Router ID for SPFVertex objects 
@@ -185,7 +177,6 @@ public:
  * @brief Get the Global Router Link State Advertisement returned by the 
  * Global Router represented by this SPFVertex during the route discovery 
  * process.
- * @internal
  *
  * @see GlobalRouter
  * @see GlobalRoutingLSA
@@ -199,7 +190,6 @@ public:
  * @brief Set the Global Router Link State Advertisement returned by the 
  * Global Router represented by this SPFVertex during the route discovery 
  * process.
- * @internal
  *
  * @see SPFVertex::GetLSA ()
  * @see GlobalRouter
@@ -213,7 +203,6 @@ public:
 
 /**
  * @brief Get the distance from the root vertex to "this" SPFVertex object.
- * @internal
  *
  * Each router in the simulation is associated with an SPFVertex object.  When
  * calculating routes, each of these routers is, in turn, chosen as the "root"
@@ -236,7 +225,6 @@ public:
 
 /**
  * @brief Set the distance from the root vertex to "this" SPFVertex object.
- * @internal
  *
  * Each router in the simulation is associated with an SPFVertex object.  When
  * calculating routes, each of these routers is, in turn, chosen as the "root"
@@ -258,7 +246,6 @@ public:
 /**
  * @brief Set the IP address and outgoing interface index that should be used 
  * to begin forwarding packets from the root SPFVertex to "this" SPFVertex.
- * @internal
  *
  * Each router node in the simulation is associated with an SPFVertex object.
  * When calculating routes, each of these routers is, in turn, chosen as the 
@@ -304,7 +291,6 @@ public:
 /**
  * @brief Set the IP address and outgoing interface index that should be used 
  * to begin forwarding packets from the root SPFVertex to "this" SPFVertex.
- * @internal
  *
  * Each router node in the simulation is associated with an SPFVertex object.
  * When calculating routes, each of these routers is, in turn, chosen as the 
@@ -388,7 +374,6 @@ public:
 /**
  * @brief Get a pointer to the SPFVector that is the parent of "this" 
  * SPFVertex.
- * @internal
  *
  * Each router node in the simulation is associated with an SPFVertex object.
  * When calculating routes, each of these routers is, in turn, chosen as the 
@@ -410,7 +395,6 @@ public:
 /**
  * @brief Set the pointer to the SPFVector that is the parent of "this" 
  * SPFVertex.
- * @internal
  *
  * Each router node in the simulation is associated with an SPFVertex object.
  * When calculating routes, each of these routers is, in turn, chosen as the 
@@ -438,7 +422,6 @@ public:
 
 /**
  * @brief Get the number of children of "this" SPFVertex.
- * @internal
  *
  * Each router node in the simulation is associated with an SPFVertex object.
  * When calculating routes, each of these routers is, in turn, chosen as the 
@@ -461,7 +444,6 @@ public:
 /**
  * @brief Get a borrowed SPFVertex pointer to the specified child of "this" 
  * SPFVertex.
- * @internal
  *
  * Each router node in the simulation is associated with an SPFVertex object.
  * When calculating routes, each of these routers is, in turn, chosen as the 
@@ -490,7 +472,6 @@ public:
 /**
  * @brief Get a borrowed SPFVertex pointer to the specified child of "this" 
  * SPFVertex.
- * @internal
  *
  * Each router node in the simulation is associated with an SPFVertex object.
  * When calculating routes, each of these routers is, in turn, chosen as the 
@@ -599,7 +580,6 @@ class GlobalRouteManagerLSDB
 public:
 /**
  * @brief Construct an empty Global Router Manager Link State Database.
- * @internal
  *
  * The database map composing the Link State Database is initialized in
  * this constructor.
@@ -608,7 +588,6 @@ public:
 
 /**
  * @brief Destroy an empty Global Router Manager Link State Database.
- * @internal
  *
  * The database map is walked and all of the Link State Advertisements stored
  * in the database are freed; then the database map itself is clear ()ed to
@@ -619,7 +598,6 @@ public:
 /**
  * @brief Insert an IP address / Link State Advertisement pair into the Link
  * State Database.
- * @internal
  *
  * The IPV4 address and the GlobalRoutingLSA given as parameters are converted
  * to an STL pair and are inserted into the database map.
@@ -635,7 +613,6 @@ public:
 /**
  * @brief Look up the Link State Advertisement associated with the given
  * link state ID (address).
- * @internal
  *
  * The database map is searched for the given IPV4 address and corresponding
  * GlobalRoutingLSA is returned.
@@ -653,7 +630,6 @@ public:
  * link state ID (address).  This is a variation of the GetLSA call
  * to allow the LSA to be found by matching addr with the LinkData field
  * of the TransitNetwork link record.
- * @internal
  *
  * @see GetLSA
  * @param addr The IP address associated with the LSA.  Typically the Router 
@@ -665,7 +641,6 @@ public:
 
 /**
  * @brief Set all LSA flags to an initialized state, for SPF computation
- * @internal
  *
  * This function walks the database and resets the status flags of all of the
  * contained Link State Advertisements to LSA_SPF_NOT_EXPLORED.  This is done
@@ -680,7 +655,6 @@ public:
   /**
    * @brief Look up the External Link State Advertisement associated with the given
    * index.
-   * @internal
    *
    * The external database map is searched for the given index and corresponding
    * GlobalRoutingLSA is returned.
@@ -692,7 +666,6 @@ public:
   GlobalRoutingLSA* GetExtLSA (uint32_t index) const;
   /**
    * @brief Get the number of External Link State Advertisements.
-   * @internal
    *
    * @see GlobalRoutingLSA
    * @returns the number of External Link State Advertisements.
@@ -745,34 +718,28 @@ public:
  *
  * \todo  separate manually assigned static routes from static routes that
  * the global routing code injects, and only delete the latter
- * @internal
- *
  */
   virtual void DeleteGlobalRoutes ();
 
 /**
  * @brief Build the routing database by gathering Link State Advertisements
  * from each node exporting a GlobalRouter interface.
- * @internal
  */
   virtual void BuildGlobalRoutingDatabase ();
 
 /**
  * @brief Compute routes using a Dijkstra SPF computation and populate
  * per-node forwarding tables
- * @internal
  */
   virtual void InitializeRoutes ();
 
 /**
  * @brief Debugging routine; allow client code to supply a pre-built LSDB
- * @internal
  */
   void DebugUseLsdb (GlobalRouteManagerLSDB*);
 
 /**
  * @brief Debugging routine; call the core SPF from the unit tests
- * @internal
  * @param root the root node to start calculations
  */
   void DebugSPFCalculate (Ipv4Address root);

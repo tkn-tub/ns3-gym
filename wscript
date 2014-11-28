@@ -308,6 +308,7 @@ def configure(conf):
         env.append_value('CXXFLAGS', '-fprofile-arcs')
         env.append_value('CXXFLAGS', '-ftest-coverage')
         env.append_value('LINKFLAGS', '-lgcov')
+        env.append_value('LINKFLAGS', '-coverage')
 
     if Options.options.build_profile == 'debug':
         env.append_value('DEFINES', 'NS3_ASSERT_ENABLE')

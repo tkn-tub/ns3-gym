@@ -121,6 +121,7 @@ WifiNetDevice::CompleteConfig (void)
   m_mac->SetLinkUpCallback (MakeCallback (&WifiNetDevice::LinkUp, this));
   m_mac->SetLinkDownCallback (MakeCallback (&WifiNetDevice::LinkDown, this));
   m_stationManager->SetupPhy (m_phy);
+  m_stationManager->SetupMac (m_mac);
   m_configComplete = true;
 }
 
