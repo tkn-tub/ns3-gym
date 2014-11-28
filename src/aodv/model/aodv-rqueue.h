@@ -61,8 +61,8 @@ public:
   {
     return ((m_packet == o.m_packet) && (m_header.GetDestination () == o.m_header.GetDestination ()) && (m_expire == o.m_expire));
   }
-  ///\name Fields
-  //\{
+
+  // Fields
   UnicastForwardCallback GetUnicastForwardCallback () const { return m_ucb; }
   void SetUnicastForwardCallback (UnicastForwardCallback ucb) { m_ucb = ucb; }
   ErrorCallback GetErrorCallback () const { return m_ecb; }
@@ -73,8 +73,9 @@ public:
   void SetIpv4Header (Ipv4Header h) { m_header = h; }
   void SetExpireTime (Time exp) { m_expire = exp + Simulator::Now (); }
   Time GetExpireTime () const { return m_expire - Simulator::Now (); }
-  //\}
+
 private:
+  
   /// Data packet
   Ptr<const Packet> m_packet;
   /// IP header
@@ -110,15 +111,15 @@ public:
   bool Find (Ipv4Address dst);
   /// Number of entries
   uint32_t GetSize ();
-  ///\name Fields
-  //\{
+  
+  // Fields
   uint32_t GetMaxQueueLen () const { return m_maxLen; }
   void SetMaxQueueLen (uint32_t len) { m_maxLen = len; }
   Time GetQueueTimeout () const { return m_queueTimeout; }
   void SetQueueTimeout (Time t) { m_queueTimeout = t; }
-  //\}
 
 private:
+  
   std::vector<QueueEntry> m_queue;
   /// Remove all expired entries
   void Purge ();

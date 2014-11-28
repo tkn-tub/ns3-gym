@@ -26,6 +26,7 @@
 using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("BlockAckTest");
+
 /**
  * This simple test verifies the correctness of buffering for packets received
  * under block ack. In order to completely understand this example is important to cite

@@ -23,9 +23,9 @@
 #include <ns3/nstime.h>
 #include <ns3/log.h>
 
-NS_LOG_COMPONENT_DEFINE ("ShannonSpectrumErrorModel");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("ShannonSpectrumErrorModel");
 
 NS_OBJECT_ENSURE_REGISTERED (SpectrumErrorModel);
 

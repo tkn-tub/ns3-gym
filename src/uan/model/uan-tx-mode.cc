@@ -22,9 +22,9 @@
 #include <map>
 #include <utility>
 
-NS_LOG_COMPONENT_DEFINE ("UanTxMode");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("UanTxMode");
 
 UanTxMode::UanTxMode ()
 {

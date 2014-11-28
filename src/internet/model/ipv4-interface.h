@@ -78,6 +78,7 @@ public:
    * \returns the underlying NetDevice. This method cannot return zero.
    */
   Ptr<NetDevice> GetDevice (void) const;
+
   /**
    * \return ARP cache used by this interface
    */

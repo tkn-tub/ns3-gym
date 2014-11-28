@@ -23,9 +23,9 @@
 #include "log.h"
 #include <cstring>
 
-NS_LOG_COMPONENT_DEFINE ("SystemThread");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("SystemThread");
 
 #ifdef HAVE_PTHREAD_H
 

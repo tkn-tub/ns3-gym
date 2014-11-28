@@ -55,6 +55,9 @@ public:
  * @brief Construct a helper class to make life easier while doing simple IPv4
  * address assignment in scripts.  This version sets the base and mask
  * in the constructor
+ * @param network the network part
+ * @param mask the address mask
+ * @param base the host part to start from
  */
   Ipv4AddressHelper (Ipv4Address network, Ipv4Mask mask, 
                      Ipv4Address base = "0.0.0.1");

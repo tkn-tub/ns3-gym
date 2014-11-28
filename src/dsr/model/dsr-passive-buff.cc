@@ -36,9 +36,10 @@
 #include "ns3/socket.h"
 #include "ns3/log.h"
 
-NS_LOG_COMPONENT_DEFINE ("PassiveBuffer");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("PassiveBuffer");
+  
 namespace dsr {
 
 NS_OBJECT_ENSURE_REGISTERED (PassiveBuffer);

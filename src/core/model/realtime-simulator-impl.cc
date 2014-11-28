@@ -35,13 +35,13 @@
 
 #include <cmath>
 
+
+namespace ns3 {
+
 // Note:  Logging in this file is largely avoided due to the
 // number of calls that are made to these functions and the possibility
 // of causing recursions leading to stack overflow
-
 NS_LOG_COMPONENT_DEFINE ("RealtimeSimulatorImpl");
-
-namespace ns3 {
 
 NS_OBJECT_ENSURE_REGISTERED (RealtimeSimulatorImpl);
 

@@ -40,9 +40,9 @@
 #include "ns3/simulator.h"
 #include "ns3/names.h"
 
-NS_LOG_COMPONENT_DEFINE ("WifiHelper");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("WifiHelper");
 
 WifiPhyHelper::~WifiPhyHelper ()
 {

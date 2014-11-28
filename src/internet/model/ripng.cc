@@ -36,13 +36,11 @@
 #define RIPNG_ALL_NODE "ff02::9"
 #define RIPNG_PORT 521
 
-NS_LOG_COMPONENT_DEFINE ("RipNg")
- ;
-
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (RipNg)
- ;
+NS_LOG_COMPONENT_DEFINE ("RipNg");
+
+NS_OBJECT_ENSURE_REGISTERED (RipNg);
 
 RipNg::RipNg ()
   : m_ipv6 (0), m_splitHorizonStrategy (RipNg::POISON_REVERSE), m_initialized (false)

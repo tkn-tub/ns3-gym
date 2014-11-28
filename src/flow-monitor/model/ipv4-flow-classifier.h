@@ -75,6 +75,7 @@ private:
 
   /// Map to Flows Identifiers to FlowIds
   std::map<FiveTuple, FlowId> m_flowMap;
+  /// Map to FlowIds to FlowPacketId
   std::map<FlowId, FlowPacketId> m_flowPktIdMap;
 
 };

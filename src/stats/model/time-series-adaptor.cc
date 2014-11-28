@@ -27,9 +27,9 @@
 #include "ns3/log.h"
 #include "ns3/simulator.h"
 
-NS_LOG_COMPONENT_DEFINE ("TimeSeriesAdaptor");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("TimeSeriesAdaptor");
 
 NS_OBJECT_ENSURE_REGISTERED (TimeSeriesAdaptor);
 

@@ -21,10 +21,9 @@
 #include "ns3/log.h"
 #include "microwave-oven-spectrum-value-helper.h"
 
-NS_LOG_COMPONENT_DEFINE ("MicrowaveOvenSpectrumValue");
-
 namespace ns3 {
 
+NS_LOG_COMPONENT_DEFINE ("MicrowaveOvenSpectrumValue");
 
 static Ptr<SpectrumModel> g_MicrowaveOvenSpectrumModel5Mhz;
 static Ptr<SpectrumModel> g_MicrowaveOvenSpectrumModel6Mhz;

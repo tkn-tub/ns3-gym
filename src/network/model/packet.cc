@@ -24,9 +24,9 @@
 #include <string>
 #include <cstdarg>
 
-NS_LOG_COMPONENT_DEFINE ("Packet");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("Packet");
 
 uint32_t Packet::m_globalUid = 0;
 

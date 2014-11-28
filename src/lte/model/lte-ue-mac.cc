@@ -37,9 +37,9 @@
 
 
 
-NS_LOG_COMPONENT_DEFINE ("LteUeMac");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("LteUeMac");
 
 NS_OBJECT_ENSURE_REGISTERED (LteUeMac);
 
@@ -527,6 +527,8 @@ LteUeMac::DoReset ()
           m_lcInfoMap.erase (it++);
         }
     }
+
+  m_noRaResponseReceivedEvent.Cancel ();
   m_rachConfigured = false;
   m_freshUlBsr = false;
   m_ulBsrReceived.clear ();
@@ -541,8 +543,14 @@ LteUeMac::DoReceivePhyPdu (Ptr<Packet> p)
     {
       // packet is for the current user
       std::map <uint8_t, LcInfo>::const_iterator it = m_lcInfoMap.find (tag.GetLcid ());
-      NS_ASSERT_MSG (it != m_lcInfoMap.end (), "received packet with unknown lcid");
-      it->second.macSapUser->ReceivePdu (p);
+      if (it != m_lcInfoMap.end ())
+        {
+          it->second.macSapUser->ReceivePdu (p);
+        }
+      else
+        {
+          NS_LOG_WARN ("received packet with unknown lcid " << (uint32_t) tag.GetLcid ());
+        }
     }
 }
 

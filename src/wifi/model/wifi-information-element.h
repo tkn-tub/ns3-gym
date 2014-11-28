@@ -167,8 +167,7 @@ public:
    */
   uint16_t GetSerializedSize () const;
 
-  ///\name Each subclass must implement
-  //\{
+  // Each subclass must implement these pure virtual functions:
   /// Own unique Element ID
   virtual WifiInformationElementId ElementId () const = 0;
   /**
@@ -199,10 +198,8 @@ public:
    */
   virtual uint8_t DeserializeInformationField (Buffer::Iterator start,
                                                uint8_t length) = 0;
-  //\}
 
-  /// In addition, a subclass may optionally override the following...
-  //\{
+  // In addition, a subclass my optionally override the following...
   /**
    * Generate human-readable form of IE
    *
@@ -225,7 +222,7 @@ public:
    * \return true if the two IEs are equal, false otherwise
    */
   virtual bool operator== (WifiInformationElement const & a) const;
-  //\}
+
 };
 
 }

@@ -21,9 +21,9 @@
 #include <ns3/lte-vendor-specific-parameters.h>
 #include <ns3/log.h>
 
-NS_LOG_COMPONENT_DEFINE ("LteVendorSpecificParameters");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("LteVendorSpecificParameters");
   
 SrsCqiRntiVsp::SrsCqiRntiVsp (uint16_t rnti)
 :  m_rnti (rnti)

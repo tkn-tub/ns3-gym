@@ -44,7 +44,6 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("TcpLargeTransfer");
 
-
 // The number of bytes to send in this simulation.
 static const uint32_t totalTxBytes = 2000000;
 static uint32_t currentTxBytes = 0;

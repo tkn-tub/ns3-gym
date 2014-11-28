@@ -49,22 +49,39 @@ public:
   ~EventGarbageCollector ();
 
 private:
-
+ 
+  /**
+   * \brief comparison operator for std::multiset
+   */
   struct EventIdLessThanTs
   {
+    /**
+     * \brief comparison operator for std::multiset
+     */
     bool operator () (const EventId &a, const EventId &b) const
     {
       return (a.GetTs () < b.GetTs ());
     }
   };
 
+  /** Event list container */
   typedef std::multiset<EventId, EventIdLessThanTs> EventList;
 
-  EventList::size_type m_nextCleanupSize;
-  EventList m_events;
+  EventList::size_type m_nextCleanupSize;      //!< batch size for cleanup
+  EventList m_events;                          //!< the tracked event list 
 
+  /**
+   * \brief called when a new event was added and the cleanup limit was
+   * exceeded in consequence.
+   */
   void Cleanup ();
+  /**
+   * \brief grow the cleanup limit
+   */
   void Grow ();
+  /**
+   * \brief shrink the cleanup limit
+   */
   void Shrink ();
 };
 

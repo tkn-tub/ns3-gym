@@ -30,9 +30,9 @@
 #include "ns3/log.h"
 #include <cstring>
 
-NS_LOG_COMPONENT_DEFINE ("PacketTagList");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("PacketTagList");
 
 bool
 PacketTagList::COWTraverse (Tag & tag, PacketTagList::COWWriter Writer)

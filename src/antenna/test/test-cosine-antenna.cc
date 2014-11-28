@@ -29,9 +29,9 @@
 #include <sstream>
 
 
-NS_LOG_COMPONENT_DEFINE ("TestCosineAntennaModel");
-
 using namespace ns3;
+
+NS_LOG_COMPONENT_DEFINE ("TestCosineAntennaModel");
 
 enum CosineAntennaModelGainTestCondition  {
   EQUAL = 0,

@@ -22,9 +22,9 @@
 #include "log.h"
 #include <sstream>
 
-NS_LOG_COMPONENT_DEFINE ("Pointer");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("Pointer");
 
 PointerValue::PointerValue ()
   : m_value ()

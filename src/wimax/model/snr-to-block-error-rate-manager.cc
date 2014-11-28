@@ -27,9 +27,9 @@
 #include "ns3/assert.h"
 #include <fstream>
 
-NS_LOG_COMPONENT_DEFINE ("SNRToBlockErrorRateManager");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("SNRToBlockErrorRateManager");
 
 SNRToBlockErrorRateManager::SNRToBlockErrorRateManager (void)
 {

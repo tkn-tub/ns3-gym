@@ -23,9 +23,9 @@
 #include "ns3/assert.h"
 #include "vendor-specific-action.h"
 
-NS_LOG_COMPONENT_DEFINE ("VendorSpecificAction");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("VendorSpecificAction");
 
 /*********** OrganizationIdentifier *******/
 

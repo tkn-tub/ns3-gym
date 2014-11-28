@@ -38,11 +38,9 @@
 #include "single-model-spectrum-channel.h"
 
 
-NS_LOG_COMPONENT_DEFINE ("SingleModelSpectrumChannel");
-
-
 namespace ns3 {
 
+NS_LOG_COMPONENT_DEFINE ("SingleModelSpectrumChannel");
 
 NS_OBJECT_ENSURE_REGISTERED (SingleModelSpectrumChannel);
 

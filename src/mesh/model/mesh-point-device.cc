@@ -27,9 +27,9 @@
 #include "ns3/wifi-net-device.h"
 #include "ns3/mesh-wifi-interface-mac.h"
 
-NS_LOG_COMPONENT_DEFINE ("MeshPointDevice");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("MeshPointDevice");
 
 NS_OBJECT_ENSURE_REGISTERED (MeshPointDevice);
 

@@ -28,9 +28,10 @@
 
 #include <csignal>
 
-NS_LOG_COMPONENT_DEFINE ("FatalImpl");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("FatalImpl");
+  
 namespace FatalImpl {
 
 /**

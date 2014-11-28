@@ -25,9 +25,9 @@
 #include <ns3/lte-common.h>
 #include <list>
 
-NS_LOG_COMPONENT_DEFINE ("A3RsrpHandoverAlgorithm");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("A3RsrpHandoverAlgorithm");
 
 NS_OBJECT_ENSURE_REGISTERED (A3RsrpHandoverAlgorithm);
 

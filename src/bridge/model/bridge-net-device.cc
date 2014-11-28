@@ -24,9 +24,9 @@
 #include "ns3/simulator.h"
 #include "ns3/uinteger.h"
 
-NS_LOG_COMPONENT_DEFINE ("BridgeNetDevice");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("BridgeNetDevice");
 
 NS_OBJECT_ENSURE_REGISTERED (BridgeNetDevice);
 

@@ -165,10 +165,28 @@ void LogComponentDisableAll (enum LogLevel level);
  * ns3::LogComponentDisable functions or with the NS_LOG
  * environment variable.
  *
+ * This macro should be placed within namespace ns3.  If functions
+ * outside of namespace ns3 require access to logging, the preferred
+ * solution is to add the following 'using' directive at file scope,
+ * outside of namespace ns3, and after the inclusion of
+ * NS_LOG_COMPONENT_DEFINE, such as follows:
+ * \code
+ * namespace ns3 {
+ * NS_LOG_COMPONENT_DEFINE ("...");
+ *
+ * \\ definitions within the ns3 namespace
+ *
+ * } // namespace ns3
+ *
+ * using ns3::g_log;
+ *
+ * // further definitions outside of the ns3 namespace
+ *\endcode
+ *
  * \param name a string
  */
 #define NS_LOG_COMPONENT_DEFINE(name)                           \
-  static ns3::LogComponent g_log = ns3::LogComponent (name)
+  static ns3::LogComponent g_log = ns3::LogComponent (name, __FILE__)
 
 /**
  * \ingroup logging
@@ -181,7 +199,7 @@ void LogComponentDisableAll (enum LogLevel level);
  * \param mask the default mask
  */
 #define NS_LOG_COMPONENT_DEFINE_MASK(name, mask)                \
-  static ns3::LogComponent g_log = ns3::LogComponent (name, mask)
+  static ns3::LogComponent g_log = ns3::LogComponent (name, __FILE__, mask)
 
 /**
  * \ingroup logging
@@ -271,7 +289,9 @@ public:
    *                  a log level helps prevent recursion by logging in
    *                  functions which help implement the logging facility.
    */
-  LogComponent (const std::string & name, const enum LogLevel mask = LOG_NONE);
+  LogComponent (const std::string & name,
+                const std::string & file,
+                const enum LogLevel mask = LOG_NONE);
   /**
    * Check if this LogComponent is enabled for \pname{level}
    *
@@ -304,6 +324,10 @@ public:
    */
   char const *Name (void) const;
   /**
+   * Get the compilation unit defining this LogComponent.
+   */
+  std::string File (void) const;
+  /**
    * Get the string label for the given LogLevel.
    *
    * \param [in] level the LogLevel to get the label for.
@@ -316,6 +340,30 @@ public:
    * \param level the LogLevel to block
    */
   void SetMask (const enum LogLevel level);
+
+  /**
+   * LogComponent name map.
+   *
+   * \internal
+   * This should really be considered an internal API.
+   * It is exposed here to allow print-introspected-doxygen.cc
+   * to generate a list of all LogComponents.
+   */
+  typedef std::map<std::string, LogComponent *> ComponentList;
+
+  /**
+   * Get the list of LogComponnents.
+   *
+   * \internal
+   * This should really be considered an internal API.
+   * It is exposed here to allow print-introspected-doxygen.cc
+   * to generate a list of all LogComponents.
+   *
+   * \returns The list of LogComponents.
+   */
+  static ComponentList *GetComponentList (void);
+
+  
 private:
   /**
    * Parse the `NS_LOG` environment variable for options relating to this
@@ -326,6 +374,7 @@ private:
   int32_t     m_levels;  //!< Enabled LogLevels
   int32_t     m_mask;    //!< Blocked LogLevels
   std::string m_name;    //!< LogComponent name
+  std::string m_file;    //!< File defining this LogComponent
 
 };  // class LogComponent
 

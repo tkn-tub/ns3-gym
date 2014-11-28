@@ -85,17 +85,17 @@ public:
    */
   Vector CalculateIntersection (const Vector &current, const Vector &speed) const;
 
-  /* The x coordinate of the left bound of the box */
+  /** The x coordinate of the left bound of the box */
   double xMin;
-  /* The x coordinate of the right bound of the box */
+  /** The x coordinate of the right bound of the box */
   double xMax;
-  /* The y coordinate of the bottom bound of the box */
+  /** The y coordinate of the bottom bound of the box */
   double yMin;
-  /* The y coordinate of the top bound of the box */
+  /** The y coordinate of the top bound of the box */
   double yMax;
-  /* The z coordinate of the down bound of the box */
+  /** The z coordinate of the down bound of the box */
   double zMin;
-  /* The z coordinate of the up bound of the box */
+  /** The z coordinate of the up bound of the box */
   double zMax;
 };
 

@@ -24,6 +24,7 @@
 #include "ns3/simulator.h"
 #include "ns3/simple-channel.h"
 #include "ns3/simple-net-device.h"
+#include "ns3/simple-net-device-helper.h"
 #include "ns3/drop-tail-queue.h"
 #include "ns3/socket.h"
 #include "ns3/boolean.h"
@@ -36,34 +37,14 @@
 #include "ns3/icmpv6-l4-protocol.h"
 #include "ns3/udp-l4-protocol.h"
 #include "ns3/ipv6-static-routing.h"
+#include "ns3/internet-stack-helper.h"
+#include "ns3/ipv6-address-helper.h"
+#include "ns3/ipv6-routing-helper.h"
 
 #include <string>
 #include <limits>
 
 using namespace ns3;
-
-static void
-AddInternetStack6 (Ptr<Node> node)
-{
-  //IPV6
-  Ptr<Ipv6L3Protocol> ipv6 = CreateObject<Ipv6L3Protocol> ();
-  //Routing for Ipv6
-  Ptr<Ipv6StaticRouting> ipv6Routing = CreateObject<Ipv6StaticRouting> ();
-  ipv6->SetRoutingProtocol (ipv6Routing);
-  node->AggregateObject (ipv6);
-  node->AggregateObject (ipv6Routing);
-  //ICMP
-  Ptr<Icmpv6L4Protocol> icmp = CreateObject<Icmpv6L4Protocol> ();
-  node->AggregateObject (icmp);
-  //Ipv6 Extensions
-  ipv6->RegisterExtensions ();
-  ipv6->RegisterOptions ();
-  //UDP
-  Ptr<UdpL4Protocol> udp = CreateObject<UdpL4Protocol> ();
-  node->AggregateObject (udp);
-}
-
-
 
 class Ipv6ForwardingTest : public TestCase
 {
@@ -79,7 +60,7 @@ public:
 };
 
 Ipv6ForwardingTest::Ipv6ForwardingTest ()
-  : TestCase ("UDP6 socket implementation")
+  : TestCase ("IPv6 forwarding")
 {
 }
 
@@ -118,72 +99,65 @@ Ipv6ForwardingTest::DoRun (void)
 
   // Receiver Node
   Ptr<Node> rxNode = CreateObject<Node> ();
-  AddInternetStack6 (rxNode);
-  Ptr<SimpleNetDevice> rxDev;
-  { // first interface
-    rxDev = CreateObject<SimpleNetDevice> ();
-    rxDev->SetAddress (Mac48Address::ConvertFrom (Mac48Address::Allocate ()));
-    rxNode->AddDevice (rxDev);
-    Ptr<Ipv6> ipv6 = rxNode->GetObject<Ipv6> ();
-    uint32_t netdev_idx = ipv6->AddInterface (rxDev);
-    Ipv6InterfaceAddress ipv6Addr = Ipv6InterfaceAddress (Ipv6Address ("2001:1::2"), Ipv6Prefix (64));
-    ipv6->AddAddress (netdev_idx, ipv6Addr);
-    ipv6->SetUp (netdev_idx);
-  }
-
   // Forwarding Node
   Ptr<Node> fwNode = CreateObject<Node> ();
-  AddInternetStack6 (fwNode);
-  Ptr<SimpleNetDevice> fwDev1, fwDev2;
-  { // first interface
-    fwDev1 = CreateObject<SimpleNetDevice> ();
-    fwDev1->SetAddress (Mac48Address::ConvertFrom (Mac48Address::Allocate ()));
-    fwNode->AddDevice (fwDev1);
-    Ptr<Ipv6> ipv6 = fwNode->GetObject<Ipv6> ();
-    uint32_t netdev_idx = ipv6->AddInterface (fwDev1);
-    Ipv6InterfaceAddress ipv6Addr = Ipv6InterfaceAddress (Ipv6Address ("2001:1::1"), Ipv6Prefix (64));
-    ipv6->AddAddress (netdev_idx, ipv6Addr);
-    ipv6->SetUp (netdev_idx);
-  }
-
-  Ipv6Address nextHop;
-  { // second interface
-    fwDev2 = CreateObject<SimpleNetDevice> ();
-    fwDev2->SetAddress (Mac48Address::ConvertFrom (Mac48Address::Allocate ()));
-    fwNode->AddDevice (fwDev2);
-    Ptr<Ipv6> ipv6 = fwNode->GetObject<Ipv6> ();
-    uint32_t netdev_idx = ipv6->AddInterface (fwDev2);
-    Ipv6InterfaceAddress ipv6Addr = Ipv6InterfaceAddress (Ipv6Address ("2001:2::1"), Ipv6Prefix (64));
-    nextHop = ipv6->GetAddress(netdev_idx, 0).GetAddress();
-    ipv6->AddAddress (netdev_idx, ipv6Addr);
-    ipv6->SetUp (netdev_idx);
-  }
-
   // Sender Node
   Ptr<Node> txNode = CreateObject<Node> ();
-  AddInternetStack6 (txNode);
-  Ptr<SimpleNetDevice> txDev;
-  {
-    txDev = CreateObject<SimpleNetDevice> ();
-    txDev->SetAddress (Mac48Address::ConvertFrom (Mac48Address::Allocate ()));
-    txNode->AddDevice (txDev);
-    Ptr<Ipv6> ipv6 = txNode->GetObject<Ipv6> ();
-    uint32_t netdev_idx = ipv6->AddInterface (txDev);
-    Ipv6InterfaceAddress ipv6Addr = Ipv6InterfaceAddress (Ipv6Address ("2001:2::2"), Ipv6Prefix (64));
-    ipv6->AddAddress (netdev_idx, ipv6Addr);
-    ipv6->SetUp (netdev_idx);
-    Ptr<Ipv6StaticRouting> ipv6StaticRouting = txNode->GetObject<Ipv6StaticRouting> ();
-    ipv6StaticRouting->SetDefaultRoute(nextHop, netdev_idx);
-  }
 
-  // link the two nodes
-  Ptr<SimpleChannel> channel1 = CreateObject<SimpleChannel> ();
-  rxDev->SetChannel (channel1);
-  fwDev1->SetChannel (channel1);
+  NodeContainer net1nodes (rxNode, fwNode);
+  NodeContainer net2nodes (fwNode, txNode);
+  NodeContainer nodes (rxNode, fwNode, txNode);
 
-  Ptr<SimpleChannel> channel2 = CreateObject<SimpleChannel> ();
-  fwDev2->SetChannel (channel2);
-  txDev->SetChannel (channel2);
+  SimpleNetDeviceHelper helperChannel1;
+  helperChannel1.SetNetDevicePointToPointMode (true);
+  NetDeviceContainer net1 = helperChannel1.Install (net1nodes);
+
+  SimpleNetDeviceHelper helperChannel2;
+  helperChannel2.SetNetDevicePointToPointMode (true);
+  NetDeviceContainer net2 = helperChannel2.Install (net2nodes);
+
+  InternetStackHelper internetv6;
+  internetv6.Install (nodes);
+
+  txNode->GetObject<Icmpv6L4Protocol> ()->SetAttribute ("DAD", BooleanValue (false));
+  fwNode->GetObject<Icmpv6L4Protocol> ()->SetAttribute ("DAD", BooleanValue (false));
+  rxNode->GetObject<Icmpv6L4Protocol> ()->SetAttribute ("DAD", BooleanValue (false));
+
+  Ipv6AddressHelper ipv6helper;
+  Ipv6InterfaceContainer iic1 = ipv6helper.AssignWithoutAddress (net1);
+  Ipv6InterfaceContainer iic2 = ipv6helper.AssignWithoutAddress (net2);
+
+  Ptr<NetDevice> device;
+  Ptr<Ipv6> ipv6;
+  int32_t ifIndex;
+  Ipv6InterfaceAddress ipv6Addr;
+
+  ipv6 = rxNode->GetObject<Ipv6> ();
+  device = net1.Get (0);
+  ifIndex = ipv6->GetInterfaceForDevice (device);
+  ipv6Addr = Ipv6InterfaceAddress (Ipv6Address ("2001:1::2"), Ipv6Prefix (64));
+  ipv6->AddAddress (ifIndex, ipv6Addr);
+
+  ipv6 = fwNode->GetObject<Ipv6> ();
+  device = net1.Get (1);
+  ifIndex = ipv6->GetInterfaceForDevice (device);
+  ipv6Addr = Ipv6InterfaceAddress (Ipv6Address ("2001:1::1"), Ipv6Prefix (64));
+  ipv6->AddAddress (ifIndex, ipv6Addr);
+
+  device = net2.Get (0);
+  ifIndex = ipv6->GetInterfaceForDevice (device);
+  ipv6Addr = Ipv6InterfaceAddress (Ipv6Address ("2001:2::1"), Ipv6Prefix (64));
+  ipv6->AddAddress (ifIndex, ipv6Addr);
+
+  ipv6 = txNode->GetObject<Ipv6> ();
+  device = net2.Get (1);
+  ifIndex = ipv6->GetInterfaceForDevice (device);
+  ipv6Addr = Ipv6InterfaceAddress (Ipv6Address ("2001:2::2"), Ipv6Prefix (64));
+  ipv6->AddAddress (ifIndex, ipv6Addr);
+
+  // Setup at least a route from the sender.
+  Ptr<Ipv6StaticRouting> ipv6StaticRouting = Ipv6RoutingHelper::GetRouting <Ipv6StaticRouting> (txNode->GetObject<Ipv6> ()->GetRoutingProtocol ());
+  ipv6StaticRouting->SetDefaultRoute (Ipv6Address ("2001:2::1"), ifIndex);
 
   // Create the UDP sockets
   Ptr<SocketFactory> rxSocketFactory = rxNode->GetObject<UdpSocketFactory> ();
@@ -204,7 +178,7 @@ Ipv6ForwardingTest::DoRun (void)
   m_receivedPacket->RemoveAllByteTags ();
   m_receivedPacket = 0;
 
-  Ptr<Ipv6> ipv6 = fwNode->GetObject<Ipv6> ();
+  ipv6 = fwNode->GetObject<Ipv6> ();
   ipv6->SetAttribute("IpForward", BooleanValue (true));
   SendData (txSocket, "2001:1::2");
   NS_TEST_EXPECT_MSG_EQ (m_receivedPacket->GetSize (), 123, "IPv6 Forwarding on");

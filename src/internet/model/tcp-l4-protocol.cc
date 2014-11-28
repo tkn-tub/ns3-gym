@@ -47,9 +47,9 @@
 #include <sstream>
 #include <iomanip>
 
-NS_LOG_COMPONENT_DEFINE ("TcpL4Protocol");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("TcpL4Protocol");
 
 NS_OBJECT_ENSURE_REGISTERED (TcpL4Protocol);
 
@@ -611,7 +611,6 @@ TcpL4Protocol::SendPacket (Ptr<Packet> packet, const TcpHeader &outgoing,
   // XXX outgoingHeader cannot be logged
 
   TcpHeader outgoingHeader = outgoing;
-  outgoingHeader.SetLength (5); //header length in units of 32bit words
   /** \todo UrgentPointer */
   /* outgoingHeader.SetUrgentPointer (0); */
   if(Node::ChecksumEnabled ())
@@ -663,7 +662,6 @@ TcpL4Protocol::SendPacket (Ptr<Packet> packet, const TcpHeader &outgoing,
       return (SendPacket (packet, outgoing, saddr.GetIpv4MappedAddress(), daddr.GetIpv4MappedAddress(), oif));
     }
   TcpHeader outgoingHeader = outgoing;
-  outgoingHeader.SetLength (5); //header length in units of 32bit words
   /** \todo UrgentPointer */
   /* outgoingHeader.SetUrgentPointer (0); */
   if(Node::ChecksumEnabled ())

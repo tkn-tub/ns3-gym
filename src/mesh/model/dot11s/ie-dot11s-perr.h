@@ -42,16 +42,14 @@ public:
   std::vector<HwmpProtocol::FailedDestination> GetAddressUnitVector () const;
   void DeleteAddressUnit (Mac48Address address);
   void ResetPerr ();
-  /**
-   * \name Inherited from WifiInformationElement
-   * \{
-   */
+
+  // Inherited from WifiInformationElement
   virtual WifiInformationElementId ElementId () const;
   virtual void SerializeInformationField (Buffer::Iterator i) const;
   virtual uint8_t DeserializeInformationField (Buffer::Iterator start, uint8_t length);
   virtual void Print (std::ostream& os) const;
   virtual uint8_t GetInformationFieldSize () const;
-  ///\}
+
 private:
   std::vector<HwmpProtocol::FailedDestination> m_addressUnits;
   friend bool operator== (const IePerr & a, const IePerr & b);

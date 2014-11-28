@@ -142,7 +142,7 @@ The MCS which is used by the simulator is measured by
 obtaining the tracing output produced by the scheduler after 4ms (this
 is needed to account for the initial delay in CQI reporting). The SINR
 which is calcualted by the simulator is also obtained using the
-``LteSinrChunkProcessor`` interface. The test
+``LteChunkProcessor`` interface. The test
 passes if both the following conditions are satisfied:
  
  #. the SINR calculated by the simulator correspond to the SNR
@@ -1007,12 +1007,19 @@ The test suite ``lte-rrc`` tests the correct functionality of the following aspe
  #. RRC Connection Establishment 
  #. RRC Reconfiguration
 
-The test suite considers a type of scenario with a single eNB and multiple UEs that are instructed to connect to the eNB. Each test case implement an instance of this scenario with specific values of the following parameters:
+The test suite considers a type of scenario with four eNBs aligned in a square
+layout with 100-meter edges. Multiple UEs are located at a specific spot on the
+diagonal of the square and are instructed to connect to the first eNB. Each test
+case implements an instance of this scenario with specific values of the
+following parameters:
 
  - number of UEs
  - number of Data Radio Bearers to be activated for each UE
  - time :math:`t^c_0` at which the first UE is instructed to start connecting to the eNB
  - time interval :math:`d^i` between the start of connection of UE :math:`n` and UE :math:`n+1`; the time at which user :math:`n` connects is thus determined as :math:`t^c_n = t^c_0 + n d^i` sdf
+ - the relative position of the UEs on the diagonal of the square, where higher
+   values indicate larger distance from the serving eNodeB, i.e., higher
+   interference from the other eNodeBs
  - a boolean flag indicating whether the ideal or the real RRC protocol model is used
 
 Each test cases passes if a number of test conditions are positively evaluated for each UE after a delay :math:`d^e` from the time it started connecting to the eNB. The delay :math:`d^e` is determined as 
@@ -1031,9 +1038,9 @@ where:
    to allocate the UL grant because of lack of resources. The number
    of collisions depends on the number of UEs that try to access
    simultaneously; we estimated that for a :math:`0.99` RA success
-   probability, 5 attempts are sufficient for up to 20 UEs, and 10
-   attempts for up to 50 UEs. For the UL
-   grant, considered the system bandwidth and the
+   probability, 5 attempts are sufficient for up to 20 UEs, and  10 attempts for up
+   to 50 UEs.
+   For the UL grant, considered the system bandwidth and the
    default MCS used for the UL grant (MCS 0), at most 4 UL grants can
    be assigned in a TTI; so for :math:`n` UEs trying to
    do RA simultaneously the max number of attempts due to the UL grant
@@ -1045,7 +1052,10 @@ where:
    SETUP + RRC CONNECTION SETUP COMPLETED. We consider a round trip
    delay of 10ms plus :math:`\lceil 2n/4 \rceil` considering that 2
    RRC packets have to be transmitted and that at most 4 such packets
-   can be transmitted per TTI.
+   can be transmitted per TTI. In cases where interference is high, we
+   accommodate one retry attempt by the UE, so we double the :math:`d^{ce}`
+   value and then add :math:`d^{si}` on top of it (because the timeout has
+   reset the previously received SIB2).
  - :math:`d^{cr}` is the delay required for eventually needed RRC
    CONNECTION RECONFIGURATION transactions. The number of transactions needed is
    1 for each bearer activation. Similarly to what done for
@@ -1053,12 +1063,12 @@ where:
    delay of 10ms plus :math:`\lceil 2n/4 \rceil`.
    delay of 20ms.
 
-The conditions that are evaluated for a test case to pass are, for
-each UE:
 
- - the eNB has the context of the UE (identified by the RNTI value
-   retrieved from the UE RRC)
- - the RRC state of the UE at the eNB is CONNECTED_NORMALLY
+The base version of the test ``LteRrcConnectionEstablishmentTestCase``
+tests for correct RRC connection establishment in absence of channel
+errors. The conditions that are evaluated for this test case to pass
+are, for each UE: 
+
  - the RRC state at the UE is CONNECTED_NORMALLY
  - the UE is configured with the CellId, DlBandwidth, UlBandwidth,
    DlEarfcn and UlEarfcn of the eNB
@@ -1068,6 +1078,24 @@ each UE:
  - for each Data Radio Bearer, the following identifiers match between
    the UE and the eNB: EPS bearer id, DRB id, LCID
 
+The test variant ``LteRrcConnectionEstablishmentErrorTestCase`` is
+similar except for the presence of errors in the transmission of a
+particular RRC message of choice during the first connection
+attempt. The error is obtained by temporarily moving the UE to a far
+away location; the time of movement has been determined empyrically
+for each instance of the test case based on the message that it was
+desidred to be in error.  the test case checks that at least one of the following
+conditions is false at the time right before the UE is moved back to
+the original location:
+
+ - the RRC state at the UE is CONNECTED_NORMALLY 
+ - the UE context at the eNB is present
+ - the RRC state of the UE Context at the eNB is CONNECTED_NORMALLY
+  
+Additionally, all the conditions of the
+``LteRrcConnectionEstablishmentTestCase`` are evaluated - they are
+espected to be true because of the NAS behavior of immediately
+re-attempting the connection establishment if it fails.
  
 
 Initial cell selection
@@ -1391,3 +1419,139 @@ cell at the same time.
 
 The test case then verifies that the handover algorithm, when faced with more
 than one options of target cells, is able to choose the right one.
+
+Downlink Power Control
+----------------------
+
+The test suite ``lte-downlink-power-control`` checks correctness of Downlink 
+Power Control in three different ways: 
+
+ * LteDownlinkPowerControlSpectrumValue test case   check if 
+   ``LteSpectrumValueHelper::CreateTxPowerSpectralDensity`` is creating correct 
+   spectrum value for PSD for downlink transmission. The test vector contain EARFCN, 
+   system bandwidth, TX power, TX power for each RB, active RBs, and expected TxPSD. 
+   The test passes if TxPDS generated by 
+   ``LteSpectrumValueHelper::CreateTxPowerSpectralDensity`` is equal to expected TxPSD. 
+
+ * LteDownlinkPowerControlTestCase test case check if TX power difference between 
+   data and control channel is equal to configured PdschConfigDedicated::P_A value. 
+   TX power of control channel is measured by ``LteTestSinrChunkProcessor`` added 
+   to ``RsPowerChunkProcessor`` list in UE DownlinkSpectrumPhy. Tx power of data 
+   channel is measured in similar way, but it had to be implemented. Now 
+   ``LteTestSinrChunkProcessor`` is added to ``DataPowerChunkProcessor`` list in UE 
+   DownlinkSpectrumPhy. Test vector contain a set of all avaiable P_A values. Test 
+   pass if power diffrence equals P_A value. 
+
+ * LteDownlinkPowerControlRrcConnectionReconfiguration test case check if 
+   RrcConnectionReconfiguration is performed correctly. When FR entity gets UE 
+   measurements, it immediately calls function to change P_A value for this UE and also 
+   triggers callback connected with this event. Then, test check if UE gets 
+   RrcConnectionReconfiguration message (it trigger callback). Finally, it checks if eNB 
+   receive RrcConnectionReconfigurationCompleted message, what also trigger callback. 
+   The test passes if all event have occurred. The test is performed two times, with 
+   IdealRrcProtocol and with RealRrcProtocol.  
+
+
+Uplink Power Control Tests 
+--------------------------
+
+UE uses Uplink Power Control to automatically change Tx Power level for Uplink 
+Physical Channels. Tx Power is computed based on path-loss, number of RB used for transmission,
+some configurable parameters and TPC command from eNB.
+
+The test suite ``lte-uplink-power-control`` verifies if Tx Power is computed correctly.
+There are three different test cases: 
+
+ * LteUplinkOpenLoopPowerControlTestCase test case checks Uplink Power Control functionality 
+   in Open Loop mechanism. UE is attached to eNB and is transmitting data in Downlink and 
+   Uplink. Uplink Power Control with Open Loop mechanism is enabled and UE changes position 
+   each 100 ms. In each position Uplink Power Control entity is calculating new Tx Power level
+   for all uplink channels. These values are traced and test passes if Uplink Tx Power for 
+   PUSCH, PUCCH and SRS in each UE position are equal to expected values.
+
+ * LteUplinkClosedLoopPowerControlAbsoluteModeTestCase test case checks Uplink Power Control 
+   functionality with Closed Loop mechanism and Absolute Mode enabled. 
+   UE is attached to eNB and is transmitting data in Downlink and Uplink. Uplink Power Control 
+   with Closed Loop mechanism and Absolute Mode is enabled. UE is located 100 m from eNB and
+   is not changing its position. LteFfrSimple algorithm is used on eNB side to set TPC values in 
+   DL-DCI messages. TPC configuration in eNB is changed every 100 ms, so every 100 ms Uplink 
+   Power Control entity in UE should calculate different Tx Power level for all uplink channels. 
+   These values are traced and test passes if Uplink Tx Power for PUSCH, PUCCH and SRS
+   computed with all TCP values are equal to expected values.
+
+ * LteUplinkClosedLoopPowerControlAccumulatedModeTestCase test case checks Closed Loop Uplink
+   Power Control functionality with Closed Loop mechanism and Accumulative Mode enabled.
+   UE is attached to eNB and is transmitting data in Downlink and Uplink. Uplink Power Control 
+   with Closed Loop mechanism and Accumulative Mode is enabled. UE is located 100 m from eNB and
+   is not changing its position. As in above test case, LteFfrSimple algorithm is used on eNB 
+   side to set TPC values in DL-DCI messages, but in this case TPC command are set in DL-DCI 
+   only configured number of times, and after that TPC is set to be 1, what is mapped to value 
+   of 0 in Accumulative Mode (TS36.213 Table 5.1.1.1-2). TPC configuration in eNB is changed 
+   every 100 ms. UE is accumulating these values and calculates Tx Power levels for all uplink 
+   channels based on accumulated value. If computed Tx Power level is lower than minimal 
+   UE Tx Power, UE should transmit with its minimal Tx Power. If computed Tx Power level is
+   higher than maximal UE Tx Power, UE should transmit with its maximal Tx Power.    
+   Tx Power levels for PUSCH, PUCCH and SRS are traced and test passes if they are equal to 
+   expected values.
+
+
+Frequency Reuse Algorithms
+--------------------------
+
+The test suite ``lte-frequency-reuse`` contain two types of test cases. 
+
+First type of test cases check if RBGs are used correctly according to FR algorithm 
+policy. We are testing if scheduler use only RBGs allowed by FR configuration. To 
+check which RBGs are used ``LteSimpleSpectrumPhy`` is attached to Downlink Channel. 
+It notifies when data downlink channel transmission has occured and pass signal 
+TxPsd spectrum value to check which RBs were used for transmission. The test vector 
+comprise a set of configuration for Hard and Strict FR algorithms (there is no point 
+to check other FR algorithms in this way because they use entire cell bandwidth). 
+Test passes if none of not allowed RBGs are used. 
+
+Second type of test cases check if UE is served within proper sub-band and with proper 
+transmission power. In this test scenario, there are two eNBs.There are also two UEs 
+and each eNB is serving one.  One uses Frequency Reuse algorithm and second one does not. 
+Second eNB is responsible for generating interferences in whole system bandwidth. 
+UE served by first eNB is changing position each few second (rather slow because time is
+needed to report new UE Measurements). To check which RBGs are used for this UE
+``LteSimpleSpectrumPhy`` is attached to Downlink Channel. It notifies when data 
+downlink channel transmission in cell 1 has occured and pass signal TxPsd spectrum value 
+to check which RBs were used for transmission and their power level. 
+The same approach is applied in Uplink direction and second ``LteSimpleSpectrumPhy``
+is attached to Uplink Channel. Test passes if UE served by eNB with FR algorithm 
+is served in DL and UL with expected RBs and with expected power level. 
+Test vector comprise a configuration for Strict FR, Soft FR, Soft FFR, Enchanced FFR.
+Each FR algorithm is tested with all schedulers, which support FR (i.e. PF, PSS, CQA, 
+TD-TBFQ, FD-TBFQ). (Hard FR do not use UE measurements, so there is no point to perform 
+this type of test for Hard FR).
+
+Test case for Distributed FFR algorithm is quite similar to above one, but since eNBs need 
+to exchange some information, scenario with EPC enabled and X2 interfaces is considered.
+Moreover, both eNB are using Distributed FFR algorithm. There are 2 UE in first cell, 
+and 1 in second cell. Position of each UE is changed (rather slow because time is
+needed to report new UE Measurements), to obtain different result from calculation in 
+Distributed FFR algorithm entities. To check which RBGs are used for UE transmission
+``LteSimpleSpectrumPhy`` is attached to Downlink Channel. It notifies when data 
+downlink channel transmission has occured and pass signal TxPsd spectrum value 
+to check which RBs were used for transmission and their power level. 
+The same approach is applied in Uplink direction and second ``LteSimpleSpectrumPhy``
+is attached to Uplink Channel. 
+Test passes if UE served by eNB in cell 2, is served in DL and UL with expected RBs 
+and with expected power level. Test vector compirse a configuration for Distributed FFR.
+Test is performed with all schedulers, which support FR (i.e. PF, PSS, CQA, 
+TD-TBFQ, FD-TBFQ).
+
+
+Inter-cell Interference with FR algorithms Tests 
+-------------------------------------------------
+
+The test suite ``lte-interference-fr`` is very similar to ``lte-interference``. 
+Topology (Figure :ref:`fig-lte-interference-test-scenario`) is the same and test checks 
+interference level. The difference is that, in this test case Frequency Reuse algorithms 
+are enabled and we are checking interference level on different RBGs (not only on one). 
+For example, when we install Hard FR algorithm in eNbs, and first half of system bandwidth 
+is assigned to one eNb, and second half to second eNb, interference level should be much 
+lower compared to legacy scenario. The test vector comprise a set of configuration for 
+all available Frequency Reuse Algorithms. Test passes if calculated SINR on specific 
+RBs is equal to these obtained by Octave script.

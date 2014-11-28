@@ -51,9 +51,9 @@
 
 #include "lte-test-fdbet-ff-mac-scheduler.h"
 
-NS_LOG_COMPONENT_DEFINE ("LenaTestFdBetFfMacScheduler");
-
 using namespace ns3;
+
+NS_LOG_COMPONENT_DEFINE ("LenaTestFdBetFfMacScheduler");
 
 LenaTestFdBetFfMacSchedulerSuite::LenaTestFdBetFfMacSchedulerSuite ()
   : TestSuite ("lte-fdbet-ff-mac-scheduler", SYSTEM)
@@ -206,6 +206,9 @@ LenaFdBetFfMacSchedulerTestCase1::DoRun (void)
     }
 
   Config::SetDefault ("ns3::LteHelper::UseIdealRrc", BooleanValue (true));
+
+  //Disable Uplink Power Control
+  Config::SetDefault ("ns3::LteUePhy::EnableUplinkPowerControl", BooleanValue (false));
 
   /**
    * Initialize Simulation Scenario: 1 eNB and m_nUser UEs

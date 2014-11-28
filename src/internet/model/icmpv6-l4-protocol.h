@@ -329,7 +329,7 @@ public:
    * \param id ID of the packet
    * \param seq sequence number
    * \param data the data
-   * \return Echo Request packet (without IPv6 header)
+   * \return Echo Request packet (with IPv6 header)
    */
   Ptr<Packet> ForgeEchoRequest (Ipv6Address src, Ipv6Address dst, uint16_t id, uint16_t seq, Ptr<Packet> data);
 

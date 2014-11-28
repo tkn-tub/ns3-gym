@@ -56,10 +56,9 @@
 #include "lte-test-mimo.h"
 
 
-NS_LOG_COMPONENT_DEFINE ("LteTestMimo");
-
 using namespace ns3;
 
+NS_LOG_COMPONENT_DEFINE ("LteTestMimo");
 
 LenaTestMimoSuite::LenaTestMimoSuite ()
   : TestSuite ("lte-mimo", SYSTEM)
@@ -120,6 +119,9 @@ LenaMimoTestCase::DoRun (void)
   Config::SetDefault ("ns3::LteSpectrumPhy::DataErrorModelEnabled", BooleanValue (false));
   Config::SetDefault ("ns3::LteAmc::AmcModel", EnumValue (LteAmc::PiroEW2010));
   Config::SetDefault ("ns3::LteHelper::UseIdealRrc", BooleanValue (m_useIdealRrc));
+
+  //Disable Uplink Power Control
+  Config::SetDefault ("ns3::LteUePhy::EnableUplinkPowerControl", BooleanValue (false));
 
   /**
    * Initialize Simulation Scenario: 1 eNB and m_nUser UEs

@@ -33,6 +33,7 @@
 namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("Ipv6StaticRouting");
+
 NS_OBJECT_ENSURE_REGISTERED (Ipv6StaticRouting);
 
 TypeId Ipv6StaticRouting::GetTypeId ()
@@ -285,8 +286,7 @@ Ptr<Ipv6Route> Ipv6StaticRouting::LookupStatic (Ipv6Address dst, Ptr<NetDevice> 
   uint32_t shortestMetric = 0xffffffff;
 
   /* when sending on link-local multicast, there have to be interface specified */
-  if (dst == Ipv6Address::GetAllNodesMulticast () || dst.IsSolicitedMulticast ()
-      || dst == Ipv6Address::GetAllRoutersMulticast () || dst == Ipv6Address::GetAllHostsMulticast ())
+  if (dst.IsLinkLocalMulticast ())
     {
       NS_ASSERT_MSG (interface, "Try to send on link-local multicast address, and no interface index is given!");
       rtentry = Create<Ipv6Route> ();

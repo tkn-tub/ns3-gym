@@ -22,9 +22,9 @@
 
 #include <cmath>
 
-NS_LOG_COMPONENT_DEFINE ("LrWpanErrorModel");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("LrWpanErrorModel");
 
 NS_OBJECT_ENSURE_REGISTERED (LrWpanErrorModel);
 

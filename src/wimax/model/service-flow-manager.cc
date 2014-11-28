@@ -39,9 +39,10 @@
 #include "ss-scheduler.h"
 #include "ns3/buffer.h"
 #include "service-flow-record.h"
-NS_LOG_COMPONENT_DEFINE ("ServiceFlowManager");
 
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("ServiceFlowManager");
 
 NS_OBJECT_ENSURE_REGISTERED (ServiceFlowManager);
 

@@ -25,10 +25,9 @@
 #include <string>
 #include "assert.h"
 
-NS_LOG_COMPONENT_DEFINE ("ListScheduler");
-
 namespace ns3 {
 
+NS_LOG_COMPONENT_DEFINE ("ListScheduler");
 
 NS_OBJECT_ENSURE_REGISTERED (ListScheduler);
 

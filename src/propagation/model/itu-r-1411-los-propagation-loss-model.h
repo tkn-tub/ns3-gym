@@ -44,7 +44,10 @@ class ItuR1411LosPropagationLossModel : public PropagationLossModel
 
 public:
 
-  // inherited from Object
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
 
   ItuR1411LosPropagationLossModel ();
@@ -69,14 +72,26 @@ public:
   double GetLoss (Ptr<MobilityModel> a, Ptr<MobilityModel> b) const;
 
 private:
+  /**
+   * \brief Copy constructor
+   *
+   * Defined and unimplemented to avoid misuse
+   */
+  ItuR1411LosPropagationLossModel (const ItuR1411LosPropagationLossModel &);
+  /**
+   * \brief Copy constructor
+   *
+   * Defined and unimplemented to avoid misuse
+   * \returns
+   */
+  ItuR1411LosPropagationLossModel & operator = (const ItuR1411LosPropagationLossModel &);
 
-  // inherited from PropagationLossModel
   virtual double DoCalcRxPower (double txPowerDbm,
                                 Ptr<MobilityModel> a,
                                 Ptr<MobilityModel> b) const;
   virtual int64_t DoAssignStreams (int64_t stream);
   
-  double m_lambda; // wavelength
+  double m_lambda; //!< wavelength
 };
 
 } // namespace ns3

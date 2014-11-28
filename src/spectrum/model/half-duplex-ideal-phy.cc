@@ -32,9 +32,9 @@
 #include "spectrum-error-model.h"
 
 
-NS_LOG_COMPONENT_DEFINE ("HalfDuplexIdealPhy");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("HalfDuplexIdealPhy");
 
 NS_OBJECT_ENSURE_REGISTERED (HalfDuplexIdealPhy);
 

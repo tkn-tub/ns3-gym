@@ -32,9 +32,9 @@
 #include "bs-link-manager.h"
 #include "bandwidth-manager.h"
 
-NS_LOG_COMPONENT_DEFINE ("UplinkScheduler");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("UplinkScheduler");
 
 NS_OBJECT_ENSURE_REGISTERED (UplinkScheduler);
 

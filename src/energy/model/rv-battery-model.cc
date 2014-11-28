@@ -26,9 +26,9 @@
 #include "ns3/simulator.h"
 #include <cmath>
 
-NS_LOG_COMPONENT_DEFINE ("RvBatteryModel");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("RvBatteryModel");
 
 NS_OBJECT_ENSURE_REGISTERED (RvBatteryModel);
 
@@ -44,6 +44,11 @@ RvBatteryModel::GetTypeId (void)
                    MakeTimeAccessor (&RvBatteryModel::SetSamplingInterval,
                                      &RvBatteryModel::GetSamplingInterval),
                    MakeTimeChecker ())
+    .AddAttribute ("RvBatteryModelLowBatteryThreshold",
+                   "Low battery threshold.",
+                   DoubleValue (0.10), // as a fraction of the initial energy
+                   MakeDoubleAccessor (&RvBatteryModel::m_lowBatteryTh),
+                   MakeDoubleChecker<double> ())
     .AddAttribute ("RvBatteryModelOpenCircuitVoltage",
                    "RV battery model open circuit voltage.",
                    DoubleValue (4.1),
@@ -76,10 +81,12 @@ RvBatteryModel::GetTypeId (void)
                    MakeIntegerChecker<int> ())
     .AddTraceSource ("RvBatteryModelBatteryLevel",
                      "RV battery model battery level.",
-                     MakeTraceSourceAccessor (&RvBatteryModel::m_batteryLevel))
+                     MakeTraceSourceAccessor (&RvBatteryModel::m_batteryLevel),
+                     "ns3::TracedValue::DoubleCallback")
     .AddTraceSource ("RvBatteryModelBatteryLifetime",
                      "RV battery model battery lifetime.",
-                     MakeTraceSourceAccessor (&RvBatteryModel::m_lifetime))
+                     MakeTraceSourceAccessor (&RvBatteryModel::m_lifetime),
+                     "ns3::Time::TracedValueCallback")
   ;
   return tid;
 }
@@ -164,7 +171,7 @@ RvBatteryModel::UpdateEnergySource (void)
     }
 
   // check if battery is dead.
-  if (calculatedAlpha >= m_alpha)
+  if (m_batteryLevel <= m_lowBatteryTh)
     {
       m_lifetime = Simulator::Now ();
       NS_LOG_DEBUG ("RvBatteryModel:Battery is dead!");

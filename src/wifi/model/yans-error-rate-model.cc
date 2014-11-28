@@ -24,9 +24,9 @@
 #include "wifi-phy.h"
 #include "ns3/log.h"
 
-NS_LOG_COMPONENT_DEFINE ("YansErrorRateModel");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("YansErrorRateModel");
 
 NS_OBJECT_ENSURE_REGISTERED (YansErrorRateModel);
 

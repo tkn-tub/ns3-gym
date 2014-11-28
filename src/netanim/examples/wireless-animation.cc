@@ -164,17 +164,28 @@ main (int argc, char *argv[])
 
   Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
   Simulator::Stop (Seconds (15.0));
-  AnimationInterface::SetNodeDescription (wifiApNode, "AP"); // Optional
-  AnimationInterface::SetNodeDescription (wifiStaNodes, "STA"); //b Optional
-  AnimationInterface::SetNodeDescription (csmaNodes, "CSMA"); // Optional
-  AnimationInterface::SetNodeColor (wifiApNode, 0, 255, 0); // Optional
-  AnimationInterface::SetNodeColor (wifiStaNodes, 255, 0, 0); // Optional
-  AnimationInterface::SetNodeColor (csmaNodes, 0, 0, 255); // Optional
 
   AnimationInterface anim ("wireless-animation.xml"); // Mandatory
+  for (uint32_t i = 0; i < wifiStaNodes.GetN (); ++i)
+    {
+      anim.UpdateNodeDescription (wifiStaNodes.Get (i), "STA"); // Optional
+      anim.UpdateNodeColor (wifiStaNodes.Get (i), 255, 0, 0); // Optional
+    }
+  for (uint32_t i = 0; i < wifiApNode.GetN (); ++i)
+    {
+      anim.UpdateNodeDescription (wifiApNode.Get (i), "AP"); // Optional
+      anim.UpdateNodeColor (wifiApNode.Get (i), 0, 255, 0); // Optional
+    }
+  for (uint32_t i = 0; i < csmaNodes.GetN (); ++i)
+    {
+      anim.UpdateNodeDescription (csmaNodes.Get (i), "CSMA"); // Optional
+      anim.UpdateNodeColor (csmaNodes.Get (i), 0, 0, 255); // Optional 
+    }
 
   anim.EnablePacketMetadata (); // Optional
   anim.EnableIpv4RouteTracking ("routingtable-wireless.xml", Seconds (0), Seconds (5), Seconds (0.25)); //Optional
+  anim.EnableWifiMacCounters (Seconds (0), Seconds (10)); //Optional
+  anim.EnableWifiPhyCounters (Seconds (0), Seconds (10)); //Optional
   Simulator::Run ();
   Simulator::Destroy ();
   return 0;

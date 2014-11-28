@@ -23,9 +23,9 @@
 #include "ipv4-address.h"
 #include "ns3/assert.h"
 
-NS_LOG_COMPONENT_DEFINE ("Ipv4Address");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("Ipv4Address");
 
 #define ASCII_DOT (0x2e)
 #define ASCII_ZERO (0x30)

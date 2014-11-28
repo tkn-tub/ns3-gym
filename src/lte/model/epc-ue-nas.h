@@ -179,16 +179,28 @@ private:
 
   // internal methods
   void DoActivateEpsBearer (EpsBearer bearer, Ptr<EpcTft> tft);
+  /**
+   * Switch the UE RRC to the given state.
+   * \param s the destination state
+   */
   void SwitchToState (State s);
 
+  /// The current UE NAS state.
   State m_state;
 
+  /**
+   * The `StateTransition` trace source. Fired upon every UE NAS state
+   * transition. Exporting old state and new state.
+   */
   TracedCallback<State, State> m_stateTransitionCallback;
 
+  /// The UE NetDevice.
   Ptr<NetDevice> m_device;
 
+  /// The unique UE identifier.
   uint64_t m_imsi;
 
+  /// Closed Subscriber Group identity.
   uint32_t m_csgId;
 
   LteAsSapProvider* m_asSapProvider;

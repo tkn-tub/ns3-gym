@@ -112,7 +112,73 @@ class CallbackImplProxyMethod(typehandlers.ReverseWrapperBase):
 
 
 
-def generate_callback_classes(out, callbacks):
+def register_callback_classes(out, callbacks):
+    for callback_impl_num, template_parameters in enumerate(callbacks):
+        cls_name = "ns3::Callback< %s >" % ', '.join(template_parameters)
+        #print >> sys.stderr, "***** trying to register callback: %r" % cls_name
+        class_name = "PythonCallbackImpl%i" % callback_impl_num
+
+        class PythonCallbackParameter(Parameter):
+            "Class handlers"
+            CTYPES = [cls_name]
+            print("***** registering callback handler: %r (%r)" % (ctypeparser.normalize_type_string(cls_name), cls_name), file=sys.stderr)
+            DIRECTIONS = [Parameter.DIRECTION_IN]
+            PYTHON_CALLBACK_IMPL_NAME = class_name
+            TEMPLATE_ARGS = template_parameters
+            DISABLED = False
+
+            def convert_python_to_c(self, wrapper):
+                "parses python args to get C++ value"
+                assert isinstance(wrapper, typehandlers.ForwardWrapperBase)
+
+                if self.DISABLED:
+                    raise CodeGenerationError("wrapper could not be generated")
+
+                if self.default_value is None:
+                    py_callback = wrapper.declarations.declare_variable('PyObject*', self.name)
+                    wrapper.parse_params.add_parameter('O', ['&'+py_callback], self.name)
+                    wrapper.before_call.write_error_check(
+                        '!PyCallable_Check(%s)' % py_callback,
+                        'PyErr_SetString(PyExc_TypeError, "parameter \'%s\' must be callbale");' % self.name)
+                    callback_impl = wrapper.declarations.declare_variable(
+                        'ns3::Ptr<%s>' % self.PYTHON_CALLBACK_IMPL_NAME,
+                        '%s_cb_impl' % self.name)
+                    wrapper.before_call.write_code("%s = ns3::Create<%s> (%s);"
+                                                   % (callback_impl, self.PYTHON_CALLBACK_IMPL_NAME, py_callback))
+                    wrapper.call_params.append(
+                        'ns3::Callback<%s> (%s)' % (', '.join(self.TEMPLATE_ARGS), callback_impl))
+                else:
+                    py_callback = wrapper.declarations.declare_variable('PyObject*', self.name, 'NULL')
+                    wrapper.parse_params.add_parameter('O', ['&'+py_callback], self.name, optional=True)
+                    value = wrapper.declarations.declare_variable(
+                        'ns3::Callback<%s>' % ', '.join(self.TEMPLATE_ARGS),
+                        self.name+'_value',
+                        self.default_value)
+
+                    wrapper.before_call.write_code("if (%s) {" % (py_callback,))
+                    wrapper.before_call.indent()
+
+                    wrapper.before_call.write_error_check(
+                        '!PyCallable_Check(%s)' % py_callback,
+                        'PyErr_SetString(PyExc_TypeError, "parameter \'%s\' must be callbale");' % self.name)
+
+                    wrapper.before_call.write_code("%s = ns3::Callback<%s> (ns3::Create<%s> (%s));"
+                                                   % (value, ', '.join(self.TEMPLATE_ARGS),
+                                                      self.PYTHON_CALLBACK_IMPL_NAME, py_callback))
+
+                    wrapper.before_call.unindent()
+                    wrapper.before_call.write_code("}") # closes: if (py_callback) {
+
+                    wrapper.call_params.append(value)
+
+
+            def convert_c_to_python(self, wrapper):
+                raise typehandlers.NotSupportedError("Reverse wrappers for ns3::Callback<...> types "
+                                                     "(python using callbacks defined in C++) not implemented.")
+
+
+def generate_callback_classes(module, callbacks):
+    out = module.after_forward_declarations
     for callback_impl_num, template_parameters in enumerate(callbacks):
         sink = MemoryCodeSink()
         cls_name = "ns3::Callback< %s >" % ', '.join(template_parameters)
@@ -181,68 +247,23 @@ public:
                               Warning)
                 ok = False
         if not ok:
+            try:
+                typehandlers.return_type_matcher.lookup(cls_name)[0].DISABLED = True
+            except typehandlers.TypeLookupError:
+                pass
+            try:
+                typehandlers.param_type_matcher.lookup(cls_name)[0].DISABLED = True
+            except typehandlers.TypeLookupError:
+                pass
             continue
 
         wrapper = CallbackImplProxyMethod(return_type, arguments)
         wrapper.generate(sink, 'operator()', decl_modifiers=[])
-            
+
         sink.unindent()
         sink.writeln('};\n')
+        print("Flushing to ", out, file=sys.stderr)
         sink.flush_to(out)
-        
-        class PythonCallbackParameter(Parameter):
-            "Class handlers"
-            CTYPES = [cls_name]
-            print("***** registering callback handler: %r" % ctypeparser.normalize_type_string(cls_name), file=sys.stderr)
-            DIRECTIONS = [Parameter.DIRECTION_IN]
-            PYTHON_CALLBACK_IMPL_NAME = class_name
-            TEMPLATE_ARGS = template_parameters
-
-            def convert_python_to_c(self, wrapper):
-                "parses python args to get C++ value"
-                assert isinstance(wrapper, typehandlers.ForwardWrapperBase)
-
-                if self.default_value is None:
-                    py_callback = wrapper.declarations.declare_variable('PyObject*', self.name)
-                    wrapper.parse_params.add_parameter('O', ['&'+py_callback], self.name)
-                    wrapper.before_call.write_error_check(
-                        '!PyCallable_Check(%s)' % py_callback,
-                        'PyErr_SetString(PyExc_TypeError, "parameter \'%s\' must be callbale");' % self.name)
-                    callback_impl = wrapper.declarations.declare_variable(
-                        'ns3::Ptr<%s>' % self.PYTHON_CALLBACK_IMPL_NAME,
-                        '%s_cb_impl' % self.name)
-                    wrapper.before_call.write_code("%s = ns3::Create<%s> (%s);"
-                                                   % (callback_impl, self.PYTHON_CALLBACK_IMPL_NAME, py_callback))
-                    wrapper.call_params.append(
-                        'ns3::Callback<%s> (%s)' % (', '.join(self.TEMPLATE_ARGS), callback_impl))
-                else:
-                    py_callback = wrapper.declarations.declare_variable('PyObject*', self.name, 'NULL')
-                    wrapper.parse_params.add_parameter('O', ['&'+py_callback], self.name, optional=True)
-                    value = wrapper.declarations.declare_variable(
-                        'ns3::Callback<%s>' % ', '.join(self.TEMPLATE_ARGS),
-                        self.name+'_value',
-                        self.default_value)
-
-                    wrapper.before_call.write_code("if (%s) {" % (py_callback,))
-                    wrapper.before_call.indent()
-
-                    wrapper.before_call.write_error_check(
-                        '!PyCallable_Check(%s)' % py_callback,
-                        'PyErr_SetString(PyExc_TypeError, "parameter \'%s\' must be callbale");' % self.name)
-
-                    wrapper.before_call.write_code("%s = ns3::Callback<%s> (ns3::Create<%s> (%s));"
-                                                   % (value, ', '.join(self.TEMPLATE_ARGS),
-                                                      self.PYTHON_CALLBACK_IMPL_NAME, py_callback))
-
-                    wrapper.before_call.unindent()
-                    wrapper.before_call.write_code("}") # closes: if (py_callback) {
-                                        
-                    wrapper.call_params.append(value)
-                    
-
-            def convert_c_to_python(self, wrapper):
-                raise typehandlers.NotSupportedError("Reverse wrappers for ns3::Callback<...> types "
-                                                     "(python using callbacks defined in C++) not implemented.")
 
 
 # def write_preamble(out):
@@ -374,7 +395,7 @@ def add_std_ofstream(module):
     ofstream.add_constructor([Parameter.new("const char *", 'filename'),
                               Parameter.new("::std::ofstream::openmode", 'mode', default_value="std::ios_base::out")])
     ofstream.add_method('close', None, [])
-    
+
     add_std_ios_openmode(module)
 
 

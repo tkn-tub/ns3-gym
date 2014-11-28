@@ -31,9 +31,9 @@
 #include "global-router-interface.h"
 #include <vector>
 
-NS_LOG_COMPONENT_DEFINE ("GlobalRouter");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("GlobalRouter");
 
 // ---------------------------------------------------------------------------
 //

@@ -25,9 +25,9 @@
 
 #include "ns3/lte-spectrum-value-helper.h"
 
-NS_LOG_COMPONENT_DEFINE ("LteTestEarfcn");
-
 using namespace ns3;
+
+NS_LOG_COMPONENT_DEFINE ("LteTestEarfcn");
 
 class LteEarfcnTestCase : public TestCase
 {

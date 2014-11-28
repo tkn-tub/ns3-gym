@@ -60,9 +60,9 @@
 
 #include "lte-test-cqa-ff-mac-scheduler.h"
 
-NS_LOG_COMPONENT_DEFINE ("LenaTestCqaFfMacScheduler");
-
 using namespace ns3;
+
+NS_LOG_COMPONENT_DEFINE ("LenaTestCqaFfMacScheduler");
 
 LenaTestCqaFfMacSchedulerSuite::LenaTestCqaFfMacSchedulerSuite ()
   : TestSuite ("lte-cqa-ff-mac-scheduler", SYSTEM)

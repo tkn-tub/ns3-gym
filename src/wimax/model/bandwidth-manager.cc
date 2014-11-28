@@ -33,9 +33,9 @@
 #include "service-flow-manager.h"
 #include "connection-manager.h"
 
-NS_LOG_COMPONENT_DEFINE ("BandwidthManager");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("BandwidthManager");
 
 NS_OBJECT_ENSURE_REGISTERED (BandwidthManager);
 

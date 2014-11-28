@@ -44,7 +44,8 @@ public:
       .SetParent<Object> ()
       .AddTraceSource ("TestTracedSequenceNumber",
                        "A traceable sequence number",
-                       MakeTraceSourceAccessor (&SequenceNumberTestObj::m_testTracedSequenceNumber))
+                       MakeTraceSourceAccessor (&SequenceNumberTestObj::m_testTracedSequenceNumber),
+                       "ns3::SequenceNumber32TracedValueCallback")
       .AddConstructor<SequenceNumberTestObj> ()
     ;
     return tid;

@@ -40,9 +40,10 @@
 #include "ns3/double.h"
 #include "ns3/uinteger.h"
 
-NS_LOG_COMPONENT_DEFINE ("DsdvRoutingProtocol");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("DsdvRoutingProtocol");
+  
 namespace dsdv {
   
 NS_OBJECT_ENSURE_REGISTERED (RoutingProtocol);
@@ -956,8 +957,8 @@ RoutingProtocol::NotifyInterfaceUp (uint32_t i)
   Ptr<Socket> socket = Socket::CreateSocket (GetObject<Node> (),UdpSocketFactory::GetTypeId ());
   NS_ASSERT (socket != 0);
   socket->SetRecvCallback (MakeCallback (&RoutingProtocol::RecvDsdv,this));
-  socket->BindToNetDevice (l3->GetNetDevice (i));
   socket->Bind (InetSocketAddress (Ipv4Address::GetAny (), DSDV_PORT));
+  socket->BindToNetDevice (l3->GetNetDevice (i));
   socket->SetAllowBroadcast (true);
   socket->SetAttribute ("IpTtl",UintegerValue (1));
   m_socketAddresses.insert (std::make_pair (socket,iface));
@@ -1013,9 +1014,9 @@ RoutingProtocol::NotifyAddAddress (uint32_t i,
       Ptr<Socket> socket = Socket::CreateSocket (GetObject<Node> (),UdpSocketFactory::GetTypeId ());
       NS_ASSERT (socket != 0);
       socket->SetRecvCallback (MakeCallback (&RoutingProtocol::RecvDsdv,this));
-      socket->BindToNetDevice (l3->GetNetDevice (i));
       // Bind to any IP address so that broadcasts can be received
       socket->Bind (InetSocketAddress (Ipv4Address::GetAny (), DSDV_PORT));
+      socket->BindToNetDevice (l3->GetNetDevice (i));
       socket->SetAllowBroadcast (true);
       m_socketAddresses.insert (std::make_pair (socket,iface));
       Ptr<NetDevice> dev = m_ipv4->GetNetDevice (m_ipv4->GetInterfaceForAddress (iface.GetLocal ()));

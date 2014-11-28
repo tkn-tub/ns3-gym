@@ -37,7 +37,7 @@ One problem that this design choice raises is that it is difficult to
 pretty-print the packet headers without context. The packet metadata describes
 the type of the headers and trailers which were serialized in the byte buffer.
 The maintenance of metadata is optional and disabled by default. To enable it,
-you must call Packet::EnableMetadata() and this will allow you to get non-empty
+you must call Packet::EnablePrinting() and this will allow you to get non-empty
 output from Packet::Print and Packet::Print.
 
 Also, developers often want to store data in packet objects that is not found

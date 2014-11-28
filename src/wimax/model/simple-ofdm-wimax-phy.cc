@@ -35,8 +35,9 @@
 #include <string>
 #include <cmath>
 
-NS_LOG_COMPONENT_DEFINE ("SimpleOfdmWimaxPhy");
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("SimpleOfdmWimaxPhy");
 
 NS_OBJECT_ENSURE_REGISTERED (SimpleOfdmWimaxPhy);
 

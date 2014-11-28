@@ -20,9 +20,9 @@
 #include "object-ptr-container.h"
 #include "log.h"
 
-NS_LOG_COMPONENT_DEFINE ("ObjectPtrContainer");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("ObjectPtrContainer");
 
 ObjectPtrContainerValue::ObjectPtrContainerValue ()
 {

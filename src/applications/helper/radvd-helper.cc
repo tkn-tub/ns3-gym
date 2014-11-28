@@ -26,10 +26,10 @@
 
 #include "radvd-helper.h"
 
-NS_LOG_COMPONENT_DEFINE ("RadvdHelper");
-
 namespace ns3
 {
+
+NS_LOG_COMPONENT_DEFINE ("RadvdHelper");
 
 RadvdHelper::RadvdHelper ()
 {

@@ -23,9 +23,9 @@
 #include "ns3/log.h"
 #include "constant-velocity-helper.h"
 
-NS_LOG_COMPONENT_DEFINE ("ConstantVelocityHelper");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("ConstantVelocityHelper");
 
 ConstantVelocityHelper::ConstantVelocityHelper ()
   : m_paused (true)

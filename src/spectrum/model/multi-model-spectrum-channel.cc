@@ -39,11 +39,9 @@
 #include "multi-model-spectrum-channel.h"
 
 
-NS_LOG_COMPONENT_DEFINE ("MultiModelSpectrumChannel");
-
-
 namespace ns3 {
 
+NS_LOG_COMPONENT_DEFINE ("MultiModelSpectrumChannel");
 
 NS_OBJECT_ENSURE_REGISTERED (MultiModelSpectrumChannel);
 

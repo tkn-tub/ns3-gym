@@ -25,9 +25,9 @@
 #include "log.h"
 #include <string>
 
-NS_LOG_COMPONENT_DEFINE ("MapScheduler");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("MapScheduler");
 
 NS_OBJECT_ENSURE_REGISTERED (MapScheduler);
 

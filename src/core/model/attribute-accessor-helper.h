@@ -50,12 +50,18 @@ MakeAccessorHelper (T1 a1, T2 a2);
 
 namespace ns3 {
 
+/**
+ * \ingroup AttributeHelper
+ */
 template <typename T>
 struct AccessorTrait
 {
   typedef typename TypeTraits<typename TypeTraits<T>::ReferencedType>::NonConstType Result;
 };
 
+/**
+ * \ingroup AttributeHelper
+ */
 template <typename T, typename U>
 class AccessorHelper : public AttributeAccessor
 {

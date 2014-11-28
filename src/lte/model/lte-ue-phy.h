@@ -33,6 +33,7 @@
 #include <ns3/ptr.h>
 #include <ns3/lte-amc.h>
 #include <set>
+#include <ns3/lte-ue-power-control.h>
 
 
 namespace ns3 {
@@ -117,6 +118,12 @@ public:
    * \return the transmission power in dBm
    */
   double GetTxPower () const;
+
+  /**
+   * \return ptr to UE Uplink Power Control entity
+   */
+  Ptr<LteUePowerControl> GetUplinkPowerControl () const;
+
   /**
    * \param nf the noise figure in dB
    */
@@ -183,7 +190,9 @@ public:
   // inherited from LtePhy
   virtual void GenerateCtrlCqiReport (const SpectrumValue& sinr);
   virtual void GenerateDataCqiReport (const SpectrumValue& sinr);
+  virtual void GenerateMixedCqiReport (const SpectrumValue& sinr);
   virtual void ReportInterference (const SpectrumValue& interf);
+  virtual void ReportDataInterference (const SpectrumValue& interf);
   virtual void ReportRsReceivedPower (const SpectrumValue& power);
 
   // callbacks for LteSpectrumPhy
@@ -251,6 +260,10 @@ private:
    */
   void ReportUeMeasurements ();
 
+  /**
+   * Switch the UE PHY to the given state.
+   * \param s the destination state
+   */
   void SwitchToState (State s);
 
   // UE CPHY SAP methods
@@ -260,6 +273,7 @@ private:
   void DoSynchronizeWithEnb (uint16_t cellId, uint16_t dlEarfcn);
   void DoSetDlBandwidth (uint8_t ulBandwidth);
   void DoConfigureUplink (uint16_t ulEarfcn, uint8_t ulBandwidth);
+  void DoConfigureReferenceSignalPower (int8_t referenceSignalPower);
   void DoSetRnti (uint16_t rnti);
   void DoSetTransmissionMode (uint8_t txMode);
   void DoSetSrsConfigurationIndex (uint16_t srcCi);
@@ -269,7 +283,9 @@ private:
   virtual void DoSendLteControlMessage (Ptr<LteControlMessage> msg);
   virtual void DoSendRachPreamble (uint32_t prachId, uint32_t raRnti);
 
+  /// A list of sub channels to use in TX.
   std::vector <int> m_subChannelsForTransmission;
+  /// A list of sub channels to use in RX.
   std::vector <int> m_subChannelsForReception;
 
   std::vector< std::vector <int> > m_subChannelsForTransmissionQueue;
@@ -277,11 +293,23 @@ private:
 
   Ptr<LteAmc> m_amc;
 
-  Time m_p10CqiPeriocity; /**< Wideband Periodic CQI: 2, 5, 10, 16, 20, 32, 40, 64, 80 or 160 ms */
+  /**
+   * The `EnableUplinkPowerControl` attribute. If true, Uplink Power Control
+   * will be enabled.
+   */
+  bool m_enableUplinkPowerControl;
+  /// Pointer to UE Uplink Power Control entity.
+  Ptr<LteUePowerControl> m_powerControl;
+
+  /// Wideband Periodic CQI. 2, 5, 10, 16, 20, 32, 40, 64, 80 or 160 ms.
+  Time m_p10CqiPeriocity;
   Time m_p10CqiLast;
 
-  /**< SubBand Aperiodic CQI: activated by  DCI format 0 or Random Access Response Grant */
-  // NOTE defines a periodicity for academic studies
+  /**
+   * SubBand Aperiodic CQI. Activated by DCI format 0 or Random Access Response
+   * Grant.
+   * \note Defines a periodicity for academic studies.
+   */
   Time m_a30CqiPeriocity;
   Time m_a30CqiLast;
 
@@ -304,10 +332,15 @@ private:
   bool m_dlConfigured;
   bool m_ulConfigured;
 
+  /// The current UE PHY state.
   State m_state;
-  //             cellid    rnti
+  /**
+   * The `StateTransition` trace source. Fired upon every UE PHY state
+   * transition. Exporting the serving cell ID, RNTI, old state, and new state.
+   */
   TracedCallback<uint16_t, uint16_t, State, State> m_stateTransitionTrace;
 
+  /// \todo Can be removed.
   uint8_t m_subframeNo;
 
   bool m_rsReceivedPowerUpdated;
@@ -315,6 +348,9 @@ private:
 
   bool m_rsInterferencePowerUpdated;
   SpectrumValue m_rsInterferencePower;
+
+  bool m_dataInterferencePowerUpdated;
+  SpectrumValue m_dataInterferencePower;
 
   bool m_pssReceived;
   struct PssElement
@@ -325,18 +361,32 @@ private:
   };
   std::list <PssElement> m_pssList;
 
-  double m_pssReceptionThreshold; // on RSRQ [W]
+  /**
+   * The `RsrqUeMeasThreshold` attribute. Receive threshold for PSS on RSRQ
+   * in dB.
+   */
+  double m_pssReceptionThreshold;
 
+  /// Summary results of measuring a specific cell. Used for layer-1 filtering.
   struct UeMeasurementsElement
   {
-    double rsrpSum;
-    uint8_t rsrpNum;
-    double rsrqSum;
-    uint8_t rsrqNum;
+    double rsrpSum;   ///< Sum of RSRP sample values in linear unit.
+    uint8_t rsrpNum;  ///< Number of RSRP samples.
+    double rsrqSum;   ///< Sum of RSRQ sample values in linear unit.
+    uint8_t rsrqNum;  ///< Number of RSRQ samples.
   };
 
+  /**
+   * Store measurement results during the last layer-1 filtering period.
+   * Indexed by the cell ID where the measurements come from.
+   */
   std::map <uint16_t, UeMeasurementsElement> m_ueMeasurementsMap;
+  /**
+   * The `UeMeasurementsFilterPeriod` attribute. Time period for reporting UE
+   * measurements, i.e., the length of layer-1 filtering (default 200 ms).
+   */
   Time m_ueMeasurementsFilterPeriod;
+  /// \todo Can be removed.
   Time m_ueMeasurementsFilterLast;
 
   Ptr<LteHarqPhy> m_harqPhyModule;
@@ -345,28 +395,36 @@ private:
   uint32_t m_raRnti;
 
   /**
-   * Trace information regarding RSRP and average SINR (see TS 36.214)
-   * uint16_t cellId, uint16_t rnti, double rsrp, double sinr
+   * The `ReportCurrentCellRsrpSinr` trace source. Trace information regarding
+   * RSRP and average SINR (see TS 36.214). Exporting cell ID, RNTI, RSRP, and
+   * SINR.
    */
   TracedCallback<uint16_t, uint16_t, double, double> m_reportCurrentCellRsrpSinrTrace;
+  /**
+   * The `RsrpSinrSamplePeriod` attribute. The sampling period for reporting
+   * RSRP-SINR stats.
+   */
   uint16_t m_rsrpSinrSamplePeriod;
   uint16_t m_rsrpSinrSampleCounter;
 
   /**
-   * Trace information regarding RSRP and RSRQ (see TS 36.214)
-   * uint16_t rnti, uint16_t cellId, double rsrpDbm, double rsrqDb, bool isServingCell
+   * The `ReportUeMeasurements` trace source. Contains trace information
+   * regarding RSRP and RSRQ measured from a specific cell (see TS 36.214).
+   * Exporting RNTI, the ID of the measured cell, RSRP (in dBm), RSRQ (in dB),
+   * and whether the cell is the serving cell.
    */
   TracedCallback<uint16_t, uint16_t, double, double, bool> m_reportUeMeasurements;
 
   EventId m_sendSrsEvent;
 
   /**
-   * Trace information regarding PHY stats from DL Tx perspective
-   * PhyTrasmissionStatParameters  see lte-common.h
+   * The `UlPhyTransmission` trace source. Contains trace information regarding
+   * PHY stats from UL Tx perspective. Exporting a structure with type
+   * PhyTransmissionStatParameters.
    */
   TracedCallback<PhyTransmissionStatParameters> m_ulPhyTransmission;
 
-};
+}; // end of `class LteUePhy`
 
 
 }

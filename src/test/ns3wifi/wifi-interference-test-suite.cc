@@ -45,9 +45,9 @@
 #include "ns3/nqos-wifi-mac-helper.h"
 #include "ns3/simulator.h"
 
-NS_LOG_COMPONENT_DEFINE ("WifiInterferenceTestSuite");
-
 using namespace ns3;
+
+NS_LOG_COMPONENT_DEFINE ("WifiInterferenceTestSuite");
 
 class WifiInterferenceTestCase : public TestCase
 {

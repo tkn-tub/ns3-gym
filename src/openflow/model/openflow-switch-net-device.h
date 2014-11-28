@@ -89,20 +89,24 @@ public:
   static TypeId GetTypeId (void);
 
   /**
-   * \name OpenFlowSwitchNetDevice Description Data
-   * \brief These four data describe the OpenFlowSwitchNetDevice as if it were a real OpenFlow switch.
+   * \name Descriptive Data
+   * \brief OpenFlowSwitchNetDevice Description Data
+   *
+   * These four data describe the OpenFlowSwitchNetDevice as if it were
+   * a real OpenFlow switch.
    *
    * There is a type of stats request that OpenFlow switches are supposed
    * to handle that returns the description of the OpenFlow switch. Currently
    * manufactured by "The ns-3 team", software description is "Simulated
    * OpenFlow Switch", and the other two are "N/A".
+   * @{
    */
-  //\{
+  /** \returns The descriptive string. */
   static const char * GetManufacturerDescription ();
   static const char * GetHardwareDescription ();
   static const char * GetSoftwareDescription ();
   static const char * GetSerialNumber ();
-  //\}
+  /**@}*/
 
   OpenFlowSwitchNetDevice ();
   virtual ~OpenFlowSwitchNetDevice ();
@@ -121,7 +125,7 @@ public:
    * the new switch port NetDevice becomes part of the switch and L2
    * frames start being forwarded to/from this NetDevice.
    *
-   * \attention The netdevice that is being added as switch port must
+   * \note The netdevice that is being added as switch port must
    * _not_ have an IP address.  In order to add IP connectivity to a
    * bridging node you must enable IP on the OpenFlowSwitchNetDevice itself,
    * never on its port netdevices.
@@ -213,8 +217,7 @@ public:
    */
   vport_table_t GetVPortTable ();
 
-  ///\name From NetDevice
-  //\{
+  // From NetDevice
   virtual void SetIfIndex (const uint32_t index);
   virtual uint32_t GetIfIndex (void) const;
   virtual Ptr<Channel> GetChannel (void) const;
@@ -239,7 +242,6 @@ public:
   virtual void SetPromiscReceiveCallback (NetDevice::PromiscReceiveCallback cb);
   virtual bool SupportsSendFrom () const;
   virtual Address GetMulticast (Ipv6Address addr) const;
-  //\}
 
 protected:
   virtual void DoDispose (void);
@@ -495,15 +497,16 @@ private:
   void* MakeOpenflowReply (size_t openflow_len, uint8_t type, ofpbuf **bufferp);
 
   /**
-   * \internal
    * \name Receive Methods
    *
    * Actions to do when a specific OpenFlow message/packet is received
    *
+   * @{
+   */
+  /**
    * \param msg The OpenFlow message received.
    * \return 0 if everything's ok, otherwise an error number.
    */
-  //\{
   int ReceiveFeaturesRequest (const void *msg);
   int ReceiveGetConfigRequest (const void *msg);
   int ReceiveSetConfig (const void *msg);
@@ -515,7 +518,7 @@ private:
   int ReceiveEchoReply (const void *oh);
   int ReceiveVPortMod (const void *msg);
   int ReceiveVPortTableFeaturesRequest (const void *msg);
-  //\}
+  /**@}*/
 
   /// Callbacks
   NetDevice::ReceiveCallback m_rxCallback;

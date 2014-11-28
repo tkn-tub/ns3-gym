@@ -51,6 +51,110 @@ to this file based on your experience, please contribute a patch or drop
 us a note on ns-developers mailing list.</p>
 
 <hr>
+<h1>Changes from ns-3.21 to ns-3.22</h1>
+<h2>New API:</h2>
+<ul>
+  <li> It is now possible to print the Neighbor Cache (ARP and NDISC) by using
+       the RoutingProtocolHelper
+  </li>
+</ul>
+
+<h2>Changes to existing API:</h2>
+<ul>
+</ul>
+
+<h2>Changes to build system:</h2>
+<ul>
+</ul>
+
+<h2>Changed behavior:</h2>
+<ul>
+</ul>
+
+<hr>
+<h1>Changes from ns-3.20 to ns-3.21</h1>
+<h2>New API:</h2>
+<ul>
+  <li> New "const double& SpectrumValue:: operator[] (size_t index) const".
+  </li>
+  <li> A new TraceSource has been added to TCP sockets: SlowStartThreshold.
+  </li>
+  <li> New method CommmandLine::AddValue (name, attibutePath) to provide a
+       shorthand argument "name" for the Attribute "path".  This also has
+       the effect of including the help string for the Attribute in the
+       Usage message.
+  </li>
+  <li> The GSoC 2014 project in the LTE module has brought some additional APIs:
+    <ul>
+      <li>a new abstract class LteFfrAlgorithm, which every future
+          implementation of frequency reuse algorithm should inherit from</li>
+      <li>a new SAPs: one between MAC Scheduler and FrAlgorithm, one between
+	  RRC and FrAlgorithm</li>
+      <li>new attribute to enable Uplink Power Control in LteUePhy</li>
+      <li>new LteUePowerControl class, an implementation of Uplink Power Control, which is 
+          configurable by attributes. ReferenceSignalPower is sent by eNB in SIB2. 
+          Uplink Power Control in Closed Loop Accumulative Mode is enabled by default</li>
+      <li>seven different Frequency Reuse Algorithms (each has its own attributes): </li>
+        <ul>
+          <li>LteFrNoOpAlgorithm</li>
+          <li>LteFrHardAlgorithm</li>
+          <li>LteFrStrictAlgorithm</li>
+          <li>LteFrSoftAlgorithm</li>
+          <li>LteFfrSoftAlgorithm</li>
+          <li>LteFfrEnhancedAlgorithm</li>
+          <li>LteFfrDistributedAlgorithm</li>
+        </ul>
+      <li>attribute in LteFfrAlgorithm to set FrCellTypeId which is used in automatic 
+          Frequency Reuse algorithm configuration</li>
+      <li>LteHelper has been updated with new methods related to frequency reuse algorithm: 
+          SetFfrAlgorithmType and SetFfrAlgorithmAttribute</li>
+    </ul>
+  </li>
+  <li> A new SimpleNetDeviceHelper can now be used to install SimpleNetDevices.
+  </li>
+  <li> New PacketSocketServer and PacketSocketClient apps, meant to be used in tests.
+  </li>
+  <li> Tcp Timestamps and Window Scale options have been added and are enabled by default (controllable by attribute).
+  </li>
+  <li> A new CoDel queue model has been added to the 'internet' module.  
+  </li>
+</ul>
+
+<h2>Changes to existing API:</h2>
+<ul>
+  <li> "Icmpv6L4Protocol::ForgeEchoRequest" is now returning a packet with the proper IPv6 header.
+  </li>
+  <li> The TCP socket Attribute "SlowStartThreshold" has been renamed "InitialSlowStartThreshold" to
+       clarify that the effect is only on the initial value.
+  </li>
+  <li> all schedulers were updated to interact with FR entity via FFR-SAP. Only PF, PSS, CQA, 
+       FD-TBFQ, TD-TBFQ schedulers supports Frequency Reuse functionality. In the beginning 
+       of scheduling process, schedulers ask FR entity for avaiable RBGs and then ask if UE 
+       can be scheduled on RB</li>
+  <li> eNB RRC interacts with FFR entity via RRC-FFR SAP</li>
+  <li> new DL-CQI generation approach was implemented. Now DL-CQI is computed from control channel as signal
+       and data channel (if received) as interference. New attribute in LteHelper was added to specify 
+       DL-CQI generation approach. New approach is default one in LteHelper </li>
+  <li> RadioEnvironmentMap can be generated for Data or Control channel and for specified RbId;
+       Data or Control channel and RbId can be configured by new attributes in RadioEnvironmentMapHelper </li>
+  <li> lte-sinr-chunk-processor refactored to lte-chunk-processor. Removed all lte-xxx-chunk-processor 
+       implementations</li>
+  <li> BindToNetDevice affects also sockets using IPv6.</li>
+  <li> BindToNetDevice now calls implicitly Bind (). To bind a socket to a NetDevice and to a specific address,
+       the correct sequence is Bind (address) - BindToNetDevice (device). The opposite will raise an error.</li>
+</ul>
+
+<h2>Changes to build system:</h2>
+<ul>
+<li> None for this release. </li>
+</ul>
+
+<h2>Changed behavior:</h2>
+<ul>
+<li> Behavior will be changed due to the list of bugs fixed (listed in RELEASE_NOTES); users are requested to review that list as well.
+</ul>
+
+<hr>
 <h1>Changes from ns-3.19 to ns-3.20</h1>
 <h2>New API:</h2>
 <ul>
@@ -203,6 +307,10 @@ failure.  </li>
   <li> Additional time units (Year, Day, Hour, Minute) were added to the time
   value class that represents simulation time; the largest unit prior to 
   this addition was Second.
+  </li>
+  <li> SimpleNetDevice and SimpleChannel are not so simple anymore. SimpleNetDevice can be now a
+       Broadcast or PointToPoint NetDevice, it can have a limited bandwidth and it uses an output
+       queue.       
   </li>
 </ul>
 

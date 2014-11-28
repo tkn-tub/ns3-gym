@@ -2,19 +2,19 @@
 
 def build(bld):
     obj = bld.create_ns3_program('dynamic-global-routing',
-                                 ['point-to-point', 'csma', 'internet'])
+                                 ['point-to-point', 'csma', 'internet', 'applications'])
     obj.source = 'dynamic-global-routing.cc'
 
     obj = bld.create_ns3_program('static-routing-slash32',
-                                 ['point-to-point', 'csma', 'internet'])
+                                 ['point-to-point', 'csma', 'internet', 'applications'])
     obj.source = 'static-routing-slash32.cc'
 
     obj = bld.create_ns3_program('global-routing-slash32',
-                                 ['point-to-point', 'csma', 'internet'])
+                                 ['point-to-point', 'csma', 'internet', 'applications'])
     obj.source = 'global-routing-slash32.cc'
 
     obj = bld.create_ns3_program('global-injection-slash32',
-                                 ['point-to-point', 'csma', 'internet'])
+                                 ['point-to-point', 'csma', 'internet', 'applications'])
     obj.source = 'global-injection-slash32.cc'
 
     obj = bld.create_ns3_program('simple-global-routing',
@@ -25,12 +25,12 @@ def build(bld):
                                  ['point-to-point', 'internet', 'applications'])
     obj.source = 'simple-alternate-routing.cc'
 
-    obj = bld.create_ns3_program( 'mixed-global-routing',
-                                  ['point-to-point', 'internet', 'csma'])
+    obj = bld.create_ns3_program('mixed-global-routing',
+                                 ['point-to-point', 'internet', 'csma', 'applications'])
     obj.source = 'mixed-global-routing.cc'
 
     obj = bld.create_ns3_program('simple-routing-ping6',
-      ['csma', 'internet'])
+                                 ['csma', 'internet', 'applications'])
     obj.source = 'simple-routing-ping6.cc'
 
     obj = bld.create_ns3_program('manet-routing-compare',

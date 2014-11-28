@@ -23,9 +23,9 @@
 #include "ns3/simulation-singleton.h"
 #include "ipv4-address-generator.h"
 
-NS_LOG_COMPONENT_DEFINE ("Ipv4AddressGenerator");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("Ipv4AddressGenerator");
 
 /**
  * \internal

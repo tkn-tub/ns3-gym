@@ -205,8 +205,8 @@ int main (int argc, char *argv[])
        sink1App.Stop (Seconds (t));
             
        OnOffHelper onoff ("ns3::TcpSocketFactory",Ipv4Address::GetAny ());
-       onoff.SetAttribute ("OnTime", RandomVariableValue (ConstantVariable(30)));//in seconds
-       onoff.SetAttribute ("OffTime", RandomVariableValue (ConstantVariable(0)));
+       onoff.SetAttribute ("OnTime", StringValue ("ns3::ConstantRandomVariable[Constant=30.0]")); //in seconds
+       onoff.SetAttribute ("OffTime", StringValue ("ns3::ConstantRandomVariable[Constant=0.0]"));
        onoff.SetAttribute ("PacketSize", UintegerValue (1500-30));//1024
        onoff.SetAttribute ("DataRate", DataRateValue (100000000));//51200
        ApplicationContainer apps;

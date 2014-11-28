@@ -122,6 +122,7 @@ public:
   virtual Time Now (void) const;
   virtual Time GetDelayLeft (const EventId &id) const;
   virtual Time GetMaximumSimulationTime (void) const;
+  virtual void SetMaximumLookAhead (const Time lookAhead);
   virtual void SetScheduler (ObjectFactory schedulerFactory);
   virtual uint32_t GetSystemId (void) const;
   virtual uint32_t GetContext (void) const;

@@ -30,10 +30,12 @@
 #include "ns3/log.h"
 #include <algorithm>
 
-NS_LOG_COMPONENT_DEFINE ("AodvNeighbors");
 
 namespace ns3
 {
+  
+NS_LOG_COMPONENT_DEFINE ("AodvNeighbors");
+
 namespace aodv
 {
 Neighbors::Neighbors (Time delay) : 

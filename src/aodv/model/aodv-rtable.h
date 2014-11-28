@@ -101,8 +101,8 @@ public:
 
   /// Mark entry as "down" (i.e. disable it)
   void Invalidate (Time badLinkLifetime);
-  ///\name Fields
-  //\{
+  
+  // Fields
   Ipv4Address GetDestination () const { return m_ipv4Route->GetDestination (); }
   Ptr<Ipv4Route> GetRoute () const { return m_ipv4Route; }
   void SetRoute (Ptr<Ipv4Route> r) { m_ipv4Route = r; }
@@ -131,7 +131,6 @@ public:
   Time GetBlacklistTimeout () const { return m_blackListTimeout; }
   /// RREP_ACK timer
   Timer m_ackTimer;
-  //\}
 
   /**
    * \brief Compare destination address

@@ -576,6 +576,9 @@ public:
    * is also possible to bind to mismatching device and address, even if
    * the socket can not receive any packets as a result.
    *
+   * \warning BindToNetDevice should be used \a after Bind. Otherwise
+   * it will perform a Bind itself.
+   *
    * \param netdevice Pointer to Netdevice of desired interface
    * \returns nothing
    */

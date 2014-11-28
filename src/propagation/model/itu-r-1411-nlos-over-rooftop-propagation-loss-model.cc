@@ -27,9 +27,9 @@
 
 #include "itu-r-1411-nlos-over-rooftop-propagation-loss-model.h"
 
-NS_LOG_COMPONENT_DEFINE ("ItuR1411NlosOverRooftopPropagationLossModel");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("ItuR1411NlosOverRooftopPropagationLossModel");
 
 NS_OBJECT_ENSURE_REGISTERED (ItuR1411NlosOverRooftopPropagationLossModel);
 

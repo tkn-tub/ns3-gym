@@ -23,9 +23,9 @@
 #include "candidate-queue.h"
 #include "global-route-manager-impl.h"
 
-NS_LOG_COMPONENT_DEFINE ("CandidateQueue");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("CandidateQueue");
 
 /**
  * \brief Stream insertion operator.

@@ -28,9 +28,9 @@
 #include "ns3/config.h"
 #include "ns3/trace-source-accessor.h"
 
-NS_LOG_COMPONENT_DEFINE ("DoubleProbe");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("DoubleProbe");
 
 NS_OBJECT_ENSURE_REGISTERED (DoubleProbe);
 
@@ -42,7 +42,8 @@ DoubleProbe::GetTypeId ()
     .AddConstructor<DoubleProbe> ()
     .AddTraceSource ( "Output",
                       "The double that serves as output for this probe",
-                      MakeTraceSourceAccessor (&DoubleProbe::m_output))
+                      MakeTraceSourceAccessor (&DoubleProbe::m_output),
+                     "ns3::TracedValue::DoubleCallback")
   ;
   return tid;
 }

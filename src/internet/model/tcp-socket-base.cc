@@ -46,13 +46,16 @@
 #include "ipv6-end-point.h"
 #include "ipv6-l3-protocol.h"
 #include "tcp-header.h"
+#include "tcp-option-winscale.h"
+#include "tcp-option-ts.h"
 #include "rtt-estimator.h"
 
+#include <math.h>
 #include <algorithm>
 
-NS_LOG_COMPONENT_DEFINE ("TcpSocketBase");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("TcpSocketBase");
 
 NS_OBJECT_ENSURE_REGISTERED (TcpSocketBase);
 
@@ -82,25 +85,39 @@ TcpSocketBase::GetTypeId (void)
     .AddAttribute ("IcmpCallback6", "Callback invoked whenever an icmpv6 error is received on this socket.",
                    CallbackValue (),
                    MakeCallbackAccessor (&TcpSocketBase::m_icmpCallback6),
-                   MakeCallbackChecker ())                   
+                   MakeCallbackChecker ())
+    .AddAttribute ("WindowScaling", "Enable or disable Window Scaling option",
+                   BooleanValue (true),
+                   MakeBooleanAccessor (&TcpSocketBase::m_winScalingEnabled),
+                   MakeBooleanChecker ())
+    .AddAttribute ("Timestamp", "Enable or disable Timestamp option",
+                   BooleanValue (true),
+                   MakeBooleanAccessor (&TcpSocketBase::m_timestampEnabled),
+                   MakeBooleanChecker ())
     .AddTraceSource ("RTO",
                      "Retransmission timeout",
-                     MakeTraceSourceAccessor (&TcpSocketBase::m_rto))
+                     MakeTraceSourceAccessor (&TcpSocketBase::m_rto),
+                     "ns3::Time::TracedValueCallback")
     .AddTraceSource ("RTT",
                      "Last RTT sample",
-                     MakeTraceSourceAccessor (&TcpSocketBase::m_lastRtt))
+                     MakeTraceSourceAccessor (&TcpSocketBase::m_lastRtt),
+                     "ns3::Time::TracedValueCallback")
     .AddTraceSource ("NextTxSequence",
                      "Next sequence number to send (SND.NXT)",
-                     MakeTraceSourceAccessor (&TcpSocketBase::m_nextTxSequence))
+                     MakeTraceSourceAccessor (&TcpSocketBase::m_nextTxSequence),
+                     "ns3::SequenceNumber32TracedValueCallback")
     .AddTraceSource ("HighestSequence",
                      "Highest sequence number ever sent in socket's life time",
-                     MakeTraceSourceAccessor (&TcpSocketBase::m_highTxMark))
+                     MakeTraceSourceAccessor (&TcpSocketBase::m_highTxMark),
+                     "ns3::SequenceNumber32TracedValueCallback")
     .AddTraceSource ("State",
                      "TCP state",
-                     MakeTraceSourceAccessor (&TcpSocketBase::m_state))
+                     MakeTraceSourceAccessor (&TcpSocketBase::m_state),
+                     "ns3::TcpStatesTracedValueCallback")
     .AddTraceSource ("RWND",
                      "Remote side's flow control window",
-                     MakeTraceSourceAccessor (&TcpSocketBase::m_rWnd))
+                     MakeTraceSourceAccessor (&TcpSocketBase::m_rWnd),
+                     "ns3::TracedValue::Uint32Callback")
   ;
   return tid;
 }
@@ -127,7 +144,13 @@ TcpSocketBase::TcpSocketBase (void)
     m_connected (false),
     m_segmentSize (0),
     // For attribute initialization consistency (quiet valgrind)
-    m_rWnd (0)
+    m_rWnd (0),
+    m_sndScaleFactor (0),
+    m_rcvScaleFactor (0),
+    m_timestampEnabled (true),
+    m_timestampToEcho (0),
+    m_lastEchoedTime (0)
+
 {
   NS_LOG_FUNCTION (this);
 }
@@ -162,7 +185,14 @@ TcpSocketBase::TcpSocketBase (const TcpSocketBase& sock)
     m_msl (sock.m_msl),
     m_segmentSize (sock.m_segmentSize),
     m_maxWinSize (sock.m_maxWinSize),
-    m_rWnd (sock.m_rWnd)
+    m_rWnd (sock.m_rWnd),
+    m_winScalingEnabled (sock.m_winScalingEnabled),
+    m_sndScaleFactor (sock.m_sndScaleFactor),
+    m_rcvScaleFactor (sock.m_rcvScaleFactor),
+    m_timestampEnabled (sock.m_timestampEnabled),
+    m_timestampToEcho (sock.m_timestampToEcho),
+    m_lastEchoedTime (sock.m_lastEchoedTime)
+
 {
   NS_LOG_FUNCTION (this);
   NS_LOG_LOGIC ("Invoked the copy constructor");
@@ -662,21 +692,28 @@ TcpSocketBase::BindToNetDevice (Ptr<NetDevice> netdevice)
 {
   NS_LOG_FUNCTION (netdevice);
   Socket::BindToNetDevice (netdevice); // Includes sanity check
-  if (m_endPoint == 0 && m_endPoint6 == 0)
+  if (m_endPoint == 0)
     {
       if (Bind () == -1)
         {
-          NS_ASSERT ((m_endPoint == 0 && m_endPoint6 == 0));
+          NS_ASSERT (m_endPoint == 0);
           return;
         }
-      NS_ASSERT ((m_endPoint != 0 && m_endPoint6 != 0));
+      NS_ASSERT (m_endPoint != 0);
     }
+  m_endPoint->BindToNetDevice (netdevice);
 
-  if (m_endPoint != 0)
+  if (m_endPoint6 == 0)
     {
-      m_endPoint->BindToNetDevice (netdevice);
+      if (Bind6 () == -1)
+        {
+          NS_ASSERT (m_endPoint6 == 0);
+          return;
+        }
+      NS_ASSERT (m_endPoint6 != 0);
     }
-  // No BindToNetDevice() for Ipv6EndPoint
+  m_endPoint6->BindToNetDevice (netdevice);
+
   return;
 }
 
@@ -872,12 +909,19 @@ TcpSocketBase::DoForwardUp (Ptr<Packet> packet, Ipv4Header header, uint16_t port
 
   // Peel off TCP header and do validity checking
   TcpHeader tcpHeader;
-  packet->RemoveHeader (tcpHeader);
+  uint32_t bytesRemoved = packet->RemoveHeader (tcpHeader);
+  if (bytesRemoved == 0 || bytesRemoved > 60)
+    {
+      NS_LOG_ERROR ("Bytes removed: " << bytesRemoved << " invalid");
+      return; // Discard invalid packet
+    }
+
+  ReadOptions (tcpHeader);
+
   if (tcpHeader.GetFlags () & TcpHeader::ACK)
     {
       EstimateRtt (tcpHeader);
     }
-  ReadOptions (tcpHeader);
 
   // Update Rx window size, i.e. the flow control window
   if (m_rWnd.Get () == 0 && tcpHeader.GetWindowSize () != 0)
@@ -886,6 +930,7 @@ TcpSocketBase::DoForwardUp (Ptr<Packet> packet, Ipv4Header header, uint16_t port
       m_persistEvent.Cancel ();
     }
   m_rWnd = tcpHeader.GetWindowSize ();
+  m_rWnd <<= m_rcvScaleFactor;
 
   // Discard fully out of range data packets
   if (packet->GetSize ()
@@ -954,6 +999,7 @@ TcpSocketBase::DoForwardUp (Ptr<Packet> packet, Ipv4Header header, uint16_t port
     }
 }
 
+// XXX this is duplicate code with the other DoForwardUp()
 void
 TcpSocketBase::DoForwardUp (Ptr<Packet> packet, Ipv6Header header, uint16_t port)
 {
@@ -967,12 +1013,19 @@ TcpSocketBase::DoForwardUp (Ptr<Packet> packet, Ipv6Header header, uint16_t port
 
   // Peel off TCP header and do validity checking
   TcpHeader tcpHeader;
-  packet->RemoveHeader (tcpHeader);
+  uint32_t bytesRemoved = packet->RemoveHeader (tcpHeader);
+  if (bytesRemoved == 0 || bytesRemoved > 60)
+    {
+      NS_LOG_ERROR ("Bytes removed: " << bytesRemoved << " invalid");
+      return; // Discard invalid packet
+    }
+
+  ReadOptions (tcpHeader);
+
   if (tcpHeader.GetFlags () & TcpHeader::ACK)
     {
       EstimateRtt (tcpHeader);
     }
-  ReadOptions (tcpHeader);
 
   // Update Rx window size, i.e. the flow control window
   if (m_rWnd.Get () == 0 && tcpHeader.GetWindowSize () != 0)
@@ -981,6 +1034,7 @@ TcpSocketBase::DoForwardUp (Ptr<Packet> packet, Ipv6Header header, uint16_t port
       m_persistEvent.Cancel ();
     }
   m_rWnd = tcpHeader.GetWindowSize ();
+  m_rWnd <<= m_rcvScaleFactor;
 
   // Discard fully out of range packets
   if (packet->GetSize ()
@@ -1636,8 +1690,8 @@ TcpSocketBase::SendEmptyPacket (uint8_t flags)
       header.SetSourcePort (m_endPoint6->GetLocalPort ());
       header.SetDestinationPort (m_endPoint6->GetPeerPort ());
     }
-  header.SetWindowSize (AdvertisedWindowSize ());
   AddOptions (header);
+  header.SetWindowSize (AdvertisedWindowSize ());
   m_rto = m_rtt->RetransmitTimeout ();
   bool hasSyn = flags & TcpHeader::SYN;
   bool hasFin = flags & TcpHeader::FIN;
@@ -1817,6 +1871,7 @@ TcpSocketBase::CompleteFork (Ptr<Packet> p, const TcpHeader& h,
   SetupCallback ();
   // Set the sequence number and send SYN+ACK
   m_rxBuffer.SetNextRxSequence (h.GetSequenceNumber () + SequenceNumber32 (1));
+
   SendEmptyPacket (TcpHeader::SYN | TcpHeader::ACK);
 }
 
@@ -2025,7 +2080,17 @@ TcpSocketBase::AvailableWindow ()
 uint16_t
 TcpSocketBase::AdvertisedWindowSize ()
 {
-  return std::min (m_rxBuffer.MaxBufferSize () - m_rxBuffer.Size (), (uint32_t)m_maxWinSize);
+  uint32_t w = m_rxBuffer.MaxBufferSize () - m_rxBuffer.Size ();
+
+  w >>= m_sndScaleFactor;
+
+  if (w > m_maxWinSize)
+    {
+      NS_LOG_WARN ("There is a loss in the adv win size, wrt buffer size");
+      w = m_maxWinSize;
+    }
+
+  return (uint16_t) w;
 }
 
 // Receipt of new packet, put into Rx buffer
@@ -2085,17 +2150,31 @@ TcpSocketBase::ReceivedData (Ptr<Packet> p, const TcpHeader& tcpHeader)
     }
 }
 
-/* Called by ForwardUp() to estimate RTT */
+/**
+ * \brief Estimate the RTT
+ *
+ * Called by ForwardUp() to estimate RTT.
+ *
+ * \param tcpHeader TCP header for the incoming packet
+ */
 void
 TcpSocketBase::EstimateRtt (const TcpHeader& tcpHeader)
 {
-  // Use m_rtt for the estimation. Note, RTT of duplicated acknowledgement
-  // (which should be ignored) is handled by m_rtt. Once timestamp option
-  // is implemented, this function would be more elaborated.
-  Time nextRtt =  m_rtt->AckSeq (tcpHeader.GetAckNumber () );
+  Time nextRtt;
+
+  if (m_timestampEnabled)
+    {
+      nextRtt = TcpOptionTS::ElapsedTimeFromTsValue (m_lastEchoedTime);
+    }
+  else
+    {
+      // Use m_rtt for the estimation. Note, RTT of duplicated acknowledgement
+      // (which should be ignored) is handled by m_rtt.
+      nextRtt =  m_rtt->EstimateRttFromSeq (tcpHeader.GetAckNumber () );
+    }
 
   //nextRtt will be zero for dup acks.  Don't want to update lastRtt in that case
-  //but still needed to do list clearing that is done in AckSeq. 
+  //but still needed to do list clearing that is done in EstimateRttFromSeq.
   if(nextRtt != Time (0))
   {
     m_lastRtt = nextRtt;
@@ -2432,16 +2511,141 @@ TcpSocketBase::GetAllowBroadcast (void) const
   return false;
 }
 
-/* Placeholder function for future extension that reads more from the TCP header */
 void
-TcpSocketBase::ReadOptions (const TcpHeader&)
+TcpSocketBase::ReadOptions (const TcpHeader& header)
 {
+  NS_LOG_FUNCTION (this << header);
+
+  if ((header.GetFlags () & TcpHeader::SYN))
+    {
+      if (m_winScalingEnabled)
+        {
+          m_winScalingEnabled = false;
+
+          if (header.HasOption (TcpOption::WINSCALE))
+            {
+              m_winScalingEnabled = true;
+              ProcessOptionWScale (header.GetOption (TcpOption::WINSCALE));
+            }
+        }
+    }
+
+  m_timestampEnabled = false;
+  if (header.HasOption (TcpOption::TS))
+    {
+      m_timestampEnabled = true;
+      ProcessOptionTimestamp (header.GetOption (TcpOption::TS));
+    }
 }
 
-/* Placeholder function for future extension that changes the TCP header */
 void
-TcpSocketBase::AddOptions (TcpHeader&)
+TcpSocketBase::AddOptions (TcpHeader& header)
 {
+  NS_LOG_FUNCTION (this << header);
+
+  // The window scaling option is set only on SYN packets
+  if (m_winScalingEnabled && (header.GetFlags () & TcpHeader::SYN))
+    {
+      AddOptionWScale (header);
+    }
+
+  if (m_timestampEnabled)
+    {
+      AddOptionTimestamp (header);
+    }
+}
+
+void
+TcpSocketBase::ProcessOptionWScale (const Ptr<const TcpOption> option)
+{
+  NS_LOG_FUNCTION (this << option);
+
+  Ptr<const TcpOptionWinScale> ws = DynamicCast<const TcpOptionWinScale> (option);
+
+  // In naming, we do the contrary of RFC 1323. The received scaling factor
+  // is Rcv.Wind.Scale (and not Snd.Wind.Scale)
+  m_rcvScaleFactor = ws->GetScale ();
+
+  if (m_rcvScaleFactor > 14)
+    {
+      NS_LOG_WARN ("Possible error; m_rcvScaleFactor exceeds 14: " << m_rcvScaleFactor);
+      m_rcvScaleFactor = 14;
+    }
+
+  NS_LOG_INFO (m_node->GetId () << " Received a scale factor of " <<
+                 static_cast<int> (m_rcvScaleFactor));
+}
+
+uint8_t
+TcpSocketBase::CalculateWScale () const
+{
+  NS_LOG_FUNCTION (this);
+  uint32_t maxSpace = m_rxBuffer.MaxBufferSize ();
+  uint8_t scale = 0;
+
+  while (maxSpace > m_maxWinSize)
+    {
+      maxSpace = maxSpace >> 1;
+      ++scale;
+    }
+
+  if (scale > 14)
+    {
+      NS_LOG_WARN ("Possible error; scale exceeds 14: " << scale);
+      scale = 14;
+    }
+
+  NS_LOG_INFO ("Node " << m_node->GetId () << " calculated wscale factor of " <<
+               static_cast<int> (scale) << " for buffer size " << m_rxBuffer.MaxBufferSize ());
+  return scale;
+}
+
+void
+TcpSocketBase::AddOptionWScale (TcpHeader &header)
+{
+  NS_LOG_FUNCTION (this << header);
+  NS_ASSERT(header.GetFlags () & TcpHeader::SYN);
+
+  Ptr<TcpOptionWinScale> option = CreateObject<TcpOptionWinScale> ();
+
+  // In naming, we do the contrary of RFC 1323. The sended scaling factor
+  // is Snd.Wind.Scale (and not Rcv.Wind.Scale)
+
+  m_sndScaleFactor = CalculateWScale ();
+  option->SetScale (m_sndScaleFactor);
+
+  header.AppendOption (option);
+
+  NS_LOG_INFO (m_node->GetId () << " Send a scaling factor of " <<
+                 static_cast<int> (m_sndScaleFactor));
+}
+
+void
+TcpSocketBase::ProcessOptionTimestamp (const Ptr<const TcpOption> option)
+{
+  NS_LOG_FUNCTION (this << option);
+
+  Ptr<const TcpOptionTS> ts = DynamicCast<const TcpOptionTS> (option);
+  m_timestampToEcho = ts->GetTimestamp ();
+  m_lastEchoedTime = ts->GetEcho ();
+
+  NS_LOG_INFO (m_node->GetId () << " Got timestamp=" <<
+               m_timestampToEcho << " and Echo="     << m_lastEchoedTime);
+}
+
+void
+TcpSocketBase::AddOptionTimestamp (TcpHeader& header)
+{
+  NS_LOG_FUNCTION (this << header);
+
+  Ptr<TcpOptionTS> option = CreateObject<TcpOptionTS> ();
+
+  option->SetTimestamp (TcpOptionTS::NowToTsValue ());
+  option->SetEcho (m_timestampToEcho);
+
+  header.AppendOption (option);
+  NS_LOG_INFO (m_node->GetId () << " Add option TS, ts=" <<
+               option->GetTimestamp () << " echo=" << m_timestampToEcho);
 }
 
 } // namespace ns3

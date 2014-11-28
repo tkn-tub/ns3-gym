@@ -29,9 +29,9 @@
 #include "ns3/config.h"
 #include "ns3/trace-source-accessor.h"
 
-NS_LOG_COMPONENT_DEFINE ("Ipv6PacketProbe");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("Ipv6PacketProbe");
 
 NS_OBJECT_ENSURE_REGISTERED (Ipv6PacketProbe);
 

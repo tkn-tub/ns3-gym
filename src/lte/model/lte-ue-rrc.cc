@@ -36,10 +36,9 @@
 
 #include <cmath>
 
-NS_LOG_COMPONENT_DEFINE ("LteUeRrc");
-
 namespace ns3 {
 
+NS_LOG_COMPONENT_DEFINE ("LteUeRrc");
 
 /////////////////////////////
 // CMAC SAP forwarder
@@ -87,7 +86,7 @@ UeMemberLteUeCmacSapUser::NotifyRandomAccessFailed ()
 
 
 
-
+/// Map each of UE RRC states to its string representation.
 static const std::string g_ueRrcStateName[LteUeRrc::NUM_STATES] =
 {
   "IDLE_START",
@@ -105,6 +104,10 @@ static const std::string g_ueRrcStateName[LteUeRrc::NUM_STATES] =
   "CONNECTED_REESTABLISHING"
 };
 
+/**
+ * \param s The UE RRC state.
+ * \return The string representation of the given state.
+ */
 static const std::string & ToString (LteUeRrc::State s)
 {
   return g_ueRrcStateName[s];
@@ -189,44 +192,53 @@ LteUeRrc::GetTypeId (void)
                    UintegerValue (0), // unused, read-only attribute
                    MakeUintegerAccessor (&LteUeRrc::GetRnti),
                    MakeUintegerChecker<uint16_t> ())
+    .AddAttribute ("T300",
+                   "Timer for the RRC Connection Establishment procedure "
+                   "(i.e., the procedure is deemed as failed if it takes longer than this)",
+                   TimeValue (MilliSeconds (100)),
+                   MakeTimeAccessor (&LteUeRrc::m_t300),
+                   MakeTimeChecker ())
     .AddTraceSource ("MibReceived",
-                     "trace fired upon reception of Master Information Block",
+                     "Fired upon reception of Master Information Block.",
                      MakeTraceSourceAccessor (&LteUeRrc::m_mibReceivedTrace))
     .AddTraceSource ("Sib1Received",
-                     "trace fired upon reception of System Information Block Type 1",
+                     "Fired upon reception of System Information Block Type 1.",
                      MakeTraceSourceAccessor (&LteUeRrc::m_sib1ReceivedTrace))
     .AddTraceSource ("Sib2Received",
-                     "trace fired upon reception of System Information Block Type 2",
+                     "Fired upon reception of System Information Block Type 2.",
                      MakeTraceSourceAccessor (&LteUeRrc::m_sib2ReceivedTrace))
     .AddTraceSource ("StateTransition",
-                     "trace fired upon every UE RRC state transition",
+                     "Fired upon every UE RRC state transition.",
                      MakeTraceSourceAccessor (&LteUeRrc::m_stateTransitionTrace))
     .AddTraceSource ("InitialCellSelectionEndOk",
-                     "trace fired upon successful initial cell selection procedure",
+                     "Fired upon successful initial cell selection procedure.",
                      MakeTraceSourceAccessor (&LteUeRrc::m_initialCellSelectionEndOkTrace))
     .AddTraceSource ("InitialCellSelectionEndError",
-                     "trace fired upon failed initial cell selection procedure",
+                     "Fired upon failed initial cell selection procedure.",
                      MakeTraceSourceAccessor (&LteUeRrc::m_initialCellSelectionEndErrorTrace))
     .AddTraceSource ("RandomAccessSuccessful",
-                     "trace fired upon successful completion of the random access procedure",
+                     "Fired upon successful completion of the random access procedure.",
                      MakeTraceSourceAccessor (&LteUeRrc::m_randomAccessSuccessfulTrace))
     .AddTraceSource ("RandomAccessError",
-                     "trace fired upon failure of the random access procedure",
+                     "Fired upon failure of the random access procedure.",
                      MakeTraceSourceAccessor (&LteUeRrc::m_randomAccessErrorTrace))
     .AddTraceSource ("ConnectionEstablished",
-                     "trace fired upon successful RRC connection establishment",
+                     "Fired upon successful RRC connection establishment.",
                      MakeTraceSourceAccessor (&LteUeRrc::m_connectionEstablishedTrace))
+    .AddTraceSource ("ConnectionTimeout",
+                     "Fired upon timeout RRC connection establishment because of T300.",
+                     MakeTraceSourceAccessor (&LteUeRrc::m_connectionTimeoutTrace))
     .AddTraceSource ("ConnectionReconfiguration",
-                     "trace fired upon RRC connection reconfiguration",
+                     "Fired upon RRC connection reconfiguration.",
                      MakeTraceSourceAccessor (&LteUeRrc::m_connectionReconfigurationTrace))
     .AddTraceSource ("HandoverStart",
-                     "trace fired upon start of a handover procedure",
+                     "Fired upon start of a handover procedure.",
                      MakeTraceSourceAccessor (&LteUeRrc::m_handoverStartTrace))
     .AddTraceSource ("HandoverEndOk",
-                     "trace fired upon successful termination of a handover procedure",
+                     "Fired upon successful termination of a handover procedure.",
                      MakeTraceSourceAccessor (&LteUeRrc::m_handoverEndOkTrace))
     .AddTraceSource ("HandoverEndError",
-                     "trace fired upon failure of a handover procedure",
+                     "Fired upon failure of a handover procedure.",
                      MakeTraceSourceAccessor (&LteUeRrc::m_handoverEndErrorTrace))
   ;
   return tid;
@@ -490,6 +502,9 @@ LteUeRrc::DoNotifyRandomAccessSuccessful ()
         LteRrcSap::RrcConnectionRequest msg;
         msg.ueIdentity = m_imsi;
         m_rrcSapUser->SendRrcConnectionRequest (msg); 
+        m_connectionTimeout = Simulator::Schedule (m_t300,
+                                                   &LteUeRrc::ConnectionTimeout,
+                                                   this);
       }
       break;
 
@@ -799,6 +814,7 @@ LteUeRrc::DoRecvSystemInformation (LteRrcSap::SystemInformation msg)
           rc.raResponseWindowSize = msg.sib2.radioResourceConfigCommon.rachConfigCommon.raSupervisionInfo.raResponseWindowSize;
           m_cmacSapProvider->ConfigureRach (rc);
           m_cphySapProvider->ConfigureUplink (m_ulEarfcn, m_ulBandwidth);
+          m_cphySapProvider->ConfigureReferenceSignalPower(msg.sib2.radioResourceConfigCommon.pdschConfigCommon.referenceSignalPower);
           if (m_state == IDLE_WAIT_SIB2)
             {
               NS_ASSERT (m_connectionPending);
@@ -824,6 +840,7 @@ LteUeRrc::DoRecvRrcConnectionSetup (LteRrcSap::RrcConnectionSetup msg)
     case IDLE_CONNECTING:
       {
         ApplyRadioResourceConfigDedicated (msg.radioResourceConfigDedicated);
+        m_connectionTimeout.Cancel ();
         SwitchToState (CONNECTED_NORMALLY);
         LteRrcSap::RrcConnectionSetupCompleted msg2;
         msg2.rrcTransactionIdentifier = msg.rrcTransactionIdentifier;
@@ -967,8 +984,12 @@ void
 LteUeRrc::DoRecvRrcConnectionReject (LteRrcSap::RrcConnectionReject msg)
 {
   NS_LOG_FUNCTION (this);
-  m_cmacSapProvider->Reset ();
+  m_connectionTimeout.Cancel ();
+
+  m_cmacSapProvider->Reset ();       // reset the MAC
+  m_hasReceivedSib2 = false;         // invalidate the previously received SIB2
   SwitchToState (IDLE_CAMPED_NORMALLY);
+  m_asSapUser->NotifyConnectionFailed ();  // inform upper layer
 }
 
 
@@ -1088,7 +1109,7 @@ LteUeRrc::ApplyRadioResourceConfigDedicated (LteRrcSap::RadioResourceConfigDedic
 {
   NS_LOG_FUNCTION (this);
   const struct LteRrcSap::PhysicalConfigDedicated& pcd = rrcd.physicalConfigDedicated;
-  
+
   if (pcd.haveAntennaInfoDedicated)
     {
       m_cphySapProvider->SetTransmissionMode (pcd.antennaInfo.transmissionMode);
@@ -1097,6 +1118,12 @@ LteUeRrc::ApplyRadioResourceConfigDedicated (LteRrcSap::RadioResourceConfigDedic
     {
       m_cphySapProvider->SetSrsConfigurationIndex (pcd.soundingRsUlConfigDedicated.srsConfigIndex);
     }
+
+  if (pcd.havePdschConfigDedicated)
+    {
+      // update PdschConfigDedicated (i.e. P_A value)
+	  m_pdschConfigDedicated = pcd.pdschConfigDedicated;
+   }
 
   std::list<LteRrcSap::SrbToAddMod>::const_iterator stamIt = rrcd.srbToAddModList.begin ();
   if (stamIt != rrcd.srbToAddModList.end ())
@@ -2733,6 +2760,17 @@ LteUeRrc::LeaveConnectedMode ()
 }
 
 void
+LteUeRrc::ConnectionTimeout ()
+{
+  NS_LOG_FUNCTION (this << m_imsi);
+  m_cmacSapProvider->Reset ();       // reset the MAC
+  m_hasReceivedSib2 = false;         // invalidate the previously received SIB2
+  SwitchToState (IDLE_CAMPED_NORMALLY);
+  m_connectionTimeoutTrace (m_imsi, m_cellId, m_rnti);
+  m_asSapUser->NotifyConnectionFailed ();  // inform upper layer
+}
+
+void
 LteUeRrc::DisposeOldSrb1 ()
 {
   NS_LOG_FUNCTION (this);
@@ -2760,7 +2798,7 @@ LteUeRrc::SwitchToState (State newState)
   NS_LOG_FUNCTION (this << ToString (newState));
   State oldState = m_state;
   m_state = newState;
-  NS_LOG_INFO (this << "IMSI " << m_imsi << " RNTI " << m_rnti << " UeRrc "
+  NS_LOG_INFO (this << " IMSI " << m_imsi << " RNTI " << m_rnti << " UeRrc "
                     << ToString (oldState) << " --> " << ToString (newState));
   m_stateTransitionTrace (m_imsi, m_cellId, m_rnti, oldState, newState);
 

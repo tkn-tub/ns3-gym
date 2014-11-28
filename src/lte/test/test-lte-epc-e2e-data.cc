@@ -46,9 +46,7 @@
 
 using namespace ns3;
 
-
 NS_LOG_COMPONENT_DEFINE ("LteEpcE2eData");
-
 
 
 struct BearerTestData

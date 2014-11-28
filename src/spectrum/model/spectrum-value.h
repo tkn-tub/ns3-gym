@@ -89,6 +89,14 @@ public:
    */
   double& operator[] (size_t index);
 
+  /**
+   * Access value at given frequency index
+   *
+   * @param index the given frequency index
+   *
+   * @return const reference to the value
+   */
+  const double& operator[] (size_t index) const;
 
 
   /**

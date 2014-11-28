@@ -52,10 +52,9 @@
 
 #include "lte-test-harq.h"
 
-NS_LOG_COMPONENT_DEFINE ("LenaTestHarq");
-
 using namespace ns3;
 
+NS_LOG_COMPONENT_DEFINE ("LenaTestHarq");
 
 LenaTestHarqSuite::LenaTestHarqSuite ()
   : TestSuite ("lte-harq", SYSTEM)
@@ -111,6 +110,9 @@ LenaHarqTestCase::DoRun (void)
   Config::SetDefault ("ns3::LteSpectrumPhy::CtrlErrorModelEnabled", BooleanValue (false));
   Config::SetDefault ("ns3::LteSpectrumPhy::DataErrorModelEnabled", BooleanValue (true));
   Config::SetDefault ("ns3::LteHelper::UseIdealRrc", BooleanValue (true));
+  //Disable Uplink Power Control
+  Config::SetDefault ("ns3::LteUePhy::EnableUplinkPowerControl", BooleanValue (false));
+
 //   Config::SetDefault ("ns3::RrFfMacScheduler::HarqEnabled", BooleanValue (false));
 //   LogComponentEnable ("LteEnbRrc", LOG_LEVEL_ALL);
 //   LogComponentEnable ("LteUeRrc", LOG_LEVEL_ALL);
@@ -124,7 +126,7 @@ LenaHarqTestCase::DoRun (void)
 
 //   LogComponentEnable ("LteSpectrumPhy", LOG_LEVEL_ALL);
 //   LogComponentEnable ("LteInterference", LOG_LEVEL_ALL);
-//   LogComponentEnable ("LteSinrChunkProcessor", LOG_LEVEL_ALL);
+//   LogComponentEnable ("LteChunkProcessor", LOG_LEVEL_ALL);
 //
 //   LogComponentEnable ("LtePropagationLossModel", LOG_LEVEL_ALL);
 //   LogComponentEnable ("LossModel", LOG_LEVEL_ALL);

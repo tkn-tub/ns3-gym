@@ -60,9 +60,10 @@
 #include "dsr-options.h"
 #include "dsr-rcache.h"
 
-NS_LOG_COMPONENT_DEFINE ("DsrOptions");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("DsrOptions");
+  
 namespace dsr {
 
 NS_OBJECT_ENSURE_REGISTERED (DsrOptions);

@@ -21,8 +21,6 @@
 #include "ns3/assert.h"
 #include "ns3/log.h"
 
-NS_LOG_COMPONENT_DEFINE ("Buffer");
-
 #define LOG_INTERNAL_STATE(y)                                                                    \
   NS_LOG_LOGIC (y << "start="<<m_start<<", end="<<m_end<<", zero start="<<m_zeroAreaStart<<              \
                 ", zero end="<<m_zeroAreaEnd<<", count="<<m_data->m_count<<", size="<<m_data->m_size<<   \
@@ -48,6 +46,8 @@ static struct Zeroes
 }
 
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("Buffer");
 
 
 uint32_t Buffer::g_recommendedStart = 0;

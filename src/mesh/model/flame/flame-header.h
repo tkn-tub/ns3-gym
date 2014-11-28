@@ -40,21 +40,16 @@ public:
 
   FlameHeader ();
   ~FlameHeader ();
-  /**
-   * \name Inherited from Header class:
-   * \{
-   */
+
+  // Inherited from Header class:
   static TypeId GetTypeId (void);
   virtual TypeId GetInstanceTypeId (void) const;
   virtual void Print (std::ostream &os) const;
   virtual uint32_t GetSerializedSize (void) const;
   virtual void Serialize (Buffer::Iterator start) const;
   virtual uint32_t Deserialize (Buffer::Iterator start);
-  ///\}
-  /**
-   * \name Seeters/Getters for fields:
-   * \{
-   */
+
+  // Seeters/Getters for fields:
   void AddCost (uint8_t cost);
   uint8_t GetCost () const;
   void SetSeqno (uint16_t seqno);
@@ -65,7 +60,7 @@ public:
   Mac48Address GetOrigSrc () const;
   void SetProtocol (uint16_t protocol);
   uint16_t GetProtocol () const;
-  ///\}
+
 private:
   uint8_t m_cost;
   uint16_t m_seqno;

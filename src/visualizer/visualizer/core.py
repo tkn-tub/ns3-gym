@@ -1124,7 +1124,7 @@ class Visualizer(gobject.GObject):
         # acquire and release the simulation lock around each code
         # that is executed.
 
-        original_runcode = __IPYTHON__.runcode
+        original_runcode = self.ipython.runcode
         def runcode(ip, *args):
             #print "lock"
             self.simulation.lock.acquire()
@@ -1134,7 +1134,7 @@ class Visualizer(gobject.GObject):
                 #print "unlock"
                 self.simulation.lock.release()
         import types
-        __IPYTHON__.runcode = types.MethodType(runcode, __IPYTHON__)                
+        self.ipython.runcode = types.MethodType(runcode, self.ipython)                
 
     def autoscale_view(self):
         if not self.nodes:
@@ -1285,7 +1285,7 @@ class Visualizer(gobject.GObject):
                     ns3_node = ns.network.NodeList.GetNode(self.selected_node.node_index)
                 finally:
                     self.simulation.lock.release()
-            __IPYTHON__.user_ns['selected_node'] = ns3_node
+            self.ipython.updateNamespace({'selected_node': ns3_node})
 
 
     def select_node(self, node):
@@ -1439,18 +1439,18 @@ class Visualizer(gobject.GObject):
         self.shell_window.set_resizable(True)
         scrolled_window = gtk.ScrolledWindow()
         scrolled_window.set_policy(gtk.POLICY_AUTOMATIC,gtk.POLICY_AUTOMATIC)
-        ipython = ipython_view.IPythonView()
-        ipython.modify_font(pango.FontDescription(SHELL_FONT))
-        ipython.set_wrap_mode(gtk.WRAP_CHAR)
-        ipython.show()
-        scrolled_window.add(ipython)
+        self.ipython = ipython_view.IPythonView()
+        self.ipython.modify_font(pango.FontDescription(SHELL_FONT))
+        self.ipython.set_wrap_mode(gtk.WRAP_CHAR)
+        self.ipython.show()
+        scrolled_window.add(self.ipython)
         scrolled_window.show()
         self.shell_window.add(scrolled_window)
         self.shell_window.show()
         self.shell_window.connect('destroy', self._on_shell_window_destroy)
 
         self._update_ipython_selected_node()
-        __IPYTHON__.user_ns['viz'] = self
+        self.ipython.updateNamespace({'viz': self})
 
 
     def _on_shell_window_destroy(self, window):

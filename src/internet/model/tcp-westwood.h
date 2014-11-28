@@ -122,8 +122,8 @@ protected:
 
   // Implementing ns3::TcpSocket -- Attribute get/set
   virtual void     SetSegSize (uint32_t size);
-  virtual void     SetSSThresh (uint32_t threshold);
-  virtual uint32_t GetSSThresh (void) const;
+  virtual void     SetInitialSSThresh (uint32_t threshold);
+  virtual uint32_t GetInitialSSThresh (void) const;
   virtual void     SetInitialCwnd (uint32_t cwnd);
   virtual uint32_t GetInitialCwnd (void) const;
 
@@ -164,8 +164,9 @@ private:
 
 protected:
   TracedValue<uint32_t>  m_cWnd;                   //!< Congestion window
-  uint32_t               m_ssThresh;               //!< Slow Start Threshold
+  TracedValue<uint32_t>  m_ssThresh;               //!< Slow Start Threshold
   uint32_t               m_initialCWnd;            //!< Initial cWnd value
+  uint32_t               m_initialSsThresh;        //!< Initial Slow Start Threshold value
   bool                   m_inFastRec;              //!< Currently in fast recovery if TRUE
 
   TracedValue<double>    m_currentBW;              //!< Current value of the estimated BW

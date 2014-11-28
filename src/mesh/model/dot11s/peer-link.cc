@@ -26,9 +26,10 @@
 #include "ns3/simulator.h"
 #include "ns3/traced-value.h"
 
-NS_LOG_COMPONENT_DEFINE ("Dot11sPeerManagementProtocol");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("Dot11sPeerManagementProtocol");
+  
 namespace dot11s {
 
 NS_OBJECT_ENSURE_REGISTERED ( PeerLink);

@@ -204,6 +204,35 @@ If a :cpp:class:`Address` is passed in and contains anything other than
 a :cpp:class:`Ipv4Address` or :cpp:class:`Ipv6Address`, these functions will
 return an error.  The ``Bind (void)`` and ``Bind6 (void)`` functions bind to
 "0.0.0.0" and "::" respectively.
+
+The socket can also be bound to a specific NetDevice though the 
+``BindToNetDevice (Ptr<NetDevice> netdevice)`` function.
+``BindToNetDevice (Ptr<NetDevice> netdevice)`` will bind the socket
+to "0.0.0.0" and "::" (equivalent to calling ``Bind ()`` and ``Bind6 ()``,
+unless the socket has been already bound to a specific address.
+Summarizing, the correct sequence is::
+
+      Ptr<Udp> udpSocketFactory = GetNode ()->GetObject<Udp> ();
+      Ptr<Socket> m_socket = socketFactory->CreateSocket ();
+      m_socket->BindToNetDevice (n_netDevice);
+     ...
+
+or::
+
+      Ptr<Udp> udpSocketFactory = GetNode ()->GetObject<Udp> ();
+      Ptr<Socket> m_socket = socketFactory->CreateSocket ();
+      m_socket->Bind (m_local_address);
+      m_socket->BindToNetDevice (n_netDevice);
+      ...
+
+The following raises an error::
+
+      Ptr<Udp> udpSocketFactory = GetNode ()->GetObject<Udp> ();
+      Ptr<Socket> m_socket = socketFactory->CreateSocket ();
+      m_socket->BindToNetDevice (n_netDevice);
+      m_socket->Bind (m_local_address);
+      ...
+
 See the chapter on |ns3| sockets for more information.  
 
 We have described so far a socket factory (e.g. ``class Udp``) and a socket,

@@ -43,9 +43,9 @@
 #include <limits>
 #include <map>
 
-NS_LOG_COMPONENT_DEFINE ("ClickInternetStackHelper");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("ClickInternetStackHelper");
 
 #define INTERFACE_CONTEXT
 

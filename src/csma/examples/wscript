@@ -1,19 +1,19 @@
 ## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
 
 def build(bld):
-    obj = bld.create_ns3_program('csma-one-subnet', ['csma', 'internet'])
+    obj = bld.create_ns3_program('csma-one-subnet', ['csma', 'internet', 'applications'])
     obj.source = 'csma-one-subnet.cc'
 
-    obj = bld.create_ns3_program('csma-broadcast', ['csma', 'internet'])
+    obj = bld.create_ns3_program('csma-broadcast', ['csma', 'internet', 'applications'])
     obj.source = 'csma-broadcast.cc'
 
-    obj = bld.create_ns3_program('csma-packet-socket', ['csma', 'internet'])
+    obj = bld.create_ns3_program('csma-packet-socket', ['csma', 'internet', 'applications'])
     obj.source = 'csma-packet-socket.cc'
 
-    obj = bld.create_ns3_program('csma-multicast', ['csma', 'internet'])
+    obj = bld.create_ns3_program('csma-multicast', ['csma', 'internet', 'applications'])
     obj.source = 'csma-multicast.cc'
 
-    obj = bld.create_ns3_program('csma-raw-ip-socket', ['csma', 'internet'])
+    obj = bld.create_ns3_program('csma-raw-ip-socket', ['csma', 'internet', 'applications'])
     obj.source = 'csma-raw-ip-socket.cc'
 
     obj = bld.create_ns3_program('csma-ping', ['csma', 'internet', 'applications'])

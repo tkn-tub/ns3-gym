@@ -20,11 +20,17 @@
 #ifndef SIMPLE_NET_DEVICE_H
 #define SIMPLE_NET_DEVICE_H
 
-#include "ns3/net-device.h"
-#include "mac48-address.h"
 #include <stdint.h>
 #include <string>
+
 #include "ns3/traced-callback.h"
+#include "ns3/net-device.h"
+#include "ns3/queue.h"
+#include "ns3/data-rate.h"
+#include "ns3/data-rate.h"
+#include "ns3/event-id.h"
+
+#include "mac48-address.h"
 
 namespace ns3 {
 
@@ -35,11 +41,15 @@ class ErrorModel;
 /**
  * \ingroup netdevice
  *
- * This device does not have a helper and assumes 48-bit mac addressing;
- * the default address assigned to each device is zero, so you must 
- * assign a real address to use it.  There is also the possibility to
+ * This device assumes 48-bit mac addressing; there is also the possibility to
  * add an ErrorModel if you want to force losses on the device.
  * 
+ * The device can be installed on a node through the SimpleNetDeviceHelper.
+ * In case of manual creation, the user is responsible for assigning an unique
+ * address to the device.
+ *
+ * By default the device is in Broadcast mode, with infinite bandwidth.
+ *
  * \brief simple net device for simple things and testing
  */
 class SimpleNetDevice : public NetDevice
@@ -65,7 +75,6 @@ public:
   void Receive (Ptr<Packet> packet, uint16_t protocol, Mac48Address to, Mac48Address from);
   
   /**
-   *
    * Attach a channel to this net device.  This will be the 
    * channel the net device sends on
    * 
@@ -73,6 +82,20 @@ public:
    *
    */
   void SetChannel (Ptr<SimpleChannel> channel);
+
+  /**
+   * Attach a queue to the SimpleNetDevice.
+   *
+   * \param queue Ptr to the new queue.
+   */
+  void SetQueue (Ptr<Queue> queue);
+
+  /**
+   * Get a copy of the attached Queue.
+   *
+   * \returns Ptr to the queue.
+   */
+  Ptr<Queue> GetQueue (void) const;
 
   /**
    * Attach a receive ErrorModel to the SimpleNetDevice.
@@ -124,6 +147,7 @@ private:
   uint32_t m_ifIndex; //!< Interface index
   Mac48Address m_address; //!< MAC address
   Ptr<ErrorModel> m_receiveErrorModel; //!< Receive error model.
+
   /**
    * The trace source fired when the phy layer drops a packet it has received
    * due to the error model being active.  Although SimpleNetDevice doesn't 
@@ -133,6 +157,29 @@ private:
    * \see class CallBackTraceSource
    */
   TracedCallback<Ptr<const Packet> > m_phyRxDropTrace;
+
+  /**
+   * The TransmitComplete method is used internally to finish the process
+   * of sending a packet out on the channel.
+   */
+  void TransmitComplete (void);
+
+  bool m_linkUp; //!< Flag indicating whether or not the link is up
+
+  /**
+   * Flag indicating whether or not the NetDevice is a Point to Point model.
+   * Enabling this will disable Broadcast and Arp.
+   */
+  bool m_pointToPointMode;
+
+  Ptr<Queue> m_queue; //!< The Queue for outgoing packets.
+  DataRate m_bps; //!< The device nominal Data rate. Zero means infinite
+  EventId TransmitCompleteEvent; //!< the Tx Complete event
+
+  /**
+   * List of callbacks to fire if the link changes state (up or down).
+   */
+  TracedCallback<> m_linkChangeCallbacks;
 };
 
 } // namespace ns3

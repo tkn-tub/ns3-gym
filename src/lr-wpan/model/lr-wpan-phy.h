@@ -46,29 +46,30 @@ class UniformRandomVariable;
  */
 typedef struct
 {
-  double averagePower;
-  Time lastUpdate;
-  Time measurementLength;
+  double averagePower;    //!< Average measured power
+  Time lastUpdate;        //!< Last update time
+  Time measurementLength; //!< Total measuremement period
 } LrWpanEdPower;
 
 /**
- * IEEE802.15.4-2006 Table 1 and 2 in section 6.1.1 and 6.1.2
+ * This data structure provides the Bit rate and Symbol rate for a given channel
+ * See IEEE802.15.4-2006 Table 1 and 2 in section 6.1.1 and 6.1.2
  */
 typedef  struct
 {
-  double bitRate;
-  double symbolRate;
+  double bitRate;    //!< bit rate
+  double symbolRate; //!< symbol rate
 } LrWpanPhyDataAndSymbolRates;
 
 /**
- * IEEE802.15.4-2006 Figure 16, Table 19 and 20 in section 6.3
- * this data structure provides number of symbols for the PPDU headers: SHR and PHR
+ * This data structure provides number of symbols for the PPDU headers: SHR and PHR
+ * See IEEE802.15.4-2006 Figure 16, Table 19 and 20 in section 6.3
  */
 typedef  struct
 {
-  double shrPreamble;
-  double shrSfd;
-  double phr;
+  double shrPreamble; //!< Number of symbols for the SHR preamble
+  double shrSfd;      //!< Number of symbols for the SHR SFD
+  double phr;         //!< Number of symbols for the PHR
 } LrWpanPhyPpduHeaderSymbolNumber;
 
 /**
@@ -127,14 +128,14 @@ typedef enum
  */
 typedef struct
 {
-  uint8_t phyCurrentChannel;
-  uint32_t phyChannelsSupported[32];
-  uint8_t phyTransmitPower;
-  uint8_t phyCCAMode;
-  uint32_t phyCurrentPage;
-  uint32_t phyMaxFrameDuration;
-  uint32_t phySHRDuration;
-  double phySymbolsPerOctet;
+  uint8_t phyCurrentChannel;         //!< The RF channel to use
+  uint32_t phyChannelsSupported[32]; //!< BitField representing the available channels supported by a channel page.
+  uint8_t phyTransmitPower;          //!< Transmit power
+  uint8_t phyCCAMode;                //!< CCA mode
+  uint32_t phyCurrentPage;           //!< Current channel page
+  uint32_t phyMaxFrameDuration;      //!< The maximum number of symbols in a frame
+  uint32_t phySHRDuration;           //!< The duration of the synchronization header (SHR) in symbols
+  double phySymbolsPerOctet;         //!< The number of symbols per octet
 } LrWpanPhyPibAttributes;
 
 /**
@@ -647,6 +648,10 @@ private:
    * The error model describing the bit and packet error rates.
    */
   Ptr<LrWpanErrorModel> m_errorModel;
+
+  /**
+   * The current PHY PIB attributes.
+   */
   LrWpanPhyPibAttributes m_phyPIBAttributes;
 
   // State variables

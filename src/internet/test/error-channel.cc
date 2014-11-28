@@ -24,9 +24,9 @@
 #include "ns3/node.h"
 #include "ns3/log.h"
 
-NS_LOG_COMPONENT_DEFINE ("ErrorChannel");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("ErrorChannel");
 
 NS_OBJECT_ENSURE_REGISTERED (ErrorChannel);
 

@@ -26,9 +26,9 @@
 # include <signal.h>
 #endif
 
-NS_LOG_COMPONENT_DEFINE ("Breakpoint");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("Breakpoint");
 
 #if defined (HAVE_SIGNAL_H) && defined (SIGTRAP)
 

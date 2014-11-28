@@ -24,9 +24,9 @@
 #include "simple-device-energy-model.h"
 #include "ns3/log.h"
 
-NS_LOG_COMPONENT_DEFINE ("SimpleDeviceEnergyModel");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("SimpleDeviceEnergyModel");
 
 NS_OBJECT_ENSURE_REGISTERED (SimpleDeviceEnergyModel);
 
@@ -38,7 +38,8 @@ SimpleDeviceEnergyModel::GetTypeId (void)
     .AddConstructor<SimpleDeviceEnergyModel> ()
     .AddTraceSource ("TotalEnergyConsumption",
                      "Total energy consumption of the radio device.",
-                     MakeTraceSourceAccessor (&SimpleDeviceEnergyModel::m_totalEnergyConsumption))
+                     MakeTraceSourceAccessor (&SimpleDeviceEnergyModel::m_totalEnergyConsumption),
+                     "ns3::TracedValue::DoubleCallback")
   ;
   return tid;
 }

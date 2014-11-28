@@ -39,8 +39,8 @@ namespace ns3 {
 static LogTimePrinter g_logTimePrinter = 0;
 static LogNodePrinter g_logNodePrinter = 0;
 
-typedef std::map<std::string, LogComponent *> ComponentList;
-typedef std::map<std::string, LogComponent *>::iterator ComponentListI;
+typedef LogComponent::ComponentList ComponentList;
+typedef ComponentList::iterator     ComponentListI;
 
 static class PrintList
 {
@@ -48,8 +48,9 @@ public:
   PrintList ();
 } g_printList;
 
-static 
-ComponentList *GetComponentList (void)
+/* static */
+LogComponent::ComponentList *
+LogComponent::GetComponentList (void)
 {
   static ComponentList components;
   return &components;
@@ -85,8 +86,9 @@ PrintList::PrintList ()
 
 
 LogComponent::LogComponent (const std::string & name,
+                            const std::string & file,
                             const enum LogLevel mask /* = 0 */)
-  : m_levels (0), m_mask (mask), m_name (name)
+  : m_levels (0), m_mask (mask), m_name (name), m_file (file)
 {
   EnvVarCheck ();
 
@@ -278,6 +280,12 @@ LogComponent::Name (void) const
   return m_name.c_str ();
 }
 
+std::string
+LogComponent::File (void) const
+{
+  return m_file;
+}
+
 /* static */
 std::string
 LogComponent::GetLevelLabel(const enum LogLevel level)
@@ -317,7 +325,7 @@ LogComponent::GetLevelLabel(const enum LogLevel level)
 void 
 LogComponentEnable (char const *name, enum LogLevel level)
 {
-  ComponentList *components = GetComponentList ();
+  ComponentList *components = LogComponent::GetComponentList ();
   ComponentListI i;
   for (i = components->begin (); 
        i != components->end (); 
@@ -341,7 +349,7 @@ LogComponentEnable (char const *name, enum LogLevel level)
 void 
 LogComponentEnableAll (enum LogLevel level)
 {
-  ComponentList *components = GetComponentList ();
+  ComponentList *components = LogComponent::GetComponentList ();
   for (ComponentListI i = components->begin ();
        i != components->end ();
        i++)
@@ -353,7 +361,7 @@ LogComponentEnableAll (enum LogLevel level)
 void 
 LogComponentDisable (char const *name, enum LogLevel level)
 {
-  ComponentList *components = GetComponentList ();
+  ComponentList *components = LogComponent::GetComponentList ();
   for (ComponentListI i = components->begin ();
        i != components->end ();
        i++)
@@ -369,7 +377,7 @@ LogComponentDisable (char const *name, enum LogLevel level)
 void 
 LogComponentDisableAll (enum LogLevel level)
 {
-  ComponentList *components = GetComponentList ();
+  ComponentList *components = LogComponent::GetComponentList ();
   for (ComponentListI i = components->begin ();
        i != components->end ();
        i++)
@@ -381,7 +389,7 @@ LogComponentDisableAll (enum LogLevel level)
 void 
 LogComponentPrintList (void)
 {
-  ComponentList *components = GetComponentList ();
+  ComponentList *components = LogComponent::GetComponentList ();
   for (ComponentListI i = components->begin ();
        i != components->end ();
        i++)
@@ -453,7 +461,7 @@ LogComponentPrintList (void)
 static bool ComponentExists(std::string componentName) 
 {
   char const*name=componentName.c_str();
-  ComponentList *components = GetComponentList ();
+  ComponentList *components = LogComponent::GetComponentList ();
   ComponentListI i;
   for (i = components->begin ();
        i != components->end ();

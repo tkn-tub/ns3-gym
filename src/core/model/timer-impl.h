@@ -17,6 +17,7 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
+
 #ifndef TIMER_IMPL_H
 #define TIMER_IMPL_H
 

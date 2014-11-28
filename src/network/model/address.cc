@@ -25,9 +25,9 @@
 #include <iostream>
 #include <iomanip>
 
-NS_LOG_COMPONENT_DEFINE ("Address");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("Address");
 
 Address::Address ()
   : m_type (0),

@@ -112,6 +112,68 @@ public:
   void PrintRoutingTableEvery (Time printInterval, Ptr<Node> node, Ptr<OutputStreamWrapper> stream) const;
 
   /**
+   * \brief prints the neighbor cache of all nodes at a particular time.
+   * \param printTime the time at which the neighbor cache is supposed to be printed.
+   * \param stream The output stream object to use
+   *
+   * This method calls the PrintNdiscCache() method of the
+   * NdiscCache associated with each Ipv6Interface stored in the Ipv6 object, for all nodes at the
+   * specified time. The output format is similar to:
+   * \verbatim
+     2001:db8::f00d:beef:cafe dev 1 lladdr 00-06-00:00:00:00:00:02 REACHABLE
+     \endverbatim
+   * Note that the MAC address is printed as "type"-"size"-"actual address"
+   */
+  void PrintNeighborCacheAllAt (Time printTime, Ptr<OutputStreamWrapper> stream) const;
+
+  /**
+   * \brief prints the neighbor cache of all nodes at regular intervals specified by user.
+   * \param printInterval the time interval for which the neighbor cache is supposed to be printed.
+   * \param stream The output stream object to use
+   *
+   * This method calls the PrintNdiscCache() method of the
+   * NdiscCache associated with each Ipv6Interface stored in the Ipv6 object, for all nodes at the
+   * specified time. The output format is similar to:
+   * \verbatim
+     2001:db8::f00d:beef:cafe dev 1 lladdr 00-06-00:00:00:00:00:02 REACHABLE
+     \endverbatim
+   * Note that the MAC address is printed as "type"-"size"-"actual address"
+   */
+  void PrintNeighborCacheAllEvery (Time printInterval, Ptr<OutputStreamWrapper> stream) const;
+
+  /**
+   * \brief prints the neighbor cache of a node at a particular time.
+   * \param printTime the time at which the neighbor cache is supposed to be printed.
+   * \param node The node ptr for which we need the neighbor cache to be printed
+   * \param stream The output stream object to use
+   *
+   * This method calls the PrintNdiscCache() method of the
+   * NdiscCache associated with each Ipv6Interface stored in the Ipv6 object, for all nodes at the
+   * specified time. The output format is similar to:
+   * \verbatim
+     2001:db8::f00d:beef:cafe dev 1 lladdr 00-06-00:00:00:00:00:02 REACHABLE
+     \endverbatim
+   * Note that the MAC address is printed as "type"-"size"-"actual address"
+   */
+  void PrintNeighborCacheAt (Time printTime, Ptr<Node> node, Ptr<OutputStreamWrapper> stream) const;
+
+  /**
+   * \brief prints the neighbor cache of a node at regular intervals specified by user.
+   * \param printInterval the time interval for which the neighbor cache is supposed to be printed.
+   * \param node The node ptr for which we need the neighbor cache to be printed
+   * \param stream The output stream object to use
+   *
+   * This method calls the PrintNdiscCache() method of the
+   * NdiscCache associated with each Ipv6Interface stored in the Ipv6 object, for all nodes at the
+   * specified time. The output format is similar to:
+   * \verbatim
+     2001:db8::f00d:beef:cafe dev 1 lladdr 00-06-00:00:00:00:00:02 REACHABLE
+     \endverbatim
+   * Note that the MAC address is printed as "type"-"size"-"actual address"
+   */
+   void PrintNeighborCacheEvery (Time printInterval, Ptr<Node> node, Ptr<OutputStreamWrapper> stream) const;
+
+  /**
    * \brief Request a specified routing protocol &lt;T&gt; from Ipv6RoutingProtocol protocol
    *
    * If protocol is Ipv6ListRouting, then protocol will be searched in the list,
@@ -150,6 +212,41 @@ private:
    * at the specified interval; the output format is routing protocol-specific.
    */
   void PrintEvery (Time printInterval, Ptr<Node> node, Ptr<OutputStreamWrapper> stream) const;
+
+  /**
+   * \internal
+   *
+   * \brief prints the neighbor cache of a node.
+   * \param node The node ptr for which we need the neighbor cache to be printed
+   * \param stream The output stream object to use
+   *
+   * This method calls the PrintNdiscCache() method of the
+   * NdiscCache associated with each Ipv6Interface stored in the Ipv6 object, for all nodes at the
+   * specified time. The output format is similar to:
+   * \verbatim
+     2001:db8::f00d:beef:cafe dev 1 lladdr 00-06-00:00:00:00:00:02 REACHABLE
+     \endverbatim
+   * Note that the MAC address is printed as "type"-"size"-"actual address"
+   */
+  void PrintNdiscCache (Ptr<Node> node, Ptr<OutputStreamWrapper> stream) const;
+
+  /**
+   * \internal
+   *
+   * \brief prints the neighbor cache of a node at regular intervals specified by user.
+   * \param printInterval the time interval for which the neighbor cache is supposed to be printed.
+   * \param node The node ptr for which we need the neighbor cache to be printed
+   * \param stream The output stream object to use
+   *
+   * This method calls the PrintNdiscCache() method of the
+   * NdiscCache associated with each Ipv6Interface stored in the Ipv6 object, for all nodes at the
+   * specified time. The output format is similar to:
+   * \verbatim
+     2001:db8::f00d:beef:cafe dev 1 lladdr 00-06-00:00:00:00:00:02 REACHABLE
+     \endverbatim
+   * Note that the MAC address is printed as "type"-"size"-"actual address"
+   */
+  void PrintNdiscCacheEvery (Time printInterval, Ptr<Node> node, Ptr<OutputStreamWrapper> stream) const;
 };
 
 /**

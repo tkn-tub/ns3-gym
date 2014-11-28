@@ -41,9 +41,9 @@
 #include <iomanip>
 #include <list>
 
-NS_LOG_COMPONENT_DEFINE ("NullMessageMpiInterface");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("NullMessageMpiInterface");
 
 /**
  * maximum MPI message size for easy

@@ -12,7 +12,7 @@ def build(bld):
     obj = bld.create_ns3_program('second', ['core', 'point-to-point', 'csma', 'internet', 'applications'])
     obj.source = 'second.cc'
         
-    obj = bld.create_ns3_program('third', ['core', 'point-to-point', 'csma', 'wifi', 'internet'])
+    obj = bld.create_ns3_program('third', ['core', 'point-to-point', 'csma', 'wifi', 'internet', 'applications'])
     obj.source = 'third.cc'
 
     obj = bld.create_ns3_program('fourth', ['core'])

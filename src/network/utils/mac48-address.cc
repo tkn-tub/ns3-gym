@@ -25,9 +25,9 @@
 #include <iostream>
 #include <cstring>
 
-NS_LOG_COMPONENT_DEFINE ("Mac48Address");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("Mac48Address");
 
 ATTRIBUTE_HELPER_CPP (Mac48Address);  //!< Macro to make help make class an ns-3 attribute
 

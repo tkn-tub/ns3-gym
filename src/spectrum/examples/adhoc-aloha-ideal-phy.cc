@@ -39,9 +39,9 @@
 #include <ns3/applications-module.h>
 #include <ns3/adhoc-aloha-noack-ideal-phy-helper.h>
 
-NS_LOG_COMPONENT_DEFINE ("TestAdhocOfdmAloha");
-
 using namespace ns3;
+
+NS_LOG_COMPONENT_DEFINE ("TestAdhocOfdmAloha");
 
 static bool g_verbose = false;
 

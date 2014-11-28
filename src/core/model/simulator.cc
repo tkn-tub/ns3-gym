@@ -37,13 +37,12 @@
 #include <vector>
 #include <iostream>
 
+namespace ns3 {
+
 // Note:  Logging in this file is largely avoided due to the
 // number of calls that are made to these functions and the possibility
 // of causing recursions leading to stack overflow
-
 NS_LOG_COMPONENT_DEFINE ("Simulator");
-
-namespace ns3 {
 
 static GlobalValue g_simTypeImpl = GlobalValue ("SimulatorImplementationType",
                                                 "The object class to use as the simulator implementation",

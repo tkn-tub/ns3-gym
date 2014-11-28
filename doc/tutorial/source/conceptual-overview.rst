@@ -743,6 +743,69 @@ took care of the hard part for you.  The remaining lines of our first
     return 0;
   }
 
+When the simulator will stop?
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+|ns3| is a Discrete Event (DE) simulator. In such a simulator, each event is
+associated with its execution time, and the simulation proceeds by executing
+events in the temporal order of simulation time.  Events may cause future
+events to be scheduled (for example, a timer may reschedule itself to
+expire at the next interval).
+
+The initial events are usually triggered by each object, e.g., IPv6 will 
+schedule Router Advertisements, Neighbor Solicitations, etc., 
+an Application schedule the first packet sending event, etc.
+
+When an event is processed, it may generate zero, one or more events.
+As a simulation executes, events are consumed, but more events may (or may
+not) be generated.
+The simulation will stop automatically when no further events are in the 
+event queue, or when a special Stop event is found. The Stop event is 
+created through the 
+``Simulator::Stop (stopTime);`` function.
+
+There is a typical case where ``Simulator::Stop`` is absolutely necessary 
+to stop the simulation: when there is a self-sustaining event.
+Self-sustaining (or recurring) events are events that always reschedule 
+themselves. As a consequence, they always keep the event queue non-empty.
+
+There are many protocols and modules containing recurring events, e.g.:
+
+* FlowMonitor - periodic check for lost packets
+* RIPng - periodic broadcast of routing tables update
+* etc.
+
+In these cases, ``Simulator::Stop`` is necessary to gracefully stop the 
+simulation.  In addition, when |ns3| is in emulation mode, the 
+``RealtimeSimulator`` is used to keep the simulation clock aligned with 
+the machine clock, and ``Simulator::Stop`` is necessary to stop the 
+process.  
+
+Many of the simulation programs in the tutorial do not explicitly call
+``Simulator::Stop``, since the event queue will automatically run out
+of events.  However, these programs will also accept a call to 
+``Simulator::Stop``.  For example, the following additional statement
+in the first example program will schedule an explicit stop at 11 seconds: 
+
+::
+
+  +  Simulator::Stop (Seconds (11.0));
+     Simulator::Run ();
+     Simulator::Destroy ();
+     return 0;
+   }
+
+The above wil not actually change the behavior of this program, since
+this particular simulation naturally ends after 10 seconds.  But if you 
+were to change the stop time in the above statement from 11 seconds to 1 
+second, you would notice that the simulation stops before any output is 
+printed to the screen (since the output occurs around time 2 seconds of 
+simulation time).
+
+It is important to call ``Simulator::Stop`` *before* calling 
+``Simulator::Run``; otherwise, ``Simulator::Run`` may never return control
+to the main program to execute the stop!
+
 Building Your Script
 ++++++++++++++++++++
 We have made it trivial to build your simple scripts.  All you have to do is 

@@ -23,10 +23,15 @@
 #include "ns3/fatal-error.h"
 #include "ns3/log.h"
 
+namespace ns3 {
+  
 NS_LOG_COMPONENT_DEFINE ("DataRate");
 
-static bool
-DoParse (const std::string s, uint64_t *v)
+ATTRIBUTE_HELPER_CPP (DataRate);  //!< Macro to make help make data-rate an ns-3 attribute
+
+/* static */
+bool
+DataRate::DoParse (const std::string s, uint64_t *v)
 {
   NS_LOG_FUNCTION (s << v);
   std::string::size_type n = s.find_first_not_of ("0123456789.");
@@ -179,11 +184,6 @@ DoParse (const std::string s, uint64_t *v)
   return true;
 }
 
-
-namespace ns3 {
-
-ATTRIBUTE_HELPER_CPP (DataRate);  //!< Macro to make help make data-rate an ns-3 attribute
-
 DataRate::DataRate ()
   : m_bps (0)
 {
@@ -260,7 +260,7 @@ std::istream &operator >> (std::istream &is, DataRate &rate)
   std::string value;
   is >> value;
   uint64_t v;
-  bool ok = DoParse (value, &v);
+  bool ok = DataRate::DoParse (value, &v);
   if (!ok)
     {
       is.setstate (std::ios_base::failbit);

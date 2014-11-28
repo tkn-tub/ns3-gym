@@ -257,12 +257,17 @@ SixlowpanFragmentationTest::DoRun (void)
 {
   // Create topology
 
+  Packet::EnablePrinting ();
+
   // Receiver Node
   Ptr<Node> serverNode = CreateObject<Node> ();
   AddInternetStack (serverNode);
   Ptr<SimpleNetDevice> serverDev;
   Ptr<BinaryErrorSixlowModel> serverDevErrorModel = CreateObject<BinaryErrorSixlowModel> ();
   {
+    Ptr<Icmpv6L4Protocol> icmpv6l4 = serverNode->GetObject<Icmpv6L4Protocol> ();
+    icmpv6l4->SetAttribute ("DAD", BooleanValue (false));
+
     serverDev = CreateObject<SimpleNetDevice> ();
     serverDev->SetAddress (Mac48Address::ConvertFrom (Mac48Address::Allocate ()));
     serverDev->SetMtu (1500);
@@ -282,8 +287,6 @@ SixlowpanFragmentationTest::DoRun (void)
     ipv6->AddAddress (netdev_idx, ipv6Addr);
     ipv6->SetUp (netdev_idx);
 
-    Ptr<Icmpv6L4Protocol> icmpv6l4 = serverNode->GetObject<Icmpv6L4Protocol> ();
-    icmpv6l4->SetAttribute ("DAD", BooleanValue (false));
   }
   StartServer (serverNode);
 
@@ -293,6 +296,9 @@ SixlowpanFragmentationTest::DoRun (void)
   Ptr<SimpleNetDevice> clientDev;
   Ptr<BinaryErrorSixlowModel> clientDevErrorModel = CreateObject<BinaryErrorSixlowModel> ();
   {
+    Ptr<Icmpv6L4Protocol> icmpv6l4 = clientNode->GetObject<Icmpv6L4Protocol> ();
+    icmpv6l4->SetAttribute ("DAD", BooleanValue (false));
+
     clientDev = CreateObject<SimpleNetDevice> ();
     clientDev->SetAddress (Mac48Address::ConvertFrom (Mac48Address::Allocate ()));
     clientDev->SetMtu (150);
@@ -302,7 +308,7 @@ SixlowpanFragmentationTest::DoRun (void)
 
     Ptr<SixLowPanNetDevice> clientSix = CreateObject<SixLowPanNetDevice> ();
     clientSix->SetAttribute ("ForceEtherType", BooleanValue (true) );
-    serverNode->AddDevice (clientSix);
+    clientNode->AddDevice (clientSix);
     clientSix->SetNetDevice (clientDev);
 
     Ptr<Ipv6> ipv6 = clientNode->GetObject<Ipv6> ();
@@ -311,9 +317,6 @@ SixlowpanFragmentationTest::DoRun (void)
     Ipv6InterfaceAddress ipv6Addr = Ipv6InterfaceAddress (Ipv6Address ("2001:0100::2"), Ipv6Prefix (64));
     ipv6->AddAddress (netdev_idx, ipv6Addr);
     ipv6->SetUp (netdev_idx);
-
-    Ptr<Icmpv6L4Protocol> icmpv6l4 = clientNode->GetObject<Icmpv6L4Protocol> ();
-    icmpv6l4->SetAttribute ("DAD", BooleanValue (false));
   }
   StartClient (clientNode);
 

@@ -33,9 +33,9 @@
 
 #include <string>
 
-NS_LOG_COMPONENT_DEFINE ("FdNetDeviceHelper");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("FdNetDeviceHelper");
 
 FdNetDeviceHelper::FdNetDeviceHelper ()
 {

@@ -166,15 +166,15 @@ LenaDeactivateBearerTestCase::DoRun (void)
   Ptr<Ipv4StaticRouting> remoteHostStaticRouting = ipv4RoutingHelper.GetStaticRouting (remoteHost->GetObject<Ipv4> ());
   remoteHostStaticRouting->AddNetworkRouteTo (Ipv4Address ("7.0.0.0"), Ipv4Mask ("255.0.0.0"), 1);
 
-  LogLevel logLevel = (LogLevel)(LOG_PREFIX_FUNC | LOG_PREFIX_TIME | LOG_LEVEL_ALL);
+  // LogLevel logLevel = (LogLevel)(LOG_PREFIX_FUNC | LOG_PREFIX_TIME | LOG_LEVEL_ALL);
 
-  LogComponentEnable ("LenaTestDeactivateBearer", LOG_LEVEL_ALL);
-  LogComponentEnable ("LteHelper", logLevel);
-  LogComponentEnable ("EpcHelper", logLevel);
-  LogComponentEnable ("EpcEnbApplication", logLevel);
-  LogComponentEnable ("EpcSgwPgwApplication", logLevel);
-  LogComponentEnable ("EpcMme", logLevel);
-  LogComponentEnable ("LteEnbRrc", logLevel);
+  // LogComponentEnable ("LenaTestDeactivateBearer", LOG_LEVEL_ALL);
+  // LogComponentEnable ("LteHelper", logLevel);
+  // LogComponentEnable ("EpcHelper", logLevel);
+  // LogComponentEnable ("EpcEnbApplication", logLevel);
+  // LogComponentEnable ("EpcSgwPgwApplication", logLevel);
+  // LogComponentEnable ("EpcMme", logLevel);
+  // LogComponentEnable ("LteEnbRrc", logLevel);
 
   lteHelper->SetAttribute ("PathlossModel", StringValue ("ns3::FriisSpectrumPropagationLossModel"));
 

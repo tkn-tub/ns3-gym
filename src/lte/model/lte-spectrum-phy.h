@@ -326,41 +326,49 @@ public:
   /**
   *
   *
-  * \param p the new LteSinrChunkProcessor to be added to the RS power 
+  * \param p the new LteChunkProcessor to be added to the RS power
   *          processing chain
   */
-  void AddRsPowerChunkProcessor (Ptr<LteSinrChunkProcessor> p);
+  void AddRsPowerChunkProcessor (Ptr<LteChunkProcessor> p);
   
+  /**
+  *
+  *
+  * \param p the new LteChunkProcessor to be added to the Data Channel power
+  *          processing chain
+  */
+  void AddDataPowerChunkProcessor (Ptr<LteChunkProcessor> p);
+
   /** 
   * 
   * 
-  * \param p the new LteSinrChunkProcessor to be added to the data processing chain
+  * \param p the new LteChunkProcessor to be added to the data processing chain
   */
-  void AddDataSinrChunkProcessor (Ptr<LteSinrChunkProcessor> p);
+  void AddDataSinrChunkProcessor (Ptr<LteChunkProcessor> p);
 
   /**
-  *  LteSinrChunkProcessor devoted to evaluate interference + noise power
+  *  LteChunkProcessor devoted to evaluate interference + noise power
   *  in control symbols of the subframe
   *
-  * \param p the new LteSinrChunkProcessor to be added to the data processing chain
+  * \param p the new LteChunkProcessor to be added to the data processing chain
   */
-  void AddInterferenceCtrlChunkProcessor (Ptr<LteSinrChunkProcessor> p);
+  void AddInterferenceCtrlChunkProcessor (Ptr<LteChunkProcessor> p);
 
   /**
-  *  LteSinrChunkProcessor devoted to evaluate interference + noise power
+  *  LteChunkProcessor devoted to evaluate interference + noise power
   *  in data symbols of the subframe
   *
-  * \param p the new LteSinrChunkProcessor to be added to the data processing chain
+  * \param p the new LteChunkProcessor to be added to the data processing chain
   */
-  void AddInterferenceDataChunkProcessor (Ptr<LteSinrChunkProcessor> p);
+  void AddInterferenceDataChunkProcessor (Ptr<LteChunkProcessor> p);
   
   
   /** 
   * 
   * 
-  * \param p the new LteSinrChunkProcessor to be added to the ctrl processing chain
+  * \param p the new LteChunkProcessor to be added to the ctrl processing chain
   */
-  void AddCtrlSinrChunkProcessor (Ptr<LteSinrChunkProcessor> p);
+  void AddCtrlSinrChunkProcessor (Ptr<LteChunkProcessor> p);
   
   /** 
   * 

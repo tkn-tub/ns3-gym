@@ -35,9 +35,10 @@
 #include "ns3/socket.h"
 #include "ns3/log.h"
 
-NS_LOG_COMPONENT_DEFINE ("DsdvPacketQueue");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("DsdvPacketQueue");
+  
 namespace dsdv {
 uint32_t
 PacketQueue::GetSize ()

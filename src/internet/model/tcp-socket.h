@@ -36,7 +36,10 @@ class Node;
 class Packet;
 
 /**
+ * \ingroup tcp
  * \brief Names of the 11 TCP states
+ *
+ * \todo This should be a member of TcpSocket.
  */
 typedef enum {
   CLOSED,       // 0
@@ -52,6 +55,16 @@ typedef enum {
   TIME_WAIT,   // 10
   LAST_STATE
 } TcpStates_t;
+
+/**
+ * \ingroup tcp
+ * TracedValue Callback signature for TcpStates_t
+ *
+ * \param [in] oldValue original value of the traced variable
+ * \param [in] newValue new value of the traced variable
+ */
+typedef void (* TcpStatesTracedValueCallback)(const TcpStates_t oldValue,
+                                              const TcpStates_t newValue);
 
 /**
  * \ingroup socket
@@ -119,16 +132,16 @@ private:
   virtual uint32_t GetSegSize (void) const = 0;
 
   /**
-   * \brief Set the Slow Start Threshold.
+   * \brief Set the initial Slow Start Threshold.
    * \param threshold the Slow Start Threshold (in bytes)
    */
-  virtual void SetSSThresh (uint32_t threshold) = 0;
+  virtual void SetInitialSSThresh (uint32_t threshold) = 0;
 
   /**
-   * \brief Get the Slow Start Threshold.
+   * \brief Get the initial Slow Start Threshold.
    * \returns the Slow Start Threshold (in bytes)
    */
-  virtual uint32_t GetSSThresh (void) const = 0;
+  virtual uint32_t GetInitialSSThresh (void) const = 0;
 
   /**
    * \brief Set the initial Congestion Window.

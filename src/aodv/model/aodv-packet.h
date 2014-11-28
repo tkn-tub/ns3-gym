@@ -56,15 +56,13 @@ public:
   /// c-tor
   TypeHeader (MessageType t = AODVTYPE_RREQ);
 
-  ///\name Header serialization/deserialization
-  //\{
+  // Header serialization/deserialization
   static TypeId GetTypeId ();
   TypeId GetInstanceTypeId () const;
   uint32_t GetSerializedSize () const;
   void Serialize (Buffer::Iterator start) const;
   uint32_t Deserialize (Buffer::Iterator start);
   void Print (std::ostream &os) const;
-  //\}
 
   /// Return type
   MessageType Get () const { return m_type; }
@@ -108,18 +106,15 @@ public:
               uint32_t dstSeqNo = 0, Ipv4Address origin = Ipv4Address (),
               uint32_t originSeqNo = 0);
 
-  ///\name Header serialization/deserialization
-  //\{
+  // Header serialization/deserialization
   static TypeId GetTypeId ();
   TypeId GetInstanceTypeId () const;
   uint32_t GetSerializedSize () const;
   void Serialize (Buffer::Iterator start) const;
   uint32_t Deserialize (Buffer::Iterator start);
   void Print (std::ostream &os) const;
-  //\}
 
-  ///\name Fields
-  //\{
+  // Fields
   void SetHopCount (uint8_t count) { m_hopCount = count; }
   uint8_t GetHopCount () const { return m_hopCount; }
   void SetId (uint32_t id) { m_requestID = id; }
@@ -132,17 +127,14 @@ public:
   Ipv4Address GetOrigin () const { return m_origin; }
   void SetOriginSeqno (uint32_t s) { m_originSeqNo = s; }
   uint32_t GetOriginSeqno () const { return m_originSeqNo; }
-  //\}
 
-  ///\name Flags
-  //\{
+  // Flags
   void SetGratiousRrep (bool f);
   bool GetGratiousRrep () const;
   void SetDestinationOnly (bool f);
   bool GetDestinationOnly () const;
   void SetUnknownSeqno (bool f);
   bool GetUnknownSeqno () const;
-  //\}
 
   bool operator== (RreqHeader const & o) const;
 private:
@@ -184,18 +176,15 @@ public:
   RrepHeader (uint8_t prefixSize = 0, uint8_t hopCount = 0, Ipv4Address dst =
                 Ipv4Address (), uint32_t dstSeqNo = 0, Ipv4Address origin =
                 Ipv4Address (), Time lifetime = MilliSeconds (0));
-  ///\name Header serialization/deserialization
-  //\{
+  // Header serialization/deserialization
   static TypeId GetTypeId ();
   TypeId GetInstanceTypeId () const;
   uint32_t GetSerializedSize () const;
   void Serialize (Buffer::Iterator start) const;
   uint32_t Deserialize (Buffer::Iterator start);
   void Print (std::ostream &os) const;
-  //\}
 
-  ///\name Fields
-  //\{
+  // Fields
   void SetHopCount (uint8_t count) { m_hopCount = count; }
   uint8_t GetHopCount () const { return m_hopCount; }
   void SetDst (Ipv4Address a) { m_dst = a; }
@@ -206,15 +195,12 @@ public:
   Ipv4Address GetOrigin () const { return m_origin; }
   void SetLifeTime (Time t);
   Time GetLifeTime () const;
-  //\}
 
-  ///\name Flags
-  //\{
+  // Flags
   void SetAckRequired (bool f);
   bool GetAckRequired () const;
   void SetPrefixSize (uint8_t sz);
   uint8_t GetPrefixSize () const;
-  //\}
 
   /// Configure RREP to be a Hello message
   void SetHello (Ipv4Address src, uint32_t srcSeqNo, Time lifetime);
@@ -249,15 +235,13 @@ public:
   /// c-tor
   RrepAckHeader ();
 
-  ///\name Header serialization/deserialization
-  //\{
+  // Header serialization/deserialization
   static TypeId GetTypeId ();
   TypeId GetInstanceTypeId () const;
   uint32_t GetSerializedSize () const;
   void Serialize (Buffer::Iterator start) const;
   uint32_t Deserialize (Buffer::Iterator start);
   void Print (std::ostream &os) const;
-  //\}
 
   bool operator== (RrepAckHeader const & o) const;
 private:
@@ -291,21 +275,17 @@ public:
   /// c-tor
   RerrHeader ();
 
-  ///\name Header serialization/deserialization
-  //\{
+  // Header serialization/deserialization
   static TypeId GetTypeId ();
   TypeId GetInstanceTypeId () const;
   uint32_t GetSerializedSize () const;
   void Serialize (Buffer::Iterator i) const;
   uint32_t Deserialize (Buffer::Iterator start);
   void Print (std::ostream &os) const;
-  //\}
 
-  ///\name No delete flag
-  //\{
+  // No delete flag
   void SetNoDelete (bool f);
   bool GetNoDelete () const;
-  //\}
 
   /**
    * Add unreachable node address and its sequence number in RERR header

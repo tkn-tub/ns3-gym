@@ -43,9 +43,9 @@
 #include "ns3/node-list.h"
 #include "ns3/names.h"
 
-NS_LOG_COMPONENT_DEFINE ("DsrHelper");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("DsrHelper");
 
 DsrHelper::DsrHelper ()
 {

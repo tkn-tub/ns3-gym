@@ -55,9 +55,9 @@
 #define SYSTEM_PATH_SEP "/"
 #endif
 
-NS_LOG_COMPONENT_DEFINE ("SystemPath");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("SystemPath");
 
 namespace SystemPath {
 

@@ -26,9 +26,9 @@
 #include "ns3/spectrum-test.h"
 #include "ns3/lte-spectrum-value-helper.h"
 
-NS_LOG_COMPONENT_DEFINE ("LteTestSpectrumValueHelper");
-
 using namespace ns3;
+
+NS_LOG_COMPONENT_DEFINE ("LteTestSpectrumValueHelper");
 
 class LteSpectrumModelTestCase : public TestCase
 {

@@ -34,13 +34,13 @@
 #include <ns3/random-variable-stream.h>
 #include <ns3/double.h>
 
-NS_LOG_COMPONENT_DEFINE ("LrWpanMac");
-
 #undef NS_LOG_APPEND_CONTEXT
 #define NS_LOG_APPEND_CONTEXT                                   \
   std::clog << "[address " << m_shortAddress << "] ";
 
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("LrWpanMac");
 
 NS_OBJECT_ENSURE_REGISTERED (LrWpanMac);
 

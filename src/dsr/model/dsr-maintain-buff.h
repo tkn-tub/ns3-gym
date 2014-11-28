@@ -158,8 +158,7 @@ public:
   {
   }
 
-  ///\name Fields
-  // \{
+  // Fields
   Ptr<const Packet> GetPacket () const
   {
     return m_packet;
@@ -224,7 +223,7 @@ public:
   {
     return m_expire - Simulator::Now ();
   }
-  // \}
+
 private:
   /// Data packet
   Ptr<const Packet> m_packet;
@@ -267,8 +266,8 @@ public:
   bool Find (Ipv4Address nextHop);
   /// Number of entries
   uint32_t GetSize ();
-  ///\name Fields
-  // \{
+
+  // Fields
   uint32_t GetMaxQueueLen () const
   {
     return m_maxLen;
@@ -293,7 +292,6 @@ public:
   bool NetworkEqual (MaintainBuffEntry & entry);
   /// Verify if the maintain buffer entry is the same in every field for promiscuous ack
   bool PromiscEqual (MaintainBuffEntry & entry);
-  // \}
 
 private:
   /// The vector of maintain buffer entries

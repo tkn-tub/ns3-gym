@@ -24,9 +24,9 @@
 #include "ns3/node.h"
 #include "ns3/packet.h"
 
-NS_LOG_COMPONENT_DEFINE ("LoopbackNetDevice");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("LoopbackNetDevice");
 
 NS_OBJECT_ENSURE_REGISTERED (LoopbackNetDevice);
 

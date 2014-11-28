@@ -31,14 +31,13 @@
 #include "wifi-mac-header.h"
 #include "wifi-mac-trailer.h"
 
-NS_LOG_COMPONENT_DEFINE ("WifiRemoteStationManager");
-
-
 /***************************************************************
  *           Packet Mode Tagger
  ***************************************************************/
 
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("WifiRemoteStationManager");
 
 class HighLatencyDataTxVectorTag : public Tag
 {

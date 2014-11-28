@@ -240,7 +240,14 @@ public:
 
 private:
   // Disable implicit copy constructors
+  /**
+   * \brief Copy constructor - defined and not implemented.
+   */
   LrWpanCsmaCa (LrWpanCsmaCa const &);
+  /**
+   * \brief Copy constructor - defined and not implemented.
+   * \returns
+   */
   LrWpanCsmaCa& operator= (LrWpanCsmaCa const &);
  
   virtual void DoDispose (void);

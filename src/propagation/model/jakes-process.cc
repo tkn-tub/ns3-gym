@@ -26,9 +26,9 @@
 #include "propagation-loss-model.h"
 #include "jakes-propagation-loss-model.h"
 
-NS_LOG_COMPONENT_DEFINE ("JakesProcess");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("JakesProcess");
 
 /// Represents a single oscillator
 JakesProcess::Oscillator::Oscillator (std::complex<double> amplitude, double initialPhase, double omega) :
@@ -85,7 +85,7 @@ JakesProcess::SetNOscillators (unsigned int nOscillators)
 void
 JakesProcess::SetDopplerFrequencyHz (double dopplerFrequencyHz)
 {
-  m_omegaDopplerMax = 2 * dopplerFrequencyHz * JakesPropagationLossModel::PI;
+  m_omegaDopplerMax = 2 * dopplerFrequencyHz * M_PI;
 }
 
 void
@@ -101,7 +101,7 @@ JakesProcess::ConstructOscillators ()
       unsigned int n = i + 1;
       /// 1. Rotation speed
       /// 1a. Initiate \f[ \alpha_n = \frac{2\pi n - \pi + \theta}{4M},  n=1,2, \ldots,M\f], n is oscillatorNumber, M is m_nOscillators
-      double alpha = (2.0 * JakesPropagationLossModel::PI * n - JakesPropagationLossModel::PI + theta) / (4.0 * m_nOscillators);
+      double alpha = (2.0 * M_PI * n - M_PI + theta) / (4.0 * m_nOscillators);
       /// 1b. Initiate rotation speed:
       double omega = m_omegaDopplerMax * std::cos (alpha);
       /// 2. Initiate complex amplitude:

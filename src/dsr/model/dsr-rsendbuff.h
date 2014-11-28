@@ -70,8 +70,8 @@ public:
   {
     return ((m_packet == o.m_packet) && (m_dst == o.m_dst) && (m_expire == o.m_expire));
   }
-  // /\name Fields
-  // \{
+  
+  // Fields
   Ptr<const Packet> GetPacket () const
   {
     return m_packet;
@@ -104,7 +104,7 @@ public:
   {
     return m_protocol;
   }
-  // \}
+
 private:
   /// Data packet
   Ptr<const Packet> m_packet;

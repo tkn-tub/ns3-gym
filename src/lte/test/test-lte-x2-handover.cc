@@ -27,9 +27,9 @@
 #include <ns3/applications-module.h>
 #include <ns3/point-to-point-module.h>
 
-NS_LOG_COMPONENT_DEFINE ("LteX2HandoverTest");
-
 using namespace ns3;
+
+NS_LOG_COMPONENT_DEFINE ("LteX2HandoverTest");
 
 struct HandoverEvent
 {
@@ -150,6 +150,9 @@ LteX2HandoverTestCase::DoRun ()
   Config::SetDefault ("ns3::UdpClient::Interval",  TimeValue (m_udpClientInterval));
   Config::SetDefault ("ns3::UdpClient::MaxPackets", UintegerValue (1000000));  
   Config::SetDefault ("ns3::UdpClient::PacketSize", UintegerValue (m_udpClientPktSize));  
+
+  //Disable Uplink Power Control
+  Config::SetDefault ("ns3::LteUePhy::EnableUplinkPowerControl", BooleanValue (false));
 
   int64_t stream = 1;
   

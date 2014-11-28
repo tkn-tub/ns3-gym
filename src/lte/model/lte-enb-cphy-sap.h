@@ -80,6 +80,14 @@ public:
   virtual void RemoveUe (uint16_t rnti) = 0;
   
   /**
+   * Set the UE transmission power offset P_A
+   *
+   * \param rnti the UE id relative to this cell
+   * \param pa transmission power offset
+   */
+  virtual void SetPa (uint16_t rnti, double pa) = 0;
+
+  /**
    * \param rnti the RNTI of the user
    * \param txMode the transmissionMode of the user
    */
@@ -102,6 +110,12 @@ public:
    * \param sib1 the System Information Block Type 1 to be sent on the BCH
    */
   virtual void SetSystemInformationBlockType1 (LteRrcSap::SystemInformationBlockType1 sib1) = 0;
+
+  /**
+   *
+   * \return Reference Signal Power for SIB2
+   */
+  virtual int8_t GetReferenceSignalPower () = 0;
 };
 
 
@@ -140,10 +154,12 @@ public:
   virtual void SetEarfcn (uint16_t ulEarfcn, uint16_t dlEarfcn);
   virtual void AddUe (uint16_t rnti);
   virtual void RemoveUe (uint16_t rnti);
+  virtual void SetPa (uint16_t rnti, double pa);
   virtual void SetTransmissionMode (uint16_t  rnti, uint8_t txMode);
   virtual void SetSrsConfigurationIndex (uint16_t  rnti, uint16_t srsCi);
   virtual void SetMasterInformationBlock (LteRrcSap::MasterInformationBlock mib);
   virtual void SetSystemInformationBlockType1 (LteRrcSap::SystemInformationBlockType1 sib1);
+  virtual int8_t GetReferenceSignalPower ();
   
 private:
   MemberLteEnbCphySapProvider ();
@@ -199,6 +215,13 @@ MemberLteEnbCphySapProvider<C>::RemoveUe (uint16_t rnti)
 
 template <class C>
 void 
+MemberLteEnbCphySapProvider<C>::SetPa (uint16_t rnti, double pa)
+{
+  m_owner->DoSetPa (rnti, pa);
+}
+
+template <class C>
+void
 MemberLteEnbCphySapProvider<C>::SetTransmissionMode (uint16_t  rnti, uint8_t txMode)
 {
   m_owner->DoSetTransmissionMode (rnti, txMode);
@@ -225,7 +248,12 @@ MemberLteEnbCphySapProvider<C>::SetSystemInformationBlockType1 (LteRrcSap::Syste
   m_owner->DoSetSystemInformationBlockType1 (sib1);
 }
 
-
+template <class C>
+int8_t
+MemberLteEnbCphySapProvider<C>::GetReferenceSignalPower ()
+{
+  return m_owner->DoGetReferenceSignalPower ();
+}
 
 /**
  * Template for the implementation of the LteEnbCphySapUser as a member

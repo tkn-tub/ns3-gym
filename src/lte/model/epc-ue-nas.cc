@@ -27,14 +27,13 @@
 #include "epc-ue-nas.h"
 #include "lte-as-sap.h"
 
-NS_LOG_COMPONENT_DEFINE ("EpcUeNas");
-
 namespace ns3 {
 
+NS_LOG_COMPONENT_DEFINE ("EpcUeNas");
 
 
 
-
+/// Map each of UE NAS states to its string representation.
 static const std::string g_ueNasStateName[EpcUeNas::NUM_STATES] =
 {
   "OFF",
@@ -44,6 +43,10 @@ static const std::string g_ueNasStateName[EpcUeNas::NUM_STATES] =
   "ACTIVE"
 };
 
+/**
+ * \param s The UE NAS state.
+ * \return The string representation of the given state.
+ */
 static inline const std::string & ToString (EpcUeNas::State s)
 {
   return g_ueNasStateName[s];
@@ -236,17 +239,13 @@ EpcUeNas::DoNotifyConnectionSuccessful ()
   SwitchToState (ACTIVE); // will eventually activate dedicated bearers
 }
 
-void 
+void
 EpcUeNas::DoNotifyConnectionFailed ()
 {
   NS_LOG_FUNCTION (this);
 
-  SwitchToState (OFF);
-  /**
-   * \todo Currently not implemented, action by NAS and upper layers after UE
-   *       fails to switch to CONNNECTED mode. Maybe a retry, or just stop here
-   *       and fire a trace to let user know.
-   */
+  // immediately retry the connection
+  Simulator::ScheduleNow (&LteAsSapProvider::Connect, m_asSapProvider);
 }
 
 void

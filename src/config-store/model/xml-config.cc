@@ -9,9 +9,9 @@
 #include <libxml/encoding.h>
 #include <libxml/xmlwriter.h>
 
-NS_LOG_COMPONENT_DEFINE ("XmlConfig");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("XmlConfig");
 
 XmlConfigSave::XmlConfigSave ()
   : m_writer (0)

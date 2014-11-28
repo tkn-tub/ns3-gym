@@ -40,7 +40,6 @@ namespace ns3
 
 NS_LOG_COMPONENT_DEFINE ("Ipv6RawSocketImpl");
 
-
 NS_OBJECT_ENSURE_REGISTERED (Ipv6RawSocketImpl);
 
 TypeId Ipv6RawSocketImpl::GetTypeId ()

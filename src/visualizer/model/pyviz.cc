@@ -35,6 +35,7 @@
 #include <sstream>
 
 NS_LOG_COMPONENT_DEFINE ("PyViz");
+
 #define NUM_LAST_PACKETS 10
 
 static

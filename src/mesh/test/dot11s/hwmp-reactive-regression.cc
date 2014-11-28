@@ -118,9 +118,9 @@ HwmpReactiveRegressionTest::CreateDevices ()
   NetDeviceContainer meshDevices = mesh.Install (wifiPhy, *m_nodes);
   // Six devices, 4 streams per device
   streamsUsed += mesh.AssignStreams (meshDevices, streamsUsed);
-  NS_TEST_EXPECT_MSG_EQ (streamsUsed, (meshDevices.GetN () * 4), "Stream assignment mismatch");
+  NS_TEST_EXPECT_MSG_EQ (streamsUsed, (meshDevices.GetN () * 9), "Stream assignment mismatch");
   streamsUsed += wifiChannel.AssignStreams (chan, streamsUsed);
-  NS_TEST_EXPECT_MSG_EQ (streamsUsed, (meshDevices.GetN () * 4), "Stream assignment mismatch");
+  NS_TEST_EXPECT_MSG_EQ (streamsUsed, (meshDevices.GetN () * 9), "Stream assignment mismatch");
 
   // 3. setup TCP/IP
   InternetStackHelper internetStack;

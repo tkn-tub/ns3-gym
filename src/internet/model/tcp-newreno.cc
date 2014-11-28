@@ -28,9 +28,9 @@
 #include "ns3/abort.h"
 #include "ns3/node.h"
 
-NS_LOG_COMPONENT_DEFINE ("TcpNewReno");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("TcpNewReno");
 
 NS_OBJECT_ENSURE_REGISTERED (TcpNewReno);
 
@@ -45,13 +45,18 @@ TcpNewReno::GetTypeId (void)
                     MakeUintegerAccessor (&TcpNewReno::m_retxThresh),
                     MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("LimitedTransmit", "Enable limited transmit",
-		    BooleanValue (false),
-		    MakeBooleanAccessor (&TcpNewReno::m_limitedTx),
-		    MakeBooleanChecker ())
+                   BooleanValue (false),
+                   MakeBooleanAccessor (&TcpNewReno::m_limitedTx),
+                   MakeBooleanChecker ())
     .AddTraceSource ("CongestionWindow",
                      "The TCP connection's congestion window",
-                     MakeTraceSourceAccessor (&TcpNewReno::m_cWnd))
-  ;
+                     MakeTraceSourceAccessor (&TcpNewReno::m_cWnd),
+                     "ns3::TracedValue::Uint32Callback")
+    .AddTraceSource ("SlowStartThreshold",
+                     "TCP slow start threshold (bytes)",
+                     MakeTraceSourceAccessor (&TcpNewReno::m_ssThresh),
+                     "ns3::TracedValue::Uint32Callback")
+ ;
   return tid;
 }
 
@@ -68,6 +73,7 @@ TcpNewReno::TcpNewReno (const TcpNewReno& sock)
     m_cWnd (sock.m_cWnd),
     m_ssThresh (sock.m_ssThresh),
     m_initialCWnd (sock.m_initialCWnd),
+    m_initialSsThresh (sock.m_initialSsThresh),
     m_retxThresh (sock.m_retxThresh),
     m_inFastRec (false),
     m_limitedTx (sock.m_limitedTx)
@@ -124,8 +130,7 @@ TcpNewReno::NewAck (const SequenceNumber32& seq)
   // Check for exit condition of fast recovery
   if (m_inFastRec && seq < m_recover)
     { // Partial ACK, partial window deflation (RFC2582 sec.3 bullet #5 paragraph 3)
-      m_cWnd -= seq - m_txBuffer.HeadSequence ();
-      m_cWnd += m_segmentSize;  // increase cwnd
+      m_cWnd += m_segmentSize - (seq - m_txBuffer.HeadSequence ());
       NS_LOG_INFO ("Partial ACK in fast recovery: cwnd set to " << m_cWnd);
       m_txBuffer.DiscardUpTo(seq);  //Bug 1850:  retransmit before newack
       DoRetransmit (); // Assume the next seq is lost. Retransmit lost packet
@@ -134,7 +139,7 @@ TcpNewReno::NewAck (const SequenceNumber32& seq)
     }
   else if (m_inFastRec && seq >= m_recover)
     { // Full ACK (RFC2582 sec.3 bullet #5 paragraph 2, option 1)
-      m_cWnd = std::min (m_ssThresh, BytesInFlight () + m_segmentSize);
+      m_cWnd = std::min (m_ssThresh.Get (), BytesInFlight () + m_segmentSize);
       m_inFastRec = false;
       NS_LOG_INFO ("Received full ACK. Leaving fast recovery with cwnd set to " << m_cWnd);
     }
@@ -220,15 +225,16 @@ TcpNewReno::SetSegSize (uint32_t size)
 }
 
 void
-TcpNewReno::SetSSThresh (uint32_t threshold)
+TcpNewReno::SetInitialSSThresh (uint32_t threshold)
 {
-  m_ssThresh = threshold;
+  NS_ABORT_MSG_UNLESS (m_state == CLOSED, "TcpNewReno::SetSSThresh() cannot change initial ssThresh after connection started.");
+  m_initialSsThresh = threshold;
 }
 
 uint32_t
-TcpNewReno::GetSSThresh (void) const
+TcpNewReno::GetInitialSSThresh (void) const
 {
-  return m_ssThresh;
+  return m_initialSsThresh;
 }
 
 void
@@ -253,6 +259,7 @@ TcpNewReno::InitializeCwnd (void)
    * m_segmentSize are set by the attribute system in ns3::TcpSocket.
    */
   m_cWnd = m_initialCWnd * m_segmentSize;
+  m_ssThresh = m_initialSsThresh;
 }
 
 } // namespace ns3

@@ -22,9 +22,13 @@
 #include "flame-protocol.h"
 #include "flame-header.h"
 #include "ns3/log.h"
+
 namespace ns3 {
-namespace flame {
+  
 NS_LOG_COMPONENT_DEFINE ("FlameProtocolMac");
+  
+namespace flame {
+  
 FlameProtocolMac::FlameProtocolMac (Ptr<FlameProtocol> protocol) :
   m_protocol (protocol)
 {

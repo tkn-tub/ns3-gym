@@ -24,9 +24,9 @@
 #include "ns3/log.h"
 #include <algorithm>
 
-NS_LOG_COMPONENT_DEFINE ("InterferenceHelper");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("InterferenceHelper");
 
 /****************************************************************
  *       Phy event class

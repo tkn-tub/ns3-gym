@@ -35,9 +35,9 @@
 
 using namespace ns3;
 
-NS_LOG_COMPONENT_DEFINE ("lr-wpan-clear-channel-assessment-test");
-
 using namespace ns3;
+
+NS_LOG_COMPONENT_DEFINE ("lr-wpan-clear-channel-assessment-test");
 
 class LrWpanCcaTestCase : public TestCase
 {

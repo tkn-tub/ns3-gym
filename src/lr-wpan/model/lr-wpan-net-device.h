@@ -138,7 +138,7 @@ public:
   virtual void SetNode (Ptr<Node> node);
   virtual bool NeedsArp (void) const;
 
-  virtual void SetReceiveCallback (ReceiveCallback cb);
+  virtual void SetReceiveCallback (NetDevice::ReceiveCallback cb);
   virtual void SetPromiscReceiveCallback (PromiscReceiveCallback cb);
   virtual bool SupportsSendFrom (void) const;
 
@@ -215,7 +215,7 @@ private:
   bool m_configComplete;
 
   /**
-   * Configure the NetDevice to request MAC layer acknowledgements when sending
+   * Configure the NetDevice to request MAC layer acknowledgments when sending
    * packets using the Send() API.
    */
   bool m_useAcks;

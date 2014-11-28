@@ -26,13 +26,14 @@
 #include "ns3/ssid.h"
 #include "ns3/packet-socket-address.h"
 #include "ns3/mobility-model.h"
-#include "ns3/on-off-helper.h"
 #include "ns3/yans-wifi-helper.h"
 #include "ns3/position-allocator.h"
 #include "ns3/packet-socket-helper.h"
 #include "ns3/mobility-helper.h"
 #include "ns3/nqos-wifi-mac-helper.h"
 #include "ns3/wifi-net-device.h"
+#include "ns3/packet-socket-server.h"
+#include "ns3/packet-socket-client.h"
 #include <iostream>
 
 #include "ns3/ocb-wifi-mac.h"
@@ -282,11 +283,17 @@ OcbWifiMacTestCase::PostDeviceConfiguration (Ptr<Node> static_node, Ptr<Node> mo
   packetSocket.Install (static_node);
   packetSocket.Install (mobile_node);
 
-  OnOffHelper onoff ("ns3::PacketSocketFactory", Address (socket));
-  onoff.SetConstantRate (DataRate ("500kb/s"));
-  ApplicationContainer apps = onoff.Install (mobile_node);
-  apps.Start (Seconds (0.5));
-  apps.Stop (Seconds (70.0));
+  Ptr<PacketSocketClient> client = CreateObject<PacketSocketClient> ();
+  client->SetRemote (socket);
+  mobile_node->AddApplication (client);
+  client->SetStartTime (Seconds (0.5));
+  client->SetStopTime (Seconds (70.0));
+
+  Ptr<PacketSocketServer> server = CreateObject<PacketSocketServer> ();
+  server->SetLocal (socket);
+  static_node->AddApplication (server);
+  server->SetStartTime (Seconds (0.0));
+  server->SetStopTime (Seconds (70.5));
 
   phytx_time = macassoc_time = phyrx_time = Time ();
   phytx_pos = macassoc_pos = phyrx_pos = Vector ();

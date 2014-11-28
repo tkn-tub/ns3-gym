@@ -1162,6 +1162,11 @@ def run_tests():
         else:
             path_cmd = os.path.join("utils", test_runner_name + " --print-test-name-list --print-test-types")
         (rc, standard_out, standard_err, et) = run_job_synchronously(path_cmd, os.getcwd(), False, False)
+        if rc != 0:
+            # This is usually a sign that ns-3 crashed or exited uncleanly
+            print('test.py error:  test-runner return code returned {}'.format(rc))
+            print('To debug, try running {}\n'.format('\'./waf --run \"test-runner --print-test-name-list\"\''))
+            return
         list_items = standard_out.split('\n')
         list_items.sort()
         print "Test Type    Test Name"

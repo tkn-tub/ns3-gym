@@ -64,9 +64,9 @@
 #include <iostream>
 #include <fstream>
 
-NS_LOG_COMPONENT_DEFINE ("multirate");
-
 using namespace ns3;
+
+NS_LOG_COMPONENT_DEFINE ("multirate");
 
 class Experiment
 {

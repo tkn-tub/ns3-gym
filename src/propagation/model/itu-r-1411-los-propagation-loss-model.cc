@@ -27,9 +27,9 @@
 
 #include "itu-r-1411-los-propagation-loss-model.h"
 
-NS_LOG_COMPONENT_DEFINE ("ItuR1411LosPropagationLossModel");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("ItuR1411LosPropagationLossModel");
 
 NS_OBJECT_ENSURE_REGISTERED (ItuR1411LosPropagationLossModel);
 

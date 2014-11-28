@@ -26,10 +26,9 @@
 #include "lte-net-device.h"
 #include "lte-ue-net-device.h"
 
-NS_LOG_COMPONENT_DEFINE ("LteControlMessage");
-
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("LteControlMessage");
 
 LteControlMessage::LteControlMessage (void)
 {

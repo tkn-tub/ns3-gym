@@ -26,6 +26,7 @@
 #include "ns3/config.h"
 #include "ns3/string.h"
 #include "ns3/uinteger.h"
+#include "ns3/boolean.h"
 #include "ns3/data-rate.h"
 #include "ns3/inet-socket-address.h"
 #include "ns3/point-to-point-helper.h"
@@ -50,7 +51,7 @@ const uint32_t PCAP_LINK_TYPE = 1187373554; // Some large random number -- we us
 const uint32_t PCAP_SNAPLEN   = 64;         // Don't bother to save much data
 
 // ===========================================================================
-// Tests of TCP implementation loss behavior
+// Tests of TCP implementation state machine behavior
 // ===========================================================================
 //
 
@@ -273,13 +274,13 @@ Ns3TcpStateTestCase::DoRun (void)
   Config::SetDefault ("ns3::TcpSocket::SegmentSize", UintegerValue (1000));
   Config::SetDefault ("ns3::TcpSocket::DelAckCount", UintegerValue (1));
   Config::SetDefault ("ns3::DropTailQueue::MaxPackets", UintegerValue (20));
+  Config::SetDefault ("ns3::TcpSocketBase::Timestamp", BooleanValue (false));
 
   if (m_writeLogging)
     {
       LogComponentEnableAll (LOG_PREFIX_FUNC);
-      LogComponentEnable ("TcpTestCases", LOG_LEVEL_ALL);
       LogComponentEnable ("ErrorModel", LOG_LEVEL_DEBUG);
-      LogComponentEnable ("TcpTestCases", LOG_LEVEL_ALL);
+      LogComponentEnable ("Ns3TcpStateTest", LOG_LEVEL_DEBUG);
       LogComponentEnable ("TcpNewReno", LOG_LEVEL_INFO);
       LogComponentEnable ("TcpReno", LOG_LEVEL_INFO);
       LogComponentEnable ("TcpTahoe", LOG_LEVEL_INFO);

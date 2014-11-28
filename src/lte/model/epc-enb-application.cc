@@ -35,7 +35,6 @@ namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("EpcEnbApplication");
 
-
 EpcEnbApplication::EpsFlowId_t::EpsFlowId_t ()
 {
 }

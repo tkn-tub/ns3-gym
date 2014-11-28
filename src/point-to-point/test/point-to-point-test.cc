@@ -6,14 +6,31 @@
 
 using namespace ns3;
 
+/**
+ * \brief Test class for PointToPoint model
+ *
+ * It tries to send one packet from one NetDevice to another, over a
+ * PointToPointChannel.
+ */
 class PointToPointTest : public TestCase
 {
 public:
+  /**
+   * \brief Create the test
+   */
   PointToPointTest ();
 
+  /**
+   * \brief Run the test
+   */
   virtual void DoRun (void);
 
 private:
+  /**
+   * \brief Send one packet to the device specified
+   *
+   * \param device NetDevice to send to
+   */
   void SendOnePacket (Ptr<PointToPointNetDevice> device);
 };
 
@@ -55,10 +72,16 @@ PointToPointTest::DoRun (void)
 
   Simulator::Destroy ();
 }
-//-----------------------------------------------------------------------------
+
+/**
+ * \brief TestSuite for PointToPoint module
+ */
 class PointToPointTestSuite : public TestSuite
 {
 public:
+  /**
+   * \brief Constructor
+   */
   PointToPointTestSuite ();
 };
 
@@ -68,4 +91,4 @@ PointToPointTestSuite::PointToPointTestSuite ()
   AddTestCase (new PointToPointTest, TestCase::QUICK);
 }
 
-static PointToPointTestSuite g_pointToPointTestSuite;
+static PointToPointTestSuite g_pointToPointTestSuite; //!< The testsuite

@@ -23,9 +23,9 @@
 #include "wave-mac-low.h"
 #include "higher-tx-tag.h"
 
-NS_LOG_COMPONENT_DEFINE ("WaveMacLow");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("WaveMacLow");
 
 NS_OBJECT_ENSURE_REGISTERED (WaveMacLow);
 

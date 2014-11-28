@@ -26,9 +26,9 @@
 #include "ns3/log.h"
 #include <cmath>
 
-NS_LOG_COMPONENT_DEFINE ("PositionAllocator");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("PositionAllocator");
 
 NS_OBJECT_ENSURE_REGISTERED (PositionAllocator);
 

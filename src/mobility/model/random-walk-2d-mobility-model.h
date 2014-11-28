@@ -47,13 +47,17 @@ class RandomWalk2dMobilityModel : public MobilityModel
 {
 public:
   static TypeId GetTypeId (void);
-
+  /** An enum representing the different working modes of this module. */
   enum Mode  {
     MODE_DISTANCE,
     MODE_TIME
   };
 
 private:
+  /**
+   * \brief Performs the rebound of the node if it reaches a boundary
+   * \param timeLeft The remaining time of the walk
+   */
   void Rebound (Time timeLeft);
   void DoWalk (Time timeLeft);
   void DoInitializePrivate (void);

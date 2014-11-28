@@ -60,7 +60,9 @@ public:
   void AddMobility (Ptr<LrWpanPhy> phy, Ptr<MobilityModel> m);
 
   /**
+   * \brief Install a LrWpanNetDevice and the associated structures (e.g., channel) in the nodes.
    * \param c a set of nodes
+   * \returns A container holding the added net devices.
    */
   NetDeviceContainer Install (NodeContainer c);
 
@@ -77,7 +79,18 @@ public:
    */
   void EnableLogComponents (void);
 
-  static std::string LrWpanPhyEnumerationPrinter (LrWpanPhyEnumeration);
+  /**
+   * \brief Transform the LrWpanPhyEnumeration enumeration into a printable string.
+   * \param e the LrWpanPhyEnumeration
+   * \return a string
+   */
+  static std::string LrWpanPhyEnumerationPrinter (LrWpanPhyEnumeration e);
+
+  /**
+   * \brief Transform the LrWpanMacState enumeration into a printable string.
+   * \param e the LrWpanMacState
+   * \return a string
+   */
   static std::string LrWpanMacStatePrinter (LrWpanMacState e);
 
   /**
@@ -95,7 +108,14 @@ public:
 
 private:
   // Disable implicit constructors
+  /**
+   * \brief Copy constructor - defined and not implemented.
+   */
   LrWpanHelper (LrWpanHelper const &);
+  /**
+   * \brief Copy constructor - defined and not implemented.
+   * \returns
+   */
   LrWpanHelper& operator= (LrWpanHelper const &);
   /**
    * \internal
@@ -123,6 +143,7 @@ private:
    * \param stream The output stream object to use when logging ascii traces.
    * \param prefix Filename prefix to use for ascii trace files.
    * \param nd Net device for which you want to enable tracing.
+   * \param explicitFilename Treat the prefix as an explicit filename if true
    */
   virtual void EnableAsciiInternal (Ptr<OutputStreamWrapper> stream,
                                     std::string prefix,
@@ -130,7 +151,7 @@ private:
                                     bool explicitFilename);
 
 private:
-  Ptr<SingleModelSpectrumChannel> m_channel;
+  Ptr<SingleModelSpectrumChannel> m_channel; //!< channel to be used for the devices
 
 };
 

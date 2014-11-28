@@ -28,9 +28,9 @@
 #include "ns3/vector.h"
 #include "ns3/ipv6-address-generator.h"
 
-NS_LOG_COMPONENT_DEFINE ("PointToPointStarHelper");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("PointToPointStarHelper");
 
 PointToPointStarHelper::PointToPointStarHelper (uint32_t numSpokes,
                                                 PointToPointHelper p2pHelper)

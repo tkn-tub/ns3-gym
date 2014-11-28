@@ -25,9 +25,9 @@
 
 #define Min(a,b) ((a < b) ? a : b)
 
-NS_LOG_COMPONENT_DEFINE ("OnoeWifiRemoteStation");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("OnoeWifiRemoteStation");
 
 /**
  * \brief hold per-remote-station state for ONOE Wifi manager.

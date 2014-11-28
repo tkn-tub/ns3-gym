@@ -25,19 +25,17 @@
 #include <iostream>
 #include "int64x64-cairo.h"
 
-// Note:  Logging in this file is largely avoided due to the
-// number of calls that are made to these functions and the possibility
-// of causing recursions leading to stack overflow
-
-NS_LOG_COMPONENT_DEFINE ("int64x64-cairo");
-
 // Include directly to allow optimizations within this compilation unit.
 extern "C" {
 #include "cairo-wideint.c"
 }
 
-
 namespace ns3 {
+
+// Note:  Logging in this file is largely avoided due to the
+// number of calls that are made to these functions and the possibility
+// of causing recursions leading to stack overflow
+NS_LOG_COMPONENT_DEFINE ("int64x64-cairo");
 
 static inline  
 bool

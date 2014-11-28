@@ -100,6 +100,12 @@ public:
    */
   bool IsStateSwitching (void);
   /**
+   * Check whether the current state is SLEEP.
+   *
+   * \return true if the current state is SLEEP, false otherwise
+   */
+  bool IsStateSleep (void);
+  /**
    * Return the elapsed time of the current state.
    *
    * \return the elapsed time of the current state
@@ -123,11 +129,11 @@ public:
    *
    * \param txDuration the duration of the TX
    * \param packet the packet
-   * \param txMode the transmission mode of the packet
+   * \param txPowerDbm the nominal tx power in dBm
+   * \param txVector the tx vector of the packet
    * \param preamble the preamble of the packet
-   * \param txPower the transmission power
    */
-  void SwitchToTx (Time txDuration, Ptr<const Packet> packet, WifiMode txMode, WifiPreamble preamble, uint8_t txPower);
+  void SwitchToTx (Time txDuration, Ptr<const Packet> packet, double txPowerDbm, WifiTxVector txVector, WifiPreamble preamble);
   /**
    * Switch state to RX for the given duration.
    *
@@ -162,6 +168,16 @@ public:
    * \param duration the duration of CCA busy state
    */
   void SwitchMaybeToCcaBusy (Time duration);
+  /**
+   * Switch to sleep mode.
+   */
+  void SwitchToSleep (void);
+  /**
+   * Switch from sleep mode.
+   *
+   * \param duration the duration of CCA busy state
+   */
+  void SwitchFromSleep (Time duration);
 
   TracedCallback<Time,Time,enum WifiPhy::State> m_stateLogger;
 private:
@@ -179,9 +195,9 @@ private:
    * Notify all WifiPhyListener that the transmission has started for the given duration.
    *
    * \param duration the duration of the transmission
+   * \param txPowerDbm the nominal tx power in dBm
    */
-  void NotifyTxStart (Time duration);
-  //void NotifyWakeup (void);
+  void NotifyTxStart (Time duration, double txPowerDbm);
   /**
    * Notify all WifiPhyListener that the reception has started for the given duration.
    *
@@ -210,11 +226,20 @@ private:
    */
   void NotifySwitchingStart (Time duration);
   /**
+   * Notify all WifiPhyListener that we are going to sleep
+   */
+  void NotifySleep (void);
+  /**
+   * Notify all WifiPhyListener that we woke up
+   */
+  void NotifyWakeup (void);
+  /**
    * Switch the state from RX.
    */
   void DoSwitchFromRx (void);
 
   bool m_rxing;
+  bool m_sleeping;
   Time m_endTx;
   Time m_endRx;
   Time m_endCcaBusy;
@@ -223,6 +248,7 @@ private:
   Time m_startRx;
   Time m_startCcaBusy;
   Time m_startSwitching;
+  Time m_startSleep;
   Time m_previousStateChangeTime;
 
   Listeners m_listeners;

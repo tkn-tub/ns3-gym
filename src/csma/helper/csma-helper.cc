@@ -34,9 +34,9 @@
 
 #include <string>
 
-NS_LOG_COMPONENT_DEFINE ("CsmaHelper");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("CsmaHelper");
 
 CsmaHelper::CsmaHelper ()
 {

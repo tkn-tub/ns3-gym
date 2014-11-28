@@ -27,9 +27,9 @@
 
 #include "kun-2600-mhz-propagation-loss-model.h"
 
-NS_LOG_COMPONENT_DEFINE ("Kun2600MhzPropagationLossModel");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("Kun2600MhzPropagationLossModel");
 
 NS_OBJECT_ENSURE_REGISTERED (Kun2600MhzPropagationLossModel);
 

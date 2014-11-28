@@ -33,9 +33,9 @@
 
 
 
-NS_LOG_COMPONENT_DEFINE ("Object");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("Object");
 
 /*********************************************************************
  *         The Object implementation

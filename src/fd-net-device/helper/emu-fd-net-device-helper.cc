@@ -53,9 +53,9 @@
 
 #include <string>
 
-NS_LOG_COMPONENT_DEFINE ("EmuFdNetDeviceHelper");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("EmuFdNetDeviceHelper");
 
 #define EMU_MAGIC 65867
 

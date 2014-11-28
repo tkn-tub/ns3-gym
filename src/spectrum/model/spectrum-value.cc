@@ -23,11 +23,9 @@
 #include <ns3/math.h>
 #include <ns3/log.h>
 
-NS_LOG_COMPONENT_DEFINE ("SpectrumValue");
-
-
 namespace ns3 {
 
+NS_LOG_COMPONENT_DEFINE ("SpectrumValue");
 
 SpectrumValue::SpectrumValue ()
 {
@@ -42,6 +40,12 @@ SpectrumValue::SpectrumValue (Ptr<const SpectrumModel> sof)
 
 double&
 SpectrumValue:: operator[] (size_t index)
+{
+  return m_values.at (index);
+}
+
+const double&
+SpectrumValue:: operator[] (size_t index) const
 {
   return m_values.at (index);
 }

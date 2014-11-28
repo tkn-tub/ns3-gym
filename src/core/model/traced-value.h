@@ -27,6 +27,12 @@
 #include "double.h"
 #include "enum.h"
 
+/* No NS_LOG_... here.  When logging is needed use something like
+   #define TRACED_VALUE_DEBUG(x)                  \
+     std::cout << __FILE__ << ":" << __FUNCTION__ \
+               << "(" << __LINE__ << ") "         \
+               << x << std::endl
+*/
 #define TRACED_VALUE_DEBUG(x)
 
 namespace ns3 {
@@ -41,7 +47,7 @@ namespace ns3 {
 /**
  * \ingroup tracing
  *
- * \brief trace classes with value semantics
+ * \brief Trace classes with value semantics
  *
  * If you want to trace the change of value of a class or
  * primitive type which have value semantics (they _must_
@@ -129,11 +135,30 @@ public:
     Set (tmp);
     return old;
   }
+
+  /**
+   *  TracedValue Callback signature for POD.
+   *
+   * \param [in] oldValue original value of the traced variable
+   * \param [in] newValue new value of the traced variable
+   * @{
+   */
+  typedef void (* BoolCallback)  (const bool     oldValue, const bool     newValue);
+  typedef void (* Int8Callback)  (const int8_t   oldValue, const int8_t   newValue);
+  typedef void (* Uint8Callback) (const uint8_t  oldValue, const uint8_t  newValue);
+  typedef void (* Int16Callback) (const int16_t  oldValue, const int16_t  newValue);
+  typedef void (* Uint16Callback)(const uint16_t oldValue, const uint16_t newValue);
+  typedef void (* Int32Callback) (const int32_t  oldValue, const int32_t  newValue);
+  typedef void (* Uint32Callback)(const int32_t  oldValue, const int32_t  newValue);
+  typedef void (* DoubleCallback)(const double   oldValue, const double   newValue);
+  /**@}*/
+
 private:
   T m_v;
   TracedCallback<T,T> m_cb;
 };
 
+  
 template <typename T>
 std::ostream& operator << (std::ostream& os, const TracedValue<T>& rhs)
 {

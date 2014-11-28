@@ -180,8 +180,8 @@ public:
   Print (Ptr<OutputStreamWrapper> stream) const;
 
 private:
-  ///\name Fields
-  // \{
+  
+  // Fields
   /// Destination Sequence Number
   uint32_t m_seqNo;
   /// Hop Count (number of hops needed to reach destination)
@@ -209,7 +209,7 @@ private:
   Time m_settlingTime;
   /// Flag to show if any of the routing table entries were changed with the routing update.
   uint32_t m_entriesChanged;
-  //\}
+
 };
 
 /**
@@ -321,8 +321,8 @@ public:
     */
   EventId
   GetEventId (Ipv4Address address);
-  ///\name Handle life time of invalid route
-  // \{
+  
+  // Handle life time of invalid route
   Time Getholddowntime () const
   {
     return m_holddownTime;
@@ -331,18 +331,17 @@ public:
   {
     m_holddownTime = t;
   }
-  // \}
 
 private:
-  ///\name Fields
-  // \{
+  
+  // Fields
   /// an entry in the routing table.
   std::map<Ipv4Address, RoutingTableEntry> m_ipv4AddressEntry;
   /// an entry in the event table.
   std::map<Ipv4Address, EventId> m_ipv4Events;
   ///
   Time m_holddownTime;
-  // \}
+
 };
 }
 }

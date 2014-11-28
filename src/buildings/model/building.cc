@@ -29,10 +29,9 @@
 #include <ns3/assert.h>
 #include <cmath>
 
-NS_LOG_COMPONENT_DEFINE ("Building");
-
 namespace ns3 {
 
+NS_LOG_COMPONENT_DEFINE ("Building");
 
 NS_OBJECT_ENSURE_REGISTERED (Building);
 

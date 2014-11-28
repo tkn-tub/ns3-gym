@@ -34,7 +34,6 @@ SOURCES = \
 	$(SRC)/csma/doc/csma.rst \
 	$(SRC)/dsdv/doc/dsdv.rst \
 	$(SRC)/dsr/doc/dsr.rst \
-	$(SRC)/emu/doc/emu.rst \
 	$(SRC)/mpi/doc/distributed.rst \
 	$(SRC)/energy/doc/energy.rst \
 	$(SRC)/fd-net-device/doc/fd-net-device.rst \
@@ -58,6 +57,7 @@ SOURCES = \
 	$(SRC)/internet/doc/ipv6.rst \
 	$(SRC)/internet/doc/routing-overview.rst \
 	$(SRC)/internet/doc/tcp.rst \
+	$(SRC)/internet/doc/codel.rst \
 	$(SRC)/mobility/doc/mobility.rst \
 	$(SRC)/olsr/doc/olsr.rst \
 	$(SRC)/openflow/doc/openflow-switch.rst \
@@ -75,7 +75,6 @@ SOURCES = \
 	$(SRC)/stats/doc/data-collection.rst \
 	$(SRC)/stats/doc/probe.rst \
 	$(SRC)/stats/doc/scope-and-limitations.rst \
-	$(SRC)/stats/doc/statistics.rst \
 	$(SRC)/netanim/doc/animation.rst \
 	$(SRC)/flow-monitor/doc/flow-monitor.rst \
 	$(SRC)/wave/doc/wave.rst \
@@ -176,6 +175,32 @@ SOURCEFIGS = \
 	$(SRC)/lte/doc/source/figures/fading_vehicular.png \
 	$(SRC)/lte/doc/source/figures/fading_urban_3kmph.pdf \
 	$(SRC)/lte/doc/source/figures/fading_urban_3kmph.png \
+	$(SRC)/lte/doc/source/figures/fr-enhanced-fractional-frequency-reuse-scheme.png \
+	$(SRC)/lte/doc/source/figures/fr-enhanced-fractional-frequency-reuse-scheme.pdf \
+	$(SRC)/lte/doc/source/figures/fr-full-frequency-reuse-scheme.png \
+	$(SRC)/lte/doc/source/figures/fr-full-frequency-reuse-scheme.pdf \
+	$(SRC)/lte/doc/source/figures/fr-hard-frequency-reuse-scheme.png \
+	$(SRC)/lte/doc/source/figures/fr-hard-frequency-reuse-scheme.pdf \
+	$(SRC)/lte/doc/source/figures/fr-soft-fractional-frequency-reuse-scheme.png \
+	$(SRC)/lte/doc/source/figures/fr-soft-fractional-frequency-reuse-scheme.pdf \
+	$(SRC)/lte/doc/source/figures/fr-soft-frequency-reuse-scheme-v1.png \
+	$(SRC)/lte/doc/source/figures/fr-soft-frequency-reuse-scheme-v1.pdf \
+	$(SRC)/lte/doc/source/figures/fr-soft-frequency-reuse-scheme-v2.png \
+	$(SRC)/lte/doc/source/figures/fr-soft-frequency-reuse-scheme-v2.pdf \
+	$(SRC)/lte/doc/source/figures/fr-strict-frequency-reuse-scheme.png \
+	$(SRC)/lte/doc/source/figures/fr-strict-frequency-reuse-scheme.pdf \
+	$(SRC)/lte/doc/source/figures/ffr-distributed-scheme.png \
+	$(SRC)/lte/doc/source/figures/ffr-distributed-scheme.pdf \
+	$(SRC)/lte/doc/source/figures/lte-fr-soft-1-rem.png \
+	$(SRC)/lte/doc/source/figures/lte-fr-soft-1-rem.pdf \
+	$(SRC)/lte/doc/source/figures/lte-ffr-soft-2-spectrum-trace.png \
+	$(SRC)/lte/doc/source/figures/lte-ffr-soft-2-spectrum-trace.pdf \
+	$(SRC)/lte/doc/source/figures/lte-fr-hard-1-rem.png \
+	$(SRC)/lte/doc/source/figures/lte-fr-hard-1-rem.pdf \
+	$(SRC)/lte/doc/source/figures/lte-fr-hard-2-rem.png \
+	$(SRC)/lte/doc/source/figures/lte-fr-hard-2-rem.pdf \
+	$(SRC)/lte/doc/source/figures/lte-fr-hard-3-rem.png \
+	$(SRC)/lte/doc/source/figures/lte-fr-hard-3-rem.pdf \
 	$(SRC)/lte/doc/source/figures/MCS_1_4.pdf \
 	$(SRC)/lte/doc/source/figures/MCS_1_4.png \
 	$(SRC)/lte/doc/source/figures/MCS_5_8.pdf \
@@ -200,6 +225,10 @@ SOURCEFIGS = \
 	$(SRC)/lte/doc/source/figures/MCS_16_test.pdf \
 	$(SRC)/lte/doc/source/figures/miesm_scheme.pdf \
 	$(SRC)/lte/doc/source/figures/miesm_scheme.png \
+	$(SRC)/lte/doc/source/figures/lte-dl-power-control.png \
+	$(SRC)/lte/doc/source/figures/lte-dl-power-control.pdf \
+	$(SRC)/lte/doc/source/figures/lte-ffr-scheduling.png \
+	$(SRC)/lte/doc/source/figures/lte-ffr-scheduling.pdf \
 	$(SRC)/lte/doc/source/figures/lte-handover-campaign-rem.pdf \
 	$(SRC)/lte/doc/source/figures/lte-handover-campaign-rem.png \
 	$(SRC)/lte/doc/source/figures/lte-legacy-handover-algorithm.pdf \
@@ -359,11 +388,21 @@ IMAGES = $(IMAGES_EPS) $(IMAGES_PNG) $(IMAGES_PDF)
 
 RESCALE = ../../utils/rescale-pdf.sh
 
-%.eps : %.dia; $(DIA) -t eps $< -e $@
-%.png : %.dia; $(DIA) -t png $< -e $@
-%.png : %.eps; $(CONVERT) $< $@
+%.eps : %.dia
+	@echo dia $(notdir $<)
+	@$(DIA) -t eps $< -e $@ >/dev/null
+
+%.png : %.dia
+	@echo dia $(notdir $<)
+	@$(DIA) -t png $< -e $@ >/dev/null
+
+%.png : %.eps
+	@echo convert $(notdir $<)
+	@$(CONVERT) $< $@ >/dev/null
+
 %.pdf : %.eps
-	$(EPSTOPDF) $< -o=$@
+	@echo epstopdf $(notdir $<)
+	@$(EPSTOPDF) $< -o=$@ >/dev/null
 	@if test x$($@_width) != x; then $(RESCALE) $($@_width) $@ ; fi
 
 # You can set these variables from the command line.

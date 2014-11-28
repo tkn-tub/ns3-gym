@@ -31,9 +31,9 @@
 #include "wifi-mac-queue.h"
 #include "mac-tx-middle.h"
 
-NS_LOG_COMPONENT_DEFINE ("BlockAckManager");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("BlockAckManager");
 
 BlockAckManager::Item::Item ()
 {

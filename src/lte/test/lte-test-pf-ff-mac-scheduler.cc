@@ -50,9 +50,9 @@
 
 #include "lte-test-pf-ff-mac-scheduler.h"
 
-NS_LOG_COMPONENT_DEFINE ("LenaTestPfFfMacScheduler");
-
 using namespace ns3;
+
+NS_LOG_COMPONENT_DEFINE ("LenaTestPfFfMacScheduler");
 
 LenaTestPfFfMacSchedulerSuite::LenaTestPfFfMacSchedulerSuite ()
   : TestSuite ("lte-pf-ff-mac-scheduler", SYSTEM)

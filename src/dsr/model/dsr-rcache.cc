@@ -47,9 +47,10 @@
 #include "ns3/address-utils.h"
 #include "ns3/packet.h"
 
-NS_LOG_COMPONENT_DEFINE ("RouteCache");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("RouteCache");
+  
 namespace dsr {
 
 bool CompareRoutesBoth (const RouteCacheEntry &a, const RouteCacheEntry &b)

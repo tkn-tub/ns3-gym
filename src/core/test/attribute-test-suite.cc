@@ -41,9 +41,21 @@ class ValueClassTest
 {
 public:
   ValueClassTest () {}
+  
+  /**
+   * TracedValue callback signature for ValueClassTest
+   *
+   * \param [in] oldValue original value of the traced variable
+   * \param [in] newValue new value of the traced variable
+   */
+  typedef void (* TracedValueCallback)(const ValueClassTest oldValue,
+                                       const ValueClassTest newValue);
+
 private:
   int m_v;
 };
+
+
 bool operator != (const ValueClassTest &a, const ValueClassTest &b)
 {
   return true;
@@ -170,11 +182,13 @@ public:
                      MakeValueClassTestAccessor (&AttributeObjectTest::m_valueSrc),
                      MakeValueClassTestChecker ())
       .AddTraceSource ("Source1", "help test",
-                       MakeTraceSourceAccessor (&AttributeObjectTest::m_intSrc1))
+                       MakeTraceSourceAccessor (&AttributeObjectTest::m_intSrc1),
+                       "ns3::TracedValue::Int8Callback")
       .AddTraceSource ("Source2", "help text",
                        MakeTraceSourceAccessor (&AttributeObjectTest::m_cb))
       .AddTraceSource ("ValueSource", "help text",
-                       MakeTraceSourceAccessor (&AttributeObjectTest::m_valueSrc))
+                       MakeTraceSourceAccessor (&AttributeObjectTest::m_valueSrc),
+                       "ns3::ValueClassTest::TracedValueCallback")
       .AddAttribute ("Pointer", "help text",
                      PointerValue (),
                      MakePointerAccessor (&AttributeObjectTest::m_ptr),

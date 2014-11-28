@@ -40,9 +40,9 @@
 #include "candidate-queue.h"
 #include "ipv4-global-routing.h"
 
-NS_LOG_COMPONENT_DEFINE ("GlobalRouteManagerImpl");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("GlobalRouteManagerImpl");
 
 /**
  * \brief Stream insertion operator.

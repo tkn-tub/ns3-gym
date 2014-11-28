@@ -33,9 +33,12 @@
 #include "ns3/wifi-net-device.h"
 #include "ns3/trace-source-accessor.h"
 
-NS_LOG_COMPONENT_DEFINE ("PeerManagementProtocol");
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("PeerManagementProtocol");
+  
 namespace dot11s {
+  
 /***************************************************
  * PeerManager
  ***************************************************/

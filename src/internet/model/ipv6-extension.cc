@@ -40,9 +40,9 @@
 #include "ipv6-option.h"
 #include "udp-header.h"
 
-NS_LOG_COMPONENT_DEFINE ("Ipv6Extension");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("Ipv6Extension");
 
 NS_OBJECT_ENSURE_REGISTERED (Ipv6Extension);
 

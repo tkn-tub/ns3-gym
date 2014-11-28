@@ -148,6 +148,8 @@ public:
   bool GetBeaconCollisionAvoidance () const;
   /// Notify about beacon send event, needed to schedule BCA
   void NotifyBeaconSent (uint32_t interface, Time beaconInterval);
+  // \}
+  
   ///\brief: Report statistics
   void Report (std::ostream &) const;
   void ResetStats ();
@@ -163,10 +165,8 @@ public:
 
 private:
   virtual void DoInitialize ();
-  /**
-   * \name Private structures
-   * \{
-   */
+  
+  // Private structures
   /// Keeps information about beacon of peer station: beacon interval, association ID, last time we have received a beacon
   struct BeaconInfo
   {
@@ -185,7 +185,7 @@ private:
   typedef std::map<uint32_t, BeaconsOnInterface> BeaconInfoMap;
   ///\brief this vector keeps pointers to MAC-plugins
   typedef std::map<uint32_t, Ptr<PeerManagementProtocolMac> > PeerManagementProtocolMacMap;
-  // \}
+
 private:
   PeerManagementProtocol& operator= (const PeerManagementProtocol &);
   PeerManagementProtocol (const PeerManagementProtocol &);

@@ -22,9 +22,9 @@
 #include "ns3/log.h"
 #include "ns3/simulator.h"
 
-NS_LOG_COMPONENT_DEFINE ("Ipv6PmtuCache");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("Ipv6PmtuCache");
 
 NS_OBJECT_ENSURE_REGISTERED (Ipv6PmtuCache);
 

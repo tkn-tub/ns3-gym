@@ -31,11 +31,9 @@
 #include "aloha-noack-net-device.h"
 #include "ns3/llc-snap-header.h"
 
-NS_LOG_COMPONENT_DEFINE ("AlohaNoackNetDevice");
-
-
 namespace ns3 {
 
+NS_LOG_COMPONENT_DEFINE ("AlohaNoackNetDevice");
 
 std::ostream& operator<< (std::ostream& os, AlohaNoackNetDevice::State state)
 {

@@ -26,9 +26,9 @@
 #include <ns3/log.h>
 #include <algorithm>
 
-NS_LOG_COMPONENT_DEFINE ("LrWpanCsmaCa");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("LrWpanCsmaCa");
 
 NS_OBJECT_ENSURE_REGISTERED (LrWpanCsmaCa);
 

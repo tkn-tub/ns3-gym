@@ -28,7 +28,6 @@ namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("GtkconfigStore");
 
-
 GtkConfigStore::GtkConfigStore ()
 {
 }

@@ -50,48 +50,66 @@ namespace ns3 {
  * can be processed via a Callback.
  *
  * CommandLine also provides handlers for these standard arguments:
- * \code
- *   --PrintGlobals:              Print the list of globals.
- *   --PrintGroups:               Print the list of groups.
- *   --PrintGroup=[group]:        Print all TypeIds of group.
- *   --PrintTypeIds:              Print all TypeIds.
- *   --PrintAttributes=[typeid]:  Print all attributes of typeid.
- *   --PrintHelp:                 Print this help message.
- * \endcode
+ * \verbatim
+   --PrintGlobals:              Print the list of globals.
+   --PrintGroups:               Print the list of groups.
+   --PrintGroup=[group]:        Print all TypeIds of group.
+   --PrintTypeIds:              Print all TypeIds.
+   --PrintAttributes=[typeid]:  Print all attributes of typeid.
+   --PrintHelp:                 Print this help message. \endverbatim
  * 
  * The more common \c --help is a synonym for \c --PrintHelp; an example
  * is given below.
  *
  * Finally, CommandLine processes Attribute and GlobalValue arguments.
+ * Default values for chosen attributes can be set using a shorthand
+ * argument name.
  *
  * In use, arguments are given in the form
- * \code
- *   --arg=value --toggle
- * \endcode
+ * \verbatim
+   --arg=value --toggle \endverbatim
  * Most arguments expect a value, as in the first form, \c --arg=value.
  * Toggles, corresponding to boolean arguments, can be given in any of
  * the forms
- * \code
- *   --toggle1 --toggle2=1 --toggle3=t --toggle4=true
- * \endcode
+ * \verbatim
+   --toggle1 --toggle2=1 --toggle3=t --toggle4=true \endverbatim
  * The first form changes the state of toggle1 from its default; 
  * all the rest set the corresponding boolean variable to true.
  * \c 0, \c f and \c false are accepted to set the variable to false.
  *
+ * Arguments can be repeated on the command line; the last value given
+ * will be the final value used.  For example,
+ * \verbatim
+   --arg=one --toggle=f --arg=another --toggle \endverbatim
+ * The variable set by \c --arg will end up with the value \c "another";
+ * the boolean set by \c --toggle will end up as \c true.
+ *
+ * Because arguments can be repeated it can be hard to decipher what
+ * value each variable ended up with, especially when using boolean toggles.
+ * Suggested best practice is for scripts to report the values of all items
+ * settable throught CommandLine, as done by the example below.
+ * 
+ *
  * CommandLine can set the initial value of every attribute in the system
  * with the 
  * \c --TypeIdName::AttributeName=value syntax, for example
- * \code
- *   --Application::StartTime=3s
- * \endcode
+ * \verbatim
+   --Application::StartTime=3s \endverbatim
+ * In some cases you may want to highlight the use of a particular
+ * attribute for a simulation script.  For example, you might want
+ * to make it easy to set the \c Application::StartTime using
+ * the argument \c --start, and have its help string show as part
+ * of the help message.  This can be done using the
+ * \link AddValue(const std::string, const std::string)
+ * AddValue (name, attributePath) \endlink
+ * method.
  *
  * CommandLine can also set the value of every GlobalValue
  * in the system with the \c --GlobalValueName=value syntax, for example
- * \code
- *   --SchedulerType=HeapScheduler
- * \endcode
+ * \verbatim
+   --SchedulerType=HeapScheduler \endverbatim
  *
- * A simple example is in `src/core/example/ command-line-example.cc`
+ * A simple example is in `src/core/example/``command-line-example.cc`
  * The heart of that example is this code:
  *
  * \code
@@ -99,55 +117,56 @@ namespace ns3 {
  *    bool        boolArg = false;
  *    std::string strArg  = "strArg default";
  *  
- *  CommandLine cmd;
- *  cmd.Usage ("CommandLine example program.\n"
- *             "\n"
- *             "This little program demonstrates how to use CommandLine.");
+ *    CommandLine cmd;
+ *    cmd.Usage ("CommandLine example program.\n"
+ *               "\n"
+ *               "This little program demonstrates how to use CommandLine.");
  *    cmd.AddValue ("intArg",  "an int argument",       intArg);
  *    cmd.AddValue ("boolArg", "a bool argument",       boolArg);
  *    cmd.AddValue ("strArg",  "a string argument",     strArg);
+ *    cmd.AddValue ("anti",    "ns3::RandomVariableStream::Antithetic");
  *    cmd.AddValue ("cbArg",   "a string via callback", MakeCallback (SetCbArg));
- *  cmd.Parse (argc, argv);
+ *    cmd.Parse (argc, argv);
  * \endcode
  * after which it prints the values of each variable.  (The \c SetCbArg function
- * is not shown here; see `src/core/example/ command-line-example.cc`)
+ * is not shown here; see `src/core/example/``command-line-example.cc`)
  *
  * Here is the output from a few runs of that program:
  *
- * \code
- *   $ ./waf --run="command-line-example"
- *   intArg:   1
- *   boolArg:  false
- *   strArg:   "strArg default"
- *   cbArg:    "cbArg default"
- *
- *   $ ./waf --run="command-line-example --intArg=2 --boolArg --strArg=Hello --cbArg=World"
- *   intArg:   2
- *   boolArg:  true
- *   strArg:   "Hello"
- *   cbArg:    "World"
- *   
- *   $ ./waf --run="command-line-example --help"
- *   ns3-dev-command-line-example-debug [Program Arguments] [General Arguments]
- *   
- *   CommandLine example program.
- *   
- *   This little program demonstrates how to use CommandLine.
- *   
- *   Program Arguments:
- *       --intArg:   an int argument [1]
- *       --boolArg:  a bool argument [false]
- *       --strArg:   a string argument [strArg default]
- *       --cbArg:    a string via callback
- *   
- *   General Arguments:
- *       --PrintGlobals:              Print the list of globals.
- *       --PrintGroups:               Print the list of groups.
- *       --PrintGroup=[group]:        Print all TypeIds of group.
- *       --PrintTypeIds:              Print all TypeIds.
- *       --PrintAttributes=[typeid]:  Print all attributes of typeid.
- *       --PrintHelp:                 Print this help message.
- * \endcode
+ * \verbatim
+   $ ./waf --run="command-line-example"
+   intArg:   1
+   boolArg:  false
+   strArg:   "strArg default"
+   cbArg:    "cbArg default"
+
+   $ ./waf --run="command-line-example --intArg=2 --boolArg --strArg=Hello --cbArg=World"
+   intArg:   2
+   boolArg:  true
+   strArg:   "Hello"
+   cbArg:    "World"
+   
+   $ ./waf --run="command-line-example --help"
+   ns3-dev-command-line-example-debug [Program Arguments] [General Arguments]
+   
+   CommandLine example program.
+   
+   This little program demonstrates how to use CommandLine.
+   
+   Program Arguments:
+       --intArg:   an int argument [1]
+       --boolArg:  a bool argument [false]
+       --strArg:   a string argument [strArg default]
+       --anti:     Set this RNG stream to generate antithetic values (ns3::RandomVariableStream::Antithetic) [false]
+       --cbArg:    a string via callback
+   
+   General Arguments:
+       --PrintGlobals:              Print the list of globals.
+       --PrintGroups:               Print the list of groups.
+       --PrintGroup=[group]:        Print all TypeIds of group.
+       --PrintTypeIds:              Print all TypeIds.
+       --PrintAttributes=[typeid]:  Print all attributes of typeid.
+       --PrintHelp:                 Print this help message. \endverbatim
  *
  * Having parsed the arguments, some programs will need to perform
  * some additional validation of the received values.  A common issue at this
@@ -216,7 +235,6 @@ public:
                  const std::string &help,
                  T &value);
 
-
   /**
    * Add a program argument, using a Callback to parse the value
    *
@@ -231,6 +249,15 @@ public:
   void AddValue (const std::string &name,
                  const std::string &help,
                  Callback<bool, std::string> callback);
+
+  /**
+   * Add a program argument as a shorthand for an Attribute.
+   *
+   * \param name the name of the program-supplied argument.
+   * \param attributePath the fully-qualified name of the Attribute
+   */
+  void AddValue (const std::string &name,
+                 const std::string &attributePath);
 
   /**
    * Parse the program arguments
@@ -348,6 +375,15 @@ private:
    * \param value the command line value
    */
   void HandleArgument (const std::string &name, const std::string &value) const;
+  /**
+   * Callback function to handle attributes.
+   *
+   * \param name The full name of the Attribute.
+   * \param value The value to assign to \p name.
+   * \return true if the value was set successfully, false otherwise.
+   */  
+  static bool HandleAttribute (const std::string name, const std::string value);
+
   /** Handler for \c \-\-PrintGlobals:  print all global variables and values */
   void PrintGlobals (std::ostream &os) const;
   /**

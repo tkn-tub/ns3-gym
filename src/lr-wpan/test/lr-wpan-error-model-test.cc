@@ -33,9 +33,9 @@
 #include <ns3/constant-position-mobility-model.h>
 #include "ns3/rng-seed-manager.h"
 
-NS_LOG_COMPONENT_DEFINE ("lr-wpan-error-model-test");
-
 using namespace ns3;
+
+NS_LOG_COMPONENT_DEFINE ("lr-wpan-error-model-test");
 
 class LrWpanErrorDistanceTestCase : public TestCase
 {

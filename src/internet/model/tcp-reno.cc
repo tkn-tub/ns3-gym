@@ -28,9 +28,9 @@
 #include "ns3/abort.h"
 #include "ns3/node.h"
 
-NS_LOG_COMPONENT_DEFINE ("TcpReno");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("TcpReno");
 
 NS_OBJECT_ENSURE_REGISTERED (TcpReno);
 
@@ -46,7 +46,12 @@ TcpReno::GetTypeId (void)
                     MakeUintegerChecker<uint32_t> ())
     .AddTraceSource ("CongestionWindow",
                      "The TCP connection's congestion window",
-                     MakeTraceSourceAccessor (&TcpReno::m_cWnd))
+                     MakeTraceSourceAccessor (&TcpReno::m_cWnd),
+                     "ns3::TracedValue::Uint32Callback")
+    .AddTraceSource ("SlowStartThreshold",
+                     "TCP slow start threshold (bytes)",
+                     MakeTraceSourceAccessor (&TcpReno::m_ssThresh),
+                     "ns3::TracedValue::Uint32Callback")
   ;
   return tid;
 }
@@ -61,6 +66,7 @@ TcpReno::TcpReno (const TcpReno& sock)
     m_cWnd (sock.m_cWnd),
     m_ssThresh (sock.m_ssThresh),
     m_initialCWnd (sock.m_initialCWnd),
+    m_initialSsThresh (sock.m_initialSsThresh),
     m_retxThresh (sock.m_retxThresh),
     m_inFastRec (false)
 {
@@ -194,15 +200,16 @@ TcpReno::SetSegSize (uint32_t size)
 }
 
 void
-TcpReno::SetSSThresh (uint32_t threshold)
+TcpReno::SetInitialSSThresh (uint32_t threshold)
 {
-  m_ssThresh = threshold;
+  NS_ABORT_MSG_UNLESS (m_state == CLOSED, "TcpReno::SetSSThresh() cannot change initial ssThresh after connection started.");
+  m_initialSsThresh = threshold;
 }
 
 uint32_t
-TcpReno::GetSSThresh (void) const
+TcpReno::GetInitialSSThresh (void) const
 {
-  return m_ssThresh;
+  return m_initialSsThresh;
 }
 
 void
@@ -227,6 +234,7 @@ TcpReno::InitializeCwnd (void)
    * m_segmentSize are set by the attribute system in ns3::TcpSocket.
    */
   m_cWnd = m_initialCWnd * m_segmentSize;
+  m_ssThresh = m_initialSsThresh;
 }
 
 } // namespace ns3

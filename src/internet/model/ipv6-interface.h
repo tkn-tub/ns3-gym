@@ -250,6 +250,12 @@ public:
    */
   void SetNsDadUid (Ipv6Address address, uint32_t uid);
 
+  /**
+   * \return NDISC cache used by this interface
+   */
+  Ptr<NdiscCache> GetNdiscCache () const;
+
+
 protected:
   /**
    * \brief Dispose this object.

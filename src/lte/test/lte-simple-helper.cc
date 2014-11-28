@@ -30,10 +30,9 @@
 #include "lte-test-entities.h"
 
 
-NS_LOG_COMPONENT_DEFINE ("LteSimpleHelper");
-
 namespace ns3 {
 
+NS_LOG_COMPONENT_DEFINE ("LteSimpleHelper");
 
 NS_OBJECT_ENSURE_REGISTERED (LteSimpleHelper);
 

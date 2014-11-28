@@ -29,9 +29,9 @@
 #include <ns3/log.h>
 
 
-NS_LOG_COMPONENT_DEFINE ("lr-wpan-collision-test");
-
 using namespace ns3;
+
+NS_LOG_COMPONENT_DEFINE ("lr-wpan-collision-test");
 
 // This is an example TestCase.
 class LrWpanCollisionTestCase : public TestCase

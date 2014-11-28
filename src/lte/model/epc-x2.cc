@@ -27,10 +27,9 @@
 #include "ns3/epc-x2-header.h"
 #include "ns3/epc-x2.h"
 
-NS_LOG_COMPONENT_DEFINE ("EpcX2");
-
 namespace ns3 {
 
+NS_LOG_COMPONENT_DEFINE ("EpcX2");
 
 X2IfaceInfo::X2IfaceInfo (Ipv4Address remoteIpAddr, Ptr<Socket> localCtrlPlaneSocket, Ptr<Socket> localUserPlaneSocket)
 {

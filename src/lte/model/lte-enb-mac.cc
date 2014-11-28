@@ -38,10 +38,9 @@
 #include <ns3/lte-common.h>
 
 
-NS_LOG_COMPONENT_DEFINE ("LteEnbMac");
-
 namespace ns3 {
 
+NS_LOG_COMPONENT_DEFINE ("LteEnbMac");
 
 NS_OBJECT_ENSURE_REGISTERED (LteEnbMac);
 

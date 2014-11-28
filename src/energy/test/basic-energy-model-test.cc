@@ -93,6 +93,7 @@ BasicEnergyUpdateTest::DoRun (void)
   NS_TEST_ASSERT_MSG_EQ (StateSwitchTest (WifiPhy::TX), false, "Problem with state switch test (WifiPhy tx).");
   NS_TEST_ASSERT_MSG_EQ (StateSwitchTest (WifiPhy::RX), false, "Problem with state switch test (WifiPhy rx).");
   NS_TEST_ASSERT_MSG_EQ (StateSwitchTest (WifiPhy::SWITCHING), false, "Problem with state switch test (WifiPhy switching).");
+  NS_TEST_ASSERT_MSG_EQ (StateSwitchTest (WifiPhy::SLEEP), false, "Problem with state switch test (WifiPhy sleep).");
 }
 
 bool
@@ -177,6 +178,9 @@ BasicEnergyUpdateTest::StateSwitchTest (WifiPhy::State state)
       break;
     case WifiPhy::SWITCHING:
       current = devModel->GetSwitchingCurrentA ();
+      break;
+    case WifiPhy::SLEEP:
+      current = devModel->GetSleepCurrentA ();
       break;
     default:
       NS_FATAL_ERROR ("Undefined radio state: " << state);

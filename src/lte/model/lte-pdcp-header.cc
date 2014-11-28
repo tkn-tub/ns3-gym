@@ -22,9 +22,9 @@
 
 #include "ns3/lte-pdcp-header.h"
 
-NS_LOG_COMPONENT_DEFINE ("LtePdcpHeader");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("LtePdcpHeader");
 
 NS_OBJECT_ENSURE_REGISTERED (LtePdcpHeader);
 

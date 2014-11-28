@@ -26,9 +26,9 @@
 #include "ns3/lte-rlc-sdu-status-tag.h"
 #include "ns3/lte-rlc-tag.h"
 
-NS_LOG_COMPONENT_DEFINE ("LteRlcAm");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("LteRlcAm");
 
 NS_OBJECT_ENSURE_REGISTERED (LteRlcAm);
 

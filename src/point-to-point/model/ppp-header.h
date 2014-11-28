@@ -45,7 +45,7 @@ namespace ns3 {
  * to the packet.  The ns-3 way to do this is via a class that inherits from
  * class Header.
  */
-class PppHeader : public Header 
+class PppHeader : public Header
 {
 public:
 
@@ -59,8 +59,21 @@ public:
    */
   virtual ~PppHeader ();
 
+  /**
+   * \brief Get the TypeId
+   *
+   * \return The TypeId for this class
+   */
   static TypeId GetTypeId (void);
+
+  /**
+   * \brief Get the TypeId of the instance
+   *
+   * \return The TypeId for this instance
+   */
   virtual TypeId GetInstanceTypeId (void) const;
+
+
   virtual void Print (std::ostream &os) const;
   virtual void Serialize (Buffer::Iterator start) const;
   virtual uint32_t Deserialize (Buffer::Iterator start);

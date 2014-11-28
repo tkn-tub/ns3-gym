@@ -24,9 +24,9 @@
 #include "ns3/node.h"
 #include "ns3/names.h"
 
-NS_LOG_COMPONENT_DEFINE ("SixLowPanHelper");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("SixLowPanHelper");
 
 SixLowPanHelper::SixLowPanHelper ()
 {

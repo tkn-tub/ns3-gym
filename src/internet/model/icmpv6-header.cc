@@ -26,10 +26,10 @@
 
 #include "icmpv6-header.h"
 
-NS_LOG_COMPONENT_DEFINE ("Icmpv6Header");
-
 namespace ns3
 {
+
+NS_LOG_COMPONENT_DEFINE ("Icmpv6Header");
 
 NS_OBJECT_ENSURE_REGISTERED (Icmpv6Header);
 
@@ -245,7 +245,7 @@ void Icmpv6NS::SetIpv6Target (Ipv6Address target)
 void Icmpv6NS::Print (std::ostream& os) const
 {
   NS_LOG_FUNCTION (this << &os);
-  os << "( type = " << (uint32_t)GetType () << " (NS) code = " << (uint32_t)GetCode () << " checksum = " << (uint32_t)GetChecksum ()  << ")";
+  os << "( type = " << (uint32_t)GetType () << " (NS) code = " << (uint32_t)GetCode () << " target = " << m_target << " checksum = " << (uint32_t)GetChecksum ()  << ")";
 }
 
 uint32_t Icmpv6NS::GetSerializedSize () const

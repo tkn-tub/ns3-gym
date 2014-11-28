@@ -65,13 +65,11 @@ public:
 private:
   /// Test Add apth and lookup path;
   void TestLookup ();
-  /**
-   * \name Test add path and try to lookup after entry has expired
-   * \{
-   */
+  
+  // Test add path and try to lookup after entry has expired
   void TestAddPath ();
   void TestExpire ();
-  ///\}
+
 private:
   Mac48Address dst;
   Mac48Address hop;

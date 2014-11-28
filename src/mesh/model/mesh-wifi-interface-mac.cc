@@ -36,9 +36,9 @@
 #include "ns3/trace-source-accessor.h"
 #include "ns3/qos-tag.h"
 
-NS_LOG_COMPONENT_DEFINE ("MeshWifiInterfaceMac");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("MeshWifiInterfaceMac");
 
 NS_OBJECT_ENSURE_REGISTERED (MeshWifiInterfaceMac);
 

@@ -27,9 +27,9 @@
 
 #include <iostream>
 
-NS_LOG_COMPONENT_DEFINE ("Main");
-
 using namespace ns3;
+
+NS_LOG_COMPONENT_DEFINE ("Main");
 
 class Experiment
 {

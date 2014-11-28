@@ -26,9 +26,9 @@
 #include <ns3/log.h>
 
 
-NS_LOG_COMPONENT_DEFINE ("lr-wpan-packet-test");
-
 using namespace ns3;
+
+NS_LOG_COMPONENT_DEFINE ("lr-wpan-packet-test");
 
 // This is an example TestCase.
 class LrWpanPacketTestCase : public TestCase

@@ -93,20 +93,15 @@ public:
 private:
   /// Test Add apth and lookup path;
   void TestLookup ();
-  /**
-   * \name Test add path and try to lookup after entry has expired
-   * \{
-   */
+
+  // Test add path and try to lookup after entry has expired
   void TestAddPath ();
   void TestExpire ();
-  ///\}
-  /**
-   * \name Test add precursors and find precursor list in rtable
-   * \{
-   */
+
+  // Test add precursors and find precursor list in rtable
   void TestPrecursorAdd ();
   void TestPrecursorFind ();
-  ///\}
+
 private:
   Mac48Address dst;
   Mac48Address hop;

@@ -20,9 +20,9 @@
 #include "trace-source-accessor.h"
 #include "log.h"
 
-NS_LOG_COMPONENT_DEFINE ("TraceSourceAccessor");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("TraceSourceAccessor");
 
 TraceSourceAccessor::TraceSourceAccessor ()
 {

@@ -27,9 +27,9 @@
 
 #include "okumura-hata-propagation-loss-model.h"
 
-NS_LOG_COMPONENT_DEFINE ("OkumuraHataPropagationLossModel");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("OkumuraHataPropagationLossModel");
 
 NS_OBJECT_ENSURE_REGISTERED (OkumuraHataPropagationLossModel);
 

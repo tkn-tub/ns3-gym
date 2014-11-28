@@ -22,24 +22,24 @@
 #ifndef LTE_TEST_SINR_CHUNK_PROCESSOR_H
 #define LTE_TEST_SINR_CHUNK_PROCESSOR_H
 
-#include "ns3/lte-sinr-chunk-processor.h"
+#include "ns3/lte-chunk-processor.h"
 
 namespace ns3 {
 
-
 /**
- * This custom LteSinrChunkProcessor averages the calculated SINR over time.
+ * This custom LteTestSinrChunkProcessor averages the calculated SINR over time.
  * It is plugged on the receiving SpectrumPhy and therefore
  * receives the SINR SpectrumValue calculated by the LteInterference module.
  */
-class LteTestSinrChunkProcessor : public LteSinrChunkProcessor
+class LteTestSinrChunkProcessor : public LteChunkProcessor
 {
 public:
-  LteTestSinrChunkProcessor (Ptr<LtePhy> p);
+  LteTestSinrChunkProcessor ();
   virtual ~LteTestSinrChunkProcessor ();
 
+  virtual void AddCallback (LteChunkProcessorCallback c);
   virtual void Start ();
-  virtual void EvaluateSinrChunk (const SpectrumValue& sinr, Time duration);
+  virtual void EvaluateChunk (const SpectrumValue& sinr, Time duration);
   virtual void End ();
 
   Ptr<SpectrumValue> GetSinr ();
@@ -48,7 +48,6 @@ private:
   Ptr<SpectrumValue> m_sumSinr;
   Ptr<SpectrumValue> m_sinr;
   Time m_totDuration;
-  Ptr<LtePhy> m_phy;
 };
 
 

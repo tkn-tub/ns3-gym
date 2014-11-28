@@ -70,7 +70,7 @@ public:
   virtual void Serialize (Buffer::Iterator start) const = 0;
   /**
    * \param start an iterator which points to where the header should
-   *        written.
+   *        read from.
    * \returns the number of bytes read.
    *
    * This method is used by Packet::RemoveHeader to
@@ -78,6 +78,12 @@ public:
    * The data read is expected to
    * match bit-for-bit the representation of this header in real
    * networks.
+   *
+   * Note that data is not actually removed from the buffer to 
+   * which the iterator points.  Both Packet::RemoveHeader() and
+   * Packet::PeekHeader() call Deserialize(), but only the RemoveHeader()
+   * has additional statements to remove the header bytes from the
+   * underlying buffer and associated metadata.
    */
   virtual uint32_t Deserialize (Buffer::Iterator start) = 0;
   /**

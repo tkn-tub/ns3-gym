@@ -211,7 +211,26 @@ protected:
    */
   virtual void Cleanup (void);
 
-  struct Item;
+  /**
+   * A struct that holds information about a packet for putting
+   * in a packet queue.
+   */
+  struct Item
+  {
+    /**
+     * Create a struct with the given parameters.
+     *
+     * \param packet
+     * \param hdr
+     * \param tstamp
+     */
+    Item (Ptr<const Packet> packet,
+          const WifiMacHeader &hdr,
+          Time tstamp);
+    Ptr<const Packet> packet; //!< Actual packet
+    WifiMacHeader hdr; //!< Wifi MAC header associated with the packet
+    Time tstamp; //!< timestamp when the packet arrived at the queue
+  };
 
   /**
    * typedef for packet (struct Item) queue.
@@ -233,27 +252,6 @@ protected:
    * \return the address
    */
   Mac48Address GetAddressForPacket (enum WifiMacHeader::AddressType type, PacketQueueI it);
-
-  /**
-   * A struct that holds information about a packet for putting
-   * in a packet queue.
-   */
-  struct Item
-  {
-    /**
-     * Create a struct with the given parameters.
-     *
-     * \param packet
-     * \param hdr
-     * \param tstamp
-     */
-    Item (Ptr<const Packet> packet,
-          const WifiMacHeader &hdr,
-          Time tstamp);
-    Ptr<const Packet> packet; //!< Actual packet
-    WifiMacHeader hdr; //!< Wifi MAC header associated with the packet
-    Time tstamp; //!< timestamp when the packet arrived at the queue
-  };
 
   PacketQueue m_queue; //!< Packet (struct Item) queue
   uint32_t m_size; //!< Current queue size

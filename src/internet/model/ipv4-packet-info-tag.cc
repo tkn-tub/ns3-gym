@@ -24,9 +24,9 @@
 #include "ipv4-packet-info-tag.h"
 #include "ns3/log.h"
 
-NS_LOG_COMPONENT_DEFINE ("Ipv4PacketInfoTag");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("Ipv4PacketInfoTag");
 
 Ipv4PacketInfoTag::Ipv4PacketInfoTag ()
   : m_addr (Ipv4Address ()),

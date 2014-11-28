@@ -28,9 +28,9 @@
 
 #include "ipv4-nix-vector-routing.h"
 
-NS_LOG_COMPONENT_DEFINE ("Ipv4NixVectorRouting");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("Ipv4NixVectorRouting");
 
 NS_OBJECT_ENSURE_REGISTERED (Ipv4NixVectorRouting);
 

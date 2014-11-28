@@ -118,6 +118,14 @@ private:
   void HandleEnergyDrainedEvent (void);
 
   /**
+   * Handles the remaining energy exceeding the high threshold after it went
+   * below the low threshold. This function notifies all the energy models
+   * aggregated to the node about the energy being recharged. Each energy model
+   * is then responsible for its own handler.
+   */
+  void HandleEnergyRechargedEvent (void);
+
+  /**
    * Calculates remaining energy. This function uses the total current from all
    * device models to calculate the amount of energy to decrease. The energy to
    * decrease is given by:
@@ -130,6 +138,10 @@ private:
 private:
   double m_initialEnergyJ;                // initial energy, in Joules
   double m_supplyVoltageV;                // supply voltage, in Volts
+  double m_lowBatteryTh;                  // low battery threshold, as a fraction of the initial energy
+  double m_highBatteryTh;                 // high battery threshold, as a fraction of the initial energy
+  bool m_depleted;                        // set to true when the remaining energy goes below the low threshold,
+                                          // set to false again when the remaining energy exceeds the high threshold
   TracedValue<double> m_remainingEnergyJ; // remaining energy, in Joules
   EventId m_energyUpdateEvent;            // energy update event
   Time m_lastUpdateTime;                  // last update time

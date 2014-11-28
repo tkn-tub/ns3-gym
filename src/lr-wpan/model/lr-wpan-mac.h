@@ -44,23 +44,30 @@ class LrWpanCsmaCa;
  *
  * This section documents the API of the IEEE 802.15.4-related models.  For a generic functional description, please refer to the ns-3 manual.
  */
+
+/**
+ * Tx options
+ */
 typedef enum
 {
-  TX_OPTION_NONE = 0,
-  TX_OPTION_ACK = 1,
-  TX_OPTION_GTS = 2,
-  TX_OPTION_INDIRECT = 4
+  TX_OPTION_NONE = 0,    //!< TX_OPTION_NONE
+  TX_OPTION_ACK = 1,     //!< TX_OPTION_ACK
+  TX_OPTION_GTS = 2,     //!< TX_OPTION_GTS
+  TX_OPTION_INDIRECT = 4 //!< TX_OPTION_INDIRECT
 } LrWpanTxOption;
 
+/**
+ * MAC states
+ */
 typedef enum
 {
-  MAC_IDLE,
-  MAC_CSMA,
-  MAC_SENDING,
-  MAC_ACK_PENDING,
-  CHANNEL_ACCESS_FAILURE,
-  CHANNEL_IDLE,
-  SET_PHY_TX_ON
+  MAC_IDLE,              //!< MAC_IDLE
+  MAC_CSMA,              //!< MAC_CSMA
+  MAC_SENDING,           //!< MAC_SENDING
+  MAC_ACK_PENDING,       //!< MAC_ACK_PENDING
+  CHANNEL_ACCESS_FAILURE,//!< CHANNEL_ACCESS_FAILURE
+  CHANNEL_IDLE,          //!< CHANNEL_IDLE
+  SET_PHY_TX_ON          //!< SET_PHY_TX_ON
 } LrWpanMacState;
 
 /**
@@ -86,7 +93,7 @@ typedef enum
   DISASSOCIATED = 0xff
 } LrWpanAssociationStatus;
 
-/*
+/**
  * Table 42 of 802.15.4-2006
  */
 typedef enum
@@ -105,6 +112,10 @@ typedef enum
   IEEE_802_15_4_INVALID_PARAMETER      = 11
 } LrWpanMcpsDataConfirmStatus;
 
+
+/**
+ * MCPS-DATA.request params. See 7.1.1.1
+ */
 struct McpsDataRequestParams
 {
   McpsDataRequestParams ()
@@ -116,42 +127,52 @@ struct McpsDataRequestParams
       m_txOptions (0)
   {
   }
-  LrWpanAddressMode m_srcAddrMode;
-  LrWpanAddressMode m_dstAddrMode;
-  uint16_t m_dstPanId;
-  Mac16Address m_dstAddr;
-  uint8_t m_msduHandle;
-  uint8_t m_txOptions;  // bitmap
+  LrWpanAddressMode m_srcAddrMode; //!< Source address mode
+  LrWpanAddressMode m_dstAddrMode; //!< Destination address mode
+  uint16_t m_dstPanId;             //!< Destination PAN identifier
+  Mac16Address m_dstAddr;          //!< Destination address
+  uint8_t m_msduHandle;            //!< MSDU handle
+  uint8_t m_txOptions;             //!< Tx Options (bitfield)
 };
 
+/**
+ * MCPS-DATA.confirm params. See 7.1.1.2
+ */
 struct McpsDataConfirmParams
 {
-  uint8_t m_msduHandle;
-  LrWpanMcpsDataConfirmStatus m_status;
+  uint8_t m_msduHandle; //!< MSDU handle
+  LrWpanMcpsDataConfirmStatus m_status; //!< The status of the last MSDU transmission
 };
 
+/**
+ * MCPS-DATA.indication params. See 7.1.1.3
+ */
 struct McpsDataIndicationParams
 {
-  uint8_t m_srcAddrMode;
-  uint16_t m_srcPanId;
-  Mac16Address m_srcAddr;
-  uint8_t m_dstAddrMode;
-  uint16_t m_dstPanId;
-  Mac16Address m_dstAddr;
-  uint8_t m_mpduLinkQuality;
-  uint8_t m_dsn;
+  uint8_t m_srcAddrMode;  //!< Source address mode
+  uint16_t m_srcPanId;    //!< Source PAN identifier
+  Mac16Address m_srcAddr; //!< Source address
+  uint8_t m_dstAddrMode;  //!< Destination address mode
+  uint16_t m_dstPanId;    //!< Destination PAN identifier
+  Mac16Address m_dstAddr; //!< Destination address
+  uint8_t m_mpduLinkQuality;  //!< LQI value measured during reception of the MPDU
+  uint8_t m_dsn;          //!< The DSN of the received data frame
 };
 
-// This callback is called after a McpsDataRequest has been called from
-// the higher layer.  It returns a status of the outcome of the
-// transmission request
+/**
+ * This callback is called after a McpsDataRequest has been called from
+ * the higher layer.  It returns a status of the outcome of the
+ * transmission request
+ */
 typedef Callback<void, McpsDataConfirmParams> McpsDataConfirmCallback;
 
-// This callback is called after a Mcps has successfully received a
-// frame and wants to deliver it to the higher layer.
-//
-// XXX for now, we do not deliver all of the parameters in section
-// 7.1.1.3.1 but just send up the packet.
+/**
+ * This callback is called after a Mcps has successfully received a
+ *  frame and wants to deliver it to the higher layer.
+ *
+ *  \todo for now, we do not deliver all of the parameters in section
+ *  7.1.1.3.1 but just send up the packet.
+ */
 typedef Callback<void, McpsDataIndicationParams, Ptr<Packet> > McpsDataIndicationCallback;
 
 
@@ -488,8 +509,8 @@ private:
    */
   struct TxQueueElement
   {
-    uint8_t txQMsduHandle;
-    Ptr<Packet> txQPkt;
+    uint8_t txQMsduHandle; //!< MSDU Handle
+    Ptr<Packet> txQPkt;    //!< Queued packet
   };
 
   /**
@@ -652,7 +673,7 @@ private:
    */
   TracedCallback<Ptr<const Packet> > m_promiscSnifferTrace;
 
-  /*
+  /**
    * A trace source that fires when the LrWpanMac changes states.
    * Parameters are the old mac state and the new mac state.
    */

@@ -28,10 +28,9 @@
 #include "ns3/sequence-number.h"
 #include <list>
 
-NS_LOG_COMPONENT_DEFINE ("MacRxMiddle");
-
 namespace ns3 {
 
+NS_LOG_COMPONENT_DEFINE ("MacRxMiddle");
 
 /**
  * A class to keep track of the packet originator status.

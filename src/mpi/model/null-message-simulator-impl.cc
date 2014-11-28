@@ -42,9 +42,9 @@
 #include <fstream>
 #include <iomanip>
 
-NS_LOG_COMPONENT_DEFINE ("NullMessageSimulatorImpl");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("NullMessageSimulatorImpl");
 
 NS_OBJECT_ENSURE_REGISTERED (NullMessageSimulatorImpl);
 

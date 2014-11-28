@@ -25,10 +25,11 @@
 #include "ns3/core-module.h"
 #include "ns3/hash.h"
 
-NS_LOG_COMPONENT_DEFINE ("Hasher");
-
 namespace ns3
 {
+
+NS_LOG_COMPONENT_DEFINE ("Hasher");
+
 namespace Hash
 {
 

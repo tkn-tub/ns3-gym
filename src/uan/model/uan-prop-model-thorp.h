@@ -53,9 +53,9 @@ public:
 
 private:
   /**
-   * Get the attenuation in dB / 1000 yards..
+   * Get the attenuation in dB / 1000 yards.
    * \param freqKhz The channel center frequency, in kHz.
-   * \return The attenuation, in dB / 1000 yards..
+   * \return The attenuation, in dB / 1000 yards.
    */
   double GetAttenDbKyd (double freqKhz);
   /**

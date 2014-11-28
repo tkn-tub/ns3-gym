@@ -559,12 +559,15 @@ private:
 /**
  * @brief The SPFVertex copy construction is disallowed.  There's no need for
  * it and a compiler provided shallow copy would be wrong.
+ * @param v object to copy from
  */
   SPFVertex (SPFVertex& v);
 
 /**
  * @brief The SPFVertex copy assignment operator is disallowed.  There's no 
  * need for it and a compiler provided shallow copy would be wrong.
+ * @param v object to copy from
+ * @returns the copied object
  */
   SPFVertex& operator= (SPFVertex& v);
 
@@ -707,12 +710,15 @@ private:
 /**
  * @brief GlobalRouteManagerLSDB copy construction is disallowed.  There's no 
  * need for it and a compiler provided shallow copy would be wrong.
+ * @param lsdb object to copy from
  */
   GlobalRouteManagerLSDB (GlobalRouteManagerLSDB& lsdb);
 
 /**
  * @brief The SPFVertex copy assignment operator is disallowed.  There's no 
  * need for it and a compiler provided shallow copy would be wrong.
+ * @param lsdb object to copy from
+ * @returns the copied object
  */
   GlobalRouteManagerLSDB& operator= (GlobalRouteManagerLSDB& lsdb);
 };
@@ -776,6 +782,8 @@ private:
  * @brief GlobalRouteManagerImpl copy construction is disallowed.
  * There's no  need for it and a compiler provided shallow copy would be 
  * wrong.
+ *
+ * @param srmi object to copy from
  */
   GlobalRouteManagerImpl (GlobalRouteManagerImpl& srmi);
 
@@ -783,6 +791,9 @@ private:
  * @brief Global Route Manager Implementation assignment operator is
  * disallowed.  There's no  need for it and a compiler provided shallow copy
  * would be hopelessly wrong.
+ *
+ * @param srmi object to copy from
+ * @returns the copied object
  */
   GlobalRouteManagerImpl& operator= (GlobalRouteManagerImpl& srmi);
 

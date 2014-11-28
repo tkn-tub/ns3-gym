@@ -22,9 +22,9 @@
 #include "ns3/log.h"
 #include "packet-socket.h"
 
-NS_LOG_COMPONENT_DEFINE ("PacketSocketFactory");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("PacketSocketFactory");
 
 NS_OBJECT_ENSURE_REGISTERED (PacketSocketFactory);
 

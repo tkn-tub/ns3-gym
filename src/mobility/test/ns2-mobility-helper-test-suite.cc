@@ -49,9 +49,9 @@
 #include "ns3/config.h"
 #include "ns3/ns2-mobility-helper.h"
 
-NS_LOG_COMPONENT_DEFINE ("ns2-mobility-helper-test-suite");
-
 using namespace ns3;
+
+NS_LOG_COMPONENT_DEFINE ("ns2-mobility-helper-test-suite");
 
 // -----------------------------------------------------------------------------
 // Testing

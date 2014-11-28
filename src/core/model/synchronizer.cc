@@ -19,9 +19,9 @@
 #include "synchronizer.h"
 #include "log.h"
 
-NS_LOG_COMPONENT_DEFINE ("Synchronizer");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("Synchronizer");
 
 NS_OBJECT_ENSURE_REGISTERED (Synchronizer);
 

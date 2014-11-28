@@ -1,13 +1,13 @@
 ## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
 
 def build(bld):
-    obj = bld.create_ns3_program('icmpv6-redirect', ['csma', 'internet'])
+    obj = bld.create_ns3_program('icmpv6-redirect', ['csma', 'internet', 'applications'])
     obj.source = 'icmpv6-redirect.cc'
 
-    obj = bld.create_ns3_program('ping6', ['csma', 'internet'])
+    obj = bld.create_ns3_program('ping6', ['csma', 'internet', 'applications'])
     obj.source = 'ping6.cc'
     
-    obj = bld.create_ns3_program('radvd', ['csma', 'internet'])
+    obj = bld.create_ns3_program('radvd', ['csma', 'internet', 'applications'])
     obj.source = 'radvd.cc'
 
     obj = bld.create_ns3_program('radvd-two-prefix', ['csma', 'internet', 'applications'])
@@ -16,15 +16,15 @@ def build(bld):
     obj = bld.create_ns3_program('test-ipv6', ['point-to-point', 'internet'])
     obj.source = 'test-ipv6.cc'
     
-    obj = bld.create_ns3_program('fragmentation-ipv6', ['csma', 'internet'])
+    obj = bld.create_ns3_program('fragmentation-ipv6', ['csma', 'internet', 'applications'])
     obj.source = 'fragmentation-ipv6.cc'
     
-    obj = bld.create_ns3_program('fragmentation-ipv6-two-MTU', ['csma', 'internet'])
+    obj = bld.create_ns3_program('fragmentation-ipv6-two-MTU', ['csma', 'internet', 'applications'])
     obj.source = 'fragmentation-ipv6-two-MTU.cc'
 
-    obj = bld.create_ns3_program('loose-routing-ipv6', ['csma', 'internet'])
+    obj = bld.create_ns3_program('loose-routing-ipv6', ['csma', 'internet', 'applications'])
     obj.source = 'loose-routing-ipv6.cc'
 
-    obj = bld.create_ns3_program('wsn-ping6', ['lr-wpan', 'internet', 'sixlowpan', 'mobility'])
+    obj = bld.create_ns3_program('wsn-ping6', ['lr-wpan', 'internet', 'sixlowpan', 'mobility', 'applications'])
     obj.source = 'wsn-ping6.cc'
 

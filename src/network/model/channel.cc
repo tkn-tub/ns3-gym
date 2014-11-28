@@ -23,9 +23,9 @@
 #include "ns3/log.h"
 #include "ns3/uinteger.h"
 
-NS_LOG_COMPONENT_DEFINE ("Channel");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("Channel");
 
 NS_OBJECT_ENSURE_REGISTERED (Channel);
 

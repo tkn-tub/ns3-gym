@@ -26,10 +26,9 @@
 #include "ns3/lte-pdcp-sap.h"
 #include "ns3/lte-pdcp-tag.h"
 
-NS_LOG_COMPONENT_DEFINE ("LtePdcp");
-
 namespace ns3 {
 
+NS_LOG_COMPONENT_DEFINE ("LtePdcp");
 
 class LtePdcpSpecificLteRlcSapUser : public LteRlcSapUser
 {

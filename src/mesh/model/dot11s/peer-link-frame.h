@@ -63,18 +63,15 @@ public:
   void SetPlinkFrameSubtype (uint8_t subtype);
   void SetPlinkFrameStart (PlinkFrameStartFields);
   PlinkFrameStartFields GetFields () const;
-  /** \name Inherited from header:
-   * \{
-   */
+
+  // Inherited from header:
   static  TypeId   GetTypeId ();
   virtual TypeId   GetInstanceTypeId () const;
   virtual void     Print (std::ostream &os) const;
   virtual uint32_t GetSerializedSize () const;
   virtual void     Serialize (Buffer::Iterator start) const;
   virtual uint32_t Deserialize (Buffer::Iterator start);
-  /**
-   * \}
-   */
+
 private:
   uint8_t m_subtype;
   IePeeringProtocol m_protocol;

@@ -107,7 +107,7 @@ FlowMonitor::DoDispose (void)
 inline FlowMonitor::FlowStats&
 FlowMonitor::GetStatsForFlow (FlowId flowId)
 {
-  std::map<FlowId, FlowStats>::iterator iter;
+  FlowStatsContainerI iter;
   iter = m_flowStats.find (flowId);
   if (iter == m_flowStats.end ())
     {
@@ -282,7 +282,7 @@ FlowMonitor::ReportDrop (Ptr<FlowProbe> probe, uint32_t flowId, uint32_t packetI
     }
 }
 
-std::map<FlowId, FlowMonitor::FlowStats>
+const FlowMonitor::FlowStatsContainer&
 FlowMonitor::GetFlowStats () const
 {
   return m_flowStats;
@@ -300,8 +300,7 @@ FlowMonitor::CheckForLostPackets (Time maxDelay)
       if (now - iter->second.lastSeenTime >= maxDelay)
         {
           // packet is considered lost, add it to the loss statistics
-          std::map<FlowId, FlowStats>::iterator
-            flow = m_flowStats.find (iter->first.first);
+          FlowStatsContainerI flow = m_flowStats.find (iter->first.first);
           NS_ASSERT (flow != m_flowStats.end ());
           flow->second.lostPackets++;
 
@@ -341,7 +340,8 @@ FlowMonitor::AddProbe (Ptr<FlowProbe> probe)
   m_flowProbes.push_back (probe);
 }
 
-std::vector< Ptr<FlowProbe> >
+
+const FlowMonitor::FlowProbeContainer&
 FlowMonitor::GetAllProbes () const
 {
   return m_flowProbes;
@@ -408,7 +408,7 @@ FlowMonitor::SerializeToXmlStream (std::ostream &os, int indent, bool enableHist
   indent += 2;
   INDENT (indent); os << "<FlowStats>\n";
   indent += 2;
-  for (std::map<FlowId, FlowStats>::const_iterator flowI = m_flowStats.begin ();
+  for (FlowStatsContainerCI flowI = m_flowStats.begin ();
        flowI != m_flowStats.end (); flowI++)
     {
 

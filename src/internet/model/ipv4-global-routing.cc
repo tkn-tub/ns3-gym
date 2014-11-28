@@ -30,9 +30,9 @@
 #include "ipv4-global-routing.h"
 #include "global-route-manager.h"
 
-NS_LOG_COMPONENT_DEFINE ("Ipv4GlobalRouting");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("Ipv4GlobalRouting");
 
 NS_OBJECT_ENSURE_REGISTERED (Ipv4GlobalRouting);
 

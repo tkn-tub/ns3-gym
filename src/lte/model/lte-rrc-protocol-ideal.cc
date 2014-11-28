@@ -31,11 +31,9 @@
 #include "lte-enb-net-device.h"
 #include "lte-ue-net-device.h"
 
-NS_LOG_COMPONENT_DEFINE ("LteRrcProtocolIdeal");
-
-
 namespace ns3 {
 
+NS_LOG_COMPONENT_DEFINE ("LteRrcProtocolIdeal");
 
 static const Time RRC_IDEAL_MSG_DELAY = MilliSeconds (0);
 

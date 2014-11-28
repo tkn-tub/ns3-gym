@@ -38,9 +38,10 @@
 #include "ns3/ipv4-route.h"
 #include "ns3/socket.h"
 
-NS_LOG_COMPONENT_DEFINE ("DsrNetworkQueue");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("DsrNetworkQueue");
+  
 namespace dsr {
 
 NS_OBJECT_ENSURE_REGISTERED (DsrNetworkQueue);

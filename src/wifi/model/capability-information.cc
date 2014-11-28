@@ -20,9 +20,9 @@
 #include "capability-information.h"
 #include "ns3/log.h"
 
-NS_LOG_COMPONENT_DEFINE ("CapabilityInformation");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("CapabilityInformation");
 
 CapabilityInformation::CapabilityInformation ()
   : m_capability (0)

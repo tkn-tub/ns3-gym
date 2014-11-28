@@ -22,10 +22,9 @@
 #include "ns3/epc-x2-header.h"
 
 
-NS_LOG_COMPONENT_DEFINE ("EpcX2Header");
-
 namespace ns3 {
 
+NS_LOG_COMPONENT_DEFINE ("EpcX2Header");
 
 NS_OBJECT_ENSURE_REGISTERED (EpcX2Header);
 

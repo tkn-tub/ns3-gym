@@ -28,9 +28,9 @@
 
 #define Min(a,b) ((a < b) ? a : b)
 
-NS_LOG_COMPONENT_DEFINE ("RraaWifiManager");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("RraaWifiManager");
 
 /**
  * \brief hold per-remote-station state for RRAA Wifi manager.

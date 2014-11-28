@@ -74,6 +74,7 @@ public:
   uint16_t AllocateUid (std::string name);
   void SetParent (uint16_t uid, uint16_t parent);
   void SetGroupName (uint16_t uid, std::string groupName);
+  void SetSize (uint16_t uid, std::size_t size);
   void AddConstructor (uint16_t uid, Callback<ObjectBase *> callback);
   void HideFromDocumentation (uint16_t uid);
   uint16_t GetUid (std::string name) const;
@@ -82,6 +83,7 @@ public:
   TypeId::hash_t GetHash (uint16_t uid) const;
   uint16_t GetParent (uint16_t uid) const;
   std::string GetGroupName (uint16_t uid) const;
+  std::size_t GetSize (uint16_t uid) const;
   Callback<ObjectBase *> GetConstructor (uint16_t uid) const;
   bool HasConstructor (uint16_t uid) const;
   uint32_t GetRegisteredN (void) const;
@@ -101,7 +103,8 @@ public:
   void AddTraceSource (uint16_t uid,
                        std::string name, 
                        std::string help,
-                       Ptr<const TraceSourceAccessor> accessor);
+                       Ptr<const TraceSourceAccessor> accessor,
+                       std::string callback);
   uint32_t GetTraceSourceN (uint16_t uid) const;
   struct TypeId::TraceSourceInformation GetTraceSource(uint16_t uid, uint32_t i) const;
   bool MustHideFromDocumentation (uint16_t uid) const;
@@ -116,6 +119,7 @@ private:
     TypeId::hash_t hash;
     uint16_t parent;
     std::string groupName;
+    std::size_t size;
     bool hasConstructor;
     Callback<ObjectBase *> constructor;
     bool mustHideFromDocumentation;
@@ -211,6 +215,7 @@ IidManager::AllocateUid (std::string name)
   information.hash = hash;
   information.parent = 0;
   information.groupName = "";
+  information.size = (std::size_t)(-1);
   information.hasConstructor = false;
   information.mustHideFromDocumentation = false;
   m_information.push_back (information);
@@ -245,6 +250,13 @@ IidManager::SetGroupName (uint16_t uid, std::string groupName)
   NS_LOG_FUNCTION (this << uid << groupName);
   struct IidInformation *information = LookupInformation (uid);
   information->groupName = groupName;
+}
+void
+IidManager::SetSize (uint16_t uid, std::size_t size)
+{
+  NS_LOG_FUNCTION (this << uid << size);
+  struct IidInformation *information = LookupInformation (uid);
+  information->size = size;
 }
 void
 IidManager::HideFromDocumentation (uint16_t uid)
@@ -321,6 +333,13 @@ IidManager::GetGroupName (uint16_t uid) const
   NS_LOG_FUNCTION (this << uid);
   struct IidInformation *information = LookupInformation (uid);
   return information->groupName;
+}
+std::size_t
+IidManager::GetSize (uint16_t uid) const
+{
+  NS_LOG_FUNCTION (this << uid);
+  struct IidInformation *information = LookupInformation (uid);
+  return information->size;
 }
 
 Callback<ObjectBase *> 
@@ -471,7 +490,8 @@ void
 IidManager::AddTraceSource (uint16_t uid,
                             std::string name, 
                             std::string help,
-                            Ptr<const TraceSourceAccessor> accessor)
+                            Ptr<const TraceSourceAccessor> accessor,
+                            std::string callback)
 {
   NS_LOG_FUNCTION (this << uid << name << help << accessor);
   struct IidInformation *information  = LookupInformation (uid);
@@ -484,6 +504,7 @@ IidManager::AddTraceSource (uint16_t uid,
   source.name = name;
   source.help = help;
   source.accessor = accessor;
+  source.callback = callback;
   information->traceSources.push_back (source);
 }
 uint32_t 
@@ -620,6 +641,13 @@ TypeId::SetGroupName (std::string groupName)
   Singleton<IidManager>::Get ()->SetGroupName (m_tid, groupName);
   return *this;
 }
+TypeId
+TypeId::SetSize (std::size_t size)
+{
+  NS_LOG_FUNCTION (this << size);
+  Singleton<IidManager>::Get ()->SetSize (m_tid, size);
+  return *this;
+}
 TypeId 
 TypeId::GetParent (void) const
 {
@@ -666,6 +694,13 @@ TypeId::GetHash (void) const
 {
   hash_t hash = Singleton<IidManager>::Get ()->GetHash (m_tid);
   return hash;
+}
+std::size_t
+TypeId::GetSize (void) const
+{
+  NS_LOG_FUNCTION (this);
+  std::size_t size = Singleton<IidManager>::Get ()->GetSize (m_tid);
+  return size;
 }
 
 bool 
@@ -771,10 +806,11 @@ TypeId::GetTraceSource(uint32_t i) const
 TypeId 
 TypeId::AddTraceSource (std::string name,
                         std::string help,
-                        Ptr<const TraceSourceAccessor> accessor)
+                        Ptr<const TraceSourceAccessor> accessor,
+                        std::string callback /* = "(not yet documented)" */)
 {
   NS_LOG_FUNCTION (this << name << help << accessor);
-  Singleton<IidManager>::Get ()->AddTraceSource (m_tid, name, help, accessor);
+  Singleton<IidManager>::Get ()->AddTraceSource (m_tid, name, help, accessor, callback);
   return *this;
 }
 

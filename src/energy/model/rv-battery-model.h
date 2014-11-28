@@ -246,6 +246,8 @@ private:
    */
   TracedValue<double> m_batteryLevel;
 
+  double m_lowBatteryTh;           // low battery threshold, as a fraction of the initial energy
+
   /**
    * (1 / sampling interval) = sampling frequency
    */

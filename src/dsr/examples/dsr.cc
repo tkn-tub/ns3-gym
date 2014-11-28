@@ -40,6 +40,7 @@
 #include <sstream>
 
 using namespace ns3;
+
 NS_LOG_COMPONENT_DEFINE ("DsrTest");
 
 int

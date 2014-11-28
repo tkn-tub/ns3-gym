@@ -35,9 +35,9 @@
 #include "service-flow-record.h"
 #include "service-flow-manager.h"
 
-NS_LOG_COMPONENT_DEFINE ("BSSchedulerSimple");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("BSSchedulerSimple");
 
 NS_OBJECT_ENSURE_REGISTERED (BSSchedulerSimple);
 

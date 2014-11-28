@@ -61,13 +61,11 @@ public:
   /// D-tor
   virtual ~MeshWifiInterfaceMac ();
 
-  ///\name Inherited from WifiMac
-  // \{
+  // Inherited from WifiMac
   virtual void  Enqueue (Ptr<const Packet> packet, Mac48Address to, Mac48Address from);
   virtual void  Enqueue (Ptr<const Packet> packet, Mac48Address to);
   virtual bool  SupportsSendFrom () const;
   virtual void  SetLinkUpCallback (Callback<void> linkUp);
-  // \}
   ///\name Each mesh point interfaces must know the mesh point address
   // \{
   void SetMeshPointAddress (Mac48Address);

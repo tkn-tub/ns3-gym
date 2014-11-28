@@ -1,13 +1,35 @@
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
+/*
+ * Copyright (c) 2007 INRIA
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation;
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
+ */
+
 #include <iostream>
 #include <algorithm>
 #include <map>
+#include <climits>    // CHAR_BIT
 
+#include "ns3/command-line.h"
+#include "ns3/config.h"
+#include "ns3/global-value.h"
+#include "ns3/log.h"
+#include "ns3/object-vector.h"
 #include "ns3/object.h"
 #include "ns3/pointer.h"
-#include "ns3/object-vector.h"
-#include "ns3/config.h"
-#include "ns3/log.h"
-#include "ns3/global-value.h"
 #include "ns3/string.h"
 #include "ns3/node-container.h"
 #include "ns3/csma-channel.h"
@@ -18,48 +40,136 @@ NS_LOG_COMPONENT_DEFINE ("PrintIntrospectedDoxygen");
 
 namespace
 {
-  std::string anchor;                        ///< hyperlink anchor
-  std::string boldStart;                     ///< start of bold span
-  std::string boldStop;                      ///< end of bold span
-  std::string breakBoth;                     ///< linebreak
-  std::string breakHtmlOnly;                 ///< linebreak for html output only
-  std::string breakTextOnly;                 ///< linebreak for text output only
-  std::string brief;                         ///< brief tag
-  std::string commentStart;                  ///< start of code comment
-  std::string commentStop;                   ///< end of code comment
-  std::string flagSpanStart;                 ///< start of Attribute flag value
-  std::string flagSpanStop;                  ///< end of Attribute flag value
-  std::string functionStart;                 ///< start of a class/function
-  std::string functionStop;                  ///< end of a class/function
-  std::string headingStart;                  ///< start of section heading (h3)
-  std::string headingStop;                   ///< end of section heading (h3)
-  std::string indentHtmlOnly;                ///< small indent
-  std::string pageAttributeList;             ///< start Attributes list
-  std::string pageGlobalValueList;           ///< start GlobalValue page
-  std::string pageTraceSourceList;           ///< start Trace sources page
-  std::string listStart;                     ///< start unordered list
-  std::string listStop;                      ///< end unordered list
-  std::string listLineStart;                 ///< start unordered list item
-  std::string listLineStop;                  ///< end unordered list item
-  std::string reference;                     ///< reference tag
-  std::string temporaryCharacter;            ///< "%" placeholder
+  std::string anchor;              ///< hyperlink anchor
+  std::string boldStart;           ///< start of bold span
+  std::string boldStop;            ///< end of bold span
+  std::string breakBoth;           ///< linebreak
+  std::string breakHtmlOnly;       ///< linebreak for html output only
+  std::string breakTextOnly;       ///< linebreak for text output only
+  std::string brief;               ///< brief tag
+  std::string commentStart;        ///< start of code comment
+  std::string commentStop;         ///< end of code comment
+  std::string flagSpanStart;       ///< start of Attribute flag value
+  std::string flagSpanStop;        ///< end of Attribute flag value
+  std::string functionStart;       ///< start of a class/function
+  std::string functionStop;        ///< end of a class/function
+  std::string headingStart;        ///< start of section heading (h3)
+  std::string headingStop;         ///< end of section heading (h3)
+  std::string indentHtmlOnly;      ///< small indent
+  std::string listLineStart;       ///< start unordered list item
+  std::string listLineStop;        ///< end unordered list item
+  std::string listStart;           ///< start unordered list
+  std::string listStop;            ///< end unordered list
+  std::string page;                ///< start a separate page
+  std::string reference;           ///< reference tag
+  std::string sectionStart;        ///< start of a section or group
+  std::string subSectionStart;     ///< start a new subsection
+  std::string temporaryCharacter;  ///< "%" placeholder
 
 } // anonymous namespace
 
+
+/**
+ * Initialize the markup strings, for either doxygen or text.
+ *
+ * \param [in] outpuText true for text output, false for doxygen output.
+ */
 void
-PrintAttributes (TypeId tid, std::ostream &os)
+SetMarkup (bool outputText)
 {
+  NS_LOG_FUNCTION (outputText);
+  if (outputText)
+    {
+      anchor                       = "";
+      boldStart                    = "";
+      boldStop                     = "";
+      breakBoth                    = "\n";
+      breakHtmlOnly                = "";
+      breakTextOnly                = "\n";
+      brief                        = "";
+      commentStart                 = "===============================================================\n";
+      commentStop                  = "";
+      flagSpanStart                = "";
+      flagSpanStop                 = "";
+      functionStart                = "";
+      functionStop                 = "\n\n";
+      headingStart                 = "";
+      headingStop                  = "";
+      indentHtmlOnly               = "";
+      page                         = "Page ";
+      listStart                    = "";
+      listStop                     = "";
+      listLineStart                = "    * ";
+      listLineStop                 = "";
+      reference                    = "";
+      sectionStart                 = "Section ";
+      subSectionStart              = "Subsection ";
+      temporaryCharacter           = "";
+    }
+  else
+    {
+      anchor                       = "\\anchor ";
+      boldStart                    = "<b>";
+      boldStop                     = "</b>";
+      breakBoth                    = "<br>";
+      breakHtmlOnly                = "<br>";
+      breakTextOnly                = "";
+      brief                        = "\\brief ";
+      commentStart                 = "/*!\n";
+      commentStop                  = "*/\n";
+      flagSpanStart                = "<span class=\"mlabel\">";
+      flagSpanStop                 = "</span>";
+      functionStart                = "\\class ";
+      functionStop                 = "";
+      headingStart                 = "<h3>";
+      headingStop                  = "</h3>";
+      indentHtmlOnly               = "  ";
+      page                         = "\\page ";
+      listStart                    = "<ul>";
+      listStop                     = "</ul>";
+      listLineStart                = "<li>";
+      listLineStop                 = "</li>";
+      reference                    = "\\ref ";
+      sectionStart                 = "\\ingroup ";
+      subSectionStart              = "\\addtogroup ";
+      temporaryCharacter           = "%";
+    }
+}  // SetMarkup ()
+
+
+/**
+ * Print direct Attributes for this TypeId.
+ *
+ * Only attributes defined directly by this TypeId will be printed.
+ *
+ * \param [in,out] os The output stream.
+ * \param [in] tid The TypeId to print.
+ */
+void
+PrintAttributesTid (std::ostream &os, const TypeId tid)
+{
+  NS_LOG_FUNCTION (tid);
   os << listStart << std::endl;
   for (uint32_t j = 0; j < tid.GetAttributeN (); j++)
     {
       struct TypeId::AttributeInformation info = tid.GetAttribute(j);
-      os << listLineStart << boldStart << info.name << boldStop << ": "
-		<< info.help << std::endl;
-      os << "  " << listStart << std::endl 
-	 << "    " << listLineStart << "Set with class: " << reference << info.checker->GetValueTypeName () << listLineStop << std::endl;
+      os << listLineStart
+	 <<   boldStart << info.name << boldStop << ": "
+	 <<   info.help
+	 <<   std::endl;
+      os <<   "  "
+	 <<   listStart << std::endl;
+      os <<     "    "
+	 <<     listLineStart
+	 <<       "Set with class: " << reference
+	 <<       info.checker->GetValueTypeName ()
+	 <<     listLineStop
+	 << std::endl;
       if (info.checker->HasUnderlyingTypeInformation ())
 	{
-	  os << "    " << listLineStart << "Underlying type: ";
+	  os << "    "
+	     << listLineStart
+	     <<   "Underlying type: ";
 	  if (    (info.checker->GetValueTypeName () != "ns3::EnumValue")
 	       && (info.checker->GetUnderlyingTypeInformation () != "std::string")
 	      )
@@ -69,7 +179,8 @@ PrintAttributes (TypeId tid, std::ostream &os)
 
 	      if (info.checker->GetValueTypeName () == "ns3::PointerValue")
 		{
-		  const PointerChecker *ptrChecker = dynamic_cast<const PointerChecker *> (PeekPointer (info.checker));
+		  const PointerChecker *ptrChecker =
+		    dynamic_cast<const PointerChecker *> (PeekPointer (info.checker));
 		  if (ptrChecker != 0)
 		    {
 		      os << reference << "ns3::Ptr" << "< "
@@ -80,7 +191,8 @@ PrintAttributes (TypeId tid, std::ostream &os)
 		}
 	      else if (info.checker->GetValueTypeName () == "ns3::ObjectPtrContainerValue")
 		{
-		  const ObjectPtrContainerChecker * ptrChecker = dynamic_cast<const ObjectPtrContainerChecker *> (PeekPointer (info.checker));
+		  const ObjectPtrContainerChecker * ptrChecker =
+		    dynamic_cast<const ObjectPtrContainerChecker *> (PeekPointer (info.checker));
 		  if (ptrChecker != 0)
 		    {
 		      os << reference << "ns3::Ptr" << "< "
@@ -98,7 +210,12 @@ PrintAttributes (TypeId tid, std::ostream &os)
 	}
       if (info.flags & TypeId::ATTR_CONSTRUCT && info.accessor->HasSetter ())
 	{
-	  os << "    " << listLineStart << "Initial value: " << info.initialValue->SerializeToString (info.checker) << listLineStop << std::endl;
+	  os << "    "
+	     << listLineStart
+	     <<   "Initial value: "
+	     <<   info.initialValue->SerializeToString (info.checker)
+	     << listLineStop
+	     << std::endl;
 	}
       os << "    " << listLineStart << "Flags: ";
       if (info.flags & TypeId::ATTR_CONSTRUCT && info.accessor->HasSetter ())
@@ -114,26 +231,304 @@ PrintAttributes (TypeId tid, std::ostream &os)
 	  os << flagSpanStart << "read " << flagSpanStop;
 	}
       os << listLineStop << std::endl;
-      os << "  " << listStop << " " << std::endl;
+      os << "  "
+	 << listStop
+	 << " " << std::endl;
       
     }
   os << listStop << std::endl;
 }
 
+
+/**
+ * Print the Attributes block for tid,
+ * including Attributes declared in base classes.
+ *
+ * All Attributes of this TypeId will be printed,
+ * including those defined in parent classes.
+ *
+ * \param [in,out] os The output stream.
+ * \param [in] tid The TypeId to print.
+ */
 void
-PrintTraceSources (TypeId tid, std::ostream &os)
+PrintAttributes (std::ostream & os, const TypeId tid)
 {
+  NS_LOG_FUNCTION (tid);
+  if (tid.GetAttributeN () == 0)
+    {
+      os << "No Attributes are defined for this type."
+	 << breakBoth
+	 << std::endl;
+    }
+  else
+    {
+      os << headingStart
+	 <<   "Attributes"
+	 << headingStop
+	 << std::endl;
+      PrintAttributesTid (os, tid);
+    }
+
+  // Attributes from base classes
+  TypeId tmp = tid.GetParent ();
+  while (tmp.GetParent () != tmp)
+    {
+      if (tmp.GetAttributeN () != 0)
+	{
+	  os << headingStart
+	     <<   "Attributes defined in parent class "
+	     <<   tmp.GetName ()
+	     << headingStop
+	     << std::endl;
+	  PrintAttributesTid (os, tmp);
+	}
+      tmp = tmp.GetParent ();
+
+    }  // Attributes
+} // PrintAttributes ()
+
+
+/**
+ * Print direct Trace sources for this TypeId.
+ *
+ * Only Trace sources defined directly by this TypeId will be printed.
+ *
+ * \param [in,out] os The output stream.
+ * \param [in] tid The TypeId to print.
+ */
+void
+PrintTraceSourcesTid (std::ostream & os, const TypeId tid)
+{
+  NS_LOG_FUNCTION (tid);
   os << listStart << std::endl;
   for (uint32_t i = 0; i < tid.GetTraceSourceN (); ++i)
     {
       struct TypeId::TraceSourceInformation info = tid.GetTraceSource (i);
-      os << listLineStart << boldStart << info.name << boldStop << ": "
-	 << info.help
-	 << std::endl;
+      os << listLineStart
+	 <<   boldStart << info.name << boldStop << ": "
+	 <<   info.help << breakBoth
+	//    '%' prevents doxygen from linking to the Callback class...
+	 <<   "%Callback signature: " 
+	 <<   info.callback
+	 <<   std::endl;
       os << listLineStop << std::endl;
     }
   os << listStop << std::endl;
 }
+
+
+/**
+ * Print the Trace sources block for tid,
+ * including Trace sources declared in base classes.
+ *
+ * All Trace sources of this TypeId will be printed,
+ * including those defined in parent classes.
+ *
+ * \param [in,out] os The output stream.
+ * \param [in] tid The TypeId to print.
+ */
+void
+PrintTraceSources (std::ostream & os, const TypeId tid)
+{
+  NS_LOG_FUNCTION (tid);
+  if (tid.GetTraceSourceN () == 0)
+    {
+      os << "No TraceSources are defined for this type."
+	 << breakBoth
+	 << std::endl;
+    }
+  else
+    {
+      os << headingStart
+	 <<   "TraceSources"
+	 << headingStop  << std::endl;
+      PrintTraceSourcesTid (os, tid);
+    }
+
+  // Trace sources from base classes
+  TypeId tmp = tid.GetParent ();
+  while (tmp.GetParent () != tmp)
+    {
+      if (tmp.GetTraceSourceN () != 0)
+	{
+	  os << headingStart
+	     << "TraceSources defined in parent class "
+	     << tmp.GetName ()
+	     << headingStop << std::endl;
+	  PrintTraceSourcesTid (os, tmp);
+	}
+      tmp = tmp.GetParent ();
+    }
+
+}  // PrintTraceSources ()
+
+/**
+ * Print the size of the type represented by this tid.
+ *
+ * \param [in,out] os The output stream.
+ * \param [in] tid The TypeId to print.
+ */
+void PrintSize (std::ostream & os, const TypeId tid)
+{
+  NS_LOG_FUNCTION (tid);
+  NS_ASSERT_MSG (CHAR_BIT != 0, "CHAR_BIT is zero");
+  
+  std::size_t arch = (sizeof (void *) * CHAR_BIT);
+  
+  os << boldStart << "Size" << boldStop
+     << " of this type is " << tid.GetSize ()
+     << " bytes (on a " << arch << "-bit architecture)."
+     << std::endl;
+}
+
+
+/**
+ * Print the list of all Trace sources.
+ *
+ * \param [in,out] os The output stream.
+ */
+void
+PrintAllTraceSources (std::ostream & os)
+{
+  NS_LOG_FUNCTION_NOARGS ();
+  os << commentStart << page << "TraceSourceList All TraceSources\n"
+      << std::endl;
+
+  for (uint32_t i = 0; i < TypeId::GetRegisteredN (); ++i)
+    {
+      TypeId tid = TypeId::GetRegistered (i);
+      if (tid.GetTraceSourceN () == 0 ||
+	  tid.MustHideFromDocumentation ())
+	{
+	  continue;
+	}
+      os << boldStart << tid.GetName () << boldStop  << breakHtmlOnly
+	 << std::endl;
+      
+      os << listStart << std::endl;
+      for (uint32_t j = 0; j < tid.GetTraceSourceN (); ++j)
+	{
+	  struct TypeId::TraceSourceInformation info = tid.GetTraceSource(j);
+	  os << listLineStart 
+	     <<   boldStart << info.name << boldStop
+	     <<   ": "      << info.help
+	     << listLineStop
+	     << std::endl;
+	}
+      os << listStop << std::endl;
+    }
+  os << commentStop << std::endl;
+
+}  // PrintAllTraceSources ()
+
+
+/**
+ * Print the list of all Attributes.
+ *
+ * \param [in,out] os The output stream.
+ */
+void
+PrintAllAttributes (std::ostream & os)
+{
+  NS_LOG_FUNCTION_NOARGS ();
+  os << commentStart << page << "AttributeList All Attributes\n"
+     << std::endl;
+
+  for (uint32_t i = 0; i < TypeId::GetRegisteredN (); ++i)
+    {
+      TypeId tid = TypeId::GetRegistered (i);
+      if (tid.GetAttributeN () == 0 ||
+	  tid.MustHideFromDocumentation ())
+	{
+	  continue;
+	}
+      os << boldStart << tid.GetName () << boldStop << breakHtmlOnly
+	 << std::endl;
+      
+      os << listStart << std::endl;
+      for (uint32_t j = 0; j < tid.GetAttributeN (); ++j)
+	{
+	  struct TypeId::AttributeInformation info = tid.GetAttribute(j);
+	  os << listLineStart
+	     <<   boldStart << info.name << boldStop
+	     <<   ": "      << info.help
+	     << listLineStop
+	     << std::endl;
+	}
+      os << listStop << std::endl;
+    }
+  os << commentStop << std::endl;
+
+}  // PrintAllAttributes ()
+
+
+/**
+ * Print the list of all global variables.
+ *
+ * \param [in,out] os The output stream.
+ */
+void
+PrintAllGlobals (std::ostream & os)
+{
+  NS_LOG_FUNCTION_NOARGS ();
+  os << commentStart << page << "GlobalValueList All GlobalValues\n"
+     << std::endl;
+  
+  os << listStart << std::endl;
+  for (GlobalValue::Iterator i = GlobalValue::Begin ();
+       i != GlobalValue::End ();
+       ++i)
+    {
+      StringValue val;
+      (*i)->GetValue (val);
+      os << indentHtmlOnly
+	 <<   listLineStart
+	 <<     boldStart
+	 <<       anchor
+	 <<       "GlobalValue" << (*i)->GetName () << " " << (*i)->GetName ()
+	 <<     boldStop
+	 <<     ": "            << (*i)->GetHelp ()
+	 <<     ".  Default value: " << val.Get () << "."
+	 <<   listLineStop
+	 << std::endl;
+    }
+  os << listStop << std::endl;
+  os << commentStop << std::endl;
+
+}  // PrintAllGlobals ()
+
+
+/**
+ * Print the list of all LogComponents.
+ *
+ * \param [in,out] os The output stream.
+ */
+void
+PrintAllLogComponents (std::ostream & os)
+{
+  NS_LOG_FUNCTION_NOARGS ();
+  os << commentStart << page << "LogComponentList All LogComponents\n"
+     << std::endl;
+
+  os << listStart << std::endl;
+  LogComponent::ComponentList * logs = LogComponent::GetComponentList ();
+  LogComponent::ComponentList::const_iterator it;
+  for (it = logs->begin (); it != logs->end (); ++it)
+    {
+      std::string file = it->second->File ();
+      if (file.find ("../") == 0)
+        {
+          file = file.substr (3);
+        }
+      
+      os << listLineStart
+         <<   boldStart << it->first << boldStop <<   ": " << file
+         << listLineStop
+         << std::endl;
+    }
+  os << listStop << std::endl;
+  os << commentStop << std::endl;
+}  // PrintAllLogComponents
 
 
 /**
@@ -165,7 +560,7 @@ public:
    *
    * \param tid [in] the TypeId to return information for
    */
-  std::vector<std::string> Get (TypeId tid);
+  std::vector<std::string> Get (TypeId tid) const;
 
 private:
   /**
@@ -216,15 +611,19 @@ private:
   std::vector<std::pair<TypeId,TypeId> > m_aggregates;
 };
 
+
 void 
 StaticInformation::RecordAggregationInfo (std::string a, std::string b)
 {
+  NS_LOG_FUNCTION (this << a << b);
   m_aggregates.push_back (std::make_pair (TypeId::LookupByName (a), TypeId::LookupByName (b)));
 }
+
 
 void 
 StaticInformation::Print (void) const
 {
+  NS_LOG_FUNCTION (this);
   for (std::vector<std::pair<TypeId,std::string> >::const_iterator i = m_output.begin (); i != m_output.end (); ++i)
     {
       std::pair<TypeId,std::string> item = *i;
@@ -232,9 +631,11 @@ StaticInformation::Print (void) const
     }
 }
 
+
 std::string
 StaticInformation::GetCurrentPath (void) const
 {
+  NS_LOG_FUNCTION (this);
   std::ostringstream oss;
   for (std::vector<std::string>::const_iterator i = m_currentPath.begin (); i != m_currentPath.end (); ++i)
     {
@@ -244,15 +645,19 @@ StaticInformation::GetCurrentPath (void) const
   return oss.str ();
 }
 
+
 void
 StaticInformation::RecordOutput (TypeId tid)
 {
+  NS_LOG_FUNCTION (this << tid);
   m_output.push_back (std::make_pair (tid, GetCurrentPath ()));
 }
+
 
 bool
 StaticInformation::HasAlreadyBeenProcessed (TypeId tid) const
 {
+  NS_LOG_FUNCTION (this << tid);
   for (uint32_t i = 0; i < m_alreadyProcessed.size (); ++i)
     {
       if (m_alreadyProcessed[i] == tid)
@@ -263,9 +668,11 @@ StaticInformation::HasAlreadyBeenProcessed (TypeId tid) const
   return false;
 }
 
+
 std::vector<std::string> 
-StaticInformation::Get (TypeId tid)
+StaticInformation::Get (TypeId tid) const
 {
+  NS_LOG_FUNCTION (this << tid);
   std::vector<std::string> paths;
   for (uint32_t i = 0; i < m_output.size (); ++i)
     {
@@ -278,19 +685,22 @@ StaticInformation::Get (TypeId tid)
   return paths;
 }
 
+
 void
 StaticInformation::Gather (TypeId tid)
 {
+  NS_LOG_FUNCTION (this << tid);
   DoGather (tid);
 
   std::sort (m_output.begin (), m_output.end ());
   m_output.erase (std::unique (m_output.begin (), m_output.end ()), m_output.end ());
 }
 
+
 void 
 StaticInformation::DoGather (TypeId tid)
 {
-  NS_LOG_FUNCTION (this);
+  NS_LOG_FUNCTION (this << tid);
   if (HasAlreadyBeenProcessed (tid))
     {
       return;
@@ -390,9 +800,11 @@ StaticInformation::DoGather (TypeId tid)
     }
 }
 
+
 void 
 StaticInformation::find_and_replace( std::string &source, const std::string find, std::string replace )
 {
+  NS_LOG_FUNCTION (this << source << find << replace);
   size_t j; 
   j = source.find (find);
   while (j != std::string::npos ) 
@@ -402,104 +814,11 @@ StaticInformation::find_and_replace( std::string &source, const std::string find
     }
 }
 
-void
-PrintHelp (const char *program_name)
+
+StaticInformation
+GetTypicalAggregations ()
 {
-  std::cout << "Usage: " << program_name << " [options]" << std::endl
-            << std::endl
-            << "Options:" << std::endl
-            << "  --help        : print these options" << std::endl
-            << "  --output-text : format output as plain text" << std::endl;  
-}
-
-int main (int argc, char *argv[])
-{
-  bool outputText = false;
-  char *programName = argv[0];
-
-  argv++;
-
-  while (*argv != 0)
-    {
-      char *arg = *argv;
-
-      if (strcmp (arg, "--help") == 0)
-        {
-          PrintHelp (programName);
-          return 0;
-        }
-      else if (strcmp(arg, "--output-text") == 0)
-        {
-          outputText = true;
-        }
-      else
-        {
-          // un-recognized command-line argument
-          PrintHelp (programName);
-          return 0;
-        }
-      argv++;
-    }
-
-  if (outputText)
-    {
-      anchor                       = "";
-      boldStart                    = "";
-      boldStop                     = "";
-      breakBoth                    = "\n";
-      breakHtmlOnly                = "";
-      breakTextOnly                = "\n";
-      brief                        = "";
-      commentStart                 = "===============================================================\n";
-      commentStop                  = "";
-      flagSpanStart                = "";
-      flagSpanStop                 = "";
-      functionStart                = "";
-      functionStop                 = "\n\n";
-      headingStart                 = "";
-      headingStop                  = "";
-      indentHtmlOnly               = "";
-      pageAttributeList            = "";
-      pageGlobalValueList          = "";
-      pageTraceSourceList          = "";
-      listStart                    = "";
-      listStop                     = "";
-      listLineStart                = "    * ";
-      listLineStop                 = "";
-      reference                    = "";
-      temporaryCharacter           = "";
-    }
-  else
-    {
-      anchor                       = "\\anchor ";
-      boldStart                    = "<b>";
-      boldStop                     = "</b>";
-      breakBoth                    = "<br>";
-      breakHtmlOnly                = "<br>";
-      breakTextOnly                = "";
-      brief                        = "\\brief ";
-      commentStart                 = "/*!\n";
-      commentStop                  = "*/\n";
-      flagSpanStart                = "<span class=\"mlabel\">";
-      flagSpanStop                 = "</span>";
-      functionStart                = "\\class ";
-      functionStop                 = "";
-      headingStart                 = "<h3>";
-      headingStop                  = "</h3>";
-      indentHtmlOnly               = "  ";
-      pageAttributeList            = "\\page AttributesList ";
-      pageGlobalValueList          = "\\page GlobalValueList ";
-      pageTraceSourceList          = "\\page TraceSourceList ";
-      listStart                    = "<ul>";
-      listStop                     = "</ul>";
-      listLineStart                = "<li>";
-      listLineStop                 = "</li>";
-      reference                    = "\\ref ";
-      temporaryCharacter           = "%";
-    }
-
-  NodeContainer c; c.Create (1);
-
+  NS_LOG_FUNCTION_NOARGS ();
   // The below statements register typical aggregation relationships
   // in ns-3 programs, that otherwise aren't picked up automatically
   // by the creation of the above node.  To manually list other common
@@ -531,11 +850,24 @@ int main (int argc, char *argv[])
       info.Gather (object->GetInstanceTypeId ());
     }
 
-  std::map< std::string, uint32_t> nameMap;
-  std::map< std::string, uint32_t>::const_iterator nameMapIterator;
+  return info;
 
-  // Create a map from the class names to their index in the vector of
-  // TypeId's so that the names will end up in alphabetical order.
+}  // GetTypicalAggregations ()
+
+
+// Map from TypeId name to tid
+typedef std::map< std::string, uint32_t> NameMap;
+typedef NameMap::const_iterator          NameMapIterator;
+
+
+// Create a map from the class names to their index in the vector of
+// TypeId's so that the names will end up in alphabetical order.
+NameMap
+GetNameMap (void)
+{
+  NS_LOG_FUNCTION_NOARGS ();
+  NameMap nameMap;
+  
   for (uint32_t i = 0; i < TypeId::GetRegisteredN (); i++)
     {
       TypeId tid = TypeId::GetRegistered (i);
@@ -543,7 +875,7 @@ int main (int argc, char *argv[])
 	{
 	  continue;
 	}
-
+      
       // Capitalize all of letters in the name so that it sorts
       // correctly in the map.
       std::string name = tid.GetName ();
@@ -551,14 +883,88 @@ int main (int argc, char *argv[])
 	{
 	  name[j] = toupper (name[j]);
 	}
-
+      
       // Save this name's index.
       nameMap[name] = i;
     }
+  return nameMap;
+}  // GetNameMap ()
+
+
+void
+PrintConfigPaths (std::ostream & os, const StaticInformation & info,
+		  const TypeId tid)
+{
+  NS_LOG_FUNCTION (tid);
+  std::vector<std::string> paths = info.Get (tid);
+
+  // Config --------------
+  if (paths.empty ())
+    {
+      os << "Doxygen introspection did not find any typical Config paths."
+	 << breakBoth
+	 << std::endl;
+    }
+  else
+    {
+      os << headingStart
+	 <<   "Config Paths"
+	 << headingStop
+	 << std::endl;
+      os << std::endl;
+      os << tid.GetName ()
+	 << " is accessible through the following paths"
+	 << " with Config::Set and Config::Connect:"
+	 << std::endl;
+      os << listStart << std::endl;
+      for (uint32_t k = 0; k < paths.size (); ++k)
+	{
+	  std::string path = paths[k];
+	  os << listLineStart
+	     <<   "\"" << path << "\""
+	     << listLineStop
+	     << breakTextOnly
+	     << std::endl;
+	}
+      os << listStop << std::endl;
+    }
+}  // PrintConfigPaths
+      
+
+int main (int argc, char *argv[])
+{
+  NS_LOG_FUNCTION_NOARGS ();
+  bool outputText = false;
+
+  CommandLine cmd;
+  cmd.Usage ("Generate documentation for all ns-3 registered types, "
+	     "trace sources, attributes and global variables.");
+  cmd.AddValue ("output-text", "format output as plain text", outputText);
+  cmd.Parse (argc, argv);
+    
+  SetMarkup (outputText);
+
+
+  // Create a Node, to force linking and instantiation of our TypeIds
+  NodeContainer c;
+  c.Create (1);
+
+  // mode-line:  helpful when debugging introspected-doxygen.h
+  if (!outputText)
+    {
+      std::cout << "/* -*- Mode:C++; c-file-style:\"gnu\"; "
+	           "indent-tabs-mode:nil; -*- */\n"
+		<< std::endl;
+    }
+    
+  // Get typical aggregation relationships.
+  StaticInformation info = GetTypicalAggregations ();
+  
+  NameMap nameMap = GetNameMap ();
 
   // Iterate over the map, which will print the class names in
   // alphabetical order.
-  for (nameMapIterator = nameMap.begin ();
+  for (NameMapIterator nameMapIterator = nameMap.begin ();
        nameMapIterator != nameMap.end ();
        nameMapIterator++)
     {
@@ -566,178 +972,29 @@ int main (int argc, char *argv[])
       uint32_t i = nameMapIterator->second;
 
       std::cout << commentStart << std::endl;
+      
       TypeId tid = TypeId::GetRegistered (i);
       if (tid.MustHideFromDocumentation ())
 	{
 	  continue;
 	}
+      
       std::cout << functionStart << tid.GetName () << std::endl;
       std::cout << std::endl;
-      std::vector<std::string> paths = info.Get (tid);
 
-      // Config --------------
-      if (paths.empty ())
-	{
-	  std::cout << "Doxygen introspection did not find any typical Config paths."
-		    << breakBoth << std::endl;
-	}
-      else
-	{
-	  std::cout << headingStart
-		    << "Config Paths"
-		    << headingStop << std::endl;
-	  std::cout << std::endl;
-	  std::cout << tid.GetName ()
-		    << " is accessible through the following paths"
-		    << " with Config::Set and Config::Connect:"
-		    << std::endl;
-	  std::cout << listStart << std::endl;
-	  for (uint32_t k = 0; k < paths.size (); ++k)
-	    {
-	      std::string path = paths[k];
-	      std::cout << listLineStart << path
-			<< listLineStop  << breakTextOnly << std::endl;
-	    }
-	  std::cout << listStop << std::endl;
-	}  // Config
-
-      // Attributes ----------
-      if (tid.GetAttributeN () == 0)
-	{
-	  std::cout << "No Attributes are defined for this type."
-		    << breakBoth << std::endl;
-	}
-      else
-	{
-	  std::cout << headingStart << "Attributes"
-		    << headingStop  << std::endl;
-	  PrintAttributes (tid, std::cout);
-
-	  TypeId tmp = tid.GetParent ();
-	  while (tmp.GetParent () != tmp)
-	    {
-	      if (tmp.GetAttributeN () != 0)
-		{
-		  std::cout << headingStart
-			    << "Attributes defined in parent class "
-			    << tmp.GetName ()
-			    << headingStop << std::endl;
-		  PrintAttributes (tmp, std::cout);
-		}
-	      tmp = tmp.GetParent ();
-	    }
-	}  // Attributes
-
-      // Tracing -------------
-      if (tid.GetTraceSourceN () == 0)
-	{
-	  std::cout << "No TraceSources are defined for this type."
-		    << breakBoth << std::endl;
-	}
-      else
-	{
-	  std::cout << headingStart << "TraceSources"
-		    << headingStop  << std::endl;
-	  PrintTraceSources (tid, std::cout);
-	}
-      {
-	TypeId tmp = tid.GetParent ();
-	while (tmp.GetParent () != tmp)
-	  {
-	    if (tmp.GetTraceSourceN () != 0)
-	      {
-		std::cout << headingStart
-			  << "TraceSources defined in parent class "
-			  << tmp.GetName ()
-			  << headingStop << std::endl;
-		PrintTraceSources (tmp, std::cout);
-	      }
-	    tmp = tmp.GetParent ();
-	  }
-      }
+      PrintConfigPaths (std::cout, info, tid);
+      PrintAttributes (std::cout, tid);
+      PrintTraceSources (std::cout, tid);
+      PrintSize (std::cout, tid);
+      
       std::cout << commentStop << std::endl;
     }  // class documentation
 
 
-  std::cout << commentStart
-            << pageTraceSourceList << "All TraceSources\n"
-	    << std::endl;
-
-  for (uint32_t i = 0; i < TypeId::GetRegisteredN (); ++i)
-    {
-      TypeId tid = TypeId::GetRegistered (i);
-      if (tid.GetTraceSourceN () == 0 ||
-	  tid.MustHideFromDocumentation ())
-	{
-	  continue;
-	}
-      std::cout << boldStart << tid.GetName ()
-		<< boldStop  << breakHtmlOnly << std::endl
-		<< listStart << std::endl;
-      for (uint32_t j = 0; j < tid.GetTraceSourceN (); ++j)
-	{
-	  struct TypeId::TraceSourceInformation info = tid.GetTraceSource(j);
-	  std::cout << listLineStart
-		    << boldStart << info.name << boldStop
-		    << ": " << info.help
-		    << listLineStop  << std::endl;
-	}
-      std::cout << listStop << std::endl;
-    }
-  std::cout << commentStop << std::endl;
-
-  std::cout << commentStart
-            << pageAttributeList << "All Attributes\n"
-	    << std::endl;
-
-  for (uint32_t i = 0; i < TypeId::GetRegisteredN (); ++i)
-    {
-      TypeId tid = TypeId::GetRegistered (i);
-      if (tid.GetAttributeN () == 0 ||
-	  tid.MustHideFromDocumentation ())
-	{
-	  continue;
-	}
-      std::cout << boldStart << tid.GetName ()
-		<< boldStop  << breakHtmlOnly << std::endl
-		<< listStart << std::endl;
-      for (uint32_t j = 0; j < tid.GetAttributeN (); ++j)
-	{
-	  struct TypeId::AttributeInformation info = tid.GetAttribute(j);
-	  std::cout << listLineStart
-		    << boldStart << info.name << boldStop
-		    << ": " << info.help
-		    << listLineStop  << std::endl;
-	}
-      std::cout << listStop << std::endl;
-    }
-  std::cout << commentStop << std::endl;
-
-
-
-  std::cout << commentStart
-            << pageGlobalValueList << "All GlobalValues\n"
-	    << std::endl
-	    << listStart << std::endl;
-  
-  for (GlobalValue::Iterator i = GlobalValue::Begin ();
-       i != GlobalValue::End ();
-       ++i)
-    {
-      StringValue val;
-      (*i)->GetValue (val);
-      std::cout << indentHtmlOnly
-		<<   listLineStart
-		<<     boldStart
-		<<       anchor
-		<< "GlobalValue" << (*i)->GetName () << " " << (*i)->GetName ()
-		<<     boldStop
-		<< ": " << (*i)->GetHelp () << ".  Default value: " << val.Get () << "."
-		<<   listLineStop << std::endl;
-    }
-  std::cout << listStop    << std::endl
-	    << commentStop << std::endl;
-
+  PrintAllAttributes (std::cout);
+  PrintAllGlobals (std::cout);
+  PrintAllLogComponents (std::cout);
+  PrintAllTraceSources (std::cout);
 
   return 0;
 }

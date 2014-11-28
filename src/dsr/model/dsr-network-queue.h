@@ -82,8 +82,7 @@ public:
             && (tstamp == o.tstamp) && (m_ipv4Route == o.m_ipv4Route));
   }
 
-  ///\name Fields
-  //\{
+  // Fields
   Ptr<const Packet> GetPacket () const
   {
     return m_packet;
@@ -124,7 +123,7 @@ public:
   {
     tstamp = time;
   }
-  //\}
+
 private:
   /// Data packet
   Ptr<const Packet> m_packet;

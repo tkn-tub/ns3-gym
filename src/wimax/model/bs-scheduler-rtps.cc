@@ -37,9 +37,9 @@
 #include "service-flow-manager.h"
 #include "wimax-mac-queue.h"
 
-NS_LOG_COMPONENT_DEFINE ("BSSchedulerRtps");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("BSSchedulerRtps");
 
 NS_OBJECT_ENSURE_REGISTERED (BSSchedulerRtps);
 

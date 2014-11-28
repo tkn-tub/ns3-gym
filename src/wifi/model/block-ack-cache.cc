@@ -25,9 +25,9 @@
 
 #define WINSIZE_ASSERT NS_ASSERT ((m_winEnd - m_winStart + 4096) % 4096 == m_winSize - 1)
 
-NS_LOG_COMPONENT_DEFINE ("BlockAckCache");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("BlockAckCache");
 
 void
 BlockAckCache::Init (uint16_t winStart, uint16_t winSize)

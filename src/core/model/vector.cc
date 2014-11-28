@@ -23,9 +23,9 @@
 #include <cmath>
 #include <sstream>
 
-NS_LOG_COMPONENT_DEFINE ("Vector");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("Vector");
 
 ATTRIBUTE_HELPER_CPP (Vector3D);
 ATTRIBUTE_HELPER_CPP (Vector2D);

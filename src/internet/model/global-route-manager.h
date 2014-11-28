@@ -72,12 +72,16 @@ private:
  * @brief Global Route Manager copy construction is disallowed.  There's no 
  * need for it and a compiler provided shallow copy would be wrong.
  *
+ * @param srm object to copy from
  */
   GlobalRouteManager (GlobalRouteManager& srm);
 
 /**
  * @brief Global Router copy assignment operator is disallowed.  There's no 
  * need for it and a compiler provided shallow copy would be wrong.
+ *
+ * @param srm object to copy from
+ * @returns the copied object
  */
   GlobalRouteManager& operator= (GlobalRouteManager& srm);
 };

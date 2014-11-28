@@ -44,7 +44,6 @@ namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("GrantedTimeWindowMpiInterface");
 
-
 SentBuffer::SentBuffer ()
 {
   m_buffer = 0;

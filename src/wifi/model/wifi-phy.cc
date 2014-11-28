@@ -32,9 +32,9 @@
 #include "ns3/trace-source-accessor.h"
 #include <cmath>
 
-NS_LOG_COMPONENT_DEFINE ("WifiPhy");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("WifiPhy");
 
 /****************************************************************
  *       This destructor is needed.
@@ -1408,6 +1408,8 @@ std::ostream& operator<< (std::ostream& os, enum WifiPhy::State state)
       return (os << "RX");
     case WifiPhy::SWITCHING:
       return (os << "SWITCHING");
+    case WifiPhy::SLEEP:
+      return (os << "SLEEP");
     default:
       NS_FATAL_ERROR ("Invalid WifiPhy state");
       return (os << "INVALID");

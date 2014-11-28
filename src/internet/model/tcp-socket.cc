@@ -27,9 +27,9 @@
 #include "ns3/nstime.h"
 #include "tcp-socket.h"
 
-NS_LOG_COMPONENT_DEFINE ("TcpSocket");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("TcpSocket");
 
 NS_OBJECT_ENSURE_REGISTERED (TcpSocket);
 
@@ -58,11 +58,11 @@ TcpSocket::GetTypeId (void)
                    MakeUintegerAccessor (&TcpSocket::GetSegSize,
                                          &TcpSocket::SetSegSize),
                    MakeUintegerChecker<uint32_t> ())
-    .AddAttribute ("SlowStartThreshold",
-                   "TCP slow start threshold (bytes)",
+    .AddAttribute ("InitialSlowStartThreshold",
+                   "TCP initial slow start threshold (bytes)",
                    UintegerValue (0xffff),
-                   MakeUintegerAccessor (&TcpSocket::GetSSThresh,
-                                         &TcpSocket::SetSSThresh),
+                   MakeUintegerAccessor (&TcpSocket::GetInitialSSThresh,
+                                         &TcpSocket::SetInitialSSThresh),
                    MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("InitialCwnd",
                    "TCP initial congestion window size (segments)",

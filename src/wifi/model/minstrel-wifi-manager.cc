@@ -40,10 +40,9 @@
 
 #define Min(a,b) ((a < b) ? a : b)
 
-NS_LOG_COMPONENT_DEFINE ("MinstrelWifiManager");
-
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("MinstrelWifiManager");
 
 /**
  * \brief hold per-remote-station state for Minstrel Wifi manager.

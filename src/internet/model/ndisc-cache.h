@@ -22,7 +22,6 @@
 #define NDISC_CACHE_H
 
 #include <stdint.h>
-
 #include <list>
 
 #include "ns3/packet.h"
@@ -32,6 +31,7 @@
 #include "ns3/ptr.h"
 #include "ns3/timer.h"
 #include "ns3/sgi-hashmap.h"
+#include "ns3/output-stream-wrapper.h"
 
 namespace ns3
 {
@@ -123,6 +123,13 @@ public:
    * \param interface the IPv6 interface
    */
   void SetDevice (Ptr<NetDevice> device, Ptr<Ipv6Interface> interface);
+
+  /**
+   * \brief Print the NDISC cache entries
+   *
+   * \param stream the ostream the NDISC cache entries is printed to
+   */
+  void PrintNdiscCache (Ptr<OutputStreamWrapper> stream);
 
   /**
    * \class Entry

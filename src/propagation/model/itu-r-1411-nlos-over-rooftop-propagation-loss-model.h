@@ -44,7 +44,10 @@ class ItuR1411NlosOverRooftopPropagationLossModel : public PropagationLossModel
 
 public:
 
-  // inherited from Object
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
 
   ItuR1411NlosOverRooftopPropagationLossModel ();
@@ -69,22 +72,34 @@ public:
   double GetLoss (Ptr<MobilityModel> a, Ptr<MobilityModel> b) const;
 
 private:
+  /**
+   * \brief Copy constructor
+   *
+   * Defined and unimplemented to avoid misuse
+   */
+  ItuR1411NlosOverRooftopPropagationLossModel (const ItuR1411NlosOverRooftopPropagationLossModel &);
+  /**
+   * \brief Copy constructor
+   *
+   * Defined and unimplemented to avoid misuse
+   * \returns
+   */
+  ItuR1411NlosOverRooftopPropagationLossModel & operator = (const ItuR1411NlosOverRooftopPropagationLossModel &);
 
-  // inherited from PropagationLossModel
   virtual double DoCalcRxPower (double txPowerDbm,
                                 Ptr<MobilityModel> a,
                                 Ptr<MobilityModel> b) const;
   virtual int64_t DoAssignStreams (int64_t stream);
   
-  double m_frequency; ///< frequency in MHz
-  double m_lambda; ///< wavelength
-  EnvironmentType m_environment;
-  CitySize m_citySize;
-  double m_rooftopHeight; ///< in meters
-  double m_streetsOrientation; ///< in degrees [0,90]
-  double m_streetsWidth; ///< in meters
-  double m_buildingsExtend; ///< in meters
-  double m_buildingSeparation; ///< in meters
+  double m_frequency; //!< frequency in MHz
+  double m_lambda; //!< wavelength
+  EnvironmentType m_environment; //!< Environment Scenario
+  CitySize m_citySize; //!< Dimension of the city
+  double m_rooftopHeight; //!< in meters
+  double m_streetsOrientation; //!< in degrees [0,90]
+  double m_streetsWidth; //!< in meters
+  double m_buildingsExtend; //!< in meters
+  double m_buildingSeparation; //!< in meters
 
 };
 

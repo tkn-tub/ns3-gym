@@ -23,9 +23,9 @@
 #include "wimax-channel.h"
 #include "wimax-phy.h"
 
-NS_LOG_COMPONENT_DEFINE ("WimaxChannel");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("WimaxChannel");
 
 NS_OBJECT_ENSURE_REGISTERED (WimaxChannel);
 

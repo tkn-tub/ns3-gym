@@ -26,7 +26,7 @@
 
 #include "ns3/lte-phy-tag.h"
 #include "ns3/lte-test-ue-phy.h"
-#include "ns3/lte-sinr-chunk-processor.h"
+#include "ns3/lte-chunk-processor.h"
 
 #include "ns3/lte-test-fading.h"
 #include <ns3/buildings-propagation-loss-model.h>
@@ -50,10 +50,9 @@
 // #include <ns3/trace-fading-loss-model.h>
 // #include <ns3/spectrum-value.h>
 
-NS_LOG_COMPONENT_DEFINE ("LteFadingTest");
-
 using namespace ns3;
 
+NS_LOG_COMPONENT_DEFINE ("LteFadingTest");
 
 /**
 * Test 1.1 Fading compound test
@@ -166,7 +165,7 @@ LteFadingTestCase::DoRun (void)
   // 
   //   LogComponentEnable ("LteSpectrumPhy", logLevel);
   //   LogComponentEnable ("LteInterference", logLevel);
-  //   LogComponentEnable ("LteSinrChunkProcessor", logLevel);
+  //   LogComponentEnable ("LteChunkProcessor", logLevel);
   // 
   //   LogComponentEnable ("LtePropagationLossModel", logLevel);
   //   LogComponentEnable ("LossModel", logLevel);

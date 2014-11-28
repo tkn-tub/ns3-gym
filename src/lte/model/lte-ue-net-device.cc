@@ -44,9 +44,9 @@
 #include <ns3/log.h>
 #include "epc-tft.h"
 
-NS_LOG_COMPONENT_DEFINE ("LteUeNetDevice");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("LteUeNetDevice");
 
 NS_OBJECT_ENSURE_REGISTERED ( LteUeNetDevice);
 

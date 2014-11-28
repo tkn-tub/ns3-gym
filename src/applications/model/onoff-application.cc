@@ -42,9 +42,9 @@
 #include "ns3/string.h"
 #include "ns3/pointer.h"
 
-NS_LOG_COMPONENT_DEFINE ("OnOffApplication");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("OnOffApplication");
 
 NS_OBJECT_ENSURE_REGISTERED (OnOffApplication);
 

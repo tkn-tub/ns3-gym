@@ -24,9 +24,9 @@
 #include "ns3/header.h"
 #include "ipv4-header.h"
 
-NS_LOG_COMPONENT_DEFINE ("Ipv4Header");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("Ipv4Header");
 
 NS_OBJECT_ENSURE_REGISTERED (Ipv4Header);
 

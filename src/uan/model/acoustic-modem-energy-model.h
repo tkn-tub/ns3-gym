@@ -158,7 +158,7 @@ public:
   void SetEnergyDepletionCallback (AcousticModemEnergyDepletionCallback callback);
 
   /**
-   * Changes state of the AcousticModemEnergyModel..
+   * Changes state of the AcousticModemEnergyModel.
    *
    * \param newState New state the modem is in.
    */
@@ -168,6 +168,15 @@ public:
    * Handles energy depletion.
    */
   virtual void HandleEnergyDepletion (void);
+
+  /**
+   * \brief Handles energy recharged.
+   *
+   * Not implemented
+   */
+  virtual void HandleEnergyRecharged (void)
+  {
+  }
 
 
 private:
