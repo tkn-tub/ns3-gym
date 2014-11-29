@@ -521,9 +521,7 @@ SNIR function.
    *SNIR function over time.*
 
 From the SNIR function we can derive the Bit Error Rate (BER) and Packet Error Rate (PER) for
-the modulation and coding scheme being used for the transmission.  Please refer to [pei80211ofdm]_, [pei80211b]_ 
-and [lacage2006yans]_ for a detailed description of the available BER/PER models.
-
+the modulation and coding scheme being used for the transmission.  Please refer to [pei80211ofdm]_, [pei80211b]_, [lacage2006yans]_, [Haccoun]_ and [Frenger]_ for a detailed description of the available BER/PER models.
 
 WifiChannel configuration
 =========================
@@ -720,6 +718,10 @@ References
 .. [pei80211ofdm] \G. Pei and Tom Henderson, `Validation of OFDM error rate model in ns-3 <http://www.nsnam.org/~pei/80211ofdm.pdf>`__ 
 
 .. [lacage2006yans] \M. Lacage and T. Henderson, `Yet another Network Simulator <http://cutebugs.net/files/wns2-yans.pdf>`__ 
+
+.. [Haccoun] \D. Haccoun and G. Begin, *High-Rate Punctured Convolutional Codes for Viterbi Sequential Decoding*, IEEE Transactions on Communications, Vol. 32, Issue 3, pp.315-319.
+
+.. [Frenger] \Pâl Frenger et al., "Multi-rate Convolutional Codes".
 
 .. [ji2004sslswn] \Z. Ji, J. Zhou, M. Takai and R. Bagrodia, *Scalable simulation of large-scale wireless networks with bounded inaccuracies*, in Proc. of the Seventh ACM Symposium on Modeling, Analysis and Simulation of Wireless and Mobile Systems, October 2004.
 
