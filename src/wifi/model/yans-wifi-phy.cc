@@ -638,7 +638,15 @@ YansWifiPhy::SendPacket (Ptr<const Packet> packet, WifiTxVector txVector, WifiPr
       m_interference.NotifyRxEnd ();
     }
   NotifyTxBegin (packet);
-  uint32_t dataRate500KbpsUnits = txVector.GetMode().GetDataRate () * txVector.GetNss() / 500000;
+  uint32_t dataRate500KbpsUnits;
+  if (txVector.GetMode().GetModulationClass () == WIFI_MOD_CLASS_HT)
+    {
+      dataRate500KbpsUnits = 128 + WifiModeToMcs (txVector.GetMode());
+    }
+  else
+    {
+      dataRate500KbpsUnits = txVector.GetMode().GetDataRate () * txVector.GetNss() / 500000;
+    }
   bool isShortPreamble = (WIFI_PREAMBLE_SHORT == preamble);
   NotifyMonitorSniffTx (packet, (uint16_t)GetChannelFrequencyMhz (), GetChannelNumber (), dataRate500KbpsUnits, isShortPreamble, txVector.GetTxPowerLevel());
   m_state->SwitchToTx (txDuration, packet, GetPowerDbm (txVector.GetTxPowerLevel()), txVector, preamble);
@@ -904,7 +912,15 @@ YansWifiPhy::EndReceive (Ptr<Packet> packet, Ptr<InterferenceHelper::Event> even
   if (m_random->GetValue () > snrPer.per)
     {
       NotifyRxEnd (packet);
-      uint32_t dataRate500KbpsUnits = event->GetPayloadMode ().GetDataRate () * event->GetTxVector().GetNss()/ 500000;
+      uint32_t dataRate500KbpsUnits;
+      if ((event->GetPayloadMode ().GetModulationClass () == WIFI_MOD_CLASS_HT))
+        {
+          dataRate500KbpsUnits = 128 + WifiModeToMcs (event->GetPayloadMode ());
+        }
+      else
+        {
+          dataRate500KbpsUnits = event->GetPayloadMode ().GetDataRate () * event->GetTxVector().GetNss()/ 500000;
+        }
       bool isShortPreamble = (WIFI_PREAMBLE_SHORT == event->GetPreambleType ());
       double signalDbm = RatioToDb (event->GetRxPowerW ()) + 30;
       double noiseDbm = RatioToDb (event->GetRxPowerW () / snrPer.snr) - GetRxNoiseFigure () + 30;
