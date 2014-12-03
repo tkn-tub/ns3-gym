@@ -101,7 +101,7 @@ public:
    * \returns the physical bit rate of this signal.
    *
    * If a transmission mode uses 1/2 FEC, and if its
-   * data rate is 3Mbs, the phy rate is 6Mbs
+   * data rate is 3Mbps, the phy rate is 6Mbps
    */
   uint64_t GetPhyRate (void) const;
   /**
@@ -133,7 +133,7 @@ public:
    * \returns the uid associated to this wireless mode.
    *
    * Each specific wireless mode should have a different uid.
-   * For example, the 802.11b 1Mbs and the 802.11b 2Mbs modes
+   * For example, the 802.11b 1Mbps and the 802.11b 2Mbps modes
    * should have different uids.
    */
   uint32_t GetUid (void) const;

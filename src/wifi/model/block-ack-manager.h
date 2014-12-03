@@ -190,7 +190,7 @@ public:
    * \param tid Traffic ID of transmitted packet.
    *
    * Marks an agreement as unsuccessful. This happens if <i>recipient</i> station reject block ack setup
-   * by an ADDBAResponse frame with a failure status code. FOr now we assume that every QoS station accepts
+   * by an ADDBA Response frame with a failure status code. For now we assume that every QoS station accepts
    * a block ack setup.
    */
   void NotifyAgreementUnsuccessful (Mac48Address recipient, uint8_t tid);

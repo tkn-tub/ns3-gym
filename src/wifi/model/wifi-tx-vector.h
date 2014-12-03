@@ -105,7 +105,7 @@ public:
    */
   uint8_t GetNss (void) const;
   /**
-   * Sets the number of Nss refer to IEEE802.11n Table 20-28 for explanation and range
+   * Sets the number of Nss refer to IEEE 802.11n Table 20-28 for explanation and range
    *
    * \param nss
    */
@@ -115,7 +115,7 @@ public:
    */
   uint8_t GetNess (void) const;
   /**
-   * Sets the Ness number refer to IEEE802.11n Table 20-6 for explanation
+   * Sets the Ness number refer to IEEE 802.11n Table 20-6 for explanation
    *
    * \param ness
    */
@@ -146,7 +146,7 @@ private:
                            for Click radiotap information */
   bool     m_shortGuardInterval; //true if short GI is going to be used
   uint8_t  m_nss; //number of streams
-  uint8_t  m_ness; //number of stream in beamforming
+  uint8_t  m_ness; //number of streams in beamforming
   bool     m_stbc; //STBC used or not
 
 };

@@ -997,8 +997,8 @@ struct WifiRemoteStationState
   Mac48Address m_address;  //!< Mac48Address of the remote station
   WifiRemoteStationInfo m_info;
   bool m_shortGuardInterval;  //!< Flag if short guard interval is supported by the remote station
-  uint32_t m_rx;  //!< Number of RX antennae of the remote station
-  uint32_t m_tx;  //!< Number of TX antennae of the remote station
+  uint32_t m_rx;  //!< Number of RX antennas of the remote station
+  uint32_t m_tx;  //!< Number of TX antennas of the remote station
   bool m_stbc;  //!< Flag if STBC is used by the remote station
   bool m_greenfield;  //!< Flag if green field is used by the remote station
 

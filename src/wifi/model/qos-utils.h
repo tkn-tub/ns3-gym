@@ -51,7 +51,7 @@ enum AcIndex
 /**
  * \ingroup wifi
  * Maps TID (Traffic ID) to Access classes.
- * For more details see (Table 9-1 "UP-to-AC mapping"; IEEE802.11-2012).
+ * For more details see (Table 9-1 "UP-to-AC mapping"; IEEE 802.11-2012).
  *
  * \param tid the Traffic ID to be mapped to Access class
  * \return the access class for the given TID
@@ -73,7 +73,7 @@ uint8_t QosUtilsGetTidForPacket (Ptr<const Packet> packet);
  * \ingroup wifi
  * Next function is useful to correctly sort buffered packets under block ack.
  * When an BAR is received from originator station, completed "old"
- * (see section 9.10.3 in IEEE802.11e) packets must be forwarded up before "new" packets.
+ * (see section 9.10.3 in IEEE 802.11e) packets must be forwarded up before "new" packets.
  *
  * \param seqControl the sequence control field
  * \param endSequence

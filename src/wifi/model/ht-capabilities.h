@@ -34,10 +34,10 @@
 namespace ns3 {
 
 /**
- * \brief The Ht Capabilities Information Element
+ * \brief The HT Capabilities Information Element
  * \ingroup wifi
  *
- * This class knows how to serialise and deserialise the Ht Capabilities Information Element
+ * This class knows how to serialise and deserialise the HT Capabilities Information Element
  *
  * \see attribute_HtCapabilities
  */
@@ -66,7 +66,7 @@ public:
   uint8_t GetLdpc (void) const;
   uint8_t GetGreenfield (void) const;
   uint8_t GetShortGuardInterval20 (void) const;
-  uint8_t GetSupportedChannelWidth (void) const; //2040 supported or not
+  uint8_t GetSupportedChannelWidth (void) const;
   uint8_t* GetRxMcsBitmask();
   
   WifiInformationElementId ElementId () const;

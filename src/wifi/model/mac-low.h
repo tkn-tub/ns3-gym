@@ -76,7 +76,7 @@ public:
    * \param snr the snr of the ack
    * \param txMode the transmission mode of the ack
    *
-   * ns3::MacLow received an expected ACL within
+   * ns3::MacLow received an expected ACK within
    * AckTimeout. The <i>snr</i> and <i>txMode</i>
    * arguments are not valid when SUPER_FAST_ACK is
    * used.
@@ -1024,7 +1024,7 @@ private:
    * This happens when the originator of block ack has only few MPDUs to send.
    * All completed MSDUs starting with starting sequence number of block ack
    * agreement are forward up to WifiMac until there is an incomplete or missing MSDU.
-   * See section 9.10.4 in IEEE802.11 standard for more details.
+   * See section 9.10.4 in IEEE 802.11 standard for more details.
    */
   void RxCompleteBufferedPacketsUntilFirstLost (Mac48Address originator, uint8_t tid);
   /*
@@ -1060,7 +1060,7 @@ private:
    * Every time that a block ack request or a packet with ack policy equals to <i>block ack</i>
    * are received, if a relative block ack agreement exists and the value of inactivity timeout
    * is not 0, the timer is reset.
-   * see section 11.5.3 in IEEE802.11e for more details.
+   * see section 11.5.3 in IEEE 802.11e for more details.
    *
    * \param agreement
    */
@@ -1120,7 +1120,7 @@ private:
 
   bool m_promisc;  //!< Flag if the device is operating in promiscuous mode
 
-  class PhyMacLowListener * m_phyMacLowListener; //!< Listerner needed to monitor when a channel switching occurs.
+  class PhyMacLowListener * m_phyMacLowListener; //!< Listener needed to monitor when a channel switching occurs.
 
   /*
    * BlockAck data structures.

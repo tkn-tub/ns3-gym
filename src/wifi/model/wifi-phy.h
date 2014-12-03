@@ -305,7 +305,7 @@ public:
    * \param payloadMode the WifiMode use for the transmission of the payload
    * \param preamble the type of preamble
    * 
-   * \return the duration of the GT-SIG in Mixed Format and greenfield format PLCP header 
+   * \return the duration of the HT-SIG in Mixed Format and greenfield format PLCP header 
    */
   static uint32_t GetPlcpHtSigHeaderDurationMicroSeconds (WifiMode payloadMode, WifiPreamble preamble);
 
@@ -400,67 +400,67 @@ public:
    * (e.g., by a WifiRemoteStationManager) to determine the set of
    * transmission/reception modes that this WifiPhy(-derived class)
    * can support - a set of WifiMode objects which we call the
-   * BssMemebershipSelectorSet, and which is stored as WifiPhy::m_bssMembershipSelectorSet.
+   * BssMembershipSelectorSet, and which is stored as WifiPhy::m_bssMembershipSelectorSet.
    *
    * This was introduced with 11n
    *
    * \return the memebership selector whose index is specified.
    */
-  virtual uint32_t GetNBssMembershipSelectors (void) const=0;
+  virtual uint32_t GetNBssMembershipSelectors (void) const = 0;
 
    /**
    * The WifiPhy::BssMembershipSelector() method is used
    * (e.g., by a WifiRemoteStationManager) to determine the set of
    * transmission/reception modes that this WifiPhy(-derived class)
    * can support - a set of WifiMode objects which we call the
-   * BssMemebershipSelectorSet, and which is stored as WifiPhy::m_bssMembershipSelectorSet.
+   * BssMembershipSelectorSet, and which is stored as WifiPhy::m_bssMembershipSelectorSet.
    *
    * This was introduced with 11n
    *
-   * \param selector index in array of supported memeberships
+   * \param selector index in array of supported memberships
    * \return the memebership selector whose index is specified.
    */
-  virtual uint32_t GetBssMembershipSelector (uint32_t selector) const=0;
+  virtual uint32_t GetBssMembershipSelector (uint32_t selector) const = 0;
   /**
    * The WifiPhy::GetMembershipSelectorModes() method is used
    * (e.g., by a WifiRemoteStationManager) to determine the set of
    * transmission/reception modes that this WifiPhy(-derived class)
    * can support - a set of WifiMode objects which we call the
-   * BssMemebershipSelectorSet, and which is stored as WifiPhy::m_bssMembershipSelectorSet.
+   * BssMembershipSelectorSet, and which is stored as WifiPhy::m_bssMembershipSelectorSet.
    *
    * This was introduced with 11n
    *
-   * \param selector index in array of supported memeberships
+   * \param selector index in array of supported memberships
    * \return a WifiModeList that contains the WifiModes associrated with the selected index.
    *
    * \sa WifiPhy::GetMembershipSelectorModes()
    */
-  virtual WifiModeList GetMembershipSelectorModes(uint32_t selector)=0;
+  virtual WifiModeList GetMembershipSelectorModes(uint32_t selector) = 0;
   /**
    * The WifiPhy::GetNMcs() method is used
    * (e.g., by a WifiRemoteStationManager) to determine the set of
    * transmission/reception MCS indexes that this WifiPhy(-derived class)
-   * can support - a set of Mcs indexes which we call the
+   * can support - a set of MCS indexes which we call the
    * DeviceMcsSet, and which is stored as WifiPhy::m_deviceMcsSet.
    *
    * This was introduced with 11n
    *
-   * \return the Mcs index whose index is specified.
+   * \return the MCS index whose index is specified.
    */
-  virtual uint8_t GetNMcs (void) const=0;
+  virtual uint8_t GetNMcs (void) const = 0;
   /**
    * The WifiPhy::GetMcs() method is used
    * (e.g., by a WifiRemoteStationManager) to determine the set of
    * transmission/reception MCS indexes that this WifiPhy(-derived class)
-   * can support - a set of Mcs indexes which we call the
+   * can support - a set of MCS indexes which we call the
    * DeviceMcsSet, and which is stored as WifiPhy::m_deviceMcsSet.
    *
    * This was introduced with 11n
    *
-   * \param mcs index in array of supported Mcs
-   * \return the Mcs index whose index is specified.
+   * \param mcs index in array of supported MCS
+   * \return the MCS index whose index is specified.
    */
-  virtual uint8_t GetMcs (uint8_t mcs) const=0;
+  virtual uint8_t GetMcs (uint8_t mcs) const = 0;
 
   /**
   * For a given WifiMode finds the corresponding MCS value and returns it 
@@ -469,15 +469,15 @@ public:
   * \param mode the WifiMode
   * \return the MCS number that corresponds to the given WifiMode
   */
-  virtual uint32_t WifiModeToMcs (WifiMode mode)=0;
+  virtual uint32_t WifiModeToMcs (WifiMode mode) = 0;
  /**
   * For a given MCS finds the corresponding WifiMode and returns it 
   * as defined in the IEEE 802.11n standard. 
   * 
   * \param mcs the MCS number 
-  * \return the WifiMode that corresponds to the given mcs number
+  * \return the WifiMode that corresponds to the given MCS number
   */
-  virtual WifiMode McsToWifiMode (uint8_t mcs)=0;
+  virtual WifiMode McsToWifiMode (uint8_t mcs) = 0;
 
   
   /**
@@ -1025,32 +1025,32 @@ public:
   /**
    * \param freq the operating frequency on this node.
    */
-  virtual void SetFrequency (uint32_t freq)=0;
+  virtual void SetFrequency (uint32_t freq) = 0;
   /**
    * \return the operating frequency on this node
    */
-  virtual uint32_t GetFrequency (void) const=0;
+  virtual uint32_t GetFrequency (void) const = 0;
   /**
    * \param tx the number of transmitters on this node.
    */
-  virtual void SetNumberOfTransmitAntennas (uint32_t tx)=0;
+  virtual void SetNumberOfTransmitAntennas (uint32_t tx) = 0;
 
   /**
    * \return the number of transmit antenna on this device
    */
-  virtual uint32_t GetNumberOfTransmitAntennas (void) const=0;
+  virtual uint32_t GetNumberOfTransmitAntennas (void) const = 0;
    /**
-   * \param rx the number of recievers on this node.
+   * \param rx the number of receivers on this node.
    */
-  virtual void SetNumberOfReceiveAntennas (uint32_t rx)=0 ;
+  virtual void SetNumberOfReceiveAntennas (uint32_t rx) = 0;
   /**
-   * \return the number of recievers on this node.
+   * \return the number of receivers on this node.
    */
-  virtual uint32_t GetNumberOfReceiveAntennas (void) const=0;
+  virtual uint32_t GetNumberOfReceiveAntennas (void) const = 0;
   /**
    * \param guardInterval Enable or disable short guard interval
    */
-   virtual void SetGuardInterval (bool guardInterval)=0;
+   virtual void SetGuardInterval (bool guardInterval) = 0;
    /**
    *  \return true if short guard interval is supported, false otherwise
    */
@@ -1058,28 +1058,28 @@ public:
   /**
    * \param ldpc Enable or disable LDPC
    */
-  virtual void SetLdpc (bool ldpc)=0;
+  virtual void SetLdpc (bool ldpc) = 0;
   /**
    * \return true if LDPC is supported, false otherwise
    */
-  virtual bool GetLdpc (void) const=0;
+  virtual bool GetLdpc (void) const = 0;
   /**
    * \param stbc Enable or disable STBC is supported
    */
-  virtual void SetStbc (bool stbc)=0;
+  virtual void SetStbc (bool stbc) = 0;
   /**
    *  \return true if STBC is supported, false otherwise
    */
-  virtual bool GetStbc (void) const=0;
+  virtual bool GetStbc (void) const = 0;
    
   /**
    * \param greenfield Enable or disable GreenField
    */
-  virtual void SetGreenfield (bool greenfield)=0;
+  virtual void SetGreenfield (bool greenfield) = 0;
   /**
    * \return true if Greenfield is supported, false otherwise
    */
-  virtual bool GetGreenfield (void) const=0;
+  virtual bool GetGreenfield (void) const = 0;
   /**
    * \return true if channel bonding 40 MHz is supported, false otherwise
    */
@@ -1087,7 +1087,7 @@ public:
   /**
    *  \param channelbonding Enable or disable channel bonding
    */
-  virtual void SetChannelBonding (bool channelbonding) = 0 ;
+  virtual void SetChannelBonding (bool channelbonding) = 0;
 
 private:
   /**
