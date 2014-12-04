@@ -2340,3 +2340,31 @@ below. These RB were selected because each one is used by different FR cell type
    :align: center
 
    REM for RB 20 obtained from ``lena-dual-stripe`` simulation with Hard FR algorithm enabled
+
+
+
+
+Troubleshooting and debugging tips
+----------------------------------
+
+Many users post on the ns-3-users mailing list asking, for example,
+why they don't get any traffic in their simulation, or maybe only
+uplink but no downlink traffic, etc. In most of the cases, it's a bug
+in the user simulation program. Here are some tips to debug the
+program and find out the cause of the problem.
+
+The general approach is to selectively and incrementally enable the
+logging of relevant LTE module components, veryfing upon each
+activation that the output is as expected. In detail:
+
+ * first check the control plane, in particular the RRC connection
+   establishment procedure, by enabling the log components LteUeRrc
+   and LteEnbRrc 
+
+ * then check packet transmissions on the data plane, starting by
+   enabling the log componbents LteUeNetDevice and the
+   EpcSgwPgwApplication, then EpcEnbApplication, then moving down the
+   LTE radio stack (PDCP, RLC, MAC, and finally PHY). All this until
+   you find where packets stop being processed / forwarded. 
+
+
