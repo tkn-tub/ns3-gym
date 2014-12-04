@@ -641,7 +641,7 @@ TypeId::SetGroupName (std::string groupName)
   Singleton<IidManager>::Get ()->SetGroupName (m_tid, groupName);
   return *this;
 }
-TypeId
+TypeId 
 TypeId::SetSize (std::size_t size)
 {
   NS_LOG_FUNCTION (this << size);
@@ -806,8 +806,16 @@ TypeId::GetTraceSource(uint32_t i) const
 TypeId 
 TypeId::AddTraceSource (std::string name,
                         std::string help,
+                        Ptr<const TraceSourceAccessor> accessor)
+{
+  return AddTraceSource (name, help, accessor, "(not yet documented)");
+}
+
+TypeId 
+TypeId::AddTraceSource (std::string name,
+                        std::string help,
                         Ptr<const TraceSourceAccessor> accessor,
-                        std::string callback /* = "(not yet documented)" */)
+                        std::string callback)
 {
   NS_LOG_FUNCTION (this << name << help << accessor);
   Singleton<IidManager>::Get ()->AddTraceSource (m_tid, name, help, accessor, callback);

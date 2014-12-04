@@ -25,6 +25,7 @@
 #include "trace-source-accessor.h"
 #include "attribute-helper.h"
 #include "callback.h"
+#include "deprecated.h"
 #include "hash.h"
 #include <string>
 #include <stdint.h>
@@ -46,7 +47,7 @@ class ObjectBase;
  *
  * \internal
  *  See the discussion in IidManager about hash chaining of TypeId's.
-  */
+ */
 class TypeId
 {
 public:
@@ -327,8 +328,23 @@ public:
    */
   TypeId AddTraceSource (std::string name,
                          std::string help,
+                         Ptr<const TraceSourceAccessor> accessor)
+    NS_DEPRECATED;
+  
+  /**
+   * \param name the name of the new trace source
+   * \param help some help text which describes the purpose of this
+   *        trace source.
+   * \param accessor a pointer to a TraceSourceAccessor which can be
+   *        used to connect/disconnect sinks to this trace source.
+   * \param callback fully qualified typedef name for the callback signature.
+   *        Generally this should begin with the "ns3::" namespace qualifier.
+   * \returns this TypeId instance.
+   */
+  TypeId AddTraceSource (std::string name,
+                         std::string help,
                          Ptr<const TraceSourceAccessor> accessor,
-                         std::string callback = "(not yet documented)" );
+                         std::string callback);
 
   TypeId HideFromDocumentation (void);
 

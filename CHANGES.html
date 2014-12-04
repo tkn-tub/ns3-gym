@@ -76,10 +76,17 @@ us a note on ns-developers mailing list.</p>
   <li> The attribute 'Recievers' in class YansWifiPhy was misspelled, so
        this has been corrected to 'Receivers'.
   </li>
+  <li> We have now documented the callback function signatures
+       for all TracedSources, using an extra (fourth) argument to
+       TypeId::AddTraceSource to pass the fully-qualified name
+       of the signature typedef.  To ensure that future TraceSources
+       are similarly documented we have deprecated the three
+       argument version of AddTraceSource.
+  </li>	
 </ul>
 
 <h2>Changes to build system:</h2>
-<ul> 
+<ul>
   <li> waf was upgraded to version 1.7.16
   </li>
 </ul>
