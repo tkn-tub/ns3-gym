@@ -91,13 +91,16 @@ UanMacCw::GetTypeId (void)
                    MakeTimeChecker ())
     .AddTraceSource ("Enqueue",
                      "A packet arrived at the MAC for transmission.",
-                     MakeTraceSourceAccessor (&UanMacCw::m_enqueueLogger))
+                     MakeTraceSourceAccessor (&UanMacCw::m_enqueueLogger),
+                     "ns3::UanMacCw::QueueTracedCallback")
     .AddTraceSource ("Dequeue",
                      "A was passed down to the PHY from the MAC.",
-                     MakeTraceSourceAccessor (&UanMacCw::m_dequeueLogger))
+                     MakeTraceSourceAccessor (&UanMacCw::m_dequeueLogger),
+                     "ns3::UanMacCw::QueueTracedCallback")
     .AddTraceSource ("RX",
                      "A packet was destined for this MAC and was received.",
-                     MakeTraceSourceAccessor (&UanMacCw::m_rxLogger))
+                     MakeTraceSourceAccessor (&UanMacCw::m_rxLogger),
+                     "ns3::UanMac::PacketModeTracedCallback")
 
   ;
   return tid;

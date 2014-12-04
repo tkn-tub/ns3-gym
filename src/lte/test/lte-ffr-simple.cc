@@ -92,7 +92,8 @@ LteFfrSimple::GetTypeId ()
                    MakeUintegerChecker<uint8_t> ())
     .AddTraceSource ("ChangePdschConfigDedicated",
                      "trace fired upon change of PdschConfigDedicated",
-                     MakeTraceSourceAccessor (&LteFfrSimple::m_changePdschConfigDedicatedTrace))
+                     MakeTraceSourceAccessor (&LteFfrSimple::m_changePdschConfigDedicatedTrace),
+                     "ns3::LteFfrSimple::PdschTracedCallback")
   ;
   return tid;
 }

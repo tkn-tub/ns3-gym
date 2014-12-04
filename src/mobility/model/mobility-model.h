@@ -75,6 +75,27 @@ public:
    */
   int64_t AssignStreams (int64_t stream);
 
+  /**
+   *  TracedCallback signature.
+   *
+   * \param [in] model Value of the MobilityModel.
+   * @{
+   */
+  typedef void (* TracedCallback)(const Ptr<const MobilityModel> model);
+  
+  /**
+   * TracedCallback signature for course change notifications.
+   *
+   * If the callback is connected using Config::ConnectWithoutContext()
+   * omit the \c context argument from the signature.
+   *
+   * \param [in] context The context string, supplied by the Trace source.
+   * \param [in] model The MobilityModel which is changing course.
+   */
+  typedef void (* CourseChangeTracedCallback)
+    (const std::string context, const Ptr<const MobilityModel> model);
+  
+  
 protected:
   /**
    * Must be invoked by subclasses when the course of the
@@ -114,7 +135,7 @@ private:
    * Used to alert subscribers that a change in direction, velocity,
    * or position has occurred.
    */
-  TracedCallback<Ptr<const MobilityModel> > m_courseChangeTrace;
+  ns3::TracedCallback<Ptr<const MobilityModel> > m_courseChangeTrace;
 
 };
 

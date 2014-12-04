@@ -120,6 +120,8 @@ private:
 
   LteRrcSap::PdschConfigDedicated m_pdschConfigDedicated;
 
+  typedef void (* PdschTracedCallback)(uint16_t, uint8_t);
+
   TracedCallback<uint16_t, uint8_t> m_changePdschConfigDedicatedTrace;
 
 

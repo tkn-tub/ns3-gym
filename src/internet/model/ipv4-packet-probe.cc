@@ -41,11 +41,14 @@ Ipv4PacketProbe::GetTypeId ()
     .SetParent<Probe> ()
     .AddConstructor<Ipv4PacketProbe> ()
     .AddTraceSource ( "Output",
-                      "The packet plus its IPv4 object and interface that serve as the output for this probe",
-                      MakeTraceSourceAccessor (&Ipv4PacketProbe::m_output))
+                      "The packet plus its IPv4 object and interface "
+                      "that serve as the output for this probe",
+                      MakeTraceSourceAccessor (&Ipv4PacketProbe::m_output),
+                      "ns3::Ipv4PacketProbe::TracedCallback")
     .AddTraceSource ( "OutputBytes",
                       "The number of bytes in the packet",
-                      MakeTraceSourceAccessor (&Ipv4PacketProbe::m_outputBytes))
+                      MakeTraceSourceAccessor (&Ipv4PacketProbe::m_outputBytes),
+                      "ns3::Packet::PacketSizeTracedCallback")
   ;
   return tid;
 }

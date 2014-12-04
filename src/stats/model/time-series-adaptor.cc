@@ -40,8 +40,10 @@ TimeSeriesAdaptor::GetTypeId (void)
     .SetParent<DataCollectionObject> ()
     .AddConstructor<TimeSeriesAdaptor> ()
     .AddTraceSource ( "Output",
-                      "The current simulation time versus the current value converted to a double",
-                      MakeTraceSourceAccessor (&TimeSeriesAdaptor::m_output))
+                      "The current simulation time versus "
+                      "the current value converted to a double",
+                      MakeTraceSourceAccessor (&TimeSeriesAdaptor::m_output),
+                      "ns3::TimeSeriesAdapter::OutputTracedCallback")
   ;
   return tid;
 }

@@ -36,15 +36,19 @@ WifiPhyStateHelper::GetTypeId (void)
     .AddConstructor<WifiPhyStateHelper> ()
     .AddTraceSource ("State",
                      "The state of the PHY layer",
-                     MakeTraceSourceAccessor (&WifiPhyStateHelper::m_stateLogger))
+                     MakeTraceSourceAccessor (&WifiPhyStateHelper::m_stateLogger),
+                     "ns3::WifiPhyStateHelper::StateTracedCallback")
     .AddTraceSource ("RxOk",
                      "A packet has been received successfully.",
-                     MakeTraceSourceAccessor (&WifiPhyStateHelper::m_rxOkTrace))
+                     MakeTraceSourceAccessor (&WifiPhyStateHelper::m_rxOkTrace),
+                     "ns3::WifiPhyStateHelper::RxOkTracedCallback")
     .AddTraceSource ("RxError",
                      "A packet has been received unsuccessfully.",
-                     MakeTraceSourceAccessor (&WifiPhyStateHelper::m_rxErrorTrace))
+                     MakeTraceSourceAccessor (&WifiPhyStateHelper::m_rxErrorTrace),
+                     "ns3::WifiPhyStateHelper::RxErrorTracedCallback")
     .AddTraceSource ("Tx", "Packet transmission is starting.",
-                     MakeTraceSourceAccessor (&WifiPhyStateHelper::m_txTrace))
+                     MakeTraceSourceAccessor (&WifiPhyStateHelper::m_txTrace),
+                     "ns3::WifiPhyStateHelper::TxTracedCallback")
   ;
   return tid;
 }

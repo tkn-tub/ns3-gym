@@ -246,15 +246,17 @@ LteUePhy::GetTypeId (void)
                    MakeDoubleChecker<double> ())
     .AddTraceSource ("ReportCurrentCellRsrpSinr",
                      "RSRP and SINR statistics.",
-                     MakeTraceSourceAccessor (&LteUePhy::m_reportCurrentCellRsrpSinrTrace))
+                     MakeTraceSourceAccessor (&LteUePhy::m_reportCurrentCellRsrpSinrTrace),
+                     "ns3::LteUePhy::RsrpSinrTracedCallback")
     .AddAttribute ("RsrpSinrSamplePeriod",
                    "The sampling period for reporting RSRP-SINR stats (default value 1)",
                    UintegerValue (1),
                    MakeUintegerAccessor (&LteUePhy::m_rsrpSinrSamplePeriod),
                    MakeUintegerChecker<uint16_t> ())
     .AddTraceSource ("UlPhyTransmission",
-                     "UL transmission PHY layer statistics.",
-                     MakeTraceSourceAccessor (&LteUePhy::m_ulPhyTransmission))
+                     "DL transmission PHY layer statistics.",
+                     MakeTraceSourceAccessor (&LteUePhy::m_ulPhyTransmission),
+                     "ns3::PhyTransmissionStatParameters::TracedCallback")
     .AddAttribute ("DlSpectrumPhy",
                    "The downlink LteSpectrumPhy associated to this LtePhy",
                    TypeId::ATTR_GET,
@@ -274,16 +276,18 @@ LteUePhy::GetTypeId (void)
                    MakeDoubleChecker<double> ())
     .AddAttribute ("UeMeasurementsFilterPeriod",
                    "Time period for reporting UE measurements, i.e., the"
-                   "length of layer-1 filtering (default 200 ms).",
+                   "length of layer-1 filtering.",
                    TimeValue (MilliSeconds (200)),
                    MakeTimeAccessor (&LteUePhy::m_ueMeasurementsFilterPeriod),
                    MakeTimeChecker ())
     .AddTraceSource ("ReportUeMeasurements",
                      "Report UE measurements RSRP (dBm) and RSRQ (dB).",
-                     MakeTraceSourceAccessor (&LteUePhy::m_reportUeMeasurements))
+                     MakeTraceSourceAccessor (&LteUePhy::m_reportUeMeasurements),
+                     "ns3::LteUePhy::RsrpRsrqTracedCallback")
     .AddTraceSource ("StateTransition",
-                     "Trace fired upon every UE PHY state transition.",
-                     MakeTraceSourceAccessor (&LteUePhy::m_stateTransitionTrace))
+                     "Trace fired upon every UE PHY state transition",
+                     MakeTraceSourceAccessor (&LteUePhy::m_stateTransitionTrace),
+                     "ns3::LteUePhy::StateTracedCallback")
     .AddAttribute ("EnableUplinkPowerControl",
                    "If true, Uplink Power Control will be enabled.",
                    BooleanValue (true),

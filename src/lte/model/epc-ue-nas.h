@@ -168,6 +168,14 @@ public:
    */
   State GetState () const;
 
+  /**
+   * TracedCallback signature for state change events.
+   *
+   * \param [in] oldState The old State.
+   * \pararm [in] newState the new State.
+   */
+  typedef void (* StateTracedCallback)
+    (const State oldState, const State newState);
  
 private:
 
@@ -191,6 +199,7 @@ private:
   /**
    * The `StateTransition` trace source. Fired upon every UE NAS state
    * transition. Exporting old state and new state.
+   * \todo This should be a TracedValue
    */
   TracedCallback<State, State> m_stateTransitionCallback;
 

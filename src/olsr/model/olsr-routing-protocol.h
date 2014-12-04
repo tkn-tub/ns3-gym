@@ -112,6 +112,22 @@ public:
   */
   int64_t AssignStreams (int64_t stream);
 
+  /**
+   * TracedCallback signature for Packet transmit and receive events.
+   *
+   * \param [in] header
+   * \param [in] messages
+   */
+  typedef void (* PacketTxRxTracedCallback)
+    (const PacketHeader & header, const MessageList & messages);
+
+  /**
+   * TracedCallback signature for routing table computation.
+   *
+   * \param [in] size Final routing table size.
+   */
+  typedef void (* TableChangeTracedCallback) (const uint32_t size);
+
 private:
   std::set<uint32_t> m_interfaceExclusions;
   Ptr<Ipv4StaticRouting> m_routingTableAssociation;

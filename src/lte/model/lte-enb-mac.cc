@@ -332,10 +332,12 @@ LteEnbMac::GetTypeId (void)
                    MakeUintegerChecker<uint8_t> (2, 10))
     .AddTraceSource ("DlScheduling",
                      "Information regarding DL scheduling.",
-                     MakeTraceSourceAccessor (&LteEnbMac::m_dlScheduling))
+                     MakeTraceSourceAccessor (&LteEnbMac::m_dlScheduling),
+                     "ns3::LteEnbMac::DlSchedulingTracedCallback")
     .AddTraceSource ("UlScheduling",
                      "Information regarding UL scheduling.",
-                     MakeTraceSourceAccessor (&LteEnbMac::m_ulScheduling))
+                     MakeTraceSourceAccessor (&LteEnbMac::m_ulScheduling),
+                     "ns3::LteEnbMac::UlSchedulingTracedCallback")
   ;
 
   return tid;

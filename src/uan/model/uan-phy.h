@@ -203,6 +203,17 @@ public:
   typedef Callback<void, Ptr<Packet>, double > RxErrCallback;
 
   /**
+   * TracedCallback signature for UanPhy packet send/receive events.
+   *
+   * \param [in] pkt The packet.
+   * \param [in] sinr The SINR.
+   * \param [in] mode The channel mode.
+   */
+  typedef void (* TracedCallback)
+    (const Ptr<const Packet> pkt, const double sinr, const UanTxMode mode);
+
+  
+  /**
    * Set the DeviceEnergyModel callback for UanPhy device. 
    * 
    * \param callback The DeviceEnergyModel change state callback.
@@ -506,7 +517,7 @@ private:
    *
    * \see class CallBackTraceSource
    */
-  TracedCallback<Ptr<const Packet> > m_phyTxBeginTrace;
+  ns3::TracedCallback<Ptr<const Packet> > m_phyTxBeginTrace;
 
   /**
    * Trace source indicating a packet has been completely transmitted
@@ -514,7 +525,7 @@ private:
    *
    * \see class CallBackTraceSource
    */
-  TracedCallback<Ptr<const Packet> > m_phyTxEndTrace;
+  ns3::TracedCallback<Ptr<const Packet> > m_phyTxEndTrace;
 
   /**
    * Trace source indicating a packet has been dropped by the device
@@ -522,7 +533,7 @@ private:
    *
    * \see class CallBackTraceSource
    */
-  TracedCallback<Ptr<const Packet> > m_phyTxDropTrace;
+  ns3::TracedCallback<Ptr<const Packet> > m_phyTxDropTrace;
 
   /**
    * Trace source indicating a packet has begun being received
@@ -530,7 +541,7 @@ private:
    *
    * \see class CallBackTraceSource
    */
-  TracedCallback<Ptr<const Packet> > m_phyRxBeginTrace;
+  ns3::TracedCallback<Ptr<const Packet> > m_phyRxBeginTrace;
 
   /**
    * Trace source indicating a packet has been completely received
@@ -538,7 +549,7 @@ private:
    *
    * \see class CallBackTraceSource
    */
-  TracedCallback<Ptr<const Packet> > m_phyRxEndTrace;
+  ns3::TracedCallback<Ptr<const Packet> > m_phyRxEndTrace;
 
   /**
    * Trace source indicating a packet has been dropped by the device
@@ -546,7 +557,7 @@ private:
    *
    * \see class CallBackTraceSource
    */
-  TracedCallback<Ptr<const Packet> > m_phyRxDropTrace;
+  ns3::TracedCallback<Ptr<const Packet> > m_phyRxDropTrace;
 
 };  // class UanPhy
 

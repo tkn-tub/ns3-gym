@@ -87,6 +87,16 @@ public:
   double GetPucchTxPower (std::vector <int> rb);
   double GetSrsTxPower (std::vector <int> rb);
 
+  /**
+   * TracedCallback signature for uplink transmit power.
+   *
+   * \param [in] cellId Cell identifier.
+   * \param [in] rnti The C-RNTI identifying the UE.
+   * \param [in] power The current TX power.
+   */
+  typedef void (* TxPowerTracedCallback)
+    (const uint16_t cellId, const uint16_t rnti, const double power);
+
 private:
   void SetSubChannelMask (std::vector <int> mask);
 

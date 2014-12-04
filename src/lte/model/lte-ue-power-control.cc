@@ -117,13 +117,16 @@ LteUePowerControl::GetTypeId (void)
                    MakeIntegerChecker<int16_t> ())
     .AddTraceSource ("ReportPuschTxPower",
                      "Report PUSCH TxPower in dBm",
-                     MakeTraceSourceAccessor (&LteUePowerControl::m_reportPuschTxPower))
+                     MakeTraceSourceAccessor (&LteUePowerControl::m_reportPuschTxPower),
+                     "ns3::LteUePowerControl::TxPowerTracedCallback")
     .AddTraceSource ("ReportPucchTxPower",
                      "Report PUCCH TxPower in dBm",
-                     MakeTraceSourceAccessor (&LteUePowerControl::m_reportPucchTxPower))
+                     MakeTraceSourceAccessor (&LteUePowerControl::m_reportPucchTxPower),
+                     "ns3::LteUePowerControl::TxPowerTracedCallback")
     .AddTraceSource ("ReportSrsTxPower",
                      "Report SRS TxPower in dBm",
-                     MakeTraceSourceAccessor (&LteUePowerControl::m_reportSrsTxPower))
+                     MakeTraceSourceAccessor (&LteUePowerControl::m_reportSrsTxPower),
+                     "ns3::LteUePowerControl::TxPowerTracedCallback")
   ;
   return tid;
 }

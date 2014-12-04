@@ -60,36 +60,57 @@ TypeId Ipv6L3Protocol::GetTypeId ()
   static TypeId tid = TypeId ("ns3::Ipv6L3Protocol")
     .SetParent<Ipv6> ()
     .AddConstructor<Ipv6L3Protocol> ()
-    .AddAttribute ("DefaultTtl", "The TTL value set by default on all outgoing packets generated on this node.",
+    .AddAttribute ("DefaultTtl",
+                   "The TTL value set by default on all "
+                   "outgoing packets generated on this node.",
                    UintegerValue (64),
                    MakeUintegerAccessor (&Ipv6L3Protocol::m_defaultTtl),
                    MakeUintegerChecker<uint8_t> ())
-    .AddAttribute ("DefaultTclass", "The TCLASS value set by default on all outgoing packets generated on this node.",
+    .AddAttribute ("DefaultTclass",
+                   "The TCLASS value set by default on all "
+                   "outgoing packets generated on this node.",
                    UintegerValue (0),
                    MakeUintegerAccessor (&Ipv6L3Protocol::m_defaultTclass),
                    MakeUintegerChecker<uint8_t> ())
-    .AddAttribute ("InterfaceList", "The set of IPv6 interfaces associated to this IPv6 stack.",
+    .AddAttribute ("InterfaceList",
+                   "The set of IPv6 interfaces associated to this IPv6 stack.",
                    ObjectVectorValue (),
                    MakeObjectVectorAccessor (&Ipv6L3Protocol::m_interfaces),
                    MakeObjectVectorChecker<Ipv6Interface> ())
-    .AddAttribute ("SendIcmpv6Redirect", "Send the ICMPv6 Redirect when appropriate.",
+    .AddAttribute ("SendIcmpv6Redirect",
+                   "Send the ICMPv6 Redirect when appropriate.",
                    BooleanValue (true),
                    MakeBooleanAccessor (&Ipv6L3Protocol::SetSendIcmpv6Redirect,
                                         &Ipv6L3Protocol::GetSendIcmpv6Redirect),
                    MakeBooleanChecker ())
-    .AddTraceSource ("Tx", "Send IPv6 packet to outgoing interface.",
-                     MakeTraceSourceAccessor (&Ipv6L3Protocol::m_txTrace))
-    .AddTraceSource ("Rx", "Receive IPv6 packet from incoming interface.",
-                     MakeTraceSourceAccessor (&Ipv6L3Protocol::m_rxTrace))
-    .AddTraceSource ("Drop", "Drop IPv6 packet",
-                     MakeTraceSourceAccessor (&Ipv6L3Protocol::m_dropTrace))
+    .AddTraceSource ("Tx",
+                     "Send IPv6 packet to outgoing interface.",
+                     MakeTraceSourceAccessor (&Ipv6L3Protocol::m_txTrace),
+                     "ns3::Ipv6L3Protocol::TxRxTracedCallback")
+    .AddTraceSource ("Rx",
+                     "Receive IPv6 packet from incoming interface.",
+                     MakeTraceSourceAccessor (&Ipv6L3Protocol::m_rxTrace),
+                     "ns3::Ipv6L3Protocol::TxRxTracedCallback")
+    .AddTraceSource ("Drop",
+                     "Drop IPv6 packet",
+                     MakeTraceSourceAccessor (&Ipv6L3Protocol::m_dropTrace),
+                     "ns3::Ipv6L3Protocol::DropTracedCallback")
 
-    .AddTraceSource ("SendOutgoing", "A newly-generated packet by this node is about to be queued for transmission",
-                     MakeTraceSourceAccessor (&Ipv6L3Protocol::m_sendOutgoingTrace))
-    .AddTraceSource ("UnicastForward", "A unicast IPv6 packet was received by this node and is being forwarded to another node",
-                     MakeTraceSourceAccessor (&Ipv6L3Protocol::m_unicastForwardTrace))
-    .AddTraceSource ("LocalDeliver", "An IPv6 packet was received by/for this node, and it is being forward up the stack",
-                     MakeTraceSourceAccessor (&Ipv6L3Protocol::m_localDeliverTrace))
+    .AddTraceSource ("SendOutgoing",
+                     "A newly-generated packet by this node is "
+                     "about to be queued for transmission",
+                     MakeTraceSourceAccessor (&Ipv6L3Protocol::m_sendOutgoingTrace),
+                     "ns3::Ipv6L3Protocol::SentTracedCallback")
+    .AddTraceSource ("UnicastForward",
+                     "A unicast IPv6 packet was received by this node "
+                     "and is being forwarded to another node",
+                     MakeTraceSourceAccessor (&Ipv6L3Protocol::m_unicastForwardTrace),
+                     "ns3::Ipv6L3Protocol::SentTracedCallback")
+    .AddTraceSource ("LocalDeliver",
+                     "An IPv6 packet was received by/for this node, "
+                     "and it is being forward up the stack",
+                     MakeTraceSourceAccessor (&Ipv6L3Protocol::m_localDeliverTrace),
+                     "ns3::Ipv6L3Protocol::SentTracedCallback")
   ;
   return tid;
 }

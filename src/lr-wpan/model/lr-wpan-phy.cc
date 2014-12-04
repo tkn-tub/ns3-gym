@@ -78,25 +78,39 @@ LrWpanPhy::GetTypeId (void)
     .AddConstructor<LrWpanPhy> ()
     .AddTraceSource ("TrxState",
                      "The state of the transceiver",
-                     MakeTraceSourceAccessor (&LrWpanPhy::m_trxStateLogger))
+                     MakeTraceSourceAccessor (&LrWpanPhy::m_trxStateLogger),
+                     "ns3::LrWpanPhy::StateTracedCallback")
     .AddTraceSource ("PhyTxBegin",
-                     "Trace source indicating a packet has begun transmitting over the channel medium",
-                     MakeTraceSourceAccessor (&LrWpanPhy::m_phyTxBeginTrace))
+                     "Trace source indicating a packet has "
+                     "begun transmitting over the channel medium",
+                     MakeTraceSourceAccessor (&LrWpanPhy::m_phyTxBeginTrace),
+                     "ns3::Packet::TracedCallback")
     .AddTraceSource ("PhyTxEnd",
-                     "Trace source indicating a packet has been completely transmitted over the channel.",
-                     MakeTraceSourceAccessor (&LrWpanPhy::m_phyTxEndTrace))
+                     "Trace source indicating a packet has been "
+                     "completely transmitted over the channel.",
+                     MakeTraceSourceAccessor (&LrWpanPhy::m_phyTxEndTrace),
+                     "ns3::Packet::TracedCallback")
     .AddTraceSource ("PhyTxDrop",
-                     "Trace source indicating a packet has been dropped by the device during transmission",
-                     MakeTraceSourceAccessor (&LrWpanPhy::m_phyTxDropTrace))
+                     "Trace source indicating a packet has been "
+                     "dropped by the device during transmission",
+                     MakeTraceSourceAccessor (&LrWpanPhy::m_phyTxDropTrace),
+                     "ns3::Packet::TracedCallback")
     .AddTraceSource ("PhyRxBegin",
-                     "Trace source indicating a packet has begun being received from the channel medium by the device",
-                     MakeTraceSourceAccessor (&LrWpanPhy::m_phyRxBeginTrace))
+                     "Trace source indicating a packet has begun "
+                     "being received from the channel medium by the device",
+                     MakeTraceSourceAccessor (&LrWpanPhy::m_phyRxBeginTrace),
+                     "ns3::Packet::TracedCallback")
     .AddTraceSource ("PhyRxEnd",
-                     "Trace source indicating a packet has been completely received from the channel medium by the device",
-                     MakeTraceSourceAccessor (&LrWpanPhy::m_phyRxEndTrace))
+                     "Trace source indicating a packet has been "
+                     "completely received from the channel medium "
+                     "by the device",
+                     MakeTraceSourceAccessor (&LrWpanPhy::m_phyRxEndTrace),
+                     "ns3::LrWpanPhy::RxEndTracedCallback")
     .AddTraceSource ("PhyRxDrop",
-                     "Trace source indicating a packet has been dropped by the device during reception",
-                     MakeTraceSourceAccessor (&LrWpanPhy::m_phyRxDropTrace))
+                     "Trace source indicating a packet has been "
+                     "dropped by the device during reception",
+                     MakeTraceSourceAccessor (&LrWpanPhy::m_phyRxDropTrace),
+                     "ns3::Packet::TracedCallback")
   ;
   return tid;
 }

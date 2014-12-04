@@ -386,6 +386,43 @@ public:
    */
   virtual void ReportDrop (Ipv6Header ipHeader, Ptr<Packet> p, DropReason dropReason);
 
+  /**
+   * TracedCallback signature for packet sent, forwarded or
+   * local-delivered events.
+   *
+   * \param [in] header The Ipv6Header.
+   * \param [in] packet The packet.
+   * \param [in] interface
+   */
+  typedef void (* SentTracedCallback)
+    (const Ipv6Header & header, const Ptr<const Packet> packet,
+     const uint32_t interface);
+   
+  /**
+   * TracedCallback signature for packet transmission or reception events.
+   *
+   * \param [in] packet The packet.
+   * \param [in] ipv6
+   * \param [in] interface
+   */
+  typedef void (* TxRxTracedCallback)
+    (const Ptr<const Packet> packet, const Ptr<const Ipv6> ipv6,
+     const uint32_t interface);
+
+  /**
+   * TracedCallback signature for packet drop events.
+   *
+   * \param [in] header The Ipv6Header.
+   * \param [in] packet The packet.
+   * \param [in] reason The reason the packet was dropped.
+   * \param [in] ipv6
+   * \param [in] interface
+   */
+  typedef void (* DropTracedCallback)
+    (const Ipv6Header & header, const Ptr<const Packet> packet,
+     const DropReason reason, const Ptr<const Ipv6> ipv6,
+     const uint32_t interface);
+   
 protected:
   /**
    * \brief Dispose object.

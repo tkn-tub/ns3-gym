@@ -36,6 +36,9 @@
 
 namespace ns3 {
 
+// Forward declaration
+class Address;
+  
 /**
  * \ingroup network
  * \defgroup packet Packet
@@ -659,6 +662,24 @@ public:
    */
   typedef void (* TracedCallback) (const Ptr<const Packet> packet);
   
+  /**
+   * TracedCallback signature for packet and address.
+   *
+   * \param [in] packet The packet.
+   * \param [in] address The address.
+   */
+  typedef void (* PacketAddressTracedCallback)
+    (const Ptr<const Packet> packet, const Address &address);
+  
+  /**
+   * TracedCallback signature for changes in packet size.
+   *
+   * \param [in] oldSize The previous packet's size.
+   * \param [in] newSize The actual packet's size.
+   */
+  typedef void (* PacketSizeTracedCallback)
+    (const uint32_t oldSize, const uint32_t newSize);
+
 private:
   /**
    * \brief Constructor

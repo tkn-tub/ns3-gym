@@ -235,7 +235,7 @@ private:
   Callback<void, Ptr<Packet>, const UanAddress& > m_forwardUpCb;
 
   /** A packet was destined for and received at this MAC layer. */
-  TracedCallback<Ptr<const Packet>, UanTxMode > m_rxLogger;
+  TracedCallback<Ptr<const Packet>, UanTxMode &> m_rxLogger;
   /** A packet arrived at the MAC for transmission. */
   TracedCallback<Ptr<const Packet>, uint16_t > m_enqueueLogger;
   /** A was passed down to the PHY from the MAC. */

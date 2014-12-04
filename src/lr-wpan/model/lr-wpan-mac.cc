@@ -57,43 +57,68 @@ LrWpanMac::GetTypeId (void)
                    MakeUintegerAccessor (&LrWpanMac::m_macPanId),
                    MakeUintegerChecker<uint16_t> ())
     .AddTraceSource ("MacTxEnqueue",
-                     "Trace source indicating a packet has was enqueued in the transaction queue",
-                     MakeTraceSourceAccessor (&LrWpanMac::m_macTxEnqueueTrace))
+                     "Trace source indicating a packet has been "
+                     "enqueued in the transaction queue",
+                     MakeTraceSourceAccessor (&LrWpanMac::m_macTxEnqueueTrace),
+                     "ns3::Packet::TracedCallback")
     .AddTraceSource ("MacTxDequeue",
-                     "Trace source indicating a packet has was dequeued from the transaction queue",
-                     MakeTraceSourceAccessor (&LrWpanMac::m_macTxDequeueTrace))
+                     "Trace source indicating a packet has was "
+                     "dequeued from the transaction queue",
+                     MakeTraceSourceAccessor (&LrWpanMac::m_macTxDequeueTrace),
+                     "ns3::Packet::TracedCallback")
     .AddTraceSource ("MacTx",
-                     "Trace source indicating a packet has arrived for transmission by this device",
-                     MakeTraceSourceAccessor (&LrWpanMac::m_macTxTrace))
+                     "Trace source indicating a packet has "
+                     "arrived for transmission by this device",
+                     MakeTraceSourceAccessor (&LrWpanMac::m_macTxTrace),
+                     "ns3::Packet::TracedCallback")
     .AddTraceSource ("MacTxOk",
-                     "Trace source indicating a packet has been successfully sent",
-                     MakeTraceSourceAccessor (&LrWpanMac::m_macTxOkTrace))
+                     "Trace source indicating a packet has been "
+                     "successfully sent",
+                     MakeTraceSourceAccessor (&LrWpanMac::m_macTxOkTrace),
+                     "ns3::Packet::TracedCallback")
     .AddTraceSource ("MacTxDrop",
-                     "Trace source indicating a packet has been dropped during transmission",
-                     MakeTraceSourceAccessor (&LrWpanMac::m_macTxDropTrace))
+                     "Trace source indicating a packet has been "
+                     "dropped during transmission",
+                     MakeTraceSourceAccessor (&LrWpanMac::m_macTxDropTrace),
+                     "ns3::Packet::TracedCallback")
     .AddTraceSource ("MacPromiscRx",
-                     "A packet has been received by this device, has been passed up from the physical layer "
-                     "and is being forwarded up the local protocol stack.  This is a promiscuous trace,",
-                     MakeTraceSourceAccessor (&LrWpanMac::m_macPromiscRxTrace))
+                     "A packet has been received by this device, "
+                     "has been passed up from the physical layer "
+                     "and is being forwarded up the local protocol stack.  "
+                     "This is a promiscuous trace,",
+                     MakeTraceSourceAccessor (&LrWpanMac::m_macPromiscRxTrace),
+                     "ns3::Packet::TracedCallback")
     .AddTraceSource ("MacRx",
-                     "A packet has been received by this device, has been passed up from the physical layer "
-                     "and is being forwarded up the local protocol stack.  This is a non-promiscuous trace,",
-                     MakeTraceSourceAccessor (&LrWpanMac::m_macRxTrace))
+                     "A packet has been received by this device, "
+                     "has been passed up from the physical layer "
+                     "and is being forwarded up the local protocol stack.  "
+                     "This is a non-promiscuous trace,",
+                     MakeTraceSourceAccessor (&LrWpanMac::m_macRxTrace),
+                     "ns3::Packet::TracedCallback")
     .AddTraceSource ("MacRxDrop",
-                     "Trace source indicating a packet was received, but dropped before being forwarded up the stack",
-                     MakeTraceSourceAccessor (&LrWpanMac::m_macRxDropTrace))
+                     "Trace source indicating a packet was received, "
+                     "but dropped before being forwarded up the stack",
+                     MakeTraceSourceAccessor (&LrWpanMac::m_macRxDropTrace),
+                     "ns3::Packet::TracedCallback")
     .AddTraceSource ("Sniffer",
-                     "Trace source simulating a non-promiscuous packet sniffer attached to the device",
-                     MakeTraceSourceAccessor (&LrWpanMac::m_snifferTrace))
+                     "Trace source simulating a non-promiscuous "
+                     "packet sniffer attached to the device",
+                     MakeTraceSourceAccessor (&LrWpanMac::m_snifferTrace),
+                     "ns3::Packet::TracedCallback")
     .AddTraceSource ("PromiscSniffer",
-                     "Trace source simulating a promiscuous packet sniffer attached to the device",
-                     MakeTraceSourceAccessor (&LrWpanMac::m_promiscSnifferTrace))
+                     "Trace source simulating a promiscuous "
+                     "packet sniffer attached to the device",
+                     MakeTraceSourceAccessor (&LrWpanMac::m_promiscSnifferTrace),
+                     "ns3::Packet::TracedCallback")
     .AddTraceSource ("MacState",
                      "The state of LrWpan Mac",
-                     MakeTraceSourceAccessor (&LrWpanMac::m_macStateLogger))
+                     MakeTraceSourceAccessor (&LrWpanMac::m_macStateLogger),
+                     "ns3::LrWpanMac::StateTracedCallback")
     .AddTraceSource ("MacSentPkt",
-                     "Trace source reporting some information about the sent packet",
-                     MakeTraceSourceAccessor (&LrWpanMac::m_sentPktTrace))
+                     "Trace source reporting some information about "
+                     "the sent packet",
+                     MakeTraceSourceAccessor (&LrWpanMac::m_sentPktTrace),
+                     "ns3::LrWpanMac::SentTracedCallback")
   ;
   return tid;
 }

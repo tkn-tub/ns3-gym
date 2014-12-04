@@ -254,11 +254,11 @@ private:
   Ptr<UanPhy> m_phy2;
 
   /** A packet was received successfully. */
-  TracedCallback<Ptr<const Packet>, double, UanTxMode > m_rxOkLogger;
+  ns3::TracedCallback<Ptr<const Packet>, double, UanTxMode > m_rxOkLogger;
   /** A packet was received unsuccessfully. */
-  TracedCallback<Ptr<const Packet>, double, UanTxMode > m_rxErrLogger;
+  ns3::TracedCallback<Ptr<const Packet>, double, UanTxMode > m_rxErrLogger;
   /** A packet was sent from this Phy. */
-  TracedCallback<Ptr<const Packet>, double, UanTxMode > m_txLogger;
+  ns3::TracedCallback<Ptr<const Packet>, double, UanTxMode > m_txLogger;
   /** Callback when packet received without errors. */
   RxOkCallback m_recOkCb;
   /** Callback when packet received with errors. */

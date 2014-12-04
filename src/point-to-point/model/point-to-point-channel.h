@@ -47,7 +47,7 @@ class Packet;
  * \see Attach
  * \see TransmitStart
  */
-class PointToPointChannel : public Channel
+class PointToPointChannel : public Channel 
 {
 public:
   /**
@@ -129,9 +129,23 @@ protected:
    */
   Ptr<PointToPointNetDevice> GetDestination (uint32_t i) const;
 
+  /**
+   * TracedCallback signature for packet transmission animation events.
+   *
+   * \param [in] packet The packet being transmitted.
+   * \param [in] txDevice the TransmitTing NetDevice.
+   * \param [in] rxDevice the Receiving NetDevice.
+   * \param [in] duration The amount of time to transmit the packet.
+   * \param [in] lastBitTime Last bit receive time (relative to now)
+   */
+  typedef void (* TxRxAnimationCallback)
+    (const Ptr<const Packet> packet,
+     const Ptr<const NetDevice> txDevice, const Ptr<const NetDevice> rxDevice,
+     const Time duration, const Time lastBitTime);
+                    
 private:
   /** Each point to point link has exactly two net devices. */
-  static const int N_DEVICES = 2; 
+  static const int N_DEVICES = 2;
 
   Time          m_delay;    //!< Propagation delay
   int32_t       m_nDevices; //!< Devices of this channel
@@ -162,9 +176,9 @@ private:
     /** Idle state (no transmission from NetDevice) */
     IDLE,
     /** Transmitting state (data being transmitted from NetDevice. */
-    TRANSMITTING, 
+    TRANSMITTING,
     /** Propagating state (data is being propagated in the channel. */
-    PROPAGATING   
+    PROPAGATING
   };
 
   /**
@@ -172,7 +186,7 @@ private:
    */
   class Link
   {
-    public:
+public:
     /** \brief Create the link, it will be in INITIALIZING state
      *
      */

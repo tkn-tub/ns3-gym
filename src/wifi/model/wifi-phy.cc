@@ -56,29 +56,50 @@ WifiPhy::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::WifiPhy")
     .SetParent<Object> ()
     .AddTraceSource ("PhyTxBegin",
-                     "Trace source indicating a packet has begun transmitting over the channel medium",
-                     MakeTraceSourceAccessor (&WifiPhy::m_phyTxBeginTrace))
+                     "Trace source indicating a packet "
+                     "has begun transmitting over the channel medium",
+                     MakeTraceSourceAccessor (&WifiPhy::m_phyTxBeginTrace),
+                     "ns3::Packet::TracedCallback")
     .AddTraceSource ("PhyTxEnd",
-                     "Trace source indicating a packet has been completely transmitted over the channel. NOTE: the only official WifiPhy implementation available to this date (YansWifiPhy) never fires this trace source.",
-                     MakeTraceSourceAccessor (&WifiPhy::m_phyTxEndTrace))
+                     "Trace source indicating a packet "
+                     "has been completely transmitted over the channel. "
+                     "NOTE: the only official WifiPhy implementation "
+                     "available to this date (YansWifiPhy) never fires "
+                     "this trace source.",
+                     MakeTraceSourceAccessor (&WifiPhy::m_phyTxEndTrace),
+                     "ns3::Packet::TracedCallback")
     .AddTraceSource ("PhyTxDrop",
-                     "Trace source indicating a packet has been dropped by the device during transmission",
-                     MakeTraceSourceAccessor (&WifiPhy::m_phyTxDropTrace))
+                     "Trace source indicating a packet "
+                     "has been dropped by the device during transmission",
+                     MakeTraceSourceAccessor (&WifiPhy::m_phyTxDropTrace),
+                     "ns3::Packet::TracedCallback")
     .AddTraceSource ("PhyRxBegin",
-                     "Trace source indicating a packet has begun being received from the channel medium by the device",
-                     MakeTraceSourceAccessor (&WifiPhy::m_phyRxBeginTrace))
+                     "Trace source indicating a packet "
+                     "has begun being received from the channel medium "
+                     "by the device",
+                     MakeTraceSourceAccessor (&WifiPhy::m_phyRxBeginTrace),
+                     "ns3::Packet::TracedCallback")
     .AddTraceSource ("PhyRxEnd",
-                     "Trace source indicating a packet has been completely received from the channel medium by the device",
-                     MakeTraceSourceAccessor (&WifiPhy::m_phyRxEndTrace))
+                     "Trace source indicating a packet "
+                     "has been completely received from the channel medium "
+                     "by the device",
+                     MakeTraceSourceAccessor (&WifiPhy::m_phyRxEndTrace),
+                     "ns3::Packet::TracedCallback")
     .AddTraceSource ("PhyRxDrop",
-                     "Trace source indicating a packet has been dropped by the device during reception",
-                     MakeTraceSourceAccessor (&WifiPhy::m_phyRxDropTrace))
+                     "Trace source indicating a packet "
+                     "has been dropped by the device during reception",
+                     MakeTraceSourceAccessor (&WifiPhy::m_phyRxDropTrace),
+                     "ns3::Packet::TracedCallback")
     .AddTraceSource ("MonitorSnifferRx",
-                     "Trace source simulating a wifi device in monitor mode sniffing all received frames",
-                     MakeTraceSourceAccessor (&WifiPhy::m_phyMonitorSniffRxTrace))
+                     "Trace source simulating a wifi device in monitor mode "
+                     "sniffing all received frames",
+                     MakeTraceSourceAccessor (&WifiPhy::m_phyMonitorSniffRxTrace),
+                     "ns3::WifiPhy::MonitorSnifferRxCallback")
     .AddTraceSource ("MonitorSnifferTx",
-                     "Trace source simulating the capability of a wifi device in monitor mode to sniff all frames being transmitted",
-                     MakeTraceSourceAccessor (&WifiPhy::m_phyMonitorSniffTxTrace))
+                     "Trace source simulating the capability of a wifi device "
+                     "in monitor mode to sniff all frames being transmitted",
+                     MakeTraceSourceAccessor (&WifiPhy::m_phyMonitorSniffTxTrace),
+                     "ns3::WifiPhy::MonitorSnifferTxCallback")
   ;
   return tid;
 }
@@ -418,7 +439,7 @@ WifiPhy::GetPayloadDurationMicroSeconds (uint32_t size, WifiTxVector txvector, d
          double Nes=1;
         // IEEE Std 802.11n, section 20.3.11, equation (20-32)
         uint32_t numSymbols = lrint (m_Stbc*ceil ((16 + size * 8.0 + 6.0*Nes) / (m_Stbc* numDataBitsPerSymbol)));
-
+       
         if (frequency >= 2400 && frequency <= 2500) //at 2.4 GHz
           {
             return (numSymbols * symbolDurationUs) + 6;
