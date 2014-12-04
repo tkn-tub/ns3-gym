@@ -5,6 +5,8 @@
 Tweaking
 --------
 
+.. _UsingLogging:
+
 Using the Logging Module
 ************************
 
@@ -412,6 +414,8 @@ message,
 Using Command Line Arguments
 ****************************
 
+.. _Attribute:
+
 Overriding Default Attributes
 +++++++++++++++++++++++++++++
 Another way you can change how |ns3| scripts behave without editing
@@ -721,6 +725,8 @@ a model author, you can add new ``Attributes`` to your ``Objects`` and
 they will automatically be available for setting by your users through the
 command line system.  If you are a script author, you can add new variables to 
 your scripts and hook them into the command line system quite painlessly.
+
+.. _UsingTracingSystem:
 
 Using the Tracing System
 ************************
