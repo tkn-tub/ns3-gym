@@ -1372,6 +1372,8 @@ each of the messages and signals described in the specs [TS36321]_.
      corresponds to a Zadoff-Chu (ZC)
      sequence using one of several formats available and sent in the
      PRACH slots which could in principle overlap with PUSCH.
+     PRACH Configuration Index 14 is assumed, i.e., preambles can be
+     sent on any system frame number and subframe number.
      The RA preamble is modeled using the LteControlMessage class,
      i.e., as an ideal message that does not consume any radio
      resources. The collision of preamble transmission by multiple UEs
