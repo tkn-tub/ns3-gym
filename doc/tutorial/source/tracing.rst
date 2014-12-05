@@ -2486,70 +2486,70 @@ You are encouraged to peruse the API Documentation for class
 summarize ...
 
 * You can enable PCAP tracing on a particular node/net-device pair by
-providing a ``Ptr<NetDevice>`` to an ``EnablePcap`` method.  The
-``Ptr<Node>`` is implicit since the net device must belong to exactly
+  providing a ``Ptr<NetDevice>`` to an ``EnablePcap`` method.  The
+  ``Ptr<Node>`` is implicit since the net device must belong to exactly
   one Node.  For example,
 
-::
+  ::
 
-  Ptr<NetDevice> nd;
-  ...
-  helper.EnablePcap ("prefix", nd);
+    Ptr<NetDevice> nd;
+    ...
+    helper.EnablePcap ("prefix", nd);
 
 * You can enable PCAP tracing on a particular node/net-device pair by
-providing a ``std::string`` representing an object name service string
-to an ``EnablePcap`` method.  The ``Ptr<NetDevice>`` is looked up from
-the name string.  Again, the ``<Node>`` is implicit since the named
+  providing a ``std::string`` representing an object name service string
+  to an ``EnablePcap`` method.  The ``Ptr<NetDevice>`` is looked up from
+  the name string.  Again, the ``<Node>`` is implicit since the named
   net device must belong to exactly one Node.  For example,
 
-::
+  ::
 
-  Names::Add ("server" ...);
-  Names::Add ("server/eth0" ...);
-  ...
-  helper.EnablePcap ("prefix", "server/ath0");
+    Names::Add ("server" ...);
+    Names::Add ("server/eth0" ...);
+    ...
+    helper.EnablePcap ("prefix", "server/ath0");
 
 * You can enable PCAP tracing on a collection of node/net-device pairs
-by providing a ``NetDeviceContainer``.  For each ``NetDevice`` in the
-container the type is checked.  For each device of the proper type
-(the same type as is managed by the device helper), tracing is
-enabled.  Again, the ``<Node>`` is implicit since the found net device
+  by providing a ``NetDeviceContainer``.  For each ``NetDevice`` in the
+  container the type is checked.  For each device of the proper type
+  (the same type as is managed by the device helper), tracing is
+  enabled.  Again, the ``<Node>`` is implicit since the found net device
   must belong to exactly one Node.  For example,
 
-::
+  ::
 
-  NetDeviceContainer d = ...;
-  ...
-  helper.EnablePcap ("prefix", d);
+    NetDeviceContainer d = ...;
+    ...
+    helper.EnablePcap ("prefix", d);
 
 * You can enable PCAP tracing on a collection of node/net-device pairs
   by providing a ``NodeContainer``.  For each Node in the
-``NodeContainer`` its attached ``NetDevices`` are iterated.  For each
+  ``NodeContainer`` its attached ``NetDevices`` are iterated.  For each
   ``NetDevice`` attached to each Node in the container, the type of that
-device is checked.  For each device of the proper type (the same type
-as is managed by the device helper), tracing is enabled.
+  device is checked.  For each device of the proper type (the same type
+  as is managed by the device helper), tracing is enabled.
 
-::
+  ::
 
-  NodeContainer n;
-  ...
-  helper.EnablePcap ("prefix", n);
+    NodeContainer n;
+    ...
+    helper.EnablePcap ("prefix", n);
 
 * You can enable PCAP tracing on the basis of Node ID and device ID as
   well as with explicit ``Ptr``.  Each Node in the system has an
   integer Node ID and each device connected to a Node has an integer
-device ID.
+  device ID.
 
-::
+  ::
 
-  helper.EnablePcap ("prefix", 21, 1);
+    helper.EnablePcap ("prefix", 21, 1);
 
 * Finally, you can enable PCAP tracing for all devices in the system,
-with the same type as that managed by the device helper.
+  with the same type as that managed by the device helper.
 
-::
+  ::
 
-  helper.EnablePcapAll ("prefix");
+    helper.EnablePcapAll ("prefix");
 
 Filenames
 #########
@@ -2704,13 +2704,13 @@ but to summarize ...
   by using an object to refer to a single file.  We have already seen
   this in the "cwnd" example above::
 
-  Ptr<NetDevice> nd1;
-  Ptr<NetDevice> nd2;
-  ...
-  Ptr<OutputStreamWrapper> stream = asciiTraceHelper.CreateFileStream ("trace-file-name.tr");
-  ...
-  helper.EnableAscii (stream, nd1);
-  helper.EnableAscii (stream, nd2);
+    Ptr<NetDevice> nd1;
+    Ptr<NetDevice> nd2;
+    ...
+    Ptr<OutputStreamWrapper> stream = asciiTraceHelper.CreateFileStream ("trace-file-name.tr");
+    ...
+    helper.EnableAscii (stream, nd1);
+    helper.EnableAscii (stream, nd2);
 
 
   In this case, trace contexts *are* written to the ASCII trace file
@@ -2725,31 +2725,31 @@ but to summarize ...
   implicit since the named net device must belong to exactly one Node.
   For example,
 
-::
+  ::
 
-  Names::Add ("client" ...);
-  Names::Add ("client/eth0" ...);
-  Names::Add ("server" ...);
-  Names::Add ("server/eth0" ...);
-  ...
-  helper.EnableAscii ("prefix", "client/eth0");
-  helper.EnableAscii ("prefix", "server/eth0");
+    Names::Add ("client" ...);
+    Names::Add ("client/eth0" ...);
+    Names::Add ("server" ...);
+    Names::Add ("server/eth0" ...);
+    ...
+    helper.EnableAscii ("prefix", "client/eth0");
+    helper.EnableAscii ("prefix", "server/eth0");
 
-  This would result in two files named ``prefix-client-eth0.tr`` and
-  ``prefix-server-eth0.tr`` with traces for each device in the
-  respective trace file.  Since all of the ``EnableAscii`` functions
-  are overloaded to take a stream wrapper, you can use that form as
-  well::
+    This would result in two files named ``prefix-client-eth0.tr`` and
+    ``prefix-server-eth0.tr`` with traces for each device in the
+    respective trace file.  Since all of the ``EnableAscii`` functions
+    are overloaded to take a stream wrapper, you can use that form as
+    well::
 
-  Names::Add ("client" ...);
-  Names::Add ("client/eth0" ...);
-  Names::Add ("server" ...);
-  Names::Add ("server/eth0" ...);
-  ...
-  Ptr<OutputStreamWrapper> stream = asciiTraceHelper.CreateFileStream ("trace-file-name.tr");
-  ...
-  helper.EnableAscii (stream, "client/eth0");
-  helper.EnableAscii (stream, "server/eth0");
+    Names::Add ("client" ...);
+    Names::Add ("client/eth0" ...);
+    Names::Add ("server" ...);
+    Names::Add ("server/eth0" ...);
+    ...
+    Ptr<OutputStreamWrapper> stream = asciiTraceHelper.CreateFileStream ("trace-file-name.tr");
+    ...
+    helper.EnableAscii (stream, "client/eth0");
+    helper.EnableAscii (stream, "server/eth0");
 
   This would result in a single trace file called
   ``trace-file-name.tr`` that contains all of the trace events for
@@ -2763,24 +2763,24 @@ but to summarize ...
   enabled.  Again, the ``<Node>`` is implicit since the found net
   device must belong to exactly one Node.  For example,
 
-::
+  ::
 
-  NetDeviceContainer d = ...;
-  ...
-  helper.EnableAscii ("prefix", d);
+    NetDeviceContainer d = ...;
+    ...
+    helper.EnableAscii ("prefix", d);
 
-  This would result in a number of ASCII trace files being created,
-  each of which follows the ``<prefix>-<node id>-<device id>.tr``
-  convention.
-  
-Combining all of the traces into a single file is accomplished
-similarly to the examples above::
+    This would result in a number of ASCII trace files being created,
+    each of which follows the ``<prefix>-<node id>-<device id>.tr``
+    convention.
 
-  NetDeviceContainer d = ...;
-  ...
-  Ptr<OutputStreamWrapper> stream = asciiTraceHelper.CreateFileStream ("trace-file-name.tr");
-  ...
-  helper.EnableAscii (stream, d);
+  Combining all of the traces into a single file is accomplished
+  similarly to the examples above::
+
+    NetDeviceContainer d = ...;
+    ...
+    Ptr<OutputStreamWrapper> stream = asciiTraceHelper.CreateFileStream ("trace-file-name.tr");
+    ...
+    helper.EnableAscii (stream, d);
 
 * You can enable ASCII tracing on a collection of (node, net-device)
   pairs by providing a ``NodeContainer``.  For each Node in the
@@ -2789,11 +2789,11 @@ similarly to the examples above::
   of that device is checked.  For each device of the proper type (the
   same type as is managed by the device helper), tracing is enabled.
 
-::
+  ::
 
-  NodeContainer n;
-  ...
-  helper.EnableAscii ("prefix", n);
+    NodeContainer n;
+    ...
+    helper.EnableAscii ("prefix", n);
 
   This would result in a number of ASCII trace files being created,
   each of which follows the ``<prefix>-<node id>-<device id>.tr``
@@ -2803,21 +2803,21 @@ similarly to the examples above::
 * You can enable PCAP tracing on the basis of Node ID and device ID
   as well as with explicit ``Ptr``.  Each Node in the system has an
   integer Node ID and each device connected to a Node has an integer
-device ID.
+  device ID.
 
-::
+  ::
 
-  helper.EnableAscii ("prefix", 21, 1);
+    helper.EnableAscii ("prefix", 21, 1);
 
-Of course, the traces can be combined into a single file as shown
-above.
+  Of course, the traces can be combined into a single file as shown
+  above.
 
 * Finally, you can enable PCAP tracing for all devices in the
   system, with the same type as that managed by the device helper.
 
-::
+  ::
 
-  helper.EnableAsciiAll ("prefix");
+    helper.EnableAsciiAll ("prefix");
 
   This would result in a number of ASCII trace files being created,
   one for every device in the system of the type managed by the
@@ -2929,73 +2929,73 @@ You are encouraged to peruse the API Documentation for class
 summarize ...
 
 * You can enable PCAP tracing on a particular protocol/interface pair by
-providing a ``Ptr<Ipv4>`` and ``interface`` to an ``EnablePcap``
-method.  For example,
+  providing a ``Ptr<Ipv4>`` and ``interface`` to an ``EnablePcap``
+  method.  For example,
 
-::
+  ::
 
-  Ptr<Ipv4> ipv4 = node->GetObject<Ipv4> ();
-  ...
-  helper.EnablePcapIpv4 ("prefix", ipv4, 0);
+    Ptr<Ipv4> ipv4 = node->GetObject<Ipv4> ();
+    ...
+    helper.EnablePcapIpv4 ("prefix", ipv4, 0);
 
 * You can enable PCAP tracing on a particular node/net-device pair by
-providing a ``std::string`` representing an object name service string
-to an ``EnablePcap`` method.  The ``Ptr<Ipv4>`` is looked up from the
-name string.  For example,
+  providing a ``std::string`` representing an object name service string
+  to an ``EnablePcap`` method.  The ``Ptr<Ipv4>`` is looked up from the
+  name string.  For example,
 
-::
+  ::
 
-  Names::Add ("serverIPv4" ...);
-  ...
-  helper.EnablePcapIpv4 ("prefix", "serverIpv4", 1);
+    Names::Add ("serverIPv4" ...);
+    ...
+    helper.EnablePcapIpv4 ("prefix", "serverIpv4", 1);
 
 * You can enable PCAP tracing on a collection of protocol/interface
-pairs by providing an ``Ipv4InterfaceContainer``.  For each ``Ipv4`` /
-interface pair in the container the protocol type is checked.  For
-each protocol of the proper type (the same type as is managed by the
-device helper), tracing is enabled for the corresponding interface.
-For example,
+  pairs by providing an ``Ipv4InterfaceContainer``.  For each ``Ipv4`` /
+  interface pair in the container the protocol type is checked.  For
+  each protocol of the proper type (the same type as is managed by the
+  device helper), tracing is enabled for the corresponding interface.
+  For example,
 
-::
+  ::
 
-  NodeContainer nodes;
-  ...
-  NetDeviceContainer devices = deviceHelper.Install (nodes);
-  ... 
-  Ipv4AddressHelper ipv4;
-  ipv4.SetBase ("10.1.1.0", "255.255.255.0");
-  Ipv4InterfaceContainer interfaces = ipv4.Assign (devices);
-  ...
-  helper.EnablePcapIpv4 ("prefix", interfaces);
+    NodeContainer nodes;
+    ...
+    NetDeviceContainer devices = deviceHelper.Install (nodes);
+    ... 
+    Ipv4AddressHelper ipv4;
+    ipv4.SetBase ("10.1.1.0", "255.255.255.0");
+    Ipv4InterfaceContainer interfaces = ipv4.Assign (devices);
+    ...
+    helper.EnablePcapIpv4 ("prefix", interfaces);
 
 * You can enable PCAP tracing on a collection of protocol/interface
   pairs by providing a ``NodeContainer``.  For each Node in the
-``NodeContainer`` the appropriate protocol is found.  For each
-protocol, its interfaces are enumerated and tracing is enabled on the
-resulting pairs.  For example,
+  ``NodeContainer`` the appropriate protocol is found.  For each
+  protocol, its interfaces are enumerated and tracing is enabled on the
+  resulting pairs.  For example,
 
-::
+  ::
 
-  NodeContainer n;
-  ...
-  helper.EnablePcapIpv4 ("prefix", n);
+    NodeContainer n;
+    ...
+    helper.EnablePcapIpv4 ("prefix", n);
 
 * You can enable PCAP tracing on the basis of Node ID and interface as
-well.  In this case, the node-id is translated to a ``Ptr<Node>`` and
-the appropriate protocol is looked up in the node.  The resulting
-protocol and interface are used to specify the resulting trace source.
+  well.  In this case, the node-id is translated to a ``Ptr<Node>`` and
+  the appropriate protocol is looked up in the node.  The resulting
+  protocol and interface are used to specify the resulting trace source.
 
-::
+  ::
 
-  helper.EnablePcapIpv4 ("prefix", 21, 1);
+    helper.EnablePcapIpv4 ("prefix", 21, 1);
 
 * Finally, you can enable PCAP tracing for all interfaces in the
   system, with associated protocol being the same type as that managed
   by the device helper.
 
-::
+  ::
 
-  helper.EnablePcapIpv4All ("prefix");
+    helper.EnablePcapIpv4All ("prefix");
 
 Filenames
 #########
@@ -3113,127 +3113,127 @@ but to summarize ...
 
 * There are twice as many methods available for ASCII tracing as there
   were for PCAP tracing.  This is because, in addition to the PCAP-style
-model where traces from each unique protocol/interface pair are
-written to a unique file, we support a model in which trace
-information for many protocol/interface pairs is written to a common
-file.  This means that the <prefix>-n<node id>-<interface> file name
-generation mechanism is replaced by a mechanism to refer to a common
-file; and the number of API methods is doubled to allow all
-combinations.
+  model where traces from each unique protocol/interface pair are
+  written to a unique file, we support a model in which trace
+  information for many protocol/interface pairs is written to a common
+  file.  This means that the <prefix>-n<node id>-<interface> file name
+  generation mechanism is replaced by a mechanism to refer to a common
+  file; and the number of API methods is doubled to allow all
+  combinations.
 
 * Just as in PCAP tracing, you can enable ASCII tracing on a particular
-protocol/interface pair by providing a ``Ptr<Ipv4>`` and an
+  protocol/interface pair by providing a ``Ptr<Ipv4>`` and an
   ``interface`` to an ``EnableAscii`` method.  For example,
 
-::
+  ::
 
-  Ptr<Ipv4> ipv4;
-  ...
-  helper.EnableAsciiIpv4 ("prefix", ipv4, 1);
+    Ptr<Ipv4> ipv4;
+    ...
+    helper.EnableAsciiIpv4 ("prefix", ipv4, 1);
 
   In this case, no trace contexts are written to the ASCII trace file
-since they would be redundant.  The system will pick the file name to
+  since they would be redundant.  The system will pick the file name to
   be created using the same rules as described in the PCAP section,
-except that the file will have the suffix ".tr" instead of ".pcap".
+  except that the file will have the suffix ".tr" instead of ".pcap".
 
 * If you want to enable ASCII tracing on more than one interface and
-have all traces sent to a single file, you can do that as well by
-using an object to refer to a single file.  We have already something
-similar to this in the "cwnd" example above::
+  have all traces sent to a single file, you can do that as well by
+  using an object to refer to a single file.  We have already something
+  similar to this in the "cwnd" example above::
 
-  Ptr<Ipv4> protocol1 = node1->GetObject<Ipv4> ();
-  Ptr<Ipv4> protocol2 = node2->GetObject<Ipv4> ();
-  ...
-  Ptr<OutputStreamWrapper> stream = asciiTraceHelper.CreateFileStream ("trace-file-name.tr");
-  ...
-  helper.EnableAsciiIpv4 (stream, protocol1, 1);
-  helper.EnableAsciiIpv4 (stream, protocol2, 1);
+    Ptr<Ipv4> protocol1 = node1->GetObject<Ipv4> ();
+    Ptr<Ipv4> protocol2 = node2->GetObject<Ipv4> ();
+    ...
+    Ptr<OutputStreamWrapper> stream = asciiTraceHelper.CreateFileStream ("trace-file-name.tr");
+    ...
+    helper.EnableAsciiIpv4 (stream, protocol1, 1);
+    helper.EnableAsciiIpv4 (stream, protocol2, 1);
 
   In this case, trace contexts are written to the ASCII trace file since
-they are required to disambiguate traces from the two interfaces.
-Note that since the user is completely specifying the file name, the
-string should include the ",tr" for consistency.
+  they are required to disambiguate traces from the two interfaces.
+  Note that since the user is completely specifying the file name, the
+  string should include the ",tr" for consistency.
 
 * You can enable ASCII tracing on a particular protocol by providing a
-``std::string`` representing an object name service string to an
-``EnablePcap`` method.  The ``Ptr<Ipv4>`` is looked up from the name
-string.  The ``<Node>`` in the resulting filenames is implicit since
-there is a one-to-one correspondence between protocol instances and
-nodes, For example,
+  ``std::string`` representing an object name service string to an
+  ``EnablePcap`` method.  The ``Ptr<Ipv4>`` is looked up from the name
+  string.  The ``<Node>`` in the resulting filenames is implicit since
+  there is a one-to-one correspondence between protocol instances and
+  nodes, For example,
 
-::
+  ::
 
-  Names::Add ("node1Ipv4" ...);
-  Names::Add ("node2Ipv4" ...);
-  ...
-  helper.EnableAsciiIpv4 ("prefix", "node1Ipv4", 1);
-  helper.EnableAsciiIpv4 ("prefix", "node2Ipv4", 1);
+    Names::Add ("node1Ipv4" ...);
+    Names::Add ("node2Ipv4" ...);
+    ...
+    helper.EnableAsciiIpv4 ("prefix", "node1Ipv4", 1);
+    helper.EnableAsciiIpv4 ("prefix", "node2Ipv4", 1);
 
-This would result in two files named "prefix-nnode1Ipv4-i1.tr" and
-"prefix-nnode2Ipv4-i1.tr" with traces for each interface in the
-respective trace file.  Since all of the EnableAscii functions are
-overloaded to take a stream wrapper, you can use that form as well::
+  This would result in two files named "prefix-nnode1Ipv4-i1.tr" and
+  "prefix-nnode2Ipv4-i1.tr" with traces for each interface in the
+  respective trace file.  Since all of the EnableAscii functions are
+  overloaded to take a stream wrapper, you can use that form as well::
 
-  Names::Add ("node1Ipv4" ...);
-  Names::Add ("node2Ipv4" ...);
-  ...
-  Ptr<OutputStreamWrapper> stream = asciiTraceHelper.CreateFileStream ("trace-file-name.tr");
-  ...
-  helper.EnableAsciiIpv4 (stream, "node1Ipv4", 1);
-  helper.EnableAsciiIpv4 (stream, "node2Ipv4", 1);
+    Names::Add ("node1Ipv4" ...);
+    Names::Add ("node2Ipv4" ...);
+    ...
+    Ptr<OutputStreamWrapper> stream = asciiTraceHelper.CreateFileStream ("trace-file-name.tr");
+    ...
+    helper.EnableAsciiIpv4 (stream, "node1Ipv4", 1);
+    helper.EnableAsciiIpv4 (stream, "node2Ipv4", 1);
 
-This would result in a single trace file called "trace-file-name.tr"
-that contains all of the trace events for both interfaces.  The events
-would be disambiguated by trace context strings.
+  This would result in a single trace file called "trace-file-name.tr"
+  that contains all of the trace events for both interfaces.  The events
+  would be disambiguated by trace context strings.
 
 * You can enable ASCII tracing on a collection of protocol/interface
-pairs by providing an ``Ipv4InterfaceContainer``.  For each protocol
-of the proper type (the same type as is managed by the device helper),
-tracing is enabled for the corresponding interface.  Again, the
-``<Node>`` is implicit since there is a one-to-one correspondence
-between each protocol and its node.  For example,
+  pairs by providing an ``Ipv4InterfaceContainer``.  For each protocol
+  of the proper type (the same type as is managed by the device helper),
+  tracing is enabled for the corresponding interface.  Again, the
+  ``<Node>`` is implicit since there is a one-to-one correspondence
+  between each protocol and its node.  For example,
 
-::
+  ::
 
-  NodeContainer nodes;
-  ...
-  NetDeviceContainer devices = deviceHelper.Install (nodes);
-  ... 
-  Ipv4AddressHelper ipv4;
-  ipv4.SetBase ("10.1.1.0", "255.255.255.0");
-  Ipv4InterfaceContainer interfaces = ipv4.Assign (devices);
-  ...
-  ...
-  helper.EnableAsciiIpv4 ("prefix", interfaces);
+    NodeContainer nodes;
+    ...
+    NetDeviceContainer devices = deviceHelper.Install (nodes);
+    ... 
+    Ipv4AddressHelper ipv4;
+    ipv4.SetBase ("10.1.1.0", "255.255.255.0");
+    Ipv4InterfaceContainer interfaces = ipv4.Assign (devices);
+    ...
+    ...
+    helper.EnableAsciiIpv4 ("prefix", interfaces);
 
   This would result in a number of ASCII trace files being created, each
-of which follows the <prefix>-n<node id>-i<interface>.tr convention.
-Combining all of the traces into a single file is accomplished
-similarly to the examples above::
+  of which follows the <prefix>-n<node id>-i<interface>.tr convention.
+  Combining all of the traces into a single file is accomplished
+  similarly to the examples above::
 
-  NodeContainer nodes;
-  ...
-  NetDeviceContainer devices = deviceHelper.Install (nodes);
-  ... 
-  Ipv4AddressHelper ipv4;
-  ipv4.SetBase ("10.1.1.0", "255.255.255.0");
-  Ipv4InterfaceContainer interfaces = ipv4.Assign (devices);
-  ...
-  Ptr<OutputStreamWrapper> stream = asciiTraceHelper.CreateFileStream ("trace-file-name.tr");
-  ...
-  helper.EnableAsciiIpv4 (stream, interfaces);
+    NodeContainer nodes;
+    ...
+    NetDeviceContainer devices = deviceHelper.Install (nodes);
+    ... 
+    Ipv4AddressHelper ipv4;
+    ipv4.SetBase ("10.1.1.0", "255.255.255.0");
+    Ipv4InterfaceContainer interfaces = ipv4.Assign (devices);
+    ...
+    Ptr<OutputStreamWrapper> stream = asciiTraceHelper.CreateFileStream ("trace-file-name.tr");
+    ...
+    helper.EnableAsciiIpv4 (stream, interfaces);
 
 * You can enable ASCII tracing on a collection of protocol/interface
   pairs by providing a ``NodeContainer``.  For each Node in the
-``NodeContainer`` the appropriate protocol is found.  For each
-protocol, its interfaces are enumerated and tracing is enabled on the
-resulting pairs.  For example,
+  ``NodeContainer`` the appropriate protocol is found.  For each
+  protocol, its interfaces are enumerated and tracing is enabled on the
+  resulting pairs.  For example,
 
-::
+  ::
 
-  NodeContainer n;
-  ...
-  helper.EnableAsciiIpv4 ("prefix", n);
+    NodeContainer n;
+    ...
+    helper.EnableAsciiIpv4 ("prefix", n);
 
   This would result in a number of ASCII trace files being created,
   each of which follows the <prefix>-<node id>-<device id>.tr
@@ -3241,31 +3241,31 @@ resulting pairs.  For example,
   accomplished similarly to the examples above.
 
 * You can enable PCAP tracing on the basis of Node ID and device ID as
-well.  In this case, the node-id is translated to a ``Ptr<Node>`` and
-the appropriate protocol is looked up in the node.  The resulting
-protocol and interface are used to specify the resulting trace source.
+  well.  In this case, the node-id is translated to a ``Ptr<Node>`` and
+  the appropriate protocol is looked up in the node.  The resulting
+  protocol and interface are used to specify the resulting trace source.
 
-::
+  ::
 
-  helper.EnableAsciiIpv4 ("prefix", 21, 1);
+    helper.EnableAsciiIpv4 ("prefix", 21, 1);
 
-Of course, the traces can be combined into a single file as shown
-above.
+  Of course, the traces can be combined into a single file as shown
+  above.
 
 * Finally, you can enable ASCII tracing for all interfaces in the
-system, with associated protocol being the same type as that managed
-by the device helper.
+  system, with associated protocol being the same type as that managed
+  by the device helper.
 
-::
+  ::
 
-  helper.EnableAsciiIpv4All ("prefix");
+    helper.EnableAsciiIpv4All ("prefix");
 
   This would result in a number of ASCII trace files being created, one
-for every interface in the system related to a protocol of the type
-managed by the helper.  All of these files will follow the
-<prefix>-n<node id>-i<interface.tr convention.  Combining all of the
-traces into a single file is accomplished similarly to the examples
-above.
+  for every interface in the system related to a protocol of the type
+  managed by the helper.  All of these files will follow the
+  <prefix>-n<node id>-i<interface.tr convention.  Combining all of the
+  traces into a single file is accomplished similarly to the examples
+  above.
 
 Filenames
 #########

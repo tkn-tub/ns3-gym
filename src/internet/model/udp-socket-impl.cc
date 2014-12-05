@@ -57,8 +57,10 @@ UdpSocketImpl::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::UdpSocketImpl")
     .SetParent<UdpSocket> ()
     .AddConstructor<UdpSocketImpl> ()
-    .AddTraceSource ("Drop", "Drop UDP packet due to receive buffer overflow",
-                     MakeTraceSourceAccessor (&UdpSocketImpl::m_dropTrace))
+    .AddTraceSource ("Drop",
+                     "Drop UDP packet due to receive buffer overflow",
+                     MakeTraceSourceAccessor (&UdpSocketImpl::m_dropTrace),
+                     "ns3::Packet::TracedCallback")
     .AddAttribute ("IcmpCallback", "Callback invoked whenever an icmp error is received on this socket.",
                    CallbackValue (),
                    MakeCallbackAccessor (&UdpSocketImpl::m_icmpCallback),

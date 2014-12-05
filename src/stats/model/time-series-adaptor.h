@@ -113,7 +113,7 @@ public:
   void TraceSinkUinteger32 (uint32_t oldData, uint32_t newData);
 
   /**
-   * TracedCallback signature for
+   * TracedCallback signature for output trace.
    *
    * \param [in] now The current Time.
    * \param [in] data The new data value.

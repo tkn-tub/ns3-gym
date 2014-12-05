@@ -43,7 +43,7 @@ TimeSeriesAdaptor::GetTypeId (void)
                       "The current simulation time versus "
                       "the current value converted to a double",
                       MakeTraceSourceAccessor (&TimeSeriesAdaptor::m_output),
-                      "ns3::TimeSeriesAdapter::OutputTracedCallback")
+                      "ns3::TimeSeriesAdaptor::OutputTracedCallback")
   ;
   return tid;
 }
