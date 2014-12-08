@@ -20,10 +20,17 @@
 #include "make-event.h"
 #include "log.h"
 
+/**
+ * \file
+ * \ingroup events
+ * ns3::MakeEvent(void(*f)(void)) definition.
+ */
+
 namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("MakeEvent");
 
+// This is the only non-templated version of MakeEvent.
 EventImpl * MakeEvent (void (*f)(void))
 {
   NS_LOG_FUNCTION (f);

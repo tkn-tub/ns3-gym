@@ -24,6 +24,14 @@
 #include <stdint.h>
 #include "object.h"
 
+/**
+ * \file
+ * \ingroup scheduler
+ * \ingroup events
+ * ns3::Scheduler abstract base class, ns3::Scheduler::Event and
+ * ns3::Scheduler::EventKey declarations.
+ */
+
 namespace ns3 {
 
 class EventImpl;
@@ -60,18 +68,27 @@ class Scheduler : public Object
 public:
   static TypeId GetTypeId (void);
 
-  /** \ingroup events */
+  /**
+   * \ingroup events
+   * Structure for sorting and comparing Events.
+   */
   struct EventKey
   {
-    uint64_t m_ts;
-    uint32_t m_uid;
-    uint32_t m_context;
+    uint64_t m_ts;         /**< Event time stamp. */
+    uint32_t m_uid;        /**< Event unique id. */
+    uint32_t m_context;    /**< Event context. */
   };
-  /** \ingroup events */
+  /**
+   * \ingroup events
+   * Scheduler event.
+   *
+   * An Event consists of an EventKey, used for maintaining the schedule,
+   * and an EventImpl which is the actual implementation.
+   */
   struct Event
   {
-    EventImpl *impl;
-    EventKey key;
+    EventImpl *impl;       /**< Pointer to the event implementation. */
+    EventKey key;          /**< Key for sorting and ordering Events. */
   };
 
   virtual ~Scheduler () = 0;
