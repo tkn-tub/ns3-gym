@@ -34,6 +34,12 @@
 #include "string.h"
 
 
+/**
+ * \file
+ * \ingroup commandline
+ * CommandLine class definitions.
+ */
+
 namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("CommandLine");

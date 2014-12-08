@@ -24,12 +24,28 @@
 
 #include "ns3/core-module.h"
 
+/**
+ * \file
+ * \ingroup commandline
+ * Example program illustrating use of ns3::CommandLine.
+ */
 
 using namespace ns3;
 
 
+/**
+ * Global variable to illustrate command line arguments handled by a
+ * Callback function.
+ */
 std::string g_cbArg = "cbArg default";
 
+/**
+ * Function to illustrate command line arguments handled by a
+ * Callback function.
+ *
+ * \param [in] val New value for \p g_cbArg.
+ * \returns \c true.
+ */
 bool SetCbArg (std::string val)
 {
   g_cbArg = val;

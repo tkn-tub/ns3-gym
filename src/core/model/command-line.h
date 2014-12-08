@@ -26,6 +26,12 @@
 
 #include "callback.h"
 
+/**
+ * \file
+ * \ingroup commandline
+ * CommandLine class declaration.
+ */
+
 namespace ns3 {
 
 /**
@@ -100,8 +106,7 @@ namespace ns3 {
  * to make it easy to set the \c Application::StartTime using
  * the argument \c --start, and have its help string show as part
  * of the help message.  This can be done using the
- * \link AddValue(const std::string, const std::string)
- * AddValue (name, attributePath) \endlink
+ * \link AddValue(const std::string&, const std::string&) AddValue (name, attributePath) \endlink
  * method.
  *
  * CommandLine can also set the value of every GlobalValue
@@ -295,6 +300,8 @@ public:
    *
    *       std::cerr << cmd;
    * @endcode
+   *
+   * \param [in,out] os The output stream to print on.
    */
   void PrintHelp (std::ostream &os) const;
 
@@ -400,9 +407,17 @@ private:
    * \param group the name of the TypeId group to display
    */
   void PrintGroup (std::ostream &os, const std::string &group) const;
-  /** Handler for \c \-\-PrintTypeIds:  print all TypeId names. */
+  /**
+   * Handler for \c \-\-PrintTypeIds:  print all TypeId names.
+   *
+   * \param os the output stream.
+   */
   void PrintTypeIds (std::ostream &os) const;
-  /** Handler for \c \-\-PrintGroups:  print all TypeId group names */
+  /**
+   * Handler for \c \-\-PrintGroups:  print all TypeId group names
+   *
+   * \param os the output stream.
+   */
   void PrintGroups (std::ostream &os) const;
   /**
    * Copy constructor
@@ -463,6 +478,11 @@ namespace CommandLineHelper {
   
   
 } // namespace ns3
+
+
+/********************************************************************
+ *  Implementation of templates defined above
+ ********************************************************************/
 
 namespace ns3 {
 
@@ -540,6 +560,10 @@ CommandLineHelper::UserItemParse (const std::string value, T & val)
  *    
  *    std::cerr << cmd;
  * \endcode
+ *
+ * \param [in,out] os The stream to print on.
+ * \param [in] cmd The CommandLine describing the program.
+ * \returns The stream.
  */
 std::ostream & operator << (std::ostream & os, const CommandLine & cmd);
 
