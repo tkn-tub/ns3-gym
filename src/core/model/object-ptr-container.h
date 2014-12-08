@@ -28,9 +28,9 @@
 namespace ns3 {
 
 /**
- * \ingroup object
+ * \ingroup attribute_ObjectPtrContainer
  * 
- * \brief contain a set of ns3::Object pointers.
+ * \brief Container for a set of ns3::Object pointers.
  *
  * This class it used to get attribute access to an array of
  * ns3::Object pointers.
@@ -45,25 +45,53 @@ public:
   ObjectPtrContainerValue ();
 
   /**
-   * \returns an iterator to the first object contained in this set
+   * Get an iterator to the first Object.
+   *
+   * \returns An iterator to the first Object.
    */
   Iterator Begin (void) const;
   /**
-   * \returns an iterator to the last object contained in this set
+   * Get an iterator to the _past-the-end_ Object.
+   *
+   * \returns An iterator to the _past-the-end_ Object.
    */
   Iterator End (void) const;
   /**
-   * \returns the number of objects contained in this set.
+   * Get the number of Objects.
+   *
+   * \returns The number of objects.
    */
   uint32_t GetN (void) const;
   /**
-   * \param i the index of the requested object.
-   * \returns the requested object
+   * Get a specific Object.
+   *
+   * \param i The index of the requested object.
+   * \returns The requested object
    */
   Ptr<Object> Get (uint32_t i) const;
 
+  /**
+   * Get a copy of this container.
+   *
+   * \returns A copy of this container.
+   */
   virtual Ptr<AttributeValue> Copy (void) const;
+  /**
+   * Serialize each of the Object pointers to a string.
+   *
+   * Note this serializes the Ptr values, not the Objects themselves.
+   *
+   * \param checker The checker to use (currently not used.)
+   * \returns The string form of the Objects.
+   */
   virtual std::string SerializeToString (Ptr<const AttributeChecker> checker) const;
+  /**
+   * Deserialize from a string. (Not implemented; raises a fatal error.)
+   *
+   * \param value The serialized string form.
+   * \param checker The checker to use.
+   * \returns \c true.
+   */
   virtual bool DeserializeFromString (std::string value, Ptr<const AttributeChecker> checker);
 
 private:
@@ -174,7 +202,10 @@ public:
 } // namespace internal
 
   
-/** AttributeAccessor implementation for ObjectPtrContainerValue. */
+/**
+ * \ingroup attribute_ObjectPtrContainer
+ * AttributeAccessor implementation for ObjectPtrContainerValue.
+ */
 class ObjectPtrContainerAccessor : public AttributeAccessor
 {
 public:
