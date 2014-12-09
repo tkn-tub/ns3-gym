@@ -25,12 +25,16 @@
 #include <cstdlib>
 #include <cerrno>
 #include <cstring>
+
+
 #if defined (HAVE_DIRENT_H) and defined (HAVE_SYS_TYPES_H)
+/** Do we have an \c opendir function? */
 #define HAVE_OPENDIR
 #include <sys/types.h>
 #include <dirent.h>
 #endif
 #if defined (HAVE_SYS_STAT_H) and defined (HAVE_SYS_TYPES_H)
+/** Do we have a \c makedir function? */
 #define HAVE_MKDIR_H
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -49,11 +53,21 @@
 #include <unistd.h>
 #endif
 
+/**
+ * \def SYSTEM_PATH_SEP
+ * System-specific path separator used between directory names.
+ */
 #if defined (__win32__)
 #define SYSTEM_PATH_SEP "\\"
 #else
 #define SYSTEM_PATH_SEP "/"
 #endif
+
+/**
+ * \file
+ * \ingroup systempath
+ * System-independent file and directory function definitions.
+ */
 
 namespace ns3 {
 
@@ -313,6 +327,8 @@ void
 MakeDirectories (std::string path)
 {
   NS_LOG_FUNCTION (path);
+
+  // Make sure all directories on the path exist
   std::list<std::string> elements = Split (path);
   for (std::list<std::string>::const_iterator i = elements.begin (); i != elements.end (); ++i)
     {
@@ -324,11 +340,13 @@ MakeDirectories (std::string path)
         }
 #endif
     }
+
+  // Make the final directory.  Is this redundant with last iteration above?
 #if defined(HAVE_MKDIR_H)
-      if (mkdir (path.c_str (), S_IRWXU))
-        {
-          NS_LOG_ERROR ("failed creating directory " << path);
-        }
+  if (mkdir (path.c_str (), S_IRWXU))
+    {
+      NS_LOG_ERROR ("failed creating directory " << path);
+    }
 #endif
 
 }

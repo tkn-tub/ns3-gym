@@ -21,11 +21,25 @@
 
 #include "ptr.h"
 
-namespace ns3 { 
+/**
+ * @file
+ * @ingroup thread
+ * System-independent thread conditional wait.
+ */
+
+namespace ns3 {
+
+/**
+ * @ingroup system
+ * @defgroup thread Threading and Signaling.
+ *
+ * System-independent interfaces to threads, signal conditions, and mutex.
+ */
 	
 class SystemConditionPrivate;
 
 /**
+ * @ingroup thread
  * @brief A class which provides a relatively platform-independent 
  * conditional-wait thread synchronization primitive.
  *
@@ -61,7 +75,7 @@ public:
 
   /**
    * Set the value of the underlying condition.
-   * \param condition value
+   * @param condition value
    */
   void SetCondition (bool condition);
 
@@ -92,12 +106,14 @@ public:
   /**
    * Wait a maximum of ns nanoseconds for the condition to be true.  If the
    * wait times out, return true else return false.
-   * \param ns maximum of nanoseconds to wait
+   * @param ns maximum of nanoseconds to wait
+   * @returns true if the timer expired, otherwise return false.
    */
   bool TimedWait (uint64_t ns);
 	
 
 private:
+  /** The (system-dependent) implementation. */
   SystemConditionPrivate * m_priv;
 };
 

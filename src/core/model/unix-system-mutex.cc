@@ -27,19 +27,26 @@
 #include "log.h"
 
 
+/**
+ * @file
+ * @ingroup thread
+ * Mutex critical section primitive definitions for Unix-like systems.
+ */
+
 namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE_MASK ("SystemMutex", ns3::LOG_PREFIX_TIME);
 
+/** System-dependent implementation of SystemMutex. */
 class SystemMutexPrivate {
 public: 
-  SystemMutexPrivate ();
+  SystemMutexPrivate ();    
   ~SystemMutexPrivate ();
 	
-  void Lock (void);
-  void Unlock (void);
+  void Lock (void);         /**< Acquire ownership of the mutex. */
+  void Unlock (void);       /**< Release ownership of the mutex. */
 private:
-  pthread_mutex_t m_mutex;
+  pthread_mutex_t m_mutex;  /**< The mutex. */
 };
 
 SystemMutexPrivate::SystemMutexPrivate ()

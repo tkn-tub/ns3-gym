@@ -23,6 +23,12 @@
 #include "log.h"
 #include <cstring>
 
+/**
+ * @file
+ * @ingroup thread
+ * System-independent thread class ns3::SystemThread definitions.
+ */
+
 namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("SystemThread");
