@@ -25,28 +25,56 @@
 #include "event-id.h"
 #include "int-to-type.h"
 
+/**
+ * \file
+ * \ingroup timer
+ * ns3::Timer class declaration.
+ */
+
 namespace ns3 {
+
+/**
+ * \ingroup core
+ * \defgroup timer Virtual Time Timer and Watchdog
+ *
+ * The Timer and Watchdog objects both facilitate scheduling functions
+ * to execute a specified virtual time in the future.
+ *
+ * A Watchdog timer cannot be paused or cancelled once it has been started,
+ * however it can be lengthened (delayed).  A Watchdog takes no action
+ * when it is destroyed.
+ *
+ * A Timer can be suspended, resumed, cancelled and queried for time left,
+ * but it can't be extended (except by suspending and resuming).
+ * In addition, it can be configured to take different actions when the
+ * Timer is destroyed.
+ */
 
 class TimerImpl;
 
 /**
- * \ingroup core
- *
- * \brief a simple Timer class
+ * \ingroup timer
+ * \brief A simple Timer class
  *
  * A timer is used to hold together a delay, a function to invoke
  * when the delay expires, and a set of arguments to pass to the function
  * when the delay expires.
  *
+ * A Timer can be suspended, resumed, cancelled and queried for the
+ * time left, but it can't be extended (except by suspending and
+ * resuming.)
+ *
  * A timer can also be used to enforce a set of predefined event lifetime
  * management policies. These policies are specified at construction time
  * and cannot be changed after.
+ *
+ * \see Watchdog for a simpler interface for a watchdog timer.
  */
 class Timer
 {
 public:
   /**
-   * The policy to use to manager the internal timer when and
+   * The policy to use to manager the internal timer when an
    * instance of the Timer class is destroyed.
    */
   enum DestroyPolicy
@@ -67,14 +95,15 @@ public:
      */
     CHECK_ON_DESTROY = (1 << 5)
   };
+  /** The possible states of the Timer. */
   enum State
   {
-    RUNNING,
-    EXPIRED,
-    SUSPENDED,
+    RUNNING,    /** Timer is currently running. */
+    EXPIRED,    /** Timer has already expired. */
+    SUSPENDED,  /** Timer is suspended. */
   };
   /**
-   * create a timer with a default event lifetime management policy:
+   * Create a timer with a default event lifetime management policy:
    *  - CHECK_ON_DESTROY
    */
   Timer ();
@@ -230,19 +259,41 @@ public:
   void Resume (void);
 
 private:
-  enum
+  /** Internal bit marking the suspended state. */
+  enum InternalSuspended
   {
-    TIMER_SUSPENDED = (1 << 7)
+    TIMER_SUSPENDED = (1 << 7)  /** Timer suspended. */
   };
 
+  /**
+   * Bitfield for Timer State, DestroyPolicy and InternalSuspended.
+   *
+   * \internal 
+   * The DestroyPolicy, State and InternalSuspended state are stored
+   * in this single bitfield.  The State uses the low-order bits,
+   * so the other users of the bitfield have to be careful in defining
+   * their bits to avoid the State.
+   */
   int m_flags;
+  /** The delay configured for this Timer. */
   Time m_delay;
+  /** The future event scheduled to expire the timer. */
   EventId m_event;
+  /**
+   * The timer implementation, which contains the bound callback
+   * function and arguments.
+   */
   TimerImpl *m_impl;
+  /** The amount of time left on the Timer while it is suspended. */
   Time m_delayLeft;
 };
 
 } // namespace ns3
+
+
+/********************************************************************
+   Implementation of templates defined above
+ ********************************************************************/
 
 #include "timer-impl.h"
 
