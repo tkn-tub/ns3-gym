@@ -130,19 +130,41 @@ WifiPhy::GetMFPlcpHeaderMode (WifiMode payloadMode, WifiPreamble preamble)
             return WifiPhy::GetOfdmRate6_5MbpsBW20MHz ();
       }
 }
-uint32_t
+
+uint32_t 
 WifiPhy::GetPlcpHtTrainingSymbolDurationMicroSeconds (WifiMode payloadMode, WifiPreamble preamble, WifiTxVector txvector)
 {
-   switch (preamble)
-     {
+  uint8_t Ndltf, Neltf;
+
+  //We suppose here that STBC = 0. 
+  //If STBC > 0, we need a different mapping between Nss and Nltf (IEEE 802.11n-2012 standard, page 1682).
+  if (txvector.GetNss () < 3)
+    {
+      Ndltf = txvector.GetNss();
+    }
+  else 
+    {
+      Ndltf = 4;
+    }
+  if (txvector.GetNess () < 3)
+    {
+      Neltf = txvector.GetNess();
+    }
+  else 
+    {
+      Neltf = 4;
+    }
+
+  switch (preamble)
+    {
      case WIFI_PREAMBLE_HT_MF:
-        return 4+ (4* txvector.GetNss());
+         return 4 + (4 * Ndltf) + (4 * Neltf);
      case WIFI_PREAMBLE_HT_GF:
-         return (4*txvector.GetNss())+(4*txvector.GetNess());
-      default:
-         // no training for non HT
-          return 0;
-      }
+	 return (4 * Ndltf) + (4 * Neltf);
+     default:
+       // no training for non HT
+         return 0;
+    }
 }
 
 //return L-SIG
