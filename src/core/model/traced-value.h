@@ -42,6 +42,10 @@ namespace ns3 {
  * \defgroup tracing Tracing
  * \brief Publish/subscribe tools to collect and report changes to any
  *        values used by the various model components.
+ *
+ * Additional callback function signatures defined elsewhere:
+ *   - Time::TracedValueCallback
+ *   - ns3::SequenceNumber32TracedValueCallback
  */
 
 /**
