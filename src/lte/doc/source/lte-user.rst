@@ -1402,8 +1402,8 @@ successfully, regardless of distance and channel condition. However, it will
 also affect all other data or control packets not related to handover, which may
 be an unwanted side effect. Otherwise, it can be done as follows::
 
-   Config::SetDefault ("ns3::LteSpectrumPhy::CtrlErrorModelEnabled");
-   Config::SetDefault ("ns3::LteSpectrumPhy::DataErrorModelEnabled");
+   Config::SetDefault ("ns3::LteSpectrumPhy::CtrlErrorModelEnabled", BooleanValue (false));
+   Config::SetDefault ("ns3::LteSpectrumPhy::DataErrorModelEnabled", BooleanValue (false));  
    
 By using the above code, we disable the error model in both control and data
 channels and in both directions (downlink and uplink). This is necessary because
