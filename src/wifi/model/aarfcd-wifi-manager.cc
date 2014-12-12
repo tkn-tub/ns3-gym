@@ -297,7 +297,7 @@ AarfcdWifiManager::DoGetDataTxVector (WifiRemoteStation *st, uint32_t size)
 {
   NS_LOG_FUNCTION (this << st << size);
   AarfcdWifiRemoteStation *station = (AarfcdWifiRemoteStation *) st;
-  return WifiTxVector (GetSupported (station, station->m_rate), GetDefaultTxPowerLevel (), GetLongRetryCount (station), GetShortGuardInterval (station), Min (GetNumberOfReceiveAntennas (station),GetNumberOfTransmitAntennas()), GetNumberOfTransmitAntennas (station), GetStbc (station));
+  return WifiTxVector (GetSupported (station, station->m_rate), GetDefaultTxPowerLevel (), GetLongRetryCount (station), GetShortGuardInterval (station), Min (GetNumberOfReceiveAntennas (station),GetNumberOfTransmitAntennas()), GetNess (station), GetStbc (station));
 }
 WifiTxVector
 AarfcdWifiManager::DoGetRtsTxVector (WifiRemoteStation *st)
@@ -306,7 +306,7 @@ AarfcdWifiManager::DoGetRtsTxVector (WifiRemoteStation *st)
   /// \todo we could/should implement the Aarf algorithm for
   /// RTS only by picking a single rate within the BasicRateSet.
   AarfcdWifiRemoteStation *station = (AarfcdWifiRemoteStation *) st;
-  return WifiTxVector (GetSupported (station, 0), GetDefaultTxPowerLevel (), GetShortRetryCount (station), GetShortGuardInterval (station), Min (GetNumberOfReceiveAntennas (station),GetNumberOfTransmitAntennas()), GetNumberOfTransmitAntennas (station), GetStbc (station));
+  return WifiTxVector (GetSupported (station, 0), GetDefaultTxPowerLevel (), GetShortRetryCount (station), GetShortGuardInterval (station), Min (GetNumberOfReceiveAntennas (station),GetNumberOfTransmitAntennas()), GetNess (station), GetStbc (station));
 }
 
 bool

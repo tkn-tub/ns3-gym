@@ -112,13 +112,13 @@ WifiTxVector
 ConstantRateWifiManager::DoGetDataTxVector (WifiRemoteStation *st, uint32_t size)
 {
   NS_LOG_FUNCTION (this << st << size);
-  return WifiTxVector (m_dataMode, GetDefaultTxPowerLevel (), GetLongRetryCount (st), GetShortGuardInterval (st), Min (GetNumberOfReceiveAntennas (st),GetNumberOfTransmitAntennas()), GetNumberOfTransmitAntennas (st), GetStbc (st));
+  return WifiTxVector (m_dataMode, GetDefaultTxPowerLevel (), GetLongRetryCount (st), GetShortGuardInterval (st), Min (GetNumberOfReceiveAntennas (st),GetNumberOfTransmitAntennas()), GetNess (st), GetStbc (st));
 }
 WifiTxVector
 ConstantRateWifiManager::DoGetRtsTxVector (WifiRemoteStation *st)
 {
   NS_LOG_FUNCTION (this << st);
-  return WifiTxVector (m_ctlMode, GetDefaultTxPowerLevel (), GetShortRetryCount (st), GetShortGuardInterval (st), Min (GetNumberOfReceiveAntennas (st),GetNumberOfTransmitAntennas()), GetNumberOfTransmitAntennas (st), GetStbc (st));
+  return WifiTxVector (m_ctlMode, GetDefaultTxPowerLevel (), GetShortRetryCount (st), GetShortGuardInterval (st), Min (GetNumberOfReceiveAntennas (st),GetNumberOfTransmitAntennas()), GetNess (st), GetStbc (st));
 }
 
 bool

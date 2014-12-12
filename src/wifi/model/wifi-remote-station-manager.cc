@@ -1204,6 +1204,7 @@ WifiRemoteStationManager::LookupState (Mac48Address address) const
   state->m_greenfield=m_wifiPhy->GetGreenfield();
   state->m_rx=1;
   state->m_tx=1;
+  state->m_ness=0;
   state->m_stbc=false;
   const_cast<WifiRemoteStationManager *> (this)->m_states.push_back (state);
   NS_LOG_DEBUG ("WifiRemoteStationManager::LookupState returning new state");
@@ -1413,6 +1414,11 @@ uint32_t
 WifiRemoteStationManager::GetNumberOfTransmitAntennas (const WifiRemoteStation *station) const
 {
   return station->m_state->m_tx;
+}
+uint32_t 
+WifiRemoteStationManager::GetNess (const WifiRemoteStation *station) const
+{
+  return station->m_state->m_ness;
 }
 uint32_t 
 WifiRemoteStationManager::GetShortRetryCount (const WifiRemoteStation *station) const

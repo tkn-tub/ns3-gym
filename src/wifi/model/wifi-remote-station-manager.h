@@ -638,6 +638,13 @@ public:
    */
   uint32_t GetNumberOfTransmitAntennas (const WifiRemoteStation *station) const;
   /**
+   * Return the Number of extension spatial streams (Ness) the station has.
+   *
+   * \param station the station being queried
+   * \return the number of Ness the station has
+   */
+  uint32_t GetNess (const WifiRemoteStation *station) const;
+  /**
    * Return the long retry limit of the given station.
    *
    * \param station the station being queried
@@ -999,6 +1006,7 @@ struct WifiRemoteStationState
   bool m_shortGuardInterval;  //!< Flag if short guard interval is supported by the remote station
   uint32_t m_rx;  //!< Number of RX antennas of the remote station
   uint32_t m_tx;  //!< Number of TX antennas of the remote station
+  uint32_t m_ness;  //!< Number of streams in beamforming of the remote station
   bool m_stbc;  //!< Flag if STBC is used by the remote station
   bool m_greenfield;  //!< Flag if green field is used by the remote station
 
