@@ -39,6 +39,10 @@ namespace ns3 {
 class MobilityModel : public Object
 {
 public:
+  /**
+   * Register this type with the TypeId system.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
   MobilityModel ();
   virtual ~MobilityModel () = 0;
@@ -128,6 +132,8 @@ private:
    * The default implementation does nothing but return the passed-in
    * parameter.  Subclasses using random variables are expected to
    * override this.
+   * \param start  starting stream index
+   * \return the number of streams used
    */
   virtual int64_t DoAssignStreams (int64_t start);
 

@@ -80,33 +80,44 @@ namespace ns3 {
 class GaussMarkovMobilityModel : public MobilityModel
 {
 public:
+  /**
+   * Register this type with the TypeId system.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
   GaussMarkovMobilityModel ();
 private:
+  /**
+   * Initialize the model and calculate new velocity, direction, and pitch
+   */
   void Start (void);
+  /**
+   * Perform a walk operation
+   * \param timeLeft time until Start method is called again
+   */
   void DoWalk (Time timeLeft);
   virtual void DoDispose (void);
   virtual Vector DoGetPosition (void) const;
   virtual void DoSetPosition (const Vector &position);
   virtual Vector DoGetVelocity (void) const;
   virtual int64_t DoAssignStreams (int64_t);
-  ConstantVelocityHelper m_helper;
-  Time m_timeStep;
-  double m_alpha;
-  double m_meanVelocity;
-  double m_meanDirection;
-  double m_meanPitch;
-  double m_Velocity;
-  double m_Direction;
-  double m_Pitch;
-  Ptr<RandomVariableStream> m_rndMeanVelocity;
-  Ptr<NormalRandomVariable> m_normalVelocity;
-  Ptr<RandomVariableStream> m_rndMeanDirection;
-  Ptr<NormalRandomVariable> m_normalDirection;
-  Ptr<RandomVariableStream> m_rndMeanPitch;
-  Ptr<NormalRandomVariable> m_normalPitch;
-  EventId m_event;
-  Box m_bounds;
+  ConstantVelocityHelper m_helper; //!< constant velocity helper
+  Time m_timeStep; //!< duraiton after which direction and speed should change
+  double m_alpha; //!< tunable constant in the model
+  double m_meanVelocity; //!< current mean velocity
+  double m_meanDirection; //!< current mean direction
+  double m_meanPitch; //!< current mean pitch
+  double m_Velocity; //!< current velocity
+  double m_Direction; //!< current direction
+  double m_Pitch;  //!< current pitch
+  Ptr<RandomVariableStream> m_rndMeanVelocity; //!< rv used to assign avg velocity
+  Ptr<NormalRandomVariable> m_normalVelocity; //!< Gaussian rv used to for next velocity
+  Ptr<RandomVariableStream> m_rndMeanDirection; //!< rv used to assign avg direction
+  Ptr<NormalRandomVariable> m_normalDirection; //!< Gaussian rv for next direction value
+  Ptr<RandomVariableStream> m_rndMeanPitch; //!< rv used to assign avg. pitch 
+  Ptr<NormalRandomVariable> m_normalPitch; //!< Gaussian rv for next pitch
+  EventId m_event; //!< event id of scheduled start
+  Box m_bounds; //!< bounding box
 };
 
 } // namespace ns3

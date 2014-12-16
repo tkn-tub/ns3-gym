@@ -104,15 +104,33 @@ public:
   template <typename T>
   void Install (T begin, T end) const;
 private:
+  /**
+   * \brief a class to hold input objects internally
+   */
   class ObjectStore
   {
 public:
     virtual ~ObjectStore () {}
+    /**
+     * Return ith object in store
+     * \param i index
+     * \return pointer to object
+     */
     virtual Ptr<Object> Get (uint32_t i) const = 0;
   };
+  /**
+   * Parses ns-2 mobility file to create ns-3 mobility events
+   * \param store Object store containing ns-3 mobility models
+   */
   void ConfigNodesMovements (const ObjectStore &store) const;
+  /**
+   * Get or create a ConstantVelocityMobilityModel corresponding to idString
+   * \param idString string name for a node
+   * \param store Object store containing ns-3 mobility models
+   * \return pointer to a ConstantVelocityMobilityModel
+   */
   Ptr<ConstantVelocityMobilityModel> GetMobilityModel (std::string idString, const ObjectStore &store) const;
-  std::string m_filename;
+  std::string m_filename; //!< filename of file containing ns-2 mobility trace 
 };
 
 } // namespace ns3

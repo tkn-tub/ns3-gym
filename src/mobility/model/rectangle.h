@@ -34,6 +34,9 @@ namespace ns3 {
 class Rectangle
 {
 public:
+  /**
+   * enum for naming sides
+   */
   enum Side {
     RIGHT,
     LEFT,
@@ -82,14 +85,10 @@ public:
    */
   Vector CalculateIntersection (const Vector &current, const Vector &speed) const;
 
-  /* The x coordinate of the left bound of the rectangle */
-  double xMin;
-  /* The x coordinate of the right bound of the rectangle */
-  double xMax;
-  /* The y coordinate of the bottom bound of the rectangle */
-  double yMin;
-  /* The y coordinate of the top bound of the rectangle */
-  double yMax;
+  double xMin; //!< The x coordinate of the left bound of the rectangle
+  double xMax; //!< The x coordinate of the right bound of the rectangle
+  double yMin; //!< The y coordinate of the bottom bound of the rectangle
+  double yMax; //!< The y coordinate of the top bound of the rectangle
 };
 
 std::ostream &operator << (std::ostream &os, const Rectangle &rectangle);

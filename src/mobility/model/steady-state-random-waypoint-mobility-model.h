@@ -55,42 +55,62 @@ namespace ns3 {
 class SteadyStateRandomWaypointMobilityModel : public MobilityModel
 {
 public:
+  /**
+   * Register this type with the TypeId system.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
   SteadyStateRandomWaypointMobilityModel ();
 protected:
   virtual void DoInitialize (void);
 private:
+  /**
+   * Configure random variables based on attributes; calculate the steady
+   * state probability that node is initially paused; schedule either end
+   * of pause time or initial motion of the node.
+   */
   void DoInitializePrivate (void);
+  /**
+   * Use provided destination to calculate travel delay, and schedule a
+   * Start() event at that time.
+   * \param destination the destination to move to
+   */
   void SteadyStateBeginWalk (const Vector &destination);
+  /**
+   * Start a pause period and schedule the ending of the pause
+   */
   void Start (void);
+  /**
+   * Start a motion period and schedule the ending of the motion
+   */
   void BeginWalk (void);
   virtual Vector DoGetPosition (void) const;
   virtual void DoSetPosition (const Vector &position);
   virtual Vector DoGetVelocity (void) const;
   virtual int64_t DoAssignStreams (int64_t);
 
-  ConstantVelocityHelper m_helper;
-  double m_maxSpeed;
-  double m_minSpeed;
-  Ptr<UniformRandomVariable> m_speed;
-  double m_minX;
-  double m_maxX;
-  double m_minY;
-  double m_maxY;
-  double m_z;
-  Ptr<RandomRectanglePositionAllocator> m_position;
-  double m_minPause;
-  double m_maxPause;
-  Ptr<UniformRandomVariable> m_pause;
-  EventId m_event;
-  bool alreadyStarted;
-  Ptr<UniformRandomVariable> m_x1_r;
-  Ptr<UniformRandomVariable> m_y1_r;
-  Ptr<UniformRandomVariable> m_x2_r;
-  Ptr<UniformRandomVariable> m_y2_r;
-  Ptr<UniformRandomVariable> m_u_r;
-  Ptr<UniformRandomVariable> m_x;
-  Ptr<UniformRandomVariable> m_y;
+  ConstantVelocityHelper m_helper; //!< helper for velocity computations
+  double m_maxSpeed; //!< maximum speed value (m/s)
+  double m_minSpeed; //!< minimum speed value (m/s)
+  Ptr<UniformRandomVariable> m_speed; //!< random variable for speed values
+  double m_minX; //!< minimum x value of traveling region (m)
+  double m_maxX; //!< maximum x value of traveling region (m)
+  double m_minY; //!< minimum y value of traveling region (m)
+  double m_maxY; //!< maximum y value of traveling region (m)
+  double m_z; //!< z value of traveling region
+  Ptr<RandomRectanglePositionAllocator> m_position; //!< position allocator
+  double m_minPause; //!< minimum pause value (s)
+  double m_maxPause; //!< maximum pause value (s)
+  Ptr<UniformRandomVariable> m_pause; //!< random variable for pause values
+  EventId m_event; //!< current event ID
+  bool alreadyStarted; //!< flag for starting state
+  Ptr<UniformRandomVariable> m_x1_r; //!< rv used in rejection sampling phase 
+  Ptr<UniformRandomVariable> m_y1_r; //!< rv used in rejection sampling phase
+  Ptr<UniformRandomVariable> m_x2_r; //!< rv used in rejection sampling phase
+  Ptr<UniformRandomVariable> m_y2_r; //!< rv used in rejection sampling phase
+  Ptr<UniformRandomVariable> m_u_r; //!< rv used in step 5 of algorithm
+  Ptr<UniformRandomVariable> m_x; //!< rv used for position allocator
+  Ptr<UniformRandomVariable> m_y; //!< rv used for position allocator
 };
 
 } // namespace ns3
