@@ -5,8 +5,8 @@
 
 me=$(basename $0)
 DIR="$(dirname $0)"
-# Trick to get the absolute path, since doxygen prefixes errors that way
-ROOT=$(cd "$DIR/.."; pwd)
+# Trick to get the absolute physical path, since doxygen prefixes errors that way
+ROOT=$(cd "$DIR/.."; pwd -P)
 
 # Known log files
 STANDARDLOGFILE=doxygen.log
