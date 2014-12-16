@@ -33,6 +33,8 @@
 namespace ns3 {
 
 /**
+ * \ingroup lte
+ *
  * Takes care of storing the information generated at PHY layer regarding 
  * reception. Metrics saved are:
  *
@@ -59,6 +61,10 @@ public:
   virtual ~PhyRxStatsCalculator ();
 
   // Inherited from ns3::Object
+  /**
+   *  Register this type.
+   *  \return The object TypeId.
+   */
   static TypeId GetTypeId (void);
 
   /**
@@ -120,7 +126,20 @@ public:
                                std::string path, PhyReceptionStatParameters params);
 private:
 
+  /**
+   * When writing DL RX PHY statistics first time to file,
+   * columns description is added. Then next lines are
+   * appended to file. This value is true if output
+   * files have not been opened yet
+   */
   bool m_dlRxFirstWrite;
+
+  /**
+   * When writing UL RX PHY statistics first time to file,
+   * columns description is added. Then next lines are
+   * appended to file. This value is true if output
+   * files have not been opened yet
+   */
   bool m_ulRxFirstWrite;
 
 };

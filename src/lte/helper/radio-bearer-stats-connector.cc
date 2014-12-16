@@ -33,22 +33,37 @@ namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("RadioBearerStatsConnector");
 
-
+/**
+  * Less than operator for CellIdRnti, because it is used as key in map
+  */
 bool
 operator < (const RadioBearerStatsConnector::CellIdRnti& a, const RadioBearerStatsConnector::CellIdRnti& b)
 {
   return ( (a.cellId < b.cellId) || ( (a.cellId == b.cellId) && (a.rnti < b.rnti) ) );
 }
 
+/**
+ * This structure is used as interface between trace
+ * sources and RadioBearerStatsCalculator. It stores
+ * and provides calculators with cellId and IMSI,
+ * because most trace sources do not provide it.
+ */
 struct BoundCallbackArgument : public SimpleRefCount<BoundCallbackArgument>
 {
 public:
-  Ptr<RadioBearerStatsCalculator> stats;
-  uint64_t imsi;
-  uint16_t cellId;
+  Ptr<RadioBearerStatsCalculator> stats;  //!< statistics calculator
+  uint64_t imsi; //!< imsi
+  uint16_t cellId; //!< cellId
 };
 
-
+/**
+ * Callback function for DL TX statistics for both RLC and PDCP
+ * /param arg
+ * /param path
+ * /param rnti
+ * /param lcid
+ * /param packetSize
+ */
 void
 DlTxPduCallback (Ptr<BoundCallbackArgument> arg, std::string path,
                  uint16_t rnti, uint8_t lcid, uint32_t packetSize)
@@ -57,6 +72,15 @@ DlTxPduCallback (Ptr<BoundCallbackArgument> arg, std::string path,
   arg->stats->DlTxPdu (arg->cellId, arg->imsi, rnti, lcid, packetSize);
 }
 
+/**
+ * Callback function for DL RX statistics for both RLC and PDCP
+ * /param arg
+ * /param path
+ * /param rnti
+ * /param lcid
+ * /param packetSize
+ * /param delay
+ */
 void
 DlRxPduCallback (Ptr<BoundCallbackArgument> arg, std::string path,
                  uint16_t rnti, uint8_t lcid, uint32_t packetSize, uint64_t delay)
@@ -65,8 +89,14 @@ DlRxPduCallback (Ptr<BoundCallbackArgument> arg, std::string path,
   arg->stats->DlRxPdu (arg->cellId, arg->imsi, rnti, lcid, packetSize, delay);
 }
 
-
-
+/**
+ * Callback function for UL TX statistics for both RLC and PDCP
+ * /param arg
+ * /param path
+ * /param rnti
+ * /param lcid
+ * /param packetSize
+ */
 void
 UlTxPduCallback (Ptr<BoundCallbackArgument> arg, std::string path,
                  uint16_t rnti, uint8_t lcid, uint32_t packetSize)
@@ -76,6 +106,15 @@ UlTxPduCallback (Ptr<BoundCallbackArgument> arg, std::string path,
   arg->stats->UlTxPdu (arg->cellId, arg->imsi, rnti, lcid, packetSize);
 }
 
+/**
+ * Callback function for UL RX statistics for both RLC and PDCP
+ * /param arg
+ * /param path
+ * /param rnti
+ * /param lcid
+ * /param packetSize
+ * /param delay
+ */
 void
 UlRxPduCallback (Ptr<BoundCallbackArgument> arg, std::string path,
                  uint16_t rnti, uint8_t lcid, uint32_t packetSize, uint64_t delay)

@@ -835,16 +835,67 @@ LteHelper::ActivateDedicatedEpsBearer (Ptr<NetDevice> ueDevice, EpsBearer bearer
   m_epcHelper->ActivateEpsBearer (ueDevice, imsi, tft, bearer);
 }
 
+/**
+ * \ingroup lte
+ *
+ * DrbActivatior allows user to activate bearers for UEs
+ * when EPC is not used. Activation function is hooked to
+ * the Enb RRC Connection Estabilished trace source. When
+ * UE change its RRC state to CONNECTED_NORMALLY, activation
+ * function is called and bearer is activated.
+*/
 class DrbActivator : public SimpleRefCount<DrbActivator>
 {
 public:
+  /**
+  * DrbActivator Constructor
+  *
+  * \param ueDevice the UeNetDevice for which bearer will be activated
+  * \param bearer the bearer configuration
+  */
   DrbActivator (Ptr<NetDevice> ueDevice, EpsBearer bearer);
+
+  /**
+   * Function hooked to the Enb RRC Connection Established trace source
+   * Fired upon successful RRC connection establishment.
+   *
+   * \param a DrbActivator object
+   * \param context
+   * \param imsi
+   * \param cellId
+   * \param rnti
+   */
   static void ActivateCallback (Ptr<DrbActivator> a, std::string context, uint64_t imsi, uint16_t cellId, uint16_t rnti);
+
+  /**
+   * Procedure firstly checks if bearer was not activated, if IMSI
+   * from trace source equals configured one and if UE is really
+   * in RRC connected state. If all requirements are met, it performs
+   * bearer activation.
+   *
+   * \param imsi
+   * \param cellId
+   * \param rnti
+   */
   void ActivateDrb (uint64_t imsi, uint16_t cellId, uint16_t rnti);
 private:
+  /**
+   * Bearer can be activated only once. This value stores state of
+   * bearer. Initially is set to false and changed to true during
+   * bearer activation.
+   */
   bool m_active;
+  /**
+   * UeNetDevice for which bearer will be activated
+   */
   Ptr<NetDevice> m_ueDevice;
+  /**
+   * Configuration of bearer which will be activated
+   */
   EpsBearer m_bearer;
+  /**
+   * imsi the unique UE identifier
+   */
   uint64_t m_imsi;
 };
 

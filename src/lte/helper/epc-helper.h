@@ -39,6 +39,8 @@ class EpcX2;
 class EpcMme;
 
 /**
+ * \ingroup lte
+ *
  * \brief Base helper class to handle the creation of the EPC entities.
  *
  * This class provides the API for the implementation of helpers that
@@ -60,6 +62,10 @@ public:
   virtual ~EpcHelper ();
   
   // inherited from Object
+  /**
+   *  Register this type.
+   *  \return The object TypeId.
+   */
   static TypeId GetTypeId (void);
   virtual void DoDispose ();
 

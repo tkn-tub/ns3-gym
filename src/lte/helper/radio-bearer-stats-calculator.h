@@ -34,15 +34,22 @@
 
 namespace ns3
 {
-
+/// Container: (IMSI, LCID) pair, uint32_t
 typedef std::map<ImsiLcidPair_t, uint32_t> Uint32Map;
+/// Container: (IMSI, LCID) pair, uint64_t
 typedef std::map<ImsiLcidPair_t, uint64_t> Uint64Map;
+/// Container: (IMSI, LCID) pair, uint32_t calculator
 typedef std::map<ImsiLcidPair_t, Ptr<MinMaxAvgTotalCalculator<uint32_t> > > Uint32StatsMap;
+/// Container: (IMSI, LCID) pair, uint64_t calculator
 typedef std::map<ImsiLcidPair_t, Ptr<MinMaxAvgTotalCalculator<uint64_t> > > Uint64StatsMap;
+/// Container: (IMSI, LCID) pair, double
 typedef std::map<ImsiLcidPair_t, double> DoubleMap;
+/// Container: (IMSI, LCID) pair, LteFlowId_t
 typedef std::map<ImsiLcidPair_t, LteFlowId_t> FlowIdMap;
 
 /**
+ * \ingroup lte
+ *
  * This class is an ns-3 trace sink that performs the calculation of
  * PDU statistics for uplink and downlink. Statistics are generated
  * on a per radio bearer basis. This class can be used for 
@@ -80,6 +87,10 @@ public:
   ~RadioBearerStatsCalculator ();
 
   // Inherited from ns3::Object
+  /**
+   *  Register this type.
+   *  \return The object TypeId.
+   */
   static TypeId GetTypeId (void);
   void DoDispose ();
 
@@ -337,38 +348,69 @@ public:
   GetDlPduSizeStats (uint64_t imsi, uint8_t lcid);
 
 private:
+  /**
+   * Called after each epoch to write collected
+   * statistics to output files. During first call
+   * it opens output files and write columns descriptions.
+   * During next calls it opens output files in append mode.
+   */
   void
   ShowResults (void);
+
+  /**
+   * Writes collected statistics to UL output file and
+   * closes UL output file.
+   * @param outFile ofstream for UL statistics
+   */
   void
   WriteUlResults (std::ofstream& outFile);
+
+  /**
+   * Writes collected statistics to DL output file and
+   * closes DL output file.
+   * @param outFile ofstream for DL statistics
+   */
   void
   WriteDlResults (std::ofstream& outFile);
+
+  /**
+   * Erases collected statistics
+   */
   void
   ResetResults (void);
 
+  /**
+   * Reschedules EndEpoch event. Usually used after
+   * execution of SetStartTime() or SetEpoch()
+   */
   void RescheduleEndEpoch ();
 
+  /**
+   * Function called in every endEpochEvent. It calls
+   * ShowResults() to write statistics to output files
+   * and ResetResults() to clear collected statistics.
+   */
   void EndEpoch (void);
 
-  EventId m_endEpochEvent;
+  EventId m_endEpochEvent; //!< Event id for next end epoch event
 
-  FlowIdMap m_flowId;
+  FlowIdMap m_flowId; //!< List of FlowIds, ie. (RNTI, LCID) by (IMSI, LCID) pair
 
-  Uint32Map m_dlCellId;
-  Uint32Map m_dlTxPackets;
-  Uint32Map m_dlRxPackets;
-  Uint64Map m_dlTxData;
-  Uint64Map m_dlRxData;
-  Uint64StatsMap m_dlDelay;
-  Uint32StatsMap m_dlPduSize;
+  Uint32Map m_dlCellId; //!< List of DL CellIds by (IMSI, LCID) pair
+  Uint32Map m_dlTxPackets; //!< Number of DL TX Packets by (IMSI, LCID) pair
+  Uint32Map m_dlRxPackets; //!< Number of DL RX Packets by (IMSI, LCID) pair
+  Uint64Map m_dlTxData; //!< Amount of DL TX Data by (IMSI, LCID) pair
+  Uint64Map m_dlRxData; //!< Amount of DL RX Data by (IMSI, LCID) pair
+  Uint64StatsMap m_dlDelay; //!< DL delay by (IMSI, LCID) pair
+  Uint32StatsMap m_dlPduSize; //!< DL PDU Size by (IMSI, LCID) pair
 
-  Uint32Map m_ulCellId;
-  Uint32Map m_ulTxPackets;
-  Uint32Map m_ulRxPackets;
-  Uint64Map m_ulTxData;
-  Uint64Map m_ulRxData;
-  Uint64StatsMap m_ulDelay;
-  Uint32StatsMap m_ulPduSize;
+  Uint32Map m_ulCellId; //!< List of UL CellIds by (IMSI, LCID) pair
+  Uint32Map m_ulTxPackets; //!< Number of UL TX Packets by (IMSI, LCID) pair
+  Uint32Map m_ulRxPackets; //!< Number of UL RX Packets by (IMSI, LCID) pair
+  Uint64Map m_ulTxData; //!< Amount of UL TX Data by (IMSI, LCID) pair
+  Uint64Map m_ulRxData; //!< Amount of UL RX Data by (IMSI, LCID) pair
+  Uint64StatsMap m_ulDelay; //!< UL delay by (IMSI, LCID) pair
+  Uint32StatsMap m_ulPduSize; //!< UL PDU Size by (IMSI, LCID) pair
 
   /**
    * Start time of the on going epoch
@@ -389,9 +431,20 @@ private:
    * true if any output is pending
    */
   bool m_pendingOutput;
+
+  /**
+   * Protocol type, by default RLC
+   */
   std::string m_protocolType;
 
+  /**
+   * Name of the file where the downlink PDCP statistics will be saved
+   */
   std::string m_dlPdcpOutputFilename;
+
+  /**
+   * Name of the file where the uplink PDCP statistics will be saved
+   */
   std::string m_ulPdcpOutputFilename;
 
 };
