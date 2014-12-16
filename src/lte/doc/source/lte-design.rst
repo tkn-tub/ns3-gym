@@ -3861,7 +3861,7 @@ power plan for Full Frequency Reuse scheme.
 .. _fig-lte-full-frequency-reuse-scheme:
  
 .. figure:: figures/fr-full-frequency-reuse-scheme.*
-   :scale: 40 %
+   :scale: 60 %
    :align: center
 
    Full Frequency Reuse scheme 
@@ -3890,7 +3890,7 @@ power plan for Hard Frequency Reuse scheme.
 .. _fig-lte-hard-frequency-reuse-scheme:
  
 .. figure:: figures/fr-hard-frequency-reuse-scheme.*
-   :scale: 40 %
+   :scale: 60 %
    :align: center
 
    Hard Frequency Reuse scheme 
@@ -3919,7 +3919,7 @@ power plan for Strict Frequency Reuse scheme with a cell-edge reuse factor of N 
 .. _fig-lte-strict-frequency-reuse-scheme:
  
 .. figure:: figures/fr-strict-frequency-reuse-scheme.*
-   :scale: 40 %
+   :scale: 60 %
    :align: center
 
    Strict Frequency Reuse scheme 
@@ -3953,7 +3953,7 @@ There are two possible versions of SFR scheme:
    .. _fig-lte-soft-frequency-reuse-scheme-v1:
  
    .. figure:: figures/fr-soft-frequency-reuse-scheme-v1.*
-      :scale: 40 %
+      :scale: 60 %
       :align: center
 
       Soft Frequency Reuse scheme version 1 
@@ -3968,7 +3968,7 @@ There are two possible versions of SFR scheme:
    .. _fig-lte-soft-frequency-reuse-scheme-v2:
  
    .. figure:: figures/fr-soft-frequency-reuse-scheme-v2.*
-      :scale: 40 %
+      :scale: 60 %
       :align: center
 
       Soft Frequency Reuse scheme version 2
@@ -3999,7 +3999,7 @@ frequency and power plan for Soft Fractional Frequency Reuse.
 .. _fig-lte-soft-fractional-frequency-reuse-scheme:
  
 .. figure:: figures/fr-soft-fractional-frequency-reuse-scheme.*
-   :scale: 40 %
+   :scale: 60 %
    :align: center
 
    Soft Fractional Fractional Frequency Reuse scheme
@@ -4046,7 +4046,7 @@ frequency and power plan for Enhanced Fractional Frequency Reuse.
 .. _fig-lte-enhanced-fractional-frequency-reuse-scheme:
  
 .. figure:: figures/fr-enhanced-fractional-frequency-reuse-scheme.*
-   :scale: 40 %
+   :scale: 60 %
    :align: center
 
    Enhanced Fractional Fractional Frequency Reuse scheme
@@ -4094,7 +4094,7 @@ sequence diagram of Distributed Fractional Frequency Reuse Scheme.
 .. _fig-lte-distributed-fractional-frequency-reuse-scheme:
  
 .. figure:: figures/ffr-distributed-scheme.*
-   :scale: 100 %
+   :scale: 80 %
    :align: center
 
    Sequence diagram of Distributed Frequency Reuse Scheme
