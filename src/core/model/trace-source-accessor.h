@@ -119,7 +119,7 @@ Ptr<const TraceSourceAccessor> MakeTraceSourceAccessor (T a);
 
 
 /********************************************************************
-   Implementation of MakeTraceSourceAccessor
+ *  Implementation of the templates declared above.
  ********************************************************************/
 
 namespace ns3 {

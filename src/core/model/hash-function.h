@@ -96,9 +96,9 @@ public:
  *
  * \ingroup hash
  *
- * \brief Basic hash function typedefs.
+ * \brief Function pointer signatures for basic hash functions.
  *
- * See Hash32Implementation<> or Hash64Implementation<>
+ * See Hash::Function::Hash32 or Hash::Function::Hash64
  * @{
  */
 typedef uint32_t (*Hash32Function_ptr) (const char *, const size_t);
@@ -114,7 +114,8 @@ namespace Function {
 /**
  * \ingroup hash
  *
- * \brief Template for Hashfunctions from 32-bit hash functions.
+ * \brief Template for creating a Hash::Implementation from
+ * a 32-bit hash function.
  */
 class Hash32 : public Implementation
 {
@@ -137,7 +138,8 @@ private:
 /**
  * \ingroup hash
  *
- * \brief Template for Hashfunctions from 64-bit hash functions
+ * \brief Template for creating a Hash::Implemetation from
+ * a 64-bit hash function.
  */
 class Hash64 : public Implementation
 {

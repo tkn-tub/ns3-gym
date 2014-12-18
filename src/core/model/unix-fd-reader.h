@@ -28,9 +28,9 @@
 #include "event-id.h"
 
 /**
- * \ingroup system
  * \file
- * Asynchronous reads from a file descriptor, which trigger a Callback.
+ * \ingroup system
+ * ns3::FdReader declaration.
  */
 
 namespace ns3 {

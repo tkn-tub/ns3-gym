@@ -66,7 +66,7 @@
 /**
  * \file
  * \ingroup systempath
- * System-independent file and directory function definitions.
+ * System-independent file and directory functions implementation.
  */
 
 namespace ns3 {

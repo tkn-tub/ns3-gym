@@ -34,7 +34,7 @@
 /**
  * \file
  * \ingroup object
- * ns3::Object class definition.
+ * ns3::Object class implementation.
  */
 
 namespace ns3 {

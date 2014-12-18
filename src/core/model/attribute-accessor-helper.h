@@ -48,7 +48,7 @@ namespace ns3 {
  * specific AttributeValue type \p V which holds the value
  * (or the type implied by the name \c Make<V>Accessor of this function.)
  * In the case of a \p setter returning \p bool, the return value
- * should be true if the value could be set successfully.
+ * should be \c true if the value could be set successfully.
  *
  * \tparam V  (If present) The specific AttributeValue type to use to represent
  *            the Attribute.  (If not present, the type \p V is implicit
@@ -115,7 +115,7 @@ MakeAccessorHelper (T1 a1, T2 a2);
 
 
 /***************************************************************
- *        The implementation of the above functions.
+ *  Implementation of the templates declared above.
  ***************************************************************/
 
 #include "type-traits.h"

@@ -23,7 +23,7 @@
 /**
  * \file
  * \ingroup events
- * ns3::MakeEvent(void(*f)(void)) definition.
+ * ns3::MakeEvent(void(*f)(void)) implementation.
  */
 
 namespace ns3 {

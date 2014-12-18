@@ -448,18 +448,19 @@ bool operator >= (const Ptr<T> &lhs, const Ptr<T> &rhs);
 template <typename T1, typename T2>
 Ptr<T1> const_pointer_cast (Ptr<T2> const&p);
 
+// Duplicate of struct CallbackTraits<T> as defined in callback.h  
 template <typename T>
 struct CallbackTraits;
 
 /**
- * \ingroup makecallbackmemptr
+ * \ingroup callbackimpl
  *
  * Trait class to convert a pointer into a reference,
  * used by MemPtrCallBackImpl.
  *
  * This is the specialization for Ptr types.
  *
- * \tparam The base object type.
+ * \tparam T The base object type.
  */
 template <typename T>
 struct CallbackTraits<Ptr<T> >
@@ -474,6 +475,7 @@ struct CallbackTraits<Ptr<T> >
   }
 };
 
+// Duplicate of struct EventMemberImplObjTraits<T> as defined in make-event.h
 template <typename T>
 struct EventMemberImplObjTraits;
 

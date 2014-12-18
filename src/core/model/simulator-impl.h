@@ -44,8 +44,8 @@ class SimulatorImpl : public Object
 public:
   
   /**
-   *  Register this type.
-   *  \return The object TypeId.
+   * Get the registered TypeId for this class.
+   * \return The object TypeId.
    */
   static TypeId GetTypeId (void);
 

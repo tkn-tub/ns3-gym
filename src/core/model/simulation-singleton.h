@@ -34,14 +34,24 @@ class SimulationSingleton
 {
 public:
   /**
-   * \returns the instance underlying this singleton.
+   * \returns The instance underlying this singleton.
    *
    * This instance will be automatically deleted when the
    * user calls ns3::Simulator::Destroy.
    */
   static T *Get (void);
 private:
+  /**
+   * Get the singleton object, creating a new one if it doesn't exist yet.
+   *
+   * \internal
+   * When a new object is created, this method schedules it's own
+   * destruction using Simulator::ScheduleDestroy().
+   *
+   * \returns The address of the pointer holding the static instance.
+   */
   static T **GetObject (void);
+  /** Delete the underlying object. */
   static void DeleteObject (void);
 };
 

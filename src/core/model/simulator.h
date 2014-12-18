@@ -31,6 +31,12 @@
 #include <stdint.h>
 #include <string>
 
+/**
+ * \file
+ * \ingroup simulator
+ * ns3::Simulator declaration.
+ */
+
 namespace ns3 {
 
 class SimulatorImpl;
@@ -786,6 +792,7 @@ private:
 };
 
 /**
+ * \ingroup simulator
  * \brief create an ns3::Time instance which contains the
  *        current simulation time.
  *
@@ -800,6 +807,11 @@ private:
 Time Now (void);
 
 } // namespace ns3
+
+
+/********************************************************************
+ *  Implementation of the templates declared above.
+ ********************************************************************/
 
 namespace ns3 {
 

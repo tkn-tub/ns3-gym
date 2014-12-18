@@ -23,7 +23,7 @@
 /**
  * \file
  * \ingroup events
- * ns3::MakeEvent function declarations and template definitions.
+ * ns3::MakeEvent function declarations and template implementation.
  */
 
 namespace ns3 {
@@ -32,7 +32,7 @@ class EventImpl;
 
 /**
  * \ingroup events
- * \defgroup makeeventmemptr MakeEvent from member function pointer.
+ * \defgroup makeeventmemptr MakeEvent from Member Function Pointer.
  *
  * Create EventImpl instances from class member functions which take
  * varying numbers of arguments.
@@ -148,13 +148,11 @@ EventImpl * MakeEvent (MEM mem_ptr, OBJ obj,
   
 /**
  * \ingroup events
- * \defgroup makeeventfnptr MakeEvent from function pointers.
+ * \defgroup makeeventfnptr MakeEvent from Function Pointers.
  *
  * Create EventImpl instances from function pointers which take
  * varying numbers of arguments.
- */
-/**
- * \ingroup makeeventfnptr
+ *
  * @{
  */
 /**
@@ -260,7 +258,7 @@ EventImpl * MakeEvent (void (*f)(U1,U2,U3,U4,U5), T1 a1, T2 a2, T3 a3, T4 a4, T5
 } // namespace ns3
 
 /********************************************************************
-   Implementation of templates defined above
+ *  Implementation of the templates declared above.
  ********************************************************************/
 
 #include "event-impl.h"
@@ -272,6 +270,8 @@ namespace ns3 {
  * \ingroup makeeventmemptr
  * Helper for the MakeEvent functions which take a class method.
  *
+ * This helper converts a pointer to a reference.
+ *
  * This is the generic template declaration (with empty body).
  *
  * \tparam T The class type.
@@ -282,6 +282,8 @@ struct EventMemberImplObjTraits;
 /**
  * \ingroup makeeventmemptr
  * Helper for the MakeEvent functions which take a class method.
+ *
+ * This helper converts a pointer to a reference.
  *
  * This is the specialization for pointer types.
  *

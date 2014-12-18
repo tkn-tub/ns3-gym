@@ -66,7 +66,7 @@ MakeObjectMapAccessor (INDEX (T::*getN)(void) const,
 
 
 /***************************************************************
- *        The implementation of the above functions.
+ *  Implementation of the templates declared above.
  ***************************************************************/
 
 template <typename T, typename U>

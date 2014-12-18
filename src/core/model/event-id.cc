@@ -25,7 +25,7 @@
 /**
  * \file
  * \ingroup events
- * ns3::EventId definitions.
+ * ns3::EventId implementation.
  */
 
 namespace ns3 {

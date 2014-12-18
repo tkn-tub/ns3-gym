@@ -137,14 +137,14 @@ public:
 
 
 /********************************************************************
-   Implementation of TimerImpl implementation functions.
+ *  Implementation of TimerImpl implementation functions.
  ********************************************************************/
 
 namespace ns3 {
 
 /**
  * \ingroup timer
- * \defgroup timerimpl TimerImpl implementation details.
+ * \defgroup timerimpl TimerImpl Implementation
  * @{
  */
   
@@ -966,7 +966,7 @@ MakeTimerImpl (IntToType<6>, MEM_PTR memPtr, OBJ_PTR objPtr)
 
   
 /********************************************************************
-   Implementation of TimerImpl itself.
+ *  Implementation of TimerImpl itself.
  ********************************************************************/
   
 template <typename T1>

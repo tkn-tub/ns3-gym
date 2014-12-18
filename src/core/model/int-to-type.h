@@ -20,17 +20,32 @@
 #ifndef INT_TO_TYPE_H
 #define INT_TO_TYPE_H
 
+/**
+ * \file
+ * ns3::IntToType template class.
+ */
+
 namespace ns3 {
 
 /**
+ * Convert an integer into a type.
+ *
  * This trivial template is extremely useful, as explained in
- * "Modern C++ Design", p29, section 2.4, 
- * "Mapping Integral Constants to Types"
+ * "Modern C++ Design", p 29, section 2.4, 
+ * "Mapping Integral Constants to Types".
+ *
+ * For an example, see timer-impl.h
+ *
+ * \tparam v The integral constant value distinguishing this type
+ *           from other values.
  */
 template <int v>
 struct IntToType
 {
-  enum v_e { value = v};
+  /** Enumeration holding the type-specific value. */
+  enum v_e {
+    value = v  /**< The integer value distinguishing this type. */
+  };
 };
 
 } // namespace ns3

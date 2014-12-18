@@ -186,7 +186,7 @@ private:
 
 
 /********************************************************************
-   Implementation of templates defined above
+ *  Implementation of the templates declared above.
  ********************************************************************/
 
 #include "timer-impl.h"

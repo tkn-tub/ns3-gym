@@ -30,7 +30,7 @@
 /**
  * \file
  * \ingroup object
- * ns3::ObjectBase class definition.
+ * ns3::ObjectBase class implementation.
  */
 
 namespace ns3 {

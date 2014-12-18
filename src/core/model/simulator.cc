@@ -37,6 +37,14 @@
 #include <vector>
 #include <iostream>
 
+/**
+ * \file
+ * \ingroup simulator
+ * ns3::Simulator implementation, as well as implementation pointer,
+ * global scheduler implementation, and default ns3::NodePrinter
+ * and ns3::TimePrinter.
+ */
+
 namespace ns3 {
 
 // Note:  Logging in this file is largely avoided due to the

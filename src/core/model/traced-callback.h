@@ -243,7 +243,7 @@ private:
 
 
 /********************************************************************
-   Implementation of TimerImpl implementation functions.
+ *  Implementation of the templates declared above.
  ********************************************************************/
 
 namespace ns3 {

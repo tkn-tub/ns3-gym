@@ -36,6 +36,12 @@
 #include <cmath>
 
 
+/**
+ * \file
+ * \ingroup realtime
+ * ns3::RealTimeSimulatorImpl implementation.
+ */
+
 namespace ns3 {
 
 // Note:  Logging in this file is largely avoided due to the

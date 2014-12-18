@@ -436,7 +436,7 @@ private:
 
 
 /** \ingroup commandline
- *  \defgroup commandlinehelper Helpers to specialize on bool
+ *  \defgroup commandlinehelper Helpers to Specialize on \c bool
  */
 /**
  * \ingroup commandlinehelper
@@ -446,7 +446,7 @@ namespace CommandLineHelper {
 
   /**
    * \ingroup commandlinehelper
-   * \brief Helper to specialize UserItem::Parse on bool
+   * \brief Helpers to specialize CommandLine::UserItem::Parse() on bool
    *
    * \param value the argument name
    * \param val the argument location
@@ -461,7 +461,7 @@ namespace CommandLineHelper {
 
   /**
    * \ingroup commandlinehelper
-   * \brief Helper to specialize UserItem::GetDefault on bool
+   * \brief Helper to specialize CommandLine::UserItem::GetDefault() on bool
    *
    * \param val the argument value
    * \return the string representation of value
@@ -481,7 +481,7 @@ namespace CommandLineHelper {
 
 
 /********************************************************************
- *  Implementation of templates defined above
+ *  Implementation of the templates declared above.
  ********************************************************************/
 
 namespace ns3 {
