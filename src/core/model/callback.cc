@@ -21,6 +21,12 @@
 #include "callback.h"
 #include "log.h"
 
+/**
+ * \file
+ * \ingroup callback
+ * ns3::CallbackValue implementation.
+ */
+
 namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("Callback");
