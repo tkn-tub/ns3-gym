@@ -2246,12 +2246,11 @@ leave RRC CONNECTED notifying the NAS of the RRC connection
 failure. In order to model RLF properly, RRC IDLE mode should be
 supported, including in particular idle mode cell (re-)selection.
 
-With the current model, an UE that experiences bad link quality will
+With the current model, an UE that experiences bad link quality and
+that does not perform handover (because of, e.g., no neighbour cells,
+handover disabled, handover thresholds misconfigured) will 
 just stay associated with the same eNB, and the scheduler will stop
-allocating resources to it for communications. This is also consistent
-with the fact that, at this stage, only handovers explicitly triggered
-within the simulation program are supported (network-driven handovers
-based on UE measurements are planned only at a later stage).
+allocating resources to it for communications. 
 
 
 .. _sec-ue-measurements:
