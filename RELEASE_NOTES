@@ -40,12 +40,15 @@ Bugs fixed
 - Bug 1970 - Missing NotifyAckTimeoutStartNow in MacLow::StartDataTxTimers
 - Bug 1971 - 802.11n at 2.4 GHz should include a signal extension duration
 - Bug 1983 - FlowMonitor returns containers copies instead of references.
+- Bug 1986 - test result divergence for lte-frequency-reuse test
 - Bug 1991 - PcapFileWrapper::CaptureSize attribute (snaplen) has no effect.
+- Bug 1996 - RSRQ calculation: misleading variable names
 - Bug 1997 - Fix PlotProbe() documentation and usage for GnuplotHelper and FileHelper
 - Bug 2011 - Default Speed attribute in ConstantSpeedPropagationDelayModel
 - Bug 2016 - Radvd do not consider the SendAdvert option and don't reply to RS
 - Bug 2020 - Erroneous MCS field in 802.11n PCAP files
 - Bug 2021 - Missing const qualifier in TopologyReader::Link::Attributes{Begin,End}()
+- Bug 2029 - new CQI generation approach fix
 
 Known issues
 ------------
