@@ -552,7 +552,7 @@ LteUePhy::GenerateCtrlCqiReport (const SpectrumValue& sinr)
       while (itPss != m_pssList.end ())
         {
           uint16_t rbNum = 0;
-          double rsrqSum = 0.0;
+          double rssiSum = 0.0;
 
           Values::const_iterator itIntN = m_rsInterferencePower.ConstValuesBegin ();
           Values::const_iterator itPj = m_rsReceivedPower.ConstValuesBegin ();
@@ -562,13 +562,13 @@ LteUePhy::GenerateCtrlCqiReport (const SpectrumValue& sinr)
             {
               rbNum++;
               // convert PSD [W/Hz] to linear power [W] for the single RE
-              double noisePowerTxW = ((*itIntN) * 180000.0) / 12.0;
-              double intPowerTxW = ((*itPj) * 180000.0) / 12.0;
-              rsrqSum += (2 * (noisePowerTxW + intPowerTxW));
+              double interfPlusNoisePowerTxW = ((*itIntN) * 180000.0) / 12.0;
+              double signalPowerTxW = ((*itPj) * 180000.0) / 12.0;
+              rssiSum += (2 * (interfPlusNoisePowerTxW + signalPowerTxW));
             }
 
           NS_ASSERT (rbNum == (*itPss).nRB);
-          double rsrq_dB = 10 * log10 ((*itPss).pssPsdSum / rsrqSum);
+          double rsrq_dB = 10 * log10 ((*itPss).pssPsdSum / rssiSum);
 
           if (rsrq_dB > m_pssReceptionThreshold)
             {
@@ -675,7 +675,7 @@ LteUePhy::GenerateMixedCqiReport (const SpectrumValue& sinr)
       while (itPss != m_pssList.end ())
         {
           uint16_t rbNum = 0;
-          double rsrqSum = 0.0;
+          double rssiSum = 0.0;
 
           Values::const_iterator itIntN = m_rsInterferencePower.ConstValuesBegin ();
           Values::const_iterator itPj = m_rsReceivedPower.ConstValuesBegin ();
@@ -685,13 +685,13 @@ LteUePhy::GenerateMixedCqiReport (const SpectrumValue& sinr)
             {
               rbNum++;
               // convert PSD [W/Hz] to linear power [W] for the single RE
-              double noisePowerTxW = ((*itIntN) * 180000.0) / 12.0;
-              double intPowerTxW = ((*itPj) * 180000.0) / 12.0;
-              rsrqSum += (2 * (noisePowerTxW + intPowerTxW));
+              double interfPlusNoisePowerTxW = ((*itIntN) * 180000.0) / 12.0;
+              double signalPowerTxW = ((*itPj) * 180000.0) / 12.0;
+              rssiSum += (2 * (interfPlusNoisePowerTxW + signalPowerTxW));
             }
 
           NS_ASSERT (rbNum == (*itPss).nRB);
-          double rsrq_dB = 10 * log10 ((*itPss).pssPsdSum / rsrqSum);
+          double rsrq_dB = 10 * log10 ((*itPss).pssPsdSum / rssiSum);
 
           if (rsrq_dB > m_pssReceptionThreshold)
             {
