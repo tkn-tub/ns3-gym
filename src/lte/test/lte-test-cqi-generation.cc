@@ -32,6 +32,9 @@
 #include "ns3/mobility-helper.h"
 #include "ns3/lte-helper.h"
 
+#include "lte-ffr-simple.h"
+#include "ns3/lte-rrc-sap.h"
+
 #include "lte-test-cqi-generation.h"
 
 using namespace ns3;
@@ -54,6 +57,22 @@ LteTestUlSchedulingCallback (LteCqiGenerationTestCase *testcase, std::string pat
   testcase->UlScheduling (frameNo, subframeNo, rnti, mcs, sizeTb);
 }
 
+void
+LteTestDlSchedulingCallback2 (LteCqiGenerationDlPowerControlTestCase *testcase, std::string path,
+                              uint32_t frameNo, uint32_t subframeNo, uint16_t rnti,
+                              uint8_t mcsTb1, uint16_t sizeTb1, uint8_t mcsTb2, uint16_t sizeTb2)
+{
+  testcase->DlScheduling (frameNo, subframeNo, rnti, mcsTb1, sizeTb1, mcsTb2, sizeTb2);
+}
+
+void
+LteTestUlSchedulingCallback2 (LteCqiGenerationDlPowerControlTestCase *testcase, std::string path,
+                              uint32_t frameNo, uint32_t subframeNo, uint16_t rnti,
+                              uint8_t mcs, uint16_t sizeTb)
+{
+  testcase->UlScheduling (frameNo, subframeNo, rnti, mcs, sizeTb);
+}
+
 
 /**
  * TestSuite
@@ -69,6 +88,20 @@ LteCqiGenerationTestSuite::LteCqiGenerationTestSuite ()
   AddTestCase (new LteCqiGenerationTestCase ("UsePdcchForCqiGeneration", false, 4, 2), TestCase::QUICK);
   AddTestCase (new LteCqiGenerationTestCase ("UsePdschForCqiGeneration", true, 28, 2), TestCase::QUICK);
 
+  AddTestCase (new LteCqiGenerationDlPowerControlTestCase ("CqiGenerationWithDlPowerControl",
+                                                           LteRrcSap::PdschConfigDedicated::dB0, LteRrcSap::PdschConfigDedicated::dB0, 4, 2), TestCase::QUICK);
+  AddTestCase (new LteCqiGenerationDlPowerControlTestCase ("CqiGenerationWithDlPowerControl",
+                                                           LteRrcSap::PdschConfigDedicated::dB0, LteRrcSap::PdschConfigDedicated::dB_3, 8, 2), TestCase::QUICK);
+  AddTestCase (new LteCqiGenerationDlPowerControlTestCase ("CqiGenerationWithDlPowerControl",
+                                                           LteRrcSap::PdschConfigDedicated::dB0, LteRrcSap::PdschConfigDedicated::dB_6, 10, 2), TestCase::QUICK);
+  AddTestCase (new LteCqiGenerationDlPowerControlTestCase ("CqiGenerationWithDlPowerControl",
+                                                           LteRrcSap::PdschConfigDedicated::dB1, LteRrcSap::PdschConfigDedicated::dB_6, 12, 2), TestCase::QUICK);
+  AddTestCase (new LteCqiGenerationDlPowerControlTestCase ("CqiGenerationWithDlPowerControl",
+                                                           LteRrcSap::PdschConfigDedicated::dB2, LteRrcSap::PdschConfigDedicated::dB_6, 14, 2), TestCase::QUICK);
+  AddTestCase (new LteCqiGenerationDlPowerControlTestCase ("CqiGenerationWithDlPowerControl",
+                                                           LteRrcSap::PdschConfigDedicated::dB3, LteRrcSap::PdschConfigDedicated::dB_6, 14, 2), TestCase::QUICK);
+  AddTestCase (new LteCqiGenerationDlPowerControlTestCase ("CqiGenerationWithDlPowerControl",
+                                                           LteRrcSap::PdschConfigDedicated::dB3, LteRrcSap::PdschConfigDedicated::dB0, 8, 2), TestCase::QUICK);
 }
 
 static LteCqiGenerationTestSuite lteCqiGenerationTestSuite;
@@ -206,3 +239,137 @@ LteCqiGenerationTestCase::DoRun (void)
 
   Simulator::Destroy ();
 }
+
+LteCqiGenerationDlPowerControlTestCase::LteCqiGenerationDlPowerControlTestCase (std::string name,
+                                                                                uint8_t cell0Pa, uint8_t cell1Pa, uint16_t dlMcs, uint16_t ulMcs)
+  : TestCase ("Downlink Power Control: " + name),
+    m_cell0Pa (cell0Pa),
+    m_cell1Pa (cell1Pa),
+    m_dlMcs (dlMcs),
+    m_ulMcs (ulMcs)
+{
+  NS_LOG_INFO ("Creating LteCqiGenerationTestCase");
+}
+
+LteCqiGenerationDlPowerControlTestCase::~LteCqiGenerationDlPowerControlTestCase ()
+{
+}
+
+void
+LteCqiGenerationDlPowerControlTestCase::DlScheduling (uint32_t frameNo, uint32_t subframeNo, uint16_t rnti,
+                                                      uint8_t mcsTb1, uint16_t sizeTb1, uint8_t mcsTb2, uint16_t sizeTb2)
+{
+  // need to allow for RRC connection establishment + CQI feedback reception
+  if (Simulator::Now () > MilliSeconds (500))
+    {
+//	  NS_LOG_UNCOND("DL MSC: " << (uint32_t)mcsTb1 << " expected DL MCS: " << (uint32_t)m_dlMcs);
+      NS_TEST_ASSERT_MSG_EQ ((uint32_t)mcsTb1, (uint32_t)m_dlMcs, "Wrong DL MCS ");
+    }
+}
+
+void
+LteCqiGenerationDlPowerControlTestCase::UlScheduling (uint32_t frameNo, uint32_t subframeNo, uint16_t rnti,
+                                                      uint8_t mcs, uint16_t sizeTb)
+{
+  // need to allow for RRC connection establishment + SRS transmission
+  if (Simulator::Now () > MilliSeconds (500))
+    {
+//	  NS_LOG_UNCOND("UL MSC: " << (uint32_t)mcs << " expected UL MCS: " << (uint32_t)m_ulMcs);
+      NS_TEST_ASSERT_MSG_EQ ((uint32_t)mcs, (uint32_t)m_ulMcs, "Wrong UL MCS");
+    }
+}
+
+void
+LteCqiGenerationDlPowerControlTestCase::DoRun (void)
+{
+  NS_LOG_DEBUG ("LteCqiGenerationTestCase");
+
+  Config::Reset ();
+  Config::SetDefault ("ns3::LteHelper::UseIdealRrc", BooleanValue (true));
+  Config::SetDefault ("ns3::LteHelper::UsePdschForCqiGeneration", BooleanValue (true));
+
+  Config::SetDefault ("ns3::LteSpectrumPhy::CtrlErrorModelEnabled", BooleanValue (true));
+  Config::SetDefault ("ns3::LteSpectrumPhy::DataErrorModelEnabled", BooleanValue (true));
+
+  Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();
+  lteHelper->SetFfrAlgorithmType ("ns3::LteFfrSimple");
+
+  // Create Nodes: eNodeB and UE
+  NodeContainer enbNodes;
+  NodeContainer ueNodes1;
+  NodeContainer ueNodes2;
+  enbNodes.Create (2);
+  ueNodes1.Create (1);
+  ueNodes2.Create (1);
+  NodeContainer allNodes = NodeContainer ( enbNodes, ueNodes1, ueNodes2);
+
+  /*
+   * The topology is the following:
+   *
+   *  eNB1                        UE1 UE2                        eNB2
+   *    |                            |                            |
+   *    x -------------------------- x -------------------------- x
+   *                  500 m                       500 m
+   *
+   */
+
+  Ptr<ListPositionAllocator> positionAlloc = CreateObject<ListPositionAllocator> ();
+  positionAlloc->Add (Vector (0.0, 0.0, 0.0));   // eNB1
+  positionAlloc->Add (Vector (1000, 0.0, 0.0)); // eNB2
+  positionAlloc->Add (Vector (500.0, 0.0, 0.0));  // UE1
+  positionAlloc->Add (Vector (500, 0.0, 0.0));  // UE2
+  MobilityHelper mobility;
+  mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
+  mobility.SetPositionAllocator (positionAlloc);
+  mobility.Install (allNodes);
+
+  // Create Devices and install them in the Nodes (eNB and UE)
+  NetDeviceContainer enbDevs;
+  NetDeviceContainer ueDevs1;
+  NetDeviceContainer ueDevs2;
+  lteHelper->SetSchedulerType ("ns3::PfFfMacScheduler");
+  lteHelper->SetSchedulerAttribute ("UlCqiFilter", EnumValue (FfMacScheduler::PUSCH_UL_CQI));
+  enbDevs = lteHelper->InstallEnbDevice (enbNodes);
+  ueDevs1 = lteHelper->InstallUeDevice (ueNodes1);
+  ueDevs2 = lteHelper->InstallUeDevice (ueNodes2);
+
+  // Attach a UE to a eNB
+  lteHelper->Attach (ueDevs1, enbDevs.Get (0));
+  lteHelper->Attach (ueDevs2, enbDevs.Get (1));
+
+  // Activate an EPS bearer
+  enum EpsBearer::Qci q = EpsBearer::GBR_CONV_VOICE;
+  EpsBearer bearer (q);
+  lteHelper->ActivateDataRadioBearer (ueDevs1, bearer);
+  lteHelper->ActivateDataRadioBearer (ueDevs2, bearer);
+
+  PointerValue tmp;
+  enbDevs.Get (0)->GetAttribute ("LteFfrAlgorithm", tmp);
+  Ptr<LteFfrSimple> simpleFfrAlgorithmEnb0 = DynamicCast<LteFfrSimple>(tmp.GetObject ());
+  simpleFfrAlgorithmEnb0->ChangePdschConfigDedicated (true);
+
+  LteRrcSap::PdschConfigDedicated pdschConfigDedicatedEnb0;
+  pdschConfigDedicatedEnb0.pa = m_cell0Pa;
+  simpleFfrAlgorithmEnb0->SetPdschConfigDedicated (pdschConfigDedicatedEnb0);
+
+  enbDevs.Get (1)->GetAttribute ("LteFfrAlgorithm", tmp);
+  Ptr<LteFfrSimple> simpleFfrAlgorithmEnb1 = DynamicCast<LteFfrSimple>(tmp.GetObject ());
+  simpleFfrAlgorithmEnb1->ChangePdschConfigDedicated (true);
+
+  LteRrcSap::PdschConfigDedicated pdschConfigDedicatedEnb1;
+  pdschConfigDedicatedEnb1.pa = m_cell1Pa;
+  simpleFfrAlgorithmEnb1->SetPdschConfigDedicated (pdschConfigDedicatedEnb1);
+
+
+  Config::Connect ("/NodeList/0/DeviceList/0/LteEnbMac/DlScheduling",
+                   MakeBoundCallback (&LteTestDlSchedulingCallback2, this));
+
+  Config::Connect ("/NodeList/0/DeviceList/0/LteEnbMac/UlScheduling",
+                   MakeBoundCallback (&LteTestUlSchedulingCallback2, this));
+
+  Simulator::Stop (Seconds (1.100));
+  Simulator::Run ();
+
+  Simulator::Destroy ();
+}
+

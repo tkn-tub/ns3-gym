@@ -312,6 +312,7 @@ private:
   void DoSetRnti (uint16_t rnti);
   void DoSetTransmissionMode (uint8_t txMode);
   void DoSetSrsConfigurationIndex (uint16_t srcCi);
+  void DoSetPa (double pa);
 
   // UE PHY SAP methods 
   virtual void DoSendMacPdu (Ptr<Packet> p);
@@ -363,6 +364,8 @@ private:
   uint16_t m_srsSubframeOffset;
   uint16_t m_srsConfigured;
   Time     m_srsStartTime;
+
+  double m_paLinear;
 
   bool m_dlConfigured;
   bool m_ulConfigured;

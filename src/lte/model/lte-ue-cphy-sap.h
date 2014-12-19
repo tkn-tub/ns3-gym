@@ -139,6 +139,11 @@ public:
    */
   virtual void SetSrsConfigurationIndex (uint16_t srcCi) = 0;
 
+  /**
+   * \param pa the P_A value
+   */
+  virtual void SetPa (double pa) = 0;
+
 };
 
 
@@ -231,6 +236,7 @@ public:
   virtual void SetRnti (uint16_t rnti);
   virtual void SetTransmissionMode (uint8_t txMode);
   virtual void SetSrsConfigurationIndex (uint16_t srcCi);
+  virtual void SetPa (double pa);
 
 private:
   MemberLteUeCphySapProvider ();
@@ -318,6 +324,12 @@ MemberLteUeCphySapProvider<C>::SetSrsConfigurationIndex (uint16_t srcCi)
   m_owner->DoSetSrsConfigurationIndex (srcCi);
 }
 
+template <class C>
+void
+MemberLteUeCphySapProvider<C>::SetPa (double pa)
+{
+  m_owner->DoSetPa (pa);
+}
 
 
 /**

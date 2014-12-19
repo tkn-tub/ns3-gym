@@ -1133,8 +1133,10 @@ LteUeRrc::ApplyRadioResourceConfigDedicated (LteRrcSap::RadioResourceConfigDedic
   if (pcd.havePdschConfigDedicated)
     {
       // update PdschConfigDedicated (i.e. P_A value)
-	  m_pdschConfigDedicated = pcd.pdschConfigDedicated;
-   }
+      m_pdschConfigDedicated = pcd.pdschConfigDedicated;
+      double paDouble = LteRrcSap::ConvertPdschConfigDedicated2Double (m_pdschConfigDedicated);
+      m_cphySapProvider->SetPa (paDouble);
+    }
 
   std::list<LteRrcSap::SrbToAddMod>::const_iterator stamIt = rrcd.srbToAddModList.begin ();
   if (stamIt != rrcd.srbToAddModList.end ())

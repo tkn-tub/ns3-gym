@@ -455,7 +455,26 @@ LteUePhy::GenerateCtrlCqiReport (const SpectrumValue& sinr)
 
   if (m_dataInterferencePowerUpdated)
     {
-      SpectrumValue mixedSinr = m_rsReceivedPower / m_dataInterferencePower;
+      SpectrumValue mixedSinr = (m_rsReceivedPower * m_paLinear) / m_dataInterferencePower;
+
+      /*
+       * some RBs are not used in PDSCH and their SINR is very high
+       * for example with bandwidth 25, last RB is not used
+       * it can make avgSinr value very high, what is incorrect
+       */
+      uint32_t rbgSize = GetRbgSize ();
+      uint32_t modulo = m_dlBandwidth % rbgSize;
+      double avgMixedSinr = 0;
+      uint32_t usedRbgNum = 0;
+      for(uint32_t i = 0; i < (m_dlBandwidth-1-modulo); i++) {
+          usedRbgNum++;
+          avgMixedSinr+=mixedSinr[i];
+        }
+      avgMixedSinr = avgMixedSinr/usedRbgNum;
+      for(uint32_t i = 0; i < modulo; i++) {
+          mixedSinr[m_dlBandwidth-1-i] = avgMixedSinr;
+        }
+
       GenerateMixedCqiReport (mixedSinr);
       m_dataInterferencePowerUpdated = false;
       return;
@@ -1243,6 +1262,7 @@ LteUePhy::DoReset ()
   m_rsrpSinrSampleCounter = 0;
   m_p10CqiLast = Simulator::Now ();
   m_a30CqiLast = Simulator::Now ();
+  m_paLinear = 1;
 
   m_packetBurstQueue.clear ();
   m_controlMessagesQueue.clear ();
@@ -1381,6 +1401,12 @@ LteUePhy::DoSetSrsConfigurationIndex (uint16_t srcCi)
   NS_LOG_DEBUG (this << " UE SRS P " << m_srsPeriodicity << " RNTI " << m_rnti << " offset " << m_srsSubframeOffset << " cellId " << m_cellId << " CI " << srcCi);
 }
 
+void
+LteUePhy::DoSetPa (double pa)
+{
+  NS_LOG_FUNCTION (this << pa);
+  m_paLinear = pow (10,(pa/10));
+}
 
 void 
 LteUePhy::SetTxMode1Gain (double gain)
