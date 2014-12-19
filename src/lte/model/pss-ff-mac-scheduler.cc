@@ -1298,13 +1298,14 @@ PssFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sche
                 {
                   if (rbgMap.at (i) == true)
                     continue;
-                  if ((m_ffrSapProvider->IsDlRbgAvailableForUe (i, (*it).first)) == false)
-                    continue;
 
                   std::map <uint16_t, pssFlowPerf_t>::iterator itMax = tdUeSet.end ();
                   double metricMax = 0.0;
                   for (it = tdUeSet.begin (); it != tdUeSet.end (); it++)
                     {
+                      if ((m_ffrSapProvider->IsDlRbgAvailableForUe (i, (*it).first)) == false)
+                        continue;
+
                       // calculate PF weigth 
                       double weight = (*it).second.targetThroughput / (*it).second.lastAveragedThroughput;
                       if (weight < 1.0)
@@ -1373,11 +1374,10 @@ PssFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sche
                           itMax = it;
                         }
                     } // end of tdUeSet
-        
-                  if (itMax == m_flowStatsDl.end ())
+
+                  if (itMax == tdUeSet.end ())
                     {
-                      // no UE available for downlink 
-                      return;
+                      // no UE available for downlink
                     }
                   else
                     {
@@ -1397,13 +1397,12 @@ PssFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sche
                   if (rbgMap.at (i) == true)
                     continue;
 
-                  if ((m_ffrSapProvider->IsDlRbgAvailableForUe (i, (*it).first)) == false)
-                    continue;
-        
                   std::map <uint16_t, pssFlowPerf_t>::iterator itMax = tdUeSet.end ();
                   double metricMax = 0.0;
                   for (it = tdUeSet.begin (); it != tdUeSet.end (); it++)
                     {
+                      if ((m_ffrSapProvider->IsDlRbgAvailableForUe (i, (*it).first)) == false)
+                        continue;
                       // calculate PF weigth 
                       double weight = (*it).second.targetThroughput / (*it).second.lastAveragedThroughput;
                       if (weight < 1.0)
@@ -1468,11 +1467,10 @@ PssFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sche
                           itMax = it;
                         }
                     } // end of tdUeSet
-         
-                  if (itMax == m_flowStatsDl.end ())
+
+                  if (itMax == tdUeSet.end ())
                     {
                       // no UE available for downlink 
-                      return;
                     }
                   else
                     {
