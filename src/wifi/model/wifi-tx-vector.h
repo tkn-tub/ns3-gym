@@ -35,6 +35,20 @@ namespace ns3 {
  * and also 15.4.4.2 "PMD_SAP peer-to-peer service primitive
  * parameters".
  *
+ * If this class is constructed with the constructor that takes no
+ * arguments, then the client must explicitly set the mode and 
+ * transmit power level parameters before using them.  Default
+ * member initializers are provided for the other parameters, to
+ * conform to a non-MIMO/long guard configuration, although these
+ * may also be explicitly set after object construction.
+ *
+ * When used in a infrastructure context, WifiTxVector values should be 
+ * drawn from WifiRemoteStationManager parameters since rate adaptation 
+ * is responsible for picking the mode, number of streams, etc., but in 
+ * the case in which there is no such manager (e.g. mesh), the client 
+ * still needs to initialize at least the mode and transmit power level 
+ * appropriately.
+ *
  * \note the above reference is valid for the DSSS PHY only (clause
  * 15). TXVECTOR is defined also for the other PHYs, however they
  * don't include the TXPWRLVL explicitly in the TXVECTOR. This is
@@ -144,10 +158,13 @@ private:
                            to PMD_TXPWRLVL.request */ 
   uint8_t  m_retries;      /**< The DATA_RETRIES/RTS_RETRIES parameter
                            for Click radiotap information */
-  bool     m_shortGuardInterval; //true if short GI is going to be used
-  uint8_t  m_nss; //number of streams
-  uint8_t  m_ness; //number of streams in beamforming
-  bool     m_stbc; //STBC used or not
+  bool     m_shortGuardInterval; /**< true if short GI is going to be used */
+  uint8_t  m_nss; /**< number of streams */
+  uint8_t  m_ness; /**< number of streams in beamforming */
+  bool     m_stbc; /**< STBC used or not */
+
+  bool     m_modeInitialized; //*< Internal initialization flag */
+  bool     m_txPowerLevelInitialized; //*< Internal initialization flag */
 
 };
 
