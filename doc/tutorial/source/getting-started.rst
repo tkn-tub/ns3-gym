@@ -62,7 +62,7 @@ and running on the target system.
 
 The |ns3| code is available in Mercurial repositories on the server
 http://code.nsnam.org.  You can also download a tarball release at
-http://www.nsnam.org/releases/, or you can work with repositories
+http://www.nsnam.org/release/, or you can work with repositories
 using Mercurial.  We recommend using Mercurial unless there's a good reason
 not to.  See the end of this section for instructions on how to get a tarball
 release.
@@ -90,7 +90,7 @@ get a copy of a release by typing the following into your Linux shell
   $ cd
   $ mkdir workspace
   $ cd workspace
-  $ wget http://www.nsnam.org/releases/ns-allinone-3.20.tar.bz2
+  $ wget http://www.nsnam.org/release/ns-allinone-3.20.tar.bz2
   $ tar xjf ns-allinone-3.20.tar.bz2
 
 If you change into the directory ``ns-allinone-3.20`` you should see a
