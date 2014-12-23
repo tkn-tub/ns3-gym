@@ -104,7 +104,7 @@ EpcMme::AddUe (uint64_t imsi)
   ueInfo->bearerCounter = 0;
 }
 
-void 
+uint8_t
 EpcMme::AddBearer (uint64_t imsi, Ptr<EpcTft> tft, EpsBearer bearer)
 {
   NS_LOG_FUNCTION (this << imsi);
@@ -116,6 +116,7 @@ EpcMme::AddBearer (uint64_t imsi, Ptr<EpcTft> tft, EpsBearer bearer)
   bearerInfo.tft = tft;
   bearerInfo.bearer = bearer;  
   it->second->bearersToBeActivated.push_back (bearerInfo);
+  return bearerInfo.bearerId;
 }
 
 

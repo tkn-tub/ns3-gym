@@ -213,12 +213,16 @@ main (int argc, char *argv[])
   rlcStats->SetAttribute ("StartTime", TimeValue (Seconds (statsStartTime)));
   rlcStats->SetAttribute ("EpochDuration", TimeValue (Seconds (statsDuration)));
 
+  //get ue device pointer for UE-ID 0 IMSI 1 and enb device pointer
+  Ptr<NetDevice> ueDevice = ueLteDevs.Get (0);
+  Ptr<NetDevice> enbDevice = enbLteDevs.Get (0);
+
   /*
-   *   Schedule dedicated bearer de-activation at 'deActivateTime'
-   *   Instantiate De-activation in sequence (Time deActivateTime, Ptr<NetDevice> ueDevice, Ptr<NetDevice> enbDevice, uint8_t bearerId)
+   *   Instantiate De-activation using Simulator::Schedule() method which will initiate bearer de-activation after deActivateTime
+   *   Instantiate De-activation in sequence (Time const &time, MEM mem_ptr, OBJ obj, T1 a1, T2 a2, T3 a3)
    */
   Time deActivateTime (Seconds (1.5));
-  lteHelper->DeActivateDedicatedEpsBearer (deActivateTime,ueLteDevs.Get (0),enbLteDevs.Get (0), 2);
+  Simulator::Schedule (deActivateTime, &LteHelper::DeActivateDedicatedEpsBearer, lteHelper, ueDevice, enbDevice, 2);
 
   //stop simulation after 3 seconds
   Simulator::Stop (Seconds (3.0));

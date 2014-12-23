@@ -91,7 +91,7 @@ LenaTestBearerDeactivateSuite::LenaTestBearerDeactivateSuite ()
   estThrPssDl_1.push_back (132000); // User 1 estimated TTI throughput from PSS
   estThrPssDl_1.push_back (132000); // User 2 estimated TTI throughput from PSS
 
-  AddTestCase (new LenaDeactivateBearerTestCase (dist_1,estThrPssDl_1,packetSize_1,1,errorModel), TestCase::QUICK);
+  AddTestCase (new LenaDeactivateBearerTestCase (dist_1,estThrPssDl_1,packetSize_1,1,errorModel,true), TestCase::QUICK);
 }
 
 static LenaTestBearerDeactivateSuite lenaTestBearerDeactivateSuite;
@@ -110,14 +110,15 @@ LenaDeactivateBearerTestCase::BuildNameString (uint16_t nUser, std::vector<uint1
   return oss.str ();
 }
 
-LenaDeactivateBearerTestCase::LenaDeactivateBearerTestCase (std::vector<uint16_t> dist, std::vector<uint32_t> estThrPssDl, std::vector<uint16_t> packetSize, uint16_t interval,bool errorModelEnabled)
+LenaDeactivateBearerTestCase::LenaDeactivateBearerTestCase (std::vector<uint16_t> dist, std::vector<uint32_t> estThrPssDl, std::vector<uint16_t> packetSize, uint16_t interval,bool errorModelEnabled, bool useIdealRrc)
   : TestCase (BuildNameString (dist.size (), dist)),
     m_nUser (dist.size ()),
     m_dist (dist),
     m_packetSize (packetSize),
     m_interval (interval),
     m_estThrPssDl (estThrPssDl),
-    m_errorModelEnabled (errorModelEnabled)
+    m_errorModelEnabled (errorModelEnabled),
+    m_useIdealRrc (useIdealRrc)
 {
 }
 
@@ -292,16 +293,16 @@ LenaDeactivateBearerTestCase::DoRun (void)
   rlcStats->SetAttribute ("EpochDuration", TimeValue (Seconds (statsDuration)));
 
 
-  //get ue device pointer for UE-ID 0 IMSI 1
+  //get ue device pointer for UE-ID 0 IMSI 1 and enb device pointer
   Ptr<NetDevice> ueDevice = ueDevs.Get (0);
-  Time deActivateTime (Seconds (1.5));
+  Ptr<NetDevice> enbDevice = enbDevs.Get (0);
 
   /*
-   *   Schedule dedicated bearer de-activation at 'deActivateTime'
-   *   Instantiate De-activation in sequence (Time deActivateTime, Ptr<NetDevice> ueDevice, Ptr<NetDevice> enbDevice, uint8_t bearerId)
+   *   Instantiate De-activation using Simulator::Schedule() method which will initiate bearer de-activation after deActivateTime
+   *   Instantiate De-activation in sequence (Time const &time, MEM mem_ptr, OBJ obj, T1 a1, T2 a2, T3 a3)
    */
-
-  lteHelper->DeActivateDedicatedEpsBearer (deActivateTime,ueDevice,enbDevs.Get (0), 2);
+  Time deActivateTime (Seconds (1.5));
+  Simulator::Schedule (deActivateTime, &LteHelper::DeActivateDedicatedEpsBearer, lteHelper, ueDevice, enbDevice, 2);
 
   //stop simulation after 3 seconds
   Simulator::Stop (Seconds (3.0));

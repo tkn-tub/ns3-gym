@@ -101,7 +101,7 @@ public:
    * \param tft the Traffic Flow Template of the new bearer
    * \param bearer struct describing the characteristics of the EPS bearer to be activated
    */
-  virtual void ActivateEpsBearer (Ptr<NetDevice> ueLteDevice, uint64_t imsi, Ptr<EpcTft> tft, EpsBearer bearer) = 0;
+  virtual uint8_t ActivateEpsBearer (Ptr<NetDevice> ueLteDevice, uint64_t imsi, Ptr<EpcTft> tft, EpsBearer bearer) = 0;
 
 
   /** 

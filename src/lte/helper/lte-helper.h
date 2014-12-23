@@ -397,7 +397,7 @@ public:
    * \param bearer the characteristics of the bearer to be activated
    * \param tft the Traffic Flow Template that identifies the traffic to go on this bearer
    */
-  void ActivateDedicatedEpsBearer (NetDeviceContainer ueDevices, EpsBearer bearer, Ptr<EpcTft> tft);
+  uint8_t ActivateDedicatedEpsBearer (NetDeviceContainer ueDevices, EpsBearer bearer, Ptr<EpcTft> tft);
 
   /**
    * Activate a dedicated EPS bearer on a given UE device.
@@ -406,11 +406,10 @@ public:
    * \param bearer the characteristics of the bearer to be activated
    * \param tft the Traffic Flow Template that identifies the traffic to go on this bearer.
    */
-  void ActivateDedicatedEpsBearer (Ptr<NetDevice> ueDevice, EpsBearer bearer, Ptr<EpcTft> tft);
+  uint8_t ActivateDedicatedEpsBearer (Ptr<NetDevice> ueDevice, EpsBearer bearer, Ptr<EpcTft> tft);
 
   /**
    *  \brief Manually trigger dedicated bearer de-activation at specific simulation time
-   *  \param deActivateTime when the dedicated bearer de-activation to be initiated
    *  \param ueDevice the UE on which dedicated bearer to be de-activated must be of the type LteUeNetDevice
    *  \param enbDevice eNB, must be of the type LteEnbNetDevice
    *  \param bearerId Bearer Identity which is to be de-activated
@@ -418,7 +417,7 @@ public:
    *  \warning Requires the use of EPC mode. See SetEpcHelper() method.
    */
 
-  void DeActivateDedicatedEpsBearer (Time deActivateTime, Ptr<NetDevice> ueDevice, Ptr<NetDevice> enbDevice, uint8_t bearerId);
+  void DeActivateDedicatedEpsBearer (Ptr<NetDevice> ueDevice, Ptr<NetDevice> enbDevice, uint8_t bearerId);
   /**
    * Create an X2 interface between all the eNBs in a given set.
    *

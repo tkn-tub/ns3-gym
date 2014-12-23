@@ -12845,9 +12845,9 @@ def register_Ns3EpcHelper_methods(root_module, cls):
     cls.add_constructor([param('ns3::EpcHelper const &', 'arg0')])
     ## epc-helper.h (module 'lte'): ns3::EpcHelper::EpcHelper() [constructor]
     cls.add_constructor([])
-    ## epc-helper.h (module 'lte'): void ns3::EpcHelper::ActivateEpsBearer(ns3::Ptr<ns3::NetDevice> ueLteDevice, uint64_t imsi, ns3::Ptr<ns3::EpcTft> tft, ns3::EpsBearer bearer) [member function]
+    ## epc-helper.h (module 'lte'): uint8_t ns3::EpcHelper::ActivateEpsBearer(ns3::Ptr<ns3::NetDevice> ueLteDevice, uint64_t imsi, ns3::Ptr<ns3::EpcTft> tft, ns3::EpsBearer bearer) [member function]
     cls.add_method('ActivateEpsBearer', 
-                   'void', 
+                   'uint8_t', 
                    [param('ns3::Ptr< ns3::NetDevice >', 'ueLteDevice'), param('uint64_t', 'imsi'), param('ns3::Ptr< ns3::EpcTft >', 'tft'), param('ns3::EpsBearer', 'bearer')], 
                    is_pure_virtual=True, is_virtual=True)
     ## epc-helper.h (module 'lte'): void ns3::EpcHelper::AddEnb(ns3::Ptr<ns3::Node> enbNode, ns3::Ptr<ns3::NetDevice> lteEnbNetDevice, uint16_t cellId) [member function]
@@ -15979,13 +15979,13 @@ def register_Ns3LteHelper_methods(root_module, cls):
     cls.add_method('ActivateDataRadioBearer', 
                    'void', 
                    [param('ns3::Ptr< ns3::NetDevice >', 'ueDevice'), param('ns3::EpsBearer', 'bearer')])
-    ## lte-helper.h (module 'lte'): void ns3::LteHelper::ActivateDedicatedEpsBearer(ns3::NetDeviceContainer ueDevices, ns3::EpsBearer bearer, ns3::Ptr<ns3::EpcTft> tft) [member function]
+    ## lte-helper.h (module 'lte'): uint8_t ns3::LteHelper::ActivateDedicatedEpsBearer(ns3::NetDeviceContainer ueDevices, ns3::EpsBearer bearer, ns3::Ptr<ns3::EpcTft> tft) [member function]
     cls.add_method('ActivateDedicatedEpsBearer', 
-                   'void', 
+                   'uint8_t', 
                    [param('ns3::NetDeviceContainer', 'ueDevices'), param('ns3::EpsBearer', 'bearer'), param('ns3::Ptr< ns3::EpcTft >', 'tft')])
-    ## lte-helper.h (module 'lte'): void ns3::LteHelper::ActivateDedicatedEpsBearer(ns3::Ptr<ns3::NetDevice> ueDevice, ns3::EpsBearer bearer, ns3::Ptr<ns3::EpcTft> tft) [member function]
+    ## lte-helper.h (module 'lte'): uint8_t ns3::LteHelper::ActivateDedicatedEpsBearer(ns3::Ptr<ns3::NetDevice> ueDevice, ns3::EpsBearer bearer, ns3::Ptr<ns3::EpcTft> tft) [member function]
     cls.add_method('ActivateDedicatedEpsBearer', 
-                   'void', 
+                   'uint8_t', 
                    [param('ns3::Ptr< ns3::NetDevice >', 'ueDevice'), param('ns3::EpsBearer', 'bearer'), param('ns3::Ptr< ns3::EpcTft >', 'tft')])
     ## lte-helper.h (module 'lte'): void ns3::LteHelper::AddX2Interface(ns3::NodeContainer enbNodes) [member function]
     cls.add_method('AddX2Interface', 
@@ -18512,9 +18512,9 @@ def register_Ns3PointToPointEpcHelper_methods(root_module, cls):
     cls.add_constructor([param('ns3::PointToPointEpcHelper const &', 'arg0')])
     ## point-to-point-epc-helper.h (module 'lte'): ns3::PointToPointEpcHelper::PointToPointEpcHelper() [constructor]
     cls.add_constructor([])
-    ## point-to-point-epc-helper.h (module 'lte'): void ns3::PointToPointEpcHelper::ActivateEpsBearer(ns3::Ptr<ns3::NetDevice> ueLteDevice, uint64_t imsi, ns3::Ptr<ns3::EpcTft> tft, ns3::EpsBearer bearer) [member function]
+    ## point-to-point-epc-helper.h (module 'lte'): uint8_t ns3::PointToPointEpcHelper::ActivateEpsBearer(ns3::Ptr<ns3::NetDevice> ueLteDevice, uint64_t imsi, ns3::Ptr<ns3::EpcTft> tft, ns3::EpsBearer bearer) [member function]
     cls.add_method('ActivateEpsBearer', 
-                   'void', 
+                   'uint8_t', 
                    [param('ns3::Ptr< ns3::NetDevice >', 'ueLteDevice'), param('uint64_t', 'imsi'), param('ns3::Ptr< ns3::EpcTft >', 'tft'), param('ns3::EpsBearer', 'bearer')], 
                    is_virtual=True)
     ## point-to-point-epc-helper.h (module 'lte'): void ns3::PointToPointEpcHelper::AddEnb(ns3::Ptr<ns3::Node> enbNode, ns3::Ptr<ns3::NetDevice> lteEnbNetDevice, uint16_t cellId) [member function]
@@ -20202,9 +20202,9 @@ def register_Ns3EmuEpcHelper_methods(root_module, cls):
     cls.add_constructor([param('ns3::EmuEpcHelper const &', 'arg0')])
     ## emu-epc-helper.h (module 'lte'): ns3::EmuEpcHelper::EmuEpcHelper() [constructor]
     cls.add_constructor([])
-    ## emu-epc-helper.h (module 'lte'): void ns3::EmuEpcHelper::ActivateEpsBearer(ns3::Ptr<ns3::NetDevice> ueLteDevice, uint64_t imsi, ns3::Ptr<ns3::EpcTft> tft, ns3::EpsBearer bearer) [member function]
+    ## emu-epc-helper.h (module 'lte'): uint8_t ns3::EmuEpcHelper::ActivateEpsBearer(ns3::Ptr<ns3::NetDevice> ueLteDevice, uint64_t imsi, ns3::Ptr<ns3::EpcTft> tft, ns3::EpsBearer bearer) [member function]
     cls.add_method('ActivateEpsBearer', 
-                   'void', 
+                   'uint8_t', 
                    [param('ns3::Ptr< ns3::NetDevice >', 'ueLteDevice'), param('uint64_t', 'imsi'), param('ns3::Ptr< ns3::EpcTft >', 'tft'), param('ns3::EpsBearer', 'bearer')], 
                    is_virtual=True)
     ## emu-epc-helper.h (module 'lte'): void ns3::EmuEpcHelper::AddEnb(ns3::Ptr<ns3::Node> enbNode, ns3::Ptr<ns3::NetDevice> lteEnbNetDevice, uint16_t cellId) [member function]

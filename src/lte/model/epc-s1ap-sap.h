@@ -71,6 +71,7 @@ public:
 
   /**
     * \brief As per 3GPP TS 23.401 Release 9 V9.5.0 Figure 5.4.4.2-1  eNB sends indication of Bearer Release to MME
+    * \brief As per 3GPP TS version 9.8.0 section 8.2.3.2.2, the eNB initiates the procedure by sending an E-RAB RELEASE INDICATION message towards MME
     * \param mmeUeS1Id in practice, we use the IMSI
     * \param enbUeS1Id in practice, we use the RNTI
     * \param erabToBeReleaseIndication, List of bearers to be deactivated

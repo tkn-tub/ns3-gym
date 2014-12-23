@@ -813,18 +813,20 @@ LteHelper::AttachToClosestEnb (Ptr<NetDevice> ueDevice, NetDeviceContainer enbDe
   Attach (ueDevice, closestEnbDevice);
 }
 
-void
+uint8_t
 LteHelper::ActivateDedicatedEpsBearer (NetDeviceContainer ueDevices, EpsBearer bearer, Ptr<EpcTft> tft)
 {
   NS_LOG_FUNCTION (this);
   for (NetDeviceContainer::Iterator i = ueDevices.Begin (); i != ueDevices.End (); ++i)
     {
-      ActivateDedicatedEpsBearer (*i, bearer, tft);
+      uint8_t bearerId = ActivateDedicatedEpsBearer (*i, bearer, tft);
+      return bearerId;
     }
+  return 0;
 }
 
 
-void
+uint8_t
 LteHelper::ActivateDedicatedEpsBearer (Ptr<NetDevice> ueDevice, EpsBearer bearer, Ptr<EpcTft> tft)
 {
   NS_LOG_FUNCTION (this);
@@ -832,7 +834,8 @@ LteHelper::ActivateDedicatedEpsBearer (Ptr<NetDevice> ueDevice, EpsBearer bearer
   NS_ASSERT_MSG (m_epcHelper != 0, "dedicated EPS bearers cannot be set up when the EPC is not used");
 
   uint64_t imsi = ueDevice->GetObject<LteUeNetDevice> ()->GetImsi ();
-  m_epcHelper->ActivateEpsBearer (ueDevice, imsi, tft, bearer);
+  uint8_t bearerId = m_epcHelper->ActivateEpsBearer (ueDevice, imsi, tft, bearer);
+  return bearerId;
 }
 
 class DrbActivator : public SimpleRefCount<DrbActivator>
@@ -956,13 +959,13 @@ LteHelper::DoHandoverRequest (Ptr<NetDevice> ueDev, Ptr<NetDevice> sourceEnbDev,
 }
 
 void
-LteHelper::DeActivateDedicatedEpsBearer (Time deActivateTime, Ptr<NetDevice> ueDevice,Ptr<NetDevice> enbDevice, uint8_t bearerId)
+LteHelper::DeActivateDedicatedEpsBearer (Ptr<NetDevice> ueDevice,Ptr<NetDevice> enbDevice, uint8_t bearerId)
 {
   NS_LOG_FUNCTION (this << ueDevice << bearerId);
   NS_ASSERT_MSG (m_epcHelper != 0, "Dedicated EPS bearers cannot be de-activated when the EPC is not used");
   NS_ASSERT_MSG (bearerId != 1, "Default bearer cannot be de-activated until and unless and UE is released");
 
-  Simulator::Schedule (deActivateTime, &LteHelper::DoDeActivateDedicatedEpsBearer, this, ueDevice, enbDevice, bearerId);
+  DoDeActivateDedicatedEpsBearer (ueDevice, enbDevice, bearerId);
 }
 
 void

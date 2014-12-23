@@ -10,7 +10,7 @@ namespace ns3 {
 class LenaDeactivateBearerTestCase : public TestCase
 {
 public:
-  LenaDeactivateBearerTestCase (std::vector<uint16_t> dist, std::vector<uint32_t> estThrPssDl, std::vector<uint16_t> packetSize, uint16_t interval, bool  errorModelEnabled);
+  LenaDeactivateBearerTestCase (std::vector<uint16_t> dist, std::vector<uint32_t> estThrPssDl, std::vector<uint16_t> packetSize, uint16_t interval, bool  errorModelEnabled, bool useIdealRrc);
   virtual ~LenaDeactivateBearerTestCase ();
 
 private:
@@ -22,6 +22,7 @@ private:
   uint16_t m_interval;    // ms
   std::vector<uint32_t> m_estThrPssDl;
   bool m_errorModelEnabled;
+  bool m_useIdealRrc;
 };
 
 

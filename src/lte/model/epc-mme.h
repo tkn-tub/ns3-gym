@@ -106,7 +106,7 @@ public:
    * \param tft traffic flow template of the bearer
    * \param bearer QoS characteristics of the bearer
    */
-  void AddBearer (uint64_t imsi, Ptr<EpcTft> tft, EpsBearer bearer);
+  uint8_t AddBearer (uint64_t imsi, Ptr<EpcTft> tft, EpsBearer bearer);
 
 
 private:
