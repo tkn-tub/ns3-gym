@@ -132,7 +132,7 @@ WifiPhy::GetMFPlcpHeaderMode (WifiMode payloadMode, WifiPreamble preamble)
 }
 
 uint32_t 
-WifiPhy::GetPlcpHtTrainingSymbolDurationMicroSeconds (WifiMode payloadMode, WifiPreamble preamble, WifiTxVector txvector)
+WifiPhy::GetPlcpHtTrainingSymbolDurationMicroSeconds (WifiPreamble preamble, WifiTxVector txvector)
 {
   uint8_t Ndltf, Neltf;
 
@@ -491,7 +491,7 @@ WifiPhy::CalculateTxDuration (uint32_t size, WifiTxVector txvector, WifiPreamble
   double duration = GetPlcpPreambleDurationMicroSeconds (payloadMode, preamble)
     + GetPlcpHeaderDurationMicroSeconds (payloadMode, preamble)
     + GetPlcpHtSigHeaderDurationMicroSeconds (payloadMode, preamble)
-    + GetPlcpHtTrainingSymbolDurationMicroSeconds (payloadMode, preamble,txvector)
+    + GetPlcpHtTrainingSymbolDurationMicroSeconds (preamble, txvector)
     + GetPayloadDurationMicroSeconds (size, txvector, frequency);
   return NanoSeconds (duration*1000);
 }

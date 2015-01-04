@@ -286,29 +286,27 @@ public:
    */
   static Time CalculateTxDuration (uint32_t size, WifiTxVector txvector, enum WifiPreamble preamble, double frequency);
 
-/** 
-   * \param payloadMode the WifiMode use for the transmission of the payload
+  /**
    * \param preamble the type of preamble
    * \param txvector the transmission parameters used for this packet
 
    * \return the training symbol duration
    */
-  static uint32_t GetPlcpHtTrainingSymbolDurationMicroSeconds (WifiMode payloadMode, WifiPreamble preamble, WifiTxVector txvector);
-/** 
+  static uint32_t GetPlcpHtTrainingSymbolDurationMicroSeconds (WifiPreamble preamble, WifiTxVector txvector);
+  /**
    * \param payloadMode the WifiMode use for the transmission of the payload
    * \param preamble the type of preamble
    * 
    * \return the WifiMode used for the transmission of the HT-SIG in Mixed Format and greenfield format PLCP header 
    */
   static WifiMode GetMFPlcpHeaderMode (WifiMode payloadMode, WifiPreamble preamble);
-/** 
+  /**
    * \param payloadMode the WifiMode use for the transmission of the payload
    * \param preamble the type of preamble
    * 
    * \return the duration of the HT-SIG in Mixed Format and greenfield format PLCP header 
    */
   static uint32_t GetPlcpHtSigHeaderDurationMicroSeconds (WifiMode payloadMode, WifiPreamble preamble);
-
 
   /** 
    * \param payloadMode the WifiMode use for the transmission of the payload
