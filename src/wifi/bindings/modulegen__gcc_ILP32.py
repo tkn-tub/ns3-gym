@@ -7564,14 +7564,14 @@ def register_Ns3WifiPhy_methods(root_module, cls):
                    'ns3::WifiMode', 
                    [], 
                    is_static=True)
-    ## wifi-phy.h (module 'wifi'): static double ns3::WifiPhy::GetPayloadDurationMicroSeconds(uint32_t size, ns3::WifiTxVector txvector, double frequency) [member function]
-    cls.add_method('GetPayloadDurationMicroSeconds', 
-                   'double', 
+    ## wifi-phy.h (module 'wifi'): static ns3::Time ns3::WifiPhy::GetPayloadDuration(uint32_t size, ns3::WifiTxVector txvector, double frequency) [member function]
+    cls.add_method('GetPayloadDuration', 
+                   'ns3::Time', 
                    [param('uint32_t', 'size'), param('ns3::WifiTxVector', 'txvector'), param('double', 'frequency')], 
                    is_static=True)
-    ## wifi-phy.h (module 'wifi'): static uint32_t ns3::WifiPhy::GetPlcpHeaderDurationMicroSeconds(ns3::WifiMode payloadMode, ns3::WifiPreamble preamble) [member function]
-    cls.add_method('GetPlcpHeaderDurationMicroSeconds', 
-                   'uint32_t', 
+    ## wifi-phy.h (module 'wifi'): static ns3::Time ns3::WifiPhy::GetPlcpHeaderDuration(ns3::WifiMode payloadMode, ns3::WifiPreamble preamble) [member function]
+    cls.add_method('GetPlcpHeaderDuration', 
+                   'ns3::Time', 
                    [param('ns3::WifiMode', 'payloadMode'), param('ns3::WifiPreamble', 'preamble')], 
                    is_static=True)
     ## wifi-phy.h (module 'wifi'): static ns3::WifiMode ns3::WifiPhy::GetPlcpHeaderMode(ns3::WifiMode payloadMode, ns3::WifiPreamble preamble) [member function]
@@ -7579,19 +7579,19 @@ def register_Ns3WifiPhy_methods(root_module, cls):
                    'ns3::WifiMode', 
                    [param('ns3::WifiMode', 'payloadMode'), param('ns3::WifiPreamble', 'preamble')], 
                    is_static=True)
-    ## wifi-phy.h (module 'wifi'): static uint32_t ns3::WifiPhy::GetPlcpHtSigHeaderDurationMicroSeconds(ns3::WifiMode payloadMode, ns3::WifiPreamble preamble) [member function]
-    cls.add_method('GetPlcpHtSigHeaderDurationMicroSeconds', 
-                   'uint32_t', 
+    ## wifi-phy.h (module 'wifi'): static ns3::Time ns3::WifiPhy::GetPlcpHtSigHeaderDuration(ns3::WifiMode payloadMode, ns3::WifiPreamble preamble) [member function]
+    cls.add_method('GetPlcpHtSigHeaderDuration', 
+                   'ns3::Time', 
                    [param('ns3::WifiMode', 'payloadMode'), param('ns3::WifiPreamble', 'preamble')], 
                    is_static=True)
-    ## wifi-phy.h (module 'wifi'): static uint32_t ns3::WifiPhy::GetPlcpHtTrainingSymbolDurationMicroSeconds(ns3::WifiMode payloadMode, ns3::WifiPreamble preamble, ns3::WifiTxVector txvector) [member function]
-    cls.add_method('GetPlcpHtTrainingSymbolDurationMicroSeconds', 
-                   'uint32_t', 
-                   [param('ns3::WifiMode', 'payloadMode'), param('ns3::WifiPreamble', 'preamble'), param('ns3::WifiTxVector', 'txvector')], 
+    ## wifi-phy.h (module 'wifi'): static ns3::Time ns3::WifiPhy::GetPlcpHtTrainingSymbolDuration(ns3::WifiPreamble preamble, ns3::WifiTxVector txvector) [member function]
+    cls.add_method('GetPlcpHtTrainingSymbolDuration', 
+                   'ns3::Time', 
+                   [param('ns3::WifiPreamble', 'preamble'), param('ns3::WifiTxVector', 'txvector')], 
                    is_static=True)
-    ## wifi-phy.h (module 'wifi'): static uint32_t ns3::WifiPhy::GetPlcpPreambleDurationMicroSeconds(ns3::WifiMode payloadMode, ns3::WifiPreamble preamble) [member function]
-    cls.add_method('GetPlcpPreambleDurationMicroSeconds', 
-                   'uint32_t', 
+    ## wifi-phy.h (module 'wifi'): static ns3::Time ns3::WifiPhy::GetPlcpPreambleDuration(ns3::WifiMode payloadMode, ns3::WifiPreamble preamble) [member function]
+    cls.add_method('GetPlcpPreambleDuration', 
+                   'ns3::Time', 
                    [param('ns3::WifiMode', 'payloadMode'), param('ns3::WifiPreamble', 'preamble')], 
                    is_static=True)
     ## wifi-phy.h (module 'wifi'): ns3::Time ns3::WifiPhy::GetStateDuration() [member function]
