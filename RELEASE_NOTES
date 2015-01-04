@@ -37,6 +37,7 @@ Bugs fixed
 - Bug 1906 - 802.11n PHY configuration for 2.4GHz and 5GHz devices
 - Bug 1957 - UdpSocketImpl is stuck after a Close()
 - Bug 1968 - Missing supported 802.11n HT rates in the WifiPhy constructor
+- Bug 1969 - Support short guard interval durations in 802.11n
 - Bug 1970 - Missing NotifyAckTimeoutStartNow in MacLow::StartDataTxTimers
 - Bug 1971 - 802.11n at 2.4 GHz should include a signal extension duration
 - Bug 1983 - FlowMonitor returns containers copies instead of references.
@@ -48,7 +49,11 @@ Bugs fixed
 - Bug 2016 - Radvd do not consider the SendAdvert option and don't reply to RS
 - Bug 2020 - Erroneous MCS field in 802.11n PCAP files
 - Bug 2021 - Missing const qualifier in TopologyReader::Link::Attributes{Begin,End}()
+- Bug 2026 - 802.11n Ness parameter badly set for data frames
+- Bug 2027 - Calculation of HT training symbol duration does not accurately follow 802.11n standard
+- Bug 2028 - remove unnecessary Time to double conversions in Wifi models
 - Bug 2029 - new CQI generation approach fix
+- Bug 2030 - provide default values for WifiTxVector
 
 Known issues
 ------------
