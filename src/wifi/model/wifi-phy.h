@@ -292,7 +292,7 @@ public:
 
    * \return the training symbol duration
    */
-  static uint32_t GetPlcpHtTrainingSymbolDurationMicroSeconds (WifiPreamble preamble, WifiTxVector txvector);
+  static Time GetPlcpHtTrainingSymbolDuration (WifiPreamble preamble, WifiTxVector txvector);
   /**
    * \param payloadMode the WifiMode use for the transmission of the payload
    * \param preamble the type of preamble
@@ -306,7 +306,7 @@ public:
    * 
    * \return the duration of the HT-SIG in Mixed Format and greenfield format PLCP header 
    */
-  static uint32_t GetPlcpHtSigHeaderDurationMicroSeconds (WifiMode payloadMode, WifiPreamble preamble);
+  static Time GetPlcpHtSigHeaderDuration (WifiMode payloadMode, WifiPreamble preamble);
 
   /** 
    * \param payloadMode the WifiMode use for the transmission of the payload
@@ -320,26 +320,26 @@ public:
    * \param payloadMode the WifiMode use for the transmission of the payload
    * \param preamble the type of preamble
    * 
-   * \return the duration of the PLCP header in microseconds
+   * \return the duration of the PLCP header
    */
-  static uint32_t GetPlcpHeaderDurationMicroSeconds (WifiMode payloadMode, WifiPreamble preamble);
+  static Time GetPlcpHeaderDuration (WifiMode payloadMode, WifiPreamble preamble);
 
   /** 
    * \param payloadMode the WifiMode use for the transmission of the payload
    * \param preamble the type of preamble 
    * 
-   * \return the duration of the PLCP preamble in microseconds
+   * \return the duration of the PLCP preamble
    */
-  static uint32_t GetPlcpPreambleDurationMicroSeconds (WifiMode payloadMode, WifiPreamble preamble);
+  static Time GetPlcpPreambleDuration (WifiMode payloadMode, WifiPreamble preamble);
 
   /** 
    * \param size the number of bytes in the packet to send
    * \param txvector the transmission parameters used for this packet
    * \param frequency the channel center frequency (MHz)
    * 
-   * \return the duration of the payload in microseconds
+   * \return the duration of the payload
    */
-  static double GetPayloadDurationMicroSeconds (uint32_t size, WifiTxVector txvector, double frequency);
+  static Time GetPayloadDuration (uint32_t size, WifiTxVector txvector, double frequency);
 
   /**
    * The WifiPhy::GetNModes() and WifiPhy::GetMode() methods are used
