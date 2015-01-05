@@ -798,12 +798,12 @@ by itself.  Above, we used the ``./test.py`` script to run a whole slew of
 tests in parallel, by repeatedly invoking the real testing program,
 ``test-runner``.  To invoke ``test-runner`` directly for a single test::
 
-  $ ./waf --run test-runner --command-template="% --suite=mytest --verbose"
+  $ ./waf --run test-runner --command-template="%s --suite=mytest --verbose"
 
 This passes the arguments to the ``test-runner`` program.  To print the
 available ``test-runner`` options::
 
-  $ ./waf --run test-runner --command-template="% --help"
+  $ ./waf --run test-runner --command-template="%s --help"
 
 Debugging
 +++++++++
