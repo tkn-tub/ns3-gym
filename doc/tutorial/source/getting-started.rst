@@ -793,15 +793,17 @@ using the provided command line template,
 inserting the program name for the ``%s`` placeholder.
 (I admit this is a bit awkward, but that's the way it is.  Patches welcome!)
 
-Another particularly useful example is to run the ``mytest`` test suite
-by itself.  Above, we used the ``./test.py`` script to run a whole slew of
+Another particularly useful example is to run a test suite by itself.
+Let's assume that a ``mytest`` test suite exists (it doesn't).
+Above, we used the ``./test.py`` script to run a whole slew of
 tests in parallel, by repeatedly invoking the real testing program,
 ``test-runner``.  To invoke ``test-runner`` directly for a single test::
 
   $ ./waf --run test-runner --command-template="%s --suite=mytest --verbose"
 
-This passes the arguments to the ``test-runner`` program.  To print the
-available ``test-runner`` options::
+This passes the arguments to the ``test-runner`` program.
+Since ``mytest`` does not exist, an error message will be generated.
+To print the available ``test-runner`` options::
 
   $ ./waf --run test-runner --command-template="%s --help"
 
@@ -812,7 +814,7 @@ To run |ns3| programs under the control of another utility, such as
 a debugger (*e.g.* ``gdb``) or memory checker (*e.g.* ``valgrind``),
 you use a similar ``--command-template="..."`` form.
 
-For example, to run your |ns3| program ``mysim`` with the arguments
+For example, to run your |ns3| program ``hello-simulator`` with the arguments
 ``<args>`` under the ``gdb`` debugger::
 
   $ ./waf --run=hello-simulator --command-template="gdb %s --args <args>"
