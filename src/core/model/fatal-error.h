@@ -28,6 +28,12 @@
 #include "fatal-impl.h"
 
 /**
+ * \file
+ * \ingroup fatal
+ * \brief \c NS_FATAL_x macro definitions.
+ */
+
+/**
  * \ingroup core
  * \defgroup fatal Fatal Error Handlers
  *
@@ -49,9 +55,8 @@
 
 /**
  * \ingroup fatal
- * \private
  *
- * \brief fatal error handling
+ * \brief Fatal error handling
  *
  * When this macro is hit at runtime, details of filename
  * and line number is printed to stderr, and the program
@@ -76,7 +81,7 @@
 /**
  * \ingroup fatal
  *
- * \brief fatal error handling
+ * \brief Fatal error handling
  *
  * \param msg message to output when this macro is hit.
  *
