@@ -25,6 +25,12 @@
 #include "attribute.h"
 #include "object-ptr-container.h"
 
+/**
+ * \file
+ * \ingroup attribute_ObjectVector
+ * ObjectVector attribute value declarations and template implementations.
+ */
+
 namespace ns3 {
 
 /**

@@ -25,6 +25,13 @@
 #include "ptr.h"
 #include "attribute.h"
 
+/**
+ * \file
+ * \ingroup attribute_ObjectPtrContainer
+ * ObjectPtrContainer attribute value declarations and template implementations.
+ */
+
+
 namespace ns3 {
 
 /**

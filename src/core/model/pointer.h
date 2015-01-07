@@ -23,6 +23,12 @@
 #include "attribute.h"
 #include "object.h"
 
+/**
+ * \file
+ * \ingroup attribute_Pointer
+ * Pointer attribute value declarations and template implementations.
+ */
+
 namespace ns3 {
 
 //  Additional docs for class PointerValue:
@@ -99,8 +105,13 @@ Ptr<AttributeChecker> MakePointerChecker (void);
 
 } // namespace ns3
 
-namespace ns3 {
 
+
+/***************************************************************
+ *  Implementation of the templates declared above.
+ ***************************************************************/
+
+namespace ns3 {
 
 namespace internal {
 

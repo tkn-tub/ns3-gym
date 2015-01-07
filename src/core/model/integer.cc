@@ -22,6 +22,12 @@
 #include "log.h"
 #include <sstream>
 
+/**
+ * \file
+ * \ingroup attribute_Integer
+ * Integer attribute value implementations.
+ */
+
 namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("Integer");
@@ -30,6 +36,15 @@ ATTRIBUTE_VALUE_IMPLEMENT_WITH_NAME (int64_t, Integer);
 
 namespace internal {
 
+/**
+ * \ingroup attribute_Integer
+ * Make an Integer attribute checker with embedded numeric type name.
+ *
+ * \param min The minimum allowed value.
+ * \param max The maximum allowed value.
+ * \param name The original type name ("int8_t", "int16_t", _etc_.).
+ * \returns The AttributeChecker.
+ */
 Ptr<const AttributeChecker>
 MakeIntegerChecker (int64_t min, int64_t max, std::string name)
 {

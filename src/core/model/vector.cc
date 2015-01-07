@@ -23,6 +23,12 @@
 #include <cmath>
 #include <sstream>
 
+/**
+ * \file
+ * \ingroup attribute_Vector
+ * ns3::Vector, ns3::Vector2D and ns3::Vector3D attribute value implementations.
+ */
+
 namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("Vector");

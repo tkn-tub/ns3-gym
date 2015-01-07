@@ -24,9 +24,15 @@
 #include "attribute-accessor-helper.h"
 #include <list>
 
+/**
+ * \file
+ * \ingroup attribute_Enum
+ * Enum attribute value declarations.
+ */
+
 namespace ns3 {
 
-//  Additional docs for class DoubleValue:
+//  Additional docs for class EnumValue:
 /**
  * Hold variables of type \c enum
  *

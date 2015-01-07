@@ -25,6 +25,12 @@
 #include <sstream>
 #include "fatal-error.h"
 
+/**
+ * \file
+ * \ingroup attributehelper
+ * Declaration of Attribute helper macros.
+ */
+
 namespace ns3 {
 
 /**

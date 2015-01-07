@@ -25,6 +25,13 @@
 #include "ptr.h"
 #include "simple-ref-count.h"
 
+/**
+ * \file
+ * \ingroup attribute
+ * ns3::AttributeValue, ns3::AttributeAccessor and
+ * ns3::AttributeChecker declarations.
+ */
+
 namespace ns3 {
 
 class AttributeAccessor;
@@ -219,7 +226,11 @@ public:
   
 };
 
-/** A class for an empty attribute value. */
+/**
+ * \brief A class for an empty attribute value.
+ *
+ * \ingroup attribute
+ */
 class EmptyAttributeValue : public AttributeValue
 {
 public:

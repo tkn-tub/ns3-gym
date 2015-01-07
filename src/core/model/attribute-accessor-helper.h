@@ -22,6 +22,12 @@
 
 #include "attribute.h"
 
+/**
+ * \file
+ * \ingroup attributeimpl
+ * ns3::MakeAccessorHelper declarations and template implementations.
+ */
+
 namespace ns3 {
 
   

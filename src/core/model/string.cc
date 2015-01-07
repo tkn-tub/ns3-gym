@@ -19,6 +19,12 @@
 
 #include "string.h"
 
+/**
+ * \file
+ * \ingroup attribute_String
+ * String attribute value implementations.
+ */
+
 namespace ns3 {
 
 ATTRIBUTE_CHECKER_IMPLEMENT_WITH_NAME (String, "std::string");

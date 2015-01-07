@@ -23,6 +23,12 @@
 #include "attribute.h"
 #include "attribute-helper.h"
 
+/**
+ * \file
+ * \ingroup attribute_Vector
+ * ns3::Vector, ns3::Vector2D and ns3::Vector3D attribute value declarations.
+ */
+
 namespace ns3 {
 
 /**

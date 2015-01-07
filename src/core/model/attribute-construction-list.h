@@ -23,6 +23,12 @@
 #include "attribute.h"
 #include <list>
 
+/**
+ * \file
+ * \ingroup object
+ * ns3::AttributeConstructionList declaration.
+ */
+
 namespace ns3 {
 
 /**
