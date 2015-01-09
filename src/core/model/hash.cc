@@ -21,6 +21,12 @@
 #include "log.h"
 #include "hash.h"
 
+/**
+ * \file
+ * \ingroup hash
+ * \brief ns3::Hasher implementation.
+ */
+
 
 namespace ns3 {
 

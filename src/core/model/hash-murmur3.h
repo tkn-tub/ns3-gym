@@ -23,6 +23,12 @@
 
 #include "hash-function.h"
 
+/**
+ * \file
+ * \ingroup hash
+ * \brief ns3::Hash::Function::Murmur3 declaration.
+ */
+
 namespace ns3 {
 
 namespace Hash {
@@ -97,17 +103,20 @@ private:
   {
     SEED = 0x8BADF00D  // Ate bad food
   };
-  //@{
   /** 
    * Cache last hash value, and total bytes hashed (needed to finalize),
    * for incremental hashing
    */
+  /**@{*/
   uint32_t m_hash32;
   uint32_t m_size32;
+  /**@}*/
+  
   /** murmur3 produces 128-bit hash and state; we use just the first 64-bits. */
+  /**@{*/
   uint64_t m_hash64[2];  
   uint64_t m_size64;
-  //@}
+  /**@}*/
       
 };  // class Murmur3
 

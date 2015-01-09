@@ -24,6 +24,13 @@
 #include <cstring>  // memcpy
 #include "simple-ref-count.h"
 
+/**
+ * \file
+ * \ingroup hash
+ * \brief ns3::Hash::Implementation, ns3::Hash::Function::Hash32 and
+ * ns3::Hash::Function::Hash64 declarations.
+ */
+
 namespace ns3 {
 
 /**

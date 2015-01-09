@@ -30,6 +30,12 @@
 #include "hash-murmur3.h"
 #include "hash-fnv.h"
 
+/**
+ * \file
+ * \ingroup hash
+ * \brief ns3::Hasher, ns3::Hash32() and ns3::Hash64() function declarations.
+ */
+
 namespace ns3 {
 
 /**
