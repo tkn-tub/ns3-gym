@@ -33,6 +33,7 @@ Bugs fixed
 - Bug 1551 - NS_LOG_COMPONENT_DEFINE inside or outside of ns3 namespace?
 - Bug 1726 - WiFi Minstrel rate control algorithm doesn't save state
 - Bug 1758 - Yans and Nist error rate models for 5/6 code rate 802.11n HT
+- Bug 1770 - mesh test and example crash for 32-bit optimized builds
 - Bug 1791 - TCP Endpoint never deallocates when closing
 - Bug 1906 - 802.11n PHY configuration for 2.4GHz and 5GHz devices
 - Bug 1957 - UdpSocketImpl is stuck after a Close()
