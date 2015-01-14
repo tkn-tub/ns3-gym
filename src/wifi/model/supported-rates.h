@@ -27,14 +27,6 @@
 
 namespace ns3 {
 
-/**
- * This defines the maximum number of supported rates that a STA is
- * allowed to have. Currently this number is set for IEEE 802.11b/g and SISO IEE 802.11n
- * stations which need 2 rates each from Clauses 15 and 18, and then 8
- * from Clause 19.
- */
-#define MAX_SUPPORTED_RATES (32)
-
 class SupportedRates;
 
 /**
@@ -60,6 +52,8 @@ public:
    * \param rates
    */
   ExtendedSupportedRatesIE (SupportedRates *rates);
+
+  void SetSupportedRates (SupportedRates *rates);
 
   WifiInformationElementId ElementId () const;
   uint8_t GetInformationFieldSize () const;
@@ -109,6 +103,17 @@ class SupportedRates : public WifiInformationElement
 {
 public:
   SupportedRates ();
+
+  SupportedRates (const SupportedRates &);
+  SupportedRates& operator= (const SupportedRates&);
+
+/**
+ * This defines the maximum number of supported rates that a STA is
+ * allowed to have. Currently this number is set for IEEE 802.11b/g and SISO IEE 802.11n
+ * stations which need 2 rates each from Clauses 15 and 18, and then 8
+ * from Clause 19.
+ */
+  static const uint8_t MAX_SUPPORTED_RATES = 32;
 
   /**
    * Add the given rate to the supported rates.
