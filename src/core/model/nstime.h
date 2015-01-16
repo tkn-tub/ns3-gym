@@ -146,8 +146,12 @@ public:
       }
   }
   /**
+   * \name Numeric constructors.
    *  Construct from a numeric value.
-   *
+   * @{
+   */
+  /**
+   *  Construct from a numeric value.
    *  The current time resolution will be assumed as the unit.
    *  \param [in] v The value.
    *  @{
@@ -216,6 +220,7 @@ public:
 	Mark (this);
       }
   }
+  /**@}*/
   /**@}*/
   
   /**
@@ -803,7 +808,7 @@ std::istream & operator >> (std::istream & is, Time & time);
 
 /**
  * \ingroup time
- * \defgroup timecivil Standard time units.
+ * \defgroup timecivil Standard Time Units.
  * \brief Convenience constructors in standard units.
  *
  * For example:
@@ -913,19 +918,8 @@ inline Time TimeStep (uint64_t ts)
   return Time (ts);
 }
 
-/**
- * \ingroup time
- * \class ns3::TimeValue
- * \brief Attribute for objects of type ns3::Time
- */
 ATTRIBUTE_VALUE_DEFINE (Time);
-
-/**
- *  Attribute accessor function for Time
- *  @{
- */
 ATTRIBUTE_ACCESSOR_DEFINE (Time);
-/**@}*/
 
 /**
  *  \ingroup time

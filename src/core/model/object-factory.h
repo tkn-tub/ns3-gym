@@ -61,12 +61,12 @@ public:
    */
   ObjectFactory (std::string typeId);
 
+  /**@{*/
   /**
    * Set the TypeId of the Objects to be created by this factory.
    *
    * \param tid The TypeId of the object to instantiate.
    */
-  /**@{*/
   void SetTypeId (TypeId tid);
   void SetTypeId (const char *tid);
   void SetTypeId (std::string tid);
@@ -183,6 +183,11 @@ CreateObjectWithAttributes (std::string n1 = "", const AttributeValue & v1 = Emp
 ATTRIBUTE_HELPER_HEADER (ObjectFactory);
 
 } // namespace ns3
+
+
+/***************************************************************
+ *  Implementation of the templates declared above.
+ ***************************************************************/
 
 namespace ns3 {
 

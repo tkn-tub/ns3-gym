@@ -79,12 +79,12 @@ public:
   /// Default constructor.
   inline int64x64_t ()
     : _v (0)  {}
-  /**@{*/
   /**
-   * Construct from a floating point value.
+   * \name Construct from a floating point value.
    *
    * \param [in] value Floating value to represent.
    */
+  /**@{*/
   inline int64x64_t (const double value)
   {
     const int64x64_t tmp ((long double)value);
@@ -120,12 +120,12 @@ public:
   }
   /**@}*/
 
-  /**@{*/
   /**
-   * Construct from an integral type.
+   * \name Construct from an integral type.
    *
    * \param [in] v Integer value to represent.
    */
+  /**@{*/
   inline int64x64_t (const int v)
     : _v (v)
   {
@@ -157,6 +157,7 @@ public:
     _v <<= 64;
   }
   /**@}*/
+  
   /**
    * Construct from explicit high and low values.
    *

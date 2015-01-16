@@ -46,6 +46,7 @@ namespace ns3 {
 /**
  * \ingroup logging
  * The LogTimePrinter.
+ * This is private to the logging implementation.
  */
 static LogTimePrinter g_logTimePrinter = 0;
 /**
@@ -58,6 +59,7 @@ static LogNodePrinter g_logNodePrinter = 0;
  * \ingroup logging
  * Handler for \c print-list token in NS_LOG
  * to print the list of log components.
+ * This is private to the logging implementation.
  */
 class PrintList
 {
@@ -65,7 +67,10 @@ public:
   PrintList ();  //<! Constructor, prints the list and exits.
 };
 
-/** Invoke handler for \c print-list in NS_LOG environment variable. */
+/**
+ * Invoke handler for \c print-list in NS_LOG environment variable.
+ * This is private to the logging implementation.
+ */
 static PrintList g_printList;
 
   
@@ -479,7 +484,9 @@ LogComponentPrintList (void)
 }
 
 /**
+ * \ingroup
  * Check if a log component exists.
+ * This is private to the logging implementation.
  *
  * \param componentName The putative log component name.
  * \returns \c true if \c componentName exists.
@@ -505,6 +512,7 @@ static bool ComponentExists(std::string componentName)
 
 /**
  * Parse the \c NS_LOG environment variable.
+ * This is private to the logging implementation.
  */
 static void CheckEnvironmentVariables (void)
 {

@@ -436,7 +436,7 @@ private:
 
 
 /** \ingroup commandline
- *  \defgroup commandlinehelper Helpers to Specialize on \c bool
+ *  \defgroup commandlinehelper Helpers to Specialize on bool
  */
 /**
  * \ingroup commandlinehelper
