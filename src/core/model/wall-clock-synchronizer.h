@@ -89,7 +89,7 @@ protected:
   /**
    * @brief Do a busy-wait until the normalized realtime equals the argument
    * or the condition variable becomes \c true.
-   
+  
    * The condition becomes \c true if an outside entity (a network device
    * receives a packet), sets the condition and signals the scheduler
    * it needs to re-evaluate.
@@ -123,6 +123,17 @@ protected:
    *          \c false if we retured because the condition was set.
    */
   bool SleepWait (uint64_t ns);
+
+  // Inherited from Synchronizer
+  virtual void DoSetOrigin (uint64_t ns);
+  virtual bool DoRealtime (void);
+  virtual uint64_t DoGetCurrentRealtime (void);
+  virtual bool DoSynchronize (uint64_t nsCurrent, uint64_t nsDelay);
+  virtual void DoSignal (void);
+  virtual void DoSetCondition (bool cond);
+  virtual int64_t DoGetDrift (uint64_t ns);
+  virtual void DoEventStart (void);
+  virtual uint64_t DoEventEnd (void);
 
   /**
    * @brief Compute a correction to the nominal delay to account for
