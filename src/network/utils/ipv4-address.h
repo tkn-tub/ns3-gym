@@ -293,17 +293,8 @@ private:
   uint32_t m_mask; //!< IP mask
 };
 
-/**
- * \class ns3::Ipv4AddressValue
- * \brief hold objects of type ns3::Ipv4Address
- */
-/**
- * \class ns3::Ipv4MaskValue
- * \brief hold objects of type ns3::Ipv4Mask
- */
-
-ATTRIBUTE_HELPER_HEADER (Ipv4Address);  //!< Macro to make help make class an ns-3 attribute
-ATTRIBUTE_HELPER_HEADER (Ipv4Mask);     //!< Macro to make help make class an ns-3 attribute
+ATTRIBUTE_HELPER_HEADER (Ipv4Address);
+ATTRIBUTE_HELPER_HEADER (Ipv4Mask);
 
 /**
  * \brief Stream insertion operator.

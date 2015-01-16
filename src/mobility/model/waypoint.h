@@ -57,11 +57,6 @@ public:
   Vector position;
 };
 
-/**
- * \ingroup mobility
- * \class ns3::WaypointValue
- * \brief hold objects of type ns3::Waypoint
- */
 ATTRIBUTE_HELPER_HEADER ( Waypoint);
 
 std::ostream &

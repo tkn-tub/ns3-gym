@@ -94,12 +94,6 @@ public:
 std::ostream &operator << (std::ostream &os, const Rectangle &rectangle);
 std::istream &operator >> (std::istream &is, Rectangle &rectangle);
 
-/**
- * \ingroup mobility
- * \class ns3::RectangleValue
- * \brief hold objects of type ns3::Rectangle
- */
-
 ATTRIBUTE_HELPER_HEADER (Rectangle);
 
 } // namespace ns3

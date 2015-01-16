@@ -41,7 +41,6 @@ namespace ns3 {
  * type such as uint8_t, uint16_t, uint32_t, uint64_t, or,
  * unsigned int, etc.
  */
-
 ATTRIBUTE_VALUE_DEFINE_WITH_NAME (uint64_t, Uinteger);
 ATTRIBUTE_ACCESSOR_DEFINE (Uinteger);
 

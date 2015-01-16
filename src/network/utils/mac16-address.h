@@ -148,12 +148,7 @@ private:
   uint8_t m_address[2]; //!< address value
 };
 
-/**
- * \class ns3::Mac16AddressValue
- * \brief hold objects of type ns3::Mac16Address
- */
-
-ATTRIBUTE_HELPER_HEADER (Mac16Address); //!< Macro to make help make class an ns-3 attribute
+ATTRIBUTE_HELPER_HEADER (Mac16Address);
 
 inline bool operator == (const Mac16Address &a, const Mac16Address &b)
 {

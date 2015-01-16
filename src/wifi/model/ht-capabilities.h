@@ -127,7 +127,7 @@ private:
 std::ostream &operator << (std::ostream &os, const HtCapabilities &htcapabilities);
 std::istream &operator >> (std::istream &is, HtCapabilities &htcapabilities);
 
-ATTRIBUTE_HELPER_HEADER (HtCapabilities)
+ATTRIBUTE_HELPER_HEADER (HtCapabilities);
 
 } // namespace ns3
 

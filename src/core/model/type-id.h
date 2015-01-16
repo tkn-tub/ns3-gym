@@ -407,12 +407,6 @@ inline bool operator == (TypeId a, TypeId b);
 inline bool operator != (TypeId a, TypeId b);
 bool operator <  (TypeId a, TypeId b);
 
-/**
- * \class ns3::TypeIdValue
- * \brief hold objects of type ns3::TypeId
- */
-
-
 ATTRIBUTE_HELPER_HEADER (TypeId);
 
 } // namespace ns3 

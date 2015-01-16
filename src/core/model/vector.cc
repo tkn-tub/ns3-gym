@@ -35,6 +35,7 @@ NS_LOG_COMPONENT_DEFINE ("Vector");
 
 ATTRIBUTE_HELPER_CPP (Vector3D);
 ATTRIBUTE_HELPER_CPP (Vector2D);
+  
 // compatibility for mobility code
 Ptr<const AttributeChecker> MakeVectorChecker (void)
 {

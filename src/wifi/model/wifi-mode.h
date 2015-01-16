@@ -174,11 +174,6 @@ bool operator == (const WifiMode &a, const WifiMode &b);
 std::ostream & operator << (std::ostream & os, const WifiMode &mode);
 std::istream & operator >> (std::istream &is, WifiMode &mode);
 
-/**
- * \class ns3::WifiModeValue
- * \brief hold objects of type ns3::WifiMode
- */
-
 ATTRIBUTE_HELPER_HEADER (WifiMode);
 
 /**

@@ -155,7 +155,7 @@ private:
  * \brief hold objects of type ns3::Mac64Address
  */
 
-ATTRIBUTE_HELPER_HEADER (Mac64Address); //!< Macro to make help make class an ns-3 attribute
+ATTRIBUTE_HELPER_HEADER (Mac64Address);
 
 inline bool operator == (const Mac64Address &a, const Mac64Address &b)
 {

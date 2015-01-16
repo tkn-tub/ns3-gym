@@ -72,7 +72,6 @@ CallbackValue::DeserializeFromString (std::string value, Ptr<const AttributeChec
   return false;
 }
 
-/** Attribute checker */
 ATTRIBUTE_CHECKER_IMPLEMENT (Callback);
 
 } // namespace ns3

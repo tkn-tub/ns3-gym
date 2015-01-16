@@ -58,12 +58,8 @@ private:
 
 std::ostream &operator << (std::ostream &os, const IeMeshId &meshId);
 
-/**
- * \class ns3::IeMeshIdValue
- * \brief hold objects of type ns3::IeMeshId
- */
-
 ATTRIBUTE_HELPER_HEADER (IeMeshId);
+  
 } // namespace dot11s
 } // namespace ns3
 #endif /* MESH_ID_H */

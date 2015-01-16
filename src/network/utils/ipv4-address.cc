@@ -422,7 +422,7 @@ bool operator != (Ipv4Mask const &a, Ipv4Mask const &b)
   return !a.IsEqual (b);
 }
 
-ATTRIBUTE_HELPER_CPP (Ipv4Address); //!< Macro to make help make class an ns-3 attribute
-ATTRIBUTE_HELPER_CPP (Ipv4Mask);    //!< Macro to make help make class an ns-3 attribute
+ATTRIBUTE_HELPER_CPP (Ipv4Address);
+ATTRIBUTE_HELPER_CPP (Ipv4Mask);
 
 } // namespace ns3
