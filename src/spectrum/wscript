@@ -39,6 +39,7 @@ def build(bld):
         'test/spectrum-interference-test.cc',
         'test/spectrum-value-test.cc',
         'test/spectrum-ideal-phy-test.cc',
+        'test/spectrum-waveform-generator-test.cc',
         ]
     
     headers = bld(features='ns3header')

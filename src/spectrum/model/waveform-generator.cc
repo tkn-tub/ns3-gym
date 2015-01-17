@@ -36,11 +36,10 @@ NS_OBJECT_ENSURE_REGISTERED (WaveformGenerator);
 
 WaveformGenerator::WaveformGenerator ()
   : m_mobility (0),
-    m_netDevice (0),
-    m_channel (0),
-    m_txPowerSpectralDensity (0),
-    m_startTime (Seconds (0)),
-    m_active (false)
+  m_netDevice (0),
+  m_channel (0),
+  m_txPowerSpectralDensity (0),
+  m_startTime (Seconds (0))
 {
 
 }
@@ -59,6 +58,10 @@ WaveformGenerator::DoDispose (void)
   m_channel = 0;
   m_netDevice = 0;
   m_mobility = 0;
+  if (m_nextWave.IsRunning ())
+    {
+      m_nextWave.Cancel ();
+    }
 }
 
 TypeId
@@ -205,11 +208,8 @@ WaveformGenerator::GenerateWaveform ()
   m_phyTxStartTrace (0);
   m_channel->StartTx (txParams);
 
-  if (m_active)
-    {
-      NS_LOG_LOGIC ("scheduling next waveform");
-      Simulator::Schedule (m_period, &WaveformGenerator::GenerateWaveform, this);
-    }
+  NS_LOG_LOGIC ("scheduling next waveform");
+  m_nextWave = Simulator::Schedule (m_period, &WaveformGenerator::GenerateWaveform, this);
 }
 
 
@@ -217,12 +217,11 @@ void
 WaveformGenerator::Start ()
 {
   NS_LOG_FUNCTION (this);
-  if (!m_active)
+  if (!m_nextWave.IsRunning ())
     {
       NS_LOG_LOGIC ("generator was not active, now starting");
-      m_active = true;
       m_startTime = Now ();
-      Simulator::ScheduleNow (&WaveformGenerator::GenerateWaveform, this);
+      m_nextWave = Simulator::ScheduleNow (&WaveformGenerator::GenerateWaveform, this);
     }
 }
 
@@ -231,8 +230,10 @@ void
 WaveformGenerator::Stop ()
 {
   NS_LOG_FUNCTION (this);
-  m_active = false;
+  if (m_nextWave.IsRunning ())
+    {
+      m_nextWave.Cancel ();
+
+    }
 }
-
-
 } // namespace ns3
