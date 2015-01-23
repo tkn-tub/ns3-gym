@@ -37,7 +37,7 @@ NS_LOG_COMPONENT_DEFINE ("TcpNscComparison");
 
 std::string m_stack = "nsc-linux";
 std::string sock_factory;
-int m_seed = 1;
+uint32_t m_seed = 1;
 double startTime = 4.0;
 double stopTime = 20.0;
 uint32_t m_nNodes = 2;
