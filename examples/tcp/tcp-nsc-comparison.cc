@@ -61,6 +61,11 @@ main (int argc, char *argv[])
 
   SeedManager::SetSeed (m_seed);
 
+  if (m_stack != "nsc-linux" && m_stack != "ns3")
+    {
+      NS_FATAL_ERROR ("Error, stack named " << m_stack << " is not supported");
+    }
+
   NodeContainer lefts, routers, rights, nodes;
   lefts.Create (m_nNodes);
   routers.Create (2);
