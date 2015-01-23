@@ -20,7 +20,6 @@
 
 #include "bug-772.h"
 
-#include "ns3/mesh-helper.h"
 #include "ns3/simulator.h"
 #include "ns3/random-variable-stream.h"
 #include "ns3/rng-seed-manager.h"
