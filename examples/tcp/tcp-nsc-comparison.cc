@@ -188,7 +188,10 @@ main (int argc, char *argv[])
   apps = sink.Install (rights);
   apps.Start (Seconds (3.9999));
 
-  pointToPoint.EnablePcapAll ("nsc.pcap");
+  if (enablePcap)
+    {
+      pointToPoint.EnablePcapAll ("nsc.pcap");
+    }
 
   Simulator::Stop (Seconds (stopTime));
   Simulator::Run ();
