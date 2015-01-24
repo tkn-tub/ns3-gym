@@ -27,6 +27,8 @@ namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("TcpRxBuffer");
 
+NS_OBJECT_ENSURE_REGISTERED (TcpRxBuffer);
+
 TypeId
 TcpRxBuffer::GetTypeId (void)
 {

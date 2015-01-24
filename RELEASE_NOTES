@@ -56,6 +56,7 @@ Bugs fixed
 - Bug 2029 - new CQI generation approach fix
 - Bug 2030 - provide default values for WifiTxVector
 - Bug 2038 - Stop method does not stop next wave in WaveformGenerator
+- Bug 2045 - Missing NS_OBJECT_ENSURE_REGISTERED in TcpTxBuffer and TcpRxBuffer
 
 Known issues
 ------------
