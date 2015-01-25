@@ -57,3 +57,9 @@ def build(bld):
 
     obj = bld.create_ns3_program('wifi-sleep', ['core', 'network', 'internet', 'mobility', 'wifi', 'applications', 'energy', 'config-store'])
     obj.source = 'wifi-sleep.cc'
+    
+    obj = bld.create_ns3_program('power-adaptation-distance', ['core', 'mobility', 'wifi', 'applications', 'flow-monitor'])
+    obj.source = 'power-adaptation-distance.cc'
+    
+    obj = bld.create_ns3_program('power-adaptation-interference', ['core', 'mobility', 'wifi', 'applications', 'flow-monitor'])
+    obj.source = 'power-adaptation-interference.cc'
