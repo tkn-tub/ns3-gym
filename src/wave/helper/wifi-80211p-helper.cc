@@ -45,7 +45,8 @@ Wifi80211pHelper::Default (void)
   helper.SetStandard (WIFI_PHY_STANDARD_80211_10MHZ);
   helper.SetRemoteStationManager ("ns3::ConstantRateWifiManager",
                                   "DataMode", StringValue ("OfdmRate6MbpsBW10MHz"),
-                                  "ControlMode",StringValue ("OfdmRate6MbpsBW10MHz"));
+                                  "ControlMode",StringValue ("OfdmRate6MbpsBW10MHz"),
+                                  "NonUnicastMode", StringValue ("OfdmRate6MbpsBW10MHz"));
   return helper;
 }
 

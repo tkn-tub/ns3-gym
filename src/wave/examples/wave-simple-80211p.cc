@@ -127,7 +127,6 @@ int main (int argc, char *argv[])
   wifiPhy.SetChannel (channel);
   // ns-3 supports generate a pcap trace
   wifiPhy.SetPcapDataLinkType (YansWifiPhyHelper::DLT_IEEE802_11);
-
   NqosWaveMacHelper wifi80211pMac = NqosWaveMacHelper::Default ();
   Wifi80211pHelper wifi80211p = Wifi80211pHelper::Default ();
   if (verbose)
@@ -139,6 +138,9 @@ int main (int argc, char *argv[])
                                       "DataMode",StringValue (phyMode),
                                       "ControlMode",StringValue (phyMode));
   NetDeviceContainer devices = wifi80211p.Install (wifiPhy, wifi80211pMac, c);
+
+  // Tracing
+  wifiPhy.EnablePcap ("wave-simple-80211p", devices);
 
   MobilityHelper mobility;
   Ptr<ListPositionAllocator> positionAlloc = CreateObject<ListPositionAllocator> ();

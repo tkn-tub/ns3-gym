@@ -20,85 +20,86 @@
  *         Junling Bu <linlinjavaer@gmail.com>
  */
 #include "higher-tx-tag.h"
-#include "ns3/tag.h"
 #include "ns3/log.h"
-#include "ns3/uinteger.h"
 
 namespace ns3 {
 
-NS_LOG_COMPONENT_DEFINE ("HigherDataTxVectorTag");
+NS_LOG_COMPONENT_DEFINE ("HigherLayerTxVectorTag");
 
-NS_OBJECT_ENSURE_REGISTERED (HigherDataTxVectorTag);
+NS_OBJECT_ENSURE_REGISTERED (HigherLayerTxVectorTag);
 
 TypeId
-HigherDataTxVectorTag::GetTypeId (void)
+HigherLayerTxVectorTag::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::HigherDataTxVectorTag")
+  static TypeId tid = TypeId ("ns3::HigherLayerTxVectorTag")
     .SetParent<Tag> ()
-    .AddConstructor<HigherDataTxVectorTag> ()
+    .AddConstructor<HigherLayerTxVectorTag> ()
   ;
   return tid;
 }
-HigherDataTxVectorTag::HigherDataTxVectorTag (void)
-  : m_adapter (false)
-{
-  NS_LOG_FUNCTION (this);
-}
-HigherDataTxVectorTag::HigherDataTxVectorTag (WifiTxVector dataTxVector, bool adapter)
-  : m_dataTxVector (dataTxVector),
-    m_adapter (adapter)
-{
-  NS_LOG_FUNCTION (this);
-}
-HigherDataTxVectorTag::~HigherDataTxVectorTag (void)
-{
-  NS_LOG_FUNCTION (this);
-}
+
 TypeId
-HigherDataTxVectorTag::GetInstanceTypeId (void) const
+HigherLayerTxVectorTag::GetInstanceTypeId (void) const
 {
   NS_LOG_FUNCTION (this);
   return GetTypeId ();
 }
 
-WifiTxVector
-HigherDataTxVectorTag::GetDataTxVector (void) const
+HigherLayerTxVectorTag::HigherLayerTxVectorTag (void)
+  : m_adaptable (false)
 {
   NS_LOG_FUNCTION (this);
-  return m_dataTxVector;
 }
-bool
-HigherDataTxVectorTag::IsAdapter (void) const
+
+HigherLayerTxVectorTag::HigherLayerTxVectorTag (WifiTxVector txVector, bool adaptable)
+  : m_txVector (txVector),
+    m_adaptable (adaptable)
 {
   NS_LOG_FUNCTION (this);
-  return m_adapter;
+}
+
+WifiTxVector
+HigherLayerTxVectorTag::GetTxVector (void) const
+{
+  NS_LOG_FUNCTION (this);
+  return m_txVector;
+}
+
+bool
+HigherLayerTxVectorTag::IsAdaptable (void) const
+{
+  NS_LOG_FUNCTION (this);
+  return m_adaptable;
 }
 
 uint32_t
-HigherDataTxVectorTag::GetSerializedSize (void) const
+HigherLayerTxVectorTag::GetSerializedSize (void) const
 {
   NS_LOG_FUNCTION (this);
   return (sizeof (WifiTxVector) + 1);
 }
+
 void
-HigherDataTxVectorTag::Serialize (TagBuffer i) const
+HigherLayerTxVectorTag::Serialize (TagBuffer i) const
 {
   NS_LOG_FUNCTION (this << &i);
-  i.Write ((uint8_t *)&m_dataTxVector, sizeof (WifiTxVector));
-  i.WriteU8 (static_cast<uint8_t> (m_adapter));
+  i.Write ((uint8_t *)&m_txVector, sizeof (WifiTxVector));
+  i.WriteU8 (static_cast<uint8_t> (m_adaptable));
 }
+
 void
-HigherDataTxVectorTag::Deserialize (TagBuffer i)
+HigherLayerTxVectorTag::Deserialize (TagBuffer i)
 {
   NS_LOG_FUNCTION (this << &i);
-  i.Read ((uint8_t *)&m_dataTxVector, sizeof (WifiTxVector));
-  m_adapter = i.ReadU8 ();
+  i.Read ((uint8_t *)&m_txVector, sizeof (WifiTxVector));
+  m_adaptable = i.ReadU8 ();
 }
+
 void
-HigherDataTxVectorTag::Print (std::ostream &os) const
+HigherLayerTxVectorTag::Print (std::ostream &os) const
 {
   NS_LOG_FUNCTION (this << &os);
-  os << " Data=" << m_dataTxVector << " Adapter=" << m_adapter;
+  os << " TxVector=" << m_txVector << ";  Adapter=" << m_adaptable;
 }
 
 } // namespace ns3

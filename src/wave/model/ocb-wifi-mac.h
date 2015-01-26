@@ -27,10 +27,11 @@
 #include "ns3/wifi-mac-queue.h"
 #include "ns3/qos-utils.h"
 #include "vendor-specific-action.h"
+#include "wave-net-device.h"
 
 namespace ns3 {
 class OrganizationIdentifier;
-class WifiMacQueue;
+class WaveNetDevice;
 /**
  * \brief STAs communicate with each directly outside the context of a BSS
  * \ingroup wave
@@ -67,7 +68,9 @@ public:
    * every node shall register first if it wants to receive specific vendor specific content.
    */
   void AddReceiveVscCallback (OrganizationIdentifier oi, VscCallback cb);
-
+  /**
+   * \param oi Organization Identifier
+   */
   void RemoveReceiveVscCallback (OrganizationIdentifier oi);
 
   /**
@@ -128,6 +131,44 @@ public:
     * configure EDCA queue parameters
     */
   void ConfigureEdca (uint32_t cwmin, uint32_t cwmax, uint32_t aifsn, enum AcIndex ac);
+
+  // below six public methods are used for MAC extension defined in IEEE 1609.4
+  /**
+   * \param device make current MAC entity associated with WaveNetDevice
+   *
+   * To support MAC extension for multiple channel operation,
+   *  WaveMacLow object will be used to replace original MacLow object.
+   */
+  void EnableForWave (Ptr<WaveNetDevice> device);
+  /**
+   * To support MAC extension for multiple channel operation,
+   * Suspend the activity in current MAC entity
+   */
+  void Suspend (void);
+  /**
+   * To support MAC extension for multiple channel operation,
+   * Resume the activity of suspended MAC entity
+   */
+  void Resume (void);
+  /**
+   * \param duration the virtual busy time for MAC entity
+   *
+   * To support MAC extension for multiple channel operation,
+   * Notify MAC entity busy for some time to prevent transmission
+   */
+  void MakeVirtualBusy (Time duration);
+  /**
+   * \param ac the specified access category
+   *
+   * To support MAC extension for multiple channel operation,
+   * Cancel transmit operation for internal queue associated with a specified Access Category.
+   */
+  void CancleTx (enum AcIndex ac);
+  /**
+   * To support MAC extension for multiple channel operation,
+   * Reset current MAC entity and flush its internal queues.
+   */
+  void Reset (void);
 
 protected:
   virtual void FinishConfigureStandard (enum WifiPhyStandard standard);

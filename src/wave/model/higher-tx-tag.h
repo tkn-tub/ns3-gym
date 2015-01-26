@@ -19,41 +19,56 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  *         Junling Bu <linlinjavaer@gmail.com>
  */
-#ifndef HIGHER_DATA_TXVECTOR_TAG_H
-#define HIGHER_DATA_TXVECTOR_TAG_H
+#ifndef HIGHER_LAYER_TX_VECTOR_TAG_H
+#define HIGHER_LAYER_TX_VECTOR_TAG_H
 
-#include "ns3/packet.h"
+#include "ns3/tag.h"
 #include "ns3/wifi-tx-vector.h"
 
 namespace ns3 {
 class Tag;
+class WifiTxVector;
+class TypeId;
 
 /**
- * This tag will be used to support higher layer control data rate
- * and tx power level.
+ * \ingroup packet
+ * \brief This tag will be used to support higher layer control DataRate
+ * and TxPwr_Level for transmission.
+ * If the high layer enables adaptable mode,  DataRate will be the
+ * minimum allowable value and TxPwr_Level will be the maximum
+ * allowable value for transmission.
+ * If the higher layer does not enable adaptable parameter, the
+ * DataRate and TxPwr_Level will be actual values for transmission.
+ * However, if this tag is not used and inserted in the packet, the actual
+ * DataRate and TxPwr_Level for transmission will be determined by MAC layer.
  */
-class HigherDataTxVectorTag : public Tag
+class HigherLayerTxVectorTag : public Tag
 {
 public:
-  HigherDataTxVectorTag (void);
-  HigherDataTxVectorTag (WifiTxVector dataTxVector, bool adapter);
-  virtual ~HigherDataTxVectorTag (void);
-
-  WifiTxVector GetDataTxVector (void) const;
-  bool IsAdapter (void) const;
-
   static TypeId GetTypeId (void);
   virtual TypeId GetInstanceTypeId (void) const;
+
+  HigherLayerTxVectorTag (void);
+  HigherLayerTxVectorTag (WifiTxVector txVector, bool adaptable);
+  /**
+   * \returns the tx vector for transmission
+   */
+  WifiTxVector GetTxVector (void) const;
+  /**
+   * \returns the adaptable mode for transmission
+   */
+  bool IsAdaptable (void) const;
+
   virtual uint32_t GetSerializedSize (void) const;
   virtual void Serialize (TagBuffer i) const;
   virtual void Deserialize (TagBuffer i);
   virtual void Print (std::ostream &os) const;
 
 private:
-  WifiTxVector m_dataTxVector;
-  bool m_adapter;
+  WifiTxVector m_txVector;
+  bool m_adaptable;
 };
 
 } // namespace ns3
 
-#endif /* HIGHER_DATA_TXVECTOR_TAG_H*/
+#endif /* HIGHER_LAYER_TX_VECTOR_TAG_H*/
