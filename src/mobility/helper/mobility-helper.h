@@ -260,6 +260,13 @@ public:
    */
   int64_t AssignStreams (NodeContainer c, int64_t stream);
 
+  /**
+   * \param n1 node 1
+   * \param n2 node 2
+   * \return the distance (squared), in meters, between two nodes
+   */
+  static double GetDistanceSquaredBetween (Ptr<Node> n1, Ptr<Node> n2);
+
 private:
 
   /**
