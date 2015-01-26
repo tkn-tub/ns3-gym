@@ -87,7 +87,11 @@ public:
    *
    * \return the current channel number
    */
-  uint16_t GetChannelNumber () const;
+  uint16_t GetChannelNumber (void) const;
+  /**
+   * \return the required time for channel switch operation of this WifiPhy
+   */
+  Time GetChannelSwitchDelay (void) const;
   /**
    * Return current center channel frequency in MHz.
    *
@@ -249,6 +253,7 @@ public:
   virtual void SetReceiveErrorCallback (WifiPhy::RxErrorCallback callback);
   virtual void SendPacket (Ptr<const Packet> packet, WifiTxVector txvector, enum WifiPreamble preamble);
   virtual void RegisterListener (WifiPhyListener *listener);
+  virtual void UnregisterListener (WifiPhyListener *listener);
   virtual void SetSleepMode (void);
   virtual void ResumeFromSleep (void);
   virtual bool IsStateCcaBusy (void);

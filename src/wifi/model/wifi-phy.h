@@ -219,6 +219,13 @@ public:
    * PHY-level events.
    */
   virtual void RegisterListener (WifiPhyListener *listener) = 0;
+  /**
+   * \param listener the listener to be unregistered
+   *
+   * Remove the input listener from the list of objects to be notified of
+   * PHY-level events.
+   */
+  virtual void UnregisterListener (WifiPhyListener *listener) = 0;
 
   /**
    * Put in sleep mode.
@@ -494,7 +501,11 @@ public:
    *
    * \return the current channel number
    */
-  virtual uint16_t GetChannelNumber () const = 0;
+  virtual uint16_t GetChannelNumber (void) const = 0;
+  /**
+   * \return the required time for channel switch operation of this WifiPhy
+   */
+  virtual Time GetChannelSwitchDelay (void) const = 0;
 
   /**
    * Configure the PHY-level parameters for different Wi-Fi standard.

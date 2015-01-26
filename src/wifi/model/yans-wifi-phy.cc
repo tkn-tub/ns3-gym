@@ -423,9 +423,15 @@ switchChannel:
 }
 
 uint16_t
-YansWifiPhy::GetChannelNumber () const
+YansWifiPhy::GetChannelNumber (void) const
 {
   return m_channelNumber;
+}
+
+Time
+YansWifiPhy::GetChannelSwitchDelay (void) const
+{
+  return m_channelSwitchDelay;
 }
 
 double
@@ -790,6 +796,12 @@ void
 YansWifiPhy::RegisterListener (WifiPhyListener *listener)
 {
   m_state->RegisterListener (listener);
+}
+
+void
+YansWifiPhy::UnregisterListener (WifiPhyListener *listener)
+{
+  m_state->UnregisterListener (listener);
 }
 
 bool

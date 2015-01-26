@@ -276,6 +276,14 @@ public:
    * \param mode the WifiMode supports by the station
    */
   void AddSupportedMode (Mac48Address address, WifiMode mode);
+  /**
+   * Invoked in a STA or AP to store all of the modes supported 
+   * by a destination which is also supported locally.
+   * The set of supported modes includes the BSSBasicRateSet.
+   *
+   * \param address the address of the station being recorded
+   */
+  void AddAllSupportedModes (Mac48Address address);
   //void  AddBssMembershipParameters(Mac48Address address, uint32_t selector);
 
   /**

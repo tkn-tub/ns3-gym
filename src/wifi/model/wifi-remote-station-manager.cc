@@ -447,6 +447,18 @@ WifiRemoteStationManager::AddSupportedMode (Mac48Address address, WifiMode mode)
     }
   state->m_operationalRateSet.push_back (mode);
 }
+void
+WifiRemoteStationManager::AddAllSupportedModes (Mac48Address address)
+{
+  NS_ASSERT (!address.IsGroup ());
+  WifiRemoteStationState *state = LookupState (address);
+  state->m_operationalRateSet.clear ();
+  for (uint32_t i = 0; i < m_wifiPhy->GetNModes (); i++)
+    {
+      state->m_operationalRateSet.push_back ( m_wifiPhy->GetMode (i));
+    }
+}
+
 /*void
 WifiRemoteStationManager::AddBssMembershipParameters(Mac48Address address, uint32_t selector)
 {

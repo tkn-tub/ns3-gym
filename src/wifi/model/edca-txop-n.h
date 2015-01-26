@@ -187,6 +187,14 @@ public:
    * When a channel switching occurs, enqueued packets are removed.
    */
   void NotifyChannelSwitching (void);
+  /**
+   * When sleep operation occurs, re-insert pending packet into front of the queue
+   */
+  void NotifySleep (void);
+  /**
+   * When wake up operation occurs, restart channel access
+   */
+  void NotifyWakeUp (void);
 
   /* Event handlers */
   /**

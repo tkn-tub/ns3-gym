@@ -327,6 +327,16 @@ MacLow::SetupPhyMacLowListener (Ptr<WifiPhy> phy)
   phy->RegisterListener (m_phyMacLowListener);
 }
 
+void
+MacLow::RemovePhyMacLowListener (Ptr<WifiPhy> phy)
+{
+  if (m_phyMacLowListener != 0 )
+    {
+      phy->UnregisterListener (m_phyMacLowListener);
+      delete m_phyMacLowListener;
+      m_phyMacLowListener = 0;
+    }
+}
 
 void
 MacLow::DoDispose (void)
@@ -432,6 +442,19 @@ MacLow::SetPhy (Ptr<WifiPhy> phy)
   m_phy->SetReceiveOkCallback (MakeCallback (&MacLow::ReceiveOk, this));
   m_phy->SetReceiveErrorCallback (MakeCallback (&MacLow::ReceiveError, this));
   SetupPhyMacLowListener (phy);
+}
+Ptr<WifiPhy>
+MacLow::GetPhy (void) const
+{
+  return m_phy;
+}
+void
+MacLow::ResetPhy (void)
+{
+  m_phy->SetReceiveOkCallback (MakeNullCallback<void,Ptr<Packet>, double, WifiMode, enum WifiPreamble>  ());
+  m_phy->SetReceiveErrorCallback (MakeNullCallback<void,Ptr<const Packet>, double> ());
+  RemovePhyMacLowListener (m_phy);
+  m_phy = 0;
 }
 void
 MacLow::SetWifiRemoteStationManager (Ptr<WifiRemoteStationManager> manager)
@@ -663,7 +686,6 @@ void
 MacLow::NotifySleepNow (void)
 {
   NS_LOG_DEBUG ("Device in sleep mode. Cancelling MAC pending events");
-  m_stationManager->Reset ();
   CancelAllEvents ();
   if (m_navCounterResetCtsMissed.IsRunning ())
     {

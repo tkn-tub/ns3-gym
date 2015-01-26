@@ -160,6 +160,14 @@ private:
    * Notify that the device is switching channel.
    */
   void NotifyChannelSwitching (void);
+  /**
+   * Notify that the device has started to sleep.
+   */
+  void NotifySleep (void);
+  /**
+   * Notify that the device has started to wake up
+   */
+  void NotifyWakeUp (void);
 
 
   /**
@@ -194,10 +202,25 @@ private:
   * Called by DcfManager to notify a DcfState subclass
   * that a channel switching occured.
   *
-  * The subclass is expected to flush the queue of
-  * packets.
+  * The subclass is expected to flush the queue of packets.
   */
-  virtual void DoNotifyChannelSwitching () = 0;
+  virtual void DoNotifyChannelSwitching (void) = 0;
+  /**
+  * Called by DcfManager to notify a DcfState subclass that the device has
+  * begun to sleep.
+  *
+  * The subclass is expected to re-insert the pending packet into the queue
+  */
+  virtual void DoNotifySleep (void) = 0;
+  /**
+  * Called by DcfManager to notify a DcfState subclass that the device 
+  * has begun to wake up.
+  *
+  * The subclass is expected to restart a new backoff by
+  * calling DcfState::StartBackoffNow and DcfManager::RequestAccess
+  * is access is still needed.
+  */
+  virtual void DoNotifyWakeUp (void) = 0;
 
   uint32_t m_aifsn;
   uint32_t m_backoffSlots;
@@ -238,6 +261,12 @@ public:
    * \param phy
    */
   void SetupPhyListener (Ptr<WifiPhy> phy);
+  /**
+   * Remove current registered listener for Phy events.
+   *
+   * \param phy
+   */
+  void RemovePhyListener (Ptr<WifiPhy> phy);
   /**
    * Set up listener for MacLow events.
    *

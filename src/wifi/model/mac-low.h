@@ -425,6 +425,16 @@ public:
    * \param phy WifiPhy associated with this MacLow
    */
   void SetPhy (Ptr<WifiPhy> phy);
+  /*
+   * \return current attached PHY device
+   */
+  Ptr<WifiPhy> GetPhy (void) const;
+  /**
+   * Remove WifiPhy associated with this MacLow.
+   *
+   * \param phy WifiPhy associated with this MacLow
+   */
+  void ResetPhy (void);
   /**
    * Set up WifiRemoteStationManager associated with this MacLow.
    *
@@ -611,7 +621,7 @@ public:
    * Start the transmission of the input packet and notify the listener
    * of transmission events.
    */
-  void StartTransmission (Ptr<const Packet> packet,
+  virtual void StartTransmission (Ptr<const Packet> packet,
                           const WifiMacHeader* hdr,
                           MacLowTransmissionParameters parameters,
                           MacLowTransmissionListener *listener);
@@ -1072,6 +1082,12 @@ private:
    * \param phy the WifiPhy this MacLow is connected to
    */
   void SetupPhyMacLowListener (Ptr<WifiPhy> phy);
+  /**
+   * Remove current WifiPhy listener for this MacLow.
+   *
+   * \param phy the WifiPhy this MacLow is connected to
+   */
+  void RemovePhyMacLowListener (Ptr<WifiPhy> phy);
 
   Ptr<WifiPhy> m_phy; //!< Pointer to WifiPhy (actually send/receives frames)
   Ptr<WifiRemoteStationManager> m_stationManager; //!< Pointer to WifiRemoteStationManager (rate control)

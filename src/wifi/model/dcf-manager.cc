@@ -161,6 +161,16 @@ DcfState::NotifyChannelSwitching (void)
 {
   DoNotifyChannelSwitching ();
 }
+void
+DcfState::NotifySleep (void)
+{
+  DoNotifySleep ();
+}
+void
+DcfState::NotifyWakeUp (void)
+{
+  DoNotifyWakeUp ();
+}
 
 
 /**
@@ -311,6 +321,19 @@ DcfManager::SetupPhyListener (Ptr<WifiPhy> phy)
   m_phyListener = new PhyListener (this);
   phy->RegisterListener (m_phyListener);
 }
+
+void
+DcfManager::RemovePhyListener (Ptr<WifiPhy> phy)
+{
+  NS_LOG_FUNCTION (this << phy);
+  if (m_phyListener != 0)
+    {
+      phy->UnregisterListener (m_phyListener);
+      delete m_phyListener;
+      m_phyListener = 0;
+    }
+}
+
 void
 DcfManager::SetupLowListener (Ptr<MacLow> low)
 {
@@ -765,6 +788,13 @@ DcfManager::NotifySleepNow (void)
     {
       m_accessTimeout.Cancel ();
     }
+
+  // Reset backoffs
+  for (States::iterator i = m_states.begin (); i != m_states.end (); i++)
+    {
+      DcfState *state = *i;
+      state->NotifySleep ();
+    }
 }
 
 void
@@ -772,7 +802,6 @@ DcfManager::NotifyWakeupNow (void)
 {
   NS_LOG_FUNCTION (this);
   m_sleeping = false;
-  // Reset backoffs
   for (States::iterator i = m_states.begin (); i != m_states.end (); i++)
     {
       DcfState *state = *i;
@@ -784,6 +813,7 @@ DcfManager::NotifyWakeupNow (void)
         }
       state->ResetCw ();
       state->m_accessRequested = false;
+      state->NotifyWakeUp ();
     }
 }
 

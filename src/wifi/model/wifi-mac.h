@@ -190,9 +190,22 @@ public:
    */
   virtual void SetWifiPhy (Ptr<WifiPhy> phy) = 0;
   /**
+   * return current attached WifiPhy device
+   */
+  virtual Ptr<WifiPhy> GetWifiPhy (void) const = 0;
+  /**
+   * remove current attached WifiPhy device from this MAC.
+   */
+  virtual void ResetWifiPhy (void) = 0;
+  /**
    * \param stationManager the station manager attached to this MAC.
    */
   virtual void SetWifiRemoteStationManager (Ptr<WifiRemoteStationManager> stationManager) = 0;
+  /**
+   * \return the station manager attached to this MAC.
+   */
+  virtual Ptr<WifiRemoteStationManager> GetWifiRemoteStationManager (void) const = 0;
+
   /**
    * \param upCallback the callback to invoke when a packet must be forwarded up the stack.
    */

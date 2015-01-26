@@ -58,6 +58,12 @@ public:
    */
   void RegisterListener (WifiPhyListener *listener);
   /**
+   * Remove WifiPhyListener from this WifiPhyStateHelper.
+   *
+   * \param listener
+   */
+  void UnregisterListener (WifiPhyListener *listener);
+  /**
    * Return the current state of WifiPhy.
    *
    * \return the current state of WifiPhy
@@ -232,6 +238,7 @@ private:
    * typedef for a list of WifiPhyListeners
    */
   typedef std::vector<WifiPhyListener *> Listeners;
+  typedef std::vector<WifiPhyListener *>::iterator ListenersI;
 
   /**
    * Log the ideal and CCA states.
