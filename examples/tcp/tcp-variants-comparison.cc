@@ -56,8 +56,12 @@ NS_LOG_COMPONENT_DEFINE ("TcpVariantsComparison");
 
 bool firstCwnd = true;
 bool firstSshThr = true;
+bool firstRtt = true;
+bool firstRto = true;
 Ptr<OutputStreamWrapper> cWndStream;
 Ptr<OutputStreamWrapper> ssThreshStream;
+Ptr<OutputStreamWrapper> rttStream;
+Ptr<OutputStreamWrapper> rtoStream;
 uint32_t cWndValue;
 uint32_t ssThreshValue;
 
@@ -96,6 +100,28 @@ SsThreshTracer (uint32_t oldval, uint32_t newval)
     }
 }
 
+static void
+RttTracer (Time oldval, Time newval)
+{
+  if (firstRtt)
+    {
+      *rttStream->GetStream () << "0.0 " << oldval.GetSeconds () << std::endl;
+      firstRtt = false;
+    }
+  *rttStream->GetStream () << Simulator::Now ().GetSeconds () << " " << newval.GetSeconds () << std::endl;
+}
+
+static void
+RtoTracer (Time oldval, Time newval)
+{
+  if (firstRto)
+    {
+      *rtoStream->GetStream () << "0.0 " << oldval.GetSeconds () << std::endl;
+      firstRto = false;
+    }
+  *rtoStream->GetStream () << Simulator::Now ().GetSeconds () << " " << newval.GetSeconds () << std::endl;
+}
+
 
 static void
 TraceCwnd (std::string cwnd_tr_file_name)
@@ -110,7 +136,23 @@ TraceSsThresh (std::string ssthresh_tr_file_name)
 {
   AsciiTraceHelper ascii;
   ssThreshStream = ascii.CreateFileStream (ssthresh_tr_file_name.c_str ());
-  Config::ConnectWithoutContext ("/NodeList/1/$ns3::TcpL4Protocol/SocketList/0/SlowStartThreshold",MakeCallback (&SsThreshTracer));
+  Config::ConnectWithoutContext ("/NodeList/1/$ns3::TcpL4Protocol/SocketList/0/SlowStartThreshold", MakeCallback (&SsThreshTracer));
+}
+
+static void
+TraceRtt (std::string rtt_tr_file_name)
+{
+  AsciiTraceHelper ascii;
+  rttStream = ascii.CreateFileStream (rtt_tr_file_name.c_str ());
+  Config::ConnectWithoutContext ("/NodeList/1/$ns3::TcpL4Protocol/SocketList/0/RTT", MakeCallback (&RttTracer));
+}
+
+static void
+TraceRto (std::string rto_tr_file_name)
+{
+  AsciiTraceHelper ascii;
+  rtoStream = ascii.CreateFileStream (rto_tr_file_name.c_str ());
+  Config::ConnectWithoutContext ("/NodeList/1/$ns3::TcpL4Protocol/SocketList/0/RTO", MakeCallback (&RtoTracer));
 }
 
 int main (int argc, char *argv[])
@@ -124,6 +166,8 @@ int main (int argc, char *argv[])
   std::string tr_file_name = "";
   std::string cwnd_tr_file_name = "";
   std::string ssthresh_tr_file_name = "";
+  std::string rtt_tr_file_name = "";
+  std::string rto_tr_file_name = "";
   double data_mbytes = 0;
   uint32_t mtu_bytes = 400;
   uint16_t num_flows = 1;
@@ -142,6 +186,8 @@ int main (int argc, char *argv[])
   cmd.AddValue ("tr_name", "Name of output trace file", tr_file_name);
   cmd.AddValue ("cwnd_tr_name", "Name of output trace file", cwnd_tr_file_name);
   cmd.AddValue ("ssthresh_tr_name", "Name of output trace file", ssthresh_tr_file_name);
+  cmd.AddValue ("rtt_tr_name", "Name of output trace file", rtt_tr_file_name);
+  cmd.AddValue ("rto_tr_name", "Name of output trace file", rto_tr_file_name);
   cmd.AddValue ("data", "Number of Megabytes of data to transmit", data_mbytes);
   cmd.AddValue ("mtu", "Size of IP packets to send in bytes", mtu_bytes);
   cmd.AddValue ("num_flows", "Number of flows", num_flows);
@@ -310,6 +356,16 @@ int main (int argc, char *argv[])
       if (ssthresh_tr_file_name.compare ("") != 0)
         {
           Simulator::Schedule (Seconds (0.00001), &TraceSsThresh, ssthresh_tr_file_name);
+        }
+
+      if (rtt_tr_file_name.compare ("") != 0)
+        {
+          Simulator::Schedule (Seconds (0.00001), &TraceRtt, rtt_tr_file_name);
+        }
+
+      if (rto_tr_file_name.compare ("") != 0)
+        {
+          Simulator::Schedule (Seconds (0.00001), &TraceRto, rto_tr_file_name);
         }
 
     }
