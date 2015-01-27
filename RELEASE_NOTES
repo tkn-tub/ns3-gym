@@ -58,6 +58,7 @@ Bugs fixed
 - Bug 2037 - HT capabilities may print bogus chars
 - Bug 2038 - Stop method does not stop next wave in WaveformGenerator
 - Bug 2045 - Missing NS_OBJECT_ENSURE_REGISTERED in TcpTxBuffer and TcpRxBuffer
+- Bug 2047 - Ipv6EndPointDemux::Lookup may crash
 
 Known issues
 ------------
