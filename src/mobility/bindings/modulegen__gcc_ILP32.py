@@ -1191,6 +1191,11 @@ def register_Ns3MobilityHelper_methods(root_module, cls):
                    'void', 
                    [param('ns3::Ptr< ns3::OutputStreamWrapper >', 'stream')], 
                    is_static=True)
+    ## mobility-helper.h (module 'mobility'): static double ns3::MobilityHelper::GetDistanceSquaredBetween(ns3::Ptr<ns3::Node> n1, ns3::Ptr<ns3::Node> n2) [member function]
+    cls.add_method('GetDistanceSquaredBetween', 
+                   'double', 
+                   [param('ns3::Ptr< ns3::Node >', 'n1'), param('ns3::Ptr< ns3::Node >', 'n2')], 
+                   is_static=True)
     ## mobility-helper.h (module 'mobility'): std::string ns3::MobilityHelper::GetMobilityModelType() const [member function]
     cls.add_method('GetMobilityModelType', 
                    'std::string', 
