@@ -59,11 +59,10 @@ struct TxInfo
   uint32_t priority;
   WifiMode dataRate;
   uint32_t txPowerLevel;
-  // Time expiryTime;   // unsupport
+  // Time expiryTime;   // unsupported
   TxInfo ()
     : channelNumber (CCH),
       priority (7),
-      dataRate (WifiMode ()),
       txPowerLevel (8)
   {
 
@@ -99,16 +98,16 @@ struct TxProfile
   TxProfile (void)
     : channelNumber (SCH1),
       adaptable (false),
-      txPowerLevel (4),
-      dataRate (WifiMode ("OfdmRate6MbpsBW10MHz"))
+      txPowerLevel (4)
   {
+      dataRate = WifiMode ("OfdmRate6MbpsBW10MHz");
   }
-  TxProfile (uint32_t channel, bool adapt = true, uint32_t powerLevel = 4, WifiMode rate = WifiMode("OfdmRate6MbpsBW10MHz"))
+  TxProfile (uint32_t channel, bool adapt = true, uint32_t powerLevel = 4)
     : channelNumber (channel),
       adaptable (adapt),
-      txPowerLevel (powerLevel),
-      dataRate (rate)
+      txPowerLevel (powerLevel)
   {
+      dataRate = WifiMode ("OfdmRate6MbpsBW10MHz");
   }
 };
 
