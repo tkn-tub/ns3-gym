@@ -26,7 +26,7 @@ namespace ns3 {
 /**
  * \brief receive notifications about channel coordination events.
  */
-class ChannelCoordinationListener
+class ChannelCoordinationListener : public SimpleRefCount<ChannelCoordinationListener>
 {
 public:
   virtual ~ChannelCoordinationListener (void);
@@ -186,13 +186,13 @@ public:
    * Add the input listener to the list of objects to be notified of
    * channel coordination events.
    */
-  void RegisterListener (ChannelCoordinationListener *listener);
+  void RegisterListener (Ptr<ChannelCoordinationListener> listener);
   /**
    * \param listener the current attached listener
    *
    * Remove the specified listener.
    */
-  void UnregisterListener (ChannelCoordinationListener *listener);
+  void UnregisterListener (Ptr<ChannelCoordinationListener> listener);
   /**
    * Remove all listeners.
    */
@@ -227,8 +227,8 @@ private:
   Time m_schi;  // SchInterval
   Time m_gi;    // GuardInterval
 
-  typedef std::vector<ChannelCoordinationListener *> Listeners;
-  typedef std::vector<ChannelCoordinationListener *>::iterator ListenersI;
+  typedef std::vector<Ptr<ChannelCoordinationListener> > Listeners;
+  typedef std::vector<Ptr<ChannelCoordinationListener> >::iterator ListenersI;
   Listeners m_listeners;
 
   uint32_t m_guardCount;

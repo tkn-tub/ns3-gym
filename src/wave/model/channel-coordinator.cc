@@ -295,7 +295,7 @@ ChannelCoordinator::GetRemainTime (Time duration) const
 }
 
 void
-ChannelCoordinator::RegisterListener (ChannelCoordinationListener *listener)
+ChannelCoordinator::RegisterListener (Ptr<ChannelCoordinationListener> listener)
 {
   NS_LOG_FUNCTION (this << listener);
   NS_ASSERT (listener != 0);
@@ -303,7 +303,7 @@ ChannelCoordinator::RegisterListener (ChannelCoordinationListener *listener)
 }
 
 void
-ChannelCoordinator::UnregisterListener (ChannelCoordinationListener *listener)
+ChannelCoordinator::UnregisterListener (Ptr<ChannelCoordinationListener> listener)
 {
   NS_LOG_FUNCTION (this << listener);
   NS_ASSERT (listener != 0);

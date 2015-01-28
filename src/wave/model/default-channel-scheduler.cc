@@ -90,7 +90,6 @@ DefaultChannelScheduler::DoDispose (void)
   m_coordinator = 0;
   if (m_coordinationListener != 0)
     {
-      delete m_coordinationListener;
       m_coordinationListener = 0;
     }
   if (!m_waitEvent.IsExpired ())
@@ -117,7 +116,7 @@ DefaultChannelScheduler::SetWaveNetDevice (Ptr<WaveNetDevice> device)
   // since default channel scheduler is in the context of single-PHY, we only use one phy object.
   m_phy = device->GetPhy (0);
   m_coordinator = device->GetChannelCoordinator ();
-  m_coordinationListener = new CoordinationListener (this);
+  m_coordinationListener = Create<CoordinationListener> (this);
   m_coordinator->RegisterListener (m_coordinationListener);
 }
 

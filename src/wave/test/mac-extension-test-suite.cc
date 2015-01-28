@@ -210,7 +210,8 @@ ChannelCoordinationTestCase::DoRun ()
 
   m_coordinator = CreateObject<ChannelCoordinator> ();
   // third test channel coordination events
-  m_coordinator->RegisterListener (new CoordinationTestListener (this));
+  Ptr<CoordinationTestListener> ptr = Create<CoordinationTestListener> (this);
+  m_coordinator->RegisterListener (ptr);
   Simulator::Stop (Seconds (100.0));
   Simulator::Run ();
   Simulator::Destroy ();

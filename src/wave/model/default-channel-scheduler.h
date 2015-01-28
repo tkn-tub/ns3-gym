@@ -113,7 +113,7 @@ private:
   uint32_t m_waitChannelNumber;
   uint32_t m_waitExtend;
 
-  ChannelCoordinationListener *m_coordinationListener;
+  Ptr<ChannelCoordinationListener> m_coordinationListener;
 };
 
 }
