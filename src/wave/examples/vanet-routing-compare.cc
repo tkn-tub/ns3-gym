@@ -414,7 +414,7 @@ public:
                 Ipv4InterfaceContainer & i,
                 double totalTime,
                 int protocol,
-                int nSinks,
+                uint32_t nSinks,
                 int routingTables);
 
   /**
@@ -482,7 +482,7 @@ private:
   double m_TotalSimTime;        // seconds
   uint32_t m_protocol;       // routing protocol; 0=NONE, 1=OLSR, 2=AODV, 3=DSDV, 4=DSR
   uint32_t m_port;
-  int m_nSinks;              // number of sink nodes (< all nodes)
+  uint32_t m_nSinks;              // number of sink nodes (< all nodes)
   int m_routingTables;      // dump routing table (at t=5 sec).  0=No, 1=Yes
   RoutingStats routingStats;
   std::string m_protocolName;
@@ -520,7 +520,7 @@ RoutingHelper::Install (NodeContainer & c,
                         Ipv4InterfaceContainer & i,
                         double totalTime,
                         int protocol,
-                        int nSinks,
+                        uint32_t nSinks,
                         int routingTables)
 {
   m_TotalSimTime = totalTime;
@@ -642,7 +642,7 @@ RoutingHelper::SetupRoutingMessages (NodeContainer & c,
   Ptr<UniformRandomVariable> var = CreateObject<UniformRandomVariable> ();
   int64_t stream = 2;
   var->SetStream (stream);
-  for (int i = 0; i <= m_nSinks - 1; i++)
+  for (uint32_t i = 0; i < m_nSinks; i++)
     {
       // protocol == 0 means no routing data, WAVE BSM only
       // so do not set up sink
@@ -1247,7 +1247,7 @@ private:
   uint32_t m_port;
   std::string m_CSVfileName;
   std::string m_CSVfileName2;
-  int m_nSinks;
+  uint32_t m_nSinks;
   std::string m_protocolName;
   double m_txp;
   bool m_traceMobility;
