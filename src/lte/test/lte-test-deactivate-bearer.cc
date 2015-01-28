@@ -117,8 +117,7 @@ LenaDeactivateBearerTestCase::LenaDeactivateBearerTestCase (std::vector<uint16_t
     m_packetSize (packetSize),
     m_interval (interval),
     m_estThrPssDl (estThrPssDl),
-    m_errorModelEnabled (errorModelEnabled),
-    m_useIdealRrc (useIdealRrc)
+    m_errorModelEnabled (errorModelEnabled)
 {
 }
 

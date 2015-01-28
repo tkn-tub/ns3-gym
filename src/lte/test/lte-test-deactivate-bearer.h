@@ -22,7 +22,6 @@ private:
   uint16_t m_interval;    // ms
   std::vector<uint32_t> m_estThrPssDl;
   bool m_errorModelEnabled;
-  bool m_useIdealRrc;
 };
 
 
