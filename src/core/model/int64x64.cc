@@ -154,6 +154,15 @@ std::ostream &operator << (std::ostream &os, const int64x64_t &value)
   return os;
 }
 
+/**
+ * \ingroup highprec
+ * Read the integer portion of a number from a string containing
+ * just the integral digits (no decimal point or fractional part).
+ *
+ * \param [in] str The string representation of the integral part
+ *             of a number, with no fractional part or decimal point.
+ * \returns    The integer.
+ */
 static uint64_t ReadHiDigits (std::string str)
 {
   const char *buf = str.c_str ();
@@ -167,6 +176,16 @@ static uint64_t ReadHiDigits (std::string str)
   return retval;
 }
 
+/**
+ * \ingroup highprec
+ * Read the fractional part of a number from a string containing
+ * just the decimal digits of the fractional part (no integral part
+ * or decimal point).
+ *
+ * \param [in] str The string representation of the fractional part
+ *             of a number, without integral part or decimal point.
+ * \returns    The decimal portion of the input number.
+ */
 static uint64_t ReadLoDigits (std::string str)
 {
   int64x64_t low;

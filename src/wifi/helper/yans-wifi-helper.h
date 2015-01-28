@@ -243,6 +243,15 @@ public:
    */
   void SetPcapDataLinkType (enum SupportedPcapDataLinkTypes dlt);
 
+  /**
+   * Get the data link type of PCAP traces to be used. 
+   *
+   * @see SupportedPcapDataLinkTypes
+   *
+   * @returns The data link type of the pcap file (and packets) to be used
+   */
+  uint32_t GetPcapDataLinkType (void) const;
+
 private:
   /**
    * \param node the node on which we wish to create a wifi PHY
@@ -251,7 +260,7 @@ private:
    *
    * This method implements the pure virtual method defined in \ref ns3::WifiPhyHelper.
    */
-  virtual Ptr<WifiPhy> Create (Ptr<Node> node, Ptr<WifiNetDevice> device) const;
+  virtual Ptr<WifiPhy> Create (Ptr<Node> node, Ptr<NetDevice> device) const;
 
   /**
    * @brief Enable pcap output the indicated net device.

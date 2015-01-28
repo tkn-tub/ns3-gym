@@ -40,6 +40,8 @@ class EpcX2;
 class EpcMme;
 
 /**
+ * \ingroup lte
+ *
  * \brief Create an EPC network using EmuFdNetDevice 
  *
  * This Helper will create an EPC network topology comprising of a
@@ -63,6 +65,10 @@ public:
   virtual ~EmuEpcHelper ();
   
   // inherited from Object
+  /**
+   *  Register this type.
+   *  \return The object TypeId.
+   */
   static TypeId GetTypeId (void);
   virtual void DoInitialize ();
   virtual void DoDispose ();
@@ -85,13 +91,24 @@ private:
    */
   Ipv4AddressHelper m_ueAddressHelper; 
 
-
   /**
    * SGW-PGW network element
    */  
   Ptr<Node> m_sgwPgw; 
+
+  /**
+   * SGW-PGW application
+   */
   Ptr<EpcSgwPgwApplication> m_sgwPgwApp;
+
+  /**
+   * TUN device implementing tunneling of user data over GTP-U/UDP/IP
+   */
   Ptr<VirtualNetDevice> m_tunDevice;
+
+  /**
+   * MME network element
+   */
   Ptr<EpcMme> m_mme;
 
   /** 
@@ -109,12 +126,30 @@ private:
    * 
    */
   std::map<uint64_t, Ptr<NetDevice> > m_imsiEnbDeviceMap;
-  
+
+  /**
+   * Container for Ipv4Interfaces of the SGW/PGW
+   */
   Ipv4InterfaceContainer m_sgwIpIfaces; 
 
+  /**
+   * The name of the device used for the S1-U interface of the SGW
+   */
   std::string m_sgwDeviceName;
+
+  /**
+   * The name of the device used for the S1-U interface of the eNB
+   */
   std::string m_enbDeviceName;
+
+  /**
+   * MAC address used for the SGW
+   */
   std::string m_sgwMacAddress;
+
+  /**
+   * First 5 bytes of the Enb MAC address base
+   */
   std::string m_enbMacAddressBase;
 };
 

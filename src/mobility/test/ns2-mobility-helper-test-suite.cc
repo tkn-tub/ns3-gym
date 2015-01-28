@@ -229,10 +229,6 @@ private:
   void DoTeardown ()
   {
     Names::Clear ();
-    if (std::remove (m_traceFile.c_str ()))
-      {
-        NS_LOG_ERROR ("Failed to delete file " << m_traceFile);
-      }
     Simulator::Destroy ();
   }
 

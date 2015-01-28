@@ -16,6 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
+ *          Sébastien Deronne <sebastien.deronne@gmail.com>
  */
 
 #include <cmath>
@@ -176,7 +177,8 @@ double
 YansErrorRateModel::GetChunkSuccessRate (WifiMode mode, double snr, uint32_t nbits) const
 {
   if (mode.GetModulationClass () == WIFI_MOD_CLASS_ERP_OFDM
-      || mode.GetModulationClass () == WIFI_MOD_CLASS_OFDM)
+      || mode.GetModulationClass () == WIFI_MOD_CLASS_OFDM
+      || mode.GetModulationClass () == WIFI_MOD_CLASS_HT)
     {
       if (mode.GetConstellationSize () == 2)
         {
@@ -267,6 +269,19 @@ YansErrorRateModel::GetChunkSuccessRate (WifiMode mode, double snr, uint32_t nbi
                                    6,  // dFree
                                    1,  // adFree
                                    16  // adFreePlusOne
+                                   );
+            }
+          if (mode.GetCodeRate () == WIFI_CODE_RATE_5_6)
+            {
+              //Table B.32  in Pâl Frenger et al., "Multi-rate Convolutional Codes".
+              return GetFecQamBer (snr,
+                                   nbits,
+                                   mode.GetBandwidth (), // signal spread
+                                   mode.GetPhyRate (), // phy rate
+                                   64, // m
+                                   4,  // dFree
+                                   14,  // adFree
+                                   69  // adFreePlusOne
                                    );
             }
           else

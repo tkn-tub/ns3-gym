@@ -175,7 +175,7 @@ LteEnbAntennaTestCase::DoRun (void)
   const double noisePowerDbm = ktDbm + 10 * std::log10 (25 * 180000); // corresponds to kT*bandwidth in linear units
   const double ueNoiseFigureDb = 9.0; // default UE noise figure
   const double enbNoiseFigureDb = 5.0; // default eNB noise figure
-  double tolerance = (m_antennaGainDb != 0) ? abs (m_antennaGainDb)*0.001 : 0.001;
+  double tolerance = (m_antennaGainDb != 0) ? std::abs (m_antennaGainDb) * 0.001 : 0.001;
 
   // first test with SINR from LteTestSinrChunkProcessor
   // this can only be done for not-too-bad SINR otherwise the measurement won't be available

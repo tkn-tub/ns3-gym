@@ -87,10 +87,7 @@ AdhocWifiMac::Enqueue (Ptr<const Packet> packet, Mac48Address to)
     {
       // In ad hoc mode, we assume that every destination supports all
       // the rates we support.
-      for (uint32_t i = 0; i < m_phy->GetNModes (); i++)
-        {
-          m_stationManager->AddSupportedMode (to, m_phy->GetMode (i));
-        }
+      m_stationManager->AddAllSupportedModes (to);
       m_stationManager->RecordDisassociated (to);
     }
 

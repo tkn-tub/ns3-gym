@@ -37,6 +37,17 @@ namespace ns3 {
 // of causing recursions leading to stack overflow
 NS_LOG_COMPONENT_DEFINE ("int64x64-cairo");
 
+/**
+ * \ingroup highprec
+ * Compute the sign of the result of multiplying or dividing
+ * Q64.64 fixed precision operands.
+ *
+ * \param [in]  sa The signed value of the first operand.
+ * \param [in]  sb The signed value of the second operand.
+ * \param [out] ua The unsigned magnitude of the first operand.
+ * \param [out] ub The unsigned magnitude of the second operand.
+ * \returns True if the result will be negative.
+ */
 static inline  
 bool
 output_sign (const cairo_int128_t sa,

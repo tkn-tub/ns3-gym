@@ -22,6 +22,12 @@
 #include "simulation-singleton.h"
 #include "log.h"
 
+/**
+ * \file
+ * \ingroup timer
+ * ns3::Timer implementation.
+ */
+
 namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("Timer");

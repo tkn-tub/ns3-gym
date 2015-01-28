@@ -22,10 +22,17 @@
 
 #include <ctime>
 
+/**
+ * \file
+ * \ingroup system
+ * Wall clock class ns3::SystemWallClockMs implementation
+ * for Windows-32 systems.
+ */
+
 namespace ns3 {
 
 /**
- * \ingroup testingimpl
+ * \ingroup system
  * \brief System-dependent implementation for SystemWallClockMs
  */
 class SystemWallClockMsPrivate {

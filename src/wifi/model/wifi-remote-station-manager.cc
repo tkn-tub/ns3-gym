@@ -301,16 +301,20 @@ WifiRemoteStationManager::GetTypeId (void)
                    MakeUintegerChecker<uint8_t> ())
     .AddTraceSource ("MacTxRtsFailed",
                      "The transmission of a RTS by the MAC layer has failed",
-                     MakeTraceSourceAccessor (&WifiRemoteStationManager::m_macTxRtsFailed))
+                     MakeTraceSourceAccessor (&WifiRemoteStationManager::m_macTxRtsFailed),
+                     "ns3::Mac48Address::TracedCallback")
     .AddTraceSource ("MacTxDataFailed",
                      "The transmission of a data packet by the MAC layer has failed",
-                     MakeTraceSourceAccessor (&WifiRemoteStationManager::m_macTxDataFailed))
+                     MakeTraceSourceAccessor (&WifiRemoteStationManager::m_macTxDataFailed),
+                     "ns3::Mac48Address::TracedCallback")
     .AddTraceSource ("MacTxFinalRtsFailed",
                      "The transmission of a RTS has exceeded the maximum number of attempts",
-                     MakeTraceSourceAccessor (&WifiRemoteStationManager::m_macTxFinalRtsFailed))
+                     MakeTraceSourceAccessor (&WifiRemoteStationManager::m_macTxFinalRtsFailed),
+                     "ns3::Mac48Address::TracedCallback")
     .AddTraceSource ("MacTxFinalDataFailed",
                      "The transmission of a data packet has exceeded the maximum number of attempts",
-                     MakeTraceSourceAccessor (&WifiRemoteStationManager::m_macTxFinalDataFailed))
+                     MakeTraceSourceAccessor (&WifiRemoteStationManager::m_macTxFinalDataFailed),
+                     "ns3::Mac48Address::TracedCallback")
   ;
   return tid;
 }
@@ -443,6 +447,18 @@ WifiRemoteStationManager::AddSupportedMode (Mac48Address address, WifiMode mode)
     }
   state->m_operationalRateSet.push_back (mode);
 }
+void
+WifiRemoteStationManager::AddAllSupportedModes (Mac48Address address)
+{
+  NS_ASSERT (!address.IsGroup ());
+  WifiRemoteStationState *state = LookupState (address);
+  state->m_operationalRateSet.clear ();
+  for (uint32_t i = 0; i < m_wifiPhy->GetNModes (); i++)
+    {
+      state->m_operationalRateSet.push_back ( m_wifiPhy->GetMode (i));
+    }
+}
+
 /*void
 WifiRemoteStationManager::AddBssMembershipParameters(Mac48Address address, uint32_t selector)
 {
@@ -1200,6 +1216,7 @@ WifiRemoteStationManager::LookupState (Mac48Address address) const
   state->m_greenfield=m_wifiPhy->GetGreenfield();
   state->m_rx=1;
   state->m_tx=1;
+  state->m_ness=0;
   state->m_stbc=false;
   const_cast<WifiRemoteStationManager *> (this)->m_states.push_back (state);
   NS_LOG_DEBUG ("WifiRemoteStationManager::LookupState returning new state");
@@ -1409,6 +1426,11 @@ uint32_t
 WifiRemoteStationManager::GetNumberOfTransmitAntennas (const WifiRemoteStation *station) const
 {
   return station->m_state->m_tx;
+}
+uint32_t 
+WifiRemoteStationManager::GetNess (const WifiRemoteStation *station) const
+{
+  return station->m_state->m_ness;
 }
 uint32_t 
 WifiRemoteStationManager::GetShortRetryCount (const WifiRemoteStation *station) const

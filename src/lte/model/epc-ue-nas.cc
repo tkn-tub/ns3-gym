@@ -88,7 +88,8 @@ EpcUeNas::GetTypeId (void)
     .AddConstructor<EpcUeNas> ()
     .AddTraceSource ("StateTransition",
                      "fired upon every UE NAS state transition",
-                     MakeTraceSourceAccessor (&EpcUeNas::m_stateTransitionCallback))
+                     MakeTraceSourceAccessor (&EpcUeNas::m_stateTransitionCallback),
+                     "ns3::EpcUeNas::StateTracedCallback")
   ;
   return tid;
 }

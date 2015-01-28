@@ -26,76 +26,228 @@
 #include "fatal-error.h"
 #include "int-to-type.h"
 
+/**
+ * \file
+ * \ingroup timer
+ * \ingroup timerimpl
+ * ns3::TimerImpl declaration and implementation.
+ */
+
 namespace ns3 {
 
+/**
+ * \ingroup timer
+ * The timer implementation underlying Timer and Watchdog.
+ */
 class TimerImpl
 {
 public:
+  /** Destructor. */
   virtual ~TimerImpl ()
   {
   }
 
+  /**
+   * Set the arguments to be used when invoking the expire function.
+   */
+  /**@{*/
+  /**
+   * \tparam T1 Type of the first argument.
+   * \param a1 The first argument
+   */
   template <typename T1>
   void SetArgs (T1 a1);
+  /**
+   * \tparam T1 Type of the first argument.
+   * \tparam T2 Type of the second argument.
+   * \param a1 the first argument
+   * \param a2 the second argument
+   */
   template <typename T1, typename T2>
   void SetArgs (T1 a1, T2 a2);
+  /**
+   * \tparam T1 Type of the first argument.
+   * \tparam T2 Type of the second argument.
+   * \tparam T3 Type of the third argument.
+   * \param a1 the first argument
+   * \param a2 the second argument
+   * \param a3 the third argument
+   */
   template <typename T1, typename T2, typename T3>
   void SetArgs (T1 a1, T2 a2, T3 a3);
+  /**
+   * \tparam T1 Type of the first argument.
+   * \tparam T2 Type of the second argument.
+   * \tparam T3 Type of the third argument.
+   * \tparam T4 Type of the fourth argument.
+   * \param a1 the first argument
+   * \param a2 the second argument
+   * \param a3 the third argument
+   * \param a4 the fourth argument
+   */
   template <typename T1, typename T2, typename T3,
             typename T4>
   void SetArgs (T1 a1, T2 a2, T3 a3, T4 a4);
+  /**
+   * \tparam T1 Type of the first argument.
+   * \tparam T2 Type of the second argument.
+   * \tparam T3 Type of the third argument.
+   * \tparam T4 Type of the fourth argument.
+   * \tparam T5 Type of the fifth argument.
+   * \param a1 the first argument
+   * \param a2 the second argument
+   * \param a3 the third argument
+   * \param a4 the fourth argument
+   * \param a5 the fifth argument
+   */
   template <typename T1, typename T2, typename T3,
             typename T4, typename T5>
   void SetArgs (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5);
+  /**
+   * \tparam T1 Type of the first argument.
+   * \tparam T2 Type of the second argument.
+   * \tparam T3 Type of the third argument.
+   * \tparam T4 Type of the fourth argument.
+   * \tparam T5 Type of the fifth argument.
+   * \tparam T6 Type of the sixth argument.
+   * \param a1 the first argument
+   * \param a2 the second argument
+   * \param a3 the third argument
+   * \param a4 the fourth argument
+   * \param a5 the fifth argument
+   * \param a6 the sixth argument
+   */
   template <typename T1, typename T2, typename T3,
             typename T4, typename T5, typename T6>
   void SetArgs (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5, T6 a6);
+  /**@}*/
 
+  /**
+   * Schedule the callback for a future time.
+   *
+   * \param delay The amount of time until the timer expires.
+   * \returns The scheduled EventId.
+   */
   virtual EventId Schedule (const Time &delay) = 0;
+  /** Invoke the expire function. */
   virtual void Invoke (void) = 0;
 };
 
+} // namespace ns3
 
+
+/********************************************************************
+ *  Implementation of TimerImpl implementation functions.
+ ********************************************************************/
+
+namespace ns3 {
+
+/**
+ * \ingroup timer
+ * \defgroup timerimpl TimerImpl Implementation
+ * @{
+ */
+  
+/** TimerImpl specialization class for varying numbers of arguments. */
 template <typename T1>
 struct TimerImplOne : public TimerImpl
 {
+  /**
+   * Bind the arguments to be used when the callback function is invoked.
+   *
+   * \param a1 The first argument.
+   */
   virtual void SetArguments (T1 a1) = 0;
 };
+/** TimerImpl specialization class for varying numbers of arguments. */
 template <typename T1, typename T2>
 struct TimerImplTwo : public TimerImpl
 {
+  /**
+   * Bind the arguments to be used when the callback function is invoked.
+   *
+   * \param a1 The first argument.
+   * \param a2 The second argument.
+   */
   virtual void SetArguments (T1 a1,T2 a2) = 0;
 };
+/** TimerImpl specialization class for varying numbers of arguments. */
 template <typename T1, typename T2, typename T3>
 struct TimerImplThree : public TimerImpl
 {
+  /**
+   * Bind the arguments to be used when the callback function is invoked.
+   *
+   * \param a1 The first argument.
+   * \param a2 The second argument.
+   * \param a3 The third argument.
+   */
   virtual void SetArguments (T1 a1,T2 a2,T3 a3) = 0;
 };
+/** TimerImpl specialization class for varying numbers of arguments. */
 template <typename T1, typename T2, typename  T3, typename T4>
 struct TimerImplFour : public TimerImpl
 {
+  /**
+   * Bind the arguments to be used when the callback function is invoked.
+   *
+   * \param a1 The first argument.
+   * \param a2 The second argument.
+   * \param a3 The third argument.
+   * \param a4 The fourth argument.
+   */
   virtual void SetArguments (T1 a1,T2 a2,T3 a3, T4 a4) = 0;
 };
+/** TimerImpl specialization class for varying numbers of arguments. */
 template <typename T1, typename T2, typename  T3, typename T4, typename T5>
 struct TimerImplFive : public TimerImpl
 {
+  /**
+   * Bind the arguments to be used when the callback function is invoked.
+   *
+   * \param a1 The first argument.
+   * \param a2 The second argument.
+   * \param a3 The third argument.
+   * \param a4 The fourth argument.
+   * \param a5 The fifth argument.
+   */
   virtual void SetArguments (T1 a1,T2 a2,T3 a3, T4 a4, T5 a5) = 0;
 };
+/** TimerImpl specialization class for varying numbers of arguments. */
 template <typename T1, typename T2, typename  T3, typename T4, typename T5, typename T6>
 struct TimerImplSix : public TimerImpl
 {
+  /**
+   * Bind the arguments to be used when the callback function is invoked.
+   *
+   * \param a1 The first argument.
+   * \param a2 The second argument.
+   * \param a3 The third argument.
+   * \param a4 The fourth argument.
+   * \param a5 The fifth argument.
+   * \param a6 The sixth argument.
+   */
   virtual void SetArguments (T1 a1,T2 a2,T3 a3, T4 a4, T5 a5, T6 a6) = 0;
 };
 
 
-
+/** Type and reference traits for TimerImpl arguments. */
 template <typename T>
 struct TimerTraits
 {
+  /** Storage type for an argument. */
   typedef typename TypeTraits<typename TypeTraits<T>::ReferencedType>::NonConstType StoredType;
+  /** Parameter type for an argument. */
   typedef const StoredType &ParameterType;
 };
 
+/**
+ * Make a TimerImpl from a function pointer taking varying numbers of arguments.
+ *
+ * \tparam FN Function signature type of the callback function.
+ * \param fn The function pointer to invoke when the timer expires.
+ * \returns The TimerImpl.
+ */
 template <typename FN>
 TimerImpl *
 MakeTimerImpl (FN fn)
@@ -104,6 +256,10 @@ MakeTimerImpl (FN fn)
   return MakeTimerImpl (IntToType<TypeTraits<FN>::FunctionPointerTraits::nArgs> (), fn);
 }
 
+/**
+ * Make a TimerImpl from a function pointer taking zero arguments.
+ * \copydetails MakeTimerImpl(FN)
+ */
 template <typename FN>
 TimerImpl *
 MakeTimerImpl (IntToType<0>, FN fn)
@@ -127,6 +283,10 @@ MakeTimerImpl (IntToType<0>, FN fn)
   return function;
 }
 
+/**
+ * Make a TimerImpl from a function pointer taking one argument.
+ * \copydetails MakeTimerImpl(FN)
+ */
 template <typename FN>
 TimerImpl *
 MakeTimerImpl (IntToType<1>, FN fn)
@@ -159,6 +319,10 @@ MakeTimerImpl (IntToType<1>, FN fn)
   return function;
 }
 
+/**
+ * Make a TimerImpl from a function pointer taking two arguments.
+ * \copydetails MakeTimerImpl(FN)
+ */
 template <typename FN>
 TimerImpl *
 MakeTimerImpl (IntToType<2>, FN fn)
@@ -196,6 +360,10 @@ MakeTimerImpl (IntToType<2>, FN fn)
   return function;
 }
 
+/**
+ * Make a TimerImpl from a function pointer taking three arguments.
+ * \copydetails MakeTimerImpl(FN)
+ */
 template <typename FN>
 TimerImpl *
 MakeTimerImpl (IntToType<3>, FN fn)
@@ -238,6 +406,10 @@ MakeTimerImpl (IntToType<3>, FN fn)
   return function;
 }
 
+/**
+ * Make a TimerImpl from a function pointer taking four arguments.
+ * \copydetails MakeTimerImpl(FN)
+ */
 template <typename FN>
 TimerImpl *
 MakeTimerImpl (IntToType<4>, FN fn)
@@ -285,6 +457,10 @@ MakeTimerImpl (IntToType<4>, FN fn)
   return function;
 }
 
+/**
+ * Make a TimerImpl from a function pointer taking five arguments.
+ * \copydetails MakeTimerImpl(FN)
+ */
 template <typename FN>
 TimerImpl *
 MakeTimerImpl (IntToType<5>, FN fn)
@@ -337,6 +513,10 @@ MakeTimerImpl (IntToType<5>, FN fn)
   return function;
 }
 
+/**
+ * Make a TimerImpl from a function pointer taking six arguments.
+ * \copydetails MakeTimerImpl(FN)
+ */
 template <typename FN>
 TimerImpl *
 MakeTimerImpl (IntToType<6>, FN fn)
@@ -395,19 +575,53 @@ MakeTimerImpl (IntToType<6>, FN fn)
 }
 
 
+/**
+ * Helper for the MakeTimerImpl functions which take a class method.
+ *
+ * This helper converts a pointer to a reference.
+ *
+ * This is the generic template declaration (with empty body).
+ *
+ * \tparam T The object type.
+ */
 template <typename T>
 struct TimerImplMemberTraits;
 
 
+/**
+ * Helper for the MakeTimerImpl functions which take a class method.
+ *
+ * This helper converts a pointer to a reference.
+ *
+ * This is the specialization for pointer to \c T.
+ *
+ * \tparam T The object type.
+ */
 template <typename T>
 struct TimerImplMemberTraits<T *>
 {
+  /**
+   * Convert a pointer type to a reference.
+   *
+   * \param p The pointer.
+   * \returns A reference to the object pointed to by \c p.
+   */
   static T &GetReference (T *p)
   {
     return *p;
   }
 };
 
+/**
+ * Make a TimerImpl from a class method pointer taking
+ * a varying number of arguments.
+ *
+ * \tparam MEM_PTR Class method function signature type.
+ * \tparam OBJ_PTR Class type.
+ * \param memPtr Class method to invoke when the timer expires.
+ * \param objPtr Object instance pointer.
+ * \returns The TimerImpl.
+ */
 template <typename MEM_PTR, typename OBJ_PTR>
 TimerImpl *
 MakeTimerImpl (MEM_PTR memPtr, OBJ_PTR objPtr)
@@ -416,6 +630,10 @@ MakeTimerImpl (MEM_PTR memPtr, OBJ_PTR objPtr)
   return MakeTimerImpl (IntToType<TypeTraits<MEM_PTR>::PointerToMemberTraits::nArgs> (), memPtr, objPtr);
 }
 
+/**
+ * Make a TimerImpl from a function pointer taking zero arguments.
+ * \copydetails MakeTimerImpl(MEM_PTR,OBJ_PTR)
+ */
 template <typename MEM_PTR, typename OBJ_PTR>
 TimerImpl *
 MakeTimerImpl (IntToType<0>, MEM_PTR memPtr, OBJ_PTR objPtr)
@@ -441,6 +659,10 @@ MakeTimerImpl (IntToType<0>, MEM_PTR memPtr, OBJ_PTR objPtr)
   return function;
 }
 
+/**
+ * Make a TimerImpl from a function pointer taking one argument.
+ * \copydetails MakeTimerImpl(MEM_PTR,OBJ_PTR)
+ */
 template <typename MEM_PTR, typename OBJ_PTR>
 TimerImpl *
 MakeTimerImpl (IntToType<1>, MEM_PTR memPtr, OBJ_PTR objPtr)
@@ -475,6 +697,10 @@ MakeTimerImpl (IntToType<1>, MEM_PTR memPtr, OBJ_PTR objPtr)
   return function;
 }
 
+/**
+ * Make a TimerImpl from a function pointer taking two arguments.
+ * \copydetails MakeTimerImpl(MEM_PTR,OBJ_PTR)
+ */
 template <typename MEM_PTR, typename OBJ_PTR>
 TimerImpl *
 MakeTimerImpl (IntToType<2>, MEM_PTR memPtr, OBJ_PTR objPtr)
@@ -514,6 +740,10 @@ MakeTimerImpl (IntToType<2>, MEM_PTR memPtr, OBJ_PTR objPtr)
   return function;
 }
 
+/**
+ * Make a TimerImpl from a function pointer taking three arguments.
+ * \copydetails MakeTimerImpl(MEM_PTR,OBJ_PTR)
+ */
 template <typename MEM_PTR, typename OBJ_PTR>
 TimerImpl *
 MakeTimerImpl (IntToType<3>, MEM_PTR memPtr, OBJ_PTR objPtr)
@@ -558,6 +788,10 @@ MakeTimerImpl (IntToType<3>, MEM_PTR memPtr, OBJ_PTR objPtr)
   return function;
 }
 
+/**
+ * Make a TimerImpl from a function pointer taking four arguments.
+ * \copydetails MakeTimerImpl(MEM_PTR,OBJ_PTR)
+ */
 template <typename MEM_PTR, typename OBJ_PTR>
 TimerImpl *
 MakeTimerImpl (IntToType<4>, MEM_PTR memPtr, OBJ_PTR objPtr)
@@ -607,6 +841,10 @@ MakeTimerImpl (IntToType<4>, MEM_PTR memPtr, OBJ_PTR objPtr)
   return function;
 }
 
+/**
+ * Make a TimerImpl from a function pointer taking five arguments.
+ * \copydetails MakeTimerImpl(MEM_PTR,OBJ_PTR)
+ */
 template <typename MEM_PTR, typename OBJ_PTR>
 TimerImpl *
 MakeTimerImpl (IntToType<5>, MEM_PTR memPtr, OBJ_PTR objPtr)
@@ -661,6 +899,10 @@ MakeTimerImpl (IntToType<5>, MEM_PTR memPtr, OBJ_PTR objPtr)
   return function;
 }
 
+/**
+ * Make a TimerImpl from a function pointer taking six arguments.
+ * \copydetails MakeTimerImpl(MEM_PTR,OBJ_PTR)
+ */
 template <typename MEM_PTR, typename OBJ_PTR>
 TimerImpl *
 MakeTimerImpl (IntToType<6>, MEM_PTR memPtr, OBJ_PTR objPtr)
@@ -720,7 +962,13 @@ MakeTimerImpl (IntToType<6>, MEM_PTR memPtr, OBJ_PTR objPtr)
   return function;
 }
 
+/**@}*/  // \ingroup timer
 
+  
+/********************************************************************
+ *  Implementation of TimerImpl itself.
+ ********************************************************************/
+  
 template <typename T1>
 void
 TimerImpl::SetArgs (T1 a1)

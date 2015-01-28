@@ -25,6 +25,12 @@
 #include <stdint.h>
 #include <limits>
 
+/**
+ * \file
+ * \ingroup attribute_Double
+ * Double attribute value declarations and template implementations.
+ */
+
 namespace ns3 {
 
 //  Additional docs for class DoubleValue:
@@ -65,6 +71,11 @@ Ptr<const AttributeChecker> MakeDoubleChecker (double min, double max);
 
 
 } // namespace ns3
+
+
+/***************************************************************
+ *  Implementation of the templates declared above.
+ ***************************************************************/
 
 #include "type-name.h"
 

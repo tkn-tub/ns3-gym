@@ -304,6 +304,19 @@ public:
    */
   void SetPdschConfigDedicated (LteRrcSap::PdschConfigDedicated pdschConfigDedicated);
 
+  /**
+   * TracedCallback signature for state transition events.
+   *
+   * \param [in] imsi
+   * \param [in] cellId
+   * \param [in] rnti
+   * \param [in] oldState
+   * \param [in] newState
+   */
+  typedef void (* StateTracedCallback)
+    (const uint64_t imsi, const uint16_t cellId, const uint16_t rnti,
+     const State oldState, const State newState);
+
 private:
 
   /** 
@@ -807,6 +820,49 @@ public:
                                    RLC_AM_ALWAYS = 3,
                                    PER_BASED = 4};
 
+  /**
+   * TracedCallback signature for new Ue Context events.
+   *
+   * \param [in] cellId
+   * \param [in] rnti
+   */
+  typedef void (* NewUeContextTracedCallback)
+    (const uint16_t cellId, const uint16_t rnti);
+
+  /**
+   * TracedCallback signature for connection and handover end events.
+   *
+   * \param [in] imsi
+   * \param [in] cellId
+   * \param [in] rnti
+   */
+  typedef void (* ConnectionHandoverTracedCallback)
+    (const uint64_t imsi, const uint16_t cellId, const uint16_t rnti);
+  
+  /**
+   * TracedCallback signature for handover start events.
+   *
+   * \param [in] imsi
+   * \param [in] cellId
+   * \param [in] rnti
+   * \param [in] targetCid
+   */
+  typedef void (* HandoverStartTracedCallback)
+    (const uint64_t imsi, const uint16_t cellId, const uint16_t rnti,
+     const uint16_t targetCid);
+
+  /**
+   * TracedCallback signature for receive measurement report events.
+   *
+   * \param [in] imsi
+   * \param [in] cellId
+   * \param [in] rnti
+   * \param [in] report
+   */
+  typedef void (* ReceiveReportTracedCallback)
+    (const uint64_t imsi, const uint16_t cellId, const uint16_t rnti,
+     const LteRrcSap::MeasurementReport report);
+  
 private:
 
 

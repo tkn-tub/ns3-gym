@@ -25,9 +25,15 @@
 #include <stdint.h>
 #include <limits>
 
+/**
+ * \file
+ * \ingroup attribute_Integer
+ * Integer attribute value declarations and template implementations.
+ */
+
 namespace ns3 {
 
-//  Additional docs for class DoubleValue:
+//  Additional docs for class IntegerValue:
 /**
  * Hold a signed integer type
  *
@@ -67,6 +73,11 @@ template <typename T>
 Ptr<const AttributeChecker> MakeIntegerChecker (int64_t min, int64_t max);
 
 } // namespace ns3
+
+
+/***************************************************************
+ *  Implementation of the templates declared above.
+ ***************************************************************/
 
 #include "type-name.h"
 

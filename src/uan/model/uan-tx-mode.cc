@@ -300,7 +300,6 @@ operator >> (std::istream &is, UanModesList &ml)
   return is;
 }
 
-ATTRIBUTE_HELPER_CPP (UanModesList)
-  ;
+ATTRIBUTE_HELPER_CPP (UanModesList);
 
 } // namespace ns3

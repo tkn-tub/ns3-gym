@@ -1,6 +1,8 @@
 .. include:: replace.txt
 .. highlight:: cpp
 
+.. _BuildingTopologies:
+
 Building Topologies
 -------------------
 

@@ -25,38 +25,43 @@ function usage
 {
     cat <<-EOF
 	
-	Usage: $me [-ethv] [-f <log-file> | -l | -s] [-m <module> | -F <regex>]
+	Usage: $me [-eithv] [-f <log-file> | -l | -s] [-m <module> | -F <regex>]
 	
 	Run doxygen to generate all errors; report error counts
 	by module and file.
 	
-	The default behavior is to modify doxygen.conf temporarily to
-	report all undocumented elements, and to reduce the run time.
-	The output of this special run is kept in doc/$WARNINGSLOGFILE.
-
-	The -e and -t options exclude examples and test directories
-	from the counts.  The -m option only includes a specific module.
-	The -F option only includes files (or warnings) matching the <regex>.
-	The -m and -F options append the relevant warnings after the
-	numerical report.  These can be used in any combination.
+	-i  Skip build and print-introspected-doxygen.
 	
+	-f  Skip doxygen run; use existing <log-file>.
+	-s  Skip doxygen run; use existing warnings log doc/$WARNINGSLOGFILE
+	-l  Skip doxygen run; use the normal doxygen log doc/$STANDARDLOGFILE
+		
 	-e  Filter out warnings from */examples/*
 	-t  Filter out warnings from */test/*
 	-m  Only include files matching src/<module>
 	-F  Only include files matching the <regex> 
+
+	-v  Show the doxygen run output
+	-h  Print this usage message
+	    
+	The default behavior is to modify doxygen.conf temporarily to
+	report all undocumented elements, and to reduce the run time.
+	The output of this special run is kept in doc/$WARNINGSLOGFILE.
+	To further reduce the run time, the -i option also skips
+	print-introspected-doxygen, so waf doesn\'t have to compile
+	any modified files at all.
 
 	The -f, -l, and -s options skip the doxygen run altogether.
 	The first two use a specified or the standard log file;
 	the -s option uses the warnings log from a prior run.
 	Only the first of -f <log-file>, -s, or -l will have effect.
 		
-	-f  Skip doxygen run; use existing <log-file>.
-	-s  Skip doxygen run; use existing warnings log doc/$WARNINGSLOGFILE
-	-l  Skip doxygen run; use the normal doxygen log doc/$STANDARDLOGFILE
-		
-	-v  Show the doxygen run output
-	-h  Print this usage message
-	    
+	The -e and -t options exclude examples and test directories
+	from the counts.  The -m option only includes a specific module.
+	The -F option only includes files (or warnings) matching the <regex>.
+	The -m and -F options append the relevant warnings after the
+	numerical report.  These can be used in any combination.
+	
 EOF
     exit 1
 }
@@ -102,12 +107,14 @@ function status_report
 #
 
 # -f argument
-usefilearg=0
-logfilearg=
+use_filearg=0
+logfile_arg=
 # -l
-usestandard=0
+use_standard=0
 # skip doxygen run; using existing log file
-SKIPDOXY=0
+skip_doxy=0 
+# skip print-introspected-doxygen, avoiding a build 
+skip_intro=0 
 
 # Filtering flags
 filter_examples=0
@@ -118,11 +125,13 @@ filter_regex=""
 echo
 echo "$me:"
 
-while getopts :etm:F:lF:svh option ; do
+while getopts :eitm:F:lF:svh option ; do
 
     case $option in
 	
 	(e)  filter_examples=1        ;;
+
+	(i)  skip_intro=1              ;;
 	
 	(t)  filter_test=1            ;;
 
@@ -130,14 +139,14 @@ while getopts :etm:F:lF:svh option ; do
 
 	(F)  filter_regex="$OPTARG"   ;;
 
-	(l)  usestandard=1            ;;
+	(l)  use_standard=1            ;;
 
-	(f)  usefilearg=1
-	     logfilearg="$OPTARG"
+	(f)  use_filearg=1
+	     logfile_arg="$OPTARG"
 	     ;;
 
-	(s)  usefilearg=1
-	     logfilearg="$DIR/$WARNINGSLOGFILE"
+	(s)  use_filearg=1
+	     logfile_arg="$DIR/$WARNINGSLOGFILE"
 	     ;;
 
 	(v)  verbosity=1
@@ -156,7 +165,7 @@ done
 function checklogfile
 {
     if [ -e "$1" ] ; then
-	SKIPDOXY=1
+	skip_doxy=1
 	LOG="$1"
     else
 	echo "$me: log file $1 does not exist."
@@ -165,24 +174,28 @@ function checklogfile
 }
     
 # Which log file
-if [[ $usefilearg -eq 1 && "${logfilearg:-}" != "" ]] ; then
-    checklogfile "$logfilearg"
-elif [ $usestandard -eq 1 ]; then
+if [[ $use_filearg -eq 1 && "${logfile_arg:-}" != "" ]] ; then
+    checklogfile "$logfile_arg"
+elif [ $use_standard -eq 1 ]; then
     checklogfile "$DIR/$STANDARDLOGFILE"
 fi
 
 #  Run doxygen -------------------------
 #
 
-if [ $SKIPDOXY -eq 1 ]; then
+if [ $skip_doxy -eq 1 ]; then
     echo
     echo "Skipping doxygen run, using existing log file $LOG"
 else
 
-    # Run introspection, which may require a build
-    verbose -n "Building and running print-introspected-doxygen..."
-    (cd "$ROOT" && ./waf --run print-introspected-doxygen >doc/introspected-doxygen.h >&6 2>&6 )
-    status_report $? "./waf build"
+    if [ $skip_intro -eq 1 ]; then
+	verbose "" "Skipping ./waf build and print-introspected-doxygen."
+    else
+        # Run introspection, which may require a build
+	verbose -n "Building and running print-introspected-doxygen..."
+	(cd "$ROOT" && ./waf --run print-introspected-doxygen >doc/introspected-doxygen.h >&6 2>&6 )
+	status_report $? "./waf build"
+    fi
 
     # Modify doxygen.conf to generate all the warnings
     # (We also suppress dot graphs, so shorten the run time.)
@@ -192,7 +205,7 @@ else
     sed -i.bak -E '/^EXTRACT_ALL |^HAVE_DOT |^WARNINGS /s/YES/no/' $conf
 
     verbose -n "Rebuilding doxygen (v$(doxygen --version)) docs with full errors..."
-    (cd "$ROOT" && ./waf --doxygen >&6 2>&6 )
+    (cd "$ROOT" && ./waf --doxygen-no-build >&6 2>&6 )
     status=$?
 
     rm -f $conf

@@ -222,13 +222,16 @@ UanPhyDual::GetTypeId (void)
                    MakePointerChecker<UanPhyCalcSinr> ())
     .AddTraceSource ("RxOk",
                      "A packet was received successfully.",
-                     MakeTraceSourceAccessor (&UanPhyDual::m_rxOkLogger))
+                     MakeTraceSourceAccessor (&UanPhyDual::m_rxOkLogger),
+                     "ns3::UanPhy::TracedCallback")
     .AddTraceSource ("RxError",
                      "A packet was received unsuccessfully.",
-                     MakeTraceSourceAccessor (&UanPhyDual::m_rxErrLogger))
+                     MakeTraceSourceAccessor (&UanPhyDual::m_rxErrLogger),
+                     "ns3::UanPhy::TracedCallback")
     .AddTraceSource ("Tx",
                      "Packet transmission beginning.",
-                     MakeTraceSourceAccessor (&UanPhyDual::m_txLogger))
+                     MakeTraceSourceAccessor (&UanPhyDual::m_txLogger),
+                     "ns3::UanPhy::TracedCallback")
 
   ;
 

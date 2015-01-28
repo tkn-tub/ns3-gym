@@ -24,17 +24,36 @@
 #include <list>
 #include "callback.h"
 
+/**
+ * \file
+ * \ingroup tracing
+ * ns3::TracedCallback declaration and template implementation.
+ */
+
 namespace ns3 {
 
 /**
- * \brief forward calls to a chain of Callback
  * \ingroup tracing
+ * \brief Forward calls to a chain of Callback
  *
- * An ns3::TracedCallback has almost exactly the same API as a normal ns3::Callback but
- * instead of forwarding calls to a single function (as an ns3::Callback normally does),
- * it forwards calls to a chain of ns3::Callback. TracedCallback::Connect adds a ns3::Callback
- * at the end of the chain of callbacks. TracedCallback::Disconnect removes a ns3::Callback from
- * the chain of callbacks.
+ * An TracedCallback has almost exactly the same API as a normal
+ * Callback but instead of forwarding calls to a single function
+ * (as a Callback normally does), it forwards calls to a chain
+ * of Callback.  Connect adds a Callback at the end of the chain
+ * of callbacks.  Disconnect removes a Callback from the chain of callbacks.
+ *
+ * This is a functor: the chain of Callbacks is invoked by
+ * calling one of the \c operator() forms with the appropriate
+ * number of arguments.
+ *
+ * \tparam T1 Type of the first argument to the functor.
+ * \tparam T2 Type of the second argument to the functor.
+ * \tparam T3 Type of the third argument to the functor.
+ * \tparam T4 Type of the fourth argument to the functor.
+ * \tparam T5 Type of the fifth argument to the functor.
+ * \tparam T6 Type of the sixth argument to the functor.
+ * \tparam T7 Type of the seventh argument to the functor.
+ * \tparam T8 Type of the eighth argument to the functor.
  */
 template<typename T1 = empty, typename T2 = empty, 
          typename T3 = empty, typename T4 = empty,
@@ -43,59 +62,189 @@ template<typename T1 = empty, typename T2 = empty,
 class TracedCallback 
 {
 public:
+  /** Constructor. */
   TracedCallback ();
   /**
-   * \param callback callback to add to chain of callbacks
+   * Append a Callback to the chain (without a context).
    *
-   * Append the input callback to the end of the internal list 
-   * of ns3::Callback.
+   * \param callback Callback to add to chain.
    */
   void ConnectWithoutContext (const CallbackBase & callback);
   /**
-   * \param callback callback to add to chain of callbacks
-   * \param path the path to send back to the user callback.
+   * Append a Callback to the chain with a context.
    *
-   * Append the input callback to the end of the internal list 
-   * of ns3::Callback. This method also will make sure that the
-   * input path specified by the user will be give back to the
-   * user's callback as its first argument. 
+   * The context string will be provided as the first argument
+   * to the Callback.
+   *
+   * \param callback Callback to add to chain.
+   * \param path Context string to provide when invoking the Callback.
    */
   void Connect (const CallbackBase & callback, std::string path);
   /**
-   * \param callback callback to remove from the chain of callbacks.
+   * Remove from the chain a Callback which was connected without a context.
    *
-   * Remove the input callback from the internal list 
-   * of ns3::Callback. This method is really the symmetric
-   * of the TracedCallback::ConnectWithoutContext method.
+   * \param callback Callback to remove from the chain.
    */
   void DisconnectWithoutContext (const CallbackBase & callback);
   /**
-   * \param callback callback to remove from the chain of callbacks.
-   * \param path the path which is sent back to the user callback.
+   * Remove from the chain a Callback which was connected with a context.
    *
-   * Remove the input callback which has a matching path as first argument 
-   * from the internal list of ns3::Callback. This method is really the symmetric
-   * of the TracedCallback::Connect method.
+   * \param callback Callback to remove from the chain.
+   * \param path Context path which was used to connect the Callback.
    */
   void Disconnect (const CallbackBase & callback, std::string path);
+  /**
+   * \name Functors taking various numbers of arguments.
+   *
+   * The version selected is determined by the number of arguments
+   * at the point where the Callback is invoked in the class
+   * which fires the Callback.
+   */
+  /**@{*/
+  /** Functor which invokes the chain of Callbacks. */
   void operator() (void) const;
+  /**
+   * \copybrief operator()()
+   * \tparam T1 Type of the first argument to the functor.
+   * \param a1 The first argument to the functor.
+   */
   void operator() (T1 a1) const;
+  /**
+   * \copybrief operator()()
+   * \tparam T1 Type of the first argument to the functor.
+   * \tparam T2 Type of the second argument to the functor.
+   * \param a1 The first argument to the functor.
+   * \param a2 The second argument to the functor.
+   */
   void operator() (T1 a1, T2 a2) const;
+  /**
+   * \copybrief operator()()
+   * \tparam T1 Type of the first argument to the functor.
+   * \tparam T2 Type of the second argument to the functor.
+   * \tparam T3 Type of the third argument to the functor.
+   * \param a1 The first argument to the functor.
+   * \param a2 The second argument to the functor.
+   * \param a3 The third argument to the functor.
+   */
   void operator() (T1 a1, T2 a2, T3 a3) const;
+  /**
+   * \copybrief operator()()
+   * \tparam T1 Type of the first argument to the functor.
+   * \tparam T2 Type of the second argument to the functor.
+   * \tparam T3 Type of the third argument to the functor.
+   * \tparam T4 Type of the fourth argument to the functor.
+   * \param a1 The first argument to the functor.
+   * \param a2 The second argument to the functor.
+   * \param a3 The third argument to the functor.
+   * \param a4 The fourth argument to the functor.
+   */
   void operator() (T1 a1, T2 a2, T3 a3, T4 a4) const;
+  /**
+   * \copybrief operator()()
+   * \tparam T1 Type of the first argument to the functor.
+   * \tparam T2 Type of the second argument to the functor.
+   * \tparam T3 Type of the third argument to the functor.
+   * \tparam T4 Type of the fourth argument to the functor.
+   * \tparam T5 Type of the fifth argument to the functor.
+   * \param a1 The first argument to the functor.
+   * \param a2 The second argument to the functor.
+   * \param a3 The third argument to the functor.
+   * \param a4 The fourth argument to the functor.
+   * \param a5 The fifth argument to the functor.
+   */
   void operator() (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5) const;
+  /**
+   * \copybrief operator()()
+   * \tparam T1 Type of the first argument to the functor.
+   * \tparam T2 Type of the second argument to the functor.
+   * \tparam T3 Type of the third argument to the functor.
+   * \tparam T4 Type of the fourth argument to the functor.
+   * \tparam T5 Type of the fifth argument to the functor.
+   * \tparam T6 Type of the sixth argument to the functor.
+   * \param a1 The first argument to the functor.
+   * \param a2 The second argument to the functor.
+   * \param a3 The third argument to the functor.
+   * \param a4 The fourth argument to the functor.
+   * \param a5 The fifth argument to the functor.
+   * \param a6 The sixth argument to the functor.
+   */
   void operator() (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5, T6 a6) const;
+  /**
+   * \copybrief operator()()
+   * \tparam T1 Type of the first argument to the functor.
+   * \tparam T2 Type of the second argument to the functor.
+   * \tparam T3 Type of the third argument to the functor.
+   * \tparam T4 Type of the fourth argument to the functor.
+   * \tparam T5 Type of the fifth argument to the functor.
+   * \tparam T6 Type of the sixth argument to the functor.
+   * \tparam T7 Type of the seventh argument to the functor.
+   * \param a1 The first argument to the functor.
+   * \param a2 The second argument to the functor.
+   * \param a3 The third argument to the functor.
+   * \param a4 The fourth argument to the functor.
+   * \param a5 The fifth argument to the functor.
+   * \param a6 The sixth argument to the functor.
+   * \param a7 The seventh argument to the functor.
+   */
   void operator() (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5, T6 a6, T7 a7) const;
+  /**
+   * \copybrief operator()()
+   * \tparam T1 Type of the first argument to the functor.
+   * \tparam T2 Type of the second argument to the functor.
+   * \tparam T3 Type of the third argument to the functor.
+   * \tparam T4 Type of the fourth argument to the functor.
+   * \tparam T5 Type of the fifth argument to the functor.
+   * \tparam T6 Type of the sixth argument to the functor.
+   * \tparam T7 Type of the seventh argument to the functor.
+   * \tparam T8 Type of the eighth argument to the functor.
+   * \param a1 The first argument to the functor.
+   * \param a2 The second argument to the functor.
+   * \param a3 The third argument to the functor.
+   * \param a4 The fourth argument to the functor.
+   * \param a5 The fifth argument to the functor.
+   * \param a6 The sixth argument to the functor.
+   * \param a7 The seventh argument to the functor.
+   * \param a8 The eighth argument to the functor.
+   */
   void operator() (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5, T6 a6, T7 a7, T8 a8) const;
+  /**@}*/
 
+  /**
+   *  TracedCallback signature for POD.
+   *
+   * \param [in] value Value of the traced variable.
+   * @{
+   */
+  // Uint32Callback appears to be the only one used at the moment.
+  // Feel free to add typedef's for any other POD you need.
+  typedef void (* Uint32Callback)(const uint32_t value);
+  /**@}*/
+
+  
 private:
+  /**
+   * Container type for holding the chain of Callbacks.
+   *
+   * \tparam T1 Type of the first argument to the functor.
+   * \tparam T2 Type of the second argument to the functor.
+   * \tparam T3 Type of the third argument to the functor.
+   * \tparam T4 Type of the fourth argument to the functor.
+   * \tparam T5 Type of the fifth argument to the functor.
+   * \tparam T6 Type of the sixth argument to the functor.
+   * \tparam T7 Type of the seventh argument to the functor.
+   * \tparam T8 Type of the eighth argument to the functor.
+   */
   typedef std::list<Callback<void,T1,T2,T3,T4,T5,T6,T7,T8> > CallbackList;
+  /** The chain of Callbacks. */
   CallbackList m_callbackList;
 };
 
 } // namespace ns3
 
-// implementation below.
+
+/********************************************************************
+ *  Implementation of the templates declared above.
+ ********************************************************************/
 
 namespace ns3 {
 

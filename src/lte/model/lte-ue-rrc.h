@@ -247,6 +247,52 @@ public:
   void SetUseRlcSm (bool val);
 
 
+  /**
+   * TracedCallback signature for imsi, cellId and rnti events.
+   *
+   * \param [in] imsi
+   * \param [in] cellId
+   */
+  typedef void (* CellSelectionTracedCallback)
+    (const uint64_t imsi, const uint16_t cellId);
+
+  /**
+   * TracedCallback signature for imsi, cellId and rnti events.
+   *
+   * \param [in] imsi
+   * \param [in] cellId
+   * \param [in] rnti
+   */
+  typedef void (* ImsiCidRntiTracedCallback)
+    (const uint64_t imsi, const uint16_t cellId, const uint16_t rnti);
+
+  /**
+   * TracedCallback signature for MIBRecieved, Sib1Received and
+   * HandoverStart events.
+   *
+   * \param [in] imsi
+   * \param [in] cellId
+   * \param [in] rnti
+   * \param [in] otherCid
+   */
+  typedef void (* MibSibHandoverTracedCallback)
+    (const uint64_t imsi, const uint16_t cellId, const uint16_t rnti,
+     const uint16_t otherCid);
+
+  /**
+   * TracedCallback signature for state transition events.
+   *
+   * \param [in] imsi
+   * \param [in] cellId
+   * \param [in] rnti
+   * \param [in] oldState
+   * \param [in] newState
+   */
+  typedef void (* StateTracedCallback)
+    (const uint64_t imsi, const uint16_t cellId, const uint16_t rnti,
+     const State oldState, const State newState);
+
+
 private:
 
 

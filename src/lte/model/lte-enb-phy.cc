@@ -168,47 +168,51 @@ LteEnbPhy::GetTypeId (void)
                                        &LteEnbPhy::GetTxPower),
                    MakeDoubleChecker<double> ())
     .AddAttribute ("NoiseFigure",
-                   "Loss (dB) in the Signal-to-Noise-Ratio due to non-idealities in the receiver."
-                   " According to Wikipedia (http://en.wikipedia.org/wiki/Noise_figure), this is "
+                   "Loss (dB) in the Signal-to-Noise-Ratio due to "
+                   "non-idealities in the receiver.  According to Wikipedia "
+                   "(http://en.wikipedia.org/wiki/Noise_figure), this is "
                    "\"the difference in decibels (dB) between"
-                   " the noise output of the actual receiver to the noise output of an "
-                   " ideal receiver with the same overall gain and bandwidth when the receivers "
-                   " are connected to sources at the standard noise temperature T0.\" "
-                   "In this model, we consider T0 = 290K.",
+                   " the noise output of the actual receiver to "
+                   "the noise output of an ideal receiver with "
+                   "the same overall gain and bandwidth when the receivers "
+                   "are connected to sources at the standard noise "
+                   "temperature T0.\"  In this model, we consider T0 = 290K.",
                    DoubleValue (5.0),
                    MakeDoubleAccessor (&LteEnbPhy::SetNoiseFigure, 
                                        &LteEnbPhy::GetNoiseFigure),
                    MakeDoubleChecker<double> ())
     .AddAttribute ("MacToChannelDelay",
-                   "The delay in TTI units that occurs between a scheduling "
-                   "decision in the MAC and the actual start of the "
-                   "transmission by the PHY. This is intended to be used to "
-                   "model the latency of real PHY and MAC implementations.",
+                   "The delay in TTI units that occurs between "
+                   "a scheduling decision in the MAC and the actual "
+                   "start of the transmission by the PHY. This is "
+                   "intended to be used to model the latency of real PHY "
+                   "and MAC implementations.",
                    UintegerValue (2),
                    MakeUintegerAccessor (&LteEnbPhy::SetMacChDelay, 
                                          &LteEnbPhy::GetMacChDelay),
                    MakeUintegerChecker<uint8_t> ())
     .AddTraceSource ("ReportUeSinr",
                      "Report UEs' averaged linear SINR",
-                     MakeTraceSourceAccessor (&LteEnbPhy::m_reportUeSinr))
+                     MakeTraceSourceAccessor (&LteEnbPhy::m_reportUeSinr),
+                     "ns3::LteEnbPhy::ReportUeSinrTracedCallback")
     .AddAttribute ("UeSinrSamplePeriod",
-                   "The sampling period for reporting UEs' SINR stats (default value 1)",
-                   /// \todo In what unit is this?
-                   UintegerValue (1),
+                   "The sampling period for reporting UEs' SINR stats.",
+                   UintegerValue (1),  /// \todo In what unit is this?
                    MakeUintegerAccessor (&LteEnbPhy::m_srsSamplePeriod),
                    MakeUintegerChecker<uint16_t> ())
     .AddTraceSource ("ReportInterference",
                      "Report linear interference power per PHY RB",
-                     MakeTraceSourceAccessor (&LteEnbPhy::m_reportInterferenceTrace))
+                     MakeTraceSourceAccessor (&LteEnbPhy::m_reportInterferenceTrace),
+                     "ns3::LteEnbPhy::ReportInterferenceTracedCallback")
     .AddAttribute ("InterferenceSamplePeriod",
-                   "The sampling period for reporting interference stats (default value 1)",
-                   /// \todo In what unit is this?
-                   UintegerValue (1),
+                   "The sampling period for reporting interference stats",
+                   UintegerValue (1),  /// \todo In what unit is this?
                    MakeUintegerAccessor (&LteEnbPhy::m_interferenceSamplePeriod),
                    MakeUintegerChecker<uint16_t> ())
     .AddTraceSource ("DlPhyTransmission",
                      "DL transmission PHY layer statistics.",
-                     MakeTraceSourceAccessor (&LteEnbPhy::m_dlPhyTransmission))
+                     MakeTraceSourceAccessor (&LteEnbPhy::m_dlPhyTransmission),
+                     "ns3::PhyTransmissionStatParameters::TracedCallback")
     .AddAttribute ("DlSpectrumPhy",
                    "The downlink LteSpectrumPhy associated to this LtePhy",
                    TypeId::ATTR_GET,

@@ -21,6 +21,12 @@
 #include "callback.h"
 #include "log.h"
 
+/**
+ * \file
+ * \ingroup callback
+ * ns3::CallbackValue implementation.
+ */
+
 namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("Callback");
@@ -66,7 +72,6 @@ CallbackValue::DeserializeFromString (std::string value, Ptr<const AttributeChec
   return false;
 }
 
-/** Attribute checker */
 ATTRIBUTE_CHECKER_IMPLEMENT (Callback);
 
 } // namespace ns3

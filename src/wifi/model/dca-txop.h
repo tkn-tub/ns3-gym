@@ -194,6 +194,15 @@ private:
    * When a channel switching occurs, enqueued packets are removed.
    */
   void NotifyChannelSwitching (void);
+  /**
+   * When sleep operation occurs, if there is a pending packet transmission,
+   * it will be reinserted to the front of the queue.
+   */
+  void NotifySleep (void);
+  /**
+   * When wake up operation occurs, channel access will be restarted
+   */
+  void NotifyWakeUp (void);
 
   /* Event handlers */
   /**

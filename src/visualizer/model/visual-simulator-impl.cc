@@ -197,9 +197,9 @@ VisualSimulatorImpl::Cancel (const EventId &id)
 }
 
 bool
-VisualSimulatorImpl::IsExpired (const EventId &ev) const
+VisualSimulatorImpl::IsExpired (const EventId &id) const
 {
-  return m_simulator->IsExpired (ev);
+  return m_simulator->IsExpired (id);
 }
 
 Time 

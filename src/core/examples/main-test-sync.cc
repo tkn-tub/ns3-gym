@@ -29,12 +29,23 @@
 #include <unistd.h>
 #include <sys/time.h>
 
+/**
+ * \file
+ * \ingroup scheduler
+ * An example of scheduling events in a background thread.
+ *
+ * See \ref ns3::SystemThread,
+ * \ref ns3::SimulatorImpl::ScheduleWithContext
+ */
+
 using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("TestSync");
 
+/** Check that the event functions run in the intended order. */
 bool gFirstRun = false;
 
+/** An event method called many times from the background thread. */
 void 
 inserted_function (void)
 {
@@ -43,6 +54,7 @@ inserted_function (void)
                  Simulator::Now ().GetSeconds () << " s");
 }
 
+/** An event method called many times from the main thread. */
 void 
 background_function (void)
 {
@@ -51,6 +63,7 @@ background_function (void)
                  Simulator::Now ().GetSeconds () << " s");
 }
 
+/** An event method called once from the main thread. */
 void 
 first_function (void)
 {
@@ -59,10 +72,13 @@ first_function (void)
   gFirstRun = true;
 }
 
+/** Example class with a method for the background task. */
 class FakeNetDevice
 {
 public:
+  /** Constructor. */
   FakeNetDevice ();
+  /** The thread entry point. */
   void Doit3 (void);
 };
 
@@ -86,7 +102,15 @@ FakeNetDevice::Doit3 (void)
     }
 }
 
-
+/**
+ * Example use of ns3::SystemThread.
+ *
+ * This example is a complete simulation.
+ * It schedules \c first_function and many executions of \c background_function
+ * to execute in the main (foreground) thread.  It also launches a background
+ * thread with an instance of FakeNetDevice, which schedules many instances of
+ * \c inserted_function.
+ */
 void 
 test (void)
 {

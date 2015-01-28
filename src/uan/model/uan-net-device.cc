@@ -110,9 +110,11 @@ UanNetDevice::GetTypeId ()
                                         &UanNetDevice::SetTransducer),
                    MakePointerChecker<UanTransducer> ())
     .AddTraceSource ("Rx", "Received payload from the MAC layer.",
-                     MakeTraceSourceAccessor (&UanNetDevice::m_rxLogger))
+                     MakeTraceSourceAccessor (&UanNetDevice::m_rxLogger),
+                     "ns3::UanNetDevice::RxTxTracedCallback")
     .AddTraceSource ("Tx", "Send payload to the MAC layer.",
-                     MakeTraceSourceAccessor (&UanNetDevice::m_txLogger))
+                     MakeTraceSourceAccessor (&UanNetDevice::m_txLogger),
+                     "ns3::UanNetDevice::RxTxTracedCallback")
   ;
   return tid;
 }

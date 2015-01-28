@@ -521,9 +521,7 @@ SNIR function.
    *SNIR function over time.*
 
 From the SNIR function we can derive the Bit Error Rate (BER) and Packet Error Rate (PER) for
-the modulation and coding scheme being used for the transmission.  Please refer to [pei80211ofdm]_, [pei80211b]_ 
-and [lacage2006yans]_ for a detailed description of the available BER/PER models.
-
+the modulation and coding scheme being used for the transmission.  Please refer to [pei80211ofdm]_, [pei80211b]_, [lacage2006yans]_, [Haccoun]_ and [Frenger]_ for a detailed description of the available BER/PER models.
 
 WifiChannel configuration
 =========================
@@ -600,6 +598,8 @@ Algorithms in literature:
 * ``CaraWifiManager`` [kim2006cara]_
 * ``RraaWifiManager`` [wong2006rraa]_
 * ``AarfcdWifiManager`` [maguolo2008aarfcd]_
+* ``ParfWifiManager`` [akella2007parf]_
+* ``AparfWifiManager`` [chevillat2005aparf]_
 
 ConstantRateWifiManager
 =======================
@@ -721,6 +721,10 @@ References
 
 .. [lacage2006yans] \M. Lacage and T. Henderson, `Yet another Network Simulator <http://cutebugs.net/files/wns2-yans.pdf>`__ 
 
+.. [Haccoun] \D. Haccoun and G. Begin, *High-Rate Punctured Convolutional Codes for Viterbi Sequential Decoding*, IEEE Transactions on Communications, Vol. 32, Issue 3, pp.315-319.
+
+.. [Frenger] \Pâl Frenger et al., "Multi-rate Convolutional Codes".
+
 .. [ji2004sslswn] \Z. Ji, J. Zhou, M. Takai and R. Bagrodia, *Scalable simulation of large-scale wireless networks with bounded inaccuracies*, in Proc. of the Seventh ACM Symposium on Modeling, Analysis and Simulation of Wireless and Mobile Systems, October 2004.
 
 .. [linuxminstrel] `minstrel linux wireless <http://wireless.kernel.org/en/developers/Documentation/mac80211/RateControl/minstrel>`_
@@ -732,3 +736,7 @@ References
 .. [wong2006rraa] \ S. Wong, H. Yang, S. Lu, and V. Bharghavan, *Robust Rate Adaptation for 802.11 Wireless Networks*, in Proc. 12th Annual International Conference on Mobile Computing and Networking, 2006
 
 .. [maguolo2008aarfcd] \ F. Maguolo, M. Lacage, and T. Turletti, *Efficient collision detection for auto rate fallback algorithm*, in IEEE Symposium on Computers and Communications, 2008
+
+.. [akella2007parf] \ A. Akella, G. Judd, S. Seshan, and P. Steenkiste, 'Self-management in chaotic wireless deployments', in Wireless Networks, Kluwer Academic Publishers, 2007, 13, 737-755.  `<http://www.cs.odu.edu/~nadeem/classes/cs795-WNS-S13/papers/enter-006.pdf>`_ 
+
+.. [chevillat2005aparf] \  Chevillat, P.; Jelitto, J., and Truong, H. L., 'Dynamic data rate and transmit power adjustment in IEEE 802.11 wireless LANs', in International Journal of Wireless Information Networks, Springer, 2005, 12, 123-145.  `<http://www.cs.mun.ca/~yzchen/papers/papers/rate_adaptation/80211_dynamic_rate_power_adjustment_chevillat_j2005.pdf>`_

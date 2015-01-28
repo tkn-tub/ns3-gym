@@ -34,28 +34,53 @@
 #include <cstdlib>
 #endif
 
+/**
+ * \file
+ * \ingroup logging
+ * Debug message logging implementation.
+ */
+
+
 namespace ns3 {
 
+/**
+ * \ingroup logging
+ * The LogTimePrinter.
+ * This is private to the logging implementation.
+ */
 static LogTimePrinter g_logTimePrinter = 0;
+/**
+ * \ingroup logging
+ * The LogNodePrinter.
+ */
 static LogNodePrinter g_logNodePrinter = 0;
 
-typedef LogComponent::ComponentList ComponentList;
-typedef ComponentList::iterator     ComponentListI;
-
-static class PrintList
+/**
+ * \ingroup logging
+ * Handler for \c print-list token in NS_LOG
+ * to print the list of log components.
+ * This is private to the logging implementation.
+ */
+class PrintList
 {
 public:
-  PrintList ();
-} g_printList;
+  PrintList ();  //<! Constructor, prints the list and exits.
+};
 
+/**
+ * Invoke handler for \c print-list in NS_LOG environment variable.
+ * This is private to the logging implementation.
+ */
+static PrintList g_printList;
+
+  
 /* static */
 LogComponent::ComponentList *
 LogComponent::GetComponentList (void)
 {
-  static ComponentList components;
+  static LogComponent::ComponentList components;
   return &components;
 }
-
 
 
 PrintList::PrintList ()
@@ -92,8 +117,8 @@ LogComponent::LogComponent (const std::string & name,
 {
   EnvVarCheck ();
 
-  ComponentList *components = GetComponentList ();
-  for (ComponentListI i = components->begin ();
+  LogComponent::ComponentList *components = GetComponentList ();
+  for (LogComponent::ComponentList::const_iterator i = components->begin ();
        i != components->end ();
        i++)
     {
@@ -325,8 +350,8 @@ LogComponent::GetLevelLabel(const enum LogLevel level)
 void 
 LogComponentEnable (char const *name, enum LogLevel level)
 {
-  ComponentList *components = LogComponent::GetComponentList ();
-  ComponentListI i;
+  LogComponent::ComponentList *components = LogComponent::GetComponentList ();
+  LogComponent::ComponentList::const_iterator i;
   for (i = components->begin (); 
        i != components->end (); 
        i++)
@@ -349,8 +374,8 @@ LogComponentEnable (char const *name, enum LogLevel level)
 void 
 LogComponentEnableAll (enum LogLevel level)
 {
-  ComponentList *components = LogComponent::GetComponentList ();
-  for (ComponentListI i = components->begin ();
+  LogComponent::ComponentList *components = LogComponent::GetComponentList ();
+  for (LogComponent::ComponentList::const_iterator i = components->begin ();
        i != components->end ();
        i++)
     {
@@ -361,8 +386,8 @@ LogComponentEnableAll (enum LogLevel level)
 void 
 LogComponentDisable (char const *name, enum LogLevel level)
 {
-  ComponentList *components = LogComponent::GetComponentList ();
-  for (ComponentListI i = components->begin ();
+  LogComponent::ComponentList *components = LogComponent::GetComponentList ();
+  for (LogComponent::ComponentList::const_iterator i = components->begin ();
        i != components->end ();
        i++)
     {
@@ -377,8 +402,8 @@ LogComponentDisable (char const *name, enum LogLevel level)
 void 
 LogComponentDisableAll (enum LogLevel level)
 {
-  ComponentList *components = LogComponent::GetComponentList ();
-  for (ComponentListI i = components->begin ();
+  LogComponent::ComponentList *components = LogComponent::GetComponentList ();
+  for (LogComponent::ComponentList::const_iterator i = components->begin ();
        i != components->end ();
        i++)
     {
@@ -389,8 +414,8 @@ LogComponentDisableAll (enum LogLevel level)
 void 
 LogComponentPrintList (void)
 {
-  ComponentList *components = LogComponent::GetComponentList ();
-  for (ComponentListI i = components->begin ();
+  LogComponent::ComponentList *components = LogComponent::GetComponentList ();
+  for (LogComponent::ComponentList::const_iterator i = components->begin ();
        i != components->end ();
        i++)
     {
@@ -458,11 +483,19 @@ LogComponentPrintList (void)
     }
 }
 
+/**
+ * \ingroup
+ * Check if a log component exists.
+ * This is private to the logging implementation.
+ *
+ * \param componentName The putative log component name.
+ * \returns \c true if \c componentName exists.
+ */
 static bool ComponentExists(std::string componentName) 
 {
   char const*name=componentName.c_str();
-  ComponentList *components = LogComponent::GetComponentList ();
-  ComponentListI i;
+  LogComponent::ComponentList *components = LogComponent::GetComponentList ();
+  LogComponent::ComponentList::const_iterator i;
   for (i = components->begin ();
        i != components->end ();
        i++)
@@ -477,6 +510,10 @@ static bool ComponentExists(std::string componentName)
   return false;    
 }
 
+/**
+ * Parse the \c NS_LOG environment variable.
+ * This is private to the logging implementation.
+ */
 static void CheckEnvironmentVariables (void)
 {
 #ifdef HAVE_GETENV

@@ -42,6 +42,8 @@ class NetDevice;
 class UniformRandomVariable;
 
 /**
+ * \ingroup lr-wpan
+ *
  * Helper structure to manage the power measurement during ED.
  */
 typedef struct
@@ -52,6 +54,8 @@ typedef struct
 } LrWpanEdPower;
 
 /**
+ * \ingroup lr-wpan
+ *
  * This data structure provides the Bit rate and Symbol rate for a given channel
  * See IEEE802.15.4-2006 Table 1 and 2 in section 6.1.1 and 6.1.2
  */
@@ -62,6 +66,8 @@ typedef  struct
 } LrWpanPhyDataAndSymbolRates;
 
 /**
+ * \ingroup lr-wpan
+ *
  * This data structure provides number of symbols for the PPDU headers: SHR and PHR
  * See IEEE802.15.4-2006 Figure 16, Table 19 and 20 in section 6.3
  */
@@ -73,6 +79,8 @@ typedef  struct
 } LrWpanPhyPpduHeaderSymbolNumber;
 
 /**
+ * \ingroup lr-wpan
+ *
  * This Phy option will be used to index various Tables in IEEE802.15.4-2006
  */
 typedef enum
@@ -88,6 +96,8 @@ typedef enum
 } LrWpanPhyOption;
 
 /**
+ * \ingroup lr-wpan
+ *
  * IEEE802.15.4-2006 PHY Emumerations Table 18
  * in section 6.2.3
  */
@@ -109,6 +119,8 @@ typedef enum
 } LrWpanPhyEnumeration;
 
 /**
+ * \ingroup lr-wpan
+ *
  * IEEE802.15.4-2006 PHY PIB Attribute Identifiers Table 23 in section 6.4.2
  */
 typedef enum
@@ -124,6 +136,8 @@ typedef enum
 } LrWpanPibAttributeIdentifier;
 
 /**
+ * \ingroup lr-wpan
+ *
  * IEEE802.15.4-2006 PHY PIB Attributes Table 23 in section 6.4.2
  */
 typedef struct
@@ -139,6 +153,8 @@ typedef struct
 } LrWpanPhyPibAttributes;
 
 /**
+ * \ingroup lr-wpan
+ *
  * This method implements the PD SAP: PdDataIndication
  *
  *  @param psduLength number of bytes in the PSDU
@@ -148,6 +164,8 @@ typedef struct
 typedef Callback< void, uint32_t, Ptr<Packet>, uint8_t > PdDataIndicationCallback;
 
 /**
+ * \ingroup lr-wpan
+ *
  * This method implements the PD SAP: PdDataConfirm
  *
  * @param status the status to be transmitted
@@ -155,6 +173,8 @@ typedef Callback< void, uint32_t, Ptr<Packet>, uint8_t > PdDataIndicationCallbac
 typedef Callback< void, LrWpanPhyEnumeration > PdDataConfirmCallback;
 
 /**
+ * \ingroup lr-wpan
+ *
  * This method implements the PD SAP: PlmeCcaConfirm
  *
  * @param status the status of CCA
@@ -162,6 +182,8 @@ typedef Callback< void, LrWpanPhyEnumeration > PdDataConfirmCallback;
 typedef Callback< void, LrWpanPhyEnumeration > PlmeCcaConfirmCallback;
 
 /**
+ * \ingroup lr-wpan
+ *
  * This method implements the PD SAP: PlmeEdConfirm
  *
  * @param status the status of ED
@@ -170,6 +192,8 @@ typedef Callback< void, LrWpanPhyEnumeration > PlmeCcaConfirmCallback;
 typedef Callback< void, LrWpanPhyEnumeration,uint8_t > PlmeEdConfirmCallback;
 
 /**
+ * \ingroup lr-wpan
+ *
  * This method implements the PD SAP: PlmeGetAttributeConfirm
  *
  * @param status the status of PlmeGetAttributeRequest
@@ -181,6 +205,8 @@ typedef Callback< void, LrWpanPhyEnumeration,
                   LrWpanPhyPibAttributes* > PlmeGetAttributeConfirmCallback;
 
 /**
+ * \ingroup lr-wpan
+ *
  * This method implements the PD SAP: PlmeSetTRXStateConfirm
  *
  * @param status the status of PlmeSetTRXStateRequest
@@ -188,6 +214,8 @@ typedef Callback< void, LrWpanPhyEnumeration,
 typedef Callback< void, LrWpanPhyEnumeration > PlmeSetTRXStateConfirmCallback;
 
 /**
+ * \ingroup lr-wpan
+ *
  * This method implements the PD SAP: PlmeSetAttributeConfirm
  *
  * @param status the status of PlmeSetAttributeRequest
@@ -434,6 +462,26 @@ public:
    */
   int64_t AssignStreams (int64_t stream);
 
+  /**
+   * TracedCallback signature for Trx state change events.
+   *
+   * \param [in] time The time of the state change.
+   * \param [in] oldState The old state.
+   * \param [in] newState The new state.
+   */
+  typedef void (* StateTracedCallback)
+    (const Time time,
+     const LrWpanPhyEnumeration oldState, const LrWpanPhyEnumeration newState);
+
+  /**
+   * TracedCallback signature for end receive events.
+   *
+   * \param [in] packet The packet.
+   * \param [in] sinr The received SINR.
+   */
+  typedef void (* RxEndTracedCallback)
+    (const Ptr<const Packet> packet, const double sinr);
+    
 protected:
   /**
    * The data and symbol rates for the different PHY options.

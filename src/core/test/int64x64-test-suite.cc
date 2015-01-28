@@ -54,9 +54,18 @@ namespace ns3 {
  */
 
 
+/**
+ * Pretty printer for test cases.
+ */
 class Printer
 {
 public:
+  /**
+   * Construct from high and low words of Q64.64 representation.
+   *
+   * \param [in] high The integer portion.
+   * \param [in] low The fractional portion.
+   */
   Printer (const int64_t high, const uint64_t low)
     : m_haveInt (false),
       m_value (0),
@@ -64,6 +73,11 @@ public:
       m_low (low)
   { }
 
+  /**
+   * Construct from an \c int64x64_t Q64.64 value.
+   *
+   * \param [in] value The value.
+   */
   Printer (const int64x64_t value)
     : m_haveInt (true),
       m_value (value),
@@ -72,12 +86,19 @@ public:
   { }
 
 private:
+  /**
+   * Output streamer, the main reason for this class.
+   *
+   * \param [in] os The stream.
+   * \param [in] p The value to print.
+   * \returns The stream.
+   */
   friend std::ostream & operator << (std::ostream & os, const Printer & p);
 
-  bool       m_haveInt;
-  int64x64_t m_value;
-  int64_t    m_high;
-  uint64_t   m_low;
+  bool       m_haveInt;  /**< Do we have a full int64x64_t value? */
+  int64x64_t m_value;    /**< The int64x64_t value. */
+  int64_t    m_high;     /**< The high (integer) word. */
+  uint64_t   m_low;      /**< The low (fractional) word. */
 };
 
 std::ostream & operator << (std::ostream & os, const Printer & p)
@@ -96,7 +117,7 @@ std::ostream & operator << (std::ostream & os, const Printer & p)
   return os;
 }
 
-	      
+
 class Int64x64HiLoTestCase : public TestCase
 {
 public:

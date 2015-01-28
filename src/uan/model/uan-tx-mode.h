@@ -311,13 +311,7 @@ std::ostream &operator << (std::ostream &os, const UanModesList &ml);
  */
 std::istream &operator >> (std::istream &is, UanModesList &ml);
 
-/**
- * \ingroup uan
- * \class ns3::UanModesListValue
- * \brief Attribute Value class for UanTxModes.
- */
-ATTRIBUTE_HELPER_HEADER (UanModesList)
-  ;
+ATTRIBUTE_HELPER_HEADER (UanModesList);
 
 } // namespace ns3
 

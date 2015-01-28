@@ -145,6 +145,31 @@ public:
    */
   int64_t AssignStreams (int64_t stream);
 
+  /**
+   * TracedCallback signature for packet send/receive events.
+   *
+   * \param [in] packet The packet.
+   * \param [in] sixNetDevice The SixLowPanNetDevice
+   * \param [in] ifindex The ifindex of the device.
+   */
+  typedef void (* RxTxTracedCallback)
+    (const Ptr<const Packet> packet,
+     const Ptr<const SixLowPanNetDevice> sixNetDevice,
+     const uint32_t ifindex);
+
+  /**
+   * TracedCallback signature for
+   *
+   * \param [in] reason The reason for the drop.
+   * \param [in] packet The packet.
+   * \param [in] sixNetDevice The SixLowPanNetDevice
+   * \param [in] ifindex The ifindex of the device.
+   */
+  typedef void (* DropTracedCallback)
+    (const DropReason reason, const Ptr<const Packet> packet,
+     const Ptr<const SixLowPanNetDevice> sixNetDevice,
+     const uint32_t ifindex);
+   
 protected:
   virtual void DoDispose (void);
 

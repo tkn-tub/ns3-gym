@@ -1862,10 +1862,10 @@ def register_Ns3ObjectBase_methods(root_module, cls):
                    'void', 
                    [param('std::string', 'name'), param('ns3::AttributeValue &', 'value')], 
                    is_const=True)
-    ## object-base.h (module 'core'): bool ns3::ObjectBase::GetAttributeFailSafe(std::string name, ns3::AttributeValue & attribute) const [member function]
+    ## object-base.h (module 'core'): bool ns3::ObjectBase::GetAttributeFailSafe(std::string name, ns3::AttributeValue & value) const [member function]
     cls.add_method('GetAttributeFailSafe', 
                    'bool', 
-                   [param('std::string', 'name'), param('ns3::AttributeValue &', 'attribute')], 
+                   [param('std::string', 'name'), param('ns3::AttributeValue &', 'value')], 
                    is_const=True)
     ## object-base.h (module 'core'): ns3::TypeId ns3::ObjectBase::GetInstanceTypeId() const [member function]
     cls.add_method('GetInstanceTypeId', 
@@ -2509,10 +2509,15 @@ def register_Ns3TypeId_methods(root_module, cls):
     cls.add_method('AddAttribute', 
                    'ns3::TypeId', 
                    [param('std::string', 'name'), param('std::string', 'help'), param('uint32_t', 'flags'), param('ns3::AttributeValue const &', 'initialValue'), param('ns3::Ptr< ns3::AttributeAccessor const >', 'accessor'), param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')])
-    ## type-id.h (module 'core'): ns3::TypeId ns3::TypeId::AddTraceSource(std::string name, std::string help, ns3::Ptr<ns3::TraceSourceAccessor const> accessor, std::string callback="(not yet documented)") [member function]
+    ## type-id.h (module 'core'): ns3::TypeId ns3::TypeId::AddTraceSource(std::string name, std::string help, ns3::Ptr<ns3::TraceSourceAccessor const> accessor) [member function]
     cls.add_method('AddTraceSource', 
                    'ns3::TypeId', 
-                   [param('std::string', 'name'), param('std::string', 'help'), param('ns3::Ptr< ns3::TraceSourceAccessor const >', 'accessor'), param('std::string', 'callback', default_value='"(not yet documented)"')])
+                   [param('std::string', 'name'), param('std::string', 'help'), param('ns3::Ptr< ns3::TraceSourceAccessor const >', 'accessor')], 
+                   deprecated=True)
+    ## type-id.h (module 'core'): ns3::TypeId ns3::TypeId::AddTraceSource(std::string name, std::string help, ns3::Ptr<ns3::TraceSourceAccessor const> accessor, std::string callback) [member function]
+    cls.add_method('AddTraceSource', 
+                   'ns3::TypeId', 
+                   [param('std::string', 'name'), param('std::string', 'help'), param('ns3::Ptr< ns3::TraceSourceAccessor const >', 'accessor'), param('std::string', 'callback')])
     ## type-id.h (module 'core'): ns3::TypeId::AttributeInformation ns3::TypeId::GetAttribute(uint32_t i) const [member function]
     cls.add_method('GetAttribute', 
                    'ns3::TypeId::AttributeInformation', 
@@ -5171,6 +5176,11 @@ def register_Ns3Packet_methods(root_module, cls):
     cls.add_method('SetNixVector', 
                    'void', 
                    [param('ns3::Ptr< ns3::NixVector >', 'nixVector')])
+    ## packet.h (module 'network'): std::string ns3::Packet::ToString() const [member function]
+    cls.add_method('ToString', 
+                   'std::string', 
+                   [], 
+                   is_const=True)
     return
 
 def register_Ns3ParetoRandomVariable_methods(root_module, cls):

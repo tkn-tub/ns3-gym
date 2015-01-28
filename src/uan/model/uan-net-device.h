@@ -147,6 +147,15 @@ public:
   virtual void AddLinkChangeCallback (Callback<void> callback);
   virtual void SetAddress (Address address);
 
+  /**
+   * TracedCallback signature for MAC send/receive events.
+   *
+   * \param [in] packet The Packet.
+   * \param [in] address The source address.
+   */
+  typedef void (* RxTxTracedCallback)
+    (const Ptr<const Packet> packet, const UanAddress address);
+  
 private:
   /**
    * Forward the packet to a higher level, set with SetReceiveCallback.

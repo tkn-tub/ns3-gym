@@ -76,7 +76,7 @@ public:
    * \param snr the snr of the ack
    * \param txMode the transmission mode of the ack
    *
-   * ns3::MacLow received an expected ACL within
+   * ns3::MacLow received an expected ACK within
    * AckTimeout. The <i>snr</i> and <i>txMode</i>
    * arguments are not valid when SUPER_FAST_ACK is
    * used.
@@ -425,6 +425,16 @@ public:
    * \param phy WifiPhy associated with this MacLow
    */
   void SetPhy (Ptr<WifiPhy> phy);
+  /*
+   * \return current attached PHY device
+   */
+  Ptr<WifiPhy> GetPhy (void) const;
+  /**
+   * Remove WifiPhy associated with this MacLow.
+   *
+   * \param phy WifiPhy associated with this MacLow
+   */
+  void ResetPhy (void);
   /**
    * Set up WifiRemoteStationManager associated with this MacLow.
    *
@@ -611,7 +621,7 @@ public:
    * Start the transmission of the input packet and notify the listener
    * of transmission events.
    */
-  void StartTransmission (Ptr<const Packet> packet,
+  virtual void StartTransmission (Ptr<const Packet> packet,
                           const WifiMacHeader* hdr,
                           MacLowTransmissionParameters parameters,
                           MacLowTransmissionListener *listener);
@@ -1024,7 +1034,7 @@ private:
    * This happens when the originator of block ack has only few MPDUs to send.
    * All completed MSDUs starting with starting sequence number of block ack
    * agreement are forward up to WifiMac until there is an incomplete or missing MSDU.
-   * See section 9.10.4 in IEEE802.11 standard for more details.
+   * See section 9.10.4 in IEEE 802.11 standard for more details.
    */
   void RxCompleteBufferedPacketsUntilFirstLost (Mac48Address originator, uint8_t tid);
   /*
@@ -1060,7 +1070,7 @@ private:
    * Every time that a block ack request or a packet with ack policy equals to <i>block ack</i>
    * are received, if a relative block ack agreement exists and the value of inactivity timeout
    * is not 0, the timer is reset.
-   * see section 11.5.3 in IEEE802.11e for more details.
+   * see section 11.5.3 in IEEE 802.11e for more details.
    *
    * \param agreement
    */
@@ -1072,6 +1082,12 @@ private:
    * \param phy the WifiPhy this MacLow is connected to
    */
   void SetupPhyMacLowListener (Ptr<WifiPhy> phy);
+  /**
+   * Remove current WifiPhy listener for this MacLow.
+   *
+   * \param phy the WifiPhy this MacLow is connected to
+   */
+  void RemovePhyMacLowListener (Ptr<WifiPhy> phy);
 
   Ptr<WifiPhy> m_phy; //!< Pointer to WifiPhy (actually send/receives frames)
   Ptr<WifiRemoteStationManager> m_stationManager; //!< Pointer to WifiRemoteStationManager (rate control)
@@ -1120,7 +1136,7 @@ private:
 
   bool m_promisc;  //!< Flag if the device is operating in promiscuous mode
 
-  class PhyMacLowListener * m_phyMacLowListener; //!< Listerner needed to monitor when a channel switching occurs.
+  class PhyMacLowListener * m_phyMacLowListener; //!< Listener needed to monitor when a channel switching occurs.
 
   /*
    * BlockAck data structures.

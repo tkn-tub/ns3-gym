@@ -197,22 +197,27 @@ WifiMac::GetTypeId (void)
     .AddTraceSource ("MacTx",
                      "A packet has been received from higher layers and is being processed in preparation for "
                      "queueing for transmission.",
-                     MakeTraceSourceAccessor (&WifiMac::m_macTxTrace))
+                     MakeTraceSourceAccessor (&WifiMac::m_macTxTrace),
+                     "ns3::Packet::TracedCallback")
     .AddTraceSource ("MacTxDrop",
                      "A packet has been dropped in the MAC layer before being queued for transmission.",
-                     MakeTraceSourceAccessor (&WifiMac::m_macTxDropTrace))
+                     MakeTraceSourceAccessor (&WifiMac::m_macTxDropTrace),
+                     "ns3::Packet::TracedCallback")
     .AddTraceSource ("MacPromiscRx",
                      "A packet has been received by this device, has been passed up from the physical layer "
                      "and is being forwarded up the local protocol stack.  This is a promiscuous trace,",
-                     MakeTraceSourceAccessor (&WifiMac::m_macPromiscRxTrace))
+                     MakeTraceSourceAccessor (&WifiMac::m_macPromiscRxTrace),
+                     "ns3::Packet::TracedCallback")
     .AddTraceSource ("MacRx",
                      "A packet has been received by this device, has been passed up from the physical layer "
                      "and is being forwarded up the local protocol stack.  This is a non-promiscuous trace,",
-                     MakeTraceSourceAccessor (&WifiMac::m_macRxTrace))
+                     MakeTraceSourceAccessor (&WifiMac::m_macRxTrace),
+                     "ns3::Packet::TracedCallback")
     .AddTraceSource ("MacRxDrop",
                      "A packet has been dropped in the MAC layer after it has been passed up from the physical "
                      "layer.",
-                     MakeTraceSourceAccessor (&WifiMac::m_macRxDropTrace))
+                     MakeTraceSourceAccessor (&WifiMac::m_macRxDropTrace),
+                     "ns3::Packet::TracedCallback")
 #if 0
     // Not currently implemented in this device
     .AddTraceSource ("Sniffer",

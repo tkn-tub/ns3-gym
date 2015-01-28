@@ -236,7 +236,42 @@ public:
    */
   State GetState () const;
 
+  /**
+   * TracedCallback signature for state transition events.
+   *
+   * \param [in] cellId
+   * \param [in] rnti
+   * \param [in] oldState
+   * \param [in] newState
+   */
+  typedef void (* StateTracedCallback)
+    (const uint16_t cellId, const uint16_t rnti,
+     const State oldState, const State newState);
 
+  /**
+   * TracedCallback signature for cell RSRP and SINR report.
+   *
+   * \param [in] cellId
+   * \param [in] rnti
+   * \param [in] rsrp
+   * \param [in] sinr
+   */
+  typedef void (* RsrpSinrTracedCallback)
+    (const uint16_t cellId, const uint16_t rnti,
+     const double rsrp, const double sinr);
+
+  /**
+   * TracedCallback signature for cell RSRP and RSRQ.
+   *
+   * \param [in] rnti
+   * \param [in] cellId
+   * \param [in] rsrp
+   * \param [in] rsrq
+   * \param [in] isServingCell
+   */
+  typedef void (* RsrpRsrqTracedCallback)
+    (const uint16_t rnti, const uint16_t cellId,
+     const double rsrp, const double rsrq, const bool isServingCell);
 
 private:
 
@@ -277,6 +312,7 @@ private:
   void DoSetRnti (uint16_t rnti);
   void DoSetTransmissionMode (uint8_t txMode);
   void DoSetSrsConfigurationIndex (uint16_t srcCi);
+  void DoSetPa (double pa);
 
   // UE PHY SAP methods 
   virtual void DoSendMacPdu (Ptr<Packet> p);
@@ -328,6 +364,8 @@ private:
   uint16_t m_srsSubframeOffset;
   uint16_t m_srsConfigured;
   Time     m_srsStartTime;
+
+  double m_paLinear;
 
   bool m_dlConfigured;
   bool m_ulConfigured;

@@ -40,8 +40,11 @@ PointToPointChannel::GetTypeId (void)
                    MakeTimeAccessor (&PointToPointChannel::m_delay),
                    MakeTimeChecker ())
     .AddTraceSource ("TxRxPointToPoint",
-                     "Trace source indicating transmission of packet from the PointToPointChannel, used by the Animation interface.",
-                     MakeTraceSourceAccessor (&PointToPointChannel::m_txrxPointToPoint))
+                     "Trace source indicating transmission of packet "
+                     "from the PointToPointChannel, used by the Animation "
+                     "interface.",
+                     MakeTraceSourceAccessor (&PointToPointChannel::m_txrxPointToPoint),
+                     "ns3::PointToPointChannel::TxRxAnimationCallback")
   ;
   return tid;
 }

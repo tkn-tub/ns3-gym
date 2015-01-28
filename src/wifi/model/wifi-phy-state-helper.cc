@@ -21,6 +21,7 @@
 #include "ns3/log.h"
 #include "ns3/simulator.h"
 #include "ns3/trace-source-accessor.h"
+#include <algorithm>
 
 namespace ns3 {
 
@@ -36,15 +37,19 @@ WifiPhyStateHelper::GetTypeId (void)
     .AddConstructor<WifiPhyStateHelper> ()
     .AddTraceSource ("State",
                      "The state of the PHY layer",
-                     MakeTraceSourceAccessor (&WifiPhyStateHelper::m_stateLogger))
+                     MakeTraceSourceAccessor (&WifiPhyStateHelper::m_stateLogger),
+                     "ns3::WifiPhyStateHelper::StateTracedCallback")
     .AddTraceSource ("RxOk",
                      "A packet has been received successfully.",
-                     MakeTraceSourceAccessor (&WifiPhyStateHelper::m_rxOkTrace))
+                     MakeTraceSourceAccessor (&WifiPhyStateHelper::m_rxOkTrace),
+                     "ns3::WifiPhyStateHelper::RxOkTracedCallback")
     .AddTraceSource ("RxError",
                      "A packet has been received unsuccessfully.",
-                     MakeTraceSourceAccessor (&WifiPhyStateHelper::m_rxErrorTrace))
+                     MakeTraceSourceAccessor (&WifiPhyStateHelper::m_rxErrorTrace),
+                     "ns3::WifiPhyStateHelper::RxErrorTracedCallback")
     .AddTraceSource ("Tx", "Packet transmission is starting.",
-                     MakeTraceSourceAccessor (&WifiPhyStateHelper::m_txTrace))
+                     MakeTraceSourceAccessor (&WifiPhyStateHelper::m_txTrace),
+                     "ns3::WifiPhyStateHelper::TxTracedCallback")
   ;
   return tid;
 }
@@ -80,6 +85,15 @@ void
 WifiPhyStateHelper::RegisterListener (WifiPhyListener *listener)
 {
   m_listeners.push_back (listener);
+}
+void
+WifiPhyStateHelper::UnregisterListener (WifiPhyListener *listener)
+{
+  ListenersI i = find (m_listeners.begin(), m_listeners.end(), listener);
+  if (i != m_listeners.end())
+    {
+      m_listeners.erase(i);
+    }
 }
 
 bool

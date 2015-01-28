@@ -25,6 +25,12 @@
 #include <sstream>
 #include "fatal-error.h"
 
+/**
+ * \file
+ * \ingroup attributehelper
+ * Declaration of Attribute helper macros.
+ */
+
 namespace ns3 {
 
 /**
@@ -158,7 +164,7 @@ MakeSimpleAttributeChecker (std::string name, std::string underlying)
 /**
  * \ingroup attributehelper
  *
- * Declare the attribute value class \p <name>Value
+ * Declare the attribute value class \p \<name>Value
  * for underlying class \p type.
  *
  * \param type The underlying type name
@@ -198,7 +204,7 @@ MakeSimpleAttributeChecker (std::string name, std::string underlying)
 /**
  * \ingroup attributehelper
  *
- * Declare the attribute value class \p <Name>Value
+ * Declare the attribute value class \p \<Name>Value
  * for the class \p Name
  *
  * \param Name the name of the class.
@@ -230,15 +236,15 @@ MakeSimpleAttributeChecker (std::string name, std::string underlying)
 /**
  * \ingroup attributehelper
  *
- * Declare the AttributeChecker class \p <type>Checker
+ * Declare the AttributeChecker class \p \<type>Checker
  * and the \c MakeTypeChecker function for class \p type.
  *
  * \param type the name of the class
  *
- * This macro declares the \p <type>Checker class and the associated
+ * This macro declares the \p \<type>Checker class and the associated
  * \c MakeTypeChecker function.
  *
- * (Note that the \p <type>Checker class needs no implementation
+ * (Note that the \p \<type>Checker class needs no implementation
  * since it just inherits all its implementation from AttributeChecker.)
  *
  * Typically invoked in the class header file.
@@ -252,15 +258,15 @@ MakeSimpleAttributeChecker (std::string name, std::string underlying)
  * \ingroup attributehelper
  *
  * Define the class methods belonging to
- * the attribute value class \p <name>Value 
+ * the attribute value class \p \<name>Value 
  * of the underlying class \p type.
  *
  * \param type The underlying type name
  * \param name The token to use in defining the accessor name.
  *
- * This macro implements the \p <type>Value class methods
- * (including the \p <type>Value::SerializeToString
- * and \p <type>Value::DeserializeFromString methods).
+ * This macro implements the \p \<type>Value class methods
+ * (including the \p \<type>Value::SerializeToString
+ * and \p \<type>Value::DeserializeFromString methods).
  *
  * Typically invoked in the source file.
  */
@@ -297,13 +303,13 @@ MakeSimpleAttributeChecker (std::string name, std::string underlying)
  * \ingroup attributehelper
  *
  * Define the class methods belonging to
- * attribute value class \p <type>Value for class \p type.
+ * attribute value class \p \<type>Value for class \p type.
  *
  * \param type the name of the class.
  *
- * This macro implements the \p <type>Value class methods
- * (including the \p <type>Value::SerializeToString
- * and \p <type>Value::DeserializeFromString methods).
+ * This macro implements the \p \<type>Value class methods
+ * (including the \p \<type>Value::SerializeToString
+ * and \p \<type>Value::DeserializeFromString methods).
  *
  * Typically invoked in the source file.
  */
@@ -356,11 +362,11 @@ MakeSimpleAttributeChecker (std::string name, std::string underlying)
  *
  * This macro declares:
  *
- *   - The attribute value class \p <type>Value,
+ *   - The attribute value class \p \<type>Value,
  *
  *   - The attribute accessor functions \c MakeTypeAccessor,
  *
- *   - The AttributeChecker class \p <type>Checker
+ *   - The AttributeChecker class \p \<type>Checker
  *     and the \c MakeTypeChecker function,
  *
  * for class \p type.
@@ -382,7 +388,7 @@ MakeSimpleAttributeChecker (std::string name, std::string underlying)
  *
  * This macro implements
  *
- *   - The \p <type>Value class methods,
+ *   - The \p \<type>Value class methods,
  *
  *   - The \c MakeTypeChecker function,
  *

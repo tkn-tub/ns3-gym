@@ -21,6 +21,10 @@
  * "DCE Cradle: Simulate Network Protocols with Real Stacks for Better Realism"
  * by Hajime Tazaki, Frederic Urbani and Thierry Turlett presented at WNS3 2013
  *
+ * By default, TCP timestamps, window scale, and SACK are disabled because
+ * they were not supported in ns-3 at the time of this paper.  TCP timestamp
+ * and window scale can be enabled by command line arguments.  
+ *
  */
 
 #include "ns3/log.h"
@@ -37,11 +41,13 @@ NS_LOG_COMPONENT_DEFINE ("TcpNscComparison");
 
 std::string m_stack = "nsc-linux";
 std::string sock_factory;
-int m_seed = 1;
+uint32_t m_seed = 1;
 double startTime = 4.0;
 double stopTime = 20.0;
 uint32_t m_nNodes = 2;
 bool enablePcap = false;
+bool enableTimestamps = false;
+bool enableWindowScale = false;
 
 int
 main (int argc, char *argv[])
@@ -54,12 +60,19 @@ main (int argc, char *argv[])
   CommandLine cmd;
   cmd.AddValue ("stack", "choose network stack", m_stack);
   cmd.AddValue ("seed", "randomize seed", m_seed);
-  cmd.AddValue ("nNodes", "the number of nodes in left side", m_nNodes);
+  cmd.AddValue ("nNodes", "the number of source and sink nodes", m_nNodes);
   cmd.AddValue ("stopTime", "duration", stopTime);
   cmd.AddValue ("enablePcap", "pcap", enablePcap);
+  cmd.AddValue ("enableTimestamps", "use TCP Timestamps option", enableTimestamps);
+  cmd.AddValue ("enableWindowScale", "use TCP Window Scale option", enableWindowScale);
   cmd.Parse (argc, argv);
 
   SeedManager::SetSeed (m_seed);
+
+  if (m_stack != "nsc-linux" && m_stack != "ns3")
+    {
+      NS_FATAL_ERROR ("Error, stack named " << m_stack << " is not supported");
+    }
 
   NodeContainer lefts, routers, rights, nodes;
   lefts.Create (m_nNodes);
@@ -73,6 +86,14 @@ main (int argc, char *argv[])
   if (m_stack == "ns3")
     {
       sock_factory = "ns3::TcpSocketFactory";
+      if (enableTimestamps == false)
+        {
+          Config::SetDefault ("ns3::TcpSocketBase::WindowScaling", BooleanValue (false));
+        }
+      if (enableWindowScale == false)
+        {
+          Config::SetDefault ("ns3::TcpSocketBase::Timestamp", BooleanValue (false));
+        }
       internetStack.Install (nodes);
     }
   else if (m_stack == "nsc-linux")
@@ -84,10 +105,17 @@ main (int argc, char *argv[])
       internetStack.Install (lefts);
       internetStack.Install (rights);
 
-      //these are not implemented in ns3 tcp so disable for comparison
+      // at the time this program was written, these were not implemented 
+      // in ns3 tcp, so disable for comparison
       Config::Set ("/NodeList/*/$ns3::Ns3NscStack<linux2.6.26>/net.ipv4.tcp_sack", StringValue ("0"));
-      Config::Set ("/NodeList/*/$ns3::Ns3NscStack<linux2.6.26>/net.ipv4.tcp_timestamps", StringValue ("0"));
-      Config::Set ("/NodeList/*/$ns3::Ns3NscStack<linux2.6.26>/net.ipv4.tcp_window_scaling", StringValue ("0"));
+      if (enableTimestamps == false)
+        {
+          Config::Set ("/NodeList/*/$ns3::Ns3NscStack<linux2.6.26>/net.ipv4.tcp_timestamps", StringValue ("0"));
+        }
+      if (enableWindowScale == false)
+        {
+          Config::Set ("/NodeList/*/$ns3::Ns3NscStack<linux2.6.26>/net.ipv4.tcp_window_scaling", StringValue ("0"));
+        }
     }
 
   PointToPointHelper pointToPoint;
@@ -160,7 +188,10 @@ main (int argc, char *argv[])
   apps = sink.Install (rights);
   apps.Start (Seconds (3.9999));
 
-  pointToPoint.EnablePcapAll ("nsc.pcap");
+  if (enablePcap)
+    {
+      pointToPoint.EnablePcapAll ("nsc.pcap");
+    }
 
   Simulator::Stop (Seconds (stopTime));
   Simulator::Run ();

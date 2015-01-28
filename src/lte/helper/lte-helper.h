@@ -50,6 +50,7 @@ class SpectrumPropagationLossModel;
 
 /**
  * \ingroup lte
+ *
  * Creation and configuration of LTE entities. One LteHelper instance is
  * typically enough for an LTE simulation. To create it:
  *
@@ -98,6 +99,10 @@ public:
   LteHelper (void);
   virtual ~LteHelper (void);
 
+  /**
+   *  Register this type.
+   *  \return The object TypeId.
+   */
   static TypeId GetTypeId (void);
   virtual void DoDispose (void);
 
@@ -687,7 +692,7 @@ private:
   Ptr<RadioBearerStatsCalculator> m_rlcStats;
   /// Container of PDCP layer statistics.
   Ptr<RadioBearerStatsCalculator> m_pdcpStats;
-  ///
+  /// Connects RLC and PDCP statistics containers to appropriate trace sources
   RadioBearerStatsConnector m_radioBearerStatsConnector;
 
   /**

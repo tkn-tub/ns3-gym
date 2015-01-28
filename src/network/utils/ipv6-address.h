@@ -508,17 +508,8 @@ private:
   friend bool operator != (Ipv6Prefix const &a, Ipv6Prefix const &b);
 };
 
-/**
- * \class ns3::Ipv6AddressValue
- * \brief Hold objects of type ns3::Ipv6Address
- */
-ATTRIBUTE_HELPER_HEADER (Ipv6Address);  //!< Macro to make help make class an ns-3 attribute
-
-/**
- * \class ns3::Ipv6PrefixValue
- * \brief Hold objects of type ns3::Ipv6Prefix
- */
-ATTRIBUTE_HELPER_HEADER (Ipv6Prefix);   //!< Macro to make help make class an ns-3 attribute
+ATTRIBUTE_HELPER_HEADER (Ipv6Address);
+ATTRIBUTE_HELPER_HEADER (Ipv6Prefix);
 
 /**
  * \brief Stream insertion operator.

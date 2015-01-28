@@ -106,22 +106,28 @@ HalfDuplexIdealPhy::GetTypeId (void)
                    MakeDataRateChecker ())
     .AddTraceSource ("TxStart",
                      "Trace fired when a new transmission is started",
-                     MakeTraceSourceAccessor (&HalfDuplexIdealPhy::m_phyTxStartTrace))
+                     MakeTraceSourceAccessor (&HalfDuplexIdealPhy::m_phyTxStartTrace),
+                     "ns3::Packet::TraceCallback")
     .AddTraceSource ("TxEnd",
                      "Trace fired when a previosuly started transmission is finished",
-                     MakeTraceSourceAccessor (&HalfDuplexIdealPhy::m_phyTxEndTrace))
+                     MakeTraceSourceAccessor (&HalfDuplexIdealPhy::m_phyTxEndTrace),
+                     "ns3::Packet::TraceCallback")
     .AddTraceSource ("RxStart",
                      "Trace fired when the start of a signal is detected",
-                     MakeTraceSourceAccessor (&HalfDuplexIdealPhy::m_phyRxStartTrace))
+                     MakeTraceSourceAccessor (&HalfDuplexIdealPhy::m_phyRxStartTrace),
+                     "ns3::Packet::TraceCallback")
     .AddTraceSource ("RxAbort",
                      "Trace fired when a previously started RX is aborted before time",
-                     MakeTraceSourceAccessor (&HalfDuplexIdealPhy::m_phyRxAbortTrace))
+                     MakeTraceSourceAccessor (&HalfDuplexIdealPhy::m_phyRxAbortTrace),
+                     "ns3::Packet::TraceCallback")
     .AddTraceSource ("RxEndOk",
                      "Trace fired when a previosuly started RX terminates successfully",
-                     MakeTraceSourceAccessor (&HalfDuplexIdealPhy::m_phyRxEndOkTrace))
+                     MakeTraceSourceAccessor (&HalfDuplexIdealPhy::m_phyRxEndOkTrace),
+                     "ns3::Packet::TraceCallback")
     .AddTraceSource ("RxEndError",
                      "Trace fired when a previosuly started RX terminates with an error (packet is corrupted)",
-                     MakeTraceSourceAccessor (&HalfDuplexIdealPhy::m_phyRxEndErrorTrace))
+                     MakeTraceSourceAccessor (&HalfDuplexIdealPhy::m_phyRxEndErrorTrace),
+                     "ns3::Packet::TraceCallback")
   ;
   return tid;
 }

@@ -46,7 +46,8 @@ PacketSocketServer::GetTypeId (void)
     .SetParent<Application> ()
     .AddConstructor<PacketSocketServer> ()
     .AddTraceSource ("Rx", "A packet has been received",
-                     MakeTraceSourceAccessor (&PacketSocketServer::m_rxTrace))
+                     MakeTraceSourceAccessor (&PacketSocketServer::m_rxTrace),
+                     "ns3::Packet::PacketAddressTracedCallback")
   ;
   return tid;
 }

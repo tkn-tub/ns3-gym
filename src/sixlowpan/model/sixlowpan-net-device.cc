@@ -40,9 +40,9 @@
 #include "sixlowpan-net-device.h"
 #include "sixlowpan-header.h"
 
-namespace ns3 {
-
 NS_LOG_COMPONENT_DEFINE ("SixLowPanNetDevice");
+
+namespace ns3 {
 
 NS_OBJECT_ENSURE_REGISTERED (SixLowPanNetDevice);
 
@@ -84,12 +84,21 @@ TypeId SixLowPanNetDevice::GetTypeId (void)
                    UintegerValue (0xFFFF),
                    MakeUintegerAccessor (&SixLowPanNetDevice::m_etherType),
                    MakeUintegerChecker<uint16_t> ())
-    .AddTraceSource ("Tx", "Send - packet (including 6LoWPAN header), SixLoWPanNetDevice Ptr, interface index.",
-                     MakeTraceSourceAccessor (&SixLowPanNetDevice::m_txTrace))
-    .AddTraceSource ("Rx", "Receive - packet (including 6LoWPAN header), SixLoWPanNetDevice Ptr, interface index.",
-                     MakeTraceSourceAccessor (&SixLowPanNetDevice::m_rxTrace))
-    .AddTraceSource ("Drop", "Drop - DropReason, packet (including 6LoWPAN header), SixLoWPanNetDevice Ptr, interface index.",
-                     MakeTraceSourceAccessor (&SixLowPanNetDevice::m_dropTrace))
+    .AddTraceSource ("Tx",
+                     "Send - packet (including 6LoWPAN header), "
+                     "SixLoWPanNetDevice Ptr, interface index.",
+                     MakeTraceSourceAccessor (&SixLowPanNetDevice::m_txTrace),
+                     "ns3::SixLowPanNetDevice::RxTxTracedCallback")
+    .AddTraceSource ("Rx",
+                     "Receive - packet (including 6LoWPAN header), "
+                     "SixLoWPanNetDevice Ptr, interface index.",
+                     MakeTraceSourceAccessor (&SixLowPanNetDevice::m_rxTrace),
+                     "ns3::SixLowPanNetDevice::RxTxTracedCallback")
+    .AddTraceSource ("Drop",
+                     "Drop - DropReason, packet (including 6LoWPAN header), "
+                     "SixLoWPanNetDevice Ptr, interface index.",
+                     MakeTraceSourceAccessor (&SixLowPanNetDevice::m_dropTrace),
+                     "ns3::SixLowPanNetDevice::DropTracedCallback")
   ;
   return tid;
 }

@@ -22,6 +22,12 @@
 #include "assert.h"
 #include "log.h"
 
+/**
+ * \file
+ * \ingroup scheduler
+ * ns3::Scheduler implementation.
+ */
+
 namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("Scheduler");

@@ -23,14 +23,31 @@
 
 #include <stdint.h>
 
+/**
+ * \file
+ * \ingroup system
+ * System-independent wall clock class ns3::SystemWallClockMs declaration.
+ */
+
 namespace ns3 {
 
 /**
- * \addtogroup core
- * \see SystemWallClockMs
+ * @ingroup core
+ * @defgroup system System Services
+ *
+ * System-independent interfaces to operating system services:
+ * files system, threading, wall clock time.
+ *
+ * Services provided:
+ *
+ *   - File and directory paths.
+ *   - Thread primitives:  threads, conditional waits, mutex, critical sections.
+ *   - Asynchronous input from a file descriptor.
+ *   - Wall clock time.
  */
+
 /**
- * \ingroup testing
+ * \ingroup system
  * \brief Measure elapsed wall clock time in milliseconds.
  */
 class SystemWallClockMs {

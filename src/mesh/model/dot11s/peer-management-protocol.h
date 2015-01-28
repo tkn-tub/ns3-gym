@@ -163,6 +163,16 @@ public:
    */
   int64_t AssignStreams (int64_t stream);
 
+  /**
+   * TracedCallback signature for link open/close events.
+   *
+   * \param [in] myIface MAC address of my interface.
+   * \param [in] peerIface MAC address of peer interface.
+   */
+  typedef void (* LinkOpenCloseTracedCallback)
+    (const Mac48Address myIface, const Mac48Address peerIface);
+   
+
 private:
   virtual void DoInitialize ();
   

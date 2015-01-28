@@ -24,6 +24,12 @@
 #include "object.h"
 #include "type-id.h"
 
+/**
+ * \file
+ * \ingroup object
+ * ns3::ObjectFactory class declaration.
+ */
+
 namespace ns3 {
 
 class AttributeValue;
@@ -31,7 +37,7 @@ class AttributeValue;
 /**
  * \ingroup object
  *
- * \brief instantiate subclasses of ns3::Object.
+ * \brief Instantiate subclasses of ns3::Object.
  *
  * This class can also hold a set of attributes to set
  * automatically during the object construction.
@@ -41,53 +47,95 @@ class AttributeValue;
 class ObjectFactory
 {
 public:
+  /**
+   * Default constructor.
+   *
+   * This factory is not capable of constructing a real Object
+   * until it has at least a TypeId.
+   */
   ObjectFactory ();
+  /**
+   * Construct a factory for a specific TypeId by name.
+   *
+   * \param typeId The name of the TypeId this factory should create.
+   */
   ObjectFactory (std::string typeId);
 
+  /**@{*/
   /**
-   * \param tid the TypeId of the object to instantiate.
+   * Set the TypeId of the Objects to be created by this factory.
+   *
+   * \param tid The TypeId of the object to instantiate.
    */
   void SetTypeId (TypeId tid);
-  /**
-   * \param tid the TypeId of the object to instantiate.
-   */
   void SetTypeId (const char *tid);
-  /**
-   * \param tid the TypeId of the object to instantiate.
-   */
   void SetTypeId (std::string tid);
+  /**@}*/
+  
   /**
-   * \param name the name of the attribute to set during object construction
-   * \param value the value of the attribute to set during object construction
+   * Set an attribute to be set during construction.
+   *
+   * \param name The name of the attribute to set.
+   * \param value The value of the attribute to set.
    */
   void Set (std::string name, const AttributeValue &value);
 
   /**
-   * \returns the currently-selected TypeId to use to create an object
-   *          instance.
+   * Get the TypeId which will be created by this ObjectFactory.
+   * \returns The currently-selected TypeId.
    */
   TypeId GetTypeId (void) const;
 
   /**
-   * \returns a new object instance.
+   * Create an Object instance of the configured TypeId.
+   *
+   * \returns A new object instance.
    */
   Ptr<Object> Create (void) const;
   /**
-   * \returns a new object instance.
+   * Create an Object instance of the requested type.
    *
    * This method performs an extra call to ns3::Object::GetObject before
    * returning a pointer of the requested type to the user. This method
    * is really syntactical sugar.
+   *
+   * \tparam T The requested Object type.
+   * \returns A new object instance.
    */
   template <typename T>
   Ptr<T> Create (void) const;
 
 private:
+  /**
+   * Print the factory configuration on an output stream.
+   *
+   * The configuration will be printed as a string with the form
+   * "<TypeId-name>[<attribute-name>=<attribute-value>|...]"
+   *
+   * \param [in] os The stream.
+   * \param [in] factory The ObjectFactory.
+   * \returns The stream.
+   */
   friend std::ostream & operator << (std::ostream &os, const ObjectFactory &factory);
+  /**
+   * Read a factory configuration from an input stream.
+   *
+   * The configuration should be in the form
+   * "<TypeId-name>[<attribute-name>=<attribute-value>|...]"
+   *
+   * \param [in] is The input stream.
+   * \param [out] factory The factory to configure as described by the stream.
+   * \return The stream.
+   */
   friend std::istream & operator >> (std::istream &is, ObjectFactory &factory);
 
+  /** The TypeId this factory will create. */
   TypeId m_tid;
-  AttributeConstructionList m_parameters;
+  /**
+   * The list of attributes and values to be used in constructing
+   * objects by this factory.
+   */
+  AttributeConstructionList m_parameters;  
 };
 
 std::ostream & operator << (std::ostream &os, const ObjectFactory &factory);
@@ -95,28 +143,29 @@ std::istream & operator >> (std::istream &is, ObjectFactory &factory);
 
 
 /**
- * \param n1 name of attribute
- * \param v1 value of attribute
- * \param n2 name of attribute
- * \param v2 value of attribute
- * \param n3 name of attribute
- * \param v3 value of attribute
- * \param n4 name of attribute
- * \param v4 value of attribute
- * \param n5 name of attribute
- * \param v5 value of attribute
- * \param n6 name of attribute
- * \param v6 value of attribute
- * \param n7 name of attribute
- * \param v7 value of attribute
- * \param n8 name of attribute
- * \param v8 value of attribute
- * \param n9 name of attribute
- * \param v9 value of attribute
- * \returns a pointer to a newly allocated object.
+ * \ingroup object
+ * Allocate an Object on the heap and initialize with a set of attributes.
  *
- * This allocates an object on the heap and initializes
- * it with a set of attributes.
+ * \tparam T The requested Object type.
+ * \param n1 Name of attribute
+ * \param v1 Value of attribute
+ * \param n2 Name of attribute
+ * \param v2 Value of attribute
+ * \param n3 Name of attribute
+ * \param v3 Value of attribute
+ * \param n4 Name of attribute
+ * \param v4 Value of attribute
+ * \param n5 Name of attribute
+ * \param v5 Value of attribute
+ * \param n6 Name of attribute
+ * \param v6 Value of attribute
+ * \param n7 Name of attribute
+ * \param v7 Value of attribute
+ * \param n8 Name of attribute
+ * \param v8 Value of attribute
+ * \param n9 Name of attribute
+ * \param v9 Value of attribute
+ * \returns A pointer to a newly allocated object.
  */
 template <typename T>
 Ptr<T> 
@@ -134,6 +183,11 @@ CreateObjectWithAttributes (std::string n1 = "", const AttributeValue & v1 = Emp
 ATTRIBUTE_HELPER_HEADER (ObjectFactory);
 
 } // namespace ns3
+
+
+/***************************************************************
+ *  Implementation of the templates declared above.
+ ***************************************************************/
 
 namespace ns3 {
 

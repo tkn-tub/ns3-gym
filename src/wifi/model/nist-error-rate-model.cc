@@ -15,7 +15,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * Author: Gary Pei <guangyu.pei@boeing.com>
+ * Authors: Gary Pei <guangyu.pei@boeing.com>
+ *          Sébastien Deronne <sebastien.deronne@gmail.com>
  */
 
 #include <cmath>
@@ -154,6 +155,23 @@ NistErrorRateModel::CalculatePe (double p, uint32_t bValue) const
           + 428005675.0 * std::pow (D, 14)
         );
     }
+  else if (bValue == 5)
+    {
+      // code rate 5/6, use table V from D. Haccoun and G. Begin, "High-Rate Punctured Convolutional Codes 
+      // for Viterbi Sequential Decoding", IEEE Transactions on Communications, Vol. 32, Issue 3, pp.315-319.
+      pe = 1.0 / (2.0 * bValue) *
+        ( 92.0 * std::pow (D, 4.0)
+          + 528.0 * std::pow (D, 5.0)
+          + 8694.0 * std::pow (D, 6.0)
+          + 79453.0 * std::pow (D, 7.0)
+          + 792114.0 * std::pow (D, 8.0)
+          + 7375573.0 * std::pow (D, 9.0)
+          + 67884974.0 * std::pow (D, 10.0)
+          + 610875423.0 * std::pow (D, 11.0)
+          + 5427275376.0 * std::pow (D, 12.0)
+          + 47664215639.0 * std::pow (D, 13.0)
+        );
+    }
   else
     {
       NS_ASSERT (false);
@@ -255,13 +273,20 @@ NistErrorRateModel::GetChunkSuccessRate (WifiMode mode, double snr, uint32_t nbi
                                      2 // b value
                                      );
             }
-          else
-            {
-              return GetFec64QamBer (snr,
-                                     nbits,
-                                     3 // b value
-                                     );
-            }
+          else if (mode.GetCodeRate () == WIFI_CODE_RATE_5_6)
+                 {
+                   return GetFec64QamBer (snr,
+                                          nbits,
+                                          5 // b value
+                                          );
+                 }
+               else
+                 {
+                   return GetFec64QamBer (snr,
+                                          nbits,
+                                          3 // b value
+                                          );
+                 }
         }
     }
   else if (mode.GetModulationClass () == WIFI_MOD_CLASS_DSSS)

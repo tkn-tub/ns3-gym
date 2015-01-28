@@ -22,7 +22,6 @@
 #include "object.h"
 #include "object-factory.h"
 #include "assert.h"
-#include "singleton.h"
 #include "attribute.h"
 #include "log.h"
 #include "string.h"
@@ -31,7 +30,11 @@
 #include <cstdlib>
 #include <cstring>
 
-
+/**
+ * \file
+ * \ingroup object
+ * ns3::Object class implementation.
+ */
 
 namespace ns3 {
 
@@ -368,6 +371,7 @@ Object::CheckLoose (void) const
   for (uint32_t i = 0; i < n; i++)
     {
       Object *current = m_aggregates->buffer[i];
+      /// \todo Shortcircuit this loop.
       refcount += current->GetReferenceCount ();
     }
   return (refcount > 0);

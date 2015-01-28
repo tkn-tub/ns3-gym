@@ -74,6 +74,15 @@ public:
    * \return iterator to the burst list end
    */
   std::list<Ptr<Packet> >::const_iterator End (void) const;
+
+  /**
+   * TracedCallback signature for Ptr<PacketBurst>
+   *
+   * \param [in] burst The PacketBurst
+   */
+  typedef void (* TracedCallback)(const Ptr<const PacketBurst> burst);
+
+  
 private:
   void DoDispose (void);
   std::list<Ptr<Packet> > m_packets; //!< the list of packets in the burst

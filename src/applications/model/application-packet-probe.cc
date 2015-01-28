@@ -41,11 +41,14 @@ ApplicationPacketProbe::GetTypeId ()
     .SetParent<Probe> ()
     .AddConstructor<ApplicationPacketProbe> ()
     .AddTraceSource ( "Output",
-                      "The packet plus its socket address that serve as the output for this probe",
-                      MakeTraceSourceAccessor (&ApplicationPacketProbe::m_output))
+                      "The packet plus its socket address that serve "
+                      "as the output for this probe",
+                      MakeTraceSourceAccessor (&ApplicationPacketProbe::m_output),
+                      "ns3::Packet::PacketAddressTracedCallback")
     .AddTraceSource ( "OutputBytes",
                       "The number of bytes in the packet",
-                      MakeTraceSourceAccessor (&ApplicationPacketProbe::m_outputBytes))
+                      MakeTraceSourceAccessor (&ApplicationPacketProbe::m_outputBytes),
+                      "ns3::Packet::PacketSizeTracedCallback")
   ;
   return tid;
 }

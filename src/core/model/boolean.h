@@ -23,6 +23,12 @@
 #include "attribute.h"
 #include "attribute-helper.h"
 
+/**
+ * \file
+ * \ingroup attribute_Boolean
+ * Boolean attribute value declarations.
+ */
+
 namespace ns3 {
 
 class BooleanValue : public AttributeValue

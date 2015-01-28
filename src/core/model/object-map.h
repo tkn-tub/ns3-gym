@@ -25,6 +25,12 @@
 #include "attribute.h"
 #include "object-ptr-container.h"
 
+/**
+ * \file
+ * \ingroup attribute_ObjectMap
+ * ObjectMap attribute value declarations and template implementations.
+ */
+
 namespace ns3 {
 
 /**
@@ -66,7 +72,7 @@ MakeObjectMapAccessor (INDEX (T::*getN)(void) const,
 
 
 /***************************************************************
- *        The implementation of the above functions.
+ *  Implementation of the templates declared above.
  ***************************************************************/
 
 template <typename T, typename U>

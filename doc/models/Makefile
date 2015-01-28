@@ -142,12 +142,12 @@ SOURCEFIGS = \
 	$(SRC)/lte/doc/source/figures/epcSimulationTime.eps \
 	$(SRC)/lte/doc/source/figures/epcEutranRunningTime.eps \
 	$(SRC)/lte/doc/source/figures/profiling-memory.eps \
-	$(SRC)/lte/doc/source/figures/lte-rlc-implementation-model.eps \
-	$(SRC)/lte/doc/source/figures/lte-rlc-data-txon-dl.eps \
-	$(SRC)/lte/doc/source/figures/lte-rlc-data-retx-dl.eps \
-	$(SRC)/lte/doc/source/figures/lte-rlc-data-txon-ul.eps \
-	$(SRC)/lte/doc/source/figures/lte-rlc-data-retx-ul.eps \
-	$(SRC)/lte/doc/source/figures/lte-epc-x2-entity-saps.eps \
+	$(SRC)/lte/doc/source/figures/lte-rlc-implementation-model.dia \
+	$(SRC)/lte/doc/source/figures/lte-rlc-data-txon-dl.dia \
+	$(SRC)/lte/doc/source/figures/lte-rlc-data-retx-dl.dia \
+	$(SRC)/lte/doc/source/figures/lte-rlc-data-txon-ul.dia \
+	$(SRC)/lte/doc/source/figures/lte-rlc-data-retx-ul.dia \
+	$(SRC)/lte/doc/source/figures/lte-epc-x2-entity-saps.dia \
 	$(SRC)/lte/doc/source/figures/lte-strongest-cell-handover-algorithm.eps \
 	$(SRC)/lte/doc/source/figures/lte-phy-interference.pdf \
 	$(SRC)/lte/doc/source/figures/lte-phy-interference.png \
@@ -175,22 +175,14 @@ SOURCEFIGS = \
 	$(SRC)/lte/doc/source/figures/fading_vehicular.png \
 	$(SRC)/lte/doc/source/figures/fading_urban_3kmph.pdf \
 	$(SRC)/lte/doc/source/figures/fading_urban_3kmph.png \
-	$(SRC)/lte/doc/source/figures/fr-enhanced-fractional-frequency-reuse-scheme.png \
-	$(SRC)/lte/doc/source/figures/fr-enhanced-fractional-frequency-reuse-scheme.pdf \
-	$(SRC)/lte/doc/source/figures/fr-full-frequency-reuse-scheme.png \
-	$(SRC)/lte/doc/source/figures/fr-full-frequency-reuse-scheme.pdf \
-	$(SRC)/lte/doc/source/figures/fr-hard-frequency-reuse-scheme.png \
-	$(SRC)/lte/doc/source/figures/fr-hard-frequency-reuse-scheme.pdf \
-	$(SRC)/lte/doc/source/figures/fr-soft-fractional-frequency-reuse-scheme.png \
-	$(SRC)/lte/doc/source/figures/fr-soft-fractional-frequency-reuse-scheme.pdf \
-	$(SRC)/lte/doc/source/figures/fr-soft-frequency-reuse-scheme-v1.png \
-	$(SRC)/lte/doc/source/figures/fr-soft-frequency-reuse-scheme-v1.pdf \
-	$(SRC)/lte/doc/source/figures/fr-soft-frequency-reuse-scheme-v2.png \
-	$(SRC)/lte/doc/source/figures/fr-soft-frequency-reuse-scheme-v2.pdf \
-	$(SRC)/lte/doc/source/figures/fr-strict-frequency-reuse-scheme.png \
-	$(SRC)/lte/doc/source/figures/fr-strict-frequency-reuse-scheme.pdf \
-	$(SRC)/lte/doc/source/figures/ffr-distributed-scheme.png \
-	$(SRC)/lte/doc/source/figures/ffr-distributed-scheme.pdf \
+	$(SRC)/lte/doc/source/figures/fr-enhanced-fractional-frequency-reuse-scheme.dia \
+	$(SRC)/lte/doc/source/figures/fr-full-frequency-reuse-scheme.dia \
+	$(SRC)/lte/doc/source/figures/fr-hard-frequency-reuse-scheme.dia \
+	$(SRC)/lte/doc/source/figures/fr-soft-fractional-frequency-reuse-scheme.dia \
+	$(SRC)/lte/doc/source/figures/fr-soft-frequency-reuse-scheme-v1.dia \
+	$(SRC)/lte/doc/source/figures/fr-soft-frequency-reuse-scheme-v2.dia \
+	$(SRC)/lte/doc/source/figures/fr-strict-frequency-reuse-scheme.dia \
+	$(SRC)/lte/doc/source/figures/ffr-distributed-scheme.dia \
 	$(SRC)/lte/doc/source/figures/lte-fr-soft-1-rem.png \
 	$(SRC)/lte/doc/source/figures/lte-fr-soft-1-rem.pdf \
 	$(SRC)/lte/doc/source/figures/lte-ffr-soft-2-spectrum-trace.png \
@@ -225,10 +217,8 @@ SOURCEFIGS = \
 	$(SRC)/lte/doc/source/figures/MCS_16_test.pdf \
 	$(SRC)/lte/doc/source/figures/miesm_scheme.pdf \
 	$(SRC)/lte/doc/source/figures/miesm_scheme.png \
-	$(SRC)/lte/doc/source/figures/lte-dl-power-control.png \
-	$(SRC)/lte/doc/source/figures/lte-dl-power-control.pdf \
-	$(SRC)/lte/doc/source/figures/lte-ffr-scheduling.png \
-	$(SRC)/lte/doc/source/figures/lte-ffr-scheduling.pdf \
+	$(SRC)/lte/doc/source/figures/lte-dl-power-control.dia \
+	$(SRC)/lte/doc/source/figures/lte-ffr-scheduling.dia \
 	$(SRC)/lte/doc/source/figures/lte-handover-campaign-rem.pdf \
 	$(SRC)/lte/doc/source/figures/lte-handover-campaign-rem.png \
 	$(SRC)/lte/doc/source/figures/lte-legacy-handover-algorithm.pdf \
@@ -295,6 +285,16 @@ IMAGES_EPS = \
 	$(FIGURES)/eutran-profiling-scenario.eps \
 	$(FIGURES)/ff-example.eps \
 	$(FIGURES)/ff-mac-saps.eps \
+	$(FIGURES)/lte-dl-power-control.eps \
+	$(FIGURES)/lte-ffr-scheduling.eps \
+	$(FIGURES)/fr-enhanced-fractional-frequency-reuse-scheme.eps \
+	$(FIGURES)/fr-full-frequency-reuse-scheme.eps \
+	$(FIGURES)/fr-hard-frequency-reuse-scheme.eps \
+	$(FIGURES)/fr-soft-fractional-frequency-reuse-scheme.eps \
+	$(FIGURES)/fr-soft-frequency-reuse-scheme-v1.eps \
+	$(FIGURES)/fr-soft-frequency-reuse-scheme-v2.eps \
+	$(FIGURES)/fr-strict-frequency-reuse-scheme.eps \
+	$(FIGURES)/ffr-distributed-scheme.eps \
 	$(FIGURES)/lte-arch-enb-data.eps \
 	$(FIGURES)/lte-arch-enb-ctrl.eps \
 	$(FIGURES)/lte-arch-ue-data.eps \
@@ -363,6 +363,16 @@ $(FIGURES)/lte-arch-data-rrc-pdcp-rlc.pdf_width = 3in
 $(FIGURES)/lte-epc-e2e-data-protocol-stack.pdf_width = 15cm
 $(FIGURES)/ff-mac-saps.pdf_width = 5in
 $(FIGURES)/ff-example.pdf_width = 5in
+$(FIGURES)/lte-dl-power-control.pdf_width = 8cm
+$(FIGURES)/lte-ffr-scheduling.pdf_width = 8cm
+$(FIGURES)/fr-enhanced-fractional-frequency-reuse-scheme.pdf_width = 8cm
+$(FIGURES)/fr-full-frequency-reuse-scheme.pdf_width = 8cm
+$(FIGURES)/fr-hard-frequency-reuse-scheme.pdf_width = 8cm
+$(FIGURES)/fr-soft-fractional-frequency-reuse-scheme.pdf_width = 8cm
+$(FIGURES)/fr-soft-frequency-reuse-scheme-v1.pdf_width = 8cm
+$(FIGURES)/fr-soft-frequency-reuse-scheme-v2.pdf_width = 8cm
+$(FIGURES)/fr-strict-frequency-reuse-scheme.pdf_width = 8cm
+$(FIGURES)/ffr-distributed-scheme.pdf_width = 8cm
 $(FIGURES)/lte-arch-enb-data.pdf_width = 6cm 
 $(FIGURES)/lte-arch-enb-ctrl.pdf_width = 10cm
 $(FIGURES)/lte-arch-ue-data.pdf_width = 6cm
@@ -370,7 +380,9 @@ $(FIGURES)/lte-arch-ue-ctrl.pdf_width = 10cm
 $(FIGURES)/lte-rlc-implementation-model.pdf_width = 20in
 $(FIGURES)/lte-rlc-data-txon-dl.pdf_width = 10cm
 $(FIGURES)/lte-rlc-data-txon-ul.pdf_width = 10cm
+$(FIGURES)/lte-rlc-data-retx-dl.pdf_width = 10cm
 $(FIGURES)/lte-rlc-data-retx-ul.pdf_width = 10cm
+$(FIGURES)/lte-epc-x2-entity-saps.pdf_width = 12cm
 $(FIGURES)/lte-phy-interference.pdf_width = 12cm
 $(FIGURES)/lte-subframe-structure.pdf_width = 2in
 $(FIGURES)/mac-random-access-contention.pdf_width = 10cm

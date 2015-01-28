@@ -37,6 +37,8 @@ class SpectrumChannel;
 class MobilityModel;
 
 /** 
+ * \ingroup lte
+ *
  * Generates a 2D map of the SINR from the strongest transmitter in the
  * downlink of an LTE FDD system. For instructions on usage, please refer to
  * the User Documentation.
@@ -50,6 +52,10 @@ public:
   
   // inherited from Object
   virtual void DoDispose (void);
+  /**
+   *  Register this type.
+   *  \return The object TypeId.
+   */
   static TypeId GetTypeId (void);
 
   /** 

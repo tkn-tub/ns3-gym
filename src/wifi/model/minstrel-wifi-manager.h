@@ -182,11 +182,11 @@ private:
   typedef std::vector<std::pair<Time,WifiMode> > TxTime;
 
   TxTime m_calcTxTime;  ///< to hold all the calculated TxTime for all modes
-  Time m_updateStats;  ///< how frequent do we calculate the stats(1/10 seconds)
+  Time m_updateStats;  ///< how frequent do we calculate the stats (1/10 seconds)
   double m_lookAroundRate;  ///< the % to try other rates than our current rate
   double m_ewmaLevel;  ///< exponential weighted moving average
   uint32_t m_sampleCol;  ///< number of sample columns
-  uint32_t m_pktLen;  ///< packet length used  for calculate mode TxTime
+  uint32_t m_pktLen;  ///< packet length used for calculate mode TxTime
   uint32_t m_nsupported;  ///< modes supported
 
   /// Provides uniform random variables.

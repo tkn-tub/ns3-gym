@@ -86,6 +86,10 @@ namespace ns3 {
 class WaypointMobilityModel : public MobilityModel
 {
 public:
+  /**
+   * Register this type with the TypeId system.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
 
   /**
@@ -127,6 +131,9 @@ public:
 private:
   friend class ::WaypointMobilityModelNotifyTest; // To allow Update() calls and access to m_current
 
+  /**
+   * Update the underlying state corresponding to the stored waypoints
+   */
   void Update (void) const;
   /**
    * \brief The dispose method.
@@ -154,7 +161,14 @@ private:
    * \brief This variable is set to true if there are no waypoints in the std::deque
    */
   bool m_first;
+  /**
+   * \brief If true, course change updates are only notified when position
+   * is calculated.
+   */
   bool m_lazyNotify;
+  /**
+   * \brief If true, calling SetPosition with no waypoints creates a waypoint
+   */
   bool m_initialPositionIsWaypoint;
   /**
    * \brief The double ended queue containing the ns3::Waypoint objects

@@ -21,13 +21,25 @@
 #include "ns3/object.h"
 #include <iostream>
 
+/**
+ * \ingroup ptr
+ * \file
+ * Example program illustrating use of the ns3::Ptr smart pointer.
+ */
+
 using namespace ns3;
 
+/**
+ * Example class illustrating use of Ptr.
+ */
 class PtrExample : public Object
 {
 public:
+  /** Constructor. */
   PtrExample ();
+  /** Destructor. */
   ~PtrExample ();
+  /** Example class method. */
   void Method (void);
 };
 PtrExample::PtrExample ()
@@ -44,8 +56,20 @@ PtrExample::Method (void)
   std::cout << "PtrExample method" << std::endl;
 }
 
+
+/**
+ *  Example Ptr global variable.
+ */
 static Ptr<PtrExample> g_ptr = 0;
 
+/**
+ * Example Ptr manipulations.
+ *
+ * This function stores it's argument in the global variable \c g_ptr
+ * and returns the old value of \c g_ptr.
+ * \param [in] p A Ptr.
+ * \returns The prior value of \c g_ptr.
+ */
 static Ptr<PtrExample>
 StorePtr (Ptr<PtrExample> p)
 {
@@ -54,6 +78,9 @@ StorePtr (Ptr<PtrExample> p)
   return prev;
 }
 
+/**
+ *  Set \c g_ptr to NULL.
+ */
 static void
 ClearPtr (void)
 {

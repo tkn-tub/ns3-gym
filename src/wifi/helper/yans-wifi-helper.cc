@@ -234,7 +234,7 @@ YansWifiPhyHelper::SetErrorRateModel (std::string name,
 }
 
 Ptr<WifiPhy>
-YansWifiPhyHelper::Create (Ptr<Node> node, Ptr<WifiNetDevice> device) const
+YansWifiPhyHelper::Create (Ptr<Node> node, Ptr<NetDevice> device) const
 {
   Ptr<YansWifiPhy> phy = m_phy.Create<YansWifiPhy> ();
   Ptr<ErrorRateModel> error = m_errorRateModel.Create<ErrorRateModel> ();
@@ -417,6 +417,12 @@ YansWifiPhyHelper::SetPcapDataLinkType (enum SupportedPcapDataLinkTypes dlt)
     default:
       NS_ABORT_MSG ("YansWifiPhyHelper::SetPcapFormat(): Unexpected format");
     }
+}
+
+uint32_t
+YansWifiPhyHelper::GetPcapDataLinkType (void) const
+{
+  return m_pcapDlt;
 }
 
 void

@@ -88,13 +88,16 @@ WimaxMacQueue::GetTypeId (void)
       MakeUintegerChecker<uint32_t> ())
     .AddTraceSource ("Enqueue",
                      "Enqueue trace",
-                     MakeTraceSourceAccessor (&WimaxMacQueue::m_traceEnqueue))
+                     MakeTraceSourceAccessor (&WimaxMacQueue::m_traceEnqueue),
+                     "ns3::Packet::TracedCallback")
     .AddTraceSource ("Dequeue",
                      "Dequeue trace",
-                     MakeTraceSourceAccessor (&WimaxMacQueue::m_traceDequeue))
+                     MakeTraceSourceAccessor (&WimaxMacQueue::m_traceDequeue),
+                     "ns3::Packet::TracedCallback")
     .AddTraceSource ("Drop",
                      "Drop trace",
-                     MakeTraceSourceAccessor (&WimaxMacQueue::m_traceDrop))
+                     MakeTraceSourceAccessor (&WimaxMacQueue::m_traceDrop),
+                     "ns3::Packet::TracedCallback")
   ;
   return tid;
 }

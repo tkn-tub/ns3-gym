@@ -44,14 +44,30 @@ namespace ns3 {
 class RandomDirection2dMobilityModel : public MobilityModel
 {
 public:
+  /**
+   * Register this type with the TypeId system.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
   RandomDirection2dMobilityModel ();
 
 private:
+  /**
+   * Set a new direction and speed
+   */
   void ResetDirectionAndSpeed (void);
+  /**
+   * Pause, cancel currently scheduled event, schedule end of pause event
+   */
   void BeginPause (void);
+  /**
+   * Set new velocity and direction, and schedule next pause event  
+   * \param direction (radians)
+   */
   void SetDirectionAndSpeed (double direction);
-  void InitializeDirectionAndSpeed (void);
+  /**
+   * Sets a new random direction and calls SetDirectionAndSpeed
+   */
   void DoInitializePrivate (void);
   virtual void DoDispose (void);
   virtual void DoInitialize (void);
@@ -60,12 +76,12 @@ private:
   virtual Vector DoGetVelocity (void) const;
   virtual int64_t DoAssignStreams (int64_t);
 
-  Ptr<UniformRandomVariable> m_direction;
-  Rectangle m_bounds;
-  Ptr<RandomVariableStream> m_speed;
-  Ptr<RandomVariableStream> m_pause;
-  EventId m_event;
-  ConstantVelocityHelper m_helper;
+  Ptr<UniformRandomVariable> m_direction; //!< rv to control direction
+  Rectangle m_bounds; //!< the 2D bounding area
+  Ptr<RandomVariableStream> m_speed; //!< a random variable to control speed
+  Ptr<RandomVariableStream> m_pause; //!< a random variable to control pause 
+  EventId m_event; //!< event ID of next scheduled event
+  ConstantVelocityHelper m_helper; //!< helper for velocity computations
 };
 
 } // namespace ns3

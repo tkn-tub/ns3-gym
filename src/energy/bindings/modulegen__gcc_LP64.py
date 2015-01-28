@@ -1787,10 +1787,10 @@ def register_Ns3ObjectBase_methods(root_module, cls):
                    'void', 
                    [param('std::string', 'name'), param('ns3::AttributeValue &', 'value')], 
                    is_const=True)
-    ## object-base.h (module 'core'): bool ns3::ObjectBase::GetAttributeFailSafe(std::string name, ns3::AttributeValue & attribute) const [member function]
+    ## object-base.h (module 'core'): bool ns3::ObjectBase::GetAttributeFailSafe(std::string name, ns3::AttributeValue & value) const [member function]
     cls.add_method('GetAttributeFailSafe', 
                    'bool', 
-                   [param('std::string', 'name'), param('ns3::AttributeValue &', 'attribute')], 
+                   [param('std::string', 'name'), param('ns3::AttributeValue &', 'value')], 
                    is_const=True)
     ## object-base.h (module 'core'): ns3::TypeId ns3::ObjectBase::GetInstanceTypeId() const [member function]
     cls.add_method('GetInstanceTypeId', 
@@ -2262,10 +2262,15 @@ def register_Ns3TypeId_methods(root_module, cls):
     cls.add_method('AddAttribute', 
                    'ns3::TypeId', 
                    [param('std::string', 'name'), param('std::string', 'help'), param('uint32_t', 'flags'), param('ns3::AttributeValue const &', 'initialValue'), param('ns3::Ptr< ns3::AttributeAccessor const >', 'accessor'), param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')])
-    ## type-id.h (module 'core'): ns3::TypeId ns3::TypeId::AddTraceSource(std::string name, std::string help, ns3::Ptr<ns3::TraceSourceAccessor const> accessor, std::string callback="(not yet documented)") [member function]
+    ## type-id.h (module 'core'): ns3::TypeId ns3::TypeId::AddTraceSource(std::string name, std::string help, ns3::Ptr<ns3::TraceSourceAccessor const> accessor) [member function]
     cls.add_method('AddTraceSource', 
                    'ns3::TypeId', 
-                   [param('std::string', 'name'), param('std::string', 'help'), param('ns3::Ptr< ns3::TraceSourceAccessor const >', 'accessor'), param('std::string', 'callback', default_value='"(not yet documented)"')])
+                   [param('std::string', 'name'), param('std::string', 'help'), param('ns3::Ptr< ns3::TraceSourceAccessor const >', 'accessor')], 
+                   deprecated=True)
+    ## type-id.h (module 'core'): ns3::TypeId ns3::TypeId::AddTraceSource(std::string name, std::string help, ns3::Ptr<ns3::TraceSourceAccessor const> accessor, std::string callback) [member function]
+    cls.add_method('AddTraceSource', 
+                   'ns3::TypeId', 
+                   [param('std::string', 'name'), param('std::string', 'help'), param('ns3::Ptr< ns3::TraceSourceAccessor const >', 'accessor'), param('std::string', 'callback')])
     ## type-id.h (module 'core'): ns3::TypeId::AttributeInformation ns3::TypeId::GetAttribute(uint32_t i) const [member function]
     cls.add_method('GetAttribute', 
                    'ns3::TypeId::AttributeInformation', 
@@ -3564,10 +3569,10 @@ def register_Ns3WifiPhy_methods(root_module, cls):
                    'double', 
                    [param('ns3::WifiMode', 'txMode'), param('double', 'ber')], 
                    is_pure_virtual=True, is_const=True, is_virtual=True)
-    ## wifi-phy.h (module 'wifi'): static ns3::Time ns3::WifiPhy::CalculateTxDuration(uint32_t size, ns3::WifiTxVector txvector, ns3::WifiPreamble preamble) [member function]
+    ## wifi-phy.h (module 'wifi'): static ns3::Time ns3::WifiPhy::CalculateTxDuration(uint32_t size, ns3::WifiTxVector txvector, ns3::WifiPreamble preamble, double frequency) [member function]
     cls.add_method('CalculateTxDuration', 
                    'ns3::Time', 
-                   [param('uint32_t', 'size'), param('ns3::WifiTxVector', 'txvector'), param('ns3::WifiPreamble', 'preamble')], 
+                   [param('uint32_t', 'size'), param('ns3::WifiTxVector', 'txvector'), param('ns3::WifiPreamble', 'preamble'), param('double', 'frequency')], 
                    is_static=True)
     ## wifi-phy.h (module 'wifi'): void ns3::WifiPhy::ConfigureStandard(ns3::WifiPhyStandard standard) [member function]
     cls.add_method('ConfigureStandard', 
@@ -4014,10 +4019,10 @@ def register_Ns3WifiPhy_methods(root_module, cls):
                    'ns3::WifiMode', 
                    [], 
                    is_static=True)
-    ## wifi-phy.h (module 'wifi'): static double ns3::WifiPhy::GetPayloadDurationMicroSeconds(uint32_t size, ns3::WifiTxVector txvector) [member function]
+    ## wifi-phy.h (module 'wifi'): static double ns3::WifiPhy::GetPayloadDurationMicroSeconds(uint32_t size, ns3::WifiTxVector txvector, double frequency) [member function]
     cls.add_method('GetPayloadDurationMicroSeconds', 
                    'double', 
-                   [param('uint32_t', 'size'), param('ns3::WifiTxVector', 'txvector')], 
+                   [param('uint32_t', 'size'), param('ns3::WifiTxVector', 'txvector'), param('double', 'frequency')], 
                    is_static=True)
     ## wifi-phy.h (module 'wifi'): static uint32_t ns3::WifiPhy::GetPlcpHeaderDurationMicroSeconds(ns3::WifiMode payloadMode, ns3::WifiPreamble preamble) [member function]
     cls.add_method('GetPlcpHeaderDurationMicroSeconds', 
@@ -4962,14 +4967,14 @@ def register_Ns3EnumChecker_methods(root_module, cls):
     cls.add_constructor([param('ns3::EnumChecker const &', 'arg0')])
     ## enum.h (module 'core'): ns3::EnumChecker::EnumChecker() [constructor]
     cls.add_constructor([])
-    ## enum.h (module 'core'): void ns3::EnumChecker::Add(int v, std::string name) [member function]
+    ## enum.h (module 'core'): void ns3::EnumChecker::Add(int value, std::string name) [member function]
     cls.add_method('Add', 
                    'void', 
-                   [param('int', 'v'), param('std::string', 'name')])
-    ## enum.h (module 'core'): void ns3::EnumChecker::AddDefault(int v, std::string name) [member function]
+                   [param('int', 'value'), param('std::string', 'name')])
+    ## enum.h (module 'core'): void ns3::EnumChecker::AddDefault(int value, std::string name) [member function]
     cls.add_method('AddDefault', 
                    'void', 
-                   [param('int', 'v'), param('std::string', 'name')])
+                   [param('int', 'value'), param('std::string', 'name')])
     ## enum.h (module 'core'): bool ns3::EnumChecker::Check(ns3::AttributeValue const & value) const [member function]
     cls.add_method('Check', 
                    'bool', 
@@ -5007,8 +5012,8 @@ def register_Ns3EnumValue_methods(root_module, cls):
     cls.add_constructor([param('ns3::EnumValue const &', 'arg0')])
     ## enum.h (module 'core'): ns3::EnumValue::EnumValue() [constructor]
     cls.add_constructor([])
-    ## enum.h (module 'core'): ns3::EnumValue::EnumValue(int v) [constructor]
-    cls.add_constructor([param('int', 'v')])
+    ## enum.h (module 'core'): ns3::EnumValue::EnumValue(int value) [constructor]
+    cls.add_constructor([param('int', 'value')])
     ## enum.h (module 'core'): ns3::Ptr<ns3::AttributeValue> ns3::EnumValue::Copy() const [member function]
     cls.add_method('Copy', 
                    'ns3::Ptr< ns3::AttributeValue >', 
@@ -5029,10 +5034,10 @@ def register_Ns3EnumValue_methods(root_module, cls):
                    'std::string', 
                    [param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
                    is_const=True, is_virtual=True)
-    ## enum.h (module 'core'): void ns3::EnumValue::Set(int v) [member function]
+    ## enum.h (module 'core'): void ns3::EnumValue::Set(int value) [member function]
     cls.add_method('Set', 
                    'void', 
-                   [param('int', 'v')])
+                   [param('int', 'value')])
     return
 
 def register_Ns3ErlangRandomVariable_methods(root_module, cls):
@@ -6044,6 +6049,11 @@ def register_Ns3Packet_methods(root_module, cls):
     cls.add_method('SetNixVector', 
                    'void', 
                    [param('ns3::Ptr< ns3::NixVector >', 'nixVector')])
+    ## packet.h (module 'network'): std::string ns3::Packet::ToString() const [member function]
+    cls.add_method('ToString', 
+                   'std::string', 
+                   [], 
+                   is_const=True)
     return
 
 def register_Ns3ParetoRandomVariable_methods(root_module, cls):

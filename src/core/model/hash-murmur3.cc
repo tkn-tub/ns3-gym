@@ -27,12 +27,19 @@
  * comments.
  *
  * Changes from the murmur3 distribution are marked with `//PDB'
+ * In addition comment blocks have been converted to Doxygen format.
  */
 
 #include "log.h"
 #include "hash-murmur3.h"
 
 #include <iomanip>
+
+/**
+ * \file
+ * \ingroup hash
+ * \brief ns3::Hash::Function::Murmur3 implementation.
+ */
 
 namespace ns3 {
 
@@ -42,8 +49,16 @@ namespace Hash {
 
 namespace Function {
 
+/** Murmur3 hash implementation details. */
 namespace Murmur3Implementation {
 
+/**
+ * \ingroup hash
+ * \defgroup hash_murmur3 Murmur3 Hash Implementation
+ */
+/**@{*/
+  
+  
 // Changes from Murmur3 distribution are marked with `//PDB'
 //
 
@@ -66,35 +81,61 @@ namespace Murmur3Implementation {
 // non-native version will be less than optimal.
 
 
+/**
+ * Barrel shift (rotate) left on 32 bits.
+ *
+ * \param x The initial value.
+ * \param r The number of bit positions to rotate.
+ * \return The rotated value.
+ */
 inline uint32_t rotl32 ( uint32_t x, int8_t r )
 {
   return (x << r) | (x >> (32 - r));
 }
 
+/**
+ * Barrel shift (rotate) left on 64 bits.
+ *
+ * \param x The initial value.
+ * \param r The number of bit positions to rotate.
+ * \return The rotated value.
+ */
 inline uint64_t rotl64 ( uint64_t x, int8_t r )
 {
   return (x << r) | (x >> (64 - r));
 }
 
+/** Unsigned long long constants. */
 #define BIG_CONSTANT(x) (x##LLU)
 
 //-----------------------------------------------------------------------------
-// Block read - if your platform needs to do endian-swapping or can only
-// handle aligned reads, do the conversion here
-
+/**
+ * Block read
+ *
+ * If your platform needs to do endian-swapping or can only
+ * handle aligned reads, do the conversion here.
+ *
+ * \param p Block base address.
+ * \param i Index into the block.
+ * \returns The \c i'th word from the block.
+ */
 inline uint32_t getblock ( const uint32_t * p, int i )
 {
   return p[i];
 }
-
+/** \copydoc getblock(const uint32_t*,int) */
 inline uint64_t getblock ( const uint64_t * p, int i )
 {
   return p[i];
 }
 
 //-----------------------------------------------------------------------------
-// Finalization mix - force all bits of a hash block to avalanche
-
+/**
+ * Finalization mix - force all bits of a hash block to avalanche.
+ *
+ * \param h Final word of the hash block.
+ * \returns Fully mixed final word.
+ */
 inline uint32_t fmix ( uint32_t h )
 {
   h ^= h >> 16;
@@ -107,27 +148,43 @@ inline uint32_t fmix ( uint32_t h )
 }
 
 //----------
-
-inline uint64_t fmix ( uint64_t k )
+/** \copydoc fmix(uint32_t) */
+inline uint64_t fmix ( uint64_t h )
 {
-  k ^= k >> 33;
-  k *= BIG_CONSTANT(0xff51afd7ed558ccd);
-  k ^= k >> 33;
-  k *= BIG_CONSTANT(0xc4ceb9fe1a85ec53);
-  k ^= k >> 33;
+  h ^= h >> 33;
+  h *= BIG_CONSTANT(0xff51afd7ed558ccd);
+  h ^= h >> 33;
+  h *= BIG_CONSTANT(0xc4ceb9fe1a85ec53);
+  h ^= h >> 33;
 
-  return k;
+  return h;
 }
 
 //-----------------------------------------------------------------------------
 
 //PDB forward
+/**
+ * Initial and incremental hash.
+ *
+ * \param key Data to be hashed.
+ * \param len Number of words in the \c key.
+ * \param seed Initial or current hash state.
+ * \param out Output hash value.
+ */
 void MurmurHash3_x86_32_incr ( const void * key, int len,
                                uint32_t seed, void * out );
+/**
+ * Finalize a hash.
+ *
+ * \param len Total number of words that have gone in to the hash.
+ * \param seed Initial or current hash state.
+ * \param out Output hash value.
+ */
 void MurmurHash3_x86_32_fin ( int len,
                               uint32_t seed, void * out );
 
 //PDB - incremental hashing
+/** \copydoc MurmurHash3_x86_32_incr() */
 void MurmurHash3_x86_32 ( const void * key, int len,
                           uint32_t seed, void * out )
 {
@@ -202,12 +259,35 @@ void MurmurHash3_x86_32_fin ( int len,
 //-----------------------------------------------------------------------------
 
 //PDB forward
+/**
+ * Initial and incremental hash.
+ *
+ * \param key Data to be hashed.
+ * \param len Number of words in the \c key.
+ * \param seeds Initial or current hash state.
+ * \param out Output hash value.
+ */
 void MurmurHash3_x86_128_incr ( const void * key, const int len,
                                 uint32_t * seeds, void * out );
+/**
+ * Finalize a hash.
+ *
+ * \param len Total number of words that have gone in to the hash.
+ * \param seeds Initial or current hash state.
+ * \param out Output hash value.
+ */
 void MurmurHash3_x86_128_fin ( const int len,
                                uint32_t * seeds, void * out );
 
 //PDB - incremental hashing
+/**
+ * Initial and incremental hash.
+ *
+ * \param key Data to be hashed.
+ * \param len Number of words in the \c key.
+ * \param seed Initial or current hash state.
+ * \param out Output hash value.
+ */
 void MurmurHash3_x86_128 ( const void * key, const int len,
                            uint32_t seed, void * out )
 {
@@ -337,7 +417,7 @@ void MurmurHash3_x86_128_fin ( const int len,
 }
 
 //-----------------------------------------------------------------------------
-
+/** \copydoc MurmurHash3_x86_32() */
 void MurmurHash3_x64_128 ( const void * key, const int len,
                            const uint32_t seed, void * out )
 {
@@ -425,6 +505,8 @@ void MurmurHash3_x64_128 ( const void * key, const int len,
   
 //-----------------------------------------------------------------------------
 
+
+/**@}*/  // \defgroup hash_murmur3
 
 }  // namespace Murmur3Implementation
 

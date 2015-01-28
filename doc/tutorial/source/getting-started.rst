@@ -62,7 +62,7 @@ and running on the target system.
 
 The |ns3| code is available in Mercurial repositories on the server
 http://code.nsnam.org.  You can also download a tarball release at
-http://www.nsnam.org/releases/, or you can work with repositories
+http://www.nsnam.org/release/, or you can work with repositories
 using Mercurial.  We recommend using Mercurial unless there's a good reason
 not to.  See the end of this section for instructions on how to get a tarball
 release.
@@ -90,7 +90,7 @@ get a copy of a release by typing the following into your Linux shell
   $ cd
   $ mkdir workspace
   $ cd workspace
-  $ wget http://www.nsnam.org/releases/ns-allinone-3.20.tar.bz2
+  $ wget http://www.nsnam.org/release/ns-allinone-3.20.tar.bz2
   $ tar xjf ns-allinone-3.20.tar.bz2
 
 If you change into the directory ``ns-allinone-3.20`` you should see a
@@ -793,17 +793,19 @@ using the provided command line template,
 inserting the program name for the ``%s`` placeholder.
 (I admit this is a bit awkward, but that's the way it is.  Patches welcome!)
 
-Another particularly useful example is to run the ``mytest`` test suite
-by itself.  Above, we used the ``./test.py`` script to run a whole slew of
+Another particularly useful example is to run a test suite by itself.
+Let's assume that a ``mytest`` test suite exists (it doesn't).
+Above, we used the ``./test.py`` script to run a whole slew of
 tests in parallel, by repeatedly invoking the real testing program,
 ``test-runner``.  To invoke ``test-runner`` directly for a single test::
 
-  $ ./waf --run test-runner --command-template="% --suite=mytest --verbose"
+  $ ./waf --run test-runner --command-template="%s --suite=mytest --verbose"
 
-This passes the arguments to the ``test-runner`` program.  To print the
-available ``test-runner`` options::
+This passes the arguments to the ``test-runner`` program.
+Since ``mytest`` does not exist, an error message will be generated.
+To print the available ``test-runner`` options::
 
-  $ ./waf --run test-runner --command-template="% --help"
+  $ ./waf --run test-runner --command-template="%s --help"
 
 Debugging
 +++++++++
@@ -812,7 +814,7 @@ To run |ns3| programs under the control of another utility, such as
 a debugger (*e.g.* ``gdb``) or memory checker (*e.g.* ``valgrind``),
 you use a similar ``--command-template="..."`` form.
 
-For example, to run your |ns3| program ``mysim`` with the arguments
+For example, to run your |ns3| program ``hello-simulator`` with the arguments
 ``<args>`` under the ``gdb`` debugger::
 
   $ ./waf --run=hello-simulator --command-template="gdb %s --args <args>"

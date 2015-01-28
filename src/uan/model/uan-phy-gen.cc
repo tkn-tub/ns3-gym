@@ -469,13 +469,16 @@ UanPhyGen::GetTypeId (void)
                    MakePointerChecker<UanPhyCalcSinr> ())
     .AddTraceSource ("RxOk",
                      "A packet was received successfully.",
-                     MakeTraceSourceAccessor (&UanPhyGen::m_rxOkLogger))
+                     MakeTraceSourceAccessor (&UanPhyGen::m_rxOkLogger),
+                     "ns3::UanPhy::TracedCallback")
     .AddTraceSource ("RxError",
                      "A packet was received unsuccessfully.",
-                     MakeTraceSourceAccessor (&UanPhyGen::m_rxErrLogger))
+                     MakeTraceSourceAccessor (&UanPhyGen::m_rxErrLogger),
+                     "ns3::UanPhy::TracedCallback")
     .AddTraceSource ("Tx",
                      "Packet transmission beginning.",
-                     MakeTraceSourceAccessor (&UanPhyGen::m_txLogger))
+                     MakeTraceSourceAccessor (&UanPhyGen::m_txLogger),
+                     "ns3::UanPhy::TracedCallback")
   ;
   return tid;
 

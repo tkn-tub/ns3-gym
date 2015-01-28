@@ -111,6 +111,30 @@ public:
    */
   void SetStatus (Status s);
 
+  /**
+   * TracedCallback for PDU transmission event.
+   *
+   * \param [in] rnti The C-RNTI identifying the UE.
+   * \param [in] lcid The logical channel id corresponding to
+   *             the sending RLC instance.
+   * \param [in] size Packet size.
+   */
+  typedef void (* PduTxTracedCallback)
+    (const uint16_t rnti, const uint8_t lcid, const uint32_t size);
+
+  /**
+   * TracedCallback signature for PDU receive event.
+   *
+   * \param [in] rnti The C-RNTI identifying the UE.
+   * \param [in] lcid The logical channel id corresponding to
+   *             the sending RLC instance.
+   * \param [in] size Packet size.
+   * \param [in] delay Delay since packet sent, in ns..
+   */
+  typedef void (* PduRxTracedCallback)
+    (const uint16_t rnti, const uint8_t lcid,
+     const uint32_t size, const uint64_t delay);
+
 protected:
   // Interface provided to upper RRC entity
   virtual void DoTransmitPdcpSdu (Ptr<Packet> p);

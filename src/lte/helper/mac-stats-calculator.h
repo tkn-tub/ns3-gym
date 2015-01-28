@@ -30,6 +30,8 @@
 namespace ns3 {
 
 /**
+ * \ingroup lte
+ *
  * Takes care of storing the information generated at MAC layer. Metrics saved are:
  *   - Timestamp (in seconds)
  *   - Frame index
@@ -54,6 +56,10 @@ public:
   virtual ~MacStatsCalculator ();
 
   // Inherited from ns3::Object
+  /**
+   *  Register this type.
+   *  \return The object TypeId.
+   */
   static TypeId GetTypeId (void);
 
   /**
@@ -146,8 +152,20 @@ public:
 
 
 private:
-
+  /**
+   * When writing DL MAC statistics first time to file,
+   * columns description is added. Then next lines are
+   * appended to file. This value is true if output
+   * files have not been opened yet
+   */
   bool m_dlFirstWrite;
+
+  /**
+   * When writing UL MAC statistics first time to file,
+   * columns description is added. Then next lines are
+   * appended to file. This value is true if output
+   * files have not been opened yet
+   */
   bool m_ulFirstWrite;
 
 };

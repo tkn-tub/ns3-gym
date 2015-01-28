@@ -26,6 +26,7 @@
 #include <typeinfo>
 #include "wave-mac-helper.h"
 #include "wifi-80211p-helper.h"
+#include "ns3/unused.h"
 
 namespace ns3 {
 
@@ -44,7 +45,8 @@ Wifi80211pHelper::Default (void)
   helper.SetStandard (WIFI_PHY_STANDARD_80211_10MHZ);
   helper.SetRemoteStationManager ("ns3::ConstantRateWifiManager",
                                   "DataMode", StringValue ("OfdmRate6MbpsBW10MHz"),
-                                  "ControlMode",StringValue ("OfdmRate6MbpsBW10MHz"));
+                                  "ControlMode",StringValue ("OfdmRate6MbpsBW10MHz"),
+                                  "NonUnicastMode", StringValue ("OfdmRate6MbpsBW10MHz"));
   return helper;
 }
 
@@ -79,12 +81,7 @@ Wifi80211pHelper::Install (const WifiPhyHelper &phyHelper, const WifiMacHelper &
     {
       const QosWaveMacHelper& qosMac = dynamic_cast<const QosWaveMacHelper&> (macHelper);
       isWaveMacHelper = true;
-      // below check will never fail, just used for survive from
-      // gcc warn "-Wunused-but-set-variable"
-      if (&qosMac == 0)
-        {
-          NS_FATAL_ERROR ("it could never get here");
-        }
+      NS_UNUSED (qosMac);
     }
   catch (const std::bad_cast &)
     {
@@ -95,10 +92,7 @@ Wifi80211pHelper::Install (const WifiPhyHelper &phyHelper, const WifiMacHelper &
     {
       const NqosWaveMacHelper& nqosMac = dynamic_cast<const NqosWaveMacHelper&> (macHelper);
       isWaveMacHelper = true;
-      if (&nqosMac == 0)
-        {
-          NS_FATAL_ERROR ("it could never get here");
-        }
+      NS_UNUSED (nqosMac);
     }
   catch (const std::bad_cast &)
     {

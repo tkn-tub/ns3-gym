@@ -9,6 +9,7 @@
 # See test.py for more information.
 cpp_examples = [
     ("wave-simple-80211p", "True", "True"),
+    ("wave-simple-device", "True", "True"),
 ]
 
 # A list of Python examples to run in order to ensure that they remain

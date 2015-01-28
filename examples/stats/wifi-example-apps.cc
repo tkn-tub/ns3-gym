@@ -66,7 +66,8 @@ Sender::GetTypeId (void)
                    MakePointerAccessor (&Sender::m_interval),
                    MakePointerChecker <RandomVariableStream>())
     .AddTraceSource ("Tx", "A new packet is created and is sent",
-                     MakeTraceSourceAccessor (&Sender::m_txTrace))
+                     MakeTraceSourceAccessor (&Sender::m_txTrace),
+                     "ns3::Packet::TracedCallback")
   ;
   return tid;
 }

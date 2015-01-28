@@ -72,6 +72,7 @@ std::istream & operator >> (std::istream &is, ValueClassTest &v)
 {
   return is;
 }
+
 ATTRIBUTE_HELPER_HEADER (ValueClassTest);
 ATTRIBUTE_HELPER_CPP (ValueClassTest);
 
@@ -189,7 +190,8 @@ public:
                        MakeTraceSourceAccessor (&AttributeObjectTest::m_intSrc1),
                        "ns3::TracedValue::Int8Callback")
       .AddTraceSource ("Source2", "help text",
-                       MakeTraceSourceAccessor (&AttributeObjectTest::m_cb))
+                       MakeTraceSourceAccessor (&AttributeObjectTest::m_cb),
+                       "ns3::AttributeObjectTest::NumericTracedCallback")
       .AddTraceSource ("ValueSource", "help text",
                        MakeTraceSourceAccessor (&AttributeObjectTest::m_valueSrc),
                        "ns3::ValueClassTest::TracedValueCallback")
@@ -269,6 +271,8 @@ private:
   Callback<void,int8_t> m_cbValue;
   TracedValue<int8_t> m_intSrc1;
   TracedValue<int8_t> m_intSrc2;
+
+  typedef void (* NumericTracedCallback) (const double, const int, const float);
   TracedCallback<double, int, float> m_cb;
   TracedValue<ValueClassTest> m_valueSrc;
   Ptr<Derived> m_ptr;

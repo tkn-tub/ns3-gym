@@ -21,7 +21,7 @@
 
 #include <cerrno>
 #include <cstring>
-#include <unistd.h>
+#include <unistd.h>  // close()
 #include <fcntl.h>
 
 #include "log.h"
@@ -31,6 +31,12 @@
 #include "simulator.h"
 
 #include "unix-fd-reader.h"
+
+/**
+ * \file
+ * \ingroup system
+ * ns3::FdReader implementation.
+ */
 
 namespace ns3 {
 

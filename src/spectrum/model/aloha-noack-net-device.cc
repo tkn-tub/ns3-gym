@@ -82,19 +82,29 @@ AlohaNoackNetDevice::GetTypeId (void)
                                         &AlohaNoackNetDevice::SetPhy),
                    MakePointerChecker<Object> ())
     .AddTraceSource ("MacTx",
-                     "Trace source indicating a packet has arrived for transmission by this device",
-                     MakeTraceSourceAccessor (&AlohaNoackNetDevice::m_macTxTrace))
+                     "Trace source indicating a packet has arrived "
+                     "for transmission by this device",
+                     MakeTraceSourceAccessor (&AlohaNoackNetDevice::m_macTxTrace),
+                     "ns3::Packet::TracedCallback")
     .AddTraceSource ("MacTxDrop",
-                     "Trace source indicating a packet has been dropped by the device before transmission",
-                     MakeTraceSourceAccessor (&AlohaNoackNetDevice::m_macTxDropTrace))
+                     "Trace source indicating a packet has been dropped "
+                     "by the device before transmission",
+                     MakeTraceSourceAccessor (&AlohaNoackNetDevice::m_macTxDropTrace),
+                     "ns3::Packet::TracedCallback")
     .AddTraceSource ("MacPromiscRx",
-                     "A packet has been received by this device, has been passed up from the physical layer "
-                     "and is being forwarded up the local protocol stack.  This is a promiscuous trace,",
-                     MakeTraceSourceAccessor (&AlohaNoackNetDevice::m_macPromiscRxTrace))
+                     "A packet has been received by this device, has been "
+                     "passed up from the physical layer "
+                     "and is being forwarded up the local protocol stack.  "
+                     "This is a promiscuous trace,",
+                     MakeTraceSourceAccessor (&AlohaNoackNetDevice::m_macPromiscRxTrace),
+                     "ns3::Packet::TracedCallback")
     .AddTraceSource ("MacRx",
-                     "A packet has been received by this device, has been passed up from the physical layer "
-                     "and is being forwarded up the local protocol stack.  This is a non-promiscuous trace,",
-                     MakeTraceSourceAccessor (&AlohaNoackNetDevice::m_macRxTrace))
+                     "A packet has been received by this device, "
+                     "has been passed up from the physical layer "
+                     "and is being forwarded up the local protocol stack.  "
+                     "This is a non-promiscuous trace,",
+                     MakeTraceSourceAccessor (&AlohaNoackNetDevice::m_macRxTrace),
+                     "ns3::Packet::TracedCallback")
   ;
   return tid;
 }

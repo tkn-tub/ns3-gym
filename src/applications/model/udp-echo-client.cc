@@ -67,7 +67,8 @@ UdpEchoClient::GetTypeId (void)
                                          &UdpEchoClient::GetDataSize),
                    MakeUintegerChecker<uint32_t> ())
     .AddTraceSource ("Tx", "A new packet is created and is sent",
-                     MakeTraceSourceAccessor (&UdpEchoClient::m_txTrace))
+                     MakeTraceSourceAccessor (&UdpEchoClient::m_txTrace),
+                     "ns3::Packet::TracedCallback")
   ;
   return tid;
 }

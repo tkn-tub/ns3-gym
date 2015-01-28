@@ -32,11 +32,14 @@ Queue::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::Queue")
     .SetParent<Object> ()
     .AddTraceSource ("Enqueue", "Enqueue a packet in the queue.",
-                     MakeTraceSourceAccessor (&Queue::m_traceEnqueue))
+                     MakeTraceSourceAccessor (&Queue::m_traceEnqueue),
+                     "ns3::Packet::TracedCallback")
     .AddTraceSource ("Dequeue", "Dequeue a packet from the queue.",
-                     MakeTraceSourceAccessor (&Queue::m_traceDequeue))
+                     MakeTraceSourceAccessor (&Queue::m_traceDequeue),
+                     "ns3::Packet::TracedCallback")
     .AddTraceSource ("Drop", "Drop a packet stored in the queue.",
-                     MakeTraceSourceAccessor (&Queue::m_traceDrop))
+                     MakeTraceSourceAccessor (&Queue::m_traceDrop),
+                     "ns3::Packet::TracedCallback")
   ;
   return tid;
 }

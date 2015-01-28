@@ -32,9 +32,9 @@
 
 namespace ns3 {
 
-
-
 /**
+ * \ingroup lte
+ *
  * Takes care of storing the information generated at PHY layer regarding 
  * transmission. Metrics saved are:
  *
@@ -61,6 +61,10 @@ public:
   virtual ~PhyTxStatsCalculator ();
 
   // Inherited from ns3::Object
+  /**
+   *  Register this type.
+   *  \return The object TypeId.
+   */
   static TypeId GetTypeId (void);
 
   /**
@@ -123,8 +127,20 @@ public:
                                   std::string path, PhyTransmissionStatParameters params);
 
 private:
-
+  /**
+   * When writing DL TX PHY statistics first time to file,
+   * columns description is added. Then next lines are
+   * appended to file. This value is true if output
+   * files have not been opened yet
+   */
   bool m_dlTxFirstWrite;
+
+  /**
+   * When writing UL TX PHY statistics first time to file,
+   * columns description is added. Then next lines are
+   * appended to file. This value is true if output
+   * files have not been opened yet
+   */
   bool m_ulTxFirstWrite;
 
 };

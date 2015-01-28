@@ -321,8 +321,11 @@ void
 VendorSpecificContentManager::RegisterVscCallback (OrganizationIdentifier oi, VscCallback cb)
 {
   NS_LOG_FUNCTION (this << oi << &cb);
+  if (IsVscCallbackRegistered (oi))
+    {
+      NS_LOG_WARN ("there is already a VsaCallback registered for OrganizationIdentifier " << oi);
+    }
   m_callbacks.insert (std::make_pair (oi, cb));
-  OrganizationIdentifiers.push_back (oi);
 }
 
 void
@@ -330,6 +333,18 @@ VendorSpecificContentManager::DeregisterVscCallback (OrganizationIdentifier &oi)
 {
   NS_LOG_FUNCTION (this << oi);
   m_callbacks.erase (oi);
+}
+
+bool
+VendorSpecificContentManager::IsVscCallbackRegistered (OrganizationIdentifier &oi)
+{
+  NS_LOG_FUNCTION (this << oi);
+  if (m_callbacks.find (oi) == m_callbacks.end ())
+    {
+      OrganizationIdentifiers.push_back (oi);
+      return false;
+    }
+  return true;
 }
 
 static VscCallback null_callback = MakeNullCallback<bool, Ptr<WifiMac>, const OrganizationIdentifier &,Ptr<const Packet>,const Address &> ();

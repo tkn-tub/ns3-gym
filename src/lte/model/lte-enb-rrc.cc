@@ -306,9 +306,10 @@ TypeId UeManager::GetTypeId (void)
                    MakeUintegerAccessor (&UeManager::m_rnti),
                    MakeUintegerChecker<uint16_t> ())
     .AddTraceSource ("StateTransition",
-                     "Fired upon every UE state transition seen by the "
-                     "UeManager at the eNB RRC.",
-                     MakeTraceSourceAccessor (&UeManager::m_stateTransitionTrace))
+                     "fired upon every UE state transition seen by the "
+                     "UeManager at the eNB RRC",
+                     MakeTraceSourceAccessor (&UeManager::m_stateTransitionTrace),
+                     "ns3::UeManager::StateTracedCallback")
   ;
   return tid;
 }
@@ -1464,22 +1465,28 @@ LteEnbRrc::GetTypeId (void)
     // Trace sources
     .AddTraceSource ("NewUeContext",
                      "Fired upon creation of a new UE context.",
-                     MakeTraceSourceAccessor (&LteEnbRrc::m_newUeContextTrace))
+                     MakeTraceSourceAccessor (&LteEnbRrc::m_newUeContextTrace),
+                     "ns3::LteEnbRrc::NewUeContextTracedCallback")
     .AddTraceSource ("ConnectionEstablished",
                      "Fired upon successful RRC connection establishment.",
-                     MakeTraceSourceAccessor (&LteEnbRrc::m_connectionEstablishedTrace))
+                     MakeTraceSourceAccessor (&LteEnbRrc::m_connectionEstablishedTrace),
+                     "ns3::LteEnbRrc::ConnectionHandoverTracedCallback")
     .AddTraceSource ("ConnectionReconfiguration",
-                     "Fired upon RRC connection reconfiguration.",
-                     MakeTraceSourceAccessor (&LteEnbRrc::m_connectionReconfigurationTrace))
+                     "trace fired upon RRC connection reconfiguration",
+                     MakeTraceSourceAccessor (&LteEnbRrc::m_connectionReconfigurationTrace),
+                     "ns3::LteEnbRrc::ConnectionHandoverTracedCallback")
     .AddTraceSource ("HandoverStart",
-                     "Fired upon start of a handover procedure.",
-                     MakeTraceSourceAccessor (&LteEnbRrc::m_handoverStartTrace))
+                     "trace fired upon start of a handover procedure",
+                     MakeTraceSourceAccessor (&LteEnbRrc::m_handoverStartTrace),
+                     "ns3::LteEnbRrc::HandoverStartTracedCallback")
     .AddTraceSource ("HandoverEndOk",
-                     "Fired upon successful termination of a handover procedure.",
-                     MakeTraceSourceAccessor (&LteEnbRrc::m_handoverEndOkTrace))
+                     "trace fired upon successful termination of a handover procedure",
+                     MakeTraceSourceAccessor (&LteEnbRrc::m_handoverEndOkTrace),
+                     "ns3::LteEnbRrc::ConnectionHandoverTracedCallback")
     .AddTraceSource ("RecvMeasurementReport",
-                     "Fired when measurement report is received.",
-                     MakeTraceSourceAccessor (&LteEnbRrc::m_recvMeasurementReportTrace))
+                     "trace fired when measurement report is received",
+                     MakeTraceSourceAccessor (&LteEnbRrc::m_recvMeasurementReportTrace),
+                     "ns3::LteEnbRrc::ReceiveReportTracedCallback")
   ;
   return tid;
 }

@@ -199,47 +199,61 @@ LteUeRrc::GetTypeId (void)
                    MakeTimeAccessor (&LteUeRrc::m_t300),
                    MakeTimeChecker ())
     .AddTraceSource ("MibReceived",
-                     "Fired upon reception of Master Information Block.",
-                     MakeTraceSourceAccessor (&LteUeRrc::m_mibReceivedTrace))
+                     "trace fired upon reception of Master Information Block",
+                     MakeTraceSourceAccessor (&LteUeRrc::m_mibReceivedTrace),
+                     "ns3::LteUeRrc::MibSibHandoverTracedCallback")
     .AddTraceSource ("Sib1Received",
-                     "Fired upon reception of System Information Block Type 1.",
-                     MakeTraceSourceAccessor (&LteUeRrc::m_sib1ReceivedTrace))
+                     "trace fired upon reception of System Information Block Type 1",
+                     MakeTraceSourceAccessor (&LteUeRrc::m_sib1ReceivedTrace),
+                     "ns3::LteUeRrc::MibSibHandoverTracedCallback")
     .AddTraceSource ("Sib2Received",
-                     "Fired upon reception of System Information Block Type 2.",
-                     MakeTraceSourceAccessor (&LteUeRrc::m_sib2ReceivedTrace))
+                     "trace fired upon reception of System Information Block Type 2",
+                     MakeTraceSourceAccessor (&LteUeRrc::m_sib2ReceivedTrace),
+                     "ns3::LteUeRrc::ImsiCidRntiTracedCallback")
     .AddTraceSource ("StateTransition",
-                     "Fired upon every UE RRC state transition.",
-                     MakeTraceSourceAccessor (&LteUeRrc::m_stateTransitionTrace))
+                     "trace fired upon every UE RRC state transition",
+                     MakeTraceSourceAccessor (&LteUeRrc::m_stateTransitionTrace),
+                     "ns3::LteUeRrc::StateTracedCallback")
     .AddTraceSource ("InitialCellSelectionEndOk",
-                     "Fired upon successful initial cell selection procedure.",
-                     MakeTraceSourceAccessor (&LteUeRrc::m_initialCellSelectionEndOkTrace))
+                     "trace fired upon successful initial cell selection procedure",
+                     MakeTraceSourceAccessor (&LteUeRrc::m_initialCellSelectionEndOkTrace),
+                     "ns3::LteUeRrc::CellSelectionTracedCallback")
     .AddTraceSource ("InitialCellSelectionEndError",
-                     "Fired upon failed initial cell selection procedure.",
-                     MakeTraceSourceAccessor (&LteUeRrc::m_initialCellSelectionEndErrorTrace))
+                     "trace fired upon failed initial cell selection procedure",
+                     MakeTraceSourceAccessor (&LteUeRrc::m_initialCellSelectionEndErrorTrace),
+                     "ns3::LteUeRrc::CellSelectionTracedCallback")
     .AddTraceSource ("RandomAccessSuccessful",
-                     "Fired upon successful completion of the random access procedure.",
-                     MakeTraceSourceAccessor (&LteUeRrc::m_randomAccessSuccessfulTrace))
+                     "trace fired upon successful completion of the random access procedure",
+                     MakeTraceSourceAccessor (&LteUeRrc::m_randomAccessSuccessfulTrace),
+                     "ns3::LteUeRrc::ImsiCidRntiTracedCallback")
     .AddTraceSource ("RandomAccessError",
-                     "Fired upon failure of the random access procedure.",
-                     MakeTraceSourceAccessor (&LteUeRrc::m_randomAccessErrorTrace))
+                     "trace fired upon failure of the random access procedure",
+                     MakeTraceSourceAccessor (&LteUeRrc::m_randomAccessErrorTrace),
+                     "ns3::LteUeRrc::ImsiCidRntiTracedCallback")
     .AddTraceSource ("ConnectionEstablished",
-                     "Fired upon successful RRC connection establishment.",
-                     MakeTraceSourceAccessor (&LteUeRrc::m_connectionEstablishedTrace))
+                     "trace fired upon successful RRC connection establishment",
+                     MakeTraceSourceAccessor (&LteUeRrc::m_connectionEstablishedTrace),
+                     "ns3::LteUeRrc::ImsiCidRntiTracedCallback")
     .AddTraceSource ("ConnectionTimeout",
-                     "Fired upon timeout RRC connection establishment because of T300.",
-                     MakeTraceSourceAccessor (&LteUeRrc::m_connectionTimeoutTrace))
+                     "trace fired upon timeout RRC connection establishment because of T300",
+                     MakeTraceSourceAccessor (&LteUeRrc::m_connectionTimeoutTrace),
+                     "ns3::LteUeRrc::ImsiCidRntiTracedCallback")
     .AddTraceSource ("ConnectionReconfiguration",
-                     "Fired upon RRC connection reconfiguration.",
-                     MakeTraceSourceAccessor (&LteUeRrc::m_connectionReconfigurationTrace))
+                     "trace fired upon RRC connection reconfiguration",
+                     MakeTraceSourceAccessor (&LteUeRrc::m_connectionReconfigurationTrace),
+                     "ns3::LteUeRrc::ImsiCidRntiTracedCallback")
     .AddTraceSource ("HandoverStart",
-                     "Fired upon start of a handover procedure.",
-                     MakeTraceSourceAccessor (&LteUeRrc::m_handoverStartTrace))
+                     "trace fired upon start of a handover procedure",
+                     MakeTraceSourceAccessor (&LteUeRrc::m_handoverStartTrace),
+                     "ns3::LteUeRrc::MibSibHandoverTracedCallback")
     .AddTraceSource ("HandoverEndOk",
-                     "Fired upon successful termination of a handover procedure.",
-                     MakeTraceSourceAccessor (&LteUeRrc::m_handoverEndOkTrace))
+                     "trace fired upon successful termination of a handover procedure",
+                     MakeTraceSourceAccessor (&LteUeRrc::m_handoverEndOkTrace),
+                     "ns3::LteUeRrc::ImsiCidRntiTracedCallback")
     .AddTraceSource ("HandoverEndError",
-                     "Fired upon failure of a handover procedure.",
-                     MakeTraceSourceAccessor (&LteUeRrc::m_handoverEndErrorTrace))
+                     "trace fired upon failure of a handover procedure",
+                     MakeTraceSourceAccessor (&LteUeRrc::m_handoverEndErrorTrace),
+                     "ns3::LteUeRrc::ImsiCidRntiTracedCallback")
   ;
   return tid;
 }
@@ -1122,8 +1136,10 @@ LteUeRrc::ApplyRadioResourceConfigDedicated (LteRrcSap::RadioResourceConfigDedic
   if (pcd.havePdschConfigDedicated)
     {
       // update PdschConfigDedicated (i.e. P_A value)
-	  m_pdschConfigDedicated = pcd.pdschConfigDedicated;
-   }
+      m_pdschConfigDedicated = pcd.pdschConfigDedicated;
+      double paDouble = LteRrcSap::ConvertPdschConfigDedicated2Double (m_pdschConfigDedicated);
+      m_cphySapProvider->SetPa (paDouble);
+    }
 
   std::list<LteRrcSap::SrbToAddMod>::const_iterator stamIt = rrcd.srbToAddModList.begin ();
   if (stamIt != rrcd.srbToAddModList.end ())

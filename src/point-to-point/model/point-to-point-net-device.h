@@ -87,7 +87,7 @@ public:
 
   /**
    * Set the Data Rate used for transmission of packets.  The data rate is
-   * set in the Attach() method from the corresponding field in the channel
+   * set in the Attach () method from the corresponding field in the channel
    * to which the device is attached.  It can be overridden using this method.
    *
    * \param bps the data rate at which this object operates
@@ -164,6 +164,11 @@ public:
 
   virtual bool IsLinkUp (void) const;
 
+  /**
+   * TracedCallback signature for link changed event.
+   */
+  typedef void (* LinkChangeTracedCallback) (void);
+  
   virtual void AddLinkChangeCallback (Callback<void> callback);
 
   virtual bool IsBroadcast (void) const;
@@ -214,7 +219,7 @@ private:
    * \brief Copy constructor
    *
    * The method is private, so it is DISABLED.
-   
+
    * \param o Other NetDevice
    */
   PointToPointNetDevice (const PointToPointNetDevice &o);

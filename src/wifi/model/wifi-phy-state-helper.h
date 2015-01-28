@@ -58,6 +58,12 @@ public:
    */
   void RegisterListener (WifiPhyListener *listener);
   /**
+   * Remove WifiPhyListener from this WifiPhyStateHelper.
+   *
+   * \param listener
+   */
+  void UnregisterListener (WifiPhyListener *listener);
+  /**
    * Return the current state of WifiPhy.
    *
    * \return the current state of WifiPhy
@@ -179,12 +185,60 @@ public:
    */
   void SwitchFromSleep (Time duration);
 
+  /** \todo Why is this public? */
   TracedCallback<Time,Time,enum WifiPhy::State> m_stateLogger;
+
+  /**
+   * TracedCallback signature for state changes.
+   *
+   * \param [in] start Time when the \p state started.
+   * \param [in] duration Amount of time we've been in (or will be in)
+   *             the \p state.
+   * \param [in] state The state.
+   */
+  typedef void (* StateTracedCallback)
+    (const Time start, const Time duration, const WifiPhy::State state);
+
+  /**
+   * TracedCallback signature for receive end ok event.
+   *
+   * \param [in] packet The received packet.
+   * \param [in] snr    The SNR of the received packet.
+   * \param [in] mode   The transmission mode of the packet.   
+   * \param [in] preamble The preamble of the packet.
+   */
+  typedef void (* RxOkTracedCallback)
+    (const Ptr<const Packet> packet, const double snr,
+     const WifiMode mode, const WifiPreamble preamble);
+
+  /**
+   * TracedCallback signature for receive end error event.
+   *
+   * \param [in] packet The received packet.
+   * \param [in] snr    The SNR of the received packet.
+   */
+  typedef void (* RxEndErrorTracedCallback)
+    (const Ptr<const Packet> packet, const double snr);
+
+  /**
+   * TracedCallback signature for transmit event.
+   *
+   * \param [in] packet The received packet.
+   * \param [in] mode   The transmission mode of the packet.   
+   * \param [in] preamble The preamble of the packet.
+   * \param [in] power  The transmit power level.
+   */
+  typedef void (* TxTracedCallback)
+    (const Ptr<const Packet> packet, const WifiMode mode,
+     const WifiPreamble preamble, const uint8_t power);
+     
+                
 private:
   /**
    * typedef for a list of WifiPhyListeners
    */
   typedef std::vector<WifiPhyListener *> Listeners;
+  typedef std::vector<WifiPhyListener *>::iterator ListenersI;
 
   /**
    * Log the ideal and CCA states.

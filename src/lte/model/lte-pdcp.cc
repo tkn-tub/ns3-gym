@@ -87,10 +87,12 @@ LtePdcp::GetTypeId (void)
     .SetParent<Object> ()
     .AddTraceSource ("TxPDU",
                      "PDU transmission notified to the RLC.",
-                     MakeTraceSourceAccessor (&LtePdcp::m_txPdu))
+                     MakeTraceSourceAccessor (&LtePdcp::m_txPdu),
+                     "ns3::LtePdcp::PduTxTracedCallback")
     .AddTraceSource ("RxPDU",
                      "PDU received.",
-                     MakeTraceSourceAccessor (&LtePdcp::m_rxPdu))
+                     MakeTraceSourceAccessor (&LtePdcp::m_rxPdu),
+                     "ns3::LtePdcp::PduRxTracedCallback")
     ;
   return tid;
 }

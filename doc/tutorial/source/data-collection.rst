@@ -178,6 +178,8 @@ by hooking the data collection components to |ns3| trace sources, and
 marshaling the data into a formatted ``gnuplot`` and into a formatted
 text file.  In the next sections, we'll review each of these.
 
+.. _GnuPlotHelper:
+
 GnuplotHelper
 *************
 

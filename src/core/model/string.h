@@ -23,9 +23,15 @@
 #include <string>
 #include "attribute-helper.h"
 
+/**
+ * \file
+ * \ingroup attribute_String
+ * String attribute value declarations.
+ */
+
 namespace ns3 {
 
-//  Additional docs for class DoubleValue:
+//  Additional docs for class StringValue:
 /**
  * Hold variables of type string
  *

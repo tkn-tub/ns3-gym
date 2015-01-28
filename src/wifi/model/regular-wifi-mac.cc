@@ -208,9 +208,19 @@ RegularWifiMac::SetWifiPhy (Ptr<WifiPhy> phy)
 }
 
 Ptr<WifiPhy>
-RegularWifiMac::GetWifiPhy () const
+RegularWifiMac::GetWifiPhy (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_phy;
+}
+
+void
+RegularWifiMac::ResetWifiPhy (void)
+{
+  NS_LOG_FUNCTION (this);
+  m_low->ResetPhy ();
+  m_dcfManager->RemovePhyListener (m_phy);
+  m_phy = 0;
 }
 
 void
@@ -685,10 +695,12 @@ RegularWifiMac::GetTypeId (void)
                    MakePointerChecker<EdcaTxopN> ())
     .AddTraceSource ( "TxOkHeader",
                       "The header of successfully transmitted packet",
-                      MakeTraceSourceAccessor (&RegularWifiMac::m_txOkCallback))
+                     MakeTraceSourceAccessor (&RegularWifiMac::m_txOkCallback),
+                     "ns3::WifiMacHeader::TracedCallback")
     .AddTraceSource ("TxErrHeader",
                      "The header of unsuccessfully transmitted packet",
-                     MakeTraceSourceAccessor (&RegularWifiMac::m_txErrCallback))
+                     MakeTraceSourceAccessor (&RegularWifiMac::m_txErrCallback),
+                     "ns3::WifiMacHeader::TracedCallback")
   ;
 
   return tid;

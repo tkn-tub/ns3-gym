@@ -23,12 +23,19 @@
 #include <cmath>
 #include <sstream>
 
+/**
+ * \file
+ * \ingroup attribute_Vector
+ * ns3::Vector, ns3::Vector2D and ns3::Vector3D attribute value implementations.
+ */
+
 namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("Vector");
 
 ATTRIBUTE_HELPER_CPP (Vector3D);
 ATTRIBUTE_HELPER_CPP (Vector2D);
+  
 // compatibility for mobility code
 Ptr<const AttributeChecker> MakeVectorChecker (void)
 {

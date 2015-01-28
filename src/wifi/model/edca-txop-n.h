@@ -187,6 +187,14 @@ public:
    * When a channel switching occurs, enqueued packets are removed.
    */
   void NotifyChannelSwitching (void);
+  /**
+   * When sleep operation occurs, re-insert pending packet into front of the queue
+   */
+  void NotifySleep (void);
+  /**
+   * When wake up operation occurs, restart channel access
+   */
+  void NotifyWakeUp (void);
 
   /* Event handlers */
   /**
@@ -291,9 +299,9 @@ public:
    */
   uint32_t GetFragmentOffset (void);
   /**
-   * Check if the curren fragment is the last fragment.
+   * Check if the current fragment is the last fragment.
    *
-   * \return true if the curren fragment is the last fragment,
+   * \return true if the current fragment is the last fragment,
    *         false otherwise
    */
   bool IsLastFragment (void) const;
@@ -385,14 +393,14 @@ private:
   EdcaTxopN (const EdcaTxopN &);
 
   /**
-   * If number of packets in the queue reaches m_blockAckThreshold value, an ADDBARequest frame
+   * If number of packets in the queue reaches m_blockAckThreshold value, an ADDBA Request frame
    * is sent to destination in order to setup a block ack.
    *
    * \return true if we tried to set up block ACK, false otherwise
    */
   bool SetupBlockAckIfNeeded ();
   /**
-   * Sends an ADDBARequest to establish a block ack agreement with sta
+   * Sends an ADDBA Request to establish a block ack agreement with sta
    * addressed by <i>recipient</i> for tid <i>tid</i>.
    *
    * \param recipient

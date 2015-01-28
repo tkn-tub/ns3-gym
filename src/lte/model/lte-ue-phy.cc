@@ -246,15 +246,17 @@ LteUePhy::GetTypeId (void)
                    MakeDoubleChecker<double> ())
     .AddTraceSource ("ReportCurrentCellRsrpSinr",
                      "RSRP and SINR statistics.",
-                     MakeTraceSourceAccessor (&LteUePhy::m_reportCurrentCellRsrpSinrTrace))
+                     MakeTraceSourceAccessor (&LteUePhy::m_reportCurrentCellRsrpSinrTrace),
+                     "ns3::LteUePhy::RsrpSinrTracedCallback")
     .AddAttribute ("RsrpSinrSamplePeriod",
                    "The sampling period for reporting RSRP-SINR stats (default value 1)",
                    UintegerValue (1),
                    MakeUintegerAccessor (&LteUePhy::m_rsrpSinrSamplePeriod),
                    MakeUintegerChecker<uint16_t> ())
     .AddTraceSource ("UlPhyTransmission",
-                     "UL transmission PHY layer statistics.",
-                     MakeTraceSourceAccessor (&LteUePhy::m_ulPhyTransmission))
+                     "DL transmission PHY layer statistics.",
+                     MakeTraceSourceAccessor (&LteUePhy::m_ulPhyTransmission),
+                     "ns3::PhyTransmissionStatParameters::TracedCallback")
     .AddAttribute ("DlSpectrumPhy",
                    "The downlink LteSpectrumPhy associated to this LtePhy",
                    TypeId::ATTR_GET,
@@ -274,16 +276,18 @@ LteUePhy::GetTypeId (void)
                    MakeDoubleChecker<double> ())
     .AddAttribute ("UeMeasurementsFilterPeriod",
                    "Time period for reporting UE measurements, i.e., the"
-                   "length of layer-1 filtering (default 200 ms).",
+                   "length of layer-1 filtering.",
                    TimeValue (MilliSeconds (200)),
                    MakeTimeAccessor (&LteUePhy::m_ueMeasurementsFilterPeriod),
                    MakeTimeChecker ())
     .AddTraceSource ("ReportUeMeasurements",
                      "Report UE measurements RSRP (dBm) and RSRQ (dB).",
-                     MakeTraceSourceAccessor (&LteUePhy::m_reportUeMeasurements))
+                     MakeTraceSourceAccessor (&LteUePhy::m_reportUeMeasurements),
+                     "ns3::LteUePhy::RsrpRsrqTracedCallback")
     .AddTraceSource ("StateTransition",
-                     "Trace fired upon every UE PHY state transition.",
-                     MakeTraceSourceAccessor (&LteUePhy::m_stateTransitionTrace))
+                     "Trace fired upon every UE PHY state transition",
+                     MakeTraceSourceAccessor (&LteUePhy::m_stateTransitionTrace),
+                     "ns3::LteUePhy::StateTracedCallback")
     .AddAttribute ("EnableUplinkPowerControl",
                    "If true, Uplink Power Control will be enabled.",
                    BooleanValue (true),
@@ -451,7 +455,26 @@ LteUePhy::GenerateCtrlCqiReport (const SpectrumValue& sinr)
 
   if (m_dataInterferencePowerUpdated)
     {
-      SpectrumValue mixedSinr = m_rsReceivedPower / m_dataInterferencePower;
+      SpectrumValue mixedSinr = (m_rsReceivedPower * m_paLinear) / m_dataInterferencePower;
+
+      /*
+       * some RBs are not used in PDSCH and their SINR is very high
+       * for example with bandwidth 25, last RB is not used
+       * it can make avgSinr value very high, what is incorrect
+       */
+      uint32_t rbgSize = GetRbgSize ();
+      uint32_t modulo = m_dlBandwidth % rbgSize;
+      double avgMixedSinr = 0;
+      uint32_t usedRbgNum = 0;
+      for(uint32_t i = 0; i < (m_dlBandwidth-1-modulo); i++) {
+          usedRbgNum++;
+          avgMixedSinr+=mixedSinr[i];
+        }
+      avgMixedSinr = avgMixedSinr/usedRbgNum;
+      for(uint32_t i = 0; i < modulo; i++) {
+          mixedSinr[m_dlBandwidth-1-i] = avgMixedSinr;
+        }
+
       GenerateMixedCqiReport (mixedSinr);
       m_dataInterferencePowerUpdated = false;
       return;
@@ -529,7 +552,7 @@ LteUePhy::GenerateCtrlCqiReport (const SpectrumValue& sinr)
       while (itPss != m_pssList.end ())
         {
           uint16_t rbNum = 0;
-          double rsrqSum = 0.0;
+          double rssiSum = 0.0;
 
           Values::const_iterator itIntN = m_rsInterferencePower.ConstValuesBegin ();
           Values::const_iterator itPj = m_rsReceivedPower.ConstValuesBegin ();
@@ -539,13 +562,13 @@ LteUePhy::GenerateCtrlCqiReport (const SpectrumValue& sinr)
             {
               rbNum++;
               // convert PSD [W/Hz] to linear power [W] for the single RE
-              double noisePowerTxW = ((*itIntN) * 180000.0) / 12.0;
-              double intPowerTxW = ((*itPj) * 180000.0) / 12.0;
-              rsrqSum += (2 * (noisePowerTxW + intPowerTxW));
+              double interfPlusNoisePowerTxW = ((*itIntN) * 180000.0) / 12.0;
+              double signalPowerTxW = ((*itPj) * 180000.0) / 12.0;
+              rssiSum += (2 * (interfPlusNoisePowerTxW + signalPowerTxW));
             }
 
           NS_ASSERT (rbNum == (*itPss).nRB);
-          double rsrq_dB = 10 * log10 ((*itPss).pssPsdSum / rsrqSum);
+          double rsrq_dB = 10 * log10 ((*itPss).pssPsdSum / rssiSum);
 
           if (rsrq_dB > m_pssReceptionThreshold)
             {
@@ -652,7 +675,7 @@ LteUePhy::GenerateMixedCqiReport (const SpectrumValue& sinr)
       while (itPss != m_pssList.end ())
         {
           uint16_t rbNum = 0;
-          double rsrqSum = 0.0;
+          double rssiSum = 0.0;
 
           Values::const_iterator itIntN = m_rsInterferencePower.ConstValuesBegin ();
           Values::const_iterator itPj = m_rsReceivedPower.ConstValuesBegin ();
@@ -662,13 +685,13 @@ LteUePhy::GenerateMixedCqiReport (const SpectrumValue& sinr)
             {
               rbNum++;
               // convert PSD [W/Hz] to linear power [W] for the single RE
-              double noisePowerTxW = ((*itIntN) * 180000.0) / 12.0;
-              double intPowerTxW = ((*itPj) * 180000.0) / 12.0;
-              rsrqSum += (2 * (noisePowerTxW + intPowerTxW));
+              double interfPlusNoisePowerTxW = ((*itIntN) * 180000.0) / 12.0;
+              double signalPowerTxW = ((*itPj) * 180000.0) / 12.0;
+              rssiSum += (2 * (interfPlusNoisePowerTxW + signalPowerTxW));
             }
 
           NS_ASSERT (rbNum == (*itPss).nRB);
-          double rsrq_dB = 10 * log10 ((*itPss).pssPsdSum / rsrqSum);
+          double rsrq_dB = 10 * log10 ((*itPss).pssPsdSum / rssiSum);
 
           if (rsrq_dB > m_pssReceptionThreshold)
             {
@@ -1239,6 +1262,7 @@ LteUePhy::DoReset ()
   m_rsrpSinrSampleCounter = 0;
   m_p10CqiLast = Simulator::Now ();
   m_a30CqiLast = Simulator::Now ();
+  m_paLinear = 1;
 
   m_packetBurstQueue.clear ();
   m_controlMessagesQueue.clear ();
@@ -1377,6 +1401,12 @@ LteUePhy::DoSetSrsConfigurationIndex (uint16_t srcCi)
   NS_LOG_DEBUG (this << " UE SRS P " << m_srsPeriodicity << " RNTI " << m_rnti << " offset " << m_srsSubframeOffset << " cellId " << m_cellId << " CI " << srcCi);
 }
 
+void
+LteUePhy::DoSetPa (double pa)
+{
+  NS_LOG_FUNCTION (this << pa);
+  m_paLinear = pow (10,(pa/10));
+}
 
 void 
 LteUePhy::SetTxMode1Gain (double gain)

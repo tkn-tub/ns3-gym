@@ -28,7 +28,7 @@ def build(bld):
     if not bld.env['ENABLE_TAP']:
         return
 
-    module = bld.create_ns3_module('tap-bridge', ['network'])
+    module = bld.create_ns3_module('tap-bridge', ['internet', 'network', 'core'])
     module.source = [
         'model/tap-bridge.cc',
         'model/tap-encode-decode.cc',

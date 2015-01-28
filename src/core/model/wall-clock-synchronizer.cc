@@ -16,17 +16,36 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <ctime> // for clock_getres
-#include <sys/time.h>
+
+#include <ctime>       // clock_t
+#include <sys/time.h>  // gettimeofday
+                       // clock_getres: glibc < 2.17, link with librt
 
 #include "log.h"
 #include "system-condition.h"
 
 #include "wall-clock-synchronizer.h"
 
+/**
+ * \file
+ * \ingroup realtime
+ * ns3::WallClockSynchronizer implementation.
+ */
+
 namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("WallClockSynchronizer");
+
+NS_OBJECT_ENSURE_REGISTERED (WallClockSynchronizer);
+
+TypeId 
+WallClockSynchronizer::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::WallClockSynchronizer")
+    .SetParent<Synchronizer> ()
+  ;
+  return tid;
+}
 
 WallClockSynchronizer::WallClockSynchronizer ()
 {
@@ -295,15 +314,8 @@ bool
 WallClockSynchronizer::SpinWait (uint64_t ns)
 {
   NS_LOG_FUNCTION (this << ns);
-//
-// Do a busy-wait until the normalized realtime equals the value passed in
-// or the condition variable becomes true.  The condition becomes true if
-// an outside entity (a network device receives a packet, sets the condition
-// and signals the scheduler it needs to re-evaluate).
-// 
 // We just sit here and spin, wasting CPU cycles until we get to the right
 // time or are told to leave.
-//
   for (;;) 
     {
       if (GetNormalizedRealtime () >= ns)
@@ -323,25 +335,6 @@ bool
 WallClockSynchronizer::SleepWait (uint64_t ns)
 {
   NS_LOG_FUNCTION (this << ns);
-//
-// Put our process to sleep for some number of nanoseconds.  Typically this
-// will be some time equal to an integral number of jiffies.  We will usually
-// follow a call to SleepWait with a call to SpinWait to get the kind of
-// accuracy we want.
-//
-// We have to have some mechanism to wake up this sleep in case an external
-// event happens that causes a schedule event in the simulator.  This newly
-// scheduled event might be before the time we are waiting until, so we have
-// to break out of both the SleepWait and the following SpinWait to go back
-// and reschedule/resynchronize taking the new event into account.  The 
-// SystemCondition we have saved in m_condition takes care of this for us.
-//
-// This call will return if the timeout expires OR if the condition is 
-// set true by a call to WallClockSynchronizer::SetCondition (true) followed
-// by a call to WallClockSynchronizer::Signal().  In either case, we are done
-// waiting.  If the timeout happened, we TimedWait returns true; if a Signal
-// happened, false.
-//
   return m_condition.TimedWait (ns);
 }
 

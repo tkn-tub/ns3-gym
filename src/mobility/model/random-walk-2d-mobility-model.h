@@ -46,6 +46,10 @@ namespace ns3 {
 class RandomWalk2dMobilityModel : public MobilityModel 
 {
 public:
+  /**
+   * Register this type with the TypeId system.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
   /** An enum representing the different working modes of this module. */
   enum Mode  {
@@ -59,7 +63,14 @@ private:
    * \param timeLeft The remaining time of the walk
    */
   void Rebound (Time timeLeft);
+  /**
+   * Walk according to position and velocity, until distance is reached,
+   * time is reached, or intersection with the bounding box
+   */
   void DoWalk (Time timeLeft);
+  /**
+   * Perform initialization of the object before MobilityModel::DoInitialize ()
+   */
   void DoInitializePrivate (void);
   virtual void DoDispose (void);
   virtual void DoInitialize (void);
@@ -68,14 +79,14 @@ private:
   virtual Vector DoGetVelocity (void) const;
   virtual int64_t DoAssignStreams (int64_t);
 
-  ConstantVelocityHelper m_helper;
-  EventId m_event;
-  enum Mode m_mode;
-  double m_modeDistance;
-  Time m_modeTime;
-  Ptr<RandomVariableStream> m_speed;
-  Ptr<RandomVariableStream> m_direction;
-  Rectangle m_bounds;
+  ConstantVelocityHelper m_helper; //!< helper for this object
+  EventId m_event; //!< stored event ID 
+  enum Mode m_mode; //!< whether in time or distance mode
+  double m_modeDistance; //!< Change direction and speed after this distance
+  Time m_modeTime; //!< Change current direction and speed after this delay
+  Ptr<RandomVariableStream> m_speed; //!< rv for picking speed
+  Ptr<RandomVariableStream> m_direction; //!< rv for picking direction
+  Rectangle m_bounds; //!< Bounds of the area to cruise
 };
 
 

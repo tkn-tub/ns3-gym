@@ -20,6 +20,12 @@
 #include "object-ptr-container.h"
 #include "log.h"
 
+/**
+ * \file
+ * \ingroup attribute_ObjectPtrContainer
+ * ObjectPtrContainer attribute value implementation.
+ */
+
 namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("ObjectPtrContainer");

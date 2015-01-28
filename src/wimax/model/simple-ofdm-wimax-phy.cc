@@ -90,33 +90,42 @@ TypeId SimpleOfdmWimaxPhy::GetTypeId (void)
                                        &SimpleOfdmWimaxPhy::SetTraceFilePath),
                    MakeStringChecker ())
 
-    .AddTraceSource ("Rx", "Receive trace", MakeTraceSourceAccessor (&SimpleOfdmWimaxPhy::m_traceRx))
-
-    .AddTraceSource ("Tx", "Transmit trace", MakeTraceSourceAccessor (&SimpleOfdmWimaxPhy::m_traceTx))
+    .AddTraceSource ("Rx", "Receive trace",
+                     MakeTraceSourceAccessor (&SimpleOfdmWimaxPhy::m_traceRx),
+                     "ns3::PacketBurst::Traced::Ptr")
+    .AddTraceSource ("Tx", "Transmit trace",
+                     MakeTraceSourceAccessor (&SimpleOfdmWimaxPhy::m_traceTx),
+                     "ns3::PacketBurst::TracedCallback")
 
     .AddTraceSource ("PhyTxBegin",
                      "Trace source indicating a packet has begun transmitting over the channel medium",
-                     MakeTraceSourceAccessor (&SimpleOfdmWimaxPhy::m_phyTxBeginTrace))
+                     MakeTraceSourceAccessor (&SimpleOfdmWimaxPhy::m_phyTxBeginTrace),
+                     "ns3::PacketBurst::TracedCallback")
 
     .AddTraceSource ("PhyTxEnd",
                      "Trace source indicating a packet has been completely transmitted over the channel",
-                     MakeTraceSourceAccessor (&SimpleOfdmWimaxPhy::m_phyTxEndTrace))
+                     MakeTraceSourceAccessor (&SimpleOfdmWimaxPhy::m_phyTxEndTrace),
+                     "ns3::PacketBurst::TracedCallback")
 
     .AddTraceSource ("PhyTxDrop",
                      "Trace source indicating a packet has been dropped by the device during transmission",
-                     MakeTraceSourceAccessor (&SimpleOfdmWimaxPhy::m_phyTxDropTrace))
+                     MakeTraceSourceAccessor (&SimpleOfdmWimaxPhy::m_phyTxDropTrace),
+                     "ns3::PacketBurst::TracedCallback")
 
     .AddTraceSource ("PhyRxBegin",
                      "Trace source indicating a packet has begun being received from the channel medium by the device",
-                     MakeTraceSourceAccessor (&SimpleOfdmWimaxPhy::m_phyRxBeginTrace))
+                     MakeTraceSourceAccessor (&SimpleOfdmWimaxPhy::m_phyRxBeginTrace),
+                     "ns3::PacketBurst::TracedCallback")
 
     .AddTraceSource ("PhyRxEnd",
                      "Trace source indicating a packet has been completely received from the channel medium by the device",
-                     MakeTraceSourceAccessor (&SimpleOfdmWimaxPhy::m_phyRxEndTrace))
+                     MakeTraceSourceAccessor (&SimpleOfdmWimaxPhy::m_phyRxEndTrace),
+                     "ns3::PacketBurst::TracedCallback")
 
     .AddTraceSource ("PhyRxDrop",
                      "Trace source indicating a packet has been dropped by the device during reception",
-                     MakeTraceSourceAccessor (&SimpleOfdmWimaxPhy::m_phyRxDropTrace));
+                     MakeTraceSourceAccessor (&SimpleOfdmWimaxPhy::m_phyRxDropTrace),
+                     "ns3::PacketBurst::TracedCallback");
   return tid;
 }
 

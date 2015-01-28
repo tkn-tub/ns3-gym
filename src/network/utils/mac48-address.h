@@ -128,6 +128,14 @@ public:
    * \returns a multicast address.
    */
   static Mac48Address GetMulticast6Prefix (void);
+
+  /**
+   * TracedCallback signature for Mac48Address
+   *
+   * \param [in] value Current value of the Mac48Address
+   */
+  typedef void (* TracedCallback)(const Mac48Address value);
+  
 private:
   /**
    * \returns a new Address instance
@@ -190,12 +198,7 @@ private:
   uint8_t m_address[6]; //!< address value
 };
 
-/**
- * \class ns3::Mac48AddressValue
- * \brief hold objects of type ns3::Mac48Address
- */
-
-ATTRIBUTE_HELPER_HEADER (Mac48Address); //!< Macro to make help make class an ns-3 attribute
+ATTRIBUTE_HELPER_HEADER (Mac48Address);
 
 inline bool operator == (const Mac48Address &a, const Mac48Address &b)
 {

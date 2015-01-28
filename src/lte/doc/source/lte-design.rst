@@ -1372,6 +1372,8 @@ each of the messages and signals described in the specs [TS36321]_.
      corresponds to a Zadoff-Chu (ZC)
      sequence using one of several formats available and sent in the
      PRACH slots which could in principle overlap with PUSCH.
+     PRACH Configuration Index 14 is assumed, i.e., preambles can be
+     sent on any system frame number and subframe number.
      The RA preamble is modeled using the LteControlMessage class,
      i.e., as an ideal message that does not consume any radio
      resources. The collision of preamble transmission by multiple UEs
@@ -2244,12 +2246,11 @@ leave RRC CONNECTED notifying the NAS of the RRC connection
 failure. In order to model RLF properly, RRC IDLE mode should be
 supported, including in particular idle mode cell (re-)selection.
 
-With the current model, an UE that experiences bad link quality will
+With the current model, an UE that experiences bad link quality and
+that does not perform handover (because of, e.g., no neighbour cells,
+handover disabled, handover thresholds misconfigured) will 
 just stay associated with the same eNB, and the scheduler will stop
-allocating resources to it for communications. This is also consistent
-with the fact that, at this stage, only handovers explicitly triggered
-within the simulation program are supported (network-driven handovers
-based on UE measurements are planned only at a later stage).
+allocating resources to it for communications. 
 
 
 .. _sec-ue-measurements:
@@ -3859,7 +3860,7 @@ power plan for Full Frequency Reuse scheme.
 .. _fig-lte-full-frequency-reuse-scheme:
  
 .. figure:: figures/fr-full-frequency-reuse-scheme.*
-   :scale: 40 %
+   :scale: 60 %
    :align: center
 
    Full Frequency Reuse scheme 
@@ -3888,7 +3889,7 @@ power plan for Hard Frequency Reuse scheme.
 .. _fig-lte-hard-frequency-reuse-scheme:
  
 .. figure:: figures/fr-hard-frequency-reuse-scheme.*
-   :scale: 40 %
+   :scale: 60 %
    :align: center
 
    Hard Frequency Reuse scheme 
@@ -3917,7 +3918,7 @@ power plan for Strict Frequency Reuse scheme with a cell-edge reuse factor of N 
 .. _fig-lte-strict-frequency-reuse-scheme:
  
 .. figure:: figures/fr-strict-frequency-reuse-scheme.*
-   :scale: 40 %
+   :scale: 60 %
    :align: center
 
    Strict Frequency Reuse scheme 
@@ -3951,7 +3952,7 @@ There are two possible versions of SFR scheme:
    .. _fig-lte-soft-frequency-reuse-scheme-v1:
  
    .. figure:: figures/fr-soft-frequency-reuse-scheme-v1.*
-      :scale: 40 %
+      :scale: 60 %
       :align: center
 
       Soft Frequency Reuse scheme version 1 
@@ -3966,7 +3967,7 @@ There are two possible versions of SFR scheme:
    .. _fig-lte-soft-frequency-reuse-scheme-v2:
  
    .. figure:: figures/fr-soft-frequency-reuse-scheme-v2.*
-      :scale: 40 %
+      :scale: 60 %
       :align: center
 
       Soft Frequency Reuse scheme version 2
@@ -3997,7 +3998,7 @@ frequency and power plan for Soft Fractional Frequency Reuse.
 .. _fig-lte-soft-fractional-frequency-reuse-scheme:
  
 .. figure:: figures/fr-soft-fractional-frequency-reuse-scheme.*
-   :scale: 40 %
+   :scale: 60 %
    :align: center
 
    Soft Fractional Fractional Frequency Reuse scheme
@@ -4044,7 +4045,7 @@ frequency and power plan for Enhanced Fractional Frequency Reuse.
 .. _fig-lte-enhanced-fractional-frequency-reuse-scheme:
  
 .. figure:: figures/fr-enhanced-fractional-frequency-reuse-scheme.*
-   :scale: 40 %
+   :scale: 60 %
    :align: center
 
    Enhanced Fractional Fractional Frequency Reuse scheme
@@ -4092,7 +4093,7 @@ sequence diagram of Distributed Fractional Frequency Reuse Scheme.
 .. _fig-lte-distributed-fractional-frequency-reuse-scheme:
  
 .. figure:: figures/ffr-distributed-scheme.*
-   :scale: 100 %
+   :scale: 80 %
    :align: center
 
    Sequence diagram of Distributed Frequency Reuse Scheme

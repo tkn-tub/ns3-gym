@@ -104,10 +104,12 @@ TypeId LteRlc::GetTypeId (void)
     .SetParent<Object> ()
     .AddTraceSource ("TxPDU",
                      "PDU transmission notified to the MAC.",
-                     MakeTraceSourceAccessor (&LteRlc::m_txPdu))
+                     MakeTraceSourceAccessor (&LteRlc::m_txPdu),
+                     "ns3::LteRlc::NotifyTxTracedCallback")
     .AddTraceSource ("RxPDU",
                      "PDU received.",
-                     MakeTraceSourceAccessor (&LteRlc::m_rxPdu))
+                     MakeTraceSourceAccessor (&LteRlc::m_rxPdu),
+                     "ns3::LteRlc::ReceiveTracedCallback")
     ;
   return tid;
 }

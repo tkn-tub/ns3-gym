@@ -189,7 +189,11 @@ public:
   /**
    * \return the physical layer attached to this MAC.
    */
-  virtual Ptr<WifiPhy> GetWifiPhy () const;
+  virtual Ptr<WifiPhy> GetWifiPhy (void) const;
+  /**
+   * removes attached WifiPhy device from this MAC.
+   */
+  virtual void ResetWifiPhy (void);
   /**
    * \param stationManager the station manager attached to this MAC.
    */
@@ -197,7 +201,7 @@ public:
   /**
    * \return the station manager attached to this MAC.
    */
-  virtual Ptr<WifiRemoteStationManager> GetWifiRemoteStationManager () const;
+  virtual Ptr<WifiRemoteStationManager> GetWifiRemoteStationManager (void) const;
 
   /**
    * This type defines the callback of a higher layer that a

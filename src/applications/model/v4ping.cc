@@ -58,7 +58,8 @@ V4Ping::GetTypeId (void)
                    MakeUintegerChecker<uint32_t> (16))
     .AddTraceSource ("Rtt",
                      "The rtt calculated by the ping.",
-                     MakeTraceSourceAccessor (&V4Ping::m_traceRtt));
+                     MakeTraceSourceAccessor (&V4Ping::m_traceRtt),
+                     "ns3::Time::TracedCallback");
   ;
   return tid;
 }

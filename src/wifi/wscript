@@ -63,6 +63,8 @@ def build(bld):
         'model/snr-tag.cc',
         'model/ht-capabilities.cc',
         'model/wifi-tx-vector.cc',
+        'model/parf-wifi-manager.cc',
+        'model/aparf-wifi-manager.cc',
         'helper/ht-wifi-mac-helper.cc',
         'helper/athstats-helper.cc',
         'helper/wifi-helper.cc',
@@ -76,6 +78,7 @@ def build(bld):
         'test/block-ack-test-suite.cc',
         'test/dcf-manager-test.cc',
         'test/tx-duration-test.cc',
+        'test/power-rate-adaptation-test.cc',
         'test/wifi-test.cc',
         ]
 
@@ -139,6 +142,8 @@ def build(bld):
         'model/block-ack-cache.h',
         'model/snr-tag.h',
         'model/ht-capabilities.h',
+        'model/parf-wifi-manager.h',
+        'model/aparf-wifi-manager.h',
         'model/wifi-tx-vector.h',
         'helper/ht-wifi-mac-helper.h',
         'helper/athstats-helper.h',

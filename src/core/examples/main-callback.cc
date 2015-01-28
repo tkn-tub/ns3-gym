@@ -21,17 +21,39 @@
 #include "ns3/assert.h"
 #include <iostream>
 
+/**
+ * \file
+ * \ingroup callback
+ * Example program illustrating use of callback functions and methods.
+ *
+ * See \ref callback
+ */
+
 using namespace ns3;
 
-static double 
+/**
+ * Example Callback function.
+ *
+ * \param [in] a The first argument.
+ * \param [in] b The second argument.
+ * \returns The first argument.
+ */
+static double
 CbOne (double a, double b)
 {
   std::cout << "invoke cbOne a=" << a << ", b=" << b << std::endl;
   return a;
 }
 
+/** Example Callback class. */
 class MyCb {
 public:
+  /**
+   * Example Callback class method.
+   *
+   * \param [in] a The argument.
+   * \returns -5
+   */
   int CbTwo (double a) {
     std::cout << "invoke cbTwo a=" << a << std::endl;
     return -5;

@@ -30,18 +30,27 @@
 #include "hash-murmur3.h"
 #include "hash-fnv.h"
 
+/**
+ * \file
+ * \ingroup hash
+ * \brief ns3::Hasher, ns3::Hash32() and ns3::Hash64() function declarations.
+ */
+
 namespace ns3 {
 
 /**
  * \ingroup core
  * \defgroup hash Hash Functions
  *
- *  \brief Generic Hash function interface
+ *  \brief Generic Hash function interface.
+ *
+ * See \ref Hasher for main entry point.
+ * See \ref hash-example.cc for example usage.
  */
 /**
  *  \ingroup hash
  *
- *  \brief Generic Hash function interface
+ *  \brief Generic Hash function interface.
  *
  *  This class provides a generic interface for computing hashes
  *  of buffers.  Various getters return hashes of different lengths.
@@ -59,7 +68,7 @@ namespace ns3 {
  *    uint32_t hash = Hasher.GetHash32 (data);
  *    \endcode
  *
- *  The available implementations are documented in group hash.
+ *  The available implementations are documented in \ref hash.
  *  The default implementation is Murmur3.  FNV1a is also available.
  *
  *  In addition to this class interface, global functions are
@@ -79,13 +88,13 @@ class Hasher
 {
 public:
   /**
-   * Constructor using the default implementation
+   * Constructor using the default implementation.
    */
   Hasher ();
   /**
-   * Constructor using the supplied implementation
+   * Constructor using the supplied implementation.
    *
-   * \param [in] hp Ptr<Hash::Implementation> to the desired implementation
+   * \param [in] hp Ptr<Hash::Implementation> to the desired implementation.
    */
   Hasher (Ptr<Hash::Implementation> hp);
   /**
@@ -98,13 +107,13 @@ public:
    * you can hash successive buffers.  The final return value
    * will be the cumulative hash across all calls.
    *
-   * \param [in] buffer pointer to the beginning of the buffer
-   * \param [in] size length of the buffer, in bytes
-   * \return 32-bit hash of the buffer
+   * \param [in] buffer Pointer to the beginning of the buffer.
+   * \param [in] size Length of the buffer, in bytes.
+   * \return 32-bit hash of the buffer..
    */
   uint32_t  GetHash32  (const char * buffer, const size_t size);
   /**
-   * Compute 64-bit hash of a byte buffer
+   * Compute 64-bit hash of a byte buffer.
    *
    * Call clear () between calls to GetHash64() to reset the
    * internal state and hash each buffer separately.
@@ -113,14 +122,14 @@ public:
    * you can hash successive buffers.  The final return value
    * will be the cumulative hash across all calls.
    *
-   * \param [in] buffer pointer to the beginning of the buffer
-   * \param [in] size length of the buffer, in bytes
-   * \return 64-bit hash of the buffer
+   * \param [in] buffer Pointer to the beginning of the buffer.
+   * \param [in] size Length of the buffer, in bytes.
+   * \return 64-bit hash of the buffer.
    */
   uint64_t  GetHash64  (const char * buffer, const size_t size);
 
   /**
-   * Compute 32-bit hash of a string
+   * Compute 32-bit hash of a string.
    *
    * Call clear () between calls to GetHash32() to reset the
    * internal state and hash each string separately.
@@ -129,12 +138,12 @@ public:
    * you can hash successive strings.  The final return value
    * will be the cumulative hash across all calls.
    *
-   * \param [in] s string to hash
-   * \return 32-bit hash of the string
+   * \param [in] s String to hash.
+   * \return 32-bit hash of the string.
    */
   uint32_t  GetHash32  (const std::string s);
   /**
-   * Compute 64-bit hash of a string
+   * Compute 64-bit hash of a string.
    *
    * Call clear () between calls to GetHash64() to reset the
    * internal state and hash each string separately.
@@ -143,19 +152,28 @@ public:
    * you can hash successive strings.  The final return value
    * will be the cumulative hash across all calls.
    *
-   * \param [in] s string to hash
-   * \return 64-bit hash of the string
+   * \param [in] s String to hash.
+   * \return 64-bit hash of the string.
    */
   uint64_t  GetHash64  (const std::string s);
   /**
-   * Restore initial state
+   * Restore initial state.
+   *
+   * Returning this Hasher allows code like this:
+   *
+   * \code
+   *   Hasher h;
+   *   h.GetHash32 (...);
+   *   ...
+   *   h.clear ().GetHash64 (...);
+   * \endcode
    *
    * \return this
    */
   Hasher & clear (void);
 
 private:
-  Ptr<Hash::Implementation> m_impl;    /** Hash implementation */
+  Ptr<Hash::Implementation> m_impl;  /**< Hash implementation. */
 };  // Hasher
 
 
@@ -166,40 +184,40 @@ private:
 /**
  * \ingroup hash
  *
- * Compute 32-bit hash of a byte buffer, using the default hash function
+ * Compute 32-bit hash of a byte buffer, using the default hash function.
  *
- * \param [in] buffer pointer to the beginning of the buffer
- * \param [in] size length of the buffer, in bytes
- * \return 32-bit hash of the buffer
+ * \param [in] buffer Pointer to the beginning of the buffer.
+ * \param [in] size Length of the buffer, in bytes.
+ * \return 32-bit hash of the buffer.
  */
 uint32_t Hash32 (const char * buffer, const size_t size);
 /**
  * \ingroup hash
  *
- * Compute 64-bit hash of a byte buffer, using the default hash function
+ * Compute 64-bit hash of a byte buffer, using the default hash function.
  *
- * \param [in] buffer pointer to the beginning of the buffer
- * \param [in] size length of the buffer, in bytes
- * \return 64-bit hash of the buffer
+ * \param [in] buffer Pointer to the beginning of the buffer.
+ * \param [in] size Length of the buffer, in bytes.
+ * \return 64-bit hash of the buffer.
  */
 uint64_t Hash64 (const char * buffer, const size_t size);
 
 /**
  * \ingroup hash
  *
- * Compute 32-bit hash of a string, using the default hash function
+ * Compute 32-bit hash of a string, using the default hash function.
  *
- * \param [in] s string to hash
- * \return 32-bit hash of the string
+ * \param [in] s String to hash.
+ * \return 32-bit hash of the string.
  */
 uint32_t Hash32 (const std::string s);
 /**
  * \ingroup hash
  *
- * Compute 64-bit hash of a string, using the default hash function
+ * Compute 64-bit hash of a string, using the default hash function.
  *
- * \param [in] s string to hash
- * \return 64-bit hash of the string
+ * \param [in] s String to hash.
+ * \return 64-bit hash of the string.
  */
 uint64_t Hash64 (const std::string s);
 

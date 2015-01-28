@@ -64,7 +64,8 @@ BulkSendApplication::GetTypeId (void)
                    MakeTypeIdAccessor (&BulkSendApplication::m_tid),
                    MakeTypeIdChecker ())
     .AddTraceSource ("Tx", "A new packet is created and is sent",
-                     MakeTraceSourceAccessor (&BulkSendApplication::m_txTrace))
+                     MakeTraceSourceAccessor (&BulkSendApplication::m_txTrace),
+                     "ns3::Packet::TracedCallback")
   ;
   return tid;
 }

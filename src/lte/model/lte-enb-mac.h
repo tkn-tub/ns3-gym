@@ -120,7 +120,35 @@ public:
   */
   void SetLteEnbPhySapProvider (LteEnbPhySapProvider* s);
 
+  /**
+   * TracedCallback signature for DL scheduling events.
+   *
+   * \param [in] frame Frame number.
+   * \param [in] subframe Subframe number.
+   * \param [in] rnti The C-RNTI identifying the UE.
+   * \param [in] mcs0 The MCS for transport block.. 
+   * \param [in] tbs0Size
+   * \param [in] mcs1 The MCS for transport block.
+   * \param [in] tbs1Size
+   */
+  typedef void (* DlSchedulingTracedCallback)
+    (const uint32_t frame, const uint32_t subframe, const uint16_t rnti,
+     const uint8_t mcs0, const uint16_t tbs0Size,
+     const uint8_t mcs1, const uint16_t tbs1Size);
 
+  /**
+   *  TracedCallback signature for UL scheduling events.
+   *
+   * \param [in] frame Frame number.
+   * \param [in] subframe Subframe number.
+   * \param [in] rnti The C-RNTI identifying the UE.
+   * \param [in] mcs  The MCS for transport block
+   * \param [in] tbsSize
+   */
+  typedef void (* UlSchedulingTracedCallback)
+    (const uint32_t frame, const uint32_t subframe, const uint16_t rnti,
+     const uint8_t mcs, const uint16_t tbsSize);
+  
 private:
 
   /**

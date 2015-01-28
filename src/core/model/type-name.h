@@ -23,6 +23,12 @@
 #include <stdint.h>
 #include <string>
 
+/**
+ * \file
+ * \ingroup attributeimpl
+ * ns3::TypeNameGet() function declarations.
+ */
+
 namespace ns3 {
 
 /**

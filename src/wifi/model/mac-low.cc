@@ -327,6 +327,16 @@ MacLow::SetupPhyMacLowListener (Ptr<WifiPhy> phy)
   phy->RegisterListener (m_phyMacLowListener);
 }
 
+void
+MacLow::RemovePhyMacLowListener (Ptr<WifiPhy> phy)
+{
+  if (m_phyMacLowListener != 0 )
+    {
+      phy->UnregisterListener (m_phyMacLowListener);
+      delete m_phyMacLowListener;
+      m_phyMacLowListener = 0;
+    }
+}
 
 void
 MacLow::DoDispose (void)
@@ -432,6 +442,19 @@ MacLow::SetPhy (Ptr<WifiPhy> phy)
   m_phy->SetReceiveOkCallback (MakeCallback (&MacLow::ReceiveOk, this));
   m_phy->SetReceiveErrorCallback (MakeCallback (&MacLow::ReceiveError, this));
   SetupPhyMacLowListener (phy);
+}
+Ptr<WifiPhy>
+MacLow::GetPhy (void) const
+{
+  return m_phy;
+}
+void
+MacLow::ResetPhy (void)
+{
+  m_phy->SetReceiveOkCallback (MakeNullCallback<void,Ptr<Packet>, double, WifiMode, enum WifiPreamble>  ());
+  m_phy->SetReceiveErrorCallback (MakeNullCallback<void,Ptr<const Packet>, double> ());
+  RemovePhyMacLowListener (m_phy);
+  m_phy = 0;
 }
 void
 MacLow::SetWifiRemoteStationManager (Ptr<WifiRemoteStationManager> manager)
@@ -663,7 +686,6 @@ void
 MacLow::NotifySleepNow (void)
 {
   NS_LOG_DEBUG ("Device in sleep mode. Cancelling MAC pending events");
-  m_stationManager->Reset ();
   CancelAllEvents ();
   if (m_navCounterResetCtsMissed.IsRunning ())
     {
@@ -805,7 +827,7 @@ MacLow::ReceiveOk (Ptr<Packet> packet, double rxSnr, WifiMode txMode, WifiPreamb
               (*i).second.UpdateWithBlockAckReq (blockAckReq.GetStartingSequence ());
 
               NS_ASSERT (m_sendAckEvent.IsExpired ());
-              /* See section 11.5.3 in IEEE802.11 for mean of this timer */
+              /* See section 11.5.3 in IEEE 802.11 for mean of this timer */
               ResetBlockAckInactivityTimerIfNeeded (it->second.first);
               if ((*it).second.first.IsImmediateBlockAck ())
                 {
@@ -843,7 +865,7 @@ MacLow::ReceiveOk (Ptr<Packet> packet, double rxSnr, WifiMode txMode, WifiPreamb
 
       if (hdr.IsQosData () && StoreMpduIfNeeded (packet, hdr))
         {
-          /* From section 9.10.4 in IEEE802.11:
+          /* From section 9.10.4 in IEEE 802.11:
              Upon the receipt of a QoS data frame from the originator for which
              the Block Ack agreement exists, the recipient shall buffer the MSDU
              regardless of the value of the Ack Policy subfield within the
@@ -865,7 +887,7 @@ MacLow::ReceiveOk (Ptr<Packet> packet, double rxSnr, WifiMode txMode, WifiPreamb
           else if (hdr.IsQosBlockAck ())
             {
               AgreementsI it = m_bAckAgreements.find (std::make_pair (hdr.GetAddr2 (), hdr.GetQosTid ()));
-              /* See section 11.5.3 in IEEE802.11 for mean of this timer */
+              /* See section 11.5.3 in IEEE 802.11 for mean of this timer */
               ResetBlockAckInactivityTimerIfNeeded (it->second.first);
             }
           return;
@@ -875,7 +897,7 @@ MacLow::ReceiveOk (Ptr<Packet> packet, double rxSnr, WifiMode txMode, WifiPreamb
           /* This happens if a packet with ack policy Block Ack is received and a block ack
              agreement for that packet doesn't exist.
 
-             From section 11.5.3 in IEEE802.11e:
+             From section 11.5.3 in IEEE 802.11e:
              When a recipient does not have an active Block ack for a TID, but receives
              data MPDUs with the Ack Policy subfield set to Block Ack, it shall discard
              them and shall send a DELBA frame using the normal access
@@ -991,7 +1013,7 @@ MacLow::GetBlockAckDuration (Mac48Address to, WifiTxVector blockAckReqTxVector, 
    * For immediate BlockAck we should transmit the frame with the same WifiMode
    * as the BlockAckReq.
    *
-   * from section 9.6 in IEEE802.11e:
+   * from section 9.6 in IEEE 802.11e:
    * The BlockAck control frame shall be sent at the same rate and modulation class as
    * the BlockAckReq frame if it is sent in response to a BlockAckReq frame.
    */
@@ -1766,7 +1788,7 @@ MacLow::SendAckAfterData (Mac48Address source, Time duration, WifiMode dataTxMod
   tag.Set (dataSnr);
   packet->AddPacketTag (tag);
 
-   //since ACK is a control response it can't have Fomat =GF
+   //since ACK is a control response it can't have format GF
   WifiPreamble preamble;
   if (ackTxVector.GetMode().GetModulationClass () == WIFI_MOD_CLASS_HT)
     preamble= WIFI_PREAMBLE_HT_MF;
@@ -2056,7 +2078,7 @@ MacLow::SendBlockAckAfterBlockAckRequest (const CtrlBAckRequestHeader reqHdr, Ma
           (*i).second.FillBlockAckBitmap (&blockAck);
 
           /* All packets with smaller sequence than starting sequence control must be passed up to Wifimac
-           * See 9.10.3 in IEEE8022.11e standard.
+           * See 9.10.3 in IEEE 802.11e standard.
            */
           RxCompleteBufferedPacketsWithSmallerSequence (reqHdr.GetStartingSequence (), originator, tid);
           RxCompleteBufferedPacketsUntilFirstLost (originator, tid);

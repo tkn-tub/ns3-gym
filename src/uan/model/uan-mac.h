@@ -35,6 +35,7 @@ class UanPhy;
 class UanChannel;
 class UanNetDevice;
 class UanTransducer;
+class UanTxMode;
 class UanAddress;
 
 
@@ -114,6 +115,15 @@ public:
   * \return The number of stream indices assigned by this model.
   */
   virtual int64_t AssignStreams (int64_t stream) = 0;
+
+  /**
+   *  TracedCallback signature for packet reception/enqueue/dequeue events.
+   *
+   * \param [in] packet The Packet.
+   * \param [in] mode The UanTxMode.
+   */
+  typedef void (* PacketModeTracedCallback)
+    (const Ptr<const Packet> packet, const UanTxMode & mode);
 
 };  // class UanMac
 

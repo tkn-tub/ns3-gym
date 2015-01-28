@@ -34,6 +34,9 @@ namespace ns3 {
 class Box
 {
 public:
+  /**
+   * Enum class to specify sides of a box
+   */
   enum Side {
     RIGHT,
     LEFT,

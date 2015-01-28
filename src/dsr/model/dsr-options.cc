@@ -76,8 +76,14 @@ TypeId DsrOptions::GetTypeId ()
                    UintegerValue (0),
                    MakeUintegerAccessor (&DsrOptions::GetOptionNumber),
                    MakeUintegerChecker<uint8_t> ())
-    .AddTraceSource ("Rx", "Receive DSR packet.",
-                     MakeTraceSourceAccessor (&DsrOptions::m_rxPacketTrace))
+    .AddTraceSource ("Drop",
+                     "Packet dropped.",
+                     MakeTraceSourceAccessor (&DsrOptions::m_dropTrace),
+                     "ns3::Packet::TracedCallback")
+    .AddTraceSource ("Rx",
+                     "Receive DSR packet.",
+                     MakeTraceSourceAccessor (&DsrOptions::m_rxPacketTrace),
+                     "ns3::Packet::TracedCallback")
   ;
   return tid;
 }

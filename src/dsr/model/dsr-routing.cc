@@ -109,181 +109,244 @@ TypeId DsrRouting::GetTypeId ()
   static TypeId tid = TypeId ("ns3::dsr::DsrRouting")
     .SetParent<IpL4Protocol> ()
     .AddConstructor<DsrRouting> ()
-    .AddAttribute ("RouteCache", "The route cache for saving routes from route discovery process.",
+    .AddAttribute ("RouteCache",
+                   "The route cache for saving routes from "
+                   "route discovery process.",
                    PointerValue (0),
                    MakePointerAccessor (&DsrRouting::SetRouteCache,
                                         &DsrRouting::GetRouteCache),
                    MakePointerChecker<RouteCache> ())
-    .AddAttribute ("RreqTable", "The request table to manage route requests.",
+    .AddAttribute ("RreqTable",
+                   "The request table to manage route requests.",
                    PointerValue (0),
                    MakePointerAccessor (&DsrRouting::SetRequestTable,
                                         &DsrRouting::GetRequestTable),
                    MakePointerChecker<RreqTable> ())
-    .AddAttribute ("PassiveBuffer", "The passive buffer to manage promisucously received passive ack.",
+    .AddAttribute ("PassiveBuffer",
+                   "The passive buffer to manage "
+                   "promisucously received passive ack.",
                    PointerValue (0),
                    MakePointerAccessor (&DsrRouting::SetPassiveBuffer,
                                         &DsrRouting::GetPassiveBuffer),
                    MakePointerChecker<PassiveBuffer> ())
-    .AddAttribute ("MaxSendBuffLen","Maximum number of packets that can be stored in send buffer.",
+    .AddAttribute ("MaxSendBuffLen",
+                   "Maximum number of packets that can be stored "
+                   "in send buffer.",
                    UintegerValue (64),
                    MakeUintegerAccessor (&DsrRouting::m_maxSendBuffLen),
                    MakeUintegerChecker<uint32_t> ())
-    .AddAttribute ("MaxSendBuffTime","Maximum time packets can be queued in the send buffer .",
+    .AddAttribute ("MaxSendBuffTime",
+                   "Maximum time packets can be queued in the send buffer .",
                    TimeValue (Seconds (30)),
                    MakeTimeAccessor (&DsrRouting::m_sendBufferTimeout),
                    MakeTimeChecker ())
-    .AddAttribute ("MaxMaintLen","Maximum number of packets that can be stored in maintenance buffer.",
+    .AddAttribute ("MaxMaintLen",
+                   "Maximum number of packets that can be stored "
+                   "in maintenance buffer.",
                    UintegerValue (50),
                    MakeUintegerAccessor (&DsrRouting::m_maxMaintainLen),
                    MakeUintegerChecker<uint32_t> ())
-    .AddAttribute ("MaxMaintTime","Maximum time packets can be queued in maintenance buffer.",
+    .AddAttribute ("MaxMaintTime",
+                   "Maximum time packets can be queued in maintenance buffer.",
                    TimeValue (Seconds (30)),
                    MakeTimeAccessor (&DsrRouting::m_maxMaintainTime),
                    MakeTimeChecker ())
-    .AddAttribute ("MaxCacheLen","Maximum number of route entries that can be stored in route cache.",
+    .AddAttribute ("MaxCacheLen",
+                   "Maximum number of route entries that can be stored "
+                   "in route cache.",
                    UintegerValue (64),
                    MakeUintegerAccessor (&DsrRouting::m_maxCacheLen),
                    MakeUintegerChecker<uint32_t> ())
-    .AddAttribute ("RouteCacheTimeout","Maximum time the route cache can be queued in route cache.",
+    .AddAttribute ("RouteCacheTimeout",
+                   "Maximum time the route cache can be queued in "
+                   "route cache.",
                    TimeValue (Seconds (300)),
                    MakeTimeAccessor (&DsrRouting::m_maxCacheTime),
                    MakeTimeChecker ())
-    .AddAttribute ("MaxEntriesEachDst","Maximum number of route entries for a single destination to respond.",
+    .AddAttribute ("MaxEntriesEachDst",
+                   "Maximum number of route entries for a "
+                   "single destination to respond.",
                    UintegerValue (20),
                    MakeUintegerAccessor (&DsrRouting::m_maxEntriesEachDst),
                    MakeUintegerChecker<uint32_t> ())
-    .AddAttribute ("SendBuffInterval","How often to check send buffer for packet with route.",
+    .AddAttribute ("SendBuffInterval",
+                   "How often to check send buffer for packet with route.",
                    TimeValue (Seconds (500)),
                    MakeTimeAccessor (&DsrRouting::m_sendBuffInterval),
                    MakeTimeChecker ())
-    .AddAttribute ("NodeTraversalTime","The time it takes to traverse two neighboring nodes.",
+    .AddAttribute ("NodeTraversalTime",
+                   "The time it takes to traverse two neighboring nodes.",
                    TimeValue (MilliSeconds (40)),
                    MakeTimeAccessor (&DsrRouting::m_nodeTraversalTime),
                    MakeTimeChecker ())
-    .AddAttribute ("RreqRetries","Maximum number of retransmissions for request discovery of a route.",
+    .AddAttribute ("RreqRetries",
+                   "Maximum number of retransmissions for "
+                   "request discovery of a route.",
                    UintegerValue (16),
                    MakeUintegerAccessor (&DsrRouting::m_rreqRetries),
                    MakeUintegerChecker<uint32_t> ())
-    .AddAttribute ("MaintenanceRetries","Maximum number of retransmissions for data packets from maintenance buffer.",
+    .AddAttribute ("MaintenanceRetries",
+                   "Maximum number of retransmissions for "
+                   "data packets from maintenance buffer.",
                    UintegerValue (2),
                    MakeUintegerAccessor (&DsrRouting::m_maxMaintRexmt),
                    MakeUintegerChecker<uint32_t> ())
-    .AddAttribute ("RequestTableSize","Maximum number of request entries in the request table, set this as the number of nodes in the simulation.",
+    .AddAttribute ("RequestTableSize",
+                   "Maximum number of request entries in the request table, "
+                   "set this as the number of nodes in the simulation.",
                    UintegerValue (64),
                    MakeUintegerAccessor (&DsrRouting::m_requestTableSize),
                    MakeUintegerChecker<uint32_t> ())
-    .AddAttribute ("RequestIdSize","Maximum number of request source Ids in the request table.",
+    .AddAttribute ("RequestIdSize",
+                   "Maximum number of request source Ids in "
+                   "the request table.",
                    UintegerValue (16),
                    MakeUintegerAccessor (&DsrRouting::m_requestTableIds),
                    MakeUintegerChecker<uint32_t> ())
-    .AddAttribute ("UniqueRequestIdSize","Maximum number of request Ids in the request table for a single destination.",
+    .AddAttribute ("UniqueRequestIdSize",
+                   "Maximum number of request Ids in "
+                   "the request table for a single destination.",
                    UintegerValue (256),
                    MakeUintegerAccessor (&DsrRouting::m_maxRreqId),
                    MakeUintegerChecker<uint32_t> ())
-    .AddAttribute ("NonPropRequestTimeout","The timeout value for non-propagation request.",
+    .AddAttribute ("NonPropRequestTimeout",
+                   "The timeout value for non-propagation request.",
                    TimeValue (MilliSeconds (30)),
                    MakeTimeAccessor (&DsrRouting::m_nonpropRequestTimeout),
                    MakeTimeChecker ())
-    .AddAttribute ("DiscoveryHopLimit","The max discovery hop limit for route requests.",
+    .AddAttribute ("DiscoveryHopLimit",
+                   "The max discovery hop limit for route requests.",
                    UintegerValue (255),
                    MakeUintegerAccessor (&DsrRouting::m_discoveryHopLimit),
                    MakeUintegerChecker<uint32_t> ())
-    .AddAttribute ("MaxSalvageCount","The max salvage count for a single data packet.",
+    .AddAttribute ("MaxSalvageCount",
+                   "The max salvage count for a single data packet.",
                    UintegerValue (15),
                    MakeUintegerAccessor (&DsrRouting::m_maxSalvageCount),
                    MakeUintegerChecker<uint8_t> ())
-    .AddAttribute ("BlacklistTimeout","The time for a neighbor to stay in blacklist.",
+    .AddAttribute ("BlacklistTimeout",
+                   "The time for a neighbor to stay in blacklist.",
                    TimeValue (Seconds (3)),
                    MakeTimeAccessor (&DsrRouting::m_blacklistTimeout),
                    MakeTimeChecker ())
-    .AddAttribute ("GratReplyHoldoff","The time for gratuitous reply entry to expire.",
+    .AddAttribute ("GratReplyHoldoff",
+                   "The time for gratuitous reply entry to expire.",
                    TimeValue (Seconds (1)),
                    MakeTimeAccessor (&DsrRouting::m_gratReplyHoldoff),
                    MakeTimeChecker ())
-    .AddAttribute ("BroadcastJitter","The jitter time to avoid collision for broadcast packets.",
+    .AddAttribute ("BroadcastJitter",
+                   "The jitter time to avoid collision for broadcast packets.",
                    UintegerValue (10),
                    MakeUintegerAccessor (&DsrRouting::m_broadcastJitter),
                    MakeUintegerChecker<uint32_t> ())
-    .AddAttribute ("LinkAckTimeout","The time a packet in maintenance buffer wait for link acknowledgment.",
+    .AddAttribute ("LinkAckTimeout",
+                   "The time a packet in maintenance buffer wait for "
+                   "link acknowledgment.",
                    TimeValue (MilliSeconds (100)),
                    MakeTimeAccessor (&DsrRouting::m_linkAckTimeout),
                    MakeTimeChecker ())
-    .AddAttribute ("TryLinkAcks","The number of link acknowledgment to use.",
+    .AddAttribute ("TryLinkAcks",
+                   "The number of link acknowledgment to use.",
                    UintegerValue (1),
                    MakeUintegerAccessor (&DsrRouting::m_tryLinkAcks),
                    MakeUintegerChecker<uint32_t> ())
-    .AddAttribute ("PassiveAckTimeout","The time a packet in maintenance buffer wait for passive acknowledgment.",
+    .AddAttribute ("PassiveAckTimeout",
+                   "The time a packet in maintenance buffer wait for "
+                   "passive acknowledgment.",
                    TimeValue (MilliSeconds (100)),
                    MakeTimeAccessor (&DsrRouting::m_passiveAckTimeout),
                    MakeTimeChecker ())
-    .AddAttribute ("TryPassiveAcks","The number of passive acknowledgment to use.",
+    .AddAttribute ("TryPassiveAcks",
+                   "The number of passive acknowledgment to use.",
                    UintegerValue (1),
                    MakeUintegerAccessor (&DsrRouting::m_tryPassiveAcks),
                    MakeUintegerChecker<uint32_t> ())
-    .AddAttribute ("RequestPeriod","The base time interval between route requests.",
+    .AddAttribute ("RequestPeriod",
+                   "The base time interval between route requests.",
                    TimeValue (MilliSeconds (500)),
                    MakeTimeAccessor (&DsrRouting::m_requestPeriod),
                    MakeTimeChecker ())
-    .AddAttribute ("MaxRequestPeriod","The max time interval between route requests.",
+    .AddAttribute ("MaxRequestPeriod",
+                   "The max time interval between route requests.",
                    TimeValue (Seconds (10)),
                    MakeTimeAccessor (&DsrRouting::m_maxRequestPeriod),
                    MakeTimeChecker ())
-    .AddAttribute ("GraReplyTableSize","The gratuitous reply table size.",
+    .AddAttribute ("GraReplyTableSize",
+                   "The gratuitous reply table size.",
                    UintegerValue (64),
                    MakeUintegerAccessor (&DsrRouting::m_graReplyTableSize),
                    MakeUintegerChecker<uint32_t> ())
-    .AddAttribute ("CacheType","Use Link Cache or use Path Cache",
+    .AddAttribute ("CacheType",
+                   "Use Link Cache or use Path Cache",
                    StringValue ("LinkCache"),
                    MakeStringAccessor (&DsrRouting::m_cacheType),
                    MakeStringChecker ())
-    .AddAttribute ("StabilityDecrFactor","The stability decrease factor for link cache",
+    .AddAttribute ("StabilityDecrFactor",
+                   "The stability decrease factor for link cache",
                    UintegerValue (2),
                    MakeUintegerAccessor (&DsrRouting::m_stabilityDecrFactor),
                    MakeUintegerChecker<uint32_t> ())
-    .AddAttribute ("StabilityIncrFactor","The stability increase factor for link cache",
+    .AddAttribute ("StabilityIncrFactor",
+                   "The stability increase factor for link cache",
                    UintegerValue (4),
                    MakeUintegerAccessor (&DsrRouting::m_stabilityIncrFactor),
                    MakeUintegerChecker<uint32_t> ())
-    .AddAttribute ("InitStability","The initial stability factor for link cache",
+    .AddAttribute ("InitStability",
+                   "The initial stability factor for link cache",
                    TimeValue (Seconds (25)),
                    MakeTimeAccessor (&DsrRouting::m_initStability),
                    MakeTimeChecker ())
-    .AddAttribute ("MinLifeTime","The minimal life time for link cache",
+    .AddAttribute ("MinLifeTime",
+                   "The minimal life time for link cache",
                    TimeValue (Seconds (1)),
                    MakeTimeAccessor (&DsrRouting::m_minLifeTime),
                    MakeTimeChecker ())
-    .AddAttribute ("UseExtends","The extension time for link cache",
+    .AddAttribute ("UseExtends",
+                   "The extension time for link cache",
                    TimeValue (Seconds (120)),
                    MakeTimeAccessor (&DsrRouting::m_useExtends),
                    MakeTimeChecker ())
-    .AddAttribute ("EnableSubRoute","Enables saving of sub route when receiving route error messages, only available when using path route cache",
+    .AddAttribute ("EnableSubRoute",
+                   "Enables saving of sub route when receiving "
+                   "route error messages, only available when "
+                   "using path route cache",
                    BooleanValue (true),
                    MakeBooleanAccessor (&DsrRouting::m_subRoute),
                    MakeBooleanChecker ())
-    .AddAttribute ("RetransIncr","The increase time for retransmission timer when facing network congestion",
+    .AddAttribute ("RetransIncr",
+                   "The increase time for retransmission timer "
+                   "when facing network congestion",
                    TimeValue (MilliSeconds (20)),
                    MakeTimeAccessor (&DsrRouting::m_retransIncr),
                    MakeTimeChecker ())
-    .AddAttribute ("MaxNetworkQueueSize","The max number of packet to save in the network queue.",
+    .AddAttribute ("MaxNetworkQueueSize",
+                   "The max number of packet to save in the network queue.",
                    UintegerValue (400),
                    MakeUintegerAccessor (&DsrRouting::m_maxNetworkSize),
                    MakeUintegerChecker<uint32_t> ())
-    .AddAttribute ("MaxNetworkQueueDelay","The max time for a packet to stay in the network queue.",
+    .AddAttribute ("MaxNetworkQueueDelay",
+                   "The max time for a packet to stay in the network queue.",
                    TimeValue (Seconds (30.0)),
                    MakeTimeAccessor (&DsrRouting::m_maxNetworkDelay),
                    MakeTimeChecker ())
-    .AddAttribute ("NumPriorityQueues","The max number of packet to save in the network queue.",
+    .AddAttribute ("NumPriorityQueues",
+                   "The max number of packet to save in the network queue.",
                    UintegerValue (2),
                    MakeUintegerAccessor (&DsrRouting::m_numPriorityQueues),
                    MakeUintegerChecker<uint32_t> ())
-    .AddAttribute ("LinkAcknowledgment","Enable Link layer acknowledgment mechanism",
+    .AddAttribute ("LinkAcknowledgment",
+                   "Enable Link layer acknowledgment mechanism",
                    BooleanValue (true),
                    MakeBooleanAccessor (&DsrRouting::m_linkAck),
                    MakeBooleanChecker ())
-    .AddTraceSource ("Tx", "Send DSR packet.",
-                     MakeTraceSourceAccessor (&DsrRouting::m_txPacketTrace))
-    .AddTraceSource ("Drop", "Drop DSR packet",
-                     MakeTraceSourceAccessor (&DsrRouting::m_dropTrace))
+    .AddTraceSource ("Tx",
+                     "Send DSR packet.",
+                     MakeTraceSourceAccessor (&DsrRouting::m_txPacketTrace),
+                     "ns3::DsrOptionSRHeader::TracedCallback")
+    .AddTraceSource ("Drop",
+                     "Drop DSR packet",
+                     MakeTraceSourceAccessor (&DsrRouting::m_dropTrace),
+                     "ns3::Packet::TracedCallback")
   ;
   return tid;
 }

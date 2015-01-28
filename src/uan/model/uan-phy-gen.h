@@ -313,11 +313,11 @@ private:
   /** Energy model callback. */
   DeviceEnergyModel::ChangeStateCallback m_energyCallback;
   /** A packet destined for this Phy was received without error. */
-  TracedCallback<Ptr<const Packet>, double, UanTxMode > m_rxOkLogger;
+  ns3::TracedCallback<Ptr<const Packet>, double, UanTxMode > m_rxOkLogger;
   /** A packet destined for this Phy was received with error. */
-  TracedCallback<Ptr<const Packet>, double, UanTxMode > m_rxErrLogger;
+  ns3::TracedCallback<Ptr<const Packet>, double, UanTxMode > m_rxErrLogger;
   /** A packet was sent from this Phy. */
-  TracedCallback<Ptr<const Packet>, double, UanTxMode > m_txLogger;
+  ns3::TracedCallback<Ptr<const Packet>, double, UanTxMode > m_txLogger;
 
   /**
    * Calculate the SINR value for a packet.

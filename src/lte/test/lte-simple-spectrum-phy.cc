@@ -64,7 +64,8 @@ LteSimpleSpectrumPhy::GetTypeId (void)
     .SetParent<SpectrumPhy> ()
     .AddTraceSource ("RxStart",
                      "Data reception start",
-                     MakeTraceSourceAccessor (&LteSimpleSpectrumPhy::m_rxStart))
+                     MakeTraceSourceAccessor (&LteSimpleSpectrumPhy::m_rxStart),
+                     "ns3::SpectrumValue::TracedCallback")
   ;
   return tid;
 }

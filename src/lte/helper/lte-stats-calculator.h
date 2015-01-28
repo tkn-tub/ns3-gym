@@ -27,6 +27,14 @@
 
 namespace ns3 {
 
+/**
+ * \ingroup lte
+ *
+ * Base class for ***StatsCalculator classes. Provides
+ * basic functionality to parse and store IMSI and CellId.
+ * Also stores names of output files.
+ */
+
 class LteStatsCalculator : public Object
 {
 public:
@@ -40,6 +48,10 @@ public:
    */
   virtual ~LteStatsCalculator ();
 
+  /**
+   *  Register this type.
+   *  \return The object TypeId.
+   */
   static TypeId GetTypeId (void);
 
   /**
@@ -112,21 +124,85 @@ public:
 
 protected:
 
+  /**
+   * Retrieves IMSI from Enb RLC path in the attribute system
+   * @param path Path in the attribute system to get
+   * @return the IMSI associated with the given path
+   */
   static uint64_t FindImsiFromEnbRlcPath (std::string path);
+
+  /**
+   * Retrieves IMSI from Ue PHY path in the attribute system
+   * @param path Path in the attribute system to get
+   * @return the IMSI associated with the given path
+   */
   static uint64_t FindImsiFromUePhy (std::string path);
-  static uint64_t FindImsiFromLteNetDevice (std::string path);  
+
+  /**
+   * Retrieves IMSI from LteNetDevice path in the attribute system
+   * @param path Path in the attribute system to get
+   * @return the IMSI associated with the given path
+   */
+  static uint64_t FindImsiFromLteNetDevice (std::string path);
+
+  /**
+   * Retrieves CellId from Enb RLC path in the attribute system
+   * @param path Path in the attribute system to get
+   * @return the CellId associated with the given path
+   */
   static uint16_t FindCellIdFromEnbRlcPath (std::string path);
+
+  /**
+   * Retrieves IMSI from Enb MAC path in the attribute system
+   * @param path Path in the attribute system to get
+   * @param rnti RNTI of UE for which IMSI is needed
+   * @return the IMSI associated with the given path and RNTI
+   */
   static uint64_t FindImsiFromEnbMac (std::string path, uint16_t rnti);
-  static uint16_t FindCellIdFromEnbMac (std::string path, uint16_t rnti);   
-  static uint64_t FindImsiForEnb (std::string path, uint16_t rnti);  
+
+  /**
+   * Retrieves CellId from Enb MAC path in the attribute system
+   * @param path Path in the attribute system to get
+   * @param rnti RNTI of UE for which CellId is needed
+   * @return the CellId associated with the given path and RNTI
+   */
+  static uint16_t FindCellIdFromEnbMac (std::string path, uint16_t rnti);
+
+  /**
+   * Retrieves IMSI from path for Enb in the attribute system
+   * @param path Path in the attribute system to get
+   * @param rnti RNTI of UE for which IMSI is needed
+   * @return the IMSI associated with the given path and RNTI
+   */
+  static uint64_t FindImsiForEnb (std::string path, uint16_t rnti);
+
+  /**
+   * Retrieves IMSI from path for Ue in the attribute system
+   * @param path Path in the attribute system to get
+   * @param rnti RNTI of UE for which IMSI is needed
+   * @return the IMSI associated with the given path and RNTI
+   */
   static uint64_t FindImsiForUe (std::string path, uint16_t rnti);
 
 private:
-
+  /**
+   * List of IMSI by path in the attribute system
+   */
   std::map<std::string, uint64_t> m_pathImsiMap;
+
+  /**
+   * List of CellId by path in the attribute system
+   */
   std::map<std::string, uint16_t> m_pathCellIdMap;
 
+  /**
+   * Name of the file where the downlink results will be saved
+   */
   std::string m_dlOutputFilename;
+
+  /**
+   * Name of the file where the uplink results will be saved
+   */
   std::string m_ulOutputFilename;
 };
 

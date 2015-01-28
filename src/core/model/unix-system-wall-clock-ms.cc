@@ -24,12 +24,19 @@
 #include <sys/times.h>
 #include <unistd.h>
 
+/**
+ * \file
+ * \ingroup system
+ * Wall clock class ns3::SystemWallClockMs implementation
+ * for Unix-like systems.
+ */
+
 namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("SystemWallClockMsPrivate");
 
 /**
- * \ingroup testingimpl
+ * \ingroup system
  * \brief System-dependent implementation for SystemWallClockMs
  */
 class SystemWallClockMsPrivate {

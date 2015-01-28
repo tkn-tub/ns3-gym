@@ -283,6 +283,25 @@ public:
 
   void SetHarqPhyModule (Ptr<LteHarqPhy> harq);
 
+  /**
+   * TracedCallback signature for the linear average of SRS SINRs.
+   *
+   * \param [in] cellId
+   * \param [in] rnti
+   * \param [in] sinrLinear
+   */
+  typedef void (* ReportUeSinrTracedCallback)
+    (const uint16_t cellId, const uint16_t rnti, const double sinrLinear);
+
+  /**
+   * TracedCallback signature for the linear average of SRS SINRs.
+   *
+   * \param [in] cellId
+   * \param [in] spectrumValue
+   */
+  typedef void (* ReportInterferenceTracedCallback)
+    (const uint16_t cellId, const Ptr<const SpectrumValue> spectrumValue);
+
 
 private:
 

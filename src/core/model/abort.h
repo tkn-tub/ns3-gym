@@ -24,116 +24,124 @@
 #include "fatal-error.h"
 
 /**
+ * \file
+ * \ingroup fatal
+ * \brief \c NS_ABORT_x macro definitions.
+ */
+
+/**
  * \ingroup fatal
  *
- * \brief Abnormal program termination
+ * \brief Unconditional abnormal program termination with a message.
  *
- * \param msg message to output when this macro is hit.
+ * \param msg The message to output when this macro is hit.
  *
  * This macro is essentially equivalent to NS_FATAL_ERROR,
  * excepts it prepends the error message with the string
  * "aborted. ". When this macro is hit a runtime, the
- * program will be halted using std::terminate, which
- * triggers clean up code regestered by std::set_terminate.
+ * program will be halted using \c std::terminate, which
+ * triggers clean up code registered by \c std::set_terminate.
  *
- * This macro is enable unconditionally in all builds,
+ * This macro is enabled unconditionally in all builds,
  * including debug and optimized builds.
  *
  * \see NS_FATAL_ERROR
  */
-#define NS_ABORT_MSG(msg)                                       \
-  do {                                                          \
-      std::cerr << "aborted. ";                                   \
-      NS_FATAL_ERROR (msg);                                       \
-    } while (false)
+#define NS_ABORT_MSG(msg)                                              \
+  do {                                                                 \
+      std::cerr << "aborted. ";                                        \
+      NS_FATAL_ERROR (msg);                                            \
+  } while (false)
 
 
 /**
  * \ingroup fatal
  *
- * \brief Abnormal program termination if cond is true.
+ * \brief Abnormal program termination if a condition is \c true.
  *
- * \param cond condition to be evaluated.
+ * \param cond The condition to be evaluated.
  *
- * This is similar to NS_ASSERT(!(cond)), except this check
- * is enabled in all builds. If cond is evaluated to true,
- * the espression evaluating to true is printed to stderr,
+ * This is similar to \c NS_ASSERT(!(cond)), except this check
+ * is enabled in all builds. If \c cond is evaluated to \c true,
+ * the expression for \c cond is printed to \c stderr,
  * followed by a call to the NS_FATAL_ERROR_NO_MSG() macro
  * which prints the details of filename and line number to
- * stderr. The program will be halted by calling
- * std::terminate(), triggering any clean up code registered
- * by std::set_terminate (NS3 default is a stream-flushing
- * code, but may be overridden).
+ * \c stderr. The program will be halted by calling
+ * \c std::terminate(), triggering any clean up code registered
+ * by \c std::set_terminate.  The ns-3 default is a stream-flushing
+ * code, but may be overridden.
  *
- * This macro is enable unconditionally in all builds,
+ * This macro is enabled unconditionally in all builds,
  * including debug and optimized builds.
  */
-#define NS_ABORT_IF(cond)                                               \
-  do {                                                                  \
-      if (cond)                                                           \
-        {                                                                 \
-          std::cerr << "aborted. cond=\"" << # cond << ", ";               \
-          NS_FATAL_ERROR_NO_MSG ();                                       \
-        }                                                                 \
+#define NS_ABORT_IF(cond)                                              \
+  do {                                                                 \
+    if (cond)                                                          \
+      {                                                                \
+        std::cerr << "aborted. cond=\"" << # cond << ", ";             \
+        NS_FATAL_ERROR_NO_MSG ();                                      \
+      }                                                                \
     } while (false)
 
 /**
  * \ingroup fatal
  *
- * \brief Abnormal program termination if cond is true.
+ * \brief Abnormal program termination if a condition is \c true,
+ * with a message.
  *
- * \param cond condition to be evaluated.
- * \param msg message to output when cond is true.
+ * \param cond The ondition to be evaluated.
+ * \param msg The message to output when cond is \c true.
  *
  * This is similar to NS_ASSERT_MSG(!(cond)), except this
- * check is enabled in all builds. If cond is evaluated to
- * true, the espression evaluating to true is printed to
- * stderr, followed by a call to the NS_FATAL_ERROR() macro
+ * check is enabled in all builds. If \c cond is evaluated to
+ * \c true, the expression for \c cond is printed to
+ * \c stderr, followed by a call to the NS_FATAL_ERROR() macro
  * which prints the user-specified error message, and details
- * of filename and line number to stderr. The program will
- * be halted by calling std::terminate(), triggering any
- * clean up code registered by std::set_terminate (NS3
- * default is a stream-flushing code, but may be overridden).
+ * of filename and line number to \c stderr. The program will
+ * be halted by calling \c std::terminate(), triggering any
+ * clean up code registered by \c std::set_terminate. The ns-3
+ * default is a stream-flushing code, but may be overridden.
  *
- * This macro is enable unconditionally in all builds,
+ * This macro is enabled unconditionally in all builds,
  * including debug and optimized builds.
  */
-#define NS_ABORT_MSG_IF(cond, msg)                                      \
-  do {                                                                  \
-      if (cond)                                                           \
-        {                                                                 \
-          std::cerr << "aborted. cond=\"" << # cond << "\", ";             \
-          NS_FATAL_ERROR (msg);                                           \
-        }                                                                 \
-    } while (false)
+#define NS_ABORT_MSG_IF(cond, msg)                                     \
+  do {                                                                 \
+    if (cond)                                                          \
+      {                                                                \
+        std::cerr << "aborted. cond=\"" << # cond << "\", ";           \
+        NS_FATAL_ERROR (msg);                                          \
+      }                                                                \
+  } while (false)
 
 /**
  * \ingroup fatal
  *
- * \brief Abnormal program termination if cond is false.
+ * \brief Abnormal program termination if a condition is \c false.
  *
- * \param cond condition to be evaluated.
+ * \param cond The condition to be evaluated.
  *
  * This is an alias for NS_ABORT_IF(!(cond))
  *
  * \see NS_ABORT_IF
  */
-#define NS_ABORT_UNLESS(cond)                                                       \
+#define NS_ABORT_UNLESS(cond)                                          \
   NS_ABORT_IF (!(cond))
 
 /**
  * \ingroup fatal
  *
- * \brief Abnormal program termination if cond is false.
+ * \brief Abnormal program termination if a condition is \c false,
+ * with a message.
  *
- * \param cond condition to be evaluated.
- * \param msg message to output if cond is false.
+ * \param cond Thecondition to be evaluated.
+ * \param msg The message to output if cond is false.
  *
  * This is an alias for NS_ABORT_MSG_IF(!(cond))
  *
  * \see NS_ABORT_MSG_IF
  */
-#define NS_ABORT_MSG_UNLESS(cond, msg)                                      \
+#define NS_ABORT_MSG_UNLESS(cond, msg)                                 \
   NS_ABORT_MSG_IF (!(cond),msg)
 
 #endif /* NS3_ABORT_H */

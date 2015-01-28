@@ -27,7 +27,7 @@ namespace ns3 {
   
 NS_LOG_COMPONENT_DEFINE ("DataRate");
 
-ATTRIBUTE_HELPER_CPP (DataRate);  //!< Macro to make help make data-rate an ns-3 attribute
+ATTRIBUTE_HELPER_CPP (DataRate);
 
 /* static */
 bool

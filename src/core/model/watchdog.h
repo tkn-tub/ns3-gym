@@ -23,25 +23,48 @@
 #include "nstime.h"
 #include "event-id.h"
 
+/**
+ * \file
+ * \ingroup timer
+ * ns3::Watchdog timer class declaration.
+ */
+
 namespace ns3 {
 
 class TimerImpl;
 
 /**
- * \ingroup core
- * \brief a very simple watchdog
+ * \ingroup timer
+ * \brief A very simple watchdog operating in virtual time.
+ *
+ * The watchdog timer is started by calling Ping with a delay value.
+ * Once started the timer cannot be suspended, cancelled or shortened.
+ * It _can_ be lengthened (delayed) by calling Ping again:  if the new
+ * expire time (current simulation time plus the new delay)
+ * is greater than the old expire time the timer will be extended
+ * to the new expire time.
+ *
+ * Typical usage would be to periodically Ping the Watchdog, extending
+ * it's execution time.  If the owning process fails to Ping before
+ * the Watchdog expires, the registered function will be invoked.
  *
  * If you don't ping the watchdog sufficiently often, it triggers its
  * listening function.
+ *
+ * \see Timer for a more sophisticated general purpose timer.
  */
 class Watchdog 
 {
 public:
+  /** Constructor. */
   Watchdog ();
+  /** Destructor. */
   ~Watchdog ();
 
   /**
-   * \param delay the watchdog delay
+   * Delay the timer.
+   *
+   * \param delay The watchdog delay
    *
    * After a call to this method, the watchdog will not be triggered
    * until the delay specified has been expired. This operation is
@@ -50,7 +73,9 @@ public:
   void Ping (Time delay);
 
   /**
-   * \param fn the function
+   * Set the function to execute when the timer expires.
+   *
+   * \param fn The function
    *
    * Store this function in this Timer for later use by Timer::Schedule.
    */
@@ -58,8 +83,12 @@ public:
   void SetFunction (FN fn);
 
   /**
-   * \param memPtr the member function pointer
-   * \param objPtr the pointer to object
+   * Set the function to execute when the timer expires.
+   *
+   * \tparam MEM_PTR Class method function type.
+   * \tparam OBJ_PTR Class type containing the function.
+   * \param memPtr The member function pointer
+   * \param objPtr The pointer to object
    *
    * Store this function and object in this Timer for later use by Timer::Schedule.
    */
@@ -68,71 +97,97 @@ public:
 
 
   /**
-   * \param a1 the first argument
-   *
-   * Store this argument in this Timer for later use by Timer::Schedule.
+   * Set the arguments to be used when invoking the expire function.
+   */
+  /**@{*/
+  /**
+   * \tparam T1 Type of the first argument.
+   * \param a1 The first argument
    */
   template <typename T1>
   void SetArguments (T1 a1);
   /**
+   * \tparam T1 Type of the first argument.
+   * \tparam T2 Type of the second argument.
    * \param a1 the first argument
    * \param a2 the second argument
-   *
-   * Store these arguments in this Timer for later use by Timer::Schedule.
    */
   template <typename T1, typename T2>
   void SetArguments (T1 a1, T2 a2);
   /**
+   * \tparam T1 Type of the first argument.
+   * \tparam T2 Type of the second argument.
+   * \tparam T3 Type of the third argument.
    * \param a1 the first argument
    * \param a2 the second argument
    * \param a3 the third argument
-   *
-   * Store these arguments in this Timer for later use by Timer::Schedule.
    */
   template <typename T1, typename T2, typename T3>
   void SetArguments (T1 a1, T2 a2, T3 a3);
   /**
+   * \tparam T1 Type of the first argument.
+   * \tparam T2 Type of the second argument.
+   * \tparam T3 Type of the third argument.
+   * \tparam T4 Type of the fourth argument.
    * \param a1 the first argument
    * \param a2 the second argument
    * \param a3 the third argument
    * \param a4 the fourth argument
-   *
-   * Store these arguments in this Timer for later use by Timer::Schedule.
    */
   template <typename T1, typename T2, typename T3, typename T4>
   void SetArguments (T1 a1, T2 a2, T3 a3, T4 a4);
   /**
+   * \tparam T1 Type of the first argument.
+   * \tparam T2 Type of the second argument.
+   * \tparam T3 Type of the third argument.
+   * \tparam T4 Type of the fourth argument.
+   * \tparam T5 Type of the fifth argument.
    * \param a1 the first argument
    * \param a2 the second argument
    * \param a3 the third argument
    * \param a4 the fourth argument
    * \param a5 the fifth argument
-   *
-   * Store these arguments in this Timer for later use by Timer::Schedule.
    */
   template <typename T1, typename T2, typename T3, typename T4, typename T5>
   void SetArguments (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5);
   /**
+   * \tparam T1 Type of the first argument.
+   * \tparam T2 Type of the second argument.
+   * \tparam T3 Type of the third argument.
+   * \tparam T4 Type of the fourth argument.
+   * \tparam T5 Type of the fifth argument.
+   * \tparam T6 Type of the sixth argument.
    * \param a1 the first argument
    * \param a2 the second argument
    * \param a3 the third argument
    * \param a4 the fourth argument
    * \param a5 the fifth argument
    * \param a6 the sixth argument
-   *
-   * Store these arguments in this Timer for later use by Timer::Schedule.
    */
   template <typename T1, typename T2, typename T3, typename T4, typename T5, typename T6>
   void SetArguments (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5, T6 a6);
+  /**@}*/
 
 private:
+  /** Internal callback invoked when the timer expires. */
   void Expire (void);
+  /**
+   * The timer implementation, which contains the bound callback
+   * function and arguments.
+   */
   TimerImpl *m_impl;
+  /** The future event scheduled to expire the timer. */
   EventId m_event;
+  /** The absolute time when the timer will expire. */
   Time m_end;
 };
 
 } // namespace ns3
+
+
+/********************************************************************
+ *  Implementation of the templates declared above.
+ ********************************************************************/
 
 #include "timer-impl.h"
 

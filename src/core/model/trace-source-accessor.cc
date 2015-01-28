@@ -20,6 +20,12 @@
 #include "trace-source-accessor.h"
 #include "log.h"
 
+/**
+ * \file
+ * \ingroup tracing
+ * ns3::TraceSourceAccessor implementation (constructor and destructor).
+ */
+
 namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("TraceSourceAccessor");

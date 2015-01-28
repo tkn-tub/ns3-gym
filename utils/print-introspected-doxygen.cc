@@ -71,7 +71,6 @@ namespace
   std::string sectionStart;        ///< start of a section or group
   std::string seeAlso;             ///< Reference to other docs
   std::string subSectionStart;     ///< start a new subsection
-  std::string temporaryCharacter;  ///< "%" placeholder
   std::string variable;            ///< variable or class member
 
 } // anonymous namespace
@@ -119,7 +118,6 @@ SetMarkup (bool outputText)
       sectionStart                 = "Section ";
       seeAlso                      = "  See: ";
       subSectionStart              = "Subsection ";
-      temporaryCharacter           = "";
       variable                     = "Variable: ";
     }
   else
@@ -155,7 +153,6 @@ SetMarkup (bool outputText)
       sectionStart                 = "\\ingroup ";
       seeAlso                      = "\\see ";
       subSectionStart              = "\\addtogroup ";
-      temporaryCharacter           = "%";
       variable                     = "\\var ";
     }
 }  // SetMarkup ()
@@ -988,14 +985,6 @@ private:
    */
   bool HasAlreadyBeenProcessed (TypeId tid) const;
   /**
-   * (Inplace) find and replace all instances of string
-   *
-   * \param source [inout] string to search and replace in
-   * \param find [in] string to search for
-   * \param replace [in] string to insert in place of find
-   */
-  void find_and_replace (std::string &source, const std::string find, std::string replace );
-  /**
    * Configuration path for each TypeId
    */
   std::vector<std::pair<TypeId,std::string> > m_output;
@@ -1153,10 +1142,7 @@ StaticInformation::DoGather (TypeId tid)
       TypeId child = TypeId::GetRegistered (j);
       if (child.IsChildOf (tid))
         {
-          //please take a look at the following note for an explanation 
-          std::string childName = "$" + temporaryCharacter + child.GetName ();
-          std::string replaceWith = "::" + temporaryCharacter;
-          find_and_replace(childName,"::",replaceWith);
+          std::string childName = "$" + child.GetName ();
           m_currentPath.push_back (childName);
           m_alreadyProcessed.push_back (tid);
           DoGather (child);
@@ -1178,21 +1164,7 @@ StaticInformation::DoGather (TypeId tid)
             {
               other = tmp.first;
             }
-          /**
-           * Note: for the Doxygen version only, we insert a % in the
-           * path below to ensure that doxygen does not attempt to
-           * resolve the typeid names included in the string.  if the
-           * name contains ::, using the % sign will remove that sign
-           * resulting for instance in $ns3MobilityModel instead of
-           * $ns3::MobilityModel hence the output must be in the form
-           * $%ns3::%MobilityModel in order to show correctly
-           * $ns3::MobilityModel We add at the beginning of the name
-           * $% and we replace all the :: in the string by ::%.
-           */  
-          std::string name = "$" + temporaryCharacter + other.GetName ();
-          //finding and replacing :: by ::% (for Doxygen version only).
-          std::string replaceWith = "::" + temporaryCharacter;
-          find_and_replace(name,"::",replaceWith);
+          std::string name = "$" + other.GetName ();
           m_currentPath.push_back (name);
           m_alreadyProcessed.push_back (tid);
           DoGather (other);
@@ -1201,20 +1173,6 @@ StaticInformation::DoGather (TypeId tid)
         }
     }
 }  // StaticInformation::DoGather ()
-
-
-void 
-StaticInformation::find_and_replace( std::string &source, const std::string find, std::string replace )
-{
-  NS_LOG_FUNCTION (this << source << find << replace);
-  size_t j; 
-  j = source.find (find);
-  while (j != std::string::npos ) 
-    {
-      source.replace (j, find.length (),replace);
-      j = source.find (find,j+1);
-    }
-}
 
 
 StaticInformation
@@ -1333,8 +1291,8 @@ PrintConfigPaths (std::ostream & os, const StaticInformation & info,
 	{
 	  std::string path = paths[k];
 	  os << listLineStart
-	     <<   "\"" << path << "\""
-	     << listLineStop
+             <<   "\"" << path << "\""
+	     <<  listLineStop 
 	     << breakTextOnly
 	     << std::endl;
 	}

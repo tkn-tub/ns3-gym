@@ -48,7 +48,6 @@ public:
 private:
   void SendData (uint8_t index);
   void ShutDownSock (uint8_t index);
-  void SinkRx (std::string path, Ptr<const Packet> p, const Address &address);
   void HandleRead (Ptr<Socket>);
   virtual void DoRun (void);
 
@@ -83,21 +82,6 @@ Ipv4DynamicGlobalRoutingTestCase::~Ipv4DynamicGlobalRoutingTestCase ()
           iter->first = 0;
         }
     }
-}
-
-void
-Ipv4DynamicGlobalRoutingTestCase::SinkRx (std::string path, Ptr<const Packet> p, const Address& address)
-{
-  Ipv4PacketInfoTag tag;
-  bool found;
-  found = p->PeekPacketTag (tag);
-  uint8_t now = static_cast<uint8_t> (Simulator::Now ().GetSeconds ());
-  if (found)
-    {
-      ;
-    }
-  m_firstInterface[now]++;
-  m_count++;
 }
 
 void 
@@ -140,7 +124,7 @@ Ipv4DynamicGlobalRoutingTestCase::SendData (uint8_t index)
   Ptr<Packet> packet = Create<Packet> (m_packetSize);
   m_sendSocks[index].first->Send (packet);
 
-  Time tNext (Seconds (m_packetSize * 8 / static_cast<double> (m_dataRate.GetBitRate ())));
+  Time tNext (MicroSeconds (m_packetSize * 8 * 1e6 / m_dataRate.GetBitRate ()));
   Simulator::Schedule (tNext, &Ipv4DynamicGlobalRoutingTestCase::SendData, this, index);
 }
 
@@ -260,10 +244,6 @@ Ipv4DynamicGlobalRoutingTestCase::DoRun (void)
   // The first ifIndex is 0 for loopback, then the first p2p is numbered 1,
   // then the next p2p is numbered 2
   uint32_t ipv4ifIndex1 = 2;
-
-  // Trace receptions
-  Config::Connect ("/NodeList/6/ApplicationList/*/$ns3::PacketSink/Rx",
-                   MakeCallback (&Ipv4DynamicGlobalRoutingTestCase::SinkRx, this));
 
   Simulator::Schedule (Seconds (2), &Ipv4::SetDown,ipv41, ipv4ifIndex1);
   Simulator::Schedule (Seconds (4), &Ipv4::SetUp,ipv41, ipv4ifIndex1);

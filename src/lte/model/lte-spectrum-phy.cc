@@ -189,19 +189,24 @@ LteSpectrumPhy::GetTypeId (void)
     .SetParent<SpectrumPhy> ()
     .AddTraceSource ("TxStart",
                      "Trace fired when a new transmission is started",
-                     MakeTraceSourceAccessor (&LteSpectrumPhy::m_phyTxStartTrace))
+                     MakeTraceSourceAccessor (&LteSpectrumPhy::m_phyTxStartTrace),
+                     "ns3::PacketBurst::TracedCallback")
     .AddTraceSource ("TxEnd",
                      "Trace fired when a previosuly started transmission is finished",
-                     MakeTraceSourceAccessor (&LteSpectrumPhy::m_phyTxEndTrace))
+                     MakeTraceSourceAccessor (&LteSpectrumPhy::m_phyTxEndTrace),
+                     "ns3::PacketBurst::TracedCallback")
     .AddTraceSource ("RxStart",
                      "Trace fired when the start of a signal is detected",
-                     MakeTraceSourceAccessor (&LteSpectrumPhy::m_phyRxStartTrace))
+                     MakeTraceSourceAccessor (&LteSpectrumPhy::m_phyRxStartTrace),
+                     "ns3::PacketBurst::TracedCallback")
     .AddTraceSource ("RxEndOk",
                      "Trace fired when a previosuly started RX terminates successfully",
-                     MakeTraceSourceAccessor (&LteSpectrumPhy::m_phyRxEndOkTrace))
+                     MakeTraceSourceAccessor (&LteSpectrumPhy::m_phyRxEndOkTrace),
+                     "ns3::Packet::TracedCallback")
     .AddTraceSource ("RxEndError",
                      "Trace fired when a previosuly started RX terminates with an error",
-                     MakeTraceSourceAccessor (&LteSpectrumPhy::m_phyRxEndErrorTrace))
+                     MakeTraceSourceAccessor (&LteSpectrumPhy::m_phyRxEndErrorTrace),
+                     "ns3::Packet::TracedCallback")
     .AddAttribute ("DataErrorModelEnabled",
                     "Activate/Deactivate the error model of data (TBs of PDSCH and PUSCH) [by default is active].",
                     BooleanValue (true),
@@ -214,10 +219,12 @@ LteSpectrumPhy::GetTypeId (void)
                     MakeBooleanChecker ())
     .AddTraceSource ("DlPhyReception",
                      "DL reception PHY layer statistics.",
-                     MakeTraceSourceAccessor (&LteSpectrumPhy::m_dlPhyReception))
+                     MakeTraceSourceAccessor (&LteSpectrumPhy::m_dlPhyReception),
+                     "ns3::PhyReceptionStatParameters::TracedCallback")
     .AddTraceSource ("UlPhyReception",
                      "DL reception PHY layer statistics.",
-                     MakeTraceSourceAccessor (&LteSpectrumPhy::m_ulPhyReception))
+                     MakeTraceSourceAccessor (&LteSpectrumPhy::m_ulPhyReception),
+                     "ns3::PhyReceptionStatParameters::TracedCallback")
   ;
   return tid;
 }

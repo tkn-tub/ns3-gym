@@ -46,6 +46,8 @@ class LrWpanCsmaCa;
  */
 
 /**
+ * \ingroup lr-wpan
+ *
  * Tx options
  */
 typedef enum
@@ -57,6 +59,8 @@ typedef enum
 } LrWpanTxOption;
 
 /**
+ * \ingroup lr-wpan
+ *
  * MAC states
  */
 typedef enum
@@ -71,6 +75,8 @@ typedef enum
 } LrWpanMacState;
 
 /**
+ * \ingroup lr-wpan
+ *
  * table 80 of 802.15.4
  */
 typedef enum
@@ -82,6 +88,8 @@ typedef enum
 } LrWpanAddressMode;
 
 /**
+ * \ingroup lr-wpan
+ *
  * table 83 of 802.15.4
  */
 typedef enum
@@ -94,6 +102,8 @@ typedef enum
 } LrWpanAssociationStatus;
 
 /**
+ * \ingroup lr-wpan
+ *
  * Table 42 of 802.15.4-2006
  */
 typedef enum
@@ -114,6 +124,8 @@ typedef enum
 
 
 /**
+ * \ingroup lr-wpan
+ *
  * MCPS-DATA.request params. See 7.1.1.1
  */
 struct McpsDataRequestParams
@@ -136,6 +148,8 @@ struct McpsDataRequestParams
 };
 
 /**
+ * \ingroup lr-wpan
+ *
  * MCPS-DATA.confirm params. See 7.1.1.2
  */
 struct McpsDataConfirmParams
@@ -145,6 +159,8 @@ struct McpsDataConfirmParams
 };
 
 /**
+ * \ingroup lr-wpan
+ *
  * MCPS-DATA.indication params. See 7.1.1.3
  */
 struct McpsDataIndicationParams
@@ -160,6 +176,8 @@ struct McpsDataIndicationParams
 };
 
 /**
+ * \ingroup lr-wpan
+ *
  * This callback is called after a McpsDataRequest has been called from
  * the higher layer.  It returns a status of the outcome of the
  * transmission request
@@ -167,6 +185,8 @@ struct McpsDataIndicationParams
 typedef Callback<void, McpsDataConfirmParams> McpsDataConfirmCallback;
 
 /**
+ * \ingroup lr-wpan
+ *
  * This callback is called after a Mcps has successfully received a
  *  frame and wants to deliver it to the higher layer.
  *
@@ -498,6 +518,26 @@ public:
    */
   void SetMacMaxFrameRetries (uint8_t retries);
 
+  /**
+   * TracedCallback signature for sent packets.
+   *
+   * \param [in] packet The packet.
+   * \param [in] retries The number of retries.
+   * \param [in] backoffs The number of CSMA backoffs.
+   */
+  typedef void (* SentTracedCallback)
+    (const Ptr<const Packet> packet, const uint8_t retries,
+     const uint8_t backoffs);
+
+  /**
+   * TracedCallback signature for LrWpanMacState change events.
+   *
+   * \param [in] oldValue The original state value.
+   * \param [in] newValue The new state value.
+   */
+  typedef void (* StateTracedCallback)
+    (const LrWpanMacState oldState, const LrWpanMacState newState);
+  
 protected:
   // Inherited from Object.
   virtual void DoInitialize (void);
@@ -676,6 +716,8 @@ private:
   /**
    * A trace source that fires when the LrWpanMac changes states.
    * Parameters are the old mac state and the new mac state.
+   *
+   * \todo This should be a TracedValue
    */
   TracedCallback<LrWpanMacState, LrWpanMacState> m_macStateLogger;
 

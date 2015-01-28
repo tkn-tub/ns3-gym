@@ -19,6 +19,12 @@
 
 #include "type-name.h"
 
+/**
+ * \file
+ * \ingroup attributeimpl
+ * ns3::TypeNameGet() function implementations.
+ */
+
 namespace ns3 {
 
 template <> std::string TypeNameGet< int8_t  > (void) { return "int8_t"  ; }
