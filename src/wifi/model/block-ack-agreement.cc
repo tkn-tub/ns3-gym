@@ -27,6 +27,7 @@ NS_LOG_COMPONENT_DEFINE ("BlockAckAgreement");
 BlockAckAgreement::BlockAckAgreement ()
   : m_amsduSupported (0),
     m_blockAckPolicy (1),
+    m_htSupported (0),
     m_inactivityEvent ()
 {
   NS_LOG_FUNCTION (this);
@@ -35,6 +36,7 @@ BlockAckAgreement::BlockAckAgreement ()
 BlockAckAgreement::BlockAckAgreement (Mac48Address peer, uint8_t tid)
   : m_amsduSupported (0),
     m_blockAckPolicy (1),
+    m_htSupported (0),
     m_inactivityEvent ()
 {
   NS_LOG_FUNCTION (this << peer << static_cast<uint32_t> (tid));
@@ -136,6 +138,28 @@ BlockAckAgreement::IsAmsduSupported (void) const
 {
   NS_LOG_FUNCTION (this);
   return (m_amsduSupported == 1) ? true : false;
+}
+uint16_t
+BlockAckAgreement::GetWinEnd (void) const
+{
+  return m_winEnd;
+}
+void
+BlockAckAgreement::SetWinEnd (uint16_t seq)
+{
+  m_winEnd = seq;
+}
+void
+BlockAckAgreement::SetHtSupported (bool htSupported)
+{
+  NS_LOG_FUNCTION (this << htSupported);
+  m_htSupported = htSupported;
+}
+bool
+BlockAckAgreement::IsHtSupported (void) const
+{
+    NS_LOG_FUNCTION (this);
+    return (m_htSupported == 1) ? true : false;
 }
 
 } // namespace ns3

@@ -141,13 +141,12 @@ public:
    * \return type of station
    */
   enum TypeOfStation GetTypeOfStation (void) const;
-
   /**
    * Return the packet queue associated with this EdcaTxopN.
    *
    * \return WifiMacQueue
    */
-  Ptr<WifiMacQueue > GetQueue () const;
+  Ptr<WifiMacQueue > GetEdcaQueue () const;
   virtual void SetMinCw (uint32_t minCw);
   virtual void SetMaxCw (uint32_t maxCw);
   virtual void SetAifsn (uint32_t aifsn);
@@ -162,6 +161,39 @@ public:
    */
   Ptr<MacLow> Low (void);
   Ptr<MsduAggregator> GetMsduAggregator (void) const;
+  /**
+   * \param recipient address of the peer station
+   * \param tid traffic ID.
+   * \return true if a block ack agreement exists, false otherwise
+   *
+   * Checks if a block ack agreement exists with station addressed by
+   * <i>recipient</i> for tid <i>tid</i>.
+   */
+  bool GetBaAgreementExists (Mac48Address address, uint8_t tid);
+  /**
+   * \param recipient address of peer station involved in block ack mechanism.
+   * \param tid traffic ID.
+   * \return the number of packets buffered for a specified agreement
+   *
+   * Returns number of packets buffered for a specified agreement. 
+   */
+  uint32_t GetNOutstandingPacketsInBa (Mac48Address address, uint8_t tid);
+  /**
+   * \param recipient address of peer station involved in block ack mechanism.
+   * \param tid traffic ID.
+   * \return the number of packets for a specific agreement that need retransmission
+   *
+   * Returns number of packets for a specific agreement that need retransmission.
+   */
+  uint32_t GetNRetryNeededPackets (Mac48Address recipient, uint8_t tid) const;
+  /**
+   * \param recipient address of peer station involved in block ack mechanism.
+   * \param tid Ttraffic ID of transmitted packet.
+   *
+   * This function resets the status of OriginatorBlockAckAgreement after the transfer
+   * of an A-MPDU with ImmediateBlockAck policy (i.e. no BAR is scheduled)
+   */
+  void CompleteAmpduTransfer(Mac48Address recipient, uint8_t tid);
 
   /* dcf notifications forwarded here */
   /**
@@ -220,8 +252,9 @@ public:
    *
    * \param blockAck
    * \param recipient
+   * \param txMode
    */
-  void GotBlockAck (const CtrlBAckResponseHeader *blockAck, Mac48Address recipient);
+  void GotBlockAck (const CtrlBAckResponseHeader *blockAck, Mac48Address recipient, WifiMode txMode);
   /**
    * Event handler when a Block ACK timeout has occurred.
    */
@@ -246,7 +279,6 @@ public:
    * does not require an ACK has completed.
    */
   void EndTxNoAck (void);
-
   /**
    * Restart access request if needed.
    */
@@ -273,6 +305,12 @@ public:
    * \return true if DATA should be re-transmitted, false otherwise
    */
   bool NeedDataRetransmission (void);
+  /**
+   * Check if Block ACK Request should be re-transmitted.
+   *
+   * \return true if BAR should be re-transmitted, false otherwise
+   */
+  bool NeedBarRetransmission (void);
   /**
    * Check if the current packet should be fragmented.
    *
@@ -319,7 +357,6 @@ public:
    * \return the fragment with the current fragment number
    */
   Ptr<Packet> GetFragmentPacket (WifiMacHeader *hdr);
-
   /**
    * Set the access category of this EDCAF.
    *
@@ -360,8 +397,46 @@ public:
    * \return the current threshold for block ACK mechanism
    */
   uint8_t GetBlockAckThreshold (void) const;
+    
   void SetBlockAckInactivityTimeout (uint16_t timeout);
   void SendDelbaFrame (Mac48Address addr, uint8_t tid, bool byOriginator);
+  void CompleteMpduTx (Ptr<const Packet> packet, WifiMacHeader hdr, Time tstamp);
+  bool GetAmpduExist (void);
+  void SetAmpduExist (bool ampdu);
+  /**
+   * Return the next sequence number for the given header.
+   *
+   * \param hdr Wi-Fi header
+   * \return the next sequence number
+   */
+  uint16_t GetNextSequenceNumberfor (WifiMacHeader *hdr);
+  /**
+   * Return the next sequence number for the Traffic ID and destination, but do not pick it (i.e. the current sequence number remains unchanged).
+   *
+   * \param hdr Wi-Fi header
+   * \return the next sequence number
+   */
+  uint16_t PeekNextSequenceNumberfor (WifiMacHeader *hdr);
+  /**
+   * Remove a packet after you peek in the retransmit queue and get it
+   */
+  void RemoveRetransmitPacket (uint8_t tid, Mac48Address recipient, uint16_t seqnumber);
+  /*
+   * Peek in retransmit queue and get the next packet without removing it from the queue
+   */
+  Ptr<const Packet> PeekNextRetransmitPacket (WifiMacHeader &header, Mac48Address recipient, uint8_t tid, Time *timestamp);
+  /**
+   * The packet we sent was successfully received by the receiver
+   *
+   * \param hdr the header of the packet that we successfully sent
+   */
+  void BaTxOk (const WifiMacHeader &hdr);
+  /**
+   * The packet we sent was successfully received by the receiver
+   *
+   * \param hdr the header of the packet that we failed to sent
+   */
+  void BaTxFailed (const WifiMacHeader &hdr);
 
  /**
   * Assign a fixed random variable stream number to the random variables
@@ -466,6 +541,7 @@ private:
   Time m_currentPacketTimestamp;
   uint16_t m_blockAckInactivityTimeout;
   struct Bar m_currentBar;
+  bool m_ampduExist;
 };
 
 }  // namespace ns3

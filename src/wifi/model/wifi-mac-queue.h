@@ -135,12 +135,14 @@ public:
    * \param tid the given TID
    * \param type the given address type
    * \param addr the given destination
+   * \param timestamp
    * \return packet
    */
   Ptr<const Packet> PeekByTidAndAddress (WifiMacHeader *hdr,
                                          uint8_t tid,
                                          WifiMacHeader::AddressType type,
-                                         Mac48Address addr);
+                                         Mac48Address addr,
+                                         Time *timestamp);
   /**
    * If exists, removes <i>packet</i> from queue and returns true. Otherwise it
    * takes no effects and return false. Deletion of the packet is
@@ -205,6 +207,7 @@ public:
    * \return the current queue size
    */
   uint32_t GetSize (void);
+
 protected:
   /**
    * Clean up the queue by removing packets that exceeded the maximum delay.

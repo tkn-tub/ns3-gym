@@ -646,7 +646,7 @@ public:
    */
   uint32_t GetNumberOfTransmitAntennas (const WifiRemoteStation *station) const;
   /**
-   * Return the Number of extension spatial streams (Ness) the station has.
+   * \returns the number of Ness the station has.
    *
    * \param station the station being queried
    * \return the number of Ness the station has

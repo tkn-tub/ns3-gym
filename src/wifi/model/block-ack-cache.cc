@@ -39,6 +39,12 @@ BlockAckCache::Init (uint16_t winStart, uint16_t winSize)
   memset (m_bitmap, 0, sizeof (m_bitmap));
 }
 
+uint16_t
+BlockAckCache::GetWinStart ()
+{
+  return m_winStart;
+}
+
 void
 BlockAckCache::UpdateWithMpdu (const WifiMacHeader *hdr)
 {

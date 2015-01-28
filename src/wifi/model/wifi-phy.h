@@ -209,8 +209,9 @@ public:
    *        this packet, and txPowerLevel, a power level to use to send this packet. The real transmission
    *        power is calculated as txPowerMin + txPowerLevel * (txPowerMax - txPowerMin) / nTxLevels
    * \param preamble the type of preamble to use to send this packet.
+   * \param packetType the type of the packet 0 is not A-MPDU, 1 is a MPDU that is part of an A-MPDU and 2 is the last MPDU in an A-MPDU
    */
-  virtual void SendPacket (Ptr<const Packet> packet, WifiTxVector txvector, enum WifiPreamble preamble) = 0;
+  virtual void SendPacket (Ptr<const Packet> packet, WifiTxVector txvector, enum WifiPreamble preamble, uint8_t packetType) = 0;
 
   /**
    * \param listener the new listener
@@ -288,10 +289,12 @@ public:
    * \param txvector the transmission parameters used for this packet
    * \param preamble the type of preamble to use for this packet.
    * \param frequency the channel center frequency (MHz)
+   * \param packetType the type of the packet 0 is not A-MPDU, 1 is a MPDU that is part of an A-MPDU  and 2 is the last MPDU in an A-MPDU
+   * \param incFlag this flag is used to indicate that the static variables need to be update or not. This function is called a couple of times for the same packet so static variables should not be increased each time. 
    * \return the total amount of time this PHY will stay busy for
    *          the transmission of these bytes.
    */
-  static Time CalculateTxDuration (uint32_t size, WifiTxVector txvector, enum WifiPreamble preamble, double frequency);
+  Time CalculateTxDuration (uint32_t size, WifiTxVector txvector, enum WifiPreamble preamble, double frequency, uint8_t packetType, uint8_t incFlag);
 
   /**
    * \param preamble the type of preamble
@@ -307,13 +310,14 @@ public:
    * \return the WifiMode used for the transmission of the HT-SIG in Mixed Format and greenfield format PLCP header 
    */
   static WifiMode GetMFPlcpHeaderMode (WifiMode payloadMode, WifiPreamble preamble);
-  /**
+  /** 
    * \param payloadMode the WifiMode use for the transmission of the payload
    * \param preamble the type of preamble
    * 
    * \return the duration of the HT-SIG in Mixed Format and greenfield format PLCP header 
    */
   static Time GetPlcpHtSigHeaderDuration (WifiMode payloadMode, WifiPreamble preamble);
+
 
   /** 
    * \param payloadMode the WifiMode use for the transmission of the payload
@@ -342,11 +346,14 @@ public:
   /** 
    * \param size the number of bytes in the packet to send
    * \param txvector the transmission parameters used for this packet
+   * \param preamble the type of preamble to use for this packet.
    * \param frequency the channel center frequency (MHz)
+   * \param packetType the type of the packet 0 is not A-MPDU, 1 is a MPDU that is part of an A-MPDU  and 2 is the last MPDU in an A-MPDU
+   * \param incFlag this flag is used to indicate that the static variables need to be update or not. This function is called a couple of times for the same packet so static variables should not be increased each time
    * 
    * \return the duration of the payload
    */
-  static Time GetPayloadDuration (uint32_t size, WifiTxVector txvector, double frequency);
+  Time GetPayloadDuration (uint32_t size, WifiTxVector txvector, WifiPreamble preamble, double frequency, uint8_t packetType, uint8_t incFlag);
 
   /**
    * The WifiPhy::GetNModes() and WifiPhy::GetMode() methods are used
@@ -1214,7 +1221,9 @@ private:
    * \see class CallBackTraceSource
    */
   TracedCallback<Ptr<const Packet>, uint16_t, uint16_t, uint32_t, bool,uint8_t> m_phyMonitorSniffTxTrace;
-
+    
+  uint32_t m_totalAmpduNumSymbols; //!< Number of symbols previously transmitted for the MPDUs in an A-MPDU, used for the computation of the number of symbols needed for the last MPDU in the A-MPDU
+  uint32_t m_totalAmpduSize;       //!< Total size of the previously transmitted MPDUs in an A-MPDU, used for the computation of the number of symbols needed for the last MPDU in the A-MPDU
 };
 
 /**

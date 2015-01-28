@@ -106,11 +106,15 @@ public:
    * \param rxPowerDbm the receive power in dBm
    * \param txVector the TXVECTOR of the arriving packet
    * \param preamble the preamble of the arriving packet
+   * \param packetType The type of the received packet (values: 0 not an A-MPDU, 1 corresponds to any packets in an A-MPDU except the last one, 2 is the last packet in an A-MPDU) 
+   * \param rxDuration the duration needed for the reception of the arriving packet
    */
   void StartReceivePacket (Ptr<Packet> packet,
                            double rxPowerDbm,
                            WifiTxVector txVector,
-                           WifiPreamble preamble);
+                           WifiPreamble preamble,
+                           uint8_t packetType,
+                           Time rxDuration);
 
   /**
    * Sets the RX loss (dB) in the Signal-to-Noise-Ratio due to non-idealities in the receiver.
@@ -251,7 +255,7 @@ public:
   virtual uint32_t GetNTxPower (void) const;
   virtual void SetReceiveOkCallback (WifiPhy::RxOkCallback callback);
   virtual void SetReceiveErrorCallback (WifiPhy::RxErrorCallback callback);
-  virtual void SendPacket (Ptr<const Packet> packet, WifiTxVector txvector, enum WifiPreamble preamble);
+  virtual void SendPacket (Ptr<const Packet> packet, WifiTxVector txvector, enum WifiPreamble preamble, uint8_t packetType);
   virtual void RegisterListener (WifiPhyListener *listener);
   virtual void UnregisterListener (WifiPhyListener *listener);
   virtual void SetSleepMode (void);
@@ -463,6 +467,9 @@ private:
   void EndReceive (Ptr<Packet> packet, Ptr<InterferenceHelper::Event> event);
 
 private:
+  virtual void DoInitialize (void);
+
+  bool     m_initialized;         //!< Flag for runtime initialization
   double   m_edThresholdW;        //!< Energy detection threshold in watts
   double   m_ccaMode1ThresholdW;  //!< Clear channel assessment (CCA) threshold in watts
   double   m_txGainDb;            //!< Transmission gain (dB)
@@ -532,7 +539,7 @@ private:
   Ptr<WifiPhyStateHelper> m_state;      //!< Pointer to WifiPhyStateHelper
   InterferenceHelper m_interference;    //!< Pointer to InterferenceHelper
   Time m_channelSwitchDelay;            //!< Time required to switch between channel
-
+  uint16_t m_mpdusNum;                  //!< carries the number of expected mpdus that are part of an A-MPDU
 };
 
 } // namespace ns3

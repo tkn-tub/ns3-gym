@@ -38,7 +38,13 @@ public:
   void Init (uint16_t winStart, uint16_t winSize);
 
   void UpdateWithMpdu (const WifiMacHeader *hdr);
-  void UpdateWithBlockAckReq (uint16_t startingSeq);
+    void UpdateWithBlockAckReq (uint16_t startingSeq);
+ /**
+  * When an A-MPDU is received, the window start may change to a new value
+  * depending on the sequence number of the received MPDU (standard11n page 134).
+  * This function is used to retrieve this value in order to add it to the BlockAck.
+  */
+  uint16_t GetWinStart (void);
 
   void FillBlockAckBitmap (CtrlBAckResponseHeader *blockAckHeader);
 private:

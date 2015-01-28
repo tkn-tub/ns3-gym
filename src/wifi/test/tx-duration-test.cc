@@ -23,7 +23,7 @@
 #include <ns3/test.h>
 #include <iostream>
 #include "ns3/interference-helper.h"
-#include "ns3/wifi-phy.h"
+#include "ns3/yans-wifi-phy.h"
 
 using namespace ns3;
 
@@ -50,7 +50,7 @@ private:
    *
    * @return true if values correspond, false otherwise
    */
-  bool CheckPayloadDuration (uint32_t size, WifiMode payloadMode,  uint32_t knownDurationMicroSeconds);
+  bool CheckPayloadDuration (uint32_t size, WifiMode payloadMode, WifiPreamble preamble, uint32_t knownDurationMicroSeconds);
 
   /**
    * Check if the overall tx duration returned by InterferenceHelper
@@ -63,7 +63,7 @@ private:
    *
    * @return true if values correspond, false otherwise
    */
-  bool CheckTxDuration (uint32_t size, WifiMode payloadMode,  WifiPreamble preamble, double knownDurationMicroSeconds);
+  bool CheckTxDuration (uint32_t size, WifiMode payloadMode, WifiPreamble preamble, double knownDurationMicroSeconds);
 
 };
 
@@ -79,17 +79,18 @@ TxDurationTest::~TxDurationTest ()
 }
 
 bool
-TxDurationTest::CheckPayloadDuration (uint32_t size, WifiMode payloadMode, uint32_t knownDurationMicroSeconds)
+TxDurationTest::CheckPayloadDuration (uint32_t size, WifiMode payloadMode, WifiPreamble preamble, uint32_t knownDurationMicroSeconds)
 {
   WifiTxVector txVector;
   txVector.SetMode (payloadMode);
   double testedFrequency = CHANNEL_1_MHZ;
+  Ptr<YansWifiPhy> phy = CreateObject<YansWifiPhy> ();
   if (payloadMode.GetModulationClass () == WIFI_MOD_CLASS_OFDM || 
       payloadMode.GetModulationClass () == WIFI_MOD_CLASS_HT)
     {
       testedFrequency = CHANNEL_36_MHZ;
     }
-  double calculatedDurationMicroSeconds = WifiPhy::GetPayloadDuration (size, txVector, testedFrequency).GetMicroSeconds();
+  double calculatedDurationMicroSeconds = (double)phy->GetPayloadDuration (size, txVector, preamble, testedFrequency, 0, 0).GetMicroSeconds();;
   if (calculatedDurationMicroSeconds != knownDurationMicroSeconds)
     {
       std::cerr << " size=" << size
@@ -103,7 +104,7 @@ TxDurationTest::CheckPayloadDuration (uint32_t size, WifiMode payloadMode, uint3
     {
       // Durations vary depending on frequency; test also 2.4 GHz (bug 1971)
       testedFrequency = CHANNEL_1_MHZ;
-      calculatedDurationMicroSeconds = WifiPhy::GetPayloadDuration (size, txVector, testedFrequency).GetMicroSeconds();
+      calculatedDurationMicroSeconds = (double)phy->GetPayloadDuration (size, txVector, preamble, testedFrequency, 0, 0).GetMicroSeconds();;
       if (calculatedDurationMicroSeconds != knownDurationMicroSeconds + 6)
         {
           std::cerr << " size=" << size
@@ -126,12 +127,13 @@ TxDurationTest::CheckTxDuration (uint32_t size, WifiMode payloadMode, WifiPreamb
   txVector.SetStbc(0);
   txVector.SetNess(0);
   double testedFrequency = CHANNEL_1_MHZ;
+  Ptr<YansWifiPhy> phy = CreateObject<YansWifiPhy> ();
   if (payloadMode.GetModulationClass () == WIFI_MOD_CLASS_OFDM || 
       payloadMode.GetModulationClass () == WIFI_MOD_CLASS_HT)
     {
       testedFrequency = CHANNEL_36_MHZ;
     }
-  double calculatedDurationMicroSeconds = ((double)WifiPhy::CalculateTxDuration (size, txVector, preamble, testedFrequency).GetNanoSeconds ())/1000;
+  double calculatedDurationMicroSeconds = ((double)phy->CalculateTxDuration (size, txVector, preamble, testedFrequency, 0, 0).GetNanoSeconds ())/1000;
   if (calculatedDurationMicroSeconds != knownDurationMicroSeconds)
     {
       std::cerr << " size=" << size
@@ -146,7 +148,7 @@ TxDurationTest::CheckTxDuration (uint32_t size, WifiMode payloadMode, WifiPreamb
     {
       // Durations vary depending on frequency; test also 2.4 GHz (bug 1971)
       testedFrequency = CHANNEL_1_MHZ;
-      calculatedDurationMicroSeconds = ((double)WifiPhy::CalculateTxDuration (size, txVector, preamble, testedFrequency).GetNanoSeconds ())/1000;
+      calculatedDurationMicroSeconds = ((double)phy->CalculateTxDuration (size, txVector, preamble, testedFrequency, 0, 0).GetNanoSeconds ())/1000;
       if (calculatedDurationMicroSeconds != knownDurationMicroSeconds + 6)
         {
           std::cerr << " size=" << size
@@ -169,10 +171,10 @@ TxDurationTest::DoRun (void)
 
   // IEEE Std 802.11-2007 Table 18-2 "Example of LENGTH calculations for CCK"
   retval = retval
-    && CheckPayloadDuration (1023, WifiPhy::GetDsssRate11Mbps (), 744)
-    && CheckPayloadDuration (1024, WifiPhy::GetDsssRate11Mbps (), 745)
-    && CheckPayloadDuration (1025, WifiPhy::GetDsssRate11Mbps (), 746)
-    && CheckPayloadDuration (1026, WifiPhy::GetDsssRate11Mbps (), 747);
+    && CheckPayloadDuration (1023, WifiPhy::GetDsssRate11Mbps (), WIFI_PREAMBLE_LONG, 744)
+    && CheckPayloadDuration (1024, WifiPhy::GetDsssRate11Mbps (), WIFI_PREAMBLE_LONG, 745)
+    && CheckPayloadDuration (1025, WifiPhy::GetDsssRate11Mbps (), WIFI_PREAMBLE_LONG, 746)
+    && CheckPayloadDuration (1026, WifiPhy::GetDsssRate11Mbps (), WIFI_PREAMBLE_LONG, 747);
 
     NS_TEST_EXPECT_MSG_EQ (retval, true, "an 802.11b CCK duration failed");
 
@@ -242,16 +244,16 @@ TxDurationTest::DoRun (void)
 
   //802.11n durations
   retval = retval
-    && CheckTxDuration (1536,WifiPhy::GetOfdmRate65MbpsBW20MHz (), WIFI_PREAMBLE_HT_MF,228) 
+    && CheckTxDuration (1536,WifiPhy::GetOfdmRate65MbpsBW20MHz (), WIFI_PREAMBLE_HT_MF,228)
     && CheckTxDuration (76, WifiPhy::GetOfdmRate65MbpsBW20MHz (), WIFI_PREAMBLE_HT_MF,48)
     && CheckTxDuration (14, WifiPhy::GetOfdmRate65MbpsBW20MHz (), WIFI_PREAMBLE_HT_MF,40)
-    && CheckTxDuration (1536,WifiPhy::GetOfdmRate65MbpsBW20MHz (), WIFI_PREAMBLE_HT_GF,220) 
+    && CheckTxDuration (1536,WifiPhy::GetOfdmRate65MbpsBW20MHz (), WIFI_PREAMBLE_HT_GF,220)
     && CheckTxDuration (76, WifiPhy::GetOfdmRate65MbpsBW20MHz (), WIFI_PREAMBLE_HT_GF,40)
     && CheckTxDuration (14, WifiPhy::GetOfdmRate65MbpsBW20MHz (), WIFI_PREAMBLE_HT_GF,32)
-    && CheckTxDuration (1536,WifiPhy::GetOfdmRate7_2MbpsBW20MHz (), WIFI_PREAMBLE_HT_MF,1746) 
+    && CheckTxDuration (1536,WifiPhy::GetOfdmRate7_2MbpsBW20MHz (), WIFI_PREAMBLE_HT_MF,1746)
     && CheckTxDuration (76, WifiPhy::GetOfdmRate7_2MbpsBW20MHz (), WIFI_PREAMBLE_HT_MF,126)
     && CheckTxDuration (14, WifiPhy::GetOfdmRate7_2MbpsBW20MHz (), WIFI_PREAMBLE_HT_MF,57.6)
-    && CheckTxDuration (1536,WifiPhy::GetOfdmRate7_2MbpsBW20MHz (), WIFI_PREAMBLE_HT_GF,1738) 
+    && CheckTxDuration (1536,WifiPhy::GetOfdmRate7_2MbpsBW20MHz (), WIFI_PREAMBLE_HT_GF,1738)
     && CheckTxDuration (76, WifiPhy::GetOfdmRate7_2MbpsBW20MHz (), WIFI_PREAMBLE_HT_GF,118)
     && CheckTxDuration (14, WifiPhy::GetOfdmRate7_2MbpsBW20MHz (), WIFI_PREAMBLE_HT_GF,49.6)
     && CheckTxDuration (1536, WifiPhy::GetOfdmRate65MbpsBW20MHzShGi (), WIFI_PREAMBLE_HT_MF,226.8)

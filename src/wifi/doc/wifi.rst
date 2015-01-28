@@ -19,7 +19,7 @@ on the IEEE 802.11 standard [ieee80211]_. We will go into more detail below but 
 
 * basic 802.11 DCF with **infrastructure** and **adhoc** modes
 * **802.11a**, **802.11b**, **802.11g** and **802.11n** (both 2.4 and 5 GHz bands) physical layers
-* **MSDU aggregation** extension of 802.11n
+* **MSDU aggregation** and **MPDU aggregation** extensions of 802.11n
 * QoS-based EDCA and queueing extensions of **802.11e**
 * the ability to use different propagation loss models and propagation delay models,
   please see the chapter on :ref:`Propagation` for more detail
@@ -701,7 +701,7 @@ Note on the current implementation
 * PHY_RXSTART is not supported
 * 802.11e TXOP is not supported
 * 802.11n MIMO is not supported
-* MPDU aggregation is not supported
+* hybrid aggregation is not supported
 
 
 Wifi Tracing
@@ -737,6 +737,6 @@ References
 
 .. [maguolo2008aarfcd] \ F. Maguolo, M. Lacage, and T. Turletti, *Efficient collision detection for auto rate fallback algorithm*, in IEEE Symposium on Computers and Communications, 2008
 
-.. [akella2007parf] \ A. Akella, G. Judd, S. Seshan, and P. Steenkiste, 'Self-management in chaotic wireless deployments', in Wireless Networks, Kluwer Academic Publishers, 2007, 13, 737-755.  `<http://www.cs.odu.edu/~nadeem/classes/cs795-WNS-S13/papers/enter-006.pdf>`_ 
+.. [akella2007parf] \ A. Akella, G. Judd, S. Seshan, and P. Steenkiste, 'Self-management in chaotic wireless deployments', in Wireless Networks, Kluwer Academic Publishers, 2007, 13, 737-755.  `<http://www.cs.odu.edu/~nadeem/classes/cs795-WNS-S13/papers/enter-006.pdf>`__
 
-.. [chevillat2005aparf] \  Chevillat, P.; Jelitto, J., and Truong, H. L., 'Dynamic data rate and transmit power adjustment in IEEE 802.11 wireless LANs', in International Journal of Wireless Information Networks, Springer, 2005, 12, 123-145.  `<http://www.cs.mun.ca/~yzchen/papers/papers/rate_adaptation/80211_dynamic_rate_power_adjustment_chevillat_j2005.pdf>`_
+.. [chevillat2005aparf] \  Chevillat, P.; Jelitto, J., and Truong, H. L., 'Dynamic data rate and transmit power adjustment in IEEE 802.11 wireless LANs', in International Journal of Wireless Information Networks, Springer, 2005, 12, 123-145.  `<http://www.cs.mun.ca/~yzchen/papers/papers/rate_adaptation/80211_dynamic_rate_power_adjustment_chevillat_j2005.pdf>`__

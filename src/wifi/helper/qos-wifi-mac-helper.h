@@ -108,6 +108,29 @@ public:
                                std::string n1 = "", const AttributeValue &v1 = EmptyAttributeValue (),
                                std::string n2 = "", const AttributeValue &v2 = EmptyAttributeValue (),
                                std::string n3 = "", const AttributeValue &v3 = EmptyAttributeValue ());
+ /**
+  * Set the class, type and attributes for the Mpdu aggregator
+  *
+  * \param ac access category for which we are setting aggregator. Possibilities
+  *  are: AC_BK, AC_BE, AC_VI, AC_VO.
+  * \param type the type of ns3::MsduAggregator to create.
+  * \param n0 the name of the attribute to set
+  * \param v0 the value of the attribute to set
+  * \param n1 the name of the attribute to set
+  * \param v1 the value of the attribute to set
+  * \param n2 the name of the attribute to set
+  * \param v2 the value of the attribute to set
+  * \param n3 the name of the attribute to set
+  * \param v3 the value of the attribute to set
+  *
+  * All the attributes specified in this method should exist
+  * in the requested aggregator.
+  */
+  void SetMpduAggregatorForAc (enum AcIndex ac, std::string type,
+                               std::string n0 = "", const AttributeValue &v0 = EmptyAttributeValue (),
+                               std::string n1 = "", const AttributeValue &v1 = EmptyAttributeValue (),
+                               std::string n2 = "", const AttributeValue &v2 = EmptyAttributeValue (),
+                               std::string n3 = "", const AttributeValue &v3 = EmptyAttributeValue ()); //A-MPDU
   /**
    * This method sets value of block ack threshold for a specific access class.
    * If number of packets in the respective queue reaches this value block ack mechanism
@@ -141,7 +164,8 @@ private:
   virtual Ptr<WifiMac> Create (void) const;
   void Setup (Ptr<WifiMac> mac, enum AcIndex ac, std::string dcaAttrName) const;
 
-  std::map<AcIndex, ObjectFactory> m_aggregators;
+  std::map<AcIndex, ObjectFactory> m_aggregators; //!<
+  ObjectFactory m_mpduAggregator;                 //!<
   /*
    * Next maps contain, for every access category, the values for
    * block ack threshold and block ack inactivity timeout.

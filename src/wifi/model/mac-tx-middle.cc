@@ -18,6 +18,7 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  * Author: Mirko Banchi <mk.banchi@gmail.com>
+ * Author: Ghada Badawy <gbadawy@gmail.com>
  */
 
 #include "ns3/assert.h"
@@ -74,6 +75,31 @@ MacTxMiddle::GetNextSequenceNumberfor (const WifiMacHeader *hdr)
       retval = m_sequence;
       m_sequence++;
       m_sequence %= 4096;
+    }
+  return retval;
+}
+uint16_t
+MacTxMiddle::PeekNextSequenceNumberfor (const WifiMacHeader *hdr)
+{
+  uint16_t retval;
+  if (hdr->IsQosData ()
+      && !hdr->GetAddr1 ().IsGroup ())
+    {
+      uint8_t tid = hdr->GetQosTid ();
+      NS_ASSERT (tid < 16);
+      std::map<Mac48Address, uint16_t*>::iterator it = m_qosSequences.find (hdr->GetAddr1 ());
+      if (it != m_qosSequences.end ())
+        {
+          retval = it->second[tid];
+        }
+      else
+        {
+          retval = 0;
+        }
+    }
+  else
+    {
+      retval = m_sequence;
     }
   return retval;
 }

@@ -50,6 +50,14 @@ public:
    */
   uint16_t GetNextSequenceNumberfor (const WifiMacHeader *hdr);
   /**
+   * Return the next sequence number for the Traffic ID and destination, but do not pick it (i.e. the current sequence number remains unchanged). 
+   * This functions is used for A-MPDU aggregation.
+   *
+   * \param hdr Wi-Fi header
+   * \return the next sequence number
+   */
+  uint16_t PeekNextSequenceNumberfor (const WifiMacHeader *hdr);
+  /**
    * Return the next sequence number for the Traffic ID and destination.
    *
    * \param tid Traffic ID

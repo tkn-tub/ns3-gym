@@ -27,6 +27,7 @@
 #include "wifi-mode.h"
 #include "wifi-preamble.h"
 #include "wifi-tx-vector.h"
+#include "ns3/nstime.h"
 
 namespace ns3 {
 
@@ -81,6 +82,8 @@ public:
    * \param txPowerDbm the tx power associated to the packet
    * \param txVector the TXVECTOR associated to the packet
    * \param preamble the preamble associated to the packet
+   * \param packetType the type of packet, used for A-MPDU to say whether it's the last MPDU or not
+   * \param duration the transmission duration associated to the packet
    *
    * This method should not be invoked by normal users. It is
    * currently invoked only from WifiPhy::Send. YansWifiChannel
@@ -88,7 +91,7 @@ public:
    * e.g. PHYs that are operating on the same channel.
    */
   void Send (Ptr<YansWifiPhy> sender, Ptr<const Packet> packet, double txPowerDbm,
-             WifiTxVector txVector, WifiPreamble preamble) const;
+             WifiTxVector txVector, WifiPreamble preamble, uint8_t packetType, Time duration) const;
 
  /**
   * Assign a fixed random variable stream number to the random variables
@@ -115,11 +118,11 @@ private:
    *
    * \param i index of the corresponding YansWifiPhy in the PHY list
    * \param packet the packet being sent
-   * \param rxPowerDbm the received power of the packet
+   * \param atts a vector containing the received power in dBm and the packet type
    * \param txVector the TXVECTOR of the packet
    * \param preamble the type of preamble being used to send the packet
    */
-  void Receive (uint32_t i, Ptr<Packet> packet, double rxPowerDbm,
+  void Receive (uint32_t i, Ptr<Packet> packet, double *atts,
                 WifiTxVector txVector, WifiPreamble preamble) const;
 
 

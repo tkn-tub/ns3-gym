@@ -30,6 +30,8 @@
 #include "originator-block-ack-agreement.h"
 #include "ctrl-headers.h"
 #include "qos-utils.h"
+#include "wifi-mode.h"
+#include "wifi-remote-station-manager.h"
 
 namespace ns3 {
 
@@ -79,6 +81,13 @@ private:
 public:
   BlockAckManager ();
   ~BlockAckManager ();
+  
+  /**
+   * Set up WifiRemoteStationManager associated with this BlockAckManager.
+   *
+   * \param manager WifiRemoteStationManager associated with this BlockAckManager
+   */
+  void SetWifiRemoteStationManager (Ptr<WifiRemoteStationManager> manager);
   /**
    * \param recipient Address of peer station involved in block ack mechanism.
    * \param tid Traffic ID.
@@ -151,13 +160,14 @@ public:
   /**
    * \param blockAck The received block ack frame.
    * \param recipient Sender of block ack frame.
+   * \param txMode mode of block ack frame.
    *
    * Invoked upon receipt of a block ack frame. Typically, this function, is called
    * by ns3::EdcaTxopN object. Performs a check on which MPDUs, previously sent
    * with ack policy set to Block Ack, were correctly received by the recipient.
    * An acknowledged MPDU is removed from the buffer, retransmitted otherwise.
    */
-  void NotifyGotBlockAck (const CtrlBAckResponseHeader *blockAck, Mac48Address recipient);
+  void NotifyGotBlockAck (const CtrlBAckResponseHeader *blockAck, Mac48Address recipient, WifiMode txMode);
   /**
    * \param recipient Address of peer station involved in block ack mechanism.
    * \param tid Traffic ID.
@@ -198,12 +208,20 @@ public:
    * \param recipient Address of peer station involved in block ack mechanism.
    * \param tid Traffic ID of transmitted packet.
    * \param nextSeqNumber Sequence number of the next packet that would be trasmitted by EdcaTxopN.
+   * \param policy ack policy of the transmitted packet.
    *
    * This method is typically invoked by ns3::EdcaTxopN object every time that a MPDU
    * with ack policy subfield in Qos Control field set to Block Ack is transmitted.
    * The <i>nextSeqNumber</i> parameter is used to block transmission of packets that are out of bitmap.
    */
-  void NotifyMpduTransmission (Mac48Address recipient, uint8_t tid, uint16_t nextSeqNumber);
+  void NotifyMpduTransmission (Mac48Address recipient, uint8_t tid, uint16_t nextSeqNumber, WifiMacHeader::QosAckPolicy policy);
+  /**
+   * \param recipient Address of peer station involved in block ack mechanism.
+   * \param tid Traffic ID of transmitted packet.
+   *
+   * This method to set the number of packets waitin for blockAck = 0 since the receiver will send the blockAck right away
+   */ 
+  void CompleteAmpduExchange(Mac48Address recipient, uint8_t tid);
   /**
    * \param nPackets Minimum number of packets for use of block ack.
    *
@@ -281,6 +299,45 @@ public:
    * the agreement doesn't exist the function returns 4096;
    */
   uint16_t GetSeqNumOfNextRetryPacket (Mac48Address recipient, uint8_t tid) const;
+  /**
+   * Checks if the packet already exists in the retransmit queue or not if it does then it doesn't add it again
+   */
+  bool AlreadyExists(uint16_t currentSeq, Mac48Address recipient, uint8_t tid);
+  /**
+   * Remove a packet after you peek in the queue and get it
+   */
+  bool RemovePacket (uint8_t tid, Mac48Address recipient, uint16_t seqnumber);
+  /*
+   * Peek in retransmit queue and get the next packet without removing it from the queue
+   */
+  Ptr<const Packet> PeekNextPacket (WifiMacHeader &hdr, Mac48Address recipient, uint8_t tid, Time *timestamp);
+  /**
+   * This function returns true if the lifetime of the packets a BAR refers to didn't expire yet else it returns false.
+   * If it return false then the BAR will be discarded (i.e. will not be re-transmitted)
+   */
+  bool NeedBarRetransmission (uint8_t tid, uint16_t seqNumber, Mac48Address recipient);
+
+  /**
+   * typedef for a callback to invoke when a
+   * packet transmission was completed successfully.
+   */
+  typedef Callback <void, const WifiMacHeader&> TxOk;
+  /**
+   * typedef for a callback to invoke when a
+   * packet transmission was failed.
+   */
+  typedef Callback <void, const WifiMacHeader&> TxFailed;
+  /**
+   * \param callback the callback to invoke when a
+   * packet transmission was completed successfully.
+   */
+  void SetTxOkCallback (TxOk callback);
+  /**
+   * \param callback the callback to invoke when a
+   * packet transmission was completed unsuccessfully.
+   */
+  void SetTxFailedCallback (TxFailed callback);
+    
 private:
   /**
    * \param recipient
@@ -343,6 +400,13 @@ private:
     WifiMacHeader hdr;
     Time timestamp;
   };
+  /**
+   * \param item
+   *
+   * Insert item in retransmission queue.
+   * This method ensures packets are retransmitted in the correct order.
+   */
+  void InsertInRetryQueue (PacketQueueI item);
 
   /**
    * This data structure contains, for each block ack agreement (recipient, tid), a set of packets
@@ -368,6 +432,9 @@ private:
   Callback<void, Mac48Address, uint8_t, bool> m_blockAckInactivityTimeout;
   Callback<void, Mac48Address, uint8_t> m_blockPackets;
   Callback<void, Mac48Address, uint8_t> m_unblockPackets;
+  TxOk m_txOkCallback;
+  TxFailed m_txFailedCallback;
+  Ptr<WifiRemoteStationManager> m_stationManager; //!<
 };
 
 } // namespace ns3
