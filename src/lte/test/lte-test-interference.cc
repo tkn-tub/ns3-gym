@@ -118,6 +118,7 @@ LteInterferenceTestCase::DoRun (void)
   Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();
   lteHelper->SetAttribute ("PathlossModel", StringValue ("ns3::FriisSpectrumPropagationLossModel"));
   lteHelper->SetAttribute ("UseIdealRrc", BooleanValue (false));
+  lteHelper->SetAttribute ("UsePdschForCqiGeneration", BooleanValue (true));
 
   //Disable Uplink Power Control
   Config::SetDefault ("ns3::LteUePhy::EnableUplinkPowerControl", BooleanValue (false));
@@ -233,8 +234,9 @@ void
 LteInterferenceTestCase::DlScheduling (uint32_t frameNo, uint32_t subframeNo, uint16_t rnti,
                                        uint8_t mcsTb1, uint16_t sizeTb1, uint8_t mcsTb2, uint16_t sizeTb2)
 {
-  // need to allow for RRC connection establishment + CQI feedback reception
-  if (Simulator::Now () > MilliSeconds (35))
+  NS_LOG_FUNCTION (frameNo << subframeNo << rnti << (uint32_t) mcsTb1 << sizeTb1 << (uint32_t) mcsTb2 << sizeTb2);
+  // need to allow for RRC connection establishment + CQI feedback reception + persistent data transmission
+  if (Simulator::Now () > MilliSeconds (65))
     {
       NS_TEST_ASSERT_MSG_EQ ((uint32_t)mcsTb1, (uint32_t)m_dlMcs, "Wrong DL MCS ");
     }
@@ -244,6 +246,7 @@ void
 LteInterferenceTestCase::UlScheduling (uint32_t frameNo, uint32_t subframeNo, uint16_t rnti,
                                        uint8_t mcs, uint16_t sizeTb)
 {
+  NS_LOG_FUNCTION (frameNo << subframeNo << rnti << (uint32_t) mcs << sizeTb);
   // need to allow for RRC connection establishment + SRS transmission
   if (Simulator::Now () > MilliSeconds (50))
     {

@@ -452,33 +452,14 @@ void
 LteUePhy::GenerateCtrlCqiReport (const SpectrumValue& sinr)
 {
   NS_LOG_FUNCTION (this);
+  
+  GenerateCqiRsrpRsrq (sinr);
+}
 
-  if (m_dataInterferencePowerUpdated)
-    {
-      SpectrumValue mixedSinr = (m_rsReceivedPower * m_paLinear) / m_dataInterferencePower;
-
-      /*
-       * some RBs are not used in PDSCH and their SINR is very high
-       * for example with bandwidth 25, last RB is not used
-       * it can make avgSinr value very high, what is incorrect
-       */
-      uint32_t rbgSize = GetRbgSize ();
-      uint32_t modulo = m_dlBandwidth % rbgSize;
-      double avgMixedSinr = 0;
-      uint32_t usedRbgNum = 0;
-      for(uint32_t i = 0; i < (m_dlBandwidth-1-modulo); i++) {
-          usedRbgNum++;
-          avgMixedSinr+=mixedSinr[i];
-        }
-      avgMixedSinr = avgMixedSinr/usedRbgNum;
-      for(uint32_t i = 0; i < modulo; i++) {
-          mixedSinr[m_dlBandwidth-1-i] = avgMixedSinr;
-        }
-
-      GenerateMixedCqiReport (mixedSinr);
-      m_dataInterferencePowerUpdated = false;
-      return;
-    }
+void
+LteUePhy::GenerateCqiRsrpRsrq (const SpectrumValue& sinr)
+{
+  NS_LOG_FUNCTION (this << sinr);
 
   NS_ASSERT (m_state != CELL_SEARCH);
   NS_ASSERT (m_cellId > 0);
@@ -605,114 +586,45 @@ LteUePhy::GenerateMixedCqiReport (const SpectrumValue& sinr)
 
   NS_ASSERT (m_state != CELL_SEARCH);
   NS_ASSERT (m_cellId > 0);
-
-  if (m_dlConfigured && m_ulConfigured && (m_rnti > 0))
+  
+  SpectrumValue mixedSinr = (m_rsReceivedPower * m_paLinear);
+  if (m_dataInterferencePowerUpdated)
     {
-      // check periodic wideband CQI
-      if (Simulator::Now () > m_p10CqiLast + m_p10CqiPeriocity)
-        {
-          Ptr<LteUeNetDevice> thisDevice = GetDevice ()->GetObject<LteUeNetDevice> ();
-          Ptr<DlCqiLteControlMessage> msg = CreateDlCqiFeedbackMessage (sinr);
-          if (msg)
-            {
-              DoSendLteControlMessage (msg);
-            }
-          m_p10CqiLast = Simulator::Now ();
-        }
-      // check aperiodic high-layer configured subband CQI
-      if  (Simulator::Now () > m_a30CqiLast + m_a30CqiPeriocity)
-        {
-          Ptr<LteUeNetDevice> thisDevice = GetDevice ()->GetObject<LteUeNetDevice> ();
-          Ptr<DlCqiLteControlMessage> msg = CreateDlCqiFeedbackMessage (sinr);
-          if (msg)
-            {
-              DoSendLteControlMessage (msg);
-            }
-          m_a30CqiLast = Simulator::Now ();
-        }
+      // we have a measurement of interf + noise for the denominator
+      // of SINR = S/(I+N)
+      mixedSinr /= m_dataInterferencePower;
+      m_dataInterferencePowerUpdated = false;
+      NS_LOG_LOGIC ("data interf measurement available, SINR = " << mixedSinr);
+    }
+  else
+    {
+      // we did not see any interference on data, so interference is
+      // there and we have only noise at the denominator of SINR
+      mixedSinr /= (*m_noisePsd);
+      NS_LOG_LOGIC ("no data interf measurement available, SINR = " << mixedSinr);
     }
 
-  // Generate PHY trace
-  m_rsrpSinrSampleCounter++;
-  if (m_rsrpSinrSampleCounter==m_rsrpSinrSamplePeriod)
+  /*
+   * some RBs are not used in PDSCH and their SINR is very high
+   * for example with bandwidth 25, last RB is not used
+   * it can make avgSinr value very high, what is incorrect
+   */
+  uint32_t rbgSize = GetRbgSize ();
+  uint32_t modulo = m_dlBandwidth % rbgSize;
+  double avgMixedSinr = 0;
+  uint32_t usedRbgNum = 0;
+  for(uint32_t i = 0; i < (m_dlBandwidth-1-modulo); i++) 
     {
-      NS_ASSERT_MSG (m_rsReceivedPowerUpdated, " RS received power info obsolete");
-      // RSRP evaluated as averaged received power among RBs
-      double sum = 0.0;
-      uint8_t rbNum = 0;
-      Values::const_iterator it;
-      for (it = m_rsReceivedPower.ConstValuesBegin (); it != m_rsReceivedPower.ConstValuesEnd (); it++)
-        {
-          // convert PSD [W/Hz] to linear power [W] for the single RE
-          // we consider only one RE for the RS since the channel is
-          // flat within the same RB
-          double powerTxW = ((*it) * 180000.0) / 12.0;
-          sum += powerTxW;
-          rbNum++;
-        }
-      double rsrp = (rbNum > 0) ? (sum / rbNum) : DBL_MAX;
-      // averaged SINR among RBs
-      sum = 0.0;
-      rbNum = 0;
-      for (it = sinr.ConstValuesBegin (); it != sinr.ConstValuesEnd (); it++)
-        {
-          sum += (*it);
-          rbNum++;
-        }
-      double avSinr = (rbNum > 0) ? (sum / rbNum) : DBL_MAX;
-      NS_LOG_INFO (this << " cellId " << m_cellId << " rnti " << m_rnti << " RSRP " << rsrp << " SINR " << avSinr);
-
-      m_reportCurrentCellRsrpSinrTrace (m_cellId, m_rnti, rsrp, avSinr);
-      m_rsrpSinrSampleCounter = 0;
+      usedRbgNum++;
+      avgMixedSinr+=mixedSinr[i];
+    }
+  avgMixedSinr = avgMixedSinr/usedRbgNum;
+  for(uint32_t i = 0; i < modulo; i++) 
+    {
+      mixedSinr[m_dlBandwidth-1-i] = avgMixedSinr;
     }
 
-  if (m_pssReceived)
-    {
-      // measure instantaneous RSRQ now
-      NS_ASSERT_MSG (m_rsInterferencePowerUpdated, " RS interference power info obsolete");
-
-      std::list <PssElement>::iterator itPss = m_pssList.begin ();
-      while (itPss != m_pssList.end ())
-        {
-          uint16_t rbNum = 0;
-          double rssiSum = 0.0;
-
-          Values::const_iterator itIntN = m_rsInterferencePower.ConstValuesBegin ();
-          Values::const_iterator itPj = m_rsReceivedPower.ConstValuesBegin ();
-          for (itPj = m_rsReceivedPower.ConstValuesBegin ();
-               itPj != m_rsReceivedPower.ConstValuesEnd ();
-               itIntN++, itPj++)
-            {
-              rbNum++;
-              // convert PSD [W/Hz] to linear power [W] for the single RE
-              double interfPlusNoisePowerTxW = ((*itIntN) * 180000.0) / 12.0;
-              double signalPowerTxW = ((*itPj) * 180000.0) / 12.0;
-              rssiSum += (2 * (interfPlusNoisePowerTxW + signalPowerTxW));
-            }
-
-          NS_ASSERT (rbNum == (*itPss).nRB);
-          double rsrq_dB = 10 * log10 ((*itPss).pssPsdSum / rssiSum);
-
-          if (rsrq_dB > m_pssReceptionThreshold)
-            {
-              NS_LOG_INFO (this << " PSS RNTI " << m_rnti << " cellId " << m_cellId
-                                << " has RSRQ " << rsrq_dB << " and RBnum " << rbNum);
-              // store measurements
-              std::map <uint16_t, UeMeasurementsElement>::iterator itMeasMap;
-              itMeasMap = m_ueMeasurementsMap.find ((*itPss).cellId);
-              NS_ASSERT (itMeasMap != m_ueMeasurementsMap.end ());
-              (*itMeasMap).second.rsrqSum += rsrq_dB;
-              (*itMeasMap).second.rsrqNum++;
-            }
-
-          itPss++;
-
-        }         // end of while (itPss != m_pssList.end ())
-
-      m_pssList.clear ();
-
-    }     // end of if (m_pssReceived)
-
+  GenerateCqiRsrpRsrq (mixedSinr);
 }
 
 void
@@ -1346,8 +1258,8 @@ LteUePhy::DoSetDlBandwidth (uint8_t dlBandwidth)
             }
         }
 
-      Ptr<SpectrumValue> noisePsd = LteSpectrumValueHelper::CreateNoisePowerSpectralDensity (m_dlEarfcn, m_dlBandwidth, m_noiseFigure);
-      m_downlinkSpectrumPhy->SetNoisePowerSpectralDensity (noisePsd);
+      m_noisePsd = LteSpectrumValueHelper::CreateNoisePowerSpectralDensity (m_dlEarfcn, m_dlBandwidth, m_noiseFigure);
+      m_downlinkSpectrumPhy->SetNoisePowerSpectralDensity (m_noisePsd);
       m_downlinkSpectrumPhy->GetChannel ()->AddRx (m_downlinkSpectrumPhy);
     }
   m_dlConfigured = true;

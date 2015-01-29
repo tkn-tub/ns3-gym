@@ -603,7 +603,6 @@ LteHelper::InstallSingleUeDevice (Ptr<Node> n)
   dlPhy->AddInterferenceCtrlChunkProcessor (pInterf); // for RSRQ evaluation of UE Measurements
 
   Ptr<LteChunkProcessor> pCtrl = Create<LteChunkProcessor> ();
-  pCtrl->AddCallback (MakeCallback (&LteUePhy::GenerateCtrlCqiReport, phy));
   pCtrl->AddCallback (MakeCallback (&LteSpectrumPhy::UpdateSinrPerceived, dlPhy));
   dlPhy->AddCtrlSinrChunkProcessor (pCtrl);
 
@@ -611,13 +610,21 @@ LteHelper::InstallSingleUeDevice (Ptr<Node> n)
   pData->AddCallback (MakeCallback (&LteSpectrumPhy::UpdateSinrPerceived, dlPhy));
   dlPhy->AddDataSinrChunkProcessor (pData);
 
-  Ptr<LteChunkProcessor> pDataInterf = Create<LteChunkProcessor> ();
   if (m_usePdschForCqiGeneration)
     {
+      // CQI calculation based on PDCCH for signal and PDSCH for interference
+      pCtrl->AddCallback (MakeCallback (&LteUePhy::GenerateMixedCqiReport, phy));
+      Ptr<LteChunkProcessor> pDataInterf = Create<LteChunkProcessor> ();      
       pDataInterf->AddCallback (MakeCallback (&LteUePhy::ReportDataInterference, phy));
+      dlPhy->AddInterferenceDataChunkProcessor (pDataInterf);
+    }
+  else
+    {
+      // CQI calculation based on PDCCH for both signal and interference
+      pCtrl->AddCallback (MakeCallback (&LteUePhy::GenerateCtrlCqiReport, phy));
     }
 
-  dlPhy->AddInterferenceDataChunkProcessor (pDataInterf);
+
 
   dlPhy->SetChannel (m_downlinkChannel);
   ulPhy->SetChannel (m_uplinkChannel);

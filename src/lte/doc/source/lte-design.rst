@@ -503,10 +503,14 @@ The generation of CQI feedback is done accordingly to what specified in [FFAPI]_
 of periodic wideband CQI (i.e., a single value of channel state that is deemed representative of all RBs
 in use) and inband CQIs (i.e., a set of value representing the channel state for each RB).
 
-In downlink, the CQI feedbacks can be generated in two different ways.
-First one is legacy approach and CQI are evaluated according to the SINR perceived by control channel (i.e., PDCCH + PCFIC) in order to have an estimation of the interference when all the eNB are transmitting simultaneously. 
-Second approach was created for better utilization of data channel resources, when using Frequency Reuse algorithms.
-Frequency Reuse algorithms are applied only to PDSCH and they can reduce inter-cell interferences only during PDSCH duration. Since in legacy approach CQI feedback is generated from control channels, it does not allow to use higher MCS for data channels and to achieve any gain in throughput. Generation CQI feedback only from data channels would be the best option. Unfortunately is impossible solution, because PDSCH is be sent only if there is data to be sent, and CQI needs to be generated every TTI. Some mixed approach was implemented. CQI are generated from control channels as signal and data channels (if received) as interference. It there is no transmission in data channel, CQI is generated only from control channels, as in legacy solution. 
+The CQI index to be reported is obtained by first obtaining a SINR measurement and then passing this SINR measurement  the :ref:`Adaptive Modulation and Coding` which will map it to the CQI index. 
+
+In downlink, the SINR used to generate CQI feedback can be calculated in two different ways:
+
+ 1. *Ctrl* method: SINR is calculated combining the signal power from the reference signals (which in the simulation is equivalent to the PDCCH) and the interference power from the PDCCH. This approach results in considering any neighboring eNB as an interferer, regardless of whether this eNB is actually performing any PDSCH transmission, and regardless of the power and RBs used for eventual interfering PDSCH transmissions.
+
+ 2. *Mixed* method: SINR is calculated combining the signal power from the reference signals (which in the simulation is equivalent to the PDCCH) and the interference power from the PDSCH. This approach results in considering as interferers only those neighboring eNBs that are actively transmitting data on the PDSCH, and allows to generate inband CQIs that account for different amounts of interference on different RBs according to the actual interference level. In the case that no PDSCH transmission is performed by any eNB, this method consider that interference is zero, i.e., the SINR will be calculated as the ratio of signal to noise only. 
+
 To switch between this two CQI generation approaches, ``LteHelper::UsePdschForCqiGeneration`` needs to be configured: false for first approach and true for second approach (true is default value)::
 
    Config::SetDefault ("ns3::LteHelper::UsePdschForCqiGeneration", BooleanValue (true));

@@ -200,7 +200,6 @@ public:
   virtual void ReceivePss (uint16_t cellId, Ptr<SpectrumValue> p);
 
 
-
   /**
    * \brief PhySpectrum received a new PHY-PDU
    */
@@ -285,6 +284,16 @@ private:
   void SetTxModeGain (uint8_t txMode, double gain);
 
   void QueueSubChannelsForTransmission (std::vector <int> rbMap);
+
+
+  /** 
+   * internal method that takes care of generating CQI reports,
+   * calculating the RSRP and RSRQ metrics, and generating RSRP+SINR traces
+   * 
+   * \param sinr 
+   */
+  void GenerateCqiRsrpRsrq (const SpectrumValue& sinr);
+
 
   /**
    * \brief Layer-1 filtering of RSRP and RSRQ measurements and reporting to
@@ -461,6 +470,10 @@ private:
    * PhyTransmissionStatParameters.
    */
   TracedCallback<PhyTransmissionStatParameters> m_ulPhyTransmission;
+
+  
+  Ptr<SpectrumValue> m_noisePsd; ///< Noise power spectral density for
+                                 ///the configured bandwidth 
 
 }; // end of `class LteUePhy`
 
