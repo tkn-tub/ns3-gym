@@ -39,6 +39,8 @@ New user-visible features
 
 Bugs fixed
 ----------
+- Bug 2049 - CQI feedback should always use the same calculation method
+- Bug 2042 - src/lte/model/a3-rsrp-handover-algorithm.cc:137:79: error: overflow in implicit constant conversion
 - Bug 1551 - NS_LOG_COMPONENT_DEFINE inside or outside of ns3 namespace?
 - Bug 1726 - WiFi Minstrel rate control algorithm doesn't save state
 - Bug 1758 - Yans and Nist error rate models for 5/6 code rate 802.11n HT
