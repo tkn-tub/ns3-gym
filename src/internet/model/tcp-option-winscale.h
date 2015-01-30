@@ -22,7 +22,7 @@
 #ifndef TCP_OPTION_WINSCALE_H
 #define TCP_OPTION_WINSCALE_H
 
-#include "tcp-option.h"
+#include "ns3/tcp-option.h"
 
 namespace ns3 {
 

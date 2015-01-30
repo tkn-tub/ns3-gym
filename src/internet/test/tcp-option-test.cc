@@ -20,8 +20,8 @@
 #include "ns3/test.h"
 #include "ns3/core-module.h"
 #include "ns3/tcp-option.h"
-#include "../src/internet/model/tcp-option-winscale.h"
-#include "../src/internet/model/tcp-option-ts.h"
+#include "ns3/private/tcp-option-winscale.h"
+#include "ns3/private/tcp-option-ts.h"
 
 #include <string.h>
 

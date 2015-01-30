@@ -442,7 +442,7 @@ def apply(self):
 def apply_ns3header(self):
     if self.module is None:
         raise WafError("'module' missing on ns3headers object %s" % self)
-    ns3_dir_node = self.bld.path.find_dir("ns3")
+    ns3_dir_node = self.bld.path.find_or_declare("ns3")
     for filename in set(self.to_list(self.source)):
         src_node = self.path.find_resource(filename)
         if src_node is None:
@@ -502,6 +502,98 @@ class ns3header_task(Task.Task):
                 return Task.SKIP_ME
         else:
             return super(ns3header_task, self).runnable_status()
+
+    def run(self):
+        if self.mode == 'install':
+            assert len(self.inputs) == len(self.outputs)
+            inputs = [node.abspath() for node in self.inputs]
+            outputs = [node.abspath() for node in self.outputs]
+            for src, dst in zip(inputs, outputs):
+                try:
+                    os.chmod(dst, 0600)
+                except OSError:
+                    pass
+                shutil.copy2(src, dst)
+                ## make the headers in builddir read-only, to prevent
+                ## accidental modification
+                os.chmod(dst, 0400)
+            return 0
+        else:
+            assert len(self.inputs) == 0
+            assert len(self.outputs) == 0
+            out_file_name = self.header_to_remove.abspath()
+            try:
+                os.unlink(out_file_name)
+            except OSError, ex:
+                if ex.errno != 2:
+                    raise
+            return 0
+
+
+@TaskGen.feature('ns3privateheader')
+@TaskGen.after_method('process_rule')
+def apply_ns3privateheader(self):
+    if self.module is None:
+        raise WafError("'module' missing on ns3headers object %s" % self)
+    ns3_dir_node = self.bld.path.find_or_declare("ns3/private")
+    for filename in set(self.to_list(self.source)):
+        src_node = self.path.find_resource(filename)
+        if src_node is None:
+            raise WafError("source ns3 header file %s not found" % (filename,))
+        dst_node = ns3_dir_node.find_or_declare(src_node.name)
+        assert dst_node is not None
+        task = self.create_task('ns3privateheader')
+        task.mode = getattr(self, 'mode', 'install')
+        if task.mode == 'install':
+            task.set_inputs([src_node])
+            task.set_outputs([dst_node])
+        else:
+            task.header_to_remove = dst_node
+    self.headers = set(self.to_list(self.source))
+    self.source = '' # tell WAF not to process these files further
+
+class ns3privateheader_task(Task.Task):
+    before = 'cxx gen_ns3_module_header'
+    after = 'ns3_header'
+    color = 'BLUE'
+
+    def __str__(self):
+        "string to display to the user"
+        env = self.env
+        src_str = ' '.join([a.nice_path(env) for a in self.inputs])
+        tgt_str = ' '.join([a.nice_path(env) for a in self.outputs])
+        if self.outputs: sep = ' -> '
+        else: sep = ''
+        if self.mode == 'remove':
+            return 'rm-ns3-header %s\n' % (self.header_to_remove.abspath(),)
+        return 'install-ns3-header: %s%s%s\n' % (src_str, sep, tgt_str)
+
+    def __repr__(self):
+        return str(self)
+
+    def uid(self):
+        try:
+            return self.uid_
+        except AttributeError:
+            m = Utils.md5()
+            up = m.update
+            up(self.__class__.__name__.encode())
+            for x in self.inputs + self.outputs:
+                up(x.abspath().encode())
+            up(self.mode)
+            if self.mode == 'remove':
+                up(self.header_to_remove.abspath().encode())
+            self.uid_ = m.digest()
+            return self.uid_
+
+    def runnable_status(self):
+        if self.mode == 'remove':
+            if os.path.exists(self.header_to_remove.abspath()):
+                return Task.RUN_ME
+            else:
+                return Task.SKIP_ME
+        else:
+            return super(ns3privateheader_task, self).runnable_status()
 
     def run(self):
         if self.mode == 'install':
@@ -616,7 +708,7 @@ class gen_ns3_module_header_task(Task.Task):
 @TaskGen.after_method('process_rule')
 def apply_ns3moduleheader(self):
     ## get all of the ns3 headers
-    ns3_dir_node = self.bld.path.find_dir("ns3")
+    ns3_dir_node = self.bld.path.find_or_declare("ns3")
     all_headers_inputs = []
     found_the_module = False
     for ns3headers in self.bld.all_task_gen:

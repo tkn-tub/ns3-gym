@@ -45,7 +45,7 @@
 #include "ns3/udp-l4-protocol.h"
 #include "ns3/tcp-l4-protocol.h"
 
-#include "../src/internet/model/tcp-option-ts.h"
+#include "ns3/private/tcp-option-ts.h"
 
 namespace ns3 {
 

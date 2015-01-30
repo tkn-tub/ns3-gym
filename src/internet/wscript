@@ -244,6 +244,13 @@ def build(bld):
         'test/rtt-test.cc',
         'test/codel-queue-test-suite.cc',
         ]
+    privateheaders = bld(features='ns3privateheader')
+    privateheaders.module = 'internet'
+    privateheaders.source = [
+        'model/tcp-option-winscale.h',
+        'model/tcp-option-ts.h',
+        'model/tcp-option-rfc793.h',
+        ]
     headers = bld(features='ns3header')
     headers.module = 'internet'
     headers.source = [
