@@ -191,7 +191,7 @@ Ns3TcpLossTestCase::Ipv4L3Tx (std::string context, Ptr<const Packet> packet, Ptr
       uint8_t *actual = new uint8_t[readLen];
       p->CopyData (actual, readLen);
 
-      uint32_t result = memcmp (actual, expected, readLen);
+      int result = memcmp (actual, expected, readLen);
 
       delete [] actual;
 
@@ -200,7 +200,7 @@ Ns3TcpLossTestCase::Ipv4L3Tx (std::string context, Ptr<const Packet> packet, Ptr
       //
       if (IsStatusSuccess ())
         {
-          NS_TEST_EXPECT_MSG_EQ (result, 0, "Expected data comparison error");
+          NS_TEST_EXPECT_MSG_EQ (result, 0, "Expected data comparison error: " << m_tcpModel << "-" << m_testCase);
         }
     }
 }
