@@ -1001,7 +1001,7 @@
 
 /**
  * \ingroup testingimpl
- * \brief Test that an actual value is greater than a or equal to limit and
+ * \brief Test that an actual value is greater than or equal to limit and
  * report if not.
  *
  * Required to avoid use of return statement which allows use in methods
