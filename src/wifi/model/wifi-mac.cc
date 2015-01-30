@@ -375,6 +375,8 @@ WifiMac::Configure80211n_2_4Ghz (void)
   SetRifs(MicroSeconds (2));
   SetCtsTimeout (MicroSeconds (10 + 52 + 20 + GetDefaultMaxPropagationDelay ().GetMicroSeconds () * 2));
   SetAckTimeout (MicroSeconds (10 + 52 + 20 + GetDefaultMaxPropagationDelay ().GetMicroSeconds () * 2));
+  SetBasicBlockAckTimeout (GetSifs () + GetSlot () + GetDefaultBasicBlockAckDelay () + GetDefaultMaxPropagationDelay () * 2);
+  SetCompressedBlockAckTimeout (GetSifs () + GetSlot () + GetDefaultCompressedBlockAckDelay () + GetDefaultMaxPropagationDelay () * 2);
 }
 void
 WifiMac::Configure80211n_5Ghz (void)
@@ -383,6 +385,8 @@ WifiMac::Configure80211n_5Ghz (void)
   SetRifs(MicroSeconds (2));
   SetCtsTimeout (MicroSeconds (10 + 52 + 20 + GetDefaultMaxPropagationDelay ().GetMicroSeconds () * 2));
   SetAckTimeout (MicroSeconds (10 + 52 + 20 + GetDefaultMaxPropagationDelay ().GetMicroSeconds () * 2));
+  SetBasicBlockAckTimeout (GetSifs () + GetSlot () + GetDefaultBasicBlockAckDelay () + GetDefaultMaxPropagationDelay () * 2);
+  SetCompressedBlockAckTimeout (GetSifs () + GetSlot () + GetDefaultCompressedBlockAckDelay () + GetDefaultMaxPropagationDelay () * 2);
 }
 
 void
