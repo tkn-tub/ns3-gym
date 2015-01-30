@@ -331,6 +331,38 @@ on a set of nodes in a NodeContainer "c"::
 This creates the WifiNetDevice which includes also a WifiRemoteStationManager, a
 WifiMac, and a WifiPhy (connected to the matching WifiChannel).
 
+The ``WifiHelper::SetStandard`` method set various default timing parameters as defined in the selected standard version, overwriting values that may exist or have been previously configured.
+In order to change parameters that are overwritten by ``WifiHelper::SetStandard``, this should be done post-install using ``Config::Set``::
+
+  WifiHelper wifi = WifiHelper::Default ();
+  wifi.SetStandard (WIFI_PHY_STANDARD_80211n_2_4GHZ);
+  wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager", "DataMode", StringValue("OfdmRate65MbpsBW20MHz"), "ControlMode", StringValue("OfdmRate6_5MbpsBW20MHz"));
+  HtWifiMacHelper mac = HtWifiMacHelper::Default ();
+
+  //Install PHY and MAC
+  Ssid ssid = Ssid ("ns3-wifi");
+  mac.SetType ("ns3::StaWifiMac",
+  "Ssid", SsidValue (ssid),
+  "ActiveProbing", BooleanValue (false));
+
+  NetDeviceContainer staDevice;
+  staDevice = wifi.Install (phy, mac, wifiStaNode);
+
+  mac.SetType ("ns3::ApWifiMac",
+  "Ssid", SsidValue (ssid));
+
+  NetDeviceContainer apDevice;
+  apDevice = wifi.Install (phy, mac, wifiApNode);
+
+  //Once install is done, we overwrite the standard timing values
+  Config::Set ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Mac/Slot", TimeValue (MicroSeconds (slot)));
+  Config::Set ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Mac/Sifs", TimeValue (MicroSeconds (sifs)));
+  Config::Set ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Mac/AckTimeout", TimeValue (MicroSeconds (ackTimeout)));
+  Config::Set ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Mac/CtsTimeout", TimeValue (MicroSeconds (ctsTimeout)));
+  Config::Set ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Mac/Rifs", TimeValue (MicroSeconds (rifs)));
+  Config::Set ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Mac/BasicBlockAckTimeout", TimeValue (MicroSeconds (basicBlockAckTimeout)));
+  Config::Set ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Mac/CompressedBlockAckTimeout", TimeValue (MicroSeconds (compressedBlockAckTimeout)));
+
 There are many |ns3| attributes that can be set on the above helpers to
 deviate from the default behavior; the example scripts show how to do some of
 this reconfiguration.

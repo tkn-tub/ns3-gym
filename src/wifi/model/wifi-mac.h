@@ -286,6 +286,17 @@ public:
   void NotifyRxDrop (Ptr<const Packet> packet);
   /**
    * \param standard the wifi standard to be configured
+   *
+   * This method sets standards-compliant defaults for WifiMac
+   * parameters such as sifs time, slot time, timeout values, etc.,
+   * based on the standard selected.
+   * \sa WifiMac::Configure80211a
+   * \sa WifiMac::Configure80211b
+   * \sa WifiMac::Configure80211g
+   * \sa WifiMac::Configure80211_10Mhz
+   * \sa WifiMac::Configure80211_5Mhz
+   * \sa WifiMac::Configure80211n_2_4Ghz
+   * \sa WifiMac::Configure80211n_5Ghz
    */
   void ConfigureStandard (enum WifiPhyStandard standard);
 
@@ -386,31 +397,40 @@ private:
   Time m_maxPropagationDelay;
 
   /**
-   * Configure appropriate timing parameters for 802.11a.
+   * This method sets 802.11a standards-compliant defaults for following attributes:
+   * Sifs, Slot, EifsNoDifs, Pifs, CtsTimeout, and AckTimeout.
    */
   void Configure80211a (void);
   /**
-   * Configure appropriate timing parameters for 802.11b.
+   * This method sets 802.11b standards-compliant defaults for following attributes:
+   * Sifs, Slot, EifsNoDifs, Pifs, CtsTimeout, and AckTimeout.
    */
   void Configure80211b (void);
   /**
-   * Configure appropriate timing parameters for 802.11g.
+   * This method sets 802.11g standards-compliant defaults for following attributes:  
+   * Sifs, Slot, EifsNoDifs, Pifs, CtsTimeout, and AckTimeout.
+   * There is no support for short slot time.
    */
   void Configure80211g (void);
   /**
-   * Configure appropriate timing parameters for 802.11 with 10Mhz channel spacing.
+   * This method sets 802.11 with 10Mhz channel spacing standards-compliant defaults
+   * for following attributes: Sifs, Slot, EifsNoDifs, Pifs, CtsTimeout, and AckTimeout.
    */
   void Configure80211_10Mhz (void);
   /**
-   * Configure appropriate timing parameters for 802.11 with 5Mhz channel spacing.
+   * This method sets 802.11 with 5Mhz channel spacing standards-compliant defaults
+   * for following attributes: Sifs, Slot, EifsNoDifs, Pifs, CtsTimeout, and AckTimeout.
    */
   void Configure80211_5Mhz ();
   /**
-   * Configure appropriate timing parameters for 802.11n operating at 2.4Ghz.
+   * This method sets 802.11n 2.4 GHz standards-compliant defaults for following attributes:
+   * Sifs, Slot, EifsNoDifs, Pifs, CtsTimeout, and AckTimeout.
+   * There is no support for short slot time.
    */
   void Configure80211n_2_4Ghz (void);
   /**
-   * Configure appropriate timing parameters for 802.11n operating at 5Ghz.
+   * This method sets 802.11n 5 GHz standards-compliant defaults for following attributes:
+   * Sifs, Slot, EifsNoDifs, Pifs, CtsTimeout, and AckTimeout.
    */
   void Configure80211n_5Ghz (void);
 
