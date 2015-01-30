@@ -2246,10 +2246,11 @@ MacLow::RxCompleteBufferedPacketsWithSmallerSequence (uint16_t seq, Mac48Address
       uint16_t endSequence = ((*it).second.first.GetStartingSequence () + 2047) % 4096;
       uint16_t mappedStart = QosUtilsMapSeqControlToUniqueInteger (seq, endSequence);
       BufferedPacketI last = (*it).second.second.begin ();
-      uint16_t guard;
+      uint16_t guard = 0;
       if (last != (*it).second.second.end ())
-        guard = (*it).second.second.begin ()->second.GetSequenceControl () & 0xfff0;
-
+        {
+          guard = (*it).second.second.begin ()->second.GetSequenceControl () & 0xfff0;
+        }
       BufferedPacketI i = (*it).second.second.begin ();
       for (; i != (*it).second.second.end ()
            && QosUtilsMapSeqControlToUniqueInteger ((*i).second.GetSequenceNumber (), endSequence) < mappedStart;)
