@@ -28,7 +28,7 @@ def build(bld):
 
         # Make sure that the csma module is enabled before building
         # this program.
-        if 'ns3-csma' in env['NS3_ENABLED_MODULES']:
-            obj = bld.create_ns3_program('print-introspected-doxygen', ['network', 'csma'])
-            obj.source = 'print-introspected-doxygen.cc'
-            obj.use = [mod for mod in env['NS3_ENABLED_MODULES']]
+        # if 'ns3-csma' in env['NS3_ENABLED_MODULES']:
+        obj = bld.create_ns3_program('print-introspected-doxygen', ['network'])
+        obj.source = 'print-introspected-doxygen.cc'
+        obj.use = [mod for mod in env['NS3_ENABLED_MODULES']]

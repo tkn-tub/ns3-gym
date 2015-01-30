@@ -32,7 +32,7 @@
 #include "ns3/pointer.h"
 #include "ns3/string.h"
 #include "ns3/node-container.h"
-#include "ns3/csma-channel.h"
+#include "ns3/simple-channel.h"
 
 using namespace ns3;
 
@@ -961,6 +961,11 @@ public:
    */
   std::vector<std::string> Get (TypeId tid) const;
 
+  /**
+   * \return the type names we couldn't aggregate.
+   */
+  std::vector<std::string> GetNoTypeIds (void) const;
+
 private:
   /**
    * \return the current configuration path
@@ -1000,6 +1005,14 @@ private:
    * List of aggregation relationships.
    */
   std::vector<std::pair<TypeId,TypeId> > m_aggregates;
+  /**
+   * List of type names without TypeIds, because those modules aren't enabled.
+   *
+   * This is mutable because GetNoTypeIds sorts and uniquifies this list
+   * before returning it.
+   */
+  mutable std::vector<std::string> m_noTids;
+  
 };  // class StaticInformation
 
 
@@ -1007,7 +1020,22 @@ void
 StaticInformation::RecordAggregationInfo (std::string a, std::string b)
 {
   NS_LOG_FUNCTION (this << a << b);
-  m_aggregates.push_back (std::make_pair (TypeId::LookupByName (a), TypeId::LookupByName (b)));
+  TypeId aTid;
+  bool found = TypeId::LookupByNameFailSafe (a, &aTid);
+  if (!found)
+    {
+      m_noTids.push_back (a);
+      return;
+    }
+  TypeId bTid;
+  found = TypeId::LookupByNameFailSafe (b, &bTid);
+  if (!found)
+    {
+      m_noTids.push_back (b);
+      return;
+    }
+
+  m_aggregates.push_back (std::make_pair (aTid, bTid));
 }
 
 
@@ -1076,15 +1104,44 @@ StaticInformation::Get (TypeId tid) const
   return paths;
 }
 
+/**
+ * Helper to keep only the unique items in a container.
+ *
+ * The container is modified in place; the elements end up sorted.
+ *
+ * The container must support \c begin(), \c end() and \c erase(),
+ * which, among the STL containers, limits this to
+ * \c std::vector, \c std::dequeue and \c std::list.
+ *
+ * The container elements must support \c operator< (for \c std::sort)
+ * and \c operator== (for \c std::unique).
+ *
+ * \tparam T The container type.
+ * \param t The container.
+ */
+template <typename T>
+void
+Uniquefy (T t)
+{
+  std::sort (t.begin (), t.end ());
+  t.erase (std::unique (t.begin (), t.end ()), t.end ());
+}
+
+std::vector<std::string>
+StaticInformation::GetNoTypeIds (void) const
+{
+  NS_LOG_FUNCTION (this);
+  Uniquefy (m_noTids);
+  return m_noTids;
+}
+
 
 void
 StaticInformation::Gather (TypeId tid)
 {
   NS_LOG_FUNCTION (this << tid);
   DoGather (tid);
-
-  std::sort (m_output.begin (), m_output.end ());
-  m_output.erase (std::unique (m_output.begin (), m_output.end ()), m_output.end ());
+  Uniquefy (m_output);
 }
 
 
@@ -1211,8 +1268,8 @@ GetTypicalAggregations ()
 
   // Create a channel object so that channels appear in the namespace
   // paths that will be generated here.
-  Ptr<CsmaChannel> csma;
-  csma = CreateObject<CsmaChannel> ();
+  Ptr<SimpleChannel> simpleChannel;
+  simpleChannel = CreateObject<SimpleChannel> ();
 
   for (uint32_t i = 0; i < Config::GetRootNamespaceObjectN (); ++i)
     {
@@ -1226,18 +1283,19 @@ GetTypicalAggregations ()
 
 
 // Map from TypeId name to tid
-typedef std::map< std::string, uint32_t> NameMap;
-typedef NameMap::const_iterator          NameMapIterator;
+typedef std::map< std::string, int32_t> NameMap;
+typedef NameMap::const_iterator         NameMapIterator;
 
 
 // Create a map from the class names to their index in the vector of
 // TypeId's so that the names will end up in alphabetical order.
 NameMap
-GetNameMap (void)
+GetNameMap (const StaticInformation & info)
 {
   NS_LOG_FUNCTION_NOARGS ();
   NameMap nameMap;
-  
+
+  // Registered types
   for (uint32_t i = 0; i < TypeId::GetRegisteredN (); i++)
     {
       TypeId tid = TypeId::GetRegistered (i);
@@ -1257,6 +1315,16 @@ GetNameMap (void)
       // Save this name's index.
       nameMap[name] = i;
     }
+
+  // Type names without TypeIds
+  std::vector<std::string> noTids = info.GetNoTypeIds ();
+  for (std::vector<std::string>::const_iterator i = noTids.begin ();
+       i != noTids.end ();
+       ++i)
+    {
+      nameMap[*i] = -1;
+    }
+       
   return nameMap;
 }  // GetNameMap ()
 
@@ -1271,7 +1339,7 @@ PrintConfigPaths (std::ostream & os, const StaticInformation & info,
   // Config --------------
   if (paths.empty ())
     {
-      os << "Doxygen introspection did not find any typical Config paths."
+      os << "Introspection did not find any typical Config paths."
 	 << breakBoth
 	 << std::endl;
     }
@@ -1334,7 +1402,7 @@ int main (int argc, char *argv[])
   // Get typical aggregation relationships.
   StaticInformation info = GetTypicalAggregations ();
   
-  NameMap nameMap = GetNameMap ();
+  NameMap nameMap = GetNameMap (info);
 
   // Iterate over the map, which will print the class names in
   // alphabetical order.
@@ -1343,23 +1411,40 @@ int main (int argc, char *argv[])
        nameMapIterator++)
     {
       // Get the class's index out of the map;
-      uint32_t i = nameMapIterator->second;
+      std::string name = nameMapIterator->first;
+      int32_t i = nameMapIterator->second;
+      TypeId tid;
 
+      if (i >= 0)
+        {
+          tid = TypeId::GetRegistered (i);
+          if (tid.MustHideFromDocumentation ())
+            {
+              continue;
+            }
+          name = tid.GetName ();
+        }
+      
       std::cout << commentStart << std::endl;
       
-      TypeId tid = TypeId::GetRegistered (i);
-      if (tid.MustHideFromDocumentation ())
-	{
-	  continue;
-	}
-      
-      std::cout << classStart << tid.GetName () << std::endl;
+      std::cout << classStart << name << std::endl;
       std::cout << std::endl;
 
-      PrintConfigPaths (std::cout, info, tid);
-      PrintAttributes (std::cout, tid);
-      PrintTraceSources (std::cout, tid);
-      PrintSize (std::cout, tid);
+      if (i >= 0)
+        {
+          PrintConfigPaths (std::cout, info, tid);
+          PrintAttributes (std::cout, tid);
+          PrintTraceSources (std::cout, tid);
+          PrintSize (std::cout, tid);
+        }
+      else
+        {
+          std::cout << "Introspection could not find Config paths for " << name
+                    << " in this build because the parent module"
+                    << " was not included in the waf configuration."
+                    << breakBoth
+                    << std::endl;
+        }
       
       std::cout << commentStop << std::endl;
     }  // class documentation
