@@ -213,7 +213,6 @@ TcpNewReno::Retransmit (void)
   m_nextTxSequence = m_txBuffer.HeadSequence (); // Restart from highest Ack
   NS_LOG_INFO ("RTO. Reset cwnd to " << m_cWnd <<
                ", ssthresh to " << m_ssThresh << ", restart from seqnum " << m_nextTxSequence);
-  m_rtt->IncreaseMultiplier ();             // Double the next RTO
   DoRetransmit ();                          // Retransmit the packet
 }
 

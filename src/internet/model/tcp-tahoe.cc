@@ -166,7 +166,6 @@ void TcpTahoe::Retransmit (void)
   m_ssThresh = std::max (static_cast<unsigned> (m_cWnd / 2), m_segmentSize * 2);  // Half ssthresh
   m_cWnd = m_segmentSize;                   // Set cwnd to 1 segSize (RFC2001, sec.2)
   m_nextTxSequence = m_txBuffer.HeadSequence (); // Restart from highest Ack
-  m_rtt->IncreaseMultiplier ();             // Double the next RTO
   DoRetransmit ();                          // Retransmit the packet
 }
 

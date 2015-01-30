@@ -216,7 +216,7 @@ def register_types(module):
     module.add_class('RipNgRoutingTableEntry', parent=root_module['ns3::Ipv6RoutingTableEntry'])
     ## ripng.h (module 'internet'): ns3::RipNgRoutingTableEntry::Status_e [enumeration]
     module.add_enum('Status_e', ['RIPNG_VALID', 'RIPNG_INVALID'], outer_class=root_module['ns3::RipNgRoutingTableEntry'])
-    ## rtt-estimator.h (module 'internet'): ns3::RttHistory [class]
+    ## tcp-socket-base.h (module 'internet'): ns3::RttHistory [class]
     module.add_class('RttHistory')
     ## global-route-manager-impl.h (module 'internet'): ns3::SPFVertex [class]
     module.add_class('SPFVertex')
@@ -4513,17 +4513,17 @@ def register_Ns3RipNgRoutingTableEntry_methods(root_module, cls):
     return
 
 def register_Ns3RttHistory_methods(root_module, cls):
-    ## rtt-estimator.h (module 'internet'): ns3::RttHistory::RttHistory(ns3::SequenceNumber32 s, uint32_t c, ns3::Time t) [constructor]
+    ## tcp-socket-base.h (module 'internet'): ns3::RttHistory::RttHistory(ns3::SequenceNumber32 s, uint32_t c, ns3::Time t) [constructor]
     cls.add_constructor([param('ns3::SequenceNumber32', 's'), param('uint32_t', 'c'), param('ns3::Time', 't')])
-    ## rtt-estimator.h (module 'internet'): ns3::RttHistory::RttHistory(ns3::RttHistory const & h) [copy constructor]
+    ## tcp-socket-base.h (module 'internet'): ns3::RttHistory::RttHistory(ns3::RttHistory const & h) [copy constructor]
     cls.add_constructor([param('ns3::RttHistory const &', 'h')])
-    ## rtt-estimator.h (module 'internet'): ns3::RttHistory::count [variable]
+    ## tcp-socket-base.h (module 'internet'): ns3::RttHistory::count [variable]
     cls.add_instance_attribute('count', 'uint32_t', is_const=False)
-    ## rtt-estimator.h (module 'internet'): ns3::RttHistory::retx [variable]
+    ## tcp-socket-base.h (module 'internet'): ns3::RttHistory::retx [variable]
     cls.add_instance_attribute('retx', 'bool', is_const=False)
-    ## rtt-estimator.h (module 'internet'): ns3::RttHistory::seq [variable]
+    ## tcp-socket-base.h (module 'internet'): ns3::RttHistory::seq [variable]
     cls.add_instance_attribute('seq', 'ns3::SequenceNumber32', is_const=False)
-    ## rtt-estimator.h (module 'internet'): ns3::RttHistory::time [variable]
+    ## tcp-socket-base.h (module 'internet'): ns3::RttHistory::time [variable]
     cls.add_instance_attribute('time', 'ns3::Time', is_const=False)
     return
 
@@ -5328,7 +5328,6 @@ def register_Ns3Empty_methods(root_module, cls):
     return
 
 def register_Ns3Int64x64_t_methods(root_module, cls):
-    cls.add_binary_comparison_operator('<=')
     cls.add_binary_comparison_operator('!=')
     cls.add_inplace_numeric_operator('+=', param('ns3::int64x64_t const &', u'right'))
     cls.add_binary_numeric_operator('*', root_module['ns3::int64x64_t'], root_module['ns3::int64x64_t'], param('ns3::int64x64_t const &', u'right'))
@@ -5342,6 +5341,7 @@ def register_Ns3Int64x64_t_methods(root_module, cls):
     cls.add_inplace_numeric_operator('-=', param('ns3::int64x64_t const &', u'right'))
     cls.add_inplace_numeric_operator('/=', param('ns3::int64x64_t const &', u'right'))
     cls.add_output_stream_operator()
+    cls.add_binary_comparison_operator('<=')
     cls.add_binary_comparison_operator('==')
     cls.add_binary_comparison_operator('>=')
     ## int64x64-double.h (module 'core'): ns3::int64x64_t::int64x64_t() [constructor]
@@ -7964,23 +7964,13 @@ def register_Ns3RttEstimator_methods(root_module, cls):
     cls.add_constructor([])
     ## rtt-estimator.h (module 'internet'): ns3::RttEstimator::RttEstimator(ns3::RttEstimator const & r) [copy constructor]
     cls.add_constructor([param('ns3::RttEstimator const &', 'r')])
-    ## rtt-estimator.h (module 'internet'): void ns3::RttEstimator::ClearSent() [member function]
-    cls.add_method('ClearSent', 
-                   'void', 
-                   [], 
-                   is_virtual=True)
     ## rtt-estimator.h (module 'internet'): ns3::Ptr<ns3::RttEstimator> ns3::RttEstimator::Copy() const [member function]
     cls.add_method('Copy', 
                    'ns3::Ptr< ns3::RttEstimator >', 
                    [], 
                    is_pure_virtual=True, is_const=True, is_virtual=True)
-    ## rtt-estimator.h (module 'internet'): ns3::Time ns3::RttEstimator::EstimateRttFromSeq(ns3::SequenceNumber32 ackSeq) [member function]
-    cls.add_method('EstimateRttFromSeq', 
-                   'ns3::Time', 
-                   [param('ns3::SequenceNumber32', 'ackSeq')], 
-                   is_virtual=True)
-    ## rtt-estimator.h (module 'internet'): ns3::Time ns3::RttEstimator::GetCurrentEstimate() const [member function]
-    cls.add_method('GetCurrentEstimate', 
+    ## rtt-estimator.h (module 'internet'): ns3::Time ns3::RttEstimator::GetEstimate() const [member function]
+    cls.add_method('GetEstimate', 
                    'ns3::Time', 
                    [], 
                    is_const=True)
@@ -7989,9 +7979,9 @@ def register_Ns3RttEstimator_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_const=True, is_virtual=True)
-    ## rtt-estimator.h (module 'internet'): ns3::Time ns3::RttEstimator::GetMinRto() const [member function]
-    cls.add_method('GetMinRto', 
-                   'ns3::Time', 
+    ## rtt-estimator.h (module 'internet'): uint32_t ns3::RttEstimator::GetNSamples() const [member function]
+    cls.add_method('GetNSamples', 
+                   'uint32_t', 
                    [], 
                    is_const=True)
     ## rtt-estimator.h (module 'internet'): static ns3::TypeId ns3::RttEstimator::GetTypeId() [member function]
@@ -7999,11 +7989,11 @@ def register_Ns3RttEstimator_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
-    ## rtt-estimator.h (module 'internet'): void ns3::RttEstimator::IncreaseMultiplier() [member function]
-    cls.add_method('IncreaseMultiplier', 
-                   'void', 
+    ## rtt-estimator.h (module 'internet'): ns3::Time ns3::RttEstimator::GetVariation() const [member function]
+    cls.add_method('GetVariation', 
+                   'ns3::Time', 
                    [], 
-                   is_virtual=True)
+                   is_const=True)
     ## rtt-estimator.h (module 'internet'): void ns3::RttEstimator::Measurement(ns3::Time t) [member function]
     cls.add_method('Measurement', 
                    'void', 
@@ -8014,29 +8004,6 @@ def register_Ns3RttEstimator_methods(root_module, cls):
                    'void', 
                    [], 
                    is_virtual=True)
-    ## rtt-estimator.h (module 'internet'): void ns3::RttEstimator::ResetMultiplier() [member function]
-    cls.add_method('ResetMultiplier', 
-                   'void', 
-                   [], 
-                   is_virtual=True)
-    ## rtt-estimator.h (module 'internet'): ns3::Time ns3::RttEstimator::RetransmitTimeout() [member function]
-    cls.add_method('RetransmitTimeout', 
-                   'ns3::Time', 
-                   [], 
-                   is_pure_virtual=True, is_virtual=True)
-    ## rtt-estimator.h (module 'internet'): void ns3::RttEstimator::SentSeq(ns3::SequenceNumber32 seq, uint32_t size) [member function]
-    cls.add_method('SentSeq', 
-                   'void', 
-                   [param('ns3::SequenceNumber32', 'seq'), param('uint32_t', 'size')], 
-                   is_virtual=True)
-    ## rtt-estimator.h (module 'internet'): void ns3::RttEstimator::SetCurrentEstimate(ns3::Time estimate) [member function]
-    cls.add_method('SetCurrentEstimate', 
-                   'void', 
-                   [param('ns3::Time', 'estimate')])
-    ## rtt-estimator.h (module 'internet'): void ns3::RttEstimator::SetMinRto(ns3::Time minRto) [member function]
-    cls.add_method('SetMinRto', 
-                   'void', 
-                   [param('ns3::Time', 'minRto')])
     return
 
 def register_Ns3RttMeanDeviation_methods(root_module, cls):
@@ -8049,10 +8016,6 @@ def register_Ns3RttMeanDeviation_methods(root_module, cls):
                    'ns3::Ptr< ns3::RttEstimator >', 
                    [], 
                    is_const=True, is_virtual=True)
-    ## rtt-estimator.h (module 'internet'): void ns3::RttMeanDeviation::Gain(double g) [member function]
-    cls.add_method('Gain', 
-                   'void', 
-                   [param('double', 'g')])
     ## rtt-estimator.h (module 'internet'): ns3::TypeId ns3::RttMeanDeviation::GetInstanceTypeId() const [member function]
     cls.add_method('GetInstanceTypeId', 
                    'ns3::TypeId', 
@@ -8071,11 +8034,6 @@ def register_Ns3RttMeanDeviation_methods(root_module, cls):
     ## rtt-estimator.h (module 'internet'): void ns3::RttMeanDeviation::Reset() [member function]
     cls.add_method('Reset', 
                    'void', 
-                   [], 
-                   is_virtual=True)
-    ## rtt-estimator.h (module 'internet'): ns3::Time ns3::RttMeanDeviation::RetransmitTimeout() [member function]
-    cls.add_method('RetransmitTimeout', 
-                   'ns3::Time', 
                    [], 
                    is_virtual=True)
     return
@@ -9389,11 +9347,21 @@ def register_Ns3TcpSocketBase_methods(root_module, cls):
                    'int', 
                    [param('ns3::Address const &', 'address')], 
                    is_virtual=True)
+    ## tcp-socket-base.h (module 'internet'): ns3::Time ns3::TcpSocketBase::GetClockGranularity() const [member function]
+    cls.add_method('GetClockGranularity', 
+                   'ns3::Time', 
+                   [], 
+                   is_const=True)
     ## tcp-socket-base.h (module 'internet'): ns3::Socket::SocketErrno ns3::TcpSocketBase::GetErrno() const [member function]
     cls.add_method('GetErrno', 
                    'ns3::Socket::SocketErrno', 
                    [], 
                    is_const=True, is_virtual=True)
+    ## tcp-socket-base.h (module 'internet'): ns3::Time ns3::TcpSocketBase::GetMinRto() const [member function]
+    cls.add_method('GetMinRto', 
+                   'ns3::Time', 
+                   [], 
+                   is_const=True)
     ## tcp-socket-base.h (module 'internet'): ns3::Ptr<ns3::Node> ns3::TcpSocketBase::GetNode() const [member function]
     cls.add_method('GetNode', 
                    'ns3::Ptr< ns3::Node >', 
@@ -9449,6 +9417,14 @@ def register_Ns3TcpSocketBase_methods(root_module, cls):
                    'int', 
                    [param('ns3::Ptr< ns3::Packet >', 'p'), param('uint32_t', 'flags'), param('ns3::Address const &', 'toAddress')], 
                    is_virtual=True)
+    ## tcp-socket-base.h (module 'internet'): void ns3::TcpSocketBase::SetClockGranularity(ns3::Time clockGranularity) [member function]
+    cls.add_method('SetClockGranularity', 
+                   'void', 
+                   [param('ns3::Time', 'clockGranularity')])
+    ## tcp-socket-base.h (module 'internet'): void ns3::TcpSocketBase::SetMinRto(ns3::Time minRto) [member function]
+    cls.add_method('SetMinRto', 
+                   'void', 
+                   [param('ns3::Time', 'minRto')])
     ## tcp-socket-base.h (module 'internet'): void ns3::TcpSocketBase::SetNode(ns3::Ptr<ns3::Node> node) [member function]
     cls.add_method('SetNode', 
                    'void', 
@@ -10110,7 +10086,6 @@ def register_Ns3TcpWestwood_methods(root_module, cls):
     return
 
 def register_Ns3Time_methods(root_module, cls):
-    cls.add_binary_comparison_operator('<=')
     cls.add_binary_comparison_operator('!=')
     cls.add_inplace_numeric_operator('+=', param('ns3::Time const &', u'right'))
     cls.add_binary_numeric_operator('*', root_module['ns3::Time'], root_module['ns3::Time'], param('int64_t const &', u'right'))
@@ -10121,6 +10096,7 @@ def register_Ns3Time_methods(root_module, cls):
     cls.add_binary_comparison_operator('>')
     cls.add_inplace_numeric_operator('-=', param('ns3::Time const &', u'right'))
     cls.add_output_stream_operator()
+    cls.add_binary_comparison_operator('<=')
     cls.add_binary_comparison_operator('==')
     cls.add_binary_comparison_operator('>=')
     ## nstime.h (module 'core'): ns3::Time::Time() [constructor]

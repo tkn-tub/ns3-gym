@@ -47,6 +47,35 @@ class TcpL4Protocol;
 class TcpHeader;
 
 /**
+ * \ingroup tcp
+ *
+ * \brief Helper class to store RTT measurements
+ */
+class RttHistory {
+public:
+  /**
+   * \brief Constructor - builds an RttHistory with the given parameters
+   * \param s First sequence number in packet sent
+   * \param c Number of bytes sent
+   * \param t Time this one was sent
+   */
+  RttHistory (SequenceNumber32 s, uint32_t c, Time t);
+  /**
+   * \brief Copy constructor
+   * \param h the object to copy
+   */
+  RttHistory (const RttHistory& h); // Copy constructor
+public:
+  SequenceNumber32  seq;  //!< First sequence number in packet sent
+  uint32_t        count;  //!< Number of bytes sent
+  Time            time;   //!< Time this one was sent
+  bool            retx;   //!< True if this has been retransmitted
+};
+
+/// Container for RttHistory objects
+typedef std::deque<RttHistory> RttHistory_t;
+
+/**
  * \ingroup socket
  * \ingroup tcp
  *
@@ -100,6 +129,31 @@ public:
    * \param rtt the RTT estimator
    */
   virtual void SetRtt (Ptr<RttEstimator> rtt);
+
+  /**
+   * \brief Sets the Minimum RTO.
+   * \param minRto The minimum RTO.
+   */
+  void SetMinRto (Time minRto);
+
+  /**
+   * \brief Get the Minimum RTO.
+   * \return The minimum RTO.
+   */
+  Time GetMinRto (void) const;
+
+  /**
+   * \brief Sets the Clock Granularity (used in RTO calcs).
+   * \param clockGranularity The Clock Granularity
+   */
+  void SetClockGranularity (Time clockGranularity);
+
+  /**
+   * \brief Get the Clock Granularity (used in RTO calcs).
+   * \return The Clock Granularity.
+   */
+  Time GetClockGranularity (void) const;
+
 
   // Necessary implementations of null functions from ns3::Socket
   virtual enum SocketErrno GetErrno (void) const;    // returns m_errno
@@ -624,10 +678,13 @@ protected:
   uint32_t          m_cnCount;         //!< Count of remaining connection retries
   uint32_t          m_cnRetries;       //!< Number of connection retries before giving up
   TracedValue<Time> m_rto;             //!< Retransmit timeout
+  Time              m_minRto;          //!< minimum value of the Retransmit timeout
+  Time              m_clockGranularity; //!< Clock Granularity used in RTO calcs
   TracedValue<Time> m_lastRtt;         //!< Last RTT sample collected
   Time              m_delAckTimeout;   //!< Time to delay an ACK
   Time              m_persistTimeout;  //!< Time between sending 1-byte probes
   Time              m_cnTimeout;       //!< Timeout for connection retry
+  RttHistory_t      m_history;         //!< List of sent packet
 
   // Connections to other layers of TCP/IP
   Ipv4EndPoint*       m_endPoint;   //!< the IPv4 endpoint
@@ -667,7 +724,6 @@ protected:
 
   bool     m_timestampEnabled;    //!< Timestamp option enabled
   uint32_t m_timestampToEcho;     //!< Timestamp to echo
-  uint32_t m_lastEchoedTime;      //!< Last echoed timestamp
 };
 
 } // namespace ns3

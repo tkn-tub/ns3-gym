@@ -94,6 +94,18 @@ TcpSocketBase::GetTypeId (void)
                    BooleanValue (true),
                    MakeBooleanAccessor (&TcpSocketBase::m_timestampEnabled),
                    MakeBooleanChecker ())
+    .AddAttribute ("MinRto",
+                   "Minimum retransmit timeout value",
+                   TimeValue (Seconds (0.2)), // RFC2988 says min RTO=1 sec, but Linux uses 200ms. See http://www.postel.org/pipermail/end2end-interest/2004-November/004402.html
+                   MakeTimeAccessor (&TcpSocketBase::SetMinRto,
+                                     &TcpSocketBase::GetMinRto),
+                                     MakeTimeChecker ())
+    .AddAttribute ("ClockGranularity",
+                   "Clock Granularity used in RTO calculations",
+                   TimeValue (MilliSeconds (1)), // RFC6298 suggest to use fine clock granularity
+                   MakeTimeAccessor (&TcpSocketBase::SetClockGranularity,
+                                     &TcpSocketBase::GetClockGranularity),
+                                     MakeTimeChecker ())
     .AddTraceSource ("RTO",
                      "Retransmission timeout",
                      MakeTraceSourceAccessor (&TcpSocketBase::m_rto),
@@ -148,8 +160,7 @@ TcpSocketBase::TcpSocketBase (void)
     m_sndScaleFactor (0),
     m_rcvScaleFactor (0),
     m_timestampEnabled (true),
-    m_timestampToEcho (0),
-    m_lastEchoedTime (0)
+    m_timestampToEcho (0)
 
 {
   NS_LOG_FUNCTION (this);
@@ -190,8 +201,7 @@ TcpSocketBase::TcpSocketBase (const TcpSocketBase& sock)
     m_sndScaleFactor (sock.m_sndScaleFactor),
     m_rcvScaleFactor (sock.m_rcvScaleFactor),
     m_timestampEnabled (sock.m_timestampEnabled),
-    m_timestampToEcho (sock.m_timestampToEcho),
-    m_lastEchoedTime (sock.m_lastEchoedTime)
+    m_timestampToEcho (sock.m_timestampToEcho)
 
 {
   NS_LOG_FUNCTION (this);
@@ -1568,8 +1578,8 @@ TcpSocketBase::DoPeerClose (void)
   if (m_state == LAST_ACK)
     {
       NS_LOG_LOGIC ("TcpSocketBase " << this << " scheduling LATO1");
-      m_lastAckEvent = Simulator::Schedule (m_rtt->RetransmitTimeout (),
-                                            &TcpSocketBase::LastAckTimeout, this);
+      Time lastRto = m_rtt->GetEstimate () + Max (m_clockGranularity, m_rtt->GetVariation ()*4);
+      m_lastAckEvent = Simulator::Schedule (lastRto, &TcpSocketBase::LastAckTimeout, this);
     }
 }
 
@@ -1687,7 +1697,10 @@ TcpSocketBase::SendEmptyPacket (uint8_t flags)
     }
   AddOptions (header);
   header.SetWindowSize (AdvertisedWindowSize ());
-  m_rto = m_rtt->RetransmitTimeout ();
+
+  // RFC 6298, clause 2.4
+  m_rto = Max (m_rtt->GetEstimate () + Max (m_clockGranularity, m_rtt->GetVariation ()*4), Time::FromDouble (1,  Time::S));
+
   bool hasSyn = flags & TcpHeader::SYN;
   bool hasFin = flags & TcpHeader::FIN;
   bool isAck = flags == TcpHeader::ACK;
@@ -1696,6 +1709,7 @@ TcpSocketBase::SendEmptyPacket (uint8_t flags)
       if (m_cnCount == 0)
         { // No more connection retries, give up
           NS_LOG_LOGIC ("Connection failed.");
+          m_rtt->Reset (); //According to recommendation -> RFC 6298
           CloseAndNotify ();
           return;
         }
@@ -1891,6 +1905,12 @@ TcpSocketBase::SendDataPacket (SequenceNumber32 seq, uint32_t maxSize, bool with
 {
   NS_LOG_FUNCTION (this << seq << maxSize << withAck);
 
+  bool isRetransmission = false;
+  if ( seq == m_txBuffer.HeadSequence () )
+    {
+      isRetransmission = true;
+    }
+
   Ptr<Packet> p = m_txBuffer.CopyFromSequence (maxSize, seq);
   uint32_t sz = p->GetSize (); // Size of packet
   uint8_t flags = withAck ? TcpHeader::ACK : 0;
@@ -1960,9 +1980,15 @@ TcpSocketBase::SendDataPacket (SequenceNumber32 seq, uint32_t maxSize, bool with
     }
   header.SetWindowSize (AdvertisedWindowSize ());
   AddOptions (header);
+
   if (m_retxEvent.IsExpired () )
-    { // Schedule retransmit
-      m_rto = m_rtt->RetransmitTimeout ();
+    {
+      // RFC 6298, clause 2.5
+      Time doubledRto = m_rto + m_rto;
+      m_rto = Min (doubledRto, Time::FromDouble (60,  Time::S));
+
+      // Schedules retransmit
+
       NS_LOG_LOGIC (this << " SendDataPacket Schedule ReTxTimeout at time " <<
                     Simulator::Now ().GetSeconds () << " to expire at time " <<
                     (Simulator::Now () + m_rto.Get ()).GetSeconds () );
@@ -1979,7 +2005,25 @@ TcpSocketBase::SendDataPacket (SequenceNumber32 seq, uint32_t maxSize, bool with
       m_tcp->SendPacket (p, header, m_endPoint6->GetLocalAddress (),
                          m_endPoint6->GetPeerAddress (), m_boundnetdevice);
     }
-  m_rtt->SentSeq (seq, sz);       // notify the RTT
+
+  // update the history of sequence numbers used to calculate the RTT
+  if (isRetransmission == false)
+    { // This is the next expected one, just log at end
+      m_history.push_back (RttHistory (seq, sz, Simulator::Now () ));
+    }
+  else
+    { // This is a retransmit, find in list and mark as re-tx
+      for (RttHistory_t::iterator i = m_history.begin (); i != m_history.end (); ++i)
+        {
+          if ((seq >= i->seq) && (seq < (i->seq + SequenceNumber32 (i->count))))
+            { // Found it
+              i->retx = true;
+              i->count = ((seq + SequenceNumber32 (sz)) - i->seq); // And update count in hist
+              break;
+            }
+        }
+    }
+
   // Notify the application of the data being sent unless this is a retransmit
   if (seq == m_nextTxSequence)
     {
@@ -2155,27 +2199,46 @@ TcpSocketBase::ReceivedData (Ptr<Packet> p, const TcpHeader& tcpHeader)
 void
 TcpSocketBase::EstimateRtt (const TcpHeader& tcpHeader)
 {
-  Time nextRtt;
+  SequenceNumber32 ackSeq = tcpHeader.GetAckNumber();
+  Time m = Time (0.0);
 
-  if (m_timestampEnabled)
+  // An ack has been received, calculate rtt and log this measurement
+  // Note we use a linear search (O(n)) for this since for the common
+  // case the ack'ed packet will be at the head of the list
+  if (!m_history.empty ())
     {
-      nextRtt = TcpOptionTS::ElapsedTimeFromTsValue (m_lastEchoedTime);
-    }
-  else
-    {
-      // Use m_rtt for the estimation. Note, RTT of duplicated acknowledgement
-      // (which should be ignored) is handled by m_rtt.
-      nextRtt =  m_rtt->EstimateRttFromSeq (tcpHeader.GetAckNumber () );
+      RttHistory& h = m_history.front ();
+      if (!h.retx && ackSeq >= (h.seq + SequenceNumber32 (h.count)))
+        { // Ok to use this sample
+          if (m_timestampEnabled && tcpHeader.HasOption (TcpOption::TS))
+            {
+              Ptr<TcpOptionTS> ts;
+              ts = DynamicCast<TcpOptionTS> (tcpHeader.GetOption (TcpOption::TS));
+              m = TcpOptionTS::ElapsedTimeFromTsValue (ts->GetEcho ());
+            }
+          else
+            {
+              m = Simulator::Now () - h.time; // Elapsed time
+            }
+        }
     }
 
-  //nextRtt will be zero for dup acks.  Don't want to update lastRtt in that case
-  //but still needed to do list clearing that is done in EstimateRttFromSeq.
-  if(nextRtt != Time (0))
-  {
-    m_lastRtt = nextRtt;
-    NS_LOG_FUNCTION(this << m_lastRtt);
-  }
-  
+  // Now delete all ack history with seq <= ack
+  while(!m_history.empty ())
+    {
+      RttHistory& h = m_history.front ();
+      if ((h.seq + SequenceNumber32 (h.count)) > ackSeq) break;               // Done removing
+      m_history.pop_front (); // Remove
+    }
+
+  if (!m.IsZero ())
+    {
+      m_rtt->Measurement (m);                // Log the measurement
+      // RFC 6298, clause 2.4
+      m_rto = Max (m_rtt->GetEstimate () + Max (m_clockGranularity, m_rtt->GetVariation ()*4), Time::FromDouble (1,  Time::S));
+      m_lastRtt = m_rtt->GetEstimate ();
+      NS_LOG_FUNCTION(this << m_lastRtt);
+    }
 }
 
 // Called by the ReceivedAck() when new ACK received and by ProcessSynRcvd()
@@ -2191,8 +2254,10 @@ TcpSocketBase::NewAck (SequenceNumber32 const& ack)
       NS_LOG_LOGIC (this << " Cancelled ReTxTimeout event which was set to expire at " <<
                     (Simulator::Now () + Simulator::GetDelayLeft (m_retxEvent)).GetSeconds ());
       m_retxEvent.Cancel ();
-      // On recieving a "New" ack we restart retransmission timer .. RFC 2988
-      m_rto = m_rtt->RetransmitTimeout ();
+      // On receiving a "New" ack we restart retransmission timer .. RFC 6298
+      // RFC 6298, clause 2.4
+      m_rto = Max (m_rtt->GetEstimate () + Max (m_clockGranularity, m_rtt->GetVariation ()*4), Time::FromDouble (1,  Time::S));
+
       NS_LOG_LOGIC (this << " Schedule ReTxTimeout at time " <<
                     Simulator::Now ().GetSeconds () << " to expire at time " <<
                     (Simulator::Now () + m_rto.Get ()).GetSeconds ());
@@ -2320,7 +2385,6 @@ void
 TcpSocketBase::Retransmit ()
 {
   m_nextTxSequence = m_txBuffer.HeadSequence (); // Start from highest Ack
-  m_rtt->IncreaseMultiplier (); // Double the timeout value for next retx timer
   m_dupAckCount = 0;
   DoRetransmit (); // Retransmit the packet
 }
@@ -2526,6 +2590,7 @@ TcpSocketBase::ReadOptions (const TcpHeader& header)
     }
 
   m_timestampEnabled = false;
+
   if (header.HasOption (TcpOption::TS))
     {
       m_timestampEnabled = true;
@@ -2622,10 +2687,9 @@ TcpSocketBase::ProcessOptionTimestamp (const Ptr<const TcpOption> option)
 
   Ptr<const TcpOptionTS> ts = DynamicCast<const TcpOptionTS> (option);
   m_timestampToEcho = ts->GetTimestamp ();
-  m_lastEchoedTime = ts->GetEcho ();
 
   NS_LOG_INFO (m_node->GetId () << " Got timestamp=" <<
-               m_timestampToEcho << " and Echo="     << m_lastEchoedTime);
+               m_timestampToEcho << " and Echo="     << ts->GetEcho ());
 }
 
 void
@@ -2641,6 +2705,43 @@ TcpSocketBase::AddOptionTimestamp (TcpHeader& header)
   header.AppendOption (option);
   NS_LOG_INFO (m_node->GetId () << " Add option TS, ts=" <<
                option->GetTimestamp () << " echo=" << m_timestampToEcho);
+}
+
+void
+TcpSocketBase::SetMinRto (Time minRto)
+{
+  NS_LOG_FUNCTION (this << minRto);
+  m_minRto = minRto;
+}
+
+Time
+TcpSocketBase::GetMinRto (void) const
+{
+  return m_minRto;
+}
+
+void
+TcpSocketBase::SetClockGranularity (Time clockGranularity)
+{
+  NS_LOG_FUNCTION (this << clockGranularity);
+  m_clockGranularity = clockGranularity;
+}
+
+Time
+TcpSocketBase::GetClockGranularity (void) const
+{
+  return m_clockGranularity;
+}
+
+//RttHistory methods
+RttHistory::RttHistory (SequenceNumber32 s, uint32_t c, Time t)
+  : seq (s), count (c), time (t), retx (false)
+{
+}
+
+RttHistory::RttHistory (const RttHistory& h)
+  : seq (h.seq), count (h.count), time (h.time), retx (h.retx)
+{
 }
 
 } // namespace ns3

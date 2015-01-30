@@ -307,23 +307,20 @@ TcpWestwood::Retransmit (void)
   if (m_state == CLOSED || m_state == TIME_WAIT)
     return;
   // If all data are received, just return
-  if (m_txBuffer.HeadSequence() >= m_nextTxSequence)
+  if (m_txBuffer.HeadSequence () >= m_nextTxSequence)
     return;
 
   // Upon an RTO, adjust cwnd and ssthresh based on the estimated BW
-  m_ssThresh = std::max (static_cast<double> (2 * m_segmentSize), m_currentBW.Get() * static_cast<double> (m_minRtt.GetSeconds()));
+  m_ssThresh = std::max (static_cast<double> (2 * m_segmentSize), m_currentBW.Get () * static_cast<double> (m_minRtt.GetSeconds ()));
   m_cWnd = m_segmentSize;
 
   // Restart from highest ACK
-  m_nextTxSequence = m_txBuffer.HeadSequence();
+  m_nextTxSequence = m_txBuffer.HeadSequence ();
   NS_LOG_INFO ("RTO. Reset cwnd to " << m_cWnd <<
       ", ssthresh to " << m_ssThresh << ", restart from seqnum " << m_nextTxSequence);
 
-  // Double the next RTO
-  m_rtt->IncreaseMultiplier();
-
   // Retransmit the packet
-  DoRetransmit();
+  DoRetransmit ();
 }
 
 void

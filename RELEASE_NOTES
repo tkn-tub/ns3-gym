@@ -39,6 +39,7 @@ New user-visible features
 
 Bugs fixed
 ----------
+- Bug 1405 - RttEstimator improvements
 - Bug 1551 - NS_LOG_COMPONENT_DEFINE inside or outside of ns3 namespace?
 - Bug 1726 - WiFi Minstrel rate control algorithm doesn't save state
 - Bug 1758 - Yans and Nist error rate models for 5/6 code rate 802.11n HT
@@ -73,7 +74,6 @@ Bugs fixed
 - Bug 2045 - Missing NS_OBJECT_ENSURE_REGISTERED in TcpTxBuffer and TcpRxBuffer
 - Bug 2047 - Ipv6EndPointDemux::Lookup may crash
 - Bug 2049 - CQI feedback should always use the same calculation method
-
 
 Known issues
 ------------
