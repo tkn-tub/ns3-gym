@@ -34,6 +34,8 @@ NS_LOG_COMPONENT_DEFINE ("Ipv4NixVectorRouting");
 
 NS_OBJECT_ENSURE_REGISTERED (Ipv4NixVectorRouting);
 
+bool Ipv4NixVectorRouting::g_isCacheDirty = false;
+
 TypeId 
 Ipv4NixVectorRouting::GetTypeId (void)
 {
@@ -86,7 +88,7 @@ Ipv4NixVectorRouting::SetNode (Ptr<Node> node)
 }
 
 void
-Ipv4NixVectorRouting::FlushGlobalNixRoutingCache ()
+Ipv4NixVectorRouting::FlushGlobalNixRoutingCache (void) const
 {
   NS_LOG_FUNCTION_NOARGS ();
   NodeList::Iterator listEnd = NodeList::End ();
@@ -105,14 +107,14 @@ Ipv4NixVectorRouting::FlushGlobalNixRoutingCache ()
 }
 
 void
-Ipv4NixVectorRouting::FlushNixCache ()
+Ipv4NixVectorRouting::FlushNixCache (void) const
 {
   NS_LOG_FUNCTION_NOARGS ();
   m_nixCache.clear ();
 }
 
 void
-Ipv4NixVectorRouting::FlushIpv4RouteCache ()
+Ipv4NixVectorRouting::FlushIpv4RouteCache (void) const
 {
   NS_LOG_FUNCTION_NOARGS ();
   m_ipv4RouteCache.clear ();
@@ -168,6 +170,8 @@ Ipv4NixVectorRouting::GetNixVectorInCache (Ipv4Address address)
 {
   NS_LOG_FUNCTION_NOARGS ();
 
+  CheckCacheStateAndFlush ();
+
   NixMap_t::iterator iter = m_nixCache.find (address);
   if (iter != m_nixCache.end ())
     {
@@ -183,6 +187,8 @@ Ptr<Ipv4Route>
 Ipv4NixVectorRouting::GetIpv4RouteInCache (Ipv4Address address)
 {
   NS_LOG_FUNCTION_NOARGS ();
+
+  CheckCacheStateAndFlush ();
 
   Ipv4RouteMap_t::iterator iter = m_ipv4RouteCache.find (address);
   if (iter != m_ipv4RouteCache.end ())
@@ -364,7 +370,7 @@ Ipv4NixVectorRouting::GetNodeByIp (Ipv4Address dest)
 }
 
 uint32_t
-Ipv4NixVectorRouting::FindTotalNeighbors ()
+Ipv4NixVectorRouting::FindTotalNeighbors (void)
 {
   uint32_t numberOfDevices = m_node->GetNDevices ();
   uint32_t totalNeighbors = 0;
@@ -488,6 +494,8 @@ Ipv4NixVectorRouting::RouteOutput (Ptr<Packet> p, const Ipv4Header &header, Ptr<
   Ptr<NixVector> nixVectorInCache;
   Ptr<NixVector> nixVectorForPacket;
 
+  CheckCacheStateAndFlush ();
+
   NS_LOG_DEBUG ("Dest IP from header: " << header.GetDestination ());
   // check if cache
   nixVectorInCache = GetNixVectorInCache (header.GetDestination ());
@@ -608,6 +616,8 @@ Ipv4NixVectorRouting::RouteInput (Ptr<const Packet> p, const Ipv4Header &header,
 {
   NS_LOG_FUNCTION_NOARGS ();
 
+  CheckCacheStateAndFlush ();
+
   Ptr<Ipv4Route> rtentry;
 
   // Get the nix-vector from the packet
@@ -663,6 +673,8 @@ void
 Ipv4NixVectorRouting::PrintRoutingTable (Ptr<OutputStreamWrapper> stream) const
 {
 
+  CheckCacheStateAndFlush ();
+
   std::ostream* os = stream->GetStream ();
   *os << "NixCache:" << std::endl;
   if (m_nixCache.size () > 0)
@@ -707,22 +719,22 @@ Ipv4NixVectorRouting::PrintRoutingTable (Ptr<OutputStreamWrapper> stream) const
 void
 Ipv4NixVectorRouting::NotifyInterfaceUp (uint32_t i)
 {
-  FlushGlobalNixRoutingCache ();
+  g_isCacheDirty = true;
 }
 void
 Ipv4NixVectorRouting::NotifyInterfaceDown (uint32_t i)
 {
-  FlushGlobalNixRoutingCache ();
+  g_isCacheDirty = true;
 }
 void
 Ipv4NixVectorRouting::NotifyAddAddress (uint32_t interface, Ipv4InterfaceAddress address)
 {
-  FlushGlobalNixRoutingCache ();
+  g_isCacheDirty = true;
 }
 void
 Ipv4NixVectorRouting::NotifyRemoveAddress (uint32_t interface, Ipv4InterfaceAddress address)
 {
-  FlushGlobalNixRoutingCache ();
+  g_isCacheDirty = true;
 }
 
 bool
@@ -871,6 +883,16 @@ Ipv4NixVectorRouting::BFS (uint32_t numberOfNodes, Ptr<Node> source,
 
   // Didn't find the dest...
   return false;
+}
+
+void 
+Ipv4NixVectorRouting::CheckCacheStateAndFlush (void) const
+{
+  if (g_isCacheDirty)
+    {
+      FlushGlobalNixRoutingCache ();
+      g_isCacheDirty = false;
+    }
 }
 
 } // namespace ns3

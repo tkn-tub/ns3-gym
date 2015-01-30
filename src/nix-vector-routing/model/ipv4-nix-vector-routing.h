@@ -73,17 +73,22 @@ public:
    * which iterates through the node list and flushes any
    * nix vector caches
    *
+   * \internal
+   * \c const is used here due to need to potentially flush the cache
+   * in const methods such as PrintRoutingTable.  Caches are stored in
+   * mutable variables and flushed in const methods.
    */
-  void FlushGlobalNixRoutingCache (void);
+  void FlushGlobalNixRoutingCache (void) const;
 
 private:
+
   /* flushes the cache which stores nix-vector based on
    * destination IP */
-  void FlushNixCache (void);
+  void FlushNixCache (void) const;
 
   /* flushes the cache which stores the Ipv4 route
    * based on the destination IP */
-  void FlushIpv4RouteCache (void);
+  void FlushIpv4RouteCache (void) const;
 
   /* upon a run-time topology change caches are
    * flushed and the total number of neighbors is
@@ -155,17 +160,27 @@ private:
   virtual void SetIpv4 (Ptr<Ipv4> ipv4);
   virtual void PrintRoutingTable (Ptr<OutputStreamWrapper> stream) const;
 
+  /* 
+   * Flushes routing caches if required.
+   */
+  void CheckCacheStateAndFlush (void) const;
 
-  /* cache stores nix-vectors based on destination ip */
-  NixMap_t m_nixCache;
+  /* 
+   * Flag to mark when caches are dirty and need to be flushed.  
+   * Used for lazy cleanup of caches when there are many topology changes.
+   */
+  static bool g_isCacheDirty;
 
-  /* cache stores Ipv4Routes based on destination ip */
-  Ipv4RouteMap_t m_ipv4RouteCache;
+  /* Cache stores nix-vectors based on destination ip */
+  mutable NixMap_t m_nixCache;
+
+  /* Cache stores Ipv4Routes based on destination ip */
+  mutable Ipv4RouteMap_t m_ipv4RouteCache;
 
   Ptr<Ipv4> m_ipv4;
   Ptr<Node> m_node;
 
-  /* total neighbors used for nix-vector to determine
+  /* Total neighbors used for nix-vector to determine
    * number of bits */
   uint32_t m_totalNeighbors;
 };
