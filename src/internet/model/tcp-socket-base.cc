@@ -2025,7 +2025,7 @@ TcpSocketBase::SendDataPacket (SequenceNumber32 seq, uint32_t maxSize, bool with
     }
 
   // Notify the application of the data being sent unless this is a retransmit
-  if (seq == m_nextTxSequence)
+  if (seq == m_highTxMark)
     {
       Simulator::ScheduleNow (&TcpSocketBase::NotifyDataSent, this, sz);
     }

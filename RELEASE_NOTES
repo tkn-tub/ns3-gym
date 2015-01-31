@@ -71,9 +71,11 @@ Bugs fixed
 - Bug 2038 - Stop method does not stop next wave in WaveformGenerator
 - Bug 2042 - src/lte/model/a3-rsrp-handover-algorithm.cc:137:79: error: overflow in implicit constant conversion
 - Bug 2043 - print-introspected-doxygen crashes when some modules are disabled default tip
+- Bug 2044 - Buffer::Iterator::ReadNtohU16() and ReadNtohU32() not implemented correctly
 - Bug 2045 - Missing NS_OBJECT_ENSURE_REGISTERED in TcpTxBuffer and TcpRxBuffer
 - Bug 2047 - Ipv6EndPointDemux::Lookup may crash
 - Bug 2049 - CQI feedback should always use the same calculation method
+- Bug 2053 - In tcp-socket-base.cc, NotifyDataSent incorrectly called with retransmits
 
 Known issues
 ------------
