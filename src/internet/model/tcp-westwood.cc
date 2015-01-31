@@ -307,7 +307,7 @@ TcpWestwood::Retransmit (void)
   if (m_state == CLOSED || m_state == TIME_WAIT)
     return;
   // If all data are received, just return
-  if (m_txBuffer.HeadSequence () >= m_nextTxSequence)
+  if (m_txBuffer->HeadSequence () >= m_nextTxSequence)
     return;
 
   // Upon an RTO, adjust cwnd and ssthresh based on the estimated BW
@@ -315,7 +315,7 @@ TcpWestwood::Retransmit (void)
   m_cWnd = m_segmentSize;
 
   // Restart from highest ACK
-  m_nextTxSequence = m_txBuffer.HeadSequence ();
+  m_nextTxSequence = m_txBuffer->HeadSequence ();
   NS_LOG_INFO ("RTO. Reset cwnd to " << m_cWnd <<
       ", ssthresh to " << m_ssThresh << ", restart from seqnum " << m_nextTxSequence);
 

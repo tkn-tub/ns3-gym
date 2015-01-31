@@ -76,6 +76,7 @@ Bugs fixed
 - Bug 2047 - Ipv6EndPointDemux::Lookup may crash
 - Bug 2049 - CQI feedback should always use the same calculation method
 - Bug 2053 - In tcp-socket-base.cc, NotifyDataSent incorrectly called with retransmits
+- Bug 2055 - TCP TxBuffer and RxBuffer traces don't work
 
 Known issues
 ------------

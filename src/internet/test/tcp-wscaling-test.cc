@@ -385,8 +385,8 @@ WScalingTestCase::SetupDefaultSim (void)
       break;
     }
 
-  m_server->m_rxBuffer.SetMaxBufferSize (m_maxServerBufferSize);
-  m_source->m_rxBuffer.SetMaxBufferSize (m_maxSourceBufferSize);
+  m_server->m_rxBuffer->SetMaxBufferSize (m_maxServerBufferSize);
+  m_source->m_rxBuffer->SetMaxBufferSize (m_maxSourceBufferSize);
 
   uint16_t port = 50000;
   InetSocketAddress serverlocaladdr (Ipv4Address::GetAny (), port);

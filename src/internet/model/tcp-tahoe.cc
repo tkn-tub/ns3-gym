@@ -146,7 +146,7 @@ TcpTahoe::DupAck (const TcpHeader& t, uint32_t count)
       // (Fall & Floyd 1996, sec.1)
       m_ssThresh = std::max (static_cast<unsigned> (m_cWnd / 2), m_segmentSize * 2);  // Half ssthresh
       m_cWnd = m_segmentSize; // Run slow start again
-      m_nextTxSequence = m_txBuffer.HeadSequence (); // Restart from highest Ack
+      m_nextTxSequence = m_txBuffer->HeadSequence (); // Restart from highest Ack
       NS_LOG_INFO ("Triple Dup Ack: new ssthresh " << m_ssThresh << " cwnd " << m_cWnd);
       NS_LOG_LOGIC ("Triple Dup Ack: retransmit missing segment at " << Simulator::Now ().GetSeconds ());
       DoRetransmit ();
@@ -161,11 +161,11 @@ void TcpTahoe::Retransmit (void)
   // If erroneous timeout in closed/timed-wait state, just return
   if (m_state == CLOSED || m_state == TIME_WAIT) return;
   // If all data are received (non-closing socket and nothing to send), just return
-  if (m_state <= ESTABLISHED && m_txBuffer.HeadSequence () >= m_highTxMark) return;
+  if (m_state <= ESTABLISHED && m_txBuffer->HeadSequence () >= m_highTxMark) return;
 
   m_ssThresh = std::max (static_cast<unsigned> (m_cWnd / 2), m_segmentSize * 2);  // Half ssthresh
   m_cWnd = m_segmentSize;                   // Set cwnd to 1 segSize (RFC2001, sec.2)
-  m_nextTxSequence = m_txBuffer.HeadSequence (); // Restart from highest Ack
+  m_nextTxSequence = m_txBuffer->HeadSequence (); // Restart from highest Ack
   DoRetransmit ();                          // Retransmit the packet
 }
 

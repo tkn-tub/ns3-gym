@@ -178,14 +178,14 @@ void TcpReno::Retransmit (void)
   // If erroneous timeout in closed/timed-wait state, just return
   if (m_state == CLOSED || m_state == TIME_WAIT) return;
   // If all data are received (non-closing socket and nothing to send), just return
-  if (m_state <= ESTABLISHED && m_txBuffer.HeadSequence () >= m_highTxMark) return;
+  if (m_state <= ESTABLISHED && m_txBuffer->HeadSequence () >= m_highTxMark) return;
 
   // According to RFC2581 sec.3.1, upon RTO, ssthresh is set to half of flight
   // size and cwnd is set to 1*MSS, then the lost packet is retransmitted and
   // TCP back to slow start
   m_ssThresh = std::max (2 * m_segmentSize, BytesInFlight () / 2);
   m_cWnd = m_segmentSize;
-  m_nextTxSequence = m_txBuffer.HeadSequence (); // Restart from highest Ack
+  m_nextTxSequence = m_txBuffer->HeadSequence (); // Restart from highest Ack
   NS_LOG_INFO ("RTO. Reset cwnd to " << m_cWnd <<
                ", ssthresh to " << m_ssThresh << ", restart from seqnum " << m_nextTxSequence);
   DoRetransmit ();                          // Retransmit the packet

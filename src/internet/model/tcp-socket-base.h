@@ -154,6 +154,18 @@ public:
    */
   Time GetClockGranularity (void) const;
 
+  /**
+   * \brief Get a pointer to the Tx buffer
+   * \return a pointer to the tx buffer
+   */
+  Ptr<TcpTxBuffer> GetTxBuffer (void) const;
+
+  /**
+   * \brief Get a pointer to the Rx buffer
+   * \return a pointer to the rx buffer
+   */
+  Ptr<TcpRxBuffer> GetRxBuffer (void) const;
+
 
   // Necessary implementations of null functions from ns3::Socket
   virtual enum SocketErrno GetErrno (void) const;    // returns m_errno
@@ -699,8 +711,8 @@ protected:
   // Rx and Tx buffer management
   TracedValue<SequenceNumber32> m_nextTxSequence; //!< Next seqnum to be sent (SND.NXT), ReTx pushes it back
   TracedValue<SequenceNumber32> m_highTxMark;     //!< Highest seqno ever sent, regardless of ReTx
-  TcpRxBuffer                   m_rxBuffer;       //!< Rx buffer (reordering buffer)
-  TcpTxBuffer                   m_txBuffer;       //!< Tx buffer
+  Ptr<TcpRxBuffer>              m_rxBuffer;       //!< Rx buffer (reordering buffer)
+  Ptr<TcpTxBuffer>              m_txBuffer;       //!< Tx buffer
 
   // State-related attributes
   TracedValue<TcpStates_t> m_state;         //!< TCP state
