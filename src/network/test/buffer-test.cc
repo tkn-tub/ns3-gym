@@ -321,6 +321,25 @@ BufferTest::DoRun (void)
       NS_TEST_ASSERT_MSG_EQ ( evilBuffer [i], cBuf [i] , "Bad buffer peeked");
     }
   free (cBuf);
+
+  /// \internal See \bugid{2044}  Will not pass without bug2044 fix.
+  buffer = Buffer (1);
+  buffer.AddAtEnd (2);
+  i = buffer.Begin ();
+  i.Next (1);
+  i.WriteU8 (0x77);
+  i.WriteU8 (0x66);
+  ENSURE_WRITTEN_BYTES (buffer, 3, 0x00, 0x77, 0x66);
+  i = buffer.Begin ();
+  i.ReadU8 ();
+  uint16_t val1 = i.ReadNtohU16 ();
+  i = buffer.Begin ();
+  i.ReadU8 ();
+  uint16_t val2 = 0;
+  val2 |= i.ReadU8 ();
+  val2 <<= 8;
+  val2 |= i.ReadU8 ();
+  NS_TEST_ASSERT_MSG_EQ (val1, val2, "Bad ReadNtohU16()");
 }
 //-----------------------------------------------------------------------------
 class BufferTestSuite : public TestSuite

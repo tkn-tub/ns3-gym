@@ -959,7 +959,7 @@ Buffer::Iterator::ReadNtohU16 (void)
     }
   else if (m_current >= m_zeroEnd)
     {
-      buffer = &m_data[m_current];
+      buffer = &m_data[m_current - (m_zeroEnd - m_zeroStart)];
     }
   else
     {
@@ -983,7 +983,7 @@ Buffer::Iterator::ReadNtohU32 (void)
     }
   else if (m_current >= m_zeroEnd)
     {
-      buffer = &m_data[m_current];
+      buffer = &m_data[m_current - (m_zeroEnd - m_zeroStart)];
     }
   else
     {
