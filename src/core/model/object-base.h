@@ -191,7 +191,7 @@ public:
 
 protected:
   /**
-   * Notifier called once the ObjectBase is fully constructucted.
+   * Notifier called once the ObjectBase is fully constructed.
    *
    * This method is invoked once all member attributes have been 
    * initialized. Subclasses can override this method to be notified
