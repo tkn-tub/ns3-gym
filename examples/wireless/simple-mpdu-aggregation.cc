@@ -145,7 +145,7 @@ int main (int argc, char *argv[])
   serverApp.Stop (Seconds (simulationTime+1));
       
   UdpClientHelper myClient (StaInterface.GetAddress (0), 9);
-  myClient.SetAttribute ("MaxPackets", UintegerValue (4294967295));
+  myClient.SetAttribute ("MaxPackets", UintegerValue (4294967295u));
   myClient.SetAttribute ("Interval", TimeValue (Time ("0.00002"))); //packets/s
   myClient.SetAttribute ("PacketSize", UintegerValue (payloadSize));
               
