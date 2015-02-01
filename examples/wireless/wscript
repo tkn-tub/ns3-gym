@@ -55,6 +55,9 @@ def build(bld):
     obj = bld.create_ns3_program('ht-wifi-network', ['core','internet', 'mobility', 'wifi', 'applications', 'propagation'])
     obj.source = 'ht-wifi-network.cc'
 
+    obj = bld.create_ns3_program('wifi-timing-attributes', ['core','internet', 'mobility', 'wifi', 'applications', 'propagation'])
+    obj.source = 'wifi-timing-attributes.cc'
+
     obj = bld.create_ns3_program('wifi-sleep', ['core', 'network', 'internet', 'mobility', 'wifi', 'applications', 'energy', 'config-store'])
     obj.source = 'wifi-sleep.cc'
     
