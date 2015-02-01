@@ -524,7 +524,6 @@ YansWifiPhy::StartReceivePacket (Ptr<Packet> packet,
   AmpduTag ampduTag;
   rxPowerDbm += m_rxGainDb;
   double rxPowerW = DbmToW (rxPowerDbm);
-  //Time rxDuration = CalculateTxDuration (packet->GetSize (), txVector, preamble, GetFrequency(), packetType, 1);
   WifiMode txMode = txVector.GetMode();
   Time endRx = Simulator::Now () + rxDuration;
 

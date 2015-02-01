@@ -2692,7 +2692,6 @@ MacLow::AggregateToAmpdu (Ptr<const Packet> packet, const WifiMacHeader hdr)
                 }
 
                while (IsInWindow (currentSequenceNumber, startingSequenceNumber, 64) && !StopAggregation (peekedPacket, peekedHdr, currentAggregatedPacket, blockAckSize))
-//&& listenerIt->second->GetNOutstandingPackets (hdr.GetAddr1(), tid) < 63
                 {
                   //for now always send AMPDU with normal ACK
                   if (retry == false)

@@ -261,6 +261,10 @@ WifiPhy::GetPlcpHeaderMode (WifiMode payloadMode, WifiPreamble preamble)
 Time
 WifiPhy::GetPlcpHeaderDuration (WifiMode payloadMode, WifiPreamble preamble)
 {
+  if (preamble == WIFI_PREAMBLE_NONE)
+  {
+      return MicroSeconds(0);
+  }
   switch (payloadMode.GetModulationClass ())
     {
     case WIFI_MOD_CLASS_OFDM:
@@ -292,7 +296,6 @@ WifiPhy::GetPlcpHeaderDuration (WifiMode payloadMode, WifiPreamble preamble)
              case WIFI_PREAMBLE_HT_MF:
                // L-SIG
                return MicroSeconds(4);
-             case WIFI_PREAMBLE_NONE:
              case WIFI_PREAMBLE_HT_GF:
                //L-SIG
                return MicroSeconds(0);
@@ -325,6 +328,10 @@ WifiPhy::GetPlcpHeaderDuration (WifiMode payloadMode, WifiPreamble preamble)
 Time
 WifiPhy::GetPlcpPreambleDuration (WifiMode payloadMode, WifiPreamble preamble)
 {
+  if (preamble == WIFI_PREAMBLE_NONE)
+  {
+      return MicroSeconds(0);
+  }
   switch (payloadMode.GetModulationClass ())
     {
     case WIFI_MOD_CLASS_OFDM:
@@ -347,16 +354,9 @@ WifiPhy::GetPlcpPreambleDuration (WifiMode payloadMode, WifiPreamble preamble)
           }
       }
     case WIFI_MOD_CLASS_HT:
-      {  
-          switch (preamble)
-            {
-             case WIFI_PREAMBLE_NONE:
-               //A-MPDU support since MPDUs inside an A-MPDU are sent without a preamble
-               return MicroSeconds(0);
-             default:
-               //IEEE 802.11n Figure 20.1 the training symbols before L_SIG or HT_SIG
-               return MicroSeconds(16);
-            }
+      {
+        //IEEE 802.11n Figure 20.1 the training symbols before L_SIG or HT_SIG
+        return MicroSeconds(16);
       }
     case WIFI_MOD_CLASS_ERP_OFDM:
       return MicroSeconds(16);
