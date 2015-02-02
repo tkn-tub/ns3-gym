@@ -2558,6 +2558,11 @@ def register_Ns3WallClockSynchronizer_methods(root_module, cls):
     cls.add_constructor([param('ns3::WallClockSynchronizer const &', 'arg0')])
     ## wall-clock-synchronizer.h (module 'core'): ns3::WallClockSynchronizer::WallClockSynchronizer() [constructor]
     cls.add_constructor([])
+    ## wall-clock-synchronizer.h (module 'core'): static ns3::TypeId ns3::WallClockSynchronizer::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
     ## wall-clock-synchronizer.h (module 'core'): ns3::WallClockSynchronizer::NS_PER_SEC [variable]
     cls.add_static_attribute('NS_PER_SEC', 'uint64_t const', is_const=True)
     ## wall-clock-synchronizer.h (module 'core'): ns3::WallClockSynchronizer::US_PER_NS [variable]
@@ -2629,15 +2634,15 @@ def register_Ns3WallClockSynchronizer_methods(root_module, cls):
                    'void', 
                    [param('int64_t', 'ns'), param('timeval *', 'tv')], 
                    visibility='protected')
-    ## wall-clock-synchronizer.h (module 'core'): bool ns3::WallClockSynchronizer::SleepWait(uint64_t arg0) [member function]
+    ## wall-clock-synchronizer.h (module 'core'): bool ns3::WallClockSynchronizer::SleepWait(uint64_t ns) [member function]
     cls.add_method('SleepWait', 
                    'bool', 
-                   [param('uint64_t', 'arg0')], 
+                   [param('uint64_t', 'ns')], 
                    visibility='protected')
-    ## wall-clock-synchronizer.h (module 'core'): bool ns3::WallClockSynchronizer::SpinWait(uint64_t arg0) [member function]
+    ## wall-clock-synchronizer.h (module 'core'): bool ns3::WallClockSynchronizer::SpinWait(uint64_t ns) [member function]
     cls.add_method('SpinWait', 
                    'bool', 
-                   [param('uint64_t', 'arg0')], 
+                   [param('uint64_t', 'ns')], 
                    visibility='protected')
     ## wall-clock-synchronizer.h (module 'core'): void ns3::WallClockSynchronizer::TimevalAdd(timeval * tv1, timeval * tv2, timeval * result) [member function]
     cls.add_method('TimevalAdd', 
@@ -4559,14 +4564,14 @@ def register_functions(root_module):
     module.add_function('LogGetTimePrinter', 
                         'ns3::LogTimePrinter', 
                         [])
-    ## log.h (module 'core'): extern void ns3::LogSetNodePrinter(ns3::LogNodePrinter arg0) [free function]
+    ## log.h (module 'core'): extern void ns3::LogSetNodePrinter(ns3::LogNodePrinter np) [free function]
     module.add_function('LogSetNodePrinter', 
                         'void', 
-                        [param('ns3::LogNodePrinter', 'arg0')])
-    ## log.h (module 'core'): extern void ns3::LogSetTimePrinter(ns3::LogTimePrinter arg0) [free function]
+                        [param('ns3::LogNodePrinter', 'np')])
+    ## log.h (module 'core'): extern void ns3::LogSetTimePrinter(ns3::LogTimePrinter lp) [free function]
     module.add_function('LogSetTimePrinter', 
                         'void', 
-                        [param('ns3::LogTimePrinter', 'arg0')])
+                        [param('ns3::LogTimePrinter', 'lp')])
     ## boolean.h (module 'core'): extern ns3::Ptr<ns3::AttributeChecker const> ns3::MakeBooleanChecker() [free function]
     module.add_function('MakeBooleanChecker', 
                         'ns3::Ptr< ns3::AttributeChecker const >', 

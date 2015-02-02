@@ -5579,10 +5579,11 @@ def register_Ns3Ipv4NixVectorRouting_methods(root_module, cls):
     cls.add_constructor([param('ns3::Ipv4NixVectorRouting const &', 'arg0')])
     ## ipv4-nix-vector-routing.h (module 'nix-vector-routing'): ns3::Ipv4NixVectorRouting::Ipv4NixVectorRouting() [constructor]
     cls.add_constructor([])
-    ## ipv4-nix-vector-routing.h (module 'nix-vector-routing'): void ns3::Ipv4NixVectorRouting::FlushGlobalNixRoutingCache() [member function]
+    ## ipv4-nix-vector-routing.h (module 'nix-vector-routing'): void ns3::Ipv4NixVectorRouting::FlushGlobalNixRoutingCache() const [member function]
     cls.add_method('FlushGlobalNixRoutingCache', 
                    'void', 
-                   [])
+                   [], 
+                   is_const=True)
     ## ipv4-nix-vector-routing.h (module 'nix-vector-routing'): static ns3::TypeId ns3::Ipv4NixVectorRouting::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
