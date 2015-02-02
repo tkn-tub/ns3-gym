@@ -1705,10 +1705,10 @@ def register_Ns3LrWpanSpectrumValueHelper_methods(root_module, cls):
     cls.add_method('CreateTxPowerSpectralDensity', 
                    'ns3::Ptr< ns3::SpectrumValue >', 
                    [param('double', 'txPower'), param('uint32_t', 'channel')])
-    ## lr-wpan-spectrum-value-helper.h (module 'lr-wpan'): static double ns3::LrWpanSpectrumValueHelper::TotalAvgPower(ns3::Ptr<ns3::SpectrumValue const> psd) [member function]
+    ## lr-wpan-spectrum-value-helper.h (module 'lr-wpan'): static double ns3::LrWpanSpectrumValueHelper::TotalAvgPower(ns3::Ptr<ns3::SpectrumValue const> psd, uint32_t channel) [member function]
     cls.add_method('TotalAvgPower', 
                    'double', 
-                   [param('ns3::Ptr< ns3::SpectrumValue const >', 'psd')], 
+                   [param('ns3::Ptr< ns3::SpectrumValue const >', 'psd'), param('uint32_t', 'channel')], 
                    is_static=True)
     return
 
@@ -2948,6 +2948,20 @@ def register_Ns3Header_methods(root_module, cls):
 def register_Ns3LrWpanHelper_methods(root_module, cls):
     ## lr-wpan-helper.h (module 'lr-wpan'): ns3::LrWpanHelper::LrWpanHelper() [constructor]
     cls.add_constructor([])
+    ## lr-wpan-helper.h (module 'lr-wpan'): ns3::LrWpanHelper::LrWpanHelper(bool useMultiModelSpectrumChannel) [constructor]
+    cls.add_constructor([param('bool', 'useMultiModelSpectrumChannel')])
+    ## lr-wpan-helper.h (module 'lr-wpan'): ns3::Ptr<ns3::SpectrumChannel> ns3::LrWpanHelper::GetChannel() [member function]
+    cls.add_method('GetChannel', 
+                   'ns3::Ptr< ns3::SpectrumChannel >', 
+                   [])
+    ## lr-wpan-helper.h (module 'lr-wpan'): void ns3::LrWpanHelper::SetChannel(ns3::Ptr<ns3::SpectrumChannel> channel) [member function]
+    cls.add_method('SetChannel', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::SpectrumChannel >', 'channel')])
+    ## lr-wpan-helper.h (module 'lr-wpan'): void ns3::LrWpanHelper::SetChannel(std::string channelName) [member function]
+    cls.add_method('SetChannel', 
+                   'void', 
+                   [param('std::string', 'channelName')])
     ## lr-wpan-helper.h (module 'lr-wpan'): void ns3::LrWpanHelper::AddMobility(ns3::Ptr<ns3::LrWpanPhy> phy, ns3::Ptr<ns3::MobilityModel> m) [member function]
     cls.add_method('AddMobility', 
                    'void', 
