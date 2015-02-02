@@ -53,11 +53,13 @@ public:
   Ptr<SpectrumValue> CreateNoisePowerSpectralDensity (uint32_t channel);
 
   /**
-   * \brief total average power of the signal is the integral of the PSD
+   * \brief total average power of the signal is the integral of the PSD using
+   * the limits of the given channel
    * \param psd spectral density
-   * \return total power (using composite trap. rule to numerally integrate
+   * \param channel the channel number per IEEE802.15.4
+   * \return total power (using composite trap. rule to numerally integrate)
    */
-  static double TotalAvgPower (Ptr<const SpectrumValue> psd);
+  static double TotalAvgPower (Ptr<const SpectrumValue> psd, uint32_t channel);
 
 private:
   /**

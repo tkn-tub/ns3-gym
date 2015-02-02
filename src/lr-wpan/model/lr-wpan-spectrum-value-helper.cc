@@ -54,7 +54,7 @@ public:
     g_LrWpanSpectrumModel = Create<SpectrumModel> (bands);
   }
 
-} g_LrWpanSpectrumModelInitializerInstance;  //!< Global object used to initialize the LrWpan Spectrum Model
+} g_LrWpanSpectrumModelInitializerInstance; //!< Global object used to initialize the LrWpan Spectrum Model
 
 LrWpanSpectrumValueHelper::LrWpanSpectrumValueHelper (void)
 {
@@ -124,15 +124,22 @@ LrWpanSpectrumValueHelper::CreateNoisePowerSpectralDensity (uint32_t channel)
 }
 
 double
-LrWpanSpectrumValueHelper::TotalAvgPower (Ptr<const SpectrumValue> psd)
+LrWpanSpectrumValueHelper::TotalAvgPower (Ptr<const SpectrumValue> psd, uint32_t channel)
 {
   NS_LOG_FUNCTION (psd);
   double totalAvgPower = 0.0;
 
-  // numerically integrate to get area under psd using
-  // 1 MHz resolution from 2400 to 2483 MHz (center freq)
+  NS_ASSERT (psd->GetSpectrumModel () == g_LrWpanSpectrumModel);
 
-  totalAvgPower = Sum (*psd * 1.0e6);
+  // numerically integrate to get area under psd using 1 MHz resolution
+
+  totalAvgPower += (*psd)[2405 + 5 * (channel - 11) - 2400 - 2];
+  totalAvgPower += (*psd)[2405 + 5 * (channel - 11) - 2400 - 1];
+  totalAvgPower += (*psd)[2405 + 5 * (channel - 11) - 2400];
+  totalAvgPower += (*psd)[2405 + 5 * (channel - 11) - 2400 + 1];
+  totalAvgPower += (*psd)[2405 + 5 * (channel - 11) - 2400 + 2];
+  totalAvgPower *= 1.0e6;
+
   return totalAvgPower;
 }
 

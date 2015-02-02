@@ -547,7 +547,7 @@ private:
    *
    * \param params signal parameters of the packet
    */
-  void EndRx (Ptr<LrWpanSpectrumSignalParameters> params);
+  void EndRx (Ptr<SpectrumSignalParameters> params);
 
   /**
    * Cancel an ongoing ED procedure. This is called when the transceiver is
