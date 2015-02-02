@@ -37,6 +37,7 @@
 #include <ns3/node.h>
 #include <ns3/net-device.h>
 #include <ns3/single-model-spectrum-channel.h>
+#include <ns3/multi-model-spectrum-channel.h>
 #include <ns3/mac16-address.h>
 #include <ns3/constant-position-mobility-model.h>
 #include <ns3/uinteger.h>
@@ -95,7 +96,7 @@ int main (int argc, char *argv[])
   Ptr<LrWpanNetDevice> dev1 = CreateObject<LrWpanNetDevice> ();
   dev0->SetAddress (Mac16Address ("00:01"));
   dev1->SetAddress (Mac16Address ("00:02"));
-  Ptr<SingleModelSpectrumChannel> channel = CreateObject<SingleModelSpectrumChannel> ();
+  Ptr<MultiModelSpectrumChannel> channel = CreateObject<MultiModelSpectrumChannel> ();
   Ptr<LogDistancePropagationLossModel> model = CreateObject<LogDistancePropagationLossModel> ();
   channel->AddPropagationLossModel (model);
   dev0->SetChannel (channel);

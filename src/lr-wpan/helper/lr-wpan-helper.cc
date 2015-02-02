@@ -25,8 +25,11 @@
 #include <ns3/lr-wpan-net-device.h>
 #include <ns3/mobility-model.h>
 #include <ns3/single-model-spectrum-channel.h>
+#include <ns3/multi-model-spectrum-channel.h>
 #include <ns3/propagation-loss-model.h>
+#include <ns3/propagation-delay-model.h>
 #include <ns3/log.h>
+#include "ns3/names.h"
 
 namespace ns3 {
 
@@ -63,8 +66,29 @@ AsciiLrWpanMacTransmitSinkWithoutContext (
 LrWpanHelper::LrWpanHelper (void)
 {
   m_channel = CreateObject<SingleModelSpectrumChannel> ();
-  Ptr<LogDistancePropagationLossModel> model = CreateObject<LogDistancePropagationLossModel> ();
-  m_channel->AddPropagationLossModel (model);
+
+  Ptr<LogDistancePropagationLossModel> lossModel = CreateObject<LogDistancePropagationLossModel> ();
+  m_channel->AddPropagationLossModel (lossModel);
+
+  Ptr<ConstantSpeedPropagationDelayModel> delayModel = CreateObject<ConstantSpeedPropagationDelayModel> ();
+  m_channel->SetPropagationDelayModel (delayModel);
+}
+
+LrWpanHelper::LrWpanHelper (bool useMultiModelSpectrumChannel)
+{
+  if (useMultiModelSpectrumChannel)
+    {
+      m_channel = CreateObject<MultiModelSpectrumChannel> ();
+    }
+  else
+    {
+      m_channel = CreateObject<SingleModelSpectrumChannel> ();
+    }
+  Ptr<LogDistancePropagationLossModel> lossModel = CreateObject<LogDistancePropagationLossModel> ();
+  m_channel->AddPropagationLossModel (lossModel);
+
+  Ptr<ConstantSpeedPropagationDelayModel> delayModel = CreateObject<ConstantSpeedPropagationDelayModel> ();
+  m_channel->SetPropagationDelayModel (delayModel);
 }
 
 LrWpanHelper::~LrWpanHelper (void)
@@ -166,6 +190,27 @@ LrWpanHelper::Install (NodeContainer c)
     }
   return devices;
 }
+
+
+Ptr<SpectrumChannel>
+LrWpanHelper::GetChannel (void)
+{
+  return m_channel;
+}
+
+void
+LrWpanHelper::SetChannel (Ptr<SpectrumChannel> channel)
+{
+  m_channel = channel;
+}
+
+void
+LrWpanHelper::SetChannel (std::string channelName)
+{
+  Ptr<SpectrumChannel> channel = Names::Find<SpectrumChannel> (channelName);
+  m_channel = channel;
+}
+
 
 int64_t
 LrWpanHelper::AssignStreams (NetDeviceContainer c, int64_t stream)
