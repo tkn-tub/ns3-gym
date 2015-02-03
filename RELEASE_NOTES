@@ -92,6 +92,8 @@ Bugs fixed
 - Bug 2049 - CQI feedback should always use the same calculation method
 - Bug 2053 - In tcp-socket-base.cc, NotifyDataSent incorrectly called with retransmits
 - Bug 2055 - TCP TxBuffer and RxBuffer traces don't work
+- Nix-vector routing implementation now uses a lazy flush mechanism,
+  which dramatically speeds up the creation of large topologies.
 
 Known issues
 ------------

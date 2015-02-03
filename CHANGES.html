@@ -116,6 +116,9 @@ This section is for behavioral changes to the models that were not due to a bug 
   </li>
   <li> The LrWpanHelper object was previously instantiating only a LogDistancePropagationLossModel on a SingleModelSpectrumChannel, but no PropagationDelayModel.  The constructor now adds by default a ConstantSpeedPropagationDelayModel.
   </li>
+  <li> The Nix-vector routing implementation now uses a lazy flush mechanism,
+       which dramatically speeds up the creation of large topologies.
+  </li>
 </ul>
 
 <hr>
