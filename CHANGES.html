@@ -54,12 +54,23 @@ us a note on ns-developers mailing list.</p>
 <h1>Changes from ns-3.21 to ns-3.22</h1>
 <h2>New API:</h2>
 <ul>
+  <li> New classes were added for the PARF and APARF WiFi rate controls. 
+  </li>
+  <li> Support for WiFi 802.11n MPDU aggregation has been added.
+  </li>
+  <li> Support for modeling of vehicular WiFi networks (IEEE 1609.4) has been added.  In addition, a basic safety message (BSM) application traffic generator and related statistics-gathering classes have been added to the wave module. 
+  </li>
+  <li> A complete LTE release bearer procedure is now implemented which can be invoked by calling the new helper method LteHelper::DeActivateDedicatedEpsBearer ().
+  </li>
   <li> It is now possible to print the Neighbor Cache (ARP and NDISC) by using
        the RoutingProtocolHelper
   </li>
   <li> A TimeProbe class has been added to the data collection framework in 
        the stats module, enabling TracedValues emitting values of type 
        ns3::Time to be handled by the framework.
+  </li>
+  <li> A new attribute 'ClockGranularity' was added to the TcpSocketBase class,
+to control modeling of RTO calculation.
   </li>
 </ul>
 
@@ -83,6 +94,13 @@ us a note on ns-developers mailing list.</p>
        are similarly documented we have deprecated the three
        argument version of AddTraceSource.
   </li>	
+  <li> The "MinRTO" attribute of the RttEstimator class was moved to the TcpSocketBase class.  The "Gain" attribute of the RttMeanDeviation class was replaced 
+by new "Alpha" and "Beta" attributes.  
+  </li>	
+  <li> Attributes of the TcpTxBuffer and TcpRxBuffer class are now accessible through the TcpSocketBase class.
+  </li>	
+  <li> The LrWpanHelper class has a new constructor allowing users to configure a MultiModelSpectrumChannel as an option, and also provides Set/Get API to allow users to access the underlying channel object. 
+  </li>
 </ul>
 
 <h2>Changes to build system:</h2>
@@ -92,8 +110,11 @@ us a note on ns-developers mailing list.</p>
 </ul>
 
 <h2>Changed behavior:</h2>
+This section is for behavioral changes to the models that were not due to a bug fix.
 <ul>
   <li> The default value of the `Speed` attribute of ConstantSpeedPropagationDelayModel was changed from 300,000,000 m/s to 299,792,458 m/s (speed of light in a vacuum), causing propagation delays using this model to vary slightly.
+  </li>
+  <li> The LrWpanHelper object was previously instantiating only a LogDistancePropagationLossModel on a SingleModelSpectrumChannel, but no PropagationDelayModel.  The constructor now adds by default a ConstantSpeedPropagationDelayModel.
   </li>
 </ul>
 

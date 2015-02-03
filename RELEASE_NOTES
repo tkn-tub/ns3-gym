@@ -21,29 +21,37 @@ Supported platforms
 
 New user-visible features
 -------------------------
-- It is now possible to print the Neighbor Cache (ARP and NDISC) by using
-  the RoutingProtocolHelper
-- The PrintRoutingTable... and PrintNeighborCache... are now static funtions
-  i.e., it's not anymore needed to instantiate an helper just to use them.
-- A new TimeProbe class has been added to hook the data collection framework
-  to traced values emitting Time objects
-- In previous releases of the LTE module, the bearer release
+- (wifi) Support for MPDU aggregation has been added to the wifi model, 
+  as well as a number of related example programs.
+- (wifi) PARF and APARF WiFi rate controls have been added to the wifi model.
+- (lte) In previous releases of the LTE module, the bearer release
   functionality was only partially supported. As an enhancement, a
   complete release bearer procedure is now implemented, which can be
   invoked by calling the new helper method
   LteHelper::DeActivateDedicatedEpsBearer(). The related output can be
   seen through the stats collected at different layers like PDCP, RLC,
-  MAC, PHY. To support this implementation, example and test suite is
+  MAC, PHY. To support this implementation, an example and test suite is
   added within the LTE module examples and tests folder.  
-
+- (wave) Support for WiFi-based vehicular communications using the 
+  IEEE 1609.4 framework has been added.  A Basic Safety Message (BSM) 
+  application packet generator, and associated statistics counters, has
+  been added.  A comprehensive VANET routing example has been added.
+- (internet) It is now possible to print the Neighbor Cache (ARP and NDISC) 
+  by using the RoutingProtocolHelper
+- (stats) A new TimeProbe class has been added to hook the data collection 
+  framework to traced values emitting Time objects
+- (documentation) the callback function signatures for all TraceSources
+  is documented in Doxygen
 
 Bugs fixed
 ----------
 - Bug 1405 - RttEstimator improvements
 - Bug 1551 - NS_LOG_COMPONENT_DEFINE inside or outside of ns3 namespace?
 - Bug 1726 - WiFi Minstrel rate control algorithm doesn't save state
+- Bug 1734 - TcpSocketBase produces spurious delayed ACKs
 - Bug 1758 - Yans and Nist error rate models for 5/6 code rate 802.11n HT
 - Bug 1770 - mesh test and example crash for 32-bit optimized builds
+- Bug 1774 - compute signal power around channel, not across whole band, and fix LrWpanHelper to add a default PropagationDelayModel
 - Bug 1791 - TCP Endpoint never deallocates when closing
 - Bug 1801 - Setting Wi-Fi timing parameters through WifiMac attributes (documentation fix)
 - Bug 1906 - 802.11n PHY configuration for 2.4GHz and 5GHz devices
@@ -55,6 +63,7 @@ Bugs fixed
 - Bug 1983 - FlowMonitor returns containers copies instead of references.
 - Bug 1986 - test result divergence for lte-frequency-reuse test
 - Bug 1991 - PcapFileWrapper::CaptureSize attribute (snaplen) has no effect.
+- Bug 1995 - avoid multiple definitions of PI
 - Bug 1996 - RSRQ calculation: misleading variable names
 - Bug 1997 - Fix PlotProbe() documentation and usage for GnuplotHelper and FileHelper
 - Bug 2002 - Hardcoded include paths cause breakage
@@ -69,10 +78,11 @@ Bugs fixed
 - Bug 2030 - provide default values for WifiTxVector
 - Bug 2037 - HT capabilities may print bogus chars
 - Bug 2038 - Stop method does not stop next wave in WaveformGenerator
-- Bug 2042 - src/lte/model/a3-rsrp-handover-algorithm.cc:137:79: error: overflow in implicit constant conversion
-- Bug 2043 - print-introspected-doxygen crashes when some modules are disabled default tip
+- Bug 2042 - LTE a3-rsrp-handover-algorithm.cc:  error: overflow in implicit constant conversion
+- Bug 2043 - print-introspected-doxygen crashes when some modules are disabled 
 - Bug 2044 - Buffer::Iterator::ReadNtohU16() and ReadNtohU32() not implemented correctly
 - Bug 2045 - Missing NS_OBJECT_ENSURE_REGISTERED in TcpTxBuffer and TcpRxBuffer
+- Bug 2046 - set Block Ack timeout when SetStandard is called
 - Bug 2047 - Ipv6EndPointDemux::Lookup may crash
 - Bug 2049 - CQI feedback should always use the same calculation method
 - Bug 2053 - In tcp-socket-base.cc, NotifyDataSent incorrectly called with retransmits
@@ -80,6 +90,8 @@ Bugs fixed
 
 Known issues
 ------------
+In general, known issues are tracked on the project tracker available
+at http://www.nsnam.org/bugzilla/
 
 Release 3.21
 ============
