@@ -42,6 +42,10 @@ New user-visible features
   framework to traced values emitting Time objects
 - (documentation) the callback function signatures for all TraceSources
   is documented in Doxygen
+- print-introspected-doxygen.sh has had several enhancements;
+  use -h to read the usage message for details.
+- TracedValue and TracedCallback function signatures are now documented,
+  which required changing the TypeId::AddTraceSource API.
 
 Bugs fixed
 ----------
@@ -60,6 +64,7 @@ Bugs fixed
 - Bug 1969 - Support short guard interval durations in 802.11n
 - Bug 1970 - Missing NotifyAckTimeoutStartNow in MacLow::StartDataTxTimers
 - Bug 1971 - 802.11n at 2.4 GHz should include a signal extension duration
+- Bug 1972 - CommandLine duplicate argument handling: documentation updated.
 - Bug 1983 - FlowMonitor returns containers copies instead of references.
 - Bug 1986 - test result divergence for lte-frequency-reuse test
 - Bug 1991 - PcapFileWrapper::CaptureSize attribute (snaplen) has no effect.
