@@ -1773,16 +1773,16 @@ def run_tests():
     #
     if skipped_testnames:
         skipped_testnames.sort()
-        print 'List of SKIPped tests: %s' % '\n    '.join(map(str, skipped_testnames))
+        print 'List of SKIPped tests:\n    %s' % '\n    '.join(map(str, skipped_testnames))
     if failed_testnames:
         failed_testnames.sort()
-        print 'List of FAILed tests: %s' % '\n    '.join(map(str, failed_testnames))
+        print 'List of FAILed tests:\n    %s' % '\n    '.join(map(str, failed_testnames))
     if crashed_testnames:
         crashed_testnames.sort()
-        print 'List of CRASHed tests: %s' % '\n    '.join(map(str, crashed_testnames))
+        print 'List of CRASHed tests:\n    %s' % '\n    '.join(map(str, crashed_testnames))
     if valgrind_testnames:
         valgrind_testnames.sort()
-        print 'List of VALGR failures: %s' % '\n    '.join(map(str, valgrind_testnames))
+        print 'List of VALGR failures:\n    %s' % '\n    '.join(map(str, valgrind_testnames))
     #
     # The last things to do are to translate the XML results file to "human
     # readable form" if the user asked for it (or make an XML file somewhere)
