@@ -23,6 +23,11 @@ New user-visible features
 -------------------------
 - (wifi) Support for MPDU aggregation has been added to the wifi model, 
   as well as a number of related example programs.
+- (wifi) Added two combined power and rate control mechanisms to the
+  wifi module.  The new mechanisms, PARF and APARF, are the first in the
+  wifi module to jointly control transmission power and data rate.  Two use 
+  case examples (PowerAdaptationDistance and PowerAdaptationInterference) 
+  and a test case have also been added.
 - (wifi) PARF and APARF WiFi rate controls have been added to the wifi model.
 - (lte) In previous releases of the LTE module, the bearer release
   functionality was only partially supported. As an enhancement, a
@@ -32,10 +37,14 @@ New user-visible features
   seen through the stats collected at different layers like PDCP, RLC,
   MAC, PHY. To support this implementation, an example and test suite is
   added within the LTE module examples and tests folder.  
-- (wave) Support for WiFi-based vehicular communications using the 
-  IEEE 1609.4 framework has been added.  A Basic Safety Message (BSM) 
-  application packet generator, and associated statistics counters, has
-  been added.  A comprehensive VANET routing example has been added.
+- (wave) Additional support has been added for WiFi-based vehicular networks, 
+  including the channel-access coordination features of IEEE 1609.4 and a 
+  comprehensive VANET routing example that includes a Basic Safety 
+  Message (BSM) packet generator application and associated statistics 
+  counters.  Together, these allow users to evaluate the performance effects 
+  in a VANET of varying transmission and channel properties (e.g., packet 
+  rate, message size, transmit power, propagation loss model, impact of 
+  routing protocol traffic, etc.).
 - (internet) It is now possible to print the Neighbor Cache (ARP and NDISC) 
   by using the RoutingProtocolHelper
 - (stats) A new TimeProbe class has been added to hook the data collection 

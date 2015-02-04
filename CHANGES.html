@@ -54,11 +54,11 @@ us a note on ns-developers mailing list.</p>
 <h1>Changes from ns-3.21 to ns-3.22</h1>
 <h2>New API:</h2>
 <ul>
-  <li> New classes were added for the PARF and APARF WiFi rate controls. 
+  <li> New classes were added for the PARF and APARF WiFi power and rate control mechanisms. 
   </li>
   <li> Support for WiFi 802.11n MPDU aggregation has been added.
   </li>
-  <li> Support for modeling of vehicular WiFi networks (IEEE 1609.4) has been added.  In addition, a basic safety message (BSM) application traffic generator and related statistics-gathering classes have been added to the wave module. 
+  <li> Additional support for modeling of vehicular WiFi networks has been added, including the channel-access coordination feature of IEEE 1609.4.  In addition, a Basic Safety Message (BSM) packet generator and related statistics-gathering classes have been added to the wave module. 
   </li>
   <li> A complete LTE release bearer procedure is now implemented which can be invoked by calling the new helper method LteHelper::DeActivateDedicatedEpsBearer ().
   </li>
@@ -91,8 +91,8 @@ to control modeling of RTO calculation.
        for all TracedSources, using an extra (fourth) argument to
        TypeId::AddTraceSource to pass the fully-qualified name
        of the signature typedef.  To ensure that future TraceSources
-       are similarly documented we have deprecated the three
-       argument version of AddTraceSource.
+       are similarly documented, the three argument version of 
+       AddTraceSource has been deprecated.
   </li>	
   <li> The "MinRTO" attribute of the RttEstimator class was moved to the TcpSocketBase class.  The "Gain" attribute of the RttMeanDeviation class was replaced 
 by new "Alpha" and "Beta" attributes.  
@@ -167,6 +167,8 @@ This section is for behavioral changes to the models that were not due to a bug 
   <li> Tcp Timestamps and Window Scale options have been added and are enabled by default (controllable by attribute).
   </li>
   <li> A new CoDel queue model has been added to the 'internet' module.  
+  </li>
+  <li> New test macros NS_TEST_ASSERT_MSG_GT_OR_EQ() and NS_TEST_EXPECT_MSG_GT_OR_EQ() have been added.
   </li>
 </ul>
 
