@@ -1090,8 +1090,8 @@ DiffTestCase::DoRun (void)
   // Check that PcapDiff(file, file) is false
   //
   std::string filename = CreateDataDirFilename ("known.pcap");
-  uint32_t sec (0), usec (0);
-  bool diff = PcapFile::Diff (filename, filename, sec, usec);
+  uint32_t sec (0), usec (0), packets (0);
+  bool diff = PcapFile::Diff (filename, filename, sec, usec, packets);
   NS_TEST_EXPECT_MSG_EQ (diff, false, "PcapDiff(file, file) must always be false");
 
   //
@@ -1114,7 +1114,8 @@ DiffTestCase::DoRun (void)
     }
   f.Close ();
 
-  diff = PcapFile::Diff (filename, filename2, sec, usec);
+  packets = 0;
+  diff = PcapFile::Diff (filename, filename2, sec, usec, packets);
   NS_TEST_EXPECT_MSG_EQ (diff, true, "PcapDiff(file, file2) must be true");
   NS_TEST_EXPECT_MSG_EQ (sec,  2, "Files are different from 2.3696 seconds");
   NS_TEST_EXPECT_MSG_EQ (usec, 3696, "Files are different from 2.3696 seconds");

@@ -494,7 +494,7 @@ PcapFile::Read (
 
 bool
 PcapFile::Diff (std::string const & f1, std::string const & f2, 
-                uint32_t & sec, uint32_t & usec, 
+                uint32_t & sec, uint32_t & usec, uint32_t & packets,
                 uint32_t snapLen)
 {
   NS_LOG_FUNCTION (f1 << f2 << sec << usec << snapLen);
@@ -537,6 +537,8 @@ PcapFile::Diff (std::string const & f1, std::string const & f2,
           break;
         }
 
+      ++packets;
+      
       if (tsSec1 != tsSec2 || tsUsec1 != tsUsec2)
         {
           diff = true; // Next packet timestamps do not match

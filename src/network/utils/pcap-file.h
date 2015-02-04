@@ -273,7 +273,7 @@ public:
    * \param  snapLen    Snap length (if used)
    */
   static bool Diff (std::string const & f1, std::string const & f2, 
-                    uint32_t & sec, uint32_t & usec, 
+                    uint32_t & sec, uint32_t & usec, uint32_t & packets,
                     uint32_t snapLen = SNAPLEN_DEFAULT);
 
 private:
