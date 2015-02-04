@@ -393,7 +393,7 @@ public:
    * \brief Send a Router Solicitation.
    * \param src link-local source address
    * \param dst destination address (usealy ff02::2 i.e all-routers)
-   * \param hardwareAddress link-layer address (SHOULD be included if src is not ::
+   * \param hardwareAddress link-layer address (SHOULD be included if src is not ::)
    */
   void SendRS (Ipv6Address src, Ipv6Address dst,  Address hardwareAddress);
 

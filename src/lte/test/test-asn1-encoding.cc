@@ -100,12 +100,12 @@ protected:
   Ptr<Packet> packet;
 };
 
-RrcHeaderTestCase :: RrcHeaderTestCase (std::string s) : TestCase (s)
+RrcHeaderTestCase::RrcHeaderTestCase (std::string s) : TestCase (s)
 {
 }
 
 LteRrcSap::RadioResourceConfigDedicated
-RrcHeaderTestCase :: CreateRadioResourceConfigDedicated ()
+RrcHeaderTestCase::CreateRadioResourceConfigDedicated ()
 {
   LteRrcSap::RadioResourceConfigDedicated rrd;
 
@@ -159,7 +159,7 @@ RrcHeaderTestCase :: CreateRadioResourceConfigDedicated ()
 }
 
 void
-RrcHeaderTestCase :: AssertEqualRadioResourceConfigDedicated (LteRrcSap::RadioResourceConfigDedicated rrcd1, LteRrcSap::RadioResourceConfigDedicated rrcd2)
+RrcHeaderTestCase::AssertEqualRadioResourceConfigDedicated (LteRrcSap::RadioResourceConfigDedicated rrcd1, LteRrcSap::RadioResourceConfigDedicated rrcd2)
 {
   NS_TEST_ASSERT_MSG_EQ (rrcd1.srbToAddModList.size (), rrcd2.srbToAddModList.size (),"SrbToAddModList different sizes");
 

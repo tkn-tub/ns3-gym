@@ -45,7 +45,7 @@ private:
   virtual void DoRun (void);
 };  // class HashTestCase
 
-HashTestCase::HashTestCase (const std:: string name)
+HashTestCase::HashTestCase (const std::string name)
   : TestCase (name),
     key ("The quick brown fox jumped over the lazy dogs.")
 {

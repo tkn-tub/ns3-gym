@@ -189,7 +189,7 @@ ChannelCoordinationTestCase::DoRun ()
   Simulator::Schedule (MilliSeconds (5), &ChannelCoordinationTestCase::TestIntervalAfter, this, true, false, false);
   Simulator::Schedule (MilliSeconds (50), &ChannelCoordinationTestCase::TestIntervalAfter, this, false, true, true);
   Simulator::Schedule (MilliSeconds (51), &ChannelCoordinationTestCase::TestIntervalAfter, this, false, true, true);
-  Simulator::Schedule (MilliSeconds (53), &ChannelCoordinationTestCase:: TestIntervalAfter, this, false, true, true);
+  Simulator::Schedule (MilliSeconds (53), &ChannelCoordinationTestCase::TestIntervalAfter, this, false, true, true);
   Simulator::Schedule (MilliSeconds (54), &ChannelCoordinationTestCase::TestIntervalAfter, this, false, true, false);
   Simulator::Schedule (MilliSeconds (55), &ChannelCoordinationTestCase::TestIntervalAfter, this, false, true, false);
   Simulator::Schedule (MilliSeconds (100), &ChannelCoordinationTestCase::TestIntervalAfter, this, true, false, true);
@@ -200,7 +200,7 @@ ChannelCoordinationTestCase::DoRun ()
   Simulator::Schedule (MilliSeconds (205), &ChannelCoordinationTestCase::TestIntervalAfter, this, true, false, false);
   Simulator::Schedule (MilliSeconds (250), &ChannelCoordinationTestCase::TestIntervalAfter, this, false, true, true);
   Simulator::Schedule (MilliSeconds (251), &ChannelCoordinationTestCase::TestIntervalAfter, this, false, true, true);
-  Simulator::Schedule (MilliSeconds (253), &ChannelCoordinationTestCase:: TestIntervalAfter, this, false, true, true);
+  Simulator::Schedule (MilliSeconds (253), &ChannelCoordinationTestCase::TestIntervalAfter, this, false, true, true);
   Simulator::Schedule (MilliSeconds (254), &ChannelCoordinationTestCase::TestIntervalAfter, this, false, true, false);
   Simulator::Schedule (MilliSeconds (255), &ChannelCoordinationTestCase::TestIntervalAfter, this, false, true, false);
   Simulator::Schedule (MilliSeconds (300), &ChannelCoordinationTestCase::TestIntervalAfter, this, true, false, true);

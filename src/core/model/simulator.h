@@ -62,7 +62,7 @@ class Scheduler;
  * expire first.
  * 
  * A simple example of how to use the Simulator class to schedule events
- * is shown in sample-simulator.cc ::
+ * is shown in sample-simulator.cc:
  * \include src/core/examples/sample-simulator.cc
  *
  * \todo Define what the simulation or event context means.

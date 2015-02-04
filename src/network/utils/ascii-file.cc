@@ -80,9 +80,9 @@ AsciiFile::Read (std::string& line)
 }
 
 bool
-AsciiFile:: Diff (std::string const & f1,
-		  std::string const & f2, 
-		  uint64_t & lineNumber)
+AsciiFile::Diff (std::string const & f1,
+                 std::string const & f2, 
+                 uint64_t & lineNumber)
 {
   AsciiFile ascii1, ascii2;
   ascii1.Open (f1, std::ios::in);
