@@ -122,7 +122,7 @@ In recent |ns3| releases, Bake has been included in the release
 tarball.  The configuration file included in the released version
 will allow one to download any software that was current at the
 time of the release.  That is, for example, the version of Bake that
-is distributed with the ns-3.21 release can be used to fetch components
+is distributed with the ``ns-3.21`` release can be used to fetch components
 for that |ns3| release or earlier, but can't be used to fetch components
 for later releases (unless the ``bakeconf.xml`` file is updated).
 
@@ -316,7 +316,7 @@ following::
    point-to-point            point-to-point-layout     propagation              
    sixlowpan                 spectrum                  stats                    
    tap-bridge                test (no Python)          topology-read            
-   uan                       virtual-net-device        visualizer               
+   uan                       virtual-net-device        wave
    wifi                      wimax                   
    
    Modules not built (see ns-3 tutorial for explanation):
