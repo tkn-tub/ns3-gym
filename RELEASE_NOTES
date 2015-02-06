@@ -10,7 +10,7 @@ Consult the file CHANGES.html for more detailed information about changed
 API and behavior across ns-3 releases.
 
 Release 3-dev
-=============
+============
 
 Availability
 ------------
@@ -21,6 +21,34 @@ Supported platforms
 
 New user-visible features
 -------------------------
+
+Bugs fixed
+----------
+
+Known issues
+------------
+
+Release 3.22
+============
+
+Availability
+------------
+This release is available from:
+http://www.nsnam.org/release/ns-allinone-3.22.tar.bz2
+
+Supported platforms
+-------------------
+This release has been tested on the following platforms:
+- Fedora Core 21 (64 bit) with g++-4.9.2
+- Ubuntu 14.10 (32 bit) with g++-4.9.1
+- Ubuntu 14.04 (64 bit) with g++-4.8.2
+- Ubuntu 12.04.4 (32/64 bit) with g++-4.6.3
+- CentOS/RHEL 6.6 (64-bit) with g++-4.4.7
+- OS X Yosemite 10.10 with Xcode 6.1.1 and clang-600.0.56
+- FreeBSD 10.1-RELEASE (64 bit) with clang-3.4.1
+
+New user-visible features
+-------------------------
 - (wifi) Support for MPDU aggregation has been added to the wifi model, 
   as well as a number of related example programs.
 - (wifi) Added two combined power and rate control mechanisms to the
@@ -28,7 +56,6 @@ New user-visible features
   wifi module to jointly control transmission power and data rate.  Two use 
   case examples (PowerAdaptationDistance and PowerAdaptationInterference) 
   and a test case have also been added.
-- (wifi) PARF and APARF WiFi rate controls have been added to the wifi model.
 - (lte) In previous releases of the LTE module, the bearer release
   functionality was only partially supported. As an enhancement, a
   complete release bearer procedure is now implemented, which can be
@@ -51,9 +78,9 @@ New user-visible features
   framework to traced values emitting Time objects
 - (documentation) the callback function signatures for all TraceSources
   is documented in Doxygen
-- print-introspected-doxygen.sh has had several enhancements;
+- (utils) print-introspected-doxygen.cc has had several enhancements;
   use -h to read the usage message for details.
-- TracedValue and TracedCallback function signatures are now documented,
+- (core) TracedValue and TracedCallback function signatures are now documented,
   which required changing the TypeId::AddTraceSource API.
 
 Bugs fixed
