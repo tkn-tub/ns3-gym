@@ -664,7 +664,7 @@ remember where you are, and invoke Waf like this::
 
   $ ../../../waf ...
 
-but that get's tedious, and error prone, and there are better solutions.
+but that gets tedious, and error prone, and there are better solutions.
 
 If you have the full |ns3| repository this little gem is a start::
 
@@ -848,7 +848,7 @@ debugger::
 Working Directory
 +++++++++++++++++
 
-Waf needs to run from it's location at the top of the |ns3| tree.
+Waf needs to run from its location at the top of the |ns3| tree.
 This becomes the working directory where output files will be written.
 But what if you want to keep those ouf to the |ns3| source tree?  Use
 the ``--cwd`` argument::
