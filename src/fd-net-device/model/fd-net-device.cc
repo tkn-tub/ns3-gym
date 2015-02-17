@@ -246,7 +246,7 @@ FdNetDevice::StartDevice (void)
   m_nodeId = GetNode ()->GetId ();
 
   m_fdReader = Create<FdNetDeviceFdReader> ();
-  m_fdReader->SetBufferSize(m_mtu);
+  m_fdReader->SetBufferSize(m_mtu + 22);
   m_fdReader->Start (m_fd, MakeCallback (&FdNetDevice::ReceiveCallback, this));
 
   NotifyLinkUp ();
@@ -513,6 +513,8 @@ FdNetDevice::SendFrom (Ptr<Packet> packet, const Address& src, const Address& de
   header.SetSource (source);
   header.SetDestination (destination);
 
+  NS_ASSERT_MSG (packet->GetSize () <= m_mtu, "FdNetDevice::SendFrom(): Packet too big " << packet->GetSize ());
+
   if (m_encapMode == LLC)
     {
       LlcSnapHeader llc;
@@ -540,7 +542,6 @@ FdNetDevice::SendFrom (Ptr<Packet> packet, const Address& src, const Address& de
 
   NS_LOG_LOGIC ("calling write");
 
-  NS_ASSERT_MSG (packet->GetSize () <= m_mtu, "FdNetDevice::SendFrom(): Packet too big " << packet->GetSize ());
 
   ssize_t len =  (ssize_t) packet->GetSize ();
   uint8_t *buffer = (uint8_t*)malloc (len);
