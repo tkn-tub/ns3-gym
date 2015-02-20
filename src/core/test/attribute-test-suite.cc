@@ -692,6 +692,9 @@ AttributeTestCase<TimeValue>::DoRun (void)
   p = CreateObject<AttributeObjectTest> ();
   NS_TEST_ASSERT_MSG_NE (p, 0, "Unable to CreateObject");
 
+  // The test vectors assume ns resolution
+  Time::SetResolution (Time::NS);
+  
   //
   // Set value
   //
