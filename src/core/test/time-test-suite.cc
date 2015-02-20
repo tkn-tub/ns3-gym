@@ -102,28 +102,28 @@ TimeSimpleTestCase::DoTeardown (void)
 {
 }
 
-class TimesWithSignsTestCase : public TestCase
+class TimeWithSignTestCase : public TestCase
 {
 public:
-  TimesWithSignsTestCase ();
+  TimeWithSignTestCase ();
 private:
   virtual void DoSetup (void);
   virtual void DoRun (void);
   virtual void DoTeardown (void);
 };
 
-TimesWithSignsTestCase::TimesWithSignsTestCase ()
+TimeWithSignTestCase::TimeWithSignTestCase ()
   : TestCase ("Checks times that have plus or minus signs")
 {
 }
 
 void
-TimesWithSignsTestCase::DoSetup (void)
+TimeWithSignTestCase::DoSetup (void)
 {
 }
 
 void
-TimesWithSignsTestCase::DoRun (void)
+TimeWithSignTestCase::DoRun (void)
 {
   Time timePositive          ("+1000.0");
   Time timePositiveWithUnits ("+1000.0ms");
@@ -153,27 +153,27 @@ TimesWithSignsTestCase::DoRun (void)
 }
 
 void 
-TimesWithSignsTestCase::DoTeardown (void)
+TimeWithSignTestCase::DoTeardown (void)
 {
 }
 
 
-class TimeIntputOutputTestCase : public TestCase
+class TimeInputOutputTestCase : public TestCase
 {
 public:
-  TimeIntputOutputTestCase ();
+  TimeInputOutputTestCase ();
 private:
   virtual void DoRun (void);
   void Check (const std::string & str);
 };
 
-TimeIntputOutputTestCase::TimeIntputOutputTestCase ()
+TimeInputOutputTestCase::TimeInputOutputTestCase ()
   : TestCase ("Input,output from,to strings")
 {
 }
 
 void
-TimeIntputOutputTestCase::Check (const std::string & str)
+TimeInputOutputTestCase::Check (const std::string & str)
 {
   std::stringstream ss (str);
   Time time;
@@ -192,7 +192,7 @@ TimeIntputOutputTestCase::Check (const std::string & str)
 }
 
 void
-TimeIntputOutputTestCase::DoRun (void)
+TimeInputOutputTestCase::DoRun (void)
 {
   std::cout << std::endl;
   std::cout << GetParent ()->GetName () << " InputOutput: " << GetName ()
@@ -236,8 +236,8 @@ public:
   TimeTestSuite ()
     : TestSuite ("time", UNIT)
   {
-    AddTestCase (new TimesWithSignsTestCase (), TestCase::QUICK);
-    AddTestCase (new TimeIntputOutputTestCase (), TestCase::QUICK);
+    AddTestCase (new TimeWithSignTestCase (), TestCase::QUICK);
+    AddTestCase (new TimeInputOutputTestCase (), TestCase::QUICK);
     // This should be last, since it changes the resolution
     AddTestCase (new TimeSimpleTestCase (), TestCase::QUICK);
   }
