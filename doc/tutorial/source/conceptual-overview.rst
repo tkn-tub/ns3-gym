@@ -92,7 +92,7 @@ access* communication medium.  This gives us Ethernet-like functionality.
 
 Net Device
 ++++++++++
-It used to be the case that if you wanted to connect a computers to a network,
+It used to be the case that if you wanted to connect a computer to a network,
 you had to buy a specific kind of network cable and a hardware device called
 (in PC terminology) a *peripheral card* that needed to be installed in
 your computer.  If the peripheral card implemented some networking function,

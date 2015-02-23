@@ -24,7 +24,7 @@ point-to-point topologies, we will see equivalent CSMA topology helpers in
 this section.  The appearance and operation of these helpers should look 
 quite familiar to you.
 
-We provide an example script in our examples/tutorial} directory.  This script
+We provide an example script in our ``examples/tutorial`` directory.  This script
 builds on the ``first.cc`` script and adds a CSMA network to the 
 point-to-point simulation we've already considered.  Go ahead and open 
 ``examples/tutorial/second.cc`` in your favorite editor.  You will have already seen
@@ -524,7 +524,7 @@ Lastly, you can look back at the node that originated the echo
 
   $ tcpdump -nn -tt -r second-0-0.pcap
 
-and see that the echoed packet arrives back at the source at 2.007602 seconds,
+and see that the echoed packet arrives back at the source at 2.017607 seconds,
 
 .. sourcecode:: text
 
@@ -884,7 +884,7 @@ that we will connect via the point-to-point link.
 Next, we see an old friend.  We instantiate a ``PointToPointHelper`` and 
 set the associated default ``Attributes`` so that we create a five megabit 
 per second transmitter on devices created using the helper and a two millisecond 
-delay on channels created by the helper.  We then ``Intall`` the devices
+delay on channels created by the helper.  We then ``Install`` the devices
 on the nodes and the channel between them.
 
 ::
@@ -1261,7 +1261,7 @@ probably understand what is going on and find the IP echo request and response
 packets in this trace.  We leave it as an exercise to completely parse the 
 trace dump.
 
-Now, look at the pcap file of the right side of the point-to-point link,
+Now, look at the pcap file of the left side of the point-to-point link,
 
 .. sourcecode:: bash
 
