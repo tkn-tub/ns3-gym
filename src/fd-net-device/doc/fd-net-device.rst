@@ -131,7 +131,7 @@ The FdNetDevice class currently supports three encapsulation modes,
 DIX for Ethernet II frames, LLC for 802.2 LLC/SNAP frames, 
 and DIXPI for Ethernet II frames with an additional TAP PI header.
 This means that traffic traversing the file descriptor is expected to be 
-Ethernet II compatible. 
+Ethernet II compatible.  IEEE 802.1q (VLAN) tagging is not supported.
 Attaching an FdNetDevice to a wireless interface is possible as long as the 
 driver provides Ethernet II frames to the socket API. 
 Note that to associate a FdNetDevice to a wireless card in ad-hoc mode, 

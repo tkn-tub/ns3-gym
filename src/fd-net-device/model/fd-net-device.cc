@@ -52,6 +52,7 @@ FdNetDeviceFdReader::FdNetDeviceFdReader ()
 void
 FdNetDeviceFdReader::SetBufferSize (uint32_t bufferSize)
 {
+  NS_LOG_FUNCTION (this << bufferSize);
   m_bufferSize = bufferSize;
 }
 
@@ -70,7 +71,7 @@ FdReader::Data FdNetDeviceFdReader::DoRead (void)
       buf = 0;
       len = 0;
     }
-
+  NS_LOG_LOGIC ("Read " << len << " bytes on fd " << m_fd);
   return FdReader::Data (buf, len);
 }
 
@@ -246,7 +247,8 @@ FdNetDevice::StartDevice (void)
   m_nodeId = GetNode ()->GetId ();
 
   m_fdReader = Create<FdNetDeviceFdReader> ();
-  m_fdReader->SetBufferSize(m_mtu + 22);
+  // 22 bytes covers 14 bytes Ethernet header with possible 8 bytes LLC/SNAP
+  m_fdReader->SetBufferSize(m_mtu + 22);  
   m_fdReader->Start (m_fd, MakeCallback (&FdNetDevice::ReceiveCallback, this));
 
   NotifyLinkUp ();
@@ -280,7 +282,7 @@ FdNetDevice::ReceiveCallback (uint8_t *buf, ssize_t len)
     CriticalSection cs (m_pendingReadMutex);
     if (m_pendingReadCount >= m_maxPendingReads)
       {
-        //XXX: Packet dropped!
+        NS_LOG_WARN ("Packet dropped");
         skip = true;
       }
     else
@@ -493,8 +495,7 @@ bool
 FdNetDevice::SendFrom (Ptr<Packet> packet, const Address& src, const Address& dest, uint16_t protocolNumber)
 {
   NS_LOG_FUNCTION (this << packet << src << dest << protocolNumber);
-  NS_LOG_LOGIC ("packet " << packet);
-  NS_LOG_LOGIC ("UID is " << packet->GetUid ());
+  NS_LOG_LOGIC ("packet: " << packet << " UID: " << packet->GetUid ());
 
   if (IsLinkUp () == false)
     {
