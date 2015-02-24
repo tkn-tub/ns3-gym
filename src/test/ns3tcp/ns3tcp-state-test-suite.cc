@@ -40,6 +40,7 @@
 #include "ns3/error-model.h"
 #include "ns3/pointer.h"
 #include "ns3tcp-socket-writer.h"
+#include "ns3/tcp-header.h"
 
 using namespace ns3;
 
@@ -148,6 +149,13 @@ Ns3TcpStateTestCase::Ipv4L3Tx (std::string context, Ptr<const Packet> packet, Pt
   Ptr<Packet> p = packet->Copy ();
   Ipv4Header ipHeader;
   p->RemoveHeader (ipHeader);
+
+  if (g_log.IsEnabled (ns3::LOG_DEBUG))
+    {
+      TcpHeader th;
+      p->PeekHeader (th);
+      std::clog << Simulator::Now ().GetSeconds () << " TCP header " << th << std::endl;
+    }
 
   //
   // What is left is the TCP header and any data that may be sent.  We aren't
