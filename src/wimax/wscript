@@ -1,6 +1,6 @@
 ## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
 def build(bld):
-    obj = bld.create_ns3_module('wimax', ['network', 'point-to-point', 'internet', 'propagation', 'mobility'])
+    obj = bld.create_ns3_module('wimax', ['network', 'internet', 'propagation', 'mobility'])
     obj.source = [
             'model/cid.cc',
             'model/cid-factory.cc',

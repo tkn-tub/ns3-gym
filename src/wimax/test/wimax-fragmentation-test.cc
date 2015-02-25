@@ -19,26 +19,14 @@
  *                       <peppe.piro@gmail.com>
  */
 #include "ns3/log.h"
-#include "ns3/abort.h"
 #include "ns3/test.h"
-#include "ns3/uinteger.h"
-#include "ns3/inet-socket-address.h"
-#include "ns3/point-to-point-helper.h"
-#include "ns3/internet-stack-helper.h"
-#include "ns3/ipv4-address-helper.h"
-#include "ns3/ipv4-header.h"
-#include "ns3/packet-sink-helper.h"
-#include "ns3/udp-client-server-helper.h"
-#include "ns3/udp-header.h"
+#include "ns3/ptr.h"
+#include "ns3/packet.h"
 #include "ns3/simulator.h"
-#include "ns3/wimax-helper.h"
-#include "ns3/mobility-helper.h"
-#include "ns3/global-route-manager.h"
-#include "ns3/wimax-tlv.h"
-#include "ns3/ipcs-classifier-record.h"
-#include "ns3/service-flow.h"
+#include "ns3/wimax-mac-header.h"
+#include "ns3/mac-messages.h"
+#include "ns3/cid.h"
 #include "ns3/wimax-connection.h"
-#include <iostream>
 
 using namespace ns3;
 
