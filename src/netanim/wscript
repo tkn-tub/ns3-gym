@@ -3,7 +3,7 @@
 import wutils
 
 # Required NetAnim version
-NETANIM_RELEASE_NAME = "netanim-3.105"
+NETANIM_RELEASE_NAME = "netanim-3.106"
 
 
 def build (bld) :

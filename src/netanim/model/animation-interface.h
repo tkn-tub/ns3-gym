@@ -47,7 +47,7 @@ namespace ns3 {
 
 #define MAX_PKTS_PER_TRACE_FILE 100000
 #define PURGE_INTERVAL 5
-#define NETANIM_VERSION "netanim-3.105"
+#define NETANIM_VERSION "netanim-3.106"
 
 
 struct NodeSize;

@@ -2051,15 +2051,18 @@ AnimationInterface::WriteXmlAnim (bool routing)
 {
   AnimXmlElement element ("anim");
   element.AddAttribute ("ver", GetNetAnimVersion ());
-  element.Close ();
+  FILE * f = m_f;
   if (!routing)
     {
-      WriteN (element.GetElementString (), m_f);
+      element.AddAttribute ("filetype", "animation");
     }
   else
     {
-      WriteN (element.GetElementString (), m_routingF);
+      element.AddAttribute ("filetype", "routing");
+      f = m_routingF;
     }
+  element.Close ();
+  WriteN (element.GetElementString (), f);
 }
 
 void 
