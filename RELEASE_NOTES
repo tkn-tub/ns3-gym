@@ -21,9 +21,13 @@ Supported platforms
 
 New user-visible features
 -------------------------
+- (network) CalculateTxTime has been declared obsolete.
+  CalculateBytesTxTime and CalculateBitsTxTime are to be used instead.
+  The reurn value is a Time, instead of a double.
 
 Bugs fixed
 ----------
+- Bug 1974 - CalculateTxTime should return a Time, not a double
 - Bug 2073 - NDisc cache entries update timer might be stuck in a loop
 
 Known issues

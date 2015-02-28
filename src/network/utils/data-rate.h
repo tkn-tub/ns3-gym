@@ -27,6 +27,7 @@
 #include "ns3/nstime.h"
 #include "ns3/attribute.h"
 #include "ns3/attribute-helper.h"
+#include "ns3/deprecated.h"
 
 namespace ns3 {
 
@@ -42,9 +43,9 @@ namespace ns3 {
  * from strings, natural multiplication e.g.:
  * \code
  *   DataRate x("56kbps");
- *   double nBits = x*ns3::Seconds(19.2);
+ *   double nBits = x*ns3::Seconds (19.2);
  *   uint32_t nBytes = 20;
- *   double txtime = x.CalclulateTxTime(nBytes);
+ *   Time txtime = x.CalculateBytesTxTime (nBytes);
  * \endcode
  * This class also supports the regular comparison operators \c <, \c >,
  * \c <=, \c >=, \c ==, and \c !=
@@ -164,9 +165,27 @@ public:
    *
    * Calculates the transmission time at this data rate
    * \param bytes The number of bytes (not bits) for which to calculate
+   * \return The transmission time for the number of bytes specified
+   */
+  Time CalculateBytesTxTime (uint32_t bytes) const;
+
+  /**
+   * \brief Calculate transmission time
+   *
+   * Calculates the transmission time at this data rate
+   * \param bits The number of bits (not bytes) for which to calculate
+   * \return The transmission time for the number of bits specified
+   */
+  Time CalculateBitsTxTime (uint32_t bits) const;
+
+  /**
+   * \brief Calculate transmission time
+   *
+   * Calculates the transmission time at this data rate
+   * \param bytes The number of bytes (not bits) for which to calculate
    * \return The transmission time in seconds for the number of bytes specified
    */
-  double CalculateTxTime (uint32_t bytes) const;
+  double CalculateTxTime (uint32_t bytes) const NS_DEPRECATED;
 
   /**
    * Get the underlying bitrate

@@ -232,6 +232,20 @@ double DataRate::CalculateTxTime (uint32_t bytes) const
   return static_cast<double>(bytes)*8/m_bps;
 }
 
+Time DataRate::CalculateBytesTxTime (uint32_t bytes) const
+{
+  NS_LOG_FUNCTION (this << bytes);
+  // \todo avoid to use double (if possible).
+  return Seconds (static_cast<double>(bytes)*8/m_bps);
+}
+
+Time DataRate::CalculateBitsTxTime (uint32_t bits) const
+{
+  NS_LOG_FUNCTION (this << bits);
+  // \todo avoid to use double (if possible).
+  return Seconds (static_cast<double>(bits)/m_bps);
+}
+
 uint64_t DataRate::GetBitRate () const
 {
   NS_LOG_FUNCTION (this);

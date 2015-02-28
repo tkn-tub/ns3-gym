@@ -246,7 +246,7 @@ PointToPointNetDevice::TransmitStart (Ptr<Packet> p)
   m_currentPkt = p;
   m_phyTxBeginTrace (m_currentPkt);
 
-  Time txTime = Seconds (m_bps.CalculateTxTime (p->GetSize ()));
+  Time txTime = m_bps.CalculateBytesTxTime (p->GetSize ());
   Time txCompleteTime = txTime + m_tInterframeGap;
 
   NS_LOG_LOGIC ("Schedule TransmitCompleteEvent in " << txCompleteTime.GetSeconds () << "sec");

@@ -451,7 +451,7 @@ SimpleNetDevice::SendFrom (Ptr<Packet> p, const Address& source, const Address& 
           Time txTime = Time (0);
           if (m_bps > DataRate (0))
             {
-              txTime = Seconds (m_bps.CalculateTxTime (packet->GetSize ()));
+              txTime = m_bps.CalculateBytesTxTime (packet->GetSize ());
             }
           m_channel->Send (p, protocolNumber, to, from, this);
           TransmitCompleteEvent = Simulator::Schedule (txTime, &SimpleNetDevice::TransmitComplete, this);
@@ -491,7 +491,7 @@ SimpleNetDevice::TransmitComplete ()
       Time txTime = Time (0);
       if (m_bps > DataRate (0))
         {
-          txTime = Seconds (m_bps.CalculateTxTime (packet->GetSize ()));
+          txTime = m_bps.CalculateBytesTxTime (packet->GetSize ());
         }
       TransmitCompleteEvent = Simulator::Schedule (txTime, &SimpleNetDevice::TransmitComplete, this);
     }

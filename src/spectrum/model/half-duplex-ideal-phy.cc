@@ -288,8 +288,8 @@ HalfDuplexIdealPhy::StartTx (Ptr<Packet> p)
         m_txPacket = p;
         ChangeState (TX);
         Ptr<HalfDuplexIdealPhySignalParameters> txParams = Create<HalfDuplexIdealPhySignalParameters> ();
-        double txTimeSeconds = m_rate.CalculateTxTime (p->GetSize ());
-        txParams->duration = Seconds (txTimeSeconds);
+        Time txTimeSeconds = m_rate.CalculateBytesTxTime (p->GetSize ());
+        txParams->duration = txTimeSeconds;
         txParams->txPhy = GetObject<SpectrumPhy> ();
         txParams->txAntenna = m_antenna;
         txParams->psd = m_txPsd;
@@ -297,7 +297,7 @@ HalfDuplexIdealPhy::StartTx (Ptr<Packet> p)
 
         NS_LOG_LOGIC (this << " tx power: " << 10 * std::log10 (Integral (*(txParams->psd))) + 30 << " dBm");
         m_channel->StartTx (txParams);
-        Simulator::Schedule (Seconds (txTimeSeconds), &HalfDuplexIdealPhy::EndTx, this);
+        Simulator::Schedule (txTimeSeconds, &HalfDuplexIdealPhy::EndTx, this);
       }
       break;
 
