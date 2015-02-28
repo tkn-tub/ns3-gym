@@ -24,6 +24,7 @@ New user-visible features
 
 Bugs fixed
 ----------
+- Bug 2073 - NDisc cache entries update timer might be stuck in a loop
 
 Known issues
 ------------

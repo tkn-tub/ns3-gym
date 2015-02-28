@@ -5328,7 +5328,6 @@ def register_Ns3Empty_methods(root_module, cls):
     return
 
 def register_Ns3Int64x64_t_methods(root_module, cls):
-    cls.add_binary_comparison_operator('<=')
     cls.add_binary_comparison_operator('!=')
     cls.add_inplace_numeric_operator('+=', param('ns3::int64x64_t const &', u'right'))
     cls.add_binary_numeric_operator('*', root_module['ns3::int64x64_t'], root_module['ns3::int64x64_t'], param('ns3::int64x64_t const &', u'right'))
@@ -5342,6 +5341,7 @@ def register_Ns3Int64x64_t_methods(root_module, cls):
     cls.add_inplace_numeric_operator('-=', param('ns3::int64x64_t const &', u'right'))
     cls.add_inplace_numeric_operator('/=', param('ns3::int64x64_t const &', u'right'))
     cls.add_output_stream_operator()
+    cls.add_binary_comparison_operator('<=')
     cls.add_binary_comparison_operator('==')
     cls.add_binary_comparison_operator('>=')
     ## int64x64-double.h (module 'core'): ns3::int64x64_t::int64x64_t() [constructor]
@@ -10096,7 +10096,6 @@ def register_Ns3TcpWestwood_methods(root_module, cls):
     return
 
 def register_Ns3Time_methods(root_module, cls):
-    cls.add_binary_comparison_operator('<=')
     cls.add_binary_comparison_operator('!=')
     cls.add_inplace_numeric_operator('+=', param('ns3::Time const &', u'right'))
     cls.add_binary_numeric_operator('*', root_module['ns3::Time'], root_module['ns3::Time'], param('int64_t const &', u'right'))
@@ -10107,6 +10106,7 @@ def register_Ns3Time_methods(root_module, cls):
     cls.add_binary_comparison_operator('>')
     cls.add_inplace_numeric_operator('-=', param('ns3::Time const &', u'right'))
     cls.add_output_stream_operator()
+    cls.add_binary_comparison_operator('<=')
     cls.add_binary_comparison_operator('==')
     cls.add_binary_comparison_operator('>=')
     ## nstime.h (module 'core'): ns3::Time::Time() [constructor]
@@ -14584,15 +14584,6 @@ def register_Ns3NdiscCacheEntry_methods(root_module, cls):
                    'ns3::Address', 
                    [], 
                    is_const=True)
-    ## ndisc-cache.h (module 'internet'): uint8_t ns3::NdiscCache::Entry::GetNSRetransmit() const [member function]
-    cls.add_method('GetNSRetransmit', 
-                   'uint8_t', 
-                   [], 
-                   is_const=True)
-    ## ndisc-cache.h (module 'internet'): void ns3::NdiscCache::Entry::IncNSRetransmit() [member function]
-    cls.add_method('IncNSRetransmit', 
-                   'void', 
-                   [])
     ## ndisc-cache.h (module 'internet'): bool ns3::NdiscCache::Entry::IsDelay() const [member function]
     cls.add_method('IsDelay', 
                    'bool', 
@@ -14651,10 +14642,6 @@ def register_Ns3NdiscCacheEntry_methods(root_module, cls):
     cls.add_method('MarkStale', 
                    'void', 
                    [])
-    ## ndisc-cache.h (module 'internet'): void ns3::NdiscCache::Entry::ResetNSRetransmit() [member function]
-    cls.add_method('ResetNSRetransmit', 
-                   'void', 
-                   [])
     ## ndisc-cache.h (module 'internet'): void ns3::NdiscCache::Entry::SetIpv6Address(ns3::Ipv6Address ipv6Address) [member function]
     cls.add_method('SetIpv6Address', 
                    'void', 
@@ -14683,20 +14670,8 @@ def register_Ns3NdiscCacheEntry_methods(root_module, cls):
     cls.add_method('StartRetransmitTimer', 
                    'void', 
                    [])
-    ## ndisc-cache.h (module 'internet'): void ns3::NdiscCache::Entry::StopDelayTimer() [member function]
-    cls.add_method('StopDelayTimer', 
-                   'void', 
-                   [])
-    ## ndisc-cache.h (module 'internet'): void ns3::NdiscCache::Entry::StopProbeTimer() [member function]
-    cls.add_method('StopProbeTimer', 
-                   'void', 
-                   [])
-    ## ndisc-cache.h (module 'internet'): void ns3::NdiscCache::Entry::StopReachableTimer() [member function]
-    cls.add_method('StopReachableTimer', 
-                   'void', 
-                   [])
-    ## ndisc-cache.h (module 'internet'): void ns3::NdiscCache::Entry::StopRetransmitTimer() [member function]
-    cls.add_method('StopRetransmitTimer', 
+    ## ndisc-cache.h (module 'internet'): void ns3::NdiscCache::Entry::StopNudTimer() [member function]
+    cls.add_method('StopNudTimer', 
                    'void', 
                    [])
     ## ndisc-cache.h (module 'internet'): void ns3::NdiscCache::Entry::UpdateLastReachabilityconfirmation() [member function]

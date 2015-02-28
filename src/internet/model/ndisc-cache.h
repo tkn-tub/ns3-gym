@@ -250,22 +250,6 @@ public:
     void SetRouter (bool router);
 
     /**
-     * \brief Get the number of NS retransmit.
-     * \return number of NS that have been retransmit
-     */
-    uint8_t GetNSRetransmit () const;
-
-    /**
-     * \brief Increment NS retransmit.
-     */
-    void IncNSRetransmit ();
-
-    /**
-     * \brief Reset NS retransmit (=0).
-     */
-    void ResetNSRetransmit ();
-
-    /**
      * \brief Get the time of last reachability confirmation.
      * \return time
      */
@@ -282,19 +266,9 @@ public:
     void StartReachableTimer ();
 
     /**
-     * \brief Stop the reachable timer.
-     */
-    void StopReachableTimer ();
-
-    /**
      * \brief Start retransmit timer.
      */
     void StartRetransmitTimer ();
-
-    /**
-     * \brief Stop retransmit timer.
-     */
-    void StopRetransmitTimer ();
 
     /**
      * \brief Start probe timer.
@@ -302,19 +276,14 @@ public:
     void StartProbeTimer ();
 
     /**
-     * \brief Stop probe timer.
-     */
-    void StopProbeTimer ();
-
-    /**
      * \brief Start delay timer.
      */
     void StartDelayTimer ();
 
     /**
-     * \brief Stop delay timer.
+     * \brief Stop NUD timer and reset the NUD retransmission counter
      */
-    void StopDelayTimer ();
+    void StopNudTimer ();
 
     /**
      * \brief Function called when reachable timer timeout.
@@ -388,24 +357,9 @@ private:
     bool m_router;
 
     /**
-     * \brief Reachable timer (used for NUD in REACHABLE state).
+     * \brief Timer (used for NUD).
      */
-    Timer m_reachableTimer;
-
-    /**
-     * \brief Retransmission timer (used for NUD in INCOMPLETE state).
-     */
-    Timer m_retransTimer;
-
-    /**
-     * \brief Probe timer (used for NUD in PROBE state).
-     */
-    Timer m_probeTimer;
-
-    /**
-     * \brief Delay timer (used for NUD when in DELAY state).
-     */
-    Timer m_delayTimer;
+    Timer m_nudTimer;
 
     /**
      * \brief Last time we see a reachability confirmation.
