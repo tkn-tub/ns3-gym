@@ -28,6 +28,7 @@ New user-visible features
 Bugs fixed
 ----------
 - Bug 1974 - CalculateTxTime should return a Time, not a double
+- Bug 2070 - Wrong report of Packets and Bytes stored in CoDeL
 - Bug 2073 - NDisc cache entries update timer might be stuck in a loop
 
 Known issues

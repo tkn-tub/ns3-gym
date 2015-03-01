@@ -180,7 +180,6 @@ protected:
    */
   void Drop (Ptr<Packet> packet);
 
-private:
   /// Traced callback: fired when a packet is enqueued
   TracedCallback<Ptr<const Packet> > m_traceEnqueue;
   /// Traced callback: fired when a packet is dequeued

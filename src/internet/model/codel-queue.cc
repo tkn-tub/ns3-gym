@@ -399,6 +399,12 @@ CoDelQueue::DoDequeue (void)
               // hence the while loop.
               NS_LOG_LOGIC ("Sojourn time is still above target and it's time for next drop; dropping " << p);
               Drop (p);
+
+              // p was in queue, trace dequeue and update stats manually
+              m_traceDequeue (p);
+              m_nBytes -= p->GetSize ();
+              m_nPackets--;
+
               ++m_dropCount;
               ++m_count;
               NewtonStep ();
@@ -444,6 +450,12 @@ CoDelQueue::DoDequeue (void)
           NS_LOG_LOGIC ("Sojourn time goes above target, dropping the first packet " << p << " and entering the dropping state");
           ++m_dropCount;
           Drop (p);
+
+          // p was in queue, trace the dequeue and update stats manually
+          m_traceDequeue (p);
+          m_nBytes -= p->GetSize ();
+          m_nPackets--;
+
           if (m_packets.empty ())
             {
               m_dropping = false;
