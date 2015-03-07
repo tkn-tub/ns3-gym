@@ -702,13 +702,13 @@ AttributeTestCase<TimeValue>::DoRun (void)
   NS_TEST_ASSERT_MSG_EQ (ok, true, "Could not SetAttributeFailSafe() via TimeValue to 5s");
 
   ok = CheckGetCodePaths (p, "TestTimeWithBounds", "+5000000000.0ns", TimeValue (Seconds (5)));
-  NS_TEST_ASSERT_MSG_EQ (ok, true, "Attribute not set properly by SetAttributeFailSafe() (5s) via TimeValue");
+  NS_TEST_ASSERT_MSG_EQ (ok, true, "Attribute not set properly by SetAttributeFailSafe(5s) via TimeValue");
 
   ok = p->SetAttributeFailSafe ("TestTimeWithBounds", StringValue ("3s"));
-  NS_TEST_ASSERT_MSG_EQ (ok, true, "Could not SetAttributeFailSafe() via TimeValue to 5s");
+  NS_TEST_ASSERT_MSG_EQ (ok, true, "Could not SetAttributeFailSafe() via TimeValue to 3s");
 
   ok = CheckGetCodePaths (p, "TestTimeWithBounds", "+3000000000.0ns", TimeValue (Seconds (3)));
-  NS_TEST_ASSERT_MSG_EQ (ok, true, "Attribute not set properly by SetAttributeFailSafe() (3s) via StringValue");
+  NS_TEST_ASSERT_MSG_EQ (ok, true, "Attribute not set properly by SetAttributeFailSafe(3s) via StringValue");
 
   
   //
@@ -720,16 +720,16 @@ AttributeTestCase<TimeValue>::DoRun (void)
   // Set the Attribute at the positive limit
   //
   ok = p->SetAttributeFailSafe ("TestTimeWithBounds", TimeValue (Seconds (10)));
-  NS_TEST_ASSERT_MSG_EQ (ok, true, "Could not SetAttributeFailSafe() via TimeValue to 10");
+  NS_TEST_ASSERT_MSG_EQ (ok, true, "Could not SetAttributeFailSafe() via TimeValue to 10s");
 
   ok = CheckGetCodePaths (p, "TestTimeWithBounds", "+10000000000.0ns", TimeValue (Seconds (10)));
-  NS_TEST_ASSERT_MSG_EQ (ok, true, "Attribute not set properly by SetAttributeFailSafe() (positive limit) via StringValue");
+  NS_TEST_ASSERT_MSG_EQ (ok, true, "Attribute not set properly by SetAttributeFailSafe(10s [positive limit]) via StringValue");
 
   //
   // Set the Attribute past the positive limit.
   //
   ok = p->SetAttributeFailSafe ("TestTimeWithBounds", TimeValue (Seconds (11)));
-  NS_TEST_ASSERT_MSG_EQ (ok, false, "Unexpectedly could SetAttributeFailSafe() via TimeValue to 11");
+  NS_TEST_ASSERT_MSG_EQ (ok, false, "Unexpectedly could SetAttributeFailSafe() via TimeValue to 11s [greater than positive limit]");
 
   ok = CheckGetCodePaths (p, "TestTimeWithBounds", "+10000000000.0ns", TimeValue (Seconds (10)));
   NS_TEST_ASSERT_MSG_EQ (ok, true, "Error in SetAttributeFailSafe() but value changes");
@@ -738,16 +738,16 @@ AttributeTestCase<TimeValue>::DoRun (void)
   // Set the Attribute at the negative limit.
   //
   ok = p->SetAttributeFailSafe ("TestTimeWithBounds", TimeValue (Seconds (-5)));
-  NS_TEST_ASSERT_MSG_EQ (ok, true, "Could not SetAttributeFailSafe() via TimeValue to -5");
+  NS_TEST_ASSERT_MSG_EQ (ok, true, "Could not SetAttributeFailSafe() via TimeValue to -5s");
 
   ok = CheckGetCodePaths (p, "TestTimeWithBounds", "-5000000000.0ns", TimeValue (Seconds (-5)));
-  NS_TEST_ASSERT_MSG_EQ (ok, true, "Attribute not set properly by SetAttributeFailSafe() (negative limit) via StringValue");
+  NS_TEST_ASSERT_MSG_EQ (ok, true, "Attribute not set properly by SetAttributeFailSafe(-5s [negative limit]) via StringValue");
 
   //
   // Set the Attribute past the negative limit.
   //
   ok = p->SetAttributeFailSafe ("TestTimeWithBounds", TimeValue (Seconds (-6)));
-  NS_TEST_ASSERT_MSG_EQ (ok, false, "Unexpectedly could SetAttributeFailSafe() via TimeValue to -6");
+  NS_TEST_ASSERT_MSG_EQ (ok, false, "Unexpectedly could SetAttributeFailSafe() via TimeValue to -6s");
 
   ok = CheckGetCodePaths (p, "TestTimeWithBounds", "-5000000000.0ns", TimeValue (Seconds (-5)));
   NS_TEST_ASSERT_MSG_EQ (ok, true, "Error in SetAttributeFailSafe() but value changes");
