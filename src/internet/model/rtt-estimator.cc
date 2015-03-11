@@ -170,23 +170,23 @@ RttMeanDeviation::CheckForReciprocalPowerOfTwo (double val) const
       return 0;
     }
   // supports 1/32, 1/16, 1/8, 1/4, 1/2
-  if (abs (1/val - 8) < TOLERANCE)
+  if (std::abs (1/val - 8) < TOLERANCE)
     {
       return 3;
     }
-  if (abs (1/val - 4) < TOLERANCE)
+  if (std::abs (1/val - 4) < TOLERANCE)
     {
       return 2;
     }
-  if (abs (1/val - 32) < TOLERANCE)
+  if (std::abs (1/val - 32) < TOLERANCE)
     {
       return 5;
     }
-  if (abs (1/val - 16) < TOLERANCE)
+  if (std::abs (1/val - 16) < TOLERANCE)
     {
       return 4;
     }
-  if (abs (1/val - 2) < TOLERANCE)
+  if (std::abs (1/val - 2) < TOLERANCE)
     {
       return 1;
     }

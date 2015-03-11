@@ -27,6 +27,7 @@
 #include "ns3/wave-net-device.h"
 #include "ns3/minstrel-wifi-manager.h"
 #include "ns3/radiotap-header.h"
+#include "ns3/unused.h"
 #include "wave-mac-helper.h"
 #include "wave-helper.h"
 
@@ -484,12 +485,7 @@ WaveHelper::Install (const WifiPhyHelper &phyHelper,  const WifiMacHelper &macHe
   try
     {
       const QosWaveMacHelper& qosMac = dynamic_cast<const QosWaveMacHelper&> (macHelper);
-      // below check will never fail, just used for survive from
-      // gcc warn "-Wunused-but-set-variable"
-      if (&qosMac == 0)
-        {
-          NS_FATAL_ERROR ("it could never get here");
-        }
+      NS_UNUSED (qosMac);
     }
   catch (const std::bad_cast &)
     {
