@@ -817,7 +817,7 @@ void Icmpv6L4Protocol::HandleDestinationUnreachable (Ptr<Packet> p, Ipv6Address 
   Ptr<Packet> origPkt = unreach.GetPacket ();
 
   Ipv6Header ipHeader;
-  if ( origPkt->GetSerializedSize () > ipHeader.GetSerializedSize () )
+  if ( origPkt->GetSize () > ipHeader.GetSerializedSize () )
     {
       origPkt->RemoveHeader (ipHeader);
       uint8_t payload[8];
