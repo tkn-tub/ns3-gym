@@ -30,6 +30,7 @@ Bugs fixed
 - Bug 1974 - CalculateTxTime should return a Time, not a double
 - Bug 2070 - Wrong report of Packets and Bytes stored in CoDeL
 - Bug 2073 - NDisc cache entries update timer might be stuck in a loop
+- Bug 2076 - MinRTO Attribute is not actually used
 - Bug 2077 - Icmpv6L4Protocol::HandleDestinationUnreachable must check the packet size, not its serialized size
 
 Known issues
