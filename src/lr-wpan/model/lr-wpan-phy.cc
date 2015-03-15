@@ -898,7 +898,7 @@ LrWpanPhy::PlmeSetAttributeRequest (LrWpanPibAttributeIdentifier id,
           }
         if (m_phyPIBAttributes.phyCurrentChannel != attribute->phyCurrentChannel)
           {
-            // Cancel a pending tranceiver state change.
+            // Cancel a pending transceiver state change.
             // Switch off the transceiver.
             // TODO: Is switching off the transceiver the right choice?
             m_trxState = IEEE_802_15_4_PHY_TRX_OFF;
@@ -928,6 +928,8 @@ LrWpanPhy::PlmeSetAttributeRequest (LrWpanPibAttributeIdentifier id,
                   }
               }
             m_phyPIBAttributes.phyCurrentChannel = attribute->phyCurrentChannel;
+            LrWpanSpectrumValueHelper psdHelper;
+            m_txPsd = psdHelper.CreateTxPowerSpectralDensity (m_phyPIBAttributes.phyTransmitPower, m_phyPIBAttributes.phyCurrentChannel);
           }
         break;
       }

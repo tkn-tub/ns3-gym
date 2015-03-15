@@ -28,9 +28,10 @@ New user-visible features
 Bugs fixed
 ----------
 - Bug 1974 - CalculateTxTime should return a Time, not a double
+- Bug 2025 - (lr-wpan) Changing the channel doesn't affect the Tx params
 - Bug 2070 - Wrong report of Packets and Bytes stored in CoDeL
 - Bug 2073 - NDisc cache entries update timer might be stuck in a loop
-- Bug 2076 - MinRTO Attribute is not actually used
+- Bug 2076 - TCP MinRTO Attribute is not actually used
 - Bug 2077 - Icmpv6L4Protocol::HandleDestinationUnreachable must check the packet size, not its serialized size
 
 Known issues
