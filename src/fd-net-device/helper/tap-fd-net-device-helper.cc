@@ -112,7 +112,6 @@ TapFdNetDeviceHelper::InstallPriv (Ptr<Node> node) const
 {
   Ptr<NetDevice> d = FdNetDeviceHelper::InstallPriv (node);
   Ptr<FdNetDevice> device = d->GetObject<FdNetDevice> ();
-  Ptr<FdNetDevice> fdnd = device->GetObject<FdNetDevice> ();
 
   //
   // We need to explicitly set the encapsulation mode for the traffic
@@ -122,7 +121,7 @@ TapFdNetDeviceHelper::InstallPriv (Ptr<Node> node) const
   //
   if (m_modePi)
     {
-      fdnd->SetEncapsulationMode (FdNetDevice::DIXPI);
+      device->SetEncapsulationMode (FdNetDevice::DIXPI);
     }
 
   SetFileDescriptor (device);
