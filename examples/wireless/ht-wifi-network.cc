@@ -54,7 +54,7 @@ int main (int argc, char *argv[])
   cmd.Parse (argc,argv);
 
   std::cout << "DataRate" << "\t" << "Throughput" << '\n';
-  for (int mcs = 0; mcs <= 31; mcs++)
+  for (int i = 0; i <= 31; i++)
     {
       uint32_t payloadSize; //1500 byte IP packet
       if (udp)
@@ -76,17 +76,17 @@ int main (int argc, char *argv[])
       YansWifiPhyHelper phy = YansWifiPhyHelper::Default ();
       phy.SetChannel (channel.Create ());
 
-      if (mcs <= 7)
+      if (i <= 7)
         {
           phy.Set ("ShortGuardEnabled", BooleanValue (false));
           phy.Set ("ChannelBonding", BooleanValue (false));
         }
-      else if (mcs > 7 && mcs <= 15)
+      else if (i > 7 && i <= 15)
         {
           phy.Set ("ShortGuardEnabled", BooleanValue (true));
           phy.Set ("ChannelBonding", BooleanValue (false));
         }
-      else if (mcs > 15 && mcs <= 23)
+      else if (i > 15 && i <= 23)
         {
           phy.Set ("ShortGuardEnabled", BooleanValue (false));
           phy.Set ("ChannelBonding", BooleanValue (true));
@@ -105,157 +105,157 @@ int main (int argc, char *argv[])
 
       double datarate = 0;
       StringValue DataRate;
-      if (mcs == 0)
+      if (i == 0)
         {
           DataRate = StringValue ("OfdmRate6_5MbpsBW20MHz");
           datarate = 6.5;
         }
-      else if (mcs == 1)
+      else if (i == 1)
         {
           DataRate = StringValue ("OfdmRate13MbpsBW20MHz");
           datarate = 13;
         }
-      else if (mcs == 2)
+      else if (i == 2)
         {
           DataRate = StringValue ("OfdmRate19_5MbpsBW20MHz");
           datarate = 19.5;
         }
-      else if (mcs == 3)
+      else if (i == 3)
         {
           DataRate = StringValue ("OfdmRate26MbpsBW20MHz");
           datarate = 26;
         }
-      else if (mcs == 4)
+      else if (i == 4)
         {
           DataRate = StringValue ("OfdmRate39MbpsBW20MHz");
           datarate = 39;
         }
-      else if (mcs == 5)
+      else if (i == 5)
         {
           DataRate = StringValue ("OfdmRate52MbpsBW20MHz");
           datarate = 52;
         }
-      else if (mcs == 6)
+      else if (i == 6)
         {
           DataRate = StringValue ("OfdmRate58_5MbpsBW20MHz");
           datarate = 58.5;
         }
-      else if (mcs == 7)
+      else if (i == 7)
         {
           DataRate = StringValue ("OfdmRate65MbpsBW20MHz");
           datarate = 65;
         }
-      else if (mcs == 8)
+      else if (i == 8)
         {
           DataRate = StringValue ("OfdmRate7_2MbpsBW20MHz");
           datarate = 7.2;
         }
-      else if (mcs == 9)
+      else if (i == 9)
         {
           DataRate = StringValue ("OfdmRate14_4MbpsBW20MHz");
           datarate = 14.4;
         }
-      else if (mcs == 10)
+      else if (i == 10)
         {
           DataRate = StringValue ("OfdmRate21_7MbpsBW20MHz");
           datarate = 21.7;
         }
-      else if (mcs == 11)
+      else if (i == 11)
         {
           DataRate = StringValue ("OfdmRate28_9MbpsBW20MHz");
           datarate = 28.9;
         }
-      else if (mcs == 12)
+      else if (i == 12)
         {
           DataRate = StringValue ("OfdmRate43_3MbpsBW20MHz");
           datarate = 43.3;
         }
-      else if (mcs == 13)
+      else if (i == 13)
         {
           DataRate = StringValue ("OfdmRate57_8MbpsBW20MHz");
           datarate = 57.8;
         }
-      else if (mcs == 14)
+      else if (i == 14)
         {
           DataRate = StringValue ("OfdmRate65MbpsBW20MHzShGi");
           datarate = 65;
         }
-      else if (mcs == 15)
+      else if (i == 15)
         {
           DataRate = StringValue ("OfdmRate72_2MbpsBW20MHz");
           datarate = 72.2;
         }
-      else if (mcs == 16)
+      else if (i == 16)
         {
           DataRate = StringValue ("OfdmRate13_5MbpsBW40MHz");
           datarate = 13.5;
         }
-      else if (mcs == 17)
+      else if (i == 17)
         {
           DataRate = StringValue ("OfdmRate27MbpsBW40MHz");
           datarate = 27;
         }
-      else if (mcs == 18)
+      else if (i == 18)
         {
           DataRate = StringValue ("OfdmRate40_5MbpsBW40MHz");
           datarate = 40.5;
         }
-      else if (mcs == 19)
+      else if (i == 19)
         {
           DataRate = StringValue ("OfdmRate54MbpsBW40MHz");
           datarate = 54;
         }
-      else if (mcs == 20)
+      else if (i == 20)
         {
           DataRate = StringValue ("OfdmRate81MbpsBW40MHz");
           datarate = 81;
         }
-      else if (mcs == 21)
+      else if (i == 21)
         {
           DataRate = StringValue ("OfdmRate108MbpsBW40MHz");
           datarate = 108;
         }
-      else if (mcs == 22)
+      else if (i == 22)
         {
           DataRate = StringValue ("OfdmRate121_5MbpsBW40MHz");
           datarate = 121.5;
         }
-      else if (mcs == 23)
+      else if (i == 23)
         {
           DataRate = StringValue ("OfdmRate135MbpsBW40MHz");
           datarate = 135;
         }
-      else if (mcs == 24)
+      else if (i == 24)
         {
           DataRate = StringValue ("OfdmRate15MbpsBW40MHz");
           datarate = 15;
         }
-      else if (mcs == 25)
+      else if (i == 25)
         {
           DataRate = StringValue ("OfdmRate30MbpsBW40MHz");
           datarate = 30;
         }
-      else if (mcs == 26)
+      else if (i == 26)
         {
           DataRate = StringValue ("OfdmRate45MbpsBW40MHz");
           datarate = 45;
         }
-      else if (mcs == 27)
+      else if (i == 27)
         {
           DataRate = StringValue ("OfdmRate60MbpsBW40MHz");
           datarate = 60;
         }
-      else if (mcs == 28)
+      else if (i == 28)
         {
           DataRate = StringValue ("OfdmRate90MbpsBW40MHz");
           datarate = 90;
         }
-      else if (mcs == 29)
+      else if (i == 29)
         {
           DataRate = StringValue ("OfdmRate120MbpsBW40MHz");
           datarate = 120;
         }
-      else if (mcs == 30)
+      else if (i == 30)
         {
           DataRate = StringValue ("OfdmRate135MbpsBW40MHzShGi");
           datarate = 135;
