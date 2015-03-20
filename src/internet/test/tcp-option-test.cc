@@ -93,7 +93,7 @@ TcpOptionWSTestCase::DoTeardown ()
 class TcpOptionTSTestCase : public TestCase
 {
 public:
-  TcpOptionTSTestCase (std::string name, uint32_t timestamp, uint32_t echo);
+  TcpOptionTSTestCase (std::string name);
 
   void TestSerialize ();
   void TestDeserialize ();
@@ -108,19 +108,23 @@ private:
 };
 
 
-TcpOptionTSTestCase::TcpOptionTSTestCase (std::string name, uint32_t timestamp,
-                                          uint32_t echo)
+TcpOptionTSTestCase::TcpOptionTSTestCase (std::string name)
   : TestCase (name)
 {
-  m_timestamp = timestamp;
-  m_echo = echo;
 }
 
 void
 TcpOptionTSTestCase::DoRun ()
 {
-  TestSerialize ();
-  TestDeserialize ();
+  Ptr<UniformRandomVariable> x = CreateObject<UniformRandomVariable> ();
+
+  for (uint32_t i = 0; i < 1000; ++i)
+    {
+      m_timestamp = x->GetInteger ();
+      m_echo = x->GetInteger ();
+      TestSerialize ();
+      TestDeserialize ();
+    }
 }
 
 void
@@ -171,17 +175,7 @@ public:
         AddTestCase (new TcpOptionWSTestCase ("Testing window "
                                               "scale value", i), TestCase::QUICK);
       }
-
-    Ptr<UniformRandomVariable> x = CreateObject<UniformRandomVariable> ();
-
-    for (uint32_t i = 0; i < 1000; ++i)
-      {
-        AddTestCase (new TcpOptionTSTestCase ("Testing serialization of random "
-                                              "values for timestamp",
-                                              x->GetInteger (),
-                                              x->GetInteger ()), TestCase::QUICK);
-      }
-
+    AddTestCase (new TcpOptionTSTestCase ("Testing serialization of random values for timestamp"), TestCase::QUICK);
   }
 
 } g_TcpOptionTestSuite;

@@ -27,97 +27,106 @@
 
 namespace ns3 {
 
+#define GET_RANDOM_UINT32(RandomVariable) \
+  static_cast<uint32_t> (RandomVariable->GetInteger (0, UINT32_MAX))
+
+#define GET_RANDOM_UINT16(RandomVariable) \
+  static_cast<uint16_t> (RandomVariable->GetInteger (0, UINT16_MAX))
+
+#define GET_RANDOM_UINT8(RandomVariable) \
+  static_cast<uint8_t> (RandomVariable->GetInteger (0, UINT8_MAX))
+
+#define GET_RANDOM_UINT6(RandomVariable) \
+  static_cast<uint8_t> (RandomVariable->GetInteger (0, UINT8_MAX >> 2))
+
 class TcpHeaderGetSetTestCase : public TestCase
 {
 public:
-  TcpHeaderGetSetTestCase (uint16_t sourcePort, uint16_t destinationPort,
-                           SequenceNumber32 sequenceNumber, SequenceNumber32 ackNumber,
-                           uint8_t flags, uint16_t m_windowSize, uint16_t m_urgentPointer,
-                           std::string name);
+  TcpHeaderGetSetTestCase (std::string name);
 protected:
-  uint16_t m_sourcePort;        //!< Source port
-  uint16_t m_destinationPort;   //!< Destination port
-  SequenceNumber32 m_sequenceNumber;  //!< Sequence number
-  SequenceNumber32 m_ackNumber;       //!< ACK number
-  uint8_t m_flags;              //!< Flags (really a uint6_t)
-  uint16_t m_windowSize;        //!< Window size
-  uint16_t m_urgentPointer;     //!< Urgent pointer
-
 private:
   virtual void DoRun (void);
   virtual void DoTeardown (void);
 
-  TcpHeader m_header;
-  Buffer m_buffer;
 };
 
-TcpHeaderGetSetTestCase::TcpHeaderGetSetTestCase (
-  uint16_t sourcePort, uint16_t destinationPort,
-  SequenceNumber32 sequenceNumber, SequenceNumber32 ackNumber,
-  uint8_t flags, uint16_t windowSize, uint16_t urgentPointer,
-  std::string name) : TestCase (name)
+TcpHeaderGetSetTestCase::TcpHeaderGetSetTestCase (std::string name) : TestCase (name)
 {
-  m_sourcePort = sourcePort;
-  m_destinationPort = destinationPort;
-  m_sequenceNumber = sequenceNumber;
-  m_ackNumber = ackNumber;
-  m_flags = flags;
-  m_windowSize = windowSize;
-  m_urgentPointer = urgentPointer;
-
-  m_header.SetSourcePort (m_sourcePort);
-  m_header.SetDestinationPort (m_destinationPort);
-  m_header.SetSequenceNumber (m_sequenceNumber);
-  m_header.SetAckNumber (m_ackNumber);
-  m_header.SetFlags (m_flags);
-  m_header.SetWindowSize (m_windowSize);
-  m_header.SetUrgentPointer (m_urgentPointer);
-
-  NS_TEST_ASSERT_MSG_EQ (m_header.GetLength (), 5, "TcpHeader without option is"
-                         " not 5 word");
-
-  m_buffer.AddAtStart (m_header.GetSerializedSize ());
-  m_header.Serialize (m_buffer.Begin ());
 }
-
 void TcpHeaderGetSetTestCase::DoRun (void)
 {
-  NS_TEST_ASSERT_MSG_EQ (m_sourcePort, m_header.GetSourcePort (),
-                         "Different source port found");
-  NS_TEST_ASSERT_MSG_EQ (m_destinationPort, m_header.GetDestinationPort (),
-                         "Different destination port found");
-  NS_TEST_ASSERT_MSG_EQ (m_sequenceNumber, m_header.GetSequenceNumber (),
-                         "Different sequence number found");
-  NS_TEST_ASSERT_MSG_EQ (m_ackNumber, m_header.GetAckNumber (),
-                         "Different ack number found");
-  NS_TEST_ASSERT_MSG_EQ (m_flags, m_header.GetFlags (),
-                         "Different flags found");
-  NS_TEST_ASSERT_MSG_EQ (m_windowSize, m_header.GetWindowSize (),
-                         "Different window size found");
-  NS_TEST_ASSERT_MSG_EQ (m_urgentPointer, m_header.GetUrgentPointer (),
-                         "Different urgent pointer found");
+  uint16_t sourcePort;        //!< Source port
+  uint16_t destinationPort;   //!< Destination port
+  SequenceNumber32 sequenceNumber;  //!< Sequence number
+  SequenceNumber32 ackNumber;       //!< ACK number
+  uint8_t flags;              //!< Flags (really a uint6_t)
+  uint16_t windowSize;        //!< Window size
+  uint16_t urgentPointer;     //!< Urgent pointer
+  TcpHeader header;
+  Buffer buffer;
 
-  NS_TEST_ASSERT_MSG_EQ (m_header.GetLength (), 5, "TcpHeader without option is"
+  Ptr<UniformRandomVariable> x = CreateObject<UniformRandomVariable> ();
+  for (uint32_t i = 0; i < 1000; ++i)
+    {
+      sourcePort = GET_RANDOM_UINT16 (x);
+      destinationPort = GET_RANDOM_UINT16 (x);
+      sequenceNumber = SequenceNumber32 (GET_RANDOM_UINT32 (x));
+      ackNumber = SequenceNumber32 (GET_RANDOM_UINT32 (x));
+      flags = GET_RANDOM_UINT6 (x);
+      windowSize = GET_RANDOM_UINT16 (x);
+      urgentPointer = GET_RANDOM_UINT16 (x);
+
+      header.SetSourcePort (sourcePort);
+      header.SetDestinationPort (destinationPort);
+      header.SetSequenceNumber (sequenceNumber);
+      header.SetAckNumber (ackNumber);
+      header.SetFlags (flags);
+      header.SetWindowSize (windowSize);
+      header.SetUrgentPointer (urgentPointer);
+
+      NS_TEST_ASSERT_MSG_EQ (header.GetLength (), 5, "TcpHeader without option is"
                          " not 5 word");
 
-  TcpHeader copyHeader;
+      buffer.AddAtStart (header.GetSerializedSize ());
+      header.Serialize (buffer.Begin ());
 
-  copyHeader.Deserialize (m_buffer.Begin ());
+      NS_TEST_ASSERT_MSG_EQ (sourcePort, header.GetSourcePort (),
+                         "Different source port found");
+      NS_TEST_ASSERT_MSG_EQ (destinationPort, header.GetDestinationPort (),
+                         "Different destination port found");
+      NS_TEST_ASSERT_MSG_EQ (sequenceNumber, header.GetSequenceNumber (),
+                         "Different sequence number found");
+      NS_TEST_ASSERT_MSG_EQ (ackNumber, header.GetAckNumber (),
+                         "Different ack number found");
+      NS_TEST_ASSERT_MSG_EQ (flags, header.GetFlags (),
+                         "Different flags found");
+      NS_TEST_ASSERT_MSG_EQ (windowSize, header.GetWindowSize (),
+                         "Different window size found");
+      NS_TEST_ASSERT_MSG_EQ (urgentPointer, header.GetUrgentPointer (),
+                         "Different urgent pointer found");
 
-  NS_TEST_ASSERT_MSG_EQ (m_sourcePort, copyHeader.GetSourcePort (),
+      NS_TEST_ASSERT_MSG_EQ (header.GetLength (), 5, "TcpHeader without option is"
+                         " not 5 word");
+
+      TcpHeader copyHeader;
+
+      copyHeader.Deserialize (buffer.Begin ());
+
+      NS_TEST_ASSERT_MSG_EQ (sourcePort, copyHeader.GetSourcePort (),
                          "Different source port found in deserialized header");
-  NS_TEST_ASSERT_MSG_EQ (m_destinationPort, copyHeader.GetDestinationPort (),
+      NS_TEST_ASSERT_MSG_EQ (destinationPort, copyHeader.GetDestinationPort (),
                          "Different destination port found in deserialized header");
-  NS_TEST_ASSERT_MSG_EQ (m_sequenceNumber, copyHeader.GetSequenceNumber (),
+      NS_TEST_ASSERT_MSG_EQ (sequenceNumber, copyHeader.GetSequenceNumber (),
                          "Different sequence number found in deserialized header");
-  NS_TEST_ASSERT_MSG_EQ (m_ackNumber, copyHeader.GetAckNumber (),
+      NS_TEST_ASSERT_MSG_EQ (ackNumber, copyHeader.GetAckNumber (),
                          "Different ack number found in deserialized header");
-  NS_TEST_ASSERT_MSG_EQ (m_flags, copyHeader.GetFlags (),
+      NS_TEST_ASSERT_MSG_EQ (flags, copyHeader.GetFlags (),
                          "Different flags found in deserialized header");
-  NS_TEST_ASSERT_MSG_EQ (m_windowSize, copyHeader.GetWindowSize (),
+      NS_TEST_ASSERT_MSG_EQ (windowSize, copyHeader.GetWindowSize (),
                          "Different window size found in deserialized header");
-  NS_TEST_ASSERT_MSG_EQ (m_urgentPointer, copyHeader.GetUrgentPointer (),
+      NS_TEST_ASSERT_MSG_EQ (urgentPointer, copyHeader.GetUrgentPointer (),
                          "Different urgent pointer found in deserialized header");
+    }
 }
 
 void TcpHeaderGetSetTestCase::DoTeardown (void)
@@ -313,44 +322,14 @@ TcpHeaderWithRFC793OptionTestCase::DoTeardown ()
 
 }
 
-#define GET_RANDOM_UINT32(RandomVariable) \
-  static_cast<uint32_t> (RandomVariable->GetInteger (0, UINT32_MAX))
-
-#define GET_RANDOM_UINT16(RandomVariable) \
-  static_cast<uint16_t> (RandomVariable->GetInteger (0, UINT16_MAX))
-
-#define GET_RANDOM_UINT8(RandomVariable) \
-  static_cast<uint8_t> (RandomVariable->GetInteger (0, UINT8_MAX))
-
-#define GET_RANDOM_UINT6(RandomVariable) \
-  static_cast<uint8_t> (RandomVariable->GetInteger (0, UINT8_MAX >> 2))
-
 static class TcpHeaderTestSuite : public TestSuite
 {
 public:
   TcpHeaderTestSuite ()
     : TestSuite ("tcp-header", UNIT)
   {
-    Ptr<UniformRandomVariable> x = CreateObject<UniformRandomVariable> ();
-
-    for (uint32_t i = 0; i < 1000; ++i)
-      {
-        std::stringstream ss;
-        ss << i;
-
-        AddTestCase (new TcpHeaderGetSetTestCase (GET_RANDOM_UINT16 (x),
-                                                  GET_RANDOM_UINT16 (x),
-                                                  SequenceNumber32 (GET_RANDOM_UINT32 (x)),
-                                                  SequenceNumber32 (GET_RANDOM_UINT32 (x)),
-                                                  GET_RANDOM_UINT6 (x),
-                                                  GET_RANDOM_UINT16 (x),
-                                                  GET_RANDOM_UINT16 (x),
-                                                  "Case number " + ss.str ()),
-                     TestCase::QUICK);
-      }
-
-    AddTestCase (new TcpHeaderWithRFC793OptionTestCase ("Test for options in RFC 793"),
-                 TestCase::QUICK);
+    AddTestCase (new TcpHeaderGetSetTestCase ("GetSet test cases"), TestCase::QUICK);
+    AddTestCase (new TcpHeaderWithRFC793OptionTestCase ("Test for options in RFC 793"), TestCase::QUICK);
   }
 
 } g_TcpHeaderTestSuite;
