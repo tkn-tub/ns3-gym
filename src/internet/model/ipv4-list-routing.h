@@ -93,8 +93,8 @@ public:
   virtual void PrintRoutingTable (Ptr<OutputStreamWrapper> stream) const;
 
 protected:
-  void DoDispose (void);
-  void DoInitialize (void);
+  virtual void DoDispose (void);
+  virtual void DoInitialize (void);
 private:
   /**
    * \brief Container identifying an IPv4 Routing Protocol entry in the list.

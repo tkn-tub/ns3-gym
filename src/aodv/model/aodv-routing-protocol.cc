@@ -582,12 +582,6 @@ RoutingProtocol::SetIpv4 (Ptr<Ipv4> ipv4)
   NS_ASSERT (ipv4 != 0);
   NS_ASSERT (m_ipv4 == 0);
 
-  if (EnableHello)
-    {
-      m_htimer.SetFunction (&RoutingProtocol::HelloTimerExpire, this);
-      m_htimer.Schedule (MilliSeconds (m_uniformRandomVariable->GetInteger (0, 100)));
-    }
-
   m_ipv4 = ipv4;
 
   // Create lo route. It is asserted that the only one interface up for now is loopback
@@ -1930,5 +1924,20 @@ RoutingProtocol::FindSubnetBroadcastSocketWithInterfaceAddress (Ipv4InterfaceAdd
   return socket;
 }
 
+void
+RoutingProtocol::DoInitialize (void)
+{
+  NS_LOG_FUNCTION (this);
+  uint32_t startTime;
+  if (EnableHello)
+    {
+      m_htimer.SetFunction (&RoutingProtocol::HelloTimerExpire, this);
+      startTime = m_uniformRandomVariable->GetInteger (0, 100);
+      NS_LOG_DEBUG ("Starting at time " << startTime << "ms");
+      m_htimer.Schedule (MilliSeconds (startTime));
+    }
+  Ipv4RoutingProtocol::DoInitialize ();
 }
-}
+
+} //namespace aodv
+} //namespace ns3

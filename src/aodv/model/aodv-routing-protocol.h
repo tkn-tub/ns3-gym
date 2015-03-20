@@ -97,6 +97,8 @@ public:
   */
   int64_t AssignStreams (int64_t stream);
 
+protected:
+  virtual void DoInitialize (void);
 private:
   
   // Protocol parameters.
