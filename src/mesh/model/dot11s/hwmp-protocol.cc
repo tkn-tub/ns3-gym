@@ -209,7 +209,8 @@ HwmpProtocol::DoInitialize ()
   m_coefficient->SetAttribute ("Max", DoubleValue (m_randomStart.GetSeconds ()));
   if (m_isRoot)
     {
-      SetRoot ();
+      Time randomStart = Seconds (m_coefficient->GetValue ());
+      m_proactivePreqTimer = Simulator::Schedule (randomStart, &HwmpProtocol::SendProactivePreq, this);
     }
 }
 
@@ -1026,8 +1027,6 @@ HwmpProtocol::RetryPathDiscovery (Mac48Address dst, uint8_t numOfRetry)
 void
 HwmpProtocol::SetRoot ()
 {
-  Time randomStart = Seconds (m_coefficient->GetValue ());
-  m_proactivePreqTimer = Simulator::Schedule (randomStart, &HwmpProtocol::SendProactivePreq, this);
   NS_LOG_DEBUG ("ROOT IS: " << m_address);
   m_isRoot = true;
 }
