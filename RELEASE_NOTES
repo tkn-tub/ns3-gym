@@ -34,6 +34,7 @@ Bugs fixed
 - Bug 2076 - TCP MinRTO Attribute is not actually used
 - Bug 2077 - Icmpv6L4Protocol::HandleDestinationUnreachable must check the packet size, not its serialized size
 - Bug 2079 - mcs variable in ht-wifi-network example is confusing
+- Bug 2083 - BridgeNetDevice may send corrupted packets
 
 Known issues
 ------------
