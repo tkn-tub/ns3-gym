@@ -31,6 +31,7 @@ SimulatorImpl::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::SimulatorImpl")
     .SetParent<Object> ()
+    .SetGroupName ("Core")
   ;
   return tid;
 }

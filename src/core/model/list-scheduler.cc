@@ -36,6 +36,7 @@ ListScheduler::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::ListScheduler")
     .SetParent<Scheduler> ()
+    .SetGroupName ("Core")
     .AddConstructor<ListScheduler> ()
   ;
   return tid;

@@ -36,6 +36,7 @@ Synchronizer::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::Synchronizer")
     .SetParent<Object> ()
+    .SetGroupName ("Core")
   ;
   return tid;
 }

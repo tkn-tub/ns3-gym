@@ -36,6 +36,7 @@ MapScheduler::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::MapScheduler")
     .SetParent<Scheduler> ()
+    .SetGroupName ("Core")
     .AddConstructor<MapScheduler> ()
   ;
   return tid;

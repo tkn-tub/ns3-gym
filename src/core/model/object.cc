@@ -87,6 +87,7 @@ Object::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::Object")
     .SetParent<ObjectBase> ()
+    .SetGroupName ("Core")
   ;
   return tid;
 }

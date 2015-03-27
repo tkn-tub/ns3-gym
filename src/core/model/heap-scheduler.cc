@@ -36,6 +36,7 @@ HeapScheduler::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::HeapScheduler")
     .SetParent<Scheduler> ()
+    .SetGroupName ("Core")
     .AddConstructor<HeapScheduler> ()
   ;
   return tid;

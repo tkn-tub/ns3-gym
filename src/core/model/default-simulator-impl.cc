@@ -45,6 +45,7 @@ DefaultSimulatorImpl::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::DefaultSimulatorImpl")
     .SetParent<SimulatorImpl> ()
+    .SetGroupName ("Core")
     .AddConstructor<DefaultSimulatorImpl> ()
   ;
   return tid;
