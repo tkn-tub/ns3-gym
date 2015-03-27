@@ -44,6 +44,7 @@ UdpClient::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::UdpClient")
     .SetParent<Application> ()
+    .SetGroupName("Applications")
     .AddConstructor<UdpClient> ()
     .AddAttribute ("MaxPackets",
                    "The maximum number of packets the application will send",

@@ -53,6 +53,7 @@ OnOffApplication::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::OnOffApplication")
     .SetParent<Application> ()
+    .SetGroupName("Applications")
     .AddConstructor<OnOffApplication> ()
     .AddAttribute ("DataRate", "The data rate in on state.",
                    DataRateValue (DataRate ("500kb/s")),

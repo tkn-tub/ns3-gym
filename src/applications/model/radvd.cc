@@ -52,6 +52,7 @@ TypeId Radvd::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::Radvd")
     .SetParent<Application> ()
+    .SetGroupName("Applications")
     .AddConstructor<Radvd> ()
     .AddAttribute ("AdvertisementJitter",
                    "Uniform variable to provide jitter between min and max values of AdvInterval",

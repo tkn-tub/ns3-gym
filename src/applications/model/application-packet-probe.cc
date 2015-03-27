@@ -39,6 +39,7 @@ ApplicationPacketProbe::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::ApplicationPacketProbe")
     .SetParent<Probe> ()
+    .SetGroupName("Applications")
     .AddConstructor<ApplicationPacketProbe> ()
     .AddTraceSource ( "Output",
                       "The packet plus its socket address that serve "

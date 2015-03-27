@@ -46,6 +46,7 @@ TypeId Ping6::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::Ping6")
     .SetParent<Application>()
+    .SetGroupName("Applications")
     .AddConstructor<Ping6>()
     .AddAttribute ("MaxPackets", 
                    "The maximum number of packets the application will send",

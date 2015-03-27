@@ -42,6 +42,7 @@ BulkSendApplication::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::BulkSendApplication")
     .SetParent<Application> ()
+    .SetGroupName("Applications") 
     .AddConstructor<BulkSendApplication> ()
     .AddAttribute ("SendSize", "The amount of data to send each time.",
                    UintegerValue (512),

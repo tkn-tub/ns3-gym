@@ -62,6 +62,7 @@ SeqTsHeader::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::SeqTsHeader")
     .SetParent<Header> ()
+    .SetGroupName("Applications")
     .AddConstructor<SeqTsHeader> ()
   ;
   return tid;

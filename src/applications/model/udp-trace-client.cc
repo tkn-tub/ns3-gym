@@ -62,6 +62,7 @@ UdpTraceClient::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::UdpTraceClient")
     .SetParent<Application> ()
+    .SetGroupName("Applications")
     .AddConstructor<UdpTraceClient> ()
     .AddAttribute ("RemoteAddress",
                    "The destination Address of the outbound packets",
