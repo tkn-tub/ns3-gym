@@ -651,6 +651,7 @@ RegularWifiMac::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::RegularWifiMac")
     .SetParent<WifiMac> ()
+    .SetGroupName ("Wifi")
     .AddAttribute ("QosSupported",
                    "This Boolean attribute is set to enable 802.11e/WMM-style QoS support at this STA",
                    BooleanValue (false),

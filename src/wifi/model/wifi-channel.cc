@@ -42,6 +42,7 @@ WifiChannel::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::WifiChannel")
     .SetParent<Channel> ()
+    .SetGroupName ("Wifi")
   ;
   return tid;
 }

@@ -91,6 +91,7 @@ MinstrelWifiManager::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::MinstrelWifiManager")
     .SetParent<WifiRemoteStationManager> ()
+    .SetGroupName ("Wifi")
     .AddConstructor<MinstrelWifiManager> ()
     .AddAttribute ("UpdateStatistics",
                    "The interval between updating statistics table ",

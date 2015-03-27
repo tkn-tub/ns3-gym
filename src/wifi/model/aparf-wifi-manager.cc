@@ -61,6 +61,7 @@ AparfWifiManager::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::AparfWifiManager")
     .SetParent<WifiRemoteStationManager> ()
+    .SetGroupName ("Wifi")
     .AddConstructor<AparfWifiManager> ()
     .AddAttribute ("SuccessThreshold 1",
                    "The minimum number of successful transmissions in \"High\" state to try a new power or rate.",

@@ -35,6 +35,7 @@ NistErrorRateModel::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::NistErrorRateModel")
     .SetParent<ErrorRateModel> ()
+    .SetGroupName ("Wifi")
     .AddConstructor<NistErrorRateModel> ()
   ;
   return tid;

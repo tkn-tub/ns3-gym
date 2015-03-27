@@ -59,6 +59,7 @@ RraaWifiManager::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::RraaWifiManager")
     .SetParent<WifiRemoteStationManager> ()
+    .SetGroupName ("Wifi")
     .AddConstructor<RraaWifiManager> ()
     .AddAttribute ("Basic",
                    "If true the RRAA-BASIC algorithm will be used, otherwise the RRAA wil be used",

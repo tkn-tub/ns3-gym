@@ -79,6 +79,7 @@ HighLatencyDataTxVectorTag::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::HighLatencyDataTxVectorTag")
     .SetParent<Tag> ()
+    .SetGroupName ("Wifi")
     .AddConstructor<HighLatencyDataTxVectorTag> ()  
     ;
   return tid;
@@ -148,6 +149,7 @@ HighLatencyRtsTxVectorTag::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::HighLatencyRtsTxVectorTag")
     .SetParent<Tag> ()
+    .SetGroupName ("Wifi")
     .AddConstructor<HighLatencyRtsTxVectorTag> ()  
     ;
   return tid;
@@ -216,6 +218,7 @@ HighLatencyCtsToSelfTxVectorTag::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::HighLatencyCtsToSelfTxVectorTag")
     .SetParent<Tag> ()
+    .SetGroupName ("Wifi")
     .AddConstructor<HighLatencyCtsToSelfTxVectorTag> ()  
     ;
   return tid;
@@ -257,6 +260,7 @@ WifiRemoteStationManager::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::WifiRemoteStationManager")
     .SetParent<Object> ()
+    .SetGroupName ("Wifi")
     .AddAttribute ("IsLowLatency", "If true, we attempt to modelize a so-called low-latency device: a device"
                    " where decisions about tx parameters can be made on a per-packet basis and feedback about the"
                    " transmission of each packet is obtained before sending the next. Otherwise, we modelize a "

@@ -956,6 +956,7 @@ WifiMacHeader::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::WifiMacHeader")
     .SetParent<Header> ()
+    .SetGroupName ("Wifi")
     .AddConstructor<WifiMacHeader> ()
   ;
   return tid;

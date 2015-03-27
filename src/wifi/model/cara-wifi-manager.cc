@@ -52,6 +52,7 @@ CaraWifiManager::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::CaraWifiManager")
     .SetParent<WifiRemoteStationManager> ()
+    .SetGroupName ("Wifi")
     .AddConstructor<CaraWifiManager> ()
     .AddAttribute ("ProbeThreshold",
                    "The number of consecutive transmissions failure to activate the RTS probe.",

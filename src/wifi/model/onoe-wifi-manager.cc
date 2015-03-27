@@ -55,6 +55,7 @@ OnoeWifiManager::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::OnoeWifiManager")
     .SetParent<WifiRemoteStationManager> ()
+    .SetGroupName ("Wifi")
     .AddConstructor<OnoeWifiManager> ()
     .AddAttribute ("UpdatePeriod",
                    "The interval between decisions about rate control changes",

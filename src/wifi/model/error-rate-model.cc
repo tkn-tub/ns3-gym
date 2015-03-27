@@ -27,6 +27,7 @@ TypeId ErrorRateModel::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::ErrorRateModel")
     .SetParent<Object> ()
+    .SetGroupName ("Wifi")
   ;
   return tid;
 }

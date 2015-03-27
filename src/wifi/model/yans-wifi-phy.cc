@@ -50,6 +50,7 @@ YansWifiPhy::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::YansWifiPhy")
     .SetParent<WifiPhy> ()
+    .SetGroupName ("Wifi")
     .AddConstructor<YansWifiPhy> ()
     .AddAttribute ("EnergyDetectionThreshold",
                    "The energy of a received signal should be higher than "

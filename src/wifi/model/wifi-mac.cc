@@ -139,6 +139,7 @@ WifiMac::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::WifiMac")
     .SetParent<Object> ()
+    .SetGroupName ("Wifi")
     .AddAttribute ("CtsTimeout", "When this timeout expires, the RTS/CTS handshake has failed.",
                    TimeValue (GetDefaultCtsAckTimeout ()),
                    MakeTimeAccessor (&WifiMac::SetCtsTimeout,

@@ -34,6 +34,7 @@ WifiPhyStateHelper::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::WifiPhyStateHelper")
     .SetParent<Object> ()
+    .SetGroupName ("Wifi")
     .AddConstructor<WifiPhyStateHelper> ()
     .AddTraceSource ("State",
                      "The state of the PHY layer",

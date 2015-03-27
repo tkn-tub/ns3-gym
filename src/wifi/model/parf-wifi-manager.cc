@@ -62,6 +62,7 @@ ParfWifiManager::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::ParfWifiManager")
     .SetParent<WifiRemoteStationManager> ()
+    .SetGroupName ("Wifi")
     .AddConstructor<ParfWifiManager> ()
     .AddAttribute ("AttemptThreshold",
                    "The minimum number of transmission attempts to try a new power or rate.",

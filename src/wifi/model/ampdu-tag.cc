@@ -30,6 +30,7 @@ AmpduTag::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::AmpduTag")
     .SetParent<Tag> ()
+    .SetGroupName ("Wifi")
     .AddConstructor<AmpduTag> ()
     .AddAttribute ("Ampdu Exists", "The value that indicates that the packet contains an AMPDU",
                    UintegerValue (false),

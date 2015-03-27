@@ -34,6 +34,7 @@ MsduStandardAggregator::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::MsduStandardAggregator")
     .SetParent<MsduAggregator> ()
+    .SetGroupName ("Wifi")
     .AddConstructor<MsduStandardAggregator> ()
     .AddAttribute ("MaxAmsduSize", "Max length in byte of an A-MSDU",
                    UintegerValue (7935),

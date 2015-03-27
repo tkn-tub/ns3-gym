@@ -29,6 +29,7 @@ AmpduSubframeHeader::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::AmpduSubframeHeader")
     .SetParent<Header> ()
+    .SetGroupName ("Wifi")
     .AddConstructor<AmpduSubframeHeader> ()
   ;
   return tid;

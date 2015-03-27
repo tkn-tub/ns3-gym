@@ -66,6 +66,7 @@ AarfcdWifiManager::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::AarfcdWifiManager")
     .SetParent<WifiRemoteStationManager> ()
+    .SetGroupName ("Wifi")
     .AddConstructor<AarfcdWifiManager> ()
     .AddAttribute ("SuccessK", "Multiplication factor for the success threshold in the AARF algorithm.",
                    DoubleValue (2.0),

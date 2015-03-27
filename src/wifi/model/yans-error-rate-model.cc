@@ -36,6 +36,7 @@ YansErrorRateModel::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::YansErrorRateModel")
     .SetParent<ErrorRateModel> ()
+    .SetGroupName ("Wifi")
     .AddConstructor<YansErrorRateModel> ()
   ;
   return tid;

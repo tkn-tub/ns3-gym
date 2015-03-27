@@ -51,6 +51,7 @@ CtrlBAckRequestHeader::GetTypeId (void)
   NS_LOG_FUNCTION_NOARGS ();
   static TypeId tid = TypeId ("ns3::CtrlBAckRequestHeader")
     .SetParent<Header> ()
+    .SetGroupName ("Wifi")
     .AddConstructor<CtrlBAckRequestHeader> ()
   ;
   return tid;
@@ -299,6 +300,7 @@ CtrlBAckResponseHeader::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::CtrlBAckResponseHeader")
     .SetParent<Header> ()
+    .SetGroupName ("Wifi")
     .AddConstructor<CtrlBAckResponseHeader> ()
   ;
   return tid;

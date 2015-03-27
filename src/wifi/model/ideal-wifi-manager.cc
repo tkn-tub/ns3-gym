@@ -45,6 +45,7 @@ IdealWifiManager::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::IdealWifiManager")
     .SetParent<WifiRemoteStationManager> ()
+    .SetGroupName ("Wifi")
     .AddConstructor<IdealWifiManager> ()
     .AddAttribute ("BerThreshold",
                    "The maximum Bit Error Rate acceptable at any transmission mode",

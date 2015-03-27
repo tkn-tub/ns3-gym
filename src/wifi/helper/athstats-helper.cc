@@ -111,6 +111,7 @@ AthstatsWifiTraceSink::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::AthstatsWifiTraceSink")
     .SetParent<Object> ()
+    .SetGroupName ("Wifi")
     .AddConstructor<AthstatsWifiTraceSink> ()
     .AddAttribute ("Interval",
                    "Time interval between reports",

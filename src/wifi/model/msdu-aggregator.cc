@@ -33,6 +33,7 @@ MsduAggregator::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::MsduAggregator")
     .SetParent<Object> ()
+    .SetGroupName ("Wifi")
   ;
   return tid;
 }

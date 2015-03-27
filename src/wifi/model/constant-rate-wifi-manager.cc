@@ -37,6 +37,7 @@ ConstantRateWifiManager::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::ConstantRateWifiManager")
     .SetParent<WifiRemoteStationManager> ()
+    .SetGroupName ("Wifi")
     .AddConstructor<ConstantRateWifiManager> ()
     .AddAttribute ("DataMode", "The transmission mode to use for every data packet transmission",
                    StringValue ("OfdmRate6Mbps"),
