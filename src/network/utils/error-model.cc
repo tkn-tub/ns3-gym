@@ -83,6 +83,7 @@ TypeId ErrorModel::GetTypeId (void)
 { 
   static TypeId tid = TypeId ("ns3::ErrorModel")
     .SetParent<Object> ()
+    .SetGroupName("Network")
     .AddAttribute ("IsEnabled", "Whether this ErrorModel is enabled or not.",
                    BooleanValue (true),
                    MakeBooleanAccessor (&ErrorModel::m_enable),
@@ -151,6 +152,7 @@ TypeId RateErrorModel::GetTypeId (void)
 { 
   static TypeId tid = TypeId ("ns3::RateErrorModel")
     .SetParent<ErrorModel> ()
+    .SetGroupName("Network")
     .AddConstructor<RateErrorModel> ()
     .AddAttribute ("ErrorUnit", "The error unit",
                    EnumValue (ERROR_UNIT_BYTE),
@@ -290,6 +292,7 @@ TypeId BurstErrorModel::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::BurstErrorModel")
     .SetParent<ErrorModel> ()
+    .SetGroupName("Network")
     .AddConstructor<BurstErrorModel> ()
     .AddAttribute ("ErrorRate", "The burst error event.",
                    DoubleValue (0.0),
@@ -418,6 +421,7 @@ TypeId ListErrorModel::GetTypeId (void)
 { 
   static TypeId tid = TypeId ("ns3::ListErrorModel")
     .SetParent<ErrorModel> ()
+    .SetGroupName("Network")
     .AddConstructor<ListErrorModel> ()
   ;
   return tid;
@@ -487,6 +491,7 @@ TypeId ReceiveListErrorModel::GetTypeId (void)
 { 
   static TypeId tid = TypeId ("ns3::ReceiveListErrorModel")
     .SetParent<ErrorModel> ()
+    .SetGroupName("Network")
     .AddConstructor<ReceiveListErrorModel> ()
   ;
   return tid;

@@ -100,6 +100,7 @@ SimpleTag::GetTypeId (void)
 {
   static TypeId tid = TypeId ("SimpleTag")
     .SetParent<Tag> ()
+    .SetGroupName("Network")
     .AddConstructor<SimpleTag> ()
   ;
   return tid;
@@ -187,6 +188,7 @@ SimpleNetDevice::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::SimpleNetDevice")
     .SetParent<NetDevice> ()
+    .SetGroupName("Network") 
     .AddConstructor<SimpleNetDevice> ()
     .AddAttribute ("ReceiveErrorModel",
                    "The receiver error model used to simulate packet loss",

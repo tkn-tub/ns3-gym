@@ -839,6 +839,7 @@ PbbPacket::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::PbbPacket")
     .SetParent<Header> ()
+    .SetGroupName("Network")
     .AddConstructor<PbbPacket> ()
   ;
   return tid;

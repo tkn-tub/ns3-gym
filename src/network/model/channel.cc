@@ -34,6 +34,7 @@ Channel::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::Channel")
     .SetParent<Object> ()
+    .SetGroupName("Network")
     .AddAttribute ("Id", "The id (unique integer) of this Channel.",
                    TypeId::ATTR_GET,
                    UintegerValue (0),

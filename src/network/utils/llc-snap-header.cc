@@ -59,6 +59,7 @@ LlcSnapHeader::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::LlcSnapHeader")
     .SetParent<Header> ()
+    .SetGroupName("Network")
     .AddConstructor<LlcSnapHeader> ()
   ;
   return tid;

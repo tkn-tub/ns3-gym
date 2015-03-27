@@ -47,6 +47,8 @@ TypeId RadiotapHeader::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::RadiotapHeader")
     .SetParent<Header> ()
+    .SetGroupName("Network")
+
     .AddConstructor<RadiotapHeader> ()
   ;
   return tid;

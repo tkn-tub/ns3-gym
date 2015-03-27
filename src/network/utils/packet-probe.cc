@@ -39,6 +39,7 @@ PacketProbe::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::PacketProbe")
     .SetParent<Probe> ()
+    .SetGroupName("Network")
     .AddConstructor<PacketProbe> ()
     .AddTraceSource ( "Output",
                       "The packet that serve as the output for this probe",

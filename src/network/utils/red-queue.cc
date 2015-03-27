@@ -75,6 +75,7 @@ TypeId RedQueue::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::RedQueue")
     .SetParent<Queue> ()
+    .SetGroupName("Network")
     .AddConstructor<RedQueue> ()
     .AddAttribute ("Mode",
                    "Determines unit for QueueLimit",

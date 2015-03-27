@@ -108,6 +108,7 @@ ChannelListPriv::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::ChannelListPriv")
     .SetParent<Object> ()
+    .SetGroupName("Network")
     .AddAttribute ("ChannelList", "The list of all channels created during the simulation.",
                    ObjectVectorValue (),
                    MakeObjectVectorAccessor (&ChannelListPriv::m_channels),

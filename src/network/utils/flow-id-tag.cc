@@ -31,6 +31,7 @@ FlowIdTag::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::FlowIdTag")
     .SetParent<Tag> ()
+    .SetGroupName("Network")
     .AddConstructor<FlowIdTag> ()
   ;
   return tid;

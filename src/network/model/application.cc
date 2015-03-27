@@ -40,6 +40,7 @@ Application::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::Application")
     .SetParent<Object> ()
+    .SetGroupName("Network")
     .AddAttribute ("StartTime", "Time at which the application will start",
                    TimeValue (Seconds (0.0)),
                    MakeTimeAccessor (&Application::m_startTime),

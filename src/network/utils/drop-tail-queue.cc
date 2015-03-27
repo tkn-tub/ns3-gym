@@ -31,6 +31,7 @@ TypeId DropTailQueue::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::DropTailQueue")
     .SetParent<Queue> ()
+    .SetGroupName("Network")
     .AddConstructor<DropTailQueue> ()
     .AddAttribute ("Mode", 
                    "Whether to use bytes (see MaxBytes) or packets (see MaxPackets) as the maximum queue size metric.",

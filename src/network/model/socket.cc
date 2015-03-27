@@ -37,7 +37,8 @@ TypeId
 Socket::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::Socket")
-    .SetParent<Object> ();
+    .SetParent<Object> ()
+    .SetGroupName("Network");
   return tid;
 }
 
@@ -539,6 +540,7 @@ SocketAddressTag::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::SocketAddressTag")
     .SetParent<Tag> ()
+    .SetGroupName("Network")
     .AddConstructor<SocketAddressTag> ()
   ;
   return tid;
@@ -599,6 +601,7 @@ SocketIpTtlTag::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::SocketIpTtlTag")
     .SetParent<Tag> ()
+    .SetGroupName("Network")
     .AddConstructor<SocketIpTtlTag> ()
   ;
   return tid;
@@ -657,6 +660,7 @@ SocketIpv6HopLimitTag::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::SocketIpv6HopLimitTag")
     .SetParent<Tag> ()
+    .SetGroupName("Network")
     .AddConstructor<SocketIpv6HopLimitTag> ()
   ;
   return tid;
@@ -718,6 +722,7 @@ SocketSetDontFragmentTag::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::SocketSetDontFragmentTag")
     .SetParent<Tag> ()
+    .SetGroupName("Network")
     .AddConstructor<SocketSetDontFragmentTag> ();
   return tid;
 }
@@ -773,6 +778,7 @@ SocketIpTosTag::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::SocketIpTosTag")
     .SetParent<Tag> ()
+    .SetGroupName("Network")
     .AddConstructor<SocketIpTosTag> ()
     ;
   return tid;
@@ -829,6 +835,7 @@ SocketIpv6TclassTag::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::SocketIpv6TclassTag")
     .SetParent<Tag> ()
+    .SetGroupName("Network") 
     .AddConstructor<SocketIpv6TclassTag> ()
     ;
   return tid;

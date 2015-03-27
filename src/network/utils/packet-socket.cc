@@ -40,6 +40,7 @@ PacketSocket::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::PacketSocket")
     .SetParent<Socket> ()
+    .SetGroupName("Network")
     .AddConstructor<PacketSocket> ()
     .AddTraceSource ("Drop", "Drop packet due to receive buffer overflow",
                      MakeTraceSourceAccessor (&PacketSocket::m_dropTrace),
@@ -544,6 +545,7 @@ PacketSocketTag::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::PacketSocketTag")
     .SetParent<Tag> ()
+    .SetGroupName("Network")
     .AddConstructor<PacketSocketTag> ()
   ;
   return tid;
@@ -607,6 +609,7 @@ DeviceNameTag::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::DeviceNameTag")
     .SetParent<Tag> ()
+    .SetGroupName("Network")
     .AddConstructor<DeviceNameTag> ();
   return tid;
 }

@@ -35,6 +35,7 @@ PacketBurst::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::PacketBurst")
     .SetParent<Object> ()
+    .SetGroupName("Network")
     .AddConstructor<PacketBurst> ()
   ;
   return tid;

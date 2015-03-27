@@ -31,6 +31,7 @@ Queue::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::Queue")
     .SetParent<Object> ()
+    .SetGroupName("Network")  
     .AddTraceSource ("Enqueue", "Enqueue a packet in the queue.",
                      MakeTraceSourceAccessor (&Queue::m_traceEnqueue),
                      "ns3::Packet::TracedCallback")

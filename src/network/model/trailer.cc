@@ -17,6 +17,7 @@ Trailer::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::Trailer")
     .SetParent<Chunk> ()
+    .SetGroupName("Network")
   ;
   return tid;
 }

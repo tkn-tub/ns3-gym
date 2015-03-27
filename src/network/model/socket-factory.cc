@@ -29,7 +29,8 @@ NS_OBJECT_ENSURE_REGISTERED (SocketFactory);
 TypeId SocketFactory::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::SocketFactory")
-    .SetParent<Object> ();
+    .SetParent<Object> ()
+    .SetGroupName("Network");
   return tid;
 }
 

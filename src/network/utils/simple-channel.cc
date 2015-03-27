@@ -35,6 +35,7 @@ SimpleChannel::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::SimpleChannel")
     .SetParent<Channel> ()
+    .SetGroupName("Network")
     .AddConstructor<SimpleChannel> ()
     .AddAttribute ("Delay", "Transmission delay through the channel",
                    TimeValue (Seconds (0)),

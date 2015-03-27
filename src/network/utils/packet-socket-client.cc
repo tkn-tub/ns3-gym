@@ -44,6 +44,7 @@ PacketSocketClient::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::PacketSocketClient")
     .SetParent<Application> ()
+    .SetGroupName("Network")
     .AddConstructor<PacketSocketClient> ()
     .AddAttribute ("MaxPackets",
                    "The maximum number of packets the application will send (zero means infinite)",

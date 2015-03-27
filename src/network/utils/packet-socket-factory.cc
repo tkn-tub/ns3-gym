@@ -32,7 +32,8 @@ TypeId
 PacketSocketFactory::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::PacketSocketFactory")
-    .SetParent<SocketFactory> ();
+    .SetParent<SocketFactory> ()
+    .SetGroupName("Network");
   return tid;
 }
 

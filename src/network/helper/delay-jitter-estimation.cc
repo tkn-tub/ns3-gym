@@ -66,6 +66,7 @@ DelayJitterEstimationTimestampTag::GetTypeId (void)
 {
   static TypeId tid = TypeId ("anon::DelayJitterEstimationTimestampTag")
     .SetParent<Tag> ()
+    .SetGroupName("Network")
     .AddConstructor<DelayJitterEstimationTimestampTag> ()
     .AddAttribute ("CreationTime",
                    "The time at which the timestamp was created",

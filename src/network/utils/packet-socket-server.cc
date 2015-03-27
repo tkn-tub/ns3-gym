@@ -44,6 +44,7 @@ PacketSocketServer::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::PacketSocketServer")
     .SetParent<Application> ()
+    .SetGroupName("Network")
     .AddConstructor<PacketSocketServer> ()
     .AddTraceSource ("Rx", "A packet has been received",
                      MakeTraceSourceAccessor (&PacketSocketServer::m_rxTrace),

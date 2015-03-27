@@ -108,6 +108,7 @@ EthernetTrailer::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::EthernetTrailer")
     .SetParent<Trailer> ()
+    .SetGroupName("Network")
     .AddConstructor<EthernetTrailer> ()
   ;
   return tid;

@@ -33,6 +33,7 @@ PcapFileWrapper::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::PcapFileWrapper")
     .SetParent<Object> ()
+    .SetGroupName("Network")
     .AddConstructor<PcapFileWrapper> ()
     .AddAttribute ("CaptureSize",
                    "Maximum length of captured packets (cf. pcap snaplen)",

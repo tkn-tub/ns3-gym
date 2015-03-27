@@ -17,6 +17,7 @@ Header::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::Header")
     .SetParent<Chunk> ()
+    .SetGroupName("Network")
   ;
   return tid;
 }
