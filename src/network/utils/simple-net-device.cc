@@ -98,7 +98,7 @@ NS_OBJECT_ENSURE_REGISTERED (SimpleTag);
 TypeId
 SimpleTag::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("SimpleTag")
+  static TypeId tid = TypeId ("ns3::SimpleTag")
     .SetParent<Tag> ()
     .SetGroupName("Network")
     .AddConstructor<SimpleTag> ()
