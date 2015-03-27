@@ -103,7 +103,10 @@ SixLowPanHc1::SixLowPanHc1 ()
 
 TypeId SixLowPanHc1::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::SixLowPanHc1").SetParent<Header> ().AddConstructor<SixLowPanHc1> ();
+  static TypeId tid = TypeId ("ns3::SixLowPanHc1")
+    .SetParent<Header> ()
+    .SetGroupName ("SixLowPan")
+    .AddConstructor<SixLowPanHc1> ();
   return tid;
 }
 
@@ -548,7 +551,10 @@ SixLowPanFrag1::SixLowPanFrag1 ()
 
 TypeId SixLowPanFrag1::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::SixLowPanFrag1").SetParent<Header> ().AddConstructor<SixLowPanFrag1> ();
+  static TypeId tid = TypeId ("ns3::SixLowPanFrag1")
+    .SetParent<Header> ()
+    .SetGroupName ("SixLowPan")
+    .AddConstructor<SixLowPanFrag1> ();
   return tid;
 }
 
@@ -635,7 +641,10 @@ SixLowPanFragN::SixLowPanFragN ()
  */
 TypeId SixLowPanFragN::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::SixLowPanFragN").SetParent<Header> ().AddConstructor<SixLowPanFragN> ();
+  static TypeId tid = TypeId ("ns3::SixLowPanFragN")
+    .SetParent<Header> ()
+    .SetGroupName ("SixLowPan")
+    .AddConstructor<SixLowPanFragN> ();
   return tid;
 }
 
@@ -729,7 +738,10 @@ SixLowPanIpv6::SixLowPanIpv6 ()
 
 TypeId SixLowPanIpv6::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::SixLowPanIpv6").SetParent<Header> ().AddConstructor<SixLowPanIpv6> ();
+  static TypeId tid = TypeId ("ns3::SixLowPanIpv6")
+    .SetParent<Header> ()
+    .SetGroupName ("SixLowPan")
+    .AddConstructor<SixLowPanIpv6> ();
   return tid;
 }
 
@@ -789,7 +801,10 @@ SixLowPanIphc::SixLowPanIphc (uint8_t dispatch)
 
 TypeId SixLowPanIphc::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::SixLowPanIphc").SetParent<Header> ().AddConstructor<SixLowPanIphc> ();
+  static TypeId tid = TypeId ("ns3::SixLowPanIphc")
+    .SetParent<Header> ()
+    .SetGroupName ("SixLowPan")
+    .AddConstructor<SixLowPanIphc> ();
   return tid;
 }
 
@@ -1481,6 +1496,7 @@ TypeId SixLowPanNhcExtension::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::SixLowPanNhcExtension")
     .SetParent<Header> ()
+    .SetGroupName ("SixLowPan")
     .AddConstructor<SixLowPanNhcExtension> ();
   return tid;
 }
@@ -1609,6 +1625,7 @@ TypeId SixLowPanUdpNhcExtension::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::SixLowPanUdpNhcExtension")
     .SetParent<Header> ()
+    .SetGroupName ("SixLowPan")
     .AddConstructor<SixLowPanUdpNhcExtension> ();
   return tid;
 }

@@ -50,6 +50,7 @@ TypeId SixLowPanNetDevice::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::SixLowPanNetDevice")
     .SetParent<NetDevice> ()
+    .SetGroupName ("SixLowPan")
     .AddConstructor<SixLowPanNetDevice> ()
     .AddAttribute ("Rfc6282", "Use RFC6282 (IPHC) if true, RFC4944 (HC1) otherwise.",
                    BooleanValue (true),

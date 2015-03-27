@@ -346,13 +346,13 @@ private:
   uint8_t m_hopLimit;           //!< Hop Limit
   uint8_t m_srcPrefix[8];       //!< Source prefix
   uint8_t m_srcInterface[8];    //!< Source interface
-  uint8_t m_dstPrefix[8];       //!< Destinaiton prefix
+  uint8_t m_dstPrefix[8];       //!< Destination prefix
   uint8_t m_dstInterface[8];    //!< Destination interface
   uint8_t m_trafficClass;       //!< Traffic Class
   uint32_t m_flowLabel;         //!< Flow Label
   uint8_t m_nextHeader;         //!< Next header
-  LowPanHc1Addr_e m_srcCompression; //!< Source compresison type
-  LowPanHc1Addr_e m_dstCompression; //!< Destination compresison type
+  LowPanHc1Addr_e m_srcCompression; //!< Source compression type
+  LowPanHc1Addr_e m_dstCompression; //!< Destination compression type
   bool m_tcflCompression;       //!< is TC and FL compressed
   LowPanHc1NextHeader_e m_nextHeaderCompression; //!< next header compression
   bool m_hc2HeaderPresent;      //!< is next header HC2 compressed
@@ -544,7 +544,7 @@ std::ostream & operator<< (std::ostream & os, SixLowPanFragN const &header);
 
 /**
  * \ingroup sixlowpan
- * \brief 6LoWPAN IPv6 uncomprssed header - see RFC 4944
+ * \brief 6LoWPAN IPv6 uncompressed header - see RFC 4944
  */
 class SixLowPanIpv6 : public Header
 {
