@@ -46,6 +46,7 @@ TypeHeader::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::aodv::TypeHeader")
     .SetParent<Header> ()
+    .SetGroupName("Aodv")
     .AddConstructor<TypeHeader> ()
   ;
   return tid;
@@ -153,6 +154,7 @@ RreqHeader::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::aodv::RreqHeader")
     .SetParent<Header> ()
+    .SetGroupName("Aodv")
     .AddConstructor<RreqHeader> ()
   ;
   return tid;
@@ -292,6 +294,7 @@ RrepHeader::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::aodv::RrepHeader")
     .SetParent<Header> ()
+    .SetGroupName("Aodv")
     .AddConstructor<RrepHeader> ()
   ;
   return tid;
@@ -434,6 +437,7 @@ RrepAckHeader::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::aodv::RrepAckHeader")
     .SetParent<Header> ()
+    .SetGroupName("Aodv")
     .AddConstructor<RrepAckHeader> ()
   ;
   return tid;
@@ -500,6 +504,7 @@ RerrHeader::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::aodv::RerrHeader")
     .SetParent<Header> ()
+    .SetGroupName("Aodv")
     .AddConstructor<RerrHeader> ()
   ;
   return tid;

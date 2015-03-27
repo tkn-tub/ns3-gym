@@ -67,6 +67,7 @@ public:
   {
     static TypeId tid = TypeId ("ns3::aodv::DeferredRouteOutputTag").SetParent<Tag> ()
       .SetParent<Tag> ()
+      .SetGroupName("Aodv")
       .AddConstructor<DeferredRouteOutputTag> ()
     ;
     return tid;
@@ -158,6 +159,7 @@ RoutingProtocol::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::aodv::RoutingProtocol")
     .SetParent<Ipv4RoutingProtocol> ()
+    .SetGroupName("Aodv")
     .AddConstructor<RoutingProtocol> ()
     .AddAttribute ("HelloInterval", "HELLO messages emission interval.",
                    TimeValue (Seconds (1)),
