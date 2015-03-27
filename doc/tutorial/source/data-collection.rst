@@ -321,6 +321,7 @@ the data out of the probed Packet object:
   {
     static TypeId tid = TypeId ("ns3::Ipv6PacketProbe")
       .SetParent<Probe> ()
+      .SetGroupName ("Stats")
       .AddConstructor<Ipv6PacketProbe> ()
       .AddTraceSource ( "Output",
                         "The packet plus its IPv6 object and interface that serve as the output for this probe",

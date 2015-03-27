@@ -365,6 +365,7 @@ simple Object we can work with.
     {
       static TypeId tid = TypeId ("MyObject")
         .SetParent (Object::GetTypeId ())
+        .SetGroupName ("MyGroup")
         .AddConstructor<MyObject> ()
         .AddTraceSource ("MyInteger",
                          "An integer value to trace.",
