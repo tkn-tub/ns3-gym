@@ -42,6 +42,7 @@ PppHeader::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::PppHeader")
     .SetParent<Header> ()
+    .SetGroupName ("PointToPoint")
     .AddConstructor<PppHeader> ()
   ;
   return tid;

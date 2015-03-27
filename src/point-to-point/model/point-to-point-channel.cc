@@ -34,6 +34,7 @@ PointToPointChannel::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::PointToPointChannel")
     .SetParent<Channel> ()
+    .SetGroupName ("PointToPoint")
     .AddConstructor<PointToPointChannel> ()
     .AddAttribute ("Delay", "Transmission delay through the channel",
                    TimeValue (Seconds (0)),

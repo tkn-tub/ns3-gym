@@ -40,6 +40,7 @@ PointToPointNetDevice::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::PointToPointNetDevice")
     .SetParent<NetDevice> ()
+    .SetGroupName ("PointToPoint")
     .AddConstructor<PointToPointNetDevice> ()
     .AddAttribute ("Mtu", "The MAC-level Maximum Transmission Unit",
                    UintegerValue (DEFAULT_MTU),
