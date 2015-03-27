@@ -39,6 +39,7 @@ CosineAntennaModel::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::CosineAntennaModel")
     .SetParent<AntennaModel> ()
+    .SetGroupName("Antenna")
     .AddConstructor<CosineAntennaModel> ()
     .AddAttribute ("Beamwidth",
                    "The 3dB beamwidth (degrees)",

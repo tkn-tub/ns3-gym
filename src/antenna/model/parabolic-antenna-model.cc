@@ -39,6 +39,7 @@ ParabolicAntennaModel::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::ParabolicAntennaModel")
     .SetParent<AntennaModel> ()
+    .SetGroupName("Antenna")
     .AddConstructor<ParabolicAntennaModel> ()
     .AddAttribute ("Beamwidth",
                    "The 3dB beamwidth (degrees)",
