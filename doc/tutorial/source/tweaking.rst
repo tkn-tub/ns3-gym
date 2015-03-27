@@ -632,6 +632,46 @@ end up looking something like,
     --ns3::PointToPointChannel::Delay=2ms 
     --ns3::UdpEchoClient::MaxPackets=2"
 
+A natural question to arise at this point is how to learn about the existence
+of all of these attributes.  Again, the command line help facility has
+a feature for this.  If we ask for command line help we should see:
+
+.. sourcecode:: bash
+
+  $ ./waf --run "scratch/myfirst --PrintHelp"
+  myfirst [Program Arguments] [General Arguments]
+
+  General Arguments:
+    --PrintGlobals:              Print the list of globals.
+    --PrintGroups:               Print the list of groups.
+    --PrintGroup=[group]:        Print all TypeIds of group.
+    --PrintTypeIds:              Print all TypeIds.
+    --PrintAttributes=[typeid]:  Print all attributes of typeid.
+    --PrintHelp:                 Print this help message.
+
+If you select the "PrintGroups" argument, you should see a list of all
+registered TypeId groups.  The group names are aligned with the module names
+in the source directory (although with a leading capital letter).  Printing 
+out all of the information at once would be too much, so a further filter 
+is available to print information on a per-group basis.   So, focusing
+again on the point-to-point module:
+
+.. sourcecode:: bash
+
+  ./waf --run "scratch/myfirst --PrintGroup=PointToPoint"
+  TypeIds in group PointToPoint:
+    ns3::PointToPointChannel
+    ns3::PointToPointNetDevice
+    ns3::PointToPointRemoteChannel
+    ns3::PppHeader
+
+and from here, one can find the possible TypeId names to search for
+attributes, such as in the ``--PrintAttributes=ns3::PointToPointChannel``
+example shown above.
+
+Another way to find out about attributes is through the ns-3 Doxygen; there
+is a page that lists out all of the registered attributes in the simulator.
+
 Hooking Your Own Values
 +++++++++++++++++++++++
 You can also add your own hooks to the command line system.  This is done
