@@ -36,6 +36,7 @@ BridgeNetDevice::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::BridgeNetDevice")
     .SetParent<NetDevice> ()
+    .SetGroupName("Bridge")
     .AddConstructor<BridgeNetDevice> ()
     .AddAttribute ("Mtu", "The MAC-level Maximum Transmission Unit",
                    UintegerValue (1500),
