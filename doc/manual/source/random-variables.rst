@@ -277,6 +277,7 @@ An example is in the propagation models for WifiNetDevice::
     { 
       static TypeId tid = TypeId ("ns3::RandomPropagationDelayModel")
         .SetParent<PropagationDelayModel> ()
+        .SetGroupName ("Propagation")
         .AddConstructor<RandomPropagationDelayModel> ()
         .AddAttribute ("Variable",
                        "The random variable which generates random delays (s).",

@@ -165,6 +165,7 @@ This is defined in the ``node.cc`` file as follows::
     {
       static TypeId tid = TypeId ("ns3::Node")
         .SetParent<Object> ()
+        .SetGroupName ("Network")
         .AddConstructor<Node> ()
         .AddAttribute ("DeviceList",
 	               "The list of devices associated to this Node.",
@@ -300,6 +301,7 @@ registrations are moved into the :cpp:class:`TypeId` class; *e.g*.::
     {
       static TypeId tid = TypeId ("ns3::DropTailQueue")
         .SetParent<Queue> ()
+        .SetGroupName ("Network")
         .AddConstructor<DropTailQueue> ()
         .AddAttribute ("MaxPackets", 
                        "The maximum number of packets accepted by this DropTailQueue.",

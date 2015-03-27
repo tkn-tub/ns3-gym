@@ -341,6 +341,7 @@ file.::
     {
       static TypeId tid = TypeId ("ns3::ErrorModel")
         .SetParent<Object> ()
+        .SetGroupName ("Network")
         ;
       return tid;
     }
@@ -359,6 +360,7 @@ file.::
     {
       static TypeId tid = TypeId ("ns3::RateErrorModel")
         .SetParent<ErrorModel> ()
+        .SetGroupName ("Network")
         .AddConstructor<RateErrorModel> ()
         ;
       return tid;
@@ -556,6 +558,7 @@ and setting the Parent to ErrorModel::
     {
       static TypeId tid = TypeId ("ns3::RateErrorModel")
         .SetParent<ErrorModel> ()
+        .SetGroupName ("Network")
         .AddConstructor<RateErrorModel> ()
       ...
 
