@@ -38,6 +38,7 @@ TypeId OrbisTopologyReader::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::OrbisTopologyReader")
     .SetParent<Object> ()
+    .SetGroupName ("TopologyReader")
   ;
   return tid;
 }

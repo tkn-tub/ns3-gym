@@ -34,6 +34,7 @@ TypeId TopologyReader::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::TopologyReader")
     .SetParent<Object> ()
+    .SetGroupName ("TopologyReader")
   ;
   return tid;
 }
