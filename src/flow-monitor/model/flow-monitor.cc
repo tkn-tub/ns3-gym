@@ -41,6 +41,7 @@ FlowMonitor::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::FlowMonitor")
     .SetParent<Object> ()
+    .SetGroupName ("FlowMonitor")
     .AddConstructor<FlowMonitor> ()
     .AddAttribute ("MaxPerHopDelay", ("The maximum per-hop delay that should be considered.  "
                                       "Packets still not received after this delay are to be considered lost."),

@@ -108,6 +108,7 @@ Ipv4FlowProbeTag::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::Ipv4FlowProbeTag")
     .SetParent<Tag> ()
+    .SetGroupName ("FlowMonitor")
     .AddConstructor<Ipv4FlowProbeTag> ()
   ;
   return tid;
