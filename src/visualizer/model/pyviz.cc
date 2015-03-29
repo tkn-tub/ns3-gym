@@ -85,6 +85,7 @@ PyVizPacketTag::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::PyVizPacketTag")
     .SetParent<Tag> ()
+    .SetGroupName ("Visualizer")
     .AddConstructor<PyVizPacketTag> ()
   ;
   return tid;

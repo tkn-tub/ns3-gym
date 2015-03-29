@@ -45,6 +45,7 @@ VisualSimulatorImpl::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::VisualSimulatorImpl")
     .SetParent<SimulatorImpl> ()
+    .SetGroupName ("Visualizer")
     .AddConstructor<VisualSimulatorImpl> ()
     .AddAttribute ("SimulatorImplFactory",
                    "Factory for the underlying simulator implementation used by the visualizer.",
