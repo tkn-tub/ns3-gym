@@ -39,6 +39,7 @@ TcpNewReno::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::TcpNewReno")
     .SetParent<TcpSocketBase> ()
+    .SetGroupName ("Internet")
     .AddConstructor<TcpNewReno> ()
     .AddAttribute ("ReTxThreshold", "Threshold for fast retransmit",
                     UintegerValue (3),

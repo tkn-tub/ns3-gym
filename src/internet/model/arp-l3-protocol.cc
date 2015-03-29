@@ -46,6 +46,7 @@ ArpL3Protocol::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::ArpL3Protocol")
     .SetParent<Object> ()
     .AddConstructor<ArpL3Protocol> ()
+    .SetGroupName ("Internet")
     .AddAttribute ("CacheList",
                    "The list of ARP caches",
                    ObjectVectorValue (),

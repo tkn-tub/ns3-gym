@@ -32,6 +32,7 @@ TcpRfc793::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::TcpRfc793")
     .SetParent<TcpSocketBase> ()
+    .SetGroupName ("Internet")
     .AddConstructor<TcpRfc793> ()
   ;
   return tid;

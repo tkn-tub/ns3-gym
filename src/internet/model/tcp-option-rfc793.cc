@@ -43,6 +43,7 @@ TcpOptionEnd::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::TcpOptionEnd")
     .SetParent<TcpOption> ()
+    .SetGroupName ("Internet")
     .AddConstructor<TcpOptionEnd> ()
   ;
   return tid;
@@ -114,6 +115,7 @@ TcpOptionNOP::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::TcpOptionNOP")
     .SetParent<TcpOption> ()
+    .SetGroupName ("Internet")
     .AddConstructor<TcpOptionNOP> ()
   ;
   return tid;
@@ -184,6 +186,7 @@ TcpOptionMSS::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::TcpOptionMSS")
     .SetParent<TcpOption> ()
+    .SetGroupName ("Internet")
     .AddConstructor<TcpOptionMSS> ()
   ;
   return tid;

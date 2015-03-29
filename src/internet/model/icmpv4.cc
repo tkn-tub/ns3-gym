@@ -37,6 +37,7 @@ Icmpv4Header::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::Icmpv4Header")
     .SetParent<Header> ()
+    .SetGroupName ("Internet")
     .AddConstructor<Icmpv4Header> ()
   ;
   return tid;
@@ -198,6 +199,7 @@ Icmpv4Echo::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::Icmpv4Echo")
     .SetParent<Header> ()
+    .SetGroupName ("Internet")
     .AddConstructor<Icmpv4Echo> ()
   ;
   return tid;
@@ -277,6 +279,7 @@ Icmpv4DestinationUnreachable::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::Icmpv4DestinationUnreachable")
     .SetParent<Header> ()
+    .SetGroupName ("Internet")
     .AddConstructor<Icmpv4DestinationUnreachable> ()
   ;
   return tid;
@@ -400,6 +403,7 @@ Icmpv4TimeExceeded::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::Icmpv4TimeExceeded")
     .SetParent<Header> ()
+    .SetGroupName ("Internet")
     .AddConstructor<Icmpv4TimeExceeded> ()
   ;
   return tid;

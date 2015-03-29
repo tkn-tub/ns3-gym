@@ -43,6 +43,7 @@ TcpOptionTS::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::TcpOptionTS")
     .SetParent<TcpOption> ()
+    .SetGroupName ("Internet")
     .AddConstructor<TcpOptionTS> ()
   ;
   return tid;

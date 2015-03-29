@@ -23,6 +23,7 @@ Icmpv4L4Protocol::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::Icmpv4L4Protocol")
     .SetParent<IpL4Protocol> ()
+    .SetGroupName ("Internet")
     .AddConstructor<Icmpv4L4Protocol> ()
   ;
   return tid;

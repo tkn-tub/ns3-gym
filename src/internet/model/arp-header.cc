@@ -98,6 +98,7 @@ ArpHeader::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::ArpHeader")
     .SetParent<Header> ()
+    .SetGroupName ("Internet")
     .AddConstructor<ArpHeader> ()
   ;
   return tid;

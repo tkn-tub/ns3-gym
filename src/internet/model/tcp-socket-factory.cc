@@ -30,6 +30,7 @@ TcpSocketFactory::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::TcpSocketFactory")
     .SetParent<SocketFactory> ()
+    .SetGroupName ("Internet")
   ;
   return tid;
 }

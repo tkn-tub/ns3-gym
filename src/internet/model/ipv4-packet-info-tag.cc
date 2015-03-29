@@ -100,6 +100,7 @@ Ipv4PacketInfoTag::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::Ipv4PacketInfoTag")
     .SetParent<Tag> ()
+    .SetGroupName ("Internet")
     .AddConstructor<Ipv4PacketInfoTag> ()
   ;
   return tid;

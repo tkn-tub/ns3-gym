@@ -53,6 +53,7 @@ TcpWestwood::GetTypeId (void)
 {
   static TypeId tid = TypeId("ns3::TcpWestwood")
       .SetParent<TcpSocketBase>()
+      .SetGroupName ("Internet")
       .AddConstructor<TcpWestwood>()
       .AddTraceSource("CongestionWindow", "The TCP connection's congestion window",
                       MakeTraceSourceAccessor(&TcpWestwood::m_cWnd),

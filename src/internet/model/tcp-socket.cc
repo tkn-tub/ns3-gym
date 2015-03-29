@@ -40,6 +40,7 @@ TcpSocket::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::TcpSocket")
     .SetParent<Socket> ()
+    .SetGroupName ("Internet")
     .AddAttribute ("SndBufSize",
                    "TcpSocket maximum transmit buffer size (bytes)",
                    UintegerValue (131072), // 128k

@@ -41,6 +41,7 @@ Ipv4GlobalRouting::GetTypeId (void)
 { 
   static TypeId tid = TypeId ("ns3::Ipv4GlobalRouting")
     .SetParent<Object> ()
+    .SetGroupName ("Internet")
     .AddAttribute ("RandomEcmpRouting",
                    "Set to true if packets are randomly routed among ECMP; set to false for using only one route consistently",
                    BooleanValue (false),

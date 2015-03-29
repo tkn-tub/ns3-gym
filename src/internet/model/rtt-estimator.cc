@@ -45,6 +45,7 @@ RttEstimator::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::RttEstimator")
     .SetParent<Object> ()
+    .SetGroupName ("Internet")
     .AddAttribute ("InitialEstimation", 
                    "Initial RTT estimate",
                    TimeValue (Seconds (1.0)),
@@ -129,6 +130,7 @@ RttMeanDeviation::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::RttMeanDeviation")
     .SetParent<RttEstimator> ()
+    .SetGroupName ("Internet")
     .AddConstructor<RttMeanDeviation> ()
     .AddAttribute ("Alpha",
                    "Gain used in estimating the RTT, must be 0 <= alpha <= 1",

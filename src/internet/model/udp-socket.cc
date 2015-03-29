@@ -37,6 +37,7 @@ UdpSocket::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::UdpSocket")
     .SetParent<Socket> ()
+    .SetGroupName ("Internet")
     .AddAttribute ("RcvBufSize",
                    "UdpSocket maximum receive buffer size (bytes)",
                    UintegerValue (131072),

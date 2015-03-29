@@ -41,6 +41,7 @@ ArpCache::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::ArpCache")
     .SetParent<Object> ()
+    .SetGroupName ("Internet")
     .AddAttribute ("AliveTimeout",
                    "When this timeout expires, "
                    "the matching cache entry needs refreshing",

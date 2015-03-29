@@ -65,6 +65,7 @@ TcpSocketBase::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::TcpSocketBase")
     .SetParent<TcpSocket> ()
+    .SetGroupName ("Internet")
 //    .AddAttribute ("TcpState", "State in TCP state machine",
 //                   TypeId::ATTR_GET,
 //                   EnumValue (CLOSED),

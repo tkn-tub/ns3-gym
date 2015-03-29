@@ -36,6 +36,7 @@ Ipv6ListRouting::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::Ipv6ListRouting")
     .SetParent<Ipv6RoutingProtocol> ()
+    .SetGroupName ("Internet")
     .AddConstructor<Ipv6ListRouting> ()
   ;
   return tid;

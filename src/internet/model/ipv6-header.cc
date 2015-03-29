@@ -117,6 +117,7 @@ TypeId Ipv6Header::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::Ipv6Header")
     .SetParent<Header> ()
+    .SetGroupName ("Internet")
     .AddConstructor<Ipv6Header> ()
   ;
   return tid;

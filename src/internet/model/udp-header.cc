@@ -155,6 +155,7 @@ UdpHeader::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::UdpHeader")
     .SetParent<Header> ()
+    .SetGroupName ("Internet")
     .AddConstructor<UdpHeader> ()
   ;
   return tid;

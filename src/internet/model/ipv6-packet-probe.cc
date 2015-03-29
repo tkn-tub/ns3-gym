@@ -40,6 +40,7 @@ Ipv6PacketProbe::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::Ipv6PacketProbe")
     .SetParent<Probe> ()
+    .SetGroupName ("Internet")
     .AddConstructor<Ipv6PacketProbe> ()
     .AddTraceSource ( "Output",
                       "The packet plus its IPv6 object and interface "

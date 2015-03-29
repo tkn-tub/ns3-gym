@@ -40,6 +40,7 @@ TypeId Ipv6StaticRouting::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::Ipv6StaticRouting")
     .SetParent<Ipv6RoutingProtocol> ()
+    .SetGroupName ("Internet")
     .AddConstructor<Ipv6StaticRouting> ()
   ;
   return tid;

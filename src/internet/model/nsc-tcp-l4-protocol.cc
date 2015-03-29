@@ -126,6 +126,7 @@ NscTcpL4Protocol::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::NscTcpL4Protocol")
     .SetParent<IpL4Protocol> ()
+    .SetGroupName ("Internet")
     .AddConstructor<NscTcpL4Protocol>()
     .AddAttribute ("SocketList", "The list of sockets associated to this protocol.",
                    ObjectVectorValue (),

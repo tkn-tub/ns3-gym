@@ -59,6 +59,7 @@ TypeId Ipv6L3Protocol::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::Ipv6L3Protocol")
     .SetParent<Ipv6> ()
+    .SetGroupName ("Internet")
     .AddConstructor<Ipv6L3Protocol> ()
     .AddAttribute ("DefaultTtl",
                    "The TTL value set by default on all "

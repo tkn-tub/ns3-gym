@@ -320,6 +320,7 @@ Ipv4Header::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::Ipv4Header")
     .SetParent<Header> ()
+    .SetGroupName ("Internet")
     .AddConstructor<Ipv4Header> ()
   ;
   return tid;

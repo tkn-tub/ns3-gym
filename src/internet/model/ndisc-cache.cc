@@ -39,6 +39,7 @@ TypeId NdiscCache::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::NdiscCache")
     .SetParent<Object> ()
+    .SetGroupName ("Internet")
     .AddAttribute ("UnresolvedQueueSize",
                    "Size of the queue for packets pending an NA reply.",
                    UintegerValue (DEFAULT_UNRES_QLEN),

@@ -53,6 +53,7 @@ Ipv4L3Protocol::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::Ipv4L3Protocol")
     .SetParent<Ipv4> ()
+    .SetGroupName ("Internet")
     .AddConstructor<Ipv4L3Protocol> ()
     .AddAttribute ("DefaultTos",
                    "The TOS value set by default on "

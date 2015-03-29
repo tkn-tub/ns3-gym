@@ -35,6 +35,7 @@ TypeId Ipv6OptionHeader::GetTypeId ()
   static TypeId tid = TypeId ("ns3::Ipv6OptionHeader")
     .AddConstructor<Ipv6OptionHeader> ()
     .SetParent<Header> ()
+    .SetGroupName ("Internet")
   ;
   return tid;
 }
@@ -123,6 +124,7 @@ TypeId Ipv6OptionPad1Header::GetTypeId ()
   static TypeId tid = TypeId ("ns3::Ipv6OptionPad1Header")
     .AddConstructor<Ipv6OptionPad1Header> ()
     .SetParent<Ipv6OptionHeader> ()
+    .SetGroupName ("Internet")
   ;
   return tid;
 }
@@ -174,6 +176,7 @@ TypeId Ipv6OptionPadnHeader::GetTypeId ()
   static TypeId tid = TypeId ("ns3::Ipv6OptionPadnHeader")
     .AddConstructor<Ipv6OptionPadnHeader> ()
     .SetParent<Ipv6OptionHeader> ()
+    .SetGroupName ("Internet")
   ;
   return tid;
 }
@@ -234,6 +237,7 @@ TypeId Ipv6OptionJumbogramHeader::GetTypeId ()
   static TypeId tid = TypeId ("ns3::Ipv6OptionJumbogramHeader")
     .AddConstructor<Ipv6OptionJumbogramHeader> ()
     .SetParent<Ipv6OptionHeader> ()
+    .SetGroupName ("Internet")
   ;
   return tid;
 }
@@ -247,6 +251,7 @@ Ipv6OptionJumbogramHeader::Ipv6OptionJumbogramHeader ()
 {
   SetType (0xC2);
   SetLength (4);
+  m_dataLength = 0;
 }
 
 Ipv6OptionJumbogramHeader::~Ipv6OptionJumbogramHeader ()
@@ -305,6 +310,7 @@ TypeId Ipv6OptionRouterAlertHeader::GetTypeId ()
   static TypeId tid = TypeId ("ns3::Ipv6OptionRouterAlertHeader")
     .AddConstructor<Ipv6OptionRouterAlertHeader> ()
     .SetParent<Ipv6OptionHeader> ()
+    .SetGroupName ("Internet")
   ;
   return tid;
 }

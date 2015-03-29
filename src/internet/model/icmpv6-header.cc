@@ -37,6 +37,7 @@ TypeId Icmpv6Header::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::Icmpv6Header")
     .SetParent<Header> ()
+    .SetGroupName ("Internet")
     .AddConstructor<Icmpv6Header> ()
   ;
   return tid;
@@ -187,6 +188,7 @@ TypeId Icmpv6NS::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::Icmpv6NS")
     .SetParent<Icmpv6Header> ()
+    .SetGroupName ("Internet")
     .AddConstructor<Icmpv6NS> ()
   ;
   return tid;
@@ -300,6 +302,7 @@ TypeId Icmpv6NA::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::Icmpv6NA")
     .SetParent<Icmpv6Header> ()
+    .SetGroupName ("Internet")
     .AddConstructor<Icmpv6NA> ()
   ;
   return tid;
@@ -483,6 +486,7 @@ TypeId Icmpv6RA::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::Icmpv6RA")
     .SetParent<Icmpv6Header> ()
+    .SetGroupName ("Internet")
     .AddConstructor<Icmpv6RA> ()
   ;
   return tid;
@@ -702,6 +706,7 @@ TypeId Icmpv6RS::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::Icmpv6RS")
     .SetParent<Icmpv6Header> ()
+    .SetGroupName ("Internet")
     .AddConstructor<Icmpv6RS> ()
   ;
   return tid;
@@ -792,6 +797,7 @@ TypeId Icmpv6Redirection::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::Icmpv6Redirection")
     .SetParent<Icmpv6Header> ()
+    .SetGroupName ("Internet")
     .AddConstructor<Icmpv6Redirection> ()
   ;
   return tid;
@@ -922,6 +928,7 @@ TypeId Icmpv6Echo::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::Icmpv6Echo")
     .SetParent<Icmpv6Header> ()
+    .SetGroupName ("Internet")
     .AddConstructor<Icmpv6Echo> ()
   ;
   return tid;
@@ -1039,6 +1046,7 @@ TypeId Icmpv6DestinationUnreachable::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::Icmpv6DestinationUnreachable")
     .SetParent<Icmpv6Header> ()
+    .SetGroupName ("Internet")
     .AddConstructor<Icmpv6DestinationUnreachable> ()
   ;
   return tid;
@@ -1136,6 +1144,7 @@ TypeId Icmpv6TooBig::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::Icmpv6TooBig")
     .SetParent<Icmpv6Header> ()
+    .SetGroupName ("Internet")
     .AddConstructor<Icmpv6TooBig> ()
   ;
   return tid;
@@ -1246,6 +1255,7 @@ TypeId Icmpv6TimeExceeded::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::Icmpv6TimeExceeded")
     .SetParent<Icmpv6Header> ()
+    .SetGroupName ("Internet")
     .AddConstructor<Icmpv6TimeExceeded> ()
   ;
   return tid;
@@ -1345,6 +1355,7 @@ TypeId Icmpv6ParameterError::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::Icmpv6ParameterError")
     .SetParent<Icmpv6Header> ()
+    .SetGroupName ("Internet")
     .AddConstructor<Icmpv6ParameterError> ()
   ;
   return tid;
@@ -1455,6 +1466,7 @@ TypeId Icmpv6OptionHeader::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::Icmpv6OptionHeader")
     .SetParent<Header> ()
+    .SetGroupName ("Internet")
     .AddConstructor<Icmpv6OptionHeader> ()
   ;
   return tid;
@@ -1533,6 +1545,7 @@ TypeId Icmpv6OptionMtu::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::Icmpv6OptionMtu")
     .SetParent<Icmpv6OptionHeader> ()
+    .SetGroupName ("Internet")
     .AddConstructor<Icmpv6OptionMtu> ()
   ;
   return tid;
@@ -1629,6 +1642,7 @@ TypeId Icmpv6OptionPrefixInformation::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::Icmpv6OptionPrefixInformation")
     .SetParent<Icmpv6OptionHeader> ()
+    .SetGroupName ("Internet")
     .AddConstructor<Icmpv6OptionPrefixInformation> ()
   ;
   return tid;
@@ -1802,6 +1816,7 @@ TypeId Icmpv6OptionLinkLayerAddress::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::Icmpv6OptionLinkLayerAddress")
     .SetParent<Icmpv6OptionHeader> ()
+    .SetGroupName ("Internet")
     .AddConstructor<Icmpv6OptionLinkLayerAddress> ()
   ;
   return tid;
@@ -1910,6 +1925,7 @@ TypeId Icmpv6OptionRedirected::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::Icmpv6OptionRedirected")
     .SetParent<Icmpv6OptionHeader> ()
+    .SetGroupName ("Internet")
     .AddConstructor<Icmpv6OptionRedirected> ()
   ;
   return tid;

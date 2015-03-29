@@ -35,6 +35,7 @@ LoopbackNetDevice::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::LoopbackNetDevice")
     .SetParent<NetDevice> ()
+    .SetGroupName ("Internet")
     .AddConstructor<LoopbackNetDevice> ()
   ;
   return tid;

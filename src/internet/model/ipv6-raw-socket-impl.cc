@@ -46,6 +46,7 @@ TypeId Ipv6RawSocketImpl::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::Ipv6RawSocketImpl")
     .SetParent<Socket> ()
+    .SetGroupName ("Internet")
     .AddAttribute ("Protocol", "Protocol number to match.", 
                    UintegerValue (0),
                    MakeUintegerAccessor (&Ipv6RawSocketImpl::m_protocol),

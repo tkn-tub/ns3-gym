@@ -148,6 +148,7 @@ TypeId CoDelQueue::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::CoDelQueue")
     .SetParent<Queue> ()
+    .SetGroupName ("Internet")
     .AddConstructor<CoDelQueue> ()
     .AddAttribute ("Mode",
                    "Whether to use Bytes (see MaxBytes) or Packets (see MaxPackets) as the maximum queue size metric.",

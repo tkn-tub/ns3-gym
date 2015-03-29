@@ -35,7 +35,10 @@ RipNgRte::RipNgRte ()
 
 TypeId RipNgRte::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::RipNgRte").SetParent<Header> ().AddConstructor<RipNgRte> ();
+  static TypeId tid = TypeId ("ns3::RipNgRte")
+    .SetParent<Header> ()
+    .SetGroupName ("Internet")
+    .AddConstructor<RipNgRte> ();
   return tid;
 }
 
@@ -139,7 +142,10 @@ RipNgHeader::RipNgHeader ()
 
 TypeId RipNgHeader::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::RipNgHeader").SetParent<Header> ().AddConstructor<RipNgHeader> ();
+  static TypeId tid = TypeId ("ns3::RipNgHeader")
+    .SetParent<Header> ()
+    .SetGroupName ("Internet")
+    .AddConstructor<RipNgHeader> ();
   return tid;
 }
 

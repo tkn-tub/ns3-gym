@@ -31,6 +31,7 @@ TypeId Ipv4RawSocketFactory::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::Ipv4RawSocketFactory")
     .SetParent<SocketFactory> ()
+    .SetGroupName ("Internet")
   ;
   return tid;
 }

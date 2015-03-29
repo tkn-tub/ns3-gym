@@ -35,6 +35,7 @@ Ipv4ListRouting::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::Ipv4ListRouting")
     .SetParent<Ipv4RoutingProtocol> ()
+    .SetGroupName ("Internet")
     .AddConstructor<Ipv4ListRouting> ()
   ;
   return tid;

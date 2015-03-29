@@ -32,6 +32,7 @@ TypeId Ipv6PmtuCache::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::Ipv6PmtuCache")
     .SetParent<Object> ()
+    .SetGroupName ("Internet")
     .AddAttribute ("CacheExpiryTime",
                    "Validity time for a Path MTU entry. Default is 10 minutes, minimum is 5 minutes.",
                    TimeValue (Seconds (60 * 10)),

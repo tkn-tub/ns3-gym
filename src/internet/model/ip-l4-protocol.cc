@@ -36,7 +36,8 @@ IpL4Protocol::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::IpL4Protocol")
     .SetParent<Object> ()
-    .AddAttribute ("ProtocolNumber", "The Ip protocol number.",
+    .SetGroupName ("Internet")
+    .AddAttribute ("ProtocolNumber", "The IP protocol number.",
                    UintegerValue (0),
                    MakeUintegerAccessor (&IpL4Protocol::GetProtocolNumber),
                    MakeUintegerChecker<int> ())

@@ -54,6 +54,7 @@ UdpL4Protocol::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::UdpL4Protocol")
     .SetParent<IpL4Protocol> ()
+    .SetGroupName ("Internet")
     .AddConstructor<UdpL4Protocol> ()
     .AddAttribute ("SocketList", "The list of sockets associated to this protocol.",
                    ObjectVectorValue (),

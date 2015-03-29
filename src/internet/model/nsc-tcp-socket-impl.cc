@@ -54,6 +54,7 @@ NscTcpSocketImpl::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::NscTcpSocketImpl")
     .SetParent<TcpSocket> ()
+    .SetGroupName ("Internet")
     .AddTraceSource ("CongestionWindow",
                      "The TCP connection's congestion window",
                      MakeTraceSourceAccessor (&NscTcpSocketImpl::m_cWnd),

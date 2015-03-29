@@ -24,6 +24,7 @@ Ipv4RawSocketImpl::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::Ipv4RawSocketImpl")
     .SetParent<Socket> ()
+    .SetGroupName ("Internet")
     .AddAttribute ("Protocol", "Protocol number to match.",
                    UintegerValue (0),
                    MakeUintegerAccessor (&Ipv4RawSocketImpl::m_protocol),

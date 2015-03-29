@@ -231,6 +231,7 @@ TcpHeader::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::TcpHeader")
     .SetParent<Header> ()
+    .SetGroupName ("Internet")
     .AddConstructor<TcpHeader> ()
   ;
   return tid;

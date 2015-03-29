@@ -56,6 +56,7 @@ UdpSocketImpl::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::UdpSocketImpl")
     .SetParent<UdpSocket> ()
+    .SetGroupName ("Internet")
     .AddConstructor<UdpSocketImpl> ()
     .AddTraceSource ("Drop",
                      "Drop UDP packet due to receive buffer overflow",

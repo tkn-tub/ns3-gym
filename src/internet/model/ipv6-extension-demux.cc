@@ -34,6 +34,7 @@ TypeId Ipv6ExtensionDemux::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::Ipv6ExtensionDemux")
     .SetParent<Object> ()
+    .SetGroupName ("Internet")
     .AddAttribute ("Extensions", "The set of IPv6 extensions registered with this demux.",
                    ObjectVectorValue (),
                    MakeObjectVectorAccessor (&Ipv6ExtensionDemux::m_extensions),

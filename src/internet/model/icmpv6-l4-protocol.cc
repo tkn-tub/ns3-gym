@@ -69,6 +69,7 @@ TypeId Icmpv6L4Protocol::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::Icmpv6L4Protocol")
     .SetParent<IpL4Protocol> ()
+    .SetGroupName ("Internet")
     .AddConstructor<Icmpv6L4Protocol> ()
     .AddAttribute ("DAD", "Always do DAD check.",
                    BooleanValue (true),

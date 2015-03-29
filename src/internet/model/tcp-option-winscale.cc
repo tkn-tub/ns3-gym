@@ -43,6 +43,7 @@ TcpOptionWinScale::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::TcpOptionWinScale")
     .SetParent<TcpOption> ()
+    .SetGroupName ("Internet")
     .AddConstructor<TcpOptionWinScale> ()
   ;
   return tid;

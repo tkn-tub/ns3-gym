@@ -42,6 +42,7 @@ TypeId Ipv6Interface::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::Ipv6Interface")
     .SetParent<Object> ()
+    .SetGroupName ("Internet")
   ;
   return tid;
 }

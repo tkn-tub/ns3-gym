@@ -57,6 +57,7 @@ RipNg::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::RipNg")
     .SetParent<Ipv6RoutingProtocol> ()
+    .SetGroupName ("Internet")
     .AddConstructor<RipNg> ()
     .AddAttribute ("UnsolicitedRoutingUpdate", "The time between two Unsolicited Routing Updates.",
                    TimeValue (Seconds(30)),
