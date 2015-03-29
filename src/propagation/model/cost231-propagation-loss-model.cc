@@ -37,35 +37,29 @@ TypeId
 Cost231PropagationLossModel::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::Cost231PropagationLossModel")
-
     .SetParent<PropagationLossModel> ()
-
+    .SetGroupName ("Propagation")
     .AddConstructor<Cost231PropagationLossModel> ()
-
     .AddAttribute ("Lambda",
                    "The wavelength  (default is 2.3 GHz at 300 000 km/s).",
                    DoubleValue (300000000.0 / 2.3e9),
                    MakeDoubleAccessor (&Cost231PropagationLossModel::m_lambda),
                    MakeDoubleChecker<double> ())
-
     .AddAttribute ("Frequency",
                    "The Frequency  (default is 2.3 GHz).",
                    DoubleValue (2.3e9),
                    MakeDoubleAccessor (&Cost231PropagationLossModel::m_frequency),
                    MakeDoubleChecker<double> ())
-
     .AddAttribute ("BSAntennaHeight",
                    "BS Antenna Height (default is 50m).",
                    DoubleValue (50.0),
                    MakeDoubleAccessor (&Cost231PropagationLossModel::m_BSAntennaHeight),
                    MakeDoubleChecker<double> ())
-
     .AddAttribute ("SSAntennaHeight",
                    "SS Antenna Height (default is 3m).",
                    DoubleValue (3),
                    MakeDoubleAccessor (&Cost231PropagationLossModel::m_SSAntennaHeight),
                    MakeDoubleChecker<double> ())
-
     .AddAttribute ("MinDistance",
                    "The distance under which the propagation model refuses to give results (m) ",
                    DoubleValue (0.5),

@@ -50,6 +50,7 @@ JakesProcess::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::JakesProcess")
     .SetParent<Object> ()
+    .SetGroupName ("Propagation")
     .AddConstructor<JakesProcess> ()
     .AddAttribute ("DopplerFrequencyHz", "Corresponding doppler frequency[Hz]",
                    DoubleValue (80),

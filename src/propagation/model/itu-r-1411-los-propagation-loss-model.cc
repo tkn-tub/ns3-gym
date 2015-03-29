@@ -37,10 +37,9 @@ TypeId
 ItuR1411LosPropagationLossModel::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::ItuR1411LosPropagationLossModel")
-
     .SetParent<PropagationLossModel> ()
+    .SetGroupName ("Propagation")
     .AddConstructor<ItuR1411LosPropagationLossModel> ()
-
     .AddAttribute ("Frequency",
                    "The propagation frequency in Hz",
                    DoubleValue (2160e6),

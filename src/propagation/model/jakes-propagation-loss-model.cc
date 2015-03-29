@@ -45,6 +45,7 @@ JakesPropagationLossModel::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::JakesPropagationLossModel")
     .SetParent<PropagationLossModel> ()
+    .SetGroupName ("Propagation")
     .AddConstructor<JakesPropagationLossModel> ()
   ;
   return tid;

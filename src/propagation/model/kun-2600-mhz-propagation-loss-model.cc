@@ -39,6 +39,7 @@ Kun2600MhzPropagationLossModel::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::Kun2600MhzPropagationLossModel")
     .SetParent<PropagationLossModel> ()
+    .SetGroupName ("Propagation")
     .AddConstructor<Kun2600MhzPropagationLossModel> ()
     ;
 

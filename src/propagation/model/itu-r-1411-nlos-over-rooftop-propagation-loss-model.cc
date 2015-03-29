@@ -38,17 +38,14 @@ TypeId
 ItuR1411NlosOverRooftopPropagationLossModel::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::ItuR1411NlosOverRooftopPropagationLossModel")
-
     .SetParent<PropagationLossModel> ()
+    .SetGroupName ("Propagation")
     .AddConstructor<ItuR1411NlosOverRooftopPropagationLossModel> ()
-
     .AddAttribute ("Frequency",
                    "The Frequency  (default is 2.106 GHz).",
                    DoubleValue (2160e6),
                    MakeDoubleAccessor (&ItuR1411NlosOverRooftopPropagationLossModel::SetFrequency),
                    MakeDoubleChecker<double> ())
-
-
     .AddAttribute ("Environment",
                    "Environment Scenario",
                    EnumValue (UrbanEnvironment),
@@ -56,7 +53,6 @@ ItuR1411NlosOverRooftopPropagationLossModel::GetTypeId (void)
                    MakeEnumChecker (UrbanEnvironment, "Urban",
                                     SubUrbanEnvironment, "SubUrban",
                                     OpenAreasEnvironment, "OpenAreas"))
-
     .AddAttribute ("CitySize",
                    "Dimension of the city",
                    EnumValue (LargeCity),
@@ -64,31 +60,26 @@ ItuR1411NlosOverRooftopPropagationLossModel::GetTypeId (void)
                    MakeEnumChecker (SmallCity, "Small",
                                     MediumCity, "Medium",
                                     LargeCity, "Large"))
-
     .AddAttribute ("RooftopLevel",
                    "The height of the rooftop level in meters",
                    DoubleValue (20.0),
                    MakeDoubleAccessor (&ItuR1411NlosOverRooftopPropagationLossModel::m_rooftopHeight),
                    MakeDoubleChecker<double> (0.0, 90.0))
-
     .AddAttribute ("StreetsOrientation",
                    "The orientation of streets in degrees [0,90] with respect to the direction of propagation",
                    DoubleValue (45.0),
                    MakeDoubleAccessor (&ItuR1411NlosOverRooftopPropagationLossModel::m_streetsOrientation),
                    MakeDoubleChecker<double> (0.0, 90.0))
-
     .AddAttribute ("StreetsWidth",
                    "The width of streets",
                    DoubleValue (20.0),
                    MakeDoubleAccessor (&ItuR1411NlosOverRooftopPropagationLossModel::m_streetsWidth),
                    MakeDoubleChecker<double> (0.0, 1000.0))
-
     .AddAttribute ("BuildingsExtend",
                    "The distance over which the buildings extend",
                    DoubleValue (80.0),
                    MakeDoubleAccessor (&ItuR1411NlosOverRooftopPropagationLossModel::m_buildingsExtend),
                    MakeDoubleChecker<double> ())
-
     .AddAttribute ("BuildingSeparation",
                    "The separation between buildings",
                    DoubleValue (50.0),

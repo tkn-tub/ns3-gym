@@ -145,6 +145,7 @@ FriisPropagationLossModel::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::FriisPropagationLossModel")
     .SetParent<PropagationLossModel> ()
+    .SetGroupName ("Propagation")
     .AddConstructor<FriisPropagationLossModel> ()
     .AddAttribute ("Frequency", 
                    "The carrier frequency (in Hz) at which propagation occurs  (default is 5.15 GHz).",
@@ -456,6 +457,7 @@ LogDistancePropagationLossModel::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::LogDistancePropagationLossModel")
     .SetParent<PropagationLossModel> ()
+    .SetGroupName ("Propagation")
     .AddConstructor<LogDistancePropagationLossModel> ()
     .AddAttribute ("Exponent",
                    "The exponent of the Path Loss propagation model",
@@ -645,6 +647,7 @@ NakagamiPropagationLossModel::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::NakagamiPropagationLossModel")
     .SetParent<PropagationLossModel> ()
+    .SetGroupName ("Propagation")
     .AddConstructor<NakagamiPropagationLossModel> ()
     .AddAttribute ("Distance1",
                    "Beginning of the second distance field. Default is 80m.",
@@ -759,6 +762,7 @@ FixedRssLossModel::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::FixedRssLossModel")
     .SetParent<PropagationLossModel> ()
+    .SetGroupName ("Propagation")
     .AddConstructor<FixedRssLossModel> ()
     .AddAttribute ("Rss", "The fixed receiver Rss.",
                    DoubleValue (-150.0),
@@ -805,6 +809,7 @@ MatrixPropagationLossModel::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::MatrixPropagationLossModel")
     .SetParent<PropagationLossModel> ()
+    .SetGroupName ("Propagation")
     .AddConstructor<MatrixPropagationLossModel> ()
     .AddAttribute ("DefaultLoss", "The default value for propagation loss, dB.",
                    DoubleValue (std::numeric_limits<double>::max ()),
