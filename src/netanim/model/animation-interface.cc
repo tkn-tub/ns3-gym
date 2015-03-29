@@ -2347,6 +2347,7 @@ AnimByteTag::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::AnimByteTag")
     .SetParent<Tag> ()
+    .SetGroupName ("NetAnim")
     .AddConstructor<AnimByteTag> ()
   ;
   return tid;
