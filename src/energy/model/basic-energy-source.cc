@@ -36,6 +36,7 @@ BasicEnergySource::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::BasicEnergySource")
     .SetParent<EnergySource> ()
+    .SetGroupName ("Energy")
     .AddConstructor<BasicEnergySource> ()
     .AddAttribute ("BasicEnergySourceInitialEnergyJ",
                    "Initial energy stored in basic energy source.",

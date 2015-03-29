@@ -39,6 +39,7 @@ WifiTxCurrentModel::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::WifiTxCurrentModel")
     .SetParent<Object> ()
+    .SetGroupName ("Energy")
   ;
   return tid;
 }

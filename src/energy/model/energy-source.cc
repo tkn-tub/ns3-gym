@@ -37,6 +37,7 @@ EnergySource::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::EnergySource")
     .SetParent<Object> ()
+    .SetGroupName ("Energy")
   ;
   return tid;
 }

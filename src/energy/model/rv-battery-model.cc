@@ -37,6 +37,7 @@ RvBatteryModel::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::RvBatteryModel")
     .SetParent<EnergySource> ()
+    .SetGroupName ("Energy")
     .AddConstructor<RvBatteryModel> ()
     .AddAttribute ("RvBatteryModelPeriodicEnergyUpdateInterval",
                    "RV battery model sampling interval.",

@@ -38,6 +38,7 @@ WifiRadioEnergyModel::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::WifiRadioEnergyModel")
     .SetParent<DeviceEnergyModel> ()
+    .SetGroupName ("Energy")
     .AddConstructor<WifiRadioEnergyModel> ()
     .AddAttribute ("IdleCurrentA",
                    "The default radio Idle current in Ampere.",

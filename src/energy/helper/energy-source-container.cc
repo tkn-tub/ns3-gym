@@ -32,6 +32,7 @@ EnergySourceContainer::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::EnergySourceContainer")
     .SetParent<Object> ()
+    .SetGroupName ("Energy")
     .AddConstructor<EnergySourceContainer> ()
   ;
   return tid;

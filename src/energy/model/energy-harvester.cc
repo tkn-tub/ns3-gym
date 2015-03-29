@@ -33,6 +33,7 @@ EnergyHarvester::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::EnergyHarvester")
     .SetParent<Object> ()
+    .SetGroupName ("Energy")
   ;
   return tid;
 }

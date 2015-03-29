@@ -38,6 +38,7 @@ LiIonEnergySource::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::LiIonEnergySource")
     .SetParent<EnergySource> ()
+    .SetGroupName ("Energy")
     .AddConstructor<LiIonEnergySource> ()
     .AddAttribute ("LiIonEnergySourceInitialEnergyJ",
                    "Initial energy stored in basic energy source.",

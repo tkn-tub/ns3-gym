@@ -39,6 +39,7 @@ BasicEnergyHarvester::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::BasicEnergyHarvester")
   .SetParent<EnergyHarvester> ()
+  .SetGroupName ("Energy")
   .AddConstructor<BasicEnergyHarvester> ()
   .AddAttribute ("PeriodicHarvestedPowerUpdateInterval",
                  "Time between two consecutive periodic updates of the harvested power. By default, the value is updated every 1 s",

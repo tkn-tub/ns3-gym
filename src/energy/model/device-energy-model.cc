@@ -32,6 +32,7 @@ DeviceEnergyModel::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::DeviceEnergyModel")
     .SetParent<Object> ()
+    .SetGroupName ("Energy")
   ;
   return tid;
 }

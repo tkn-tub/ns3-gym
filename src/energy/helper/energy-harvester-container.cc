@@ -35,6 +35,7 @@ EnergyHarvesterContainer::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::EnergyHarvesterContainer")
     .SetParent<Object> ()
+    .SetGroupName ("Energy")
     .AddConstructor<EnergyHarvesterContainer> ()
   ;
   return tid;

@@ -35,6 +35,7 @@ SimpleDeviceEnergyModel::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::SimpleDeviceEnergyModel")
     .SetParent<DeviceEnergyModel> ()
+    .SetGroupName ("Energy")
     .AddConstructor<SimpleDeviceEnergyModel> ()
     .AddTraceSource ("TotalEnergyConsumption",
                      "Total energy consumption of the radio device.",
