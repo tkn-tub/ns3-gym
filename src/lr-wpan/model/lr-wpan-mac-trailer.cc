@@ -40,6 +40,7 @@ LrWpanMacTrailer::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::LrWpanMacTrailer")
     .SetParent<Trailer> ()
+    .SetGroupName ("LrWpan")
     .AddConstructor<LrWpanMacTrailer> ()
   ;
   return tid;

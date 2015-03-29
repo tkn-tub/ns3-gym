@@ -45,6 +45,7 @@ LrWpanNetDevice::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::LrWpanNetDevice")
     .SetParent<NetDevice> ()
+    .SetGroupName ("LrWpan")
     .AddConstructor<LrWpanNetDevice> ()
     .AddAttribute ("Channel", "The channel attached to this device",
                    PointerValue (),

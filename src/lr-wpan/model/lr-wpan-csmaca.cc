@@ -37,6 +37,7 @@ LrWpanCsmaCa::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::LrWpanCsmaCa")
     .SetParent<Object> ()
+    .SetGroupName ("LrWpan")
     .AddConstructor<LrWpanCsmaCa> ()
   ;
   return tid;

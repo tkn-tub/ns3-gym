@@ -485,6 +485,7 @@ LrWpanMacHeader::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::LrWpanMacHeader")
     .SetParent<Header> ()
+    .SetGroupName ("LrWpan")
     .AddConstructor<LrWpanMacHeader> ();
   return tid;
 }

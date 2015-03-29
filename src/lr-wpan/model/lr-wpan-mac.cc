@@ -51,6 +51,7 @@ LrWpanMac::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::LrWpanMac")
     .SetParent<Object> ()
+    .SetGroupName ("LrWpan")
     .AddConstructor<LrWpanMac> ()
     .AddAttribute ("PanId", "16-bit identifier of the associated PAN",
                    UintegerValue (),

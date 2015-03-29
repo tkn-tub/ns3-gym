@@ -30,6 +30,7 @@ LrWpanLqiTag::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::LrWpanLqiTag")
     .SetParent<Tag> ()
+    .SetGroupName ("LrWpan")
     .AddConstructor<LrWpanLqiTag> ()
     .AddAttribute ("Lqi", "The lqi of the last packet received",
                    IntegerValue (0),

@@ -33,6 +33,7 @@ LrWpanErrorModel::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::LrWpanErrorModel")
     .SetParent<Object> ()
+    .SetGroupName ("LrWpan")
     .AddConstructor<LrWpanErrorModel> ()
   ;
   return tid;

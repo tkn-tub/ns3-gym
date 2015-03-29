@@ -75,6 +75,7 @@ LrWpanPhy::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::LrWpanPhy")
     .SetParent<Object> ()
+    .SetGroupName ("LrWpan")
     .AddConstructor<LrWpanPhy> ()
     .AddTraceSource ("TrxState",
                      "The state of the transceiver",
