@@ -35,6 +35,7 @@ CsmaChannel::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::CsmaChannel")
     .SetParent<Channel> ()
+    .SetGroupName ("Csma")
     .AddConstructor<CsmaChannel> ()
     .AddAttribute ("DataRate", 
                    "The transmission data rate to be provided to devices connected to the channel",

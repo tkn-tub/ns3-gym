@@ -44,6 +44,7 @@ CsmaNetDevice::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::CsmaNetDevice")
     .SetParent<NetDevice> ()
+    .SetGroupName ("Csma")
     .AddConstructor<CsmaNetDevice> ()
     .AddAttribute ("Address", 
                    "The MAC address of this device.",
