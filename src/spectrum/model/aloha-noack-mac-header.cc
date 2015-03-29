@@ -33,6 +33,7 @@ AlohaNoackMacHeader::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::AlohaNoackMacHeader")
     .SetParent<Header> ()
+    .SetGroupName ("Spectrum")
     .AddConstructor<AlohaNoackMacHeader> ()
   ;
   return tid;

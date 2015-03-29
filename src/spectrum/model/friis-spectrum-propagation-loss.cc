@@ -42,6 +42,7 @@ FriisSpectrumPropagationLossModel::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::FriisSpectrumPropagationLossModel")
     .SetParent<SpectrumPropagationLossModel> ()
+    .SetGroupName ("Spectrum")
     .AddConstructor<FriisSpectrumPropagationLossModel> ()
   ;
   return tid;

@@ -60,6 +60,7 @@ AlohaNoackNetDevice::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::AlohaNoackNetDevice")
     .SetParent<NetDevice> ()
+    .SetGroupName ("Spectrum")
     .AddConstructor<AlohaNoackNetDevice> ()
     .AddAttribute ("Address",
                    "The MAC address of this device.",

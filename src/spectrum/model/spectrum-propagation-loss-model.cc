@@ -48,6 +48,7 @@ SpectrumPropagationLossModel::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::SpectrumPropagationLossModel")
     .SetParent<Object> ()
+    .SetGroupName ("Spectrum")
   ;
   return tid;
 }

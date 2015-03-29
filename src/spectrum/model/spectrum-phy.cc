@@ -37,6 +37,7 @@ SpectrumPhy::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::SpectrumPhy")
     .SetParent<Object> ()
+    .SetGroupName ("Spectrum")
   ;
   return tid;
 }

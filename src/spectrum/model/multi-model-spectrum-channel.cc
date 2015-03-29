@@ -97,6 +97,7 @@ MultiModelSpectrumChannel::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::MultiModelSpectrumChannel")
     .SetParent<SpectrumChannel> ()
+    .SetGroupName ("Spectrum")
     .AddConstructor<MultiModelSpectrumChannel> ()
     .AddAttribute ("MaxLossDb",
                    "If a single-frequency PropagationLossModel is used, "

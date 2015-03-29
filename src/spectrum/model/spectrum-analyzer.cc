@@ -71,6 +71,7 @@ SpectrumAnalyzer::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::SpectrumAnalyzer")
     .SetParent<SpectrumPhy> ()
+    .SetGroupName ("Spectrum")
     .AddConstructor<SpectrumAnalyzer> ()
     .AddAttribute ("Resolution",
                    "The lengh of the time interval over which the "

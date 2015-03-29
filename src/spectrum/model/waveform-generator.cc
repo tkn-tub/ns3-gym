@@ -69,6 +69,7 @@ WaveformGenerator::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::WaveformGenerator")
     .SetParent<SpectrumPhy> ()
+    .SetGroupName ("Spectrum")
     .AddConstructor<WaveformGenerator> ()
     .AddAttribute ("Period",
                    "the period (=1/frequency)",

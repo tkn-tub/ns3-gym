@@ -34,6 +34,7 @@ SpectrumErrorModel::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::SpectrumErrorModel")
     .SetParent<Object> ()
+    .SetGroupName ("Spectrum")
     ;
   return tid;
 }

@@ -47,6 +47,7 @@ ConstantSpectrumPropagationLossModel::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::ConstantSpectrumPropagationLossModel")
     .SetParent<SpectrumPropagationLossModel> ()
+    .SetGroupName ("Spectrum")
     .AddConstructor<ConstantSpectrumPropagationLossModel> ()
     .AddAttribute ("Loss",
                    "Path loss (dB) between transmitter and receiver",

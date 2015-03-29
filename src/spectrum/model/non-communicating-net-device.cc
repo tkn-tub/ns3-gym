@@ -40,6 +40,7 @@ NonCommunicatingNetDevice::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::NonCommunicatingNetDevice")
     .SetParent<NetDevice> ()
+    .SetGroupName ("Spectrum")
     .AddConstructor<NonCommunicatingNetDevice> ()
     .AddAttribute ("Phy", "The PHY layer attached to this device.",
                    PointerValue (),
