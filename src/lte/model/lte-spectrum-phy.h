@@ -162,7 +162,7 @@ public:
    */
   enum State
   {
-    IDLE, TX, RX_DATA, RX_CTRL
+    IDLE, TX_DL_CTRL, TX_DATA, TX_UL_SRS, RX_DL_CTRL, RX_DATA, RX_UL_SRS
   };
 
   // inherited from Object
@@ -179,7 +179,8 @@ public:
   Ptr<AntennaModel> GetRxAntenna ();
   void StartRx (Ptr<SpectrumSignalParameters> params);
   void StartRxData (Ptr<LteSpectrumSignalParametersDataFrame> params);
-  void StartRxCtrl (Ptr<SpectrumSignalParameters> params);
+  void StartRxDlCtrl (Ptr<LteSpectrumSignalParametersDlCtrlFrame> lteDlCtrlRxParams);
+  void StartRxUlSrs (Ptr<LteSpectrumSignalParametersUlSrsFrame> lteUlSrsRxParams);
 
   void SetHarqPhyModule (Ptr<LteHarqPhy> harq);
 
