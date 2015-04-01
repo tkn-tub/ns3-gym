@@ -466,7 +466,7 @@ LteSpectrumPhy::StartTxDataFrame (Ptr<PacketBurst> pb, std::list<Ptr<LteControlM
       txParams->ctrlMsgList = ctrlMsgList;
       txParams->cellId = m_cellId;
       m_channel->StartTx (txParams);
-      m_endTxEvent = Simulator::Schedule (duration, &LteSpectrumPhy::EndTx, this);
+      m_endTxEvent = Simulator::Schedule (duration, &LteSpectrumPhy::EndTxData, this);
     }
     return false;
     break;
@@ -523,7 +523,7 @@ LteSpectrumPhy::StartTxDlCtrlFrame (std::list<Ptr<LteControlMessage> > ctrlMsgLi
       txParams->pss = pss;
       txParams->ctrlMsgList = ctrlMsgList;
       m_channel->StartTx (txParams);
-      m_endTxEvent = Simulator::Schedule (DL_CTRL_DURATION, &LteSpectrumPhy::EndTx, this);
+      m_endTxEvent = Simulator::Schedule (DL_CTRL_DURATION, &LteSpectrumPhy::EndTxDlCtrl, this);
     }
     return false;
     break;
@@ -578,7 +578,7 @@ LteSpectrumPhy::StartTxUlSrsFrame ()
       txParams->psd = m_txPsd;
       txParams->cellId = m_cellId;
       m_channel->StartTx (txParams);
-      m_endTxEvent = Simulator::Schedule (UL_SRS_DURATION, &LteSpectrumPhy::EndTx, this);
+      m_endTxEvent = Simulator::Schedule (UL_SRS_DURATION, &LteSpectrumPhy::EndTxUlSrs, this);
     }
     return false;
     break;
@@ -593,7 +593,7 @@ LteSpectrumPhy::StartTxUlSrsFrame ()
 
 
 void
-LteSpectrumPhy::EndTx ()
+LteSpectrumPhy::EndTxData ()
 {
   NS_LOG_FUNCTION (this);
   NS_LOG_LOGIC (this << " state: " << m_state);
@@ -601,6 +601,8 @@ LteSpectrumPhy::EndTx ()
   NS_ASSERT (m_state == TX);
 
   m_phyTxEndTrace (m_txPacketBurst);
+
+  NS_ASSERT (m_ltePhyTxEndCallback.IsNull () == true);
 
   if (!m_ltePhyTxEndCallback.IsNull ())
     {
@@ -615,6 +617,32 @@ LteSpectrumPhy::EndTx ()
   m_txPacketBurst = 0;
   ChangeState (IDLE);
 }
+
+void
+LteSpectrumPhy::EndTxDlCtrl ()
+{
+  NS_LOG_FUNCTION (this);
+  NS_LOG_LOGIC (this << " state: " << m_state);
+
+  NS_ASSERT (m_state == TX);
+  NS_ASSERT (m_txPacketBurst == 0);
+  NS_ASSERT (m_ltePhyTxEndCallback.IsNull () == true);
+  ChangeState (IDLE);
+}
+
+void
+LteSpectrumPhy::EndTxUlSrs ()
+{
+  NS_LOG_FUNCTION (this);
+  NS_LOG_LOGIC (this << " state: " << m_state);
+
+  NS_ASSERT (m_state == TX);
+  NS_ASSERT (m_txPacketBurst == 0);
+  NS_ASSERT (m_ltePhyTxEndCallback.IsNull () == true);
+  ChangeState (IDLE);
+}
+
+
 
 
 void

@@ -420,7 +420,9 @@ public:
 
 private:
   void ChangeState (State newState);
-  void EndTx ();
+  void EndTxData ();
+  void EndTxDlCtrl ();
+  void EndTxUlSrs ();
   void EndRxData ();
   void EndRxDlCtrl ();
   void EndRxUlSrs ();
