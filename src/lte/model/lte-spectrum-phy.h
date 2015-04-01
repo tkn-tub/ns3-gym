@@ -455,7 +455,6 @@ private:
   TracedCallback<Ptr<const Packet> > m_phyRxEndOkTrace;
   TracedCallback<Ptr<const Packet> > m_phyRxEndErrorTrace;
 
-  LtePhyTxEndCallback        m_ltePhyTxEndCallback;
   LtePhyRxDataEndErrorCallback   m_ltePhyRxDataEndErrorCallback;
   LtePhyRxDataEndOkCallback      m_ltePhyRxDataEndOkCallback;
   

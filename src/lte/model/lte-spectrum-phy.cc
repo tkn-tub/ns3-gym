@@ -148,7 +148,6 @@ void LteSpectrumPhy::DoDispose ()
   m_interferenceData = 0;
   m_interferenceCtrl->Dispose ();
   m_interferenceCtrl = 0;
-  m_ltePhyTxEndCallback      = MakeNullCallback< void, Ptr<const Packet> > ();
   m_ltePhyRxDataEndErrorCallback = MakeNullCallback< void > ();
   m_ltePhyRxDataEndOkCallback    = MakeNullCallback< void, Ptr<Packet> >  ();
   m_ltePhyRxCtrlEndOkCallback = MakeNullCallback< void, std::list<Ptr<LteControlMessage> > > ();
@@ -321,15 +320,6 @@ LteSpectrumPhy::Reset ()
   m_rxPacketBurstList.clear ();
   m_txPacketBurst = 0;
   m_rxSpectrumModel = 0;
-}
-
-
-
-void
-LteSpectrumPhy::SetLtePhyTxEndCallback (LtePhyTxEndCallback c)
-{
-  NS_LOG_FUNCTION (this);
-  m_ltePhyTxEndCallback = c;
 }
 
 
@@ -599,21 +589,7 @@ LteSpectrumPhy::EndTxData ()
   NS_LOG_LOGIC (this << " state: " << m_state);
 
   NS_ASSERT (m_state == TX);
-
   m_phyTxEndTrace (m_txPacketBurst);
-
-  NS_ASSERT (m_ltePhyTxEndCallback.IsNull () == true);
-
-  if (!m_ltePhyTxEndCallback.IsNull ())
-    {
-      for (std::list<Ptr<Packet> >::const_iterator iter = m_txPacketBurst->Begin (); iter
-           != m_txPacketBurst->End (); ++iter)
-        {
-          Ptr<Packet> packet = (*iter)->Copy ();
-          m_ltePhyTxEndCallback (packet);
-        }
-    }
-
   m_txPacketBurst = 0;
   ChangeState (IDLE);
 }
@@ -626,7 +602,6 @@ LteSpectrumPhy::EndTxDlCtrl ()
 
   NS_ASSERT (m_state == TX);
   NS_ASSERT (m_txPacketBurst == 0);
-  NS_ASSERT (m_ltePhyTxEndCallback.IsNull () == true);
   ChangeState (IDLE);
 }
 
@@ -638,7 +613,6 @@ LteSpectrumPhy::EndTxUlSrs ()
 
   NS_ASSERT (m_state == TX);
   NS_ASSERT (m_txPacketBurst == 0);
-  NS_ASSERT (m_ltePhyTxEndCallback.IsNull () == true);
   ChangeState (IDLE);
 }
 
