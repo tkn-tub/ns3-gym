@@ -474,9 +474,6 @@ LteSpectrumPhy::StartTxDlCtrlFrame (std::list<Ptr<LteControlMessage> > ctrlMsgLi
   NS_LOG_FUNCTION (this << " PSS " << (uint16_t)pss);
   NS_LOG_LOGIC (this << " state: " << m_state);
   
-  
-//   m_phyTxStartTrace (pb);
-  
   switch (m_state)
   {
     case RX_DATA:
@@ -531,8 +528,6 @@ LteSpectrumPhy::StartTxUlSrsFrame ()
 {
   NS_LOG_FUNCTION (this);
   NS_LOG_LOGIC (this << " state: " << m_state);
-  
-  //   m_phyTxStartTrace (pb);
   
   switch (m_state)
   {
