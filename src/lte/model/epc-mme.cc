@@ -59,6 +59,7 @@ EpcMme::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::EpcMme")
     .SetParent<Object> ()
+    .SetGroupName("Lte")
     .AddConstructor<EpcMme> ()
     ;
   return tid;

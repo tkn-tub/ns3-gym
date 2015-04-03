@@ -70,6 +70,7 @@ LtePdcpHeader::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::LtePdcpHeader")
     .SetParent<Header> ()
+    .SetGroupName("Lte")
     .AddConstructor<LtePdcpHeader> ()
   ;
   return tid;

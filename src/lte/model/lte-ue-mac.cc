@@ -195,6 +195,7 @@ LteUeMac::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::LteUeMac")
     .SetParent<Object> ()
+    .SetGroupName("Lte")
     .AddConstructor<LteUeMac> ();
   return tid;
 }

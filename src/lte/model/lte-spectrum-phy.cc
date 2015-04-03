@@ -192,6 +192,7 @@ LteSpectrumPhy::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::LteSpectrumPhy")
     .SetParent<SpectrumPhy> ()
+    .SetGroupName("Lte")
     .AddTraceSource ("TxStart",
                      "Trace fired when a new transmission is started",
                      MakeTraceSourceAccessor (&LteSpectrumPhy::m_phyTxStartTrace),

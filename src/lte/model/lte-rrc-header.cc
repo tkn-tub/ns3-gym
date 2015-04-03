@@ -50,6 +50,7 @@ RrcAsn1Header::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::RrcAsn1Header")
     .SetParent<Header> ()
+    .SetGroupName("Lte")
   ;
   return tid;
 }
@@ -3905,6 +3906,7 @@ RrcConnectionRequestHeader::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::RrcConnectionRequestHeader")
     .SetParent<Header> ()
+    .SetGroupName("Lte")
   ;
   return tid;
 }

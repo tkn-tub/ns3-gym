@@ -58,6 +58,7 @@ LteFrNoOpAlgorithm::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::LteFrNoOpAlgorithm")
     .SetParent<LteFfrAlgorithm> ()
+    .SetGroupName("Lte")
     .AddConstructor<LteFrNoOpAlgorithm> ()
   ;
   return tid;

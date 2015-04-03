@@ -314,6 +314,7 @@ LteEnbMac::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::LteEnbMac")
     .SetParent<Object> ()
+    .SetGroupName("Lte")
     .AddConstructor<LteEnbMac> ()
     .AddAttribute ("NumberOfRaPreambles",
                    "how many random access preambles are available for the contention based RACH process",

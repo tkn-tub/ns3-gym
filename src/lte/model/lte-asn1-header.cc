@@ -36,6 +36,7 @@ Asn1Header::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::Asn1Header")
     .SetParent<Header> ()
+    .SetGroupName("Lte")
   ;
   return tid;
 }

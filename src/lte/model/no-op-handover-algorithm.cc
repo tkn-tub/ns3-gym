@@ -56,6 +56,7 @@ NoOpHandoverAlgorithm::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::NoOpHandoverAlgorithm")
     .SetParent<LteHandoverAlgorithm> ()
+    .SetGroupName("Lte")
     .AddConstructor<NoOpHandoverAlgorithm> ()
   ;
   return tid;

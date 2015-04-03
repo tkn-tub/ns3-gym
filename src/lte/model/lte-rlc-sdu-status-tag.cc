@@ -45,6 +45,7 @@ LteRlcSduStatusTag::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::LteRlcSduStatusTag")
     .SetParent<Tag> ()
+    .SetGroupName("Lte")
     .AddConstructor<LteRlcSduStatusTag> ()
   ;
   return tid;

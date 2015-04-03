@@ -48,6 +48,7 @@ LteRlcTm::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::LteRlcTm")
     .SetParent<LteRlc> ()
+    .SetGroupName("Lte")
     .AddConstructor<LteRlcTm> ()
     .AddAttribute ("MaxTxBufferSize",
                    "Maximum Size of the Transmission Buffer (in Bytes)",

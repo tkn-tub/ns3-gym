@@ -63,6 +63,7 @@ LteUeRrcProtocolIdeal::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::LteUeRrcProtocolIdeal")
     .SetParent<Object> ()
+    .SetGroupName("Lte")
     .AddConstructor<LteUeRrcProtocolIdeal> ()
     ;
   return tid;
@@ -230,6 +231,7 @@ LteEnbRrcProtocolIdeal::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::LteEnbRrcProtocolIdeal")
     .SetParent<Object> ()
+    .SetGroupName("Lte")
     .AddConstructor<LteEnbRrcProtocolIdeal> ()
     ;
   return tid;
@@ -459,6 +461,7 @@ IdealHandoverPreparationInfoHeader::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::IdealHandoverPreparationInfoHeader")
     .SetParent<Header> ()
+    .SetGroupName("Lte")
     .AddConstructor<IdealHandoverPreparationInfoHeader> ()
   ;
   return tid;
@@ -565,6 +568,7 @@ IdealHandoverCommandHeader::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::IdealHandoverCommandHeader")
     .SetParent<Header> ()
+    .SetGroupName("Lte")
     .AddConstructor<IdealHandoverCommandHeader> ()
   ;
   return tid;

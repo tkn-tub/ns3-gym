@@ -68,6 +68,7 @@ LteUeRrcProtocolReal::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::LteUeRrcProtocolReal")
     .SetParent<Object> ()
+    .SetGroupName("Lte")
     .AddConstructor<LteUeRrcProtocolReal> ()
   ;
   return tid;
@@ -383,6 +384,7 @@ LteEnbRrcProtocolReal::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::LteEnbRrcProtocolReal")
     .SetParent<Object> ()
+    .SetGroupName("Lte")
     .AddConstructor<LteEnbRrcProtocolReal> ()
   ;
   return tid;

@@ -52,6 +52,7 @@ LteStatsCalculator::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::LteStatsCalculator")
     .SetParent<Object> ()
+    .SetGroupName("Lte")
     .AddConstructor<LteStatsCalculator> ()
   ;
   return tid;

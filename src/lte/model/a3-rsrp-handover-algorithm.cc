@@ -51,6 +51,7 @@ A3RsrpHandoverAlgorithm::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::A3RsrpHandoverAlgorithm")
     .SetParent<LteHandoverAlgorithm> ()
+    .SetGroupName("Lte")
     .AddConstructor<A3RsrpHandoverAlgorithm> ()
     .AddAttribute ("Hysteresis",
                    "Handover margin (hysteresis) in dB "

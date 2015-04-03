@@ -35,9 +35,9 @@ NS_OBJECT_ENSURE_REGISTERED (GtpuHeader);
 TypeId
 GtpuHeader::GetTypeId (void)
 {
-  static TypeId tid =
-    TypeId ("ns3::GtpuHeader")
+  static TypeId tid = TypeId ("ns3::GtpuHeader")
     .SetParent<Header> ()
+    .SetGroupName("Lte")
     .AddConstructor<GtpuHeader> ();
   return tid;
 }

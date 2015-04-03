@@ -59,6 +59,7 @@ TraceFadingLossModel::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::TraceFadingLossModel")
     .SetParent<SpectrumPropagationLossModel> ()
+    .SetGroupName("Lte")
     .AddConstructor<TraceFadingLossModel> ()
     .AddAttribute ("TraceFilename",
                    "Name of file to load a trace from.",

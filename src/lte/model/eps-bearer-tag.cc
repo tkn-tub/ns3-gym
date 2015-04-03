@@ -33,6 +33,7 @@ EpsBearerTag::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::EpsBearerTag")
     .SetParent<Tag> ()
+    .SetGroupName("Lte")
     .AddConstructor<EpsBearerTag> ()
     .AddAttribute ("rnti", "The rnti that indicates the UE which packet belongs",
                    UintegerValue (0),

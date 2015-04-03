@@ -109,7 +109,8 @@ TypeId
 EpcX2::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::EpcX2")
-    .SetParent<Object> ();
+    .SetParent<Object> ()
+    .SetGroupName("Lte");
   return tid;
 }
 

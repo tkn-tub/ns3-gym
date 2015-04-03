@@ -100,7 +100,8 @@ TypeId
 EpcSgwPgwApplication::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::EpcSgwPgwApplication")
-    .SetParent<Object> ();
+    .SetParent<Object> ()
+    .SetGroupName("Lte");
   return tid;
 }
 

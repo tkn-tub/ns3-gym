@@ -54,6 +54,7 @@ FfMacScheduler::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::FfMacScheduler")
     .SetParent<Object> ()
+    .SetGroupName("Lte")
     .AddAttribute ("UlCqiFilter",
                    "The filter to apply on UL CQIs received",
                    EnumValue (FfMacScheduler::ALL_UL_CQI),

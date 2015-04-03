@@ -85,6 +85,7 @@ EpcUeNas::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::EpcUeNas")
     .SetParent<Object> ()
+    .SetGroupName("Lte")
     .AddConstructor<EpcUeNas> ()
     .AddTraceSource ("StateTransition",
                      "fired upon every UE NAS state transition",

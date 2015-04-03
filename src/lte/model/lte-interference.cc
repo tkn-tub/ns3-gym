@@ -62,6 +62,7 @@ LteInterference::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::LteInterference")
     .SetParent<Object> ()
+    .SetGroupName("Lte")
   ;
   return tid;
 }

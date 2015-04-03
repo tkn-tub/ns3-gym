@@ -60,6 +60,7 @@ LtePhy::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::LtePhy")
     .SetParent<Object> ()
+    .SetGroupName("Lte")
   ;
   return tid;
 }

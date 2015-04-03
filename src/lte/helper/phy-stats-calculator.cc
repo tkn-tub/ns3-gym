@@ -48,6 +48,7 @@ PhyStatsCalculator::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::PhyStatsCalculator")
     .SetParent<LteStatsCalculator> ()
+    .SetGroupName("Lte")
     .AddConstructor<PhyStatsCalculator> ()
     .AddAttribute ("DlRsrpSinrFilename",
                    "Name of the file where the RSRP/SINR statistics will be saved.",

@@ -70,6 +70,7 @@ RadioEnvironmentMapHelper::GetTypeId (void)
   NS_LOG_FUNCTION ("RadioEnvironmentMapHelper::GetTypeId");
   static TypeId tid = TypeId ("ns3::RadioEnvironmentMapHelper")
     .SetParent<Object> ()
+    .SetGroupName("Lte")
     .AddConstructor<RadioEnvironmentMapHelper> ()
     .AddAttribute ("ChannelPath", "The path to the channel for which the Radio Environment Map is to be generated",
                    StringValue ("/ChannelList/0"),

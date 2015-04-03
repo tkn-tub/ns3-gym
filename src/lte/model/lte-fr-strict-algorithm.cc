@@ -118,6 +118,7 @@ LteFrStrictAlgorithm::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::LteFrStrictAlgorithm")
     .SetParent<LteFfrAlgorithm> ()
+    .SetGroupName("Lte")
     .AddConstructor<LteFrStrictAlgorithm> ()
     .AddAttribute ("UlCommonSubBandwidth",
                    "Uplink Common SubBandwidth Configuration in number of Resource Block Groups",

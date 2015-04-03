@@ -54,6 +54,7 @@ LteFfrAlgorithm::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::LteFfrAlgorithm")
     .SetParent<Object> ()
+    .SetGroupName("Lte")
     .AddAttribute ("FrCellTypeId",
                    "Downlink FR cell type ID for automatic configuration,"
                    "default value is 0 and it means that user needs to configure FR algorithm manually,"

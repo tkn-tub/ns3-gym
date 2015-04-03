@@ -47,6 +47,7 @@ MacStatsCalculator::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::MacStatsCalculator")
     .SetParent<LteStatsCalculator> ()
+    .SetGroupName("Lte")
     .AddConstructor<MacStatsCalculator> ()
     .AddAttribute ("DlOutputFilename",
                    "Name of the file where the downlink results will be saved.",

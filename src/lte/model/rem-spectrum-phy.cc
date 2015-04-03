@@ -68,6 +68,7 @@ RemSpectrumPhy::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::RemSpectrumPhy")
     .SetParent<SpectrumPhy> ()
+    .SetGroupName("Lte")
     .AddConstructor<RemSpectrumPhy> ()
   ;
   return tid;

@@ -72,6 +72,7 @@ LteUePowerControl::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::LteUePowerControl")
     .SetParent<Object> ()
+    .SetGroupName("Lte")
     .AddConstructor<LteUePowerControl> ()
     .AddAttribute ("ClosedLoop",
                    "If true Closed Loop mode will be active, otherwise Open Loop",

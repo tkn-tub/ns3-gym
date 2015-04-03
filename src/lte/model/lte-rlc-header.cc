@@ -116,6 +116,7 @@ LteRlcHeader::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::LteRlcHeader")
     .SetParent<Header> ()
+    .SetGroupName("Lte")
     .AddConstructor<LteRlcHeader> ()
   ;
   return tid;

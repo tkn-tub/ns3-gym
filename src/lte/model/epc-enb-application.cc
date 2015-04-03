@@ -62,7 +62,8 @@ TypeId
 EpcEnbApplication::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::EpcEnbApplication")
-    .SetParent<Object> ();
+    .SetParent<Object> ()
+    .SetGroupName("Lte");
   return tid;
 }
 

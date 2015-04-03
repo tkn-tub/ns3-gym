@@ -87,6 +87,7 @@ LteRlcAm::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::LteRlcAm")
     .SetParent<LteRlc> ()
+    .SetGroupName("Lte")
     .AddConstructor<LteRlcAm> ()
     .AddAttribute ("PollRetransmitTimer",
                    "Value of the t-PollRetransmit (See section 7.3 of 3GPP TS 36.322)",

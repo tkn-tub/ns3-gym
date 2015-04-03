@@ -64,6 +64,7 @@ A2A4RsrqHandoverAlgorithm::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::A2A4RsrqHandoverAlgorithm")
     .SetParent<LteHandoverAlgorithm> ()
+    .SetGroupName("Lte")
     .AddConstructor<A2A4RsrqHandoverAlgorithm> ()
     .AddAttribute ("ServingCellThreshold",
                    "If the RSRQ of the serving cell is worse than this "

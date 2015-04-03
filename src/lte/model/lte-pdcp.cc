@@ -85,6 +85,7 @@ LtePdcp::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::LtePdcp")
     .SetParent<Object> ()
+    .SetGroupName("Lte")
     .AddTraceSource ("TxPDU",
                      "PDU transmission notified to the RLC.",
                      MakeTraceSourceAccessor (&LtePdcp::m_txPdu),

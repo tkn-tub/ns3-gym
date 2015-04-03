@@ -58,6 +58,7 @@ LteAnr::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::LteAnr")
     .SetParent<Object> ()
+    .SetGroupName("Lte")
     .AddAttribute ("Threshold",
                    "Minimum RSRQ range value required for detecting a neighbour cell",
                    UintegerValue (0),

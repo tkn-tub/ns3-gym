@@ -248,6 +248,7 @@ TtaFfMacScheduler::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::TtaFfMacScheduler")
     .SetParent<FfMacScheduler> ()
+    .SetGroupName("Lte")
     .AddConstructor<TtaFfMacScheduler> ()
     .AddAttribute ("CqiTimerThreshold",
                    "The number of TTIs a CQI is valid (default 1000 - 1 sec.)",

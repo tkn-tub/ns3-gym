@@ -69,6 +69,7 @@ EmuEpcHelper::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::EmuEpcHelper")
     .SetParent<EpcHelper> ()
+    .SetGroupName("Lte")
     .AddConstructor<EmuEpcHelper> ()
     .AddAttribute ("sgwDeviceName", 
                    "The name of the device used for the S1-U interface of the SGW",

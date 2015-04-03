@@ -112,6 +112,7 @@ PointToPointEpcHelper::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::PointToPointEpcHelper")
     .SetParent<EpcHelper> ()
+    .SetGroupName("Lte")
     .AddConstructor<PointToPointEpcHelper> ()
     .AddAttribute ("S1uLinkDataRate", 
                    "The data rate to be used for the next S1-U link to be created",

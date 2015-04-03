@@ -113,6 +113,7 @@ LteFrHardAlgorithm::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::LteFrHardAlgorithm")
     .SetParent<LteFfrAlgorithm> ()
+    .SetGroupName("Lte")
     .AddConstructor<LteFrHardAlgorithm> ()
     .AddAttribute ("UlSubBandOffset",
                    "Uplink Offset in number of Resource Block Groups",

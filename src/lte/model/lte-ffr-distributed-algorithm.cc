@@ -59,6 +59,7 @@ LteFfrDistributedAlgorithm::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::LteFfrDistributedAlgorithm")
     .SetParent<LteFfrAlgorithm> ()
+    .SetGroupName("Lte")
     .AddConstructor<LteFfrDistributedAlgorithm> ()
     .AddAttribute ("CalculationInterval",
                    "Time interval between calculation of Edge sub-band, Default value 1 second",

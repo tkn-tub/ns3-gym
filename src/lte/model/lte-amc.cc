@@ -234,6 +234,7 @@ LteAmc::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::LteAmc")
   .SetParent<Object> ()
+  .SetGroupName("Lte")
   .AddConstructor<LteAmc> ()
   .AddAttribute ("Ber",
                  "The requested BER in assigning MCS (default is 0.00005).",

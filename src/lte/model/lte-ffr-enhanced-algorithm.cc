@@ -120,6 +120,7 @@ LteFfrEnhancedAlgorithm::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::LteFfrEnhancedAlgorithm")
     .SetParent<LteFfrAlgorithm> ()
+    .SetGroupName("Lte")
     .AddConstructor<LteFfrEnhancedAlgorithm> ()
     .AddAttribute ("UlSubBandOffset",
                    "Uplink SubBand Offset for this cell in number of Resource Block Groups",

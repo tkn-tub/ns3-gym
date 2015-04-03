@@ -44,6 +44,7 @@ LteHandoverAlgorithm::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::LteHandoverAlgorithm")
     .SetParent<Object> ()
+    .SetGroupName("Lte")
   ;
   return tid;
 }

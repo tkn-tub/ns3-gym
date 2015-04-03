@@ -59,6 +59,7 @@ RadioBearerStatsCalculator::GetTypeId (void)
   static TypeId tid =
     TypeId ("ns3::RadioBearerStatsCalculator")
     .SetParent<LteStatsCalculator> ().AddConstructor<RadioBearerStatsCalculator> ()
+    .SetGroupName("Lte")
     .AddAttribute ("StartTime", "Start time of the on going epoch.", 
                    TimeValue (Seconds (0.)),
                    MakeTimeAccessor (&RadioBearerStatsCalculator::SetStartTime,

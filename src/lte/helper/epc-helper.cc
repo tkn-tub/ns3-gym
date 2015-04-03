@@ -47,6 +47,7 @@ EpcHelper::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::EpcHelper")
     .SetParent<Object> ()
+    .SetGroupName("Lte")
     ;
   return tid;
 }
