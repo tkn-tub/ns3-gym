@@ -536,7 +536,7 @@ def configure(conf):
                              Options.options.build_profile, Logs.colors('NORMAL'))
     bld = wutils.bld
     print "%-30s: %s%s%s" % ("Build directory", Logs.colors('GREEN'),
-                             Context.out_dir, Logs.colors('NORMAL'))
+                             Options.options.out, Logs.colors('NORMAL'))
     
     
     for (name, caption, was_enabled, reason_not_enabled) in conf.env['NS3_OPTIONAL_FEATURES']:
