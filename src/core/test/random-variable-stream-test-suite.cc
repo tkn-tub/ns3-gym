@@ -2754,6 +2754,13 @@ RandomVariableStreamEmpiricalTestCase::DoRun (void)
   // Test that values have approximately the right mean value.
   double TOLERANCE = expectedMean * 1e-2;
   NS_TEST_ASSERT_MSG_EQ_TOL (valueMean, expectedMean, TOLERANCE, "Wrong mean value."); 
+
+  // Bug 2082: Create the RNG with a uniform distribution between -1 and 1.
+  Ptr<EmpiricalRandomVariable> y = CreateObject<EmpiricalRandomVariable> ();
+  y->CDF (-1.0,  0.0);
+  y->CDF (0.0,  0.5);
+  y->CDF (1.0,  1.0);
+  NS_TEST_ASSERT_MSG_LT (y->GetValue (), 2, "Empirical variable with negative domain");
 }
 
 // ===========================================================================

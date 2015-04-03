@@ -1610,7 +1610,7 @@ void EmpiricalRandomVariable::CDF (double v, double c)
 void EmpiricalRandomVariable::Validate ()
 {
   NS_LOG_FUNCTION (this);
-  ValueCDF prior;
+  ValueCDF prior = emp[0];
   for (std::vector<ValueCDF>::size_type i = 0; i < emp.size (); ++i)
     {
       ValueCDF& current = emp[i];
