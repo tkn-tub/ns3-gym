@@ -1,3 +1,4 @@
+
 ## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
 
 import os, os.path
@@ -206,7 +207,11 @@ def ns3_python_bindings(bld):
         return
 
     env.append_value('PYTHON_MODULES_BUILT', module)
-    apidefs = env['PYTHON_BINDINGS_APIDEFS'].replace("-", "_")
+    try:
+        apidefs = env['PYTHON_BINDINGS_APIDEFS'].replace("-", "_")
+    except AttributeError:
+        # we likely got an empty list for env['PYTHON_BINDINGS_APIDEFS']
+        return
 
     #debug = ('PYBINDGEN_DEBUG' in os.environ)
     debug = True # XXX
