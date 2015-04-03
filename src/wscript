@@ -492,7 +492,7 @@ class ns3header_task(Task.Task):
             up = m.update
             up(self.__class__.__name__.encode())
             for x in self.inputs + self.outputs:
-                up(x.abspath().encode())
+                up(x.abspath())
             up(self.mode)
             if self.mode == 'remove':
                 up(self.header_to_remove.abspath().encode())
@@ -584,7 +584,7 @@ class ns3privateheader_task(Task.Task):
             up = m.update
             up(self.__class__.__name__.encode())
             for x in self.inputs + self.outputs:
-                up(x.abspath().encode())
+                up(x.abspath())
             up(self.mode)
             if self.mode == 'remove':
                 up(self.header_to_remove.abspath().encode())
