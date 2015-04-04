@@ -71,7 +71,7 @@ UplinkSchedulerRtps::~UplinkSchedulerRtps (void)
 TypeId
 UplinkSchedulerRtps::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::UplinkSchedulerRtps").SetParent<UplinkScheduler> ();
+  static TypeId tid = TypeId ("ns3::UplinkSchedulerRtps").SetParent<UplinkScheduler> ().SetGroupName("Wimax");
   return tid;
 }
 

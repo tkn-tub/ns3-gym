@@ -40,7 +40,8 @@ NS_OBJECT_ENSURE_REGISTERED (IpcsClassifier);
 TypeId IpcsClassifier::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::IpcsClassifier")
-    .SetParent<Object> ();
+    .SetParent<Object> ()
+    .SetGroupName("Wimax");
   return tid;
 }
 

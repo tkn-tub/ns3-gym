@@ -49,7 +49,8 @@ NS_OBJECT_ENSURE_REGISTERED (ServiceFlowManager);
 TypeId ServiceFlowManager::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::ServiceFlowManager")
-    .SetParent<Object> ();
+    .SetParent<Object> ()
+    .SetGroupName("Wimax");
   return tid;
 }
 

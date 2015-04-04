@@ -41,7 +41,8 @@ NS_OBJECT_ENSURE_REGISTERED (BSLinkManager);
 TypeId BSLinkManager::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::BSLinkManager")
-    .SetParent<Object> ();
+    .SetParent<Object> ()
+    .SetGroupName("Wimax");
   return tid;
 }
 

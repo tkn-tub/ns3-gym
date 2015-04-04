@@ -58,6 +58,8 @@ TypeId BaseStationNetDevice::GetTypeId (void)
 
     .SetParent<WimaxNetDevice> ()
 
+    .SetGroupName("Wimax")
+
     .AddConstructor<BaseStationNetDevice> ()
 
     .AddAttribute ("BSScheduler",

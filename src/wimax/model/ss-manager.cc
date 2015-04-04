@@ -34,7 +34,8 @@ NS_OBJECT_ENSURE_REGISTERED (SSManager);
 TypeId SSManager::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::SSManager")
-    .SetParent<Object> ();
+    .SetParent<Object> ()
+    .SetGroupName("Wimax");
   return tid;
 }
 

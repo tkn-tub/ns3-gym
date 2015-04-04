@@ -68,7 +68,7 @@ TypeId
 ManagementMessageType::GetTypeId (void)
 {
   static TypeId tid =
-    TypeId ("ns3::ManagementMessageType").SetParent<Header> ().AddConstructor<ManagementMessageType> ();
+    TypeId ("ns3::ManagementMessageType").SetParent<Header> ().SetGroupName("Wimax").AddConstructor<ManagementMessageType> ();
   return tid;
 }
 
@@ -166,7 +166,7 @@ RngReq::GetName (void) const
 TypeId
 RngReq::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::RngReq").SetParent<Header> ().AddConstructor<RngReq> ();
+  static TypeId tid = TypeId ("ns3::RngReq").SetParent<Header> ().SetGroupName("Wimax").AddConstructor<RngReq> ();
   return tid;
 }
 
@@ -423,7 +423,7 @@ RngRsp::GetName (void) const
 TypeId
 RngRsp::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::RngRsp").SetParent<Header> ().AddConstructor<RngRsp> ();
+  static TypeId tid = TypeId ("ns3::RngRsp").SetParent<Header> ().SetGroupName("Wimax").AddConstructor<RngRsp> ();
   return tid;
 }
 
@@ -564,7 +564,7 @@ DsaReq::GetName (void) const
 TypeId
 DsaReq::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::DsaReq").SetParent<Header> ().AddConstructor<DsaReq> ();
+  static TypeId tid = TypeId ("ns3::DsaReq").SetParent<Header> ().SetGroupName("Wimax").AddConstructor<DsaReq> ();
   return tid;
 }
 
@@ -705,7 +705,7 @@ DsaRsp::GetName (void) const
 TypeId
 DsaRsp::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::DsaRsp").SetParent<Header> ().AddConstructor<DsaRsp> ();
+  static TypeId tid = TypeId ("ns3::DsaRsp").SetParent<Header> ().SetGroupName("Wimax").AddConstructor<DsaRsp> ();
   return tid;
 }
 
@@ -799,7 +799,7 @@ DsaAck::GetName (void) const
 TypeId
 DsaAck::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::DsaAck").SetParent<Header> ().AddConstructor<DsaAck> ();
+  static TypeId tid = TypeId ("ns3::DsaAck").SetParent<Header> ().SetGroupName("Wimax").AddConstructor<DsaAck> ();
   return tid;
 }
 

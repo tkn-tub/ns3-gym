@@ -46,7 +46,7 @@ NS_OBJECT_ENSURE_REGISTERED (BSSchedulerRtps);
 TypeId
 BSSchedulerRtps::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::BSSchedulerRtps").SetParent<Object> ().AddConstructor<BSSchedulerRtps> ();
+  static TypeId tid = TypeId ("ns3::BSSchedulerRtps").SetParent<Object> ().SetGroupName("Wimax").AddConstructor<BSSchedulerRtps> ();
   return tid;
 }
 

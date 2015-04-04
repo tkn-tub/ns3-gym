@@ -76,6 +76,7 @@ UplinkScheduler::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::UplinkScheduler")
     .SetParent<Object> ()
+    .SetGroupName("Wimax")
   ;
   return tid;
 }

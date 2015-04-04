@@ -40,7 +40,8 @@ NS_OBJECT_ENSURE_REGISTERED (ConnectionManager);
 TypeId ConnectionManager::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::ConnectionManager")
-    .SetParent<Object> ();
+    .SetParent<Object> ()
+    .SetGroupName("Wimax");
   return tid;
 }
 

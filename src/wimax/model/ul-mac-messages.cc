@@ -376,6 +376,7 @@ Ucd::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::Ucd")
     .SetParent<Header> ()
+    .SetGroupName("Wimax")
     .AddConstructor<Ucd> ()
   ;
   return tid;
@@ -637,6 +638,7 @@ UlMap::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::UlMap")
     .SetParent<Header> ()
+    .SetGroupName("Wimax")
     .AddConstructor<UlMap> ()
   ;
   return tid;

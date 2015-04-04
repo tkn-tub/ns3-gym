@@ -79,6 +79,7 @@ WimaxMacQueue::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::WimaxMacQueue")
     .SetParent<Object> ()
+    .SetGroupName("Wimax")
     .AddAttribute (
       "MaxSize",
       "Maximum size",

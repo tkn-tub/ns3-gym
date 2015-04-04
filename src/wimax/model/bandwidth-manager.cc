@@ -42,7 +42,8 @@ NS_OBJECT_ENSURE_REGISTERED (BandwidthManager);
 TypeId BandwidthManager::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::BandwidthManager")
-    .SetParent<Object> ();
+    .SetParent<Object> ()
+    .SetGroupName("Wimax");
   return tid;
 }
 

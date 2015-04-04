@@ -40,7 +40,8 @@ NS_OBJECT_ENSURE_REGISTERED (SSScheduler);
 TypeId SSScheduler::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::SSScheduler")
-    .SetParent<Object> ();
+    .SetParent<Object> ()
+    .SetGroupName("Wimax");
   return tid;
 }
 

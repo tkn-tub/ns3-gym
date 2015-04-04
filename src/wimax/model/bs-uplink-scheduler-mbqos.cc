@@ -58,6 +58,8 @@ UplinkSchedulerMBQoS::GetTypeId (void)
 
     .SetParent<UplinkScheduler> ()
 
+    .SetGroupName("Wimax")
+
     .AddAttribute ("WindowInterval",
                    "The time to wait to reset window",
                    TimeValue (Seconds (1.0)),
