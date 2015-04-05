@@ -296,7 +296,7 @@ def check_boost(self, *k, **kw):
         try:
                 self.env['INCLUDES_%s' % var] = inc = self.boost_get_includes(**params)
                 self.env.BOOST_VERSION = self.boost_get_version(inc)
-        except WafError:
+        except Errors.WafError:
                 self.end_msg("not found", 'YELLOW')
                 raise
         #self.env['INCLUDES_%s' % var] = inc = self.boost_get_includes(**params)
@@ -311,7 +311,7 @@ def check_boost(self, *k, **kw):
         try:
                 suffix = params.get('static', None) and 'ST' or ''
                 path, libs = self.boost_get_libs(**params)
-        except WafError:
+        except Errors.WafError:
                 self.end_msg("not found", 'YELLOW')
                 raise
         #suffix = params.get('static', None) and 'ST' or ''
