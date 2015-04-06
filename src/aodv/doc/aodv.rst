@@ -94,37 +94,43 @@ Future Work
 
 No announced plans.
 
-References
-++++++++++
+..
+  References
+  ++++++++++
 
+..
+  Usage
+  *****
 
-Usage
-*****
+..
+  Examples
+  ++++++++
 
-Examples
-++++++++
+..
+  Helpers
+  +++++++
 
-Helpers
-+++++++
+..
+  Attributes
+  ++++++++++
 
-Attributes
-++++++++++
+..
+  Tracing
+  +++++++
 
-Tracing
-+++++++
+..
+  Logging
+  +++++++
 
-Logging
-+++++++
+..
+  Caveats
+  +++++++
 
-Caveats
-+++++++
-
-Validation
-**********
-
-Unit tests
-++++++++++
-
-Larger-scale performance tests
-++++++++++++++++++++++++++++++
+..
+  Validation
+  **********
+  Unit tests
+  ++++++++++
+  Larger-scale performance tests
+  ++++++++++++++++++++++++++++++
 
