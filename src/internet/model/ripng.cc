@@ -247,6 +247,15 @@ bool RipNg::RouteInput (Ptr<const Packet> p, const Ipv6Header &header, Ptr<const
           NS_LOG_LOGIC ("Address " << addr << " not a match");
         }
     }
+
+  if (header.GetDestinationAddress ().IsLinkLocal () ||
+      header.GetSourceAddress ().IsLinkLocal ())
+    {
+      NS_LOG_LOGIC ("Dropping packet not for me and with src or dst LinkLocal");
+      ecb (p, header, Socket::ERROR_NOROUTETOHOST);
+      return false;
+    }
+
   // Check if input device supports IP forwarding
   if (m_ipv6->IsForwarding (iif) == false)
     {
@@ -260,13 +269,13 @@ bool RipNg::RouteInput (Ptr<const Packet> p, const Ipv6Header &header, Ptr<const
 
   if (rtentry != 0)
     {
-      NS_LOG_LOGIC ("Found unicast destination- calling unicast callback");
+      NS_LOG_LOGIC ("Found unicast destination - calling unicast callback");
       ucb (idev, rtentry, p, header);  // unicast forwarding callback
       return true;
     }
   else
     {
-      NS_LOG_LOGIC ("Did not find unicast destination- returning false");
+      NS_LOG_LOGIC ("Did not find unicast destination - returning false");
       return false; // Let other routing protocols try to handle this
     }
 }
@@ -283,15 +292,7 @@ void RipNg::NotifyInterfaceUp (uint32_t i)
 
       if (address != Ipv6Address () && networkMask != Ipv6Prefix ())
         {
-          if (networkMask == Ipv6Prefix (128))
-            {
-              /* host route */
-              AddNetworkRouteTo (networkAddress, Ipv6Prefix::GetOnes (), 0);
-            }
-          else
-            {
-              AddNetworkRouteTo (networkAddress, networkMask, i);
-            }
+          AddNetworkRouteTo (networkAddress, networkMask, i);
         }
     }
 
