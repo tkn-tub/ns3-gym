@@ -321,10 +321,6 @@ void RipNg::NotifyInterfaceUp (uint32_t i)
     {
       Ipv6InterfaceAddress address = m_ipv6->GetAddress (i, j);
 
-      Ipv6Address networkAddress = address.GetAddress ().CombinePrefix (address.GetPrefix ());
-      Ipv6Prefix networkMask = address.GetPrefix ();
-      AddNetworkRouteTo (networkAddress, networkMask, i);
-
       if (address.GetScope() == Ipv6InterfaceAddress::LINKLOCAL && sendSocketFound == false && activeInterface == true)
         {
           NS_LOG_LOGIC ("RIPng: adding sending socket to " << address.GetAddress ());
