@@ -412,6 +412,7 @@ MultiModelSpectrumChannel::GetDevice (uint32_t i) const
             {
               return (*phyIt)->GetDevice ();
             }
+          j++;
         }
     }
   NS_FATAL_ERROR ("m_numDevice > actual number of devices");

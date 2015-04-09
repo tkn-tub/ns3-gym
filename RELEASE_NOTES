@@ -43,6 +43,7 @@ Bugs fixed
 - Bug 2083 - BridgeNetDevice may send corrupted packets
 - Bug 2087 - Waf fails to build ns-3 if the path contains accented characters
 - Bug 2090 - (rip-ng) Routes may be added twice on interface activation
+- Bug 2093 - MultiModelSpectrumChannel::GetDevice only works for 0-th index
 
 Known issues
 ------------
