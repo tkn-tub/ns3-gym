@@ -53,6 +53,7 @@ TvSpectrumTransmitter::TvSpectrumTransmitter ()
     m_active (false)
 {
   NS_LOG_FUNCTION (this);
+  NS_UNUSED (m_channelNumber); // avoid unused warning; variable used by helper
 }
 
 TvSpectrumTransmitter::~TvSpectrumTransmitter ()
