@@ -23,7 +23,11 @@ New user-visible features
 -------------------------
 - (network) CalculateTxTime has been declared obsolete.
   CalculateBytesTxTime and CalculateBitsTxTime are to be used instead.
-  The reurn value is a Time, instead of a double.
+  The return value is a Time, instead of a double.
+- (mobility) Classes for converting geographic to cartesian coordinates.
+- (spectrum) TvSpectrumTransmitter classes to create television 
+  transmitter(s) that transmit PSD spectrums customized by attributes such 
+  as modulation type, power, antenna type, channel frequency, etc.
 
 Bugs fixed
 ----------
@@ -35,7 +39,9 @@ Bugs fixed
 - Bug 2076 - TCP MinRTO Attribute is not actually used
 - Bug 2077 - Icmpv6L4Protocol::HandleDestinationUnreachable must check the packet size, not its serialized size
 - Bug 2079 - mcs variable in ht-wifi-network example is confusing
+- Bug 2082 - Empirical RV fails if the value provided in the CDF member function is negative
 - Bug 2083 - BridgeNetDevice may send corrupted packets
+- Bug 2087 - Waf fails to build ns-3 if the path contains accented characters
 - Bug 2090 - (rip-ng) Routes may be added twice on interface activation
 
 Known issues
