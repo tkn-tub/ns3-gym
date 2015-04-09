@@ -9,6 +9,7 @@ def build(bld):
         'model/constant-velocity-helper.cc',
         'model/constant-velocity-mobility-model.cc',
         'model/gauss-markov-mobility-model.cc',
+        'model/geographic-positions.cc',
         'model/hierarchical-mobility-model.cc',
         'model/mobility-model.cc',
         'model/position-allocator.cc',
@@ -30,6 +31,8 @@ def build(bld):
         'test/ns2-mobility-helper-test-suite.cc',
         'test/steady-state-random-waypoint-mobility-model-test.cc',
         'test/waypoint-mobility-model-test.cc',
+        'test/geo-to-cartesian-test.cc',
+        'test/rand-cart-around-geo-test.cc',
         ]
 
     headers = bld(features='ns3header')
@@ -41,6 +44,7 @@ def build(bld):
         'model/constant-velocity-helper.h',
         'model/constant-velocity-mobility-model.h',
         'model/gauss-markov-mobility-model.h',
+        'model/geographic-positions.h',
         'model/hierarchical-mobility-model.h',
         'model/mobility-model.h',
         'model/position-allocator.h',
