@@ -136,7 +136,7 @@ private:
   /** Sets up signal to be transmitted */
   virtual void SetupTx ();
 
-  int m_tvType; //!< Type of TV transmitter
+  enum TvType m_tvType; //!< Type of TV transmitter
   double m_startFrequency; //!< Start frequency (in Hz) of TV transmitter's signal
   double m_channelBandwidth; //!< Bandwidth (in Hz) of TV transmitter's signal
   uint16_t m_channelNumber; //!< Channel number of TV transmitter
