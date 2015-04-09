@@ -28,10 +28,12 @@ def build(bld):
         'model/half-duplex-ideal-phy-signal-parameters.cc',
         'model/non-communicating-net-device.cc',
         'model/microwave-oven-spectrum-value-helper.cc',
+        'model/tv-spectrum-transmitter.cc',
         'helper/spectrum-helper.cc',
         'helper/adhoc-aloha-noack-ideal-phy-helper.cc',
         'helper/waveform-generator-helper.cc',
         'helper/spectrum-analyzer-helper.cc',
+        'helper/tv-spectrum-transmitter-helper.cc',
         ]
 
     module_test = bld.create_ns3_module_test_library('spectrum')
@@ -40,6 +42,8 @@ def build(bld):
         'test/spectrum-value-test.cc',
         'test/spectrum-ideal-phy-test.cc',
         'test/spectrum-waveform-generator-test.cc',
+        'test/tv-helper-distribution-test.cc',
+        'test/tv-spectrum-transmitter-test.cc',
         ]
     
     headers = bld(features='ns3header')
@@ -69,10 +73,12 @@ def build(bld):
         'model/half-duplex-ideal-phy-signal-parameters.h',
         'model/non-communicating-net-device.h',
         'model/microwave-oven-spectrum-value-helper.h',
+        'model/tv-spectrum-transmitter.h',
         'helper/spectrum-helper.h',
         'helper/adhoc-aloha-noack-ideal-phy-helper.h',
         'helper/waveform-generator-helper.h',
         'helper/spectrum-analyzer-helper.h',
+        'helper/tv-spectrum-transmitter-helper.h',
         'test/spectrum-test.h',
         ]
 

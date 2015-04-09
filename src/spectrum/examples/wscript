@@ -13,4 +13,10 @@ def build(bld):
                                  ['spectrum', 'mobility', 'internet', 'applications'])
     obj.source = 'adhoc-aloha-ideal-phy-with-microwave-oven.cc'
 
+    obj = bld.create_ns3_program('tv-trans-example',
+                                 ['spectrum', 'mobility', 'core'])
+    obj.source = 'tv-trans-example.cc'
 
+    obj = bld.create_ns3_program('tv-trans-regional-example',
+                                 ['spectrum', 'mobility', 'core'])
+    obj.source = 'tv-trans-regional-example.cc'

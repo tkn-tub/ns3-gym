@@ -250,6 +250,9 @@ SOURCEFIGS = \
 	$(SRC)/spectrum/doc/spectrum-channel-phy-interface.png \
 	$(SRC)/spectrum/doc/spectrum-channel-phy-interface.pdf \
 	$(SRC)/spectrum/doc/spectrum-analyzer-example.eps \
+	$(SRC)/spectrum/doc/spectrum-tv-rand-geo-points.eps \
+	$(SRC)/spectrum/doc/spectrum-tv-8vsb.png \
+	$(SRC)/spectrum/doc/spectrum-tv-cofdm.png \
 	$(SRC)/lr-wpan/doc/lr-wpan-arch.dia \
 	$(SRC)/lr-wpan/doc/lr-wpan-data-example.dia \
 	$(SRC)/lr-wpan/doc/lr-wpan-primitives.dia \
