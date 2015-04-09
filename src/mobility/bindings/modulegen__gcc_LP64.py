@@ -38,6 +38,10 @@ def register_types(module):
     module.add_class('ConstantVelocityHelper')
     ## event-id.h (module 'core'): ns3::EventId [class]
     module.add_class('EventId', import_from_module='ns.core')
+    ## geographic-positions.h (module 'mobility'): ns3::GeographicPositions [class]
+    module.add_class('GeographicPositions')
+    ## geographic-positions.h (module 'mobility'): ns3::GeographicPositions::EarthSpheroidType [enumeration]
+    module.add_enum('EarthSpheroidType', ['SPHERE', 'GRS80', 'WGS84'], outer_class=root_module['ns3::GeographicPositions'])
     ## hash.h (module 'core'): ns3::Hasher [class]
     module.add_class('Hasher', import_from_module='ns.core')
     ## ipv4-address.h (module 'network'): ns3::Ipv4Address [class]
@@ -268,6 +272,7 @@ def register_types(module):
     module.add_class('GaussMarkovMobilityModel', parent=root_module['ns3::MobilityModel'])
     ## hierarchical-mobility-model.h (module 'mobility'): ns3::HierarchicalMobilityModel [class]
     module.add_class('HierarchicalMobilityModel', parent=root_module['ns3::MobilityModel'])
+    module.add_container('std::list< ns3::Vector3D >', 'ns3::Vector3D', container_type=u'list')
     typehandlers.add_type_alias(u'ns3::Vector3D', u'ns3::Vector')
     typehandlers.add_type_alias(u'ns3::Vector3D*', u'ns3::Vector*')
     typehandlers.add_type_alias(u'ns3::Vector3D&', u'ns3::Vector&')
@@ -335,6 +340,7 @@ def register_methods(root_module):
     register_Ns3CallbackBase_methods(root_module, root_module['ns3::CallbackBase'])
     register_Ns3ConstantVelocityHelper_methods(root_module, root_module['ns3::ConstantVelocityHelper'])
     register_Ns3EventId_methods(root_module, root_module['ns3::EventId'])
+    register_Ns3GeographicPositions_methods(root_module, root_module['ns3::GeographicPositions'])
     register_Ns3Hasher_methods(root_module, root_module['ns3::Hasher'])
     register_Ns3Ipv4Address_methods(root_module, root_module['ns3::Ipv4Address'])
     register_Ns3Ipv4Mask_methods(root_module, root_module['ns3::Ipv4Mask'])
@@ -708,6 +714,23 @@ def register_Ns3EventId_methods(root_module, cls):
                    'ns3::EventImpl *', 
                    [], 
                    is_const=True)
+    return
+
+def register_Ns3GeographicPositions_methods(root_module, cls):
+    ## geographic-positions.h (module 'mobility'): ns3::GeographicPositions::GeographicPositions() [constructor]
+    cls.add_constructor([])
+    ## geographic-positions.h (module 'mobility'): ns3::GeographicPositions::GeographicPositions(ns3::GeographicPositions const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::GeographicPositions const &', 'arg0')])
+    ## geographic-positions.h (module 'mobility'): static ns3::Vector ns3::GeographicPositions::GeographicToCartesianCoordinates(double latitude, double longitude, double altitude, ns3::GeographicPositions::EarthSpheroidType sphType) [member function]
+    cls.add_method('GeographicToCartesianCoordinates', 
+                   'ns3::Vector', 
+                   [param('double', 'latitude'), param('double', 'longitude'), param('double', 'altitude'), param('ns3::GeographicPositions::EarthSpheroidType', 'sphType')], 
+                   is_static=True)
+    ## geographic-positions.h (module 'mobility'): static std::list<ns3::Vector3D,std::allocator<ns3::Vector3D> > ns3::GeographicPositions::RandCartesianPointsAroundGeographicPoint(double originLatitude, double originLongitude, double maxAltitude, int numPoints, double maxDistFromOrigin, ns3::Ptr<ns3::UniformRandomVariable> uniRand) [member function]
+    cls.add_method('RandCartesianPointsAroundGeographicPoint', 
+                   'std::list< ns3::Vector3D >', 
+                   [param('double', 'originLatitude'), param('double', 'originLongitude'), param('double', 'maxAltitude'), param('int', 'numPoints'), param('double', 'maxDistFromOrigin'), param('ns3::Ptr< ns3::UniformRandomVariable >', 'uniRand')], 
+                   is_static=True)
     return
 
 def register_Ns3Hasher_methods(root_module, cls):
