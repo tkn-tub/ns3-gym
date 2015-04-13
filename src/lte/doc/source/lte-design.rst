@@ -503,7 +503,7 @@ The generation of CQI feedback is done accordingly to what specified in [FFAPI]_
 of periodic wideband CQI (i.e., a single value of channel state that is deemed representative of all RBs
 in use) and inband CQIs (i.e., a set of value representing the channel state for each RB).
 
-The CQI index to be reported is obtained by first obtaining a SINR measurement and then passing this SINR measurement  the :ref:`Adaptive Modulation and Coding` which will map it to the CQI index. 
+The CQI index to be reported is obtained by first obtaining a SINR measurement and then passing this SINR measurement to the `Adaptive Modulation and Coding`_ module which will map it to the CQI index. 
 
 In downlink, the SINR used to generate CQI feedback can be calculated in two different ways:
 

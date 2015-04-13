@@ -113,12 +113,6 @@ returned by LteSpectrumValueHelper is the same as the known value for
 each element in the test vector.
 
 
-
-
-
-
-
-
 System Tests
 ~~~~~~~~~~~~
 
@@ -130,25 +124,26 @@ Test Case Flow is as follows:
 Attach UE -> Create Default+Dedicated Bearer -> Deactivate one of the Dedicated bearer
 
 Test case further deactivates dedicated bearer having bearer ID 2(LCID=BearerId+2) of First UE (UE_ID=1) 
-User can schedule bearer deactivation after specific time delay using Simulator::Schedule () method.
+User can schedule bearer deactivation after specific time delay using Simulator::Schedule () method. 
 
-Once the test case execution ends it will create DlRlcStats.txt and UlRlcStats.txt. 
-Key fields that need to be checked in statistics are:
-|Start | end | Cell ID | IMSI | RNTI | LCID | TxBytes | RxBytes |
+Once the test case execution ends it will create ``DlRlcStats.txt`` and ``UlRlcStats.txt``. Key fields that need to be checked in statistics are:
 
-Test case executes in three epoch’s.
-1) In first Epoch (0.04s-1.04s) All UE’s and corresponding bearers gets attached 
-   and packet flow over the dedicated bearers activated.
-2) In second Epoch (1.04s-2.04s), bearer deactivation is instantiated, hence User can see 
-   relatively less number of TxBytes on UE_ID=1 and LCID=4 as compared to other bearers.
-3) In third Epoch (2.04s-3.04s) since bearer deactivation of UE_ID=1 and LCID=4 is completed, 
-   user will not see any logging related to LCID=4.
+:: 
+
+  |Start | end | Cell ID | IMSI | RNTI | LCID | TxBytes | RxBytes |
+
+Test case executes in three epochs:
+
+ #. In first Epoch (0.04s-1.04s) All UE’s and corresponding bearers gets attached and packet flow over the dedicated bearers activated.
+ #. In second Epoch (1.04s-2.04s), bearer deactivation is instantiated, hence User can see relatively less number of TxBytes on UE_ID=1 and LCID=4 as compared to other bearers.
+ #. In third Epoch (2.04s-3.04s) since bearer deactivation of UE_ID=1 and LCID=4 is completed, user will not see any logging related to LCID=4.
 
 Test case passes if and only if 
-1) IMSI=1 and LCID=4 completely removed in third epoch 
-2) No packets seen in TxBytes and RxBytes corresponding to IMSI=1 and LCID=4
-If above criterion does not match test case considered to be failed
 
+ #. IMSI=1 and LCID=4 completely removed in third epoch 
+ #. No packets seen in TxBytes and RxBytes corresponding to IMSI=1 and LCID=4
+
+If above criteria do not match, the test case is considered to be failed
 
 .. _sec-lte-amc-tests:
 
