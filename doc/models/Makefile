@@ -338,6 +338,7 @@ IMAGES_EPS = \
 	$(FIGURES)/lte-strongest-cell-handover-algorithm.eps \
 	$(FIGURES)/auvmobility-classes.eps \
 	$(FIGURES)/spectrum-analyzer-example.eps \
+	$(FIGURES)/spectrum-tv-rand-geo-points.eps \
 	$(FIGURES)/lr-wpan-primitives.eps \
 	$(FIGURES)/lr-wpan-data-example.eps \
 	$(FIGURES)/lr-wpan-arch.eps \
@@ -393,6 +394,7 @@ $(FIGURES)/mac-random-access-noncontention.pdf_width = 15cm
 $(FIGURES)/helpers.pdf_width = 8cm
 $(FIGURES)/auvmobility-classes.pdf_width = 10cm
 $(FIGURES)/spectrum-analyzer-example.pdf_width = 15cm
+$(FIGURES)/spectrum-tv-rand-geo-points.pdf_width = 8cm
 $(FIGURES)/lr-wpan-primitives.pdf_width = 3in
 $(FIGURES)/lr-wpan-arch.pdf_width = 2in
 
