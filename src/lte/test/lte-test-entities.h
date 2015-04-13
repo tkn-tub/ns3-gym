@@ -82,6 +82,8 @@ class LteTestRrc : public Object
     void SetArrivalTime (Time arrivalTime);
     void SetPduSize (uint32_t pduSize);
 
+  void SetDevice (Ptr<NetDevice> device);
+
   private:
     // Interface forwarded by LtePdcpSapUser
     virtual void DoReceivePdcpSdu (LtePdcpSapUser::ReceivePdcpSduParameters params);
@@ -101,6 +103,8 @@ class LteTestRrc : public Object
     EventId m_nextPdu;
     Time m_arrivalTime;
     uint32_t m_pduSize;
+
+    Ptr<NetDevice> m_device;
 };
 
 /////////////////////////////////////////////////////////////////////

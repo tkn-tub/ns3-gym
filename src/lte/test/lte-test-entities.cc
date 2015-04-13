@@ -20,6 +20,7 @@
 
 #include "ns3/simulator.h"
 #include "ns3/log.h"
+#include "ns3/node.h"
 
 #include "ns3/lte-rlc-header.h"
 #include "ns3/lte-rlc-am-header.h"
@@ -70,6 +71,12 @@ LteTestRrc::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
   delete m_pdcpSapUser;
+}
+
+void
+LteTestRrc::SetDevice (Ptr<NetDevice> device)
+{
+  m_device = device;
 }
 
 void
@@ -198,7 +205,7 @@ LteTestRrc::Start ()
   p.lcid = 222;
   p.pdcpSdu = Create<Packet> (m_pduSize);
 
-  Simulator::ScheduleNow (&LtePdcpSapProvider::TransmitPdcpSdu, m_pdcpSapProvider, p);
+  Simulator::ScheduleWithContext (m_device->GetNode ()->GetId (), Seconds (0), &LtePdcpSapProvider::TransmitPdcpSdu, m_pdcpSapProvider, p);
   m_nextPdu = Simulator::Schedule (m_arrivalTime, &LteTestRrc::Start, this);
 //   Simulator::Run ();
 }
@@ -450,7 +457,7 @@ void
 LteTestMac::SendTxOpportunity (Time time, uint32_t bytes)
 {
   NS_LOG_FUNCTION (this << time << bytes);
-  Simulator::Schedule (time, &LteMacSapUser::NotifyTxOpportunity, m_macSapUser, bytes, 0, 0);
+  Simulator::ScheduleWithContext (m_device->GetNode ()->GetId (), time, &LteMacSapUser::NotifyTxOpportunity, m_macSapUser, bytes, 0, 0);
   if (m_txOpportunityMode == RANDOM_MODE)
   {
     if (m_txOppTime != Seconds (0))
