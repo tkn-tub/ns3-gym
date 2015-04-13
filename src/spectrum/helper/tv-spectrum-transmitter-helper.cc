@@ -91,7 +91,6 @@ const double japanEndFrequencies[63] = {0, 96e6, 102e6, 108e6, 176e6, 182e6,
 
 TvSpectrumTransmitterHelper::TvSpectrumTransmitterHelper ()
   : m_channel (0),
-    m_channelNumber (0),
     m_uniRand (CreateObject<UniformRandomVariable> ())
 {
   NS_LOG_FUNCTION (this);
@@ -116,13 +115,6 @@ void
 TvSpectrumTransmitterHelper::SetAttribute (std::string name, const AttributeValue &val)
 {
   m_factory.Set (name, val);
-  if (name.compare ("ChannelNumber") == 0)
-    {
-      const AttributeValue * aval = &val;
-      const UintegerValue * ival;
-      ival = dynamic_cast<const UintegerValue *> (aval);
-      m_channelNumber = (uint16_t) ival->Get (); // store channel number
-    }
 }
 
 
@@ -156,7 +148,9 @@ TvSpectrumTransmitterHelper::Install (NodeContainer nodeCont)
 
 
 NetDeviceContainer
-TvSpectrumTransmitterHelper::Install (NodeContainer nodeCont, Region region)
+TvSpectrumTransmitterHelper::Install (NodeContainer nodeCont,
+                                      Region region,
+                                      uint16_t channelNumber)
 {
   NS_LOG_FUNCTION (this);
   NetDeviceContainer devCont;
@@ -164,21 +158,39 @@ TvSpectrumTransmitterHelper::Install (NodeContainer nodeCont, Region region)
   double channelBandwidth;
   if (region == REGION_NORTH_AMERICA)
     {
-      startFrequency = northAmericaStartFrequencies[m_channelNumber];    
-      channelBandwidth = northAmericaEndFrequencies[m_channelNumber] - 
-                         northAmericaStartFrequencies[m_channelNumber];
+      NS_ASSERT_MSG (channelNumber < northAmericaArrayLength,
+                     "channel number " << channelNumber <<
+                     " does not exist for this region");
+      NS_ASSERT_MSG (northAmericaStartFrequencies[channelNumber] != 0,
+                     "channel number " << channelNumber <<
+                     " does not exist for this region");
+      startFrequency = northAmericaStartFrequencies[channelNumber];    
+      channelBandwidth = northAmericaEndFrequencies[channelNumber] - 
+                         northAmericaStartFrequencies[channelNumber];
     }
   else if (region == REGION_EUROPE)
     {
-      startFrequency = europeStartFrequencies[m_channelNumber];    
-      channelBandwidth = europeEndFrequencies[m_channelNumber] - 
-                         europeStartFrequencies[m_channelNumber];
+      NS_ASSERT_MSG (channelNumber < europeArrayLength,
+                     "channel number " << channelNumber <<
+                     " does not exist for this region");
+      NS_ASSERT_MSG (europeStartFrequencies[channelNumber] != 0,
+                     "channel number " << channelNumber <<
+                     " does not exist for this region");
+      startFrequency = europeStartFrequencies[channelNumber];    
+      channelBandwidth = europeEndFrequencies[channelNumber] - 
+                         europeStartFrequencies[channelNumber];
     }
   else if (region == REGION_JAPAN)
     {
-      startFrequency = japanStartFrequencies[m_channelNumber];    
-      channelBandwidth = japanEndFrequencies[m_channelNumber] - 
-                         japanStartFrequencies[m_channelNumber];
+      NS_ASSERT_MSG (channelNumber < japanArrayLength,
+                     "channel number " << channelNumber <<
+                     " does not exist for this region");
+      NS_ASSERT_MSG (japanStartFrequencies[channelNumber] != 0,
+                     "channel number " << channelNumber <<
+                     " does not exist for this region");
+      startFrequency = japanStartFrequencies[channelNumber];    
+      channelBandwidth = japanEndFrequencies[channelNumber] - 
+                         japanStartFrequencies[channelNumber];
     }
   //iterate over node container to make one transmitter for each given node
   for (NodeContainer::Iterator i = nodeCont.Begin (); i != nodeCont.End (); ++i)
@@ -223,7 +235,6 @@ TvSpectrumTransmitterHelper::InstallAdjacent (NodeContainer nodeCont)
       phy->GetAttribute ("ChannelBandwidth", channelBandwidth);
       phy->SetAttribute ("StartFrequency", DoubleValue (startFrequency.Get () + 
                          (index * channelBandwidth.Get ())));
-      phy->SetAttribute ("ChannelNumber", UintegerValue (m_channelNumber + index));
       phy->CreateTvPsd ();
       Ptr<NonCommunicatingNetDevice> dev = CreateObject<NonCommunicatingNetDevice> ();
       NS_ASSERT (phy);
@@ -245,39 +256,60 @@ TvSpectrumTransmitterHelper::InstallAdjacent (NodeContainer nodeCont)
 
 
 NetDeviceContainer
-TvSpectrumTransmitterHelper::InstallAdjacent (NodeContainer nodeCont, Region region)
+TvSpectrumTransmitterHelper::InstallAdjacent (NodeContainer nodeCont,
+                                              Region region,
+                                              uint16_t channelNumber)
 {
   NS_LOG_FUNCTION (this);
   NetDeviceContainer devCont;
   double startFrequency;
   double channelBandwidth;
+  uint16_t currChannelNumber;
   int index = 0;
   //iterate over node container to make one transmitter for each given node
   for (NodeContainer::Iterator i = nodeCont.Begin (); i != nodeCont.End (); ++i)
     {
+      currChannelNumber = channelNumber + index;
       if (region == REGION_NORTH_AMERICA)
         {
-          startFrequency = northAmericaStartFrequencies[m_channelNumber + index];    
-          channelBandwidth = northAmericaEndFrequencies[m_channelNumber + index] 
-                             - northAmericaStartFrequencies[m_channelNumber + index];
+          NS_ASSERT_MSG (currChannelNumber < northAmericaArrayLength,
+                         "channel number " << currChannelNumber <<
+                         " does not exist for this region");
+          NS_ASSERT_MSG (northAmericaStartFrequencies[currChannelNumber] != 0,
+                         "channel number " << currChannelNumber <<
+                         " does not exist for this region");
+          startFrequency = northAmericaStartFrequencies[currChannelNumber];    
+          channelBandwidth = northAmericaEndFrequencies[currChannelNumber] 
+                             - northAmericaStartFrequencies[currChannelNumber];
         }
       else if (region == REGION_EUROPE)
         {
-          startFrequency = europeStartFrequencies[m_channelNumber + index];    
-          channelBandwidth = europeEndFrequencies[m_channelNumber + index] - 
-                             europeStartFrequencies[m_channelNumber + index];
+          NS_ASSERT_MSG (currChannelNumber < europeArrayLength,
+                         "channel number " << currChannelNumber <<
+                         " does not exist for this region");
+          NS_ASSERT_MSG (europeStartFrequencies[currChannelNumber] != 0,
+                         "channel number " << currChannelNumber <<
+                         " does not exist for this region");
+          startFrequency = europeStartFrequencies[currChannelNumber];    
+          channelBandwidth = europeEndFrequencies[currChannelNumber] - 
+                             europeStartFrequencies[currChannelNumber];
         }
       else if (region == REGION_JAPAN)
         {
-          startFrequency = japanStartFrequencies[m_channelNumber + index];    
-          channelBandwidth = japanEndFrequencies[m_channelNumber + index] - 
-                             japanStartFrequencies[m_channelNumber + index];
+          NS_ASSERT_MSG (currChannelNumber < japanArrayLength,
+                         "channel number " << currChannelNumber <<
+                         " does not exist for this region");
+          NS_ASSERT_MSG (japanStartFrequencies[currChannelNumber] != 0,
+                         "channel number " << currChannelNumber <<
+                         " does not exist for this region");
+          startFrequency = japanStartFrequencies[currChannelNumber];    
+          channelBandwidth = japanEndFrequencies[currChannelNumber] - 
+                             japanStartFrequencies[currChannelNumber];
         }
       Ptr<Node> node = *i;
       Ptr<TvSpectrumTransmitter> phy = m_factory.Create ()->GetObject<TvSpectrumTransmitter> ();
       phy->SetAttribute ("StartFrequency", DoubleValue (startFrequency));
       phy->SetAttribute ("ChannelBandwidth", DoubleValue (channelBandwidth));
-      phy->SetAttribute ("ChannelNumber", UintegerValue (m_channelNumber + index));      
       phy->CreateTvPsd ();
       Ptr<NonCommunicatingNetDevice> dev = CreateObject<NonCommunicatingNetDevice> ();
       NS_ASSERT (phy);
@@ -437,8 +469,8 @@ TvSpectrumTransmitterHelper::InstallRandomRegionalTransmitters (Region region,
       tvNode.Create (1);
       mobility.Install (tvNode);
       // set channel number for this transmitter
-      m_channelNumber = (uint16_t) transmitterIndicesToCreate.front(); 
-      Install (tvNode, region); //install tv transmitter
+      uint16_t channelNumber = (uint16_t) transmitterIndicesToCreate.front(); 
+      Install (tvNode, region, channelNumber); //install tv transmitter
       transmitterLocations.pop_front(); // remove created transmitter location
       transmitterIndicesToCreate.pop_front(); // remove created transmitter index
     }

@@ -45,7 +45,6 @@ TvSpectrumTransmitter::TvSpectrumTransmitter ()
     m_tvType (TVTYPE_8VSB),
     m_startFrequency (500e6),
     m_channelBandwidth (6e6),
-    m_channelNumber (0),
     m_basePsd (20),
     m_txPsd (0),
     m_startingTime (Seconds (0)),
@@ -53,7 +52,6 @@ TvSpectrumTransmitter::TvSpectrumTransmitter ()
     m_active (false)
 {
   NS_LOG_FUNCTION (this);
-  NS_UNUSED (m_channelNumber); // avoid unused warning; variable used by helper
 }
 
 TvSpectrumTransmitter::~TvSpectrumTransmitter ()
@@ -91,16 +89,6 @@ TvSpectrumTransmitter::GetTypeId(void)
                    DoubleValue (6e6),
                    MakeDoubleAccessor (&TvSpectrumTransmitter::m_channelBandwidth),
                    MakeDoubleChecker<double> (0, std::numeric_limits<double>::max ()))
-    .AddAttribute ("ChannelNumber",
-                   "The channel number to name the TV transmitter (channel 0, "
-                   "1, 2, 3, etc.). Must be greater than or equal to 0. This "
-                   "is only required to be set when setting up regional "
-                   "transmitters from TvSpectrumTransmitterHelper class using "
-                   "methods that take Region as an argument (i.e. the "
-                   "TvSpectrumTransmitterHelper::CreateRegionalTvTransmitters method).",
-                   UintegerValue (5),
-                   MakeUintegerAccessor (&TvSpectrumTransmitter::m_channelNumber),
-                   MakeUintegerChecker<uint16_t> (0, std::numeric_limits<uint16_t>::max ()))
     .AddAttribute ("BasePsd",
                    "The base power spectral density (in dBm/Hz) of the TV "
                    "transmitter's transmitted spectrum. Base PSD is the "

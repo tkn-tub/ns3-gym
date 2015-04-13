@@ -139,7 +139,6 @@ private:
   enum TvType m_tvType; //!< Type of TV transmitter
   double m_startFrequency; //!< Start frequency (in Hz) of TV transmitter's signal
   double m_channelBandwidth; //!< Bandwidth (in Hz) of TV transmitter's signal
-  uint16_t m_channelNumber; //!< Channel number of TV transmitter
   double m_basePsd; //!< Base power spectral density value (in dBm/Hz) of TV transmitter's signal
   Ptr<SpectrumValue> m_txPsd; //!< Pointer to power spectral density of TV transmitter's signal
   Time m_startingTime; //!< Timepoint after simulation begins that TV transmitter will begin transmitting

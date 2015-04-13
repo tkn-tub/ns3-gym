@@ -2660,18 +2660,18 @@ def register_Ns3TvSpectrumTransmitterHelper_methods(root_module, cls):
     cls.add_method('Install', 
                    'ns3::NetDeviceContainer', 
                    [param('ns3::NodeContainer', 'nodes')])
-    ## tv-spectrum-transmitter-helper.h (module 'spectrum'): ns3::NetDeviceContainer ns3::TvSpectrumTransmitterHelper::Install(ns3::NodeContainer nodes, ns3::TvSpectrumTransmitterHelper::Region region) [member function]
+    ## tv-spectrum-transmitter-helper.h (module 'spectrum'): ns3::NetDeviceContainer ns3::TvSpectrumTransmitterHelper::Install(ns3::NodeContainer nodes, ns3::TvSpectrumTransmitterHelper::Region region, uint16_t channelNumber) [member function]
     cls.add_method('Install', 
                    'ns3::NetDeviceContainer', 
-                   [param('ns3::NodeContainer', 'nodes'), param('ns3::TvSpectrumTransmitterHelper::Region', 'region')])
+                   [param('ns3::NodeContainer', 'nodes'), param('ns3::TvSpectrumTransmitterHelper::Region', 'region'), param('uint16_t', 'channelNumber')])
     ## tv-spectrum-transmitter-helper.h (module 'spectrum'): ns3::NetDeviceContainer ns3::TvSpectrumTransmitterHelper::InstallAdjacent(ns3::NodeContainer nodes) [member function]
     cls.add_method('InstallAdjacent', 
                    'ns3::NetDeviceContainer', 
                    [param('ns3::NodeContainer', 'nodes')])
-    ## tv-spectrum-transmitter-helper.h (module 'spectrum'): ns3::NetDeviceContainer ns3::TvSpectrumTransmitterHelper::InstallAdjacent(ns3::NodeContainer nodes, ns3::TvSpectrumTransmitterHelper::Region region) [member function]
+    ## tv-spectrum-transmitter-helper.h (module 'spectrum'): ns3::NetDeviceContainer ns3::TvSpectrumTransmitterHelper::InstallAdjacent(ns3::NodeContainer nodes, ns3::TvSpectrumTransmitterHelper::Region region, uint16_t channelNumber) [member function]
     cls.add_method('InstallAdjacent', 
                    'ns3::NetDeviceContainer', 
-                   [param('ns3::NodeContainer', 'nodes'), param('ns3::TvSpectrumTransmitterHelper::Region', 'region')])
+                   [param('ns3::NodeContainer', 'nodes'), param('ns3::TvSpectrumTransmitterHelper::Region', 'region'), param('uint16_t', 'channelNumber')])
     ## tv-spectrum-transmitter-helper.h (module 'spectrum'): void ns3::TvSpectrumTransmitterHelper::SetAttribute(std::string name, ns3::AttributeValue const & val) [member function]
     cls.add_method('SetAttribute', 
                    'void', 

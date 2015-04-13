@@ -125,23 +125,24 @@ public:
    * Creates one TV Transmitter for each node given as an input, with settings 
    * selected from attributes.
    * Use SetAttribute() to select settings for the TV Transmitter(s).
-   * Must set ChannelNumber attribute to select the TV channel in the 
-   * user-selected region that the transmitter(s) will be modeled after.
-   * If ChannelNumber attribute is not set by the user, it defaults to 5.
+   * Transmitter(s) will be created with frequencies corresponding to the 
+   * user-selected channel number of the user-selected region.
    * If multiple transmitters created, all will have same settings (frequency, 
    * PSD, etc.) except for position/location, which depends on the positions 
    * in the input NodeContainer.
-   * Transmitter(s) will be created with the frequencies corresponding to the 
-   * channel numbers of the user-selected region.
    *
    * @param nodes a container containing the node(s) which the TV 
    * transmitter(s) will be attached to
    * @param region the region of which the transmitter(s) will be characterized
+   * @param channelNumber the TV channel number in the selected region that the 
+   * transmitter frequencies will be modeled after
    *
    * @return a device container which contains all the devices created by this 
    * method
    */
-  NetDeviceContainer Install (NodeContainer nodes, Region region);
+  NetDeviceContainer Install (NodeContainer nodes,
+                              Region region,
+                              uint16_t channelNumber);
 
   /** 
    * Set up and start the TV Transmitter's transmission on the spectrum channel.
@@ -153,14 +154,13 @@ public:
    * selected from attributes.
    * Use SetAttribute() to select settings for the TV Transmitter(s).
    * If multiple transmitters created, they will have same settings except for 
-   * frequency, channel number, and position/location.
-   * Channel number will be incremented by 1 for each node, and start frequency 
-   * will be incremented by the channel bandwidth that is set.
+   * frequency and position/location.
+   * For each node, start frequency will be incremented by the channel bandwidth 
+   * that is set.
    * For example, if two nodes are given as inputs to InstallAdjacent with 
-   * start frequency set to 500 MHz, channel bandwidth set to 6 MHz, and 
-   * channel number set to 19, the first node will be a transmitter set as 
-   * channel 19 ranging from 500 MHz to 506 MHz and the second node will be a 
-   * transmitter set as channel 20 ranging from 506 MHz to 512 MHz.
+   * start frequency set to 500 MHz and channel bandwidth set to 6 MHz, the 
+   * first node will be a transmitter ranging from 500 MHz to 506 MHz and the 
+   * second node will be a transmitter ranging from 506 MHz to 512 MHz.
    *
    * @param nodes a container containing the node(s) which the TV 
    * transmitter(s) will be attached to
@@ -178,30 +178,28 @@ public:
    * Creates one TV Transmitter for each node given as an input, with settings 
    * selected from attributes.
    * Use SetAttribute() to select settings for the TV Transmitter(s).
-   * Must set ChannelNumber attribute to select the TV channel in the 
-   * user-selected region that the first created transmitter will be modeled 
-   * after.
-   * Each subsequently created transmitter will be modeled after the channel 
-   * number following the previous one, for example if the first created 
-   * transmitter is modeled after channel 1, the next one created will be 
-   * modeled after channel 2.
-   * If ChannelNumber attribute is not set by the user, it defaults to 5.
+   * The first created transmitter will have frequencies corresponding to the 
+   * user-selected channel number of the user-selected region.
+   * Each subsequently created transmitter will have its frequencies modeled 
+   * after the channel number (of the user-selected region) following the 
+   * previous one; for example if the first created transmitter is modeled after 
+   * channel 1, the next one created will be modeled after channel 2, and the 
+   * following one will be modeled after channel 3.
    * If multiple transmitters created, they will have same settings except for 
-   * frequency, channel number, and position/location.
-   * Channel number will be incremented by 1 for each node, and start frequency 
-   * will be incremented by the channel bandwidth according to the 
-   * user-selected region.
-   * Transmitter(s) will be created with the frequencies corresponding to the 
-   * channel numbers of the user-selected region.
+   * frequency and position/location.
    *
    * @param nodes a container containing the node(s) which the TV 
    * transmitter(s) will be attached to
    * @param region the region of which the transmitter(s) will be characterized
+   * @param channelNumber the TV channel number in the selected region that the 
+   * first created transmitter's frequencies will be modeled after
    *
    * @return a device container which contains all the devices created by this 
    * method
    */
-  NetDeviceContainer InstallAdjacent (NodeContainer nodes, Region region);
+  NetDeviceContainer InstallAdjacent (NodeContainer nodes,
+                                      Region region,
+                                      uint16_t channelNumber);
 
   /**
    * Assigns the stream number for the uniform random number generator to use
@@ -318,7 +316,6 @@ private:
                                           std::list<Vector> transmitterLocations);
 
   ObjectFactory m_factory; //!< Object factory for attribute setting
-  uint16_t m_channelNumber; //!< Channel number of TV transmitter to be created
   Ptr<UniformRandomVariable> m_uniRand; //!< Object to generate uniform random numbers
 
 };

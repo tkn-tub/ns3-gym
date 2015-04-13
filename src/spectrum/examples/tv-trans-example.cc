@@ -71,8 +71,6 @@ int main (int argc, char** argv)
   tvTransHelper.SetChannel (channel);
   tvTransHelper.SetAttribute ("StartFrequency", DoubleValue (524e6));
   tvTransHelper.SetAttribute ("ChannelBandwidth", DoubleValue (6e6));
-  // channel number not required in this example but shown for clarity
-  tvTransHelper.SetAttribute ("ChannelNumber", UintegerValue (23));
   tvTransHelper.SetAttribute ("StartingTime", TimeValue (Seconds (0)));
   tvTransHelper.SetAttribute ("TransmitDuration", TimeValue (Seconds (0.2)));
   // 22.22 dBm/Hz from 1000 kW ERP transmit power, flat 6 MHz PSD spectrum assumed for this approximation 

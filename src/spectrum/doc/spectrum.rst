@@ -483,7 +483,7 @@ analog PSD is approximated from Figure 4 of [QualcommAnalog]. Note that the
 analog model is approximated from the NTSC standard, but other analog modulation 
 standards such as PAL have similar signals. The approximated COFDM PSD model is 
 in 8K mode. The other configurable attributes are the start frequency, 
-signal/channel bandwidth, channel number, base PSD, antenna type, starting time, 
+signal/channel bandwidth, base PSD, antenna type, starting time, 
 and transmit duration.
 
 ``TvSpectrumTransmitter`` uses ``IsotropicAntennaModel`` as its antenna model by 
