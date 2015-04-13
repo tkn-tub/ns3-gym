@@ -37,7 +37,9 @@ NS_LOG_COMPONENT_DEFINE ("TvSpectrumTransmitterTest");
 using namespace ns3;
 
 const double TOLERANCE = 1e-15;
-
+// Bug 2094: Adjust floating point comparison epsilon based on inputs.
+//           Follows http://realtimecollisiondetection.net/blog/?p=89
+double epsilon;
 
 class TvSpectrumTransmitterTestCase : public TestCase
 {
@@ -121,29 +123,33 @@ TvSpectrumTransmitterTestCase::DoRun (void)
   if (m_tvType == TvSpectrumTransmitter::TVTYPE_8VSB) // pilot has highest PSD
     {
       double expectedPsd = (0.502 * basePsdWattsHz) + (21.577 * basePsdWattsHz);
+      epsilon = TOLERANCE * std::max (1.0, std::max (maxValue, expectedPsd));
       NS_TEST_ASSERT_MSG_EQ_TOL (maxValue, 
                                  expectedPsd, 
-                                 TOLERANCE, 
+                                 epsilon,
                                  "peak PSD value (" << maxValue << ") is incorrect");
     }
   else // highest PSD is base PSD
     {
+      epsilon = TOLERANCE * std::max (1.0, std::max (maxValue, basePsdWattsHz));
       NS_TEST_ASSERT_MSG_EQ_TOL (maxValue, 
                                  basePsdWattsHz, 
-                                 TOLERANCE, 
+                                 epsilon, 
                                  "peak PSD value (" << maxValue << ") is incorrect");
     }
 
   /* Test frequency range */
   Bands::const_iterator bandStart = psd->ConstBandsBegin ();
   Bands::const_iterator bandEnd = psd->ConstBandsEnd ();
+  epsilon = TOLERANCE * std::max (1.0, std::max ((*bandStart).fc, m_startFrequency));
   NS_TEST_ASSERT_MSG_EQ_TOL ((*bandStart).fc, 
                              m_startFrequency, 
-                             TOLERANCE, 
+                             epsilon, 
                              "start frequency value (" << (*bandStart).fc << ") is incorrect");
+  epsilon = TOLERANCE * std::max (1.0, std::max ((*bandStart).fc, (m_startFrequency + m_channelBandwidth)));
   NS_TEST_ASSERT_MSG_EQ_TOL ((*(bandEnd - 1)).fc, 
                              m_startFrequency + m_channelBandwidth, 
-                             TOLERANCE, 
+                             epsilon, 
                              "end frequency value (" << (*(bandEnd - 1)).fc << ") is incorrect");
 }
 
