@@ -16,6 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Manuel Requena <manuel.requena@cttc.es>
+ *         Nicola Baldo <nbaldo@cttc.es>
  */
 
 #include "ns3/simulator.h"
@@ -75,12 +76,6 @@ LteRlcAm::LteRlcAm ()
   m_reassemblingState = WAITING_S0_FULL;
   m_expectedSeqNumber = 0;
 
-  // Timers
-  m_pollRetransmitTimerValue = MilliSeconds (100);
-  m_reorderingTimerValue = MilliSeconds (20);
-  m_statusProhibitTimerValue = MilliSeconds (20);
-  m_rbsTimerValue = MilliSeconds (10);
-
   m_pollRetransmitTimerJustExpired = false;
 }
 
@@ -96,9 +91,25 @@ LteRlcAm::GetTypeId (void)
     .SetParent<LteRlc> ()
     .AddConstructor<LteRlcAm> ()
     .AddAttribute ("PollRetransmitTimer",
-                   "Value of the t-PollRetransmit (See section 7.3 of 3GPP TS 36.322)",
-                   TimeValue (MilliSeconds (100)),
+                   "Value of the t-PollRetransmit timer (See section 7.3 of 3GPP TS 36.322)",
+                   TimeValue (MilliSeconds (20)),
                    MakeTimeAccessor (&LteRlcAm::m_pollRetransmitTimerValue),
+                   MakeTimeChecker ())
+    .AddAttribute ("ReorderingTimer",
+                   "Value of the t-Reordering timer (See section 7.3 of 3GPP TS 36.322)",
+                   TimeValue (MilliSeconds (10)),
+                   MakeTimeAccessor (&LteRlcAm::m_reorderingTimerValue),
+                   MakeTimeChecker ())
+    .AddAttribute ("StatusProhibitTimer",
+                   "Value of the t-StatusProhibit timer (See section 7.3 of 3GPP TS 36.322)",
+                   TimeValue (MilliSeconds (10)),
+                   MakeTimeAccessor (&LteRlcAm::m_statusProhibitTimerValue),
+                   MakeTimeChecker ())
+    .AddAttribute ("ReportBufferStatusTimer",
+                   "How much to wait to issue a new Report Buffer Status since the last time "
+                   "a new SDU was received",     
+                   TimeValue (MilliSeconds (20)),
+                   MakeTimeAccessor (&LteRlcAm::m_rbsTimerValue),
                    MakeTimeChecker ())
     .AddAttribute ("TxOpportunityForRetxAlwaysBigEnough",
                    "If true, always pretend that the size of a TxOpportunity is big enough "
@@ -376,6 +387,13 @@ LteRlcAm::DoNotifyTxOpportunity (uint32_t bytes, uint8_t layer, uint8_t harqId)
         return;
       }
 
+      NS_ASSERT (m_vtS <= m_vtMs);
+      if (m_vtS == m_vtMs)
+        {
+          NS_LOG_INFO ("cannot transmit new RLC PDU due to window stalling");
+          return;
+        }
+
       NS_LOG_LOGIC ("Sending data from Transmission Buffer");
     }
   /* else if ( m_txedBufferSize > 0 )
@@ -628,6 +646,9 @@ LteRlcAm::DoNotifyTxOpportunity (uint32_t bytes, uint8_t layer, uint8_t harqId)
   rlcAmHeader.SetResegmentationFlag (LteRlcAmHeader::PDU);
   rlcAmHeader.SetLastSegmentFlag (LteRlcAmHeader::LAST_PDU_SEGMENT);
   rlcAmHeader.SetSegmentOffset (0);
+
+  NS_ASSERT_MSG(rlcAmHeader.GetSequenceNumber () < m_vtMs, "SN above TX window");
+  NS_ASSERT_MSG(rlcAmHeader.GetSequenceNumber () >= m_vtA, "SN below TX window");
 
   // Calculate FramingInfo flag according the status of the SDUs in the DataField
   uint8_t framingInfo = 0;
@@ -1121,6 +1142,7 @@ LteRlcAm::DoReceivePdu (Ptr<Packet> p)
 
       m_vtA.SetModulusBase (m_vtA);
       m_vtS.SetModulusBase (m_vtA);
+      m_vtMs.SetModulusBase (m_vtA);
       ackSn.SetModulusBase (m_vtA);
       sn.SetModulusBase (m_vtA);
 
@@ -1188,8 +1210,10 @@ LteRlcAm::DoReceivePdu (Ptr<Packet> p)
           if (incrementVtA)
             {
               m_vtA++;
+              m_vtMs = m_vtA + m_windowSize;
               NS_LOG_INFO ("New VT(A) = " << m_vtA);
               m_vtA.SetModulusBase (m_vtA);
+              m_vtMs.SetModulusBase (m_vtA);
               m_vtS.SetModulusBase (m_vtA);
               ackSn.SetModulusBase (m_vtA);
               sn.SetModulusBase (m_vtA);
@@ -1832,10 +1856,12 @@ LteRlcAm::ExpirePollRetransmitTimer (void)
 
   m_pollRetransmitTimerJustExpired = true;
 
-  if ( m_txonBufferSize == 0 && m_retxBufferSize == 0 )
+  // see section 5.2.2.3
+  // note the difference between Rel 8 and Rel 11 specs; we follow Rel 11 here
+  NS_ASSERT (m_vtS <= m_vtMs);
+  if ((m_txonBufferSize == 0 && m_retxBufferSize == 0)
+      || (m_vtS == m_vtMs))
     {
-      // see section 5.2.2.3
-      // note the difference between Rel 8 and Rel 11 specs; we follow Rel 11 here
       NS_LOG_INFO ("txonBuffer and retxBuffer empty. Move PDUs up to = " << m_vtS.GetValue () - 1 << " to retxBuffer");
       uint16_t sn = 0;
       for ( sn = m_vtA.GetValue(); sn < m_vtS.GetValue (); sn++ )
