@@ -79,6 +79,7 @@ public:
   {
     SequenceNumber10 retval (m_value);
     m_value = (m_value + 1) % 1024;
+    retval.SetModulusBase (m_modulusBase);
     return retval;
   }
 
