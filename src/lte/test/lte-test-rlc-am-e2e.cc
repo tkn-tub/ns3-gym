@@ -16,6 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Manuel Requena <manuel.requena@cttc.es>
+ *         Nicola Baldo <nbaldo@cttc.es>
  */
 
 #include "ns3/config.h"
@@ -67,7 +68,7 @@ LteRlcAmE2eTestSuite::LteRlcAmE2eTestSuite ()
           std::ostringstream name;
           name << " Losses = " << losses[l] * 100 << "%. Run = " << runs[s];
           TestCase::TestDuration testDuration;
-          if (l == 6 && s == 16)
+          if (l == 6 && s == 0)
             {
               testDuration = TestCase::QUICK;
             }
@@ -141,6 +142,9 @@ LteRlcAmE2eTestCase::DoRun (void)
   // LogComponentEnable ("LteRlcAm", level);
 
   Config::SetGlobal ("RngRun", IntegerValue (m_run));
+  Config::SetDefault ("ns3::LteRlcAm::PollRetransmitTimer", TimeValue (MilliSeconds (20)));
+  Config::SetDefault ("ns3::LteRlcAm::ReorderingTimer", TimeValue (MilliSeconds (10)));
+  Config::SetDefault ("ns3::LteRlcAm::StatusProhibitTimer", TimeValue (MilliSeconds (10)));
 
   Ptr<LteSimpleHelper> lteSimpleHelper = CreateObject<LteSimpleHelper> ();
   // lteSimpleHelper->EnableLogComponents ();
@@ -217,12 +221,53 @@ LteRlcAmE2eTestCase::DoRun (void)
   Simulator::Schedule (Seconds (sduStartTimeSeconds), &LteTestRrc::Start, lteSimpleHelper->m_enbRrc);
   Simulator::Schedule (Seconds (sduStopTimeSeconds), &LteTestRrc::Stop, lteSimpleHelper->m_enbRrc);
 
-  //double throughput = (150.0/0.005) * (1.0-m_losses);
-  double throughput = (dlTxOppSizeBytes/(dlTxOppSizeBytes+4.0))*(dlTxOppSizeBytes/dlTxOpprTimeSeconds) * (1.0-m_losses);
-  //double totBytes = ((100 + 4) * 10.0 / 0.010);
+  
+  double maxDlThroughput = (dlTxOppSizeBytes/(dlTxOppSizeBytes+4.0))*(dlTxOppSizeBytes/dlTxOpprTimeSeconds) * (1.0-m_losses);
+  const double statusProhibitSeconds = 0.020;
+  double pollFrequency = (1.0/dlTxOpprTimeSeconds)*(1-m_losses);
+  double statusFrequency = std::min (pollFrequency, 1.0/statusProhibitSeconds);
+  const uint32_t numNackSnPerStatusPdu = (ulTxOppSizeBytes*8 - 14)/10;
+  double maxRetxThroughput = ((double)numNackSnPerStatusPdu*(double)dlTxOppSizeBytes)*statusFrequency;
+  double throughput = std::min (maxDlThroughput, maxRetxThroughput);
   double totBytes = ((sduSizeBytes) * (sduStopTimeSeconds - sduStartTimeSeconds) / sduArrivalTimeSeconds);
-  Time stopTime = Seconds (std::max (totBytes/throughput, 10.0) + 20);
-  NS_LOG_INFO ("throughput=" << throughput << ", totBytes=" << totBytes << ", stopTime=" << stopTime.GetSeconds () << "s");
+
+
+  // note: the throughput estimation is valid only for the full buffer
+  // case. However, the test sends a finite number of SDUs. Hence, the
+  // estimated throughput will only be effective at the beginning of
+  // the test. Towards the end of the test, no new data is
+  // transmitted, hence less feedback is sent, hence the transmission
+  // rate for the last PDUs to be retransmitted is much lower. This
+  // effect can be best noteed at very high loss rates. 
+  // Estimating correctly this effect would require a complex stateful
+  // model (e.g., a Markov chain model) so to avoid the hassle we just
+  // use a margin here which we empirically determine as something we
+  // think reasonable based on the PDU loss rate
+  Time margin;
+  if (m_losses < 0.20)
+    {
+      margin = Seconds (2);
+    }
+  else if (m_losses < 0.50)
+    {
+      margin = Seconds (5);
+    }
+  else if (m_losses < 0.70)
+    {
+      margin = Seconds (10);
+    }
+  else if (m_losses < 0.91)
+    {
+      margin = Seconds (20);
+    }
+  else // 0.95
+    {
+      margin = Seconds (30);
+    }
+
+
+  Time stopTime = Seconds (std::max (totBytes/throughput, 10.0)) + margin;
+  NS_LOG_INFO ("statusFrequency=" << statusFrequency << ", maxDlThroughput=" << maxDlThroughput << ", maxRetxThroughput=" << maxRetxThroughput << ", totBytes=" << totBytes << ", stopTime=" << stopTime.GetSeconds () << "s");
   
   Simulator::Stop (stopTime);
   Simulator::Run ();
