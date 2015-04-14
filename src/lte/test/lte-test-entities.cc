@@ -204,8 +204,26 @@ LteTestRrc::Start ()
   p.rnti = 1111;
   p.lcid = 222;
   p.pdcpSdu = Create<Packet> (m_pduSize);
+  
+  bool haveContext = false;
+  Ptr<Node> node;
+  if (m_device != 0)
+    {
+      node = m_device->GetNode ();
+      if (node != 0)
+        {                    
+          haveContext = true;
+        }
+    }
+  if (haveContext)
+    {
+      Simulator::ScheduleWithContext (node->GetId (), Seconds (0), &LtePdcpSapProvider::TransmitPdcpSdu, m_pdcpSapProvider, p);
+    }
+  else
+    {
+      Simulator::Schedule (Seconds (0), &LtePdcpSapProvider::TransmitPdcpSdu, m_pdcpSapProvider, p);
+    }
 
-  Simulator::ScheduleWithContext (m_device->GetNode ()->GetId (), Seconds (0), &LtePdcpSapProvider::TransmitPdcpSdu, m_pdcpSapProvider, p);
   m_nextPdu = Simulator::Schedule (m_arrivalTime, &LteTestRrc::Start, this);
 //   Simulator::Run ();
 }
@@ -457,7 +475,25 @@ void
 LteTestMac::SendTxOpportunity (Time time, uint32_t bytes)
 {
   NS_LOG_FUNCTION (this << time << bytes);
-  Simulator::ScheduleWithContext (m_device->GetNode ()->GetId (), time, &LteMacSapUser::NotifyTxOpportunity, m_macSapUser, bytes, 0, 0);
+  bool haveContext = false;
+  Ptr<Node> node;
+  if (m_device != 0)
+    {
+      node = m_device->GetNode ();
+      if (node != 0)
+        {                    
+          haveContext = true;
+        }
+    }
+  if (haveContext)
+    {
+      Simulator::ScheduleWithContext (node->GetId (), time, &LteMacSapUser::NotifyTxOpportunity, m_macSapUser, bytes, 0, 0);
+    }
+  else
+    {
+      Simulator::Schedule (time, &LteMacSapUser::NotifyTxOpportunity, m_macSapUser, bytes, 0, 0);
+    }
+    
   if (m_txOpportunityMode == RANDOM_MODE)
   {
     if (m_txOppTime != Seconds (0))
