@@ -712,6 +712,17 @@ transmitted by the RLC instance, both the size and the content of the
 PDU are verified to check for an exact match with the test vector.
 
 
+The AM RLC implementation features an additional test suite,
+``lte-rlc-am-e2e``, which test the correct retransmission of RLC PDUs
+in presence of channel losses. The test instantiates an RLC AM
+transmitter and a receiver, and interposes a channel that randomly
+drops packet according to a fixed loss probability. Different test
+cases are instantiated using different ``RngRun`` values and different
+loss probability values. Each test case passes if at the end of the
+simulation all SDUs are correctly delivered to the upper layers of the
+receiving RLC AM entity.
+
+
 RRC
 ---
 

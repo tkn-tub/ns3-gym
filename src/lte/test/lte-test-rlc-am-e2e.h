@@ -16,6 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Manuel Requena <manuel.requena@cttc.es>
+ *         Nicola Baldo <nbaldo@cttc.es>
  */
 
 #ifndef LTE_TEST_RLC_AM_E2E_H
@@ -28,7 +29,8 @@ namespace ns3 {
 
 
 /**
- * Test x.x.x RLC AM: End-to-end flow
+ * Provides the test suite lte-rlc-am-e2e. See the testing section of
+ * the LTE module documentation for details.  
  */
 class LteRlcAmE2eTestSuite : public TestSuite
 {
@@ -36,11 +38,15 @@ public:
   LteRlcAmE2eTestSuite ();
 };
 
-
+/**
+ * Test cases used for the test suite lte-rlc-am-e2e. See the testing section of
+ * the LTE module documentation for details.  
+ * 
+ */
 class LteRlcAmE2eTestCase : public TestCase
 {
   public:
-    LteRlcAmE2eTestCase (std::string name, uint32_t seed, double losses);
+  LteRlcAmE2eTestCase (std::string name, uint32_t seed, double losses, bool bulkSduArrival);
     LteRlcAmE2eTestCase ();
     virtual ~LteRlcAmE2eTestCase ();
 
@@ -50,11 +56,13 @@ class LteRlcAmE2eTestCase : public TestCase
     void DlDropEvent (Ptr<const Packet> p);
     void UlDropEvent (Ptr<const Packet> p);
 
+    uint32_t m_run;
+    double   m_losses;
+    bool m_bulkSduArrival;
+
     uint32_t m_dlDrops;
     uint32_t m_ulDrops;
 
-    uint32_t m_run;
-    double   m_losses;
 };
 
 
