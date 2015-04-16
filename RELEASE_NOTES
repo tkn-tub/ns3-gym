@@ -31,6 +31,7 @@ New user-visible features
 
 Bugs fixed
 ----------
+- Bug 1757 - RLC AM not using NACK_SN
 - Bug 1974 - CalculateTxTime should return a Time, not a double
 - Bug 1982 - AODV and mesh use random variables before seed can be set
 - Bug 2025 - (lr-wpan) Changing the channel doesn't affect the Tx params
