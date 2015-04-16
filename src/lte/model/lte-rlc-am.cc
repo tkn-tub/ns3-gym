@@ -397,49 +397,6 @@ LteRlcAm::DoNotifyTxOpportunity (uint32_t bytes, uint8_t layer, uint8_t harqId)
 
       NS_LOG_LOGIC ("Sending data from Transmission Buffer");
     }
-  /* else if ( m_txedBufferSize > 0 )
-    {
-      NS_LOG_LOGIC ("Sending data from Transmitted Buffer");
-
-      NS_LOG_INFO ("VT(A)     = " << m_vtA);
-      NS_LOG_INFO ("VT(S)     = " << m_vtS);
-
-      uint16_t vta = m_vtA.GetValue ();
-      Ptr<Packet> packet = m_txedBuffer.at (vta)->Copy ();
-      
-      if (( packet->GetSize () <= bytes )
-          || m_txOpportunityForRetxAlwaysBigEnough)
-        {
-          NS_LOG_INFO ("Move SN = " << vta << " to retxBuffer");
-          m_retxBuffer.at (vta).m_pdu = m_txedBuffer.at (vta)->Copy ();
-          m_retxBuffer.at (vta).m_retxCount = 1;
-          m_retxBufferSize += m_retxBuffer.at (vta).m_pdu->GetSize ();
-
-          m_txedBufferSize -= m_txedBuffer.at (vta)->GetSize ();
-          m_txedBuffer.at (vta) = 0;
-
-          LteRlcAmHeader rlcAmHeader;
-          packet->PeekHeader (rlcAmHeader);
-          NS_LOG_LOGIC ("RLC header: " << rlcAmHeader);
-
-          // Send RLC PDU to MAC layer
-          LteMacSapProvider::TransmitPduParameters params;
-          params.pdu = packet;
-          params.rnti = m_rnti;
-          params.lcid = m_lcid;
-          params.layer = layer;
-          params.harqProcessId = harqId;
-
-          m_macSapProvider->TransmitPdu (params);
-          return;
-        }
-      else
-        {
-          NS_LOG_LOGIC ("TxOpportunity (size = " << bytes << ") too small for retransmission of the packet (size = " << packet->GetSize () << ")");
-          NS_LOG_LOGIC ("Waiting for bigger TxOpportunity");
-          return;
-        }
-        }*/ 
   else
     {
       NS_LOG_LOGIC ("No data pending");
@@ -992,11 +949,6 @@ LteRlcAm::DoReceivePdu (Ptr<Packet> p)
               NS_LOG_LOGIC ("New VR(MR) = " << m_vrMr);
             }
 
-//           NS_LOG_LOGIC ("Reassemble and Deliver ( SN = " << seqNumber << " )");
-//           NS_ASSERT_MSG (m_rxonBuffer[ seqNumber.GetValue () ].m_byteSegments.size () == 1,
-//                          "Too many segments. PDU Reassembly process didn't work");
-//           ReassembleAndDeliver (m_rxonBuffer[ seqNumber.GetValue () ].m_byteSegments.front ());
-//           m_rxonBuffer.erase (seqNumber.GetValue ());
         }
 
       // - if t-Reordering is running:
@@ -1034,99 +986,6 @@ LteRlcAm::DoReceivePdu (Ptr<Packet> p)
               NS_LOG_LOGIC ("New VR(X) = " << m_vrX);
             }
         }
-
-
-
-      /// \todo To remove
-
-      // 5.1.2.2.3 Actions when an UMD PDU is placed in the reception buffer
-      // When an UMD PDU with SN = x is placed in the reception buffer, the receiving UM RLC entity shall:
-
-      // - if x falls outside of the reordering window:
-      //    - update VR(UH) to x + 1;
-      //    - reassemble RLC SDUs from any UMD PDUs with SN that falls outside of the reordering window, remove
-      //      RLC headers when doing so and deliver the reassembled RLC SDUs to upper layer in ascending order of the
-      //      RLC SN if not delivered before;
-      //    - if VR(UR) falls outside of the reordering window:
-      //        - set VR(UR) to (VR(UH) - UM_Window_Size);
-
-//       if ( ! IsInsideReorderingWindow (seqNumber))
-//         {
-//           NS_LOG_LOGIC ("SN outside the reordering window");
-// 
-//           m_vrUh = seqNumber + 1;
-//           NS_LOG_LOGIC ("New VR(UH) = " << m_vrUh);
-// 
-//           ReassembleOutsideWindow ();
-// 
-//           if ( ! IsInsideReorderingWindow (m_vrUr) )
-//             {
-//               m_vrUr = m_vrUh - m_windowSize;
-//               NS_LOG_LOGIC ("VR(UR) outside the reordering window");
-//               NS_LOG_LOGIC ("New VR(UR) = " << m_vrUr);
-//             }
-//         }
-
-      // - if the reception buffer contains an UMD PDU with SN = VR(UR):
-      //    - update VR(UR) to the SN of the first UMD PDU with SN > current VR(UR) that has not been received;
-      //    - reassemble RLC SDUs from any UMD PDUs with SN < updated VR(UR), remove RLC headers when doing
-      //      so and deliver the reassembled RLC SDUs to upper layer in ascending order of the RLC SN if not delivered
-      //      before;
-
-//       if ( m_rxBuffer.count (m_vrUr) > 0 )
-//         {
-//           NS_LOG_LOGIC ("Reception buffer contains SN = " << m_vrUr);
-// 
-//           std::map <uint16_t, Ptr<Packet> >::iterator it;
-//           uint16_t newVrUr;
-// 
-//           it = m_rxBuffer.find (m_vrUr);
-//           newVrUr = (it->first) + 1;
-//           while ( m_rxBuffer.count (newVrUr) > 0 )
-//             {
-//               newVrUr++;
-//             }
-//           m_vrUr = newVrUr;
-//           NS_LOG_LOGIC ("New VR(UR) = " << m_vrUr);
-// 
-//           ReassembleSnLessThan (m_vrUr);
-//         }
-
-      // - if t-Reordering is running:
-      //    - if VR(UX) <= VR(UR); or
-      //    - if VR(UX) falls outside of the reordering window and VR(UX) is not equal to VR(UH)::
-      //        - stop and reset t-Reordering;
-//       if ( m_reorderingTimer.IsRunning () )
-//         {
-//           NS_LOG_LOGIC ("Reordering timer is running");
-// 
-//           if ( (m_vrUx <= m_vrUr) ||
-//               ((! IsInsideReorderingWindow (m_vrUx)) && (m_vrUx != m_vrUh)) )
-//             {
-//               NS_LOG_LOGIC ("Stop reordering timer");
-//               m_reorderingTimer.Cancel ();
-//             }
-//         }
-
-      // - if t-Reordering is not running (includes the case when t-Reordering is stopped due to actions above):
-      //    - if VR(UH) > VR(UR):
-      //        - start t-Reordering;
-      //        - set VR(UX) to VR(UH).
-//       if ( ! m_reorderingTimer.IsRunning () )
-//         {
-//           NS_LOG_LOGIC ("Reordering timer is not running");
-// 
-//           if ( m_vrUx > m_vrUr )
-//             {
-//               NS_LOG_LOGIC ("VR(UX) > VR(UR). " << m_vrUx << " > " << m_vrUr);
-//               NS_LOG_LOGIC ("Start reordering timer");
-//               m_reorderingTimer = Simulator::Schedule (m_reorderingTimerValue),
-//                                                       &LteRlcAm::ExpireReorderingTimer ,this);
-//               m_vrUx = m_vrUh;
-//               NS_LOG_LOGIC ("New VR(UX) = " << m_vrUx);
-//             }
-//         }
-
     }
   else if ( rlcAmHeader.IsControlPdu () )
     {
@@ -1675,59 +1534,6 @@ LteRlcAm::ReassembleAndDeliver (Ptr<Packet> packet)
     }
 
 }
-
-
-/// \todo To remove
-// void
-// LteRlcAm::ReassembleOutsideWindow (void)
-// {
-//   NS_LOG_LOGIC ("Reassemble Outside Window");
-// 
-//   std::map <uint16_t, Ptr<Packet> >::iterator it;
-//   it = m_rxBuffer.begin ();
-// 
-//   while ( (it != m_rxBuffer.end ()) && ! IsInsideReorderingWindow (it->first) )
-//     {
-//       NS_LOG_LOGIC ("SN = " << it->first);
-// 
-//       // Reassemble RLC SDUs and deliver the PDCP PDU to upper layer
-//       ReassembleAndDeliver (it->second);
-//       m_rxBuffer.erase (it);
-//       it++;
-//     }
-// 
-//   if (it != m_rxBuffer.end ())
-//     {
-//       NS_LOG_LOGIC ("(SN = " << it->first << ") is inside the reordering window");
-//     }
-// }
-
-
-/// \todo To remove
-// void
-// LteRlcAm::ReassembleSnLessThan (uint16_t seqNumber)
-// {
-//   NS_LOG_LOGIC ("Reassemble SN < updated VR(UR)" );
-// 
-//   std::map <uint16_t, Ptr<Packet> >::iterator it;
-//   it = m_rxBuffer.begin ();
-// 
-//   while ( (it != m_rxBuffer.end ()) && (it->first < seqNumber) )
-//     {
-//       NS_LOG_LOGIC ("SN = " << it->first);
-// 
-//       // Reassemble RLC SDUs and deliver the PDCP PDU to upper layer
-//       ReassembleAndDeliver (it->second);
-//       m_rxBuffer.erase (it);
-//       it++;
-//     }
-// 
-//   if (it != m_rxBuffer.end ())
-//     {
-//       NS_LOG_LOGIC ("(SN = " << it->first << ") >= " << m_vrUr);
-//     }
-// }
-
 
 void
 LteRlcAm::DoReportBufferStatus (void)
