@@ -36,9 +36,9 @@
 #include "amsdu-subframe-header.h"
 #include "mgt-headers.h"
 
-NS_LOG_COMPONENT_DEFINE ("AdhocWifiMac");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("AdhocWifiMac");
 
 NS_OBJECT_ENSURE_REGISTERED (AdhocWifiMac);
 
@@ -47,6 +47,7 @@ AdhocWifiMac::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::AdhocWifiMac")
     .SetParent<RegularWifiMac> ()
+    .SetGroupName ("Wifi")
     .AddConstructor<AdhocWifiMac> ()
   ;
   return tid;
@@ -87,10 +88,7 @@ AdhocWifiMac::Enqueue (Ptr<const Packet> packet, Mac48Address to)
     {
       // In ad hoc mode, we assume that every destination supports all
       // the rates we support.
-      for (uint32_t i = 0; i < m_phy->GetNModes (); i++)
-        {
-          m_stationManager->AddSupportedMode (to, m_phy->GetMode (i));
-        }
+      m_stationManager->AddAllSupportedModes (to);
       m_stationManager->RecordDisassociated (to);
     }
 

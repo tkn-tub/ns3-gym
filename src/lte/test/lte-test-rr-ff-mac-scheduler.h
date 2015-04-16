@@ -25,7 +25,7 @@
 #include "ns3/test.h"
 
 
-namespace ns3 {
+using namespace ns3;
 
 
 /**
@@ -40,14 +40,13 @@ namespace ns3 {
 class LenaRrFfMacSchedulerTestCase : public TestCase
 {
 public:
-  LenaRrFfMacSchedulerTestCase (uint16_t nUser, uint16_t nLc, uint16_t dist, double thrRefDl, double thrRefUl, bool errorModelEnabled);
+  LenaRrFfMacSchedulerTestCase (uint16_t nUser, uint16_t dist, double thrRefDl, double thrRefUl, bool errorModelEnabled);
   virtual ~LenaRrFfMacSchedulerTestCase ();
 
 private:
   virtual void DoRun (void);
   static std::string BuildNameString (uint16_t nUser, uint16_t dist);
   uint16_t m_nUser;
-  uint16_t m_nLc;
   uint16_t m_dist;
   double m_thrRefDl;
   double m_thrRefUl;
@@ -62,11 +61,5 @@ class LenaTestRrFfMacSchedulerSuite : public TestSuite
 public:
   LenaTestRrFfMacSchedulerSuite ();
 };
-
-
-
-} // namespace ns3
-
-
 
 #endif /* LENA_TEST_RR_FF_MAC_SCHEDULER_H */

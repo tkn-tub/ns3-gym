@@ -118,7 +118,14 @@ protected:
   virtual void DoDispose (void);
 
 private:
+  /**
+   * \brief Container identifying an IPv6 Routing Protocol entry in the list.
+   */
   typedef std::pair<int16_t, Ptr<Ipv6RoutingProtocol> > Ipv6RoutingProtocolEntry;
+
+  /**
+   * \brief Container of the IPv6 Routing Protocols.
+   */
   typedef std::list<Ipv6RoutingProtocolEntry> Ipv6RoutingProtocolList;
 
   /**
@@ -129,15 +136,8 @@ private:
    */
   static bool Compare (const Ipv6RoutingProtocolEntry& a, const Ipv6RoutingProtocolEntry& b);
 
-  /**
-   * \brief List of routing protocols.
-   */
-  Ipv6RoutingProtocolList m_routingProtocols;
-
-  /**
-   * \brief Ipv6 reference.
-   */
-  Ptr<Ipv6> m_ipv6;
+  Ipv6RoutingProtocolList m_routingProtocols; //!<  List of routing protocols.
+  Ptr<Ipv6> m_ipv6;  //!< Ipv6 this protocol is associated with.
 };
 
 } // namespace ns3

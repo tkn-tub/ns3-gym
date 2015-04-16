@@ -87,39 +87,51 @@ public:
 
   Time GetRifs (void) const;
   /**
-   * \returns the current PIFS duration.
+   * \return the current PIFS duration.
    */
   Time GetPifs (void) const;
   /**
-   * \returns the current SIFS duration.
+   * \return the current SIFS duration.
    */
   Time GetSifs (void) const;
   /**
-   * \returns the current slot duration.
+   * \return the current slot duration.
    */
   Time GetSlot (void) const;
   /**
-   * \returns the current EIFS minus DIFS duration
+   * \return the current EIFS minus DIFS duration
    */
   Time GetEifsNoDifs (void) const;
   /**
-   * \returns the current CTS timeout duration.
+   * \return the current CTS timeout duration.
    */
   Time GetCtsTimeout (void) const;
   /**
-   * \returns the current ACK timeout duration.
+   * \return the current ACK timeout duration.
    */
   Time GetAckTimeout (void) const;
 
+  /**
+   * Enable or disable CTS-to-self feature.
+   *
+   * \param enable true if CTS-to-self is to be supported,
+   *        false otherwise
+   */
   void SetCtsToSelfSupported (bool enable);
  
+  /**
+   * Return whether the device supports CTS-to-self
+   * capability.
+   *
+   * \return true if CTS-to-self is supported, false otherwise.
+   */
   bool GetCtsToSelfSupported () const;
   /**
-   * \returns the MAC address associated to this MAC layer.
+   * \return the MAC address associated to this MAC layer.
    */
   virtual Mac48Address GetAddress (void) const;
   /**
-   * \returns the ssid which this MAC layer is going to try to stay in.
+   * \return the ssid which this MAC layer is going to try to stay in.
    */
   virtual Ssid GetSsid (void) const;
   /**
@@ -135,7 +147,7 @@ public:
    */
   virtual void SetBssid (Mac48Address bssid);
   /**
-   * \returns the bssid of the network this device belongs to.
+   * \return the bssid of the network this device belongs to.
    */
   virtual Mac48Address GetBssid (void) const;
   /**
@@ -175,17 +187,21 @@ public:
    */
   virtual void SetWifiPhy (Ptr<WifiPhy> phy);
   /**
-   * \returns the physical layer attached to this MAC.
+   * \return the physical layer attached to this MAC.
    */
-  virtual Ptr<WifiPhy> GetWifiPhy () const;
+  virtual Ptr<WifiPhy> GetWifiPhy (void) const;
+  /**
+   * removes attached WifiPhy device from this MAC.
+   */
+  virtual void ResetWifiPhy (void);
   /**
    * \param stationManager the station manager attached to this MAC.
    */
   virtual void SetWifiRemoteStationManager (Ptr<WifiRemoteStationManager> stationManager);
   /**
-   * \returns the station manager attached to this MAC.
+   * \return the station manager attached to this MAC.
    */
-  virtual Ptr<WifiRemoteStationManager> GetWifiRemoteStationManager () const;
+  virtual Ptr<WifiRemoteStationManager> GetWifiRemoteStationManager (void) const;
 
   /**
    * This type defines the callback of a higher layer that a
@@ -222,19 +238,19 @@ protected:
   virtual void DoInitialize ();
   virtual void DoDispose ();
 
-  MacRxMiddle *m_rxMiddle;
-  MacTxMiddle *m_txMiddle;
-  Ptr<MacLow> m_low;
-  DcfManager *m_dcfManager;
-  Ptr<WifiPhy> m_phy;
+  MacRxMiddle *m_rxMiddle; //!< RX middle (de-fragmentation etc.)
+  MacTxMiddle *m_txMiddle; //!< TX middle (aggregation etc.)
+  Ptr<MacLow> m_low; //!< MacLow (RTS, CTS, DATA, ACK etc.)
+  DcfManager *m_dcfManager; //!< DCF manager (access to channel)
+  Ptr<WifiPhy> m_phy; //!< Wifi PHY
 
-  Ptr<WifiRemoteStationManager> m_stationManager;
+  Ptr<WifiRemoteStationManager> m_stationManager; //!< Remote station manager (rate control, RTS/CTS/fragmentation thresholds etc.)
 
-  ForwardUpCallback m_forwardUp;
-  Callback<void> m_linkUp;
-  Callback<void> m_linkDown;
+  ForwardUpCallback m_forwardUp; //!< Callback to forward packet up the stack
+  Callback<void> m_linkUp; //!< Callback when a link is up
+  Callback<void> m_linkDown; //!< Callback when a link is down
 
-  Ssid m_ssid;
+  Ssid m_ssid; //!< Service Set ID (SSID)
 
   /** This holds a pointer to the DCF instance for this WifiMac - used
   for transmission of frames to non-QoS peers. */
@@ -246,6 +262,38 @@ protected:
   /** This is a map from Access Category index to the corresponding
   channel access function */
   EdcaQueues m_edca;
+
+  /**
+   * Accessor for the DCF object
+   * 
+   * \return a smart pointer to DcaTxop
+   */
+  Ptr<DcaTxop> GetDcaTxop (void) const;
+
+  /**
+   * Accessor for the AC_VO channel access function
+   * 
+   * \return a smart pointer to EdcaTxopN
+   */
+  Ptr<EdcaTxopN> GetVOQueue (void) const;
+  /**
+   * Accessor for the AC_VI channel access function
+   * 
+   * \return a smart pointer to EdcaTxopN
+   */
+  Ptr<EdcaTxopN> GetVIQueue (void) const;
+  /**
+   * Accessor for the AC_BE channel access function
+   * 
+   * \return a smart pointer to EdcaTxopN
+   */
+  Ptr<EdcaTxopN> GetBEQueue (void) const;
+  /**
+   * Accessor for the AC_BK channel access function
+   * 
+   * \return a smart pointer to EdcaTxopN
+   */
+  Ptr<EdcaTxopN> GetBKQueue (void) const;
 
   /**
    * \param standard the phy standard to be used
@@ -286,9 +334,28 @@ protected:
    * \param hdr a pointer to the MAC header of the received frame.
    */
   virtual void Receive (Ptr<Packet> packet, const WifiMacHeader *hdr);
+    /**
+   * The packet we sent was successfully received by the receiver
+   * (i.e. we received an ACK from the receiver).
+   * 
+   * \param hdr the header of the packet that we successfully sent
+   */
   virtual void TxOk (const WifiMacHeader &hdr);
+  /**
+   * The packet we sent was successfully received by the receiver
+   * (i.e. we did not receive an ACK from the receiver).
+   *
+   * \param hdr the header of the packet that we failed to sent
+   */
   virtual void TxFailed (const WifiMacHeader &hdr);
 
+  /**
+   * Forward the packet up to the device.
+   *
+   * \param packet the packet that we are forwarding up to the device
+   * \param from the address of the source
+   * \param to the address of the destination
+   */
   void ForwardUp (Ptr<Packet> packet, Mac48Address from, Mac48Address to);
 
   /**
@@ -325,9 +392,17 @@ protected:
    * however.
    */
   bool m_qosSupported;
-  /** Set accessor for the \c m_qosSupported member */
+  /**
+   * Enable or disable QoS support for the device.
+   *
+   * \param enable whether QoS is supported
+   */
   void SetQosSupported (bool enable);
-  /** Get accessor for the \c m_qosSupported member */
+  /** 
+   * Return whether the device supports QoS.
+   *
+   * \return true if QoS is supported, false otherwise
+   */
   bool GetQosSupported () const;
 
  /**
@@ -344,9 +419,17 @@ protected:
    * however.
    */
   bool m_htSupported;
-  /** Set accessor for the \c m_htSupported member */
+  /**
+   * Enable or disable HT support for the device.
+   *
+   * \param enable whether HT is supported
+   */
   void SetHtSupported (bool enable);
-  /** Get accessor for the \c m_htSupported member */
+  /**
+   * Return whether the device supports QoS.
+   *
+   * \return true if HT is supported, false otherwise
+   */
   bool GetHtSupported () const;
 
 private:
@@ -360,18 +443,6 @@ private:
    * \param ac the Access Category index of the queue to initialise.
    */
   void SetupEdcaQueue (enum AcIndex ac);
-
-  /** Accessor for the DCF object */
-  Ptr<DcaTxop> GetDcaTxop (void) const;
-
-  /** Accessor for the AC_VO channel access function */
-  Ptr<EdcaTxopN> GetVOQueue (void) const;
-  /** Accessor for the AC_VI channel access function */
-  Ptr<EdcaTxopN> GetVIQueue (void) const;
-  /** Accessor for the AC_BE channel access function */
-  Ptr<EdcaTxopN> GetBEQueue (void) const;
-  /** Accessor for the AC_BK channel access function */
-  Ptr<EdcaTxopN> GetBKQueue (void) const;
 
   TracedCallback<const WifiMacHeader &> m_txOkCallback;
   TracedCallback<const WifiMacHeader &> m_txErrCallback;

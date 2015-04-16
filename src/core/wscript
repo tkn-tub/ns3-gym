@@ -4,35 +4,64 @@ import sys
 from waflib import Options
 import wutils
 
+int64x64 = {
+    # implementation name: [define, env, highprec]
+    'default': ['INT64X64_USE_128',    'INT64X64_USE_128',    '128-bit integer'], 
+    'int128':  ['INT64X64_USE_128',    'INT64X64_USE_128',    '128-bit integer'], 
+    'cairo':   ['INT64X64_USE_CAIRO',  'INT64X64_USE_CAIRO',  'cairo 128-bit integer'],
+    'double':  ['INT64X64_USE_DOUBLE', 'INT64X64_USE_DOUBLE', 'long double'],
+    }
+
+default_int64x64 = 'default'
+
 def options(opt):
-    opt.add_option('--int64x64-as-double',
-                   help=('Whether to use a double floating point'
-                         ' type for int64x64 values'
-                         ' WARNING: this option only has effect '
-                         'with the configure command.'),
+    assert default_int64x64 in int64x64
+    opt.add_option('--int64x64',
+                   action='store',
+                   default=default_int64x64,
+                   help=("Force the choice of int64x64_t implementation "
+                         "(normally only for debugging).  "
+                         "The supported implementations use int128_t, "
+                         "cairo_int128, or long double.  "
+                         "The int128_t implementation (the preferred option) "
+                         "requires compiler support.  "
+                         "The cairo implementation fallback provides exactly "
+                         "the same numerical results, but possibly at lower "
+                         "execution speed.  The long double implementation "
+                         "may not provide the same numerical results because "
+                         "the implementation-defined numerical precision may "
+                         "be less than the other implementations.  "
+                         "[Allowed Values: %s]"
+                         % ", ".join([repr(p) for p in int64x64.keys()])),
+                   choices=int64x64.keys(),
+                   dest='int64x64_impl')
+                   
+    opt.add_option('--disable-pthread',
+                   help=('Whether to enable the use of POSIX threads'),
                    action="store_true", default=False,
-                   dest='int64x64_as_double')
+                   dest='disable_pthread')
 
 
 
 def configure(conf):
-    a = conf.check_nonfatal(type_name='uint128_t', define_name='HAVE_UINT128_T')
-    b = conf.check_nonfatal(type_name='__uint128_t', define_name='HAVE___UINT128_T')
-
-    if Options.options.int64x64_as_double:
-        conf.define('INT64X64_USE_DOUBLE', 1)
-        conf.env['INT64X64_USE_DOUBLE'] = 1
-        highprec = 'long double'
-    elif a or b:
-        conf.define('INT64X64_USE_128', 1)
-        conf.env['INT64X64_USE_128'] = 1
-        highprec = '128-bit integer'
-    else:
-        conf.define('INT64X64_USE_CAIRO', 1)
-        conf.env['INT64X64_USE_CAIRO'] = 1
-        highprec = 'cairo 128-bit integer'
-
-    conf.msg('Checking high precision time implementation', highprec)
+    int64x64_impl = Options.options.int64x64_impl
+    if int64x64_impl == 'default' or int64x64_impl == 'int128':
+        have_uint128  = conf.check_nonfatal(type_name='uint128_t',
+                                            define_name='HAVE_UINT128_T')
+        have__uint128 = conf.check_nonfatal(type_name='__uint128_t',
+                                            define_name='HAVE___UINT128_T')
+        if have_uint128 or have__uint128:
+            int64x64_impl = 'int128'
+        else:
+            int64x64_impl = 'cairo'
+        
+    def_flag, env_flag, highprec = int64x64[int64x64_impl]
+    # Add a tag confirming default choice
+    if Options.options.int64x64_impl == 'default':
+        highprec += ' (default)'
+    conf.define(def_flag, 1)
+    conf.env[env_flag] = 1
+    conf.msg('Checking high precision implementation', highprec)
 
     conf.check_nonfatal(header_name='stdint.h', define_name='HAVE_STDINT_H')
     conf.check_nonfatal(header_name='inttypes.h', define_name='HAVE_INTTYPES_H')
@@ -62,9 +91,15 @@ int main ()
    return 0;
 }
 """
-    have_pthread = conf.check_nonfatal(header_name='pthread.h', define_name='HAVE_PTHREAD_H',
-                                       env=test_env, fragment=fragment,
-                                       errmsg='Could not find pthread support (build/config.log for details)')
+    if Options.options.disable_pthread:
+        conf.report_optional_feature("Threading", "Threading Primitives",
+                                     False,
+                                     "Disabled by user request (--disable-pthread)")
+        have_pthread = False
+    else:
+        have_pthread = conf.check_nonfatal(header_name='pthread.h', define_name='HAVE_PTHREAD_H',
+                                           env=test_env, fragment=fragment,
+                                           errmsg='Could not find pthread support (build/config.log for details)')
     if have_pthread:
         # darwin accepts -pthread but prints a warning saying it is ignored
         if Options.platform != 'darwin' and Options.platform != 'cygwin':
@@ -122,7 +157,6 @@ def build(bld):
         'model/ref-count-base.cc',
         'model/object.cc',
         'model/test.cc',
-        'model/random-variable.cc',
         'model/random-variable-stream.cc',
         'model/rng-seed-manager.cc',
         'model/rng-stream.cc',
@@ -166,7 +200,6 @@ def build(bld):
         'test/names-test-suite.cc',
         'test/object-test-suite.cc',
         'test/ptr-test-suite.cc',
-        'test/random-variable-test-suite.cc',
         'test/event-garbage-collector-test-suite.cc',
         'test/many-uniform-random-variables-one-get-value-call-test-suite.cc',
         'test/one-uniform-random-variable-many-get-value-calls-test-suite.cc',
@@ -213,11 +246,12 @@ def build(bld):
         'model/ptr.h',
         'model/object.h',
         'model/log.h',
+        'model/log-macros-enabled.h',
+        'model/log-macros-disabled.h',
         'model/assert.h',
         'model/breakpoint.h',
         'model/fatal-error.h',
         'model/test.h',
-        'model/random-variable.h',
         'model/random-variable-stream.h',
         'model/rng-seed-manager.h',
         'model/rng-stream.h',
@@ -261,6 +295,7 @@ def build(bld):
         'model/hash-murmur3.h',
         'model/hash-fnv.h',
         'model/hash.h',
+        'model/valgrind.h',
         ]
 
     if sys.platform == 'win32':
@@ -320,7 +355,10 @@ def build(bld):
     if env['ENABLE_GSL']:
         core.use.extend(['GSL', 'GSLCBLAS', 'M'])
         core_test.use.extend(['GSL', 'GSLCBLAS', 'M'])
-        core_test.source.extend(['test/rng-test-suite.cc'])
+        core_test.source.extend([
+                'test/rng-test-suite.cc',
+                'test/random-variable-stream-test-suite.cc'
+                ])
 
     if (bld.env['ENABLE_EXAMPLES']):
         bld.recurse('examples')

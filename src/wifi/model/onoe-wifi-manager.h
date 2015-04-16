@@ -62,6 +62,11 @@ private:
   virtual WifiTxVector DoGetRtsTxVector (WifiRemoteStation *station);
   virtual bool IsLowLatency (void) const;
 
+  /**
+   * Update the number of retry (both short and long).
+   *
+   * \param station
+   */
   void UpdateRetry (OnoeWifiRemoteStation *station);
   void UpdateMode (OnoeWifiRemoteStation *station);
 

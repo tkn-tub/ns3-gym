@@ -22,7 +22,6 @@
 #include "bug-772.h"
 #include "loopback.h"
 
-#include "ns3/mesh-helper.h"
 #include "ns3/simulator.h"
 #include "ns3/mobility-helper.h"
 #include "ns3/double.h"
@@ -44,8 +43,8 @@
 #include "ns3/rng-seed-manager.h"
 #include <sstream>
 
-namespace ns3 {
-namespace aodv {
+using namespace ns3;
+using namespace aodv;
 //-----------------------------------------------------------------------------
 // Test suite
 //-----------------------------------------------------------------------------
@@ -191,7 +190,4 @@ ChainRegressionTest::CheckResults ()
     {
       NS_PCAP_TEST_EXPECT_EQ (m_prefix << "-" << i << "-0.pcap");
     }
-}
-
-}
 }

@@ -27,35 +27,38 @@
 namespace ns3 {
 
 /**
- * \brief Assign AcousticModemEnergyModel to uan devices.
+ * \ingroup uan
  *
- * This installer installs AcousticModemEnergyModel for only UanNetDevice objects.
+ * Assign AcousticModemEnergyModel to uan devices.
+ *
+ * This installer installs AcousticModemEnergyModel for only
+ * UanNetDevice objects.
  */
 class AcousticModemEnergyModelHelper : public DeviceEnergyModelHelper
 {
 public:
-  /**
-   * Construct a helper which is used to add a radio energy model to a node
+  /** 
+   * Construct a helper which is used to add a radio energy model to a node.
    */
   AcousticModemEnergyModelHelper ();
 
   /**
-   * Destroy an AcousticModemEnergy Helper
+   * Destroy an AcousticModemEnergy Helper.
    */
   ~AcousticModemEnergyModelHelper ();
 
   /**
-   * \param name the name of the attribute to set
-   * \param v the value of the attribute
-   *
    * Sets an attribute of the underlying energy model object.
+   *
+   * \param name The name of the attribute to set.
+   * \param v The value of the attribute.
    */
   void Set (std::string name, const AttributeValue &v);
 
   /**
-   * \param callback Callback function for energy depletion handling.
-   *
    * Sets the callback to be invoked when energy is depleted.
+   *
+   * \param callback Callback function for energy depletion handling.
    */
   void SetDepletionCallback (
     AcousticModemEnergyModel::AcousticModemEnergyDepletionCallback callback);
@@ -63,16 +66,20 @@ public:
 
 private:
   /**
+   * Implements DeviceEnergyModel::Install.
+   *
    * \param device Pointer to the NetDevice to install DeviceEnergyModel.
    * \param source Pointer to EnergySource installed on node.
-   *
-   * Implements DeviceEnergyModel::Install.
+   * \return The energy model.
    */
   virtual Ptr<DeviceEnergyModel> DoInstall (Ptr<NetDevice> device,
                                             Ptr<EnergySource> source) const;
 
 private:
+  /** Energy model factory. */
   ObjectFactory m_modemEnergy;
+
+  /** Callback for energy depletion. */
   AcousticModemEnergyModel::AcousticModemEnergyDepletionCallback m_depletionCallback;
 
 };

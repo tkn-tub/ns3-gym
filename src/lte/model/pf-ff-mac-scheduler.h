@@ -29,7 +29,7 @@
 #include <map>
 #include <ns3/nstime.h>
 #include <ns3/lte-amc.h>
-
+#include <ns3/lte-ffr-sap.h>
 
 // value for SINR outside the range defined by FF-API, used to indicate that there
 // is no CQI for this element
@@ -92,6 +92,10 @@ public:
   virtual void SetFfMacSchedSapUser (FfMacSchedSapUser* s);
   virtual FfMacCschedSapProvider* GetFfMacCschedSapProvider ();
   virtual FfMacSchedSapProvider* GetFfMacSchedSapProvider ();
+
+  // FFR SAPs
+  virtual void SetLteFfrSapProvider (LteFfrSapProvider* s);
+  virtual LteFfrSapUser* GetLteFfrSapUser ();
 
   friend class PfSchedulerMemberCschedSapProvider;
   friend class PfSchedulerMemberSchedSapProvider;
@@ -239,6 +243,9 @@ private:
   FfMacCschedSapProvider* m_cschedSapProvider;
   FfMacSchedSapProvider* m_schedSapProvider;
 
+  // FFR SAPs
+  LteFfrSapUser* m_ffrSapUser;
+  LteFfrSapProvider* m_ffrSapProvider;
 
   // Internal parameters
   FfMacCschedSapProvider::CschedCellConfigReqParameters m_cschedCellConfig;

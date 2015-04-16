@@ -30,9 +30,9 @@
 #include "ns3/trace-source-accessor.h"
 #include "ns3/log.h"
 
-NS_LOG_COMPONENT_DEFINE ("WifiNetDevice");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("WifiNetDevice");
 
 NS_OBJECT_ENSURE_REGISTERED (WifiNetDevice);
 
@@ -42,6 +42,7 @@ WifiNetDevice::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::WifiNetDevice")
     .SetParent<NetDevice> ()
     .AddConstructor<WifiNetDevice> ()
+    .SetGroupName ("Wifi")
     .AddAttribute ("Mtu", "The MAC-level Maximum Transmission Unit",
                    UintegerValue (MAX_MSDU_SIZE - LLC_SNAP_HEADER_LENGTH),
                    MakeUintegerAccessor (&WifiNetDevice::SetMtu,
@@ -121,6 +122,7 @@ WifiNetDevice::CompleteConfig (void)
   m_mac->SetLinkUpCallback (MakeCallback (&WifiNetDevice::LinkUp, this));
   m_mac->SetLinkDownCallback (MakeCallback (&WifiNetDevice::LinkDown, this));
   m_stationManager->SetupPhy (m_phy);
+  m_stationManager->SetupMac (m_mac);
   m_configComplete = true;
 }
 

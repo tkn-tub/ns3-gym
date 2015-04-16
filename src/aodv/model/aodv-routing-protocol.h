@@ -61,8 +61,7 @@ public:
   virtual ~RoutingProtocol();
   virtual void DoDispose ();
 
-  ///\name From Ipv4RoutingProtocol
-  //\{
+  // Inherited from Ipv4RoutingProtocol
   Ptr<Ipv4Route> RouteOutput (Ptr<Packet> p, const Ipv4Header &header, Ptr<NetDevice> oif, Socket::SocketErrno &sockerr);
   bool RouteInput (Ptr<const Packet> p, const Ipv4Header &header, Ptr<const NetDevice> idev,
                    UnicastForwardCallback ucb, MulticastForwardCallback mcb,
@@ -73,10 +72,8 @@ public:
   virtual void NotifyRemoveAddress (uint32_t interface, Ipv4InterfaceAddress address);
   virtual void SetIpv4 (Ptr<Ipv4> ipv4);
   virtual void PrintRoutingTable (Ptr<OutputStreamWrapper> stream) const;
-  //\}
 
-  ///\name Handle protocol parameters
-  //\{
+  // Handle protocol parameters
   Time GetMaxQueueTime () const { return MaxQueueTime; }
   void SetMaxQueueTime (Time t);
   uint32_t GetMaxQueueLen () const { return MaxQueueLen; }
@@ -89,7 +86,6 @@ public:
   bool GetHelloEnable () const { return EnableHello; }
   void SetBroadcastEnable (bool f) { EnableBroadcast = f; }
   bool GetBroadcastEnable () const { return EnableBroadcast; }
-  //\}
 
  /**
   * Assign a fixed random variable stream number to the random variables
@@ -101,9 +97,11 @@ public:
   */
   int64_t AssignStreams (int64_t stream);
 
+protected:
+  virtual void DoInitialize (void);
 private:
-  ///\name Protocol parameters.
-  //\{
+  
+  // Protocol parameters.
   uint32_t RreqRetries;             ///< Maximum number of retransmissions of RREQ with TTL = NetDiameter to discover a route
   uint16_t RreqRateLimit;           ///< Maximum number of RREQ per second.
   uint16_t RerrRateLimit;           ///< Maximum number of REER per second.
@@ -129,11 +127,6 @@ private:
    */
   Time DeletePeriod;
   Time NextHopWait;                  ///< Period of our waiting for the neighbour's RREP_ACK
-  /**
-   * The TimeoutBuffer is configurable.  Its purpose is to provide a buffer for the timeout so that if the RREP is delayed
-   * due to congestion, a timeout is less likely to occur while the RREP is still en route back to the source.
-   */
-  uint16_t TimeoutBuffer;
   Time BlackListTimeout;             ///< Time for which the node is put into the blacklist
   uint32_t MaxQueueLen;              ///< The maximum number of packets that we allow a routing protocol to buffer.
   Time MaxQueueTime;                 ///< The maximum period of time that a routing protocol is allowed to buffer a packet for.
@@ -145,8 +138,10 @@ private:
 
   /// IP protocol
   Ptr<Ipv4> m_ipv4;
-  /// Raw socket per each IP interface, map socket -> iface address (IP + mask)
+  /// Raw unicast socket per each IP interface, map socket -> iface address (IP + mask)
   std::map< Ptr<Socket>, Ipv4InterfaceAddress > m_socketAddresses;
+  /// Raw subnet directed broadcast socket per each IP interface, map socket -> iface address (IP + mask)
+  std::map< Ptr<Socket>, Ipv4InterfaceAddress > m_socketSubnetBroadcastAddresses;
   /// Loopback device used to defer RREQ until packet will be fully formed
   Ptr<NetDevice> m_lo; 
 
@@ -196,8 +191,10 @@ private:
   void UpdateRouteToNeighbor (Ipv4Address sender, Ipv4Address receiver);
   /// Check that packet is send from own interface
   bool IsMyOwnAddress (Ipv4Address src);
-  /// Find socket with local interface address iface
+  /// Find unicast socket with local interface address iface
   Ptr<Socket> FindSocketWithInterfaceAddress (Ipv4InterfaceAddress iface) const;
+  /// Find subnet directed broadcast socket with local interface address iface
+  Ptr<Socket> FindSubnetBroadcastSocketWithInterfaceAddress (Ipv4InterfaceAddress iface) const;
   /// Process hello message
   void ProcessHello (RrepHeader const & rrepHeader, Ipv4Address receiverIfaceAddr);
   /// Create loopback route for given header
@@ -246,7 +243,7 @@ private:
    * \param origin - originating node IP address
    */
   void SendRerrWhenNoRouteToForward (Ipv4Address dst, uint32_t dstSeqNo, Ipv4Address origin);
-  //\}
+  /// @}
 
   void SendTo (Ptr<Socket> socket, Ptr<Packet> packet, Ipv4Address destination);
 

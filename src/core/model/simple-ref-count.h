@@ -28,6 +28,12 @@
 #include <stdint.h>
 #include <limits>
 
+/**
+ * \file
+ * \ingroup ptr
+ * Reference counting for smart pointers.
+ */
+
 namespace ns3 {
 
 /**
@@ -36,7 +42,7 @@ namespace ns3 {
  *
  * This template can be used to give reference-counting powers
  * to a class. This template does not require this class to
- * have a virtual destructor or no parent class.
+ * have a virtual destructor or a specific (or any) parent class.
  * 
  * Note: if you are moving to this template from the RefCountBase class,
  * you need to be careful to mark appropriately your destructor virtual
@@ -46,14 +52,15 @@ namespace ns3 {
  *
  * This template takes 3 arguments but only the first argument is
  * mandatory:
- *    - T: the typename of the subclass which derives from this template
+ *
+ * \tparam T The typename of the subclass which derives from this template
  *      class. Yes, this is weird but it's a common C++ template pattern
  *      whose name is CRTP (Curiously Recursive Template Pattern)
- *    - PARENT: the typename of the parent of this template. By default,
+ * \tparam PARENT: the typename of the parent of this template. By default,
  *      this typename is "'ns3::empty'" which is an empty class: compilers
  *      which implement the RBCO optimization (empty base class optimization)
  *      will make this a no-op
- *    - DELETER: the typename of a class which implements a public static 
+ * \tparam DELETER: the typename of a class which implements a public static 
  *      method named 'Delete'. This method will be called whenever the
  *      SimpleRefCount template detects that no references to the object
  *      it manages exist anymore.
@@ -112,6 +119,8 @@ public:
   /**
    * Get the reference count of the object.
    * Normally not needed; for language bindings.
+   *
+   * \return The reference count.
    */
   inline uint32_t GetReferenceCount (void) const
   {
@@ -123,8 +132,13 @@ public:
    */
   static void Cleanup (void) {}
 private:
-  // Note we make this mutable so that the const methods can still
-  // change it.
+  /**
+   * The reference count.
+   *
+   * \internal
+   * Note we make this mutable so that the const methods can still
+   * change it.
+   */
   mutable uint32_t m_count;
 };
 

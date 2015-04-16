@@ -29,6 +29,7 @@ HierarchicalMobilityModel::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::HierarchicalMobilityModel")
     .SetParent<MobilityModel> ()
+    .SetGroupName ("Mobility")
     .AddConstructor<HierarchicalMobilityModel> ()
     .AddAttribute ("Child", "The child mobility model.",
                    PointerValue (),

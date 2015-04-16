@@ -23,10 +23,17 @@
 #include "candidate-queue.h"
 #include "global-route-manager-impl.h"
 
-NS_LOG_COMPONENT_DEFINE ("CandidateQueue");
-
 namespace ns3 {
 
+NS_LOG_COMPONENT_DEFINE ("CandidateQueue");
+
+/**
+ * \brief Stream insertion operator.
+ *
+ * \param os the reference to the output stream
+ * \param t the SPFVertex type
+ * \returns the reference to the output stream
+ */
 std::ostream&
 operator<< (std::ostream& os, const SPFVertex::VertexType& t)
 {

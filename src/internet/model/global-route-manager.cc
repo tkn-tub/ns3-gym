@@ -24,9 +24,9 @@
 #include "global-route-manager.h"
 #include "global-route-manager-impl.h"
 
-NS_LOG_COMPONENT_DEFINE ("GlobalRouteManager");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("GlobalRouteManager");
 
 // ---------------------------------------------------------------------------
 //

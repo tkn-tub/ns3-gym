@@ -206,7 +206,6 @@ public:
 
 private:
   /**
-   * \internal
    * \returns a WifiNetDevice with ready-to-use interface
    */
   Ptr<WifiNetDevice> CreateInterface (const WifiPhyHelper &phyHelper, Ptr<Node> node, uint16_t channelId) const;
@@ -214,12 +213,12 @@ private:
   ChannelPolicy m_spreadChannelPolicy;
   Ptr<MeshStack> m_stack;
   ObjectFactory m_stackFactory;
-  ///\name Interface factory
-  ///\{
+
+  // Interface factory
   ObjectFactory m_mac;
   ObjectFactory m_stationManager;
   enum WifiPhyStandard m_standard;
-  ///\}
+
 };
 } // namespace ns3
 

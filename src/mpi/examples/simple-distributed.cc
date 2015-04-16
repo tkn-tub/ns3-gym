@@ -66,10 +66,32 @@ int
 main (int argc, char *argv[])
 {
 #ifdef NS3_MPI
-  // Distributed simulation setup
+
+  bool nix = true;
+  bool nullmsg = false;
+  bool tracing = false;
+
+  // Parse command line
+  CommandLine cmd;
+  cmd.AddValue ("nix", "Enable the use of nix-vector or global routing", nix);
+  cmd.AddValue ("nullmsg", "Enable the use of null-message synchronization", nullmsg);
+  cmd.AddValue ("tracing", "Enable pcap tracing", tracing);
+  cmd.Parse (argc, argv);
+
+  // Distributed simulation setup; by default use granted time window algorithm.
+  if(nullmsg) 
+    {
+      GlobalValue::Bind ("SimulatorImplementationType",
+                         StringValue ("ns3::NullMessageSimulatorImpl"));
+    } 
+  else 
+    {
+      GlobalValue::Bind ("SimulatorImplementationType",
+                         StringValue ("ns3::DistributedSimulatorImpl"));
+    }
+
+  // Enable parallel simulator with the command line arguments
   MpiInterface::Enable (&argc, &argv);
-  GlobalValue::Bind ("SimulatorImplementationType",
-                     StringValue ("ns3::DistributedSimulatorImpl"));
 
   LogComponentEnable ("PacketSink", LOG_LEVEL_INFO);
 
@@ -88,12 +110,6 @@ main (int argc, char *argv[])
   Config::SetDefault ("ns3::OnOffApplication::PacketSize", UintegerValue (512));
   Config::SetDefault ("ns3::OnOffApplication::DataRate", StringValue ("1Mbps"));
   Config::SetDefault ("ns3::OnOffApplication::MaxBytes", UintegerValue (512));
-  bool nix = true;
-
-  // Parse command line
-  CommandLine cmd;
-  cmd.AddValue ("nix", "Enable the use of nix-vector or global routing", nix);
-  cmd.Parse (argc, argv);
 
   // Create leaf nodes on left with system id 0
   NodeContainer leftLeafNodes;
@@ -204,6 +220,21 @@ main (int argc, char *argv[])
   if (!nix)
     {
       Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
+    }
+
+  if (tracing == true)
+    {
+      if (systemId == 0)
+        {
+          routerLink.EnablePcap("router-left", routerDevices, true);
+          leafLink.EnablePcap("leaf-left", leftLeafDevices, true);
+        }
+      
+      if (systemId == 1)
+        {
+          routerLink.EnablePcap("router-right", routerDevices, true);
+          leafLink.EnablePcap("leaf-right", rightLeafDevices, true);
+        }
     }
 
   // Create a packet sink on the right leafs to receive packets from left leafs

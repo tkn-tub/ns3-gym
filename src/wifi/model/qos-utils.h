@@ -29,8 +29,8 @@ namespace ns3 {
 /**
  * \ingroup wifi
  * This enumeration defines the Access Categories as an enumeration
- * with values corresponding to the AC index (ACI) values specified in
- * Table 7-36 of IEEE 802.11-2007.
+ * with values corresponding to the AC index (ACI) values specified
+ * (Table 8-104 "ACI-to-AC coding"; IEEE 802.11-2012).
  */
 enum AcIndex
 {
@@ -51,7 +51,10 @@ enum AcIndex
 /**
  * \ingroup wifi
  * Maps TID (Traffic ID) to Access classes.
- * For more details see table 9-1 of IEEE802.11 standard.
+ * For more details see (Table 9-1 "UP-to-AC mapping"; IEEE 802.11-2012).
+ *
+ * \param tid the Traffic ID to be mapped to Access class
+ * \return the access class for the given TID
  */
 AcIndex QosUtilsMapTidToAc (uint8_t tid);
 
@@ -59,6 +62,10 @@ AcIndex QosUtilsMapTidToAc (uint8_t tid);
  * \ingroup wifi
  * If a qos tag is attached to the packet, returns a value < 8.
  * A value >= 8 is returned otherwise.
+ *
+ * \param packet the packet to checked for a QoS tag
+ * \return a value less than 8 if QoS tag was present, a value >= 8
+ *         is returned if no QoS tag was present
  */
 uint8_t QosUtilsGetTidForPacket (Ptr<const Packet> packet);
 
@@ -66,7 +73,11 @@ uint8_t QosUtilsGetTidForPacket (Ptr<const Packet> packet);
  * \ingroup wifi
  * Next function is useful to correctly sort buffered packets under block ack.
  * When an BAR is received from originator station, completed "old"
- * (see section 9.10.3 in IEEE802.11e) packets must be forwarded up before "new" packets.
+ * (see section 9.10.3 in IEEE 802.11e) packets must be forwarded up before "new" packets.
+ *
+ * \param seqControl the sequence control field
+ * \param endSequence
+ * \return a unique integer for the given sequence control and end sequence
  */
 uint32_t QosUtilsMapSeqControlToUniqueInteger (uint16_t seqControl, uint16_t endSequence);
 
@@ -102,7 +113,9 @@ uint32_t QosUtilsMapSeqControlToUniqueInteger (uint16_t seqControl, uint16_t end
  * if that packet (with sequence number <i>numberSeq</i>)) belongs to the section of the
  * sequence number space marked with '-' characters. The function returns false otherwise.
  *
- *
+ * \param startingSeq the starting sequence number
+ * \param seqNumber the sequence number to be checked
+ * \return true if the packet is old, false otherwise
  */
 bool QosUtilsIsOldPacket (uint16_t startingSeq, uint16_t seqNumber);
 

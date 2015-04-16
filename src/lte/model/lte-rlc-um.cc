@@ -26,9 +26,9 @@
 #include "ns3/lte-rlc-sdu-status-tag.h"
 #include "ns3/lte-rlc-tag.h"
 
-NS_LOG_COMPONENT_DEFINE ("LteRlcUm");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("LteRlcUm");
 
 NS_OBJECT_ENSURE_REGISTERED (LteRlcUm);
 
@@ -56,6 +56,7 @@ LteRlcUm::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::LteRlcUm")
     .SetParent<LteRlc> ()
+    .SetGroupName("Lte")
     .AddConstructor<LteRlcUm> ()
     .AddAttribute ("MaxTxBufferSize",
                    "Maximum Size of the Transmission Buffer (in Bytes)",

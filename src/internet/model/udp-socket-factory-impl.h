@@ -46,7 +46,6 @@ class UdpL4Protocol;
 /**
  * \ingroup udp
  * \brief Object to create UDP socket instances 
- * \internal
  *
  * This class implements the API for creating UDP sockets.
  * It is a socket factory (deriving from class SocketFactory).
@@ -57,12 +56,15 @@ public:
   UdpSocketFactoryImpl ();
   virtual ~UdpSocketFactoryImpl ();
 
+  /**
+   * \brief Set the associated UDP L4 protocol.
+   * \param udp the UDP L4 protocol
+   */
   void SetUdp (Ptr<UdpL4Protocol> udp);
 
   /**
    * \brief Implements a method to create a Udp-based socket and return
    * a base class smart pointer to the socket.
-   * \internal
    *
    * \return smart pointer to Socket
    */
@@ -71,7 +73,7 @@ public:
 protected:
   virtual void DoDispose (void);
 private:
-  Ptr<UdpL4Protocol> m_udp;
+  Ptr<UdpL4Protocol> m_udp; //!< the associated UDP L4 protocol
 };
 
 } // namespace ns3

@@ -26,9 +26,9 @@
 #include <ns3/log.h>
 #include <ns3/assert.h>
 
-NS_LOG_COMPONENT_DEFINE ("MobilityBuildingInfo");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("MobilityBuildingInfo");
 
 NS_OBJECT_ENSURE_REGISTERED (MobilityBuildingInfo);
 

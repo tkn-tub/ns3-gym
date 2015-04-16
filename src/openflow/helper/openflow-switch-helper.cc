@@ -26,9 +26,9 @@
 #include "ns3/node.h"
 #include "ns3/names.h"
 
-NS_LOG_COMPONENT_DEFINE ("OpenFlowSwitchHelper");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("OpenFlowSwitchHelper");
 
 OpenFlowSwitchHelper::OpenFlowSwitchHelper ()
 {

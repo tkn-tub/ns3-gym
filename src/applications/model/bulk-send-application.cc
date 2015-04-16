@@ -31,9 +31,9 @@
 #include "ns3/tcp-socket-factory.h"
 #include "bulk-send-application.h"
 
-NS_LOG_COMPONENT_DEFINE ("BulkSendApplication");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("BulkSendApplication");
 
 NS_OBJECT_ENSURE_REGISTERED (BulkSendApplication);
 
@@ -42,6 +42,7 @@ BulkSendApplication::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::BulkSendApplication")
     .SetParent<Application> ()
+    .SetGroupName("Applications") 
     .AddConstructor<BulkSendApplication> ()
     .AddAttribute ("SendSize", "The amount of data to send each time.",
                    UintegerValue (512),
@@ -64,7 +65,8 @@ BulkSendApplication::GetTypeId (void)
                    MakeTypeIdAccessor (&BulkSendApplication::m_tid),
                    MakeTypeIdChecker ())
     .AddTraceSource ("Tx", "A new packet is created and is sent",
-                     MakeTraceSourceAccessor (&BulkSendApplication::m_txTrace))
+                     MakeTraceSourceAccessor (&BulkSendApplication::m_txTrace),
+                     "ns3::Packet::TracedCallback")
   ;
   return tid;
 }

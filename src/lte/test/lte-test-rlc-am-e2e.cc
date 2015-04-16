@@ -38,10 +38,9 @@
 #include "lte-test-entities.h"
 
 
+using namespace ns3;
+
 NS_LOG_COMPONENT_DEFINE ("LteRlcAmE2eTest");
-
-namespace ns3 {
-
 
 LteRlcAmE2eTestSuite::LteRlcAmE2eTestSuite ()
   : TestSuite ("lte-rlc-am-e2e", SYSTEM)
@@ -325,6 +324,3 @@ LteRlcAmE2eTestCase::DoRun (void)
 
   Simulator::Destroy ();
 }
-
-} // namespace ns3
-

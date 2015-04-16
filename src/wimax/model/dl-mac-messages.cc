@@ -384,6 +384,7 @@ Dcd::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::Dcd")
     .SetParent<Header> ()
+    .SetGroupName("Wimax")
     .AddConstructor<Dcd> ()
   ;
   return tid;
@@ -603,6 +604,7 @@ DlMap::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::DlMap")
     .SetParent<Header> ()
+    .SetGroupName("Wimax")
     .AddConstructor<DlMap> ()
   ;
   return tid;

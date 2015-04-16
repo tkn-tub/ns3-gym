@@ -48,6 +48,10 @@ class Socket;
 class SocketFactory : public Object
 {
 public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
 
   SocketFactory ();

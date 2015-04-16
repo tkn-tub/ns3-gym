@@ -34,10 +34,19 @@
 
 namespace ns3 {
 
-/// \brief An object that monitors and reports back packet flows observed during a simulation
-///
-/// The FlowMonitor class is responsible forcoordinating efforts
-/// regarding probes, and collects end-to-end flowstatistics.
+/**
+ * \defgroup flow-monitor Flow Monitor
+ * \brief  Collect and store performance data from a simulation
+ */
+
+/**
+ * \ingroup flow-monitor
+ * \brief An object that monitors and reports back packet flows observed during a simulation
+ *
+ * The FlowMonitor class is responsible for coordinating efforts
+ * regarding probes, and collects end-to-end flow statistics.
+ *
+ */
 class FlowMonitor : public Object
 {
 public:
@@ -77,6 +86,8 @@ public:
     /// as defined in IETF \RFC{3393}.
     Time     jitterSum; // jitterCount == rxPackets - 1
 
+    /// Contains the last measured delay of a packet
+    /// It is stored to measure the packet's Jitter
     Time     lastDelay;
 
     /// Total number of transmitted bytes for the flow
@@ -123,20 +134,27 @@ public:
     /// This attribute also tracks the number of lost bytes.  See also
     /// comment in attribute packetsDropped.
     std::vector<uint64_t> bytesDropped; // bytesDropped[reasonCode] => number of dropped bytes
-    Histogram flowInterruptionsHistogram; // histogram of durations of flow interruptions
+    Histogram flowInterruptionsHistogram; //!< histogram of durations of flow interruptions
   };
 
   // --- basic methods ---
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId ();
   TypeId GetInstanceTypeId () const;
   FlowMonitor ();
 
-  /// Set the FlowClassifier to be used by the flow monitor.
-  void SetFlowClassifier (Ptr<FlowClassifier> classifier);
+  /// Add a FlowClassifier to be used by the flow monitor.
+  /// \param classifier the FlowClassifier
+  void AddFlowClassifier (Ptr<FlowClassifier> classifier);
 
-  /// Set the time, counting from the current time, from which to start monitoring flows
+  /// Set the time, counting from the current time, from which to start monitoring flows.
+  /// \param time delta time to start
   void Start (const Time &time);
-  /// Set the time, counting from the current time, from which to stop monitoring flows
+  /// Set the time, counting from the current time, from which to stop monitoring flows.
+  /// \param time delta time to stop
   void Stop (const Time &time);
   /// Begin monitoring flows *right now*
   void StartRightNow ();
@@ -147,21 +165,39 @@ public:
   /// Register a new FlowProbe that will begin monitoring and report
   /// events to this monitor.  This method is normally only used by
   /// FlowProbe implementations.
+  /// \param probe the probe to add
   void AddProbe (Ptr<FlowProbe> probe);
 
   /// FlowProbe implementations are supposed to call this method to
   /// report that a new packet was transmitted (but keep in mind the
   /// distinction between a new packet entering the system and a
   /// packet that is already known and is only being forwarded).
+  /// \param probe the reporting probe
+  /// \param flowId flow identification
+  /// \param packetId Packet ID
+  /// \param packetSize packet size
   void ReportFirstTx (Ptr<FlowProbe> probe, FlowId flowId, FlowPacketId packetId, uint32_t packetSize);
   /// FlowProbe implementations are supposed to call this method to
   /// report that a known packet is being forwarded.
+  /// \param probe the reporting probe
+  /// \param flowId flow identification
+  /// \param packetId Packet ID
+  /// \param packetSize packet size
   void ReportForwarding (Ptr<FlowProbe> probe, FlowId flowId, FlowPacketId packetId, uint32_t packetSize);
   /// FlowProbe implementations are supposed to call this method to
   /// report that a known packet is being received.
+  /// \param probe the reporting probe
+  /// \param flowId flow identification
+  /// \param packetId Packet ID
+  /// \param packetSize packet size
   void ReportLastRx (Ptr<FlowProbe> probe, FlowId flowId, FlowPacketId packetId, uint32_t packetSize);
   /// FlowProbe implementations are supposed to call this method to
   /// report that a known packet is being dropped due to some reason.
+  /// \param probe the reporting probe
+  /// \param flowId flow identification
+  /// \param packetId Packet ID
+  /// \param packetSize packet size
+  /// \param reasonCode drop reason code
   void ReportDrop (Ptr<FlowProbe> probe, FlowId flowId, FlowPacketId packetId,
                    uint32_t packetSize, uint32_t reasonCode);
 
@@ -171,17 +207,34 @@ public:
   /// Check right now for packets that appear to be lost, considering
   /// packets as lost if not seen in the network for a time larger
   /// than maxDelay
+  /// \param maxDelay the max delay for a packet
   void CheckForLostPackets (Time maxDelay);
 
   // --- methods to get the results ---
+
+  /// Container: FlowId, FlowStats
+  typedef std::map<FlowId, FlowStats> FlowStatsContainer;
+  /// Container Iterator: FlowId, FlowStats
+  typedef std::map<FlowId, FlowStats>::iterator FlowStatsContainerI;
+  /// Container Const Iterator: FlowId, FlowStats
+  typedef std::map<FlowId, FlowStats>::const_iterator FlowStatsContainerCI;
+  /// Container: FlowProbe
+  typedef std::vector< Ptr<FlowProbe> > FlowProbeContainer;
+  /// Container Iterator: FlowProbe
+  typedef std::vector< Ptr<FlowProbe> >::iterator FlowProbeContainerI;
+  /// Container Const Iterator: FlowProbe
+  typedef std::vector< Ptr<FlowProbe> >::const_iterator FlowProbeContainerCI;
+
   /// Retrieve all collected the flow statistics.  Note, if the
   /// FlowMonitor has not stopped monitoring yet, you should call
   /// CheckForLostPackets() to make sure all possibly lost packets are
   /// accounted for.
-  std::map<FlowId, FlowStats> GetFlowStats () const;
+  /// \returns the flows statistics
+  const FlowStatsContainer& GetFlowStats () const;
 
   /// Get a list of all FlowProbe's associated with this FlowMonitor
-  std::vector< Ptr<FlowProbe> > GetAllProbes () const;
+  /// \returns a list of all the probes
+  const FlowProbeContainer& GetAllProbes () const;
 
   /// Serializes the results to an std::ostream in XML format
   /// \param os the output stream
@@ -189,12 +242,14 @@ public:
   /// \param enableHistograms if true, include also the histograms in the output
   /// \param enableProbes if true, include also the per-probe/flow pair statistics in the output
   void SerializeToXmlStream (std::ostream &os, int indent, bool enableHistograms, bool enableProbes);
+
   /// Same as SerializeToXmlStream, but returns the output as a std::string
   /// \param indent number of spaces to use as base indentation level
   /// \param enableHistograms if true, include also the histograms in the output
   /// \param enableProbes if true, include also the per-probe/flow pair statistics in the output
   /// \return the XML output as string
   std::string SerializeToXmlString (int indent, bool enableHistograms, bool enableProbes);
+
   /// Same as SerializeToXmlStream, but writes to a file instead
   /// \param fileName name or path of the output file that will be created
   /// \param enableHistograms if true, include also the histograms in the output
@@ -209,35 +264,41 @@ protected:
 
 private:
 
+  /// Structure to represent a single tracked packet data
   struct TrackedPacket
   {
-    Time firstSeenTime; // absolute time when the packet was first seen by a probe
-    Time lastSeenTime; // absolute time when the packet was last seen by a probe
-    uint32_t timesForwarded; // number of times the packet was reportedly forwarded
+    Time firstSeenTime; //!< absolute time when the packet was first seen by a probe
+    Time lastSeenTime; //!< absolute time when the packet was last seen by a probe
+    uint32_t timesForwarded; //!< number of times the packet was reportedly forwarded
   };
 
-  // FlowId --> FlowStats
-  std::map<FlowId, FlowStats> m_flowStats;
+  /// FlowId --> FlowStats
+  FlowStatsContainer m_flowStats;
 
-  // (FlowId,PacketId) --> TrackedPacket
+  /// (FlowId,PacketId) --> TrackedPacket
   typedef std::map< std::pair<FlowId, FlowPacketId>, TrackedPacket> TrackedPacketMap;
-  TrackedPacketMap m_trackedPackets;
-  Time m_maxPerHopDelay;
-  std::vector< Ptr<FlowProbe> > m_flowProbes;
+  TrackedPacketMap m_trackedPackets; //!< Tracked packets
+  Time m_maxPerHopDelay; //!< Minimum per-hop delay
+  FlowProbeContainer m_flowProbes; //!< all the FlowProbes
 
   // note: this is needed only for serialization
-  Ptr<FlowClassifier> m_classifier;
+  std::list<Ptr<FlowClassifier> > m_classifiers; //!< the FlowClassifiers
 
-  EventId m_startEvent;
-  EventId m_stopEvent;
-  bool m_enabled;
-  double m_delayBinWidth;
-  double m_jitterBinWidth;
-  double m_packetSizeBinWidth;
-  double m_flowInterruptionsBinWidth;
-  Time m_flowInterruptionsMinTime;
+  EventId m_startEvent;     //!< Start event
+  EventId m_stopEvent;      //!< Stop event
+  bool m_enabled;           //!< FlowMon is enabled
+  double m_delayBinWidth;   //!< Delay bin width (for histograms)
+  double m_jitterBinWidth;  //!< Jitter bin width (for histograms)
+  double m_packetSizeBinWidth;  //!< packet size bin width (for histograms)
+  double m_flowInterruptionsBinWidth; //!< Flow interruptions bin width (for histograms)
+  Time m_flowInterruptionsMinTime; //!< Flow interruptions minimum time
 
+  /// Get the stats for a given flow
+  /// \param flowId the Flow identification
+  /// \returns the stats of the flow
   FlowStats& GetStatsForFlow (FlowId flowId);
+
+  /// Periodic function to check for lost packets and prune statistics
   void PeriodicCheckForLostPackets ();
 };
 

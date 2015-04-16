@@ -40,9 +40,9 @@
 #include "ipv4-interface.h"
 #include "ipv4-raw-socket-impl.h"
 
-NS_LOG_COMPONENT_DEFINE ("Ipv4L3Protocol");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("Ipv4L3Protocol");
 
 const uint16_t Ipv4L3Protocol::PROT_NUMBER = 0x0800;
 
@@ -53,45 +53,65 @@ Ipv4L3Protocol::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::Ipv4L3Protocol")
     .SetParent<Ipv4> ()
+    .SetGroupName ("Internet")
     .AddConstructor<Ipv4L3Protocol> ()
-    .AddAttribute ("DefaultTos", "The TOS value set by default on all outgoing packets generated on this node.",
+    .AddAttribute ("DefaultTos",
+                   "The TOS value set by default on "
+                   "all outgoing packets generated on this node.",
                    UintegerValue (0),
                    MakeUintegerAccessor (&Ipv4L3Protocol::m_defaultTos),
                    MakeUintegerChecker<uint8_t> ())
-    .AddAttribute ("DefaultTtl", "The TTL value set by default on all outgoing packets generated on this node.",
+    .AddAttribute ("DefaultTtl",
+                   "The TTL value set by default on "
+                   "all outgoing packets generated on this node.",
                    UintegerValue (64),
                    MakeUintegerAccessor (&Ipv4L3Protocol::m_defaultTtl),
                    MakeUintegerChecker<uint8_t> ())
     .AddAttribute ("FragmentExpirationTimeout",
-                   "When this timeout expires, the fragments will be cleared from the buffer.",
+                   "When this timeout expires, the fragments "
+                   "will be cleared from the buffer.",
                    TimeValue (Seconds (30)),
                    MakeTimeAccessor (&Ipv4L3Protocol::m_fragmentExpirationTimeout),
                    MakeTimeChecker ())
-    .AddTraceSource ("Tx", "Send ipv4 packet to outgoing interface.",
-                     MakeTraceSourceAccessor (&Ipv4L3Protocol::m_txTrace))
-    .AddTraceSource ("Rx", "Receive ipv4 packet from incoming interface.",
-                     MakeTraceSourceAccessor (&Ipv4L3Protocol::m_rxTrace))
-    .AddTraceSource ("Drop", "Drop ipv4 packet",
-                     MakeTraceSourceAccessor (&Ipv4L3Protocol::m_dropTrace))
-    .AddAttribute ("InterfaceList", "The set of Ipv4 interfaces associated to this Ipv4 stack.",
+    .AddTraceSource ("Tx",
+                     "Send ipv4 packet to outgoing interface.",
+                     MakeTraceSourceAccessor (&Ipv4L3Protocol::m_txTrace),
+                     "ns3::Ipv4L3Protocol::TxRxTracedCallback")
+    .AddTraceSource ("Rx",
+                     "Receive ipv4 packet from incoming interface.",
+                     MakeTraceSourceAccessor (&Ipv4L3Protocol::m_rxTrace),
+                     "ns3::Ipv4L3Protocol::TxRxTracedCallback")
+    .AddTraceSource ("Drop",
+                     "Drop ipv4 packet",
+                     MakeTraceSourceAccessor (&Ipv4L3Protocol::m_dropTrace),
+                     "ns3::Ipv4L3Protocol::DropTracedCallback")
+    .AddAttribute ("InterfaceList",
+                   "The set of Ipv4 interfaces associated to this Ipv4 stack.",
                    ObjectVectorValue (),
                    MakeObjectVectorAccessor (&Ipv4L3Protocol::m_interfaces),
                    MakeObjectVectorChecker<Ipv4Interface> ())
 
-    .AddTraceSource ("SendOutgoing", "A newly-generated packet by this node is about to be queued for transmission",
-                     MakeTraceSourceAccessor (&Ipv4L3Protocol::m_sendOutgoingTrace))
-    .AddTraceSource ("UnicastForward", "A unicast IPv4 packet was received by this node and is being forwarded to another node",
-                     MakeTraceSourceAccessor (&Ipv4L3Protocol::m_unicastForwardTrace))
-    .AddTraceSource ("LocalDeliver", "An IPv4 packet was received by/for this node, and it is being forward up the stack",
-                     MakeTraceSourceAccessor (&Ipv4L3Protocol::m_localDeliverTrace))
+    .AddTraceSource ("SendOutgoing",
+                     "A newly-generated packet by this node is "
+                     "about to be queued for transmission",
+                     MakeTraceSourceAccessor (&Ipv4L3Protocol::m_sendOutgoingTrace),
+                     "ns3::Ipv4L3Protocol::SentTracedCallback")
+    .AddTraceSource ("UnicastForward",
+                     "A unicast IPv4 packet was received by this node "
+                     "and is being forwarded to another node",
+                     MakeTraceSourceAccessor (&Ipv4L3Protocol::m_unicastForwardTrace),
+                     "ns3::Ipv4L3Protocol::SentTracedCallback")
+    .AddTraceSource ("LocalDeliver",
+                     "An IPv4 packet was received by/for this node, "
+                     "and it is being forward up the stack",
+                     MakeTraceSourceAccessor (&Ipv4L3Protocol::m_localDeliverTrace),
+                     "ns3::Ipv4L3Protocol::SentTracedCallback")
 
   ;
   return tid;
 }
 
 Ipv4L3Protocol::Ipv4L3Protocol()
-  : m_identification (0)
-
 {
   NS_LOG_FUNCTION (this);
 }
@@ -540,6 +560,35 @@ Ipv4L3Protocol::GetIcmp (void) const
 }
 
 bool
+Ipv4L3Protocol::IsUnicast (Ipv4Address ad) const
+{
+  NS_LOG_FUNCTION (this << ad);
+
+  if (ad.IsBroadcast () || ad.IsMulticast ())
+    {
+      return false;
+    }
+  else
+    {
+      // check for subnet-broadcast
+      for (uint32_t ifaceIndex = 0; ifaceIndex < GetNInterfaces (); ifaceIndex++)
+        {
+          for (uint32_t j = 0; j < GetNAddresses (ifaceIndex); j++)
+            {
+              Ipv4InterfaceAddress ifAddr = GetAddress (ifaceIndex, j);
+              NS_LOG_LOGIC ("Testing address " << ad << " with subnet-directed broadcast " << ifAddr.GetBroadcast () );
+              if (ad == ifAddr.GetBroadcast () )
+                {
+                  return false;
+                }
+            }
+        }
+    }
+
+  return true;
+}
+
+bool
 Ipv4L3Protocol::IsUnicast (Ipv4Address ad, Ipv4Mask interfaceMask) const
 {
   NS_LOG_FUNCTION (this << ad << interfaceMask);
@@ -687,9 +736,9 @@ Ipv4L3Protocol::Send (Ptr<Packet> packet,
     }
 }
 
-/// \todo when should we set ip_id?   check whether we are incrementing
-/// m_identification on packets that may later be dropped in this stack
-/// and whether that deviates from Linux
+// \todo when should we set ip_id?   check whether we are incrementing
+// m_identification on packets that may later be dropped in this stack
+// and whether that deviates from Linux
 Ipv4Header
 Ipv4L3Protocol::BuildHeader (
   Ipv4Address source,
@@ -708,18 +757,27 @@ Ipv4L3Protocol::BuildHeader (
   ipHeader.SetPayloadSize (payloadSize);
   ipHeader.SetTtl (ttl);
   ipHeader.SetTos (tos);
+
+  uint64_t src = source.Get ();
+  uint64_t dst = destination.Get ();
+  uint64_t srcDst = dst | (src << 32);
+  std::pair<uint64_t, uint8_t> key = std::make_pair (srcDst, protocol);
+
   if (mayFragment == true)
     {
       ipHeader.SetMayFragment ();
-      ipHeader.SetIdentification (m_identification);
-      m_identification++;
+      ipHeader.SetIdentification (m_identification[key]);
+      m_identification[key]++;
     }
   else
     {
       ipHeader.SetDontFragment ();
-      // TBD:  set to zero here; will cause traces to change
-      ipHeader.SetIdentification (m_identification);
-      m_identification++;
+      // RFC 6864 does not state anything about atomic datagrams
+      // identification requirement:
+      // >> Originating sources MAY set the IPv4 ID field of atomic datagrams
+      //    to any value.
+      ipHeader.SetIdentification (m_identification[key]);
+      m_identification[key]++;
     }
   if (Node::ChecksumEnabled ())
     {
@@ -889,18 +947,20 @@ Ipv4L3Protocol::LocalDeliver (Ptr<const Packet> packet, Ipv4Header const&ip, uin
           return;
         }
       NS_LOG_LOGIC ("Got last fragment, Packet is complete " << *p );
+      ipHeader.SetFragmentOffset (0);
+      ipHeader.SetPayloadSize (p->GetSize () + ipHeader.GetSerializedSize ());
     }
 
-  m_localDeliverTrace (ip, packet, iif);
+  m_localDeliverTrace (ipHeader, p, iif);
 
-  Ptr<IpL4Protocol> protocol = GetProtocol (ip.GetProtocol ());
+  Ptr<IpL4Protocol> protocol = GetProtocol (ipHeader.GetProtocol ());
   if (protocol != 0)
     {
       // we need to make a copy in the unlikely event we hit the
       // RX_ENDPOINT_UNREACH codepath
       Ptr<Packet> copy = p->Copy ();
       enum IpL4Protocol::RxStatus status = 
-        protocol->Receive (p, ip, GetInterface (iif));
+        protocol->Receive (p, ipHeader, GetInterface (iif));
       switch (status) {
         case IpL4Protocol::RX_OK:
         // fall through
@@ -909,8 +969,8 @@ Ipv4L3Protocol::LocalDeliver (Ptr<const Packet> packet, Ipv4Header const&ip, uin
         case IpL4Protocol::RX_CSUM_FAILED:
           break;
         case IpL4Protocol::RX_ENDPOINT_UNREACH:
-          if (ip.GetDestination ().IsBroadcast () == true ||
-              ip.GetDestination ().IsMulticast () == true)
+          if (ipHeader.GetDestination ().IsBroadcast () == true ||
+              ipHeader.GetDestination ().IsMulticast () == true)
             {
               break; // Do not reply to broadcast or multicast
             }
@@ -919,15 +979,15 @@ Ipv4L3Protocol::LocalDeliver (Ptr<const Packet> packet, Ipv4Header const&ip, uin
           for (uint32_t i = 0; i < GetNAddresses (iif); i++)
             {
               Ipv4InterfaceAddress addr = GetAddress (iif, i);
-              if (addr.GetLocal ().CombineMask (addr.GetMask ()) == ip.GetDestination ().CombineMask (addr.GetMask ()) &&
-                  ip.GetDestination ().IsSubnetDirectedBroadcast (addr.GetMask ()))
+              if (addr.GetLocal ().CombineMask (addr.GetMask ()) == ipHeader.GetDestination ().CombineMask (addr.GetMask ()) &&
+                  ipHeader.GetDestination ().IsSubnetDirectedBroadcast (addr.GetMask ()))
                 {
                   subnetDirected = true;
                 }
             }
           if (subnetDirected == false)
             {
-              GetIcmp ()->SendDestUnreachPort (ip, copy);
+              GetIcmp ()->SendDestUnreachPort (ipHeader, copy);
             }
         }
     }
@@ -1092,11 +1152,23 @@ Ipv4L3Protocol::SetUp (uint32_t i)
 {
   NS_LOG_FUNCTION (this << i);
   Ptr<Ipv4Interface> interface = GetInterface (i);
-  interface->SetUp ();
 
-  if (m_routingProtocol != 0)
+  // RFC 791, pg.25:
+  //  Every internet module must be able to forward a datagram of 68
+  //  octets without further fragmentation.  This is because an internet
+  //  header may be up to 60 octets, and the minimum fragment is 8 octets.
+  if (interface->GetDevice ()->GetMtu () >= 68)
     {
-      m_routingProtocol->NotifyInterfaceUp (i);
+      interface->SetUp ();
+
+      if (m_routingProtocol != 0)
+        {
+          m_routingProtocol->NotifyInterfaceUp (i);
+        }
+    }
+  else
+    {
+      NS_LOG_LOGIC ("Interface " << int(i) << " is set to be down for IPv4. Reason: not respecting minimum IPv4 MTU (68 octects)");
     }
 }
 
@@ -1275,8 +1347,8 @@ Ipv4L3Protocol::ProcessFragment (Ptr<Packet>& packet, Ipv4Header& ipHeader, uint
 {
   NS_LOG_FUNCTION (this << packet << ipHeader << iif);
 
-  uint64_t addressCombination = uint64_t (ipHeader.GetSource ().Get ()) << 32 & uint64_t (ipHeader.GetDestination ().Get ());
-  uint32_t idProto = uint32_t (ipHeader.GetIdentification ()) << 16 & uint32_t (ipHeader.GetProtocol ());
+  uint64_t addressCombination = uint64_t (ipHeader.GetSource ().Get ()) << 32 | uint64_t (ipHeader.GetDestination ().Get ());
+  uint32_t idProto = uint32_t (ipHeader.GetIdentification ()) << 16 | uint32_t (ipHeader.GetProtocol ());
   std::pair<uint64_t, uint32_t> key;
   bool ret = false;
   Ptr<Packet> p = packet->Copy ();
@@ -1392,10 +1464,11 @@ Ipv4L3Protocol::Fragments::GetPacket () const
 
   std::list<std::pair<Ptr<Packet>, uint16_t> >::const_iterator it = m_fragments.begin ();
 
-  Ptr<Packet> p = Create<Packet> ();
-  uint16_t lastEndOffset = 0;
+  Ptr<Packet> p = it->first->Copy ();
+  uint16_t lastEndOffset = p->GetSize ();
+  it++;
 
-  for ( it = m_fragments.begin (); it != m_fragments.end (); it++)
+  for ( ; it != m_fragments.end (); it++)
     {
       if ( lastEndOffset > it->second )
         {
@@ -1479,5 +1552,4 @@ Ipv4L3Protocol::HandleFragmentsTimeout (std::pair<uint64_t, uint32_t> key, Ipv4H
   m_fragments.erase (key);
   m_fragmentsTimers.erase (key);
 }
-
 } // namespace ns3

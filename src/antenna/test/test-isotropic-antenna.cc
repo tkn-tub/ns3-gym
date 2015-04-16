@@ -26,7 +26,7 @@
 #include <iostream>
 #include <sstream>
 
-namespace ns3 {
+using namespace ns3;
 
 class IsotropicAntennaModelTestCase : public TestCase
 {
@@ -90,8 +90,3 @@ IsotropicAntennaModelTestSuite::IsotropicAntennaModelTestSuite ()
 };
 
 static IsotropicAntennaModelTestSuite staticIsotropicAntennaModelTestSuiteInstance;
-
-
-
-
-} // namespace ns3

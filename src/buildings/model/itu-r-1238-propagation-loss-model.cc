@@ -28,9 +28,9 @@
 #include "itu-r-1238-propagation-loss-model.h"
 #include <ns3/mobility-building-info.h>
 
-NS_LOG_COMPONENT_DEFINE ("ItuR1238PropagationLossModel");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("ItuR1238PropagationLossModel");
 
 NS_OBJECT_ENSURE_REGISTERED (ItuR1238PropagationLossModel);
 

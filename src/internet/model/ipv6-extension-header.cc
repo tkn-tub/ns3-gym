@@ -35,6 +35,7 @@ TypeId Ipv6ExtensionHeader::GetTypeId ()
   static TypeId tid = TypeId ("ns3::Ipv6ExtensionHeader")
     .AddConstructor<Ipv6ExtensionHeader> ()
     .SetParent<Header> ()
+    .SetGroupName ("Internet")
   ;
   return tid;
 }
@@ -206,6 +207,7 @@ TypeId Ipv6ExtensionHopByHopHeader::GetTypeId ()
   static TypeId tid = TypeId ("ns3::Ipv6ExtensionHopByHopHeader")
     .AddConstructor<Ipv6ExtensionHopByHopHeader> ()
     .SetParent<Ipv6ExtensionHeader> ()
+    .SetGroupName ("Internet")
   ;
   return tid;
 }
@@ -261,6 +263,7 @@ TypeId Ipv6ExtensionDestinationHeader::GetTypeId ()
   static TypeId tid = TypeId ("ns3::Ipv6ExtensionDestinationHeader")
     .AddConstructor<Ipv6ExtensionDestinationHeader> ()
     .SetParent<Ipv6ExtensionHeader> ()
+    .SetGroupName ("Internet")
   ;
   return tid;
 }
@@ -316,6 +319,7 @@ TypeId Ipv6ExtensionFragmentHeader::GetTypeId ()
   static TypeId tid = TypeId ("ns3::Ipv6ExtensionFragmentHeader")
     .AddConstructor<Ipv6ExtensionFragmentHeader> ()
     .SetParent<Ipv6ExtensionHeader> ()
+    .SetGroupName ("Internet")
   ;
   return tid;
 }
@@ -329,6 +333,7 @@ Ipv6ExtensionFragmentHeader::Ipv6ExtensionFragmentHeader ()
   : m_offset (0),
     m_identification (0)
 {
+  SetLength (0);
 }
 
 Ipv6ExtensionFragmentHeader::~Ipv6ExtensionFragmentHeader ()
@@ -383,7 +388,7 @@ void Ipv6ExtensionFragmentHeader::Serialize (Buffer::Iterator start) const
   Buffer::Iterator i = start;
 
   i.WriteU8 (GetNextHeader ());
-  i.WriteU8 ((GetLength () >> 3) - 1);
+  i.WriteU8 (0);
   i.WriteHtonU16 (m_offset);
   i.WriteHtonU32 (m_identification);
 }
@@ -393,7 +398,8 @@ uint32_t Ipv6ExtensionFragmentHeader::Deserialize (Buffer::Iterator start)
   Buffer::Iterator i = start;
 
   SetNextHeader (i.ReadU8 ());
-  SetLength ((i.ReadU8 () + 1) << 3);
+  i.ReadU8();
+  SetLength (0);
   m_offset = i.ReadNtohU16 ();
   m_identification = i.ReadNtohU32 ();
 
@@ -407,6 +413,7 @@ TypeId Ipv6ExtensionRoutingHeader::GetTypeId ()
   static TypeId tid = TypeId ("ns3::Ipv6ExtensionRoutingHeader")
     .AddConstructor<Ipv6ExtensionRoutingHeader> ()
     .SetParent<Ipv6ExtensionHeader> ()
+    .SetGroupName ("Internet")
   ;
   return tid;
 }
@@ -486,6 +493,7 @@ TypeId Ipv6ExtensionLooseRoutingHeader::GetTypeId ()
   static TypeId tid = TypeId ("ns3::Ipv6ExtensionLooseRoutingHeader")
     .AddConstructor<Ipv6ExtensionLooseRoutingHeader> ()
     .SetParent<Ipv6ExtensionRoutingHeader> ()
+    .SetGroupName ("Internet")
   ;
   return tid;
 }
@@ -593,6 +601,7 @@ TypeId Ipv6ExtensionESPHeader::GetTypeId ()
   static TypeId tid = TypeId ("ns3::Ipv6ExtensionESPHeader")
     .AddConstructor<Ipv6ExtensionESPHeader> ()
     .SetParent<Ipv6ExtensionHeader> ()
+    .SetGroupName ("Internet")
   ;
   return tid;
 }
@@ -639,6 +648,7 @@ TypeId Ipv6ExtensionAHHeader::GetTypeId ()
   static TypeId tid = TypeId ("ns3::Ipv6ExtensionAHHeader")
     .AddConstructor<Ipv6ExtensionAHHeader> ()
     .SetParent<Ipv6ExtensionHeader> ()
+    .SetGroupName ("Internet")
   ;
   return tid;
 }

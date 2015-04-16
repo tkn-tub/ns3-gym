@@ -27,8 +27,8 @@
 namespace ns3 {
 
 /* see http://www.iana.org/assignments/protocol-numbers */
-const uint8_t TCP_PROT_NUMBER = 6;
-const uint8_t UDP_PROT_NUMBER = 17;
+const uint8_t TCP_PROT_NUMBER = 6;  //!< TCP Protocol number
+const uint8_t UDP_PROT_NUMBER = 17; //!< UDP Protocol number
 
 
 
@@ -103,9 +103,9 @@ bool
 Ipv4FlowClassifier::Classify (const Ipv4Header &ipHeader, Ptr<const Packet> ipPayload,
                               uint32_t *out_flowId, uint32_t *out_packetId)
 {
-  if (ipHeader.GetDestination () == Ipv4Address::GetBroadcast ())
+  if (ipHeader.GetFragmentOffset () > 0 )
     {
-      // we are not prepared to handle broadcast yet
+      // Ignore fragments: they don't carry a valid L4 header
       return false;
     }
 
@@ -114,29 +114,37 @@ Ipv4FlowClassifier::Classify (const Ipv4Header &ipHeader, Ptr<const Packet> ipPa
   tuple.destinationAddress = ipHeader.GetDestination ();
   tuple.protocol = ipHeader.GetProtocol ();
 
-  switch (tuple.protocol)
+  if ((tuple.protocol != UDP_PROT_NUMBER) && (tuple.protocol != TCP_PROT_NUMBER))
     {
-    case UDP_PROT_NUMBER:
-      {
-        UdpHeader udpHeader;
-        ipPayload->PeekHeader (udpHeader);
-        tuple.sourcePort = udpHeader.GetSourcePort ();
-        tuple.destinationPort = udpHeader.GetDestinationPort ();
-      }
-      break;
-
-    case TCP_PROT_NUMBER:
-      {
-        TcpHeader tcpHeader;
-        ipPayload->PeekHeader (tcpHeader);
-        tuple.sourcePort = tcpHeader.GetSourcePort ();
-        tuple.destinationPort = tcpHeader.GetDestinationPort ();
-      }
-      break;
-
-    default:
       return false;
     }
+
+  if (ipPayload->GetSize () < 4)
+    {
+      // the packet doesn't carry enough bytes
+      return false;
+    }
+
+  // we rely on the fact that for both TCP and UDP the ports are
+  // carried in the first 4 octects.
+  // This allows to read the ports even on fragmented packets
+  // not carrying a full TCP or UDP header.
+
+  uint8_t data[4];
+  ipPayload->CopyData (data, 4);
+
+  uint16_t srcPort = 0;
+  srcPort |= data[0];
+  srcPort <<= 8;
+  srcPort |= data[1];
+
+  uint16_t dstPort = 0;
+  dstPort |= data[2];
+  dstPort <<= 8;
+  dstPort |= data[3];
+
+  tuple.sourcePort = srcPort;
+  tuple.destinationPort = dstPort;
 
   // try to insert the tuple, but check if it already exists
   std::pair<std::map<FiveTuple, FlowId>::iterator, bool> insert
@@ -145,11 +153,17 @@ Ipv4FlowClassifier::Classify (const Ipv4Header &ipHeader, Ptr<const Packet> ipPa
   // if the insertion succeeded, we need to assign this tuple a new flow identifier
   if (insert.second)
     {
-      insert.first->second = GetNewFlowId ();
+      FlowId newFlowId = GetNewFlowId ();
+      insert.first->second = newFlowId;
+      m_flowPktIdMap[newFlowId] = 0;
+    }
+  else
+    {
+      m_flowPktIdMap[insert.first->second] ++;
     }
 
   *out_flowId = insert.first->second;
-  *out_packetId = ipHeader.GetIdentification ();
+  *out_packetId = m_flowPktIdMap[*out_flowId];
 
   return true;
 }

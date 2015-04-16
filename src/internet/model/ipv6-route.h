@@ -28,7 +28,6 @@
 #include "ns3/simple-ref-count.h"
 
 #include "ns3/ipv6-address.h"
-#include "ns3/deprecated.h"
 
 namespace ns3
 {
@@ -123,6 +122,13 @@ private:
   Ptr<NetDevice> m_outputDevice;
 };
 
+/**
+ * \brief Stream insertion operator.
+ *
+ * \param os the reference to the output stream
+ * \param route the Ipv6 route
+ * \returns the reference to the output stream
+ */
 std::ostream& operator<< (std::ostream& os, Ipv6Route const& route);
 
 /**
@@ -197,14 +203,6 @@ public:
   void SetOutputTtl (uint32_t oif, uint32_t ttl);
 
   /**
-   * \brief Get output TTL for this route.
-   * \param oif outgoing interface
-   * \return TTL for this route
-   * \deprecated
-   */
-  uint32_t GetOutputTtl (uint32_t oif) NS_DEPRECATED;
-
-  /**
    * \return map of output interface Ids and TTLs for this route
    */
   std::map<uint32_t, uint32_t> GetOutputTtlMap () const;
@@ -231,6 +229,13 @@ private:
   std::map<uint32_t, uint32_t> m_ttls;
 };
 
+/**
+ * \brief Stream insertion operator.
+ *
+ * \param os the reference to the output stream
+ * \param route the Ipv6 multicast route
+ * \returns the reference to the output stream
+ */
 std::ostream& operator<< (std::ostream& os, Ipv6MulticastRoute const& route);
 
 } /* namespace ns3 */

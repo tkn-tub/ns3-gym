@@ -21,7 +21,7 @@
 #include "ns3/test.h"
 #include "ns3/event-garbage-collector.h"
 
-namespace ns3 {
+using namespace ns3;
 
 class EventGarbageCollectorTestCase : public TestCase
 {
@@ -84,6 +84,3 @@ public:
     AddTestCase (new EventGarbageCollectorTestCase (), TestCase::QUICK);
   }
 } g_eventGarbageCollectorTests;
-
-}
-

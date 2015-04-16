@@ -43,6 +43,20 @@ public:
    */
   double CalculateSnr (WifiMode txMode, double ber) const;
 
+  /**
+   * A pure virtual method that must be implemented in the subclass.
+   * This method returns the probability that the given 'chuck' of the
+   * packet will be successfully received by the PHY.
+   *
+   * A chuck can be viewed as a part of a packet with equal SNR.
+   * The probability of successfully receiving the chunk depends on
+   * the mode, the SNR, and the size of the chunk.
+   *
+   * \param mode the Wi-Fi mode the chunk is sent
+   * \param snr the SNR of the chunk
+   * \param nbits the number of bits in this chunk
+   * \return probability of successfully receiving the chunk
+   */
   virtual double GetChunkSuccessRate (WifiMode mode, double snr, uint32_t nbits) const = 0;
 };
 

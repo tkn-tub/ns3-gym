@@ -22,9 +22,9 @@
 #include "ns3/assert.h"
 #include "ns3/log.h"
 
-NS_LOG_COMPONENT_DEFINE ("Ipv4Route");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("Ipv4Route");
 
 Ipv4Route::Ipv4Route ()
 {
@@ -159,17 +159,6 @@ Ipv4MulticastRoute::SetOutputTtl (uint32_t oif, uint32_t ttl)
     {
       m_ttls[oif] = ttl;
     }
-}
-
-uint32_t
-Ipv4MulticastRoute::GetOutputTtl (uint32_t oif)
-{
-  NS_LOG_FUNCTION (this << oif);
-  // We keep this interface around for compatibility (for now)
-  std::map<uint32_t, uint32_t>::const_iterator iter = m_ttls.find (oif);
-  if (iter == m_ttls.end ())
-    return((uint32_t)MAX_TTL);
-  return(iter->second);
 }
 
 std::map<uint32_t, uint32_t>

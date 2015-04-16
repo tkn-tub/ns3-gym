@@ -51,7 +51,6 @@ public:
   OlsrHelper (const OlsrHelper &);
 
   /**
-   * \internal
    * \returns pointer to clone of this OlsrHelper 
    * 
    * This method is mainly for internal use by the other helpers;
@@ -98,14 +97,13 @@ public:
 
 private:
   /**
-   * \internal
    * \brief Assignment operator declared private and not implemented to disallow
    * assignment and prevent the compiler from happily inserting its own.
    */
-  OlsrHelper &operator = (const OlsrHelper &o);
-  ObjectFactory m_agentFactory;
+  OlsrHelper &operator = (const OlsrHelper &);
+  ObjectFactory m_agentFactory; //!< Object factory
 
-  std::map< Ptr<Node>, std::set<uint32_t> > m_interfaceExclusions;
+  std::map< Ptr<Node>, std::set<uint32_t> > m_interfaceExclusions; //!< container of interfaces excluded from OLSR operations
 };
 
 } // namespace ns3

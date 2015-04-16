@@ -39,9 +39,9 @@
 #include "ns3/packet-sink-helper.h"
 #include "ns3/on-off-helper.h"
 
-NS_LOG_COMPONENT_DEFINE ("WifiMsduAggregatorThroughputTest");
-
 using namespace ns3;
+
+NS_LOG_COMPONENT_DEFINE ("WifiMsduAggregatorThroughputTest");
 
 class WifiMsduAggregatorThroughputTest : public TestCase
 {

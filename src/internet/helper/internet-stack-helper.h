@@ -80,7 +80,15 @@ public:
    * Destroy the InternetStackHelper
    */
   virtual ~InternetStackHelper(void);
+
+  /**
+   * \brief Copy constructor
+   */
   InternetStackHelper (const InternetStackHelper &);
+
+  /**
+   * \brief Copy constructor
+   */
   InternetStackHelper &operator = (const InternetStackHelper &o);
 
   /**
@@ -206,7 +214,6 @@ public:
 private:
   /**
    * @brief Enable pcap output the indicated Ipv4 and interface pair.
-   * @internal
    *
    * @param prefix Filename prefix to use for pcap files.
    * @param ipv4 Ptr to the Ipv4 interface on which you want to enable tracing.
@@ -220,7 +227,6 @@ private:
 
   /**
    * @brief Enable ascii trace output on the indicated Ipv4 and interface pair.
-   * @internal
    *
    * @param stream An OutputStreamWrapper representing an existing file to use
    *               when writing trace data.
@@ -237,7 +243,6 @@ private:
 
   /**
    * @brief Enable pcap output the indicated Ipv6 and interface pair.
-   * @internal
    *
    * @param prefix Filename prefix to use for pcap files.
    * @param ipv6 Ptr to the Ipv6 interface on which you want to enable tracing.
@@ -251,7 +256,6 @@ private:
 
   /**
    * @brief Enable ascii trace output on the indicated Ipv6 and interface pair.
-   * @internal
    *
    * @param stream An OutputStreamWrapper representing an existing file to use
    *               when writing trace data.
@@ -266,43 +270,60 @@ private:
                                         uint32_t interface,
                                         bool explicitFilename);
 
+  /**
+   * \brief Initialize the helper to its default values
+   */
   void Initialize (void);
+
+  /**
+   * \brief TCP objects factory
+   */
   ObjectFactory m_tcpFactory;
+
+  /**
+   * \brief IPv4 routing helper.
+   */
   const Ipv4RoutingHelper *m_routing;
 
   /**
-   * \internal
    * \brief IPv6 routing helper.
    */
   const Ipv6RoutingHelper *m_routingv6;
 
   /**
-   * \internal
+   * \brief create an object from its TypeId and aggregates it to the node
+   * \param node the node
+   * \param typeId the object TypeId
    */
   static void CreateAndAggregateObjectFromTypeId (Ptr<Node> node, const std::string typeId);
 
-  /**
-   * \internal
-   */
   static void Cleanup (void);
 
   /**
-   * \internal
+   * \brief checks if there is an hook to a Pcap wrapper
+   * \param ipv4 pointer to the IPv4 object
+   * \returns true if a hook is found
    */
   bool PcapHooked (Ptr<Ipv4> ipv4);
 
   /**
-   * \internal
+   * \brief checks if there is an hook to an ascii output stream
+   * \param ipv4 pointer to the IPv4 object
+   * \returns true if a hook is found
    */
   bool AsciiHooked (Ptr<Ipv4> ipv4);
 
   /**
-   * \internal
+   * \brief checks if there is an hook to a Pcap wrapper
+   * \param ipv6 pointer to the IPv6 object
+   * \returns true if a hook is found
    */
   bool PcapHooked (Ptr<Ipv6> ipv6);
 
   /**
-   * \internal
+   * \brief checks if there is an hook to an ascii output stream
+   * \param ipv6 pointer to the IPv6 object
+   * \returns true if a hook is found
    */
   bool AsciiHooked (Ptr<Ipv6> ipv6);
 

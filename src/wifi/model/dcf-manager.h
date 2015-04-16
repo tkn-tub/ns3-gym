@@ -57,10 +57,35 @@ public:
    * Calling this method after DcfManager::Add has been called is not recommended.
    */
   void SetAifsn (uint32_t aifsn);
+  /**
+   * Set the minimum congestion window size.
+   *
+   * \param minCw the minimum congestion window size
+   */
   void SetCwMin (uint32_t minCw);
+  /**
+   * Set the maximum congestion window size.
+   *
+   * \param maxCw the maximum congestion window size
+   */
   void SetCwMax (uint32_t maxCw);
+  /**
+   * Return the number of slots that make up an AIFS.
+   *
+   * \return the number of slots that make up an AIFS
+   */
   uint32_t GetAifsn (void) const;
+  /**
+   * Return the minimum congestion window size.
+   *
+   * \return the minimum congestion window size
+   */
   uint32_t GetCwMin (void) const;
+  /**
+   * Return the maximum congestion window size.
+   *
+   * \return the maximum congestion window size
+   */
   uint32_t GetCwMax (void) const;
   /**
    * Update the value of the CW variable to take into account
@@ -96,14 +121,53 @@ public:
 private:
   friend class DcfManager;
 
+  /**
+   * Return the current number of backoff slots.
+   *
+   * \return the current number of backoff slots
+   */
   uint32_t GetBackoffSlots (void) const;
+  /**
+   * Return the time when the backoff procedure started.
+   *
+   * \return the time when the backoff procedure started
+   */
   Time GetBackoffStart (void) const;
+  /**
+   * Update backoff slots that nSlots has passed.
+   *
+   * \param nSlots
+   * \param backoffUpdateBound
+   */
   void UpdateBackoffSlotsNow (uint32_t nSlots, Time backoffUpdateBound);
+  /**
+   * Notify that access request has been received.
+   */
   void NotifyAccessRequested (void);
+  /**
+   * Notify that access has been granted.
+   */
   void NotifyAccessGranted (void);
+  /**
+   * Notify that collision has occurred.
+   */
   void NotifyCollision (void);
+  /**
+   * Notify that internal collision has occurred.
+   */
   void NotifyInternalCollision (void);
+  /**
+   * Notify that the device is switching channel.
+   */
   void NotifyChannelSwitching (void);
+  /**
+   * Notify that the device has started to sleep.
+   */
+  void NotifySleep (void);
+  /**
+   * Notify that the device has started to wake up
+   */
+  void NotifyWakeUp (void);
 
 
   /**
@@ -138,10 +202,25 @@ private:
   * Called by DcfManager to notify a DcfState subclass
   * that a channel switching occured.
   *
-  * The subclass is expected to flush the queue of
-  * packets.
+  * The subclass is expected to flush the queue of packets.
   */
-  virtual void DoNotifyChannelSwitching () = 0;
+  virtual void DoNotifyChannelSwitching (void) = 0;
+  /**
+  * Called by DcfManager to notify a DcfState subclass that the device has
+  * begun to sleep.
+  *
+  * The subclass is expected to re-insert the pending packet into the queue
+  */
+  virtual void DoNotifySleep (void) = 0;
+  /**
+  * Called by DcfManager to notify a DcfState subclass that the device 
+  * has begun to wake up.
+  *
+  * The subclass is expected to restart a new backoff by
+  * calling DcfState::StartBackoffNow and DcfManager::RequestAccess
+  * is access is still needed.
+  */
+  virtual void DoNotifyWakeUp (void) = 0;
 
   uint32_t m_aifsn;
   uint32_t m_backoffSlots;
@@ -176,7 +255,23 @@ public:
   DcfManager ();
   ~DcfManager ();
 
+  /**
+   * Set up listener for Phy events.
+   *
+   * \param phy
+   */
   void SetupPhyListener (Ptr<WifiPhy> phy);
+  /**
+   * Remove current registered listener for Phy events.
+   *
+   * \param phy
+   */
+  void RemovePhyListener (Ptr<WifiPhy> phy);
+  /**
+   * Set up listener for MacLow events.
+   *
+   * \param low
+   */
   void SetupLowListener (Ptr<MacLow> low);
 
   /**
@@ -269,6 +364,14 @@ public:
    */
   void NotifySwitchingStartNow (Time duration);
   /**
+   * Notify the DCF that the device has been put in sleep mode.
+   */
+  void NotifySleepNow (void);
+  /**
+   * Notify the DCF that the device has been resumed from sleep mode.
+   */
+  void NotifyWakeupNow (void);
+  /**
    * \param duration the value of the received NAV.
    *
    * Called at end of rx
@@ -280,16 +383,82 @@ public:
    * Called at end of rx
    */
   void NotifyNavStartNow (Time duration);
+  /**
+   * Notify that ACK timer has started for the given duration.
+   *
+   * \param duration
+   */
   void NotifyAckTimeoutStartNow (Time duration);
+  /**
+   * Notify that ACK timer has resetted.
+   */
   void NotifyAckTimeoutResetNow ();
+  /**
+   * Notify that CTS timer has started for the given duration.
+   *
+   * \param duration
+   */
   void NotifyCtsTimeoutStartNow (Time duration);
+  /**
+   * Notify that CTS timer has resetted.
+   */
   void NotifyCtsTimeoutResetNow ();
 private:
+  /**
+   * Update backoff slots for all DcfStates.
+   */
   void UpdateBackoff (void);
+  /**
+   * Return the most recent time.
+   *
+   * \param a
+   * \param b
+   * \return the most recent time
+   */
   Time MostRecent (Time a, Time b) const;
+  /**
+   * Return the most recent time.
+   *
+   * \param a
+   * \param b
+   * \param c
+   * \return the most recent time
+   */
   Time MostRecent (Time a, Time b, Time c) const;
+  /**
+   * Return the most recent time.
+   *
+   * \param a
+   * \param b
+   * \param c
+   * \param d
+   * \return the most recent time
+   */
   Time MostRecent (Time a, Time b, Time c, Time d) const;
+  /**
+   * Return the most recent time.
+   *
+   * \param a
+   * \param b
+   * \param c
+   * \param d
+   * \param e
+   * \param f
+   * \return the most recent time
+   */
   Time MostRecent (Time a, Time b, Time c, Time d, Time e, Time f) const;
+  /**
+   * Return the most recent time.
+   *
+   * \param a
+   * \param b
+   * \param c
+   * \param d
+   * \param e
+   * \param f
+   * \param g
+   * \return the most recent time
+   */
   Time MostRecent (Time a, Time b, Time c, Time d, Time e, Time f, Time g) const;
   /**
    * Access will never be granted to the medium _before_
@@ -299,13 +468,44 @@ private:
    * be granted
    */
   Time GetAccessGrantStart (void) const;
+  /**
+   * Return the time when the backoff procedure
+   * started for the given DcfState.
+   *
+   * \param state
+   * \return the time when the backoff procedure started
+   */
   Time GetBackoffStartFor (DcfState *state);
+  /**
+   * Return the time when the backoff procedure
+   * ended (or will ended) for the given DcfState.
+   *
+   * \param state
+   * \return the time when the backoff procedure ended (or will ended)
+   */
   Time GetBackoffEndFor (DcfState *state);
   void DoRestartAccessTimeoutIfNeeded (void);
+  /**
+   * Called when access timeout should occur
+   * (e.g. backoff procedure expired).
+   */
   void AccessTimeout (void);
+  /**
+   * Grant access to DCF
+   */
   void DoGrantAccess (void);
+  /**
+   * Check if the device is busy sending or receiving,
+   * or NAV busy.
+   *
+   * \return true if the device is busy,
+   *         false otherwise
+   */
   bool IsBusy (void) const;
 
+  /**
+   * typedef for a vector of DcfStates
+   */
   typedef std::vector<DcfState *> States;
 
   States m_states;

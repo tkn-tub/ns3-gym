@@ -53,15 +53,34 @@ class TcpHeader;
 class NscTcpSocketImpl : public TcpSocket
 {
 public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
   /**
    * Create an unbound tcp socket.
    */
   NscTcpSocketImpl ();
+
+  /**
+   * Clone a TCP socket, for use upon receiving a connection request in LISTEN state
+   *
+   * \param sock the original Tcp Socket
+   */
   NscTcpSocketImpl (const NscTcpSocketImpl& sock);
   virtual ~NscTcpSocketImpl ();
 
+  /**
+   * \brief Set the associated node.
+   * \param node the node
+   */
   void SetNode (Ptr<Node> node);
+
+  /**
+   * \brief Set the associated TCP L4 protocol.
+   * \param tcp the TCP L4 protocol
+   */
   void SetTcp (Ptr<NscTcpL4Protocol> tcp);
 
   virtual enum SocketErrno GetErrno (void) const;
@@ -87,22 +106,68 @@ public:
   virtual bool GetAllowBroadcast () const;
 
 private:
+  /**
+   * \brief Called by NscTcpSocketImpl::ForwardUp()
+   *
+   * Actually performs the ForwardUp operations
+   */
   void NSCWakeup (void);
   friend class Tcp;
   // invoked by Tcp class
+  /**
+   * Finish the binding process
+   * \returns 0 on success, -1 on failure
+   */
   int FinishBind (void);
+  /**
+   * \brief Called by the L3 protocol when it received a packet to pass on to TCP.
+   *
+   * \param p the incoming packet
+   * \param header the packet's IPv4 header
+   * \param port the incoming port
+   * \param incomingInterface the incoming interface
+   */
   void ForwardUp (Ptr<Packet> p, Ipv4Header header, uint16_t port, 
                   Ptr<Ipv4Interface> incomingInterface);
+  /**
+   * \brief Kill this socket by zeroing its attributes (IPv4)
+   *
+   * This is a callback function configured to m_endpoint in
+   * SetupCallback(), invoked when the endpoint is destroyed.
+   */
   void Destroy (void);
   //methods for state
+  /**
+   * \brief Send all the pending data
+   * \returns true on success
+   */
   bool SendPendingData (void);
+  /**
+   * \brief Read all the pending data
+   * \returns true on success
+   */
   bool ReadPendingData (void);
+  /**
+   * \brief Accept an incoming connection
+   * \returns true on success
+   */
   bool Accept (void);
+  /**
+   * \brief Complete the Fork operations (after a connection has been accepted)
+   */
   void CompleteFork (void);
+
+  /**
+   * \brief Called when a connection is in Established state
+   */
   void ConnectionSucceeded ();
 
   // Manage data tx/rx
-  /// \todo This should be virtual and overridden
+  // \todo This should be virtual and overridden
+  /**
+   * \brief Copy self
+   * \returns a copy of self
+   */
   Ptr<NscTcpSocketImpl> Copy ();
 
   // attribute related
@@ -112,10 +177,18 @@ private:
   virtual uint32_t GetRcvBufSize (void) const;
   virtual void SetSegSize (uint32_t size);
   virtual uint32_t GetSegSize (void) const;
+  /**
+   * \brief Set the Advertised Window size
+   * \param window the window size
+   */
   virtual void SetAdvWin (uint32_t window);
+  /**
+   * \brief Get the Advertised Window size
+   * \returns the window size
+   */
   virtual uint32_t GetAdvWin (void) const;
-  virtual void SetSSThresh (uint32_t threshold);
-  virtual uint32_t GetSSThresh (void) const;
+  virtual void SetInitialSSThresh (uint32_t threshold);
+  virtual uint32_t GetInitialSSThresh (void) const;
   virtual void SetInitialCwnd (uint32_t cwnd);
   virtual uint32_t GetInitialCwnd (void) const;
   virtual void SetConnTimeout (Time timeout);
@@ -131,57 +204,63 @@ private:
   virtual void SetPersistTimeout (Time timeout);
   virtual Time GetPersistTimeout (void) const;
 
+  /**
+   * \brief Translate between a NSC error and a ns-3 error code
+   * \param err NSC error
+   * \returns ns-3 error code
+   */
   enum Socket::SocketErrno GetNativeNs3Errno (int err) const;
-  uint32_t m_delAckMaxCount;
-  Time m_delAckTimeout;
-  bool m_noDelay;
+  uint32_t m_delAckMaxCount;  //!< Number of packet to fire an ACK before delay timeout
+  Time m_delAckTimeout;       //!< Time to delay an ACK
+  bool m_noDelay;             //!< Disable ACk delay
 
-  Ipv4EndPoint *m_endPoint;
-  Ptr<Node> m_node;
-  Ptr<NscTcpL4Protocol> m_tcp;
-  Ipv4Address m_remoteAddress;
-  uint16_t m_remotePort;
+  Ipv4EndPoint *m_endPoint;     //!< the IPv4 endpoint
+  Ptr<Node> m_node;             //!< the associated node
+  Ptr<NscTcpL4Protocol> m_tcp;  //!< the associated TCP L4 protocol
+  Ipv4Address m_remoteAddress;  //!< peer IP address
+  uint16_t m_remotePort;        //!< peer port
   //these two are so that the socket/endpoint cloning works
-  Ipv4Address m_localAddress;
-  uint16_t m_localPort;
-  InetSocketAddress m_peerAddress;
-  enum SocketErrno m_errno;
-  bool m_shutdownSend;
-  bool m_shutdownRecv;
-  bool m_connected;
+  Ipv4Address m_localAddress;   //!< local address
+  uint16_t m_localPort;         //!< local port
+  InetSocketAddress m_peerAddress; //!< peer IP and port
+  enum SocketErrno m_errno;     //!< last error number
+  bool m_shutdownSend;          //!< Send no longer allowed
+  bool m_shutdownRecv;          //!< Receive no longer allowed
+  bool m_connected;             //!< Connection established
 
   //manage the state information
-  TracedValue<TcpStates_t> m_state;
-  bool m_closeOnEmpty;
+  TracedValue<TcpStates_t> m_state; //!< state information
+  bool m_closeOnEmpty;              //!< true if socket will close when buffer is empty
 
   //needed to queue data when in SYN_SENT state
-  std::queue<Ptr<Packet> > m_txBuffer;
-  uint32_t m_txBufferSize;
+  std::queue<Ptr<Packet> > m_txBuffer; //!< transmission buffer
+  uint32_t m_txBufferSize;             //!< transmission buffer size
 
   // Window management
-  uint32_t                       m_segmentSize;          //SegmentSize
-  uint32_t                       m_rxWindowSize;
-  uint32_t                       m_advertisedWindowSize; //Window to advertise
-  TracedValue<uint32_t>          m_cWnd;                 //Congestion window
-  uint32_t                       m_ssThresh;             //Slow Start Threshold
-  uint32_t                       m_initialCWnd;          //Initial cWnd value
+  uint32_t                       m_segmentSize;          //!< SegmentSize
+  uint32_t                       m_rxWindowSize;         //!< Receive window size
+  uint32_t                       m_advertisedWindowSize; //!< Window to advertise
+  TracedValue<uint32_t>          m_cWnd;                 //!< Congestion window
+  TracedValue<uint32_t>          m_ssThresh;             //!< Slow Start Threshold
+  uint32_t                       m_initialCWnd;          //!< Initial cWnd value
+  uint32_t                       m_initialSsThresh;      //!< Initial Slow Start Threshold
 
   // Round trip time estimation
-  Time m_lastMeasuredRtt;
+  Time m_lastMeasuredRtt; //!< Last measured RTT
 
   // Timer-related members
-  Time              m_cnTimeout; 
-  uint32_t          m_cnCount;
-  Time              m_persistTimeout; 
+  Time              m_cnTimeout;       //!< Timeout for connection retry
+  uint32_t          m_cnCount;         //!< Count of remaining connection retries
+  Time              m_persistTimeout;  //!< Time between sending 1-byte probes
 
   // Temporary queue for delivering data to application
-  std::queue<Ptr<Packet> > m_deliveryQueue;
-  uint32_t m_rxAvailable;
-  INetStreamSocket* m_nscTcpSocket;
+  std::queue<Ptr<Packet> > m_deliveryQueue; //!< receive buffer
+  uint32_t m_rxAvailable;                   //!< receive buffer available size
+  INetStreamSocket* m_nscTcpSocket;         //!< the real NSC TCP socket
 
   // Attributes
-  uint32_t m_sndBufSize;   // buffer limit for the outgoing queue
-  uint32_t m_rcvBufSize;   // maximum receive socket buffer size
+  uint32_t m_sndBufSize;   //!< buffer limit for the outgoing queue
+  uint32_t m_rcvBufSize;   //!< maximum receive socket buffer size
 };
 
 } // namespace ns3

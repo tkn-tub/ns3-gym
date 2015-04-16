@@ -27,12 +27,26 @@
 #include <cstdlib>
 #endif
 
-NS_LOG_COMPONENT_DEFINE ("ObjectBase");
+/**
+ * \file
+ * \ingroup object
+ * ns3::ObjectBase class implementation.
+ */
 
 namespace ns3 {
 
+NS_LOG_COMPONENT_DEFINE ("ObjectBase");
+
 NS_OBJECT_ENSURE_REGISTERED (ObjectBase);
 
+/**
+ * Ensure the TypeId for ObjectBase gets fully configured
+ * to anchor the inheritance tree properly.
+ *
+ * \relates ns3::ObjectBase
+ *
+ * \return The TypeId for ObjectBase.
+ */
 static TypeId
 GetObjectIid (void)
 {
@@ -75,13 +89,29 @@ ObjectBase::ConstructSelf (const AttributeConstructionList &attributes)
           struct TypeId::AttributeInformation info = tid.GetAttribute(i);
           NS_LOG_DEBUG ("try to construct \""<< tid.GetName ()<<"::"<<
                         info.name <<"\"");
-          if (!(info.flags & TypeId::ATTR_CONSTRUCT))
-            {
-              continue;
-            }
-          bool found = false;
           // is this attribute stored in this AttributeConstructionList instance ?
           Ptr<AttributeValue> value = attributes.Find(info.checker);
+          // See if this attribute should not be set here in the
+          // constructor.
+          if (!(info.flags & TypeId::ATTR_CONSTRUCT))
+            {
+              // Handle this attribute if it should not be 
+              // set here.
+              if (value == 0)
+                {
+                  // Skip this attribute if it's not in the
+                  // AttributeConstructionList.
+                  continue;
+                }              
+              else
+                {
+                  // This is an error because this attribute is not
+                  // settable in its constructor but is present in
+                  // the AttributeConstructionList.
+                  NS_FATAL_ERROR ("Attribute name="<<info.name<<" tid="<<tid.GetName () << ": initial value cannot be set using attributes");
+                }
+            }
+          bool found = false;
           if (value != 0)
             {
               // We have a matching attribute value.

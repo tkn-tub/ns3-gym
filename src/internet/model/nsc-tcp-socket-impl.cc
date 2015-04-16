@@ -43,9 +43,9 @@
 #include "sim_errno.h"
 
 
-NS_LOG_COMPONENT_DEFINE ("NscTcpSocketImpl");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("NscTcpSocketImpl");
 
 NS_OBJECT_ENSURE_REGISTERED (NscTcpSocketImpl);
 
@@ -54,9 +54,19 @@ NscTcpSocketImpl::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::NscTcpSocketImpl")
     .SetParent<TcpSocket> ()
+    .SetGroupName ("Internet")
     .AddTraceSource ("CongestionWindow",
                      "The TCP connection's congestion window",
-                     MakeTraceSourceAccessor (&NscTcpSocketImpl::m_cWnd))
+                     MakeTraceSourceAccessor (&NscTcpSocketImpl::m_cWnd),
+                     "ns3::TracedValue::Uint32Callback")
+    .AddTraceSource ("SlowStartThreshold",
+                     "TCP slow start threshold (bytes)",
+                     MakeTraceSourceAccessor (&NscTcpSocketImpl::m_ssThresh),
+                     "ns3::TracedValue::Uint32Callback")
+    .AddTraceSource ("State",
+                     "TCP state",
+                     MakeTraceSourceAccessor (&NscTcpSocketImpl::m_state),
+                     "ns3::TcpStatesTracedValueCallback")
   ;
   return tid;
 }
@@ -106,6 +116,7 @@ NscTcpSocketImpl::NscTcpSocketImpl(const NscTcpSocketImpl& sock)
     m_cWnd (sock.m_cWnd),
     m_ssThresh (sock.m_ssThresh),
     m_initialCWnd (sock.m_initialCWnd),
+    m_initialSsThresh (sock.m_initialSsThresh),
     m_lastMeasuredRtt (Seconds (0.0)),
     m_cnTimeout (sock.m_cnTimeout),
     m_cnCount (sock.m_cnCount),
@@ -152,6 +163,7 @@ NscTcpSocketImpl::SetNode (Ptr<Node> node)
   m_node = node;
   // Initialize some variables 
   m_cWnd = m_initialCWnd * m_segmentSize;
+  m_ssThresh = m_initialSsThresh;
   m_rxWindowSize = m_advertisedWindowSize;
 }
 
@@ -730,15 +742,15 @@ NscTcpSocketImpl::GetAdvWin (void) const
 }
 
 void
-NscTcpSocketImpl::SetSSThresh (uint32_t threshold)
+NscTcpSocketImpl::SetInitialSSThresh (uint32_t threshold)
 {
-  m_ssThresh = threshold;
+  m_initialSsThresh = threshold;
 }
 
 uint32_t
-NscTcpSocketImpl::GetSSThresh (void) const
+NscTcpSocketImpl::GetInitialSSThresh (void) const
 {
-  return m_ssThresh;
+  return m_initialSsThresh;
 }
 
 void

@@ -27,9 +27,9 @@
 #include "ns3/simulator.h"
 #include "ns3/log.h"
 
-NS_LOG_COMPONENT_DEFINE ("WimaxMacQueue");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("WimaxMacQueue");
 
 NS_OBJECT_ENSURE_REGISTERED (WimaxMacQueue);
 
@@ -79,6 +79,7 @@ WimaxMacQueue::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::WimaxMacQueue")
     .SetParent<Object> ()
+    .SetGroupName("Wimax")
     .AddAttribute (
       "MaxSize",
       "Maximum size",
@@ -88,13 +89,16 @@ WimaxMacQueue::GetTypeId (void)
       MakeUintegerChecker<uint32_t> ())
     .AddTraceSource ("Enqueue",
                      "Enqueue trace",
-                     MakeTraceSourceAccessor (&WimaxMacQueue::m_traceEnqueue))
+                     MakeTraceSourceAccessor (&WimaxMacQueue::m_traceEnqueue),
+                     "ns3::Packet::TracedCallback")
     .AddTraceSource ("Dequeue",
                      "Dequeue trace",
-                     MakeTraceSourceAccessor (&WimaxMacQueue::m_traceDequeue))
+                     MakeTraceSourceAccessor (&WimaxMacQueue::m_traceDequeue),
+                     "ns3::Packet::TracedCallback")
     .AddTraceSource ("Drop",
                      "Drop trace",
-                     MakeTraceSourceAccessor (&WimaxMacQueue::m_traceDrop))
+                     MakeTraceSourceAccessor (&WimaxMacQueue::m_traceDrop),
+                     "ns3::Packet::TracedCallback")
   ;
   return tid;
 }

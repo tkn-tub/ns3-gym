@@ -28,9 +28,9 @@
 #include "ns3/abort.h"
 #include "ns3/node.h"
 
-NS_LOG_COMPONENT_DEFINE ("TcpNewReno");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("TcpNewReno");
 
 NS_OBJECT_ENSURE_REGISTERED (TcpNewReno);
 
@@ -39,19 +39,25 @@ TcpNewReno::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::TcpNewReno")
     .SetParent<TcpSocketBase> ()
+    .SetGroupName ("Internet")
     .AddConstructor<TcpNewReno> ()
     .AddAttribute ("ReTxThreshold", "Threshold for fast retransmit",
                     UintegerValue (3),
                     MakeUintegerAccessor (&TcpNewReno::m_retxThresh),
                     MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("LimitedTransmit", "Enable limited transmit",
-		    BooleanValue (false),
-		    MakeBooleanAccessor (&TcpNewReno::m_limitedTx),
-		    MakeBooleanChecker ())
+                   BooleanValue (false),
+                   MakeBooleanAccessor (&TcpNewReno::m_limitedTx),
+                   MakeBooleanChecker ())
     .AddTraceSource ("CongestionWindow",
                      "The TCP connection's congestion window",
-                     MakeTraceSourceAccessor (&TcpNewReno::m_cWnd))
-  ;
+                     MakeTraceSourceAccessor (&TcpNewReno::m_cWnd),
+                     "ns3::TracedValue::Uint32Callback")
+    .AddTraceSource ("SlowStartThreshold",
+                     "TCP slow start threshold (bytes)",
+                     MakeTraceSourceAccessor (&TcpNewReno::m_ssThresh),
+                     "ns3::TracedValue::Uint32Callback")
+ ;
   return tid;
 }
 
@@ -68,6 +74,7 @@ TcpNewReno::TcpNewReno (const TcpNewReno& sock)
     m_cWnd (sock.m_cWnd),
     m_ssThresh (sock.m_ssThresh),
     m_initialCWnd (sock.m_initialCWnd),
+    m_initialSsThresh (sock.m_initialSsThresh),
     m_retxThresh (sock.m_retxThresh),
     m_inFastRec (false),
     m_limitedTx (sock.m_limitedTx)
@@ -80,7 +87,7 @@ TcpNewReno::~TcpNewReno (void)
 {
 }
 
-/** We initialize m_cWnd from this function, after attributes initialized */
+/* We initialize m_cWnd from this function, after attributes initialized */
 int
 TcpNewReno::Listen (void)
 {
@@ -89,7 +96,7 @@ TcpNewReno::Listen (void)
   return TcpSocketBase::Listen ();
 }
 
-/** We initialize m_cWnd from this function, after attributes initialized */
+/* We initialize m_cWnd from this function, after attributes initialized */
 int
 TcpNewReno::Connect (const Address & address)
 {
@@ -98,7 +105,7 @@ TcpNewReno::Connect (const Address & address)
   return TcpSocketBase::Connect (address);
 }
 
-/** Limit the size of in-flight data by cwnd and receiver's rxwin */
+/* Limit the size of in-flight data by cwnd and receiver's rxwin */
 uint32_t
 TcpNewReno::Window (void)
 {
@@ -112,37 +119,37 @@ TcpNewReno::Fork (void)
   return CopyObject<TcpNewReno> (this);
 }
 
-/** New ACK (up to seqnum seq) received. Increase cwnd and call TcpSocketBase::NewAck() */
+/* New ACK (up to seqnum seq) received. Increase cwnd and call TcpSocketBase::NewAck() */
 void
 TcpNewReno::NewAck (const SequenceNumber32& seq)
 {
   NS_LOG_FUNCTION (this << seq);
-  NS_LOG_LOGIC ("TcpNewReno receieved ACK for seq " << seq <<
+  NS_LOG_LOGIC ("TcpNewReno received ACK for seq " << seq <<
                 " cwnd " << m_cWnd <<
                 " ssthresh " << m_ssThresh);
 
   // Check for exit condition of fast recovery
   if (m_inFastRec && seq < m_recover)
     { // Partial ACK, partial window deflation (RFC2582 sec.3 bullet #5 paragraph 3)
-      m_cWnd -= seq - m_txBuffer.HeadSequence ();
-      m_cWnd += m_segmentSize;  // increase cwnd
-      NS_LOG_INFO ("Partial ACK in fast recovery: cwnd set to " << m_cWnd);
-      TcpSocketBase::NewAck (seq); // update m_nextTxSequence and send new data if allowed by window
+      m_cWnd += m_segmentSize - (seq - m_txBuffer->HeadSequence ());
+      NS_LOG_INFO ("Partial ACK for seq " << seq << " in fast recovery: cwnd set to " << m_cWnd);
+      m_txBuffer->DiscardUpTo(seq);  //Bug 1850:  retransmit before newack
       DoRetransmit (); // Assume the next seq is lost. Retransmit lost packet
+      TcpSocketBase::NewAck (seq); // update m_nextTxSequence and send new data if allowed by window
       return;
     }
   else if (m_inFastRec && seq >= m_recover)
     { // Full ACK (RFC2582 sec.3 bullet #5 paragraph 2, option 1)
-      m_cWnd = std::min (m_ssThresh, BytesInFlight () + m_segmentSize);
+      m_cWnd = std::min (m_ssThresh.Get (), BytesInFlight () + m_segmentSize);
       m_inFastRec = false;
-      NS_LOG_INFO ("Received full ACK. Leaving fast recovery with cwnd set to " << m_cWnd);
+      NS_LOG_INFO ("Received full ACK for seq " << seq <<". Leaving fast recovery with cwnd set to " << m_cWnd);
     }
 
   // Increase of cwnd based on current phase (slow start or congestion avoidance)
   if (m_cWnd < m_ssThresh)
     { // Slow start mode, add one segSize to cWnd. Default m_ssThresh is 65535. (RFC2001, sec.1)
       m_cWnd += m_segmentSize;
-      NS_LOG_INFO ("In SlowStart, updated to cwnd " << m_cWnd << " ssthresh " << m_ssThresh);
+      NS_LOG_INFO ("In SlowStart, ACK of seq " << seq << "; update cwnd to " << m_cWnd << "; ssthresh " << m_ssThresh);
     }
   else
     { // Congestion avoidance mode, increase by (segSize*segSize)/cwnd. (RFC2581, sec.3.1)
@@ -157,7 +164,7 @@ TcpNewReno::NewAck (const SequenceNumber32& seq)
   TcpSocketBase::NewAck (seq);
 }
 
-/** Cut cwnd and enter fast recovery mode upon triple dupack */
+/* Cut cwnd and enter fast recovery mode upon triple dupack */
 void
 TcpNewReno::DupAck (const TcpHeader& t, uint32_t count)
 {
@@ -178,7 +185,7 @@ TcpNewReno::DupAck (const TcpHeader& t, uint32_t count)
       NS_LOG_INFO ("Dupack in fast recovery mode. Increase cwnd to " << m_cWnd);
       SendPendingData (m_connected);
     }
-  else if (!m_inFastRec && m_limitedTx && m_txBuffer.SizeFromSequence (m_nextTxSequence) > 0)
+  else if (!m_inFastRec && m_limitedTx && m_txBuffer->SizeFromSequence (m_nextTxSequence) > 0)
     { // RFC3042 Limited transmit: Send a new packet for each duplicated ACK before fast retransmit
       NS_LOG_INFO ("Limited transmit");
       uint32_t sz = SendDataPacket (m_nextTxSequence, m_segmentSize, true);
@@ -186,7 +193,7 @@ TcpNewReno::DupAck (const TcpHeader& t, uint32_t count)
     };
 }
 
-/** Retransmit timeout */
+/* Retransmit timeout */
 void
 TcpNewReno::Retransmit (void)
 {
@@ -197,17 +204,16 @@ TcpNewReno::Retransmit (void)
   // If erroneous timeout in closed/timed-wait state, just return
   if (m_state == CLOSED || m_state == TIME_WAIT) return;
   // If all data are received (non-closing socket and nothing to send), just return
-  if (m_state <= ESTABLISHED && m_txBuffer.HeadSequence () >= m_highTxMark) return;
+  if (m_state <= ESTABLISHED && m_txBuffer->HeadSequence () >= m_highTxMark) return;
 
   // According to RFC2581 sec.3.1, upon RTO, ssthresh is set to half of flight
   // size and cwnd is set to 1*MSS, then the lost packet is retransmitted and
   // TCP back to slow start
   m_ssThresh = std::max (2 * m_segmentSize, BytesInFlight () / 2);
   m_cWnd = m_segmentSize;
-  m_nextTxSequence = m_txBuffer.HeadSequence (); // Restart from highest Ack
+  m_nextTxSequence = m_txBuffer->HeadSequence (); // Restart from highest Ack
   NS_LOG_INFO ("RTO. Reset cwnd to " << m_cWnd <<
                ", ssthresh to " << m_ssThresh << ", restart from seqnum " << m_nextTxSequence);
-  m_rtt->IncreaseMultiplier ();             // Double the next RTO
   DoRetransmit ();                          // Retransmit the packet
 }
 
@@ -219,15 +225,16 @@ TcpNewReno::SetSegSize (uint32_t size)
 }
 
 void
-TcpNewReno::SetSSThresh (uint32_t threshold)
+TcpNewReno::SetInitialSSThresh (uint32_t threshold)
 {
-  m_ssThresh = threshold;
+  NS_ABORT_MSG_UNLESS (m_state == CLOSED, "TcpNewReno::SetSSThresh() cannot change initial ssThresh after connection started.");
+  m_initialSsThresh = threshold;
 }
 
 uint32_t
-TcpNewReno::GetSSThresh (void) const
+TcpNewReno::GetInitialSSThresh (void) const
 {
-  return m_ssThresh;
+  return m_initialSsThresh;
 }
 
 void
@@ -252,6 +259,7 @@ TcpNewReno::InitializeCwnd (void)
    * m_segmentSize are set by the attribute system in ns3::TcpSocket.
    */
   m_cWnd = m_initialCWnd * m_segmentSize;
+  m_ssThresh = m_initialSsThresh;
 }
 
 } // namespace ns3

@@ -68,7 +68,7 @@ public:
   /**
    *
    *
-   * \param s the PDCP SAP Provider interface offered to the RRC by this LTE_PDCP
+   * \return the PDCP SAP Provider interface offered to the RRC by this LTE_PDCP
    */
   LtePdcpSapProvider* GetLtePdcpSapProvider ();
 
@@ -82,7 +82,7 @@ public:
   /**
    *
    *
-   * \param s the RLC SAP User interface offered to the RLC by this LTE_PDCP
+   * \return the RLC SAP User interface offered to the RLC by this LTE_PDCP
    */
   LteRlcSapUser* GetLteRlcSapUser ();
 
@@ -110,6 +110,30 @@ public:
    * \param s 
    */
   void SetStatus (Status s);
+
+  /**
+   * TracedCallback for PDU transmission event.
+   *
+   * \param [in] rnti The C-RNTI identifying the UE.
+   * \param [in] lcid The logical channel id corresponding to
+   *             the sending RLC instance.
+   * \param [in] size Packet size.
+   */
+  typedef void (* PduTxTracedCallback)
+    (const uint16_t rnti, const uint8_t lcid, const uint32_t size);
+
+  /**
+   * TracedCallback signature for PDU receive event.
+   *
+   * \param [in] rnti The C-RNTI identifying the UE.
+   * \param [in] lcid The logical channel id corresponding to
+   *             the sending RLC instance.
+   * \param [in] size Packet size.
+   * \param [in] delay Delay since packet sent, in ns..
+   */
+  typedef void (* PduRxTracedCallback)
+    (const uint16_t rnti, const uint8_t lcid,
+     const uint32_t size, const uint64_t delay);
 
 protected:
   // Interface provided to upper RRC entity

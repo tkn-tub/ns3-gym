@@ -24,14 +24,15 @@
 #include "ns3/log.h"
 #include "ns3/node.h"
 #include "ns3/trace-source-accessor.h"
+#include "ns3/names.h"
 
 #include "arp-cache.h"
 #include "arp-header.h"
 #include "ipv4-interface.h"
 
-NS_LOG_COMPONENT_DEFINE ("ArpCache");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("ArpCache");
 
 NS_OBJECT_ENSURE_REGISTERED (ArpCache);
 
@@ -40,23 +41,31 @@ ArpCache::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::ArpCache")
     .SetParent<Object> ()
+    .SetGroupName ("Internet")
     .AddAttribute ("AliveTimeout",
-                   "When this timeout expires, the matching cache entry needs refreshing",
+                   "When this timeout expires, "
+                   "the matching cache entry needs refreshing",
                    TimeValue (Seconds (120)),
                    MakeTimeAccessor (&ArpCache::m_aliveTimeout),
                    MakeTimeChecker ())
     .AddAttribute ("DeadTimeout",
-                   "When this timeout expires, a new attempt to resolve the matching entry is made",
+                   "When this timeout expires, "
+                   "a new attempt to resolve the matching entry is made",
                    TimeValue (Seconds (100)),
                    MakeTimeAccessor (&ArpCache::m_deadTimeout),
                    MakeTimeChecker ())
     .AddAttribute ("WaitReplyTimeout",
-                   "When this timeout expires, the cache entries will be scanned and entries in WaitReply state will resend ArpRequest unless MaxRetries has been exceeded, in which case the entry is marked dead",
+                   "When this timeout expires, "
+                   "the cache entries will be scanned and "
+                   "entries in WaitReply state will resend ArpRequest "
+                   "unless MaxRetries has been exceeded, "
+                   "in which case the entry is marked dead",
                    TimeValue (Seconds (1)),
                    MakeTimeAccessor (&ArpCache::m_waitReplyTimeout),
                    MakeTimeChecker ())
     .AddAttribute ("MaxRetries",
-                   "Number of retransmissions of ArpRequest before marking dead",
+                   "Number of retransmissions of ArpRequest "
+                   "before marking dead",
                    UintegerValue (3),
                    MakeUintegerAccessor (&ArpCache::m_maxRetries),
                    MakeUintegerChecker<uint32_t> ())
@@ -66,8 +75,10 @@ ArpCache::GetTypeId (void)
                    MakeUintegerAccessor (&ArpCache::m_pendingQueueSize),
                    MakeUintegerChecker<uint32_t> ())
     .AddTraceSource ("Drop",
-                     "Packet dropped due to ArpCache entry in WaitReply expiring.",
-                     MakeTraceSourceAccessor (&ArpCache::m_dropTrace))
+                     "Packet dropped due to ArpCache entry "
+                     "in WaitReply expiring.",
+                     MakeTraceSourceAccessor (&ArpCache::m_dropTrace),
+                     "ns3::Packet::TracedCallback")
   ;
   return tid;
 }
@@ -242,6 +253,42 @@ ArpCache::Flush (void)
     }
 }
 
+void
+ArpCache::PrintArpCache (Ptr<OutputStreamWrapper> stream)
+{
+  NS_LOG_FUNCTION (this << stream);
+  std::ostream* os = stream->GetStream ();
+
+  for (CacheI i = m_arpCache.begin (); i != m_arpCache.end (); i++)
+    {
+      *os << i->first << " dev ";
+      std::string found = Names::FindName (m_device);
+      if (Names::FindName (m_device) != "")
+        {
+          *os << found;
+        }
+      else
+        {
+          *os << static_cast<int> (m_device->GetIfIndex ());
+        }
+
+      *os << " lladdr " << i->second->GetMacAddress ();
+
+      if (i->second->IsAlive ())
+        {
+          *os << " REACHABLE\n";
+        }
+      else if (i->second->IsWaitReply ())
+        {
+          *os << " DELAY\n";
+        }
+      else
+        {
+          *os << " STALE\n";
+        }
+    }
+}
+
 ArpCache::Entry *
 ArpCache::Lookup (Ipv4Address to)
 {
@@ -346,7 +393,6 @@ Address
 ArpCache::Entry::GetMacAddress (void) const
 {
   NS_LOG_FUNCTION (this);
-  NS_ASSERT (m_state == ALIVE);
   return m_macAddress;
 }
 Ipv4Address 

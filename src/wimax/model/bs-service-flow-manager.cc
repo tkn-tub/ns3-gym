@@ -37,9 +37,10 @@
 #include "ss-scheduler.h"
 #include "ns3/buffer.h"
 #include "service-flow-record.h"
-NS_LOG_COMPONENT_DEFINE ("BsServiceFlowManager");
 
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("BsServiceFlowManager");
 
 BsServiceFlowManager::BsServiceFlowManager (Ptr<BaseStationNetDevice> device)
   : m_device (device),

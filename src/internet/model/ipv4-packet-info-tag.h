@@ -43,23 +43,67 @@ class Ipv4PacketInfoTag : public Tag
 {
 public:
   Ipv4PacketInfoTag ();
-  // Implemented, but not used in the stack yet
+
+  /**
+   * \brief Set the tag's address
+   *
+   * \param addr the address
+   */
   void SetAddress (Ipv4Address addr);
-  // Implemented, but not used in the stack yet
+
+  /**
+   * \brief Get the tag's address
+   *
+   * \returns the address
+   */
   Ipv4Address GetAddress (void) const;
-  // This corresponds to "ipi_spec_dst" in struct in_pktinfo.
-  // Implemented, but not used in the stack yet
+  /**
+   * \brief Set the tag's \a local address
+   *
+   * This corresponds to "ipi_spec_dst" in struct in_pktinfo.
+   * Implemented, but not used in the stack yet
+   * \param addr the address
+   */
   void SetLocalAddress (Ipv4Address addr);
-  // This corresponds to "ipi_spec_dst" in struct in_pktinfo.
-  // Implemented, but not used in the stack yet
+  /**
+   * \brief Get the tag's \a local address
+   *
+   * This corresponds to "ipi_spec_dst" in struct in_pktinfo.
+   * Implemented, but not used in the stack yet
+   * \returns the address
+   */
   Ipv4Address GetLocalAddress (void) const;
+
+  /**
+   * \brief Set the tag's receiving interface
+   *
+   * \param ifindex the interface index
+   */
   void SetRecvIf (uint32_t ifindex);
+  /**
+   * \brief Get the tag's receiving interface
+   *
+   * \returns the interface index
+   */
   uint32_t GetRecvIf (void) const;
-  // Implemented, but not used in the stack yet
+
+  /**
+   * \brief Set the tag's Time to Live
+   * Implemented, but not used in the stack yet
+   * \param ttl the TTL
+   */
   void SetTtl (uint8_t ttl);
-  // Implemented, but not used in the stack yet
+  /**
+   * \brief Get the tag's Time to Live
+   * Implemented, but not used in the stack yet
+   * \returns the TTL
+   */
   uint8_t GetTtl (void) const;
 
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
   virtual TypeId GetInstanceTypeId (void) const;
   virtual uint32_t GetSerializedSize (void) const;
@@ -77,12 +121,12 @@ private:
   //                                   address */
   // };
 
-  Ipv4Address m_addr;
-  Ipv4Address m_spec_dst;
-  uint32_t m_ifindex;
+  Ipv4Address m_addr;     //!< Header destination address
+  Ipv4Address m_spec_dst; //!< Local address
+  uint32_t m_ifindex;     //!< interface index
 
-  // Uset for IP_RECVTTL, though not implemented yet.
-  uint8_t m_ttl;
+  // Used for IP_RECVTTL, though not implemented yet.
+  uint8_t m_ttl; //!< Time to Live
 };
 } // namespace ns3
 

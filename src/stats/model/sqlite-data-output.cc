@@ -37,17 +37,18 @@ NS_LOG_COMPONENT_DEFINE ("SqliteDataOutput");
 //----------------------------------------------
 SqliteDataOutput::SqliteDataOutput()
 {
+  NS_LOG_FUNCTION (this);
+
   m_filePrefix = "data";
-  NS_LOG_FUNCTION_NOARGS ();
 }
 SqliteDataOutput::~SqliteDataOutput()
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
 }
 void
 SqliteDataOutput::DoDispose ()
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
 
   DataOutputInterface::DoDispose ();
   // end SqliteDataOutput::DoDispose
@@ -55,6 +56,8 @@ SqliteDataOutput::DoDispose ()
 
 int
 SqliteDataOutput::Exec (std::string exe) {
+  NS_LOG_FUNCTION (this << exe);
+
   int res;
   char **result;
   int nrows, ncols;
@@ -100,6 +103,8 @@ SqliteDataOutput::Exec (std::string exe) {
 void
 SqliteDataOutput::Output (DataCollector &dc)
 {
+  NS_LOG_FUNCTION (this << &dc);
+
   std::string m_dbFile = m_filePrefix + ".db";
 
   if (sqlite3_open (m_dbFile.c_str (), &m_db)) {
@@ -149,6 +154,7 @@ SqliteDataOutput::SqliteOutputCallback::SqliteOutputCallback
   m_owner (owner),
   m_runLabel (run)
 {
+  NS_LOG_FUNCTION (this << owner << run);
 
   m_owner->Exec ("create table if not exists Singletons ( run text, name text, variable text, value )");
 
@@ -160,6 +166,8 @@ SqliteDataOutput::SqliteOutputCallback::OutputStatistic (std::string key,
                                                          std::string variable,
                                                          const StatisticalSummary *statSum)
 {
+  NS_LOG_FUNCTION (this << key << variable << statSum);
+
   OutputSingleton (key,variable+"-count", (double)statSum->getCount ());
   if (!isNaN (statSum->getSum ()))
     OutputSingleton (key,variable+"-total", statSum->getSum ());
@@ -179,6 +187,7 @@ SqliteDataOutput::SqliteOutputCallback::OutputSingleton (std::string key,
                                                          std::string variable,
                                                          int val)
 {
+  NS_LOG_FUNCTION (this << key << variable << val);
 
   std::stringstream sstr;
   sstr << "insert into Singletons (run,name,variable,value) values ('" <<
@@ -195,6 +204,8 @@ SqliteDataOutput::SqliteOutputCallback::OutputSingleton (std::string key,
                                                          std::string variable,
                                                          uint32_t val)
 {
+  NS_LOG_FUNCTION (this << key << variable << val);
+
   std::stringstream sstr;
   sstr << "insert into Singletons (run,name,variable,value) values ('" <<
   m_runLabel << "', '" <<
@@ -209,6 +220,8 @@ SqliteDataOutput::SqliteOutputCallback::OutputSingleton (std::string key,
                                                          std::string variable,
                                                          double val)
 {
+  NS_LOG_FUNCTION (this << key << variable << val);
+
   std::stringstream sstr;
   sstr << "insert into Singletons (run,name,variable,value) values ('" <<
   m_runLabel << "', '" <<
@@ -223,6 +236,8 @@ SqliteDataOutput::SqliteOutputCallback::OutputSingleton (std::string key,
                                                          std::string variable,
                                                          std::string val)
 {
+  NS_LOG_FUNCTION (this << key << variable << val);
+
   std::stringstream sstr;
   sstr << "insert into Singletons (run,name,variable,value) values ('" <<
   m_runLabel << "', '" <<
@@ -237,6 +252,8 @@ SqliteDataOutput::SqliteOutputCallback::OutputSingleton (std::string key,
                                                          std::string variable,
                                                          Time val)
 {
+  NS_LOG_FUNCTION (this << key << variable << val);
+
   std::stringstream sstr;
   sstr << "insert into Singletons (run,name,variable,value) values ('" <<
   m_runLabel << "', '" <<

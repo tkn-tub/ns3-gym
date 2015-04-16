@@ -26,9 +26,9 @@
 #include "ns3/simulator.h"
 #include "ipv4-address-helper.h"
 
-NS_LOG_COMPONENT_DEFINE ("Ipv4AddressHelper");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("Ipv4AddressHelper");
 
 Ipv4AddressHelper::Ipv4AddressHelper () 
 {
@@ -161,7 +161,7 @@ Ipv4AddressHelper::Assign (const NetDeviceContainer &c)
   return retval;
 }
 
-const uint32_t N_BITS = 32;
+const uint32_t N_BITS = 32; //!< number of bits in a IPv4 address
 
 uint32_t
 Ipv4AddressHelper::NumAddressBits (uint32_t maskbits) const

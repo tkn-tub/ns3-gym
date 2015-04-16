@@ -18,9 +18,10 @@
  * Author: Tommaso Pecorella <tommaso.pecorella@unifi.it>
  */
 /**
+ * \file
+ *
  * This is the test code for ipv6-l3protocol.cc (only the fragmentation and reassembly part).
  */
-#define NS3_LOG_ENABLE 1
 
 #include "ns3/test.h"
 #include "ns3/config.h"
@@ -31,7 +32,7 @@
 #include "ns3/udp-socket-factory.h"
 #include "ns3/simulator.h"
 #include "error-channel.h"
-#include "error-net-device.h"
+#include "ns3/simple-net-device.h"
 #include "ns3/drop-tail-queue.h"
 #include "ns3/socket.h"
 #include "ns3/udp-socket.h"
@@ -62,6 +63,26 @@
 using namespace ns3;
 
 class UdpSocketImpl;
+
+/* ----------------------------------------------------------------------------------
+ * Tag
+ --------------------------------------------------------------------------------- */
+class IPv6TestTag : public Tag {
+private:
+  uint64_t token;
+public:
+  static TypeId GetTypeId () {
+    static TypeId tid = TypeId ("ns3::IPv6TestTag").SetParent<Tag> ().AddConstructor<IPv6TestTag> ();
+    return tid;
+  }
+  virtual TypeId GetInstanceTypeId () const { return GetTypeId (); }
+  virtual uint32_t GetSerializedSize () const { return sizeof (token); }
+  virtual void Serialize (TagBuffer buffer) const { buffer.WriteU64 (token); }
+  virtual void Deserialize (TagBuffer buffer) { token = buffer.ReadU64 (); }
+  virtual void Print (std::ostream &os) const { os << "token=" << token; }
+  void setToken (uint64_t token) { this->token = token; }
+  uint64_t getToken () { return token; }
+};
 
 static void
 AddInternetStack (Ptr<Node> node)
@@ -170,9 +191,6 @@ Ipv6FragmentationTest::HandleReadServer (Ptr<Socket> socket)
     {
       if (Inet6SocketAddress::IsMatchingType (from))
         {
-          packet->RemoveAllPacketTags ();
-          packet->RemoveAllByteTags ();
-
           m_receivedPacketServer = packet->Copy ();
         }
     }
@@ -257,6 +275,11 @@ Ptr<Packet> Ipv6FragmentationTest::SendClient (void)
     {
       p = Create<Packet> (m_size);
     }
+  IPv6TestTag tag;
+  tag.setToken (42);
+  p->AddPacketTag (tag);
+  p->AddByteTag (tag);
+
   m_socketClient->Send (p);
 
   return p;
@@ -270,10 +293,10 @@ Ipv6FragmentationTest::DoRun (void)
   // Receiver Node
   Ptr<Node> serverNode = CreateObject<Node> ();
   AddInternetStack (serverNode);
-  Ptr<ErrorNetDevice> serverDev;
+  Ptr<SimpleNetDevice> serverDev;
   Ptr<BinaryErrorModel> serverDevErrorModel = CreateObject<BinaryErrorModel> ();
   {
-    serverDev = CreateObject<ErrorNetDevice> ();
+    serverDev = CreateObject<SimpleNetDevice> ();
     serverDev->SetAddress (Mac48Address::ConvertFrom (Mac48Address::Allocate ()));
     serverDev->SetMtu (1500);
     serverDev->SetReceiveErrorModel (serverDevErrorModel);
@@ -290,12 +313,12 @@ Ipv6FragmentationTest::DoRun (void)
   // Sender Node
   Ptr<Node> clientNode = CreateObject<Node> ();
   AddInternetStack (clientNode);
-  Ptr<ErrorNetDevice> clientDev;
+  Ptr<SimpleNetDevice> clientDev;
   Ptr<BinaryErrorModel> clientDevErrorModel = CreateObject<BinaryErrorModel> ();
   {
-    clientDev = CreateObject<ErrorNetDevice> ();
+    clientDev = CreateObject<SimpleNetDevice> ();
     clientDev->SetAddress (Mac48Address::ConvertFrom (Mac48Address::Allocate ()));
-    clientDev->SetMtu (1000);
+    clientDev->SetMtu (1500);
     clientDev->SetReceiveErrorModel (clientDevErrorModel);
     clientDevErrorModel->Disable ();
     clientNode->AddDevice (clientDev);
@@ -315,7 +338,7 @@ Ipv6FragmentationTest::DoRun (void)
 
 
   // some small packets, some rather big ones
-  uint32_t packetSizes[5] = {1000, 2000, 5000, 10000, 65000};
+  uint32_t packetSizes[5] = {2000, 2500, 5000, 10000, 65000};
 
   // using the alphabet
   uint8_t fillData[78];
@@ -409,6 +432,55 @@ Ipv6FragmentationTest::DoRun (void)
                              true, "Client did not receive ICMPv6::TIME_EXCEEDED " << int(m_icmpType) << int(m_icmpCode) );
     }
 
+  // Fourth test: normal channel, no errors, no delays.
+  // We check tags
+  clientDevErrorModel->Disable ();
+  serverDevErrorModel->Disable ();
+  for (int i= 0; i<5; i++)
+    {
+      uint32_t packetSize = packetSizes[i];
+
+      SetFill (fillData, 78, packetSize);
+
+      m_receivedPacketServer = Create<Packet> ();
+      Simulator::ScheduleWithContext (m_socketClient->GetNode ()->GetId (), Seconds (0),
+                                      &Ipv6FragmentationTest::SendClient, this);
+      Simulator::Run ();
+
+      IPv6TestTag packetTag;
+      bool found = m_receivedPacketServer->PeekPacketTag (packetTag);
+
+      NS_TEST_EXPECT_MSG_EQ (found, true, "PacketTag not found");
+      NS_TEST_EXPECT_MSG_EQ (packetTag.getToken (), 42, "PacketTag value not correct");
+
+      ByteTagIterator iter = m_receivedPacketServer->GetByteTagIterator ();
+
+      uint32_t end = 0;
+      uint32_t tagStart = 0;
+      uint32_t tagEnd = 0;
+      while (iter.HasNext ())
+        {
+          ByteTagIterator::Item item = iter.Next ();
+          NS_TEST_EXPECT_MSG_EQ (item.GetTypeId ().GetName (), "ns3::IPv6TestTag", "ByteTag name not correct");
+          tagStart = item.GetStart ();
+          tagEnd = item.GetEnd ();
+          if (end == 0)
+            {
+              NS_TEST_EXPECT_MSG_EQ (tagStart, 0, "First ByteTag Start not correct");
+            }
+          if (end != 0)
+            {
+              NS_TEST_EXPECT_MSG_EQ (tagStart, end, "ByteTag End not correct");
+            }
+          end = tagEnd;
+          IPv6TestTag *byteTag = dynamic_cast<IPv6TestTag *> (item.GetTypeId ().GetConstructor () ());
+          NS_TEST_EXPECT_MSG_NE (byteTag, 0, "ByteTag not found");
+          item.GetTag (*byteTag);
+          NS_TEST_EXPECT_MSG_EQ (byteTag->getToken (), 42, "ByteTag value not correct");
+          delete byteTag;
+        }
+      NS_TEST_EXPECT_MSG_EQ (end, m_receivedPacketServer->GetSize (), "trivial");
+    }
 
   Simulator::Destroy ();
 }

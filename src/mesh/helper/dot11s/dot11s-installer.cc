@@ -26,6 +26,7 @@
 namespace ns3 {
 using namespace dot11s;
 NS_OBJECT_ENSURE_REGISTERED (Dot11sStack);
+  
 TypeId
 Dot11sStack::GetTypeId ()
 {

@@ -37,6 +37,7 @@
 namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("UdpServer");
+
 NS_OBJECT_ENSURE_REGISTERED (UdpServer);
 
 
@@ -45,6 +46,7 @@ UdpServer::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::UdpServer")
     .SetParent<Application> ()
+    .SetGroupName("Applications")
     .AddConstructor<UdpServer> ()
     .AddAttribute ("Port",
                    "Port on which we listen for incoming packets.",

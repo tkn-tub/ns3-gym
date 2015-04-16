@@ -26,9 +26,9 @@
 #include <ns3/antenna-model.h>
 
 
-NS_LOG_COMPONENT_DEFINE ("SpectrumSignalParameters");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("SpectrumSignalParameters");
 
 SpectrumSignalParameters::SpectrumSignalParameters ()
 {

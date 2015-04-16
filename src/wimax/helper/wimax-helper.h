@@ -28,7 +28,6 @@
 #include "ns3/net-device-container.h"
 #include "ns3/bs-net-device.h"
 #include "ns3/ss-net-device.h"
-#include "ns3/deprecated.h"
 #include "ns3/service-flow.h"
 #include "ns3/propagation-loss-model.h"
 #include "ns3/simple-ofdm-wimax-channel.h"
@@ -278,7 +277,6 @@ private:
   static void AsciiTxEvent (Ptr<OutputStreamWrapper> stream, std::string path, Ptr<const Packet> packet, const Mac48Address &dest);
   /**
    * \brief Enable pcap output on the indicated net device.
-   * \internal
    *
    * NetDevice-specific implementation mechanism for hooking the trace and
    * writing to the trace file.
@@ -292,7 +290,6 @@ private:
 
   /**
    * \brief Enable ascii trace output on the indicated net device.
-   * \internal
    *
    * NetDevice-specific implementation mechanism for hooking the trace and
    * writing to the trace file.

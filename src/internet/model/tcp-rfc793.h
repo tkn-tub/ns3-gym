@@ -39,19 +39,27 @@ namespace ns3 {
 class TcpRfc793 : public TcpSocketBase
 {
 public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
   /**
    * Create an unbound tcp socket.
    */
   TcpRfc793 (void);
+  /**
+   * \brief Copy constructor
+   * \param sock the object to copy
+   */
   TcpRfc793 (const TcpRfc793& sock);
   virtual ~TcpRfc793 (void);
 
 protected:
   virtual Ptr<TcpSocketBase> Fork (); // Call CopyObject<TcpRfc793> to clone me
   virtual void DupAck (const TcpHeader& t, uint32_t count);
-  virtual void     SetSSThresh (uint32_t threshold);
-  virtual uint32_t GetSSThresh (void) const;
+  virtual void     SetInitialSSThresh (uint32_t threshold);
+  virtual uint32_t GetInitialSSThresh (void) const;
   virtual void     SetInitialCwnd (uint32_t cwnd);
   virtual uint32_t GetInitialCwnd (void) const;
 };

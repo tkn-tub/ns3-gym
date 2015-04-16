@@ -39,8 +39,10 @@
 #include "ns3/enum.h"
 
 namespace ns3 {
-namespace dsr {
+
 NS_LOG_COMPONENT_DEFINE ("DsrOptionHeader");
+
+namespace dsr {
 
 NS_OBJECT_ENSURE_REGISTERED (DsrOptionHeader);
 
@@ -658,12 +660,6 @@ TypeId DsrOptionRerrHeader::GetTypeId ()
   static TypeId tid = TypeId ("ns3::dsr::DsrOptionRerrHeader")
     .AddConstructor<DsrOptionRerrHeader> ()
     .SetParent<DsrOptionHeader> ()
-    .AddAttribute ("ErrorType","Type of route errors",
-                   EnumValue (NODE_UNREACHABLE),
-                   MakeEnumAccessor (&DsrOptionRerrHeader::m_errorType),
-                   MakeEnumChecker (NODE_UNREACHABLE, "Node unreachable",
-                                    FLOW_STATE_NOT_SUPPORTED, "Flow state not supported",
-                                    OPTION_NOT_SUPPORTED, "Option not supported"))
   ;
   return tid;
 }
@@ -675,7 +671,6 @@ TypeId DsrOptionRerrHeader::GetInstanceTypeId () const
 
 DsrOptionRerrHeader::DsrOptionRerrHeader ()
   : m_errorType (0),
-    m_reserved (0),
     m_salvage (0),
     m_errorLength (4)
 {
@@ -797,7 +792,7 @@ TypeId DsrOptionRerrUnreachHeader::GetInstanceTypeId () const
 }
 
 DsrOptionRerrUnreachHeader::DsrOptionRerrUnreachHeader ()
-  :    m_reserved (0),
+  :
     m_salvage (0)
 {
   SetType (3);
@@ -925,7 +920,7 @@ TypeId DsrOptionRerrUnsupportHeader::GetInstanceTypeId () const
 }
 
 DsrOptionRerrUnsupportHeader::DsrOptionRerrUnsupportHeader ()
-  :    m_reserved (0),
+  :
     m_salvage (0)
 {
   SetType (3);

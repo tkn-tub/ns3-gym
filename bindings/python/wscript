@@ -13,10 +13,10 @@ from waflib.Errors import WafError
 # after = TaskGen.after
 
 ## https://launchpad.net/pybindgen/
-REQUIRED_PYBINDGEN_VERSION = (0, 16, 0, 831)
+REQUIRED_PYBINDGEN_VERSION = (0, 17, 0, 886)
 REQUIRED_PYGCCXML_VERSION = (0, 9, 5)
 
-
+RUN_ME=-3
 
 def add_to_python_path(path):
     if os.environ.get('PYTHONPATH', ''):
@@ -47,6 +47,10 @@ def options(opt):
     opt.add_option('--with-python',
                    help=('Path to the Python interpreter to use.'),
                    default=None, dest='with_python', type="string")
+    opt.add_option('--no32bit-scan',
+                   help=("Don't scan for the 32-bit variant of the bindings on 64-bit platforms."),
+                   action="store_true", default=False,
+                   dest='no32bit_scan')
 
 
 def configure(conf):
@@ -161,7 +165,7 @@ def configure(conf):
     else:
         out = subprocess.Popen([conf.env['PYTHON'][0], "-c",
                                 "import pybindgen.version; "
-                                "print '.'.join([str(x) for x in pybindgen.version.__version__])"],
+                                "print('.'.join([str(x) for x in pybindgen.version.__version__]))"],
                                 stdout=subprocess.PIPE).communicate()[0]
         pybindgen_version_str = out.strip()
         pybindgen_version = tuple([int(x) for x in pybindgen_version_str.split('.')])
@@ -251,6 +255,8 @@ int main ()
                             "import pygccxml; print pygccxml.__version__"],
                             stdout=subprocess.PIPE).communicate()[0]
     pygccxml_version_str = out.strip()
+    # Bug 2013:  pygccxml versions > 1.0.0 prepend a 'v' to version number
+    pygccxml_version_str = pygccxml_version_str.lstrip('v')
     pygccxml_version = tuple([int(x) for x in pygccxml_version_str.split('.')])
     conf.msg('Checking for pygccxml version', pygccxml_version_str)
     if not (pygccxml_version >= REQUIRED_PYGCCXML_VERSION):
@@ -261,7 +267,7 @@ int main ()
         conf.report_optional_feature("pygccxml", "Python API Scanning Support", False,
                                      "pygccxml too old")
         return
-    
+
 
     ## Check gccxml version
     try:
@@ -310,7 +316,7 @@ def get_module_path(bld, module):
         raise ValueError("Module %r not found" % module)
     return ns3headers.path.abspath()
 
-class apiscan_task(Task.TaskBase):
+class apiscan_task(Task.Task):
     """Uses gccxml to scan the file 'everything.h' and extract API definitions.
     """
     after = 'gen_ns3_module_header ns3header'
@@ -318,7 +324,7 @@ class apiscan_task(Task.TaskBase):
     color = "BLUE"
     def __init__(self, curdirnode, env, bld, target, cflags, module):
         self.bld = bld
-        super(apiscan_task, self).__init__(generator=self)
+        super(apiscan_task, self).__init__(generator=self, env=env)
         self.curdirnode = curdirnode
         self.env = env
         self.target = target
@@ -341,6 +347,8 @@ class apiscan_task(Task.TaskBase):
             return self.uid_
 
     def run(self):
+        self.inputs = [self.bld.bldnode.find_resource("ns3/{0}-module.h".format(self.module))]
+        self.outputs = [self.bld.srcnode.find_resource("src/{}/bindings/modulegen__{}.py".format(self.module, self.target))]
         top_builddir = self.bld.bldnode.abspath()
         module_path = get_module_path(self.bld, self.module)
         headers_map = get_headers_map(self.bld)
@@ -363,6 +371,12 @@ class apiscan_task(Task.TaskBase):
         retval = scan.wait()
         return retval
 
+    def runnable_status(self):
+        # By default, Waf Task will skip running a task if the signature of
+        # the build has not changed.  We want this task to always run if
+        # invoked by the user, particularly since --apiscan=all will require
+        # invoking this task many times, once per module.
+        return RUN_ME
 
 def get_modules_and_headers(bld):
     """
@@ -393,35 +407,11 @@ def get_modules_and_headers(bld):
 
 
 
-class python_scan_task_collector(Task.TaskBase):
-    """Tasks that waits for the python-scan-* tasks to complete and then signals WAF to exit
-    """
-    after = 'apiscan'
-    before = 'cxx'
-    color = "BLUE"
-    def __init__(self, curdirnode, env, bld):
-        self.bld = bld
-        super(python_scan_task_collector, self).__init__(generator=self)
-        self.curdirnode = curdirnode
-        self.env = env
-
-    def display(self):
-        return 'python-scan-collector\n'
-
-    def run(self):
-        # signal stop (we generated files into the source dir and WAF
-        # can't cope with it, so we have to force the user to restart
-        # WAF)
-        self.bld.producer.stop = 1
-        return 0
-
-
-
 class gen_ns3_compat_pymod_task(Task.Task):
     """Generates a 'ns3.py' compatibility module."""
     before = 'cxx'
     color = 'BLUE'
-    
+
     def run(self):
         assert len(self.outputs) == 1
         outfile = file(self.outputs[0].abspath(), "w")
@@ -452,7 +442,9 @@ def build(bld):
         else:
             import struct
             if struct.calcsize('I') == 4 and struct.calcsize('L') == 8 and struct.calcsize('P') == 8:
-                scan_targets.extend([('gcc_ILP32', '-m32'), ('gcc_LP64', '-m64')])
+                if not Options.options.no32bit_scan:
+                    scan_targets.append(('gcc_ILP32', '-m32'))
+                scan_targets.append(('gcc_LP64', '-m64'))
             elif struct.calcsize('I') == 4 and struct.calcsize('L') == 4 and struct.calcsize('P') == 4:
                 scan_targets.append(('gcc_ILP32', ''))
             else:
@@ -479,7 +471,6 @@ def build(bld):
             group = bld.get_group(bld.current_group)
             for module in scan_modules:
                 group.append(apiscan_task(bld.path, env, bld, target, cflags, module))
-        group.append(python_scan_task_collector(bld.path, env, bld))
         return
 
 

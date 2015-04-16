@@ -35,6 +35,7 @@ TypeId Ipv6::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::Ipv6")
     .SetParent<Object> ()
+    .SetGroupName ("Internet")
     .AddAttribute ("IpForward", "Globally enable or disable IP forwarding for all current and future IPv6 devices.",
                    BooleanValue (false),
                    MakeBooleanAccessor (&Ipv6::SetIpForward,

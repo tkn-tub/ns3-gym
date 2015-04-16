@@ -4,7 +4,7 @@ def configure(conf):
     pass
 
 def build(bld):
-    obj = bld.create_ns3_program('perf-io', ['network'])
+    obj = bld.create_ns3_program('perf-io')
     obj.source = 'perf-io.cc'
 
 

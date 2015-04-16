@@ -167,19 +167,23 @@ def parse_examples_to_run_file(
 
             # Add the proper prefix and suffix to the example name to
             # match what is done in the wscript file.
-            example_name = "%s%s-%s%s" % (APPNAME, VERSION, example_name, BUILD_PROFILE_SUFFIX)
+            example_path = "%s%s-%s%s" % (APPNAME, VERSION, example_name, BUILD_PROFILE_SUFFIX)
 
             # Set the full path for the example.
-            example_path = os.path.join(cpp_executable_dir, example_name)
+            example_path = os.path.join(cpp_executable_dir, example_path)
+            example_name = os.path.join(
+                os.path.relpath(cpp_executable_dir, NS3_BUILDDIR),
+                example_name)
             # Add all of the C++ examples that were built, i.e. found
             # in the directory, to the list of C++ examples to run.
             if os.path.exists(example_path):
                 # Add any arguments to the path.
                 if len(example_name_parts) != 1:
                     example_path = "%s %s" % (example_path, example_arguments)
+                    example_name = "%s %s" % (example_name, example_arguments)
 
                 # Add this example.
-                example_tests.append((example_path, do_run, do_valgrind_run))
+                example_tests.append((example_name, example_path, do_run, do_valgrind_run))
                 example_names_original.append(example_name_original)
     
         # Each tuple in the Python list of examples to run contains
@@ -1158,6 +1162,11 @@ def run_tests():
         else:
             path_cmd = os.path.join("utils", test_runner_name + " --print-test-name-list --print-test-types")
         (rc, standard_out, standard_err, et) = run_job_synchronously(path_cmd, os.getcwd(), False, False)
+        if rc != 0:
+            # This is usually a sign that ns-3 crashed or exited uncleanly
+            print('test.py error:  test-runner return code returned {}'.format(rc))
+            print('To debug, try running {}\n'.format('\'./waf --run \"test-runner --print-test-name-list\"\''))
+            return
         list_items = standard_out.split('\n')
         list_items.sort()
         print "Test Type    Test Name"
@@ -1320,6 +1329,7 @@ def run_tests():
     #
     total_tests = 0
     skipped_tests = 0
+    skipped_testnames = []
 
     #
     # We now have worker threads spun up, and a list of work to do.  So, run 
@@ -1412,7 +1422,7 @@ def run_tests():
     if len(options.suite) == 0 and len(options.example) == 0 and len(options.pyexample) == 0:
         if len(options.constrain) == 0 or options.constrain == "example":
             if ENABLE_EXAMPLES:
-                for test, do_run, do_valgrind_run in example_tests:
+                for name, test, do_run, do_valgrind_run in example_tests:
                     # Remove any arguments and directory names from test.
                     test_name = test.split(' ', 1)[0] 
                     test_name = os.path.basename(test_name)
@@ -1423,7 +1433,7 @@ def run_tests():
                             job = Job()
                             job.set_is_example(True)
                             job.set_is_pyexample(False)
-                            job.set_display_name(test)
+                            job.set_display_name(name)
                             job.set_tmp_file_name("")
                             job.set_cwd(testpy_output_dir)
                             job.set_basedir(os.getcwd())
@@ -1589,8 +1599,11 @@ def run_tests():
     #
     passed_tests = 0
     failed_tests = 0
+    failed_testnames = []
     crashed_tests = 0
+    crashed_testnames = []
     valgrind_errors = 0
+    valgrind_testnames = []
     for i in range(jobs):
         job = output_queue.get()
         if job.is_break:
@@ -1604,18 +1617,22 @@ def run_tests():
         if job.is_skip:
             status = "SKIP"
             skipped_tests = skipped_tests + 1
+            skipped_testnames.append(job.display_name)
         else:
             if job.returncode == 0:
                 status = "PASS"
                 passed_tests = passed_tests + 1
             elif job.returncode == 1:
                 failed_tests = failed_tests + 1
+                failed_testnames.append(job.display_name)
                 status = "FAIL"
             elif job.returncode == 2:
                 valgrind_errors = valgrind_errors + 1
+                valgrind_testnames.append(job.display_name)
                 status = "VALGR"
             else:
                 crashed_tests = crashed_tests + 1
+                crashed_testnames.append(job.display_name)
                 status = "CRASH"
 
         if options.duration or options.constrain == "performance":
@@ -1751,6 +1768,21 @@ def run_tests():
     #
     print "%d of %d tests passed (%d passed, %d skipped, %d failed, %d crashed, %d valgrind errors)" % (passed_tests, 
         total_tests, passed_tests, skipped_tests, failed_tests, crashed_tests, valgrind_errors)
+    #
+    # Repeat summary of skipped, failed, crashed, valgrind events 
+    #
+    if skipped_testnames:
+        skipped_testnames.sort()
+        print 'List of SKIPped tests: %s' % '\n    '.join(map(str, skipped_testnames))
+    if failed_testnames:
+        failed_testnames.sort()
+        print 'List of FAILed tests: %s' % '\n    '.join(map(str, failed_testnames))
+    if crashed_testnames:
+        crashed_testnames.sort()
+        print 'List of CRASHed tests: %s' % '\n    '.join(map(str, crashed_testnames))
+    if valgrind_testnames:
+        valgrind_testnames.sort()
+        print 'List of VALGR failures: %s' % '\n    '.join(map(str, valgrind_testnames))
     #
     # The last things to do are to translate the XML results file to "human
     # readable form" if the user asked for it (or make an XML file somewhere)

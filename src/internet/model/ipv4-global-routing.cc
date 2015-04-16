@@ -30,9 +30,9 @@
 #include "ipv4-global-routing.h"
 #include "global-route-manager.h"
 
-NS_LOG_COMPONENT_DEFINE ("Ipv4GlobalRouting");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("Ipv4GlobalRouting");
 
 NS_OBJECT_ENSURE_REGISTERED (Ipv4GlobalRouting);
 
@@ -41,6 +41,7 @@ Ipv4GlobalRouting::GetTypeId (void)
 { 
   static TypeId tid = TypeId ("ns3::Ipv4GlobalRouting")
     .SetParent<Object> ()
+    .SetGroupName ("Internet")
     .AddAttribute ("RandomEcmpRouting",
                    "Set to true if packets are randomly routed among ECMP; set to false for using only one route consistently",
                    BooleanValue (false),

@@ -25,7 +25,7 @@
 #include "ns3/test.h"
 
 
-namespace ns3 {
+using namespace ns3;
 
 
 /**
@@ -43,8 +43,6 @@ private:
   void GetRlcBufferSample (Ptr<RadioBearerStatsCalculator> rlcStats, uint64_t imsi, uint8_t rnti);
   
   static std::string BuildNameString (uint16_t dist, std::string schedulerType, bool useIdealRrc);
-  uint16_t m_nUser;
-  uint16_t m_nLc;
   uint16_t m_dist;
   std::vector<uint32_t> m_estThrDl;
   std::string m_schedulerType;
@@ -61,11 +59,5 @@ class LenaTestMimoSuite : public TestSuite
 public:
   LenaTestMimoSuite ();
 };
-
-
-
-
-} // namespace ns3
-
 
 #endif /* LENA_TEST_MIMO_H */

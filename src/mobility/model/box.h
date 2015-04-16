@@ -29,10 +29,14 @@ namespace ns3 {
 /**
  * \ingroup mobility
  * \brief a 3d box
+ * \see attribute_Box
  */
 class Box
 {
 public:
+  /**
+   * Enum class to specify sides of a box
+   */
   enum Side {
     RIGHT,
     LEFT,
@@ -85,27 +89,22 @@ public:
    */
   Vector CalculateIntersection (const Vector &current, const Vector &speed) const;
 
-  /* The x coordinate of the left bound of the box */
+  /** The x coordinate of the left bound of the box */
   double xMin;
-  /* The x coordinate of the right bound of the box */
+  /** The x coordinate of the right bound of the box */
   double xMax;
-  /* The y coordinate of the bottom bound of the box */
+  /** The y coordinate of the bottom bound of the box */
   double yMin;
-  /* The y coordinate of the top bound of the box */
+  /** The y coordinate of the top bound of the box */
   double yMax;
-  /* The z coordinate of the down bound of the box */
+  /** The z coordinate of the down bound of the box */
   double zMin;
-  /* The z coordinate of the up bound of the box */
+  /** The z coordinate of the up bound of the box */
   double zMax;
 };
 
 std::ostream &operator << (std::ostream &os, const Box &box);
 std::istream &operator >> (std::istream &is, Box &box);
-
-/**
- * \class ns3::BoxValue
- * \brief hold objects of type ns3::Box
- */
 
 ATTRIBUTE_HELPER_HEADER (Box);
 

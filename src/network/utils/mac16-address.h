@@ -35,6 +35,8 @@ class Address;
  * \ingroup address
  *
  * This class can contain 16 bit addresses.
+ *
+ * \see attribute_Mac16Address
  */
 class Mac16Address
 {
@@ -80,6 +82,7 @@ public:
   static bool IsMatchingType (const Address &address);
   /**
    * Allocate a new Mac16Address.
+   * \returns newly allocated mac16Address
    */
   static Mac16Address Allocate (void);
 
@@ -90,19 +93,60 @@ private:
    * Convert an instance of this class to a polymorphic Address instance.
    */
   Address ConvertTo (void) const;
+
+  /**
+   * \brief Return the Type of address.
+   * \return type of address
+   */
   static uint8_t GetType (void);
-  friend bool operator < (const Mac16Address &a, const Mac16Address &b);
+
+  /**
+   * \brief Equal to operator.
+   *
+   * \param a the first operand
+   * \param b the first operand
+   * \returns true if the operands are equal
+   */
   friend bool operator == (const Mac16Address &a, const Mac16Address &b);
+
+  /**
+   * \brief Not equal to operator.
+   *
+   * \param a the first operand
+   * \param b the first operand
+   * \returns true if the operands are not equal
+   */
   friend bool operator != (const Mac16Address &a, const Mac16Address &b);
+
+  /**
+   * \brief Less than operator.
+   *
+   * \param a the first operand
+   * \param b the first operand
+   * \returns true if the operand a is less than operand b
+   */
+  friend bool operator < (const Mac16Address &a, const Mac16Address &b);
+
+  /**
+   * \brief Stream insertion operator.
+   *
+   * \param os the stream
+   * \param address the address
+   * \returns a reference to the stream
+   */
+  friend std::ostream& operator<< (std::ostream& os, const Mac16Address & address);
+
+  /**
+   * \brief Stream extraction operator.
+   *
+   * \param is the stream
+   * \param address the address
+   * \returns a reference to the stream
+   */
   friend std::istream& operator>> (std::istream& is, Mac16Address & address);
 
-  uint8_t m_address[2];
+  uint8_t m_address[2]; //!< address value
 };
-
-/**
- * \class ns3::Mac16AddressValue
- * \brief hold objects of type ns3::Mac16Address
- */
 
 ATTRIBUTE_HELPER_HEADER (Mac16Address);
 

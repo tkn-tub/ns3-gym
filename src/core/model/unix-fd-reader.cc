@@ -21,7 +21,7 @@
 
 #include <cerrno>
 #include <cstring>
-#include <unistd.h>
+#include <unistd.h>  // close()
 #include <fcntl.h>
 
 #include "log.h"
@@ -32,9 +32,15 @@
 
 #include "unix-fd-reader.h"
 
-NS_LOG_COMPONENT_DEFINE ("FdReader");
+/**
+ * \file
+ * \ingroup system
+ * ns3::FdReader implementation.
+ */
 
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("FdReader");
 
 FdReader::FdReader ()
   : m_fd (-1), m_readCallback (0), m_readThread (0), m_stop (false),

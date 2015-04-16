@@ -39,9 +39,6 @@
 #include "mgt-headers.h"
 #include "ht-capabilities.h"
 
-NS_LOG_COMPONENT_DEFINE ("StaWifiMac");
-
-
 /*
  * The state machine for this STA is:
  --------------                                          -----------
@@ -60,6 +57,8 @@ NS_LOG_COMPONENT_DEFINE ("StaWifiMac");
 
 namespace ns3 {
 
+NS_LOG_COMPONENT_DEFINE ("StaWifiMac");
+
 NS_OBJECT_ENSURE_REGISTERED (StaWifiMac);
 
 TypeId
@@ -67,6 +66,7 @@ StaWifiMac::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::StaWifiMac")
     .SetParent<RegularWifiMac> ()
+    .SetGroupName ("Wifi")
     .AddConstructor<StaWifiMac> ()
     .AddAttribute ("ProbeRequestTimeout", "The interval between two consecutive probe request attempts.",
                    TimeValue (Seconds (0.05)),
@@ -84,12 +84,14 @@ StaWifiMac::GetTypeId (void)
                    MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("ActiveProbing", "If true, we send probe requests. If false, we don't. NOTE: if more than one STA in your simulation is using active probing, you should enable it at a different simulation time for each STA, otherwise all the STAs will start sending probes at the same time resulting in collisions. See bug 1060 for more info.",
                    BooleanValue (false),
-                   MakeBooleanAccessor (&StaWifiMac::SetActiveProbing),
+                   MakeBooleanAccessor (&StaWifiMac::SetActiveProbing, &StaWifiMac::GetActiveProbing),
                    MakeBooleanChecker ())
     .AddTraceSource ("Assoc", "Associated with an access point.",
-                     MakeTraceSourceAccessor (&StaWifiMac::m_assocLogger))
+                     MakeTraceSourceAccessor (&StaWifiMac::m_assocLogger),
+                     "ns3::Mac48Address::TracedCallback")
     .AddTraceSource ("DeAssoc", "Association with an access point lost.",
-                     MakeTraceSourceAccessor (&StaWifiMac::m_deAssocLogger))
+                     MakeTraceSourceAccessor (&StaWifiMac::m_deAssocLogger),
+                     "ns3::Mac48Address::TracedCallback")
   ;
   return tid;
 }
@@ -152,6 +154,12 @@ StaWifiMac::SetActiveProbing (bool enable)
     {
       m_probeRequestEvent.Cancel ();
     }
+  m_activeProbing = enable;
+}
+  
+bool StaWifiMac::GetActiveProbing (void) const
+{
+  return m_activeProbing;
 }
 
 void
@@ -250,8 +258,11 @@ StaWifiMac::TryToEnsureAssociated (void)
        * We try to initiate a probe request now.
        */
       m_linkDown ();
+      if (m_activeProbing) 
+        {
       SetState (WAIT_PROBE_RESP);
       SendProbeRequest ();
+        }
       break;
     case WAIT_ASSOC_RESP:
       /* we have sent an assoc request so we do not need to

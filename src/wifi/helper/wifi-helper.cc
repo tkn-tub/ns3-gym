@@ -26,6 +26,7 @@
 #include "ns3/dca-txop.h"
 #include "ns3/edca-txop-n.h"
 #include "ns3/minstrel-wifi-manager.h"
+#include "ns3/ap-wifi-mac.h"
 #include "ns3/wifi-phy.h"
 #include "ns3/wifi-remote-station-manager.h"
 #include "ns3/wifi-channel.h"
@@ -39,15 +40,19 @@
 #include "ns3/simulator.h"
 #include "ns3/names.h"
 
-NS_LOG_COMPONENT_DEFINE ("WifiHelper");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("WifiHelper");
 
 WifiPhyHelper::~WifiPhyHelper ()
 {
 }
 
 WifiMacHelper::~WifiMacHelper ()
+{
+}
+
+WifiHelper::~WifiHelper ()
 {
 }
 
@@ -140,7 +145,7 @@ WifiHelper::EnableLogComponents (void)
   LogComponentEnable ("AdhocWifiMac", LOG_LEVEL_ALL);
   LogComponentEnable ("AmrrWifiRemoteStation", LOG_LEVEL_ALL);
   LogComponentEnable ("ApWifiMac", LOG_LEVEL_ALL);
-  LogComponentEnable ("ns3::ArfWifiManager", LOG_LEVEL_ALL);
+  LogComponentEnable ("ArfWifiManager", LOG_LEVEL_ALL);
   LogComponentEnable ("Cara", LOG_LEVEL_ALL);
   LogComponentEnable ("DcaTxop", LOG_LEVEL_ALL);
   LogComponentEnable ("DcfManager", LOG_LEVEL_ALL);
@@ -215,6 +220,13 @@ WifiHelper::AssignStreams (NetDeviceContainer c, int64_t stream)
               rmac->GetAttribute ("BK_EdcaTxopN", ptr);
               Ptr<EdcaTxopN> bk_edcaTxopN = ptr.Get<EdcaTxopN> ();
               currentStream += bk_edcaTxopN->AssignStreams (currentStream);
+
+              // if an AP, handle any beacon jitter
+              Ptr<ApWifiMac> apmac = DynamicCast<ApWifiMac> (rmac);
+              if (apmac)
+                {
+                  currentStream += apmac->AssignStreams (currentStream);
+                }
             }
         }
     }

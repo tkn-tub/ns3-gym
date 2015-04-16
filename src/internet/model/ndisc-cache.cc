@@ -21,6 +21,7 @@
 #include "ns3/log.h"
 #include "ns3/uinteger.h"
 #include "ns3/node.h"
+#include "ns3/names.h"
 
 #include "ipv6-l3-protocol.h" 
 #include "icmpv6-l4-protocol.h"
@@ -38,6 +39,7 @@ TypeId NdiscCache::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::NdiscCache")
     .SetParent<Object> ()
+    .SetGroupName ("Internet")
     .AddAttribute ("UnresolvedQueueSize",
                    "Size of the queue for packets pending an NA reply.",
                    UintegerValue (DEFAULT_UNRES_QLEN),
@@ -149,14 +151,54 @@ uint32_t NdiscCache::GetUnresQlen ()
   return m_unresQlen;
 }
 
+void NdiscCache::PrintNdiscCache (Ptr<OutputStreamWrapper> stream)
+{
+  NS_LOG_FUNCTION (this << stream);
+  std::ostream* os = stream->GetStream ();
+
+  for (CacheI i = m_ndCache.begin (); i != m_ndCache.end (); i++)
+    {
+      *os << i->first << " dev ";
+      std::string found = Names::FindName (m_device);
+      if (Names::FindName (m_device) != "")
+        {
+          *os << found;
+        }
+      else
+        {
+          *os << static_cast<int> (m_device->GetIfIndex ());
+        }
+
+      *os << " lladdr " << i->second->GetMacAddress ();
+
+      if (i->second->IsReachable ())
+        {
+          *os << " REACHABLE\n";
+        }
+      else if (i->second->IsDelay ())
+        {
+          *os << " DELAY\n";
+        }
+      else if (i->second->IsIncomplete ())
+        {
+          *os << " INCOMPLETE\n";
+        }
+      else if (i->second->IsProbe ())
+        {
+          *os << " PROBE\n";
+        }
+      else
+        {
+          *os << " STALE\n";
+        }
+    }
+}
+
 NdiscCache::Entry::Entry (NdiscCache* nd)
   : m_ndCache (nd),
     m_waiting (),
     m_router (false),
-    m_reachableTimer (Timer::CANCEL_ON_DESTROY),
-    m_retransTimer (Timer::CANCEL_ON_DESTROY),
-    m_probeTimer (Timer::CANCEL_ON_DESTROY),
-    m_delayTimer (Timer::CANCEL_ON_DESTROY),
+    m_nudTimer (Timer::CANCEL_ON_DESTROY),
     m_lastReachabilityConfirmation (Seconds (0.0)),
     m_nsRetransmit (0)
 {
@@ -224,9 +266,9 @@ void NdiscCache::Entry::FunctionRetransmitTimeout ()
         }
     }
 
-  if (GetNSRetransmit () < icmpv6->MAX_MULTICAST_SOLICIT)
+  if (m_nsRetransmit < icmpv6->MAX_MULTICAST_SOLICIT)
     {
-      IncNSRetransmit ();
+      m_nsRetransmit++;
 
       icmpv6->SendNS (addr, Ipv6Address::MakeSolicitedAddress (m_ipv6Address), m_ipv6Address, m_ndCache->GetDevice ()->GetAddress ());
       /* arm the timer again */
@@ -279,8 +321,7 @@ void NdiscCache::Entry::FunctionDelayTimeout ()
   Ptr<Packet> p = icmpv6->ForgeNS (addr, m_ipv6Address, m_ipv6Address, m_ndCache->GetDevice ()->GetAddress ());
   m_ndCache->GetDevice ()->Send (p, this->GetMacAddress (), Ipv6L3Protocol::PROT_NUMBER);
 
-  ResetNSRetransmit ();
-  IncNSRetransmit ();
+  m_nsRetransmit = 1;
   StartProbeTimer ();
 }
 
@@ -290,8 +331,10 @@ void NdiscCache::Entry::FunctionProbeTimeout ()
   Ptr<Ipv6L3Protocol> ipv6 = m_ndCache->GetDevice ()->GetNode ()->GetObject<Ipv6L3Protocol> ();
   Ptr<Icmpv6L4Protocol> icmpv6 = ipv6->GetIcmpv6 ();
 
-  if (GetNSRetransmit () < icmpv6->MAX_UNICAST_SOLICIT)
+  if (m_nsRetransmit < icmpv6->MAX_UNICAST_SOLICIT)
     {
+      m_nsRetransmit++;
+
       Ipv6Address addr;
 
       if (m_ipv6Address.IsLinkLocal ())
@@ -314,7 +357,6 @@ void NdiscCache::Entry::FunctionProbeTimeout ()
           return;
         }
 
-      IncNSRetransmit ();
       /* icmpv6->SendNS (m_ndCache->GetInterface ()->GetLinkLocalAddress (), m_ipv6Address, m_ipv6Address, m_ndCache->GetDevice ()->GetAddress ()); */
       Ptr<Packet> p = icmpv6->ForgeNS (addr, m_ipv6Address, m_ipv6Address, m_ndCache->GetDevice ()->GetAddress ());
       m_ndCache->GetDevice ()->Send (p, this->GetMacAddress (), Ipv6L3Protocol::PROT_NUMBER);
@@ -335,24 +377,6 @@ void NdiscCache::Entry::SetIpv6Address (Ipv6Address ipv6Address)
   m_ipv6Address = ipv6Address;
 }
 
-uint8_t NdiscCache::Entry::GetNSRetransmit () const
-{
-  NS_LOG_FUNCTION_NOARGS ();
-  return m_nsRetransmit;
-}
-
-void NdiscCache::Entry::IncNSRetransmit ()
-{
-  NS_LOG_FUNCTION_NOARGS ();
-  m_nsRetransmit++;
-}
-
-void NdiscCache::Entry::ResetNSRetransmit ()
-{
-  NS_LOG_FUNCTION_NOARGS ();
-  m_nsRetransmit = 0;
-}
-
 Time NdiscCache::Entry::GetLastReachabilityConfirmation () const
 {
   NS_LOG_FUNCTION_NOARGS ();
@@ -367,61 +391,57 @@ void NdiscCache::Entry::UpdateLastReachabilityconfirmation ()
 void NdiscCache::Entry::StartReachableTimer ()
 {
   NS_LOG_FUNCTION_NOARGS ();
-  m_reachableTimer.SetFunction (&NdiscCache::Entry::FunctionReachableTimeout, this);
-  m_reachableTimer.SetDelay (MilliSeconds (Icmpv6L4Protocol::REACHABLE_TIME));
-  m_reachableTimer.Schedule ();
-}
+  if (m_nudTimer.IsRunning ())
+    {
+      m_nudTimer.Cancel ();
+    }
 
-void NdiscCache::Entry::StopReachableTimer ()
-{
-  NS_LOG_FUNCTION_NOARGS ();
-  m_reachableTimer.Cancel ();
+  m_nudTimer.SetFunction (&NdiscCache::Entry::FunctionReachableTimeout, this);
+  m_nudTimer.SetDelay (MilliSeconds (Icmpv6L4Protocol::REACHABLE_TIME));
+  m_nudTimer.Schedule ();
 }
 
 void NdiscCache::Entry::StartProbeTimer ()
 {
   NS_LOG_FUNCTION_NOARGS ();
-  m_probeTimer.SetFunction (&NdiscCache::Entry::FunctionProbeTimeout, this);
-  m_probeTimer.SetDelay (MilliSeconds (Icmpv6L4Protocol::RETRANS_TIMER));
-  m_probeTimer.Schedule ();
+  if (m_nudTimer.IsRunning ())
+    {
+      m_nudTimer.Cancel ();
+    }
+  m_nudTimer.SetFunction (&NdiscCache::Entry::FunctionProbeTimeout, this);
+  m_nudTimer.SetDelay (MilliSeconds (Icmpv6L4Protocol::RETRANS_TIMER));
+  m_nudTimer.Schedule ();
 }
-
-void NdiscCache::Entry::StopProbeTimer ()
-{
-  NS_LOG_FUNCTION_NOARGS ();
-  m_probeTimer.Cancel ();
-  ResetNSRetransmit ();
-}
-
 
 void NdiscCache::Entry::StartDelayTimer ()
 {
   NS_LOG_FUNCTION_NOARGS ();
-  m_delayTimer.SetFunction (&NdiscCache::Entry::FunctionDelayTimeout, this);
-  m_delayTimer.SetDelay (Seconds (Icmpv6L4Protocol::DELAY_FIRST_PROBE_TIME));
-  m_delayTimer.Schedule ();
-}
-
-void NdiscCache::Entry::StopDelayTimer ()
-{
-  NS_LOG_FUNCTION_NOARGS ();
-  m_delayTimer.Cancel ();
-  ResetNSRetransmit ();
+  if (m_nudTimer.IsRunning ())
+    {
+      m_nudTimer.Cancel ();
+    }
+  m_nudTimer.SetFunction (&NdiscCache::Entry::FunctionDelayTimeout, this);
+  m_nudTimer.SetDelay (Seconds (Icmpv6L4Protocol::DELAY_FIRST_PROBE_TIME));
+  m_nudTimer.Schedule ();
 }
 
 void NdiscCache::Entry::StartRetransmitTimer ()
 {
   NS_LOG_FUNCTION_NOARGS ();
-  m_retransTimer.SetFunction (&NdiscCache::Entry::FunctionRetransmitTimeout, this);
-  m_retransTimer.SetDelay (MilliSeconds (Icmpv6L4Protocol::RETRANS_TIMER));
-  m_retransTimer.Schedule ();
+  if (m_nudTimer.IsRunning ())
+    {
+      m_nudTimer.Cancel ();
+    }
+  m_nudTimer.SetFunction (&NdiscCache::Entry::FunctionRetransmitTimeout, this);
+  m_nudTimer.SetDelay (MilliSeconds (Icmpv6L4Protocol::RETRANS_TIMER));
+  m_nudTimer.Schedule ();
 }
 
-void NdiscCache::Entry::StopRetransmitTimer ()
+void NdiscCache::Entry::StopNudTimer ()
 {
   NS_LOG_FUNCTION_NOARGS ();
-  m_retransTimer.Cancel ();
-  ResetNSRetransmit ();
+  m_nudTimer.Cancel ();
+  m_nsRetransmit = 0;
 }
 
 void NdiscCache::Entry::MarkIncomplete (Ptr<Packet> p)
@@ -513,7 +533,7 @@ Address NdiscCache::Entry::GetMacAddress () const
 
 void NdiscCache::Entry::SetMacAddress (Address mac)
 {
-  NS_LOG_FUNCTION (this << mac);
+  NS_LOG_FUNCTION (this << mac << int(m_state));
   m_macAddress = mac;
 }
 

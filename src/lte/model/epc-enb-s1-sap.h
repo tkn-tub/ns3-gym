@@ -49,6 +49,13 @@ public:
    */
   virtual void InitialUeMessage (uint64_t imsi, uint16_t rnti) = 0;
 
+  /**
+   *  \brief Triggers epc-enb-application to send ERAB Release Indication message towards MME
+   *  \param imsi the UE IMSI
+   *  \param rnti the UE RNTI
+   *  \param bearerId Bearer Identity which is to be de-activated
+   */
+  virtual void DoSendReleaseIndication (uint64_t imsi, uint16_t rnti, uint8_t bearerId) = 0;
 
   struct BearerToBeSwitched
   {
@@ -139,6 +146,8 @@ public:
 
   // inherited from EpcEnbS1SapProvider
   virtual void InitialUeMessage (uint64_t imsi, uint16_t rnti);
+  virtual void DoSendReleaseIndication (uint64_t imsi, uint16_t rnti, uint8_t bearerId);
+
   virtual void PathSwitchRequest (PathSwitchRequestParameters params);
   virtual void UeContextRelease (uint16_t rnti);
 
@@ -165,6 +174,11 @@ void MemberEpcEnbS1SapProvider<C>::InitialUeMessage (uint64_t imsi, uint16_t rnt
   m_owner->DoInitialUeMessage (imsi, rnti);
 }
 
+template <class C>
+void MemberEpcEnbS1SapProvider<C>::DoSendReleaseIndication (uint64_t imsi, uint16_t rnti, uint8_t bearerId)
+{
+  m_owner->DoReleaseIndication (imsi, rnti, bearerId);
+}
 
 template <class C>
 void MemberEpcEnbS1SapProvider<C>::PathSwitchRequest (PathSwitchRequestParameters params)

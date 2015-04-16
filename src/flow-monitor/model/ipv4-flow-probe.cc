@@ -36,9 +36,22 @@ NS_LOG_COMPONENT_DEFINE ("Ipv4FlowProbe");
 // Ipv4FlowProbeTag class implementation //
 //////////////////////////////////////
 
+/**
+ * \ingroup flow-monitor
+ *
+ * \brief Tag used to allow a fast identification of the packet
+ *
+ * This tag is added by FlowMonitor when a packet is seen for
+ * the first time, and it is then used to classify the packet in
+ * the following hops.
+ */
 class Ipv4FlowProbeTag : public Tag
 {
 public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
   virtual TypeId GetInstanceTypeId (void) const;
   virtual uint32_t GetSerializedSize (void) const;
@@ -46,17 +59,47 @@ public:
   virtual void Deserialize (TagBuffer buf);
   virtual void Print (std::ostream &os) const;
   Ipv4FlowProbeTag ();
+  /**
+   * \brief Consructor
+   * \param flowId the flow identifier
+   * \param packetId the packet identifier
+   * \param packetSize the packet size
+   */
   Ipv4FlowProbeTag (uint32_t flowId, uint32_t packetId, uint32_t packetSize);
+  /**
+   * \brief Set the flow identifier
+   * \param flowId the flow identifier
+   */
   void SetFlowId (uint32_t flowId);
+  /**
+   * \brief Set the packet identifier
+   * \param packetId the packet identifier
+   */
   void SetPacketId (uint32_t packetId);
+  /**
+   * \brief Set the packet size
+   * \param packetSize the packet size
+   */
   void SetPacketSize (uint32_t packetSize);
+  /**
+   * \brief Set the flow identifier
+   * \returns the flow identifier
+   */
   uint32_t GetFlowId (void) const;
+  /**
+   * \brief Set the packet identifier
+   * \returns the packet identifier
+   */
   uint32_t GetPacketId (void) const;
+  /**
+   * \brief Get the packet size
+   * \returns the packet size
+   */
   uint32_t GetPacketSize (void) const;
 private:
-  uint32_t m_flowId;
-  uint32_t m_packetId;
-  uint32_t m_packetSize;
+  uint32_t m_flowId;      //!< flow identifier
+  uint32_t m_packetId;    //!< packet identifier
+  uint32_t m_packetSize;  //!< packet size
 
 };
 
@@ -65,6 +108,7 @@ Ipv4FlowProbeTag::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::Ipv4FlowProbeTag")
     .SetParent<Tag> ()
+    .SetGroupName ("FlowMonitor")
     .AddConstructor<Ipv4FlowProbeTag> ()
   ;
   return tid;
@@ -153,26 +197,26 @@ Ipv4FlowProbe::Ipv4FlowProbe (Ptr<FlowMonitor> monitor,
 {
   NS_LOG_FUNCTION (this << node->GetId ());
 
-  Ptr<Ipv4L3Protocol> ipv4 = node->GetObject<Ipv4L3Protocol> ();
+  m_ipv4 = node->GetObject<Ipv4L3Protocol> ();
 
-  if (!ipv4->TraceConnectWithoutContext ("SendOutgoing",
-                                         MakeCallback (&Ipv4FlowProbe::SendOutgoingLogger, Ptr<Ipv4FlowProbe> (this))))
+  if (!m_ipv4->TraceConnectWithoutContext ("SendOutgoing",
+                                           MakeCallback (&Ipv4FlowProbe::SendOutgoingLogger, Ptr<Ipv4FlowProbe> (this))))
     {
       NS_FATAL_ERROR ("trace fail");
     }
-  if (!ipv4->TraceConnectWithoutContext ("UnicastForward",
-                                         MakeCallback (&Ipv4FlowProbe::ForwardLogger, Ptr<Ipv4FlowProbe> (this))))
+  if (!m_ipv4->TraceConnectWithoutContext ("UnicastForward",
+                                           MakeCallback (&Ipv4FlowProbe::ForwardLogger, Ptr<Ipv4FlowProbe> (this))))
     {
       NS_FATAL_ERROR ("trace fail");
     }
-  if (!ipv4->TraceConnectWithoutContext ("LocalDeliver",
-                                         MakeCallback (&Ipv4FlowProbe::ForwardUpLogger, Ptr<Ipv4FlowProbe> (this))))
+  if (!m_ipv4->TraceConnectWithoutContext ("LocalDeliver",
+                                           MakeCallback (&Ipv4FlowProbe::ForwardUpLogger, Ptr<Ipv4FlowProbe> (this))))
     {
       NS_FATAL_ERROR ("trace fail");
     }
 
-  if (!ipv4->TraceConnectWithoutContext ("Drop",
-                                         MakeCallback (&Ipv4FlowProbe::DropLogger, Ptr<Ipv4FlowProbe> (this))))
+  if (!m_ipv4->TraceConnectWithoutContext ("Drop",
+                                           MakeCallback (&Ipv4FlowProbe::DropLogger, Ptr<Ipv4FlowProbe> (this))))
     {
       NS_FATAL_ERROR ("trace fail");
     }
@@ -190,6 +234,8 @@ Ipv4FlowProbe::~Ipv4FlowProbe ()
 void
 Ipv4FlowProbe::DoDispose ()
 {
+  m_ipv4 = 0;
+  m_classifier = 0;
   FlowProbe::DoDispose ();
 }
 
@@ -198,6 +244,12 @@ Ipv4FlowProbe::SendOutgoingLogger (const Ipv4Header &ipHeader, Ptr<const Packet>
 {
   FlowId flowId;
   FlowPacketId packetId;
+
+  if (!m_ipv4->IsUnicast(ipHeader.GetDestination ()))
+    {
+      // we are not prepared to handle broadcast yet
+      return;
+    }
 
   if (m_classifier->Classify (ipHeader, ipPayload, &flowId, &packetId))
     {
@@ -209,38 +261,37 @@ Ipv4FlowProbe::SendOutgoingLogger (const Ipv4Header &ipHeader, Ptr<const Packet>
       // tag the packet with the flow id and packet id, so that the packet can be identified even
       // when Ipv4Header is not accessible at some non-IPv4 protocol layer
       Ipv4FlowProbeTag fTag (flowId, packetId, size);
-      ipPayload->AddPacketTag (fTag);
+      ipPayload->AddByteTag (fTag);
     }
 }
 
 void
 Ipv4FlowProbe::ForwardLogger (const Ipv4Header &ipHeader, Ptr<const Packet> ipPayload, uint32_t interface)
 {
-  FlowId flowId;
-  FlowPacketId packetId;
+  Ipv4FlowProbeTag fTag;
+  bool found = ipPayload->FindFirstMatchingByteTag (fTag);
 
-  if (m_classifier->Classify (ipHeader, ipPayload, &flowId, &packetId))
+  if (found)
     {
+      FlowId flowId = fTag.GetFlowId ();
+      FlowPacketId packetId = fTag.GetPacketId ();
+
       uint32_t size = (ipPayload->GetSize () + ipHeader.GetSerializedSize ());
       NS_LOG_DEBUG ("ReportForwarding ("<<this<<", "<<flowId<<", "<<packetId<<", "<<size<<");");
       m_flowMonitor->ReportForwarding (this, flowId, packetId, size);
     }
-
 }
 
 void
 Ipv4FlowProbe::ForwardUpLogger (const Ipv4Header &ipHeader, Ptr<const Packet> ipPayload, uint32_t interface)
 {
-  FlowId flowId;
-  FlowPacketId packetId;
+  Ipv4FlowProbeTag fTag;
+  bool found = ipPayload->FindFirstMatchingByteTag (fTag);
 
-  if (m_classifier->Classify (ipHeader, ipPayload, &flowId, &packetId))
+  if (found)
     {
-      // remove the tags that are added by Ipv4FlowProbe::SendOutgoingLogger ()
-      Ipv4FlowProbeTag fTag;
-
-      // ConstCast: see http://www.nsnam.org/bugzilla/show_bug.cgi?id=904
-      ConstCast<Packet> (ipPayload)->RemovePacketTag (fTag);
+      FlowId flowId = fTag.GetFlowId ();
+      FlowPacketId packetId = fTag.GetPacketId ();
 
       uint32_t size = (ipPayload->GetSize () + ipHeader.GetSerializedSize ());
       NS_LOG_DEBUG ("ReportLastRx ("<<this<<", "<<flowId<<", "<<packetId<<", "<<size<<");");
@@ -270,16 +321,13 @@ Ipv4FlowProbe::DropLogger (const Ipv4Header &ipHeader, Ptr<const Packet> ipPaylo
     }
 #endif
 
-  FlowId flowId;
-  FlowPacketId packetId;
+  Ipv4FlowProbeTag fTag;
+  bool found = ipPayload->FindFirstMatchingByteTag (fTag);
 
-  if (m_classifier->Classify (ipHeader, ipPayload, &flowId, &packetId))
+  if (found)
     {
-      // remove the tags that are added by Ipv4FlowProbe::SendOutgoingLogger ()
-      Ipv4FlowProbeTag fTag;
-
-      // ConstCast: see http://www.nsnam.org/bugzilla/show_bug.cgi?id=904
-      ConstCast<Packet> (ipPayload)->RemovePacketTag (fTag);
+      FlowId flowId = fTag.GetFlowId ();
+      FlowPacketId packetId = fTag.GetPacketId ();
 
       uint32_t size = (ipPayload->GetSize () + ipHeader.GetSerializedSize ());
       NS_LOG_DEBUG ("Drop ("<<this<<", "<<flowId<<", "<<packetId<<", "<<size<<", " << reason 
@@ -328,12 +376,9 @@ Ipv4FlowProbe::DropLogger (const Ipv4Header &ipHeader, Ptr<const Packet> ipPaylo
 void 
 Ipv4FlowProbe::QueueDropLogger (Ptr<const Packet> ipPayload)
 {
-  // remove the tags that are added by Ipv4FlowProbe::SendOutgoingLogger ()
   Ipv4FlowProbeTag fTag;
+  bool tagFound = ipPayload->FindFirstMatchingByteTag (fTag);
 
-  // ConstCast: see http://www.nsnam.org/bugzilla/show_bug.cgi?id=904
-  bool tagFound;
-  tagFound = ConstCast<Packet> (ipPayload)->RemovePacketTag (fTag);
   if (!tagFound)
     {
       return;

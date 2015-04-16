@@ -48,9 +48,9 @@
 
 #include <string>
 
-NS_LOG_COMPONENT_DEFINE ("Ipv6DualStackTestSuite");
-
 using namespace ns3;
+
+NS_LOG_COMPONENT_DEFINE ("Ipv6DualStackTestSuite");
 
 class DualStackTestCase : public TestCase
 {

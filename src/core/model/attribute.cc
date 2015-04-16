@@ -23,9 +23,16 @@
 #include "string.h"
 #include <sstream>
 
-NS_LOG_COMPONENT_DEFINE ("AttributeValue");
+/**
+ * \file
+ * \ingroup attribute
+ * ns3::AttributeValue, ns3::AttributeAccessor and
+ * ns3::AttributeChecker implementations.
+ */
 
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("AttributeValue");
 
 AttributeValue::AttributeValue ()
 {

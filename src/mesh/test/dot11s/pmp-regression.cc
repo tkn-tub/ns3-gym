@@ -99,11 +99,11 @@ PeerManagementProtocolRegressionTest::CreateDevices ()
   mesh.SetMacType ("RandomStart", TimeValue (Seconds (0.1)));
   mesh.SetNumberOfInterfaces (1);
   NetDeviceContainer meshDevices = mesh.Install (wifiPhy, *m_nodes);
-  // Two devices, four streams per device (one for mac, one for phy, 
-  // two for plugins)
+  // Two devices, nine streams per device (one for mac, one for phy, 
+  // two for plugins, five for regular mac wifi DCF)
   streamsUsed += mesh.AssignStreams (meshDevices, 0);
-  NS_TEST_ASSERT_MSG_EQ (streamsUsed, (meshDevices.GetN () * 4), "Stream assignment mismatch");
-  wifiChannel.AssignStreams (chan, streamsUsed);
+  NS_TEST_ASSERT_MSG_EQ (streamsUsed, (meshDevices.GetN () * 9), "Stream assignment mismatch");
+  streamsUsed += wifiChannel.AssignStreams (chan, streamsUsed);
   // 3. write PCAP if needed
   wifiPhy.EnablePcapAll (CreateTempDirFilename (PREFIX));
 }

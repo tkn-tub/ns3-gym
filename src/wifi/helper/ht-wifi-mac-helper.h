@@ -43,7 +43,6 @@ public:
   HtWifiMacHelper ();
 
   /**
-   * \internal
    * Destroy a HtWifiMacHelper
    */
   virtual ~HtWifiMacHelper ();

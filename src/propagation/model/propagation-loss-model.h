@@ -41,7 +41,7 @@ class MobilityModel;
 /**
  * \ingroup propagation
  *
- * \brief Modelize the propagation loss through a transmission medium
+ * \brief Models the propagation loss through a transmission medium
  *
  * Calculate the receive power (dbm) from a transmit power (dbm)
  * and a mobility model for the source and destination positions.
@@ -49,6 +49,11 @@ class MobilityModel;
 class PropagationLossModel : public Object
 {
 public:
+  /**
+   * Get the type ID.
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
 
   PropagationLossModel ();
@@ -76,6 +81,9 @@ public:
   Ptr<PropagationLossModel> GetNext ();
 
   /**
+   * Returns the Rx Power taking into account all the PropagatinLossModel(s)
+   * chained to the current one.
+   *
    * \param txPowerDbm current transmission power (in dBm)
    * \param a the mobility model of the source
    * \param b the mobility model of the destination
@@ -99,8 +107,29 @@ public:
   int64_t AssignStreams (int64_t stream);
 
 private:
-  PropagationLossModel (const PropagationLossModel &o);
-  PropagationLossModel &operator = (const PropagationLossModel &o);
+  /**
+   * \brief Copy constructor
+   *
+   * Defined and unimplemented to avoid misuse
+   */
+  PropagationLossModel (const PropagationLossModel &);
+  /**
+   * \brief Copy constructor
+   *
+   * Defined and unimplemented to avoid misuse
+   * \returns
+   */
+  PropagationLossModel &operator = (const PropagationLossModel &);
+
+  /**
+   * Returns the Rx Power taking into account only the particular
+   * PropagatinLossModel.
+   *
+   * \param txPowerDbm current transmission power (in dBm)
+   * \param a the mobility model of the source
+   * \param b the mobility model of the destination
+   * \returns the reception power after adding/multiplying propagation loss (in dBm)
+   */
   virtual double DoCalcRxPower (double txPowerDbm,
                                 Ptr<MobilityModel> a,
                                 Ptr<MobilityModel> b) const = 0;
@@ -111,7 +140,7 @@ private:
    */
   virtual int64_t DoAssignStreams (int64_t stream) = 0;
 
-  Ptr<PropagationLossModel> m_next;
+  Ptr<PropagationLossModel> m_next; //!< Next propagation loss model in the list
 };
 
 /**
@@ -122,19 +151,34 @@ private:
 class RandomPropagationLossModel : public PropagationLossModel
 {
 public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
 
   RandomPropagationLossModel ();
   virtual ~RandomPropagationLossModel ();
 
 private:
-  RandomPropagationLossModel (const RandomPropagationLossModel &o);
-  RandomPropagationLossModel & operator = (const RandomPropagationLossModel &o);
+  /**
+   * \brief Copy constructor
+   *
+   * Defined and unimplemented to avoid misuse
+   */
+  RandomPropagationLossModel (const RandomPropagationLossModel &);
+  /**
+   * \brief Copy constructor
+   *
+   * Defined and unimplemented to avoid misuse
+   * \returns
+   */
+  RandomPropagationLossModel & operator = (const RandomPropagationLossModel &);
   virtual double DoCalcRxPower (double txPowerDbm,
                                 Ptr<MobilityModel> a,
                                 Ptr<MobilityModel> b) const;
   virtual int64_t DoAssignStreams (int64_t stream);
-  Ptr<RandomVariableStream> m_variable;
+  Ptr<RandomVariableStream> m_variable; //!< random generator
 };
 
 /**
@@ -166,20 +210,61 @@ private:
  *  - \f$ \lambda \f$ : wavelength (m)
  *  - \f$ d \f$ : distance (m)
  *  - \f$ L \f$ : system loss (unit-less)
- *
- *
- * This model is invalid for small distance values.
- * The current implementation returns the txpower as the rxpower
- * for any distance smaller than MinDistance.
  * 
  * In the implementation,  \f$ \lambda \f$ is calculated as 
  * \f$ \frac{C}{f} \f$, where  \f$ C = 299792458\f$ m/s is the speed of light in
  * vacuum, and \f$ f \f$ is the frequency in Hz which can be configured by
  * the user via the Frequency attribute.
+ *
+ * The Friis model is valid only for propagation in free space within
+ * the so-called far field region, which can be considered
+ * approximately as the region for \f$ d > 3 \lambda \f$.
+ * The model will still return a value for \f$ d < 3 \lambda \f$, as
+ * doing so (rather than triggering a fatal error) is practical for
+ * many simulation scenarios. However, we stress that the values
+ * obtained in such conditions shall not be considered realistic. 
+ * 
+ * Related with this issue, we note that the Friis formula is
+ * undefined for \f$ d = 0 \f$, and results in 
+ * \f$ P_r > P_t \f$ for \f$ d < \lambda / 2 \sqrt{\pi} \f$.
+ * Both these conditions occur outside of the far field region, so in
+ * principle the Friis model shall not be used in these conditions. 
+ * In practice, however, Friis is often used in scenarios where accurate
+ * propagation modeling is not deemed important, and values of \f$ d =
+ * 0 \f$ can occur. To allow practical use of the model in such
+ * scenarios, we have to 1) return some value for \f$ d = 0 \f$, and
+ * 2) avoid large discontinuities in propagation loss values (which
+ * could lead to artifacts such as bogus capture effects which are
+ * much worse than inaccurate propagation loss values). The two issues
+ * are conflicting, as, according to the Friis formula, 
+ * \f$\lim_{d \to 0 }  P_r = +\infty \f$;
+ * so if, for \f$ d = 0 \f$, we use a fixed loss value, we end up with an infinitely large
+ * discontinuity, which as we discussed can cause undesireable
+ * simulation artifacts.
+ *
+ * To avoid these artifact, this implmentation of the Friis model
+ * provides an attribute called MinLoss which allows to specify the
+ * minimum total loss (in dB) returned by the model. This is used in
+ * such a way that 
+ * \f$ P_r \f$ continuously increases for \f$ d \to 0 \f$, until
+ * MinLoss is reached, and then stay constant; this allow to
+ * return a value for \f$ d  = 0 \f$ and at the same time avoid
+ * discontinuities. The model won't be much realistic, but at least
+ * the simulation artifacts discussed before are avoided. The default value of
+ * MinLoss is 0 dB, which means that by default the model will return 
+ * \f$ P_r = P_t \f$ for \f$ d <= \lambda / 2 \sqrt{\pi} \f$. We note
+ * that this value of \f$ d \f$ is outside of the far field
+ * region, hence the validity of the model in the far field region is
+ * not affected.
+ * 
  */
 class FriisPropagationLossModel : public PropagationLossModel
 {
 public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
   FriisPropagationLossModel ();
   /**
@@ -197,17 +282,17 @@ public:
   void SetSystemLoss (double systemLoss);
 
   /**
-   * \param minDistance the minimum distance
+   * \param minLoss the minimum loss (dB)
    *
-   * Below this distance, the txpower is returned
-   * unmodified as the rxpower.
+   * no matter how short the distance, the total propagation loss (in
+   * dB) will always be greater or equal than this value 
    */
-  void SetMinDistance (double minDistance);
+  void SetMinLoss (double minLoss);
 
   /**
-   * \returns the minimum distance.
+   * \return the minimum loss.
    */
-  double GetMinDistance (void) const;
+  double GetMinLoss (void) const;
 
   /**
    * \returns the current frequency (Hz)
@@ -219,20 +304,43 @@ public:
   double GetSystemLoss (void) const;
 
 private:
-  FriisPropagationLossModel (const FriisPropagationLossModel &o);
-  FriisPropagationLossModel & operator = (const FriisPropagationLossModel &o);
+  /**
+   * \brief Copy constructor
+   *
+   * Defined and unimplemented to avoid misuse
+   */
+  FriisPropagationLossModel (const FriisPropagationLossModel &);
+  /**
+   * \brief Copy constructor
+   *
+   * Defined and unimplemented to avoid misuse
+   * \returns
+   */
+  FriisPropagationLossModel & operator = (const FriisPropagationLossModel &);
+
   virtual double DoCalcRxPower (double txPowerDbm,
                                 Ptr<MobilityModel> a,
                                 Ptr<MobilityModel> b) const;
   virtual int64_t DoAssignStreams (int64_t stream);
+
+  /**
+   * Transforms a Dbm value to Watt
+   * \param dbm the Dbm value
+   * \return the Watts
+   */
   double DbmToW (double dbm) const;
+
+  /**
+   * Transforms a Watt value to Dbm
+   * \param w the Watt value
+   * \return the Dbm
+   */
   double DbmFromW (double w) const;
 
-  static const double PI;
-  double m_lambda;
-  double m_frequency;
-  double m_systemLoss;
-  double m_minDistance;
+  double m_lambda;        //!< the carrier wavelength
+  double m_frequency;     //!< the carrier frequency
+  double m_systemLoss;    //!< the system loss
+  double m_minLoss;       //!< the minimum loss
 };
 
 /**
@@ -266,6 +374,10 @@ private:
 class TwoRayGroundPropagationLossModel : public PropagationLossModel
 {
 public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
   TwoRayGroundPropagationLossModel ();
 
@@ -312,21 +424,44 @@ public:
   void SetHeightAboveZ (double heightAboveZ);
 
 private:
-  TwoRayGroundPropagationLossModel (const TwoRayGroundPropagationLossModel &o);
-  TwoRayGroundPropagationLossModel & operator = (const TwoRayGroundPropagationLossModel &o);
+  /**
+   * \brief Copy constructor
+   *
+   * Defined and unimplemented to avoid misuse
+   */
+  TwoRayGroundPropagationLossModel (const TwoRayGroundPropagationLossModel &);
+  /**
+   * \brief Copy constructor
+   *
+   * Defined and unimplemented to avoid misuse
+   * \returns
+   */
+  TwoRayGroundPropagationLossModel & operator = (const TwoRayGroundPropagationLossModel &);
+
   virtual double DoCalcRxPower (double txPowerDbm,
                                 Ptr<MobilityModel> a,
                                 Ptr<MobilityModel> b) const;
   virtual int64_t DoAssignStreams (int64_t stream);
+
+  /**
+   * Transforms a Dbm value to Watt
+   * \param dbm the Dbm value
+   * \return the Watts
+   */
   double DbmToW (double dbm) const;
+
+  /**
+   * Transforms a Watt value to Dbm
+   * \param w the Watt value
+   * \return the Dbm
+   */
   double DbmFromW (double w) const;
 
-  static const double PI;
-  double m_lambda;
-  double m_frequency;
-  double m_systemLoss;
-  double m_minDistance;
-  double m_heightAboveZ;
+  double m_lambda;        //!< the carrier wavelength
+  double m_frequency;     //!< the carrier frequency
+  double m_systemLoss;    //!< the system loss
+  double m_minDistance;   //!< minimum distance for the model
+  double m_heightAboveZ;  //!< antenna height above the node's Z coordinate
 };
 
 /**
@@ -352,6 +487,10 @@ private:
 class LogDistancePropagationLossModel : public PropagationLossModel
 {
 public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
   LogDistancePropagationLossModel ();
 
@@ -365,20 +504,42 @@ public:
    */
   double GetPathLossExponent (void) const;
 
+  /**
+   * Set the reference path loss at a given distance
+   * \param referenceDistance reference distance
+   * \param referenceLoss reference path loss
+   */
   void SetReference (double referenceDistance, double referenceLoss);
 
 private:
-  LogDistancePropagationLossModel (const LogDistancePropagationLossModel &o);
-  LogDistancePropagationLossModel & operator = (const LogDistancePropagationLossModel &o);
+  /**
+   * \brief Copy constructor
+   *
+   * Defined and unimplemented to avoid misuse
+   */
+  LogDistancePropagationLossModel (const LogDistancePropagationLossModel &);
+  /**
+   * \brief Copy constructor
+   *
+   * Defined and unimplemented to avoid misuse
+   * \returns
+   */
+  LogDistancePropagationLossModel & operator = (const LogDistancePropagationLossModel &);
+
   virtual double DoCalcRxPower (double txPowerDbm,
                                 Ptr<MobilityModel> a,
                                 Ptr<MobilityModel> b) const;
   virtual int64_t DoAssignStreams (int64_t stream);
+
+  /**
+   *  Creates a default reference loss model
+   * \return a default reference loss model
+   */
   static Ptr<PropagationLossModel> CreateDefaultReference (void);
 
-  double m_exponent;
-  double m_referenceDistance;
-  double m_referenceLoss;
+  double m_exponent; //!< model exponent
+  double m_referenceDistance; //!< reference distance
+  double m_referenceLoss; //!< reference loss
 };
 
 /**
@@ -424,29 +585,44 @@ L_0 + 10 \cdot n_0 \log_{10}(\frac{d_1}{d_0}) + 10 \cdot n_1 \log_{10}(\frac{d_2
 class ThreeLogDistancePropagationLossModel : public PropagationLossModel
 {
 public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
   ThreeLogDistancePropagationLossModel ();
 
   // Parameters are all accessible via attributes.
 
 private:
-  ThreeLogDistancePropagationLossModel (const ThreeLogDistancePropagationLossModel& o);
-  ThreeLogDistancePropagationLossModel& operator= (const ThreeLogDistancePropagationLossModel& o);
+  /**
+   * \brief Copy constructor
+   *
+   * Defined and unimplemented to avoid misuse
+   */
+  ThreeLogDistancePropagationLossModel (const ThreeLogDistancePropagationLossModel&);
+  /**
+   * \brief Copy constructor
+   *
+   * Defined and unimplemented to avoid misuse
+   * \returns
+   */
+  ThreeLogDistancePropagationLossModel& operator= (const ThreeLogDistancePropagationLossModel&);
 
   virtual double DoCalcRxPower (double txPowerDbm,
                                 Ptr<MobilityModel> a,
                                 Ptr<MobilityModel> b) const;
   virtual int64_t DoAssignStreams (int64_t stream);
 
-  double m_distance0;
-  double m_distance1;
-  double m_distance2;
+  double m_distance0; //!< Beginning of the first (near) distance field
+  double m_distance1; //!< Beginning of the second (middle) distance field.
+  double m_distance2; //!< Beginning of the third (far) distance field.
 
-  double m_exponent0;
-  double m_exponent1;
-  double m_exponent2;
+  double m_exponent0; //!< The exponent for the first field.
+  double m_exponent1; //!< The exponent for the second field.
+  double m_exponent2; //!< The exponent for the third field.
 
-  double m_referenceLoss;
+  double m_referenceLoss; //!< The reference loss at distance d0 (dB).
 };
 
 /**
@@ -472,6 +648,10 @@ private:
 class NakagamiPropagationLossModel : public PropagationLossModel
 {
 public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
 
   NakagamiPropagationLossModel ();
@@ -479,23 +659,34 @@ public:
   // Parameters are all accessible via attributes.
 
 private:
-  NakagamiPropagationLossModel (const NakagamiPropagationLossModel& o);
-  NakagamiPropagationLossModel& operator= (const NakagamiPropagationLossModel& o);
+  /**
+   * \brief Copy constructor
+   *
+   * Defined and unimplemented to avoid misuse
+   */
+  NakagamiPropagationLossModel (const NakagamiPropagationLossModel&);
+  /**
+   * \brief Copy constructor
+   *
+   * Defined and unimplemented to avoid misuse
+   * \returns
+   */
+  NakagamiPropagationLossModel& operator= (const NakagamiPropagationLossModel&);
 
   virtual double DoCalcRxPower (double txPowerDbm,
                                 Ptr<MobilityModel> a,
                                 Ptr<MobilityModel> b) const;
   virtual int64_t DoAssignStreams (int64_t stream);
 
-  double m_distance1;
-  double m_distance2;
+  double m_distance1; //!< Distance1
+  double m_distance2; //!< Distance2
 
-  double m_m0;
-  double m_m1;
-  double m_m2;
+  double m_m0;        //!< m for distances smaller than Distance1
+  double m_m1;        //!< m for distances smaller than Distance2
+  double m_m2;        //!< m for distances greater than Distance2
 
-  Ptr<ErlangRandomVariable>  m_erlangRandomVariable;
-  Ptr<GammaRandomVariable> m_gammaRandomVariable;
+  Ptr<ErlangRandomVariable>  m_erlangRandomVariable; //!< Erlang random variable
+  Ptr<GammaRandomVariable> m_gammaRandomVariable;    //!< Gamma random variable
 };
 
 /**
@@ -514,6 +705,10 @@ private:
 class FixedRssLossModel : public PropagationLossModel
 {
 public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
 
   FixedRssLossModel ();
@@ -526,13 +721,26 @@ public:
   void SetRss (double rss);
 
 private:
-  FixedRssLossModel (const FixedRssLossModel &o);
-  FixedRssLossModel & operator = (const FixedRssLossModel &o);
+  /**
+   * \brief Copy constructor
+   *
+   * Defined and unimplemented to avoid misuse
+   */
+  FixedRssLossModel (const FixedRssLossModel &);
+  /**
+   * \brief Copy constructor
+   *
+   * Defined and unimplemented to avoid misuse
+   * \returns
+   */
+  FixedRssLossModel & operator = (const FixedRssLossModel &);
+
   virtual double DoCalcRxPower (double txPowerDbm,
                                 Ptr<MobilityModel> a,
                                 Ptr<MobilityModel> b) const;
+
   virtual int64_t DoAssignStreams (int64_t stream);
-  double m_rss;
+  double m_rss; //!< the received signal strength
 };
 
 /**
@@ -545,6 +753,10 @@ private:
 class MatrixPropagationLossModel : public PropagationLossModel
 {
 public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
 
   MatrixPropagationLossModel ();
@@ -560,21 +772,40 @@ public:
    * \param symmetric   If true (default), both a->b and b->a paths will be affected
    */ 
   void SetLoss (Ptr<MobilityModel> a, Ptr<MobilityModel> b, double loss, bool symmetric = true);
-  /// Set default loss (in dB, positive) to be used, infinity if not set
-  void SetDefaultLoss (double);
+
+  /**
+   * Set the default propagation loss (in dB, positive) to be used, infinity if not set
+   * \param defaultLoss the default proagation loss
+   */
+  void SetDefaultLoss (double defaultLoss);
 
 private:
+  /**
+   * \brief Copy constructor
+   *
+   * Defined and unimplemented to avoid misuse
+   */
+  MatrixPropagationLossModel (const MatrixPropagationLossModel &);
+  /**
+   * \brief Copy constructor
+   *
+   * Defined and unimplemented to avoid misuse
+   * \returns
+   */
+  MatrixPropagationLossModel &operator = (const MatrixPropagationLossModel &);
+
   virtual double DoCalcRxPower (double txPowerDbm,
                                 Ptr<MobilityModel> a,
                                 Ptr<MobilityModel> b) const;
+
   virtual int64_t DoAssignStreams (int64_t stream);
 private:
-  /// default loss
-  double m_default; 
+  double m_default; //!< default loss
 
+  /// Typedef: Mobility models pair
   typedef std::pair< Ptr<MobilityModel>, Ptr<MobilityModel> > MobilityPair; 
-  /// Fixed loss between pair of nodes
-  std::map<MobilityPair, double> m_loss;
+
+  std::map<MobilityPair, double> m_loss; //!< Propagation loss between pair of nodes
 };
 
 /**
@@ -590,17 +821,32 @@ private:
 class RangePropagationLossModel : public PropagationLossModel
 {
 public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
   RangePropagationLossModel ();
 private:
-  RangePropagationLossModel (const RangePropagationLossModel& o);
-  RangePropagationLossModel& operator= (const RangePropagationLossModel& o);
+  /**
+   * \brief Copy constructor
+   *
+   * Defined and unimplemented to avoid misuse
+   */
+  RangePropagationLossModel (const RangePropagationLossModel&);
+  /**
+   * \brief Copy constructor
+   *
+   * Defined and unimplemented to avoid misuse
+   * \returns
+   */
+  RangePropagationLossModel& operator= (const RangePropagationLossModel&);
   virtual double DoCalcRxPower (double txPowerDbm,
                                 Ptr<MobilityModel> a,
                                 Ptr<MobilityModel> b) const;
   virtual int64_t DoAssignStreams (int64_t stream);
 private:
-  double m_range;
+  double m_range; //!< Maximum Transmission Range (meters)
 };
 
 } // namespace ns3

@@ -24,9 +24,9 @@
 #include "ns3/node.h"
 #include "ns3/log.h"
 
-NS_LOG_COMPONENT_DEFINE ("SimpleChannel");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("SimpleChannel");
 
 NS_OBJECT_ENSURE_REGISTERED (SimpleChannel);
 
@@ -35,7 +35,12 @@ SimpleChannel::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::SimpleChannel")
     .SetParent<Channel> ()
+    .SetGroupName("Network")
     .AddConstructor<SimpleChannel> ()
+    .AddAttribute ("Delay", "Transmission delay through the channel",
+                   TimeValue (Seconds (0)),
+                   MakeTimeAccessor (&SimpleChannel::m_delay),
+                   MakeTimeChecker ())
   ;
   return tid;
 }
@@ -58,7 +63,7 @@ SimpleChannel::Send (Ptr<Packet> p, uint16_t protocol,
         {
           continue;
         }
-      Simulator::ScheduleWithContext (tmp->GetNode ()->GetId (), Seconds (0),
+      Simulator::ScheduleWithContext (tmp->GetNode ()->GetId (), m_delay,
                                       &SimpleNetDevice::Receive, tmp, p->Copy (), protocol, to, from);
     }
 }

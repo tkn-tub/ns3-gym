@@ -46,7 +46,7 @@ enum
 };
 
 WifiMacHeader::WifiMacHeader ()
-  : m_ctrlPwrMgt (0),
+  :
     m_ctrlMoreData (0),
     m_ctrlWep (0),
     m_ctrlOrder (1),
@@ -313,7 +313,7 @@ WifiMacHeader::SetRawDuration (uint16_t duration)
 void
 WifiMacHeader::SetDuration (Time duration)
 {
-  int64_t duration_us = duration.GetMicroSeconds ();
+  int64_t duration_us = ceil((double)duration.GetNanoSeconds ()/1000);
   NS_ASSERT (duration_us >= 0 && duration_us <= 0x7fff);
   m_duration = static_cast<uint16_t> (duration_us);
 }
@@ -956,6 +956,7 @@ WifiMacHeader::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::WifiMacHeader")
     .SetParent<Header> ()
+    .SetGroupName ("Wifi")
     .AddConstructor<WifiMacHeader> ()
   ;
   return tid;

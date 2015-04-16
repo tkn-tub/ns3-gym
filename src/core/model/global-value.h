@@ -25,6 +25,7 @@
 #include "ptr.h"
 #include "attribute.h"
 
+class GlobalValueTestCase;
 
 namespace ns3 {
 
@@ -141,7 +142,7 @@ public:
 
 
 private:
-  friend class GlobalValueTestCase;
+  friend class ::GlobalValueTestCase;
 
   static Vector *GetVector (void);
   void InitializeFromEnv (void);

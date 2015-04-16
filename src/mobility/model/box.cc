@@ -145,12 +145,26 @@ Box::CalculateIntersection (const Vector &current, const Vector &speed) const
 
 ATTRIBUTE_HELPER_CPP (Box);
 
+/**
+ * \brief Stream insertion operator.
+ *
+ * \param os the stream
+ * \param box the box
+ * \returns a reference to the stream
+ */
 std::ostream &
 operator << (std::ostream &os, const Box &box)
 {
   os << box.xMin << "|" << box.xMax << "|" << box.yMin << "|" << box.yMax << "|" << box.zMin << "|" << box.zMax;
   return os;
 }
+/**
+ * \brief Stream extraction operator.
+ *
+ * \param is the stream
+ * \param box the box
+ * \returns a reference to the stream
+ */
 std::istream &
 operator >> (std::istream &is, Box &box)
 {

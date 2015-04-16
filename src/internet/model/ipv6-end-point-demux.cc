@@ -197,6 +197,10 @@ Ipv6EndPointDemux::EndPoints Ipv6EndPointDemux::Lookup (Ipv6Address daddr, uint1
 
       if (endP->GetBoundNetDevice ())
         {
+          if (!incomingInterface)
+            {
+              continue;
+            }
           if (endP->GetBoundNetDevice () != incomingInterface->GetDevice ())
             {
               NS_LOG_LOGIC ("Skipping endpoint " << &endP

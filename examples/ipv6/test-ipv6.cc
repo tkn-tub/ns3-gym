@@ -24,9 +24,9 @@
 #include "ns3/node.h"
 #include "ns3/mac48-address.h"
 
-NS_LOG_COMPONENT_DEFINE ("TestIpv6");
-
 using namespace ns3;
+
+NS_LOG_COMPONENT_DEFINE ("TestIpv6");
 
 int 
 main (int argc, char *argv[])

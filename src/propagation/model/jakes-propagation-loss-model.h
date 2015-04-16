@@ -29,30 +29,50 @@ namespace ns3
 /**
  * \ingroup propagation
  *
- * \brief a  jakes narrowband propagation model.
+ * \brief a  Jakes narrowband propagation model.
  * Symmetrical cache for JakesProcess
  */
 
 class JakesPropagationLossModel : public PropagationLossModel
 {
 public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId ();
   JakesPropagationLossModel ();
   virtual ~JakesPropagationLossModel ();
   
-  static const double PI;
-
 private:
   friend class JakesProcess;
+
+  /**
+   * \brief Copy constructor
+   *
+   * Defined and unimplemented to avoid misuse
+   */
+  JakesPropagationLossModel (const JakesPropagationLossModel &);
+  /**
+   * \brief Copy constructor
+   *
+   * Defined and unimplemented to avoid misuse
+   * \returns
+   */
+  JakesPropagationLossModel & operator = (const JakesPropagationLossModel &);
   double DoCalcRxPower (double txPowerDbm,
                         Ptr<MobilityModel> a,
                         Ptr<MobilityModel> b) const;
   virtual int64_t DoAssignStreams (int64_t stream);
+
+  /**
+   * Get the underlying RNG stream
+   * \return the RNG stream
+   */
   Ptr<UniformRandomVariable> GetUniformRandomVariable () const;
 
-  Ptr<UniformRandomVariable> m_uniformVariable;
-private:
-  mutable PropagationCache<JakesProcess> m_propagationCache;
+  Ptr<UniformRandomVariable> m_uniformVariable; //!< random stream
+  mutable PropagationCache<JakesProcess> m_propagationCache; //!< Propagation cache
 };
 
 } // namespace ns3

@@ -16,6 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
+ *          Sébastien Deronne <sebastien.deronne@gmail.com>
  */
 
 #include <cmath>
@@ -24,9 +25,9 @@
 #include "wifi-phy.h"
 #include "ns3/log.h"
 
-NS_LOG_COMPONENT_DEFINE ("YansErrorRateModel");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("YansErrorRateModel");
 
 NS_OBJECT_ENSURE_REGISTERED (YansErrorRateModel);
 
@@ -35,6 +36,7 @@ YansErrorRateModel::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::YansErrorRateModel")
     .SetParent<ErrorRateModel> ()
+    .SetGroupName ("Wifi")
     .AddConstructor<YansErrorRateModel> ()
   ;
   return tid;
@@ -64,7 +66,7 @@ YansErrorRateModel::GetQamBer (double snr, unsigned int m, uint32_t signalSpread
   double EbNo = snr * signalSpread / phyRate;
   double z = std::sqrt ((1.5 * Log2 (m) * EbNo) / (m - 1.0));
   double z1 = ((1.0 - 1.0 / std::sqrt (m)) * erfc (z));
-  double z2 = 1 - std::pow ((1 - z1), 2.0);
+  double z2 = 1 - std::pow ((1 - z1), 2);
   double ber = z2 / Log2 (m);
   NS_LOG_INFO ("Qam m=" << m << " rate=" << phyRate << " snr=" << snr << " ber=" << ber);
   return ber;
@@ -176,7 +178,8 @@ double
 YansErrorRateModel::GetChunkSuccessRate (WifiMode mode, double snr, uint32_t nbits) const
 {
   if (mode.GetModulationClass () == WIFI_MOD_CLASS_ERP_OFDM
-      || mode.GetModulationClass () == WIFI_MOD_CLASS_OFDM)
+      || mode.GetModulationClass () == WIFI_MOD_CLASS_OFDM
+      || mode.GetModulationClass () == WIFI_MOD_CLASS_HT)
     {
       if (mode.GetConstellationSize () == 2)
         {
@@ -267,6 +270,19 @@ YansErrorRateModel::GetChunkSuccessRate (WifiMode mode, double snr, uint32_t nbi
                                    6,  // dFree
                                    1,  // adFree
                                    16  // adFreePlusOne
+                                   );
+            }
+          if (mode.GetCodeRate () == WIFI_CODE_RATE_5_6)
+            {
+              //Table B.32  in Pâl Frenger et al., "Multi-rate Convolutional Codes".
+              return GetFecQamBer (snr,
+                                   nbits,
+                                   mode.GetBandwidth (), // signal spread
+                                   mode.GetPhyRate (), // phy rate
+                                   64, // m
+                                   4,  // dFree
+                                   14,  // adFree
+                                   69  // adFreePlusOne
                                    );
             }
           else

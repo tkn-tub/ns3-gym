@@ -25,9 +25,9 @@
 
 namespace ns3 {
 
-
-
 /**
+ * \ingroup lte
+ *
  * This helper class allows to easily create a topology with eNBs
  * grouped in three-sector sites layed out on an hexagonal grid. The
  * layout is done row-wise. 
@@ -39,6 +39,10 @@ public:
   LteHexGridEnbTopologyHelper (void);
   virtual ~LteHexGridEnbTopologyHelper (void);
 
+  /**
+   *  Register this type.
+   *  \return The object TypeId.
+   */
   static TypeId GetTypeId (void);
   virtual void DoDispose (void);
 
@@ -68,13 +72,41 @@ public:
   NetDeviceContainer SetPositionAndInstallEnbDevice (NodeContainer c);
 
 private:
-
+  /**
+   * Pointer to LteHelper object
+   */
   Ptr<LteHelper> m_lteHelper;
+
+  /**
+   * The offset [m] in the position for the node of each sector with
+   * respect to the center of the three-sector site
+   */
   double m_offset;
+
+  /**
+   * The distance [m] between nearby sites
+   */
   double m_d;
+
+  /**
+   * The x coordinate where the hex grid starts
+   */
   double m_xMin;
+
+  /**
+   * The y coordinate where the hex grid starts
+   */
   double m_yMin;
+
+  /**
+   * The number of sites in even rows (odd rows will have
+   * one additional site)
+   */
   uint32_t m_gridWidth;
+
+  /**
+   * The height [m] of each site
+   */
   uint32_t m_siteHeight;
 
 };

@@ -33,16 +33,17 @@
 #include "service-flow-manager.h"
 #include "connection-manager.h"
 
-NS_LOG_COMPONENT_DEFINE ("BandwidthManager");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("BandwidthManager");
 
 NS_OBJECT_ENSURE_REGISTERED (BandwidthManager);
 
 TypeId BandwidthManager::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::BandwidthManager")
-    .SetParent<Object> ();
+    .SetParent<Object> ()
+    .SetGroupName("Wimax");
   return tid;
 }
 

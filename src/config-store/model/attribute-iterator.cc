@@ -25,10 +25,9 @@
 #include <fstream>
 
 
-NS_LOG_COMPONENT_DEFINE ("AttributeIterator");
-
 namespace ns3 {
 
+NS_LOG_COMPONENT_DEFINE ("AttributeIterator");
 
 AttributeIterator::AttributeIterator ()
 {

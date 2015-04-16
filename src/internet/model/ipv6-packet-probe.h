@@ -48,7 +48,12 @@ namespace ns3 {
 class Ipv6PacketProbe : public Probe
 {
 public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId ();
+
   Ipv6PacketProbe ();
   virtual ~Ipv6PacketProbe ();
 
@@ -90,6 +95,17 @@ public:
    */
   virtual void ConnectByPath (std::string path);
 
+  /**
+   * TracedCallback signature for PacketProbe events.
+   *
+   * \param [in] packet The packet.
+   * \param [in] ipv6 
+   * \param [in] interface
+   */
+  typedef void (* TracedCallback)
+    (const Ptr<const Packet> packet, const Ptr<const Ipv6> ipv6,
+     const uint32_t interface);
+
 private:
   /**
    * \brief Method to connect to an underlying ns3::TraceSource with
@@ -98,13 +114,13 @@ private:
    * \param packet the traced packet
    * \param ipv6 the IPv6 object for the traced packet
    * \param interface the IPv6 interface for the traced packet
-   *
-   * \internal
    */
   void TraceSink (Ptr<const Packet> packet, Ptr<Ipv6> ipv6, uint32_t interface);
 
-  TracedCallback<Ptr<const Packet>, Ptr<Ipv6>, uint32_t> m_output;
-  TracedCallback<uint32_t, uint32_t> m_outputBytes;
+  /// Traced Callback: the packet, the Ipv6 object and the interface.
+  ns3::TracedCallback<Ptr<const Packet>, Ptr<Ipv6>, uint32_t> m_output;
+  /// Traced Callback: the previous packet's size and the actual packet's size.
+  ns3::TracedCallback<uint32_t, uint32_t> m_outputBytes;
 
   /// The traced packet.
   Ptr<const Packet> m_packet;

@@ -35,6 +35,7 @@
 #include <sstream>
 
 NS_LOG_COMPONENT_DEFINE ("PyViz");
+
 #define NUM_LAST_PACKETS 10
 
 static
@@ -84,6 +85,7 @@ PyVizPacketTag::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::PyVizPacketTag")
     .SetParent<Tag> ()
+    .SetGroupName ("Visualizer")
     .AddConstructor<PyVizPacketTag> ()
   ;
   return tid;

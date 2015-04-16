@@ -26,7 +26,7 @@
 #include <iostream>
 #include <sstream>
 
-namespace ns3 {
+using namespace ns3;
 
 class OneVectorConstructorTestCase : public TestCase
 {
@@ -209,8 +209,3 @@ AnglesTestSuite::AnglesTestSuite ()
 };
 
 static AnglesTestSuite staticAnglesTestSuiteInstance;
-
-
-
-
-} // namespace ns3

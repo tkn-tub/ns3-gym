@@ -27,6 +27,8 @@
 namespace ns3 {
 
 /**
+ * \ingroup aggregator
+ *
  * Base class for data collection framework objects.
  *
  * All data collection objects have 1) a string name, and 2) enabled
@@ -35,6 +37,10 @@ namespace ns3 {
 class DataCollectionObject : public Object
 {
 public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId ();
 
   DataCollectionObject ();
@@ -42,6 +48,7 @@ public:
 
   /// Set the status of an individual object.
   void Enable (void);
+  /// Unset the status of an individual object.
   void Disable (void);
 
   /// Check the status of an individual object.

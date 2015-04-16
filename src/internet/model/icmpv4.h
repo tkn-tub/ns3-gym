@@ -40,16 +40,42 @@ public:
     TIME_EXCEEDED = 11
   };
 
+  /**
+   * Enables ICMP Checksum calculation
+   */
   void EnableChecksum (void);
+
+  /**
+   * Set ICMP type
+   * \param type the ICMP type
+   */
   void SetType (uint8_t type);
+
+  /**
+   * Set ICMP code
+   * \param code the ICMP code
+   */
   void SetCode (uint8_t code);
 
+  /**
+   * Get ICMP type
+   * \returns the ICMP type
+   */
   uint8_t GetType (void) const;
+  /**
+   * Get ICMP code
+   * \returns the ICMP code
+   */
   uint8_t GetCode (void) const;
 
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
   Icmpv4Header ();
   virtual ~Icmpv4Header ();
+
   virtual TypeId GetInstanceTypeId (void) const;
   virtual uint32_t GetSerializedSize (void) const;
   virtual void Serialize (Buffer::Iterator start) const;
@@ -57,23 +83,56 @@ public:
   virtual void Print (std::ostream &os) const;
 
 private:
-  uint8_t m_type;
-  uint8_t m_code;
-  bool m_calcChecksum;
+  uint8_t m_type; //!< ICMP type
+  uint8_t m_code; //!< ICMP code
+  bool m_calcChecksum;  //!< true if checksum is calculated
 };
 
 class Icmpv4Echo : public Header
 {
 public:
+  /**
+   * \brief Set the Echo identifier
+   * \param id the identifier
+   */
   void SetIdentifier (uint16_t id);
+  /**
+   * \brief Set the Echo sequence number
+   * \param seq the sequence number
+   */
   void SetSequenceNumber (uint16_t seq);
+  /**
+   * \brief Set the Echo data
+   * \param data the data
+   */
   void SetData (Ptr<const Packet> data);
+  /**
+   * \brief Get the Echo identifier
+   * \returns the identifier
+   */
   uint16_t GetIdentifier (void) const;
+  /**
+   * \brief Get the Echo sequence number
+   * \returns the sequence number
+   */
   uint16_t GetSequenceNumber (void) const;
+  /**
+   * \brief Get the Echo data size
+   * \returns the data size
+   */
   uint32_t GetDataSize (void) const;
+  /**
+   * \brief Get the Echo data
+   * \param payload the data (filled)
+   * \returns the data length
+   */
   uint32_t GetData (uint8_t payload[]) const;
 
 
+  /**
+   * Get ICMP type
+   * \returns the ICMP type
+   */
   static TypeId GetTypeId (void);
   Icmpv4Echo ();
   virtual ~Icmpv4Echo ();
@@ -83,10 +142,10 @@ public:
   virtual uint32_t Deserialize (Buffer::Iterator start);
   virtual void Print (std::ostream &os) const;
 private:
-  uint16_t m_identifier;
-  uint16_t m_sequence;
-  uint8_t *m_data;
-  uint32_t m_dataSize;
+  uint16_t m_identifier; //!< identifier
+  uint16_t m_sequence;   //!< sequence number
+  uint8_t *m_data;       //!< data
+  uint32_t m_dataSize;   //!< data size
 };
 
 class Icmpv4DestinationUnreachable : public Header
@@ -100,17 +159,46 @@ public:
     FRAG_NEEDED = 4,
     SOURCE_ROUTE_FAILED = 5
   };
+
+  /**
+   * Get ICMP type
+   * \returns the ICMP type
+   */
   static TypeId GetTypeId (void);
   Icmpv4DestinationUnreachable ();
   virtual ~Icmpv4DestinationUnreachable ();
 
+  /**
+   * \brief Set the next hop MTU
+   * \param mtu the MTU
+   */
   void SetNextHopMtu (uint16_t mtu);
+  /**
+   * \brief Get the next hop MTU
+   * \returns the MTU
+   */
   uint16_t GetNextHopMtu (void) const;
 
+  /**
+   * \brief Set the ICMP carried data
+   * \param data the data
+   */
   void SetData (Ptr<const Packet> data);
+  /**
+   * \brief Set the ICMP carried IPv4 header
+   * \param header the header
+   */
   void SetHeader (Ipv4Header header);
 
+  /**
+   * \brief Get the ICMP carried data
+   * \param payload the data (filled)
+   */
   void GetData (uint8_t payload[8]) const;
+  /**
+   * \brief Get the ICMP carried IPv4 header
+   * \returns the header
+   */
   Ipv4Header GetHeader (void) const;
 
 private:
@@ -120,9 +208,9 @@ private:
   virtual uint32_t Deserialize (Buffer::Iterator start);
   virtual void Print (std::ostream &os) const;
 private:
-  uint16_t m_nextHopMtu;
-  Ipv4Header m_header;
-  uint8_t m_data[8];
+  uint16_t m_nextHopMtu; //!< next hop MTU
+  Ipv4Header m_header;   //!< carried IPv4 header
+  uint8_t m_data[8];     //!< carried data
 };
 
 
@@ -134,12 +222,32 @@ public:
     FRAGMENT_REASSEMBLY = 1
   };
 
+  /**
+   * \brief Get the ICMP carried data
+   * \param data the data
+   */
   void SetData (Ptr<const Packet> data);
+  /**
+   * \brief Set the ICMP carried IPv4 header
+   * \param header the header
+   */
   void SetHeader (Ipv4Header header);
 
+  /**
+   * \brief Get the ICMP carried data
+   * \param payload the data (filled)
+   */
   void GetData (uint8_t payload[8]) const;
+  /**
+   * \brief Get the ICMP carried IPv4 header
+   * \returns the header
+   */
   Ipv4Header GetHeader (void) const;
 
+  /**
+   * Get ICMP type
+   * \returns the ICMP type
+   */
   static TypeId GetTypeId (void);
   Icmpv4TimeExceeded ();
   virtual ~Icmpv4TimeExceeded ();
@@ -150,8 +258,8 @@ public:
   virtual void Print (std::ostream &os) const;
 
 private:
-  Ipv4Header m_header;
-  uint8_t m_data[8];
+  Ipv4Header m_header;   //!< carried IPv4 header
+  uint8_t m_data[8];     //!< carried data
 };
 
 } // namespace ns3

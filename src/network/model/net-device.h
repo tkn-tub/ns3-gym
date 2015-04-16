@@ -38,7 +38,7 @@ class Packet;
 
 /**
  * \ingroup network
- * \defgroup netdevice NetDevice
+ * \defgroup netdevice Network Device
  */
 /**
  * \ingroup netdevice
@@ -75,6 +75,10 @@ class Packet;
 class NetDevice : public Object
 {
 public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
   virtual ~NetDevice();
 
@@ -179,9 +183,7 @@ public:
    * multicast group.
    *
    * \warning Calling this method is invalid if IsMulticast returns not true.
-   * \see Ipv4Address
-   * \see Address
-   * \see NetDevice::IsMulticast
+   * \see IsMulticast()
    */
   virtual Address GetMulticast (Ipv4Address multicastGroup) const = 0;
 
@@ -289,12 +291,14 @@ public:
    * \returns true if the callback could handle the packet successfully, false
    *          otherwise.
    */
-  typedef Callback<bool,Ptr<NetDevice>,Ptr<const Packet>,uint16_t,const Address &> ReceiveCallback;
+  typedef Callback< bool, Ptr<NetDevice>, Ptr<const Packet>, uint16_t, const Address & > ReceiveCallback;
 
   /**
    * \param cb callback to invoke whenever a packet has been received and must
    *        be forwarded to the higher layers.
    *
+   * Set the callback to be used to notify higher layers when a packet has been
+   * received.
    */
   virtual void SetReceiveCallback (ReceiveCallback cb) = 0;
 

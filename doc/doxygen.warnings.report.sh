@@ -1,62 +1,287 @@
 #!/bin/bash
 
-# Process doxygen.warnings.log to generate sorted list of top offenders
+# Process doxygen log to generate sorted list of top offenders.
+#
 
-# Flag to skip the build and running doxygen, and just analyze the log
-skipdoxy=${1:-""}
+me=$(basename $0)
+DIR="$(dirname $0)"
+# Trick to get the absolute path, since doxygen prefixes errors that way
+ROOT=$(cd "$DIR/.."; pwd)
 
-DIR=`dirname $0`
-ROOT=`hg root`
-# Final resting place for the log file
-log=$DIR/doxygen.warnings.log
+# Known log files
+STANDARDLOGFILE=doxygen.log
+WARNINGSLOGFILE=doxygen.warnings.log
+# Default choice:  generate it
+LOG="$DIR/$WARNINGSLOGFILE"
+
+# Verbose log
+VERBLOG="$DIR/doxygen.verbose.log"
 
 
-# First, we have to modify doxygen.conf to generate all the warnings
-# (We also suppress dot graphs, so shorten the run time.)
+# Options ------------------------------
+#
 
-if [ "$skipdoxy" == "" ]; then
+function usage
+{
+    cat <<-EOF
+	
+	Usage: $me [-eithv] [-f <log-file> | -l | -s] [-m <module> | -F <regex>]
+	
+	Run doxygen to generate all errors; report error counts
+	by module and file.
+	
+	-i  Skip build and print-introspected-doxygen.
+	
+	-f  Skip doxygen run; use existing <log-file>.
+	-s  Skip doxygen run; use existing warnings log doc/$WARNINGSLOGFILE
+	-l  Skip doxygen run; use the normal doxygen log doc/$STANDARDLOGFILE
+		
+	-e  Filter out warnings from */examples/*
+	-t  Filter out warnings from */test/*
+	-m  Only include files matching src/<module>
+	-F  Only include files matching the <regex> 
 
-    # Run introspection, which may require a build
-    cd $(hg root) && ./waf --run print-introspected-doxygen >doc/introspected-doxygen.h
+	-v  Show the doxygen run output
+	-h  Print this usage message
+	    
+	The default behavior is to modify doxygen.conf temporarily to
+	report all undocumented elements, and to reduce the run time.
+	The output of this special run is kept in doc/$WARNINGSLOGFILE.
+	To further reduce the run time, the -i option also skips
+	print-introspected-doxygen, so waf doesn\'t have to compile
+	any modified files at all.
+
+	The -f, -l, and -s options skip the doxygen run altogether.
+	The first two use a specified or the standard log file;
+	the -s option uses the warnings log from a prior run.
+	Only the first of -f <log-file>, -s, or -l will have effect.
+		
+	The -e and -t options exclude examples and test directories
+	from the counts.  The -m option only includes a specific module.
+	The -F option only includes files (or warnings) matching the <regex>.
+	The -m and -F options append the relevant warnings after the
+	numerical report.  These can be used in any combination.
+	
+EOF
+    exit 1
+}
+
+# Messaging ----------------------------
+#
+
+# Arg -v Verbosity level
+verbosity=0
+
+function verbose
+{
+    if [ "$1" == "-n" ]; then
+	echo -n "$2"
+    elif [ $verbosity -eq 1 ]; then
+	echo "$1 $2"
+    else
+	echo "$2"
+    fi
+}
+
+# Use file handle 6 for verbose output
+rm -f $VERBLOG
+exec 6>$VERBLOG
+
+function status_report
+{
+    local status="$1"
+    local long_msg="$2"
+    if [ $status -eq 0 ]; then
+	verbose "$long_msg "  "done."
+	rm -f $VERBLOG
+    else
+	verbose "$long_msg "  "FAILED.  Details:"
+	cat $VERBLOG
+	rm -f $VERBLOG
+	exit 1
+    fi
+}
+   
+
+# Argument processing ------------------
+#
+
+# -f argument
+use_filearg=0
+logfile_arg=
+# -l
+use_standard=0
+# skip doxygen run; using existing log file
+skip_doxy=0 
+# skip print-introspected-doxygen, avoiding a build 
+skip_intro=0 
+
+# Filtering flags
+filter_examples=0
+filter_test=0
+filter_module=""
+filter_regex=""
+
+echo
+echo "$me:"
+
+while getopts :eitm:F:lF:svh option ; do
+
+    case $option in
+	
+	(e)  filter_examples=1        ;;
+
+	(i)  skip_intro=1              ;;
+	
+	(t)  filter_test=1            ;;
+
+	(m)  filter_module="$OPTARG"  ;;
+
+	(F)  filter_regex="$OPTARG"   ;;
+
+	(l)  use_standard=1            ;;
+
+	(f)  use_filearg=1
+	     logfile_arg="$OPTARG"
+	     ;;
+
+	(s)  use_filearg=1
+	     logfile_arg="$DIR/$WARNINGSLOGFILE"
+	     ;;
+
+	(v)  verbosity=1
+	     exec 6>&1
+	     ;;
+
+	(h)  usage ;;
+	
+	(:)  echo "$me: Missing argument to -$OPTARG" ; usage ;;
+	
+	(\?) echo "$me: Invalid option: -$OPTARG"     ; usage ;;
+	
+    esac
+done
+
+function checklogfile
+{
+    if [ -e "$1" ] ; then
+	skip_doxy=1
+	LOG="$1"
+    else
+	echo "$me: log file $1 does not exist."
+	exit 1
+    fi
+}
+    
+# Which log file
+if [[ $use_filearg -eq 1 && "${logfile_arg:-}" != "" ]] ; then
+    checklogfile "$logfile_arg"
+elif [ $use_standard -eq 1 ]; then
+    checklogfile "$DIR/$STANDARDLOGFILE"
+fi
+
+#  Run doxygen -------------------------
+#
+
+if [ $skip_doxy -eq 1 ]; then
+    echo
+    echo "Skipping doxygen run, using existing log file $LOG"
+else
+
+    if [ $skip_intro -eq 1 ]; then
+	verbose "" "Skipping ./waf build and print-introspected-doxygen."
+    else
+        # Run introspection, which may require a build
+	verbose -n "Building and running print-introspected-doxygen..."
+	(cd "$ROOT" && ./waf --run print-introspected-doxygen >doc/introspected-doxygen.h >&6 2>&6 )
+	status_report $? "./waf build"
+    fi
+
+    # Modify doxygen.conf to generate all the warnings
+    # (We also suppress dot graphs, so shorten the run time.)
 
     conf=$DIR/doxygen.conf
 
     sed -i.bak -E '/^EXTRACT_ALL |^HAVE_DOT |^WARNINGS /s/YES/no/' $conf
-    rm -f $conf.bak
 
-    echo -n "Rebuilding doxygen docs with full errors..."
-    (cd $ROOT && ./waf --doxygen >/dev/null 2>&1)
+    verbose -n "Rebuilding doxygen (v$(doxygen --version)) docs with full errors..."
+    (cd "$ROOT" && ./waf --doxygen-no-build >&6 2>&6 )
     status=$?
 
-    hg revert $conf
+    rm -f $conf
+    mv -f $conf.bak $conf
 
-    if [ "$status" = "0" ]; then
-	echo "Done."
-    else
-	echo "FAILED."
-	exit 1
-    fi
+    status_report $status "Doxygen run"
 
-    mv $DIR/doxygen.log $log
+    cp -f "$DIR/$STANDARDLOGFILE" "$DIR/$WARNINGSLOGFILE"
 
-else
-    echo "Skipping doxygen run, using existing log file $log"
 fi
 
+# Log filters --------------------------
+#
 
-# Analyze the log
+# Filter regular expression for -m and -F
+filter_inRE=""
+if [ "$filter_module" != "" ] ; then
+    filter_inRE="${filter_inRE:-}${filter_inRE:+\\|}src/$filter_module"
+fi
+if [ "$filter_regex" != "" ] ; then
+    filter_inRE="${filter_inRE:-}${filter_inRE:+\\|}$filter_regex"
+fi
+
+# Filter regular expression for -e and -t
+filter_outRE=""
+if [ $filter_examples -eq 1 ]; then
+    filter_outRE="${filter_outRE:-}${filter_outRE:+\\|}/examples/"
+fi
+if [ $filter_test -eq 1 ]; then
+    filter_outRE="${filter_outRE:-}${filter_outRE:+\\|}/test/"
+fi
+
+if [ "${filter_inRE:-}" != "" ] ; then
+    echo "Filtering in \"$filter_inRE\""
+fi
+if [ "${filter_outRE:-}" != "" ] ; then
+    echo "Filtering out \"$filter_outRE\""
+fi
+echo
+
+# Filter log file
+function filter_log
+{
+    local flog;
+    flog=$( cat "$LOG" | grep "^$ROOT" )
+
+    if [ "${filter_inRE:-}" != "" ] ; then
+	flog=$( echo "$flog" | grep "$filter_inRE" )
+    fi
+
+    if [ "${filter_outRE:-}" != "" ] ; then
+	flog=$( echo "$flog" | grep -v "$filter_outRE" )
+    fi
+
+    flog=$(                         \
+	echo "$flog"              | \
+	sort -t ':' -k1,1 -k2,2n  | \
+	uniq                        \
+	)
+
+    echo "$flog"
+}
+
+# Analyze the log ----------------------
+#
 
 # List of module directories (e.g, "src/core/model")
 undocmods=$(                \
-    grep "^$ROOT" "$log"  | \
+    filter_log            | \
     cut -d ':' -f 1       | \
-    sed "s|$ROOT||g"      | \
-    cut -d '/' -f 2-4     | \
+    sed "s|$ROOT/||g"     | \
+    cut -d '/' -f 1-3     | \
     sort                  | \
     uniq -c               | \
     sort -nr                \
     )
-    
 
 # Number of directories
 modcount=$(                         \
@@ -68,24 +293,24 @@ modcount=$(                         \
 # For a function with multiple undocumented parameters,
 # Doxygen prints the additional parameters on separate lines,
 # so they don't show up in the totals above.
-# Rather than work too hard to get the exact number,
+# Rather than work too hard to get the exact number for each file,
 # we just list the total here. 
 addlparam=$(                                  \
-    grep -v "^$ROOT" $log                   | \
-    grep -v "not generated, too many nodes" | \
-    grep "^  parameter '" $log              | \
+    grep "^  parameter '" "$LOG"            | \
     wc -l                                   | \
     sed 's/^[ \t]*//;s/[ \t]*$//'             \
     )
 
 # Total number of warnings
-warncount=$(echo "$undocmods" | \
-    awk '{total += $1}; END {print total}' )
+warncount=$(                                  \
+    echo "$undocmods"                       | \
+    awk '{total += $1}; END {print total}'    \
+    )
 warncount=$((warncount + addlparam))
 
 # List of files appearing in the log
-undocfiles=$( \
-    grep "^$ROOT" "$log"  | \
+undocfiles=$(               \
+    filter_log            | \
     cut -d ':' -f 1       | \
     sed "s|$ROOT||g"      | \
     cut -d '/' -f 2-      | \
@@ -95,7 +320,7 @@ undocfiles=$( \
     )
 
 # Sorted by number, decreasing
-undocsort=$(echo "$undocfiles" | sort -r )
+undocsort=$(echo "$undocfiles" | sort -k1nr,2 )
 
 # Total number of files
 filecount=$(                        \
@@ -104,7 +329,19 @@ filecount=$(                        \
     sed 's/^[ \t]*//;s/[ \t]*$//'   \
     )
 
-# Now we're ready to summarize the log
+# Filtered in warnings
+filterin=
+if [ "${filter_inRE:-}" != "" ] ; then
+    filterin=$(              \
+	filter_log         | \
+	sed "s|$ROOT/||g"    \
+	)
+fi
+
+
+
+# Summarize the log --------------------
+#
 
 echo
 echo "Report of Doxygen warnings"
@@ -147,4 +384,10 @@ printf "%6d directories\n" $modcount
 printf "%6d files\n" $filecount
 printf "%6d warnings\n" $warncount
 
-
+if [ "$filterin" != "" ] ; then
+    echo
+    echo
+    echo "Filtered Warnings"
+    echo "========================================"
+    echo "$filterin"
+fi

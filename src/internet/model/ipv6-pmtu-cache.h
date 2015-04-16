@@ -108,7 +108,11 @@ private:
    */
   std::map<Ipv6Address, uint32_t> m_pathMtu;
 
+  /**
+   * \brief Container of the IPv6 PMTU data (Ipv6 destination address and expiration event).
+   */
   typedef std::map<Ipv6Address, EventId> ::iterator pathMtuTimerIter;
+
   /**
    * \brief Path MTU Expiration table
    */

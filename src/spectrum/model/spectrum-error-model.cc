@@ -23,9 +23,21 @@
 #include <ns3/nstime.h>
 #include <ns3/log.h>
 
+namespace ns3 {
+
 NS_LOG_COMPONENT_DEFINE ("ShannonSpectrumErrorModel");
 
-namespace ns3 {
+NS_OBJECT_ENSURE_REGISTERED (SpectrumErrorModel);
+
+TypeId
+SpectrumErrorModel::GetTypeId ()
+{
+  static TypeId tid = TypeId ("ns3::SpectrumErrorModel")
+    .SetParent<Object> ()
+    .SetGroupName ("Spectrum")
+    ;
+  return tid;
+}
 
 SpectrumErrorModel::~SpectrumErrorModel ()
 {

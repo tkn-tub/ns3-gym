@@ -35,6 +35,8 @@ TypeId WimaxConnection::GetTypeId (void)
 
     .SetParent<Object> ()
 
+    .SetGroupName("Wimax")
+
     .AddAttribute ("Type",
                    "Connection type",
                    EnumValue (Cid::INITIAL_RANGING),

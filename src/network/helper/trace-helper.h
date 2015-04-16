@@ -51,7 +51,8 @@ public:
     DLT_RAW = 101,
     DLT_IEEE802_11 = 105,
     DLT_PRISM_HEADER = 119,
-    DLT_IEEE802_11_RADIO = 127
+    DLT_IEEE802_11_RADIO = 127,
+    DLT_IEEE802_15_4 = 195
   };
 
   /**
@@ -67,27 +68,58 @@ public:
   /**
    * @brief Let the pcap helper figure out a reasonable filename to use for a
    * pcap file associated with a device.
+   * 
+   * @param prefix prefix string
+   * @param device NetDevice
+   * @param useObjectNames use node and device names instead of indexes
+   * @returns file name
    */
   std::string GetFilenameFromDevice (std::string prefix, Ptr<NetDevice> device, bool useObjectNames = true);
 
   /**
    * @brief Let the pcap helper figure out a reasonable filename to use for the
    * pcap file associated with a node.
+   * 
+   * @param prefix prefix string
+   * @param object interface (such as Ipv4Interface or Ipv6Interface)
+   * @param interface interface id
+   * @param useObjectNames use node and device names instead of indexes
+   * @returns file name
    */
   std::string GetFilenameFromInterfacePair (std::string prefix, Ptr<Object> object, 
                                             uint32_t interface, bool useObjectNames = true);
 
   /**
    * @brief Create and initialize a pcap file.
+   * 
+   * @param filename file name
+   * @param filemode file mode
+   * @param dataLinkType data link type of packet data
+   * @param snapLen maximum length of packet data stored in records
+   * @param tzCorrection time zone correction to be applied to timestamps of packets
+   * @returns a smart pointer to the Pcap file
    */
   Ptr<PcapFileWrapper> CreateFile (std::string filename, std::ios::openmode filemode,
-                                   uint32_t dataLinkType,  uint32_t snapLen = 65535, int32_t tzCorrection = 0);
+                                   uint32_t dataLinkType,  uint32_t snapLen = std::numeric_limits<uint32_t>::max (), int32_t tzCorrection = 0);
   /**
    * @brief Hook a trace source to the default trace sink
+   * 
+   * @param object object
+   * @param traceName trace source name
+   * @param file file wrapper
    */
   template <typename T> void HookDefaultSink (Ptr<T> object, std::string traceName, Ptr<PcapFileWrapper> file);
 
 private:
+  /**
+   * The basic default trace sink.
+   *
+   * This one just writes the packet to the pcap
+   * file which is good enough for most kinds of captures.
+   *
+   * @param file the file to write to
+   * @param p the packet to write
+   */
   static void DefaultSink (Ptr<PcapFileWrapper> file, Ptr<const Packet> p);
 };
 
@@ -122,12 +154,23 @@ public:
   /**
    * @brief Let the ascii trace helper figure out a reasonable filename to use
    * for an ascii trace file associated with a device.
+   * 
+   * @param prefix prefix string
+   * @param device NetDevice
+   * @param useObjectNames use node and device names instead of indexes
+   * @returns file name
    */
   std::string GetFilenameFromDevice (std::string prefix, Ptr<NetDevice> device, bool useObjectNames = true);
 
   /**
    * @brief Let the ascii trace helper figure out a reasonable filename to use
    * for an ascii trace file associated with a node.
+   * 
+   * @param prefix prefix string
+   * @param object interface (such as Ipv4Interface or Ipv6Interface)
+   * @param interface interface id
+   * @param useObjectNames use node and device names instead of indexes
+   * @returns file name
    */
   std::string GetFilenameFromInterfacePair (std::string prefix, Ptr<Object> object, 
                                             uint32_t interface, bool useObjectNames = true);
@@ -151,6 +194,10 @@ public:
    * run into object lifetime issues.  Ns-3 has a nice reference counted object
    * that can solve the problem so we use one of those to carry the stream
    * around and deal with the lifetime issues.
+   * 
+   * @param filename file name
+   * @param filemode file mode
+   * @returns a smart pointer to the output stream
    */
   Ptr<OutputStreamWrapper> CreateFileStream (std::string filename, 
                                              std::ios::openmode filemode = std::ios::out);
@@ -158,6 +205,10 @@ public:
   /**
    * @brief Hook a trace source to the default enqueue operation trace sink that
    * does not accept nor log a trace context.
+   * 
+   * @param object object
+   * @param traceName trace source name
+   * @param stream output stream wrapper
    */
   template <typename T> 
   void HookDefaultEnqueueSinkWithoutContext (Ptr<T> object, std::string traceName, Ptr<OutputStreamWrapper> stream);
@@ -165,6 +216,11 @@ public:
   /**
    * @brief Hook a trace source to the default enqueue operation trace sink that
    * does accept and log a trace context.
+   * 
+   * @param object object
+   * @param context context string
+   * @param traceName trace source name
+   * @param stream output stream wrapper
    */
   template <typename T> 
   void HookDefaultEnqueueSinkWithContext (Ptr<T> object, 
@@ -173,6 +229,10 @@ public:
   /**
    * @brief Hook a trace source to the default drop operation trace sink that 
    * does not accept nor log a trace context.
+   * 
+   * @param object object
+   * @param traceName trace source name
+   * @param stream output stream wrapper
    */
   template <typename T> 
   void HookDefaultDropSinkWithoutContext (Ptr<T> object, std::string traceName, Ptr<OutputStreamWrapper> stream);
@@ -180,6 +240,11 @@ public:
   /**
    * @brief Hook a trace source to the default drop operation trace sink that 
    * does accept and log a trace context.
+   * 
+   * @param object object
+   * @param context context string
+   * @param traceName trace source name
+   * @param stream output stream wrapper
    */
   template <typename T> 
   void HookDefaultDropSinkWithContext (Ptr<T> object, 
@@ -188,6 +253,10 @@ public:
   /**
    * @brief Hook a trace source to the default dequeue operation trace sink
    * that does not accept nor log a trace context.
+   * 
+   * @param object object
+   * @param traceName trace source name
+   * @param stream output stream wrapper
    */
   template <typename T> 
   void HookDefaultDequeueSinkWithoutContext (Ptr<T> object, std::string traceName, Ptr<OutputStreamWrapper> stream);
@@ -195,6 +264,11 @@ public:
   /**
    * @brief Hook a trace source to the default dequeue operation trace sink
    * that does accept and log a trace context.
+   * 
+   * @param object object
+   * @param context context string
+   * @param traceName trace source name
+   * @param stream output stream wrapper
    */
   template <typename T> 
   void HookDefaultDequeueSinkWithContext (Ptr<T> object, 
@@ -203,6 +277,10 @@ public:
   /**
    * @brief Hook a trace source to the default receive operation trace sink
    * that does not accept nor log a trace context.
+   * 
+   * @param object object
+   * @param traceName trace source name
+   * @param stream output stream wrapper
    */
   template <typename T> 
   void HookDefaultReceiveSinkWithoutContext (Ptr<T> object, std::string traceName, Ptr<OutputStreamWrapper> stream);
@@ -210,21 +288,152 @@ public:
   /**
    * @brief Hook a trace source to the default receive operation trace sink
    * that does accept and log a trace context.
+   * 
+   * @param object object
+   * @param context context string
+   * @param traceName trace source name
+   * @param stream output stream wrapper
    */
   template <typename T> 
   void HookDefaultReceiveSinkWithContext (Ptr<T> object, 
                                           std::string context, std::string traceName, Ptr<OutputStreamWrapper> stream);
 
+  /**
+   * @brief Basic Enqueue default trace sink.
+   *
+   * When a packet has been sent to a device for transmission, the device is
+   * expected to place the packet onto a transmit queue even if it does not
+   * have to delay the packet at all, if only to trigger this event.  This
+   * event will eventually translate into a '+' operation in the trace file.
+   *
+   * This is typically implemented by hooking the "TxQueue/Enqueue" trace hook
+   * in the device (actually the Queue in the device).
+   *
+   * @param file the output file
+   * @param p the packet
+   */
   static void DefaultEnqueueSinkWithoutContext (Ptr<OutputStreamWrapper> file, Ptr<const Packet> p);
+
+  /**
+   * @brief Basic Enqueue default trace sink.
+   *
+   * When a packet has been sent to a device for transmission, the device is
+   * expected to place the packet onto a transmit queue even if it does not
+   * have to delay the packet at all, if only to trigger this event.  This
+   * event will eventually translate into a '+' operation in the trace file.
+   *
+   * This is typically implemented by hooking the "TxQueue/Enqueue" trace hook
+   * in the device (actually the Queue in the device).
+   *
+   * @param file the output file
+   * @param context the context
+   * @param p the packet
+   */
   static void DefaultEnqueueSinkWithContext (Ptr<OutputStreamWrapper> file, std::string context, Ptr<const Packet> p);
 
+  /**
+   * @brief Basic Drop default trace sink.
+   *
+   * When a packet has been sent to a device for transmission, the device is
+   * expected to place the packet onto a transmit queue.  If this queue is
+   * full the packet will be dropped.  The device is expected to trigger an
+   * event to indicate that an outbound packet is being dropped.  This event
+   * will eventually translate into a 'd' operation in the trace file.
+   *
+   * This is typically implemented by hooking the "TxQueue/Drop" trace hook
+   * in the device (actually the Queue in the device).
+   *
+   * @param file the output file
+   * @param p the packet
+   */
   static void DefaultDropSinkWithoutContext (Ptr<OutputStreamWrapper> file, Ptr<const Packet> p);
+
+  /**
+   * @brief Basic Drop default trace sink.
+   *
+   * When a packet has been sent to a device for transmission, the device is
+   * expected to place the packet onto a transmit queue.  If this queue is
+   * full the packet will be dropped.  The device is expected to trigger an
+   * event to indicate that an outbound packet is being dropped.  This event
+   * will eventually translate into a 'd' operation in the trace file.
+   *
+   * This is typically implemented by hooking the "TxQueue/Drop" trace hook
+   * in the device (actually the Queue in the device).
+   *
+   * @param file the output file
+   * @param context the context
+   * @param p the packet
+   */
   static void DefaultDropSinkWithContext (Ptr<OutputStreamWrapper> file, std::string context, Ptr<const Packet> p);
 
+  /**
+   * @brief Basic Dequeue default trace sink.
+   *
+   * When a packet has been sent to a device for transmission, the device is
+   * expected to place the packet onto a transmit queue even if it does not
+   * have to delay the packet at all.  The device removes the packet from the
+   * transmit queue when the packet is ready to send, and this dequeue will
+   * fire a corresponding event.  This event will eventually translate into a
+   * '-' operation in the trace file.
+   *
+   * This is typically implemented by hooking the "TxQueue/Dequeue" trace hook
+   * in the device (actually the Queue in the device).
+   *
+   * @param file the output file
+   * @param p the packet
+   */
   static void DefaultDequeueSinkWithoutContext (Ptr<OutputStreamWrapper> file, Ptr<const Packet> p);
+
+  /**
+   * @brief Basic Dequeue default trace sink.
+   *
+   * When a packet has been sent to a device for transmission, the device is
+   * expected to place the packet onto a transmit queue even if it does not
+   * have to delay the packet at all.  The device removes the packet from the
+   * transmit queue when the packet is ready to send, and this dequeue will
+   * fire a corresponding event.  This event will eventually translate into a
+   * '-' operation in the trace file.
+   *
+   * This is typically implemented by hooking the "TxQueue/Dequeue" trace hook
+   * in the device (actually the Queue in the device).
+   *
+   * @param file the output file
+   * @param context the context
+   * @param p the packet
+   */
   static void DefaultDequeueSinkWithContext (Ptr<OutputStreamWrapper> file, std::string context, Ptr<const Packet> p);
 
+  /**
+   * @brief Basic Receive default trace sink.
+   *
+   * When a packet is received by a device for transmission, the device is
+   * expected to trigger this event to indicate the reception has occurred.
+   * This event will eventually translate into an 'r' operation in the trace
+   * file.
+   *
+   * This is typically implemented by hooking the "MacRx" trace hook in the
+   * device.
+   *
+   * @param file the output file
+   * @param p the packet
+   */
   static void DefaultReceiveSinkWithoutContext (Ptr<OutputStreamWrapper> file, Ptr<const Packet> p);
+
+  /**
+   * @brief Basic Receive default trace sink.
+   *
+   * When a packet is received by a device for transmission, the device is
+   * expected to trigger this event to indicate the reception has occurred.
+   * This event will eventually translate into an 'r' operation in the trace
+   * file.
+   *
+   * This is typically implemented by hooking the "MacRx" trace hook in the
+   * device.
+   *
+   * @param file the output file
+   * @param context the context
+   * @param p the packet
+   */
   static void DefaultReceiveSinkWithContext (Ptr<OutputStreamWrapper> file, std::string context, Ptr<const Packet> p);
 };
 
@@ -335,7 +544,6 @@ public:
 
   /**
    * @brief Enable pcap output the indicated net device.
-   * @internal
    *
    * @param prefix Filename prefix to use for pcap files.
    * @param nd Net device for which you want to enable tracing.
@@ -425,7 +633,6 @@ public:
 
   /**
    * @brief Enable ascii trace output on the indicated net device.
-   * @internal
    *
    * The implementation is expected to use a provided Ptr<OutputStreamWrapper>
    * if it is non-null.  If the OutputStreamWrapper is null, the implementation
@@ -495,7 +702,7 @@ public:
    * of the appropriate type.
    *
    * @param prefix Filename prefix to use for ascii files.
-   * @param d container of devices of type ns3::CsmaNetDevice
+   * @param d container of devices
    */
   void EnableAscii (std::string prefix, NetDeviceContainer d);
 
@@ -505,7 +712,7 @@ public:
    *
    * @param stream An OutputStreamWrapper representing an existing file to use
    *               when writing trace data.
-   * @param d container of devices of type ns3::CsmaNetDevice
+   * @param d container of devices
    */
   void EnableAscii (Ptr<OutputStreamWrapper> stream, NetDeviceContainer d);
 
@@ -573,8 +780,19 @@ public:
 
 private:
   /**
-   * @internal Avoid code duplication.
+   * @brief Enable ascii trace output on the device specified by a global
+   * node-id (of a previously created node) and associated device-id (implementation)
+   *
+   * @param stream An OutputStreamWrapper representing an existing file to use
+   *               when writing trace data.
+   * @param prefix Filename prefix to use for ascii trace files.
+   * @param nodeid The node identifier/number of the node on which to enable
+   *               ascii tracing
+   * @param deviceid The device identifier/index of the device on which to enable
+   *               ascii tracing
+   * @param explicitFilename Treat the prefix as an explicit filename if true
    */
+
   void EnableAsciiImpl (Ptr<OutputStreamWrapper> stream, 
                         std::string prefix, 
                         uint32_t nodeid, 
@@ -582,22 +800,47 @@ private:
                         bool explicitFilename);
 
   /**
-   * @internal Avoid code duplication.
+   * @brief Enable ascii trace output on each device (which is of the
+   * appropriate type) in the nodes provided in the container (implementation).
+   *
+   * @param stream An OutputStreamWrapper representing an existing file to use
+   *               when writing trace data.
+   * @param prefix Filename prefix to use for ascii files.
+   * @param n container of nodes.
    */
   void EnableAsciiImpl (Ptr<OutputStreamWrapper> stream, std::string prefix, NodeContainer n);
 
   /**
-   * @internal Avoid code duplication.
+   * @brief Enable ascii trace output on each device in the container which is
+   * of the appropriate type (implementation).
+   *
+   * @param stream An OutputStreamWrapper representing an existing file to use
+   *               when writing trace data.
+   * @param prefix Filename prefix to use for ascii files.
+   * @param d container of devices
    */
   void EnableAsciiImpl (Ptr<OutputStreamWrapper> stream, std::string prefix, NetDeviceContainer d);
 
   /**
-   * @internal Avoid code duplication.
+   * @brief Enable ascii trace output the indicated net device using a device
+   * previously named using the ns-3 object name service (implementation).
+   *
+   * @param stream An OutputStreamWrapper representing an existing file to use
+   *               when writing trace data.
+   * @param prefix filename prefix to use for ascii files.
+   * @param ndName The name of the net device in which you want to enable tracing.
+   * @param explicitFilename Treat the prefix as an explicit filename if true
    */
   void EnableAsciiImpl (Ptr<OutputStreamWrapper> stream, std::string prefix, std::string ndName, bool explicitFilename);
 
   /**
-   * @internal Avoid code duplication.
+   * @brief Enable ascii trace output the indicated net device (implementation).
+   *
+   * @param stream An OutputStreamWrapper representing an existing file to use
+   *               when writing trace data.
+   * @param prefix filename prefix to use for ascii files.
+   * @param nd Net device for which you want to enable tracing
+   * @param explicitFilename Treat the prefix as an explicit filename if true
    */
   void EnableAsciiImpl (Ptr<OutputStreamWrapper> stream, std::string prefix, Ptr<NetDevice> nd, bool explicitFilename);
 };

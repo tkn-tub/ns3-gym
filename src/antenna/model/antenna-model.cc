@@ -24,9 +24,9 @@
 #include "antenna-model.h"
 
 
-NS_LOG_COMPONENT_DEFINE ("AntennaModel");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("AntennaModel");
 
 NS_OBJECT_ENSURE_REGISTERED (AntennaModel);
 
@@ -39,11 +39,12 @@ AntennaModel::~AntennaModel ()
 {
 }
 
-TypeId 
+TypeId
 AntennaModel::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::AntennaModel")
     .SetParent<Object> ()
+    .SetGroupName("Antenna")
   ;
   return tid;
 }

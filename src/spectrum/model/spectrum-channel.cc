@@ -31,6 +31,7 @@ SpectrumChannel::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::SpectrumChannel")
     .SetParent<Channel> ()
+    .SetGroupName ("Spectrum")
   ;
   return tid;
 }

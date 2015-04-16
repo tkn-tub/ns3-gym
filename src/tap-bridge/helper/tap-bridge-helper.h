@@ -53,7 +53,7 @@ public:
    */
   TapBridgeHelper (Ipv4Address gateway);
 
-  /*
+  /**
    * Set an attribute in the underlying TapBridge net device when these
    * devices are automatically created.
    *
@@ -126,7 +126,7 @@ public:
    */
   Ptr<NetDevice> Install (Ptr<Node> node, Ptr<NetDevice> nd, const AttributeValue &bridgeType);
 private:
-  ObjectFactory m_deviceFactory;
+  ObjectFactory m_deviceFactory; //!< Object factory
 };
 
 } // namespace ns3

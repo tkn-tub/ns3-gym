@@ -22,7 +22,7 @@
 #include "ns3/olsr-header.h"
 #include "ns3/packet.h"
 
-namespace ns3 {
+using namespace ns3;
 
 class OlsrEmfTestCase : public TestCase {
 public:
@@ -311,6 +311,3 @@ OlsrTestSuite::OlsrTestSuite()
   AddTestCase (new OlsrMidTestCase (), TestCase::QUICK);
   AddTestCase (new OlsrEmfTestCase (), TestCase::QUICK);
 }
-
-} // namespace ns3
-

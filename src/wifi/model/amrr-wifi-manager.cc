@@ -26,10 +26,16 @@
 
 #define Min(a,b) ((a < b) ? a : b)
 
-NS_LOG_COMPONENT_DEFINE ("AmrrWifiRemoteStation");
-
 namespace ns3 {
 
+NS_LOG_COMPONENT_DEFINE ("AmrrWifiRemoteStation");
+
+/**
+ * \brief hold per-remote-station state for AMRR Wifi manager.
+ *
+ * This struct extends from WifiRemoteStation struct to hold additional
+ * information required by the AMRR Wifi manager
+ */
 struct AmrrWifiRemoteStation : public WifiRemoteStation
 {
   Time m_nextModeUpdate;
@@ -51,6 +57,7 @@ AmrrWifiManager::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::AmrrWifiManager")
     .SetParent<WifiRemoteStationManager> ()
+    .SetGroupName ("Wifi")
     .AddConstructor<AmrrWifiManager> ()
     .AddAttribute ("UpdatePeriod",
                    "The interval between decisions about rate control changes",
@@ -315,7 +322,7 @@ AmrrWifiManager::DoGetDataTxVector (WifiRemoteStation *st, uint32_t size)
         }
     }
 
-  return WifiTxVector (GetSupported (station, rateIndex), GetDefaultTxPowerLevel (), GetLongRetryCount (station), GetShortGuardInterval (station), Min (GetNumberOfReceiveAntennas (station),GetNumberOfTransmitAntennas()), GetNumberOfTransmitAntennas (station), GetStbc (station));
+  return WifiTxVector (GetSupported (station, rateIndex), GetDefaultTxPowerLevel (), GetLongRetryCount (station), GetShortGuardInterval (station), Min (GetNumberOfReceiveAntennas (station),GetNumberOfTransmitAntennas()), GetNess (station), GetStbc (station));
 }
 WifiTxVector
 AmrrWifiManager::DoGetRtsTxVector (WifiRemoteStation *st)
@@ -324,7 +331,7 @@ AmrrWifiManager::DoGetRtsTxVector (WifiRemoteStation *st)
   AmrrWifiRemoteStation *station = (AmrrWifiRemoteStation *)st;
   UpdateMode (station);
   /// \todo can we implement something smarter ?
-  return WifiTxVector (GetSupported (station, 0), GetDefaultTxPowerLevel (), GetLongRetryCount (station), GetShortGuardInterval (station), Min (GetNumberOfReceiveAntennas (station),GetNumberOfTransmitAntennas()), GetNumberOfTransmitAntennas (station), GetStbc (station));
+  return WifiTxVector (GetSupported (station, 0), GetDefaultTxPowerLevel (), GetLongRetryCount (station), GetShortGuardInterval (station), Min (GetNumberOfReceiveAntennas (station),GetNumberOfTransmitAntennas()), GetNess (station), GetStbc (station));
 }
 
 

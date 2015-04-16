@@ -31,9 +31,9 @@
 #include "ns3/enum.h"
 
 
-NS_LOG_COMPONENT_DEFINE ("OhBuildingsPropagationLossModel");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("OhBuildingsPropagationLossModel");
 
 NS_OBJECT_ENSURE_REGISTERED (OhBuildingsPropagationLossModel);
 

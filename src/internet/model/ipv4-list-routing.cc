@@ -24,9 +24,9 @@
 #include "ns3/ipv4-static-routing.h"
 #include "ipv4-list-routing.h"
 
-NS_LOG_COMPONENT_DEFINE ("Ipv4ListRouting");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("Ipv4ListRouting");
 
 NS_OBJECT_ENSURE_REGISTERED (Ipv4ListRouting);
 
@@ -35,6 +35,7 @@ Ipv4ListRouting::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::Ipv4ListRouting")
     .SetParent<Ipv4RoutingProtocol> ()
+    .SetGroupName ("Internet")
     .AddConstructor<Ipv4ListRouting> ()
   ;
   return tid;

@@ -132,15 +132,15 @@ O |ns3| é um simulador para pesquisas e de uso educacional, feito por e para pes
 
 * Licença de código aberto compatível com GNU GPLv2;
 
-* `Wiki	<http://www.nsnam.org/wiki/index.php>`_;
+* `Wiki	<http://www.nsnam.org/wiki>`_;
 
 .. 
 	* `Contributed Code
-	<http://www.nsnam.org/wiki/index.php/Contributed_Code>`_ page, similar to ns-2's popular Contributed Code
+	<http://www.nsnam.org/wiki/Contributed_Code>`_ page, similar to ns-2's popular Contributed Code
 	`page
 	<http://nsnam.isi.edu/nsnam/index.php/Contributed_Code>`_ 
 
-* Página para `contribuição com o código <http://www.nsnam.org/wiki/index.php/Contributed_Code>`_, similar a página de contribuição do `ns-2 <http://nsnam.isi.edu/nsnam/index.php/Contributed_Code>`_;
+* Página para `contribuição com o código <http://www.nsnam.org/wiki/Contributed_Code>`_, similar a página de contribuição do `ns-2 <http://nsnam.isi.edu/nsnam/index.php/Contributed_Code>`_;
 
 .. 
 	* Open `bug tracker

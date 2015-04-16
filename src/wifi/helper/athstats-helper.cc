@@ -30,10 +30,9 @@
 #include <fstream>
 
 
-NS_LOG_COMPONENT_DEFINE ("Athstats");
-
 namespace ns3 {
 
+NS_LOG_COMPONENT_DEFINE ("Athstats");
 
 AthstatsHelper::AthstatsHelper ()
   : m_interval (Seconds (1.0))
@@ -112,6 +111,7 @@ AthstatsWifiTraceSink::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::AthstatsWifiTraceSink")
     .SetParent<Object> ()
+    .SetGroupName ("Wifi")
     .AddConstructor<AthstatsWifiTraceSink> ()
     .AddAttribute ("Interval",
                    "Time interval between reports",

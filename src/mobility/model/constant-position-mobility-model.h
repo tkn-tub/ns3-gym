@@ -32,6 +32,10 @@ namespace ns3 {
 class ConstantPositionMobilityModel : public MobilityModel 
 {
 public:
+  /**
+   * Register this type with the TypeId system.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
   /**
    * Create a position located at coordinates (0,0,0)
@@ -44,7 +48,7 @@ private:
   virtual void DoSetPosition (const Vector &position);
   virtual Vector DoGetVelocity (void) const;
 
-  Vector m_position;
+  Vector m_position; //!< the constant position
 };
 
 } // namespace ns3

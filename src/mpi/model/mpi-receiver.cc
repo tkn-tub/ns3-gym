@@ -33,17 +33,23 @@ MpiReceiver::~MpiReceiver ()
 {
 }
 
-void 
+void
 MpiReceiver::SetReceiveCallback (Callback<void, Ptr<Packet> > callback)
 {
   m_rxCallback = callback;
 }
 
-void 
+void
 MpiReceiver::Receive (Ptr<Packet> p)
 {
   NS_ASSERT (!m_rxCallback.IsNull ());
   m_rxCallback (p);
+}
+
+void
+MpiReceiver::DoDispose(void)
+{
+  m_rxCallback = MakeNullCallback<void, Ptr<Packet> >();
 }
 
 } // namespace ns3

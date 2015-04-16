@@ -32,6 +32,8 @@ namespace ns3 {
 /**
  * \ingroup network
  * \defgroup address Address
+ *
+ * Network Address abstractions, including MAC, IPv4 and IPv6.
  */
 /**
  * \ingroup address
@@ -82,6 +84,8 @@ namespace ns3 {
  *   return type;
  * }
  * \endcode
+ *
+ * \see attribute_Address
  */
 class Address 
 {
@@ -99,19 +103,29 @@ public:
    */
   Address ();
   /**
+   * \brief Create an address from a type and a buffer.
+   *
+   * This constructor is typically invoked from the conversion
+   * functions of various address types when they have to
+   * convert themselves to an Address instance.
+   *
    * \param type the type of the Address to create
    * \param buffer a pointer to a buffer of bytes which hold
    *        a serialized representation of the address in network
    *        byte order.
    * \param len the length of the buffer.
-   * 
-   * Create an address from a type and a buffer. This constructor
-   * is typically invoked from the conversion functions of various
-   * address types when they have to convert themselves to an 
-   * Address instance.
    */
   Address (uint8_t type, const uint8_t *buffer, uint8_t len);
+  /**
+   * \brief Create an address from another address.
+   * \param address the address to copy
+   */
   Address (const Address & address);
+  /**
+   * \brief Basic assignment operator.
+   * \param address the address to copy
+   * \returns the address
+   */
   Address &operator = (const Address &address);
 
   /**
@@ -123,10 +137,12 @@ public:
    */
   bool IsInvalid (void) const;
   /**
+   * \brief Get the length of the underlying address.
    * \returns the length of the underlying address.
    */
   uint8_t GetLength (void) const;
   /**
+   * \brief Copy the address bytes into a buffer.
    * \param buffer buffer to copy the address bytes to.
    * \returns the number of bytes copied.
    */
@@ -209,20 +225,55 @@ public:
   void Deserialize (TagBuffer buffer);
 
 private:
+  /**
+   * \brief Equal to operator.
+   *
+   * \param a the first operand
+   * \param b the first operand
+   * \returns true if the operands are equal
+   */
   friend bool operator == (const Address &a, const Address &b);
+
+  /**
+   * \brief Not equal to operator.
+   *
+   * \param a the first operand
+   * \param b the first operand
+   * \returns true if the operands are not equal
+   */
+  friend bool operator != (const Address &a, const Address &b);
+
+  /**
+   * \brief Less than operator.
+   *
+   * \param a the first operand
+   * \param b the first operand
+   * \returns true if the operand a is less than operand b
+   */
   friend bool operator < (const Address &a, const Address &b);
+
+  /**
+   * \brief Stream insertion operator.
+   *
+   * \param os the stream
+   * \param address the address
+   * \returns a reference to the stream
+   */
   friend std::ostream& operator<< (std::ostream& os, const Address & address);
+
+  /**
+   * \brief Stream extraction operator.
+   *
+   * \param is the stream
+   * \param address the address
+   * \returns a reference to the stream
+   */
   friend std::istream& operator>> (std::istream& is, Address & address);
 
-  uint8_t m_type;
-  uint8_t m_len;
-  uint8_t m_data[MAX_SIZE];
+  uint8_t m_type; //!< Type of the address
+  uint8_t m_len;  //!< Length of the address
+  uint8_t m_data[MAX_SIZE]; //!< The address value
 };
-
-/**
- * \class ns3::AddressValue
- * \brief hold objects of type ns3::Address
- */
 
 ATTRIBUTE_HELPER_HEADER (Address);
 

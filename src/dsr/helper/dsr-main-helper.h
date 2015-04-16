@@ -62,7 +62,6 @@ public:
 private:
   void Install (Ptr<Node> node);
   /**
-   * \internal
    * \brief Assignment operator declared private and not implemented to disallow
    * assignment and prevent the compiler from happily inserting its own.
    */

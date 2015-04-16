@@ -25,6 +25,7 @@
 #include "trace-source-accessor.h"
 #include "attribute-helper.h"
 #include "callback.h"
+#include "deprecated.h"
 #include "hash.h"
 #include <string>
 #include <stdint.h>
@@ -42,9 +43,10 @@ class ObjectBase;
  *  - the set of accessible constructors in the subclass
  *  - the set of 'attributes' accessible in the subclass
  *
+ * \see attribute_TypeId
+ *
  * \internal
  *  See the discussion in IidManager about hash chaining of TypeId's.
- *
  */
 class TypeId
 {
@@ -70,6 +72,7 @@ public:
   struct TraceSourceInformation {
     std::string name;
     std::string help;
+    std::string callback;
     Ptr<const TraceSourceAccessor> accessor;
   };
 
@@ -168,6 +171,11 @@ public:
   hash_t GetHash (void) const;
 
   /**
+   * \returns the size of this interface.
+   */
+  std::size_t GetSize (void) const;
+
+  /**
    * \returns true if this TypeId has a constructor
    */
   bool HasConstructor (void) const;
@@ -240,6 +248,22 @@ public:
   TypeId SetGroupName (std::string groupName);
 
   /**
+   * Set the size of this type, based on the \p sizeof operator.
+   *
+   * Call this way:
+   * \code
+   *   SetSize (sizeof (<typename>));
+   * \endcode
+   * This is done automatically by NS_LOG_ENSURE_REGISTERED()
+   * A ridiculously large reported size is a symptom that the
+   * type hasn't been registered.
+   *
+   * \param size The size of the object, in bytes.
+   * \returns this TypeId instance.
+   */
+  TypeId SetSize (std::size_t size);
+  
+  /**
    * \returns this TypeId instance
    *
    * Record in this TypeId the fact that the default constructor
@@ -298,11 +322,29 @@ public:
    *        trace source.
    * \param accessor a pointer to a TraceSourceAccessor which can be
    *        used to connect/disconnect sinks to this trace source.
+   * \param callback fully qualified typedef name for the callback signature.
+   *        Generally this should begin with the "ns3::" namespace qualifier.
    * \returns this TypeId instance.
    */
   TypeId AddTraceSource (std::string name,
                          std::string help,
-                         Ptr<const TraceSourceAccessor> accessor);
+                         Ptr<const TraceSourceAccessor> accessor)
+    NS_DEPRECATED;
+  
+  /**
+   * \param name the name of the new trace source
+   * \param help some help text which describes the purpose of this
+   *        trace source.
+   * \param accessor a pointer to a TraceSourceAccessor which can be
+   *        used to connect/disconnect sinks to this trace source.
+   * \param callback fully qualified typedef name for the callback signature.
+   *        Generally this should begin with the "ns3::" namespace qualifier.
+   * \returns this TypeId instance.
+   */
+  TypeId AddTraceSource (std::string name,
+                         std::string help,
+                         Ptr<const TraceSourceAccessor> accessor,
+                         std::string callback);
 
   TypeId HideFromDocumentation (void);
 
@@ -358,18 +400,12 @@ private:
 
   uint16_t m_tid;
 };
-
+  
 std::ostream & operator << (std::ostream &os, TypeId tid);
 std::istream & operator >> (std::istream &is, TypeId &tid);
 inline bool operator == (TypeId a, TypeId b);
 inline bool operator != (TypeId a, TypeId b);
 bool operator <  (TypeId a, TypeId b);
-
-/**
- * \class ns3::TypeIdValue
- * \brief hold objects of type ns3::TypeId
- */
-
 
 ATTRIBUTE_HELPER_HEADER (TypeId);
 

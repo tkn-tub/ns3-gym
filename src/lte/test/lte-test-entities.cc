@@ -28,10 +28,9 @@
 
 #include "lte-test-entities.h"
 
-NS_LOG_COMPONENT_DEFINE ("LteTestEntities");
-
 namespace ns3 {
 
+NS_LOG_COMPONENT_DEFINE ("LteTestEntities");
 
 /////////////////////////////////////////////////////////////////////
 
@@ -193,7 +192,7 @@ void
 LteTestRrc::Start ()
 {
   NS_LOG_FUNCTION (this);
-  NS_ASSERT_MSG (m_arrivalTime != 0, "Arrival time must be different from 0");
+  NS_ASSERT_MSG (m_arrivalTime != Time (0), "Arrival time must be different from 0");
 
   // Stats
   m_txPdus++;

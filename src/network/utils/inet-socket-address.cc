@@ -22,9 +22,9 @@
 #include "ns3/assert.h"
 #include "ns3/log.h"
 
-NS_LOG_COMPONENT_DEFINE ("InetSocketAddress");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("InetSocketAddress");
 
 InetSocketAddress::InetSocketAddress (Ipv4Address ipv4, uint16_t port)
   : m_ipv4 (ipv4),

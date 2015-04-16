@@ -35,12 +35,12 @@
 #include "wifi-mac.h"
 #include "random-stream.h"
 
-NS_LOG_COMPONENT_DEFINE ("DcaTxop");
-
 #undef NS_LOG_APPEND_CONTEXT
 #define NS_LOG_APPEND_CONTEXT if (m_low != 0) { std::clog << "[mac=" << m_low->GetAddress () << "] "; }
 
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("DcaTxop");
 
 class DcaTxop::Dcf : public DcfState
 {
@@ -66,12 +66,28 @@ private:
   {
     m_txop->NotifyChannelSwitching ();
   }
+  virtual void DoNotifySleep (void)
+  {
+    m_txop->NotifySleep ();
+  }
+  virtual void DoNotifyWakeUp (void)
+  {
+    m_txop->NotifyWakeUp ();
+  }
   DcaTxop *m_txop;
 };
 
+/**
+ * Listener for MacLow events. Forwards to DcaTxop.
+ */
 class DcaTxop::TransmissionListener : public MacLowTransmissionListener
 {
 public:
+  /**
+   * Create a TransmissionListener for the given DcaTxop.
+   *
+   * \param txop
+   */
   TransmissionListener (DcaTxop * txop)
     : MacLowTransmissionListener (),
       m_txop (txop) {
@@ -119,6 +135,7 @@ DcaTxop::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::DcaTxop")
     .SetParent (ns3::Dcf::GetTypeId ())
+    .SetGroupName ("Wifi")
     .AddConstructor<DcaTxop> ()
     .AddAttribute ("Queue", "The WifiMacQueue object",
                    PointerValue (),
@@ -137,7 +154,6 @@ DcaTxop::DcaTxop ()
   m_dcf = new DcaTxop::Dcf (this);
   m_queue = CreateObject<WifiMacQueue> ();
   m_rng = new RealRandomStream ();
-  m_txMiddle = new MacTxMiddle ();
 }
 
 DcaTxop::~DcaTxop ()
@@ -155,7 +171,6 @@ DcaTxop::DoDispose (void)
   delete m_transmissionListener;
   delete m_dcf;
   delete m_rng;
-  delete m_txMiddle;
   m_transmissionListener = 0;
   m_dcf = 0;
   m_rng = 0;
@@ -168,6 +183,11 @@ DcaTxop::SetManager (DcfManager *manager)
   NS_LOG_FUNCTION (this << manager);
   m_manager = manager;
   m_manager->Add (m_dcf);
+}
+
+void DcaTxop::SetTxMiddle (MacTxMiddle *txMiddle)
+{
+  m_txMiddle = txMiddle;
 }
 
 void
@@ -500,6 +520,22 @@ DcaTxop::NotifyChannelSwitching (void)
   NS_LOG_FUNCTION (this);
   m_queue->Flush ();
   m_currentPacket = 0;
+}
+void
+DcaTxop::NotifySleep (void)
+{
+  NS_LOG_FUNCTION (this);
+  if (m_currentPacket != 0)
+    {
+      m_queue->PushFront (m_currentPacket, m_currentHdr);
+      m_currentPacket = 0;
+    }
+}
+void
+DcaTxop::NotifyWakeUp (void)
+{
+  NS_LOG_FUNCTION (this);
+  RestartAccessIfNeeded ();
 }
 
 void

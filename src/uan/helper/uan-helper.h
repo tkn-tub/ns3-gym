@@ -31,30 +31,37 @@ namespace ns3 {
 
 class UanChannel;
 
+/**
+ * \ingroup uan
+ *
+ * UAN configuration helper.
+ */
 class UanHelper
 {
 public:
-  UanHelper ();
-  virtual ~UanHelper ();
+  UanHelper ();           //!< Defalt constructor.
+  virtual ~UanHelper ();  //!< Destructor.
 
   /**
-   * \param type the type of ns3::UanMac to create.
-   * \param n0 the name of the attribute to set
-   * \param v0 the value of the attribute to set
-   * \param n1 the name of the attribute to set
-   * \param v1 the value of the attribute to set
-   * \param n2 the name of the attribute to set
-   * \param v2 the value of the attribute to set
-   * \param n3 the name of the attribute to set
-   * \param v3 the value of the attribute to set
-   * \param n4 the name of the attribute to set
-   * \param v4 the value of the attribute to set
-   * \param n5 the name of the attribute to set
-   * \param v5 the value of the attribute to set
-   * \param n6 the name of the attribute to set
-   * \param v6 the value of the attribute to set
-   * \param n7 the name of the attribute to set
-   * \param v7 the value of the attribute to set
+   * Set MAC attributes.
+   *
+   * \param type The type of ns3::UanMac to create.
+   * \param n0 The name of the attribute to set.
+   * \param v0 The value of the attribute to set.
+   * \param n1 The name of the attribute to set.
+   * \param v1 The value of the attribute to set.
+   * \param n2 The name of the attribute to set.
+   * \param v2 The value of the attribute to set.
+   * \param n3 The name of the attribute to set.
+   * \param v3 The value of the attribute to set.
+   * \param n4 The name of the attribute to set.
+   * \param v4 The value of the attribute to set.
+   * \param n5 The name of the attribute to set.
+   * \param v5 The value of the attribute to set.
+   * \param n6 The name of the attribute to set.
+   * \param v6 The value of the attribute to set.
+   * \param n7 The name of the attribute to set.
+   * \param v7 The value of the attribute to set.
    *
    * All the attributes specified in this method should exist
    * in the requested mac.
@@ -71,26 +78,28 @@ public:
 
 
   /**
-   * \param phyType the type of ns3::UanPhy to create.
-   * \param n0 the name of the attribute to set
-   * \param v0 the value of the attribute to set
-   * \param n1 the name of the attribute to set
-   * \param v1 the value of the attribute to set
-   * \param n2 the name of the attribute to set
-   * \param v2 the value of the attribute to set
-   * \param n3 the name of the attribute to set
-   * \param v3 the value of the attribute to set
-   * \param n4 the name of the attribute to set
-   * \param v4 the value of the attribute to set
-   * \param n5 the name of the attribute to set
-   * \param v5 the value of the attribute to set
-   * \param n6 the name of the attribute to set
-   * \param v6 the value of the attribute to set
-   * \param n7 the name of the attribute to set
-   * \param v7 the value of the attribute to set
+   * Set PHY attributes.
+   *
+   * \param phyType The type of ns3::UanPhy to create.
+   * \param n0 The name of the attribute to set.
+   * \param v0 The value of the attribute to set.
+   * \param n1 The name of the attribute to set.
+   * \param v1 The value of the attribute to set.
+   * \param n2 The name of the attribute to set.
+   * \param v2 The value of the attribute to set.
+   * \param n3 The name of the attribute to set.
+   * \param v3 The value of the attribute to set.
+   * \param n4 The name of the attribute to set.
+   * \param v4 The value of the attribute to set.
+   * \param n5 The name of the attribute to set.
+   * \param v5 The value of the attribute to set.
+   * \param n6 The name of the attribute to set.
+   * \param v6 The value of the attribute to set.
+   * \param n7 The name of the attribute to set.
+   * \param v7 The value of the attribute to set.
    *
    * All the attributes specified in this method should exist
-   * in the requested phy.
+   * in the requested Phy.
    */
   void SetPhy (std::string phyType,
                std::string n0 = "", const AttributeValue &v0 = EmptyAttributeValue (),
@@ -104,23 +113,25 @@ public:
 
 
   /**
-   * \param type the type of ns3::Transducer to create
-   * \param n0 the name of the attribute to set
-   * \param v0 the value of the attribute to set
-   * \param n1 the name of the attribute to set
-   * \param v1 the value of the attribute to set
-   * \param n2 the name of the attribute to set
-   * \param v2 the value of the attribute to set
-   * \param n3 the name of the attribute to set
-   * \param v3 the value of the attribute to set
-   * \param n4 the name of the attribute to set
-   * \param v4 the value of the attribute to set
-   * \param n5 the name of the attribute to set
-   * \param v5 the value of the attribute to set
-   * \param n6 the name of the attribute to set
-   * \param v6 the value of the attribute to set
-   * \param n7 the name of the attribute to set
-   * \param v7 the value of the attribute to set
+   * Set the transducer attributes.
+   *
+   * \param type The type of ns3::Transducer to create.
+   * \param n0 The name of the attribute to set.
+   * \param v0 The value of the attribute to set.
+   * \param n1 The name of the attribute to set.
+   * \param v1 The value of the attribute to set.
+   * \param n2 The name of the attribute to set.
+   * \param v2 The value of the attribute to set.
+   * \param n3 The name of the attribute to set.
+   * \param v3 The value of the attribute to set.
+   * \param n4 The name of the attribute to set.
+   * \param v4 The value of the attribute to set.
+   * \param n5 The name of the attribute to set.
+   * \param v5 The value of the attribute to set.
+   * \param n6 The name of the attribute to set.
+   * \param v6 The value of the attribute to set.
+   * \param n7 The name of the attribute to set.
+   * \param v7 The value of the attribute to set.
    *
    * All the attributes specified in this method should exist
    * in the requested transducer.
@@ -135,47 +146,45 @@ public:
                       std::string n6 = "", const AttributeValue &v6 = EmptyAttributeValue (),
                       std::string n7 = "", const AttributeValue &v7 = EmptyAttributeValue ());
   /**
-   * \param os output stream
-   * \param nodeid the id of the node to generate ascii output for.
-   * \param deviceid the id of the device to generate ascii output for.
-   *
    * Enable ascii output on the specified deviceid within the
    * specified nodeid if it is of type ns3::UanNetDevice and dump
    * that to the specified stdc++ output stream.
+   *
+   * \param os Output stream.
+   * \param nodeid The id of the node to generate ascii output for.
+   * \param deviceid The id of the device to generate ascii output for.
    */
   static void EnableAscii (std::ostream &os, uint32_t nodeid, uint32_t deviceid);
   /**
-   * \param os output stream
-   * \param d device container
-   *
    * Enable ascii output on each device which is of the
    * ns3::UanNetDevice type and which is located in the input
    * device container and dump that to the specified
    * stdc++ output stream.
+   *
+   * \param os Output stream.
+   * \param d Device container.
    */
   static void EnableAscii (std::ostream &os, NetDeviceContainer d);
   /**
-   * \param os output stream
-   * \param n node container
-   *
    * Enable ascii output on each device which is of the
    * ns3::UanNetDevice type and which is located in one
    * of the input node and dump that to the specified
    * stdc++ output stream.
+   *
+   * \param os Output stream.
+   * \param n Node container.
    */
   static void EnableAscii (std::ostream &os, NodeContainer n);
   /**
-   * \param os output stream
-   *
    * Enable ascii output on each device which is of the
    * ns3::UanNetDevice type and dump that to the specified
    * stdc++ output stream.
+   *
+   * \param os Output stream.
    */
   static void EnableAsciiAll (std::ostream &os);
 
   /**
-   * \param c a set of nodes
-   *
    * This method creates a simple ns3::UanChannel (with a default
    * ns3::UanNoiseModelDefault and ns3::UanPropModelIdeal) and
    * creates, for each of the input nodes, a new ns3::UanNetDevice
@@ -184,34 +193,41 @@ public:
    * ns3::UanPhy, all of which are created based on the user-specified
    * attributes specified in UanHelper::SetTransducer,
    * UanHelper::SetMac, and, UanHelper::SetPhy.
-   */
-
-  NetDeviceContainer Install (NodeContainer c) const;
-  /**
-   * \param c a set of nodes
-   * \param channel a channel to use
    *
+   * \param c A set of nodes.
+   * \return The installed netdevices.
+   */
+  NetDeviceContainer Install (NodeContainer c) const;
+  
+  /**
    * For each of the input nodes, a new ns3::UanNetDevice is attached
    * to the shared input channel. Each ns3::UanNetDevice is also
    * configured with an ns3::UanTransducerHd, a ns3::UanMac, and ns3::UanPhy,
    * all of which are created based on the user-specified attributes
    * specified in UanHelper::SetTransducer, UanHelper::SetMac, and
    * UanHelper::SetPhy.
+   *
+   * \param c A set of nodes.
+   * \param channel A channel to use.
+   * \return The installed netdevices.
    */
   NetDeviceContainer Install (NodeContainer c, Ptr<UanChannel> channel) const;
 
   /**
-   * \param node a node where to install the uan components
-   * \param channel a channel to use
+   * Create a default an stack.
    *
-   * Create a default uan stack with:
-   * - default channel, ideal propagation and default noise model
-   * - default physical layer, with UanPhyGen
-   * - default transducer, half duplex acoustic modem with UanTransducerHd
-   * - default MAC layer, with UanMacAloha
+   * The stack includes:
+   * - default channel, ideal propagation and default noise model.
+   * - default physical layer, with UanPhyGen.
+   * - default transducer, half duplex acoustic modem with UanTransducerHd.
+   * - default MAC layer, with UanMacAloha.
    *
    * Channel, physical layer, transducer and mac layer are added to the
    * UanNetDevice and then added to the node.
+   *
+   * \param node A node where to install the uan components.
+   * \param channel A channel to use.
+   * \return The installed UanNetDevice.
    */
   Ptr<UanNetDevice> Install (Ptr<Node> node, Ptr<UanChannel> channel) const;
 
@@ -222,17 +238,17 @@ public:
   * called by the user.
   *
   * \param c NetDeviceContainer of the set of net devices for which the 
-  *          UanNetDevice should be modified to use a fixed stream
-  * \param stream first stream index to use
-  * \return the number of stream indices assigned by this helper
+  *          UanNetDevice should be modified to use a fixed stream.
+  * \param stream First stream index to use.
+  * \return The number of stream indices assigned by this helper.
   */
   int64_t AssignStreams (NetDeviceContainer c, int64_t stream);
 
 private:
-  ObjectFactory m_device;
-  ObjectFactory m_mac;
-  ObjectFactory m_phy;
-  ObjectFactory m_transducer;
+  ObjectFactory m_device;      //!< The device.
+  ObjectFactory m_mac;         //!< The MAC layer.
+  ObjectFactory m_phy;         //!< The PHY layer.
+  ObjectFactory m_transducer;  //!< The transducer.
 
 };
 

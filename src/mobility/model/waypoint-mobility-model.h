@@ -26,6 +26,8 @@
 #include "ns3/vector.h"
 #include "waypoint.h"
 
+class WaypointMobilityModelNotifyTest;
+
 namespace ns3 {
 
 /**
@@ -84,6 +86,10 @@ namespace ns3 {
 class WaypointMobilityModel : public MobilityModel
 {
 public:
+  /**
+   * Register this type with the TypeId system.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
 
   /**
@@ -123,20 +129,62 @@ public:
   void EndMobility (void);
 
 private:
-  friend class WaypointMobilityModelNotifyTest; // To allow Update() calls and access to m_current
+  friend class ::WaypointMobilityModelNotifyTest; // To allow Update() calls and access to m_current
 
+  /**
+   * Update the underlying state corresponding to the stored waypoints
+   */
   void Update (void) const;
+  /**
+   * \brief The dispose method.
+   * 
+   * Subclasses must override this method.
+   */
   virtual void DoDispose (void);
+  /**
+   * \brief Get current position.
+   * \return A vector with the current position of the node.  
+   */
   virtual Vector DoGetPosition (void) const;
+  /**
+   * \brief Sets a new position for the node  
+   * \param position A vector to be added as the new position
+   */
   virtual void DoSetPosition (const Vector &position);
+  /**
+   * \brief Returns the current velocity of a node
+   * \return The velocity vector of a node. 
+   */
   virtual Vector DoGetVelocity (void) const;
 
+  /**
+   * \brief This variable is set to true if there are no waypoints in the std::deque
+   */
   bool m_first;
+  /**
+   * \brief If true, course change updates are only notified when position
+   * is calculated.
+   */
   bool m_lazyNotify;
+  /**
+   * \brief If true, calling SetPosition with no waypoints creates a waypoint
+   */
   bool m_initialPositionIsWaypoint;
+  /**
+   * \brief The double ended queue containing the ns3::Waypoint objects
+   */
   mutable std::deque<Waypoint> m_waypoints;
+  /**
+   * \brief The ns3::Waypoint currently being used
+   */
   mutable Waypoint m_current;
+  /**
+   * \brief The next ns3::Waypoint in the deque
+   */
   mutable Waypoint m_next;
+  /**
+   * \brief The current velocity vector
+   */
   mutable Vector m_velocity;
 };
 

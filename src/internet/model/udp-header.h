@@ -114,6 +114,10 @@ public:
                            Ipv6Address destination,
                            uint8_t protocol);
 
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
   virtual TypeId GetInstanceTypeId (void) const;
   virtual void Print (std::ostream &os) const;
@@ -127,17 +131,58 @@ public:
    */
   bool IsChecksumOk (void) const;
 
-private:
-  uint16_t CalculateHeaderChecksum (uint16_t size) const;
-  uint16_t m_sourcePort;
-  uint16_t m_destinationPort;
-  uint16_t m_payloadSize;
+  /**
+   * \brief Force the UDP checksum to a given value.
+   *
+   * This might be useful for test purposes or to
+   * restore the UDP checksum when the UDP header
+   * has been compressed (e.g., in 6LoWPAN).
+   * Note that, normally, the header checksum is
+   * calculated on the fly when the packet is
+   * serialized.
+   *
+   * When this option is used, the UDP checksum is written in
+   * the header, regardless of the global ChecksumEnabled option.
+   *
+   * \note The checksum value must be a big endian number.
+   *
+   * \param checksum the checksum to use (big endian).
+   */
+  void ForceChecksum (uint16_t checksum);
 
-  Address m_source;
-  Address m_destination;
-  uint8_t m_protocol;
-  bool m_calcChecksum;
-  bool m_goodChecksum;
+  /**
+   * \brief Force the UDP payload length to a given value.
+   *
+   * This might be useful when forging a packet for test
+   * purposes.
+   *
+   * \param payloadSize the payload length to use.
+   */
+  void ForcePayloadSize (uint16_t payloadSize);
+
+  /**
+   * \brief Return the checksum (only known after a Deserialize)
+   * \return The checksum for this UdpHeader
+   */
+  uint16_t GetChecksum ();
+
+private:
+  /**
+   * \brief Calculate the header checksum
+   * \param size packet size
+   * \returns the checksum
+   */
+  uint16_t CalculateHeaderChecksum (uint16_t size) const;
+  uint16_t m_sourcePort;      //!< Source port
+  uint16_t m_destinationPort; //!< Destination port
+  uint16_t m_payloadSize;     //!< Payload size
+
+  Address m_source;           //!< Source IP address
+  Address m_destination;      //!< Destination IP address
+  uint8_t m_protocol;         //!< Protocol number
+  uint16_t m_checksum;        //!< Forced Checksum value
+  bool m_calcChecksum;        //!< Flag to calculate checksum
+  bool m_goodChecksum;        //!< Flag to indicate that checksum is correct
 };
 
 } // namespace ns3

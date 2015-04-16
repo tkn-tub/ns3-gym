@@ -55,31 +55,18 @@ int
 main (int argc, char *argv[])
 {
 #ifdef NS3_MPI
-  // Distributed simulation setup
-  MpiInterface::Enable (&argc, &argv);
-  GlobalValue::Bind ("SimulatorImplementationType",
-                     StringValue ("ns3::DistributedSimulatorImpl"));
-
-  uint32_t systemId = MpiInterface::GetSystemId ();
-  uint32_t systemCount = MpiInterface::GetSize ();
-
-  // Check for valid distributed parameters.
-  // Must have 2 and only 2 Logical Processors (LPs)
-  if (systemCount != 2)
-    {
-      std::cout << "This simulation requires 2 and only 2 logical processors." << std::endl;
-      return 1;
-    }
 
   bool verbose = true;
   uint32_t nCsma = 3;
   uint32_t nWifi = 3;
+  bool nullmsg = false;
   bool tracing = false;
 
   CommandLine cmd;
   cmd.AddValue ("nCsma", "Number of \"extra\" CSMA nodes/devices", nCsma);
   cmd.AddValue ("nWifi", "Number of wifi STA devices", nWifi);
   cmd.AddValue ("verbose", "Tell echo applications to log if true", verbose);
+  cmd.AddValue ("nullmsg", "Enable the use of null-message synchronization", nullmsg);
   cmd.AddValue ("tracing", "Enable pcap tracing", tracing);
   cmd.Parse (argc,argv);
 
@@ -97,6 +84,32 @@ main (int argc, char *argv[])
       LogComponentEnable ("UdpEchoClientApplication", LOG_LEVEL_INFO);
       LogComponentEnable ("UdpEchoServerApplication", LOG_LEVEL_INFO);
     }
+
+  // Distributed simulation setup; by default use granted time window algorithm.
+  if(nullmsg) 
+    {
+      GlobalValue::Bind ("SimulatorImplementationType",
+                         StringValue ("ns3::NullMessageSimulatorImpl"));
+    } 
+  else 
+    {
+      GlobalValue::Bind ("SimulatorImplementationType",
+                         StringValue ("ns3::DistributedSimulatorImpl"));
+    }
+
+  MpiInterface::Enable (&argc, &argv);
+
+  uint32_t systemId = MpiInterface::GetSystemId ();
+  uint32_t systemCount = MpiInterface::GetSize ();
+
+  // Check for valid distributed parameters.
+  // Must have 2 and only 2 Logical Processors (LPs)
+  if (systemCount != 2)
+    {
+      std::cout << "This simulation requires 2 and only 2 logical processors." << std::endl;
+      return 1;
+    }
+
 
   NodeContainer p2pNodes;
   Ptr<Node> p2pNode1 = CreateObject<Node> (0); // Create node with rank 0

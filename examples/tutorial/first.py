@@ -35,9 +35,10 @@ stack = ns.internet.InternetStackHelper()
 stack.Install(nodes)
 
 address = ns.internet.Ipv4AddressHelper()
-address.SetBase(ns.network.Ipv4Address("10.1.1.0"), ns.network.Ipv4Mask("255.255.255.0"))
+address.SetBase(ns.network.Ipv4Address("10.1.1.0"),
+                ns.network.Ipv4Mask("255.255.255.0"))
 
-interfaces = address.Assign (devices);
+interfaces = address.Assign(devices)
 
 echoServer = ns.applications.UdpEchoServerHelper(9)
 
@@ -47,7 +48,7 @@ serverApps.Stop(ns.core.Seconds(10.0))
 
 echoClient = ns.applications.UdpEchoClientHelper(interfaces.GetAddress(1), 9)
 echoClient.SetAttribute("MaxPackets", ns.core.UintegerValue(1))
-echoClient.SetAttribute("Interval", ns.core.TimeValue(ns.core.Seconds (1.0)))
+echoClient.SetAttribute("Interval", ns.core.TimeValue(ns.core.Seconds(1.0)))
 echoClient.SetAttribute("PacketSize", ns.core.UintegerValue(1024))
 
 clientApps = echoClient.Install(nodes.Get(0))

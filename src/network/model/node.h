@@ -55,6 +55,10 @@ class Address;
 class Node : public Object
 {
 public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
 
   Node();
@@ -80,19 +84,18 @@ public:
   uint32_t GetSystemId (void) const;
 
   /**
+   * \brief Associate a NetDevice to this node.
+   *
    * \param device NetDevice to associate to this node.
    * \returns the index of the NetDevice into the Node's list of
    *          NetDevice.
-   *
-   * Associate this device to this node.
    */
   uint32_t AddDevice (Ptr<NetDevice> device);
   /**
-   * \param index the index of the requested NetDevice
-   * \returns the requested NetDevice associated to this Node.
+   * \brief Retrieve the index-th NetDevice associated to this node.
    *
-   * The indexes used by the GetDevice method start at one and
-   * end at GetNDevices ()
+   * \param index the index of the requested NetDevice
+   * \returns the requested NetDevice.
    */
   Ptr<NetDevice> GetDevice (uint32_t index) const;
   /**
@@ -102,22 +105,23 @@ public:
   uint32_t GetNDevices (void) const;
 
   /**
+   * \brief Associate an Application to this Node.
+   *
    * \param application Application to associate to this node.
    * \returns the index of the Application within the Node's list
    *          of Application.
-   *
-   * Associated this Application to this Node. 
    */
   uint32_t AddApplication (Ptr<Application> application);
   /**
-   * \param index
-   * \returns the application associated to this requested index
-   *          within this Node.
+   * \brief Retrieve the index-th Application associated to this node.
+   *
+   * \param index the index of the requested Application
+   * \returns the requested Application.
    */
   Ptr<Application> GetApplication (uint32_t index) const;
 
   /**
-   * \returns the number of applications associated to this Node.
+   * \returns the number of Application instances associated to this Node.
    */
   uint32_t GetNApplications (void) const;
 
@@ -175,7 +179,7 @@ public:
    * \param listener the listener to add
    *
    * Add a new listener to the list of listeners for the device-added
-   * event. When a new listener is added, it is notified of the existance
+   * event. When a new listener is added, it is notified of the existence
    * of all already-added devices to make discovery of devices easier.
    */
   void RegisterDeviceAdditionListener (DeviceAdditionListener listener);
@@ -204,30 +208,75 @@ protected:
   virtual void DoDispose (void);
   virtual void DoInitialize (void);
 private:
+
+  /**
+   * \brief Notifies all the DeviceAdditionListener about the new device added.
+   * \param device the added device to notify.
+   */
   void NotifyDeviceAdded (Ptr<NetDevice> device);
-  bool NonPromiscReceiveFromDevice (Ptr<NetDevice> device, Ptr<const Packet>, uint16_t protocol, const Address &from);
-  bool PromiscReceiveFromDevice (Ptr<NetDevice> device, Ptr<const Packet>, uint16_t protocol,
+
+  /**
+   * \brief Receive a packet from a device in non-promiscuous mode.
+   * \param device the device
+   * \param packet the packet
+   * \param protocol the protocol
+   * \param from the sender
+   * \returns true if the packet has been delivered to a protocol handler.
+   */
+  bool NonPromiscReceiveFromDevice (Ptr<NetDevice> device, Ptr<const Packet> packet, uint16_t protocol, const Address &from);
+  /**
+   * \brief Receive a packet from a device in promiscuous mode.
+   * \param device the device
+   * \param packet the packet
+   * \param protocol the protocol
+   * \param from the sender
+   * \param to the destination
+   * \param packetType the packet type
+   * \returns true if the packet has been delivered to a protocol handler.
+   */
+  bool PromiscReceiveFromDevice (Ptr<NetDevice> device, Ptr<const Packet> packet, uint16_t protocol,
                                  const Address &from, const Address &to, NetDevice::PacketType packetType);
+  /**
+   * \brief Receive a packet from a device.
+   * \param device the device
+   * \param packet the packet
+   * \param protocol the protocol
+   * \param from the sender
+   * \param to the destination
+   * \param packetType the packet type
+   * \param promisc true if received in promiscuous mode
+   * \returns true if the packet has been delivered to a protocol handler.
+   */
   bool ReceiveFromDevice (Ptr<NetDevice> device, Ptr<const Packet>, uint16_t protocol,
                           const Address &from, const Address &to, NetDevice::PacketType packetType, bool promisc);
 
+  /**
+   * \brief Finish node's construction by setting the correct node ID.
+   */
   void Construct (void);
 
+  /**
+   * \brief Protocol handler entry.
+   * This structure is used to demultiplex all the protocols.
+   */
   struct ProtocolHandlerEntry {
-    ProtocolHandler handler;
-    Ptr<NetDevice> device;
-    uint16_t protocol;
-    bool promiscuous;
+    ProtocolHandler handler; //!< the protocol handler
+    Ptr<NetDevice> device;   //!< the NetDevice
+    uint16_t protocol;       //!< the protocol number
+    bool promiscuous;        //!< true if it is a promiscuous handler
   };
+
+  /// Typedef for protocol handlers container
   typedef std::vector<struct Node::ProtocolHandlerEntry> ProtocolHandlerList;
+  /// Typedef for NetDevice addition listeners container
   typedef std::vector<DeviceAdditionListener> DeviceAdditionListenerList;
 
-  uint32_t    m_id;         // Node id for this node
-  uint32_t    m_sid;        // System id for this node
-  std::vector<Ptr<NetDevice> > m_devices;
-  std::vector<Ptr<Application> > m_applications;
-  ProtocolHandlerList m_handlers;
-  DeviceAdditionListenerList m_deviceAdditionListeners;
+  uint32_t    m_id;         //!< Node id for this node
+  uint32_t    m_sid;        //!< System id for this node
+  std::vector<Ptr<NetDevice> > m_devices; //!< Devices associated to this node
+  std::vector<Ptr<Application> > m_applications; //!< Applications associated to this node
+  ProtocolHandlerList m_handlers; //!< Protocol handlers in the node
+  DeviceAdditionListenerList m_deviceAdditionListeners; //!< Device addition listeners in the node
 };
 
 } // namespace ns3

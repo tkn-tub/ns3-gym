@@ -22,9 +22,15 @@
 #include "event-impl.h"
 #include "log.h"
 
-NS_LOG_COMPONENT_DEFINE ("EventId");
+/**
+ * \file
+ * \ingroup events
+ * ns3::EventId implementation.
+ */
 
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("EventId");
 
 EventId::EventId ()
   : m_eventImpl (0),

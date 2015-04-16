@@ -33,10 +33,9 @@
 
 
 
-NS_LOG_COMPONENT_DEFINE ("WaveformGeneratorHelper");
-
 namespace ns3 {
 
+NS_LOG_COMPONENT_DEFINE ("WaveformGeneratorHelper");
 
 WaveformGeneratorHelper::WaveformGeneratorHelper ()
 {

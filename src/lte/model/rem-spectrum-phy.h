@@ -82,9 +82,9 @@ public:
    */
   double GetSinr (double noisePower);
 
-  /** 
+  /**
    * make StartRx a no-op from now on, and mark instance as inactive
-   * 
+   *
    */
   void Deactivate ();
 
@@ -100,6 +100,20 @@ public:
    */
   void Reset ();
 
+  /**
+   * set usage of DataChannel
+   *
+   * \param value if true, data channel signal will be processed, control signal otherwise
+   */
+  void SetUseDataChannel (bool value);
+
+  /**
+   * set RB Id
+   *
+   * \param rbId Resource Block Id which will be processed
+   */
+  void SetRbId (int32_t rbId);
+
 private:
   Ptr<MobilityModel> m_mobility;
   Ptr<const SpectrumModel> m_rxSpectrumModel;
@@ -108,6 +122,9 @@ private:
   double m_sumPower;
 
   bool m_active;
+
+  bool m_useDataChannel;
+  int32_t m_rbId;
 
 };
 

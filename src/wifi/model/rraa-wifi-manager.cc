@@ -28,10 +28,16 @@
 
 #define Min(a,b) ((a < b) ? a : b)
 
-NS_LOG_COMPONENT_DEFINE ("RraaWifiManager");
-
 namespace ns3 {
 
+NS_LOG_COMPONENT_DEFINE ("RraaWifiManager");
+
+/**
+ * \brief hold per-remote-station state for RRAA Wifi manager.
+ *
+ * This struct extends from WifiRemoteStation struct to hold additional
+ * information required by the RRAA Wifi manager
+ */
 struct RraaWifiRemoteStation : public WifiRemoteStation
 {
   uint32_t m_counter;
@@ -53,6 +59,7 @@ RraaWifiManager::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::RraaWifiManager")
     .SetParent<WifiRemoteStationManager> ()
+    .SetGroupName ("Wifi")
     .AddConstructor<RraaWifiManager> ()
     .AddAttribute ("Basic",
                    "If true the RRAA-BASIC algorithm will be used, otherwise the RRAA wil be used",
@@ -278,12 +285,12 @@ RraaWifiManager::DoGetDataTxVector (WifiRemoteStation *st,
     {
       ResetCountersBasic (station);
     }
-  return WifiTxVector (GetSupported (station, station->m_rate), GetDefaultTxPowerLevel (), GetLongRetryCount (station), GetShortGuardInterval (station), Min (GetNumberOfReceiveAntennas (station),GetNumberOfTransmitAntennas()), GetNumberOfTransmitAntennas (station), GetStbc (station));
+  return WifiTxVector (GetSupported (station, station->m_rate), GetDefaultTxPowerLevel (), GetLongRetryCount (station), GetShortGuardInterval (station), Min (GetNumberOfReceiveAntennas (station),GetNumberOfTransmitAntennas()), GetNess (station), GetStbc (station));
 }
 WifiTxVector
 RraaWifiManager::DoGetRtsTxVector (WifiRemoteStation *st)
 {
-  return WifiTxVector (GetSupported (st, 0), GetDefaultTxPowerLevel (), GetShortRetryCount (st), GetShortGuardInterval (st), Min (GetNumberOfReceiveAntennas (st),GetNumberOfTransmitAntennas()), GetNumberOfTransmitAntennas (st), GetStbc (st));
+  return WifiTxVector (GetSupported (st, 0), GetDefaultTxPowerLevel (), GetShortRetryCount (st), GetShortGuardInterval (st), Min (GetNumberOfReceiveAntennas (st),GetNumberOfTransmitAntennas()), GetNess (st), GetStbc (st));
 }
 
 bool

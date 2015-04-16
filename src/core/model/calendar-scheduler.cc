@@ -37,6 +37,7 @@ CalendarScheduler::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::CalendarScheduler")
     .SetParent<Scheduler> ()
+    .SetGroupName ("Core")
     .AddConstructor<CalendarScheduler> ()
   ;
   return tid;

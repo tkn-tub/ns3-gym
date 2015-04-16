@@ -36,9 +36,10 @@
 #include "ns3/socket.h"
 #include "ns3/log.h"
 
-NS_LOG_COMPONENT_DEFINE ("DsrErrorBuffer");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("DsrErrorBuffer");
+  
 namespace dsr {
 
 uint32_t
@@ -116,7 +117,7 @@ ErrorBuffer::Dequeue (Ipv4Address dst, ErrorBuffEntry & entry)
       if (i->GetDestination () == dst)
         {
           entry = *i;
-          m_errorBuffer.erase (i);
+          i = m_errorBuffer.erase (i);
           NS_LOG_DEBUG ("Packet size while dequeuing " << entry.GetPacket ()->GetSize ());
           return true;
         }

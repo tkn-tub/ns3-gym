@@ -27,10 +27,9 @@
 #include "lte-test-rlc-am-transmitter.h"
 #include "lte-test-entities.h"
 
+using namespace ns3;
+
 NS_LOG_COMPONENT_DEFINE ("LteRlcAmTransmitterTest");
-
-namespace ns3 {
-
 
 /**
  * TestSuite 4.1.1 RLC AM: Only transmitter
@@ -297,6 +296,3 @@ LteRlcAmTransmitterReportBufferStatusTestCase::DoRun (void)
   Simulator::Run ();
   Simulator::Destroy ();
 }
-
-} // namespace ns3
-

@@ -32,15 +32,74 @@
 
 namespace ns3 {
 
+// Define the doxygen subgroups all at once,
+// since the implementations are interleaved.
+
 /**
  * \ingroup core
  * \defgroup callback Callbacks
+ * \brief Wrap functions, objects, and arguments into self contained callbacks.
+ *
+ * Wrapped callbacks are at the heart of scheduling events in the
+ * simulator.
  */
 /**
  * \ingroup callback
+ * \defgroup callbackimpl Callback Implementation
+ * Callback implementation classes
  */
-/**@{*/
 /**
+ * \ingroup callback
+ * \defgroup makecallbackmemptr MakeCallback from member function pointer
+ *
+ * Build Callbacks for class method members which take varying numbers
+ * of arguments and potentially returning a value.
+ *
+ * Generally the \c MakeCallback functions are invoked with the
+ * method function address first, followed by the \c this pointer:
+ * \code
+ *   MakeCallback ( & MyClass::Handler, this);
+ * \endcode
+ *
+ * There is not a version with bound arguments.  You may be able to
+ * get the same result by using \c MakeBoundCallback with a \c static
+ * member function, as in:
+ * \code
+ *   MakeBoundCallback ( & MyClass::StaticHandler, this);
+ * \endcode
+ * This still leaves two argument slots available for binding.
+ */
+/**
+ * \ingroup callback
+ * \defgroup makecallbackfnptr MakeCallback from function pointers
+ *
+ * Build Callbacks for functions which take varying numbers of arguments
+ * and potentially returning a value.
+ */
+/**
+ * \ingroup callback
+ * \defgroup makenullcallback MakeCallback with no arguments
+ *
+ * Define empty (Null) callbacks as placeholders for unset callback variables.
+ */
+/**
+ * \ingroup callback
+ * \defgroup makeboundcallback MakeBoundCallback from functions bound with up to three arguments.
+ *
+ * Build bound Callbacks which take varying numbers of arguments,
+ * and potentially returning a value.
+ *
+ * \internal
+ *
+ * The following is experimental code. It works but we have
+ * not yet determined whether or not it is really useful and whether
+ * or not we really want to use it.
+ */
+
+  
+/**
+ * \ingroup makecallbackmemptr
+ *
  * Trait class to convert a pointer into a reference,
  * used by MemPtrCallBackImpl
  */
@@ -48,6 +107,8 @@ template <typename T>
 struct CallbackTraits;
 
 /**
+ * \ingroup makecallbackmemptr
+ *
  * Trait class to convert a pointer into a reference,
  * used by MemPtrCallBackImpl
  */
@@ -63,13 +124,7 @@ struct CallbackTraits<T *>
     return *p;
   }
 };
-/**@}*/
 
-/**
- * \ingroup callback
- * \defgroup callbackimpl CallbackImpl
- * CallbackImpl classes
- */
 /**
  * \ingroup callbackimpl
  * Abstract base class for CallbackImpl
@@ -99,8 +154,9 @@ class CallbackImpl;
 /**
  * \ingroup callbackimpl
  * CallbackImpl classes with varying numbers of argument types
+ *
+ * @{
  */
-/**@{*/
 /** CallbackImpl class with no arguments. */
 template <typename R>
 class CallbackImpl<R,empty,empty,empty,empty,empty,empty,empty,empty,empty> : public CallbackImplBase {
@@ -175,7 +231,7 @@ public:
 
 
 /**
- * \ingroup callback
+ * \ingroup callbackimpl
  * CallbackImpl with functors
  */
 template <typename T, typename R, typename T1, typename T2, typename T3, typename T4,typename T5, typename T6, typename T7, typename T8, typename T9>
@@ -321,7 +377,7 @@ private:
 };
 
 /**
- * \ingroup callback
+ * \ingroup makecallbackmemptr
  * CallbackImpl for pointer to member functions
  */
 template <typename OBJ_PTR, typename MEM_PTR, typename R, typename T1, typename T2, typename T3, typename T4, typename T5, typename T6, typename T7, typename T8, typename T9>
@@ -470,7 +526,7 @@ private:
 };
 
 /**
- * \ingroup callback
+ * \ingroup callbackimpl
  * CallbackImpl for functors with first argument bound at construction
  */
 template <typename T, typename R, typename TX, typename T1, typename T2, typename T3, typename T4,typename T5, typename T6, typename T7, typename T8>
@@ -604,7 +660,7 @@ private:
 };
 
 /**
- * \ingroup callback
+ * \ingroup callbackimpl
  * CallbackImpl for functors with first two arguments bound at construction
  */
 template <typename T, typename R, typename TX1, typename TX2, typename T1, typename T2, typename T3, typename T4,typename T5, typename T6, typename T7>
@@ -726,7 +782,7 @@ private:
 };
 
 /**
- * \ingroup callback
+ * \ingroup callbackimpl
  * CallbackImpl for functors with first three arguments bound at construction
  */
 template <typename T, typename R, typename TX1, typename TX2, typename TX3, typename T1, typename T2, typename T3, typename T4,typename T5, typename T6>
@@ -837,7 +893,7 @@ private:
 };
 
 /**
- * \ingroup callback
+ * \ingroup callbackimpl
  * Base class for Callback class.
  * Provides pimpl abstraction.
  */
@@ -910,6 +966,8 @@ protected:
  * Of course, it also does not use copy-destruction semantics
  * and relies on a reference list rather than autoPtr to hold
  * the pointer.
+ *
+ * \see attribute_Callback
  */
 template<typename R, 
          typename T1 = empty, typename T2 = empty, 
@@ -1188,9 +1246,10 @@ private:
   void DoAssign (Ptr<const CallbackImplBase> other) {
     if (!DoCheckType (other))
       {
+        Ptr<CallbackImpl<R,T1,T2,T3,T4,T5,T6,T7,T8,T9> > expected;
         NS_FATAL_ERROR ("Incompatible types. (feed to \"c++filt -t\" if needed)" << std::endl <<
                         "got=" << Demangle ( typeid (*other).name () ) << std::endl <<
-                        "expected=" << Demangle ( typeid (CallbackImpl<R,T1,T2,T3,T4,T5,T6,T7,T8,T9> *).name () ));
+                        "expected=" << Demangle ( typeid (*expected).name () ));
       }
     m_impl = const_cast<CallbackImplBase *> (PeekPointer (other));
   }
@@ -1215,13 +1274,6 @@ bool operator != (Callback<R,T1,T2,T3,T4,T5,T6,T7,T8,T9> a, Callback<R,T1,T2,T3,
   return !a.IsEqual (b);
 }
 
-/**
- * \ingroup callback
- * \defgroup makecallbackmemptr MakeCallback from member function pointer
- *
- * Build Callbacks for class method members which take varying numbers of arguments
- * and potentially returning a value.
- */
 /**
  * \ingroup makecallbackmemptr
  * @{
@@ -1317,13 +1369,6 @@ Callback<R,T1,T2,T3,T4,T5,T6,T7,T8,T9> MakeCallback (R (T::*memPtr)(T1,T2,T3,T4,
 /**@}*/
 
 /**
- * \ingroup callback
- * \defgroup makecallbackfnptr MakeCallback from function pointers
- *
- * Build Callbacks for functions which take varying numbers of arguments
- * and potentially returning a value.
- */
-/**
  * \ingroup makecallbackfnptr
  * @{
  */
@@ -1376,10 +1421,6 @@ Callback<R,T1,T2,T3,T4,T5,T6,T7,T8,T9> MakeCallback (R (*fnPtr)(T1,T2,T3,T4,T5,T
 }
 /**@}*/
 
-/**
- * \ingroup callback
- * \defgroup makenullcallback MakeCallbacks with no arguments
- */
 /**
  * \ingroup makenullcallback
  * @{
@@ -1435,26 +1476,9 @@ Callback<R,T1,T2,T3,T4,T5,T6,T7,T8,T9> MakeNullCallback (void) {
 
 
 /**
- * \ingroup callback
- * \defgroup makeboundcallback MakeBoundCallback from functions bound with up to three arguments.
- */
-  
-/**
  * \ingroup makeboundcallback
- *
- * Build bound Callbacks which take varying numbers of arguments,
- * and potentially returning a value.
- *
- * \internal
- *
- * The following is experimental code. It works but we have
- * not yet determined whether or not it is really useful and whether
- * or not we really want to use it.
- *
  * @{
- */
-/**
- * @{
+ * Make Callbacks with one bound argument.
  * \param fnPtr function pointer
  * \param a1 first bound argument
  * \return a bound Callback
@@ -1524,11 +1548,13 @@ Callback<R,T1,T2,T3,T4,T5,T6,T7,T8> MakeBoundCallback (R (*fnPtr)(TX,T1,T2,T3,T4
 /**@}*/
 
 /**
+ * \ingroup makeboundcallback
+ * @{
+ * Make Callbacks with two bound arguments.
  * \param fnPtr function pointer
  * \param a1 first bound argument
  * \param a2 second bound argument 
  * \return a bound Callback
- * @{
  */
 template <typename R, typename TX1, typename TX2, typename ARG1, typename ARG2>
 Callback<R> MakeBoundCallback (R (*fnPtr)(TX1,TX2), ARG1 a1, ARG2 a2) {
@@ -1588,12 +1614,14 @@ Callback<R,T1,T2,T3,T4,T5,T6,T7> MakeBoundCallback (R (*fnPtr)(TX1,TX2,T1,T2,T3,
 /**@}*/
 
 /**
+ * \ingroup makeboundcallback
+ * @{
+ * Make Callbacks with three bound arguments.
  * \param a1 first bound argument
  * \param a2 second bound argument 
  * \param a3 third bound argument 
  * \param fnPtr function pointer
  * \return a bound Callback
- * @{
  */
 template <typename R, typename TX1, typename TX2, typename TX3, typename ARG1, typename ARG2, typename ARG3>
 Callback<R> MakeBoundCallback (R (*fnPtr)(TX1,TX2,TX3), ARG1 a1, ARG2 a2, ARG3 a3) {
@@ -1645,27 +1673,24 @@ Callback<R,T1,T2,T3,T4,T5,T6> MakeBoundCallback (R (*fnPtr)(TX1,TX2,TX3,T1,T2,T3
 }
 /**@}*/
 
-/**@}*/
 
 } // namespace ns3
 
 namespace ns3 {
 
-/**
- * \ingroup callback
- * AttributeValue form of a Callback
- */
 class CallbackValue : public AttributeValue
 {
 public:
+  /** Constructor */
   CallbackValue ();
   /**
    * Copy constructor
    * \param base Callback to copy
    */
-  CallbackValue (const CallbackBase &base);  
+  CallbackValue (const CallbackBase &base);
+  /** Destructor */
   virtual ~CallbackValue ();
-  /** \param base the Callbackbase to use */
+  /** \param base The CallbackBase to use */
   void Set (CallbackBase base);
   /**
    * Give value my callback, if type compatible
@@ -1695,10 +1720,8 @@ private:
   CallbackBase m_value;                 //!< the CallbackBase
 };
 
-/** Attribute helpers @{ */
 ATTRIBUTE_ACCESSOR_DEFINE (Callback);
 ATTRIBUTE_CHECKER_DEFINE (Callback);
-/**@}*/
 
 } // namespace ns3
 

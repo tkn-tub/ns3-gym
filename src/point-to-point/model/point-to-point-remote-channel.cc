@@ -27,9 +27,9 @@
 #include "ns3/log.h"
 #include "ns3/mpi-interface.h"
 
-NS_LOG_COMPONENT_DEFINE ("PointToPointRemoteChannel");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("PointToPointRemoteChannel");
 
 NS_OBJECT_ENSURE_REGISTERED (PointToPointRemoteChannel);
 
@@ -38,6 +38,7 @@ PointToPointRemoteChannel::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::PointToPointRemoteChannel")
     .SetParent<PointToPointChannel> ()
+    .SetGroupName ("PointToPoint")
     .AddConstructor<PointToPointRemoteChannel> ()
   ;
   return tid;

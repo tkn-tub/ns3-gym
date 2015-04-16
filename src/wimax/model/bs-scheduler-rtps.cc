@@ -37,16 +37,16 @@
 #include "service-flow-manager.h"
 #include "wimax-mac-queue.h"
 
-NS_LOG_COMPONENT_DEFINE ("BSSchedulerRtps");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("BSSchedulerRtps");
 
 NS_OBJECT_ENSURE_REGISTERED (BSSchedulerRtps);
 
 TypeId
 BSSchedulerRtps::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::BSSchedulerRtps").SetParent<Object> ().AddConstructor<BSSchedulerRtps> ();
+  static TypeId tid = TypeId ("ns3::BSSchedulerRtps").SetParent<Object> ().SetGroupName("Wimax").AddConstructor<BSSchedulerRtps> ();
   return tid;
 }
 

@@ -25,6 +25,12 @@
 #include "ns3/double.h"
 #include "ns3/random-variable-stream.h"
 
+/**
+ * \file
+ * \ingroup simulator
+ * Example program demonstrating use of various Schedule functions.
+ */
+
 using namespace ns3;
 
 class MyModel

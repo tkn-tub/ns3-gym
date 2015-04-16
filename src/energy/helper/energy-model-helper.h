@@ -38,8 +38,8 @@ namespace ns3 {
  * \ingroup energy
  * \brief Creates EnergySource objects.
  *
- * This class creates and installs an energy source onto network nodes. Only a
- * single source can exist on a network node.
+ * This class creates and installs an energy source onto network nodes.
+ * Multiple sources can exist on a network node.
  *
  */
 class EnergySourceHelper

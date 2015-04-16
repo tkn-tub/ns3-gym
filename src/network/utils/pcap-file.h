@@ -31,12 +31,14 @@ namespace ns3 {
 class Packet;
 class Header;
 
-/*
+
+/**
+ * \brief A class representing a pcap file
+ * 
  * A class representing a pcap file.  This allows easy creation, writing and 
  * reading of files composed of stored packets; which may be viewed using
  * standard tools.
  */
-
 class PcapFile
 {
 public:
@@ -184,62 +186,78 @@ public:
    * byteswapped.  Used primarily for testing the class itself, but may be 
    * useful as a flag indicating a difference in endianness of the writing 
    * system.
+   *
+   * \returns swap mode of the file
    */
   bool GetSwapMode (void);
 
-  /*
+  /**
    * \brief Returns the magic number of the pcap file as defined by the magic_number
    * field in the pcap global header.
    *
    * See http://wiki.wireshark.org/Development/LibpcapFileFormat
+   *
+   * \returns magic number
    */ 
   uint32_t GetMagic (void);
 
-  /*
+  /**
    * \brief Returns the major version of the pcap file as defined by the version_major
    * field in the pcap global header.
    *
    * See http://wiki.wireshark.org/Development/LibpcapFileFormat
+   *
+   * \returns major version
    */ 
   uint16_t GetVersionMajor (void);
 
-  /*
+  /**
    * \brief Returns the minor version of the pcap file as defined by the version_minor
    * field in the pcap global header.
    *
    * See http://wiki.wireshark.org/Development/LibpcapFileFormat
+   *
+   * \returns minor version
    */ 
   uint16_t GetVersionMinor (void);
 
-  /*
+  /**
    * \brief Returns the time zone offset of the pcap file as defined by the thiszone
    * field in the pcap global header.
    *
    * See http://wiki.wireshark.org/Development/LibpcapFileFormat
+   *
+   * \returns time zone offset
    */ 
   int32_t GetTimeZoneOffset (void);
 
-  /*
+  /**
    * \brief Returns the accuracy of timestamps field of the pcap file as defined
    * by the sigfigs field in the pcap global header.
    *
    * See http://wiki.wireshark.org/Development/LibpcapFileFormat
+   *
+   * \returns accuracy of timestamps
    */ 
   uint32_t GetSigFigs (void);
 
-  /*
+  /**
    * \brief Returns the max length of saved packets field of the pcap file as 
    * defined by the snaplen field in the pcap global header.
    *
    * See http://wiki.wireshark.org/Development/LibpcapFileFormat
+   *
+   * \returns max length of saved packets field
    */ 
   uint32_t GetSnapLen (void);
 
-  /*
+  /**
    * \brief Returns the data link type field of the pcap file as defined by the 
    * network field in the pcap global header.
    *
    * See http://wiki.wireshark.org/Development/LibpcapFileFormat
+   *
+   * \returns data link type field
    */ 
   uint32_t GetDataLinkType (void);
 
@@ -259,6 +277,9 @@ public:
                     uint32_t snapLen = SNAPLEN_DEFAULT);
 
 private:
+  /**
+   * \brief Pcap file header
+   */
   typedef struct {
     uint32_t m_magicNumber;   /**< Magic number identifying this as a pcap file */
     uint16_t m_versionMajor;  /**< Major version identifying the version of pcap used in this file */
@@ -269,6 +290,9 @@ private:
     uint32_t m_type;          /**< Data link type of packet data */
   } PcapFileHeader;
 
+  /**
+   * \brief Pcap record header
+   */
   typedef struct {
     uint32_t m_tsSec;         /**< seconds part of timestamp */
     uint32_t m_tsUsec;        /**< microseconds part of timestamp (nsecs for PCAP_NSEC_MAGIC) */
@@ -276,20 +300,59 @@ private:
     uint32_t m_origLen;       /**< actual length of original packet */
   } PcapRecordHeader;
 
+  /**
+   * \brief Swap a value byte order
+   * \param val the value
+   * \returns the value with byte order swapped
+   */
   uint8_t Swap (uint8_t val);
+  /**
+   * \brief Swap a value byte order
+   * \param val the value
+   * \returns the value with byte order swapped
+   */
   uint16_t Swap (uint16_t val);
+  /**
+   * \brief Swap a value byte order
+   * \param val the value
+   * \returns the value with byte order swapped
+   */
   uint32_t Swap (uint32_t val);
+  /**
+   * \brief Swap the byte order of a Pcap file header
+   * \param from original file header
+   * \param to swapped file header
+   */
   void Swap (PcapFileHeader *from, PcapFileHeader *to);
+  /**
+   * \brief Swap the byte order of a Pcap record header
+   * \param from original record header
+   * \param to swapped record header
+   */
   void Swap (PcapRecordHeader *from, PcapRecordHeader *to);
 
+  /**
+   * \brief Write a Pcap file header
+   */
   void WriteFileHeader (void);
+  /**
+   * \brief Write a Pcap packet header
+   * \param tsSec Time stamp (seconds part)
+   * \param tsUsec Time stamp (microseconds part)
+   * \param totalLen total packet length
+   * \returns the length of the packet to write in the Pcap file
+   */
   uint32_t WritePacketHeader (uint32_t tsSec, uint32_t tsUsec, uint32_t totalLen);
+
+  /**
+   * \brief Read and verify a Pcap file header
+   */
   void ReadAndVerifyFileHeader (void);
 
-  std::string    m_filename;
-  std::fstream   m_file;
-  PcapFileHeader m_fileHeader;
-  bool m_swapMode;
+  std::string    m_filename;    //!< file name
+  std::fstream   m_file;        //!< file stream
+  PcapFileHeader m_fileHeader;  //!< file header
+  bool m_swapMode;              //!< swap mode
 };
 
 } // namespace ns3

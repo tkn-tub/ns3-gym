@@ -92,9 +92,7 @@ public:
   void SetTapMacAddress (Mac48Address mac);
 
 protected:
-  /*
-   * \internal
-   */
+
   Ptr<NetDevice> InstallPriv (Ptr<Node> node) const;
 
   /**
@@ -109,47 +107,33 @@ protected:
   virtual int CreateFileDescriptor (void) const;
 
   /**
-  * \internal
-  *
-  * The TAP device flag IFF_NO_PI.
-  */
+   * The TAP device flag IFF_NO_PI.
+   */
   bool m_modePi;
 
   /**
-  * \internal
-  *
-  * The IPv4 address for the TAP device.
-  */
+   * The IPv4 address for the TAP device.
+   */
   Ipv4Address m_tapIp4;
 
   /**
-  * \internal
-  *
-  * The IPv6 address for the TAP device.
-  */
+   * The IPv6 address for the TAP device.
+   */
   Ipv6Address m_tapIp6;
 
-
   /**
-  * \internal
-  *
-  * The network mask IPv4 for the TAP device.
-  */
+   * The network mask IPv4 for the TAP device.
+   */
   Ipv4Mask m_tapMask4;
 
   /**
-  * \internal
-  *
-  * The network prefix IPv6 for the TAP device.
-  */
+   * The network prefix IPv6 for the TAP device.
+   */
   int m_tapPrefix6;
 
-
   /**
-  * \internal
-  *
-  * The TAP device MAC address.
-  */
+   * The TAP device MAC address.
+   */
   Mac48Address m_tapMac;
 
 };

@@ -26,10 +26,9 @@
 #include "lte-net-device.h"
 #include "lte-ue-net-device.h"
 
-NS_LOG_COMPONENT_DEFINE ("LteControlMessage");
-
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("LteControlMessage");
 
 LteControlMessage::LteControlMessage (void)
 {
@@ -258,9 +257,31 @@ MibLteControlMessage::GetMib () const
 }
 
 
+// ----------------------------------------------------------------------------------------------------------
+
+
+
+Sib1LteControlMessage::Sib1LteControlMessage (void)
+{
+  SetMessageType (LteControlMessage::SIB1);
+}
+
+
+void
+Sib1LteControlMessage::SetSib1 (LteRrcSap::SystemInformationBlockType1 sib1)
+{
+  m_sib1 = sib1;
+}
+
+LteRrcSap::SystemInformationBlockType1
+Sib1LteControlMessage::GetSib1 () const
+{
+  return m_sib1;
+}
 
 
 // ---------------------------------------------------------------------------
+
 
 
 DlHarqFeedbackLteControlMessage::DlHarqFeedbackLteControlMessage (void)

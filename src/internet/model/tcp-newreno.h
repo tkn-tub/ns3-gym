@@ -36,11 +36,19 @@ namespace ns3 {
 class TcpNewReno : public TcpSocketBase
 {
 public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
   /**
    * Create an unbound tcp socket.
    */
   TcpNewReno (void);
+  /**
+   * \brief Copy constructor
+   * \param sock the object to copy
+   */
   TcpNewReno (const TcpNewReno& sock);
   virtual ~TcpNewReno (void);
 
@@ -57,21 +65,25 @@ protected:
 
   // Implementing ns3::TcpSocket -- Attribute get/set
   virtual void     SetSegSize (uint32_t size);
-  virtual void     SetSSThresh (uint32_t threshold);
-  virtual uint32_t GetSSThresh (void) const;
+  virtual void     SetInitialSSThresh (uint32_t threshold);
+  virtual uint32_t GetInitialSSThresh (void) const;
   virtual void     SetInitialCwnd (uint32_t cwnd);
   virtual uint32_t GetInitialCwnd (void) const;
 private:
-  void InitializeCwnd (void);            // set m_cWnd when connection starts
+  /**
+   * \brief Set the congestion window when connection starts
+   */
+  void InitializeCwnd (void);
 
 protected:
-  TracedValue<uint32_t>  m_cWnd;         //< Congestion window
-  uint32_t               m_ssThresh;     //< Slow Start Threshold
-  uint32_t               m_initialCWnd;  //< Initial cWnd value
-  SequenceNumber32       m_recover;      //< Previous highest Tx seqnum for fast recovery
-  uint32_t               m_retxThresh;   //< Fast Retransmit threshold
-  bool                   m_inFastRec;    //< currently in fast recovery
-  bool                   m_limitedTx;    //< perform limited transmit
+  TracedValue<uint32_t>  m_cWnd;         //!< Congestion window
+  TracedValue<uint32_t>  m_ssThresh;     //!< Slow Start Threshold
+  uint32_t               m_initialCWnd;  //!< Initial cWnd value
+  uint32_t               m_initialSsThresh;  //!< Initial Slow Start Threshold value
+  SequenceNumber32       m_recover;      //!< Previous highest Tx seqnum for fast recovery
+  uint32_t               m_retxThresh;   //!< Fast Retransmit threshold
+  bool                   m_inFastRec;    //!< currently in fast recovery
+  bool                   m_limitedTx;    //!< perform limited transmit
 };
 
 } // namespace ns3

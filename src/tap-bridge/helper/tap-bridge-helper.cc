@@ -23,9 +23,9 @@
 #include "ns3/names.h"
 #include "tap-bridge-helper.h"
 
-NS_LOG_COMPONENT_DEFINE ("TapBridgeHelper");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("TapBridgeHelper");
 
 TapBridgeHelper::TapBridgeHelper ()
 {

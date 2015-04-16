@@ -28,9 +28,9 @@
 #include "ns3/config.h"
 #include "ns3/trace-source-accessor.h"
 
-NS_LOG_COMPONENT_DEFINE ("PacketProbe");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("PacketProbe");
 
 NS_OBJECT_ENSURE_REGISTERED (PacketProbe);
 
@@ -39,13 +39,16 @@ PacketProbe::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::PacketProbe")
     .SetParent<Probe> ()
+    .SetGroupName("Network")
     .AddConstructor<PacketProbe> ()
     .AddTraceSource ( "Output",
                       "The packet that serve as the output for this probe",
-                      MakeTraceSourceAccessor (&PacketProbe::m_output))
+                      MakeTraceSourceAccessor (&PacketProbe::m_output),
+                      "ns3::Packet::TracedCallback")
     .AddTraceSource ( "OutputBytes",
                       "The number of bytes in the packet",
-                      MakeTraceSourceAccessor (&PacketProbe::m_outputBytes))
+                      MakeTraceSourceAccessor (&PacketProbe::m_outputBytes),
+                      "ns3::Packet::PacketSizeTracedCallback")
   ;
   return tid;
 }

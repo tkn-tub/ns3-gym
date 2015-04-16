@@ -66,9 +66,7 @@ public:
   void SetTapMask (Ipv4Mask mask);
 
 protected:
-  /*
-   * \internal
-   */
+
   Ptr<NetDevice> InstallPriv (Ptr<Node> node) const;
 
   /**
@@ -83,17 +81,13 @@ protected:
   virtual int CreateFileDescriptor (void) const;
 
   /**
-  * \internal
-  *
-  * The IP address for the TAP device.
-  */
+   * The IP address for the TAP device.
+   */
   Ipv4Address m_tapIp;
 
   /**
-  * \internal
-  *
-  * The network mask for the TAP device.
-  */
+   * The network mask for the TAP device.
+   */
   Ipv4Mask m_tapMask;
 
 };

@@ -81,6 +81,7 @@ MgtProbeRequestHeader::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::MgtProbeRequestHeader")
     .SetParent<Header> ()
+    .SetGroupName ("Wifi")
     .AddConstructor<MgtProbeRequestHeader> ()
   ;
   return tid;
@@ -181,6 +182,7 @@ MgtProbeResponseHeader::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::MgtProbeResponseHeader")
     .SetParent<Header> ()
+    .SetGroupName ("Wifi")
     .AddConstructor<MgtProbeResponseHeader> ()
   ;
   return tid;
@@ -311,6 +313,7 @@ MgtAssocRequestHeader::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::MgtAssocRequestHeader")
     .SetParent<Header> ()
+    .SetGroupName ("Wifi")
     .AddConstructor<MgtAssocRequestHeader> ()
   ;
   return tid;
@@ -413,6 +416,7 @@ MgtAssocResponseHeader::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::MgtAssocResponseHeader")
     .SetParent<Header> ()
+    .SetGroupName ("Wifi")
     .AddConstructor<MgtAssocResponseHeader> ()
   ;
   return tid;
@@ -501,6 +505,7 @@ WifiActionHeader::SetAction (WifiActionHeader::CategoryValue type,
     case MESH_INTERWORKING:
     case MESH_RESOURCE_COORDINATION:
     case MESH_PROXY_FORWARDING:
+    case VENDOR_SPECIFIC_ACTION:
       break;
     }
 }
@@ -523,6 +528,8 @@ WifiActionHeader::GetCategory ()
       return MESH_RESOURCE_COORDINATION;
     case MESH_PROXY_FORWARDING:
       return MESH_PROXY_FORWARDING;
+    case VENDOR_SPECIFIC_ACTION:
+      return VENDOR_SPECIFIC_ACTION;
     default:
       NS_FATAL_ERROR ("Unknown action value");
       return MESH_PEERING_MGT;
@@ -579,7 +586,8 @@ WifiActionHeader::GetAction ()
           retval.peerLink = PEER_LINK_OPEN; /* quiet compiler */
         }
       break ;
-      
+    case VENDOR_SPECIFIC_ACTION:
+      break ;
     case MESH_LINK_METRIC:
     // not yet supported
     case MESH_INTERWORKING:
@@ -597,6 +605,7 @@ WifiActionHeader::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::WifiActionHeader")
     .SetParent<Header> ()
+    .SetGroupName ("Wifi")
     .AddConstructor<WifiActionHeader> ();
   return tid;
 }
@@ -647,6 +656,7 @@ MgtAddBaRequestHeader::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::MgtAddBaRequestHeader")
     .SetParent<Header> ()
+    .SetGroupName ("Wifi")
     .AddConstructor<MgtAddBaRequestHeader> ();
   return tid;
 }
@@ -823,6 +833,7 @@ MgtAddBaResponseHeader::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::MgtAddBaResponseHeader")
     .SetParent<Header> ()
+    .SetGroupName ("Wifi")
     .AddConstructor<MgtAddBaResponseHeader> ()
   ;
   return tid;
@@ -987,6 +998,7 @@ MgtDelBaHeader::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::MgtDelBaHeader")
     .SetParent<Header> ()
+    .SetGroupName ("Wifi")
     .AddConstructor<MgtDelBaHeader> ()
   ;
   return tid;

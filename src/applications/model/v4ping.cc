@@ -13,6 +13,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+
 #include "v4ping.h"
 #include "ns3/icmpv4.h"
 #include "ns3/assert.h"
@@ -28,6 +29,7 @@
 namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("V4Ping");
+
 NS_OBJECT_ENSURE_REGISTERED (V4Ping);
 
 TypeId 
@@ -35,6 +37,7 @@ V4Ping::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::V4Ping")
     .SetParent<Application> ()
+    .SetGroupName("Applications")
     .AddConstructor<V4Ping> ()
     .AddAttribute ("Remote", 
                    "The address of the machine we want to ping.",
@@ -56,7 +59,8 @@ V4Ping::GetTypeId (void)
                    MakeUintegerChecker<uint32_t> (16))
     .AddTraceSource ("Rtt",
                      "The rtt calculated by the ping.",
-                     MakeTraceSourceAccessor (&V4Ping::m_traceRtt));
+                     MakeTraceSourceAccessor (&V4Ping::m_traceRtt),
+                     "ns3::Time::TracedCallback");
   ;
   return tid;
 }

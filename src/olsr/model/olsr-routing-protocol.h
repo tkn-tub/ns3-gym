@@ -43,6 +43,8 @@
 #include <vector>
 #include <map>
 
+/// Testcase for MPR computation mechanism
+class OlsrMprTestCase;
 
 namespace ns3 {
 namespace olsr {
@@ -67,9 +69,6 @@ struct RoutingTableEntry
 
 class RoutingProtocol;
 
-/// Testcase for MPR computation mechanism
-class OlsrMprTestCase;
-
 ///
 /// \ingroup olsr
 ///
@@ -78,7 +77,7 @@ class OlsrMprTestCase;
 class RoutingProtocol : public Ipv4RoutingProtocol
 {
 public:
-  friend class OlsrMprTestCase;
+  friend class ::OlsrMprTestCase;
   static TypeId GetTypeId (void);
 
   RoutingProtocol ();
@@ -113,6 +112,22 @@ public:
   */
   int64_t AssignStreams (int64_t stream);
 
+  /**
+   * TracedCallback signature for Packet transmit and receive events.
+   *
+   * \param [in] header
+   * \param [in] messages
+   */
+  typedef void (* PacketTxRxTracedCallback)
+    (const PacketHeader & header, const MessageList & messages);
+
+  /**
+   * TracedCallback signature for routing table computation.
+   *
+   * \param [in] size Final routing table size.
+   */
+  typedef void (* TableChangeTracedCallback) (const uint32_t size);
+
 private:
   std::set<uint32_t> m_interfaceExclusions;
   Ptr<Ipv4StaticRouting> m_routingTableAssociation;
@@ -131,6 +146,12 @@ public:
 
   /// Inject Associations from an Ipv4StaticRouting instance
   void SetRoutingTableAssociation (Ptr<Ipv4StaticRouting> routingTable);
+
+  /**
+   * \brief Returns the internal HNA table
+   * \returns the internal HNA table
+   */
+  Ptr<const Ipv4StaticRouting> GetRoutingTableAssociation () const;
 
 protected:
   virtual void DoInitialize (void);

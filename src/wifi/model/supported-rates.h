@@ -27,14 +27,6 @@
 
 namespace ns3 {
 
-/**
- * This defines the maximum number of supported rates that a STA is
- * allowed to have. Currently this number is set for IEEE 802.11b/g and SISO IEE 802.11n
- * stations which need 2 rates each from Clauses 15 and 18, and then 8
- * from Clause 19.
- */
-#define MAX_SUPPORTED_RATES (32)
-
 class SupportedRates;
 
 /**
@@ -53,7 +45,15 @@ class ExtendedSupportedRatesIE : public WifiInformationElement
 {
 public:
   ExtendedSupportedRatesIE ();
+  /**
+   * Create an extended supported rates information element
+   * from the given rates.
+   *
+   * \param rates
+   */
   ExtendedSupportedRatesIE (SupportedRates *rates);
+
+  void SetSupportedRates (SupportedRates *rates);
 
   WifiInformationElementId ElementId () const;
   uint8_t GetInformationFieldSize () const;
@@ -61,13 +61,23 @@ public:
   uint8_t DeserializeInformationField (Buffer::Iterator start,
                                        uint8_t length);
 
-  /*
+  /**
    * This information element is a bit special in that it is only
    * included if there are more than 8 rates. To support this we
    * override the Serialize and GetSerializedSize methods of
    * WifiInformationElement.
+   *
+   * \param start
+   * \return an iterator
    */
   Buffer::Iterator Serialize (Buffer::Iterator start) const;
+  /**
+   * Return the serialized size of this supported rates 
+   * information element.
+   * 
+   * \return the serialized size of this supported rates 
+   * information element
+   */
   uint16_t GetSerializedSize () const;
 private:
   /**
@@ -94,13 +104,57 @@ class SupportedRates : public WifiInformationElement
 public:
   SupportedRates ();
 
+  SupportedRates (const SupportedRates &);
+  SupportedRates& operator= (const SupportedRates&);
+
+/**
+ * This defines the maximum number of supported rates that a STA is
+ * allowed to have. Currently this number is set for IEEE 802.11b/g and SISO IEE 802.11n
+ * stations which need 2 rates each from Clauses 15 and 18, and then 8
+ * from Clause 19.
+ */
+  static const uint8_t MAX_SUPPORTED_RATES = 32;
+
+  /**
+   * Add the given rate to the supported rates.
+   *
+   * \param bs the rate to be added
+   */
   void AddSupportedRate (uint32_t bs);
+  /**
+   * Set the given rate to basic rates.
+   *
+   * \param bs the rate to be set
+   */
   void SetBasicRate (uint32_t bs);
 
+  /**
+   * Check if the given rate is supported.
+   *
+   * \param bs the rate to be checked
+   * \return true if the rate is supported, false otherwise
+   */
   bool IsSupportedRate (uint32_t bs) const;
+  /**
+   * Check if the given rate is a basic rate.
+   *
+   * \param bs the rate to be checked
+   * \return true if the rate is a basic rate, false otherwise
+   */
   bool IsBasicRate (uint32_t bs) const;
 
+  /**
+   * Return the number of supported rates.
+   *
+   * \return the number of supported rates
+   */
   uint8_t GetNRates (void) const;
+  /**
+   * Return the rate at the given index.
+   *
+   * \param i the given index
+   * \return the rate
+   */
   uint32_t GetRate (uint8_t i) const;
 
   WifiInformationElementId ElementId () const;
@@ -119,8 +173,8 @@ public:
   friend class ExtendedSupportedRatesIE;
   ExtendedSupportedRatesIE extended;
 private:
-  uint8_t m_nRates;
-  uint8_t m_rates[MAX_SUPPORTED_RATES];
+  uint8_t m_nRates;  //!< Number of supported rates
+  uint8_t m_rates[MAX_SUPPORTED_RATES];  //!< List of supported bitrate (divided by 500000)
 };
 
 std::ostream &operator << (std::ostream &os, const SupportedRates &rates);

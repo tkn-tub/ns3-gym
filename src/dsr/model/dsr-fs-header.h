@@ -99,7 +99,7 @@ public:
   virtual ~DsrFsHeader ();
   /**
    * \brief Set the "Next header" field.
-   * \param nextHeader the next header number
+   * \param protocol the next header number
    */
   void SetNextHeader (uint8_t protocol);
   /**
@@ -109,7 +109,7 @@ public:
   uint8_t GetNextHeader () const;
   /**
    * brief Set the message type of the header.
-   * \param message type the message type of the header
+   * \param messageType the message type of the header
    */
   void SetMessageType (uint8_t messageType);
   /**
@@ -118,23 +118,23 @@ public:
    */
   uint8_t GetMessageType () const;
   /**
-   * brief Set the source id of the header.
-   * \param source id the source id of the header
+   * brief Set the source ID of the header.
+   * \param sourceId the source ID of the header
    */
   void SetSourceId (uint16_t sourceId);
   /**
-   * brief Get the source id of the header.
-   * \return source id the source id of the header
+   * brief Get the source ID of the header.
+   * \return source ID the source ID of the header
    */
   uint16_t GetSourceId () const;
   /**
-   * brief Set the dest id of the header.
-   * \param dest id the dest id of the header
+   * brief Set the dest ID of the header.
+   * \param destId the destination ID of the header
    */
   void SetDestId (uint16_t destId);
   /**
-   * brief Get the dest id of the header.
-   * \return dest id the dest id of the header
+   * brief Get the dest ID of the header.
+   * \return dest ID the dest ID of the header
    */
   uint16_t GetDestId () const;
   /**
@@ -257,6 +257,7 @@ private:
   /**
    * \brief Calculate padding.
    * \param alignment alignment
+   * \return the number of bytes required to pad
    */
   uint32_t CalculatePad (DsrOptionHeader::Alignment alignment) const;
   /**

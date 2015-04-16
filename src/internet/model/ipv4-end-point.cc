@@ -23,9 +23,9 @@
 #include "ns3/log.h"
 #include "ns3/simulator.h"
 
-NS_LOG_COMPONENT_DEFINE ("Ipv4EndPoint");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("Ipv4EndPoint");
 
 Ipv4EndPoint::Ipv4EndPoint (Ipv4Address address, uint16_t port)
   : m_localAddr (address), 

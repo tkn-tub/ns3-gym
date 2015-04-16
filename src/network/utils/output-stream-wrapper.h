@@ -26,8 +26,8 @@
 
 namespace ns3 {
 
-/*
- * @brief A class encapsulating an STL output stream.
+/**
+ * @brief A class encapsulating an output stream.
  *
  * This class wraps a pointer to a C++ std::ostream and provides 
  * reference counting of the object.  This class is recommended for users 
@@ -70,7 +70,16 @@ namespace ns3 {
 class OutputStreamWrapper : public SimpleRefCount<OutputStreamWrapper>
 {
 public:
+  /**
+   * Constructor
+   * \param filename file name
+   * \param filemode std::ios::openmode flags
+   */
   OutputStreamWrapper (std::string filename, std::ios::openmode filemode);
+  /**
+   * Constructor
+   * \param os output stream
+   */
   OutputStreamWrapper (std::ostream* os);
   ~OutputStreamWrapper ();
 
@@ -84,8 +93,8 @@ public:
   std::ostream *GetStream (void);
 
 private:
-  std::ostream *m_ostream;
-  bool m_destroyable;
+  std::ostream *m_ostream; //!< The output stream
+  bool m_destroyable; //!< Can be destroyed
 };
 
 } // namespace ns3

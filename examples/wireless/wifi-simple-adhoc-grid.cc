@@ -84,13 +84,16 @@
 #include <vector>
 #include <string>
 
-NS_LOG_COMPONENT_DEFINE ("WifiSimpleAdhocGrid");
-
 using namespace ns3;
+
+NS_LOG_COMPONENT_DEFINE ("WifiSimpleAdhocGrid");
 
 void ReceivePacket (Ptr<Socket> socket)
 {
-  NS_LOG_UNCOND ("Received one packet!");
+  while (socket->Recv ())
+    {
+      NS_LOG_UNCOND ("Received one packet!");
+    }
 }
 
 static void GenerateTraffic (Ptr<Socket> socket, uint32_t pktSize, 
@@ -224,6 +227,8 @@ int main (int argc, char *argv[])
       // Trace routing tables
       Ptr<OutputStreamWrapper> routingStream = Create<OutputStreamWrapper> ("wifi-simple-adhoc-grid.routes", std::ios::out);
       olsr.PrintRoutingTableAllEvery (Seconds (2), routingStream);
+      Ptr<OutputStreamWrapper> neighborStream = Create<OutputStreamWrapper> ("wifi-simple-adhoc-grid.neighbors", std::ios::out);
+      olsr.PrintNeighborCacheAllEvery (Seconds (2), neighborStream);
 
       // To do-- enable an IP-level trace that shows forwarding events only
     }
@@ -235,7 +240,7 @@ int main (int argc, char *argv[])
   // Output what we are doing
   NS_LOG_UNCOND ("Testing from node " << sourceNode << " to " << sinkNode << " with grid distance " << distance);
 
-  Simulator::Stop (Seconds (32.0));
+  Simulator::Stop (Seconds (33.0));
   Simulator::Run ();
   Simulator::Destroy ();
 

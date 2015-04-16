@@ -32,6 +32,7 @@
 namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("UdpEchoClientApplication");
+
 NS_OBJECT_ENSURE_REGISTERED (UdpEchoClient);
 
 TypeId
@@ -39,6 +40,7 @@ UdpEchoClient::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::UdpEchoClient")
     .SetParent<Application> ()
+    .SetGroupName("Applications")
     .AddConstructor<UdpEchoClient> ()
     .AddAttribute ("MaxPackets", 
                    "The maximum number of packets the application will send",
@@ -66,7 +68,8 @@ UdpEchoClient::GetTypeId (void)
                                          &UdpEchoClient::GetDataSize),
                    MakeUintegerChecker<uint32_t> ())
     .AddTraceSource ("Tx", "A new packet is created and is sent",
-                     MakeTraceSourceAccessor (&UdpEchoClient::m_txTrace))
+                     MakeTraceSourceAccessor (&UdpEchoClient::m_txTrace),
+                     "ns3::Packet::TracedCallback")
   ;
   return tid;
 }
@@ -296,9 +299,9 @@ UdpEchoClient::Send (void)
   else
     {
       //
-      // If m_dataSize is zero, the client has indicated that she doesn't care 
+      // If m_dataSize is zero, the client has indicated that it doesn't care
       // about the data itself either by specifying the data size by setting
-      // the corresponding atribute or by not calling a SetFill function.  In 
+      // the corresponding attribute or by not calling a SetFill function.  In
       // this case, we don't worry about it either.  But we do allow m_size
       // to have a value different from the (zero) m_dataSize.
       //

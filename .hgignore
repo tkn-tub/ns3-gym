@@ -38,11 +38,11 @@ massif.*
 \.patch$
 \.diff$
 \.tr$
-\.txt$
-\.sh$
 \.dat$
 \.plt$
 \#[^\#/]+\#$
 ^coverity
+^(D|U)l[A-Z][a-z]*Stats.txt$
 syntax: glob
 TAGS
+waf

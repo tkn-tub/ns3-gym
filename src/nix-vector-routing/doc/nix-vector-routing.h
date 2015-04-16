@@ -19,7 +19,7 @@
  */
 
 /**
- * \defgroup nixvectorrouting Nix-Vector Routing
+ * \defgroup nix-vector-routing Nix-Vector Routing
  *
  * \section model Model
  *

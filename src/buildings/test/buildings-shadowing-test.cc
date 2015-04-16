@@ -33,11 +33,9 @@
 
 #include "buildings-shadowing-test.h"
 
+using namespace ns3;
+
 NS_LOG_COMPONENT_DEFINE ("BuildingsShadowingTest");
-
-
-namespace ns3 {
-
 
 
 /**
@@ -100,28 +98,43 @@ BuildingsShadowingTestCase::DoRun (void)
   building1->SetExtWallsType (Building::ConcreteWithWindows);
   building1->SetNFloors (3);
   
-  Ptr<MobilityModel> mma = CreateMobilityModel (m_mobilityModelIndex1);
-  Ptr<MobilityModel> mmb = CreateMobilityModel (m_mobilityModelIndex2);
-
+  Ptr<HybridBuildingsPropagationLossModel> propagationLossModel = CreateObject<HybridBuildingsPropagationLossModel> ();
+  
   std::vector<double> loss;
   double sum = 0.0;
   double sumSquared = 0.0;
-  int samples = 10000;
+  int samples = 1000;
   for (int i = 0; i < samples; i++)
     {
-      Ptr<HybridBuildingsPropagationLossModel> propagationLossModel = CreateObject<HybridBuildingsPropagationLossModel> ();
-      loss.push_back (propagationLossModel->DoCalcRxPower (0.0, mma, mmb) + m_lossRef);
-      sum += loss.at (loss.size () - 1);
-      sumSquared += (loss.at (loss.size () - 1) * loss.at (loss.size () - 1));
+      Ptr<MobilityModel> mma = CreateMobilityModel (m_mobilityModelIndex1);
+      Ptr<MobilityModel> mmb = CreateMobilityModel (m_mobilityModelIndex2);
+      double shadowingLoss = propagationLossModel->DoCalcRxPower (0.0, mma, mmb) + m_lossRef;
+      double shadowingLoss2 = propagationLossModel->DoCalcRxPower (0.0, mma, mmb) + m_lossRef;
+      NS_TEST_ASSERT_MSG_EQ_TOL (shadowingLoss, shadowingLoss2, 0.001, 
+                                 "Shadowing is not constant for the same mobility model pair!");
+      loss.push_back (shadowingLoss);
+      sum += shadowingLoss;
+      sumSquared += (shadowingLoss * shadowingLoss);
     }
-  double mean = sum / samples;
-  double sigma = std::sqrt (sumSquared / samples - (mean * mean));
-  // test whether the distribution falls in the 99% confidence interval, as expected with a nornal distribution
-  double ci = (2.575829303549 * sigma) / std::sqrt (samples);
+  double sampleMean = sum / samples;
+  double sampleVariance = (sumSquared - (sum * sum / samples)) / (samples - 1);
+  double sampleStd = std::sqrt (sampleVariance);
 
-  NS_LOG_INFO ("Mean from simulation " << mean << ", sigma " << sigma << ", reference value " << m_sigmaRef << ", CI(99%) " << ci);
+  // test whether the sample mean falls in the 99% confidence interval
+  const double zn995 = 2.575829303549; // 99.5 quantile of the normal distribution
+  double ci = (zn995 * sampleStd) / std::sqrt (samples);
+  NS_LOG_INFO ("SampleMean from simulation " << sampleMean << ", sampleStd " << sampleStd << ", reference value " << m_sigmaRef << ", CI(99%) " << ci);
+  NS_TEST_ASSERT_MSG_EQ_TOL (std::fabs (sampleMean), 0.0, ci, "Wrong shadowing distribution !");
 
-  NS_TEST_ASSERT_MSG_EQ_TOL (std::fabs (mean), 0.0, ci, "Wrong shadowing distribution !");
+  // test whether the sample variance falls in the 99% confidence interval
+  // since the shadowing is gaussian, its sample variance follows the 
+  // chi2 distribution with samples-1 degrees of freedom
+  double chi2 = (samples - 1) *  sampleVariance / (m_sigmaRef*m_sigmaRef);
+  const double zchi2_005 = 887.621135217515;  //  0.5% quantile of the chi2 distribution 
+  const double zchi2_995 = 1117.89045267865;  // 99.5% quantile of the chi2 distribution
+  NS_TEST_ASSERT_MSG_GT (chi2, zchi2_005, "sample variance lesser than expected");
+  NS_TEST_ASSERT_MSG_LT (chi2, zchi2_995, "sample variance greater than expected");
+
   Simulator::Destroy ();
 }
 
@@ -213,8 +226,3 @@ BuildingsShadowingTestCase::CreateMobilityModel (uint16_t index)
   BuildingsHelper::MakeConsistent (mm); 
   return mm;
 }
-
-
-
-
-} // namespace ns3

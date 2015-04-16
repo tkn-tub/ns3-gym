@@ -64,9 +64,9 @@
 #include <iostream>
 #include <fstream>
 
-NS_LOG_COMPONENT_DEFINE ("multirate");
-
 using namespace ns3;
+
+NS_LOG_COMPONENT_DEFINE ("multirate");
 
 class Experiment
 {
@@ -508,12 +508,11 @@ Experiment::Run (const WifiHelper &wifi, const YansWifiPhyHelper &wifiPhy,
       phy.EnableAsciiAll (ascii.CreateFileStream (GetOutputFileName () + ".tr"));
     }
 
-  Ptr<FlowMonitor> flowmon;
   FlowMonitorHelper flowmonHelper;
 
   if (enableFlowMon)
     {
-      flowmon = flowmonHelper.InstallAll ();
+      flowmonHelper.InstallAll ();
     }
 
   Simulator::Stop (Seconds (totalTime));
@@ -521,7 +520,7 @@ Experiment::Run (const WifiHelper &wifi, const YansWifiPhyHelper &wifiPhy,
 
   if (enableFlowMon)
     {
-      flowmon->SerializeToXmlFile ((GetOutputFileName () + ".flomon"), false, false);
+      flowmonHelper.SerializeToXmlFile ((GetOutputFileName () + ".flomon"), false, false);
     }
 
   Simulator::Destroy ();

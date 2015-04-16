@@ -39,11 +39,9 @@
 #include "multi-model-spectrum-channel.h"
 
 
-NS_LOG_COMPONENT_DEFINE ("MultiModelSpectrumChannel");
-
-
 namespace ns3 {
 
+NS_LOG_COMPONENT_DEFINE ("MultiModelSpectrumChannel");
 
 NS_OBJECT_ENSURE_REGISTERED (MultiModelSpectrumChannel);
 
@@ -99,29 +97,37 @@ MultiModelSpectrumChannel::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::MultiModelSpectrumChannel")
     .SetParent<SpectrumChannel> ()
+    .SetGroupName ("Spectrum")
     .AddConstructor<MultiModelSpectrumChannel> ()
     .AddAttribute ("MaxLossDb",
-                   "If a single-frequency PropagationLossModel is used, this value "
-                   "represents the maximum loss in dB for which transmissions will be "
-                   "passed to the receiving PHY. Signals for which the PropagationLossModel "
-                   "returns a loss bigger than this value will not be propagated to the receiver. "
-                   "This parameter is to be used to reduce "
-                   "the computational load by not propagating signals that are far beyond "
-                   "the interference range. Note that the default value corresponds to "
-                   "considering all signals for reception. Tune this value with care. ",
+                   "If a single-frequency PropagationLossModel is used, "
+                   "this value represents the maximum loss in dB for which "
+                   "transmissions will be passed to the receiving PHY.  "
+                   "Signals for which the PropagationLossModel returns "
+                   "a loss bigger than this value will not be propagated "
+                   "to the receiver.  This parameter is to be used to reduce "
+                   "the computational load by not propagating signals that "
+                   "are far beyond the interference range. Note that the "
+                   "default value corresponds to considering all signals "
+                   "for reception. Tune this value with care. ",
                    DoubleValue (1.0e9),
                    MakeDoubleAccessor (&MultiModelSpectrumChannel::m_maxLossDb),
                    MakeDoubleChecker<double> ())
     .AddTraceSource ("PathLoss",
-                     "This trace is fired "
-                     "whenever a new path loss value is calculated. The first and second parameters "
-                     "to the trace are pointers respectively to the TX and RX SpectrumPhy instances, "
-                     "whereas the third parameters is the loss value in dB. Note that the loss value "
-                     "reported by this trace is the single-frequency loss value obtained by evaluating "
-                     "only the TX and RX AntennaModels and the PropagationLossModel. In particular, note that "
-                     "SpectrumPropagationLossModel (even if present) is never used to evaluate the loss value "
+                     "This trace is fired whenever a new path loss value "
+                     "is calculated. The first and second parameters "
+                     "to the trace are pointers respectively to the "
+                     "TX and RX SpectrumPhy instances, whereas the "
+                     "third parameters is the loss value in dB.  "
+                     "Note that the loss value reported by this trace is "
+                     "the single-frequency loss value obtained by evaluating "
+                     "only the TX and RX AntennaModels and the "
+                     "PropagationLossModel. In particular, note that "
+                     "SpectrumPropagationLossModel (even if present) "
+                     "is never used to evaluate the loss value "
                      "reported in this trace. ",
-                     MakeTraceSourceAccessor (&MultiModelSpectrumChannel::m_pathLossTrace))
+                     MakeTraceSourceAccessor (&MultiModelSpectrumChannel::m_pathLossTrace),
+                     "ns3::SpectrumChannel::LossTracedCallback")
   ;
   return tid;
 }
@@ -406,6 +412,7 @@ MultiModelSpectrumChannel::GetDevice (uint32_t i) const
             {
               return (*phyIt)->GetDevice ();
             }
+          j++;
         }
     }
   NS_FATAL_ERROR ("m_numDevice > actual number of devices");

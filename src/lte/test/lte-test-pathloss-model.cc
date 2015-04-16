@@ -25,7 +25,7 @@
 #include "ns3/spectrum-test.h"
 
 #include "ns3/lte-phy-tag.h"
-#include "ns3/lte-sinr-chunk-processor.h"
+#include "ns3/lte-chunk-processor.h"
 
 
 #include <ns3/hybrid-buildings-propagation-loss-model.h>
@@ -36,6 +36,7 @@
 #include <ns3/single-model-spectrum-channel.h>
 #include "ns3/string.h"
 #include "ns3/double.h"
+#include <ns3/boolean.h>
 #include <ns3/building.h>
 #include <ns3/enum.h>
 #include <ns3/net-device-container.h>
@@ -50,10 +51,9 @@
 #include "lte-test-ue-phy.h"
 #include "lte-test-pathloss-model.h"
 
+using namespace ns3;
+
 NS_LOG_COMPONENT_DEFINE ("LtePathlossModelTest");
-
-namespace ns3 {
-
 
 /**
  * Test 1.1 Pathloss compound test
@@ -78,8 +78,6 @@ LteTestPathlossDlSchedCallback (LtePathlossModelSystemTestCase *testcase, std::s
 LtePathlossModelTestSuite::LtePathlossModelTestSuite ()
   : TestSuite ("lte-pathloss-model", SYSTEM)
 {
- 
-  
   // LogLevel logLevel = (LogLevel)(LOG_PREFIX_FUNC | LOG_PREFIX_TIME | LOG_LEVEL_ALL);
   // LogComponentEnable ("LteHelper", logLevel);
   // LogComponentEnable ("LtePathlossModelTest", logLevel);
@@ -207,6 +205,8 @@ LtePathlossModelSystemTestCase::DoRun (void)
   /**
   * Simulation Topology
   */
+  //Disable Uplink Power Control
+  Config::SetDefault ("ns3::LteUePhy::EnableUplinkPowerControl", BooleanValue (false));
 
   Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();
   //   lteHelper->EnableLogComponents ();
@@ -214,10 +214,10 @@ LtePathlossModelSystemTestCase::DoRun (void)
   lteHelper->EnableRlcTraces ();
   lteHelper->SetAttribute ("PathlossModel", StringValue ("ns3::HybridBuildingsPropagationLossModel"));
 
-  // set frequency. This is important because it changes the behavior of the pathloss model
+  // set frequency. This is important because it changes the behavior of the path loss model
   lteHelper->SetEnbDeviceAttribute ("DlEarfcn", UintegerValue (200));
+  lteHelper->SetUeDeviceAttribute ("DlEarfcn", UintegerValue (200));
 
-  
   // remove shadowing component
   lteHelper->SetPathlossModelAttribute ("ShadowSigmaOutdoor", DoubleValue (0.0));
   lteHelper->SetPathlossModelAttribute ("ShadowSigmaIndoor", DoubleValue (0.0));
@@ -263,7 +263,6 @@ LtePathlossModelSystemTestCase::DoRun (void)
   // Attach a UE to a eNB
   lteHelper->Attach (ueDevs, enbDevs.Get (0));
 
-  
   // Activate an EPS bearer
   enum EpsBearer::Qci q = EpsBearer::GBR_CONV_VOICE;
   EpsBearer bearer (q);
@@ -272,7 +271,7 @@ LtePathlossModelSystemTestCase::DoRun (void)
   // Use testing chunk processor in the PHY layer
   // It will be used to test that the SNR is as intended
   //Ptr<LtePhy> uePhy = ueDevs.Get (0)->GetObject<LteUeNetDevice> ()->GetPhy ()->GetObject<LtePhy> ();
-  Ptr<LteTestSinrChunkProcessor> testSinr = Create<LteTestSinrChunkProcessor> (uePhy);
+  Ptr<LteTestSinrChunkProcessor> testSinr = Create<LteTestSinrChunkProcessor> ();
   uePhy->GetDownlinkSpectrumPhy ()->AddCtrlSinrChunkProcessor (testSinr);
    
 //   Config::Connect ("/NodeList/0/DeviceList/0/LteEnbMac/DlScheduling",
@@ -309,7 +308,3 @@ LtePathlossModelSystemTestCase::DlScheduling (uint32_t frameNo, uint32_t subfram
     NS_TEST_ASSERT_MSG_EQ ((uint16_t)mcsTb1, m_mcsIndex, "Wrong MCS index");
   }
 }
-                                         
-
-} // namespace ns3
-

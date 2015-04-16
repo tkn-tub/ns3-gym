@@ -31,13 +31,11 @@
 #include "lte-enb-net-device.h"
 #include "lte-ue-net-device.h"
 
-NS_LOG_COMPONENT_DEFINE ("LteRrcProtocolIdeal");
-
-
 namespace ns3 {
 
+NS_LOG_COMPONENT_DEFINE ("LteRrcProtocolIdeal");
 
-const Time RRC_IDEAL_MSG_DELAY = MilliSeconds (0); 
+static const Time RRC_IDEAL_MSG_DELAY = MilliSeconds (0);
 
 NS_OBJECT_ENSURE_REGISTERED (LteUeRrcProtocolIdeal);
 
@@ -65,6 +63,7 @@ LteUeRrcProtocolIdeal::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::LteUeRrcProtocolIdeal")
     .SetParent<Object> ()
+    .SetGroupName("Lte")
     .AddConstructor<LteUeRrcProtocolIdeal> ()
     ;
   return tid;
@@ -232,6 +231,7 @@ LteEnbRrcProtocolIdeal::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::LteEnbRrcProtocolIdeal")
     .SetParent<Object> ()
+    .SetGroupName("Lte")
     .AddConstructor<LteEnbRrcProtocolIdeal> ()
     ;
   return tid;
@@ -320,50 +320,6 @@ LteEnbRrcProtocolIdeal::DoRemoveUe (uint16_t rnti)
 {
   NS_LOG_FUNCTION (this << rnti);
   m_enbRrcSapProviderMap.erase (rnti);
-}
-
-void 
-LteEnbRrcProtocolIdeal::DoSendMasterInformationBlock (LteRrcSap::MasterInformationBlock msg)
-{
-  NS_LOG_FUNCTION (this);
-  for (std::map<uint16_t, LteUeRrcSapProvider*>::const_iterator it = m_enbRrcSapProviderMap.begin ();
-       it != m_enbRrcSapProviderMap.end ();
-       ++it)
-    {
-      Simulator::Schedule (RRC_IDEAL_MSG_DELAY, 
-                           &LteUeRrcSapProvider::RecvMasterInformationBlock,
-                           it->second, 
-                           msg);
-    }
-}
-
-void 
-LteEnbRrcProtocolIdeal::DoSendSystemInformationBlockType1 (LteRrcSap::SystemInformationBlockType1 msg)
-{
-  NS_LOG_FUNCTION (this << m_cellId);
- // walk list of all nodes to get UEs with this cellId
-  Ptr<LteUeRrc> ueRrc;
-  for (NodeList::Iterator i = NodeList::Begin (); i != NodeList::End (); ++i)
-    {
-      Ptr<Node> node = *i;
-      int nDevs = node->GetNDevices ();
-      for (int j = 0; j < nDevs; ++j)
-        {
-          Ptr<LteUeNetDevice> ueDev = node->GetDevice (j)->GetObject <LteUeNetDevice> ();
-          if (ueDev != 0)
-            {
-              NS_LOG_LOGIC ("considering UE " << ueDev->GetImsi ());
-              Ptr<LteUeRrc> ueRrc = ueDev->GetRrc ();              
-              if (ueRrc->GetCellId () == m_cellId)
-                {       
-                  Simulator::Schedule (RRC_IDEAL_MSG_DELAY, 
-                                       &LteUeRrcSapProvider::RecvSystemInformationBlockType1,
-                                       ueRrc->GetLteUeRrcSapProvider (), 
-                                       msg);          
-                }             
-            }
-        }
-    } 
 }
 
 void 
@@ -463,8 +419,8 @@ LteEnbRrcProtocolIdeal::DoSendRrcConnectionReject (uint16_t rnti, LteRrcSap::Rrc
  * 
  */
 
-std::map<uint32_t, LteRrcSap::HandoverPreparationInfo> g_handoverPreparationInfoMsgMap;
-uint32_t g_handoverPreparationInfoMsgIdCounter = 0;
+static std::map<uint32_t, LteRrcSap::HandoverPreparationInfo> g_handoverPreparationInfoMsgMap;
+static uint32_t g_handoverPreparationInfoMsgIdCounter = 0;
 
 /*
  * This header encodes the map key discussed above. We keep this
@@ -505,6 +461,7 @@ IdealHandoverPreparationInfoHeader::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::IdealHandoverPreparationInfoHeader")
     .SetParent<Header> ()
+    .SetGroupName("Lte")
     .AddConstructor<IdealHandoverPreparationInfoHeader> ()
   ;
   return tid;
@@ -569,8 +526,8 @@ LteEnbRrcProtocolIdeal::DoDecodeHandoverPreparationInformation (Ptr<Packet> p)
 
 
 
-std::map<uint32_t, LteRrcSap::RrcConnectionReconfiguration> g_handoverCommandMsgMap;
-uint32_t g_handoverCommandMsgIdCounter = 0;
+static std::map<uint32_t, LteRrcSap::RrcConnectionReconfiguration> g_handoverCommandMsgMap;
+static uint32_t g_handoverCommandMsgIdCounter = 0;
 
 /*
  * This header encodes the map key discussed above. We keep this
@@ -611,6 +568,7 @@ IdealHandoverCommandHeader::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::IdealHandoverCommandHeader")
     .SetParent<Header> ()
+    .SetGroupName("Lte")
     .AddConstructor<IdealHandoverCommandHeader> ()
   ;
   return tid;

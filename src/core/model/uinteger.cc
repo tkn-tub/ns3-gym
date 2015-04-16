@@ -22,14 +22,29 @@
 #include "log.h"
 #include <sstream>
 
-NS_LOG_COMPONENT_DEFINE ("Uinteger");
+/**
+ * \file
+ * \ingroup attribute_Uinteger
+ * Uinteger attribute value implementations.
+ */
 
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("Uinteger");
 
 ATTRIBUTE_VALUE_IMPLEMENT_WITH_NAME (uint64_t,Uinteger);
 
 namespace internal {
 
+/**
+ * \ingroup attribute_Uinteger
+ * Make an Uinteger attribute checker with embedded numeric type name.
+ *
+ * \param min The minimum allowed value.
+ * \param max The maximum allowed value.
+ * \param name The original type name ("uint8_t", "uint16_t", _etc_.).
+ * \returns The AttributeChecker.
+ */
 Ptr<const AttributeChecker> MakeUintegerChecker (uint64_t min, uint64_t max, std::string name)
 {
   NS_LOG_FUNCTION (min << max << name);

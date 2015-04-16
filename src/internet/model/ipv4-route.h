@@ -25,7 +25,6 @@
 
 #include "ns3/simple-ref-count.h"
 #include "ns3/ipv4-address.h"
-#include "ns3/deprecated.h"
 
 namespace ns3 {
 
@@ -89,15 +88,22 @@ public:
 #endif
 
 private:
-  Ipv4Address m_dest;
-  Ipv4Address m_source;
-  Ipv4Address m_gateway;
-  Ptr<NetDevice> m_outputDevice;
+  Ipv4Address m_dest;             //!< Destination address.
+  Ipv4Address m_source;           //!< Source address.
+  Ipv4Address m_gateway;          //!< Gateway address.
+  Ptr<NetDevice> m_outputDevice;  //!< Output device.
 #ifdef NOTYET
   uint32_t m_inputIfIndex;
 #endif
 };
 
+/**
+ * \brief Stream insertion operator.
+ *
+ * \param os the reference to the output stream
+ * \param route the Ipv4 route
+ * \returns the reference to the output stream
+ */
 std::ostream& operator<< (std::ostream& os, Ipv4Route const& route);
 
 /**
@@ -142,26 +148,20 @@ public:
    * \param ttl time-to-live for this route
    */
   void SetOutputTtl (uint32_t oif, uint32_t ttl);
-  /**
-   * \param oif outgoing interface
-   * \return TTL for this route
-   * \deprecated
-   */
-  uint32_t GetOutputTtl (uint32_t oif) NS_DEPRECATED;
 
   /**
    * \return map of output interface Ids and TTLs for this route
    */
   std::map<uint32_t, uint32_t> GetOutputTtlMap () const;
 
-  static const uint32_t MAX_INTERFACES = 16;  // Maximum number of multicast interfaces on a router
-  static const uint32_t MAX_TTL = 255;  // Maximum time-to-live (TTL)
+  static const uint32_t MAX_INTERFACES = 16;  //!< Maximum number of multicast interfaces on a router
+  static const uint32_t MAX_TTL = 255;  //!< Maximum time-to-live (TTL)
 
 private:
-  Ipv4Address m_group;      // Group 
-  Ipv4Address m_origin;     // Source of packet
-  uint32_t m_parent;        // Source interface
-  std::map<uint32_t, uint32_t> m_ttls;
+  Ipv4Address m_group;      //!< Group
+  Ipv4Address m_origin;     //!< Source of packet
+  uint32_t m_parent;        //!< Source interface
+  std::map<uint32_t, uint32_t> m_ttls; //!< Time to Live container
 };
 
 } // namespace ns3

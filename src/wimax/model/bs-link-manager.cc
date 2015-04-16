@@ -32,16 +32,17 @@
 #include "bs-uplink-scheduler.h"
 #include "connection-manager.h"
 
-NS_LOG_COMPONENT_DEFINE ("BSLinkManager");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("BSLinkManager");
 
 NS_OBJECT_ENSURE_REGISTERED (BSLinkManager);
 
 TypeId BSLinkManager::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::BSLinkManager")
-    .SetParent<Object> ();
+    .SetParent<Object> ()
+    .SetGroupName("Wimax");
   return tid;
 }
 

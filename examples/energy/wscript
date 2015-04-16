@@ -3,3 +3,5 @@
 def build(bld):
     obj = bld.create_ns3_program('energy-model-example', ['core', 'mobility', 'wifi', 'energy', 'internet'])
     obj.source = 'energy-model-example.cc'
+    obj = bld.create_ns3_program('energy-model-with-harvesting-example', ['core', 'mobility', 'wifi', 'energy', 'internet'])
+    obj.source = 'energy-model-with-harvesting-example.cc'

@@ -33,9 +33,11 @@
 #include "ie-dot11s-perr.h"
 
 namespace ns3 {
-namespace dot11s {
 
 NS_LOG_COMPONENT_DEFINE ("HwmpProtocolMac");
+  
+namespace dot11s {
+
 HwmpProtocolMac::HwmpProtocolMac (uint32_t ifIndex, Ptr<HwmpProtocol> protocol) :
   m_ifIndex (ifIndex), m_protocol (protocol)
 {

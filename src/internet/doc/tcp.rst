@@ -1,4 +1,5 @@
 .. include:: replace.txt
+.. highlight:: cpp
 
 TCP models in ns-3
 ------------------
@@ -41,7 +42,9 @@ This implementation was substantially rewritten by Adriam Tam for ns-3.10.
 The model is a full TCP, in that it is bidirectional and attempts to model the
 connection setup and close logic. 
 
-The implementation of TCP is contained in the following files:::
+The implementation of TCP is contained in the following files:
+
+.. sourcecode:: text
 
     src/internet/model/tcp-header.{cc,h}
     src/internet/model/tcp-l4-protocol.{cc,h}
@@ -59,7 +62,7 @@ The implementation of TCP is contained in the following files:::
 
 Different variants of TCP congestion control are supported by subclassing
 the common base class :cpp:class:`TcpSocketBase`.  Several variants
-are supported, including RFC 793 (no congestion control), Tahoe, Reno, Westwood,
+are supported, including :rfc:`793` (no congestion control), Tahoe, Reno, Westwood,
 Westwood+, and NewReno.  NewReno is used by default.  See the Usage section of this
 document for on how to change the default TCP variant used in simulation.
 
@@ -70,7 +73,7 @@ In many cases, usage of TCP is set at the application layer by telling
 the |ns3| application which kind of socket factory to use.
 
 Using the helper functions defined in ``src/applications/helper`` and
-``src/network/helper``, here is how one would create a TCP receiver:::
+``src/network/helper``, here is how one would create a TCP receiver::
 
   // Create a packet sink on the star "hub" to receive these packets
   uint16_t port = 50000;
@@ -81,7 +84,7 @@ Using the helper functions defined in ``src/applications/helper`` and
   sinkApp.Stop (Seconds (10.0));
 
 Similarly, the below snippet configures OnOffApplication traffic source to use
-TCP:::
+TCP::
 
   // Create the OnOff applications to send TCP to the server
   OnOffHelper clientHelper ("ns3::TcpSocketFactory", Address ());
@@ -103,7 +106,7 @@ settable attribute.
 
 To set the default socket type before any internet stack-related objects are
 created, one may put the following statement at the top of the simulation
-program::: 
+program:: 
 
   Config::SetDefault ("ns3::TcpL4Protocol::SocketType", StringValue ("ns3::TcpTahoe")); 
 
@@ -116,7 +119,7 @@ socket type must be done by twiddling the attribute associated with the
 underlying TcpL4Protocol object.  The easiest way to get at this would be 
 through the attribute configuration system.  In the below example,
 the Node container "n0n1" is accessed
-to get the zeroth element, and a socket is created on this node:::
+to get the zeroth element, and a socket is created on this node::
 
   // Create and bind the socket...
   TypeId tid = TypeId::LookupByName ("ns3::TcpTahoe");
@@ -127,7 +130,7 @@ to get the zeroth element, and a socket is created on this node:::
 Above, the "*" wild card for node number is passed to the attribute
 configuration system, so that all future sockets on all nodes are set to 
 Tahoe, not just on node 'n0n1.Get (0)'.  If one wants to limit it to just 
-the specified node, one would have to do something like:::
+the specified node, one would have to do something like::
 
   // Create and bind the socket...
   TypeId tid = TypeId::LookupByName ("ns3::TcpTahoe");
@@ -147,7 +150,7 @@ Validation
 ++++++++++
 
 Several TCP validation test results can be found in the
-`wiki page <http://www.nsnam.org/wiki/index.php/New_TCP_Socket_Architecture>`_ 
+`wiki page <http://www.nsnam.org/wiki/New_TCP_Socket_Architecture>`_ 
 describing this implementation.
 
 Current limitations
@@ -169,40 +172,114 @@ network stacks by hand. Not a single line of code has been changed in the
 network protocol implementations of any of the above four stacks. However, a
 custom C parser was built to programmatically change source code.
 
-NSC has previously been ported to |ns2| and OMNeT++, and recently 
-was added to |ns3|.  This section describes the |ns3| port of NSC and
-how to use it.
+NSC has previously been ported to |ns2| and OMNeT++, and was 
+was added to |ns3| in September 2008 (ns-3.2 release).  This section 
+describes the |ns3| port of NSC and how to use it.
+
+To some extent, NSC has been superseded by the Linux kernel support within 
+`Direct Code Execution (DCE) <http://www.nsnam.org/docs/dce/manual/singlehtml/index.html>`_.  However, NSC is still available through the bake build
+system.  NSC supports Linux kernels 2.6.18 and 2.6.26, but newer
+versions of the kernel have not been ported.  
 
 Prerequisites
 +++++++++++++
 
 Presently, NSC has been tested and shown to work on these platforms:
-Linux i386 and Linux x86-64. NSC does not support powerpc.
+Linux i386 and Linux x86-64.  NSC does not support powerpc.  Use on
+FreeBSD or OS X is unsupported (although it may be able to work).
 
 Building NSC requires the packages flex and bison.  
 
 Configuring and Downloading
 +++++++++++++++++++++++++++
 
-Using the ``build.py`` script in ns-3-allinone directory, NSC will be enabled by
-default unless the platform does not support it. To disable it when building
-|ns3|, type:::
+As of ns-3.17 or later, NSC must either be downloaded separately from
+its own repository, or downloading when using the 
+`bake build system <http://www.nsnam.org/docs/tutorial/html/getting-started.html#downloading-ns3-using-bake>`_ of 
+|ns3|.  
 
-./waf configure --enable-examples --enable-tests --disable-nsc
+For ns-3.17 or later releases, when using bake, one must configure NSC as 
+part of an "allinone" configuration, such as:
+
+.. sourcecode:: bash
+
+  $ cd bake
+  $ python bake.py configure -e ns-allinone-3.19
+  $ python bake.py download
+  $ python bake.py build
+
+Instead of a released version, one may use the ns-3 development version
+by specifying "ns-3-allinone" to the configure step above.
+
+NSC may also be downloaded from 
+`its download site <http://research.wand.net.nz/software/nsc.php>`_ 
+using Mercurial:
+
+.. sourcecode:: bash
+
+  $ hg clone https://secure.wand.net.nz/mercurial/nsc
+
+Prior to the ns-3.17 release, NSC was included in the allinone tarball and
+the released version did not need to be separately downloaded.
 
 Building and validating
 +++++++++++++++++++++++
 
-Building |ns3| with nsc support is the same as building it without; no
-additional arguments are needed for waf. Building nsc may take some time
-compared to |ns3|; it is interleaved in the |ns3| building process.
+NSC may be built as part of the bake build process; alternatively, one
+may build NSC by itself using its build system; e.g.:
 
-Try running the following ns-3 test suite:::  
+.. sourcecode:: bash
 
-    ./test.py -s ns3-tcp-interoperability
+  $ cd nsc-dev
+  $ python scons.py
+
+Once NSC has been built either manually or through the bake system, change
+into the |ns3| source directory and try running the following configuration:
+
+.. sourcecode:: bash
+
+  $ ./waf configure
+
+If NSC has been previously built and found by waf, then you will see:
+
+.. sourcecode:: bash
+
+  Network Simulation Cradle     : enabled
+
+If NSC has not been found, you will see:
+
+.. sourcecode:: bash
+
+  Network Simulation Cradle     : not enabled (NSC not found (see option --with-nsc))
+
+In this case, you must pass the relative or absolute path to the NSC libraries
+with the "--with-nsc" configure option; e.g.
+
+.. sourcecode:: bash
+
+  $ ./waf configure --with-nsc=/path/to/my/nsc/directory
+
+For |ns3| releases prior to the ns-3.17 release, using the ``build.py`` 
+script in ns-3-allinone directory, NSC will be built by default unless the 
+platform does not support it. To explicitly disable it when building |ns3|, 
+type:
+
+.. sourcecode:: bash
+
+  $ ./waf configure --enable-examples --enable-tests --disable-nsc
+
+If waf detects NSC, then building |ns3| with NSC is performed the same way
+with waf as without it.  Once |ns3| is built, try running the following 
+test suite:
+
+.. sourcecode:: bash
+
+    $ ./test.py -s ns3-tcp-interoperability
 
 If NSC has been successfully built, the following test should show up 
-in the results:::
+in the results:
+
+.. sourcecode:: text
 
     PASS TestSuite ns3-tcp-interoperability
 
@@ -211,10 +288,12 @@ This confirms that NSC is ready to use.
 Usage
 +++++
 
-There are a few example files.  Try::
+There are a few example files.  Try:
 
-    ./waf --run tcp-nsc-zoo
-    ./waf --run tcp-nsc-lfn
+.. sourcecode:: bash
+
+    $ ./waf --run tcp-nsc-zoo
+    $ ./waf --run tcp-nsc-lfn
 
 These examples will deposit some ``.pcap`` files in your directory,
 which can be examined by tcpdump or wireshark.
@@ -222,7 +301,7 @@ which can be examined by tcpdump or wireshark.
 Let's look at the ``examples/tcp/tcp-nsc-zoo.cc`` file for some typical
 usage. How does it differ from using native |ns3| TCP? There is one main
 configuration line, when using NSC and the |ns3| helper API, that needs to be
-set:::
+set::
 
   InternetStackHelper internetStack;
 
@@ -240,9 +319,11 @@ to the remaining nodes.  It is important that this function be called
 Which stacks are available to use? Presently, the focus has been on
 Linux 2.6.18 and Linux 2.6.26 stacks for |ns3|. To see which stacks
 were built, one can execute the following find command at the |ns3| top level
-directory:::
+directory:
 
-    ~/ns-3.10> find nsc -name "*.so" -type f 
+.. sourcecode:: bash
+
+    $ find nsc -name "*.so" -type f 
     nsc/linux-2.6.18/liblinux2.6.18.so
     nsc/linux-2.6.26/liblinux2.6.26.so
 
@@ -258,7 +339,7 @@ sockets, as described above and documented in `Doxygen
 
 Additionally, NSC TCP exports a lot of configuration variables into the 
 |ns3| attributes system, via a `sysctl <http://en.wikipedia.org/wiki/Sysctl>`_-like interface. In the ``examples/tcp/tcp-nsc-zoo`` example, you
-can see the following configuration:::
+can see the following configuration::
 
 
   // this disables TCP SACK, wscale and timestamps on node 1 (the attributes 
@@ -272,10 +353,10 @@ can see the following configuration:::
 
 These additional configuration variables are not available to native |ns3| TCP.
 
-Also note that default values for TCP attributes in |ns3| TCP may differ from the nsc TCP implementation.  Specifically in |ns3|::: 
+Also note that default values for TCP attributes in |ns3| TCP may differ from the nsc TCP implementation.  Specifically in |ns3|:
 
-		1) TCP default MSS is 536
-		2) TCP Delayed Ack count is 2 
+  1) TCP default MSS is 536
+  2) TCP Delayed Ack count is 2 
 		
 Therefore when making comparisons between results obtained using nsc and |ns3| TCP, care must be taken to ensure these values are set appropriately.  See /examples/tcp/tcp-nsc-comparision.cc for an example.
 
@@ -361,8 +442,8 @@ Limitations
 
 * NSC only works on single-interface nodes; attempting to run it on a
   multi-interface node will cause a program error.  
-* Cygwin and OS X PPC are not supported
+* Cygwin and OS X PPC are not supported; OS X Intel is not supported but may work
 * The non-Linux stacks of NSC are not supported in |ns3|
 * Not all socket API callbacks are supported
 
-For more information, see `this wiki page <http://www.nsnam.org/wiki/index.php/Network_Simulation_Cradle_Integration>`_.
+For more information, see `this wiki page <http://www.nsnam.org/wiki/Network_Simulation_Cradle_Integration>`_.

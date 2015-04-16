@@ -48,9 +48,22 @@ class Ipv6MulticastRoutingTableEntry;
 /**
  * \ingroup ipv6StaticRouting
  * \class Ipv6StaticRouting
- * \brief Static routing protocol for IP version 6 stack.
+ *
+ * \brief Static routing protocol for IP version 6 stacks.
+ *
+ * This class provides a basic set of methods for inserting static
+ * unicast and multicast routes into the Ipv6 routing system.
+ * This particular protocol is designed to be inserted into an
+ * Ipv6ListRouting protocol but can be used also as a standalone
+ * protocol.
+ *
+ * The Ipv6StaticRouting class inherits from the abstract base class
+ * Ipv6RoutingProtocol that defines the interface methods that a routing
+ * protocol must support.
+ *
  * \see Ipv6RoutingProtocol
  * \see Ipv6ListRouting
+ * \see Ipv6ListRouting::AddRoutingProtocol
  */
 class Ipv6StaticRouting : public Ipv6RoutingProtocol
 {
@@ -61,14 +74,7 @@ public:
    */
   static TypeId GetTypeId ();
 
-  /**
-   * \brief Constructor.
-   */
   Ipv6StaticRouting ();
-
-  /**
-   * \brief Destructor.
-   */
   virtual ~Ipv6StaticRouting ();
 
   /**
@@ -205,6 +211,7 @@ public:
    * \param origin IPv6 address of the source
    * \param group the multicast group address.
    * \param inputInterface the input interface index
+   * \return true on success
    */
   bool RemoveMulticastRoute (Ipv6Address origin, Ipv6Address group, uint32_t inputInterface);
 
@@ -250,12 +257,22 @@ protected:
   virtual void DoDispose ();
 
 private:
+  /// Container for the network routes
   typedef std::list<std::pair <Ipv6RoutingTableEntry *, uint32_t> > NetworkRoutes;
+
+  /// Const Iterator for container for the network routes
   typedef std::list<std::pair <Ipv6RoutingTableEntry *, uint32_t> >::const_iterator NetworkRoutesCI;
+
+  /// Iterator for container for the network routes
   typedef std::list<std::pair <Ipv6RoutingTableEntry *, uint32_t> >::iterator NetworkRoutesI;
 
+  /// Container for the multicast routes
   typedef std::list<Ipv6MulticastRoutingTableEntry *> MulticastRoutes;
+
+  /// Const Iterator for container for the multicast routes
   typedef std::list<Ipv6MulticastRoutingTableEntry *>::const_iterator MulticastRoutesCI;
+
+  /// Iterator for container for the multicast routes
   typedef std::list<Ipv6MulticastRoutingTableEntry *>::iterator MulticastRoutesI;
 
   /**
@@ -274,14 +291,6 @@ private:
    * \return Ipv6MulticastRoute to route the packet to reach dest address
    */
   Ptr<Ipv6MulticastRoute> LookupStatic (Ipv6Address origin, Ipv6Address group, uint32_t ifIndex);
-
-  /**
-   * \brief Choose the source address to use with destination address.
-   * \param interface interface index
-   * \param dest IPv6 destination address
-   * \return IPv6 source address to use
-   */
-  Ipv6Address SourceAddressSelection (uint32_t interface, Ipv6Address dest);
 
   /**
    * \brief the forwarding table for network.

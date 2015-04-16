@@ -30,9 +30,9 @@
 #include "ns3/lte-rrc-header.h"
 #include "ns3/lte-rrc-sap.h"
 
-NS_LOG_COMPONENT_DEFINE ("Asn1EncodingTest");
+using namespace ns3;
 
-namespace ns3 {
+NS_LOG_COMPONENT_DEFINE ("Asn1EncodingTest");
 
 class TestUtils
 {
@@ -150,6 +150,9 @@ RrcHeaderTestCase :: CreateRadioResourceConfigDedicated ()
   physicalConfigDedicated.haveAntennaInfoDedicated = true;
   physicalConfigDedicated.antennaInfo.transmissionMode = 2;
 
+  physicalConfigDedicated.havePdschConfigDedicated = true;
+  physicalConfigDedicated.pdschConfigDedicated.pa = LteRrcSap::PdschConfigDedicated::dB0;
+
   rrd.physicalConfigDedicated = physicalConfigDedicated;
 
   return rrd;
@@ -235,6 +238,17 @@ RrcHeaderTestCase :: AssertEqualRadioResourceConfigDedicated (LteRrcSap::RadioRe
           NS_TEST_ASSERT_MSG_EQ (rrcd1.physicalConfigDedicated.antennaInfo.transmissionMode,
                                  rrcd2.physicalConfigDedicated.antennaInfo.transmissionMode,
                                  "antennaInfo.transmissionMode");
+        }
+
+      NS_TEST_ASSERT_MSG_EQ (rrcd1.physicalConfigDedicated.havePdschConfigDedicated,
+                             rrcd2.physicalConfigDedicated.havePdschConfigDedicated,
+                             "havePdschConfigDedicated");
+
+      if (rrcd1.physicalConfigDedicated.havePdschConfigDedicated)
+        {
+          NS_TEST_ASSERT_MSG_EQ (rrcd1.physicalConfigDedicated.pdschConfigDedicated.pa,
+                                 rrcd2.physicalConfigDedicated.pdschConfigDedicated.pa,
+                                 "pdschConfigDedicated.pa");
         }
     }
 }
@@ -1031,6 +1045,4 @@ Asn1EncodingSuite::Asn1EncodingSuite ()
 }
 
 Asn1EncodingSuite asn1EncodingSuite;
-
-} // namespace ns3
 

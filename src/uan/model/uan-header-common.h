@@ -29,68 +29,91 @@
 namespace ns3 {
 
 /**
- * \class UanHeaderCommon
+ * \ingroup uan
  *
- * Header includes 1 byte src address, 1 byte dest address,
+ * Common packet header fields.
+ *
+ * Includes 1 byte src address, 1 byte dest address,
  * and a 1 byte type field.
+ *
+ * The type field is protocol specific; see the relevant MAC protocol.
  */
 class UanHeaderCommon : public Header
 {
 public:
+  /** Default constructor */
   UanHeaderCommon ();
   /**
-   * \brief Create UanHeaderCommon object with given source and destination address and header type
-   * \param src Source address defined in header
-   * \param dest Destination address defined in header
-   * \param type Header type
+   * Create UanHeaderCommon object with given source and destination
+   * address and header type
+   *
+   * \param src Source address defined in header.
+   * \param dest Destination address defined in header.
+   * \param type Header type.
    */
   UanHeaderCommon (const UanAddress src, const UanAddress dest, uint8_t type);
+  /** Destructor */
   virtual ~UanHeaderCommon ();
 
+  /**
+   * Register this type.
+   * \return The TypeId.
+   */
   static TypeId GetTypeId (void);
 
   /**
-   * \param dest Address of destination node
+   * Set the destination address.
+   *
+   * \param dest Address of destination node.
    */
   void SetDest (UanAddress dest);
   /**
-   * \param src Address of packet source node
+   * Set the source address.
+   *
+   * \param src Address of packet source node.
    */
   void SetSrc (UanAddress src);
   /**
-   * \param type Value to set 1 byte type field to.  Value has protocol specific meaning
+   * Set the header type.
+   *
+   * Use of this value is protocol specific.
+   * \param type The type value.
    */
   void SetType (uint8_t type);
 
   /**
-   * \returns UanAddress in destination field
+   * Get the destination address.
+   *
+   * \return UanAddress in destination field.
    */
   UanAddress GetDest (void) const;
   /**
-   * \returns UanAddress in source field
+   * Get the source address
+   *
+   * \return UanAddress in source field.
    */
   UanAddress GetSrc (void) const;
   /**
-   * \returns value of type field
+   * Get the header type value.
+   *
+   * \return value of type field.
    */
   uint8_t GetType (void) const;
 
 
-
-  // Inherrited methods
+  // Inherited methods
   virtual uint32_t GetSerializedSize (void) const;
   virtual void Serialize (Buffer::Iterator start) const;
   virtual uint32_t Deserialize (Buffer::Iterator start);
   virtual void Print (std::ostream &os) const;
   virtual TypeId GetInstanceTypeId (void) const;
 private:
-  UanAddress m_dest;
-  UanAddress m_src;
-  uint8_t m_type;
+  UanAddress m_dest;  //!< The destination address.
+  UanAddress m_src;   //!< The source address.
+  uint8_t m_type;     //!< The type field.
 
+};  // class UanHeaderCommon
 
-};
-
-}
+} // namespace ns3
 
 #endif /* UAN_HEADER_COMMON_H */

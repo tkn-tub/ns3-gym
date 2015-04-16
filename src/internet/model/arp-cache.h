@@ -33,6 +33,7 @@
 #include "ns3/object.h"
 #include "ns3/traced-callback.h"
 #include "ns3/sgi-hashmap.h"
+#include "ns3/output-stream-wrapper.h"
 
 namespace ns3 {
 
@@ -49,34 +50,78 @@ class Ipv4Interface;
 class ArpCache : public Object
 {
 private:
+  /**
+   * \brief Copy constructor
+   *
+   * Defined and unimplemented to avoid misuse
+   */
   ArpCache (ArpCache const &);
+  /**
+   * \brief Copy constructor
+   *
+   * Defined and unimplemented to avoid misuse
+   * \returns
+   */
   ArpCache& operator= (ArpCache const &);
 
 public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
   class Entry;
   ArpCache ();
   ~ArpCache ();
 
   /**
-   * \param device The hardware NetDevice associated with this ARP chache
-   * \param interface the Ipv4Interface associated with this ARP chache
+   * \brief Set the NetDevice and Ipv4Interface associated with the ArpCache
+   *
+   * \param device The hardware NetDevice associated with this ARP cache
+   * \param interface the Ipv4Interface associated with this ARP cache
    */
   void SetDevice (Ptr<NetDevice> device, Ptr<Ipv4Interface> interface);
   /**
+   * \brief Returns the NetDevice that this ARP cache is associated with
    * \return The NetDevice that this ARP cache is associated with
    */
   Ptr<NetDevice> GetDevice (void) const;
   /**
+   * \brief Returns the Ipv4Interface that this ARP cache is associated with
    * \return the Ipv4Interface that this ARP cache is associated with
    */
   Ptr<Ipv4Interface> GetInterface (void) const;
 
+  /**
+   * \brief Set the time the entry will be in ALIVE state (unless refreshed)
+   * \param aliveTimeout the Alive state timeout
+   */
   void SetAliveTimeout (Time aliveTimeout);
+  /**
+   * \brief Set the time the entry will be in DEAD state before being removed
+   * \param deadTimeout the Dead state timeout
+   */
   void SetDeadTimeout (Time deadTimeout);
+  /**
+   * \brief Set the time the entry will be in WAIT_REPLY state
+   * \param waitReplyTimeout the WAIT_REPLY state timeout
+   */
   void SetWaitReplyTimeout (Time waitReplyTimeout);
+
+  /**
+   * \brief Get the time the entry will be in ALIVE state (unless refreshed)
+   * \returns the Alive state timeout
+   */
   Time GetAliveTimeout (void) const;
+  /**
+   * \brief Get the time the entry will be in DEAD state before being removed
+   * \returns the Dead state timeout
+   */
   Time GetDeadTimeout (void) const;
+  /**
+   * \brief Get the time the entry will be in WAIT_REPLY state
+   * \returns the WAIT_REPLY state timeout
+   */
   Time GetWaitReplyTimeout (void) const;
 
   /**
@@ -109,6 +154,13 @@ public:
    * \brief Clear the ArpCache of all entries
    */
   void Flush (void);
+
+  /**
+   * \brief Print the ARP cache entries
+   *
+   * \param stream the ostream the ARP cache entries is printed to
+   */
+  void PrintArpCache (Ptr<OutputStreamWrapper> stream);
 
   /**
    * \brief A record that that holds information about an ArpCache entry
@@ -190,46 +242,65 @@ public:
     void ClearRetries (void);
 
 private:
+    /**
+     * \brief ARP cache entry states
+     */
     enum ArpCacheEntryState_e {
       ALIVE,
       WAIT_REPLY,
       DEAD
     };
 
+    /**
+     * \brief Update the entry when seeing a packet
+     */
     void UpdateSeen (void);
+
+    /**
+     * \brief Returns the entry timeout
+     * \returns the entry timeout
+     */
     Time GetTimeout (void) const;
-    ArpCache *m_arp;
-    ArpCacheEntryState_e m_state;
-    Time m_lastSeen;
-    Address m_macAddress;
-    Ipv4Address m_ipv4Address;
-    std::list<Ptr<Packet> > m_pending;
-    uint32_t m_retries;
+
+    ArpCache *m_arp; //!< pointer to the ARP cache owning the entry
+    ArpCacheEntryState_e m_state; //!< state of the entry
+    Time m_lastSeen; //!< last moment a packet from that address has been seen
+    Address m_macAddress; //!< entry's MAC address
+    Ipv4Address m_ipv4Address; //!< entry's IP address
+    std::list<Ptr<Packet> > m_pending; //!< list of pending packets for the entry's IP
+    uint32_t m_retries; //!< rerty counter
   };
 
 private:
+  /**
+   * \brief ARP Cache container
+   */
   typedef sgi::hash_map<Ipv4Address, ArpCache::Entry *, Ipv4AddressHash> Cache;
+  /**
+   * \brief ARP Cache container iterator
+   */
   typedef sgi::hash_map<Ipv4Address, ArpCache::Entry *, Ipv4AddressHash>::iterator CacheI;
 
   virtual void DoDispose (void);
 
-  Ptr<NetDevice> m_device;
-  Ptr<Ipv4Interface> m_interface;
-  Time m_aliveTimeout;
-  Time m_deadTimeout;
-  Time m_waitReplyTimeout;
-  EventId m_waitReplyTimer;
-  Callback<void, Ptr<const ArpCache>, Ipv4Address> m_arpRequestCallback;
-  uint32_t m_maxRetries;
+  Ptr<NetDevice> m_device; //!< NetDevice associated with the cache
+  Ptr<Ipv4Interface> m_interface; //!< Ipv4Interface associated with the cache
+  Time m_aliveTimeout; //!< cache alive state timeout
+  Time m_deadTimeout; //!< cache dead state timeout
+  Time m_waitReplyTimeout; //!< cache reply state timeout
+  EventId m_waitReplyTimer;  //!< cache alive state timer
+  Callback<void, Ptr<const ArpCache>, Ipv4Address> m_arpRequestCallback;  //!< reply timeout callback
+  uint32_t m_maxRetries; //!< max retries for a resolution
+
   /**
    * This function is an event handler for the event that the
    * ArpCache wants to check whether it must retry any Arp requests.
    * If there are no Arp requests pending, this event is not scheduled.
    */
   void HandleWaitReplyTimeout (void);
-  uint32_t m_pendingQueueSize;
-  Cache m_arpCache;
-  TracedCallback<Ptr<const Packet> > m_dropTrace;
+  uint32_t m_pendingQueueSize; //!< number of packets waiting for a resolution
+  Cache m_arpCache; //!< the ARP cache
+  TracedCallback<Ptr<const Packet> > m_dropTrace; //!< trace for packets dropped by the ARP cache queue
 };
 
 

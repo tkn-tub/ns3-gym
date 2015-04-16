@@ -25,9 +25,9 @@
 
 #define WINSIZE_ASSERT NS_ASSERT ((m_winEnd - m_winStart + 4096) % 4096 == m_winSize - 1)
 
-NS_LOG_COMPONENT_DEFINE ("BlockAckCache");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("BlockAckCache");
 
 void
 BlockAckCache::Init (uint16_t winStart, uint16_t winSize)
@@ -37,6 +37,12 @@ BlockAckCache::Init (uint16_t winStart, uint16_t winSize)
   m_winSize = winSize <= 64 ? winSize : 64;
   m_winEnd = (m_winStart + m_winSize - 1) % 4096;
   memset (m_bitmap, 0, sizeof (m_bitmap));
+}
+
+uint16_t
+BlockAckCache::GetWinStart ()
+{
+  return m_winStart;
 }
 
 void

@@ -54,7 +54,7 @@ public:
    *
    * @param rnti the value of the RNTI to set
    */
-  void SetRnti (uint16_t tid);
+  void SetRnti (uint16_t rnti);
 
   /**
    * Set the bearer id to the given value.

@@ -24,7 +24,6 @@
 #include "ns3/object.h"
 #include "ns3/socket.h"
 #include "ns3/callback.h"
-#include "ns3/ip-l4-protocol.h"
 #include "ns3/ipv4-address.h"
 #include "ipv4-route.h"
 #include "ipv4-interface-address.h"
@@ -35,6 +34,8 @@ class Node;
 class NetDevice;
 class Packet;
 class Ipv4RoutingProtocol;
+class IpL4Protocol;
+class Ipv4Header;
 
 /**
  * \ingroup internet
@@ -75,6 +76,10 @@ class Ipv4RoutingProtocol;
 class Ipv4 : public Object
 {
 public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
   Ipv4 ();
   virtual ~Ipv4 ();
@@ -167,6 +172,7 @@ public:
    *
    * \param address The IP address being considered
    * \param iif The incoming Ipv4 interface index
+   * \returns true if the address is associated with the interface index
    *
    * This method can be used to determine whether a received packet has
    * an acceptable address for local delivery on the host.  The address
@@ -378,13 +384,35 @@ public:
   virtual void DeleteRawSocket (Ptr<Socket> socket) = 0;
 
 
-  static const uint32_t IF_ANY = 0xffffffff;
+  static const uint32_t IF_ANY = 0xffffffff; //!< interface wildcard, meaning any interface
 
 private:
   // Indirect the Ipv4 attributes through private pure virtual methods
+
+  /**
+   * \brief Set or unset the IP forwarding state
+   * \param forward the forwarding state
+   */
   virtual void SetIpForward (bool forward) = 0;
+  /**
+   * \brief Get the IP forwarding state
+   * \returns true if IP is in forwarding state
+   */
   virtual bool GetIpForward (void) const = 0;
+
+  /**
+   * \brief Set or unset the Weak Es Model
+   *
+   * RFC1122 term for whether host accepts datagram with a dest. address on another interface
+   * \param model true for Weak Es Model
+   */
   virtual void SetWeakEsModel (bool model) = 0;
+  /**
+   * \brief Get the Weak Es Model status
+   *
+   * RFC1122 term for whether host accepts datagram with a dest. address on another interface
+   * \returns true for Weak Es Model activated
+   */
   virtual bool GetWeakEsModel (void) const = 0;
 };
 

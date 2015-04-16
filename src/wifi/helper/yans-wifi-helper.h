@@ -23,7 +23,6 @@
 #include "wifi-helper.h"
 #include "ns3/trace-helper.h"
 #include "ns3/yans-wifi-channel.h"
-#include "ns3/deprecated.h"
 
 namespace ns3 {
 
@@ -244,6 +243,15 @@ public:
    */
   void SetPcapDataLinkType (enum SupportedPcapDataLinkTypes dlt);
 
+  /**
+   * Get the data link type of PCAP traces to be used. 
+   *
+   * @see SupportedPcapDataLinkTypes
+   *
+   * @returns The data link type of the pcap file (and packets) to be used
+   */
+  uint32_t GetPcapDataLinkType (void) const;
+
 private:
   /**
    * \param node the node on which we wish to create a wifi PHY
@@ -252,7 +260,7 @@ private:
    *
    * This method implements the pure virtual method defined in \ref ns3::WifiPhyHelper.
    */
-  virtual Ptr<WifiPhy> Create (Ptr<Node> node, Ptr<WifiNetDevice> device) const;
+  virtual Ptr<WifiPhy> Create (Ptr<Node> node, Ptr<NetDevice> device) const;
 
   /**
    * @brief Enable pcap output the indicated net device.
@@ -272,7 +280,6 @@ private:
 
   /**
    * \brief Enable ascii trace output on the indicated net device.
-   * \internal
    *
    * NetDevice-specific implementation mechanism for hooking the trace and
    * writing to the trace file.

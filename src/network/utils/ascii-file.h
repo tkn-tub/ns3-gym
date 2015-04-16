@@ -30,10 +30,11 @@
 namespace ns3 {
 
 
-/*
- * A class representing an ascii file.
+/**
+ * \brief A class representing an ascii file.
+ *
+ * This class represents an ascii file
  */
-
 class AsciiFile
 {
 public:
@@ -77,15 +78,15 @@ public:
    * 
    * \param  f1         First ASCII file name
    * \param  f2         Second ASCII file name
-   * \param  lineNumbe   [out] Line number of first different line.
+   * \param  lineNumber   [out] Line number of first different line.
    */
   static bool Diff (std::string const & f1,
 		    std::string const & f2, 
                     uint64_t & lineNumber);
 
 private:
-  std::string    m_filename;
-  std::fstream   m_file;
+  std::string    m_filename; //!< output file name
+  std::fstream   m_file;     //!< output file
 };
 
 } // namespace ns3

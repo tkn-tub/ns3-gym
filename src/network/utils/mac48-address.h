@@ -37,6 +37,8 @@ class Address;
  * \brief an EUI-48 address
  *
  * This class can contain 48 bit IEEE addresses.
+ *
+ * \see attribute_Mac48Address
  */
 class Mac48Address
 {
@@ -84,6 +86,7 @@ public:
   static bool IsMatchingType (const Address &address);
   /**
    * Allocate a new Mac48Address.
+   * \returns newly allocated mac48Address
    */
   static Mac48Address Allocate (void);
 
@@ -125,6 +128,14 @@ public:
    * \returns a multicast address.
    */
   static Mac48Address GetMulticast6Prefix (void);
+
+  /**
+   * TracedCallback signature for Mac48Address
+   *
+   * \param [in] value Current value of the Mac48Address
+   */
+  typedef void (* TracedCallback)(const Mac48Address value);
+  
 private:
   /**
    * \returns a new Address instance
@@ -132,19 +143,60 @@ private:
    * Convert an instance of this class to a polymorphic Address instance.
    */
   Address ConvertTo (void) const;
+
+  /**
+   * \brief Return the Type of address.
+   * \return type of address
+   */
   static uint8_t GetType (void);
-  friend bool operator < (const Mac48Address &a, const Mac48Address &b);
+
+  /**
+   * \brief Equal to operator.
+   *
+   * \param a the first operand
+   * \param b the first operand
+   * \returns true if the operands are equal
+   */
   friend bool operator == (const Mac48Address &a, const Mac48Address &b);
+
+  /**
+   * \brief Not equal to operator.
+   *
+   * \param a the first operand
+   * \param b the first operand
+   * \returns true if the operands are not equal
+   */
   friend bool operator != (const Mac48Address &a, const Mac48Address &b);
+
+  /**
+   * \brief Less than operator.
+   *
+   * \param a the first operand
+   * \param b the first operand
+   * \returns true if the operand a is less than operand b
+   */
+  friend bool operator < (const Mac48Address &a, const Mac48Address &b);
+
+  /**
+   * \brief Stream insertion operator.
+   *
+   * \param os the stream
+   * \param address the address
+   * \returns a reference to the stream
+   */
+  friend std::ostream& operator<< (std::ostream& os, const Mac48Address & address);
+
+  /**
+   * \brief Stream extraction operator.
+   *
+   * \param is the stream
+   * \param address the address
+   * \returns a reference to the stream
+   */
   friend std::istream& operator>> (std::istream& is, Mac48Address & address);
 
-  uint8_t m_address[6];
+  uint8_t m_address[6]; //!< address value
 };
-
-/**
- * \class ns3::Mac48AddressValue
- * \brief hold objects of type ns3::Mac48Address
- */
 
 ATTRIBUTE_HELPER_HEADER (Mac48Address);
 

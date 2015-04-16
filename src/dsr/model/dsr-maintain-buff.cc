@@ -36,9 +36,10 @@
 #include "ns3/socket.h"
 #include "ns3/log.h"
 
-NS_LOG_COMPONENT_DEFINE ("DsrMaintainBuffer");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("DsrMaintainBuffer");
+  
 namespace dsr {
 
 uint32_t
@@ -97,7 +98,7 @@ MaintainBuffer::Dequeue (Ipv4Address nextHop, MaintainBuffEntry & entry)
       if (i->GetNextHop () == nextHop)
         {
           entry = *i;
-          m_maintainBuffer.erase (i);
+          i = m_maintainBuffer.erase (i);
           NS_LOG_DEBUG ("Packet size while dequeuing " << entry.GetPacket ()->GetSize ());
           return true;
         }
@@ -134,7 +135,7 @@ MaintainBuffer::AllEqual (MaintainBuffEntry & entry)
           && (i->GetSrc () == entry.GetSrc ()) && (i->GetDst () == entry.GetDst ())
           && (i->GetAckId () == entry.GetAckId ()) && (i->GetSegsLeft () == entry.GetSegsLeft ()))
         {
-          m_maintainBuffer.erase (i);   // Erase the same maintain buffer entry for the received packet
+          i = m_maintainBuffer.erase (i);   // Erase the same maintain buffer entry for the received packet
           return true;
         }
     }
@@ -155,7 +156,7 @@ MaintainBuffer::NetworkEqual (MaintainBuffEntry & entry)
           && (i->GetSrc () == entry.GetSrc ()) && (i->GetDst () == entry.GetDst ())
           && (i->GetAckId () == entry.GetAckId ()))
         {
-          m_maintainBuffer.erase (i);   // Erase the same maintain buffer entry for the received packet
+          i = m_maintainBuffer.erase (i);   // Erase the same maintain buffer entry for the received packet
           return true;
         }
     }
@@ -178,7 +179,7 @@ MaintainBuffer::PromiscEqual (MaintainBuffEntry & entry)
           && (i->GetSegsLeft () == entry.GetSegsLeft ()) && (i->GetAckId () == entry.GetAckId ())
           )
         {
-          m_maintainBuffer.erase (i);   // Erase the same maintain buffer entry for the promisc received packet
+          i = m_maintainBuffer.erase (i);   // Erase the same maintain buffer entry for the promisc received packet
           return true;
         }
     }
@@ -201,7 +202,7 @@ MaintainBuffer::LinkEqual (MaintainBuffEntry & entry)
           && (i->GetNextHop () == entry.GetNextHop ())
           )
         {
-          m_maintainBuffer.erase (i);   // Erase the same maintain buffer entry for the promisc received packet
+          i = m_maintainBuffer.erase (i);   // Erase the same maintain buffer entry for the promisc received packet
           return true;
         }
     }

@@ -24,10 +24,9 @@
 #include "angles.h"
 
 
-NS_LOG_COMPONENT_DEFINE ("Angles");
-
 namespace ns3 {
 
+NS_LOG_COMPONENT_DEFINE ("Angles");
 
 double DegreesToRadians (double degrees)
 {

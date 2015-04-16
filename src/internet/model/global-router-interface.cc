@@ -31,9 +31,9 @@
 #include "global-router-interface.h"
 #include <vector>
 
-NS_LOG_COMPONENT_DEFINE ("GlobalRouter");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("GlobalRouter");
 
 // ---------------------------------------------------------------------------
 //
@@ -510,7 +510,8 @@ TypeId
 GlobalRouter::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::GlobalRouter")
-    .SetParent<Object> ();
+    .SetParent<Object> ()
+    .SetGroupName ("Internet");
   return tid;
 }
 

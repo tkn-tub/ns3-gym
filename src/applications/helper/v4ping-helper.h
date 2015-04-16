@@ -1,3 +1,23 @@
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
+/*
+ * Copyright (c) 2008 INRIA
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation;
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
+ */
+
 #ifndef V4PING_HELPER_H
 #define V4PING_HELPER_H
 
@@ -8,7 +28,8 @@
 namespace ns3 {
 
 /**
- * \brief create a pinger application and associate it to a node
+ * \ingroup v4ping
+ * \brief Create a IPv5 ping application and associate it to a node
  *
  * This class creates one or multiple instances of ns3::V4Ping and associates
  * it/them to one/multiple node(s).
@@ -25,33 +46,33 @@ public:
   V4PingHelper (Ipv4Address remote);
 
   /**
-   * Install a pinger application on each Node in the provided NodeContainer.
+   * Install a Ping application on each Node in the provided NodeContainer.
    *
    * \param nodes The NodeContainer containing all of the nodes to get a V4Ping
    *              application.
    *
-   * \returns A list of pinger applications, one for each input node
+   * \returns A list of Ping applications, one for each input node
    */
   ApplicationContainer Install (NodeContainer nodes) const;
 
   /**
-   * Install a pinger application on the provided Node.  The Node is specified
+   * Install a Ping application on the provided Node.  The Node is specified
    * directly by a Ptr<Node>
    *
    * \param node The node to install the V4PingApplication on.
    *
-   * \returns An ApplicationContainer holding the pinger application created.
+   * \returns An ApplicationContainer holding the Ping application created.
    */
   ApplicationContainer Install (Ptr<Node> node) const;
 
   /**
-   * Install a pinger application on the provided Node.  The Node is specified
+   * Install a Ping application on the provided Node.  The Node is specified
    * by a string that must have previously been associated with a Node using the
    * Object Name Service.
    *
    * \param nodeName The node to install the V4PingApplication on.
    *
-   * \returns An ApplicationContainer holding the pinger application created.
+   * \returns An ApplicationContainer holding the Ping application created.
    */
   ApplicationContainer Install (std::string nodeName) const;
 
@@ -63,9 +84,12 @@ public:
   void SetAttribute (std::string name, const AttributeValue &value);
 private:
   /**
-   * \internal
+   * \brief Do the actual application installation in the node
+   * \param node the node
+   * \returns a Smart pointer to the installed application
    */
   Ptr<Application> InstallPriv (Ptr<Node> node) const;
+  /// Object factory
   ObjectFactory m_factory;
 };
 

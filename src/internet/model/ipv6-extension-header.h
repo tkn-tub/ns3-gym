@@ -196,6 +196,7 @@ private:
   /**
    * \brief Calculate padding.
    * \param alignment alignment
+   * \return the number of pad bytes
    */
   uint32_t CalculatePad (Ipv6OptionHeader::Alignment alignment) const;
 

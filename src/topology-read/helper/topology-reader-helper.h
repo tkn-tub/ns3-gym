@@ -56,9 +56,9 @@ public:
   Ptr<TopologyReader> GetTopologyReader ();
 
 private:
-  Ptr<TopologyReader> m_inFile;
-  std::string m_fileName;
-  std::string m_fileType;
+  Ptr<TopologyReader> m_inputModel;  //!< Smart pointer to the actual topology model
+  std::string m_fileName;  //!< Name of the input file
+  std::string m_fileType;  //!< Type of the input file (e.g., "Inet", "Orbis", etc.).
 };
 
 } // namespace ns3

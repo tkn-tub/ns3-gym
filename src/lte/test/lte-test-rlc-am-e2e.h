@@ -25,7 +25,7 @@
 #include "ns3/test.h"
 
 
-namespace ns3 {
+using namespace ns3;
 
 
 /**
@@ -64,9 +64,5 @@ class LteRlcAmE2eTestCase : public TestCase
     uint32_t m_ulDrops;
 
 };
-
-
-} // namespace ns3
-
 
 #endif // LTE_TEST_RLC_AM_E2E_H

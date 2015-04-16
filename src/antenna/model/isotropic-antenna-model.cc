@@ -25,9 +25,9 @@
 #include "isotropic-antenna-model.h"
 
 
-NS_LOG_COMPONENT_DEFINE ("IsotropicAntennaModel");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("IsotropicAntennaModel");
 
 NS_OBJECT_ENSURE_REGISTERED (IsotropicAntennaModel);
 
@@ -37,6 +37,7 @@ IsotropicAntennaModel::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::IsotropicAntennaModel")
     .SetParent<AntennaModel> ()
+    .SetGroupName("Antenna")
     .AddConstructor<IsotropicAntennaModel> ()
   ;
   return tid;

@@ -28,6 +28,8 @@
 namespace ns3 {
 
 /**
+ * \ingroup probes
+ *
  * Base class for probes.
  *
  * This class provides general functionality to control each
@@ -37,6 +39,10 @@ namespace ns3 {
 class Probe : public DataCollectionObject
 {
 public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId ();
   Probe ();
   virtual ~Probe ();

@@ -28,9 +28,9 @@
 #include "ns3/config.h"
 #include "ns3/trace-source-accessor.h"
 
-NS_LOG_COMPONENT_DEFINE ("DoubleProbe");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("DoubleProbe");
 
 NS_OBJECT_ENSURE_REGISTERED (DoubleProbe);
 
@@ -42,7 +42,8 @@ DoubleProbe::GetTypeId ()
     .AddConstructor<DoubleProbe> ()
     .AddTraceSource ( "Output",
                       "The double that serves as output for this probe",
-                      MakeTraceSourceAccessor (&DoubleProbe::m_output))
+                      MakeTraceSourceAccessor (&DoubleProbe::m_output),
+                     "ns3::TracedValue::DoubleCallback")
   ;
   return tid;
 }
@@ -84,7 +85,7 @@ bool
 DoubleProbe::ConnectByObject (std::string traceSource, Ptr<Object> obj)
 {
   NS_LOG_FUNCTION (this << traceSource << obj);
-  NS_LOG_DEBUG ("Name of probe (if any) in names database: " << Names::FindPath (obj));
+  NS_LOG_DEBUG ("Name of trace source (if any) in names database: " << Names::FindPath (obj));
   bool connected = obj->TraceConnectWithoutContext (traceSource, MakeCallback (&ns3::DoubleProbe::TraceSink, this));
   return connected;
 }
@@ -93,7 +94,7 @@ void
 DoubleProbe::ConnectByPath (std::string path)
 {
   NS_LOG_FUNCTION (this << path);
-  NS_LOG_DEBUG ("Name of probe to search for in config database: " << path);
+  NS_LOG_DEBUG ("Name of trace source to search for in config database: " << path);
   Config::ConnectWithoutContext (path, MakeCallback (&ns3::DoubleProbe::TraceSink, this));
 }
 

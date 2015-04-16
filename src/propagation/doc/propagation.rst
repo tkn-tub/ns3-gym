@@ -111,6 +111,7 @@ where for small or medium sized city
 and for large cities
 
 .. math::
+
   C_\mathrm{H} = \left\{\begin{array}{ll} 8.29 (\log{(1.54h_M)})^2 -1.1 & \mbox{if } 150\leq f\leq 200 \\ 3.2(\log{(11.75h_M)})^2 -4.97 & \mbox{if } 200<f\leq 1500\end{array} \right.
 
 There extension for the standard OH in suburban is

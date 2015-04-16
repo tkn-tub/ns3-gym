@@ -38,16 +38,20 @@ class LtePdcpSapProvider;
 class Packet;
 
 /**
- * Class holding definition common to all Ue/Enb SAP
- * Users/Providers. See 3GPP TS 36.331 for reference. 
+ * \ingroup lte
+ *
+ * \brief Class holding definition common to all UE/eNodeB SAP Users/Providers.
+ *
+ * See 3GPP TS 36.331 for reference.
+ *
  * Note that only those values that are (expected to be) used by the
  * ns-3 model are mentioned here. The naming of the variables that are
  * defined here is the same of 36.331, except for removal of "-" and
  * conversion to CamelCase or ALL_CAPS where needed in order to follow
- * the ns-3 coding style. Due to the 1-to-1 mapping with TS 36.331, 
+ * the ns-3 coding style. Due to the 1-to-1 mapping with TS 36.331,
  * detailed doxygen documentation is omitted, so please refer to
  * 36.331 for the meaning of these data structures / fields.
- * 
+ *
  */
 class LteRrcSap
 {
@@ -71,6 +75,12 @@ public:
     uint32_t cellIdentity;
     bool csgIndication;
     uint32_t csgIdentity;
+  };
+
+  struct CellSelectionInfo
+  {
+    int8_t qRxLevMin; ///< INTEGER (-70..-22), actual value = IE value * 2 [dBm].
+    int8_t qQualMin; ///< INTEGER (-34..-3), actual value = IE value [dB].
   };
 
   struct FreqInfo
@@ -123,6 +133,66 @@ public:
     uint8_t transmissionMode;
   };
 
+  struct PdschConfigCommon
+  {
+	int8_t referenceSignalPower;  // INTEGER (-60..50),
+    int8_t pb;                    // INTEGER (0..3),
+  };
+
+  struct PdschConfigDedicated
+  {
+    /*
+     * P_A values, TS 36.331 6.3.2 PDSCH-Config
+     * ENUMERATED { dB-6, dB-4dot77, dB-3, dB-1dot77, dB0, dB1, dB2, dB3 }
+     */
+    enum
+    {
+      dB_6,
+      dB_4dot77,
+      dB_3,
+      dB_1dot77,
+      dB0,
+      dB1,
+      dB2,
+      dB3
+    };
+    uint8_t pa;
+  };
+
+  static double ConvertPdschConfigDedicated2Double (PdschConfigDedicated pdschConfigDedicated)
+  {
+    double pa = 0;
+    switch (pdschConfigDedicated.pa)
+      {
+      case PdschConfigDedicated::dB_6:
+        pa = -6;
+        break;
+      case PdschConfigDedicated::dB_4dot77:
+        pa = -4.77;
+        break;
+      case PdschConfigDedicated::dB_3:
+        pa = -3;
+        break;
+      case PdschConfigDedicated::dB_1dot77:
+        pa = -1.77;
+        break;
+      case PdschConfigDedicated::dB0:
+        pa = 0;
+        break;
+      case PdschConfigDedicated::dB1:
+        pa = 1;
+        break;
+      case PdschConfigDedicated::dB2:
+        pa = 2;
+        break;
+      case PdschConfigDedicated::dB3:
+        pa = 3;
+        break;
+      default:
+        break;
+      }
+    return pa;
+  }
 
   struct PhysicalConfigDedicated
   {
@@ -130,6 +200,8 @@ public:
     SoundingRsUlConfigDedicated soundingRsUlConfigDedicated;
     bool haveAntennaInfoDedicated;
     AntennaInfoDedicated antennaInfo;
+    bool havePdschConfigDedicated;
+    PdschConfigDedicated pdschConfigDedicated;
   };
 
 
@@ -173,6 +245,7 @@ public:
   struct RadioResourceConfigCommonSib
   {
     RachConfigCommon rachConfigCommon;
+    PdschConfigCommon pdschConfigCommon;
   };
 
   struct RadioResourceConfigDedicated
@@ -225,16 +298,26 @@ public:
     uint8_t cellForWhichToReportCGI;
   };
 
+  /**
+   * \brief Threshold for event evaluation.
+   *
+   * For RSRP-based threshold, the actual value is (value - 140) dBm. While for
+   * RSRQ-based threshold, the actual value is (value - 40) / 2 dB. This is in
+   * accordance with section 9.1.4 and 9.1.7 of 3GPP TS 36.133.
+   *
+   * \sa ns3::EutranMeasurementMapping
+   */
   struct ThresholdEutra
   {
     enum
     {
-      THRESHOLD_RSRP,
-      THRESHOLD_RSRQ
+      THRESHOLD_RSRP, ///< RSRP is used for the threshold.
+      THRESHOLD_RSRQ ///< RSRQ is used for the threshold.
     } choice;
-    uint8_t range;
+    uint8_t range; ///< Value range used in RSRP/RSRQ threshold.
   };
 
+  /// Specifies criteria for triggering of an E-UTRA measurement reporting event.
   struct ReportConfigEutra
   {
     enum
@@ -245,34 +328,50 @@ public:
 
     enum
     {
-      EVENT_A1,
-      EVENT_A2,
-      EVENT_A3,
-      EVENT_A4,
-      EVENT_A5
-    } eventId;
-    ThresholdEutra threshold1; // used for A1, A2, A4, A5
-    ThresholdEutra threshold2; // used for A5
-    bool reportOnLeave; // used for A3
-    int8_t a3Offset; // used for A3
+      EVENT_A1, ///< Event A1: Serving becomes better than absolute threshold.
+      EVENT_A2, ///< Event A2: Serving becomes worse than absolute threshold.
+      EVENT_A3, ///< Event A3: Neighbour becomes amount of offset better than PCell.
+      EVENT_A4, ///< Event A4: Neighbour becomes better than absolute threshold.
+      EVENT_A5 ///< Event A5: PCell becomes worse than absolute `threshold1` AND Neighbour becomes better than another absolute `threshold2`.
+
+    } eventId; ///< Choice of E-UTRA event triggered reporting criteria.
+
+    ThresholdEutra threshold1; ///< Threshold for event A1, A2, A4, and A5.
+    ThresholdEutra threshold2; ///< Threshold for event A5.
+
+    /// Indicates whether or not the UE shall initiate the measurement reporting procedure when the leaving condition is met for a cell in `cellsTriggeredList`, as specified in 5.5.4.1 of 3GPP TS 36.331.
+    bool reportOnLeave;
+
+    /// Offset value for Event A3. An integer between -30 and 30. The actual value is (value * 0.5) dB.
+    int8_t a3Offset;
+
+    /// Parameter used within the entry and leave condition of an event triggered reporting condition. The actual value is (value * 0.5) dB.
     uint8_t hysteresis;
+
+    /// Time during which specific criteria for the event needs to be met in order to trigger a measurement report.
     uint16_t timeToTrigger;
+
     enum
     {
       REPORT_STRONGEST_CELLS,
       REPORT_CGI
     } purpose;
+
     enum
     {
-      RSRP,
-      RSRQ
-    } triggerQuantity;
+      RSRP, ///< Reference Signal Received Power
+      RSRQ ///< Reference Signal Received Quality
+    } triggerQuantity; ///< The quantities used to evaluate the triggering condition for the event, see 3GPP TS 36.214.
+
     enum
     {
       SAME_AS_TRIGGER_QUANTITY,
-      BOTH
-    } reportQuantity;
+      BOTH ///< Both the RSRP and RSRQ quantities are to be included in the measurement report.
+    } reportQuantity; ///< The quantities to be included in the measurement report, always assumed to be BOTH.
+
+    /// Maximum number of cells, excluding the serving cell, to be included in the measurement report.
     uint8_t maxReportCells;
+
     enum
     {
       MS120,
@@ -291,9 +390,14 @@ public:
       SPARE3,
       SPARE2,
       SPARE1
-    } reportInterval;
+    } reportInterval; ///< Indicates the interval between periodical reports.
+
+    /// Number of measurement reports applicable, always assumed to be infinite.
     uint8_t reportAmount;
-  };
+
+    ReportConfigEutra ();
+
+  }; // end of struct ReportConfigEutra
 
   struct MeasObjectToAddMod
   {
@@ -424,6 +528,7 @@ public:
   struct SystemInformationBlockType1
   {
     CellAccessRelatedInfo cellAccessRelatedInfo;
+    CellSelectionInfo cellSelectionInfo;
   };
 
   struct SystemInformationBlockType2
@@ -558,10 +663,10 @@ public:
 
 
 /**
- * Service Access Point (SAP) used by the UE RRC to send messages to
- * the eNB. Each method defined in this class correspond to the
- * transmission of a message that is defined in section 6.2.2 of TS
- * 36.331.
+ * \brief Part of the RRC protocol. This Service Access Point (SAP) is used by
+ *        the UE RRC to send messages to the eNB. Each method defined in this
+ *        class corresponds to the transmission of a message that is defined in
+ *        Section 6.2.2 of TS 36.331.
  */
 class LteUeRrcSapUser : public LteRrcSap
 {
@@ -573,20 +678,63 @@ public:
   };
 
   virtual void Setup (SetupParameters params) = 0;
+
+  /**
+   * \brief Send an _RRCConnectionRequest message to the serving eNodeB
+   *        during an RRC connection establishment procedure
+   *        (Section 5.3.3 of TS 36.331).
+   * \param msg the message
+   */
   virtual void SendRrcConnectionRequest (RrcConnectionRequest msg) = 0;
+
+  /**
+   * \brief Send an _RRCConnectionSetupComplete_ message to the serving eNodeB
+   *        during an RRC connection establishment procedure
+   *        (Section 5.3.3 of TS 36.331).
+   * \param msg the message
+   */
   virtual void SendRrcConnectionSetupCompleted (RrcConnectionSetupCompleted msg) = 0;
+
+  /**
+   * \brief Send an _RRCConnectionReconfigurationComplete_ message to the serving eNodeB
+   *        during an RRC connection reconfiguration procedure
+   *        (Section 5.3.5 of TS 36.331).
+   * \param msg the message
+   */
   virtual void SendRrcConnectionReconfigurationCompleted (RrcConnectionReconfigurationCompleted msg) = 0;
+
+  /**
+   * \brief Send an _RRCConnectionReestablishmentRequest_ message to the serving eNodeB
+   *        during an RRC connection re-establishment procedure
+   *        (Section 5.3.7 of TS 36.331).
+   * \param msg the message
+   */
   virtual void SendRrcConnectionReestablishmentRequest (RrcConnectionReestablishmentRequest msg) = 0;
+
+  /**
+   * \brief Send an _RRCConnectionReestablishmentComplete_ message to the serving eNodeB
+   *        during an RRC connection re-establishment procedure
+   *        (Section 5.3.7 of TS 36.331).
+   * \param msg the message
+   */
   virtual void SendRrcConnectionReestablishmentComplete (RrcConnectionReestablishmentComplete msg) = 0;
+
+  /**
+   * \brief Send a _MeasurementReport_ message to the serving eNodeB
+   *        during a measurement reporting procedure
+   *        (Section 5.5.5 of TS 36.331).
+   * \param msg the message
+   */
   virtual void SendMeasurementReport (MeasurementReport msg) = 0;
+
 };
 
 
 /**
- * Service Access Point (SAP) used to let the UE RRC receive a message
- * from the eNB RRC. Each method defined in this class correspond to
- * the reception of a message that is defined in section 6.2.2 of TS
- * 36.331.
+ * \brief Part of the RRC protocol. This Service Access Point (SAP) is used to
+ *        let the UE RRC receive a message from the eNB RRC. Each method defined
+ *        in this class corresponds to the reception of a message that is
+ *        defined in Section 6.2.2 of TS 36.331.
  */
 class LteUeRrcSapProvider : public LteRrcSap
 {
@@ -598,24 +746,71 @@ public:
   };
 
   virtual void CompleteSetup (CompleteSetupParameters params) = 0;
-  virtual void RecvMasterInformationBlock (MasterInformationBlock msg) = 0;
-  virtual void RecvSystemInformationBlockType1 (SystemInformationBlockType1 msg) = 0;
+
+  /**
+   * \brief Receive a _SystemInformation_ message from the serving eNodeB
+   *        during a system information acquisition procedure
+   *        (Section 5.2.2 of TS 36.331).
+   * \param msg the message
+   */
   virtual void RecvSystemInformation (SystemInformation msg) = 0;
+
+  /**
+   * \brief Receive an _RRCConnectionSetup_ message from the serving eNodeB
+   *        during an RRC connection establishment procedure
+   *        (Section 5.3.3 of TS 36.331).
+   * \param msg the message
+   */
   virtual void RecvRrcConnectionSetup (RrcConnectionSetup msg) = 0;
+
+  /**
+   * \brief Receive an _RRCConnectionReconfiguration_ message from the serving eNodeB
+   *        during an RRC connection reconfiguration procedure
+   *        (Section 5.3.5 of TS 36.331).
+   * \param msg the message
+   */
   virtual void RecvRrcConnectionReconfiguration (RrcConnectionReconfiguration msg) = 0;
+
+  /**
+   * \brief Receive an _RRCConnectionReestablishment_ message from the serving eNodeB
+   *        during an RRC connection re-establishment procedure
+   *        (Section 5.3.7 of TS 36.331).
+   * \param msg the message
+   */
   virtual void RecvRrcConnectionReestablishment (RrcConnectionReestablishment msg) = 0;
+
+  /**
+   * \brief Receive an _RRCConnectionReestablishmentReject_ message from the serving eNodeB
+   *        during an RRC connection re-establishment procedure
+   *        (Section 5.3.7 of TS 36.331).
+   * \param msg the message
+   */
   virtual void RecvRrcConnectionReestablishmentReject (RrcConnectionReestablishmentReject msg) = 0;
+
+  /**
+   * \brief Receive an _RRCConnectionRelease_ message from the serving eNodeB
+   *        during an RRC connection release procedure
+   *        (Section 5.3.8 of TS 36.331).
+   * \param msg the message
+   */
   virtual void RecvRrcConnectionRelease (RrcConnectionRelease msg) = 0;
+
+  /**
+   * \brief Receive an _RRCConnectionReject_ message from the serving eNodeB
+   *        during an RRC connection establishment procedure
+   *        (Section 5.3.3 of TS 36.331).
+   * \param msg the message
+   */
   virtual void RecvRrcConnectionReject (RrcConnectionReject msg) = 0;
 
 };
 
 
 /**
- * Service Access Point (SAP) used by the eNB RRC to send messages to
- * the UE RC.  Each method defined in this class correspond to
- * the transmission of a message that is defined in section 6.2.2 of TS
- * 36.331.
+ * \brief Part of the RRC protocol. This Service Access Point (SAP) is used by
+ *        the eNB RRC to send messages to the UE RRC.  Each method defined in
+ *        this class corresponds to the transmission of a message that is
+ *        defined in Section 6.2.2 of TS 36.331.
  */
 class LteEnbRrcSapUser : public LteRrcSap
 {
@@ -628,14 +823,69 @@ public:
 
   virtual void SetupUe (uint16_t rnti, SetupUeParameters params) = 0;
   virtual void RemoveUe (uint16_t rnti) = 0;
-  virtual void SendSystemInformationBlockType1 (SystemInformationBlockType1 msg) = 0;
+
+  /**
+   * \brief Send a _SystemInformation_ message to all attached UEs
+   *        during a system information acquisition procedure
+   *        (Section 5.2.2 of TS 36.331).
+   * \param msg the message
+   */
   virtual void SendSystemInformation (SystemInformation msg) = 0;
+
+  /**
+   * \brief Send an _RRCConnectionSetup_ message to a UE
+   *        during an RRC connection establishment procedure
+   *        (Section 5.3.3 of TS 36.331).
+   * \param rnti the RNTI of the destination UE
+   * \param msg the message
+   */
   virtual void SendRrcConnectionSetup (uint16_t rnti, RrcConnectionSetup msg) = 0;
+
+  /**
+   * \brief Send an _RRCConnectionReconfiguration_ message to a UE
+   *        during an RRC connection reconfiguration procedure
+   *        (Section 5.3.5 of TS 36.331).
+   * \param rnti the RNTI of the destination UE
+   * \param msg the message
+   */
   virtual void SendRrcConnectionReconfiguration (uint16_t rnti, RrcConnectionReconfiguration msg) = 0;
+
+  /**
+   * \brief Send an _RRCConnectionReestablishment_ message to a UE
+   *        during an RRC connection re-establishment procedure
+   *        (Section 5.3.7 of TS 36.331).
+   * \param rnti the RNTI of the destination UE
+   * \param msg the message
+   */
   virtual void SendRrcConnectionReestablishment (uint16_t rnti, RrcConnectionReestablishment msg) = 0;
+
+  /**
+   * \brief Send an _RRCConnectionReestablishmentReject_ message to a UE
+   *        during an RRC connection re-establishment procedure
+   *        (Section 5.3.7 of TS 36.331).
+   * \param rnti the RNTI of the destination UE
+   * \param msg the message
+   */
   virtual void SendRrcConnectionReestablishmentReject (uint16_t rnti, RrcConnectionReestablishmentReject msg) = 0;
+
+  /**
+   * \brief Send an _RRCConnectionRelease_ message to a UE
+   *        during an RRC connection release procedure
+   *        (Section 5.3.8 of TS 36.331).
+   * \param rnti the RNTI of the destination UE
+   * \param msg the message
+   */
   virtual void SendRrcConnectionRelease (uint16_t rnti, RrcConnectionRelease msg) = 0;
+
+  /**
+   * \brief Send an _RRCConnectionReject_ message to a UE
+   *        during an RRC connection establishment procedure
+   *        (Section 5.3.3 of TS 36.331).
+   * \param rnti the RNTI of the destination UE
+   * \param msg the message
+   */
   virtual void SendRrcConnectionReject (uint16_t rnti, RrcConnectionReject msg) = 0;
+
   virtual Ptr<Packet> EncodeHandoverPreparationInformation (HandoverPreparationInfo msg) = 0;
   virtual HandoverPreparationInfo DecodeHandoverPreparationInformation (Ptr<Packet> p) = 0;
   virtual Ptr<Packet> EncodeHandoverCommand (RrcConnectionReconfiguration msg) = 0;
@@ -645,10 +895,10 @@ public:
 
 
 /**
- * Service Access Point (SAP) used to let the eNB RRC receive a
- * message from a UE RRC.  Each method defined in this class correspond to
- * the reception of a message that is defined in section 6.2.2 of TS
- * 36.331.
+ * \brief Part of the RRC protocol. This Service Access Point (SAP) is used to
+ *        let the eNB RRC receive a message from a UE RRC.  Each method defined
+ *        in this class corresponds to the reception of a message that is
+ *        defined in Section 6.2.2 of TS 36.331.
  */
 class LteEnbRrcSapProvider : public LteRrcSap
 {
@@ -660,11 +910,64 @@ public:
   };
 
   virtual void CompleteSetupUe (uint16_t rnti, CompleteSetupUeParameters params) = 0;
-  virtual void RecvRrcConnectionRequest (uint16_t rnti, RrcConnectionRequest msg) = 0;
-  virtual void RecvRrcConnectionSetupCompleted (uint16_t rnti, RrcConnectionSetupCompleted msg) = 0;
-  virtual void RecvRrcConnectionReconfigurationCompleted (uint16_t rnti, RrcConnectionReconfigurationCompleted msg) = 0;
-  virtual void RecvRrcConnectionReestablishmentRequest (uint16_t rnti, RrcConnectionReestablishmentRequest msg) = 0;
-  virtual void RecvRrcConnectionReestablishmentComplete (uint16_t rnti, RrcConnectionReestablishmentComplete msg) = 0;
+
+  /**
+   * \brief Receive an _RRCConnectionRequest_ message from a UE
+   *        during an RRC connection establishment procedure
+   *        (Section 5.3.3 of TS 36.331).
+   * \param rnti the RNTI of UE which sent the message
+   * \param msg the message
+   */
+  virtual void RecvRrcConnectionRequest (uint16_t rnti,
+                                         RrcConnectionRequest msg) = 0;
+
+  /**
+   * \brief Receive an _RRCConnectionSetupComplete_ message from a UE
+   *        during an RRC connection establishment procedure
+   *        (Section 5.3.3 of TS 36.331).
+   * \param rnti the RNTI of UE which sent the message
+   * \param msg the message
+   */
+  virtual void RecvRrcConnectionSetupCompleted (uint16_t rnti,
+                                                RrcConnectionSetupCompleted msg) = 0;
+
+  /**
+   * \brief Receive an _RRCConnectionReconfigurationComplete_ message from a UE
+   *        during an RRC connection reconfiguration procedure
+   *        (Section 5.3.5 of TS 36.331).
+   * \param rnti the RNTI of UE which sent the message
+   * \param msg the message
+   */
+  virtual void RecvRrcConnectionReconfigurationCompleted (uint16_t rnti,
+                                                          RrcConnectionReconfigurationCompleted msg) = 0;
+
+  /**
+   * \brief Receive an _RRCConnectionReestablishmentRequest_ message from a UE
+   *        during an RRC connection re-establishment procedure
+   *        (Section 5.3.7 of TS 36.331).
+   * \param rnti the RNTI of UE which sent the message
+   * \param msg the message
+   */
+  virtual void RecvRrcConnectionReestablishmentRequest (uint16_t rnti,
+                                                        RrcConnectionReestablishmentRequest msg) = 0;
+
+  /**
+   * \brief Receive an _RRCConnectionReestablishmentComplete_ message from a UE
+   *        during an RRC connection re-establishment procedure
+   *        (Section 5.3.7 of TS 36.331).
+   * \param rnti the RNTI of UE which sent the message
+   * \param msg the message
+   */
+  virtual void RecvRrcConnectionReestablishmentComplete (uint16_t rnti,
+                                                         RrcConnectionReestablishmentComplete msg) = 0;
+
+  /**
+   * \brief Receive a _MeasurementReport_ message from a UE
+   *        during a measurement reporting procedure
+   *        (Section 5.5.5 of TS 36.331).
+   * \param rnti the RNTI of UE which sent the message
+   * \param msg the message
+   */
   virtual void RecvMeasurementReport (uint16_t rnti, MeasurementReport msg) = 0;
 
 };
@@ -777,8 +1080,6 @@ public:
 
   // methods inherited from LteUeRrcSapProvider go here
   virtual void CompleteSetup (CompleteSetupParameters params);
-  virtual void RecvMasterInformationBlock (MasterInformationBlock msg);
-  virtual void RecvSystemInformationBlockType1 (SystemInformationBlockType1 msg);
   virtual void RecvSystemInformation (SystemInformation msg);
   virtual void RecvRrcConnectionSetup (RrcConnectionSetup msg);
   virtual void RecvRrcConnectionReconfiguration (RrcConnectionReconfiguration msg);
@@ -808,20 +1109,6 @@ void
 MemberLteUeRrcSapProvider<C>::CompleteSetup (CompleteSetupParameters params)
 {
   m_owner->DoCompleteSetup (params);
-}
-
-template <class C>
-void
-MemberLteUeRrcSapProvider<C>::RecvMasterInformationBlock (MasterInformationBlock msg)
-{
-  Simulator::ScheduleNow (&C::DoRecvMasterInformationBlock, m_owner, msg);
-}
-
-template <class C>
-void
-MemberLteUeRrcSapProvider<C>::RecvSystemInformationBlockType1 (SystemInformationBlockType1 msg)
-{
-  Simulator::ScheduleNow (&C::DoRecvSystemInformationBlockType1, m_owner, msg);
 }
 
 template <class C>
@@ -889,8 +1176,6 @@ public:
 
   virtual void SetupUe (uint16_t rnti, SetupUeParameters params);
   virtual void RemoveUe (uint16_t rnti);
-  virtual void SendMasterInformationBlock (MasterInformationBlock msg);
-  virtual void SendSystemInformationBlockType1 (SystemInformationBlockType1 msg);
   virtual void SendSystemInformation (SystemInformation msg);
   virtual void SendRrcConnectionSetup (uint16_t rnti, RrcConnectionSetup msg);
   virtual void SendRrcConnectionReconfiguration (uint16_t rnti, RrcConnectionReconfiguration msg);
@@ -931,20 +1216,6 @@ void
 MemberLteEnbRrcSapUser<C>::RemoveUe (uint16_t rnti)
 {
   m_owner->DoRemoveUe (rnti);
-}
-
-template <class C>
-void
-MemberLteEnbRrcSapUser<C>::SendMasterInformationBlock (MasterInformationBlock msg)
-{
-  m_owner->DoSendMasterInformationBlock (msg);
-}
-
-template <class C>
-void
-MemberLteEnbRrcSapUser<C>::SendSystemInformationBlockType1 (SystemInformationBlockType1 msg)
-{
-  m_owner->DoSendSystemInformationBlockType1 (msg);
 }
 
 template <class C>

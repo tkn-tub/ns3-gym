@@ -24,9 +24,9 @@
 #include "ipv4-packet-info-tag.h"
 #include "ns3/log.h"
 
-NS_LOG_COMPONENT_DEFINE ("Ipv4PacketInfoTag");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("Ipv4PacketInfoTag");
 
 Ipv4PacketInfoTag::Ipv4PacketInfoTag ()
   : m_addr (Ipv4Address ()),
@@ -100,6 +100,7 @@ Ipv4PacketInfoTag::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::Ipv4PacketInfoTag")
     .SetParent<Tag> ()
+    .SetGroupName ("Internet")
     .AddConstructor<Ipv4PacketInfoTag> ()
   ;
   return tid;

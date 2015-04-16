@@ -20,33 +20,83 @@
 #ifndef SIMULATION_SINGLETON_H
 #define SIMULATION_SINGLETON_H
 
+/**
+ * \file
+ * \ingroup core
+ * ns3::SimulationSingleton declaration and template implementation.
+ */
+
 namespace ns3 {
 
 /**
+ * \ingroup core
  * This singleton class template ensures that the type
  * for which we want a singleton has a lifetime bounded
- * by the simulation lifetime. That it, the underlying
- * type will be automatically deleted upon a users' call
+ * by the simulation run lifetime. That it, the underlying
+ * type will be automatically deleted upon a call
  * to Simulator::Destroy.
+ *
+ * For a singleton with a lifetime bounded by the process,
+ * not the simulation run, see Singleton.
  */
 template <typename T>
 class SimulationSingleton
 {
 public:
   /**
-   * \returns the instance underlying this singleton.
+   * Get a pointer to the singleton instance.
    *
    * This instance will be automatically deleted when the
-   * user calls ns3::Simulator::Destroy.
+   * simulation is destroyed by a call to Simulator::Destroy.
+   *
+   * \returns A pointer to the singleton instance.
    */
   static T *Get (void);
+  
 private:
+  
+  /**
+   * Get the singleton object, creating a new one if it doesn't exist yet.
+   *
+   * \internal
+   * When a new object is created, this method schedules it's own
+   * destruction using Simulator::ScheduleDestroy().
+   *
+   * \returns The address of the pointer holding the static instance.
+   */
   static T **GetObject (void);
+  
+  /** Delete the static instance. */
   static void DeleteObject (void);
+
+  /**
+   * \name %Singleton pattern
+   * Private constructor, copy and assignment operator.
+   *
+   *  Note these do not have to be implemented, since they are
+   *  never called.
+   */
+  /**@{*/
+  /** Default constructor */
+  SimulationSingleton<T> (void);
+  
+  /** Copy constructor. */
+  SimulationSingleton<T> (const SimulationSingleton<T> &);
+  /**
+   * Assignment.
+   * \returns The Singleton.
+   */
+  SimulationSingleton<T> operator = (const SimulationSingleton<T> &);
+  /**@}*/
+
 };
 
 } // namespace ns3
 
+
+/********************************************************************
+ *  Implementation of the templates declared above.
+ ********************************************************************/
 
 #include "simulator.h"
 

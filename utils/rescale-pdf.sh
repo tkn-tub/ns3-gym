@@ -4,7 +4,8 @@ TMPDIR=${TMPDIR:-/tmp}
 
 TMPFILE=`mktemp -t $(basename ${2}).XXXXXX`
 
-echo "Rescaling ${2} to ${1}"
+ME=$(basename $0)
+echo "$ME $(basename ${2}) to ${1}"
 
 echo "
 \documentclass{book}

@@ -34,11 +34,11 @@
 #include "ipv4-static-routing.h"
 #include "ipv4-routing-table-entry.h"
 
-NS_LOG_COMPONENT_DEFINE ("Ipv4StaticRouting");
-
 using std::make_pair;
 
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("Ipv4StaticRouting");
 
 NS_OBJECT_ENSURE_REGISTERED (Ipv4StaticRouting);
 
@@ -47,6 +47,7 @@ Ipv4StaticRouting::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::Ipv4StaticRouting")
     .SetParent<Ipv4RoutingProtocol> ()
+    .SetGroupName ("Internet")
     .AddConstructor<Ipv4StaticRouting> ()
   ;
   return tid;
@@ -626,17 +627,16 @@ Ipv4StaticRouting::NotifyInterfaceDown (uint32_t i)
 {
   NS_LOG_FUNCTION (this << i);
   // Remove all static routes that are going through this interface
-  uint32_t j = 0;
-  while (j < GetNRoutes ())
+  for (NetworkRoutesI it = m_networkRoutes.begin (); it != m_networkRoutes.end (); )
     {
-      Ipv4RoutingTableEntry route = GetRoute (j);
-      if (route.GetInterface () == i)
+      if (it->first->GetInterface () == i)
         {
-          RemoveRoute (j);
+          delete it->first;
+          it = m_networkRoutes.erase (it);
         }
       else
         {
-          j++;
+          it++;
         }
     }
 }
@@ -671,15 +671,19 @@ Ipv4StaticRouting::NotifyRemoveAddress (uint32_t interface, Ipv4InterfaceAddress
   Ipv4Mask networkMask = address.GetMask ();
   // Remove all static routes that are going through this interface
   // which reference this network
-  for (uint32_t j = 0; j < GetNRoutes (); j++)
+  for (NetworkRoutesI it = m_networkRoutes.begin (); it != m_networkRoutes.end (); )
     {
-      Ipv4RoutingTableEntry route = GetRoute (j);
-      if (route.GetInterface () == interface &&
-          route.IsNetwork () && 
-          route.GetDestNetwork () == networkAddress &&
-          route.GetDestNetworkMask () == networkMask)
+      if (it->first->GetInterface () == interface
+          && it->first->IsNetwork ()
+          && it->first->GetDestNetwork () == networkAddress
+          && it->first->GetDestNetworkMask () == networkMask)
         {
-          RemoveRoute (j);
+          delete it->first;
+          it = m_networkRoutes.erase (it);
+        }
+      else
+        {
+          it++;
         }
     }
 }

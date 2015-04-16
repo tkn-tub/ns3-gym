@@ -18,15 +18,15 @@
  * Author: Tommaso Pecorella <tommaso.pecorella@unifi.it>
  */
 #include "error-channel.h"
-#include "error-net-device.h"
+#include "ns3/simple-net-device.h"
 #include "ns3/simulator.h"
 #include "ns3/packet.h"
 #include "ns3/node.h"
 #include "ns3/log.h"
 
-NS_LOG_COMPONENT_DEFINE ("ErrorChannel");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("ErrorChannel");
 
 NS_OBJECT_ENSURE_REGISTERED (ErrorChannel);
 
@@ -62,12 +62,12 @@ ErrorChannel::SetJumpingMode(bool mode)
 void
 ErrorChannel::Send (Ptr<Packet> p, uint16_t protocol,
                     Mac48Address to, Mac48Address from,
-                    Ptr<ErrorNetDevice> sender)
+                    Ptr<SimpleNetDevice> sender)
 {
   NS_LOG_FUNCTION (p << protocol << to << from << sender);
-  for (std::vector<Ptr<ErrorNetDevice> >::const_iterator i = m_devices.begin (); i != m_devices.end (); ++i)
+  for (std::vector<Ptr<SimpleNetDevice> >::const_iterator i = m_devices.begin (); i != m_devices.end (); ++i)
     {
-      Ptr<ErrorNetDevice> tmp = *i;
+      Ptr<SimpleNetDevice> tmp = *i;
       if (tmp == sender)
         {
           continue;
@@ -75,20 +75,20 @@ ErrorChannel::Send (Ptr<Packet> p, uint16_t protocol,
       if( !jumping || jumpingState%2 )
         {
           Simulator::ScheduleWithContext (tmp->GetNode ()->GetId (), Seconds (0),
-                                      &ErrorNetDevice::Receive, tmp, p->Copy (), protocol, to, from);
+                                      &SimpleNetDevice::Receive, tmp, p->Copy (), protocol, to, from);
           jumpingState++;
         }
       else
         {
           Simulator::ScheduleWithContext (tmp->GetNode ()->GetId (), jumpingTime,
-                                      &ErrorNetDevice::Receive, tmp, p->Copy (), protocol, to, from);
+                                      &SimpleNetDevice::Receive, tmp, p->Copy (), protocol, to, from);
           jumpingState++;
         }
     }
 }
 
 void 
-ErrorChannel::Add (Ptr<ErrorNetDevice> device)
+ErrorChannel::Add (Ptr<SimpleNetDevice> device)
 {
   m_devices.push_back (device);
 }
@@ -104,7 +104,7 @@ ErrorChannel::GetDevice (uint32_t i) const
   return m_devices[i];
 }
 
-NS_OBJECT_ENSURE_REGISTERED (ErrorModel);
+NS_OBJECT_ENSURE_REGISTERED (BinaryErrorModel);
 
 TypeId BinaryErrorModel::GetTypeId (void)
 {

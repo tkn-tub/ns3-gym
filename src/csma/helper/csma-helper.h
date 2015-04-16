@@ -27,7 +27,6 @@
 #include "ns3/net-device-container.h"
 #include "ns3/node-container.h"
 #include "ns3/csma-channel.h"
-#include "ns3/deprecated.h"
 #include "ns3/trace-helper.h"
 
 namespace ns3 {
@@ -206,14 +205,11 @@ public:
   int64_t AssignStreams (NetDeviceContainer c, int64_t stream);
 
 private:
-  /*
-   * \internal
-   */
+
   Ptr<NetDevice> InstallPriv (Ptr<Node> node, Ptr<CsmaChannel> channel) const;
 
   /**
    * \brief Enable pcap output on the indicated net device.
-   * \internal
    *
    * NetDevice-specific implementation mechanism for hooking the trace and
    * writing to the trace file.
@@ -227,7 +223,6 @@ private:
 
   /**
    * \brief Enable ascii trace output on the indicated net device.
-   * \internal
    *
    * NetDevice-specific implementation mechanism for hooking the trace and
    * writing to the trace file.

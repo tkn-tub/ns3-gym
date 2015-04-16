@@ -35,10 +35,9 @@
 
 #include "lte-test-sinr-chunk-processor.h"
 
+using namespace ns3;
+
 NS_LOG_COMPONENT_DEFINE ("LteLinkAdaptationTest");
-
-namespace ns3 {
-
 
 /**
  * Test 1.3 Link Adaptation
@@ -162,6 +161,9 @@ LteLinkAdaptationTestCase::DoRun (void)
   Config::SetDefault ("ns3::LteEnbRrc::SrsPeriodicity", UintegerValue (2));
   Config::SetDefault ("ns3::LteHelper::UseIdealRrc", BooleanValue (true));
 
+  //Disable Uplink Power Control
+  Config::SetDefault ("ns3::LteUePhy::EnableUplinkPowerControl", BooleanValue (false));
+
   /**
     * Simulation Topology
     */
@@ -204,7 +206,7 @@ LteLinkAdaptationTestCase::DoRun (void)
   // Use testing chunk processor in the PHY layer
   // It will be used to test that the SNR is as intended
   Ptr<LtePhy> uePhy = ueDevs.Get (0)->GetObject<LteUeNetDevice> ()->GetPhy ()->GetObject<LtePhy> ();
-  Ptr<LteTestSinrChunkProcessor> testSinr = Create<LteTestSinrChunkProcessor> (uePhy);
+  Ptr<LteTestSinrChunkProcessor> testSinr = Create<LteTestSinrChunkProcessor> ();
   uePhy->GetDownlinkSpectrumPhy ()->AddCtrlSinrChunkProcessor (testSinr);
 
   Config::Connect ("/NodeList/0/DeviceList/0/LteEnbMac/DlScheduling",
@@ -244,6 +246,3 @@ LteLinkAdaptationTestCase::DlScheduling (uint32_t frameNo, uint32_t subframeNo, 
       NS_TEST_ASSERT_MSG_EQ ((uint16_t)mcsTb1, m_mcsIndex, "Wrong MCS index");
     }
 }
-
-} // namespace ns3
-

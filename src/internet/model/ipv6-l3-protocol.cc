@@ -49,9 +49,9 @@
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (Ipv6L3Protocol);
-
 NS_LOG_COMPONENT_DEFINE ("Ipv6L3Protocol");
+
+NS_OBJECT_ENSURE_REGISTERED (Ipv6L3Protocol);
 
 const uint16_t Ipv6L3Protocol::PROT_NUMBER = 0x86DD;
 
@@ -59,30 +59,59 @@ TypeId Ipv6L3Protocol::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::Ipv6L3Protocol")
     .SetParent<Ipv6> ()
+    .SetGroupName ("Internet")
     .AddConstructor<Ipv6L3Protocol> ()
-    .AddAttribute ("DefaultTtl", "The TTL value set by default on all outgoing packets generated on this node.",
+    .AddAttribute ("DefaultTtl",
+                   "The TTL value set by default on all "
+                   "outgoing packets generated on this node.",
                    UintegerValue (64),
                    MakeUintegerAccessor (&Ipv6L3Protocol::m_defaultTtl),
                    MakeUintegerChecker<uint8_t> ())
-    .AddAttribute ("DefaultTclass", "The TCLASS value set by default on all outgoing packets generated on this node.",
+    .AddAttribute ("DefaultTclass",
+                   "The TCLASS value set by default on all "
+                   "outgoing packets generated on this node.",
                    UintegerValue (0),
                    MakeUintegerAccessor (&Ipv6L3Protocol::m_defaultTclass),
                    MakeUintegerChecker<uint8_t> ())
-    .AddAttribute ("InterfaceList", "The set of IPv6 interfaces associated to this IPv6 stack.",
+    .AddAttribute ("InterfaceList",
+                   "The set of IPv6 interfaces associated to this IPv6 stack.",
                    ObjectVectorValue (),
                    MakeObjectVectorAccessor (&Ipv6L3Protocol::m_interfaces),
                    MakeObjectVectorChecker<Ipv6Interface> ())
-    .AddAttribute ("SendIcmpv6Redirect", "Send the ICMPv6 Redirect when appropriate.",
+    .AddAttribute ("SendIcmpv6Redirect",
+                   "Send the ICMPv6 Redirect when appropriate.",
                    BooleanValue (true),
                    MakeBooleanAccessor (&Ipv6L3Protocol::SetSendIcmpv6Redirect,
                                         &Ipv6L3Protocol::GetSendIcmpv6Redirect),
                    MakeBooleanChecker ())
-    .AddTraceSource ("Tx", "Send IPv6 packet to outgoing interface.",
-                     MakeTraceSourceAccessor (&Ipv6L3Protocol::m_txTrace))
-    .AddTraceSource ("Rx", "Receive IPv6 packet from incoming interface.",
-                     MakeTraceSourceAccessor (&Ipv6L3Protocol::m_rxTrace))
-    .AddTraceSource ("Drop", "Drop IPv6 packet",
-                     MakeTraceSourceAccessor (&Ipv6L3Protocol::m_dropTrace))
+    .AddTraceSource ("Tx",
+                     "Send IPv6 packet to outgoing interface.",
+                     MakeTraceSourceAccessor (&Ipv6L3Protocol::m_txTrace),
+                     "ns3::Ipv6L3Protocol::TxRxTracedCallback")
+    .AddTraceSource ("Rx",
+                     "Receive IPv6 packet from incoming interface.",
+                     MakeTraceSourceAccessor (&Ipv6L3Protocol::m_rxTrace),
+                     "ns3::Ipv6L3Protocol::TxRxTracedCallback")
+    .AddTraceSource ("Drop",
+                     "Drop IPv6 packet",
+                     MakeTraceSourceAccessor (&Ipv6L3Protocol::m_dropTrace),
+                     "ns3::Ipv6L3Protocol::DropTracedCallback")
+
+    .AddTraceSource ("SendOutgoing",
+                     "A newly-generated packet by this node is "
+                     "about to be queued for transmission",
+                     MakeTraceSourceAccessor (&Ipv6L3Protocol::m_sendOutgoingTrace),
+                     "ns3::Ipv6L3Protocol::SentTracedCallback")
+    .AddTraceSource ("UnicastForward",
+                     "A unicast IPv6 packet was received by this node "
+                     "and is being forwarded to another node",
+                     MakeTraceSourceAccessor (&Ipv6L3Protocol::m_unicastForwardTrace),
+                     "ns3::Ipv6L3Protocol::SentTracedCallback")
+    .AddTraceSource ("LocalDeliver",
+                     "An IPv6 packet was received by/for this node, "
+                     "and it is being forward up the stack",
+                     MakeTraceSourceAccessor (&Ipv6L3Protocol::m_localDeliverTrace),
+                     "ns3::Ipv6L3Protocol::SentTracedCallback")
   ;
   return tid;
 }
@@ -484,11 +513,23 @@ void Ipv6L3Protocol::SetUp (uint32_t i)
   NS_LOG_FUNCTION (this << i);
   Ptr<Ipv6Interface> interface = GetInterface (i);
 
-  interface->SetUp ();
-
-  if (m_routingProtocol != 0)
+  // RFC 2460, Section 5, pg. 24:
+  //  IPv6 requires that every link in the internet have an MTU of 1280
+  //  octets or greater.  On any link that cannot convey a 1280-octet
+  //  packet in one piece, link-specific fragmentation and reassembly must
+  //  be provided at a layer below IPv6.
+  if (interface->GetDevice ()->GetMtu () >= 1280)
     {
-      m_routingProtocol->NotifyInterfaceUp (i);
+      interface->SetUp ();
+
+      if (m_routingProtocol != 0)
+        {
+          m_routingProtocol->NotifyInterfaceUp (i);
+        }
+    }
+  else
+    {
+      NS_LOG_LOGIC ("Interface " << int(i) << " is set to be down for IPv6. Reason: not respecting minimum IPv6 MTU (1280 octects)");
     }
 }
 
@@ -556,6 +597,45 @@ void Ipv6L3Protocol::SetForwarding (uint32_t i, bool val)
   NS_LOG_FUNCTION (this << i << val);
   Ptr<Ipv6Interface> interface = GetInterface (i);
   interface->SetForwarding (val);
+}
+
+Ipv6Address Ipv6L3Protocol::SourceAddressSelection (uint32_t interface, Ipv6Address dest)
+{
+  NS_LOG_FUNCTION (this << interface << dest);
+  Ipv6Address ret;
+
+  if (dest.IsLinkLocal () || dest.IsLinkLocalMulticast ())
+    {
+      for (uint32_t i = 0; i < GetNAddresses (interface); i++)
+        {
+          Ipv6InterfaceAddress test = GetAddress (interface, i);
+          if (test.GetScope () == Ipv6InterfaceAddress::LINKLOCAL)
+            {
+              return test.GetAddress ();
+            }
+        }
+      NS_ASSERT_MSG (false, "No link-local address found on interface " << interface);
+    }
+
+  for (uint32_t i = 0; i < GetNAddresses (interface); i++)
+    {
+      Ipv6InterfaceAddress test = GetAddress (interface, i);
+
+      if (test.GetScope () == Ipv6InterfaceAddress::GLOBAL)
+        {
+          if (test.IsInSameSubnet (dest))
+            {
+              return test.GetAddress ();
+            }
+          else
+            {
+              ret = test.GetAddress ();
+            }
+        }
+    }
+
+  // no specific match found. Use a global address (any useful is fine).
+  return ret;
 }
 
 void Ipv6L3Protocol::SetIpForward (bool forward)
@@ -733,6 +813,8 @@ void Ipv6L3Protocol::Send (Ptr<Packet> packet, Ipv6Address source, Ipv6Address d
     {
       NS_LOG_LOGIC ("Ipv6L3Protocol::Send case 1: passed in with a route");
       hdr = BuildHeader (source, destination, protocol, packet->GetSize (), ttl, tclass);
+      int32_t interface = GetInterfaceForDevice (route->GetOutputDevice ());
+      m_sendOutgoingTrace (hdr, packet, interface);
       SendRealOut (route, packet, hdr);
       return;
     }
@@ -743,6 +825,8 @@ void Ipv6L3Protocol::Send (Ptr<Packet> packet, Ipv6Address source, Ipv6Address d
       NS_LOG_LOGIC ("Ipv6L3Protocol::Send case 1: probably sent to machine on same IPv6 network");
       /* NS_FATAL_ERROR ("This case is not yet implemented"); */
       hdr = BuildHeader (source, destination, protocol, packet->GetSize (), ttl, tclass);
+      int32_t interface = GetInterfaceForDevice (route->GetOutputDevice ());
+      m_sendOutgoingTrace (hdr, packet, interface);
       SendRealOut (route, packet, hdr);
       return;
     }
@@ -758,13 +842,10 @@ void Ipv6L3Protocol::Send (Ptr<Packet> packet, Ipv6Address source, Ipv6Address d
   //for link-local traffic, we need to determine the interface
   if (source.IsLinkLocal ()
       || destination.IsLinkLocal ()
-      || destination.IsAllNodesMulticast ()
-      || destination.IsAllRoutersMulticast ()
-      || destination.IsAllHostsMulticast ()
-      || destination.IsSolicitedMulticast ())
+      || destination.IsLinkLocalMulticast ())
     {
       int32_t index = GetInterfaceForAddress (source);
-      NS_ASSERT (index >= 0);
+      NS_ASSERT_MSG (index >= 0, "Can not find an outgoing interface for a packet with src " << source << " and dst " << destination);
       oif = GetNetDevice (index);
     }
 
@@ -772,6 +853,8 @@ void Ipv6L3Protocol::Send (Ptr<Packet> packet, Ipv6Address source, Ipv6Address d
 
   if (newRoute)
     {
+      int32_t interface = GetInterfaceForDevice (newRoute->GetOutputDevice ());
+      m_sendOutgoingTrace (hdr, packet, interface);
       SendRealOut (newRoute, packet, hdr);
     }
   else
@@ -831,7 +914,9 @@ void Ipv6L3Protocol::Receive (Ptr<NetDevice> device, Ptr<const Packet> p, uint16
   Ptr<Ipv6ExtensionDemux> ipv6ExtensionDemux = m_node->GetObject<Ipv6ExtensionDemux> ();
   Ptr<Ipv6Extension> ipv6Extension = 0;
   uint8_t nextHeader = hdr.GetNextHeader ();
+  bool stopProcessing = false;
   bool isDropped = false;
+  DropReason dropReason;
 
   if (nextHeader == Ipv6Header::IPV6_EXT_HOP_BY_HOP)
     {
@@ -839,10 +924,15 @@ void Ipv6L3Protocol::Receive (Ptr<NetDevice> device, Ptr<const Packet> p, uint16
 
       if (ipv6Extension)
         {
-          ipv6Extension->Process (packet, 0, hdr, hdr.GetDestinationAddress (), (uint8_t *)0, isDropped);
+          ipv6Extension->Process (packet, 0, hdr, hdr.GetDestinationAddress (), (uint8_t *)0, stopProcessing, isDropped, dropReason);
         }
 
       if (isDropped)
+        {
+          m_dropTrace (hdr, packet, dropReason, m_node->GetObject<Ipv6> (), interface);
+        }
+
+      if (stopProcessing)
         {
           return;
         }
@@ -855,6 +945,7 @@ void Ipv6L3Protocol::Receive (Ptr<NetDevice> device, Ptr<const Packet> p, uint16
                                       MakeCallback (&Ipv6L3Protocol::RouteInputError, this)))
     {
       NS_LOG_WARN ("No route found for forwarding packet.  Drop.");
+      GetIcmpv6 ()->SendErrorDestinationUnreachable (p->Copy (), hdr.GetSourceAddress (), Icmpv6Header::ICMPV6_NO_ROUTE);
       m_dropTrace (hdr, packet, DROP_NO_ROUTE, m_node->GetObject<Ipv6> (), interface);
     }
 }
@@ -1013,9 +1104,8 @@ void Ipv6L3Protocol::IpForward (Ptr<const NetDevice> idev, Ptr<Ipv6Route> rtentr
     {
       NS_LOG_WARN ("TTL exceeded.  Drop.");
       m_dropTrace (ipHeader, packet, DROP_TTL_EXPIRED, m_node->GetObject<Ipv6> (), 0);
-      // Do not reply to ICMPv6 or to multicast IPv6 address
-      if (ipHeader.GetNextHeader () != Icmpv6L4Protocol::PROT_NUMBER
-          && ipHeader.GetDestinationAddress ().IsMulticast () == false)
+      // Do not reply to multicast IPv6 address
+      if (ipHeader.GetDestinationAddress ().IsMulticast () == false)
         {
           packet->AddHeader (ipHeader);
           GetIcmpv6 ()->SendErrorTimeExceeded (packet, ipHeader.GetSourceAddress (), Icmpv6Header::ICMPV6_HOPLIMIT);
@@ -1062,7 +1152,8 @@ void Ipv6L3Protocol::IpForward (Ptr<const NetDevice> idev, Ptr<Ipv6Route> rtentr
           icmpv6->SendRedirection (copy, linkLocal, src, target, dst, Address ());
         }
     }
-
+  int32_t interface = GetInterfaceForDevice (rtentry->GetOutputDevice ());
+  m_unicastForwardTrace (ipHeader, packet, interface);
   SendRealOut (rtentry, packet, ipHeader);
 }
 
@@ -1110,6 +1201,8 @@ void Ipv6L3Protocol::LocalDeliver (Ptr<const Packet> packet, Ipv6Header const& i
   uint8_t nextHeader = ip.GetNextHeader ();
   uint8_t nextHeaderPosition = 0;
   bool isDropped = false;
+  bool stopProcessing = false;
+  DropReason dropReason;
 
   // check for a malformed hop-by-hop extension
   // this is a common case when forging IPv6 raw packets
@@ -1134,10 +1227,15 @@ void Ipv6L3Protocol::LocalDeliver (Ptr<const Packet> packet, Ipv6Header const& i
         {
           uint8_t nextHeaderStep = 0;
           uint8_t curHeader = nextHeader;
-          nextHeaderStep = ipv6Extension->Process (p, nextHeaderPosition, ip, dst, &nextHeader, isDropped);
+          nextHeaderStep = ipv6Extension->Process (p, nextHeaderPosition, ip, dst, &nextHeader, stopProcessing, isDropped, dropReason);
           nextHeaderPosition += nextHeaderStep;
 
           if (isDropped)
+            {
+              m_dropTrace (ip, packet, dropReason, m_node->GetObject<Ipv6> (), iif);
+            }
+
+          if (stopProcessing)
             {
               return;
             }
@@ -1173,6 +1271,9 @@ void Ipv6L3Protocol::LocalDeliver (Ptr<const Packet> packet, Ipv6Header const& i
 
               /* L4 protocol */
               Ptr<Packet> copy = p->Copy ();
+
+              m_localDeliverTrace (ip, p, iif);
+
               enum IpL4Protocol::RxStatus status = protocol->Receive (p, ip, GetInterface (iif));
 
               switch (status)
@@ -1273,6 +1374,11 @@ void Ipv6L3Protocol::RegisterOptions ()
   ipv6OptionDemux->Insert (routerAlertOption);
 
   m_node->AggregateObject (ipv6OptionDemux);
+}
+
+void Ipv6L3Protocol::ReportDrop (Ipv6Header ipHeader, Ptr<Packet> p, DropReason dropReason)
+{
+  m_dropTrace (ipHeader, p, dropReason, m_node->GetObject<Ipv6> (), 0);
 }
 
 } /* namespace ns3 */

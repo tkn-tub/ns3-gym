@@ -22,9 +22,9 @@
 #include "ns3/header.h"
 #include "pcap-file-wrapper.h"
 
-NS_LOG_COMPONENT_DEFINE ("PcapFileWrapper");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("PcapFileWrapper");
 
 NS_OBJECT_ENSURE_REGISTERED (PcapFileWrapper);
 
@@ -33,6 +33,7 @@ PcapFileWrapper::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::PcapFileWrapper")
     .SetParent<Object> ()
+    .SetGroupName("Network")
     .AddConstructor<PcapFileWrapper> ()
     .AddAttribute ("CaptureSize",
                    "Maximum length of captured packets (cf. pcap snaplen)",

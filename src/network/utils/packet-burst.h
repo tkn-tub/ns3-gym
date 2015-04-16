@@ -29,12 +29,16 @@ namespace ns3 {
 
 class Packet;
 
+/**
+ * \brief this class implement a burst as a list of packets
+ */
 class PacketBurst : public Object
 {
-  /**
-   * \brief this class implement a burst as a list of packets
-   */
 public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
   PacketBurst (void);
   virtual ~PacketBurst (void);
@@ -60,11 +64,28 @@ public:
    */
   uint32_t GetSize (void) const;
 
+  /**
+   * \brief Returns an iterator to the begin of the burst
+   * \return iterator to the burst list start
+   */
   std::list<Ptr<Packet> >::const_iterator Begin (void) const;
+  /**
+   * \brief Returns an iterator to the end of the burst
+   * \return iterator to the burst list end
+   */
   std::list<Ptr<Packet> >::const_iterator End (void) const;
+
+  /**
+   * TracedCallback signature for Ptr<PacketBurst>
+   *
+   * \param [in] burst The PacketBurst
+   */
+  typedef void (* TracedCallback)(const Ptr<const PacketBurst> burst);
+
+  
 private:
   void DoDispose (void);
-  std::list<Ptr<Packet> > m_packets;
+  std::list<Ptr<Packet> > m_packets; //!< the list of packets in the burst
 };
 } // namespace ns3
 

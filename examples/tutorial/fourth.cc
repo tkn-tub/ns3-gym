@@ -33,7 +33,8 @@ public:
       .AddConstructor<MyObject> ()
       .AddTraceSource ("MyInteger",
                        "An integer value to trace.",
-                       MakeTraceSourceAccessor (&MyObject::m_myInt))
+                       MakeTraceSourceAccessor (&MyObject::m_myInt),
+                       "ns3::TracedValue::Int32Callback")
     ;
     return tid;
   }

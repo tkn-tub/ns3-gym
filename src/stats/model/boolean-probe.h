@@ -34,6 +34,8 @@
 namespace ns3 {
 
 /**
+ * \ingroup probes
+ *
  * This class is designed to probe an underlying ns3 TraceSource exporting
  * a bool.  This probe exports a trace source "Output" of type bool.
  * The Output trace source emits a value when either the trace source
@@ -45,6 +47,10 @@ namespace ns3 {
 class BooleanProbe : public Probe
 {
 public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId ();
   BooleanProbe ();
   virtual ~BooleanProbe ();
@@ -92,12 +98,10 @@ private:
    *
    * \param oldData previous value of the bool
    * \param newData new value of the bool
-   *
-   * \internal
    */
   void TraceSink (bool oldData, bool newData);
 
-  TracedValue<bool> m_output;
+  TracedValue<bool> m_output; //!< Output trace source.
 };
 
 } // namespace ns3

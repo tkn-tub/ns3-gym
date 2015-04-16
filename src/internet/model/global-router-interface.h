@@ -376,6 +376,7 @@ public:
 /**
  * @brief Print the contents of the Global Routing Link State Advertisement and
  * any Global Routing Link Records present in the list.  Quite verbose.
+ * @param os the output stream
  */
   void Print (std::ostream &os) const;
 
@@ -559,9 +560,16 @@ private:
  * proper position in the tree.
  */
   SPFStatus m_status;
-  uint32_t m_node_id;
+  uint32_t m_node_id; //!< node ID
 };
 
+/**
+ * \brief Stream insertion operator.
+ *
+ * \param os the reference to the output stream
+ * \param lsa the LSA
+ * \returns the reference to the output stream
+ */
 std::ostream& operator<< (std::ostream& os, GlobalRoutingLSA& lsa);
 
 /**
@@ -576,11 +584,10 @@ std::ostream& operator<< (std::ostream& os, GlobalRoutingLSA& lsa);
 class GlobalRouter : public Object
 {
 public:
-/**
- * @brief The Interface ID of the Global Router interface.
- *
- * @see Object::GetObject ()
- */
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
 
 /**
@@ -588,8 +595,16 @@ public:
  */
   GlobalRouter ();
 
-
+  /**
+   * \brief Set the specific Global Routing Protocol to be used
+   * \param routing the routing protocol
+   */
   void SetRoutingProtocol (Ptr<Ipv4GlobalRouting> routing);
+
+  /**
+   * \brief Get the specific Global Routing Protocol used
+   * \returns the routing protocol
+   */
   Ptr<Ipv4GlobalRouting> GetRoutingProtocol (void);
 
 /**
@@ -709,31 +724,129 @@ public:
 
 private:
   virtual ~GlobalRouter ();
+
+  /**
+   * \brief Clear list of LSAs
+   */
   void ClearLSAs (void);
 
+  /**
+   * \brief Link through the given channel and find the net device that's on the other end.
+   *
+   * This only makes sense with a point-to-point channel.
+   *
+   * \param nd outgoing NetDevice
+   * \param ch channel
+   * \returns the NetDevice on the other end
+   */
   Ptr<NetDevice> GetAdjacent (Ptr<NetDevice> nd, Ptr<Channel> ch) const;
+
+  /**
+   * \brief Given a node and a net device, find an IPV4 interface index that corresponds
+   *        to that net device.
+   *
+   * This function may fail for various reasons.  If a node
+   * does not have an internet stack (for example if it is a bridge) we won't have
+   * an IPv4 at all.  If the node does have a stack, but the net device in question
+   * is bridged, there will not be an interface associated directly with the device.
+   *
+   * \param node the node
+   * \param nd outgoing NetDevice
+   * \param index the IPV4 interface index
+   * \returns true on success
+   */
   bool FindInterfaceForDevice (Ptr<Node> node, Ptr<NetDevice> nd, uint32_t &index) const;
+
+  /**
+   * \brief Finds a designated router
+   *
+   * Given a local net device, we need to walk the channel to which the net device is
+   * attached and look for nodes with GlobalRouter interfaces on them (one of them
+   * will be us).  Of these, the router with the lowest IP address on the net device
+   * connecting to the channel becomes the designated router for the link.
+   *
+   * \param ndLocal local NetDevice to scan
+   * \param allowRecursion Recursively look for routers down bridge port
+   * \returns the IP address of the designated router
+   */
   Ipv4Address FindDesignatedRouterForLink (Ptr<NetDevice> ndLocal, bool allowRecursion) const;
+
+  /**
+   * \brief Checks for the presence of another router on the NetDevice
+   *
+   * Given a node and an attached net device, take a look off in the channel to
+   * which the net device is attached and look for a node on the other side
+   * that has a GlobalRouter interface aggregated.  Life gets more complicated
+   * when there is a bridged net device on the other side.
+   *
+   * \param nd NetDevice to scan
+   * \param allowRecursion Recursively look for routers down bridge port
+   * \returns true if a router is found
+   */
   bool AnotherRouterOnLink (Ptr<NetDevice> nd, bool allowRecursion) const;
+
+  /**
+   * \brief Process a generic broadcast link
+   *
+   * \param nd the NetDevice
+   * \param pLSA the Global LSA
+   * \param c the returned NetDevice container
+   */
   void ProcessBroadcastLink (Ptr<NetDevice> nd, GlobalRoutingLSA *pLSA, NetDeviceContainer &c);
+
+  /**
+   * \brief Process a single broadcast link
+   *
+   * \param nd the NetDevice
+   * \param pLSA the Global LSA
+   * \param c the returned NetDevice container
+   */
   void ProcessSingleBroadcastLink (Ptr<NetDevice> nd, GlobalRoutingLSA *pLSA, NetDeviceContainer &c);
+
+  /**
+   * \brief Process a bridged broadcast link
+   *
+   * \param nd the NetDevice
+   * \param pLSA the Global LSA
+   * \param c the returned NetDevice container
+   */
   void ProcessBridgedBroadcastLink (Ptr<NetDevice> nd, GlobalRoutingLSA *pLSA, NetDeviceContainer &c);
 
+  /**
+   * \brief Process a point to point link
+   *
+   * \param ndLocal the NetDevice
+   * \param pLSA the Global LSA
+   */
   void ProcessPointToPointLink (Ptr<NetDevice> ndLocal, GlobalRoutingLSA *pLSA);
+
+  /**
+   * \brief Build one NetworkLSA for each net device talking to a network that we are the
+   * designated router for.
+   *
+   * \param c the devices.
+   */
   void BuildNetworkLSAs (NetDeviceContainer c);
+
+  /**
+   * \brief Decide whether or not a given net device is being bridged by a BridgeNetDevice.
+   *
+   * \param nd the NetDevice
+   * \returns the BridgeNetDevice smart pointer or null if not found
+   */
   Ptr<BridgeNetDevice> NetDeviceIsBridged (Ptr<NetDevice> nd) const;
 
 
-  typedef std::list<GlobalRoutingLSA*> ListOfLSAs_t;
-  ListOfLSAs_t m_LSAs;
+  typedef std::list<GlobalRoutingLSA*> ListOfLSAs_t; //!< container for the GlobalRoutingLSAs
+  ListOfLSAs_t m_LSAs; //!< database of GlobalRoutingLSAs
 
-  Ipv4Address m_routerId;
-  Ptr<Ipv4GlobalRouting> m_routingProtocol;
+  Ipv4Address m_routerId; //!< router ID (its IPv4 address)
+  Ptr<Ipv4GlobalRouting> m_routingProtocol; //!< the Ipv4GlobalRouting in use
 
-  typedef std::list<Ipv4RoutingTableEntry *> InjectedRoutes;
-  typedef std::list<Ipv4RoutingTableEntry *>::const_iterator InjectedRoutesCI;
-  typedef std::list<Ipv4RoutingTableEntry *>::iterator InjectedRoutesI;
-  InjectedRoutes m_injectedRoutes; // Routes we are exporting
+  typedef std::list<Ipv4RoutingTableEntry *> InjectedRoutes; //!< container of Ipv4RoutingTableEntry
+  typedef std::list<Ipv4RoutingTableEntry *>::const_iterator InjectedRoutesCI; //!< Const Iterator to container of Ipv4RoutingTableEntry
+  typedef std::list<Ipv4RoutingTableEntry *>::iterator InjectedRoutesI; //!< Iterator to container of Ipv4RoutingTableEntry
+  InjectedRoutes m_injectedRoutes; //!< Routes we are exporting
 
   // inherited from Object
   virtual void DoDispose (void);

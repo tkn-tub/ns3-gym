@@ -8,13 +8,13 @@ available in five forms:
 
 * `ns-3 Doxygen <http://www.nsnam.org/doxygen/index.html>`_: Documentation of the public APIs of the simulator
 * Tutorial, Manual, and Model Library *(this document)* for the `latest release <http://www.nsnam.org/documentation/latest/>`_ and `development tree <http://www.nsnam.org/ns-3-dev/documentation/>`_
-* `ns-3 wiki <http://www.nsnam.org/wiki/index.php/Main_Page>`_ 
+* `ns-3 wiki <http://www.nsnam.org/wiki>`_ 
 
 This document is written in `reStructuredText <http://docutils.sourceforge.net/rst.html>`_ for `Sphinx <http://sphinx.pocoo.org/>`_ and is maintained in the
 ``doc/models`` directory of ns-3's source code.
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
    organization
    animation
@@ -26,12 +26,14 @@ This document is written in `reStructuredText <http://docutils.sourceforge.net/r
    buildings
    click
    csma
+   data-collection
    dsdv
    dsr
    emulation-overview
    energy
    flow-monitor
    internet-models
+   lr-wpan
    lte
    mesh
    distributed
@@ -41,8 +43,10 @@ This document is written in `reStructuredText <http://docutils.sourceforge.net/r
    openflow-switch
    point-to-point
    propagation
-   statistics
+   spectrum
+   sixlowpan
    topology
    uan
+   wave
    wifi
    wimax

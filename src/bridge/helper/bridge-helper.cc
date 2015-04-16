@@ -22,9 +22,9 @@
 #include "ns3/node.h"
 #include "ns3/names.h"
 
-NS_LOG_COMPONENT_DEFINE ("BridgeHelper");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("BridgeHelper");
 
 BridgeHelper::BridgeHelper ()
 {

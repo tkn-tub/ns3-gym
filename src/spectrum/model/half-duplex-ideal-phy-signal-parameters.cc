@@ -23,9 +23,9 @@
 #include "half-duplex-ideal-phy-signal-parameters.h"
 
 
-NS_LOG_COMPONENT_DEFINE ("HalfDuplexIdealPhySignalParameters");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("HalfDuplexIdealPhySignalParameters");
 
 HalfDuplexIdealPhySignalParameters::HalfDuplexIdealPhySignalParameters ()
 {

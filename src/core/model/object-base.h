@@ -26,17 +26,30 @@
 #include <list>
 
 /**
+ * \file
+ * \ingroup object
+ * ns3::ObjectBase class declaration and NS_OBJECT_ENSURE_REGISTERED() definition.
+ */
+
+/**
+ * \ingroup object
+ * \brief Register an Object subclass with the TypeId system.
+ *
  * This macro should be invoked once for every class which
  * defines a new GetTypeId method.
+ *
+ * If the class is in a namespace, then the macro call should also be
+ * in the namespace.
  */
-#define NS_OBJECT_ENSURE_REGISTERED(type)       \
-  static struct X ## type ## RegistrationClass      \
-  {                                             \
-    X ## type ## RegistrationClass () {             \
-      ns3::TypeId tid = type::GetTypeId ();     \
-      tid.GetParent ();                         \
-    }                                           \
-  } x_ ## type ## RegistrationVariable
+#define NS_OBJECT_ENSURE_REGISTERED(type)               \
+  static struct Object ## type ## RegistrationClass     \
+  {                                                     \
+    Object ## type ## RegistrationClass () {            \
+      ns3::TypeId tid = type::GetTypeId ();             \
+      tid.SetSize (sizeof (type));                      \
+      tid.GetParent ();                                 \
+    }                                                   \
+  } Object ## type ## RegistrationVariable
 
 namespace ns3 {
 
@@ -45,12 +58,12 @@ class AttributeConstructionList;
 /**
  * \ingroup object
  *
- * \brief implement the ns-3 type and attribute system
+ * \brief Anchor the ns-3 type and attribute system.
  *
  * Every class which wants to integrate in the ns-3 type and attribute
  * system should derive from this base class. This base class provides:
- * - a way to associate an ns3::TypeId to each object instance
- * - a way to set and get the attributes registered in the ns3::TypeId.
+ * - A way to associate an ns3::TypeId to each object instance.
+ * - A way to set and get the attributes registered in the ns3::TypeId.
  */
 class ObjectBase
 {
@@ -61,83 +74,125 @@ public:
   static TypeId GetTypeId (void);
 
   /**
-   * Virtual destructor
+   * Virtual destructor.
    */
   virtual ~ObjectBase ();
 
   /**
-   * \return the TypeId associated to the most-derived type
-   *          of this instance.
+   * Get the most derived TypeId for this Object.
    *
    * This method is typically implemented by ns3::Object::GetInstanceTypeId
    * but some classes which derive from ns3::ObjectBase directly
    * have to implement it themselves.
+   *
+   * \return The TypeId associated to the most-derived type
+   *          of this instance.
    */
   virtual TypeId GetInstanceTypeId (void) const = 0;
 
   /**
-   * \param name the name of the attribute to set
-   * \param value the name of the attribute to set
    *
-   * Set a single attribute. This cannot fail: if the input is invalid,
-   * it will crash immediately.
+   * Set a single attribute, raising fatal errors if unsuccessful.
+   *
+   * This will either succeed at setting the attribute
+   * or it will raise NS_FATAL_ERROR() on these conditions:
+   *
+   *   - The attribute doesn't exist in this Object.
+   *   - The attribute can't be set (no Setter).
+   *   - The attribute couldn't be deserialized from the AttributeValue.
+   * 
+   * \param [in] name The name of the attribute to set.
+   * \param [in] value The name of the attribute to set.
    */
   void SetAttribute (std::string name, const AttributeValue &value);
   /**
-   * \param name the name of the attribute to set
-   * \param value the name of the attribute to set
-   * \return true if the requested attribute exists and could be set, 
-   * false otherwise.
+   * Set a single attribute without raising errors.
+   *
+   * If the atttribute could not be set this will return \c false,
+   * but not raise any errors.
+   *
+   * \param [in] name The name of the attribute to set.
+   * \param [in] value The value to set it to.
+   * \return \c true if the requested attribute exists and could be set, 
+   *         \c false otherwise.
    */
   bool SetAttributeFailSafe (std::string name, const AttributeValue &value);
   /**
-   * \param name the name of the attribute to read
-   * \param value a reference to the value where the result should be stored.
-   * \return the attribute read.
+   * Get the value of an attribute, raising fatal errors if unsuccessful.
    *
-   * If the input attribute name does not exist, this method crashes.
+   * This will either succeed at setting the attribute
+   * or it will raise NS_FATAL_ERROR() on these conditions:
+   *
+   *   - The attribute doesn't exist in this Object.
+   *   - The attribute can't be read (no Getter).
+   *   - The attribute doesn't support string formatting.
+   *   - The attribute couldn't be serialized into the AttributeValue.
+   *
+   * \param [in]  name The name of the attribute to read.
+   * \param [out] value Where the result should be stored.
    */
   void GetAttribute (std::string name, AttributeValue &value) const;
   /**
-   * \param name the name of the attribute to read
-   * \param attribute the attribute where the result value should be stored
-   * \return true if the requested attribute was found, false otherwise.
+   * Get the value of an attribute without raising erros.
+   *
+   * If the atttribute could not be read this will return \c false,
+   * but not raise any errors.
+   *
+   * \param [in]  name The name of the attribute to read.
+   * \param [out] value Where the result value should be stored.
+   * \return \c true if the requested attribute was found, \c false otherwise.
    */
-  bool GetAttributeFailSafe (std::string name, AttributeValue &attribute) const;
+  bool GetAttributeFailSafe (std::string name, AttributeValue &value) const;
 
   /**
-   * \param name the name of the targetted trace source
-   * \param context the trace context associated to the callback
-   * \param cb the callback to connect to the trace source.
+   * Connect a TraceSource to a Callback with a context.
    *
-   * The targetted trace source should be registered with TypeId::AddTraceSource.
+   * The target trace source should be registered with TypeId::AddTraceSource.
+   *
+   * \param name The name of the target trace source.
+   * \param context The trace context associated to the callback.
+   * \param cb The callback to connect to the trace source.
+   * \returns \c true.
    */
   bool TraceConnect (std::string name, std::string context, const CallbackBase &cb);
   /**
-   * \param name the name of the targetted trace source
-   * \param cb the callback to connect to the trace source.
+   * Connect a TraceSource to a Callback without a context.
    *
-   * The targetted trace source should be registered with TypeId::AddTraceSource.
+   * The target trace source should be registered with TypeId::AddTraceSource.
+   *
+   * \param name The name of the target trace source.
+   * \param cb The callback to connect to the trace source.
+   * \returns \c true.
    */
   bool TraceConnectWithoutContext (std::string name, const CallbackBase &cb);
   /**
-   * \param name the name of the targetted trace source
-   * \param context the trace context associated to the callback
-   * \param cb the callback to disconnect from the trace source.
+   * Disconnect from a TraceSource a Callback previously connected
+   * with a context.
    *
-   * The targetted trace source should be registered with TypeId::AddTraceSource.
+   * The target trace source should be registered with TypeId::AddTraceSource.
+   *
+   * \param name The name of the target trace source.
+   * \param context The trace context associated to the callback.
+   * \param cb The callback to disconnect from the trace source.
+   * \returns \c true.
    */
   bool TraceDisconnect (std::string name, std::string context, const CallbackBase &cb);
   /**
-   * \param name the name of the targetted trace source
-   * \param cb the callback to disconnect from the trace source.
+   * Disconnect from a TraceSource a Callback previously connected
+   * without a context.
    *
-   * The targetted trace source should be registered with TypeId::AddTraceSource.
+   * The target trace source should be registered with TypeId::AddTraceSource.
+   *
+   * \param name The name of the target trace source.
+   * \param cb The callback to disconnect from the trace source.
+   * \returns \c true.
    */
   bool TraceDisconnectWithoutContext (std::string name, const CallbackBase &cb);
 
 protected:
   /**
+   * Notifier called once the ObjectBase is fully constructed.
+   *
    * This method is invoked once all member attributes have been 
    * initialized. Subclasses can override this method to be notified
    * of this event but if they do this, they must chain up to their
@@ -145,8 +200,7 @@ protected:
    */
   virtual void NotifyConstructionCompleted (void);
   /**
-   * \param attributes the attribute values used to initialize 
-   *        the member variables of this object's instance.
+   * Complete construction of ObjectBase; invoked by derived classes. 
    *
    * Invoked from subclasses to initialize all of their 
    * attribute members. This method will typically be invoked
@@ -154,10 +208,23 @@ protected:
    * from ns3::Object. If you derive from ns3::ObjectBase directly,
    * you should make sure that you invoke this method from
    * your most-derived constructor.
+   *
+   * \param attributes The attribute values used to initialize 
+   *        the member variables of this object's instance.
    */
   void ConstructSelf (const AttributeConstructionList &attributes);
 
 private:
+  /**
+   * Attempt to set the value referenced by the accessor \p spec
+   * to a valid value according to the \c checker, based on \p value.
+   *
+   * \param [in] spec The accessor for the storage location.
+   * \param [in] checker The checker to use in validating the value.
+   * \param [in] value The value to attempt to store.
+   * \returns \c true if the \c value could be validated by the \p checker
+   *          and written to the storage location.
+   */
   bool DoSet (Ptr<const AttributeAccessor> spec,
               Ptr<const AttributeChecker> checker, 
               const AttributeValue &value);

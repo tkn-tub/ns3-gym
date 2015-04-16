@@ -87,8 +87,7 @@ public:
   Ptr<MeshL2RoutingProtocol> GetRoutingProtocol () const;
   //\}
 
-  ///\name NetDevice interface for upper layers
-  //\{
+  // Inherited from NetDevice
   virtual void SetIfIndex (const uint32_t index);
   virtual uint32_t GetIfIndex () const;
   virtual Ptr<Channel> GetChannel () const;
@@ -114,7 +113,6 @@ public:
   virtual bool SupportsSendFrom () const;
   virtual Address GetMulticast (Ipv6Address addr) const;
   virtual void DoDispose ();
-  //\}
 
   ///\name Statistics
   //\{

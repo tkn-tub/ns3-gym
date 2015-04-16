@@ -30,10 +30,11 @@
 #define OLSR_PKT_HEADER_SIZE 4
 
 namespace ns3 {
+  
+NS_LOG_COMPONENT_DEFINE ("OlsrHeader");
+
 namespace olsr {
 
-
-NS_LOG_COMPONENT_DEFINE ("OlsrHeader");
 
 /// Scaling factor used in RFC 3626.
 #define OLSR_C 0.0625

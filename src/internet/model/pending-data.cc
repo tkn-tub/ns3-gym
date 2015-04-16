@@ -34,10 +34,10 @@
 #include "pending-data.h"
 
 
-NS_LOG_COMPONENT_DEFINE ("PendingData");
-
 namespace ns3
 {
+
+NS_LOG_COMPONENT_DEFINE ("PendingData");
 
 PendingData::PendingData () : size (0), data (0),
                               msgSize (0), responseSize (0)

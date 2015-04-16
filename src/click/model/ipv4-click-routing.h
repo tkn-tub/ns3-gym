@@ -37,6 +37,10 @@
 #include <map>
 #include <string>
 
+class ClickTrivialTest;
+class ClickIfidFromNameTest;
+class ClickIpMacAddressFromNameTest;
+
 namespace ns3 {
 
 /**
@@ -56,9 +60,9 @@ class Ipv4ClickRouting : public Ipv4RoutingProtocol
 #ifdef NS3_CLICK
 public:
   // Allow test cases to access private members
-  friend class ClickTrivialTest;
-  friend class ClickIfidFromNameTest;
-  friend class ClickIpMacAddressFromNameTest;
+  friend class ::ClickTrivialTest;
+  friend class ::ClickIfidFromNameTest;
+  friend class ::ClickIpMacAddressFromNameTest;
 
   static TypeId GetTypeId (void);
 

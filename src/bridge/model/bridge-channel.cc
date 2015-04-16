@@ -19,9 +19,9 @@
 #include "ns3/log.h"
 #include "bridge-channel.h"
 
-NS_LOG_COMPONENT_DEFINE ("BridgeChannel");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("BridgeChannel");
 
 NS_OBJECT_ENSURE_REGISTERED (BridgeChannel);
 
@@ -30,6 +30,7 @@ BridgeChannel::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::BridgeChannel")
     .SetParent<Channel> ()
+    .SetGroupName("Bridge")
     .AddConstructor<BridgeChannel> ()
   ;
   return tid;

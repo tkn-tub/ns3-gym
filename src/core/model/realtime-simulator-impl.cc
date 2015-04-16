@@ -35,13 +35,19 @@
 
 #include <cmath>
 
+
+/**
+ * \file
+ * \ingroup realtime
+ * ns3::RealTimeSimulatorImpl implementation.
+ */
+
+namespace ns3 {
+
 // Note:  Logging in this file is largely avoided due to the
 // number of calls that are made to these functions and the possibility
 // of causing recursions leading to stack overflow
-
 NS_LOG_COMPONENT_DEFINE ("RealtimeSimulatorImpl");
-
-namespace ns3 {
 
 NS_OBJECT_ENSURE_REGISTERED (RealtimeSimulatorImpl);
 
@@ -50,6 +56,7 @@ RealtimeSimulatorImpl::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::RealtimeSimulatorImpl")
     .SetParent<SimulatorImpl> ()
+    .SetGroupName ("Core")
     .AddConstructor<RealtimeSimulatorImpl> ()
     .AddAttribute ("SynchronizationMode", 
                    "What to do if the simulation cannot keep up with real time.",
@@ -750,12 +757,12 @@ RealtimeSimulatorImpl::Cancel (const EventId &id)
 }
 
 bool
-RealtimeSimulatorImpl::IsExpired (const EventId &ev) const
+RealtimeSimulatorImpl::IsExpired (const EventId &id) const
 {
-  if (ev.GetUid () == 2)
+  if (id.GetUid () == 2)
     {
-      if (ev.PeekEventImpl () == 0 ||
-          ev.PeekEventImpl ()->IsCancelled ())
+      if (id.PeekEventImpl () == 0 ||
+          id.PeekEventImpl ()->IsCancelled ())
         {
           return true;
         }
@@ -763,7 +770,7 @@ RealtimeSimulatorImpl::IsExpired (const EventId &ev) const
       for (DestroyEvents::const_iterator i = m_destroyEvents.begin (); 
            i != m_destroyEvents.end (); i++)
         {
-          if (*i == ev)
+          if (*i == id)
             {
               return false;
             }
@@ -779,10 +786,10 @@ RealtimeSimulatorImpl::IsExpired (const EventId &ev) const
   //
   // The same is true for the next line involving the m_currentUid.
   //
-  if (ev.PeekEventImpl () == 0 ||
-      ev.GetTs () < m_currentTs ||
-      (ev.GetTs () == m_currentTs && ev.GetUid () <= m_currentUid) ||
-      ev.PeekEventImpl ()->IsCancelled ()) 
+  if (id.PeekEventImpl () == 0 ||
+      id.GetTs () < m_currentTs ||
+      (id.GetTs () == m_currentTs && id.GetUid () <= m_currentUid) ||
+      id.PeekEventImpl ()->IsCancelled ()) 
     {
       return true;
     }

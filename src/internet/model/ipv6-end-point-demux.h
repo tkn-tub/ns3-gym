@@ -37,17 +37,17 @@ class Ipv6EndPoint;
 class Ipv6EndPointDemux
 {
 public:
+  /**
+   * \brief Container of the IPv6 endpoints.
+   */
   typedef std::list<Ipv6EndPoint *>EndPoints;
+
+  /**
+   * \brief Iterator to the container of the IPv6 endpoints.
+   */
   typedef std::list<Ipv6EndPoint *>::iterator EndPointsI;
 
-  /**
-   * \brief Constructor.
-   */
   Ipv6EndPointDemux ();
-
-  /**
-   * \brief Destructor.
-   */
   ~Ipv6EndPointDemux ();
 
   /**
@@ -72,7 +72,7 @@ public:
    * \param src source address to test
    * \param sport source port to test
    * \param incomingInterface the incoming interface
-   * \return list en IPv6EndPoints (could be 0 element)
+   * \return list of IPv6EndPoints (could be 0 element)
    */
   EndPoints Lookup (Ipv6Address dst, uint16_t dport, Ipv6Address src, uint16_t sport, Ptr<Ipv6Interface> incomingInterface);
 

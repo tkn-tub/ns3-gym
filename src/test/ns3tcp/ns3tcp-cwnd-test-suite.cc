@@ -485,7 +485,7 @@ Ns3TcpCwndTestCase2::DoRun (void)
   app->Setup (ns3TcpSocket, sinkAddress, 1040, 1000, DataRate ("1Mbps"));
   n0n1.Get (0)->AddApplication (app);
   app->SetStartTime (Seconds (1.0));
-  app->SetStopTime (Seconds (4.4));
+  app->SetStopTime (Seconds (4.1));
 
   if (m_writeResults)
     {
@@ -495,7 +495,7 @@ Ns3TcpCwndTestCase2::DoRun (void)
     }
 
   // Finally, set up the simulator to run.
-  Simulator::Stop (Seconds (4.4));
+  Simulator::Stop (Seconds (4.1));
   Simulator::Run ();
   Simulator::Destroy ();
 
@@ -516,7 +516,7 @@ Ns3TcpCwndTestCase2::DoRun (void)
   
   
   const uint32_t MSS = 536;
-  const uint32_t N_EVENTS = 45;
+  const uint32_t N_EVENTS = 37;
 
   CwndEvent event;
 
@@ -531,39 +531,34 @@ Ns3TcpCwndTestCase2::DoRun (void)
 
   VerifyCwndRun (11, 13, 9 * MSS, MSS);
   
-  //Partial ack will end up modifying cwnd 2X due to how code is written
-  //Partial ACK in fast recovery: cwnd set to 4824
-  NS_TEST_ASSERT_MSG_EQ (m_responses.Get (15).m_newCwnd, 9 * MSS, "Wrong new cwnd value in cwnd change event " << 15);
+  // partial ack, cwnd reset to 9
+  NS_TEST_ASSERT_MSG_EQ (m_responses.Get (14).m_newCwnd, 9 * MSS, "Wrong new cwnd value in cwnd change event " << 14);
+
+  // partial ack, cwnd reset to 8 
+  NS_TEST_ASSERT_MSG_EQ (m_responses.Get (16).m_newCwnd, 8 * MSS, "Wrong new cwnd value in cwnd change event " << 16);
 
   //DUP ACKS in fast recovery
-  VerifyCwndRun (16, 17, 10 * MSS, MSS);
+  VerifyCwndRun (17, 18, 9 * MSS, MSS);
 
-  //Partial ack will end up modifying cwnd 2X due to how code is written, therefore eat 18 and 19
-  //Partial ACK in fast recovery: cwnd set to 4824
-  NS_TEST_ASSERT_MSG_EQ (m_responses.Get (19).m_newCwnd, 9 * MSS, "Wrong new cwnd value in cwnd change event " << 19);
-
-  //DUP ACKS in fast recovery
-  VerifyCwndRun (20, 22, 10 * MSS, MSS);
-  
-  //Partial ack will end up modifying cwnd 2X due to how code is written, therefore eat 23, 24
-  //Partial ACK in fast recovery: cwnd set to 4824
-  NS_TEST_ASSERT_MSG_EQ (m_responses.Get (24).m_newCwnd, 10 * MSS, "Wrong new cwnd value in cwnd change event " << 24);  
-  
-  //DUP ACKS in fast recovery 
-  VerifyCwndRun (25, 29, 11 * MSS, MSS);
+  VerifyCwndRun (19, 22, 8 * MSS, MSS);
   
   //Leaving fast recovery
-  NS_TEST_ASSERT_MSG_EQ (m_responses.Get (29).m_newCwnd, 5 * MSS, "Wrong new cwnd value in cwnd change event " << 29);  
+  NS_TEST_ASSERT_MSG_EQ (m_responses.Get (23).m_newCwnd, 5 * MSS, "Wrong new cwnd value in cwnd change event " << 23);  
   
   uint32_t cwnd = 5 * MSS;
   //In CongAvoid each event will increase cwnd by (MSS * MSS / cwnd)
-  for (uint32_t i = 30; i < N_EVENTS; ++i)
+  for (uint32_t i = 24; i < N_EVENTS; ++i)
     {
       double adder = static_cast<double> (MSS * MSS) / cwnd;
       adder = std::max (1.0, adder);
       cwnd += static_cast<uint32_t> (adder);    
       NS_TEST_ASSERT_MSG_EQ (m_responses.Get (i).m_newCwnd, cwnd, "Wrong new cwnd value in cwnd change event " << i); 
     }
+    
+  for (uint32_t i = 0; i < N_EVENTS; ++i)
+  {
+    std::cout << "i: " << i << " newCwnd: " << m_responses.Get(i).m_newCwnd << " newCwnd segments " << static_cast<double> (m_responses.Get(i).m_newCwnd)/MSS << std::endl;
+  }
 }
 
 void 

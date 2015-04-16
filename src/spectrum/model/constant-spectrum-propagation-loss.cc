@@ -26,10 +26,9 @@
 #include "ns3/double.h"
 
 
-NS_LOG_COMPONENT_DEFINE ("ConstantSpectrumPropagationLossModel");
-
 namespace ns3 {
 
+NS_LOG_COMPONENT_DEFINE ("ConstantSpectrumPropagationLossModel");
 
 NS_OBJECT_ENSURE_REGISTERED (ConstantSpectrumPropagationLossModel);
 
@@ -48,6 +47,7 @@ ConstantSpectrumPropagationLossModel::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::ConstantSpectrumPropagationLossModel")
     .SetParent<SpectrumPropagationLossModel> ()
+    .SetGroupName ("Spectrum")
     .AddConstructor<ConstantSpectrumPropagationLossModel> ()
     .AddAttribute ("Loss",
                    "Path loss (dB) between transmitter and receiver",

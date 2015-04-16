@@ -81,7 +81,7 @@ public:
   /**
    *
    *
-   * \param s the RLC SAP Provider interface offered to the PDCP by this LTE_RLC
+   * \return the RLC SAP Provider interface offered to the PDCP by this LTE_RLC
    */
   LteRlcSapProvider* GetLteRlcSapProvider ();
 
@@ -95,11 +95,34 @@ public:
   /**
    *
    *
-   * \param s the MAC SAP User interface offered to the MAC by this LTE_RLC
+   * \return the MAC SAP User interface offered to the MAC by this LTE_RLC
    */
   LteMacSapUser* GetLteMacSapUser ();
 
 
+  /**
+   * TracedCallback signature for NotifyTxOpportunity events.
+   *
+   * \param [in] rnti C-RNTI scheduled.
+   * \param [in] lcid The logical channel id corresponding to
+   *             the sending RLC instance.
+   * \param [in] bytes The number of bytes to transmit
+   */
+  typedef void (* NotifyTxTracedCallback)
+    (const uint16_t rnti, const uint8_t lcid, const uint32_t bytes);
+
+  /**
+   * TracedCallback signature for
+   *
+   * \param [in] rnti C-RNTI scheduled.
+   * \param [in] lcid The logical channel id corresponding to
+   *             the sending RLC instance.
+   * \param [in] bytes The packet size.
+   * \param [in] delay Delay since sender timestamp, in ns.
+   */
+  typedef void (* ReceiveTracedCallback)
+    (const uint16_t rnti, const uint8_t lcid,
+     const uint32_t bytes, const uint64_t delay);
 
   /// \todo MRE What is the sense to duplicate all the interfaces here???
   // NB to avoid the use of multiple inheritance

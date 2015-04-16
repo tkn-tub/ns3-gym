@@ -58,9 +58,9 @@
 
 #include <string>
 
-NS_LOG_COMPONENT_DEFINE ("PlanetLabFdNetDeviceHelper");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("PlanetLabFdNetDeviceHelper");
 
 #define PLANETLAB_MAGIC 75867
 

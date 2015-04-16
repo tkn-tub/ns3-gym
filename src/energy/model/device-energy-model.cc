@@ -21,9 +21,9 @@
 #include "device-energy-model.h"
 #include "ns3/log.h"
 
-NS_LOG_COMPONENT_DEFINE ("DeviceEnergyModel");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("DeviceEnergyModel");
 
 NS_OBJECT_ENSURE_REGISTERED (DeviceEnergyModel);
 
@@ -32,6 +32,7 @@ DeviceEnergyModel::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::DeviceEnergyModel")
     .SetParent<Object> ()
+    .SetGroupName ("Energy")
   ;
   return tid;
 }

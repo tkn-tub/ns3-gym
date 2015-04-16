@@ -13,9 +13,9 @@
 #include "ns3/boolean.h"
 #include "ns3/log.h"
 
-NS_LOG_COMPONENT_DEFINE ("Ipv4RawSocketImpl");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("Ipv4RawSocketImpl");
 
 NS_OBJECT_ENSURE_REGISTERED (Ipv4RawSocketImpl);
 
@@ -24,6 +24,7 @@ Ipv4RawSocketImpl::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::Ipv4RawSocketImpl")
     .SetParent<Socket> ()
+    .SetGroupName ("Internet")
     .AddAttribute ("Protocol", "Protocol number to match.",
                    UintegerValue (0),
                    MakeUintegerAccessor (&Ipv4RawSocketImpl::m_protocol),

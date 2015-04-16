@@ -6,9 +6,9 @@
 #include "ns3/log.h"
 #include "ns3/config.h"
 
-NS_LOG_COMPONENT_DEFINE ("RawTextConfig");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("RawTextConfig");
 
 RawTextConfigSave::RawTextConfigSave ()
   : m_os (0)

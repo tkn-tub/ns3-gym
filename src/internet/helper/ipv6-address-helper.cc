@@ -104,12 +104,6 @@ Ipv6Address Ipv6AddressHelper::NewAddress (void)
   return Ipv6AddressGenerator::NextAddress (Ipv6Prefix (64));
 }
 
-void Ipv6AddressHelper::NewNetwork (Ipv6Address network, Ipv6Prefix prefix)
-{
-  NS_LOG_FUNCTION (this << network << prefix);
-  SetBase (network, Ipv6Prefix (64));
-}
-
 void Ipv6AddressHelper::NewNetwork (void)
 {
   NS_LOG_FUNCTION (this);

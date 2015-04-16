@@ -68,17 +68,30 @@ private:
   virtual WifiTxVector DoGetRtsTxVector (WifiRemoteStation *station);
   virtual bool IsLowLatency (void) const;
 
-  // return the min snr needed to successfully transmit
-  // data with this mode at the specified ber.
+  /**
+   * Return the minimum SNR needed to successfully transmit
+   * data with this mode at the specified BER.
+   *
+   * \param mode WifiMode
+   * \return the minimum SNR for the given mode
+   */
   double GetSnrThreshold (WifiMode mode) const;
-  void AddModeSnrThreshold (WifiMode mode, double ber);
+  /**
+   * Adds a pair of WifiMode and the minimum SNR for that given mode
+   * to the list.
+   *
+   * \param mode WifiMode
+   * \param snr the minimum SNR for the given mode
+   */
+  void AddModeSnrThreshold (WifiMode mode, double snr);
 
+  /**
+   * A vector of <snr, mode> pair that holds the minimum SNR for different mode
+   */
   typedef std::vector<std::pair<double,WifiMode> > Thresholds;
 
-  double m_ber;
-  Thresholds m_thresholds;
-  double m_minSnr;
-  double m_maxSnr;
+  double m_ber;  //!< The maximum Bit Error Rate acceptable at any transmission mode
+  Thresholds m_thresholds;  //!< List of WifiMode and the minimum SNR pair
 };
 
 } // namespace ns3

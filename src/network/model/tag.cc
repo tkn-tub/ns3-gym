@@ -28,6 +28,7 @@ Tag::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::Tag")
     .SetParent<ObjectBase> ()
+    .SetGroupName("Network")
   ;
   return tid;
 }

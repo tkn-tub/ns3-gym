@@ -23,9 +23,9 @@
 #include "ns3/assert.h"
 #include "random-variable-stream-helper.h"
 
-NS_LOG_COMPONENT_DEFINE ("RandomVariableStreamHelper");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("RandomVariableStreamHelper");
 
 int64_t RandomVariableStreamHelper::AssignStreams (std::string path, int64_t stream)
 {

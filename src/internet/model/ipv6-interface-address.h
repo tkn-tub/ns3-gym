@@ -53,7 +53,7 @@ public:
 
   /**
    * \enum Scope_e
-   * \brief Scope of address.
+   * \brief Address scope.
    */
   enum Scope_e
   {
@@ -134,6 +134,13 @@ public:
   Ipv6InterfaceAddress::Scope_e GetScope () const;
 
   /**
+   * \brief Checks if the address is in the same subnet.
+   * \param b the address to check
+   * \return true if the address is in the same subnet.
+   */
+  bool IsInSameSubnet (Ipv6Address b) const;
+
+  /**
    * \brief Set the latest DAD probe packet UID.
    * \param uid packet uid
    */
@@ -179,7 +186,22 @@ private:
    */
   Scope_e m_scope;
 
+  /**
+   * \brief Equal to operator.
+   *
+   * \param a the first operand
+   * \param b the first operand
+   * \returns true if the operands are equal
+   */
   friend bool operator == (Ipv6InterfaceAddress const& a, Ipv6InterfaceAddress const& b);
+
+  /**
+   * \brief Not equal to operator.
+   *
+   * \param a the first operand
+   * \param b the first operand
+   * \returns true if the operands are not equal
+   */
   friend bool operator != (Ipv6InterfaceAddress const& a, Ipv6InterfaceAddress const& b);
 
   /**
@@ -188,6 +210,13 @@ private:
   uint32_t m_nsDadUid;
 };
 
+/**
+ * \brief Stream insertion operator.
+ *
+ * \param os the reference to the output stream
+ * \param addr the Ipv6InterfaceAddress
+ * \returns the reference to the output stream
+ */
 std::ostream& operator<< (std::ostream& os, const Ipv6InterfaceAddress &addr);
 
 /* follow Ipv4InterfaceAddress way, maybe not inline them */

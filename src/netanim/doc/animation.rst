@@ -1,4 +1,5 @@
 .. include:: replace.txt
+.. toctree::
 
 Animation
 ---------
@@ -6,7 +7,7 @@ Animation
 Animation is an important tool for network simulation. While |ns3| does not
 contain a default graphical animation tool, we currently have two ways to provide
 animation, namely using the PyViz method or the NetAnim method.
-The PyViz method is described in http://www.nsnam.org/wiki/index.php/PyViz.
+The PyViz method is described in http://www.nsnam.org/wiki/PyViz.
 
 We will describe the NetAnim method briefly here.
 
@@ -16,19 +17,12 @@ NetAnim
 NetAnim is a standalone, Qt4-based software executable that uses a trace file generated during 
 an |ns3| simulation to display the topology and animate the packet flow between nodes.
 
-.. figure:: figures/Dumbbell.*
+.. figure:: figures/NetAnim_3_105.*
    :align: center
    :width: 500px
    :height: 400px
 
    An example of packet animation on wired-links
-
-.. figure:: figures/Wireless.*
-   :align: center
-   :width: 480px
-   :height: 400px
-
-   An example of packet animation on wireless-links
 
 In addition, NetAnim also provides useful features such as tables to display meta-data of packets like the image below
 
@@ -38,13 +32,35 @@ In addition, NetAnim also provides useful features such as tables to display met
 
    An example of tables for packet meta-data with protocol filters
 
-and a way to visualize the trajectory of a mobile node
+A way to visualize the trajectory of a mobile node
 
 .. figure:: figures/Trajectory.*
    :align: center
    :width: 500px
 
    An example of the trajectory of a mobile node
+
+A way to display the routing-tables of multiple nodes at various points in time
+
+.. figure:: figures/RoutingTables.*
+   :align: center
+   :width: 500px
+
+A way to display counters associated with multiple nodes as a chart or a table
+
+.. figure:: figures/NodeCountersChart.*
+   :align: center
+   :width: 500px
+
+.. figure:: figures/NodeCountersTable.*
+   :align: center
+   :width: 500px
+
+A way to view the timeline of packet transmit and receive events
+
+.. figure:: figures/PacketTimeline.*
+   :align: center
+   :width: 500px
 
 Methodology
 ===========
@@ -62,9 +78,11 @@ Downloading NetAnim
 If NetAnim is not already available in the |ns3| package you downloaded, you can do the following:
 
 Please ensure that you have installed mercurial.
-The latest version of NetAnim can be downloaded using mercurial with the following command::
+The latest version of NetAnim can be downloaded using mercurial with the following command:
 
-  hg clone http://code.nsnam.org/netanim
+.. sourcecode:: bash
+
+  $ hg clone http://code.nsnam.org/netanim
 
 Building NetAnim
 ================
@@ -72,35 +90,41 @@ Prerequisites
 ~~~~~~~~~~~~~
 Qt4 (4.7 and over) is required to build NetAnim. This can be obtained using the following ways:
 
-For Debian/Ubuntu Linux distributions::
+For Debian/Ubuntu Linux distributions:
 
-  apt-get install qt4-dev-tools
+.. sourcecode:: bash
 
-For Red Hat/Fedora based distribution::
+  $ apt-get install qt4-dev-tools
 
-  yum install qt4
-  yum install qt4-devel
+For Red Hat/Fedora based distribution:
 
-For Mac/OSX::
+.. sourcecode:: bash
 
-  http://qt.nokia.com/downloads/
+  $ yum install qt4
+  $ yum install qt4-devel
+
+For Mac/OSX, see http://qt.nokia.com/downloads/
 
 Build steps
 ~~~~~~~~~~~
 
-To build NetAnim use the following commands::
+To build NetAnim use the following commands:
 
-  cd netanim
-  make clean
-  qmake NetAnim.pro  (For MAC Users: qmake -spec macx-g++ NetAnim.pro)
-  make
+.. sourcecode:: bash
+
+  $ cd netanim
+  $ make clean
+  $ qmake NetAnim.pro  (For MAC Users: qmake -spec macx-g++ NetAnim.pro)
+  $ make
 
 
 Note: qmake could be "qmake-qt4" in some systems
 
-This should create an executable named "NetAnim" in the same directory::
+This should create an executable named "NetAnim" in the same directory:
 
- john@john-VirtualBox:~/netanim$ ls -l NetAnim
+.. sourcecode:: bash
+
+  $ ls -l NetAnim
  -rwxr-xr-x 1 john john 390395 2012-05-22 08:32 NetAnim
 
 Usage
@@ -117,10 +141,12 @@ The class "AnimationInterface" under "src/netanim" uses underlying |ns3| trace s
 to construct a timestamped ASCII file in XML format.
 
 Examples are found under src/netanim/examples
-Example::
+Example:
 
-  ./waf -d debug configure --enable-examples
-  ./waf --run "dumbbell-animation"
+.. sourcecode:: bash
+
+  $ ./waf -d debug configure --enable-examples
+  $ ./waf --run "dumbbell-animation"
 
 The above will create an XML file dumbbell-animation.xml
 
@@ -131,19 +157,22 @@ Mandatory
 2. Include the header [#include "ns3/netanim-module.h"] in your test program
 3. Add the statement
 
-::
+.. sourcecode:: cpp
 
-  AnimationInterface anim ("animation.xml"); 
-  where "animation.xml" is any arbitrary filename
+  AnimationInterface anim ("animation.xml");  // where "animation.xml" is any arbitrary filename
 
 [for versions before ns-3.13 you also have to use the line "anim.SetXMLOutput() to set the XML mode and also use anim.StartAnimation();]
 
 
 Optional
 ########
+
+.. highlight:: cpp
+
 The following are optional but useful steps::
 
-  1.anim.SetMobilityPollInterval (Seconds (1));
+  // Step 1
+  anim.SetMobilityPollInterval (Seconds (1));
 
 AnimationInterface records the position of all nodes every 250 ms by default. The statement above sets 
 the periodic interval at which AnimationInterface records the position of all nodes. If the nodes are 
@@ -151,36 +180,63 @@ expected to move very little, it is useful to set a high mobility poll interval 
 
 ::
 
-  2. anim.SetConstantPosition (Ptr< Node > n, double x, double y);
+  // Step 2
+  anim.SetConstantPosition (Ptr< Node > n, double x, double y);
 
 AnimationInterface requires that the position of all nodes be set. In |ns3| this is done by setting an associated MobilityModel. "SetConstantPosition" is a quick way to set the x-y coordinates of a node which is stationary.
 
 ::
 
-  3. anim.SetStartTime (Seconds(150)); and anim.SetStopTime (Seconds(150));
+  // Step 3
+  anim.SetStartTime (Seconds(150)); and anim.SetStopTime (Seconds(150));
 
 AnimationInterface can generate large XML files. The above statements restricts the window between which AnimationInterface does tracing. Restricting the window serves to focus only on relevant portions of the simulation and creating manageably small XML files
 
 ::
 
-  4. AnimationInterface anim ("animation.xml", 50000);
+  // Step 4
+  AnimationInterface anim ("animation.xml", 50000);
 
 Using the above constructor ensures that each animation XML trace file has only 50000 packets. For example, if AnimationInterface captures 150000 packets, using the above constructor splits the capture into 3 files
 
-animation.xml - containing the packet range 1-50000
+* animation.xml - containing the packet range 1-50000
 
-animation.xml-1 - containing the packet range 50001-100000 
+* animation.xml-1 - containing the packet range 50001-100000 
 
-animation.xml-2 - containing the packet range 100001-150000 
+* animation.xml-2 - containing the packet range 100001-150000 
 
 ::
 
-  5. anim.EnablePacketMetadata (true);
+  // Step 5
+  anim.EnablePacketMetadata (true);
 
 With the above statement, AnimationInterface records the meta-data of each packet in the xml trace file. Metadata can be used by NetAnim to provide better statistics and filter, along with providing some brief information about the packet such as TCP sequence number or source & destination IP address during packet animation.
 
 CAUTION: Enabling this feature will result in larger XML trace files.
 Please do NOT enable this feature when using Wimax links.
+
+::
+
+  // Step 6
+  anim.UpdateNodeDescription (5, "Access-point");
+
+With the above statement, AnimationInterface assigns the text "Access-point" to node 5.
+
+::
+
+  // Step 7
+  anim.UpdateNodeSize (6, 1.5, 1.5);
+
+With the above statement, AnimationInterface sets the node size to scale by 1.5. NetAnim automatically scales the graphics view to fit the oboundaries of the topology. This means that NetAnim, can abnormally scale a node's size too high or too low. Using AnimationInterface::UpdateNodeSize allows you to overwrite the default scaling in NetAnim and use your own custom scale.
+
+:: 
+
+  // Step 8
+  anim.UpdateNodeCounter (89, 7, 3.4);
+
+With the above statement, AnimationInterface sets the counter with Id == 89, associated with Node 7 with the value 3.4.
+The counter with Id 89 is obtained using AnimationInterface::AddNodeCounter. An example usage for this is in src/netanim/examples/resources_demo.cc.
+
 
 Step 2: Loading the XML in NetAnim
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -192,132 +248,8 @@ Step 2: Loading the XML in NetAnim
 Here is a video illustrating this
 http://www.youtube.com/watch?v=tz_hUuNwFDs
 
-Essential settings of NetAnim
-=============================
-
-Persist combobox
-~~~~~~~~~~~~~~~~
-.. figure:: figures/Persist.*
-   :width: 150px
-
-   The persist combobox
-
-When packets are transmitted and received very quickly, they can be almost invisible. The persist time setting
-allows the user to control the duration for which a packet should be visible on the animation canvas. 
-
-Update-interval slider
-~~~~~~~~~~~~~~~~~~~~~~
-.. figure:: figures/UpdateRateInterval.*
-   :width: 150px
-
-   The update-interval slider
-
-The update-interval slider controls the rate at which NetAnim refreshes the canvas screen. For instance, 
-for the setting above, NetAnim, updates the position of nodes and packets only once in 250 ms.
-
-
-Parts of the XML
-================
-The XML trace files has the following main sections
-
-1. Topology
-
-   - Nodes
-   - Links
-2. packets (packets over wired-links)
-3. wpackets (packets over wireless-links)
-
-XML tags
-~~~~~~~~
-Nodes are identified by their unique Node id. The XML begins with the "information" element describing the rest of the elements
-
-1. <anim> element
-
-This is the XML root element. All other elements fall within this element.
-  Attributes are::
-
-    lp = Logical Processor Id (Used for distributed simulations only)
-
-2. <topology> element
-
-This elements contains the Node and Link elements.It describes, the co-ordinates of the canvas used for animation.
-   Attributes are::
-
-     minX = minimum X coordinate of the animation canvas
-     minY = minimum Y coordinate of the animation canvas
-     maxX = maximum X coordinate of the animation canvas
-     maxY = maximum Y coordinate of the animation canvas
-
-Example::
-
- <topology minX = "-6.42025" minY = "-6.48444" maxX = "186.187" maxY = "188.049">
-
-3. <node> element
-
-This element describes each Node's Id and X,Y co-ordinate (position).
-  Attributes are::
-
-   id = Node Id
-   locX = X coordinate
-   locY = Y coordinate
-
-Example::
-
-  <node id = "8" locX = "107.599" locY = "96.9366" />
-
-4. <link> element
-
-This element describes wired links between two nodes.
- Attributes are::
-
-   fromId = From Node Id (first node id)
-   toId   = To Node Id (second node id)
- 
-Example::
-
-  <link fromId="0" toId="1"/>
-
-5. <p> element
-
-This element describes a packet over wired links being transmitted at some node and received at another. 
-
-The reception details are described in its associated rx element
- Attributes are::
-
-   fId = Node Id transmitting the packet
-   fbTx = First bit transmit time of the packet
-   lbTx = Last bit transmit time of the packet
-   toId = Node Id receiving the packet
-   fbRx = First bit Reception Time of the packet
-   lbRx = Last bit Reception Time of the packet
-
-Example::
-
-  <p fId="1" fbTx="1" lbTx="1.000067199" tId="0" fbRx="1.002" lbRx="1.002067199"/>
-
-A packet over wired-links from Node 1 was received at Node 0. The first bit of the packet was transmitted at  the 1st second, the last bit was transmitted at the 1.000067199th second of the simulation Node 0 received the first bit of the packet at the 1.002th second and the last bit of the packet at the 1.002067199th second of the simulation
-NOTE: A packet with fromId == toId is a dummy packet used internally by the AnimationInterface. Please ignore this packet
-
-7. <wp> element
-
-This element describes a packet over wireless links being transmitted at some node and received at another. 
-
-The reception details are described in its associated rx element.
- Attributes are::
-
-   fromId = Node Id transmitting the packet
-   fbTx = First bit transmit time of the packet
-   lbTx = Last bit transmit time of the packet
-   range = Range of the transmission
-
-Example::
-
-  <wp fId = "20" fbTx = "0.003" lbTx = "0.003254" range = "59.68176982" tId="32" fbRx="0.003000198" lbRx="0.003254198"/>
-
-A packet over wireless-links from Node 20 was received at Node 32. The first bit of the packet was transmitted at  the 0.003th second, the last bit was transmitted at the 0.003254 second of the simulation Node 0 received the first bit of the packet at the 0.003000198 second and the last bit of the packet at the 0.003254198 second of the simulation
-
 Wiki
 ====
 For detailed instructions on installing "NetAnim", F.A.Qs and loading the XML trace file 
 (mentioned earlier) using NetAnim please refer:
-http://www.nsnam.org/wiki/index.php/NetAnim
+http://www.nsnam.org/wiki/NetAnim

@@ -49,6 +49,7 @@ PhyTxStatsCalculator::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::PhyTxStatsCalculator")
     .SetParent<LteStatsCalculator> ()
+    .SetGroupName("Lte")
     .AddConstructor<PhyTxStatsCalculator> ()
     .AddAttribute ("DlTxOutputFilename",
                    "Name of the file where the downlink results will be saved.",

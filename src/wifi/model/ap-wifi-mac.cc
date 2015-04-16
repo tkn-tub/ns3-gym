@@ -38,9 +38,9 @@
 #include "amsdu-subframe-header.h"
 #include "msdu-aggregator.h"
 
-NS_LOG_COMPONENT_DEFINE ("ApWifiMac");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("ApWifiMac");
 
 NS_OBJECT_ENSURE_REGISTERED (ApWifiMac);
 
@@ -49,12 +49,21 @@ ApWifiMac::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::ApWifiMac")
     .SetParent<RegularWifiMac> ()
+    .SetGroupName ("Wifi")
     .AddConstructor<ApWifiMac> ()
     .AddAttribute ("BeaconInterval", "Delay between two beacons",
                    TimeValue (MicroSeconds (102400)),
                    MakeTimeAccessor (&ApWifiMac::GetBeaconInterval,
                                      &ApWifiMac::SetBeaconInterval),
                    MakeTimeChecker ())
+    .AddAttribute ("BeaconJitter", "A uniform random variable to cause the initial beacon starting time (after simulation time 0) to be distributed between 0 and the BeaconInterval.",
+                   StringValue ("ns3::UniformRandomVariable"),
+                   MakePointerAccessor (&ApWifiMac::m_beaconJitter),
+                   MakePointerChecker<UniformRandomVariable> ())
+    .AddAttribute ("EnableBeaconJitter", "If beacons are enabled, whether to jitter the initial send event.",
+                   BooleanValue (false),
+                   MakeBooleanAccessor (&ApWifiMac::m_enableBeaconJitter),
+                   MakeBooleanChecker ())
     .AddAttribute ("BeaconGeneration", "Whether or not beacons are generated.",
                    BooleanValue (true),
                    MakeBooleanAccessor (&ApWifiMac::SetBeaconGeneration,
@@ -73,6 +82,7 @@ ApWifiMac::ApWifiMac ()
   m_beaconDca->SetMaxCw (0);
   m_beaconDca->SetLow (m_low);
   m_beaconDca->SetManager (m_dcfManager);
+  m_beaconDca->SetTxMiddle (m_txMiddle);
 
   // Let the lower layers know that we are acting as an AP.
   SetTypeOfStation (AP);
@@ -160,7 +170,7 @@ ApWifiMac::SetBeaconInterval (Time interval)
   NS_LOG_FUNCTION (this << interval);
   if ((interval.GetMicroSeconds () % 1024) != 0)
     {
-      NS_LOG_WARN ("beacon interval should be multiple of 1024us, see IEEE Std. 802.11-2007, section 11.1.1.1");
+      NS_LOG_WARN ("beacon interval should be multiple of 1024us (802.11 time unit), see IEEE Std. 802.11-2012");
     }
   m_beaconInterval = interval;
 }
@@ -170,6 +180,14 @@ ApWifiMac::StartBeaconing (void)
 {
   NS_LOG_FUNCTION (this);
   SendOneBeacon ();
+}
+
+int64_t
+ApWifiMac::AssignStreams (int64_t stream)
+{
+  NS_LOG_FUNCTION (this << stream);
+  m_beaconJitter->SetStream (stream);
+  return 1;
 }
 
 void
@@ -648,7 +666,17 @@ ApWifiMac::DoInitialize (void)
   m_beaconEvent.Cancel ();
   if (m_enableBeaconGeneration)
     {
-      m_beaconEvent = Simulator::ScheduleNow (&ApWifiMac::SendOneBeacon, this);
+      if (m_enableBeaconJitter)
+        {
+          int64_t jitter = m_beaconJitter->GetValue (0, m_beaconInterval.GetMicroSeconds ());
+          NS_LOG_DEBUG ("Scheduling initial beacon for access point " << GetAddress() << " at time " << jitter << " microseconds");
+          m_beaconEvent = Simulator::Schedule (MicroSeconds (jitter), &ApWifiMac::SendOneBeacon, this);
+        }
+      else
+        {
+          NS_LOG_DEBUG ("Scheduling initial beacon for access point " << GetAddress() << " at time 0");
+          m_beaconEvent = Simulator::ScheduleNow (&ApWifiMac::SendOneBeacon, this);
+        }
     }
   RegularWifiMac::DoInitialize ();
 }

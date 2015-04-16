@@ -27,7 +27,7 @@
 #include "ns3/simulator.h"
 #include "ns3/log.h"
 #include "ns3/test.h"
-#include "ns3/epc-helper.h"
+#include "ns3/point-to-point-epc-helper.h"
 #include "ns3/epc-enb-application.h"
 #include "ns3/packet-sink-helper.h"
 #include "ns3/point-to-point-helper.h"
@@ -48,9 +48,7 @@
 #include "ns3/config.h"
 #include "lte-test-entities.h"
 
-namespace ns3 {
-
-
+using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("EpcTestS1uUplink");
 
@@ -293,7 +291,7 @@ EpcS1uUlTestCase::~EpcS1uUlTestCase ()
 void 
 EpcS1uUlTestCase::DoRun ()
 {
-  Ptr<EpcHelper> epcHelper = CreateObject<EpcHelper> ();
+  Ptr<PointToPointEpcHelper> epcHelper = CreateObject<PointToPointEpcHelper> ();
   Ptr<Node> pgw = epcHelper->GetPgwNode ();
 
   // allow jumbo packets
@@ -537,8 +535,3 @@ EpcS1uUlTestSuite::EpcS1uUlTestSuite ()
   AddTestCase (new EpcS1uUlTestCase ("1 eNB, 100 pkts 15000 bytes each", v8), TestCase::QUICK);
   
 }
-
-
-
-}  // namespace ns3
-

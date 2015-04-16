@@ -1,4 +1,5 @@
 .. include:: replace.txt
+.. highlight:: text
 
 Tap NetDevice
 -------------
@@ -48,6 +49,7 @@ automatically created.  In this case, a Linux computer is made to appear as
 if it was directly connected to a simulated ns-3 network.
 
 This is illustrated below: ::
+
 
     +--------+
     |  Linux |
@@ -99,7 +101,9 @@ significant difference is, as the mode name implies, the TapBridge is
 going to "Use" an existing tap device previously created and configured
 by the user.  This mode is particularly useful when a virtualization 
 scheme automatically creates tap devices and ns-3 is used to provide 
-simulated networks for those devices. ::
+simulated networks for those devices.
+
+::
 
     +--------+
     |  Linux |
@@ -139,11 +143,13 @@ This means that Linux bridges with more than one net device added are
 incompatible with UseLocal mode.
 
 In UseLocal mode, the user is expected to create and configure a tap device
-completely outside the scope of the ns-3 simulation using something like: ::
+completely outside the scope of the ns-3 simulation using something like:
 
-  sudo tunctl -t tap0
-  sudo ifconfig tap0 hw ether 08:00:2e:00:00:01
-  sudo ifconfig tap0 10.1.1.1 netmask 255.255.255.0 up
+.. sourcecode:: bash
+
+  $ sudo tunctl -t tap0
+  $ sudo ifconfig tap0 hw ether 08:00:2e:00:00:01
+  $ sudo ifconfig tap0 10.1.1.1 netmask 255.255.255.0 up
 
 To tell the TapBridge what is going on, the user will set either directly
 into the TapBridge or via the TapBridgeHelper, the "DeviceName" attribute.
@@ -163,7 +169,9 @@ mode.  Again, the "Use" prefix indicates that the TapBridge is going to Use
 an existing configuration.  In this case, the TapBridge is going to logically
 extend a Linux bridge into ns-3.  
 
-This is illustrated below: ::
+This is illustrated below:
+
+::
 
     +---------+
     |  Linux  |                             +----------+
@@ -203,15 +211,17 @@ addresses.  Thus, ns-3 devices must support SendFrom()
 for use in UseBridge mode.
 
 It is expected that the user will do something like the following to
-configure the bridge and tap completely outside ns-3: ::
+configure the bridge and tap completely outside ns-3:
 
-  sudo brctl addbr mybridge
-  sudo tunctl -t mytap
-  sudo ifconfig mytap hw ether 00:00:00:00:00:01
-  sudo ifconfig mytap 0.0.0.0 up
-  sudo brctl addif mybridge mytap
-  sudo brctl addif mybridge ...
-  sudo ifconfig mybridge 10.1.1.1 netmask 255.255.255.0 up
+.. sourcecode:: bash
+
+  $ sudo brctl addbr mybridge
+  $ sudo tunctl -t mytap
+  $ sudo ifconfig mytap hw ether 00:00:00:00:00:01
+  $ sudo ifconfig mytap 0.0.0.0 up
+  $ sudo brctl addif mybridge mytap
+  $ sudo brctl addif mybridge ...
+  $ sudo ifconfig mybridge 10.1.1.1 netmask 255.255.255.0 up
 
 To tell the TapBridge what is going on, the user will set either directly
 into the TapBridge or via the TapBridgeHelper, the "DeviceName" attribute.

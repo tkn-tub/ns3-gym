@@ -20,32 +20,51 @@
  */
 
 #include "ns3/wifi-tx-vector.h"
+#include "ns3/fatal-error.h"
 
 namespace ns3 {
 
 WifiTxVector::WifiTxVector ()
+  : m_retries (0),
+    m_shortGuardInterval (false),
+    m_nss (1),
+    m_ness (0),
+    m_stbc (false),
+    m_modeInitialized (false),
+    m_txPowerLevelInitialized (false)
 {
 }
 
-WifiTxVector::WifiTxVector (WifiMode m, uint8_t l, uint8_t r, bool sg, uint8_t ns, uint8_t ne, bool Stbc)
-  : m_mode (m),
-    m_txPowerLevel (l),
-    m_retries (r),
-    m_shortGuardInterval(sg),
-    m_nss(ns),
-    m_ness(ne),
-    m_stbc(Stbc)
+WifiTxVector::WifiTxVector (WifiMode mode, uint8_t powerLevel, uint8_t retries,
+                            bool shortGuardInterval, uint8_t nss, uint8_t ness, bool stbc)
+  : m_mode (mode),
+    m_txPowerLevel (powerLevel),
+    m_retries (retries),
+    m_shortGuardInterval(shortGuardInterval),
+    m_nss(nss),
+    m_ness(ness),
+    m_stbc(stbc),
+    m_modeInitialized (true),
+    m_txPowerLevelInitialized (true)
 {
 }
 
 WifiMode
 WifiTxVector::GetMode (void) const
 {
+  if (!m_modeInitialized)
+    {
+      NS_FATAL_ERROR ("WifiTxVector mode must be set before using");
+    }
   return m_mode;
 }
 uint8_t 
 WifiTxVector::GetTxPowerLevel (void) const
 {
+  if (!m_txPowerLevelInitialized)
+    {
+      NS_FATAL_ERROR ("WifiTxVector txPowerLevel must be set before using");
+    }
   return m_txPowerLevel;
 }
 uint8_t 
@@ -78,11 +97,13 @@ void
 WifiTxVector::SetMode (WifiMode mode)
 {
   m_mode=mode;
+  m_modeInitialized = true;
 }
 void 
 WifiTxVector::SetTxPowerLevel (uint8_t powerlevel)
 {
   m_txPowerLevel=powerlevel;
+  m_txPowerLevelInitialized = true;
 }
 void 
 WifiTxVector::SetRetries (uint8_t retries)
@@ -112,7 +133,13 @@ WifiTxVector::SetStbc (bool stbc)
 
 std::ostream & operator << ( std::ostream &os, const WifiTxVector &v)
 { 
-  os << "mode:" << v.GetMode() << " txpwrlvl:" << v.GetTxPowerLevel() << " retries:" << v.GetRetries() << " Short GI: " << v.IsShortGuardInterval() << " Nss: " << v.GetNss() << " Ness: " << v.GetNess() << " STBC: " << v.IsStbc();
+  os << "mode:" << v.GetMode() <<
+    " txpwrlvl:" << (uint32_t)v.GetTxPowerLevel() <<
+    " retries:" << (uint32_t)v.GetRetries() <<
+    " Short GI: " << v.IsShortGuardInterval() <<
+    " Nss: " << (uint32_t)v.GetNss() <<
+    " Ness: " << (uint32_t)v.GetNess() <<
+    " STBC: " << v.IsStbc();
   return os;
 }
 

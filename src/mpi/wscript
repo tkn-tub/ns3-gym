@@ -36,16 +36,21 @@ def build(bld):
     sim = bld.create_ns3_module('mpi', ['core', 'network'])
     sim.source = [
         'model/distributed-simulator-impl.cc',
-        'model/mpi-interface.cc',
+        'model/granted-time-window-mpi-interface.cc',
         'model/mpi-receiver.cc',
+        'model/null-message-simulator-impl.cc',
+        'model/null-message-mpi-interface.cc',
+        'model/remote-channel-bundle.cc',
+        'model/remote-channel-bundle-manager.cc',
+        'model/mpi-interface.cc', 
         ]
 
     headers = bld(features='ns3header')
     headers.module = 'mpi'
     headers.source = [
-        'model/distributed-simulator-impl.h',
-        'model/mpi-interface.h',
         'model/mpi-receiver.h',
+        'model/mpi-interface.h',
+        'model/parallel-communication-interface.h', 
         ]
 
     if env['ENABLE_MPI']:

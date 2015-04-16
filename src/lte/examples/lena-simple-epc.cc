@@ -38,7 +38,9 @@ using namespace ns3;
  * attaches one UE per eNodeB starts a flow for each UE to  and from a remote host.
  * It also  starts yet another flow between each UE pair.
  */
+
 NS_LOG_COMPONENT_DEFINE ("EpcFirstExample");
+
 int
 main (int argc, char *argv[])
 {
@@ -57,7 +59,7 @@ main (int argc, char *argv[])
   cmd.Parse(argc, argv);
 
   Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();
-  Ptr<EpcHelper>  epcHelper = CreateObject<EpcHelper> ();
+  Ptr<PointToPointEpcHelper>  epcHelper = CreateObject<PointToPointEpcHelper> ();
   lteHelper->SetEpcHelper (epcHelper);
 
   ConfigStore inputConfig;

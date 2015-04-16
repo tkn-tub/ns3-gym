@@ -32,11 +32,9 @@
 #include "lte-enb-net-device.h"
 #include "lte-ue-net-device.h"
 
-NS_LOG_COMPONENT_DEFINE ("LteRrcProtocolReal");
-
-
 namespace ns3 {
 
+NS_LOG_COMPONENT_DEFINE ("LteRrcProtocolReal");
 
 const Time RRC_REAL_MSG_DELAY = MilliSeconds (0); 
 
@@ -70,6 +68,7 @@ LteUeRrcProtocolReal::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::LteUeRrcProtocolReal")
     .SetParent<Object> ()
+    .SetGroupName("Lte")
     .AddConstructor<LteUeRrcProtocolReal> ()
   ;
   return tid;
@@ -385,6 +384,7 @@ LteEnbRrcProtocolReal::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::LteEnbRrcProtocolReal")
     .SetParent<Object> ()
+    .SetGroupName("Lte")
     .AddConstructor<LteEnbRrcProtocolReal> ()
   ;
   return tid;
@@ -500,50 +500,6 @@ LteEnbRrcProtocolReal::DoRemoveUe (uint16_t rnti)
   m_completeSetupUeParametersMap.erase (it);
   m_enbRrcSapProviderMap.erase (rnti);
   m_setupUeParametersMap.erase (rnti);
-}
-
-void 
-LteEnbRrcProtocolReal::DoSendMasterInformationBlock (LteRrcSap::MasterInformationBlock msg)
-{
-  NS_LOG_FUNCTION (this);
-  for (std::map<uint16_t, LteUeRrcSapProvider*>::const_iterator it = m_enbRrcSapProviderMap.begin ();
-       it != m_enbRrcSapProviderMap.end ();
-       ++it)
-    {
-      Simulator::Schedule (RRC_REAL_MSG_DELAY, 
-                           &LteUeRrcSapProvider::RecvMasterInformationBlock,
-                           it->second, 
-                           msg);
-    }
-}
-
-void 
-LteEnbRrcProtocolReal::DoSendSystemInformationBlockType1 (LteRrcSap::SystemInformationBlockType1 msg)
-{
-  NS_LOG_FUNCTION (this << m_cellId);
-  // walk list of all nodes to get UEs with this cellId
-  Ptr<LteUeRrc> ueRrc;
-  for (NodeList::Iterator i = NodeList::Begin (); i != NodeList::End (); ++i)
-    {
-      Ptr<Node> node = *i;
-      int nDevs = node->GetNDevices ();
-      for (int j = 0; j < nDevs; ++j)
-        {
-          Ptr<LteUeNetDevice> ueDev = node->GetDevice (j)->GetObject <LteUeNetDevice> ();
-          if (ueDev != 0)
-            {
-              NS_LOG_LOGIC ("considering UE " << ueDev->GetImsi ());
-              Ptr<LteUeRrc> ueRrc = ueDev->GetRrc ();
-              if (ueRrc->GetCellId () == m_cellId)
-                {
-                  Simulator::Schedule (RRC_REAL_MSG_DELAY, 
-                                       &LteUeRrcSapProvider::RecvSystemInformationBlockType1,
-                                       ueRrc->GetLteUeRrcSapProvider (), 
-                                       msg);
-                }
-            }
-        }
-    } 
 }
 
 void 

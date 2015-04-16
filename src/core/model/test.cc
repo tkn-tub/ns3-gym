@@ -72,6 +72,18 @@ struct TestCaseFailure
   std::string file;
   int32_t line;
 };
+std::ostream & operator << (std::ostream & os, const TestCaseFailure & failure)
+{
+  os << "    test=\""  << failure.cond
+     << "\" actual=\"" << failure.actual
+     << "\" limit=\""  << failure.limit
+     << "\" in=\""     << failure.file
+     << ":"            << failure.line 
+     << "\" "          << failure.message;
+
+  return os;
+}
+
 struct TestCase::Result
 {
   Result ();
@@ -169,12 +181,6 @@ TestCase::~TestCase ()
 }
 
 void
-TestCase::AddTestCase (TestCase *testCase)
-{
-  AddTestCase (testCase, TestCase::QUICK);
-}
-
-void
 TestCase::AddTestCase (TestCase *testCase, enum TestCase::TestDuration duration)
 {
   // Record this for use later when all test cases are run.
@@ -243,6 +249,12 @@ TestCase::GetName (void) const
   NS_LOG_FUNCTION (this);
   return m_name;
 }
+TestCase *
+TestCase::GetParent () const
+{
+  return m_parent;
+}
+
 void
 TestCase::ReportTestFailure (std::string cond, std::string actual, 
                              std::string limit, std::string message, 
@@ -312,12 +324,6 @@ TestCase::CreateTempDirFilename (std::string filename)
       SystemPath::MakeDirectories (tempDir);
       return SystemPath::Append (tempDir, filename);
     }
-}
-bool 
-TestCase::GetErrorStatus (void) const
-{
-  NS_LOG_FUNCTION (this);
-  return IsStatusFailure ();
 }
 bool 
 TestCase::IsStatusFailure (void) const
@@ -591,10 +597,7 @@ TestRunnerImpl::PrintReport (TestCase *test, std::ostream *os, bool xml, int lev
         {
           for (uint32_t i = 0; i < test->m_result->failure.size (); i++)
             {
-              TestCaseFailure failure = test->m_result->failure[i];
-              *os << Indent (level) << "    got=\"" << failure.cond << "\" expected=\"" 
-                  << failure.actual << "\" in=\"" << failure.file << ":" << failure.line 
-                  << "\" " << failure.message << std::endl;
+              *os << Indent (level) << test->m_result->failure[i] << std::endl;
             }
           for (uint32_t i = 0; i < test->m_children.size (); i++)
             {
@@ -934,6 +937,11 @@ TestRunnerImpl::Run (int argc, char *argv[])
 
   // let's run our tests now.
   bool failed = false;
+  if (tests.size () == 0)
+    {
+      std::cerr << "Error:  no tests match the requested string" << std::endl;
+      return 1;
+    }
   for (std::list<TestCase *>::const_iterator i = tests.begin (); i != tests.end (); ++i)
     {
       TestCase *test = *i;

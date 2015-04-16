@@ -27,12 +27,9 @@
 
 
 
-NS_LOG_COMPONENT_DEFINE ("SpectrumModel");
-
-
-
 namespace ns3 {
 
+NS_LOG_COMPONENT_DEFINE ("SpectrumModel");
 
 bool operator== (const SpectrumModel& lhs, const SpectrumModel& rhs)
 {

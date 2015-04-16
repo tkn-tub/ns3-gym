@@ -39,9 +39,9 @@
 #include "connection-manager.h"
 #include "bandwidth-manager.h"
 
-NS_LOG_COMPONENT_DEFINE ("WimaxNetDevice");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("WimaxNetDevice");
 
 NS_OBJECT_ENSURE_REGISTERED (WimaxNetDevice);
 
@@ -120,9 +120,15 @@ TypeId WimaxNetDevice::GetTypeId (void)
                    MakePointerAccessor (&WimaxNetDevice::m_broadcastConnection),
                    MakePointerChecker<WimaxConnection> ())
 
-    .AddTraceSource ("Rx", "Receive trace", MakeTraceSourceAccessor (&WimaxNetDevice::m_traceRx))
+    .AddTraceSource ("Rx",
+                     "Receive trace",
+                     MakeTraceSourceAccessor (&WimaxNetDevice::m_traceRx),
+                     "ns3::Packet::TracedCallback")
 
-    .AddTraceSource ("Tx", "Transmit trace", MakeTraceSourceAccessor (&WimaxNetDevice::m_traceTx));
+    .AddTraceSource ("Tx",
+                     "Transmit trace",
+                     MakeTraceSourceAccessor (&WimaxNetDevice::m_traceTx),
+                     "ns3::Packet::TracedCallback");
   return tid;
 }
 

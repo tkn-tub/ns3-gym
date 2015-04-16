@@ -2,7 +2,10 @@
 
 def build(bld):
 
-    module = bld.create_ns3_module('lte', ['core', 'network', 'spectrum', 'stats', 'buildings', 'virtual-net-device','point-to-point','applications','internet','csma'])
+    lte_module_dependencies = ['core', 'network', 'spectrum', 'stats', 'buildings', 'virtual-net-device','point-to-point','applications','internet','csma']
+    if (bld.env['ENABLE_EMU']):
+        lte_module_dependencies.append('fd-net-device')
+    module = bld.create_ns3_module('lte', lte_module_dependencies)
     module.source = [
         'model/lte-common.cc',
         'model/lte-spectrum-phy.cc',
@@ -40,6 +43,7 @@ def build(bld):
         'helper/lte-helper.cc',
         'helper/lte-stats-calculator.cc',
         'helper/epc-helper.cc',
+        'helper/point-to-point-epc-helper.cc',
         'helper/radio-bearer-stats-calculator.cc',
         'helper/radio-bearer-stats-connector.cc',
         'helper/phy-stats-calculator.cc',
@@ -68,7 +72,7 @@ def build(bld):
         'model/lte-ue-phy-sap.cc',
         'model/lte-ue-cphy-sap.cc',
         'model/lte-interference.cc',
-        'model/lte-sinr-chunk-processor.cc',
+        'model/lte-chunk-processor.cc',
         'model/pf-ff-mac-scheduler.cc',
         'model/fdmt-ff-mac-scheduler.cc',
         'model/tdmt-ff-mac-scheduler.cc',
@@ -78,6 +82,7 @@ def build(bld):
         'model/fdtbfq-ff-mac-scheduler.cc',
         'model/tdtbfq-ff-mac-scheduler.cc',
         'model/pss-ff-mac-scheduler.cc',
+        'model/cqa-ff-mac-scheduler.cc',
         'model/epc-gtpu-header.cc',
         'model/trace-fading-loss-model.cc',
         'model/epc-enb-application.cc',
@@ -98,6 +103,24 @@ def build(bld):
         'model/epc-mme.cc',
         'model/lte-asn1-header.cc',
         'model/lte-rrc-header.cc',
+        'model/lte-handover-management-sap.cc',
+        'model/lte-handover-algorithm.cc',
+        'model/a2-a4-rsrq-handover-algorithm.cc',
+        'model/a3-rsrp-handover-algorithm.cc',
+        'model/no-op-handover-algorithm.cc',
+        'model/lte-anr-sap.cc',
+        'model/lte-anr.cc',
+        'model/lte-ffr-algorithm.cc',
+        'model/lte-ffr-sap.cc',
+        'model/lte-ffr-rrc-sap.cc',
+        'model/lte-fr-no-op-algorithm.cc',
+        'model/lte-fr-hard-algorithm.cc',
+        'model/lte-fr-strict-algorithm.cc',
+        'model/lte-fr-soft-algorithm.cc',
+        'model/lte-ffr-soft-algorithm.cc',
+        'model/lte-ffr-enhanced-algorithm.cc',
+        'model/lte-ffr-distributed-algorithm.cc',
+        'model/lte-ue-power-control.cc',
         ]
 
     module_test = bld.create_ns3_module_test_library('lte')
@@ -118,6 +141,7 @@ def build(bld):
         'test/lte-test-fdtbfq-ff-mac-scheduler.cc',
         'test/lte-test-tdtbfq-ff-mac-scheduler.cc',
         'test/lte-test-pss-ff-mac-scheduler.cc',
+        'test/lte-test-cqa-ff-mac-scheduler.cc',
         'test/lte-test-earfcn.cc',
         'test/lte-test-spectrum-value-helper.cc',
         'test/lte-test-pathloss-model.cc',
@@ -143,7 +167,17 @@ def build(bld):
         'test/test-lte-x2-handover-measures.cc',
         'test/test-asn1-encoding.cc',
         'test/lte-test-ue-measurements.cc',
+        'test/lte-test-cell-selection.cc',
         'test/test-lte-handover-delay.cc',
+        'test/test-lte-handover-target.cc',
+        'test/lte-test-deactivate-bearer.cc',
+        'test/lte-ffr-simple.cc',
+        'test/lte-test-downlink-power-control.cc',
+        'test/lte-test-uplink-power-control.cc',
+        'test/lte-test-frequency-reuse.cc',
+        'test/lte-test-interference-fr.cc',
+        'test/lte-test-cqi-generation.cc',
+        'test/lte-simple-spectrum-phy.cc',
         ]
 
     headers = bld(features='ns3header')
@@ -185,6 +219,7 @@ def build(bld):
         'helper/lte-helper.h',
         'helper/lte-stats-calculator.h',
         'helper/epc-helper.h',
+        'helper/point-to-point-epc-helper.h',
         'helper/phy-stats-calculator.h',
         'helper/mac-stats-calculator.h',
         'helper/phy-tx-stats-calculator.h',
@@ -213,7 +248,7 @@ def build(bld):
         'model/lte-ue-phy-sap.h',
         'model/lte-ue-cphy-sap.h',
         'model/lte-interference.h',
-        'model/lte-sinr-chunk-processor.h',
+        'model/lte-chunk-processor.h',
         'model/pf-ff-mac-scheduler.h',
         'model/fdmt-ff-mac-scheduler.h',
         'model/tdmt-ff-mac-scheduler.h',
@@ -223,6 +258,7 @@ def build(bld):
         'model/fdtbfq-ff-mac-scheduler.h',
         'model/tdtbfq-ff-mac-scheduler.h',
         'model/pss-ff-mac-scheduler.h',
+        'model/cqa-ff-mac-scheduler.h',
         'model/trace-fading-loss-model.h',
         'model/epc-gtpu-header.h',
         'model/epc-enb-application.h',
@@ -243,7 +279,29 @@ def build(bld):
         'model/epc-mme.h',
         'model/lte-asn1-header.h',
         'model/lte-rrc-header.h',
+        'model/lte-handover-management-sap.h',
+        'model/lte-handover-algorithm.h',
+        'model/a2-a4-rsrq-handover-algorithm.h',
+        'model/a3-rsrp-handover-algorithm.h',
+        'model/no-op-handover-algorithm.h',
+        'model/lte-anr-sap.h',
+        'model/lte-anr.h',
+        'model/lte-ffr-algorithm.h',
+        'model/lte-ffr-sap.h',
+        'model/lte-ffr-rrc-sap.h',
+        'model/lte-fr-no-op-algorithm.h',
+        'model/lte-fr-hard-algorithm.h',
+        'model/lte-fr-strict-algorithm.h',
+        'model/lte-fr-soft-algorithm.h',
+        'model/lte-ffr-soft-algorithm.h',
+        'model/lte-ffr-enhanced-algorithm.h',
+        'model/lte-ffr-distributed-algorithm.h',     
+		'model/lte-ue-power-control.h',           
         ]
+
+    if (bld.env['ENABLE_EMU']):
+        module.source.append ('helper/emu-epc-helper.cc')
+        headers.source.append ('helper/emu-epc-helper.h')
 
     if (bld.env['ENABLE_EXAMPLES']):
       bld.recurse('examples')

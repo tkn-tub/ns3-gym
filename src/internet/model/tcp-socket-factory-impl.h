@@ -31,7 +31,9 @@ class TcpL4Protocol;
  * \ingroup internet
  * \defgroup tcp Tcp
  *
- * This class serves to create sockets of the TcpSocketBase type.
+ * Transmission Control Protocol
+ *
+ * See \RFC{793} and others.
  */
 
 /**
@@ -39,6 +41,8 @@ class TcpL4Protocol;
  *
  * \brief socket factory implementation for native ns-3 TCP
  *
+ *
+ * This class serves to create sockets of the TcpSocketBase type.
  */
 class TcpSocketFactoryImpl : public TcpSocketFactory
 {
@@ -46,6 +50,10 @@ public:
   TcpSocketFactoryImpl ();
   virtual ~TcpSocketFactoryImpl ();
 
+  /**
+   * \brief Set the associated TCP L4 protocol.
+   * \param tcp the TCP L4 protocol
+   */
   void SetTcp (Ptr<TcpL4Protocol> tcp);
 
   virtual Ptr<Socket> CreateSocket (void);
@@ -53,7 +61,7 @@ public:
 protected:
   virtual void DoDispose (void);
 private:
-  Ptr<TcpL4Protocol> m_tcp;
+  Ptr<TcpL4Protocol> m_tcp; //!< the associated TCP L4 protocol
 };
 
 } // namespace ns3

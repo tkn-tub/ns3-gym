@@ -1,3 +1,22 @@
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
+/*
+ * Copyright (c) 2012 Mathieu Lacage
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation;
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ */
+
 #include "rng-seed-manager.h"
 #include "global-value.h"
 #include "attribute-helper.h"
@@ -5,15 +24,32 @@
 #include "config.h"
 #include "log.h"
 
-NS_LOG_COMPONENT_DEFINE ("RngSeedManager");
-
 namespace ns3 {
 
+NS_LOG_COMPONENT_DEFINE ("RngSeedManager");
+
+/**
+ * \relates RngSeedManager
+ * The next random number generator stream number to use
+ * for automatic assignment.
+ */
 static uint64_t g_nextStreamIndex = 0;
+/**
+ * \relates RngSeedManager
+ * The random number generator seed number global value.
+ *
+ * This is accessible as "--RngSeed" from CommandLine.
+ */
 static ns3::GlobalValue g_rngSeed ("RngSeed", 
                                    "The global seed of all rng streams",
                                    ns3::IntegerValue(1),
                                    ns3::MakeIntegerChecker<uint32_t> ());
+/**
+ * \relates RngSeedManager
+ * The random number generator run number global value.
+ *
+ * This is accessible as "--RngRun" from CommandLine.
+ */
 static ns3::GlobalValue g_rngRun ("RngRun", 
                                   "The run number used to modify the global seed",
                                   ns3::IntegerValue (1),

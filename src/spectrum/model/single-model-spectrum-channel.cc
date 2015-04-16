@@ -38,11 +38,9 @@
 #include "single-model-spectrum-channel.h"
 
 
-NS_LOG_COMPONENT_DEFINE ("SingleModelSpectrumChannel");
-
-
 namespace ns3 {
 
+NS_LOG_COMPONENT_DEFINE ("SingleModelSpectrumChannel");
 
 NS_OBJECT_ENSURE_REGISTERED (SingleModelSpectrumChannel);
 
@@ -69,29 +67,36 @@ SingleModelSpectrumChannel::GetTypeId (void)
   NS_LOG_FUNCTION_NOARGS ();
   static TypeId tid = TypeId ("ns3::SingleModelSpectrumChannel")
     .SetParent<SpectrumChannel> ()
+    .SetGroupName ("Spectrum")
     .AddConstructor<SingleModelSpectrumChannel> ()
     .AddAttribute ("MaxLossDb",
-                   "If a single-frequency PropagationLossModel is used, this value "
-                   "represents the maximum loss in dB for which transmissions will be "
-                   "passed to the receiving PHY. Signals for which the PropagationLossModel "
-                   "returns a loss bigger than this value will not be propagated to the receiver. "
-                   "This parameter is to be used to reduce "
-                   "the computational load by not propagating signals that are far beyond "
-                   "the interference range. Note that the default value corresponds to "
-                   "considering all signals for reception. Tune this value with care. ",
+                   "If a single-frequency PropagationLossModel is used, "
+                   "this value represents the maximum loss in dB for which "
+                   "transmissions will be passed to the receiving PHY. "
+                   "Signals for which the PropagationLossModel returns "
+                   "a loss bigger than this value will not be propagated "
+                   "to the receiver. This parameter is to be used to reduce "
+                   "the computational load by not propagating signals "
+                   "that are far beyond the interference range. Note that "
+                   "the default value corresponds to considering all signals "
+                   "for reception. Tune this value with care. ",
                    DoubleValue (1.0e9),
                    MakeDoubleAccessor (&SingleModelSpectrumChannel::m_maxLossDb),
                    MakeDoubleChecker<double> ())
     .AddTraceSource ("PathLoss",
-                     "This trace is fired "
-                     "whenever a new path loss value is calculated. The first and second parameters "
-                     "to the trace are pointers respectively to the TX and RX SpectrumPhy instances, "
-                     "whereas the third parameters is the loss value in dB. Note that the loss value "
-                     "reported by this trace is the single-frequency loss value obtained by evaluating "
-                     "only the TX and RX AntennaModels and the PropagationLossModel. In particular, note that "
-                     "SpectrumPropagationLossModel (even if present) is never used to evaluate the loss value "
-                     "reported in this trace. ",
-                     MakeTraceSourceAccessor (&SingleModelSpectrumChannel::m_pathLossTrace))
+                     "This trace is fired whenever a new path loss value "
+                     "is calculated. The first and second parameters "
+                     "to the trace are pointers respectively to the TX and "
+                     "RX SpectrumPhy instances, whereas the third parameters "
+                     "is the loss value in dB. Note that the loss value "
+                     "reported by this trace is the single-frequency loss "
+                     "value obtained by evaluating only the TX and RX "
+                     "AntennaModels and the PropagationLossModel. "
+                     "In particular, note that SpectrumPropagationLossModel "
+                     "(even if present) is never used to evaluate the "
+                     "loss value reported in this trace. ",
+                     MakeTraceSourceAccessor (&SingleModelSpectrumChannel::m_pathLossTrace),
+                     "ns3::SpectrumChannel::LossTracedCallback")
   ;
   return tid;
 }

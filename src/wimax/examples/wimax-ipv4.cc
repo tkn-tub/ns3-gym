@@ -60,9 +60,9 @@
 #include "ns3/global-route-manager.h"
 #include <iostream>
 
-NS_LOG_COMPONENT_DEFINE ("wimaxIpV4Simulation");
-
 using namespace ns3;
+
+NS_LOG_COMPONENT_DEFINE ("wimaxIpV4Simulation");
 
 int main (int argc, char *argv[])
 {

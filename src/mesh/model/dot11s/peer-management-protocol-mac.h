@@ -44,14 +44,13 @@ class PeerManagementProtocolMac : public MeshWifiInterfaceMacPlugin
 public:
   PeerManagementProtocolMac (uint32_t interface, Ptr<PeerManagementProtocol> protocol);
   ~PeerManagementProtocolMac ();
-  ///\name Inherited from plugin abstract class
-  // \{
+  
+  // Inherited from plugin abstract class
   void SetParent (Ptr<MeshWifiInterfaceMac> parent);
   bool Receive (Ptr<Packet> packet, const WifiMacHeader & header);
   bool UpdateOutcomingFrame (Ptr<Packet> packet, WifiMacHeader & header, Mac48Address from, Mac48Address to);
   void UpdateBeacon (MeshWifiBeacon & beacon) const;
   int64_t AssignStreams (int64_t stream);
-  // \}
   ///\name Statistics
   // \{
   void Report (std::ostream &) const;

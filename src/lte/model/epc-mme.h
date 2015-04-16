@@ -84,10 +84,10 @@ public:
 
   /** 
    * Add a new ENB to the MME. 
-   * \param imsi the unique identifier of the UE
+   * \param ecgi E-UTRAN Cell Global ID, the unique identifier of the eNodeB
    * \param enbS1apSap the ENB side of the S1-AP SAP 
    */
-  void AddEnb (uint16_t egci, Ipv4Address enbS1UAddr, EpcS1apSapEnb* enbS1apSap); 
+  void AddEnb (uint16_t ecgi, Ipv4Address enbS1UAddr, EpcS1apSapEnb* enbS1apSap);
   
   /** 
    * Add a new UE to the MME. This is the equivalent of storing the UE
@@ -106,7 +106,7 @@ public:
    * \param tft traffic flow template of the bearer
    * \param bearer QoS characteristics of the bearer
    */
-  void AddBearer (uint64_t imsi, Ptr<EpcTft> tft, EpsBearer bearer);
+  uint8_t AddBearer (uint64_t imsi, Ptr<EpcTft> tft, EpsBearer bearer);
 
 
 private:
@@ -115,11 +115,13 @@ private:
   void DoInitialUeMessage (uint64_t mmeUeS1Id, uint16_t enbUeS1Id, uint64_t imsi, uint16_t ecgi);
   void DoInitialContextSetupResponse (uint64_t mmeUeS1Id, uint16_t enbUeS1Id, std::list<EpcS1apSapMme::ErabSetupItem> erabSetupList);
   void DoPathSwitchRequest (uint64_t enbUeS1Id, uint64_t mmeUeS1Id, uint16_t cgi, std::list<EpcS1apSapMme::ErabSwitchedInDownlinkItem> erabToBeSwitchedInDownlinkList);
-
+  void DoErabReleaseIndication (uint64_t mmeUeS1Id, uint16_t enbUeS1Id, std::list<EpcS1apSapMme::ErabToBeReleasedIndication> erabToBeReleaseIndication);
 
   // S11 SAP MME forwarded methods
   void DoCreateSessionResponse (EpcS11SapMme::CreateSessionResponseMessage msg);
   void DoModifyBearerResponse (EpcS11SapMme::ModifyBearerResponseMessage msg);
+  void DoDeleteBearerRequest (EpcS11SapMme::DeleteBearerRequestMessage msg);
+
 
   /**
    * Hold info on an EPS bearer to be activated
@@ -151,6 +153,13 @@ private:
    * 
    */  
   std::map<uint64_t, Ptr<UeInfo> > m_ueInfoMap;
+
+  /**
+   * \brief This Function erases all contexts of bearer from MME side
+   * \param ueInfo UE information pointer
+   * \param epsBearerId Bearer Id which need to be removed corresponding to UE
+   */
+  void RemoveBearer (Ptr<UeInfo> ueInfo, uint8_t epsBearerId);
 
   /**
    * Hold info on a ENB

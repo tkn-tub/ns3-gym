@@ -27,6 +27,7 @@
 #include "wifi-mode.h"
 #include "wifi-preamble.h"
 #include "wifi-tx-vector.h"
+#include "ns3/nstime.h"
 
 namespace ns3 {
 
@@ -59,6 +60,11 @@ public:
   virtual uint32_t GetNDevices (void) const;
   virtual Ptr<NetDevice> GetDevice (uint32_t i) const;
 
+  /**
+   * Adds the given YansWifiPhy to the PHY list
+   *
+   * \param phy the YansWifiPhy to be added to the PHY list
+   */
   void Add (Ptr<YansWifiPhy> phy);
 
   /**
@@ -74,8 +80,10 @@ public:
    * \param sender the device from which the packet is originating.
    * \param packet the packet to send
    * \param txPowerDbm the tx power associated to the packet
-   * \param wifiMode the tx mode associated to the packet
+   * \param txVector the TXVECTOR associated to the packet
    * \param preamble the preamble associated to the packet
+   * \param packetType the type of packet, used for A-MPDU to say whether it's the last MPDU or not
+   * \param duration the transmission duration associated to the packet
    *
    * This method should not be invoked by normal users. It is
    * currently invoked only from WifiPhy::Send. YansWifiChannel
@@ -83,7 +91,7 @@ public:
    * e.g. PHYs that are operating on the same channel.
    */
   void Send (Ptr<YansWifiPhy> sender, Ptr<const Packet> packet, double txPowerDbm,
-             WifiTxVector txVector, WifiPreamble preamble) const;
+             WifiTxVector txVector, WifiPreamble preamble, uint8_t packetType, Time duration) const;
 
  /**
   * Assign a fixed random variable stream number to the random variables
@@ -96,17 +104,31 @@ public:
   int64_t AssignStreams (int64_t stream);
 
 private:
-  YansWifiChannel& operator = (const YansWifiChannel &);
-  YansWifiChannel (const YansWifiChannel &);
+  //YansWifiChannel& operator = (const YansWifiChannel &);
+  //YansWifiChannel (const YansWifiChannel &);
 
+  /**
+   * A vector of pointers to YansWifiPhy.
+   */
   typedef std::vector<Ptr<YansWifiPhy> > PhyList;
-  void Receive (uint32_t i, Ptr<Packet> packet, double rxPowerDbm,
+  /**
+   * This method is scheduled by Send for each associated YansWifiPhy.
+   * The method then calls the corresponding YansWifiPhy that the first
+   * bit of the packet has arrived.
+   *
+   * \param i index of the corresponding YansWifiPhy in the PHY list
+   * \param packet the packet being sent
+   * \param atts a vector containing the received power in dBm and the packet type
+   * \param txVector the TXVECTOR of the packet
+   * \param preamble the type of preamble being used to send the packet
+   */
+  void Receive (uint32_t i, Ptr<Packet> packet, double *atts,
                 WifiTxVector txVector, WifiPreamble preamble) const;
 
 
-  PhyList m_phyList;
-  Ptr<PropagationLossModel> m_loss;
-  Ptr<PropagationDelayModel> m_delay;
+  PhyList m_phyList; //!< List of YansWifiPhys connected to this YansWifiChannel
+  Ptr<PropagationLossModel> m_loss; //!< Propagation loss model
+  Ptr<PropagationDelayModel> m_delay; //!< Propagation delay model
 };
 
 } // namespace ns3

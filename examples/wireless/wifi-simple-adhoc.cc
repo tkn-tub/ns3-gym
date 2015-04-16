@@ -63,13 +63,16 @@
 #include <vector>
 #include <string>
 
-NS_LOG_COMPONENT_DEFINE ("WifiSimpleAdhoc");
-
 using namespace ns3;
+
+NS_LOG_COMPONENT_DEFINE ("WifiSimpleAdhoc");
 
 void ReceivePacket (Ptr<Socket> socket)
 {
-  NS_LOG_UNCOND ("Received one packet!");
+  while (socket->Recv ())
+    {
+      NS_LOG_UNCOND ("Received one packet!");
+    }
 }
 
 static void GenerateTraffic (Ptr<Socket> socket, uint32_t pktSize, 

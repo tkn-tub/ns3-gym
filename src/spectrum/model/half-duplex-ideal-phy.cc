@@ -32,9 +32,9 @@
 #include "spectrum-error-model.h"
 
 
-NS_LOG_COMPONENT_DEFINE ("HalfDuplexIdealPhy");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("HalfDuplexIdealPhy");
 
 NS_OBJECT_ENSURE_REGISTERED (HalfDuplexIdealPhy);
 
@@ -106,22 +106,28 @@ HalfDuplexIdealPhy::GetTypeId (void)
                    MakeDataRateChecker ())
     .AddTraceSource ("TxStart",
                      "Trace fired when a new transmission is started",
-                     MakeTraceSourceAccessor (&HalfDuplexIdealPhy::m_phyTxStartTrace))
+                     MakeTraceSourceAccessor (&HalfDuplexIdealPhy::m_phyTxStartTrace),
+                     "ns3::Packet::TraceCallback")
     .AddTraceSource ("TxEnd",
                      "Trace fired when a previosuly started transmission is finished",
-                     MakeTraceSourceAccessor (&HalfDuplexIdealPhy::m_phyTxEndTrace))
+                     MakeTraceSourceAccessor (&HalfDuplexIdealPhy::m_phyTxEndTrace),
+                     "ns3::Packet::TraceCallback")
     .AddTraceSource ("RxStart",
                      "Trace fired when the start of a signal is detected",
-                     MakeTraceSourceAccessor (&HalfDuplexIdealPhy::m_phyRxStartTrace))
+                     MakeTraceSourceAccessor (&HalfDuplexIdealPhy::m_phyRxStartTrace),
+                     "ns3::Packet::TraceCallback")
     .AddTraceSource ("RxAbort",
                      "Trace fired when a previously started RX is aborted before time",
-                     MakeTraceSourceAccessor (&HalfDuplexIdealPhy::m_phyRxAbortTrace))
+                     MakeTraceSourceAccessor (&HalfDuplexIdealPhy::m_phyRxAbortTrace),
+                     "ns3::Packet::TraceCallback")
     .AddTraceSource ("RxEndOk",
                      "Trace fired when a previosuly started RX terminates successfully",
-                     MakeTraceSourceAccessor (&HalfDuplexIdealPhy::m_phyRxEndOkTrace))
+                     MakeTraceSourceAccessor (&HalfDuplexIdealPhy::m_phyRxEndOkTrace),
+                     "ns3::Packet::TraceCallback")
     .AddTraceSource ("RxEndError",
                      "Trace fired when a previosuly started RX terminates with an error (packet is corrupted)",
-                     MakeTraceSourceAccessor (&HalfDuplexIdealPhy::m_phyRxEndErrorTrace))
+                     MakeTraceSourceAccessor (&HalfDuplexIdealPhy::m_phyRxEndErrorTrace),
+                     "ns3::Packet::TraceCallback")
   ;
   return tid;
 }
@@ -282,8 +288,8 @@ HalfDuplexIdealPhy::StartTx (Ptr<Packet> p)
         m_txPacket = p;
         ChangeState (TX);
         Ptr<HalfDuplexIdealPhySignalParameters> txParams = Create<HalfDuplexIdealPhySignalParameters> ();
-        double txTimeSeconds = m_rate.CalculateTxTime (p->GetSize ());
-        txParams->duration = Seconds (txTimeSeconds);
+        Time txTimeSeconds = m_rate.CalculateBytesTxTime (p->GetSize ());
+        txParams->duration = txTimeSeconds;
         txParams->txPhy = GetObject<SpectrumPhy> ();
         txParams->txAntenna = m_antenna;
         txParams->psd = m_txPsd;
@@ -291,7 +297,7 @@ HalfDuplexIdealPhy::StartTx (Ptr<Packet> p)
 
         NS_LOG_LOGIC (this << " tx power: " << 10 * std::log10 (Integral (*(txParams->psd))) + 30 << " dBm");
         m_channel->StartTx (txParams);
-        Simulator::Schedule (Seconds (txTimeSeconds), &HalfDuplexIdealPhy::EndTx, this);
+        Simulator::Schedule (txTimeSeconds, &HalfDuplexIdealPhy::EndTx, this);
       }
       break;
 

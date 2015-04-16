@@ -28,6 +28,7 @@ TypeId ConstantVelocityMobilityModel::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::ConstantVelocityMobilityModel")
     .SetParent<MobilityModel> ()
+    .SetGroupName ("Mobility")
     .AddConstructor<ConstantVelocityMobilityModel> ();
   return tid;
 }

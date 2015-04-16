@@ -30,19 +30,20 @@
 #include <iostream>
 #include <fstream>
 
-NS_LOG_COMPONENT_DEFINE ("BriteTopologyHelper");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("BriteTopologyHelper");
 
 BriteTopologyHelper::BriteTopologyHelper (std::string confFile,
                                           std::string seedFile,
-                                          std::string newseedFile) : m_confFile (confFile),
-                                                                     m_seedFile (seedFile),
-                                                                     m_newSeedFile (newseedFile),
-                                                                     m_numAs (0),
-                                                                     m_topology (NULL),
-                                                                     m_numNodes (0),
-                                                                     m_numEdges (0)
+                                          std::string newseedFile)
+  : m_confFile (confFile),
+    m_seedFile (seedFile),
+    m_newSeedFile (newseedFile),
+    m_numAs (0),
+    m_topology (NULL),
+    m_numNodes (0),
+    m_numEdges (0)
 {
   NS_LOG_FUNCTION (this);
 
@@ -50,11 +51,12 @@ BriteTopologyHelper::BriteTopologyHelper (std::string confFile,
 
 }
 
-BriteTopologyHelper::BriteTopologyHelper (std::string confFile) : m_confFile (confFile),
-                                                                  m_numAs (0),
-                                                                  m_topology (NULL),
-                                                                  m_numNodes (0),
-                                                                  m_numEdges (0)
+BriteTopologyHelper::BriteTopologyHelper (std::string confFile)
+  : m_confFile (confFile),
+    m_numAs (0),
+    m_topology (NULL),
+    m_numNodes (0),
+    m_numEdges (0)
 {
   NS_LOG_FUNCTION (this);
 
@@ -454,7 +456,7 @@ BriteTopologyHelper::ConstructTopology ()
       // Set the link delay
       // The brite value for delay is given in milliseconds
       m_britePointToPointHelper.SetChannelAttribute ("Delay",
-                                                     TimeValue (MilliSeconds ((*it).delay)));
+                                                     TimeValue (Seconds ((*it).delay/1000.0)));
 
       // The brite value for data rate is given in Mbps
       m_britePointToPointHelper.SetDeviceAttribute ("DataRate",

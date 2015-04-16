@@ -23,9 +23,9 @@
 #include "ns3/log.h"
 #include "ns3/uinteger.h"
 
-NS_LOG_COMPONENT_DEFINE ("Channel");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("Channel");
 
 NS_OBJECT_ENSURE_REGISTERED (Channel);
 
@@ -34,6 +34,7 @@ Channel::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::Channel")
     .SetParent<Object> ()
+    .SetGroupName("Network")
     .AddAttribute ("Id", "The id (unique integer) of this Channel.",
                    TypeId::ATTR_GET,
                    UintegerValue (0),

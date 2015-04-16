@@ -65,9 +65,9 @@
 #include "ns3/random-variable-stream.h"
 #include "red-queue.h"
 
-NS_LOG_COMPONENT_DEFINE ("RedQueue");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("RedQueue");
 
 NS_OBJECT_ENSURE_REGISTERED (RedQueue);
 
@@ -75,6 +75,7 @@ TypeId RedQueue::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::RedQueue")
     .SetParent<Queue> ()
+    .SetGroupName("Network")
     .AddConstructor<RedQueue> ()
     .AddAttribute ("Mode",
                    "Determines unit for QueueLimit",

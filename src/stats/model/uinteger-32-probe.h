@@ -31,6 +31,8 @@
 namespace ns3 {
 
 /**
+ * \ingroup probes
+ *
  * This class is designed to probe an underlying ns3 TraceSource exporting
  * an uint32_t.  This probe exports a trace source "Output" of type uint32_t.
  * The Output trace source emits a value when either the trace source
@@ -41,6 +43,10 @@ namespace ns3 {
 class Uinteger32Probe : public Probe
 {
 public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId ();
   Uinteger32Probe ();
   virtual ~Uinteger32Probe ();
@@ -88,12 +94,10 @@ private:
    *
    * \param oldData previous value of the uint32_t
    * \param newData new value of the uint32_t
-   *
-   * \internal
    */
   void TraceSink (uint32_t oldData, uint32_t newData);
 
-  TracedValue<uint32_t> m_output;
+  TracedValue<uint32_t> m_output; //!< Output trace source.
 };
 
 } // namespace ns3

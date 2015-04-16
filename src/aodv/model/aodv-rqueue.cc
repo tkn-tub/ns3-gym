@@ -32,10 +32,11 @@
 #include "ns3/socket.h"
 #include "ns3/log.h"
 
-NS_LOG_COMPONENT_DEFINE ("AodvRequestQueue");
-
 namespace ns3
 {
+
+NS_LOG_COMPONENT_DEFINE ("AodvRequestQueue");
+
 namespace aodv
 {
 uint32_t

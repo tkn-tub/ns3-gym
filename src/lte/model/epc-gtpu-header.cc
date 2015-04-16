@@ -22,9 +22,9 @@
 #include "ns3/log.h"
 #include "ns3/packet.h"
 
-NS_LOG_COMPONENT_DEFINE ("GtpuHeader");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("GtpuHeader");
 
 /********************************************************
  *        GTP-U-v1 Header
@@ -35,9 +35,9 @@ NS_OBJECT_ENSURE_REGISTERED (GtpuHeader);
 TypeId
 GtpuHeader::GetTypeId (void)
 {
-  static TypeId tid =
-    TypeId ("ns3::GtpuHeader")
+  static TypeId tid = TypeId ("ns3::GtpuHeader")
     .SetParent<Header> ()
+    .SetGroupName("Lte")
     .AddConstructor<GtpuHeader> ();
   return tid;
 }

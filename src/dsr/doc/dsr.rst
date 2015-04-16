@@ -14,7 +14,8 @@ DSR Routing Overview
 ********************
  
 This model implements the base specification of the Dynamic Source Routing 
-(DSR) protocol. Implementation is based on RFC4728.
+(DSR) protocol. Implementation is based on :rfc:`4728`, with some extensions
+and modifications to the RFC specifications.
 
 DSR operates on a on-demand behavior. Therefore, our DSR model buffers all 
 packets while a route request packet (RREQ) is disseminated. We implement 
@@ -127,7 +128,7 @@ Implementation modification
 	1. Message type is used to identify the data packet from control packet
 	2. source id is used to identify the real source of the data packet since we have to deliver the packet hop-by-hop and the ipv4header is not carrying the real source and destination ip address as needed
 	3. destination id is for same reason of above
-* Route Reply header is not word-aligned in DSR rfc, change it to word-aligned in implementation
+* Route Reply header is not word-aligned in DSR RFC, change it to word-aligned in implementation
 * DSR works as a shim header between transport and network protocol, it needs its own forwarding mechanism, we are changing the packet transmission to hop-by-hop delivery, so we added two fields in dsr fixed header to notify packet delivery
 
 
@@ -155,7 +156,9 @@ Helper
 ******
 
 To have a node run DSR, the easiest way would be to use the DsrHelper
-and DsrMainHelpers in your simulation script. For instance::
+and DsrMainHelpers in your simulation script. For instance:
+
+.. sourcecode:: cpp
 
   DsrHelper dsr;
   DsrMainHelper dsrMain;
@@ -186,12 +189,21 @@ This model has been tested as follows:
 * manet-routing-compare.cc has been used to compare DSR with three of other routing protocols.
 
 A paper was presented on these results at the Workshop on ns-3 in 2011.
-  
+
+Limitations
+***********
+
+The model is not fully compliant with :rfc:`4728`. As an example, Dsr fixed size header
+has been extended and it is four octects longer then the RFC specification.
+As a consequence, the DSR headers can not be correctly decoded by Wireshark.
+
+The model full compliance with the RFC is planned for the future.
+
 References
 **********
 
-[1] Link for the `original paper: <http://www.monarch.cs.rice.edu/monarch-papers/dsr-chapter00.pdf>`_
+[1] Original paper: http://www.monarch.cs.rice.edu/monarch-papers/dsr-chapter00.pdf
 
-[2] Link for `RFC 4728: <http://www6.ietf.org/rfc/rfc4728.txt>`_
+[2] RFC 4728 http://www6.ietf.org/rfc/rfc4728.txt
 
-[3] Link for the `Broch's comparison paper: <http://www.monarch.cs.rice.edu/monarch-papers/mobicom98.ps>`_
+[3] Broch's comparison paper: http://www.monarch.cs.rice.edu/monarch-papers/mobicom98.ps

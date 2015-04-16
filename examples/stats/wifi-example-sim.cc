@@ -49,9 +49,6 @@ using namespace std;
 
 NS_LOG_COMPONENT_DEFINE ("WiFiDistanceExperiment");
 
-
-
-
 void TxCallback (Ptr<CounterCalculator<uint32_t> > datac,
                  std::string path, Ptr<const Packet> packet) {
   NS_LOG_INFO ("Sent frame counted in " <<

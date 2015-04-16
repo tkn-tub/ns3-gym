@@ -26,19 +26,55 @@
 
 namespace ns3 {
 
+/**
+ * Keep track of destination address - TID pairs that are waiting
+ * for a block ACK response.
+ */
 class QosBlockedDestinations
 {
 public:
   QosBlockedDestinations ();
   ~QosBlockedDestinations ();
 
+  /**
+   * Block the given destination address and TID from sending (e.g. pending
+   * block ACK response).
+   *
+   * \param dest
+   * \param tid
+   */
   void Block (Mac48Address dest, uint8_t tid);
+  /**
+   * Un-block the given destination address and TID (e.g. block ACK
+   * response received).
+   *
+   * \param dest
+   * \param tid
+   */
   void Unblock (Mac48Address dest, uint8_t tid);
+  /**
+   * Check if the given destination address and TID are blocked
+   * from sending (e.g. pending block ACK response).
+   *
+   * \param dest
+   * \param tid
+   * \return true if the given destination address and TID are blocked
+   *         from sending, false otherwise
+   */
   bool IsBlocked (Mac48Address dest, uint8_t tid) const;
 
 private:
+  /**
+   * typedef for a list of <Mac48Address, TID> pair.
+   */
   typedef std::list<std::pair<Mac48Address, uint8_t> > BlockedPackets;
+  /**
+   * typedef for an iterator of BlockedPackets
+   */
   typedef std::list<std::pair<Mac48Address, uint8_t> >::iterator BlockedPacketsI;
+  /**
+   * typedef for a constan iterator of BlockedPackets
+   */
   typedef std::list<std::pair<Mac48Address, uint8_t> >::const_iterator BlockedPacketsCI;
   BlockedPackets m_blockedQosPackets;
 };

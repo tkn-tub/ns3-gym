@@ -31,9 +31,9 @@
 
 #include "ipv6-static-routing-helper.h"
 
-NS_LOG_COMPONENT_DEFINE ("Ipv6StaticRoutingHelper");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("Ipv6StaticRoutingHelper");
 
 Ipv6StaticRoutingHelper::Ipv6StaticRoutingHelper ()
 {

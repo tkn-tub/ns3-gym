@@ -27,7 +27,7 @@
 namespace ns3 {
 
 std::ostream &
-operator<< (std::ostream &os, UanPdp &pdp)
+operator<< (std::ostream &os, const UanPdp &pdp)
 {
   os << pdp.GetNTaps () << '|';
   os << pdp.GetResolution ().GetSeconds () << '|';

@@ -22,28 +22,42 @@
 #include <vector>
 #include <cstring>
 
-NS_LOG_COMPONENT_DEFINE ("ByteTagList");
-
 #define USE_FREE_LIST 1
 #define FREE_LIST_SIZE 1000
 #define OFFSET_MAX (2147483647)
 
 namespace ns3 {
 
+NS_LOG_COMPONENT_DEFINE ("ByteTagList");
+
+/**
+ * \ingroup packet
+ *
+ * \brief Internal representation of the byte tags stored in a packet.
+ *
+ * This structure is only used by ByteTagList and should not be accessed directly.
+ */
 struct ByteTagListData {
-  uint32_t size;
-  uint32_t count;
-  uint32_t dirty;
-  uint8_t data[4];
+  uint32_t size;   //!< size of the data
+  uint32_t count;  //!< use counter (for smart deallocation)
+  uint32_t dirty;  //!< number of bytes actually in use
+  uint8_t data[4]; //!< data
 };
 
 #ifdef USE_FREE_LIST
+/**
+ * \ingroup packet
+ *
+ * \brief Container class for struct ByteTagListData
+ *
+ * Internal use only.
+ */
 static class ByteTagListDataFreeList : public std::vector<struct ByteTagListData *>
 {
 public:
   ~ByteTagListDataFreeList ();
-} g_freeList;
-static uint32_t g_maxSize = 0;
+} g_freeList; //!< Container for struct ByteTagListData
+static uint32_t g_maxSize = 0; //!< maximum data size (used for allocation)
 
 ByteTagListDataFreeList::~ByteTagListDataFreeList ()
 {

@@ -162,7 +162,7 @@ public:
    */
   enum State
   {
-    IDLE, TX, RX_DATA, RX_CTRL
+    IDLE, TX_DL_CTRL, TX_DATA, TX_UL_SRS, RX_DL_CTRL, RX_DATA, RX_UL_SRS
   };
 
   // inherited from Object
@@ -179,7 +179,8 @@ public:
   Ptr<AntennaModel> GetRxAntenna ();
   void StartRx (Ptr<SpectrumSignalParameters> params);
   void StartRxData (Ptr<LteSpectrumSignalParametersDataFrame> params);
-  void StartRxCtrl (Ptr<SpectrumSignalParameters> params);
+  void StartRxDlCtrl (Ptr<LteSpectrumSignalParametersDlCtrlFrame> lteDlCtrlRxParams);
+  void StartRxUlSrs (Ptr<LteSpectrumSignalParametersUlSrsFrame> lteUlSrsRxParams);
 
   void SetHarqPhyModule (Ptr<LteHarqPhy> harq);
 
@@ -227,7 +228,7 @@ public:
   * Start a transmission of control frame in DL
   *
   *
-  * @param ctrlMsgList the burst of contrl messages to be transmitted
+  * @param ctrlMsgList the burst of control messages to be transmitted
   * @param pss the flag for transmitting the primary synchronization signal
   *
   * @return true if an error occurred and the transmission was not
@@ -239,9 +240,6 @@ public:
   /**
   * Start a transmission of control frame in UL
   *
-  *
-  * @param pb the burst of control messages to be transmitted
-  *
   * @return true if an error occurred and the transmission was not
   * started, false otherwise.
   */
@@ -250,7 +248,7 @@ public:
 
   /**
    * set the callback for the end of a TX, as part of the
-   * interconnections betweenthe PHY and the MAC
+   * interconnections between the PHY and the MAC
    *
    * @param c the callback
    */
@@ -258,7 +256,7 @@ public:
 
   /**
    * set the callback for the end of a RX in error, as part of the
-   * interconnections betweenthe PHY and the MAC
+   * interconnections between the PHY and the MAC
    *
    * @param c the callback
    */
@@ -266,7 +264,7 @@ public:
 
   /**
    * set the callback for the successful end of a RX, as part of the
-   * interconnections betweenthe PHY and the MAC
+   * interconnections between the PHY and the MAC
    *
    * @param c the callback
    */
@@ -274,7 +272,7 @@ public:
   
   /**
   * set the callback for the successful end of a RX ctrl frame, as part 
-  * of the interconnections betweenthe LteSpectrumPhy and the PHY
+  * of the interconnections between the LteSpectrumPhy and the PHY
   *
   * @param c the callback
   */
@@ -282,7 +280,7 @@ public:
   
   /**
   * set the callback for the erroneous end of a RX ctrl frame, as part 
-  * of the interconnections betweenthe LteSpectrumPhy and the PHY
+  * of the interconnections between the LteSpectrumPhy and the PHY
   *
   * @param c the callback
   */
@@ -298,7 +296,7 @@ public:
 
   /**
   * set the callback for the DL HARQ feedback as part of the 
-  * interconnections betweenthe LteSpectrumPhy and the PHY
+  * interconnections between the LteSpectrumPhy and the PHY
   *
   * @param c the callback
   */
@@ -306,7 +304,7 @@ public:
 
   /**
   * set the callback for the UL HARQ feedback as part of the
-  * interconnections betweenthe LteSpectrumPhy and the PHY
+  * interconnections between the LteSpectrumPhy and the PHY
   *
   * @param c the callback
   */
@@ -329,41 +327,49 @@ public:
   /**
   *
   *
-  * \param p the new LteSinrChunkProcessor to be added to the RS power 
-  * \processing chain
+  * \param p the new LteChunkProcessor to be added to the RS power
+  *          processing chain
   */
-  void AddRsPowerChunkProcessor (Ptr<LteSinrChunkProcessor> p);
+  void AddRsPowerChunkProcessor (Ptr<LteChunkProcessor> p);
   
+  /**
+  *
+  *
+  * \param p the new LteChunkProcessor to be added to the Data Channel power
+  *          processing chain
+  */
+  void AddDataPowerChunkProcessor (Ptr<LteChunkProcessor> p);
+
   /** 
   * 
   * 
-  * \param p the new LteSinrChunkProcessor to be added to the data processing chain
+  * \param p the new LteChunkProcessor to be added to the data processing chain
   */
-  void AddDataSinrChunkProcessor (Ptr<LteSinrChunkProcessor> p);
+  void AddDataSinrChunkProcessor (Ptr<LteChunkProcessor> p);
 
   /**
-  *  LteSinrChunkProcessor devoted to evaluate intefrerence + noise power 
+  *  LteChunkProcessor devoted to evaluate interference + noise power
   *  in control symbols of the subframe
   *
-  * \param p the new LteSinrChunkProcessor to be added to the data processing chain
+  * \param p the new LteChunkProcessor to be added to the data processing chain
   */
-  void AddInterferenceCtrlChunkProcessor (Ptr<LteSinrChunkProcessor> p);
+  void AddInterferenceCtrlChunkProcessor (Ptr<LteChunkProcessor> p);
 
   /**
-  *  LteSinrChunkProcessor devoted to evaluate intefrerence + noise power
+  *  LteChunkProcessor devoted to evaluate interference + noise power
   *  in data symbols of the subframe
   *
-  * \param p the new LteSinrChunkProcessor to be added to the data processing chain
+  * \param p the new LteChunkProcessor to be added to the data processing chain
   */
-  void AddInterferenceDataChunkProcessor (Ptr<LteSinrChunkProcessor> p);
+  void AddInterferenceDataChunkProcessor (Ptr<LteChunkProcessor> p);
   
   
   /** 
   * 
   * 
-  * \param p the new LteSinrChunkProcessor to be added to the ctrl processing chain
+  * \param p the new LteChunkProcessor to be added to the ctrl processing chain
   */
-  void AddCtrlSinrChunkProcessor (Ptr<LteSinrChunkProcessor> p);
+  void AddCtrlSinrChunkProcessor (Ptr<LteChunkProcessor> p);
   
   /** 
   * 
@@ -415,7 +421,9 @@ public:
 
 private:
   void ChangeState (State newState);
-  void EndTx ();
+  void EndTxData ();
+  void EndTxDlCtrl ();
+  void EndTxUlSrs ();
   void EndRxData ();
   void EndRxDlCtrl ();
   void EndRxUlSrs ();
@@ -448,7 +456,6 @@ private:
   TracedCallback<Ptr<const Packet> > m_phyRxEndOkTrace;
   TracedCallback<Ptr<const Packet> > m_phyRxEndErrorTrace;
 
-  LtePhyTxEndCallback        m_ltePhyTxEndCallback;
   LtePhyRxDataEndErrorCallback   m_ltePhyRxDataEndErrorCallback;
   LtePhyRxDataEndOkCallback      m_ltePhyRxDataEndOkCallback;
   

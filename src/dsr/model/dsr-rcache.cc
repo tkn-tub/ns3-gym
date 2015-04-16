@@ -47,9 +47,10 @@
 #include "ns3/address-utils.h"
 #include "ns3/packet.h"
 
-NS_LOG_COMPONENT_DEFINE ("RouteCache");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("RouteCache");
+  
 namespace dsr {
 
 bool CompareRoutesBoth (const RouteCacheEntry &a, const RouteCacheEntry &b)
@@ -695,7 +696,7 @@ RouteCache::AddRoute (RouteCacheEntry & rt)
       else
         {
           // Check if the expire time for the new route has expired or not
-          if (rt.GetExpireTime () > 0)
+          if (rt.GetExpireTime () > Time (0))
             {
               rtVector.push_back (rt);
               // This sort function will sort the route cache entries based on the size of route in each of the

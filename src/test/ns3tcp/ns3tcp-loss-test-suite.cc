@@ -191,7 +191,7 @@ Ns3TcpLossTestCase::Ipv4L3Tx (std::string context, Ptr<const Packet> packet, Ptr
       uint8_t *actual = new uint8_t[readLen];
       p->CopyData (actual, readLen);
 
-      uint32_t result = memcmp (actual, expected, readLen);
+      int result = memcmp (actual, expected, readLen);
 
       delete [] actual;
 
@@ -200,7 +200,7 @@ Ns3TcpLossTestCase::Ipv4L3Tx (std::string context, Ptr<const Packet> packet, Ptr
       //
       if (IsStatusSuccess ())
         {
-          NS_TEST_EXPECT_MSG_EQ (result, 0, "Expected data comparison error");
+          NS_TEST_EXPECT_MSG_EQ (result, 0, "Expected data comparison error: " << m_tcpModel << "-" << m_testCase);
         }
     }
 }
@@ -302,13 +302,13 @@ Ns3TcpLossTestCase::DoRun (void)
 
   Config::SetDefault ("ns3::TcpSocket::SegmentSize", UintegerValue (1000));
   Config::SetDefault ("ns3::TcpSocket::DelAckCount", UintegerValue (1));
+  Config::SetDefault ("ns3::TcpSocketBase::Timestamp", BooleanValue (false));
 
   if (m_writeLogging)
     {
       LogComponentEnableAll (LOG_PREFIX_FUNC);
-      LogComponentEnable ("TcpLossResponse", LOG_LEVEL_ALL);
+      LogComponentEnable ("Ns3TcpLossTest", LOG_LEVEL_ALL);
       LogComponentEnable ("ErrorModel", LOG_LEVEL_DEBUG);
-      LogComponentEnable ("TcpLossResponse", LOG_LEVEL_ALL);
       LogComponentEnable ("TcpWestwood", LOG_LEVEL_ALL);
       LogComponentEnable ("TcpNewReno", LOG_LEVEL_INFO);
       LogComponentEnable ("TcpReno", LOG_LEVEL_INFO);

@@ -26,8 +26,8 @@
 #include "ns3/peer-link-frame.h"
 #include "ns3/ie-dot11s-peer-management.h"
 
-namespace ns3 {
-namespace dot11s {
+using namespace ns3;
+using namespace dot11s;
 
 /// Built-in self test for FlameHeader
 struct MeshHeaderTest : public TestCase
@@ -93,20 +93,15 @@ public:
 private:
   /// Test Add apth and lookup path;
   void TestLookup ();
-  /**
-   * \name Test add path and try to lookup after entry has expired
-   * \{
-   */
+
+  // Test add path and try to lookup after entry has expired
   void TestAddPath ();
   void TestExpire ();
-  ///\}
-  /**
-   * \name Test add precursors and find precursor list in rtable
-   * \{
-   */
+
+  // Test add precursors and find precursor list in rtable
   void TestPrecursorAdd ();
   void TestPrecursorFind ();
-  ///\}
+
 private:
   Mac48Address dst;
   Mac48Address hop;
@@ -285,5 +280,3 @@ Dot11sTestSuite::Dot11sTestSuite ()
 }
 
 static Dot11sTestSuite g_dot11sTestSuite;
-}
-}

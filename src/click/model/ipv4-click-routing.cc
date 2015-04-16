@@ -36,9 +36,9 @@
 #include <cstdlib>
 #include <cstdarg>
 
-NS_LOG_COMPONENT_DEFINE ("Ipv4ClickRouting");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("Ipv4ClickRouting");
 
 // Values from nsclick ExtRouter implementation
 #define INTERFACE_ID_KERNELTAP 0
@@ -568,6 +568,8 @@ Ipv4ClickRouting::NotifyRemoveAddress (uint32_t interface, Ipv4InterfaceAddress 
 
 
 } // namespace ns3
+
+using ns3::g_log;
 
 static int simstrlcpy (char *buf, int len, const std::string &s)
 {

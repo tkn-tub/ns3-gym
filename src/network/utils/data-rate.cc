@@ -23,10 +23,15 @@
 #include "ns3/fatal-error.h"
 #include "ns3/log.h"
 
+namespace ns3 {
+  
 NS_LOG_COMPONENT_DEFINE ("DataRate");
 
-static bool
-DoParse (const std::string s, uint64_t *v)
+ATTRIBUTE_HELPER_CPP (DataRate);
+
+/* static */
+bool
+DataRate::DoParse (const std::string s, uint64_t *v)
 {
   NS_LOG_FUNCTION (s << v);
   std::string::size_type n = s.find_first_not_of ("0123456789.");
@@ -179,11 +184,6 @@ DoParse (const std::string s, uint64_t *v)
   return true;
 }
 
-
-namespace ns3 {
-
-ATTRIBUTE_HELPER_CPP (DataRate);
-
 DataRate::DataRate ()
   : m_bps (0)
 {
@@ -232,6 +232,20 @@ double DataRate::CalculateTxTime (uint32_t bytes) const
   return static_cast<double>(bytes)*8/m_bps;
 }
 
+Time DataRate::CalculateBytesTxTime (uint32_t bytes) const
+{
+  NS_LOG_FUNCTION (this << bytes);
+  // \todo avoid to use double (if possible).
+  return Seconds (static_cast<double>(bytes)*8/m_bps);
+}
+
+Time DataRate::CalculateBitsTxTime (uint32_t bits) const
+{
+  NS_LOG_FUNCTION (this << bits);
+  // \todo avoid to use double (if possible).
+  return Seconds (static_cast<double>(bits)/m_bps);
+}
+
 uint64_t DataRate::GetBitRate () const
 {
   NS_LOG_FUNCTION (this);
@@ -248,17 +262,19 @@ DataRate::DataRate (std::string rate)
     }
 }
 
+/* For printing of data rate */
 std::ostream &operator << (std::ostream &os, const DataRate &rate)
 {
   os << rate.GetBitRate () << "bps";
   return os;
 }
+/* Initialize a data rate from an input stream */
 std::istream &operator >> (std::istream &is, DataRate &rate)
 {
   std::string value;
   is >> value;
   uint64_t v;
-  bool ok = DoParse (value, &v);
+  bool ok = DataRate::DoParse (value, &v);
   if (!ok)
     {
       is.setstate (std::ios_base::failbit);
@@ -266,8 +282,6 @@ std::istream &operator >> (std::istream &is, DataRate &rate)
   rate = DataRate (v);
   return is;
 }
-
-
 
 double operator* (const DataRate& lhs, const Time& rhs)
 {

@@ -31,17 +31,17 @@ NS_LOG_COMPONENT_DEFINE ("DataCollector");
 //--------------------------------------------------------------
 //----------------------------------------------
 DataCollector::DataCollector() {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   // end DataCollector::DataCollector
 }
 
 DataCollector::~DataCollector() {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   // end DataCollector::~DataCollector
 }
 
 void DataCollector::DoDispose () {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
 
   m_calcList.clear ();
   m_metadata.clear ();
@@ -57,6 +57,7 @@ DataCollector::DescribeRun (std::string experiment,
                             std::string runID,
                             std::string description)
 {
+  NS_LOG_FUNCTION (this << experiment << strategy << input << runID << description);
 
   m_experimentLabel = experiment;
   m_strategyLabel = strategy;
@@ -70,6 +71,7 @@ DataCollector::DescribeRun (std::string experiment,
 void
 DataCollector::AddDataCalculator (Ptr<DataCalculator> datac)
 {
+  NS_LOG_FUNCTION (this << datac);
 
   m_calcList.push_back (datac);
 
@@ -92,6 +94,8 @@ DataCollector::DataCalculatorEnd ()
 void
 DataCollector::AddMetadata (std::string key, std::string value)
 {
+  NS_LOG_FUNCTION (this << key << value);
+
   std::pair<std::string, std::string> blob (key, value);
   m_metadata.push_back (blob);
   // end DataCollector::AddMetadata
@@ -99,6 +103,8 @@ DataCollector::AddMetadata (std::string key, std::string value)
 void
 DataCollector::AddMetadata (std::string key, uint32_t value)
 {
+  NS_LOG_FUNCTION (this << key << value);
+
   std::stringstream st;
   st << value;
 
@@ -109,6 +115,8 @@ DataCollector::AddMetadata (std::string key, uint32_t value)
 void
 DataCollector::AddMetadata (std::string key, double value)
 {
+  NS_LOG_FUNCTION (this << key << value);
+
   std::stringstream st;
   st << value;
 

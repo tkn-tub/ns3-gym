@@ -3,15 +3,14 @@
 import wutils
 
 # Required NetAnim version
-NETANIM_RELEASE_NAME = "netanim-3.103"
+NETANIM_RELEASE_NAME = "netanim-3.106"
 
 
 def build (bld) :
-	module = bld.create_ns3_module ('netanim', ['internet', 'mobility', 'wimax', 'wifi', 'csma', 'lte', 'uan'])
+	module = bld.create_ns3_module ('netanim', ['internet', 'mobility', 'wimax', 'wifi', 'csma', 'lte', 'uan', 'energy'])
 	module.includes = '.'
 	module.source = [
 			  'model/animation-interface.cc',
-			  'helper/animation-interface-helper.cc',
 		        ]
     	netanim_test = bld.create_ns3_module_test_library('netanim')
     	netanim_test.source = [
@@ -22,7 +21,6 @@ def build (bld) :
 	headers.module = 'netanim'
 	headers.source = [
 			  'model/animation-interface.h',
-			  'helper/animation-interface-helper.h',
   			 ]
 
 	if (bld.env['ENABLE_EXAMPLES']) :

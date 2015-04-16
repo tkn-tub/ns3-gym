@@ -69,6 +69,7 @@
 #include "ns3/csma-module.h"
 #include "ns3/olsr-helper.h"
 #include "ns3/internet-module.h"
+#include "ns3/netanim-module.h"
 
 using namespace ns3;
 
@@ -96,18 +97,17 @@ main (int argc, char *argv[])
   // simulation parameters.
   //
   uint32_t backboneNodes = 10;
-  uint32_t infraNodes = 5;
-  uint32_t lanNodes = 5;
-  uint32_t stopTime = 10;
+  uint32_t infraNodes = 2;
+  uint32_t lanNodes = 2;
+  uint32_t stopTime = 20;
   bool useCourseChangeCallback = false;
-  bool enableTracing = false;
 
   //
   // Simulation defaults are typically set next, before command line
   // arguments are parsed.
   //
-  Config::SetDefault ("ns3::OnOffApplication::PacketSize", StringValue ("210"));
-  Config::SetDefault ("ns3::OnOffApplication::DataRate", StringValue ("10kb/s"));
+  Config::SetDefault ("ns3::OnOffApplication::PacketSize", StringValue ("1472"));
+  Config::SetDefault ("ns3::OnOffApplication::DataRate", StringValue ("100kb/s"));
 
   //
   // For convenience, we add the local variables to the command line argument
@@ -120,7 +120,6 @@ main (int argc, char *argv[])
   cmd.AddValue ("lanNodes", "number of LAN nodes", lanNodes);
   cmd.AddValue ("stopTime", "simulation stop time (seconds)", stopTime);
   cmd.AddValue ("useCourseChangeCallback", "whether to enable course change tracing", useCourseChangeCallback);
-  cmd.AddValue ("enableTracing", "enable tracing", enableTracing);
 
   //
   // The system global variables and the local values added to the argument
@@ -128,6 +127,11 @@ main (int argc, char *argv[])
   //
   cmd.Parse (argc, argv);
 
+  if (stopTime < 10)
+    {
+      std::cout << "Use a simulation stop time >= 10 seconds" << std::endl;
+      exit (1);
+    }
   /////////////////////////////////////////////////////////////////////////// 
   //                                                                       //
   // Construct the backbone                                                //
@@ -165,9 +169,6 @@ main (int argc, char *argv[])
   internet.SetRoutingHelper (olsr); // has effect on the next Install ()
   internet.Install (backbone);
 
-  // re-initialize for non-olsr routing.
-  internet.Reset ();
-
   //
   // Assign IPv4 addresses to the device drivers (actually to the associated
   // IPv4 interfaces) we just created.
@@ -181,17 +182,15 @@ main (int argc, char *argv[])
   // each of the nodes we just finished building.
   //
   MobilityHelper mobility;
-  Ptr<ListPositionAllocator> positionAlloc = 
-    CreateObject<ListPositionAllocator> ();
-  double x = 0.0;
-  for (uint32_t i = 0; i < backboneNodes; ++i)
-    {
-      positionAlloc->Add (Vector (x, 0.0, 0.0));
-      x += 5.0;
-    }
-  mobility.SetPositionAllocator (positionAlloc);
+  mobility.SetPositionAllocator ("ns3::GridPositionAllocator",
+                                 "MinX", DoubleValue (20.0),
+                                 "MinY", DoubleValue (20.0),
+                                 "DeltaX", DoubleValue (20.0),
+                                 "DeltaY", DoubleValue (20.0),
+                                 "GridWidth", UintegerValue (5),
+                                 "LayoutType", StringValue ("RowFirst"));
   mobility.SetMobilityModel ("ns3::RandomDirection2dMobilityModel",
-                             "Bounds", RectangleValue (Rectangle (0, 20, 0, 20)),
+                             "Bounds", RectangleValue (Rectangle (-500, 500, -500, 500)),
                              "Speed", StringValue ("ns3::ConstantRandomVariable[Constant=2]"),
                              "Pause", StringValue ("ns3::ConstantRandomVariable[Constant=0.2]"));
   mobility.Install (backbone);
@@ -242,6 +241,21 @@ main (int argc, char *argv[])
       // network mask initialized above
       //
       ipAddrs.NewNetwork ();
+      //
+      // The new LAN nodes need a mobility model so we aggregate one
+      // to each of the nodes we just finished building.
+      //
+      MobilityHelper mobilityLan;
+      Ptr<ListPositionAllocator> subnetAlloc = 
+        CreateObject<ListPositionAllocator> ();
+      for (uint32_t j = 0; j < newLanNodes.GetN (); ++j)
+        {
+          subnetAlloc->Add (Vector (0.0, j*10 + 10, 0.0));
+        }
+      mobilityLan.PushReferenceMobilityModel (backbone.Get (i));
+      mobilityLan.SetPositionAllocator (subnetAlloc);
+      mobilityLan.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
+      mobilityLan.Install (newLanNodes);
     }
 
   /////////////////////////////////////////////////////////////////////////// 
@@ -286,7 +300,9 @@ main (int argc, char *argv[])
       NetDeviceContainer staDevices = wifiInfra.Install (wifiPhy, macInfra, stas);
       // setup ap.
       macInfra.SetType ("ns3::ApWifiMac",
-                        "Ssid", SsidValue (ssid));
+                        "Ssid", SsidValue (ssid),
+                        "BeaconGeneration", BooleanValue (true),
+                        "BeaconInterval", TimeValue(Seconds(2.5)));
       NetDeviceContainer apDevices = wifiInfra.Install (wifiPhy, macInfra, backbone.Get (i));
       // Collect all of these new devices
       NetDeviceContainer infraDevices (apDevices, staDevices);
@@ -320,19 +336,8 @@ main (int argc, char *argv[])
                                  "Bounds", RectangleValue (Rectangle (-10, 10, -10, 10)),
                                  "Speed", StringValue ("ns3::ConstantRandomVariable[Constant=3]"),
                                  "Pause", StringValue ("ns3::ConstantRandomVariable[Constant=0.4]"));
-      mobility.Install (infra);
+      mobility.Install (stas);
     }
-  /////////////////////////////////////////////////////////////////////////// 
-  //                                                                       //
-  // Routing configuration                                                 //
-  //                                                                       //
-  /////////////////////////////////////////////////////////////////////////// 
-
-  // The below global routing does not take into account wireless effects.
-  // However, it is useful for setting default routes for all of the nodes
-  // such as the LAN nodes.
-  NS_LOG_INFO ("Enabling global routing on all nodes");
-  Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
 
   /////////////////////////////////////////////////////////////////////////// 
   //                                                                       //
@@ -363,17 +368,16 @@ main (int argc, char *argv[])
 
   OnOffHelper onoff ("ns3::UdpSocketFactory", 
                      Address (InetSocketAddress (remoteAddr, port)));
-  onoff.SetConstantRate (DataRate ("10kb/s"));
 
   ApplicationContainer apps = onoff.Install (appSource);
-  apps.Start (Seconds (3.0));
-  apps.Stop (Seconds (20.0));
+  apps.Start (Seconds (3));
+  apps.Stop (Seconds (stopTime - 1));
 
   // Create a packet sink to receive these packets
   PacketSinkHelper sink ("ns3::UdpSocketFactory", 
                          InetSocketAddress (Ipv4Address::GetAny (), port));
   apps = sink.Install (appSink);
-  apps.Start (Seconds (3.0));
+  apps.Start (Seconds (3));
 
   /////////////////////////////////////////////////////////////////////////// 
   //                                                                       //
@@ -382,35 +386,30 @@ main (int argc, char *argv[])
   /////////////////////////////////////////////////////////////////////////// 
 
   NS_LOG_INFO ("Configure Tracing.");
-  if (enableTracing == true)
-    {
-      CsmaHelper csma;
+  CsmaHelper csma;
 
-      //
-      // Let's set up some ns-2-like ascii traces, using another helper class
-      //
-      AsciiTraceHelper ascii;
-      Ptr<OutputStreamWrapper> stream = ascii.CreateFileStream ("mixed-wireless.tr");
-      wifiPhy.EnableAsciiAll (stream);
-      csma.EnableAsciiAll (stream);
-      internet.EnableAsciiIpv4All (stream);
+  //
+  // Let's set up some ns-2-like ascii traces, using another helper class
+  //
+  AsciiTraceHelper ascii;
+  Ptr<OutputStreamWrapper> stream = ascii.CreateFileStream ("mixed-wireless.tr");
+  wifiPhy.EnableAsciiAll (stream);
+  csma.EnableAsciiAll (stream);
+  internet.EnableAsciiIpv4All (stream);
 
-      // Let's do a pcap trace on the application source and sink, ifIndex 0
-      // Csma captures in non-promiscuous mode
-#if 0
-      csma.EnablePcap ("mixed-wireless", appSource->GetId (), 0, false);
-#else
-      csma.EnablePcapAll ("mixed-wireless", false);
-#endif
-      wifiPhy.EnablePcap ("mixed-wireless", appSink->GetId (), 0);
-      wifiPhy.EnablePcap ("mixed-wireless", 9, 2);
-      wifiPhy.EnablePcap ("mixed-wireless", 9, 0);
-    }
+  // Csma captures in non-promiscuous mode
+  csma.EnablePcapAll ("mixed-wireless", false);
+  // pcap captures on the backbone wifi devices
+  wifiPhy.EnablePcap ("mixed-wireless", backboneDevices, false);
+  // pcap trace on the application data sink
+  wifiPhy.EnablePcap ("mixed-wireless", appSink->GetId (), 0);
 
   if (useCourseChangeCallback == true)
     {
       Config::Connect ("/NodeList/*/$ns3::MobilityModel/CourseChange", MakeCallback (&CourseChangeCallback));
     }
+
+  AnimationInterface anim ("mixed-wireless.xml");
 
   /////////////////////////////////////////////////////////////////////////// 
   //                                                                       //

@@ -52,10 +52,9 @@
 
 #include "lte-test-harq.h"
 
+using namespace ns3;
+
 NS_LOG_COMPONENT_DEFINE ("LenaTestHarq");
-
-namespace ns3 {
-
 
 LenaTestHarqSuite::LenaTestHarqSuite ()
   : TestSuite ("lte-harq", SYSTEM)
@@ -82,18 +81,17 @@ LenaTestHarqSuite::LenaTestHarqSuite ()
 static LenaTestHarqSuite lenaTestHarqSuite;
 
 std::string
-LenaHarqTestCase::BuildNameString (uint16_t nUser, uint16_t dist)
+LenaHarqTestCase::BuildNameString (uint16_t nUser, uint16_t dist, uint16_t tbSize)
 {
   std::ostringstream oss;
-  oss << nUser << " UEs, distance " << dist << " m";
+  oss << nUser << " UEs, distance " << dist << " m, TB size " << tbSize;
   return oss.str ();
 }
 
 LenaHarqTestCase::LenaHarqTestCase (uint16_t nUser, uint16_t dist, uint16_t tbSize, double amcBer, double thrRef)
-  : TestCase (BuildNameString (nUser, dist)),
+  : TestCase (BuildNameString (nUser, dist, tbSize)),
     m_nUser (nUser),
     m_dist (dist),
-    m_tbSize (tbSize),
     m_amcBer (amcBer),
     m_throughputRef (thrRef)
 {
@@ -112,6 +110,9 @@ LenaHarqTestCase::DoRun (void)
   Config::SetDefault ("ns3::LteSpectrumPhy::CtrlErrorModelEnabled", BooleanValue (false));
   Config::SetDefault ("ns3::LteSpectrumPhy::DataErrorModelEnabled", BooleanValue (true));
   Config::SetDefault ("ns3::LteHelper::UseIdealRrc", BooleanValue (true));
+  //Disable Uplink Power Control
+  Config::SetDefault ("ns3::LteUePhy::EnableUplinkPowerControl", BooleanValue (false));
+
 //   Config::SetDefault ("ns3::RrFfMacScheduler::HarqEnabled", BooleanValue (false));
 //   LogComponentEnable ("LteEnbRrc", LOG_LEVEL_ALL);
 //   LogComponentEnable ("LteUeRrc", LOG_LEVEL_ALL);
@@ -125,7 +126,7 @@ LenaHarqTestCase::DoRun (void)
 
 //   LogComponentEnable ("LteSpectrumPhy", LOG_LEVEL_ALL);
 //   LogComponentEnable ("LteInterference", LOG_LEVEL_ALL);
-//   LogComponentEnable ("LteSinrChunkProcessor", LOG_LEVEL_ALL);
+//   LogComponentEnable ("LteChunkProcessor", LOG_LEVEL_ALL);
 //
 //   LogComponentEnable ("LtePropagationLossModel", LOG_LEVEL_ALL);
 //   LogComponentEnable ("LossModel", LOG_LEVEL_ALL);
@@ -252,7 +253,7 @@ LenaHarqTestCase::DoRun (void)
       double rxed = rlcStats->GetDlRxData (imsi, lcId);
       double tolerance = 0.1;
 
-      NS_LOG_INFO (" User " << i << " imsi " << imsi << " bytes rxed/t " << rxed/statsDuration << " txed/t " << txed/statsDuration << " thr Ref " << m_throughputRef << " Err " << (abs (txed/statsDuration - m_throughputRef)) / m_throughputRef);
+      NS_LOG_INFO (" User " << i << " imsi " << imsi << " bytes rxed/t " << rxed/statsDuration << " txed/t " << txed/statsDuration << " thr Ref " << m_throughputRef << " Err " << (std::abs (txed/statsDuration - m_throughputRef)) / m_throughputRef);
 
       NS_TEST_ASSERT_MSG_EQ_TOL (txed/statsDuration, m_throughputRef, m_throughputRef * tolerance, " Unexpected Throughput!");
       NS_TEST_ASSERT_MSG_EQ_TOL (rxed/statsDuration, m_throughputRef, m_throughputRef * tolerance, " Unexpected Throughput!");
@@ -261,6 +262,3 @@ LenaHarqTestCase::DoRun (void)
 
   Simulator::Destroy ();
 }
-
-
-} // namespace

@@ -29,7 +29,7 @@ namespace ns3 {
 namespace dot11s {
 /**
  * \brief a IEEE 802.11s Mesh ID 7.3.287 of 802.11s draft 3.0
- *
+ * \see attribute_IeMeshId
  */
 class IeMeshId : public WifiInformationElement
 {
@@ -42,16 +42,14 @@ public:
   bool IsBroadcast (void) const;
   //uint32_t GetLength (void) const;
   char *PeekString (void) const;
-  /**
-   * \name Inherited from WifiInformationElement
-   * \{
-   */
+
+  // Inherited from WifiInformationElement
   virtual WifiInformationElementId ElementId () const;
   virtual void SerializeInformationField (Buffer::Iterator i) const;
   virtual uint8_t DeserializeInformationField (Buffer::Iterator start, uint8_t length);
   virtual void Print (std::ostream& os) const;
   virtual uint8_t GetInformationFieldSize () const;
-  ///\}
+
 private:
   uint8_t m_meshId[33];
   friend bool operator== (const IeMeshId & a, const IeMeshId & b);
@@ -60,12 +58,8 @@ private:
 
 std::ostream &operator << (std::ostream &os, const IeMeshId &meshId);
 
-/**
- * \class ns3::IeMeshIdValue
- * \brief hold objects of type ns3::IeMeshId
- */
-
 ATTRIBUTE_HELPER_HEADER (IeMeshId);
+  
 } // namespace dot11s
 } // namespace ns3
 #endif /* MESH_ID_H */

@@ -25,33 +25,57 @@
 #include <stdint.h>
 #include <limits>
 
+/**
+ * \file
+ * \ingroup attribute_Double
+ * Double attribute value declarations and template implementations.
+ */
+
 namespace ns3 {
 
+//  Additional docs for class DoubleValue:
 /**
- * \ingroup attribute 
- *
- * \class ns3::DoubleValue
- * \brief Hold an floating point type
- *
- * \anchor double
  * This class can be used to hold variables of floating point type
  * such as 'double' or 'float'. The internal format is 'double'.
  */
-
 ATTRIBUTE_VALUE_DEFINE_WITH_NAME (double, Double);
 ATTRIBUTE_ACCESSOR_DEFINE (Double);
 
 template <typename T>
 Ptr<const AttributeChecker> MakeDoubleChecker (void);
 
+/**
+ * Make a checker with a minimum value.
+ *
+ * The minimum value is included in the allowed range.
+ *
+ * \param [in] min The minimum value.
+ * \returns The AttributeChecker.
+ * \see AttributeChecker
+ */
 template <typename T>
 Ptr<const AttributeChecker> MakeDoubleChecker (double min);
 
+/**
+ * Make a checker with a minimum and a maximum value.
+ *
+ * The minimum and maximum values are included in the allowed range.
+ *
+ * \param [in] min The minimum value.
+ * \param [in] max The maximum value.
+ * \returns The AttributeChecker.
+ * \see AttributeChecker
+ */
 template <typename T>
 Ptr<const AttributeChecker> MakeDoubleChecker (double min, double max);
 
 
 } // namespace ns3
+
+
+/***************************************************************
+ *  Implementation of the templates declared above.
+ ***************************************************************/
 
 #include "type-name.h"
 

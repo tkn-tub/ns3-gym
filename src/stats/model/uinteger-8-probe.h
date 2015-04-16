@@ -31,6 +31,8 @@
 namespace ns3 {
 
 /**
+ * \ingroup probes
+ *
  * This class is designed to probe an underlying ns3 TraceSource exporting
  * an uint8_t.  This probe exports a trace source "Output" of type uint8_t.
  * The Output trace source emits a value when either the trace source
@@ -41,6 +43,10 @@ namespace ns3 {
 class Uinteger8Probe : public Probe
 {
 public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId ();
   Uinteger8Probe ();
   virtual ~Uinteger8Probe ();
@@ -88,12 +94,10 @@ private:
    *
    * \param oldData previous value of the uint8_t
    * \param newData new value of the uint8_t
-   *
-   * \internal
    */
   void TraceSink (uint8_t oldData, uint8_t newData);
 
-  TracedValue<uint8_t> m_output;
+  TracedValue<uint8_t> m_output; //!< Output trace source.
 };
 
 } // namespace ns3

@@ -38,15 +38,16 @@
 #include "ns3/ipv4-route.h"
 #include "ns3/socket.h"
 
-NS_LOG_COMPONENT_DEFINE ("DsrNetworkQueue");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("DsrNetworkQueue");
+  
 namespace dsr {
 
 NS_OBJECT_ENSURE_REGISTERED (DsrNetworkQueue);
 
 TypeId
-DsrNetworkQueue::GetTypeID (void)
+DsrNetworkQueue::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::dsr::DsrNetworkQueue")
     .SetParent<Object> ()
@@ -96,6 +97,36 @@ Time
 DsrNetworkQueue::GetMaxNetworkDelay (void) const
 {
   return m_maxDelay;
+}
+
+bool
+DsrNetworkQueue::FindPacketWithNexthop (Ipv4Address nextHop, DsrNetworkQueueEntry & entry)
+{
+  Cleanup ();
+  for (std::vector<DsrNetworkQueueEntry>::iterator i = m_dsrNetworkQueue.begin (); i != m_dsrNetworkQueue.end (); ++i)
+    {
+      if (i->GetNextHopAddress () == nextHop)
+        {
+          entry = *i;
+          i = m_dsrNetworkQueue.erase (i);
+          return true;
+        }
+    }
+  return false;
+}
+
+bool
+DsrNetworkQueue::Find (Ipv4Address nextHop)
+{
+  Cleanup ();
+  for (std::vector<DsrNetworkQueueEntry>::iterator i = m_dsrNetworkQueue.begin (); i != m_dsrNetworkQueue.end (); ++i)
+    {
+      if (i->GetNextHopAddress () == nextHop)
+        {
+          return true;
+        }
+    }
+  return false;
 }
 
 bool

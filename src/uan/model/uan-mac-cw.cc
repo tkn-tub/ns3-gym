@@ -27,9 +27,9 @@
 #include "ns3/trace-source-accessor.h"
 #include "ns3/log.h"
 
-NS_LOG_COMPONENT_DEFINE ("UanMacCw");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("UanMacCw");
 
 NS_OBJECT_ENSURE_REGISTERED (UanMacCw);
 
@@ -80,24 +80,27 @@ UanMacCw::GetTypeId (void)
     .SetParent<Object> ()
     .AddConstructor<UanMacCw> ()
     .AddAttribute ("CW",
-                   "The MAC parameter CW",
+                   "The MAC parameter CW.",
                    UintegerValue (10),
                    MakeUintegerAccessor (&UanMacCw::m_cw),
                    MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("SlotTime",
-                   "Time slot duration for MAC backoff",
+                   "Time slot duration for MAC backoff.",
                    TimeValue (MilliSeconds (20)),
                    MakeTimeAccessor (&UanMacCw::m_slotTime),
                    MakeTimeChecker ())
     .AddTraceSource ("Enqueue",
-                     "A packet arrived at the MAC for transmission",
-                     MakeTraceSourceAccessor (&UanMacCw::m_enqueueLogger))
+                     "A packet arrived at the MAC for transmission.",
+                     MakeTraceSourceAccessor (&UanMacCw::m_enqueueLogger),
+                     "ns3::UanMacCw::QueueTracedCallback")
     .AddTraceSource ("Dequeue",
-                     "A was passed down to the PHY from the MAC",
-                     MakeTraceSourceAccessor (&UanMacCw::m_dequeueLogger))
+                     "A was passed down to the PHY from the MAC.",
+                     MakeTraceSourceAccessor (&UanMacCw::m_dequeueLogger),
+                     "ns3::UanMacCw::QueueTracedCallback")
     .AddTraceSource ("RX",
-                     "A packet was destined for this MAC and was received",
-                     MakeTraceSourceAccessor (&UanMacCw::m_rxLogger))
+                     "A packet was destined for this MAC and was received.",
+                     MakeTraceSourceAccessor (&UanMacCw::m_rxLogger),
+                     "ns3::UanMac::PacketModeTracedCallback")
 
   ;
   return tid;

@@ -15,6 +15,12 @@
  *
  */
 
+// OLSR was observed to not converge in simple 3-nodes varying topology.
+// https://www.nsnam.org/bugzilla/show_bug.cgi?id=780
+// tcpdump -r bug780-0-0.pcap -nn -tt icmp | wc  
+// should show about 395 packets; there is a ping outage from time
+// 123-127 due to the mobility.
+
 #include <fstream>
 #include <iostream>
 
@@ -127,7 +133,7 @@ Bug780Test::CreateNodes (void)
   // Assign 6 streams per Wifi device
   NS_TEST_ASSERT_MSG_EQ (streamsUsed, (adhocDevices.GetN () * 6), "Stream assignment mismatch");
   streamsUsed += wifiChannel.AssignStreams (chan, streamsUsed);
-  // Assign 0 streams per channel for this configuration 
+  // Assign 0 additional streams per channel for this configuration 
   NS_TEST_ASSERT_MSG_EQ (streamsUsed, (adhocDevices.GetN () * 6), "Stream assignment mismatch");
 
   OlsrHelper olsr;
@@ -135,8 +141,12 @@ Bug780Test::CreateNodes (void)
   InternetStackHelper internet;
   internet.SetRoutingHelper (olsr);
   internet.Install (adhocNodes);
+  // Assign 3 streams per node to internet stack for this configuration
+  streamsUsed += internet.AssignStreams (adhocNodes, streamsUsed);
+  NS_TEST_ASSERT_MSG_EQ (streamsUsed, (adhocDevices.GetN () * 6) + (adhocNodes.GetN () * 3), "Stream assignment mismatch");
+  // Olsr uses one additional stream per wifi device for this configuration
   streamsUsed += olsr.AssignStreams (adhocNodes, 0);
-  NS_TEST_ASSERT_MSG_EQ (streamsUsed, ((adhocDevices.GetN () * 6) + nWifis), "Should have assigned 3 streams");
+  NS_TEST_ASSERT_MSG_EQ (streamsUsed, ((adhocDevices.GetN () * 6) + (adhocDevices.GetN () * 3) + nWifis), "Should have assigned 3 streams");
 
   Ipv4AddressHelper addressAdhoc;
   addressAdhoc.SetBase ("10.1.1.0", "255.255.255.0");

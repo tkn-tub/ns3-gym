@@ -27,9 +27,9 @@
 
 #include "okumura-hata-propagation-loss-model.h"
 
-NS_LOG_COMPONENT_DEFINE ("OkumuraHataPropagationLossModel");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("OkumuraHataPropagationLossModel");
 
 NS_OBJECT_ENSURE_REGISTERED (OkumuraHataPropagationLossModel);
 
@@ -38,15 +38,14 @@ TypeId
 OkumuraHataPropagationLossModel::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::OkumuraHataPropagationLossModel")
-
     .SetParent<PropagationLossModel> ()
-
+    .SetGroupName ("Propagation")
+    .AddConstructor<OkumuraHataPropagationLossModel> ()
     .AddAttribute ("Frequency",
                    "The propagation frequency in Hz",
                    DoubleValue (2160e6),
                    MakeDoubleAccessor (&OkumuraHataPropagationLossModel::m_frequency),
                    MakeDoubleChecker<double> ())
-
     .AddAttribute ("Environment",
                    "Environment Scenario",
                    EnumValue (UrbanEnvironment),
@@ -54,7 +53,6 @@ OkumuraHataPropagationLossModel::GetTypeId (void)
                    MakeEnumChecker (UrbanEnvironment, "Urban",
                                     SubUrbanEnvironment, "SubUrban",
                                     OpenAreasEnvironment, "OpenAreas"))
-
     .AddAttribute ("CitySize",
                    "Dimension of the city",
                    EnumValue (LargeCity),
@@ -62,8 +60,16 @@ OkumuraHataPropagationLossModel::GetTypeId (void)
                    MakeEnumChecker (SmallCity, "Small",
                                     MediumCity, "Medium",
                                     LargeCity, "Large"));
-
   return tid;
+}
+
+OkumuraHataPropagationLossModel::OkumuraHataPropagationLossModel ()
+  : PropagationLossModel ()
+{
+}
+
+OkumuraHataPropagationLossModel::~OkumuraHataPropagationLossModel ()
+{
 }
 
 double

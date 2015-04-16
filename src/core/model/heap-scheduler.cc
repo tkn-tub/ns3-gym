@@ -25,9 +25,9 @@
 #include "assert.h"
 #include "log.h"
 
-NS_LOG_COMPONENT_DEFINE ("HeapScheduler");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("HeapScheduler");
 
 NS_OBJECT_ENSURE_REGISTERED (HeapScheduler);
 
@@ -36,6 +36,7 @@ HeapScheduler::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::HeapScheduler")
     .SetParent<Scheduler> ()
+    .SetGroupName ("Core")
     .AddConstructor<HeapScheduler> ()
   ;
   return tid;

@@ -32,6 +32,7 @@ LteRadioBearerTag::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::LteRadioBearerTag")
     .SetParent<Tag> ()
+    .SetGroupName("Lte")
     .AddConstructor<LteRadioBearerTag> ()
     .AddAttribute ("rnti", "The rnti that indicates the UE to which packet belongs",
                    UintegerValue (0),

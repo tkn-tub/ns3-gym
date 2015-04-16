@@ -27,6 +27,7 @@ namespace ns3
 {
 using namespace flame;
 NS_OBJECT_ENSURE_REGISTERED (FlameStack);
+  
 TypeId
 FlameStack::GetTypeId ()
 {

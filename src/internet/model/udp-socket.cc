@@ -26,9 +26,9 @@
 #include "ns3/trace-source-accessor.h"
 #include "udp-socket.h"
 
-NS_LOG_COMPONENT_DEFINE ("UdpSocket");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("UdpSocket");
 
 NS_OBJECT_ENSURE_REGISTERED (UdpSocket);
 
@@ -37,6 +37,7 @@ UdpSocket::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::UdpSocket")
     .SetParent<Socket> ()
+    .SetGroupName ("Internet")
     .AddAttribute ("RcvBufSize",
                    "UdpSocket maximum receive buffer size (bytes)",
                    UintegerValue (131072),

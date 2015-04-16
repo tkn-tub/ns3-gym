@@ -57,6 +57,10 @@ namespace ns3 {
 class HierarchicalMobilityModel : public MobilityModel
 {
 public:
+  /**
+   * Register this type with the TypeId system.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
 
   HierarchicalMobilityModel ();
@@ -98,11 +102,17 @@ private:
   virtual void DoSetPosition (const Vector &position);
   virtual Vector DoGetVelocity (void) const;
 
+  /**
+   * Callback for when parent mobility model course change occurs
+   */
   void ParentChanged (Ptr<const MobilityModel> model);
+  /**
+   * Callback for when child mobility model course change occurs
+   */
   void ChildChanged (Ptr<const MobilityModel> model);
 
-  Ptr<MobilityModel> m_child;
-  Ptr<MobilityModel> m_parent;
+  Ptr<MobilityModel> m_child; //!< pointer to child mobility model
+  Ptr<MobilityModel> m_parent; //!< pointer to parent mobility model
 };
 
 

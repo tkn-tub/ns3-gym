@@ -31,9 +31,9 @@
 
 #include "trace-helper.h"
 
-NS_LOG_COMPONENT_DEFINE ("TraceHelper");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("TraceHelper");
 
 PcapHelper::PcapHelper ()
 {

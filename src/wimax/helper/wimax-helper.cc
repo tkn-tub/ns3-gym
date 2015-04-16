@@ -36,9 +36,9 @@
 #include "ns3/wimax-mac-to-mac-header.h"
 
 
-NS_LOG_COMPONENT_DEFINE ("WimaxHelper");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("WimaxHelper");
 
 WimaxHelper::WimaxHelper (void)
   : m_channel (0)

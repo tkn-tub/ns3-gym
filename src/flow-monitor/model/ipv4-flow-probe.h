@@ -30,6 +30,7 @@ namespace ns3 {
 class FlowMonitor;
 class Node;
 
+/// \ingroup flow-monitor
 /// \brief Class that monitors flows at the IPv4 layer of a Node
 ///
 /// For each node in the simulation, one instance of the class
@@ -40,6 +41,10 @@ class Ipv4FlowProbe : public FlowProbe
 {
 
 public:
+  /// \brief Constructor
+  /// \param monitor the FlowMonitor this probe is associated with
+  /// \param classifier the Ipv4FlowClassifier this probe is associated with
+  /// \param node the Node this probe is associated with
   Ipv4FlowProbe (Ptr<FlowMonitor> monitor, Ptr<Ipv4FlowClassifier> classifier, Ptr<Node> node);
   virtual ~Ipv4FlowProbe ();
 
@@ -65,23 +70,43 @@ public:
     DROP_ROUTE_ERROR,   /**< Route error */
     DROP_FRAGMENT_TIMEOUT, /**< Fragment timeout exceeded */
 
-    DROP_INVALID_REASON,
+    DROP_INVALID_REASON, /**< Fallback reason (no known reason) */
   };
 
 protected:
 
-    virtual void DoDispose (void);
+  virtual void DoDispose (void);
 
 private:
-
+  /// Log a packet being sent
+  /// \param ipHeader IP header
+  /// \param ipPayload IP payload
+  /// \param interface outgoing interface
   void SendOutgoingLogger (const Ipv4Header &ipHeader, Ptr<const Packet> ipPayload, uint32_t interface);
+  /// Log a packet being forwarded
+  /// \param ipHeader IP header
+  /// \param ipPayload IP payload
+  /// \param interface incoming interface
   void ForwardLogger (const Ipv4Header &ipHeader, Ptr<const Packet> ipPayload, uint32_t interface);
+  /// Log a packet being received by the destination
+  /// \param ipHeader IP header
+  /// \param ipPayload IP payload
+  /// \param interface incoming interface
   void ForwardUpLogger (const Ipv4Header &ipHeader, Ptr<const Packet> ipPayload, uint32_t interface);
+  /// Log a packet being dropped
+  /// \param ipHeader IP header
+  /// \param ipPayload IP payload
+  /// \param reason drop reason
+  /// \param ipv4 pointer to the IP object dropping the packet
+  /// \param ifIndex interface index
   void DropLogger (const Ipv4Header &ipHeader, Ptr<const Packet> ipPayload,
                    Ipv4L3Protocol::DropReason reason, Ptr<Ipv4> ipv4, uint32_t ifIndex);
+  /// Log a packet being dropped by a queue
+  /// \param ipPayload IP payload
   void QueueDropLogger (Ptr<const Packet> ipPayload);
 
-  Ptr<Ipv4FlowClassifier> m_classifier;
+  Ptr<Ipv4FlowClassifier> m_classifier; //!< the Ipv4FlowClassifier this probe is associated with
+  Ptr<Ipv4L3Protocol> m_ipv4; //!< the Ipv4L3Protocol this probe is bound to
 };
 
 

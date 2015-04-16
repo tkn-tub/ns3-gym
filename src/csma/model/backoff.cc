@@ -21,9 +21,9 @@
 #include "backoff.h"
 #include "ns3/log.h"
 
-NS_LOG_COMPONENT_DEFINE ("Backoff");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("Backoff");
 
 Backoff::Backoff () 
 {
@@ -32,6 +32,7 @@ Backoff::Backoff ()
   m_maxSlots = 1000;
   m_ceiling = 10;
   m_maxRetries = 1000;
+  m_numBackoffRetries = 0;
   m_rng = CreateObject<UniformRandomVariable> ();
 
   ResetBackoffTime ();
@@ -44,6 +45,7 @@ Backoff::Backoff(Time slotTime, uint32_t minSlots, uint32_t maxSlots, uint32_t c
   m_maxSlots = maxSlots;
   m_ceiling = ceiling;
   m_maxRetries = maxRetries;
+  m_numBackoffRetries = 0;
   m_rng = CreateObject<UniformRandomVariable> ();
 }
 

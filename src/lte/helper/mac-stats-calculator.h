@@ -30,6 +30,8 @@
 namespace ns3 {
 
 /**
+ * \ingroup lte
+ *
  * Takes care of storing the information generated at MAC layer. Metrics saved are:
  *   - Timestamp (in seconds)
  *   - Frame index
@@ -53,8 +55,10 @@ public:
    */
   virtual ~MacStatsCalculator ();
 
+  // Inherited from ns3::Object
   /**
-   * Inherited from ns3::Object
+   *  Register this type.
+   *  \return The object TypeId.
    */
   static TypeId GetTypeId (void);
 
@@ -67,6 +71,7 @@ public:
 
   /**
    * Get the name of the file where the uplink statistics will be stored.
+   * @return the name of the file where the uplink statistics will be stored
    */
   std::string GetUlOutputFilename (void);
 
@@ -79,6 +84,7 @@ public:
 
   /**
    * Get the name of the file where the downlink statistics will be stored.
+   * @return the name of the file where the downlink statistics will be stored
    */
   std::string GetDlOutputFilename (void);
 
@@ -108,7 +114,7 @@ public:
    * @param sizeTb Size of transport block
    */
   void UlScheduling (uint16_t cellId, uint64_t imsi,uint32_t frameNo, uint32_t subframeNo,
-                     uint16_t rnti, uint8_t mcs, uint16_t sizeTb);
+                     uint16_t rnti, uint8_t mcsTb, uint16_t sizeTb);
 
   
   /** 
@@ -146,8 +152,20 @@ public:
 
 
 private:
-
+  /**
+   * When writing DL MAC statistics first time to file,
+   * columns description is added. Then next lines are
+   * appended to file. This value is true if output
+   * files have not been opened yet
+   */
   bool m_dlFirstWrite;
+
+  /**
+   * When writing UL MAC statistics first time to file,
+   * columns description is added. Then next lines are
+   * appended to file. This value is true if output
+   * files have not been opened yet
+   */
   bool m_ulFirstWrite;
 
 };

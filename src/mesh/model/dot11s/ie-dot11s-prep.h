@@ -57,16 +57,14 @@ public:
 
   void  DecrementTtl ();
   void  IncrementMetric (uint32_t metric);
-  /**
-   * \name Inherited from WifiInformationElement
-   * \{
-   */
+
+  // Inherited from WifiInformationElement
   virtual WifiInformationElementId ElementId () const;
   virtual void SerializeInformationField (Buffer::Iterator i) const;
   virtual uint8_t DeserializeInformationField (Buffer::Iterator start, uint8_t length);
   virtual uint8_t GetInformationFieldSize () const;
   virtual void Print (std::ostream& os) const;
-  ///\}
+
 private:
   uint8_t  m_flags;
   uint8_t  m_hopcount;

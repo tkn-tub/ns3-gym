@@ -33,12 +33,12 @@ namespace ns3 {
 
 
 /**
- * \defgroup virtualdevice Virtual Device
+ * \defgroup virtual-net-device Virtual Device
  *
  */
 
 /**
- * \ingroup virtualdevice
+ * \ingroup virtual-net-device
  *
  * \class VirtualNetDevice
  * \brief A virtual device, similar to Linux TUN/TAP interfaces.

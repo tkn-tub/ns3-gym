@@ -99,9 +99,30 @@ public:
   /** 
    * send a Create Session Response message
    * 
-   * \params msg the message
+   * \param msg the message
    */
   virtual void CreateSessionResponse (CreateSessionResponseMessage msg) = 0;
+
+  struct BearerContextRemoved
+  {
+    uint8_t epsBearerId;
+  };
+
+  /**
+   * Delete Bearer Request message, see 3GPP TS 29.274 Release 9 V9.3.0 section 7.2.9.2
+   */
+  struct DeleteBearerRequestMessage : public GtpcMessage
+  {
+    std::list<BearerContextRemoved> bearerContextsRemoved;
+  };
+
+  /**
+    * \brief As per 3GPP TS 29.274 Release 9 V9.3.0, a Delete Bearer Request message shall be sent on the S11 interface by PGW to SGW and from SGW to MME
+    * \param msg the message
+    */
+  virtual void DeleteBearerRequest (DeleteBearerRequestMessage msg) = 0;
+
+
 
 
   /**     
@@ -120,7 +141,7 @@ public:
   /** 
    * send a Modify Bearer Response message
    * 
-   * \params msg the message
+   * \param msg the message
    */
   virtual void ModifyBearerResponse (ModifyBearerResponseMessage msg) = 0;
 
@@ -158,10 +179,47 @@ public:
   /** 
    * send a Create Session Request message
    * 
-   * \params msg the message
+   * \param msg the message
    */
   virtual void CreateSessionRequest (CreateSessionRequestMessage msg) = 0;
 
+  struct BearerContextToBeRemoved
+  {
+    uint8_t epsBearerId;
+  };
+
+  /**
+   * Delete Bearer Command message, see 3GPP TS 29.274 Release 9 V9.3.0 section 7.2.17.1
+   */
+  struct DeleteBearerCommandMessage : public GtpcMessage
+  {
+    std::list<BearerContextToBeRemoved> bearerContextsToBeRemoved;
+  };
+
+  /**
+    * \brief As per 3GPP TS 29.274 Release 9 V9.3.0, a Delete Bearer Command message shall be sent on the S11 interface by the MME to the SGW
+    */
+  virtual void DeleteBearerCommand (DeleteBearerCommandMessage msg) = 0;
+
+
+  struct BearerContextRemovedSgwPgw
+  {
+    uint8_t epsBearerId;
+  };
+
+  /**
+   * Delete Bearer Response message, see 3GPP TS 29.274 Release 9 V9.3.0 section 7.2.10.2
+   */
+  struct DeleteBearerResponseMessage : public GtpcMessage
+  {
+    std::list<BearerContextRemovedSgwPgw> bearerContextsRemoved;
+  };
+
+  /**
+    * \brief As per 3GPP TS 29.274 Release 9 V9.3.0, a Delete Bearer Command message shall be sent on the S11 interface by the MME to the SGW
+    * \param msg the message
+    */
+  virtual void DeleteBearerResponse (DeleteBearerResponseMessage msg) = 0;
 
   /**     
    * Modify Bearer Request message, see 3GPP TS 29.274 7.2.7
@@ -174,7 +232,7 @@ public:
   /** 
    * send a Modify Bearer Request message
    * 
-   * \params msg the message
+   * \param msg the message
    */
   virtual void ModifyBearerRequest (ModifyBearerRequestMessage msg) = 0;
 
@@ -200,6 +258,7 @@ public:
   // inherited from EpcS11SapMme
   virtual void CreateSessionResponse (CreateSessionResponseMessage msg);
   virtual void ModifyBearerResponse (ModifyBearerResponseMessage msg);
+  virtual void DeleteBearerRequest (DeleteBearerRequestMessage msg);
 
 private:
   MemberEpcS11SapMme ();
@@ -221,6 +280,12 @@ template <class C>
 void MemberEpcS11SapMme<C>::CreateSessionResponse (CreateSessionResponseMessage msg)
 {
   m_owner->DoCreateSessionResponse (msg);
+}
+
+template <class C>
+void MemberEpcS11SapMme<C>::DeleteBearerRequest (DeleteBearerRequestMessage msg)
+{
+  m_owner->DoDeleteBearerRequest (msg);
 }
 
 template <class C>
@@ -247,6 +312,8 @@ public:
   // inherited from EpcS11SapSgw
   virtual void CreateSessionRequest (CreateSessionRequestMessage msg);
   virtual void ModifyBearerRequest (ModifyBearerRequestMessage msg);
+  virtual void DeleteBearerCommand (DeleteBearerCommandMessage msg);
+  virtual void DeleteBearerResponse (DeleteBearerResponseMessage msg);
 
 private:
   MemberEpcS11SapSgw ();
@@ -276,10 +343,17 @@ void MemberEpcS11SapSgw<C>::ModifyBearerRequest (ModifyBearerRequestMessage msg)
   m_owner->DoModifyBearerRequest (msg);
 }
 
+template <class C>
+void MemberEpcS11SapSgw<C>::DeleteBearerCommand (DeleteBearerCommandMessage msg)
+{
+  m_owner->DoDeleteBearerCommand (msg);
+}
 
-
-
-
+template <class C>
+void MemberEpcS11SapSgw<C>::DeleteBearerResponse (DeleteBearerResponseMessage msg)
+{
+  m_owner->DoDeleteBearerResponse (msg);
+}
 
 
 

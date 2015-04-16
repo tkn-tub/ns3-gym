@@ -62,18 +62,32 @@ namespace ns3 {
 class TcpWestwood : public TcpSocketBase
 {
 public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
 
   TcpWestwood (void);
+  /**
+   * \brief Copy constructor
+   * \param sock the object to copy
+   */
   TcpWestwood (const TcpWestwood& sock);
   virtual ~TcpWestwood (void);
 
+  /**
+   * \brief Protocol variant (Westwood or Westwood+)
+   */
   enum ProtocolType 
   {
     WESTWOOD,
     WESTWOODPLUS
   };
 
+  /**
+   * \brief Filter type (None or Tustin)
+   */
   enum FilterType 
   {
     NONE,
@@ -85,17 +99,11 @@ public:
   virtual int Listen (void);
 
 protected:
-  /**
-   * Limit the size of outstanding data based on the cwnd and the receiver's advertised window
-   *
-   * \return the max. possible number of unacked bytes
-   */  
-  virtual uint32_t Window (void);
-
-  /**
-   * Call CopyObject<TcpWestwood> to clone me
-   */  
-  virtual Ptr<TcpSocketBase> Fork (void);
+  virtual uint32_t Window (void); // Return the max possible number of unacked bytes
+  virtual Ptr<TcpSocketBase> Fork (void); // Call CopyObject<TcpTahoe> to clone me
+  virtual void NewAck (SequenceNumber32 const& seq); // Inc cwnd and call NewAck() of parent
+  virtual void DupAck (const TcpHeader& t, uint32_t count);  // Treat 3 dupack as timeout
+  virtual void Retransmit (void); // Retransmit time out
 
   /**
    * Process the newly received ACK
@@ -106,58 +114,17 @@ protected:
   virtual void ReceivedAck (Ptr<Packet> packet, const TcpHeader& tcpHeader);
   
   /**
-   * Adjust the cwnd based on the current congestion control phase,
-   * and then call the TcpSocketBase::NewAck() to complete the processing
-   *
-   * \param seq the acknowledgment number
-   */  
-  virtual void NewAck (SequenceNumber32 const& seq);
-
-  /**
-   * Adjust the cwnd using the currently estimated bandwidth,
-   * retransmit the missing packet, and enter fast recovery if 3 DUPACKs are received
-   *
-   * \param header the TCP header of the ACK packet
-   * \param count the number of DUPACKs
-   */  
-  virtual void DupAck (const TcpHeader& header, uint32_t count);
-
-  /**
-   * Upon an RTO event, adjust the cwnd using the currently estimated bandwidth,
-   * retransmit the missing packet, and exit fast recovery
-   */  
-  virtual void Retransmit (void);
-
-  /**
    * Estimate the RTT, record the minimum value,
    * and run a clock on the RTT to trigger Westwood+ bandwidth sampling
+   * \param header the packet header
    */
   virtual void EstimateRtt (const TcpHeader& header);
 
   // Implementing ns3::TcpSocket -- Attribute get/set
-  /**
-   * \param size the segment size to be used in a connection
-   */  
-  virtual void SetSegSize (uint32_t size);
-
-  /**
-   * \param the slow-start threshold
-   */  
-  virtual void SetSSThresh (uint32_t threshold);
-
-  /**
-   * \return the slow-start threshold
-   */  
-  virtual uint32_t GetSSThresh (void) const;
-
-  /**
-   * \param cwnd the initial cwnd
-   */  
-  virtual void SetInitialCwnd (uint32_t cwnd);
-
-  /**
-   * \return the initial cwnd
-   */ 
+  virtual void     SetSegSize (uint32_t size);
+  virtual void     SetInitialSSThresh (uint32_t threshold);
+  virtual uint32_t GetInitialSSThresh (void) const;
+  virtual void     SetInitialCwnd (uint32_t cwnd);
   virtual uint32_t GetInitialCwnd (void) const;
 
 private:
@@ -196,24 +163,25 @@ private:
   void Filtering (void);
 
 protected:
-  TracedValue<uint32_t>  m_cWnd;                   //< Congestion window
-  uint32_t               m_ssThresh;               //< Slow Start Threshold
-  uint32_t               m_initialCWnd;            //< Initial cWnd value
-  bool                   m_inFastRec;              //< Currently in fast recovery if TRUE
+  TracedValue<uint32_t>  m_cWnd;                   //!< Congestion window
+  TracedValue<uint32_t>  m_ssThresh;               //!< Slow Start Threshold
+  uint32_t               m_initialCWnd;            //!< Initial cWnd value
+  uint32_t               m_initialSsThresh;        //!< Initial Slow Start Threshold value
+  bool                   m_inFastRec;              //!< Currently in fast recovery if TRUE
 
-  TracedValue<double>    m_currentBW;              //< Current value of the estimated BW
-  double                 m_lastSampleBW;           //< Last bandwidth sample
-  double                 m_lastBW;                 //< Last bandwidth sample after being filtered
-  Time                   m_minRtt;                 //< Minimum RTT
-  double                 m_lastAck;                //< The time last ACK was received
-  SequenceNumber32       m_prevAckNo;              //< Previously received ACK number
-  int                    m_accountedFor;           //< The number of received DUPACKs
-  enum ProtocolType      m_pType;                  //< 0 for Westwood, 1 for Westwood+
-  enum FilterType        m_fType;                  //< 0 for none, 1 for Tustin
+  TracedValue<double>    m_currentBW;              //!< Current value of the estimated BW
+  double                 m_lastSampleBW;           //!< Last bandwidth sample
+  double                 m_lastBW;                 //!< Last bandwidth sample after being filtered
+  Time                   m_minRtt;                 //!< Minimum RTT
+  double                 m_lastAck;                //!< The time last ACK was received
+  SequenceNumber32       m_prevAckNo;              //!< Previously received ACK number
+  int                    m_accountedFor;           //!< The number of received DUPACKs
+  enum ProtocolType      m_pType;                  //!< 0 for Westwood, 1 for Westwood+
+  enum FilterType        m_fType;                  //!< 0 for none, 1 for Tustin
 
-  int                    m_ackedSegments;          //< The number of segments ACKed between RTTs
-  bool                   m_IsCount;                //< Start keeping track of m_ackedSegments for Westwood+ if TRUE
-  EventId                m_bwEstimateEvent;        //< The BW estimation event for Westwood+
+  int                    m_ackedSegments;          //!< The number of segments ACKed between RTTs
+  bool                   m_IsCount;                //!< Start keeping track of m_ackedSegments for Westwood+ if TRUE
+  EventId                m_bwEstimateEvent;        //!< The BW estimation event for Westwood+
 
 };
 

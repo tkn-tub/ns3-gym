@@ -1,3 +1,5 @@
+from __future__ import print_function
+import sys
 import re
 
 from pybindgen.typehandlers import base as typehandlers
@@ -5,6 +7,7 @@ from pybindgen import ReturnValue, Parameter
 from pybindgen.cppmethod import CustomCppMethodWrapper, CustomCppConstructorWrapper
 from pybindgen.typehandlers.codesink import MemoryCodeSink
 from pybindgen.typehandlers import ctypeparser
+from pybindgen.typehandlers.base import ForwardWrapperBase
 from pybindgen import cppclass
 import warnings
 
@@ -25,11 +28,13 @@ class SmartPointerTransformation(typehandlers.TypeTransformation):
     def __init__(self):
         super(SmartPointerTransformation, self).__init__()
         self.rx = re.compile(r'(ns3::|::ns3::|)Ptr<([^>]+)>\s*$')
+        print("{0!r}".format(self), file=sys.stderr)
 
     def _get_untransformed_type_traits(self, name):
         m = self.rx.match(name)
         is_const = False
         if m is None:
+            print("{0!r} did not match".format(name), file=sys.stderr)
             return None, False
         else:
             name1 = m.group(2).strip()
@@ -60,9 +65,9 @@ class SmartPointerTransformation(typehandlers.TypeTransformation):
         ## fix the ctype, add ns3:: namespace
         orig_ctype, is_const = self._get_untransformed_type_traits(args[0])
         if is_const:
-            correct_ctype = 'ns3::Ptr< %s const >' % orig_ctype[:-2]
+            correct_ctype = 'ns3::Ptr< {0} const >'.format(orig_ctype[:-2])
         else:
-            correct_ctype = 'ns3::Ptr< %s >' % orig_ctype[:-2]
+            correct_ctype = 'ns3::Ptr< {0} >'.format(orig_ctype[:-2])
         args = tuple([correct_ctype] + list(args[1:]))
 
         handler = type_handler(*args, **kwargs)
@@ -81,58 +86,6 @@ transf = SmartPointerTransformation()
 typehandlers.return_type_matcher.register_transformation(transf)
 typehandlers.param_type_matcher.register_transformation(transf)
 del transf
-
-
-class ArgvParam(Parameter):
-    """
-    Converts a python list-of-strings argument to a pair of 'int argc,
-    char *argv[]' arguments to pass into C.
-
-    One Python argument becomes two C function arguments -> it's a miracle!
-
-    Note: this parameter type handler is not registered by any name;
-    must be used explicitly.
-    """
-
-    DIRECTIONS = [Parameter.DIRECTION_IN]
-    CTYPES = []
-    
-    def convert_c_to_python(self, wrapper):
-        raise NotImplementedError
-
-    def convert_python_to_c(self, wrapper):
-        py_name = wrapper.declarations.declare_variable('PyObject*', 'py_' + self.name)
-        argc_var = wrapper.declarations.declare_variable('int', 'argc')
-        name = wrapper.declarations.declare_variable('char**', self.name)
-        idx = wrapper.declarations.declare_variable('Py_ssize_t', 'idx')
-        wrapper.parse_params.add_parameter('O!', ['&PyList_Type', '&'+py_name], self.name)
-
-        #wrapper.before_call.write_error_check('!PyList_Check(%s)' % py_name) # XXX
-
-        wrapper.before_call.write_code("%s = (char **) malloc(sizeof(char*)*PyList_Size(%s));"
-                                       % (name, py_name))
-        wrapper.before_call.add_cleanup_code('free(%s);' % name)
-        wrapper.before_call.write_code('''
-for (%(idx)s = 0; %(idx)s < PyList_Size(%(py_name)s); %(idx)s++)
-{
-''' % vars())
-        wrapper.before_call.sink.indent()
-        wrapper.before_call.write_code('''
-PyObject *item = PyList_GET_ITEM(%(py_name)s, %(idx)s);
-''' % vars())
-        #wrapper.before_call.write_error_check('item == NULL')
-        wrapper.before_call.write_error_check(
-            '!PyString_Check(item)',
-            failure_cleanup=('PyErr_SetString(PyExc_TypeError, '
-                             '"argument %s must be a list of strings");') % self.name)
-        wrapper.before_call.write_code(
-            '%s[%s] = PyString_AsString(item);' % (name, idx))
-        wrapper.before_call.sink.unindent()
-        wrapper.before_call.write_code('}')
-        wrapper.before_call.write_code('%s = PyList_Size(%s);' % (argc_var, py_name))
-        
-        wrapper.call_params.append(argc_var)
-        wrapper.call_params.append(name)
 
 
 class CallbackImplProxyMethod(typehandlers.ReverseWrapperBase):
@@ -159,7 +112,73 @@ class CallbackImplProxyMethod(typehandlers.ReverseWrapperBase):
 
 
 
-def generate_callback_classes(out, callbacks):
+def register_callback_classes(out, callbacks):
+    for callback_impl_num, template_parameters in enumerate(callbacks):
+        cls_name = "ns3::Callback< %s >" % ', '.join(template_parameters)
+        #print >> sys.stderr, "***** trying to register callback: %r" % cls_name
+        class_name = "PythonCallbackImpl%i" % callback_impl_num
+
+        class PythonCallbackParameter(Parameter):
+            "Class handlers"
+            CTYPES = [cls_name]
+            print("***** registering callback handler: %r (%r)" % (ctypeparser.normalize_type_string(cls_name), cls_name), file=sys.stderr)
+            DIRECTIONS = [Parameter.DIRECTION_IN]
+            PYTHON_CALLBACK_IMPL_NAME = class_name
+            TEMPLATE_ARGS = template_parameters
+            DISABLED = False
+
+            def convert_python_to_c(self, wrapper):
+                "parses python args to get C++ value"
+                assert isinstance(wrapper, typehandlers.ForwardWrapperBase)
+
+                if self.DISABLED:
+                    raise CodeGenerationError("wrapper could not be generated")
+
+                if self.default_value is None:
+                    py_callback = wrapper.declarations.declare_variable('PyObject*', self.name)
+                    wrapper.parse_params.add_parameter('O', ['&'+py_callback], self.name)
+                    wrapper.before_call.write_error_check(
+                        '!PyCallable_Check(%s)' % py_callback,
+                        'PyErr_SetString(PyExc_TypeError, "parameter \'%s\' must be callbale");' % self.name)
+                    callback_impl = wrapper.declarations.declare_variable(
+                        'ns3::Ptr<%s>' % self.PYTHON_CALLBACK_IMPL_NAME,
+                        '%s_cb_impl' % self.name)
+                    wrapper.before_call.write_code("%s = ns3::Create<%s> (%s);"
+                                                   % (callback_impl, self.PYTHON_CALLBACK_IMPL_NAME, py_callback))
+                    wrapper.call_params.append(
+                        'ns3::Callback<%s> (%s)' % (', '.join(self.TEMPLATE_ARGS), callback_impl))
+                else:
+                    py_callback = wrapper.declarations.declare_variable('PyObject*', self.name, 'NULL')
+                    wrapper.parse_params.add_parameter('O', ['&'+py_callback], self.name, optional=True)
+                    value = wrapper.declarations.declare_variable(
+                        'ns3::Callback<%s>' % ', '.join(self.TEMPLATE_ARGS),
+                        self.name+'_value',
+                        self.default_value)
+
+                    wrapper.before_call.write_code("if (%s) {" % (py_callback,))
+                    wrapper.before_call.indent()
+
+                    wrapper.before_call.write_error_check(
+                        '!PyCallable_Check(%s)' % py_callback,
+                        'PyErr_SetString(PyExc_TypeError, "parameter \'%s\' must be callbale");' % self.name)
+
+                    wrapper.before_call.write_code("%s = ns3::Callback<%s> (ns3::Create<%s> (%s));"
+                                                   % (value, ', '.join(self.TEMPLATE_ARGS),
+                                                      self.PYTHON_CALLBACK_IMPL_NAME, py_callback))
+
+                    wrapper.before_call.unindent()
+                    wrapper.before_call.write_code("}") # closes: if (py_callback) {
+
+                    wrapper.call_params.append(value)
+
+
+            def convert_c_to_python(self, wrapper):
+                raise typehandlers.NotSupportedError("Reverse wrappers for ns3::Callback<...> types "
+                                                     "(python using callbacks defined in C++) not implemented.")
+
+
+def generate_callback_classes(module, callbacks):
+    out = module.after_forward_declarations
     for callback_impl_num, template_parameters in enumerate(callbacks):
         sink = MemoryCodeSink()
         cls_name = "ns3::Callback< %s >" % ', '.join(template_parameters)
@@ -203,7 +222,7 @@ public:
             kwargs = {}
         try:
             return_type = ReturnValue.new(str(return_ctype), **kwargs)
-        except (typehandlers.TypeLookupError, typehandlers.TypeConfigurationError), ex:
+        except (typehandlers.TypeLookupError, typehandlers.TypeConfigurationError) as ex:
             warnings.warn("***** Unable to register callback; Return value '%s' error (used in %s): %r"
                           % (callback_return, cls_name, ex),
                           Warning)
@@ -222,74 +241,29 @@ public:
                 kwargs = {}
             try:
                 arguments.append(Parameter.new(str(param_ctype), arg_name, **kwargs))
-            except (typehandlers.TypeLookupError, typehandlers.TypeConfigurationError), ex:
+            except (typehandlers.TypeLookupError, typehandlers.TypeConfigurationError) as ex:
                 warnings.warn("***** Unable to register callback; parameter '%s %s' error (used in %s): %r"
                               % (arg_type, arg_name, cls_name, ex),
                               Warning)
                 ok = False
         if not ok:
+            try:
+                typehandlers.return_type_matcher.lookup(cls_name)[0].DISABLED = True
+            except typehandlers.TypeLookupError:
+                pass
+            try:
+                typehandlers.param_type_matcher.lookup(cls_name)[0].DISABLED = True
+            except typehandlers.TypeLookupError:
+                pass
             continue
 
         wrapper = CallbackImplProxyMethod(return_type, arguments)
         wrapper.generate(sink, 'operator()', decl_modifiers=[])
-            
+
         sink.unindent()
         sink.writeln('};\n')
+        print("Flushing to ", out, file=sys.stderr)
         sink.flush_to(out)
-        
-        class PythonCallbackParameter(Parameter):
-            "Class handlers"
-            CTYPES = [cls_name]
-            print >> sys.stderr, "***** registering callback handler: %r" % ctypeparser.normalize_type_string(cls_name)
-            DIRECTIONS = [Parameter.DIRECTION_IN]
-            PYTHON_CALLBACK_IMPL_NAME = class_name
-            TEMPLATE_ARGS = template_parameters
-
-            def convert_python_to_c(self, wrapper):
-                "parses python args to get C++ value"
-                assert isinstance(wrapper, typehandlers.ForwardWrapperBase)
-
-                if self.default_value is None:
-                    py_callback = wrapper.declarations.declare_variable('PyObject*', self.name)
-                    wrapper.parse_params.add_parameter('O', ['&'+py_callback], self.name)
-                    wrapper.before_call.write_error_check(
-                        '!PyCallable_Check(%s)' % py_callback,
-                        'PyErr_SetString(PyExc_TypeError, "parameter \'%s\' must be callbale");' % self.name)
-                    callback_impl = wrapper.declarations.declare_variable(
-                        'ns3::Ptr<%s>' % self.PYTHON_CALLBACK_IMPL_NAME,
-                        '%s_cb_impl' % self.name)
-                    wrapper.before_call.write_code("%s = ns3::Create<%s> (%s);"
-                                                   % (callback_impl, self.PYTHON_CALLBACK_IMPL_NAME, py_callback))
-                    wrapper.call_params.append(
-                        'ns3::Callback<%s> (%s)' % (', '.join(self.TEMPLATE_ARGS), callback_impl))
-                else:
-                    py_callback = wrapper.declarations.declare_variable('PyObject*', self.name, 'NULL')
-                    wrapper.parse_params.add_parameter('O', ['&'+py_callback], self.name, optional=True)
-                    value = wrapper.declarations.declare_variable(
-                        'ns3::Callback<%s>' % ', '.join(self.TEMPLATE_ARGS),
-                        self.name+'_value',
-                        self.default_value)
-
-                    wrapper.before_call.write_code("if (%s) {" % (py_callback,))
-                    wrapper.before_call.indent()
-
-                    wrapper.before_call.write_error_check(
-                        '!PyCallable_Check(%s)' % py_callback,
-                        'PyErr_SetString(PyExc_TypeError, "parameter \'%s\' must be callbale");' % self.name)
-
-                    wrapper.before_call.write_code("%s = ns3::Callback<%s> (ns3::Create<%s> (%s));"
-                                                   % (value, ', '.join(self.TEMPLATE_ARGS),
-                                                      self.PYTHON_CALLBACK_IMPL_NAME, py_callback))
-
-                    wrapper.before_call.unindent()
-                    wrapper.before_call.write_code("}") # closes: if (py_callback) {
-                                        
-                    wrapper.call_params.append(value)
-                    
-
-            def convert_c_to_python(self, wrapper):
-                raise typehandlers.NotSupportedError("Reverse wrappers for ns3::Callback<...> types "
-                                                     "(python using callbacks defined in C++) not implemented.")
 
 
 # def write_preamble(out):
@@ -421,15 +395,28 @@ def add_std_ofstream(module):
     ofstream.add_constructor([Parameter.new("const char *", 'filename'),
                               Parameter.new("::std::ofstream::openmode", 'mode', default_value="std::ios_base::out")])
     ofstream.add_method('close', None, [])
-    
+
     add_std_ios_openmode(module)
 
 
-def add_std_ios_openmode(module):
-    import pybindgen.typehandlers.base
-    for alias in "std::_Ios_Openmode", "std::ios::openmode":
-        pybindgen.typehandlers.base.param_type_matcher.add_type_alias(alias, "int")
+class IosOpenmodeParam(Parameter):
 
+    DIRECTIONS = [Parameter.DIRECTION_IN]
+    CTYPES = ['std::ios::openmode', 'std::_Ios_Openmode']
+
+    def convert_c_to_python(self, wrapper):
+        assert isinstance(wrapper, ReverseWrapperBase)
+        wrapper.build_params.add_parameter('i', [self.value])
+
+    def convert_python_to_c(self, wrapper):
+        assert isinstance(wrapper, ForwardWrapperBase)
+        name = wrapper.declarations.declare_variable("std::ios::openmode", self.name, self.default_value)
+        wrapper.parse_params.add_parameter('i', ['&'+name], self.name, optional=bool(self.default_value))
+        wrapper.call_params.append(name)
+
+
+
+def add_std_ios_openmode(module):
     for flag in 'in', 'out', 'ate', 'app', 'trunc', 'binary':
         module.after_init.write_code('PyModule_AddIntConstant(m, (char *) "STD_IOS_%s", std::ios::%s);'
                                      % (flag.upper(), flag))

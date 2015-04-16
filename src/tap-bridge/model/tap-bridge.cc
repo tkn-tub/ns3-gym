@@ -39,32 +39,16 @@
 #include <sys/stat.h>
 #include <sys/socket.h>
 #include <sys/un.h>
+#include <sys/ioctl.h>
+#include <net/if.h>
 #include <cerrno>
 #include <limits>
 #include <cstdlib>
 #include <unistd.h>
 
-//
-// Sometimes having a tap-creator is actually more trouble than solution.  In 
-// these cases you can uncomment the define of TAP_CREATOR below and the 
-// simulation will just use a device you have preconfigured.  This is useful
-// if you are running in an environment where you have got to run as root,
-// such as ORBIT or CORE.
-//
-
-
-// #define NO_CREATOR
-
-#ifdef NO_CREATOR
-#include <fcntl.h>
-#include <net/if.h>
-#include <linux/if_tun.h>
-#include <sys/ioctl.h>
-#endif
+namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("TapBridge");
-
-namespace ns3 {
 
 FdReader::Data TapBridgeFdReader::DoRead (void)
 {
@@ -235,6 +219,9 @@ TapBridge::StartTapDevice (void)
   // tap device.
   //
   CreateTap ();
+
+  // Declare the link up
+  NotifyLinkUp ();
 
   //
   // Now spin up a read thread to read packets from the tap device.
@@ -630,7 +617,7 @@ TapBridge::CreateTap (void)
                   int *rawSocket = (int*)CMSG_DATA (cmsg);
                   NS_LOG_INFO ("Got the socket from the socket creator = " << *rawSocket);
                   m_sock = *rawSocket;
-                  return;
+                  break;
                 }
               else
                 {
@@ -638,8 +625,40 @@ TapBridge::CreateTap (void)
                 }
             }
         }
-      NS_FATAL_ERROR ("Did not get the raw socket from the socket creator");
+      if (cmsg == NULL)
+        {
+          NS_FATAL_ERROR ("Did not get the raw socket from the socket creator");
+        }
+
+      if (m_mode == USE_LOCAL || m_mode == USE_BRIDGE)
+        {
+          //
+          // Set the ns-3 device's mac address to the overlying container's
+          // mac address
+          //
+          struct ifreq s;
+          strncpy (s.ifr_name, m_tapDeviceName.c_str (), sizeof (s.ifr_name));
+
+          NS_LOG_INFO ("Trying to get MacAddr of " << m_tapDeviceName);
+          int ioctlResult = ioctl (sock, SIOCGIFHWADDR, &s);
+          if (ioctlResult == 0)
+            {
+              Mac48Address learnedMac;
+              learnedMac.CopyFrom ((uint8_t *)s.ifr_hwaddr.sa_data);
+              NS_LOG_INFO ("Learned Tap device MacAddr is " << learnedMac << ": setting ns-3 device to use this address");
+              m_bridgedDevice->SetAddress (learnedMac);
+              m_ns3AddressRewritten = true;
+            }
+
+          if (!m_ns3AddressRewritten)
+            {
+              NS_LOG_INFO ("Cannot get MacAddr of Tap device: " << m_tapDeviceName << " while in USE_LOCAL/USE_BRIDGE mode: " << std::strerror (errno));
+              NS_LOG_INFO ("Underlying ns-3 device will continue to use default address, what can lead to connectivity errors");
+            }
+        }
     }
+
+  close (sock);
 }
 
 void
@@ -813,7 +832,8 @@ TapBridge::Filter (Ptr<Packet> p, Address *src, Address *dst, uint16_t *type)
       return 0;
     }
 
-  p->RemoveHeader (header);
+  uint32_t headerSize = p->PeekHeader (header);
+  p->RemoveAtStart (headerSize);
 
   NS_LOG_LOGIC ("Pkt source is " << header.GetSource ());
   NS_LOG_LOGIC ("Pkt destination is " << header.GetDestination ());
@@ -1039,18 +1059,29 @@ TapBridge::GetMtu (void) const
   return m_mtu;
 }
 
+void
+TapBridge::NotifyLinkUp (void)
+{
+  NS_LOG_FUNCTION_NOARGS ();
+  if (!m_linkUp)
+    {
+      m_linkUp = true;
+      m_linkChangeCallbacks ();
+    }
+}
 
 bool 
 TapBridge::IsLinkUp (void) const
 {
   NS_LOG_FUNCTION_NOARGS ();
-  return true;
+  return m_linkUp;
 }
 
 void 
 TapBridge::AddLinkChangeCallback (Callback<void> callback)
 {
   NS_LOG_FUNCTION_NOARGS ();
+  m_linkChangeCallbacks.ConnectWithoutContext (callback);
 }
 
 bool 

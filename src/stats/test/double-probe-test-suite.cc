@@ -3,7 +3,14 @@
 // Include a header file from your module to test.
 #include "ns3/double-probe.h"
 #include "ns3/test.h"
-#include "ns3/core-module.h"
+#include "ns3/random-variable-stream.h"
+#include "ns3/trace-source-accessor.h"
+#include "ns3/traced-value.h"
+#include "ns3/nstime.h"
+#include "ns3/simulator.h"
+#include "ns3/object.h"
+#include "ns3/type-id.h"
+#include "ns3/names.h"
 
 using namespace ns3;
 
@@ -13,6 +20,7 @@ public:
   static TypeId GetTypeId (void);
   SampleEmitter ()
   {
+    m_var = CreateObject<ExponentialRandomVariable> ();
   }
   virtual ~SampleEmitter ()
   {
@@ -23,7 +31,7 @@ public:
   }
   void Reschedule ()
   {
-    m_time = m_var.GetValue ();
+    m_time = m_var->GetValue ();
     Simulator::Schedule (Seconds (m_time), &SampleEmitter::Report, this);
     m_time += Simulator::Now ().GetSeconds ();
   }
@@ -38,24 +46,25 @@ public:
 private:
   void Report ()
   {
-    aux = m_var.GetValue ();
+    aux = m_var->GetValue ();
     m_trace = aux;
     Reschedule ();
   }
-  ExponentialVariable m_var;
+  Ptr<ExponentialRandomVariable> m_var;
   double m_time;
   TracedValue<double> m_trace;
   double aux;
 };
 
-Ptr<SampleEmitter> s = CreateObject<SampleEmitter> ();
 
 TypeId
 SampleEmitter::GetTypeId (void)
 {
   static TypeId tid = TypeId ("SampleEmitter")
     .SetParent<Object> ()
-    .AddTraceSource ("Emitter", "XX", MakeTraceSourceAccessor (&SampleEmitter::m_trace))
+    .AddTraceSource ("Emitter", "XX",
+                     MakeTraceSourceAccessor (&SampleEmitter::m_trace),
+                     "ns3::TracedValue::DoubleCallback")
   ;
   return tid;
 }
@@ -71,6 +80,7 @@ private:
   void TraceSink (std::string context, double oldValue, double newValue);
   uint32_t m_objectProbed;
   uint32_t m_pathProbed;
+  Ptr<SampleEmitter> m_s;
 };
 
 ProbeTestCase1::ProbeTestCase1 ()
@@ -90,7 +100,7 @@ ProbeTestCase1::TraceSink (std::string context, double oldValue, double newValue
   NS_TEST_ASSERT_MSG_GT (Simulator::Now (), Seconds (100), "Probed a value outside of the time window");
   NS_TEST_ASSERT_MSG_LT (Simulator::Now (), Seconds (200), "Probed a value outside of the time window");
 
-  NS_TEST_ASSERT_MSG_EQ_TOL (s->GetValue (), newValue, 0.00001, "Value probed different than value in the variable");
+  NS_TEST_ASSERT_MSG_EQ_TOL (m_s->GetValue (), newValue, 0.00001, "Value probed different than value in the variable");
 
   if (context == "testProbe")
     {
@@ -105,23 +115,25 @@ ProbeTestCase1::TraceSink (std::string context, double oldValue, double newValue
 void
 ProbeTestCase1::DoRun (void)
 {
+  // Defer creation of this until here because it is a random variable
+  m_s = CreateObject<SampleEmitter> ();
   // Test that all instances of probe data are between time window specified
   // Check also that probes can be hooked to sources by Object and by path
 
   Ptr<DoubleProbe> p = CreateObject<DoubleProbe> ();
   p->SetName ("testProbe");
 
-  Simulator::Schedule (Seconds (1), &SampleEmitter::Start, s);
+  Simulator::Schedule (Seconds (1), &SampleEmitter::Start, m_s);
   p->SetAttribute ("Start", TimeValue (Seconds (100.0)));
   p->SetAttribute ("Stop", TimeValue (Seconds (200.0)));
   Simulator::Stop (Seconds (300));
 
   // Register our emitter object so we can fetch it by using the Config
   // namespace
-  Names::Add ("/Names/SampleEmitter", s);
+  Names::Add ("/Names/SampleEmitter", m_s);
 
   // Hook probe to the emitter.
-  p->ConnectByObject ("Emitter", s);
+  p->ConnectByObject ("Emitter", m_s);
 
   // Hook our test function to the probe trace source
   p->TraceConnect ("Output", p->GetName (), MakeCallback (&ProbeTestCase1::TraceSink, this));

@@ -87,6 +87,7 @@ Ipv6PacketInfoTag::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::Ipv6PacketInfoTag")
     .SetParent<Tag> ()
+    .SetGroupName ("Internet")
     .AddConstructor<Ipv6PacketInfoTag> ()
   ;
   return tid;

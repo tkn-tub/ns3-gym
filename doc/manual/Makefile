@@ -16,6 +16,7 @@ SOURCES = \
 	source/replace.txt \
 	source/attributes.rst \
 	source/callbacks.rst \
+	source/documentation.rst \
 	source/enable-modules.rst \
 	source/enable-tests.rst \
 	source/events.rst \
@@ -87,15 +88,24 @@ IMAGES_PDF = ${IMAGES_EPS:.eps=.pdf}
 
 IMAGES = $(IMAGES_EPS) $(IMAGES_PNG) $(IMAGES_PDF)
 
-RESCALE = $(shell hg root)/utils/rescale-pdf.sh
+RESCALE = ../../utils/rescale-pdf.sh
 
-%.eps : %.dia; $(DIA) -t eps $< -e $@
-%.png : %.dia; $(DIA) -t png $< -e $@
-%.png : %.eps; $(CONVERT) $< $@
-%.pdf : %.eps;
-	$(EPSTOPDF) $< -o=$@
-	if test x$($@_width) != x; then $(RESCALE) $($@_width) $@ ; fi
+%.eps : %.dia
+	@echo dia $(notdir $<)
+	@$(DIA) -t eps $< -e $@ >/dev/null
 
+%.png : %.dia
+	@echo dia $(notdir $<)
+	@$(DIA) -t png $< -e $@ >/dev/null
+
+%.png : %.eps
+	@echo convert $(notdir $<)
+	@$(CONVERT) $< $@ >/dev/null
+
+%.pdf : %.eps
+	@echo epstopdf $(notdir $<)
+	@$(EPSTOPDF) $< -o=$@ >/dev/null
+	@if test x$($@_width) != x; then $(RESCALE) $($@_width) $@ ; fi
 
 # You can set these variables from the command line.
 SPHINXOPTS    =
@@ -134,7 +144,7 @@ help:
 copy-sources:  $(SOURCES)
 	@rm -rf $(SOURCETEMP)
 	@mkdir -p $(SOURCETEMP) 
-	@mkdir -p $(FIGURES) 
+	@mkdir -p $(FIGURES)
 	@cp -r $(SOURCES) $(SOURCETEMP)
 	@cp -r $(SOURCEFIGS) $(FIGURES)
 

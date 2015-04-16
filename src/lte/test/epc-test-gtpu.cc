@@ -26,10 +26,9 @@
 
 #include "epc-test-gtpu.h"
 
+using namespace ns3;
+
 NS_LOG_COMPONENT_DEFINE ("EpcGtpuTest");
-
-namespace ns3 {
-
 
 /**
  * TestSuite
@@ -84,6 +83,4 @@ EpsGtpuHeaderTestCase::DoRun (void)
 
   NS_TEST_ASSERT_MSG_EQ (h1, h2, "Wrong value!");
 }
-
-} // namespace ns3
 

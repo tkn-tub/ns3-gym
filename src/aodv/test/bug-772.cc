@@ -20,7 +20,6 @@
 
 #include "bug-772.h"
 
-#include "ns3/mesh-helper.h"
 #include "ns3/simulator.h"
 #include "ns3/random-variable-stream.h"
 #include "ns3/rng-seed-manager.h"
@@ -48,8 +47,7 @@
 #include "ns3/pcap-test.h"
 #include <sstream>
 
-namespace ns3 {
-namespace aodv {
+using namespace ns3;
 
 //-----------------------------------------------------------------------------
 // UdpChainTest
@@ -135,9 +133,12 @@ Bug772ChainTest::CreateDevices ()
   InternetStackHelper internetStack;
   internetStack.SetRoutingHelper (aodv);
   internetStack.Install (*m_nodes);
+  streamsUsed += internetStack.AssignStreams (*m_nodes, streamsUsed);
+  // Expect to use (3*m_size) more streams for internet stack random variables
+  NS_TEST_ASSERT_MSG_EQ (streamsUsed, ((devices.GetN () * 6) + (3*m_size)), "Stream assignment mismatch");
   streamsUsed += aodv.AssignStreams (*m_nodes, streamsUsed);
   // Expect to use m_size more streams for AODV
-  NS_TEST_ASSERT_MSG_EQ (streamsUsed, ((devices.GetN () * 6) + m_size), "Stream assignment mismatch");
+  NS_TEST_ASSERT_MSG_EQ (streamsUsed, ((devices.GetN () * 6) + (3*m_size) + m_size), "Stream assignment mismatch");
   Ipv4AddressHelper address;
   address.SetBase ("10.1.1.0", "255.255.255.0");
   Ipv4InterfaceContainer interfaces = address.Assign (devices);
@@ -146,7 +147,7 @@ Bug772ChainTest::CreateDevices ()
   uint16_t port = 9; // Discard port (RFC 863)
   OnOffHelper onoff (m_proto, Address (InetSocketAddress (interfaces.GetAddress (m_size-1), port)));
   onoff.SetConstantRate (DataRate (64000));
-  onoff.SetAttribute ("PacketSize", UintegerValue (1200));
+  onoff.SetAttribute ("PacketSize", UintegerValue (1000));
   ApplicationContainer app = onoff.Install (m_nodes->Get (0));
   app.Start (Seconds (1.0));
   app.Stop (m_time);
@@ -166,7 +167,4 @@ Bug772ChainTest::CheckResults ()
     {
       NS_PCAP_TEST_EXPECT_EQ(m_prefix << "-" << i << "-0.pcap");
     }
-}
-
-}
 }

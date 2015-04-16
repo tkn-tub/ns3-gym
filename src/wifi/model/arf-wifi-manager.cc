@@ -25,11 +25,16 @@
 
 #define Min(a,b) ((a < b) ? a : b)
 
-NS_LOG_COMPONENT_DEFINE ("ns3::ArfWifiManager");
-
-
 namespace ns3 {
 
+NS_LOG_COMPONENT_DEFINE ("ArfWifiManager");
+
+/**
+ * \brief hold per-remote-station state for ARF Wifi manager.
+ *
+ * This struct extends from WifiRemoteStation struct to hold additional
+ * information required by the ARF Wifi manager
+ */
 struct ArfWifiRemoteStation : public WifiRemoteStation
 {
   uint32_t m_timer;
@@ -51,6 +56,7 @@ ArfWifiManager::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::ArfWifiManager")
     .SetParent<WifiRemoteStationManager> ()
+    .SetGroupName ("Wifi")
     .AddConstructor<ArfWifiManager> ()
     .AddAttribute ("TimerThreshold", "The 'timer' threshold in the ARF algorithm.",
                    UintegerValue (15),
@@ -104,6 +110,8 @@ ArfWifiManager::DoReportRtsFailed (WifiRemoteStation *station)
  * is the initial transmission of a packet or the retransmission of a packet.
  * The fundamental reason for this is that there is a backoff between each data
  * transmission, be it an initial transmission or a retransmission.
+ *
+ * \param st the station that we failed to send DATA
  */
 void
 ArfWifiManager::DoReportDataFailed (WifiRemoteStation *st)
@@ -195,7 +203,7 @@ ArfWifiManager::DoGetDataTxVector (WifiRemoteStation *st, uint32_t size)
 {
   NS_LOG_FUNCTION (this << st << size);
   ArfWifiRemoteStation *station = (ArfWifiRemoteStation *) st;
-  return WifiTxVector (GetSupported (station, station->m_rate), GetDefaultTxPowerLevel (), GetLongRetryCount (station), GetShortGuardInterval (station), Min (GetNumberOfReceiveAntennas (station),GetNumberOfTransmitAntennas()), GetNumberOfTransmitAntennas (station), GetStbc (station));
+  return WifiTxVector (GetSupported (station, station->m_rate), GetDefaultTxPowerLevel (), GetLongRetryCount (station), GetShortGuardInterval (station), Min (GetNumberOfReceiveAntennas (station),GetNumberOfTransmitAntennas()), GetNess (station), GetStbc (station));
 }
 WifiTxVector
 ArfWifiManager::DoGetRtsTxVector (WifiRemoteStation *st)
@@ -204,7 +212,7 @@ ArfWifiManager::DoGetRtsTxVector (WifiRemoteStation *st)
   /// \todo we could/should implement the Arf algorithm for
   /// RTS only by picking a single rate within the BasicRateSet.
   ArfWifiRemoteStation *station = (ArfWifiRemoteStation *) st;
-  return WifiTxVector (GetSupported (station, 0), GetDefaultTxPowerLevel (), GetLongRetryCount (station), GetShortGuardInterval (station), Min (GetNumberOfReceiveAntennas (station),GetNumberOfTransmitAntennas()), GetNumberOfTransmitAntennas (station), GetStbc (station));
+  return WifiTxVector (GetSupported (station, 0), GetDefaultTxPowerLevel (), GetLongRetryCount (station), GetShortGuardInterval (station), Min (GetNumberOfReceiveAntennas (station),GetNumberOfTransmitAntennas()), GetNess (station), GetStbc (station));
 }
 
 bool

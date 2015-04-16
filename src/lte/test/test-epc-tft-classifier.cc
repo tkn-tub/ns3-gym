@@ -33,9 +33,9 @@
 
 #include <iomanip>
 
-NS_LOG_COMPONENT_DEFINE ("TestEpcTftClassifier");
+using namespace ns3;
 
-namespace ns3 {
+NS_LOG_COMPONENT_DEFINE ("TestEpcTftClassifier");
 
 class EpcTftClassifierTestCase : public TestCase
 {
@@ -329,6 +329,3 @@ EpcTftClassifierTestSuite::EpcTftClassifierTestSuite ()
   AddTestCase (new EpcTftClassifierTestCase (c4, EpcTft::DOWNLINK, Ipv4Address ("9.1.1.1"), Ipv4Address ("8.1.1.1"),  5897,       10,     0,    2), TestCase::QUICK);
 
 }
-
-
-} // namespace ns3

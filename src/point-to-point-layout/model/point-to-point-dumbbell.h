@@ -33,7 +33,7 @@
 namespace ns3 {
 
 /**
- * \ingroup pointtopointlayout
+ * \ingroup point-to-point-layout
  *
  * \brief A helper to make it easier to create a dumbbell topology
  * with p2p links

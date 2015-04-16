@@ -33,6 +33,7 @@ LtePhyTag::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::LtePhyTag")
     .SetParent<Tag> ()
+    .SetGroupName("Lte")
     .AddConstructor<LtePhyTag> ()
   ;
   return tid;

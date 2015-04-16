@@ -30,41 +30,36 @@
 namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("Cost231PropagationLossModel");
+
 NS_OBJECT_ENSURE_REGISTERED (Cost231PropagationLossModel);
 
 TypeId
 Cost231PropagationLossModel::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::Cost231PropagationLossModel")
-
     .SetParent<PropagationLossModel> ()
-
+    .SetGroupName ("Propagation")
     .AddConstructor<Cost231PropagationLossModel> ()
-
     .AddAttribute ("Lambda",
                    "The wavelength  (default is 2.3 GHz at 300 000 km/s).",
                    DoubleValue (300000000.0 / 2.3e9),
                    MakeDoubleAccessor (&Cost231PropagationLossModel::m_lambda),
                    MakeDoubleChecker<double> ())
-
     .AddAttribute ("Frequency",
                    "The Frequency  (default is 2.3 GHz).",
                    DoubleValue (2.3e9),
                    MakeDoubleAccessor (&Cost231PropagationLossModel::m_frequency),
                    MakeDoubleChecker<double> ())
-
     .AddAttribute ("BSAntennaHeight",
-                   " BS Antenna Height (default is 50m).",
+                   "BS Antenna Height (default is 50m).",
                    DoubleValue (50.0),
                    MakeDoubleAccessor (&Cost231PropagationLossModel::m_BSAntennaHeight),
                    MakeDoubleChecker<double> ())
-
     .AddAttribute ("SSAntennaHeight",
-                   " SS Antenna Height (default is 3m).",
+                   "SS Antenna Height (default is 3m).",
                    DoubleValue (3),
                    MakeDoubleAccessor (&Cost231PropagationLossModel::m_SSAntennaHeight),
                    MakeDoubleChecker<double> ())
-
     .AddAttribute ("MinDistance",
                    "The distance under which the propagation model refuses to give results (m) ",
                    DoubleValue (0.5),
@@ -75,7 +70,6 @@ Cost231PropagationLossModel::GetTypeId (void)
 
 Cost231PropagationLossModel::Cost231PropagationLossModel ()
 {
-  C = 0;
   m_shadowing = 10;
 }
 
@@ -145,17 +139,6 @@ Cost231PropagationLossModel::GetSSAntennaHeight (void) const
   return m_SSAntennaHeight;
 }
 
-void
-Cost231PropagationLossModel::SetEnvironment (Environment env)
-{
-  m_environment = env;
-}
-Cost231PropagationLossModel::Environment
-Cost231PropagationLossModel::GetEnvironment (void) const
-{
-  return m_environment;
-}
-
 double
 Cost231PropagationLossModel::GetLoss (Ptr<MobilityModel> a, Ptr<MobilityModel> b) const
 {
@@ -166,15 +149,18 @@ Cost231PropagationLossModel::GetLoss (Ptr<MobilityModel> a, Ptr<MobilityModel> b
       return 0.0;
     }
 
-  double log_f = std::log (m_frequency / 1000000000) / 2.302;
-  double C_H = 0.8 + ((1.11 * log_f) - 0.7) * m_SSAntennaHeight - (1.56 * log_f);
-  double log_BSH = std::log (m_BSAntennaHeight) / 2.303;
+  double frequency_MHz = m_frequency * 1e-6;
+
+  double distance_km = distance * 1e-3;
+
+  double C_H = 0.8 + ((1.11 * std::log10(frequency_MHz)) - 0.7) * m_SSAntennaHeight - (1.56 * std::log10(frequency_MHz));
 
   // from the COST231 wiki entry
-  // 2.303 is for the logarithm base change
+  // See also http://www.lx.it.pt/cost231/final_report.htm
+  // Ch. 4, eq. 4.4.3, pg. 135
 
-  double loss_in_db = 46.3 + (33.9 * log_f) - (13.82 * log_BSH) - C_H + ((44.9 - 6.55 * log_BSH) * std::log (distance)
-                                                                         / 2.303) + C + m_shadowing;
+  double loss_in_db = 46.3 + (33.9 * std::log10(frequency_MHz)) - (13.82 * std::log10 (m_BSAntennaHeight)) - C_H
+		  	  	  + ((44.9 - 6.55 * std::log10 (m_BSAntennaHeight)) * std::log10 (distance_km)) + m_shadowing;
 
   NS_LOG_DEBUG ("dist =" << distance << ", Path Loss = " << loss_in_db);
 

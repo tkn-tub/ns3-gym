@@ -22,14 +22,33 @@
 #include "ns3/assert.h"
 #include "ns3/log.h"
 
-NS_LOG_COMPONENT_DEFINE ("SupportedRates");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("SupportedRates");
 
 SupportedRates::SupportedRates ()
   : extended (this),
     m_nRates (0)
 {
+}
+
+SupportedRates::SupportedRates (const SupportedRates &rates)
+{
+  m_nRates = rates.m_nRates;
+  memcpy (m_rates, rates.m_rates, MAX_SUPPORTED_RATES);
+  // reset the back pointer to this object
+  extended.SetSupportedRates (this);
+
+}
+
+SupportedRates&
+SupportedRates::operator= (const SupportedRates& rates)
+{
+  this->m_nRates = rates.m_nRates;
+  memcpy (this->m_rates, rates.m_rates, MAX_SUPPORTED_RATES);
+  // reset the back pointer to this object
+  this->extended.SetSupportedRates (this);
+  return (*this);
 }
 
 void
@@ -148,6 +167,12 @@ ExtendedSupportedRatesIE::ElementId () const
   return IE_EXTENDED_SUPPORTED_RATES;
 }
 
+void
+ExtendedSupportedRatesIE::SetSupportedRates (SupportedRates *sr)
+{
+  m_supportedRates = sr;
+}
+
 uint8_t
 ExtendedSupportedRatesIE::GetInformationFieldSize () const
 {
@@ -211,12 +236,19 @@ ExtendedSupportedRatesIE::DeserializeInformationField (Buffer::Iterator start,
                                                        uint8_t length)
 {
   NS_ASSERT (length > 0);
-  NS_ASSERT (m_supportedRates->m_nRates + length <= MAX_SUPPORTED_RATES);
+  NS_ASSERT (m_supportedRates->m_nRates + length <= SupportedRates::MAX_SUPPORTED_RATES);
   start.Read (m_supportedRates->m_rates + m_supportedRates->m_nRates, length);
   m_supportedRates->m_nRates += length;
   return length;
 }
 
+/**
+ * Serialize SupportedRates to the given ostream.
+ *
+ * \param os
+ * \param rates
+ * \return std::ostream
+ */
 std::ostream &operator << (std::ostream &os, const SupportedRates &rates)
 {
   os << "[";

@@ -32,6 +32,7 @@
 namespace ns3 {
 
 /**
+ * \ingroup ping6
  * \class Ping6Helper
  * \brief Ping6 application helper.
  */

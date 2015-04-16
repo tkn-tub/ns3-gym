@@ -56,10 +56,9 @@
 #include "lte-test-mimo.h"
 
 
+using namespace ns3;
+
 NS_LOG_COMPONENT_DEFINE ("LteTestMimo");
-
-namespace ns3 {
-
 
 LenaTestMimoSuite::LenaTestMimoSuite ()
   : TestSuite ("lte-mimo", SYSTEM)
@@ -120,6 +119,9 @@ LenaMimoTestCase::DoRun (void)
   Config::SetDefault ("ns3::LteSpectrumPhy::DataErrorModelEnabled", BooleanValue (false));
   Config::SetDefault ("ns3::LteAmc::AmcModel", EnumValue (LteAmc::PiroEW2010));
   Config::SetDefault ("ns3::LteHelper::UseIdealRrc", BooleanValue (m_useIdealRrc));
+
+  //Disable Uplink Power Control
+  Config::SetDefault ("ns3::LteUePhy::EnableUplinkPowerControl", BooleanValue (false));
 
   /**
    * Initialize Simulation Scenario: 1 eNB and m_nUser UEs
@@ -261,8 +263,3 @@ LenaMimoTestCase::GetRlcBufferSample (Ptr<RadioBearerStatsCalculator> rlcStats, 
   m_dlDataRxed.push_back (rlcStats->GetDlRxData (imsi, lcId));
   NS_LOG_INFO (Simulator::Now () << "\t get bytes " << m_dlDataRxed.at (m_dlDataRxed.size () - 1));
 }
-
-
-
-} // namespace ns3
-

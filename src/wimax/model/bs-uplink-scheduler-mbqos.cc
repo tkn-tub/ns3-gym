@@ -29,9 +29,9 @@
 #include "bandwidth-manager.h"
 #include "connection-manager.h"
 
-NS_LOG_COMPONENT_DEFINE ("UplinkSchedulerMBQoS");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("UplinkSchedulerMBQoS");
 
 NS_OBJECT_ENSURE_REGISTERED (UplinkSchedulerMBQoS);
 
@@ -57,6 +57,8 @@ UplinkSchedulerMBQoS::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::UplinkSchedulerMBQoS")
 
     .SetParent<UplinkScheduler> ()
+
+    .SetGroupName("Wimax")
 
     .AddAttribute ("WindowInterval",
                    "The time to wait to reset window",
@@ -311,7 +313,7 @@ UplinkSchedulerMBQoS::Schedule (void)
                         (*(ssRecord->GetServiceFlows (ServiceFlow::SF_TYPE_UGS).begin ()))->GetRecord ()->GetLastGrantTime ()
                         + MilliSeconds ((*(ssRecord->GetServiceFlows (ServiceFlow::SF_TYPE_UGS).begin ()))->GetUnsolicitedGrantInterval ());
 
-                      Time frame = Time ((timestamp - Simulator::Now ()) / frame_duration);
+                      int64_t frame = (timestamp - Simulator::Now ()) / frame_duration;
 
                       if (frame <= 1)
                         {
@@ -662,7 +664,7 @@ UplinkSchedulerMBQoS::CheckDeadline (uint32_t &availableSymbols)
               Time deadline = job->GetDeadline ();
               Time frame_duration = GetBs ()->GetPhy ()->GetFrameDuration ();
 
-              Time frame = Time ((deadline - Simulator::Now ()) / frame_duration);
+              int64_t frame = (deadline - Simulator::Now ()) / frame_duration;
 
               NS_LOG_DEBUG ("At " << Simulator::Now ().GetSeconds () << " reserved traffic rate: "
                                   << job->GetServiceFlow ()->GetMinReservedTrafficRate ()

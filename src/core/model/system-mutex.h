@@ -23,11 +23,19 @@
 
 #include "ptr.h"
 
+/**
+ * @file
+ * @ingroup thread
+ * System-independent mutex primitive, ns3::SystemMutex,
+ * and ns3::CriticalSection.
+ */
+
 namespace ns3 { 
 	
 class SystemMutexPrivate;
 
 /**
+ * @ingroup thread
  * @brief A class which provides a relatively platform-independent Mutual
  * Exclusion thread synchronization primitive.
  *
@@ -64,6 +72,7 @@ public:
   void Unlock ();
 	
 private:
+  /** The (system-dependent) implementation. */
   SystemMutexPrivate * m_priv;
 };
 
@@ -73,32 +82,32 @@ private:
  * When more than one SystemThread needs to access a shared resource, we
  * control access by acquiring a SystemMutex.  The CriticalSection class uses
  * the C++ scoping rules to automatically perform the required Lock and Unlock
- * operations to implement a Critical Section.
+ * operations on the shared SystemMutex to implement a Critical Section.
  *
  * If one wants to treat an entire method call as a critical section, one would
  * do something like,
- *
- * Class::Method ()
- * {
- *   CriticalSection cs (mutex);
- *   ...
- * }
- *
+ * @code
+ *   Class::Method ()
+ *   {
+ *     CriticalSection cs (mutex);
+ *     ...
+ *   }
+ * @endcode
  * In this case, the critical section is entered when the CriticalSection 
  * object is created, and the critical section is exited when the 
  * CriticalSection object goes out of scope at the end of the method.
  *
  * Finer granularity is achieved by using local scope blocks.
- *
- * Class::Method ()
- * {
- *   ...
+ * @code
+ *   Class::Method ()
  *   {
- *     CriticalSection cs (mutex);
+ *     ...
+ *     {
+ *       CriticalSection cs (mutex);
+ *     }
+ *     ...
  *   }
- *   ...
- * }
- *
+ * @endcode
  * Here, the critical section is entered partway through the method when the
  * CriticalSection object is created in the local scope block (the braces).
  * The critical section is exited when the CriticalSection object goes out of
@@ -109,10 +118,16 @@ private:
 class CriticalSection
 {
 public:
+  /**
+   * Construct with the required SystemMutex.
+   *
+   * @param [in] mutex The mutex.
+   */
   CriticalSection (SystemMutex &mutex);
+  /** Destructor */
   ~CriticalSection ();
 private:
-  SystemMutex &m_mutex;
+  SystemMutex &m_mutex;  /**< The mutex. */
 };
 
 } // namespace ns3

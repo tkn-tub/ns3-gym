@@ -28,10 +28,9 @@
 #include "ns3/lte-rlc-sap.h"
 // #include "ff-mac-sched-sap.h"
 
-NS_LOG_COMPONENT_DEFINE ("LteRlc");
-
 namespace ns3 {
 
+NS_LOG_COMPONENT_DEFINE ("LteRlc");
 
 
 ///////////////////////////////////////
@@ -103,12 +102,15 @@ TypeId LteRlc::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::LteRlc")
     .SetParent<Object> ()
+    .SetGroupName("Lte")
     .AddTraceSource ("TxPDU",
                      "PDU transmission notified to the MAC.",
-                     MakeTraceSourceAccessor (&LteRlc::m_txPdu))
+                     MakeTraceSourceAccessor (&LteRlc::m_txPdu),
+                     "ns3::LteRlc::NotifyTxTracedCallback")
     .AddTraceSource ("RxPDU",
                      "PDU received.",
-                     MakeTraceSourceAccessor (&LteRlc::m_rxPdu))
+                     MakeTraceSourceAccessor (&LteRlc::m_rxPdu),
+                     "ns3::LteRlc::ReceiveTracedCallback")
     ;
   return tid;
 }
@@ -184,6 +186,7 @@ LteRlcSm::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::LteRlcSm")
     .SetParent<LteRlc> ()
+    .SetGroupName("Lte")
     .AddConstructor<LteRlcSm> ()
     ;
   return tid;

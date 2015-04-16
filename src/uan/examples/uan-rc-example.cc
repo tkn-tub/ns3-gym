@@ -67,7 +67,6 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("UanRcExample");
 
-
 Experiment::Experiment () 
   : m_simMin (1),
     m_simMax (1),
@@ -174,7 +173,6 @@ Experiment::Run (uint32_t param)
               "NumberOfRates", UintegerValue (m_numRates),
               "NumberOfNodes", UintegerValue (nNodes),
               "MaxReservations", UintegerValue (a),
-              "RetryRate", DoubleValue (1/30.0),
               "SIFS", TimeValue (m_sifs),
               "MaxPropDelay", TimeValue (pDelay),
               "FrameSize", UintegerValue (m_pktSize));
@@ -186,8 +184,7 @@ Experiment::Run (uint32_t param)
 
   uan.SetMac ("ns3::UanMacRc",
               "NumberOfRates", UintegerValue (m_numRates),
-              "MaxPropDelay", TimeValue (pDelay),
-              "RetryRate", DoubleValue (1.0/100.0));
+              "MaxPropDelay", TimeValue (pDelay));
   NodeContainer nodes;
   nodes.Create (nNodes);
   NetDeviceContainer devices = uan.Install (nodes, chan);
@@ -264,7 +261,7 @@ main (int argc, char *argv[])
   cmd.AddValue ("MaxRange", "Maximum range between gateway and acoustic node", exp.m_maxRange);
   cmd.AddValue ("SimMin", "Minimum parameter to test (nodes if DoNode=1, \"a\" param otherwise)", exp.m_simMin);
   cmd.AddValue ("SimMax", "Maximum parameter to test (nodes if DoNode=1, \"a\" param otherwise)", exp.m_simMax);
-  cmd.AddValue ("SimStep", "Ammount to increment param per trial", exp.m_simStep);
+  cmd.AddValue ("SimStep", "Amount to increment param per trial", exp.m_simStep);
   cmd.AddValue ("DataFile", "Filename for GnuPlot", exp.m_gnuplotfile);
   cmd.AddValue ("NumberNodes", "Number of nodes (invalid for doNode=1)", exp.m_numNodes);
   cmd.AddValue ("SIFS", "SIFS time duration", exp.m_sifs);

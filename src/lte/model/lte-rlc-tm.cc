@@ -25,9 +25,9 @@
 #include "ns3/lte-rlc-tm.h"
 #include "ns3/lte-rlc-tag.h"
 
-NS_LOG_COMPONENT_DEFINE ("LteRlcTm");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("LteRlcTm");
 
 NS_OBJECT_ENSURE_REGISTERED (LteRlcTm);
 
@@ -48,6 +48,7 @@ LteRlcTm::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::LteRlcTm")
     .SetParent<LteRlc> ()
+    .SetGroupName("Lte")
     .AddConstructor<LteRlcTm> ()
     .AddAttribute ("MaxTxBufferSize",
                    "Maximum Size of the Transmission Buffer (in Bytes)",

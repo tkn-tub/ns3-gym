@@ -34,9 +34,9 @@
 #include "ns3/trace-helper.h"
 #include "point-to-point-helper.h"
 
-NS_LOG_COMPONENT_DEFINE ("PointToPointHelper");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("PointToPointHelper");
 
 PointToPointHelper::PointToPointHelper ()
 {
@@ -241,6 +241,7 @@ PointToPointHelper::Install (Ptr<Node> a, Ptr<Node> b)
   //use a normal p2p channel, otherwise use a remote channel
   bool useNormalChannel = true;
   Ptr<PointToPointChannel> channel = 0;
+
   if (MpiInterface::IsEnabled ())
     {
       uint32_t n1SystemId = a->GetSystemId ();

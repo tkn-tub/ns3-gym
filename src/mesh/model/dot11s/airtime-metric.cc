@@ -26,6 +26,7 @@
 namespace ns3 {
 namespace dot11s {
 NS_OBJECT_ENSURE_REGISTERED (AirtimeLinkMetricCalculator);
+  
 TypeId
 AirtimeLinkMetricCalculator::GetTypeId ()
 {
@@ -46,18 +47,10 @@ AirtimeLinkMetricCalculator::GetTypeId ()
                       &AirtimeLinkMetricCalculator::SetHeaderTid),
                     MakeUintegerChecker<uint8_t> (0)
                     )
-    .AddAttribute ( "Dot11sMeshHeaderLength",
-                    "Length of the mesh header",
-                    UintegerValue (6),
-                    MakeUintegerAccessor (
-                      &AirtimeLinkMetricCalculator::m_meshHeaderLength),
-                    MakeUintegerChecker<uint16_t> (0)
-                    )
   ;
   return tid;
 }
-AirtimeLinkMetricCalculator::AirtimeLinkMetricCalculator () :
-  m_overheadNanosec (0)
+AirtimeLinkMetricCalculator::AirtimeLinkMetricCalculator ()
 {
 }
 void
@@ -102,7 +95,7 @@ AirtimeLinkMetricCalculator::CalculateMetric (Mac48Address peerAddress, Ptr<Mesh
   //calculate metric
   uint32_t metric = (uint32_t)((double)( /*Overhead + payload*/
                                  mac->GetPifs () + mac->GetSlot () + mac->GetEifsNoDifs () + //DIFS + SIFS + AckTxTime = PIFS + SLOT + EifsNoDifs
-                                 mac->GetWifiPhy ()->CalculateTxDuration (m_testFrame->GetSize (), txVector, WIFI_PREAMBLE_LONG)
+                                 mac->GetWifiPhy ()->CalculateTxDuration (m_testFrame->GetSize (), txVector, WIFI_PREAMBLE_LONG, mac->GetWifiPhy ()->GetFrequency(), 0, 0)
                                  ).GetMicroSeconds () / (10.24 * (1.0 - failAvg)));
   return metric;
 }

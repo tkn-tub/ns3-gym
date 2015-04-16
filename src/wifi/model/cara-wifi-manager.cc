@@ -27,11 +27,16 @@
 
 #define Min(a,b) ((a < b) ? a : b)
 
-NS_LOG_COMPONENT_DEFINE ("Cara");
-
-
 namespace ns3 {
 
+NS_LOG_COMPONENT_DEFINE ("Cara");
+
+/**
+ * \brief hold per-remote-station state for CARA Wifi manager.
+ *
+ * This struct extends from WifiRemoteStation struct to hold additional
+ * information required by the CARA Wifi manager
+ */
 struct CaraWifiRemoteStation : public WifiRemoteStation
 {
   uint32_t m_timer;
@@ -47,6 +52,7 @@ CaraWifiManager::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::CaraWifiManager")
     .SetParent<WifiRemoteStationManager> ()
+    .SetGroupName ("Wifi")
     .AddConstructor<CaraWifiManager> ()
     .AddAttribute ("ProbeThreshold",
                    "The number of consecutive transmissions failure to activate the RTS probe.",
@@ -171,7 +177,7 @@ CaraWifiManager::DoGetDataTxVector (WifiRemoteStation *st,
 {
   NS_LOG_FUNCTION (this << st << size);
   CaraWifiRemoteStation *station = (CaraWifiRemoteStation *) st;
-  return WifiTxVector (GetSupported (station, station->m_rate), GetDefaultTxPowerLevel (), GetLongRetryCount (station), GetShortGuardInterval (station), Min (GetNumberOfReceiveAntennas (station),GetNumberOfTransmitAntennas()), GetNumberOfTransmitAntennas (station), GetStbc (station));
+  return WifiTxVector (GetSupported (station, station->m_rate), GetDefaultTxPowerLevel (), GetLongRetryCount (station), GetShortGuardInterval (station), Min (GetNumberOfReceiveAntennas (station),GetNumberOfTransmitAntennas()), GetNess (station), GetStbc (station));
 }
 WifiTxVector
 CaraWifiManager::DoGetRtsTxVector (WifiRemoteStation *st)
@@ -179,7 +185,7 @@ CaraWifiManager::DoGetRtsTxVector (WifiRemoteStation *st)
   NS_LOG_FUNCTION (this << st);
   /// \todo we could/should implement the Arf algorithm for
   /// RTS only by picking a single rate within the BasicRateSet.
-  return WifiTxVector (GetSupported (st, 0), GetDefaultTxPowerLevel (), GetLongRetryCount (st), GetShortGuardInterval (st), Min (GetNumberOfReceiveAntennas (st),GetNumberOfTransmitAntennas()), GetNumberOfTransmitAntennas (st), GetStbc (st));
+  return WifiTxVector (GetSupported (st, 0), GetDefaultTxPowerLevel (), GetLongRetryCount (st), GetShortGuardInterval (st), Min (GetNumberOfReceiveAntennas (st),GetNumberOfTransmitAntennas()), GetNess (st), GetStbc (st));
 }
 
 bool

@@ -45,6 +45,7 @@ RlcTag::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::RlcTag")
     .SetParent<Tag> ()
+    .SetGroupName("Lte")
     .AddConstructor<RlcTag> ();
   return tid;
 }

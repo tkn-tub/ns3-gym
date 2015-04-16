@@ -32,7 +32,7 @@ NS_LOG_COMPONENT_DEFINE ("TopologyReaderHelper");
 
 TopologyReaderHelper::TopologyReaderHelper ()
 {
-  m_inFile = 0;
+  m_inputModel = 0;
 }
 
 void
@@ -51,7 +51,7 @@ TopologyReaderHelper::SetFileType (const std::string fileType)
 Ptr<TopologyReader>
 TopologyReaderHelper::GetTopologyReader ()
 {
-  if (!m_inFile)
+  if (!m_inputModel)
     {
       NS_ASSERT_MSG (!m_fileType.empty (), "Missing File Type");
       NS_ASSERT_MSG (!m_fileName.empty (), "Missing File Name");
@@ -59,26 +59,26 @@ TopologyReaderHelper::GetTopologyReader ()
       if (m_fileType == "Orbis")
         {
           NS_LOG_INFO ("Creating Orbis formatted data input.");
-          m_inFile = CreateObject<OrbisTopologyReader> ();
+          m_inputModel = CreateObject<OrbisTopologyReader> ();
         }
       else if (m_fileType == "Inet")
         {
           NS_LOG_INFO ("Creating Inet formatted data input.");
-          m_inFile = CreateObject<InetTopologyReader> ();
+          m_inputModel = CreateObject<InetTopologyReader> ();
         }
       else if (m_fileType == "Rocketfuel")
         {
           NS_LOG_INFO ("Creating Rocketfuel formatted data input.");
-          m_inFile = CreateObject<RocketfuelTopologyReader> ();
+          m_inputModel = CreateObject<RocketfuelTopologyReader> ();
         }
       else
         {
           NS_ASSERT_MSG (false, "Wrong (unknown) File Type");
         }
 
-      m_inFile->SetFileName (m_fileName);
+      m_inputModel->SetFileName (m_fileName);
     }
-  return m_inFile;
+  return m_inputModel;
 }
 
 

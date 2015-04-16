@@ -28,8 +28,35 @@
 #include "fatal-impl.h"
 
 /**
- * \ingroup debugging
- * \brief fatal error handling
+ * \file
+ * \ingroup fatal
+ * \brief \c NS_FATAL_x macro definitions.
+ */
+
+/**
+ * \ingroup core
+ * \defgroup fatal Fatal Error Handlers
+ *
+ * \brief Functions to help clean up when a fatal error
+ * is encountered.
+ *
+ * The functions in this group are used to perform
+ * limited clean up, like flushing active streams, when
+ * fatal errors are encountered (through assertion fail,
+ * calls to NS_ABORT_* or calls to NS_FATAL_ERROR).
+ *
+ * Currently, other than flushing active ostreams, these
+ * functions does not interfere with outside memory.  There
+ * is still a residual risk that invalid ostream
+ * pointers may be present, and may corrupt the memory
+ * on the attempt to execute the flush() function.
+ */
+
+
+/**
+ * \ingroup fatal
+ *
+ * \brief Fatal error handling
  *
  * When this macro is hit at runtime, details of filename
  * and line number is printed to stderr, and the program
@@ -52,8 +79,9 @@
   while (false)
 
 /**
- * \ingroup debugging
- * \brief fatal error handling
+ * \ingroup fatal
+ *
+ * \brief Fatal error handling
  *
  * \param msg message to output when this macro is hit.
  *

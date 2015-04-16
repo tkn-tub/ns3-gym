@@ -36,9 +36,10 @@
 #include "ns3/socket.h"
 #include "ns3/log.h"
 
-NS_LOG_COMPONENT_DEFINE ("PassiveBuffer");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("PassiveBuffer");
+  
 namespace dsr {
 
 NS_OBJECT_ENSURE_REGISTERED (PassiveBuffer);
@@ -116,7 +117,7 @@ PassiveBuffer::AllEqual (PassiveBuffEntry & entry)
           && (i->GetDestination () == entry.GetDestination ()) && (i->GetIdentification () == entry.GetIdentification ()) && (i->GetFragmentOffset () == entry.GetFragmentOffset ())
           && (i->GetSegsLeft () == entry.GetSegsLeft () + 1))
         {
-          m_passiveBuffer.erase (i);   // Erase the same maintain buffer entry for the received packet
+          i = m_passiveBuffer.erase (i);   // Erase the same maintain buffer entry for the received packet
           return true;
         }
     }
@@ -135,7 +136,7 @@ PassiveBuffer::Dequeue (Ipv4Address dst, PassiveBuffEntry & entry)
       if (i->GetDestination () == dst)
         {
           entry = *i;
-          m_passiveBuffer.erase (i);
+          i = m_passiveBuffer.erase (i);
           NS_LOG_DEBUG ("Packet size while dequeuing " << entry.GetPacket ()->GetSize ());
           return true;
         }

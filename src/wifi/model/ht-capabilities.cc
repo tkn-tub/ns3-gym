@@ -23,10 +23,9 @@
 #include "ns3/log.h"
 
 
-NS_LOG_COMPONENT_DEFINE ("HtCapabilities");
-
 namespace ns3 {
 
+NS_LOG_COMPONENT_DEFINE ("HtCapabilities");
 
 HtCapabilities::HtCapabilities ()
    :  m_ldpc(0),
@@ -314,9 +313,10 @@ ATTRIBUTE_HELPER_CPP (HtCapabilities);
 std::ostream &
 operator << (std::ostream &os, const HtCapabilities &htcapabilities)
 {
-  os <<  htcapabilities.GetLdpc () << "|" << htcapabilities.GetSupportedChannelWidth ()
-  << "|" << htcapabilities.GetGreenfield ()
-  << "|" << htcapabilities.GetShortGuardInterval20 ();
+  os <<  bool (htcapabilities.GetLdpc ())
+     << "|" << bool (htcapabilities.GetSupportedChannelWidth ())
+     << "|" << bool (htcapabilities.GetGreenfield ())
+     << "|" << bool (htcapabilities.GetShortGuardInterval20 ());
 
   return os;
 }

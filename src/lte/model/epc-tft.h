@@ -124,7 +124,7 @@ public:
   /** 
    * add a PacketFilter to the Traffic Flow Template
    * 
-   * \param the PacketFilter to be added
+   * \param f the PacketFilter to be added
    * 
    * \return the id( 0 <= id < 16) of the newly added filter, if the addition was successful. Will fail if you try to add more than 15 filters. This is to be compliant with TS 24.008.
    */

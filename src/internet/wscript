@@ -14,10 +14,17 @@ def options(opt):
                    help=('Use Network Simulation Cradle, given by the indicated path,'
                          ' to allow the use of real-world network stacks'),
                    default='', dest='with_nsc')
-
+    opt.add_option('--disable-nsc',
+                   help=('Disable Network Simulation Cradle support'),
+                   dest='disable_nsc', default=False, action="store_true")
 
 def configure(conf):
     conf.env['ENABLE_NSC'] = False
+
+    if Options.options.disable_nsc:
+        conf.report_optional_feature("nsc", "Network Simulation Cradle", False,
+                                     "disabled by user request")
+        return
 
     # checks for flex and bison, which is needed to build NSCs globaliser
     # TODO: how to move these checks into the allinone scripts?
@@ -145,6 +152,10 @@ def build(bld):
         'model/tcp-westwood.cc',
         'model/tcp-rx-buffer.cc',
         'model/tcp-tx-buffer.cc',
+        'model/tcp-option.cc',
+        'model/tcp-option-rfc793.cc',
+        'model/tcp-option-winscale.cc',
+        'model/tcp-option-ts.cc',
         'model/ipv4-packet-info-tag.cc',
         'model/ipv6-packet-info-tag.cc',
         'model/ipv4-interface-address.cc',
@@ -178,6 +189,7 @@ def build(bld):
         'model/global-route-manager.cc',
         'model/global-route-manager-impl.cc',
         'model/candidate-queue.cc',
+        'model/codel-queue.cc',
         'model/ipv4-global-routing.cc',
         'helper/ipv4-global-routing-helper.cc',
         'helper/internet-stack-helper.cc',
@@ -192,6 +204,9 @@ def build(bld):
         'model/ipv4-packet-probe.cc',
         'model/ipv6-packet-probe.cc',
         'model/ipv6-pmtu-cache.cc',
+        'model/ripng.cc',
+        'model/ripng-header.cc',
+        'helper/ripng-helper.cc',
         ]
 
     internet_test = bld.create_ns3_module_test_library('internet')
@@ -206,27 +221,42 @@ def build(bld):
         'test/ipv4-fragmentation-test.cc',
         'test/ipv4-forwarding-test.cc',
         'test/error-channel.cc',
-        'test/error-net-device.cc',
         'test/ipv4-test.cc',
+        'test/ipv4-static-routing-test-suite.cc',
+        'test/ipv4-global-routing-test-suite.cc',
         'test/ipv6-extension-header-test-suite.cc',
         'test/ipv6-list-routing-test-suite.cc',
         'test/ipv6-packet-info-tag-test-suite.cc',
         'test/ipv6-test.cc',
         'test/ipv6-raw-test.cc',
         'test/tcp-test.cc',
+        'test/tcp-timestamp-test.cc',
+        'test/tcp-wscaling-test.cc',
+        'test/tcp-option-test.cc',
+        'test/tcp-header-test.cc',
         'test/udp-test.cc',
         'test/ipv6-address-generator-test-suite.cc',
         'test/ipv6-dual-stack-test-suite.cc',
         'test/ipv6-fragmentation-test.cc',
         'test/ipv6-forwarding-test.cc',
-        'test/ipv6-address-helper-test-suite.cc',
+        'test/ipv6-ripng-test.cc',
+     	'test/ipv6-address-helper-test-suite.cc',
         'test/rtt-test.cc',
+        'test/codel-queue-test-suite.cc',
+        ]
+    privateheaders = bld(features='ns3privateheader')
+    privateheaders.module = 'internet'
+    privateheaders.source = [
+        'model/tcp-option-winscale.h',
+        'model/tcp-option-ts.h',
+        'model/tcp-option-rfc793.h',
         ]
     headers = bld(features='ns3header')
     headers.module = 'internet'
     headers.source = [
         'model/udp-header.h',
         'model/tcp-header.h',
+        'model/tcp-option.h',
         'model/icmpv4.h',
         'model/icmpv6-header.h',
         # used by routing
@@ -283,6 +313,7 @@ def build(bld):
         'model/global-route-manager.h',
         'model/global-route-manager-impl.h',
         'model/candidate-queue.h',
+        'model/codel-queue.h',
         'model/ipv4-global-routing.h',
         'helper/ipv4-global-routing-helper.h',
         'helper/internet-stack-helper.h',
@@ -306,6 +337,9 @@ def build(bld):
         'model/ipv4-packet-probe.h',
         'model/ipv6-packet-probe.h',
         'model/ipv6-pmtu-cache.h',
+        'model/ripng.h',
+        'model/ripng-header.h',
+        'helper/ripng-helper.h',
        ]
 
     if bld.env['NSC_ENABLED']:

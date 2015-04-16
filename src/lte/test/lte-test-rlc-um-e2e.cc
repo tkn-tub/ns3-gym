@@ -36,10 +36,9 @@
 #include "lte-test-rlc-um-e2e.h"
 
 
+using namespace ns3;
+
 NS_LOG_COMPONENT_DEFINE ("LteRlcUmE2eTest");
-
-namespace ns3 {
-
 
 /**
  * Test x.x.x RLC UM: End-to-end flow
@@ -233,6 +232,3 @@ LteRlcUmE2eTestCase::DoRun (void)
 
   Simulator::Destroy ();
 }
-
-} // namespace ns3
-

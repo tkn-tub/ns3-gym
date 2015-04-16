@@ -51,16 +51,14 @@ class CandidateQueue
 public:
 /**
  * @brief Create an empty SPF Candidate Queue.
- * @internal
  *
  * @see SPFVertex
  */
   CandidateQueue ();
 
 /**
- * @internal Destroy an SPF Candidate Queue and release any resources held 
+ * @brief Destroy an SPF Candidate Queue and release any resources held 
  * by the contents.
- * @internal
  *
  * @see SPFVertex
  */
@@ -69,7 +67,6 @@ public:
 /**
  * @brief Empty the Candidate Queue and release all of the resources 
  * associated with the Shortest Path First Vertex pointers in the queue.
- * @internal
  *
  * @see SPFVertex
  */
@@ -78,7 +75,6 @@ public:
 /**
  * @brief Push a Shortest Path First Vertex pointer onto the queue according
  * to the priority scheme.
- * @internal
  * 
  * On completion, the top of the queue will hold the Shortest Path First
  * Vertex pointer that points to a vertex having lowest value of the field
@@ -92,7 +88,6 @@ public:
 
 /**
  * @brief Pop the Shortest Path First Vertex pointer at the top of the queue.
- * @internal
  *
  * The caller is given the responsibility for releasing the resources 
  * associated with the vertex.
@@ -106,7 +101,6 @@ public:
 /**
  * @brief Return the Shortest Path First Vertex pointer at the top of the 
  * queue.
- * @internal
  *
  * This method does not pop the SPFVertex* off of the queue, it simply 
  * returns the pointer.
@@ -119,7 +113,6 @@ public:
 
 /**
  * @brief Test the Candidate Queue to determine if it is empty.
- * @internal
  *
  * @returns True if the queue is empty, false otherwise.
  */
@@ -128,7 +121,6 @@ public:
 /**
  * @brief Return the number of Shortest Path First Vertex pointers presently
  * stored in the Candidate Queue.
- * @internal
  *
  * @see SPFVertex
  * @returns The number of SPFVertex* pointers in the Candidate Queue.
@@ -138,7 +130,6 @@ public:
 /**
  * @brief Searches the Candidate Queue for a Shortest Path First Vertex 
  * pointer that points to a vertex having the given IP address.
- * @internal
  *
  * @see SPFVertex
  * @param addr The IP address to search for.
@@ -148,7 +139,6 @@ public:
 
 /**
  * @brief Reorders the Candidate Queue according to the priority scheme.
- * @internal
  * 
  * On completion, the top of the queue will hold the Shortest Path First
  * Vertex pointer that points to a vertex having lowest value of the field
@@ -176,6 +166,7 @@ private:
  * prevent the compiler from slipping in incorrect versions that don't
  * properly deal with deep copies.
  * \param sr object to assign
+ * \return copied object
  */
   CandidateQueue& operator= (CandidateQueue& sr);
 /**
@@ -185,13 +176,22 @@ private:
  * defined by this method. If v1 should be popped before v2, this 
  * method return true; false otherwise
  *
+ * \param v1 first operand
+ * \param v2 second operand
  * \return True if v1 should be popped before v2; false otherwise
  */
   static bool CompareSPFVertex (const SPFVertex* v1, const SPFVertex* v2);
 
-  typedef std::list<SPFVertex*> CandidateList_t;
-  CandidateList_t m_candidates;
+  typedef std::list<SPFVertex*> CandidateList_t; //!< container of SPFVertex pointers
+  CandidateList_t m_candidates;  //!< SPFVertex candidates
 
+  /**
+   * \brief Stream insertion operator.
+   *
+   * \param os the reference to the output stream
+   * \param q the CandidateQueue
+   * \returns the reference to the output stream
+   */
   friend std::ostream& operator<< (std::ostream& os, const CandidateQueue& q);
 };
 

@@ -75,6 +75,8 @@ public:
    */
   NixVector (const NixVector &o);
   /**
+   * \return a reference to the assignee
+   *
    * \param o the NixVector to copy to a new NixVector using the
    *          equals operator
    */
@@ -150,38 +152,58 @@ public:
 
 
 private:
+  /// Typedef: the NixVector bits storage.
   typedef std::vector<uint32_t> NixBits_t;
 
+  /**
+   * \brief Print the NixVector.
+   *
+   * \param os the output stream
+   */
   /* for printing of nix-vector */
   void DumpNixVector (std::ostream &os) const;
-  /* for printing of nix-vector */
-  friend std::ostream & operator << ( std::ostream &outs, const NixVector &nix);
 
-  /* the actual nix-vector */
-  NixBits_t m_nixVector;
-
-  /* for tracking where we are
-   * in the nix-vector
+  /**
+   * \brief Stream insertion operator.
+   *
+   * \param os the stream
+   * \param nix the Nixvector
+   * \returns a reference to the stream
    */
-  uint32_t m_used;
+  friend std::ostream & operator << ( std::ostream &os, const NixVector &nix);
 
-  /* for tracking how many bits we
+  NixBits_t m_nixVector; //!< the actual nix-vector
+  uint32_t m_used; //!< For tracking where we are in the nix-vector
+
+  /**
+   * For tracking how many bits we
    * have used in the current vector
    * entry. need this in order to
    * expand the vector passed 32bits
    */
   uint32_t m_currentVectorBitSize;
 
-  /* a counter of how total bits are in
+  /**
+   * A counter of how total bits are in
    * the nix-vector
    */
   uint32_t m_totalBitSize;
 
-  /* internal for pretty printing of nix-vector */
-  void PrintDec2BinNixFill (uint32_t, uint32_t, std::ostream &os) const;
+  /**
+   * Internal for pretty printing of nix-vector (fill)
+   * \param decimalNum decimal divider
+   * \param bitCount bit counter
+   * \param os output stream
+   */
+  void PrintDec2BinNixFill (uint32_t decimalNum, uint32_t bitCount, std::ostream &os) const;
 
-  /* internal for pretty printing of nix-vector */
-  void PrintDec2BinNix (uint32_t, uint32_t, std::ostream &os) const;
+  /**
+   * Internal for pretty printing of nix-vector (no fill)
+   * \param decimalNum decimal divider
+   * \param bitCount bit counter
+   * \param os output stream
+   */
+  void PrintDec2BinNix (uint32_t decimalNum, uint32_t bitCount, std::ostream &os) const;
 };
 } // namespace ns3
 

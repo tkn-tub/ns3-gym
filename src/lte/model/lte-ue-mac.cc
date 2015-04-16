@@ -25,7 +25,7 @@
 #include <ns3/pointer.h>
 #include <ns3/packet.h>
 #include <ns3/packet-burst.h>
-#include <ns3/random-variable.h>
+#include <ns3/random-variable-stream.h>
 
 #include "lte-ue-mac.h"
 #include "lte-ue-net-device.h"
@@ -37,9 +37,9 @@
 
 
 
-NS_LOG_COMPONENT_DEFINE ("LteUeMac");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("LteUeMac");
 
 NS_OBJECT_ENSURE_REGISTERED (LteUeMac);
 
@@ -195,6 +195,7 @@ LteUeMac::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::LteUeMac")
     .SetParent<Object> ()
+    .SetGroupName("Lte")
     .AddConstructor<LteUeMac> ();
   return tid;
 }
@@ -297,7 +298,7 @@ LteUeMac::DoReportBufferStatus (LteMacSapProvider::ReportBufferStatusParameters 
   
   
   it = m_ulBsrReceived.find (params.lcid);
-  if (it!=m_ulBsrReceived.end ())
+  if (it != m_ulBsrReceived.end ())
     {
       // update entry
       (*it).second = params;
@@ -527,6 +528,8 @@ LteUeMac::DoReset ()
           m_lcInfoMap.erase (it++);
         }
     }
+
+  m_noRaResponseReceivedEvent.Cancel ();
   m_rachConfigured = false;
   m_freshUlBsr = false;
   m_ulBsrReceived.clear ();
@@ -541,8 +544,14 @@ LteUeMac::DoReceivePhyPdu (Ptr<Packet> p)
     {
       // packet is for the current user
       std::map <uint8_t, LcInfo>::const_iterator it = m_lcInfoMap.find (tag.GetLcid ());
-      NS_ASSERT_MSG (it != m_lcInfoMap.end (), "received packet with unknown lcid");
-      it->second.macSapUser->ReceivePdu (p);
+      if (it != m_lcInfoMap.end ())
+        {
+          it->second.macSapUser->ReceivePdu (p);
+        }
+      else
+        {
+          NS_LOG_WARN ("received packet with unknown lcid " << (uint32_t) tag.GetLcid ());
+        }
     }
 }
 
@@ -555,7 +564,7 @@ LteUeMac::DoReceiveLteControlMessage (Ptr<LteControlMessage> msg)
     {
       Ptr<UlDciLteControlMessage> msg2 = DynamicCast<UlDciLteControlMessage> (msg);
       UlDciListElement_s dci = msg2->GetDci ();
-      if (dci.m_ndi==1)
+      if (dci.m_ndi == 1)
         {
           // New transmission -> emtpy pkt buffer queue (for deleting eventual pkts not acked )
           Ptr<PacketBurst> pb = CreateObject <PacketBurst> ();
@@ -569,11 +578,11 @@ LteUeMac::DoReceiveLteControlMessage (Ptr<LteControlMessage> msg)
               if (((*itBsr).second.statusPduSize > 0) || ((*itBsr).second.retxQueueSize > 0) || ((*itBsr).second.txQueueSize > 0))
                 {
                   activeLcs++;
-                  if (((*itBsr).second.statusPduSize!=0)&&((*itBsr).second.statusPduSize < statusPduMinSize))
+                  if (((*itBsr).second.statusPduSize != 0)&&((*itBsr).second.statusPduSize < statusPduMinSize))
                     {
                       statusPduMinSize = (*itBsr).second.statusPduSize;
                     }
-                  if (((*itBsr).second.statusPduSize!=0)&&(statusPduMinSize == 0))
+                  if (((*itBsr).second.statusPduSize != 0)&&(statusPduMinSize == 0))
                     {
                       statusPduMinSize = (*itBsr).second.statusPduSize;
                     }
@@ -598,14 +607,14 @@ LteUeMac::DoReceiveLteControlMessage (Ptr<LteControlMessage> msg)
                 }
             }
           NS_LOG_LOGIC (this << " UE " << m_rnti << ": UL-CQI notified TxOpportunity of " << dci.m_tbSize << " => " << bytesPerActiveLc << " bytes per active LC" << " statusPduMinSize " << statusPduMinSize);
-          for (it = m_lcInfoMap.begin (); it!=m_lcInfoMap.end (); it++)
+          for (it = m_lcInfoMap.begin (); it != m_lcInfoMap.end (); it++)
             {
               itBsr = m_ulBsrReceived.find ((*it).first);
               NS_LOG_DEBUG (this << " Processing LC " << (uint32_t)(*it).first << " bytesPerActiveLc " << bytesPerActiveLc);
-              if ( (itBsr!=m_ulBsrReceived.end ()) &&
-                  ( ((*itBsr).second.statusPduSize > 0) ||
-                  ((*itBsr).second.retxQueueSize > 0) ||
-                  ((*itBsr).second.txQueueSize > 0)) )
+              if ( (itBsr != m_ulBsrReceived.end ())
+                   && ( ((*itBsr).second.statusPduSize > 0)
+                        || ((*itBsr).second.retxQueueSize > 0)
+                        || ((*itBsr).second.txQueueSize > 0)) )
                 {
                   if ((statusPduPriority) && ((*itBsr).second.statusPduSize == statusPduMinSize))
                     {
@@ -627,15 +636,15 @@ LteUeMac::DoReceiveLteControlMessage (Ptr<LteControlMessage> msg)
                         }
                       else
                         {
-                          if ((*itBsr).second.statusPduSize>bytesForThisLc)
+                          if ((*itBsr).second.statusPduSize > bytesForThisLc)
                             {
                               NS_FATAL_ERROR ("Insufficient Tx Opportunity for sending a status message");
                             }
                         }
                         
-                      if ((bytesForThisLc > 7) && // 7 is the min TxOpportunity useful for Rlc
-                         (((*itBsr).second.retxQueueSize > 0) ||
-                         ((*itBsr).second.txQueueSize > 0)))
+                      if ((bytesForThisLc > 7)    // 7 is the min TxOpportunity useful for Rlc
+                          && (((*itBsr).second.retxQueueSize > 0)
+                              || ((*itBsr).second.txQueueSize > 0)))
                         {
                           if ((*itBsr).second.retxQueueSize > 0)
                             {
@@ -769,7 +778,7 @@ LteUeMac::DoSubframeIndication (uint32_t frameNo, uint32_t subframeNo)
   m_frameNo = frameNo;
   m_subframeNo = subframeNo;
   RefreshHarqProcessesPacketBuffer ();
-  if ((Simulator::Now () >= m_bsrLast + m_bsrPeriodicity) && (m_freshUlBsr==true))
+  if ((Simulator::Now () >= m_bsrLast + m_bsrPeriodicity) && (m_freshUlBsr == true))
     {
       SendReportBufferStatus ();
       m_bsrLast = Simulator::Now ();

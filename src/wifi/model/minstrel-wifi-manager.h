@@ -56,10 +56,6 @@ struct RateInfo
    */
   uint32_t ewmaProb;
 
-  uint32_t prevNumRateAttempt;  ///< from last rate
-  uint32_t prevNumRateSuccess;  ///< from last rate
-  uint64_t successHist;  ///< aggregate of all successes
-  uint64_t attemptHist;  ///< aggregate of all attempts
   uint32_t throughput;  ///< throughput of a rate
 };
 
@@ -117,12 +113,21 @@ private:
                                double ackSnr, WifiMode ackMode, double dataSnr);
   virtual void DoReportFinalRtsFailed (WifiRemoteStation *station);
   virtual void DoReportFinalDataFailed (WifiRemoteStation *station);
- virtual WifiTxVector DoGetDataTxVector (WifiRemoteStation *station, uint32_t size);
+  virtual WifiTxVector DoGetDataTxVector (WifiRemoteStation *station, uint32_t size);
   virtual WifiTxVector DoGetRtsTxVector (WifiRemoteStation *station);
+
+  virtual bool DoNeedDataRetransmission (WifiRemoteStation *st, Ptr<const Packet> packet, bool normally);
+
   virtual bool IsLowLatency (void) const;
 
   /// for estimating the TxTime of a packet with a given mode
   Time GetCalcTxTime (WifiMode mode) const;
+  /**
+   * Add transmission time for the given mode to an internal list.
+   *
+   * \param mode Wi-Fi mode
+   * \param t transmission time
+   */
   void AddCalcTxTime (WifiMode mode, Time t);
 
   /// update the number of retries and reset accordingly
@@ -140,6 +145,24 @@ private:
   /// initialize Minstrel Table
   void RateInit (MinstrelWifiRemoteStation *station);
 
+  /**
+   * Estimate the time to transmit the given packet with the given number of retries.
+   * This function is "roughly" the function "calc_usecs_unicast_packet" in minstrel.c
+   * in the madwifi implementation.
+   *
+   * The basic idea is that, we try to estimate the "average" time used to transmit the
+   * packet for the given number of retries while also accounting for the 802.11 congestion
+   * window change. The original code in the madwifi seems to estimate the number of backoff
+   * slots as the half of the current CW size.
+   *
+   * There are four main parts:
+   *  - wait for DIFS (sense idle channel)
+   *  - ACK timeouts
+   *  - DATA transmission
+   *  - backoffs according to CW
+   */
+  Time CalculateTimeUnicastPacket (Time dataTransmissionTime, uint32_t shortRetries, uint32_t longRetries);
+
   /// initialize Sample Table
   void InitSampleTable (MinstrelWifiRemoteStation *station);
 
@@ -151,19 +174,19 @@ private:
 
   void CheckInit (MinstrelWifiRemoteStation *station);  ///< check for initializations
 
-
+  /**
+   * typedef for a vector of a pair of Time, WifiMode.
+   * (Essentially a list for WifiMode and its corresponding transmission time
+   * to transmit a reference packet.
+   */
   typedef std::vector<std::pair<Time,WifiMode> > TxTime;
-  MinstrelRate m_minstrelTable;  ///< minstrel table
-  SampleRate m_sampleTable;  ///< sample table
-
 
   TxTime m_calcTxTime;  ///< to hold all the calculated TxTime for all modes
-  Time m_updateStats;  ///< how frequent do we calculate the stats(1/10 seconds)
+  Time m_updateStats;  ///< how frequent do we calculate the stats (1/10 seconds)
   double m_lookAroundRate;  ///< the % to try other rates than our current rate
   double m_ewmaLevel;  ///< exponential weighted moving average
-  uint32_t m_segmentSize;  ///< largest allowable segment size
   uint32_t m_sampleCol;  ///< number of sample columns
-  uint32_t m_pktLen;  ///< packet length used  for calculate mode TxTime
+  uint32_t m_pktLen;  ///< packet length used for calculate mode TxTime
   uint32_t m_nsupported;  ///< modes supported
 
   /// Provides uniform random variables.

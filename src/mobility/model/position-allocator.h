@@ -35,6 +35,10 @@ namespace ns3 {
 class PositionAllocator : public Object
 {
 public:
+  /**
+   * Register this type with the TypeId system.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
   PositionAllocator ();
   virtual ~PositionAllocator ();
@@ -67,18 +71,23 @@ public:
 class ListPositionAllocator : public PositionAllocator
 {
 public:
+  /**
+   * Register this type with the TypeId system.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
   ListPositionAllocator ();
 
   /**
+   * \brief Add a position to the list of positions
    * \param v the position to append at the end of the list of positions to return from GetNext.
    */
   void Add (Vector v);
   virtual Vector GetNext (void) const;
   virtual int64_t AssignStreams (int64_t stream);
 private:
-  std::vector<Vector> m_positions;
-  mutable std::vector<Vector>::const_iterator m_current;
+  std::vector<Vector> m_positions;  //!< vector of positions
+  mutable std::vector<Vector>::const_iterator m_current; //!< vector iterator
 };
 
 /**
@@ -88,6 +97,10 @@ private:
 class GridPositionAllocator : public PositionAllocator
 {
 public:
+  /**
+   * Register this type with the TypeId system.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
 
   /**
@@ -145,11 +158,11 @@ public:
    */
   double GetMinY (void) const;
   /**
-   * \return the x interval between two x-consecutive positions.
+   * \return the x interval between two consecutive x-positions.
    */
   double GetDeltaX (void) const;
   /**
-   * \return the y interval between two y-consecutive positions.
+   * \return the y interval between two consecutive y-positions.
    */
   double GetDeltaY (void) const;
   /**
@@ -165,13 +178,13 @@ public:
   virtual Vector GetNext (void) const;
   virtual int64_t AssignStreams (int64_t stream);
 private:
-  mutable uint32_t m_current;
-  enum LayoutType m_layoutType;
-  double m_xMin;
-  double m_yMin;
-  uint32_t m_n;
-  double m_deltaX;
-  double m_deltaY;
+  mutable uint32_t m_current; //!< currently position
+  enum LayoutType m_layoutType;  //!< currently selected layout type
+  double m_xMin; //!< minimum boundary on x positions
+  double m_yMin; //!< minimum boundary on y positions
+  uint32_t m_n;  //!< number of positions to allocate on each row or column
+  double m_deltaX; //!< x interval between two consecutive x positions
+  double m_deltaY; //!< y interval between two consecutive y positions
 };
 
 /**
@@ -181,18 +194,30 @@ private:
 class RandomRectanglePositionAllocator : public PositionAllocator
 {
 public:
+  /**
+   * Register this type with the TypeId system.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
   RandomRectanglePositionAllocator ();
   virtual ~RandomRectanglePositionAllocator ();
 
+  /**
+   * \brief Set the random variable stream object that generates x-positions
+   * \param x pointer to a RandomVariableStream object
+   */
   void SetX (Ptr<RandomVariableStream> x);
+  /**
+   * \brief Set the random variable stream object that generates y-positions
+   * \param y pointer to a RandomVariableStream object
+   */
   void SetY (Ptr<RandomVariableStream> y);
 
   virtual Vector GetNext (void) const;
   virtual int64_t AssignStreams (int64_t stream);
 private:
-  Ptr<RandomVariableStream> m_x;
-  Ptr<RandomVariableStream> m_y;
+  Ptr<RandomVariableStream> m_x; //!< pointer to x's random variable stream
+  Ptr<RandomVariableStream> m_y; //!< pointer to y's random variable stream
 };
 
 /**
@@ -202,20 +227,36 @@ private:
 class RandomBoxPositionAllocator : public PositionAllocator
 {
 public:
+  /**
+   * Register this type with the TypeId system.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
   RandomBoxPositionAllocator ();
   virtual ~RandomBoxPositionAllocator ();
 
+  /**
+   * \brief Set the random variable stream object that generates x-positions
+   * \param x pointer to a RandomVariableStream object
+   */
   void SetX (Ptr<RandomVariableStream> x);
+  /**
+   * \brief Set the random variable stream object that generates y-positions
+   * \param y pointer to a RandomVariableStream object
+   */
   void SetY (Ptr<RandomVariableStream> y);
+  /**
+   * \brief Set the random variable stream object that generates z-positions
+   * \param z pointer to a RandomVariableStream object
+   */
   void SetZ (Ptr<RandomVariableStream> z);
 
   virtual Vector GetNext (void) const;
   virtual int64_t AssignStreams (int64_t stream);
 private:
-  Ptr<RandomVariableStream> m_x;
-  Ptr<RandomVariableStream> m_y;
-  Ptr<RandomVariableStream> m_z;
+  Ptr<RandomVariableStream> m_x; //!< pointer to x's random variable stream
+  Ptr<RandomVariableStream> m_y; //!< pointer to y's random variable stream
+  Ptr<RandomVariableStream> m_z; //!< pointer to z's random variable stream
 };
 
 /**
@@ -226,22 +267,40 @@ private:
 class RandomDiscPositionAllocator : public PositionAllocator
 {
 public:
+  /**
+   * Register this type with the TypeId system.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
   RandomDiscPositionAllocator ();
   virtual ~RandomDiscPositionAllocator ();
 
+  /**
+   * \brief Set the random variable that generates position radius
+   * \param theta random variable that represents the radius of a position in a random disc.
+   */
   void SetTheta (Ptr<RandomVariableStream> theta);
+  /**
+   * \brief Set the random variable that generates position angle
+   * \param rho random variable that represents the angle (gradients) of a position in a random disc.
+   */
   void SetRho (Ptr<RandomVariableStream> rho);
+  /** 
+   * \param x  the X coordinate of the center of the disc
+   */
   void SetX (double x);
+  /** 
+   * \param y   the Y coordinate of the center of the disc 
+   */
   void SetY (double y);
 
   virtual Vector GetNext (void) const;
   virtual int64_t AssignStreams (int64_t stream);
 private:
-  Ptr<RandomVariableStream> m_theta;
-  Ptr<RandomVariableStream> m_rho;
-  double m_x;
-  double m_y;
+  Ptr<RandomVariableStream> m_theta; //!< pointer to theta's random variable stream
+  Ptr<RandomVariableStream> m_rho; //!< pointer to rho's random variable stream
+  double m_x; //!< x coordinate of center of disc
+  double m_y; //!< y coordinate of center of disc
 };
 
 
@@ -265,6 +324,10 @@ private:
 class UniformDiscPositionAllocator : public PositionAllocator
 {
 public:
+  /**
+   * Register this type with the TypeId system.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
   UniformDiscPositionAllocator ();
   virtual ~UniformDiscPositionAllocator ();
@@ -287,10 +350,10 @@ public:
   virtual Vector GetNext (void) const;
   virtual int64_t AssignStreams (int64_t stream);
 private:
-  Ptr<UniformRandomVariable> m_rv;
-  double m_rho;
-  double m_x;
-  double m_y;
+  Ptr<UniformRandomVariable> m_rv;  //!< pointer to uniform random variable 
+  double m_rho; //!< value of the radius of the disc
+  double m_x;  //!< x coordinate of center of disc
+  double m_y;  //!< y coordinate of center of disc
 };
 
 } // namespace ns3

@@ -35,6 +35,7 @@
 namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("UdpEchoServerApplication");
+
 NS_OBJECT_ENSURE_REGISTERED (UdpEchoServer);
 
 TypeId
@@ -42,6 +43,7 @@ UdpEchoServer::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::UdpEchoServer")
     .SetParent<Application> ()
+    .SetGroupName("Applications")
     .AddConstructor<UdpEchoServer> ()
     .AddAttribute ("Port", "Port on which we listen for incoming packets.",
                    UintegerValue (9),

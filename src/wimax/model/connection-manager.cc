@@ -31,16 +31,17 @@
 #include "ss-net-device.h"
 #include "bs-net-device.h"
 
-NS_LOG_COMPONENT_DEFINE ("ConnectionManager");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("ConnectionManager");
 
 NS_OBJECT_ENSURE_REGISTERED (ConnectionManager);
 
 TypeId ConnectionManager::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::ConnectionManager")
-    .SetParent<Object> ();
+    .SetParent<Object> ()
+    .SetGroupName("Wimax");
   return tid;
 }
 

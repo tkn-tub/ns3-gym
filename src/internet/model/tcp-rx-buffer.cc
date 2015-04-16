@@ -23,19 +23,23 @@
 #include "ns3/log.h"
 #include "tcp-rx-buffer.h"
 
+namespace ns3 {
+
 NS_LOG_COMPONENT_DEFINE ("TcpRxBuffer");
 
-namespace ns3 {
+NS_OBJECT_ENSURE_REGISTERED (TcpRxBuffer);
 
 TypeId
 TcpRxBuffer::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::TcpRxBuffer")
     .SetParent<Object> ()
+    .SetGroupName ("Internet")
     .AddConstructor<TcpRxBuffer> ()
     .AddTraceSource ("NextRxSequence",
                      "Next sequence number expected (RCV.NXT)",
-                     MakeTraceSourceAccessor (&TcpRxBuffer::m_nextRxSeq))
+                     MakeTraceSourceAccessor (&TcpRxBuffer::m_nextRxSeq),
+                     "ns3::SequenceNumber32TracedValueCallback")
   ;
   return tid;
 }

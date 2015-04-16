@@ -43,6 +43,10 @@ class NetDevice;
 class Channel : public Object
 {
 public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
 
   Channel ();
@@ -71,7 +75,7 @@ public:
   virtual Ptr<NetDevice> GetDevice (uint32_t i) const = 0;
 
 private:
-  uint32_t m_id; // Channel id for this channel
+  uint32_t m_id; //!< Channel id for this channel
 };
 
 } // namespace ns3

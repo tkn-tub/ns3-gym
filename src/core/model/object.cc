@@ -22,7 +22,6 @@
 #include "object.h"
 #include "object-factory.h"
 #include "assert.h"
-#include "singleton.h"
 #include "attribute.h"
 #include "log.h"
 #include "string.h"
@@ -31,11 +30,15 @@
 #include <cstdlib>
 #include <cstring>
 
-
-
-NS_LOG_COMPONENT_DEFINE ("Object");
+/**
+ * \file
+ * \ingroup object
+ * ns3::Object class implementation.
+ */
 
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("Object");
 
 /*********************************************************************
  *         The Object implementation
@@ -84,6 +87,7 @@ Object::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::Object")
     .SetParent<ObjectBase> ()
+    .SetGroupName ("Core")
   ;
   return tid;
 }
@@ -368,6 +372,7 @@ Object::CheckLoose (void) const
   for (uint32_t i = 0; i < n; i++)
     {
       Object *current = m_aggregates->buffer[i];
+      /// \todo Shortcircuit this loop.
       refcount += current->GetReferenceCount ();
     }
   return (refcount > 0);

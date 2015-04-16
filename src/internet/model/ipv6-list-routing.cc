@@ -25,9 +25,9 @@
 #include "ipv6-list-routing.h"
 #include "ns3/simulator.h"
 
-NS_LOG_COMPONENT_DEFINE ("Ipv6ListRouting");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("Ipv6ListRouting");
 
 NS_OBJECT_ENSURE_REGISTERED (Ipv6ListRouting);
 
@@ -36,6 +36,7 @@ Ipv6ListRouting::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::Ipv6ListRouting")
     .SetParent<Ipv6RoutingProtocol> ()
+    .SetGroupName ("Internet")
     .AddConstructor<Ipv6ListRouting> ()
   ;
   return tid;
@@ -129,7 +130,7 @@ Ipv6ListRouting::RouteInput (Ptr<const Packet> p, const Ipv6Header &header, Ptr<
         }
 
       /* do not forward link-local multicast address */
-      if (dst == Ipv6Address::GetAllNodesMulticast () || dst == Ipv6Address::GetAllRoutersMulticast () || dst == Ipv6Address::GetAllHostsMulticast ())
+      if (dst.IsLinkLocalMulticast ())
         {
           return retVal;
         }

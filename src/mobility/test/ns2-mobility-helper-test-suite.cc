@@ -49,9 +49,9 @@
 #include "ns3/config.h"
 #include "ns3/ns2-mobility-helper.h"
 
-NS_LOG_COMPONENT_DEFINE ("ns2-mobility-helper-test-suite");
+using namespace ns3;
 
-namespace ns3 {
+NS_LOG_COMPONENT_DEFINE ("ns2-mobility-helper-test-suite");
 
 // -----------------------------------------------------------------------------
 // Testing
@@ -229,10 +229,6 @@ private:
   void DoTeardown ()
   {
     Names::Clear ();
-    if (std::remove (m_traceFile.c_str ()))
-      {
-        NS_LOG_ERROR ("Failed to delete file " << m_traceFile);
-      }
     Simulator::Destroy ();
   }
 
@@ -522,6 +518,3 @@ public:
 
   }
 } g_ns2TransmobilityHelperTestSuite;
-
-
-} // namespace ns3

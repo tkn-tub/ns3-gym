@@ -28,12 +28,12 @@
 #include "wifi-mac.h"
 #include "mac-low.h"
 
-NS_LOG_COMPONENT_DEFINE ("DcfManager");
-
 #define MY_DEBUG(x) \
   NS_LOG_DEBUG (Simulator::Now () << " " << this << " " << x)
 
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("DcfManager");
 
 /****************************************************************
  *      Implement the DCF state holder
@@ -94,7 +94,7 @@ DcfState::ResetCw (void)
 void
 DcfState::UpdateFailedCw (void)
 {
-  // see 802.11-2007, section 9.9.1.5
+  // see 802.11-2012, section 9.19.2.5
   m_cw = std::min ( 2 * (m_cw + 1) - 1, m_cwMax);
 }
 void
@@ -161,15 +161,29 @@ DcfState::NotifyChannelSwitching (void)
 {
   DoNotifyChannelSwitching ();
 }
+void
+DcfState::NotifySleep (void)
+{
+  DoNotifySleep ();
+}
+void
+DcfState::NotifyWakeUp (void)
+{
+  DoNotifyWakeUp ();
+}
 
 
-/***************************************************************
- *         Listener for Nav events. Forwards to DcfManager
- ***************************************************************/
-
+/**
+ * Listener for NAV events. Forwards to DcfManager
+ */
 class LowDcfListener : public ns3::MacLowDcfListener
 {
 public:
+  /**
+   * Create a LowDcfListener for the given DcfManager.
+   *
+   * \param dcf
+   */
   LowDcfListener (ns3::DcfManager *dcf)
     : m_dcf (dcf)
   {
@@ -202,16 +216,20 @@ public:
     m_dcf->NotifyCtsTimeoutResetNow ();
   }
 private:
-  ns3::DcfManager *m_dcf;
+  ns3::DcfManager *m_dcf;  //!< DcfManager to forward events to
 };
 
-/***************************************************************
- *         Listener for PHY events. Forwards to DcfManager
- ***************************************************************/
-
+/**
+ * Listener for PHY events. Forwards to DcfManager
+ */
 class PhyListener : public ns3::WifiPhyListener
 {
 public:
+  /**
+   * Create a PhyListener for the given DcfManager.
+   *
+   * \param dcf
+   */
   PhyListener (ns3::DcfManager *dcf)
     : m_dcf (dcf)
   {
@@ -231,7 +249,7 @@ public:
   {
     m_dcf->NotifyRxEndErrorNow ();
   }
-  virtual void NotifyTxStart (Time duration)
+  virtual void NotifyTxStart (Time duration, double txPowerDbm)
   {
     m_dcf->NotifyTxStartNow (duration);
   }
@@ -243,8 +261,16 @@ public:
   {
     m_dcf->NotifySwitchingStartNow (duration);
   }
+  virtual void NotifySleep (void)
+  {
+    m_dcf->NotifySleepNow ();
+  }
+  virtual void NotifyWakeup (void)
+  {
+    m_dcf->NotifyWakeupNow ();
+  }
 private:
-  ns3::DcfManager *m_dcf;
+  ns3::DcfManager *m_dcf;  //!< DcfManager to forward events to
 };
 
 /****************************************************************
@@ -267,6 +293,7 @@ DcfManager::DcfManager ()
     m_lastSwitchingStart (MicroSeconds (0)),
     m_lastSwitchingDuration (MicroSeconds (0)),
     m_rxing (false),
+    m_sleeping (false),
     m_slotTimeUs (0),
     m_sifs (Seconds (0.0)),
     m_phyListener (0),
@@ -287,13 +314,34 @@ void
 DcfManager::SetupPhyListener (Ptr<WifiPhy> phy)
 {
   NS_LOG_FUNCTION (this << phy);
+  if (m_phyListener != 0)
+    {
+      delete m_phyListener;
+    }
   m_phyListener = new PhyListener (this);
   phy->RegisterListener (m_phyListener);
 }
+
+void
+DcfManager::RemovePhyListener (Ptr<WifiPhy> phy)
+{
+  NS_LOG_FUNCTION (this << phy);
+  if (m_phyListener != 0)
+    {
+      phy->UnregisterListener (m_phyListener);
+      delete m_phyListener;
+      m_phyListener = 0;
+    }
+}
+
 void
 DcfManager::SetupLowListener (Ptr<MacLow> low)
 {
   NS_LOG_FUNCTION (this << low);
+  if (m_lowListener != 0)
+    {
+      delete m_lowListener;
+    }
   m_lowListener = new LowDcfListener (this);
   low->RegisterDcfListener (m_lowListener);
 }
@@ -407,6 +455,9 @@ void
 DcfManager::RequestAccess (DcfState *state)
 {
   NS_LOG_FUNCTION (this << state);
+  // Deny access if in sleep mode
+  if (m_sleeping)
+    return;
   UpdateBackoff ();
   NS_ASSERT (!state->IsAccessRequested ());
   state->NotifyAccessRequested ();
@@ -728,6 +779,45 @@ DcfManager::NotifySwitchingStartNow (Time duration)
 }
 
 void
+DcfManager::NotifySleepNow (void)
+{
+  NS_LOG_FUNCTION (this);
+  m_sleeping = true;
+  // Cancel timeout
+  if (m_accessTimeout.IsRunning ())
+    {
+      m_accessTimeout.Cancel ();
+    }
+
+  // Reset backoffs
+  for (States::iterator i = m_states.begin (); i != m_states.end (); i++)
+    {
+      DcfState *state = *i;
+      state->NotifySleep ();
+    }
+}
+
+void
+DcfManager::NotifyWakeupNow (void)
+{
+  NS_LOG_FUNCTION (this);
+  m_sleeping = false;
+  for (States::iterator i = m_states.begin (); i != m_states.end (); i++)
+    {
+      DcfState *state = *i;
+      uint32_t remainingSlots = state->GetBackoffSlots ();
+      if (remainingSlots > 0)
+        {
+          state->UpdateBackoffSlotsNow (remainingSlots, Simulator::Now ());
+          NS_ASSERT (state->GetBackoffSlots () == 0);
+        }
+      state->ResetCw ();
+      state->m_accessRequested = false;
+      state->NotifyWakeUp ();
+    }
+}
+
+void
 DcfManager::NotifyNavResetNow (Time duration)
 {
   NS_LOG_FUNCTION (this << duration);
@@ -748,7 +838,7 @@ void
 DcfManager::NotifyNavStartNow (Time duration)
 {
   NS_LOG_FUNCTION (this << duration);
-  NS_ASSERT (m_lastNavStart < Simulator::Now ());
+  NS_ASSERT (m_lastNavStart <= Simulator::Now ());
   MY_DEBUG ("nav start for=" << duration);
   UpdateBackoff ();
   Time newNavEnd = Simulator::Now () + duration;

@@ -33,9 +33,9 @@
 // adding any ns-3 specific constructs such as Packet to this file.
 //
 
-NS_LOG_COMPONENT_DEFINE ("PcapFile");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("PcapFile");
 
 const uint32_t MAGIC = 0xa1b2c3d4;            /**< Magic number identifying standard pcap file format */
 const uint32_t SWAPPED_MAGIC = 0xd4c3b2a1;    /**< Looks this way if byte swapping is required */
@@ -45,7 +45,6 @@ const uint32_t NS_SWAPPED_MAGIC = 0xd43cb2a1; /**< Looks this way if byte swappi
 
 const uint16_t VERSION_MAJOR = 2;             /**< Major version of supported pcap file format */
 const uint16_t VERSION_MINOR = 4;             /**< Minor version of supported pcap file format */
-const int32_t  SIGFIGS_DEFAULT = 0;           /**< Significant figures for timestamps (libpcap doesn't even bother) */
 
 PcapFile::PcapFile ()
   : m_file (),

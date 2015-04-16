@@ -24,9 +24,9 @@
 #include "packet-burst.h"
 #include "ns3/log.h"
 
-NS_LOG_COMPONENT_DEFINE ("PacketBurst");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("PacketBurst");
 
 NS_OBJECT_ENSURE_REGISTERED (PacketBurst);
 
@@ -35,6 +35,7 @@ PacketBurst::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::PacketBurst")
     .SetParent<Object> ()
+    .SetGroupName("Network")
     .AddConstructor<PacketBurst> ()
   ;
   return tid;

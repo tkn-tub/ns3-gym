@@ -423,7 +423,8 @@ IePreq::MayAddAddress (Mac48Address originator)
     {
       return false;
     }
-  if ((GetInformationFieldSize () + 11) > 255)
+  // -fstrict-overflow sensitive, see bug 1868
+  if ( GetInformationFieldSize () > 255 - 11 )
     {
       return false;
     }
@@ -432,7 +433,8 @@ IePreq::MayAddAddress (Mac48Address originator)
 bool
 IePreq::IsFull () const
 {
-  return ((GetInformationFieldSize () + 11) > 255);
+  // -fstrict-overflow sensitive, see bug 1868
+  return ( GetInformationFieldSize () > 255 - 11 );
 }
 std::ostream &
 operator << (std::ostream &os, const IePreq &a)

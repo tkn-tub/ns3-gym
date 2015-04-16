@@ -25,7 +25,7 @@
 #include "ns3/test.h"
 
 
-namespace ns3 {
+using namespace ns3;
 
 
 /**
@@ -43,10 +43,9 @@ public:
 
 private:
   virtual void DoRun (void);
-  static std::string BuildNameString (uint16_t nUser, uint16_t dist);
+  static std::string BuildNameString (uint16_t nUser, uint16_t dist, uint16_t tbSize);
   uint16_t m_nUser;
   uint16_t m_dist;
-  uint16_t m_tbSize;
   double m_amcBer;
   double m_throughputRef;
 
@@ -61,11 +60,5 @@ class LenaTestHarqSuite : public TestSuite
 public:
   LenaTestHarqSuite ();
 };
-
-
-
-
-} // namespace ns3
-
 
 #endif /* LENA_TEST_HARQ_H */

@@ -22,10 +22,9 @@
 #include "ns3/epc-x2-header.h"
 
 
-NS_LOG_COMPONENT_DEFINE ("EpcX2Header");
-
 namespace ns3 {
 
+NS_LOG_COMPONENT_DEFINE ("EpcX2Header");
 
 NS_OBJECT_ENSURE_REGISTERED (EpcX2Header);
 
@@ -50,6 +49,7 @@ EpcX2Header::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::EpcX2Header")
     .SetParent<Header> ()
+    .SetGroupName("Lte")
     .AddConstructor<EpcX2Header> ()
   ;
   return tid;
@@ -174,6 +174,7 @@ EpcX2HandoverRequestHeader::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::EpcX2HandoverRequestHeader")
     .SetParent<Header> ()
+    .SetGroupName("Lte")
     .AddConstructor<EpcX2HandoverRequestHeader> ()
   ;
   return tid;
@@ -458,6 +459,7 @@ EpcX2HandoverRequestAckHeader::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::EpcX2HandoverRequestAckHeader")
     .SetParent<Header> ()
+    .SetGroupName("Lte")
     .AddConstructor<EpcX2HandoverRequestAckHeader> ()
   ;
   return tid;
@@ -683,6 +685,7 @@ EpcX2HandoverPreparationFailureHeader::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::EpcX2HandoverPreparationFailureHeader")
     .SetParent<Header> ()
+    .SetGroupName("Lte")
     .AddConstructor<EpcX2HandoverPreparationFailureHeader> ()
   ;
   return tid;
@@ -808,6 +811,7 @@ EpcX2SnStatusTransferHeader::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::EpcX2SnStatusTransferHeader")
     .SetParent<Header> ()
+    .SetGroupName("Lte")
     .AddConstructor<EpcX2SnStatusTransferHeader> ()
   ;
   return tid;
@@ -998,6 +1002,7 @@ EpcX2UeContextReleaseHeader::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::EpcX2UeContextReleaseHeader")
     .SetParent<Header> ()
+    .SetGroupName("Lte")
     .AddConstructor<EpcX2UeContextReleaseHeader> ()
   ;
   return tid;
@@ -1103,6 +1108,7 @@ EpcX2LoadInformationHeader::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::EpcX2LoadInformationHeader")
     .SetParent<Header> ()
+    .SetGroupName("Lte")
     .AddConstructor<EpcX2LoadInformationHeader> ()
   ;
   return tid;
@@ -1331,6 +1337,7 @@ EpcX2ResourceStatusUpdateHeader::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::EpcX2ResourceStatusUpdateHeader")
     .SetParent<Header> ()
+    .SetGroupName("Lte")
     .AddConstructor<EpcX2ResourceStatusUpdateHeader> ()
   ;
   return tid;

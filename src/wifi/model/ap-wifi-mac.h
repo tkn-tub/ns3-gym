@@ -26,6 +26,7 @@
 #include "ht-capabilities.h"
 #include "amsdu-subframe-header.h"
 #include "supported-rates.h"
+#include "ns3/random-variable-stream.h"
 
 namespace ns3 {
 
@@ -87,7 +88,7 @@ public:
    */
   void SetBeaconInterval (Time interval);
   /**
-   * \returns the interval between two beacon transmissions.
+   * \return the interval between two beacon transmissions.
    */
   Time GetBeaconInterval (void) const;
   /**
@@ -95,9 +96,35 @@ public:
    */
   void StartBeaconing (void);
 
+ /**
+  * Assign a fixed random variable stream number to the random variables
+  * used by this model.  Return the number of streams (possibly zero) that
+  * have been assigned.
+  *
+  * \param stream first stream index to use
+  * \return the number of stream indices assigned by this model
+  */
+  int64_t AssignStreams (int64_t stream);
+
 private:
   virtual void Receive (Ptr<Packet> packet, const WifiMacHeader *hdr);
+  /**
+   * The packet we sent was successfully received by the receiver
+   * (i.e. we received an ACK from the receiver).  If the packet
+   * was an association response to the receiver, we record that
+   * the receiver is now associated with us.
+   * 
+   * \param hdr the header of the packet that we successfully sent
+   */
   virtual void TxOk (const WifiMacHeader &hdr);
+  /**
+   * The packet we sent was successfully received by the receiver
+   * (i.e. we did not receive an ACK from the receiver).  If the packet
+   * was an association response to the receiver, we record that
+   * the receiver is not associated with us yet.
+   *
+   * \param hdr the header of the packet that we failed to sent
+   */
   virtual void TxFailed (const WifiMacHeader &hdr);
 
   /**
@@ -112,22 +139,77 @@ private:
   virtual void DeaggregateAmsduAndForward (Ptr<Packet> aggregatedPacket,
                                            const WifiMacHeader *hdr);
 
+  /**
+   * Forward the packet down to DCF/EDCAF (enqueue the packet). This method
+   * is a wrapper for ForwardDown with traffic id.
+   *
+   * \param packet the packet we are forwarding to DCF/EDCAF
+   * \param from the address to be used for Address 3 field in the header
+   * \param to the address to be used for Address 1 field in the header
+   */
   void ForwardDown (Ptr<const Packet> packet, Mac48Address from, Mac48Address to);
+  /**
+   * Forward the packet down to DCF/EDCAF (enqueue the packet).
+   *
+   * \param packet the packet we are forwarding to DCF/EDCAF
+   * \param from the address to be used for Address 3 field in the header
+   * \param to the address to be used for Address 1 field in the header
+   * \param tid the traffic id for the packet
+   */
   void ForwardDown (Ptr<const Packet> packet, Mac48Address from, Mac48Address to, uint8_t tid);
+  /**
+   * Forward a probe response packet to the DCF. The standard is not clear on the correct
+   * queue for management frames if QoS is supported. We always use the DCF.
+   *
+   * \param to the address of the STA we are sending a probe response to
+   */
   void SendProbeResp (Mac48Address to);
+  /**
+   * Forward an association response packet to the DCF. The standard is not clear on the correct
+   * queue for management frames if QoS is supported. We always use the DCF.
+   *
+   * \param to the address of the STA we are sending an association response to
+   * \param success indicates whether the association was successful or not
+   */
   void SendAssocResp (Mac48Address to, bool success);
+  /**
+   * Forward a beacon packet to the beacon special DCF.
+   */
   void SendOneBeacon (void);
+  /**
+   * Return the HT capability of the current AP.
+   * 
+   * \return the HT capability that we support
+   */
   HtCapabilities GetHtCapabilities (void) const;
+  /**
+   * Return an instance of SupportedRates that contains all rates that we support
+   * including HT rates.
+   *
+   * \return SupportedRates all rates that we support
+   */
   SupportedRates GetSupportedRates (void) const;
+  /**
+   * Enable or disable beacon generation of the AP.
+   *
+   * \param enable enable or disable beacon generation
+   */
   void SetBeaconGeneration (bool enable);
+  /**
+   * Return whether the AP is generating beacons.
+   *
+   * \return true if beacons are periodically generated, false otherwise
+   */
   bool GetBeaconGeneration (void) const;
   virtual void DoDispose (void);
   virtual void DoInitialize (void);
 
-  Ptr<DcaTxop> m_beaconDca;
-  Time m_beaconInterval;
-  bool m_enableBeaconGeneration;
-  EventId m_beaconEvent;
+  Ptr<DcaTxop> m_beaconDca; //!< Dedicated DcaTxop for beacons
+  Time m_beaconInterval; //!< Interval between beacons
+  bool m_enableBeaconGeneration; //!< Flag if beacons are being generated
+  EventId m_beaconEvent; //!< Event to generate one beacon
+  Ptr<UniformRandomVariable> m_beaconJitter; //!< UniformRandomVariable used to randomize the time of the first beacon
+  bool m_enableBeaconJitter; //!< Flag if the first beacon should be generated at random time
 };
 
 } // namespace ns3

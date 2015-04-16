@@ -26,12 +26,9 @@
 
 #include "epc-mme.h"
 
-NS_LOG_COMPONENT_DEFINE ("EpcMme");
-
 namespace ns3 {
 
-
-
+NS_LOG_COMPONENT_DEFINE ("EpcMme");
 
 NS_OBJECT_ENSURE_REGISTERED (EpcMme);
 
@@ -62,6 +59,7 @@ EpcMme::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::EpcMme")
     .SetParent<Object> ()
+    .SetGroupName("Lte")
     .AddConstructor<EpcMme> ()
     ;
   return tid;
@@ -107,7 +105,7 @@ EpcMme::AddUe (uint64_t imsi)
   ueInfo->bearerCounter = 0;
 }
 
-void 
+uint8_t
 EpcMme::AddBearer (uint64_t imsi, Ptr<EpcTft> tft, EpsBearer bearer)
 {
   NS_LOG_FUNCTION (this << imsi);
@@ -119,6 +117,7 @@ EpcMme::AddBearer (uint64_t imsi, Ptr<EpcTft> tft, EpsBearer bearer)
   bearerInfo.tft = tft;
   bearerInfo.bearer = bearer;  
   it->second->bearersToBeActivated.push_back (bearerInfo);
+  return bearerInfo.bearerId;
 }
 
 
@@ -219,6 +218,68 @@ EpcMme::DoModifyBearerResponse (EpcS11SapMme::ModifyBearerResponseMessage msg)
   std::map<uint16_t, Ptr<EnbInfo> >::iterator jt = m_enbInfoMap.find (it->second->cellId);
   NS_ASSERT_MSG (jt != m_enbInfoMap.end (), "could not find any eNB with CellId " << it->second->cellId);
   jt->second->s1apSapEnb->PathSwitchRequestAcknowledge (enbUeS1Id, mmeUeS1Id, cgi, erabToBeSwitchedInUplinkList);
+}
+
+void
+EpcMme::DoErabReleaseIndication (uint64_t mmeUeS1Id, uint16_t enbUeS1Id, std::list<EpcS1apSapMme::ErabToBeReleasedIndication> erabToBeReleaseIndication)
+{
+  NS_LOG_FUNCTION (this << mmeUeS1Id << enbUeS1Id);
+  uint64_t imsi = mmeUeS1Id;
+  std::map<uint64_t, Ptr<UeInfo> >::iterator it = m_ueInfoMap.find (imsi);
+  NS_ASSERT_MSG (it != m_ueInfoMap.end (), "could not find any UE with IMSI " << imsi);
+
+  EpcS11SapSgw::DeleteBearerCommandMessage msg;
+  // trick to avoid the need for allocating TEIDs on the S11 interface
+  msg.teid = imsi;
+
+  for (std::list<EpcS1apSapMme::ErabToBeReleasedIndication>::iterator bit = erabToBeReleaseIndication.begin (); bit != erabToBeReleaseIndication.end (); ++bit)
+    {
+      EpcS11SapSgw::BearerContextToBeRemoved bearerContext;
+      bearerContext.epsBearerId =  bit->erabId;
+      msg.bearerContextsToBeRemoved.push_back (bearerContext);
+    }
+  //Delete Bearer command towards epc-sgw-pgw-application
+  m_s11SapSgw->DeleteBearerCommand (msg);
+}
+
+void
+EpcMme::DoDeleteBearerRequest (EpcS11SapMme::DeleteBearerRequestMessage msg)
+{
+  NS_LOG_FUNCTION (this);
+  uint64_t imsi = msg.teid;
+  std::map<uint64_t, Ptr<UeInfo> >::iterator it = m_ueInfoMap.find (imsi);
+  NS_ASSERT_MSG (it != m_ueInfoMap.end (), "could not find any UE with IMSI " << imsi);
+  EpcS11SapSgw::DeleteBearerResponseMessage res;
+
+  res.teid = imsi;
+
+  for (std::list<EpcS11SapMme::BearerContextRemoved>::iterator bit = msg.bearerContextsRemoved.begin ();
+       bit != msg.bearerContextsRemoved.end ();
+       ++bit)
+    {
+      EpcS11SapSgw::BearerContextRemovedSgwPgw bearerContext;
+      bearerContext.epsBearerId = bit->epsBearerId;
+      res.bearerContextsRemoved.push_back (bearerContext);
+
+      RemoveBearer (it->second, bearerContext.epsBearerId); //schedules function to erase, context of de-activated bearer
+    }
+  //schedules Delete Bearer Response towards epc-sgw-pgw-application
+  m_s11SapSgw->DeleteBearerResponse (res);
+}
+
+void EpcMme::RemoveBearer (Ptr<UeInfo> ueInfo, uint8_t epsBearerId)
+{
+  NS_LOG_FUNCTION (this << epsBearerId);
+  for (std::list<BearerInfo>::iterator bit = ueInfo->bearersToBeActivated.begin ();
+       bit != ueInfo->bearersToBeActivated.end ();
+       ++bit)
+    {
+      if (bit->bearerId == epsBearerId)
+        {
+          ueInfo->bearersToBeActivated.erase (bit);
+          break;
+        }
+    }
 }
 
 } // namespace ns3

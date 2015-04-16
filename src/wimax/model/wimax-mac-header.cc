@@ -62,7 +62,7 @@ MacHeaderType::GetName (void) const
 TypeId
 MacHeaderType::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::MacHeaderType").SetParent<Header> ().AddConstructor<MacHeaderType> ();
+  static TypeId tid = TypeId ("ns3::MacHeaderType").SetParent<Header> ().SetGroupName("Wimax").AddConstructor<MacHeaderType> ();
   return tid;
 }
 
@@ -200,7 +200,7 @@ std::string GenericMacHeader::GetName (void) const
 
 TypeId GenericMacHeader::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::GenericMacHeader").SetParent<Header> ().AddConstructor<GenericMacHeader> ();
+  static TypeId tid = TypeId ("ns3::GenericMacHeader").SetParent<Header> ().SetGroupName("Wimax").AddConstructor<GenericMacHeader> ();
   return tid;
 }
 
@@ -379,7 +379,7 @@ std::string BandwidthRequestHeader::GetName (void) const
 
 TypeId BandwidthRequestHeader::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::BandwidthRequestHeader").SetParent<Header> ().AddConstructor<
+  static TypeId tid = TypeId ("ns3::BandwidthRequestHeader").SetParent<Header> ().SetGroupName("Wimax").AddConstructor<
       BandwidthRequestHeader> ();
   return tid;
 }
@@ -528,7 +528,7 @@ std::string GrantManagementSubheader::GetName (void) const
 
 TypeId GrantManagementSubheader::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::GrantManagementSubheader").SetParent<Header> ().AddConstructor<
+  static TypeId tid = TypeId ("ns3::GrantManagementSubheader").SetParent<Header> ().SetGroupName("Wimax").AddConstructor<
       GrantManagementSubheader> ();
   return tid;
 }
@@ -616,7 +616,7 @@ TypeId
 FragmentationSubheader::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::FragmentationSubheader").SetParent<
-      Header> ().AddConstructor<FragmentationSubheader> ();
+      Header> ().SetGroupName("Wimax").AddConstructor<FragmentationSubheader> ();
   return tid;
 }
 

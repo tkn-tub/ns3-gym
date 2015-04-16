@@ -21,9 +21,9 @@
 #include "tcp-rfc793.h"
 #include "ns3/log.h"
 
-NS_LOG_COMPONENT_DEFINE ("TcpRfc793");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("TcpRfc793");
 
 NS_OBJECT_ENSURE_REGISTERED (TcpRfc793);
 
@@ -32,6 +32,7 @@ TcpRfc793::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::TcpRfc793")
     .SetParent<TcpSocketBase> ()
+    .SetGroupName ("Internet")
     .AddConstructor<TcpRfc793> ()
   ;
   return tid;
@@ -63,13 +64,13 @@ TcpRfc793::DupAck (const TcpHeader& t, uint32_t count)
 }
 
 void
-TcpRfc793::SetSSThresh (uint32_t threshold)
+TcpRfc793::SetInitialSSThresh (uint32_t threshold)
 {
   NS_LOG_WARN ("DoD TCP does not perform slow start");
 }
 
 uint32_t
-TcpRfc793::GetSSThresh (void) const
+TcpRfc793::GetInitialSSThresh (void) const
 {
   NS_LOG_WARN ("DoD TCP does not perform slow start");
   return 0;

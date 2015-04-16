@@ -96,7 +96,7 @@ NS_OBJECT_ENSURE_REGISTERED (DerivedB);
 
 } // namespace anonymous
 
-namespace ns3 {
+using namespace ns3;
 
 // ===========================================================================
 // Test case to make sure that we can make Objects using CreateObject.
@@ -425,5 +425,3 @@ ObjectTestSuite::ObjectTestSuite ()
 }
 
 static ObjectTestSuite objectTestSuite;
-
-} // namespace ns3

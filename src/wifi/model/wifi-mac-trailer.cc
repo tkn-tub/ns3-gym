@@ -37,6 +37,7 @@ WifiMacTrailer::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::WifiMacTrailer")
     .SetParent<Trailer> ()
+    .SetGroupName ("Wifi")
     .AddConstructor<WifiMacTrailer> ()
   ;
   return tid;

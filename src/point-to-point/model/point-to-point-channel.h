@@ -43,17 +43,25 @@ class Packet;
  * There are two "wires" in the channel.  The first device connected gets the
  * [0] wire to transmit on.  The second device gets the [1] wire.  There is a
  * state (IDLE, TRANSMITTING) associated with each wire.
+ *
+ * \see Attach
+ * \see TransmitStart
  */
 class PointToPointChannel : public Channel 
 {
 public:
+  /**
+   * \brief Get the TypeId
+   *
+   * \return The TypeId for this class
+   */
   static TypeId GetTypeId (void);
 
   /**
    * \brief Create a PointToPointChannel
    *
-   * By default, you get a channel that
-   * has zero transmission delay.
+   * By default, you get a channel that has an "infinitely" fast 
+   * transmission speed and zero delay.
    */
   PointToPointChannel ();
 
@@ -78,14 +86,14 @@ public:
    */
   virtual uint32_t GetNDevices (void) const;
 
-  /*
+  /**
    * \brief Get PointToPointNetDevice corresponding to index i on this channel
    * \param i Index number of the device requested
    * \returns Ptr to PointToPointNetDevice requested
    */
   Ptr<PointToPointNetDevice> GetPointToPointDevice (uint32_t i) const;
 
-  /*
+  /**
    * \brief Get NetDevice corresponding to index i on this channel
    * \param i Index number of the device requested
    * \returns Ptr to NetDevice requested
@@ -93,19 +101,19 @@ public:
   virtual Ptr<NetDevice> GetDevice (uint32_t i) const;
 
 protected:
-  /*
+  /**
    * \brief Get the delay associated with this channel
    * \returns Time delay
    */
   Time GetDelay (void) const;
 
-  /*
+  /**
    * \brief Check to make sure the link is initialized
    * \returns true if initialized, asserts otherwise
    */
   bool IsInitialized (void) const;
 
-  /*
+  /**
    * \brief Get the net-device source 
    * \param i the link requested
    * \returns Ptr to PointToPointNetDevice source for the 
@@ -113,7 +121,7 @@ protected:
    */
   Ptr<PointToPointNetDevice> GetSource (uint32_t i) const;
 
-  /*
+  /**
    * \brief Get the net-device destination
    * \param i the link requested
    * \returns Ptr to PointToPointNetDevice destination for 
@@ -121,12 +129,26 @@ protected:
    */
   Ptr<PointToPointNetDevice> GetDestination (uint32_t i) const;
 
+  /**
+   * TracedCallback signature for packet transmission animation events.
+   *
+   * \param [in] packet The packet being transmitted.
+   * \param [in] txDevice the TransmitTing NetDevice.
+   * \param [in] rxDevice the Receiving NetDevice.
+   * \param [in] duration The amount of time to transmit the packet.
+   * \param [in] lastBitTime Last bit receive time (relative to now)
+   */
+  typedef void (* TxRxAnimationCallback)
+    (const Ptr<const Packet> packet,
+     const Ptr<const NetDevice> txDevice, const Ptr<const NetDevice> rxDevice,
+     const Time duration, const Time lastBitTime);
+                    
 private:
-  // Each point to point link has exactly two net devices
+  /** Each point to point link has exactly two net devices. */
   static const int N_DEVICES = 2;
 
-  Time          m_delay;
-  int32_t       m_nDevices;
+  Time          m_delay;    //!< Propagation delay
+  int32_t       m_nDevices; //!< Devices of this channel
 
   /**
    * The trace source for the packet transmission animation events that the 
@@ -135,7 +157,7 @@ private:
    * net device, receiving net device, transmission time and 
    * packet receipt time.
    *
-   * @see class CallBackTraceSource
+   * \see class CallBackTraceSource
    */
   TracedCallback<Ptr<const Packet>, // Packet being transmitted
                  Ptr<NetDevice>,    // Transmitting NetDevice
@@ -144,24 +166,38 @@ private:
                  Time               // Last bit receive time (relative to now)
                  > m_txrxPointToPoint;
 
+  /** \brief Wire states
+   *
+   */
   enum WireState
   {
+    /** Initializing state */
     INITIALIZING,
+    /** Idle state (no transmission from NetDevice) */
     IDLE,
+    /** Transmitting state (data being transmitted from NetDevice. */
     TRANSMITTING,
+    /** Propagating state (data is being propagated in the channel. */
     PROPAGATING
   };
 
+  /**
+   * \brief Wire model for the PointToPointChannel
+   */
   class Link
   {
 public:
+    /** \brief Create the link, it will be in INITIALIZING state
+     *
+     */
     Link() : m_state (INITIALIZING), m_src (0), m_dst (0) {}
-    WireState                  m_state;
-    Ptr<PointToPointNetDevice> m_src;
-    Ptr<PointToPointNetDevice> m_dst;
+
+    WireState                  m_state; //!< State of the link
+    Ptr<PointToPointNetDevice> m_src;   //!< First NetDevice
+    Ptr<PointToPointNetDevice> m_dst;   //!< Second NetDevice
   };
 
-  Link    m_link[N_DEVICES];
+  Link    m_link[N_DEVICES]; //!< Link model
 };
 
 } // namespace ns3

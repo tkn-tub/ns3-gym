@@ -30,6 +30,7 @@ QosTag::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::QosTag")
     .SetParent<Tag> ()
+    .SetGroupName ("Wifi")
     .AddConstructor<QosTag> ()
     .AddAttribute ("tid", "The tid that indicates AC which packet belongs",
                    UintegerValue (0),

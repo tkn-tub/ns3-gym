@@ -55,8 +55,12 @@ public:
    *
    * Subclasses must implement this method to allow the ns3::WifiHelper class
    * to create PHY objects from ns3::WifiHelper::Install.
+   *
+   * Typically the device type will be of class WifiNetDevice but the
+   * type of the pointer is generalized so that this method may be used
+   * by other Wifi device variants such as WaveNetDevice.
    */
-  virtual Ptr<WifiPhy> Create (Ptr<Node> node, Ptr<WifiNetDevice> device) const = 0;
+  virtual Ptr<WifiPhy> Create (Ptr<Node> node, Ptr<NetDevice> device) const = 0;
 };
 
 /**
@@ -88,6 +92,8 @@ public:
 class WifiHelper
 {
 public:
+  virtual ~WifiHelper ();
+
   /**
    * Create a Wifi helper in an empty state: all its parameters
    * must be set before calling ns3::WifiHelper::Install
@@ -140,7 +146,7 @@ public:
    * \param c the set of nodes on which a wifi device must be created
    * \returns a device container which contains all the devices created by this method.
    */
-  NetDeviceContainer Install (const WifiPhyHelper &phy,
+  virtual NetDeviceContainer Install (const WifiPhyHelper &phy,
                               const WifiMacHelper &mac, NodeContainer c) const;
   /**
    * \param phy the PHY helper to create PHY objects
@@ -148,7 +154,7 @@ public:
    * \param node the node on which a wifi device must be created
    * \returns a device container which contains all the devices created by this method.
    */
-  NetDeviceContainer Install (const WifiPhyHelper &phy,
+  virtual NetDeviceContainer Install (const WifiPhyHelper &phy,
                               const WifiMacHelper &mac, Ptr<Node> node) const;
   /**
    * \param phy the PHY helper to create PHY objects
@@ -156,15 +162,33 @@ public:
    * \param nodeName the name of node on which a wifi device must be created
    * \returns a device container which contains all the devices created by this method.
    */
-  NetDeviceContainer Install (const WifiPhyHelper &phy,
+  virtual NetDeviceContainer Install (const WifiPhyHelper &phy,
                               const WifiMacHelper &mac, std::string nodeName) const;
-
   /**
    * \param standard the phy standard to configure during installation
    *
-   * By default, all objects are configured for 802.11a
+   * This method sets standards-compliant defaults for WifiMac
+   * parameters such as sifs time, slot time, timeout values, etc.,
+   * based on the standard selected.  It results in
+   * WifiMac::ConfigureStandard(standard) being called on each
+   * installed mac object.
+   *
+   * The default standard of 802.11a will be applied if SetStandard()
+   * is not called.
+   *
+   * Note that WifiMac::ConfigureStandard () will overwrite certain
+   * defaults in the attribute system, so if a user wants to manipulate
+   * any default values affected by ConfigureStandard() while using this
+   * helper, the user should use a post-install configuration such as
+   * Config::Set() on any objects that this helper creates, such as:
+   * \code
+   * Config::Set ("/NodeList/0/DeviceList/0/$ns3::WifiNetDevice/Mac/Slot", TimeValue (MicroSeconds (slot)));
+   * \endcode
+   *
+   * \sa WifiMac::ConfigureStandard
+   * \sa Config::Set
    */
-  void SetStandard (enum WifiPhyStandard standard);
+  virtual void SetStandard (enum WifiPhyStandard standard);
 
   /**
    * Helper to enable all WifiNetDevice log components with one statement
@@ -187,7 +211,7 @@ public:
   */
   int64_t AssignStreams (NetDeviceContainer c, int64_t stream);
 
-private:
+protected:
   ObjectFactory m_stationManager;
   enum WifiPhyStandard m_standard;
 };

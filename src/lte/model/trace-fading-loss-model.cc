@@ -30,9 +30,9 @@
 #include <fstream>
 #include <ns3/simulator.h>
 
-NS_LOG_COMPONENT_DEFINE ("TraceFadingLossModel");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("TraceFadingLossModel");
 
 NS_OBJECT_ENSURE_REGISTERED (TraceFadingLossModel);
   
@@ -59,6 +59,7 @@ TraceFadingLossModel::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::TraceFadingLossModel")
     .SetParent<SpectrumPropagationLossModel> ()
+    .SetGroupName("Lte")
     .AddConstructor<TraceFadingLossModel> ()
     .AddAttribute ("TraceFilename",
                    "Name of file to load a trace from.",

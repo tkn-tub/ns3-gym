@@ -225,7 +225,6 @@ private:
   std::vector<double> m_load;     // load profile
   std::vector<Time> m_timeStamps; // time stamps of load profile
   Time m_lastSampleTime;
-  uint64_t m_counter;
 
   int m_numOfTerms; // # of terms for infinite sum in battery level estimation
 
@@ -246,6 +245,8 @@ private:
    * definition. In the paper, battery level = 1 when the battery is drained.
    */
   TracedValue<double> m_batteryLevel;
+
+  double m_lowBatteryTh;           // low battery threshold, as a fraction of the initial energy
 
   /**
    * (1 / sampling interval) = sampling frequency

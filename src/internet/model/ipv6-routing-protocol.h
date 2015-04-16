@@ -54,11 +54,22 @@ class NetDevice;
 class Ipv6RoutingProtocol : public Object
 {
 public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
 
+  /// Callback for unicast packets to be forwarded
   typedef Callback<void, Ptr<const NetDevice>, Ptr<Ipv6Route>, Ptr<const Packet>, const Ipv6Header &> UnicastForwardCallback;
+
+  /// Callback for multicast packets to be forwarded
   typedef Callback<void, Ptr<const NetDevice>, Ptr<Ipv6MulticastRoute>, Ptr<const Packet>, const Ipv6Header &> MulticastForwardCallback;
+
+  /// Callback for packets to be locally delivered
   typedef Callback<void, Ptr<const Packet>, const Ipv6Header &, uint32_t > LocalDeliverCallback;
+
+  /// Callback for routing errors (e.g., no route found)
   typedef Callback<void, Ptr<const Packet>, const Ipv6Header &, Socket::SocketErrno > ErrorCallback;
 
   /**

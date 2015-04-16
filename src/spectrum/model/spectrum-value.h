@@ -89,6 +89,14 @@ public:
    */
   double& operator[] (size_t index);
 
+  /**
+   * Access value at given frequency index
+   *
+   * @param index the given frequency index
+   *
+   * @return const reference to the value
+   */
+  const double& operator[] (size_t index) const;
 
 
   /**
@@ -495,6 +503,12 @@ public:
    */
   Ptr<SpectrumValue> Copy () const;
 
+  /**
+   *  TracedCallback signature for SpectrumValue.
+   *
+   * \param [in] value Value of the traced variable.
+   */
+  typedef void (* TracedCallback)(const Ptr<const SpectrumValue> value);
 
 
 private:

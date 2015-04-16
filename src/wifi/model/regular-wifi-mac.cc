@@ -34,9 +34,9 @@
 
 #include "msdu-aggregator.h"
 
-NS_LOG_COMPONENT_DEFINE ("RegularWifiMac");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("RegularWifiMac");
 
 NS_OBJECT_ENSURE_REGISTERED (RegularWifiMac);
 
@@ -57,11 +57,12 @@ RegularWifiMac::RegularWifiMac ()
   m_dca = CreateObject<DcaTxop> ();
   m_dca->SetLow (m_low);
   m_dca->SetManager (m_dcfManager);
+  m_dca->SetTxMiddle(m_txMiddle);
   m_dca->SetTxOkCallback (MakeCallback (&RegularWifiMac::TxOk, this));
   m_dca->SetTxFailedCallback (MakeCallback (&RegularWifiMac::TxFailed, this));
 
   // Construct the EDCAFs. The ordering is important - highest
-  // priority (see Table 9-1 in IEEE 802.11-2007) must be created
+  // priority (Table 9-1 UP-to-AC mapping; IEEE 802.11-2012) must be created
   // first.
   SetupEdcaQueue (AC_VO);
   SetupEdcaQueue (AC_VI);
@@ -92,26 +93,26 @@ RegularWifiMac::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
   delete m_rxMiddle;
-  m_rxMiddle = NULL;
+  m_rxMiddle = 0;
 
   delete m_txMiddle;
-  m_txMiddle = NULL;
+  m_txMiddle = 0;
 
   delete m_dcfManager;
-  m_dcfManager = NULL;
+  m_dcfManager = 0;
 
   m_low->Dispose ();
-  m_low = NULL;
+  m_low = 0;
 
-  m_phy = NULL;
-  m_stationManager = NULL;
+  m_phy = 0;
+  m_stationManager = 0;
 
   m_dca->Dispose ();
-  m_dca = NULL;
+  m_dca = 0;
 
   for (EdcaQueues::iterator i = m_edca.begin (); i != m_edca.end (); ++i)
     {
-      i->second = NULL;
+      i->second = 0;
     }
 }
 
@@ -207,9 +208,19 @@ RegularWifiMac::SetWifiPhy (Ptr<WifiPhy> phy)
 }
 
 Ptr<WifiPhy>
-RegularWifiMac::GetWifiPhy () const
+RegularWifiMac::GetWifiPhy (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_phy;
+}
+
+void
+RegularWifiMac::ResetWifiPhy (void)
+{
+  NS_LOG_FUNCTION (this);
+  m_low->ResetPhy ();
+  m_dcfManager->RemovePhyListener (m_phy);
+  m_phy = 0;
 }
 
 void
@@ -640,6 +651,7 @@ RegularWifiMac::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::RegularWifiMac")
     .SetParent<WifiMac> ()
+    .SetGroupName ("Wifi")
     .AddAttribute ("QosSupported",
                    "This Boolean attribute is set to enable 802.11e/WMM-style QoS support at this STA",
                    BooleanValue (false),
@@ -684,10 +696,12 @@ RegularWifiMac::GetTypeId (void)
                    MakePointerChecker<EdcaTxopN> ())
     .AddTraceSource ( "TxOkHeader",
                       "The header of successfully transmitted packet",
-                      MakeTraceSourceAccessor (&RegularWifiMac::m_txOkCallback))
+                     MakeTraceSourceAccessor (&RegularWifiMac::m_txOkCallback),
+                     "ns3::WifiMacHeader::TracedCallback")
     .AddTraceSource ("TxErrHeader",
                      "The header of unsuccessfully transmitted packet",
-                     MakeTraceSourceAccessor (&RegularWifiMac::m_txErrCallback))
+                     MakeTraceSourceAccessor (&RegularWifiMac::m_txErrCallback),
+                     "ns3::WifiMacHeader::TracedCallback")
   ;
 
   return tid;
@@ -701,12 +715,6 @@ RegularWifiMac::FinishConfigureStandard (enum WifiPhyStandard standard)
 
   switch (standard)
     {
-    case WIFI_PHY_STANDARD_80211p_CCH:
-    case WIFI_PHY_STANDARD_80211p_SCH:
-      cwmin = 15;
-      cwmax = 511;
-      break;
-
     case WIFI_PHY_STANDARD_holland:
     case WIFI_PHY_STANDARD_80211a:
     case WIFI_PHY_STANDARD_80211g:
@@ -734,15 +742,7 @@ RegularWifiMac::FinishConfigureStandard (enum WifiPhyStandard standard)
   // Now we configure the EDCA functions
   for (EdcaQueues::iterator i = m_edca.begin (); i != m_edca.end (); ++i)
     {
-      // Special configuration for 802.11p CCH
-      if (standard == WIFI_PHY_STANDARD_80211p_CCH)
-        {
-          ConfigureCCHDcf (i->second, cwmin, cwmax, i->first);
-        }
-      else
-        {
-          ConfigureDcf (i->second, cwmin, cwmax, i->first);
-        }
+      ConfigureDcf (i->second, cwmin, cwmax, i->first);
     }
 }
 

@@ -29,10 +29,9 @@
 #include <ns3/log.h>
 
 
-NS_LOG_COMPONENT_DEFINE ("BuildingsHelper");
-
 namespace ns3 {
 
+NS_LOG_COMPONENT_DEFINE ("BuildingsHelper");
 
 void
 BuildingsHelper::Install (NodeContainer c)

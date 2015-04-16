@@ -37,13 +37,29 @@
 
 using namespace ns3;
 
+/**
+ * Test class for TracedValue callbacks.
+ * \see attribute_ValueClassTest
+ */
 class ValueClassTest 
 {
 public:
   ValueClassTest () {}
+  
+  /**
+   * TracedValue callback signature for ValueClassTest
+   *
+   * \param [in] oldValue original value of the traced variable
+   * \param [in] newValue new value of the traced variable
+   */
+  typedef void (* TracedValueCallback)(const ValueClassTest oldValue,
+                                       const ValueClassTest newValue);
+
 private:
   int m_v;
 };
+
+
 bool operator != (const ValueClassTest &a, const ValueClassTest &b)
 {
   return true;
@@ -56,6 +72,7 @@ std::istream & operator >> (std::istream &is, ValueClassTest &v)
 {
   return is;
 }
+
 ATTRIBUTE_HELPER_HEADER (ValueClassTest);
 ATTRIBUTE_HELPER_CPP (ValueClassTest);
 
@@ -170,11 +187,14 @@ public:
                      MakeValueClassTestAccessor (&AttributeObjectTest::m_valueSrc),
                      MakeValueClassTestChecker ())
       .AddTraceSource ("Source1", "help test",
-                       MakeTraceSourceAccessor (&AttributeObjectTest::m_intSrc1))
+                       MakeTraceSourceAccessor (&AttributeObjectTest::m_intSrc1),
+                       "ns3::TracedValue::Int8Callback")
       .AddTraceSource ("Source2", "help text",
-                       MakeTraceSourceAccessor (&AttributeObjectTest::m_cb))
+                       MakeTraceSourceAccessor (&AttributeObjectTest::m_cb),
+                       "ns3::AttributeObjectTest::NumericTracedCallback")
       .AddTraceSource ("ValueSource", "help text",
-                       MakeTraceSourceAccessor (&AttributeObjectTest::m_valueSrc))
+                       MakeTraceSourceAccessor (&AttributeObjectTest::m_valueSrc),
+                       "ns3::ValueClassTest::TracedValueCallback")
       .AddAttribute ("Pointer", "help text",
                      PointerValue (),
                      MakePointerAccessor (&AttributeObjectTest::m_ptr),
@@ -199,6 +219,18 @@ public:
 
     return tid;
   }
+
+  AttributeObjectTest (void)
+  {
+    NS_UNUSED (m_boolTest);
+    NS_UNUSED (m_int16);
+    NS_UNUSED (m_int16WithBounds);
+    NS_UNUSED (m_uint8);
+    NS_UNUSED (m_float);
+    NS_UNUSED (m_enum);
+  }
+
+  virtual ~AttributeObjectTest (void) {};
 
   void AddToVector1 (void) { m_vector1.push_back (CreateObject<Derived> ()); }
   void AddToVector2 (void) { m_vector2.push_back (CreateObject<Derived> ()); }
@@ -239,6 +271,8 @@ private:
   Callback<void,int8_t> m_cbValue;
   TracedValue<int8_t> m_intSrc1;
   TracedValue<int8_t> m_intSrc2;
+
+  typedef void (* NumericTracedCallback) (const double, const int, const float);
   TracedCallback<double, int, float> m_cb;
   TracedValue<ValueClassTest> m_valueSrc;
   Ptr<Derived> m_ptr;

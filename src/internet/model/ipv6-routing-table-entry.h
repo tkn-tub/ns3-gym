@@ -57,7 +57,7 @@ public:
   /**
    * \brief Destructor
    */
-  ~Ipv6RoutingTableEntry ();
+  virtual ~Ipv6RoutingTableEntry ();
 
   /**
    * \brief Is the route entry correspond to a host ?
@@ -260,6 +260,13 @@ private:
 
 };
 
+/**
+ * \brief Stream insertion operator.
+ *
+ * \param os the reference to the output stream
+ * \param route the Ipv6 routing table entry
+ * \returns the reference to the output stream
+ */
 std::ostream& operator<< (std::ostream& os, Ipv6RoutingTableEntry const& route);
 
 /**
@@ -364,6 +371,13 @@ private:
   std::vector<uint32_t> m_outputInterfaces;
 };
 
+/**
+ * \brief Stream insertion operator.
+ *
+ * \param os the reference to the output stream
+ * \param route the Ipv6 multicast routing table entry
+ * \returns the reference to the output stream
+ */
 std::ostream& operator<< (std::ostream& os, Ipv6MulticastRoutingTableEntry const& route);
 
 } /* namespace ns3 */

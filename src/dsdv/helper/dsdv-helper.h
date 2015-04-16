@@ -48,7 +48,6 @@ public:
   DsdvHelper ();
   ~DsdvHelper ();
   /**
-   * \internal
    * \returns pointer to clone of this DsdvHelper
    *
    * This method is mainly for internal use by the other helpers;
@@ -73,7 +72,7 @@ public:
   void Set (std::string name, const AttributeValue &value);
 
 private:
-  ObjectFactory m_agentFactory;
+  ObjectFactory m_agentFactory; //!< Object factory
 };
 
 }

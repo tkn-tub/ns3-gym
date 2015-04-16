@@ -29,9 +29,9 @@
 
 #include <algorithm>
 
-NS_LOG_COMPONENT_DEFINE ("PacketSocket");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("PacketSocket");
 
 NS_OBJECT_ENSURE_REGISTERED (PacketSocket);
 
@@ -40,9 +40,11 @@ PacketSocket::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::PacketSocket")
     .SetParent<Socket> ()
+    .SetGroupName("Network")
     .AddConstructor<PacketSocket> ()
     .AddTraceSource ("Drop", "Drop packet due to receive buffer overflow",
-                     MakeTraceSourceAccessor (&PacketSocket::m_dropTrace))
+                     MakeTraceSourceAccessor (&PacketSocket::m_dropTrace),
+                     "ns3::Packet::TracedCallback")
     .AddAttribute ("RcvBufSize",
                    "PacketSocket maximum receive buffer size (bytes)",
                    UintegerValue (131072),
@@ -543,6 +545,7 @@ PacketSocketTag::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::PacketSocketTag")
     .SetParent<Tag> ()
+    .SetGroupName("Network")
     .AddConstructor<PacketSocketTag> ()
   ;
   return tid;
@@ -606,6 +609,7 @@ DeviceNameTag::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::DeviceNameTag")
     .SetParent<Tag> ()
+    .SetGroupName("Network")
     .AddConstructor<DeviceNameTag> ();
   return tid;
 }

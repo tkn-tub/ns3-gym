@@ -30,13 +30,13 @@
 
 #include <cmath>
 
+
+namespace ns3 {
+
 // Note:  Logging in this file is largely avoided due to the
 // number of calls that are made to these functions and the possibility
 // of causing recursions leading to stack overflow
-
 NS_LOG_COMPONENT_DEFINE ("DefaultSimulatorImpl");
-
-namespace ns3 {
 
 NS_OBJECT_ENSURE_REGISTERED (DefaultSimulatorImpl);
 
@@ -45,6 +45,7 @@ DefaultSimulatorImpl::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::DefaultSimulatorImpl")
     .SetParent<SimulatorImpl> ()
+    .SetGroupName ("Core")
     .AddConstructor<DefaultSimulatorImpl> ()
   ;
   return tid;
@@ -357,30 +358,30 @@ DefaultSimulatorImpl::Cancel (const EventId &id)
 }
 
 bool
-DefaultSimulatorImpl::IsExpired (const EventId &ev) const
+DefaultSimulatorImpl::IsExpired (const EventId &id) const
 {
-  if (ev.GetUid () == 2)
+  if (id.GetUid () == 2)
     {
-      if (ev.PeekEventImpl () == 0 ||
-          ev.PeekEventImpl ()->IsCancelled ())
+      if (id.PeekEventImpl () == 0 ||
+          id.PeekEventImpl ()->IsCancelled ())
         {
           return true;
         }
       // destroy events.
       for (DestroyEvents::const_iterator i = m_destroyEvents.begin (); i != m_destroyEvents.end (); i++)
         {
-          if (*i == ev)
+          if (*i == id)
             {
               return false;
             }
         }
       return true;
     }
-  if (ev.PeekEventImpl () == 0 ||
-      ev.GetTs () < m_currentTs ||
-      (ev.GetTs () == m_currentTs &&
-       ev.GetUid () <= m_currentUid) ||
-      ev.PeekEventImpl ()->IsCancelled ()) 
+  if (id.PeekEventImpl () == 0 ||
+      id.GetTs () < m_currentTs ||
+      (id.GetTs () == m_currentTs &&
+       id.GetUid () <= m_currentUid) ||
+      id.PeekEventImpl ()->IsCancelled ()) 
     {
       return true;
     }

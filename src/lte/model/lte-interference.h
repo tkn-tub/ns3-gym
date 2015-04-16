@@ -34,7 +34,7 @@ namespace ns3 {
 
 
 
-class LteSinrChunkProcessor;
+class LteChunkProcessor;
 
 
 
@@ -54,31 +54,31 @@ public:
   virtual void DoDispose ();
 
   /**
-   * Add a LteSinrChunkProcessor that will use the time-vs-frequency SINR
+   * Add a LteChunkProcessor that will use the time-vs-frequency SINR
    * calculated by this LteInterference instance. Note that all the
-   * added LteSinrChunkProcessors will work in parallel. 
+   * added LteChunkProcessors will work in parallel.
    *
    * @param p
    */
-  void AddSinrChunkProcessor (Ptr<LteSinrChunkProcessor> p);
+  void AddSinrChunkProcessor (Ptr<LteChunkProcessor> p);
 
   /**
-   * Add a LteSinrChunkProcessor that will use the time-vs-frequency
+   * Add a LteChunkProcessor that will use the time-vs-frequency
    *  interference calculated by this LteInterference instance. Note 
-   *  that all the added LteSinrChunkProcessors will work in parallel.
+   *  that all the added LteChunkProcessors will work in parallel.
    *
    * @param p
    */
-  void AddInterferenceChunkProcessor (Ptr<LteSinrChunkProcessor> p);
+  void AddInterferenceChunkProcessor (Ptr<LteChunkProcessor> p);
 
   /**
-   * Add a LteSinrChunkProcessor that will use the time-vs-frequency
+   * Add a LteChunkProcessor that will use the time-vs-frequency
    *  power calculated by this LteInterference instance. Note
-   *  that all the added LteSinrChunkProcessors will work in parallel.
+   *  that all the added LteChunkProcessors will work in parallel.
    *
    * @param p
    */
-  void AddRsPowerChunkProcessor (Ptr<LteSinrChunkProcessor> p);
+  void AddRsPowerChunkProcessor (Ptr<LteChunkProcessor> p);
 
   /**
    * notify that the PHY is starting a RX attempt
@@ -143,15 +143,15 @@ private:
 
   /** all the processor instances that need to be notified whenever
   a new interference chunk is calculated */
-  std::list<Ptr<LteSinrChunkProcessor> > m_rsPowerChunkProcessorList;
+  std::list<Ptr<LteChunkProcessor> > m_rsPowerChunkProcessorList;
 
   /** all the processor instances that need to be notified whenever
       a new SINR chunk is calculated */
-  std::list<Ptr<LteSinrChunkProcessor> > m_sinrChunkProcessorList;
+  std::list<Ptr<LteChunkProcessor> > m_sinrChunkProcessorList;
 
   /** all the processor instances that need to be notified whenever
       a new interference chunk is calculated */
-  std::list<Ptr<LteSinrChunkProcessor> > m_interfChunkProcessorList; 
+  std::list<Ptr<LteChunkProcessor> > m_interfChunkProcessorList;
 
 
 };

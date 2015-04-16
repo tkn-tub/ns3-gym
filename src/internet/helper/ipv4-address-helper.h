@@ -55,6 +55,9 @@ public:
  * @brief Construct a helper class to make life easier while doing simple IPv4
  * address assignment in scripts.  This version sets the base and mask
  * in the constructor
+ * @param network the network part
+ * @param mask the address mask
+ * @param base the host part to start from
  */
   Ipv4AddressHelper (Ipv4Address network, Ipv4Mask mask, 
                      Ipv4Address base = "0.0.0.1");
@@ -169,7 +172,7 @@ public:
  * @param c The NetDeviceContainer holding the collection of net devices we
  * are asked to assign Ipv4 addresses to.
  *
- * @returns Nothing
+ * @returns A container holding the added NetDevices
  * @see SetBase
  * @see NewNetwork
  */
@@ -177,16 +180,18 @@ public:
 
 private:
   /**
-   * @internal
+   * \brief Returns the number of address bits (hostpart) for a given netmask
+   * \param maskbits the netmask
+   * \returns the number of bits in the hostpart
    */
   uint32_t NumAddressBits (uint32_t maskbits) const;
 
-  uint32_t m_network;
-  uint32_t m_mask;
-  uint32_t m_address;
-  uint32_t m_base;
-  uint32_t m_shift;
-  uint32_t m_max;
+  uint32_t m_network; //!< network address
+  uint32_t m_mask;    //!< network mask
+  uint32_t m_address; //!< address
+  uint32_t m_base;    //!< base address
+  uint32_t m_shift;   //!< shift, equivalent to the number of bits in the hostpart
+  uint32_t m_max;     //!< maximum allowed address
 };
 
 } // namespace ns3

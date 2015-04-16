@@ -5,10 +5,172 @@
   User Documentation
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
+How to use buildings in a simulation
+====================================
+
+In this section we explain the basic usage of the buildings model within a
+simulation program.
+
+Include the headers
+*******************
+
+Add this at the beginning of your simulation program::
+
+   #include <ns3/buildings-module.h>
 
 
-Main configurable parameters
-----------------------------
+Create a building
+*****************
+
+As an example, let's create a residential 10 x 20 x 10 building::
+
+    double x_min = 0.0;
+    double x_max = 10.0;
+    double y_min = 0.0;
+    double y_max = 20.0;
+    double z_min = 0.0;
+    double z_max = 10.0;
+    Ptr<Building> b = CreateObject <Building> ();
+    b->SetBoundaries (Box (x_min, x_max, y_min, y_max, z_min, z_max));
+    b->SetBuildingType (Building::Residential);
+    b->SetExtWallsType (Building::ConcreteWithWindows);
+    b->SetNFloors (3);
+    b->SetNRoomsX (3);
+    b->SetNRoomsY (2);
+
+This building has three floors and an internal 3 x 2  grid of rooms of equal size.
+
+The helper class GridBuildingAllocator is also available to easily
+create a set of buildings with identical characteristics placed on a
+rectangular grid. Here's an example of how to use it::
+
+  Ptr<GridBuildingAllocator>  gridBuildingAllocator;
+  gridBuildingAllocator = CreateObject<GridBuildingAllocator> ();
+  gridBuildingAllocator->SetAttribute ("GridWidth", UintegerValue (3));
+  gridBuildingAllocator->SetAttribute ("LengthX", DoubleValue (7)); 
+  gridBuildingAllocator->SetAttribute ("LengthY", DoubleValue (13));
+  gridBuildingAllocator->SetAttribute ("DeltaX", DoubleValue (3));
+  gridBuildingAllocator->SetAttribute ("DeltaY", DoubleValue (3));
+  gridBuildingAllocator->SetAttribute ("Height", DoubleValue (6));
+  gridBuildingAllocator->SetBuildingAttribute ("NRoomsX", UintegerValue (2));
+  gridBuildingAllocator->SetBuildingAttribute ("NRoomsY", UintegerValue (4));
+  gridBuildingAllocator->SetBuildingAttribute ("NFloors", UintegerValue (2));
+  gridBuildingAllocator->SetAttribute ("MinX", DoubleValue (0));
+  gridBuildingAllocator->SetAttribute ("MinY", DoubleValue (0));
+  gridBuildingAllocator->Create (6);
+
+
+This will create a 3x2 grid of 6 buildings, each 7 x 13 x 6 m with 2 x
+4 rooms inside and 2 foors; the buildings are spaced by 3 m on both
+the x and the y axis. 
+
+
+Setup nodes and mobility models
+*******************************
+
+Nodes and mobility models are configured as usual, however in order to
+use them with the buildings model you need an additional call to
+``BuildingsHelper::Install()``, so as to let the mobility model include
+the informtion on their position w.r.t. the buildings. Here is an example::
+
+    MobilityHelper mobility;
+    mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
+    ueNodes.Create (2);
+    mobility.Install (ueNodes);
+    BuildingsHelper::Install (ueNodes);
+
+It is to be noted that any mobility model can be used. However, the
+user is advised to make sure that the behavior of the mobility model
+being used is consistent with the presence of Buildings. For example,
+using a simple random mobility over the whole simulation area in
+presence of buildings might easily results in node moving in and out
+of buildings, regardless of the presence of walls. 
+
+
+Place some nodes
+****************
+
+You can place nodes in your simulation using several methods, which
+are described in the following.
+
+Legacy positioning methods
+--------------------------
+
+Any legacy ns-3 positioning method can be used to place node in the
+simulation. The important additional step is to For example, you can
+place nodes manually like this::
+
+    Ptr<ConstantPositionMobilityModel> mm0 = enbNodes.Get (0)->GetObject<ConstantPositionMobilityModel> ();
+    Ptr<ConstantPositionMobilityModel> mm1 = enbNodes.Get (1)->GetObject<ConstantPositionMobilityModel> ();
+    mm0->SetPosition (Vector (5.0, 5.0, 1.5));
+    mm1->SetPosition (Vector (30.0, 40.0, 1.5));
+
+    MobilityHelper mobility;
+    mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
+    ueNodes.Create (2);
+    mobility.Install (ueNodes);
+    BuildingsHelper::Install (ueNodes);
+    mm0->SetPosition (Vector (5.0, 5.0, 1.5));
+    mm1->SetPosition (Vector (30.0, 40.0, 1.5));
+
+Alternatively, you could use any existing PositionAllocator
+class. The coordinates of the node will determine whether it is placed
+outdoor or indoor and, if indoor, in which building and room it is placed.
+
+
+Building-specific positioning methods
+-------------------------------------
+
+The following position allocator classes are available to place node
+in special positions with respect to buildings:
+
+ - ``RandomBuildingPositionAllocator``: Allocate each position by
+   randomly chosing a building from the list of all buildings, and
+   then randomly chosing a position inside the building. 
+
+ - ``RandomRoomPositionAllocator``: Allocate each position by randomly
+   chosing a room from the list of rooms in all buildings, and then
+   randomly chosing a position inside the room. 
+
+ - ``SameRoomPositionAllocator``: Walks a given NodeContainer
+   sequentially, and for each node allocate a new position randomly in
+   the same room of that node.  
+
+ - ``FixedRoomPositionAllocator``: Generate a random position
+   uniformly distributed in the volume of a chosen room inside a
+   chosen building.   
+
+
+
+Make the Mobility Model Consistent
+**********************************
+
+**Important**: whenever you use buildings, you have to issue the
+following command after we have placed all nodes and buildings in the simulation::
+
+    BuildingsHelper::MakeMobilityModelConsistent ();
+
+This command will go through the lists of all nodes and of all
+buildings, determine for each user if it is indoor or outdoor, and if
+indoor it will also determine the building in which the user is
+located and the corresponding floor and number inside the building. 
+
+
+Building-aware pathloss model
+*****************************
+
+After you placed buildings and nodes in a simulation, you can use a
+building-aware pathloss model in a simulation exactly in the same way
+you would use any regular path loss model. How to do this is specific
+for the wireless module that you are considering (lte, wifi, wimax,
+etc.), so please refer to the documentation of that model for specific
+instructions.
+
+
+
+
+Main configurable attributes
+============================
 
 The ``Building`` class has the following configurable parameters:
 
@@ -40,12 +202,6 @@ The ``BuildingPropagationLossModel`` class has the following configurable parame
 
 In order to use the hybrid mode, the class to be used is the ``HybridBuildingMobilityLossModel``, which allows the selection of the proper pathloss model according to the pathloss logic presented in the design chapter. However, this solution has the problem that the pathloss model switching points might present discontinuities due to the different characteristics of the model. This implies that according to the specific scenario, the threshold used for switching have to be properly tuned.
 The simple ``OhBuildingMobilityLossModel`` overcome this problem by using only the Okumura Hata model and the wall penetration losses.
-
-
-Helper Functionalities
-----------------------
-
-The ``BuildingsHelper`` class defines a set of static function for assisting in the definition of the scenario with building module. In detail, it provides the method ``Install`` for installing the building information included in  ``MobilityBuildingInfo`` to a specific node (or set of nodes, i.e.,  the ``NodeContainer``). In order to synchronize the nodes information with their position, this helper provides the function ``MakeMobilityModelConsistent`` that puts all the ``Node``\s presents in the simulation in the right position (i.e., outdoor or indoor, in the latter also updating in terms of building, floor and room number).
 
 
 

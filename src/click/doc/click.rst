@@ -1,3 +1,5 @@
+.. highlight:: bash
+
 Click Modular Router Integration
 --------------------------------
 
@@ -78,10 +80,10 @@ Building Click
 
 The first step is to clone Click from the github repository and build it::
 
-  $: git clone https://github.com/kohler/click
-  $: cd click/
-  $: ./configure --disable-linuxmodule --enable-nsclick --enable-wifi
-  $: make
+  $ git clone https://github.com/kohler/click
+  $ cd click/
+  $ ./configure --disable-linuxmodule --enable-nsclick --enable-wifi
+  $ make
 
 The --enable-wifi flag may be skipped if you don't intend on using Click with Wifi.
 * Note: You don't need to do a 'make install'. 
@@ -89,7 +91,7 @@ The --enable-wifi flag may be skipped if you don't intend on using Click with Wi
 Once Click has been built successfully, change into the ns-3 directory and 
 configure ns-3 with Click Integration support::
 
-  $: ./waf configure --enable-examples --enable-tests --with-nsclick=/path/to/click/source
+  $ ./waf configure --enable-examples --enable-tests --with-nsclick=/path/to/click/source
 
 Hint:  If you have click installed one directory above ns-3 (such as in the
 ns-3-allinone directory), and the name of the directory is 'click' (or
@@ -101,7 +103,7 @@ If it says 'enabled' beside 'NS-3 Click Integration Support', then you're good t
 
 Next, try running one of the examples::
 
-  $: ./waf --run nsclick-simple-lan
+  $ ./waf --run nsclick-simple-lan
 
 You may then view the resulting .pcap traces, which are named nsclick-simple-lan-0-0.pcap and nsclick-simple-lan-0-1.pcap.
 
@@ -120,7 +122,9 @@ The following should be kept in mind when making your Click graph:
 Debugging Packet Flows from Click
 =================================
 
-From any point within a Click graph, you may use the Print (http://read.cs.ucla.edu/click/elements/print) element and its variants for pretty printing of packet contents. Furthermore, you may generate pcap traces of packets flowing through a Click graph by using the ToDump (http://read.cs.ucla.edu/click/elements/todump) element as well. For instance::
+From any point within a Click graph, you may use the Print (http://read.cs.ucla.edu/click/elements/print) element and its variants for pretty printing of packet contents. Furthermore, you may generate pcap traces of packets flowing through a Click graph by using the ToDump (http://read.cs.ucla.edu/click/elements/todump) element as well. For instance:
+
+.. sourcecode:: cpp
 
   myarpquerier
    -> Print(fromarpquery,64)
@@ -133,7 +137,9 @@ Helper
 ======
 
 To have a node run Click, the easiest way would be to use the ClickInternetStackHelper
-class in your simulation script. For instance::
+class in your simulation script. For instance:
+
+.. sourcecode:: cpp
 
   ClickInternetStackHelper click;
   click.SetClickFile (myNodeContainer, "nsclick-simple-lan.click");

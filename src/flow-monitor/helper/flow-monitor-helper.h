@@ -30,39 +30,107 @@ namespace ns3 {
 
 class AttributeValue;
 class Ipv4FlowClassifier;
+class Ipv6FlowClassifier;
 
-/// \brief Helper to enable IPv4 flow monitoring on a set of Nodes
+/**
+ * \ingroup flow-monitor
+ * \brief Helper to enable IP flow monitoring on a set of Nodes
+ */
 class FlowMonitorHelper
 {
 public:
-  /// \brief Construct a FlowMonitorHelper class which makes it easier to 
-  /// configure and use the FlowMonitor
+
   FlowMonitorHelper ();
-  /// \brief Dispose of objects allocated by the helper
   ~FlowMonitorHelper ();
 
-  /// \brief Set an attribute for the to-be-created FlowMonitor object
+  /**
+   * \brief Set an attribute for the to-be-created FlowMonitor object
+   * \param n1 attribute name
+   * \param v1 attibute value
+   */
   void SetMonitorAttribute (std::string n1, const AttributeValue &v1);
 
-  /// \brief Enable flow monitoring on a set of nodes
-  /// \param nodes A NodeContainer holding the set of nodes to work with.
+  /**
+   * \brief Enable flow monitoring on a set of nodes
+   * \param nodes A NodeContainer holding the set of nodes to work with.
+   * \returns a pointer to the FlowMonitor object
+   */
   Ptr<FlowMonitor> Install (NodeContainer nodes);
-  /// \brief Enable flow monitoring on a single node
-  /// \param node A Ptr<Node> to the node on which to enable flow monitoring.
+  /**
+   * \brief Enable flow monitoring on a single node
+   * \param node A Ptr<Node> to the node on which to enable flow monitoring.
+   * \returns a pointer to the FlowMonitor object
+   */
   Ptr<FlowMonitor> Install (Ptr<Node> node);
-  /// \brief Enable flow monitoring on all nodes
+  /**
+   * \brief Enable flow monitoring on all nodes
+   * \returns a pointer to the FlowMonitor object
+   */
   Ptr<FlowMonitor> InstallAll ();
 
-  /// \brief Retrieve the FlowMonitor object created by the Install* methods
+  /**
+   * \brief Retrieve the FlowMonitor object created by the Install* methods
+   * \returns a pointer to the FlowMonitor object
+   */
   Ptr<FlowMonitor> GetMonitor ();
 
-  /// \brief Retrieve the FlowClassifier object created by the Install* methods
+  /**
+   * \brief Retrieve the FlowClassifier object for IPv4 created by the Install* methods
+   * \returns a pointer to the FlowClassifier object
+   */
   Ptr<FlowClassifier> GetClassifier ();
 
+  /**
+   * \brief Retrieve the FlowClassifier object for IPv6 created by the Install* methods
+   * \returns a pointer to the FlowClassifier object
+   */
+  Ptr<FlowClassifier> GetClassifier6 ();
+
+  /**
+   * Serializes the results to an std::ostream in XML format
+   * \param os the output stream
+   * \param indent number of spaces to use as base indentation level
+   * \param enableHistograms if true, include also the histograms in the output
+   * \param enableProbes if true, include also the per-probe/flow pair statistics in the output
+   */
+  void SerializeToXmlStream (std::ostream &os, int indent, bool enableHistograms, bool enableProbes);
+
+  /**
+   * Same as SerializeToXmlStream, but returns the output as a std::string
+   * \param indent number of spaces to use as base indentation level
+   * \param enableHistograms if true, include also the histograms in the output
+   * \param enableProbes if true, include also the per-probe/flow pair statistics in the output
+   * \return the XML output as string
+   */
+  std::string SerializeToXmlString (int indent, bool enableHistograms, bool enableProbes);
+
+  /**
+   * Same as SerializeToXmlStream, but writes to a file instead
+   * \param fileName name or path of the output file that will be created
+   * \param enableHistograms if true, include also the histograms in the output
+   * \param enableProbes if true, include also the per-probe/flow pair statistics in the output
+   */
+  void SerializeToXmlFile (std::string fileName, bool enableHistograms, bool enableProbes);
+
 private:
-  ObjectFactory m_monitorFactory;
-  Ptr<FlowMonitor> m_flowMonitor;
-  Ptr<FlowClassifier> m_flowClassifier;
+  /**
+   * \brief Copy constructor
+   *
+   * Defined and unimplemented to avoid misuse
+   */
+  FlowMonitorHelper (const FlowMonitorHelper&);
+  /**
+   * \brief Copy constructor
+   *
+   * Defined and unimplemented to avoid misuse
+   * \returns
+   */
+  FlowMonitorHelper& operator= (const FlowMonitorHelper&);
+
+  ObjectFactory m_monitorFactory;        //!< Object factory
+  Ptr<FlowMonitor> m_flowMonitor;        //!< the FlowMonitor object
+  Ptr<FlowClassifier> m_flowClassifier4; //!< the FlowClassifier object for IPv4
+  Ptr<FlowClassifier> m_flowClassifier6; //!< the FlowClassifier object for IPv6
 };
 
 } // namespace ns3

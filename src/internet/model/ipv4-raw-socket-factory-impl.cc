@@ -23,9 +23,9 @@
 #include "ns3/socket.h"
 #include "ns3/log.h"
 
-NS_LOG_COMPONENT_DEFINE ("Ipv4RawSocketFactoryImpl");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("Ipv4RawSocketFactoryImpl");
 
 Ptr<Socket> 
 Ipv4RawSocketFactoryImpl::CreateSocket (void)

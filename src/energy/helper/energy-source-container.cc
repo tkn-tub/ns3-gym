@@ -25,11 +25,14 @@
 
 namespace ns3 {
 
+NS_OBJECT_ENSURE_REGISTERED (EnergySourceContainer);
+
 TypeId
 EnergySourceContainer::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::EnergySourceContainer")
     .SetParent<Object> ()
+    .SetGroupName ("Energy")
     .AddConstructor<EnergySourceContainer> ()
   ;
   return tid;

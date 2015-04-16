@@ -35,6 +35,7 @@ SnrTag::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::SnrTag")
     .SetParent<Tag> ()
+    .SetGroupName ("Wifi")
     .AddConstructor<SnrTag> ()
     .AddAttribute ("Snr", "The snr of the last packet received",
                    DoubleValue (0.0),

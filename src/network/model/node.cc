@@ -32,22 +32,26 @@
 #include "ns3/boolean.h"
 #include "ns3/simulator.h"
 
-NS_LOG_COMPONENT_DEFINE ("Node");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("Node");
 
 NS_OBJECT_ENSURE_REGISTERED (Node);
 
-GlobalValue g_checksumEnabled  = GlobalValue ("ChecksumEnabled",
-                                              "A global switch to enable all checksums for all protocols",
-                                              BooleanValue (false),
-                                              MakeBooleanChecker ());
+/**
+ * \brief A global switch to enable all checksums for all protocols.
+ */
+static GlobalValue g_checksumEnabled  = GlobalValue ("ChecksumEnabled",
+                                                     "A global switch to enable all checksums for all protocols",
+                                                     BooleanValue (false),
+                                                     MakeBooleanChecker ());
 
 TypeId 
 Node::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::Node")
     .SetParent<Object> ()
+    .SetGroupName("Network")
     .AddConstructor<Node> ()
     .AddAttribute ("DeviceList", "The list of devices associated to this Node.",
                    ObjectVectorValue (),
@@ -63,7 +67,7 @@ Node::GetTypeId (void)
                    MakeUintegerAccessor (&Node::m_id),
                    MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("SystemId", "The systemId of this node: a unique integer used for parallel simulations.",
-                   TypeId::ATTR_GET|TypeId::ATTR_SET,
+                   TypeId::ATTR_GET || TypeId::ATTR_SET,
                    UintegerValue (0),
                    MakeUintegerAccessor (&Node::m_sid),
                    MakeUintegerChecker<uint32_t> ())

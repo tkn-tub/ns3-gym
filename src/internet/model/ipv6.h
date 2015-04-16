@@ -38,6 +38,7 @@ class Node;
 class NetDevice;
 class Packet;
 class Ipv6RoutingProtocol;
+class IpL4Protocol;
 
 /**
  * \ingroup internet
@@ -79,6 +80,10 @@ class Ipv6RoutingProtocol;
 class Ipv6 : public Object
 {
 public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
 
   /**
@@ -298,6 +303,21 @@ public:
    * If set to true, IPv6 forwarding is enabled for input datagrams on this device
    */
   virtual void SetForwarding (uint32_t interface, bool val) = 0;
+
+  /**
+   * \brief Choose the source address to use with destination address.
+   * \param interface interface index
+   * \param dest IPv6 destination address
+   * \return IPv6 source address to use
+   */
+  virtual Ipv6Address SourceAddressSelection (uint32_t interface, Ipv6Address dest) = 0;
+
+  /**
+   * \brief Get L4 protocol by protocol number.
+   * \param protocolNumber protocol number
+   * \return corresponding Ipv6L4Protocol or 0 if not found
+   */
+  virtual Ptr<IpL4Protocol> GetProtocol (int protocolNumber) const = 0;
 
   /**
    * \brief Register the IPv6 Extensions.

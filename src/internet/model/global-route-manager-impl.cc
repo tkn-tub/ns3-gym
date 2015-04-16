@@ -40,10 +40,17 @@
 #include "candidate-queue.h"
 #include "ipv4-global-routing.h"
 
-NS_LOG_COMPONENT_DEFINE ("GlobalRouteManagerImpl");
-
 namespace ns3 {
 
+NS_LOG_COMPONENT_DEFINE ("GlobalRouteManagerImpl");
+
+/**
+ * \brief Stream insertion operator.
+ *
+ * \param os the reference to the output stream
+ * \param exit the exit node
+ * \returns the reference to the output stream
+ */
 std::ostream& 
 operator<< (std::ostream& os, const SPFVertex::NodeExit_t& exit)
 {
@@ -704,8 +711,9 @@ GlobalRouteManagerImpl::InitializeRoutes ()
       Ptr<GlobalRouter> rtr = 
         node->GetObject<GlobalRouter> ();
 
+      uint32_t systemId = MpiInterface::GetSystemId ();
       // Ignore nodes that are not assigned to our systemId (distributed sim)
-      if (node->GetSystemId () != MpiInterface::GetSystemId ()) 
+      if (node->GetSystemId () != systemId) 
         {
           continue;
         }

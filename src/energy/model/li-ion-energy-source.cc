@@ -27,9 +27,9 @@
 
 #include <cmath>
 
-NS_LOG_COMPONENT_DEFINE ("LiIonEnergySource");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("LiIonEnergySource");
 
 NS_OBJECT_ENSURE_REGISTERED (LiIonEnergySource);
 
@@ -38,12 +38,18 @@ LiIonEnergySource::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::LiIonEnergySource")
     .SetParent<EnergySource> ()
+    .SetGroupName ("Energy")
     .AddConstructor<LiIonEnergySource> ()
     .AddAttribute ("LiIonEnergySourceInitialEnergyJ",
                    "Initial energy stored in basic energy source.",
                    DoubleValue (31752.0),  // in Joules
                    MakeDoubleAccessor (&LiIonEnergySource::SetInitialEnergy,
                                        &LiIonEnergySource::GetInitialEnergy),
+                   MakeDoubleChecker<double> ())
+    .AddAttribute ("LiIonEnergyLowBatteryThreshold",
+                   "Low battery threshold for LiIon energy source.",
+                   DoubleValue (0.10), // as a fraction of the initial energy
+                   MakeDoubleAccessor (&LiIonEnergySource::m_lowBatteryTh),
                    MakeDoubleChecker<double> ())
     .AddAttribute ("InitialCellVoltage",
                    "Initial (maximum) voltage of the cell (fully charged).",
@@ -99,7 +105,8 @@ LiIonEnergySource::GetTypeId (void)
                    MakeTimeChecker ())
     .AddTraceSource ("RemainingEnergy",
                      "Remaining energy at BasicEnergySource.",
-                     MakeTraceSourceAccessor (&LiIonEnergySource::m_remainingEnergyJ))
+                     MakeTraceSourceAccessor (&LiIonEnergySource::m_remainingEnergyJ),
+                     "ns3::TracedValue::DoubleCallback")
   ;
   return tid;
 }
@@ -219,13 +226,13 @@ LiIonEnergySource::UpdateEnergySource (void)
 
   CalculateRemainingEnergy ();
 
-  if (m_remainingEnergyJ <= 0)
+  m_lastUpdateTime = Simulator::Now ();
+
+  if (m_remainingEnergyJ <= m_lowBatteryTh * m_initialEnergyJ)
     {
       HandleEnergyDrainedEvent ();
       return; // stop periodic update
     }
-
-  m_lastUpdateTime = Simulator::Now ();
 
   m_energyUpdateEvent = Simulator::Schedule (m_energyUpdateInterval,
                                              &LiIonEnergySource::UpdateEnergySource,
@@ -259,7 +266,10 @@ LiIonEnergySource::HandleEnergyDrainedEvent (void)
   NS_LOG_DEBUG ("LiIonEnergySource:Energy depleted at node #" <<
                 GetNode ()->GetId ());
   NotifyEnergyDrained (); // notify DeviceEnergyModel objects
-  m_remainingEnergyJ = 0; // energy never goes below 0
+  if (m_remainingEnergyJ <= 0)
+    {
+      m_remainingEnergyJ = 0; // energy never goes below 0
+    }
 }
 
 

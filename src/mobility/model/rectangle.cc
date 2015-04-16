@@ -124,12 +124,26 @@ Rectangle::CalculateIntersection (const Vector &current, const Vector &speed) co
 
 ATTRIBUTE_HELPER_CPP (Rectangle);
 
+/**
+ * \brief Stream insertion operator.
+ *
+ * \param os the stream
+ * \param rectangle the rectangle
+ * \returns a reference to the stream
+ */
 std::ostream &
 operator << (std::ostream &os, const Rectangle &rectangle)
 {
   os << rectangle.xMin << "|" << rectangle.xMax << "|" << rectangle.yMin << "|" << rectangle.yMax;
   return os;
 }
+/**
+ * \brief Stream extraction operator.
+ *
+ * \param is the stream
+ * \param rectangle the rectangle
+ * \returns a reference to the stream
+ */
 std::istream &
 operator >> (std::istream &is, Rectangle &rectangle)
 {

@@ -49,6 +49,7 @@ PhyRxStatsCalculator::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::PhyRxStatsCalculator")
     .SetParent<LteStatsCalculator> ()
+    .SetGroupName("Lte")
     .AddConstructor<PhyRxStatsCalculator> ()
     .AddAttribute ("DlRxOutputFilename",
                    "Name of the file where the downlink results will be saved.",

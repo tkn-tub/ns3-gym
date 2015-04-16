@@ -5,7 +5,7 @@ Ad Hoc On-Demand Distance Vector (AODV)
 
 This model implements the base specification of the Ad Hoc On-Demand 
 Distance Vector (AODV) protocol. The implementation is based on 
-[rfc3561]_.
+:rfc:`3561`.
 
 The model was written by Elena Buchatskaia and Pavel Boyko of ITTP RAS,
 and is based on the ns-2 AODV model developed by the CMU/MONARCH group
@@ -94,38 +94,43 @@ Future Work
 
 No announced plans.
 
-References
-++++++++++
+..
+  References
+  ++++++++++
 
-.. [rfc3561] RFC 3561 *Ad hoc On-Demand Distance Vector (AODV) Routing*
+..
+  Usage
+  *****
 
-Usage
-*****
+..
+  Examples
+  ++++++++
 
-Examples
-++++++++
+..
+  Helpers
+  +++++++
 
-Helpers
-+++++++
+..
+  Attributes
+  ++++++++++
 
-Attributes
-++++++++++
+..
+  Tracing
+  +++++++
 
-Tracing
-+++++++
+..
+  Logging
+  +++++++
 
-Logging
-+++++++
+..
+  Caveats
+  +++++++
 
-Caveats
-+++++++
-
-Validation
-**********
-
-Unit tests
-++++++++++
-
-Larger-scale performance tests
-++++++++++++++++++++++++++++++
+..
+  Validation
+  **********
+  Unit tests
+  ++++++++++
+  Larger-scale performance tests
+  ++++++++++++++++++++++++++++++
 

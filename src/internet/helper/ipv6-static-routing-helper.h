@@ -53,7 +53,6 @@ public:
   Ipv6StaticRoutingHelper (const Ipv6StaticRoutingHelper &);
 
   /**
-   * \internal
    * \returns pointer to clone of this Ipv6StaticRoutingHelper
    *
    * This method is mainly for internal use by the other helpers;
@@ -72,7 +71,7 @@ public:
   /**
    * \brief Get Ipv6StaticRouting pointer from IPv6 stack.
    * \param ipv6 Ipv6 pointer
-   * \return Ipv6StaticRouting pointer or 0 if not exist
+   * \return Ipv6StaticRouting pointer or 0 if not found
    */
   Ptr<Ipv6StaticRouting> GetStaticRouting (Ptr<Ipv6> ipv6) const;
 
@@ -118,9 +117,10 @@ public:
 #endif
 private:
   /**
-   * \internal
    * \brief Assignment operator declared private and not implemented to disallow
    * assignment and prevent the compiler from happily inserting its own.
+   * \param o object to copy from
+   * \returns a reference to the new object
    */
   Ipv6StaticRoutingHelper &operator = (const Ipv6StaticRoutingHelper &o);
 };

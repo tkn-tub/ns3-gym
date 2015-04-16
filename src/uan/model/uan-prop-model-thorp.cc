@@ -22,9 +22,9 @@
 #include "ns3/double.h"
 #include "ns3/log.h"
 
-NS_LOG_COMPONENT_DEFINE ("UanPropModelThorp");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("UanPropModelThorp");
 
 NS_OBJECT_ENSURE_REGISTERED (UanPropModelThorp);
 
@@ -43,7 +43,7 @@ UanPropModelThorp::GetTypeId (void)
     .SetParent<Object> ()
     .AddConstructor<UanPropModelThorp> ()
     .AddAttribute ("SpreadCoef",
-                   "Spreading coefficient used in calculation of Thorp's approximation",
+                   "Spreading coefficient used in calculation of Thorp's approximation.",
                    DoubleValue (1.5),
                    MakeDoubleAccessor (&UanPropModelThorp::m_SpreadCoef),
                    MakeDoubleChecker<double> ())

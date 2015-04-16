@@ -27,6 +27,7 @@
 #include "ns3/callback.h"
 #include "ns3/ipv6-header.h"
 #include "ns3/net-device.h"
+#include "ns3/ipv6-interface.h"
 
 namespace ns3
 {
@@ -35,8 +36,14 @@ class Header;
 class Packet;
 
 /**
- * \class Ipv6EndPoint
- * \brief An IPv6 end point, four tuples identification.
+ * \brief A representation of an internet IPv6 endpoint/connection
+ *
+ * This class provides an internet four-tuple (source and destination ports
+ * and addresses).  These are used in the ns3::Ipv6EndPointDemux as targets
+ * of lookups.  The class also has a callback for notification to higher
+ * layers that a packet from a lower layer was received.  In the ns3
+ * internet-stack, these notifications are automatically registered to be
+ * received by the corresponding socket.
  */
 class Ipv6EndPoint
 {
@@ -48,9 +55,6 @@ public:
    */
   Ipv6EndPoint (Ipv6Address addr, uint16_t port);
 
-  /**
-   * \brief Destructor.
-   */
   ~Ipv6EndPoint ();
 
   /**
@@ -113,7 +117,6 @@ public:
    * the socket can not receive any packets as a result.
    *
    * \param netdevice Pointer to Netdevice of desired interface
-   * \returns nothing
    */
   void BindToNetDevice (Ptr<NetDevice> netdevice);
 
@@ -132,7 +135,7 @@ public:
    * \brief Set the reception callback.
    * \param callback callback function
    */
-  void SetRxCallback (Callback<void, Ptr<Packet>, Ipv6Header, uint16_t> callback);
+  void SetRxCallback (Callback<void, Ptr<Packet>, Ipv6Header, uint16_t, Ptr<Ipv6Interface> > callback);
 
   /**
    * \brief Set the ICMP callback.
@@ -148,16 +151,23 @@ public:
 
   /**
    * \brief Forward the packet to the upper level.
+   *
+   * Called from an L4Protocol implementation to notify an endpoint of a
+   * packet reception.
+   *
    * \param p the packet
-   * \param srcAddr source address
-   * \param dstAddr source address
+   * \param header the packet header
    * \param port source port
+   * \param incomingInterface incoming interface
    */
-  void ForwardUp (Ptr<Packet> p, Ipv6Header header, uint16_t port);
+  void ForwardUp (Ptr<Packet> p, Ipv6Header header, uint16_t port, Ptr<Ipv6Interface> incomingInterface);
 
   /**
-   * \brief Function called from an L4Protocol implementation
-   * to notify an endpoint of an icmp message reception.
+   * \brief Forward the ICMP packet to the upper level.
+   *
+   * Called from an L4Protocol implementation to notify an endpoint of
+   * an icmp message reception.
+   *
    * \param src source IPv6 address
    * \param ttl time-to-live
    * \param type ICMPv6 type
@@ -171,11 +181,11 @@ private:
   /**
    * \brief ForwardUp wrapper.
    * \param p packet
-   * \param saddr source IPv6 address
-   * \param daddr dest IPv6 address
+   * \param header the packet header
    * \param sport source port
+   * \param incomingInterface incoming interface
    */
-  void DoForwardUp (Ptr<Packet> p, Ipv6Header header, uint16_t sport);
+  void DoForwardUp (Ptr<Packet> p, Ipv6Header header, uint16_t sport, Ptr<Ipv6Interface> incomingInterface);
 
   /**
    * \brief ForwardIcmp wrapper.
@@ -216,7 +226,7 @@ private:
   /**
    * \brief The RX callback.
    */
-  Callback<void, Ptr<Packet>, Ipv6Header, uint16_t> m_rxCallback;
+  Callback<void, Ptr<Packet>, Ipv6Header, uint16_t, Ptr<Ipv6Interface> > m_rxCallback;
 
   /**
    * \brief The ICMPv6 callback.

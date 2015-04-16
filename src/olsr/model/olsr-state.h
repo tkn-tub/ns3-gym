@@ -28,8 +28,7 @@
 #include "olsr-repositories.h"
 
 namespace ns3 {
-
-using namespace olsr;
+namespace olsr {
 
 /// This class encapsulates all data structures needed for maintaining internal state of an OLSR node.
 class OlsrState
@@ -175,6 +174,6 @@ public:
 
 };
 
-} // namespace ns3
+}} // namespace olsr,ns3
 
 #endif /* OLSR_STATE_H */

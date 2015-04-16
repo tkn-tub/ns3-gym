@@ -32,7 +32,6 @@ namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("EpcSgwPgwApplication");
 
-
 /////////////////////////
 // UeInfo
 /////////////////////////
@@ -49,6 +48,13 @@ EpcSgwPgwApplication::UeInfo::AddBearer (Ptr<EpcTft> tft, uint8_t bearerId, uint
   NS_LOG_FUNCTION (this << tft << teid);
   m_teidByBearerIdMap[bearerId] = teid;
   return m_tftClassifier.Add (tft, teid);
+}
+
+void
+EpcSgwPgwApplication::UeInfo::RemoveBearer (uint8_t bearerId)
+{
+  NS_LOG_FUNCTION (this << bearerId);
+  m_teidByBearerIdMap.erase (bearerId);
 }
 
 uint32_t
@@ -94,7 +100,8 @@ TypeId
 EpcSgwPgwApplication::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::EpcSgwPgwApplication")
-    .SetParent<Object> ();
+    .SetParent<Object> ()
+    .SetGroupName("Lte");
   return tid;
 }
 
@@ -144,7 +151,7 @@ EpcSgwPgwApplication::RecvFromTunDevice (Ptr<Packet> packet, const Address& sour
   std::map<Ipv4Address, Ptr<UeInfo> >::iterator it = m_ueInfoByAddrMap.find (ueAddr);
   if (it == m_ueInfoByAddrMap.end ())
     {        
-      NS_LOG_WARN ("unknown UE address " << ueAddr) ;
+      NS_LOG_WARN ("unknown UE address " << ueAddr);
     }
   else
     {
@@ -204,7 +211,7 @@ EpcSgwPgwApplication::SendToS1uSocket (Ptr<Packet> packet, Ipv4Address enbAddr, 
   gtpu.SetLength (packet->GetSize () + gtpu.GetSerializedSize () - 8);  
   packet->AddHeader (gtpu);
   uint32_t flags = 0;
-  m_s1uSocket->SendTo (packet, flags, InetSocketAddress(enbAddr, m_gtpuUdpPort));
+  m_s1uSocket->SendTo (packet, flags, InetSocketAddress (enbAddr, m_gtpuUdpPort));
 }
 
 
@@ -305,4 +312,44 @@ EpcSgwPgwApplication::DoModifyBearerRequest (EpcS11SapSgw::ModifyBearerRequestMe
   m_s11SapMme->ModifyBearerResponse (res);
 }
  
-}; // namespace ns3
+void
+EpcSgwPgwApplication::DoDeleteBearerCommand (EpcS11SapSgw::DeleteBearerCommandMessage req)
+{
+  NS_LOG_FUNCTION (this << req.teid);
+  uint64_t imsi = req.teid; // trick to avoid the need for allocating TEIDs on the S11 interface
+  std::map<uint64_t, Ptr<UeInfo> >::iterator ueit = m_ueInfoByImsiMap.find (imsi);
+  NS_ASSERT_MSG (ueit != m_ueInfoByImsiMap.end (), "unknown IMSI " << imsi);
+
+  EpcS11SapMme::DeleteBearerRequestMessage res;
+  res.teid = imsi;
+
+  for (std::list<EpcS11SapSgw::BearerContextToBeRemoved>::iterator bit = req.bearerContextsToBeRemoved.begin ();
+       bit != req.bearerContextsToBeRemoved.end ();
+       ++bit)
+    {
+      EpcS11SapMme::BearerContextRemoved bearerContext;
+      bearerContext.epsBearerId =  bit->epsBearerId;
+      res.bearerContextsRemoved.push_back (bearerContext);
+    }
+  //schedules Delete Bearer Request towards MME
+  m_s11SapMme->DeleteBearerRequest (res);
+}
+
+void
+EpcSgwPgwApplication::DoDeleteBearerResponse (EpcS11SapSgw::DeleteBearerResponseMessage req)
+{
+  NS_LOG_FUNCTION (this << req.teid);
+  uint64_t imsi = req.teid; // trick to avoid the need for allocating TEIDs on the S11 interface
+  std::map<uint64_t, Ptr<UeInfo> >::iterator ueit = m_ueInfoByImsiMap.find (imsi);
+  NS_ASSERT_MSG (ueit != m_ueInfoByImsiMap.end (), "unknown IMSI " << imsi);
+
+  for (std::list<EpcS11SapSgw::BearerContextRemovedSgwPgw>::iterator bit = req.bearerContextsRemoved.begin ();
+       bit != req.bearerContextsRemoved.end ();
+       ++bit)
+    {
+      //Function to remove de-activated bearer contexts from S-Gw and P-Gw side
+      ueit->second->RemoveBearer (bit->epsBearerId);
+    }
+}
+
+}  // namespace ns3

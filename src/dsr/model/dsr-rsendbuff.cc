@@ -36,9 +36,10 @@
 #include "ns3/socket.h"
 #include "ns3/log.h"
 
-NS_LOG_COMPONENT_DEFINE ("DsrSendBuffer");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("DsrSendBuffer");
+  
 namespace dsr {
 
 uint32_t
@@ -111,7 +112,7 @@ SendBuffer::Dequeue (Ipv4Address dst, SendBuffEntry & entry)
       if (i->GetDestination () == dst)
         {
           entry = *i;
-          m_sendBuffer.erase (i);
+          i = m_sendBuffer.erase (i);
           NS_LOG_DEBUG ("Packet size while dequeuing " << entry.GetPacket ()->GetSize ());
           return true;
         }

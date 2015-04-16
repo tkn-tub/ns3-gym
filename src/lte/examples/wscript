@@ -34,10 +34,24 @@ def build(bld):
     obj = bld.create_ns3_program('lena-simple-epc',
                                  ['lte'])
     obj.source = 'lena-simple-epc.cc'
+    obj = bld.create_ns3_program('lena-deactivate-bearer',
+                                 ['lte'])
+    obj.source = 'lena-deactivate-bearer.cc'
     obj = bld.create_ns3_program('lena-x2-handover',
                                  ['lte'])
     obj.source = 'lena-x2-handover.cc'
     obj = bld.create_ns3_program('lena-x2-handover-measures',
                                  ['lte'])
     obj.source = 'lena-x2-handover-measures.cc'
-
+    obj = bld.create_ns3_program('lena-simple-epc-emu',
+                                 ['lte', 'emu'])
+    obj.source = 'lena-simple-epc-emu.cc'
+    obj = bld.create_ns3_program('lena-frequency-reuse',
+                                 ['lte'])
+    obj.source = 'lena-frequency-reuse.cc'
+    obj = bld.create_ns3_program('lena-distributed-ffr',
+                                 ['lte'])
+    obj.source = 'lena-distributed-ffr.cc'
+    obj = bld.create_ns3_program('lena-uplink-power-control',
+                                 ['lte'])
+    obj.source = 'lena-uplink-power-control.cc'

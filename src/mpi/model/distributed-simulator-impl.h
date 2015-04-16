@@ -15,12 +15,10 @@
  *
  * Author: George Riley <riley@ece.gatech.edu>
  *
- * Some updates to this code were developed under a research contract
- * sponsored by the Army Research Laboratory. (April 30, 2013)
  */
 
-#ifndef DISTRIBUTED_SIMULATOR_IMPL_H
-#define DISTRIBUTED_SIMULATOR_IMPL_H
+#ifndef NS3_DISTRIBUTED_SIMULATOR_IMPL_H
+#define NS3_DISTRIBUTED_SIMULATOR_IMPL_H
 
 #include "ns3/simulator-impl.h"
 #include "ns3/scheduler.h"
@@ -51,6 +49,7 @@ public:
    * \param rxc received count
    * \param txc transmitted count
    * \param id mpi rank
+   * \param isFinished whether message is finished
    * \param t smallest time
    */
   LbtsMessage (uint32_t rxc, uint32_t txc, uint32_t id, bool isFinished, const Time& t)
@@ -73,14 +72,16 @@ public:
    */
   uint32_t GetTxCount ();
   /**
-   * \return receieved count
+   * \return received count
    */
   uint32_t GetRxCount ();
   /**
    * \return id which corresponds to mpi rank
    */
   uint32_t GetMyId ();
-
+  /**
+   * \return true if system is finished
+   */
   bool IsFinished ();
 
 private:
@@ -95,7 +96,7 @@ private:
  * \ingroup simulator
  * \ingroup mpi
  *
- * \brief distributed simulator implementation using lookahead
+ * \brief Distributed simulator implementation using lookahead
  */
 class DistributedSimulatorImpl : public SimulatorImpl
 {
@@ -114,13 +115,14 @@ public:
   virtual void ScheduleWithContext (uint32_t context, Time const &time, EventImpl *event);
   virtual EventId ScheduleNow (EventImpl *event);
   virtual EventId ScheduleDestroy (EventImpl *event);
-  virtual void Remove (const EventId &ev);
-  virtual void Cancel (const EventId &ev);
-  virtual bool IsExpired (const EventId &ev) const;
+  virtual void Remove (const EventId &id);
+  virtual void Cancel (const EventId &id);
+  virtual bool IsExpired (const EventId &id) const;
   virtual void Run (void);
   virtual Time Now (void) const;
   virtual Time GetDelayLeft (const EventId &id) const;
   virtual Time GetMaximumSimulationTime (void) const;
+  virtual void SetMaximumLookAhead (const Time lookAhead);
   virtual void SetScheduler (ObjectFactory schedulerFactory);
   virtual uint32_t GetSystemId (void) const;
   virtual uint32_t GetContext (void) const;
@@ -157,4 +159,4 @@ private:
 
 } // namespace ns3
 
-#endif /* DISTRIBUTED_SIMULATOR_IMPL_H */
+#endif /* NS3_DISTRIBUTED_SIMULATOR_IMPL_H */

@@ -108,6 +108,12 @@ UanAddress::Allocate ()
 }
 
 bool
+operator < (const UanAddress &a, const UanAddress &b)
+{
+  return a.m_address < b.m_address;
+}
+
+bool
 operator == (const UanAddress &a, const UanAddress &b)
 {
   return a.m_address == b.m_address;

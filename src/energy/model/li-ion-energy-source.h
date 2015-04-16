@@ -59,8 +59,8 @@ namespace ns3 {
  *   depleted
  *
  * For a complete reference of the energy source model and model's fitting please refer
- * to <a href="http://www.nsnam.org/wiki/index.php/GSOC2010UANFramework">UAN Framework</a>
- * page and <a href="http://www.nsnam.org/wiki/index.php/Li-Ion_model_fitting">Li-Ion model
+ * to <a href="http://www.nsnam.org/wiki/GSOC2010UANFramework">UAN Framework</a>
+ * page and <a href="http://www.nsnam.org/wiki/Li-Ion_model_fitting">Li-Ion model
  * fitting</a> page.
  *
  * References:
@@ -185,6 +185,7 @@ private:
   TracedValue<double> m_remainingEnergyJ; // remaining energy, in Joules
   double m_drainedCapacity;               // capacity drained from the cell, in Ah
   double m_supplyVoltageV;                // actual voltage of the cell
+  double m_lowBatteryTh;                  // low battery threshold, as a fraction of the initial energy
   EventId m_energyUpdateEvent;            // energy update event
   Time m_lastUpdateTime;                  // last update time
   Time m_energyUpdateInterval;            // energy update interval

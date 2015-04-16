@@ -27,11 +27,12 @@
 #include "ns3/pointer.h"
 
 
-NS_LOG_COMPONENT_DEFINE ("UanTransducerHd");
-
 namespace ns3 {
 
+NS_LOG_COMPONENT_DEFINE ("UanTransducerHd");
+
 NS_OBJECT_ENSURE_REGISTERED (UanTransducerHd);
+  
 UanTransducerHd::UanTransducerHd ()
   : UanTransducer (),
     m_state (RX),
@@ -153,8 +154,6 @@ UanTransducerHd::Transmit (Ptr<UanPhy> src,
                            double txPowerDb,
                            UanTxMode txMode)
 {
-
-  Time endTxTime;
   if (m_state == TX)
     {
       Simulator::Remove (m_endTxEvent);

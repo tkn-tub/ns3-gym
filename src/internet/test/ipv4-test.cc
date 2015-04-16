@@ -30,7 +30,7 @@
 #include "ns3/ipv4-interface.h"
 #include "ns3/loopback-net-device.h"
 
-namespace ns3 {
+using namespace ns3;
 
 class Ipv4L3ProtocolTestCase : public TestCase
 {
@@ -150,5 +150,3 @@ public:
     AddTestCase (new Ipv4L3ProtocolTestCase (), TestCase::QUICK);
   }
 } g_ipv4protocolTestSuite;
-
-} // namespace ns3

@@ -34,10 +34,12 @@
 namespace ns3 {
 
 /**
- * \brief The Ht Capabilities Information Element
+ * \brief The HT Capabilities Information Element
  * \ingroup wifi
  *
- * This class knows how to serialise and deserialise the Ht Capabilities Information Element
+ * This class knows how to serialise and deserialise the HT Capabilities Information Element
+ *
+ * \see attribute_HtCapabilities
  */
 class HtCapabilities: public WifiInformationElement
 {
@@ -64,7 +66,7 @@ public:
   uint8_t GetLdpc (void) const;
   uint8_t GetGreenfield (void) const;
   uint8_t GetShortGuardInterval20 (void) const;
-  uint8_t GetSupportedChannelWidth (void) const; //2040 supported or not
+  uint8_t GetSupportedChannelWidth (void) const;
   uint8_t* GetRxMcsBitmask();
   
   WifiInformationElementId ElementId () const;
@@ -72,13 +74,23 @@ public:
   void SerializeInformationField (Buffer::Iterator start) const;
   uint8_t DeserializeInformationField (Buffer::Iterator start,
                                        uint8_t length);
- /*
+  /**
    * This information element is a bit special in that it is only
    * included if the STA is an HT STA. To support this we
    * override the Serialize and GetSerializedSize methods of
    * WifiInformationElement.
+   *
+   * \param start
+   * \return an iterator
    */
   Buffer::Iterator Serialize (Buffer::Iterator start) const;
+  /**
+   * Return the serialized size of this HT capability 
+   * information element.
+   * 
+   * \return the serialized size of this HT capability 
+   * information element
+   */
   uint16_t GetSerializedSize () const;
  
 private:
@@ -115,7 +127,7 @@ private:
 std::ostream &operator << (std::ostream &os, const HtCapabilities &htcapabilities);
 std::istream &operator >> (std::istream &is, HtCapabilities &htcapabilities);
 
-ATTRIBUTE_HELPER_HEADER (HtCapabilities)
+ATTRIBUTE_HELPER_HEADER (HtCapabilities);
 
 } // namespace ns3
 

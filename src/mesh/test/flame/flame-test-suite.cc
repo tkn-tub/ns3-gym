@@ -24,8 +24,8 @@
 #include "ns3/flame-header.h"
 #include "ns3/flame-rtable.h"
 
-namespace ns3 {
-namespace flame {
+using namespace ns3;
+using namespace flame;
 
 /// Built-in self test for FlameHeader
 struct FlameHeaderTest : public TestCase
@@ -65,16 +65,12 @@ public:
 private:
   /// Test Add apth and lookup path;
   void TestLookup ();
-  /**
-   * \name Test add path and try to lookup after entry has expired
-   * \{
-   */
+  
+  // Test add path and try to lookup after entry has expired
   void TestAddPath ();
   void TestExpire ();
-  ///\}
-private:
-  bool error;
 
+private:
   Mac48Address dst;
   Mac48Address hop;
   uint32_t iface;
@@ -88,7 +84,6 @@ static FlameRtableTest g_FlameRtableTest;
 
 FlameRtableTest::FlameRtableTest () :
   TestCase ("FlameRtable"), 
-  error (false), 
   dst ("01:00:00:01:00:01"), 
   hop ("01:00:00:01:00:03"),
   iface (8010), 
@@ -150,6 +145,3 @@ FlameTestSuite::FlameTestSuite ()
 }
 
 static FlameTestSuite g_flameTestSuite;
-
-}
-}

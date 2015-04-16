@@ -47,18 +47,18 @@ public:
   // inherited from PositionAllocator
   virtual Vector GetNext (void) const;
 
- /**
-  * Assign a fixed random variable stream number to the random variables
-  * used by this model.  Return the number of streams (possibly zero) that
-  * have been assigned.
-  *
-  * \param stream first stream index to use
-  * \return the number of stream indices assigned by this model
-  */
+  /**
+   * Assign a fixed random variable stream number to the random variables
+   * used by this model.  Return the number of streams (possibly zero) that
+   * have been assigned.
+   *
+   * \param stream first stream index to use
+   * \return the number of stream indices assigned by this model
+   */
   int64_t AssignStreams (int64_t stream);
 
 private:
-  
+
   bool m_withReplacement;
   mutable std::vector< Ptr<Building> > m_buildingListWithoutReplacement;
 
@@ -95,8 +95,7 @@ public:
   int64_t AssignStreams (int64_t stream);
 
 private:
-  
-  bool m_withReplacement;
+
   struct RoomInfo 
   {
     Ptr<Building> b;
@@ -111,10 +110,11 @@ private:
 };
 
 
+
 /**
  * Walks a given NodeContainer sequentially, and for each node allocate a new
  * position randomly in the same room of that node
- * 
+ *
  */
 class SameRoomPositionAllocator : public PositionAllocator
 {
@@ -128,20 +128,68 @@ public:
   // inherited from PositionAllocator
   virtual Vector GetNext (void) const;
 
- /**
-  * Assign a fixed random variable stream number to the random variables
-  * used by this model.  Return the number of streams (possibly zero) that
-  * have been assigned.
-  *
-  * \param stream first stream index to use
-  * \return the number of stream indices assigned by this model
-  */
+  /**
+   * Assign a fixed random variable stream number to the random variables
+   * used by this model.  Return the number of streams (possibly zero) that
+   * have been assigned.
+   *
+   * \param stream first stream index to use
+   * \return the number of stream indices assigned by this model
+   */
   int64_t AssignStreams (int64_t);
 
 private:
 
   NodeContainer m_nodes;
   mutable NodeContainer::Iterator m_nodeIt;
+
+  /// Provides uniform random variables.
+  Ptr<UniformRandomVariable> m_rand;
+};
+
+/**
+ * Generate a random position uniformly distributed in the volume of a
+ * chosen room inside a chosen building.  
+ */
+class FixedRoomPositionAllocator : public PositionAllocator
+{
+public:
+
+  /** 
+   * 
+   * 
+   * \param x index of the room on the x-axis 
+   * \param y index of the room on the y-axis 
+   * \param z index of the room on the z-axis (i.e., floor number)
+   * \param b pointer to the chosen building
+   * 
+   */
+  FixedRoomPositionAllocator (uint32_t x,
+                              uint32_t y,
+                              uint32_t z,
+                              Ptr<Building> b);
+  // inherited from Object
+  static TypeId GetTypeId (void);
+  // inherited from PositionAllocator
+  virtual Vector GetNext (void) const;
+
+  /**
+   * Assign a fixed random variable stream number to the random variables
+   * used by this model.  Return the number of streams (possibly zero) that
+   * have been assigned.
+   *
+   * \param stream first stream index to use
+   * \return the number of stream indices assigned by this model
+   */
+  int64_t AssignStreams (int64_t);
+
+private:
+
+  uint32_t roomx;
+  uint32_t roomy;
+  uint32_t floor;
+
+  Ptr<Building> bptr;
 
   /// Provides uniform random variables.
   Ptr<UniformRandomVariable> m_rand;

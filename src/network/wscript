@@ -25,6 +25,7 @@ def build(bld):
         'model/trailer.cc',
         'utils/address-utils.cc',
         'utils/ascii-file.cc',
+        'utils/crc32.cc',
         'utils/data-rate.cc',
         'utils/drop-tail-queue.cc',
         'utils/error-model.cc',
@@ -52,6 +53,8 @@ def build(bld):
         'utils/red-queue.cc',
         'utils/simple-channel.cc',
         'utils/simple-net-device.cc',
+        'utils/packet-socket-client.cc',
+        'utils/packet-socket-server.cc',
         'utils/packet-data-calculators.cc',
         'utils/packet-probe.cc',
         'helper/application-container.cc',
@@ -60,6 +63,7 @@ def build(bld):
         'helper/packet-socket-helper.cc',
         'helper/trace-helper.cc',
         'helper/delay-jitter-estimation.cc',
+        'helper/simple-net-device-helper.cc',
         ]
 
     network_test = bld.create_ns3_module_test_library('network')
@@ -74,6 +78,7 @@ def build(bld):
         'test/pcap-file-test-suite.cc',
         'test/red-queue-test-suite.cc',
         'test/sequence-number-test-suite.cc',
+        'test/packet-socket-apps-test-suite.cc',
         ]
 
     headers = bld(features='ns3header')
@@ -102,6 +107,7 @@ def build(bld):
         'utils/address-utils.h',
         'utils/ascii-file.h',
         'utils/ascii-test.h',
+        'utils/crc32.h',
         'utils/data-rate.h',
         'utils/drop-tail-queue.h',
         'utils/error-model.h',
@@ -132,6 +138,8 @@ def build(bld):
         'utils/sgi-hashmap.h',
         'utils/simple-channel.h',
         'utils/simple-net-device.h',
+        'utils/packet-socket-client.h',
+        'utils/packet-socket-server.h',
         'utils/pcap-test.h',
         'utils/packet-data-calculators.h',
         'utils/packet-probe.h',
@@ -141,6 +149,7 @@ def build(bld):
         'helper/packet-socket-helper.h',
         'helper/trace-helper.h',
         'helper/delay-jitter-estimation.h',
+        'helper/simple-net-device-helper.h',
         ]
 
     if (bld.env['ENABLE_EXAMPLES']):

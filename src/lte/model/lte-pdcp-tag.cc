@@ -46,6 +46,7 @@ PdcpTag::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::PdcpTag")
     .SetParent<Tag> ()
+    .SetGroupName("Lte")
     .AddConstructor<PdcpTag> ();
   return tid;
 }

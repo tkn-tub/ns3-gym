@@ -53,7 +53,6 @@ public:
   Ipv4StaticRoutingHelper (const Ipv4StaticRoutingHelper &);
 
   /**
-   * \internal
    * \returns pointer to clone of this Ipv4StaticRoutingHelper
    *
    * This method is mainly for internal use by the other helpers;
@@ -75,6 +74,7 @@ public:
    * Ipv4 provided.
    *
    * \param ipv4 the Ptr<Ipv4> to search for the static routing protocol
+   * \returns Ipv4StaticRouting pointer or 0 if not found
    */
   Ptr<Ipv4StaticRouting> GetStaticRouting (Ptr<Ipv4> ipv4) const;
 
@@ -157,11 +157,11 @@ public:
   void SetDefaultMulticastRoute (std::string nName, std::string ndName);
 private:
   /**
-   * \internal
    * \brief Assignment operator declared private and not implemented to disallow
    * assignment and prevent the compiler from happily inserting its own.
+   * \returns
    */
-  Ipv4StaticRoutingHelper &operator = (const Ipv4StaticRoutingHelper &o);
+  Ipv4StaticRoutingHelper &operator = (const Ipv4StaticRoutingHelper &);
 };
 
 } // namespace ns3

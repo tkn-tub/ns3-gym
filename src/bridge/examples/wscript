@@ -2,11 +2,11 @@
 
 def build(bld):
 
-    obj = bld.create_ns3_program('csma-bridge', ['bridge', 'csma', 'internet'])
+    obj = bld.create_ns3_program('csma-bridge', ['bridge', 'csma', 'internet', 'applications'])
     obj.source = 'csma-bridge.cc'
 
-    bld.register_ns3_script('csma-bridge.py', ['bridge', 'csma', 'internet'])
+    bld.register_ns3_script('csma-bridge.py', ['bridge', 'csma', 'internet', 'applications'])
 
-    obj = bld.create_ns3_program('csma-bridge-one-hop', ['bridge', 'csma', 'internet'])
+    obj = bld.create_ns3_program('csma-bridge-one-hop', ['bridge', 'csma', 'internet', 'applications'])
     obj.source = 'csma-bridge-one-hop.cc'
 

@@ -30,8 +30,8 @@
 namespace ns3 {
 
 /**
- * This enumeration defines the modulation classes per IEEE
- * 802.11-2007, Section 9.6.1, Table 9-2.
+ * This enumeration defines the modulation classes per 
+ * (Table 9-4 "Modulation classes"; IEEE 802.11-2012).
  */
 enum WifiModulationClass
 {
@@ -87,6 +87,8 @@ enum WifiCodeRate
  * to lookup in a global array the characteristics of the
  * associated transmission mode. It is thus extremely cheap to
  * keep a WifiMode variable around.
+ *
+ * \see attribute_WifiMode
  */
 class WifiMode
 {
@@ -99,7 +101,7 @@ public:
    * \returns the physical bit rate of this signal.
    *
    * If a transmission mode uses 1/2 FEC, and if its
-   * data rate is 3Mbs, the phy rate is 6Mbs
+   * data rate is 3Mbps, the phy rate is 6Mbps
    */
   uint64_t GetPhyRate (void) const;
   /**
@@ -131,15 +133,15 @@ public:
    * \returns the uid associated to this wireless mode.
    *
    * Each specific wireless mode should have a different uid.
-   * For example, the 802.11b 1Mbs and the 802.11b 2Mbs modes
+   * For example, the 802.11b 1Mbps and the 802.11b 2Mbps modes
    * should have different uids.
    */
   uint32_t GetUid (void) const;
 
   /**
    *
-   * \returns the Modulation Class (see IEEE 802.11-2007 Section
-   * 9.6.1) to which this WifiMode belongs.
+   * \returns the Modulation Class (Section 9.7.8 "Modulation classes"; IEEE 802.11-2012)
+   * to which this WifiMode belongs.
    */
   enum WifiModulationClass GetModulationClass () const;
 
@@ -150,9 +152,20 @@ public:
    * its initialization.
    */
   WifiMode ();
+  /**
+   * Create a WifiMode if the given string represents a valid
+   * WifiMode name.
+   *
+   * \param name std::string of a valid WifiMode name
+   */
   WifiMode (std::string name);
 private:
   friend class WifiModeFactory;
+  /**
+   * Create a WifiMode from a given unique ID.
+   *
+   * \param uid unique ID
+   */
   WifiMode (uint32_t uid);
   uint32_t m_uid;
 };
@@ -160,11 +173,6 @@ private:
 bool operator == (const WifiMode &a, const WifiMode &b);
 std::ostream & operator << (std::ostream & os, const WifiMode &mode);
 std::istream & operator >> (std::istream &is, WifiMode &mode);
-
-/**
- * \class ns3::WifiModeValue
- * \brief hold objects of type ns3::WifiMode
- */
 
 ATTRIBUTE_HELPER_HEADER (WifiMode);
 
@@ -175,9 +183,18 @@ ATTRIBUTE_HELPER_HEADER (WifiMode);
  * WifiModeList type, and a corresponding iterator.
  */
 typedef std::vector<WifiMode> WifiModeList;
+/**
+ * An iterator for WifiModeList vector.
+ */
 typedef WifiModeList::const_iterator WifiModeListIterator;
 
+/**
+ * A list of Wi-Fi Modulation and Coding Scheme (MCS).
+ */
 typedef std::vector<uint8_t> WifiMcsList;
+/**
+ * An iterator for WifiMcsList vector.
+ */
 typedef WifiMcsList::const_iterator WifiMcsListIterator;
 
 /**
@@ -198,11 +215,12 @@ public:
    *        associated WifiMode is used.
    * \param dataRate the rate (bits/second) at which the user data is transmitted
    * \param codingRate if convolutional coding is used for this rate
-   * then this parameter specifies the convolutional coding rate
-   * used. If there is no explicit convolutional coding step (e.g.,
-   * for DSSS rates) then the caller should set this parameter to
-   * WIFI_CODE_RATE_UNCODED.
+   *        then this parameter specifies the convolutional coding rate
+   *        used. If there is no explicit convolutional coding step (e.g.,
+   *        for DSSS rates) then the caller should set this parameter to
+   *        WIFI_CODE_RATE_UNCODED.
    * \param constellationSize the order of the constellation used.
+   * \return WifiMode
    *
    * Create a WifiMode.
    */
@@ -217,6 +235,12 @@ public:
 private:
   friend class WifiMode;
   friend std::istream & operator >> (std::istream &is, WifiMode &mode);
+
+  /**
+   * Return a WifiModeFactory
+   *
+   * \return a WifiModeFactory
+   */
   static WifiModeFactory* GetFactory ();
   WifiModeFactory ();
 
@@ -237,10 +261,31 @@ private:
     bool isMandatory;
   };
 
+  /**
+   * Search and return WifiMode from a given name.
+   *
+   * \param name human-readable WifiMode
+   * \return WifiMode
+   */
   WifiMode Search (std::string name);
-  uint32_t AllocateUid (std::string uniqueName);
+  /**
+   * Allocate a WifiModeItem from a given uniqueUid.
+   *
+   * \param uniqueUid
+   * \return uid
+   */
+  uint32_t AllocateUid (std::string uniqueUid);
+  /**
+   * Return a WifiModeItem at the given uid index.
+   *
+   * \param uid
+   * \return WifiModeItem at the given uid
+   */
   WifiModeItem* Get (uint32_t uid);
 
+  /**
+   * typedef for a vector of WifiModeItem.
+   */
   typedef std::vector<struct WifiModeItem> WifiModeItemList;
   WifiModeItemList m_itemList;
 };

@@ -58,7 +58,10 @@ main (int argc, char *argv[])
 
   // Allow the user to override any of the defaults and the above
   // SetDefaults() at run-time, via command-line arguments
+  // For example, via "--ns3::DropTailQueue::MaxPackets=80"
   CommandLine cmd;
+  // This provides yet another way to set the value from the command line:
+  cmd.AddValue ("maxPackets", "ns3::DropTailQueue::MaxPackets");
   cmd.Parse (argc, argv);
 
   // Now, we will create a few objects using the low-level API

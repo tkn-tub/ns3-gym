@@ -52,22 +52,32 @@ namespace ns3 {
 class RandomWaypointMobilityModel : public MobilityModel
 {
 public:
+  /**
+   * Register this type with the TypeId system.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
 protected:
   virtual void DoInitialize (void);
 private:
+  /**
+   * Get next position, begin moving towards it, schedule future pause event
+   */
   void BeginWalk (void);
+  /**
+   * Begin current pause event, schedule future walk event
+   */
   void DoInitializePrivate (void);
   virtual Vector DoGetPosition (void) const;
   virtual void DoSetPosition (const Vector &position);
   virtual Vector DoGetVelocity (void) const;
   virtual int64_t DoAssignStreams (int64_t);
 
-  ConstantVelocityHelper m_helper;
-  Ptr<PositionAllocator> m_position;
-  Ptr<RandomVariableStream> m_speed;
-  Ptr<RandomVariableStream> m_pause;
-  EventId m_event;
+  ConstantVelocityHelper m_helper; //!< helper for velocity computations
+  Ptr<PositionAllocator> m_position; //!< pointer to position allocator
+  Ptr<RandomVariableStream> m_speed; //!< random variable to generate speeds
+  Ptr<RandomVariableStream> m_pause; //!< random variable to generate pauses
+  EventId m_event; //!< event ID of next scheduled event
 };
 
 } // namespace ns3

@@ -19,23 +19,17 @@
  *                              <amine.ismail@udcast.com>
  */
 #include "ns3/log.h"
-#include "ns3/abort.h"
 #include "ns3/test.h"
-#include "ns3/config.h"
-#include "ns3/string.h"
-#include "ns3/uinteger.h"
-#include "ns3/inet-socket-address.h"
-#include "ns3/point-to-point-helper.h"
+#include "ns3/simulator.h"
+#include "ns3/node-container.h"
+#include "ns3/wimax-helper.h"
+#include "ns3/net-device-container.h"
 #include "ns3/internet-stack-helper.h"
 #include "ns3/ipv4-address-helper.h"
-#include "ns3/ipv4-header.h"
-#include "ns3/packet-sink-helper.h"
-#include "ns3/udp-client-server-helper.h"
-#include "ns3/simulator.h"
-#include "ns3/wimax-helper.h"
-#include "ns3/mobility-helper.h"
-#include <iostream>
-#include "ns3/global-route-manager.h"
+#include "ns3/ipv4-interface-container.h"
+#include "ns3/ipv4-address.h"
+#include "ns3/service-flow.h"
+#include "ns3/ipcs-classifier-record.h"
 
 using namespace ns3;
 
@@ -88,23 +82,23 @@ Ns3WimaxSchedulingTestCase::DoRunOnce (WimaxHelper::SchedulerType scheduler)
   Ipv4InterfaceContainer BSinterface = address.Assign (bsDevs);
 
   /*------------------------------*/
-  UdpServerHelper udpServer;
-  ApplicationContainer serverApps;
-  UdpClientHelper udpClient;
-  ApplicationContainer clientApps;
-
-  udpServer = UdpServerHelper (100);
-  serverApps = udpServer.Install (ssNodes.Get (0));
-  serverApps.Start (Seconds (1));
-  serverApps.Stop (Seconds (2));
-
-  udpClient = UdpClientHelper (SSinterfaces.GetAddress (0), 100);
-  udpClient.SetAttribute ("MaxPackets", UintegerValue (1200));
-  udpClient.SetAttribute ("Interval", TimeValue (Seconds (0.12)));
-  udpClient.SetAttribute ("PacketSize", UintegerValue (1024));
-  clientApps = udpClient.Install (ssNodes.Get (1));
-  clientApps.Start (Seconds (1));
-  clientApps.Stop (Seconds (2));
+  //  UdpServerHelper udpServer;
+  //  ApplicationContainer serverApps;
+  //  UdpClientHelper udpClient;
+  //  ApplicationContainer clientApps;
+  //
+  //  udpServer = UdpServerHelper (100);
+  //  serverApps = udpServer.Install (ssNodes.Get (0));
+  //  serverApps.Start (Seconds (1));
+  //  serverApps.Stop (Seconds (2));
+  //
+  //  udpClient = UdpClientHelper (SSinterfaces.GetAddress (0), 100);
+  //  udpClient.SetAttribute ("MaxPackets", UintegerValue (1200));
+  //  udpClient.SetAttribute ("Interval", TimeValue (Seconds (0.12)));
+  //  udpClient.SetAttribute ("PacketSize", UintegerValue (1024));
+  //  clientApps = udpClient.Install (ssNodes.Get (1));
+  //  clientApps.Start (Seconds (1));
+  //  clientApps.Stop (Seconds (2));
 
   Simulator::Stop (Seconds (2 + 0.1));
 
@@ -210,23 +204,23 @@ Ns3WimaxSFTypeTestCase::DoRunOnce (ServiceFlow::SchedulingType schedulingType)
   Ipv4InterfaceContainer BSinterface = address.Assign (bsDevs);
 
   /*------------------------------*/
-  UdpServerHelper udpServer;
-  ApplicationContainer serverApps;
-  UdpClientHelper udpClient;
-  ApplicationContainer clientApps;
-
-  udpServer = UdpServerHelper (100);
-  serverApps = udpServer.Install (ssNodes.Get (0));
-  serverApps.Start (Seconds (1));
-  serverApps.Stop (Seconds (2));
-
-  udpClient = UdpClientHelper (SSinterfaces.GetAddress (0), 100);
-  udpClient.SetAttribute ("MaxPackets", UintegerValue (1200));
-  udpClient.SetAttribute ("Interval", TimeValue (Seconds (0.12)));
-  udpClient.SetAttribute ("PacketSize", UintegerValue (1024));
-  clientApps = udpClient.Install (ssNodes.Get (1));
-  clientApps.Start (Seconds (1));
-  clientApps.Stop (Seconds (2));
+  //  UdpServerHelper udpServer;
+  //  ApplicationContainer serverApps;
+  //  UdpClientHelper udpClient;
+  //  ApplicationContainer clientApps;
+  //
+  //  udpServer = UdpServerHelper (100);
+  //  serverApps = udpServer.Install (ssNodes.Get (0));
+  //  serverApps.Start (Seconds (1));
+  //  serverApps.Stop (Seconds (2));
+  //
+  //  udpClient = UdpClientHelper (SSinterfaces.GetAddress (0), 100);
+  //  udpClient.SetAttribute ("MaxPackets", UintegerValue (1200));
+  //  udpClient.SetAttribute ("Interval", TimeValue (Seconds (0.12)));
+  //  udpClient.SetAttribute ("PacketSize", UintegerValue (1024));
+  //  clientApps = udpClient.Install (ssNodes.Get (1));
+  //  clientApps.Start (Seconds (1));
+  //  clientApps.Stop (Seconds (2));
 
   Simulator::Stop (Seconds (2 + 0.1));
 

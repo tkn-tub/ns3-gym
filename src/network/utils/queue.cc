@@ -20,9 +20,9 @@
 #include "ns3/trace-source-accessor.h"
 #include "queue.h"
 
-NS_LOG_COMPONENT_DEFINE ("Queue");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("Queue");
 
 NS_OBJECT_ENSURE_REGISTERED (Queue);
 
@@ -31,12 +31,16 @@ Queue::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::Queue")
     .SetParent<Object> ()
+    .SetGroupName("Network")  
     .AddTraceSource ("Enqueue", "Enqueue a packet in the queue.",
-                     MakeTraceSourceAccessor (&Queue::m_traceEnqueue))
+                     MakeTraceSourceAccessor (&Queue::m_traceEnqueue),
+                     "ns3::Packet::TracedCallback")
     .AddTraceSource ("Dequeue", "Dequeue a packet from the queue.",
-                     MakeTraceSourceAccessor (&Queue::m_traceDequeue))
+                     MakeTraceSourceAccessor (&Queue::m_traceDequeue),
+                     "ns3::Packet::TracedCallback")
     .AddTraceSource ("Drop", "Drop a packet stored in the queue.",
-                     MakeTraceSourceAccessor (&Queue::m_traceDrop))
+                     MakeTraceSourceAccessor (&Queue::m_traceDrop),
+                     "ns3::Packet::TracedCallback")
   ;
   return tid;
 }

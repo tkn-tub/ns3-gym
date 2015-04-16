@@ -29,30 +29,76 @@ namespace ns3 {
 NS_LOG_COMPONENT_DEFINE ("ChannelList");
 
 /**
+ * \ingroup network
+ *
  * \brief private implementation detail of the ChannelList API.
  */
 class ChannelListPriv : public Object
 {
 public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
   ChannelListPriv ();
   ~ChannelListPriv ();
 
+  /**
+   * \param channel channel to add
+   * \returns index of channel in list.
+   *
+   * This method is called automatically from Channel::Channel so
+   * the user has little reason to call it himself.
+   */
   uint32_t Add (Ptr<Channel> channel);
 
+  /**
+   * \returns a C++ iterator located at the beginning of this
+   *          list.
+   */
   ChannelList::Iterator Begin (void) const;
+  /**
+   * \returns a C++ iterator located at the end of this
+   *          list.
+   */
   ChannelList::Iterator End (void) const;
 
+  /**
+   * \param n index of requested channel.
+   * \returns the Channel associated to index n.
+   */
   Ptr<Channel> GetChannel (uint32_t n);
+
+  /**
+   * \returns the number of channels currently in the list.
+   */
   uint32_t GetNChannels (void);
 
+  /**
+   * \brief Get the channel list object
+   * \returns the channel list
+   */
   static Ptr<ChannelListPriv> Get (void);
 
 private:
+  /**
+   * \brief Get the channel list object
+   * \returns the channel list
+   */
   static Ptr<ChannelListPriv> *DoGet (void);
+
+  /**
+   * \brief Delete the channel list object
+   */
   static void Delete (void);
+
+  /**
+   * \brief Dispose the channels in the list
+   */
   virtual void DoDispose (void);
-  std::vector<Ptr<Channel> > m_channels;
+
+  std::vector<Ptr<Channel> > m_channels; //!< channel objects container
 };
 
 NS_OBJECT_ENSURE_REGISTERED (ChannelListPriv);
@@ -62,6 +108,7 @@ ChannelListPriv::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::ChannelListPriv")
     .SetParent<Object> ()
+    .SetGroupName("Network")
     .AddAttribute ("ChannelList", "The list of all channels created during the simulation.",
                    ObjectVectorValue (),
                    MakeObjectVectorAccessor (&ChannelListPriv::m_channels),
