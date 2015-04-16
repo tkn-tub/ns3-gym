@@ -50,7 +50,7 @@ RandomBuildingPositionAllocator::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::RandomBuildingPositionAllocator")
     .SetParent<PositionAllocator> ()
-    .SetGroupName ("Mobility")
+    .SetGroupName ("Buildings")
     .AddConstructor<RandomBuildingPositionAllocator> ()
     .AddAttribute ("WithReplacement",
                    "If true, the building will be randomly selected with replacement. "
@@ -117,7 +117,7 @@ RandomRoomPositionAllocator::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::RandomRoomPositionAllocator")
     .SetParent<PositionAllocator> ()
-    .SetGroupName ("Mobility")
+    .SetGroupName ("Buildings")
     .AddConstructor<RandomRoomPositionAllocator> ();
   return tid;
 }
@@ -221,7 +221,7 @@ SameRoomPositionAllocator::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::SameRoomPositionAllocator")
     .SetParent<PositionAllocator> ()
-    .SetGroupName ("Mobility")
+    .SetGroupName ("Buildings")
     .AddConstructor<SameRoomPositionAllocator> ();
   return tid;
 }
@@ -303,7 +303,7 @@ FixedRoomPositionAllocator::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::FixedRoomPositionAllocator")
     .SetParent<PositionAllocator> ()
-    .SetGroupName ("Mobility")
+    .SetGroupName ("Buildings")
     .AddConstructor<SameRoomPositionAllocator> ();
   return tid;
 }

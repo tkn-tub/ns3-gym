@@ -41,6 +41,7 @@ Building::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::Building")
     .SetParent<Object> ()
     .AddConstructor<Building> ()
+    .SetGroupName ("Buildings")
     .AddAttribute ("NRoomsX", "The number of rooms in the X axis.",
                    UintegerValue (1),
                    MakeUintegerAccessor (&Building::GetNRoomsX, &Building::SetNRoomsX),

@@ -65,6 +65,7 @@ BuildingsPropagationLossModel::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::BuildingsPropagationLossModel")
 
     .SetParent<PropagationLossModel> ()
+    .SetGroupName ("Buildings")
 
 
     .AddAttribute ("ShadowSigmaOutdoor",

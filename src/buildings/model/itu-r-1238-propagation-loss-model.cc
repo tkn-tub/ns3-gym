@@ -41,6 +41,7 @@ ItuR1238PropagationLossModel::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::ItuR1238PropagationLossModel")
 
     .SetParent<PropagationLossModel> ()
+    .SetGroupName ("Buildings")
 
     .AddAttribute ("Frequency",
                    "The Frequency  (default is 2.106 GHz).",

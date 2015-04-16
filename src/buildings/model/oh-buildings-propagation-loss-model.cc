@@ -54,6 +54,7 @@ OhBuildingsPropagationLossModel::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::OhBuildingsPropagationLossModel")
   
   .SetParent<BuildingsPropagationLossModel> ()
+  .SetGroupName ("Buildings")
   
   .AddConstructor<OhBuildingsPropagationLossModel> ();
   

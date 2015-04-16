@@ -37,7 +37,7 @@ MobilityBuildingInfo::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::MobilityBuildingInfo")
     .SetParent<Object> ()
-    .SetGroupName ("Building")
+    .SetGroupName ("Buildings")
     .AddConstructor<MobilityBuildingInfo> ();
 
   return tid;

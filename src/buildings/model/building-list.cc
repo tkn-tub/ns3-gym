@@ -64,6 +64,7 @@ BuildingListPriv::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::BuildingListPriv")
     .SetParent<Object> ()
+    .SetGroupName ("Buildings")
     .AddAttribute ("BuildingList", "The list of all buildings created during the simulation.",
                    ObjectVectorValue (),
                    MakeObjectVectorAccessor (&BuildingListPriv::m_buildings),

@@ -66,6 +66,7 @@ HybridBuildingsPropagationLossModel::GetTypeId (void)
     .SetParent<BuildingsPropagationLossModel> ()
     
     .AddConstructor<HybridBuildingsPropagationLossModel> ()
+    .SetGroupName ("Buildings")
     
     .AddAttribute ("Frequency",
                    "The Frequency  (default is 2.106 GHz).",
