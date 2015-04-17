@@ -45,6 +45,7 @@ OcbWifiMac::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::OcbWifiMac")
     .SetParent<RegularWifiMac> ()
+    .SetGroupName ("Wave")
     .AddConstructor<OcbWifiMac> ()
   ;
   return tid;

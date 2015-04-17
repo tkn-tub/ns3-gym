@@ -34,6 +34,7 @@ WaveMacLow::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::WaveMacLow")
     .SetParent<MacLow> ()
+    .SetGroupName ("Wave")
     .AddConstructor<WaveMacLow> ()
   ;
   return tid;

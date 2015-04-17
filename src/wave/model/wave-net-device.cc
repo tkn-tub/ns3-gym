@@ -41,6 +41,7 @@ WaveNetDevice::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::WaveNetDevice")
     .SetParent<NetDevice> ()
+    .SetGroupName ("Wave")
     .AddConstructor<WaveNetDevice> ()
     .AddAttribute ("Mtu", "The MAC-level Maximum Transmission Unit",
                    UintegerValue (MAX_MSDU_SIZE - LLC_SNAP_HEADER_LENGTH),

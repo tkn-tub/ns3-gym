@@ -30,6 +30,7 @@ ChannelManager::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::ChannelManager")
     .SetParent<Object> ()
+    .SetGroupName ("Wave")
     .AddConstructor<ChannelManager> ()
   ;
   return tid;

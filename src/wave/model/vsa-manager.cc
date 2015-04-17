@@ -37,6 +37,7 @@ VsaManager::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::VsaManager")
     .SetParent<Object> ()
+    .SetGroupName ("Wave")
     .AddConstructor<VsaManager> ()
   ;
   return tid;

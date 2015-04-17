@@ -33,6 +33,7 @@ HigherLayerTxVectorTag::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::HigherLayerTxVectorTag")
     .SetParent<Tag> ()
+    .SetGroupName ("Wave")
     .AddConstructor<HigherLayerTxVectorTag> ()
   ;
   return tid;

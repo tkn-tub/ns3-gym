@@ -40,6 +40,7 @@ ChannelCoordinator::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::ChannelCoordinator")
     .SetParent<Object> ()
+    .SetGroupName ("Wave")
     .AddConstructor<ChannelCoordinator> ()
     .AddAttribute ("CchInterval", "CCH Interval, default value is 50ms.",
                    TimeValue (GetDefaultCchInterval ()),

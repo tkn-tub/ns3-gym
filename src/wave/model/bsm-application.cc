@@ -42,6 +42,7 @@ BsmApplication::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::BsmApplication")
     .SetParent<Application> ()
+    .SetGroupName ("Wave")
     .AddConstructor<BsmApplication> ()
     ;
   return tid;

@@ -247,6 +247,7 @@ VendorSpecificActionHeader::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::VendorSpecificActionHeader")
     .SetParent<Header> ()
+    .SetGroupName ("Wave")
     .AddConstructor<VendorSpecificActionHeader> ()
   ;
 

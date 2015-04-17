@@ -56,6 +56,7 @@ DefaultChannelScheduler::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::DefaultChannelScheduler")
     .SetParent<ChannelScheduler> ()
+    .SetGroupName ("Wave")
     .AddConstructor<DefaultChannelScheduler> ()
   ;
   return tid;

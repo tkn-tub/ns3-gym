@@ -30,6 +30,7 @@ ChannelScheduler::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::ChannelScheduler")
     .SetParent<Object> ()
+    .SetGroupName ("Wave")
   ;
   return tid;
 }
