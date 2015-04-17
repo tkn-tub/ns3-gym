@@ -41,6 +41,7 @@ VirtualNetDevice::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::VirtualNetDevice")
     .SetParent<NetDevice> ()
+    .SetGroupName ("VirtualNetDevice")
     .AddConstructor<VirtualNetDevice> ()
     .AddAttribute ("Mtu", "The MAC-level Maximum Transmission Unit",
                    UintegerValue (1500),
