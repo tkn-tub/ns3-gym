@@ -29,6 +29,7 @@ ConfigStore::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::ConfigStore")
     .SetParent<ObjectBase> ()
+    .SetGroupName ("ConfigStore")
     .AddAttribute ("Mode", 
                    "Configuration mode",
                    EnumValue (ConfigStore::NONE),
