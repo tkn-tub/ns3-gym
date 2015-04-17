@@ -52,6 +52,7 @@ Ipv4L3ClickProtocol::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::Ipv4L3ClickProtocol")
     .SetParent<Ipv4> ()
     .AddConstructor<Ipv4L3ClickProtocol> ()
+    .SetGroupName ("Click")
     .AddAttribute ("DefaultTtl", "The TTL value set by default on all outgoing packets generated on this node.",
                    UintegerValue (64),
                    MakeUintegerAccessor (&Ipv4L3ClickProtocol::m_defaultTtl),

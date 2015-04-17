@@ -55,6 +55,7 @@ Ipv4ClickRouting::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::Ipv4ClickRouting")
     .SetParent<Ipv4RoutingProtocol> ()
     .AddConstructor<Ipv4ClickRouting> ()
+    .SetGroupName ("Click")
   ;
 
   return tid;
