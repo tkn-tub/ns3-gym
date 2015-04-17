@@ -7805,10 +7805,10 @@ def register_Ns3WifiPhy_methods(root_module, cls):
                    'ns3::WifiMode', 
                    [param('ns3::WifiMode', 'payloadMode'), param('ns3::WifiPreamble', 'preamble')], 
                    is_static=True)
-    ## wifi-phy.h (module 'wifi'): static ns3::Time ns3::WifiPhy::GetPlcpHtSigHeaderDuration(ns3::WifiMode payloadMode, ns3::WifiPreamble preamble) [member function]
+    ## wifi-phy.h (module 'wifi'): static ns3::Time ns3::WifiPhy::GetPlcpHtSigHeaderDuration(ns3::WifiPreamble preamble) [member function]
     cls.add_method('GetPlcpHtSigHeaderDuration', 
                    'ns3::Time', 
-                   [param('ns3::WifiMode', 'payloadMode'), param('ns3::WifiPreamble', 'preamble')], 
+                   [param('ns3::WifiPreamble', 'preamble')], 
                    is_static=True)
     ## wifi-phy.h (module 'wifi'): static ns3::Time ns3::WifiPhy::GetPlcpHtTrainingSymbolDuration(ns3::WifiPreamble preamble, ns3::WifiTxVector txvector) [member function]
     cls.add_method('GetPlcpHtTrainingSymbolDuration', 
