@@ -69,6 +69,7 @@ TvSpectrumTransmitter::GetTypeId(void)
 {
   static TypeId tid = TypeId("ns3::TvSpectrumTransmitter")
     .SetParent<SpectrumPhy> ()
+    .SetGroupName ("Spectrum")
     .AddConstructor<TvSpectrumTransmitter> ()
     .AddAttribute ("TvType",
                    "The type of TV transmitter/modulation to be used.",
