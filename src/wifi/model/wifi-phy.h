@@ -311,12 +311,11 @@ public:
    */
   static WifiMode GetMFPlcpHeaderMode (WifiMode payloadMode, WifiPreamble preamble);
   /** 
-   * \param payloadMode the WifiMode use for the transmission of the payload
    * \param preamble the type of preamble
    * 
    * \return the duration of the HT-SIG in Mixed Format and greenfield format PLCP header 
    */
-  static Time GetPlcpHtSigHeaderDuration (WifiMode payloadMode, WifiPreamble preamble);
+  static Time GetPlcpHtSigHeaderDuration (WifiPreamble preamble);
 
 
   /** 

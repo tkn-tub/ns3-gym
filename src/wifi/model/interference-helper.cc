@@ -283,7 +283,7 @@ InterferenceHelper::CalculatePer (Ptr<const InterferenceHelper::Event> event, Ni
   WifiMode headerMode = WifiPhy::GetPlcpHeaderMode (payloadMode, preamble);
   Time plcpHeaderStart = (*j).GetTime () + WifiPhy::GetPlcpPreambleDuration (payloadMode, preamble); //packet start time+ preamble
   Time plcpHsigHeaderStart = plcpHeaderStart + WifiPhy::GetPlcpHeaderDuration (payloadMode, preamble);//packet start time+ preamble+L SIG
-  Time plcpHtTrainingSymbolsStart = plcpHsigHeaderStart + WifiPhy::GetPlcpHtSigHeaderDuration (payloadMode, preamble);//packet start time+ preamble+L SIG+HT SIG
+  Time plcpHtTrainingSymbolsStart = plcpHsigHeaderStart + WifiPhy::GetPlcpHtSigHeaderDuration (preamble);//packet start time+ preamble+L SIG+HT SIG
   Time plcpPayloadStart =plcpHtTrainingSymbolsStart + WifiPhy::GetPlcpHtTrainingSymbolDuration (preamble,event->GetTxVector()); //packet start time+ preamble+L SIG+HT SIG+Training
   double noiseInterferenceW = (*j).GetDelta ();
   double powerW = event->GetRxPowerW ();
