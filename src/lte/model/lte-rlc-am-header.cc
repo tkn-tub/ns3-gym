@@ -220,11 +220,11 @@ LteRlcAmHeader::OneMoreNackWouldFitIn (uint16_t bytes)
                  "method allowed only for STATUS PDUs");
   if (m_nackSnList.size () % 2 == 0)
     {
-      return (m_headerLength + 1 <= bytes);
+      return (m_headerLength < bytes);
     }
   else
     {
-      return (m_headerLength + 2 <= bytes);
+      return (m_headerLength < (bytes - 1));
     }
 }
 
