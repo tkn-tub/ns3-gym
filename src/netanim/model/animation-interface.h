@@ -420,44 +420,21 @@ public:
 
 private:
 
-
-  // ##### typedef #####
-  class AnimRxInfo
-  {
-  public:
-    AnimRxInfo () {}
-    AnimRxInfo (const Time& fbRx, Ptr <const NetDevice> nd ,double rxRange)
-      : m_fbRx (fbRx.GetSeconds ()), m_lbRx (0), m_rxnd (nd), rxRange (rxRange), m_PhyRxComplete (false) {}
-    double m_fbRx;            
-    double m_lbRx;             
-    Ptr <const NetDevice> m_rxnd;
-    double rxRange;
-    bool IsPhyRxComplete ();
-    void SetPhyRxComplete ();
-  private:
-    bool m_PhyRxComplete;
-  };
-
   class AnimPacketInfo
   
   {
   public:
     AnimPacketInfo ();
     AnimPacketInfo (const AnimPacketInfo & pInfo);
-    AnimPacketInfo(Ptr <const NetDevice> tx_nd, const Time fbTx, const Time lbTx, Vector txLoc, uint32_t txNodeId = 0);
+    AnimPacketInfo(Ptr <const NetDevice> tx_nd, const Time fbTx, uint32_t txNodeId = 0);
     Ptr <const NetDevice> m_txnd;
     uint32_t m_txNodeId;
     double m_fbTx;     
     double m_lbTx;     
-    Vector m_txLoc;
-    double m_firstLastBitDelta;
-    std::map<uint32_t,AnimRxInfo> m_rx;
-    void ProcessRxBegin (Ptr <const NetDevice> nd, const Time fbRx);
-    bool ProcessRxEnd (Ptr <const NetDevice> nd, const Time fbRx, Vector rxLoc);
-    void ProcessRxDrop (Ptr <const NetDevice> nd);
-    AnimRxInfo GetRxInfo (Ptr <const NetDevice> nd);
-    void RemoveRxInfo (Ptr <const NetDevice> nd);
-  
+    double m_fbRx;            
+    double m_lbRx;
+    Ptr <const NetDevice> m_rxnd;
+    void ProcessRxBegin (Ptr <const NetDevice> nd, const double fbRx);
   };
 
   typedef struct
@@ -608,7 +585,7 @@ private:
   AnimUidPacketInfoMap m_pendingLtePackets;
   AnimUidPacketInfoMap m_pendingCsmaPackets;
   AnimUidPacketInfoMap m_pendingUanPackets;
-  std::map<uint32_t, Vector> m_nodeLocation;
+  std::map <uint32_t, Vector> m_nodeLocation;
   std::map <std::string, uint32_t> m_macToNodeIdMap;
   std::map <std::string, uint32_t> m_ipv4ToNodeIdMap;
   NodeColorsMap m_nodeColors;
@@ -621,6 +598,7 @@ private:
   std::vector <std::string> m_resources;
   std::vector <std::string> m_nodeCounters;
 
+  /* Value-added custom counters */
   NodeCounterMap64 m_nodeIpv4Drop;
   NodeCounterMap64 m_nodeIpv4Tx;
   NodeCounterMap64 m_nodeIpv4Rx;
@@ -764,8 +742,8 @@ private:
   void WriteNonP2pLinkProperties (uint32_t id, std::string ipv4Address, std::string channelType);
   void WriteNodeUpdate (uint32_t nodeId);
   void OutputWirelessPacketTxInfo (Ptr<const Packet> p, AnimPacketInfo& pktInfo, uint64_t animUid);
-  void OutputWirelessPacketRxInfo (Ptr<const Packet> p, AnimRxInfo pktrxInfo, uint64_t animUid);
-  void OutputCsmaPacket (Ptr<const Packet> p, AnimPacketInfo& pktInfo, AnimRxInfo pktrxInfo);
+  void OutputWirelessPacketRxInfo (Ptr<const Packet> p, AnimPacketInfo& pktInfo, uint64_t animUid);
+  void OutputCsmaPacket (Ptr<const Packet> p, AnimPacketInfo& pktInfo);
   void WriteLinkProperties ();
   void WriteNodes ();
   void WriteNodeColors ();
@@ -792,7 +770,7 @@ private:
                                  double lbRx,
                                  std::string metaInfo = ""); 
   void WriteXmlP (uint64_t animUid, std::string pktType, uint32_t fId, double fbTx, double lbTx);
-  void WriteXmlPRef (uint64_t animUid, uint32_t fId, double fbTx, double lbTx, std::string metaInfo = "");
+  void WriteXmlPRef (uint64_t animUid, uint32_t fId, double fbTx, std::string metaInfo = "");
   void WriteXmlClose (std::string name, bool routing = false);
   void WriteXmlNonP2pLinkProperties (uint32_t id, std::string ipv4Address, std::string channelType);
   void WriteXmlRouting (uint32_t id, std::string routingInfo);

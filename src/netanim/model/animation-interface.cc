@@ -1,6 +1,4 @@
-/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
-/*
- * This program is free software; you can redistribute it and/or modify
+/* -*- Mode:C++; c-file-style:"gnu"; indeni * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
  *
@@ -773,7 +771,8 @@ AnimationInterface::UanPhyGenTxTrace (std::string context, Ptr<const Packet> p)
   ++gAnimUid;
   NS_LOG_INFO ("Uan TxBeginTrace for packet:" << gAnimUid);
   AddByteTag (gAnimUid, p);
-  AnimPacketInfo pktInfo (ndev, Simulator::Now (), Simulator::Now (), UpdatePosition (n));
+  UpdatePosition (n);
+  AnimPacketInfo pktInfo (ndev, Simulator::Now ());
   AddPendingPacket (AnimationInterface::UAN, gAnimUid, pktInfo);
   OutputWirelessPacketTxInfo (p, m_pendingUanPackets[gAnimUid], gAnimUid);
 }
@@ -794,9 +793,9 @@ AnimationInterface::UanPhyGenRxTrace (std::string context, Ptr<const Packet> p)
       NS_LOG_WARN ("UanPhyGenRxBeginTrace: unknown Uid");
       return;
     }
-  m_pendingUanPackets[animUid].ProcessRxBegin (ndev, Simulator::Now ());
-  m_pendingUanPackets[animUid].ProcessRxEnd (ndev, Simulator::Now (), UpdatePosition (n));
-  OutputWirelessPacketRxInfo (p, m_pendingUanPackets[animUid].GetRxInfo (ndev), animUid);
+  UpdatePosition (n);
+  m_pendingUanPackets[animUid].ProcessRxBegin (ndev, Simulator::Now ().GetSeconds ());
+  OutputWirelessPacketRxInfo (p, m_pendingUanPackets[animUid], animUid);
 }
 
 
@@ -813,7 +812,8 @@ AnimationInterface::WifiPhyTxBeginTrace (std::string context,
   ++gAnimUid;
   NS_LOG_INFO ("Wifi TxBeginTrace for packet:" << gAnimUid);
   AddByteTag (gAnimUid, p);
-  AnimPacketInfo pktInfo (ndev, Simulator::Now (), Simulator::Now (), UpdatePosition (n));
+  UpdatePosition (n);
+  AnimPacketInfo pktInfo (ndev, Simulator::Now ());
   AddPendingPacket (AnimationInterface::WIFI, gAnimUid, pktInfo);
   Ptr<WifiNetDevice> netDevice = DynamicCast<WifiNetDevice> (ndev);
   Mac48Address nodeAddr = netDevice->GetMac ()->GetAddress ();
@@ -855,14 +855,15 @@ AnimationInterface::WifiPhyRxBeginTrace (std::string context,
         return;
       }
       Ptr <Node> txNode = NodeList::GetNode (m_macToNodeIdMap[oss.str ()]);
-      AnimPacketInfo pktInfo (0, Simulator::Now (), Simulator::Now (), UpdatePosition (txNode), m_macToNodeIdMap[oss.str ()]);
+      UpdatePosition (txNode);
+      AnimPacketInfo pktInfo (0, Simulator::Now (), m_macToNodeIdMap[oss.str ()]);
       AddPendingPacket (AnimationInterface::WIFI, animUid, pktInfo);
       NS_LOG_WARN ("WifiPhyRxBegin: unknown Uid, but we are adding a wifi packet");
     }
   /// \todo NS_ASSERT (WifiPacketIsPending (animUid) == true);
-  m_pendingWifiPackets[animUid].ProcessRxBegin (ndev, Simulator::Now ());
-  m_pendingWifiPackets[animUid].ProcessRxEnd (ndev, Simulator::Now (), UpdatePosition (n));
-  OutputWirelessPacketRxInfo (p, m_pendingWifiPackets[animUid].GetRxInfo (ndev), animUid);
+  UpdatePosition (n);
+  m_pendingWifiPackets[animUid].ProcessRxBegin (ndev, Simulator::Now ().GetSeconds ());
+  OutputWirelessPacketRxInfo (p, m_pendingWifiPackets[animUid], animUid);
 }
 
 void 
@@ -876,8 +877,8 @@ AnimationInterface::WimaxTxTrace (std::string context, Ptr<const Packet> p, cons
   NS_ASSERT (n);
   ++gAnimUid;
   NS_LOG_INFO ("WimaxTxTrace for packet:" << gAnimUid);
-  AnimPacketInfo pktInfo (ndev, Simulator::Now (), Simulator::Now () + Seconds (0.001), UpdatePosition (n));
-  /// \todo 0.0001 is used until Wimax implements TxBegin and TxEnd traces
+  UpdatePosition (n);
+  AnimPacketInfo pktInfo (ndev, Simulator::Now ());
   AddByteTag (gAnimUid, p);
   AddPendingPacket (AnimationInterface::WIMAX, gAnimUid, pktInfo);
   OutputWirelessPacketTxInfo (p, pktInfo, gAnimUid);
@@ -897,11 +898,9 @@ AnimationInterface::WimaxRxTrace (std::string context, Ptr<const Packet> p, cons
   NS_LOG_INFO ("WimaxRxTrace for packet:" << animUid);
   NS_ASSERT (IsPacketPending (animUid, AnimationInterface::WIMAX) == true);
   AnimPacketInfo& pktInfo = m_pendingWimaxPackets[animUid];
-  pktInfo.ProcessRxBegin (ndev, Simulator::Now ());
-  pktInfo.ProcessRxEnd (ndev, Simulator::Now () + Seconds (0.001), UpdatePosition (n));
-  /// \todo 0.001 is used until Wimax implements RxBegin and RxEnd traces
-  AnimRxInfo pktrxInfo = pktInfo.GetRxInfo (ndev);
-  OutputWirelessPacketRxInfo (p, pktrxInfo, animUid);
+  UpdatePosition (n);
+  pktInfo.ProcessRxBegin (ndev, Simulator::Now ().GetSeconds ());
+  OutputWirelessPacketRxInfo (p, pktInfo, animUid);
 }
 
 void 
@@ -915,8 +914,8 @@ AnimationInterface::LteTxTrace (std::string context, Ptr<const Packet> p, const 
   NS_ASSERT (n);
   ++gAnimUid;
   NS_LOG_INFO ("LteTxTrace for packet:" << gAnimUid);
-  AnimPacketInfo pktInfo (ndev, Simulator::Now (), Simulator::Now () + Seconds (0.001), UpdatePosition (n));
-  /// \todo 0.0001 is used until Lte implements TxBegin and TxEnd traces
+  UpdatePosition (n);
+  AnimPacketInfo pktInfo (ndev, Simulator::Now ());
   AddByteTag (gAnimUid, p);
   AddPendingPacket (AnimationInterface::LTE, gAnimUid, pktInfo);
   OutputWirelessPacketTxInfo (p, pktInfo, gAnimUid);
@@ -940,11 +939,9 @@ AnimationInterface::LteRxTrace (std::string context, Ptr<const Packet> p, const 
       return;
     }
   AnimPacketInfo& pktInfo = m_pendingLtePackets[animUid];
-  pktInfo.ProcessRxBegin (ndev, Simulator::Now ());
-  pktInfo.ProcessRxEnd (ndev, Simulator::Now () + Seconds (0.001), UpdatePosition (n));
-  /// \todo 0.001 is used until Lte implements RxBegin and RxEnd traces
-  AnimRxInfo pktrxInfo = pktInfo.GetRxInfo (ndev);
-  OutputWirelessPacketRxInfo (p, pktrxInfo, animUid);
+  UpdatePosition (n);
+  pktInfo.ProcessRxBegin (ndev, Simulator::Now ().GetSeconds ());
+  OutputWirelessPacketRxInfo (p, pktInfo, animUid);
 }
 
 void 
@@ -971,8 +968,8 @@ AnimationInterface::LteSpectrumPhyTxStart (std::string context, Ptr<const Packet
       Ptr <Packet> p = *i;
       ++gAnimUid;
       NS_LOG_INFO ("LteSpectrumPhyTxTrace for packet:" << gAnimUid);
-      AnimPacketInfo pktInfo (ndev, Simulator::Now (), Simulator::Now () + Seconds (0.001), UpdatePosition (n));
-      /// \todo 0.0001 is used until Lte implements TxBegin and TxEnd traces
+      UpdatePosition (n);
+      AnimPacketInfo pktInfo (ndev, Simulator::Now ());
       AddByteTag (gAnimUid, p);
       AddPendingPacket (AnimationInterface::LTE, gAnimUid, pktInfo);
       OutputWirelessPacketTxInfo (p, pktInfo, gAnimUid);
@@ -1009,11 +1006,9 @@ AnimationInterface::LteSpectrumPhyRxStart (std::string context, Ptr<const Packet
           return;
         }
       AnimPacketInfo& pktInfo = m_pendingLtePackets[animUid];
-      pktInfo.ProcessRxBegin (ndev, Simulator::Now ());
-      pktInfo.ProcessRxEnd (ndev, Simulator::Now () + Seconds (0.001), UpdatePosition (n));
-      /// \todo 0.001 is used until Lte implements RxBegin and RxEnd traces
-      AnimRxInfo pktrxInfo = pktInfo.GetRxInfo (ndev);
-      OutputWirelessPacketRxInfo (p, pktrxInfo, animUid);
+      UpdatePosition (n);
+      pktInfo.ProcessRxBegin (ndev, Simulator::Now ().GetSeconds ());
+      OutputWirelessPacketRxInfo (p, pktInfo, animUid);
     }
 }
 
@@ -1029,7 +1024,8 @@ AnimationInterface::CsmaPhyTxBeginTrace (std::string context, Ptr<const Packet> 
   ++gAnimUid;
   NS_LOG_INFO ("CsmaPhyTxBeginTrace for packet:" << gAnimUid);
   AddByteTag (gAnimUid, p);
-  AnimPacketInfo pktInfo (ndev, Simulator::Now (), Simulator::Now (), UpdatePosition (n));
+  UpdatePosition (n);
+  AnimPacketInfo pktInfo (ndev, Simulator::Now ());
   AddPendingPacket (AnimationInterface::CSMA, gAnimUid, pktInfo);
 
 }
@@ -1049,7 +1045,8 @@ AnimationInterface::CsmaPhyTxEndTrace (std::string context, Ptr<const Packet> p)
     {
       NS_LOG_WARN ("CsmaPhyTxEndTrace: unknown Uid"); 
       NS_FATAL_ERROR ("CsmaPhyTxEndTrace: unknown Uid"); 
-      AnimPacketInfo pktInfo (ndev, Simulator::Now (), Simulator::Now (), UpdatePosition (n));
+      UpdatePosition (n);
+      AnimPacketInfo pktInfo (ndev, Simulator::Now ());
       AddPendingPacket (AnimationInterface::CSMA, animUid, pktInfo);
       NS_LOG_WARN ("Unknown Uid, but adding Csma Packet anyway");
     }
@@ -1075,15 +1072,11 @@ AnimationInterface::CsmaPhyRxEndTrace (std::string context, Ptr<const Packet> p)
     }
   /// \todo NS_ASSERT (CsmaPacketIsPending (AnimUid) == true);
   AnimPacketInfo& pktInfo = m_pendingCsmaPackets[animUid];
-  pktInfo.ProcessRxBegin (ndev, Simulator::Now ());
-  pktInfo.ProcessRxEnd (ndev, Simulator::Now (), UpdatePosition (n));
+  UpdatePosition (n);
+  pktInfo.ProcessRxBegin (ndev, Simulator::Now ().GetSeconds ());
   NS_LOG_INFO ("CsmaPhyRxEndTrace for packet:" << animUid);
-  AnimRxInfo pktrxInfo = pktInfo.GetRxInfo (ndev);
-  if (pktrxInfo.IsPhyRxComplete ())
-    {
-      NS_LOG_INFO ("CsmaPhyRxEndTrace for packet:" << animUid << " complete");
-      OutputCsmaPacket (p, pktInfo, pktrxInfo);
-    }
+  NS_LOG_INFO ("CsmaPhyRxEndTrace for packet:" << animUid << " complete");
+  OutputCsmaPacket (p, pktInfo);
 }
 
 void 
@@ -1105,12 +1098,8 @@ AnimationInterface::CsmaMacRxTrace (std::string context,
     }
   /// \todo NS_ASSERT (CsmaPacketIsPending (AnimUid) == true);
   AnimPacketInfo& pktInfo = m_pendingCsmaPackets[animUid];
-  AnimRxInfo pktrxInfo = pktInfo.GetRxInfo (ndev);
-  if (pktrxInfo.IsPhyRxComplete ())
-    {
-      NS_LOG_INFO ("MacRxTrace for packet:" << animUid << " complete");
-      OutputCsmaPacket (p, pktInfo, pktrxInfo);
-    }
+  NS_LOG_INFO ("MacRxTrace for packet:" << animUid << " complete");
+  OutputCsmaPacket (p, pktInfo);
 }
 
 void
@@ -1122,34 +1111,33 @@ AnimationInterface::OutputWirelessPacketTxInfo (Ptr<const Packet> p, AnimPacketI
     nodeId = pktInfo.m_txnd->GetNode ()->GetId ();
   else
     nodeId = pktInfo.m_txNodeId;
-  double lbTx = pktInfo.m_firstLastBitDelta + pktInfo.m_fbTx;
-  WriteXmlPRef (animUid, nodeId, pktInfo.m_fbTx, lbTx, m_enablePacketMetadata? GetPacketMetadata (p):"");
+  WriteXmlPRef (animUid, nodeId, pktInfo.m_fbTx, m_enablePacketMetadata? GetPacketMetadata (p):"");
 
 }
 
 void 
-AnimationInterface::OutputWirelessPacketRxInfo (Ptr<const Packet> p, AnimRxInfo pktrxInfo, uint64_t animUid)
+AnimationInterface::OutputWirelessPacketRxInfo (Ptr<const Packet> p, AnimPacketInfo & pktInfo, uint64_t animUid)
 {
   CheckMaxPktsPerTraceFile ();
-  uint32_t rxId = pktrxInfo.m_rxnd->GetNode ()->GetId ();
-  WriteXmlP (animUid, "wpr", rxId, pktrxInfo.m_fbRx, pktrxInfo.m_lbRx);
+  uint32_t rxId = pktInfo.m_rxnd->GetNode ()->GetId ();
+  WriteXmlP (animUid, "wpr", rxId, pktInfo.m_fbRx, pktInfo.m_lbRx);
 }
 
 void 
-AnimationInterface::OutputCsmaPacket (Ptr<const Packet> p, AnimPacketInfo &pktInfo, AnimRxInfo pktrxInfo)
+AnimationInterface::OutputCsmaPacket (Ptr<const Packet> p, AnimPacketInfo &pktInfo)
 {
   CheckMaxPktsPerTraceFile ();
   NS_ASSERT (pktInfo.m_txnd);
   uint32_t nodeId = pktInfo.m_txnd->GetNode ()->GetId ();
-  uint32_t rxId = pktrxInfo.m_rxnd->GetNode ()->GetId ();
+  uint32_t rxId = pktInfo.m_rxnd->GetNode ()->GetId ();
 
   WriteXmlP ("p", 
              nodeId, 
              pktInfo.m_fbTx, 
              pktInfo.m_lbTx, 
              rxId,
-             pktrxInfo.m_fbRx, 
-             pktrxInfo.m_lbRx, 
+             pktInfo.m_fbRx, 
+             pktInfo.m_lbRx, 
              m_enablePacketMetadata? GetPacketMetadata (p):"");
 }
 
@@ -2170,13 +2158,12 @@ AnimationInterface::WriteXmlRp (uint32_t nodeId, std::string destination, Ipv4Ro
 
 
 void 
-AnimationInterface::WriteXmlPRef (uint64_t animUid, uint32_t fId, double fbTx, double lbTx, std::string metaInfo)
+AnimationInterface::WriteXmlPRef (uint64_t animUid, uint32_t fId, double fbTx, std::string metaInfo)
 {
   AnimXmlElement element ("pr");
   element.AddAttribute ("uId", animUid);
   element.AddAttribute ("fId", fId);
   element.AddAttribute ("fbTx", fbTx);
-  element.AddAttribute ("lbTx", lbTx);
   if (!metaInfo.empty ())
     {
       element.AddAttribute ("meta-info", metaInfo.c_str ());
@@ -2400,8 +2387,7 @@ AnimationInterface::AnimPacketInfo::AnimPacketInfo ()
     m_txNodeId (0),
     m_fbTx (0), 
     m_lbTx (0), 
-    m_txLoc (Vector (0,0,0)), 
-    m_firstLastBitDelta (0)
+    m_lbRx (0)
 {
 }
 
@@ -2411,84 +2397,28 @@ AnimationInterface::AnimPacketInfo::AnimPacketInfo (const AnimPacketInfo & pInfo
   m_txNodeId = pInfo.m_txNodeId;
   m_fbTx = pInfo.m_fbTx;
   m_lbTx = pInfo.m_lbTx;
-  m_txLoc = pInfo.m_txLoc;
-  m_firstLastBitDelta = pInfo.m_firstLastBitDelta;
+  m_lbRx = pInfo.m_lbRx;
 }
 
 AnimationInterface::AnimPacketInfo::AnimPacketInfo (Ptr <const NetDevice> txnd, 
                                 const Time fbTx, 
-                                const Time lbTx, 
-                                Vector txLoc, 
                                 uint32_t txNodeId)
   : m_txnd (txnd), 
     m_txNodeId (0),
     m_fbTx (fbTx.GetSeconds ()), 
-    m_lbTx (lbTx.GetSeconds ()), 
-    m_txLoc (txLoc),
-    m_firstLastBitDelta (0)
+    m_lbTx (0), 
+    m_lbRx (0)
 {
   if (!m_txnd)
     m_txNodeId = txNodeId;
 }
 
 void 
-AnimationInterface::AnimPacketInfo::ProcessRxBegin (Ptr<const NetDevice> nd, const Time fbRx)
+AnimationInterface::AnimPacketInfo::ProcessRxBegin (Ptr<const NetDevice> nd, const double fbRx)
 {
-  m_rx[nd->GetNode ()->GetId ()] = AnimRxInfo (fbRx, nd, 0);
-}
-
-bool 
-AnimationInterface::AnimPacketInfo::ProcessRxEnd (Ptr<const NetDevice> nd, const Time lbRx, Vector rxLoc)
-{
-  uint32_t NodeId = nd->GetNode ()->GetId (); 
-  // Find the RxInfo
-  if (m_rx.find (NodeId) == m_rx.end ())
-    {
-      return false;
-    } 
-  AnimRxInfo& rxInfo = m_rx[NodeId];
-  // Check if the NetDevice matches. A node may have several NetDevices
-  if (rxInfo.m_rxnd != nd) 
-    {
-      return false; 
-    }
-  rxInfo.rxRange = CalculateDistance (m_txLoc, rxLoc);
-  rxInfo.m_lbRx = lbRx.GetSeconds ();
-  rxInfo.SetPhyRxComplete ();
-  m_firstLastBitDelta = rxInfo.m_lbRx - rxInfo.m_fbRx;
-  return true;
-}
-
-AnimationInterface::AnimRxInfo 
-AnimationInterface::AnimPacketInfo::GetRxInfo (Ptr<const NetDevice> nd)
-{
-  uint32_t NodeId = nd->GetNode ()->GetId (); 
-  NS_ASSERT (m_rx.find (NodeId) != m_rx.end ()); 
-  return m_rx[NodeId];
-}
-
-void 
-AnimationInterface::AnimPacketInfo::RemoveRxInfo (Ptr<const NetDevice> nd)
-{
-  uint32_t NodeId = nd->GetNode ()->GetId (); 
-  m_rx.erase (m_rx.find (NodeId));
-}
-
-void 
-AnimationInterface::AnimPacketInfo::ProcessRxDrop (Ptr<const NetDevice> nd)
-{
-}
-
-bool 
-AnimationInterface::AnimRxInfo::IsPhyRxComplete ()
-{
-  return m_PhyRxComplete;
-}
-
-void 
-AnimationInterface::AnimRxInfo::SetPhyRxComplete ()
-{
-  m_PhyRxComplete = true; 
+  Ptr <Node> n = nd->GetNode ();
+  m_fbRx = fbRx;
+  m_rxnd = nd;
 }
 
 } // namespace ns3
