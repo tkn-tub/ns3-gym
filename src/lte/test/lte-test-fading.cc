@@ -239,7 +239,7 @@ LteFadingTestCase::DoRun (void)
       sum.at (i) = 0.;
       sumSquared.at (i) = 0.;
     }
-  for (uint i = 0; i < m_fadingSamples.size (); i++)
+  for (std::vector<SpectrumValue>::size_type i = 0; i != m_fadingSamples.size (); i++)
   {
     NS_LOG_INFO ("Sample time " << time << " : " << m_fadingSamples.at(i)[0] << " " << m_fadingSamples.at(i)[1]);
     time += samplingInterval;

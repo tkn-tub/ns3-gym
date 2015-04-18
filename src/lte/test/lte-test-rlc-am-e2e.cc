@@ -301,8 +301,8 @@ LteRlcAmE2eTestCase::DoRun (void)
   uint32_t txEnbRrcPdus = lteSimpleHelper->m_enbRrc->GetTxPdus ();
   uint32_t rxUeRrcPdus = lteSimpleHelper->m_ueRrc->GetRxPdus ();
 
-  uint txEnbRlcPdus = lteSimpleHelper->m_enbMac->GetTxPdus ();
-  uint rxUeRlcPdus = lteSimpleHelper->m_ueMac->GetRxPdus ();
+  uint32_t txEnbRlcPdus = lteSimpleHelper->m_enbMac->GetTxPdus ();
+  uint32_t rxUeRlcPdus = lteSimpleHelper->m_ueMac->GetRxPdus ();
 
   NS_LOG_INFO ("Run = " << m_run);
   NS_LOG_INFO ("Loss rate (%) = " << uint32_t (m_losses * 100));
