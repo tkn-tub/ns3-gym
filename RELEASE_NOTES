@@ -45,6 +45,7 @@ Bugs fixed
 - Bug 2087 - Waf fails to build ns-3 if the path contains accented characters
 - Bug 2090 - (rip-ng) Routes may be added twice on interface activation
 - Bug 2093 - MultiModelSpectrumChannel::GetDevice only works for 0-th index
+- Bug 2103 - Ipv[4,6]RoutingHelper::PrintRoutingTableAll[At,Every] hangs if a node doesn't have IP
 
 Known issues
 ------------

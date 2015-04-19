@@ -71,19 +71,25 @@ void
 Ipv4RoutingHelper::Print (Ptr<Node> node, Ptr<OutputStreamWrapper> stream)
 {
   Ptr<Ipv4> ipv4 = node->GetObject<Ipv4> ();
-  Ptr<Ipv4RoutingProtocol> rp = ipv4->GetRoutingProtocol ();
-  NS_ASSERT (rp);
-  rp->PrintRoutingTable (stream);
+  if (ipv4)
+    {
+      Ptr<Ipv4RoutingProtocol> rp = ipv4->GetRoutingProtocol ();
+      NS_ASSERT (rp);
+      rp->PrintRoutingTable (stream);
+    }
 }
 
 void
 Ipv4RoutingHelper::PrintEvery (Time printInterval, Ptr<Node> node, Ptr<OutputStreamWrapper> stream)
 {
   Ptr<Ipv4> ipv4 = node->GetObject<Ipv4> ();
-  Ptr<Ipv4RoutingProtocol> rp = ipv4->GetRoutingProtocol ();
-  NS_ASSERT (rp);
-  rp->PrintRoutingTable (stream);
-  Simulator::Schedule (printInterval, &Ipv4RoutingHelper::PrintEvery, printInterval, node, stream);
+  if (ipv4)
+    {
+      Ptr<Ipv4RoutingProtocol> rp = ipv4->GetRoutingProtocol ();
+      NS_ASSERT (rp);
+      rp->PrintRoutingTable (stream);
+      Simulator::Schedule (printInterval, &Ipv4RoutingHelper::PrintEvery, printInterval, node, stream);
+    }
 }
 
 void
@@ -121,27 +127,30 @@ Ipv4RoutingHelper::PrintNeighborCacheEvery (Time printInterval,Ptr<Node> node, P
 void
 Ipv4RoutingHelper::PrintArpCache (Ptr<Node> node, Ptr<OutputStreamWrapper> stream)
 {
-  std::ostream* os = stream->GetStream ();
-
-  *os << "ARP Cache of node ";
-  std::string found = Names::FindName (node);
-  if (Names::FindName (node) != "")
-    {
-      *os << found;
-    }
-  else
-    {
-      *os << static_cast<int> (node->GetId ());
-    }
-  *os << " at time " << Simulator::Now ().GetSeconds () << "\n";
-
   Ptr<Ipv4L3Protocol> ipv4 = node->GetObject<Ipv4L3Protocol> ();
-  for (uint32_t i=0; i<ipv4->GetNInterfaces(); i++)
+  if (ipv4)
     {
-      Ptr<ArpCache> arpCache = ipv4->GetInterface (i)->GetArpCache ();
-      if (arpCache)
+      std::ostream* os = stream->GetStream ();
+
+      *os << "ARP Cache of node ";
+      std::string found = Names::FindName (node);
+      if (Names::FindName (node) != "")
         {
-          arpCache->PrintArpCache (stream);
+          *os << found;
+        }
+      else
+        {
+          *os << static_cast<int> (node->GetId ());
+        }
+      *os << " at time " << Simulator::Now ().GetSeconds () << "\n";
+
+      for (uint32_t i=0; i<ipv4->GetNInterfaces(); i++)
+        {
+          Ptr<ArpCache> arpCache = ipv4->GetInterface (i)->GetArpCache ();
+          if (arpCache)
+            {
+              arpCache->PrintArpCache (stream);
+            }
         }
     }
 }
@@ -149,30 +158,33 @@ Ipv4RoutingHelper::PrintArpCache (Ptr<Node> node, Ptr<OutputStreamWrapper> strea
 void
 Ipv4RoutingHelper::PrintArpCacheEvery (Time printInterval, Ptr<Node> node, Ptr<OutputStreamWrapper> stream)
 {
-  std::ostream* os = stream->GetStream ();
-
-  *os << "ARP Cache of node ";
-  std::string found = Names::FindName (node);
-  if (Names::FindName (node) != "")
-    {
-      *os << found;
-    }
-  else
-    {
-      *os << static_cast<int> (node->GetId ());
-    }
-  *os << " at time " << Simulator::Now ().GetSeconds () << "\n";
-
   Ptr<Ipv4L3Protocol> ipv4 = node->GetObject<Ipv4L3Protocol> ();
-  for (uint32_t i=0; i<ipv4->GetNInterfaces(); i++)
+  if (ipv4)
     {
-      Ptr<ArpCache> arpCache = ipv4->GetInterface (i)->GetArpCache ();
-      if (arpCache)
+      std::ostream* os = stream->GetStream ();
+
+      *os << "ARP Cache of node ";
+      std::string found = Names::FindName (node);
+      if (Names::FindName (node) != "")
         {
-          arpCache->PrintArpCache (stream);
+          *os << found;
         }
+      else
+        {
+          *os << static_cast<int> (node->GetId ());
+        }
+      *os << " at time " << Simulator::Now ().GetSeconds () << "\n";
+
+      for (uint32_t i=0; i<ipv4->GetNInterfaces(); i++)
+        {
+          Ptr<ArpCache> arpCache = ipv4->GetInterface (i)->GetArpCache ();
+          if (arpCache)
+            {
+              arpCache->PrintArpCache (stream);
+            }
+        }
+      Simulator::Schedule (printInterval, &Ipv4RoutingHelper::PrintArpCacheEvery, printInterval, node, stream);
     }
-  Simulator::Schedule (printInterval, &Ipv4RoutingHelper::PrintArpCacheEvery, printInterval, node, stream);
 }
 
 } // namespace ns3
