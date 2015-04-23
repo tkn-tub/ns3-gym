@@ -152,7 +152,6 @@ LteEnbPhy::LteEnbPhy (Ptr<LteSpectrumPhy> dlPhy, Ptr<LteSpectrumPhy> ulPhy)
   m_harqPhyModule = Create <LteHarqPhy> ();
   m_downlinkSpectrumPhy->SetHarqPhyModule (m_harqPhyModule);
   m_uplinkSpectrumPhy->SetHarqPhyModule (m_harqPhyModule);
-  Simulator::ScheduleNow (&LteEnbPhy::StartFrame, this);
 }
 
 TypeId
@@ -250,6 +249,25 @@ void
 LteEnbPhy::DoInitialize ()
 {
   NS_LOG_FUNCTION (this);
+  bool haveNodeId = false;
+  uint32_t nodeId;
+  if (m_netDevice != 0)
+    {
+      Ptr<Node> node = m_netDevice->GetNode ();
+      if (node != 0)
+        {
+          nodeId = node->GetId ();
+          haveNodeId = true;
+        }
+    }
+  if (haveNodeId)
+    {
+      Simulator::ScheduleWithContext (nodeId, Seconds (0), &LteEnbPhy::StartFrame, this);
+    }
+  else
+    {
+      Simulator::ScheduleNow (&LteEnbPhy::StartFrame, this);
+    }
   Ptr<SpectrumValue> noisePsd = LteSpectrumValueHelper::CreateNoisePowerSpectralDensity (m_ulEarfcn, m_ulBandwidth, m_noiseFigure);
   m_uplinkSpectrumPhy->SetNoisePowerSpectralDensity (noisePsd);
   LtePhy::DoInitialize ();

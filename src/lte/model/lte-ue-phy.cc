@@ -22,6 +22,7 @@
 
 #include <ns3/object-factory.h>
 #include <ns3/log.h>
+#include <ns3/node.h>
 #include <cfloat>
 #include <cmath>
 #include <ns3/simulator.h>
@@ -162,7 +163,6 @@ LteUePhy::LteUePhy (Ptr<LteSpectrumPhy> dlPhy, Ptr<LteSpectrumPhy> ulPhy)
 
   NS_ASSERT_MSG (Simulator::Now ().GetNanoSeconds () == 0,
                  "Cannot create UE devices after simulation started");
-  Simulator::ScheduleNow (&LteUePhy::SubframeIndication, this, 1, 1);
   Simulator::Schedule (m_ueMeasurementsFilterPeriod, &LteUePhy::ReportUeMeasurements, this);
 
   DoReset ();
@@ -302,6 +302,25 @@ void
 LteUePhy::DoInitialize ()
 {
   NS_LOG_FUNCTION (this);
+  bool haveNodeId = false;
+  uint32_t nodeId;
+  if (m_netDevice != 0)
+    {
+      Ptr<Node> node = m_netDevice->GetNode ();
+      if (node != 0)
+        {
+          nodeId = node->GetId ();
+          haveNodeId = true;
+        }
+    }
+  if (haveNodeId)
+    {
+      Simulator::ScheduleWithContext (nodeId, Seconds (0), &LteUePhy::SubframeIndication, this, 1, 1);
+    }
+  else
+    {
+      Simulator::ScheduleNow (&LteUePhy::SubframeIndication, this, 1, 1);
+    }  
   LtePhy::DoInitialize ();
 }
 
