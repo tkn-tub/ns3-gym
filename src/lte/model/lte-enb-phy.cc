@@ -250,7 +250,7 @@ LteEnbPhy::DoInitialize ()
 {
   NS_LOG_FUNCTION (this);
   bool haveNodeId = false;
-  uint32_t nodeId;
+  uint32_t nodeId = 0;
   if (m_netDevice != 0)
     {
       Ptr<Node> node = m_netDevice->GetNode ();
