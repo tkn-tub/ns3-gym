@@ -129,7 +129,6 @@ def build(bld):
         'test/lte-test-uplink-sinr.cc',
         'test/lte-test-link-adaptation.cc',
         'test/lte-test-interference.cc',
-        'test/lte-test-sinr-chunk-processor.cc',
         'test/lte-test-ue-phy.cc',
         'test/lte-test-rr-ff-mac-scheduler.cc',
         'test/lte-test-pf-ff-mac-scheduler.cc',

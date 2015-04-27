@@ -41,8 +41,10 @@
 #include <ns3/lte-ue-rrc.h>
 
 #include "lte-ffr-simple.h"
-#include "lte-test-sinr-chunk-processor.h"
 #include <ns3/lte-common.h>
+
+
+#include <ns3/lte-chunk-processor.h>
 
 #include "lte-test-downlink-power-control.h"
 #include <ns3/lte-rrc-sap.h>
@@ -441,17 +443,21 @@ LteDownlinkPowerControlTestCase::DoRun (void)
 
   Ptr<LtePhy> ue1Phy = ueDevs.Get (0)->GetObject<LteUeNetDevice> ()->GetPhy ()->GetObject<LtePhy> ();
 
-  Ptr<LteTestSinrChunkProcessor> testDlDataPowerReceived = Create<LteTestSinrChunkProcessor> ();
+  Ptr<LteChunkProcessor> testDlDataPowerReceived = Create<LteChunkProcessor> ();
+  LteSpectrumValueCatcher dlDataPowerReceivedCatcher;
+  testDlDataPowerReceived->AddCallback (MakeCallback (&LteSpectrumValueCatcher::ReportValue, &dlDataPowerReceivedCatcher));
   ue1Phy->GetDownlinkSpectrumPhy ()->AddDataPowerChunkProcessor (testDlDataPowerReceived);
 
-  Ptr<LteTestSinrChunkProcessor> testDlCtrlPowerReceived = Create<LteTestSinrChunkProcessor> ();
+  Ptr<LteChunkProcessor> testDlCtrlPowerReceived = Create<LteChunkProcessor> ();
+  LteSpectrumValueCatcher dlCtrlPowerReceivedCatcher;
+  testDlCtrlPowerReceived->AddCallback (MakeCallback (&LteSpectrumValueCatcher::ReportValue, &dlCtrlPowerReceivedCatcher));
   ue1Phy->GetDownlinkSpectrumPhy ()->AddRsPowerChunkProcessor (testDlCtrlPowerReceived);
 
   Simulator::Stop (Seconds (0.400));
   Simulator::Run ();
 
-  double dataPower = 10.0 * std::log10 (testDlDataPowerReceived->GetSinr ()->operator[] (0));
-  double ctrlPower = 10.0 * std::log10 (testDlCtrlPowerReceived->GetSinr ()->operator[] (0));
+  double dataPower = 10.0 * std::log10 (dlDataPowerReceivedCatcher.GetValue ()->operator[] (0));
+  double ctrlPower = 10.0 * std::log10 (dlCtrlPowerReceivedCatcher.GetValue ()->operator[] (0));
   double powerDiff = (-1.0)*ctrlPower + dataPower;
 
   NS_LOG_DEBUG ("DataPower: " << dataPower);

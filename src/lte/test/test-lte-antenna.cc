@@ -37,7 +37,8 @@
 
 #include "ns3/lte-global-pathloss-database.h"
 
-#include "lte-test-sinr-chunk-processor.h"
+#include <ns3/lte-chunk-processor.h>
+
 
 using namespace ns3;
 
@@ -148,11 +149,15 @@ LteEnbAntennaTestCase::DoRun (void)
   // Use testing chunk processor in the PHY layer
   // It will be used to test that the SNR is as intended
   Ptr<LtePhy> uePhy = ueDevs.Get (0)->GetObject<LteUeNetDevice> ()->GetPhy ()->GetObject<LtePhy> ();
-  Ptr<LteTestSinrChunkProcessor> testDlSinr = Create<LteTestSinrChunkProcessor> ();
+  Ptr<LteChunkProcessor> testDlSinr = Create<LteChunkProcessor> ();
+  LteSpectrumValueCatcher dlSinrCatcher;
+  testDlSinr->AddCallback (MakeCallback (&LteSpectrumValueCatcher::ReportValue, &dlSinrCatcher));
   uePhy->GetDownlinkSpectrumPhy ()->AddDataSinrChunkProcessor (testDlSinr);
 
   Ptr<LtePhy> enbphy = enbDevs.Get (0)->GetObject<LteEnbNetDevice> ()->GetPhy ()->GetObject<LtePhy> ();
-  Ptr<LteTestSinrChunkProcessor> testUlSinr = Create<LteTestSinrChunkProcessor> ();
+  Ptr<LteChunkProcessor> testUlSinr = Create<LteChunkProcessor> ();
+  LteSpectrumValueCatcher ulSinrCatcher;
+  testUlSinr->AddCallback (MakeCallback (&LteSpectrumValueCatcher::ReportValue, &ulSinrCatcher));
   enbphy->GetUplinkSpectrumPhy ()->AddDataSinrChunkProcessor (testUlSinr);
 
 
@@ -177,15 +182,15 @@ LteEnbAntennaTestCase::DoRun (void)
   const double enbNoiseFigureDb = 5.0; // default eNB noise figure
   double tolerance = (m_antennaGainDb != 0) ? std::abs (m_antennaGainDb) * 0.001 : 0.001;
 
-  // first test with SINR from LteTestSinrChunkProcessor
+  // first test with SINR from LteChunkProcessor
   // this can only be done for not-too-bad SINR otherwise the measurement won't be available
   double expectedSinrDl = enbTxPowerDbm + m_antennaGainDb - noisePowerDbm + ueNoiseFigureDb;
   if (expectedSinrDl > 0)
     {
       double calculatedSinrDbDl = -INFINITY;
-      if (testDlSinr->GetSinr () != 0)
+      if (dlSinrCatcher.GetValue () != 0)
         {
-          calculatedSinrDbDl = 10.0 * std::log10 (testDlSinr->GetSinr ()->operator[] (0));
+          calculatedSinrDbDl = 10.0 * std::log10 (dlSinrCatcher.GetValue ()->operator[] (0));
         }      
       // remember that propagation loss is 0dB
       double calculatedAntennaGainDbDl = - (enbTxPowerDbm - calculatedSinrDbDl - noisePowerDbm - ueNoiseFigureDb);      
@@ -195,9 +200,9 @@ LteEnbAntennaTestCase::DoRun (void)
   if (expectedSinrUl > 0)
     {      
       double calculatedSinrDbUl = -INFINITY;
-      if (testUlSinr->GetSinr () != 0)
+      if (ulSinrCatcher.GetValue () != 0)
         {
-          calculatedSinrDbUl = 10.0 * std::log10 (testUlSinr->GetSinr ()->operator[] (0));
+          calculatedSinrDbUl = 10.0 * std::log10 (ulSinrCatcher.GetValue ()->operator[] (0));
         }  
       double calculatedAntennaGainDbUl = - (ueTxPowerDbm - calculatedSinrDbUl - noisePowerDbm - enbNoiseFigureDb);
       NS_TEST_ASSERT_MSG_EQ_TOL (calculatedAntennaGainDbUl, m_antennaGainDb, tolerance, "Wrong UL antenna gain!");

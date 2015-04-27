@@ -53,7 +53,7 @@ private:
   Ptr<SpectrumValue> m_sv1;
   Ptr<SpectrumValue> m_sv2;
   Ptr<const SpectrumModel> m_sm;
-  Ptr<SpectrumValue> m_sinr;
+  Ptr<SpectrumValue> m_expectedSinr;
 };
 
 
@@ -63,13 +63,22 @@ class LteUplinkSrsSinrTestCase : public TestCase
     LteUplinkSrsSinrTestCase (Ptr<SpectrumValue> sv1, Ptr<SpectrumValue> sv2, Ptr<SpectrumValue> sinr, std::string name);
     virtual ~LteUplinkSrsSinrTestCase ();
     
-  private:
-    virtual void DoRun (void);
-    
-    Ptr<SpectrumValue> m_sv1;
-    Ptr<SpectrumValue> m_sv2;
-    Ptr<const SpectrumModel> m_sm;
-    Ptr<SpectrumValue> m_sinr;
+  /** 
+   * Callback to be connected to an LteChunkProcessor to collect the reported SINR
+   * 
+   * \param sinr 
+   */
+  void ReportSinr (const SpectrumValue& sinr);
+
+private:
+  virtual void DoRun (void);
+  
+  Ptr<SpectrumValue> m_sv1;
+  Ptr<SpectrumValue> m_sv2;
+  Ptr<const SpectrumModel> m_sm;
+  
+  Ptr<SpectrumValue> m_expectedSinr;
+  Ptr<SpectrumValue> m_actualSinr;
 };
 
 

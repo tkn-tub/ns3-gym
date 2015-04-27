@@ -88,6 +88,34 @@ private:
   std::vector<LteChunkProcessorCallback> m_lteChunkProcessorCallbacks;
 };
 
+
+/**
+ * A sink to be plugged to the callback of LteChunkProcessor allowing
+ * to save and later retrieve the latest reported value 
+ * 
+ */
+class LteSpectrumValueCatcher
+{
+public:
+
+  /** 
+   * function to be plugged to LteChunkProcessor::AddCallback ()
+   * 
+   * \param value 
+   */
+  void ReportValue (const SpectrumValue& value);
+
+  /** 
+   * 
+   * 
+   * \return the latest value reported by the LteChunkProcessor
+   */
+  Ptr<SpectrumValue> GetValue ();
+  
+private:
+  Ptr<SpectrumValue> m_value;
+};
+
 } // namespace ns3
 
 

@@ -86,4 +86,18 @@ LteChunkProcessor::End ()
 }
 
 
+  
+void
+LteSpectrumValueCatcher::ReportValue (const SpectrumValue& value)
+{
+  m_value = value.Copy ();
+}
+
+Ptr<SpectrumValue> 
+LteSpectrumValueCatcher::GetValue ()
+{
+  return m_value;
+}
+
+
 } // namespace ns3

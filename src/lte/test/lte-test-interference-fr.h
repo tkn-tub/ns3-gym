@@ -49,8 +49,8 @@ private:
 
   double m_d1;
   double m_d2;
-  double m_dlSinrDb;
-  double m_ulSinrDb;
+  double m_expectedDlSinrDb;
+  double m_expectedUlSinrDb;
 };
 
 class LteInterferenceStrictFrTestCase : public TestCase

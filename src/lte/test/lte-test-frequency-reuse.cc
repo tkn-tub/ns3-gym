@@ -46,7 +46,6 @@
 
 #include "lte-ffr-simple.h"
 #include "lte-simple-spectrum-phy.h"
-#include "lte-test-sinr-chunk-processor.h"
 #include <ns3/lte-common.h>
 
 #include "lte-test-frequency-reuse.h"

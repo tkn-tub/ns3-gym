@@ -51,7 +51,6 @@
 #include <ns3/lte-ue-rrc.h>
 
 #include "lte-test-ue-measurements.h"
-#include "lte-test-sinr-chunk-processor.h"
 #include <ns3/lte-common.h>
 
 using namespace ns3;
@@ -198,32 +197,11 @@ LteUeMeasurementsTestCase::DoRun (void)
   lteHelper->ActivateDataRadioBearer (ueDevs1, bearer);
   lteHelper->ActivateDataRadioBearer (ueDevs2, bearer);
 
-  // Use testing chunk processor in the PHY layer
-  // It will be used to test that the SNR is as intended
-  // we plug in two instances, one for DL and one for UL
-
-  Ptr<LtePhy> ue1Phy = ueDevs1.Get (0)->GetObject<LteUeNetDevice> ()->GetPhy ()->GetObject<LtePhy> ();
-  Ptr<LteTestSinrChunkProcessor> testDlSinr1 = Create<LteTestSinrChunkProcessor> ();
-  ue1Phy->GetDownlinkSpectrumPhy ()->AddDataSinrChunkProcessor (testDlSinr1);
-
-  Ptr<LtePhy> enb1phy = enbDevs.Get (0)->GetObject<LteEnbNetDevice> ()->GetPhy ()->GetObject<LtePhy> ();
-  Ptr<LteTestSinrChunkProcessor> testUlSinr1 = Create<LteTestSinrChunkProcessor> ();
-  enb1phy->GetUplinkSpectrumPhy ()->AddDataSinrChunkProcessor (testUlSinr1);
 
   Config::Connect ("/NodeList/2/DeviceList/0/LteUePhy/ReportUeMeasurements",
                    MakeBoundCallback (&ReportUeMeasurementsCallback, this));
   Config::Connect ("/NodeList/0/DeviceList/0/LteEnbRrc/RecvMeasurementReport",
                    MakeBoundCallback (&RecvMeasurementReportCallback, this));
-
-  // same as above for eNB2 and UE2
-
-  Ptr<LtePhy> ue2Phy = ueDevs2.Get (0)->GetObject<LteUeNetDevice> ()->GetPhy ()->GetObject<LtePhy> ();
-  Ptr<LteTestSinrChunkProcessor> testDlSinr2 = Create<LteTestSinrChunkProcessor> ();
-  ue2Phy->GetDownlinkSpectrumPhy ()->AddDataSinrChunkProcessor (testDlSinr2);
-
-  Ptr<LtePhy> enb2phy = enbDevs.Get (1)->GetObject<LteEnbNetDevice> ()->GetPhy ()->GetObject<LtePhy> ();
-  Ptr<LteTestSinrChunkProcessor> testUlSinr2 = Create<LteTestSinrChunkProcessor> ();
-  enb1phy->GetUplinkSpectrumPhy ()->AddDataSinrChunkProcessor (testUlSinr2);
 
   Config::Connect ("/NodeList/3/DeviceList/0/LteUePhy/ReportUeMeasurements",
                    MakeBoundCallback (&ReportUeMeasurementsCallback, this));

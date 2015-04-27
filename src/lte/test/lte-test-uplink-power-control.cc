@@ -42,7 +42,6 @@
 #include <ns3/lte-ue-rrc.h>
 
 #include "lte-ffr-simple.h"
-#include "lte-test-sinr-chunk-processor.h"
 #include <ns3/lte-common.h>
 
 #include "lte-test-uplink-power-control.h"
