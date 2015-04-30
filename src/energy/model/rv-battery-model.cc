@@ -95,8 +95,9 @@ RvBatteryModel::GetTypeId (void)
 RvBatteryModel::RvBatteryModel ()
 {
   NS_LOG_FUNCTION (this);
-  m_lastSampleTime = Seconds (0.0);
-  m_previousLoad = 0.0;
+  m_lastSampleTime = Simulator::Now ();
+  m_timeStamps.push_back (m_lastSampleTime);
+  m_previousLoad = -1.0;
   m_batteryLevel = 1; // fully charged
   m_lifetime = Seconds (0.0);
 }
@@ -171,13 +172,12 @@ RvBatteryModel::UpdateEnergySource (void)
       m_batteryLevel = 0;
     }
 
-  // check if battery is dead.
+  // check if battery level is below the low battery threshold.
   if (m_batteryLevel <= m_lowBatteryTh)
     {
-      m_lifetime = Simulator::Now ();
-      NS_LOG_DEBUG ("RvBatteryModel:Battery is dead!");
+      m_lifetime = Simulator::Now () - m_timeStamps[0];
+      NS_LOG_DEBUG ("RvBatteryModel:Battery level below threshold!");
       HandleEnergyDrainedEvent ();
-      return; // stop periodic sampling
     }
 
   m_previousLoad = currentLoad;
@@ -327,19 +327,15 @@ RvBatteryModel::Discharge (double load, Time t)
     {
       m_load.push_back (load);
       m_previousLoad = load;
-      if (t != Seconds (0.0))
-        {
-          m_timeStamps[m_timeStamps.size () - 1] = m_lastSampleTime;
-        }
-      else
-        {
-          m_timeStamps.push_back (Seconds (0.0));
-        }
+      m_timeStamps[m_timeStamps.size () - 1] = m_lastSampleTime;
       m_timeStamps.push_back (t);
     }
   else
     {
-      m_timeStamps[m_timeStamps.size () - 1] = t;
+      if  (!m_timeStamps.empty())
+      {
+        m_timeStamps[m_timeStamps.size () - 1] = t;
+      }
     }
 
   m_lastSampleTime = t;

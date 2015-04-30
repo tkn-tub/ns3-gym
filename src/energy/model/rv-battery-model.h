@@ -55,7 +55,7 @@ public:
   virtual ~RvBatteryModel ();
 
   /**
-   * \return Initial energy stored (theoretical capacity) in the battery.
+   * \return Initial energy stored (theoretical capacity) in the battery, in Joules.
    *
    * Implements GetInitialEnergy.
    */

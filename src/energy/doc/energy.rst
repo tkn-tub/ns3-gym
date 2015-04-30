@@ -186,6 +186,11 @@ References
    Energy Framework for Network Simulator 3 (ns-3). Workshop on ns-3
    (WNS3), Poster Session, Atlanta, GA, USA. May, 2014.
 
+.. [7] C. Tapparello, H. Ayatollahi and W. Heinzelman. Energy Harvesting 
+   Framework for Network Simulator 3 (ns-3). 2nd International Workshop on
+   Energy Neutral Sensing Systems (ENSsys), Memphis, TN, USA. November 6,
+   2014.
+
 Usage
 =====
 
