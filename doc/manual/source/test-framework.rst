@@ -4,7 +4,7 @@
 Testing framework
 -----------------
 
-ns-3 consists of a simulation core engine, a set of models, example programs, 
+|ns3| consists of a simulation core engine, a set of models, example programs, 
 and tests.  Over time, new contributors contribute models, tests, and 
 examples.  A Python test program ``test.py`` serves as the test
 execution manager; ``test.py`` can run test code and examples to
@@ -17,7 +17,7 @@ and with different configuration options.
 BuildBots
 *********
 
-At the highest level of ns-3 testing are the buildbots (build robots).  
+At the highest level of |ns3| testing are the buildbots (build robots).  
 If you are unfamiliar with
 this system look at `<http://djmitche.github.com/buildbot/docs/0.7.11/>`_.  
 This is an open-source automated system that allows |ns3| to be rebuilt
@@ -120,6 +120,17 @@ if you run ``test.py --help`` you should see a command summary like:
     -e EXAMPLE, --example=EXAMPLE
                           specify a single example to run (no relative path is
                           needed)
+    -d, --duration        print the duration of each test suite and example
+    -e EXAMPLE, --example=EXAMPLE
+                          specify a single example to run (no relative path is
+                          needed)
+    -u, --update-data     If examples use reference data files, get them to re-
+                          generate them
+    -f FULLNESS, --fullness=FULLNESS
+                          choose the duration of tests to run: QUICK, EXTENSIVE,
+                          or TAKES_FOREVER, where EXTENSIVE includes QUICK and
+                          TAKES_FOREVER includes QUICK and EXTENSIVE (only QUICK
+                          tests are run by default)
     -g, --grind           run the test suites and examples using valgrind
     -k, --kinds           print the kinds of tests available
     -l, --list            print the list of known tests
@@ -307,7 +318,7 @@ results in that single example being run.
 
   PASS: Example examples/udp/udp-echo
 
-You can specify the directory where ns-3 was built using the
+You can specify the directory where |ns3| was built using the
 ``--buildpath`` option as follows.
 
 ::
@@ -329,7 +340,7 @@ results in that single example being run.
   PASS: Example examples/tutorial/first.py
 
 Because Python examples are not built, you do not need to specify the
-directory where ns-3 was built to run them.
+directory where |ns3| was built to run them.
 
 Normally when example programs are executed, they write a large amount of trace 
 file data.  This is normally saved to the base directory of the distribution 
@@ -399,7 +410,7 @@ and examples.  Select verbose in the following way::
   $ ./test.py --verbose
 
 All of these options can be mixed and matched.  For example, to run all of the 
-ns-3 core test suites under valgrind, in verbose mode, while generating an HTML
+|ns3| core test suites under valgrind, in verbose mode, while generating an HTML
 output file, one would do::
 
   $ ./test.py --verbose --grind --constrain=core --html=results.html 
@@ -417,14 +428,32 @@ kinds of testing that need to be done.
 * Examples
 * Performance Tests
 
+Moreover, each test is further classified according to the expected time needed to
+run it. Tests are classified as:
+
+* QUICK 
+* EXTENSIVE
+* TAKES_FOREVER
+
+Note that specifying EXTENSIVE fullness will also run tests in QUICK category. 
+Specifying TAKES_FOREVER will run tests in EXTENSIVE and QUICK categories. 
+By default, only QUICK tests are ran.
+
+As a rule of thumb, tests that must be run to ensure |ns3| coherence should be
+QUICK (i.e., take a few seconds). Tests that could be skipped, but are nice to do
+can be EXTENSIVE; these are tests that typically need minutes. TAKES_FOREVER is
+left for tests that take a really long time, in the order of several minutes.
+The main classification goal is to be able to run the buildbots in a reasonable
+time, and still be able to perform more extensive tests when needed.
+
 BuildVerificationTests
 ++++++++++++++++++++++
 
 These are relatively simple tests that are built along with the distribution
 and are used to make sure that the build is pretty much working.  Our
 current unit tests live in the source files of the code they test and are
-built into the ns-3 modules; and so fit the description of BVTs.  BVTs live
-in the same source code that is built into the ns-3 code.  Our current tests
+built into the |ns3| modules; and so fit the description of BVTs.  BVTs live
+in the same source code that is built into the |ns3| code.  Our current tests
 are examples of this kind of test.
 
 Unit Tests
@@ -432,10 +461,10 @@ Unit Tests
 
 Unit tests are more involved tests that go into detail to make sure that a
 piece of code works as advertised in isolation.  There is really no reason
-for this kind of test to be built into an ns-3 module.  It turns out, for
+for this kind of test to be built into an |ns3| module.  It turns out, for
 example, that the unit tests for the object name service are about the same
 size as the object name service code itself.  Unit tests are tests that
-check a single bit of functionality that are not built into the ns-3 code,
+check a single bit of functionality that are not built into the |ns3| code,
 but live in the same directory as the code it tests.  It is possible that
 these tests check integration of multiple implementation files in a module
 as well.  The file src/core/test/names-test-suite.cc is an example of this kind
@@ -451,11 +480,11 @@ have lots of this kind of test running in our current regression framework,
 but they are typically overloaded examples.  We provide a new place 
 for this kind of test in the directory ``src/test``.  The file
 src/test/ns3tcp/ns3-interop-test-suite.cc is an example of this kind of
-test.  It uses NSC TCP to test the ns-3 TCP implementation.  Often there
+test.  It uses NSC TCP to test the |ns3| TCP implementation.  Often there
 will be test vectors required for this kind of test, and they are stored in
 the directory where the test lives.  For example,
 ns3tcp-interop-response-vectors.pcap is a file consisting of a number of TCP
-headers that are used as the expected responses of the ns-3 TCP under test
+headers that are used as the expected responses of the |ns3| TCP under test
 to a stimulus generated by the NSC TCP which is used as a ''known good''
 implementation.
 
@@ -492,7 +521,7 @@ stage, and also (optionally) examples if examples are to be checked:
 
    $ ./waf --configure --enable-examples --enable-tests
 
-Then, build ns-3, and after it is built, just run ``test.py``.  ``test.py -h``
+Then, build |ns3|, and after it is built, just run ``test.py``.  ``test.py -h``
 will show a number of configuration options that modify the behavior
 of test.py.
 
@@ -503,12 +532,19 @@ below, this ``test-runner`` can be a helpful way to debug tests.
 Debugging Tests
 ***************
 
-The debugging of the test programs is best performed running the low-level test-runner program. The test-runner is the bridge from generic Python code to |ns3| code. It is written in C++ and uses the automatic test discovery process in the 
-|ns3| code to find and allow execution of all of the various tests.
+The debugging of the test programs is best performed running the low-level 
+test-runner program. The test-runner is the bridge from generic Python 
+code to |ns3| code. It is written in C++ and uses the automatic test 
+discovery process in the |ns3| code to find and allow execution of all 
+of the various tests.
 
-The main reason why ``test.py`` is not suitable for debugging is that it is not allowed for logging to be turned on using the ``NS_LOG`` environmental variable when test.py runs.  This limitation does not apply to the test-runner executable. Hence, if you want to see logging output from your tests, you have to run them using the test-runner directly.
+The main reason why ``test.py`` is not suitable for debugging is that it is 
+not allowed for logging to be turned on using the ``NS_LOG`` environmental 
+variable when test.py runs.  This limitation does not apply to the test-runner 
+executable. Hence, if you want to see logging output from your tests, you 
+have to run them using the test-runner directly.
 
-In order to execute the test-runner, you run it like any other ns-3 executable
+In order to execute the test-runner, you run it like any other |ns3| executable
 -- using ``waf``.  To get a list of available options, you can type::
 
   $ ./waf --run "test-runner --help"
@@ -761,7 +797,7 @@ as a ''unit'' test with the display name, ``my-test-suite-name``.
   MyTestSuite::MyTestSuite ()
     : TestSuite ("my-test-suite-name", UNIT)
   {
-    AddTestCase (new MyTestCase);
+    AddTestCase (new MyTestCase, TestCase::QUICK);
   }
   
   MyTestSuite myTestSuite;
