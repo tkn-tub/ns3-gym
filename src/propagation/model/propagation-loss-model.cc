@@ -125,7 +125,7 @@ RandomPropagationLossModel::DoCalcRxPower (double txPowerDbm,
                                            Ptr<MobilityModel> b) const
 {
   double rxc = -m_variable->GetValue ();
-  NS_LOG_DEBUG ("attenuation coefficent="<<rxc<<"Db");
+  NS_LOG_DEBUG ("attenuation coefficient="<<rxc<<"Db");
   return txPowerDbm + rxc;
 }
 

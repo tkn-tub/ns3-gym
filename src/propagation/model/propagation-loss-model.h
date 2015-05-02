@@ -239,10 +239,10 @@ private:
  * are conflicting, as, according to the Friis formula, 
  * \f$\lim_{d \to 0 }  P_r = +\infty \f$;
  * so if, for \f$ d = 0 \f$, we use a fixed loss value, we end up with an infinitely large
- * discontinuity, which as we discussed can cause undesireable
+ * discontinuity, which as we discussed can cause undesirable
  * simulation artifacts.
  *
- * To avoid these artifact, this implmentation of the Friis model
+ * To avoid these artifact, this implementation of the Friis model
  * provides an attribute called MinLoss which allows to specify the
  * minimum total loss (in dB) returned by the model. This is used in
  * such a way that 
@@ -350,7 +350,7 @@ private:
  *
  * Two-ray ground reflection model.
  *
- * \f$ Pr = \frac{Pt * Gt * Gr * (ht^2 * hr^2)}{d^4 * L} \f$
+ * \f$ Pr = \frac{P_t * G_t * G_r * (H_t^2 * H_r^2)}{d^4 * L} \f$
  *
  * The original equation in Rappaport's book assumes L = 1.
  * To be consistent with the free space equation, L is added here.
@@ -364,7 +364,7 @@ private:
  *
  * The crossover distance, below which Friis is used, is calculated as follows:
  *
- * \f$ dCross = \frac{(4 * pi * Ht * Hr)}{lambda} \f$
+ * \f$ dCross = \frac{(4 * \pi * H_t * H_r)}{\lambda} \f$
  *
  * In the implementation,  \f$ \lambda \f$ is calculated as 
  * \f$ \frac{C}{f} \f$, where  \f$ C = 299792458\f$ m/s is the speed of light in
