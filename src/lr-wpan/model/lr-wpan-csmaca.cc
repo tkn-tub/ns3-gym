@@ -240,7 +240,7 @@ LrWpanCsmaCa::RandomBackoffDelay ()
 
 
   symbolRate = (uint64_t) m_mac->GetPhy ()->GetDataOrSymbolRate (isData); //symbols per second
-  backoffPeriod = (uint64_t)m_random->GetValue (0, upperBound); //num backoff periods
+  backoffPeriod = (uint64_t)m_random->GetValue (0, upperBound+1); // num backoff periods
   randomBackoff = MicroSeconds (backoffPeriod * GetUnitBackoffPeriod () * 1000 * 1000 / symbolRate);
 
   if (IsUnSlottedCsmaCa ())
