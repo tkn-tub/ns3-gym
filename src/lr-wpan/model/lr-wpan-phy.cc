@@ -285,7 +285,7 @@ LrWpanPhy::StartRx (Ptr<SpectrumSignalParameters> spectrumRxParams)
 
   Ptr<LrWpanSpectrumSignalParameters> lrWpanRxParams = DynamicCast<LrWpanSpectrumSignalParameters> (spectrumRxParams);
 
-  if ( lrWpanRxParams == 0)
+  if (lrWpanRxParams == 0)
     {
       CheckInterference ();
       m_signal->AddSignal (spectrumRxParams->psd);
@@ -450,7 +450,11 @@ LrWpanPhy::EndRx (Ptr<SpectrumSignalParameters> par)
       m_edPower.lastUpdate = now;
     }
 
-  CheckInterference ();
+  Ptr<LrWpanSpectrumSignalParameters> currentRxParams = m_currentRxPacket.first;
+  if (currentRxParams == params)
+    {
+      CheckInterference ();
+    }
 
   // Update the interference.
   m_signal->RemoveSignal (par->psd);
@@ -462,7 +466,6 @@ LrWpanPhy::EndRx (Ptr<SpectrumSignalParameters> par)
     }
 
   // If this is the end of the currently received packet, check if reception was successful.
-  Ptr<LrWpanSpectrumSignalParameters> currentRxParams = m_currentRxPacket.first;
   if (currentRxParams == params)
     {
       Ptr<Packet> currentPacket = currentRxParams->packetBurst->GetPackets ().front ();

@@ -189,7 +189,7 @@ LrWpanCollisionTestCase::DoRun (void)
   Simulator::Run ();
 
   std::cout << "m_rxPackets = " << int(m_rxPackets) << std::endl;
-  NS_TEST_EXPECT_MSG_EQ (m_rxPackets, 0, "Received a packet (as expected)");
+  NS_TEST_EXPECT_MSG_EQ (m_rxPackets, 1, "Received a packet (as expected)");
 
   // Fourth case: two concurrent tx and ACKs
   std::cout << "*** Fourth test " << std::endl;
