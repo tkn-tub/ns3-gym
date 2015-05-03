@@ -173,8 +173,10 @@ YansWifiPhy::YansWifiPhy ()
   :  m_initialized (false),
     m_channelNumber (1),
     m_endRxEvent (),
+    m_endPlcpRxEvent(),
     m_channelStartingFrequency (0),
-    m_mpdusNum(0)
+    m_mpdusNum(0),
+    m_plcpSuccess (false)
 {
   NS_LOG_FUNCTION (this);
   m_random = CreateObject<UniformRandomVariable> ();
@@ -397,6 +399,7 @@ YansWifiPhy::SetChannelNumber (uint16_t nch)
     {
     case YansWifiPhy::RX:
       NS_LOG_DEBUG ("drop packet because of channel switching while reception");
+      m_endPlcpRxEvent.Cancel();
       m_endRxEvent.Cancel ();
       goto switchChannel;
       break;
@@ -514,19 +517,24 @@ YansWifiPhy::SetReceiveErrorCallback (RxErrorCallback callback)
 {
   m_state->SetReceiveErrorCallback (callback);
 }
+
 void
-YansWifiPhy::StartReceivePacket (Ptr<Packet> packet,
-                                 double rxPowerDbm,
-                                 WifiTxVector txVector,
-                                 enum WifiPreamble preamble, 
-                                 uint8_t packetType, Time rxDuration)
+YansWifiPhy::StartReceivePlcp (Ptr<Packet> packet,
+                               double rxPowerDbm,
+                               WifiTxVector txVector,
+                               enum WifiPreamble preamble,
+                               uint8_t packetType, Time rxDuration)
 {
+  // This function should be later split to check separately wether plcp preamble and plcp header can be successfully received.
+  // Note: plcp preamble reception is not yet modeled.
   NS_LOG_FUNCTION (this << packet << rxPowerDbm << txVector.GetMode()<< preamble << (uint32_t)packetType);
   AmpduTag ampduTag;
+  WifiMode txMode = txVector.GetMode();
+  
   rxPowerDbm += m_rxGainDb;
   double rxPowerW = DbmToW (rxPowerDbm);
-  WifiMode txMode = txVector.GetMode();
   Time endRx = Simulator::Now () + rxDuration;
+  Time plcpDuration = CalculatePlcpDuration (txVector, preamble);
 
   Ptr<InterferenceHelper::Event> event;
   event = m_interference.Add (packet->GetSize (),
@@ -534,13 +542,14 @@ YansWifiPhy::StartReceivePacket (Ptr<Packet> packet,
                               preamble,
                               rxDuration,
                               rxPowerW,
-		          txVector);  // we need it to calculate duration of HT training symbols
-
+                              txVector);
+    
   switch (m_state->GetState ())
     {
     case YansWifiPhy::SWITCHING:
       NS_LOG_DEBUG ("drop packet because of channel switching");
       NotifyRxDrop (packet);
+      m_plcpSuccess = false;
       /*
        * Packets received on the upcoming channel are added to the event list
        * during the switching state. This way the medium can be correctly sensed
@@ -580,71 +589,79 @@ YansWifiPhy::StartReceivePacket (Ptr<Packet> packet,
       break;
     case YansWifiPhy::CCA_BUSY:
     case YansWifiPhy::IDLE:
-      if (rxPowerW > m_edThresholdW)
+      if (rxPowerW > m_edThresholdW) //checked here, no need to check in the payload reception (current implementation assumes constant rx power over the packet duration)
         {
-          if (IsModeSupported (txMode) || IsMcsSupported(txMode))
+          if (preamble == WIFI_PREAMBLE_NONE && m_mpdusNum == 0)
             {
-              if (preamble != WIFI_PREAMBLE_NONE && packet->PeekPacketTag (ampduTag) && m_mpdusNum == 0)
-                {
-                  //received the first MPDU in an MPDU
-                  m_mpdusNum = ampduTag.GetNoOfMpdus()-1;
-                }
-              else if (preamble == WIFI_PREAMBLE_NONE && packet->PeekPacketTag (ampduTag) && m_mpdusNum > 0)
-                {
-                  //received the other MPDUs that are part of the A-MPDU
-                  if (ampduTag.GetNoOfMpdus() < m_mpdusNum)
-                    {
-                      NS_LOG_DEBUG ("Missing MPDU from the A-MPDU " << m_mpdusNum - ampduTag.GetNoOfMpdus());
-                      m_mpdusNum = ampduTag.GetNoOfMpdus();
-                    }
-                  else
-                      m_mpdusNum--;
-                }
-              else if (preamble != WIFI_PREAMBLE_NONE && m_mpdusNum > 0 )
-                {
-                  NS_LOG_DEBUG ("Didn't receive the last MPDUs from an A-MPDU " << m_mpdusNum);
-                  m_mpdusNum = 0;
-                }
-              else if (preamble == WIFI_PREAMBLE_NONE && m_mpdusNum == 0)
-                {
-                  NS_LOG_DEBUG ("drop packet because no preamble has been received");
-                  NotifyRxDrop (packet);
-                  goto maybeCcaBusy;
-                }
-              NS_LOG_DEBUG ("sync to signal (power=" << rxPowerW << "W)");
-              // sync to signal
-              m_state->SwitchToRx (rxDuration);
-              NS_ASSERT (m_endRxEvent.IsExpired ());
-              NotifyRxBegin (packet);
-              m_interference.NotifyRxStart ();
-              m_endRxEvent = Simulator::Schedule (rxDuration, &YansWifiPhy::EndReceive, this,
-                                                  packet,
-                                                  event);
-            }
-          else
-            {
-              NS_LOG_DEBUG ("drop packet because it was sent using an unsupported mode (" << txMode << ")");
+              NS_LOG_DEBUG ("drop packet because no preamble has been received");
               NotifyRxDrop (packet);
               goto maybeCcaBusy;
             }
+          else if (preamble == WIFI_PREAMBLE_NONE && m_plcpSuccess == false) // A-MPDU reception fails
+            {
+              NS_LOG_DEBUG ("Drop MPDU because no plcp has been received");
+              NotifyRxDrop (packet);
+              goto maybeCcaBusy;
+            }
+           else if (preamble != WIFI_PREAMBLE_NONE && packet->PeekPacketTag (ampduTag) && m_mpdusNum == 0)
+            {
+              //received the first MPDU in an MPDU
+              m_mpdusNum = ampduTag.GetNoOfMpdus()-1;
+            }
+           else if (preamble == WIFI_PREAMBLE_NONE && packet->PeekPacketTag (ampduTag) && m_mpdusNum > 0)
+            {
+              //received the other MPDUs that are part of the A-MPDU
+              if (ampduTag.GetNoOfMpdus() < m_mpdusNum)
+                {
+                    NS_LOG_DEBUG ("Missing MPDU from the A-MPDU " << m_mpdusNum - ampduTag.GetNoOfMpdus());
+                    m_mpdusNum = ampduTag.GetNoOfMpdus();
+                }
+              else
+                m_mpdusNum--;
+            }
+          else if (preamble != WIFI_PREAMBLE_NONE && m_mpdusNum > 0 )
+            {
+              NS_LOG_DEBUG ("Didn't receive the last MPDUs from an A-MPDU " << m_mpdusNum);
+              m_mpdusNum = 0;
+            }
+            
+          NS_LOG_DEBUG ("sync to signal (power=" << rxPowerW << "W)");
+          // sync to signal
+          m_state->SwitchToRx (rxDuration);
+          NS_ASSERT (m_endPlcpRxEvent.IsExpired ());
+          NotifyRxBegin (packet);
+          m_interference.NotifyRxStart ();
+            
+          if (preamble != WIFI_PREAMBLE_NONE)
+          {
+            NS_ASSERT (m_endPlcpRxEvent.IsExpired ());
+            m_endPlcpRxEvent = Simulator::Schedule (plcpDuration, &YansWifiPhy::StartReceivePacket, this,
+                                                    packet, txVector, preamble, packetType, event);
+          }
+            
+          NS_ASSERT (m_endRxEvent.IsExpired ());
+          m_endRxEvent = Simulator::Schedule (rxDuration, &YansWifiPhy::EndReceive, this,
+                                              packet, preamble, packetType, event);
         }
       else
         {
           NS_LOG_DEBUG ("drop packet because signal power too Small (" <<
                         rxPowerW << "<" << m_edThresholdW << ")");
           NotifyRxDrop (packet);
+          m_plcpSuccess = false;
           goto maybeCcaBusy;
         }
       break;
     case YansWifiPhy::SLEEP:
       NS_LOG_DEBUG ("drop packet because in sleep mode");
       NotifyRxDrop (packet);
+      m_plcpSuccess = false;
       break;
     }
 
   return;
-
-maybeCcaBusy:
+  
+  maybeCcaBusy:
   // We are here because we have received the first bit of a packet and we are
   // not going to be able to synchronize on it
   // In this model, CCA becomes busy when the aggregation of all signals as
@@ -655,6 +672,45 @@ maybeCcaBusy:
     {
       m_state->SwitchMaybeToCcaBusy (delayUntilCcaEnd);
     }
+}
+void
+YansWifiPhy::StartReceivePacket (Ptr<Packet> packet,
+                                 WifiTxVector txVector,
+                                 enum WifiPreamble preamble, 
+                                 uint8_t packetType,
+                                 Ptr<InterferenceHelper::Event> event)
+{
+  NS_LOG_FUNCTION (this << packet << txVector.GetMode()<< preamble << (uint32_t)packetType);
+  NS_ASSERT (IsStateRx ());
+  NS_ASSERT (m_endPlcpRxEvent.IsExpired ());
+  AmpduTag ampduTag;
+  WifiMode txMode = txVector.GetMode();
+  
+  struct InterferenceHelper::SnrPer snrPer;
+  snrPer = m_interference.CalculatePlcpHeaderSnrPer (event);
+  
+  NS_LOG_DEBUG ("snr=" << snrPer.snr << ", per=" << snrPer.per);
+
+    if (m_random->GetValue () > snrPer.per) //plcp reception succeeded
+      {
+          if (IsModeSupported (txMode) || IsMcsSupported(txMode))
+            {
+              NS_LOG_DEBUG ("receiving plcp payload"); //endReceive is already scheduled
+              m_plcpSuccess = true;
+            }
+          else //mode is not allowed
+            {
+              NS_LOG_DEBUG ("drop packet because it was sent using an unsupported mode (" << txMode << ")");
+              NotifyRxDrop (packet);
+              m_plcpSuccess = false;
+            }
+      }
+    else //plcp reception failed
+      {
+        NS_LOG_DEBUG ("drop packet because plcp reception failed");
+        NotifyRxDrop (packet);
+        m_plcpSuccess = false;
+      }
 }
 
 void
@@ -668,7 +724,7 @@ YansWifiPhy::SendPacket (Ptr<const Packet> packet, WifiTxVector txVector, WifiPr
    *  - we are idle
    */
   NS_ASSERT (!m_state->IsStateTx () && !m_state->IsStateSwitching ());
-
+  
   if (m_state->IsStateSleep ())
     {
       NS_LOG_DEBUG ("Dropping packet because in sleep mode");
@@ -679,6 +735,7 @@ YansWifiPhy::SendPacket (Ptr<const Packet> packet, WifiTxVector txVector, WifiPr
   Time txDuration = CalculateTxDuration (packet->GetSize (), txVector, preamble, GetFrequency(), packetType, 1);
   if (m_state->IsStateRx ())
     {
+      m_endPlcpRxEvent.Cancel ();
       m_endRxEvent.Cancel ();
       m_interference.NotifyRxEnd ();
     }
@@ -948,19 +1005,22 @@ YansWifiPhy::GetPowerDbm (uint8_t power) const
 }
 
 void
-YansWifiPhy::EndReceive (Ptr<Packet> packet, Ptr<InterferenceHelper::Event> event)
+YansWifiPhy::EndReceive (Ptr<Packet> packet, enum WifiPreamble preamble, uint8_t packetType, Ptr<InterferenceHelper::Event> event)
 {
   NS_LOG_FUNCTION (this << packet << event);
   NS_ASSERT (IsStateRx ());
   NS_ASSERT (event->GetEndTime () == Simulator::Now ());
 
   struct InterferenceHelper::SnrPer snrPer;
-  snrPer = m_interference.CalculateSnrPer (event);
+  snrPer = m_interference.CalculatePlcpPayloadSnrPer (event);
   m_interference.NotifyRxEnd ();
-
-  NS_LOG_DEBUG ("mode=" << (event->GetPayloadMode ().GetDataRate ()) <<
-                ", snr=" << snrPer.snr << ", per=" << snrPer.per << ", size=" << packet->GetSize ());
-  if (m_random->GetValue () > snrPer.per)
+  
+  if (m_plcpSuccess == true)
+  {
+    NS_LOG_DEBUG ("mode=" << (event->GetPayloadMode ().GetDataRate ()) <<
+                  ", snr=" << snrPer.snr << ", per=" << snrPer.per << ", size=" << packet->GetSize ());
+  
+    if (m_random->GetValue () > snrPer.per)
     {
       NotifyRxEnd (packet);
       uint32_t dataRate500KbpsUnits;
@@ -978,12 +1038,23 @@ YansWifiPhy::EndReceive (Ptr<Packet> packet, Ptr<InterferenceHelper::Event> even
       NotifyMonitorSniffRx (packet, (uint16_t)GetChannelFrequencyMhz (), GetChannelNumber (), dataRate500KbpsUnits, isShortPreamble, signalDbm, noiseDbm);
       m_state->SwitchFromRxEndOk (packet, snrPer.snr, event->GetPayloadMode (), event->GetPreambleType ());
     }
-  else
+    else
     {
       /* failure. */
       NotifyRxDrop (packet);
       m_state->SwitchFromRxEndError (packet, snrPer.snr);
     }
+  }
+  else
+  {
+    m_state->SwitchFromRxEndError (packet, snrPer.snr); //notify rx end
+  }
+    
+  if (preamble == WIFI_PREAMBLE_NONE && packetType == 2)
+    {
+      m_plcpSuccess = false;
+    }
+    
 }
 
 int64_t

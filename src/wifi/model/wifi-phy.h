@@ -295,6 +295,13 @@ public:
    *          the transmission of these bytes.
    */
   Time CalculateTxDuration (uint32_t size, WifiTxVector txvector, enum WifiPreamble preamble, double frequency, uint8_t packetType, uint8_t incFlag);
+  
+  /**
+   * \param txvector the transmission parameters used for this packet
+   * \param preamble the type of preamble to use for this packet.
+   * \return the total amount of time this PHY will stay busy for the transmission of the plcp.
+   */
+  Time CalculatePlcpDuration (WifiTxVector txvector, enum WifiPreamble preamble);
 
   /**
    * \param preamble the type of preamble

@@ -125,7 +125,7 @@ void
 YansWifiChannel::Receive (uint32_t i, Ptr<Packet> packet, double *atts,
                           WifiTxVector txVector, WifiPreamble preamble) const
 {
-  m_phyList[i]->StartReceivePacket (packet, *atts, txVector, preamble,*(atts+1), NanoSeconds(*(atts+2)));
+  m_phyList[i]->StartReceivePlcp (packet, *atts, txVector, preamble,*(atts+1), NanoSeconds(*(atts+2)));
   delete[] atts;
 }
 

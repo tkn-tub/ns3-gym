@@ -584,6 +584,16 @@ WifiPhy::CalculateTxDuration (uint32_t size, WifiTxVector txvector, WifiPreamble
     + GetPayloadDuration (size, txvector, preamble, frequency, packetType, incFlag);
   return duration;
 }
+Time
+WifiPhy::CalculatePlcpDuration (WifiTxVector txvector, WifiPreamble preamble)
+{
+  WifiMode payloadMode=txvector.GetMode();
+  Time duration = GetPlcpPreambleDuration (payloadMode, preamble)
+    + GetPlcpHeaderDuration (payloadMode, preamble)
+    + GetPlcpHtSigHeaderDuration (preamble)
+    + GetPlcpHtTrainingSymbolDuration (preamble, txvector);
+  return duration;
+}
 
 void
 WifiPhy::NotifyTxBegin (Ptr<const Packet> packet)

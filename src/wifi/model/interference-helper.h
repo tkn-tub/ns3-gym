@@ -182,13 +182,21 @@ private:
                                       Time duration, double rxPower, WifiTxVector txvector);
 
   /**
-   * Calculate the SNIR at the start of the packet and accumulate
+   * Calculate the SNIR at the start of the plcp payload and accumulate
    * all SNIR changes in the snir vector.
    *
-   * \param event the event corresponding to the first time the packet arrives
+   * \param event the event corresponding to the first time the corresponding packet arrives
    * \return struct of SNR and PER
    */
-  struct InterferenceHelper::SnrPer CalculateSnrPer (Ptr<InterferenceHelper::Event> event);
+  struct InterferenceHelper::SnrPer CalculatePlcpPayloadSnrPer (Ptr<InterferenceHelper::Event> event);
+  /**
+   * Calculate the SNIR at the start of the plcp header and accumulate
+   * all SNIR changes in the snir vector.
+   *
+   * \param event the event corresponding to the first time the corresponding packet arrives
+   * \return struct of SNR and PER
+   */
+  struct InterferenceHelper::SnrPer CalculatePlcpHeaderSnrPer (Ptr<InterferenceHelper::Event> event);
   /**
    * Notify that RX has started.
    */
@@ -284,14 +292,23 @@ private:
    */
   double CalculateChunkSuccessRate (double snir, Time duration, WifiMode mode) const;
   /**
-   * Calculate the error rate of the given packet. The packet can be divided into
+   * Calculate the error rate of the given plcp payload. The plcp payload can be divided into
    * multiple chunks (e.g. due to interference from other transmissions).
    *
    * \param event
    * \param ni
    * \return the error rate of the packet
    */
-  double CalculatePer (Ptr<const Event> event, NiChanges *ni) const;
+  double CalculatePlcpPayloadPer (Ptr<const Event> event, NiChanges *ni) const;
+  /**
+   * Calculate the error rate of the plcp header. The plcp header can be divided into
+   * multiple chunks (e.g. due to interference from other transmissions).
+   *
+   * \param event
+   * \param ni
+   * \return the error rate of the packet
+   */
+  double CalculatePlcpHeaderPer (Ptr<const Event> event, NiChanges *ni) const;
 
   double m_noiseFigure; /**< noise figure (linear) */
   Ptr<ErrorRateModel> m_errorRateModel;

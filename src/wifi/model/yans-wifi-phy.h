@@ -100,21 +100,35 @@ public:
   double GetChannelFrequencyMhz () const;
 
   /**
-   * Starting receiving the packet (i.e. the first bit of the preamble has arrived).
+   * Starting receiving the plcp of a packet (i.e. the first bit of the preamble has arrived).
    *
    * \param packet the arriving packet
    * \param rxPowerDbm the receive power in dBm
    * \param txVector the TXVECTOR of the arriving packet
    * \param preamble the preamble of the arriving packet
    * \param packetType The type of the received packet (values: 0 not an A-MPDU, 1 corresponds to any packets in an A-MPDU except the last one, 2 is the last packet in an A-MPDU) 
-   * \param rxDuration the duration needed for the reception of the arriving packet
+   * \param rxDuration the duration needed for the reception of the packet
+   */
+  void StartReceivePlcp (Ptr<Packet> packet,
+                         double rxPowerDbm,
+                         WifiTxVector txVector,
+                         WifiPreamble preamble,
+                         uint8_t packetType,
+                         Time rxDuration);
+  /**
+   * Starting receiving the payload of a packet (i.e. the first bit of the packet has arrived).
+   *
+   * \param packet the arriving packet
+   * \param txVector the TXVECTOR of the arriving packet
+   * \param preamble the preamble of the arriving packet
+   * \param packetType The type of the received packet (values: 0 not an A-MPDU, 1 corresponds to any packets in an A-MPDU except the last one, 2 is the last packet in an A-MPDU) 
+   * \param event the corresponding event of the first time the packet arrives
    */
   void StartReceivePacket (Ptr<Packet> packet,
-                           double rxPowerDbm,
                            WifiTxVector txVector,
                            WifiPreamble preamble,
                            uint8_t packetType,
-                           Time rxDuration);
+                           Ptr<InterferenceHelper::Event> event);
 
   /**
    * Sets the RX loss (dB) in the Signal-to-Noise-Ratio due to non-idealities in the receiver.
@@ -462,13 +476,15 @@ private:
    * The last bit of the packet has arrived.
    *
    * \param packet the packet that the last bit has arrived
+   * \param preamble the preamble of the arriving packet
+   * \param packetType The type of the received packet (values: 0 not an A-MPDU, 1 corresponds to any packets in an A-MPDU except the last one, 2 is the last packet in an A-MPDU)
    * \param event the corresponding event of the first time the packet arrives
    */
-  void EndReceive (Ptr<Packet> packet, Ptr<InterferenceHelper::Event> event);
+  void EndReceive (Ptr<Packet> packet, enum WifiPreamble preamble, uint8_t packetType, Ptr<InterferenceHelper::Event> event);
 
 private:
   virtual void DoInitialize (void);
-
+  
   bool     m_initialized;         //!< Flag for runtime initialization
   double   m_edThresholdW;        //!< Energy detection threshold in watts
   double   m_ccaMode1ThresholdW;  //!< Clear channel assessment (CCA) threshold in watts
@@ -533,6 +549,7 @@ private:
   std::vector<uint32_t> m_bssMembershipSelectorSet;
   std::vector<uint8_t> m_deviceMcsSet;
   EventId m_endRxEvent;
+  EventId m_endPlcpRxEvent;
 
   Ptr<UniformRandomVariable> m_random;  //!< Provides uniform random variables.
   double m_channelStartingFrequency;    //!< Standard-dependent center frequency of 0-th channel in MHz
@@ -540,6 +557,7 @@ private:
   InterferenceHelper m_interference;    //!< Pointer to InterferenceHelper
   Time m_channelSwitchDelay;            //!< Time required to switch between channel
   uint16_t m_mpdusNum;                  //!< carries the number of expected mpdus that are part of an A-MPDU
+  bool m_plcpSuccess;                   //!< Flag if the PLCP of the packet or the first MPDU in an A-MPDU has been received
 };
 
 } // namespace ns3
