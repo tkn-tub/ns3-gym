@@ -37,6 +37,7 @@ Bugs fixed
 - Bug 2008 - (lr-wpan) Crash if ending rx while status change is in progress
 - Bug 2025 - (lr-wpan) Changing the channel doesn't affect the Tx params
 - Bug 2034 - (lr-wpan) CSMA-CA BackoffPeriod is too short 
+- Bug 2066 - A-MPDU reception should check for successful preamble
 - Bug 2070 - Wrong report of Packets and Bytes stored in CoDeL
 - Bug 2073 - NDisc cache entries update timer might be stuck in a loop
 - Bug 2076 - TCP MinRTO Attribute is not actually used
