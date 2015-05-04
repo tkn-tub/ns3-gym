@@ -126,6 +126,7 @@ protected:
   virtual uint32_t GetInitialSSThresh (void) const;
   virtual void     SetInitialCwnd (uint32_t cwnd);
   virtual uint32_t GetInitialCwnd (void) const;
+  virtual void ScaleSsThresh (uint8_t scaleFactor);
 
 private:
   /**

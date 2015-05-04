@@ -89,4 +89,19 @@ TcpRfc793::GetInitialCwnd (void) const
   return 0;
 }
 
+uint32_t
+TcpRfc793::Window ()
+{
+  NS_LOG_FUNCTION (this);
+  return m_rWnd;
+}
+
+void
+TcpRfc793::ScaleSsThresh (uint8_t scaleFactor)
+{
+  NS_LOG_WARN ("DoD TCP does not perform slow start");
+  return;
+}
+
+
 } // namespace ns3

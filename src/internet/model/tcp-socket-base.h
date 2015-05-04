@@ -518,7 +518,7 @@ protected:
    * \brief Return the max possible number of unacked bytes
    * \returns the max possible number of unacked bytes
    */
-  virtual uint32_t Window (void);
+  virtual uint32_t Window (void) = 0;
 
   /**
    * \brief Return unfilled portion of window
@@ -675,6 +675,15 @@ protected:
    */
   void AddOptionTimestamp (TcpHeader& header);
 
+  /**
+   * \brief Scale the initial SsThresh value to the correct one
+   *
+   * Set the initial SsThresh to the largest possible advertised window
+   * according to the sender scale factor.
+   *
+   * \param scaleFactor the sender scale factor
+   */
+  virtual void ScaleSsThresh (uint8_t scaleFactor) = 0;
 
 protected:
   // Counters and events
@@ -736,6 +745,8 @@ protected:
 
   bool     m_timestampEnabled;    //!< Timestamp option enabled
   uint32_t m_timestampToEcho;     //!< Timestamp to echo
+
+  EventId m_sendPendingDataEvent; //!< micro-delay event to send pending data
 };
 
 } // namespace ns3

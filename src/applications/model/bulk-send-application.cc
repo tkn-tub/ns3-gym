@@ -225,7 +225,7 @@ void BulkSendApplication::DataSend (Ptr<Socket>, uint32_t)
 
   if (m_connected)
     { // Only send new data if the connection has completed
-      Simulator::ScheduleNow (&BulkSendApplication::SendData, this);
+      SendData ();
     }
 }
 

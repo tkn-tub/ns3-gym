@@ -165,7 +165,10 @@ TcpReno::DupAck (const TcpHeader& t, uint32_t count)
     { // In fast recovery, inc cwnd for every additional dupack (RFC2581, sec.3.2)
       m_cWnd += m_segmentSize;
       NS_LOG_INFO ("Increased cwnd to " << m_cWnd);
-      SendPendingData (m_connected);
+      if (!m_sendPendingDataEvent.IsRunning ())
+        {
+          SendPendingData (m_connected);
+        }
     };
 }
 
@@ -236,5 +239,12 @@ TcpReno::InitializeCwnd (void)
   m_cWnd = m_initialCWnd * m_segmentSize;
   m_ssThresh = m_initialSsThresh;
 }
+
+void
+TcpReno::ScaleSsThresh (uint8_t scaleFactor)
+{
+  m_ssThresh <<= scaleFactor;
+}
+
 
 } // namespace ns3

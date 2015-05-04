@@ -183,7 +183,10 @@ TcpNewReno::DupAck (const TcpHeader& t, uint32_t count)
     { // Increase cwnd for every additional dupack (RFC2582, sec.3 bullet #3)
       m_cWnd += m_segmentSize;
       NS_LOG_INFO ("Dupack in fast recovery mode. Increase cwnd to " << m_cWnd);
-      SendPendingData (m_connected);
+      if (!m_sendPendingDataEvent.IsRunning ())
+        {
+          SendPendingData (m_connected);
+        }
     }
   else if (!m_inFastRec && m_limitedTx && m_txBuffer->SizeFromSequence (m_nextTxSequence) > 0)
     { // RFC3042 Limited transmit: Send a new packet for each duplicated ACK before fast retransmit
@@ -260,6 +263,12 @@ TcpNewReno::InitializeCwnd (void)
    */
   m_cWnd = m_initialCWnd * m_segmentSize;
   m_ssThresh = m_initialSsThresh;
+}
+
+void
+TcpNewReno::ScaleSsThresh (uint8_t scaleFactor)
+{
+  m_ssThresh <<= scaleFactor;
 }
 
 } // namespace ns3

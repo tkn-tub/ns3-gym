@@ -215,4 +215,11 @@ TcpTahoe::InitializeCwnd (void)
   m_ssThresh = m_initialSsThresh;
 }
 
+void
+TcpTahoe::ScaleSsThresh (uint8_t scaleFactor)
+{
+  m_ssThresh <<= scaleFactor;
+}
+
+
 } // namespace ns3
