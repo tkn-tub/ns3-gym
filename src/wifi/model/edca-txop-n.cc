@@ -132,14 +132,14 @@ private:
   EdcaTxopN *m_txop;
 };
 
-class EdcaTxopN::BlockAckEventListener : public MacLowBlockAckEventListener
+class EdcaTxopN::AggregationCapableTransmissionListener : public MacLowAggregationCapableTransmissionListener
 {
 public:
-  BlockAckEventListener (EdcaTxopN * txop)
-    : MacLowBlockAckEventListener (),
+  AggregationCapableTransmissionListener (EdcaTxopN * txop)
+    : MacLowAggregationCapableTransmissionListener (),
       m_txop (txop) {
   }
-  virtual ~BlockAckEventListener () {}
+  virtual ~AggregationCapableTransmissionListener () {}
 
   virtual void BlockAckInactivityTimeout (Mac48Address address, uint8_t tid)
   {
@@ -189,6 +189,18 @@ public:
   {
     return m_txop->GetNRetryNeededPackets (recipient, tid);
   }
+  virtual Ptr<MsduAggregator> GetMsduAggregator (void) const
+  { 
+    return m_txop->GetMsduAggregator ();
+  }
+  virtual Mac48Address GetSrcAddressForAggregation (const WifiMacHeader &hdr)
+  {
+    return m_txop->MapSrcAddressForAggregation (hdr);
+  }
+  virtual Mac48Address GetDestAddressForAggregation (const WifiMacHeader &hdr)
+  {
+    return m_txop->MapDestAddressForAggregation (hdr);
+  }
 
 private:
   EdcaTxopN *m_txop;
@@ -233,7 +245,7 @@ EdcaTxopN::EdcaTxopN ()
 {
   NS_LOG_FUNCTION (this);
   m_transmissionListener = new EdcaTxopN::TransmissionListener (this);
-  m_blockAckListener = new EdcaTxopN::BlockAckEventListener (this);
+  m_blockAckListener = new EdcaTxopN::AggregationCapableTransmissionListener (this);
   m_dcf = new EdcaTxopN::Dcf (this);
   m_queue = CreateObject<WifiMacQueue> ();
   m_rng = new RealRandomStream ();

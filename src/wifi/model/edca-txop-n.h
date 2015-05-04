@@ -507,7 +507,7 @@ private:
   AcIndex m_ac;
   class Dcf;
   class TransmissionListener;
-  class BlockAckEventListener;
+  class AggregationCapableTransmissionListener;
   friend class Dcf;
   friend class TransmissionListener;
   Dcf *m_dcf;
@@ -518,7 +518,7 @@ private:
   Ptr<MacLow> m_low;
   MacTxMiddle *m_txMiddle;
   TransmissionListener *m_transmissionListener;
-  BlockAckEventListener *m_blockAckListener;
+  AggregationCapableTransmissionListener *m_blockAckListener;
   RandomStream *m_rng;
   Ptr<WifiRemoteStationManager> m_stationManager;
   uint8_t m_fragmentNumber;

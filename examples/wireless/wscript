@@ -72,3 +72,6 @@ def build(bld):
 
     obj = bld.create_ns3_program('simple-mpdu-aggregation', ['internet', 'mobility', 'wifi', 'applications'])
     obj.source = 'simple-mpdu-aggregation.cc'
+
+    obj = bld.create_ns3_program('simple-two-level-aggregation', ['internet', 'mobility', 'wifi', 'applications'])
+    obj.source = 'simple-two-level-aggregation.cc'

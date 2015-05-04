@@ -61,6 +61,7 @@ void
 MacLowTransmissionListener::MissedBlockAck (void)
 {
 }
+
 MacLowDcfListener::MacLowDcfListener ()
 {
 }
@@ -68,49 +69,64 @@ MacLowDcfListener::~MacLowDcfListener ()
 {
 }
 
-MacLowBlockAckEventListener::MacLowBlockAckEventListener ()
+MacLowAggregationCapableTransmissionListener::MacLowAggregationCapableTransmissionListener ()
 {
 }
-MacLowBlockAckEventListener::~MacLowBlockAckEventListener ()
+MacLowAggregationCapableTransmissionListener::~MacLowAggregationCapableTransmissionListener ()
 {
 }
 
-void MacLowBlockAckEventListener::SetAmpdu (bool ampdu)
+void MacLowAggregationCapableTransmissionListener::SetAmpdu (bool ampdu)
 {
 }
-void MacLowBlockAckEventListener::CompleteTransfer(Mac48Address address, uint8_t tid)
+void MacLowAggregationCapableTransmissionListener::CompleteTransfer(Mac48Address address, uint8_t tid)
 {
 }
 void
-MacLowBlockAckEventListener::CompleteMpduTx (Ptr<const Packet> packet, WifiMacHeader hdr, Time tstamp)
+MacLowAggregationCapableTransmissionListener::CompleteMpduTx (Ptr<const Packet> packet, WifiMacHeader hdr, Time tstamp)
 {
 }
 uint16_t 
-MacLowBlockAckEventListener::GetNextSequenceNumberfor (WifiMacHeader *hdr)
+MacLowAggregationCapableTransmissionListener::GetNextSequenceNumberfor (WifiMacHeader *hdr)
 {
  return 0;
 }
 uint16_t 
-MacLowBlockAckEventListener::PeekNextSequenceNumberfor (WifiMacHeader *hdr)
+MacLowAggregationCapableTransmissionListener::PeekNextSequenceNumberfor (WifiMacHeader *hdr)
 {
  return 0;
 }
 Ptr<const Packet> 
-MacLowBlockAckEventListener::PeekNextPacketInBaQueue (WifiMacHeader &header, Mac48Address recipient, uint8_t tid, Time *timestamp)
+MacLowAggregationCapableTransmissionListener::PeekNextPacketInBaQueue (WifiMacHeader &header, Mac48Address recipient, uint8_t tid, Time *timestamp)
 {
  return 0;
 }
 void 
-MacLowBlockAckEventListener::RemoveFromBaQueue (uint8_t tid, Mac48Address recipient, uint16_t seqnumber)
+MacLowAggregationCapableTransmissionListener::RemoveFromBaQueue (uint8_t tid, Mac48Address recipient, uint16_t seqnumber)
 {
 }
 uint32_t 
-MacLowBlockAckEventListener::GetNOutstandingPackets (Mac48Address recipient, uint8_t tid)
+MacLowAggregationCapableTransmissionListener::GetNOutstandingPackets (Mac48Address recipient, uint8_t tid)
 {
   return 0;
 }
 uint32_t 
-MacLowBlockAckEventListener::GetNRetryNeededPackets (Mac48Address recipient, uint8_t tid) const
+MacLowAggregationCapableTransmissionListener::GetNRetryNeededPackets (Mac48Address recipient, uint8_t tid) const
+{
+  return 0;
+}
+Ptr<MsduAggregator>
+MacLowAggregationCapableTransmissionListener::GetMsduAggregator (void) const
+{
+  return 0;
+}
+Mac48Address
+MacLowAggregationCapableTransmissionListener::GetSrcAddressForAggregation (const WifiMacHeader &hdr)
+{
+  return 0;
+}
+Mac48Address
+MacLowAggregationCapableTransmissionListener::GetDestAddressForAggregation (const WifiMacHeader &hdr)
 {
   return 0;
 }
@@ -2215,7 +2231,7 @@ MacLow::CreateBlockAckAgreement (const MgtAddBaResponseHeader *respHdr, Mac48Add
       AcIndex ac = QosUtilsMapTidToAc (agreement.GetTid ());
 
       it->second.first.m_inactivityEvent = Simulator::Schedule (timeout,
-                                                                &MacLowBlockAckEventListener::BlockAckInactivityTimeout,
+                                                                &MacLowAggregationCapableTransmissionListener::BlockAckInactivityTimeout,
                                                                 m_edcaListeners[ac],
                                                                 originator, tid);
     }
@@ -2494,7 +2510,7 @@ MacLow::ResetBlockAckInactivityTimerIfNeeded (BlockAckAgreement &agreement)
       //NS_ASSERT (it != m_edcaListeners.end ());
 
       agreement.m_inactivityEvent = Simulator::Schedule (timeout,
-                                                         &MacLowBlockAckEventListener::BlockAckInactivityTimeout,
+                                                         &MacLowAggregationCapableTransmissionListener::BlockAckInactivityTimeout,
                                                          m_edcaListeners[ac],
                                                          agreement.GetPeer (),
                                                          agreement.GetTid ());
@@ -2502,7 +2518,7 @@ MacLow::ResetBlockAckInactivityTimerIfNeeded (BlockAckAgreement &agreement)
 }
 
 void
-MacLow::RegisterBlockAckListenerForAc (enum AcIndex ac, MacLowBlockAckEventListener *listener)
+MacLow::RegisterBlockAckListenerForAc (enum AcIndex ac, MacLowAggregationCapableTransmissionListener *listener)
 {
   m_edcaListeners.insert (std::make_pair (ac, listener));
 }
@@ -2585,7 +2601,7 @@ MacLow::DeaggregateAmpduAndReceive (Ptr<Packet> aggregatedPacket, double rxSnr, 
 }
 
 bool 
-MacLow::StopAggregation(Ptr<const Packet> peekedPacket, WifiMacHeader peekedHdr, Ptr<Packet> aggregatedPacket, uint16_t size) const
+MacLow::StopMpduAggregation(Ptr<const Packet> peekedPacket, WifiMacHeader peekedHdr, Ptr<Packet> aggregatedPacket, uint16_t size) const
 {
     WifiPreamble preamble;
     WifiTxVector dataTxVector = GetDataTxVector (m_currentPacket, &m_currentHdr);
@@ -2612,7 +2628,7 @@ MacLow::AggregateToAmpdu (Ptr<const Packet> packet, const WifiMacHeader hdr)
 {
   NS_ASSERT (m_aggregateQueue->GetSize () == 0);
   bool isAmpdu = false;
-  Ptr<Packet> newPacket;
+  Ptr<Packet> newPacket, tempPacket;
   WifiMacHeader peekedHdr;
   newPacket = packet->Copy();
   //missing hdr.IsAck() since we have no means of knowing the Tid of the Ack yet
@@ -2623,7 +2639,7 @@ MacLow::AggregateToAmpdu (Ptr<const Packet> packet, const WifiMacHeader hdr)
       Ptr<WifiMacQueue> queue;
       AcIndex ac = QosUtilsMapTidToAc (tid);
       //since a blockack agreement always preceeds mpdu aggregation there should always exist blockAck listener
-      std::map<AcIndex, MacLowBlockAckEventListener*>::const_iterator listenerIt= m_edcaListeners.find(ac);
+      std::map<AcIndex, MacLowAggregationCapableTransmissionListener*>::const_iterator listenerIt= m_edcaListeners.find(ac);
       NS_ASSERT (listenerIt != m_edcaListeners.end ());
       queue = listenerIt->second->GetQueue();
       
@@ -2660,7 +2676,7 @@ MacLow::AggregateToAmpdu (Ptr<const Packet> packet, const WifiMacHeader hdr)
 
                   if (aggregated)
                     {
-                      NS_LOG_DEBUG ("Adding packet with Sequence number " << peekedHdr.GetSequenceNumber()<<" to A-MPDU");
+                      NS_LOG_DEBUG ("Adding packet with Sequence number " << peekedHdr.GetSequenceNumber()<<" to A-MPDU, packet size = " << newPacket->GetSize ()<< ", A-MPDU size = " << currentAggregatedPacket->GetSize ());
                       i++;
                       m_sentMpdus++;
                       m_aggregateQueue->Enqueue (aggPacket, peekedHdr);
@@ -2678,12 +2694,20 @@ MacLow::AggregateToAmpdu (Ptr<const Packet> packet, const WifiMacHeader hdr)
               bool retry = false;
               //looks for other packets to the same destination with the same Tid need to extend that to include MSDUs
               Ptr<const Packet> peekedPacket = listenerIt->second->PeekNextPacketInBaQueue (peekedHdr, peekedHdr.GetAddr1 (), tid, &tstamp);
-              if (peekedPacket == 0) 
+              if (peekedPacket == 0)
                 {
                   peekedPacket = queue->PeekByTidAndAddress (&peekedHdr, tid,
                                                              WifiMacHeader::ADDR1,
                                                              hdr.GetAddr1 (), &tstamp);
                   currentSequenceNumber = listenerIt->second->PeekNextSequenceNumberfor (&peekedHdr);
+                    
+                  /* here is performed MSDU aggregation (two-level aggregation) */
+                  if (peekedPacket != 0 && listenerIt->second->GetMsduAggregator () != 0)
+                    {
+                       tempPacket = PerformMsduAggregation(peekedPacket, &peekedHdr, &tstamp, currentAggregatedPacket, blockAckSize);
+                       if (tempPacket != 0) //MSDU aggregation
+                         peekedPacket = tempPacket->Copy();
+                    }
                 }
               else
                 {
@@ -2691,7 +2715,7 @@ MacLow::AggregateToAmpdu (Ptr<const Packet> packet, const WifiMacHeader hdr)
                   currentSequenceNumber = peekedHdr.GetSequenceNumber(); 
                 }
 
-               while (IsInWindow (currentSequenceNumber, startingSequenceNumber, 64) && !StopAggregation (peekedPacket, peekedHdr, currentAggregatedPacket, blockAckSize))
+               while (IsInWindow (currentSequenceNumber, startingSequenceNumber, 64) && !StopMpduAggregation (peekedPacket, peekedHdr, currentAggregatedPacket, blockAckSize))
                 {
                   //for now always send AMPDU with normal ACK
                   if (retry == false)
@@ -2721,7 +2745,7 @@ MacLow::AggregateToAmpdu (Ptr<const Packet> packet, const WifiMacHeader hdr)
                       {
                           listenerIt->second->CompleteMpduTx (packet, hdr, tstamp);
                       }
-                      NS_LOG_DEBUG ("Adding packet with Sequence number " << peekedHdr.GetSequenceNumber()<<" to A-MPDU");
+                      NS_LOG_DEBUG ("Adding packet with Sequence number " << peekedHdr.GetSequenceNumber()<<" to A-MPDU, packet size = " << newPacket->GetSize ()<< ", A-MPDU size = " << currentAggregatedPacket->GetSize ());
                       i++;
                       isAmpdu = true;
                       m_sentMpdus++;
@@ -2747,6 +2771,13 @@ MacLow::AggregateToAmpdu (Ptr<const Packet> packet, const WifiMacHeader hdr)
                             {
                               //find what will the sequence number be so that we don't send more than 64 packets apart
                               currentSequenceNumber = listenerIt->second->PeekNextSequenceNumberfor (&peekedHdr);
+                              
+                              if (listenerIt->second->GetMsduAggregator () != 0)
+                              {
+                                tempPacket = PerformMsduAggregation(peekedPacket, &peekedHdr, &tstamp, currentAggregatedPacket, blockAckSize);
+                                if (tempPacket != 0) //MSDU aggregation
+                                  peekedPacket = tempPacket->Copy();
+                              }
                             }   
                         }
                       else
@@ -2760,6 +2791,13 @@ MacLow::AggregateToAmpdu (Ptr<const Packet> packet, const WifiMacHeader hdr)
                         {
                           //find what will the sequence number be so that we don't send more than 64 packets apart
                           currentSequenceNumber = listenerIt->second->PeekNextSequenceNumberfor (&peekedHdr);
+                          
+                          if (listenerIt->second->GetMsduAggregator () != 0 && IsInWindow (currentSequenceNumber, startingSequenceNumber, 64))
+                          {
+                            tempPacket = PerformMsduAggregation(peekedPacket, &peekedHdr, &tstamp, currentAggregatedPacket, blockAckSize);
+                            if (tempPacket != 0) //MSDU aggregation
+                              peekedPacket = tempPacket->Copy();
+                          }
                         }   
                     }
                 }
@@ -2811,6 +2849,60 @@ MacLow::FlushAggregateQueue (void)
 {
   NS_LOG_DEBUG("Flush aggregate queue");
   m_aggregateQueue->Flush ();
+}
+
+Ptr<Packet>
+MacLow::PerformMsduAggregation(Ptr<const Packet> packet, WifiMacHeader *hdr, Time *tstamp, Ptr<Packet> currentAmpduPacket, uint16_t blockAckSize)
+{
+  bool msduAggregation = false;
+  bool isAmsdu = false;
+  Ptr<Packet> currentAmsduPacket = Create<Packet> ();
+  Ptr<Packet> tempPacket = Create<Packet> ();
+
+  Ptr<WifiMacQueue> queue;
+  AcIndex ac = QosUtilsMapTidToAc (GetTid (packet, *hdr));
+  std::map<AcIndex, MacLowAggregationCapableTransmissionListener*>::const_iterator listenerIt= m_edcaListeners.find(ac);
+  NS_ASSERT (listenerIt != m_edcaListeners.end ());
+  queue = listenerIt->second->GetQueue();
+    
+  listenerIt->second->GetMsduAggregator ()->Aggregate (packet, currentAmsduPacket,
+                                               listenerIt->second->GetSrcAddressForAggregation (*hdr),
+                                               listenerIt->second->GetDestAddressForAggregation (*hdr));
+
+  Ptr<const Packet> peekedPacket = queue->PeekByTidAndAddress (hdr, hdr->GetQosTid (),
+                                                               WifiMacHeader::ADDR1, hdr->GetAddr1 (), tstamp);
+  while (peekedPacket != 0)
+  {
+    tempPacket = currentAmsduPacket;
+   
+    msduAggregation = listenerIt->second->GetMsduAggregator ()->Aggregate (peekedPacket, tempPacket,
+                                                        listenerIt->second->GetSrcAddressForAggregation (*hdr),
+                                                        listenerIt->second->GetDestAddressForAggregation (*hdr));
+      
+    if (msduAggregation && !StopMpduAggregation (tempPacket, *hdr, currentAmpduPacket, blockAckSize))
+    {
+      isAmsdu = true;
+      currentAmsduPacket = tempPacket;
+      queue->Remove (peekedPacket);
+    }
+    else
+    {
+      break;
+    }
+    peekedPacket = queue->PeekByTidAndAddress (hdr, hdr->GetQosTid (), WifiMacHeader::ADDR1, hdr->GetAddr1 (), tstamp);
+  }
+  
+  if (isAmsdu)
+  {
+    NS_LOG_DEBUG ("A-MSDU with size = " << currentAmsduPacket->GetSize ());
+    hdr->SetQosAmsdu ();
+    hdr->SetAddr3 (GetBssid ());
+    return currentAmsduPacket;
+  }
+  else
+  {
+    return 0;
+  }
 }
 
 } // namespace ns3

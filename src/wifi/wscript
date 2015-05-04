@@ -84,6 +84,7 @@ def build(bld):
         'test/tx-duration-test.cc',
         'test/power-rate-adaptation-test.cc',
         'test/wifi-test.cc',
+        'test/wifi-aggregation-test.cc',
         ]
 
     headers = bld(features='ns3header')

@@ -43,6 +43,9 @@
 #include "block-ack-cache.h"
 #include "wifi-tx-vector.h"
 #include "mpdu-aggregator.h"
+#include "msdu-aggregator.h"
+
+class TwoLevelAggregationTest;
 
 namespace ns3 {
 
@@ -133,7 +136,6 @@ public:
    * 
    */
   virtual void EndTxNoAck (void) = 0;
-
 };
 
 
@@ -188,11 +190,11 @@ public:
  * \ingroup wifi
  * \brief listen for block ack events.
  */
-class MacLowBlockAckEventListener
+class MacLowAggregationCapableTransmissionListener
 {
 public:
-  MacLowBlockAckEventListener ();
-  virtual ~MacLowBlockAckEventListener ();
+  MacLowAggregationCapableTransmissionListener ();
+  virtual ~MacLowAggregationCapableTransmissionListener ();
   /**
    * Typically is called in order to notify EdcaTxopN that a block ack inactivity
    * timeout occurs for the block ack agreement identified by the pair <i>originator</i>, <i>tid</i>.
@@ -272,6 +274,15 @@ public:
    * Returns number of packets for a specific agreement that need retransmission.
    */
   virtual uint32_t GetNRetryNeededPackets (Mac48Address recipient, uint8_t tid) const;
+  /**
+   */
+  virtual Ptr<MsduAggregator> GetMsduAggregator (void) const;
+  /**
+   */
+  virtual Mac48Address GetSrcAddressForAggregation (const WifiMacHeader &hdr);
+  /**
+   */
+  virtual Mac48Address GetDestAddressForAggregation (const WifiMacHeader &hdr);
 };
 
 /**
@@ -475,6 +486,8 @@ std::ostream &operator << (std::ostream &os, const MacLowTransmissionParameters 
 class MacLow : public Object
 {
 public:
+  // Allow test cases to access private members
+  friend class ::TwoLevelAggregationTest;
   /**
    * typedef for a callback for MacLowRx
    */
@@ -762,7 +775,7 @@ public:
    * The lifetime of the registered listener is typically equal to the lifetime of the queue
    * associated to this AC.
    */
-  void RegisterBlockAckListenerForAc (enum AcIndex ac, MacLowBlockAckEventListener *listener);
+  void RegisterBlockAckListenerForAc (enum AcIndex ac, MacLowAggregationCapableTransmissionListener *listener);
   /**
    * \param packet the packet to be aggregated. If the aggregation is succesfull, it corresponds either to the first data packet that will be aggregated or to the BAR that will be piggybacked at the end of the A-MPDU.
    * \param hdr the WifiMacHeader for the packet.
@@ -792,7 +805,7 @@ public:
    * This function decides if a given packet can be added to an A-MPDU or not
    * 
    */
-  bool StopAggregation (Ptr<const Packet> peekedPacket, WifiMacHeader peekedHdr, Ptr<Packet> aggregatedPacket, uint16_t size) const;
+  bool StopMpduAggregation (Ptr<const Packet> peekedPacket, WifiMacHeader peekedHdr, Ptr<Packet> aggregatedPacket, uint16_t size) const;
   /**
    *
    * This function is called to flush the aggregate queue, which is used for A-MPDU
@@ -1242,6 +1255,19 @@ private:
    *
    */
   bool IsAmpdu (Ptr<const Packet> packet, const WifiMacHeader hdr);
+  /**
+   * Perform MSDU aggregation for a given MPDU in an A-MPDU
+   *
+   * \param packet packet picked for aggregation
+   * \param hdr 802.11 header for packet picked for aggregation
+   * \param tstamp timestamp
+   * \param currentAmpduPacket current A-MPDU packet
+   * \param blockAckSize size of the piggybacked block ack request
+   *
+   * \return the aggregate if MSDU aggregation succeeded, 0 otherwise
+   */
+  Ptr<Packet> PerformMsduAggregation(Ptr<const Packet> packet, WifiMacHeader *hdr, Time *tstamp, Ptr<Packet> currentAmpduPacket, uint16_t blockAckSize);
+
 
   Ptr<WifiPhy> m_phy; //!< Pointer to WifiPhy (actually send/receives frames)
   Ptr<WifiRemoteStationManager> m_stationManager; //!< Pointer to WifiRemoteStationManager (rate control)
@@ -1313,7 +1339,7 @@ private:
   Agreements m_bAckAgreements;
   BlockAckCaches m_bAckCaches;
 
-  typedef std::map<AcIndex, MacLowBlockAckEventListener*> QueueListeners;
+  typedef std::map<AcIndex, MacLowAggregationCapableTransmissionListener*> QueueListeners;
   QueueListeners m_edcaListeners;
   bool m_ctsToSelfSupported;          //!< Flag whether CTS-to-self is supported
   uint8_t m_sentMpdus;                //!< Number of transmitted MPDUs in an A-MPDU that have not been acknowledged yet
