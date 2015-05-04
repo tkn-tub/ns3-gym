@@ -75,3 +75,6 @@ def build(bld):
 
     obj = bld.create_ns3_program('simple-two-level-aggregation', ['internet', 'mobility', 'wifi', 'applications'])
     obj.source = 'simple-two-level-aggregation.cc'
+
+    obj = bld.create_ns3_program('simple-ht-hidden-stations', ['internet', 'mobility', 'wifi', 'applications'])    
+    obj.source = 'simple-ht-hidden-stations.cc'
