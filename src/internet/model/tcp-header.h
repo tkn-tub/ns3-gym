@@ -41,11 +41,21 @@ namespace ns3 {
  * as methods for serialization to and deserialization from a byte buffer.
  */
 
-class TcpHeader : public Header 
+class TcpHeader : public Header
 {
 public:
   TcpHeader ();
   virtual ~TcpHeader ();
+
+  /**
+   * \brief Converts an integer into a human readable list of Tcp flags
+   *
+   * \param flags List of TCP flags to convert to a readable string
+   * \param delimiter String to insert between flags
+   *
+   * \return the generated string
+   **/
+  static std::string FlagsToString(const uint8_t& flags, const std::string& delimiter="|");
 
   /**
    * \brief Enable checksum calculation for TCP
