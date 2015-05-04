@@ -913,7 +913,8 @@ MacLow::ReceiveOk (Ptr<Packet> packet, double rxSnr, WifiMode txMode, WifiPreamb
                                     rxSnr, txMode);
       m_stationManager->ReportDataOk (m_currentHdr.GetAddr1 (), &m_currentHdr,
                                       rxSnr, txMode, tag.Get ());
-        
+
+      FlushAggregateQueue();
       bool gotAck = false;
       if (m_txParams.MustWaitNormalAck ()
           && m_normalAckTimeoutEvent.IsRunning ())
@@ -951,6 +952,7 @@ MacLow::ReceiveOk (Ptr<Packet> packet, double rxSnr, WifiMode txMode, WifiPreamb
       m_listener->GotBlockAck (&blockAck, hdr.GetAddr2 (),txMode);
       m_sentMpdus = 0;
       m_ampdu = false;
+      FlushAggregateQueue();
     }
   else if (hdr.IsBlockAckReq () && hdr.GetAddr1 () == m_self)
     {
@@ -1576,6 +1578,7 @@ MacLow::NormalAckTimeout (void)
   m_listener = 0;
   m_sentMpdus = 0;
   m_ampdu = false;
+  FlushAggregateQueue();
   listener->MissedAck ();
 }
 void
@@ -1606,6 +1609,7 @@ MacLow::BlockAckTimeout (void)
   m_listener = 0;
   m_sentMpdus = 0;
   m_ampdu = false;
+  FlushAggregateQueue();
   listener->MissedBlockAck ();
 }
 void
@@ -1991,6 +1995,19 @@ MacLow::SendDataAfterCts (Mac48Address source, Time duration, WifiMode txMode)
    */
   NS_ASSERT (m_currentPacket != 0);
   WifiTxVector dataTxVector = GetDataTxVector (m_currentPacket, &m_currentHdr);
+  
+  if (m_aggregateQueue->GetSize () != 0)
+  {
+    for(int i = 0; i < m_txPackets.size(); i++)
+    {
+      uint8_t tid = GetTid (m_txPackets.at(i).packet, m_txPackets.at(i).hdr);
+      AcIndex ac = QosUtilsMapTidToAc (tid);
+      std::map<AcIndex, MacLowAggregationCapableTransmissionListener*>::const_iterator listenerIt= m_edcaListeners.find(ac);
+      
+      listenerIt->second->CompleteMpduTx (m_txPackets.at(i).packet, m_txPackets.at(i).hdr, m_txPackets.at(i).timestamp);
+    }
+    m_txPackets.clear ();
+  }
   
   WifiPreamble preamble;       
   if (m_phy->GetGreenfield() && m_stationManager->GetGreenfieldSupported (m_currentHdr.GetAddr1 ()))
@@ -2743,13 +2760,27 @@ MacLow::AggregateToAmpdu (Ptr<const Packet> packet, const WifiMacHeader hdr)
                       m_aggregateQueue->Enqueue (aggPacket, peekedHdr);
                       if (i == 1 && hdr.IsQosData ())
                       {
-                          listenerIt->second->CompleteMpduTx (packet, hdr, tstamp);
+                        if (!m_txParams.MustSendRts ())
+                        {
+                           listenerIt->second->CompleteMpduTx (packet, hdr, tstamp);
+                        }
+                        else
+                        {
+                          InsertInTxQueue (packet, hdr, tstamp);
+                        }
                       }
                       NS_LOG_DEBUG ("Adding packet with Sequence number " << peekedHdr.GetSequenceNumber()<<" to A-MPDU, packet size = " << newPacket->GetSize ()<< ", A-MPDU size = " << currentAggregatedPacket->GetSize ());
                       i++;
                       isAmpdu = true;
                       m_sentMpdus++;
-                      listenerIt->second->CompleteMpduTx (peekedPacket, peekedHdr, tstamp);
+                      if (!m_txParams.MustSendRts ())
+                      {
+                        listenerIt->second->CompleteMpduTx (peekedPacket, peekedHdr, tstamp);
+                      }
+                      else
+                      {
+                        InsertInTxQueue (peekedPacket, peekedHdr, tstamp);
+                      }
                       if (retry)
                           listenerIt->second->RemoveFromBaQueue(tid, hdr.GetAddr1 (), peekedHdr.GetSequenceNumber ());
                       else
@@ -2849,6 +2880,19 @@ MacLow::FlushAggregateQueue (void)
 {
   NS_LOG_DEBUG("Flush aggregate queue");
   m_aggregateQueue->Flush ();
+  m_txPackets.clear ();
+}
+
+void
+MacLow::InsertInTxQueue (Ptr<const Packet> packet, const WifiMacHeader &hdr, Time tStamp)
+{
+  Item item;
+  
+  item.packet = packet;
+  item.hdr = hdr;
+  item.timestamp = tStamp;
+
+  m_txPackets.push_back (item);
 }
 
 Ptr<Packet>

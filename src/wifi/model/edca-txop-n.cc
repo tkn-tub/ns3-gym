@@ -659,9 +659,35 @@ EdcaTxopN::MissedCts (void)
       if (GetAmpduExist())
         {
           m_low->FlushAggregateQueue ();
+          
+          NS_LOG_DEBUG ("Transmit Block Ack Request");
+          CtrlBAckRequestHeader reqHdr;
+          reqHdr.SetType (COMPRESSED_BLOCK_ACK);
+          uint8_t tid = m_currentHdr.GetQosTid ();
+          reqHdr.SetStartingSequence (m_txMiddle->PeekNextSequenceNumberfor (&m_currentHdr));
+          reqHdr.SetTidInfo (tid);
+          reqHdr.SetHtImmediateAck(true);
+          Ptr<Packet> bar = Create<Packet> ();
+          bar->AddHeader (reqHdr);
+          Bar request (bar, m_currentHdr.GetAddr1 (), tid, reqHdr.MustSendHtImmediateAck());
+          m_currentBar = request;
+          WifiMacHeader hdr;
+          hdr.SetType (WIFI_MAC_CTL_BACKREQ);
+          hdr.SetAddr1 (request.recipient);
+          hdr.SetAddr2 (m_low->GetAddress ());
+          hdr.SetAddr3 (m_low->GetBssid ());
+          hdr.SetDsNotTo ();
+          hdr.SetDsNotFrom ();
+          hdr.SetNoRetry ();
+          hdr.SetNoMoreFragments ();
+          m_currentPacket = request.bar;
+          m_currentHdr = hdr;
+        }
+      else
+        {
+          m_currentPacket = 0;
         }
       // to reset the dcf.
-      m_currentPacket = 0;
       m_dcf->ResetCw ();
     }
   else

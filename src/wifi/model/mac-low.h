@@ -1256,6 +1256,11 @@ private:
    */
   bool IsAmpdu (Ptr<const Packet> packet, const WifiMacHeader hdr);
   /**
+   * Insert in a temporary queue.
+   * It is only used with a RTS/CTS exchange for an A-MPDU transmission.
+   */
+  void InsertInTxQueue (Ptr<const Packet> packet, const WifiMacHeader &hdr, Time tStamp);
+  /**
    * Perform MSDU aggregation for a given MPDU in an A-MPDU
    *
    * \param packet packet picked for aggregation
@@ -1272,6 +1277,17 @@ private:
   Ptr<WifiPhy> m_phy; //!< Pointer to WifiPhy (actually send/receives frames)
   Ptr<WifiRemoteStationManager> m_stationManager; //!< Pointer to WifiRemoteStationManager (rate control)
   MacLowRxCallback m_rxCallback; //!< Callback to pass packet up
+    
+  /**
+   * A struct for packet, Wifi header, and timestamp.
+   */
+  typedef struct
+  {
+    Ptr<const Packet> packet;
+    WifiMacHeader hdr;
+    Time timestamp;
+  } Item;
+
   /**
    * typedef for an iterator for a list of MacLowDcfListener.
    */
@@ -1346,6 +1362,7 @@ private:
   Ptr<WifiMacQueue> m_aggregateQueue; //!< Queue used for MPDU aggregation
   WifiMode m_currentMode;             //!< mode used for the current packet transmission
   bool m_receivedAtLeastOneMpdu;      //!< Flag whether an MPDU has already been successfully received while receiving an A-MPDU
+  std::vector<Item> m_txPackets;      //!< Contain temporary items to be sent with the next A-MPDU transmission, once RTS/CTS exchange has succeeded. It is not used in other cases.
 };
 
 } // namespace ns3
