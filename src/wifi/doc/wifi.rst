@@ -19,7 +19,7 @@ on the IEEE 802.11 standard [ieee80211]_. We will go into more detail below but 
 
 * basic 802.11 DCF with **infrastructure** and **adhoc** modes
 * **802.11a**, **802.11b**, **802.11g** and **802.11n** (both 2.4 and 5 GHz bands) physical layers
-* **MSDU aggregation** and **MPDU aggregation** extensions of 802.11n
+* **MSDU aggregation** and **MPDU aggregation** extensions of 802.11n, and both can be combined together (two-level aggregation)
 * QoS-based EDCA and queueing extensions of **802.11e**
 * the ability to use different propagation loss models and propagation delay models,
   please see the chapter on :ref:`Propagation` for more detail
@@ -733,7 +733,6 @@ Note on the current implementation
 * PHY_RXSTART is not supported
 * 802.11e TXOP is not supported
 * 802.11n MIMO is not supported
-* hybrid aggregation is not supported
 
 
 Wifi Tracing
