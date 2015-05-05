@@ -20,6 +20,12 @@
 #ifndef TYPE_TRAITS_H
 #define TYPE_TRAITS_H
 
+/**
+ * \file
+ * \ingroup object
+ * TypeTraits introspection template.
+ */
+
 /** Type trait reference values */
 template <typename T>
 struct TypeTraits

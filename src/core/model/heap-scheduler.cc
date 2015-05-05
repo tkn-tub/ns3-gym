@@ -25,6 +25,12 @@
 #include "assert.h"
 #include "log.h"
 
+/**
+ * \file
+ * \ingroup scheduler
+ * Implementation of ns3::HeapScheduler class.
+ */
+
 namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("HeapScheduler");

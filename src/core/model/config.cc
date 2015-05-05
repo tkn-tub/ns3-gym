@@ -28,6 +28,12 @@
 
 #include <sstream>
 
+/**
+ * \file
+ * \ingroup config
+ * Imlementation of the various ns3::Config functions and classes.
+ */
+
 namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("Config");

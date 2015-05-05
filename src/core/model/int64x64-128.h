@@ -30,6 +30,12 @@ typedef __uint128_t uint128_t;
 typedef __int128_t int128_t;
 #endif
 
+/**
+ * \file
+ * \ingroup highprec
+ * Declaration of the ns3::int64x64_t type using a native int128_t type..
+ */
+
 namespace ns3 {
 
 /**

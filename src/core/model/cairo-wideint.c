@@ -30,6 +30,12 @@
 
 #include "cairo-wideint-private.h"
 
+/**
+ * \file
+ * \ingroup highprec
+ * Implementation of the cairo_x functions which implement high precision arithmetic.
+ */
+
 #if HAVE_UINT64_T
 
 const char * cairo_impl64 = "uint64_t";

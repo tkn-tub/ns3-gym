@@ -25,6 +25,12 @@
 #include "assert.h"
 #include "log.h"
 
+/**
+ * \file
+ * \ingroup highprec
+ * Implementation of the streaming input and output operators for
+ * the ns3::int64x64_t type.
+ */
 
 namespace ns3 {
 

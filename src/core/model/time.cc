@@ -27,6 +27,13 @@
 #include <iomanip>  // showpos
 #include <sstream>
 
+/**
+ * \file
+ * \ingroup time
+ * Implementation of classes ns3::Time and ns3::TimeWithUnit,
+ * and the TimeValue implementation classes.
+ */
+
 namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE_MASK ("Time", ns3::LOG_PREFIX_TIME);

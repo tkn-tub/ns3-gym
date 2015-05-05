@@ -21,6 +21,12 @@
 #ifndef NS3_LOG_MACROS_ENABLED_H
 #define NS3_LOG_MACROS_ENABLED_H
 
+/**
+ * \file
+ * \ingroup logging
+ * Definition of logging macros.
+ */
+
 #ifdef NS3_LOG_ENABLE
 
 

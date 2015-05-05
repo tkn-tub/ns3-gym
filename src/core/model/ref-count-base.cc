@@ -24,6 +24,12 @@
 #include "ref-count-base.h"
 #include "log.h"
 
+/**
+ * \file
+ * \ingroup ptr
+ * (Deprecated) ns3::RefCountBase implementation.
+ */
+
 namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("RefCountBase");

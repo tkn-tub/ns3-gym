@@ -25,6 +25,12 @@
 #include <cmath>  // pow
 #include <utility>  // pair
 
+/**
+ * \file
+ * \ingroup highprec
+ * Declaration and implementation of the ns3::int64x64_t type
+ * using the double type.
+ */
 
 namespace ns3 {
 

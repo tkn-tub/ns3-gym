@@ -32,6 +32,12 @@
 #ifndef CAIRO_WIDEINT_H
 #define CAIRO_WIDEINT_H
 
+/**
+ * \file
+ * \ingroup highprec
+ * Declaration of the cairo_x functions which implement high precision arithmetic.
+ */
+
 // Adapt to ns-3 environment
 #include "ns3/core-config.h"
 #define cairo_private 

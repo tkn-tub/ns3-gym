@@ -36,6 +36,12 @@
 
 #include <iostream>
 
+/**
+ * \file
+ * \ingroup highprec
+ * Declaration of the ns3::int64x64_t type and associated operators.
+ */
+
 namespace ns3 {
 
 /**

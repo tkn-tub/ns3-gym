@@ -36,6 +36,12 @@
 #include <cmath>
 #include <iostream>
 
+/**
+ * \file
+ * \ingroup randomvariable
+ * Implementation of ns3::RandomVariableStream and derivatives.
+ */
+
 namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("RandomVariableStream");

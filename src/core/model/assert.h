@@ -22,6 +22,12 @@
 #define NS_ASSERT_H
 
 /**
+ * \file
+ * \ingroup assert
+ * Definition of assertion macros NS_ASSERT() and NS_ASSERT_MSG().
+ */
+
+/**
  * \ingroup debugging
  * \defgroup assert Assertions
  *

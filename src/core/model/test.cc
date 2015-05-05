@@ -28,6 +28,12 @@
 #include <map>
 
 
+/**
+ * \file
+ * \ingroup testing
+ * Implementation of the testing classes and functions
+ */
+
 namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("Test");

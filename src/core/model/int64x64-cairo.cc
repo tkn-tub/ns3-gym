@@ -30,6 +30,12 @@ extern "C" {
 #include "cairo-wideint.c"
 }
 
+/**
+ * \file
+ * \ingroup highprec
+ * Implementation of the ns3::int64x64_t type using the Cairo implementation.
+ */
+
 namespace ns3 {
 
 // Note:  Logging in this file is largely avoided due to the

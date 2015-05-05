@@ -22,6 +22,12 @@
 #include "ptr.h"
 #include "object.h"
 
+/**
+ * \file
+ * \ingroup config
+ * Declaration of class ns3::Names.
+ */
+
 namespace ns3 {
 
 /**

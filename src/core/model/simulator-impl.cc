@@ -20,6 +20,12 @@
 #include "simulator-impl.h"
 #include "log.h"
 
+/**
+ * \file
+ * \ingroup simulator
+ * Implementation of class ns3::SimulatorImpl.
+ */
+
 namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("SimulatorImpl");

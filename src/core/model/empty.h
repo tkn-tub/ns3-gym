@@ -20,6 +20,12 @@
 #ifndef EMPTY_H
 #define EMPTY_H
 
+/**
+ * \file
+ * \ingroup callback
+ * Definition of class ns3::empty, used by callbacks.
+ */
+
 namespace ns3 {
 /**
  * \brief make Callback use a separate empty type

@@ -31,6 +31,12 @@
 #include <cmath>
 
 
+/**
+ * \file
+ * \ingroup simulator
+ * Implementation of class ns3::DefaultSimulatorImpl.
+ */
+
 namespace ns3 {
 
 // Note:  Logging in this file is largely avoided due to the

@@ -26,6 +26,12 @@
 #include <map>
 #include <utility>
 
+/**
+ * \file
+ * \ingroup scheduler
+ * Declaration of ns3::MapScheduler class.
+ */
+
 namespace ns3 {
 
 /**

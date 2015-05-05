@@ -24,6 +24,12 @@
 #ifndef MATH_H
 #define MATH_H
 
+/**
+ * \file
+ * \ingroup core
+ * Custom version of log2() to deal with \bugid{1467}.
+ */
+
 #include <cmath>
 
 #ifdef __FreeBSD__

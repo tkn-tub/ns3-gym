@@ -31,6 +31,13 @@
 #include <ostream>
 #include <set>
 
+/**
+ * \file
+ * \ingroup time
+ * Declaration of classes ns3::Time and ns3::TimeWithUnit,
+ * and the TimeValue implementation classes.
+ */
+
 namespace ns3 {
 
 class TimeWithUnit;

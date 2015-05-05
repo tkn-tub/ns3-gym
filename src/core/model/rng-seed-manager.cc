@@ -24,6 +24,12 @@
 #include "config.h"
 #include "log.h"
 
+/**
+ * \file
+ * \ingroup randomvariable
+ * ns3::RngSeedManager implementation.
+ */
+
 namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("RngSeedManager");

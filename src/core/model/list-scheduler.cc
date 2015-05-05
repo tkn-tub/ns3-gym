@@ -25,6 +25,12 @@
 #include <string>
 #include "assert.h"
 
+/**
+ * \file
+ * \ingroup scheduler
+ * Implementation of ns3::ListScheduler class.
+ */
+
 namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("ListScheduler");

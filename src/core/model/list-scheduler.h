@@ -26,6 +26,12 @@
 #include <utility>
 #include <stdint.h>
 
+/**
+ * \file
+ * \ingroup scheduler
+ * Declaration of ns3::ListScheduler class.
+ */
+
 namespace ns3 {
 
 class EventImpl;

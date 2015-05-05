@@ -25,6 +25,12 @@
 #include "ptr.h"
 #include "attribute.h"
 
+/**
+ * \file
+ * \ingroup core
+ * ns3::GlobalValue declaration.
+ */
+
 class GlobalValueTestCase;
 
 namespace ns3 {

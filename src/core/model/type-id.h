@@ -30,6 +30,12 @@
 #include <string>
 #include <stdint.h>
 
+/**
+ * \file
+ * \ingroup object
+ * ns3::TypeId declaration; inline and template implementations.
+ */
+
 namespace ns3 {
 
 class ObjectBase;

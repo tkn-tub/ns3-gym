@@ -31,6 +31,12 @@
 #include "system-wall-clock-ms.h"
 
 /**
+ * \file
+ * \ingroup testing
+ * Definition of the testing macros and declaration of the testing classes.
+ */
+
+/**
  * \ingroup core
  * \defgroup testing Testing
  * \brief Tools to define and execute unit tests.

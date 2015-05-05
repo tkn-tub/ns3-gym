@@ -28,6 +28,13 @@
 #include <sstream>
 #include <iomanip>
 
+/**
+ * \file
+ * \ingroup object
+ * ns3::TypeId and ns3::IidManager implementations.
+ */
+
+
 /*********************************************************************
  *         Helper code
  *********************************************************************/

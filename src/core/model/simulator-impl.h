@@ -28,6 +28,12 @@
 #include "object-factory.h"
 #include "ptr.h"
 
+/**
+ * \file
+ * \ingroup simulator
+ * Declaration of class ns3::SimulatorImpl.
+ */
+
 namespace ns3 {
 
 class Scheduler;

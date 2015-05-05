@@ -30,6 +30,12 @@
 #include "simple-ref-count.h"
 #include <typeinfo>
 
+/**
+ * \file
+ * \ingroup callback
+ * Declaration of the various callback functions.
+ */
+
 namespace ns3 {
 
 // Define the doxygen subgroups all at once,

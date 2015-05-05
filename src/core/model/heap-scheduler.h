@@ -25,6 +25,12 @@
 #include <stdint.h>
 #include <vector>
 
+/**
+ * \file
+ * \ingroup scheduler
+ * Declaration of ns3::HeapScheduler class.
+ */
+
 namespace ns3 {
 
 /**

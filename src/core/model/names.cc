@@ -23,6 +23,13 @@
 #include "abort.h"
 #include "names.h"
 
+/**
+ * \file
+ * \ingroup config
+ * Implementation of class ns3::Names, and declaration of classes
+ * ns3::NamesNode and ns3::NamePriv.
+ */
+
 namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("Names");

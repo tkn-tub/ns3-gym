@@ -21,6 +21,13 @@
 #ifndef BREAKPOINT_H
 #define BREAKPOINT_H
 
+/**
+ * \file
+ * \ingroup breakpoint
+ * Definition of NS_BREAKPOINT() macro and ns3::BreakpointFallback
+ * function declaration.
+ */
+
 namespace ns3 {
 
 /* Hacker macro to place breakpoints for selected machines.

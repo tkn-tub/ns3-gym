@@ -21,6 +21,12 @@
 #include "log.h"
 #include <sstream>
 
+/**
+ * \file
+ * \ingroup object
+ * ns3::ObjectFactory class implementation.
+ */
+
 namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE("ObjectFactory");
