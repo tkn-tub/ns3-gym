@@ -89,7 +89,6 @@ public:
   ~RealtimeSimulatorImpl ();
 
   // Inherited from SimulatorImpl
-  /*
   virtual void Destroy ();
   virtual bool IsFinished (void) const;
   virtual void Stop (void);
@@ -108,7 +107,6 @@ public:
   virtual void SetScheduler (ObjectFactory schedulerFactory);
   virtual uint32_t GetSystemId (void) const; 
   virtual uint32_t GetContext (void) const;
-  */
 
   /** \copydoc ScheduleWithContext */
   void ScheduleRealtimeWithContext (uint32_t context, Time const &time, EventImpl *event);
