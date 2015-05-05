@@ -24,6 +24,12 @@
 #include <string>
 #include <vector>
 
+/**
+ * \file
+ * \ingroup config
+ * Declaration of the various ns3::Config functions and classes.
+ */
+
 namespace ns3 {
 
 class AttributeValue;
@@ -31,18 +37,26 @@ class Object;
 class CallbackBase;
 
 /**
- * \brief Configuration of simulation parameters and tracing
  * \ingroup core
+ * \defgroup config Configuration
+ * \brief Configuration of simulation parameters and tracing.
+ */
+
+/**
+ * \ingroup config
+ * Namespace for the various functions implementing the Config system.
  */
 namespace Config {
 
 /**
+ * \ingroup config
  * Reset the initial value of every attribute as well as the value of every
  * global to what they were before any call to SetDefault and SetGlobal.
  */
 void Reset (void);
 
 /**
+ * \ingroup config
  * \param path a path to match attributes.
  * \param value the value to set in all matching attributes.
  *
@@ -52,6 +66,7 @@ void Reset (void);
  */
 void Set (std::string path, const AttributeValue &value);
 /**
+ * \ingroup config
  * \param name the full name of the attribute
  * \param value the value to set.
  *
@@ -61,6 +76,7 @@ void Set (std::string path, const AttributeValue &value);
  */
 void SetDefault (std::string name, const AttributeValue &value);
 /**
+ * \ingroup config
  * \param name the full name of the attribute
  * \param value the value to set.
  * \returns true if the value was set successfully, false otherwise.
@@ -70,6 +86,7 @@ void SetDefault (std::string name, const AttributeValue &value);
  */
 bool SetDefaultFailSafe (std::string name, const AttributeValue &value);
 /**
+ * \ingroup config
  * \param name the name of the requested GlobalValue.
  * \param value the value to set
  *
@@ -77,6 +94,7 @@ bool SetDefaultFailSafe (std::string name, const AttributeValue &value);
  */
 void SetGlobal (std::string name, const AttributeValue &value);
 /**
+ * \ingroup config
  * \param name the name of the requested GlobalValue.
  * \param value the value to set
  *
@@ -84,6 +102,7 @@ void SetGlobal (std::string name, const AttributeValue &value);
  */
 bool SetGlobalFailSafe (std::string name, const AttributeValue &value);
 /**
+ * \ingroup config
  * \param path a path to match trace sources.
  * \param cb the callback to connect to the matching trace sources.
  *
@@ -93,6 +112,7 @@ bool SetGlobalFailSafe (std::string name, const AttributeValue &value);
  */
 void ConnectWithoutContext (std::string path, const CallbackBase &cb);
 /**
+ * \ingroup config
  * \param path a path to match trace sources.
  * \param cb the callback to disconnect to the matching trace sources.
  *
@@ -100,6 +120,7 @@ void ConnectWithoutContext (std::string path, const CallbackBase &cb);
  */
 void DisconnectWithoutContext (std::string path, const CallbackBase &cb);
 /**
+ * \ingroup config
  * \param path a path to match trace sources.
  * \param cb the callback to connect to the matching trace sources.
  *
@@ -110,6 +131,7 @@ void DisconnectWithoutContext (std::string path, const CallbackBase &cb);
  */
 void Connect (std::string path, const CallbackBase &cb);
 /**
+ * \ingroup config
  * \param path a path to match trace sources.
  * \param cb the callback to connect to the matching trace sources.
  *
@@ -118,6 +140,7 @@ void Connect (std::string path, const CallbackBase &cb);
 void Disconnect (std::string path, const CallbackBase &cb);
 
 /**
+ * \ingroup config
  * \brief hold a set of objects which match a specific search string.
  *
  * This class also allows you to perform a set of configuration operations
@@ -216,6 +239,7 @@ private:
 };
 
 /**
+ * \ingroup config
  * \param path the path to perform a match against
  * \returns a container which contains all the objects which match the input
  *          path.
@@ -223,6 +247,7 @@ private:
 MatchContainer LookupMatches (std::string path);
 
 /**
+ * \ingroup config
  * \param obj a new root object
  *
  * Each root object is used during path matching as
@@ -230,6 +255,7 @@ MatchContainer LookupMatches (std::string path);
  */
 void RegisterRootNamespaceObject (Ptr<Object> obj);
 /**
+ * \ingroup config
  * \param obj a new root object
  *
  * This function undoes the work of Config::RegisterRootNamespaceObject.
@@ -237,11 +263,13 @@ void RegisterRootNamespaceObject (Ptr<Object> obj);
 void UnregisterRootNamespaceObject (Ptr<Object> obj);
 
 /**
+ * \ingroup config
  * \returns the number of registered root namespace objects.
  */
 uint32_t GetRootNamespaceObjectN (void);
 
 /**
+ * \ingroup config
  * \param i the index of the requested object.
  * \returns the requested root namespace object
  */

@@ -18,11 +18,22 @@
  * Author: Andrey Mazo <ahippo@yandex.com>
  */
 
+/**
+ * \file
+ * \ingroup logging
+ * Definition of empty logging macros and the NS_LOG_NOOP_INTERNAL macro.
+ */
+
+
 #ifndef NS3_LOG_MACROS_DISABLED_H
 #define NS3_LOG_MACROS_DISABLED_H
 
 #ifndef NS3_LOG_ENABLE
 
+/**
+ * \ingroup logging
+ * Empty logging macro implementation, used when logging is disabled.
+ */
 #define NS_LOG_NOOP_INTERNAL(msg)           \
   do                                        \
     {                                       \
