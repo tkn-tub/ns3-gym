@@ -1998,7 +1998,7 @@ MacLow::SendDataAfterCts (Mac48Address source, Time duration, WifiMode txMode)
   
   if (m_aggregateQueue->GetSize () != 0)
   {
-    for(int i = 0; i < m_txPackets.size(); i++)
+    for (std::vector<Item>::size_type i = 0; i != m_txPackets.size(); i++)
     {
       uint8_t tid = GetTid (m_txPackets.at(i).packet, m_txPackets.at(i).hdr);
       AcIndex ac = QosUtilsMapTidToAc (tid);
