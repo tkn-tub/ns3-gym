@@ -322,6 +322,65 @@ TcpHeaderWithRFC793OptionTestCase::DoTeardown ()
 
 }
 
+class TcpHeaderFlagsToString : public TestCase
+{
+public:
+  TcpHeaderFlagsToString (std::string name);
+
+private:
+  virtual void DoRun (void);
+};
+
+TcpHeaderFlagsToString::TcpHeaderFlagsToString (std::string name)
+  : TestCase (name)
+{
+}
+
+void
+TcpHeaderFlagsToString::DoRun (void)
+{
+  std::string str, target;
+  str = TcpHeader::FlagsToString (0x0);
+  target = "";
+  NS_TEST_ASSERT_MSG_EQ (str, target, "str " << str <<  " does not equal target " << target);
+  str = TcpHeader::FlagsToString (0x1);
+  target = "FIN";
+  NS_TEST_ASSERT_MSG_EQ (str, target, "str " << str <<  " does not equal target " << target);
+  str = TcpHeader::FlagsToString (0x2);
+  target = "SYN";
+  NS_TEST_ASSERT_MSG_EQ (str, target, "str " << str <<  " does not equal target " << target);
+  str = TcpHeader::FlagsToString (0x4);
+  target = "RST";
+  NS_TEST_ASSERT_MSG_EQ (str, target, "str " << str <<  " does not equal target " << target);
+  str = TcpHeader::FlagsToString (0x8);
+  target = "PSH";
+  NS_TEST_ASSERT_MSG_EQ (str, target, "str " << str <<  " does not equal target " << target);
+  str = TcpHeader::FlagsToString (0x10);
+  target = "ACK";
+  NS_TEST_ASSERT_MSG_EQ (str, target, "str " << str <<  " does not equal target " << target);
+  str = TcpHeader::FlagsToString (0x20);
+  target = "URG";
+  NS_TEST_ASSERT_MSG_EQ (str, target, "str " << str <<  " does not equal target " << target);
+  str = TcpHeader::FlagsToString (0x40);
+  target = "ECE";
+  NS_TEST_ASSERT_MSG_EQ (str, target, "str " << str <<  " does not equal target " << target);
+  str = TcpHeader::FlagsToString (0x80);
+  target = "CWR";
+  NS_TEST_ASSERT_MSG_EQ (str, target, "str " << str <<  " does not equal target " << target);
+  str = TcpHeader::FlagsToString (0x3);
+  target = "FIN|SYN";
+  NS_TEST_ASSERT_MSG_EQ (str, target, "str " << str <<  " does not equal target " << target);
+  str = TcpHeader::FlagsToString (0x5);
+  target = "FIN|RST";
+  NS_TEST_ASSERT_MSG_EQ (str, target, "str " << str <<  " does not equal target " << target);
+  str = TcpHeader::FlagsToString (0xff);
+  target = "FIN|SYN|RST|PSH|ACK|URG|ECE|CWR";
+  NS_TEST_ASSERT_MSG_EQ (str, target, "str " << str <<  " does not equal target " << target);
+  str = TcpHeader::FlagsToString (0xff, ":");
+  target = "FIN:SYN:RST:PSH:ACK:URG:ECE:CWR";
+  NS_TEST_ASSERT_MSG_EQ (str, target, "str " << str <<  " does not equal target " << target);
+}
+
 static class TcpHeaderTestSuite : public TestSuite
 {
 public:
@@ -330,6 +389,7 @@ public:
   {
     AddTestCase (new TcpHeaderGetSetTestCase ("GetSet test cases"), TestCase::QUICK);
     AddTestCase (new TcpHeaderWithRFC793OptionTestCase ("Test for options in RFC 793"), TestCase::QUICK);
+    AddTestCase (new TcpHeaderFlagsToString ("Test flags to string function"), TestCase::QUICK);
   }
 
 } g_TcpHeaderTestSuite;

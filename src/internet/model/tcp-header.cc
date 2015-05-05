@@ -52,7 +52,7 @@ TcpHeader::~TcpHeader ()
 }
 
 std::string
-TcpHeader::FlagsToString(const uint8_t& flags, const std::string& delimiter)
+TcpHeader::FlagsToString (uint8_t flags, const std::string& delimiter)
 {
   static const char* flagNames[8] = {
     "FIN",
@@ -65,14 +65,17 @@ TcpHeader::FlagsToString(const uint8_t& flags, const std::string& delimiter)
     "CWR"
   };
   std::string flagsDescription = "";
-  for(int i = 0; i < 8; ++i)
-  {
-    if( flags & (1 << i) )
+  for (uint8_t i = 0; i < 8; ++i)
     {
-      if(flagsDescription.length() > 0) flagsDescription += delimiter;
-      flagsDescription.append(flagNames[i]);
+      if (flags & (1 << i))
+        {
+          if (flagsDescription.length() > 0) 
+            {
+              flagsDescription += delimiter;
+            }
+          flagsDescription.append (flagNames[i]);
+        }
     }
-  }
   return flagsDescription;
 }
 

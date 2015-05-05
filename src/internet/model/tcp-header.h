@@ -50,12 +50,19 @@ public:
   /**
    * \brief Converts an integer into a human readable list of Tcp flags
    *
-   * \param flags List of TCP flags to convert to a readable string
+   * \param flags Bitfield of TCP flags to convert to a readable string
    * \param delimiter String to insert between flags
+   *
+   * FIN=0x1, SYN=0x2, RST=0x4, PSH=0x8, ACK=0x10, URG=0x20, ECE=0x40, CWR=0x80
+   * TcpHeader::FlagsToString (0x1) should return the following string;
+   *     "FIN"
+   *
+   * TcpHeader::FlagsToString (0xff) should return the following string;
+   *     "FIN|SYN|RST|PSH|ACK|URG|ECE|CWR";
    *
    * \return the generated string
    **/
-  static std::string FlagsToString(const uint8_t& flags, const std::string& delimiter="|");
+  static std::string FlagsToString (uint8_t flags, const std::string& delimiter = "|");
 
   /**
    * \brief Enable checksum calculation for TCP
