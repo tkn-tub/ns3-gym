@@ -5328,6 +5328,7 @@ def register_Ns3Empty_methods(root_module, cls):
     return
 
 def register_Ns3Int64x64_t_methods(root_module, cls):
+    cls.add_binary_comparison_operator('<=')
     cls.add_binary_comparison_operator('!=')
     cls.add_inplace_numeric_operator('+=', param('ns3::int64x64_t const &', u'right'))
     cls.add_binary_numeric_operator('*', root_module['ns3::int64x64_t'], root_module['ns3::int64x64_t'], param('ns3::int64x64_t const &', u'right'))
@@ -5341,7 +5342,6 @@ def register_Ns3Int64x64_t_methods(root_module, cls):
     cls.add_inplace_numeric_operator('-=', param('ns3::int64x64_t const &', u'right'))
     cls.add_inplace_numeric_operator('/=', param('ns3::int64x64_t const &', u'right'))
     cls.add_output_stream_operator()
-    cls.add_binary_comparison_operator('<=')
     cls.add_binary_comparison_operator('==')
     cls.add_binary_comparison_operator('>=')
     ## int64x64-double.h (module 'core'): ns3::int64x64_t::int64x64_t() [constructor]
@@ -8893,6 +8893,11 @@ def register_Ns3TcpHeader_methods(root_module, cls):
     cls.add_method('EnableChecksums', 
                    'void', 
                    [])
+    ## tcp-header.h (module 'internet'): static std::string ns3::TcpHeader::FlagsToString(uint8_t const & flags, std::string const & delimiter="|") [member function]
+    cls.add_method('FlagsToString', 
+                   'std::string', 
+                   [param('uint8_t const &', 'flags'), param('std::string const &', 'delimiter', default_value='"|"')], 
+                   is_static=True)
     ## tcp-header.h (module 'internet'): ns3::SequenceNumber32 ns3::TcpHeader::GetAckNumber() const [member function]
     cls.add_method('GetAckNumber', 
                    'ns3::SequenceNumber32', 
@@ -9755,6 +9760,11 @@ def register_Ns3TcpSocketBase_methods(root_module, cls):
                    'void', 
                    [], 
                    visibility='protected', is_virtual=True)
+    ## tcp-socket-base.h (module 'internet'): void ns3::TcpSocketBase::ScaleSsThresh(uint8_t scaleFactor) [member function]
+    cls.add_method('ScaleSsThresh', 
+                   'void', 
+                   [param('uint8_t', 'scaleFactor')], 
+                   is_pure_virtual=True, visibility='protected', is_virtual=True)
     ## tcp-socket-base.h (module 'internet'): uint32_t ns3::TcpSocketBase::SendDataPacket(ns3::SequenceNumber32 seq, uint32_t maxSize, bool withAck) [member function]
     cls.add_method('SendDataPacket', 
                    'uint32_t', 
@@ -9860,11 +9870,16 @@ def register_Ns3TcpSocketBase_methods(root_module, cls):
                    'uint32_t', 
                    [], 
                    visibility='protected', is_virtual=True)
+    ## tcp-socket-base.h (module 'internet'): void ns3::TcpSocketBase::UpdateWindowSize(ns3::TcpHeader const & header) [member function]
+    cls.add_method('UpdateWindowSize', 
+                   'void', 
+                   [param('ns3::TcpHeader const &', 'header')], 
+                   visibility='protected')
     ## tcp-socket-base.h (module 'internet'): uint32_t ns3::TcpSocketBase::Window() [member function]
     cls.add_method('Window', 
                    'uint32_t', 
                    [], 
-                   visibility='protected', is_virtual=True)
+                   is_pure_virtual=True, visibility='protected', is_virtual=True)
     return
 
 def register_Ns3TcpSocketFactory_methods(root_module, cls):
@@ -9928,6 +9943,11 @@ def register_Ns3TcpTahoe_methods(root_module, cls):
     cls.add_method('Retransmit', 
                    'void', 
                    [], 
+                   visibility='protected', is_virtual=True)
+    ## tcp-tahoe.h (module 'internet'): void ns3::TcpTahoe::ScaleSsThresh(uint8_t scaleFactor) [member function]
+    cls.add_method('ScaleSsThresh', 
+                   'void', 
+                   [param('uint8_t', 'scaleFactor')], 
                    visibility='protected', is_virtual=True)
     ## tcp-tahoe.h (module 'internet'): void ns3::TcpTahoe::SetInitialCwnd(uint32_t cwnd) [member function]
     cls.add_method('SetInitialCwnd', 
@@ -10073,6 +10093,11 @@ def register_Ns3TcpWestwood_methods(root_module, cls):
                    'void', 
                    [], 
                    visibility='protected', is_virtual=True)
+    ## tcp-westwood.h (module 'internet'): void ns3::TcpWestwood::ScaleSsThresh(uint8_t scaleFactor) [member function]
+    cls.add_method('ScaleSsThresh', 
+                   'void', 
+                   [param('uint8_t', 'scaleFactor')], 
+                   visibility='protected', is_virtual=True)
     ## tcp-westwood.h (module 'internet'): void ns3::TcpWestwood::SetInitialCwnd(uint32_t cwnd) [member function]
     cls.add_method('SetInitialCwnd', 
                    'void', 
@@ -10096,6 +10121,7 @@ def register_Ns3TcpWestwood_methods(root_module, cls):
     return
 
 def register_Ns3Time_methods(root_module, cls):
+    cls.add_binary_comparison_operator('<=')
     cls.add_binary_comparison_operator('!=')
     cls.add_inplace_numeric_operator('+=', param('ns3::Time const &', u'right'))
     cls.add_binary_numeric_operator('*', root_module['ns3::Time'], root_module['ns3::Time'], param('int64_t const &', u'right'))
@@ -10106,7 +10132,6 @@ def register_Ns3Time_methods(root_module, cls):
     cls.add_binary_comparison_operator('>')
     cls.add_inplace_numeric_operator('-=', param('ns3::Time const &', u'right'))
     cls.add_output_stream_operator()
-    cls.add_binary_comparison_operator('<=')
     cls.add_binary_comparison_operator('==')
     cls.add_binary_comparison_operator('>=')
     ## nstime.h (module 'core'): ns3::Time::Time() [constructor]
@@ -15615,6 +15640,11 @@ def register_Ns3TcpNewReno_methods(root_module, cls):
                    'void', 
                    [], 
                    visibility='protected', is_virtual=True)
+    ## tcp-newreno.h (module 'internet'): void ns3::TcpNewReno::ScaleSsThresh(uint8_t scaleFactor) [member function]
+    cls.add_method('ScaleSsThresh', 
+                   'void', 
+                   [param('uint8_t', 'scaleFactor')], 
+                   visibility='protected', is_virtual=True)
     ## tcp-newreno.h (module 'internet'): void ns3::TcpNewReno::SetInitialCwnd(uint32_t cwnd) [member function]
     cls.add_method('SetInitialCwnd', 
                    'void', 
@@ -15687,6 +15717,11 @@ def register_Ns3TcpReno_methods(root_module, cls):
                    'void', 
                    [], 
                    visibility='protected', is_virtual=True)
+    ## tcp-reno.h (module 'internet'): void ns3::TcpReno::ScaleSsThresh(uint8_t scaleFactor) [member function]
+    cls.add_method('ScaleSsThresh', 
+                   'void', 
+                   [param('uint8_t', 'scaleFactor')], 
+                   visibility='protected', is_virtual=True)
     ## tcp-reno.h (module 'internet'): void ns3::TcpReno::SetInitialCwnd(uint32_t cwnd) [member function]
     cls.add_method('SetInitialCwnd', 
                    'void', 
@@ -15739,6 +15774,11 @@ def register_Ns3TcpRfc793_methods(root_module, cls):
                    'uint32_t', 
                    [], 
                    is_const=True, visibility='protected', is_virtual=True)
+    ## tcp-rfc793.h (module 'internet'): void ns3::TcpRfc793::ScaleSsThresh(uint8_t scaleFactor) [member function]
+    cls.add_method('ScaleSsThresh', 
+                   'void', 
+                   [param('uint8_t', 'scaleFactor')], 
+                   visibility='protected', is_virtual=True)
     ## tcp-rfc793.h (module 'internet'): void ns3::TcpRfc793::SetInitialCwnd(uint32_t cwnd) [member function]
     cls.add_method('SetInitialCwnd', 
                    'void', 
@@ -15748,6 +15788,11 @@ def register_Ns3TcpRfc793_methods(root_module, cls):
     cls.add_method('SetInitialSSThresh', 
                    'void', 
                    [param('uint32_t', 'threshold')], 
+                   visibility='protected', is_virtual=True)
+    ## tcp-rfc793.h (module 'internet'): uint32_t ns3::TcpRfc793::Window() [member function]
+    cls.add_method('Window', 
+                   'uint32_t', 
+                   [], 
                    visibility='protected', is_virtual=True)
     return
 
