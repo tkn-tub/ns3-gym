@@ -32,17 +32,17 @@ Dot11sMeshCapability::Dot11sMeshCapability () :
 uint8_t
 Dot11sMeshCapability::GetSerializedSize () const
 {
-  return 2;
+  return 1; 
 }
-uint16_t
-Dot11sMeshCapability::GetUint16 () const
+uint8_t  
+Dot11sMeshCapability::GetUint8 () const  //IEEE 802.11-2012 8.4.2.100.8 Mesh Capability 
 {
-  uint16_t result = 0;
+  uint8_t result = 0;  
   if (acceptPeerLinks)
     {
-      result |= 1 << 0;
+      result |= 1 << 0; //The Accepting Additional Mesh Peerings subfield is set to 1 if the mesh STA is willing to establish additional mesh peerings   with other mesh STAs and set to 0 otherwise
     }
-  if (MCCASupported)
+  if (MCCASupported) // The MCCA Supported subfield is set to 1 if the mesh STA implements MCCA and set to 0 otherwise
     {
       result |= 1 << 1;
     }
@@ -71,13 +71,13 @@ Dot11sMeshCapability::GetUint16 () const
 Buffer::Iterator
 Dot11sMeshCapability::Serialize (Buffer::Iterator i) const
 {
-  i.WriteHtolsbU16 (GetUint16 ());
+  i.WriteU8 (GetUint8 ());
   return i;
 }
 Buffer::Iterator
 Dot11sMeshCapability::Deserialize (Buffer::Iterator i)
 {
-  uint16_t cap = i.ReadLsbtohU16 ();
+  uint8_t cap = i.ReadU8 ();
   acceptPeerLinks = Is (cap, 0);
   MCCASupported = Is (cap, 1);
   MCCAEnabled = Is (cap, 2);
@@ -88,7 +88,7 @@ Dot11sMeshCapability::Deserialize (Buffer::Iterator i)
   return i;
 }
 bool
-Dot11sMeshCapability::Is (uint16_t cap, uint8_t n) const
+Dot11sMeshCapability::Is (uint8_t cap, uint8_t n) const
 {
   uint16_t mask = 1 << n;
   return (cap & mask);
@@ -107,29 +107,28 @@ IeConfiguration::IeConfiguration () :
 uint8_t
 IeConfiguration::GetInformationFieldSize () const
 {
-  return 1 // Version
-         + 4 // APSPId
-         + 4 // APSMId
-         + 4 // CCMId
-         + 4 // SPId
-         + 4 // APId
+   return 0   // Version
+         + 1  // APSPId
+         + 1 // APSMId
+         + 1 // CCMId
+         + 1 // SPId
+         + 1 // APId
          + 1 // Mesh formation info (see 7.3.2.86.6 of 802.11s draft 3.0)
          + m_meshCap.GetSerializedSize ();
 }
 void
 IeConfiguration::SerializeInformationField (Buffer::Iterator i) const
 {
-  i.WriteU8 (1); //Version
   // Active Path Selection Protocol ID:
-  i.WriteHtolsbU32 (m_APSPId);
+  i.WriteU8 (m_APSPId);
   // Active Path Metric ID:
-  i.WriteHtolsbU32 (m_APSMId);
+  i.WriteU8 (m_APSMId);
   // Congestion Control Mode ID:
-  i.WriteHtolsbU32 (m_CCMId);
+  i.WriteU8 (m_CCMId);
   // Sync:
-  i.WriteHtolsbU32 (m_SPId);
+  i.WriteU8 (m_SPId);
   // Auth:
-  i.WriteHtolsbU32 (m_APId);
+  i.WriteU8 (m_APId);
   i.WriteU8 (m_neighbors << 1);
   m_meshCap.Serialize (i);
 }
@@ -137,20 +136,14 @@ uint8_t
 IeConfiguration::DeserializeInformationField (Buffer::Iterator i, uint8_t length)
 {
   Buffer::Iterator start = i;
-  uint8_t version;
-  version = i.ReadU8 ();
-  if (version != 1)
-    {
-      NS_FATAL_ERROR ("Other versions not supported yet");
-    }
   // Active Path Selection Protocol ID:
-  m_APSPId = (dot11sPathSelectionProtocol) i.ReadLsbtohU32 ();
+  m_APSPId = (dot11sPathSelectionProtocol) i.ReadU8 ();
   // Active Path Metric ID:
-  m_APSMId = (dot11sPathSelectionMetric) i.ReadLsbtohU32 ();
+  m_APSMId = (dot11sPathSelectionMetric) i.ReadU8 ();
   // Congestion Control Mode ID:
-  m_CCMId = (dot11sCongestionControlMode) i.ReadLsbtohU32 ();
-  m_SPId = (dot11sSynchronizationProtocolIdentifier) i.ReadLsbtohU32 ();
-  m_APId = (dot11sAuthenticationProtocol) i.ReadLsbtohU32 ();
+  m_CCMId = (dot11sCongestionControlMode) i.ReadU8 ();
+  m_SPId = (dot11sSynchronizationProtocolIdentifier) i.ReadU8 ();
+  m_APId = (dot11sAuthenticationProtocol) i.ReadU8 ();
   m_neighbors = (i.ReadU8 () >> 1) & 0xF;
   i = m_meshCap.Deserialize (i);
   return i.GetDistanceFrom (start);
@@ -165,7 +158,7 @@ IeConfiguration::Print (std::ostream& os) const
      << std::endl << "Congestion Control Mode ID:        = " << (uint32_t) m_CCMId
      << std::endl << "Synchronize protocol ID:           = " << (uint32_t) m_SPId
      << std::endl << "Authentication protocol ID:        = " << (uint32_t) m_APId
-     << std::endl << "Capabilities:                      = " << m_meshCap.GetUint16 () << std::endl;
+     << std::endl << "Capabilities:                      = " << m_meshCap.GetUint8 () << std::endl;
   os << "</information_element>" << std::endl;
 }
 void

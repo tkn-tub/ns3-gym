@@ -435,7 +435,7 @@ MgtAssocResponseHeader::GetSerializedSize (void) const
   size += 2; // aid
   size += m_rates.GetSerializedSize ();
   size += m_rates.extended.GetSerializedSize ();
-size += m_htCapability.GetSerializedSize();
+  size += m_htCapability.GetSerializedSize();
   return size;
 }
 
@@ -466,7 +466,7 @@ MgtAssocResponseHeader::Deserialize (Buffer::Iterator start)
   m_aid = i.ReadLsbtohU16 ();
   i = m_rates.Deserialize (i);
   i = m_rates.extended.DeserializeIfPresent (i);
- i = m_htCapability.DeserializeIfPresent (i);
+  i = m_htCapability.DeserializeIfPresent (i);
   return i.GetDistanceFrom (start);
 }
 /**********************************************************
@@ -483,7 +483,6 @@ WifiActionHeader::SetAction (WifiActionHeader::CategoryValue type,
                              WifiActionHeader::ActionValue action)
 {
   m_category = type;
-
   switch (type)
     {
     case BLOCK_ACK:
@@ -491,22 +490,25 @@ WifiActionHeader::SetAction (WifiActionHeader::CategoryValue type,
         m_actionValue = action.blockAck;
         break;
       }
-    case MESH_PEERING_MGT:
+    case MESH:  
       {
-        m_actionValue = action.peerLink;
+        m_actionValue = action.meshAction;
         break;
       }
-    case MESH_PATH_SELECTION:
+    case MULTIHOP: 
       {
-        m_actionValue = action.pathSelection;
+        m_actionValue = action.multihopAction;
         break;
       }
-    case MESH_LINK_METRIC:
-    case MESH_INTERWORKING:
-    case MESH_RESOURCE_COORDINATION:
-    case MESH_PROXY_FORWARDING:
+    case SELF_PROTECTED:
+      {
+        m_actionValue = action.selfProtectedAction;
+        break;
+      } 
     case VENDOR_SPECIFIC_ACTION:
-      break;
+      {
+        break;
+      } 
     }
 }
 WifiActionHeader::CategoryValue
@@ -516,30 +518,25 @@ WifiActionHeader::GetCategory ()
     {
     case BLOCK_ACK:
       return BLOCK_ACK;
-    case MESH_PEERING_MGT:
-      return MESH_PEERING_MGT;
-    case MESH_LINK_METRIC:
-      return MESH_LINK_METRIC;
-    case MESH_PATH_SELECTION:
-      return MESH_PATH_SELECTION;
-    case MESH_INTERWORKING:
-      return MESH_INTERWORKING;
-    case MESH_RESOURCE_COORDINATION:
-      return MESH_RESOURCE_COORDINATION;
-    case MESH_PROXY_FORWARDING:
-      return MESH_PROXY_FORWARDING;
+    case MESH:
+      return MESH;
+    case MULTIHOP:
+      return MULTIHOP;
+    case SELF_PROTECTED:
+      return SELF_PROTECTED;
     case VENDOR_SPECIFIC_ACTION:
       return VENDOR_SPECIFIC_ACTION;
     default:
       NS_FATAL_ERROR ("Unknown action value");
-      return MESH_PEERING_MGT;
+      return SELF_PROTECTED;
     }
 }
 WifiActionHeader::ActionValue
 WifiActionHeader::GetAction ()
 {
   ActionValue retval;
-  retval.peerLink = PEER_LINK_OPEN; // Needs to be initialized to something to quiet valgrind in default cases
+  retval.selfProtectedAction = PEER_LINK_OPEN; // Needs to be initialized to something to quiet valgrind in default cases
+ 
   switch (m_category)
     {
     case BLOCK_ACK:
@@ -554,50 +551,92 @@ WifiActionHeader::GetAction ()
         case BLOCK_ACK_DELBA:
           retval.blockAck = BLOCK_ACK_DELBA;
           break ;
-        }
+       }
       break ;
-      
-    case MESH_PEERING_MGT:
+    case SELF_PROTECTED:
       switch (m_actionValue)
         {
         case PEER_LINK_OPEN:
-          retval.peerLink = PEER_LINK_OPEN;
-          break ;
+          retval.selfProtectedAction = PEER_LINK_OPEN;
+          break;
         case PEER_LINK_CONFIRM:
-          retval.peerLink = PEER_LINK_CONFIRM;
-          break ;
+          retval.selfProtectedAction = PEER_LINK_CONFIRM;
+          break;
         case PEER_LINK_CLOSE:
-          retval.peerLink = PEER_LINK_CLOSE;
-          break ;
+          retval.selfProtectedAction = PEER_LINK_CLOSE;
+          break;
+        case GROUP_KEY_INFORM:
+          retval.selfProtectedAction = GROUP_KEY_INFORM;
+          break;
+        case GROUP_KEY_ACK:
+          retval.selfProtectedAction = GROUP_KEY_ACK;
+          break;
         default:
           NS_FATAL_ERROR ("Unknown mesh peering management action code");
-          retval.peerLink = PEER_LINK_OPEN; /* quiet compiler */
+          retval.selfProtectedAction = PEER_LINK_OPEN; /* quiet compiler */
         }
-      break ;
+       break ;
       
-    case MESH_PATH_SELECTION:
+    case MESH:
       switch (m_actionValue)
         {
+        case LINK_METRIC_REPORT:
+          retval.meshAction = LINK_METRIC_REPORT;
+          break;
         case PATH_SELECTION:
-          retval.pathSelection = PATH_SELECTION;
-          break ;
+          retval.meshAction = PATH_SELECTION;
+          break;
+        case PORTAL_ANNOUNCEMENT:
+          retval.meshAction = PORTAL_ANNOUNCEMENT;
+          break;
+        case CONGESTION_CONTROL_NOTIFICATION:
+          retval.meshAction = CONGESTION_CONTROL_NOTIFICATION;
+         break;
+        case MDA_SETUP_REQUEST:
+          retval.meshAction = MDA_SETUP_REQUEST;
+         break;
+        case MDA_SETUP_REPLY:
+          retval.meshAction = MDA_SETUP_REPLY;
+          break;
+        case MDAOP_ADVERTISMENT_REQUEST:
+          retval.meshAction = MDAOP_ADVERTISMENT_REQUEST;
+          break;
+        case MDAOP_ADVERTISMENTS:
+          retval.meshAction = MDAOP_ADVERTISMENTS;
+          break;
+        case MDAOP_SET_TEARDOWN:
+          retval.meshAction = MDAOP_SET_TEARDOWN;
+          break;
+        case TBTT_ADJUSTMENT_REQUEST:
+          retval.meshAction = TBTT_ADJUSTMENT_REQUEST;
+          break;
+        case TBTT_ADJUSTMENT_RESPONSE:
+          retval.meshAction = TBTT_ADJUSTMENT_RESPONSE;
+          break;
         default:
-          NS_FATAL_ERROR ("Unknown mesh path selection action code");
-          retval.peerLink = PEER_LINK_OPEN; /* quiet compiler */
+          NS_FATAL_ERROR ("Unknown mesh peering management action code");
+          retval.selfProtectedAction = PEER_LINK_OPEN; /* quiet compiler */
         }
-      break ;
-    case VENDOR_SPECIFIC_ACTION:
-      break ;
-    case MESH_LINK_METRIC:
-    // not yet supported
-    case MESH_INTERWORKING:
-    // not yet supported
-    case MESH_RESOURCE_COORDINATION:
-    // not yet supported
-    default:
+      break;
+  
+    case MULTIHOP: //not yet supported
+      switch (m_actionValue)
+        {
+        case PROXY_UPDATE:                    //(not used so far)
+          retval.multihopAction = PROXY_UPDATE;
+          break;
+        case PROXY_UPDATE_CONFIRMATION:       //(not used so far)
+          retval.multihopAction = PROXY_UPDATE;
+          break;
+        default:
+          NS_FATAL_ERROR ("Unknown mesh peering management action code");
+          retval.selfProtectedAction = PEER_LINK_OPEN; /* quiet compiler */
+        }
+      break;
+      default:
       NS_FATAL_ERROR ("Unsupported mesh action");
-      retval.peerLink = PEER_LINK_OPEN; /* quiet compiler */
-    }
+      retval.selfProtectedAction = PEER_LINK_OPEN; /* quiet compiler */
+      }
   return retval;
 }
 TypeId

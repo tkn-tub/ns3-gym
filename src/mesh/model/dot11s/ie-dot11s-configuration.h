@@ -27,48 +27,41 @@
 
 namespace ns3 {
 namespace dot11s {
-/**
- * \ingroup dot11s
- * \brief See 7.3.2.86.1 in 802.11s draft 3.0
- */
+ 
+//according to IEEE 802.11 - 2012
+
+//in 7.3.2.98.2 Active Path Selection Protocol Identifier - 802.11s-2011 
 enum dot11sPathSelectionProtocol
 {
-  PROTOCOL_HWMP = 0x000fac00,
+  PROTOCOL_HWMP = 0x01,
 };
-/**
- * \ingroup dot11s
- * \brief See 7.3.2.86.2 in 802.11s draft 3.0
- */
+ 
+//in 7.3.2.98.3 Active Path Selection Metric Identifier - 802.11s-2011 
 enum dot11sPathSelectionMetric
 {
-  METRIC_AIRTIME = 0x000fac00,
+  METRIC_AIRTIME = 0x01,
 };
-/**
- * \ingroup dot11s
- * \brief See 7.3.2.86.3 in 802.11s draft 3.0
- */
+
+// in 7.3.2.98.4 Congestion Control Mode Identifier - 802.11s-2011 
 enum dot11sCongestionControlMode
 {
-  CONGESTION_SIGNALING = 0x000fac00,
-  CONGESTION_NULL      = 0x000facff,
+  CONGESTION_SIGNALING = 0x01,
+  CONGESTION_NULL      = 0x00,
 };
-/**
- * \ingroup dot11s
- * \brief See 7.3.2.86.4 in 802.11s draft 3.0
- */
+
+// in 7.3.2.98.5 Synchronization Method Identifier - 802.11s-2011 
 enum dot11sSynchronizationProtocolIdentifier
 {
-  SYNC_NEIGHBOUR_OFFSET = 0x000fac00,
-  SYNC_NULL             = 0x000facff,
+  SYNC_NEIGHBOUR_OFFSET = 0x01,  //Neighbor offset synchronization method
+  SYNC_NULL             = 0x00,  //Reserved
 };
-/**
- * \ingroup dot11s
- * \brief See 7.3.2.86.5 in 802.11s draft 3.0
- */
+
+// in 7.3.2.98.6 Authentication Protocol Identifier - 802.11s-2011 
 enum dot11sAuthenticationProtocol
 {
-  AUTH_NULL = 0x000fac00,
-  AUTH_SAE  = 0x000fac01,
+  AUTH_NULL = 0x00,  //No authentication method is required to establish mesh peerings within the MBSS
+  AUTH_SAE  = 0x01,  //SAE defined in 8.2a
+  AUTH_IEEE = 0x02,  //IEEE 802.1X authentication
 };
 /**
  * \ingroup dot11s
@@ -81,7 +74,7 @@ public:
   uint8_t  GetSerializedSize () const;
   Buffer::Iterator Serialize (Buffer::Iterator i) const;
   Buffer::Iterator Deserialize (Buffer::Iterator i);
-  uint16_t GetUint16 () const;
+  uint8_t GetUint8 () const;  
   bool acceptPeerLinks;
   bool MCCASupported;
   bool MCCAEnabled;
@@ -89,7 +82,7 @@ public:
   bool beaconTimingReport;
   bool TBTTAdjustment;
   bool powerSaveLevel;
-  bool Is (uint16_t cap,uint8_t n) const;
+  bool Is (uint8_t cap,uint8_t n) const;
   friend bool operator== (const Dot11sMeshCapability & a, const Dot11sMeshCapability & b);
 };
 
