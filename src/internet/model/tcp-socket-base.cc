@@ -142,6 +142,14 @@ TcpSocketBase::GetTypeId (void)
                      "Remote side's flow control window",
                      MakeTraceSourceAccessor (&TcpSocketBase::m_rWnd),
                      "ns3::TracedValue::Uint32Callback")
+    .AddTraceSource ("HighestRxSequence",
+                     "Highest sequence number received from peer",
+                     MakeTraceSourceAccessor (&TcpSocketBase::m_highRxMark),
+                     "ns3::SequenceNumber32TracedValueCallback")
+    .AddTraceSource ("HighestRxAck",
+                     "Highest ack received from peer",
+                     MakeTraceSourceAccessor (&TcpSocketBase::m_highRxAckMark),
+                     "ns3::SequenceNumber32TracedValueCallback")
   ;
   return tid;
 }
@@ -169,6 +177,8 @@ TcpSocketBase::TcpSocketBase (void)
     m_segmentSize (0),
     // For attribute initialization consistency (quiet valgrind)
     m_rWnd (0),
+    m_highRxMark (0),
+    m_highRxAckMark (0),
     m_sndScaleFactor (0),
     m_rcvScaleFactor (0),
     m_timestampEnabled (true),
@@ -209,6 +219,8 @@ TcpSocketBase::TcpSocketBase (const TcpSocketBase& sock)
     m_segmentSize (sock.m_segmentSize),
     m_maxWinSize (sock.m_maxWinSize),
     m_rWnd (sock.m_rWnd),
+    m_highRxMark (sock.m_highRxMark),
+    m_highRxAckMark (sock.m_highRxAckMark),
     m_winScalingEnabled (sock.m_winScalingEnabled),
     m_sndScaleFactor (sock.m_sndScaleFactor),
     m_rcvScaleFactor (sock.m_rcvScaleFactor),
@@ -945,14 +957,6 @@ TcpSocketBase::DoForwardUp (Ptr<Packet> packet, Ipv4Header header, uint16_t port
       EstimateRtt (tcpHeader);
     }
 
-  // Update Rx window size, i.e. the flow control window
-  if (m_rWnd.Get () == 0 && tcpHeader.GetWindowSize () != 0)
-    { // persist probes end
-      NS_LOG_LOGIC (this << " Leaving zerowindow persist state");
-      m_persistEvent.Cancel ();
-    }
-  m_rWnd = (uint32_t(tcpHeader.GetWindowSize ()) << m_rcvScaleFactor);
-
   // Discard fully out of range data packets
   if (packet->GetSize ()
       && OutOfRange (tcpHeader.GetSequenceNumber (), tcpHeader.GetSequenceNumber () + packet->GetSize ()))
@@ -968,6 +972,17 @@ TcpSocketBase::DoForwardUp (Ptr<Packet> packet, Ipv4Header header, uint16_t port
           SendEmptyPacket (TcpHeader::ACK);
         }
       return;
+    }
+
+  // Update Rx window size, i.e. the flow control window
+  if (m_rWnd.Get () == 0 && tcpHeader.GetWindowSize () != 0 && m_persistEvent.IsRunning ())
+    { // persist probes end
+      NS_LOG_LOGIC (this << " Leaving zerowindow persist state");
+      m_persistEvent.Cancel ();
+    }
+  if (tcpHeader.GetFlags () & TcpHeader::ACK)
+    {
+      UpdateWindowSize (tcpHeader);
     }
 
   // TCP state machine code in different process functions
@@ -1048,14 +1063,6 @@ TcpSocketBase::DoForwardUp (Ptr<Packet> packet, Ipv6Header header, uint16_t port
       EstimateRtt (tcpHeader);
     }
 
-  // Update Rx window size, i.e. the flow control window
-  if (m_rWnd.Get () == 0 && tcpHeader.GetWindowSize () != 0)
-    { // persist probes end
-      NS_LOG_LOGIC (this << " Leaving zerowindow persist state");
-      m_persistEvent.Cancel ();
-    }
-  m_rWnd = (uint32_t(tcpHeader.GetWindowSize ()) << m_rcvScaleFactor);
-
   // Discard fully out of range packets
   if (packet->GetSize ()
       && OutOfRange (tcpHeader.GetSequenceNumber (), tcpHeader.GetSequenceNumber () + packet->GetSize ()))
@@ -1071,6 +1078,18 @@ TcpSocketBase::DoForwardUp (Ptr<Packet> packet, Ipv6Header header, uint16_t port
           SendEmptyPacket (TcpHeader::ACK);
         }
       return;
+    }
+
+  // Update Rx window size, i.e. the flow control window
+  if (m_rWnd.Get () == 0 && tcpHeader.GetWindowSize () != 0 && m_persistEvent.IsRunning ())
+    { // persist probes end
+      NS_LOG_LOGIC (this << " Leaving zerowindow persist state");
+      m_persistEvent.Cancel ();
+    }
+
+  if (tcpHeader.GetFlags () & TcpHeader::ACK)
+    {
+      UpdateWindowSize (tcpHeader);
     }
 
   // TCP state machine code in different process functions
@@ -2724,6 +2743,50 @@ TcpSocketBase::AddOptionTimestamp (TcpHeader& header)
   header.AppendOption (option);
   NS_LOG_INFO (m_node->GetId () << " Add option TS, ts=" <<
                option->GetTimestamp () << " echo=" << m_timestampToEcho);
+}
+
+void TcpSocketBase::UpdateWindowSize (const TcpHeader &header)
+{
+  NS_LOG_FUNCTION (this << header);
+  //  If the connection is not established, the window size is always
+  //  updated
+  uint32_t receivedWindow = header.GetWindowSize ();
+  receivedWindow <<= m_rcvScaleFactor;
+  NS_LOG_DEBUG ("Received (scaled) window is " << receivedWindow << " bytes");
+  if (m_state < ESTABLISHED)
+    {
+      m_rWnd = receivedWindow;
+      NS_LOG_DEBUG ("State less than ESTABLISHED; updating rWnd to " << m_rWnd);
+      return;
+    }
+
+  // Test for conditions that allow updating of the window
+  // 1) segment contains new data (advancing the right edge of the receive 
+  // buffer), 
+  // 2) segment does not contain new data but the segment acks new data 
+  // (highest sequence number acked advances), or
+  // 3) the advertised window is larger than the current send window
+  bool update = false;
+  if (header.GetAckNumber () == m_highRxAckMark && receivedWindow > m_rWnd)
+    {
+      // right edge of the send window is increased (window update)
+      update = true;
+    }
+  if (header.GetAckNumber () > m_highRxAckMark)
+    {
+      m_highRxAckMark = header.GetAckNumber ();
+      update = true;
+    }
+  if (header.GetSequenceNumber () > m_highRxMark)
+    {
+      m_highRxMark = header.GetSequenceNumber ();
+      update = true;
+    }
+  if (update == true)
+    {
+      m_rWnd = receivedWindow;
+      NS_LOG_DEBUG ("updating rWnd to " << m_rWnd);
+    }
 }
 
 void

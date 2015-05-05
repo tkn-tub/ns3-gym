@@ -532,6 +532,20 @@ protected:
    */
   virtual uint16_t AdvertisedWindowSize (void);
 
+  /**
+   * \brief Update the receiver window (RWND) based on the value of the 
+   * window field in the header.
+   *
+   * This method suppresses updates unless one of the following three 
+   * conditions holds:  1) segment contains new data (advancing the right
+   * edge of the receive buffer), 2) segment does not contain new data
+   * but the segment acks new data (highest sequence number acked advances),
+   * or 3) the advertised window is larger than the current send window
+   *
+   * \param header TcpHeader from which to extract the new window value
+   */
+  void UpdateWindowSize (const TcpHeader& header);
+
 
   // Manage data tx/rx
 
@@ -736,7 +750,9 @@ protected:
   // Window management
   uint32_t              m_segmentSize; //!< Segment size
   uint16_t              m_maxWinSize;  //!< Maximum window size to advertise
-  TracedValue<uint32_t> m_rWnd;        //!< Flow control window at remote side
+  TracedValue<uint32_t> m_rWnd;        //!< Receiver window (RCV.WND in RFC793)
+  TracedValue<SequenceNumber32> m_highRxMark;     //!< Highest seqno received
+  TracedValue<SequenceNumber32> m_highRxAckMark;  //!< Highest ack received
 
   // Options
   bool    m_winScalingEnabled;    //!< Window Scale option enabled
