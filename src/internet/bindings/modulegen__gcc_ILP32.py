@@ -8893,10 +8893,10 @@ def register_Ns3TcpHeader_methods(root_module, cls):
     cls.add_method('EnableChecksums', 
                    'void', 
                    [])
-    ## tcp-header.h (module 'internet'): static std::string ns3::TcpHeader::FlagsToString(uint8_t const & flags, std::string const & delimiter="|") [member function]
+    ## tcp-header.h (module 'internet'): static std::string ns3::TcpHeader::FlagsToString(uint8_t flags, std::string const & delimiter="|") [member function]
     cls.add_method('FlagsToString', 
                    'std::string', 
-                   [param('uint8_t const &', 'flags'), param('std::string const &', 'delimiter', default_value='"|"')], 
+                   [param('uint8_t', 'flags'), param('std::string const &', 'delimiter', default_value='"|"')], 
                    is_static=True)
     ## tcp-header.h (module 'internet'): ns3::SequenceNumber32 ns3::TcpHeader::GetAckNumber() const [member function]
     cls.add_method('GetAckNumber', 
