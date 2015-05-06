@@ -35,6 +35,7 @@ Bugs fixed
 - Bug 1757 - RLC AM not using NACK_SN
 - Bug 1974 - CalculateTxTime should return a Time, not a double
 - Bug 1982 - AODV and mesh use random variables before seed can be set
+- Bug 2004 - Wrong timeout calculation for 802.11n in WifiMac
 - Bug 2008 - (lr-wpan) Crash if ending rx while status change is in progress
 - Bug 2025 - (lr-wpan) Changing the channel doesn't affect the Tx params
 - Bug 2034 - (lr-wpan) CSMA-CA BackoffPeriod is too short 
