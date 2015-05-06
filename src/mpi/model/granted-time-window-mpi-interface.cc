@@ -93,6 +93,7 @@ GrantedTimeWindowMpiInterface::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::GrantedTimeWindowMpiInterface")
     .SetParent<Object> ()
+    .SetGroupName ("Mpi")
   ;
   return tid;
 }

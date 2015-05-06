@@ -34,6 +34,7 @@ TypeId RemoteChannelBundle::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::RemoteChannelBundle")
     .SetParent<Object> ()
+    .SetGroupName ("Mpi")
     .AddConstructor <RemoteChannelBundle> ();
   return tid;
 }

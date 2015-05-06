@@ -55,6 +55,7 @@ NullMessageSimulatorImpl::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::NullMessageSimulatorImpl")
     .SetParent<Object> ()
+    .SetGroupName ("Mpi")
     .AddConstructor<NullMessageSimulatorImpl> ()
     .AddAttribute ("SchedulerTune", "Null Message scheduler tuning parameter",
                    DoubleValue (1.0),

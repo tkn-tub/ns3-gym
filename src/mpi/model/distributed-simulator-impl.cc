@@ -83,6 +83,7 @@ DistributedSimulatorImpl::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::DistributedSimulatorImpl")
     .SetParent<Object> ()
+    .SetGroupName ("Mpi")
     .AddConstructor<DistributedSimulatorImpl> ()
   ;
   return tid;
