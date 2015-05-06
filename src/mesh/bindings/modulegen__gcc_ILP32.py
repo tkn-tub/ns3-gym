@@ -251,17 +251,13 @@ def register_types(module):
     ## mgt-headers.h (module 'wifi'): ns3::WifiActionHeader [class]
     module.add_class('WifiActionHeader', import_from_module='ns.wifi', parent=root_module['ns3::Header'])
     ## mgt-headers.h (module 'wifi'): ns3::WifiActionHeader::CategoryValue [enumeration]
-    module.add_enum('CategoryValue', ['BLOCK_ACK', 'MESH_PEERING_MGT', 'MESH_LINK_METRIC', 'MESH_PATH_SELECTION', 'MESH_INTERWORKING', 'MESH_RESOURCE_COORDINATION', 'MESH_PROXY_FORWARDING', 'VENDOR_SPECIFIC_ACTION'], outer_class=root_module['ns3::WifiActionHeader'], import_from_module='ns.wifi')
-    ## mgt-headers.h (module 'wifi'): ns3::WifiActionHeader::PeerLinkMgtActionValue [enumeration]
-    module.add_enum('PeerLinkMgtActionValue', ['PEER_LINK_OPEN', 'PEER_LINK_CONFIRM', 'PEER_LINK_CLOSE'], outer_class=root_module['ns3::WifiActionHeader'], import_from_module='ns.wifi')
-    ## mgt-headers.h (module 'wifi'): ns3::WifiActionHeader::LinkMetricActionValue [enumeration]
-    module.add_enum('LinkMetricActionValue', ['LINK_METRIC_REQUEST', 'LINK_METRIC_REPORT'], outer_class=root_module['ns3::WifiActionHeader'], import_from_module='ns.wifi')
-    ## mgt-headers.h (module 'wifi'): ns3::WifiActionHeader::PathSelectionActionValue [enumeration]
-    module.add_enum('PathSelectionActionValue', ['PATH_SELECTION'], outer_class=root_module['ns3::WifiActionHeader'], import_from_module='ns.wifi')
-    ## mgt-headers.h (module 'wifi'): ns3::WifiActionHeader::InterworkActionValue [enumeration]
-    module.add_enum('InterworkActionValue', ['PORTAL_ANNOUNCEMENT'], outer_class=root_module['ns3::WifiActionHeader'], import_from_module='ns.wifi')
-    ## mgt-headers.h (module 'wifi'): ns3::WifiActionHeader::ResourceCoordinationActionValue [enumeration]
-    module.add_enum('ResourceCoordinationActionValue', ['CONGESTION_CONTROL_NOTIFICATION', 'MDA_SETUP_REQUEST', 'MDA_SETUP_REPLY', 'MDAOP_ADVERTISMENT_REQUEST', 'MDAOP_ADVERTISMENTS', 'MDAOP_SET_TEARDOWN', 'BEACON_TIMING_REQUEST', 'BEACON_TIMING_RESPONSE', 'TBTT_ADJUSTMENT_REQUEST', 'MESH_CHANNEL_SWITCH_ANNOUNCEMENT'], outer_class=root_module['ns3::WifiActionHeader'], import_from_module='ns.wifi')
+    module.add_enum('CategoryValue', ['BLOCK_ACK', 'MESH', 'MULTIHOP', 'SELF_PROTECTED', 'VENDOR_SPECIFIC_ACTION'], outer_class=root_module['ns3::WifiActionHeader'], import_from_module='ns.wifi')
+    ## mgt-headers.h (module 'wifi'): ns3::WifiActionHeader::SelfProtectedActionValue [enumeration]
+    module.add_enum('SelfProtectedActionValue', ['PEER_LINK_OPEN', 'PEER_LINK_CONFIRM', 'PEER_LINK_CLOSE', 'GROUP_KEY_INFORM', 'GROUP_KEY_ACK'], outer_class=root_module['ns3::WifiActionHeader'], import_from_module='ns.wifi')
+    ## mgt-headers.h (module 'wifi'): ns3::WifiActionHeader::MultihopActionValue [enumeration]
+    module.add_enum('MultihopActionValue', ['PROXY_UPDATE', 'PROXY_UPDATE_CONFIRMATION'], outer_class=root_module['ns3::WifiActionHeader'], import_from_module='ns.wifi')
+    ## mgt-headers.h (module 'wifi'): ns3::WifiActionHeader::MeshActionValue [enumeration]
+    module.add_enum('MeshActionValue', ['LINK_METRIC_REPORT', 'PATH_SELECTION', 'PORTAL_ANNOUNCEMENT', 'CONGESTION_CONTROL_NOTIFICATION', 'MDA_SETUP_REQUEST', 'MDA_SETUP_REPLY', 'MDAOP_ADVERTISMENT_REQUEST', 'MDAOP_ADVERTISMENTS', 'MDAOP_SET_TEARDOWN', 'TBTT_ADJUSTMENT_REQUEST', 'TBTT_ADJUSTMENT_RESPONSE'], outer_class=root_module['ns3::WifiActionHeader'], import_from_module='ns.wifi')
     ## mgt-headers.h (module 'wifi'): ns3::WifiActionHeader::BlockAckActionValue [enumeration]
     module.add_enum('BlockAckActionValue', ['BLOCK_ACK_ADDBA_REQUEST', 'BLOCK_ACK_ADDBA_RESPONSE', 'BLOCK_ACK_DELBA'], outer_class=root_module['ns3::WifiActionHeader'], import_from_module='ns.wifi')
     ## mgt-headers.h (module 'wifi'): ns3::WifiActionHeader::ActionValue [union]
@@ -507,7 +503,7 @@ def register_types_ns3_dot11s(module):
     ## ie-dot11s-configuration.h (module 'mesh'): ns3::dot11s::dot11sCongestionControlMode [enumeration]
     module.add_enum('dot11sCongestionControlMode', ['CONGESTION_SIGNALING', 'CONGESTION_NULL'])
     ## ie-dot11s-configuration.h (module 'mesh'): ns3::dot11s::dot11sAuthenticationProtocol [enumeration]
-    module.add_enum('dot11sAuthenticationProtocol', ['AUTH_NULL', 'AUTH_SAE'])
+    module.add_enum('dot11sAuthenticationProtocol', ['AUTH_NULL', 'AUTH_SAE', 'AUTH_IEEE'])
     ## ie-dot11s-configuration.h (module 'mesh'): ns3::dot11s::dot11sPathSelectionMetric [enumeration]
     module.add_enum('dot11sPathSelectionMetric', ['METRIC_AIRTIME'])
     ## ie-dot11s-peer-management.h (module 'mesh'): ns3::dot11s::PmpReasonCode [enumeration]
@@ -4986,16 +4982,12 @@ def register_Ns3WifiActionHeaderActionValue_methods(root_module, cls):
     cls.add_constructor([param('ns3::WifiActionHeader::ActionValue const &', 'arg0')])
     ## mgt-headers.h (module 'wifi'): ns3::WifiActionHeader::ActionValue::blockAck [variable]
     cls.add_instance_attribute('blockAck', 'ns3::WifiActionHeader::BlockAckActionValue', is_const=False)
-    ## mgt-headers.h (module 'wifi'): ns3::WifiActionHeader::ActionValue::interwork [variable]
-    cls.add_instance_attribute('interwork', 'ns3::WifiActionHeader::InterworkActionValue', is_const=False)
-    ## mgt-headers.h (module 'wifi'): ns3::WifiActionHeader::ActionValue::linkMetrtic [variable]
-    cls.add_instance_attribute('linkMetrtic', 'ns3::WifiActionHeader::LinkMetricActionValue', is_const=False)
-    ## mgt-headers.h (module 'wifi'): ns3::WifiActionHeader::ActionValue::pathSelection [variable]
-    cls.add_instance_attribute('pathSelection', 'ns3::WifiActionHeader::PathSelectionActionValue', is_const=False)
-    ## mgt-headers.h (module 'wifi'): ns3::WifiActionHeader::ActionValue::peerLink [variable]
-    cls.add_instance_attribute('peerLink', 'ns3::WifiActionHeader::PeerLinkMgtActionValue', is_const=False)
-    ## mgt-headers.h (module 'wifi'): ns3::WifiActionHeader::ActionValue::resourceCoordination [variable]
-    cls.add_instance_attribute('resourceCoordination', 'ns3::WifiActionHeader::ResourceCoordinationActionValue', is_const=False)
+    ## mgt-headers.h (module 'wifi'): ns3::WifiActionHeader::ActionValue::meshAction [variable]
+    cls.add_instance_attribute('meshAction', 'ns3::WifiActionHeader::MeshActionValue', is_const=False)
+    ## mgt-headers.h (module 'wifi'): ns3::WifiActionHeader::ActionValue::multihopAction [variable]
+    cls.add_instance_attribute('multihopAction', 'ns3::WifiActionHeader::MultihopActionValue', is_const=False)
+    ## mgt-headers.h (module 'wifi'): ns3::WifiActionHeader::ActionValue::selfProtectedAction [variable]
+    cls.add_instance_attribute('selfProtectedAction', 'ns3::WifiActionHeader::SelfProtectedActionValue', is_const=False)
     return
 
 def register_Ns3WifiInformationElement_methods(root_module, cls):
@@ -5791,6 +5783,10 @@ def register_Ns3WifiPhy_methods(root_module, cls):
                    'int64_t', 
                    [param('int64_t', 'stream')], 
                    is_pure_virtual=True, is_virtual=True)
+    ## wifi-phy.h (module 'wifi'): ns3::Time ns3::WifiPhy::CalculatePlcpDuration(ns3::WifiTxVector txvector, ns3::WifiPreamble preamble) [member function]
+    cls.add_method('CalculatePlcpDuration', 
+                   'ns3::Time', 
+                   [param('ns3::WifiTxVector', 'txvector'), param('ns3::WifiPreamble', 'preamble')])
     ## wifi-phy.h (module 'wifi'): double ns3::WifiPhy::CalculateSnr(ns3::WifiMode txMode, double ber) const [member function]
     cls.add_method('CalculateSnr', 
                    'double', 
@@ -6264,10 +6260,10 @@ def register_Ns3WifiPhy_methods(root_module, cls):
                    'ns3::WifiMode', 
                    [param('ns3::WifiMode', 'payloadMode'), param('ns3::WifiPreamble', 'preamble')], 
                    is_static=True)
-    ## wifi-phy.h (module 'wifi'): static ns3::Time ns3::WifiPhy::GetPlcpHtSigHeaderDuration(ns3::WifiMode payloadMode, ns3::WifiPreamble preamble) [member function]
+    ## wifi-phy.h (module 'wifi'): static ns3::Time ns3::WifiPhy::GetPlcpHtSigHeaderDuration(ns3::WifiPreamble preamble) [member function]
     cls.add_method('GetPlcpHtSigHeaderDuration', 
                    'ns3::Time', 
-                   [param('ns3::WifiMode', 'payloadMode'), param('ns3::WifiPreamble', 'preamble')], 
+                   [param('ns3::WifiPreamble', 'preamble')], 
                    is_static=True)
     ## wifi-phy.h (module 'wifi'): static ns3::Time ns3::WifiPhy::GetPlcpHtTrainingSymbolDuration(ns3::WifiPreamble preamble, ns3::WifiTxVector txvector) [member function]
     cls.add_method('GetPlcpHtTrainingSymbolDuration', 
@@ -10222,15 +10218,15 @@ def register_Ns3Dot11sDot11sMeshCapability_methods(root_module, cls):
                    'uint8_t', 
                    [], 
                    is_const=True)
-    ## ie-dot11s-configuration.h (module 'mesh'): uint16_t ns3::dot11s::Dot11sMeshCapability::GetUint16() const [member function]
-    cls.add_method('GetUint16', 
-                   'uint16_t', 
+    ## ie-dot11s-configuration.h (module 'mesh'): uint8_t ns3::dot11s::Dot11sMeshCapability::GetUint8() const [member function]
+    cls.add_method('GetUint8', 
+                   'uint8_t', 
                    [], 
                    is_const=True)
-    ## ie-dot11s-configuration.h (module 'mesh'): bool ns3::dot11s::Dot11sMeshCapability::Is(uint16_t cap, uint8_t n) const [member function]
+    ## ie-dot11s-configuration.h (module 'mesh'): bool ns3::dot11s::Dot11sMeshCapability::Is(uint8_t cap, uint8_t n) const [member function]
     cls.add_method('Is', 
                    'bool', 
-                   [param('uint16_t', 'cap'), param('uint8_t', 'n')], 
+                   [param('uint8_t', 'cap'), param('uint8_t', 'n')], 
                    is_const=True)
     ## ie-dot11s-configuration.h (module 'mesh'): ns3::Buffer::Iterator ns3::dot11s::Dot11sMeshCapability::Serialize(ns3::Buffer::Iterator i) const [member function]
     cls.add_method('Serialize', 

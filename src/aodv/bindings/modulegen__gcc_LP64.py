@@ -7648,6 +7648,11 @@ def register_Ns3AodvRoutingProtocol_methods(root_module, cls):
                    [param('ns3::Time', 't')])
     ## aodv-routing-protocol.h (module 'aodv'): ns3::aodv::RoutingProtocol::AODV_PORT [variable]
     cls.add_static_attribute('AODV_PORT', 'uint32_t const', is_const=True)
+    ## aodv-routing-protocol.h (module 'aodv'): void ns3::aodv::RoutingProtocol::DoInitialize() [member function]
+    cls.add_method('DoInitialize', 
+                   'void', 
+                   [], 
+                   visibility='protected', is_virtual=True)
     return
 
 def register_Ns3AodvRoutingTable_methods(root_module, cls):

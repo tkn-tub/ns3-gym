@@ -3926,10 +3926,10 @@ def register_Ns3RealtimeSimulatorImpl_methods(root_module, cls):
     cls.add_constructor([param('ns3::RealtimeSimulatorImpl const &', 'arg0')])
     ## realtime-simulator-impl.h (module 'core'): ns3::RealtimeSimulatorImpl::RealtimeSimulatorImpl() [constructor]
     cls.add_constructor([])
-    ## realtime-simulator-impl.h (module 'core'): void ns3::RealtimeSimulatorImpl::Cancel(ns3::EventId const & id) [member function]
+    ## realtime-simulator-impl.h (module 'core'): void ns3::RealtimeSimulatorImpl::Cancel(ns3::EventId const & ev) [member function]
     cls.add_method('Cancel', 
                    'void', 
-                   [param('ns3::EventId const &', 'id')], 
+                   [param('ns3::EventId const &', 'ev')], 
                    is_virtual=True)
     ## realtime-simulator-impl.h (module 'core'): void ns3::RealtimeSimulatorImpl::Destroy() [member function]
     cls.add_method('Destroy', 
@@ -3971,10 +3971,10 @@ def register_Ns3RealtimeSimulatorImpl_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
-    ## realtime-simulator-impl.h (module 'core'): bool ns3::RealtimeSimulatorImpl::IsExpired(ns3::EventId const & id) const [member function]
+    ## realtime-simulator-impl.h (module 'core'): bool ns3::RealtimeSimulatorImpl::IsExpired(ns3::EventId const & ev) const [member function]
     cls.add_method('IsExpired', 
                    'bool', 
-                   [param('ns3::EventId const &', 'id')], 
+                   [param('ns3::EventId const &', 'ev')], 
                    is_const=True, is_virtual=True)
     ## realtime-simulator-impl.h (module 'core'): bool ns3::RealtimeSimulatorImpl::IsFinished() const [member function]
     cls.add_method('IsFinished', 
@@ -3991,10 +3991,10 @@ def register_Ns3RealtimeSimulatorImpl_methods(root_module, cls):
                    'ns3::Time', 
                    [], 
                    is_const=True)
-    ## realtime-simulator-impl.h (module 'core'): void ns3::RealtimeSimulatorImpl::Remove(ns3::EventId const & id) [member function]
+    ## realtime-simulator-impl.h (module 'core'): void ns3::RealtimeSimulatorImpl::Remove(ns3::EventId const & ev) [member function]
     cls.add_method('Remove', 
                    'void', 
-                   [param('ns3::EventId const &', 'id')], 
+                   [param('ns3::EventId const &', 'ev')], 
                    is_virtual=True)
     ## realtime-simulator-impl.h (module 'core'): void ns3::RealtimeSimulatorImpl::Run() [member function]
     cls.add_method('Run', 
