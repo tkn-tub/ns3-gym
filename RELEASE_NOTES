@@ -28,6 +28,7 @@ New user-visible features
 - (spectrum) TvSpectrumTransmitter classes to create television 
   transmitter(s) that transmit PSD spectrums customized by attributes such 
   as modulation type, power, antenna type, channel frequency, etc.
+- (wifi) 802.11n extended to support two-level aggregation.
 
 Bugs fixed
 ----------
