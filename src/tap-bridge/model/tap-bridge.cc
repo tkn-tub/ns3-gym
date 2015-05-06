@@ -80,6 +80,7 @@ TapBridge::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::TapBridge")
     .SetParent<NetDevice> ()
+    .SetGroupName ("TapBridge")
     .AddConstructor<TapBridge> ()
     .AddAttribute ("Mtu", "The MAC-level Maximum Transmission Unit",
                    UintegerValue (0),
