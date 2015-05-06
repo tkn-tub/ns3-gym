@@ -138,6 +138,7 @@ TypeId RouteCache::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::dsr::RouteCache")
     .SetParent<Object> ()
+    .SetGroupName ("Dsr")
     .AddConstructor<RouteCache> ()
   ;
   return tid;

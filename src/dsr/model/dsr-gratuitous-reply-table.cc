@@ -45,6 +45,7 @@ TypeId GraReply::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::dsr::GraReply")
     .SetParent<Object> ()
+    .SetGroupName ("Dsr")
     .AddConstructor<GraReply> ()
   ;
   return tid;

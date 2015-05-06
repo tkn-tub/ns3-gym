@@ -108,6 +108,7 @@ TypeId DsrRouting::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::dsr::DsrRouting")
     .SetParent<IpL4Protocol> ()
+    .SetGroupName ("Dsr")
     .AddConstructor<DsrRouting> ()
     .AddAttribute ("RouteCache",
                    "The route cache for saving routes from "

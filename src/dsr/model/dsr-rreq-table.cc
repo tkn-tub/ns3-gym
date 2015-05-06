@@ -46,6 +46,7 @@ TypeId RreqTable::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::dsr::RreqTable")
     .SetParent<Object> ()
+    .SetGroupName ("Dsr")
     .AddConstructor<RreqTable> ()
   ;
   return tid;

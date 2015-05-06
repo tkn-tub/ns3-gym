@@ -47,6 +47,7 @@ TypeId DsrFsHeader::GetTypeId ()
   static TypeId tid = TypeId ("ns3::dsr::DsrFsHeader")
     .AddConstructor<DsrFsHeader> ()
     .SetParent<Header> ()
+    .SetGroupName ("Dsr")
   ;
   return tid;
 }

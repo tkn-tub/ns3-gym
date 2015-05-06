@@ -51,6 +51,7 @@ DsrNetworkQueue::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::dsr::DsrNetworkQueue")
     .SetParent<Object> ()
+    .SetGroupName ("Dsr")
     .AddConstructor<DsrNetworkQueue>  ()
   ;
   return tid;

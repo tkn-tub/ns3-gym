@@ -48,6 +48,7 @@ TypeId PassiveBuffer::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::dsr::PassiveBuffer")
     .SetParent<Object> ()
+    .SetGroupName ("Dsr")
     .AddConstructor<PassiveBuffer> ()
   ;
   return tid;
