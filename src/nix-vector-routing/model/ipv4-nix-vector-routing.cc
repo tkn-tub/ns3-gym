@@ -41,6 +41,7 @@ Ipv4NixVectorRouting::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::Ipv4NixVectorRouting")
     .SetParent<Ipv4RoutingProtocol> ()
+    .SetGroupName ("NixVectorRouting")
     .AddConstructor<Ipv4NixVectorRouting> ()
   ;
   return tid;
