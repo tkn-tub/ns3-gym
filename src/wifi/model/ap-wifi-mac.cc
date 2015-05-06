@@ -314,6 +314,14 @@ ApWifiMac::GetSupportedRates (void) const
     {
       WifiMode mode = m_phy->GetMode (i);
       rates.AddSupportedRate (mode.GetDataRate ());
+      // add rates that are part of the BSSBasicRateSet (manufacturer dependent!)
+      // here we choose to add the mandatory rates to the BSSBasicRateSet,
+      // exept for 802.11b where we assume that only the two lowest mandatory rates are part of the BSSBasicRateSet
+      if (mode.IsMandatory() &&
+         ((mode.GetModulationClass () != WIFI_MOD_CLASS_DSSS) || mode == WifiPhy::GetDsssRate1Mbps () || mode == WifiPhy::GetDsssRate2Mbps ()))
+      {
+        m_stationManager->AddBasicMode (mode);
+      }
     }
   // set the basic rates
   for (uint32_t j = 0; j < m_stationManager->GetNBasicModes (); j++)

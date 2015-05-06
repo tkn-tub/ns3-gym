@@ -51,15 +51,15 @@ public:
      * Create an Event with the given parameters.
      *
      * \param size packet size
-     * \param payloadMode Wi-Fi mode used for the payload
+     * \param txvector TXVECTOR of the packet
      * \param preamble preamble type
      * \param duration duration of the signal
      * \param rxPower the receive power (w)
      * \param txvector TXVECTOR of the packet
      */
-    Event (uint32_t size, WifiMode payloadMode,
+    Event (uint32_t size, WifiTxVector txvector,
            enum WifiPreamble preamble,
-           Time duration, double rxPower, WifiTxVector txvector);
+           Time duration, double rxPower);
     ~Event ();
 
     /**
@@ -93,6 +93,12 @@ public:
      */
     uint32_t GetSize (void) const;
     /**
+     * Return the TXVECTOR of the packet.
+     *
+     * \return the TXVECTOR of the packet
+     */
+    WifiTxVector GetTxVector (void) const;
+    /**
      * Return the Wi-Fi mode used for the payload.
      *
      * \return the Wi-Fi mode used for the payload
@@ -104,20 +110,14 @@ public:
      * \return the preamble type of the packet
      */
     enum WifiPreamble GetPreambleType (void) const;
-    /**
-     * Return the TXVECTOR of the packet.
-     *
-     * \return the TXVECTOR of the packet
-     */
-    WifiTxVector GetTxVector (void) const;
+
 private:
     uint32_t m_size;
-    WifiMode m_payloadMode;
+    WifiTxVector m_txVector;
     enum WifiPreamble m_preamble;
     Time m_startTime;
     Time m_endTime;
     double m_rxPowerW;
-    WifiTxVector m_txVector;
   };
   /**
    * A struct for both SNR and PER
@@ -170,16 +170,15 @@ private:
    * Add the packet-related signal to interference helper.
    *
    * \param size packet size
-   * \param payloadMode Wi-Fi mode for the payload
+   * \param txvector TXVECTOR of the packet
    * \param preamble Wi-Fi preamble for the packet
    * \param duration the duration of the signal
    * \param rxPower receive power (w)
-   * \param txvector TXVECTOR of the packet
    * \return InterferenceHelper::Event
    */
-  Ptr<InterferenceHelper::Event> Add (uint32_t size, WifiMode payloadMode,
+  Ptr<InterferenceHelper::Event> Add (uint32_t size, WifiTxVector txvector,
                                       enum WifiPreamble preamble,
-                                      Time duration, double rxPower, WifiTxVector txvector);
+                                      Time duration, double rxPower);
 
   /**
    * Calculate the SNIR at the start of the plcp payload and accumulate

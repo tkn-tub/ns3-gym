@@ -59,7 +59,7 @@ public:
 
 private:
   void Send (void);
-  void Receive (Ptr<Packet> p, double snr, WifiMode mode, enum WifiPreamble preamble);
+  void Receive (Ptr<Packet> p, double snr, WifiTxVector txVector, enum WifiPreamble preamble);
   Ptr<WifiPhy> m_tx;
   struct Input m_input;
   struct Output m_output;
@@ -77,7 +77,7 @@ PsrExperiment::Send (void)
 }
 
 void
-PsrExperiment::Receive (Ptr<Packet> p, double snr, WifiMode mode, enum WifiPreamble preamble)
+PsrExperiment::Receive (Ptr<Packet> p, double snr, WifiTxVector txVector, enum WifiPreamble preamble)
 {
   m_output.received++;
 }
@@ -161,7 +161,7 @@ public:
 private:
   void SendA (void) const;
   void SendB (void) const;
-  void Receive (Ptr<Packet> p, double snr, WifiMode mode, enum WifiPreamble preamble);
+  void Receive (Ptr<Packet> p, double snr, WifiTxVector txVector, enum WifiPreamble preamble);
   Ptr<WifiPhy> m_txA;
   Ptr<WifiPhy> m_txB;
   uint32_t m_flowIdA;
@@ -193,7 +193,7 @@ CollisionExperiment::SendB (void) const
 }
 
 void
-CollisionExperiment::Receive (Ptr<Packet> p, double snr, WifiMode mode, enum WifiPreamble preamble)
+CollisionExperiment::Receive (Ptr<Packet> p, double snr, WifiTxVector txVector, enum WifiPreamble preamble)
 {
   FlowIdTag tag;
   if (p->FindFirstMatchingByteTag (tag))

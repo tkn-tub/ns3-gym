@@ -160,10 +160,10 @@ public:
   /**
    * arg1: packet received successfully
    * arg2: snr of packet
-   * arg3: mode of packet
+   * arg3: TXVECTOR of packet
    * arg4: type of preamble used for packet.
    */
-  typedef Callback<void,Ptr<Packet>, double, WifiMode, enum WifiPreamble> RxOkCallback;
+  typedef Callback<void,Ptr<Packet>, double, WifiTxVector, enum WifiPreamble> RxOkCallback;
   /**
    * arg1: packet received unsuccessfully
    * arg2: snr of packet

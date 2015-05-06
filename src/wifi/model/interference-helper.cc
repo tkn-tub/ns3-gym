@@ -32,16 +32,15 @@ NS_LOG_COMPONENT_DEFINE ("InterferenceHelper");
  *       Phy event class
  ****************************************************************/
 
-InterferenceHelper::Event::Event (uint32_t size, WifiMode payloadMode,
+InterferenceHelper::Event::Event (uint32_t size, WifiTxVector txVector,
                                   enum WifiPreamble preamble,
-                                  Time duration, double rxPower, WifiTxVector txVector)
+                                  Time duration, double rxPower)
   : m_size (size),
-    m_payloadMode (payloadMode),
+    m_txVector (txVector),
     m_preamble (preamble),
     m_startTime (Simulator::Now ()),
     m_endTime (m_startTime + duration),
-    m_rxPowerW (rxPower),
-    m_txVector (txVector)
+    m_rxPowerW (rxPower)
 {
 }
 InterferenceHelper::Event::~Event ()
@@ -73,21 +72,20 @@ InterferenceHelper::Event::GetSize (void) const
 {
   return m_size;
 }
+WifiTxVector
+InterferenceHelper::Event::GetTxVector (void) const
+{
+  return m_txVector;
+}
 WifiMode
 InterferenceHelper::Event::GetPayloadMode (void) const
 {
-  return m_payloadMode;
+  return m_txVector.GetMode();
 }
 enum WifiPreamble
 InterferenceHelper::Event::GetPreambleType (void) const
 {
   return m_preamble;
-}
-
-WifiTxVector
-InterferenceHelper::Event::GetTxVector (void) const
-{
-  return m_txVector;
 }
 
 
@@ -134,18 +132,17 @@ InterferenceHelper::~InterferenceHelper ()
 }
 
 Ptr<InterferenceHelper::Event>
-InterferenceHelper::Add (uint32_t size, WifiMode payloadMode,
+InterferenceHelper::Add (uint32_t size, WifiTxVector txVector,
                          enum WifiPreamble preamble,
-                         Time duration, double rxPowerW, WifiTxVector txVector)
+                         Time duration, double rxPowerW)
 {
   Ptr<InterferenceHelper::Event> event;
 
   event = Create<InterferenceHelper::Event> (size,
-                                             payloadMode,
+                                             txVector,
                                              preamble,
                                              duration,
-                                             rxPowerW,
-                                             txVector);
+                                             rxPowerW);
   AppendEvent (event);
   return event;
 }

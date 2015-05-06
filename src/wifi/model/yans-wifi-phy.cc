@@ -529,7 +529,6 @@ YansWifiPhy::StartReceivePlcp (Ptr<Packet> packet,
   // Note: plcp preamble reception is not yet modeled.
   NS_LOG_FUNCTION (this << packet << rxPowerDbm << txVector.GetMode()<< preamble << (uint32_t)packetType);
   AmpduTag ampduTag;
-  WifiMode txMode = txVector.GetMode();
   
   rxPowerDbm += m_rxGainDb;
   double rxPowerW = DbmToW (rxPowerDbm);
@@ -538,11 +537,10 @@ YansWifiPhy::StartReceivePlcp (Ptr<Packet> packet,
 
   Ptr<InterferenceHelper::Event> event;
   event = m_interference.Add (packet->GetSize (),
-                              txMode,
+                              txVector,
                               preamble,
                               rxDuration,
-                              rxPowerW,
-                              txVector);
+                              rxPowerW);
     
   switch (m_state->GetState ())
     {
@@ -1036,7 +1034,7 @@ YansWifiPhy::EndReceive (Ptr<Packet> packet, enum WifiPreamble preamble, uint8_t
       double signalDbm = RatioToDb (event->GetRxPowerW ()) + 30;
       double noiseDbm = RatioToDb (event->GetRxPowerW () / snrPer.snr) - GetRxNoiseFigure () + 30;
       NotifyMonitorSniffRx (packet, (uint16_t)GetChannelFrequencyMhz (), GetChannelNumber (), dataRate500KbpsUnits, isShortPreamble, signalDbm, noiseDbm);
-      m_state->SwitchFromRxEndOk (packet, snrPer.snr, event->GetPayloadMode (), event->GetPreambleType ());
+      m_state->SwitchFromRxEndOk (packet, snrPer.snr, event->GetTxVector (), event->GetPreambleType ());
     }
     else
     {

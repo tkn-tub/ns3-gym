@@ -711,14 +711,14 @@ public:
   /**
    * \param packet packet received
    * \param rxSnr snr of packet received
-   * \param txMode transmission mode of packet received
+   * \param txVector TXVECTOR of packet received
    * \param preamble type of preamble used for the packet received
    * \param ampduSubframe true if this MPDU is part of an A-MPDU
    *
    * This method is typically invoked by the lower PHY layer to notify
    * the MAC layer that a packet was successfully received.
    */
-  void ReceiveOk (Ptr<Packet> packet, double rxSnr, WifiMode txMode, WifiPreamble preamble, bool ampduSubframe);
+  void ReceiveOk (Ptr<Packet> packet, double rxSnr, WifiTxVector txVector, WifiPreamble preamble, bool ampduSubframe);
   /**
    * \param packet packet received.
    * \param rxSnr snr of packet received.
@@ -788,13 +788,13 @@ public:
   /**
    * \param aggregatedPacket which is the current A-MPDU
    * \param rxSnr snr of packet received
-   * \param txMode transmission mode of packet received
-   * \param preamble type of preamble used for the packet received        
+   * \param txVector TXVECTOR of packet received
+   * \param preamble type of preamble used for the packet received
    *
    * This function de-aggregates an A-MPDU and decide if each MPDU is received correctly or not
    * 
    */
-  void DeaggregateAmpduAndReceive (Ptr<Packet> aggregatedPacket, double rxSnr, WifiMode txMode, WifiPreamble preamble);
+  void DeaggregateAmpduAndReceive (Ptr<Packet> aggregatedPacket, double rxSnr, WifiTxVector txVector, WifiPreamble preamble);
   /**
    * \param peekedPacket the packet to be aggregated
    * \param peekedHdr the WifiMacHeader for the packet.
@@ -1011,7 +1011,7 @@ private:
   Time CalculateOverallTxTime (Ptr<const Packet> packet,
                                const WifiMacHeader* hdr,
                                const MacLowTransmissionParameters &params) const;
-  void NotifyNav (Ptr<const Packet> packet,const WifiMacHeader &hdr, WifiMode txMode, WifiPreamble preamble);
+  void NotifyNav (Ptr<const Packet> packet,const WifiMacHeader &hdr, WifiPreamble preamble);
   /**
    * Reset NAV with the given duration.
    *
@@ -1099,10 +1099,10 @@ private:
    *
    * \param source
    * \param duration
-   * \param txMode
+   * \param rtsTxVector
    * \param rtsSnr
    */
-  void SendCtsAfterRts (Mac48Address source, Time duration, WifiMode txMode, double rtsSnr);
+  void SendCtsAfterRts (Mac48Address source, Time duration, WifiTxVector rtsTxVector, double rtsSnr);
   /**
    * Send ACK after receiving DATA.
    *
@@ -1117,9 +1117,8 @@ private:
    *
    * \param source
    * \param duration
-   * \param txMode
    */
-  void SendDataAfterCts (Mac48Address source, Time duration, WifiMode txMode);
+  void SendDataAfterCts (Mac48Address source, Time duration);
   /**
    * Event handler that is usually scheduled to fired at the appropriate time
    * after completing transmissions.
@@ -1213,7 +1212,7 @@ private:
    * block ack agreement and creates block ack bitmap on a received packets basis.
    */
   void SendBlockAckAfterAmpdu (uint8_t tid, Mac48Address originator,
-                                          Time duration, WifiMode blockAckReqTxMode);
+                                          Time duration, WifiTxVector blockAckReqTxVector);
   /**
    * This method creates block ack frame with header equals to <i>blockAck</i> and start its transmission.
    *
@@ -1360,7 +1359,7 @@ private:
   bool m_ctsToSelfSupported;          //!< Flag whether CTS-to-self is supported
   uint8_t m_sentMpdus;                //!< Number of transmitted MPDUs in an A-MPDU that have not been acknowledged yet
   Ptr<WifiMacQueue> m_aggregateQueue; //!< Queue used for MPDU aggregation
-  WifiMode m_currentMode;             //!< mode used for the current packet transmission
+  WifiTxVector m_currentTxVector;     //!< TXVECTOR used for the current packet transmission
   bool m_receivedAtLeastOneMpdu;      //!< Flag whether an MPDU has already been successfully received while receiving an A-MPDU
   std::vector<Item> m_txPackets;      //!< Contain temporary items to be sent with the next A-MPDU transmission, once RTS/CTS exchange has succeeded. It is not used in other cases.
 };

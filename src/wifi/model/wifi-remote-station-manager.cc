@@ -935,8 +935,9 @@ WifiRemoteStationManager::GetControlAnswerMode (Mac48Address address, WifiMode r
        i != m_bssBasicRateSet.end (); i++)
     {
       if ((!found || i->GetPhyRate () > mode.GetPhyRate ())
-          && i->GetPhyRate () <= reqMode.GetPhyRate ()
-          && i->GetModulationClass () == reqMode.GetModulationClass ())
+          && (i->GetPhyRate () <= reqMode.GetPhyRate ())
+          && ((i->GetModulationClass () == reqMode.GetModulationClass ())
+              || (reqMode.GetModulationClass () == WIFI_MOD_CLASS_HT)))
         {
           mode = *i;
           // We've found a potentially-suitable transmit rate, but we
@@ -946,13 +947,13 @@ WifiRemoteStationManager::GetControlAnswerMode (Mac48Address address, WifiMode r
         }
     }
   if(HasHtSupported())
-      {
-        if (!found)
-          {
-            uint8_t mcs = GetDefaultMcs (); 
-            mode=  m_wifiPhy->McsToWifiMode (mcs); 
-          }
-        for (WifiMcsListIterator i = m_bssBasicMcsSet.begin ();
+    {
+      if (!found)
+        {
+          uint8_t mcs = GetDefaultMcs ();
+          mode = m_wifiPhy->McsToWifiMode (mcs);
+            
+          for (WifiMcsListIterator i = m_bssBasicMcsSet.begin ();
              i != m_bssBasicMcsSet.end (); i++)
           {
             WifiMode thismode=  m_wifiPhy->McsToWifiMode (*i); 
@@ -967,11 +968,13 @@ WifiRemoteStationManager::GetControlAnswerMode (Mac48Address address, WifiMode r
                 found = true;
               }
           }
+        }
       }
   // If we found a suitable rate in the BSSBasicRateSet, then we are
   // done and can return that mode.
   if (found)
     {
+      NS_LOG_DEBUG ("WifiRemoteStationManager::GetControlAnswerMode returning " << mode);
       return mode;
     }
 
@@ -1007,8 +1010,9 @@ WifiRemoteStationManager::GetControlAnswerMode (Mac48Address address, WifiMode r
        */
       if (thismode.IsMandatory ()
           && (!found || thismode.GetPhyRate () > mode.GetPhyRate ())
-          && thismode.GetPhyRate () <= reqMode.GetPhyRate ()
-          && thismode.GetModulationClass () == reqMode.GetModulationClass ())
+          && (thismode.GetPhyRate () <= reqMode.GetPhyRate ())
+          && ((thismode.GetModulationClass () == reqMode.GetModulationClass ()) ||
+             (reqMode.GetModulationClass () == WIFI_MOD_CLASS_HT)))
         {
           mode = thismode;
           // As above; we've found a potentially-suitable transmit

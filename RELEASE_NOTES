@@ -50,6 +50,7 @@ Bugs fixed
 - Bug 2090 - (rip-ng) Routes may be added twice on interface activation
 - Bug 2093 - MultiModelSpectrumChannel::GetDevice only works for 0-th index
 - Bug 2095 - (wimax) Wrong values in default-traces.h for 16 QAM 3/4
+- Bug 2097 - ACKs should be sent using legacy rates and preambles in 802.11n
 - Bug 2103 - Ipv[4,6]RoutingHelper::PrintRoutingTableAll[At,Every] hangs if a node doesn't have IP
 
 Known issues

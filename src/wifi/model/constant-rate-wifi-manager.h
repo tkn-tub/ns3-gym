@@ -28,7 +28,7 @@ namespace ns3 {
 
 /**
  * \ingroup wifi
- * \brief use constant rates for data and control transmissions
+ * \brief use constant rates for data and RTS transmissions
  *
  * This class uses always the same transmission rate for every
  * packet sent.
@@ -58,7 +58,7 @@ private:
   virtual bool IsLowLatency (void) const;
 
   WifiMode m_dataMode; //!< Wifi mode for unicast DATA frames
-  WifiMode m_ctlMode; //!< Wifi mode for request control frames
+  WifiMode m_ctlMode; //!< Wifi mode for RTS frames
 };
 
 } // namespace ns3

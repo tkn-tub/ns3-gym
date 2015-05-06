@@ -43,7 +43,7 @@ ConstantRateWifiManager::GetTypeId (void)
                    StringValue ("OfdmRate6Mbps"),
                    MakeWifiModeAccessor (&ConstantRateWifiManager::m_dataMode),
                    MakeWifiModeChecker ())
-    .AddAttribute ("ControlMode", "The transmission mode to use for every control packet transmission.",
+    .AddAttribute ("ControlMode", "The transmission mode to use for every RTS packet transmission.",
                    StringValue ("OfdmRate6Mbps"),
                    MakeWifiModeAccessor (&ConstantRateWifiManager::m_ctlMode),
                    MakeWifiModeChecker ())

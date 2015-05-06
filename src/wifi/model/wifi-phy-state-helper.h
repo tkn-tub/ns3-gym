@@ -157,10 +157,10 @@ public:
    *
    * \param packet the successfully received packet
    * \param snr the SNR of the received packet
-   * \param mode the transmission mode of the packet
+   * \param txVector TXVECTOR of the packet
    * \param preamble the preamble of the received packet
    */
-  void SwitchFromRxEndOk (Ptr<Packet> packet, double snr, WifiMode mode, enum WifiPreamble preamble);
+  void SwitchFromRxEndOk (Ptr<Packet> packet, double snr, WifiTxVector txVector, enum WifiPreamble preamble);
   /**
    * Switch from RX after the reception failed.
    *
