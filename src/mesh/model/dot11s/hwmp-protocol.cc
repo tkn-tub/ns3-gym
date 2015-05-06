@@ -49,6 +49,7 @@ HwmpProtocol::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::dot11s::HwmpProtocol")
     .SetParent<MeshL2RoutingProtocol> ()
+    .SetGroupName ("Mesh")
     .AddConstructor<HwmpProtocol> ()
     .AddAttribute ( "RandomStart",
                     "Random delay at first proactive PREQ",

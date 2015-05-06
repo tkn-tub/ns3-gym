@@ -33,6 +33,7 @@ MeshHeader::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::Dot11sMacHeader")
     .SetParent<Header> ()
+    .SetGroupName ("Mesh")
     .AddConstructor<MeshHeader> ();
   return tid;
 }

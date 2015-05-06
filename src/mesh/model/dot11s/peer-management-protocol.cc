@@ -49,6 +49,7 @@ PeerManagementProtocol::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::dot11s::PeerManagementProtocol")
     .SetParent<Object> ()
+    .SetGroupName ("Mesh")
     .AddConstructor<PeerManagementProtocol> ()
     // maximum number of peer links. Now we calculate the total
     // number of peer links on all interfaces

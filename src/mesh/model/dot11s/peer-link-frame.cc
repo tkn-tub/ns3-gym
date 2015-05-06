@@ -85,8 +85,11 @@ PeerLinkFrameStart::GetFields () const
 TypeId
 PeerLinkFrameStart::GetTypeId ()
 {
-  static TypeId tid = TypeId ("ns3::dot11s::PeerLinkFrameStart").SetParent<Header> ().AddConstructor<
-      PeerLinkFrameStart> ();
+  static TypeId tid = TypeId ("ns3::dot11s::PeerLinkFrameStart")
+    .SetParent<Header> ()
+    .SetGroupName ("Mesh")
+    .AddConstructor<PeerLinkFrameStart> ()
+  ;
   return tid;
 }
 TypeId

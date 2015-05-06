@@ -39,6 +39,7 @@ PeerLink::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::dot11s::PeerLink")
     .SetParent<Object> ()
+    .SetGroupName ("Mesh")
     .AddConstructor<PeerLink> ()
     .AddAttribute ( "RetryTimeout",
                     "Retry timeout",

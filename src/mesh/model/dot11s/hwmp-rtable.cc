@@ -39,6 +39,7 @@ HwmpRtable::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::dot11s::HwmpRtable")
     .SetParent<Object> ()
+    .SetGroupName ("Mesh")
     .AddConstructor<HwmpRtable> ();
   return tid;
 }

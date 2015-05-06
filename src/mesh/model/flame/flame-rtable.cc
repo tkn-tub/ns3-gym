@@ -38,6 +38,7 @@ FlameRtable::GetTypeId ()
   static TypeId tid =
     TypeId ("ns3::flame::FlameRtable")
     .SetParent<Object> ().AddConstructor<FlameRtable> ()
+    .SetGroupName ("Mesh")
     .AddAttribute ( "Lifetime",
                     "The lifetime of the routing enrty",
                     TimeValue (Seconds (120)), MakeTimeAccessor (

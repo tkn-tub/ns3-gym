@@ -40,6 +40,7 @@ FlameHeader::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::flame::FlameHeader")
     .SetParent<Header> ()
+    .SetGroupName ("Mesh")
     .AddConstructor<FlameHeader> ();
   return tid;
 }

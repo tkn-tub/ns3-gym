@@ -32,6 +32,7 @@ AirtimeLinkMetricCalculator::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::dot11s::AirtimeLinkMetricCalculator")
     .SetParent<Object> ()
+    .SetGroupName ("Mesh")
     .AddConstructor<AirtimeLinkMetricCalculator> ()
     .AddAttribute ( "TestLength",
                     "Rate should be estimated using test length.",

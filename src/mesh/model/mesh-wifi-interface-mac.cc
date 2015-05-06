@@ -47,6 +47,7 @@ MeshWifiInterfaceMac::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::MeshWifiInterfaceMac")
     .SetParent<RegularWifiMac> ()
+    .SetGroupName ("Mesh")
     .AddConstructor<MeshWifiInterfaceMac> ()
     .AddAttribute ( "BeaconInterval",
                     "Beacon Interval",
