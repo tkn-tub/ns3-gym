@@ -82,6 +82,7 @@ FdNetDevice::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::FdNetDevice")
     .SetParent<NetDevice> ()
+    .SetGroupName ("FdNetDevice")
     .AddConstructor<FdNetDevice> ()
     .AddAttribute ("Address",
                    "The MAC address of this device.",
