@@ -153,6 +153,7 @@ RoutingProtocol::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::olsr::RoutingProtocol")
     .SetParent<Ipv4RoutingProtocol> ()
+    .SetGroupName ("Olsr")
     .AddConstructor<RoutingProtocol> ()
     .AddAttribute ("HelloInterval", "HELLO messages emission interval.",
                    TimeValue (Seconds (2)),
