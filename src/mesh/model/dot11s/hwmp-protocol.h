@@ -156,7 +156,7 @@ private:
   /// \return list of addresses where a PERR should be sent to
   std::vector<std::pair<uint32_t, Mac48Address> > GetPerrReceivers (std::vector<FailedDestination> failedDest);
 
-  /// \return list of addresses where a PERR should be sent to
+  /// \return list of addresses where a PREQ should be sent to
   std::vector<Mac48Address> GetPreqReceivers (uint32_t interface);
   /// \return list of addresses where a broadcast should be
   //retransmitted
