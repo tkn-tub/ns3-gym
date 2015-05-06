@@ -240,6 +240,7 @@ EdcaTxopN::EdcaTxopN ()
   : m_manager (0),
     m_currentPacket (0),
     m_aggregator (0),
+    m_typeOfStation (STA),
     m_blockAckType (COMPRESSED_BLOCK_ACK),
     m_ampduExist (false)
 {

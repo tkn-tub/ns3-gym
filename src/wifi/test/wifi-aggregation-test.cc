@@ -21,6 +21,7 @@
 #include "ns3/string.h"
 #include "ns3/test.h"
 #include "ns3/object-factory.h"
+#include "ns3/simulator.h"
 #include "ns3/wifi-mac-queue.h"
 #include "ns3/mac-low.h"
 #include "ns3/edca-txop-n.h"
@@ -171,6 +172,7 @@ TwoLevelAggregationTest::DoRun (void)
   
   result = (packet != 0);
   NS_TEST_EXPECT_MSG_EQ (result, false, "aggregation failed to stop as queue is empty");
+  Simulator::Destroy ();
 }
 
 //-----------------------------------------------------------------------------
