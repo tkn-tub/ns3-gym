@@ -64,6 +64,7 @@ OpenFlowSwitchNetDevice::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::OpenFlowSwitchNetDevice")
     .SetParent<NetDevice> ()
+    .SetGroupName ("Openflow")
     .AddConstructor<OpenFlowSwitchNetDevice> ()
     .AddAttribute ("ID",
                    "The identification of the OpenFlowSwitchNetDevice/Datapath, needed for OpenFlow compatibility.",

@@ -767,6 +767,7 @@ TypeId LearningController::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::ofi::LearningController")
     .SetParent (Controller::GetTypeId ())
+    .SetGroupName ("Openflow")
     .AddConstructor<LearningController> ()
     .AddAttribute ("ExpirationTime",
                    "Time it takes for learned MAC state entry/created flow to expire.",
