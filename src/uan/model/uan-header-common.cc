@@ -43,6 +43,7 @@ UanHeaderCommon::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::UanHeaderCommon")
     .SetParent<Header> ()
+    .SetGroupName ("Uan")
     .AddConstructor<UanHeaderCommon> ()
   ;
   return tid;

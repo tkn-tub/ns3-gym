@@ -88,10 +88,9 @@ UanNetDevice::DoDispose ()
 TypeId
 UanNetDevice::GetTypeId ()
 {
-
-
   static TypeId tid = TypeId ("ns3::UanNetDevice")
     .SetParent<NetDevice> ()
+    .SetGroupName ("Uan")
     .AddAttribute ("Channel", "The channel attached to this device.",
                    PointerValue (),
                    MakePointerAccessor (&UanNetDevice::DoGetChannel, &UanNetDevice::SetChannel),

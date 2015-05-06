@@ -41,6 +41,7 @@ UanPropModelThorp::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::UanPropModelThorp")
     .SetParent<Object> ()
+    .SetGroupName ("Uan")
     .AddConstructor<UanPropModelThorp> ()
     .AddAttribute ("SpreadCoef",
                    "Spreading coefficient used in calculation of Thorp's approximation.",

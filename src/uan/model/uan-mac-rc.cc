@@ -209,6 +209,7 @@ UanMacRc::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::UanMacRc")
     .SetParent<UanMac> ()
+    .SetGroupName ("Uan")
     .AddConstructor<UanMacRc> ()
     .AddAttribute ("RetryRate",
                    "Number of retry attempts per second (of RTS/GWPING).",

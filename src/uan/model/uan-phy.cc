@@ -27,7 +27,9 @@ NS_OBJECT_ENSURE_REGISTERED (UanPhyCalcSinr);
 TypeId UanPhyCalcSinr::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::UanPhyCalcSinr")
-    .SetParent<Object> ();
+    .SetParent<Object> ()
+    .SetGroupName ("Uan")
+  ;
   return tid;
 }
 
@@ -48,7 +50,9 @@ NS_OBJECT_ENSURE_REGISTERED (UanPhyPer);
 TypeId UanPhyPer::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::UanPhyPer")
-    .SetParent<Object> ();
+    .SetParent<Object> ()
+    .SetGroupName ("Uan")
+  ;
   return tid;
 }
 
@@ -70,6 +74,7 @@ TypeId UanPhy::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::UanPhy")
     .SetParent<Object> ()
+    .SetGroupName ("Uan")
     .AddTraceSource ("PhyTxBegin",
                      "Trace source indicating a packet has "
                      "begun transmitting over the channel medium.",

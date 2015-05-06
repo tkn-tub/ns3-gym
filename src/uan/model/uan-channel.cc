@@ -49,6 +49,7 @@ UanChannel::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::UanChannel")
     .SetParent<Channel> ()
+    .SetGroupName ("Uan")
     .AddConstructor<UanChannel> ()
     .AddAttribute ("PropagationModel",
                    "A pointer to the propagation model.",

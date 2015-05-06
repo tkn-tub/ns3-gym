@@ -104,6 +104,7 @@ UanMacRcGw::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::UanMacRcGw")
     .SetParent<UanMac> ()
+    .SetGroupName ("Uan")
     .AddConstructor<UanMacRcGw> ()
     .AddAttribute ("MaxReservations",
                    "Maximum number of reservations to accept per cycle.",

@@ -89,6 +89,7 @@ UanTransducerHd::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::UanTransducerHd")
     .SetParent<Object> ()
+    .SetGroupName ("Uan")
     .AddConstructor<UanTransducerHd> ()
   ;
   return tid;
