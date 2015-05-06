@@ -35,6 +35,7 @@ DataCollectionObject::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::DataCollectionObject")
     .SetParent<Object> ()
+    .SetGroupName ("Stats")
     .AddConstructor<DataCollectionObject> ()
     .AddAttribute ( "Name",
                     "Object's name",

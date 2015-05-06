@@ -38,6 +38,7 @@ TimeSeriesAdaptor::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::TimeSeriesAdaptor")
     .SetParent<DataCollectionObject> ()
+    .SetGroupName ("Stats")
     .AddConstructor<TimeSeriesAdaptor> ()
     .AddTraceSource ( "Output",
                       "The current simulation time versus "

@@ -38,6 +38,7 @@ Uinteger8Probe::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::Uinteger8Probe")
     .SetParent<Probe> ()
+    .SetGroupName ("Stats")
     .AddConstructor<Uinteger8Probe> ()
     .AddTraceSource ( "Output",
                       "The uint8_t that serves as output for this probe",

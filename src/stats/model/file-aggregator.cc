@@ -37,6 +37,7 @@ FileAggregator::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::FileAggregator")
     .SetParent<DataCollectionObject> ()
+    .SetGroupName ("Stats")
   ;
 
   return tid;

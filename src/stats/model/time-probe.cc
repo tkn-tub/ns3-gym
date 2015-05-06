@@ -40,6 +40,7 @@ TimeProbe::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::TimeProbe")
     .SetParent<Probe> ()
+    .SetGroupName ("Stats")
     .AddConstructor<TimeProbe> ()
     .AddTraceSource ("Output",
                      "The double valued (units of seconds) probe output",

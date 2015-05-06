@@ -39,6 +39,7 @@ BooleanProbe::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::BooleanProbe")
     .SetParent<Probe> ()
+    .SetGroupName ("Stats")
     .AddConstructor<BooleanProbe> ()
     .AddTraceSource ( "Output",
                       "The bool that serves as output for this probe",

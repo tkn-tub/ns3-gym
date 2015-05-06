@@ -39,6 +39,7 @@ DoubleProbe::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::DoubleProbe")
     .SetParent<Probe> ()
+    .SetGroupName ("Stats")
     .AddConstructor<DoubleProbe> ()
     .AddTraceSource ( "Output",
                       "The double that serves as output for this probe",

@@ -37,6 +37,7 @@ GnuplotAggregator::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::GnuplotAggregator")
     .SetParent<DataCollectionObject> ()
+    .SetGroupName ("Stats")
   ;
 
   return tid;
