@@ -65,13 +65,22 @@ distributed geographic coordinates.
 <ul>
   <li> In LteSpectrumPhy, LtePhyTxEndCallback and the corresponding methods have been removed, since they were unused.
   </li>
+  <li> In the DataRate class in the network module, CalculateTxTime has been declared deprecated.  CalculateBytesTxTime and CalculateBitsTxTime are to be used instead.  The return value is a Time, instead of a double.
+  </li>
+  <li> In the Wi-Fi InterferenceHelper, the interference event now takes the WifiTxVector as an input parameter, instead of the WifiMode.  A similar change was made to the WifiPhy::RxOkCallback signature.
+  </li>
 </ul>
 <h2>Changes to build system:</h2>
 <ul>
+  <li> None </li>
 </ul>
 <h2>Changed behavior:</h2>
 This section is for behavioral changes to the models that were not due to a bug fix.
 <ul>
+  <li> In Wi-Fi, HT stations (802.11n) now support two-level aggregation. The InterferenceHelper now distinguishes between the PLCP and regular payload reception, for higher fidelity modeling.  ACKs are now sent using legacy rates and preambles.  Acces points now establish BSSBasicRateSet for control frame transmissions.  PLCP header and PLCP payload reception have been decoupled to improve PHY layer modeling accuracy.  RTS/CTS with A-MPDU is now fully supported.  
+  </li>
+  <li> The mesh module was made more compliant to the IEEE 802.11s-2012 standard and packet traces are now parseable by Wireshark.  
+  </li>
 </ul>
 
 <hr>
