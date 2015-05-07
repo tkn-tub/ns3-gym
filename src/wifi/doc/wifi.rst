@@ -733,7 +733,12 @@ Note on the current implementation
 * PHY_RXSTART is not supported
 * 802.11e TXOP is not supported
 * 802.11n MIMO is not supported
-
+* PLCP preamble reception is not modeled
+* BSSBasicRateSet for 802.11b has been assumed to be 1-2 Mbit/s
+* BSSBasicRateSet for 802.11a has been assumed to be 6-12-24 Mbit/s
+* cases where RTS/CTS and ACK are transmitted using HT formats are not
+supported
+* rate control algorithms are not aware of HT rates; they will only use the 802.11a BSSBasicRateSet when 802.11n is configured
 
 Wifi Tracing
 ************
