@@ -9,12 +9,13 @@ http://www.nsnam.org including tutorials: http://www.nsnam.org/tutorials.html
 Consult the file CHANGES.html for more detailed information about changed
 API and behavior across ns-3 releases.
 
-Release 3-dev
+Release 3.23
 ============
 
 Availability
 ------------
-This release is not yet available.
+This release is available from:
+http://www.nsnam.org/release/ns-allinone-3.23.tar.bz2
 
 Supported platforms
 -------------------
