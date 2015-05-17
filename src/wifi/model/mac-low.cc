@@ -2847,8 +2847,11 @@ MacLow::AggregateToAmpdu (Ptr<const Packet> packet, const WifiMacHeader hdr)
 void
 MacLow::FlushAggregateQueue (void)
 {
-  NS_LOG_DEBUG("Flush aggregate queue");
-  m_aggregateQueue->Flush ();
+  if (m_aggregateQueue->GetSize () > 0)
+  {
+    NS_LOG_DEBUG("Flush aggregate queue");
+    m_aggregateQueue->Flush ();
+  }
   m_txPackets.clear ();
 }
 
