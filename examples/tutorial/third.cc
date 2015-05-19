@@ -44,19 +44,23 @@ main (int argc, char *argv[])
   bool verbose = true;
   uint32_t nCsma = 3;
   uint32_t nWifi = 3;
+  bool tracing = false;
 
   CommandLine cmd;
   cmd.AddValue ("nCsma", "Number of \"extra\" CSMA nodes/devices", nCsma);
   cmd.AddValue ("nWifi", "Number of wifi STA devices", nWifi);
   cmd.AddValue ("verbose", "Tell echo applications to log if true", verbose);
+  cmd.AddValue ("tracing", "Enable pcap tracing", tracing);
 
   cmd.Parse (argc,argv);
 
-  if (nWifi > 18)
+  // Check for valid number of csma or wifi nodes
+  // 250 should be enough, otherwise IP addresses 
+  // soon become an issue
+  if (nWifi > 250 || nCsma > 250)
     {
-      std::cout << "Number of wifi nodes " << nWifi << 
-                   " specified exceeds the mobility bounding box" << std::endl;
-      exit (1);
+      std::cout << "Too many wifi or csma nodes, no more than 250 each." << std::endl;
+      return 1;
     }
 
   if (verbose)
@@ -169,9 +173,16 @@ main (int argc, char *argv[])
 
   Simulator::Stop (Seconds (10.0));
 
-  pointToPoint.EnablePcapAll ("third");
-  phy.EnablePcap ("third", apDevices.Get (0));
-  csma.EnablePcap ("third", csmaDevices.Get (0), true);
+  if (tracing == true)
+    {
+      pointToPoint.EnablePcapAll ("third-distributed-wifi");
+      phy.EnablePcap ("third-distributed-wifi", apDevices.Get (0));
+      csma.EnablePcap ("third-distributed-wifi", csmaDevices.Get (0), true);
+          
+      pointToPoint.EnablePcapAll ("third-distributed-csma");
+      phy.EnablePcap ("third-distributed-csma", apDevices.Get (0));
+      csma.EnablePcap ("third-distributed-csma", csmaDevices.Get (0), true);
+    }
 
   Simulator::Run ();
   Simulator::Destroy ();
