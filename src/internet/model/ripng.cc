@@ -151,7 +151,7 @@ void RipNg::DoInitialize ()
       TypeId tid = TypeId::LookupByName ("ns3::UdpSocketFactory");
       Ptr<Node> theNode = GetObject<Node> ();
       m_recvSocket = Socket::CreateSocket (theNode, tid);
-      Inet6SocketAddress local = Inet6SocketAddress (Ipv6Address::GetAny (), RIPNG_PORT);
+      Inet6SocketAddress local = Inet6SocketAddress (RIPNG_ALL_NODE, RIPNG_PORT);
       m_recvSocket->Bind (local);
       m_recvSocket->SetRecvCallback (MakeCallback (&RipNg::Receive, this));
       m_recvSocket->SetIpv6RecvHopLimit (true);
@@ -347,7 +347,7 @@ void RipNg::NotifyInterfaceUp (uint32_t i)
       TypeId tid = TypeId::LookupByName ("ns3::UdpSocketFactory");
       Ptr<Node> theNode = GetObject<Node> ();
       m_recvSocket = Socket::CreateSocket (theNode, tid);
-      Inet6SocketAddress local = Inet6SocketAddress (Ipv6Address::GetAny (), RIPNG_PORT);
+      Inet6SocketAddress local = Inet6SocketAddress (RIPNG_ALL_NODE, RIPNG_PORT);
       m_recvSocket->Bind (local);
       m_recvSocket->SetRecvCallback (MakeCallback (&RipNg::Receive, this));
       m_recvSocket->SetIpv6RecvHopLimit (true);
