@@ -1150,7 +1150,6 @@ LteSpectrumPhy::EndRxDlCtrl ()
   if (m_ctrlErrorModelEnabled)
     {
       double  errorRate = LteMiErrorModel::GetPcfichPdcchError (m_sinrPerceived);
-      errorRate = LteMiErrorModel::GetPcfichPdcchError (m_sinrPerceived);
       error = m_random->GetValue () > errorRate ? false : true;
       NS_LOG_DEBUG (this << " PCFICH-PDCCH Decodification, errorRate " << errorRate << " error " << error);
     }
