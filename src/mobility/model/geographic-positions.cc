@@ -26,7 +26,7 @@ NS_LOG_COMPONENT_DEFINE ("GeographicPositions");
 
 namespace ns3 {
 
-// earth's radius in meters if modeled as a perfect sphere
+/// Earth's radius in meters if modeled as a perfect sphere
 static const double EARTH_RADIUS = 6371e3; 
 
 /**

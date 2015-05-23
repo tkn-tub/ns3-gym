@@ -141,14 +141,14 @@ public:
   void AssignIpv6Addresses (Ipv6Address network, Ipv6Prefix prefix);
 
 private:
-  NodeContainer m_hub;
-  NetDeviceContainer m_hubDevices;
-  NodeContainer m_spokes;
-  NetDeviceContainer m_spokeDevices;
-  Ipv4InterfaceContainer m_hubInterfaces;
-  Ipv4InterfaceContainer m_spokeInterfaces;
-  Ipv6InterfaceContainer m_hubInterfaces6;
-  Ipv6InterfaceContainer m_spokeInterfaces6;
+  NodeContainer m_hub;                        //!< NodeContainer for the hub node
+  NetDeviceContainer m_hubDevices;            //!< NetDeviceContainer for the hub node NetDevices
+  NodeContainer m_spokes;                     //!< NodeContainer for the spokes nodes
+  NetDeviceContainer m_spokeDevices;          //!< NetDeviceContainer for the spokes nodes NetDevices
+  Ipv4InterfaceContainer m_hubInterfaces;     //!< Ipv4InterfaceContainer for the hub IPv4 interfaces
+  Ipv4InterfaceContainer m_spokeInterfaces;   //!< Ipv4InterfaceContainer for the spokes IPv4 interfaces
+  Ipv6InterfaceContainer m_hubInterfaces6;    //!< Ipv6InterfaceContainer for the hub IPv6 interfaces
+  Ipv6InterfaceContainer m_spokeInterfaces6;  //!< Ipv6InterfaceContainer for the spokes IPv6 interfaces
 };
 
 } // namespace ns3
