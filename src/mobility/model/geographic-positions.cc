@@ -40,13 +40,13 @@ static const double EARTH_RADIUS = 6371e3;
  * <http://earth-info.nga.mil/GandG/publications/tr8350.2/wgs84fin.pdf>.
  */
 
-// earth's semi-major axis in meters as defined by both GRS80 and WGS84
+/// Earth's semi-major axis in meters as defined by both GRS80 and WGS84
 static const double EARTH_SEMIMAJOR_AXIS = 6378137;
 
-// earth's first eccentricity as defined by GRS80
+/// Earth's first eccentricity as defined by GRS80
 static const double EARTH_GRS80_ECCENTRICITY = 0.0818191910428158;
 
-// earth's first eccentricity as defined by WGS84
+/// Earth's first eccentricity as defined by WGS84
 static const double EARTH_WGS84_ECCENTRICITY = 0.0818191908426215;
 
 Vector
