@@ -93,6 +93,8 @@ public:
    *   - uncorrelated measurements, 
    *   - normal distribution and
    *   - large enough sample size.
+   *
+   * \returns Margin of error of the mean for 90% confidence level
    */
   double   Error90 () const { return 1.645 * std::sqrt (Var () / Count ()); }
   /**
@@ -102,6 +104,8 @@ public:
    *   - uncorrelated measurements, 
    *   - normal distribution and
    *   - large enough sample size.
+   *
+   * \returns Margin of error of the mean for 95% confidence level
    */
   double   Error95 () const { return 1.960 * std::sqrt (Var () / Count ()); }
   /**
@@ -111,6 +115,9 @@ public:
    *   - uncorrelated measurements, 
    *   - normal distribution and
    *   - large enough sample size.
+   *
+   * \returns Margin of error of the mean for 99% confidence level
+   *
    */
   double   Error99 () const { return 2.576 * std::sqrt (Var () / Count ()); }
   /**@}*/
