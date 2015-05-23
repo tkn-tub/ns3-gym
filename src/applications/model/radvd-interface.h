@@ -317,7 +317,7 @@ public:
 
   /**
    * \brief Set the last RA send time. It also decrements the initial Rtr Advertisements counter.
-   * \param the last RA send time
+   * \param now the last RA send time
    */
   void SetLastRaTxTime (Time now);
 
