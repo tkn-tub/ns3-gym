@@ -297,8 +297,6 @@ private:
    */
   static void CreateAndAggregateObjectFromTypeId (Ptr<Node> node, const std::string typeId);
 
-  static void Cleanup (void);
-
   /**
    * \brief checks if there is an hook to a Pcap wrapper
    * \param ipv4 pointer to the IPv4 object
