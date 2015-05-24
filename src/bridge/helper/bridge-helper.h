@@ -31,6 +31,7 @@ class Node;
 class AttributeValue;
 
 /**
+ * \ingroup bridge
  * \brief Add capability to bridge multiple LAN segments (IEEE 802.1D bridging)
  */
 class BridgeHelper

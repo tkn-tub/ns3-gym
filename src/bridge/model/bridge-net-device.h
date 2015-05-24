@@ -65,12 +65,17 @@ class Node;
 class BridgeNetDevice : public NetDevice
 {
 public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
   BridgeNetDevice ();
   virtual ~BridgeNetDevice ();
 
   /** 
    * \brief Add a 'port' to a bridge device
+   * \param bridgePort the NetDevice to add
    *
    * This method adds a new bridge port to a BridgeNetDevice, so that
    * the new bridge port NetDevice becomes part of the bridge and L2
@@ -84,8 +89,18 @@ public:
    */
   void AddBridgePort (Ptr<NetDevice> bridgePort);
 
+  /**
+   * \brief Gets the number of bridged 'ports', i.e., the NetDevices currently bridged.
+   *
+   * \return the number of bridged ports.
+   */
   uint32_t GetNBridgePorts (void) const;
 
+  /**
+   * \brief Gets the n-th bridged port.
+   * \param n the port index
+   * \return the n-th bridged NetDevice
+   */
   Ptr<NetDevice> GetBridgePort (uint32_t n) const;
 
   // inherited from NetDevice base class.
@@ -117,36 +132,92 @@ public:
 protected:
   virtual void DoDispose (void);
 
+  /**
+   * \brief Receives a packet from one bridged port.
+   * \param device the originating port
+   * \param packet the received packet
+   * \param protocol the packet protocol (e.g., Ethertype)
+   * \param source the packet source
+   * \param destination the packet destination
+   * \param packetType the packet type (e.g., host, broadcast, etc.)
+   */
   void ReceiveFromDevice (Ptr<NetDevice> device, Ptr<const Packet> packet, uint16_t protocol,
                           Address const &source, Address const &destination, PacketType packetType);
+
+  /**
+   * \brief Forwards a unicast packet
+   * \param incomingPort the packet incoming port
+   * \param packet the packet
+   * \param protocol the packet protocol (e.g., Ethertype)
+   * \param src the packet source
+   * \param dst the packet destination
+   */
   void ForwardUnicast (Ptr<NetDevice> incomingPort, Ptr<const Packet> packet,
                        uint16_t protocol, Mac48Address src, Mac48Address dst);
+
+  /**
+   * \brief Forwards a broadcast or a multicast packet
+   * \param incomingPort the packet incoming port
+   * \param packet the packet
+   * \param protocol the packet protocol (e.g., Ethertype)
+   * \param src the packet source
+   * \param dst the packet destination
+   */
   void ForwardBroadcast (Ptr<NetDevice> incomingPort, Ptr<const Packet> packet,
                          uint16_t protocol, Mac48Address src, Mac48Address dst);
+
+  /**
+   * \brief Learns the port a MAC address is sending from
+   * \param source source address
+   * \param port the port the source is sending from
+   */
   void Learn (Mac48Address source, Ptr<NetDevice> port);
+
+  /**
+   * \brief Gets the port associated to a source address
+   * \param source the source address
+   * \returns the port the source is associated to, or NULL if no association is known.
+   */
   Ptr<NetDevice> GetLearnedState (Mac48Address source);
 
 private:
+  /**
+   * \brief Copy constructor
+   *
+   * Defined and unimplemented to avoid misuse
+   */
   BridgeNetDevice (const BridgeNetDevice &);
+
+  /**
+   * \brief Copy constructor
+   *
+   * Defined and unimplemented to avoid misuse
+   * \returns
+   */
   BridgeNetDevice &operator = (const BridgeNetDevice &);
 
-  NetDevice::ReceiveCallback m_rxCallback;
-  NetDevice::PromiscReceiveCallback m_promiscRxCallback;
+  NetDevice::ReceiveCallback m_rxCallback; //!< receive callback
+  NetDevice::PromiscReceiveCallback m_promiscRxCallback; //!< promiscuous receive callback
 
-  Mac48Address m_address;
-  Time m_expirationTime; // time it takes for learned MAC state to expire
+  Mac48Address m_address; //!< MAC address of the NetDevice
+  Time m_expirationTime;  //!< time it takes for learned MAC state to expire
+
+  /**
+   * \ingroup bridge
+   * Structure holding the status of an address
+   */
   struct LearnedState
   {
-    Ptr<NetDevice> associatedPort;
-    Time expirationTime;
+    Ptr<NetDevice> associatedPort; //!< port associated with the address
+    Time expirationTime;  //!< time it takes for learned MAC state to expire
   };
-  std::map<Mac48Address, LearnedState> m_learnState;
-  Ptr<Node> m_node;
-  Ptr<BridgeChannel> m_channel;
-  std::vector< Ptr<NetDevice> > m_ports;
-  uint32_t m_ifIndex;
-  uint16_t m_mtu;
-  bool m_enableLearning;
+  std::map<Mac48Address, LearnedState> m_learnState; //!< Container for known address statuses
+  Ptr<Node> m_node; //!< node owning this NetDevice
+  Ptr<BridgeChannel> m_channel; //!< virtual bridged channel
+  std::vector< Ptr<NetDevice> > m_ports; //!< bridged ports
+  uint32_t m_ifIndex; //!< Interface index
+  uint16_t m_mtu; //!< MTU of the bridged NetDevice
+  bool m_enableLearning; //!< true if the bridge will learn the node status
 };
 
 } // namespace ns3
