@@ -52,10 +52,13 @@
 
 using namespace ns3;
 
+/**
+ * Struct holding IPv6 address data
+ */
 struct in6_ifreq {
-  struct in6_addr ifr6_addr;
-  uint32_t        ifr6_prefixlen;
-  int32_t         ifr6_ifindex;
+  struct in6_addr ifr6_addr;      //!< IPv6 address
+  uint32_t        ifr6_prefixlen; //!< IPv6 prefix length
+  int32_t         ifr6_ifindex;   //!< interface index
 };
 
 char

@@ -34,7 +34,8 @@
 namespace ns3 {
 
 /**
- * \brief build a set of FdNetDevice objects attached to a virtua TAP network
+ * \ingroup fd-net-device
+ * \brief build a set of FdNetDevice objects attached to a virtual TAP network
  * interface
  *
  */
@@ -93,6 +94,13 @@ public:
 
 protected:
 
+  /**
+   * This method creates an ns3::FdNetDevice attached to a virtual TAP network
+   * interface
+   *
+   * \param node The node to install the device in
+   * \returns A container holding the added net device.
+   */
   Ptr<NetDevice> InstallPriv (Ptr<Node> node) const;
 
   /**

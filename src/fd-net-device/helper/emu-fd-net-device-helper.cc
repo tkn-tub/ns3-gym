@@ -339,7 +339,7 @@ EmuFdNetDeviceHelper::CreateFileDescriptor (void) const
       //
       // First, we're going to allocate a buffer on the stack to receive our
       // data array (that contains the socket).  Sometimes you'll see this called
-      // an "ancillary element" but the msghdr uses the control message termimology
+      // an "ancillary element" but the msghdr uses the control message terminology
       // so we call it "control."
       //
       size_t msg_size = sizeof(int);
@@ -350,7 +350,7 @@ EmuFdNetDeviceHelper::CreateFileDescriptor (void) const
       // passed to recvmsg (which we will use to receive our ancillary data).
       // This structure uses terminology corresponding to control messages, so
       // you'll see msg_control, which is the pointer to the ancillary data and
-      // controllen which is the size of the ancillary data array.
+      // controller which is the size of the ancillary data array.
       //
       // So, initialize the message header that describes the ancillary/control
       // data we expect to receive and point it to buffer.
