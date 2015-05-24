@@ -142,15 +142,15 @@ public:
   void BoundingBox (double ulx, double uly, double lrx, double lry);
 
 private:
-  uint32_t m_xSize;
-  uint32_t m_ySize;
-  std::vector<NetDeviceContainer> m_rowDevices;
-  std::vector<NetDeviceContainer> m_colDevices;
-  std::vector<Ipv4InterfaceContainer> m_rowInterfaces;
-  std::vector<Ipv4InterfaceContainer> m_colInterfaces;
-  std::vector<Ipv6InterfaceContainer> m_rowInterfaces6;
-  std::vector<Ipv6InterfaceContainer> m_colInterfaces6;
-  std::vector<NodeContainer> m_nodes;
+  uint32_t m_xSize;   //!< X size of the grid (number of columns)
+  uint32_t m_ySize;   //!< Y size of the grid (number of rows)
+  std::vector<NetDeviceContainer> m_rowDevices;         //!< NetDevices in a row
+  std::vector<NetDeviceContainer> m_colDevices;         //!< NetDevices in a column
+  std::vector<Ipv4InterfaceContainer> m_rowInterfaces;  //!< IPv4 interfaces in a row
+  std::vector<Ipv4InterfaceContainer> m_colInterfaces;  //!< IPv4 interfaces in a column
+  std::vector<Ipv6InterfaceContainer> m_rowInterfaces6; //!< IPv6 interfaces in a row
+  std::vector<Ipv6InterfaceContainer> m_colInterfaces6; //!< IPv6 interfaces in a column
+  std::vector<NodeContainer> m_nodes; //!< all the nodes in the grid
 };
 
 } // namespace ns3

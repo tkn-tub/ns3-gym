@@ -139,14 +139,14 @@ public:
   void BoundingBox (double ulx, double uly, double lrx, double lry);
 
 private:
-  NodeContainer m_hub;
-  NetDeviceContainer m_hubDevices;
-  NodeContainer m_spokes;
-  NetDeviceContainer m_spokeDevices;
-  Ipv4InterfaceContainer m_hubInterfaces;
-  Ipv4InterfaceContainer m_spokeInterfaces;
-  Ipv6InterfaceContainer m_hubInterfaces6;
-  Ipv6InterfaceContainer m_spokeInterfaces6;
+  NodeContainer m_hub;              //!< Hub node
+  NetDeviceContainer m_hubDevices;  //!< Hub node NetDevices
+  NodeContainer m_spokes;                     //!< Spoke nodes
+  NetDeviceContainer m_spokeDevices;          //!< Spoke nodes NetDevices
+  Ipv4InterfaceContainer m_hubInterfaces;     //!< IPv4 hub interfaces
+  Ipv4InterfaceContainer m_spokeInterfaces;   //!< IPv4 spoke nodes interfaces
+  Ipv6InterfaceContainer m_hubInterfaces6;    //!< IPv6 hub interfaces
+  Ipv6InterfaceContainer m_spokeInterfaces6;  //!< IPv6 spoke nodes interfaces
 };
 
 } // namespace ns3
