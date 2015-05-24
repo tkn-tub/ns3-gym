@@ -62,9 +62,6 @@ public:
   void SetBufferSize (uint32_t bufferSize);
 
 private:
-  /**
-   * Reads data from the socket
-   */
   FdReader::Data DoRead (void);
   
   uint32_t m_bufferSize; //!< size of the read buffer

@@ -35,6 +35,10 @@
 
 namespace ns3 {
 
+/**
+ * \ingroup tap-bridge
+ * Class to perform the actual reading from a socket
+ */
 class TapBridgeFdReader : public FdReader
 {
 private:
@@ -103,6 +107,10 @@ class Node;
 class TapBridge : public NetDevice
 {
 public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
 
   /**
@@ -217,10 +225,29 @@ protected:
    */
   virtual void DoDispose (void);
 
+  /**
+   * Receives a packet from a bridged Device
+   * \param device the originating port
+   * \param packet the received packet
+   * \param protocol the packet protocol (e.g., Ethertype)
+   * \param src the packet source
+   * \param dst the packet destination
+   * \param packetType the packet type (e.g., host, broadcast, etc.)
+   * \returns true on success
+   */
   bool ReceiveFromBridgedDevice (Ptr<NetDevice> device, Ptr<const Packet> packet, uint16_t protocol,
                                  Address const &src, Address const &dst, PacketType packetType);
 
-  bool DiscardFromBridgedDevice (Ptr<NetDevice> device, Ptr<const Packet> packet, uint16_t protocol, Address const &src);
+  /**
+   * Receives a packet from a bridged Device
+   * \param device the originating port
+   * \param packet the received packet
+   * \param protocol the packet protocol (e.g., Ethertype)
+   * \param src the packet source
+   * \returns true on success
+   */
+  bool DiscardFromBridgedDevice (Ptr<NetDevice> device, Ptr<const Packet> packet, uint16_t protocol,
+                                 Address const &src);
 
 private:
 
@@ -247,13 +274,13 @@ private:
    */
   void ReadCallback (uint8_t *buf, ssize_t len);
 
-  /*
+  /**
    * Forward a packet received from the tap device to the bridged ns-3 
    * device
    *
    * \param buf A character buffer containing the actual packet bits that were
    *            received from the host.
-   * \param buf The length of the buffer.
+   * \param len The length of the buffer.
    */
   void ForwardToBridgedDevice (uint8_t *buf, ssize_t len);
 
@@ -274,9 +301,13 @@ private:
    *               either the Ethernet header in the case of type interpretation
    *               (DIX framing) or from the 802.2 LLC header in the case of 
    *               length interpretation (802.3 framing).
+   * \returns the packet, or null if the packet has been filtered.
    */
   Ptr<Packet> Filter (Ptr<Packet> packet, Address *src, Address *dst, uint16_t *type);
 
+  /**
+   * Notifies that the link is up and ready.
+   */
   void NotifyLinkUp (void);
 
   /**
@@ -405,7 +436,7 @@ private:
    */
   uint8_t *m_packetBuffer;
 
-  /*
+  /**
    * a copy of the node id so the read thread doesn't have to GetNode() in
    * in order to find the node ID.  Thread unsafe reference counting in 
    * multithreaded apps is not a good thing.
