@@ -58,6 +58,11 @@ class ErrorModel;
 class CsmaNetDevice : public NetDevice 
 {
 public:
+
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
 
   /**
@@ -114,6 +119,7 @@ public:
    * \see SetDataRate ()
    * \see SetInterframeGap ()
    * \param ch a pointer to the channel to which this object is being attached.
+   * \returns true if no error
    */
   bool Attach (Ptr<CsmaChannel> ch);
 
@@ -356,6 +362,7 @@ private:
    * Operator = is declared but not implemented.  This disables the assignment
    * operator for CsmaNetDevice objects.
    * \param o object to copy
+   * \returns the copied object
    */
   CsmaNetDevice &operator = (const CsmaNetDevice &o);
 
@@ -708,6 +715,9 @@ private:
    */
   TracedCallback<> m_linkChangeCallbacks;
 
+  /**
+   * Default Maximum Transmission Unit (MTU) for the CsmaNetDevice
+   */
   static const uint16_t DEFAULT_MTU = 1500;
 
   /**

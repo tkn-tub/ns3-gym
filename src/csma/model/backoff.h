@@ -29,9 +29,9 @@ Transmi */
 namespace ns3 {
 
 /**
+ * \ingroup csma
  * \brief The backoff class is used for calculating backoff times
  * when many net devices can write to the same channel
- *
  */
 
 class Backoff {
@@ -62,6 +62,14 @@ public:
   Time m_slotTime;
 
   Backoff (void);
+  /**
+   * \brief Constructor
+   * \param slotTime Length of one slot
+   * \param minSlots Minimum number of backoff slots
+   * \param maxSlots Maximum number of backoff slots
+   * \param ceiling Cap to the exponential function
+   * \param maxRetries Maximum number of transmission retries
+   */
   Backoff (Time slotTime, uint32_t minSlots, uint32_t maxSlots, uint32_t ceiling, uint32_t maxRetries);
 
   /**
@@ -103,6 +111,10 @@ private:
    * Number of times that the transmitter has tried to unsuccessfully transmit the current packet.
    */
   uint32_t m_numBackoffRetries;
+
+  /**
+   * Random number generator
+   */
   Ptr<UniformRandomVariable> m_rng;
 };
 

@@ -33,6 +33,7 @@ class Packet;
 class CsmaNetDevice;
 
 /**
+ * \ingroup csma
  * \brief CsmaNetDevice Record 
  *
  * Stores the information related to each net device that is
@@ -40,12 +41,24 @@ class CsmaNetDevice;
  */
 class CsmaDeviceRec {
 public:
-  Ptr< CsmaNetDevice > devicePtr; /// Pointer to the net device
-  bool                       active;    /// Is net device enabled to TX/RX
+  Ptr< CsmaNetDevice > devicePtr; //!< Pointer to the net device
+  bool                 active;    //!< Is net device enabled to TX/RX
 
   CsmaDeviceRec();
+
+  /**
+   * \brief Constructor
+   * Builds a record of the given NetDevice, its status is initialized to enabled.
+   *
+   * \param device the device to record
+   */
   CsmaDeviceRec(Ptr< CsmaNetDevice > device);
-  CsmaDeviceRec (CsmaDeviceRec const &);
+
+  /**
+   * Copy constructor
+   * \param o the object to copy
+   */
+  CsmaDeviceRec (CsmaDeviceRec const &o);
 
   /**
    * \return If the net device pointed to by the devicePtr is active
@@ -65,6 +78,7 @@ enum WireState
 };
 
 /**
+ * \ingroup csma
  * \brief Csma Channel.
  *
  * This class represents a simple Csma channel that can be used
@@ -76,6 +90,11 @@ enum WireState
 class CsmaChannel : public Channel 
 {
 public:
+
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
 
   /**
@@ -274,9 +293,20 @@ public:
   Time GetDelay (void);
 
 private:
-  // Avoid implicit copy constructor and assignment (python bindings issues)
-  CsmaChannel (CsmaChannel const &);
-  CsmaChannel &operator = (CsmaChannel const &);
+  /**
+   * Copy constructor is declared but not implemented.  This disables the
+   * copy constructor for CsmaChannel objects.
+   * \param o object to copy
+   */
+  CsmaChannel (CsmaChannel const &o);
+
+  /**
+   * Operator = is declared but not implemented.  This disables the assignment
+   * operator for CsmaChannel objects.
+   * \param o object to copy
+   * \returns the copied object
+   */
+  CsmaChannel &operator = (CsmaChannel const &o);
 
   /**
    * The assigned data rate of the channel
