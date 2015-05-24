@@ -234,10 +234,28 @@ private:
   TypeId m_socketTypeId; //!< The socket TypeId
 private:
   friend class TcpSocketBase;
-  void SendPacket (Ptr<Packet>, const TcpHeader &,
-                   Ipv4Address, Ipv4Address, Ptr<NetDevice> oif = 0);
-  void SendPacket (Ptr<Packet>, const TcpHeader &,
-                   Ipv6Address, Ipv6Address, Ptr<NetDevice> oif = 0);
+
+  /**
+   * \brief Send a packet via TCP (IPv4)
+   * \param packet The packet to send
+   * \param outgoing The TCP header
+   * \param saddr The source Ipv4Address
+   * \param daddr The destination Ipv4Address
+   * \param oif The output interface bound. Defaults to null (unspecified).
+   */
+  void SendPacket (Ptr<Packet> packet, const TcpHeader &outgoing,
+                   Ipv4Address saddr, Ipv4Address daddr, Ptr<NetDevice>  oif = 0);
+
+  /**
+   * \brief Send a packet via TCP (IPv4)
+   * \param packet The packet to send
+   * \param outgoing The TCP header
+   * \param saddr The source Ipv4Address
+   * \param daddr The destination Ipv4Address
+   * \param oif The output interface bound. Defaults to null (unspecified).
+   */
+  void SendPacket (Ptr<Packet> packet, const TcpHeader &outgoing,
+                   Ipv6Address saddr, Ipv6Address daddr, Ptr<NetDevice> oif = 0);
 
   /**
    * \brief Copy constructor
