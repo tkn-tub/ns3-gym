@@ -1311,9 +1311,11 @@ MacLow::CalculateOverallTxTime (Ptr<const Packet> packet,
       txTime += Time (GetSifs () * 2);
     }
   WifiTxVector dataTxVector = GetDataTxVector (packet, hdr);
-  if ( m_phy->GetGreenfield()&& m_stationManager->GetGreenfieldSupported (m_currentHdr.GetAddr1 ()))
+  if (m_phy->GetGreenfield () && m_stationManager->GetGreenfieldSupported (m_currentHdr.GetAddr1 ()))
     preamble = WIFI_PREAMBLE_HT_GF;
-  else //Otherwise, RTS should always use non-HT PPDU (HT PPDU cases not supported yet)
+  else if (dataTxVector.GetMode().GetModulationClass () == WIFI_MOD_CLASS_HT)
+    preamble = WIFI_PREAMBLE_HT_MF;
+  else
     preamble = WIFI_PREAMBLE_LONG;
   uint32_t dataSize = GetSize (packet, hdr);
   txTime += m_phy->CalculateTxDuration (dataSize, dataTxVector, preamble, m_phy->GetFrequency(), 0, 0);
@@ -1335,13 +1337,12 @@ MacLow::CalculateTransmissionTime (Ptr<const Packet> packet,
     {
       WifiTxVector dataTxVector = GetDataTxVector (packet, hdr);
       WifiPreamble preamble;
-      //standard says RTS packets can have GF format sec 9.6.0e.1 page 110 bullet b 2
-      if ( m_phy->GetGreenfield()&& m_stationManager->GetGreenfieldSupported (m_currentHdr.GetAddr1 ()))
-         preamble= WIFI_PREAMBLE_HT_GF;
+      if (m_phy->GetGreenfield () && m_stationManager->GetGreenfieldSupported (m_currentHdr.GetAddr1 ()))
+         preamble = WIFI_PREAMBLE_HT_GF;
       else if (dataTxVector.GetMode().GetModulationClass () == WIFI_MOD_CLASS_HT)
-        preamble= WIFI_PREAMBLE_HT_MF;
+        preamble = WIFI_PREAMBLE_HT_MF;
       else
-        preamble=WIFI_PREAMBLE_LONG;
+        preamble = WIFI_PREAMBLE_LONG;
       txTime += GetSifs ();
       txTime += m_phy->CalculateTxDuration (params.GetNextPacketSize (), dataTxVector, preamble, m_phy->GetFrequency(), 0, 0);
     }
@@ -1631,7 +1632,7 @@ MacLow::SendRtsForPacket (void)
   WifiPreamble preamble;
   //standard says RTS packets can have GF format sec 9.6.0e.1 page 110 bullet b 2
   if (m_phy->GetGreenfield () && m_stationManager->GetGreenfieldSupported (m_currentHdr.GetAddr1 ()))
-    preamble= WIFI_PREAMBLE_HT_GF;
+    preamble = WIFI_PREAMBLE_HT_GF;
   else //Otherwise, RTS should always use non-HT PPDU (HT PPDU cases not supported yet)
     preamble = WIFI_PREAMBLE_LONG;
 
@@ -1696,7 +1697,7 @@ MacLow::StartDataTxTimers (WifiTxVector dataTxVector)
   WifiPreamble preamble;
  
   //Since it is data then it can have format = GF
-  if (m_phy->GetGreenfield() && m_stationManager->GetGreenfieldSupported (m_currentHdr.GetAddr1 ()))
+  if (m_phy->GetGreenfield () && m_stationManager->GetGreenfieldSupported (m_currentHdr.GetAddr1 ()))
     preamble = WIFI_PREAMBLE_HT_GF;
   else if (dataTxVector.GetMode ().GetModulationClass () == WIFI_MOD_CLASS_HT)
     preamble = WIFI_PREAMBLE_HT_MF;
@@ -1770,7 +1771,7 @@ MacLow::SendDataPacket (void)
   WifiTxVector dataTxVector = GetDataTxVector (m_currentPacket, &m_currentHdr);
   WifiPreamble preamble;
           
-  if (m_phy->GetGreenfield() && m_stationManager->GetGreenfieldSupported (m_currentHdr.GetAddr1 ()))
+  if (m_phy->GetGreenfield () && m_stationManager->GetGreenfieldSupported (m_currentHdr.GetAddr1 ()))
      //In the future has to make sure that receiver has greenfield enabled
      preamble = WIFI_PREAMBLE_HT_GF;
   else if (dataTxVector.GetMode ().GetModulationClass () == WIFI_MOD_CLASS_HT)
@@ -1841,6 +1842,7 @@ MacLow::IsNavZero (void) const
       return false;
     }
 }
+
 void
 MacLow::SendCtsToSelf (void)
 {
@@ -1927,6 +1929,7 @@ MacLow::SendCtsToSelf (void)
                                          cts.GetAddr1 (),
                                          duration);
 }
+
 void
 MacLow::SendCtsAfterRts (Mac48Address source, Time duration, WifiTxVector rtsTxVector, double rtsSnr)
 {
@@ -2398,6 +2401,7 @@ MacLow::SendBlockAckResponse (const CtrlBAckResponseHeader* blockAck, Mac48Addre
   ForwardDown (packet, &hdr, blockAckReqTxVector, preamble);
   m_currentPacket = 0;
 }
+
 void 
 MacLow::SendBlockAckAfterAmpdu (uint8_t tid, Mac48Address originator, Time duration, WifiTxVector blockAckReqTxVector)
 {
@@ -2582,7 +2586,7 @@ MacLow::DeaggregateAmpduAndReceive (Ptr<Packet> aggregatedPacket, double rxSnr, 
     }
   else
     {     
-          ReceiveOk (aggregatedPacket,rxSnr, txVector, preamble, ampduSubframe);
+          ReceiveOk (aggregatedPacket, rxSnr, txVector, preamble, ampduSubframe);
     }
 }
 
@@ -2593,7 +2597,9 @@ MacLow::StopMpduAggregation(Ptr<const Packet> peekedPacket, WifiMacHeader peeked
     WifiTxVector dataTxVector = GetDataTxVector (m_currentPacket, &m_currentHdr);
     if (m_phy->GetGreenfield () && m_stationManager->GetGreenfieldSupported (m_currentHdr.GetAddr1 ()))
         preamble = WIFI_PREAMBLE_HT_GF;
-    else //Block ACK following implicit BAR always use non-HT PPDU
+    else if (dataTxVector.GetMode ().GetModulationClass () == WIFI_MOD_CLASS_HT)
+        preamble = WIFI_PREAMBLE_HT_MF;
+    else
         preamble = WIFI_PREAMBLE_LONG;
     
     if (peekedPacket == 0)
