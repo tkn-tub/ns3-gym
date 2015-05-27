@@ -1315,6 +1315,10 @@ void
 WifiRemoteStationManager::AddBasicMode (WifiMode mode)
 {
   NS_LOG_FUNCTION (this << mode);
+  if (mode.GetModulationClass () == WIFI_MOD_CLASS_HT)
+    {
+      NS_FATAL_ERROR ("It is not allowed to add a HT rate in the BSSBasicRateSet!");
+    }
   for (uint32_t i = 0; i < GetNBasicModes (); i++)
     {
       if (GetBasicMode (i) == mode)
@@ -1339,7 +1343,8 @@ WifiRemoteStationManager::GetBasicMode (uint32_t i) const
 void 
 WifiRemoteStationManager::AddBasicMcs (uint8_t mcs)
 {
-   for (uint32_t i = 0; i < GetNBasicMcs (); i++)
+  NS_LOG_FUNCTION (this << (uint32_t)mcs);
+  for (uint32_t i = 0; i < GetNBasicMcs (); i++)
     {
       if (GetBasicMcs (i) == mcs)
         {
