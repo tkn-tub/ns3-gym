@@ -24,6 +24,7 @@ New user-visible features
 
 Bugs fixed
 ----------
+- Bug 2126 - LrWpanNetDevice silently accepts no mobility on the node
 
 Known issues
 ------------

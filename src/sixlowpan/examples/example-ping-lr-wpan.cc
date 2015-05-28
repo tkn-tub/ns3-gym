@@ -49,13 +49,6 @@ int main (int argc, char** argv)
   NodeContainer nodes;
   nodes.Create(2);
 
-  LrWpanHelper lrWpanHelper;
-  // Add and install the LrWpanNetDevice for each node
-  NetDeviceContainer lrwpanDevices = lrWpanHelper.Install(nodes);
-
-  // Fake PAN association and short address assignment.
-  lrWpanHelper.AssociateToPan (lrwpanDevices, 0);
-
   MobilityHelper mobility;
   mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
   mobility.SetPositionAllocator ("ns3::GridPositionAllocator",
@@ -68,6 +61,12 @@ int main (int argc, char** argv)
   mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
   mobility.Install (nodes);
   
+  LrWpanHelper lrWpanHelper;
+  // Add and install the LrWpanNetDevice for each node
+  NetDeviceContainer lrwpanDevices = lrWpanHelper.Install(nodes);
+
+  // Fake PAN association and short address assignment.
+  lrWpanHelper.AssociateToPan (lrwpanDevices, 0);
 
   InternetStackHelper internetv6;
   internetv6.Install (nodes);

@@ -128,7 +128,12 @@ LrWpanNetDevice::CompleteConfig (void)
   m_mac->SetMcpsDataIndicationCallback (MakeCallback (&LrWpanNetDevice::McpsDataIndication, this));
   m_csmaca->SetMac (m_mac);
 
-  m_phy->SetMobility (m_node->GetObject<MobilityModel> ());
+  Ptr<MobilityModel> mobility = m_node->GetObject<MobilityModel> ();
+  if (!mobility)
+    {
+      NS_LOG_WARN ("LrWpanNetDevice: no Mobility found on the node, probably it's not a good idea.");
+    }
+  m_phy->SetMobility (mobility);
   Ptr<LrWpanErrorModel> model = CreateObject<LrWpanErrorModel> ();
   m_phy->SetErrorModel (model);
   m_phy->SetDevice (this);
