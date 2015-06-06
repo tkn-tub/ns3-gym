@@ -1011,13 +1011,14 @@ public:
    * \param rate the PHY data rate in units of 500kbps (i.e., the same
    *        units used both for the radiotap and for the prism header)
    * \param isShortPreamble true if short preamble is used, false otherwise
+   * \param txVector the txvector that holds rx parameters
    * \param signalDbm signal power in dBm
    * \param noiseDbm  noise power in dBm
    */
   void NotifyMonitorSniffRx (Ptr<const Packet> packet, uint16_t channelFreqMhz,
                              uint16_t channelNumber, uint32_t rate,
-                             bool isShortPreamble, double signalDbm,
-                             double noiseDbm);
+                             bool isShortPreamble, WifiTxVector txvector,
+                             double signalDbm, double noiseDbm);
 
   /**
    * TracedCallback signature for monitor mode receive events.
@@ -1035,14 +1036,15 @@ public:
    * \param rate the PHY data rate in units of 500kbps (i.e., the same
    *        units used both for the radiotap and for the prism header)
    * \param isShortPreamble true if short preamble is used, false otherwise
+   * \param txVector the txvector that holds rx parameters
    * \param signalDbm signal power in dBm
    * \param noiseDbm  noise power in dBm
    */
   typedef void (* MonitorSnifferRxCallback)
     (Ptr<const Packet> packet, uint16_t channelFreqMhz,
      uint16_t channelNumber, uint32_t rate,
-     bool isShortPreamble, double signalDbm,
-     double noiseDbm);
+     bool isShortPreamble, WifiTxVector txvector,
+     double signalDbm, double noiseDbm);
 
   /**
    * Public method used to fire a MonitorSniffer trace for a wifi packet
@@ -1055,11 +1057,11 @@ public:
    * \param rate the PHY data rate in units of 500kbps (i.e., the same
    *        units used both for the radiotap and for the prism header)
    * \param isShortPreamble true if short preamble is used, false otherwise
-   * \param txPower the transmission power in dBm
+   * \param txVector the txvector that holds tx parameters
    */
   void NotifyMonitorSniffTx (Ptr<const Packet> packet, uint16_t channelFreqMhz,
                              uint16_t channelNumber, uint32_t rate,
-                             bool isShortPreamble, uint8_t txPower);
+                             bool isShortPreamble, WifiTxVector txvector);
 
   /**
    * TracedCallback signature for monitor mode transmit events.
@@ -1071,12 +1073,12 @@ public:
    * \param rate the PHY data rate in units of 500kbps (i.e., the same
    *        units used both for the radiotap and for the prism header)
    * \param isShortPreamble true if short preamble is used, false otherwise
-   * \param txPower the transmission power in dBm
+   * \param txVector the txvector that holds tx parameters
    */
   typedef void (* MonitorSnifferTxCallback)
     (const Ptr<const Packet> packet, uint16_t channelFreqMhz,
      uint16_t channelNumber, uint32_t rate,
-     bool isShortPreamble, uint8_t txPower);
+     bool isShortPreamble, WifiTxVector txvector);
 
 
  /**
@@ -1214,7 +1216,7 @@ private:
    *
    * \see class CallBackTraceSource
    */
-  TracedCallback<Ptr<const Packet>, uint16_t, uint16_t, uint32_t, bool, double, double> m_phyMonitorSniffRxTrace;
+  TracedCallback<Ptr<const Packet>, uint16_t, uint16_t, uint32_t, bool, WifiTxVector, double, double> m_phyMonitorSniffRxTrace;
 
   /**
    * A trace source that emulates a wifi device in monitor mode
@@ -1226,7 +1228,7 @@ private:
    *
    * \see class CallBackTraceSource
    */
-  TracedCallback<Ptr<const Packet>, uint16_t, uint16_t, uint32_t, bool,uint8_t> m_phyMonitorSniffTxTrace;
+  TracedCallback<Ptr<const Packet>, uint16_t, uint16_t, uint32_t, bool, WifiTxVector> m_phyMonitorSniffTxTrace;
     
   uint32_t m_totalAmpduNumSymbols; //!< Number of symbols previously transmitted for the MPDUs in an A-MPDU, used for the computation of the number of symbols needed for the last MPDU in the A-MPDU
   uint32_t m_totalAmpduSize;       //!< Total size of the previously transmitted MPDUs in an A-MPDU, used for the computation of the number of symbols needed for the last MPDU in the A-MPDU

@@ -248,12 +248,12 @@ YansWifiPhyHelper::Create (Ptr<Node> node, Ptr<NetDevice> device) const
 static void
 PcapSniffTxEvent (
   Ptr<PcapFileWrapper> file,
-  Ptr<const Packet>   packet,
-  uint16_t            channelFreqMhz,
-  uint16_t            channelNumber,
-  uint32_t            rate,
-  bool                isShortPreamble,
-  uint8_t             txPower)
+  Ptr<const Packet>    packet,
+  uint16_t             channelFreqMhz,
+  uint16_t             channelNumber,
+  uint32_t             rate,
+  bool                 isShortPreamble,
+  WifiTxVector         txvector)
 {
   uint32_t dlt = file->GetDataLinkType ();
 
@@ -280,6 +280,11 @@ PcapSniffTxEvent (
         if (isShortPreamble)
           {
             frameFlags |= RadiotapHeader::FRAME_FLAG_SHORT_PREAMBLE;
+          }
+          
+        if (txvector.IsShortGuardInterval ())
+          {
+            frameFlags |= RadiotapHeader::FRAME_FLAG_SHORT_GUARD;
           }
 
         header.SetFrameFlags (frameFlags);
@@ -310,7 +315,6 @@ PcapSniffTxEvent (
           }
 
         header.SetChannelFrequencyAndFlags (channelFreqMhz, channelFlags);
-        
 
         p->AddHeader (header);
         file->Write (Simulator::Now (), p);
@@ -324,13 +328,14 @@ PcapSniffTxEvent (
 static void
 PcapSniffRxEvent (
   Ptr<PcapFileWrapper> file,
-  Ptr<const Packet> packet,
-  uint16_t channelFreqMhz,
-  uint16_t channelNumber,
-  uint32_t rate,
-  bool isShortPreamble,
-  double signalDbm,
-  double noiseDbm)
+  Ptr<const Packet>    packet,
+  uint16_t             channelFreqMhz,
+  uint16_t             channelNumber,
+  uint32_t             rate,
+  bool                 isShortPreamble,
+  WifiTxVector         txvector,
+  double               signalDbm,
+  double               noiseDbm)
 {
   uint32_t dlt = file->GetDataLinkType ();
 
@@ -357,6 +362,11 @@ PcapSniffRxEvent (
         if (isShortPreamble)
           {
             frameFlags |= RadiotapHeader::FRAME_FLAG_SHORT_PREAMBLE;
+          }
+          
+        if (txvector.IsShortGuardInterval ())
+          {
+            frameFlags |= RadiotapHeader::FRAME_FLAG_SHORT_GUARD;
           }
 
         header.SetFrameFlags (frameFlags);
