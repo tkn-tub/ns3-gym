@@ -26,6 +26,7 @@ Bugs fixed
 ----------
 - Bug 1736 - default dot11EDCATableMSDULifetime
 - Bug 2126 - LrWpanNetDevice silently accepts no mobility on the node
+- Bug 2136 - The usage of tid in wifi and wave module shall be "if (tid > 7)" rather than "if (tid >= 7)"
 
 Known issues
 ------------
