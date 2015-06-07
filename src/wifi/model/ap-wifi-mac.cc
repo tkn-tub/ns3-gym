@@ -207,7 +207,7 @@ ApWifiMac::ForwardDown (Ptr<const Packet> packet, Mac48Address from,
       // Any value greater than 7 is invalid and likely indicates that
       // the packet had no QoS tag, so we revert to zero, which'll
       // mean that AC_BE is used.
-      if (tid >= 7)
+      if (tid > 7)
         {
           tid = 0;
         }
