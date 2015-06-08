@@ -36,7 +36,8 @@ TypeId DropTailQueue::GetTypeId (void)
     .AddAttribute ("Mode", 
                    "Whether to use bytes (see MaxBytes) or packets (see MaxPackets) as the maximum queue size metric.",
                    EnumValue (QUEUE_MODE_PACKETS),
-                   MakeEnumAccessor (&DropTailQueue::SetMode),
+                   MakeEnumAccessor (&DropTailQueue::SetMode,
+                                     &DropTailQueue::GetMode),
                    MakeEnumChecker (QUEUE_MODE_BYTES, "QUEUE_MODE_BYTES",
                                     QUEUE_MODE_PACKETS, "QUEUE_MODE_PACKETS"))
     .AddAttribute ("MaxPackets", 
@@ -75,7 +76,7 @@ DropTailQueue::SetMode (DropTailQueue::QueueMode mode)
 }
 
 DropTailQueue::QueueMode
-DropTailQueue::GetMode (void)
+DropTailQueue::GetMode (void) const
 {
   NS_LOG_FUNCTION (this);
   return m_mode;

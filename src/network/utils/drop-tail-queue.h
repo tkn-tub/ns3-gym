@@ -61,7 +61,7 @@ public:
    *
    * \returns The encapsulation mode of this device.
    */
-  DropTailQueue::QueueMode GetMode (void);
+  DropTailQueue::QueueMode GetMode (void) const;
 
 private:
   virtual bool DoEnqueue (Ptr<Packet> p);

@@ -136,6 +136,13 @@ public:
                      MakeEnumChecker (TEST_A, "TestA",
                                       TEST_B, "TestB",
                                       TEST_C, "TestC"))
+      .AddAttribute ("TestEnumSetGet", "help text",
+                     EnumValue (TEST_B),
+                     MakeEnumAccessor (&AttributeObjectTest::DoSetEnum,
+                                       &AttributeObjectTest::DoGetEnum),
+                     MakeEnumChecker (TEST_A, "TestA",
+                                      TEST_B, "TestB",
+                                      TEST_C, "TestC"))
       .AddAttribute ("TestRandom", "help text",
                      StringValue ("ns3::ConstantRandomVariable[Constant=1.0]"),
                      MakePointerAccessor (&AttributeObjectTest::m_random),
@@ -228,6 +235,7 @@ public:
     NS_UNUSED (m_uint8);
     NS_UNUSED (m_float);
     NS_UNUSED (m_enum);
+    NS_UNUSED (m_enumSetGet);
   }
 
   virtual ~AttributeObjectTest (void) {};
@@ -255,6 +263,8 @@ private:
   Ptr<Derived> DoGetVector (uint32_t i) const { return m_vector2[i]; }
   bool DoSetIntSrc (int8_t v) { m_intSrc2 = v; return true; }
   int8_t DoGetIntSrc (void) const { return m_intSrc2; }
+  bool DoSetEnum (Test_e v) { m_enumSetGet = v; return true; }
+  Test_e DoGetEnum (void) const { return m_enumSetGet; }
 
   bool m_boolTestA;
   bool m_boolTest;
@@ -264,6 +274,7 @@ private:
   uint8_t m_uint8;
   float m_float;
   enum Test_e m_enum;
+  enum Test_e m_enumSetGet;
   Ptr<RandomVariableStream> m_random;
   std::vector<Ptr<Derived> > m_vector1;
   std::vector<Ptr<Derived> > m_vector2;
@@ -651,6 +662,22 @@ AttributeTestCase<EnumValue>::DoRun (void)
   NS_TEST_ASSERT_MSG_EQ (ok, true, "Could not SetAttributeFailSafe() to TEST_C");
 
   ok = CheckGetCodePaths (p, "TestEnum", "TestC", EnumValue (AttributeObjectTest::TEST_C));
+  NS_TEST_ASSERT_MSG_EQ (ok, true, "Attribute not set properly by SetAttributeFailSafe() via EnumValue");
+
+  //
+  // When the object is first created, the Attribute should have the default 
+  // value.
+  //
+  ok = CheckGetCodePaths (p, "TestEnumSetGet", "TestB", EnumValue (AttributeObjectTest::TEST_B));
+  NS_TEST_ASSERT_MSG_EQ (ok, true, "Attribute not set properly by default value");
+
+  //
+  // Set the Attribute using the EnumValue type.
+  //
+  ok = p->SetAttributeFailSafe ("TestEnumSetGet", EnumValue (AttributeObjectTest::TEST_C));
+  NS_TEST_ASSERT_MSG_EQ (ok, true, "Could not SetAttributeFailSafe() to TEST_C");
+
+  ok = CheckGetCodePaths (p, "TestEnumSetGet", "TestC", EnumValue (AttributeObjectTest::TEST_C));
   NS_TEST_ASSERT_MSG_EQ (ok, true, "Attribute not set properly by SetAttributeFailSafe() via EnumValue");
 
   //
