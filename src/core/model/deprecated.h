@@ -1,3 +1,5 @@
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
+
 #ifndef NS3_DEPRECATED_H
 #define NS3_DEPRECATED_H
 

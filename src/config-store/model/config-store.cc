@@ -1,3 +1,5 @@
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
+
 #include "config-store.h"
 #include "raw-text-config.h"
 #include "ns3/abort.h"

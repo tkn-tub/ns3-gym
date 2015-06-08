@@ -1,3 +1,5 @@
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
+
 #ifndef CHUNK_H
 #define CHUNK_H
 

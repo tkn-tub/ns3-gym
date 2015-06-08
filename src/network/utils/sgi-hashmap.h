@@ -1,3 +1,5 @@
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
+
 /* This code snippet was ripped out of the gcc 
  * documentation and slightly modified to work
  * with gcc 4.x

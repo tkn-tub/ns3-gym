@@ -1,3 +1,5 @@
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
+
 #include "ns3/test.h"
 #include "ns3/drop-tail-queue.h"
 #include "ns3/simulator.h"

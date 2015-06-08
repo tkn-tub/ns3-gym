@@ -1,3 +1,5 @@
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
+
 #include "ns3/buffer.h"
 #include "ns3/random-variable-stream.h"
 #include "ns3/double.h"

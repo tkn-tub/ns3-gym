@@ -1,3 +1,5 @@
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
+
 #include "raw-text-config.h"
 #include "attribute-iterator.h"
 #include "attribute-default-iterator.h"

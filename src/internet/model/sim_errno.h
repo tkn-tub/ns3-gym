@@ -1,3 +1,5 @@
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
+
 #ifndef NSC_SIM_ERRNO_H
 #define NSC_SIM_ERRNO_H
 

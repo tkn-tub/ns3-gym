@@ -1,3 +1,5 @@
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
+
 #include "xml-config.h"
 #include "attribute-default-iterator.h"
 #include "attribute-iterator.h"

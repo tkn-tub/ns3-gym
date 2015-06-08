@@ -1,3 +1,5 @@
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
+
 #ifndef XML_CONFIG_STORE_H
 #define XML_CONFIG_STORE_H
 

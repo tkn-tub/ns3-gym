@@ -1,3 +1,5 @@
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
+
 #ifndef ICMPV4_L4_PROTOCOL_H
 #define ICMPV4_L4_PROTOCOL_H
 

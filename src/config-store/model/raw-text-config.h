@@ -1,3 +1,5 @@
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
+
 #ifndef RAW_TEXT_CONFIG_H
 #define RAW_TEXT_CONFIG_H
 

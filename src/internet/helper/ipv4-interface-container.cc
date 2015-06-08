@@ -1,3 +1,5 @@
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
+
 #include "ipv4-interface-container.h"
 #include "ns3/node-list.h"
 #include "ns3/names.h"

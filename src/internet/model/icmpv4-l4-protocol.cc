@@ -1,3 +1,5 @@
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
+
 #include "icmpv4-l4-protocol.h"
 #include "ipv4-raw-socket-factory-impl.h"
 #include "ipv4-interface.h"

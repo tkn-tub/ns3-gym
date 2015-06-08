@@ -1,3 +1,5 @@
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
+
 #ifndef IPV4_INTERFACE_CONTAINER_H
 #define IPV4_INTERFACE_CONTAINER_H
 
