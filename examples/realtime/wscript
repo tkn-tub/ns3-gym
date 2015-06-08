@@ -1,7 +1,8 @@
 ## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
 
 def build(bld):
-    obj = bld.create_ns3_program('realtime-udp-echo', ['csma', 'internet', 'applications'])
-    obj.source = 'realtime-udp-echo.cc'
+    if bld.env["ENABLE_REAL_TIME"]:
+        obj = bld.create_ns3_program('realtime-udp-echo', ['csma', 'internet', 'applications'])
+        obj.source = 'realtime-udp-echo.cc'
 
-    bld.register_ns3_script('realtime-udp-echo.py', ['csma', 'internet', 'applications'])
+        bld.register_ns3_script('realtime-udp-echo.py', ['csma', 'internet', 'applications'])
