@@ -541,7 +541,6 @@ TcpL4Protocol::Send (Ptr<Packet> packet,
       header.SetProtocol (PROT_NUMBER);
       Socket::SocketErrno errno_;
       Ptr<Ipv4Route> route;
-      Ptr<NetDevice> oif (0); //specify non-zero if bound to a source address
       if (ipv4->GetRoutingProtocol () != 0)
         {
           route = ipv4->GetRoutingProtocol ()->RouteOutput (packet, header, oif, errno_);
@@ -585,7 +584,6 @@ TcpL4Protocol::Send (Ptr<Packet> packet,
       header.SetNextHeader (PROT_NUMBER);
       Socket::SocketErrno errno_;
       Ptr<Ipv6Route> route;
-      Ptr<NetDevice> oif (0); //specify non-zero if bound to a source address
       if (ipv6->GetRoutingProtocol () != 0)
         {
           route = ipv6->GetRoutingProtocol ()->RouteOutput (packet, header, oif, errno_);
