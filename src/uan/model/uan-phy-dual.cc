@@ -58,7 +58,7 @@ TypeId
 UanPhyCalcSinrDual::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::UanPhyCalcSinrDual")
-    .SetParent<Object> ()
+    .SetParent<UanPhyCalcSinr> ()
     .SetGroupName ("Uan")
     .AddConstructor<UanPhyCalcSinrDual> ()
   ;

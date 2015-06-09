@@ -50,6 +50,12 @@ public:
   virtual ~SpectrumInterference ();
 
   /**
+   * Register this type.
+   * \return The TypeId.
+   */
+  static TypeId GetTypeId (void);
+  
+  /**
    * set the SpectrumErrorModel to be used.
    *
    * @param e

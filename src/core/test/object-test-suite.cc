@@ -28,9 +28,15 @@ namespace {
 class BaseA : public ns3::Object
 {
 public:
-  static ns3::TypeId GetTypeId (void) {
+  /**
+   * Register this type.
+   * \return The TypeId.
+   */
+  static ns3::TypeId GetTypeId (void)
+  {
     static ns3::TypeId tid = ns3::TypeId ("ObjectTest:BaseA")
-      .SetParent (Object::GetTypeId ())
+      .SetParent<Object> ()
+      .SetGroupName ("Core")
       .HideFromDocumentation ()
       .AddConstructor<BaseA> ();
     return tid;
@@ -43,9 +49,15 @@ public:
 class DerivedA : public BaseA
 {
 public:
-  static ns3::TypeId GetTypeId (void) {
+  /**
+   * Register this type.
+   * \return The TypeId.
+   */
+  static ns3::TypeId GetTypeId (void)
+  {
     static ns3::TypeId tid = ns3::TypeId ("ObjectTest:DerivedA")
-      .SetParent (BaseA::GetTypeId ())
+      .SetParent<BaseA> ()
+      .SetGroupName ("Core")
       .HideFromDocumentation ()
       .AddConstructor<DerivedA> ();
     return tid;
@@ -60,9 +72,15 @@ public:
 class BaseB : public ns3::Object
 {
 public:
-  static ns3::TypeId GetTypeId (void) {
+  /**
+   * Register this type.
+   * \return The TypeId.
+   */
+  static ns3::TypeId GetTypeId (void)
+  {
     static ns3::TypeId tid = ns3::TypeId ("ObjectTest:BaseB")
-      .SetParent (Object::GetTypeId ())
+      .SetParent<Object> ()
+      .SetGroupName ("Core")
       .HideFromDocumentation ()
       .AddConstructor<BaseB> ();
     return tid;
@@ -75,9 +93,15 @@ public:
 class DerivedB : public BaseB
 {
 public:
-  static ns3::TypeId GetTypeId (void) {
+  /**
+   * Register this type.
+   * \return The TypeId.
+   */
+  static ns3::TypeId GetTypeId (void)
+  {
     static ns3::TypeId tid = ns3::TypeId ("ObjectTest:DerivedB")
-      .SetParent (BaseB::GetTypeId ())
+      .SetParent<BaseB> ()
+      .SetGroupName ("Core")
       .HideFromDocumentation ()
       .AddConstructor<DerivedB> ();
     return tid;

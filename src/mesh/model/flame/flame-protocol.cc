@@ -46,7 +46,11 @@ NS_OBJECT_ENSURE_REGISTERED (FlameProtocol);
 TypeId
 FlameTag::GetTypeId ()
 {
-  static TypeId tid = TypeId ("ns3::flame::FlameTag").SetParent<Tag> ().AddConstructor<FlameTag> ().SetGroupName ("Mesh");
+  static TypeId tid = TypeId ("ns3::flame::FlameTag")
+    .SetParent<Tag> ()
+    .SetGroupName ("Mesh")
+    .AddConstructor<FlameTag> ()
+    ;
   return tid;
 }
 

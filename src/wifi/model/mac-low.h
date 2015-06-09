@@ -497,6 +497,12 @@ public:
   virtual ~MacLow ();
 
   /**
+   * Register this type.
+   * \return The TypeId.
+   */
+  static TypeId GetTypeId (void);
+
+  /**
    * Set up WifiPhy associated with this MacLow.
    *
    * \param phy WifiPhy associated with this MacLow

@@ -228,6 +228,19 @@ Ipv6FlowProbe::Ipv6FlowProbe (Ptr<FlowMonitor> monitor,
   Config::ConnectWithoutContext (oss.str (), MakeCallback (&Ipv6FlowProbe::QueueDropLogger, Ptr<Ipv6FlowProbe> (this)));
 }
 
+/* static */
+TypeId
+Ipv6FlowProbe::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::Ipv6FlowProbe")
+    .SetParent<FlowProbe> ()
+    .SetGroupName ("FlowMonitor")
+    // No AddConstructor because this class has no default constructor.
+    ;
+
+  return tid;
+}
+
 Ipv6FlowProbe::~Ipv6FlowProbe ()
 {
 }

@@ -32,8 +32,9 @@ TypeId
 MpduAggregator::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::MpduAggregator")
-    .SetGroupName ("Wifi")
     .SetParent<Object> ()
+    .SetGroupName ("Wifi")
+    // No AddConstructor because this is an abstract class.
   ;
   return tid;
 }

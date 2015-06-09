@@ -45,6 +45,17 @@ SqliteDataOutput::~SqliteDataOutput()
 {
   NS_LOG_FUNCTION (this);
 }
+/* static */
+TypeId
+SqliteDataOutput::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::SqliteDataOutput")
+    .SetParent<DataOutputInterface> ()
+    .SetGroupName ("Stats")
+    .AddConstructor<SqliteDataOutput> ();
+  return tid;
+}
+  
 void
 SqliteDataOutput::DoDispose ()
 {

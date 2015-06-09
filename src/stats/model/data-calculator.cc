@@ -43,6 +43,18 @@ DataCalculator::~DataCalculator()
   NS_LOG_FUNCTION (this);
 }
 
+/* static */
+TypeId
+DataCalculator::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::DataCalculator")
+    .SetParent<Object> ()
+    .SetGroupName ("Stats")
+    // No AddConstructor because this is an abstract class.
+    ;
+  return tid;
+}
+  
 void
 DataCalculator::DoDispose (void)
 {

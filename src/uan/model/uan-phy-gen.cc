@@ -62,7 +62,7 @@ TypeId
 UanPhyCalcSinrDefault::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::UanPhyCalcSinrDefault")
-    .SetParent<Object> ()
+    .SetParent<UanPhyCalcSinr> ()
     .SetGroupName ("Uan")
     .AddConstructor<UanPhyCalcSinrDefault> ()
   ;
@@ -110,7 +110,7 @@ TypeId
 UanPhyCalcSinrFhFsk::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::UanPhyCalcSinrFhFsk")
-    .SetParent<Object> ()
+    .SetParent<UanPhyCalcSinr> ()
     .SetGroupName ("Uan")
     .AddConstructor<UanPhyCalcSinrFhFsk> ()
     .AddAttribute ("NumberOfHops",
@@ -217,7 +217,7 @@ TypeId
 UanPhyPerGenDefault::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::UanPhyPerGenDefault")
-    .SetParent<Object> ()
+    .SetParent<UanPhyPer> ()
     .SetGroupName ("Uan")
     .AddConstructor<UanPhyPerGenDefault> ()
     .AddAttribute ("Threshold", "SINR cutoff for good packet reception.",
@@ -256,7 +256,7 @@ UanPhyPerUmodem::~UanPhyPerUmodem ()
 TypeId UanPhyPerUmodem::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::UanPhyPerUmodem")
-    .SetParent<Object> ()
+    .SetParent<UanPhyPer> ()
     .SetGroupName ("Uan")
     .AddConstructor<UanPhyPerUmodem> ()
   ;

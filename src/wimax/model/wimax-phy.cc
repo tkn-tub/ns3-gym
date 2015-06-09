@@ -38,7 +38,11 @@ NS_OBJECT_ENSURE_REGISTERED (WimaxPhy);
 
 TypeId WimaxPhy::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::WimaxPhy").SetParent<Object> ().SetGroupName("Wimax")
+  static TypeId tid = TypeId ("ns3::WimaxPhy")
+    .SetParent<Object> ()
+    .SetGroupName("Wimax")
+
+    // No AddConstructor because this is an abstract class.
 
     .AddAttribute ("Channel",
                    "Wimax channel",

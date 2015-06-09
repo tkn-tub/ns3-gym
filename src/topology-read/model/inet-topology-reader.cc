@@ -37,8 +37,9 @@ NS_OBJECT_ENSURE_REGISTERED (InetTopologyReader);
 TypeId InetTopologyReader::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::InetTopologyReader")
-    .SetParent<Object> ()
+    .SetParent<TopologyReader> ()
     .SetGroupName ("TopologyReader")
+    .AddConstructor<InetTopologyReader> ()
   ;
   return tid;
 }

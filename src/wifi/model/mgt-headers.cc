@@ -254,6 +254,24 @@ MgtProbeResponseHeader::Deserialize (Buffer::Iterator start)
 }
 
 /***********************************************************
+ *          Beacons
+ ***********************************************************/
+
+NS_OBJECT_ENSURE_REGISTERED (MgtBeaconHeader);
+
+/* static */
+TypeId
+MgtBeaconHeader::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::MgtBeaconHeader")
+    .SetParent<MgtProbeResponseHeader> ()
+    .SetGroupName ("Wifi")
+    .AddConstructor<MgtBeaconHeader> ()
+    ;
+  return tid;
+}
+
+/***********************************************************
  *          Assoc Request
  ***********************************************************/
 
@@ -645,7 +663,8 @@ WifiActionHeader::GetTypeId ()
   static TypeId tid = TypeId ("ns3::WifiActionHeader")
     .SetParent<Header> ()
     .SetGroupName ("Wifi")
-    .AddConstructor<WifiActionHeader> ();
+    .AddConstructor<WifiActionHeader> ()
+    ;
   return tid;
 }
 TypeId
@@ -696,7 +715,8 @@ MgtAddBaRequestHeader::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::MgtAddBaRequestHeader")
     .SetParent<Header> ()
     .SetGroupName ("Wifi")
-    .AddConstructor<MgtAddBaRequestHeader> ();
+    .AddConstructor<MgtAddBaRequestHeader> ()
+    ;
   return tid;
 }
 

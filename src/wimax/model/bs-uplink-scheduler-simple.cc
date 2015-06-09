@@ -75,7 +75,11 @@ UplinkSchedulerSimple::InitOnce ()
 TypeId
 UplinkSchedulerSimple::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::UplinkSchedulerSimple").SetParent<Object> ().SetGroupName("Wimax");
+  static TypeId tid = TypeId ("ns3::UplinkSchedulerSimple")
+    .SetParent<UplinkScheduler> ()
+    .SetGroupName("Wimax")
+    .AddConstructor<UplinkSchedulerSimple> ()
+    ;
   return tid;
 }
 

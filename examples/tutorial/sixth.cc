@@ -65,6 +65,11 @@ public:
   MyApp ();
   virtual ~MyApp ();
 
+  /**
+   * Register this type.
+   * \return The TypeId.
+   */
+  static TypeId GetTypeId (void);
   void Setup (Ptr<Socket> socket, Address address, uint32_t packetSize, uint32_t nPackets, DataRate dataRate);
 
 private:
@@ -99,6 +104,17 @@ MyApp::MyApp ()
 MyApp::~MyApp ()
 {
   m_socket = 0;
+}
+
+/* static */
+TypeId MyApp::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("MyApp")
+    .SetParent<Application> ()
+    .SetGroupName ("Tutorial")
+    .AddConstructor<MyApp> ()
+    ;
+  return tid;
 }
 
 void

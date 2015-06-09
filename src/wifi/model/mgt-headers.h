@@ -93,6 +93,10 @@ public:
    */
   uint16_t GetListenInterval (void) const;
 
+  /**
+   * Register this type.
+   * \return The TypeId.
+   */
   static TypeId GetTypeId (void);
   virtual TypeId GetInstanceTypeId (void) const;
   virtual void Print (std::ostream &os) const;
@@ -157,6 +161,10 @@ public:
    */
   void SetStatusCode (StatusCode code);
 
+  /**
+   * Register this type.
+   * \return The TypeId.
+   */
   static TypeId GetTypeId (void);
   virtual TypeId GetInstanceTypeId (void) const;
   virtual void Print (std::ostream &os) const;
@@ -219,6 +227,11 @@ public:
    * \param htcapabilities HT capabilities
    */
   void SetHtCapabilities(HtCapabilities htcapabilities);
+  
+  /**
+   * Register this type.
+   * \return The TypeId.
+   */
   static TypeId GetTypeId (void);
   virtual TypeId GetInstanceTypeId (void) const;
   virtual void Print (std::ostream &os) const;
@@ -297,6 +310,11 @@ public:
    * \return time stamp
    */
   uint64_t GetTimestamp ();
+  
+  /**
+   * Register this type.
+   * \return The TypeId.
+   */
   static TypeId GetTypeId (void);
   virtual TypeId GetInstanceTypeId (void) const;
   virtual void Print (std::ostream &os) const;
@@ -320,6 +338,13 @@ private:
  */
 class MgtBeaconHeader : public MgtProbeResponseHeader
 {
+public:
+  /** Register this type. */
+  /**
+   * Register this type.
+   * \return The TypeId.
+   */
+  static TypeId GetTypeId (void);
 };
 
 /****************************
@@ -426,6 +451,11 @@ public:
    * \return ActionValue
    */
   ActionValue GetAction ();
+  
+  /**
+   * Register this type.
+   * \return The TypeId.
+   */
   static TypeId GetTypeId (void);
   virtual TypeId GetInstanceTypeId () const;
   virtual void Print (std::ostream &os) const;
@@ -446,6 +476,10 @@ class MgtAddBaRequestHeader : public Header
 public:
   MgtAddBaRequestHeader ();
 
+  /**
+   * Register this type.
+   * \return The TypeId.
+   */
   static TypeId GetTypeId (void);
   virtual TypeId GetInstanceTypeId (void) const;
   virtual void Print (std::ostream &os) const;
@@ -574,6 +608,10 @@ class MgtAddBaResponseHeader : public Header
 public:
   MgtAddBaResponseHeader ();
 
+  /**
+   * Register this type.
+   * \return The TypeId.
+   */
   static TypeId GetTypeId (void);
   virtual TypeId GetInstanceTypeId (void) const;
   virtual void Print (std::ostream &os) const;
@@ -690,7 +728,12 @@ class MgtDelBaHeader : public Header
 public:
   MgtDelBaHeader ();
 
+  /**
+   * Register this type.
+   * \return The TypeId.
+   */
   static TypeId GetTypeId (void);
+  // Inherited
   virtual TypeId GetInstanceTypeId (void) const;
   virtual void Print (std::ostream &os) const;
   virtual uint32_t GetSerializedSize (void) const;

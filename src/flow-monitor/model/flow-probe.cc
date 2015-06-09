@@ -23,6 +23,17 @@
 
 namespace ns3 {
 
+/* static */
+TypeId FlowProbe::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::FlowProbe")
+    .SetParent<Object> ()
+    .SetGroupName ("FlowMonitor")
+    // No AddConstructor because this class has no default constructor.
+    ;
+
+  return tid;
+}
 
 FlowProbe::~FlowProbe ()
 {

@@ -54,6 +54,18 @@ BsServiceFlowManager::~BsServiceFlowManager (void)
 {
 }
 
+/* static */
+TypeId
+BsServiceFlowManager::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::BsServiceFlowManager")
+    .SetParent<ServiceFlowManager> ()
+    .SetGroupName ("Wifi")
+    // No AddConstructor because this class has no default constructor.
+  ;
+  return tid;
+}
+
 void
 BsServiceFlowManager::DoDispose (void)
 {

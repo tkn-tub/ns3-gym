@@ -40,7 +40,21 @@ class ATestTagBase : public Tag
 public:
   ATestTagBase () : m_error (false), m_data (0) {}
   ATestTagBase (uint8_t data) : m_error (false), m_data (data) {}
-  virtual int GetData () const {
+  /**
+   * Register this type.
+   * \return The TypeId.
+   */
+  static TypeId GetTypeId (void)
+  {
+    static TypeId tid = TypeId ("ATestTagBase")
+      .SetParent<Tag> ()
+      .SetGroupName ("Network")
+      .HideFromDocumentation ()
+    // No AddConstructor because this is an abstract class.
+      ;
+    return tid;
+  }
+  int GetData () const {
     int result = (int)m_data;
     return result;
   }
@@ -52,13 +66,18 @@ template <int N>
 class ATestTag : public ATestTagBase
 {
 public:
+  /**
+   * Register this type.
+   * \return The TypeId.
+   */
   static TypeId GetTypeId (void) {
     std::ostringstream oss;
     oss << "anon::ATestTag<" << N << ">";
     static TypeId tid = TypeId (oss.str ().c_str ())
-      .SetParent<Tag> ()
-      .AddConstructor<ATestTag<N> > ()
+      .SetParent<ATestTagBase> ()
+      .SetGroupName ("Network")
       .HideFromDocumentation ()
+      .AddConstructor<ATestTag<N> > ()
     ;
     return tid;
   }
@@ -99,6 +118,20 @@ class ATestHeaderBase : public Header
 {
 public:
   ATestHeaderBase () : Header (), m_error (false) {}
+  /**
+   * Register this type.
+   * \return The TypeId.
+   */
+  static TypeId GetTypeId (void)
+  {
+    static TypeId tid = TypeId ("ATestHeaderBase")
+      .SetParent<Header> ()
+      .SetGroupName ("Network")
+      .HideFromDocumentation ()
+      // No AddConstructor because this is an abstract class.
+      ;
+    return tid;
+  }
   bool m_error;
 };
 
@@ -106,13 +139,18 @@ template <int N>
 class ATestHeader : public ATestHeaderBase
 {
 public:
+  /**
+   * Register this type.
+   * \return The TypeId.
+   */
   static TypeId GetTypeId (void) {
     std::ostringstream oss;
     oss << "anon::ATestHeader<" << N << ">";
     static TypeId tid = TypeId (oss.str ().c_str ())
-      .SetParent<Header> ()
-      .AddConstructor<ATestHeader<N> > ()
+      .SetParent<ATestHeaderBase> ()
+      .SetGroupName ("Network")
       .HideFromDocumentation ()
+      .AddConstructor<ATestHeader<N> > ()
     ;
     return tid;
   }
@@ -150,6 +188,20 @@ class ATestTrailerBase : public Trailer
 {
 public:
   ATestTrailerBase () : Trailer (), m_error (false) {}
+  /**
+   * Register this type.
+   * \return The TypeId.
+   */
+  static TypeId GetTypeId (void)
+  {
+    static TypeId tid = TypeId ("ATestTrailerBase")
+      .SetParent<Trailer> ()
+      .SetGroupName ("Network")
+      .HideFromDocumentation ()
+    // No AddConstructor because this is an abstract class.
+      ;
+    return tid;
+  }
   bool m_error;
 };
 
@@ -157,13 +209,18 @@ template <int N>
 class ATestTrailer : public ATestTrailerBase
 {
 public:
+  /**
+   * Register this type.
+   * \return The TypeId.
+   */
   static TypeId GetTypeId (void) {
     std::ostringstream oss;
     oss << "anon::ATestTrailer<" << N << ">";
     static TypeId tid = TypeId (oss.str ().c_str ())
-      .SetParent<Header> ()
-      .AddConstructor<ATestTrailer<N> > ()
+      .SetParent<ATestTrailerBase> ()
+      .SetGroupName ("Network")
       .HideFromDocumentation ()
+      .AddConstructor<ATestTrailer<N> > ()
     ;
     return tid;
   }

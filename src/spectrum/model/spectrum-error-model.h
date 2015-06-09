@@ -40,6 +40,10 @@ class SpectrumErrorModel :  public Object
 {
 public:
 
+  /**
+   * Register this type.
+   * \return The TypeId.
+   */
   static TypeId GetTypeId ();
   virtual ~SpectrumErrorModel ();
   virtual void StartRx (Ptr<const Packet> p) = 0;
@@ -62,6 +66,11 @@ protected:
   virtual void DoDispose ();
 
 public:
+  /**
+   * Register this type.
+   * \return The TypeId.
+   */
+  static TypeId GetTypeId (void);
   // inherited from SpectrumErrorModel
   void StartRx (Ptr<const Packet> p);
   void EvaluateChunk (const SpectrumValue& sinr, Time duration);

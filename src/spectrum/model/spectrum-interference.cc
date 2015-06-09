@@ -45,6 +45,17 @@ SpectrumInterference::~SpectrumInterference ()
   NS_LOG_FUNCTION (this);
 }
 
+TypeId
+SpectrumInterference::GetTypeId ()
+{
+  static TypeId tid = TypeId ("ns3::SpectrumInterference")
+    .SetParent<Object> ()
+    .SetGroupName ("Spectrum")
+    .AddConstructor<SpectrumInterference> ()
+    ;
+  return tid;
+}
+
 void
 SpectrumInterference::DoDispose ()
 {

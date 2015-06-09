@@ -1,6 +1,6 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
- * Copyright (c) 2010 University of Washington
+ * Copyright (c) 2015, LLNL
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -14,40 +14,25 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * Author: Peter D. Barnes, Jr. <pdbarnes@llnl.gov>
  */
 
-#include "ns3/application.h"
-#include "ns3/node.h"
-#include "ns3/ptr.h"
-#include "ns3/socket.h"
-#include "ns3/address.h"
+#include "ns3/mesh-stack-installer.h"
 
 namespace ns3
 {
-//  Simple class to write data to sockets
-class SocketWriter : public Application
-{
-public:
-  SocketWriter ();
-  virtual ~SocketWriter ();
-  /**
-   * Register this type.
-   * \return The TypeId.
-   */
-  static TypeId GetTypeId (void);
+NS_OBJECT_ENSURE_REGISTERED (MeshStack);
   
-  void Setup (Ptr<Node> node, Address peer);
-  void Connect ();
-  void Write (uint32_t numBytes);
-  void Close ();
-
-private:
-  virtual void StartApplication (void);
-  virtual void StopApplication (void);
-  Address m_peer;
-  Ptr<Node> m_node;
-  Ptr<Socket> m_socket;
-  bool m_isSetup;
-  bool m_isConnected;
-};
+TypeId
+MeshStack::GetTypeId ()
+{
+  static TypeId tid = TypeId ("ns3::MeshStack")
+    .SetParent<Object> ()
+    .SetGroupName ("Mesh")
+    // No AddConstructor because this is an abstract class.
+    ;
+  return tid;
 }
+
+} // namespace ns3

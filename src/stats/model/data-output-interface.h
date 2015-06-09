@@ -42,6 +42,12 @@ public:
   virtual ~DataOutputInterface();
 
   /**
+   * Register this type.
+   * \return The TypeId.
+   */
+  static TypeId GetTypeId (void);
+  
+  /**
    * Outputs information from the provided DataCollector
    * \param dc DataCollector object
    */

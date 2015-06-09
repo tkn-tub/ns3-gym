@@ -26,15 +26,14 @@
 #include <vector>
 
 namespace ns3 {
-class WaveBsmStats : public Object
 /**
  * \ingroup wave
  * \brief The WaveBsmStats class implements a stats collector for
  * IEEE 1609 WAVE (Wireless Access in Vehicular Environments)
  * Basic Safety Messages (BSMs).  The BSM is a ~200-byte packet that is
  * generally broadcast from every vehicle at a nominal rate of 10 Hz.
- */
-/*
+ *
+ * \internal
  * Note:  This class collects data elements and accessors
  * along with methods that calculate metrics from the data
  * elements.  The data and metrics calculation algorithms
@@ -47,6 +46,7 @@ class WaveBsmStats : public Object
  * or the algorithms separately into different classes could
  * lead to confusion over usage.
  */
+class WaveBsmStats : public Object
 {
 public:
   /**
@@ -55,6 +55,12 @@ public:
    */
   WaveBsmStats ();
 
+  /**
+   * Register this type.
+   * \return The TypeId.
+   */
+  static TypeId GetTypeId (void);
+  
   /**
    * \brief Increments the count of transmitted packets
    * \return none

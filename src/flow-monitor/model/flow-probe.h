@@ -54,6 +54,10 @@ protected:
 public:
   virtual ~FlowProbe ();
 
+  /// Register this type.
+  /// \return The TypeId.
+  static TypeId GetTypeId (void);
+  
   /// Structure to hold the statistics of a flow
   struct FlowStats
   {

@@ -40,6 +40,18 @@ DataCollector::~DataCollector() {
   // end DataCollector::~DataCollector
 }
 
+/* static */
+TypeId
+DataCollector::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::DataCollector")
+    .SetParent<Object> ()
+    .SetGroupName ("Stats")
+    .AddConstructor<DataCollector> ()
+    ;
+  return tid;
+}
+  
 void DataCollector::DoDispose () {
   NS_LOG_FUNCTION (this);
 

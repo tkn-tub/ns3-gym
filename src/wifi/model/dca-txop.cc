@@ -134,7 +134,7 @@ TypeId
 DcaTxop::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::DcaTxop")
-    .SetParent (ns3::Dcf::GetTypeId ())
+    .SetParent<ns3::Dcf> ()
     .SetGroupName ("Wifi")
     .AddConstructor<DcaTxop> ()
     .AddAttribute ("Queue", "The WifiMacQueue object",

@@ -34,6 +34,10 @@ public:
   BenchHeader ();
   bool IsOk (void) const;
 
+  /**
+   * Register this type.
+   * \return The TypeId.
+   */
   static TypeId GetTypeId (void);
   virtual TypeId GetInstanceTypeId (void) const;
   virtual void Print (std::ostream &os) const;
@@ -72,6 +76,9 @@ BenchHeader<N>::GetTypeId (void)
 {
   static TypeId tid = TypeId (GetTypeName ().c_str ())
     .SetParent<Header> ()
+    .SetGroupName ("Utils")
+    .HideFromDocumentation ()
+    .AddConstructor<BenchHeader <N> > ()
     ;
   return tid;
 }
@@ -124,11 +131,16 @@ public:
     oss << "anon::BenchTag<" << N << ">";
     return oss.str ();
   }
+  /**
+   * Register this type.
+   * \return The TypeId.
+   */
   static TypeId GetTypeId (void) {
     static TypeId tid = TypeId (GetName ().c_str ())
       .SetParent<Tag> ()
-      .AddConstructor<BenchTag > ()
+      .SetGroupName ("Utils")
       .HideFromDocumentation ()
+      .AddConstructor<BenchTag<N> > ()
       ;
     return tid;
   }

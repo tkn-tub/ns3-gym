@@ -74,7 +74,7 @@ TypeId
 LrWpanPhy::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::LrWpanPhy")
-    .SetParent<Object> ()
+    .SetParent<SpectrumPhy> ()
     .SetGroupName ("LrWpan")
     .AddConstructor<LrWpanPhy> ()
     .AddTraceSource ("TrxState",

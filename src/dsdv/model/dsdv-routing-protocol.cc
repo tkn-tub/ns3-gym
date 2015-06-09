@@ -66,7 +66,11 @@ struct DeferredRouteOutputTag : public Tag
   static TypeId
   GetTypeId ()
   {
-    static TypeId tid = TypeId ("ns3::dsdv::DeferredRouteOutputTag").SetParent<Tag> ().SetGroupName ("Dsdv");
+    static TypeId tid = TypeId ("ns3::dsdv::DeferredRouteOutputTag")
+      .SetParent<Tag> ()
+      .SetGroupName ("Dsdv")
+      .AddConstructor<DeferredRouteOutputTag> ()
+      ;
     return tid;
   }
 

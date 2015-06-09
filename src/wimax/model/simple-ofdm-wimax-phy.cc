@@ -43,9 +43,11 @@ NS_OBJECT_ENSURE_REGISTERED (SimpleOfdmWimaxPhy);
 
 TypeId SimpleOfdmWimaxPhy::GetTypeId (void)
 {
-  static TypeId
-    tid =
-    TypeId ("ns3::SimpleOfdmWimaxPhy").SetParent<WimaxPhy> ()
+  static TypeId tid = TypeId ("ns3::SimpleOfdmWimaxPhy")
+    .SetParent<WimaxPhy> ()
+    .SetGroupName ("Wimax")
+    
+    .AddConstructor<SimpleOfdmWimaxPhy> ()
 
     .AddAttribute ("NoiseFigure",
                    "Loss (dB) in the Signal-to-Noise-Ratio due to non-idealities in the receiver.",

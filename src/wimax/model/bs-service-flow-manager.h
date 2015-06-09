@@ -52,6 +52,12 @@ public:
   ~BsServiceFlowManager (void);
   void DoDispose (void);
   /**
+   * Register this type.
+   * \return The TypeId.
+   */
+  static TypeId GetTypeId (void);
+  
+  /**
    * \brief Add a new service flow
    * \param serviceFlow the service flow to add
    */

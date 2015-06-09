@@ -59,6 +59,18 @@ SsServiceFlowManager::~SsServiceFlowManager (void)
 {
 }
 
+/* static */
+TypeId
+SsServiceFlowManager::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::SsServiceFlowManager")
+    .SetParent<ServiceFlowManager> ()
+    .SetGroupName ("Wimax")
+    // No AddConstructor because this is an abstract class.
+    ;
+  return tid;
+}
+
 void
 SsServiceFlowManager::DoDispose (void)
 {

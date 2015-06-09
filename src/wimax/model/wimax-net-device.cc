@@ -56,6 +56,9 @@ TypeId WimaxNetDevice::GetTypeId (void)
     TypeId ("ns3::WimaxNetDevice")
 
     .SetParent<NetDevice> ()
+    .SetGroupName ("Wimax")
+
+    // No AddConstructor because this is an abstract class.
 
     .AddAttribute ("Mtu", "The MAC-level Maximum Transmission Unit",
                    UintegerValue (DEFAULT_MSDU_SIZE),

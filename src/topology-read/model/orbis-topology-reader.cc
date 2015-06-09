@@ -37,8 +37,9 @@ NS_OBJECT_ENSURE_REGISTERED (OrbisTopologyReader);
 TypeId OrbisTopologyReader::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::OrbisTopologyReader")
-    .SetParent<Object> ()
+    .SetParent<TopologyReader> ()
     .SetGroupName ("TopologyReader")
+    .AddConstructor<OrbisTopologyReader> ()
   ;
   return tid;
 }

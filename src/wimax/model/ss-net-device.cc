@@ -61,6 +61,7 @@ SubscriberStationNetDevice::GetTypeId (void)
     TypeId ("ns3::SubscriberStationNetDevice")
 
     .SetParent<WimaxNetDevice> ()
+    .SetGroupName ("Wimax")
 
     .AddConstructor<SubscriberStationNetDevice> ()
 

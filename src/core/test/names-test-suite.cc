@@ -26,10 +26,15 @@ using namespace ns3;
 class TestObject : public Object
 {
 public:
+  /**
+   * Register this type.
+   * \return The TypeId.
+   */
   static TypeId GetTypeId (void) 
   {
     static TypeId tid = TypeId ("TestObject")
-      .SetParent (Object::GetTypeId ())
+      .SetParent<Object> ()
+      .SetGroupName ("Core")
       .HideFromDocumentation ()
       .AddConstructor<TestObject> ();
     return tid;
@@ -41,10 +46,15 @@ public:
 class AlternateTestObject : public Object
 {
 public:
+  /**
+   * Register this type.
+   * \return The TypeId.
+   */
   static TypeId GetTypeId (void) 
   {
     static TypeId tid = TypeId ("AlternateTestObject")
-      .SetParent (Object::GetTypeId ())
+      .SetParent<Object> ()
+      .SetGroupName ("Core")
       .HideFromDocumentation ()
       .AddConstructor<AlternateTestObject> ();
     return tid;

@@ -32,7 +32,8 @@ TypeId
 FlameStack::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::FlameStack")
-    .SetParent<Object> ()
+    .SetParent<MeshStack> ()
+    .SetGroupName ("Mesh")
     .AddConstructor<FlameStack> ();
   return tid;
 }

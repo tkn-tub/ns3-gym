@@ -49,6 +49,10 @@ public:
   Ipv6FlowProbe (Ptr<FlowMonitor> monitor, Ptr<Ipv6FlowClassifier> classifier, Ptr<Node> node);
   virtual ~Ipv6FlowProbe ();
 
+  /// Register this type.
+  /// \return The TypeId.
+  static TypeId GetTypeId (void);
+
   /// \brief enumeration of possible reasons why a packet may be dropped
   enum DropReason 
   {

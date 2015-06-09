@@ -37,8 +37,9 @@ NS_OBJECT_ENSURE_REGISTERED (RocketfuelTopologyReader);
 TypeId RocketfuelTopologyReader::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::RocketfuelTopologyReader")
-    .SetParent<Object> ()
+    .SetParent<TopologyReader> ()
     .SetGroupName ("TopologyReader")
+    .AddConstructor<RocketfuelTopologyReader> ()
   ;
   return tid;
 }

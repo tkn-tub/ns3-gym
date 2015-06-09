@@ -35,6 +35,7 @@ SpectrumErrorModel::GetTypeId ()
   static TypeId tid = TypeId ("ns3::SpectrumErrorModel")
     .SetParent<Object> ()
     .SetGroupName ("Spectrum")
+    // No AddConstructor because this is an abstract class.
     ;
   return tid;
 }
@@ -43,6 +44,17 @@ SpectrumErrorModel::~SpectrumErrorModel ()
 {
 }
 
+/* static */
+TypeId
+ShannonSpectrumErrorModel::GetTypeId ()
+{
+  static TypeId tid = TypeId ("ns3::ShannonSpectrumErrorModel")
+    .SetParent<SpectrumErrorModel> ()
+    .SetGroupName ("Spectrum")
+    .AddConstructor<ShannonSpectrumErrorModel> ()
+    ;
+  return tid;
+}
 void
 ShannonSpectrumErrorModel::DoDispose ()
 {

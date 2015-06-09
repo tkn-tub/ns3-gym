@@ -346,19 +346,13 @@ struct SwitchPacketMetadata
 class Controller : public Object
 {
 public:
-  static TypeId GetTypeId (void)
-  {
-    static TypeId tid = TypeId ("ns3::ofi::Controller")
-      .SetParent<Object> ()
-      .AddConstructor<Controller> ()
-    ;
-    return tid;
-  }
-
-  virtual ~Controller ()
-  {
-    m_switches.clear ();
-  }
+  /**
+   * Register this type.
+   * \return The TypeId.
+   */
+  static TypeId GetTypeId (void);
+  /** Destructor. */
+  virtual ~Controller ();
 
   /**
    * Adds a switch to the controller.
@@ -443,6 +437,12 @@ protected:
 class DropController : public Controller
 {
 public:
+  /**
+   * Register this type.
+   * \return The TypeId.
+   */
+  static TypeId GetTypeId (void);
+  
   void ReceiveFromSwitch (Ptr<OpenFlowSwitchNetDevice> swtch, ofpbuf* buffer);
 };
 
@@ -456,6 +456,10 @@ public:
 class LearningController : public Controller
 {
 public:
+  /**
+   * Register this type.
+   * \return The TypeId.
+   */
   static TypeId GetTypeId (void);
 
   virtual ~LearningController ()

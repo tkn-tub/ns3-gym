@@ -79,6 +79,12 @@ public:
   SimpleSource ();
   virtual ~SimpleSource();
 
+  /**
+   * Register this type.
+   * \return The TypeId.
+   */
+  static TypeId GetTypeId (void);
+  
   void Setup (Ptr<Socket> socket, Address address, uint32_t packetSize, uint32_t nPackets, DataRate dataRate);
 
 private:
@@ -115,6 +121,18 @@ SimpleSource::~SimpleSource()
   m_socket = 0;
 }
 
+/* static */
+TypeId
+SimpleSource::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("SimpleSource")
+    .SetParent<Application> ()
+    .SetGroupName ("Stats")
+    .AddConstructor<SimpleSource> ()
+    ;
+  return tid;
+}
+  
 void
 SimpleSource::Setup (Ptr<Socket> socket, Address address, uint32_t packetSize, uint32_t nPackets, DataRate dataRate)
 {

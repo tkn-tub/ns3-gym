@@ -50,6 +50,18 @@ SimpleOfdmWimaxChannel::~SimpleOfdmWimaxChannel (void)
   m_phyList.clear ();
 }
 
+/* static */
+TypeId
+SimpleOfdmWimaxChannel::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::SimpleOfdmWimaxChannel")
+    .SetParent<WimaxChannel> ()
+    .SetGroupName ("Wimax")
+    .AddConstructor<SimpleOfdmWimaxChannel> ()
+    ;
+  return tid;
+}
+
 SimpleOfdmWimaxChannel::SimpleOfdmWimaxChannel (PropModel propModel)
 {
   switch (propModel)

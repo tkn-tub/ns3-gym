@@ -83,6 +83,12 @@ public:
   OfdmDownlinkFramePrefix ();
   ~OfdmDownlinkFramePrefix ();
 
+  /**
+   * Register this type.
+   * \return The TypeId.
+   */
+  static TypeId GetTypeId (void);
+  
   void SetBaseStationId (Mac48Address baseStationId);
   void SetFrameNumber (uint32_t frameNumber);
   void SetConfigurationChangeCount (uint8_t configurationChangeCount);

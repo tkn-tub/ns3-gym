@@ -40,7 +40,7 @@ TypeId
 UanNoiseModelDefault::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::UanNoiseModelDefault")
-    .SetParent<Object> ()
+    .SetParent<UanNoiseModel> ()
     .SetGroupName ("Uan")
     .AddConstructor<UanNoiseModelDefault> ()
     .AddAttribute ("Wind", "Wind speed in m/s.",

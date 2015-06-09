@@ -212,7 +212,7 @@ TypeId
 EdcaTxopN::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::EdcaTxopN")
-    .SetParent (ns3::Dcf::GetTypeId ())
+    .SetParent<ns3::Dcf> ()
     .SetGroupName ("Wifi")
     .AddConstructor<EdcaTxopN> ()
     .AddAttribute ("BlockAckThreshold", "If number of packets in this queue reaches this value,\

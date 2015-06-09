@@ -77,6 +77,11 @@ public:
   Tlv (uint8_t type, uint64_t length, const TlvValue & value);
   Tlv (void);
   ~Tlv (void);
+  /**
+   * Register this type.
+   * \return The TypeId.
+   */
+  static TypeId GetTypeId (void);
   virtual TypeId GetInstanceTypeId (void) const;
   virtual void Print (std::ostream &os) const;
   virtual uint32_t GetSerializedSize (void) const;

@@ -34,7 +34,8 @@ TypeId
 ErrorChannelSixlow::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::ErrorChannelSixlow")
-    .SetParent<Channel> ()
+    .SetParent<SimpleChannel> ()
+    .SetGroupName ("SixLowPan")
     .AddConstructor<ErrorChannelSixlow> ()
   ;
   return tid;
@@ -150,6 +151,7 @@ TypeId BinaryErrorSixlowModel::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::BinaryErrorSixlowModel")
     .SetParent<ErrorModel> ()
+    .SetGroupName ("SixLowPan")
     .AddConstructor<BinaryErrorSixlowModel> ()
   ;
   return tid;

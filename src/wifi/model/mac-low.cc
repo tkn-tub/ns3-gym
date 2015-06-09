@@ -384,6 +384,18 @@ MacLow::~MacLow ()
   NS_LOG_FUNCTION (this);
 }
 
+/* static */
+TypeId
+MacLow::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::MacLow")
+    .SetParent<Object> ()
+    .SetGroupName ("Wifi")
+    .AddConstructor<MacLow> ()
+    ;
+  return tid;
+}
+
 void
 MacLow::SetupPhyMacLowListener (Ptr<WifiPhy> phy)
 {

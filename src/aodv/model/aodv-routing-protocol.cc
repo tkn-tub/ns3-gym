@@ -65,7 +65,7 @@ public:
 
   static TypeId GetTypeId ()
   {
-    static TypeId tid = TypeId ("ns3::aodv::DeferredRouteOutputTag").SetParent<Tag> ()
+    static TypeId tid = TypeId ("ns3::aodv::DeferredRouteOutputTag")
       .SetParent<Tag> ()
       .SetGroupName("Aodv")
       .AddConstructor<DeferredRouteOutputTag> ()

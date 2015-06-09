@@ -51,6 +51,13 @@ public:
     LOG_DISTANCE_PROPAGATION,
     COST231_PROPAGATION
   };
+  
+  /**
+   * Register this type.
+   * \return The TypeId.
+   */
+  static TypeId GetTypeId (void);
+  
   /**
    * \brief Creates a channel and sets the propagation model
    * \param propModel the propagation model to use

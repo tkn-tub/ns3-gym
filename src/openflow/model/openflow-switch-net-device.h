@@ -86,6 +86,10 @@ namespace ns3 {
 class OpenFlowSwitchNetDevice : public NetDevice
 {
 public:
+  /**
+   * Register this type.
+   * \return The TypeId.
+   */
   static TypeId GetTypeId (void);
 
   /**

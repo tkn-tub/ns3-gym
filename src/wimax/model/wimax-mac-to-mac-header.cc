@@ -46,7 +46,11 @@ TypeId
 WimaxMacToMacHeader::GetTypeId (void)
 {
   static TypeId tid =
-    TypeId ("ns3::WimaxMacToMacHeader").SetParent<Header> ().SetGroupName("Wimax").AddConstructor<WimaxMacToMacHeader> ();
+    TypeId ("ns3::WimaxMacToMacHeader")
+    .SetParent<Header> ()
+    .SetGroupName("Wimax")
+    .AddConstructor<WimaxMacToMacHeader> ()
+    ;
   return tid;
 }
 

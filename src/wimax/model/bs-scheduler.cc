@@ -44,7 +44,11 @@ NS_OBJECT_ENSURE_REGISTERED (BSScheduler);
 TypeId
 BSScheduler::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::BSScheduler").SetParent<Object> ().SetGroupName("Wimax");
+  static TypeId tid = TypeId ("ns3::BSScheduler")
+    .SetParent<Object> ()
+    .SetGroupName("Wimax")
+    // No AddConstructor because this is an abstract class.
+    ;
   return tid;
 }
 

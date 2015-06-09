@@ -40,6 +40,18 @@ WaveBsmStats::WaveBsmStats ()
   m_waveTotalPktInCoverageReceiveCounts.resize (10, 0);
 }
 
+/* static */
+TypeId
+WaveBsmStats::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::WaveBsmStats")
+    .SetParent<Object> ()
+    .SetGroupName ("Stats")
+    .AddConstructor<WaveBsmStats> ()
+    ;
+  return tid;
+}
+  
 void
 WaveBsmStats::IncTxPktCount ()
 {

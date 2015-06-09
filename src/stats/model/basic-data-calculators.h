@@ -23,6 +23,7 @@
 
 #include "data-calculator.h"
 #include "data-output-interface.h"
+#include "ns3/type-name.h"
 
 namespace ns3 {
 
@@ -41,6 +42,12 @@ public:
   MinMaxAvgTotalCalculator();
   virtual ~MinMaxAvgTotalCalculator();
 
+  /**
+   * Register this type.
+   * \return The TypeId.
+   */
+  static TypeId GetTypeId (void);
+  
   /**
    * Updates all variables of MinMaxAvgTotalCalculator
    * \param i value of type T to use for updating the calculator
@@ -139,6 +146,7 @@ template <typename T>
 MinMaxAvgTotalCalculator<T>::~MinMaxAvgTotalCalculator()
 {
 }
+  
 template <typename T>
 void
 MinMaxAvgTotalCalculator<T>::DoDispose (void)
@@ -147,6 +155,21 @@ MinMaxAvgTotalCalculator<T>::DoDispose (void)
   // MinMaxAvgTotalCalculator::DoDispose
 }
 
+/* static */
+template <typename T>
+TypeId
+MinMaxAvgTotalCalculator<T>::GetTypeId (void)
+{
+  static TypeId tid = TypeId ( ("ns3::MinMaxAvgTotalCalculator<"
+                                + TypeNameGet<T> ()
+                                + ">").c_str () )
+    .SetParent<Object> ()
+    .SetGroupName ("Stats")
+    .AddConstructor<MinMaxAvgTotalCalculator<T> > ()
+    ;
+  return tid;
+}
+  
 template <typename T>
 void
 MinMaxAvgTotalCalculator<T>::Update (const T i)
@@ -254,6 +277,12 @@ public:
   virtual ~CounterCalculator();
 
   /**
+   * Register this type.
+   * \return The TypeId.
+   */
+  static TypeId GetTypeId (void);
+  
+  /**
    * Increments count by 1
    */
   void Update ();
@@ -295,6 +324,21 @@ template <typename T>
 CounterCalculator<T>::~CounterCalculator()
 {
 }
+/* static */
+template <typename T>
+TypeId
+CounterCalculator<T>::GetTypeId (void)
+{
+  static TypeId tid = TypeId ( ("ns3::CounterCalculator<"
+                                + TypeNameGet<T> ()
+                                + ">").c_str () )
+    .SetParent<Object> ()
+    .SetGroupName ("Stats")
+    .AddConstructor<CounterCalculator<T> > ()
+    ;
+  return tid;
+}
+
 template <typename T>
 void
 CounterCalculator<T>::DoDispose (void)

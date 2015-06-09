@@ -31,7 +31,8 @@ TypeId
 Dot11sStack::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::Dot11sStack")
-    .SetParent<Object> ()
+    .SetParent<MeshStack> ()
+    .SetGroupName ("Mesh")
     .AddConstructor<Dot11sStack> ()
     .AddAttribute ("Root", 
                    "The MAC address of root mesh point.",

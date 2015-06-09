@@ -51,9 +51,15 @@ public:
    * \param  device the device to which the service flow manager will be attached
    */
   SsServiceFlowManager (Ptr<SubscriberStationNetDevice> device);
-
   ~SsServiceFlowManager (void);
   void DoDispose (void);
+
+  /**
+   * Register this type.
+   * \return The TypeId.
+   */
+  static TypeId GetTypeId (void);
+  
   /**
    * \brief add a service flow to the list
    * \param serviceFlow the service flow to add
