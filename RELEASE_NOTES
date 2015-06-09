@@ -25,6 +25,7 @@ New user-visible features
 Bugs fixed
 ----------
 - Bug 1736 - default dot11EDCATableMSDULifetime
+- Bug 1929 - TcpL4Protocol::Send must indicate the source address to routing (if known)
 - Bug 2126 - LrWpanNetDevice silently accepts no mobility on the node
 - Bug 2135 - TCP doesn't honor the socket's output interface
 - Bug 2136 - The usage of tid in wifi and wave module shall be "if (tid > 7)" rather than "if (tid >= 7)"

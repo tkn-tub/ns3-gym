@@ -537,6 +537,7 @@ TcpL4Protocol::Send (Ptr<Packet> packet,
   if (ipv4 != 0)
     {
       Ipv4Header header;
+      header.SetSource (saddr);
       header.SetDestination (daddr);
       header.SetProtocol (PROT_NUMBER);
       Socket::SocketErrno errno_;
@@ -580,6 +581,7 @@ TcpL4Protocol::Send (Ptr<Packet> packet,
   if (ipv6 != 0)
     {
       Ipv6Header header;
+      header.SetSourceAddress (saddr);
       header.SetDestinationAddress (daddr);
       header.SetNextHeader (PROT_NUMBER);
       Socket::SocketErrno errno_;
