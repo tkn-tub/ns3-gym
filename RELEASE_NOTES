@@ -29,6 +29,7 @@ Bugs fixed
 - Bug 2126 - LrWpanNetDevice silently accepts no mobility on the node
 - Bug 2135 - TCP doesn't honor the socket's output interface
 - Bug 2136 - The usage of tid in wifi and wave module shall be "if (tid > 7)" rather than "if (tid >= 7)"
+- Bug 2138 - SimpleNetDevice could send overlapped packets.
 
 Known issues
 ------------

@@ -446,7 +446,7 @@ SimpleNetDevice::SendFrom (Ptr<Packet> p, const Address& source, const Address& 
 
   if (m_queue->Enqueue (p))
     {
-      if (m_queue->GetNPackets () == 1)
+      if (m_queue->GetNPackets () == 1 && !TransmitCompleteEvent.IsRunning ())
         {
           p = m_queue->Dequeue ();
           p->RemovePacketTag (tag);
