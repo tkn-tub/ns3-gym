@@ -24,6 +24,7 @@
 #include "ns3/nstime.h"
 #include "mac48-address.h"
 #include <vector>
+#include <map>
 
 namespace ns3 {
 
@@ -74,6 +75,24 @@ public:
    */ 
   virtual void Add (Ptr<SimpleNetDevice> device);
 
+  /**
+   * Blocks the communications from a NetDevice to another NetDevice.
+   * The block is unidirectional
+   *
+   * \param from the device to BlackList
+   * \param to the device wanting to block the other one
+   */
+  virtual void BlackList (Ptr<SimpleNetDevice> from, Ptr<SimpleNetDevice> to);
+
+  /**
+   * Un-Blocks the communications from a NetDevice to another NetDevice.
+   * The block is unidirectional
+   *
+   * \param from the device to BlackList
+   * \param to the device wanting to block the other one
+   */
+  virtual void UnBlackList (Ptr<SimpleNetDevice> from, Ptr<SimpleNetDevice> to);
+
   // inherited from ns3::Channel
   virtual uint32_t GetNDevices (void) const;
   virtual Ptr<NetDevice> GetDevice (uint32_t i) const;
@@ -81,6 +100,7 @@ public:
 private:
   Time m_delay; //!< The assigned speed-of-light delay of the channel
   std::vector<Ptr<SimpleNetDevice> > m_devices; //!< devices connected by the channel
+  std::map<Ptr<SimpleNetDevice>, std::vector<Ptr<SimpleNetDevice> > > m_blackListedDevices; //!< devices blocked on a device
 };
 
 } // namespace ns3

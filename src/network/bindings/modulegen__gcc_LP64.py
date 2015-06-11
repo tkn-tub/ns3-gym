@@ -3055,10 +3055,10 @@ def register_Ns3PcapFile_methods(root_module, cls):
     cls.add_method('Close', 
                    'void', 
                    [])
-    ## pcap-file.h (module 'network'): static bool ns3::PcapFile::Diff(std::string const & f1, std::string const & f2, uint32_t & sec, uint32_t & usec, uint32_t snapLen=ns3::PcapFile::SNAPLEN_DEFAULT) [member function]
+    ## pcap-file.h (module 'network'): static bool ns3::PcapFile::Diff(std::string const & f1, std::string const & f2, uint32_t & sec, uint32_t & usec, uint32_t & packets, uint32_t snapLen=ns3::PcapFile::SNAPLEN_DEFAULT) [member function]
     cls.add_method('Diff', 
                    'bool', 
-                   [param('std::string const &', 'f1'), param('std::string const &', 'f2'), param('uint32_t &', 'sec'), param('uint32_t &', 'usec'), param('uint32_t', 'snapLen', default_value='ns3::PcapFile::SNAPLEN_DEFAULT')], 
+                   [param('std::string const &', 'f1'), param('std::string const &', 'f2'), param('uint32_t &', 'sec'), param('uint32_t &', 'usec'), param('uint32_t &', 'packets'), param('uint32_t', 'snapLen', default_value='ns3::PcapFile::SNAPLEN_DEFAULT')], 
                    is_static=True)
     ## pcap-file.h (module 'network'): bool ns3::PcapFile::Eof() const [member function]
     cls.add_method('Eof', 
@@ -3715,6 +3715,11 @@ def register_Ns3TypeId_methods(root_module, cls):
     cls.add_method('SetParent', 
                    'ns3::TypeId', 
                    [param('ns3::TypeId', 'tid')])
+    ## type-id.h (module 'core'): ns3::TypeId ns3::TypeId::SetParent() [member function]
+    cls.add_method('SetParent', 
+                   'ns3::TypeId', 
+                   [], 
+                   template_parameters=['ns3::Object'])
     ## type-id.h (module 'core'): ns3::TypeId ns3::TypeId::SetSize(std::size_t size) [member function]
     cls.add_method('SetSize', 
                    'ns3::TypeId', 
@@ -6182,6 +6187,11 @@ def register_Ns3DataCalculator_methods(root_module, cls):
                    'std::string', 
                    [], 
                    is_const=True)
+    ## data-calculator.h (module 'stats'): static ns3::TypeId ns3::DataCalculator::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
     ## data-calculator.h (module 'stats'): void ns3::DataCalculator::Output(ns3::DataOutputCallback & callback) const [member function]
     cls.add_method('Output', 
                    'void', 
@@ -6256,6 +6266,11 @@ def register_Ns3DataOutputInterface_methods(root_module, cls):
                    'std::string', 
                    [], 
                    is_const=True)
+    ## data-output-interface.h (module 'stats'): static ns3::TypeId ns3::DataOutputInterface::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
     ## data-output-interface.h (module 'stats'): void ns3::DataOutputInterface::Output(ns3::DataCollector & dc) [member function]
     cls.add_method('Output', 
                    'void', 
@@ -6374,10 +6389,11 @@ def register_Ns3DropTailQueue_methods(root_module, cls):
     cls.add_constructor([param('ns3::DropTailQueue const &', 'arg0')])
     ## drop-tail-queue.h (module 'network'): ns3::DropTailQueue::DropTailQueue() [constructor]
     cls.add_constructor([])
-    ## drop-tail-queue.h (module 'network'): ns3::Queue::QueueMode ns3::DropTailQueue::GetMode() [member function]
+    ## drop-tail-queue.h (module 'network'): ns3::Queue::QueueMode ns3::DropTailQueue::GetMode() const [member function]
     cls.add_method('GetMode', 
                    'ns3::Queue::QueueMode', 
-                   [])
+                   [], 
+                   is_const=True)
     ## drop-tail-queue.h (module 'network'): static ns3::TypeId ns3::DropTailQueue::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
@@ -7254,6 +7270,11 @@ def register_Ns3MinMaxAvgTotalCalculator__Unsigned_int_methods(root_module, cls)
     cls.add_constructor([param('ns3::MinMaxAvgTotalCalculator< unsigned int > const &', 'arg0')])
     ## basic-data-calculators.h (module 'stats'): ns3::MinMaxAvgTotalCalculator<unsigned int>::MinMaxAvgTotalCalculator() [constructor]
     cls.add_constructor([])
+    ## basic-data-calculators.h (module 'stats'): static ns3::TypeId ns3::MinMaxAvgTotalCalculator<unsigned int>::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
     ## basic-data-calculators.h (module 'stats'): void ns3::MinMaxAvgTotalCalculator<unsigned int>::Output(ns3::DataOutputCallback & callback) const [member function]
     cls.add_method('Output', 
                    'void', 
@@ -7865,6 +7886,11 @@ def register_Ns3PacketSizeMinMaxAvgTotalCalculator_methods(root_module, cls):
     cls.add_method('FrameUpdate', 
                    'void', 
                    [param('std::string', 'path'), param('ns3::Ptr< ns3::Packet const >', 'packet'), param('ns3::Mac48Address', 'realto')])
+    ## packet-data-calculators.h (module 'network'): static ns3::TypeId ns3::PacketSizeMinMaxAvgTotalCalculator::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
     ## packet-data-calculators.h (module 'network'): void ns3::PacketSizeMinMaxAvgTotalCalculator::PacketUpdate(std::string path, ns3::Ptr<ns3::Packet const> packet) [member function]
     cls.add_method('PacketUpdate', 
                    'void', 
@@ -9235,6 +9261,11 @@ def register_Ns3SimpleChannel_methods(root_module, cls):
                    'void', 
                    [param('ns3::Ptr< ns3::SimpleNetDevice >', 'device')], 
                    is_virtual=True)
+    ## simple-channel.h (module 'network'): void ns3::SimpleChannel::BlackList(ns3::Ptr<ns3::SimpleNetDevice> from, ns3::Ptr<ns3::SimpleNetDevice> to) [member function]
+    cls.add_method('BlackList', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::SimpleNetDevice >', 'from'), param('ns3::Ptr< ns3::SimpleNetDevice >', 'to')], 
+                   is_virtual=True)
     ## simple-channel.h (module 'network'): ns3::Ptr<ns3::NetDevice> ns3::SimpleChannel::GetDevice(uint32_t i) const [member function]
     cls.add_method('GetDevice', 
                    'ns3::Ptr< ns3::NetDevice >', 
@@ -9254,6 +9285,11 @@ def register_Ns3SimpleChannel_methods(root_module, cls):
     cls.add_method('Send', 
                    'void', 
                    [param('ns3::Ptr< ns3::Packet >', 'p'), param('uint16_t', 'protocol'), param('ns3::Mac48Address', 'to'), param('ns3::Mac48Address', 'from'), param('ns3::Ptr< ns3::SimpleNetDevice >', 'sender')], 
+                   is_virtual=True)
+    ## simple-channel.h (module 'network'): void ns3::SimpleChannel::UnBlackList(ns3::Ptr<ns3::SimpleNetDevice> from, ns3::Ptr<ns3::SimpleNetDevice> to) [member function]
+    cls.add_method('UnBlackList', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::SimpleNetDevice >', 'from'), param('ns3::Ptr< ns3::SimpleNetDevice >', 'to')], 
                    is_virtual=True)
     return
 
@@ -9614,6 +9650,11 @@ def register_Ns3CounterCalculator__Unsigned_int_methods(root_module, cls):
                    'unsigned int', 
                    [], 
                    is_const=True)
+    ## basic-data-calculators.h (module 'stats'): static ns3::TypeId ns3::CounterCalculator<unsigned int>::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
     ## basic-data-calculators.h (module 'stats'): void ns3::CounterCalculator<unsigned int>::Output(ns3::DataOutputCallback & callback) const [member function]
     cls.add_method('Output', 
                    'void', 
@@ -9643,6 +9684,11 @@ def register_Ns3PacketCounterCalculator_methods(root_module, cls):
     cls.add_method('FrameUpdate', 
                    'void', 
                    [param('std::string', 'path'), param('ns3::Ptr< ns3::Packet const >', 'packet'), param('ns3::Mac48Address', 'realto')])
+    ## packet-data-calculators.h (module 'network'): static ns3::TypeId ns3::PacketCounterCalculator::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
     ## packet-data-calculators.h (module 'network'): void ns3::PacketCounterCalculator::PacketUpdate(std::string path, ns3::Ptr<ns3::Packet const> packet) [member function]
     cls.add_method('PacketUpdate', 
                    'void', 
