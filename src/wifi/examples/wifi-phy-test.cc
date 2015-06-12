@@ -119,6 +119,9 @@ PsrExperiment::Run (struct PsrExperiment::Input input)
   rx->SetChannel (channel);
   tx->SetMobility (posTx);
   rx->SetMobility (posRx);
+  
+  tx->ConfigureStandard(WIFI_PHY_STANDARD_80211a);
+  rx->ConfigureStandard(WIFI_PHY_STANDARD_80211a);
 
   rx->SetReceiveOkCallback (MakeCallback (&PsrExperiment::Receive, this));
 
@@ -263,6 +266,9 @@ CollisionExperiment::Run (struct CollisionExperiment::Input input)
   txB->SetMobility (posTxB);
   rx->SetMobility (posRx);
 
+  txA->ConfigureStandard(WIFI_PHY_STANDARD_80211a);
+  txB->ConfigureStandard(WIFI_PHY_STANDARD_80211a);
+  rx->ConfigureStandard(WIFI_PHY_STANDARD_80211a);
 
   rx->SetReceiveOkCallback (MakeCallback (&CollisionExperiment::Receive, this));
 
@@ -320,6 +326,7 @@ static void PrintPsrVsDistance (int argc, char *argv[])
   cmd.AddValue ("NPackets", "The number of packets to send", input.nPackets);
   cmd.AddValue ("PacketSize", "The size of each packet sent", input.packetSize);
   cmd.Parse (argc, argv);
+    
   for (input.distance = 1.0; input.distance < 165; input.distance += 2.0)
     {
       std::cout << input.distance;
@@ -406,6 +413,7 @@ static void PrintPsrVsCollisionInterval (int argc, char *argv[])
   cmd.AddValue ("NPackets", "The number of packets to send for each transmitter", input.nPackets);
   cmd.AddValue ("xA", "the position of transmitter A", input.xA);
   cmd.AddValue ("xB", "the position of transmitter B", input.xB);
+  
   for (uint32_t i = 0; i < 100; i += 1)
     {
       CollisionExperiment experiment;
@@ -461,6 +469,10 @@ int main (int argc, char *argv[])
   else if (type == "PsrVsCollisionInterval")
     {
       PrintPsrVsCollisionInterval (argc, argv);
+    }
+  else
+    {
+      std::cout << "Wrong arguments!" << std::endl;
     }
 
   return 0;
