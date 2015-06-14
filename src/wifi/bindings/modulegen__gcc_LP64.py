@@ -7343,8 +7343,8 @@ def register_Ns3WifiPhy_methods(root_module, cls):
                    'int64_t', 
                    [param('int64_t', 'stream')], 
                    is_pure_virtual=True, is_virtual=True)
-    ## wifi-phy.h (module 'wifi'): ns3::Time ns3::WifiPhy::CalculatePlcpDuration(ns3::WifiTxVector txvector, ns3::WifiPreamble preamble) [member function]
-    cls.add_method('CalculatePlcpDuration', 
+    ## wifi-phy.h (module 'wifi'): ns3::Time ns3::WifiPhy::CalculatePlcpPreambleAndHeaderDuration(ns3::WifiTxVector txvector, ns3::WifiPreamble preamble) [member function]
+    cls.add_method('CalculatePlcpPreambleAndHeaderDuration', 
                    'ns3::Time', 
                    [param('ns3::WifiTxVector', 'txvector'), param('ns3::WifiPreamble', 'preamble')])
     ## wifi-phy.h (module 'wifi'): double ns3::WifiPhy::CalculateSnr(ns3::WifiMode txMode, double ber) const [member function]
@@ -11768,6 +11768,11 @@ def register_Ns3MacLow_methods(root_module, cls):
                    'ns3::Time', 
                    [], 
                    is_const=True)
+    ## mac-low.h (module 'wifi'): static ns3::TypeId ns3::MacLow::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
     ## mac-low.h (module 'wifi'): bool ns3::MacLow::IsPromisc() const [member function]
     cls.add_method('IsPromisc', 
                    'bool', 
@@ -11920,6 +11925,11 @@ def register_Ns3MgtBeaconHeader_methods(root_module, cls):
     cls.add_constructor([])
     ## mgt-headers.h (module 'wifi'): ns3::MgtBeaconHeader::MgtBeaconHeader(ns3::MgtBeaconHeader const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::MgtBeaconHeader const &', 'arg0')])
+    ## mgt-headers.h (module 'wifi'): static ns3::TypeId ns3::MgtBeaconHeader::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
     return
 
 def register_Ns3MinstrelWifiManager_methods(root_module, cls):
