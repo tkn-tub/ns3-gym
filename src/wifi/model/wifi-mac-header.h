@@ -546,7 +546,7 @@ public:
    * Check if the A-MSDU present bit is set in the QoS control field.
    *
    * \return true if the A-MSDU present bit is set,
-   *        false otherwise
+   *         false otherwise
    */
   bool IsQosAmsdu (void) const;
   /**
@@ -567,7 +567,6 @@ public:
    * \return the TXOP limit
    */
   uint8_t GetQosTxopLimit (void) const;
-
   /**
    * Return the size of the WifiMacHeader in octets.
    * GetSerializedSize calls this function.
@@ -652,7 +651,5 @@ private:
 };
 
 } // namespace ns3
-
-
 
 #endif /* WIFI_MAC_HEADER_H */
