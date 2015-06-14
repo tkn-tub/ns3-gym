@@ -533,7 +533,7 @@ YansWifiPhy::StartReceivePlcp (Ptr<Packet> packet,
   rxPowerDbm += m_rxGainDb;
   double rxPowerW = DbmToW (rxPowerDbm);
   Time endRx = Simulator::Now () + rxDuration;
-  Time plcpDuration = CalculatePlcpDuration (txVector, preamble);
+  Time plcpDuration = CalculatePlcpPreambleAndHeaderDuration (txVector, preamble);
 
   Ptr<InterferenceHelper::Event> event;
   event = m_interference.Add (packet->GetSize (),

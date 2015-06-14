@@ -82,7 +82,6 @@ public:
    * unless they have received a cca busy report.
    */
   virtual void NotifyTxStart (Time duration, double txPowerDbm) = 0;
-
   /**
    * \param duration the expected busy duration.
    *
@@ -163,12 +162,12 @@ public:
    * arg3: TXVECTOR of packet
    * arg4: type of preamble used for packet.
    */
-  typedef Callback<void,Ptr<Packet>, double, WifiTxVector, enum WifiPreamble> RxOkCallback;
+  typedef Callback<void, Ptr<Packet>, double, WifiTxVector, enum WifiPreamble> RxOkCallback;
   /**
    * arg1: packet received unsuccessfully
    * arg2: snr of packet
    */
-  typedef Callback<void,Ptr<const Packet>, double> RxErrorCallback;
+  typedef Callback<void, Ptr<const Packet>, double> RxErrorCallback;
 
   static TypeId GetTypeId (void);
 
@@ -289,24 +288,25 @@ public:
    * \param txvector the transmission parameters used for this packet
    * \param preamble the type of preamble to use for this packet.
    * \param frequency the channel center frequency (MHz)
-   * \param packetType the type of the packet 0 is not A-MPDU, 1 is a MPDU that is part of an A-MPDU  and 2 is the last MPDU in an A-MPDU
+   * \param packetType the type of the packet 0 is not A-MPDU, 1 is a MPDU that is part of an A-MPDU and 2 is the last MPDU in an A-MPDU
    * \param incFlag this flag is used to indicate that the static variables need to be update or not. This function is called a couple of times for the same packet so static variables should not be increased each time. 
-   * \return the total amount of time this PHY will stay busy for
-   *          the transmission of these bytes.
+   *
+   * \return the total amount of time this PHY will stay busy for the transmission of these bytes.
    */
   Time CalculateTxDuration (uint32_t size, WifiTxVector txvector, enum WifiPreamble preamble, double frequency, uint8_t packetType, uint8_t incFlag);
   
   /**
    * \param txvector the transmission parameters used for this packet
    * \param preamble the type of preamble to use for this packet.
-   * \return the total amount of time this PHY will stay busy for the transmission of the plcp.
+   *
+   * \return the total amount of time this PHY will stay busy for the transmission of the PLCP preamble and PLCP header.
    */
-  Time CalculatePlcpDuration (WifiTxVector txvector, enum WifiPreamble preamble);
+  Time CalculatePlcpPreambleAndHeaderDuration (WifiTxVector txvector, enum WifiPreamble preamble);
 
   /**
    * \param preamble the type of preamble
    * \param txvector the transmission parameters used for this packet
-
+   *
    * \return the training symbol duration
    */
   static Time GetPlcpHtTrainingSymbolDuration (WifiPreamble preamble, WifiTxVector txvector);
@@ -323,8 +323,6 @@ public:
    * \return the duration of the HT-SIG in Mixed Format and greenfield format PLCP header 
    */
   static Time GetPlcpHtSigHeaderDuration (WifiPreamble preamble);
-
-
   /** 
    * \param payloadMode the WifiMode use for the transmission of the payload
    * \param preamble the type of preamble
@@ -332,7 +330,6 @@ public:
    * \return the WifiMode used for the transmission of the PLCP header 
    */
   static WifiMode GetPlcpHeaderMode (WifiMode payloadMode, WifiPreamble preamble);
-
   /**
    * \param payloadMode the WifiMode use for the transmission of the payload
    * \param preamble the type of preamble
@@ -340,7 +337,6 @@ public:
    * \return the duration of the PLCP header
    */
   static Time GetPlcpHeaderDuration (WifiMode payloadMode, WifiPreamble preamble);
-
   /** 
    * \param payloadMode the WifiMode use for the transmission of the payload
    * \param preamble the type of preamble 
@@ -348,13 +344,12 @@ public:
    * \return the duration of the PLCP preamble
    */
   static Time GetPlcpPreambleDuration (WifiMode payloadMode, WifiPreamble preamble);
-
   /** 
    * \param size the number of bytes in the packet to send
    * \param txvector the transmission parameters used for this packet
-   * \param preamble the type of preamble to use for this packet.
+   * \param preamble the type of preamble to use for this packet
    * \param frequency the channel center frequency (MHz)
-   * \param packetType the type of the packet 0 is not A-MPDU, 1 is a MPDU that is part of an A-MPDU  and 2 is the last MPDU in an A-MPDU
+   * \param packetType the type of the packet (0 is not A-MPDU, 1 is a MPDU that is part of an A-MPDU and 2 is the last MPDU in an A-MPDU)
    * \param incFlag this flag is used to indicate that the static variables need to be update or not. This function is called a couple of times for the same packet so static variables should not be increased each time
    * 
    * \return the duration of the payload
@@ -393,6 +388,7 @@ public:
    * necessarily proper) of the BSSBasicRateSet.
    *
    * \param mode index in array of supported modes
+   *
    * \return the mode whose index is specified.
    *
    * \sa WifiPhy::GetNModes()
@@ -402,17 +398,21 @@ public:
    * Check if the given WifiMode is supported by the PHY.
    *
    * \param mode the wifi mode to check
+   *
    * \return true if the given mode is supported,
    *         false otherwise
    */
   virtual bool IsModeSupported (WifiMode mode) const = 0;
+  
   /**
    * \param txMode the transmission mode
    * \param ber the probability of bit error rate
+   *
    * \return the minimum snr which is required to achieve
    *          the requested ber for the specified transmission mode. (W/W)
    */
   virtual double CalculateSnr (WifiMode txMode, double ber) const = 0;
+  
    /**
    * The WifiPhy::NBssMembershipSelectors() method is used
    * (e.g., by a WifiRemoteStationManager) to determine the set of
@@ -420,12 +420,9 @@ public:
    * can support - a set of WifiMode objects which we call the
    * BssMembershipSelectorSet, and which is stored as WifiPhy::m_bssMembershipSelectorSet.
    *
-   * This was introduced with 11n
-   *
    * \return the memebership selector whose index is specified.
    */
-  virtual uint32_t GetNBssMembershipSelectors (void) const=0;
-
+  virtual uint32_t GetNBssMembershipSelectors (void) const = 0;
    /**
    * The WifiPhy::BssMembershipSelector() method is used
    * (e.g., by a WifiRemoteStationManager) to determine the set of
@@ -433,12 +430,11 @@ public:
    * can support - a set of WifiMode objects which we call the
    * BssMembershipSelectorSet, and which is stored as WifiPhy::m_bssMembershipSelectorSet.
    *
-   * This was introduced with 11n
-   *
    * \param selector index in array of supported memberships
+   *
    * \return the memebership selector whose index is specified.
    */
-  virtual uint32_t GetBssMembershipSelector (uint32_t selector) const=0;
+  virtual uint32_t GetBssMembershipSelector (uint32_t selector) const = 0;
   /**
    * The WifiPhy::GetMembershipSelectorModes() method is used
    * (e.g., by a WifiRemoteStationManager) to determine the set of
@@ -446,22 +442,19 @@ public:
    * can support - a set of WifiMode objects which we call the
    * BssMembershipSelectorSet, and which is stored as WifiPhy::m_bssMembershipSelectorSet.
    *
-   * This was introduced with 11n
-   *
    * \param selector index in array of supported memberships
+   *
    * \return a WifiModeList that contains the WifiModes associrated with the selected index.
    *
    * \sa WifiPhy::GetMembershipSelectorModes()
    */
-  virtual WifiModeList GetMembershipSelectorModes(uint32_t selector)=0;
+  virtual WifiModeList GetMembershipSelectorModes(uint32_t selector) = 0;
   /**
    * The WifiPhy::GetNMcs() method is used
    * (e.g., by a WifiRemoteStationManager) to determine the set of
    * transmission/reception MCS indexes that this WifiPhy(-derived class)
    * can support - a set of MCS indexes which we call the
    * DeviceMcsSet, and which is stored as WifiPhy::m_deviceMcsSet.
-   *
-   * This was introduced with 11n
    *
    * \return the MCS index whose index is specified.
    */
@@ -473,31 +466,31 @@ public:
    * can support - a set of MCS indexes which we call the
    * DeviceMcsSet, and which is stored as WifiPhy::m_deviceMcsSet.
    *
-   * This was introduced with 11n
-   *
    * \param mcs index in array of supported MCS
+   *
    * \return the MCS index whose index is specified.
    */
-  virtual uint8_t GetMcs (uint8_t mcs) const=0;
+  virtual uint8_t GetMcs (uint8_t mcs) const = 0;
 
   /**
   * For a given WifiMode finds the corresponding MCS value and returns it 
   * as defined in the IEEE 802.11n standard 
   *
   * \param mode the WifiMode
+  *
   * \return the MCS number that corresponds to the given WifiMode
   */
-  virtual uint32_t WifiModeToMcs (WifiMode mode)=0;
+  virtual uint32_t WifiModeToMcs (WifiMode mode) = 0;
  /**
   * For a given MCS finds the corresponding WifiMode and returns it 
   * as defined in the IEEE 802.11n standard. 
   * 
   * \param mcs the MCS number 
+  *
   * \return the WifiMode that corresponds to the given MCS number
   */
-  virtual WifiMode McsToWifiMode (uint8_t mcs)=0;
+  virtual WifiMode McsToWifiMode (uint8_t mcs) = 0;
 
-  
   /**
    * \brief Set channel number.
    *
@@ -846,7 +839,6 @@ public:
    * \return a WifiMode for OFDM at 135Mbps with 40MHz channel spacing
    */
   static WifiMode GetOfdmRate135MbpsBW40MHz ();
-  //Rates for clause 20 with short guard interval
   /**
    * Return a WifiMode for OFDM at 7.2Mbps with 20MHz channel spacing.
    *
@@ -946,58 +938,52 @@ public:
    */
   static WifiMode GetOfdmRate150MbpsBW40MHz ();
 
-
   /**
-   * Public method used to fire a PhyTxBegin trace.  Implemented for encapsulation
-   * purposes.
+   * Public method used to fire a PhyTxBegin trace.
+   * Implemented for encapsulation purposes.
    *
    * \param packet the packet being transmitted
    */
   void NotifyTxBegin (Ptr<const Packet> packet);
-
   /**
-   * Public method used to fire a PhyTxEnd trace.  Implemented for encapsulation
-   * purposes.
+   * Public method used to fire a PhyTxEnd trace.
+   * Implemented for encapsulation purposes.
    *
    * \param packet the packet that was transmitted
    */
   void NotifyTxEnd (Ptr<const Packet> packet);
-
   /**
-   * Public method used to fire a PhyTxDrop trace.  Implemented for encapsulation
-   * purposes.
+   * Public method used to fire a PhyTxDrop trace.
+   * Implemented for encapsulation purposes.
    *
    * \param packet the packet that was failed to transmitted
    */
   void NotifyTxDrop (Ptr<const Packet> packet);
-
   /**
-   * Public method used to fire a PhyRxBegin trace.  Implemented for encapsulation
-   * purposes.
+   * Public method used to fire a PhyRxBegin trace.
+   * Implemented for encapsulation purposes.
    *
    * \param packet the packet being received
    */
   void NotifyRxBegin (Ptr<const Packet> packet);
-
   /**
-   * Public method used to fire a PhyRxEnd trace.  Implemented for encapsulation
-   * purposes.
+   * Public method used to fire a PhyRxEnd trace.
+   * Implemented for encapsulation purposes.
    *
    * \param packet the packet received
    */
   void NotifyRxEnd (Ptr<const Packet> packet);
-
   /**
-   * Public method used to fire a PhyRxDrop trace.  Implemented for encapsulation
-   * purposes.
+   * Public method used to fire a PhyRxDrop trace.
+   * Implemented for encapsulation purposes.
    *
    * \param packet the packet that was not successfully received
    */
   void NotifyRxDrop (Ptr<const Packet> packet);
 
   /**
-   * Public method used to fire a MonitorSniffer trace for a wifi packet
-   * being received.  Implemented for encapsulation purposes.
+   * Public method used to fire a MonitorSniffer trace for a wifi packet being received.
+   * Implemented for encapsulation purposes.
    *
    * \param packet the packet being received
    * \param channelFreqMhz the frequency in MHz at which the packet is
@@ -1038,7 +1024,7 @@ public:
    * \param isShortPreamble true if short preamble is used, false otherwise
    * \param txVector the txvector that holds rx parameters
    * \param signalDbm signal power in dBm
-   * \param noiseDbm  noise power in dBm
+   * \param noiseDbm noise power in dBm
    */
   typedef void (* MonitorSnifferRxCallback)
     (Ptr<const Packet> packet, uint16_t channelFreqMhz,
@@ -1047,8 +1033,8 @@ public:
      double signalDbm, double noiseDbm);
 
   /**
-   * Public method used to fire a MonitorSniffer trace for a wifi packet
-   * being transmitted.  Implemented for encapsulation purposes.
+   * Public method used to fire a MonitorSniffer trace for a wifi packet being transmitted.
+   * Implemented for encapsulation purposes.
    *
    * \param packet the packet being transmitted
    * \param channelFreqMhz the frequency in MHz at which the packet is
@@ -1080,10 +1066,9 @@ public:
      uint16_t channelNumber, uint32_t rate,
      bool isShortPreamble, WifiTxVector txvector);
 
-
  /**
   * Assign a fixed random variable stream number to the random variables
-  * used by this model.  Return the number of streams (possibly zero) that
+  * used by this model. Return the number of streams (possibly zero) that
   * have been assigned.
   *
   * \param stream first stream index to use
@@ -1094,69 +1079,68 @@ public:
   /**
    * \param freq the operating frequency on this node.
    */
-  virtual void SetFrequency (uint32_t freq)=0;
+  virtual void SetFrequency (uint32_t freq) = 0;
   /**
    * \return the operating frequency on this node
    */
-  virtual uint32_t GetFrequency (void) const=0;
+  virtual uint32_t GetFrequency (void) const = 0;
   /**
    * \param tx the number of transmitters on this node.
    */
-  virtual void SetNumberOfTransmitAntennas (uint32_t tx)=0;
-
+  virtual void SetNumberOfTransmitAntennas (uint32_t tx) = 0;
   /**
    * \return the number of transmit antenna on this device
    */
-  virtual uint32_t GetNumberOfTransmitAntennas (void) const=0;
+  virtual uint32_t GetNumberOfTransmitAntennas (void) const = 0;
    /**
    * \param rx the number of receivers on this node.
    */
-  virtual void SetNumberOfReceiveAntennas (uint32_t rx)=0 ;
+  virtual void SetNumberOfReceiveAntennas (uint32_t rx) = 0;
   /**
    * \return the number of receivers on this node.
    */
-  virtual uint32_t GetNumberOfReceiveAntennas (void) const=0;
+  virtual uint32_t GetNumberOfReceiveAntennas (void) const = 0;
   /**
    * \param guardInterval Enable or disable short guard interval
    */
-   virtual void SetGuardInterval (bool guardInterval)=0;
-   /**
-   *  \return true if short guard interval is supported, false otherwise
+  virtual void SetGuardInterval (bool guardInterval) = 0;
+  /**
+   * \return true if short guard interval is supported, false otherwise
    */
   virtual bool GetGuardInterval (void) const = 0;
   /**
    * \param ldpc Enable or disable LDPC
    */
-  virtual void SetLdpc (bool ldpc)=0;
+  virtual void SetLdpc (bool ldpc) = 0;
   /**
    * \return true if LDPC is supported, false otherwise
    */
-  virtual bool GetLdpc (void) const=0;
+  virtual bool GetLdpc (void) const = 0;
   /**
    * \param stbc Enable or disable STBC is supported
    */
-  virtual void SetStbc (bool stbc)=0;
+  virtual void SetStbc (bool stbc) = 0;
   /**
-   *  \return true if STBC is supported, false otherwise
+   * \return true if STBC is supported, false otherwise
    */
-  virtual bool GetStbc (void) const=0;
-   
+  virtual bool GetStbc (void) const = 0;
   /**
    * \param greenfield Enable or disable GreenField
    */
-  virtual void SetGreenfield (bool greenfield)=0;
+  virtual void SetGreenfield (bool greenfield) = 0;
   /**
    * \return true if Greenfield is supported, false otherwise
    */
-  virtual bool GetGreenfield (void) const=0;
+  virtual bool GetGreenfield (void) const = 0;
   /**
    * \return true if channel bonding 40 MHz is supported, false otherwise
    */
   virtual bool GetChannelBonding (void) const = 0;
   /**
-   *  \param channelbonding Enable or disable channel bonding
+   * \param channelbonding Enable or disable channel bonding
    */
-  virtual void SetChannelBonding (bool channelbonding) = 0 ;
+  virtual void SetChannelBonding (bool channelbonding) = 0;
+
 
 private:
   /**
