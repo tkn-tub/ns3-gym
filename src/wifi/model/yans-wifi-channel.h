@@ -17,6 +17,7 @@
  *
  * Author: Mathieu Lacage, <mathieu.lacage@sophia.inria.fr>
  */
+
 #ifndef YANS_WIFI_CHANNEL_H
 #define YANS_WIFI_CHANNEL_H
 
@@ -56,7 +57,7 @@ public:
   YansWifiChannel ();
   virtual ~YansWifiChannel ();
 
-  // inherited from Channel.
+  //inherited from Channel.
   virtual uint32_t GetNDevices (void) const;
   virtual Ptr<NetDevice> GetDevice (uint32_t i) const;
 
@@ -99,13 +100,13 @@ public:
   * have been assigned.
   *
   * \param stream first stream index to use
+  *
   * \return the number of stream indices assigned by this model
   */
   int64_t AssignStreams (int64_t stream);
 
+
 private:
-  //YansWifiChannel& operator = (const YansWifiChannel &);
-  //YansWifiChannel (const YansWifiChannel &);
 
   /**
    * A vector of pointers to YansWifiPhy.
@@ -126,12 +127,11 @@ private:
                 WifiTxVector txVector, WifiPreamble preamble) const;
 
 
-  PhyList m_phyList; //!< List of YansWifiPhys connected to this YansWifiChannel
-  Ptr<PropagationLossModel> m_loss; //!< Propagation loss model
-  Ptr<PropagationDelayModel> m_delay; //!< Propagation delay model
+  PhyList m_phyList;                   //!< List of YansWifiPhys connected to this YansWifiChannel
+  Ptr<PropagationLossModel> m_loss;    //!< Propagation loss model
+  Ptr<PropagationDelayModel> m_delay;  //!< Propagation delay model
 };
 
 } // namespace ns3
-
 
 #endif /* YANS_WIFI_CHANNEL_H */

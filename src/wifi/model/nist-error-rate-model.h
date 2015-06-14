@@ -17,6 +17,7 @@
  *
  * Author: Gary Pei <guangyu.pei@boeing.com>
  */
+
 #ifndef NIST_ERROR_RATE_MODEL_H
 #define NIST_ERROR_RATE_MODEL_H
 
@@ -44,12 +45,15 @@ public:
 
   virtual double GetChunkSuccessRate (WifiMode mode, double snr, uint32_t nbits) const;
 
+
 private:
+
   /**
    * Return the coded BER for the given p and b.
    *
    * \param p
    * \param bValue
+   *
    * \return BER
    */
   double CalculatePe (double p, uint32_t bValue) const;
@@ -57,6 +61,7 @@ private:
    * Return BER of BPSK at the given SNR.
    *
    * \param snr snr value
+   *
    * \return BER of BPSK at the given SNR
    */
   double GetBpskBer (double snr) const;
@@ -64,6 +69,7 @@ private:
    * Return BER of QPSK at the given SNR.
    *
    * \param snr snr value
+   *
    * \return BER of QPSK at the given SNR
    */
   double GetQpskBer (double snr) const;
@@ -71,6 +77,7 @@ private:
    * Return BER of QAM16 at the given SNR.
    *
    * \param snr snr value
+   *
    * \return BER of QAM16 at the given SNR
    */
   double Get16QamBer (double snr) const;
@@ -78,6 +85,7 @@ private:
    * Return BER of QAM64 at the given SNR.
    *
    * \param snr snr value
+   *
    * \return BER of QAM64 at the given SNR
    */
   double Get64QamBer (double snr) const;
@@ -87,6 +95,7 @@ private:
    * \param snr snr value
    * \param nbits the number of bits in the chunk
    * \param bValue
+   *
    * \return BER of BPSK at the given SNR after applying FEC
    */
   double GetFecBpskBer (double snr, uint32_t nbits,
@@ -97,6 +106,7 @@ private:
    * \param snr snr value
    * \param nbits the number of bits in the chunk
    * \param bValue
+   *
    * \return BER of QPSK at the given SNR after applying FEC
    */
   double GetFecQpskBer (double snr, uint32_t nbits,
@@ -107,6 +117,7 @@ private:
    * \param snr snr value
    * \param nbits the number of bits in the chunk
    * \param bValue
+   *
    * \return BER of QAM16 at the given SNR after applying FEC
    */
   double GetFec16QamBer (double snr, uint32_t nbits,
@@ -117,12 +128,12 @@ private:
    * \param snr snr value
    * \param nbits the number of bits in the chunk
    * \param bValue
+   *
    * \return BER of QAM64 at the given SNR after applying FEC
    */
   double GetFec64QamBer (double snr, uint32_t nbits,
                          uint32_t bValue) const;
 };
-
 
 } // namespace ns3
 

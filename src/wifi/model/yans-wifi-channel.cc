@@ -17,6 +17,7 @@
  *
  * Author: Mathieu Lacage, <mathieu.lacage@sophia.inria.fr>
  */
+
 #include "ns3/packet.h"
 #include "ns3/simulator.h"
 #include "ns3/mobility-model.h"
@@ -58,6 +59,7 @@ YansWifiChannel::GetTypeId (void)
 YansWifiChannel::YansWifiChannel ()
 {
 }
+
 YansWifiChannel::~YansWifiChannel ()
 {
   NS_LOG_FUNCTION_NOARGS ();
@@ -69,6 +71,7 @@ YansWifiChannel::SetPropagationLossModel (Ptr<PropagationLossModel> loss)
 {
   m_loss = loss;
 }
+
 void
 YansWifiChannel::SetPropagationDelayModel (Ptr<PropagationDelayModel> delay)
 {
@@ -86,7 +89,7 @@ YansWifiChannel::Send (Ptr<YansWifiPhy> sender, Ptr<const Packet> packet, double
     {
       if (sender != (*i))
         {
-          // For now don't account for inter channel interference
+          //For now don't account for inter channel interference
           if ((*i)->GetChannelNumber () != sender->GetChannelNumber ())
             {
               continue;
@@ -111,8 +114,8 @@ YansWifiChannel::Send (Ptr<YansWifiPhy> sender, Ptr<const Packet> packet, double
 
           double *atts = new double[3];
           *atts = rxPowerDbm;
-          *(atts+1)= packetType;
-          *(atts+2)= duration.GetNanoSeconds();
+          *(atts+1) = packetType;
+          *(atts+2) = duration.GetNanoSeconds ();
 
           Simulator::ScheduleWithContext (dstNode,
                                           delay, &YansWifiChannel::Receive, this,
@@ -125,7 +128,7 @@ void
 YansWifiChannel::Receive (uint32_t i, Ptr<Packet> packet, double *atts,
                           WifiTxVector txVector, WifiPreamble preamble) const
 {
-  m_phyList[i]->StartReceivePreambleAndHeader (packet, *atts, txVector, preamble, *(atts+1), NanoSeconds(*(atts+2)));
+  m_phyList[i]->StartReceivePreambleAndHeader (packet, *atts, txVector, preamble, *(atts+1), NanoSeconds (*(atts+2)));
   delete[] atts;
 }
 
@@ -134,6 +137,7 @@ YansWifiChannel::GetNDevices (void) const
 {
   return m_phyList.size ();
 }
+
 Ptr<NetDevice>
 YansWifiChannel::GetDevice (uint32_t i) const
 {

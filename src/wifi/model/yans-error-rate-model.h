@@ -17,6 +17,7 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
+
 #ifndef YANS_ERROR_RATE_MODEL_H
 #define YANS_ERROR_RATE_MODEL_H
 
@@ -61,11 +62,13 @@ public:
 
   virtual double GetChunkSuccessRate (WifiMode mode, double snr, uint32_t nbits) const;
 
+
 private:
   /**
    * Return the logarithm of the given value to base 2.
    *
    * \param val
+   *
    * \return the logarithm of val to base 2.
    */
   double Log2 (double val) const;
@@ -75,6 +78,7 @@ private:
    * \param snr snr value
    * \param signalSpread
    * \param phyRate
+   *
    * \return BER of BPSK at the given SNR
    */
   double GetBpskBer (double snr, uint32_t signalSpread, uint32_t phyRate) const;
@@ -85,6 +89,7 @@ private:
    * \param m
    * \param signalSpread
    * \param phyRate
+   *
    * \return BER of BPSK at the given SNR
    */
   double GetQamBer (double snr, unsigned int m, uint32_t signalSpread, uint32_t phyRate) const;
@@ -92,6 +97,7 @@ private:
    * Return k!
    *
    * \param k
+   *
    * \return k!
    */
   uint32_t Factorial (uint32_t k) const;
@@ -101,24 +107,28 @@ private:
    * \param k
    * \param p
    * \param n
+   *
    * \return a Binomial distribution
    */
   double Binomial (uint32_t k, double p, uint32_t n) const;
   /**
    * \param ber
    * \param d
+   *
    * \return double
    */
   double CalculatePdOdd (double ber, unsigned int d) const;
   /**
    * \param ber
    * \param d
+   *
    * \return double
    */
   double CalculatePdEven (double ber, unsigned int d) const;
   /**
    * \param ber
    * \param d
+   *
    * \return double
    */
   double CalculatePd (double ber, unsigned int d) const;
@@ -129,6 +139,7 @@ private:
    * \param phyRate
    * \param dFree
    * \param adFree
+   *
    * \return double
    */
   double GetFecBpskBer (double snr, double nbits,
@@ -143,6 +154,7 @@ private:
    * \param dfree
    * \param adFree
    * \param adFreePlusOne
+   *
    * \return double
    */
   double GetFecQamBer (double snr, uint32_t nbits,
@@ -151,7 +163,6 @@ private:
                        uint32_t m, uint32_t dfree,
                        uint32_t adFree, uint32_t adFreePlusOne) const;
 };
-
 
 } // namespace ns3
 

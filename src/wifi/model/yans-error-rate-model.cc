@@ -15,12 +15,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
+ * Authors: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  *          Sébastien Deronne <sebastien.deronne@gmail.com>
  */
 
 #include <cmath>
-
 #include "yans-error-rate-model.h"
 #include "wifi-phy.h"
 #include "ns3/log.h"
@@ -51,6 +50,7 @@ YansErrorRateModel::Log2 (double val) const
 {
   return std::log (val) / std::log (2.0);
 }
+
 double
 YansErrorRateModel::GetBpskBer (double snr, uint32_t signalSpread, uint32_t phyRate) const
 {
@@ -60,6 +60,7 @@ YansErrorRateModel::GetBpskBer (double snr, uint32_t signalSpread, uint32_t phyR
   NS_LOG_INFO ("bpsk snr=" << snr << " ber=" << ber);
   return ber;
 }
+
 double
 YansErrorRateModel::GetQamBer (double snr, unsigned int m, uint32_t signalSpread, uint32_t phyRate) const
 {
@@ -71,6 +72,7 @@ YansErrorRateModel::GetQamBer (double snr, unsigned int m, uint32_t signalSpread
   NS_LOG_INFO ("Qam m=" << m << " rate=" << phyRate << " snr=" << snr << " ber=" << ber);
   return ber;
 }
+
 uint32_t
 YansErrorRateModel::Factorial (uint32_t k) const
 {
@@ -82,12 +84,14 @@ YansErrorRateModel::Factorial (uint32_t k) const
     }
   return fact;
 }
+
 double
 YansErrorRateModel::Binomial (uint32_t k, double p, uint32_t n) const
 {
   double retval = Factorial (n) / (Factorial (k) * Factorial (n - k)) * std::pow (p, static_cast<double> (k)) * std::pow (1 - p, static_cast<double> (n - k));
   return retval;
 }
+
 double
 YansErrorRateModel::CalculatePdOdd (double ber, unsigned int d) const
 {
@@ -102,6 +106,7 @@ YansErrorRateModel::CalculatePdOdd (double ber, unsigned int d) const
     }
   return pd;
 }
+
 double
 YansErrorRateModel::CalculatePdEven (double ber, unsigned int d) const
 {
@@ -187,21 +192,19 @@ YansErrorRateModel::GetChunkSuccessRate (WifiMode mode, double snr, uint32_t nbi
             {
               return GetFecBpskBer (snr,
                                     nbits,
-                                    mode.GetBandwidth (), // signal spread
-                                    mode.GetPhyRate (), // phy rate
-                                    10, // dFree
-                                    11 // adFree
-                                    );
+                                    mode.GetBandwidth (), //signal spread
+                                    mode.GetPhyRate (), //phy rate
+                                    10, //dFree
+                                    11); //adFree
             }
           else
             {
               return GetFecBpskBer (snr,
                                     nbits,
-                                    mode.GetBandwidth (), // signal spread
-                                    mode.GetPhyRate (), // phy rate
-                                    5, // dFree
-                                    8 // adFree
-                                    );
+                                    mode.GetBandwidth (), //signal spread
+                                    mode.GetPhyRate (), //phy rate
+                                    5, //dFree
+                                    8); //adFree
             }
         }
       else if (mode.GetConstellationSize () == 4)
@@ -210,25 +213,23 @@ YansErrorRateModel::GetChunkSuccessRate (WifiMode mode, double snr, uint32_t nbi
             {
               return GetFecQamBer (snr,
                                    nbits,
-                                   mode.GetBandwidth (), // signal spread
-                                   mode.GetPhyRate (), // phy rate
-                                   4,  // m
-                                   10, // dFree
-                                   11, // adFree
-                                   0   // adFreePlusOne
-                                   );
+                                   mode.GetBandwidth (), //signal spread
+                                   mode.GetPhyRate (), //phy rate
+                                   4, //m
+                                   10, //dFree
+                                   11, //adFree
+                                   0); //adFreePlusOne
             }
           else
             {
               return GetFecQamBer (snr,
                                    nbits,
-                                   mode.GetBandwidth (), // signal spread
-                                   mode.GetPhyRate (), // phy rate
-                                   4, // m
-                                   5, // dFree
-                                   8, // adFree
-                                   31 // adFreePlusOne
-                                   );
+                                   mode.GetBandwidth (), //signal spread
+                                   mode.GetPhyRate (), //phy rate
+                                   4, //m
+                                   5, //dFree
+                                   8, //adFree
+                                   31); //adFreePlusOne
             }
         }
       else if (mode.GetConstellationSize () == 16)
@@ -237,25 +238,23 @@ YansErrorRateModel::GetChunkSuccessRate (WifiMode mode, double snr, uint32_t nbi
             {
               return GetFecQamBer (snr,
                                    nbits,
-                                   mode.GetBandwidth (), // signal spread
-                                   mode.GetPhyRate (), // phy rate
-                                   16, // m
-                                   10, // dFree
-                                   11, // adFree
-                                   0   // adFreePlusOne
-                                   );
+                                   mode.GetBandwidth (), //signal spread
+                                   mode.GetPhyRate (), //phy rate
+                                   16, //m
+                                   10, //dFree
+                                   11, //adFree
+                                   0); //adFreePlusOne
             }
           else
             {
               return GetFecQamBer (snr,
                                    nbits,
-                                   mode.GetBandwidth (), // signal spread
-                                   mode.GetPhyRate (), // phy rate
-                                   16, // m
-                                   5,  // dFree
-                                   8,  // adFree
-                                   31  // adFreePlusOne
-                                   );
+                                   mode.GetBandwidth (), //signal spread
+                                   mode.GetPhyRate (), //phy rate
+                                   16, //m
+                                   5, //dFree
+                                   8, //adFree
+                                   31); //adFreePlusOne
             }
         }
       else if (mode.GetConstellationSize () == 64)
@@ -264,38 +263,35 @@ YansErrorRateModel::GetChunkSuccessRate (WifiMode mode, double snr, uint32_t nbi
             {
               return GetFecQamBer (snr,
                                    nbits,
-                                   mode.GetBandwidth (), // signal spread
-                                   mode.GetPhyRate (), // phy rate
-                                   64, // m
-                                   6,  // dFree
-                                   1,  // adFree
-                                   16  // adFreePlusOne
-                                   );
+                                   mode.GetBandwidth (), //signal spread
+                                   mode.GetPhyRate (), //phy rate
+                                   64, //m
+                                   6, //dFree
+                                   1, //adFree
+                                   16); //adFreePlusOne
             }
           if (mode.GetCodeRate () == WIFI_CODE_RATE_5_6)
             {
               //Table B.32  in Pâl Frenger et al., "Multi-rate Convolutional Codes".
               return GetFecQamBer (snr,
                                    nbits,
-                                   mode.GetBandwidth (), // signal spread
-                                   mode.GetPhyRate (), // phy rate
-                                   64, // m
-                                   4,  // dFree
-                                   14,  // adFree
-                                   69  // adFreePlusOne
-                                   );
+                                   mode.GetBandwidth (), //signal spread
+                                   mode.GetPhyRate (), //phy rate
+                                   64, //m
+                                   4, //dFree
+                                   14, //adFree
+                                   69); //adFreePlusOne
             }
           else
             {
               return GetFecQamBer (snr,
                                    nbits,
-                                   mode.GetBandwidth (), // signal spread
-                                   mode.GetPhyRate (), // phy rate
-                                   64, // m
-                                   5,  // dFree
-                                   8,  // adFree
-                                   31  // adFreePlusOne
-                                   );
+                                   mode.GetBandwidth (), //signal spread
+                                   mode.GetPhyRate (), //phy rate
+                                   64, //m
+                                   5, //dFree
+                                   8, //adFree
+                                   31); //adFreePlusOne
             }
         }
     }
