@@ -15,8 +15,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
- * Author: ghada Badawy <gbadawy@gmail.com>
+ * Authors: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
+ *          Ghada Badawy <gbadawy@gmail.com>
  */
 
 #ifndef YANS_WIFI_PHY_H
@@ -36,7 +36,6 @@
 #include "wifi-preamble.h"
 #include "wifi-phy-standard.h"
 #include "interference-helper.h"
-
 
 namespace ns3 {
 
@@ -75,7 +74,6 @@ public:
    * \param channel the YansWifiChannel this YansWifiPhy is to be connected to
    */
   void SetChannel (Ptr<YansWifiChannel> channel);
-
   /**
    * Set the current channel number.
    *
@@ -109,12 +107,12 @@ public:
    * \param packetType The type of the received packet (values: 0 not an A-MPDU, 1 corresponds to any packets in an A-MPDU except the last one, 2 is the last packet in an A-MPDU) 
    * \param rxDuration the duration needed for the reception of the packet
    */
-  void StartReceivePlcp (Ptr<Packet> packet,
-                         double rxPowerDbm,
-                         WifiTxVector txVector,
-                         WifiPreamble preamble,
-                         uint8_t packetType,
-                         Time rxDuration);
+  void StartReceivePreambleAndHeader (Ptr<Packet> packet,
+                                      double rxPowerDbm,
+                                      WifiTxVector txVector,
+                                      WifiPreamble preamble,
+                                      uint8_t packetType,
+                                      Time rxDuration);
   /**
    * Starting receiving the payload of a packet (i.e. the first bit of the packet has arrived).
    *
@@ -150,7 +148,7 @@ public:
   void SetTxPowerEnd (double end);
   /**
    * Sets the number of transmission power levels available between the
-   * minimum level and the maximum level.  Transmission power levels are
+   * minimum level and the maximum level. Transmission power levels are
    * equally separated (in dBm) with the minimum and the maximum included.
    *
    * \param n the number of available levels
@@ -177,7 +175,7 @@ public:
    */
   void SetEdThreshold (double threshold);
   /**
-   * Sets the CCA threshold (dBm).  The energy of a received signal
+   * Sets the CCA threshold (dBm). The energy of a received signal
    * should be higher than this threshold to allow the PHY
    * layer to declare CCA BUSY state.
    *
@@ -250,7 +248,6 @@ public:
    * \return the mobility model this PHY is associated with
    */
   Ptr<Object> GetMobility (void);
-
   /**
    * Return the minimum available transmission power level (dBm).
    * \return the minimum available transmission power level (dBm)
@@ -267,6 +264,7 @@ public:
    * \return the number of available transmission power levels
    */
   virtual uint32_t GetNTxPower (void) const;
+  
   virtual void SetReceiveOkCallback (WifiPhy::RxOkCallback callback);
   virtual void SetReceiveErrorCallback (WifiPhy::RxErrorCallback callback);
   virtual void SendPacket (Ptr<const Packet> packet, WifiTxVector txvector, enum WifiPreamble preamble, uint8_t packetType);
@@ -315,6 +313,9 @@ public:
    * \param tx the number of transmitters on this node.
    */
   virtual void SetNumberOfTransmitAntennas (uint32_t tx);
+  /**
+   * \return the number of transmitters on this node.
+   */
   virtual uint32_t GetNumberOfTransmitAntennas (void) const;
   /**
    * \param rx the number of receivers on this node.
@@ -387,6 +388,7 @@ public:
   virtual uint32_t GetNBssMembershipSelectors (void) const;
   virtual uint32_t GetBssMembershipSelector (uint32_t selector) const;
   virtual WifiModeList GetMembershipSelectorModes(uint32_t selector);
+  
   /**
    * \return the number of MCS supported by this phy
    */
@@ -396,9 +398,11 @@ public:
   virtual uint32_t WifiModeToMcs (WifiMode mode);
   virtual WifiMode McsToWifiMode (uint8_t mcs);
 
+
 private:
-  //YansWifiPhy (const YansWifiPhy &o);
+  virtual void DoInitialize (void);
   virtual void DoDispose (void);
+  
   /**
    * Configure YansWifiPhy with appropriate channel frequency and
    * supported rates for 802.11a standard.
@@ -440,6 +444,7 @@ private:
    * Convert from dBm to Watts.
    *
    * \param dbm the power in dBm
+   *
    * \return the equivalent Watts for the given dBm
    */
   double DbmToW (double dbm) const;
@@ -447,6 +452,7 @@ private:
    * Convert from dB to ratio.
    *
    * \param db
+   *
    * \return ratio
    */
   double DbToRatio (double db) const;
@@ -454,6 +460,7 @@ private:
    * Convert from Watts to dBm.
    *
    * \param w the power in Watts
+   *
    * \return the equivalent dBm for the given Watts
    */
   double WToDbm (double w) const;
@@ -461,6 +468,7 @@ private:
    * Convert from ratio to dB.
    *
    * \param ratio
+   *
    * \return dB
    */
   double RatioToDb (double ratio) const;
@@ -469,6 +477,7 @@ private:
    * In YansWifiPhy implementation, the power levels are equally spaced (in dBm).
    *
    * \param power the power level
+   *
    * \return the transmission power in dBm at the given power level
    */
   double GetPowerDbm (uint8_t power) const;
@@ -481,9 +490,6 @@ private:
    * \param event the corresponding event of the first time the packet arrives
    */
   void EndReceive (Ptr<Packet> packet, enum WifiPreamble preamble, uint8_t packetType, Ptr<InterferenceHelper::Event> event);
-
-private:
-  virtual void DoInitialize (void);
   
   bool     m_initialized;         //!< Flag for runtime initialization
   double   m_edThresholdW;        //!< Energy detection threshold in watts
@@ -561,6 +567,5 @@ private:
 };
 
 } // namespace ns3
-
 
 #endif /* YANS_WIFI_PHY_H */
