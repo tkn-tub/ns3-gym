@@ -7466,6 +7466,11 @@ def register_Ns3WifiPhy_methods(root_module, cls):
                    'bool', 
                    [], 
                    is_pure_virtual=True, is_const=True, is_virtual=True)
+    ## wifi-phy.h (module 'wifi'): static ns3::WifiMode ns3::WifiPhy::GetHTPlcpHeaderMode(ns3::WifiMode payloadMode, ns3::WifiPreamble preamble) [member function]
+    cls.add_method('GetHTPlcpHeaderMode', 
+                   'ns3::WifiMode', 
+                   [param('ns3::WifiMode', 'payloadMode'), param('ns3::WifiPreamble', 'preamble')], 
+                   is_static=True)
     ## wifi-phy.h (module 'wifi'): ns3::Time ns3::WifiPhy::GetLastRxStartTime() const [member function]
     cls.add_method('GetLastRxStartTime', 
                    'ns3::Time', 
@@ -7476,11 +7481,6 @@ def register_Ns3WifiPhy_methods(root_module, cls):
                    'bool', 
                    [], 
                    is_pure_virtual=True, is_const=True, is_virtual=True)
-    ## wifi-phy.h (module 'wifi'): static ns3::WifiMode ns3::WifiPhy::GetMFPlcpHeaderMode(ns3::WifiMode payloadMode, ns3::WifiPreamble preamble) [member function]
-    cls.add_method('GetMFPlcpHeaderMode', 
-                   'ns3::WifiMode', 
-                   [param('ns3::WifiMode', 'payloadMode'), param('ns3::WifiPreamble', 'preamble')], 
-                   is_static=True)
     ## wifi-phy.h (module 'wifi'): uint8_t ns3::WifiPhy::GetMcs(uint8_t mcs) const [member function]
     cls.add_method('GetMcs', 
                    'uint8_t', 
@@ -8695,9 +8695,9 @@ def register_Ns3YansWifiPhy_methods(root_module, cls):
                    'ns3::Time', 
                    [], 
                    is_virtual=True)
-    ## yans-wifi-phy.h (module 'wifi'): ns3::Ptr<ns3::Object> ns3::YansWifiPhy::GetDevice() const [member function]
+    ## yans-wifi-phy.h (module 'wifi'): ns3::Ptr<ns3::NetDevice> ns3::YansWifiPhy::GetDevice() const [member function]
     cls.add_method('GetDevice', 
-                   'ns3::Ptr< ns3::Object >', 
+                   'ns3::Ptr< ns3::NetDevice >', 
                    [], 
                    is_const=True)
     ## yans-wifi-phy.h (module 'wifi'): double ns3::YansWifiPhy::GetEdThreshold() const [member function]
@@ -8745,9 +8745,9 @@ def register_Ns3YansWifiPhy_methods(root_module, cls):
                    'ns3::WifiModeList', 
                    [param('uint32_t', 'selector')], 
                    is_virtual=True)
-    ## yans-wifi-phy.h (module 'wifi'): ns3::Ptr<ns3::Object> ns3::YansWifiPhy::GetMobility() [member function]
+    ## yans-wifi-phy.h (module 'wifi'): ns3::Ptr<ns3::MobilityModel> ns3::YansWifiPhy::GetMobility() [member function]
     cls.add_method('GetMobility', 
-                   'ns3::Ptr< ns3::Object >', 
+                   'ns3::Ptr< ns3::MobilityModel >', 
                    [])
     ## yans-wifi-phy.h (module 'wifi'): ns3::WifiMode ns3::YansWifiPhy::GetMode(uint32_t mode) const [member function]
     cls.add_method('GetMode', 
@@ -8907,10 +8907,10 @@ def register_Ns3YansWifiPhy_methods(root_module, cls):
                    'void', 
                    [param('uint16_t', 'id')], 
                    is_virtual=True)
-    ## yans-wifi-phy.h (module 'wifi'): void ns3::YansWifiPhy::SetDevice(ns3::Ptr<ns3::Object> device) [member function]
+    ## yans-wifi-phy.h (module 'wifi'): void ns3::YansWifiPhy::SetDevice(ns3::Ptr<ns3::NetDevice> device) [member function]
     cls.add_method('SetDevice', 
                    'void', 
-                   [param('ns3::Ptr< ns3::Object >', 'device')])
+                   [param('ns3::Ptr< ns3::NetDevice >', 'device')])
     ## yans-wifi-phy.h (module 'wifi'): void ns3::YansWifiPhy::SetEdThreshold(double threshold) [member function]
     cls.add_method('SetEdThreshold', 
                    'void', 
@@ -8939,10 +8939,10 @@ def register_Ns3YansWifiPhy_methods(root_module, cls):
                    'void', 
                    [param('bool', 'ldpc')], 
                    is_virtual=True)
-    ## yans-wifi-phy.h (module 'wifi'): void ns3::YansWifiPhy::SetMobility(ns3::Ptr<ns3::Object> mobility) [member function]
+    ## yans-wifi-phy.h (module 'wifi'): void ns3::YansWifiPhy::SetMobility(ns3::Ptr<ns3::MobilityModel> mobility) [member function]
     cls.add_method('SetMobility', 
                    'void', 
-                   [param('ns3::Ptr< ns3::Object >', 'mobility')])
+                   [param('ns3::Ptr< ns3::MobilityModel >', 'mobility')])
     ## yans-wifi-phy.h (module 'wifi'): void ns3::YansWifiPhy::SetNTxPower(uint32_t n) [member function]
     cls.add_method('SetNTxPower', 
                    'void', 
