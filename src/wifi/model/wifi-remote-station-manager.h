@@ -17,6 +17,7 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
+
 #ifndef WIFI_REMOTE_STATION_MANAGER_H
 #define WIFI_REMOTE_STATION_MANAGER_H
 
@@ -50,10 +51,9 @@ class WifiRemoteStationInfo
 public:
   WifiRemoteStationInfo ();
   /**
-   * \brief Updates average frame error rate when data or RTS
-   * was transmitted successfully.
-   * \param retryCounter is slrc or ssrc value at the moment of
-   * success transmission.
+   * \brief Updates average frame error rate when data or RTS was transmitted successfully.
+   *
+   * \param retryCounter is slrc or ssrc value at the moment of success transmission.
    */
   void NotifyTxSuccess (uint32_t retryCounter);
   /// Updates average frame error rate when final data or RTS has failed.
@@ -63,6 +63,7 @@ public:
 private:
   /**
    * \brief Calculate averaging coefficient for frame error rate. Depends on time of the last update.
+   *
    * \attention Calling this method twice gives different results,
    * because it resets time of last update.
    *
@@ -179,6 +180,7 @@ public:
    * Reset the station, invoked in a STA upon dis-association or in an AP upon reboot.
    */
   void Reset (void);
+
   /**
    * Invoked in a STA upon association to store the set of rates which belong to the
    * BSSBasicRateSet of the associated AP and which are supported locally.
@@ -187,7 +189,6 @@ public:
    * \param mode the WifiMode to be added to the basic mode set
    */
   void AddBasicMode (WifiMode mode);
-
   /**
    * Return the default transmission mode.
    *
@@ -204,6 +205,7 @@ public:
    * Return a basic mode from the set of basic modes.
    *
    * \param i index of the basic mode in the basic mode set
+   *
    * \return the basic mode at the given index
    */
   WifiMode GetBasicMode (uint32_t i) const;
@@ -211,8 +213,9 @@ public:
    * Return whether the station supports Greenfield or not.
    *
    * \param address the address of the station
+   *
    * \return true if Greenfield is supported by the station,
-   *          false otherwise
+   *         false otherwise
    */
   bool GetGreenfieldSupported (Mac48Address address) const;
   /**
@@ -222,7 +225,6 @@ public:
    * \param mcs the MCS index
    */
   void AddBasicMcs (uint8_t mcs);
-
   /**
    * Return the default Modulation and Coding Scheme (MCS) index.
    *
@@ -239,6 +241,7 @@ public:
    * Return the MCS at the given <i>list</i> index.
    *
    * \param i the position in the list
+   *
    * \return the MCS at the given list index
    */
   uint8_t GetBasicMcs (uint32_t i) const;
@@ -265,6 +268,7 @@ public:
    * \param address the address of the STA
    */
   void Reset (Mac48Address address);
+
   /**
    * Invoked in a STA or AP to store the set of
    * modes supported by a destination which is
@@ -284,22 +288,23 @@ public:
    * \param address the address of the station being recorded
    */
   void AddAllSupportedModes (Mac48Address address);
-  //void  AddBssMembershipParameters(Mac48Address address, uint32_t selector);
 
   /**
    * Return whether the station state is brand new.
    *
    * \param address the address of the station
+   *
    * \return true if the state of the station is brand new,
-   *          false otherwise
+   *         false otherwise
    */
   bool IsBrandNew (Mac48Address address) const;
   /**
    * Return whether the station associated.
    *
    * \param address the address of the station
+   *
    * \return true if the station is associated,
-   *          false otherwise
+   *         false otherwise
    */
   bool IsAssociated (Mac48Address address) const;
   /**
@@ -307,8 +312,9 @@ public:
    * the association response we sent.
    *
    * \param address the address of the station
+   *
    * \return true if the station is associated,
-   *          false otherwise
+   *         false otherwise
    */
   bool IsWaitAssocTxOk (Mac48Address address) const;
   /**
@@ -358,40 +364,38 @@ public:
    * \param header MAC header
    * \param packet the packet to send
    * \param fullPacketSize the size of the packet after its 802.11 MAC header has been added.
+   *
    * \return the transmission mode to use to send this packet
    */
   WifiTxVector GetDataTxVector (Mac48Address address, const WifiMacHeader *header,
-                        Ptr<const Packet> packet, uint32_t fullPacketSize);
+                                Ptr<const Packet> packet, uint32_t fullPacketSize);
   /**
    * \param address remote address
    * \param header MAC header
    * \param packet the packet to send
    *
    * \return the transmission mode to use to send the RTS prior to the
-   *          transmission of the data packet itself.
+   *         transmission of the data packet itself.
    */
   WifiTxVector GetRtsTxVector (Mac48Address address, const WifiMacHeader *header,
-                       Ptr<const Packet> packet);
-
+                               Ptr<const Packet> packet);
   /**
    * \param header MAC header
    * \param packet the packet to send
    *
    * \return the transmission mode to use to send the CTS-to-self prior to the
-   *          transmission of the data packet itself.
+   *         transmission of the data packet itself.
    */
   WifiTxVector GetCtsToSelfTxVector (const WifiMacHeader *header,
-                       Ptr<const Packet> packet);
-
+                                     Ptr<const Packet> packet);
   /**
    * Since CTS-to-self parameters are not dependent on the station,
    * it is implemented in wifiremote station manager
    *
    * \return the transmission mode to use to send the CTS-to-self prior to the
-   *          transmission of the data packet itself.
+   *         transmission of the data packet itself.
    */
   WifiTxVector DoGetCtsToSelfTxVector (void);
-
 
   /**
    * Should be invoked whenever the RtsTimeout associated to a transmission
@@ -466,8 +470,9 @@ public:
    * \param address remote address
    * \param header MAC header
    * \param packet the packet to send
+   *
    * \return true if we want to use an RTS/CTS handshake for this
-   *          packet before sending it, false otherwise.
+   *         packet before sending it, false otherwise.
    */
   bool NeedRts (Mac48Address address, const WifiMacHeader *header,
                 Ptr<const Packet> packet);
@@ -475,7 +480,9 @@ public:
    * Return if we need to do Cts-to-self before sending a DATA.
    *
    * \param txVector the TXVECTOR of the packet to be sent
-   * \return true if Cts-to-self is needed, false otherwise
+   *
+   * \return true if Cts-to-self is needed, 
+   *         false otherwise
    */
   bool NeedCtsToSelf (WifiTxVector txVector);
 
@@ -483,8 +490,9 @@ public:
    * \param address remote address
    * \param header MAC header
    * \param packet the packet to send
-   * \return true if we want to restart a failed RTS/CTS
-   *          handshake, false otherwise.
+   *
+   * \return true if we want to restart a failed RTS/CTS handshake, 
+   *         false otherwise.
    */
   bool NeedRtsRetransmission (Mac48Address address, const WifiMacHeader *header,
                               Ptr<const Packet> packet);
@@ -492,17 +500,19 @@ public:
    * \param address remote address
    * \param header MAC header
    * \param packet the packet to send
-   * \return true if we want to resend a packet
-   *          after a failed transmission attempt, false otherwise.
+   *
+   * \return true if we want to resend a packet after a failed transmission attempt, 
+   *         false otherwise.
    */
   bool NeedDataRetransmission (Mac48Address address, const WifiMacHeader *header,
                                Ptr<const Packet> packet);
-
   /**
    * \param address remote address
    * \param header MAC header
    * \param packet the packet to send
-   * \return true if this packet should be fragmented, false otherwise.
+   *
+   * \return true if this packet should be fragmented, 
+   *         false otherwise.
    */
   bool NeedFragmentation (Mac48Address address, const WifiMacHeader *header,
                           Ptr<const Packet> packet);
@@ -511,6 +521,7 @@ public:
    * \param header MAC header
    * \param packet the packet to send
    * \param fragmentNumber the fragment index of the next fragment to send (starts at zero).
+   *
    * \return the size of the corresponding fragment.
    */
   uint32_t GetFragmentSize (Mac48Address address, const WifiMacHeader *header,
@@ -520,6 +531,7 @@ public:
    * \param header MAC header
    * \param packet the packet to send
    * \param fragmentNumber the fragment index of the next fragment to send (starts at zero).
+   *
    * \return the offset within the original packet where this fragment starts.
    */
   uint32_t GetFragmentOffset (Mac48Address address, const WifiMacHeader *header,
@@ -529,6 +541,7 @@ public:
    * \param header MAC header
    * \param packet the packet to send
    * \param fragmentNumber the fragment index of the next fragment to send (starts at zero).
+   *
    * \return true if this is the last fragment, false otherwise.
    */
   bool IsLastFragment (Mac48Address address, const WifiMacHeader *header,
@@ -537,22 +550,22 @@ public:
   /**
    * \param address remote address
    * \param rtsMode the transmission mode used to send an RTS we just received
-   * \return the transmission mode to use for the CTS to complete the RTS/CTS
-   *          handshake.
+   *
+   * \return the transmission mode to use for the CTS to complete the RTS/CTS handshake.
    */
   WifiTxVector GetCtsTxVector (Mac48Address address, WifiMode rtsMode);
   /**
    * \param address
    * \param dataMode the transmission mode used to send an ACK we just received
-   * \return the transmission mode to use for the ACK to complete the data/ACK
-   *          handshake.
+   *
+   * \return the transmission mode to use for the ACK to complete the data/ACK handshake.
    */
   WifiTxVector GetAckTxVector (Mac48Address address, WifiMode dataMode);
   /**
    * \param address
    * \param dataMode the transmission mode used to send an ACK we just received
-   * \return the transmission mode to use for the ACK to complete the data/ACK
-   *          handshake.
+   *
+   * \return the transmission mode to use for the ACK to complete the data/ACK handshake.
    */
   WifiTxVector GetBlockAckTxVector (Mac48Address address, WifiMode dataMode);
   /**
@@ -561,6 +574,7 @@ public:
   uint8_t GetDefaultTxPowerLevel (void) const;
   /**
    * \param address of the remote station
+   *
    * \return information regarding the remote station associated with the given address
    */
   WifiRemoteStationInfo GetInfo (Mac48Address address);
@@ -570,10 +584,11 @@ public:
    * \param txPower the default transmission power level
    */
   void SetDefaultTxPowerLevel (uint8_t txPower);
- /**
-  * \return the number of transmit antennas supported by the phy layer
-  */
- uint32_t GetNumberOfTransmitAntennas (void);
+  /**
+   * \return the number of transmit antennas supported by the phy layer
+   */
+  uint32_t GetNumberOfTransmitAntennas (void);
+
 
  protected:
   virtual void DoDispose (void);
@@ -582,6 +597,7 @@ public:
    *
    * \param station the station being queried
    * \param i the index
+   *
    * \return WifiMode at the given index of the specified station
    */
   WifiMode GetSupported (const WifiRemoteStation *station, uint32_t i) const;
@@ -589,6 +605,7 @@ public:
    * Return the number of modes supported by the given station.
    *
    * \param station the station being queried
+   *
    * \return the number of modes supported by the given station
    */
   uint32_t GetNSupported (const WifiRemoteStation *station) const;
@@ -597,6 +614,7 @@ public:
    *
    * \param station the station being queried
    * \param i the index
+   *
    * \return the MCS index at the given index of the specified station
    */
   uint8_t GetMcsSupported (const WifiRemoteStation *station, uint32_t i) const;
@@ -604,51 +622,58 @@ public:
    * Return the number of MCS supported by the given station.
    *
    * \param station the station being queried
+   *
    * \return the number of MCS supported by the given station
    */
   uint32_t GetNMcsSupported (const WifiRemoteStation *station) const;
-
   /**
    * Return whether the given station supports short guard interval.
    *
    * \param station the station being queried
+   *
    * \return true if the station supports short guard interval,
-   *          false otherwise
+   *         false otherwise
    */
   bool GetShortGuardInterval (const WifiRemoteStation *station) const;
   /**
    * Return whether the given station supports space-time block coding (STBC).
    *
    * \param station the station being queried
-   * \return true if the station supports STBC, false otherwise
+   *
+   * \return true if the station supports STBC, 
+   *         false otherwise
    */
   bool GetStbc (const WifiRemoteStation *station) const;
   /**
    * Return whether the station supports Greenfield or not.
    *
    * \param station the station being queried
+   *
    * \return true if Greenfield is supported by the station,
-   *          false otherwise
+   *         false otherwise
    */
   bool GetGreenfield (const WifiRemoteStation *station) const;
   /**
-   * Return the number of receive antenna the station has.
+   * Return the number of receive antennas the station has.
    *
    * \param station the station being queried
-   * \return the number of receive antenna the station has
+   *
+   * \return the number of receive antennas the station has
    */
   uint32_t GetNumberOfReceiveAntennas (const WifiRemoteStation *station) const;
   /**
-   * Return the number of transmit antenna the station has.
+   * Return the number of transmit antennas the station has.
    *
    * \param station the station being queried
-   * \return the number of transmit antenna the station has
+   *
+   * \return the number of transmit antennas the station has
    */
   uint32_t GetNumberOfTransmitAntennas (const WifiRemoteStation *station) const;
   /**
    * \returns the number of Ness the station has.
    *
    * \param station the station being queried
+   *
    * \return the number of Ness the station has
    */
   uint32_t GetNess (const WifiRemoteStation *station) const;
@@ -656,6 +681,7 @@ public:
    * Return the long retry limit of the given station.
    *
    * \param station the station being queried
+   *
    * \return the long retry limit of the the station
    */
   uint32_t GetLongRetryCount (const WifiRemoteStation *station) const;
@@ -663,6 +689,7 @@ public:
    * Return the short retry limit of the given station.
    *
    * \param station the station being queried
+   *
    * \return the short retry limit of the the station
    */
   uint32_t GetShortRetryCount (const WifiRemoteStation *station) const;
@@ -680,14 +707,16 @@ public:
    */
   Ptr<WifiMac> GetMac (void) const;
 
+
 private:
   /**
    * \param station the station that we need to communicate
    * \param packet the packet to send
    * \param normally indicates whether the normal 802.11 rts enable mechanism would
    *        request that the rts is sent or not.
-   * \return true if we want to use an RTS/CTS handshake for this
-   *          packet before sending it, false otherwise.
+   *
+   * \return true if we want to use an RTS/CTS handshake for this packet before sending it, 
+   *         false otherwise.
    *
    * Note: This method is called before a unicast packet is sent on the medium.
    */
@@ -698,8 +727,9 @@ private:
    * \param packet the packet to send
    * \param normally indicates whether the normal 802.11 rts enable mechanism would
    *        request that the rts is retransmitted or not.
-   * \return true if we want to restart a failed RTS/CTS
-   *          handshake, false otherwise.
+   *
+   * \return true if we want to restart a failed RTS/CTS handshake, 
+   *         false otherwise.
    *
    * Note: This method is called after an rts/cts handshake has been attempted
    *       and has failed.
@@ -711,29 +741,29 @@ private:
    * \param packet the packet to send
    * \param normally indicates whether the normal 802.11 data retransmission mechanism
    *        would request that the data is retransmitted or not.
-   * \return true if we want to resend a packet
-   *          after a failed transmission attempt, false otherwise.
+   * \return true if we want to resend a packet after a failed transmission attempt, 
+   *         false otherwise.
    *
    * Note: This method is called after a unicast packet transmission has been attempted
    *       and has failed.
    */
   virtual bool DoNeedDataRetransmission (WifiRemoteStation *station,
                                          Ptr<const Packet> packet, bool normally);
-
   /**
    * \param station the station that we need to communicate
    * \param packet the packet to send
    * \param normally indicates whether the normal 802.11 data fragmentation mechanism
    *        would request that the data packet is fragmented or not.
-   * \return true if this packet should be fragmented, false otherwise.
+   *
+   * \return true if this packet should be fragmented, 
+   *         false otherwise.
    *
    * Note: This method is called before sending a unicast packet.
    */
   virtual bool DoNeedFragmentation (WifiRemoteStation *station,
                                     Ptr<const Packet> packet, bool normally);
   /**
-   * \return whether this manager is a manager designed to work in low-latency
-   *          environments.
+   * \return whether this manager is a manager designed to work in low-latency environments.
    *
    * Note: In this context, low vs high latency is defined in <i>IEEE 802.11 Rate Adaptation:
    * A Practical Approach</i>, by M. Lacage, M.H. Manshaei, and T. Turletti.
@@ -746,23 +776,22 @@ private:
  /**
    * \param station the station that we need to communicate
    * \param size size of the packet or fragment we want to send
+   *
    * \return the transmission mode to use to send a packet to the station
    *
    * Note: This method is called before sending a unicast packet or a fragment
    *       of a unicast packet to decide which transmission mode to use.
    */
-  virtual WifiTxVector DoGetDataTxVector (WifiRemoteStation *station,
-                                  uint32_t size) = 0;
+  virtual WifiTxVector DoGetDataTxVector (WifiRemoteStation *station, uint32_t size) = 0;
   /**
    * \param station the station that we need to communicate
+   *
    * \return the transmission mode to use to send an rts to the station
    *
    * Note: This method is called before sending an rts to a station
    *       to decide which transmission mode to use for the rts.
    */
   virtual WifiTxVector DoGetRtsTxVector (WifiRemoteStation *station) = 0;
-
-  
   /** 
    * \param address the address of the recipient of the CTS
    * \param ctsMode the mode to be used for the CTS 
@@ -770,7 +799,6 @@ private:
    * \return the power level to be used to send the CTS
    */
   virtual uint8_t DoGetCtsTxPowerLevel (Mac48Address address, WifiMode ctsMode);
-
   /** 
    * \param address the address of the recipient of the ACK
    * \param ackMode the mode to be used for the ACK 
@@ -778,7 +806,6 @@ private:
    * \return the power level to be used to send the ACK
    */  
   virtual uint8_t DoGetAckTxPowerLevel (Mac48Address address, WifiMode ackMode);
-
   /** 
    * \param address the address of the recipient of the Block ACK
    * \param blockAckMode the mode to be used for the Block ACK 
@@ -874,6 +901,7 @@ private:
    *
    * \param address the address of the station
    * \param tid the TID
+   *
    * \return WifiRemoteStation corresponding to the address
    */
   WifiRemoteStation* Lookup (Mac48Address address, uint8_t tid) const;
@@ -884,9 +912,11 @@ private:
    *
    * \param address the address of the station
    * \param header MAC header
+   *
    * \return WifiRemoteStation corresponding to the address
    */
   WifiRemoteStation* Lookup (Mac48Address address, const WifiMacHeader *header) const;
+  
   WifiMode GetControlAnswerMode (Mac48Address address, WifiMode reqMode);
 
   /**
@@ -907,6 +937,7 @@ private:
    *
    * \param header MAC header
    * \param packet the packet to be fragmented
+   *
    * \return the number of fragments needed
    */
   uint32_t GetNFragments (const WifiMacHeader *header, Ptr<const Packet> packet);
@@ -920,8 +951,6 @@ private:
    */
   typedef std::vector <WifiRemoteStationState *> StationStates;
 
-  StationStates m_states;  //!< States of known stations
-  Stations m_stations;  //!< Information for each known stations
   /**
    * This is a pointer to the WifiPhy associated with this
    * WifiRemoteStationManager that is set on call to
@@ -939,8 +968,6 @@ private:
    * interframe spaces.
    */
   Ptr<WifiMac> m_wifiMac;
-  WifiMode m_defaultTxMode;  //!< The default transmission mode
-  uint8_t m_defaultTxMcs;  //!< The default transmission modulation-coding scheme (MCS)
 
   /**
    * This member is the list of WifiMode objects that comprise the
@@ -952,6 +979,12 @@ private:
    */
   WifiModeList m_bssBasicRateSet;
   WifiMcsList m_bssBasicMcsSet;
+
+  StationStates m_states;  //!< States of known stations
+  Stations m_stations;     //!< Information for each known stations
+
+  WifiMode m_defaultTxMode; //!< The default transmission mode
+  uint8_t m_defaultTxMcs;   //!< The default transmission modulation-coding scheme (MCS)
 
   bool m_htSupported;  //!< Flag if HT capability is supported
   uint32_t m_maxSsrc;  //!< Maximum STA short retry count (SSRC)
@@ -979,7 +1012,6 @@ private:
    * exceeded the maximum number of attempts
    */
   TracedCallback<Mac48Address> m_macTxFinalDataFailed;
-
 };
 
 /**
@@ -1011,13 +1043,13 @@ struct WifiRemoteStationState
   WifiMcsList m_operationalMcsSet;
   Mac48Address m_address;  //!< Mac48Address of the remote station
   WifiRemoteStationInfo m_info;
-  bool m_shortGuardInterval;  //!< Flag if short guard interval is supported by the remote station
-  uint32_t m_rx;  //!< Number of RX antennas of the remote station
-  uint32_t m_tx;  //!< Number of TX antennas of the remote station
-  uint32_t m_ness;  //!< Number of streams in beamforming of the remote station
-  bool m_stbc;  //!< Flag if STBC is used by the remote station
-  bool m_greenfield;  //!< Flag if green field is used by the remote station
 
+  bool m_shortGuardInterval;  //!< Flag if short guard interval is supported by the remote station
+  uint32_t m_rx;              //!< Number of RX antennas of the remote station
+  uint32_t m_tx;              //!< Number of TX antennas of the remote station
+  uint32_t m_ness;            //!< Number of streams in beamforming of the remote station
+  bool m_stbc;                //!< Flag if STBC is used by the remote station
+  bool m_greenfield;          //!< Flag if green field is used by the remote station
 };
 
 /**
@@ -1034,13 +1066,12 @@ struct WifiRemoteStationState
 struct WifiRemoteStation
 {
   virtual ~WifiRemoteStation ();
-  WifiRemoteStationState *m_state; //!< Remote station state
-  uint32_t m_ssrc; //!< STA short retry count
-  uint32_t m_slrc; //!< STA long retry count
-  uint8_t m_tid; //!< traffic ID
+  WifiRemoteStationState *m_state;  //!< Remote station state
+  uint32_t m_ssrc;                  //!< STA short retry count
+  uint32_t m_slrc;                  //!< STA long retry count
+  uint8_t m_tid;                    //!< traffic ID
 };
 
-
-} // namespace ns3
+} //namespace ns3
 
 #endif /* WIFI_REMOTE_STATION_MANAGER_H */
