@@ -68,7 +68,7 @@ void
 DlTxPduCallback (Ptr<BoundCallbackArgument> arg, std::string path,
                  uint16_t rnti, uint8_t lcid, uint32_t packetSize)
 {
-  NS_LOG_LOGIC (path << rnti << (uint16_t)lcid << packetSize);
+  NS_LOG_FUNCTION (path << rnti << (uint16_t)lcid << packetSize);
   arg->stats->DlTxPdu (arg->cellId, arg->imsi, rnti, lcid, packetSize);
 }
 
@@ -85,7 +85,7 @@ void
 DlRxPduCallback (Ptr<BoundCallbackArgument> arg, std::string path,
                  uint16_t rnti, uint8_t lcid, uint32_t packetSize, uint64_t delay)
 {
-  NS_LOG_LOGIC (path << rnti << (uint16_t)lcid << packetSize << delay);
+  NS_LOG_FUNCTION (path << rnti << (uint16_t)lcid << packetSize << delay);
   arg->stats->DlRxPdu (arg->cellId, arg->imsi, rnti, lcid, packetSize, delay);
 }
 
@@ -101,7 +101,7 @@ void
 UlTxPduCallback (Ptr<BoundCallbackArgument> arg, std::string path,
                  uint16_t rnti, uint8_t lcid, uint32_t packetSize)
 {
-  NS_LOG_LOGIC (path << rnti << (uint16_t)lcid << packetSize);
+  NS_LOG_FUNCTION (path << rnti << (uint16_t)lcid << packetSize);
  
   arg->stats->UlTxPdu (arg->cellId, arg->imsi, rnti, lcid, packetSize);
 }
@@ -119,7 +119,7 @@ void
 UlRxPduCallback (Ptr<BoundCallbackArgument> arg, std::string path,
                  uint16_t rnti, uint8_t lcid, uint32_t packetSize, uint64_t delay)
 {
-  NS_LOG_LOGIC (path << rnti << (uint16_t)lcid << packetSize << delay);
+  NS_LOG_FUNCTION (path << rnti << (uint16_t)lcid << packetSize << delay);
  
   arg->stats->UlRxPdu (arg->cellId, arg->imsi, rnti, lcid, packetSize, delay);
 }
