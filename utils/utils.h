@@ -3,7 +3,7 @@
  * \defgroup CheckStyle check-style.py
  *
  * The check-style.py script will test and reformat code according to the
- * ns-3 coding style posted at http://www.nsnam.org/codingstyle.html
+ * ns-3 coding style posted at https://www.nsnam.org/developers/contributing-code/coding-style/
  * It requires that you install 'uncrustify' 
  *
  * It has multiple levels of conformance:
