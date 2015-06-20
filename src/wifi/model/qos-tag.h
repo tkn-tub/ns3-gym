@@ -17,6 +17,7 @@
  *
  * Author: Mirko Banchi <mk.banchi@gmail.com>
  */
+
 #ifndef QOS_TAG_H
 #define QOS_TAG_H
 
@@ -46,7 +47,6 @@ enum UserPriority
   UP_VO = 6, /**< voice, < 10ms latency and jitter */
   UP_NC = 7  /**< network control */
 };
-
 
 
 /**
@@ -81,7 +81,7 @@ public:
    * application is aware of the QoS support provided by the MAC
    * layer, and is therefore able to set the correct TID.
    *
-   * @param tid the value of the TID to set
+   * \param tid the value of the TID to set
    */
   void SetTid (uint8_t tid);
 
@@ -92,7 +92,7 @@ public:
    * EDCA is used. When using HDCA, QosTag(uint8_t tid) should be used
    * instead.
    *
-   * @param up the requested UserPriority
+   * \param up the requested UserPriority
    *
    */
   void SetUserPriority (UserPriority up);
@@ -113,6 +113,6 @@ private:
   uint8_t m_tid;  //!< Traffic ID
 };
 
-} // namespace ns3
+} //namespace ns3
 
 #endif /* QOS_TAG_H */

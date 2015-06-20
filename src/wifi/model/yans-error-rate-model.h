@@ -103,7 +103,7 @@ private:
   uint32_t Factorial (uint32_t k) const;
   /**
    * Return Binomial distribution for a given k, p, and n
-   * 
+   *
    * \param k
    * \param p
    * \param n
@@ -164,6 +164,6 @@ private:
                        uint32_t adFree, uint32_t adFreePlusOne) const;
 };
 
-} // namespace ns3
+} //namespace ns3
 
 #endif /* YANS_ERROR_RATE_MODEL_H */

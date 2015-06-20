@@ -17,6 +17,7 @@
  *
  * Author: Mirko Banchi <mk.banchi@gmail.com>
  */
+
 #ifndef CTRL_HEADERS_H
 #define CTRL_HEADERS_H
 
@@ -77,10 +78,10 @@ public:
    */
   void SetTidInfo (uint8_t tid);
   /**
-   * Set the starting sequence number from the given 
+   * Set the starting sequence number from the given
    * raw sequence control field.
    *
-   * \param seq the raw sequence control 
+   * \param seq the raw sequence control
    */
   void SetStartingSequence (uint16_t seq);
 
@@ -134,6 +135,7 @@ public:
    */
   uint16_t GetStartingSequenceControl (void) const;
 
+
 private:
   /**
    * Set the starting sequence control with the given
@@ -167,6 +169,7 @@ private:
   uint16_t m_tidInfo;
   uint16_t m_startingSeq;
 };
+
 
 /**
  * \ingroup wifi
@@ -211,10 +214,10 @@ public:
    */
   void SetTidInfo (uint8_t tid);
   /**
-   * Set the starting sequence number from the given 
+   * Set the starting sequence number from the given
    * raw sequence control field.
    *
-   * \param seq the raw sequence control 
+   * \param seq the raw sequence control
    */
   void SetStartingSequence (uint16_t seq);
 
@@ -328,6 +331,7 @@ public:
    */
   void ResetBitmap (void);
 
+
 private:
   /**
    * Return the block ACK control.
@@ -401,6 +405,6 @@ private:
   } bitmap;
 };
 
-} // namespace ns3
+} //namespace ns3
 
 #endif /* CTRL_HEADERS_H */

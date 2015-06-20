@@ -16,9 +16,10 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
- * Author: Mirko Banchi <mk.banchi@gmail.com>
+ * Authors: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
+ *          Mirko Banchi <mk.banchi@gmail.com>
  */
+
 #include "wifi-helper.h"
 #include "ns3/wifi-net-device.h"
 #include "ns3/wifi-mac.h"
@@ -184,10 +185,10 @@ WifiHelper::AssignStreams (NetDeviceContainer c, int64_t stream)
       Ptr<WifiNetDevice> wifi = DynamicCast<WifiNetDevice> (netDevice);
       if (wifi)
         {
-          // Handle any random numbers in the PHY objects.
+          //Handle any random numbers in the PHY objects.
           currentStream += wifi->GetPhy ()->AssignStreams (currentStream);
 
-          // Handle any random numbers in the station managers.
+          //Handle any random numbers in the station managers.
           Ptr<WifiRemoteStationManager> manager = wifi->GetRemoteStationManager ();
           Ptr<MinstrelWifiManager> minstrel = DynamicCast<MinstrelWifiManager> (manager);
           if (minstrel)
@@ -195,7 +196,7 @@ WifiHelper::AssignStreams (NetDeviceContainer c, int64_t stream)
               currentStream += minstrel->AssignStreams (currentStream);
             }
 
-          // Handle any random numbers in the MAC objects.
+          //Handle any random numbers in the MAC objects.
           Ptr<WifiMac> mac = wifi->GetMac ();
           Ptr<RegularWifiMac> rmac = DynamicCast<RegularWifiMac> (mac);
           if (rmac)
@@ -221,7 +222,7 @@ WifiHelper::AssignStreams (NetDeviceContainer c, int64_t stream)
               Ptr<EdcaTxopN> bk_edcaTxopN = ptr.Get<EdcaTxopN> ();
               currentStream += bk_edcaTxopN->AssignStreams (currentStream);
 
-              // if an AP, handle any beacon jitter
+              //if an AP, handle any beacon jitter
               Ptr<ApWifiMac> apmac = DynamicCast<ApWifiMac> (rmac);
               if (apmac)
                 {
@@ -233,4 +234,4 @@ WifiHelper::AssignStreams (NetDeviceContainer c, int64_t stream)
   return (currentStream - stream);
 }
 
-} // namespace ns3
+} //namespace ns3

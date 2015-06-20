@@ -17,6 +17,7 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
+
 #include "error-rate-model.h"
 
 namespace ns3 {
@@ -35,7 +36,7 @@ TypeId ErrorRateModel::GetTypeId (void)
 double
 ErrorRateModel::CalculateSnr (WifiMode txMode, double ber) const
 {
-  // This is a very simple binary search.
+  //This is a very simple binary search.
   double low, high, precision;
   low = 1e-25;
   high = 1e25;
@@ -56,4 +57,4 @@ ErrorRateModel::CalculateSnr (WifiMode txMode, double ber) const
   return low;
 }
 
-} // namespace ns3
+} //namespace ns3

@@ -94,7 +94,7 @@ public:
    * Return current center channel frequency in MHz.
    *
    * \return the current center channel frequency in MHz
-   */  
+   */
   double GetChannelFrequencyMhz () const;
 
   /**
@@ -104,7 +104,7 @@ public:
    * \param rxPowerDbm the receive power in dBm
    * \param txVector the TXVECTOR of the arriving packet
    * \param preamble the preamble of the arriving packet
-   * \param packetType The type of the received packet (values: 0 not an A-MPDU, 1 corresponds to any packets in an A-MPDU except the last one, 2 is the last packet in an A-MPDU) 
+   * \param packetType The type of the received packet (values: 0 not an A-MPDU, 1 corresponds to any packets in an A-MPDU except the last one, 2 is the last packet in an A-MPDU)
    * \param rxDuration the duration needed for the reception of the packet
    */
   void StartReceivePreambleAndHeader (Ptr<Packet> packet,
@@ -119,7 +119,7 @@ public:
    * \param packet the arriving packet
    * \param txVector the TXVECTOR of the arriving packet
    * \param preamble the preamble of the arriving packet
-   * \param packetType The type of the received packet (values: 0 not an A-MPDU, 1 corresponds to any packets in an A-MPDU except the last one, 2 is the last packet in an A-MPDU) 
+   * \param packetType The type of the received packet (values: 0 not an A-MPDU, 1 corresponds to any packets in an A-MPDU except the last one, 2 is the last packet in an A-MPDU)
    * \param event the corresponding event of the first time the packet arrives
    */
   void StartReceivePacket (Ptr<Packet> packet,
@@ -264,7 +264,7 @@ public:
    * \return the number of available transmission power levels
    */
   virtual uint32_t GetNTxPower (void) const;
-  
+
   virtual void SetReceiveOkCallback (WifiPhy::RxOkCallback callback);
   virtual void SetReceiveErrorCallback (WifiPhy::RxErrorCallback callback);
   virtual void SendPacket (Ptr<const Packet> packet, WifiTxVector txvector, enum WifiPreamble preamble, uint8_t packetType);
@@ -288,17 +288,17 @@ public:
   virtual bool IsMcsSupported (WifiMode mode);
   virtual double CalculateSnr (WifiMode txMode, double ber) const;
   virtual Ptr<WifiChannel> GetChannel (void) const;
-  
+
   virtual void ConfigureStandard (enum WifiPhyStandard standard);
 
- /**
-  * Assign a fixed random variable stream number to the random variables
-  * used by this model.  Return the number of streams (possibly zero) that
-  * have been assigned.
-  *
-  * \param stream first stream index to use
-  * \return the number of stream indices assigned by this model
-  */
+  /**
+   * Assign a fixed random variable stream number to the random variables
+   * used by this model.  Return the number of streams (possibly zero) that
+   * have been assigned.
+   *
+   * \param stream first stream index to use
+   * \return the number of stream indices assigned by this model
+   */
   int64_t AssignStreams (int64_t stream);
 
   /**
@@ -320,7 +320,7 @@ public:
   /**
    * \param rx the number of receivers on this node.
    */
-  virtual void SetNumberOfReceiveAntennas (uint32_t rx) ;
+  virtual void SetNumberOfReceiveAntennas (uint32_t rx);
   /**
    * \return the number of receivers on this node.
    */
@@ -355,7 +355,7 @@ public:
    */
   virtual void SetStbc (bool stbc);
   /**
-   * Return whether STBC is supported. 
+   * Return whether STBC is supported.
    *
    * \return true if STBC is supported, false otherwise
    */
@@ -374,21 +374,21 @@ public:
   virtual bool GetGreenfield (void) const;
   /**
    * Return whether channel bonding is supported.
-   * 
+   *
    * \return true if channel bonding is supported, false otherwise
    */
-  virtual bool GetChannelBonding (void) const ;
+  virtual bool GetChannelBonding (void) const;
   /**
    * Enable or disable channel bonding support.
-   * 
+   *
    * \param channelbonding Enable or disable channel bonding
    */
-  virtual void SetChannelBonding (bool channelbonding) ;
+  virtual void SetChannelBonding (bool channelbonding);
 
   virtual uint32_t GetNBssMembershipSelectors (void) const;
   virtual uint32_t GetBssMembershipSelector (uint32_t selector) const;
-  virtual WifiModeList GetMembershipSelectorModes(uint32_t selector);
-  
+  virtual WifiModeList GetMembershipSelectorModes (uint32_t selector);
+
   /**
    * \return the number of MCS supported by this phy
    */
@@ -402,7 +402,7 @@ public:
 private:
   virtual void DoInitialize (void);
   virtual void DoDispose (void);
-  
+
   /**
    * Configure YansWifiPhy with appropriate channel frequency and
    * supported rates for 802.11a standard.
@@ -490,7 +490,7 @@ private:
    * \param event the corresponding event of the first time the packet arrives
    */
   void EndReceive (Ptr<Packet> packet, enum WifiPreamble preamble, uint8_t packetType, Ptr<InterferenceHelper::Event> event);
-  
+
   bool     m_initialized;         //!< Flag for runtime initialization
   double   m_edThresholdW;        //!< Energy detection threshold in watts
   double   m_ccaMode1ThresholdW;  //!< Clear channel assessment (CCA) threshold in watts
@@ -508,7 +508,7 @@ private:
   uint32_t m_numberOfTransmitters;  //!< Number of transmitters
   uint32_t m_numberOfReceivers;     //!< Number of receivers
   bool     m_ldpc;                  //!< Flag if LDPC is used
-  bool     m_stbc;                  //!< Flag if STBC is used      
+  bool     m_stbc;                  //!< Flag if STBC is used
   bool     m_greenfield;            //!< Flag if GreenField format is supported
   bool     m_guardInterval;         //!< Flag if short guard interval is used
   bool     m_channelBonding;        //!< Flag if channel bonding is used
@@ -551,7 +551,7 @@ private:
    * mandatory rates".
    */
   WifiModeList m_deviceRateSet;
-  
+
   std::vector<uint32_t> m_bssMembershipSelectorSet;
   std::vector<uint8_t> m_deviceMcsSet;
   EventId m_endRxEvent;
@@ -566,6 +566,6 @@ private:
   bool m_plcpSuccess;                   //!< Flag if the PLCP of the packet or the first MPDU in an A-MPDU has been received
 };
 
-} // namespace ns3
+} //namespace ns3
 
 #endif /* YANS_WIFI_PHY_H */

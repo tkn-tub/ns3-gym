@@ -48,10 +48,8 @@ struct AarfcdWifiRemoteStation : public WifiRemoteStation
   bool m_recovery;
   bool m_justModifyRate;
   uint32_t m_retry;
-
   uint32_t m_successThreshold;
   uint32_t m_timerTimeout;
-
   uint32_t m_rate;
   bool m_rtsOn;
   uint32_t m_rtsWnd;
@@ -115,22 +113,25 @@ AarfcdWifiManager::GetTypeId (void)
   ;
   return tid;
 }
+
 AarfcdWifiManager::AarfcdWifiManager ()
   : WifiRemoteStationManager ()
 {
   NS_LOG_FUNCTION (this);
 }
+
 AarfcdWifiManager::~AarfcdWifiManager ()
 {
   NS_LOG_FUNCTION (this);
 }
+
 WifiRemoteStation *
 AarfcdWifiManager::DoCreateStation (void) const
 {
   NS_LOG_FUNCTION (this);
   AarfcdWifiRemoteStation *station = new AarfcdWifiRemoteStation ();
 
-  // aarf fields below
+  //aarf fields below
   station->m_successThreshold = m_minSuccessThreshold;
   station->m_timerTimeout = m_minTimerThreshold;
   station->m_rate = 0;
@@ -140,7 +141,7 @@ AarfcdWifiManager::DoCreateStation (void) const
   station->m_retry = 0;
   station->m_timer = 0;
 
-  // aarf-cd specific fields below
+  //aarf-cd specific fields below
   station->m_rtsOn = false;
   station->m_rtsWnd = m_minRtsWnd;
   station->m_rtsCounter = 0;
@@ -190,7 +191,7 @@ AarfcdWifiManager::DoReportDataFailed (WifiRemoteStation *st)
       station->m_rtsCounter = station->m_rtsWnd;
       if (station->m_retry == 1)
         {
-          // need recovery fallback
+          //need recovery fallback
           if (m_turnOffRtsAfterRateDecrease)
             {
               TurnOffRts (station);
@@ -214,7 +215,7 @@ AarfcdWifiManager::DoReportDataFailed (WifiRemoteStation *st)
       station->m_rtsCounter = station->m_rtsWnd;
       if (((station->m_retry - 1) % 2) == 1)
         {
-          // need normal fallback
+          //need normal fallback
           if (m_turnOffRtsAfterRateDecrease)
             {
               TurnOffRts (station);
@@ -234,12 +235,14 @@ AarfcdWifiManager::DoReportDataFailed (WifiRemoteStation *st)
     }
   CheckRts (station);
 }
+
 void
 AarfcdWifiManager::DoReportRxOk (WifiRemoteStation *station,
                                  double rxSnr, WifiMode txMode)
 {
   NS_LOG_FUNCTION (this << station << rxSnr << txMode);
 }
+
 void
 AarfcdWifiManager::DoReportRtsOk (WifiRemoteStation *st,
                                   double ctsSnr, WifiMode ctsMode, double rtsSnr)
@@ -249,6 +252,7 @@ AarfcdWifiManager::DoReportRtsOk (WifiRemoteStation *st,
   NS_LOG_DEBUG ("station=" << station << " rts ok");
   station->m_rtsCounter--;
 }
+
 void
 AarfcdWifiManager::DoReportDataOk (WifiRemoteStation *st,
                                    double ackSnr, WifiMode ackMode, double dataSnr)
@@ -282,11 +286,13 @@ AarfcdWifiManager::DoReportDataOk (WifiRemoteStation *st,
     }
   CheckRts (station);
 }
+
 void
 AarfcdWifiManager::DoReportFinalRtsFailed (WifiRemoteStation *station)
 {
   NS_LOG_FUNCTION (this << station);
 }
+
 void
 AarfcdWifiManager::DoReportFinalDataFailed (WifiRemoteStation *station)
 {
@@ -298,7 +304,7 @@ AarfcdWifiManager::DoGetDataTxVector (WifiRemoteStation *st, uint32_t size)
 {
   NS_LOG_FUNCTION (this << st << size);
   AarfcdWifiRemoteStation *station = (AarfcdWifiRemoteStation *) st;
-  return WifiTxVector (GetSupported (station, station->m_rate), GetDefaultTxPowerLevel (), GetLongRetryCount (station), GetShortGuardInterval (station), Min (GetNumberOfReceiveAntennas (station),GetNumberOfTransmitAntennas()), GetNess (station), GetStbc (station));
+  return WifiTxVector (GetSupported (station, station->m_rate), GetDefaultTxPowerLevel (), GetLongRetryCount (station), GetShortGuardInterval (station), Min (GetNumberOfReceiveAntennas (station), GetNumberOfTransmitAntennas ()), GetNess (station), GetStbc (station));
 }
 WifiTxVector
 AarfcdWifiManager::DoGetRtsTxVector (WifiRemoteStation *st)
@@ -307,7 +313,7 @@ AarfcdWifiManager::DoGetRtsTxVector (WifiRemoteStation *st)
   /// \todo we could/should implement the Aarf algorithm for
   /// RTS only by picking a single rate within the BasicRateSet.
   AarfcdWifiRemoteStation *station = (AarfcdWifiRemoteStation *) st;
-  return WifiTxVector (GetSupported (station, 0), GetDefaultTxPowerLevel (), GetShortRetryCount (station), GetShortGuardInterval (station), Min (GetNumberOfReceiveAntennas (station),GetNumberOfTransmitAntennas()), GetNess (station), GetStbc (station));
+  return WifiTxVector (GetSupported (station, 0), GetDefaultTxPowerLevel (), GetShortRetryCount (station), GetShortGuardInterval (station), Min (GetNumberOfReceiveAntennas (station), GetNumberOfTransmitAntennas ()), GetNess (station), GetStbc (station));
 }
 
 bool
@@ -377,4 +383,4 @@ AarfcdWifiManager::ResetRtsWnd (AarfcdWifiRemoteStation *station)
 }
 
 
-} // namespace ns3
+} //namespace ns3

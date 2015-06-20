@@ -17,6 +17,7 @@
  *
  * Author: Mirko Banchi <mk.banchi@gmail.com>
  */
+
 #include "qos-wifi-mac-helper.h"
 #include "ns3/msdu-aggregator.h"
 #include "ns3/wifi-mac.h"
@@ -42,10 +43,9 @@ QosWifiMacHelper::Default (void)
 {
   QosWifiMacHelper helper;
 
-  // We're making QoS-enabled Wi-Fi MACs here, so we set the necessary
-  // attribute. I've carefully positioned this here so that someone
-  // who knows what they're doing can override with explicit
-  // attributes.
+  //We're making QoS-enabled Wi-Fi MACs here, so we set the necessary
+  //attribute. I've carefully positioned this here so that someone
+  //who knows what they're doing can override with explicit attributes.
   helper.SetType ("ns3::StaWifiMac",
                   "QosSupported", BooleanValue (true));
 
@@ -114,7 +114,7 @@ QosWifiMacHelper::SetMpduAggregatorForAc (enum AcIndex ac, std::string name,
   m_mpduAggregator.Set (n0, v0);
   m_mpduAggregator.Set (n1, v1);
   m_mpduAggregator.Set (n2, v2);
-  m_mpduAggregator.Set (n3, v3); 
+  m_mpduAggregator.Set (n3, v3);
 }
 
 void
@@ -137,10 +137,10 @@ QosWifiMacHelper::Setup (Ptr<WifiMac> mac, enum AcIndex ac, std::string dcaAttrN
   mac->GetAttribute (dcaAttrName, ptr);
   Ptr<EdcaTxopN> edca = ptr.Get<EdcaTxopN> ();
 
-  if (m_mpduAggregator.GetTypeId().GetUid() != 0)
+  if (m_mpduAggregator.GetTypeId ().GetUid () != 0)
     {
       Ptr<MpduAggregator> mpduaggregator = m_mpduAggregator.Create<MpduAggregator> ();
-      Ptr<MacLow> low = edca->Low();
+      Ptr<MacLow> low = edca->Low ();
       low->SetMpduAggregator (mpduaggregator);
     }
   if (it != m_aggregators.end ())
@@ -172,4 +172,4 @@ QosWifiMacHelper::Create (void) const
   return mac;
 }
 
-} // namespace ns3
+} //namespace ns3

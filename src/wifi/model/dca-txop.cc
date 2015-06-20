@@ -25,7 +25,6 @@
 #include "ns3/node.h"
 #include "ns3/uinteger.h"
 #include "ns3/pointer.h"
-
 #include "dca-txop.h"
 #include "dcf-manager.h"
 #include "mac-low.h"
@@ -49,6 +48,7 @@ public:
     : m_txop (txop)
   {
   }
+
 private:
   virtual void DoNotifyAccessGranted (void)
   {
@@ -74,8 +74,10 @@ private:
   {
     m_txop->NotifyWakeUp ();
   }
+
   DcaTxop *m_txop;
 };
+
 
 /**
  * Listener for MacLow events. Forwards to DcaTxop.
@@ -90,10 +92,13 @@ public:
    */
   TransmissionListener (DcaTxop * txop)
     : MacLowTransmissionListener (),
-      m_txop (txop) {
+      m_txop (txop)
+  {
   }
 
-  virtual ~TransmissionListener () {}
+  virtual ~TransmissionListener ()
+  {
+  }
 
   virtual void GotCts (double snr, WifiMode txMode)
   {
@@ -196,18 +201,21 @@ DcaTxop::SetLow (Ptr<MacLow> low)
   NS_LOG_FUNCTION (this << low);
   m_low = low;
 }
+
 void
 DcaTxop::SetWifiRemoteStationManager (Ptr<WifiRemoteStationManager> remoteManager)
 {
   NS_LOG_FUNCTION (this << remoteManager);
   m_stationManager = remoteManager;
 }
+
 void
 DcaTxop::SetTxOkCallback (TxOk callback)
 {
   NS_LOG_FUNCTION (this << &callback);
   m_txOkCallback = callback;
 }
+
 void
 DcaTxop::SetTxFailedCallback (TxFailed callback)
 {
@@ -228,30 +236,35 @@ DcaTxop::SetMinCw (uint32_t minCw)
   NS_LOG_FUNCTION (this << minCw);
   m_dcf->SetCwMin (minCw);
 }
+
 void
 DcaTxop::SetMaxCw (uint32_t maxCw)
 {
   NS_LOG_FUNCTION (this << maxCw);
   m_dcf->SetCwMax (maxCw);
 }
+
 void
 DcaTxop::SetAifsn (uint32_t aifsn)
 {
   NS_LOG_FUNCTION (this << aifsn);
   m_dcf->SetAifsn (aifsn);
 }
+
 uint32_t
 DcaTxop::GetMinCw (void) const
 {
   NS_LOG_FUNCTION (this);
   return m_dcf->GetCwMin ();
 }
+
 uint32_t
 DcaTxop::GetMaxCw (void) const
 {
   NS_LOG_FUNCTION (this);
   return m_dcf->GetCwMax ();
 }
+
 uint32_t
 DcaTxop::GetAifsn (void) const
 {
@@ -303,7 +316,6 @@ DcaTxop::StartAccessIfNeeded (void)
     }
 }
 
-
 Ptr<MacLow>
 DcaTxop::Low (void)
 {
@@ -327,6 +339,7 @@ DcaTxop::DoInitialize ()
   m_dcf->StartBackoffNow (m_rng->GetNext (0, m_dcf->GetCw ()));
   ns3::Dcf::DoInitialize ();
 }
+
 bool
 DcaTxop::NeedRtsRetransmission (void)
 {
@@ -342,6 +355,7 @@ DcaTxop::NeedDataRetransmission (void)
   return m_stationManager->NeedDataRetransmission (m_currentHdr.GetAddr1 (), &m_currentHdr,
                                                    m_currentPacket);
 }
+
 bool
 DcaTxop::NeedFragmentation (void)
 {
@@ -364,6 +378,7 @@ DcaTxop::GetFragmentSize (void)
   return m_stationManager->GetFragmentSize (m_currentHdr.GetAddr1 (), &m_currentHdr,
                                             m_currentPacket, m_fragmentNumber);
 }
+
 bool
 DcaTxop::IsLastFragment (void)
 {
@@ -505,6 +520,7 @@ DcaTxop::NotifyInternalCollision (void)
   NS_LOG_FUNCTION (this);
   NotifyCollision ();
 }
+
 void
 DcaTxop::NotifyCollision (void)
 {
@@ -521,6 +537,7 @@ DcaTxop::NotifyChannelSwitching (void)
   m_queue->Flush ();
   m_currentPacket = 0;
 }
+
 void
 DcaTxop::NotifySleep (void)
 {
@@ -531,6 +548,7 @@ DcaTxop::NotifySleep (void)
       m_currentPacket = 0;
     }
 }
+
 void
 DcaTxop::NotifyWakeUp (void)
 {
@@ -544,6 +562,7 @@ DcaTxop::GotCts (double snr, WifiMode txMode)
   NS_LOG_FUNCTION (this << snr << txMode);
   NS_LOG_DEBUG ("got cts");
 }
+
 void
 DcaTxop::MissedCts (void)
 {
@@ -557,7 +576,7 @@ DcaTxop::MissedCts (void)
         {
           m_txFailedCallback (m_currentHdr);
         }
-      // to reset the dcf.
+      //to reset the dcf.
       m_currentPacket = 0;
       m_dcf->ResetCw ();
     }
@@ -568,6 +587,7 @@ DcaTxop::MissedCts (void)
   m_dcf->StartBackoffNow (m_rng->GetNext (0, m_dcf->GetCw ()));
   RestartAccessIfNeeded ();
 }
+
 void
 DcaTxop::GotAck (double snr, WifiMode txMode)
 {
@@ -594,6 +614,7 @@ DcaTxop::GotAck (double snr, WifiMode txMode)
       NS_LOG_DEBUG ("got ack. tx not done, size=" << m_currentPacket->GetSize ());
     }
 }
+
 void
 DcaTxop::MissedAck (void)
 {
@@ -607,7 +628,7 @@ DcaTxop::MissedAck (void)
         {
           m_txFailedCallback (m_currentHdr);
         }
-      // to reset the dcf.
+      //to reset the dcf.
       m_currentPacket = 0;
       m_dcf->ResetCw ();
     }
@@ -620,6 +641,7 @@ DcaTxop::MissedAck (void)
   m_dcf->StartBackoffNow (m_rng->GetNext (0, m_dcf->GetCw ()));
   RestartAccessIfNeeded ();
 }
+
 void
 DcaTxop::StartNext (void)
 {
@@ -687,4 +709,4 @@ DcaTxop::EndTxNoAck (void)
   StartAccessIfNeeded ();
 }
 
-} // namespace ns3
+} //namespace ns3

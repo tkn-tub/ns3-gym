@@ -312,4 +312,4 @@ YansErrorRateModel::GetChunkSuccessRate (WifiMode mode, double snr, uint32_t nbi
   return 0;
 }
 
-} // namespace ns3
+} //namespace ns3

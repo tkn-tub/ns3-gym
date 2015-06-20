@@ -15,9 +15,10 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * Author: Mirko Banchi <mk.banchi@gmail.com>
- * Author: Cecchi Niccolò <insa@igeek.it>
+ * Authors: Mirko Banchi <mk.banchi@gmail.com>
+ *          Cecchi Niccolò <insa@igeek.it>
  */
+
 #include "qos-utils.h"
 #include "qos-tag.h"
 
@@ -91,4 +92,4 @@ QosUtilsIsOldPacket (uint16_t startingSeq, uint16_t seqNumber)
   return (distance >= 2048);
 }
 
-} // namespace ns3
+} //namespace ns3

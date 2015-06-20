@@ -17,7 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
- * Author: Mirko Banchi <mk.banchi@gmail.com>
+ *         Mirko Banchi <mk.banchi@gmail.com>
  */
 
 #ifndef MAC_TX_MIDDLE_H
@@ -50,7 +50,7 @@ public:
    */
   uint16_t GetNextSequenceNumberfor (const WifiMacHeader *hdr);
   /**
-   * Return the next sequence number for the Traffic ID and destination, but do not pick it (i.e. the current sequence number remains unchanged). 
+   * Return the next sequence number for the Traffic ID and destination, but do not pick it (i.e. the current sequence number remains unchanged).
    * This functions is used for A-MPDU aggregation.
    *
    * \param hdr Wi-Fi header
@@ -66,11 +66,12 @@ public:
    */
   uint16_t GetNextSeqNumberByTidAndAddress (uint8_t tid, Mac48Address addr) const;
 
+
 private:
   std::map <Mac48Address,uint16_t*> m_qosSequences;
   uint16_t m_sequence;
 };
 
-} // namespace ns3
+} //namespace ns3
 
 #endif /* MAC_TX_MIDDLE_H */

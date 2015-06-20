@@ -17,9 +17,9 @@
  *
  * Author: Mirko Banchi <mk.banchi@gmail.com>
  */
+
 #include "ns3/fatal-error.h"
 #include "ns3/log.h"
-
 #include "ctrl-headers.h"
 
 namespace ns3 {
@@ -274,6 +274,7 @@ CtrlBAckRequestHeader::IsMultiTid (void) const
   NS_LOG_FUNCTION (this);
   return (m_multiTid && m_compressed) ? true : false;
 }
+
 
 /***********************************
  *       Block ack response
@@ -784,4 +785,4 @@ CtrlBAckResponseHeader::ResetBitmap (void)
   memset (&bitmap, 0, sizeof (bitmap));
 }
 
-}  // namespace ns3
+}  //namespace ns3

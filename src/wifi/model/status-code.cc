@@ -27,11 +27,13 @@ namespace ns3 {
 StatusCode::StatusCode ()
 {
 }
+
 void
 StatusCode::SetSuccess (void)
 {
   m_code = 0;
 }
+
 void
 StatusCode::SetFailure (void)
 {
@@ -43,17 +45,20 @@ StatusCode::IsSuccess (void) const
 {
   return (m_code == 0);
 }
+
 uint32_t
 StatusCode::GetSerializedSize (void) const
 {
   return 2;
 }
+
 Buffer::Iterator
 StatusCode::Serialize (Buffer::Iterator start) const
 {
   start.WriteHtolsbU16 (m_code);
   return start;
 }
+
 Buffer::Iterator
 StatusCode::Deserialize (Buffer::Iterator start)
 {
@@ -66,6 +71,7 @@ StatusCode::Deserialize (Buffer::Iterator start)
  *
  * \param os
  * \param code
+ *
  * \return std::ostream
  */
 std::ostream &
@@ -82,4 +88,4 @@ operator << (std::ostream &os, const StatusCode &code)
   return os;
 }
 
-} // namespace ns3
+} //namespace ns3

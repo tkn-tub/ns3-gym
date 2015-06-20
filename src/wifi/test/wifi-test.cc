@@ -16,8 +16,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
- *         Quincy Tse <quincy.tse@nicta.com.au> (Case for Bug 991)
+ * Authors: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
+ *          Quincy Tse <quincy.tse@nicta.com.au> (Case for Bug 991)
  */
 
 #include "ns3/wifi-net-device.h"
@@ -44,8 +44,8 @@
 
 using namespace ns3;
 
-// helper function to assign streams to random variables, to control 
-// randomness in the tests
+//Helper function to assign streams to random variables, to control
+//randomness in the tests
 static void
 AssignWifiRandomStreams (Ptr<WifiMac> mac, int64_t stream)
 {
@@ -76,12 +76,15 @@ AssignWifiRandomStreams (Ptr<WifiMac> mac, int64_t stream)
     }
 }
 
+
 class WifiTest : public TestCase
 {
 public:
   WifiTest ();
 
   virtual void DoRun (void);
+
+
 private:
   void RunOne (void);
   void CreateOne (Vector pos, Ptr<YansWifiChannel> channel);
@@ -193,24 +196,25 @@ public:
   }
   virtual void DoRun (void)
   {
-    // startingSeq=0, seqNum=2047
+    //startingSeq=0, seqNum=2047
     NS_TEST_EXPECT_MSG_EQ (QosUtilsIsOldPacket (0, 2047), false, "2047 is new in comparison to 0");
-    // startingSeq=0, seqNum=2048
+    //startingSeq=0, seqNum=2048
     NS_TEST_EXPECT_MSG_EQ (QosUtilsIsOldPacket (0, 2048), true, "2048 is old in comparison to 0");
-    // startingSeq=2048, seqNum=0
+    //startingSeq=2048, seqNum=0
     NS_TEST_EXPECT_MSG_EQ (QosUtilsIsOldPacket (2048, 0), true, "0 is old in comparison to 2048");
-    // startingSeq=4095, seqNum=0
+    //startingSeq=4095, seqNum=0
     NS_TEST_EXPECT_MSG_EQ (QosUtilsIsOldPacket (4095, 0), false, "0 is new in comparison to 4095");
-    // startingSeq=0, seqNum=4095
+    //startingSeq=0, seqNum=4095
     NS_TEST_EXPECT_MSG_EQ (QosUtilsIsOldPacket (0, 4095), true, "4095 is old in comparison to 0");
-    // startingSeq=4095 seqNum=2047
+    //startingSeq=4095 seqNum=2047
     NS_TEST_EXPECT_MSG_EQ (QosUtilsIsOldPacket (4095, 2047), true, "2047 is old in comparison to 4095");
-    // startingSeq=2048 seqNum=4095
+    //startingSeq=2048 seqNum=4095
     NS_TEST_EXPECT_MSG_EQ (QosUtilsIsOldPacket (2048, 4095), false, "4095 is new in comparison to 2048");
-    // startingSeq=2049 seqNum=0
+    //startingSeq=2049 seqNum=0
     NS_TEST_EXPECT_MSG_EQ (QosUtilsIsOldPacket (2049, 0), false, "0 is new in comparison to 2049");
   }
 };
+
 
 //-----------------------------------------------------------------------------
 /**
@@ -222,6 +226,8 @@ public:
   InterferenceHelperSequenceTest ();
 
   virtual void DoRun (void);
+
+
 private:
   Ptr<Node> CreateOne (Vector pos, Ptr<YansWifiChannel> channel);
   void SendOnePacket (Ptr<WifiNetDevice> dev);
@@ -322,21 +328,22 @@ InterferenceHelperSequenceTest::DoRun (void)
   Simulator::Destroy ();
 }
 
+
 //-----------------------------------------------------------------------------
 /**
  * Make sure that when multiple broadcast packets are queued on the same
- * device in a short succession no virtual collision occurs 
+ * device in a short succession no virtual collision occurs
  *
  * The observed behavior is that the first frame will be sent immediately,
  * and the frames are spaced by (backoff + SIFS + AIFS) time intervals
  * (where backoff is a random number of slot sizes up to maximum CW)
- * 
+ *
  * The following test case should _not_ generate virtual collision for the second frame.
  * The seed and run numbers were pick such that the second frame gets backoff = 0.
  *
  *                      frame 1, frame 2
  *                      arrive                SIFS + AIFS
- *                      V                    <-----------> 
+ *                      V                    <----------->
  * time  |--------------|-------------------|-------------|----------->
  *       0              1s                  1.001408s     1.001442s
  *                      ^                   ^             ^
@@ -357,17 +364,16 @@ InterferenceHelperSequenceTest::DoRun (void)
 class Bug555TestCase : public TestCase
 {
 public:
-
   Bug555TestCase ();
 
   virtual void DoRun (void);
 
-private:
 
+private:
   void SendOnePacket (Ptr<WifiNetDevice> dev);
 
   ObjectFactory m_manager;
-  ObjectFactory m_mac; 
+  ObjectFactory m_mac;
   ObjectFactory m_propDelay;
 
   Time m_firstTransmissionTime;
@@ -382,12 +388,12 @@ Bug555TestCase::Bug555TestCase ()
 {
 }
 
-void 
+void
 Bug555TestCase::NotifyPhyTxBegin (Ptr<const Packet> p)
 {
   if (m_numSentPackets == 0)
     {
-      NS_ASSERT_MSG (Simulator::Now() == Time (Seconds (1)), "Packet 0 not transmitted at 1 second");
+      NS_ASSERT_MSG (Simulator::Now () == Time (Seconds (1)), "Packet 0 not transmitted at 1 second");
       m_numSentPackets++;
       m_firstTransmissionTime = Simulator::Now ();
     }
@@ -411,13 +417,13 @@ Bug555TestCase::DoRun (void)
   m_propDelay.SetTypeId ("ns3::ConstantSpeedPropagationDelayModel");
   m_manager.SetTypeId ("ns3::ConstantRateWifiManager");
 
-  // Assign a seed and run number, and later fix the assignment of streams to
-  // WiFi random variables, so that the first backoff used is zero slots
+  //Assign a seed and run number, and later fix the assignment of streams to
+  //WiFi random variables, so that the first backoff used is zero slots
   RngSeedManager::SetSeed (1);
   RngSeedManager::SetRun (17);
 
-  // Disable the initial jitter of AP beacons (test case was written before
-  // beacon jitter was added)
+  //Disable the initial jitter of AP beacons (test case was written before
+  //beacon jitter was added)
   Config::SetDefault ("ns3::ApWifiMac::EnableBeaconJitter", BooleanValue (false));
 
   Ptr<YansWifiChannel> channel = CreateObject<YansWifiChannel> ();
@@ -430,10 +436,10 @@ Bug555TestCase::DoRun (void)
   Ptr<WifiNetDevice> txDev = CreateObject<WifiNetDevice> ();
   Ptr<WifiMac> txMac = m_mac.Create<WifiMac> ();
   txMac->ConfigureStandard (WIFI_PHY_STANDARD_80211a);
-  // Fix the stream assignment to the Dcf Txop objects (backoffs)
-  // The below stream assignment will result in the DcaTxop object
-  // using a backoff value of zero for this test when the 
-  // DcaTxop::EndTxNoAck() calls to StartBackoffNow()
+  //Fix the stream assignment to the Dcf Txop objects (backoffs)
+  //The below stream assignment will result in the DcaTxop object
+  //using a backoff value of zero for this test when the
+  //DcaTxop::EndTxNoAck() calls to StartBackoffNow()
   AssignWifiRandomStreams (txMac, 23);
 
   Ptr<ConstantPositionMobilityModel> txMobility = CreateObject<ConstantPositionMobilityModel> ();
@@ -458,7 +464,7 @@ Bug555TestCase::DoRun (void)
   m_firstTransmissionTime = Seconds (0.0);
   m_secondTransmissionTime = Seconds (0.0);
   m_numSentPackets = 0;
-  
+
   Simulator::Schedule (Seconds (1.0), &Bug555TestCase::SendOnePacket, this, txDev);
   Simulator::Schedule (Seconds (1.0), &Bug555TestCase::SendOnePacket, this, txDev);
 
@@ -466,15 +472,16 @@ Bug555TestCase::DoRun (void)
   Simulator::Run ();
   Simulator::Destroy ();
 
-  // First packet has 1408 us of transmit time.   Slot time is 9 us.  
-  // Backoff is 0 slots.  SIFS is 16 us.  AIFS is 2 slots = 18 us.
-  // Should send next packet at 1408 us + (0 * 9 us) + 16 us + 18 us
-  // 1442 us after the first one.
+  //First packet has 1408 us of transmit time.   Slot time is 9 us.
+  //Backoff is 0 slots.  SIFS is 16 us.  AIFS is 2 slots = 18 us.
+  //Should send next packet at 1408 us + (0 * 9 us) + 16 us + 18 us
+  //1442 us after the first one.
   uint32_t expectedWait1 = 1408 + (0 * 9) + 16 + 18;
   Time expectedSecondTransmissionTime = MicroSeconds (expectedWait1) + Seconds (1.0);
 
   NS_TEST_ASSERT_MSG_EQ (m_secondTransmissionTime, expectedSecondTransmissionTime, "The second transmission time not correct!");
 }
+
 
 //-----------------------------------------------------------------------------
 class WifiTestSuite : public TestSuite
@@ -488,8 +495,8 @@ WifiTestSuite::WifiTestSuite ()
 {
   AddTestCase (new WifiTest, TestCase::QUICK);
   AddTestCase (new QosUtilsIsOldPacketTest, TestCase::QUICK);
-  AddTestCase (new InterferenceHelperSequenceTest, TestCase::QUICK); // Bug 991
-  AddTestCase (new Bug555TestCase, TestCase::QUICK); // Bug 555
+  AddTestCase (new InterferenceHelperSequenceTest, TestCase::QUICK); //Bug 991
+  AddTestCase (new Bug555TestCase, TestCase::QUICK); //Bug 555
 }
 
 static WifiTestSuite g_wifiTestSuite;

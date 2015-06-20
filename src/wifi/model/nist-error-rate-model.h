@@ -47,7 +47,6 @@ public:
 
 
 private:
-
   /**
    * Return the coded BER for the given p and b.
    *
@@ -135,6 +134,6 @@ private:
                          uint32_t bValue) const;
 };
 
-} // namespace ns3
+} //namespace ns3
 
 #endif /* NIST_ERROR_RATE_MODEL_H */

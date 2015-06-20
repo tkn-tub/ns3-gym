@@ -17,6 +17,7 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
+
 #include "wifi-mac.h"
 #include "dcf.h"
 #include "ns3/uinteger.h"
@@ -25,43 +26,49 @@
 namespace ns3 {
 
 NS_OBJECT_ENSURE_REGISTERED (WifiMac);
-  
+
 
 Time
 WifiMac::GetDefaultMaxPropagationDelay (void)
 {
-  // 1000m
+  //1000m
   return Seconds (1000.0 / 300000000.0);
 }
+
 Time
 WifiMac::GetDefaultSlot (void)
 {
-  // 802.11-a specific
+  //802.11-a specific
   return MicroSeconds (9);
 }
+
 Time
 WifiMac::GetDefaultSifs (void)
 {
-  // 802.11-a specific
+  //802.11-a specific
   return MicroSeconds (16);
 }
-Time 
+
+Time
 WifiMac::GetDefaultRifs (void)
 {
   //802.11n specific
   return MicroSeconds (2);
 }
+
 Time
 WifiMac::GetDefaultEifsNoDifs (void)
 {
   return GetDefaultSifs () + GetDefaultCtsAckDelay ();
 }
+
 Time
 WifiMac::GetDefaultCtsAckDelay (void)
 {
-  // 802.11-a specific: 6mb/s
+  //802.11-a specific: at 6 Mbit/s
   return MicroSeconds (44);
 }
+
 Time
 WifiMac::GetDefaultCtsAckTimeout (void)
 {
@@ -79,16 +86,18 @@ WifiMac::GetDefaultCtsAckTimeout (void)
 Time
 WifiMac::GetDefaultBasicBlockAckDelay (void)
 {
-  // This value must be rivisited
+  //This value must be rivisited
   return MicroSeconds (250);
 }
+
 Time
 WifiMac::GetDefaultCompressedBlockAckDelay (void)
 {
-  // This value must be rivisited was 68. 
- //CompressedBlockAckSize 32* 8*time it takes to transfer at the lowest rate (6Mb/s)+ aPhy-StartDelay(33)
+  //This value must be rivisited
+  //CompressedBlockAckSize 32 * 8 * time it takes to transfer at the lowest rate (at 6 Mbit/s) + aPhy-StartDelay (33)
   return MicroSeconds (76);
 }
+
 Time
 WifiMac::GetDefaultBasicBlockAckTimeout (void)
 {
@@ -98,6 +107,7 @@ WifiMac::GetDefaultBasicBlockAckTimeout (void)
   blockAckTimeout += GetDefaultSlot ();
   return blockAckTimeout;
 }
+
 Time
 WifiMac::GetDefaultCompressedBlockAckTimeout (void)
 {
@@ -165,7 +175,7 @@ WifiMac::GetTypeId (void)
                    MakeTimeAccessor (&WifiMac::SetSifs,
                                      &WifiMac::GetSifs),
                    MakeTimeChecker ())
-    .AddAttribute ("EifsNoDifs", "The value of EIFS-DIFS",
+    .AddAttribute ("EifsNoDifs", "The value of EIFS-DIFS.",
                    TimeValue (GetDefaultEifsNoDifs ()),
                    MakeTimeAccessor (&WifiMac::SetEifsNoDifs,
                                      &WifiMac::GetEifsNoDifs),
@@ -180,12 +190,11 @@ WifiMac::GetTypeId (void)
                    MakeTimeAccessor (&WifiMac::SetPifs,
                                      &WifiMac::GetPifs),
                    MakeTimeChecker ())
-.AddAttribute ("Rifs", "The value of the RIFS constant.",
+    .AddAttribute ("Rifs", "The value of the RIFS constant.",
                    TimeValue (GetDefaultRifs ()),
                    MakeTimeAccessor (&WifiMac::SetRifs,
                                      &WifiMac::GetRifs),
                    MakeTimeChecker ())
-
     .AddAttribute ("MaxPropagationDelay", "The maximum propagation delay. Unused for now.",
                    TimeValue (GetDefaultMaxPropagationDelay ()),
                    MakeTimeAccessor (&WifiMac::m_maxPropagationDelay),
@@ -206,27 +215,25 @@ WifiMac::GetTypeId (void)
                      "ns3::Packet::TracedCallback")
     .AddTraceSource ("MacPromiscRx",
                      "A packet has been received by this device, has been passed up from the physical layer "
-                     "and is being forwarded up the local protocol stack.  This is a promiscuous trace,",
+                     "and is being forwarded up the local protocol stack.  This is a promiscuous trace.",
                      MakeTraceSourceAccessor (&WifiMac::m_macPromiscRxTrace),
                      "ns3::Packet::TracedCallback")
     .AddTraceSource ("MacRx",
                      "A packet has been received by this device, has been passed up from the physical layer "
-                     "and is being forwarded up the local protocol stack.  This is a non-promiscuous trace,",
+                     "and is being forwarded up the local protocol stack. This is a non-promiscuous trace.",
                      MakeTraceSourceAccessor (&WifiMac::m_macRxTrace),
                      "ns3::Packet::TracedCallback")
     .AddTraceSource ("MacRxDrop",
-                     "A packet has been dropped in the MAC layer after it has been passed up from the physical "
-                     "layer.",
+                     "A packet has been dropped in the MAC layer after it has been passed up from the physical layer.",
                      MakeTraceSourceAccessor (&WifiMac::m_macRxDropTrace),
                      "ns3::Packet::TracedCallback")
-#if 0
-    // Not currently implemented in this device
+    //Not currently implemented in this device
+    /*
     .AddTraceSource ("Sniffer",
                      "Trace source simulating a non-promiscuous packet sniffer attached to the device",
                      MakeTraceSourceAccessor (&WifiMac::m_snifferTrace))
-#endif
+    */
   ;
-
   return tid;
 }
 
@@ -241,6 +248,7 @@ WifiMac::GetMsduLifetime (void) const
 {
   return Seconds (10);
 }
+
 Time
 WifiMac::GetMaxPropagationDelay (void) const
 {
@@ -339,7 +347,7 @@ void
 WifiMac::Configure80211g (void)
 {
   SetSifs (MicroSeconds (10));
-  // Note no support for Short Slot Time as yet
+  //Note: no support for Short Slot Time yet
   SetSlot (MicroSeconds (20));
   SetEifsNoDifs (MicroSeconds (10 + 304));
   SetPifs (MicroSeconds (10 + 20));
@@ -373,7 +381,7 @@ void
 WifiMac::Configure80211n_2_4Ghz (void)
 {
   Configure80211g ();
-  SetRifs(MicroSeconds (2));
+  SetRifs (MicroSeconds (2));
   SetBasicBlockAckTimeout (GetSifs () + GetSlot () + GetDefaultBasicBlockAckDelay () + GetDefaultMaxPropagationDelay () * 2);
   SetCompressedBlockAckTimeout (GetSifs () + GetSlot () + GetDefaultCompressedBlockAckDelay () + GetDefaultMaxPropagationDelay () * 2);
 }
@@ -381,7 +389,7 @@ void
 WifiMac::Configure80211n_5Ghz (void)
 {
   Configure80211a ();
-  SetRifs(MicroSeconds (2));
+  SetRifs (MicroSeconds (2));
   SetBasicBlockAckTimeout (GetSifs () + GetSlot () + GetDefaultBasicBlockAckDelay () + GetDefaultMaxPropagationDelay () * 2);
   SetCompressedBlockAckTimeout (GetSifs () + GetSlot () + GetDefaultCompressedBlockAckDelay () + GetDefaultMaxPropagationDelay () * 2);
 }
@@ -422,4 +430,6 @@ WifiMac::ConfigureDcf (Ptr<Dcf> dcf, uint32_t cwmin, uint32_t cwmax, enum AcInde
       break;
     }
 }
-} // namespace ns3
+
+} //namespace ns3
+

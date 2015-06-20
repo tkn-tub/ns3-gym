@@ -17,6 +17,7 @@
  *
  * Author: Federico Maguolo <maguolof@dei.unipd.it>
  */
+
 #ifndef AARFCD_WIFI_MANAGER_H
 #define AARFCD_WIFI_MANAGER_H
 
@@ -104,20 +105,20 @@ private:
    */
   void TurnOnRts (AarfcdWifiRemoteStation *station);
 
-  // aarf fields below
+  //aarf fields below
   uint32_t m_minTimerThreshold;
   uint32_t m_minSuccessThreshold;
   double m_successK;
   uint32_t m_maxSuccessThreshold;
   double m_timerK;
 
-  // aarf-cd fields below
+  //aarf-cd fields below
   uint32_t m_minRtsWnd;
   uint32_t m_maxRtsWnd;
   bool m_turnOffRtsAfterRateDecrease;
   bool m_turnOnRtsAfterRateIncrease;
 };
 
-} // namespace ns3
+} //namespace ns3
 
 #endif /* AARFCD_WIFI_MANAGER_H */

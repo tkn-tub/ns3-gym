@@ -17,6 +17,7 @@
  *
  * Author: Mirko Banchi <mk.banchi@gmail.com>
  */
+
 #include "block-ack-agreement.h"
 #include "ns3/log.h"
 
@@ -58,12 +59,14 @@ BlockAckAgreement::SetBufferSize (uint16_t bufferSize)
   NS_ASSERT (bufferSize % 16 == 0);
   m_bufferSize = bufferSize;
 }
+
 void
 BlockAckAgreement::SetTimeout (uint16_t timeout)
 {
   NS_LOG_FUNCTION (this << timeout);
   m_timeout = timeout;
 }
+
 void
 BlockAckAgreement::SetStartingSequence (uint16_t seq)
 {
@@ -71,18 +74,21 @@ BlockAckAgreement::SetStartingSequence (uint16_t seq)
   NS_ASSERT (seq < 4096);
   m_startingSeq = seq;
 }
+
 void
 BlockAckAgreement::SetImmediateBlockAck (void)
 {
   NS_LOG_FUNCTION (this);
   m_blockAckPolicy = 1;
 }
+
 void
 BlockAckAgreement::SetDelayedBlockAck (void)
 {
   NS_LOG_FUNCTION (this);
   m_blockAckPolicy = 0;
 }
+
 void
 BlockAckAgreement::SetAmsduSupport (bool supported)
 {
@@ -96,30 +102,35 @@ BlockAckAgreement::GetTid (void) const
   NS_LOG_FUNCTION (this);
   return m_tid;
 }
+
 Mac48Address
 BlockAckAgreement::GetPeer (void) const
 {
   NS_LOG_FUNCTION (this);
   return m_peer;
 }
+
 uint16_t
 BlockAckAgreement::GetBufferSize (void) const
 {
   NS_LOG_FUNCTION (this);
   return m_bufferSize;
 }
+
 uint16_t
 BlockAckAgreement::GetTimeout (void) const
 {
   NS_LOG_FUNCTION (this);
   return m_timeout;
 }
+
 uint16_t
 BlockAckAgreement::GetStartingSequence (void) const
 {
   NS_LOG_FUNCTION (this);
   return m_startingSeq;
 }
+
 uint16_t
 BlockAckAgreement::GetStartingSequenceControl (void) const
 {
@@ -127,39 +138,45 @@ BlockAckAgreement::GetStartingSequenceControl (void) const
   uint16_t seqControl = (m_startingSeq << 4) | 0xfff0;
   return seqControl;
 }
+
 bool
 BlockAckAgreement::IsImmediateBlockAck (void) const
 {
   NS_LOG_FUNCTION (this);
   return (m_blockAckPolicy == 1);
 }
+
 bool
 BlockAckAgreement::IsAmsduSupported (void) const
 {
   NS_LOG_FUNCTION (this);
   return (m_amsduSupported == 1) ? true : false;
 }
+
 uint16_t
 BlockAckAgreement::GetWinEnd (void) const
 {
   return m_winEnd;
 }
+
 void
 BlockAckAgreement::SetWinEnd (uint16_t seq)
 {
   m_winEnd = seq;
 }
+
 void
 BlockAckAgreement::SetHtSupported (bool htSupported)
 {
   NS_LOG_FUNCTION (this << htSupported);
   m_htSupported = htSupported;
 }
+
 bool
 BlockAckAgreement::IsHtSupported (void) const
 {
-    NS_LOG_FUNCTION (this);
-    return (m_htSupported == 1) ? true : false;
+  NS_LOG_FUNCTION (this);
+  return (m_htSupported == 1) ? true : false;
 }
 
-} // namespace ns3
+} //namespace ns3

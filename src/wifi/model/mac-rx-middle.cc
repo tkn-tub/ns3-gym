@@ -20,7 +20,6 @@
 
 #include "mac-rx-middle.h"
 #include "wifi-mac-header.h"
-
 #include "ns3/assert.h"
 #include "ns3/log.h"
 #include "ns3/packet.h"
@@ -51,6 +50,8 @@ private:
   bool m_defragmenting;
   uint16_t m_lastSequenceControl;
   Fragments m_fragments;
+
+
 public:
   OriginatorRxStatus ()
   {
@@ -91,6 +92,7 @@ public:
    * and return the full packet.
    *
    * \param packet the last fragment
+   *
    * \return the fully reconstructed packet
    */
   Ptr<Packet> AccumulateLastFragment (Ptr<const Packet> packet)
@@ -122,6 +124,7 @@ public:
    * in order.
    *
    * \param sequenceControl the raw sequence control
+   *
    * \return true if the sequence control is in order,
    *         false otherwise
    */
@@ -150,12 +153,11 @@ public:
    * Set the last sequence control we received.
    *
    * \param sequenceControl the last sequence control we received
-   */ 
+   */
   void SetSequenceControl (uint16_t sequenceControl)
   {
     m_lastSequenceControl = sequenceControl;
   }
-
 };
 
 
@@ -316,7 +318,7 @@ MacRxMiddle::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
       NS_LOG_DEBUG ("Sequence numbers have looped back. last recorded=" << originator->GetLastSequenceControl () <<
                     " currently seen=" << hdr->GetSequenceControl ());
     }
-  // filter duplicates.
+  //filter duplicates.
   if (IsDuplicate (hdr, originator))
     {
       NS_LOG_DEBUG ("duplicate from=" << hdr->GetAddr2 () <<
@@ -339,4 +341,4 @@ MacRxMiddle::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
   m_callback (agregate, hdr);
 }
 
-} // namespace ns3
+} //namespace ns3

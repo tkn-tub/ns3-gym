@@ -17,6 +17,7 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
+
 #ifndef WIFI_PHY_STATE_HELPER_H
 #define WIFI_PHY_STATE_HELPER_H
 
@@ -196,20 +197,18 @@ public:
    *             the \p state.
    * \param [in] state The state.
    */
-  typedef void (* StateTracedCallback)
-    (const Time start, const Time duration, const WifiPhy::State state);
+  typedef void (* StateTracedCallback)(const Time start, const Time duration, const WifiPhy::State state);
 
   /**
    * TracedCallback signature for receive end ok event.
    *
    * \param [in] packet The received packet.
    * \param [in] snr    The SNR of the received packet.
-   * \param [in] mode   The transmission mode of the packet.   
+   * \param [in] mode   The transmission mode of the packet.
    * \param [in] preamble The preamble of the packet.
    */
-  typedef void (* RxOkTracedCallback)
-    (const Ptr<const Packet> packet, const double snr,
-     const WifiMode mode, const WifiPreamble preamble);
+  typedef void (* RxOkTracedCallback)(const Ptr<const Packet> packet, const double snr,
+                                      const WifiMode mode, const WifiPreamble preamble);
 
   /**
    * TracedCallback signature for receive end error event.
@@ -217,22 +216,20 @@ public:
    * \param [in] packet The received packet.
    * \param [in] snr    The SNR of the received packet.
    */
-  typedef void (* RxEndErrorTracedCallback)
-    (const Ptr<const Packet> packet, const double snr);
+  typedef void (* RxEndErrorTracedCallback)(const Ptr<const Packet> packet, const double snr);
 
   /**
    * TracedCallback signature for transmit event.
    *
    * \param [in] packet The received packet.
-   * \param [in] mode   The transmission mode of the packet.   
+   * \param [in] mode   The transmission mode of the packet.
    * \param [in] preamble The preamble of the packet.
    * \param [in] power  The transmit power level.
    */
-  typedef void (* TxTracedCallback)
-    (const Ptr<const Packet> packet, const WifiMode mode,
-     const WifiPreamble preamble, const uint8_t power);
-     
-                
+  typedef void (* TxTracedCallback)(const Ptr<const Packet> packet, const WifiMode mode,
+                                    const WifiPreamble preamble, const uint8_t power);
+
+
 private:
   /**
    * typedef for a list of WifiPhyListeners
@@ -313,6 +310,6 @@ private:
   WifiPhy::RxErrorCallback m_rxErrorCallback;
 };
 
-} // namespace ns3
+} //namespace ns3
 
 #endif /* WIFI_PHY_STATE_HELPER_H */

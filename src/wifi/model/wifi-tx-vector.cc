@@ -3,7 +3,7 @@
  * Copyright (c) 2010 CTTC
  *
  * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as 
+ * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
  *
  * This program is distributed in the hope that it will be useful,
@@ -15,8 +15,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * Author: Nicola Baldo <nbaldo@cttc.es>
- *       : Ghada Badawy <gbadawy@gmail.com>
+ * Authors: Nicola Baldo <nbaldo@cttc.es>
+ *          Ghada Badawy <gbadawy@gmail.com>
  */
 
 #include "ns3/wifi-tx-vector.h"
@@ -40,10 +40,10 @@ WifiTxVector::WifiTxVector (WifiMode mode, uint8_t powerLevel, uint8_t retries,
   : m_mode (mode),
     m_txPowerLevel (powerLevel),
     m_retries (retries),
-    m_shortGuardInterval(shortGuardInterval),
-    m_nss(nss),
-    m_ness(ness),
-    m_stbc(stbc),
+    m_shortGuardInterval (shortGuardInterval),
+    m_nss (nss),
+    m_ness (ness),
+    m_stbc (stbc),
     m_modeInitialized (true),
     m_txPowerLevelInitialized (true)
 {
@@ -58,7 +58,8 @@ WifiTxVector::GetMode (void) const
     }
   return m_mode;
 }
-uint8_t 
+
+uint8_t
 WifiTxVector::GetTxPowerLevel (void) const
 {
   if (!m_txPowerLevelInitialized)
@@ -67,80 +68,91 @@ WifiTxVector::GetTxPowerLevel (void) const
     }
   return m_txPowerLevel;
 }
-uint8_t 
+
+uint8_t
 WifiTxVector::GetRetries (void) const
 {
   return m_retries;
 }
-bool 
+
+bool
 WifiTxVector::IsShortGuardInterval (void) const
 {
- return m_shortGuardInterval;
+  return m_shortGuardInterval;
 }
-uint8_t 
+
+uint8_t
 WifiTxVector::GetNss (void) const
 {
   return m_nss;
 }
-uint8_t 
+
+uint8_t
 WifiTxVector::GetNess (void) const
 {
   return m_ness;
 }
-bool 
+
+bool
 WifiTxVector::IsStbc (void) const
 {
   return m_stbc;
 }
 
-void 
+void
 WifiTxVector::SetMode (WifiMode mode)
 {
-  m_mode=mode;
+  m_mode = mode;
   m_modeInitialized = true;
 }
-void 
+
+void
 WifiTxVector::SetTxPowerLevel (uint8_t powerlevel)
 {
-  m_txPowerLevel=powerlevel;
+  m_txPowerLevel = powerlevel;
   m_txPowerLevelInitialized = true;
 }
-void 
+
+void
 WifiTxVector::SetRetries (uint8_t retries)
 {
   m_retries = retries;
 }
-void 
+
+void
 WifiTxVector::SetShortGuardInterval (bool guardinterval)
 {
-  m_shortGuardInterval=guardinterval;
+  m_shortGuardInterval = guardinterval;
 }
-void 
+
+void
 WifiTxVector::SetNss (uint8_t nss)
 {
-  m_nss= nss;
+  m_nss = nss;
 }
-void 
+
+void
 WifiTxVector::SetNess (uint8_t ness)
 {
-  m_ness=ness;
+  m_ness = ness;
 }
-void 
+
+void
 WifiTxVector::SetStbc (bool stbc)
 {
-  m_stbc=stbc;
+  m_stbc = stbc;
 }
 
 std::ostream & operator << ( std::ostream &os, const WifiTxVector &v)
-{ 
-  os << "mode:" << v.GetMode() <<
-    " txpwrlvl:" << (uint32_t)v.GetTxPowerLevel() <<
-    " retries:" << (uint32_t)v.GetRetries() <<
-    " Short GI: " << v.IsShortGuardInterval() <<
-    " Nss: " << (uint32_t)v.GetNss() <<
-    " Ness: " << (uint32_t)v.GetNess() <<
-    " STBC: " << v.IsStbc();
+{
+  os << "mode:" << v.GetMode () <<
+    " txpwrlvl:" << (uint32_t)v.GetTxPowerLevel () <<
+    " retries:" << (uint32_t)v.GetRetries () <<
+    " Short GI: " << v.IsShortGuardInterval () <<
+    " Nss: " << (uint32_t)v.GetNss () <<
+    " Ness: " << (uint32_t)v.GetNess () <<
+    " STBC: " << v.IsStbc ();
   return os;
 }
 
-} // namespace ns3
+} //namespace ns3

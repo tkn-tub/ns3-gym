@@ -17,6 +17,7 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
+
 #include "dcf.h"
 #include "ns3/uinteger.h"
 #include "ns3/log.h"
@@ -51,4 +52,4 @@ Dcf::GetTypeId (void)
   return tid;
 }
 
-} // namespace ns3
+} //namespace ns3

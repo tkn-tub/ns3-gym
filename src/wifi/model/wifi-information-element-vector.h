@@ -24,9 +24,7 @@
 
 #include "ns3/header.h"
 #include "ns3/simple-ref-count.h"
-
 #include "ns3/wifi-information-element.h"
-
 
 namespace ns3 {
 
@@ -53,15 +51,17 @@ public:
   /**
    * \attention When you use RemoveHeader, WifiInformationElementVector supposes, that
    * all buffer consists of information elements
-   * @param start
-   * @return
+   *
+   * \param start
    */
   virtual uint32_t Deserialize (Buffer::Iterator start);
   virtual void Print (std::ostream &os) const;
 
   /**
    * \brief Needed when you try to deserialize a lonely IE inside other header
+   *
    * \param start is the start of the buffer
+   *
    * \return deserialized bytes
    */
   virtual uint32_t DeserializeSingleIe (Buffer::Iterator start);
@@ -80,12 +80,15 @@ public:
 
   /**
    * Check if the given WifiInformationElementVectors are equivalent.
-   * 
+   *
    * \param a another WifiInformationElementVector
+   *
    * \return true if the given WifiInformationElementVectors are equivalent,
    *         false otherwise
    */
   virtual bool operator== (const WifiInformationElementVector & a) const;
+
+
 protected:
   /**
    * typedef for a vector of WifiInformationElements.
@@ -98,5 +101,6 @@ protected:
   uint16_t m_maxSize;
 };
 
-}
+} //namespace ns3
+
 #endif /* WIFI_INFORMATION_ELEMENT_VECTOR_H */

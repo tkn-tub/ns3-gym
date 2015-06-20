@@ -3,7 +3,7 @@
  * Copyright (c) 2013
  *
  * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as 
+ * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
  *
  * This program is distributed in the hope that it will be useful,
@@ -17,6 +17,7 @@
  *
  * Author: Ghada Badawy <gbadawy@gmail.com>
  */
+
 #ifndef HT_CAPABILITIES_H
 #define HT_CAPABILITIES_H
 
@@ -41,19 +42,19 @@ namespace ns3 {
  *
  * \see attribute_HtCapabilities
  */
-class HtCapabilities: public WifiInformationElement
+class HtCapabilities : public WifiInformationElement
 {
 public:
-   HtCapabilities ();
+  HtCapabilities ();
   void SetLdpc (uint8_t ldpc);
   void SetSupportedChannelWidth (uint8_t supportedchannelwidth);
   void SetGreenfield (uint8_t greenfield);
-  void SetShortGuardInterval20(uint8_t shortguardinterval);
-  void SetHtCapabilitiesInfo(uint16_t ctrl);
+  void SetShortGuardInterval20 (uint8_t shortguardinterval);
+  void SetHtCapabilitiesInfo (uint16_t ctrl);
   void SetAmpduParameters (uint8_t ctrl);
   void SetSupportedMcsSet (uint64_t ctrl1, uint64_t ctrl2);
-  void SetHtSupported(uint8_t htsupported);
-  void SetRxMcsBitmask(uint8_t index);
+  void SetHtSupported (uint8_t htsupported);
+  void SetRxMcsBitmask (uint8_t index);
   bool IsSupportedMcs (uint8_t mcs);
   //returns the HT Capabilties info field in the HT Capabilities information element
   uint16_t GetHtCapabilitiesInfo (void) const;
@@ -67,8 +68,8 @@ public:
   uint8_t GetGreenfield (void) const;
   uint8_t GetShortGuardInterval20 (void) const;
   uint8_t GetSupportedChannelWidth (void) const;
-  uint8_t* GetRxMcsBitmask();
-  
+  uint8_t* GetRxMcsBitmask ();
+
   WifiInformationElementId ElementId () const;
   uint8_t GetInformationFieldSize () const;
   void SerializeInformationField (Buffer::Iterator start) const;
@@ -81,24 +82,25 @@ public:
    * WifiInformationElement.
    *
    * \param start
+   *
    * \return an iterator
    */
   Buffer::Iterator Serialize (Buffer::Iterator start) const;
   /**
-   * Return the serialized size of this HT capability 
+   * Return the serialized size of this HT capability
    * information element.
-   * 
-   * \return the serialized size of this HT capability 
-   * information element
+   *
+   * \return the serialized size of this HT capability information element
    */
   uint16_t GetSerializedSize () const;
- 
+
+
 private:
   uint8_t m_ldpc;
   uint8_t m_supportedChannelWidth;
   uint8_t m_smPowerSave;
   uint8_t m_greenField;
-  uint8_t m_shortGuardInterval20; 
+  uint8_t m_shortGuardInterval20;
   uint8_t m_shortGuardInterval40;
   uint8_t m_txStbc;
   uint8_t m_rxStbc;
@@ -118,7 +120,7 @@ private:
   uint8_t m_txRxMcsSetUnequal;
   uint8_t m_txMaxNSpatialStreams;
   uint8_t m_txUnequalModulation;
-  uint32_t m_reservedMcsSet3; 
+  uint32_t m_reservedMcsSet3;
   uint8_t m_rxMcsBitmask[MAX_SUPPORTED_MCS];
   //this is used to decide if this element should be added to the frame or not
   uint8_t m_htSupported;
@@ -129,6 +131,6 @@ std::istream &operator >> (std::istream &is, HtCapabilities &htcapabilities);
 
 ATTRIBUTE_HELPER_HEADER (HtCapabilities);
 
-} // namespace ns3
+} //namespace ns3
 
 #endif /* HT_CAPABILITY_H */

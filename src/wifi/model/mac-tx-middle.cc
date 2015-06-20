@@ -16,13 +16,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
- * Author: Mirko Banchi <mk.banchi@gmail.com>
- * Author: Ghada Badawy <gbadawy@gmail.com>
+ * Authors: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
+ *          Mirko Banchi <mk.banchi@gmail.com>
+ *          Ghada Badawy <gbadawy@gmail.com>
  */
 
 #include "ns3/assert.h"
-
 #include "mac-tx-middle.h"
 #include "wifi-mac-header.h"
 
@@ -78,6 +77,7 @@ MacTxMiddle::GetNextSequenceNumberfor (const WifiMacHeader *hdr)
     }
   return retval;
 }
+
 uint16_t
 MacTxMiddle::PeekNextSequenceNumberfor (const WifiMacHeader *hdr)
 {
@@ -117,4 +117,4 @@ MacTxMiddle::GetNextSeqNumberByTidAndAddress (uint8_t tid, Mac48Address addr) co
   return seq;
 }
 
-} // namespace ns3
+} //namespace ns3

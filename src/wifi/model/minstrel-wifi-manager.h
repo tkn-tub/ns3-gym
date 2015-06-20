@@ -18,8 +18,6 @@
  * Author: Duy Nguyen <duy@soe.ucsc.edu>
  */
 
-
-
 #ifndef MINSTREL_WIFI_MANAGER_H
 #define MINSTREL_WIFI_MANAGER_H
 
@@ -43,12 +41,11 @@ struct RateInfo
    */
   Time perfectTxTime;
 
-
-  uint32_t retryCount;  ///< retry limit
+  uint32_t retryCount;          ///< retry limit
   uint32_t adjustedRetryCount;  ///< adjust the retry limit for this rate
-  uint32_t numRateAttempt;  ///< how many number of attempts so far
-  uint32_t numRateSuccess;    ///< number of successful pkts
-  uint32_t prob;  ///< (# pkts success )/(# total pkts)
+  uint32_t numRateAttempt;      ///< how many number of attempts so far
+  uint32_t numRateSuccess;      ///< number of successful pkts
+  uint32_t prob;                ///< (# pkts success )/(# total pkts)
 
   /**
    * EWMA calculation
@@ -64,7 +61,6 @@ struct RateInfo
  * A vector of a struct RateInfo
  */
 typedef std::vector<struct RateInfo> MinstrelRate;
-
 /**
  * Data structure for a Sample Rate table
  * A vector of a vector uint32_t
@@ -90,18 +86,20 @@ public:
 
   virtual void SetupPhy (Ptr<WifiPhy> phy);
 
- /**
-  * Assign a fixed random variable stream number to the random variables
-  * used by this model.  Return the number of streams (possibly zero) that
-  * have been assigned.
-  *
-  * \param stream first stream index to use
-  * \return the number of stream indices assigned by this model
-  */
+  /**
+   * Assign a fixed random variable stream number to the random variables
+   * used by this model.  Return the number of streams (possibly zero) that
+   * have been assigned.
+   *
+   * \param stream first stream index to use
+   *
+   * \return the number of stream indices assigned by this model
+   */
   int64_t AssignStreams (int64_t stream);
 
+
 private:
-  // overriden from base class
+  //overriden from base class
   virtual WifiRemoteStation * DoCreateStation (void) const;
   virtual void DoReportRxOk (WifiRemoteStation *station,
                              double rxSnr, WifiMode txMode);
@@ -120,7 +118,7 @@ private:
 
   virtual bool IsLowLatency (void) const;
 
-  /// for estimating the TxTime of a packet with a given mode
+  //for estimating the TxTime of a packet with a given mode
   Time GetCalcTxTime (WifiMode mode) const;
   /**
    * Add transmission time for the given mode to an internal list.
@@ -130,19 +128,19 @@ private:
    */
   void AddCalcTxTime (WifiMode mode, Time t);
 
-  /// update the number of retries and reset accordingly
+  //update the number of retries and reset accordingly
   void UpdateRetry (MinstrelWifiRemoteStation *station);
 
-  /// getting the next sample from Sample Table
+  //getting the next sample from Sample Table
   uint32_t GetNextSample (MinstrelWifiRemoteStation *station);
 
-  /// find a rate to use from Minstrel Table
+  //find a rate to use from Minstrel Table
   uint32_t FindRate (MinstrelWifiRemoteStation *station);
 
-  /// updating the Minstrel Table every 1/10 seconds
+  //updating the Minstrel Table every 1/10 seconds
   void UpdateStats (MinstrelWifiRemoteStation *station);
 
-  /// initialize Minstrel Table
+  //initialize Minstrel Table
   void RateInit (MinstrelWifiRemoteStation *station);
 
   /**
@@ -163,13 +161,13 @@ private:
    */
   Time CalculateTimeUnicastPacket (Time dataTransmissionTime, uint32_t shortRetries, uint32_t longRetries);
 
-  /// initialize Sample Table
+  //initialize Sample Table
   void InitSampleTable (MinstrelWifiRemoteStation *station);
 
-  /// printing Sample Table
+  //printing Sample Table
   void PrintSampleTable (MinstrelWifiRemoteStation *station);
 
-  /// printing Minstrel Table
+  //printing Minstrel Table
   void PrintTable (MinstrelWifiRemoteStation *station);
 
   void CheckInit (MinstrelWifiRemoteStation *station);  ///< check for initializations
@@ -181,18 +179,18 @@ private:
    */
   typedef std::vector<std::pair<Time,WifiMode> > TxTime;
 
-  TxTime m_calcTxTime;  ///< to hold all the calculated TxTime for all modes
-  Time m_updateStats;  ///< how frequent do we calculate the stats (1/10 seconds)
+  TxTime m_calcTxTime;      ///< to hold all the calculated TxTime for all modes
+  Time m_updateStats;       ///< how frequent do we calculate the stats (1/10 seconds)
   double m_lookAroundRate;  ///< the % to try other rates than our current rate
-  double m_ewmaLevel;  ///< exponential weighted moving average
-  uint32_t m_sampleCol;  ///< number of sample columns
-  uint32_t m_pktLen;  ///< packet length used for calculate mode TxTime
-  uint32_t m_nsupported;  ///< modes supported
+  double m_ewmaLevel;       ///< exponential weighted moving average
+  uint32_t m_sampleCol;     ///< number of sample columns
+  uint32_t m_pktLen;        ///< packet length used for calculate mode TxTime
+  uint32_t m_nsupported;    ///< modes supported
 
-  /// Provides uniform random variables.
+  //Provides uniform random variables.
   Ptr<UniformRandomVariable> m_uniformRandomVariable;
 };
 
-} // namespace ns3
+} //namespace ns3
 
 #endif /* MINSTREL_WIFI_MANAGER_H */

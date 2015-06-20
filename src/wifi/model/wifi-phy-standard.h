@@ -45,12 +45,12 @@ enum WifiPhyStandard
    *  ACM MOBICOM, 2001.
    */
   WIFI_PHY_STANDARD_holland,
-  // 11n support
+  /** HT OFDM PHY for the 2.4 GHz band (clause 20) */
   WIFI_PHY_STANDARD_80211n_2_4GHZ,
-  // needed for different mac parameters
+  /** HT OFDM PHY for the 5 GHz band (clause 20) */
   WIFI_PHY_STANDARD_80211n_5GHZ
 };
 
-} // namespace ns3
+} //namespace ns3
 
 #endif /* WIFI_PHY_STANDARD_H */

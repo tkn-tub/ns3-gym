@@ -17,6 +17,7 @@
  *
  * Author: Mirko Banchi <mk.banchi@gmail.com>
  */
+
 #ifndef QOS_UTILS_H
 #define QOS_UTILS_H
 
@@ -42,7 +43,6 @@ enum AcIndex
   AC_VI = 2,
   /** Voice */
   AC_VO = 3,
-
   /** Total number of ACs */
   AC_BE_NQOS = 4,
   AC_UNDEF
@@ -64,6 +64,7 @@ AcIndex QosUtilsMapTidToAc (uint8_t tid);
  * A value >= 8 is returned otherwise.
  *
  * \param packet the packet to checked for a QoS tag
+ *
  * \return a value less than 8 if QoS tag was present, a value >= 8
  *         is returned if no QoS tag was present
  */
@@ -77,6 +78,7 @@ uint8_t QosUtilsGetTidForPacket (Ptr<const Packet> packet);
  *
  * \param seqControl the sequence control field
  * \param endSequence
+ *
  * \return a unique integer for the given sequence control and end sequence
  */
 uint32_t QosUtilsMapSeqControlToUniqueInteger (uint16_t seqControl, uint16_t endSequence);
@@ -115,10 +117,11 @@ uint32_t QosUtilsMapSeqControlToUniqueInteger (uint16_t seqControl, uint16_t end
  *
  * \param startingSeq the starting sequence number
  * \param seqNumber the sequence number to be checked
+ *
  * \return true if the packet is old, false otherwise
  */
 bool QosUtilsIsOldPacket (uint16_t startingSeq, uint16_t seqNumber);
 
-} // namespace ns3
+} //namespace ns3
 
 #endif /* QOS_UTILS_H */

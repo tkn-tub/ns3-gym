@@ -17,6 +17,7 @@
  *
  * Author: Ghada Badawy <gbadawy@gmail.com>
  */
+
 #ifndef AMPDU_TAG_H
 #define AMPDU_TAG_H
 
@@ -77,6 +78,7 @@ private:
   uint8_t m_noOfMpdus; //!< number of MPDUs in the A-MPDU
 };
 
-} // namespace ns3
+} //namespace ns3
 
 #endif /* AMPDU_TAG_H */
+

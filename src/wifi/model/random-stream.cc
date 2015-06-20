@@ -17,9 +17,9 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
+
 #include "random-stream.h"
 #include "ns3/assert.h"
-
 #include <cmath>
 
 namespace ns3 {
@@ -68,4 +68,4 @@ TestRandomStream::AssignStreams (int64_t stream)
   return 0;
 }
 
-} // namespace ns3
+} //namespace ns3

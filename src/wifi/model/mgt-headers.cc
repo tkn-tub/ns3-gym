@@ -19,6 +19,7 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  * Author: Mirko Banchi <mk.banchi@gmail.com>
  */
+
 #include "mgt-headers.h"
 #include "ns3/simulator.h"
 #include "ns3/assert.h"
@@ -40,32 +41,37 @@ MgtProbeRequestHeader::SetSsid (Ssid ssid)
 {
   m_ssid = ssid;
 }
+
 Ssid
 MgtProbeRequestHeader::GetSsid (void) const
 {
   return m_ssid;
 }
+
 void
 MgtProbeRequestHeader::SetSupportedRates (SupportedRates rates)
 {
   m_rates = rates;
 }
-void 
-MgtProbeRequestHeader::SetHtCapabilities(HtCapabilities htcapabilities)
+
+void
+MgtProbeRequestHeader::SetHtCapabilities (HtCapabilities htcapabilities)
 {
-  m_htCapability=htcapabilities;
+  m_htCapability = htcapabilities;
 }
 
-HtCapabilities 
+HtCapabilities
 MgtProbeRequestHeader::GetHtCapabilities (void) const
 {
-   return  m_htCapability;
+  return m_htCapability;
 }
+
 SupportedRates
 MgtProbeRequestHeader::GetSupportedRates (void) const
 {
   return m_rates;
 }
+
 uint32_t
 MgtProbeRequestHeader::GetSerializedSize (void) const
 {
@@ -73,9 +79,10 @@ MgtProbeRequestHeader::GetSerializedSize (void) const
   size += m_ssid.GetSerializedSize ();
   size += m_rates.GetSerializedSize ();
   size += m_rates.extended.GetSerializedSize ();
-  size += m_htCapability.GetSerializedSize();
+  size += m_htCapability.GetSerializedSize ();
   return size;
 }
+
 TypeId
 MgtProbeRequestHeader::GetTypeId (void)
 {
@@ -86,11 +93,13 @@ MgtProbeRequestHeader::GetTypeId (void)
   ;
   return tid;
 }
+
 TypeId
 MgtProbeRequestHeader::GetInstanceTypeId (void) const
 {
   return GetTypeId ();
 }
+
 void
 MgtProbeRequestHeader::Print (std::ostream &os) const
 {
@@ -98,6 +107,7 @@ MgtProbeRequestHeader::Print (std::ostream &os) const
      << "rates=" << m_rates << ", "
      << "HT Capabilities=" << m_htCapability;
 }
+
 void
 MgtProbeRequestHeader::Serialize (Buffer::Iterator start) const
 {
@@ -105,8 +115,9 @@ MgtProbeRequestHeader::Serialize (Buffer::Iterator start) const
   i = m_ssid.Serialize (i);
   i = m_rates.Serialize (i);
   i = m_rates.extended.Serialize (i);
-   i = m_htCapability.Serialize(i);
+  i = m_htCapability.Serialize (i);
 }
+
 uint32_t
 MgtProbeRequestHeader::Deserialize (Buffer::Iterator start)
 {
@@ -128,55 +139,65 @@ NS_OBJECT_ENSURE_REGISTERED (MgtProbeResponseHeader);
 MgtProbeResponseHeader::MgtProbeResponseHeader ()
 {
 }
+
 MgtProbeResponseHeader::~MgtProbeResponseHeader ()
 {
 }
+
 uint64_t
 MgtProbeResponseHeader::GetTimestamp ()
 {
   return m_timestamp;
 }
+
 Ssid
 MgtProbeResponseHeader::GetSsid (void) const
 {
   return m_ssid;
 }
+
 uint64_t
 MgtProbeResponseHeader::GetBeaconIntervalUs (void) const
 {
   return m_beaconInterval;
 }
+
 SupportedRates
 MgtProbeResponseHeader::GetSupportedRates (void) const
 {
   return m_rates;
 }
-void 
-MgtProbeResponseHeader::SetHtCapabilities(HtCapabilities htcapabilities)
+
+void
+MgtProbeResponseHeader::SetHtCapabilities (HtCapabilities htcapabilities)
 {
-  m_htCapability=htcapabilities;
+  m_htCapability = htcapabilities;
 }
 
-HtCapabilities 
+HtCapabilities
 MgtProbeResponseHeader::GetHtCapabilities (void) const
 {
-   return  m_htCapability;
+  return m_htCapability;
 }
+
 void
 MgtProbeResponseHeader::SetSsid (Ssid ssid)
 {
   m_ssid = ssid;
 }
+
 void
 MgtProbeResponseHeader::SetBeaconIntervalUs (uint64_t us)
 {
   m_beaconInterval = us;
 }
+
 void
 MgtProbeResponseHeader::SetSupportedRates (SupportedRates rates)
 {
   m_rates = rates;
 }
+
 TypeId
 MgtProbeResponseHeader::GetTypeId (void)
 {
@@ -187,24 +208,25 @@ MgtProbeResponseHeader::GetTypeId (void)
   ;
   return tid;
 }
+
 TypeId
 MgtProbeResponseHeader::GetInstanceTypeId (void) const
 {
   return GetTypeId ();
 }
+
 uint32_t
 MgtProbeResponseHeader::GetSerializedSize (void) const
 {
   uint32_t size = 0;
-  size += 8; // timestamp
-  size += 2; // beacon interval
+  size += 8; //timestamp
+  size += 2; //beacon interval
   size += m_capability.GetSerializedSize ();
   size += m_ssid.GetSerializedSize ();
   size += m_rates.GetSerializedSize ();
-  //size += 3; // ds parameter set
+  //size += 3; //ds parameter set
   size += m_rates.extended.GetSerializedSize ();
-  size += m_htCapability.GetSerializedSize();
-  // xxx
+  size += m_htCapability.GetSerializedSize ();
   return size;
 }
 void
@@ -217,26 +239,26 @@ MgtProbeResponseHeader::Print (std::ostream &os) const
 void
 MgtProbeResponseHeader::Serialize (Buffer::Iterator start) const
 {
-  // timestamp
-  // beacon interval
-  // capability information
-  // ssid
-  // supported rates
-  // fh parameter set
-  // ds parameter set
-  // cf parameter set
-  // ibss parameter set
-  //XXX
+  //timestamp
+  //beacon interval
+  //capability information
+  //ssid
+  //supported rates
+  //fh parameter set
+  //ds parameter set
+  //cf parameter set
+  //ibss parameter set
   Buffer::Iterator i = start;
   i.WriteHtolsbU64 (Simulator::Now ().GetMicroSeconds ());
   i.WriteHtolsbU16 (m_beaconInterval / 1024);
   i = m_capability.Serialize (i);
   i = m_ssid.Serialize (i);
   i = m_rates.Serialize (i);
-  //i.WriteU8 (0, 3); // ds parameter set.
+  //i.WriteU8 (0, 3); //ds parameter set.
   i = m_rates.extended.Serialize (i);
-  i = m_htCapability.Serialize(i);
+  i = m_htCapability.Serialize (i);
 }
+
 uint32_t
 MgtProbeResponseHeader::Deserialize (Buffer::Iterator start)
 {
@@ -247,11 +269,12 @@ MgtProbeResponseHeader::Deserialize (Buffer::Iterator start)
   i = m_capability.Deserialize (i);
   i = m_ssid.Deserialize (i);
   i = m_rates.Deserialize (i);
-  //i.Next (3); // ds parameter set
+  //i.Next (3); //ds parameter set
   i = m_rates.extended.DeserializeIfPresent (i);
   i = m_htCapability.DeserializeIfPresent (i);
   return i.GetDistanceFrom (start);
 }
+
 
 /***********************************************************
  *          Beacons
@@ -267,9 +290,10 @@ MgtBeaconHeader::GetTypeId (void)
     .SetParent<MgtProbeResponseHeader> ()
     .SetGroupName ("Wifi")
     .AddConstructor<MgtBeaconHeader> ()
-    ;
+  ;
   return tid;
 }
+
 
 /***********************************************************
  *          Assoc Request
@@ -281,6 +305,7 @@ MgtAssocRequestHeader::MgtAssocRequestHeader ()
   : m_listenInterval (0)
 {
 }
+
 MgtAssocRequestHeader::~MgtAssocRequestHeader ()
 {
 }
@@ -290,36 +315,43 @@ MgtAssocRequestHeader::SetSsid (Ssid ssid)
 {
   m_ssid = ssid;
 }
+
 void
 MgtAssocRequestHeader::SetSupportedRates (SupportedRates rates)
 {
   m_rates = rates;
 }
-void 
-MgtAssocRequestHeader::SetHtCapabilities(HtCapabilities htcapabilities)
+
+void
+MgtAssocRequestHeader::SetHtCapabilities (HtCapabilities htcapabilities)
 {
   m_htCapability = htcapabilities;
 }
+
 void
 MgtAssocRequestHeader::SetListenInterval (uint16_t interval)
 {
   m_listenInterval = interval;
 }
-HtCapabilities 
+
+HtCapabilities
 MgtAssocRequestHeader::GetHtCapabilities (void) const
 {
-   return  m_htCapability;
+  return m_htCapability;
 }
+
 Ssid
 MgtAssocRequestHeader::GetSsid (void) const
 {
   return m_ssid;
 }
+
 SupportedRates
 MgtAssocRequestHeader::GetSupportedRates (void) const
 {
   return m_rates;
 }
+
 uint16_t
 MgtAssocRequestHeader::GetListenInterval (void) const
 {
@@ -336,11 +368,13 @@ MgtAssocRequestHeader::GetTypeId (void)
   ;
   return tid;
 }
+
 TypeId
 MgtAssocRequestHeader::GetInstanceTypeId (void) const
 {
   return GetTypeId ();
 }
+
 uint32_t
 MgtAssocRequestHeader::GetSerializedSize (void) const
 {
@@ -349,17 +383,19 @@ MgtAssocRequestHeader::GetSerializedSize (void) const
   size += 2;
   size += m_ssid.GetSerializedSize ();
   size += m_rates.GetSerializedSize ();
-  size += m_htCapability.GetSerializedSize();
+  size += m_htCapability.GetSerializedSize ();
   size += m_rates.extended.GetSerializedSize ();
   return size;
 }
+
 void
 MgtAssocRequestHeader::Print (std::ostream &os) const
 {
   os << "ssid=" << m_ssid << ", "
-     << "rates=" << m_rates<< ", "
+     << "rates=" << m_rates << ", "
      << "HT Capabilities=" << m_htCapability;
 }
+
 void
 MgtAssocRequestHeader::Serialize (Buffer::Iterator start) const
 {
@@ -369,8 +405,9 @@ MgtAssocRequestHeader::Serialize (Buffer::Iterator start) const
   i = m_ssid.Serialize (i);
   i = m_rates.Serialize (i);
   i = m_rates.extended.Serialize (i);
-  i = m_htCapability.Serialize(i);
+  i = m_htCapability.Serialize (i);
 }
+
 uint32_t
 MgtAssocRequestHeader::Deserialize (Buffer::Iterator start)
 {
@@ -384,6 +421,7 @@ MgtAssocRequestHeader::Deserialize (Buffer::Iterator start)
   return i.GetDistanceFrom (start);
 }
 
+
 /***********************************************************
  *          Assoc Response
  ***********************************************************/
@@ -394,6 +432,7 @@ MgtAssocResponseHeader::MgtAssocResponseHeader ()
   : m_aid (0)
 {
 }
+
 MgtAssocResponseHeader::~MgtAssocResponseHeader ()
 {
 }
@@ -403,32 +442,37 @@ MgtAssocResponseHeader::GetStatusCode (void)
 {
   return m_code;
 }
+
 SupportedRates
 MgtAssocResponseHeader::GetSupportedRates (void)
 {
   return m_rates;
 }
+
 void
 MgtAssocResponseHeader::SetStatusCode (StatusCode code)
 {
   m_code = code;
 }
+
 void
 MgtAssocResponseHeader::SetSupportedRates (SupportedRates rates)
 {
   m_rates = rates;
 }
-void 
-MgtAssocResponseHeader::SetHtCapabilities(HtCapabilities htcapabilities)
+
+void
+MgtAssocResponseHeader::SetHtCapabilities (HtCapabilities htcapabilities)
 {
-  m_htCapability=htcapabilities;
+  m_htCapability = htcapabilities;
 }
 
-HtCapabilities 
+HtCapabilities
 MgtAssocResponseHeader::GetHtCapabilities (void) const
 {
-   return  m_htCapability;
+  return m_htCapability;
 }
+
 TypeId
 MgtAssocResponseHeader::GetTypeId (void)
 {
@@ -439,21 +483,23 @@ MgtAssocResponseHeader::GetTypeId (void)
   ;
   return tid;
 }
+
 TypeId
 MgtAssocResponseHeader::GetInstanceTypeId (void) const
 {
   return GetTypeId ();
 }
+
 uint32_t
 MgtAssocResponseHeader::GetSerializedSize (void) const
 {
   uint32_t size = 0;
   size += m_capability.GetSerializedSize ();
   size += m_code.GetSerializedSize ();
-  size += 2; // aid
+  size += 2; //aid
   size += m_rates.GetSerializedSize ();
   size += m_rates.extended.GetSerializedSize ();
-  size += m_htCapability.GetSerializedSize();
+  size += m_htCapability.GetSerializedSize ();
   return size;
 }
 
@@ -462,8 +508,9 @@ MgtAssocResponseHeader::Print (std::ostream &os) const
 {
   os << "status code=" << m_code << ", "
      << "rates=" << m_rates << ", "
-  << "HT Capabilities=" << m_htCapability;
+     << "HT Capabilities=" << m_htCapability;
 }
+
 void
 MgtAssocResponseHeader::Serialize (Buffer::Iterator start) const
 {
@@ -473,8 +520,9 @@ MgtAssocResponseHeader::Serialize (Buffer::Iterator start) const
   i.WriteHtolsbU16 (m_aid);
   i = m_rates.Serialize (i);
   i = m_rates.extended.Serialize (i);
- i = m_htCapability.Serialize(i);
+  i = m_htCapability.Serialize (i);
 }
+
 uint32_t
 MgtAssocResponseHeader::Deserialize (Buffer::Iterator start)
 {
@@ -487,15 +535,19 @@ MgtAssocResponseHeader::Deserialize (Buffer::Iterator start)
   i = m_htCapability.DeserializeIfPresent (i);
   return i.GetDistanceFrom (start);
 }
+
+
 /**********************************************************
  *   ActionFrame
  **********************************************************/
 WifiActionHeader::WifiActionHeader ()
 {
 }
+
 WifiActionHeader::~WifiActionHeader ()
 {
 }
+
 void
 WifiActionHeader::SetAction (WifiActionHeader::CategoryValue type,
                              WifiActionHeader::ActionValue action)
@@ -508,12 +560,12 @@ WifiActionHeader::SetAction (WifiActionHeader::CategoryValue type,
         m_actionValue = action.blockAck;
         break;
       }
-    case MESH:  
+    case MESH:
       {
         m_actionValue = action.meshAction;
         break;
       }
-    case MULTIHOP: 
+    case MULTIHOP:
       {
         m_actionValue = action.multihopAction;
         break;
@@ -522,13 +574,14 @@ WifiActionHeader::SetAction (WifiActionHeader::CategoryValue type,
       {
         m_actionValue = action.selfProtectedAction;
         break;
-      } 
+      }
     case VENDOR_SPECIFIC_ACTION:
       {
         break;
-      } 
+      }
     }
 }
+
 WifiActionHeader::CategoryValue
 WifiActionHeader::GetCategory ()
 {
@@ -549,12 +602,13 @@ WifiActionHeader::GetCategory ()
       return SELF_PROTECTED;
     }
 }
+
 WifiActionHeader::ActionValue
 WifiActionHeader::GetAction ()
 {
   ActionValue retval;
-  retval.selfProtectedAction = PEER_LINK_OPEN; // Needs to be initialized to something to quiet valgrind in default cases
- 
+  retval.selfProtectedAction = PEER_LINK_OPEN; //Needs to be initialized to something to quiet valgrind in default cases
+
   switch (m_category)
     {
     case BLOCK_ACK:
@@ -562,15 +616,15 @@ WifiActionHeader::GetAction ()
         {
         case BLOCK_ACK_ADDBA_REQUEST:
           retval.blockAck = BLOCK_ACK_ADDBA_REQUEST;
-          break ;
+          break;
         case BLOCK_ACK_ADDBA_RESPONSE:
           retval.blockAck = BLOCK_ACK_ADDBA_RESPONSE;
-          break ;
+          break;
         case BLOCK_ACK_DELBA:
           retval.blockAck = BLOCK_ACK_DELBA;
-          break ;
-       }
-      break ;
+          break;
+        }
+      break;
     case SELF_PROTECTED:
       switch (m_actionValue)
         {
@@ -593,8 +647,8 @@ WifiActionHeader::GetAction ()
           NS_FATAL_ERROR ("Unknown mesh peering management action code");
           retval.selfProtectedAction = PEER_LINK_OPEN; /* quiet compiler */
         }
-       break ;
-      
+      break;
+
     case MESH:
       switch (m_actionValue)
         {
@@ -609,10 +663,10 @@ WifiActionHeader::GetAction ()
           break;
         case CONGESTION_CONTROL_NOTIFICATION:
           retval.meshAction = CONGESTION_CONTROL_NOTIFICATION;
-         break;
+          break;
         case MDA_SETUP_REQUEST:
           retval.meshAction = MDA_SETUP_REQUEST;
-         break;
+          break;
         case MDA_SETUP_REPLY:
           retval.meshAction = MDA_SETUP_REPLY;
           break;
@@ -636,14 +690,14 @@ WifiActionHeader::GetAction ()
           retval.selfProtectedAction = PEER_LINK_OPEN; /* quiet compiler */
         }
       break;
-  
+
     case MULTIHOP: //not yet supported
       switch (m_actionValue)
         {
-        case PROXY_UPDATE:                    //(not used so far)
+        case PROXY_UPDATE: //not used so far
           retval.multihopAction = PROXY_UPDATE;
           break;
-        case PROXY_UPDATE_CONFIRMATION:       //(not used so far)
+        case PROXY_UPDATE_CONFIRMATION: //not used so far
           retval.multihopAction = PROXY_UPDATE;
           break;
         default:
@@ -651,12 +705,13 @@ WifiActionHeader::GetAction ()
           retval.selfProtectedAction = PEER_LINK_OPEN; /* quiet compiler */
         }
       break;
-      default:
+    default:
       NS_FATAL_ERROR ("Unsupported mesh action");
       retval.selfProtectedAction = PEER_LINK_OPEN; /* quiet compiler */
-      }
+    }
   return retval;
 }
+
 TypeId
 WifiActionHeader::GetTypeId ()
 {
@@ -664,29 +719,34 @@ WifiActionHeader::GetTypeId ()
     .SetParent<Header> ()
     .SetGroupName ("Wifi")
     .AddConstructor<WifiActionHeader> ()
-    ;
+  ;
   return tid;
 }
+
 TypeId
 WifiActionHeader::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
+
 void
 WifiActionHeader::Print (std::ostream &os) const
 {
 }
+
 uint32_t
 WifiActionHeader::GetSerializedSize () const
 {
   return 2;
 }
+
 void
 WifiActionHeader::Serialize (Buffer::Iterator start) const
 {
   start.WriteU8 (m_category);
   start.WriteU8 (m_actionValue);
 }
+
 uint32_t
 WifiActionHeader::Deserialize (Buffer::Iterator start)
 {
@@ -695,6 +755,7 @@ WifiActionHeader::Deserialize (Buffer::Iterator start)
   m_actionValue = i.ReadU8 ();
   return i.GetDistanceFrom (start);
 }
+
 
 /***************************************************
 *                 ADDBARequest
@@ -716,7 +777,7 @@ MgtAddBaRequestHeader::GetTypeId (void)
     .SetParent<Header> ()
     .SetGroupName ("Wifi")
     .AddConstructor<MgtAddBaRequestHeader> ()
-    ;
+  ;
   return tid;
 }
 
@@ -873,6 +934,7 @@ MgtAddBaRequestHeader::SetParameterSet (uint16_t params)
   m_tid = (params >> 2) & 0x0f;
   m_bufferSize = (params >> 6) & 0x03ff;
 }
+
 
 /***************************************************
 *                 ADDBAResponse
@@ -1041,6 +1103,7 @@ MgtAddBaResponseHeader::SetParameterSet (uint16_t params)
   m_bufferSize = (params >> 6) & 0x03ff;
 }
 
+
 /***************************************************
 *                     DelBa
 ****************************************************/
@@ -1149,4 +1212,4 @@ MgtDelBaHeader::SetParameterSet (uint16_t params)
   m_tid = (params >> 12) & 0x0f;
 }
 
-} // namespace ns3
+} //namespace ns3

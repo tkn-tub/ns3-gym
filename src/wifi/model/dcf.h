@@ -73,6 +73,6 @@ public:
   virtual uint32_t GetAifsn (void) const = 0;
 };
 
-} // namespace ns3
+} //namespace ns3
 
 #endif /* DCF_H */

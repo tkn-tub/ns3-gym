@@ -17,6 +17,7 @@
  *
  * Author: Mathieu Lacage, <mathieu.lacage@sophia.inria.fr>
  */
+
 #ifndef WIFI_CHANNEL_H
 #define WIFI_CHANNEL_H
 
@@ -45,7 +46,7 @@ public:
   static TypeId GetTypeId (void);
 };
 
-} // namespace ns3
+} //namespace ns3
 
 
 #endif /* WIFI_CHANNEL_H */

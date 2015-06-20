@@ -584,10 +584,10 @@ public:
   /**
    * TracedCallback signature for WifiMacHeader
    *
-   * \param [in] header The header 
+   * \param [in] header The header
    */
   typedef void (* TracedCallback)(const WifiMacHeader &header);
-  
+
 
 private:
   /**
@@ -650,6 +650,6 @@ private:
   uint16_t m_qosStuff;
 };
 
-} // namespace ns3
+} //namespace ns3
 
 #endif /* WIFI_MAC_HEADER_H */

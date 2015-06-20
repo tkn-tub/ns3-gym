@@ -17,6 +17,7 @@
  *
  * Author: Ghada Badawy <gbadawy@gmail.com>
  */
+
 #include "ampdu-subframe-header.h"
 #include "ns3/address-utils.h"
 
@@ -116,4 +117,4 @@ AmpduSubframeHeader::GetLength (void) const
   return m_length;
 }
 
-} // namespace ns3
+} //namespace ns3

@@ -17,6 +17,7 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
+
 #ifndef IDEAL_WIFI_MANAGER_H
 #define IDEAL_WIFI_MANAGER_H
 
@@ -51,8 +52,9 @@ public:
 
   virtual void SetupPhy (Ptr<WifiPhy> phy);
 
+
 private:
-  // overriden from base class
+  //overriden from base class
   virtual WifiRemoteStation* DoCreateStation (void) const;
   virtual void DoReportRxOk (WifiRemoteStation *station,
                              double rxSnr, WifiMode txMode);
@@ -73,6 +75,7 @@ private:
    * data with this mode at the specified BER.
    *
    * \param mode WifiMode
+   *
    * \return the minimum SNR for the given mode
    */
   double GetSnrThreshold (WifiMode mode) const;
@@ -90,10 +93,10 @@ private:
    */
   typedef std::vector<std::pair<double,WifiMode> > Thresholds;
 
-  double m_ber;  //!< The maximum Bit Error Rate acceptable at any transmission mode
+  double m_ber;             //!< The maximum Bit Error Rate acceptable at any transmission mode
   Thresholds m_thresholds;  //!< List of WifiMode and the minimum SNR pair
 };
 
-} // namespace ns3
+} //namespace ns3
 
 #endif /* IDEAL_WIFI_MANAGER_H */

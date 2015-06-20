@@ -17,6 +17,7 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
+
 #ifndef INTERFERENCE_HELPER_H
 #define INTERFERENCE_HELPER_H
 
@@ -111,6 +112,7 @@ public:
      */
     enum WifiPreamble GetPreambleType (void) const;
 
+
 private:
     uint32_t m_size;
     WifiTxVector m_txVector;
@@ -119,6 +121,7 @@ private:
     Time m_endTime;
     double m_rxPowerW;
   };
+
   /**
    * A struct for both SNR and PER
    */
@@ -157,9 +160,9 @@ private:
    */
   Ptr<ErrorRateModel> GetErrorRateModel (void) const;
 
-
   /**
    * \param energyW the minimum energy (W) requested
+   *
    * \returns the expected amount of time the observed
    *          energy on the medium will be higher than
    *          the requested threshold.
@@ -173,7 +176,8 @@ private:
    * \param txvector TXVECTOR of the packet
    * \param preamble Wi-Fi preamble for the packet
    * \param duration the duration of the signal
-   * \param rxPower receive power (w)
+   * \param rxPower receive power (W)
+   *
    * \return InterferenceHelper::Event
    */
   Ptr<InterferenceHelper::Event> Add (uint32_t size, WifiTxVector txvector,
@@ -185,6 +189,7 @@ private:
    * all SNIR changes in the snir vector.
    *
    * \param event the event corresponding to the first time the corresponding packet arrives
+   *
    * \return struct of SNR and PER
    */
   struct InterferenceHelper::SnrPer CalculatePlcpPayloadSnrPer (Ptr<InterferenceHelper::Event> event);
@@ -193,9 +198,11 @@ private:
    * all SNIR changes in the snir vector.
    *
    * \param event the event corresponding to the first time the corresponding packet arrives
+   *
    * \return struct of SNR and PER
    */
   struct InterferenceHelper::SnrPer CalculatePlcpHeaderSnrPer (Ptr<InterferenceHelper::Event> event);
+
   /**
    * Notify that RX has started.
    */
@@ -208,6 +215,8 @@ private:
    * Erase all events.
    */
   void EraseEvents (void);
+
+
 private:
   /**
    * Noise and Interference (thus Ni) event.
@@ -241,6 +250,8 @@ public:
      * \return true if a < o.time, false otherwise
      */
     bool operator < (const NiChange& o) const;
+
+
 private:
     Time m_time;
     double m_delta;
@@ -254,8 +265,6 @@ private:
    */
   typedef std::list<Ptr<Event> > Events;
 
-  //InterferenceHelper (const InterferenceHelper &o);
-  //InterferenceHelper &operator = (const InterferenceHelper &o);
   /**
    * Append the given Event.
    *
@@ -267,6 +276,7 @@ private:
    *
    * \param event
    * \param ni
+   *
    * \return noise and interference power
    */
   double CalculateNoiseInterferenceW (Ptr<Event> event, NiChanges *ni) const;
@@ -277,6 +287,7 @@ private:
    * \param signal
    * \param noiseInterference
    * \param mode
+   *
    * \return SNR in liear ratio
    */
   double CalculateSnr (double signal, double noiseInterference, WifiMode mode) const;
@@ -287,6 +298,7 @@ private:
    * \param snir SINR
    * \param duration
    * \param mode
+   *
    * \return the success rate
    */
   double CalculateChunkSuccessRate (double snir, Time duration, WifiMode mode) const;
@@ -296,6 +308,7 @@ private:
    *
    * \param event
    * \param ni
+   *
    * \return the error rate of the packet
    */
   double CalculatePlcpPayloadPer (Ptr<const Event> event, NiChanges *ni) const;
@@ -305,6 +318,7 @@ private:
    *
    * \param event
    * \param ni
+   *
    * \return the error rate of the packet
    */
   double CalculatePlcpHeaderPer (Ptr<const Event> event, NiChanges *ni) const;
@@ -325,6 +339,6 @@ private:
   void AddNiChangeEvent (NiChange change);
 };
 
-} // namespace ns3
+} //namespace ns3
 
 #endif /* INTERFERENCE_HELPER_H */

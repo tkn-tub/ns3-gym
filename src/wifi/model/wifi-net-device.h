@@ -82,7 +82,7 @@ public:
   Ptr<WifiRemoteStationManager> GetRemoteStationManager (void) const;
 
 
-  // inherited from NetDevice base class.
+  //inherited from NetDevice base class.
   virtual void SetIfIndex (const uint32_t index);
   virtual uint32_t GetIfIndex (void) const;
   virtual Ptr<Channel> GetChannel (void) const;
@@ -109,9 +109,11 @@ public:
   virtual bool SendFrom (Ptr<Packet> packet, const Address& source, const Address& dest, uint16_t protocolNumber);
   virtual void SetPromiscReceiveCallback (PromiscReceiveCallback cb);
   virtual bool SupportsSendFrom (void) const;
+
+
 protected:
-   virtual void DoDispose (void);
-   virtual void DoInitialize (void);
+  virtual void DoDispose (void);
+  virtual void DoInitialize (void);
   /**
    * Receive a packet from the lower layer and pass the
    * packet up the stack.
@@ -120,9 +122,11 @@ protected:
    * \param from
    * \param to
    */
-   void ForwardUp (Ptr<Packet> packet, Mac48Address from, Mac48Address to);
+  void ForwardUp (Ptr<Packet> packet, Mac48Address from, Mac48Address to);
+
+
 private:
-  // This value conforms to the 802.11 specification
+  //This value conforms to the 802.11 specification
   static const uint16_t MAX_MSDU_SIZE = 2304;
 
   /**
@@ -163,6 +167,6 @@ private:
   bool m_configComplete;
 };
 
-} // namespace ns3
+} //namespace ns3
 
 #endif /* WIFI_NET_DEVICE_H */

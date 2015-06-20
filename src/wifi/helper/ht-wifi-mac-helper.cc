@@ -17,6 +17,7 @@
  *
  * Author: Ghada Badawy <gbadawy@gmail.com>
  */
+
 #include "ht-wifi-mac-helper.h"
 #include "ns3/wifi-mac.h"
 #include "ns3/edca-txop-n.h"
@@ -39,10 +40,9 @@ HtWifiMacHelper::Default (void)
 {
   HtWifiMacHelper helper;
 
-  // We're making Ht-enabled Wi-Fi MACs here, so we set the necessary
-  // attribute. I've carefully positioned this here so that someone
-  // who knows what they're doing can override with explicit
-  // attributes.
+  //We're making Ht-enabled Wi-Fi MACs here, so we set the necessary
+  //attribute. I've carefully positioned this here so that someone
+  //who knows what they're doing can override with explicit attributes.
   helper.SetType ("ns3::StaWifiMac",
                   "QosSupported", BooleanValue (true),
                   "HtSupported", BooleanValue (true));
@@ -50,6 +50,4 @@ HtWifiMacHelper::Default (void)
   return helper;
 }
 
-
-} // namespace ns3
-
+} //namespace ns3

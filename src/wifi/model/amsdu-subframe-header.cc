@@ -17,6 +17,7 @@
  *
  * Author: Mirko Banchi <mk.banchi@gmail.com>
  */
+
 #include "amsdu-subframe-header.h"
 #include "ns3/address-utils.h"
 #include "ns3/log.h"
@@ -131,4 +132,4 @@ AmsduSubframeHeader::GetLength (void) const
   return m_length;
 }
 
-} // namespace ns3
+} //namespace ns3

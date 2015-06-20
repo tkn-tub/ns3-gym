@@ -17,6 +17,7 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
+
 #ifndef WIFI_MODE_H
 #define WIFI_MODE_H
 
@@ -30,7 +31,7 @@
 namespace ns3 {
 
 /**
- * This enumeration defines the modulation classes per 
+ * This enumeration defines the modulation classes per
  * (Table 9-4 "Modulation classes"; IEEE 802.11-2012).
  */
 enum WifiModulationClass
@@ -56,7 +57,6 @@ enum WifiModulationClass
   WIFI_MOD_CLASS_HT
 };
 
-
 /**
  * This enumeration defines the various convolutional coding rates
  * used for the OFDM transmission modes in the IEEE 802.11
@@ -74,8 +74,8 @@ enum WifiCodeRate
   WIFI_CODE_RATE_2_3,
   /** Rate 1/2 */
   WIFI_CODE_RATE_1_2,
- /** Rate 5/6 */
- WIFI_CODE_RATE_5_6
+  /** Rate 5/6 */
+  WIFI_CODE_RATE_5_6
 
 };
 
@@ -116,19 +116,16 @@ public:
    * \returns the size of the modulation constellation.
    */
   uint8_t GetConstellationSize (void) const;
-
   /**
    * \returns a human-readable representation of this WifiMode
    * instance.
    */
   std::string GetUniqueName (void) const;
-
   /**
    * \returns true if this mode is a mandatory mode, false
    *          otherwise.
    */
   bool IsMandatory (void) const;
-
   /**
    * \returns the uid associated to this wireless mode.
    *
@@ -137,7 +134,6 @@ public:
    * should have different uids.
    */
   uint32_t GetUid (void) const;
-
   /**
    *
    * \returns the Modulation Class (Section 9.7.8 "Modulation classes"; IEEE 802.11-2012)
@@ -159,6 +155,8 @@ public:
    * \param name std::string of a valid WifiMode name
    */
   WifiMode (std::string name);
+
+
 private:
   friend class WifiModeFactory;
   /**
@@ -220,6 +218,7 @@ public:
    *        for DSSS rates) then the caller should set this parameter to
    *        WIFI_CODE_RATE_UNCODED.
    * \param constellationSize the order of the constellation used.
+   *
    * \return WifiMode
    *
    * Create a WifiMode.
@@ -231,6 +230,7 @@ public:
                                   uint32_t dataRate,
                                   enum WifiCodeRate codingRate,
                                   uint8_t constellationSize);
+
 
 private:
   friend class WifiMode;
@@ -265,6 +265,7 @@ private:
    * Search and return WifiMode from a given name.
    *
    * \param name human-readable WifiMode
+   *
    * \return WifiMode
    */
   WifiMode Search (std::string name);
@@ -272,6 +273,7 @@ private:
    * Allocate a WifiModeItem from a given uniqueUid.
    *
    * \param uniqueUid
+   *
    * \return uid
    */
   uint32_t AllocateUid (std::string uniqueUid);
@@ -279,6 +281,7 @@ private:
    * Return a WifiModeItem at the given uid index.
    *
    * \param uid
+   *
    * \return WifiModeItem at the given uid
    */
   WifiModeItem* Get (uint32_t uid);
@@ -290,6 +293,7 @@ private:
   WifiModeItemList m_itemList;
 };
 
-} // namespace ns3
+} //namespace ns3
 
 #endif /* WIFI_MODE_H */
+

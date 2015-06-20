@@ -17,6 +17,7 @@
  *
  * Author: Mirko Banchi <mk.banchi@gmail.com>
  */
+
 #include "block-ack-cache.h"
 #include "ctrl-headers.h"
 #include "wifi-mac-header.h"
@@ -146,4 +147,4 @@ BlockAckCache::FillBlockAckBitmap (CtrlBAckResponseHeader *blockAckHeader)
     }
 }
 
-} // namespace ns3
+} //namespace ns3

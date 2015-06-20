@@ -17,11 +17,11 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
+
 #ifndef CONSTANT_RATE_WIFI_MANAGER_H
 #define CONSTANT_RATE_WIFI_MANAGER_H
 
 #include <stdint.h>
-
 #include "wifi-remote-station-manager.h"
 
 namespace ns3 {
@@ -40,8 +40,9 @@ public:
   ConstantRateWifiManager ();
   virtual ~ConstantRateWifiManager ();
 
+
 private:
-  // overriden from base class
+  //overriden from base class
   virtual WifiRemoteStation* DoCreateStation (void) const;
   virtual void DoReportRxOk (WifiRemoteStation *station,
                              double rxSnr, WifiMode txMode);
@@ -58,11 +59,9 @@ private:
   virtual bool IsLowLatency (void) const;
 
   WifiMode m_dataMode; //!< Wifi mode for unicast DATA frames
-  WifiMode m_ctlMode; //!< Wifi mode for RTS frames
+  WifiMode m_ctlMode;  //!< Wifi mode for RTS frames
 };
 
-} // namespace ns3
-
-
+} //namespace ns3
 
 #endif /* CONSTANT_RATE_WIFI_MANAGER_H */

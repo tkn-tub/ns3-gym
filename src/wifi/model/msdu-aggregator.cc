@@ -17,6 +17,7 @@
  *
  * Author: Mirko Banchi <mk.banchi@gmail.com>
  */
+
 #include "ns3/log.h"
 
 #include "msdu-aggregator.h"
@@ -74,4 +75,4 @@ MsduAggregator::Deaggregate (Ptr<Packet> aggregatedPacket)
   return set;
 }
 
-} // namespace ns3
+} //namespace ns3

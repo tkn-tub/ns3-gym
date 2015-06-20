@@ -17,9 +17,9 @@
  *
  * Author: Ghada Badawy <gbadawy@gmail.com>
  */
+
 #include "ns3/log.h"
 #include "ns3/uinteger.h"
-
 #include "ampdu-subframe-header.h"
 #include "mpdu-standard-aggregator.h"
 
@@ -86,7 +86,7 @@ MpduStandardAggregator::AddHeaderAndPad (Ptr<Packet> packet, bool last)
 {
   NS_LOG_FUNCTION (this);
   AmpduSubframeHeader currentHdr;
-  //This is called to prepare packets from the aggregte queue to be sent so no need to check total size since it has already been
+  //This is called to prepare packets from the aggregate queue to be sent so no need to check total size since it has already been
   //done before when deciding how many packets to add to the queue
   currentHdr.SetCrc (1);
   currentHdr.SetSig ();
@@ -126,4 +126,4 @@ MpduStandardAggregator::CalculatePadding (Ptr<const Packet> packet)
   return (4 - (packet->GetSize () % 4 )) % 4;
 }
 
-}  // namespace ns3
+} //namespace ns3

@@ -17,6 +17,7 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
+
 #ifndef AARF_WIFI_MANAGER_H
 #define AARF_WIFI_MANAGER_H
 
@@ -40,7 +41,7 @@ public:
   AarfWifiManager ();
   virtual ~AarfWifiManager ();
 private:
-  // overriden from base class
+  //overriden from base class
   virtual WifiRemoteStation * DoCreateStation (void) const;
   virtual void DoReportRxOk (WifiRemoteStation *station,
                              double rxSnr, WifiMode txMode);
@@ -63,7 +64,6 @@ private:
   double m_timerK;
 };
 
-} // namespace ns3
-
+} //namespace ns3
 
 #endif /* AARF_WIFI_MANAGER_H */

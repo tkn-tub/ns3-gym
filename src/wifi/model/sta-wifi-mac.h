@@ -16,18 +16,16 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
- * Author: Mirko Banchi <mk.banchi@gmail.com>
+ * Authors: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
+ *          Mirko Banchi <mk.banchi@gmail.com>
  */
 #ifndef STA_WIFI_MAC_H
 #define STA_WIFI_MAC_H
 
 #include "regular-wifi-mac.h"
-
 #include "ns3/event-id.h"
 #include "ns3/packet.h"
 #include "ns3/traced-callback.h"
-
 #include "supported-rates.h"
 #include "amsdu-subframe-header.h"
 
@@ -83,6 +81,7 @@ public:
    */
   void StartActiveAssociation (void);
 
+
 private:
   /**
    * The current MAC state of the STA.
@@ -108,6 +107,7 @@ private:
    * \return true if active probing is enabled, false otherwise
    */
   bool GetActiveProbing (void) const;
+
   virtual void Receive (Ptr<Packet> packet, const WifiMacHeader *hdr);
 
   /**
@@ -126,12 +126,12 @@ private:
    */
   void TryToEnsureAssociated (void);
   /**
-   * This method is called after the association timeout occurred. We switch the state to 
+   * This method is called after the association timeout occurred. We switch the state to
    * WAIT_ASSOC_RESP and re-send an association request.
    */
   void AssocRequestTimeout (void);
   /**
-   * This method is called after the probe request timeout occurred. We switch the state to 
+   * This method is called after the probe request timeout occurred. We switch the state to
    * WAIT_PROBE_RESP and re-send a probe request.
    */
   void ProbeRequestTimeout (void);
@@ -148,11 +148,11 @@ private:
    */
   bool IsWaitAssocResp (void) const;
   /**
-   * This method is called after we have not received a beacon from the AP 
+   * This method is called after we have not received a beacon from the AP
    */
   void MissedBeacons (void);
   /**
-   * Restarts the beacon timer. 
+   * Restarts the beacon timer.
    *
    * \param delay the delay before the watchdog fires
    */
@@ -170,14 +170,12 @@ private:
    * \param value the new state
    */
   void SetState (enum MacState value);
-
   /**
    * Return the HT capability of the current AP.
-   * 
+   *
    * \return the HT capability that we support
    */
   HtCapabilities GetHtCapabilities (void) const;
-
 
   enum MacState m_state;
   Time m_probeRequestTimeout;
@@ -193,6 +191,6 @@ private:
   TracedCallback<Mac48Address> m_deAssocLogger;
 };
 
-} // namespace ns3
+} //namespace ns3
 
 #endif /* STA_WIFI_MAC_H */

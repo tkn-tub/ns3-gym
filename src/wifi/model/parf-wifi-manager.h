@@ -57,7 +57,6 @@ public:
    * \param [in] address The remote station MAC address.
    */
   typedef void (*PowerChangeTracedCallback)(const uint8_t power, const Mac48Address remoteAddress);
-
   /**
    * TracedCallback signature for rate change events.
    *
@@ -66,8 +65,9 @@ public:
    */
   typedef void (*RateChangeTracedCallback)(const uint32_t rate, const Mac48Address remoteAddress);
 
+
 private:
-  // overriden from base class
+  //overriden from base class
   virtual WifiRemoteStation * DoCreateStation (void) const;
   virtual void DoReportRxOk (WifiRemoteStation *station,
                              double rxSnr, WifiMode txMode);
@@ -89,7 +89,6 @@ private:
    */
   void CheckInit (ParfWifiRemoteStation *station);
 
-
   uint32_t m_attemptThreshold; //!< The minimum number of transmission attempts to try a new power or rate. The 'timer' threshold in the ARF algorithm.
   uint32_t m_successThreshold; //!< The minimum number of successful transmissions to try a new power or rate.
   /**
@@ -110,6 +109,6 @@ private:
 
 };
 
-} // namespace ns3
+} //namespace ns3
 
 #endif /* PARF_WIFI_MANAGER_H */

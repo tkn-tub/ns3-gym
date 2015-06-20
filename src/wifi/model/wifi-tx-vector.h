@@ -3,7 +3,7 @@
  * Copyright (c) 2010 CTTC
  *
  * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as 
+ * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
  *
  * This program is distributed in the hope that it will be useful,
@@ -15,8 +15,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * Author: Nicola Baldo <nbaldo@cttc.es>
- *       : Ghada Badawy <gbadawy@gmail.com>
+ * Authors: Nicola Baldo <nbaldo@cttc.es>
+ *          Ghada Badawy <gbadawy@gmail.com>
  */
 
 #ifndef WIFI_TX_VECTOR_H
@@ -36,17 +36,17 @@ namespace ns3 {
  * parameters".
  *
  * If this class is constructed with the constructor that takes no
- * arguments, then the client must explicitly set the mode and 
+ * arguments, then the client must explicitly set the mode and
  * transmit power level parameters before using them.  Default
  * member initializers are provided for the other parameters, to
  * conform to a non-MIMO/long guard configuration, although these
  * may also be explicitly set after object construction.
  *
- * When used in a infrastructure context, WifiTxVector values should be 
- * drawn from WifiRemoteStationManager parameters since rate adaptation 
- * is responsible for picking the mode, number of streams, etc., but in 
- * the case in which there is no such manager (e.g. mesh), the client 
- * still needs to initialize at least the mode and transmit power level 
+ * When used in a infrastructure context, WifiTxVector values should be
+ * drawn from WifiRemoteStationManager parameters since rate adaptation
+ * is responsible for picking the mode, number of streams, etc., but in
+ * the case in which there is no such manager (e.g. mesh), the client
+ * still needs to initialize at least the mode and transmit power level
  * appropriately.
  *
  * \note the above reference is valid for the DSSS PHY only (clause
@@ -75,7 +75,7 @@ public:
    */
   WifiTxVector (WifiMode mode, uint8_t powerLevel, uint8_t retries, bool shortGuardInterval, uint8_t nss, uint8_t ness, bool stbc);
   /**
-   *  \returns the txvector payload mode
+   * \returns the txvector payload mode
    */
   WifiMode GetMode (void) const;
   /**
@@ -85,7 +85,7 @@ public:
   */
   void SetMode (WifiMode mode);
   /**
-   *  \returns the transmission power level
+   * \returns the transmission power level
    */
   uint8_t GetTxPowerLevel (void) const;
   /**
@@ -95,7 +95,7 @@ public:
    */
   void SetTxPowerLevel (uint8_t powerlevel);
   /**
-   *  \returns the number of retries
+   * \returns the number of retries
    */
   uint8_t GetRetries (void) const;
   /**
@@ -105,17 +105,17 @@ public:
    */
   void SetRetries (uint8_t retries);
   /**
-   *  \returns if ShortGuardInterval is used or not
+   * \returns if ShortGuardInterval is used or not
    */
   bool IsShortGuardInterval (void) const;
-   /**
-   * Sets if short gurad interval is being used
-   *
-   * \param guardinterval enable or disable short guard interval
-   */
+  /**
+  * Sets if short gurad interval is being used
+  *
+  * \param guardinterval enable or disable short guard interval
+  */
   void SetShortGuardInterval (bool guardinterval);
   /**
-   *  \returns the number of Nss
+   * \returns the number of Nss
    */
   uint8_t GetNss (void) const;
   /**
@@ -125,7 +125,7 @@ public:
    */
   void SetNss (uint8_t nss);
   /**
-   *  \returns the number of Ness  
+   * \returns the number of Ness
    */
   uint8_t GetNess (void) const;
   /**
@@ -136,7 +136,8 @@ public:
   void SetNess (uint8_t ness);
   /**
    * Check if STBC is used or not
-   *  \returns true if STBC is used,
+   *
+   * \returns true if STBC is used,
    *           false otherwise
    */
   bool IsStbc (void) const;
@@ -147,23 +148,23 @@ public:
    */
   void SetStbc (bool stbc);
 
-  
+
 private:
+  WifiMode m_mode;               /**< The DATARATE parameter in Table 15-4.
+                                 It is the value that will be passed
+                                 to PMD_RATE.request */
+  uint8_t  m_txPowerLevel;       /**< The TXPWR_LEVEL parameter in Table 15-4.
+                                 It is the value that will be passed
+                                 to PMD_TXPWRLVL.request */
+  uint8_t  m_retries;            /**< The DATA_RETRIES/RTS_RETRIES parameter
+                                 for Click radiotap information */
 
-  WifiMode m_mode;         /**< The DATARATE parameter in Table 15-4. 
-                           It is the value that will be passed
-                           to PMD_RATE.request */ 
-  uint8_t  m_txPowerLevel;  /**< The TXPWR_LEVEL parameter in Table 15-4. 
-                           It is the value that will be passed
-                           to PMD_TXPWRLVL.request */ 
-  uint8_t  m_retries;      /**< The DATA_RETRIES/RTS_RETRIES parameter
-                           for Click radiotap information */
   bool     m_shortGuardInterval; /**< true if short GI is going to be used */
-  uint8_t  m_nss; /**< number of streams */
-  uint8_t  m_ness; /**< number of streams in beamforming */
-  bool     m_stbc; /**< STBC used or not */
+  uint8_t  m_nss;                /**< number of streams */
+  uint8_t  m_ness;               /**< number of streams in beamforming */
+  bool     m_stbc;               /**< STBC used or not */
 
-  bool     m_modeInitialized; //*< Internal initialization flag */
+  bool     m_modeInitialized;         //*< Internal initialization flag */
   bool     m_txPowerLevelInitialized; //*< Internal initialization flag */
 
 };
@@ -173,10 +174,11 @@ private:
  *
  * \param os
  * \param v
+ *
  * \return ostream
  */
-std::ostream & operator << (std::ostream & os,const WifiTxVector &v); 
+std::ostream & operator << (std::ostream & os,const WifiTxVector &v);
 
-} // namespace ns3
+} //namespace ns3
 
-#endif // WIFI_TX_VECTOR_H
+#endif /* WIFI_TX_VECTOR_H */

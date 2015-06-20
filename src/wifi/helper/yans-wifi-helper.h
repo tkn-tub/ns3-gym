@@ -17,6 +17,7 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
+
 #ifndef YANS_WIFI_HELPER_H
 #define YANS_WIFI_HELPER_H
 
@@ -128,12 +129,13 @@ public:
   /**
   * Assign a fixed random variable stream number to the random variables
   * used by the channel.  Typically this corresponds to random variables
-  * used in the propagation loss models.  Return the number of streams 
-  * (possibly zero) that have been assigned. 
+  * used in the propagation loss models.  Return the number of streams
+  * (possibly zero) that have been assigned.
   *
-  * \param c NetDeviceContainer of the set of net devices for which the 
+  * \param c NetDeviceContainer of the set of net devices for which the
   *          WifiNetDevice should be modified to use fixed streams
   * \param stream first stream index to use
+  *
   * \return the number of stream indices assigned by this helper
   */
   int64_t AssignStreams (Ptr<YansWifiChannel> c, int64_t stream);
@@ -143,6 +145,7 @@ private:
   std::vector<ObjectFactory> m_propagationLoss;
   ObjectFactory m_propagationDelay;
 };
+
 
 /**
  * \brief Make it easy to create and manage PHY objects for the yans model.
@@ -244,7 +247,7 @@ public:
   void SetPcapDataLinkType (enum SupportedPcapDataLinkTypes dlt);
 
   /**
-   * Get the data link type of PCAP traces to be used. 
+   * Get the data link type of PCAP traces to be used.
    *
    * @see SupportedPcapDataLinkTypes
    *
@@ -300,6 +303,6 @@ private:
   uint32_t m_pcapDlt;
 };
 
-} // namespace ns3
+} //namespace ns3
 
 #endif /* YANS_WIFI_HELPER_H */

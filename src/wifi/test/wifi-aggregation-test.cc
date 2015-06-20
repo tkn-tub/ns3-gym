@@ -66,13 +66,13 @@ TwoLevelAggregationTest::DoRun (void)
   m_factory.SetTypeId ("ns3::ConstantRateWifiManager");
   m_factory.Set ("DataMode", StringValue ("OfdmRate65MbpsBW20MHz"));
   m_manager = m_factory.Create<WifiRemoteStationManager> ();
-  m_manager->SetupPhy(m_phy);
+  m_manager->SetupPhy (m_phy);
 
   /*
    * Create and configure maclayer.
    */
   m_low = CreateObject<MacLow> ();
-  m_low->SetPhy(m_phy);
+  m_low->SetPhy (m_phy);
   m_low->SetWifiRemoteStationManager (m_manager);
 
   m_edca = CreateObject<EdcaTxopN> ();
@@ -86,16 +86,16 @@ TwoLevelAggregationTest::DoRun (void)
    */
   m_factory = ObjectFactory ();
   m_factory.SetTypeId ("ns3::MsduStandardAggregator");
-  m_factory.Set ("MaxAmsduSize", UintegerValue(4095));
+  m_factory.Set ("MaxAmsduSize", UintegerValue (4095));
   m_msduAggregator = m_factory.Create<MsduAggregator> ();
   m_edca->SetMsduAggregator (m_msduAggregator);
-  
+
   m_factory = ObjectFactory ();
   m_factory.SetTypeId ("ns3::MpduStandardAggregator");
-  m_factory.Set ("MaxAmpduSize", UintegerValue(65535));
+  m_factory.Set ("MaxAmpduSize", UintegerValue (65535));
   m_mpduAggregator = m_factory.Create<MpduAggregator> ();
   m_low->SetMpduAggregator (m_mpduAggregator);
-  
+
   /*
    * Create dummy packets of 1500 bytes and fill mac header fields that will be used for the tests.
    */
@@ -109,33 +109,33 @@ TwoLevelAggregationTest::DoRun (void)
   Time tstamp;
 
   //-----------------------------------------------------------------------------------------------------
-  
+
   /*
    * Test MSDU aggregation of two packets using MacLow::PerformMsduAggregation.
-   * It checks whether aggregation succeeded: 
+   * It checks whether aggregation succeeded:
    *      - returned packet should be different from 0;
    *      - A-MSDU frame size should be 3030 bytes (= 2 packets + headers + padding);
    *      - one packet should be removed from the queue (the other packet is removed later in MacLow::AggregateToAmpdu) .
    */
-  m_edca->GetEdcaQueue()->Enqueue(pkt, hdr);
-  m_edca->GetEdcaQueue()->Enqueue(pkt, hdr);
-    
-  Ptr<const Packet> peekedPacket = m_edca->GetEdcaQueue()->PeekByTidAndAddress (&peekedHdr, 0,
-                                                                                WifiMacHeader::ADDR1,
-                                                                                hdr.GetAddr1 (),
-                                                                                &tstamp);
+  m_edca->GetEdcaQueue ()->Enqueue (pkt, hdr);
+  m_edca->GetEdcaQueue ()->Enqueue (pkt, hdr);
+
+  Ptr<const Packet> peekedPacket = m_edca->GetEdcaQueue ()->PeekByTidAndAddress (&peekedHdr, 0,
+                                                                                 WifiMacHeader::ADDR1,
+                                                                                 hdr.GetAddr1 (),
+                                                                                 &tstamp);
   m_low->m_currentPacket = peekedPacket->Copy ();
   m_low->m_currentHdr = peekedHdr;
-  
-  Ptr<Packet> packet = m_low->PerformMsduAggregation(peekedPacket, &peekedHdr, &tstamp, currentAggregatedPacket, 0);
-    
+
+  Ptr<Packet> packet = m_low->PerformMsduAggregation (peekedPacket, &peekedHdr, &tstamp, currentAggregatedPacket, 0);
+
   bool result = (packet != 0);
   NS_TEST_EXPECT_MSG_EQ (result, true, "aggregation failed");
-  NS_TEST_EXPECT_MSG_EQ (packet->GetSize(), 3030, "wrong packet size");
-  NS_TEST_EXPECT_MSG_EQ (m_edca->GetEdcaQueue()->GetSize(), 1, "removing packet from EDCA queue failed");
+  NS_TEST_EXPECT_MSG_EQ (packet->GetSize (), 3030, "wrong packet size");
+  NS_TEST_EXPECT_MSG_EQ (m_edca->GetEdcaQueue ()->GetSize (), 1, "removing packet from EDCA queue failed");
 
   //-----------------------------------------------------------------------------------------------------
-    
+
   /*
    * Aggregation is refused when the maximum size is reached.
    * It checks whether MSDU aggregation has been rejected because the maximum MPDU size is set to 0 (returned packet should be equal to 0).
@@ -143,18 +143,18 @@ TwoLevelAggregationTest::DoRun (void)
    */
   m_factory = ObjectFactory ();
   m_factory.SetTypeId ("ns3::MpduStandardAggregator");
-  m_factory.Set ("MaxAmpduSize", UintegerValue(0));
+  m_factory.Set ("MaxAmpduSize", UintegerValue (0));
   m_mpduAggregator = m_factory.Create<MpduAggregator> ();
   m_low->SetMpduAggregator (m_mpduAggregator);
-  
-  m_edca->GetEdcaQueue()->Enqueue(pkt, hdr);
-  packet = m_low->PerformMsduAggregation(peekedPacket, &peekedHdr, &tstamp, currentAggregatedPacket, 0);
-  
+
+  m_edca->GetEdcaQueue ()->Enqueue (pkt, hdr);
+  packet = m_low->PerformMsduAggregation (peekedPacket, &peekedHdr, &tstamp, currentAggregatedPacket, 0);
+
   result = (packet != 0);
   NS_TEST_EXPECT_MSG_EQ (result, false, "maximum aggregated frame size check failed");
 
   //-----------------------------------------------------------------------------------------------------
-  
+
   /*
    * Aggregation does not occur zhen there is no more packets in the queue.
    * It checks whether MSDU aggregation has been rejected because there is no packets ready in the queue (returned packet should be equal to 0).
@@ -162,18 +162,19 @@ TwoLevelAggregationTest::DoRun (void)
    */
   m_factory = ObjectFactory ();
   m_factory.SetTypeId ("ns3::MpduStandardAggregator");
-  m_factory.Set ("MaxAmpduSize", UintegerValue(4095));
+  m_factory.Set ("MaxAmpduSize", UintegerValue (4095));
   m_mpduAggregator = m_factory.Create<MpduAggregator> ();
   m_low->SetMpduAggregator (m_mpduAggregator);
-    
-  m_edca->GetEdcaQueue()->Remove(pkt);
-  m_edca->GetEdcaQueue()->Remove(pkt);
-  packet = m_low->PerformMsduAggregation(peekedPacket, &peekedHdr, &tstamp, currentAggregatedPacket, 0);
-  
+
+  m_edca->GetEdcaQueue ()->Remove (pkt);
+  m_edca->GetEdcaQueue ()->Remove (pkt);
+  packet = m_low->PerformMsduAggregation (peekedPacket, &peekedHdr, &tstamp, currentAggregatedPacket, 0);
+
   result = (packet != 0);
   NS_TEST_EXPECT_MSG_EQ (result, false, "aggregation failed to stop as queue is empty");
   Simulator::Destroy ();
 }
+
 
 //-----------------------------------------------------------------------------
 class WifiAggregationTestSuite : public TestSuite

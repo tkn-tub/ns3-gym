@@ -189,10 +189,10 @@ RraaWifiManager::GetTypeId (void)
 RraaWifiManager::RraaWifiManager ()
 {
 }
+
 RraaWifiManager::~RraaWifiManager ()
 {
 }
-
 
 WifiRemoteStation *
 RraaWifiManager::DoCreateStation (void) const
@@ -224,12 +224,12 @@ RraaWifiManager::GetMaxRate (RraaWifiRemoteStation *station)
 {
   return GetNSupported (station) - 1;
 }
+
 uint32_t
 RraaWifiManager::GetMinRate (RraaWifiRemoteStation *station)
 {
   return 0;
 }
-
 
 void
 RraaWifiManager::DoReportRtsFailed (WifiRemoteStation *st)
@@ -246,17 +246,20 @@ RraaWifiManager::DoReportDataFailed (WifiRemoteStation *st)
   station->m_failed++;
   RunBasicAlgorithm (station);
 }
+
 void
 RraaWifiManager::DoReportRxOk (WifiRemoteStation *st,
                                double rxSnr, WifiMode txMode)
 {
 }
+
 void
 RraaWifiManager::DoReportRtsOk (WifiRemoteStation *st,
                                 double ctsSnr, WifiMode ctsMode, double rtsSnr)
 {
   NS_LOG_DEBUG ("self=" << st << " rts ok");
 }
+
 void
 RraaWifiManager::DoReportDataOk (WifiRemoteStation *st,
                                  double ackSnr, WifiMode ackMode, double dataSnr)
@@ -267,10 +270,12 @@ RraaWifiManager::DoReportDataOk (WifiRemoteStation *st,
   station->m_counter--;
   RunBasicAlgorithm (station);
 }
+
 void
 RraaWifiManager::DoReportFinalRtsFailed (WifiRemoteStation *st)
 {
 }
+
 void
 RraaWifiManager::DoReportFinalDataFailed (WifiRemoteStation *st)
 {
@@ -278,19 +283,20 @@ RraaWifiManager::DoReportFinalDataFailed (WifiRemoteStation *st)
 
 WifiTxVector
 RraaWifiManager::DoGetDataTxVector (WifiRemoteStation *st,
-                                uint32_t size)
+                                    uint32_t size)
 {
   RraaWifiRemoteStation *station = (RraaWifiRemoteStation *) st;
   if (!station->m_initialized)
     {
       ResetCountersBasic (station);
     }
-  return WifiTxVector (GetSupported (station, station->m_rate), GetDefaultTxPowerLevel (), GetLongRetryCount (station), GetShortGuardInterval (station), Min (GetNumberOfReceiveAntennas (station),GetNumberOfTransmitAntennas()), GetNess (station), GetStbc (station));
+  return WifiTxVector (GetSupported (station, station->m_rate), GetDefaultTxPowerLevel (), GetLongRetryCount (station), GetShortGuardInterval (station), Min (GetNumberOfReceiveAntennas (station), GetNumberOfTransmitAntennas ()), GetNess (station), GetStbc (station));
 }
+
 WifiTxVector
 RraaWifiManager::DoGetRtsTxVector (WifiRemoteStation *st)
 {
-  return WifiTxVector (GetSupported (st, 0), GetDefaultTxPowerLevel (), GetShortRetryCount (st), GetShortGuardInterval (st), Min (GetNumberOfReceiveAntennas (st),GetNumberOfTransmitAntennas()), GetNess (st), GetStbc (st));
+  return WifiTxVector (GetSupported (st, 0), GetDefaultTxPowerLevel (), GetShortRetryCount (st), GetShortGuardInterval (st), Min (GetNumberOfReceiveAntennas (st), GetNumberOfTransmitAntennas ()), GetNess (st), GetStbc (st));
 }
 
 bool
@@ -468,4 +474,4 @@ RraaWifiManager::IsLowLatency (void) const
   return true;
 }
 
-} // namespace ns3
+} //namespace ns3

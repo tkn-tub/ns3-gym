@@ -56,6 +56,8 @@ public:
   void SetForwardCallback (ForwardUpCallback callback);
 
   void Receive (Ptr<Packet> packet, const WifiMacHeader *hdr);
+
+
 private:
   friend class MacRxMiddleTest;
   /**
@@ -64,6 +66,7 @@ private:
    * The method creates a new OriginatorRxStatus if one is not already presented.
    *
    * \param hdr
+   *
    * \return OriginatorRxStatus
    */
   OriginatorRxStatus* Lookup (const WifiMacHeader* hdr);
@@ -73,6 +76,7 @@ private:
    *
    * \param hdr
    * \param originator
+   *
    * \return true if we already received the packet previously,
    *         false otherwise
    */
@@ -88,6 +92,7 @@ private:
    * \param packet
    * \param hdr
    * \param originator
+   *
    * \return a packet if the packet is successfully reassembled (or not a fragment),
    *         0 if we failed to reassemble the packet (e.g. missing fragments/out-of-order).
    */
@@ -110,12 +115,12 @@ private:
    * typedef for an interator for QosOriginators
    */
   typedef std::map <std::pair<Mac48Address, uint8_t>, OriginatorRxStatus *, std::less<std::pair<Mac48Address,uint8_t> > >::iterator QosOriginatorsI;
+
   Originators m_originatorStatus;
   QosOriginators m_qosOriginatorStatus;
   ForwardUpCallback m_callback;
 };
 
-} // namespace ns3
-
+} //namespace ns3
 
 #endif /* MAC_RX_MIDDLE_H */

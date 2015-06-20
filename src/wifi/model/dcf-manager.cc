@@ -22,7 +22,6 @@
 #include "ns3/log.h"
 #include "ns3/simulator.h"
 #include <cmath>
-
 #include "dcf-manager.h"
 #include "wifi-phy.h"
 #include "wifi-mac.h"
@@ -58,28 +57,33 @@ DcfState::SetAifsn (uint32_t aifsn)
 {
   m_aifsn = aifsn;
 }
+
 void
 DcfState::SetCwMin (uint32_t minCw)
 {
   m_cwMin = minCw;
   ResetCw ();
 }
+
 void
 DcfState::SetCwMax (uint32_t maxCw)
 {
   m_cwMax = maxCw;
   ResetCw ();
 }
+
 uint32_t
 DcfState::GetAifsn (void) const
 {
   return m_aifsn;
 }
+
 uint32_t
 DcfState::GetCwMin (void) const
 {
   return m_cwMin;
 }
+
 uint32_t
 DcfState::GetCwMax (void) const
 {
@@ -91,12 +95,14 @@ DcfState::ResetCw (void)
 {
   m_cw = m_cwMin;
 }
+
 void
 DcfState::UpdateFailedCw (void)
 {
-  // see 802.11-2012, section 9.19.2.5
+  //see 802.11-2012, section 9.19.2.5
   m_cw = std::min ( 2 * (m_cw + 1) - 1, m_cwMax);
 }
+
 void
 DcfState::UpdateBackoffSlotsNow (uint32_t nSlots, Time backoffUpdateBound)
 {
@@ -119,16 +125,19 @@ DcfState::GetCw (void) const
 {
   return m_cw;
 }
+
 uint32_t
 DcfState::GetBackoffSlots (void) const
 {
   return m_backoffSlots;
 }
+
 Time
 DcfState::GetBackoffStart (void) const
 {
   return m_backoffStart;
 }
+
 bool
 DcfState::IsAccessRequested (void) const
 {
@@ -139,6 +148,7 @@ DcfState::NotifyAccessRequested (void)
 {
   m_accessRequested = true;
 }
+
 void
 DcfState::NotifyAccessGranted (void)
 {
@@ -146,26 +156,31 @@ DcfState::NotifyAccessGranted (void)
   m_accessRequested = false;
   DoNotifyAccessGranted ();
 }
+
 void
 DcfState::NotifyCollision (void)
 {
   DoNotifyCollision ();
 }
+
 void
 DcfState::NotifyInternalCollision (void)
 {
   DoNotifyInternalCollision ();
 }
+
 void
 DcfState::NotifyChannelSwitching (void)
 {
   DoNotifyChannelSwitching ();
 }
+
 void
 DcfState::NotifySleep (void)
 {
   DoNotifySleep ();
 }
+
 void
 DcfState::NotifyWakeUp (void)
 {
@@ -215,9 +230,11 @@ public:
   {
     m_dcf->NotifyCtsTimeoutResetNow ();
   }
+
 private:
   ns3::DcfManager *m_dcf;  //!< DcfManager to forward events to
 };
+
 
 /**
  * Listener for PHY events. Forwards to DcfManager
@@ -269,9 +286,11 @@ public:
   {
     m_dcf->NotifyWakeupNow ();
   }
+
 private:
   ns3::DcfManager *m_dcf;  //!< DcfManager to forward events to
 };
+
 
 /****************************************************************
  *      Implement the DCF manager of all DCF state holders
@@ -352,18 +371,21 @@ DcfManager::SetSlot (Time slotTime)
   NS_LOG_FUNCTION (this << slotTime);
   m_slotTimeUs = slotTime.GetMicroSeconds ();
 }
+
 void
 DcfManager::SetSifs (Time sifs)
 {
   NS_LOG_FUNCTION (this << sifs);
   m_sifs = sifs;
 }
+
 void
 DcfManager::SetEifsNoDifs (Time eifsNoDifs)
 {
   NS_LOG_FUNCTION (this << eifsNoDifs);
   m_eifsNoDifs = eifsNoDifs;
 }
+
 Time
 DcfManager::GetEifsNoDifs () const
 {
@@ -384,6 +406,7 @@ DcfManager::MostRecent (Time a, Time b) const
   NS_LOG_FUNCTION (this << a << b);
   return Max (a, b);
 }
+
 Time
 DcfManager::MostRecent (Time a, Time b, Time c) const
 {
@@ -393,6 +416,7 @@ DcfManager::MostRecent (Time a, Time b, Time c) const
   retval = Max (retval, c);
   return retval;
 }
+
 Time
 DcfManager::MostRecent (Time a, Time b, Time c, Time d) const
 {
@@ -402,6 +426,7 @@ DcfManager::MostRecent (Time a, Time b, Time c, Time d) const
   Time retval = Max (e, f);
   return retval;
 }
+
 Time
 DcfManager::MostRecent (Time a, Time b, Time c, Time d, Time e, Time f) const
 {
@@ -450,14 +475,15 @@ DcfManager::IsBusy (void) const
   return false;
 }
 
-
 void
 DcfManager::RequestAccess (DcfState *state)
 {
   NS_LOG_FUNCTION (this << state);
-  // Deny access if in sleep mode
+  //Deny access if in sleep mode
   if (m_sleeping)
-    return;
+    {
+      return;
+    }
   UpdateBackoff ();
   NS_ASSERT (!state->IsAccessRequested ());
   state->NotifyAccessRequested ();
@@ -494,7 +520,7 @@ DcfManager::DoGrantAccess (void)
            * needs access to the medium. i.e., it has data to send.
            */
           MY_DEBUG ("dcf " << k << " needs access. backoff expired. access granted. slots=" << state->GetBackoffSlots ());
-          i++; // go to the next item in the list.
+          i++; //go to the next item in the list.
           k++;
           std::vector<DcfState *> internalCollisionStates;
           for (States::const_iterator j = i; j != m_states.end (); j++, k++)
@@ -669,6 +695,7 @@ DcfManager::NotifyRxStartNow (Time duration)
   m_lastRxDuration = duration;
   m_rxing = true;
 }
+
 void
 DcfManager::NotifyRxEndOkNow (void)
 {
@@ -678,6 +705,7 @@ DcfManager::NotifyRxEndOkNow (void)
   m_lastRxReceivedOk = true;
   m_rxing = false;
 }
+
 void
 DcfManager::NotifyRxEndErrorNow (void)
 {
@@ -687,6 +715,7 @@ DcfManager::NotifyRxEndErrorNow (void)
   m_lastRxReceivedOk = false;
   m_rxing = false;
 }
+
 void
 DcfManager::NotifyTxStartNow (Time duration)
 {
@@ -694,8 +723,7 @@ DcfManager::NotifyTxStartNow (Time duration)
   if (m_rxing)
     {
       //this may be caused only if PHY has started to receive a packet
-      //inside SIFS, so, we check that lastRxStart was maximum a SIFS
-      //ago
+      //inside SIFS, so, we check that lastRxStart was maximum a SIFS ago
       NS_ASSERT (Simulator::Now () - m_lastRxStart <= m_sifs);
       m_lastRxEnd = Simulator::Now ();
       m_lastRxDuration = m_lastRxEnd - m_lastRxStart;
@@ -707,6 +735,7 @@ DcfManager::NotifyTxStartNow (Time duration)
   m_lastTxStart = Simulator::Now ();
   m_lastTxDuration = duration;
 }
+
 void
 DcfManager::NotifyMaybeCcaBusyStartNow (Time duration)
 {
@@ -716,7 +745,6 @@ DcfManager::NotifyMaybeCcaBusyStartNow (Time duration)
   m_lastBusyStart = Simulator::Now ();
   m_lastBusyDuration = duration;
 }
-
 
 void
 DcfManager::NotifySwitchingStartNow (Time duration)
@@ -728,7 +756,7 @@ DcfManager::NotifySwitchingStartNow (Time duration)
 
   if (m_rxing)
     {
-      // channel switching during packet reception
+      //channel switching during packet reception
       m_lastRxEnd = Simulator::Now ();
       m_lastRxDuration = m_lastRxEnd - m_lastRxStart;
       m_lastRxReceivedOk = true;
@@ -751,13 +779,13 @@ DcfManager::NotifySwitchingStartNow (Time duration)
       m_lastCtsTimeoutEnd = now;
     }
 
-  // Cancel timeout
+  //Cancel timeout
   if (m_accessTimeout.IsRunning ())
     {
       m_accessTimeout.Cancel ();
     }
 
-  // Reset backoffs
+  //Reset backoffs
   for (States::iterator i = m_states.begin (); i != m_states.end (); i++)
     {
       DcfState *state = *i;
@@ -783,13 +811,13 @@ DcfManager::NotifySleepNow (void)
 {
   NS_LOG_FUNCTION (this);
   m_sleeping = true;
-  // Cancel timeout
+  //Cancel timeout
   if (m_accessTimeout.IsRunning ())
     {
       m_accessTimeout.Cancel ();
     }
 
-  // Reset backoffs
+  //Reset backoffs
   for (States::iterator i = m_states.begin (); i != m_states.end (); i++)
     {
       DcfState *state = *i;
@@ -834,6 +862,7 @@ DcfManager::NotifyNavResetNow (Time duration)
    */
   DoRestartAccessTimeoutIfNeeded ();
 }
+
 void
 DcfManager::NotifyNavStartNow (Time duration)
 {
@@ -849,6 +878,7 @@ DcfManager::NotifyNavStartNow (Time duration)
       m_lastNavDuration = duration;
     }
 }
+
 void
 DcfManager::NotifyAckTimeoutStartNow (Time duration)
 {
@@ -856,6 +886,7 @@ DcfManager::NotifyAckTimeoutStartNow (Time duration)
   NS_ASSERT (m_lastAckTimeoutEnd < Simulator::Now ());
   m_lastAckTimeoutEnd = Simulator::Now () + duration;
 }
+
 void
 DcfManager::NotifyAckTimeoutResetNow ()
 {
@@ -863,12 +894,14 @@ DcfManager::NotifyAckTimeoutResetNow ()
   m_lastAckTimeoutEnd = Simulator::Now ();
   DoRestartAccessTimeoutIfNeeded ();
 }
+
 void
 DcfManager::NotifyCtsTimeoutStartNow (Time duration)
 {
   NS_LOG_FUNCTION (this << duration);
   m_lastCtsTimeoutEnd = Simulator::Now () + duration;
 }
+
 void
 DcfManager::NotifyCtsTimeoutResetNow ()
 {
@@ -876,4 +909,4 @@ DcfManager::NotifyCtsTimeoutResetNow ()
   m_lastCtsTimeoutEnd = Simulator::Now ();
   DoRestartAccessTimeoutIfNeeded ();
 }
-} // namespace ns3
+} //namespace ns3

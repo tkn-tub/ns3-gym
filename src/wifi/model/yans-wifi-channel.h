@@ -94,20 +94,19 @@ public:
   void Send (Ptr<YansWifiPhy> sender, Ptr<const Packet> packet, double txPowerDbm,
              WifiTxVector txVector, WifiPreamble preamble, uint8_t packetType, Time duration) const;
 
- /**
-  * Assign a fixed random variable stream number to the random variables
-  * used by this model.  Return the number of streams (possibly zero) that
-  * have been assigned.
-  *
-  * \param stream first stream index to use
-  *
-  * \return the number of stream indices assigned by this model
-  */
+  /**
+   * Assign a fixed random variable stream number to the random variables
+   * used by this model.  Return the number of streams (possibly zero) that
+   * have been assigned.
+   *
+   * \param stream first stream index to use
+   *
+   * \return the number of stream indices assigned by this model
+   */
   int64_t AssignStreams (int64_t stream);
 
 
 private:
-
   /**
    * A vector of pointers to YansWifiPhy.
    */
@@ -132,6 +131,6 @@ private:
   Ptr<PropagationDelayModel> m_delay;  //!< Propagation delay model
 };
 
-} // namespace ns3
+} //namespace ns3
 
 #endif /* YANS_WIFI_CHANNEL_H */

@@ -289,12 +289,12 @@ public:
    * \param preamble the type of preamble to use for this packet.
    * \param frequency the channel center frequency (MHz)
    * \param packetType the type of the packet 0 is not A-MPDU, 1 is a MPDU that is part of an A-MPDU and 2 is the last MPDU in an A-MPDU
-   * \param incFlag this flag is used to indicate that the static variables need to be update or not. This function is called a couple of times for the same packet so static variables should not be increased each time. 
+   * \param incFlag this flag is used to indicate that the static variables need to be update or not. This function is called a couple of times for the same packet so static variables should not be increased each time.
    *
    * \return the total amount of time this PHY will stay busy for the transmission of these bytes.
    */
   Time CalculateTxDuration (uint32_t size, WifiTxVector txvector, enum WifiPreamble preamble, double frequency, uint8_t packetType, uint8_t incFlag);
-  
+
   /**
    * \param txvector the transmission parameters used for this packet
    * \param preamble the type of preamble to use for this packet.
@@ -313,45 +313,45 @@ public:
   /**
    * \param payloadMode the WifiMode use for the transmission of the payload
    * \param preamble the type of preamble
-   * 
-   * \return the WifiMode used for the transmission of the HT-SIG in Mixed Format and greenfield format PLCP header 
+   *
+   * \return the WifiMode used for the transmission of the HT-SIG in Mixed Format and greenfield format PLCP header
    */
   static WifiMode GetMFPlcpHeaderMode (WifiMode payloadMode, WifiPreamble preamble);
-  /** 
+  /**
    * \param preamble the type of preamble
-   * 
-   * \return the duration of the HT-SIG in Mixed Format and greenfield format PLCP header 
+   *
+   * \return the duration of the HT-SIG in Mixed Format and greenfield format PLCP header
    */
   static Time GetPlcpHtSigHeaderDuration (WifiPreamble preamble);
-  /** 
+  /**
    * \param payloadMode the WifiMode use for the transmission of the payload
    * \param preamble the type of preamble
-   * 
-   * \return the WifiMode used for the transmission of the PLCP header 
+   *
+   * \return the WifiMode used for the transmission of the PLCP header
    */
   static WifiMode GetPlcpHeaderMode (WifiMode payloadMode, WifiPreamble preamble);
   /**
    * \param payloadMode the WifiMode use for the transmission of the payload
    * \param preamble the type of preamble
-   * 
+   *
    * \return the duration of the PLCP header
    */
   static Time GetPlcpHeaderDuration (WifiMode payloadMode, WifiPreamble preamble);
-  /** 
+  /**
    * \param payloadMode the WifiMode use for the transmission of the payload
-   * \param preamble the type of preamble 
-   * 
+   * \param preamble the type of preamble
+   *
    * \return the duration of the PLCP preamble
    */
   static Time GetPlcpPreambleDuration (WifiMode payloadMode, WifiPreamble preamble);
-  /** 
+  /**
    * \param size the number of bytes in the packet to send
    * \param txvector the transmission parameters used for this packet
    * \param preamble the type of preamble to use for this packet
    * \param frequency the channel center frequency (MHz)
    * \param packetType the type of the packet (0 is not A-MPDU, 1 is a MPDU that is part of an A-MPDU and 2 is the last MPDU in an A-MPDU)
    * \param incFlag this flag is used to indicate that the static variables need to be update or not. This function is called a couple of times for the same packet so static variables should not be increased each time
-   * 
+   *
    * \return the duration of the payload
    */
   Time GetPayloadDuration (uint32_t size, WifiTxVector txvector, WifiPreamble preamble, double frequency, uint8_t packetType, uint8_t incFlag);
@@ -403,7 +403,7 @@ public:
    *         false otherwise
    */
   virtual bool IsModeSupported (WifiMode mode) const = 0;
-  
+
   /**
    * \param txMode the transmission mode
    * \param ber the probability of bit error rate
@@ -412,28 +412,28 @@ public:
    *          the requested ber for the specified transmission mode. (W/W)
    */
   virtual double CalculateSnr (WifiMode txMode, double ber) const = 0;
-  
-   /**
-   * The WifiPhy::NBssMembershipSelectors() method is used
-   * (e.g., by a WifiRemoteStationManager) to determine the set of
-   * transmission/reception modes that this WifiPhy(-derived class)
-   * can support - a set of WifiMode objects which we call the
-   * BssMembershipSelectorSet, and which is stored as WifiPhy::m_bssMembershipSelectorSet.
-   *
-   * \return the memebership selector whose index is specified.
-   */
+
+  /**
+  * The WifiPhy::NBssMembershipSelectors() method is used
+  * (e.g., by a WifiRemoteStationManager) to determine the set of
+  * transmission/reception modes that this WifiPhy(-derived class)
+  * can support - a set of WifiMode objects which we call the
+  * BssMembershipSelectorSet, and which is stored as WifiPhy::m_bssMembershipSelectorSet.
+  *
+  * \return the memebership selector whose index is specified.
+  */
   virtual uint32_t GetNBssMembershipSelectors (void) const = 0;
-   /**
-   * The WifiPhy::BssMembershipSelector() method is used
-   * (e.g., by a WifiRemoteStationManager) to determine the set of
-   * transmission/reception modes that this WifiPhy(-derived class)
-   * can support - a set of WifiMode objects which we call the
-   * BssMembershipSelectorSet, and which is stored as WifiPhy::m_bssMembershipSelectorSet.
-   *
-   * \param selector index in array of supported memberships
-   *
-   * \return the memebership selector whose index is specified.
-   */
+  /**
+  * The WifiPhy::BssMembershipSelector() method is used
+  * (e.g., by a WifiRemoteStationManager) to determine the set of
+  * transmission/reception modes that this WifiPhy(-derived class)
+  * can support - a set of WifiMode objects which we call the
+  * BssMembershipSelectorSet, and which is stored as WifiPhy::m_bssMembershipSelectorSet.
+  *
+  * \param selector index in array of supported memberships
+  *
+  * \return the memebership selector whose index is specified.
+  */
   virtual uint32_t GetBssMembershipSelector (uint32_t selector) const = 0;
   /**
    * The WifiPhy::GetMembershipSelectorModes() method is used
@@ -448,7 +448,7 @@ public:
    *
    * \sa WifiPhy::GetMembershipSelectorModes()
    */
-  virtual WifiModeList GetMembershipSelectorModes(uint32_t selector) = 0;
+  virtual WifiModeList GetMembershipSelectorModes (uint32_t selector) = 0;
   /**
    * The WifiPhy::GetNMcs() method is used
    * (e.g., by a WifiRemoteStationManager) to determine the set of
@@ -458,7 +458,7 @@ public:
    *
    * \return the MCS index whose index is specified.
    */
-  virtual uint8_t GetNMcs (void) const=0;
+  virtual uint8_t GetNMcs (void) const = 0;
   /**
    * The WifiPhy::GetMcs() method is used
    * (e.g., by a WifiRemoteStationManager) to determine the set of
@@ -473,22 +473,22 @@ public:
   virtual uint8_t GetMcs (uint8_t mcs) const = 0;
 
   /**
-  * For a given WifiMode finds the corresponding MCS value and returns it 
-  * as defined in the IEEE 802.11n standard 
+  * For a given WifiMode finds the corresponding MCS value and returns it
+  * as defined in the IEEE 802.11n standard
   *
   * \param mode the WifiMode
   *
   * \return the MCS number that corresponds to the given WifiMode
   */
   virtual uint32_t WifiModeToMcs (WifiMode mode) = 0;
- /**
-  * For a given MCS finds the corresponding WifiMode and returns it 
-  * as defined in the IEEE 802.11n standard. 
-  * 
-  * \param mcs the MCS number 
-  *
-  * \return the WifiMode that corresponds to the given MCS number
-  */
+  /**
+   * For a given MCS finds the corresponding WifiMode and returns it
+   * as defined in the IEEE 802.11n standard.
+   *
+   * \param mcs the MCS number
+   *
+   * \return the WifiMode that corresponds to the given MCS number
+   */
   virtual WifiMode McsToWifiMode (uint8_t mcs) = 0;
 
   /**
@@ -502,7 +502,7 @@ public:
    * \param id the channel number
    */
   virtual void SetChannelNumber (uint16_t id) = 0;
-  /**  
+  /**
    * Return current channel number.
    *
    * \return the current channel number
@@ -899,7 +899,7 @@ public:
    *
    * \return a WifiMode for OFDM at 30Mbps with 40MHz channel spacing
    */
-  static WifiMode GetOfdmRate30MbpsBW40MHz (); 
+  static WifiMode GetOfdmRate30MbpsBW40MHz ();
   /**
    * Return a WifiMode for OFDM at 45Mbps with 40MHz channel spacing.
    *
@@ -1026,11 +1026,10 @@ public:
    * \param signalDbm signal power in dBm
    * \param noiseDbm noise power in dBm
    */
-  typedef void (* MonitorSnifferRxCallback)
-    (Ptr<const Packet> packet, uint16_t channelFreqMhz,
-     uint16_t channelNumber, uint32_t rate,
-     bool isShortPreamble, WifiTxVector txvector,
-     double signalDbm, double noiseDbm);
+  typedef void (* MonitorSnifferRxCallback)(Ptr<const Packet> packet, uint16_t channelFreqMhz,
+                                            uint16_t channelNumber, uint32_t rate,
+                                            bool isShortPreamble, WifiTxVector txvector,
+                                            double signalDbm, double noiseDbm);
 
   /**
    * Public method used to fire a MonitorSniffer trace for a wifi packet being transmitted.
@@ -1061,19 +1060,18 @@ public:
    * \param isShortPreamble true if short preamble is used, false otherwise
    * \param txVector the txvector that holds tx parameters
    */
-  typedef void (* MonitorSnifferTxCallback)
-    (const Ptr<const Packet> packet, uint16_t channelFreqMhz,
-     uint16_t channelNumber, uint32_t rate,
-     bool isShortPreamble, WifiTxVector txvector);
+  typedef void (* MonitorSnifferTxCallback)(const Ptr<const Packet> packet, uint16_t channelFreqMhz,
+                                            uint16_t channelNumber, uint32_t rate,
+                                            bool isShortPreamble, WifiTxVector txvector);
 
- /**
-  * Assign a fixed random variable stream number to the random variables
-  * used by this model. Return the number of streams (possibly zero) that
-  * have been assigned.
-  *
-  * \param stream first stream index to use
-  * \return the number of stream indices assigned by this model
-  */
+  /**
+   * Assign a fixed random variable stream number to the random variables
+   * used by this model. Return the number of streams (possibly zero) that
+   * have been assigned.
+   *
+   * \param stream first stream index to use
+   * \return the number of stream indices assigned by this model
+   */
   virtual int64_t AssignStreams (int64_t stream) = 0;
 
   /**
@@ -1092,9 +1090,9 @@ public:
    * \return the number of transmit antenna on this device
    */
   virtual uint32_t GetNumberOfTransmitAntennas (void) const = 0;
-   /**
-   * \param rx the number of receivers on this node.
-   */
+  /**
+  * \param rx the number of receivers on this node.
+  */
   virtual void SetNumberOfReceiveAntennas (uint32_t rx) = 0;
   /**
    * \return the number of receivers on this node.
@@ -1213,7 +1211,7 @@ private:
    * \see class CallBackTraceSource
    */
   TracedCallback<Ptr<const Packet>, uint16_t, uint16_t, uint32_t, bool, WifiTxVector> m_phyMonitorSniffTxTrace;
-    
+
   uint32_t m_totalAmpduNumSymbols; //!< Number of symbols previously transmitted for the MPDUs in an A-MPDU, used for the computation of the number of symbols needed for the last MPDU in the A-MPDU
   uint32_t m_totalAmpduSize;       //!< Total size of the previously transmitted MPDUs in an A-MPDU, used for the computation of the number of symbols needed for the last MPDU in the A-MPDU
 };
@@ -1225,6 +1223,6 @@ private:
  */
 std::ostream& operator<< (std::ostream& os, enum WifiPhy::State state);
 
-} // namespace ns3
+} //namespace ns3
 
 #endif /* WIFI_PHY_H */

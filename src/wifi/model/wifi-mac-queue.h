@@ -16,9 +16,10 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
- * Author: Mirko Banchi <mk.banchi@gmail.com>
+ * Authors: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
+ *          Mirko Banchi <mk.banchi@gmail.com>
  */
+
 #ifndef WIFI_MAC_QUEUE_H
 #define WIFI_MAC_QUEUE_H
 
@@ -97,6 +98,7 @@ public:
    * Dequeue the packet in the front of the queue.
    *
    * \param hdr the WifiMacHeader of the packet
+   *
    * \return the packet
    */
   Ptr<const Packet> Dequeue (WifiMacHeader *hdr);
@@ -104,6 +106,7 @@ public:
    * Peek the packet in the front of the queue. The packet is not removed.
    *
    * \param hdr the WifiMacHeader of the packet
+   *
    * \return the packet
    */
   Ptr<const Packet> Peek (WifiMacHeader *hdr);
@@ -118,6 +121,7 @@ public:
    * \param tid the given TID
    * \param type the given address type
    * \param addr the given destination
+   *
    * \return packet
    */
   Ptr<const Packet> DequeueByTidAndAddress (WifiMacHeader *hdr,
@@ -136,6 +140,7 @@ public:
    * \param type the given address type
    * \param addr the given destination
    * \param timestamp
+   *
    * \return packet
    */
   Ptr<const Packet> PeekByTidAndAddress (WifiMacHeader *hdr,
@@ -149,6 +154,7 @@ public:
    * performed in linear time (O(n)).
    *
    * \param packet the packet to be removed
+   *
    * \return true if the packet was removed, false otherwise
    */
   bool Remove (Ptr<const Packet> packet);
@@ -159,6 +165,7 @@ public:
    * \param tid the given TID
    * \param type the given address type
    * \param addr the given destination
+   *
    * \return the number of QoS packets
    */
   uint32_t GetNPacketsByTidAndAddress (uint8_t tid,
@@ -174,17 +181,19 @@ public:
    * \param hdr the header of the dequeued packet
    * \param tStamp
    * \param blockedPackets
+   *
    * \return packet
    */
   Ptr<const Packet> DequeueFirstAvailable (WifiMacHeader *hdr,
                                            Time &tStamp,
                                            const QosBlockedDestinations *blockedPackets);
   /**
-   * Returns first available packet for transmission. The packet isn't removed from queue.  
+   * Returns first available packet for transmission. The packet isn't removed from queue.
    *
    * \param hdr the header of the dequeued packet
    * \param tStamp
    * \param blockedPackets
+   *
    * \return packet
    */
   Ptr<const Packet> PeekFirstAvailable (WifiMacHeader *hdr,
@@ -207,6 +216,7 @@ public:
    * \return the current queue size
    */
   uint32_t GetSize (void);
+
 
 protected:
   /**
@@ -231,8 +241,8 @@ protected:
           const WifiMacHeader &hdr,
           Time tstamp);
     Ptr<const Packet> packet; //!< Actual packet
-    WifiMacHeader hdr; //!< Wifi MAC header associated with the packet
-    Time tstamp; //!< timestamp when the packet arrived at the queue
+    WifiMacHeader hdr;        //!< Wifi MAC header associated with the packet
+    Time tstamp;              //!< timestamp when the packet arrived at the queue
   };
 
   /**
@@ -252,16 +262,17 @@ protected:
    *
    * \param type
    * \param it
+   *
    * \return the address
    */
   Mac48Address GetAddressForPacket (enum WifiMacHeader::AddressType type, PacketQueueI it);
 
   PacketQueue m_queue; //!< Packet (struct Item) queue
-  uint32_t m_size; //!< Current queue size
-  uint32_t m_maxSize; //!< Queue capacity
-  Time m_maxDelay; //!< Time to live for packets in the queue
+  uint32_t m_size;     //!< Current queue size
+  uint32_t m_maxSize;  //!< Queue capacity
+  Time m_maxDelay;     //!< Time to live for packets in the queue
 };
 
-} // namespace ns3
+} //namespace ns3
 
 #endif /* WIFI_MAC_QUEUE_H */

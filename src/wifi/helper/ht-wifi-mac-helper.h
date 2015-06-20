@@ -17,6 +17,7 @@
  *
  * Author: Ghada Badawy <gbadawy@gmail.com>
  */
+
 #ifndef HT_WIFI_MAC_HELPER_H
 #define HT_WIFI_MAC_HELPER_H
 
@@ -52,8 +53,8 @@ public:
    */
   static HtWifiMacHelper Default (void);
 
- };
+};
 
-} // namespace ns3
+} //namespace ns3
 
 #endif /* HT_WIFI_MAC_HELPER_H */

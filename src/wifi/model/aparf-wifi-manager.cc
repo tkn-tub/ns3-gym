@@ -17,13 +17,16 @@
  *
  * Author: Matias Richart <mrichart@fing.edu.uy>
  */
+
 #include "aparf-wifi-manager.h"
 #include "wifi-phy.h"
 #include "ns3/assert.h"
 #include "ns3/log.h"
 #include "ns3/uinteger.h"
 #include "ns3/trace-source-accessor.h"
+
 #define Min(a,b) ((a < b) ? a : b)
+
 NS_LOG_COMPONENT_DEFINE ("ns3::AparfWifiManager");
 
 namespace ns3 {
@@ -37,20 +40,16 @@ namespace ns3 {
 struct
 AparfWifiRemoteStation : public WifiRemoteStation
 {
-  uint32_t m_nSuccess; //!< Number of successful transmission attempts.
-  uint32_t m_nFailed; //!< Number of failed transmission attempts.
-  uint32_t m_pCount; //!< Number of power changes.
-
-  uint32_t m_successThreshold; //!< The minimum number of successful transmissions to try a new power or rate.
-  uint32_t m_failThreshold; //!< The minimum number of failed transmissions to try a new power or rate.
-
-  uint32_t m_rate; //!< Current rate.
-  uint32_t m_rateCrit; //!< Critical rate.
-  uint8_t m_power; //!< Current power.
-
-  uint32_t m_nSupported; //!< Number of supported rates by the remote station.
-  bool m_initialized; //!< For initializing variables.
-
+  uint32_t m_nSuccess;                  //!< Number of successful transmission attempts.
+  uint32_t m_nFailed;                   //!< Number of failed transmission attempts.
+  uint32_t m_pCount;                    //!< Number of power changes.
+  uint32_t m_successThreshold;          //!< The minimum number of successful transmissions to try a new power or rate.
+  uint32_t m_failThreshold;             //!< The minimum number of failed transmissions to try a new power or rate.
+  uint32_t m_rate;                      //!< Current rate.
+  uint32_t m_rateCrit;                  //!< Critical rate.
+  uint8_t m_power;                      //!< Current power.
+  uint32_t m_nSupported;                //!< Number of supported rates by the remote station.
+  bool m_initialized;                   //!< For initializing variables.
   AparfWifiManager::State m_aparfState; //!< The estimated state of the channel.
 };
 
@@ -119,6 +118,7 @@ AparfWifiManager::AparfWifiManager ()
 {
   NS_LOG_FUNCTION (this);
 }
+
 AparfWifiManager::~AparfWifiManager ()
 {
   NS_LOG_FUNCTION (this);
@@ -215,11 +215,13 @@ void AparfWifiManager::DoReportDataFailed (WifiRemoteStation *st)
         }
     }
 }
+
 void
 AparfWifiManager::DoReportRxOk (WifiRemoteStation *station, double rxSnr, WifiMode txMode)
 {
   NS_LOG_FUNCTION (this << station << rxSnr << txMode);
 }
+
 void
 AparfWifiManager::DoReportRtsOk (WifiRemoteStation *station, double ctsSnr,
                                  WifiMode ctsMode, double rtsSnr)
@@ -227,6 +229,7 @@ AparfWifiManager::DoReportRtsOk (WifiRemoteStation *station, double ctsSnr,
   NS_LOG_FUNCTION (this << station << ctsSnr << ctsMode << rtsSnr);
   NS_LOG_DEBUG ("station=" << station << " rts ok");
 }
+
 void
 AparfWifiManager::DoReportDataOk (WifiRemoteStation *st, double ackSnr,
                                   WifiMode ackMode, double dataSnr)
@@ -300,11 +303,13 @@ AparfWifiManager::DoReportDataOk (WifiRemoteStation *st, double ackSnr,
         }
     }
 }
+
 void
 AparfWifiManager::DoReportFinalRtsFailed (WifiRemoteStation *station)
 {
   NS_LOG_FUNCTION (this << station);
 }
+
 void
 AparfWifiManager::DoReportFinalDataFailed (WifiRemoteStation *station)
 {
@@ -319,6 +324,7 @@ AparfWifiManager::DoGetDataTxVector (WifiRemoteStation *st, uint32_t size)
   CheckInit (station);
   return WifiTxVector (GetSupported (station, station->m_rate), station->m_power, GetLongRetryCount (station), GetShortGuardInterval (station), Min (GetNumberOfReceiveAntennas (station),GetNumberOfTransmitAntennas ()), GetNumberOfTransmitAntennas (station), GetStbc (station));
 }
+
 WifiTxVector
 AparfWifiManager::DoGetRtsTxVector (WifiRemoteStation *st)
 {
@@ -336,4 +342,4 @@ AparfWifiManager::IsLowLatency (void) const
   return true;
 }
 
-} // namespace ns3
+} //namespace ns3

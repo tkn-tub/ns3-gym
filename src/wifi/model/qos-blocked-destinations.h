@@ -18,6 +18,7 @@
  *
  * Author: Mirko Banchi <mk.banchi@gmail.com>
  */
+
 #ifndef QOS_BLOCKED_DESTINATIONS_H
 #define QOS_BLOCKED_DESTINATIONS_H
 
@@ -58,10 +59,12 @@ public:
    *
    * \param dest
    * \param tid
-   * \return true if the given destination address and TID are blocked
-   *         from sending, false otherwise
+   *
+   * \return true if the given destination address and TID are blocked from sending,
+   *         false otherwise
    */
   bool IsBlocked (Mac48Address dest, uint8_t tid) const;
+
 
 private:
   /**
@@ -79,6 +82,6 @@ private:
   BlockedPackets m_blockedQosPackets;
 };
 
-} // namespace ns3
+} //namespace ns3
 
 #endif /* QOS_BLOCKED_DESTINATIONS_H */

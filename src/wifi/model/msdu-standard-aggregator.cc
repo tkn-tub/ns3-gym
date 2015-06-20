@@ -17,9 +17,9 @@
  *
  * Author: Mirko Banchi <mk.banchi@gmail.com>
  */
+
 #include "ns3/log.h"
 #include "ns3/uinteger.h"
-
 #include "amsdu-subframe-header.h"
 #include "msdu-standard-aggregator.h"
 
@@ -88,4 +88,4 @@ MsduStandardAggregator::CalculatePadding (Ptr<const Packet> packet)
   return (4 - (packet->GetSize () % 4 )) % 4;
 }
 
-}  // namespace ns3
+} //namespace ns3

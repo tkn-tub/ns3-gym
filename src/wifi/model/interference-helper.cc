@@ -17,6 +17,7 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
+
 #include "interference-helper.h"
 #include "wifi-phy.h"
 #include "error-rate-model.h"
@@ -43,6 +44,7 @@ InterferenceHelper::Event::Event (uint32_t size, WifiTxVector txVector,
     m_rxPowerW (rxPower)
 {
 }
+
 InterferenceHelper::Event::~Event ()
 {
 }
@@ -52,36 +54,43 @@ InterferenceHelper::Event::GetDuration (void) const
 {
   return m_endTime - m_startTime;
 }
+
 Time
 InterferenceHelper::Event::GetStartTime (void) const
 {
   return m_startTime;
 }
+
 Time
 InterferenceHelper::Event::GetEndTime (void) const
 {
   return m_endTime;
 }
+
 double
 InterferenceHelper::Event::GetRxPowerW (void) const
 {
   return m_rxPowerW;
 }
+
 uint32_t
 InterferenceHelper::Event::GetSize (void) const
 {
   return m_size;
 }
+
 WifiTxVector
 InterferenceHelper::Event::GetTxVector (void) const
 {
   return m_txVector;
 }
+
 WifiMode
 InterferenceHelper::Event::GetPayloadMode (void) const
 {
-  return m_txVector.GetMode();
+  return m_txVector.GetMode ();
 }
+
 enum WifiPreamble
 InterferenceHelper::Event::GetPreambleType (void) const
 {
@@ -99,21 +108,25 @@ InterferenceHelper::NiChange::NiChange (Time time, double delta)
     m_delta (delta)
 {
 }
+
 Time
 InterferenceHelper::NiChange::GetTime (void) const
 {
   return m_time;
 }
+
 double
 InterferenceHelper::NiChange::GetDelta (void) const
 {
   return m_delta;
 }
+
 bool
 InterferenceHelper::NiChange::operator < (const InterferenceHelper::NiChange& o) const
 {
   return (m_time < o.m_time);
 }
+
 
 /****************************************************************
  *       The actual InterferenceHelper
@@ -125,6 +138,7 @@ InterferenceHelper::InterferenceHelper ()
     m_rxing (false)
 {
 }
+
 InterferenceHelper::~InterferenceHelper ()
 {
   EraseEvents ();
@@ -221,11 +235,11 @@ InterferenceHelper::AppendEvent (Ptr<InterferenceHelper::Event> event)
 double
 InterferenceHelper::CalculateSnr (double signal, double noiseInterference, WifiMode mode) const
 {
-  // thermal noise at 290K in J/s = W
+  //thermal noise at 290K in J/s = W
   static const double BOLTZMANN = 1.3803e-23;
-  // Nt is the power of thermal noise in W
+  //Nt is the power of thermal noise in W
   double Nt = BOLTZMANN * 290.0 * mode.GetBandwidth ();
-  // receiver noise Floor (W) which accounts for thermal noise and non-idealities of the receiver
+  //receiver noise Floor (W) which accounts for thermal noise and non-idealities of the receiver
   double noiseFloor = m_noiseFigure * Nt;
   double noise = noiseFloor + noiseInterference;
   double snr = signal / noise;
@@ -271,18 +285,18 @@ InterferenceHelper::CalculatePlcpPayloadPer (Ptr<const InterferenceHelper::Event
   Time previous = (*j).GetTime ();
   WifiMode payloadMode = event->GetPayloadMode ();
   WifiPreamble preamble = event->GetPreambleType ();
-  Time plcpHeaderStart = (*j).GetTime () + WifiPhy::GetPlcpPreambleDuration (payloadMode, preamble); //packet start time+ preamble
-  Time plcpHsigHeaderStart = plcpHeaderStart + WifiPhy::GetPlcpHeaderDuration (payloadMode, preamble);//packet start time+ preamble+L SIG
-  Time plcpHtTrainingSymbolsStart = plcpHsigHeaderStart + WifiPhy::GetPlcpHtSigHeaderDuration (preamble);//packet start time+ preamble+L SIG+HT SIG
-  Time plcpPayloadStart =plcpHtTrainingSymbolsStart + WifiPhy::GetPlcpHtTrainingSymbolDuration (preamble,event->GetTxVector()); //packet start time+ preamble+L SIG+HT SIG+Training
+  Time plcpHeaderStart = (*j).GetTime () + WifiPhy::GetPlcpPreambleDuration (payloadMode, preamble); //packet start time + preamble
+  Time plcpHsigHeaderStart = plcpHeaderStart + WifiPhy::GetPlcpHeaderDuration (payloadMode, preamble); //packet start time + preamble + L-SIG
+  Time plcpHtTrainingSymbolsStart = plcpHsigHeaderStart + WifiPhy::GetPlcpHtSigHeaderDuration (preamble); //packet start time + preamble + L-SIG + HT-SIG
+  Time plcpPayloadStart = plcpHtTrainingSymbolsStart + WifiPhy::GetPlcpHtTrainingSymbolDuration (preamble,event->GetTxVector ()); //packet start time + preamble + L-SIG + HT-SIG + HT Training
   double noiseInterferenceW = (*j).GetDelta ();
   double powerW = event->GetRxPowerW ();
-    j++;
+  j++;
   while (ni->end () != j)
     {
       Time current = (*j).GetTime ();
       NS_ASSERT (current >= previous);
-      //Case 1: Both prev and curr point to the payload
+      //Case 1: Both previous and current point to the payload
       if (previous >= plcpPayloadStart)
         {
           psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
@@ -296,14 +310,13 @@ InterferenceHelper::CalculatePlcpPayloadPer (Ptr<const InterferenceHelper::Event
         {
           //Case 2a: current is after payload
           if (current >= plcpPayloadStart)
-            { 
-               //Case 2ai and 2aii: All formats
-               psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
-                                                               noiseInterferenceW,
-                                                               payloadMode),
-                                                 current - plcpPayloadStart,
-                                                 payloadMode);
-                
+            {
+              //Case 2ai and 2aii: All formats
+              psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
+                                                              noiseInterferenceW,
+                                                              payloadMode),
+                                                current - plcpPayloadStart,
+                                                payloadMode);
             }
         }
       //Case 3: previous is in HT-SIG: Non HT will not enter here since it didn't enter in the last two and they are all the same for non HT
@@ -311,29 +324,28 @@ InterferenceHelper::CalculatePlcpPayloadPer (Ptr<const InterferenceHelper::Event
         {
           //Case 3a: cuurent after payload start
           if (current >= plcpPayloadStart)
-             {
-                   psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
-                                                                   noiseInterferenceW,
-                                                                   payloadMode),
-                                                     current - plcpPayloadStart,
-                                                     payloadMode);
-                 
-              }
+            {
+              psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
+                                                              noiseInterferenceW,
+                                                              payloadMode),
+                                                current - plcpPayloadStart,
+                                                payloadMode);
 
+            }
         }
       //Case 4: previous in L-SIG: GF will not reach here because it will execute the previous if and exit
       else if (previous >= plcpHeaderStart)
         {
-          //Case 4a: current after payload start  
+          //Case 4a: current after payload start
           if (current >= plcpPayloadStart)
-             {
-                   psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
-                                                                   noiseInterferenceW,
-                                                                   payloadMode),
-                                                     current - plcpPayloadStart,
-                                                     payloadMode);
+            {
+              psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
+                                                              noiseInterferenceW,
+                                                              payloadMode),
+                                                current - plcpPayloadStart,
+                                                payloadMode);
 
-              }
+            }
         }
       //Case 5: previous is in the preamble works for all cases
       else
@@ -345,8 +357,7 @@ InterferenceHelper::CalculatePlcpPayloadPer (Ptr<const InterferenceHelper::Event
                                                               noiseInterferenceW,
                                                               payloadMode),
                                                 current - plcpPayloadStart,
-                                                payloadMode); 
-             
+                                                payloadMode);
             }
         }
 
@@ -367,19 +378,19 @@ InterferenceHelper::CalculatePlcpHeaderPer (Ptr<const InterferenceHelper::Event>
   Time previous = (*j).GetTime ();
   WifiMode payloadMode = event->GetPayloadMode ();
   WifiPreamble preamble = event->GetPreambleType ();
-  WifiMode MfHeaderMode ;
+  WifiMode MfHeaderMode;
   if (preamble == WIFI_PREAMBLE_HT_MF)
     {
-      MfHeaderMode = WifiPhy::GetMFPlcpHeaderMode (payloadMode, preamble); //return L-SIG mode
+      MfHeaderMode = WifiPhy::GetMFPlcpHeaderMode (payloadMode, preamble);
     }
   WifiMode headerMode = WifiPhy::GetPlcpHeaderMode (payloadMode, preamble);
-  Time plcpHeaderStart = (*j).GetTime () + WifiPhy::GetPlcpPreambleDuration (payloadMode, preamble); // packet start time + preamble
-  Time plcpHsigHeaderStart = plcpHeaderStart + WifiPhy::GetPlcpHeaderDuration (payloadMode, preamble); // packet start time + preamble+L SIG
-  Time plcpHtTrainingSymbolsStart = plcpHsigHeaderStart + WifiPhy::GetPlcpHtSigHeaderDuration (preamble); // packet start time + preamble + L SIG + HT SIG
-  Time plcpPayloadStart = plcpHtTrainingSymbolsStart + WifiPhy::GetPlcpHtTrainingSymbolDuration (preamble, event->GetTxVector()); // packet start time + preamble + L SIG + HT SIG + Training
+  Time plcpHeaderStart = (*j).GetTime () + WifiPhy::GetPlcpPreambleDuration (payloadMode, preamble); //packet start time + preamble
+  Time plcpHsigHeaderStart = plcpHeaderStart + WifiPhy::GetPlcpHeaderDuration (payloadMode, preamble); //packet start time + preamble + L-SIG
+  Time plcpHtTrainingSymbolsStart = plcpHsigHeaderStart + WifiPhy::GetPlcpHtSigHeaderDuration (preamble); //packet start time + preamble + L-SIG + HT-SIG
+  Time plcpPayloadStart = plcpHtTrainingSymbolsStart + WifiPhy::GetPlcpHtTrainingSymbolDuration (preamble, event->GetTxVector ()); //packet start time + preamble + L-SIG + HT-SIG + HT Training
   double noiseInterferenceW = (*j).GetDelta ();
   double powerW = event->GetRxPowerW ();
-    j++;
+  j++;
   while (ni->end () != j)
     {
       Time current = (*j).GetTime ();
@@ -387,199 +398,204 @@ InterferenceHelper::CalculatePlcpHeaderPer (Ptr<const InterferenceHelper::Event>
       //Case 1: previous is in HT-SIG: Non HT will not enter here since it didn't enter in the last two and they are all the same for non HT
       if (previous >= plcpHsigHeaderStart)
         {
-          //Case 1a: cuurent after payload start
+          //Case 1a: current after payload start
           if (current >= plcpPayloadStart)
-             {
-
-                 
-                    psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
-                                                                    noiseInterferenceW,
-                                                                    headerMode),
-                                                      plcpHtTrainingSymbolsStart - previous,
-                                                      headerMode);
-              }
-          //case 1b: current after HT training symbols start
-          else if (current >=plcpHtTrainingSymbolsStart)
-             {
-                psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
-                                                                noiseInterferenceW,
-                                                                headerMode),
-                                                  plcpHtTrainingSymbolsStart - previous,
-                                                  headerMode);
-                   
-             }
-         //Case 1c: current is with previous in HT sig
-         else
             {
-                psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
-                                                                noiseInterferenceW,
-                                                                headerMode),
-                                                  current - previous,
-                                                  headerMode);
-                   
+
+
+              psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
+                                                              noiseInterferenceW,
+                                                              headerMode),
+                                                plcpHtTrainingSymbolsStart - previous,
+                                                headerMode);
             }
-      }
-      // Case 2: previous in L-SIG: GF will not reach here because it will execute the previous if and exit
-      else if (previous >= plcpHeaderStart)
-        {
-          // Case 2a: current after payload start
-          if (current >= plcpPayloadStart)
-             {
-              // Case 2ai: Non HT format (No HT-SIG or Training Symbols)
-              if (preamble == WIFI_PREAMBLE_LONG || preamble == WIFI_PREAMBLE_SHORT) //plcpHtTrainingSymbolsStart==plcpHeaderStart)
-                {
-                    psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
-                                                                    noiseInterferenceW,
-                                                                    headerMode),
-                                                      plcpPayloadStart - previous,
-                                                      headerMode);
-                }
-              else
-                {
-                    psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
-                                                              noiseInterferenceW,
-                                                              headerMode),
-                                                      plcpHtTrainingSymbolsStart - plcpHsigHeaderStart,
-                                                      headerMode);
-                    psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
-                                                                    noiseInterferenceW,
-                                                                    MfHeaderMode),
-                                                      plcpHsigHeaderStart - previous,
-                                                      MfHeaderMode);
-                 }
-              }
-          // Case 2b: current in HT training symbol. non HT will not come here since it went in previous if or if the previous ifis not true this will be not true
+          //case 1b: current after HT training symbols start
           else if (current >= plcpHtTrainingSymbolsStart)
-             {
-                psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
+            {
+              psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
                                                               noiseInterferenceW,
                                                               headerMode),
-                                                  plcpHtTrainingSymbolsStart - plcpHsigHeaderStart,
-                                                  headerMode);
-                psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
-                                                                noiseInterferenceW,
-                                                                MfHeaderMode),
-                                                   plcpHsigHeaderStart - previous,
-                                                   MfHeaderMode);
-              }
-          // Case 2c: current in H sig. non HT will not come here since it went in previous if or if the previous ifis not true this will be not true
-          else if (current >= plcpHsigHeaderStart)
-             {
-                psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
-                                                                noiseInterferenceW,
-                                                                headerMode),
-                                                  current - plcpHsigHeaderStart,
-                                                  headerMode);
-                 psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
-                                                                 noiseInterferenceW,
-                                                                 MfHeaderMode),
-                                                   plcpHsigHeaderStart - previous,
-                                                   MfHeaderMode);
+                                                plcpHtTrainingSymbolsStart - previous,
+                                                headerMode);
 
-             }
-         // Case 2d: Current with prev in L SIG
-         else 
+            }
+          //Case 1c: current is with previous in HT sig
+          else
             {
-              // Case 4di: Non HT format (No HT-SIG or Training Symbols)
-              if (preamble == WIFI_PREAMBLE_LONG || preamble == WIFI_PREAMBLE_SHORT) //plcpHtTrainingSymbolsStart==plcpHeaderStart)
-                {
-                    psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
-                                                                    noiseInterferenceW,
-                                                                    headerMode),
-                                                      current - previous,
-                                                      headerMode);
-                }
-              else
-                {
-                    psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
-                                                               noiseInterferenceW,
-                                                               MfHeaderMode),
-                                                      current - previous,
-                                                      MfHeaderMode);
-                }
+              psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
+                                                              noiseInterferenceW,
+                                                              headerMode),
+                                                current - previous,
+                                                headerMode);
             }
         }
-      // Case 3: previous is in the preamble works for all cases
-      else
+      //Case 2: previous in L-SIG: GF will not reach here because it will execute the previous if and exit
+      else if (previous >= plcpHeaderStart)
         {
+          //Case 2a: current after payload start
           if (current >= plcpPayloadStart)
             {
-              // Non HT format (No HT-SIG or Training Symbols)
+              //Case 2ai: Non HT format (No HT-SIG or Training Symbols)
               if (preamble == WIFI_PREAMBLE_LONG || preamble == WIFI_PREAMBLE_SHORT)
-                 psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
-                                                                 noiseInterferenceW,
-                                                                 headerMode),
-                                                   plcpPayloadStart - plcpHeaderStart,
-                                                   headerMode);
+                {
+                  psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
+                                                                  noiseInterferenceW,
+                                                                  headerMode),
+                                                    plcpPayloadStart - previous,
+                                                    headerMode);
+                }
               else
-              // Greenfield or Mixed format
-                psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
-                                                                noiseInterferenceW,
-                                                                headerMode),
-                                                  plcpHtTrainingSymbolsStart - plcpHsigHeaderStart,
-                                                  headerMode);
-              if (preamble == WIFI_PREAMBLE_HT_MF)
-                 psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
-                                                                 noiseInterferenceW,
-                                                                 MfHeaderMode),
-                                                   plcpHsigHeaderStart-plcpHeaderStart,
-                                                   MfHeaderMode);             
+                {
+                  psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
+                                                                  noiseInterferenceW,
+                                                                  headerMode),
+                                                    plcpHtTrainingSymbolsStart - plcpHsigHeaderStart,
+                                                    headerMode);
+                  psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
+                                                                  noiseInterferenceW,
+                                                                  MfHeaderMode),
+                                                    plcpHsigHeaderStart - previous,
+                                                    MfHeaderMode);
+                }
             }
-          else if (current >= plcpHtTrainingSymbolsStart )
-          { 
-              // Non HT format will not come here since it will execute prev if
-              // Greenfield or Mixed format
+          //Case 2b: current in HT training symbol. non HT will not come here since it went in previous if or if the previous if is not true this will be not true
+          else if (current >= plcpHtTrainingSymbolsStart)
+            {
               psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
                                                               noiseInterferenceW,
                                                               headerMode),
                                                 plcpHtTrainingSymbolsStart - plcpHsigHeaderStart,
                                                 headerMode);
-              // Greenfield
-              if (preamble == WIFI_PREAMBLE_HT_MF)
-                {
-                    psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
-                                                                    noiseInterferenceW,
-                                                                    MfHeaderMode),
-                                                      plcpHsigHeaderStart-plcpHeaderStart,
-                                                      MfHeaderMode);
-                }
-           }
-          // non HT will not come here
-          else if (current >= plcpHsigHeaderStart)
-             { 
-                psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
-                                                                noiseInterferenceW,
-                                                                headerMode),
-                                                  current- plcpHsigHeaderStart,
-                                                  headerMode); 
-                if  (preamble != WIFI_PREAMBLE_HT_GF)
-                 {
-                   psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
-                                                                   noiseInterferenceW,
-                                                                   MfHeaderMode),
-                                                     plcpHsigHeaderStart-plcpHeaderStart,
-                                                     MfHeaderMode);    
-                  }          
-             }
-          // GF will not come here
-          else if (current >= plcpHeaderStart)
-            {
-               if (preamble == WIFI_PREAMBLE_LONG || preamble == WIFI_PREAMBLE_SHORT)
-                 {
-                 psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
-                                                                 noiseInterferenceW,
-                                                                 headerMode),
-                                                   current - plcpHeaderStart,
-                                                   headerMode);
-                 }
-              else
-                 {
               psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
                                                               noiseInterferenceW,
                                                               MfHeaderMode),
-                                                current - plcpHeaderStart,
+                                                plcpHsigHeaderStart - previous,
                                                 MfHeaderMode);
-                       }
+            }
+          //Case 2c: current in HT-SIG. non HT will not come here since it went in previous if or if the previous if is not true this will be not true
+          else if (current >= plcpHsigHeaderStart)
+            {
+              psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
+                                                              noiseInterferenceW,
+                                                              headerMode),
+                                                current - plcpHsigHeaderStart,
+                                                headerMode);
+              psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
+                                                              noiseInterferenceW,
+                                                              MfHeaderMode),
+                                                plcpHsigHeaderStart - previous,
+                                                MfHeaderMode);
+
+            }
+          //Case 2d: Current with previous in L-SIG
+          else
+            {
+              // Case 4di: Non HT format (No HT-SIG or Training Symbols)
+              if (preamble == WIFI_PREAMBLE_LONG || preamble == WIFI_PREAMBLE_SHORT)
+                {
+                  psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
+                                                                  noiseInterferenceW,
+                                                                  headerMode),
+                                                    current - previous,
+                                                    headerMode);
+                }
+              else
+                {
+                  psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
+                                                                  noiseInterferenceW,
+                                                                  MfHeaderMode),
+                                                    current - previous,
+                                                    MfHeaderMode);
+                }
+            }
+        }
+      //Case 3: previous is in the preamble works for all cases
+      else
+        {
+          if (current >= plcpPayloadStart)
+            {
+              //Non HT format (No HT-SIG or Training Symbols)
+              if (preamble == WIFI_PREAMBLE_LONG || preamble == WIFI_PREAMBLE_SHORT)
+                {
+                  psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
+                                                                  noiseInterferenceW,
+                                                                  headerMode),
+                                                    plcpPayloadStart - plcpHeaderStart,
+                                                    headerMode);
+                }
+              else
+                {
+                  //Greenfield or Mixed format
+                  psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
+                                                                  noiseInterferenceW,
+                                                                  headerMode),
+                                                    plcpHtTrainingSymbolsStart - plcpHsigHeaderStart,
+                                                    headerMode);
+                }
+              if (preamble == WIFI_PREAMBLE_HT_MF)
+                {
+                  psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
+                                                                  noiseInterferenceW,
+                                                                  MfHeaderMode),
+                                                    plcpHsigHeaderStart - plcpHeaderStart,
+                                                    MfHeaderMode);
+                }
+            }
+          else if (current >= plcpHtTrainingSymbolsStart )
+            {
+              //Non HT format will not come here since it will execute prev if
+              //Greenfield or Mixed format
+              psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
+                                                              noiseInterferenceW,
+                                                              headerMode),
+                                                plcpHtTrainingSymbolsStart - plcpHsigHeaderStart,
+                                                headerMode);
+              //Greenfield
+              if (preamble == WIFI_PREAMBLE_HT_MF)
+                {
+                  psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
+                                                                  noiseInterferenceW,
+                                                                  MfHeaderMode),
+                                                    plcpHsigHeaderStart - plcpHeaderStart,
+                                                    MfHeaderMode);
+                }
+            }
+          //non HT will not come here
+          else if (current >= plcpHsigHeaderStart)
+            {
+              psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
+                                                              noiseInterferenceW,
+                                                              headerMode),
+                                                current - plcpHsigHeaderStart,
+                                                headerMode);
+              if  (preamble != WIFI_PREAMBLE_HT_GF)
+                {
+                  psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
+                                                                  noiseInterferenceW,
+                                                                  MfHeaderMode),
+                                                    plcpHsigHeaderStart - plcpHeaderStart,
+                                                    MfHeaderMode);
+                }
+            }
+          //GF will not come here
+          else if (current >= plcpHeaderStart)
+            {
+              if (preamble == WIFI_PREAMBLE_LONG || preamble == WIFI_PREAMBLE_SHORT)
+                {
+                  psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
+                                                                  noiseInterferenceW,
+                                                                  headerMode),
+                                                    current - plcpHeaderStart,
+                                                    headerMode);
+                }
+              else
+                {
+                  psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
+                                                                  noiseInterferenceW,
+                                                                  MfHeaderMode),
+                                                    current - plcpHeaderStart,
+                                                    MfHeaderMode);
+                }
             }
         }
 
@@ -639,25 +655,29 @@ InterferenceHelper::EraseEvents (void)
   m_rxing = false;
   m_firstPower = 0.0;
 }
+
 InterferenceHelper::NiChanges::iterator
 InterferenceHelper::GetPosition (Time moment)
 {
   return std::upper_bound (m_niChanges.begin (), m_niChanges.end (), NiChange (moment, 0));
-
 }
+
 void
 InterferenceHelper::AddNiChangeEvent (NiChange change)
 {
   m_niChanges.insert (GetPosition (change.GetTime ()), change);
 }
+
 void
 InterferenceHelper::NotifyRxStart ()
 {
   m_rxing = true;
 }
+
 void
 InterferenceHelper::NotifyRxEnd ()
 {
   m_rxing = false;
 }
-} // namespace ns3
+
+} //namespace ns3

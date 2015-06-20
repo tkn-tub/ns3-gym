@@ -17,6 +17,7 @@
  *
  * Author: Ghada Badawy <gbadawy@gmail.com>
  */
+
 #ifndef AMPDU_SUBFRAME_HEADER_H
 #define AMPDU_SUBFRAME_HEADER_H
 
@@ -86,6 +87,6 @@ private:
   uint16_t m_length; //!< length field
 };
 
-} // namespace ns3
+} //namespace ns3
 
 #endif /* AMPDU_SUBFRAME_HEADER_H */

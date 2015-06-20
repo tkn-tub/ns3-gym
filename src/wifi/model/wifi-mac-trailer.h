@@ -17,6 +17,7 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
+
 #ifndef WIFI_MAC_TRAILER_H
 #define WIFI_MAC_TRAILER_H
 
@@ -24,8 +25,6 @@
 #include <stdint.h>
 
 namespace ns3 {
-
-
 
 /**
  * The length in octects of the IEEE 802.11 MAC FCS field
@@ -51,6 +50,6 @@ public:
   virtual uint32_t Deserialize (Buffer::Iterator start);
 };
 
-} // namespace ns3
+} //namespace ns3
 
 #endif /* WIFI_MAC_TRAILER_H */

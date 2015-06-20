@@ -17,6 +17,7 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
+
 #include "wifi-mode.h"
 #include "ns3/simulator.h"
 #include "ns3/assert.h"
@@ -29,6 +30,7 @@ namespace ns3 {
  *
  * \param a WifiMode
  * \param b WifiMode
+ *
  * \return true if the two WifiModes are identical,
  *         false otherwise
  */
@@ -41,6 +43,7 @@ bool operator == (const WifiMode &a, const WifiMode &b)
  *
  * \param os std::ostream
  * \param mode
+ *
  * \return std::ostream
  */
 std::ostream & operator << (std::ostream & os, const WifiMode &mode)
@@ -53,6 +56,7 @@ std::ostream & operator << (std::ostream & os, const WifiMode &mode)
  *
  * \param is std::istream
  * \param mode
+ *
  * \return std::istream
  */
 std::istream & operator >> (std::istream &is, WifiMode &mode)
@@ -69,54 +73,63 @@ WifiMode::GetBandwidth (void) const
   struct WifiModeFactory::WifiModeItem *item = WifiModeFactory::GetFactory ()->Get (m_uid);
   return item->bandwidth;
 }
+
 uint64_t
 WifiMode::GetPhyRate (void) const
 {
   struct WifiModeFactory::WifiModeItem *item = WifiModeFactory::GetFactory ()->Get (m_uid);
   return item->phyRate;
 }
+
 uint64_t
 WifiMode::GetDataRate (void) const
 {
   struct WifiModeFactory::WifiModeItem *item = WifiModeFactory::GetFactory ()->Get (m_uid);
   return item->dataRate;
 }
+
 enum WifiCodeRate
 WifiMode::GetCodeRate (void) const
 {
   struct WifiModeFactory::WifiModeItem *item = WifiModeFactory::GetFactory ()->Get (m_uid);
   return item->codingRate;
 }
+
 uint8_t
 WifiMode::GetConstellationSize (void) const
 {
   struct WifiModeFactory::WifiModeItem *item = WifiModeFactory::GetFactory ()->Get (m_uid);
   return item->constellationSize;
 }
+
 std::string
 WifiMode::GetUniqueName (void) const
 {
-  // needed for ostream printing of the invalid mode
+  //needed for ostream printing of the invalid mode
   struct WifiModeFactory::WifiModeItem *item = WifiModeFactory::GetFactory ()->Get (m_uid);
   return item->uniqueUid;
 }
+
 bool
 WifiMode::IsMandatory (void) const
 {
   struct WifiModeFactory::WifiModeItem *item = WifiModeFactory::GetFactory ()->Get (m_uid);
   return item->isMandatory;
 }
+
 uint32_t
 WifiMode::GetUid (void) const
 {
   return m_uid;
 }
+
 enum WifiModulationClass
 WifiMode::GetModulationClass () const
 {
   struct WifiModeFactory::WifiModeItem *item = WifiModeFactory::GetFactory ()->Get (m_uid);
   return item->modClass;
 }
+
 WifiMode::WifiMode ()
   : m_uid (0)
 {
@@ -125,6 +138,7 @@ WifiMode::WifiMode (uint32_t uid)
   : m_uid (uid)
 {
 }
+
 WifiMode::WifiMode (std::string name)
 {
   *this = WifiModeFactory::GetFactory ()->Search (name);
@@ -135,7 +149,6 @@ ATTRIBUTE_HELPER_CPP (WifiMode);
 WifiModeFactory::WifiModeFactory ()
 {
 }
-
 
 WifiMode
 WifiModeFactory::CreateWifiMode (std::string uniqueName,
@@ -151,12 +164,10 @@ WifiModeFactory::CreateWifiMode (std::string uniqueName,
   WifiModeItem *item = factory->Get (uid);
   item->uniqueUid = uniqueName;
   item->modClass = modClass;
-  // The modulation class for this WifiMode must be valid.
+  //The modulation class for this WifiMode must be valid.
   NS_ASSERT (modClass != WIFI_MOD_CLASS_UNKNOWN);
-
   item->bandwidth = bandwidth;
   item->dataRate = dataRate;
-
   item->codingRate = codingRate;
 
   switch (codingRate)
@@ -179,12 +190,12 @@ WifiModeFactory::CreateWifiMode (std::string uniqueName,
       break;
     }
 
-  // Check for compatibility between modulation class and coding
-  // rate. If modulation class is DSSS then coding rate must be
-  // undefined, and vice versa. I could have done this with an
-  // assertion, but it seems better to always give the error (i.e.,
-  // not only in non-optimised builds) and the cycles that extra test
-  // here costs are only suffered at simulation setup.
+  //Check for compatibility between modulation class and coding
+  //rate. If modulation class is DSSS then coding rate must be
+  //undefined, and vice versa. I could have done this with an
+  //assertion, but it seems better to always give the error (i.e.,
+  //not only in non-optimised builds) and the cycles that extra test
+  //here costs are only suffered at simulation setup.
   if ((codingRate == WIFI_CODE_RATE_UNDEFINED) != (modClass == WIFI_MOD_CLASS_DSSS))
     {
       NS_FATAL_ERROR ("Error in creation of WifiMode named " << uniqueName << std::endl
@@ -211,24 +222,24 @@ WifiModeFactory::Search (std::string name)
       j++;
     }
 
-  // If we get here then a matching WifiMode was not found above. This
-  // is a fatal problem, but we try to be helpful by displaying the
-  // list of WifiModes that are supported.
+  //If we get here then a matching WifiMode was not found above. This
+  //is a fatal problem, but we try to be helpful by displaying the
+  //list of WifiModes that are supported.
   NS_LOG_UNCOND ("Could not find match for WifiMode named \""
                  << name << "\". Valid options are:");
   for (i = m_itemList.begin (); i != m_itemList.end (); i++)
     {
       NS_LOG_UNCOND ("  " << i->uniqueUid);
     }
-  // Empty fatal error to die. We've already unconditionally logged
-  // the helpful information.
+  //Empty fatal error to die. We've already unconditionally logged
+  //the helpful information.
   NS_FATAL_ERROR ("");
 
-  // This next line is unreachable because of the fatal error
-  // immediately above, and that is fortunate, because we have no idea
-  // what is in WifiMode (0), but we do know it is not what our caller
-  // has requested by name. It's here only because it's the safest
-  // thing that'll give valid code.
+  //This next line is unreachable because of the fatal error
+  //immediately above, and that is fortunate, because we have no idea
+  //what is in WifiMode (0), but we do know it is not what our caller
+  //has requested by name. It's here only because it's the safest
+  //thing that'll give valid code.
   return WifiMode (0);
 }
 
@@ -279,4 +290,4 @@ WifiModeFactory::GetFactory (void)
   return &factory;
 }
 
-} // namespace ns3
+} //namespace ns3

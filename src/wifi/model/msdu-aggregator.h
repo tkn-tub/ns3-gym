@@ -17,15 +17,14 @@
  *
  * Author: Mirko Banchi <mk.banchi@gmail.com>
  */
+
 #ifndef MSDU_AGGREGATOR_H
 #define MSDU_AGGREGATOR_H
 
 #include "ns3/ptr.h"
 #include "ns3/packet.h"
 #include "ns3/object.h"
-
 #include "amsdu-subframe-header.h"
-
 #include <list>
 
 namespace ns3 {
@@ -53,6 +52,6 @@ public:
   static DeaggregatedMsdus Deaggregate (Ptr<Packet> aggregatedPacket);
 };
 
-}  // namespace ns3
+} //namespace ns3
 
 #endif /* MSDU_AGGREGATOR_H */

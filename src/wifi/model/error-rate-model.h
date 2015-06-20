@@ -17,6 +17,7 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
+
 #ifndef ERROR_RATE_MODEL_H
 #define ERROR_RATE_MODEL_H
 
@@ -38,8 +39,8 @@ public:
   /**
    * \param txMode a specific transmission mode
    * \param ber a target ber
-   * \returns the snr which corresponds to the requested
-   *          ber.
+   *
+   * \return the snr which corresponds to the requested ber
    */
   double CalculateSnr (WifiMode txMode, double ber) const;
 
@@ -55,11 +56,13 @@ public:
    * \param mode the Wi-Fi mode the chunk is sent
    * \param snr the SNR of the chunk
    * \param nbits the number of bits in this chunk
+   *
    * \return probability of successfully receiving the chunk
    */
   virtual double GetChunkSuccessRate (WifiMode mode, double snr, uint32_t nbits) const = 0;
 };
 
-} // namespace ns3
+} //namespace ns3
 
 #endif /* ERROR_RATE_MODEL_H */
+

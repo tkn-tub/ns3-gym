@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * Authors: Dean Armstrong <deanarm@gmail.com>
+ * Author: Dean Armstrong <deanarm@gmail.com>
  */
 
 #ifndef WIFI_INFORMATION_ELEMENT_H
@@ -134,8 +134,8 @@ public:
   /**
    * Serialize entire IE including Element ID and length fields
    *
-   * \param i an iterator which points to where the IE should
-   *        be written.
+   * \param i an iterator which points to where the IE should be written.
+   *
    * \return an iterator
    */
   Buffer::Iterator Serialize (Buffer::Iterator i) const;
@@ -146,6 +146,7 @@ public:
    * otherwise this method will generate a fatal error.
    *
    * \param i an iterator which points to where the IE should be read.
+   *
    * \return an iterator
    */
   Buffer::Iterator Deserialize (Buffer::Iterator i);
@@ -156,6 +157,7 @@ public:
    * in then it will return the same iterator.
    *
    * \param i an iterator which points to where the IE should be read.
+   *
    * \return an iterator
    */
   Buffer::Iterator DeserializeIfPresent (Buffer::Iterator i);
@@ -191,15 +193,15 @@ public:
    * Deserialize information (i.e., the body of the IE, not including
    * the Element ID and length octets)
    *
-   * \param start an iterator which points to where the information should
-   *        be written.
+   * \param start an iterator which points to where the information should be written.
    * \param length
+   *
    * \return the number of bytes read
    */
   virtual uint8_t DeserializeInformationField (Buffer::Iterator start,
                                                uint8_t length) = 0;
 
-  // In addition, a subclass my optionally override the following...
+  // In addition, a subclass may optionally override the following...
   /**
    * Generate human-readable form of IE
    *
@@ -210,6 +212,7 @@ public:
    * Compare information elements using Element ID
    *
    * \param a another information element to compare with
+   *
    * \return true if the Element ID is less than the other IE Element ID,
    *         false otherwise
    */
@@ -219,11 +222,14 @@ public:
    * memcmp of serialised version
    *
    * \param a another information element to compare with
-   * \return true if the two IEs are equal, false otherwise
+   *
+   * \return true if the two IEs are equal,
+   *         false otherwise
    */
   virtual bool operator== (WifiInformationElement const & a) const;
 
 };
 
-}
+} //namespace ns3
+
 #endif /* WIFI_INFORMATION_ELEMENT_H */

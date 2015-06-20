@@ -17,6 +17,7 @@
  *
  * Author: Matias Richart <mrichart@fing.edu.uy>
  */
+
 #ifndef APARF_WIFI_MANAGER_H
 #define APARF_WIFI_MANAGER_H
 
@@ -77,8 +78,9 @@ public:
    */
   typedef void (*RateChangeTracedCallback)(const uint32_t rate, const Mac48Address remoteAddress);
 
+
 private:
-  // overriden from base class
+  //overriden from base class
   virtual WifiRemoteStation * DoCreateStation (void) const;
   virtual void DoReportRxOk (WifiRemoteStation *station,
                              double rxSnr, WifiMode txMode);
@@ -102,12 +104,12 @@ private:
 
   uint32_t m_succesMax1; //!< The minimum number of successful transmissions in \"High\" state to try a new power or rate.
   uint32_t m_succesMax2; //!< The minimum number of successful transmissions in \"Low\" state to try a new power or rate.
-  uint32_t m_failMax; //!< The minimum number of failed transmissions to try a new power or rate.
-  uint32_t m_powerMax; //!< The maximum number of power changes.
-  uint32_t m_powerInc; //!< Step size for increment the power.
-  uint32_t m_powerDec; //!< Step size for decrement the power.
-  uint32_t m_rateInc; //!< Step size for increment the rate.
-  uint32_t m_rateDec; //!< Step size for decrement the rate.
+  uint32_t m_failMax;    //!< The minimum number of failed transmissions to try a new power or rate.
+  uint32_t m_powerMax;   //!< The maximum number of power changes.
+  uint32_t m_powerInc;   //!< Step size for increment the power.
+  uint32_t m_powerDec;   //!< Step size for decrement the power.
+  uint32_t m_rateInc;    //!< Step size for increment the rate.
+  uint32_t m_rateDec;    //!< Step size for decrement the rate.
   /**
    * Number of power levels.
    * Differently form rate, power levels do not depend on the remote station.
@@ -126,6 +128,6 @@ private:
 
 };
 
-} // namespace ns3
+} //namespace ns3
 
 #endif /* APARF_WIFI_MANAGER_H */

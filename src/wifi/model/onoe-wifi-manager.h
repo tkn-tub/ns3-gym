@@ -17,6 +17,7 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
+
 #ifndef ONOE_WIFI_MANAGER_H
 #define ONOE_WIFI_MANAGER_H
 
@@ -45,8 +46,9 @@ public:
 
   OnoeWifiManager ();
 
+
 private:
-  // overriden from base class
+  //overriden from base class
   virtual WifiRemoteStation * DoCreateStation (void) const;
   virtual void DoReportRxOk (WifiRemoteStation *station,
                              double rxSnr, WifiMode txMode);
@@ -75,6 +77,6 @@ private:
   uint32_t m_raiseThreshold;
 };
 
-} // namespace ns3
+} //namespace ns3
 
 #endif /* ONOE_WIFI_MANAGER_H */

@@ -17,6 +17,7 @@
  *
  * Author: Federico Maguolo <maguolof@dei.unipd.it>
  */
+
 #ifndef RRAA_WIFI_MANAGER_H
 #define RRAA_WIFI_MANAGER_H
 
@@ -44,6 +45,7 @@ public:
   RraaWifiManager ();
   virtual ~RraaWifiManager ();
 
+
 private:
   struct ThresholdsItem
   {
@@ -53,7 +55,7 @@ private:
     uint32_t ewnd;
   };
 
-  // overriden from base class
+  //overriden from base class
   virtual WifiRemoteStation * DoCreateStation (void) const;
   virtual void DoReportRxOk (WifiRemoteStation *station,
                              double rxSnr, WifiMode txMode);
@@ -76,6 +78,7 @@ private:
    * the given station.
    *
    * \param station
+   *
    * \return the index for the maximum transmission rate
    */
   uint32_t GetMaxRate (RraaWifiRemoteStation *station);
@@ -84,6 +87,7 @@ private:
    * the given station.
    *
    * \param station
+   *
    * \return the index for the minimum transmission rate
    */
   uint32_t GetMinRate (RraaWifiRemoteStation *station);
@@ -116,6 +120,7 @@ private:
    * Get a threshold for the given mode.
    *
    * \param mode
+   *
    * \return threshold
    */
   struct ThresholdsItem GetThresholds (WifiMode mode) const;
@@ -124,6 +129,7 @@ private:
    *
    * \param station
    * \param rate
+   *
    * \return threshold
    */
   struct ThresholdsItem GetThresholds (RraaWifiRemoteStation *station, uint32_t rate) const;
@@ -154,6 +160,6 @@ private:
   double m_pmtlfor9;
 };
 
-} // namespace ns3
+} //namespace ns3
 
 #endif /* RRAA_WIFI_MANAGER_H */

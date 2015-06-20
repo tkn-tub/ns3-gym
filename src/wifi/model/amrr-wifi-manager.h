@@ -17,6 +17,7 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
+
 #ifndef AMRR_WIFI_MANAGER_H
 #define AMRR_WIFI_MANAGER_H
 
@@ -43,8 +44,9 @@ public:
 
   AmrrWifiManager ();
 
+
 private:
-  // overriden from base class
+  //overriden from base class
   virtual WifiRemoteStation * DoCreateStation (void) const;
   virtual void DoReportRxOk (WifiRemoteStation *station,
                              double rxSnr, WifiMode txMode);
@@ -90,6 +92,7 @@ private:
    * minimum rate.
    *
    * \param station
+   *
    * \return true if the current rate is the minimum rate,
    *         false otherwise
    */
@@ -99,6 +102,7 @@ private:
    * maximum rate.
    *
    * \param station
+   *
    * \return true if the current rate is the maximum rate,
    *         false otherwise
    */
@@ -108,6 +112,7 @@ private:
    * is less than the number of successful transmission (times ratio).
    *
    * \param station
+   *
    * \return true if the number of retransmission and transmission error
    *              is less than the number of successful transmission
    *              (times ratio), false otherwise
@@ -118,6 +123,7 @@ private:
    * is greater than the number of successful transmission (times ratio).
    *
    * \param station
+   *
    * \return true if the number of retransmission and transmission error
    *              is less than the number of successful transmission
    *              (times ratio), false otherwise
@@ -141,6 +147,6 @@ private:
   uint32_t m_minSuccessThreshold;
 };
 
-} // namespace ns3
+} //namespace ns3
 
 #endif /* AMRR_WIFI_MANAGER_H */

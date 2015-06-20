@@ -15,9 +15,10 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * Author: Mirko Banchi <mk.banchi@gmail.com>
- * Author: Tommaso Pecorella <tommaso.pecorella@unifi.it>
+ * Authors: Mirko Banchi <mk.banchi@gmail.com>
+ *          Tommaso Pecorella <tommaso.pecorella@unifi.it>
  */
+
 #include "originator-block-ack-agreement.h"
 
 namespace ns3 {
@@ -29,6 +30,7 @@ OriginatorBlockAckAgreement::OriginatorBlockAckAgreement ()
     m_needBlockAckReq (false)
 {
 }
+
 OriginatorBlockAckAgreement::OriginatorBlockAckAgreement (Mac48Address recipient, uint8_t tid)
   : BlockAckAgreement (recipient, tid),
     m_state (PENDING),
@@ -36,9 +38,11 @@ OriginatorBlockAckAgreement::OriginatorBlockAckAgreement (Mac48Address recipient
     m_needBlockAckReq (false)
 {
 }
+
 OriginatorBlockAckAgreement::~OriginatorBlockAckAgreement ()
 {
 }
+
 void
 OriginatorBlockAckAgreement::SetState (enum State state)
 {
@@ -49,26 +53,31 @@ OriginatorBlockAckAgreement::SetState (enum State state)
       m_sentMpdus = 0;
     }
 }
+
 bool
 OriginatorBlockAckAgreement::IsPending (void) const
 {
   return (m_state == PENDING) ? true : false;
 }
+
 bool
 OriginatorBlockAckAgreement::IsEstablished (void) const
 {
   return (m_state == ESTABLISHED) ? true : false;
 }
+
 bool
 OriginatorBlockAckAgreement::IsInactive (void) const
 {
   return (m_state == INACTIVE) ? true : false;
 }
+
 bool
 OriginatorBlockAckAgreement::IsUnsuccessful (void) const
 {
   return (m_state == UNSUCCESSFUL) ? true : false;
 }
+
 void
 OriginatorBlockAckAgreement::NotifyMpduTransmission (uint16_t nextSeqNumber)
 {
@@ -81,11 +90,13 @@ OriginatorBlockAckAgreement::NotifyMpduTransmission (uint16_t nextSeqNumber)
       m_needBlockAckReq = true;
     }
 }
+
 bool
 OriginatorBlockAckAgreement::IsBlockAckRequestNeeded (void) const
 {
   return m_needBlockAckReq;
 }
+
 void
 OriginatorBlockAckAgreement::CompleteExchange (void)
 {
@@ -93,4 +104,4 @@ OriginatorBlockAckAgreement::CompleteExchange (void)
   m_sentMpdus = 0;
 }
 
-} // namespace ns3
+} //namespace ns3

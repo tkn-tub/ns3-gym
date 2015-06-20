@@ -17,6 +17,7 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
+
 #ifndef CAPABILITY_INFORMATION_H
 #define CAPABILITY_INFORMATION_H
 
@@ -64,7 +65,7 @@ public:
   bool IsIbss (void) const;
 
   /**
-   * Return the serialized size of capability 
+   * Return the serialized size of capability
    * information.
    *
    * \return the serialized size
@@ -86,11 +87,14 @@ public:
    *         was deserialized
    */
   Buffer::Iterator Deserialize (Buffer::Iterator start);
+
+
 private:
   /**
    * Check if bit n is set to 1.
    *
    * \param n the bit position
+   *
    * \return true if bit n is set to 1,
    *         false otherwise
    */
@@ -110,6 +114,6 @@ private:
   uint16_t m_capability;
 };
 
-} // namespace ns3
+} //namespace ns3
 
 #endif /* CAPABILITY_INFORMATION_H */

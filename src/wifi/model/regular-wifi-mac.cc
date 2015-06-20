@@ -17,21 +17,19 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#include "regular-wifi-mac.h"
 
+#include "regular-wifi-mac.h"
 #include "ns3/log.h"
 #include "ns3/boolean.h"
 #include "ns3/pointer.h"
 #include "ns3/uinteger.h"
 #include "ns3/trace-source-accessor.h"
-
 #include "mac-rx-middle.h"
 #include "mac-tx-middle.h"
 #include "mac-low.h"
 #include "dcf.h"
 #include "dcf-manager.h"
 #include "wifi-phy.h"
-
 #include "msdu-aggregator.h"
 
 namespace ns3 {
@@ -57,13 +55,13 @@ RegularWifiMac::RegularWifiMac ()
   m_dca = CreateObject<DcaTxop> ();
   m_dca->SetLow (m_low);
   m_dca->SetManager (m_dcfManager);
-  m_dca->SetTxMiddle(m_txMiddle);
+  m_dca->SetTxMiddle (m_txMiddle);
   m_dca->SetTxOkCallback (MakeCallback (&RegularWifiMac::TxOk, this));
   m_dca->SetTxFailedCallback (MakeCallback (&RegularWifiMac::TxFailed, this));
 
-  // Construct the EDCAFs. The ordering is important - highest
-  // priority (Table 9-1 UP-to-AC mapping; IEEE 802.11-2012) must be created
-  // first.
+  //Construct the EDCAFs. The ordering is important - highest
+  //priority (Table 9-1 UP-to-AC mapping; IEEE 802.11-2012) must be created
+  //first.
   SetupEdcaQueue (AC_VO);
   SetupEdcaQueue (AC_VI);
   SetupEdcaQueue (AC_BE);
@@ -79,7 +77,6 @@ void
 RegularWifiMac::DoInitialize ()
 {
   NS_LOG_FUNCTION (this);
-
   m_dca->Initialize ();
 
   for (EdcaQueues::iterator i = m_edca.begin (); i != m_edca.end (); ++i)
@@ -121,7 +118,7 @@ RegularWifiMac::SetWifiRemoteStationManager (Ptr<WifiRemoteStationManager> stati
 {
   NS_LOG_FUNCTION (this << stationManager);
   m_stationManager = stationManager;
-  m_stationManager->SetHtSupported (GetHtSupported());
+  m_stationManager->SetHtSupported (GetHtSupported ());
   m_low->SetWifiRemoteStationManager (stationManager);
 
   m_dca->SetWifiRemoteStationManager (stationManager);
@@ -143,8 +140,8 @@ RegularWifiMac::SetupEdcaQueue (enum AcIndex ac)
 {
   NS_LOG_FUNCTION (this << ac);
 
-  // Our caller shouldn't be attempting to setup a queue that is
-  // already configured.
+  //Our caller shouldn't be attempting to setup a queue that is
+  //already configured.
   NS_ASSERT (m_edca.find (ac) == m_edca.end ());
 
   Ptr<EdcaTxopN> edca = CreateObject<EdcaTxopN> ();
@@ -256,6 +253,7 @@ RegularWifiMac::GetQosSupported () const
 {
   return m_qosSupported;
 }
+
 void
 RegularWifiMac::SetHtSupported (bool enable)
 {
@@ -268,8 +266,9 @@ RegularWifiMac::GetHtSupported () const
 {
   return m_htSupported;
 }
+
 void
-RegularWifiMac::SetCtsToSelfSupported(bool enable)
+RegularWifiMac::SetCtsToSelfSupported (bool enable)
 {
   NS_LOG_FUNCTION (this);
   m_low->SetCtsToSelfSupported (enable);
@@ -278,7 +277,7 @@ RegularWifiMac::SetCtsToSelfSupported(bool enable)
 bool
 RegularWifiMac::GetCtsToSelfSupported () const
 {
-   return  m_low->GetCtsToSelfSupported ();
+  return m_low->GetCtsToSelfSupported ();
 }
 
 void
@@ -321,6 +320,7 @@ RegularWifiMac::GetEifsNoDifs (void) const
 {
   return m_dcfManager->GetEifsNoDifs ();
 }
+
 void
 RegularWifiMac::SetRifs (Time rifs)
 {
@@ -331,7 +331,7 @@ RegularWifiMac::SetRifs (Time rifs)
 Time
 RegularWifiMac::GetRifs (void) const
 {
-  return m_low->GetRifs();
+  return m_low->GetRifs ();
 }
 
 void
@@ -448,10 +448,10 @@ void
 RegularWifiMac::Enqueue (Ptr<const Packet> packet,
                          Mac48Address to, Mac48Address from)
 {
-  // We expect RegularWifiMac subclasses which do support forwarding (e.g.,
-  // AP) to override this method. Therefore, we throw a fatal error if
-  // someone tries to invoke this method on a class which has not done
-  // this.
+  //We expect RegularWifiMac subclasses which do support forwarding (e.g.,
+  //AP) to override this method. Therefore, we throw a fatal error if
+  //someone tries to invoke this method on a class which has not done
+  //this.
   NS_FATAL_ERROR ("This MAC entity (" << this << ", " << GetAddress ()
                                       << ") does not support Enqueue() with from address");
 }
@@ -477,12 +477,12 @@ RegularWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
   Mac48Address to = hdr->GetAddr1 ();
   Mac48Address from = hdr->GetAddr2 ();
 
-  // We don't know how to deal with any frame that is not addressed to
-  // us (and odds are there is nothing sensible we could do anyway),
-  // so we ignore such frames.
+  //We don't know how to deal with any frame that is not addressed to
+  //us (and odds are there is nothing sensible we could do anyway),
+  //so we ignore such frames.
   //
-  // The derived class may also do some such filtering, but it doesn't
-  // hurt to have it here too as a backstop.
+  //The derived class may also do some such filtering, but it doesn't
+  //hurt to have it here too as a backstop.
   if (to != GetAddress ())
     {
       return;
@@ -490,8 +490,8 @@ RegularWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
 
   if (hdr->IsMgt () && hdr->IsAction ())
     {
-      // There is currently only any reason for Management Action
-      // frames to be flying about if we are a QoS STA.
+      //There is currently only any reason for Management Action
+      //frames to be flying about if we are a QoS STA.
       NS_ASSERT (m_qosSupported);
 
       WifiActionHeader actionHdr;
@@ -508,31 +508,29 @@ RegularWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
                 MgtAddBaRequestHeader reqHdr;
                 packet->RemoveHeader (reqHdr);
 
-                // We've received an ADDBA Request. Our policy here is
-                // to automatically accept it, so we get the ADDBA
-                // Response on it's way immediately.
+                //We've received an ADDBA Request. Our policy here is
+                //to automatically accept it, so we get the ADDBA
+                //Response on it's way immediately.
                 SendAddBaResponse (&reqHdr, from);
-                // This frame is now completely dealt with, so we're done.
+                //This frame is now completely dealt with, so we're done.
                 return;
               }
-
             case WifiActionHeader::BLOCK_ACK_ADDBA_RESPONSE:
               {
                 MgtAddBaResponseHeader respHdr;
                 packet->RemoveHeader (respHdr);
 
-                // We've received an ADDBA Response. We assume that it
-                // indicates success after an ADDBA Request we have
-                // sent (we could, in principle, check this, but it
-                // seems a waste given the level of the current model)
-                // and act by locally establishing the agreement on
-                // the appropriate queue.
+                //We've received an ADDBA Response. We assume that it
+                //indicates success after an ADDBA Request we have
+                //sent (we could, in principle, check this, but it
+                //seems a waste given the level of the current model)
+                //and act by locally establishing the agreement on
+                //the appropriate queue.
                 AcIndex ac = QosUtilsMapTidToAc (respHdr.GetTid ());
                 m_edca[ac]->GotAddBaResponse (&respHdr, from);
-                // This frame is now completely dealt with, so we're done.
+                //This frame is now completely dealt with, so we're done.
                 return;
               }
-
             case WifiActionHeader::BLOCK_ACK_DELBA:
               {
                 MgtDelBaHeader delBaHdr;
@@ -540,30 +538,27 @@ RegularWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
 
                 if (delBaHdr.IsByOriginator ())
                   {
-                    // This DELBA frame was sent by the originator, so
-                    // this means that an ingoing established
-                    // agreement exists in MacLow and we need to
-                    // destroy it.
+                    //This DELBA frame was sent by the originator, so
+                    //this means that an ingoing established
+                    //agreement exists in MacLow and we need to
+                    //destroy it.
                     m_low->DestroyBlockAckAgreement (from, delBaHdr.GetTid ());
                   }
                 else
                   {
-                    // We must have been the originator. We need to
-                    // tell the correct queue that the agreement has
-                    // been torn down
+                    //We must have been the originator. We need to
+                    //tell the correct queue that the agreement has
+                    //been torn down
                     AcIndex ac = QosUtilsMapTidToAc (delBaHdr.GetTid ());
                     m_edca[ac]->GotDelBaFrame (&delBaHdr, from);
                   }
-                // This frame is now completely dealt with, so we're done.
+                //This frame is now completely dealt with, so we're done.
                 return;
               }
-
             default:
               NS_FATAL_ERROR ("Unsupported Action field in Block Ack Action frame");
               return;
             }
-
-
         default:
           NS_FATAL_ERROR ("Unsupported Action frame received");
           return;
@@ -616,13 +611,12 @@ RegularWifiMac::SendAddBaResponse (const MgtAddBaRequestHeader *reqHdr,
       respHdr.SetDelayedBlockAck ();
     }
   respHdr.SetTid (reqHdr->GetTid ());
-  // For now there's not no control about limit of reception. We
-  // assume that receiver has no limit on reception. However we assume
-  // that a receiver sets a bufferSize in order to satisfy next
-  // equation: (bufferSize + 1) % 16 = 0 So if a recipient is able to
-  // buffer a packet, it should be also able to buffer all possible
-  // packet's fragments. See section 7.3.1.14 in IEEE802.11e for more
-  // details.
+  //For now there's not no control about limit of reception. We
+  //assume that receiver has no limit on reception. However we assume
+  //that a receiver sets a bufferSize in order to satisfy next
+  //equation: (bufferSize + 1) % 16 = 0 So if a recipient is able to
+  //buffer a packet, it should be also able to buffer all possible
+  //packet's fragments. See section 7.3.1.14 in IEEE802.11e for more details.
   respHdr.SetBufferSize (1023);
   respHdr.SetTimeout (reqHdr->GetTimeout ());
 
@@ -635,14 +629,14 @@ RegularWifiMac::SendAddBaResponse (const MgtAddBaRequestHeader *reqHdr,
   packet->AddHeader (respHdr);
   packet->AddHeader (actionHdr);
 
-  // We need to notify our MacLow object as it will have to buffer all
-  // correctly received packets for this Block Ack session
+  //We need to notify our MacLow object as it will have to buffer all
+  //correctly received packets for this Block Ack session
   m_low->CreateBlockAckAgreement (&respHdr, originator,
                                   reqHdr->GetStartingSequence ());
 
-  // It is unclear which queue this frame should go into. For now we
-  // bung it into the queue corresponding to the TID for which we are
-  // establishing an agreement, and push it to the head.
+  //It is unclear which queue this frame should go into. For now we
+  //bung it into the queue corresponding to the TID for which we are
+  //establishing an agreement, and push it to the head.
   m_edca[QosUtilsMapTidToAc (reqHdr->GetTid ())]->PushFront (packet, hdr);
 }
 
@@ -664,12 +658,12 @@ RegularWifiMac::GetTypeId (void)
                    MakeBooleanAccessor (&RegularWifiMac::SetHtSupported,
                                         &RegularWifiMac::GetHtSupported),
                    MakeBooleanChecker ())
-   .AddAttribute ("CtsToSelfSupported",
+    .AddAttribute ("CtsToSelfSupported",
                    "Use CTS to Self when using a rate that is not in the basic set rate",
                    BooleanValue (false),
                    MakeBooleanAccessor (&RegularWifiMac::SetCtsToSelfSupported,
                                         &RegularWifiMac::GetCtsToSelfSupported),
-                    MakeBooleanChecker ())
+                   MakeBooleanChecker ())
     .AddAttribute ("DcaTxop", "The DcaTxop object",
                    PointerValue (),
                    MakePointerAccessor (&RegularWifiMac::GetDcaTxop),
@@ -694,8 +688,8 @@ RegularWifiMac::GetTypeId (void)
                    PointerValue (),
                    MakePointerAccessor (&RegularWifiMac::GetBKQueue),
                    MakePointerChecker<EdcaTxopN> ())
-    .AddTraceSource ( "TxOkHeader",
-                      "The header of successfully transmitted packet",
+    .AddTraceSource ("TxOkHeader",
+                     "The header of successfully transmitted packet",
                      MakeTraceSourceAccessor (&RegularWifiMac::m_txOkCallback),
                      "ns3::WifiMacHeader::TracedCallback")
     .AddTraceSource ("TxErrHeader",
@@ -703,7 +697,6 @@ RegularWifiMac::GetTypeId (void)
                      MakeTraceSourceAccessor (&RegularWifiMac::m_txErrCallback),
                      "ns3::WifiMacHeader::TracedCallback")
   ;
-
   return tid;
 }
 
@@ -725,21 +718,19 @@ RegularWifiMac::FinishConfigureStandard (enum WifiPhyStandard standard)
       cwmin = 15;
       cwmax = 1023;
       break;
-
     case WIFI_PHY_STANDARD_80211b:
       cwmin = 31;
       cwmax = 1023;
       break;
-
     default:
       NS_FATAL_ERROR ("Unsupported WifiPhyStandard in RegularWifiMac::FinishConfigureStandard ()");
     }
 
-  // The special value of AC_BE_NQOS which exists in the Access
-  // Category enumeration allows us to configure plain old DCF.
+  //The special value of AC_BE_NQOS which exists in the Access
+  //Category enumeration allows us to configure plain old DCF.
   ConfigureDcf (m_dca, cwmin, cwmax, AC_BE_NQOS);
 
-  // Now we configure the EDCA functions
+  //Now we configure the EDCA functions
   for (EdcaQueues::iterator i = m_edca.begin (); i != m_edca.end (); ++i)
     {
       ConfigureDcf (i->second, cwmin, cwmax, i->first);
@@ -760,4 +751,4 @@ RegularWifiMac::TxFailed (const WifiMacHeader &hdr)
   m_txErrCallback (hdr);
 }
 
-} // namespace ns3
+} //namespace ns3

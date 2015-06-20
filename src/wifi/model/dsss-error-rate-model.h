@@ -20,8 +20,8 @@
 
 #ifndef DSS_ERROR_RATE_MODEL_H
 #define DSS_ERROR_RATE_MODEL_H
-#include <stdint.h>
 
+#include <stdint.h>
 #ifdef ENABLE_GSL
 #include <gsl/gsl_math.h>
 #include <gsl/gsl_integration.h>
@@ -71,7 +71,8 @@ public:
    * A function DQPSK
    *
    * \param x x
-   * \return DQPSK(x)
+   *
+   * \return DQPSK (x)
    */
   static double DqpskFunction (double x);
   /**
@@ -79,6 +80,7 @@ public:
    *
    * \param sinr the SINR of the chunk
    * \param nbits the size of the chunk
+   *
    * \return the chunk success rate of the differential BPSK
    */
   static double GetDsssDbpskSuccessRate (double sinr, uint32_t nbits);
@@ -87,6 +89,7 @@ public:
    *
    * \param sinr the SINR of the chunk
    * \param nbits the size of the chunk
+   *
    * \return the chunk success rate of the differential encoded QPSK.
    */
   static double GetDsssDqpskSuccessRate (double sinr,uint32_t nbits);
@@ -96,6 +99,7 @@ public:
    *
    * \param sinr the SINR of the chunk
    * \param nbits the size of the chunk
+   *
    * \return the chunk success rate of the differential encoded QPSK for
    */
   static double GetDsssDqpskCck5_5SuccessRate (double sinr,uint32_t nbits);
@@ -105,19 +109,23 @@ public:
    *
    * \param sinr the SINR of the chunk
    * \param nbits the size of the chunk
+   *
    * \return the chunk success rate of the differential encoded QPSK for
    */
   static double GetDsssDqpskCck11SuccessRate (double sinr,uint32_t nbits);
 #ifdef ENABLE_GSL
-  static double SymbolErrorProb16Cck (double e2);  /// equation (18) in Pursley's paper
-  static double SymbolErrorProb256Cck (double e1);  /// equation (17) in Pursley's paper
+  static double SymbolErrorProb16Cck (double e2); /// equation (18) in Pursley's paper
+  static double SymbolErrorProb256Cck (double e1); /// equation (17) in Pursley's paper
 #else
+
+
 protected:
   static const double WLAN_SIR_PERFECT;
   static const double WLAN_SIR_IMPOSSIBLE;
 #endif
 };
 
-} // namespace ns3
+} //namespace ns3
 
 #endif /* DSSS_ERROR_RATE_MODEL_H */
+

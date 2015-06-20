@@ -16,9 +16,10 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
- * Author: Mirko Banchi <mk.banchi@gmail.com>
+ * Authors: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
+ *          Mirko Banchi <mk.banchi@gmail.com>
  */
+
 #ifndef AP_WIFI_MAC_H
 #define AP_WIFI_MAC_H
 
@@ -77,6 +78,7 @@ public:
    * frames without altering the source address.
    */
   virtual void Enqueue (Ptr<const Packet> packet, Mac48Address to, Mac48Address from);
+
   virtual bool SupportsSendFrom (void) const;
 
   /**
@@ -96,15 +98,17 @@ public:
    */
   void StartBeaconing (void);
 
- /**
-  * Assign a fixed random variable stream number to the random variables
-  * used by this model.  Return the number of streams (possibly zero) that
-  * have been assigned.
-  *
-  * \param stream first stream index to use
-  * \return the number of stream indices assigned by this model
-  */
+  /**
+   * Assign a fixed random variable stream number to the random variables
+   * used by this model.  Return the number of streams (possibly zero) that
+   * have been assigned.
+   *
+   * \param stream first stream index to use
+   *
+   * \return the number of stream indices assigned by this model
+   */
   int64_t AssignStreams (int64_t stream);
+
 
 private:
   virtual void Receive (Ptr<Packet> packet, const WifiMacHeader *hdr);
@@ -113,7 +117,7 @@ private:
    * (i.e. we received an ACK from the receiver).  If the packet
    * was an association response to the receiver, we record that
    * the receiver is now associated with us.
-   * 
+   *
    * \param hdr the header of the packet that we successfully sent
    */
   virtual void TxOk (const WifiMacHeader &hdr);
@@ -138,7 +142,6 @@ private:
    */
   virtual void DeaggregateAmsduAndForward (Ptr<Packet> aggregatedPacket,
                                            const WifiMacHeader *hdr);
-
   /**
    * Forward the packet down to DCF/EDCAF (enqueue the packet). This method
    * is a wrapper for ForwardDown with traffic id.
@@ -178,7 +181,7 @@ private:
   void SendOneBeacon (void);
   /**
    * Return the HT capability of the current AP.
-   * 
+   *
    * \return the HT capability that we support
    */
   HtCapabilities GetHtCapabilities (void) const;
@@ -201,17 +204,18 @@ private:
    * \return true if beacons are periodically generated, false otherwise
    */
   bool GetBeaconGeneration (void) const;
+
   virtual void DoDispose (void);
   virtual void DoInitialize (void);
 
-  Ptr<DcaTxop> m_beaconDca; //!< Dedicated DcaTxop for beacons
-  Time m_beaconInterval; //!< Interval between beacons
-  bool m_enableBeaconGeneration; //!< Flag if beacons are being generated
-  EventId m_beaconEvent; //!< Event to generate one beacon
+  Ptr<DcaTxop> m_beaconDca;                  //!< Dedicated DcaTxop for beacons
+  Time m_beaconInterval;                     //!< Interval between beacons
+  bool m_enableBeaconGeneration;             //!< Flag if beacons are being generated
+  EventId m_beaconEvent;                     //!< Event to generate one beacon
   Ptr<UniformRandomVariable> m_beaconJitter; //!< UniformRandomVariable used to randomize the time of the first beacon
-  bool m_enableBeaconJitter; //!< Flag if the first beacon should be generated at random time
+  bool m_enableBeaconJitter;                 //!< Flag if the first beacon should be generated at random time
 };
 
-} // namespace ns3
+} //namespace ns3
 
 #endif /* AP_WIFI_MAC_H */

@@ -17,6 +17,7 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
+
 #ifndef SSID_H
 #define SSID_H
 
@@ -57,6 +58,7 @@ public:
    * Check if the two SSIDs are equal.
    *
    * \param o SSID to compare to
+   *
    * \return true if the two SSIDs are equal,
    *         false otherwise
    */
@@ -92,6 +94,6 @@ std::istream &operator >> (std::istream &is, Ssid &ssid);
 
 ATTRIBUTE_HELPER_HEADER (Ssid);
 
-} // namespace ns3
+} //namespace ns3
 
 #endif /* SSID_H */

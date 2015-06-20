@@ -17,6 +17,7 @@
  *
  * Author: Mathieu Lacage, <mathieu.lacage@sophia.inria.fr>
  */
+
 #include "ns3/packet.h"
 #include "ns3/simulator.h"
 #include "ns3/mobility-model.h"
@@ -47,4 +48,4 @@ WifiChannel::GetTypeId (void)
   return tid;
 }
 
-} // namespace ns3
+} //namespace ns3

@@ -33,6 +33,8 @@ namespace ns3 {
 class OriginatorBlockAckAgreement : public BlockAckAgreement
 {
   friend class BlockAckManager;
+
+
 public:
   OriginatorBlockAckAgreement ();
   OriginatorBlockAckAgreement (Mac48Address recipient, uint8_t tid);
@@ -138,12 +140,13 @@ public:
   bool IsBlockAckRequestNeeded (void) const;
   void CompleteExchange (void);
 
+
 private:
   enum State m_state;
   uint16_t m_sentMpdus;
   bool m_needBlockAckReq;
 };
 
-} // namespace ns3
+} //namespace ns3
 
 #endif /* ORIGINATOR_BLOCK_ACK_AGREEMENT_H */

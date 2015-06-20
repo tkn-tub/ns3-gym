@@ -30,6 +30,7 @@ WifiInformationElementVector::WifiInformationElementVector ()
   : m_maxSize (1500)
 {
 }
+
 WifiInformationElementVector::~WifiInformationElementVector ()
 {
   for (IE_VECTOR::iterator i = m_elements.begin (); i != m_elements.end (); i++)
@@ -38,6 +39,7 @@ WifiInformationElementVector::~WifiInformationElementVector ()
     }
   m_elements.clear ();
 }
+
 TypeId
 WifiInformationElementVector::GetTypeId ()
 {
@@ -47,16 +49,19 @@ WifiInformationElementVector::GetTypeId ()
     .AddConstructor<WifiInformationElementVector> ();
   return tid;
 }
+
 TypeId
 WifiInformationElementVector::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
+
 uint32_t
 WifiInformationElementVector::GetSerializedSize () const
 {
   return GetSize ();
 }
+
 void
 WifiInformationElementVector::Serialize (Buffer::Iterator start) const
 {
@@ -65,6 +70,7 @@ WifiInformationElementVector::Serialize (Buffer::Iterator start) const
       start = (*i)->Serialize (start);
     }
 }
+
 uint32_t
 WifiInformationElementVector::Deserialize (Buffer::Iterator start)
 {
@@ -78,6 +84,7 @@ WifiInformationElementVector::Deserialize (Buffer::Iterator start)
     }
   return i.GetDistanceFrom (start);
 }
+
 uint32_t
 WifiInformationElementVector::DeserializeSingleIe (Buffer::Iterator start)
 {
@@ -85,7 +92,7 @@ WifiInformationElementVector::DeserializeSingleIe (Buffer::Iterator start)
   uint8_t id = i.ReadU8 ();
   //unused: uint8_t length = i.ReadU8 ();
   //but need side effects of read:
-  i.ReadU8 ();  
+  i.ReadU8 ();
   Ptr<WifiInformationElement> newElement;
   switch (id)
     {
@@ -104,26 +111,31 @@ WifiInformationElementVector::DeserializeSingleIe (Buffer::Iterator start)
   return i.GetDistanceFrom (start);
   */
 }
+
 void
 WifiInformationElementVector::Print (std::ostream & os) const
 {
   /// \todo
 }
+
 void
 WifiInformationElementVector::SetMaxSize (uint16_t size)
 {
   m_maxSize = size;
 }
+
 WifiInformationElementVector::Iterator
 WifiInformationElementVector::Begin ()
 {
   return m_elements.begin ();
 }
+
 WifiInformationElementVector::Iterator
 WifiInformationElementVector::End ()
 {
   return m_elements.end ();
 }
+
 bool
 WifiInformationElementVector::AddInformationElement (Ptr<WifiInformationElement> element)
 {
@@ -134,6 +146,7 @@ WifiInformationElementVector::AddInformationElement (Ptr<WifiInformationElement>
   m_elements.push_back (element);
   return true;
 }
+
 Ptr<WifiInformationElement>
 WifiInformationElementVector::FindFirst (WifiInformationElementId id) const
 {
@@ -146,7 +159,10 @@ WifiInformationElementVector::FindFirst (WifiInformationElementId id) const
     }
   return 0;
 }
+
+
 namespace {
+
 struct PIEComparator
 {
   bool
@@ -155,7 +171,10 @@ struct PIEComparator
     return ((*PeekPointer (a)) < (*PeekPointer (b)));
   }
 };
+
 }
+
+
 uint32_t
 WifiInformationElementVector::GetSize () const
 {
@@ -175,13 +194,13 @@ WifiInformationElementVector::operator== (const WifiInformationElementVector & a
       NS_ASSERT (false);
       return false;
     }
-  // In principle we could bypass some of the faffing about (and speed
-  // the comparison) by simply serialising each IE vector into a
-  // buffer and memcmp'ing the two.
+  //In principle we could bypass some of the faffing about (and speed
+  //the comparison) by simply serialising each IE vector into a
+  //buffer and memcmp'ing the two.
   //
-  // I'm leaving it like this, however, so that there is the option of
-  // having individual Information Elements implement slightly more
-  // flexible equality operators.
+  //I'm leaving it like this, however, so that there is the option of
+  //having individual Information Elements implement slightly more
+  //flexible equality operators.
   WifiInformationElementVector::IE_VECTOR::const_iterator j = a.m_elements.begin ();
   for (WifiInformationElementVector::IE_VECTOR::const_iterator i = m_elements.begin (); i
        != m_elements.end (); i++, j++)
@@ -195,4 +214,4 @@ WifiInformationElementVector::operator== (const WifiInformationElementVector & a
   return true;
 }
 
-} // namespace ns3
+} //namespace ns3

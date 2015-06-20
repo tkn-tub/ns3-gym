@@ -114,8 +114,8 @@ YansWifiChannel::Send (Ptr<YansWifiPhy> sender, Ptr<const Packet> packet, double
 
           double *atts = new double[3];
           *atts = rxPowerDbm;
-          *(atts+1) = packetType;
-          *(atts+2) = duration.GetNanoSeconds ();
+          *(atts + 1) = packetType;
+          *(atts + 2) = duration.GetNanoSeconds ();
 
           Simulator::ScheduleWithContext (dstNode,
                                           delay, &YansWifiChannel::Receive, this,
@@ -128,7 +128,7 @@ void
 YansWifiChannel::Receive (uint32_t i, Ptr<Packet> packet, double *atts,
                           WifiTxVector txVector, WifiPreamble preamble) const
 {
-  m_phyList[i]->StartReceivePreambleAndHeader (packet, *atts, txVector, preamble, *(atts+1), NanoSeconds (*(atts+2)));
+  m_phyList[i]->StartReceivePreambleAndHeader (packet, *atts, txVector, preamble, *(atts + 1), NanoSeconds (*(atts + 2)));
   delete[] atts;
 }
 
@@ -158,4 +158,4 @@ YansWifiChannel::AssignStreams (int64_t stream)
   return (currentStream - stream);
 }
 
-} // namespace ns3
+} //namespace ns3

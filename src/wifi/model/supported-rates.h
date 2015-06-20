@@ -17,6 +17,7 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
+
 #ifndef SUPPORTED_RATES_H
 #define SUPPORTED_RATES_H
 
@@ -68,15 +69,16 @@ public:
    * WifiInformationElement.
    *
    * \param start
+   *
    * \return an iterator
    */
   Buffer::Iterator Serialize (Buffer::Iterator start) const;
   /**
-   * Return the serialized size of this supported rates 
+   * Return the serialized size of this supported rates
    * information element.
-   * 
-   * \return the serialized size of this supported rates 
-   * information element
+   *
+   * \return the serialized size of this supported rates
+   *         information element
    */
   uint16_t GetSerializedSize () const;
 private:
@@ -132,6 +134,7 @@ public:
    * Check if the given rate is supported.
    *
    * \param bs the rate to be checked
+   *
    * \return true if the rate is supported, false otherwise
    */
   bool IsSupportedRate (uint32_t bs) const;
@@ -139,6 +142,7 @@ public:
    * Check if the given rate is a basic rate.
    *
    * \param bs the rate to be checked
+   *
    * \return true if the rate is a basic rate, false otherwise
    */
   bool IsBasicRate (uint32_t bs) const;
@@ -172,13 +176,15 @@ public:
    */
   friend class ExtendedSupportedRatesIE;
   ExtendedSupportedRatesIE extended;
+
+
 private:
-  uint8_t m_nRates;  //!< Number of supported rates
+  uint8_t m_nRates;                      //!< Number of supported rates
   uint8_t m_rates[MAX_SUPPORTED_RATES];  //!< List of supported bitrate (divided by 500000)
 };
 
 std::ostream &operator << (std::ostream &os, const SupportedRates &rates);
 
-} // namespace ns3
+} //namespace ns3
 
 #endif /* SUPPORTED_RATES_H */

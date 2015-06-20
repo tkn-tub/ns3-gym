@@ -46,8 +46,7 @@ enum
 };
 
 WifiMacHeader::WifiMacHeader ()
-  :
-    m_ctrlMoreData (0),
+  : m_ctrlMoreData (0),
     m_ctrlWep (0),
     m_ctrlOrder (1),
     m_amsduPresent (0)
@@ -200,7 +199,7 @@ WifiMacHeader::SetType (enum WifiMacType type)
       m_ctrlType = TYPE_CTL;
       m_ctrlSubtype = SUBTYPE_CTL_ACK;
       break;
-    case WIFI_MAC_CTL_CTLWRAPPER: 
+    case WIFI_MAC_CTL_CTLWRAPPER:
       m_ctrlType = TYPE_CTL;
       m_ctrlSubtype = SUBTYPE_CTL_CTLWRAPPER;
       break;
@@ -594,7 +593,7 @@ WifiMacHeader::GetType (void) const
     }
   // NOTREACHED
   NS_ASSERT (false);
-  return (enum WifiMacType) - 1;
+  return (enum WifiMacType) -1;
 }
 
 bool
@@ -861,7 +860,7 @@ WifiMacHeader::GetQosAckPolicy (void) const
     }
   // NOTREACHED
   NS_ASSERT (false);
-  return (enum QosAckPolicy) - 1;
+  return (enum QosAckPolicy) -1;
 }
 
 uint8_t
@@ -1250,4 +1249,4 @@ WifiMacHeader::Deserialize (Buffer::Iterator start)
   return i.GetDistanceFrom (start);
 }
 
-} // namespace ns3
+} //namespace ns3

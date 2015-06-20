@@ -17,15 +17,14 @@
  *
  * Author: Ghada Badawy <gbadawy@gmail.com>
  */
+
 #ifndef MPDU_AGGREGATOR_H
 #define MPDU_AGGREGATOR_H
 
 #include "ns3/ptr.h"
 #include "ns3/packet.h"
 #include "ns3/object.h"
-
 #include "ampdu-subframe-header.h"
-
 #include <list>
 
 namespace ns3 {
@@ -52,6 +51,7 @@ public:
   /**
    * \param packet Packet we have to insert into <i>aggregatedPacket</i>.
    * \param aggregatedPacket Packet that will contain <i>packet</i>, if aggregation is possible.
+   *
    * \return true if <i>packet</i> can be aggregated to <i>aggregatedPacket</i>, false otherwise.
    *
    * Adds <i>packet</i> to <i>aggregatedPacket</i>. In concrete aggregator's implementation is
@@ -61,11 +61,12 @@ public:
   /**
    * Adds A-MPDU subframe header and padding to each MPDU that is part of an A-MPDU before it is sent.
    */
-  virtual void AddHeaderAndPad (Ptr<Packet> packet,bool last) = 0;
+  virtual void AddHeaderAndPad (Ptr<Packet> packet, bool last) = 0;
   /**
    * \param packetSize size of the packet we want to insert into <i>aggregatedPacket</i>.
    * \param aggregatedPacket packet that will contain the packet of size <i>packetSize</i>, if aggregation is possible.
    * \param blockAckSize size of the piggybacked block ack request
+   *
    * \return true if the packet of size <i>packetSize</i> can be aggregated to <i>aggregatedPacket</i>, false otherwise.
    *
    * This method is used to determine if a packet could be aggregated to an A-MPDU without exceeding the maximum packet size.
@@ -86,6 +87,6 @@ public:
   static DeaggregatedMpdus Deaggregate (Ptr<Packet> aggregatedPacket);
 };
 
-}  // namespace ns3
+}  //namespace ns3
 
 #endif /* MPDU_AGGREGATOR_H */

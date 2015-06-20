@@ -47,7 +47,6 @@ struct OnoeWifiRemoteStation : public WifiRemoteStation
   uint32_t m_txrate;
 };
 
-
 NS_OBJECT_ENSURE_REGISTERED (OnoeWifiManager);
 
 TypeId
@@ -77,6 +76,7 @@ OnoeWifiManager::GetTypeId (void)
 OnoeWifiManager::OnoeWifiManager ()
 {
 }
+
 WifiRemoteStation *
 OnoeWifiManager::DoCreateStation (void) const
 {
@@ -91,28 +91,33 @@ OnoeWifiManager::DoCreateStation (void) const
   station->m_txrate = 0;
   return station;
 }
+
 void
 OnoeWifiManager::DoReportRxOk (WifiRemoteStation *station,
                                double rxSnr, WifiMode txMode)
 {
 }
+
 void
 OnoeWifiManager::DoReportRtsFailed (WifiRemoteStation *st)
 {
   OnoeWifiRemoteStation *station = (OnoeWifiRemoteStation *)st;
   station->m_shortRetry++;
 }
+
 void
 OnoeWifiManager::DoReportDataFailed (WifiRemoteStation *st)
 {
   OnoeWifiRemoteStation *station = (OnoeWifiRemoteStation *)st;
   station->m_longRetry++;
 }
+
 void
 OnoeWifiManager::DoReportRtsOk (WifiRemoteStation *station,
                                 double ctsSnr, WifiMode ctsMode, double rtsSnr)
 {
 }
+
 void
 OnoeWifiManager::DoReportDataOk (WifiRemoteStation *st,
                                  double ackSnr, WifiMode ackMode, double dataSnr)
@@ -121,6 +126,7 @@ OnoeWifiManager::DoReportDataOk (WifiRemoteStation *st,
   UpdateRetry (station);
   station->m_tx_ok++;
 }
+
 void
 OnoeWifiManager::DoReportFinalRtsFailed (WifiRemoteStation *st)
 {
@@ -128,6 +134,7 @@ OnoeWifiManager::DoReportFinalRtsFailed (WifiRemoteStation *st)
   UpdateRetry (station);
   station->m_tx_err++;
 }
+
 void
 OnoeWifiManager::DoReportFinalDataFailed (WifiRemoteStation *st)
 {
@@ -135,6 +142,7 @@ OnoeWifiManager::DoReportFinalDataFailed (WifiRemoteStation *st)
   UpdateRetry (station);
   station->m_tx_err++;
 }
+
 void
 OnoeWifiManager::UpdateRetry (OnoeWifiRemoteStation *station)
 {
@@ -142,6 +150,7 @@ OnoeWifiManager::UpdateRetry (OnoeWifiRemoteStation *station)
   station->m_shortRetry = 0;
   station->m_longRetry = 0;
 }
+
 void
 OnoeWifiManager::UpdateMode (OnoeWifiRemoteStation *station)
 {
@@ -226,7 +235,7 @@ OnoeWifiManager::UpdateMode (OnoeWifiRemoteStation *station)
 
 WifiTxVector
 OnoeWifiManager::DoGetDataTxVector (WifiRemoteStation *st,
-                                uint32_t size)
+                                    uint32_t size)
 {
   OnoeWifiRemoteStation *station = (OnoeWifiRemoteStation *)st;
   UpdateMode (station);
@@ -269,15 +278,16 @@ OnoeWifiManager::DoGetDataTxVector (WifiRemoteStation *st,
           rateIndex = station->m_txrate;
         }
     }
-  return WifiTxVector (GetSupported (station, rateIndex), GetDefaultTxPowerLevel (), GetLongRetryCount (station), GetShortGuardInterval (station), Min (GetNumberOfReceiveAntennas (station),GetNumberOfTransmitAntennas()), GetNess (station), GetStbc (station));
+  return WifiTxVector (GetSupported (station, rateIndex), GetDefaultTxPowerLevel (), GetLongRetryCount (station), GetShortGuardInterval (station), Min (GetNumberOfReceiveAntennas (station), GetNumberOfTransmitAntennas ()), GetNess (station), GetStbc (station));
 }
+
 WifiTxVector
 OnoeWifiManager::DoGetRtsTxVector (WifiRemoteStation *st)
 {
   OnoeWifiRemoteStation *station = (OnoeWifiRemoteStation *)st;
   UpdateMode (station);
   /// \todo can we implement something smarter ?
-  return WifiTxVector (GetSupported (station, 0), GetDefaultTxPowerLevel (), GetShortRetryCount (station), GetShortGuardInterval (station), Min (GetNumberOfReceiveAntennas (station),GetNumberOfTransmitAntennas()), GetNess (station), GetStbc (station));
+  return WifiTxVector (GetSupported (station, 0), GetDefaultTxPowerLevel (), GetShortRetryCount (station), GetShortGuardInterval (station), Min (GetNumberOfReceiveAntennas (station), GetNumberOfTransmitAntennas ()), GetNess (station), GetStbc (station));
 }
 
 bool
@@ -286,4 +296,4 @@ OnoeWifiManager::IsLowLatency (void) const
   return false;
 }
 
-} // namespace ns3
+} //namespace ns3

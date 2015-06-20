@@ -18,6 +18,7 @@
  *
  * Author: Mirko Banchi <mk.banchi@gmail.com>
  */
+
 #include "qos-blocked-destinations.h"
 
 namespace ns3 {
@@ -65,4 +66,4 @@ QosBlockedDestinations::Unblock (Mac48Address dest, uint8_t tid)
     }
 }
 
-} // namespace ns3
+} //namespace ns3
