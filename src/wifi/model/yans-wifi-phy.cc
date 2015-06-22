@@ -36,6 +36,7 @@
 #include "ns3/net-device.h"
 #include "ns3/trace-source-accessor.h"
 #include "ns3/boolean.h"
+#include "ns3/node.h"
 #include "ampdu-tag.h"
 #include <cmath>
 
@@ -314,13 +315,13 @@ YansWifiPhy::SetErrorRateModel (Ptr<ErrorRateModel> rate)
 }
 
 void
-YansWifiPhy::SetDevice (Ptr<Object> device)
+YansWifiPhy::SetDevice (Ptr<NetDevice> device)
 {
   m_device = device;
 }
 
 void
-YansWifiPhy::SetMobility (Ptr<Object> mobility)
+YansWifiPhy::SetMobility (Ptr<MobilityModel> mobility)
 {
   m_mobility = mobility;
 }
@@ -373,16 +374,23 @@ YansWifiPhy::GetErrorRateModel (void) const
   return m_interference.GetErrorRateModel ();
 }
 
-Ptr<Object>
+Ptr<NetDevice>
 YansWifiPhy::GetDevice (void) const
 {
   return m_device;
 }
 
-Ptr<Object>
+Ptr<MobilityModel>
 YansWifiPhy::GetMobility (void)
 {
-  return m_mobility;
+  if (m_mobility != 0)
+    {
+      return m_mobility;
+    }
+  else
+    {
+      return m_device->GetNode ()->GetObject<MobilityModel> ();
+    }
 }
 
 double

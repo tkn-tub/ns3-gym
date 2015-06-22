@@ -31,6 +31,7 @@
 #include "ns3/nstime.h"
 #include "ns3/ptr.h"
 #include "ns3/random-variable-stream.h"
+#include "ns3/mobility-model.h"
 #include "wifi-phy.h"
 #include "wifi-mode.h"
 #include "wifi-preamble.h"
@@ -193,13 +194,18 @@ public:
    *
    * \param device the device this PHY is associated with
    */
-  void SetDevice (Ptr<Object> device);
+  void SetDevice (Ptr<NetDevice> device);
   /**
-   * Sets the mobility model.
+   * \brief assign a mobility model to this device
+   *
+   * This method allows a user to specify a mobility model that should be
+   * associated with this physical layer.  Calling this method is optional
+   * and only necessary if the user wants to override the mobility model
+   * that is aggregated to the node.
    *
    * \param mobility the mobility model this PHY is associated with
    */
-  void SetMobility (Ptr<Object> mobility);
+  void SetMobility (Ptr<MobilityModel> mobility);
   /**
    * Return the RX noise figure (dBm).
    *
@@ -241,13 +247,17 @@ public:
    *
    * \return the device this PHY is associated with
    */
-  Ptr<Object> GetDevice (void) const;
+  Ptr<NetDevice> GetDevice (void) const;
   /**
    * Return the mobility model this PHY is associated with.
+   * This method will return either the mobility model that has been
+   * explicitly set by a call to YansWifiPhy::SetMobility(), or else
+   * will return the mobility model (if any) that has been aggregated
+   * to the node.
    *
    * \return the mobility model this PHY is associated with
    */
-  Ptr<Object> GetMobility (void);
+  Ptr<MobilityModel> GetMobility (void);
   /**
    * Return the minimum available transmission power level (dBm).
    * \return the minimum available transmission power level (dBm)
@@ -502,8 +512,8 @@ private:
 
   Ptr<YansWifiChannel> m_channel;        //!< YansWifiChannel that this YansWifiPhy is connected to
   uint16_t             m_channelNumber;  //!< Operating channel number
-  Ptr<Object>          m_device;         //!< Pointer to the device
-  Ptr<Object>          m_mobility;       //!< Pointer to the mobility model
+  Ptr<NetDevice>       m_device;         //!< Pointer to the device
+  Ptr<MobilityModel>   m_mobility;       //!< Pointer to the mobility model
 
   uint32_t m_numberOfTransmitters;  //!< Number of transmitters
   uint32_t m_numberOfReceivers;     //!< Number of receivers

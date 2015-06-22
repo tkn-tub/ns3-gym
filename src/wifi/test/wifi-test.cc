@@ -121,7 +121,6 @@ WifiTest::CreateOne (Vector pos, Ptr<YansWifiChannel> channel)
   phy->SetErrorRateModel (error);
   phy->SetChannel (channel);
   phy->SetDevice (dev);
-  phy->SetMobility (node);
   phy->ConfigureStandard (WIFI_PHY_STANDARD_80211a);
   Ptr<WifiRemoteStationManager> manager = m_manager.Create<WifiRemoteStationManager> ();
 
@@ -271,7 +270,7 @@ InterferenceHelperSequenceTest::CreateOne (Vector pos, Ptr<YansWifiChannel> chan
   phy->SetErrorRateModel (error);
   phy->SetChannel (channel);
   phy->SetDevice (dev);
-  phy->SetMobility (node);
+  phy->SetMobility (mobility);
   phy->ConfigureStandard (WIFI_PHY_STANDARD_80211a);
   Ptr<WifiRemoteStationManager> manager = m_manager.Create<WifiRemoteStationManager> ();
 
@@ -448,7 +447,7 @@ Bug555TestCase::DoRun (void)
   txPhy->SetErrorRateModel (txError);
   txPhy->SetChannel (channel);
   txPhy->SetDevice (txDev);
-  txPhy->SetMobility (txNode);
+  txPhy->SetMobility (txMobility);
   txPhy->ConfigureStandard (WIFI_PHY_STANDARD_80211a);
 
   txPhy->TraceConnectWithoutContext ("PhyTxBegin", MakeCallback (&Bug555TestCase::NotifyPhyTxBegin, this));

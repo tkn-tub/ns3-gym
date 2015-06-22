@@ -242,7 +242,6 @@ YansWifiPhyHelper::Create (Ptr<Node> node, Ptr<NetDevice> device) const
   Ptr<ErrorRateModel> error = m_errorRateModel.Create<ErrorRateModel> ();
   phy->SetErrorRateModel (error);
   phy->SetChannel (m_channel);
-  phy->SetMobility (node);
   phy->SetDevice (device);
   return phy;
 }
