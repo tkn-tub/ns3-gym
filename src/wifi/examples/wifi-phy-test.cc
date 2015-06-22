@@ -74,7 +74,7 @@ PsrExperiment::Send (void)
   WifiTxVector txVector;
   txVector.SetTxPowerLevel (m_input.txPowerLevel);
   txVector.SetMode (mode);
-  m_tx->SendPacket (p, txVector, WIFI_PREAMBLE_SHORT, 0);
+  m_tx->SendPacket (p, txVector, WIFI_PREAMBLE_LONG, 0);
 }
 
 void
@@ -182,7 +182,7 @@ CollisionExperiment::SendA (void) const
   WifiTxVector txVector;
   txVector.SetTxPowerLevel (m_input.txPowerLevelA);
   txVector.SetMode (WifiMode (m_input.txModeA));
-  m_txA->SendPacket (p, txVector, WIFI_PREAMBLE_SHORT, 0);
+  m_txA->SendPacket (p, txVector, WIFI_PREAMBLE_LONG, 0);
 }
 
 void
@@ -193,7 +193,7 @@ CollisionExperiment::SendB (void) const
   WifiTxVector txVector;
   txVector.SetTxPowerLevel (m_input.txPowerLevelB);
   txVector.SetMode (WifiMode (m_input.txModeB));
-  m_txB->SendPacket (p, txVector, WIFI_PREAMBLE_SHORT, 0);
+  m_txB->SendPacket (p, txVector, WIFI_PREAMBLE_LONG, 0);
 }
 
 void
@@ -380,6 +380,7 @@ static void PrintSizeVsRange (int argc, char *argv[])
   cmd.AddValue ("NPackets", "The number of packets to send", input.nPackets);
   cmd.AddValue ("TargetPsr", "The psr needed to assume that we are within range", targetPsr);
   cmd.Parse (argc, argv);
+  
   for (input.packetSize = 10; input.packetSize < 3000; input.packetSize += 40)
     {
       double precision = 0.1;
@@ -414,6 +415,7 @@ static void PrintPsrVsCollisionInterval (int argc, char *argv[])
   cmd.AddValue ("NPackets", "The number of packets to send for each transmitter", input.nPackets);
   cmd.AddValue ("xA", "the position of transmitter A", input.xA);
   cmd.AddValue ("xB", "the position of transmitter B", input.xB);
+  cmd.Parse (argc, argv);
 
   for (uint32_t i = 0; i < 100; i += 1)
     {
