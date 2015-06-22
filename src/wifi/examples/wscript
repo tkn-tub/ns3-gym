@@ -7,3 +7,7 @@ def build(bld):
     obj = bld.create_ns3_program('wifi-phy-test',
         ['core', 'mobility', 'network', 'wifi'])
     obj.source = 'wifi-phy-test.cc'
+
+    obj = bld.create_ns3_program('test-interference-helper',
+        ['core', 'mobility', 'network', 'wifi'])
+    obj.source = 'test-interference-helper.cc'
