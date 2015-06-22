@@ -15,7 +15,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
+ * Authors: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
+ *          Sébastien Deronne <sebastien.deronne@gmail.com>
  */
 
 #include "interference-helper.h"
@@ -243,6 +244,7 @@ InterferenceHelper::CalculateSnr (double signal, double noiseInterference, WifiM
   double noiseFloor = m_noiseFigure * Nt;
   double noise = noiseFloor + noiseInterference;
   double snr = signal / noise;
+  NS_LOG_DEBUG ("signal= " << signal << ", noise=" << noiseFloor << ", interference=" << noiseInterference << ", snr=" << snr);
   return snr;
 }
 
@@ -280,6 +282,7 @@ InterferenceHelper::CalculateChunkSuccessRate (double snir, Time duration, WifiM
 double
 InterferenceHelper::CalculatePlcpPayloadPer (Ptr<const InterferenceHelper::Event> event, NiChanges *ni) const
 {
+  NS_LOG_FUNCTION (this);
   double psr = 1.0; /* Packet Success Rate */
   NiChanges::iterator j = ni->begin ();
   Time previous = (*j).GetTime ();
@@ -295,6 +298,7 @@ InterferenceHelper::CalculatePlcpPayloadPer (Ptr<const InterferenceHelper::Event
   while (ni->end () != j)
     {
       Time current = (*j).GetTime ();
+      NS_LOG_DEBUG ("previous= " << previous << ", current=" << current);
       NS_ASSERT (current >= previous);
       //Case 1: Both previous and current point to the payload
       if (previous >= plcpPayloadStart)
@@ -304,61 +308,18 @@ InterferenceHelper::CalculatePlcpPayloadPer (Ptr<const InterferenceHelper::Event
                                                           payloadMode),
                                             current - previous,
                                             payloadMode);
-        }
-      //Case 2: previous is before payload
-      else if (previous >= plcpHtTrainingSymbolsStart)
-        {
-          //Case 2a: current is after payload
-          if (current >= plcpPayloadStart)
-            {
-              //Case 2ai and 2aii: All formats
-              psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
-                                                              noiseInterferenceW,
-                                                              payloadMode),
-                                                current - plcpPayloadStart,
-                                                payloadMode);
-            }
-        }
-      //Case 3: previous is in HT-SIG: Non HT will not enter here since it didn't enter in the last two and they are all the same for non HT
-      else if (previous >= plcpHsigHeaderStart)
-        {
-          //Case 3a: cuurent after payload start
-          if (current >= plcpPayloadStart)
-            {
-              psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
-                                                              noiseInterferenceW,
-                                                              payloadMode),
-                                                current - plcpPayloadStart,
-                                                payloadMode);
 
-            }
+          NS_LOG_DEBUG ("Both previous and current point to the payload: mode=" << payloadMode << ", psr=" << psr);
         }
-      //Case 4: previous in L-SIG: GF will not reach here because it will execute the previous if and exit
-      else if (previous >= plcpHeaderStart)
+      //Case 2: previous is before payload and current is in the payload
+      else if (current >= plcpPayloadStart)
         {
-          //Case 4a: current after payload start
-          if (current >= plcpPayloadStart)
-            {
-              psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
-                                                              noiseInterferenceW,
-                                                              payloadMode),
-                                                current - plcpPayloadStart,
-                                                payloadMode);
-
-            }
-        }
-      //Case 5: previous is in the preamble works for all cases
-      else
-        {
-          if (current >= plcpPayloadStart)
-            {
-              //for all
-              psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
-                                                              noiseInterferenceW,
-                                                              payloadMode),
-                                                current - plcpPayloadStart,
-                                                payloadMode);
-            }
+          psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
+                                                          noiseInterferenceW,
+                                                          payloadMode),
+                                            current - plcpPayloadStart,
+                                            payloadMode);
+          NS_LOG_DEBUG ("previous is before payload and current is in the payload: mode=" << payloadMode << ", psr=" << psr);
         }
 
       noiseInterferenceW += (*j).GetDelta ();
@@ -373,15 +334,17 @@ InterferenceHelper::CalculatePlcpPayloadPer (Ptr<const InterferenceHelper::Event
 double
 InterferenceHelper::CalculatePlcpHeaderPer (Ptr<const InterferenceHelper::Event> event, NiChanges *ni) const
 {
+  NS_LOG_FUNCTION (this);
   double psr = 1.0; /* Packet Success Rate */
   NiChanges::iterator j = ni->begin ();
   Time previous = (*j).GetTime ();
   WifiMode payloadMode = event->GetPayloadMode ();
   WifiPreamble preamble = event->GetPreambleType ();
-  WifiMode MfHeaderMode;
+  WifiMode htHeaderMode;
   if (preamble == WIFI_PREAMBLE_HT_MF)
     {
-      MfHeaderMode = WifiPhy::GetMFPlcpHeaderMode (payloadMode, preamble);
+      //mode for PLCP header fields sent with HT modulation
+      htHeaderMode = WifiPhy::GetHTPlcpHeaderMode (payloadMode, preamble);
     }
   WifiMode headerMode = WifiPhy::GetPlcpHeaderMode (payloadMode, preamble);
   Time plcpHeaderStart = (*j).GetTime () + WifiPhy::GetPlcpPreambleDuration (payloadMode, preamble); //packet start time + preamble
@@ -394,48 +357,49 @@ InterferenceHelper::CalculatePlcpHeaderPer (Ptr<const InterferenceHelper::Event>
   while (ni->end () != j)
     {
       Time current = (*j).GetTime ();
+      NS_LOG_DEBUG ("previous= " << previous << ", current=" << current);
       NS_ASSERT (current >= previous);
-      //Case 1: previous is in HT-SIG: Non HT will not enter here since it didn't enter in the last two and they are all the same for non HT
-      if (previous >= plcpHsigHeaderStart)
+      //Case 1: previous and current after playload start: nothing to do
+      if (previous >= plcpPayloadStart)
         {
-          //Case 1a: current after payload start
+          psr *= 1;
+          NS_LOG_DEBUG ("Case 1 - previous and current after playload start: nothing to do");
+        }
+      //Case 2: previous is in HT-SIG or in HT training: Non HT will not enter here since it didn't enter in the last two and they are all the same for non HT
+      else if (previous >= plcpHsigHeaderStart)
+        {
+          NS_ASSERT ((preamble != WIFI_PREAMBLE_LONG) && (preamble != WIFI_PREAMBLE_SHORT));
+          //Case 2a: current after payload start
           if (current >= plcpPayloadStart)
             {
-
-
               psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
                                                               noiseInterferenceW,
-                                                              headerMode),
-                                                plcpHtTrainingSymbolsStart - previous,
-                                                headerMode);
-            }
-          //case 1b: current after HT training symbols start
-          else if (current >= plcpHtTrainingSymbolsStart)
-            {
-              psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
-                                                              noiseInterferenceW,
-                                                              headerMode),
-                                                plcpHtTrainingSymbolsStart - previous,
-                                                headerMode);
+                                                              htHeaderMode),
+                                                plcpPayloadStart - previous,
+                                                htHeaderMode);
 
+              NS_LOG_DEBUG ("Case 2a - previous is in HT-SIG or in HT training and current after payload start: mode=" << htHeaderMode << ", psr=" << psr);
             }
-          //Case 1c: current is with previous in HT sig
+          //Case 2b: current is in HT-SIG or in HT training
           else
             {
               psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
                                                               noiseInterferenceW,
-                                                              headerMode),
+                                                              htHeaderMode),
                                                 current - previous,
-                                                headerMode);
+                                                htHeaderMode);
+
+              NS_LOG_DEBUG ("Case 2b - previous is in HT-SIG or in HT training and current is in HT-SIG or in HT training: mode=" << htHeaderMode << ", psr=" << psr);
             }
         }
-      //Case 2: previous in L-SIG: GF will not reach here because it will execute the previous if and exit
+      //Case 3: previous in L-SIG: GF will not reach here because it will execute the previous if and exit
       else if (previous >= plcpHeaderStart)
         {
-          //Case 2a: current after payload start
+          NS_ASSERT (preamble != WIFI_PREAMBLE_HT_GF);
+          //Case 3a: current after payload start
           if (current >= plcpPayloadStart)
             {
-              //Case 2ai: Non HT format (No HT-SIG or Training Symbols)
+              //Case 3ai: Non HT format (No HT-SIG or Training Symbols)
               if (preamble == WIFI_PREAMBLE_LONG || preamble == WIFI_PREAMBLE_SHORT)
                 {
                   psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
@@ -443,73 +407,58 @@ InterferenceHelper::CalculatePlcpHeaderPer (Ptr<const InterferenceHelper::Event>
                                                                   headerMode),
                                                     plcpPayloadStart - previous,
                                                     headerMode);
+
+                  NS_LOG_DEBUG ("Case 3ai - previous in L-SIG and current after payload start: mode=" << headerMode << ", psr=" << psr);
                 }
+              //Case 3aii: HT mixed format
               else
                 {
                   psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
                                                                   noiseInterferenceW,
-                                                                  headerMode),
-                                                    plcpHtTrainingSymbolsStart - plcpHsigHeaderStart,
-                                                    headerMode);
+                                                                  htHeaderMode),
+                                                    plcpPayloadStart - plcpHsigHeaderStart,
+                                                    htHeaderMode);
+
                   psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
                                                                   noiseInterferenceW,
-                                                                  MfHeaderMode),
+                                                                  headerMode),
                                                     plcpHsigHeaderStart - previous,
-                                                    MfHeaderMode);
+                                                    headerMode);
+
+                  NS_LOG_DEBUG ("Case 3aii - previous in L-SIG and current after payload start: HT mode=" << htHeaderMode << ", non-HT mode=" << headerMode << ", psr=" << psr);
                 }
             }
-          //Case 2b: current in HT training symbol. non HT will not come here since it went in previous if or if the previous if is not true this will be not true
-          else if (current >= plcpHtTrainingSymbolsStart)
-            {
-              psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
-                                                              noiseInterferenceW,
-                                                              headerMode),
-                                                plcpHtTrainingSymbolsStart - plcpHsigHeaderStart,
-                                                headerMode);
-              psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
-                                                              noiseInterferenceW,
-                                                              MfHeaderMode),
-                                                plcpHsigHeaderStart - previous,
-                                                MfHeaderMode);
-            }
-          //Case 2c: current in HT-SIG. non HT will not come here since it went in previous if or if the previous if is not true this will be not true
+          //Case 3b: current in HT-SIG or in HT training symbol. Non HT will not come here since it went in previous if or if the previous if is not true this will be not true
           else if (current >= plcpHsigHeaderStart)
             {
+              NS_ASSERT ((preamble != WIFI_PREAMBLE_LONG) && (preamble != WIFI_PREAMBLE_SHORT));
+
+              psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
+                                                              noiseInterferenceW,
+                                                              htHeaderMode),
+                                                current - plcpHsigHeaderStart,
+                                                htHeaderMode);
               psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
                                                               noiseInterferenceW,
                                                               headerMode),
-                                                current - plcpHsigHeaderStart,
-                                                headerMode);
-              psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
-                                                              noiseInterferenceW,
-                                                              MfHeaderMode),
                                                 plcpHsigHeaderStart - previous,
-                                                MfHeaderMode);
+                                                headerMode);
 
+              NS_LOG_DEBUG ("Case 3b - previous in L-SIG and current in HT-SIG or in HT training symbol: HT mode=" << htHeaderMode << ", non-HT mode=" << headerMode << ", psr=" << psr);
             }
-          //Case 2d: Current with previous in L-SIG
+          //Case 3c: current with previous in L-SIG
           else
             {
-              // Case 4di: Non HT format (No HT-SIG or Training Symbols)
-              if (preamble == WIFI_PREAMBLE_LONG || preamble == WIFI_PREAMBLE_SHORT)
-                {
-                  psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
-                                                                  noiseInterferenceW,
-                                                                  headerMode),
-                                                    current - previous,
-                                                    headerMode);
-                }
-              else
-                {
-                  psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
-                                                                  noiseInterferenceW,
-                                                                  MfHeaderMode),
-                                                    current - previous,
-                                                    MfHeaderMode);
-                }
+              psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
+                                                              noiseInterferenceW,
+                                                              headerMode),
+                                                current - previous,
+                                                headerMode);
+
+              NS_LOG_DEBUG ("Case 3c - current with previous in L-SIG: mode=" << headerMode << ", psr=" << psr);
             }
         }
-      //Case 3: previous is in the preamble works for all cases
+      //Case 4: previous is in the preamble works for all cases
       else
         {
           if (current >= plcpPayloadStart)
@@ -522,80 +471,58 @@ InterferenceHelper::CalculatePlcpHeaderPer (Ptr<const InterferenceHelper::Event>
                                                                   headerMode),
                                                     plcpPayloadStart - plcpHeaderStart,
                                                     headerMode);
+
+                  NS_LOG_DEBUG ("Case 4a - previous is in the preamble: mode=" << headerMode << ", psr=" << psr);
                 }
+              //HT format
               else
                 {
-                  //Greenfield or Mixed format
+                  psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
+                                                                  noiseInterferenceW,
+                                                                  htHeaderMode),
+                                                    plcpPayloadStart - plcpHsigHeaderStart,
+                                                    htHeaderMode);
+
                   psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
                                                                   noiseInterferenceW,
                                                                   headerMode),
-                                                    plcpHtTrainingSymbolsStart - plcpHsigHeaderStart,
+                                                    plcpHsigHeaderStart - plcpHeaderStart, //HT GF: plcpHsigHeaderStart - plcpHeaderStart = 0
                                                     headerMode);
-                }
-              if (preamble == WIFI_PREAMBLE_HT_MF)
-                {
-                  psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
-                                                                  noiseInterferenceW,
-                                                                  MfHeaderMode),
-                                                    plcpHsigHeaderStart - plcpHeaderStart,
-                                                    MfHeaderMode);
-                }
-            }
-          else if (current >= plcpHtTrainingSymbolsStart )
-            {
-              //Non HT format will not come here since it will execute prev if
-              //Greenfield or Mixed format
-              psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
-                                                              noiseInterferenceW,
-                                                              headerMode),
-                                                plcpHtTrainingSymbolsStart - plcpHsigHeaderStart,
-                                                headerMode);
-              //Greenfield
-              if (preamble == WIFI_PREAMBLE_HT_MF)
-                {
-                  psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
-                                                                  noiseInterferenceW,
-                                                                  MfHeaderMode),
-                                                    plcpHsigHeaderStart - plcpHeaderStart,
-                                                    MfHeaderMode);
+
+                  NS_LOG_DEBUG ("Case 4a - previous is in the preamble: HT mode=" << htHeaderMode << ", non-HT mode=" << headerMode << ", psr=" << psr);
                 }
             }
           //non HT will not come here
           else if (current >= plcpHsigHeaderStart)
             {
+              NS_ASSERT ((preamble != WIFI_PREAMBLE_LONG) && (preamble != WIFI_PREAMBLE_SHORT));
+
+              psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
+                                                              noiseInterferenceW,
+                                                              htHeaderMode),
+                                                current - plcpHsigHeaderStart,
+                                                htHeaderMode);
+
               psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
                                                               noiseInterferenceW,
                                                               headerMode),
-                                                current - plcpHsigHeaderStart,
+                                                plcpHsigHeaderStart - plcpHeaderStart, //HT GF: plcpHsigHeaderStart - plcpHeaderStart = 0
                                                 headerMode);
-              if  (preamble != WIFI_PREAMBLE_HT_GF)
-                {
-                  psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
-                                                                  noiseInterferenceW,
-                                                                  MfHeaderMode),
-                                                    plcpHsigHeaderStart - plcpHeaderStart,
-                                                    MfHeaderMode);
-                }
+
+              NS_LOG_DEBUG ("Case 4b - previous is in the preamble: HT mode=" << htHeaderMode << ", non-HT mode=" << headerMode << ", psr=" << psr);
             }
           //GF will not come here
           else if (current >= plcpHeaderStart)
             {
-              if (preamble == WIFI_PREAMBLE_LONG || preamble == WIFI_PREAMBLE_SHORT)
-                {
-                  psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
-                                                                  noiseInterferenceW,
-                                                                  headerMode),
-                                                    current - plcpHeaderStart,
-                                                    headerMode);
-                }
-              else
-                {
-                  psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
-                                                                  noiseInterferenceW,
-                                                                  MfHeaderMode),
-                                                    current - plcpHeaderStart,
-                                                    MfHeaderMode);
-                }
+              NS_ASSERT (preamble != WIFI_PREAMBLE_HT_GF);
+
+              psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
+                                                              noiseInterferenceW,
+                                                              headerMode),
+                                                current - plcpHeaderStart,
+                                                headerMode);
+
+              NS_LOG_DEBUG ("Case 4c - previous is in the preamble: mode=" << headerMode << ", psr=" << psr);
             }
         }
 
@@ -671,12 +598,14 @@ InterferenceHelper::AddNiChangeEvent (NiChange change)
 void
 InterferenceHelper::NotifyRxStart ()
 {
+  NS_LOG_FUNCTION (this);
   m_rxing = true;
 }
 
 void
 InterferenceHelper::NotifyRxEnd ()
 {
+  NS_LOG_FUNCTION (this);
   m_rxing = false;
 }
 

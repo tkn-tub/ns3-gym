@@ -118,7 +118,7 @@ WifiPhy::~WifiPhy ()
 }
 
 WifiMode
-WifiPhy::GetMFPlcpHeaderMode (WifiMode payloadMode, WifiPreamble preamble)
+WifiPhy::GetHTPlcpHeaderMode (WifiMode payloadMode, WifiPreamble preamble)
 {
   switch (payloadMode.GetBandwidth ())
     {
@@ -186,6 +186,7 @@ WifiPhy::GetPlcpHeaderMode (WifiMode payloadMode, WifiPreamble preamble)
   switch (payloadMode.GetModulationClass ())
     {
     case WIFI_MOD_CLASS_OFDM:
+    case WIFI_MOD_CLASS_HT:
       {
         switch (payloadMode.GetBandwidth ())
           {
@@ -198,36 +199,6 @@ WifiPhy::GetPlcpHeaderMode (WifiMode payloadMode, WifiPreamble preamble)
             //actually this is only the first part of the PlcpHeader,
             //because the last 16 bits of the PlcpHeader are using the
             //same mode of the payload
-            return WifiPhy::GetOfdmRate6Mbps ();
-          }
-      }
-    case WIFI_MOD_CLASS_HT:
-      {
-        //return the HT-SIG
-        //IEEE Std 802.11n, 20.3.23
-        switch (preamble)
-          {
-          case WIFI_PREAMBLE_HT_MF:
-            switch (payloadMode.GetBandwidth ())
-              {
-              case 20000000:
-                return WifiPhy::GetOfdmRate13MbpsBW20MHz ();
-              case 40000000:
-                return WifiPhy::GetOfdmRate27MbpsBW40MHz ();
-              default:
-                return WifiPhy::GetOfdmRate13MbpsBW20MHz ();
-              }
-          case WIFI_PREAMBLE_HT_GF:
-            switch (payloadMode.GetBandwidth ())
-              {
-              case 20000000:
-                return WifiPhy::GetOfdmRate13MbpsBW20MHz ();
-              case 40000000:
-                return WifiPhy::GetOfdmRate27MbpsBW40MHz ();
-              default:
-                return WifiPhy::GetOfdmRate13MbpsBW20MHz ();
-              }
-          default:
             return WifiPhy::GetOfdmRate6Mbps ();
           }
       }

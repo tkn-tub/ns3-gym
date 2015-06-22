@@ -314,9 +314,10 @@ public:
    * \param payloadMode the WifiMode use for the transmission of the payload
    * \param preamble the type of preamble
    *
-   * \return the WifiMode used for the transmission of the HT-SIG in Mixed Format and greenfield format PLCP header
+   * \return the WifiMode used for the transmission of the HT-SIG and the HT training fields
+   *         in Mixed Format and greenfield format PLCP header
    */
-  static WifiMode GetMFPlcpHeaderMode (WifiMode payloadMode, WifiPreamble preamble);
+  static WifiMode GetHTPlcpHeaderMode (WifiMode payloadMode, WifiPreamble preamble);
   /**
    * \param preamble the type of preamble
    *
