@@ -21,8 +21,8 @@ class command_task(Task.Task):
 	def __str__(self):
 		"string to display to the user"
 		env = self.env
-		src_str = ' '.join([a.nice_path(env) for a in self.inputs])
-		tgt_str = ' '.join([a.nice_path(env) for a in self.outputs])
+		src_str = ' '.join([a.bldpath() for a in self.inputs])
+		tgt_str = ' '.join([a.bldpath() for a in self.outputs])
 		if self.outputs:
 			sep = ' -> '
 		else:

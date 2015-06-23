@@ -192,13 +192,11 @@ int main ()
 ''' % dict(type1=t1, type2=t2)
 
         try:
-            ret = conf.run_c_code(code=test_program,
-                                  env=conf.env.derive(), compile_filename='test.cc',
-                                  features='cxx cprogram', execute=False)
+            ret = conf.check(compiler='cxx', fragment=test_program, features='cxx')
         except Errors.ConfigurationError:
-            ret = 1
+            ret = False
         conf.msg('Checking for types %s and %s equivalence' % (t1, t2), (ret and 'no' or 'yes'))
-        return not ret
+        return ret
 
     uint64_is_long = test("uint64_t", "unsigned long")
     uint64_is_long_long = test("uint64_t", "unsigned long long")
