@@ -278,7 +278,7 @@ int main ()
                                      "gccxml missing")
         return
 
-    gccxml_version_line = os.popen(gccxml + " --version").readline().strip()
+    gccxml_version_line = os.popen(gccxml[0] + " --version").readline().strip()
     m = re.match( "^GCC-XML version (\d\.\d(\.\d)?)$", gccxml_version_line)
     gccxml_version = m.group(1)
     gccxml_version_ok = ([int(s) for s in gccxml_version.split('.')] >= [0, 9])
