@@ -238,39 +238,38 @@ def _check_compilation_flag(conf, flag, mode='cxx', linkflags=None):
     conf.start_msg('Checking for compilation %s support' % (flag_str,))
     env = conf.env.derive()
 
+    retval = False
     if mode == 'cc':
         mode = 'c'
 
     if mode == 'cxx':
-        fname = 'test.cc'
         env.append_value('CXXFLAGS', flag)
     else:
-        fname = 'test.c'
         env.append_value('CFLAGS', flag)
 
     if linkflags is not None:
         env.append_value("LINKFLAGS", linkflags)
 
     try:
-        retval = conf.run_c_code(code='#include <stdio.h>\nint main() { return 0; }\n',
-                                 env=env, compile_filename=fname,
-                                 features=[mode, mode+'program'], execute=False)
+        retval = conf.check(compiler=mode, fragment='int main() { return 0; }', features='c')
     except Errors.ConfigurationError:
         ok = False
     else:
-        ok = (retval == 0)
+        ok = (retval == True)
     conf.end_msg(ok)
     return ok
 
-    
+
 def report_optional_feature(conf, name, caption, was_enabled, reason_not_enabled):
     conf.env.append_value('NS3_OPTIONAL_FEATURES', [(name, caption, was_enabled, reason_not_enabled)])
+
 
 def check_optional_feature(conf, name):
     for (name1, caption, was_enabled, reason_not_enabled) in conf.env.NS3_OPTIONAL_FEATURES:
         if name1 == name:
             return was_enabled
     raise KeyError("Feature %r not declared yet" % (name,))
+
 
 # starting with waf 1.6, conf.check() becomes fatal by default if the
 # test fails, this alternative method makes the test non-fatal, as it
@@ -280,6 +279,7 @@ def _check_nonfatal(conf, *args, **kwargs):
         return conf.check(*args, **kwargs)
     except conf.errors.ConfigurationError:
         return None
+
 
 def configure(conf):
     conf.load('relocation', tooldir=['waf-tools'])
@@ -292,12 +292,13 @@ def configure(conf):
     conf.env['NS3_OPTIONAL_FEATURES'] = []
 
     conf.load('compiler_c')
-    cc_string='.'.join(conf.env['CC_VERSION'])
+    cc_string = '.'.join(conf.env['CC_VERSION'])
     conf.msg('Checking for cc version',cc_string,'GREEN')
     conf.load('compiler_cxx')
     conf.load('cflags', tooldir=['waf-tools'])
     conf.load('command', tooldir=['waf-tools'])
     conf.load('gnu_dirs')
+    conf.load('clang_compilation_database', tooldir=['waf-tools'])
 
     env = conf.env
 
