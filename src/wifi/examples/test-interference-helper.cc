@@ -123,7 +123,8 @@ InterferenceExperiment::InterferenceExperiment ()
 {
 }
 InterferenceExperiment::Input::Input ()
-  : xA (-5),
+  : interval (MicroSeconds (0)),
+    xA (-5),
     xB (5),
     txModeA ("OfdmRate54Mbps"),
     txModeB ("OfdmRate54Mbps"),
@@ -176,7 +177,7 @@ InterferenceExperiment::Run (struct InterferenceExperiment::Input input)
   rx->ConfigureStandard (input.standard);
 
   Simulator::Schedule (Seconds (0), &InterferenceExperiment::SendA, this);
-  Simulator::Schedule (Seconds (0) + MicroSeconds (input.interval), &InterferenceExperiment::SendB, this);
+  Simulator::Schedule (Seconds (0) + input.interval, &InterferenceExperiment::SendB, this);
 
   Simulator::Run ();
   Simulator::Destroy ();
@@ -188,9 +189,10 @@ int main (int argc, char *argv[])
   InterferenceExperiment::Input input;
   std::string str_standard = "WIFI_PHY_STANDARD_80211a";
   std::string str_preamble = "WIFI_PREAMBLE_LONG";
+  double delay = 0; //microseconds
 
   CommandLine cmd;
-  cmd.AddValue ("delay", "Delay in microseconds between frame transmission from sender A and frame transmission from sender B", input.interval);
+  cmd.AddValue ("delay", "Delay in microseconds between frame transmission from sender A and frame transmission from sender B", delay);
   cmd.AddValue ("xA", "The position of transmitter A (< 0)", input.xA);
   cmd.AddValue ("xB", "The position of transmitter B (> 0)", input.xB);
   cmd.AddValue ("packetSizeA", "Packet size in bytes of transmitter A", input.packetSizeA);
@@ -205,6 +207,8 @@ int main (int argc, char *argv[])
 
   LogComponentEnable ("YansWifiPhy", LOG_LEVEL_ALL);
   LogComponentEnable ("InterferenceHelper", LOG_LEVEL_ALL);
+
+  input.interval = MicroSeconds (delay);
 
   if (input.xA >= 0 || input.xB <= 0)
     {
