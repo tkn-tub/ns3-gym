@@ -197,7 +197,7 @@ Ipv4L3Protocol::NotifyNewAggregate ()
           this->SetNode (node);
         }
     }
-  Object::NotifyNewAggregate ();
+  Ipv4::NotifyNewAggregate ();
 }
 
 void 

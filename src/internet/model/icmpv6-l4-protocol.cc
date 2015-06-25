@@ -137,7 +137,7 @@ void Icmpv6L4Protocol::NotifyNewAggregate ()
             }
         }
     }
-  Object::NotifyNewAggregate ();
+  IpL4Protocol::NotifyNewAggregate ();
 }
 
 void Icmpv6L4Protocol::SetNode (Ptr<Node> node)

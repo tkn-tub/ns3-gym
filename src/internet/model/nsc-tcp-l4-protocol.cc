@@ -244,7 +244,7 @@ NscTcpL4Protocol::NotifyNewAggregate ()
             }
         }
     }
-  Object::NotifyNewAggregate ();
+  IpL4Protocol::NotifyNewAggregate ();
 }
 
 int 

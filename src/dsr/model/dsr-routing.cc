@@ -416,7 +416,7 @@ DsrRouting::NotifyNewAggregate ()
             }
         }
     }
-  Object::NotifyNewAggregate ();
+  IpL4Protocol::NotifyNewAggregate ();
   Simulator::ScheduleNow (&DsrRouting::Start, this);
 }
 

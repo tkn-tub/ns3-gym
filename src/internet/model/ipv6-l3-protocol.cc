@@ -693,7 +693,7 @@ void Ipv6L3Protocol::NotifyNewAggregate ()
           this->SetNode (node);
         }
     }
-  Object::NotifyNewAggregate ();
+  Ipv6::NotifyNewAggregate ();
 }
 
 void Ipv6L3Protocol::SetNode (Ptr<Node> node)

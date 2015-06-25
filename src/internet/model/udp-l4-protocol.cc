@@ -120,7 +120,7 @@ UdpL4Protocol::NotifyNewAggregate ()
       ipv6->Insert (this);
       this->SetDownTarget6 (MakeCallback (&Ipv6L3Protocol::Send, ipv6));
     }
-  Object::NotifyNewAggregate ();
+  IpL4Protocol::NotifyNewAggregate ();
 }
 
 int 

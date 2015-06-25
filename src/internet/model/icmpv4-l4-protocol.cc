@@ -92,7 +92,7 @@ Icmpv4L4Protocol::NotifyNewAggregate ()
             }
         }
     }
-  Object::NotifyNewAggregate ();
+  IpL4Protocol::NotifyNewAggregate ();
 }
 
 uint16_t 
