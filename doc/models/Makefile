@@ -62,7 +62,11 @@ SOURCES = \
 	$(SRC)/olsr/doc/olsr.rst \
 	$(SRC)/openflow/doc/openflow-switch.rst \
 	$(SRC)/point-to-point/doc/point-to-point.rst \
-	$(SRC)/wifi/doc/wifi.rst \
+	$(SRC)/wifi/doc/source/wifi.rst \
+	$(SRC)/wifi/doc/source/wifi-design.rst \
+	$(SRC)/wifi/doc/source/wifi-user.rst \
+	$(SRC)/wifi/doc/source/wifi-testing.rst \
+	$(SRC)/wifi/doc/source/wifi-references.rst \
 	$(SRC)/wimax/doc/wimax.rst \
 	$(SRC)/uan/doc/uan.rst \
 	$(SRC)/topology-read/doc/topology.rst \
@@ -99,8 +103,8 @@ SOURCEFIGS = \
 	$(SRC)/internet/doc/internet-node-recv.dia \
 	$(SRC)/internet/doc/routing.dia \
 	$(SRC)/internet/doc/routing-specialization.dia \
-	$(SRC)/wifi/doc/WifiArchitecture.dia \
-	$(SRC)/wifi/doc/snir.dia \
+	$(SRC)/wifi/doc/source/figures/WifiArchitecture.dia \
+	$(SRC)/wifi/doc/source/figures/snir.dia \
 	$(SRC)/wimax/doc/WimaxArchitecture.dia \
 	$(SRC)/lte/doc/source/figures/epc-ctrl-arch.dia \
 	$(SRC)/lte/doc/source/figures/epc-data-flow-dl.dia \
