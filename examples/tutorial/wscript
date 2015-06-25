@@ -12,8 +12,12 @@ def build(bld):
     obj = bld.create_ns3_program('second', ['core', 'point-to-point', 'csma', 'internet', 'applications'])
     obj.source = 'second.cc'
         
+    bld.register_ns3_script('second.py', ['core', 'point-to-point', 'csma', 'internet', 'applications'])
+
     obj = bld.create_ns3_program('third', ['core', 'point-to-point', 'csma', 'wifi', 'internet', 'applications'])
     obj.source = 'third.cc'
+
+    bld.register_ns3_script('third.py', ['core', 'point-to-point', 'csma', 'wifi', 'internet', 'applications'])
 
     obj = bld.create_ns3_program('fourth', ['core'])
     obj.source = 'fourth.cc'
