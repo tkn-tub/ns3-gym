@@ -80,6 +80,8 @@ Bench::RunBench (void)
   double init, simu;
 
   DEB ("initializing");
+  m_count = 0;
+
 
   time.Start ();
   for (uint32_t i = 0; i < m_population; ++i)
@@ -105,14 +107,12 @@ Bench::RunBench (void)
        std::setw (g_fwidth) << (m_count / simu) <<
        std::setw (g_fwidth) << (simu / m_count));
 
-  // Clean up scheduler
-  Simulator::Destroy ();
 }
 
 void
 Bench::Cb (void)
 {
-  if (m_count > m_total) 
+  if (m_count >= m_total) 
     {
       return;
     }
@@ -271,4 +271,7 @@ int main (int argc, char *argv[])
 
   LOG ("");
   return 0;
+
+  Simulator::Destroy ();
+
 }
