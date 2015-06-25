@@ -72,13 +72,15 @@ import ns.wifi
 
 def main(argv): 
     # 
-    #  First, we declare and initialize a few local variables that control some 
+    #  First, we initialize a few local variables that control some 
     #  simulation parameters.
-    # 
-    backboneNodes = 10
-    infraNodes = 2 
-    lanNodes = 2
-    stopTime = 20
+    #
+
+    cmd = ns.core.CommandLine()
+    cmd.backboneNodes = 10
+    cmd.infraNodes = 2
+    cmd.lanNodes = 2
+    cmd.stopTime = 20
 
     # 
     #  Simulation defaults are typically set next, before command line
@@ -92,17 +94,22 @@ def main(argv):
     #  system so that they can be overridden with flags such as 
     #  "--backboneNodes=20"
     # 
-    cmd = ns.core.CommandLine()
-    cmd.AddValue("backboneNodes", "number of backbone nodes", str(backboneNodes))
-    cmd.AddValue("infraNodes", "number of leaf nodes", str(infraNodes))
-    cmd.AddValue("lanNodes", "number of LAN nodes", str(lanNodes))
-    cmd.AddValue("stopTime", "simulation stop time(seconds)", str(stopTime))
-
+    
+    cmd.AddValue("backboneNodes", "number of backbone nodes")
+    cmd.AddValue("infraNodes", "number of leaf nodes")
+    cmd.AddValue("lanNodes", "number of LAN nodes")
+    cmd.AddValue("stopTime", "simulation stop time(seconds)")
+    
     # 
     #  The system global variables and the local values added to the argument
     #  system can be overridden by command line arguments by using this call.
     # 
     cmd.Parse(argv)
+
+    backboneNodes = int(cmd.backboneNodes)
+    infraNodes = int(cmd.infraNodes) 
+    lanNodes = int(cmd.lanNodes)
+    stopTime = int(cmd.stopTime)
 
     if (stopTime < 10):
         print "Use a simulation stop time >= 10 seconds"
