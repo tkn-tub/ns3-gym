@@ -25,6 +25,10 @@
 
 // Default Network Topology
 //
+// Number of wifi or csma nodes can be increased up to 250
+//                          |
+//                 Rank 0   |   Rank 1
+// -------------------------|----------------------------
 //   Wifi 10.1.3.0
 //                 AP
 //  *    *    *    *
@@ -175,13 +179,9 @@ main (int argc, char *argv[])
 
   if (tracing == true)
     {
-      pointToPoint.EnablePcapAll ("third-distributed-wifi");
-      phy.EnablePcap ("third-distributed-wifi", apDevices.Get (0));
-      csma.EnablePcap ("third-distributed-wifi", csmaDevices.Get (0), true);
-          
-      pointToPoint.EnablePcapAll ("third-distributed-csma");
-      phy.EnablePcap ("third-distributed-csma", apDevices.Get (0));
-      csma.EnablePcap ("third-distributed-csma", csmaDevices.Get (0), true);
+      pointToPoint.EnablePcapAll ("third");
+      phy.EnablePcap ("third", apDevices.Get (0));
+      csma.EnablePcap ("third", csmaDevices.Get (0), true);
     }
 
   Simulator::Run ();

@@ -26,6 +26,7 @@
 #include "ns3/mpi-module.h"
 
 // Default Network Topology
+//
 // (same as third.cc from tutorial)
 // Distributed simulation, split along the p2p link
 // Number of wifi or csma nodes can be increased up to 250
