@@ -1120,7 +1120,7 @@ def _doxygen(bld):
 
     _getVersion()
     doxygen_config = os.path.join('doc', 'doxygen.conf')
-    if subprocess.Popen([env['DOXYGEN'], doxygen_config]).wait():
+    if subprocess.Popen(env['DOXYGEN'] + [doxygen_config]).wait():
         Logs.error("Doxygen build returned an error.")
         raise SystemExit(1)
 
