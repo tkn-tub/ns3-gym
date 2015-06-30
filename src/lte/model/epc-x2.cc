@@ -348,6 +348,7 @@ EpcX2::RecvFromX2cSocket (Ptr<Socket> socket)
           NS_LOG_INFO ("X2 ResourceStatusUpdate header: " << x2ResStatUpdHeader);
 
           EpcX2SapUser::ResourceStatusUpdateParams params;
+          params.targetCellId = 0;
           params.enb1MeasurementId = x2ResStatUpdHeader.GetEnb1MeasurementId ();
           params.enb2MeasurementId = x2ResStatUpdHeader.GetEnb2MeasurementId ();
           params.cellMeasurementResultList = x2ResStatUpdHeader.GetCellMeasurementResultList ();
