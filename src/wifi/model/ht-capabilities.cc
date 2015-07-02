@@ -149,7 +149,7 @@ HtCapabilities::GetInformationFieldSize () const
 {
   //we should not be here if ht is not supported
   NS_ASSERT (m_htSupported > 0);
-  return 19;
+  return 26;
 }
 
 Buffer::Iterator
@@ -296,6 +296,9 @@ HtCapabilities::SerializeInformationField (Buffer::Iterator start) const
       start.WriteU8 (GetAmpduParameters ());
       start.WriteHtolsbU64 (GetSupportedMcsSet2 ());
       start.WriteHtolsbU64 (GetSupportedMcsSet1 ());
+      start.WriteU16 (0); //HT Extended Capabilities (not yet supported)
+      start.WriteU32 (0); //Transmit Beamforming Capabilities (not yet supported)
+      start.WriteU8 (0); //ASEL Capabilities (not yet supported)
     }
 }
 
@@ -311,6 +314,9 @@ HtCapabilities::DeserializeInformationField (Buffer::Iterator start,
   SetHtCapabilitiesInfo (htinfo);
   SetAmpduParameters (ampduparam);
   SetSupportedMcsSet (mcsset1, mcsset2);
+  i.ReadU16 (); //HT Extended Capabilities (not yet supported)
+  i.ReadU32 (); //Transmit Beamforming Capabilities (not yet supported)
+  i.ReadU8 (); //ASEL Capabilities (not yet supported)
   return length;
 }
 
