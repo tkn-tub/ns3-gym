@@ -182,10 +182,19 @@ Ipv6EndPointDemux::EndPoints Ipv6EndPointDemux::Lookup (Ipv6Address daddr, uint1
   for (EndPointsI i = m_endPoints.begin (); i != m_endPoints.end (); i++)
     {
       Ipv6EndPoint* endP = *i;
+
       NS_LOG_DEBUG ("Looking at endpoint dport=" << endP->GetLocalPort ()
                                                  << " daddr=" << endP->GetLocalAddress ()
                                                  << " sport=" << endP->GetPeerPort ()
                                                  << " saddr=" << endP->GetPeerAddress ());
+
+      if (!endP->IsRxEnabled ())
+        {
+          NS_LOG_LOGIC ("Skipping endpoint " << &endP
+                        << " because endpoint can not receive packets");
+          continue;
+        }
+
       if (endP->GetLocalPort () != dport)
         {
           NS_LOG_LOGIC ("Skipping endpoint " << &endP

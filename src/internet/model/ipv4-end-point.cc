@@ -31,10 +31,12 @@ Ipv4EndPoint::Ipv4EndPoint (Ipv4Address address, uint16_t port)
   : m_localAddr (address), 
     m_localPort (port),
     m_peerAddr (Ipv4Address::GetAny ()),
-    m_peerPort (0)
+    m_peerPort (0),
+    m_rxEnabled (true)
 {
   NS_LOG_FUNCTION (this << address << port);
 }
+
 Ipv4EndPoint::~Ipv4EndPoint ()
 {
   NS_LOG_FUNCTION (this);
@@ -67,18 +69,21 @@ Ipv4EndPoint::GetLocalPort (void)
   NS_LOG_FUNCTION (this);
   return m_localPort;
 }
+
 Ipv4Address 
 Ipv4EndPoint::GetPeerAddress (void)
 {
   NS_LOG_FUNCTION (this);
   return m_peerAddr;
 }
+
 uint16_t 
 Ipv4EndPoint::GetPeerPort (void)
 {
   NS_LOG_FUNCTION (this);
   return m_peerPort;
 }
+
 void 
 Ipv4EndPoint::SetPeer (Ipv4Address address, uint16_t port)
 {
@@ -108,6 +113,7 @@ Ipv4EndPoint::SetRxCallback (Callback<void,Ptr<Packet>, Ipv4Header, uint16_t, Pt
   NS_LOG_FUNCTION (this << &callback);
   m_rxCallback = callback;
 }
+
 void 
 Ipv4EndPoint::SetIcmpCallback (Callback<void,Ipv4Address,uint8_t,uint8_t,uint8_t,uint32_t> callback)
 {
@@ -134,6 +140,7 @@ Ipv4EndPoint::ForwardUp (Ptr<Packet> p, const Ipv4Header& header, uint16_t sport
                               incomingInterface);
     }
 }
+
 void 
 Ipv4EndPoint::DoForwardUp (Ptr<Packet> p, const Ipv4Header& header, uint16_t sport,
                            Ptr<Ipv4Interface> incomingInterface)
@@ -159,6 +166,7 @@ Ipv4EndPoint::ForwardIcmp (Ipv4Address icmpSource, uint8_t icmpTtl,
                               icmpSource, icmpTtl, icmpType, icmpCode, icmpInfo);
     }
 }
+
 void 
 Ipv4EndPoint::DoForwardIcmp (Ipv4Address icmpSource, uint8_t icmpTtl, 
                              uint8_t icmpType, uint8_t icmpCode,
@@ -170,6 +178,18 @@ Ipv4EndPoint::DoForwardIcmp (Ipv4Address icmpSource, uint8_t icmpTtl,
     {
       m_icmpCallback (icmpSource,icmpTtl,icmpType,icmpCode,icmpInfo);
     }
+}
+
+void
+Ipv4EndPoint::SetRxEnabled (bool enabled)
+{
+  m_rxEnabled = enabled;
+}
+
+bool
+Ipv4EndPoint::IsRxEnabled ()
+{
+  return m_rxEnabled;
 }
 
 } // namespace ns3

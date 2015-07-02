@@ -329,6 +329,14 @@ UdpSocketImpl::ShutdownRecv (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
   m_shutdownRecv = true;
+  if (m_endPoint)
+    {
+      m_endPoint->SetRxEnabled (false);
+    }
+  if (m_endPoint6)
+    {
+      m_endPoint6->SetRxEnabled (false);
+    }
   return 0;
 }
 

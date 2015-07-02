@@ -177,6 +177,18 @@ public:
   void ForwardIcmp (Ipv6Address src, uint8_t ttl, uint8_t type,
                     uint8_t code, uint32_t info);
 
+  /**
+   * \brief Enable or Disable the endpoint Rx capability.
+   * \param enabled true if Rx is enabled
+   */
+  void SetRxEnabled (bool enabled);
+
+  /**
+   * \brief Checks if the endpoint can receive packets.
+   * \returns true if the endpoint can receive packets.
+   */
+  bool IsRxEnabled (void);
+
 private:
   /**
    * \brief ForwardUp wrapper.
@@ -237,6 +249,11 @@ private:
    * \brief The destroy callback.
    */
   Callback<void> m_destroyCallback;
+
+  /**
+   * \brief true if the endpoint can receive packets.
+   */
+  bool m_rxEnabled;
 };
 
 } /* namespace ns3 */

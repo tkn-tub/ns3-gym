@@ -207,10 +207,19 @@ Ipv4EndPointDemux::Lookup (Ipv4Address daddr, uint16_t dport,
   for (EndPointsI i = m_endPoints.begin (); i != m_endPoints.end (); i++) 
     {
       Ipv4EndPoint* endP = *i;
+
       NS_LOG_DEBUG ("Looking at endpoint dport=" << endP->GetLocalPort ()
                                                  << " daddr=" << endP->GetLocalAddress ()
                                                  << " sport=" << endP->GetPeerPort ()
                                                  << " saddr=" << endP->GetPeerAddress ());
+
+      if (!endP->IsRxEnabled ())
+        {
+          NS_LOG_LOGIC ("Skipping endpoint " << &endP
+                        << " because endpoint can not receive packets");
+          continue;
+        }
+
       if (endP->GetLocalPort () != dport) 
         {
           NS_LOG_LOGIC ("Skipping endpoint " << &endP

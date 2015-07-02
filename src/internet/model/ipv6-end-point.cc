@@ -33,7 +33,8 @@ Ipv6EndPoint::Ipv6EndPoint (Ipv6Address addr, uint16_t port)
   : m_localAddr (addr),
     m_localPort (port),
     m_peerAddr (Ipv6Address::GetAny ()),
-    m_peerPort (0)
+    m_peerPort (0),
+    m_rxEnabled (true)
 {
 }
 
@@ -139,6 +140,17 @@ void Ipv6EndPoint::DoForwardIcmp (Ipv6Address src, uint8_t ttl, uint8_t type,
 {
   m_icmpCallback (src, ttl, type, code, info);
 }
+
+void Ipv6EndPoint::SetRxEnabled (bool enabled)
+{
+  m_rxEnabled = enabled;
+}
+
+bool Ipv6EndPoint::IsRxEnabled ()
+{
+  return m_rxEnabled;
+}
+
 
 } /* namespace ns3 */
 

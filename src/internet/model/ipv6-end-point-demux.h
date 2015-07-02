@@ -67,6 +67,15 @@ public:
 
   /**
    * \brief lookup for a match with all the parameters.
+   *
+   * The function will return a list of most-matching EndPoints, in this order:
+   *   -# Full match
+   *   -# All but local address
+   *   -# Only local port and local address match
+   *   -# Only local port match
+   *
+   * EndPoint with disabled Rx are skipped.
+   *
    * \param dst destination address to test
    * \param dport destination port to test
    * \param src source address to test

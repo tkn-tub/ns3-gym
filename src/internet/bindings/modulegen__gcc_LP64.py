@@ -120,8 +120,6 @@ def register_types(module):
     module.add_class('Ipv4AddressGenerator')
     ## ipv4-address-helper.h (module 'internet'): ns3::Ipv4AddressHelper [class]
     module.add_class('Ipv4AddressHelper')
-    ## ipv4-end-point.h (module 'internet'): ns3::Ipv4EndPoint [class]
-    module.add_class('Ipv4EndPoint')
     ## ipv4-interface-address.h (module 'internet'): ns3::Ipv4InterfaceAddress [class]
     module.add_class('Ipv4InterfaceAddress')
     ## ipv4-interface-address.h (module 'internet'): ns3::Ipv4InterfaceAddress::InterfaceAddressScope_e [enumeration]
@@ -847,7 +845,6 @@ def register_methods(root_module):
     register_Ns3Ipv4Address_methods(root_module, root_module['ns3::Ipv4Address'])
     register_Ns3Ipv4AddressGenerator_methods(root_module, root_module['ns3::Ipv4AddressGenerator'])
     register_Ns3Ipv4AddressHelper_methods(root_module, root_module['ns3::Ipv4AddressHelper'])
-    register_Ns3Ipv4EndPoint_methods(root_module, root_module['ns3::Ipv4EndPoint'])
     register_Ns3Ipv4InterfaceAddress_methods(root_module, root_module['ns3::Ipv4InterfaceAddress'])
     register_Ns3Ipv4InterfaceContainer_methods(root_module, root_module['ns3::Ipv4InterfaceContainer'])
     register_Ns3Ipv4Mask_methods(root_module, root_module['ns3::Ipv4Mask'])
@@ -2515,65 +2512,6 @@ def register_Ns3Ipv4AddressHelper_methods(root_module, cls):
                    [param('ns3::Ipv4Address', 'network'), param('ns3::Ipv4Mask', 'mask'), param('ns3::Ipv4Address', 'base', default_value='"0.0.0.1"')])
     return
 
-def register_Ns3Ipv4EndPoint_methods(root_module, cls):
-    ## ipv4-end-point.h (module 'internet'): ns3::Ipv4EndPoint::Ipv4EndPoint(ns3::Ipv4EndPoint const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::Ipv4EndPoint const &', 'arg0')])
-    ## ipv4-end-point.h (module 'internet'): ns3::Ipv4EndPoint::Ipv4EndPoint(ns3::Ipv4Address address, uint16_t port) [constructor]
-    cls.add_constructor([param('ns3::Ipv4Address', 'address'), param('uint16_t', 'port')])
-    ## ipv4-end-point.h (module 'internet'): void ns3::Ipv4EndPoint::BindToNetDevice(ns3::Ptr<ns3::NetDevice> netdevice) [member function]
-    cls.add_method('BindToNetDevice', 
-                   'void', 
-                   [param('ns3::Ptr< ns3::NetDevice >', 'netdevice')])
-    ## ipv4-end-point.h (module 'internet'): void ns3::Ipv4EndPoint::ForwardIcmp(ns3::Ipv4Address icmpSource, uint8_t icmpTtl, uint8_t icmpType, uint8_t icmpCode, uint32_t icmpInfo) [member function]
-    cls.add_method('ForwardIcmp', 
-                   'void', 
-                   [param('ns3::Ipv4Address', 'icmpSource'), param('uint8_t', 'icmpTtl'), param('uint8_t', 'icmpType'), param('uint8_t', 'icmpCode'), param('uint32_t', 'icmpInfo')])
-    ## ipv4-end-point.h (module 'internet'): void ns3::Ipv4EndPoint::ForwardUp(ns3::Ptr<ns3::Packet> p, ns3::Ipv4Header const & header, uint16_t sport, ns3::Ptr<ns3::Ipv4Interface> incomingInterface) [member function]
-    cls.add_method('ForwardUp', 
-                   'void', 
-                   [param('ns3::Ptr< ns3::Packet >', 'p'), param('ns3::Ipv4Header const &', 'header'), param('uint16_t', 'sport'), param('ns3::Ptr< ns3::Ipv4Interface >', 'incomingInterface')])
-    ## ipv4-end-point.h (module 'internet'): ns3::Ptr<ns3::NetDevice> ns3::Ipv4EndPoint::GetBoundNetDevice() [member function]
-    cls.add_method('GetBoundNetDevice', 
-                   'ns3::Ptr< ns3::NetDevice >', 
-                   [])
-    ## ipv4-end-point.h (module 'internet'): ns3::Ipv4Address ns3::Ipv4EndPoint::GetLocalAddress() [member function]
-    cls.add_method('GetLocalAddress', 
-                   'ns3::Ipv4Address', 
-                   [])
-    ## ipv4-end-point.h (module 'internet'): uint16_t ns3::Ipv4EndPoint::GetLocalPort() [member function]
-    cls.add_method('GetLocalPort', 
-                   'uint16_t', 
-                   [])
-    ## ipv4-end-point.h (module 'internet'): ns3::Ipv4Address ns3::Ipv4EndPoint::GetPeerAddress() [member function]
-    cls.add_method('GetPeerAddress', 
-                   'ns3::Ipv4Address', 
-                   [])
-    ## ipv4-end-point.h (module 'internet'): uint16_t ns3::Ipv4EndPoint::GetPeerPort() [member function]
-    cls.add_method('GetPeerPort', 
-                   'uint16_t', 
-                   [])
-    ## ipv4-end-point.h (module 'internet'): void ns3::Ipv4EndPoint::SetDestroyCallback(ns3::Callback<void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> callback) [member function]
-    cls.add_method('SetDestroyCallback', 
-                   'void', 
-                   [param('ns3::Callback< void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'callback')])
-    ## ipv4-end-point.h (module 'internet'): void ns3::Ipv4EndPoint::SetIcmpCallback(ns3::Callback<void, ns3::Ipv4Address, unsigned char, unsigned char, unsigned char, unsigned int, ns3::empty, ns3::empty, ns3::empty, ns3::empty> callback) [member function]
-    cls.add_method('SetIcmpCallback', 
-                   'void', 
-                   [param('ns3::Callback< void, ns3::Ipv4Address, unsigned char, unsigned char, unsigned char, unsigned int, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'callback')])
-    ## ipv4-end-point.h (module 'internet'): void ns3::Ipv4EndPoint::SetLocalAddress(ns3::Ipv4Address address) [member function]
-    cls.add_method('SetLocalAddress', 
-                   'void', 
-                   [param('ns3::Ipv4Address', 'address')])
-    ## ipv4-end-point.h (module 'internet'): void ns3::Ipv4EndPoint::SetPeer(ns3::Ipv4Address address, uint16_t port) [member function]
-    cls.add_method('SetPeer', 
-                   'void', 
-                   [param('ns3::Ipv4Address', 'address'), param('uint16_t', 'port')])
-    ## ipv4-end-point.h (module 'internet'): void ns3::Ipv4EndPoint::SetRxCallback(ns3::Callback<void, ns3::Ptr<ns3::Packet>, ns3::Ipv4Header, unsigned short, ns3::Ptr<ns3::Ipv4Interface>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> callback) [member function]
-    cls.add_method('SetRxCallback', 
-                   'void', 
-                   [param('ns3::Callback< void, ns3::Ptr< ns3::Packet >, ns3::Ipv4Header, unsigned short, ns3::Ptr< ns3::Ipv4Interface >, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'callback')])
-    return
-
 def register_Ns3Ipv4InterfaceAddress_methods(root_module, cls):
     cls.add_binary_comparison_operator('!=')
     cls.add_output_stream_operator()
@@ -4223,10 +4161,10 @@ def register_Ns3PcapFile_methods(root_module, cls):
     cls.add_method('Close', 
                    'void', 
                    [])
-    ## pcap-file.h (module 'network'): static bool ns3::PcapFile::Diff(std::string const & f1, std::string const & f2, uint32_t & sec, uint32_t & usec, uint32_t snapLen=ns3::PcapFile::SNAPLEN_DEFAULT) [member function]
+    ## pcap-file.h (module 'network'): static bool ns3::PcapFile::Diff(std::string const & f1, std::string const & f2, uint32_t & sec, uint32_t & usec, uint32_t & packets, uint32_t snapLen=ns3::PcapFile::SNAPLEN_DEFAULT) [member function]
     cls.add_method('Diff', 
                    'bool', 
-                   [param('std::string const &', 'f1'), param('std::string const &', 'f2'), param('uint32_t &', 'sec'), param('uint32_t &', 'usec'), param('uint32_t', 'snapLen', default_value='ns3::PcapFile::SNAPLEN_DEFAULT')], 
+                   [param('std::string const &', 'f1'), param('std::string const &', 'f2'), param('uint32_t &', 'sec'), param('uint32_t &', 'usec'), param('uint32_t &', 'packets'), param('uint32_t', 'snapLen', default_value='ns3::PcapFile::SNAPLEN_DEFAULT')], 
                    is_static=True)
     ## pcap-file.h (module 'network'): bool ns3::PcapFile::Eof() const [member function]
     cls.add_method('Eof', 
@@ -14710,7 +14648,7 @@ def register_Ns3NetDevice_methods(root_module, cls):
     cls.add_constructor([])
     ## net-device.h (module 'network'): ns3::NetDevice::NetDevice(ns3::NetDevice const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::NetDevice const &', 'arg0')])
-    ## net-device.h (module 'network'): void ns3::NetDevice::AddLinkChangeCallback(ns3::Callback<void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> callback) [member function]
+    ## net-device.h (module 'network'): void ns3::NetDevice::AddLinkChangeCallback(ns3::Callback<void,ns3::empty,ns3::empty,ns3::empty,ns3::empty,ns3::empty,ns3::empty,ns3::empty,ns3::empty,ns3::empty> callback) [member function]
     cls.add_method('AddLinkChangeCallback', 
                    'void', 
                    [param('ns3::Callback< void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'callback')], 
@@ -16112,7 +16050,7 @@ def register_Ns3BridgeNetDevice_methods(root_module, cls):
     cls.add_method('AddBridgePort', 
                    'void', 
                    [param('ns3::Ptr< ns3::NetDevice >', 'bridgePort')])
-    ## bridge-net-device.h (module 'bridge'): void ns3::BridgeNetDevice::AddLinkChangeCallback(ns3::Callback<void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> callback) [member function]
+    ## bridge-net-device.h (module 'bridge'): void ns3::BridgeNetDevice::AddLinkChangeCallback(ns3::Callback<void,ns3::empty,ns3::empty,ns3::empty,ns3::empty,ns3::empty,ns3::empty,ns3::empty,ns3::empty,ns3::empty> callback) [member function]
     cls.add_method('AddLinkChangeCallback', 
                    'void', 
                    [param('ns3::Callback< void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'callback')], 
@@ -16905,7 +16843,7 @@ def register_Ns3LoopbackNetDevice_methods(root_module, cls):
     cls.add_constructor([param('ns3::LoopbackNetDevice const &', 'arg0')])
     ## loopback-net-device.h (module 'internet'): ns3::LoopbackNetDevice::LoopbackNetDevice() [constructor]
     cls.add_constructor([])
-    ## loopback-net-device.h (module 'internet'): void ns3::LoopbackNetDevice::AddLinkChangeCallback(ns3::Callback<void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> callback) [member function]
+    ## loopback-net-device.h (module 'internet'): void ns3::LoopbackNetDevice::AddLinkChangeCallback(ns3::Callback<void,ns3::empty,ns3::empty,ns3::empty,ns3::empty,ns3::empty,ns3::empty,ns3::empty,ns3::empty,ns3::empty> callback) [member function]
     cls.add_method('AddLinkChangeCallback', 
                    'void', 
                    [param('ns3::Callback< void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'callback')], 

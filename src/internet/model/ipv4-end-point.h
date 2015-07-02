@@ -168,6 +168,18 @@ public:
                     uint8_t icmpType, uint8_t icmpCode,
                     uint32_t icmpInfo);
 
+  /**
+   * \brief Enable or Disable the endpoint Rx capability.
+   * \param enabled true if Rx is enabled
+   */
+  void SetRxEnabled (bool enabled);
+
+  /**
+   * \brief Checks if the endpoint can receive packets.
+   * \returns true if the endpoint can receive packets.
+   */
+  bool IsRxEnabled (void);
+
 private:
   /**
    * \brief ForwardUp wrapper.
@@ -229,6 +241,11 @@ private:
    * \brief The destroy callback.
    */
   Callback<void> m_destroyCallback;
+
+  /**
+   * \brief true if the endpoint can receive packets.
+   */
+  bool m_rxEnabled;
 };
 
 } // namespace ns3

@@ -263,7 +263,6 @@ def build(bld):
         'model/ipv4-interface.h',
         'model/ipv4-l3-protocol.h',
         'model/ipv6-l3-protocol.h',
-        'model/ipv4-end-point.h',
         'model/ipv6-extension.h',
         'model/ipv6-extension-demux.h',
         'model/ipv6-extension-header.h',
