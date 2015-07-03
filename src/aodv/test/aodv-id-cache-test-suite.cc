@@ -37,11 +37,14 @@ namespace aodv
 // Tests
 //-----------------------------------------------------------------------------
 /// Unit test for id cache
-struct IdCacheTest : public TestCase
+class IdCacheTest : public TestCase
 {
+public:
   IdCacheTest () : TestCase ("Id Cache"), cache (Seconds (10))
   {}
   virtual void DoRun ();
+
+private:
   void CheckTimeout1 ();
   void CheckTimeout2 ();
   void CheckTimeout3 ();
@@ -93,7 +96,7 @@ IdCacheTest::CheckTimeout3 ()
 class IdCacheTestSuite : public TestSuite
 {
 public:
-  IdCacheTestSuite () : TestSuite ("routing-id-cache", UNIT)
+  IdCacheTestSuite () : TestSuite ("aodv-routing-id-cache", UNIT)
   {
     AddTestCase (new IdCacheTest, TestCase::QUICK);
   }

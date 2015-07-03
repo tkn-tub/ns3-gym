@@ -33,17 +33,14 @@
 #include "ns3/internet-stack-helper.h"
 #include "ns3/ipv4-address-helper.h"
 #include "ns3/abort.h"
-#include "ns3/udp-echo-helper.h"
 #include "ns3/mobility-model.h"
 #include "ns3/pcap-file.h"
 #include "ns3/aodv-helper.h"
 #include "ns3/v4ping-helper.h"
 #include "ns3/nqos-wifi-mac-helper.h"
 #include "ns3/config.h"
-#include "ns3/on-off-helper.h"
 #include "ns3/inet-socket-address.h"
 #include "ns3/data-rate.h"
-#include "ns3/packet-sink-helper.h"
 #include "ns3/pcap-test.h"
 #include <sstream>
 
@@ -59,13 +56,24 @@ Bug772ChainTest::Bug772ChainTest (const char * const prefix, const char * const 
   m_proto (proto),
   m_time (t),
   m_size (size),
-  m_step (120)
-{
+  m_step (120),
+  m_port (9){
 }
 
 Bug772ChainTest::~Bug772ChainTest ()
 {
   delete m_nodes;
+}
+
+void
+Bug772ChainTest::SendData (Ptr<Socket> socket)
+{
+  if (Simulator::Now () < m_time)
+    {
+      socket->Send (Create<Packet> (1000));
+      Simulator::ScheduleWithContext (socket->GetNode ()->GetId (), Seconds (0.125),
+                                      &Bug772ChainTest::SendData, this, socket);
+    }
 }
 
 void
@@ -144,16 +152,17 @@ Bug772ChainTest::CreateDevices ()
   Ipv4InterfaceContainer interfaces = address.Assign (devices);
 
   // 3. Setup UDP source and sink
-  uint16_t port = 9; // Discard port (RFC 863)
-  OnOffHelper onoff (m_proto, Address (InetSocketAddress (interfaces.GetAddress (m_size-1), port)));
-  onoff.SetConstantRate (DataRate (64000));
-  onoff.SetAttribute ("PacketSize", UintegerValue (1000));
-  ApplicationContainer app = onoff.Install (m_nodes->Get (0));
-  app.Start (Seconds (1.0));
-  app.Stop (m_time);
-  PacketSinkHelper sink (m_proto, Address (InetSocketAddress (Ipv4Address::GetAny (), port)));
-  app = sink.Install (m_nodes->Get (m_size - 1));
-  app.Start (Seconds (0.0));
+  m_sendSocket = Socket::CreateSocket (m_nodes->Get (0), TypeId::LookupByName (m_proto));
+  m_sendSocket->Bind ();
+  m_sendSocket->Connect (InetSocketAddress (interfaces.GetAddress (m_size-1), m_port));
+  m_sendSocket->SetAllowBroadcast (true);
+  Simulator::ScheduleWithContext (m_sendSocket->GetNode ()->GetId (), Seconds (1.0),
+                                  &Bug772ChainTest::SendData, this, m_sendSocket);
+
+  m_recvSocket = Socket::CreateSocket (m_nodes->Get (m_size - 1), TypeId::LookupByName (m_proto));
+  m_recvSocket->Bind (InetSocketAddress (Ipv4Address::GetAny (), m_port));
+  m_recvSocket->Listen ();
+  m_recvSocket->ShutdownSend ();
 
   // 4. write PCAP on the first and last nodes only
   wifiPhy.EnablePcap (CreateTempDirFilename (m_prefix), devices.Get (0));

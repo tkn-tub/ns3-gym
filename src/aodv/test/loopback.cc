@@ -18,8 +18,10 @@
  * Authors: Pavel Boyko <boyko@iitp.ru>
  */
 
-#include "loopback.h"
+#include "ns3/test.h"
 #include "ns3/simulator.h"
+#include "ns3/socket-factory.h"
+#include "ns3/udp-socket-factory.h"
 #include "ns3/mobility-helper.h"
 #include "ns3/double.h"
 #include "ns3/uinteger.h"
@@ -45,12 +47,66 @@ namespace ns3
 namespace aodv
 {
 
-static uint32_t g_count (0);
-
-static void 
-PingRtt (std::string context, Time rtt)
+/**
+ * \ingroup aodv
+ *
+ * \brief AODV loopback UDP echo test case
+ */
+class LoopbackTestCase : public TestCase
 {
-  g_count++;
+  uint32_t m_count; //!< number of packet received;
+  Ptr<Socket> m_txSocket;
+  Ptr<Socket> m_echoSocket;
+  Ptr<Socket> m_rxSocket;
+  uint16_t m_echoSendPort;
+  uint16_t m_echoReplyPort;
+
+  void SendData (Ptr<Socket> socket);
+  void ReceivePkt (Ptr<Socket> socket);
+  void EchoData (Ptr<Socket> socket);
+
+public:
+  LoopbackTestCase ();
+  void DoRun ();
+};
+
+LoopbackTestCase::LoopbackTestCase () :
+    TestCase ("UDP Echo 127.0.0.1 test"), m_count (0)
+{
+  m_echoSendPort = 1233;
+  m_echoReplyPort = 1234;
+}
+
+void LoopbackTestCase::ReceivePkt (Ptr<Socket> socket)
+{
+  Ptr<Packet> receivedPacket = socket->Recv (std::numeric_limits<uint32_t>::max (), 0);
+
+  m_count ++;
+}
+
+void
+LoopbackTestCase::EchoData (Ptr<Socket> socket)
+{
+  Address from;
+  Ptr<Packet> receivedPacket = socket->RecvFrom (std::numeric_limits<uint32_t>::max (), 0, from);
+
+  Ipv4Address src = InetSocketAddress::ConvertFrom (from).GetIpv4 ();
+  Address to = InetSocketAddress (src, m_echoReplyPort);
+
+  receivedPacket->RemoveAllPacketTags ();
+  receivedPacket->RemoveAllByteTags ();
+
+  socket->SendTo (receivedPacket, 0, to);
+}
+
+void
+LoopbackTestCase::SendData (Ptr<Socket> socket)
+{
+  Address realTo = InetSocketAddress (Ipv4Address::GetLoopback (), m_echoSendPort);
+  socket->SendTo (Create<Packet> (123), 0, realTo);
+
+  Simulator::ScheduleWithContext (socket->GetNode ()->GetId (), Seconds (1.0),
+                                  &LoopbackTestCase::SendData, this, socket);
 }
 
 void
@@ -80,23 +136,49 @@ LoopbackTestCase::DoRun ()
   address.SetBase ("10.1.1.0", "255.255.255.0");
   Ipv4InterfaceContainer interfaces = address.Assign (devices);
 
-  // Setup ping
-  Ptr<V4Ping> ping = CreateObject<V4Ping> ();
-  ping->SetAttribute ("Remote", Ipv4AddressValue (Ipv4Address::GetLoopback ()));
-  nodes.Get (0)->AddApplication (ping);
-  ping->SetStartTime (Seconds (0));
-  ping->SetStopTime (Seconds (4));
-  Names::Add ("ping", ping);
-  Config::Connect ("/Names/ping/Rtt", MakeCallback (&PingRtt));
+  // Setup echos
+  Ptr<SocketFactory> socketFactory = nodes.Get (0)->GetObject<UdpSocketFactory> ();
+  m_rxSocket = socketFactory->CreateSocket ();
+  m_rxSocket->Bind (InetSocketAddress (Ipv4Address::GetLoopback (), m_echoReplyPort));
+  m_rxSocket->SetRecvCallback (MakeCallback (&LoopbackTestCase::ReceivePkt, this));
+
+  m_echoSocket = socketFactory->CreateSocket ();
+  m_echoSocket->Bind (InetSocketAddress (Ipv4Address::GetLoopback (), m_echoSendPort));
+  m_echoSocket->SetRecvCallback (MakeCallback (&LoopbackTestCase::EchoData, this));
+
+  m_txSocket = socketFactory->CreateSocket ();
+
+  Simulator::ScheduleWithContext (m_txSocket->GetNode ()->GetId (), Seconds (1.0),
+                                  &LoopbackTestCase::SendData, this, m_txSocket);
 
   // Run 
   Simulator::Stop (Seconds (5));
   Simulator::Run ();
+
+  m_txSocket->Close ();
+  m_echoSocket->Close ();
+  m_rxSocket->Close ();
+
   Simulator::Destroy ();
 
   // Check that 4 packets delivered
-  NS_TEST_ASSERT_MSG_EQ (g_count, 4, "Exactly 4 ping replies must be delivered.");
+  NS_TEST_ASSERT_MSG_EQ (m_count, 4, "Exactly 4 echo replies must be delivered.");
 }
+
+//-----------------------------------------------------------------------------
+// Test suite
+//-----------------------------------------------------------------------------
+class AodvLoopbackTestSuite : public TestSuite
+{
+public:
+  AodvLoopbackTestSuite () : TestSuite ("routing-aodv-loopback", SYSTEM)
+  {
+    SetDataDir (NS_TEST_SOURCEDIR);
+    // UDP Echo loopback test case
+    AddTestCase (new LoopbackTestCase (), TestCase::QUICK);
+  }
+} g_aodvLoopbackTestSuite;
+
 
 }
 }

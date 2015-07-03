@@ -24,6 +24,7 @@
 #include "ns3/test.h"
 #include "ns3/nstime.h"
 #include "ns3/node-container.h"
+#include "ns3/socket.h"
 
 using namespace ns3;
 
@@ -62,6 +63,8 @@ private:
   const uint32_t m_size;
   /// Chain step, meters
   const double m_step;
+  /// port number
+  const uint16_t m_port;
 
   /// Create test topology
   void CreateNodes ();
@@ -71,6 +74,17 @@ private:
   void CheckResults ();
   /// Go
   void DoRun ();
+
+  /// Receiving socket
+  Ptr<Socket> m_recvSocket;
+  /// Transmitting socket
+  Ptr<Socket> m_sendSocket;
+
+  /**
+   * Send data
+   * \param socket the sending socket
+   */
+  void SendData (Ptr<Socket> socket);
 };
 
 #endif /* BUG_772_H */

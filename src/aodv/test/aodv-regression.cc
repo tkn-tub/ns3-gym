@@ -20,7 +20,6 @@
 
 #include "aodv-regression.h"
 #include "bug-772.h"
-#include "loopback.h"
 
 #include "ns3/simulator.h"
 #include "ns3/mobility-helper.h"
@@ -32,19 +31,18 @@
 #include "ns3/internet-stack-helper.h"
 #include "ns3/ipv4-address-helper.h"
 #include "ns3/abort.h"
-#include "ns3/udp-echo-helper.h"
 #include "ns3/mobility-model.h"
 #include "ns3/pcap-file.h"
 #include "ns3/aodv-helper.h"
-#include "ns3/v4ping-helper.h"
 #include "ns3/nqos-wifi-mac-helper.h"
 #include "ns3/config.h"
 #include "ns3/pcap-test.h"
 #include "ns3/rng-seed-manager.h"
+#include "ns3/icmpv4.h"
 #include <sstream>
 
 using namespace ns3;
-using namespace aodv;
+
 //-----------------------------------------------------------------------------
 // Test suite
 //-----------------------------------------------------------------------------
@@ -56,17 +54,12 @@ public:
     SetDataDir (NS_TEST_SOURCEDIR);
     // General RREQ-RREP-RRER test case
     AddTestCase (new ChainRegressionTest ("aodv-chain-regression-test"), TestCase::QUICK);
-    /// \internal
-    /// \bugid{606} test case, should crash if bug is not fixed
+    // \bugid{606} test case, should crash if bug is not fixed
     AddTestCase (new ChainRegressionTest ("bug-606-test", Seconds (10), 3, Seconds (1)), TestCase::QUICK);
-    /// \internal
-    /// \bugid{772} UDP test case
+    // \bugid{772} UDP test case
     AddTestCase (new Bug772ChainTest ("udp-chain-test", "ns3::UdpSocketFactory", Seconds (3), 10), TestCase::QUICK);
-    /// \internal
-    /// \bugid{772} TCP test case
+    // \bugid{772} TCP test case
     AddTestCase (new Bug772ChainTest ("tcp-chain-test", "ns3::TcpSocketFactory", Seconds (3), 10), TestCase::QUICK);
-    // Ping loopback test case
-    AddTestCase (new LoopbackTestCase (), TestCase::QUICK);
   }
 } g_aodvRegressionTestSuite;
  
@@ -81,13 +74,43 @@ ChainRegressionTest::ChainRegressionTest (const char * const prefix, Time t, uin
   m_time (t),
   m_size (size),
   m_step (120),
-  m_arpAliveTimeout (arpAliveTimeout)
+  m_arpAliveTimeout (arpAliveTimeout),
+  m_seq (0)
 {
 }
 
 ChainRegressionTest::~ChainRegressionTest ()
 {
   delete m_nodes;
+}
+
+void
+ChainRegressionTest::SendPing ()
+{
+  if (Simulator::Now () >= m_time)
+    {
+      return;
+    }
+
+  Ptr<Packet> p = Create<Packet> ();
+  Icmpv4Echo echo;
+  echo.SetSequenceNumber (m_seq);
+  m_seq++;
+  echo.SetIdentifier (0);
+
+  Ptr<Packet> dataPacket = Create<Packet> (56);
+  echo.SetData (dataPacket);
+  p->AddHeader (echo);
+  Icmpv4Header header;
+  header.SetType (Icmpv4Header::ECHO);
+  header.SetCode (0);
+  if (Node::ChecksumEnabled ())
+    {
+      header.EnableChecksum ();
+    }
+  p->AddHeader (header);
+  m_socket->Send (p, 0);
+  Simulator::Schedule (Seconds (1), &ChainRegressionTest::SendPing, this);
 }
 
 void
@@ -173,11 +196,14 @@ ChainRegressionTest::CreateDevices ()
   Ipv4InterfaceContainer interfaces = address.Assign (devices);
 
   // 3. Setup ping
-  V4PingHelper ping (interfaces.GetAddress (m_size - 1));
-  ping.SetAttribute ("Verbose", BooleanValue (false)); // don't need verbose ping in regression test
-  ApplicationContainer p = ping.Install (m_nodes->Get (0));
-  p.Start (Seconds (0));
-  p.Stop (m_time);
+  m_socket = Socket::CreateSocket (m_nodes->Get (0), TypeId::LookupByName ("ns3::Ipv4RawSocketFactory"));
+  m_socket->SetAttribute ("Protocol", UintegerValue (1)); // icmp
+  InetSocketAddress src = InetSocketAddress (Ipv4Address::GetAny (), 0);
+  m_socket->Bind (src);
+  InetSocketAddress dst = InetSocketAddress (interfaces.GetAddress (m_size - 1), 0);
+  m_socket->Connect (dst);
+
+  SendPing ();
 
   // 4. write PCAP
   wifiPhy.EnablePcapAll (CreateTempDirFilename (m_prefix));
