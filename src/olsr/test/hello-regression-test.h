@@ -23,6 +23,8 @@
 
 #include "ns3/test.h"
 #include "ns3/nstime.h"
+#include "ns3/socket.h"
+#include "ns3/ipv4-raw-socket-impl.h"
 #include "ns3/node-container.h"
 
 namespace ns3
@@ -53,16 +55,25 @@ public:
   HelloRegressionTest (); 
   ~HelloRegressionTest ();
 private:
-  /// Unique PCAP files prefix for this test
-  static const char * const PREFIX;
   /// Total simulation time
   const Time m_time;
   /// Create & configure test network
   void CreateNodes ();
-  /// Compare traces with reference ones
-  void CheckResults ();
   /// Go
   void DoRun ();
+
+  /// Receive raw data on node A
+  void ReceivePktProbeA (Ptr<Socket> socket);
+  /// Packet counter on node A
+  uint8_t m_countA;
+  /// Receiving socket on node A
+  Ptr<Ipv4RawSocketImpl> m_rxSocketA;
+  /// Receive raw data on node B
+  void ReceivePktProbeB (Ptr<Socket> socket);
+  /// Packet counter on node B
+  uint8_t m_countB;
+  /// Receiving socket on node B
+  Ptr<Ipv4RawSocketImpl> m_rxSocketB;
 };
 
 }

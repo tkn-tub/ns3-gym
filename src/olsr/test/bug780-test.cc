@@ -21,32 +21,23 @@
 // should show about 395 packets; there is a ping outage from time
 // 123-127 due to the mobility.
 
-#include <fstream>
-#include <iostream>
-
 #include "ns3/test.h"
 #include "ns3/olsr-helper.h"
 #include "ns3/ipv4-list-routing-helper.h"
-#include "ns3/wifi-helper.h"
-#include "ns3/yans-wifi-helper.h"
-#include "ns3/nqos-wifi-mac-helper.h"
-#include "ns3/constant-velocity-mobility-model.h"
-#include "ns3/mobility-helper.h"
 #include "ns3/olsr-routing-protocol.h"
 #include "ns3/internet-stack-helper.h"
 #include "ns3/log.h"
-#include "ns3/config.h"
 #include "ns3/double.h"
+#include "ns3/uinteger.h"
 #include "ns3/string.h"
 #include "ns3/boolean.h"
 #include "ns3/ipv4-address-helper.h"
 #include "ns3/ipv4-interface-container.h"
 #include "ns3/internet-stack-helper.h"
-#include "ns3/v4ping-helper.h"
-#include "ns3/pcap-file.h"
-#include "ns3/pcap-test.h"
 #include "ns3/rng-seed-manager.h"
-
+#include "ns3/simple-net-device-helper.h"
+#include "ns3/simple-net-device.h"
+#include "ns3/icmpv4.h"
 #include "bug780-test.h"
 
 namespace ns3
@@ -54,20 +45,9 @@ namespace ns3
 namespace olsr
 {
 
-const char * const Bug780Test::PREFIX = "bug780";
-
-static void
-SetVelocity (Ptr<Node> node, Vector vel)
-{
-  Ptr<ConstantVelocityMobilityModel> mobility =
-    node->GetObject<ConstantVelocityMobilityModel> ();
-  mobility->SetVelocity (vel);
-}
-
-
 Bug780Test::Bug780Test() : 
   TestCase ("Test OLSR bug 780"),
-  m_time (Seconds (200.0))
+  m_time (Seconds (200.0)), m_seq (0), m_recvCount (0)
 {
 }
 
@@ -84,118 +64,106 @@ Bug780Test::DoRun ()
 
   Simulator::Stop (m_time);
   Simulator::Run ();
-  Simulator::Destroy ();
 
-  CheckResults ();  
+  NS_TEST_EXPECT_MSG_EQ (m_recvCount, 192, "192 out of 200 ping received.");
+
+  Simulator::Destroy ();
 }
 
 void
 Bug780Test::CreateNodes (void)
 {
-  int nWifis = 3;
-  double SimTime = 200.0;
-  std::string phyMode ("DsssRate1Mbps");
-  int64_t streamsUsed = 0;
+  NodeContainer c;
+  c.Create (3);
 
-  //sending one packets per sec
-  // Fix non-unicast data rate to be the same as that of unicast
-  Config::SetDefault ("ns3::WifiRemoteStationManager::RtsCtsThreshold",
-                      StringValue ("400"));
-
-  NodeContainer adhocNodes;
-  adhocNodes.Create (nWifis);
-
-  WifiHelper wifi;
-  YansWifiPhyHelper wifiPhy =  YansWifiPhyHelper::Default ();
-  YansWifiChannelHelper wifiChannel;
-  wifiChannel.SetPropagationDelay ("ns3::ConstantSpeedPropagationDelayModel");
-  wifiChannel.AddPropagationLoss ("ns3::FriisPropagationLossModel");
-  Ptr<YansWifiChannel> chan = wifiChannel.Create ();
-  wifiPhy.SetChannel (chan);
-
-  // Add a non-QoS upper mac, and disable rate control
-  NqosWifiMacHelper wifiMac = NqosWifiMacHelper::Default ();
-  wifi.SetStandard (WIFI_PHY_STANDARD_80211b);
-  wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager",
-                                "DataMode",StringValue (phyMode),
-                                "ControlMode",StringValue (phyMode));
-
-  //set the tx range to 300
-  wifiPhy.Set ("TxPowerStart",DoubleValue (-0.1615));
-  wifiPhy.Set ("TxPowerEnd", DoubleValue (-0.1615));
-
-  // Set it to adhoc mode
-  wifiMac.SetType ("ns3::AdhocWifiMac");
-  NetDeviceContainer adhocDevices = wifi.Install (wifiPhy, wifiMac, adhocNodes);
-
-  // Assign fixed stream numbers to wifi and channel random variables
-  streamsUsed += wifi.AssignStreams (adhocDevices, streamsUsed);
-  // Assign 6 streams per Wifi device
-  NS_TEST_ASSERT_MSG_EQ (streamsUsed, (adhocDevices.GetN () * 6), "Stream assignment mismatch");
-  streamsUsed += wifiChannel.AssignStreams (chan, streamsUsed);
-  // Assign 0 additional streams per channel for this configuration 
-  NS_TEST_ASSERT_MSG_EQ (streamsUsed, (adhocDevices.GetN () * 6), "Stream assignment mismatch");
-
+  // install TCP/IP & OLSR
   OlsrHelper olsr;
-
   InternetStackHelper internet;
   internet.SetRoutingHelper (olsr);
-  internet.Install (adhocNodes);
-  // Assign 3 streams per node to internet stack for this configuration
-  streamsUsed += internet.AssignStreams (adhocNodes, streamsUsed);
-  NS_TEST_ASSERT_MSG_EQ (streamsUsed, (adhocDevices.GetN () * 6) + (adhocNodes.GetN () * 3), "Stream assignment mismatch");
-  // Olsr uses one additional stream per wifi device for this configuration
-  streamsUsed += olsr.AssignStreams (adhocNodes, 0);
-  NS_TEST_ASSERT_MSG_EQ (streamsUsed, ((adhocDevices.GetN () * 6) + (adhocDevices.GetN () * 3) + nWifis), "Should have assigned 3 streams");
+  internet.Install (c);
+  int64_t streamsUsed = olsr.AssignStreams (c, 0);
+  NS_TEST_EXPECT_MSG_EQ (streamsUsed, 3, "Should have assigned 3 streams");
+
+  // create channel & devices
+  SimpleNetDeviceHelper simpleNetHelper;
+  simpleNetHelper.SetDeviceAttribute ("DataRate", StringValue ("10Mbps"));
+  simpleNetHelper.SetChannelAttribute ("Delay", StringValue ("2ms"));
+  NetDeviceContainer nd = simpleNetHelper.Install (c);
 
   Ipv4AddressHelper addressAdhoc;
   addressAdhoc.SetBase ("10.1.1.0", "255.255.255.0");
   Ipv4InterfaceContainer adhocInterfaces;
-  adhocInterfaces = addressAdhoc.Assign (adhocDevices);
+  adhocInterfaces = addressAdhoc.Assign (nd);
 
-  MobilityHelper mobilityAdhoc;
+  // Blacklist some devices (equivalent to Wireless out of range)
+  Ptr<SimpleNetDevice> nd0 = DynamicCast<SimpleNetDevice> (nd.Get (0));
+  Ptr<SimpleNetDevice> nd2 = DynamicCast<SimpleNetDevice> (nd.Get (2));
+  Ptr<SimpleChannel> ch = DynamicCast<SimpleChannel> (nd.Get (0)->GetChannel ());
 
-  Ptr<ListPositionAllocator> positionAlloc_Adhoc =
-    CreateObject<ListPositionAllocator>();
-  double distance = 0.0;
-  for (uint32_t i = 0; i <= adhocNodes.GetN (); i++)
-    {
-      positionAlloc_Adhoc->Add (Vector (distance,0.0,0.0));
-      distance += 250.0;
-    }
+  Simulator::Schedule (Seconds (100.0), &SimpleChannel::BlackList, ch, nd0, nd2);
+  Simulator::Schedule (Seconds (100.0), &SimpleChannel::BlackList, ch, nd2, nd0);
 
-  mobilityAdhoc.SetMobilityModel ("ns3::ConstantVelocityMobilityModel");
-  mobilityAdhoc.SetPositionAllocator (positionAlloc_Adhoc);
-  mobilityAdhoc.Install (adhocNodes);
+  // 3. Setup ping
+  m_socket = Socket::CreateSocket (c.Get (0), TypeId::LookupByName ("ns3::Ipv4RawSocketFactory"));
+  m_socket->SetAttribute ("Protocol", UintegerValue (1)); // icmp
+  m_socket->SetRecvCallback (MakeCallback (&Bug780Test::Receive, this));
+  InetSocketAddress src = InetSocketAddress (Ipv4Address::GetAny (), 0);
+  m_socket->Bind (src);
+  InetSocketAddress dst = InetSocketAddress (adhocInterfaces.GetAddress (2), 0);
+  m_socket->Connect (dst);
 
-  //At 50 sec node 3 moves towards node 2
-  Simulator::Schedule (Seconds (50.0), &SetVelocity, adhocNodes.Get (2),Vector (-5.0,0.0,0.0));
-  //AT 100 sec set node 3 with zero velocity
-  Simulator::Schedule (Seconds (100.0), &SetVelocity, adhocNodes.Get (2),Vector (0.0,0.0,0.0));
-  //Move node2 away from node 3
-  Simulator::Schedule (Seconds (100.0), &SetVelocity, adhocNodes.Get (1),Vector (5.0,0.0,0.0));
-  //AT 150 sec set node 2 with zero velocity
-  Simulator::Schedule (Seconds (150.0), &SetVelocity, adhocNodes.Get (1), Vector (0.0,0.0,0.0));
-
-
-  // Ping 10.1.1.1 -> 10.1.1.2
-  V4PingHelper ping (adhocInterfaces.GetAddress (1));
-  ping.SetAttribute ("Verbose", BooleanValue (true));
-
-  ApplicationContainer p = ping.Install (adhocNodes.Get (0));
-  p.Start (Seconds (50));
-  p.Stop (Seconds (SimTime) - Seconds (0.001));
-
-  // pcap
-  wifiPhy.EnablePcapAll (CreateTempDirFilename (PREFIX));
+  SendPing ();
 }
 
 void
-Bug780Test::CheckResults ()
+Bug780Test::SendPing ()
 {
-  for (uint32_t i = 0; i < 2; ++i)
+  if (Simulator::Now () >= m_time)
     {
-      NS_PCAP_TEST_EXPECT_EQ (PREFIX << "-" << i << "-0.pcap");
+      return;
+    }
+
+  Ptr<Packet> p = Create<Packet> ();
+  Icmpv4Echo echo;
+  echo.SetSequenceNumber (m_seq);
+  m_seq++;
+  echo.SetIdentifier (0);
+
+  Ptr<Packet> dataPacket = Create<Packet> (56);
+  echo.SetData (dataPacket);
+  p->AddHeader (echo);
+  Icmpv4Header header;
+  header.SetType (Icmpv4Header::ECHO);
+  header.SetCode (0);
+  if (Node::ChecksumEnabled ())
+    {
+      header.EnableChecksum ();
+    }
+  p->AddHeader (header);
+  m_socket->Send (p, 0);
+  Simulator::Schedule (Seconds (1), &Bug780Test::SendPing, this);
+}
+
+void
+Bug780Test::Receive (Ptr<Socket> socket)
+{
+  while (m_socket->GetRxAvailable () > 0)
+    {
+      Address from;
+      Ptr<Packet> p = m_socket->RecvFrom (0xffffffff, 0, from);
+
+      NS_ASSERT (InetSocketAddress::IsMatchingType (from));
+      InetSocketAddress realFrom = InetSocketAddress::ConvertFrom (from);
+      NS_ASSERT (realFrom.GetPort () == 1); // protocol should be icmp.
+      Ipv4Header ipv4;
+      p->RemoveHeader (ipv4);
+      NS_ASSERT (ipv4.GetProtocol () == 1); // protocol should be icmp.
+      Icmpv4Header icmp;
+      p->RemoveHeader (icmp);
+      if (icmp.GetType () == Icmpv4Header::ECHO_REPLY)
+        {
+          m_recvCount ++;
+        }
     }
 }
 

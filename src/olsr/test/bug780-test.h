@@ -34,16 +34,23 @@ public:
   Bug780Test (); 
   ~Bug780Test ();
 private:
-  /// Unique PCAP files prefix for this test
-  static const char * const PREFIX;
   /// Total simulation time
   const Time m_time;
   /// Create & configure test network
   void CreateNodes ();
-  /// Compare traces with reference ones
-  void CheckResults ();
   /// Go
   void DoRun ();
+  /// Send one ping
+  void SendPing ();
+  /// Receive echo reply
+  /// \param socket the socket
+  void Receive (Ptr<Socket> socket);
+  /// Socket
+  Ptr<Socket> m_socket;
+  /// Sequence number
+  uint16_t m_seq;
+  /// Received ECHO Reply counter
+  uint16_t m_recvCount;
 };
 
 }

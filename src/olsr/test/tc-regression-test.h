@@ -23,6 +23,8 @@
 
 #include "ns3/test.h"
 #include "ns3/nstime.h"
+#include "ns3/socket.h"
+#include "ns3/ipv4-raw-socket-impl.h"
 #include "ns3/node-container.h"
 
 namespace ns3
@@ -33,7 +35,7 @@ namespace olsr
  * \ingroup olsr
  * \brief Less trivial test of OLSR Topology Control message generation
  * 
- * This test creates 3 WiFi stations with chain topology and runs OLSR without any extra traffic. 
+ * This test simulates 3 Wi-Fi stations with chain topology and runs OLSR without any extra traffic.
  * It is expected that only second station will send TC messages.
  * 
  * Expected trace (20 seconds, note random b-cast jitter):
@@ -78,18 +80,34 @@ public:
   TcRegressionTest(); 
   ~TcRegressionTest();
 private:
-  /// Unique PCAP files prefix for this test
-  static const char * const PREFIX;
   /// Total simulation time
   const Time m_time;
-  /// Distance between nodes in meters, 0.8 of RX range is recommended
-  const double m_step;
   /// Create & configure test network
   void CreateNodes ();
-  /// Compare traces with reference ones
-  void CheckResults ();
   /// Go
   void DoRun ();
+
+  /// Receive raw data on node A
+  void ReceivePktProbeA (Ptr<Socket> socket);
+  /// Packet counter on node A
+  uint8_t m_countA;
+  /// Receiving socket on node A
+  Ptr<Ipv4RawSocketImpl> m_rxSocketA;
+
+  /// Receive raw data on node B
+  void ReceivePktProbeB (Ptr<Socket> socket);
+  /// Packet counter on node B
+  uint8_t m_countB;
+  /// Receiving socket on node B
+  Ptr<Ipv4RawSocketImpl> m_rxSocketB;
+
+  /// Receive raw data on node C
+  void ReceivePktProbeC (Ptr<Socket> socket);
+  /// Packet counter on node C
+  uint8_t m_countC;
+  /// Receiving socket on node C
+  Ptr<Ipv4RawSocketImpl> m_rxSocketC;
+
 };
 
 }
