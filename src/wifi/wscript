@@ -1,7 +1,7 @@
 ## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
 
 def build(bld):
-    obj = bld.create_ns3_module('wifi', ['network', 'propagation'])
+    obj = bld.create_ns3_module('wifi', ['network', 'propagation', 'energy'])
     obj.source = [
         'model/wifi-information-element.cc',
         'model/wifi-information-element-vector.cc',
@@ -69,6 +69,9 @@ def build(bld):
         'model/mpdu-aggregator.cc',
         'model/mpdu-standard-aggregator.cc',
         'model/ampdu-tag.cc',
+        'model/wifi-radio-energy-model.cc',
+        'model/wifi-tx-current-model.cc',
+        'helper/wifi-radio-energy-model-helper.cc',
         'helper/ht-wifi-mac-helper.cc',
         'helper/athstats-helper.cc',
         'helper/wifi-helper.cc',
@@ -154,6 +157,9 @@ def build(bld):
         'model/mpdu-aggregator.h',
         'model/mpdu-standard-aggregator.h',
         'model/ampdu-tag.h',
+        'model/wifi-radio-energy-model.h',
+        'model/wifi-tx-current-model.h',
+        'helper/wifi-radio-energy-model-helper.h',
         'helper/ht-wifi-mac-helper.h',
         'helper/athstats-helper.h',
         'helper/wifi-helper.h',

@@ -1,7 +1,7 @@
 ## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
 
 def build(bld):
-    module = bld.create_ns3_module('uan', ['network', 'energy'])
+    module = bld.create_ns3_module('uan', ['network', 'energy', 'mobility'])
     module.source = [
         'model/uan-channel.cc',
         'model/uan-phy-gen.cc',

@@ -25,7 +25,6 @@
 #include "ns3/energy-source-container.h"
 #include "ns3/device-energy-model-container.h"
 #include "ns3/log.h"
-#include "ns3/test.h"
 #include "ns3/node.h"
 #include "ns3/simulator.h"
 #include "ns3/double.h"
@@ -43,15 +42,19 @@ NS_LOG_COMPONENT_DEFINE ("BasicEnergyModelTestSuite");
  * Test case of update remaining energy for BasicEnergySource and
  * WifiRadioEnergyModel.
  */
-class BasicEnergyUpdateTest : public TestCase
+class BasicEnergyUpdateTest
 {
 public:
   BasicEnergyUpdateTest ();
   virtual ~BasicEnergyUpdateTest ();
 
-private:
-  void DoRun (void);
+  /**
+   * Performs some tests involving state updates and the relative energy consumption
+   * \return true is some error happened.
+   */
+  bool DoRun (void);
 
+private:
   /**
    * \param state Radio state to switch to.
    * \return False if no error occurs.
@@ -70,7 +73,6 @@ private:
 };
 
 BasicEnergyUpdateTest::BasicEnergyUpdateTest ()
-  : TestCase ("Basic energy model update remaining energy test case")
 {
   m_timeS = 15.5; // idle for 15 seconds before changing state
   m_tolerance = 1.0e-13;  //
@@ -80,20 +82,47 @@ BasicEnergyUpdateTest::~BasicEnergyUpdateTest ()
 {
 }
 
-void
+bool
 BasicEnergyUpdateTest::DoRun (void)
 {
   // set types
   m_energySource.SetTypeId ("ns3::BasicEnergySource");
   m_deviceEnergyModel.SetTypeId ("ns3::WifiRadioEnergyModel");
 
+  uint8_t ret = 0;
+
   // run state switch tests
-  NS_TEST_ASSERT_MSG_EQ (StateSwitchTest (WifiPhy::IDLE), false, "Problem with state switch test (WifiPhy idle).");
-  NS_TEST_ASSERT_MSG_EQ (StateSwitchTest (WifiPhy::CCA_BUSY), false, "Problem with state switch test (WifiPhy cca busy).");
-  NS_TEST_ASSERT_MSG_EQ (StateSwitchTest (WifiPhy::TX), false, "Problem with state switch test (WifiPhy tx).");
-  NS_TEST_ASSERT_MSG_EQ (StateSwitchTest (WifiPhy::RX), false, "Problem with state switch test (WifiPhy rx).");
-  NS_TEST_ASSERT_MSG_EQ (StateSwitchTest (WifiPhy::SWITCHING), false, "Problem with state switch test (WifiPhy switching).");
-  NS_TEST_ASSERT_MSG_EQ (StateSwitchTest (WifiPhy::SLEEP), false, "Problem with state switch test (WifiPhy sleep).");
+  if (StateSwitchTest (WifiPhy::IDLE))
+    {
+      ret = 1;
+      std::cerr << "Problem with state switch test (WifiPhy idle)." << std::endl;
+    }
+  if (StateSwitchTest (WifiPhy::CCA_BUSY))
+    {
+      ret = 1;
+      std::cerr << "Problem with state switch test (WifiPhy cca busy)." << std::endl;
+    }
+  if (StateSwitchTest (WifiPhy::TX))
+    {
+      ret = 1;
+      std::cerr << "Problem with state switch test (WifiPhy tx)." << std::endl;
+    }
+  if (StateSwitchTest (WifiPhy::RX))
+    {
+      ret = 1;
+      std::cerr << "Problem with state switch test (WifiPhy rx)." << std::endl;
+    }
+  if (StateSwitchTest (WifiPhy::SWITCHING))
+    {
+      ret = 1;
+      std::cerr << "Problem with state switch test (WifiPhy switching)." << std::endl;
+    }
+  if (StateSwitchTest (WifiPhy::SLEEP))
+    {
+      ret = 1;
+      std::cerr << "Problem with state switch test (WifiPhy sleep)." << std::endl;
+    }
+  return ret;
 }
 
 bool
@@ -119,12 +148,20 @@ BasicEnergyUpdateTest::StateSwitchTest (WifiPhy::State state)
   DeviceEnergyModelContainer models =
     source->FindDeviceEnergyModels ("ns3::WifiRadioEnergyModel");
   // check list
-  NS_TEST_ASSERT_MSG_EQ_RETURNS_BOOL (false, (models.GetN () == 0), "Model list is empty!");
+  if ((models.GetN () == 0))
+    {
+      std::cerr << "Model list is empty!." << std::endl;
+      return true;
+    }
   // get pointer
   Ptr<WifiRadioEnergyModel> devModel =
     DynamicCast<WifiRadioEnergyModel> (models.Get (0));
   // check pointer
-  NS_TEST_ASSERT_MSG_NE_RETURNS_BOOL (0, devModel, "NULL pointer to device model!");
+  if ((devModel == 0))
+    {
+      std::cerr << "NULL pointer to device model!." << std::endl;
+      return true;
+    }
 
   /*
    * The radio will stay IDLE for m_timeS seconds. Then it will switch into a
@@ -193,15 +230,24 @@ BasicEnergyUpdateTest::StateSwitchTest (WifiPhy::State state)
   NS_LOG_DEBUG ("Remaining energy is " << remainingEnergy);
   NS_LOG_DEBUG ("Estimated remaining energy is " << estRemainingEnergy);
   NS_LOG_DEBUG ("Difference is " << estRemainingEnergy - remainingEnergy);
+
   // check remaining energy
-  NS_TEST_ASSERT_MSG_EQ_TOL_RETURNS_BOOL (remainingEnergy, estRemainingEnergy, m_tolerance,
-                                          "Incorrect remaining energy!");
+  if ((remainingEnergy > (estRemainingEnergy + m_tolerance)) ||
+      (remainingEnergy < (estRemainingEnergy - m_tolerance)))
+    {
+      std::cerr << "Incorrect remaining energy!" << std::endl;
+      return true;
+    }
 
   // obtain radio state
   WifiPhy::State endState = devModel->GetCurrentState ();
   NS_LOG_DEBUG ("Radio state is " << endState);
   // check end state
-  NS_TEST_ASSERT_MSG_EQ_RETURNS_BOOL (endState, state,  "Incorrect end state!");
+  if (endState != state)
+    {
+      std::cerr << "Incorrect end state!" << std::endl;
+      return true;
+    }
   Simulator::Destroy ();
 
   return false; // no error
@@ -213,15 +259,19 @@ BasicEnergyUpdateTest::StateSwitchTest (WifiPhy::State state)
  * Test case of energy depletion handling for BasicEnergySource and
  * WifiRadioEnergyModel.
  */
-class BasicEnergyDepletionTest : public TestCase
+class BasicEnergyDepletionTest
 {
 public:
   BasicEnergyDepletionTest ();
   virtual ~BasicEnergyDepletionTest ();
 
-private:
-  void DoRun (void);
+  /**
+   * Performs some tests involving energy depletion
+   * \return true is some error happened.
+   */
+  bool DoRun (void);
 
+private:
   /**
    * Callback invoked when energy is drained from source.
    */
@@ -246,7 +296,6 @@ private:
 };
 
 BasicEnergyDepletionTest::BasicEnergyDepletionTest ()
-  : TestCase ("Basic energy model energy depletion test case")
 {
   m_numOfNodes = 10;
   m_callbackCount = 0;
@@ -259,22 +308,29 @@ BasicEnergyDepletionTest::~BasicEnergyDepletionTest ()
 {
 }
 
-void
+bool
 BasicEnergyDepletionTest::DoRun (void)
 {
   /*
    * Run simulation with different simulation time and update interval.
    */
+  uint8_t ret = 0;
+
   for (double simTimeS = 0.0; simTimeS <= m_simTimeS; simTimeS += m_timeStepS)
     {
       for (double updateIntervalS = 0.5; updateIntervalS <= m_updateIntervalS;
            updateIntervalS += m_timeStepS)
         {
-          NS_TEST_ASSERT_MSG_EQ (DepletionTestCase (simTimeS, updateIntervalS), false, "Depletion test case problem.");
+          if (DepletionTestCase (simTimeS, updateIntervalS))
+            {
+              ret = 1;
+              std::cerr << "Depletion test case problem." << std::endl;
+            }
           // reset callback count
           m_callbackCount = 0;
         }
     }
+  return ret;
 }
 
 void
@@ -363,31 +419,31 @@ BasicEnergyDepletionTest::DepletionTestCase (double simTimeS,
   NS_LOG_DEBUG ("Actual callback count is " << m_callbackCount);
 
   // check result, call back should only be invoked once
-  NS_TEST_ASSERT_MSG_EQ_RETURNS_BOOL (m_numOfNodes, m_callbackCount, "Not all callbacks are invoked!");
+  if (m_numOfNodes != m_callbackCount)
+    {
+      std::cerr << "Not all callbacks are invoked!" << std::endl;
+      return true;
+    }
 
   return false;
 }
 
 // -------------------------------------------------------------------------- //
 
-/**
- * Unit test suite for energy model. Although the test suite involves 2 modules
- * it is still considered a unit test. Because a DeviceEnergyModel cannot live
- * without an EnergySource.
- */
-class BasicEnergyModelTestSuite : public TestSuite
+int
+main (int argc, char **argv)
 {
-public:
-  BasicEnergyModelTestSuite ();
-};
+  BasicEnergyUpdateTest testEnergyUpdate;
+  if (testEnergyUpdate.DoRun ())
+    {
+      return 1;
+    }
 
-BasicEnergyModelTestSuite::BasicEnergyModelTestSuite ()
-  : TestSuite ("basic-energy-model", UNIT)
-{
-  AddTestCase (new BasicEnergyUpdateTest, TestCase::QUICK);
-  AddTestCase (new BasicEnergyDepletionTest, TestCase::QUICK);
+  BasicEnergyDepletionTest testEnergyDepletion;
+  if (testEnergyDepletion.DoRun ())
+    {
+      return 1;
+    }
+
+  return 0;
 }
-
-// create an instance of the test suite
-static BasicEnergyModelTestSuite g_energyModelTestSuite;
-

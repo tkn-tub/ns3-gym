@@ -21,7 +21,7 @@
 #ifndef WIFI_RADIO_ENERGY_MODEL_HELPER_H
 #define WIFI_RADIO_ENERGY_MODEL_HELPER_H
 
-#include "energy-model-helper.h"
+#include "ns3/energy-model-helper.h"
 #include "ns3/wifi-radio-energy-model.h"
 
 namespace ns3 {

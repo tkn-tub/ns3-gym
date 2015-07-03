@@ -1,9 +1,8 @@
 ## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
 
 def build(bld):
-    obj = bld.create_ns3_module('energy', ['wifi'])
+    obj = bld.create_ns3_module('energy', ['network'])
     obj.source = [
-        'model/wifi-radio-energy-model.cc',
         'model/energy-source.cc',
         'model/basic-energy-source.cc',
         'model/li-ion-energy-source.cc',
@@ -13,11 +12,9 @@ def build(bld):
         'model/simple-device-energy-model.cc',
         'model/energy-harvester.cc',
         'model/basic-energy-harvester.cc',
-        'model/wifi-tx-current-model.cc',
         'helper/energy-source-container.cc',
         'helper/energy-model-helper.cc',
         'helper/basic-energy-source-helper.cc',
-        'helper/wifi-radio-energy-model-helper.cc',
         'helper/rv-battery-model-helper.cc',
         'helper/energy-harvester-container.cc',
         'helper/energy-harvester-helper.cc',
@@ -26,8 +23,6 @@ def build(bld):
 
     obj_test = bld.create_ns3_module_test_library('energy')
     obj_test.source = [
-        'test/basic-energy-model-test.cc',
-        'test/rv-battery-model-test.cc',
         'test/li-ion-energy-source-test.cc',
         'test/basic-energy-harvester-test.cc',
         ]
@@ -35,7 +30,6 @@ def build(bld):
     headers = bld(features='ns3header')
     headers.module = 'energy'
     headers.source = [
-        'model/wifi-radio-energy-model.h',
         'model/energy-source.h',
         'model/basic-energy-source.h',
         'model/li-ion-energy-source.h',
@@ -45,11 +39,9 @@ def build(bld):
         'model/simple-device-energy-model.h',
         'model/energy-harvester.h',
         'model/basic-energy-harvester.h',
-        'model/wifi-tx-current-model.h',
         'helper/energy-source-container.h',
         'helper/energy-model-helper.h',
         'helper/basic-energy-source-helper.h',
-        'helper/wifi-radio-energy-model-helper.h',
         'helper/rv-battery-model-helper.h',
         'helper/energy-harvester-container.h',
         'helper/energy-harvester-helper.h',

@@ -6,3 +6,10 @@ def build(bld):
 
     obj = bld.create_ns3_program('li-ion-energy-source', ['core', 'energy'])
     obj.source = 'li-ion-energy-source.cc'
+
+    obj = bld.create_ns3_program('rv-battery-model-test', ['core', 'energy', 'wifi'])
+    obj.source = 'rv-battery-model-test.cc'
+    
+    obj = bld.create_ns3_program('basic-energy-model-test', ['core', 'energy', 'wifi'])
+    obj.source = 'basic-energy-model-test.cc'
+    

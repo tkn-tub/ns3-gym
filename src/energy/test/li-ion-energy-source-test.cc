@@ -37,7 +37,6 @@ public:
 
   void DoRun (void);
 
-  double m_simTime;
   Ptr<Node> m_node;
 };
 

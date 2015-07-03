@@ -25,7 +25,6 @@
 #include "ns3/energy-source-container.h"
 #include "ns3/device-energy-model-container.h"
 #include "ns3/log.h"
-#include "ns3/test.h"
 #include "ns3/node.h"
 #include "ns3/simulator.h"
 #include "ns3/double.h"
@@ -40,28 +39,29 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE ("RvBatteryModelTestSuite");
 
 /**
- * Test case of update remaining energy for RvBatteryModel and
- * WifiRadioEnergyModel.
+ * This example was originally devised as a test, then it was converted
+ * to an example.
+ *
+ * The script tests the remaining energy for RvBatteryModel and
+ * WifiRadioEnergyModel updates. It does so by
+ * mimicking the procedure and results published in
+ * D. Rakhmatov, S. Vrudhula, D.A. Wallach, "Battery lifetime prediction for energy-aware computing,"
+ * Proceedings of the 2002 International Symposium on Low Power Electronics and Design, 2002. ISLPED '02.
+ * doi: 10.1109/LPE.2002.146729
  */
-class BatteryLifetimeTest : public TestCase
+class BatteryLifetimeTest
 {
 public:
   BatteryLifetimeTest ();
   virtual ~BatteryLifetimeTest ();
 
-private:
   /**
-   * Creates load profiles according to "Battery Lifetime Prediction for Energy-
-   * Aware Computing" paper.
+   * Creates load profiles according to
+   * D. Rakhmatov, S. Vrudhula, D.A. Wallach, "Battery lifetime prediction for energy-aware computing,"
+   * Proceedings of the 2002 International Symposium on Low Power Electronics and Design, 2002. ISLPED '02.
+   * doi: 10.1109/LPE.2002.146729
    */
   void CreateLoadProfiles (void);
-
-  /**
-   * \returns False if no error occurs.
-   *
-   * Runs test.
-   */
-  void DoRun (void);
 
   /**
    * \param load Load value, in Amperes (A).
@@ -86,7 +86,6 @@ private:
                          std::vector<Time> timeStamps,
                          Time expLifetime);
 
-private:
   typedef struct LoadProfile
   {
     std::vector<double> loads;
@@ -95,14 +94,12 @@ private:
     Time dualFoilLifeTime;
   } LoadProfile;
 
-private:
   std::vector<LoadProfile> m_loadProfiles;
   double m_alpha;
   double m_beta;
 };
 
 BatteryLifetimeTest::BatteryLifetimeTest ()
-  : TestCase ("RV battery model battery lifetime test case.")
 {
   // Itsy battery
   m_alpha = 35220;
@@ -637,56 +634,78 @@ BatteryLifetimeTest::CreateLoadProfiles (void)
   timeStamps.clear ();
 }
 
-void
-BatteryLifetimeTest::DoRun (void)
+int
+main (int argc, char **argv)
 {
   NS_LOG_DEBUG ("Constant load run.");
 
-  // 640mA
-  NS_TEST_ASSERT_MSG_EQ (ConstantLoadTest (0.640, Seconds (2844.0)), false,  "Problems with constant load test (640mA).");
-  // 320mA
-  NS_TEST_ASSERT_MSG_EQ (ConstantLoadTest (0.320, Seconds (6146.0)), false,  "Problems with constant load test (320mA).");
-  // 128mA
-  NS_TEST_ASSERT_MSG_EQ (ConstantLoadTest (0.128, Seconds (16052.0)), false,  "Problems with constant load test (128mA).");
-  // 64mA
-  NS_TEST_ASSERT_MSG_EQ (ConstantLoadTest (0.064, Seconds (32561.0)), false,  "Problems with constant load test (64mA).");
-  // 32mA
-  NS_TEST_ASSERT_MSG_EQ (ConstantLoadTest (0.032, Seconds (65580.0)), false,  "Problems with constant load test (32).");
+  BatteryLifetimeTest test;
+  int ret = 0;
+
+  if (test.ConstantLoadTest (0.640, Seconds (2844.0)))
+    {
+      ret = 1;
+      std::cerr << "Problems with constant load test (640mA)." << std::endl;
+    }
+  if (test.ConstantLoadTest (0.320, Seconds (6146.0)))
+    {
+      ret = 1;
+      std::cerr << "Problems with constant load test (320mA)." << std::endl;
+    }
+  if (test.ConstantLoadTest (0.128, Seconds (16052.0)))
+    {
+      ret = 1;
+      std::cerr << "Problems with constant load test (128mA)." << std::endl;
+    }
+  if (test.ConstantLoadTest (0.064, Seconds (32561.0)))
+    {
+      ret = 1;
+      std::cerr << "Problems with constant load test (64mA)." << std::endl;
+    }
+  if (test.ConstantLoadTest (0.032, Seconds (65580.0)))
+    {
+      ret = 1;
+      std::cerr << "Problems with constant load test (32mA)." << std::endl;
+    }
 
   // create load profiles for variable load test
-  CreateLoadProfiles ();
+  test.CreateLoadProfiles ();
 
   // variable load with Itsy battery
   NS_LOG_DEBUG ("\n\nItsy");
-  m_alpha = 35220;
-  m_beta = 0.637;
-  for (uint32_t i = 0; i < m_loadProfiles.size (); i++)
+  test.m_alpha = 35220;
+  test.m_beta = 0.637;
+  for (uint32_t i = 0; i < test.m_loadProfiles.size (); i++)
     {
       NS_LOG_DEBUG ("========");
       NS_LOG_DEBUG ("Variable load profile C" << i + 1);
-      if (VariableLoadTest (m_loadProfiles[i].loads,
-                            m_loadProfiles[i].timeStamps,
-                            m_loadProfiles[i].itsyLifetime))
+      if (test.VariableLoadTest (test.m_loadProfiles[i].loads,
+                                 test.m_loadProfiles[i].timeStamps,
+                                 test.m_loadProfiles[i].itsyLifetime))
         {
-          return;
+          ret = 1;
+          std::cerr << "Problems with variable load test (Itsy)." << std::endl;
         }
     }
 
   // variable load with DUALFOIL battery
   NS_LOG_DEBUG ("\n\nDUALFOIL");
-  m_alpha = 40027;
-  m_beta = 0.276;
-  for (uint32_t i = 0; i < m_loadProfiles.size (); i++)
+  test.m_alpha = 40027;
+  test.m_beta = 0.276;
+  for (uint32_t i = 0; i < test.m_loadProfiles.size (); i++)
     {
       NS_LOG_DEBUG ("========");
       NS_LOG_DEBUG ("Variable load profile C" << i + 1);
-      if (VariableLoadTest (m_loadProfiles[i].loads,
-                            m_loadProfiles[i].timeStamps,
-                            m_loadProfiles[i].dualFoilLifeTime))
+      if (test.VariableLoadTest (test.m_loadProfiles[i].loads,
+                                 test.m_loadProfiles[i].timeStamps,
+                                 test.m_loadProfiles[i].dualFoilLifeTime))
         {
-          return;
+          ret = 1;
+          std::cerr << "Problems with variable load test (DUALFOIL)." << std::endl;
         }
     }
+
+  return ret;
 }
 
 bool
@@ -761,14 +780,13 @@ BatteryLifetimeTest::ConstantLoadTest (double load, Time expLifetime)
   NS_LOG_DEBUG ("Expected lifetime = " << expLifetime.GetSeconds () << "s");
   NS_LOG_DEBUG ("Actual lifetime = " << actualLifetime.GetSeconds () << "s");
 
-  NS_TEST_ASSERT_MSG_EQ_RETURNS_BOOL (actualLifetime, expLifetime, "Incorrect lifetime!");
-  /*
-  NS_TEST_ASSERT_MSG_EQ_TOL_RETURNS_BOOL (actualLifetime.GetSeconds () / 60,
-                                         expLifetime.GetSeconds () / 60, 0.1,
-                                         "Incorrect lifetime!");
-   */
-
   Simulator::Destroy ();
+
+  if (actualLifetime != expLifetime)
+    {
+      std::cerr << "ConstantLoadTest: Incorrect lifetime for load " << load << std::endl;
+      return true;
+    }
 
   return false; // error free
 }
@@ -859,34 +877,16 @@ BatteryLifetimeTest::VariableLoadTest (std::vector<double> loads,
   NS_LOG_DEBUG ("Actual lifetime = " << actualLifetime.GetSeconds () << "s");
   NS_LOG_DEBUG ("Difference = " << expLifetime.GetSeconds () - actualLifetime.GetSeconds () << "s");
 
-  //NS_TEST_ASSERT_MSG_EQ_RETURNS_BOOL (actualLifetime, expLifetime, "Incorrect lifetime!");
-  NS_TEST_ASSERT_MSG_EQ_TOL_RETURNS_BOOL (actualLifetime.GetSeconds (), expLifetime.GetSeconds (),
-                                          120, // error tolerance = 120s
-                                          "Incorrect lifetime!");
-
   Simulator::Destroy ();
+
+  // error tolerance = 120s
+  if ((actualLifetime.GetSeconds ()) > (expLifetime.GetSeconds ()) + (120) ||
+      (actualLifetime.GetSeconds ()) < (expLifetime.GetSeconds ()) - (120))
+    {
+      std::cerr << "VariableLoadTest: Incorrect lifetime." << std::endl;
+      return true;
+    }
 
   return false;   // error free
 }
 
-// -------------------------------------------------------------------------- //
-
-/**
- * Unit test suite for energy model. Although the test suite involves 2 modules
- * it is still considered a unit test. Because a DeviceEnergyModel cannot live
- * without an EnergySource.
- */
-class RvBatteryModelTestSuite : public TestSuite
-{
-public:
-  RvBatteryModelTestSuite ();
-};
-
-RvBatteryModelTestSuite::RvBatteryModelTestSuite ()
-  : TestSuite ("rv-battery-model", SYSTEM)
-{
-  AddTestCase (new BatteryLifetimeTest, TestCase::QUICK);
-}
-
-// create an instance of the test suite
-static RvBatteryModelTestSuite g_rvBatteryModelTestSuite;

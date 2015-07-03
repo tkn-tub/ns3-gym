@@ -23,7 +23,7 @@
 #include "ns3/simulator.h"
 #include "ns3/trace-source-accessor.h"
 #include "ns3/pointer.h"
-#include "energy-source.h"
+#include "ns3/energy-source.h"
 #include "wifi-radio-energy-model.h"
 #include "wifi-tx-current-model.h"
 
