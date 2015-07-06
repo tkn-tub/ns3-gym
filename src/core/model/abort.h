@@ -37,8 +37,8 @@
  * \param msg The message to output when this macro is hit.
  *
  * This macro is essentially equivalent to NS_FATAL_ERROR,
- * excepts it prepends the error message with the string
- * "aborted. ". When this macro is hit a runtime, the
+ * except it prepends the error message with the string
+ * "aborted. ". When this macro is hit at runtime, the
  * program will be halted using \c std::terminate, which
  * triggers clean up code registered by \c std::set_terminate.
  *
