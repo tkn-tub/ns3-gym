@@ -469,13 +469,6 @@ def configure(conf):
         else:
             why_not_examples = "defaults to disabled"
 
-    env['EXAMPLE_DIRECTORIES'] = []
-    for dir in os.listdir('examples'):
-        if dir.startswith('.') or dir == 'CVS':
-            continue
-        if os.path.isdir(os.path.join('examples', dir)):
-            env['EXAMPLE_DIRECTORIES'].append(dir)
-
     conf.report_optional_feature("ENABLE_EXAMPLES", "Build examples", env['ENABLE_EXAMPLES'], 
                                  why_not_examples)
 
