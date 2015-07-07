@@ -1252,10 +1252,12 @@ private:
   void DoAssign (Ptr<const CallbackImplBase> other) {
     if (!DoCheckType (other))
       {
+        const CallbackImplBase * otherRaw = PeekPointer (other);
         Ptr<CallbackImpl<R,T1,T2,T3,T4,T5,T6,T7,T8,T9> > expected;
+        CallbackImpl<R,T1,T2,T3,T4,T5,T6,T7,T8,T9> * expectedRaw = PeekPointer (expected);
         NS_FATAL_ERROR ("Incompatible types. (feed to \"c++filt -t\" if needed)" << std::endl <<
-                        "got=" << Demangle ( typeid (*other).name () ) << std::endl <<
-                        "expected=" << Demangle ( typeid (*expected).name () ));
+                        "got=" << Demangle ( typeid (*otherRaw).name () ) << std::endl <<
+                        "expected=" << Demangle ( typeid (*expectedRaw).name () ));
       }
     m_impl = const_cast<CallbackImplBase *> (PeekPointer (other));
   }
