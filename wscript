@@ -251,7 +251,7 @@ def _check_compilation_flag(conf, flag, mode='cxx', linkflags=None):
         env.append_value("LINKFLAGS", linkflags)
 
     try:
-        retval = conf.check(compiler=mode, fragment='int main() { return 0; }', features='c')
+        retval = conf.check(compiler=mode, fragment='int main() { return 0; }', features='c', env=env)
     except Errors.ConfigurationError:
         ok = False
     else:
