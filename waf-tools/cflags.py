@@ -131,6 +131,8 @@ compiler_mapping = {
 	'msvc': msvc,
 	'icc': icc,
 	'icpc': icc,
+	'clang': gcc,
+	'clang++': gcc,
 }
 
 profiles = {
