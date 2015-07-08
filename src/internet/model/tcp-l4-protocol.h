@@ -159,6 +159,28 @@ public:
   Ipv6EndPoint *Allocate6 (Ipv6Address localAddress, uint16_t localPort,
                            Ipv6Address peerAddress, uint16_t peerPort);
 
+  /** Send a packet via TCP (IPv4)
+   *
+   * \param pkt The packet to send
+   * \param outgoing The packet header
+   * \param saddr The source Ipv4Address
+   * \param daddr The destination Ipv4Address
+   * \param oif The output interface bound. Defaults to null (unspecified).
+   */
+  void SendPacket (Ptr<Packet> pkt, const TcpHeader &outgoing,
+                   Ipv4Address saddr, Ipv4Address, Ptr<NetDevice> oif = 0);
+
+  /** Send a packet via TCP (IPv6)
+   *
+   * \param pkt The packet to send
+   * \param outgoing The packet header
+   * \param saddr The source Ipv4Address
+   * \param daddr The destination Ipv4Address
+   * \param oif The output interface bound. Defaults to null (unspecified).
+   */
+  void SendPacket (Ptr<Packet> pkt, const TcpHeader &outgoing,
+                   Ipv6Address saddr, Ipv6Address daddr, Ptr<NetDevice> oif = 0);
+
   /**
    * \brief Remove an IPv4 Endpoint.
    * \param endPoint the end point to remove
@@ -169,32 +191,6 @@ public:
    * \param endPoint the end point to remove
    */
   void DeAllocate (Ipv6EndPoint *endPoint);
-
-  /**
-   * \brief Send a packet via TCP (IPv4)
-   * \param packet The packet to send
-   * \param saddr The source Ipv4Address
-   * \param daddr The destination Ipv4Address
-   * \param sport The source port number
-   * \param dport The destination port number
-   * \param oif The output interface bound. Defaults to null (unspecified).
-   */
-  void Send (Ptr<Packet> packet,
-             Ipv4Address saddr, Ipv4Address daddr, 
-             uint16_t sport, uint16_t dport, Ptr<NetDevice> oif = 0);
-  /**
-   * \brief Send a packet via TCP (IPv6)
-   * \param packet The packet to send
-   * \param saddr The source Ipv4Address
-   * \param daddr The destination Ipv4Address
-   * \param sport The source port number
-   * \param dport The destination port number
-   * \param oif The output interface bound. Defaults to null (unspecified).
-   */
-  void Send (Ptr<Packet> packet,
-             Ipv6Address saddr, Ipv6Address daddr, 
-             uint16_t sport, uint16_t dport, Ptr<NetDevice> oif = 0);
-
 
   virtual enum IpL4Protocol::RxStatus Receive (Ptr<Packet> p,
                                                Ipv4Header const &header,
@@ -233,30 +229,6 @@ private:
   TypeId m_rttTypeId; //!< The RTT Estimator TypeId
   TypeId m_socketTypeId; //!< The socket TypeId
 private:
-  friend class TcpSocketBase;
-
-  /**
-   * \brief Send a packet via TCP (IPv4)
-   * \param packet The packet to send
-   * \param outgoing The TCP header
-   * \param saddr The source Ipv4Address
-   * \param daddr The destination Ipv4Address
-   * \param oif The output interface bound. Defaults to null (unspecified).
-   */
-  void SendPacket (Ptr<Packet> packet, const TcpHeader &outgoing,
-                   Ipv4Address saddr, Ipv4Address daddr, Ptr<NetDevice>  oif = 0);
-
-  /**
-   * \brief Send a packet via TCP (IPv4)
-   * \param packet The packet to send
-   * \param outgoing The TCP header
-   * \param saddr The source Ipv4Address
-   * \param daddr The destination Ipv4Address
-   * \param oif The output interface bound. Defaults to null (unspecified).
-   */
-  void SendPacket (Ptr<Packet> packet, const TcpHeader &outgoing,
-                   Ipv6Address saddr, Ipv6Address daddr, Ptr<NetDevice> oif = 0);
-
   /**
    * \brief Copy constructor
    *
