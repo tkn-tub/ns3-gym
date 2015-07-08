@@ -21,7 +21,6 @@
 
 #include "ns3/bsm-application.h"
 #include "ns3/log.h"
-#include "ns3/seq-ts-header.h"
 #include "ns3/wave-net-device.h"
 #include "ns3/wave-mac-helper.h"
 #include "ns3/wave-helper.h"

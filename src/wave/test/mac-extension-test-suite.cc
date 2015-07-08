@@ -23,7 +23,6 @@
 #include "ns3/mobility-model.h"
 #include "ns3/yans-wifi-helper.h"
 #include "ns3/mobility-helper.h"
-#include "ns3/seq-ts-header.h"
 #include "ns3/wave-net-device.h"
 #include "ns3/wave-mac-helper.h"
 #include "ns3/wave-helper.h"
@@ -530,21 +529,67 @@ ChannelAccessTestCase::SendX  (uint32_t channel, uint32_t receiverId)
   const static uint16_t WSMP_PROT_NUMBER = 0x88DC;
   const Mac48Address dest = Mac48Address::GetBroadcast ();
   const TxInfo txInfo = TxInfo (channel);
-  Ptr<Packet> p  = Create<Packet> (100);
-  // the sequence here indicates the node id which should receive transmitted packets.
-  SeqTsHeader seqTs;
-  seqTs.SetSeq (receiverId);
-  p->AddHeader (seqTs);
+
+  uint8_t *data = new uint8_t [112];
+  data [0] = (receiverId >> 24) & 0xFF;
+  data [1] = (receiverId >> 16) & 0xFF;
+  data [2] = (receiverId >> 8) & 0xFF;
+  data [3] = (receiverId >> 0) & 0xFF;
+
+  uint64_t ts = Simulator::Now ().GetTimeStep ();
+  data [4] = (ts >> 56) & 0xFF;
+  data [5] = (ts >> 48) & 0xFF;
+  data [6] = (ts >> 40) & 0xFF;
+  data [7] = (ts >> 32) & 0xFF;
+  data [8] = (ts >> 24) & 0xFF;
+  data [9] = (ts >> 16) & 0xFF;
+  data [10] = (ts >> 8) & 0xFF;
+  data [11] = (ts >> 0) & 0xFF;
+
+  Ptr<Packet> p = Create<Packet> (data, 112);
+
   m_sender->SendX  (p, dest, WSMP_PROT_NUMBER, txInfo);
+
+  delete [] data;
 }
 
 bool
 ChannelAccessTestCase::Receive (Ptr<NetDevice> dev, Ptr<const Packet> pkt, uint16_t mode, const Address &sender)
 {
-  SeqTsHeader seqTs;
-  ConstCast<Packet> (pkt)->RemoveHeader (seqTs);
+  uint8_t *data = new uint8_t [pkt->GetSize ()];
+  pkt->CopyData(data, pkt->GetSize ());
+
+  uint32_t seq = data [0];
+  seq <<= 8;
+  seq |= data [1];
+  seq <<= 8;
+  seq |= data [2];
+  seq <<= 8;
+  seq |= data [3];
+
+  uint64_t ts = data [4];
+  ts <<= 8;
+  ts |= data [5];
+  ts <<= 8;
+  ts |= data [6];
+  ts <<= 8;
+  ts |= data [7];
+  ts <<= 8;
+  ts |= data [8];
+  ts <<= 8;
+  ts |= data [9];
+  ts <<= 8;
+  ts |= data [10];
+  ts <<= 8;
+  ts |= data [11];
+  Time sendTime = TimeStep (ts);
+
+  delete [] data;
+
+//  SeqTsHeader seqTs;
+//  ConstCast<Packet> (pkt)->RemoveHeader (seqTs);
   uint32_t curNodeId =  dev->GetNode ()->GetId ();
-  NS_TEST_EXPECT_MSG_EQ (curNodeId, seqTs.GetSeq (), "fail to assign channel access");
+  NS_TEST_EXPECT_MSG_EQ (curNodeId, seq, "fail to assign channel access");
   m_received++;
   return true;
 }
@@ -879,24 +924,63 @@ AnnexC_TestCase::SendPacket  (uint32_t packetSize, const TxInfo & txInfo, uint32
 {
   const static uint16_t WSMP_PROT_NUMBER = 0x88DC;
   const Mac48Address dest = Mac48Address::ConvertFrom (m_receiver->GetAddress ());
-//   const Mac48Address dest = Mac48Address::GetBroadcast();
 
+  uint8_t *data = new uint8_t [packetSize];
+  data [0] = (sequence >> 24) & 0xFF;
+  data [1] = (sequence >> 16) & 0xFF;
+  data [2] = (sequence >> 8) & 0xFF;
+  data [3] = (sequence >> 0) & 0xFF;
 
-  Ptr<Packet> p  = Create<Packet> (packetSize - (8 + 4)); // 8+4 : the size of the seqTs header
-  // the sequence here indicates whether the node id which should receive transmitted packets.
-  SeqTsHeader seqTs;
-  seqTs.SetSeq (sequence);
-  p->AddHeader (seqTs);
+  uint64_t ts = Simulator::Now ().GetTimeStep ();
+  data [4] = (ts >> 56) & 0xFF;
+  data [5] = (ts >> 48) & 0xFF;
+  data [6] = (ts >> 40) & 0xFF;
+  data [7] = (ts >> 32) & 0xFF;
+  data [8] = (ts >> 24) & 0xFF;
+  data [9] = (ts >> 16) & 0xFF;
+  data [10] = (ts >> 8) & 0xFF;
+  data [11] = (ts >> 0) & 0xFF;
+
+  Ptr<Packet> p = Create<Packet> (data, packetSize);
+
   m_sender->SendX  (p, dest, WSMP_PROT_NUMBER, txInfo);
+
+  delete [] data;
 }
 
 bool
 AnnexC_TestCase::Receive (Ptr<NetDevice> dev, Ptr<const Packet> pkt, uint16_t mode, const Address &sender)
 {
-  SeqTsHeader seqTs;
-  ConstCast<Packet> (pkt)->RemoveHeader (seqTs);
-  uint32_t seq = seqTs.GetSeq ();
-  Time sendTime =  seqTs.GetTs ();
+  uint8_t *data = new uint8_t [pkt->GetSize ()];
+  pkt->CopyData(data, pkt->GetSize ());
+
+  uint32_t seq = data [0];
+  seq <<= 8;
+  seq |= data [1];
+  seq <<= 8;
+  seq |= data [2];
+  seq <<= 8;
+  seq |= data [3];
+
+  uint64_t ts = data [4];
+  ts <<= 8;
+  ts |= data [5];
+  ts <<= 8;
+  ts |= data [6];
+  ts <<= 8;
+  ts |= data [7];
+  ts <<= 8;
+  ts |= data [8];
+  ts <<= 8;
+  ts |= data [9];
+  ts <<= 8;
+  ts |= data [10];
+  ts <<= 8;
+  ts |= data [11];
+  Time sendTime = TimeStep (ts);
+
+  delete [] data;
+
   Time curTime = Now ();
   Time duration = curTime - sendTime;
 
