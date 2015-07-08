@@ -331,10 +331,8 @@ TcpSocketBase::Bind (void)
       return -1;
     }
 
-  if (std::find(m_tcp->m_sockets.begin(), m_tcp->m_sockets.end(), this) == m_tcp->m_sockets.end())
-    {
-      m_tcp->m_sockets.push_back (this);
-    }
+  m_tcp->AddSocket(this);
+
   return SetupCallback ();
 }
 
@@ -349,10 +347,8 @@ TcpSocketBase::Bind6 (void)
       return -1;
     }
 
-  if (std::find(m_tcp->m_sockets.begin(), m_tcp->m_sockets.end(), this) == m_tcp->m_sockets.end())
-    {
-      m_tcp->m_sockets.push_back (this);
-    }
+  m_tcp->AddSocket(this);
+
   return SetupCallback ();
 }
 
@@ -421,10 +417,8 @@ TcpSocketBase::Bind (const Address &address)
       return -1;
     }
 
-  if (std::find(m_tcp->m_sockets.begin(), m_tcp->m_sockets.end(), this) == m_tcp->m_sockets.end())
-    {
-      m_tcp->m_sockets.push_back (this);
-    }
+  m_tcp->AddSocket(this);
+
   NS_LOG_LOGIC ("TcpSocketBase " << this << " got an endpoint: " << m_endPoint);
 
   return SetupCallback ();
@@ -1626,12 +1620,7 @@ TcpSocketBase::Destroy (void)
   m_endPoint = 0;
   if (m_tcp != 0)
     {
-      std::vector<Ptr<TcpSocketBase> >::iterator it
-        = std::find (m_tcp->m_sockets.begin (), m_tcp->m_sockets.end (), this);
-      if (it != m_tcp->m_sockets.end ())
-        {
-          m_tcp->m_sockets.erase (it);
-        }
+      m_tcp->RemoveSocket(this);
     }
   NS_LOG_LOGIC (this << " Cancelled ReTxTimeout event which was set to expire at " <<
                 (Simulator::Now () + Simulator::GetDelayLeft (m_retxEvent)).GetSeconds ());
@@ -1647,12 +1636,7 @@ TcpSocketBase::Destroy6 (void)
   m_endPoint6 = 0;
   if (m_tcp != 0)
     {
-      std::vector<Ptr<TcpSocketBase> >::iterator it
-        = std::find (m_tcp->m_sockets.begin (), m_tcp->m_sockets.end (), this);
-      if (it != m_tcp->m_sockets.end ())
-        {
-          m_tcp->m_sockets.erase (it);
-        }
+      m_tcp->RemoveSocket(this);
     }
   NS_LOG_LOGIC (this << " Cancelled ReTxTimeout event which was set to expire at " <<
                 (Simulator::Now () + Simulator::GetDelayLeft (m_retxEvent)).GetSeconds ());
@@ -1798,12 +1782,7 @@ TcpSocketBase::DeallocateEndPoint (void)
       m_endPoint->SetDestroyCallback (MakeNullCallback<void> ());
       m_tcp->DeAllocate (m_endPoint);
       m_endPoint = 0;
-      std::vector<Ptr<TcpSocketBase> >::iterator it
-        = std::find (m_tcp->m_sockets.begin (), m_tcp->m_sockets.end (), this);
-      if (it != m_tcp->m_sockets.end ())
-        {
-          m_tcp->m_sockets.erase (it);
-        }
+      m_tcp->RemoveSocket(this);
     }
   else if (m_endPoint6 != 0)
     {
@@ -1811,12 +1790,7 @@ TcpSocketBase::DeallocateEndPoint (void)
       m_endPoint6->SetDestroyCallback (MakeNullCallback<void> ());
       m_tcp->DeAllocate (m_endPoint6);
       m_endPoint6 = 0;
-      std::vector<Ptr<TcpSocketBase> >::iterator it
-        = std::find (m_tcp->m_sockets.begin (), m_tcp->m_sockets.end (), this);
-      if (it != m_tcp->m_sockets.end ())
-        {
-          m_tcp->m_sockets.erase (it);
-        }
+      m_tcp->RemoveSocket(this);
     }
 }
 
@@ -1905,7 +1879,7 @@ TcpSocketBase::CompleteFork (Ptr<Packet> p, const TcpHeader& h,
                                       Inet6SocketAddress::ConvertFrom (fromAddress).GetPort ());
       m_endPoint = 0;
     }
-  m_tcp->m_sockets.push_back (this);
+  m_tcp->AddSocket(this);
 
   // Change the cloned socket from LISTEN state to SYN_RCVD
   NS_LOG_INFO ("LISTEN -> SYN_RCVD");
