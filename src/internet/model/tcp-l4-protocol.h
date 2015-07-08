@@ -182,6 +182,23 @@ public:
                    Ipv6Address saddr, Ipv6Address daddr, Ptr<NetDevice> oif = 0);
 
   /**
+   * \brief Make a socket capable to being demultiplexed
+   *
+   * Called after a socket has been bound, it is inserted in an internal vector.
+   *
+   * \param socket Socket to be added
+   */
+  void AddSocket (Ptr<TcpSocketBase> socket);
+
+  /**
+   * \brief Remove a socket from the internal list
+   *
+   * \param socket socket to Remove
+   * \return true if the socket has been removed
+   */
+  bool RemoveSocket(Ptr<TcpSocketBase> socket);
+
+  /**
    * \brief Remove an IPv4 Endpoint.
    * \param endPoint the end point to remove
    */

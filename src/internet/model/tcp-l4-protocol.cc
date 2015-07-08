@@ -611,6 +611,43 @@ TcpL4Protocol::SendPacket (Ptr<Packet> packet, const TcpHeader &outgoing,
 }
 
 void
+TcpL4Protocol::AddSocket(Ptr<TcpSocketBase> socket)
+{
+  std::vector<Ptr<TcpSocketBase> >::iterator it = m_sockets.begin ();
+
+  while (it != m_sockets.end())
+    {
+      if (*it == socket)
+        {
+          return;
+        }
+
+      ++it;
+    }
+
+   m_sockets.push_back (socket);
+}
+
+bool
+TcpL4Protocol::RemoveSocket(Ptr<TcpSocketBase> socket)
+{
+  std::vector<Ptr<TcpSocketBase> >::iterator it = m_sockets.begin ();
+
+  while (it != m_sockets.end())
+    {
+      if (*it == socket)
+        {
+          m_sockets.erase(it);
+          return true;
+        }
+
+      ++it;
+    }
+
+  return false;
+}
+
+void
 TcpL4Protocol::SetDownTarget (IpL4Protocol::DownTargetCallback callback)
 {
   m_downTarget = callback;
