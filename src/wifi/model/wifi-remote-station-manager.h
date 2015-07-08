@@ -636,6 +636,15 @@ protected:
    */
   bool GetShortGuardInterval (const WifiRemoteStation *station) const;
   /**
+   * Return whether the given station supports A-MPDU.
+   *
+   * \param station the station being queried
+   *
+   * \return true if the station supports MPDU aggregation,
+   *         false otherwise
+   */
+  bool GetAggregation (const WifiRemoteStation *station) const;
+  /**
    * Return whether the given station supports space-time block coding (STBC).
    *
    * \param station the station being queried
@@ -1049,6 +1058,7 @@ struct WifiRemoteStationState
   uint32_t m_tx;              //!< Number of TX antennas of the remote station
   uint32_t m_ness;            //!< Number of streams in beamforming of the remote station
   bool m_stbc;                //!< Flag if STBC is used by the remote station
+  bool m_aggregation;         //!< Flag if MPDU aggregation is used by the remote station
   bool m_greenfield;          //!< Flag if green field is used by the remote station
 };
 

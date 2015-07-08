@@ -886,8 +886,10 @@ private:
    * \param hdr
    * \param txVector
    * \param preamble
+   * \param packetType
+   * \param mpduReferenceNumber
    */
-  void SendPacket (Ptr<const Packet> packet, WifiTxVector txVector, WifiPreamble preamble, uint8_t packetType);
+  void SendPacket (Ptr<const Packet> packet, WifiTxVector txVector, WifiPreamble preamble, uint8_t packetType, uint32_t mpduReferenceNumber);
   /**
    * Return a TXVECTOR for the RTS frame given the destination.
    * The function consults WifiRemoteStationManager, which controls the rate
@@ -1367,6 +1369,7 @@ private:
   WifiTxVector m_currentTxVector;     //!< TXVECTOR used for the current packet transmission
   bool m_receivedAtLeastOneMpdu;      //!< Flag whether an MPDU has already been successfully received while receiving an A-MPDU
   std::vector<Item> m_txPackets;      //!< Contain temporary items to be sent with the next A-MPDU transmission, once RTS/CTS exchange has succeeded. It is not used in other cases.
+  uint32_t m_mpduReferenceNumber;       //!< A-MPDU reference number to identify all subframes belonging to the same A-MPDU
 };
 
 } //namespace ns3

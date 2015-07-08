@@ -169,7 +169,7 @@ IdealWifiManager::DoGetDataTxVector (WifiRemoteStation *st, uint32_t size)
           maxMode = mode;
         }
     }
-  return WifiTxVector (maxMode, GetDefaultTxPowerLevel (), GetLongRetryCount (station), GetShortGuardInterval (station), Min (GetNumberOfReceiveAntennas (station), GetNumberOfTransmitAntennas ()), GetNess (station), GetStbc (station));
+  return WifiTxVector (maxMode, GetDefaultTxPowerLevel (), GetLongRetryCount (station), GetShortGuardInterval (station), Min (GetNumberOfReceiveAntennas (station), GetNumberOfTransmitAntennas ()), GetNess (station), GetAggregation (station), GetStbc (station));
 }
 
 WifiTxVector
@@ -192,7 +192,7 @@ IdealWifiManager::DoGetRtsTxVector (WifiRemoteStation *st)
           maxMode = mode;
         }
     }
-  return WifiTxVector (maxMode, GetDefaultTxPowerLevel (), GetShortRetryCount (station), GetShortGuardInterval (station), Min (GetNumberOfReceiveAntennas (station), GetNumberOfTransmitAntennas ()), GetNess (station), GetStbc (station));
+  return WifiTxVector (maxMode, GetDefaultTxPowerLevel (), GetShortRetryCount (station), GetShortGuardInterval (station), Min (GetNumberOfReceiveAntennas (station), GetNumberOfTransmitAntennas ()), GetNess (station), GetAggregation (station), GetStbc (station));
 }
 
 bool

@@ -592,15 +592,15 @@ WifiPhy::NotifyRxDrop (Ptr<const Packet> packet)
 }
 
 void
-WifiPhy::NotifyMonitorSniffRx (Ptr<const Packet> packet, uint16_t channelFreqMhz, uint16_t channelNumber, uint32_t rate, bool isShortPreamble, WifiTxVector txvector, double signalDbm, double noiseDbm)
+WifiPhy::NotifyMonitorSniffRx (Ptr<const Packet> packet, uint16_t channelFreqMhz, uint16_t channelNumber, uint32_t rate, WifiPreamble preamble, WifiTxVector txvector, struct mpduInfo aMpdu, struct snrDbm snr)
 {
-  m_phyMonitorSniffRxTrace (packet, channelFreqMhz, channelNumber, rate, isShortPreamble, txvector, signalDbm, noiseDbm);
+  m_phyMonitorSniffRxTrace (packet, channelFreqMhz, channelNumber, rate, preamble, txvector, aMpdu, snr);
 }
 
 void
-WifiPhy::NotifyMonitorSniffTx (Ptr<const Packet> packet, uint16_t channelFreqMhz, uint16_t channelNumber, uint32_t rate, bool isShortPreamble, WifiTxVector txvector)
+WifiPhy::NotifyMonitorSniffTx (Ptr<const Packet> packet, uint16_t channelFreqMhz, uint16_t channelNumber, uint32_t rate, WifiPreamble preamble, WifiTxVector txvector, struct mpduInfo aMpdu)
 {
-  m_phyMonitorSniffTxTrace (packet, channelFreqMhz, channelNumber, rate, isShortPreamble, txvector);
+  m_phyMonitorSniffTxTrace (packet, channelFreqMhz, channelNumber, rate, preamble, txvector, aMpdu);
 }
 
 

@@ -38,6 +38,18 @@ namespace ns3 {
 class WifiChannel;
 class NetDevice;
 
+struct snrDbm
+{
+  double signal;
+  double noise;
+};
+
+struct mpduInfo
+{
+  uint8_t packetType;
+  uint32_t referenceNumber;
+};
+
 /**
  * \brief receive notifications about phy events.
  */
@@ -209,8 +221,9 @@ public:
    *        power is calculated as txPowerMin + txPowerLevel * (txPowerMax - txPowerMin) / nTxLevels
    * \param preamble the type of preamble to use to send this packet.
    * \param packetType the type of the packet 0 is not A-MPDU, 1 is a MPDU that is part of an A-MPDU and 2 is the last MPDU in an A-MPDU
+   * \param mpduReferenceNumber the A-MPDU reference number (must be a different value for each A-MPDU but the same for each subframe within one A-MPDU)
    */
-  virtual void SendPacket (Ptr<const Packet> packet, WifiTxVector txvector, enum WifiPreamble preamble, uint8_t packetType) = 0;
+  virtual void SendPacket (Ptr<const Packet> packet, WifiTxVector txvector, enum WifiPreamble preamble, uint8_t packetType, uint32_t mpduReferenceNumber) = 0;
 
   /**
    * \param listener the new listener
@@ -997,15 +1010,15 @@ public:
    * \param channelNumber the channel on which the packet is received
    * \param rate the PHY data rate in units of 500kbps (i.e., the same
    *        units used both for the radiotap and for the prism header)
-   * \param isShortPreamble true if short preamble is used, false otherwise
+   * \param preamble the preamble of the packet
    * \param txVector the txvector that holds rx parameters
-   * \param signalDbm signal power in dBm
-   * \param noiseDbm  noise power in dBm
+   * \param aMpdu the type of the packet (0 is not A-MPDU, 1 is a MPDU that is part of an A-MPDU and 2 is the last MPDU in an A-MPDU)
+   *        and the A-MPDU reference number (must be a different value for each A-MPDU but the same for each subframe within one A-MPDU)
+   * \param snr signal power and noise power in dBm
    */
   void NotifyMonitorSniffRx (Ptr<const Packet> packet, uint16_t channelFreqMhz,
-                             uint16_t channelNumber, uint32_t rate,
-                             bool isShortPreamble, WifiTxVector txvector,
-                             double signalDbm, double noiseDbm);
+                             uint16_t channelNumber, uint32_t rate, WifiPreamble preamble,
+                             WifiTxVector txvector, struct mpduInfo aMpdu, struct snrDbm snr);
 
   /**
    * TracedCallback signature for monitor mode receive events.
@@ -1022,15 +1035,15 @@ public:
    * \param channelNumber the channel on which the packet is received
    * \param rate the PHY data rate in units of 500kbps (i.e., the same
    *        units used both for the radiotap and for the prism header)
-   * \param isShortPreamble true if short preamble is used, false otherwise
+   * \param preamble the preamble of the packet
    * \param txVector the txvector that holds rx parameters
-   * \param signalDbm signal power in dBm
-   * \param noiseDbm noise power in dBm
+   * \param aMpdu the type of the packet (0 is not A-MPDU, 1 is a MPDU that is part of an A-MPDU and 2 is the last MPDU in an A-MPDU)
+   *        and the A-MPDU reference number (must be a different value for each A-MPDU but the same for each subframe within one A-MPDU)
+   * \param snr signal power and noise power in dBm
    */
   typedef void (* MonitorSnifferRxCallback)(Ptr<const Packet> packet, uint16_t channelFreqMhz,
-                                            uint16_t channelNumber, uint32_t rate,
-                                            bool isShortPreamble, WifiTxVector txvector,
-                                            double signalDbm, double noiseDbm);
+                                            uint16_t channelNumber, uint32_t rate, WifiPreamble preamble,
+                                            WifiTxVector txvector, struct mpduInfo aMpdu, struct snrDbm snr);
 
   /**
    * Public method used to fire a MonitorSniffer trace for a wifi packet being transmitted.
@@ -1042,12 +1055,14 @@ public:
    * \param channelNumber the channel on which the packet is transmitted
    * \param rate the PHY data rate in units of 500kbps (i.e., the same
    *        units used both for the radiotap and for the prism header)
-   * \param isShortPreamble true if short preamble is used, false otherwise
+   * \param preamble the preamble of the packet
    * \param txVector the txvector that holds tx parameters
+   * \param aMpdu the type of the packet (0 is not A-MPDU, 1 is a MPDU that is part of an A-MPDU and 2 is the last MPDU in an A-MPDU)
+   *        and the A-MPDU reference number (must be a different value for each A-MPDU but the same for each subframe within one A-MPDU)
    */
   void NotifyMonitorSniffTx (Ptr<const Packet> packet, uint16_t channelFreqMhz,
-                             uint16_t channelNumber, uint32_t rate,
-                             bool isShortPreamble, WifiTxVector txvector);
+                             uint16_t channelNumber, uint32_t rate, WifiPreamble preamble,
+                             WifiTxVector txvector, struct mpduInfo aMpdu);
 
   /**
    * TracedCallback signature for monitor mode transmit events.
@@ -1058,12 +1073,14 @@ public:
    * \param channelNumber the channel on which the packet is transmitted
    * \param rate the PHY data rate in units of 500kbps (i.e., the same
    *        units used both for the radiotap and for the prism header)
-   * \param isShortPreamble true if short preamble is used, false otherwise
+   * \param preamble the preamble of the packet
    * \param txVector the txvector that holds tx parameters
+   * \param aMpdu the type of the packet (0 is not A-MPDU, 1 is a MPDU that is part of an A-MPDU and 2 is the last MPDU in an A-MPDU)
+   *        and the A-MPDU reference number (must be a different value for each A-MPDU but the same for each subframe within one A-MPDU)
    */
   typedef void (* MonitorSnifferTxCallback)(const Ptr<const Packet> packet, uint16_t channelFreqMhz,
-                                            uint16_t channelNumber, uint32_t rate,
-                                            bool isShortPreamble, WifiTxVector txvector);
+                                            uint16_t channelNumber, uint32_t rate, WifiPreamble preamble,
+                                            WifiTxVector txvector, struct mpduInfo aMpdu);
 
   /**
    * Assign a fixed random variable stream number to the random variables
@@ -1199,7 +1216,7 @@ private:
    *
    * \see class CallBackTraceSource
    */
-  TracedCallback<Ptr<const Packet>, uint16_t, uint16_t, uint32_t, bool, WifiTxVector, double, double> m_phyMonitorSniffRxTrace;
+  TracedCallback<Ptr<const Packet>, uint16_t, uint16_t, uint32_t, WifiPreamble, WifiTxVector, struct mpduInfo, struct snrDbm> m_phyMonitorSniffRxTrace;
 
   /**
    * A trace source that emulates a wifi device in monitor mode
@@ -1211,7 +1228,7 @@ private:
    *
    * \see class CallBackTraceSource
    */
-  TracedCallback<Ptr<const Packet>, uint16_t, uint16_t, uint32_t, bool, WifiTxVector> m_phyMonitorSniffTxTrace;
+  TracedCallback<Ptr<const Packet>, uint16_t, uint16_t, uint32_t, WifiPreamble, WifiTxVector, struct mpduInfo> m_phyMonitorSniffTxTrace;
 
   uint32_t m_totalAmpduNumSymbols; //!< Number of symbols previously transmitted for the MPDUs in an A-MPDU, used for the computation of the number of symbols needed for the last MPDU in the A-MPDU
   uint32_t m_totalAmpduSize;       //!< Total size of the previously transmitted MPDUs in an A-MPDU, used for the computation of the number of symbols needed for the last MPDU in the A-MPDU

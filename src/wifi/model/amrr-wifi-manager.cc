@@ -336,7 +336,7 @@ AmrrWifiManager::DoGetDataTxVector (WifiRemoteStation *st, uint32_t size)
         }
     }
 
-  return WifiTxVector (GetSupported (station, rateIndex), GetDefaultTxPowerLevel (), GetLongRetryCount (station), GetShortGuardInterval (station), Min (GetNumberOfReceiveAntennas (station), GetNumberOfTransmitAntennas ()), GetNess (station), GetStbc (station));
+  return WifiTxVector (GetSupported (station, rateIndex), GetDefaultTxPowerLevel (), GetLongRetryCount (station), GetShortGuardInterval (station), Min (GetNumberOfReceiveAntennas (station), GetNumberOfTransmitAntennas ()), GetNess (station), GetAggregation (station), GetStbc (station));
 }
 
 WifiTxVector
@@ -346,7 +346,7 @@ AmrrWifiManager::DoGetRtsTxVector (WifiRemoteStation *st)
   AmrrWifiRemoteStation *station = (AmrrWifiRemoteStation *)st;
   UpdateMode (station);
   /// \todo can we implement something smarter ?
-  return WifiTxVector (GetSupported (station, 0), GetDefaultTxPowerLevel (), GetLongRetryCount (station), GetShortGuardInterval (station), Min (GetNumberOfReceiveAntennas (station), GetNumberOfTransmitAntennas ()), GetNess (station), GetStbc (station));
+  return WifiTxVector (GetSupported (station, 0), GetDefaultTxPowerLevel (), GetLongRetryCount (station), GetShortGuardInterval (station), Min (GetNumberOfReceiveAntennas (station), GetNumberOfTransmitAntennas ()), GetNess (station), GetAggregation (station), GetStbc (station));
 }
 
 bool

@@ -183,7 +183,7 @@ CaraWifiManager::DoGetDataTxVector (WifiRemoteStation *st,
 {
   NS_LOG_FUNCTION (this << st << size);
   CaraWifiRemoteStation *station = (CaraWifiRemoteStation *) st;
-  return WifiTxVector (GetSupported (station, station->m_rate), GetDefaultTxPowerLevel (), GetLongRetryCount (station), GetShortGuardInterval (station), Min (GetNumberOfReceiveAntennas (station), GetNumberOfTransmitAntennas ()), GetNess (station), GetStbc (station));
+  return WifiTxVector (GetSupported (station, station->m_rate), GetDefaultTxPowerLevel (), GetLongRetryCount (station), GetShortGuardInterval (station), Min (GetNumberOfReceiveAntennas (station), GetNumberOfTransmitAntennas ()), GetNess (station), GetAggregation (station), GetStbc (station));
 }
 
 WifiTxVector
@@ -192,7 +192,7 @@ CaraWifiManager::DoGetRtsTxVector (WifiRemoteStation *st)
   NS_LOG_FUNCTION (this << st);
   /// \todo we could/should implement the Arf algorithm for
   /// RTS only by picking a single rate within the BasicRateSet.
-  return WifiTxVector (GetSupported (st, 0), GetDefaultTxPowerLevel (), GetLongRetryCount (st), GetShortGuardInterval (st), Min (GetNumberOfReceiveAntennas (st), GetNumberOfTransmitAntennas ()), GetNess (st), GetStbc (st));
+  return WifiTxVector (GetSupported (st, 0), GetDefaultTxPowerLevel (), GetLongRetryCount (st), GetShortGuardInterval (st), Min (GetNumberOfReceiveAntennas (st), GetNumberOfTransmitAntennas ()), GetNess (st), GetAggregation (st), GetStbc (st));
 }
 
 bool

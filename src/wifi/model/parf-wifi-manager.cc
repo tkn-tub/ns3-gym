@@ -294,7 +294,7 @@ ParfWifiManager::DoGetDataTxVector (WifiRemoteStation *st, uint32_t size)
   NS_LOG_FUNCTION (this << st << size);
   ParfWifiRemoteStation *station = (ParfWifiRemoteStation *) st;
   CheckInit (station);
-  return WifiTxVector (GetSupported (station, station->m_currentRate), station->m_currentPower, GetLongRetryCount (station), GetShortGuardInterval (station), Min (GetNumberOfReceiveAntennas (station), GetNumberOfTransmitAntennas ()), GetNumberOfTransmitAntennas (station), GetStbc (station));
+  return WifiTxVector (GetSupported (station, station->m_currentRate), station->m_currentPower, GetLongRetryCount (station), GetShortGuardInterval (station), Min (GetNumberOfReceiveAntennas (station), GetNumberOfTransmitAntennas ()), GetNumberOfTransmitAntennas (station), GetAggregation (station), GetStbc (station));
 }
 
 WifiTxVector
@@ -304,7 +304,7 @@ ParfWifiManager::DoGetRtsTxVector (WifiRemoteStation *st)
   /// \todo we could/should implement the Arf algorithm for
   /// RTS only by picking a single rate within the BasicRateSet.
   ParfWifiRemoteStation *station = (ParfWifiRemoteStation *) st;
-  return WifiTxVector (GetSupported (station, 0), GetDefaultTxPowerLevel (), GetShortRetryCount (station), GetShortGuardInterval (station), Min (GetNumberOfReceiveAntennas (station), GetNumberOfTransmitAntennas ()), GetNumberOfTransmitAntennas (station), GetStbc (station));
+  return WifiTxVector (GetSupported (station, 0), GetDefaultTxPowerLevel (), GetShortRetryCount (station), GetShortGuardInterval (station), Min (GetNumberOfReceiveAntennas (station), GetNumberOfTransmitAntennas ()), GetNumberOfTransmitAntennas (station), GetAggregation (station), GetStbc (station));
 }
 
 bool

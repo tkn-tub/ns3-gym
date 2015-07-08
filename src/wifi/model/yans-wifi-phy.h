@@ -105,14 +105,15 @@ public:
    * \param rxPowerDbm the receive power in dBm
    * \param txVector the TXVECTOR of the arriving packet
    * \param preamble the preamble of the arriving packet
-   * \param packetType The type of the received packet (values: 0 not an A-MPDU, 1 corresponds to any packets in an A-MPDU except the last one, 2 is the last packet in an A-MPDU)
+   * \param aMpdu the type of the packet (0 is not A-MPDU, 1 is a MPDU that is part of an A-MPDU and 2 is the last MPDU in an A-MPDU)
+   *        and the A-MPDU reference number (must be a different value for each A-MPDU but the same for each subframe within one A-MPDU)
    * \param rxDuration the duration needed for the reception of the packet
    */
   void StartReceivePreambleAndHeader (Ptr<Packet> packet,
                                       double rxPowerDbm,
                                       WifiTxVector txVector,
                                       WifiPreamble preamble,
-                                      uint8_t packetType,
+                                      struct mpduInfo aMpdu,
                                       Time rxDuration);
   /**
    * Starting receiving the payload of a packet (i.e. the first bit of the packet has arrived).
@@ -120,13 +121,14 @@ public:
    * \param packet the arriving packet
    * \param txVector the TXVECTOR of the arriving packet
    * \param preamble the preamble of the arriving packet
-   * \param packetType The type of the received packet (values: 0 not an A-MPDU, 1 corresponds to any packets in an A-MPDU except the last one, 2 is the last packet in an A-MPDU)
+   * \param aMpdu the type of the packet (0 is not A-MPDU, 1 is a MPDU that is part of an A-MPDU and 2 is the last MPDU in an A-MPDU)
+   *        and the A-MPDU reference number (must be a different value for each A-MPDU but the same for each subframe within one A-MPDU)
    * \param event the corresponding event of the first time the packet arrives
    */
   void StartReceivePacket (Ptr<Packet> packet,
                            WifiTxVector txVector,
                            WifiPreamble preamble,
-                           uint8_t packetType,
+                           struct mpduInfo aMpdu,
                            Ptr<InterferenceHelper::Event> event);
 
   /**
@@ -277,7 +279,7 @@ public:
 
   virtual void SetReceiveOkCallback (WifiPhy::RxOkCallback callback);
   virtual void SetReceiveErrorCallback (WifiPhy::RxErrorCallback callback);
-  virtual void SendPacket (Ptr<const Packet> packet, WifiTxVector txvector, enum WifiPreamble preamble, uint8_t packetType);
+  virtual void SendPacket (Ptr<const Packet> packet, WifiTxVector txvector, enum WifiPreamble preamble, uint8_t packetType, uint32_t mpduReferenceNumber);
   virtual void RegisterListener (WifiPhyListener *listener);
   virtual void UnregisterListener (WifiPhyListener *listener);
   virtual void SetSleepMode (void);
@@ -496,10 +498,11 @@ private:
    *
    * \param packet the packet that the last bit has arrived
    * \param preamble the preamble of the arriving packet
-   * \param packetType The type of the received packet (values: 0 not an A-MPDU, 1 corresponds to any packets in an A-MPDU except the last one, 2 is the last packet in an A-MPDU)
+   * \param aMpdu the type of the packet (0 is not A-MPDU, 1 is a MPDU that is part of an A-MPDU and 2 is the last MPDU in an A-MPDU)
+   *        and the A-MPDU reference number (must be a different value for each A-MPDU but the same for each subframe within one A-MPDU)
    * \param event the corresponding event of the first time the packet arrives
    */
-  void EndReceive (Ptr<Packet> packet, enum WifiPreamble preamble, uint8_t packetType, Ptr<InterferenceHelper::Event> event);
+  void EndReceive (Ptr<Packet> packet, enum WifiPreamble preamble, struct mpduInfo aMpdu, Ptr<InterferenceHelper::Event> event);
 
   bool     m_initialized;         //!< Flag for runtime initialization
   double   m_edThresholdW;        //!< Energy detection threshold in watts

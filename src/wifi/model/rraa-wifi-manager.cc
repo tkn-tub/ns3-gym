@@ -290,13 +290,13 @@ RraaWifiManager::DoGetDataTxVector (WifiRemoteStation *st,
     {
       ResetCountersBasic (station);
     }
-  return WifiTxVector (GetSupported (station, station->m_rate), GetDefaultTxPowerLevel (), GetLongRetryCount (station), GetShortGuardInterval (station), Min (GetNumberOfReceiveAntennas (station), GetNumberOfTransmitAntennas ()), GetNess (station), GetStbc (station));
+  return WifiTxVector (GetSupported (station, station->m_rate), GetDefaultTxPowerLevel (), GetLongRetryCount (station), GetShortGuardInterval (station), Min (GetNumberOfReceiveAntennas (station), GetNumberOfTransmitAntennas ()), GetNess (station), GetAggregation (station), GetStbc (station));
 }
 
 WifiTxVector
 RraaWifiManager::DoGetRtsTxVector (WifiRemoteStation *st)
 {
-  return WifiTxVector (GetSupported (st, 0), GetDefaultTxPowerLevel (), GetShortRetryCount (st), GetShortGuardInterval (st), Min (GetNumberOfReceiveAntennas (st), GetNumberOfTransmitAntennas ()), GetNess (st), GetStbc (st));
+  return WifiTxVector (GetSupported (st, 0), GetDefaultTxPowerLevel (), GetShortRetryCount (st), GetShortGuardInterval (st), Min (GetNumberOfReceiveAntennas (st), GetNumberOfTransmitAntennas ()), GetNess (st), GetAggregation (st), GetStbc (st));
 }
 
 bool

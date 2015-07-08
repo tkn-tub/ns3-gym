@@ -661,6 +661,7 @@ WifiRemoteStationManager::DoGetCtsToSelfTxVector (void)
                        m_wifiPhy->GetGuardInterval (),
                        GetNumberOfTransmitAntennas (),
                        GetNumberOfTransmitAntennas (),
+                       false,
                        false);
 }
 
@@ -1271,6 +1272,7 @@ WifiRemoteStationManager::LookupState (Mac48Address address) const
   state->m_rx = 1;
   state->m_tx = 1;
   state->m_ness = 0;
+  state->m_aggregation = false;
   state->m_stbc = false;
   const_cast<WifiRemoteStationManager *> (this)->m_states.push_back (state);
   NS_LOG_DEBUG ("WifiRemoteStationManager::LookupState returning new state");
@@ -1485,6 +1487,12 @@ bool
 WifiRemoteStationManager::GetGreenfield (const WifiRemoteStation *station) const
 {
   return station->m_state->m_greenfield;
+}
+
+bool
+WifiRemoteStationManager::GetAggregation (const WifiRemoteStation *station) const
+{
+  return station->m_state->m_aggregation;
 }
 
 bool

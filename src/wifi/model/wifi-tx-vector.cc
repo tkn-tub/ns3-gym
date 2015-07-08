@@ -29,6 +29,7 @@ WifiTxVector::WifiTxVector ()
     m_shortGuardInterval (false),
     m_nss (1),
     m_ness (0),
+    m_aggregation (false),
     m_stbc (false),
     m_modeInitialized (false),
     m_txPowerLevelInitialized (false)
@@ -36,13 +37,15 @@ WifiTxVector::WifiTxVector ()
 }
 
 WifiTxVector::WifiTxVector (WifiMode mode, uint8_t powerLevel, uint8_t retries,
-                            bool shortGuardInterval, uint8_t nss, uint8_t ness, bool stbc)
+                            bool shortGuardInterval, uint8_t nss, uint8_t ness,
+                            bool aggregation, bool stbc)
   : m_mode (mode),
     m_txPowerLevel (powerLevel),
     m_retries (retries),
     m_shortGuardInterval (shortGuardInterval),
     m_nss (nss),
     m_ness (ness),
+    m_aggregation (aggregation),
     m_stbc (stbc),
     m_modeInitialized (true),
     m_txPowerLevelInitialized (true)
@@ -94,6 +97,12 @@ WifiTxVector::GetNess (void) const
 }
 
 bool
+WifiTxVector::IsAggregation (void) const
+{
+  return m_aggregation;
+}
+
+bool
 WifiTxVector::IsStbc (void) const
 {
   return m_stbc;
@@ -138,6 +147,12 @@ WifiTxVector::SetNess (uint8_t ness)
 }
 
 void
+WifiTxVector::SetAggregation (bool aggregation)
+{
+  m_aggregation = aggregation;
+}
+
+void
 WifiTxVector::SetStbc (bool stbc)
 {
   m_stbc = stbc;
@@ -151,6 +166,7 @@ std::ostream & operator << ( std::ostream &os, const WifiTxVector &v)
     " Short GI: " << v.IsShortGuardInterval () <<
     " Nss: " << (uint32_t)v.GetNss () <<
     " Ness: " << (uint32_t)v.GetNess () <<
+    " MPDU aggregation" << v.IsAggregation () <<
     " STBC: " << v.IsStbc ();
   return os;
 }

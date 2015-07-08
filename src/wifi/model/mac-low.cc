@@ -366,7 +366,8 @@ MacLow::MacLow ()
     m_listener (0),
     m_phyMacLowListener (0),
     m_ctsToSelfSupported (false),
-    m_receivedAtLeastOneMpdu (false)
+    m_receivedAtLeastOneMpdu (false),
+    m_mpduReferenceNumber (0)
 {
   NS_LOG_FUNCTION (this);
   m_lastNavDuration = Seconds (0);
@@ -1556,7 +1557,7 @@ MacLow::ForwardDown (Ptr<const Packet> packet, const WifiMacHeader* hdr,
                 ", seq=0x" << std::hex << m_currentHdr.GetSequenceControl () << std::dec);
   if (!m_ampdu || hdr->IsRts ())
     {
-      m_phy->SendPacket (packet, txVector, preamble, 0);
+      m_phy->SendPacket (packet, txVector, preamble, 0, 0);
     }
   else
     {
@@ -1571,6 +1572,10 @@ MacLow::ForwardDown (Ptr<const Packet> packet, const WifiMacHeader* hdr,
       AmpduTag ampdutag;
       ampdutag.SetAmpdu (true);
       Time delay = Seconds (0);
+      if (queueSize > 1)
+        {
+          txVector.SetAggregation (true);
+        }
       for (; queueSize > 0; queueSize--)
         {
           dequeuedPacket = m_aggregateQueue->Dequeue (&newHdr);
@@ -1591,11 +1596,11 @@ MacLow::ForwardDown (Ptr<const Packet> packet, const WifiMacHeader* hdr,
             {
               NS_LOG_DEBUG ("Sending MPDU as part of A-MPDU");
               packetType = 1;
-              m_phy->SendPacket (newPacket, txVector, preamble, packetType);
+              m_phy->SendPacket (newPacket, txVector, preamble, packetType, m_mpduReferenceNumber);
             }
           else
             {
-              Simulator::Schedule (delay, &MacLow::SendPacket, this, newPacket, txVector, preamble, packetType);
+              Simulator::Schedule (delay, &MacLow::SendPacket, this, newPacket, txVector, preamble, packetType, m_mpduReferenceNumber);
             }
           if (queueSize > 1)
             {
@@ -1603,14 +1608,15 @@ MacLow::ForwardDown (Ptr<const Packet> packet, const WifiMacHeader* hdr,
             }
           preamble = WIFI_PREAMBLE_NONE;
         }
+      m_mpduReferenceNumber = ((m_mpduReferenceNumber + 1) % 4294967296);
     }
 }
 
 void
-MacLow::SendPacket (Ptr<const Packet> packet, WifiTxVector txVector, WifiPreamble preamble, uint8_t packetType)
+MacLow::SendPacket (Ptr<const Packet> packet, WifiTxVector txVector, WifiPreamble preamble, uint8_t packetType, uint32_t mpduReferenceNumber)
 {
   NS_LOG_DEBUG ("Sending MPDU as part of A-MPDU");
-  m_phy->SendPacket (packet, txVector, preamble, packetType);
+  m_phy->SendPacket (packet, txVector, preamble, packetType, mpduReferenceNumber);
 }
 
 void

@@ -73,7 +73,14 @@ public:
    * \param ness the number of extension spatial streams (NESS)
    * \param stbc enable or disable STBC
    */
-  WifiTxVector (WifiMode mode, uint8_t powerLevel, uint8_t retries, bool shortGuardInterval, uint8_t nss, uint8_t ness, bool stbc);
+  WifiTxVector (WifiMode mode,
+                uint8_t powerLevel,
+                uint8_t retries,
+                bool shortGuardInterval,
+                uint8_t nss,
+                uint8_t ness,
+                bool aggregation,
+                bool stbc);
   /**
    * \returns the txvector payload mode
    */
@@ -135,6 +142,18 @@ public:
    */
   void SetNess (uint8_t ness);
   /**
+   * Checks whether the PSDU contains A-MPDU.
+   *  \returns true if this PSDU has A-MPDU aggregation,
+   *           false otherwise.
+   */
+  bool IsAggregation (void) const;
+  /**
+   * Sets if PSDU contains A-MPDU.
+   *
+   * \param aggregated whether the PSDU contains A-MPDU or not.
+   */
+  void SetAggregation (bool aggregation);
+  /**
    * Check if STBC is used or not
    *
    * \returns true if STBC is used,
@@ -162,6 +181,7 @@ private:
   bool     m_shortGuardInterval; /**< true if short GI is going to be used */
   uint8_t  m_nss;                /**< number of streams */
   uint8_t  m_ness;               /**< number of streams in beamforming */
+  bool     m_aggregation;        /** Flag whether the PSDU contains A-MPDU. */
   bool     m_stbc;               /**< STBC used or not */
 
   bool     m_modeInitialized;         //*< Internal initialization flag */
