@@ -38,7 +38,7 @@ namespace ns3 {
 class WifiChannel;
 class NetDevice;
 
-struct snrDbm
+struct snrDb
 {
   double signal;
   double noise;
@@ -1014,11 +1014,11 @@ public:
    * \param txVector the txvector that holds rx parameters
    * \param aMpdu the type of the packet (0 is not A-MPDU, 1 is a MPDU that is part of an A-MPDU and 2 is the last MPDU in an A-MPDU)
    *        and the A-MPDU reference number (must be a different value for each A-MPDU but the same for each subframe within one A-MPDU)
-   * \param snr signal power and noise power in dBm
+   * \param snr signal power and noise power in dB
    */
   void NotifyMonitorSniffRx (Ptr<const Packet> packet, uint16_t channelFreqMhz,
                              uint16_t channelNumber, uint32_t rate, WifiPreamble preamble,
-                             WifiTxVector txvector, struct mpduInfo aMpdu, struct snrDbm snr);
+                             WifiTxVector txvector, struct mpduInfo aMpdu, struct snrDb snr);
 
   /**
    * TracedCallback signature for monitor mode receive events.
@@ -1039,11 +1039,11 @@ public:
    * \param txVector the txvector that holds rx parameters
    * \param aMpdu the type of the packet (0 is not A-MPDU, 1 is a MPDU that is part of an A-MPDU and 2 is the last MPDU in an A-MPDU)
    *        and the A-MPDU reference number (must be a different value for each A-MPDU but the same for each subframe within one A-MPDU)
-   * \param snr signal power and noise power in dBm
+   * \param snr signal power and noise power in dB
    */
   typedef void (* MonitorSnifferRxCallback)(Ptr<const Packet> packet, uint16_t channelFreqMhz,
                                             uint16_t channelNumber, uint32_t rate, WifiPreamble preamble,
-                                            WifiTxVector txvector, struct mpduInfo aMpdu, struct snrDbm snr);
+                                            WifiTxVector txvector, struct mpduInfo aMpdu, struct snrDb snr);
 
   /**
    * Public method used to fire a MonitorSniffer trace for a wifi packet being transmitted.
@@ -1216,7 +1216,7 @@ private:
    *
    * \see class CallBackTraceSource
    */
-  TracedCallback<Ptr<const Packet>, uint16_t, uint16_t, uint32_t, WifiPreamble, WifiTxVector, struct mpduInfo, struct snrDbm> m_phyMonitorSniffRxTrace;
+  TracedCallback<Ptr<const Packet>, uint16_t, uint16_t, uint32_t, WifiPreamble, WifiTxVector, struct mpduInfo, struct snrDb> m_phyMonitorSniffRxTrace;
 
   /**
    * A trace source that emulates a wifi device in monitor mode

@@ -243,7 +243,7 @@ PcapSniffRxEvent (
   WifiPreamble         preamble,
   WifiTxVector         txvector,
   struct mpduInfo      aMpdu,
-  struct snrDbm        snr)
+  struct snrDb        snr)
 {
   uint32_t dlt = file->GetDataLinkType ();
 

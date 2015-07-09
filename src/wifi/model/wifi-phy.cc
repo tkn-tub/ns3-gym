@@ -592,7 +592,7 @@ WifiPhy::NotifyRxDrop (Ptr<const Packet> packet)
 }
 
 void
-WifiPhy::NotifyMonitorSniffRx (Ptr<const Packet> packet, uint16_t channelFreqMhz, uint16_t channelNumber, uint32_t rate, WifiPreamble preamble, WifiTxVector txvector, struct mpduInfo aMpdu, struct snrDbm snr)
+WifiPhy::NotifyMonitorSniffRx (Ptr<const Packet> packet, uint16_t channelFreqMhz, uint16_t channelNumber, uint32_t rate, WifiPreamble preamble, WifiTxVector txvector, struct mpduInfo aMpdu, struct snrDb snr)
 {
   m_phyMonitorSniffRxTrace (packet, channelFreqMhz, channelNumber, rate, preamble, txvector, aMpdu, snr);
 }
