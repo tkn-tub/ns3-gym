@@ -30,7 +30,6 @@
 #include "ns3/ipv4-address-helper.h"
 #include "ns3/abort.h"
 #include "ns3/pcap-test.h"
-#include "ns3/udp-echo-helper.h"
 #include "ns3/mobility-model.h"
 #include <sstream>
 
@@ -44,7 +43,8 @@ const char * const PREFIX = "flame-regression-test";
 
 FlameRegressionTest::FlameRegressionTest () : TestCase ("FLAME regression test"),
                                               m_nodes (0),
-                                              m_time (Seconds (10))
+                                              m_time (Seconds (10)),
+                                              m_sentPktsCounter (0)
 {
 }
 
@@ -125,17 +125,18 @@ FlameRegressionTest::CreateDevices ()
 void
 FlameRegressionTest::InstallApplications ()
 {
-  UdpEchoServerHelper echoServer (9);
-  ApplicationContainer serverApps = echoServer.Install (m_nodes->Get (0));
-  serverApps.Start (Seconds (0.0));
-  serverApps.Stop (m_time);
-  UdpEchoClientHelper echoClient (m_interfaces.GetAddress (0), 9);
-  echoClient.SetAttribute ("MaxPackets", UintegerValue (300));
-  echoClient.SetAttribute ("Interval", TimeValue (Seconds (1.1)));
-  echoClient.SetAttribute ("PacketSize", UintegerValue (20));
-  ApplicationContainer clientApps = echoClient.Install (m_nodes->Get (2));
-  clientApps.Start (Seconds (1.0));
-  clientApps.Stop (m_time);
+  // client socket
+  m_clientSocket = Socket::CreateSocket (m_nodes->Get (2), TypeId::LookupByName ("ns3::UdpSocketFactory"));
+  m_clientSocket->Bind ();
+  m_clientSocket->Connect (InetSocketAddress (m_interfaces.GetAddress (0), 9));
+  m_clientSocket->SetRecvCallback (MakeCallback (&FlameRegressionTest::HandleReadClient, this));
+  Simulator::ScheduleWithContext (m_clientSocket->GetNode ()->GetId (), Seconds (1.0),
+                                  &FlameRegressionTest::SendData, this, m_clientSocket);
+
+  // server socket
+  m_serverSocket = Socket::CreateSocket (m_nodes->Get (0), TypeId::LookupByName ("ns3::UdpSocketFactory"));
+  m_serverSocket->Bind (InetSocketAddress (Ipv4Address::GetAny (), 9));
+  m_serverSocket->SetRecvCallback (MakeCallback (&FlameRegressionTest::HandleReadServer, this));
 }
 
 void
@@ -147,3 +148,38 @@ FlameRegressionTest::CheckResults ()
     }
 }
 
+void
+FlameRegressionTest::SendData (Ptr<Socket> socket)
+{
+  if ((Simulator::Now () < m_time) && (m_sentPktsCounter < 300))
+    {
+      socket->Send (Create<Packet> (20));
+      m_sentPktsCounter ++;
+      Simulator::ScheduleWithContext (socket->GetNode ()->GetId (), Seconds (1.1),
+                                      &FlameRegressionTest::SendData, this, socket);
+    }
+}
+
+void
+FlameRegressionTest::HandleReadServer (Ptr<Socket> socket)
+{
+  Ptr<Packet> packet;
+  Address from;
+  while ((packet = socket->RecvFrom (from)))
+    {
+      packet->RemoveAllPacketTags ();
+      packet->RemoveAllByteTags ();
+
+      socket->SendTo (packet, 0, from);
+    }
+}
+
+void
+FlameRegressionTest::HandleReadClient (Ptr<Socket> socket)
+{
+  Ptr<Packet> packet;
+  Address from;
+  while ((packet = socket->RecvFrom (from)))
+    {
+    }
+}

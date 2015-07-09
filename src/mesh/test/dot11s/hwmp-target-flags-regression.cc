@@ -44,7 +44,10 @@ const char * const PREFIX = "hwmp-target-flags-regression-test";
 
 HwmpDoRfRegressionTest::HwmpDoRfRegressionTest () : TestCase ("HWMP target flags regression test"),
                                                     m_nodes (0),
-                                                    m_time (Seconds (5))
+                                                    m_time (Seconds (5)),
+                                                    m_sentPktsCounterA (0),
+                                                    m_sentPktsCounterB (0),
+                                                    m_sentPktsCounterC (0)
 {
 }
 
@@ -52,6 +55,7 @@ HwmpDoRfRegressionTest::~HwmpDoRfRegressionTest ()
 {
   delete m_nodes;
 }
+
 void
 HwmpDoRfRegressionTest::DoRun ()
 {
@@ -69,6 +73,7 @@ HwmpDoRfRegressionTest::DoRun ()
 
   delete m_nodes, m_nodes = 0;
 }
+
 void
 HwmpDoRfRegressionTest::CreateNodes ()
 {
@@ -85,38 +90,45 @@ HwmpDoRfRegressionTest::CreateNodes ()
   mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
   mobility.Install (*m_nodes);
 }
+
 void
 HwmpDoRfRegressionTest::InstallApplications ()
 {
-  UdpEchoServerHelper echoServer (9);
-  ApplicationContainer serverApps = echoServer.Install (m_nodes->Get (0));
-  serverApps.Start (Seconds (0.0));
-  serverApps.Stop (m_time);
-  UdpEchoClientHelper echoClient (m_interfaces.GetAddress (0), 9);
-  echoClient.SetAttribute ("MaxPackets", UintegerValue (300));
-  echoClient.SetAttribute ("Interval", TimeValue (Seconds (1.0)));
-  echoClient.SetAttribute ("PacketSize", UintegerValue (100));
-  //Install first client
-  ApplicationContainer clientApps = echoClient.Install (m_nodes->Get (1));
-  clientApps.Start (Seconds (2.2));
-  clientApps.Stop (m_time);
-  //Install second client
-  clientApps = echoClient.Install (m_nodes->Get (2));
-  clientApps.Start (Seconds (2.0));
-  clientApps.Stop (m_time);
-  //Install second server and attach client to it:
-  UdpEchoServerHelper echoServer1 (10);
-  serverApps = echoServer1.Install (m_nodes->Get (3));
-  serverApps.Start (Seconds (0.0));
-  serverApps.Stop (m_time);
-  UdpEchoClientHelper echoClient1 (m_interfaces.GetAddress (3), 10);
-  echoClient1.SetAttribute ("MaxPackets", UintegerValue (300));
-  echoClient1.SetAttribute ("Interval", TimeValue (Seconds (1.0)));
-  echoClient1.SetAttribute ("PacketSize", UintegerValue (100));
-  clientApps = echoClient1.Install (m_nodes->Get (0));
-  clientApps.Start (Seconds (2.4));
-  clientApps.Stop (m_time);
+  // server socket A
+  m_serverSocketA = Socket::CreateSocket (m_nodes->Get (0), TypeId::LookupByName ("ns3::UdpSocketFactory"));
+  m_serverSocketA->Bind (InetSocketAddress (Ipv4Address::GetAny (), 9));
+  m_serverSocketA->SetRecvCallback (MakeCallback (&HwmpDoRfRegressionTest::HandleReadServer, this));
+
+  // server socket B
+  m_serverSocketB = Socket::CreateSocket (m_nodes->Get (3), TypeId::LookupByName ("ns3::UdpSocketFactory"));
+  m_serverSocketB->Bind (InetSocketAddress (Ipv4Address::GetAny (), 10));
+  m_serverSocketB->SetRecvCallback (MakeCallback (&HwmpDoRfRegressionTest::HandleReadServer, this));
+
+  // client socket A
+  m_clientSocketA = Socket::CreateSocket (m_nodes->Get (1), TypeId::LookupByName ("ns3::UdpSocketFactory"));
+  m_clientSocketA->Bind ();
+  m_clientSocketA->Connect (InetSocketAddress (m_interfaces.GetAddress (0), 9));
+  m_clientSocketA->SetRecvCallback (MakeCallback (&HwmpDoRfRegressionTest::HandleReadClient, this));
+  Simulator::ScheduleWithContext (m_clientSocketA->GetNode ()->GetId (), Seconds (2.2),
+                                  &HwmpDoRfRegressionTest::SendDataA, this, m_clientSocketA);
+
+  // client socket B
+  m_clientSocketB = Socket::CreateSocket (m_nodes->Get (2), TypeId::LookupByName ("ns3::UdpSocketFactory"));
+  m_clientSocketB->Bind ();
+  m_clientSocketB->Connect (InetSocketAddress (m_interfaces.GetAddress (0), 9));
+  m_clientSocketB->SetRecvCallback (MakeCallback (&HwmpDoRfRegressionTest::HandleReadClient, this));
+  Simulator::ScheduleWithContext (m_clientSocketB->GetNode ()->GetId (), Seconds (2.0),
+                                  &HwmpDoRfRegressionTest::SendDataB, this, m_clientSocketB);
+
+  // client socket C
+  m_clientSocketB = Socket::CreateSocket (m_nodes->Get (0), TypeId::LookupByName ("ns3::UdpSocketFactory"));
+  m_clientSocketB->Bind ();
+  m_clientSocketB->Connect (InetSocketAddress (m_interfaces.GetAddress (3), 10));
+  m_clientSocketB->SetRecvCallback (MakeCallback (&HwmpDoRfRegressionTest::HandleReadClient, this));
+  Simulator::ScheduleWithContext (m_clientSocketB->GetNode ()->GetId (), Seconds (2.4),
+                                  &HwmpDoRfRegressionTest::SendDataC, this, m_clientSocketB);
 }
+
 void
 HwmpDoRfRegressionTest::CreateDevices ()
 {
@@ -160,3 +172,62 @@ HwmpDoRfRegressionTest::CheckResults ()
     }
 }
 
+void
+HwmpDoRfRegressionTest::SendDataA (Ptr<Socket> socket)
+{
+  if ((Simulator::Now () < m_time) && (m_sentPktsCounterA < 300))
+    {
+      socket->Send (Create<Packet> (100));
+      m_sentPktsCounterA ++;
+      Simulator::ScheduleWithContext (socket->GetNode ()->GetId (), Seconds (1.0),
+                                      &HwmpDoRfRegressionTest::SendDataA, this, socket);
+    }
+}
+
+void
+HwmpDoRfRegressionTest::SendDataB (Ptr<Socket> socket)
+{
+  if ((Simulator::Now () < m_time) && (m_sentPktsCounterA < 300))
+    {
+      socket->Send (Create<Packet> (100));
+      m_sentPktsCounterB ++;
+      Simulator::ScheduleWithContext (socket->GetNode ()->GetId (), Seconds (1.0),
+                                      &HwmpDoRfRegressionTest::SendDataB, this, socket);
+    }
+}
+
+void
+HwmpDoRfRegressionTest::SendDataC (Ptr<Socket> socket)
+{
+  if ((Simulator::Now () < m_time) && (m_sentPktsCounterA < 300))
+    {
+      socket->Send (Create<Packet> (100));
+      m_sentPktsCounterC ++;
+      Simulator::ScheduleWithContext (socket->GetNode ()->GetId (), Seconds (1.0),
+                                      &HwmpDoRfRegressionTest::SendDataC, this, socket);
+    }
+}
+
+void
+HwmpDoRfRegressionTest::HandleReadServer (Ptr<Socket> socket)
+{
+  Ptr<Packet> packet;
+  Address from;
+  while ((packet = socket->RecvFrom (from)))
+    {
+      packet->RemoveAllPacketTags ();
+      packet->RemoveAllByteTags ();
+
+      socket->SendTo (packet, 0, from);
+    }
+}
+
+void
+HwmpDoRfRegressionTest::HandleReadClient (Ptr<Socket> socket)
+{
+  Ptr<Packet> packet;
+  Address from;
+  while ((packet = socket->RecvFrom (from)))
+    {
+    }
+}

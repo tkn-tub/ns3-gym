@@ -84,5 +84,59 @@ private:
   void CreateDevices ();
   void InstallApplications ();
   void ResetPosition ();
+
+  /// Server-side socket
+  Ptr<Socket> m_serverSocketA;
+  /// Server-side socket
+  Ptr<Socket> m_serverSocketB;
+  /// Client-side socket
+  Ptr<Socket> m_clientSocketA;
+  /// Client-side socket
+  Ptr<Socket> m_clientSocketB;
+  /// Client-side socket
+  Ptr<Socket> m_clientSocketC;
+
+  // sent packets counter A
+  uint32_t m_sentPktsCounterA;
+  // sent packets counter B
+  uint32_t m_sentPktsCounterB;
+  // sent packets counter C
+  uint32_t m_sentPktsCounterC;
+
+  /**
+   * Send data A
+   * \param socket the sending socket
+   */
+  void SendDataA (Ptr<Socket> socket);
+
+  /**
+   * Send data B
+   * \param socket the sending socket
+   */
+  void SendDataB (Ptr<Socket> socket);
+
+  /**
+   * Send data C
+   * \param socket the sending socket
+   */
+  void SendDataC (Ptr<Socket> socket);
+
+  /**
+   * \brief Handle a packet reception.
+   *
+   * This function is called by lower layers.
+   *
+   * \param socket the socket the packet was received to.
+   */
+  void HandleReadServer (Ptr<Socket> socket);
+
+  /**
+   * \brief Handle a packet reception.
+   *
+   * This function is called by lower layers.
+   *
+   * \param socket the socket the packet was received to.
+   */
+  void HandleReadClient (Ptr<Socket> socket);
 };
 

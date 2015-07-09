@@ -31,7 +31,6 @@
 #include "ns3/ipv4-interface-container.h"
 #include "ns3/ipv4-address-helper.h"
 #include "ns3/abort.h"
-#include "ns3/udp-echo-helper.h"
 #include "ns3/mobility-model.h"
 #include "ns3/pcap-test.h"
 #include <sstream>
@@ -45,7 +44,8 @@ const char * const PREFIX = "hwmp-proactive-regression-test";
 
 HwmpProactiveRegressionTest::HwmpProactiveRegressionTest () : TestCase ("HWMP proactive regression test"),
                                                               m_nodes (0),
-                                                              m_time (Seconds (5))
+                                                              m_time (Seconds (5)),
+                                                              m_sentPktsCounter (0)
 {
 }
 
@@ -89,17 +89,18 @@ HwmpProactiveRegressionTest::CreateNodes ()
 void
 HwmpProactiveRegressionTest::InstallApplications ()
 {
-  UdpEchoServerHelper echoServer (9);
-  ApplicationContainer serverApps = echoServer.Install (m_nodes->Get (0));
-  serverApps.Start (Seconds (0.0));
-  serverApps.Stop (m_time);
-  UdpEchoClientHelper echoClient (m_interfaces.GetAddress (0), 9);
-  echoClient.SetAttribute ("MaxPackets", UintegerValue (300));
-  echoClient.SetAttribute ("Interval", TimeValue (Seconds (0.5)));
-  echoClient.SetAttribute ("PacketSize", UintegerValue (100));
-  ApplicationContainer clientApps = echoClient.Install (m_nodes->Get (4));
-  clientApps.Start (Seconds (2.5));
-  clientApps.Stop (m_time);
+  // client socket
+  m_clientSocket = Socket::CreateSocket (m_nodes->Get (4), TypeId::LookupByName ("ns3::UdpSocketFactory"));
+  m_clientSocket->Bind ();
+  m_clientSocket->Connect (InetSocketAddress (m_interfaces.GetAddress (0), 9));
+  m_clientSocket->SetRecvCallback (MakeCallback (&HwmpProactiveRegressionTest::HandleReadClient, this));
+  Simulator::ScheduleWithContext (m_clientSocket->GetNode ()->GetId (), Seconds (2.5),
+                                  &HwmpProactiveRegressionTest::SendData, this, m_clientSocket);
+
+  // server socket
+  m_serverSocket = Socket::CreateSocket (m_nodes->Get (0), TypeId::LookupByName ("ns3::UdpSocketFactory"));
+  m_serverSocket->Bind (InetSocketAddress (Ipv4Address::GetAny (), 9));
+  m_serverSocket->SetRecvCallback (MakeCallback (&HwmpProactiveRegressionTest::HandleReadServer, this));
 }
 void
 HwmpProactiveRegressionTest::CreateDevices ()
@@ -145,3 +146,38 @@ HwmpProactiveRegressionTest::CheckResults ()
     }
 }
 
+void
+HwmpProactiveRegressionTest::SendData (Ptr<Socket> socket)
+{
+  if ((Simulator::Now () < m_time) && (m_sentPktsCounter < 300))
+    {
+      socket->Send (Create<Packet> (100));
+      m_sentPktsCounter ++;
+      Simulator::ScheduleWithContext (socket->GetNode ()->GetId (), Seconds (0.5),
+                                      &HwmpProactiveRegressionTest::SendData, this, socket);
+    }
+}
+
+void
+HwmpProactiveRegressionTest::HandleReadServer (Ptr<Socket> socket)
+{
+  Ptr<Packet> packet;
+  Address from;
+  while ((packet = socket->RecvFrom (from)))
+    {
+      packet->RemoveAllPacketTags ();
+      packet->RemoveAllByteTags ();
+
+      socket->SendTo (packet, 0, from);
+    }
+}
+
+void
+HwmpProactiveRegressionTest::HandleReadClient (Ptr<Socket> socket)
+{
+  Ptr<Packet> packet;
+  Address from;
+  while ((packet = socket->RecvFrom (from)))
+    {
+    }
+}
