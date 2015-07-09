@@ -478,8 +478,8 @@ class ns3header_task(Task.Task):
         if self.outputs: sep = ' -> '
         else: sep = ''
         if self.mode == 'remove':
-            return 'rm-ns3-header %s\n' % (self.header_to_remove.abspath(),)
-        return 'install-ns3-header: %s%s%s\n' % (src_str, sep, tgt_str)
+            return 'rm-ns3-header %s' % (self.header_to_remove.abspath(),)
+        return 'install-ns3-header: %s' % (tgt_str)
 
     def __repr__(self):
         return str(self)
@@ -570,8 +570,8 @@ class ns3privateheader_task(Task.Task):
         if self.outputs: sep = ' -> '
         else: sep = ''
         if self.mode == 'remove':
-            return 'rm-ns3-header %s\n' % (self.header_to_remove.abspath(),)
-        return 'install-ns3-header: %s%s%s\n' % (src_str, sep, tgt_str)
+            return 'rm-ns3-header %s' % (self.header_to_remove.abspath(),)
+        return 'install-ns3-header: %s' % (tgt_str)
 
     def __repr__(self):
         return str(self)
@@ -649,8 +649,8 @@ class gen_ns3_module_header_task(Task.Task):
         if self.outputs: sep = ' -> '
         else: sep = ''
         if self.mode == 'remove':
-            return 'rm-module-header %s\n' % (self.header_to_remove.abspath(),)
-        return 'gen-module-header: %s%s%s\n' % (src_str, sep, tgt_str)
+            return 'rm-module-header %s' % (self.header_to_remove.abspath(),)
+        return 'gen-module-header: %s' % (tgt_str)
 
     def run(self):
         if self.mode == 'remove':
