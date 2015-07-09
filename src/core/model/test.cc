@@ -102,11 +102,6 @@ class TestRunnerImpl
 {
 public:
   void AddTestSuite (TestSuite *testSuite);
-  void StartTestCase (std::string name);
-  void EndTestCase (void);
-  void ReportTestFailure (std::string cond, std::string actual, 
-                      std::string limit, std::string message, 
-                      std::string file, int32_t line);
   bool MustAssertOnFailure (void) const;
   bool MustContinueOnFailure (void) const;
   bool MustUpdateData (void) const;
