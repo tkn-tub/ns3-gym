@@ -1,6 +1,8 @@
 .. include:: replace.txt
 .. highlight:: cpp
 
+.. _Propagation:
+
 Propagation
 -----------
 
