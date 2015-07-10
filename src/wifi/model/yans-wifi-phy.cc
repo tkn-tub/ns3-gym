@@ -728,7 +728,7 @@ YansWifiPhy::StartReceivePacket (Ptr<Packet> packet,
   struct InterferenceHelper::SnrPer snrPer;
   snrPer = m_interference.CalculatePlcpHeaderSnrPer (event);
 
-  NS_LOG_DEBUG ("snr=" << snrPer.snr << ", per=" << snrPer.per);
+  NS_LOG_DEBUG ("snr(dB)=" << RatioToDb(snrPer.snr) << ", per=" << snrPer.per);
 
   if (m_random->GetValue () > snrPer.per)   //plcp reception succeeded
     {
@@ -1094,7 +1094,7 @@ YansWifiPhy::EndReceive (Ptr<Packet> packet, enum WifiPreamble preamble, struct 
   if (m_plcpSuccess == true)
     {
       NS_LOG_DEBUG ("mode=" << (event->GetPayloadMode ().GetDataRate ()) <<
-                    ", snr=" << snrPer.snr << ", per=" << snrPer.per << ", size=" << packet->GetSize ());
+                    ", snr(dB)=" << RatioToDb(snrPer.snr) << ", per=" << snrPer.per << ", size=" << packet->GetSize ());
 
       if (m_random->GetValue () > snrPer.per)
         {

@@ -243,8 +243,8 @@ InterferenceHelper::CalculateSnr (double signal, double noiseInterference, WifiM
   //receiver noise Floor (W) which accounts for thermal noise and non-idealities of the receiver
   double noiseFloor = m_noiseFigure * Nt;
   double noise = noiseFloor + noiseInterference;
-  double snr = signal / noise;
-  NS_LOG_DEBUG ("signal= " << signal << ", noise=" << noiseFloor << ", interference=" << noiseInterference << ", snr=" << snr);
+  double snr = signal / noise; //linear scale
+  NS_LOG_DEBUG ("signal(W)= " << signal << ", noise(W)=" << noiseFloor << ", interference(W)=" << noiseInterference << ", snr(linear)=" << snr);
   return snr;
 }
 
