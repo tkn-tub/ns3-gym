@@ -231,7 +231,7 @@ HtCapabilities::SetAmpduParameters (uint8_t ctrl)
 }
 
 void
-HtCapabilities::SetSupportedMcsSet (uint64_t ctrl2, uint64_t ctrl1)
+HtCapabilities::SetSupportedMcsSet (uint64_t ctrl1, uint64_t ctrl2)
 {
   for (uint64_t i = 0; i < 77; i++)
     {
@@ -294,8 +294,8 @@ HtCapabilities::SerializeInformationField (Buffer::Iterator start) const
       //write the corresponding value for each bit
       start.WriteHtolsbU16 (GetHtCapabilitiesInfo ());
       start.WriteU8 (GetAmpduParameters ());
-      start.WriteHtolsbU64 (GetSupportedMcsSet2 ());
       start.WriteHtolsbU64 (GetSupportedMcsSet1 ());
+      start.WriteHtolsbU64 (GetSupportedMcsSet2 ());
       start.WriteU16 (0); //HT Extended Capabilities (not yet supported)
       start.WriteU32 (0); //Transmit Beamforming Capabilities (not yet supported)
       start.WriteU8 (0); //ASEL Capabilities (not yet supported)
