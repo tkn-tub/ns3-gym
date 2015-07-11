@@ -1108,10 +1108,10 @@ YansWifiPhy::EndReceive (Ptr<Packet> packet, enum WifiPreamble preamble, struct 
             {
               dataRate500KbpsUnits = event->GetPayloadMode ().GetDataRate () * event->GetTxVector ().GetNss () / 500000;
             }
-          struct snrDb snr;
-          snr.signal = RatioToDb (event->GetRxPowerW ()) + 30;
-          snr.noise = RatioToDb (event->GetRxPowerW () / snrPer.snr) - GetRxNoiseFigure () + 30;
-          NotifyMonitorSniffRx (packet, (uint16_t)GetChannelFrequencyMhz (), GetChannelNumber (), dataRate500KbpsUnits, event->GetPreambleType (), event->GetTxVector (), aMpdu, snr);
+          struct signalNoiseDbm signalNoise;
+          signalNoise.signal = RatioToDb (event->GetRxPowerW ()) + 30;
+          signalNoise.noise = RatioToDb (event->GetRxPowerW () / snrPer.snr) - GetRxNoiseFigure () + 30;
+          NotifyMonitorSniffRx (packet, (uint16_t)GetChannelFrequencyMhz (), GetChannelNumber (), dataRate500KbpsUnits, event->GetPreambleType (), event->GetTxVector (), aMpdu, signalNoise);
           m_state->SwitchFromRxEndOk (packet, snrPer.snr, event->GetTxVector (), event->GetPreambleType ());
         }
       else

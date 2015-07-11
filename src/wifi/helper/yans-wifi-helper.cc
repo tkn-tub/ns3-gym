@@ -397,15 +397,15 @@ PcapSniffTxEvent (
 
 static void
 PcapSniffRxEvent (
-  Ptr<PcapFileWrapper> file,
-  Ptr<const Packet>    packet,
-  uint16_t             channelFreqMhz,
-  uint16_t             channelNumber,
-  uint32_t             rate,
-  WifiPreamble         preamble,
-  WifiTxVector         txvector,
-  struct mpduInfo      aMpdu,
-  struct snrDb        snr)
+  Ptr<PcapFileWrapper>  file,
+  Ptr<const Packet>     packet,
+  uint16_t              channelFreqMhz,
+  uint16_t              channelNumber,
+  uint32_t              rate,
+  WifiPreamble          preamble,
+  WifiTxVector          txvector,
+  struct mpduInfo       aMpdu,
+  struct signalNoiseDbm signalNoise)
 {
   uint32_t dlt = file->GetDataLinkType ();
 
@@ -468,8 +468,8 @@ PcapSniffRxEvent (
 
         header.SetChannelFrequencyAndFlags (channelFreqMhz, channelFlags);
 
-        header.SetAntennaSignalPower (snr.signal);
-        header.SetAntennaNoisePower (snr.noise);
+        header.SetAntennaSignalPower (signalNoise.signal);
+        header.SetAntennaNoisePower (signalNoise.noise);
 
         if (preamble == WIFI_PREAMBLE_HT_MF || preamble == WIFI_PREAMBLE_HT_GF || preamble == WIFI_PREAMBLE_NONE)
           {
