@@ -36,7 +36,11 @@
  *
  * When deprecating a feature, please update the documentation
  * with information for users on how to update their code.
+ *
+ * For example,
+ * \snippet src/core/doc/deprecated-example.h doxygen snippet
  */
+
 #if defined(__GNUC__) && (__GNUC__ == 4) && (__GNUC_MINOR__ > 1)
 #define NS_DEPRECATED __attribute__ ((deprecated))
 #else

@@ -331,6 +331,9 @@ public:
    * \param callback fully qualified typedef name for the callback signature.
    *        Generally this should begin with the "ns3::" namespace qualifier.
    * \returns this TypeId instance.
+   *
+   * \deprecated This method will go away in future versions of ns-3.
+   * See instead AddTraceSource(std::string,std::string,Ptr<const TraceSourceAccessor>,std::string)
    */
   TypeId AddTraceSource (std::string name,
                          std::string help,
