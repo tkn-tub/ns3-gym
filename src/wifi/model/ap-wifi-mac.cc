@@ -341,12 +341,25 @@ ApWifiMac::GetHtCapabilities (void) const
   HtCapabilities capabilities;
   capabilities.SetHtSupported (1);
   capabilities.SetLdpc (m_phy->GetLdpc ());
+  capabilities.SetSupportedChannelWidth (m_phy->GetChannelBonding ());
   capabilities.SetShortGuardInterval20 (m_phy->GetGuardInterval ());
+  capabilities.SetShortGuardInterval40 (m_phy->GetChannelBonding () && m_phy->GetGuardInterval ());
   capabilities.SetGreenfield (m_phy->GetGreenfield ());
+  capabilities.SetMaxAmsduLength (1); //hardcoded for now (TBD)
+  capabilities.SetLSigProtectionSupport (!m_phy->GetGreenfield ());
+  capabilities.SetMaxAmpduLength (3); //hardcoded for now (TBD)
+  uint64_t maxSupportedRate = 0; //in bit/s
   for (uint8_t i = 0; i < m_phy->GetNMcs (); i++)
     {
       capabilities.SetRxMcsBitmask (m_phy->GetMcs (i));
+      if (((m_phy->McsToWifiMode (i)).GetDataRate ()) > maxSupportedRate)
+        {
+          maxSupportedRate = (m_phy->McsToWifiMode (i)).GetDataRate ();
+        }
     }
+  capabilities.SetRxHighestSupportedDataRate (maxSupportedRate / 1e6); //in Mbit/s
+  capabilities.SetTxMcsSetDefined (m_phy->GetNMcs () > 0);
+  capabilities.SetTxMaxNSpatialStreams (m_phy->GetNumberOfTransmitAntennas ());
   return capabilities;
 }
 

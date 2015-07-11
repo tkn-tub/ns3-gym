@@ -15,7 +15,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * Author: Ghada Badawy <gbadawy@rim.com>
+ * Authors: Ghada Badawy <gbadawy@rim.com>
+ *          Sébastien Deronne <sebastien.deronne@gmail.com>
  */
 
 #include "ht-capabilities.h"
@@ -27,7 +28,7 @@ namespace ns3 {
 NS_LOG_COMPONENT_DEFINE ("HtCapabilities");
 
 HtCapabilities::HtCapabilities ()
-  :  m_ldpc (0),
+  : m_ldpc (0),
     m_supportedChannelWidth (0),
     m_smPowerSave (0),
     m_greenField (0),
@@ -38,7 +39,7 @@ HtCapabilities::HtCapabilities ()
     m_htDelayedBlockAck (0),
     m_maxAmsduLength (0),
     m_dssMode40 (0),
-    m_reserved (0),
+    m_psmpSupport (0),
     m_fortyMhzIntolerant (0),
     m_lsigProtectionSupport (0),
     m_maxAmpduLength (0),
@@ -51,7 +52,42 @@ HtCapabilities::HtCapabilities ()
     m_txRxMcsSetUnequal (0),
     m_txMaxNSpatialStreams (0),
     m_txUnequalModulation (0),
-    m_reservedMcsSet3 (7),
+    m_reservedMcsSet3 (0),
+    m_pco (0),
+    m_pcoTransitionTime (0),
+    m_reservedExtendedCapabilities (0),
+    m_mcsFeedback (0),
+    m_htcSupport (0),
+    m_reverzeDirectionResponder (0),
+    m_reservedExtendedCapabilities2 (0),
+    m_implicitRxBfCapable (0),
+    m_rxStaggeredSoundingCapable (0),
+    m_txStaggeredSoundingCapable (0),
+    m_rxNdpCapable (0),
+    m_txNdpCapable (0),
+    m_implicitTxBfCapable (0),
+    m_calibration (0),
+    m_explicitCsiTxBfCapable (0),
+    m_explicitNoncompressedSteeringCapable (0),
+    m_explicitCompressedSteeringCapable (0),
+    m_explicitTxBfCsiFeedback (0),
+    m_explicitNoncompressedBfFeedbackCapable (0),
+    m_explicitCompressedBfFeedbackCapable (0),
+    m_minimalGrouping (0),
+    m_csiNBfAntennasSupported (0),
+    m_noncompressedSteeringNBfAntennasSupported (0),
+    m_compressedSteeringNBfAntennasSupported (0),
+    m_csiMaxNRowsBfSupported (0),
+    m_channelEstimationCapability (0),
+    m_reservedTxBf (0),
+    m_antennaSelectionCapability (0),
+    m_explicitCsiFeedbackBasedTxASelCapable (0),
+    m_antennaIndicesFeedbackBasedTxASelCapable (0),
+    m_explicitCsiFeedbackCapable (0),
+    m_antennaIndicesFeedbackCapable (0),
+    m_rxASelCapable (0),
+    m_txSoundingPpdusCapable (0),
+    m_reservedASel (0),
     m_htSupported (0)
 {
   for (uint32_t k = 0; k < MAX_SUPPORTED_MCS; k++)
@@ -97,29 +133,53 @@ HtCapabilities::SetShortGuardInterval20 (uint8_t shortguardinterval)
 }
 
 void
+HtCapabilities::SetShortGuardInterval40 (uint8_t shortguardinterval)
+{
+  m_shortGuardInterval40 = shortguardinterval;
+}
+
+void
+HtCapabilities::SetMaxAmsduLength (uint8_t maxamsdulength)
+{
+  m_maxAmsduLength = maxamsdulength;
+}
+
+void
+HtCapabilities::SetLSigProtectionSupport (uint8_t lsigprotection)
+{
+  m_lsigProtectionSupport = lsigprotection;
+}
+
+void
+HtCapabilities::SetMaxAmpduLength (uint8_t maxampdulength)
+{
+  m_maxAmpduLength = maxampdulength;
+}
+
+void
 HtCapabilities::SetRxMcsBitmask (uint8_t index)
 {
   m_rxMcsBitmask[index] = 1;
 }
 
-uint8_t*
-HtCapabilities::GetRxMcsBitmask ()
+void
+HtCapabilities::SetRxHighestSupportedDataRate (uint16_t maxsupportedrate)
 {
-  uint8_t* p;
-  p = m_rxMcsBitmask;
-  return p;
+  m_rxHighestSupportedDataRate = maxsupportedrate;
 }
 
-bool
-HtCapabilities::IsSupportedMcs (uint8_t mcs)
+void
+HtCapabilities::SetTxMcsSetDefined (uint8_t txmcssetdefined)
 {
-  if (m_rxMcsBitmask[mcs] == 1)
-    {
-      return true;
-    }
-  return false;
-
+  m_txMcsSetDefined = txmcssetdefined;
 }
+
+void
+HtCapabilities::SetTxMaxNSpatialStreams (uint8_t maxtxspatialstreams)
+{
+  m_txMaxNSpatialStreams = maxtxspatialstreams;
+}
+
 uint8_t
 HtCapabilities::GetLdpc (void) const
 {
@@ -142,6 +202,66 @@ uint8_t
 HtCapabilities::GetShortGuardInterval20 (void) const
 {
   return m_shortGuardInterval20;
+}
+
+uint8_t
+HtCapabilities::GetShortGuardInterval40 (void) const
+{
+  return m_shortGuardInterval40;
+}
+
+uint8_t
+HtCapabilities::GetMaxAmsduLength (void) const
+{
+  return m_maxAmsduLength;
+}
+
+uint8_t
+HtCapabilities::GetLSigProtectionSupport (void) const
+{
+  return m_lsigProtectionSupport;
+}
+
+uint8_t
+HtCapabilities::GetMaxAmpduLength (void) const
+{
+  return m_maxAmpduLength;
+}
+
+uint8_t*
+HtCapabilities::GetRxMcsBitmask ()
+{
+  uint8_t* p;
+  p = m_rxMcsBitmask;
+  return p;
+}
+
+bool
+HtCapabilities::IsSupportedMcs (uint8_t mcs)
+{
+  if (m_rxMcsBitmask[mcs] == 1)
+    {
+      return true;
+    }
+  return false;
+}
+
+uint16_t
+HtCapabilities::GetRxHighestSupportedDataRate (void) const
+{
+  return m_rxHighestSupportedDataRate;
+}
+
+uint8_t
+HtCapabilities::GetTxMcsSetDefined (void) const
+{
+  return m_txMcsSetDefined;
+}
+
+uint8_t
+HtCapabilities::GetTxMaxNSpatialStreams (void) const
+{
+  return m_txMaxNSpatialStreams;
 }
 
 uint8_t
@@ -176,20 +296,20 @@ uint16_t
 HtCapabilities::GetHtCapabilitiesInfo (void) const
 {
   uint16_t val = 0;
-  val |= m_ldpc;
-  val |= (m_supportedChannelWidth << 1) & (0x1 << 1);
-  val |= (m_smPowerSave << 2) & (0x3 << 2);
-  val |= (m_greenField << 4) & (0x1 << 4);
-  val |= (m_shortGuardInterval20 << 5) & (0x1 << 5);
-  val |= (m_shortGuardInterval40 << 6) & (0x1 << 6);
-  val |= (m_txStbc << 7) & (0x1 << 7);
-  val |= (m_rxStbc << 8) & (0x3 << 8);
-  val |= (m_htDelayedBlockAck << 10) & (0x1 << 10);
-  val |= (m_maxAmsduLength << 11) & (0x1 << 11);
-  val |= (m_dssMode40 << 12) & (0x1 << 12);
-  val |= (m_reserved << 13) & (0x1 << 13);
-  val |= (m_fortyMhzIntolerant << 14) & (0x1 << 14);
-  val |= (m_lsigProtectionSupport << 15) & (0x1 << 15);
+  val |= m_ldpc & 0x01;
+  val |= (m_supportedChannelWidth & 0x01) << 1;
+  val |= (m_smPowerSave & 0x03) << 2;
+  val |= (m_greenField & 0x01) << 4;
+  val |= (m_shortGuardInterval20 & 0x01) << 5;
+  val |= (m_shortGuardInterval40 & 0x01) << 6;
+  val |= (m_txStbc & 0x01) << 7;
+  val |= (m_rxStbc & 0x03) << 8;
+  val |= (m_htDelayedBlockAck & 0x01) << 10;
+  val |= (m_maxAmsduLength & 0x01) << 11;
+  val |= (m_dssMode40 & 0x01) << 12;
+  val |= (m_psmpSupport & 0x01) << 13;
+  val |= (m_fortyMhzIntolerant & 0x01) << 14;
+  val |= (m_lsigProtectionSupport & 0x01) << 15;
   return val;
 }
 
@@ -207,27 +327,27 @@ HtCapabilities::SetHtCapabilitiesInfo (uint16_t ctrl)
   m_htDelayedBlockAck = (ctrl >> 10) & 0x01;
   m_maxAmsduLength = (ctrl >> 11) & 0x01;
   m_dssMode40 = (ctrl >> 12) & 0x01;
-  m_reserved = (ctrl >> 13) & 0x01;
+  m_psmpSupport = (ctrl >> 13) & 0x01;
   m_fortyMhzIntolerant = (ctrl >> 14) & 0x01;
   m_lsigProtectionSupport = (ctrl >> 15) & 0x01;
-}
-
-uint8_t
-HtCapabilities::GetAmpduParameters (void) const
-{
-  uint8_t val = 0;
-  val |=  m_maxAmpduLength & 0x3;
-  val |= ( m_minMpduStartSpace << 2) & (0x7 << 2);
-  val |= (m_ampduReserved << 5) & (0x7 << 5);
-  return val;
 }
 
 void
 HtCapabilities::SetAmpduParameters (uint8_t ctrl)
 {
   m_maxAmpduLength = ctrl & 0x03;
-  m_minMpduStartSpace = (ctrl >> 2) & 0x07;
-  m_ampduReserved = (ctrl >> 5) & 0x07;
+  m_minMpduStartSpace = (ctrl >> 2) & 0x1b;
+  m_ampduReserved = (ctrl >> 5) & 0xe0;
+}
+
+uint8_t
+HtCapabilities::GetAmpduParameters (void) const
+{
+  uint8_t val = 0;
+  val |=  m_maxAmpduLength & 0x03;
+  val |= (m_minMpduStartSpace & 0x1b) << 2;
+  val |= (m_ampduReserved & 0xe0) << 5;
+  return val;
 }
 
 void
@@ -244,14 +364,14 @@ HtCapabilities::SetSupportedMcsSet (uint64_t ctrl1, uint64_t ctrl2)
           m_rxMcsBitmask[i] = (ctrl2 >> (i - 64)) & 0x01;
         }
     }
-  m_reservedMcsSet1 = (ctrl2 >> 12) & 0x07;
-  m_rxHighestSupportedDataRate = (ctrl2 >> 15) & 0x03ff;
-  m_reservedMcsSet2 = (ctrl2 >> 25) & 0x3f;
-  m_txMcsSetDefined = (ctrl2 >> 31) & 0x01;
-  m_txRxMcsSetUnequal = (ctrl2 >> 32) & 0x01;
-  m_txMaxNSpatialStreams = (ctrl2 >> 33) & 0x03;
-  m_txUnequalModulation = (ctrl2 >> 35) & 0x01;
-  m_reservedMcsSet3 = (ctrl2 >> 36) & 0x07ffffff;
+  m_reservedMcsSet1 = (ctrl2 >> 13) & 0x07;
+  m_rxHighestSupportedDataRate = (ctrl2 >> 16) & 0x03ff;
+  m_reservedMcsSet2 = (ctrl2 >> 26) & 0x3f;
+  m_txMcsSetDefined = (ctrl2 >> 32) & 0x01;
+  m_txRxMcsSetUnequal = (ctrl2 >> 33) & 0x01;
+  m_txMaxNSpatialStreams = (ctrl2 >> 34) & 0x03;
+  m_txUnequalModulation = (ctrl2 >> 36) & 0x01;
+  m_reservedMcsSet3 = (ctrl2 >> 37) & 0x07ffffff;
 }
 
 uint64_t
@@ -279,11 +399,117 @@ HtCapabilities::GetSupportedMcsSet2 (void) const
   val = (val << 10) | (m_rxHighestSupportedDataRate & 0x3ff);
   val = (val << 3) | (m_reservedMcsSet1 & 0x07);
 
-  for (uint64_t i = 12; i > 0; i--)
+  for (uint64_t i = 13; i > 0; i--)
     {
-      val = (val << 1) | ( m_rxMcsBitmask[i + 64] & 0x01);
+      val = (val << 1) | ( m_rxMcsBitmask[i + 63] & 0x01);
     }
   return val;
+}
+
+uint16_t
+HtCapabilities::GetExtendedHtCapabilities (void) const
+{
+  uint16_t val = 0;
+  val |= m_pco & 0x01;
+  val |= (m_pcoTransitionTime & 0x03) << 1;
+  val |= (m_reservedExtendedCapabilities & 0x1f) << 3;
+  val |= (m_mcsFeedback & 0x03) << 8;
+  val |= (m_htcSupport & 0x01) << 10;
+  val |= (m_reverzeDirectionResponder & 0x01) << 11;
+  val |= (m_reservedExtendedCapabilities2 & 0x0f) << 12;
+  return val;
+}
+
+void
+HtCapabilities::SetExtendedHtCapabilities (uint16_t ctrl)
+{
+  m_pco = ctrl & 0x01;
+  m_pcoTransitionTime = (ctrl >> 1) & 0x03;
+  m_reservedExtendedCapabilities = (ctrl >> 3) & 0x1f;
+  m_mcsFeedback = (ctrl >> 8) & 0x03;
+  m_htcSupport = (ctrl >> 10) & 0x01;
+  m_reverzeDirectionResponder = (ctrl >> 11) & 0x01;
+  m_reservedExtendedCapabilities2 = (ctrl >> 12) & 0x0f;
+}
+
+uint32_t
+HtCapabilities::GetTxBfCapabilities (void) const
+{
+  uint32_t val = 0;
+  val |= m_implicitRxBfCapable & 0x01;
+  val |= (m_rxStaggeredSoundingCapable & 0x01) << 1;
+  val |= (m_txStaggeredSoundingCapable & 0x01) << 2;
+  val |= (m_rxNdpCapable & 0x01) << 3;
+  val |= (m_txNdpCapable & 0x01) << 4;
+  val |= (m_implicitTxBfCapable & 0x01) << 5;
+  val |= (m_calibration & 0x03) << 6;
+  val |= (m_explicitCsiTxBfCapable & 0x01) << 8;
+  val |= (m_explicitNoncompressedSteeringCapable & 0x01) << 9;
+  val |= (m_explicitCompressedSteeringCapable & 0x01) << 10;
+  val |= (m_explicitTxBfCsiFeedback & 0x03) << 11;
+  val |= (m_explicitNoncompressedBfFeedbackCapable & 0x03) << 13;
+  val |= (m_explicitCompressedBfFeedbackCapable & 0x03) << 15;
+  val |= (m_minimalGrouping & 0x03) << 17;
+  val |= (m_csiNBfAntennasSupported & 0x03) << 19;
+  val |= (m_noncompressedSteeringNBfAntennasSupported & 0x03) << 21;
+  val |= (m_compressedSteeringNBfAntennasSupported & 0x03) << 23;
+  val |= (m_csiMaxNRowsBfSupported & 0x03) << 25;
+  val |= (m_channelEstimationCapability & 0x03) << 27;
+  val |= (m_reservedTxBf & 0x07) << 29;
+  return val;
+}
+
+void
+HtCapabilities::SetTxBfCapabilities (uint32_t ctrl)
+{
+  m_implicitRxBfCapable = ctrl & 0x01;
+  m_rxStaggeredSoundingCapable = (ctrl >> 1) & 0x01;
+  m_txStaggeredSoundingCapable = (ctrl >> 2) & 0x01;
+  m_rxNdpCapable = (ctrl >> 3) & 0x01;
+  m_txNdpCapable = (ctrl >> 4) & 0x01;
+  m_implicitTxBfCapable = (ctrl >> 5) & 0x01;
+  m_calibration = (ctrl >> 6) & 0x03;
+  m_explicitCsiTxBfCapable = (ctrl >> 8) & 0x01;
+  m_explicitNoncompressedSteeringCapable = (ctrl >> 9) & 0x01;
+  m_explicitCompressedSteeringCapable = (ctrl >> 10) & 0x01;
+  m_explicitTxBfCsiFeedback = (ctrl >> 11) & 0x03;
+  m_explicitNoncompressedBfFeedbackCapable = (ctrl >> 13) & 0x03;
+  m_explicitCompressedBfFeedbackCapable = (ctrl >> 15) & 0x03;
+  m_minimalGrouping = (ctrl >> 17) & 0x03;
+  m_csiNBfAntennasSupported = (ctrl >> 19) & 0x03;
+  m_noncompressedSteeringNBfAntennasSupported = (ctrl >> 21) & 0x03;
+  m_compressedSteeringNBfAntennasSupported = (ctrl >> 23) & 0x03;
+  m_csiMaxNRowsBfSupported = (ctrl >> 25) & 0x03;
+  m_channelEstimationCapability = (ctrl >> 27) & 0x03;
+  m_reservedTxBf = (ctrl >> 29) & 0x07;
+}
+
+uint8_t
+HtCapabilities::GetAntennaSelectionCapabilities (void) const
+{
+  uint8_t val = 0;
+  val |= m_antennaSelectionCapability & 0x01;
+  val |= (m_explicitCsiFeedbackBasedTxASelCapable & 0x01) << 1;
+  val |= (m_antennaIndicesFeedbackBasedTxASelCapable & 0x01) << 2;
+  val |= (m_explicitCsiFeedbackCapable & 0x01) << 3;
+  val |= (m_antennaIndicesFeedbackCapable & 0x01) << 4;
+  val |= (m_rxASelCapable & 0x01) << 5;
+  val |= (m_txSoundingPpdusCapable & 0x01) << 6;
+  val |= (m_reservedASel & 0x01) << 7;
+  return val;
+}
+
+void
+HtCapabilities::SetAntennaSelectionCapabilities (uint8_t ctrl)
+{
+  m_antennaSelectionCapability = ctrl & 0x01;
+  m_explicitCsiFeedbackBasedTxASelCapable = (ctrl >> 1) & 0x01;
+  m_antennaIndicesFeedbackBasedTxASelCapable = (ctrl >> 2) & 0x01;
+  m_explicitCsiFeedbackCapable = (ctrl >> 3) & 0x01;
+  m_antennaIndicesFeedbackCapable = (ctrl >> 4) & 0x01;
+  m_rxASelCapable = (ctrl >> 5) & 0x01;
+  m_txSoundingPpdusCapable = (ctrl >> 6) & 0x01;
+  m_reservedASel = (ctrl >> 7) & 0x01;
 }
 
 void
@@ -296,9 +522,9 @@ HtCapabilities::SerializeInformationField (Buffer::Iterator start) const
       start.WriteU8 (GetAmpduParameters ());
       start.WriteHtolsbU64 (GetSupportedMcsSet1 ());
       start.WriteHtolsbU64 (GetSupportedMcsSet2 ());
-      start.WriteU16 (0); //HT Extended Capabilities (not yet supported)
-      start.WriteU32 (0); //Transmit Beamforming Capabilities (not yet supported)
-      start.WriteU8 (0); //ASEL Capabilities (not yet supported)
+      start.WriteU16 (GetExtendedHtCapabilities ());
+      start.WriteU32 (GetTxBfCapabilities ());
+      start.WriteU8 (GetAntennaSelectionCapabilities ());
     }
 }
 
@@ -311,12 +537,15 @@ HtCapabilities::DeserializeInformationField (Buffer::Iterator start,
   uint8_t ampduparam = i.ReadU8 ();
   uint64_t mcsset1 = i.ReadLsbtohU64 ();
   uint64_t mcsset2 = i.ReadLsbtohU64 ();
+  uint16_t extendedcapabilities = i.ReadU16 ();
+  uint32_t txbfcapabilities = i.ReadU32 ();
+  uint8_t aselcapabilities = i.ReadU8 ();
   SetHtCapabilitiesInfo (htinfo);
   SetAmpduParameters (ampduparam);
   SetSupportedMcsSet (mcsset1, mcsset2);
-  i.ReadU16 (); //HT Extended Capabilities (not yet supported)
-  i.ReadU32 (); //Transmit Beamforming Capabilities (not yet supported)
-  i.ReadU8 (); //ASEL Capabilities (not yet supported)
+  SetExtendedHtCapabilities (extendedcapabilities);
+  SetTxBfCapabilities (txbfcapabilities);
+  SetAntennaSelectionCapabilities (aselcapabilities);
   return length;
 }
 
@@ -333,7 +562,7 @@ operator << (std::ostream &os, const HtCapabilities &htcapabilities)
   return os;
 }
 
-std::istream &operator >> (std::istream &is,HtCapabilities &htcapabilities)
+std::istream &operator >> (std::istream &is, HtCapabilities &htcapabilities)
 {
   bool c1, c2, c3, c4;
   is >> c1 >> c2 >> c3 >> c4;

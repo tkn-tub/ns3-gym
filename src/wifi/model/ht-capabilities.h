@@ -15,7 +15,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * Author: Ghada Badawy <gbadawy@gmail.com>
+ * Authors: Ghada Badawy <gbadawy@gmail.com>
+ *          Sébastien Deronne <sebastien.deronne@gmail.com>
  */
 
 #ifndef HT_CAPABILITIES_H
@@ -46,29 +47,119 @@ class HtCapabilities : public WifiInformationElement
 {
 public:
   HtCapabilities ();
+  void SetHtSupported (uint8_t htsupported);
+
+  /**
+   * Set the HT Capabilties Info field in the HT Capabilities information element.
+   *
+   * \param ctrl the HT Capabilties Info field in the HT Capabilities information element
+   */
+  void SetHtCapabilitiesInfo (uint16_t ctrl);
+  /**
+   * Set the A-MPDU Parameters field in the HT Capabilities information element.
+   *
+   * \param ctrl the A-MPDU Parameters field in the HT Capabilities information element
+   */
+  void SetAmpduParameters (uint8_t ctrl);
+  /**
+   * Set the Supported MCS Set field in the HT Capabilities information element.
+   *
+   * \param ctrl1 the first 64 bytes of the Supported MCS Set field in the HT Capabilities information element
+   * \param ctrl2 the last 64 bytes of the Supported MCS Set field in the HT Capabilities information element
+   */
+  void SetSupportedMcsSet (uint64_t ctrl1, uint64_t ctrl2);
+  /**
+   * Set the Extended HT Capabilties field in the HT Capabilities information element.
+   *
+   * \param ctrl the Extended HT Capabilties field in the HT Capabilities information element
+   */
+  void SetExtendedHtCapabilities (uint16_t ctrl);
+  /**
+   * Set the Transmit Beamforming (TxBF) Capabilties field in the HT Capabilities information element.
+   *
+   * \param ctrl the Transmit Beamforming (TxBF) Capabilties field in the HT Capabilities information element
+   */
+  void SetTxBfCapabilities (uint32_t ctrl);
+  /**
+   * Set the the Antenna Selection (ASEL) Capabilties field in the HT Capabilities information element.
+   *
+   * \param ctrl the Antenna Selection (ASEL) Capabilties field in the HT Capabilities information element
+   */
+  void SetAntennaSelectionCapabilities (uint8_t ctrl);
+
   void SetLdpc (uint8_t ldpc);
   void SetSupportedChannelWidth (uint8_t supportedchannelwidth);
   void SetGreenfield (uint8_t greenfield);
   void SetShortGuardInterval20 (uint8_t shortguardinterval);
-  void SetHtCapabilitiesInfo (uint16_t ctrl);
-  void SetAmpduParameters (uint8_t ctrl);
-  void SetSupportedMcsSet (uint64_t ctrl1, uint64_t ctrl2);
-  void SetHtSupported (uint8_t htsupported);
+  void SetShortGuardInterval40 (uint8_t shortguardinterval);
+  void SetMaxAmsduLength (uint8_t maxamsdulength);
+  void SetLSigProtectionSupport (uint8_t lsigprotection);
+
+  void SetMaxAmpduLength (uint8_t maxampdulength);
+
   void SetRxMcsBitmask (uint8_t index);
-  bool IsSupportedMcs (uint8_t mcs);
-  //returns the HT Capabilties info field in the HT Capabilities information element
+  void SetRxHighestSupportedDataRate (uint16_t maxsupportedrate);
+  void SetTxMcsSetDefined (uint8_t txmcssetdefined);
+  void SetTxMaxNSpatialStreams (uint8_t maxtxspatialstreams);
+
+  /*
+   * Return the HT Capabilties Info field in the HT Capabilities information element.
+   *
+   * \return the HT Capabilties Info field in the HT Capabilities information element
+   */
   uint16_t GetHtCapabilitiesInfo (void) const;
-  //returns the Ampdu parameters field in the HT Capabilities information element
+  /*
+   * Return the A-MPDU Parameters field in the HT Capabilities information element.
+   *
+   * \return the A-MPDU Parameters field in the HT Capabilities information element
+   */
   uint8_t GetAmpduParameters (void) const;
-  //returns the first 64bytes of the Supported MCS field in the HT Capabilities information element
+  /*
+   * Return the first 64 bytes of the Supported MCS Set field in the HT Capabilities information element.
+   *
+   * \return the first 64 bytes of the Supported MCS Set field in the HT Capabilities information element
+   */
   uint64_t GetSupportedMcsSet1 (void) const;
-  //returns the first 64bytes of the Supported MCS field in the HT Capabilities information element
+  /*
+   * Return the last 64 bytes of the Supported MCS Set field in the HT Capabilities information element.
+   *
+   * \return the last 64 bytes of the Supported MCS Set field in the HT Capabilities information element
+   */
   uint64_t GetSupportedMcsSet2 (void) const;
+  /*
+   * Return the Extended HT Capabilties field in the HT Capabilities information element.
+   *
+   * \return the Extended HT Capabilties field in the HT Capabilities information element
+   */
+  uint16_t GetExtendedHtCapabilities (void) const;
+  /*
+   * Return the Transmit Beamforming (TxBF) Capabilties field in the HT Capabilities information element.
+   *
+   * \return the Transmit Beamforming (TxBF) Capabilties field in the HT Capabilities information element
+   */
+  uint32_t GetTxBfCapabilities (void) const;
+  /*
+   * Return the Antenna Selection (ASEL) Capabilties field in the HT Capabilities information element.
+   *
+   * \return the Antenna Selection (ASEL) Capabilties field in the HT Capabilities information element
+   */
+  uint8_t GetAntennaSelectionCapabilities (void) const;
+
   uint8_t GetLdpc (void) const;
+  uint8_t GetSupportedChannelWidth (void) const;
   uint8_t GetGreenfield (void) const;
   uint8_t GetShortGuardInterval20 (void) const;
-  uint8_t GetSupportedChannelWidth (void) const;
+  uint8_t GetShortGuardInterval40 (void) const;
+  uint8_t GetMaxAmsduLength (void) const;
+  uint8_t GetLSigProtectionSupport (void) const;
+
+  uint8_t GetMaxAmpduLength (void) const;
+
   uint8_t* GetRxMcsBitmask ();
+  bool IsSupportedMcs (uint8_t mcs);
+  uint16_t GetRxHighestSupportedDataRate (void) const;
+  uint8_t GetTxMcsSetDefined (void) const;
+  uint8_t GetTxMaxNSpatialStreams (void) const;
 
   WifiInformationElementId ElementId () const;
   uint8_t GetInformationFieldSize () const;
@@ -96,6 +187,7 @@ public:
 
 
 private:
+  //HT Capabilties Info field
   uint8_t m_ldpc;
   uint8_t m_supportedChannelWidth;
   uint8_t m_smPowerSave;
@@ -107,12 +199,16 @@ private:
   uint8_t m_htDelayedBlockAck;
   uint8_t m_maxAmsduLength;
   uint8_t m_dssMode40;
-  uint8_t m_reserved;
+  uint8_t m_psmpSupport;
   uint8_t m_fortyMhzIntolerant;
   uint8_t m_lsigProtectionSupport;
+
+  //A-MPDU Parameters field
   uint8_t m_maxAmpduLength;
   uint8_t m_minMpduStartSpace;
   uint8_t m_ampduReserved;
+
+  //Supported MCS Set field
   uint8_t m_reservedMcsSet1;
   uint16_t m_rxHighestSupportedDataRate;
   uint8_t m_reservedMcsSet2;
@@ -122,7 +218,49 @@ private:
   uint8_t m_txUnequalModulation;
   uint32_t m_reservedMcsSet3;
   uint8_t m_rxMcsBitmask[MAX_SUPPORTED_MCS];
-  //this is used to decide if this element should be added to the frame or not
+
+  //HT Extended Capabilties field
+  uint8_t m_pco;
+  uint8_t m_pcoTransitionTime;
+  uint8_t m_reservedExtendedCapabilities;
+  uint8_t m_mcsFeedback;
+  uint8_t m_htcSupport;
+  uint8_t m_reverzeDirectionResponder;
+  uint8_t m_reservedExtendedCapabilities2;
+
+  //Transmit Beamforming Capabilities field
+  uint8_t m_implicitRxBfCapable;
+  uint8_t m_rxStaggeredSoundingCapable;
+  uint8_t m_txStaggeredSoundingCapable;
+  uint8_t m_rxNdpCapable;
+  uint8_t m_txNdpCapable;
+  uint8_t m_implicitTxBfCapable;
+  uint8_t m_calibration;
+  uint8_t m_explicitCsiTxBfCapable;
+  uint8_t m_explicitNoncompressedSteeringCapable;
+  uint8_t m_explicitCompressedSteeringCapable;
+  uint8_t m_explicitTxBfCsiFeedback;
+  uint8_t m_explicitNoncompressedBfFeedbackCapable;
+  uint8_t m_explicitCompressedBfFeedbackCapable;
+  uint8_t m_minimalGrouping;
+  uint8_t m_csiNBfAntennasSupported;
+  uint8_t m_noncompressedSteeringNBfAntennasSupported;
+  uint8_t m_compressedSteeringNBfAntennasSupported;
+  uint8_t m_csiMaxNRowsBfSupported;
+  uint8_t m_channelEstimationCapability;
+  uint8_t m_reservedTxBf;
+
+  //ASEL Capabilities field
+  uint8_t m_antennaSelectionCapability;
+  uint8_t m_explicitCsiFeedbackBasedTxASelCapable;
+  uint8_t m_antennaIndicesFeedbackBasedTxASelCapable;
+  uint8_t m_explicitCsiFeedbackCapable;
+  uint8_t m_antennaIndicesFeedbackCapable;
+  uint8_t m_rxASelCapable;
+  uint8_t m_txSoundingPpdusCapable;
+  uint8_t m_reservedASel;
+
+  //This is used to decide whether this element should be added to the frame or not
   uint8_t m_htSupported;
 };
 
