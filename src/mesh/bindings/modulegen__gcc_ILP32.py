@@ -188,8 +188,8 @@ def register_types(module):
     module.add_enum('impl_type', ['int128_impl', 'cairo_impl', 'ld_impl'], outer_class=root_module['ns3::int64x64_t'], import_from_module='ns.core')
     ## wifi-phy.h (module 'wifi'): ns3::mpduInfo [struct]
     module.add_class('mpduInfo', import_from_module='ns.wifi')
-    ## wifi-phy.h (module 'wifi'): ns3::snrDb [struct]
-    module.add_class('snrDb', import_from_module='ns.wifi')
+    ## wifi-phy.h (module 'wifi'): ns3::signalNoiseDbm [struct]
+    module.add_class('signalNoiseDbm', import_from_module='ns.wifi')
     ## chunk.h (module 'network'): ns3::Chunk [class]
     module.add_class('Chunk', import_from_module='ns.network', parent=root_module['ns3::ObjectBase'])
     ## header.h (module 'network'): ns3::Header [class]
@@ -656,7 +656,7 @@ def register_methods(root_module):
     register_Ns3Empty_methods(root_module, root_module['ns3::empty'])
     register_Ns3Int64x64_t_methods(root_module, root_module['ns3::int64x64_t'])
     register_Ns3MpduInfo_methods(root_module, root_module['ns3::mpduInfo'])
-    register_Ns3SnrDb_methods(root_module, root_module['ns3::snrDb'])
+    register_Ns3SignalNoiseDbm_methods(root_module, root_module['ns3::signalNoiseDbm'])
     register_Ns3Chunk_methods(root_module, root_module['ns3::Chunk'])
     register_Ns3Header_methods(root_module, root_module['ns3::Header'])
     register_Ns3MgtAddBaRequestHeader_methods(root_module, root_module['ns3::MgtAddBaRequestHeader'])
@@ -3806,14 +3806,14 @@ def register_Ns3MpduInfo_methods(root_module, cls):
     cls.add_instance_attribute('referenceNumber', 'uint32_t', is_const=False)
     return
 
-def register_Ns3SnrDb_methods(root_module, cls):
-    ## wifi-phy.h (module 'wifi'): ns3::snrDb::snrDb() [constructor]
+def register_Ns3SignalNoiseDbm_methods(root_module, cls):
+    ## wifi-phy.h (module 'wifi'): ns3::signalNoiseDbm::signalNoiseDbm() [constructor]
     cls.add_constructor([])
-    ## wifi-phy.h (module 'wifi'): ns3::snrDb::snrDb(ns3::snrDb const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::snrDb const &', 'arg0')])
-    ## wifi-phy.h (module 'wifi'): ns3::snrDb::noise [variable]
+    ## wifi-phy.h (module 'wifi'): ns3::signalNoiseDbm::signalNoiseDbm(ns3::signalNoiseDbm const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::signalNoiseDbm const &', 'arg0')])
+    ## wifi-phy.h (module 'wifi'): ns3::signalNoiseDbm::noise [variable]
     cls.add_instance_attribute('noise', 'double', is_const=False)
-    ## wifi-phy.h (module 'wifi'): ns3::snrDb::signal [variable]
+    ## wifi-phy.h (module 'wifi'): ns3::signalNoiseDbm::signal [variable]
     cls.add_instance_attribute('signal', 'double', is_const=False)
     return
 
@@ -6384,10 +6384,10 @@ def register_Ns3WifiPhy_methods(root_module, cls):
                    'ns3::WifiMode', 
                    [param('uint8_t', 'mcs')], 
                    is_pure_virtual=True, is_virtual=True)
-    ## wifi-phy.h (module 'wifi'): void ns3::WifiPhy::NotifyMonitorSniffRx(ns3::Ptr<ns3::Packet const> packet, uint16_t channelFreqMhz, uint16_t channelNumber, uint32_t rate, ns3::WifiPreamble preamble, ns3::WifiTxVector txvector, ns3::mpduInfo aMpdu, ns3::snrDb snr) [member function]
+    ## wifi-phy.h (module 'wifi'): void ns3::WifiPhy::NotifyMonitorSniffRx(ns3::Ptr<ns3::Packet const> packet, uint16_t channelFreqMhz, uint16_t channelNumber, uint32_t rate, ns3::WifiPreamble preamble, ns3::WifiTxVector txvector, ns3::mpduInfo aMpdu, ns3::signalNoiseDbm signalNoise) [member function]
     cls.add_method('NotifyMonitorSniffRx', 
                    'void', 
-                   [param('ns3::Ptr< ns3::Packet const >', 'packet'), param('uint16_t', 'channelFreqMhz'), param('uint16_t', 'channelNumber'), param('uint32_t', 'rate'), param('ns3::WifiPreamble', 'preamble'), param('ns3::WifiTxVector', 'txvector'), param('ns3::mpduInfo', 'aMpdu'), param('ns3::snrDb', 'snr')])
+                   [param('ns3::Ptr< ns3::Packet const >', 'packet'), param('uint16_t', 'channelFreqMhz'), param('uint16_t', 'channelNumber'), param('uint32_t', 'rate'), param('ns3::WifiPreamble', 'preamble'), param('ns3::WifiTxVector', 'txvector'), param('ns3::mpduInfo', 'aMpdu'), param('ns3::signalNoiseDbm', 'signalNoise')])
     ## wifi-phy.h (module 'wifi'): void ns3::WifiPhy::NotifyMonitorSniffTx(ns3::Ptr<ns3::Packet const> packet, uint16_t channelFreqMhz, uint16_t channelNumber, uint32_t rate, ns3::WifiPreamble preamble, ns3::WifiTxVector txvector, ns3::mpduInfo aMpdu) [member function]
     cls.add_method('NotifyMonitorSniffTx', 
                    'void', 
