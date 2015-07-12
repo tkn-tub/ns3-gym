@@ -12,4 +12,3 @@ def build(bld):
     
     obj = bld.create_ns3_program('basic-energy-model-test', ['core', 'energy', 'wifi'])
     obj.source = 'basic-energy-model-test.cc'
-    
