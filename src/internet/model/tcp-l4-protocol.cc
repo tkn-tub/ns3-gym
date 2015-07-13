@@ -337,19 +337,14 @@ TcpL4Protocol::ReceiveIcmp (Ipv6Address icmpSource, uint8_t icmpTtl,
 }
 
 enum IpL4Protocol::RxStatus
-TcpL4Protocol::Receive (Ptr<Packet> packet,
-                        Ipv4Header const &incomingIpHeader,
-                        Ptr<Ipv4Interface> incomingInterface)
+TcpL4Protocol::PacketReceived(Ptr<Packet> packet, TcpHeader &incomingTcpHeader,
+                              Address source, Address destination)
 {
-  NS_LOG_FUNCTION (this << packet << incomingIpHeader << incomingInterface);
 
-  TcpHeader incomingTcpHeader;
   if(Node::ChecksumEnabled ())
     {
       incomingTcpHeader.EnableChecksums ();
-      incomingTcpHeader.InitializeChecksum (incomingIpHeader.GetSource (),
-                                            incomingIpHeader.GetDestination (),
-                                            PROT_NUMBER);
+      incomingTcpHeader.InitializeChecksum (source, destination, PROT_NUMBER);
     }
 
   packet->PeekHeader (incomingTcpHeader);
@@ -364,6 +359,63 @@ TcpL4Protocol::Receive (Ptr<Packet> packet,
     {
       NS_LOG_INFO ("Bad checksum, dropping packet!");
       return IpL4Protocol::RX_CSUM_FAILED;
+    }
+
+  return IpL4Protocol::RX_OK;
+}
+
+void
+TcpL4Protocol::NoEndPointsFound(const TcpHeader &incomingHeader,
+                                const Address &incomingSAddr,
+                                const Address &incomingDAddr)
+{
+  if (! (incomingHeader.GetFlags () & TcpHeader::RST))
+    {
+      // build a RST packet and send
+      Ptr<Packet> rstPacket = Create<Packet> ();
+      TcpHeader outgoingTcpHeader;
+
+      if (incomingHeader.GetFlags () & TcpHeader::ACK)
+        {
+          // ACK bit was set
+          outgoingTcpHeader.SetFlags (TcpHeader::RST);
+          outgoingTcpHeader.SetSequenceNumber (incomingHeader.GetAckNumber ());
+        }
+      else
+        {
+          outgoingTcpHeader.SetFlags (TcpHeader::RST | TcpHeader::ACK);
+          outgoingTcpHeader.SetSequenceNumber (SequenceNumber32 (0));
+          outgoingTcpHeader.SetAckNumber (incomingHeader.GetSequenceNumber () +
+                                          SequenceNumber32 (1));
+        }
+
+      // Remember that parameters refer to the incoming packet; in reply,
+      // we need to swap src/dst
+
+      outgoingTcpHeader.SetSourcePort (incomingHeader.GetDestinationPort ());
+      outgoingTcpHeader.SetDestinationPort (incomingHeader.GetSourcePort ());
+
+      SendPacket (rstPacket, outgoingTcpHeader, incomingDAddr, incomingSAddr);
+    }
+}
+
+enum IpL4Protocol::RxStatus
+TcpL4Protocol::Receive (Ptr<Packet> packet,
+                        Ipv4Header const &incomingIpHeader,
+                        Ptr<Ipv4Interface> incomingInterface)
+{
+  NS_LOG_FUNCTION (this << packet << incomingIpHeader << incomingInterface);
+
+  TcpHeader incomingTcpHeader;
+  IpL4Protocol::RxStatus checksumControl;
+
+  checksumControl = PacketReceived (packet, incomingTcpHeader,
+                                    incomingIpHeader.GetSource (),
+                                    incomingIpHeader.GetDestination ());
+
+  if (checksumControl != IpL4Protocol::RX_OK)
+    {
+      return checksumControl;
     }
 
   NS_LOG_LOGIC ("TcpL4Protocol "<<this<<" received a packet");
@@ -397,41 +449,20 @@ TcpL4Protocol::Receive (Ptr<Packet> packet,
                     " source IP: " << incomingIpHeader.GetSource () <<
                     " source port: "<< incomingTcpHeader.GetSourcePort ());
 
-      if (! (incomingTcpHeader.GetFlags () & TcpHeader::RST))
-        {
-          // build a RST packet and send
-          Ptr<Packet> rstPacket = Create<Packet> ();
-          TcpHeader outgoingTcpHeader;
-          if (incomingTcpHeader.GetFlags () & TcpHeader::ACK)
-            {
-              // ACK bit was set
-              outgoingTcpHeader.SetFlags (TcpHeader::RST);
-              outgoingTcpHeader.SetSequenceNumber (incomingTcpHeader.GetAckNumber ());
-            }
-          else
-            {
-              outgoingTcpHeader.SetFlags (TcpHeader::RST | TcpHeader::ACK);
-              outgoingTcpHeader.SetSequenceNumber (SequenceNumber32 (0));
-              outgoingTcpHeader.SetAckNumber (incomingTcpHeader.GetSequenceNumber () + SequenceNumber32 (1));
-            }
+      NoEndPointsFound (incomingTcpHeader, incomingIpHeader.GetSource(),
+                        incomingIpHeader.GetDestination());
 
-          outgoingTcpHeader.SetSourcePort (incomingTcpHeader.GetDestinationPort ());
-          outgoingTcpHeader.SetDestinationPort (incomingTcpHeader.GetSourcePort ());
+      return IpL4Protocol::RX_ENDPOINT_CLOSED;
 
-          SendPacket (rstPacket, outgoingTcpHeader, incomingIpHeader.GetDestination (),
-                      incomingIpHeader.GetSource ());
-          return IpL4Protocol::RX_ENDPOINT_CLOSED;
-        }
-      else
-        {
-          return IpL4Protocol::RX_ENDPOINT_CLOSED;
-        }
     }
+
   NS_ASSERT_MSG (endPoints.size () == 1, "Demux returned more than one endpoint");
   NS_LOG_LOGIC ("TcpL4Protocol "<<this<<" forwarding up to endpoint/socket");
+
   (*endPoints.begin ())->ForwardUp (packet, incomingIpHeader,
                                     incomingTcpHeader.GetSourcePort (),
                                     incomingInterface);
+
   return IpL4Protocol::RX_OK;
 }
 
@@ -444,36 +475,27 @@ TcpL4Protocol::Receive (Ptr<Packet> packet,
                    incomingIpHeader.GetDestinationAddress ());
 
   TcpHeader incomingTcpHeader;
+  IpL4Protocol::RxStatus checksumControl;
 
   // If we are receving a v4-mapped packet, we will re-calculate the TCP checksum
   // Is it worth checking every received "v6" packet to see if it is v4-mapped in
   // order to avoid re-calculating TCP checksums for v4-mapped packets?
 
-  if(Node::ChecksumEnabled ())
+  checksumControl = PacketReceived (packet, incomingTcpHeader,
+                                    incomingIpHeader.GetSourceAddress (),
+                                    incomingIpHeader.GetDestinationAddress ());
+
+  if (checksumControl != IpL4Protocol::RX_OK)
     {
-      incomingTcpHeader.EnableChecksums ();
-      incomingTcpHeader.InitializeChecksum (incomingIpHeader.GetSourceAddress (),
-                                    incomingIpHeader.GetDestinationAddress (), PROT_NUMBER);
-    }
-
-  packet->PeekHeader (incomingTcpHeader);
-
-  NS_LOG_LOGIC ("TcpL4Protocol " << this
-                                 << " receiving seq " << incomingTcpHeader.GetSequenceNumber ()
-                                 << " ack " << incomingTcpHeader.GetAckNumber ()
-                                 << " flags "<< std::hex << (int)incomingTcpHeader.GetFlags () << std::dec
-                                 << " data size " << packet->GetSize ());
-
-  if(!incomingTcpHeader.IsChecksumOk ())
-    {
-      NS_LOG_INFO ("Bad checksum, dropping packet!");
-      return IpL4Protocol::RX_CSUM_FAILED;
+      return checksumControl;
     }
 
   NS_LOG_LOGIC ("TcpL4Protocol "<<this<<" received a packet");
   Ipv6EndPointDemux::EndPoints endPoints =
-    m_endPoints6->Lookup (incomingIpHeader.GetDestinationAddress (), incomingTcpHeader.GetDestinationPort (),
-                          incomingIpHeader.GetSourceAddress (), incomingTcpHeader.GetSourcePort (),interface);
+    m_endPoints6->Lookup (incomingIpHeader.GetDestinationAddress (),
+                          incomingTcpHeader.GetDestinationPort (),
+                          incomingIpHeader.GetSourceAddress (),
+                          incomingTcpHeader.GetSourcePort (), interface);
   if (endPoints.empty ())
     {
       NS_LOG_LOGIC ("No endpoints matched on TcpL4Protocol "<< this <<
@@ -482,37 +504,18 @@ TcpL4Protocol::Receive (Ptr<Packet> packet,
                     " source IP: " << incomingIpHeader.GetSourceAddress () <<
                     " source port: "<< incomingTcpHeader.GetSourcePort ());
 
-      if (!(incomingTcpHeader.GetFlags () & TcpHeader::RST))
-        {
-          // build a RST packet and send
-          Ptr<Packet> rstPacket = Create<Packet> ();
-          TcpHeader outgoingTcpHeader;
-          if (incomingTcpHeader.GetFlags () & TcpHeader::ACK)
-            {
-              // ACK bit was set
-              outgoingTcpHeader.SetFlags (TcpHeader::RST);
-              outgoingTcpHeader.SetSequenceNumber (incomingTcpHeader.GetAckNumber ());
-            }
-          else
-            {
-              outgoingTcpHeader.SetFlags (TcpHeader::RST | TcpHeader::ACK);
-              outgoingTcpHeader.SetSequenceNumber (SequenceNumber32 (0));
-              outgoingTcpHeader.SetAckNumber (incomingTcpHeader.GetSequenceNumber () + SequenceNumber32 (1));
-            }
-          outgoingTcpHeader.SetSourcePort (incomingTcpHeader.GetDestinationPort ());
-          outgoingTcpHeader.SetDestinationPort (incomingTcpHeader.GetSourcePort ());
-          SendPacket (rstPacket, outgoingTcpHeader, incomingIpHeader.GetDestinationAddress (),
-                      incomingIpHeader.GetSourceAddress ());
-          return IpL4Protocol::RX_ENDPOINT_CLOSED;
-        }
-      else
-        {
-          return IpL4Protocol::RX_ENDPOINT_CLOSED;
-        }
+      NoEndPointsFound (incomingTcpHeader, incomingIpHeader.GetSourceAddress (),
+                        incomingIpHeader.GetDestinationAddress ());
+
+      return IpL4Protocol::RX_ENDPOINT_CLOSED;
     }
+
   NS_ASSERT_MSG (endPoints.size () == 1, "Demux returned more than one endpoint");
   NS_LOG_LOGIC ("TcpL4Protocol "<<this<<" forwarding up to endpoint/socket");
-  (*endPoints.begin ())->ForwardUp (packet, incomingIpHeader, incomingTcpHeader.GetSourcePort (), interface);
+
+  (*endPoints.begin ())->ForwardUp (packet, incomingIpHeader,
+                                    incomingTcpHeader.GetSourcePort (), interface);
+
   return IpL4Protocol::RX_OK;
 }
 
@@ -616,7 +619,51 @@ TcpL4Protocol::SendPacket (Ptr<Packet> packet, const TcpHeader &outgoing,
 }
 
 void
-TcpL4Protocol::AddSocket(Ptr<TcpSocketBase> socket)
+TcpL4Protocol::SendPacket (Ptr<Packet> pkt, const TcpHeader &outgoing,
+                           const Address &saddr, const Address &daddr, Ptr<NetDevice> oif)
+{
+  if (Ipv4Address::IsMatchingType (saddr))
+    {
+      NS_ASSERT (Ipv4Address::IsMatchingType (daddr));
+
+      SendPacket (pkt, outgoing, Ipv4Address::ConvertFrom (saddr),
+                  Ipv4Address::ConvertFrom (daddr), oif);
+
+      return;
+    }
+  else if (Ipv6Address::IsMatchingType (saddr))
+    {
+      NS_ASSERT (Ipv6Address::IsMatchingType (daddr));
+
+      SendPacket (pkt, outgoing, Ipv6Address::ConvertFrom (saddr),
+                  Ipv6Address::ConvertFrom (daddr), oif);
+
+      return;
+    }
+  else if (InetSocketAddress::IsMatchingType (saddr))
+    {
+      InetSocketAddress s = InetSocketAddress::ConvertFrom (saddr);
+      InetSocketAddress d = InetSocketAddress::ConvertFrom (daddr);
+
+      SendPacket (pkt, outgoing, s.GetIpv4 (), d.GetIpv4 (), oif);
+
+      return;
+    }
+  else if (Inet6SocketAddress::IsMatchingType (saddr))
+    {
+      Inet6SocketAddress s = Inet6SocketAddress::ConvertFrom (saddr);
+      Inet6SocketAddress d = Inet6SocketAddress::ConvertFrom (daddr);
+
+      SendPacket (pkt, outgoing, s.GetIpv6 (), d.GetIpv6 (), oif);
+
+      return;
+    }
+
+  NS_FATAL_ERROR ("Trying to send a packet without IP addresses");
+}
+
+void
+TcpL4Protocol::AddSocket (Ptr<TcpSocketBase> socket)
 {
   std::vector<Ptr<TcpSocketBase> >::iterator it = m_sockets.begin ();
 

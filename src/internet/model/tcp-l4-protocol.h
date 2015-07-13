@@ -25,7 +25,9 @@
 
 #include "ns3/ipv4-address.h"
 #include "ns3/ipv6-address.h"
+#include "ns3/sequence-number.h"
 #include "ip-l4-protocol.h"
+
 
 namespace ns3 {
 
@@ -177,7 +179,7 @@ public:
    * \param oif The output interface bound. Defaults to null (unspecified).
    */
   void SendPacket (Ptr<Packet> pkt, const TcpHeader &outgoing,
-                   Ipv4Address saddr, Ipv4Address, Ptr<NetDevice> oif = 0);
+                   Ipv4Address saddr, Ipv4Address daddr, Ptr<NetDevice> oif = 0);
 
   /**
    * \brief Send a packet via TCP (IPv6)
@@ -190,6 +192,18 @@ public:
    */
   void SendPacket (Ptr<Packet> pkt, const TcpHeader &outgoing,
                    Ipv6Address saddr, Ipv6Address daddr, Ptr<NetDevice> oif = 0);
+
+  /**
+   * \brief Send a packet via TCP (IP-agnostic)
+   *
+   * \param pkt The packet to send
+   * \param outgoing The packet header
+   * \param saddr The source Ipv4Address
+   * \param daddr The destination Ipv4Address
+   * \param oif The output interface bound. Defaults to null (unspecified).
+   */
+  void SendPacket (Ptr<Packet> pkt, const TcpHeader &outgoing,
+                   const Address &saddr, const Address &daddr, Ptr<NetDevice> oif = 0);
 
   /**
    * \brief Make a socket capable to being demultiplexed
@@ -244,6 +258,7 @@ public:
 
 protected:
   virtual void DoDispose (void);
+
   /**
    * \brief Setup socket factory and callbacks when aggregated to a node
    *
@@ -254,6 +269,36 @@ protected:
    * it to the ipv4 stack and adding TCP socket factory to the node.
    */
   virtual void NotifyNewAggregate ();
+
+  /**
+   * \brief Get the tcp header of the incoming packet and checks its checksum
+   *
+   * \param packet Received packet
+   * \param incomingTcpHeader At the end will contain the tcp header of the packet
+   * \param source Source address (who sent the packet)
+   * \param destination Destination address (who received the packet -- us)
+   *
+   * \return RX_CSUM_FAILED if the checksum check fails, RX_OK otherwise
+   */
+  enum IpL4Protocol::RxStatus
+      PacketReceived (Ptr<Packet> packet, TcpHeader &incomingTcpHeader,
+                      Address source, Address destination);
+
+  /**
+   * \brief Check if RST packet should be sent, and in case, send it
+   *
+   * The function is called when no endpoint is found for the received
+   * packet. So TcpL4Protocol do not know to who the packet should be
+   * given to. An RST packet is sent out as reply unless the received packet
+   * has the RST flag set.
+   *
+   * \param incomingHeader TCP header of the incoming packet
+   * \param incomingSAddr Source address of the incoming packet
+   * \param incomingDAddr Destination address of the incoming packet
+   *
+   */
+  void NoEndPointsFound (const TcpHeader &incomingHeader, const Address &incomingSAddr,
+                         const Address &incomingDAddr);
 
 private:
   Ptr<Node> m_node;                //!< the node this stack is associated with
