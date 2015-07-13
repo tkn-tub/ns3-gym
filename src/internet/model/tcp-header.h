@@ -204,8 +204,8 @@ public:
    *        IP packet.
    *
    */
-  void InitializeChecksum (Ipv4Address source, 
-                           Ipv4Address destination,
+  void InitializeChecksum (const Ipv4Address &source,
+                           const Ipv4Address &destination,
                            uint8_t protocol);
 
   /**
@@ -222,8 +222,8 @@ public:
    *        IP packet.
    *
    */
-  void InitializeChecksum (Ipv6Address source, 
-                           Ipv6Address destination,
+  void InitializeChecksum (const Ipv6Address &source,
+                           const Ipv6Address &destination,
                            uint8_t protocol);
 
   /**
@@ -240,8 +240,8 @@ public:
    *        IP packet.
    *
    */
-  void InitializeChecksum (Address source, 
-                           Address destination,
+  void InitializeChecksum (const Address &source,
+                           const Address &destination,
                            uint8_t protocol);
 
   /**

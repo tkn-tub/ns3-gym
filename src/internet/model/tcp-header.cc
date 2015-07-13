@@ -176,8 +176,8 @@ TcpHeader::GetUrgentPointer () const
 }
 
 void 
-TcpHeader::InitializeChecksum (Ipv4Address source, 
-                               Ipv4Address destination,
+TcpHeader::InitializeChecksum (const Ipv4Address &source,
+                               const Ipv4Address &destination,
                                uint8_t protocol)
 {
   m_source = source;
@@ -186,8 +186,8 @@ TcpHeader::InitializeChecksum (Ipv4Address source,
 }
 
 void 
-TcpHeader::InitializeChecksum (Ipv6Address source, 
-                               Ipv6Address destination,
+TcpHeader::InitializeChecksum (const Ipv6Address &source,
+                               const Ipv6Address &destination,
                                uint8_t protocol)
 {
   m_source = source;
@@ -196,8 +196,8 @@ TcpHeader::InitializeChecksum (Ipv6Address source,
 }
 
 void 
-TcpHeader::InitializeChecksum (Address source, 
-                               Address destination,
+TcpHeader::InitializeChecksum (const Address &source,
+                               const Address &destination,
                                uint8_t protocol)
 {
   m_source = source;

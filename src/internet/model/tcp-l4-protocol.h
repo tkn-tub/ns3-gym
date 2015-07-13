@@ -179,7 +179,8 @@ public:
    * \param oif The output interface bound. Defaults to null (unspecified).
    */
   void SendPacket (Ptr<Packet> pkt, const TcpHeader &outgoing,
-                   Ipv4Address saddr, Ipv4Address daddr, Ptr<NetDevice> oif = 0);
+                   const Ipv4Address &saddr, const Ipv4Address &daddr,
+                   Ptr<NetDevice> oif = 0) const;
 
   /**
    * \brief Send a packet via TCP (IPv6)
@@ -191,7 +192,8 @@ public:
    * \param oif The output interface bound. Defaults to null (unspecified).
    */
   void SendPacket (Ptr<Packet> pkt, const TcpHeader &outgoing,
-                   Ipv6Address saddr, Ipv6Address daddr, Ptr<NetDevice> oif = 0);
+                   const Ipv6Address &saddr, const Ipv6Address &daddr,
+                   Ptr<NetDevice> oif = 0) const;
 
   /**
    * \brief Send a packet via TCP (IP-agnostic)
@@ -203,7 +205,8 @@ public:
    * \param oif The output interface bound. Defaults to null (unspecified).
    */
   void SendPacket (Ptr<Packet> pkt, const TcpHeader &outgoing,
-                   const Address &saddr, const Address &daddr, Ptr<NetDevice> oif = 0);
+                   const Address &saddr, const Address &daddr,
+                   Ptr<NetDevice> oif = 0) const;
 
   /**
    * \brief Make a socket capable to being demultiplexed
@@ -282,7 +285,7 @@ protected:
    */
   enum IpL4Protocol::RxStatus
       PacketReceived (Ptr<Packet> packet, TcpHeader &incomingTcpHeader,
-                      Address source, Address destination);
+                      const Address &source, const Address &destination);
 
   /**
    * \brief Check if RST packet should be sent, and in case, send it
