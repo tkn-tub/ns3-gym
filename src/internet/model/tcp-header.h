@@ -48,6 +48,15 @@ public:
   virtual ~TcpHeader ();
 
   /**
+   * \brief Print a TCP header into an output stream
+   *
+   * \param os output stream
+   * \param tc TCP header to print
+   * \return The ostream passed as first argument
+   */
+  friend std::ostream& operator<<(std::ostream& os, TcpHeader const & tc);
+
+  /**
    * \brief Converts an integer into a human readable list of Tcp flags
    *
    * \param flags Bitfield of TCP flags to convert to a readable string
