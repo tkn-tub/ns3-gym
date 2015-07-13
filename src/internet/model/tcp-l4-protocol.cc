@@ -105,11 +105,6 @@ TcpL4Protocol::SetNode (Ptr<Node> node)
   m_node = node;
 }
 
-/* 
- * This method is called by AddAgregate and completes the aggregation
- * by setting the node in the TCP stack, link it to the ipv4 stack and 
- * adding TCP socket factory to the node.
- */
 void
 TcpL4Protocol::NotifyNewAggregate ()
 {

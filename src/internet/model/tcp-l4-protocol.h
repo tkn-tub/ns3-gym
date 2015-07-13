@@ -41,12 +41,24 @@ class Ipv6EndPoint;
 
 /**
  * \ingroup tcp
- * \brief A layer between the sockets interface and IP
+ * \brief Tcp socket creation and multiplexing/demultiplexing
  * 
- * This class allocates "endpoint" objects (ns3::Ipv4EndPoint) for TCP,
+ * A single instance of this class is held by one instance of class Node.
+ *
+ * The creation of TcpSocket are handled in the method CreateSocket, which is
+ * called by TcpSocketFactory. Upon creation, this class is responsible to
+ * the socket initialization and handle multiplexing/demultiplexing of data
+ * between node's TCP sockets. Demultiplexing is done by receiving
+ * packets from IP, and forwards them up to the right socket. Multiplexing
+ * is done through the SendPacket function, which sends the packet down the stack.
+ *
+ * Moreover, this class allocates "endpoint" objects (ns3::Ipv4EndPoint) for TCP,
  * and SHOULD checksum packets its receives from the socket layer going down
- * the stack , but currently checksumming is disabled.  It also receives 
- * packets from IP, and forwards them up to the endpoints.
+ * the stack, but currently checksumming is disabled.
+ *
+ * \see CreateSocket
+ * \see NotifyNewAggregate
+ * \see SendPacket
 */
 
 class TcpL4Protocol : public IpL4Protocol {
@@ -67,16 +79,16 @@ public:
    */
   void SetNode (Ptr<Node> node);
 
-  virtual int GetProtocolNumber (void) const;
-
   /**
-   * \brief Create a TCP socket
+   * \brief Create a TCP socket using the TypeId set by SocketType attribute
+   *
    * \return A smart Socket pointer to a TcpSocket allocated by this instance
    * of the TCP protocol
    */
   Ptr<Socket> CreateSocket (void);
   /**
-   * \brief Create a TCP socket
+   * \brief Create a TCP socket using the specified TypeId
+   *
    * \return A smart Socket pointer to a TcpSocket allocated by this instance
    * of the TCP protocol
    *
@@ -155,7 +167,8 @@ public:
   Ipv6EndPoint *Allocate6 (Ipv6Address localAddress, uint16_t localPort,
                            Ipv6Address peerAddress, uint16_t peerPort);
 
-  /** Send a packet via TCP (IPv4)
+  /**
+   * \brief Send a packet via TCP (IPv4)
    *
    * \param pkt The packet to send
    * \param outgoing The packet header
@@ -166,7 +179,8 @@ public:
   void SendPacket (Ptr<Packet> pkt, const TcpHeader &outgoing,
                    Ipv4Address saddr, Ipv4Address, Ptr<NetDevice> oif = 0);
 
-  /** Send a packet via TCP (IPv6)
+  /**
+   * \brief Send a packet via TCP (IPv6)
    *
    * \param pkt The packet to send
    * \param outgoing The packet header
@@ -205,6 +219,7 @@ public:
    */
   void DeAllocate (Ipv6EndPoint *endPoint);
 
+  // From IpL4Protocol
   virtual enum IpL4Protocol::RxStatus Receive (Ptr<Packet> p,
                                                Ipv4Header const &header,
                                                Ptr<Ipv4Interface> incomingInterface);
@@ -221,27 +236,35 @@ public:
                             Ipv6Address payloadSource,Ipv6Address payloadDestination,
                             const uint8_t payload[8]);
 
-  // From IpL4Protocol
   virtual void SetDownTarget (IpL4Protocol::DownTargetCallback cb);
   virtual void SetDownTarget6 (IpL4Protocol::DownTargetCallback6 cb);
-  // From IpL4Protocol
+  virtual int GetProtocolNumber (void) const;
   virtual IpL4Protocol::DownTargetCallback GetDownTarget (void) const;
   virtual IpL4Protocol::DownTargetCallback6 GetDownTarget6 (void) const;
 
 protected:
   virtual void DoDispose (void);
-  /* 
-   * This function will notify other components connected to the node that a new stack member is now connected
-   * This will be used to notify Layer 3 protocol of layer 4 protocol stack to connect them together.
+  /**
+   * \brief Setup socket factory and callbacks when aggregated to a node
+   *
+   * This function will notify other components connected to the node that a
+   * new stack member is now connected. This will be used to notify Layer 3
+   * protocol of layer 4 protocol stack to connect them together.
+   * The aggregation is completed by setting the node in the TCP stack, link
+   * it to the ipv4 stack and adding TCP socket factory to the node.
    */
   virtual void NotifyNewAggregate ();
+
 private:
-  Ptr<Node> m_node; //!< the node this stack is associated with
-  Ipv4EndPointDemux *m_endPoints; //!< A list of IPv4 end points.
+  Ptr<Node> m_node;                //!< the node this stack is associated with
+  Ipv4EndPointDemux *m_endPoints;  //!< A list of IPv4 end points.
   Ipv6EndPointDemux *m_endPoints6; //!< A list of IPv6 end points.
-  TypeId m_rttTypeId; //!< The RTT Estimator TypeId
-  TypeId m_socketTypeId; //!< The socket TypeId
-private:
+  TypeId m_rttTypeId;              //!< The RTT Estimator TypeId
+  TypeId m_socketTypeId;           //!< The socket TypeId
+  std::vector<Ptr<TcpSocketBase> > m_sockets;      //!< list of sockets
+  IpL4Protocol::DownTargetCallback m_downTarget;   //!< Callback to send packets over IPv4
+  IpL4Protocol::DownTargetCallback6 m_downTarget6; //!< Callback to send packets over IPv6
+
   /**
    * \brief Copy constructor
    *
@@ -255,10 +278,6 @@ private:
    * \returns
    */
   TcpL4Protocol &operator = (const TcpL4Protocol &);
-
-  std::vector<Ptr<TcpSocketBase> > m_sockets;      //!< list of sockets
-  IpL4Protocol::DownTargetCallback m_downTarget;   //!< Callback to send packets over IPv4
-  IpL4Protocol::DownTargetCallback6 m_downTarget6; //!< Callback to send packets over IPv6
 };
 
 } // namespace ns3
