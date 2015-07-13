@@ -293,23 +293,19 @@ protected:
   void ForwardUp6 (Ptr<Packet> packet, Ipv6Header header, uint16_t port, Ptr<Ipv6Interface> incomingInterface);
 
   /**
-   * \brief Called by TcpSocketBase::ForwardUp().
+   * \brief Called by TcpSocketBase::ForwardUp{,6}().
+   *
+   * Get a packet from L3. This is the real function to handle the
+   * incoming packet from lower layers. This is
+   * wrapped by ForwardUp() so that this function can be overloaded by daughter
+   * classes.
    *
    * \param packet the incoming packet
-   * \param header the packet's IPv4 header
-   * \param port the remote port
-   * \param incomingInterface the incoming interface
+   * \param fromAddress the address of the sender of packet
+   * \param toAddress the address of the receiver of packet (hopefully, us)
    */
-  virtual void DoForwardUp (Ptr<Packet> packet, Ipv4Header header, uint16_t port, Ptr<Ipv4Interface> incomingInterface); //Get a pkt from L3
-
-  /**
-   * \brief Called by TcpSocketBase::ForwardUp6().
-   *
-   * \param packet the incoming packet
-   * \param header the packet's IPv6 header
-   * \param port the remote port
-   */
-  virtual void DoForwardUp (Ptr<Packet> packet, Ipv6Header header, uint16_t port);
+  virtual void DoForwardUp (Ptr<Packet> packet, const Address &fromAddress,
+                            const Address &toAddress);
 
   /**
    * \brief Called by the L3 protocol when it received an ICMP packet to pass on to TCP.

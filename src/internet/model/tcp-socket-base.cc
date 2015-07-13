@@ -885,13 +885,34 @@ void
 TcpSocketBase::ForwardUp (Ptr<Packet> packet, Ipv4Header header, uint16_t port,
                           Ptr<Ipv4Interface> incomingInterface)
 {
-  DoForwardUp (packet, header, port, incomingInterface);
+  NS_LOG_LOGIC ("Socket " << this << " forward up " <<
+                m_endPoint->GetPeerAddress () <<
+                ":" << m_endPoint->GetPeerPort () <<
+                " to " << m_endPoint->GetLocalAddress () <<
+                ":" << m_endPoint->GetLocalPort ());
+
+  Address fromAddress = InetSocketAddress (header.GetSource (), port);
+  Address toAddress = InetSocketAddress (header.GetDestination (),
+                                         m_endPoint->GetLocalPort ());
+
+  DoForwardUp (packet, fromAddress, toAddress);
 }
 
 void
-TcpSocketBase::ForwardUp6 (Ptr<Packet> packet, Ipv6Header header, uint16_t port, Ptr<Ipv6Interface> incomingInterface)
+TcpSocketBase::ForwardUp6 (Ptr<Packet> packet, Ipv6Header header, uint16_t port,
+                           Ptr<Ipv6Interface> incomingInterface)
 {
-  DoForwardUp (packet, header, port);
+  NS_LOG_LOGIC ("Socket " << this << " forward up " <<
+                m_endPoint6->GetPeerAddress () <<
+                ":" << m_endPoint6->GetPeerPort () <<
+                " to " << m_endPoint6->GetLocalAddress () <<
+                ":" << m_endPoint6->GetLocalPort ());
+
+  Address fromAddress = Inet6SocketAddress (header.GetSourceAddress (), port);
+  Address toAddress = Inet6SocketAddress (header.GetDestinationAddress (),
+                                          m_endPoint6->GetLocalPort ());
+
+  DoForwardUp (packet, fromAddress, toAddress);
 }
 
 void
@@ -920,21 +941,10 @@ TcpSocketBase::ForwardIcmp6 (Ipv6Address icmpSource, uint8_t icmpTtl,
     }
 }
 
-/* The real function to handle the incoming packet from lower layers. This is
-    wrapped by ForwardUp() so that this function can be overloaded by daughter
-    classes. */
 void
-TcpSocketBase::DoForwardUp (Ptr<Packet> packet, Ipv4Header header, uint16_t port,
-                            Ptr<Ipv4Interface> incomingInterface)
+TcpSocketBase::DoForwardUp (Ptr<Packet> packet, const Address &fromAddress,
+                            const Address &toAddress)
 {
-  NS_LOG_LOGIC ("Socket " << this << " forward up " <<
-                m_endPoint->GetPeerAddress () <<
-                ":" << m_endPoint->GetPeerPort () <<
-                " to " << m_endPoint->GetLocalAddress () <<
-                ":" << m_endPoint->GetLocalPort ());
-  Address fromAddress = InetSocketAddress (header.GetSource (), port);
-  Address toAddress = InetSocketAddress (header.GetDestination (), m_endPoint->GetLocalPort ());
-
   // Peel off TCP header and do validity checking
   TcpHeader tcpHeader;
   uint32_t bytesRemoved = packet->RemoveHeader (tcpHeader);
@@ -1004,116 +1014,7 @@ TcpSocketBase::DoForwardUp (Ptr<Packet> packet, Ipv4Header header, uint16_t port
           h.SetDestinationPort (tcpHeader.GetSourcePort ());
           h.SetWindowSize (AdvertisedWindowSize ());
           AddOptions (h);
-          m_tcp->SendPacket (Create<Packet> (), h, header.GetDestination (),
-                             header.GetSource (), m_boundnetdevice);
-        }
-      break;
-    case SYN_SENT:
-      ProcessSynSent (packet, tcpHeader);
-      break;
-    case SYN_RCVD:
-      ProcessSynRcvd (packet, tcpHeader, fromAddress, toAddress);
-      break;
-    case FIN_WAIT_1:
-    case FIN_WAIT_2:
-    case CLOSE_WAIT:
-      ProcessWait (packet, tcpHeader);
-      break;
-    case CLOSING:
-      ProcessClosing (packet, tcpHeader);
-      break;
-    case LAST_ACK:
-      ProcessLastAck (packet, tcpHeader);
-      break;
-    default: // mute compiler
-      break;
-    }
-}
-
-// XXX this is duplicate code with the other DoForwardUp()
-void
-TcpSocketBase::DoForwardUp (Ptr<Packet> packet, Ipv6Header header, uint16_t port)
-{
-  NS_LOG_LOGIC ("Socket " << this << " forward up " <<
-                m_endPoint6->GetPeerAddress () <<
-                ":" << m_endPoint6->GetPeerPort () <<
-                " to " << m_endPoint6->GetLocalAddress () <<
-                ":" << m_endPoint6->GetLocalPort ());
-  Address fromAddress = Inet6SocketAddress (header.GetSourceAddress (), port);
-  Address toAddress = Inet6SocketAddress (header.GetDestinationAddress (), m_endPoint6->GetLocalPort ());
-
-  // Peel off TCP header and do validity checking
-  TcpHeader tcpHeader;
-  uint32_t bytesRemoved = packet->RemoveHeader (tcpHeader);
-  if (bytesRemoved == 0 || bytesRemoved > 60)
-    {
-      NS_LOG_ERROR ("Bytes removed: " << bytesRemoved << " invalid");
-      return; // Discard invalid packet
-    }
-
-  ReadOptions (tcpHeader);
-
-  if (tcpHeader.GetFlags () & TcpHeader::ACK)
-    {
-      EstimateRtt (tcpHeader);
-    }
-
-  // Discard fully out of range packets
-  if (packet->GetSize ()
-      && OutOfRange (tcpHeader.GetSequenceNumber (), tcpHeader.GetSequenceNumber () + packet->GetSize ()))
-    {
-      NS_LOG_LOGIC ("At state " << TcpStateName[m_state] <<
-                    " received packet of seq [" << tcpHeader.GetSequenceNumber () <<
-                    ":" << tcpHeader.GetSequenceNumber () + packet->GetSize () <<
-                    ") out of range [" << m_rxBuffer->NextRxSequence () << ":" <<
-                    m_rxBuffer->MaxRxSequence () << ")");
-      // Acknowledgement should be sent for all unacceptable packets (RFC793, p.69)
-      if (m_state == ESTABLISHED && !(tcpHeader.GetFlags () & TcpHeader::RST))
-        {
-          SendEmptyPacket (TcpHeader::ACK);
-        }
-      return;
-    }
-
-  // Update Rx window size, i.e. the flow control window
-  if (m_rWnd.Get () == 0 && tcpHeader.GetWindowSize () != 0 && m_persistEvent.IsRunning ())
-    { // persist probes end
-      NS_LOG_LOGIC (this << " Leaving zerowindow persist state");
-      m_persistEvent.Cancel ();
-    }
-
-  if (tcpHeader.GetFlags () & TcpHeader::ACK)
-    {
-      UpdateWindowSize (tcpHeader);
-    }
-
-  // TCP state machine code in different process functions
-  // C.f.: tcp_rcv_state_process() in tcp_input.c in Linux kernel
-  switch (m_state)
-    {
-    case ESTABLISHED:
-      ProcessEstablished (packet, tcpHeader);
-      break;
-    case LISTEN:
-      ProcessListen (packet, tcpHeader, fromAddress, toAddress);
-      break;
-    case TIME_WAIT:
-      // Do nothing
-      break;
-    case CLOSED:
-      // Send RST if the incoming packet is not a RST
-      if ((tcpHeader.GetFlags () & ~(TcpHeader::PSH | TcpHeader::URG)) != TcpHeader::RST)
-        { // Since m_endPoint is not configured yet, we cannot use SendRST here
-          TcpHeader h;
-          h.SetFlags (TcpHeader::RST);
-          h.SetSequenceNumber (m_nextTxSequence);
-          h.SetAckNumber (m_rxBuffer->NextRxSequence ());
-          h.SetSourcePort (tcpHeader.GetDestinationPort ());
-          h.SetDestinationPort (tcpHeader.GetSourcePort ());
-          h.SetWindowSize (AdvertisedWindowSize ());
-          AddOptions (h);
-          m_tcp->SendPacket (Create<Packet> (), h, header.GetDestinationAddress (),
-                             header.GetSourceAddress (), m_boundnetdevice);
+          m_tcp->SendPacket (Create<Packet> (), h, toAddress, fromAddress, m_boundnetdevice);
         }
       break;
     case SYN_SENT:
