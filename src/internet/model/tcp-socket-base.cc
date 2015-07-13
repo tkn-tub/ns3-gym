@@ -1078,7 +1078,7 @@ TcpSocketBase::ProcessEstablished (Ptr<Packet> packet, const TcpHeader& tcpHeade
     { // Received RST or the TCP flags is invalid, in either case, terminate this socket
       if (tcpflags != TcpHeader::RST)
         { // this must be an invalid flag, send reset
-          NS_LOG_LOGIC ("Illegal flag " << tcpflags << " received. Reset packet is sent.");
+          NS_LOG_LOGIC ("Illegal flag " << TcpHeader::FlagsToString (tcpflags) << " received. Reset packet is sent.");
           SendRST ();
         }
       CloseAndNotify ();
@@ -1203,7 +1203,8 @@ TcpSocketBase::ProcessSynSent (Ptr<Packet> packet, const TcpHeader& tcpHeader)
     { // Other in-sequence input
       if (tcpflags != TcpHeader::RST)
         { // When (1) rx of FIN+ACK; (2) rx of FIN; (3) rx of bad flags
-          NS_LOG_LOGIC ("Illegal flag " << std::hex << static_cast<uint32_t> (tcpflags) << std::dec << " received. Reset packet is sent.");
+          NS_LOG_LOGIC ("Illegal flag " << TcpHeader::FlagsToString (tcpflags) <<
+                        " received. Reset packet is sent.");
           SendRST ();
         }
       CloseAndNotify ();
@@ -1283,7 +1284,8 @@ TcpSocketBase::ProcessSynRcvd (Ptr<Packet> packet, const TcpHeader& tcpHeader,
     { // Other in-sequence input
       if (tcpflags != TcpHeader::RST)
         { // When (1) rx of SYN+ACK; (2) rx of FIN; (3) rx of bad flags
-          NS_LOG_LOGIC ("Illegal flag " << tcpflags << " received. Reset packet is sent.");
+          NS_LOG_LOGIC ("Illegal flag " << TcpHeader::FlagsToString (tcpflags) <<
+                        " received. Reset packet is sent.");
           if (m_endPoint)
             {
               m_endPoint->SetPeer (InetSocketAddress::ConvertFrom (fromAddress).GetIpv4 (),
@@ -1339,7 +1341,8 @@ TcpSocketBase::ProcessWait (Ptr<Packet> packet, const TcpHeader& tcpHeader)
     { // This is a RST or bad flags
       if (tcpflags != TcpHeader::RST)
         {
-          NS_LOG_LOGIC ("Illegal flag " << tcpflags << " received. Reset packet is sent.");
+          NS_LOG_LOGIC ("Illegal flag " << TcpHeader::FlagsToString (tcpflags) <<
+                        " received. Reset packet is sent.");
           SendRST ();
         }
       CloseAndNotify ();
@@ -1396,7 +1399,7 @@ TcpSocketBase::ProcessClosing (Ptr<Packet> packet, const TcpHeader& tcpHeader)
         }
       else if (tcpflags != TcpHeader::RST)
         { // Receive of SYN or SYN+ACK or bad flags or pure data
-          NS_LOG_LOGIC ("Illegal flag " << tcpflags << " received. Reset packet is sent.");
+          NS_LOG_LOGIC ("Illegal flag " << TcpHeader::FlagsToString (tcpflags) << " received. Reset packet is sent.");
           SendRST ();
         }
       CloseAndNotify ();
@@ -1433,7 +1436,7 @@ TcpSocketBase::ProcessLastAck (Ptr<Packet> packet, const TcpHeader& tcpHeader)
     }
   else
     { // Received a SYN or SYN+ACK or bad flags
-      NS_LOG_LOGIC ("Illegal flag " << tcpflags << " received. Reset packet is sent.");
+      NS_LOG_LOGIC ("Illegal flag " << TcpHeader::FlagsToString (tcpflags) << " received. Reset packet is sent.");
       SendRST ();
       CloseAndNotify ();
     }
@@ -1911,7 +1914,8 @@ TcpSocketBase::SendDataPacket (SequenceNumber32 seq, uint32_t maxSize, bool with
                     (Simulator::Now () + m_rto.Get ()).GetSeconds () );
       m_retxEvent = Simulator::Schedule (m_rto, &TcpSocketBase::ReTxTimeout, this);
     }
-  NS_LOG_LOGIC ("Send packet via TcpL4Protocol with flags 0x" << std::hex << static_cast<uint32_t> (flags) << std::dec);
+  NS_LOG_LOGIC ("Send packet via TcpL4Protocol with flags" <<
+                TcpHeader::FlagsToString (flags));
   if (m_endPoint)
     {
       m_tcp->SendPacket (p, header, m_endPoint->GetLocalAddress (),

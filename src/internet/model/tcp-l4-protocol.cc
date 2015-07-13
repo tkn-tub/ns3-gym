@@ -352,7 +352,7 @@ TcpL4Protocol::PacketReceived (Ptr<Packet> packet, TcpHeader &incomingTcpHeader,
   NS_LOG_LOGIC ("TcpL4Protocol " << this
                                  << " receiving seq " << incomingTcpHeader.GetSequenceNumber ()
                                  << " ack " << incomingTcpHeader.GetAckNumber ()
-                                 << " flags " << std::hex << (int)incomingTcpHeader.GetFlags () << std::dec
+                                 << " flags "<< TcpHeader::FlagsToString (incomingTcpHeader.GetFlags ())
                                  << " data size " << packet->GetSize ());
 
   if (!incomingTcpHeader.IsChecksumOk ())
@@ -527,7 +527,7 @@ TcpL4Protocol::SendPacketV4 (Ptr<Packet> packet, const TcpHeader &outgoing,
   NS_LOG_LOGIC ("TcpL4Protocol " << this
                                  << " sending seq " << outgoing.GetSequenceNumber ()
                                  << " ack " << outgoing.GetAckNumber ()
-                                 << " flags " << std::hex << (int)outgoing.GetFlags () << std::dec
+                                 << " flags " << TcpHeader::FlagsToString (outgoing.GetFlags ())
                                  << " data size " << packet->GetSize ());
   NS_LOG_FUNCTION (this << packet << saddr << daddr << oif);
   // XXX outgoingHeader cannot be logged
@@ -578,7 +578,7 @@ TcpL4Protocol::SendPacketV6 (Ptr<Packet> packet, const TcpHeader &outgoing,
   NS_LOG_LOGIC ("TcpL4Protocol " << this
                                  << " sending seq " << outgoing.GetSequenceNumber ()
                                  << " ack " << outgoing.GetAckNumber ()
-                                 << " flags " << std::hex << (int)outgoing.GetFlags () << std::dec
+                                 << " flags " << TcpHeader::FlagsToString (outgoing.GetFlags ())
                                  << " data size " << packet->GetSize ());
   NS_LOG_FUNCTION (this << packet << saddr << daddr << oif);
   // XXX outgoingHeader cannot be logged
