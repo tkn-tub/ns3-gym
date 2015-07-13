@@ -221,10 +221,10 @@ public:
 
   // From IpL4Protocol
   virtual enum IpL4Protocol::RxStatus Receive (Ptr<Packet> p,
-                                               Ipv4Header const &header,
+                                               Ipv4Header const &incomingIpHeader,
                                                Ptr<Ipv4Interface> incomingInterface);
   virtual enum IpL4Protocol::RxStatus Receive (Ptr<Packet> p,
-                                               Ipv6Header const &header,
+                                               Ipv6Header const &incomingIpHeader,
                                                Ptr<Ipv6Interface> incomingInterface);
 
   virtual void ReceiveIcmp (Ipv4Address icmpSource, uint8_t icmpTtl,
