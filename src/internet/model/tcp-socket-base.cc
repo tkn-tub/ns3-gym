@@ -1004,7 +1004,8 @@ TcpSocketBase::DoForwardUp (Ptr<Packet> packet, Ipv4Header header, uint16_t port
           h.SetDestinationPort (tcpHeader.GetSourcePort ());
           h.SetWindowSize (AdvertisedWindowSize ());
           AddOptions (h);
-          m_tcp->SendPacket (Create<Packet> (), h, header.GetDestination (), header.GetSource (), m_boundnetdevice);
+          m_tcp->SendPacket (Create<Packet> (), h, header.GetDestination (),
+                             header.GetSource (), m_boundnetdevice);
         }
       break;
     case SYN_SENT:
@@ -1111,7 +1112,8 @@ TcpSocketBase::DoForwardUp (Ptr<Packet> packet, Ipv6Header header, uint16_t port
           h.SetDestinationPort (tcpHeader.GetSourcePort ());
           h.SetWindowSize (AdvertisedWindowSize ());
           AddOptions (h);
-          m_tcp->SendPacket (Create<Packet> (), h, header.GetDestinationAddress (), header.GetSourceAddress (), m_boundnetdevice);
+          m_tcp->SendPacket (Create<Packet> (), h, header.GetDestinationAddress (),
+                             header.GetSourceAddress (), m_boundnetdevice);
         }
       break;
     case SYN_SENT:

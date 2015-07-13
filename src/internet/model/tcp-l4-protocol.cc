@@ -520,9 +520,9 @@ TcpL4Protocol::Receive (Ptr<Packet> packet,
 }
 
 void
-TcpL4Protocol::SendPacket (Ptr<Packet> packet, const TcpHeader &outgoing,
-                           const Ipv4Address &saddr, const Ipv4Address &daddr,
-                           Ptr<NetDevice> oif) const
+TcpL4Protocol::SendPacketV4 (Ptr<Packet> packet, const TcpHeader &outgoing,
+                             const Ipv4Address &saddr, const Ipv4Address &daddr,
+                             Ptr<NetDevice> oif) const
 {
   NS_LOG_LOGIC ("TcpL4Protocol " << this
                                  << " sending seq " << outgoing.GetSequenceNumber ()
@@ -571,9 +571,9 @@ TcpL4Protocol::SendPacket (Ptr<Packet> packet, const TcpHeader &outgoing,
 }
 
 void
-TcpL4Protocol::SendPacket (Ptr<Packet> packet, const TcpHeader &outgoing,
-                           const Ipv6Address &saddr, const Ipv6Address &daddr,
-                           Ptr<NetDevice> oif) const
+TcpL4Protocol::SendPacketV6 (Ptr<Packet> packet, const TcpHeader &outgoing,
+                             const Ipv6Address &saddr, const Ipv6Address &daddr,
+                             Ptr<NetDevice> oif) const
 {
   NS_LOG_LOGIC ("TcpL4Protocol " << this
                                  << " sending seq " << outgoing.GetSequenceNumber ()
@@ -633,8 +633,8 @@ TcpL4Protocol::SendPacket (Ptr<Packet> pkt, const TcpHeader &outgoing,
     {
       NS_ASSERT (Ipv4Address::IsMatchingType (daddr));
 
-      SendPacket (pkt, outgoing, Ipv4Address::ConvertFrom (saddr),
-                  Ipv4Address::ConvertFrom (daddr), oif);
+      SendPacketV4 (pkt, outgoing, Ipv4Address::ConvertFrom (saddr),
+                    Ipv4Address::ConvertFrom (daddr), oif);
 
       return;
     }
@@ -642,8 +642,8 @@ TcpL4Protocol::SendPacket (Ptr<Packet> pkt, const TcpHeader &outgoing,
     {
       NS_ASSERT (Ipv6Address::IsMatchingType (daddr));
 
-      SendPacket (pkt, outgoing, Ipv6Address::ConvertFrom (saddr),
-                  Ipv6Address::ConvertFrom (daddr), oif);
+      SendPacketV6 (pkt, outgoing, Ipv6Address::ConvertFrom (saddr),
+                    Ipv6Address::ConvertFrom (daddr), oif);
 
       return;
     }
@@ -652,7 +652,7 @@ TcpL4Protocol::SendPacket (Ptr<Packet> pkt, const TcpHeader &outgoing,
       InetSocketAddress s = InetSocketAddress::ConvertFrom (saddr);
       InetSocketAddress d = InetSocketAddress::ConvertFrom (daddr);
 
-      SendPacket (pkt, outgoing, s.GetIpv4 (), d.GetIpv4 (), oif);
+      SendPacketV4 (pkt, outgoing, s.GetIpv4 (), d.GetIpv4 (), oif);
 
       return;
     }
@@ -661,7 +661,7 @@ TcpL4Protocol::SendPacket (Ptr<Packet> pkt, const TcpHeader &outgoing,
       Inet6SocketAddress s = Inet6SocketAddress::ConvertFrom (saddr);
       Inet6SocketAddress d = Inet6SocketAddress::ConvertFrom (daddr);
 
-      SendPacket (pkt, outgoing, s.GetIpv6 (), d.GetIpv6 (), oif);
+      SendPacketV6 (pkt, outgoing, s.GetIpv6 (), d.GetIpv6 (), oif);
 
       return;
     }

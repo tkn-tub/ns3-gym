@@ -170,32 +170,6 @@ public:
                            Ipv6Address peerAddress, uint16_t peerPort);
 
   /**
-   * \brief Send a packet via TCP (IPv4)
-   *
-   * \param pkt The packet to send
-   * \param outgoing The packet header
-   * \param saddr The source Ipv4Address
-   * \param daddr The destination Ipv4Address
-   * \param oif The output interface bound. Defaults to null (unspecified).
-   */
-  void SendPacket (Ptr<Packet> pkt, const TcpHeader &outgoing,
-                   const Ipv4Address &saddr, const Ipv4Address &daddr,
-                   Ptr<NetDevice> oif = 0) const;
-
-  /**
-   * \brief Send a packet via TCP (IPv6)
-   *
-   * \param pkt The packet to send
-   * \param outgoing The packet header
-   * \param saddr The source Ipv4Address
-   * \param daddr The destination Ipv4Address
-   * \param oif The output interface bound. Defaults to null (unspecified).
-   */
-  void SendPacket (Ptr<Packet> pkt, const TcpHeader &outgoing,
-                   const Ipv6Address &saddr, const Ipv6Address &daddr,
-                   Ptr<NetDevice> oif = 0) const;
-
-  /**
    * \brief Send a packet via TCP (IP-agnostic)
    *
    * \param pkt The packet to send
@@ -209,7 +183,7 @@ public:
                    Ptr<NetDevice> oif = 0) const;
 
   /**
-   * \brief Make a socket capable to being demultiplexed
+   * \brief Make a socket fully operational
    *
    * Called after a socket has been bound, it is inserted in an internal vector.
    *
@@ -269,17 +243,17 @@ protected:
    * new stack member is now connected. This will be used to notify Layer 3
    * protocol of layer 4 protocol stack to connect them together.
    * The aggregation is completed by setting the node in the TCP stack, link
-   * it to the ipv4 stack and adding TCP socket factory to the node.
+   * it to the ipv4 or ipv6 stack and adding TCP socket factory to the node.
    */
   virtual void NotifyNewAggregate ();
 
   /**
-   * \brief Get the tcp header of the incoming packet and checks its checksum
+   * \brief Get the tcp header of the incoming packet and checks its checksum if needed
    *
    * \param packet Received packet
-   * \param incomingTcpHeader At the end will contain the tcp header of the packet
-   * \param source Source address (who sent the packet)
-   * \param destination Destination address (who received the packet -- us)
+   * \param incomingTcpHeader Overwritten with the tcp header of the packet
+   * \param source Source address (an underlying Ipv4Address or Ipv6Address)
+   * \param destination Destination address (an underlying Ipv4Address or Ipv6Address)
    *
    * \return RX_CSUM_FAILED if the checksum check fails, RX_OK otherwise
    */
@@ -326,6 +300,32 @@ private:
    * \returns
    */
   TcpL4Protocol &operator = (const TcpL4Protocol &);
+
+  /**
+   * \brief Send a packet via TCP (IPv4)
+   *
+   * \param pkt The packet to send
+   * \param outgoing The packet header
+   * \param saddr The source Ipv4Address
+   * \param daddr The destination Ipv4Address
+   * \param oif The output interface bound. Defaults to null (unspecified).
+   */
+  void SendPacketV4 (Ptr<Packet> pkt, const TcpHeader &outgoing,
+                     const Ipv4Address &saddr, const Ipv4Address &daddr,
+                     Ptr<NetDevice> oif = 0) const;
+
+  /**
+   * \brief Send a packet via TCP (IPv6)
+   *
+   * \param pkt The packet to send
+   * \param outgoing The packet header
+   * \param saddr The source Ipv4Address
+   * \param daddr The destination Ipv4Address
+   * \param oif The output interface bound. Defaults to null (unspecified).
+   */
+  void SendPacketV6 (Ptr<Packet> pkt, const TcpHeader &outgoing,
+                     const Ipv6Address &saddr, const Ipv6Address &daddr,
+                     Ptr<NetDevice> oif = 0) const;
 };
 
 } // namespace ns3
