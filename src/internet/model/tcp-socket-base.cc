@@ -150,6 +150,14 @@ TcpSocketBase::GetTypeId (void)
                      "Highest ack received from peer",
                      MakeTraceSourceAccessor (&TcpSocketBase::m_highRxAckMark),
                      "ns3::SequenceNumber32TracedValueCallback")
+    .AddTraceSource ("CongestionWindow",
+                     "The TCP connection's congestion window",
+                     MakeTraceSourceAccessor (&TcpSocketBase::m_cWnd),
+                     "ns3::TracedValue::Uint32Callback")
+    .AddTraceSource ("SlowStartThreshold",
+                     "TCP slow start threshold (bytes)",
+                     MakeTraceSourceAccessor (&TcpSocketBase::m_ssThresh),
+                     "ns3::TracedValue::Uint32Callback")
   ;
   return tid;
 }
@@ -221,6 +229,8 @@ TcpSocketBase::TcpSocketBase (const TcpSocketBase& sock)
     m_rWnd (sock.m_rWnd),
     m_highRxMark (sock.m_highRxMark),
     m_highRxAckMark (sock.m_highRxAckMark),
+    m_cWnd (sock.m_cWnd),
+    m_ssThresh (sock.m_ssThresh),
     m_winScalingEnabled (sock.m_winScalingEnabled),
     m_sndScaleFactor (sock.m_sndScaleFactor),
     m_rcvScaleFactor (sock.m_rcvScaleFactor),

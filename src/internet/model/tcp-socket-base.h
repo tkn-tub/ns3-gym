@@ -750,6 +750,10 @@ protected:
   TracedValue<SequenceNumber32> m_highRxMark;     //!< Highest seqno received
   TracedValue<SequenceNumber32> m_highRxAckMark;  //!< Highest ack received
 
+  // Congestion control
+  TracedValue<uint32_t> m_cWnd;     //!< Congestion window
+  TracedValue<uint32_t> m_ssThresh; //!< Slow start threshold
+
   // Options
   bool    m_winScalingEnabled;    //!< Window Scale option enabled
   uint8_t m_sndScaleFactor;       //!< Sent Window Scale (i.e., the one of the node)

@@ -49,14 +49,6 @@ TcpNewReno::GetTypeId (void)
                    BooleanValue (false),
                    MakeBooleanAccessor (&TcpNewReno::m_limitedTx),
                    MakeBooleanChecker ())
-    .AddTraceSource ("CongestionWindow",
-                     "The TCP connection's congestion window",
-                     MakeTraceSourceAccessor (&TcpNewReno::m_cWnd),
-                     "ns3::TracedValue::Uint32Callback")
-    .AddTraceSource ("SlowStartThreshold",
-                     "TCP slow start threshold (bytes)",
-                     MakeTraceSourceAccessor (&TcpNewReno::m_ssThresh),
-                     "ns3::TracedValue::Uint32Callback")
  ;
   return tid;
 }
@@ -71,8 +63,6 @@ TcpNewReno::TcpNewReno (void)
 
 TcpNewReno::TcpNewReno (const TcpNewReno& sock)
   : TcpSocketBase (sock),
-    m_cWnd (sock.m_cWnd),
-    m_ssThresh (sock.m_ssThresh),
     m_initialCWnd (sock.m_initialCWnd),
     m_initialSsThresh (sock.m_initialSsThresh),
     m_retxThresh (sock.m_retxThresh),

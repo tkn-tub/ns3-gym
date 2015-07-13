@@ -164,8 +164,6 @@ private:
   void Filtering (void);
 
 protected:
-  TracedValue<uint32_t>  m_cWnd;                   //!< Congestion window
-  TracedValue<uint32_t>  m_ssThresh;               //!< Slow Start Threshold
   uint32_t               m_initialCWnd;            //!< Initial cWnd value
   uint32_t               m_initialSsThresh;        //!< Initial Slow Start Threshold value
   bool                   m_inFastRec;              //!< Currently in fast recovery if TRUE

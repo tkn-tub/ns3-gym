@@ -55,13 +55,6 @@ TcpWestwood::GetTypeId (void)
       .SetParent<TcpSocketBase>()
       .SetGroupName ("Internet")
       .AddConstructor<TcpWestwood>()
-      .AddTraceSource("CongestionWindow", "The TCP connection's congestion window",
-                      MakeTraceSourceAccessor(&TcpWestwood::m_cWnd),
-                      "ns3::TracedValue::Uint32Callback")
-      .AddTraceSource ("SlowStartThreshold",
-                       "TCP slow start threshold (bytes)",
-                       MakeTraceSourceAccessor (&TcpWestwood::m_ssThresh),
-                       "ns3::TracedValue::Uint32Callback")
       .AddAttribute("FilterType", "Use this to choose no filter or Tustin's approximation filter",
                     EnumValue(TcpWestwood::TUSTIN), MakeEnumAccessor(&TcpWestwood::m_fType),
                     MakeEnumChecker(TcpWestwood::NONE, "None", TcpWestwood::TUSTIN, "Tustin"))
@@ -92,8 +85,6 @@ TcpWestwood::TcpWestwood (void) :
 
 TcpWestwood::TcpWestwood (const TcpWestwood& sock) :
   TcpSocketBase(sock),
-  m_cWnd(sock.m_cWnd),
-  m_ssThresh(sock.m_ssThresh),
   m_initialCWnd(sock.m_initialCWnd),
   m_initialSsThresh (sock.m_initialSsThresh),
   m_inFastRec(false),

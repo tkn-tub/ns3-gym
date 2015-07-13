@@ -45,14 +45,6 @@ TcpTahoe::GetTypeId (void)
                     UintegerValue (3),
                     MakeUintegerAccessor (&TcpTahoe::m_retxThresh),
                     MakeUintegerChecker<uint32_t> ())
-    .AddTraceSource ("CongestionWindow",
-                     "The TCP connection's congestion window",
-                     MakeTraceSourceAccessor (&TcpTahoe::m_cWnd),
-                     "ns3::TracedValue::Uint32Callback")
-    .AddTraceSource ("SlowStartThreshold",
-                     "TCP slow start threshold (bytes)",
-                     MakeTraceSourceAccessor (&TcpTahoe::m_ssThresh),
-                     "ns3::TracedValue::Uint32Callback")
   ;
   return tid;
 }
@@ -64,8 +56,6 @@ TcpTahoe::TcpTahoe (void) : m_initialCWnd (1), m_retxThresh (3)
 
 TcpTahoe::TcpTahoe (const TcpTahoe& sock)
   : TcpSocketBase (sock),
-    m_cWnd (sock.m_cWnd),
-    m_ssThresh (sock.m_ssThresh),
     m_initialCWnd (sock.m_initialCWnd),
     m_initialSsThresh (sock.m_initialSsThresh),
     m_retxThresh (sock.m_retxThresh)

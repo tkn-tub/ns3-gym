@@ -78,8 +78,6 @@ private:
   void InitializeCwnd (void);
 
 protected:
-  TracedValue<uint32_t>  m_cWnd;         //!< Congestion window
-  TracedValue<uint32_t>  m_ssThresh;     //!< Slow Start Threshold
   uint32_t               m_initialCWnd;  //!< Initial cWnd value
   uint32_t               m_initialSsThresh;  //!< Initial Slow Start Threshold value
   SequenceNumber32       m_recover;      //!< Previous highest Tx seqnum for fast recovery
