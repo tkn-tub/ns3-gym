@@ -223,7 +223,7 @@ public:
    * \param socket socket to Remove
    * \return true if the socket has been removed
    */
-  bool RemoveSocket(Ptr<TcpSocketBase> socket);
+  bool RemoveSocket (Ptr<TcpSocketBase> socket);
 
   /**
    * \brief Remove an IPv4 Endpoint.
@@ -284,8 +284,8 @@ protected:
    * \return RX_CSUM_FAILED if the checksum check fails, RX_OK otherwise
    */
   enum IpL4Protocol::RxStatus
-      PacketReceived (Ptr<Packet> packet, TcpHeader &incomingTcpHeader,
-                      const Address &source, const Address &destination);
+  PacketReceived (Ptr<Packet> packet, TcpHeader &incomingTcpHeader,
+                  const Address &source, const Address &destination);
 
   /**
    * \brief Check if RST packet should be sent, and in case, send it
