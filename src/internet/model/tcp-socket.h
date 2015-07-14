@@ -36,37 +36,6 @@ class Node;
 class Packet;
 
 /**
- * \ingroup tcp
- * \brief Names of the 11 TCP states
- *
- * \todo This should be a member of TcpSocket.
- */
-typedef enum {
-  CLOSED,       // 0
-  LISTEN,       // 1
-  SYN_SENT,     // 2
-  SYN_RCVD,     // 3
-  ESTABLISHED,  // 4
-  CLOSE_WAIT,   // 5
-  LAST_ACK,     // 6
-  FIN_WAIT_1,   // 7
-  FIN_WAIT_2,   // 8
-  CLOSING,      // 9
-  TIME_WAIT,   // 10
-  LAST_STATE
-} TcpStates_t;
-
-/**
- * \ingroup tcp
- * TracedValue Callback signature for TcpStates_t
- *
- * \param [in] oldValue original value of the traced variable
- * \param [in] newValue new value of the traced variable
- */
-typedef void (* TcpStatesTracedValueCallback)(const TcpStates_t oldValue,
-                                              const TcpStates_t newValue);
-
-/**
  * \ingroup socket
  *
  * \brief (abstract) base class of all TcpSockets
@@ -88,9 +57,40 @@ public:
   virtual ~TcpSocket (void);
 
   /**
+   * \ingroup tcp
+   * \brief Names of the 11 TCP states
+   *
+   */
+  typedef enum {
+    CLOSED = 0,   /**< Socket is finished                                     */
+    LISTEN,       /**< Listening for a connection                             */
+    SYN_SENT,     /**< Sent a connection request, waiting for ack             */
+    SYN_RCVD,     /**< Received a connection request, sent ack,
+                    *  waiting for final ack in three-way handshake.          */
+    ESTABLISHED,  /**< Connection established                                 */
+    CLOSE_WAIT,   /**< Remote side has shutdown and is waiting for
+                    *  us to finish writing our data and to shutdown
+                    *  (we have to close() to move on to LAST_ACK)            */
+    LAST_ACK,     /**< Our side has shutdown after remote has
+                    *  shutdown.  There may still be data in our
+                    *  buffer that we have to finish sending                  */
+    FIN_WAIT_1,   /**< Our side has shutdown, waiting to complete
+                    *  transmission of remaining buffered data                */
+    FIN_WAIT_2,   /**< All buffered data sent, waiting for remote to shutdown */
+    CLOSING,      /**< Both sides have shutdown but we still have
+                    *  data we have to finish sending                         */
+    TIME_WAIT,    /**< Timeout to catch resent junk before entering
+                    *  closed, can only be entered from FIN_WAIT2
+                    *  or CLOSING.  Required because the other end
+                    *  may not have gotten our last ACK causing it
+                    *  to retransmit the data packet (which we ignore)        */
+    LAST_STATE    /**< Last state, used only in debug messages                */
+  } TcpStates_t;
+
+  /**
    * \brief Literal names of TCP states for use in log messages
    */
-  static const char* const TcpStateName[LAST_STATE];
+  static const char* const TcpStateName[TcpSocket::LAST_STATE];
 
 private:
   // Indirect the attribute setting and getting through private virtual methods
@@ -238,6 +238,16 @@ private:
   virtual Time GetPersistTimeout (void) const = 0;
 
 };
+
+/**
+ * \ingroup tcp
+ * TracedValue Callback signature for TcpStates_t
+ *
+ * \param [in] oldValue original value of the traced variable
+ * \param [in] newValue new value of the traced variable
+ */
+typedef void (* TcpStatesTracedValueCallback)(const TcpSocket::TcpStates_t oldValue,
+                                              const TcpSocket::TcpStates_t newValue);
 
 } // namespace ns3
 
