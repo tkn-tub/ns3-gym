@@ -54,10 +54,6 @@ public:
   TcpReno (const TcpReno& sock);
   virtual ~TcpReno (void);
 
-  // From TcpSocketBase
-  virtual int Connect (const Address &address);
-  virtual int Listen (void);
-
 protected:
   virtual uint32_t Window (void); // Return the max possible number of unacked bytes
   virtual Ptr<TcpSocketBase> Fork (void); // Call CopyObject<TcpReno> to clone me
@@ -65,23 +61,7 @@ protected:
   virtual void DupAck (const TcpHeader& t, uint32_t count);  // Fast retransmit
   virtual void Retransmit (void); // Retransmit timeout
 
-  // Implementing ns3::TcpSocket -- Attribute get/set
-  virtual void     SetSegSize (uint32_t size);
-  virtual void     SetInitialSSThresh (uint32_t threshold);
-  virtual uint32_t GetInitialSSThresh (void) const;
-  virtual void     SetInitialCwnd (uint32_t cwnd);
-  virtual uint32_t GetInitialCwnd (void) const;
-  virtual void ScaleSsThresh (uint8_t scaleFactor);
-
-private:
-  /**
-   * \brief Set the congestion window when connection starts
-   */
-  void InitializeCwnd (void);
-
 protected:
-  uint32_t               m_initialCWnd;  //!< Initial cWnd value
-  uint32_t               m_initialSsThresh;  //!< Initial Slow Start Threshold value
   uint32_t               m_retxThresh;   //!< Fast Retransmit threshold
   bool                   m_inFastRec;    //!< currently in fast recovery
 };

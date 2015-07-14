@@ -231,6 +231,8 @@ TcpSocketBase::TcpSocketBase (const TcpSocketBase& sock)
     m_highRxAckMark (sock.m_highRxAckMark),
     m_cWnd (sock.m_cWnd),
     m_ssThresh (sock.m_ssThresh),
+    m_initialCWnd (sock.m_initialCWnd),
+    m_initialSsThresh (sock.m_initialSsThresh),
     m_winScalingEnabled (sock.m_winScalingEnabled),
     m_sndScaleFactor (sock.m_sndScaleFactor),
     m_rcvScaleFactor (sock.m_rcvScaleFactor),
@@ -434,11 +436,56 @@ TcpSocketBase::Bind (const Address &address)
   return SetupCallback ();
 }
 
+void
+TcpSocketBase::InitializeCwnd (void)
+{
+  m_cWnd = m_initialCWnd * m_segmentSize;
+  m_ssThresh = m_initialSsThresh;
+}
+
+void
+TcpSocketBase::SetInitialSSThresh (uint32_t threshold)
+{
+  NS_ABORT_MSG_UNLESS (m_state == CLOSED,
+    "TcpSocketBase::SetSSThresh() cannot change initial ssThresh after connection started.");
+
+  m_initialSsThresh = threshold;
+}
+
+uint32_t
+TcpSocketBase::GetInitialSSThresh (void) const
+{
+  return m_initialSsThresh;
+}
+
+void
+TcpSocketBase::SetInitialCwnd (uint32_t cwnd)
+{
+  NS_ABORT_MSG_UNLESS (m_state == CLOSED,
+    "TcpSocketBase::SetInitialCwnd() cannot change initial cwnd after connection started.");
+
+  m_initialCWnd = cwnd;
+}
+
+uint32_t
+TcpSocketBase::GetInitialCwnd (void) const
+{
+  return m_initialCWnd;
+}
+
+void
+TcpSocketBase::ScaleSsThresh (uint8_t scaleFactor)
+{
+  m_ssThresh <<= scaleFactor;
+}
+
 /* Inherit from Socket class: Initiate connection to a remote address:port */
 int
 TcpSocketBase::Connect (const Address & address)
 {
   NS_LOG_FUNCTION (this << address);
+
+  InitializeCwnd ();
 
   // If haven't do so, Bind() this socket first
   if (InetSocketAddress::IsMatchingType (address) && m_endPoint6 == 0)
@@ -511,6 +558,9 @@ int
 TcpSocketBase::Listen (void)
 {
   NS_LOG_FUNCTION (this);
+
+  InitializeCwnd ();
+
   // Linux quits EINVAL if we're not in CLOSED state, so match what they do
   if (m_state != CLOSED)
     {

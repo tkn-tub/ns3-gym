@@ -56,8 +56,6 @@ TcpReno::TcpReno (void) : m_retxThresh (3), m_inFastRec (false)
 
 TcpReno::TcpReno (const TcpReno& sock)
   : TcpSocketBase (sock),
-    m_initialCWnd (sock.m_initialCWnd),
-    m_initialSsThresh (sock.m_initialSsThresh),
     m_retxThresh (sock.m_retxThresh),
     m_inFastRec (false)
 {
@@ -67,24 +65,6 @@ TcpReno::TcpReno (const TcpReno& sock)
 
 TcpReno::~TcpReno (void)
 {
-}
-
-/* We initialize m_cWnd from this function, after attributes initialized */
-int
-TcpReno::Listen (void)
-{
-  NS_LOG_FUNCTION (this);
-  InitializeCwnd ();
-  return TcpSocketBase::Listen ();
-}
-
-/* We initialize m_cWnd from this function, after attributes initialized */
-int
-TcpReno::Connect (const Address & address)
-{
-  NS_LOG_FUNCTION (this << address);
-  InitializeCwnd ();
-  return TcpSocketBase::Connect (address);
 }
 
 /* Limit the size of in-flight data by cwnd and receiver's rxwin */
@@ -184,57 +164,5 @@ void TcpReno::Retransmit (void)
                ", ssthresh to " << m_ssThresh << ", restart from seqnum " << m_nextTxSequence);
   DoRetransmit ();                          // Retransmit the packet
 }
-
-void
-TcpReno::SetSegSize (uint32_t size)
-{
-  NS_ABORT_MSG_UNLESS (m_state == CLOSED, "TcpReno::SetSegSize() cannot change segment size after connection started.");
-  m_segmentSize = size;
-}
-
-void
-TcpReno::SetInitialSSThresh (uint32_t threshold)
-{
-  NS_ABORT_MSG_UNLESS (m_state == CLOSED, "TcpReno::SetSSThresh() cannot change initial ssThresh after connection started.");
-  m_initialSsThresh = threshold;
-}
-
-uint32_t
-TcpReno::GetInitialSSThresh (void) const
-{
-  return m_initialSsThresh;
-}
-
-void
-TcpReno::SetInitialCwnd (uint32_t cwnd)
-{
-  NS_ABORT_MSG_UNLESS (m_state == CLOSED, "TcpReno::SetInitialCwnd() cannot change initial cwnd after connection started.");
-  m_initialCWnd = cwnd;
-}
-
-uint32_t
-TcpReno::GetInitialCwnd (void) const
-{
-  return m_initialCWnd;
-}
-
-void 
-TcpReno::InitializeCwnd (void)
-{
-  /*
-   * Initialize congestion window, default to 1 MSS (RFC2001, sec.1) and must
-   * not be larger than 2 MSS (RFC2581, sec.3.1). Both m_initiaCWnd and
-   * m_segmentSize are set by the attribute system in ns3::TcpSocket.
-   */
-  m_cWnd = m_initialCWnd * m_segmentSize;
-  m_ssThresh = m_initialSsThresh;
-}
-
-void
-TcpReno::ScaleSsThresh (uint8_t scaleFactor)
-{
-  m_ssThresh <<= scaleFactor;
-}
-
 
 } // namespace ns3

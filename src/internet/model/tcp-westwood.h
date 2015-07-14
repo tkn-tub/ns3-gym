@@ -94,10 +94,6 @@ public:
     TUSTIN
   };
 
-  // From TcpSocketBase
-  virtual int Connect (const Address &address);
-  virtual int Listen (void);
-
 protected:
   virtual uint32_t Window (void); // Return the max possible number of unacked bytes
   virtual Ptr<TcpSocketBase> Fork (void); // Call CopyObject<TcpTahoe> to clone me
@@ -120,20 +116,7 @@ protected:
    */
   virtual void EstimateRtt (const TcpHeader& header);
 
-  // Implementing ns3::TcpSocket -- Attribute get/set
-  virtual void     SetSegSize (uint32_t size);
-  virtual void     SetInitialSSThresh (uint32_t threshold);
-  virtual uint32_t GetInitialSSThresh (void) const;
-  virtual void     SetInitialCwnd (uint32_t cwnd);
-  virtual uint32_t GetInitialCwnd (void) const;
-  virtual void ScaleSsThresh (uint8_t scaleFactor);
-
 private:
-  /**
-   * Initialize cwnd at the beginning of a connection
-   */
-  void InitializeCwnd (void);
-
   /**
    * Calculate the number of acknowledged packets upon the receipt of an ACK packet
    *
@@ -164,8 +147,6 @@ private:
   void Filtering (void);
 
 protected:
-  uint32_t               m_initialCWnd;            //!< Initial cWnd value
-  uint32_t               m_initialSsThresh;        //!< Initial Slow Start Threshold value
   bool                   m_inFastRec;              //!< Currently in fast recovery if TRUE
 
   TracedValue<double>    m_currentBW;              //!< Current value of the estimated BW

@@ -49,15 +49,13 @@ TcpTahoe::GetTypeId (void)
   return tid;
 }
 
-TcpTahoe::TcpTahoe (void) : m_initialCWnd (1), m_retxThresh (3)
+TcpTahoe::TcpTahoe (void) : m_retxThresh (3)
 {
   NS_LOG_FUNCTION (this);
 }
 
 TcpTahoe::TcpTahoe (const TcpTahoe& sock)
   : TcpSocketBase (sock),
-    m_initialCWnd (sock.m_initialCWnd),
-    m_initialSsThresh (sock.m_initialSsThresh),
     m_retxThresh (sock.m_retxThresh)
 {
   NS_LOG_FUNCTION (this);
@@ -66,24 +64,6 @@ TcpTahoe::TcpTahoe (const TcpTahoe& sock)
 
 TcpTahoe::~TcpTahoe (void)
 {
-}
-
-/* We initialize m_cWnd from this function, after attributes initialized */
-int
-TcpTahoe::Listen (void)
-{
-  NS_LOG_FUNCTION (this);
-  InitializeCwnd ();
-  return TcpSocketBase::Listen ();
-}
-
-/* We initialize m_cWnd from this function, after attributes initialized */
-int
-TcpTahoe::Connect (const Address & address)
-{
-  NS_LOG_FUNCTION (this << address);
-  InitializeCwnd ();
-  return TcpSocketBase::Connect (address);
 }
 
 /* Limit the size of in-flight data by cwnd and receiver's rxwin */
@@ -159,57 +139,5 @@ void TcpTahoe::Retransmit (void)
   m_nextTxSequence = m_txBuffer->HeadSequence (); // Restart from highest Ack
   DoRetransmit ();                          // Retransmit the packet
 }
-
-void
-TcpTahoe::SetSegSize (uint32_t size)
-{
-  NS_ABORT_MSG_UNLESS (m_state == CLOSED, "TcpTahoe::SetSegSize() cannot change segment size after connection started.");
-  m_segmentSize = size;
-}
-
-void
-TcpTahoe::SetInitialSSThresh (uint32_t threshold)
-{
-  NS_ABORT_MSG_UNLESS (m_state == CLOSED, "TcpTahoe::SetSSThresh() cannot change initial ssThresh after connection started.");
-  m_initialSsThresh = threshold;
-}
-
-uint32_t
-TcpTahoe::GetInitialSSThresh (void) const
-{
-  return m_initialSsThresh;
-}
-
-void
-TcpTahoe::SetInitialCwnd (uint32_t cwnd)
-{
-  NS_ABORT_MSG_UNLESS (m_state == CLOSED, "TcpTahoe::SetInitialCwnd() cannot change initial cwnd after connection started.");
-  m_initialCWnd = cwnd;
-}
-
-uint32_t
-TcpTahoe::GetInitialCwnd (void) const
-{
-  return m_initialCWnd;
-}
-
-void 
-TcpTahoe::InitializeCwnd (void)
-{
-  /*
-   * Initialize congestion window, default to 1 MSS (RFC2001, sec.1) and must
-   * not be larger than 2 MSS (RFC2581, sec.3.1). Both m_initiaCWnd and
-   * m_segmentSize are set by the attribute system in ns3::TcpSocket.
-   */
-  m_cWnd = m_initialCWnd * m_segmentSize;
-  m_ssThresh = m_initialSsThresh;
-}
-
-void
-TcpTahoe::ScaleSsThresh (uint8_t scaleFactor)
-{
-  m_ssThresh <<= scaleFactor;
-}
-
 
 } // namespace ns3

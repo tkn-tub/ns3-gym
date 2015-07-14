@@ -198,10 +198,10 @@ protected:
   virtual uint32_t GetRcvBufSize (void) const;
   virtual void     SetSegSize (uint32_t size);
   virtual uint32_t GetSegSize (void) const;
-  virtual void     SetInitialSSThresh (uint32_t threshold) = 0;
-  virtual uint32_t GetInitialSSThresh (void) const = 0;
-  virtual void     SetInitialCwnd (uint32_t cwnd) = 0;
-  virtual uint32_t GetInitialCwnd (void) const = 0;
+  virtual void     SetInitialSSThresh (uint32_t threshold);
+  virtual uint32_t GetInitialSSThresh (void) const;
+  virtual void     SetInitialCwnd (uint32_t cwnd);
+  virtual uint32_t GetInitialCwnd (void) const;
   virtual void     SetConnTimeout (Time timeout);
   virtual Time     GetConnTimeout (void) const;
   virtual void     SetConnCount (uint32_t count);
@@ -693,7 +693,16 @@ protected:
    *
    * \param scaleFactor the sender scale factor
    */
-  virtual void ScaleSsThresh (uint8_t scaleFactor) = 0;
+  virtual void ScaleSsThresh (uint8_t scaleFactor);
+
+  /**
+   * \brief Initialize congestion window
+   *
+   * Default cWnd to 1 MSS (RFC2001, sec.1) and must
+   * not be larger than 2 MSS (RFC2581, sec.3.1). Both m_initiaCWnd and
+   * m_segmentSize are set by the attribute system in ns3::TcpSocket.
+   */
+  virtual void InitializeCwnd ();
 
 protected:
   // Counters and events
@@ -753,6 +762,8 @@ protected:
   // Congestion control
   TracedValue<uint32_t> m_cWnd;     //!< Congestion window
   TracedValue<uint32_t> m_ssThresh; //!< Slow start threshold
+  uint32_t               m_initialCWnd;      //!< Initial cWnd value
+  uint32_t               m_initialSsThresh;  //!< Initial Slow Start Threshold value
 
   // Options
   bool    m_winScalingEnabled;    //!< Window Scale option enabled
