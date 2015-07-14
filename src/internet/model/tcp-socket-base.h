@@ -514,7 +514,7 @@ protected:
    * \brief Return the max possible number of unacked bytes
    * \returns the max possible number of unacked bytes
    */
-  virtual uint32_t Window (void) = 0;
+  virtual uint32_t Window (void);
 
   /**
    * \brief Return unfilled portion of window

@@ -106,13 +106,6 @@ TcpWestwood::~TcpWestwood (void)
 {
 }
 
-uint32_t
-TcpWestwood::Window (void)
-{
-  NS_LOG_FUNCTION (this);
-  return std::min (m_rWnd.Get (), m_cWnd.Get ());
-}
-
 Ptr<TcpSocketBase>
 TcpWestwood::Fork (void)
 {

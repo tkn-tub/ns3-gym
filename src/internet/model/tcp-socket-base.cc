@@ -2081,6 +2081,13 @@ TcpSocketBase::BytesInFlight ()
 }
 
 uint32_t
+TcpSocketBase::Window (void)
+{
+  NS_LOG_FUNCTION (this);
+  return std::min (m_rWnd.Get (), m_cWnd.Get ());
+}
+
+uint32_t
 TcpSocketBase::AvailableWindow ()
 {
   NS_LOG_FUNCTION_NOARGS ();

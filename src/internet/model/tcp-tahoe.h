@@ -59,7 +59,6 @@ public:
   virtual ~TcpTahoe (void);
 
 protected:
-  virtual uint32_t Window (void); // Return the max possible number of unacked bytes
   virtual Ptr<TcpSocketBase> Fork (void); // Call CopyObject<TcpTahoe> to clone me
   virtual void NewAck (SequenceNumber32 const& seq); // Inc cwnd and call NewAck() of parent
   virtual void DupAck (const TcpHeader& t, uint32_t count);  // Treat 3 dupack as timeout

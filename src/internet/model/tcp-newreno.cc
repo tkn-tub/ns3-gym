@@ -75,14 +75,6 @@ TcpNewReno::~TcpNewReno (void)
 {
 }
 
-/* Limit the size of in-flight data by cwnd and receiver's rxwin */
-uint32_t
-TcpNewReno::Window (void)
-{
-  NS_LOG_FUNCTION (this);
-  return std::min (m_rWnd.Get (), m_cWnd.Get ());
-}
-
 Ptr<TcpSocketBase>
 TcpNewReno::Fork (void)
 {
