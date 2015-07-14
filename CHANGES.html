@@ -57,6 +57,9 @@ us a note on ns-developers mailing list.</p>
 </ul>
 <h2>Changes to existing API:</h2>
 <ul>
+<li> The signatures on several TcpHeader methods were changed to take const arguments.</li>
+<li> class TcpL4Protocol replaces Send() methods with SendPacket(), and adds new methods to AddSocket() and RemoveSocket() from a node.  Also, a new PacketReceived() method was introduced to get the TCP header of an incoming packet and check its checksum.</li>
+<li> The CongestionWindow and SlowStartThreshold trace sources have been moved from the TCP subclasses such as NewReno, Reno, Tahoe, and Westwood to the TcpSocketBase class.</li>
 </ul>
 <h2>Changes to build system:</h2>
 <ul>
