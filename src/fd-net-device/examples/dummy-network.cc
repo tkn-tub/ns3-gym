@@ -35,6 +35,10 @@ NS_LOG_COMPONENT_DEFINE ("DummyNetworkExample");
 int
 main (int argc, char *argv[])
 {
+  GlobalValue::Bind ("SimulatorImplementationType", StringValue ("ns3::RealtimeSimulatorImpl"));
+
+  GlobalValue::Bind ("ChecksumEnabled", BooleanValue (true));
+
   NodeContainer nodes;
   nodes.Create (2);
 
@@ -69,7 +73,7 @@ main (int argc, char *argv[])
   app->SetStartTime (Seconds (0.0));
   app->SetStopTime (Seconds (4.0));
 
-  fd.EnablePcapAll ("dummy-network", false);
+  fd.EnablePcapAll ("dummy-network", true);
 
   Simulator::Stop (Seconds (5.));
   Simulator::Run ();
