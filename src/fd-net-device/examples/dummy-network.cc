@@ -35,10 +35,6 @@ NS_LOG_COMPONENT_DEFINE ("DummyNetworkExample");
 int
 main (int argc, char *argv[])
 {
-  GlobalValue::Bind ("SimulatorImplementationType", StringValue ("ns3::RealtimeSimulatorImpl"));
-
-  GlobalValue::Bind ("ChecksumEnabled", BooleanValue (true));
-
   NodeContainer nodes;
   nodes.Create (2);
 
