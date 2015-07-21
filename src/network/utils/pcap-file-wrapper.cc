@@ -121,7 +121,7 @@ PcapFileWrapper::Write (Time t, Ptr<const Packet> p)
 }
 
 void
-PcapFileWrapper::Write (Time t, Header &header, Ptr<const Packet> p)
+PcapFileWrapper::Write (Time t, const Header &header, Ptr<const Packet> p)
 {
   NS_LOG_FUNCTION (this << t << &header << p);
   uint64_t current = t.GetMicroSeconds ();

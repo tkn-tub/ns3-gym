@@ -417,7 +417,7 @@ PcapFile::Write (uint32_t tsSec, uint32_t tsUsec, Ptr<const Packet> p)
 }
 
 void 
-PcapFile::Write (uint32_t tsSec, uint32_t tsUsec, Header &header, Ptr<const Packet> p)
+PcapFile::Write (uint32_t tsSec, uint32_t tsUsec, const Header &header, Ptr<const Packet> p)
 {
   NS_LOG_FUNCTION (this << tsSec << tsUsec << &header << p);
   uint32_t headerSize = header.GetSerializedSize ();

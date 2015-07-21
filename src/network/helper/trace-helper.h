@@ -50,9 +50,11 @@ public:
     DLT_PPP = 9,
     DLT_RAW = 101,
     DLT_IEEE802_11 = 105,
+    DLT_LINUX_SSL = 113,
     DLT_PRISM_HEADER = 119,
     DLT_IEEE802_11_RADIO = 127,
-    DLT_IEEE802_15_4 = 195
+    DLT_IEEE802_15_4 = 195,
+    DLT_NETLINK = 253
   };
 
   /**
@@ -121,6 +123,18 @@ private:
    * @param p the packet to write
    */
   static void DefaultSink (Ptr<PcapFileWrapper> file, Ptr<const Packet> p);
+
+  /**
+   * This trace sink passes a header separately from the packet to prevent creating a new packet
+   * (for performance reasons)
+   *
+   * @param file the file to write to
+   * @param header header of the packet
+   * @param p the packet to write
+   *
+   * @see DefaultSink
+   */
+  static void SinkWithHeader (Ptr<PcapFileWrapper> file, const Header& header, Ptr<const Packet> p);
 };
 
 template <typename T> void

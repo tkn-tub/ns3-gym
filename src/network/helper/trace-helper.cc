@@ -170,6 +170,13 @@ PcapHelper::DefaultSink (Ptr<PcapFileWrapper> file, Ptr<const Packet> p)
   file->Write (Simulator::Now (), p);
 }
 
+void
+PcapHelper::SinkWithHeader (Ptr<PcapFileWrapper> file, const Header &header, Ptr<const Packet> p)
+{
+  NS_LOG_FUNCTION (file << p);
+  file->Write (Simulator::Now (), header, p);
+}
+
 AsciiTraceHelper::AsciiTraceHelper ()
 {
   NS_LOG_FUNCTION_NOARGS ();

@@ -130,7 +130,7 @@ public:
    * \param p Packet to write to the pcap file.
    * 
    */
-  void Write (Time t, Header &header, Ptr<const Packet> p);
+  void Write (Time t, const Header &header, Ptr<const Packet> p);
 
   /**
    * \brief Write the provided data buffer to the pcap file.
