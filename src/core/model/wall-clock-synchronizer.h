@@ -23,8 +23,8 @@
 #include "synchronizer.h"
 
 /**
- * \file
- * \ingroup realtime
+ * @file
+ * @ingroup realtime
  * ns3::WallClockSynchronizer declaration.
  */
 
@@ -37,9 +37,9 @@ namespace ns3 {
  *
  * Enable this synchronizer using:
  *
- * \code
+ * @code
  *   DefaultValue::Bind ("Synchronizer", "WallClockSynchronizer");
- * \endcode
+ * @endcode
  *
  * before calling any simulator functions.
  *
@@ -47,21 +47,21 @@ namespace ns3 {
  * access to several clocks we could use as a wall clock.  We don't care about
  * time in the sense of 04:30 CEST, we care about some piece of hardware that
  * ticks at some regular period.  The most accurate posix clock in this
- * respect is the \c CLOCK_PROCESS_CPUTIME_ID clock.  This is a high-resolution
+ * respect is the @c CLOCK_PROCESS_CPUTIME_ID clock.  This is a high-resolution
  * register in the CPU.  For example, on Intel machines this corresponds to
  * the timestamp counter (TSC) register.  The resolution of this counter will
  * be on the order of nanoseconds.
  *
  * Now, just because we can measure time in nanoseconds doesn't mean we can
  * put our process to sleep to nanosecond resolution.  We are eventually going
- * to use the function \c clock_nanosleep() to sleep until a simulation Time
+ * to use the function @c clock_nanosleep() to sleep until a simulation Time
  * specified by the caller. 
  *
- * \todo Add more on jiffies, sleep, processes, etc.
+ * @todo Add more on jiffies, sleep, processes, etc.
  *
- * \internal
+ * @internal
  * Nanosleep takes a <tt>struct timeval</tt> as an input so we have to
- * deal with conversion between Time and \c timeval here.
+ * deal with conversion between Time and @c timeval here.
  * They are both interpreted as elapsed times.
  */
 class WallClockSynchronizer : public Synchronizer
@@ -69,7 +69,7 @@ class WallClockSynchronizer : public Synchronizer
 public:
   /**
    * Get the registered TypeId for this class.
-   * \returns The TypeId.
+   * @returns The TypeId.
    */
   static TypeId GetTypeId (void);
 
@@ -88,15 +88,15 @@ public:
 protected:
   /**
    * @brief Do a busy-wait until the normalized realtime equals the argument
-   * or the condition variable becomes \c true.
+   * or the condition variable becomes @c true.
   
-   * The condition becomes \c true if an outside entity (a network device
+   * The condition becomes @c true if an outside entity (a network device
    * receives a packet), sets the condition and signals the scheduler
    * it needs to re-evaluate.
    *
    * @param ns The target normalized real time we should wait for.
-   * @returns \c true if we reached the target time,
-   *          \c false if we retured because the condition was set.
+   * @returns @c true if we reached the target time,
+   *          @c false if we retured because the condition was set.
    */
   bool SpinWait (uint64_t ns);
   /**
@@ -114,13 +114,13 @@ protected:
    * SystemCondition we have saved in m_condition takes care of this for us.
    *
    * This call will return if the timeout expires OR if the condition is 
-   * set \c true by a call to SetCondition (true) followed by a call to
+   * set @c true by a call to SetCondition (true) followed by a call to
    * Signal().  In either case, we are done waiting.  If the timeout happened,
-   * we return \c true; if a Signal happened we return \c false.
+   * we return @c true; if a Signal happened we return @c false.
    *
    * @param ns The target normalized real time we should wait for.
-   * @returns \c true if we reached the target time,
-   *          \c false if we retured because the condition was set.
+   * @returns @c true if we reached the target time,
+   *          @c false if we retured because the condition was set.
    */
   bool SleepWait (uint64_t ns);
 
@@ -160,33 +160,33 @@ protected:
   uint64_t GetNormalizedRealtime (void);
 
   /**
-   * @brief Convert an absolute time in ns to a \c timeval
+   * @brief Convert an absolute time in ns to a @c timeval
    *
    * @param ns Absolute time in ns.
-   * @param tv Converted \c timeval.
+   * @param tv Converted @c timeval.
    */
   void NsToTimeval (int64_t ns, struct timeval *tv);
   /**
-   * @brief Convert a \c timeval to absolute time, in ns.
+   * @brief Convert a @c timeval to absolute time, in ns.
    *
-   * @param tv The input \c timeval.
+   * @param tv The input @c timeval.
    * @returns The absolute time, in ns.
    */
   uint64_t TimevalToNs (struct timeval *tv);
 
   /**
-   * @brief Add two \c timeval.
+   * @brief Add two @c timeval.
    *
-   * @param tv1 The first \c timeval.
-   * @param tv2 The second \c timeval.
-   * @param result The sum of \c tv1 and \c tv2.
+   * @param tv1 The first @c timeval.
+   * @param tv2 The second @c timeval.
+   * @param result The sum of @c tv1 and @c tv2.
    */
   void TimevalAdd (
     struct timeval *tv1, 
     struct timeval *tv2,
     struct timeval *result);
 
-  /** Size of the system clock tick, as reported by \c clock_getres, in ns. */
+  /** Size of the system clock tick, as reported by @c clock_getres, in ns. */
   uint64_t m_jiffy;
   /** Time recorded by DoEventStart. */
   uint64_t m_nsEventStart;

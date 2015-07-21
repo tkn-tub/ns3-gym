@@ -77,9 +77,9 @@ class TimeWithUnit;
  *
  * You can also use the following non-member functions to manipulate
  * any of these ns3::Time object:
- *  - \ref Abs()
- *  - \ref Max()
- *  - \ref Min()
+ *  - Abs(Time)
+ *  - Max(Time,Time)
+ *  - Min(Time,Time)
  *
  * This class also controls the resolution of the underlying time value.
  * The resolution is the smallest representable time interval.
@@ -161,7 +161,6 @@ public:
    *  Construct from a numeric value.
    *  The current time resolution will be assumed as the unit.
    *  \param [in] v The value.
-   *  @{
    */
   explicit inline Time (double v)
     : m_data (lround (v))
@@ -227,7 +226,6 @@ public:
 	Mark (this);
       }
   }
-  /**@}*/
   /**@}*/
   
   /**
@@ -309,11 +307,20 @@ public:
   }
 
   /**
+   * \name Convert to Number in a Unit.
+   * Convert a Time to number, in indicated units.
+   *
+   * Conversions to seconds and larger will return doubles, with
+   * possible loss of precision.  Conversions to units smaller than
+   * seconds will by rounded.
+   *
+   * @{
+   */
+  /**
    * Get an approximation of the time stored in this instance
    * in the indicated unit.
    *
    * \return An approximate value in the indicated unit.
-   * @{
    */
   inline double GetYears (void) const
   {
@@ -358,8 +365,14 @@ public:
   /**@}*/
 
   /**
-   * \returns the raw time value, in the current unit
+   * \name Convert to Raw Value.
+   * Convert a Time to a number in the current resolution units.
+   *
    * @{
+   */
+  /**
+   * Get the raw time value, in the current resolution unit.
+   * \returns the raw time value
    */
   inline int64_t GetTimeStep (void) const
   {
@@ -401,12 +414,17 @@ public:
     return Time (value);
   }
   /**
+   * \name Create Times from Values and Units.
+   * Create Times from values given in the indicated units.
+   *
+   * @{
+   */
+  /**
    *  Create a Time equal to \p value  in unit \c unit
    *
    *  \param [in] value The new Time value, expressed in \c unit
    *  \param [in] unit The unit of \p value
    *  \return The Time representing \p value in \c unit
-   *  @{
    */
   inline static Time FromInteger (uint64_t value, enum Unit unit)
   {
@@ -443,13 +461,18 @@ public:
   }
   /**@}*/
 
-  
+
+  /**
+   * \name Get Times as Numbers in Specified Units
+   * Get the Time as integers or doubles in the indicated unit.
+   *
+   * @{
+   */
   /**
    *  Get the Time value expressed in a particular unit.
    *
    *  \param [in] unit The desired unit
    *  \return The Time expressed in \p unit
-   *  @{
    */
   inline int64_t ToInteger (enum Unit unit) const
   {
@@ -642,11 +665,15 @@ private:
    */
   static void ConvertTimes (const enum Unit unit);
 
+  /*
+   * \name Arithmetic Operators
+   * Arithmetic operators between Times, and scaling by scalars.
+   */
   /**
-   *  @{
+   * @{
    *  Arithmetic operator.
    *  \param [in] lhs Left hand argument
-   *  \param [in] rhs Righ hand argument
+   *  \param [in] rhs Right hand argument
    *  \return The result of the operator.
    */
   friend bool operator == (const Time & lhs, const Time & rhs);
@@ -663,8 +690,8 @@ private:
   friend Time operator / (const Time & lhs, const int64_t & rhs);
   friend Time & operator += (Time & lhs, const Time & rhs);
   friend Time & operator -= (Time & lhs, const Time & rhs);
-  /**@}*/
-  
+  /** @} */
+
   /**
    *  Absolute value function for Time
    *  \param time the input value
@@ -769,7 +796,7 @@ inline Time & operator -= (Time & lhs, const Time & rhs)
   lhs.m_data -= rhs.m_data;
   return lhs;
 }
-
+/**@}*/
   
 inline Time Abs (const Time & time)
 {

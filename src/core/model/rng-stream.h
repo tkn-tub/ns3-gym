@@ -22,10 +22,21 @@
 #include <string>
 #include <stdint.h>
 
+/**
+ * \file
+ * \ingroup rngimpl
+ * Declaration of class RngStream.
+ */
+
 namespace ns3 {
 
 /**
- * \ingroup randomvariable 
+ * \ingroup randomvariable
+ * \defgroup rngimpl RNG Implementation.
+ */
+  
+/**
+ * \ingroup rngimpl
  *
  * \brief Combined Multiple-Recursive Generator MRG32k3a
  *
@@ -38,17 +49,39 @@ namespace ns3 {
 class RngStream
 {
 public:
+  /**
+   * Construct from explicit seed, stream and substream values.
+   *
+   * \param seed The starting seed.
+   * \param stream The stream number.
+   * \param substream The sub-stream number.
+   */
   RngStream (uint32_t seed, uint64_t stream, uint64_t substream);
-  RngStream (const RngStream&);
+  /**
+   * Copy constructor.
+   *
+   * \param r The RngStream to copy.
+   */
+  RngStream (const RngStream & r);
   /**
    * Generate the next random number for this stream.
    * Uniformly distributed between 0 and 1.
+   *
+   * \returns The next random.
    */
   double RandU01 (void);
 
 private:
+  /**
+   * Advance \p state of the RNG by leaps and bounds.
+   *
+   * \param nth The stream or substream index.
+   * \param by The log2 base of \p nth.
+   * \param state The state vector to advance.
+   */
   void AdvanceNthBy (uint64_t nth, int by, double state[6]);
 
+  /** The RNG state vector. */
   double m_currentState[6];
 };
 

@@ -40,6 +40,20 @@ namespace ns3 {
 NS_LOG_COMPONENT_DEFINE ("int64x64");
 
 /**
+ * \ingroup highprec
+ * Print the high and low words of an int64x64 in hex, for debugging.
+ *
+ * \param [in] hi The high (integer) word.
+ * \param [in] lo The low (fractional) work.
+ */
+#define HEXHILOW(hi, lo) \
+  std::hex << std::setfill ('0') << std::right << " (0x"		\
+	   << std::setw (16) << hi << " "				\
+	   << std::setw (16) << lo					\
+	   << std::dec << std::setfill (' ') << std::left << ")"
+
+  
+/**
  * \internal
  * This algorithm is exact to the precision requested, up to the full
  * 64 decimal digits required to exactly represent a 64-bit fraction.
@@ -74,13 +88,6 @@ std::ostream &operator << (std::ostream &os, const int64x64_t &value)
   int64x64_t low(0, absVal.GetLow ());
   int places = 0;    // Number of decimal places printed so far
   bool more = true;  // Should we print more digits?
-
-#define HEXHILOW(hi, lo) \
-  std::hex << std::setfill ('0') << std::right << " (0x"		\
-	   << std::setw (16) << hi << " "				\
-	   << std::setw (16) << lo					\
-	   << std::dec << std::setfill (' ') << std::left << ")"
-
   
   NS_LOG_LOGIC (std::endl
 		<< (floatfield ? " f" : "  ")

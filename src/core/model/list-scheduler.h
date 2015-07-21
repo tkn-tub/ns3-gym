@@ -46,20 +46,31 @@ class EventImpl;
 class ListScheduler : public Scheduler
 {
 public:
+  /**
+   *  Register this type.
+   *  \return The object TypeId.
+   */
   static TypeId GetTypeId (void);
 
+  /** Constructor. */
   ListScheduler ();
+  /** Destructor. */
   virtual ~ListScheduler ();
 
-  virtual void Insert (const Event &ev);
+  // Inherited
+  virtual void Insert (const Scheduler::Event &ev);
   virtual bool IsEmpty (void) const;
-  virtual Event PeekNext (void) const;
-  virtual Event RemoveNext (void);
-  virtual void Remove (const Event &ev);
+  virtual Scheduler::Event PeekNext (void) const;
+  virtual Scheduler::Event RemoveNext (void);
+  virtual void Remove (const Scheduler::Event &ev);
 
 private:
-  typedef std::list<Event> Events;
-  typedef std::list<Event>::iterator EventsI;
+  /** Event list type: a simple list of Events. */
+  typedef std::list<Scheduler::Event> Events;
+  /** Events iterator. */
+  typedef std::list<Scheduler::Event>::iterator EventsI;
+
+  /** The event list. */
   Events m_events;
 };
 

@@ -22,6 +22,7 @@
 #include "assert.h"
 #include "abort.h"
 #include "names.h"
+#include "singleton.h"
 
 /**
  * \file
@@ -34,20 +35,48 @@ namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("Names");
 
+/**
+ * \ingroup config
+ *  Node in the naming tree.
+ */
 class NameNode
 {
 public:
+  /** Default constructor. */
   NameNode ();
+  /**
+   * Copy constructor.
+   *
+   * \param [in] nameNode The NameNode to copy from.
+   */
   NameNode (const NameNode &nameNode);
+  /**
+   * Constructor.
+   *
+   * \param [in] parent The parent NameNode.
+   * \param [in] name The name of this NameNode
+   * \param [in] object The object corresponding to this NameNode.
+   */
   NameNode (NameNode *parent, std::string name, Ptr<Object> object);
+  /**
+   * Assignment operator.
+   *
+   * \param [in] rhs The NameNode to copy from.
+   * \returns The lhs NameNode.
+   */
   NameNode &operator = (const NameNode &rhs);
 
+  /** Destructor. */
   ~NameNode ();
 
+  /** The parent NameNode. */
   NameNode *m_parent;
+  /** The name of this NameNode. */
   std::string m_name;
+  /** The object corresponding to this NameNode. */
   Ptr<Object> m_object;
 
+  /** Children of this NameNode. */
   std::map<std::string, NameNode *> m_nameMap;
 };
 
@@ -85,47 +114,90 @@ NameNode::~NameNode ()
   NS_LOG_FUNCTION (this);
 }
 
-class NamesPriv 
+/**
+ * \ingroup config
+ * The singleton root Names object.
+ */
+class NamesPriv : public Singleton<NamesPriv>
 {
 public:
+  /** Constructor. */
   NamesPriv ();
+  /** Destructor. */
   ~NamesPriv ();
 
+  /**
+   * \copydoc Names::Add(std::string,Ptr<Object>object)
+   * \return \c true if the object was named successfully.
+   */
   bool Add (std::string name, Ptr<Object> object);
+  /**
+   * \copydoc Names::Add(std::string,std::string,Ptr<Object>)
+   * \return \c true if the object was named successfully.
+   */
   bool Add (std::string path, std::string name, Ptr<Object> object);
+  /**
+   * \copydoc Names::Add(Ptr<Object>,std::string,Ptr<Object>)
+   * \return \c true if the object was named successfully.
+   */
   bool Add (Ptr<Object> context, std::string name, Ptr<Object> object);
 
+  /**
+   * \copydoc Names::Rename(std::string,std::string)
+   * \return \c true if the object was renamed successfully.
+   */
   bool Rename (std::string oldpath, std::string newname);
+  /**
+   * \copydoc Names::Rename(std::string,std::string,std::string)
+   * \return \c true if the object was renamed successfully.
+   */
   bool Rename (std::string path, std::string oldname, std::string newname);
+  /**
+   * \copydoc Names::Rename(Ptr<Object>,std::string,std::string)
+   * \return \c true if the object was renamed successfully.
+   */
   bool Rename (Ptr<Object> context, std::string oldname, std::string newname);
 
+  /** \copydoc Names::FindName() */
   std::string FindName (Ptr<Object> object);
+  /** \copydoc Names::FindPath() */
   std::string FindPath (Ptr<Object> object);
 
+  /** \copydoc Names::Clear() */
   void Clear (void);
 
-  Ptr<Object> Find (std::string name);
+  /** \copydoc Names::Find(std::string) */
+  Ptr<Object> Find (std::string path);
+  /** \copydoc Names::Find(std::string,std::string) */
   Ptr<Object> Find (std::string path, std::string name);
+  /** \copydoc Names::Find(Ptr<Object>,std::string) */
   Ptr<Object> Find (Ptr<Object> context, std::string name);
 
 private:
   friend class Names;
-  static NamesPriv *Get (void);
 
-  NameNode *IsNamed (Ptr<Object>);
+  /**
+   * Check if an object has a name.
+   *
+   * \param [in] object The object to check.
+   * \returns The corresponding NameNode, if it exists.
+   */
+  NameNode *IsNamed (Ptr<Object> object);
+  /**
+   * Check if a name already exists as a child of a NameNode.
+   *
+   * \param [in] node The node to search.
+   * \param [in] name The name to search for.
+   * \returns \c true if \c name already exists as a child of \c node.
+   */
   bool IsDuplicateName (NameNode *node, std::string name);
 
+  /** The root NameNode. */
   NameNode m_root;
+
+  /** Map from object pointers to their NameNodes. */
   std::map<Ptr<Object>, NameNode *> m_objectMap;
 };
-
-NamesPriv *
-NamesPriv::Get (void)
-{
-  NS_LOG_FUNCTION_NOARGS ();
-  static NamesPriv namesPriv;
-  return &namesPriv;
-}
 
 NamesPriv::NamesPriv ()
 {

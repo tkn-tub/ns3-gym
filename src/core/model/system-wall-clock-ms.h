@@ -32,8 +32,8 @@
 namespace ns3 {
 
 /**
- * @ingroup core
- * @defgroup system System Services
+ * \ingroup core
+ * \defgroup system System Services
  *
  * System-independent interfaces to operating system services:
  * files system, threading, wall clock time.

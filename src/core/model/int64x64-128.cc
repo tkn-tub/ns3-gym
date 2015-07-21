@@ -25,7 +25,7 @@
 /**
  * \file
  * \ingroup highprec
- * Implementation of the ns3::int64x64_t type using a native int128_t type..
+ * Implementation of the ns3::int64x64_t type using a native int128_t type.
  */
 
 namespace ns3 {

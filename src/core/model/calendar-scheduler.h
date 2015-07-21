@@ -39,58 +39,113 @@ class EventImpl;
  * \ingroup scheduler
  * \brief a calendar queue event scheduler
  *
- * This event scheduler is a direct implementation of the algorithm known as a calendar queue.
- * first published in 1988 in "Calendar Queues: A Fast O(1) Priority Queue Implementation for
- * the Simulation Event Set Problem" by Randy Brown. There are many refinements published
- * later but this class implements the original algorithm (to the best of my knowledge).
+ * This event scheduler is a direct implementation of the algorithm
+ * known as a calendar queue, first published in 1988 in
+ * "Calendar Queues: A Fast O(1) Priority Queue Implementation for
+ * the Simulation Event Set Problem" by Randy Brown. There are many
+ * refinements published later but this class implements
+ * the original algorithm (to the best of my knowledge).
  *
- * Note: This queue is much slower than I expected (much slower than the std::map queue)
- * and this seems to be because the original resizing policy is horribly bad. This is
- * most likely the reason why there have been so many variations published which all
- * slightly tweak the resizing heuristics to obtain a better distribution of events
- * across buckets.
+ * \note
+ * This queue is much slower than I expected (much slower than the
+ * std::map queue) and this seems to be because the original resizing policy
+ * is horribly bad.  This is most likely the reason why there have been
+ * so many variations published which all slightly tweak the resizing
+ * heuristics to obtain a better distribution of events across buckets.
  */
 class CalendarScheduler : public Scheduler
 {
 public:
+  /**
+   *  Register this type.
+   *  \return The object TypeId.
+   */
   static TypeId GetTypeId (void);
 
+  /** Constructor. */
   CalendarScheduler ();
+  /** Destructor. */
   virtual ~CalendarScheduler ();
 
-  virtual void Insert (const Event &ev);
+  // Inherited
+  virtual void Insert (const Scheduler::Event &ev);
   virtual bool IsEmpty (void) const;
-  virtual Event PeekNext (void) const;
-  virtual Event RemoveNext (void);
-  virtual void Remove (const Event &ev);
+  virtual Scheduler::Event PeekNext (void) const;
+  virtual Scheduler::Event RemoveNext (void);
+  virtual void Remove (const Scheduler::Event &ev);
 
 private:
+  /** Double the number of buckets if necessary. */
   void ResizeUp (void);
+  /** Halve the number of buckets if necessary. */
   void ResizeDown (void);
+  /**
+   * Resize to a new number of buckets, with automatically computed width.
+   *
+   * \param [in] newSize The new number of buckets.
+   */
   void Resize (uint32_t newSize);
+  /**
+   * Compute the new bucket size, based on up to the first 25 entries.
+   *
+   * \returns The new width.
+   */
   uint32_t CalculateNewWidth (void);
+  /**
+   * Initialize the calendar queue.
+   *
+   * \param [in] nBuckets The number of buckets.
+   * \param [in] width The bucket size, in dimensionless time units.
+   * \param [in] startPrio The starting time.
+   */
   void Init (uint32_t nBuckets,
              uint64_t width,
              uint64_t startPrio);
+  /**
+   * Hash the dimensionless time to a bucket.
+   *
+   * \param [in] key The dimensionless time.
+   * \returns The bucket index.
+   */
   inline uint32_t Hash (uint64_t key) const;
+  /** Print the configuration and bucket size distribution. */
   void PrintInfo (void);
+  /**
+   * Resize the number of buckets and width.
+   *
+   * \param [in] newSize The number of buckets.
+   * \param [in] newWidth The size of the new buckets.
+   */
   void DoResize (uint32_t newSize, uint32_t newWidth);
+  /**
+   * Remove the earliest event.
+   *
+   * \returns The earliest event.
+   */
   Scheduler::Event DoRemoveNext (void);
-  void DoInsert (const Event &ev);
+  /**
+   * Insert a new event in to the correct bucket.
+   *
+   * \param [in] ev The new Event.
+   */
+  void DoInsert (const Scheduler::Event &ev);
 
+  /** Calendar bucket type: a list of Events. */
   typedef std::list<Scheduler::Event> Bucket;
+  
+  /** Array of buckets. */
   Bucket *m_buckets;
-  // number of buckets in array
+  /** Number of buckets in the array. */
   uint32_t m_nBuckets;
-  // duration of a bucket
+  /** Duration of a bucket, in dimensionless time units. */
   uint64_t m_width;
-  // bucket index from which the last event was dequeued
+  /** Bucket index from which the last event was dequeued. */
   uint32_t m_lastBucket;
-  // priority at the top of the bucket from which last event was dequeued
+  /** Priority at the top of the bucket from which last event was dequeued. */
   uint64_t m_bucketTop;
-  // the priority of the last event removed
+  /** The priority of the last event removed. */
   uint64_t m_lastPrio;
-  // number of events in queue
+  /** Number of events in queue. */
   uint32_t m_qSize;
 };
 

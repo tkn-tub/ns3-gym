@@ -108,18 +108,18 @@ public:
   virtual uint32_t GetSystemId (void) const; 
   virtual uint32_t GetContext (void) const;
 
-  /** \copydoc ScheduleWithContext */
+  /** \copydoc ScheduleWithContext(uint32_t,const Time&,EventImpl*) */
   void ScheduleRealtimeWithContext (uint32_t context, Time const &delay, EventImpl *event);
-  /** \copydoc Schedule */
+  /** \copydoc Schedule(const Time&,EventImpl*) */
   void ScheduleRealtime (Time const &delay, EventImpl *event);
   /**
-   * \copybrief ScheduleNow
+   * \copybrief ScheduleNow(EventImpl*)
    *
    * \param context Event context.
    * \param event The event to schedule.
    */
   void ScheduleRealtimeNowWithContext (uint32_t context, EventImpl *event);
-  /** \copydoc ScheduleNow */
+  /** \copydoc ScheduleNow(EventImpl*) */
   void ScheduleRealtimeNow (EventImpl *event);
   /**
    * Get the current real time from the synchronizer.

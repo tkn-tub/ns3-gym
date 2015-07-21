@@ -44,22 +44,33 @@ namespace ns3 {
 class MapScheduler : public Scheduler
 {
 public:
+  /**
+   *  Register this type.
+   *  \return The object TypeId.
+   */
   static TypeId GetTypeId (void);
 
+  /** Constructor. */
   MapScheduler ();
+  /** Destructor. */
   virtual ~MapScheduler ();
 
-  virtual void Insert (const Event &ev);
+  // Inherited
+  virtual void Insert (const Scheduler::Event &ev);
   virtual bool IsEmpty (void) const;
-  virtual Event PeekNext (void) const;
-  virtual Event RemoveNext (void);
-  virtual void Remove (const Event &ev);
+  virtual Scheduler::Event PeekNext (void) const;
+  virtual Scheduler::Event RemoveNext (void);
+  virtual void Remove (const Scheduler::Event &ev);
+
 private:
+  /** Event list type: a Map from EventKey to EventImpl. */
   typedef std::map<Scheduler::EventKey, EventImpl*> EventMap;
+  /** EventMap iterator. */
   typedef std::map<Scheduler::EventKey, EventImpl*>::iterator EventMapI;
+  /** EventMap const iterator. */
   typedef std::map<Scheduler::EventKey, EventImpl*>::const_iterator EventMapCI;
 
-
+  /** The event list. */
   EventMap m_list;
 };
 

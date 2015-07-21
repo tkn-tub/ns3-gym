@@ -97,6 +97,7 @@ void SetGlobal (std::string name, const AttributeValue &value);
  * \ingroup config
  * \param name the name of the requested GlobalValue.
  * \param value the value to set
+ * \return \c true if the GlobalValue could be set.
  *
  * This method is equivalent to GlobalValue::BindFailSafe
  */
@@ -150,9 +151,16 @@ void Disconnect (std::string path, const CallbackBase &cb);
 class MatchContainer
 {
 public:
+  /** Const iterator over the objects in this container. */
   typedef std::vector<Ptr<Object> >::const_iterator Iterator;
   MatchContainer ();
-  // constructor used only by implementation.
+  /**
+   * Constructor used only by implementation.
+   *
+   * \param [in] objects The vector of objects to store in this container.
+   * \param [in] contexts The corresponding contexts.
+   * \param [in] path The path used for object matching.
+   */
   MatchContainer (const std::vector<Ptr<Object> > &objects, 
                   const std::vector<std::string> &contexts, 
                   std::string path);
@@ -232,9 +240,13 @@ public:
    * \sa ns3::Config::DisconnectWithoutContext
    */
   void DisconnectWithoutContext (std::string name, const CallbackBase &cb);
+  
 private:
+  /** The list of objects in this container. */
   std::vector<Ptr<Object> > m_objects;
+  /** The context for each object. */
   std::vector<std::string> m_contexts;
+  /** The path used to perform the object matching. */
   std::string m_path;
 };
 

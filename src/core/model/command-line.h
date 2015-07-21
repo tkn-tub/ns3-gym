@@ -293,13 +293,13 @@ public:
    * Handler for \c \-\-PrintHelp and \c \-\-help:  print Usage(), argument names, and help strings
    *
    * Alternatively, an overloaded operator << can be used:
-   * @code
+   * \code
    *       CommandLine cmd;
    *       cmd.Parse (argc, argv);
    *     ...
    *
    *       std::cerr << cmd;
-   * @endcode
+   * \endcode
    *
    * \param [in,out] os The output stream to print on.
    */

@@ -53,11 +53,15 @@ namespace ns3 {
  */
 class GlobalValue
 {
+  /** Container type for holding all the GlobalValues. */
   typedef std::vector<GlobalValue *> Vector;
+  
 public:
+  /** Iterator type for the list of all global values. */
   typedef Vector::const_iterator Iterator;
 
   /**
+   * Constructor.
    * \param name the name of this global value.
    * \param help some help text which describes the purpose of this
    *        global value.
@@ -72,77 +76,89 @@ public:
                Ptr<const AttributeChecker> checker);
 
   /**
+   * Get the name.
    * \returns the name of this GlobalValue.
    */
   std::string GetName (void) const;
   /**
+   * Get the help string.
    * \returns the help text of this GlobalValue.
    */
   std::string GetHelp (void) const;
   /**
+   * Get the value.
+   * \param [out] value The AttributeValue to set to the value
+   *                    of this GlobalValue
    * \returns the current value of this GlobalValue.
    */
   void GetValue (AttributeValue &value) const;
   /**
+   * Get the AttributeChecker.
    * \returns the checker associated to this GlobalValue.
    */
   Ptr<const AttributeChecker> GetChecker (void) const;
   /**
+   * Set the value of this GlobalValue.
    * \param value the new value to set in this GlobalValue.
+   * \returns \c true if the Global Value was set successfully.
    */
   bool SetValue (const AttributeValue &value);
 
+  /** Reset to the initial value. */
   void ResetInitialValue (void);
 
   /**
-   * \param name the name of the global value
-   * \param value the value to set in the requested global value.
-   *
    * Iterate over the set of GlobalValues until a matching name is found
    * and then set its value with GlobalValue::SetValue.
+   *
+   * \param name the name of the global value
+   * \param value the value to set in the requested global value.
    *
    * This method cannot fail. It will crash if the input is not valid.
    */
   static void Bind (std::string name, const AttributeValue &value);
 
   /**
+   * Iterate over the set of GlobalValues until a matching name is found
+   * and then set its value with GlobalValue::SetValue.
+   *
    * \param name the name of the global value
    * \param value the value to set in the requested global value.
    * \returns true if the value could be set successfully, false otherwise.
-   *
-   * Iterate over the set of GlobalValues until a matching name is found
-   * and then set its value with GlobalValue::SetValue.
    */
   static bool BindFailSafe (std::string name, const AttributeValue &value);
 
   /**
+   * The Begin iterator.
    * \returns an iterator which represents a pointer to the first GlobalValue registered.
    */
   static Iterator Begin (void);
   /**
+   * The End iterator.
    * \returns an iterator which represents a pointer to the last GlobalValue registered.
    */
   static Iterator End (void);
 
 
   /** 
-   * finds the GlobalValue with the given name and returns its value
+   * Finds the GlobalValue with the given name and returns its value
    * 
-   * @param name the name of the GlobalValue to be found
-   * @param value where to store the value of the found GlobalValue
+   * \param name the name of the GlobalValue to be found
+   * \param value where to store the value of the found GlobalValue
    * 
-   * @return true if the GlobalValue was found, false otherwise
+   * \return true if the GlobalValue was found, false otherwise
    */
   static bool GetValueByNameFailSafe (std::string name, AttributeValue &value);
 
   /** 
-   * finds the GlobalValue with the given name and returns its
-   * value. This method cannot fail, i.e., it will trigger a
+   * Finds the GlobalValue with the given name and returns its
+   * value.
+   *
+   * This method cannot fail, i.e., it will trigger a
    * NS_FATAL_ERROR if the requested GlobalValue is not found.
    * 
-   * @param name the name of the GlobalValue to be found
-   * @param value where to store the value of the found GlobalValue
-   * 
+   * \param name the name of the GlobalValue to be found
+   * \param value where to store the value of the found GlobalValue
    */
   static void GetValueByName (std::string name, AttributeValue &value);
 
@@ -150,12 +166,24 @@ public:
 private:
   friend class ::GlobalValueTestCase;
 
+  /**
+   * Get the static vector of all GlobalValues.
+   *
+   * \returns The vector.
+   */
   static Vector *GetVector (void);
+  /** Initialize from the \c NS_GLOBAL_VALUE environment variable. */
   void InitializeFromEnv (void);
+
+  /** The name of this GlobalValue. */
   std::string m_name;
+  /** The help string. */
   std::string m_help;
+  /** The initial value. */
   Ptr<AttributeValue> m_initialValue;
+  /** The current value. */
   Ptr<AttributeValue> m_currentValue;
+  /** The AttributeChecker for this GlobalValue. */
   Ptr<const AttributeChecker> m_checker;
 };
 

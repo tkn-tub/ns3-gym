@@ -23,11 +23,17 @@
 import ns.core
 
 class MyModel(object):
+    """Simple model object to illustrate event handling."""
 
+    ## \returns None.
     def Start(self):
+        """Start model execution by scheduling a HandleEvent."""
         ns.core.Simulator.Schedule(ns.core.Seconds(10.0), self.HandleEvent, ns.core.Simulator.Now().GetSeconds())
 
+    ## \param [in] value Event argument.
+    ## \return None.
     def HandleEvent(self, value):
+        """Simple event handler."""
         print "Member method received event at", ns.core.Simulator.Now().GetSeconds(), \
             "s started at", value, "s"
 

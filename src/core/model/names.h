@@ -31,6 +31,7 @@
 namespace ns3 {
 
 /**
+ * \ingroup config
  * \brief A directory of name and Ptr<Object> associations that allows us to
  * give any ns3 Object a name.
  */
@@ -246,7 +247,7 @@ public:
   static void Rename (Ptr<Object> context, std::string oldname, std::string newname);
 
   /**
-   * Given a pointer to an object, look to see if that object has a name
+   * \brief Given a pointer to an object, look to see if that object has a name
    * associated with it and, if so, return the name of the object otherwise
    * return an empty string.
    *
@@ -265,7 +266,7 @@ public:
   static std::string FindName (Ptr<Object> object);
 
   /**
-   * Given a pointer to an object, look to see if that object has a name
+   * \brief Given a pointer to an object, look to see if that object has a name
    * associated with it and return the fully qualified name path of the 
    * object otherwise return an empty string.
    *
@@ -284,13 +285,13 @@ public:
   static std::string FindPath (Ptr<Object> object);
 
   /**
-   * Clear the list of objects associated with names.
+   * \brief Clear the list of objects associated with names.
    */
 
   static void Clear (void);
 
   /**
-   * Given a name path string, look to see if there's an object in the system
+   * \brief Given a name path string, look to see if there's an object in the system
    * with that associated to it.  If there is, do a GetObject on the resulting
    * object to convert it to the requested typename and return it.
    * 
@@ -310,7 +311,7 @@ public:
   static Ptr<T> Find (std::string path);
 
   /**
-   * Given a path to an object and an object name, look through the names defined
+   * \brief Given a path to an object and an object name, look through the names defined
    * under the path to see if there's an object there with the given name.
    *
    * In some cases, it is desirable to break up the path used to describe an item
@@ -334,7 +335,7 @@ public:
   static Ptr<T> Find (std::string path, std::string name);
 
   /**
-   * Given a path to an object and an object name, look through the names defined
+   * \brief Given a path to an object and an object name, look through the names defined
    * under the path to see if there's an object there with the given name.
    *
    * In some cases, it is desirable to break up the path used to describe an item
@@ -402,14 +403,13 @@ private:
   static Ptr<Object> FindInternal (Ptr<Object> context, std::string name);
 };
 
-/**
- * \brief Template definition of corresponding template declaration found in class Names.
- */
+  
 template <typename T>
+/* static */
 Ptr<T> 
-Names::Find (std::string name)
+Names::Find (std::string path)
 {
-  Ptr<Object> obj = FindInternal (name);
+  Ptr<Object> obj = FindInternal (path);
   if (obj)
     {
       return obj->GetObject<T> ();
@@ -420,10 +420,8 @@ Names::Find (std::string name)
     }
 }
 
-/**
- * \brief Template definition of corresponding template declaration found in class Names.
- */
 template <typename T>
+/* static */
 Ptr<T> 
 Names::Find (std::string path, std::string name)
 {
@@ -438,10 +436,8 @@ Names::Find (std::string path, std::string name)
     }
 }
 
-/**
- * \brief Template definition of corresponding template declaration found in class Names.
- */
 template <typename T>
+/* static */
 Ptr<T> 
 Names::Find (Ptr<Object> context, std::string name)
 {

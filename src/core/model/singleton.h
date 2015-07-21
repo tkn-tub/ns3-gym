@@ -22,14 +22,14 @@
 
 /**
  * \file
- * \ingroup core
+ * \ingroup access
  * ns3::Singleton declaration and template implementation.
  */
 
 namespace ns3 {
 
 /**
- * \ingroup core
+ * \ingroup access
  * \brief A template singleton
  *
  * This template class can be used to implement the singleton pattern.
@@ -39,7 +39,18 @@ namespace ns3 {
  * For a singleton whose lifetime is bounded by the simulation run,
  * not the process, see SimulationSingleton.
  *
- * \note If you call Get() again after the object has
+ * To force your `class ExampleS` to be a singleton, inherit from Singleton:
+ * \code
+ *   class ExampleS : public Singleton<ExampleS> { ... };
+ * \endcode
+ *
+ * Then, to reach the singleton instance, just do
+ * \code
+ *   ExampleS::Get ()->...;
+ * \endcode
+ *
+ * \note
+ * If you call Get() again after the object has
  * been destroyed, the object will be re-created which will result in a
  * memory leak as reported by most memory leak checkers. It is up to the
  * user to ensure that Get() is never called from a static variable

@@ -24,8 +24,8 @@
 #include "object.h"
 
 /**
- * \file
- * \ingroup realtime
+ * @file
+ * @ingroup realtime
  * ns3::Synchronizer declaration.
  */
 
@@ -53,7 +53,7 @@ class Synchronizer : public Object
 public:
   /**
    * Get the registered TypeId for this class.
-   * \returns The TypeId.
+   * @returns The TypeId.
    */
   static TypeId GetTypeId (void);
 
@@ -68,7 +68,7 @@ public:
    *
    * The simulator sometimes needs to know this.
    *
-   * @returns \c true if locked with realtime, \c false if not.
+   * @returns @c true if locked with realtime, @c false if not.
    */
   bool Realtime (void);
 
@@ -127,7 +127,7 @@ public:
    * @brief Wait until the real time is in sync with the specified simulation
    * time or until the synchronizer is Sigalled.
    *
-   * This is where the real work of synchronization is done.  The \c tsCurrent
+   * This is where the real work of synchronization is done.  The @c tsCurrent
    * argument is the simulation time.  The job of Synchronize is to
    * translate from simulation time to synchronizer time (in a perfect world
    * this is the same time) and then figure out how long in real-time it needs
@@ -141,8 +141,8 @@ public:
    * @param tsCurrent The current simulation time (in Time resolution units).
    * @param tsDelay The simulation time we need to wait for (in Time
    *     resolution units).
-   * @returns \c true if the function ran to completion,
-   *          \c false if it was interrupted by a Signal.
+   * @returns @c true if the function ran to completion,
+   *          @c false if it was interrupted by a Signal.
    * @see DoSynchronize
    * @see Signal
    */
@@ -219,7 +219,7 @@ protected:
   virtual void DoSetOrigin (uint64_t ns) = 0;
 
   /**
-   * @brief Return \c true if this synchronizer is actually synchronizing to a
+   * @brief Return @c true if this synchronizer is actually synchronizing to a
    * realtime clock.
    *
    * The simulator sometimes needs to know this.
@@ -227,7 +227,7 @@ protected:
    * Subclasses are expected to implement this method to tell the outside world
    * whether or not they are synchronizing to a realtime clock.
    *
-   * @returns \c true if locked with realtime, \c false if not.
+   * @returns @c true if locked with realtime, @c false if not.
    */
   virtual bool DoRealtime (void) = 0;
 
@@ -248,7 +248,7 @@ protected:
    * time.
    *
    * This is where the real work of synchronization is done.  The
-   * \c nsCurrent argument is the simulation time (in ns).  The job of
+   * @c nsCurrent argument is the simulation time (in ns).  The job of
    * DoSynchronize is to translate from simulation time to synchronizer time
    * (in a perfect world these are the same time) and then figure out
    * how long in real-time it needs to wait until that
@@ -261,8 +261,8 @@ protected:
    * @param nsCurrent The current simulation time (in nanosecond units).
    * @param nsDelay The simulation time we need to wait for (normalized to 
    * nanosecond units).
-   * @returns \c true if the function ran to completion,
-   *          \c false if it was interrupted by a Signal.
+   * @returns @c true if the function ran to completion,
+   *          @c false if it was interrupted by a Signal.
    * @see Synchronize
    * @see Signal
    */

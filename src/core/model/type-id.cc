@@ -47,6 +47,7 @@ NS_LOG_COMPONENT_DEFINE ("TypeId");
 // to find g_log
 
 /**
+ * \ingroup object
  * \brief TypeId information manager
  *
  * Information records are stored in a vector.  Name and hash lookup
@@ -74,89 +75,272 @@ NS_LOG_COMPONENT_DEFINE ("TypeId");
  * collisions.  The three-fold collision probability should be an
  * acceptablly small error rate.
  */
-class IidManager
+class IidManager : public Singleton<IidManager>
 {
 public:
-  IidManager ();
+  /**
+   * Create a new unique type id.
+   * \param [in] name The name of this type id.
+   * \returns The id.
+   */
   uint16_t AllocateUid (std::string name);
+  /**
+   * Set the parent of a type id.
+   * \param [in] uid The id.
+   * \param [in] parent The id of the parent.
+   */
   void SetParent (uint16_t uid, uint16_t parent);
+  /**
+   * Set the group name of a type id.
+   * \param [in] uid The id.
+   * \param [in] groupName The group name.
+   */
   void SetGroupName (uint16_t uid, std::string groupName);
+  /**
+   * Set the size of the object class referred to by this id.
+   * \param [in] uid The id.
+   * \param [in] size The object size.
+   */
   void SetSize (uint16_t uid, std::size_t size);
+  /**
+   * Add a constructor Callback to this type id.
+   * \param [in] uid The id.
+   * \param [in] callback The Callback for the constructor.
+   */
   void AddConstructor (uint16_t uid, Callback<ObjectBase *> callback);
+  /**
+   * Mark this type id to be excluded from documentation.
+   * \param [in] uid The id.
+   */
   void HideFromDocumentation (uint16_t uid);
+  /**
+   * Get a type id by name.
+   * \param [in] name The type id to find.
+   * \returns The type id.  A type id of 0 means \p name wasn't found.
+   */
   uint16_t GetUid (std::string name) const;
+  /**
+   * Get a type id by hash value.
+   * \param [in] hash The type id to find.
+   * \returns The type id.  A type id of 0 means \p hash wasn't found.
+   */
   uint16_t GetUid (TypeId::hash_t hash) const;
+  /**
+   * Get the name of a type id.
+   * \param [in] uid The id.
+   * \returns The name of the type id.
+   */
   std::string GetName (uint16_t uid) const;
+  /**
+   * Get the hash of a type id.
+   * \param [in] uid The id.
+   * \returns The hash of the type id.
+   */
   TypeId::hash_t GetHash (uint16_t uid) const;
+  /**
+   * Get the parent of a type id.
+   * \param [in] uid The id.
+   * \returns The parent type id of the type id.
+   */
   uint16_t GetParent (uint16_t uid) const;
+  /**
+   * Get the group name of a type id.
+   * \param [in] uid The id.
+   * \returns The group name of the type id.
+   */
   std::string GetGroupName (uint16_t uid) const;
+  /**
+   * Get the size of a type id.
+   * \param [in] uid The id.
+   * \returns The size of the type id.
+   */
   std::size_t GetSize (uint16_t uid) const;
+  /**
+   * Get the constructor Callback of a type id.
+   * \param [in] uid The id.
+   * \returns The constructor Callback of the type id.
+   */
   Callback<ObjectBase *> GetConstructor (uint16_t uid) const;
+  /**
+   * Check if a type id has a constructor Callback.
+   * \param [in] uid The id.
+   * \returns \c true if the type id has a constructor Callback.
+   */
   bool HasConstructor (uint16_t uid) const;
+  /**
+   * Get the total number of type ids.
+   * \returns The total number.
+   */
   uint32_t GetRegisteredN (void) const;
+  /**
+   * Get a type id by index.
+   *
+   * The type id value 0 indicates not registerd, so there is an offset
+   * of 1 between the index and the type id value.  This function converts
+   * from an index to the type id value.
+   * \param [in] i The index.
+   * \returns The type id.
+   */
   uint16_t GetRegistered (uint32_t i) const;
-  void AddAttribute (uint16_t uid, 
+  /**
+   * Record a new attribute in a type id.
+   * \param [in] uid The id.
+   * \param name The name of the new attribute
+   * \param help Some help text which describes the purpose of this
+   *        attribute.
+   * \param flags Flags which describe how this attribute can be read and/or written.
+   * \param initialValue The initial value for this attribute.
+   * \param accessor An instance of the associated AttributeAccessor subclass.
+   * \param checker An instance of the associated AttributeChecker subclass.
+   */
+  void AddAttribute (uint16_t uid,
                      std::string name,
                      std::string help, 
                      uint32_t flags,
                      Ptr<const AttributeValue> initialValue,
-                     Ptr<const AttributeAccessor> spec,
+                     Ptr<const AttributeAccessor> accessor,
                      Ptr<const AttributeChecker> checker);
+  /**
+   * Set the initial value of an Attribute.
+   * \param [in] uid The id.
+   * \param i The attribute to manipulate
+   * \param initialValue The new initial value to use for this attribute.
+   */
   void SetAttributeInitialValue(uint16_t uid,
                                 uint32_t i,
                                 Ptr<const AttributeValue> initialValue);
+  /**
+   * Get the number of attributes.
+   * \param [in] uid The id.
+   * \returns The number of attributes associated to this TypeId
+   */
   uint32_t GetAttributeN (uint16_t uid) const;
+  /**
+   * Get Attribute information by index.
+   * \param [in] uid The id.
+   * \param i Index into attribute array
+   * \returns The information associated to attribute whose index is \p i.
+   */
   struct TypeId::AttributeInformation GetAttribute(uint16_t uid, uint32_t i) const;
+  /**
+   * Record a new TraceSource.
+   * \param [in] uid The id.
+   * \param name The name of the new trace source
+   * \param help Some help text which describes the purpose of this
+   *        trace source.
+   * \param accessor A pointer to a TraceSourceAccessor which can be
+   *        used to connect/disconnect sinks to this trace source.
+   * \param callback Fully qualified typedef name for the callback signature.
+   *        Generally this should begin with the "ns3::" namespace qualifier.
+   * \returns This TypeId instance.
+   */
   void AddTraceSource (uint16_t uid,
                        std::string name, 
                        std::string help,
                        Ptr<const TraceSourceAccessor> accessor,
                        std::string callback);
+  /**
+   * Get the number of Trace sources.
+   * \param [in] uid The id.
+   * \returns The number of trace sources defined in this TypeId.
+   */
   uint32_t GetTraceSourceN (uint16_t uid) const;
+  /**
+   * Get the trace source by index.
+   * \param [in] uid The id.
+   * \param i Index into trace source array.
+   * \returns Detailed information about the requested trace source.
+   */
   struct TypeId::TraceSourceInformation GetTraceSource(uint16_t uid, uint32_t i) const;
+  /**
+   * Check if this TypeId should not be listed in documentation.
+   * \param [in] uid The id.
+   * \returns \c true if this TypeId should be hidden from the user.
+   */
   bool MustHideFromDocumentation (uint16_t uid) const;
 
 private:
+  /**
+   * Check if a type id has a given TraceSource.
+   * \param [in] uid The id.
+   * \param [in] name The TraceSource name.
+   * \returns \c true if \p uid has the TraceSource \p name.
+   */
   bool HasTraceSource (uint16_t uid, std::string name);
+  /**
+   * Check if a type id has a given Attribute.
+   * \param [in] uid The id.
+   * \param [in] name The Attribute name.
+   * \returns \c true if \p uid has the Attribute \p name.
+   */
   bool HasAttribute (uint16_t uid, std::string name);
+  /**
+   * Hashing function.
+   * \param [in] name The type id name.
+   * \returns The hashed value of \p name.
+   */
   static TypeId::hash_t Hasher (const std::string name);
 
+  /** The information record about a single type id. */
   struct IidInformation {
+    /** The type id name. */
     std::string name;
+    /** The type id hash value. */
     TypeId::hash_t hash;
+    /** The parent type id. */
     uint16_t parent;
+    /** The group name. */
     std::string groupName;
+    /** The size of the object represented by this type id. */
     std::size_t size;
+    /** \c true if a constructor Callback has been registered. */
     bool hasConstructor;
+    /** The constructor Callback. */
     Callback<ObjectBase *> constructor;
+    /** \c true if this type should be omitted from documentation. */
     bool mustHideFromDocumentation;
+    /** The container of Attributes. */
     std::vector<struct TypeId::AttributeInformation> attributes;
+    /** The container of TraceSources. */
     std::vector<struct TypeId::TraceSourceInformation> traceSources;
   };
+  /** Iterator type. */
   typedef std::vector<struct IidInformation>::const_iterator Iterator;
 
+  /**
+   * Retrieve the information record for a type.
+   * \param [in] uid The id.
+   * \returns The information record.
+   */
   struct IidManager::IidInformation *LookupInformation (uint16_t uid) const;
 
+  /** The container of all type id records. */
   std::vector<struct IidInformation> m_information;
 
+  /** Type of the by-name index. */
   typedef std::map<std::string, uint16_t> namemap_t;
+  /** The by-name index. */
   namemap_t m_namemap;
 
+  /** Type of the by-hash index. */
   typedef std::map<TypeId::hash_t, uint16_t> hashmap_t;
+  /** The by-hash index. */
   hashmap_t m_hashmap;
 
-  
-  // To handle the first collision, we reserve the high bit as a
-  // chain flag:
-  enum { HashChainFlag = 0x80000000};
+
+  enum {
+    /**
+     * Hash chaining flag.
+     *
+     * To handle the first collision, we reserve the high bit as a
+     * chain flag.
+     */
+    HashChainFlag = 0x80000000
+  };
 };
 
-IidManager::IidManager ()
-{
-  NS_LOG_FUNCTION (this);
-}
 
-  //static
+//static
 TypeId::hash_t
 IidManager::Hasher (const std::string name)
 {
@@ -548,7 +732,7 @@ namespace ns3 {
 TypeId::TypeId (const char *name)
 {
   NS_LOG_FUNCTION (this << name);
-  uint16_t uid = Singleton<IidManager>::Get ()->AllocateUid (name);
+  uint16_t uid = IidManager::Get ()->AllocateUid (name);
   NS_ASSERT (uid != 0);
   m_tid = uid;
 }
@@ -563,7 +747,7 @@ TypeId
 TypeId::LookupByName (std::string name)
 {
   NS_LOG_FUNCTION (name);
-  uint16_t uid = Singleton<IidManager>::Get ()->GetUid (name);
+  uint16_t uid = IidManager::Get ()->GetUid (name);
   NS_ASSERT_MSG (uid != 0, "Assert in TypeId::LookupByName: " << name << " not found");
   return TypeId (uid);
 }
@@ -571,7 +755,7 @@ bool
 TypeId::LookupByNameFailSafe (std::string name, TypeId *tid)
 {
   NS_LOG_FUNCTION (name << tid);
-  uint16_t uid = Singleton<IidManager>::Get ()->GetUid (name);
+  uint16_t uid = IidManager::Get ()->GetUid (name);
   if (uid == 0)
     {
       return false;
@@ -582,7 +766,7 @@ TypeId::LookupByNameFailSafe (std::string name, TypeId *tid)
 TypeId
 TypeId::LookupByHash (hash_t hash)
 {
-  uint16_t uid = Singleton<IidManager>::Get ()->GetUid (hash);
+  uint16_t uid = IidManager::Get ()->GetUid (hash);
   NS_ASSERT_MSG (uid != 0, "Assert in TypeId::LookupByHash: 0x"
                  << std::hex << hash << std::dec << " not found");
   return TypeId (uid);
@@ -590,7 +774,7 @@ TypeId::LookupByHash (hash_t hash)
 bool
 TypeId::LookupByHashFailSafe (hash_t hash, TypeId *tid)
 {
-  uint16_t uid = Singleton<IidManager>::Get ()->GetUid (hash);
+  uint16_t uid = IidManager::Get ()->GetUid (hash);
   if (uid == 0)
     {
       return false;
@@ -603,13 +787,13 @@ uint32_t
 TypeId::GetRegisteredN (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
-  return Singleton<IidManager>::Get ()->GetRegisteredN ();
+  return IidManager::Get ()->GetRegisteredN ();
 }
 TypeId 
 TypeId::GetRegistered (uint32_t i)
 {
   NS_LOG_FUNCTION (i);
-  return TypeId (Singleton<IidManager>::Get ()->GetRegistered (i));
+  return TypeId (IidManager::Get ()->GetRegistered (i));
 }
 
 bool
@@ -638,35 +822,35 @@ TypeId
 TypeId::SetParent (TypeId tid)
 {
   NS_LOG_FUNCTION (this << tid);
-  Singleton<IidManager>::Get ()->SetParent (m_tid, tid.m_tid);
+  IidManager::Get ()->SetParent (m_tid, tid.m_tid);
   return *this;
 }
 TypeId 
 TypeId::SetGroupName (std::string groupName)
 {
   NS_LOG_FUNCTION (this << groupName);
-  Singleton<IidManager>::Get ()->SetGroupName (m_tid, groupName);
+  IidManager::Get ()->SetGroupName (m_tid, groupName);
   return *this;
 }
 TypeId 
 TypeId::SetSize (std::size_t size)
 {
   NS_LOG_FUNCTION (this << size);
-  Singleton<IidManager>::Get ()->SetSize (m_tid, size);
+  IidManager::Get ()->SetSize (m_tid, size);
   return *this;
 }
 TypeId 
 TypeId::GetParent (void) const
 {
   NS_LOG_FUNCTION (this);
-  uint16_t parent = Singleton<IidManager>::Get ()->GetParent (m_tid);
+  uint16_t parent = IidManager::Get ()->GetParent (m_tid);
   return TypeId (parent);
 }
 bool 
 TypeId::HasParent (void) const
 {
   NS_LOG_FUNCTION (this);
-  uint16_t parent = Singleton<IidManager>::Get ()->GetParent (m_tid);
+  uint16_t parent = IidManager::Get ()->GetParent (m_tid);
   return parent != m_tid;
 }
 bool 
@@ -684,7 +868,7 @@ std::string
 TypeId::GetGroupName (void) const
 {
   NS_LOG_FUNCTION (this);
-  std::string groupName = Singleton<IidManager>::Get ()->GetGroupName (m_tid);
+  std::string groupName = IidManager::Get ()->GetGroupName (m_tid);
   return groupName;
 }
 
@@ -692,21 +876,21 @@ std::string
 TypeId::GetName (void) const
 {
   NS_LOG_FUNCTION (this);
-  std::string name = Singleton<IidManager>::Get ()->GetName (m_tid);
+  std::string name = IidManager::Get ()->GetName (m_tid);
   return name;
 }
 
 TypeId::hash_t
 TypeId::GetHash (void) const
 {
-  hash_t hash = Singleton<IidManager>::Get ()->GetHash (m_tid);
+  hash_t hash = IidManager::Get ()->GetHash (m_tid);
   return hash;
 }
 std::size_t
 TypeId::GetSize (void) const
 {
   NS_LOG_FUNCTION (this);
-  std::size_t size = Singleton<IidManager>::Get ()->GetSize (m_tid);
+  std::size_t size = IidManager::Get ()->GetSize (m_tid);
   return size;
 }
 
@@ -714,7 +898,7 @@ bool
 TypeId::HasConstructor (void) const
 {
   NS_LOG_FUNCTION (this);
-  bool hasConstructor = Singleton<IidManager>::Get ()->HasConstructor (m_tid);
+  bool hasConstructor = IidManager::Get ()->HasConstructor (m_tid);
   return hasConstructor;
 }
 
@@ -722,7 +906,7 @@ void
 TypeId::DoAddConstructor (Callback<ObjectBase *> cb)
 {
   NS_LOG_FUNCTION (this << &cb);
-  Singleton<IidManager>::Get ()->AddConstructor (m_tid, cb);
+  IidManager::Get ()->AddConstructor (m_tid, cb);
 }
 
 TypeId 
@@ -733,7 +917,7 @@ TypeId::AddAttribute (std::string name,
                       Ptr<const AttributeChecker> checker)
 {
   NS_LOG_FUNCTION (this << name << help << &initialValue << accessor << checker);
-  Singleton<IidManager>::Get ()->AddAttribute (m_tid, name, help, ATTR_SGC, initialValue.Copy (), accessor, checker);
+  IidManager::Get ()->AddAttribute (m_tid, name, help, ATTR_SGC, initialValue.Copy (), accessor, checker);
   return *this;
 }
 
@@ -746,7 +930,7 @@ TypeId::AddAttribute (std::string name,
                       Ptr<const AttributeChecker> checker)
 {
   NS_LOG_FUNCTION (this << name << help << flags << &initialValue << accessor << checker);
-  Singleton<IidManager>::Get ()->AddAttribute (m_tid, name, help, flags, initialValue.Copy (), accessor, checker);
+  IidManager::Get ()->AddAttribute (m_tid, name, help, flags, initialValue.Copy (), accessor, checker);
   return *this;
 }
 
@@ -755,7 +939,7 @@ TypeId::SetAttributeInitialValue(uint32_t i,
                                  Ptr<const AttributeValue> initialValue)
 {
   NS_LOG_FUNCTION (this << i << initialValue);
-  Singleton<IidManager>::Get ()->SetAttributeInitialValue (m_tid, i, initialValue);
+  IidManager::Get ()->SetAttributeInitialValue (m_tid, i, initialValue);
   return true;
 }
 
@@ -764,7 +948,7 @@ Callback<ObjectBase *>
 TypeId::GetConstructor (void) const
 {
   NS_LOG_FUNCTION (this);
-  Callback<ObjectBase *>  cb = Singleton<IidManager>::Get ()->GetConstructor (m_tid);
+  Callback<ObjectBase *>  cb = IidManager::Get ()->GetConstructor (m_tid);
   return cb;
 }
 
@@ -772,7 +956,7 @@ bool
 TypeId::MustHideFromDocumentation (void) const
 {
   NS_LOG_FUNCTION (this);
-  bool mustHide = Singleton<IidManager>::Get ()->MustHideFromDocumentation (m_tid);
+  bool mustHide = IidManager::Get ()->MustHideFromDocumentation (m_tid);
   return mustHide;
 }
 
@@ -780,14 +964,14 @@ uint32_t
 TypeId::GetAttributeN (void) const
 {
   NS_LOG_FUNCTION (this);
-  uint32_t n = Singleton<IidManager>::Get ()->GetAttributeN (m_tid);
+  uint32_t n = IidManager::Get ()->GetAttributeN (m_tid);
   return n;
 }
 struct TypeId::AttributeInformation 
 TypeId::GetAttribute(uint32_t i) const
 {
   NS_LOG_FUNCTION (this << i);
-  return Singleton<IidManager>::Get ()->GetAttribute(m_tid, i);
+  return IidManager::Get ()->GetAttribute(m_tid, i);
 }
 std::string 
 TypeId::GetAttributeFullName (uint32_t i) const
@@ -801,13 +985,13 @@ uint32_t
 TypeId::GetTraceSourceN (void) const
 {
   NS_LOG_FUNCTION (this);
-  return Singleton<IidManager>::Get ()->GetTraceSourceN (m_tid);
+  return IidManager::Get ()->GetTraceSourceN (m_tid);
 }
 struct TypeId::TraceSourceInformation 
 TypeId::GetTraceSource(uint32_t i) const
 {
   NS_LOG_FUNCTION (this << i);
-  return Singleton<IidManager>::Get ()->GetTraceSource(m_tid, i);
+  return IidManager::Get ()->GetTraceSource(m_tid, i);
 }
 
 TypeId 
@@ -825,7 +1009,7 @@ TypeId::AddTraceSource (std::string name,
                         std::string callback)
 {
   NS_LOG_FUNCTION (this << name << help << accessor);
-  Singleton<IidManager>::Get ()->AddTraceSource (m_tid, name, help, accessor, callback);
+  IidManager::Get ()->AddTraceSource (m_tid, name, help, accessor, callback);
   return *this;
 }
 
@@ -833,7 +1017,7 @@ TypeId
 TypeId::HideFromDocumentation (void)
 {
   NS_LOG_FUNCTION (this);
-  Singleton<IidManager>::Get ()->HideFromDocumentation (m_tid);
+  IidManager::Get ()->HideFromDocumentation (m_tid);
   return *this;
 }
 
