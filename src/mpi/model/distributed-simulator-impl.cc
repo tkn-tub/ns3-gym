@@ -462,22 +462,22 @@ DistributedSimulatorImpl::Stop (void)
 }
 
 void
-DistributedSimulatorImpl::Stop (Time const &time)
+DistributedSimulatorImpl::Stop (Time const &delay)
 {
-  NS_LOG_FUNCTION (this << time.GetTimeStep ());
+  NS_LOG_FUNCTION (this << delay.GetTimeStep ());
 
-  Simulator::Schedule (time, &Simulator::Stop);
+  Simulator::Schedule (delay, &Simulator::Stop);
 }
 
 //
 // Schedule an event for a _relative_ time in the future.
 //
 EventId
-DistributedSimulatorImpl::Schedule (Time const &time, EventImpl *event)
+DistributedSimulatorImpl::Schedule (Time const &delay, EventImpl *event)
 {
-  NS_LOG_FUNCTION (this << time.GetTimeStep () << event);
+  NS_LOG_FUNCTION (this << delay.GetTimeStep () << event);
 
-  Time tAbsolute = time + TimeStep (m_currentTs);
+  Time tAbsolute = delay + TimeStep (m_currentTs);
 
   NS_ASSERT (tAbsolute.IsPositive ());
   NS_ASSERT (tAbsolute >= TimeStep (m_currentTs));
@@ -493,13 +493,13 @@ DistributedSimulatorImpl::Schedule (Time const &time, EventImpl *event)
 }
 
 void
-DistributedSimulatorImpl::ScheduleWithContext (uint32_t context, Time const &time, EventImpl *event)
+DistributedSimulatorImpl::ScheduleWithContext (uint32_t context, Time const &delay, EventImpl *event)
 {
-  NS_LOG_FUNCTION (this << context << time.GetTimeStep () << m_currentTs << event);
+  NS_LOG_FUNCTION (this << context << delay.GetTimeStep () << m_currentTs << event);
 
   Scheduler::Event ev;
   ev.impl = event;
-  ev.key.m_ts = m_currentTs + time.GetTimeStep ();
+  ev.key.m_ts = m_currentTs + delay.GetTimeStep ();
   ev.key.m_context = context;
   ev.key.m_uid = m_uid;
   m_uid++;

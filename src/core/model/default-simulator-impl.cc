@@ -213,22 +213,22 @@ DefaultSimulatorImpl::Stop (void)
 }
 
 void 
-DefaultSimulatorImpl::Stop (Time const &time)
+DefaultSimulatorImpl::Stop (Time const &delay)
 {
-  NS_LOG_FUNCTION (this << time.GetTimeStep ());
-  Simulator::Schedule (time, &Simulator::Stop);
+  NS_LOG_FUNCTION (this << delay.GetTimeStep ());
+  Simulator::Schedule (delay, &Simulator::Stop);
 }
 
 //
 // Schedule an event for a _relative_ time in the future.
 //
 EventId
-DefaultSimulatorImpl::Schedule (Time const &time, EventImpl *event)
+DefaultSimulatorImpl::Schedule (Time const &delay, EventImpl *event)
 {
-  NS_LOG_FUNCTION (this << time.GetTimeStep () << event);
+  NS_LOG_FUNCTION (this << delay.GetTimeStep () << event);
   NS_ASSERT_MSG (SystemThread::Equals (m_main), "Simulator::Schedule Thread-unsafe invocation!");
 
-  Time tAbsolute = time + TimeStep (m_currentTs);
+  Time tAbsolute = delay + TimeStep (m_currentTs);
 
   NS_ASSERT (tAbsolute.IsPositive ());
   NS_ASSERT (tAbsolute >= TimeStep (m_currentTs));
@@ -244,13 +244,13 @@ DefaultSimulatorImpl::Schedule (Time const &time, EventImpl *event)
 }
 
 void
-DefaultSimulatorImpl::ScheduleWithContext (uint32_t context, Time const &time, EventImpl *event)
+DefaultSimulatorImpl::ScheduleWithContext (uint32_t context, Time const &delay, EventImpl *event)
 {
-  NS_LOG_FUNCTION (this << context << time.GetTimeStep () << event);
+  NS_LOG_FUNCTION (this << context << delay.GetTimeStep () << event);
 
   if (SystemThread::Equals (m_main))
     {
-      Time tAbsolute = time + TimeStep (m_currentTs);
+      Time tAbsolute = delay + TimeStep (m_currentTs);
       Scheduler::Event ev;
       ev.impl = event;
       ev.key.m_ts = (uint64_t) tAbsolute.GetTimeStep ();
@@ -264,7 +264,8 @@ DefaultSimulatorImpl::ScheduleWithContext (uint32_t context, Time const &time, E
     {
       EventWithContext ev;
       ev.context = context;
-      ev.timestamp = time.GetTimeStep ();
+      // Current time added in ProcessEventsWithContext()
+      ev.timestamp = delay.GetTimeStep ();
       ev.event = event;
       {
         CriticalSection cs (m_eventsWithContextMutex);

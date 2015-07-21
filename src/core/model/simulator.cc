@@ -213,10 +213,10 @@ Simulator::Stop (void)
 }
 
 void 
-Simulator::Stop (Time const &time)
+Simulator::Stop (Time const &delay)
 {
-  NS_LOG_FUNCTION (time);
-  GetImpl ()->Stop (time);
+  NS_LOG_FUNCTION (delay);
+  GetImpl ()->Stop (delay);
 }
 
 Time
@@ -236,9 +236,9 @@ Simulator::GetDelayLeft (const EventId &id)
 }
 
 EventId
-Simulator::Schedule (Time const &time, const Ptr<EventImpl> &ev)
+Simulator::Schedule (Time const &delay, const Ptr<EventImpl> &event)
 {
-  return DoSchedule (time, GetPointer (ev));
+  return DoSchedule (delay, GetPointer (event));
 }
 
 EventId
@@ -247,9 +247,9 @@ Simulator::ScheduleNow (const Ptr<EventImpl> &ev)
   return DoScheduleNow (GetPointer (ev));
 }
 void
-Simulator::ScheduleWithContext (uint32_t context, const Time &time, EventImpl *impl)
+Simulator::ScheduleWithContext (uint32_t context, const Time &delay, EventImpl *impl)
 {
-  return GetImpl ()->ScheduleWithContext (context, time, impl);
+  return GetImpl ()->ScheduleWithContext (context, delay, impl);
 }
 EventId
 Simulator::ScheduleDestroy (const Ptr<EventImpl> &ev)
@@ -274,15 +274,15 @@ Simulator::DoScheduleDestroy (EventImpl *impl)
 
 
 EventId
-Simulator::Schedule (Time const &time, void (*f)(void))
+Simulator::Schedule (Time const &delay, void (*f)(void))
 {
-  return DoSchedule (time, MakeEvent (f));
+  return DoSchedule (delay, MakeEvent (f));
 }
 
 void
-Simulator::ScheduleWithContext (uint32_t context, Time const &time, void (*f)(void))
+Simulator::ScheduleWithContext (uint32_t context, Time const &delay, void (*f)(void))
 {
-  return ScheduleWithContext (context, time, MakeEvent (f));
+  return ScheduleWithContext (context, delay, MakeEvent (f));
 }
 
 EventId

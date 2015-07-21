@@ -92,9 +92,9 @@ public:
   virtual void Destroy ();
   virtual bool IsFinished (void) const;
   virtual void Stop (void);
-  virtual void Stop (Time const &time);
-  virtual EventId Schedule (Time const &time, EventImpl *event);
-  virtual void ScheduleWithContext (uint32_t context, Time const &time, EventImpl *event);
+  virtual void Stop (Time const &delay);
+  virtual EventId Schedule (Time const &delay, EventImpl *event);
+  virtual void ScheduleWithContext (uint32_t context, Time const &delay, EventImpl *event);
   virtual EventId ScheduleNow (EventImpl *event);
   virtual EventId ScheduleDestroy (EventImpl *event);
   virtual void Remove (const EventId &ev);
@@ -109,9 +109,9 @@ public:
   virtual uint32_t GetContext (void) const;
 
   /** \copydoc ScheduleWithContext */
-  void ScheduleRealtimeWithContext (uint32_t context, Time const &time, EventImpl *event);
+  void ScheduleRealtimeWithContext (uint32_t context, Time const &delay, EventImpl *event);
   /** \copydoc Schedule */
-  void ScheduleRealtime (Time const &time, EventImpl *event);
+  void ScheduleRealtime (Time const &delay, EventImpl *event);
   /**
    * \copybrief ScheduleNow
    *
