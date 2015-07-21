@@ -20,6 +20,9 @@
 #ifndef SINGLETON_H
 #define SINGLETON_H
 
+#include "non-copyable.h"
+
+
 /**
  * \file
  * \ingroup access
@@ -57,7 +60,7 @@ namespace ns3 {
  * finalizer.
  */
 template <typename T>
-class Singleton
+class Singleton : private NonCopyable
 {
 public:
   /**
@@ -69,28 +72,6 @@ public:
    * \return A pointer to the singleton instance.
    */
   static T *Get (void);
-
-private:
-
-  /**
-   * \name %Singleton pattern
-   * Private constructor, copy and assignment operator.
-   *
-   *  Note these do not have to be implemented, since they are
-   *  never called.
-   */
-  /**@{*/
-  /** Default constructor */
-  Singleton<T> (void);
-  
-  /** Copy constructor. */
-  Singleton<T> (const Singleton<T> &);
-  /**
-   * Assignment.
-   * \returns The Singleton.
-   */
-  Singleton<T> operator = (const Singleton<T> &);
-  /**@}*/
 
 };
 

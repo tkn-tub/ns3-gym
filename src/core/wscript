@@ -296,6 +296,7 @@ def build(bld):
         'model/hash-fnv.h',
         'model/hash.h',
         'model/valgrind.h',
+        'model/non-copyable.h',
         ]
 
     if sys.platform == 'win32':
