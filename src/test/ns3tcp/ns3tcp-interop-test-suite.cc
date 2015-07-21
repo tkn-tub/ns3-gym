@@ -157,15 +157,10 @@ Ns3TcpInteroperabilityTestCase::Ipv4L3Tx (std::string context, Ptr<const Packet>
       Time tNow = Simulator::Now ();
       int64_t tMicroSeconds = tNow.GetMicroSeconds ();
 
-      uint32_t size = p->GetSize ();
-      uint8_t *buf = new uint8_t[size];
-      p->CopyData (buf, size);
-
       m_pcapFile.Write (uint32_t (tMicroSeconds / 1000000), 
                         uint32_t (tMicroSeconds % 1000000), 
-                        buf, 
-                        size);
-      delete [] buf;
+                        p
+                        );
     }
   else
     {
