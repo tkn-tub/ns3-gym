@@ -197,9 +197,11 @@ NodeStatistics::PhyCallback (std::string path, Ptr<const Packet> packet)
   packet->PeekHeader (head);
   Mac48Address dest = head.GetAddr1 ();
 
-  totalEnergy += actualPower[dest] * GetCalcTxTime (actualMode[dest]).GetSeconds ();
-  totalTime += GetCalcTxTime (actualMode[dest]).GetSeconds ();
-
+  if (head.GetType() == WIFI_MAC_DATA)
+    {
+      totalEnergy += pow (10, actualPower[dest] / 10) * GetCalcTxTime (actualMode[dest]).GetSeconds ();
+      totalTime += GetCalcTxTime (actualMode[dest]).GetSeconds ();
+    }
 }
 
 void
@@ -259,10 +261,10 @@ NodeStatistics::AdvancePosition (Ptr<Node> node, int stepsSize, int stepsTime)
   Vector pos = GetPosition (node);
   double mbs = ((m_bytesTotal * 8.0) / (1000000 * stepsTime));
   m_bytesTotal = 0;
-  double atm = pow (10, ((totalEnergy / stepsTime) / 10));
+  double atp = totalEnergy / stepsTime;
   totalEnergy = 0;
   totalTime = 0;
-  m_output_power.Add (pos.x, atm);
+  m_output_power.Add (pos.x, atp);
   m_output.Add (pos.x, mbs);
   pos.x += stepsSize;
   SetPosition (node, pos);

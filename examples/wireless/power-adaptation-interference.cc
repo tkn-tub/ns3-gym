@@ -193,9 +193,11 @@ NodeStatistics::PhyCallback (std::string path, Ptr<const Packet> packet)
   packet->PeekHeader (head);
   Mac48Address dest = head.GetAddr1 ();
 
-  totalEnergy += actualPower[dest] * GetCalcTxTime (actualMode[dest]).GetSeconds ();
-  totalTime += GetCalcTxTime (actualMode[dest]).GetSeconds ();
-
+  if (head.GetType() == WIFI_MAC_DATA)
+    {
+      totalEnergy += pow(10, actualPower[dest] / 10) * GetCalcTxTime (actualMode[dest]).GetSeconds ();
+      totalTime += GetCalcTxTime (actualMode[dest]).GetSeconds ();
+    }
 }
 
 void
@@ -259,10 +261,10 @@ NodeStatistics::CheckStatistics (double time)
 {
   double mbs = ((m_bytesTotal * 8.0) / (1000000 * time));
   m_bytesTotal = 0;
-  double atm = pow (10, ((totalEnergy / time) / 10));
+  double atp = totalEnergy / time;
   totalEnergy = 0;
   totalTime = 0;
-  m_output_power.Add ((Simulator::Now ()).GetSeconds (), atm);
+  m_output_power.Add ((Simulator::Now ()).GetSeconds (), atp);
   m_output.Add ((Simulator::Now ()).GetSeconds (), mbs);
 
   m_output_idle.Add ((Simulator::Now ()).GetSeconds (), idleTime * 100);
