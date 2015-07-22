@@ -559,7 +559,7 @@ def apply_ns3privateheader(self):
 
 class ns3privateheader_task(Task.Task):
     before = 'cxx gen_ns3_module_header'
-    after = 'ns3_header'
+    after = 'ns3header'
     color = 'BLUE'
 
     def __str__(self):
