@@ -127,7 +127,8 @@ AparfWifiManager::~AparfWifiManager ()
 void
 AparfWifiManager::SetupPhy (Ptr<WifiPhy> phy)
 {
-  m_nPower = phy->GetNTxPower ();
+  m_minPower = phy->GetTxPowerStart();
+  m_maxPower = phy->GetTxPowerEnd();
   WifiRemoteStationManager::SetupPhy (phy);
 }
 
@@ -158,7 +159,7 @@ AparfWifiManager::CheckInit (AparfWifiRemoteStation *station)
     {
       station->m_nSupported = GetNSupported (station);
       station->m_rate = station->m_nSupported - 1;
-      station->m_power = m_nPower - 1;
+      station->m_power = m_maxPower;
       station->m_rateCrit = 0;
       m_powerChange (station->m_power, station->m_state->m_address);
       m_rateChange (station->m_rate, station->m_state->m_address);
@@ -197,7 +198,7 @@ void AparfWifiManager::DoReportDataFailed (WifiRemoteStation *st)
       station->m_nFailed = 0;
       station->m_nSuccess = 0;
       station->m_pCount = 0;
-      if (station->m_power == (m_nPower - 1))
+      if (station->m_power == m_maxPower)
         {
           station->m_rateCrit = station->m_rate;
           if (station->m_rate != 0)
@@ -261,7 +262,7 @@ AparfWifiManager::DoReportDataOk (WifiRemoteStation *st, double ackSnr,
       station->m_nFailed = 0;
       if (station->m_rate == (station->m_state->m_operationalRateSet.size () - 1))
         {
-          if (station->m_power != 0)
+          if (station->m_power != m_minPower)
             {
               NS_LOG_DEBUG ("station=" << station << " dec power");
               station->m_power -= m_powerDec;
@@ -283,7 +284,7 @@ AparfWifiManager::DoReportDataOk (WifiRemoteStation *st, double ackSnr,
             {
               if (station->m_pCount == m_powerMax)
                 {
-                  station->m_power = (m_nPower - 1);
+                  station->m_power = m_maxPower;
                   m_powerChange (station->m_power, station->m_state->m_address);
                   station->m_rate = station->m_rateCrit;
                   m_rateChange (station->m_rate, station->m_state->m_address);
@@ -292,7 +293,7 @@ AparfWifiManager::DoReportDataOk (WifiRemoteStation *st, double ackSnr,
                 }
               else
                 {
-                  if (station->m_power != 0)
+                  if (station->m_power != m_minPower)
                     {
                       station->m_power -= m_powerDec;
                       m_powerChange (station->m_power, station->m_state->m_address);

@@ -110,12 +110,18 @@ private:
   uint32_t m_powerDec;   //!< Step size for decrement the power.
   uint32_t m_rateInc;    //!< Step size for increment the rate.
   uint32_t m_rateDec;    //!< Step size for decrement the rate.
+
   /**
-   * Number of power levels.
+   * Minimal power level.
    * Differently form rate, power levels do not depend on the remote station.
    * The levels depend only on the physical layer of the device.
    */
-  uint32_t m_nPower;
+  uint32_t m_minPower;  
+
+  /**
+   * Maximal power level.
+   */
+  uint32_t m_maxPower;
 
   /**
    * The trace source fired when the transmission power change

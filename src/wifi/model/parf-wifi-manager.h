@@ -91,12 +91,18 @@ private:
 
   uint32_t m_attemptThreshold; //!< The minimum number of transmission attempts to try a new power or rate. The 'timer' threshold in the ARF algorithm.
   uint32_t m_successThreshold; //!< The minimum number of successful transmissions to try a new power or rate.
+  
   /**
-   * Number of power levels.
+   * Minimal power level.
    * In contrast to rate, power levels do not depend on the remote station.
    * The levels depend only on the physical layer of the device.
    */
-  uint32_t m_nPower;
+  uint32_t m_minPower;
+
+  /**
+   * Maximal power level.
+   */
+  uint32_t m_maxPower;
 
   /**
    * The trace source fired when the transmission power changes....
