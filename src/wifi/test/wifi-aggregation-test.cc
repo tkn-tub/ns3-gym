@@ -132,7 +132,7 @@ TwoLevelAggregationTest::DoRun (void)
   bool result = (packet != 0);
   NS_TEST_EXPECT_MSG_EQ (result, true, "aggregation failed");
   NS_TEST_EXPECT_MSG_EQ (packet->GetSize (), 3030, "wrong packet size");
-  NS_TEST_EXPECT_MSG_EQ (m_edca->GetEdcaQueue ()->GetSize (), 1, "removing packet from EDCA queue failed");
+  NS_TEST_EXPECT_MSG_EQ (m_edca->GetEdcaQueue ()->GetSize (), 0, "aggregated packets not removed from the queue");
 
   //-----------------------------------------------------------------------------------------------------
 

@@ -3046,13 +3046,16 @@ MacLow::PerformMsduAggregation (Ptr<const Packet> packet, WifiMacHeader *hdr, Ti
   std::map<AcIndex, MacLowAggregationCapableTransmissionListener*>::const_iterator listenerIt = m_edcaListeners.find (ac);
   NS_ASSERT (listenerIt != m_edcaListeners.end ());
   queue = listenerIt->second->GetQueue ();
+  
+  Ptr<const Packet> peekedPacket = queue->DequeueByTidAndAddress (hdr, hdr->GetQosTid (),
+                                                                  WifiMacHeader::ADDR1, hdr->GetAddr1 ());
 
   listenerIt->second->GetMsduAggregator ()->Aggregate (packet, currentAmsduPacket,
                                                        listenerIt->second->GetSrcAddressForAggregation (*hdr),
                                                        listenerIt->second->GetDestAddressForAggregation (*hdr));
 
-  Ptr<const Packet> peekedPacket = queue->PeekByTidAndAddress (hdr, hdr->GetQosTid (),
-                                                               WifiMacHeader::ADDR1, hdr->GetAddr1 (), tstamp);
+  peekedPacket = queue->PeekByTidAndAddress (hdr, hdr->GetQosTid (),
+                                             WifiMacHeader::ADDR1, hdr->GetAddr1 (), tstamp);
   while (peekedPacket != 0)
     {
       tempPacket = currentAmsduPacket;
@@ -3083,6 +3086,7 @@ MacLow::PerformMsduAggregation (Ptr<const Packet> packet, WifiMacHeader *hdr, Ti
     }
   else
     {
+      queue->PushFront (packet, *hdr);
       return 0;
     }
 }
