@@ -52,23 +52,23 @@ public:
    */
   /**@{*/
   /**
-   * \tparam T1 Type of the first argument.
+   * \tparam T1 \deduced Type of the first argument.
    * \param a1 The first argument
    */
   template <typename T1>
   void SetArgs (T1 a1);
   /**
-   * \tparam T1 Type of the first argument.
-   * \tparam T2 Type of the second argument.
+   * \tparam T1 \deduced Type of the first argument.
+   * \tparam T2 \deduced Type of the second argument.
    * \param a1 the first argument
    * \param a2 the second argument
    */
   template <typename T1, typename T2>
   void SetArgs (T1 a1, T2 a2);
   /**
-   * \tparam T1 Type of the first argument.
-   * \tparam T2 Type of the second argument.
-   * \tparam T3 Type of the third argument.
+   * \tparam T1 \deduced Type of the first argument.
+   * \tparam T2 \deduced Type of the second argument.
+   * \tparam T3 \deduced Type of the third argument.
    * \param a1 the first argument
    * \param a2 the second argument
    * \param a3 the third argument
@@ -76,10 +76,10 @@ public:
   template <typename T1, typename T2, typename T3>
   void SetArgs (T1 a1, T2 a2, T3 a3);
   /**
-   * \tparam T1 Type of the first argument.
-   * \tparam T2 Type of the second argument.
-   * \tparam T3 Type of the third argument.
-   * \tparam T4 Type of the fourth argument.
+   * \tparam T1 \deduced Type of the first argument.
+   * \tparam T2 \deduced Type of the second argument.
+   * \tparam T3 \deduced Type of the third argument.
+   * \tparam T4 \deduced Type of the fourth argument.
    * \param a1 the first argument
    * \param a2 the second argument
    * \param a3 the third argument
@@ -89,11 +89,11 @@ public:
             typename T4>
   void SetArgs (T1 a1, T2 a2, T3 a3, T4 a4);
   /**
-   * \tparam T1 Type of the first argument.
-   * \tparam T2 Type of the second argument.
-   * \tparam T3 Type of the third argument.
-   * \tparam T4 Type of the fourth argument.
-   * \tparam T5 Type of the fifth argument.
+   * \tparam T1 \deduced Type of the first argument.
+   * \tparam T2 \deduced Type of the second argument.
+   * \tparam T3 \deduced Type of the third argument.
+   * \tparam T4 \deduced Type of the fourth argument.
+   * \tparam T5 \deduced Type of the fifth argument.
    * \param a1 the first argument
    * \param a2 the second argument
    * \param a3 the third argument
@@ -104,12 +104,12 @@ public:
             typename T4, typename T5>
   void SetArgs (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5);
   /**
-   * \tparam T1 Type of the first argument.
-   * \tparam T2 Type of the second argument.
-   * \tparam T3 Type of the third argument.
-   * \tparam T4 Type of the fourth argument.
-   * \tparam T5 Type of the fifth argument.
-   * \tparam T6 Type of the sixth argument.
+   * \tparam T1 \deduced Type of the first argument.
+   * \tparam T2 \deduced Type of the second argument.
+   * \tparam T3 \deduced Type of the third argument.
+   * \tparam T4 \deduced Type of the fourth argument.
+   * \tparam T5 \deduced Type of the fifth argument.
+   * \tparam T6 \deduced Type of the sixth argument.
    * \param a1 the first argument
    * \param a2 the second argument
    * \param a3 the third argument
@@ -244,7 +244,7 @@ struct TimerTraits
 /**
  * Make a TimerImpl from a function pointer taking varying numbers of arguments.
  *
- * \tparam FN Function signature type of the callback function.
+ * \tparam FN \deduced Function signature type of the callback function.
  * \param fn The function pointer to invoke when the timer expires.
  * \returns The TimerImpl.
  */
@@ -582,7 +582,7 @@ MakeTimerImpl (IntToType<6>, FN fn)
  *
  * This is the generic template declaration (with empty body).
  *
- * \tparam T The object type.
+ * \tparam T \explicit The object type.
  */
 template <typename T>
 struct TimerImplMemberTraits;
@@ -595,7 +595,7 @@ struct TimerImplMemberTraits;
  *
  * This is the specialization for pointer to \c T.
  *
- * \tparam T The object type.
+ * \tparam T \explicit The object type.
  */
 template <typename T>
 struct TimerImplMemberTraits<T *>
@@ -616,8 +616,8 @@ struct TimerImplMemberTraits<T *>
  * Make a TimerImpl from a class method pointer taking
  * a varying number of arguments.
  *
- * \tparam MEM_PTR Class method function signature type.
- * \tparam OBJ_PTR Class type.
+ * \tparam MEM_PTR \deduced Class method function signature type.
+ * \tparam OBJ_PTR \deduced Class type.
  * \param memPtr Class method to invoke when the timer expires.
  * \param objPtr Object instance pointer.
  * \returns The TimerImpl.

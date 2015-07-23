@@ -35,7 +35,7 @@ namespace ns3 {
  * \ingroup attributeimpl
  * Type name strings for numeric AttributeValue types.
  *
- * \tparam T The numeric type.
+ * \tparam T \explicit The numeric type.
  * \returns The numeric type name as a string.
  */
 template <typename T>

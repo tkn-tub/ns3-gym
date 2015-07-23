@@ -35,7 +35,7 @@ namespace ns3 {
  *        last reference to an object they manage
  *        disappears.
  *
- * \tparam T The object type being deleted.
+ * \tparam T \deduced The object type being deleted.
  * \sa ns3::SimpleRefCount
  */
 template <typename T>
@@ -46,7 +46,7 @@ struct DefaultDeleter
    * \code
    *   delete object;
    * \endcode
-   * \tparam T The object type being deleted.
+   * \tparam T \deduced The object type being deleted.
    * \param [in] object The object to delete.
    */
   inline static void Delete (T *object) {

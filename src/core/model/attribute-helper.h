@@ -85,12 +85,12 @@ namespace ns3 {
  *
  * A simple string-based attribute checker
  *
- * \tparam T    The specific AttributeValue type used to represent
+ * \tparam T    \explicit The specific AttributeValue type used to represent
  *              the Attribute.
- * \tparam BASE The AttributeChecker type corresponding to \p T.
- * \param name  The name of the AttributeValue type, essentially the
+ * \tparam BASE \explicit The AttributeChecker type corresponding to \p T.
+ * \param [in] name  The name of the AttributeValue type, essentially the
  *              string form of \p T.
- * \param underlying Underlying type name.
+ * \param [in] underlying Underlying type name.
  * \return Ptr to AttributeChecker.
  */
 template <typename T, typename BASE>

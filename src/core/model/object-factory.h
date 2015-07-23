@@ -99,7 +99,7 @@ public:
    * returning a pointer of the requested type to the user. This method
    * is really syntactical sugar.
    *
-   * \tparam T The requested Object type.
+   * \tparam T \explicit The requested Object type.
    * \returns A new object instance.
    */
   template <typename T>
@@ -146,7 +146,7 @@ std::istream & operator >> (std::istream &is, ObjectFactory &factory);
  * \ingroup object
  * Allocate an Object on the heap and initialize with a set of attributes.
  *
- * \tparam T The requested Object type.
+ * \tparam T \explicit The requested Object type.
  * \param n1 Name of attribute
  * \param v1 Value of attribute
  * \param n2 Name of attribute

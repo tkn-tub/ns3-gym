@@ -73,7 +73,7 @@ namespace ns3 {
  * and will define Connect/DisconnectWithoutContext methods to work
  * with MakeTraceSourceAccessor.
  *
- * \tparam T The type of the underlying value being traced.
+ * \tparam T \explicit The type of the underlying value being traced.
  */
 template <typename T>
 class TracedValue
@@ -113,7 +113,7 @@ public:
   }
   /**
    * Copy from a TracedValue of a compatable type.
-   * \tparam U The underlying type of the other TracedValue.
+   * \tparam U \deduced The underlying type of the other TracedValue.
    * \param other The other TracedValuet to copy.
    */
   template <typename U>
@@ -122,7 +122,7 @@ public:
   {}
   /**
    * Copy from a variable type compatible with this underlying type.
-   * \tparam U Type of the other variable.
+   * \tparam U \deduced Type of the other variable.
    * \param other The other variable to copy.
    */
   template <typename U>
@@ -263,7 +263,7 @@ private:
  *
  * The underlying value will be written to the stream.
  *
- * \tparam T The underlying type of the TracedValue.
+ * \tparam T \deduced The underlying type of the TracedValue.
  * \param os The output stream.
  * \param rhs The TracedValue to stream.
  * \returns The stream.
@@ -276,8 +276,8 @@ std::ostream& operator << (std::ostream& os, const TracedValue<T>& rhs)
 
 /**
  * Boolean operator for TracedValue.
- * \tparam T The underlying type held by the left-hand argument.
- * \tparam U The underlying type held by the right-hand argument.
+ * \tparam T \deduced The underlying type held by the left-hand argument.
+ * \tparam U \deduced The underlying type held by the right-hand argument.
  * \param lhs The left-hand argument.
  * \param rhs The right-hand argument.
  * \returns The boolean result of comparing the underlying values.
@@ -418,8 +418,8 @@ bool operator > (const U &lhs, const TracedValue<T> &rhs)
  * This returns the arithmetic result in a new TracedValue,
  * which has no Callback connected.
  *
- * \tparam T The underlying type held by the left-hand argument.
- * \tparam U The underlying type held by the right-hand argument.
+ * \tparam T \deduced The underlying type held by the left-hand argument.
+ * \tparam U \deduced The underlying type held by the right-hand argument.
  * \param lhs The left-hand argument.
  * \param rhs The right-hand argument.
  * \returns The result of doing the operator on
@@ -621,8 +621,8 @@ TracedValue<T> operator >> (const U &lhs, const TracedValue<T> &rhs) {
  * is assigned to the \c lhs TracedValue.  If the new value 
  * is different, the Callback will be invoked.
  *
- * \tparam T The underlying type held by the left-hand argument.
- * \tparam U The underlying type held by the right-hand argument.
+ * \tparam T \deduced The underlying type held by the left-hand argument.
+ * \tparam U \deduced The underlying type held by the right-hand argument.
  * \param lhs The left-hand argument.
  * \param rhs The right-hand argument.
  * \returns The result of doing the operator on
@@ -722,7 +722,7 @@ TracedValue<T> &operator ^= (TracedValue<T> &lhs, const U &rhs) {
 /**
  * Unary arithmetic operator for TracedValue.
  *
- * \tparam T The underlying type held by the TracedValue.
+ * \tparam T \deduced The underlying type held by the TracedValue.
  * \param lhs The TracedValue.
  * \returns The result of doing the operator on
  *     the underlying values.

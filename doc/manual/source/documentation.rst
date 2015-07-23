@@ -38,7 +38,8 @@ Documenting with Sphinx
 We use Sphinx_ to generate expository chapters describing
 the design and usage of each module.  Right now you are reading the
 :doc:`Documentation <documentation>` Chapter.
-The `Show Source <_sources/documentation.txt>`_ link in the sidebar
+If you are reading the html version, the
+`Show Source <_sources/documentation.txt>`_ link in the sidebar
 will show you the reStructuredText source for this chapter.
 
 Adding New Chapters
@@ -59,7 +60,7 @@ top-level document for the module.  The ``src/create-module.py`` script
 will create this file for you.
 
 Some models require several ``.rst`` files, and figures; these should
-all go in the ``src/foo/doc/`` directory.  The docs are actually build
+all go in the ``src/foo/doc/`` directory.  The docs are actually built
 by a Sphinx Makefile.  For especially involved
 documentation, it may be helpful to have a local ``Makefile``
 in the ``src/foo/doc/`` directory to
@@ -137,7 +138,7 @@ To build just the Models documentation:
 
 .. sourcecode:: bash
 
-   $ make -C doc/models
+   $ make -C doc/models html
 
 To see the generated documentation point your browser at
 ``doc/models/build/html``.
@@ -260,7 +261,7 @@ provides a number of useful features:
 
   * Summary table of all class members.
   * Graphs of inheritance and collaboration for all classes.
-  * Links to the source code imlementing each function.
+  * Links to the source code implementing each function.
   * Links to every place a member is used.
   * Links to every object used in implementing a function.
   * Grouping of related classes, such as all the classes related to
@@ -273,6 +274,7 @@ for every class
   * Documentation for any ``Attributes``, including ``Attributes``
     defined in parent classes.
   * Documentation for any ``Trace`` sources defined by the class.
+  * The memory footprint for each class.
 
 Doxygen operates by scaning the source code, looking for
 specially marked comments.  It also creates a cross reference,
@@ -368,91 +370,100 @@ Building the Doxygen documentation is pretty simple:
 
    $ ./waf doxygen
 
-This builds using the default configuration, which generates documentation
-sections for *all* items, even if they do not have explicit comment
-documentation blocks.  This has the effect of suppressing warnings for
-undocumented items, but makes sure everything appears in the generated
-output.
+This builds using the default configuration, which generates
+documentation sections for *all* items, even if they do not have
+explicit comment documentation blocks.  This has the effect of
+suppressing warnings for undocumented items, but makes sure everything
+appears in the generated output, which is usually what you want for
+general use.  Note that we generate documentation even for modules
+which are disabled, to make it easier to see all the features
+available in |ns3|.
 
 When writing documentation, it's often more useful to see which items
-are generating warnings, typically about missing documentation.
-To see the full warnings list, use the ``doc/doxygen.warnings.report.sh``
+are generating warnings, typically about missing documentation.  To
+see the full warnings list, use the ``doc/doxygen.warnings.report.sh``
 script:
 
 .. sourcecode:: bash
 
-   $ doc/doxygen.warnings.report.sh
-   Waf: Entering directory `build'
-   ...
-   Waf: Leaving directory `build'
-   'build' finished successfully (3m24.094s)
-
-   Rebuilding doxygen docs with full errors...Done.
+    $ doc/doxygen.warnings.report.sh
+    
+    doxygen.warnings.report.sh:
+    Building and running print-introspected-doxygen...done.
+    Rebuilding doxygen (v1.8.10) docs with full errors...done.
 
 
-   Report of Doxygen warnings
-   ----------------------------------------
+    Report of Doxygen warnings
+    ----------------------------------------
 
-   (All counts are lower bounds.)
+    (All counts are lower bounds.)
 
-   Warnings by module/directory:
+    Warnings by module/directory:
 
-   Count Directory
-   ----- ----------------------------------
-   3844 src/lte/model
-   1718 src/wimax/model
-   1423 src/core/model
-   ....
-    138 additional undocumented parameters.
-   ----------------------------------------
-    15765 total warnings
-      126 directories with warnings
-
-
-   Warnings by file (alphabetical)
-
-   Count File
-   ----- ----------------------------------
-     17 doc/introspected-doxygen.h
-     15 examples/routing/manet-routing-compare.cc
-     26 examples/stats/wifi-example-apps.h
-   ....
-   ----------------------------------------
-      967 files with warnings
+    Count Directory
+    ----- ----------------------------------
+    3414 src/lte/model
+    1532 src/wimax/model
+     825 src/lte/test
+    ....
+       1 src/applications/test
+     97 additional undocumented parameters.
+    ----------------------------------------
+     12460 total warnings
+       100 directories with warnings
 
 
-   Warnings by file (numerical)
+    Warnings by file (alphabetical)
 
-   Count File
-   ----- ----------------------------------
-    374 src/lte/model/lte-asn1-header.h
-    280 src/lte/model/lte-rrc-sap.h
-    262 src/lte/model/lte-rrc-header.h
-   ....
-   ----------------------------------------
-      967 files with warnings
+    Count File
+    ----- ----------------------------------
+      15 examples/routing/manet-routing-compare.cc
+      26 examples/stats/wifi-example-apps.h
+      12 examples/tutorial/fifth.cc
+    ....
+      17 utils/python-unit-tests.py
+    ----------------------------------------
+       771 files with warnings
 
 
-   Doxygen Warnings Summary
-   ----------------------------------------
-      126 directories
-      967 files
-    15765 warnings
+    Warnings by file (numerical)
 
-The script modifies the configuration to show all warnings, and
-to shorten the run time.  As you can see, at this writing we have
-*a lot* of undocumented items.  The report summarizes warnings
-by module ``src/*/*``, and by file, in alphabetically and numerical
-order.
+    Count File
+    ----- ----------------------------------
+     273 src/lte/model/lte-rrc-sap.h
+     272 src/core/model/simulator.h
+     221 src/netanim/model/animation-interface.h
+    ....
+       1 src/wimax/model/ul-job.cc
+    ----------------------------------------
+       771 files with warnings
 
-The script has a few options to pare things down and make this more
+
+    Doxygen Warnings Summary
+    ----------------------------------------
+       100 directories
+       771 files
+     12460 warnings
+
+(This snippet has *a lot* of lines suppressed!)
+
+The script modifies the configuration to show all warnings, and to
+shorten the run time.  (It shortens the run time primarily by
+disabling creation of diagrams, such as call trees, and doesn't
+generate documentation for undocumented items, in order to trigger the
+warnings.)  As you can see, at this writing we have *a lot* of
+undocumented items.  The report summarizes warnings by module
+``src/*/*``, and by file, in alphabetically and numerical order.
+
+The script has a few options to pare things down and make the output more
 manageable.  For help, use the ``-h`` option.  Having run it once
 to do the Doxygen build and generate the full warnings log,
 you can reprocess the log file with various "filters,"
-without having to do the full Doxygen build by,
-again using the ``-s`` option.  You can exclude warnings
+without having to do the full Doxygen build again by
+using the ``-s`` option.  You can exclude warnings
 from ``*/examples/*`` files (``-e`` option), and/or ``*/test/*`` files
-(``-t``).
+(``-t``).  Just to be clear, all of the filter options do the complete
+fast doxygen build; they just filter doxygen log and warnings output.
 
 Perhaps the most useful option when writing documentation comments
 is ``-m <module>``, which will limit the report to just files matching
@@ -486,6 +497,13 @@ urgent in a single module:
    src/mesh/helper/mesh-helper.h:119: warning: parameters of member ns3::MeshHelper::SetStandard are not (all) documented
 
 
+Finally, note that undocumented items (classes, methods, functions,
+typedefs, *etc.* won't produce documentation when you build with
+``doxygen.warnings.report.sh``, and only the outermost item
+will produce a warning.  As a result, if you don't see documentation
+for a class method in the generated documentation, the class itself
+probably needs documentation.
+
 Now it's just a matter of understanding the code, and writing some
 docs!
 
@@ -508,24 +526,45 @@ usage for |ns3|.
 
     /**
      *  \defgroup foo Foo protocol.
+     *  Implemenation of the Foo protocol.
      */
 
-  Mark each associated class as belonging to the group::
+  The symbol ``foo`` is how other items can add themselves to this group.
+  The string following that will be the title for the group.  Any futher
+  text will be the detailed descriptionf for the group page.
+
+* Document each file, assigning it to the relevant group.  In a header file::
+
+    /**
+     *  \file
+     *  \ingroup foo
+     *  Class Foo declaration.
+     */
+
+  or in the corresponding ``.cc`` file::
+  
+    /**
+     *  \file
+     *  \ingroup foo
+     *  Class FooBar implementation.
+     */
+
+* Mark each associated class as belonging to the group::
 
     /**
      *  \ingroup foo
      *
-     *  Foo packet type.
+     *  FooBar packet type.
     */
-    class Foo
+    class FooBar
 
 * Did you know ``typedefs`` can have formal arguments?  This enables
   documentation of function pointer signatures::
 
     /**
-     * Bar callback function signature.
+     *  Bar callback function signature.
      *
-     * \param ale The size of a pint of ale, in Imperial ounces.
+     *  \param ale The size of a pint of ale, in Imperial ounces.
      */
     typedef void (* BarCallback)(const int ale);
     
@@ -534,12 +573,32 @@ usage for |ns3|.
 
 * ``\bugid{298}`` will create a link to bug 298 in our Bugzilla.
 
-* ``\pname{foo}`` in a description will format ``foo``
-  as a ``\param foo`` parameter, making it clear that you
+* ``\p foo`` in a description will format ``foo``
+  the same as the ``\param foo`` parameter, making it clear that you
   are referring to an actual argument.
 
 * ``\RFC{301}`` will create a link to RFC 301.
 
+* Document the direction of function arguments with ``\param [in]``, _etc_.
+  The allowed values of the direction token are ``[in]``, ``[out]``, and
+  ``[in,out]`` (note the explicit square brackets), as discussed in the
+  Doxygen docs for ``\param``.
+  
+* Document template arguments with ``\tparam``, just as you use ``\param``
+  for function arguments.
+
+* For template arguments, indicate if they will be deduced or must be given
+  explicitly::
+
+    template <typename T, typename U> void Function (U a);
+
+  * Use ``\tparam U \deduced`` because the type ``U`` can be deduced at
+    the site where the template is invoked.  Basically deduction can only
+    be done for function arguments.
+
+  * Use ``\tparam T \explicit`` because the type ``T`` can't be deduced;
+    it must be given explicitly at the invocation site.
+				   
 * ``\internal`` should be used only to set off a discussion of implementation
   details, not to mark ``private`` functions (they are already marked,
   as ``private``!)

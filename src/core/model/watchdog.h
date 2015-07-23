@@ -85,8 +85,8 @@ public:
   /**
    * Set the function to execute when the timer expires.
    *
-   * \tparam MEM_PTR Class method function type.
-   * \tparam OBJ_PTR Class type containing the function.
+   * \tparam MEM_PTR \deduced Class method function type.
+   * \tparam OBJ_PTR \deduced Class type containing the function.
    * \param memPtr The member function pointer
    * \param objPtr The pointer to object
    *
@@ -101,23 +101,23 @@ public:
    */
   /**@{*/
   /**
-   * \tparam T1 Type of the first argument.
+   * \tparam T1 \deduced Type of the first argument.
    * \param a1 The first argument
    */
   template <typename T1>
   void SetArguments (T1 a1);
   /**
-   * \tparam T1 Type of the first argument.
-   * \tparam T2 Type of the second argument.
+   * \tparam T1 \deduced Type of the first argument.
+   * \tparam T2 \deduced Type of the second argument.
    * \param a1 the first argument
    * \param a2 the second argument
    */
   template <typename T1, typename T2>
   void SetArguments (T1 a1, T2 a2);
   /**
-   * \tparam T1 Type of the first argument.
-   * \tparam T2 Type of the second argument.
-   * \tparam T3 Type of the third argument.
+   * \tparam T1 \deduced Type of the first argument.
+   * \tparam T2 \deduced Type of the second argument.
+   * \tparam T3 \deduced Type of the third argument.
    * \param a1 the first argument
    * \param a2 the second argument
    * \param a3 the third argument
@@ -125,10 +125,10 @@ public:
   template <typename T1, typename T2, typename T3>
   void SetArguments (T1 a1, T2 a2, T3 a3);
   /**
-   * \tparam T1 Type of the first argument.
-   * \tparam T2 Type of the second argument.
-   * \tparam T3 Type of the third argument.
-   * \tparam T4 Type of the fourth argument.
+   * \tparam T1 \deduced Type of the first argument.
+   * \tparam T2 \deduced Type of the second argument.
+   * \tparam T3 \deduced Type of the third argument.
+   * \tparam T4 \deduced Type of the fourth argument.
    * \param a1 the first argument
    * \param a2 the second argument
    * \param a3 the third argument
@@ -137,11 +137,11 @@ public:
   template <typename T1, typename T2, typename T3, typename T4>
   void SetArguments (T1 a1, T2 a2, T3 a3, T4 a4);
   /**
-   * \tparam T1 Type of the first argument.
-   * \tparam T2 Type of the second argument.
-   * \tparam T3 Type of the third argument.
-   * \tparam T4 Type of the fourth argument.
-   * \tparam T5 Type of the fifth argument.
+   * \tparam T1 \deduced Type of the first argument.
+   * \tparam T2 \deduced Type of the second argument.
+   * \tparam T3 \deduced Type of the third argument.
+   * \tparam T4 \deduced Type of the fourth argument.
+   * \tparam T5 \deduced Type of the fifth argument.
    * \param a1 the first argument
    * \param a2 the second argument
    * \param a3 the third argument
@@ -151,12 +151,12 @@ public:
   template <typename T1, typename T2, typename T3, typename T4, typename T5>
   void SetArguments (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5);
   /**
-   * \tparam T1 Type of the first argument.
-   * \tparam T2 Type of the second argument.
-   * \tparam T3 Type of the third argument.
-   * \tparam T4 Type of the fourth argument.
-   * \tparam T5 Type of the fifth argument.
-   * \tparam T6 Type of the sixth argument.
+   * \tparam T1 \deduced Type of the first argument.
+   * \tparam T2 \deduced Type of the second argument.
+   * \tparam T3 \deduced Type of the third argument.
+   * \tparam T4 \deduced Type of the fourth argument.
+   * \tparam T5 \deduced Type of the fifth argument.
+   * \tparam T6 \deduced Type of the sixth argument.
    * \param a1 the first argument
    * \param a2 the second argument
    * \param a3 the third argument

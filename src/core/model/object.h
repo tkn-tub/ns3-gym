@@ -305,7 +305,7 @@ private:
   /**
    * Set the TypeId and construct all Attributes of an Object.
    *
-   * \tparam T The type of the derived object we are constructing.
+   * \tparam T \explicit The type of the derived object we are constructing.
    * \param [in] object The uninitialized object pointer.
    * \return The derived object.
    */
@@ -517,7 +517,7 @@ Ptr<T> CompleteConstruct (T *object)
 /**
  * Create an object by type, with varying number of constructor parameters.
  *
- * \tparam T The type of the derived object to construct.
+ * \tparam T \explicit The type of the derived object to construct.
  * \return The derived object.
  */
 template <typename T>
@@ -527,8 +527,8 @@ Ptr<T> CreateObject (void)
 }
 /**
  * \copybrief CreateObject()
- * \tparam T The type of the derived object to construct.
- * \tparam T1 The type of the constructor argument.
+ * \tparam T \explicit The type of the derived object to construct.
+ * \tparam T1 \deduced The type of the constructor argument.
  * \param a1 The constructor argument
  * \return The derived object.
  */
@@ -540,9 +540,9 @@ Ptr<T> CreateObject (T1 a1)
 
 /**
  * \copybrief CreateObject()
- * \tparam T The type of the derived object to construct.
- * \tparam T1 The type of the first constructor argument.
- * \tparam T2 The type of the second constructor argument.
+ * \tparam T \explicit The type of the derived object to construct.
+ * \tparam T1 \deduced The type of the first constructor argument.
+ * \tparam T2 \deduced The type of the second constructor argument.
  * \param a1 The constructor first argument
  * \param a2 The constructor second argument
  * \return The derived object.
@@ -555,10 +555,10 @@ Ptr<T> CreateObject (T1 a1, T2 a2)
 
 /**
  * \copybrief CreateObject()
- * \tparam T The type of the derived object to construct.
- * \tparam T1 The type of the first constructor argument.
- * \tparam T2 The type of the second constructor argument.
- * \tparam T3 The type of the third constructor argument.
+ * \tparam T \explicit The type of the derived object to construct.
+ * \tparam T1 \deduced The type of the first constructor argument.
+ * \tparam T2 \deduced The type of the second constructor argument.
+ * \tparam T3 \deduced The type of the third constructor argument.
  * \param a1 The constructor first argument
  * \param a2 The constructor second argument
  * \param a3 The constructor third argument
@@ -572,11 +572,11 @@ Ptr<T> CreateObject (T1 a1, T2 a2, T3 a3)
 
 /**
  * \copybrief CreateObject()
- * \tparam T The type of the derived object to construct.
- * \tparam T1 The type of the first constructor argument.
- * \tparam T2 The type of the second constructor argument.
- * \tparam T3 The type of the third constructor argument.
- * \tparam T4 The type of the fourth constructor argument.
+ * \tparam T \explicit The type of the derived object to construct.
+ * \tparam T1 \deduced The type of the first constructor argument.
+ * \tparam T2 \deduced The type of the second constructor argument.
+ * \tparam T3 \deduced The type of the third constructor argument.
+ * \tparam T4 \deduced The type of the fourth constructor argument.
  * \param a1 The constructor first argument
  * \param a2 The constructor second argument
  * \param a3 The constructor third argument
@@ -591,12 +591,12 @@ Ptr<T> CreateObject (T1 a1, T2 a2, T3 a3, T4 a4)
 
 /**
  * \copybrief CreateObject()
- * \tparam T The type of the derived object to construct.
- * \tparam T1 The type of the first constructor argument.
- * \tparam T2 The type of the second constructor argument.
- * \tparam T3 The type of the third constructor argument.
- * \tparam T4 The type of the fourth constructor argument.
- * \tparam T5 The type of the fifth constructor argument.
+ * \tparam T \explicit The type of the derived object to construct.
+ * \tparam T1 \deduced The type of the first constructor argument.
+ * \tparam T2 \deduced The type of the second constructor argument.
+ * \tparam T3 \deduced The type of the third constructor argument.
+ * \tparam T4 \deduced The type of the fourth constructor argument.
+ * \tparam T5 \deduced The type of the fifth constructor argument.
  * \param a1 The constructor first argument
  * \param a2 The constructor second argument
  * \param a3 The constructor third argument
@@ -612,13 +612,13 @@ Ptr<T> CreateObject (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5)
 
 /**
  * \copybrief CreateObject()
- * \tparam T The type of the derived object to construct.
- * \tparam T1 The type of the first constructor argument.
- * \tparam T2 The type of the second constructor argument.
- * \tparam T3 The type of the third constructor argument.
- * \tparam T4 The type of the fourth constructor argument.
- * \tparam T5 The type of the fifth constructor argument.
- * \tparam T6 The type of the sixth constructor argument.
+ * \tparam T \explicit The type of the derived object to construct.
+ * \tparam T1 \deduced The type of the first constructor argument.
+ * \tparam T2 \deduced The type of the second constructor argument.
+ * \tparam T3 \deduced The type of the third constructor argument.
+ * \tparam T4 \deduced The type of the fourth constructor argument.
+ * \tparam T5 \deduced The type of the fifth constructor argument.
+ * \tparam T6 \deduced The type of the sixth constructor argument.
  * \param a1 The constructor first argument
  * \param a2 The constructor second argument
  * \param a3 The constructor third argument
@@ -635,14 +635,14 @@ Ptr<T> CreateObject (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5, T6 a6)
 
 /**
  * \copybrief CreateObject()
- * \tparam T The type of the derived object to construct.
- * \tparam T1 The type of the first constructor argument.
- * \tparam T2 The type of the second constructor argument.
- * \tparam T3 The type of the third constructor argument.
- * \tparam T4 The type of the fourth constructor argument.
- * \tparam T5 The type of the fifth constructor argument.
- * \tparam T6 The type of the sixth constructor argument.
- * \tparam T7 The type of the seventh constructor argument.
+ * \tparam T \explicit The type of the derived object to construct.
+ * \tparam T1 \deduced The type of the first constructor argument.
+ * \tparam T2 \deduced The type of the second constructor argument.
+ * \tparam T3 \deduced The type of the third constructor argument.
+ * \tparam T4 \deduced The type of the fourth constructor argument.
+ * \tparam T5 \deduced The type of the fifth constructor argument.
+ * \tparam T6 \deduced The type of the sixth constructor argument.
+ * \tparam T7 \deduced The type of the seventh constructor argument.
  * \param a1 The constructor first argument
  * \param a2 The constructor second argument
  * \param a3 The constructor third argument

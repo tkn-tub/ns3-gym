@@ -67,7 +67,7 @@ namespace ns3 {
  * functions and their goal is just is save you a small
  * bit of typing.
  *
- * \tparam T The underlying type.
+ * \tparam T \explicit The underlying type.
  */
 template <typename T>
 class Ptr 
@@ -147,7 +147,7 @@ public:
   /**
    * Copy, removing \c const qualifier.
    *
-   * \tparam U The underlying type of the \c const object.
+   * \tparam U \deduced The underlying type of the \c const object.
    * \param [in] o The Ptr to copy.
    */
   template <typename U>
@@ -216,15 +216,15 @@ public:
  */
 /** @{ */
 /**
- * \tparam T  The type of class object to create.
+ * \tparam T \explicit The type of class object to create.
  * \return A Ptr to the newly created \c T.
  */
 template <typename T>
 Ptr<T> Create (void);
 
 /**
- * \tparam T  The type of class object to create.
- * \tparam T1 The type of the first constructor argument.
+ * \tparam T  \explicit The type of class object to create.
+ * \tparam T1 \deduced The type of the first constructor argument.
  * \param  a1 The first constructor argument.
  * \return A Ptr to the newly created \c T.
  */
@@ -233,9 +233,9 @@ template <typename T,
 Ptr<T> Create (T1 a1);
 
 /**
- * \tparam T  The type of class object to create.
- * \tparam T1 The type of the first constructor argument.
- * \tparam T2 The type of the second constructor argument.
+ * \tparam T  \explicit The type of class object to create.
+ * \tparam T1 \deduced The type of the first constructor argument.
+ * \tparam T2 \deduced The type of the second constructor argument.
  * \param  a1 The first constructor argument.
  * \param  a2 The second constructor argument.
  * \return A Ptr to the newly created \c T.
@@ -245,10 +245,10 @@ template <typename T,
 Ptr<T> Create (T1 a1, T2 a2);
 
 /**
- * \tparam T  The type of class object to create.
- * \tparam T1 The type of the first constructor argument.
- * \tparam T2 The type of the second constructor argument.
- * \tparam T3 The type of the third constructor argument.
+ * \tparam T  \explicit The type of class object to create.
+ * \tparam T1 \deduced The type of the first constructor argument.
+ * \tparam T2 \deduced The type of the second constructor argument.
+ * \tparam T3 \deduced The type of the third constructor argument.
  * \param  a1 The first constructor argument.
  * \param  a2 The second constructor argument.
  * \param  a3 The third constructor argument.
@@ -260,11 +260,11 @@ template <typename T,
 Ptr<T> Create (T1 a1, T2 a2, T3 a3);
 
 /**
- * \tparam T  The type of class object to create.
- * \tparam T1 The type of the first constructor argument.
- * \tparam T2 The type of the second constructor argument.
- * \tparam T3 The type of the third constructor argument.
- * \tparam T4 The type of the fourth constructor argument.
+ * \tparam T  \explicit The type of class object to create.
+ * \tparam T1 \deduced The type of the first constructor argument.
+ * \tparam T2 \deduced The type of the second constructor argument.
+ * \tparam T3 \deduced The type of the third constructor argument.
+ * \tparam T4 \deduced The type of the fourth constructor argument.
  * \param  a1 The first constructor argument.
  * \param  a2 The second constructor argument.
  * \param  a3 The third constructor argument.
@@ -277,12 +277,12 @@ template <typename T,
 Ptr<T> Create (T1 a1, T2 a2, T3 a3, T4 a4);
 
 /**
- * \tparam T  The type of class object to create.
- * \tparam T1 The type of the first constructor argument.
- * \tparam T2 The type of the second constructor argument.
- * \tparam T3 The type of the third constructor argument.
- * \tparam T4 The type of the fourth constructor argument.
- * \tparam T5 The type of the fifth constructor argument.
+ * \tparam T  \explicit The type of class object to create.
+ * \tparam T1 \deduced The type of the first constructor argument.
+ * \tparam T2 \deduced The type of the second constructor argument.
+ * \tparam T3 \deduced The type of the third constructor argument.
+ * \tparam T4 \deduced The type of the fourth constructor argument.
+ * \tparam T5 \deduced The type of the fifth constructor argument.
  * \param  a1 The first constructor argument.
  * \param  a2 The second constructor argument.
  * \param  a3 The third constructor argument.
@@ -297,13 +297,13 @@ template <typename T,
 Ptr<T> Create (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5);
 
 /**
- * \tparam T  The type of class object to create.
- * \tparam T1 The type of the first constructor argument.
- * \tparam T2 The type of the second constructor argument.
- * \tparam T3 The type of the third constructor argument.
- * \tparam T4 The type of the fourth constructor argument.
- * \tparam T5 The type of the fifth constructor argument.
- * \tparam T6 The type of the sixth constructor argument.
+ * \tparam T  \explicit The type of class object to create.
+ * \tparam T1 \deduced The type of the first constructor argument.
+ * \tparam T2 \deduced The type of the second constructor argument.
+ * \tparam T3 \deduced The type of the third constructor argument.
+ * \tparam T4 \deduced The type of the fourth constructor argument.
+ * \tparam T5 \deduced The type of the fifth constructor argument.
+ * \tparam T6 \deduced The type of the sixth constructor argument.
  * \param  a1 The first constructor argument.
  * \param  a2 The second constructor argument.
  * \param  a3 The third constructor argument.
@@ -319,14 +319,14 @@ template <typename T,
 Ptr<T> Create (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5, T6 a6);
 
 /**
- * \tparam T  The type of class object to create.
- * \tparam T1 The type of the first constructor argument.
- * \tparam T2 The type of the second constructor argument.
- * \tparam T3 The type of the third constructor argument.
- * \tparam T4 The type of the fourth constructor argument.
- * \tparam T5 The type of the fifth constructor argument.
- * \tparam T6 The type of the sixth constructor argument.
- * \tparam T7 The type of the seventh constructor argument.
+ * \tparam T  \explicit The type of class object to create.
+ * \tparam T1 \deduced The type of the first constructor argument.
+ * \tparam T2 \deduced The type of the second constructor argument.
+ * \tparam T3 \deduced The type of the third constructor argument.
+ * \tparam T4 \deduced The type of the fourth constructor argument.
+ * \tparam T5 \deduced The type of the fifth constructor argument.
+ * \tparam T6 \deduced The type of the sixth constructor argument.
+ * \tparam T7 \deduced The type of the seventh constructor argument.
  * \param  a1 The first constructor argument.
  * \param  a2 The second constructor argument.
  * \param  a3 The third constructor argument.
@@ -368,8 +368,8 @@ std::ostream &operator << (std::ostream &os, const Ptr<T> &p);
  * Note that either \c p or \c q could also be ordinary pointers
  * to the underlying object.
  *
- * \tparam T1 Type of the object on the lhs.
- * \tparam T2 Type of the object on the rhs.
+ * \tparam T1 \deduced Type of the object on the lhs.
+ * \tparam T2 \deduced Type of the object on the rhs.
  * \param [in] lhs The left operand.
  * \param [in] rhs The right operand.
  * \return true if the operands point to the same underlying object.
@@ -399,8 +399,8 @@ bool operator == (Ptr<T1> const &lhs, Ptr<T2> const &rhs);
  * Note that either \c p or \c q could also be ordinary pointers
  * to the underlying object.
  *
- * \tparam T1 Type of the object on the lhs.
- * \tparam T2 Type of the object on the rhs.
+ * \tparam T1 \deduced Type of the object on the lhs.
+ * \tparam T2 \deduced Type of the object on the rhs.
  * \param [in] lhs The left operand.
  * \param [in] rhs The right operand.
  * \return true if the operands point to the same underlying object.
@@ -440,8 +440,8 @@ bool operator >= (const Ptr<T> &lhs, const Ptr<T> &rhs);
  * Return a copy of \c p with its stored pointer const casted from
  * \c T2 to \c T1.
  *
- * \tparam T1 The type to return in a Ptr.
- * \tparam T2 The type of the underlying object.
+ * \tparam T1 \deduced The type to return in a Ptr.
+ * \tparam T2 \deduced The type of the underlying object.
  * \param p The original \c const Ptr.
  * \return A non-const Ptr.
  */
@@ -460,7 +460,7 @@ struct CallbackTraits;
  *
  * This is the specialization for Ptr types.
  *
- * \tparam T The base object type.
+ * \tparam T \deduced The base object type.
  */
 template <typename T>
 struct CallbackTraits<Ptr<T> >
@@ -485,7 +485,7 @@ struct EventMemberImplObjTraits;
  *
  * This is the specialization for Ptr types.
  *
- * \tparam T The class type.
+ * \tparam T \explicit The class type.
  */
 template <typename T>
 struct EventMemberImplObjTraits<Ptr<T> >
@@ -647,8 +647,8 @@ bool operator >= (const Ptr<T> &lhs, const Ptr<T> &rhs)
 /**
  * Cast a Ptr.
  *
- * \tparam T1 The desired type to cast to.
- * \tparam T2 The type of the original Ptr.
+ * \tparam T1 \deduced The desired type to cast to.
+ * \tparam T2 \deduced The type of the original Ptr.
  * \param p The original Ptr.
  * \return The result of the cast.
  */

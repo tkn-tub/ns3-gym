@@ -53,17 +53,18 @@ namespace ns3 {
  * This template takes 3 arguments but only the first argument is
  * mandatory:
  *
- * \tparam T The typename of the subclass which derives from this template
- *      class. Yes, this is weird but it's a common C++ template pattern
- *      whose name is CRTP (Curiously Recursive Template Pattern)
- * \tparam PARENT: the typename of the parent of this template. By default,
- *      this typename is "'ns3::empty'" which is an empty class: compilers
- *      which implement the RBCO optimization (empty base class optimization)
- *      will make this a no-op
- * \tparam DELETER: the typename of a class which implements a public static 
- *      method named 'Delete'. This method will be called whenever the
- *      SimpleRefCount template detects that no references to the object
- *      it manages exist anymore.
+ * \tparam T \explicit The typename of the subclass which derives
+ *      from this template class. Yes, this is weird but it's a
+ *      common C++ template pattern whose name is CRTP (Curiously
+ *      Recursive Template Pattern)
+ * \tparam PARENT \explicit The typename of the parent of this template.
+ *      By default, this typename is "'ns3::empty'" which is an empty
+ *      class: compilers which implement the RBCO optimization (empty
+ *      base class optimization) will make this a no-op
+ * \tparam DELETER \explicit The typename of a class which implements
+ *      a public static method named 'Delete'. This method will be called
+ *      whenever the SimpleRefCount template detects that no references
+ *      to the object it manages exist anymore.
  *
  * Interesting users of this class include ns3::Object as well as ns3::Packet.
  */

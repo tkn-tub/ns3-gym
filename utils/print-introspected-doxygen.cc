@@ -18,6 +18,12 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 
+/**
+ * \file
+ * \ingroup utils
+ * Generate documentation from the TypeId database.
+ */
+
 #include <iostream>
 #include <algorithm>
 #include <map>
@@ -71,6 +77,9 @@ namespace
   std::string sectionStart;        ///< start of a section or group
   std::string seeAlso;             ///< Reference to other docs
   std::string subSectionStart;     ///< start a new subsection
+  std::string templateArgument;    ///< template argument
+  std::string templArgExplicit;    ///< template argument required
+  std::string templArgDeduced;     ///< template argument deduced from function
   std::string variable;            ///< variable or class member
 
 } // anonymous namespace
@@ -118,6 +127,9 @@ SetMarkup (bool outputText)
       sectionStart                 = "Section ";
       seeAlso                      = "  See: ";
       subSectionStart              = "Subsection ";
+      templateArgument             = "Template Arg: ";
+      templArgDeduced              = "[deduced]  ";
+      templArgExplicit             = "[explicit] ";
       variable                     = "Variable: ";
     }
   else
@@ -153,6 +165,9 @@ SetMarkup (bool outputText)
       sectionStart                 = "\\ingroup ";
       seeAlso                      = "\\see ";
       subSectionStart              = "\\addtogroup ";
+      templateArgument             = "\\tparam ";
+      templArgDeduced              = "\\deduced ";
+      templArgExplicit             = "\\explicit ";
       variable                     = "\\var ";
     }
 }  // SetMarkup ()
@@ -717,6 +732,7 @@ PrintAttributeValueWithName (std::ostream & os,
      <<   functionStart << "bool"
      <<     qualClass << "::GetAccessor (T & value) const\n"
      <<   "Access the " << name << " value as type " << codeWord << "T.\n"
+     <<   templateArgument << "T " << templArgExplicit << "The type to cast to.\n"
      <<   argument << "[out] value The " << name << " value, as type "
      <<     codeWord << "T.\n"
      <<   returns << "true.\n"
@@ -1116,7 +1132,7 @@ StaticInformation::Get (TypeId tid) const
  * The container elements must support \c operator< (for \c std::sort)
  * and \c operator== (for \c std::unique).
  *
- * \tparam T The container type.
+ * \tparam T \deduced The container type.
  * \param t The container.
  */
 template <typename T>

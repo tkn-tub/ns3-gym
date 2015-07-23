@@ -36,7 +36,7 @@ namespace ns3 {
  *
  * For an example, see timer-impl.h
  *
- * \tparam v The integral constant value distinguishing this type
+ * \tparam v \explicit The integral constant value distinguishing this type
  *           from other values.
  */
 template <int v>
