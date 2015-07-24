@@ -152,8 +152,8 @@ elif [ $tag -eq 1 ]; then
 else
     version=`hg log -r tip --template '{node|short}'`
     # Check for uncommitted changes
-    hg summary | grep -q 'commit: (clean)'
-    if [ $? ] ; then
+    hg summary | grep 'commit:' | grep -q '(clean)'
+    if [ ! $? ] ; then
 	say "beyond latest tag, last commit: $version, dirty"
 	dirty="(+)"
     else
