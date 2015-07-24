@@ -54,8 +54,8 @@ public:
   /**
    * Connect a Callback to a TraceSource (without context.)
    *
-   * \param obj The object instance which contains the target trace source.
-   * \param cb The callback to connect to the target trace source.
+   * \param [in] obj The object instance which contains the target trace source.
+   * \param [in] cb The callback to connect to the target trace source.
    * \return \c true unless the connection could not be made, typically because
    *         the \c obj couldn't be cast to the correct type.
    */
@@ -66,9 +66,9 @@ public:
    * The context string will be provided as the first argument to the
    * Callback function.
    *
-   * \param obj The object instance which contains the target trace source.
-   * \param context The context to bind to the user callback.
-   * \param cb The callback to connect to the target trace source.
+   * \param [in] obj The object instance which contains the target trace source.
+   * \param [in] context The context to bind to the user callback.
+   * \param [in] cb The callback to connect to the target trace source.
    * \return \c true unless the connection could not be made, typically because
    *         the \c obj couldn't be cast to the correct type.
    */
@@ -76,8 +76,8 @@ public:
   /**
    * Disconnect a Callback from a TraceSource (without context).
    *
-   * \param obj The object instance which contains the target trace source.
-   * \param cb The callback to disconnect from the target trace source.
+   * \param [in] obj The object instance which contains the target trace source.
+   * \param [in] cb The callback to disconnect from the target trace source.
    * \return \c true unless the connection could not be made, typically because
    *         the \c obj couldn't be cast to the correct type.
    */
@@ -88,9 +88,9 @@ public:
    * The context string will be provided as the first argument to the
    * Callback function.
    *
-   * \param obj the object instance which contains the target trace source.
-   * \param context the context which was bound to the user callback.
-   * \param cb the callback to disconnect from the target trace source.
+   * \param [in] obj the object instance which contains the target trace source.
+   * \param [in] context the context which was bound to the user callback.
+   * \param [in] cb the callback to disconnect from the target trace source.
    * \return \c true unless the connection could not be made, typically because
    *         the \c obj couldn't be cast to the correct type.
    */
@@ -109,7 +109,7 @@ public:
  * static-polymorphic class.  This functionality is typically provided
  * by wrapping an object data member in a TracedCallback.
  *
- * \param a the trace source
+ * \param [in] a The trace source
  * \returns The TraceSourceAccessor
  */
 template <typename T>
@@ -130,7 +130,7 @@ namespace ns3 {
  *
  * \tparam T \deduced Class type of the TracedCallback
  * \tparam SOURCE \deduced Type of the underlying value.
- * \param a The underlying data value.
+ * \param [in] a The underlying data value.
  * \returns The TraceSourceAccessor
  */
 template <typename T, typename SOURCE>

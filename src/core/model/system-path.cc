@@ -82,7 +82,7 @@ namespace SystemPath {
  * This is an internal function (by virtue of not being
  * declared in a \c .h file); the public API is FindSelfDirectory().
  * 
- * \param path The full path to a file.
+ * \param [in] path The full path to a file.
  * \returns The full path to the containing directory.
  */
 std::string Dirname (std::string path)

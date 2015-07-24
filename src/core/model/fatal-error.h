@@ -83,7 +83,7 @@
  *
  * \brief Fatal error handling
  *
- * \param msg message to output when this macro is hit.
+ * \param [in] msg message to output when this macro is hit.
  *
  * When this macro is hit at runtime, the user-specified
  * error message is printed to stderr, followed by a call

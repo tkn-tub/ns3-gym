@@ -302,8 +302,11 @@ The preferred style for Doxygen comments is the JavaDoc style::
    *  \note Note any limitations or gotchas.
    *
    *  (For functions with arguments or return valued:)
-   *  \param foo Brief noun phrase describing this argument.
-   *  \param bar Note Sentence case, and terminating period.
+   *  \param [in] foo Brief noun phrase describing this argument. Note
+   *                  that we indicate if the argument is input,
+   *                  output, or both.
+   *  \param [in,out] bar Note Sentence case, and terminating period.
+   *  \param [in] baz Indicate boolean values with \c true or \c false.
    *  \return Brief noun phrase describing the value.
    *
    *  \internal
@@ -312,7 +315,7 @@ The preferred style for Doxygen comments is the JavaDoc style::
    *  Understanding this material shouldn't be necessary to using
    *  the class or method.
    */
-   class Example
+   void ExampleFunction (const int foo, double & bar, const bool baz);
 
 In this style the Doxygen comment block begins with two \`*' characters:
 ``/**``, and precedes the item being documented.
@@ -531,7 +534,7 @@ usage for |ns3|.
 
   The symbol ``foo`` is how other items can add themselves to this group.
   The string following that will be the title for the group.  Any futher
-  text will be the detailed descriptionf for the group page.
+  text will be the detailed description for the group page.
 
 * Document each file, assigning it to the relevant group.  In a header file::
 
@@ -579,7 +582,7 @@ usage for |ns3|.
 
 * ``\RFC{301}`` will create a link to RFC 301.
 
-* Document the direction of function arguments with ``\param [in]``, _etc_.
+* Document the direction of function arguments with ``\param [in]``, *etc*.
   The allowed values of the direction token are ``[in]``, ``[out]``, and
   ``[in,out]`` (note the explicit square brackets), as discussed in the
   Doxygen docs for ``\param``.
@@ -590,7 +593,13 @@ usage for |ns3|.
 * For template arguments, indicate if they will be deduced or must be given
   explicitly::
 
-    template <typename T, typename U> void Function (U a);
+    /**
+     * A templated function.
+     * \tparam T \explicit The return type.
+     * \tparam U \deduced The argument type.
+     * \param [in] a The argument.
+     */
+    template <typename T, typename U> T Function (U a);
 
   * Use ``\tparam U \deduced`` because the type ``U`` can be deduced at
     the site where the template is invoked.  Basically deduction can only

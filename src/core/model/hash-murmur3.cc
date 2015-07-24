@@ -84,8 +84,8 @@ namespace Murmur3Implementation {
 /**
  * Barrel shift (rotate) left on 32 bits.
  *
- * \param x The initial value.
- * \param r The number of bit positions to rotate.
+ * \param [in] x The initial value.
+ * \param [in] r The number of bit positions to rotate.
  * \return The rotated value.
  */
 inline uint32_t rotl32 ( uint32_t x, int8_t r )
@@ -96,8 +96,8 @@ inline uint32_t rotl32 ( uint32_t x, int8_t r )
 /**
  * Barrel shift (rotate) left on 64 bits.
  *
- * \param x The initial value.
- * \param r The number of bit positions to rotate.
+ * \param [in] x The initial value.
+ * \param [in] r The number of bit positions to rotate.
  * \return The rotated value.
  */
 inline uint64_t rotl64 ( uint64_t x, int8_t r )
@@ -115,8 +115,8 @@ inline uint64_t rotl64 ( uint64_t x, int8_t r )
  * If your platform needs to do endian-swapping or can only
  * handle aligned reads, do the conversion here.
  *
- * \param p Block base address.
- * \param i Index into the block.
+ * \param [in] p Block base address.
+ * \param [in] i Index into the block.
  * \returns The \c i'th word from the block.
  */
 inline uint32_t getblock ( const uint32_t * p, int i )
@@ -133,7 +133,7 @@ inline uint64_t getblock ( const uint64_t * p, int i )
 /**
  * Finalization mix - force all bits of a hash block to avalanche.
  *
- * \param h Final word of the hash block.
+ * \param [in] h Final word of the hash block.
  * \returns Fully mixed final word.
  */
 inline uint32_t fmix ( uint32_t h )
@@ -166,19 +166,19 @@ inline uint64_t fmix ( uint64_t h )
 /**
  * Initial and incremental hash.
  *
- * \param key Data to be hashed.
- * \param len Number of words in the \c key.
- * \param seed Initial or current hash state.
- * \param out Output hash value.
+ * \param [in] key Data to be hashed.
+ * \param [in] len Number of words in the \c key.
+ * \param [in] seed Initial or current hash state.
+ * \param [out] out Output hash value.
  */
 void MurmurHash3_x86_32_incr ( const void * key, int len,
                                uint32_t seed, void * out );
 /**
  * Finalize a hash.
  *
- * \param len Total number of words that have gone in to the hash.
- * \param seed Initial or current hash state.
- * \param out Output hash value.
+ * \param [in] len Total number of words that have gone in to the hash.
+ * \param [in] seed Initial or current hash state.
+ * \param [out] out Output hash value.
  */
 void MurmurHash3_x86_32_fin ( int len,
                               uint32_t seed, void * out );
@@ -262,19 +262,19 @@ void MurmurHash3_x86_32_fin ( int len,
 /**
  * Initial and incremental hash.
  *
- * \param key Data to be hashed.
- * \param len Number of words in the \c key.
- * \param seeds Initial or current hash state.
- * \param out Output hash value.
+ * \param [in] key Data to be hashed.
+ * \param [in] len Number of words in the \c key.
+ * \param [in] seeds Initial or current hash state.
+ * \param [out] out Output hash value.
  */
 void MurmurHash3_x86_128_incr ( const void * key, const int len,
                                 uint32_t * seeds, void * out );
 /**
  * Finalize a hash.
  *
- * \param len Total number of words that have gone in to the hash.
- * \param seeds Initial or current hash state.
- * \param out Output hash value.
+ * \param [in] len Total number of words that have gone in to the hash.
+ * \param [in] seeds Initial or current hash state.
+ * \param [out] out Output hash value.
  */
 void MurmurHash3_x86_128_fin ( const int len,
                                uint32_t * seeds, void * out );
@@ -283,10 +283,10 @@ void MurmurHash3_x86_128_fin ( const int len,
 /**
  * Initial and incremental hash.
  *
- * \param key Data to be hashed.
- * \param len Number of words in the \c key.
- * \param seed Initial or current hash state.
- * \param out Output hash value.
+ * \param [in] key Data to be hashed.
+ * \param [in] len Number of words in the \c key.
+ * \param [in] seed Initial or current hash state.
+ * \param [out] out Output hash value.
  */
 void MurmurHash3_x86_128 ( const void * key, const int len,
                            uint32_t seed, void * out )

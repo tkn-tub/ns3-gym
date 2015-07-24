@@ -168,7 +168,7 @@ public:
    *   h.clear ().GetHash64 (...);
    * \endcode
    *
-   * \return this
+   * \return This hasher.
    */
   Hasher & clear (void);
 

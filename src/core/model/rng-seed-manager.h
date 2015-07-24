@@ -50,7 +50,7 @@ public:
    *   UniformVariable x(2,3);     // These will give the same output everytime
    *   ExponentialVariable y(120); // as long as the seed stays the same.
    * \endcode
-   * \param seed The seed value to use.
+   * \param [in] seed The seed value to use.
    *
    * \note While the underlying RNG takes six integer values as a seed;
    * it is sufficient to set these all to the same integer, so we provide

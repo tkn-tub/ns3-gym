@@ -109,10 +109,10 @@ const Matrix A2p0 = {
 /// This computes the result exactly, without exceeding the 53 bit
 /// precision of doubles.
 ///
-/// \param a First multiplicative argument.
-/// \param s Second multiplicative argument.
-/// \param c Additive argument.
-/// \param m Modulus.
+/// \param [in] a First multiplicative argument.
+/// \param [in] s Second multiplicative argument.
+/// \param [in] c Additive argument.
+/// \param [in] m Modulus.
 /// \returns <tt>(a*s +c) MOD m</tt>
 //
 double MultModM (double a, double s, double c, double m)
@@ -150,10 +150,10 @@ double MultModM (double a, double s, double c, double m)
 /// Compute the vector v = A*s MOD m. Assume that -m < s[i] < m.
 /// Works also when v = s.
 ///
-/// \param A Matrix argument, 3x3.
-/// \param s Three component input vector.
-/// \param v Three component output vector.
-/// \param m Modulus.
+/// \param [in] A Matrix argument, 3x3.
+/// \param [in] s Three component input vector.
+/// \param [out] v Three component output vector.
+/// \param [in] m Modulus.
 //
 void MatVecModM (const Matrix A, const double s[3], double v[3],
                  double m)
@@ -179,10 +179,10 @@ void MatVecModM (const Matrix A, const double s[3], double v[3],
 /// Compute the matrix C = A*B MOD m. Assume that -m < s[i] < m.
 /// Note: works also if A = C or B = C or A = B = C.
 ///
-/// \param A First matrix argument.
-/// \param B Second matrix argument.
-/// \param C Result matrix.
-/// \param m Modulus.
+/// \param [in] A First matrix argument.
+/// \param [in] B Second matrix argument.
+/// \param [out] C Result matrix.
+/// \param [in] m Modulus.
 //
 void MatMatModM (const Matrix A, const Matrix B,
                  Matrix C, double m)
@@ -217,10 +217,10 @@ void MatMatModM (const Matrix A, const Matrix B,
 /// \ingroup rngimpl
 /// Compute the matrix B = (A^(2^e) Mod m);  works also if A = B. 
 ///
-/// \param src Matrix input argument \c A.
-/// \param dst Matrix output \c B.
-/// \param m Modulus.
-/// \param e The exponent.
+/// \param [in] src Matrix input argument \c A.
+/// \param [out] dst Matrix output \c B.
+/// \param [in] m Modulus.
+/// \param [in] e The exponent.
 //
 void MatTwoPowModM (const Matrix src, Matrix dst, double m, int32_t e)
 {
@@ -247,10 +247,10 @@ void MatTwoPowModM (const Matrix src, Matrix dst, double m, int32_t e)
 /// \ingroup rngimpl
 /// Compute the matrix B = (A^n Mod m);  works even if A = B.
 ///
-/// \param A Matrix input argument.
-/// \param B Matrix output.
-/// \param m Modulus.
-/// \param n Exponent.
+/// \param [in] A Matrix input argument.
+/// \param [out] B Matrix output.
+/// \param [in] m Modulus.
+/// \param [in] n Exponent.
 //
 void MatPowModM (const double A[3][3], double B[3][3], double m, int32_t n)
 {
@@ -311,9 +311,9 @@ struct Precalculated PowerOfTwoConstants (void)
 }
 /// Get the transition matrices raised to a power of 2.
 ///
-/// \param n The power of 2.
-/// \param a1p The first transition matrix power.
-/// \param a2p The second transition matrix power.
+/// \param [in] n The power of 2.
+/// \param [out] a1p The first transition matrix power.
+/// \param [out] a2p The second transition matrix power.
 //
 void PowerOfTwoMatrix (int n, Matrix a1p, Matrix a2p)
 {

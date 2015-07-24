@@ -185,13 +185,16 @@ public:
   /**
    * Record a new attribute in a type id.
    * \param [in] uid The id.
-   * \param name The name of the new attribute
-   * \param help Some help text which describes the purpose of this
-   *        attribute.
-   * \param flags Flags which describe how this attribute can be read and/or written.
-   * \param initialValue The initial value for this attribute.
-   * \param accessor An instance of the associated AttributeAccessor subclass.
-   * \param checker An instance of the associated AttributeChecker subclass.
+   * \param [in] name The name of the new attribute
+   * \param [in] help Some help text which describes the purpose of this
+   *             attribute.
+   * \param [in] flags Flags which describe how this attribute can be
+   *             read and/or written.
+   * \param [in] initialValue The initial value for this attribute.
+   * \param [in] accessor An instance of the associated AttributeAccessor
+   *             subclass.
+   * \param [in] checker An instance of the associated AttributeChecker
+   *             subclass.
    */
   void AddAttribute (uint16_t uid,
                      std::string name,
@@ -203,8 +206,8 @@ public:
   /**
    * Set the initial value of an Attribute.
    * \param [in] uid The id.
-   * \param i The attribute to manipulate
-   * \param initialValue The new initial value to use for this attribute.
+   * \param [in] i The attribute to manipulate
+   * \param [in] initialValue The new initial value to use for this attribute.
    */
   void SetAttributeInitialValue(uint16_t uid,
                                 uint32_t i,
@@ -218,20 +221,21 @@ public:
   /**
    * Get Attribute information by index.
    * \param [in] uid The id.
-   * \param i Index into attribute array
+   * \param [in] i Index into attribute array
    * \returns The information associated to attribute whose index is \p i.
    */
   struct TypeId::AttributeInformation GetAttribute(uint16_t uid, uint32_t i) const;
   /**
    * Record a new TraceSource.
    * \param [in] uid The id.
-   * \param name The name of the new trace source
-   * \param help Some help text which describes the purpose of this
-   *        trace source.
-   * \param accessor A pointer to a TraceSourceAccessor which can be
-   *        used to connect/disconnect sinks to this trace source.
-   * \param callback Fully qualified typedef name for the callback signature.
-   *        Generally this should begin with the "ns3::" namespace qualifier.
+   * \param [in] name The name of the new trace source
+   * \param [in] help Some help text which describes the purpose of this
+   *             trace source.
+   * \param [in] accessor A pointer to a TraceSourceAccessor which can be
+   *             used to connect/disconnect sinks to this trace source.
+   * \param [in] callback Fully qualified typedef name for the callback
+   *             signature.  Generally this should begin with the
+   *             "ns3::" namespace qualifier.  
    * \returns This TypeId instance.
    */
   void AddTraceSource (uint16_t uid,
@@ -248,7 +252,7 @@ public:
   /**
    * Get the trace source by index.
    * \param [in] uid The id.
-   * \param i Index into trace source array.
+   * \param [in] i Index into trace source array.
    * \returns Detailed information about the requested trace source.
    */
   struct TypeId::TraceSourceInformation GetTraceSource(uint16_t uid, uint32_t i) const;

@@ -149,9 +149,9 @@ public:
    *
    * The target trace source should be registered with TypeId::AddTraceSource.
    *
-   * \param name The name of the target trace source.
-   * \param context The trace context associated to the callback.
-   * \param cb The callback to connect to the trace source.
+   * \param [in] name The name of the target trace source.
+   * \param [in] context The trace context associated to the callback.
+   * \param [in] cb The callback to connect to the trace source.
    * \returns \c true.
    */
   bool TraceConnect (std::string name, std::string context, const CallbackBase &cb);
@@ -160,8 +160,8 @@ public:
    *
    * The target trace source should be registered with TypeId::AddTraceSource.
    *
-   * \param name The name of the target trace source.
-   * \param cb The callback to connect to the trace source.
+   * \param [in] name The name of the target trace source.
+   * \param [in] cb The callback to connect to the trace source.
    * \returns \c true.
    */
   bool TraceConnectWithoutContext (std::string name, const CallbackBase &cb);
@@ -171,9 +171,9 @@ public:
    *
    * The target trace source should be registered with TypeId::AddTraceSource.
    *
-   * \param name The name of the target trace source.
-   * \param context The trace context associated to the callback.
-   * \param cb The callback to disconnect from the trace source.
+   * \param [in] name The name of the target trace source.
+   * \param [in] context The trace context associated to the callback.
+   * \param [in] cb The callback to disconnect from the trace source.
    * \returns \c true.
    */
   bool TraceDisconnect (std::string name, std::string context, const CallbackBase &cb);
@@ -183,8 +183,8 @@ public:
    *
    * The target trace source should be registered with TypeId::AddTraceSource.
    *
-   * \param name The name of the target trace source.
-   * \param cb The callback to disconnect from the trace source.
+   * \param [in] name The name of the target trace source.
+   * \param [in] cb The callback to disconnect from the trace source.
    * \returns \c true.
    */
   bool TraceDisconnectWithoutContext (std::string name, const CallbackBase &cb);
@@ -209,7 +209,7 @@ protected:
    * you should make sure that you invoke this method from
    * your most-derived constructor.
    *
-   * \param attributes The attribute values used to initialize 
+   * \param [in] attributes The attribute values used to initialize 
    *        the member variables of this object's instance.
    */
   void ConstructSelf (const AttributeConstructionList &attributes);

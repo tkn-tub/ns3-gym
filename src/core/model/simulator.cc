@@ -79,7 +79,7 @@ static GlobalValue g_schedTypeImpl = GlobalValue ("SchedulerType",
  * \ingroup logging
  * Default TimePrinter implementation.
  *
- * \param [in] os The output stream to print the time on.
+ * \param [in,out] os The output stream to print the time on.
  */
 static void
 TimePrinter (std::ostream &os)
@@ -91,7 +91,7 @@ TimePrinter (std::ostream &os)
  * \ingroup logging
  * Default node id printer implementation.
  * 
- * \param [in] os The output stream to print the node id on.
+ * \param [in,out] os The output stream to print the node id on.
  */
 static void
 NodePrinter (std::ostream &os)

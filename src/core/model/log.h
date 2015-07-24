@@ -127,8 +127,8 @@ enum LogLevel {
  * Same as running your program with the NS_LOG environment
  * variable set as NS_LOG='name=level'.
  *
- * \param name The log component name.
- * \param level The logging level.
+ * \param [in] name The log component name.
+ * \param [in] level The logging level.
  */
 void LogComponentEnable (char const *name, enum LogLevel level);
 
@@ -138,7 +138,7 @@ void LogComponentEnable (char const *name, enum LogLevel level);
  * Same as running your program with the NS_LOG environment
  * variable set as NS_LOG='*=level'
  *
- * \param level The logging level.
+ * \param [in] level The logging level.
  */
 void LogComponentEnableAll (enum LogLevel level);
 
@@ -149,15 +149,15 @@ void LogComponentEnableAll (enum LogLevel level);
  * The logging output can be later re-enabled with a call
  * to LogComponentEnable.
  *
- * \param name The log component name.
- * \param level The logging level.
+ * \param [in] name The log component name.
+ * \param [in] level The logging level.
  */
 void LogComponentDisable (char const *name, enum LogLevel level);
 
 /**
  * Disable all logging for all components.
  *
- * \param level The logging level.
+ * \param [in] level The logging level.
  */
 void LogComponentDisableAll (enum LogLevel level);
 
@@ -196,7 +196,7 @@ void LogComponentDisableAll (enum LogLevel level);
  *   // Further definitions outside of the ns3 namespace
  *\endcode
  *
- * \param name The log component name.
+ * \param [in] name The log component name.
  */
 #define NS_LOG_COMPONENT_DEFINE(name)                           \
   static ns3::LogComponent g_log = ns3::LogComponent (name, __FILE__)
@@ -206,8 +206,8 @@ void LogComponentDisableAll (enum LogLevel level);
  *
  * See LogComponent().
  *
- * \param name The log component name.
- * \param mask The default mask.
+ * \param [in] name The log component name.
+ * \param [in] mask The default mask.
  */
 #define NS_LOG_COMPONENT_DEFINE_MASK(name, mask)                \
   static ns3::LogComponent g_log = ns3::LogComponent (name, __FILE__, mask)
@@ -215,7 +215,7 @@ void LogComponentDisableAll (enum LogLevel level);
 /**
  * Use \ref NS_LOG to output a message of level LOG_ERROR.
  *
- * \param msg The message to log.
+ * \param [in] msg The message to log.
  */
 #define NS_LOG_ERROR(msg) \
   NS_LOG (ns3::LOG_ERROR, msg)
@@ -223,7 +223,7 @@ void LogComponentDisableAll (enum LogLevel level);
 /**
  * Use \ref NS_LOG to output a message of level LOG_WARN.
  *
- * \param msg The message to log.
+ * \param [in] msg The message to log.
  */
 #define NS_LOG_WARN(msg) \
   NS_LOG (ns3::LOG_WARN, msg)
@@ -231,7 +231,7 @@ void LogComponentDisableAll (enum LogLevel level);
 /**
  * Use \ref NS_LOG to output a message of level LOG_DEBUG.
  *
- * \param msg The message to log.
+ * \param [in] msg The message to log.
  */
 #define NS_LOG_DEBUG(msg) \
   NS_LOG (ns3::LOG_DEBUG, msg)
@@ -239,7 +239,7 @@ void LogComponentDisableAll (enum LogLevel level);
 /**
  * Use \ref NS_LOG to output a message of level LOG_INFO.
  *
- * \param msg The message to log.
+ * \param [in] msg The message to log.
  */
 #define NS_LOG_INFO(msg) \
   NS_LOG (ns3::LOG_INFO, msg)
@@ -247,7 +247,7 @@ void LogComponentDisableAll (enum LogLevel level);
 /**
  * Use \ref NS_LOG to output a message of level LOG_LOGIC
  *
- * \param msg The message to log.
+ * \param [in] msg The message to log.
  */
 #define NS_LOG_LOGIC(msg) \
   NS_LOG (ns3::LOG_LOGIC, msg)
@@ -266,14 +266,14 @@ void LogComponentPrintList (void);
  * Function signature for prepending the simulation time
  * to a log message.
  *
- * \param os The output stream to print on.
+ * \param [in,out] os The output stream to print on.
  */
 typedef void (*LogTimePrinter)(std::ostream &os);
 /**
  * Function signature for prepending the node id
  * to a log message.
  *
- * \param os The output stream to print on.
+ * \param [in,out] os The output stream to print on.
  */
 typedef void (*LogNodePrinter)(std::ostream &os);
 
@@ -281,7 +281,7 @@ typedef void (*LogNodePrinter)(std::ostream &os);
  * Set the LogTimePrinter function to be used
  * to prepend log messages with the simulation time.
  *
- * \param lp The LogTimePrinter function.
+ * \param [in] lp The LogTimePrinter function.
  */
 void LogSetTimePrinter (LogTimePrinter lp);
 /**
@@ -294,7 +294,7 @@ LogTimePrinter LogGetTimePrinter (void);
  * Set the LogNodePrinter function to be used
  * to prepend log messages with the node id.
  *
- * \param np The LogNodePrinter function.
+ * \param [in] np The LogNodePrinter function.
  */
 void LogSetNodePrinter (LogNodePrinter np);
 /**
@@ -368,7 +368,7 @@ public:
   /**
    * Prevent the enabling of a specific LogLevel.
    *
-   * \param level The LogLevel to block.
+   * \param [in] level The LogLevel to block.
    */
   void SetMask (const enum LogLevel level);
 

@@ -123,7 +123,7 @@ public:
   /**
    *  Assignment operator
    * \param [in] o Time to assign.
-   * \return the Time.
+   * \return The Time.
    */      
   inline Time & operator = (const Time & o)
   {
@@ -246,7 +246,7 @@ public:
    * There can be no white space between the numerical portion
    * and the units.  Any otherwise malformed string causes a fatal error to
    * occur.
-   * \param s The string to parse into a Time
+   * \param [in] s The string to parse into a Time
    */
   explicit Time (const std::string & s);
 
@@ -270,27 +270,27 @@ public:
       }
   }
 
-  /** \return true if the time is zero, false otherwise. */
+  /** \return \c true if the time is zero, \c false otherwise. */
   inline bool IsZero (void) const
   {
     return m_data == 0;
   }
-  /** \return true if the time is negative or zero, false otherwise. */
+  /** \return \c true if the time is negative or zero, \c false otherwise. */
   inline bool IsNegative (void) const
   {
     return m_data <= 0;
   }
-  /** \return true if the time is positive or zero, false otherwise. */
+  /** \return \c true if the time is positive or zero, \c false otherwise. */
   inline bool IsPositive (void) const
   {
     return m_data >= 0;
   }
-  /** \return true if the time is strictly negative, false otherwise. */
+  /** \return \c true if the time is strictly negative, \c false otherwise. */
   inline bool IsStrictlyNegative (void) const
   {
     return m_data < 0;
   }
-  /** \return true if the time is strictly positive, false otherwise. */
+  /** \return \c true if the time is strictly positive, \c false otherwise. */
   inline bool IsStrictlyPositive (void) const
   {
     return m_data > 0;
@@ -372,7 +372,7 @@ public:
    */
   /**
    * Get the raw time value, in the current resolution unit.
-   * \returns the raw time value
+   * \returns The raw time value
    */
   inline int64_t GetTimeStep (void) const
   {
@@ -390,7 +390,7 @@ public:
 
 
   /**
-   * \param resolution the new resolution to use
+   * \param [in] resolution The new resolution to use
    *
    * Change the global resolution used to convert all
    * user-provided time values in Time objects and Time objects
@@ -398,7 +398,7 @@ public:
    */
   static void SetResolution (enum Unit resolution);
   /**
-   * \returns the current global resolution.
+   * \returns The current global resolution.
    */
   static enum Unit GetResolution (void);
 
@@ -526,7 +526,7 @@ public:
    * \endcode
    * will print ``+3140.0ms``
    *
-   * \param unit [in] The unit to use.
+   * \param [in] unit The unit to use.
    * \return The Time with embedded unit.
    */
   TimeWithUnit As (const enum Unit unit) const;
@@ -534,8 +534,8 @@ public:
   /**
    * TracedValue callback signature for Time
    *
-   * \param [in] oldValue original value of the traced variable
-   * \param [in] newValue new value of the traced variable
+   * \param [in] oldValue Original value of the traced variable
+   * \param [in] newValue New value of the traced variable
    */
   typedef void (* TracedValueCallback)(const Time oldValue,
                                        const Time newValue);
@@ -571,7 +571,7 @@ private:
    *  Get the Information record for \p timeUnit for the current Resolution
    *
    *  \param [in] timeUnit The Unit to get Information for
-   *  \return the Information for \p timeUnit
+   *  \return The Information for \p timeUnit
    */
   static inline struct Information *PeekInformation (enum Unit timeUnit)
   {
@@ -633,7 +633,7 @@ public:
   /**
    *  Function to force static initialization of Time.
    *
-   * \return true on the first call
+   * \return \c true on the first call
    */
   static bool StaticInit ();
 private:
@@ -694,22 +694,22 @@ private:
 
   /**
    *  Absolute value function for Time
-   *  \param time the input value
-   *  \returns the absolute value of the input value.
+   *  \param [in] time The input value
+   *  \returns The absolute value of the input value.
    */
   friend Time Abs (const Time & time);
   /**
    *  Max function for Time.
-   *  \param ta the first value
-   *  \param tb the seconds value
-   *  \returns the max of the two input values.
+   *  \param [in] ta The first value
+   *  \param [in] tb The seconds value
+   *  \returns The max of the two input values.
    */
   friend Time Max (const Time & ta, const Time & tb);
   /**
    *  Min function for Time.
-   *  \param ta the first value
-   *  \param tb the seconds value
-   *  \returns the min of the two input values.
+   *  \param [in] ta The first value
+   *  \param [in] tb The seconds value
+   *  \returns The min of the two input values.
    */
   friend Time Min (const Time & ta, const Time & tb);
 
@@ -823,7 +823,7 @@ inline Time Min (const Time & ta, const Time & tb)
  * The stream `width` and `precision` are ignored; Time output always
  * includes ".0".
  *
- * \param [in] os The output stream.
+ * \param [in,out] os The output stream.
  * \param [in] time The Time to put on the stream.
  * \return The stream.
  */
@@ -834,7 +834,7 @@ std::ostream & operator << (std::ostream & os, const Time & time);
  *
  * Uses the Time::Time (const std::string &) constructor
  *
- * \param [in] is The input stream.
+ * \param [in,out] is The input stream.
  * \param [out] time The Time variable to set from the stream data.
  * \return The stream.
  */
@@ -854,7 +854,7 @@ std::istream & operator >> (std::istream & is, Time & time);
 /**
  * \ingroup timecivil
  * Construct a Time in the indicated unit.
- * \param value The value
+ * \param [in] value The value
  * \return The Time
  * @{
  */
@@ -962,7 +962,7 @@ ATTRIBUTE_ACCESSOR_DEFINE (Time);
  *
  *  \param [in] min Minimum allowed value.
  *  \param [in] max Maximum allowed value.
- *  \return the AttributeChecker
+ *  \return The AttributeChecker
  */
 Ptr<const AttributeChecker> MakeTimeChecker (const Time min, const Time max);
 
@@ -970,7 +970,7 @@ Ptr<const AttributeChecker> MakeTimeChecker (const Time min, const Time max);
  * \ingroup time
  * \brief Helper to make an unbounded Time checker.
  *
- * \return the AttributeChecker
+ * \return The AttributeChecker
  */
 inline
 Ptr<const AttributeChecker> MakeTimeChecker (void)
@@ -983,7 +983,7 @@ Ptr<const AttributeChecker> MakeTimeChecker (void)
  * \brief Helper to make a Time checker with a lower bound.
  *
  *  \param [in] min Minimum allowed value.
- * \return the AttributeChecker
+ * \return The AttributeChecker
  */
 inline
 Ptr<const AttributeChecker> MakeTimeChecker (const Time min)
@@ -1015,7 +1015,7 @@ private:
 
   /**
    *  Output streamer
-   *  \param [in] os The stream.
+   *  \param [in,out] os The stream.
    *  \param [in] timeU The Time with desired unit
    *  \returns The stream.
    */

@@ -144,8 +144,8 @@
  * NS_LOG (LOG_DEBUG, "a number="<<aNumber<<", anotherNumber="<<anotherNumber);
  * \endcode
  *
- * \param level the log level
- * \param msg the message to log
+ * \param [in] level The log level
+ * \param [in] msg The message to log
  * \internal
  * Logging implementation macro; should not be called directly.
  */
@@ -208,7 +208,7 @@
  * (at least) NS_LOG_FUNCTION(this).  Static functions should use
  * NS_LOG_FUNCTION_NOARGS() instead.
  *
- * \param parameters the parameters to output.
+ * \param [in] parameters The parameters to output.
  */
 #define NS_LOG_FUNCTION(parameters)                             \
   NS_LOG_CONDITION                                              \
@@ -233,7 +233,7 @@
  *
  * Output the requested message unconditionaly.
  *
- * \param msg the message to log
+ * \param [in] msg The message to log
  */
 #define NS_LOG_UNCOND(msg)              \
   NS_LOG_CONDITION                                              \

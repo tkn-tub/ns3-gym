@@ -115,8 +115,8 @@ public:
   /**
    * \copybrief ScheduleNow(EventImpl*)
    *
-   * \param context Event context.
-   * \param event The event to schedule.
+   * \param [in] context Event context.
+   * \param [in] event The event to schedule.
    */
   void ScheduleRealtimeNowWithContext (uint32_t context, EventImpl *event);
   /** \copydoc ScheduleNow(EventImpl*) */
@@ -130,7 +130,7 @@ public:
   /**
    * Set the SynchronizationMode.
    *
-   * \param mode The new SynchronizationMode.
+   * \param [in] mode The new SynchronizationMode.
    */
   void SetSynchronizationMode (RealtimeSimulatorImpl::SynchronizationMode mode);
   /**
@@ -142,7 +142,7 @@ public:
   /**
    * Set the fatal error threshold for SynchronizationMode SYNC_HARD_LIMIT.
    *
-   * \param limit The maximum amount of real time we are allowed to fall
+   * \param [in] limit The maximum amount of real time we are allowed to fall
    *     behind before we trigger a fatal error.
    */
   void SetHardLimit (Time limit);

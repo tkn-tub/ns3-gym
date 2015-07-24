@@ -52,7 +52,7 @@ public:
   /**
    * Set the condition.
    *
-   * \param condition The new condition value.
+   * \param [in] condition The new condition value.
    */
   void SetCondition (bool condition);
   /**
@@ -73,7 +73,7 @@ public:
    * Unset the condition, then wait for a limited amount of wall-clock
    * time for another thread to set it with SetCondition.
    *
-   * \param ns Maximum time to wait, in ns.
+   * \param [in] ns Maximum time to wait, in ns.
    * \returns \c true if the condition timed out; \c false if the other
    * thread set it.
    */

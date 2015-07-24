@@ -44,7 +44,7 @@ NS_LOG_COMPONENT_DEFINE ("int64x64-128");
  * \param [in]  sb The signed value of the second operand.
  * \param [out] ua The unsigned magnitude of the first operand.
  * \param [out] ub The unsigned magnitude of the second operand.
- * \returns True if the result will be negative.
+ * \returns \c true if the result will be negative.
  */
 static inline  
 bool

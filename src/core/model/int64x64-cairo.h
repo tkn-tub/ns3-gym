@@ -125,7 +125,7 @@ public:
   /**
    * Construct from an integral type.
    *
-   * \param [in] v integer value to represent
+   * \param [in] v Integer value to represent
    */
   inline int64x64_t (const int v)
   {

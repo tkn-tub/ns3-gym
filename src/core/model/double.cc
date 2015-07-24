@@ -41,9 +41,9 @@ namespace internal {
  * \ingroup attribute_Double
  * Make a Double attribute checker with embedded numeric type name.
  *
- * \param min The minimum allowed value.
- * \param max The maximum allowed value.
- * \param name The original type name ("float", "double").
+ * \param [in] min The minimum allowed value.
+ * \param [in] max The maximum allowed value.
+ * \param [in] name The original type name ("float", "double").
  * \returns The AttributeChecker.
  */
 Ptr<const AttributeChecker> MakeDoubleChecker (double min, double max, std::string name)

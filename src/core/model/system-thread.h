@@ -112,7 +112,7 @@ public:
    * method provided to do this is Join(). If you call Join() you will block
    * until the SystemThread run method returns.
    *
-   * @param callback entry point of the thread
+   * @param [in] callback entry point of the thread
    * 
    * @warning I've made the system thread class look like a normal ns3 object
    * with smart pointers, and living in the heap.  This makes it very easy to
@@ -144,7 +144,7 @@ public:
   /**
    * @brief Returns the current thread Id.
    *
-   * @returns current thread Id. 
+   * @returns Current thread Id. 
    */
   static ThreadId Self(void);
 
@@ -152,7 +152,7 @@ public:
    * @brief Compares an ThreadId with the current ThreadId .
    *
    * @param [in] id The ThreadId to compare to.
-   * @returns true if @c id matches the current ThreadId.
+   * @returns @c true if @c id matches the current ThreadId.
    */
   static bool Equals(ThreadId id);
 

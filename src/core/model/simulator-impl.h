@@ -88,7 +88,7 @@ public:
   /**
    * Set the Scheduler to be used to manage the event list.
    *
-   * \param schedulerFactory A new event scheduler factory.
+   * \param [in] schedulerFactory A new event scheduler factory.
    *
    * The event scheduler can be set at any time: the events scheduled
    * in the previous scheduler will be transfered to the new scheduler

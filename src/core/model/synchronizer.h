@@ -95,7 +95,7 @@ public:
    * virtual method to do the actual real-time-clock-specific work
    * of making the correspondence mentioned above.
    *
-   * @param ts The simulation time we should use as the origin (in
+   * @param [in] ts The simulation time we should use as the origin (in
    *     Time resolution units).
    * @see DoSetOrigin
    */
@@ -115,7 +115,7 @@ public:
    * synchronize the simulation and the simulation time (in
    * Time resolution units).
    *
-   * @param ts Simulation time in Time resolution units.
+   * @param [in] ts Simulation time in Time resolution units.
    * @returns Simulation Time (in Time resolution units)
    *     minus the origin time (stored internally in nanosecond units).
    * @see SetOrigin
@@ -138,8 +138,8 @@ public:
    * (either busy-waiting or sleeping, or some combination thereof) until the
    * requested simulation time.
    *
-   * @param tsCurrent The current simulation time (in Time resolution units).
-   * @param tsDelay The simulation time we need to wait for (in Time
+   * @param [in] tsCurrent The current simulation time (in Time resolution units).
+   * @param [in] tsDelay The simulation time we need to wait for (in Time
    *     resolution units).
    * @returns @c true if the function ran to completion,
    *          @c false if it was interrupted by a Signal.
@@ -212,7 +212,7 @@ protected:
    * for example, this is where the differences between Time parameters and
    * parameters to clock_nanosleep would be dealt with. 
    *
-   * @param ns The simulation time we need to use as the origin (normalized to
+   * @param [in] ns The simulation time we need to use as the origin (normalized to
    *    nanosecond units).
    * @see SetOrigin
    */
@@ -258,8 +258,8 @@ protected:
    * real-time-clock-specific work of waiting (either busy-waiting or sleeping,
    * or some combination) until the requested simulation time.
    *
-   * @param nsCurrent The current simulation time (in nanosecond units).
-   * @param nsDelay The simulation time we need to wait for (normalized to 
+   * @param [in] nsCurrent The current simulation time (in nanosecond units).
+   * @param [in] nsDelay The simulation time we need to wait for (normalized to 
    * nanosecond units).
    * @returns @c true if the function ran to completion,
    *          @c false if it was interrupted by a Signal.
@@ -290,7 +290,7 @@ protected:
    * @brief Get the drift between the real time clock used to synchronize
    * the simulation and the current simulation time.
    *
-   * @param ns Simulation time in ns.
+   * @param [in] ns Simulation time in ns.
    * @returns Drift in ns units.
    * @see SetOrigin
    * @see GetDrift
@@ -320,7 +320,7 @@ private:
    * @brief Convert a simulator time step (in Time resolution units)
    * to a normalized time step in nanosecond units.
    *
-   * @param ts The simulation time step to be normalized.
+   * @param [in] ts The simulation time step to be normalized.
    * @returns The simulation time step normalized to nanosecond units.
    */
   uint64_t TimeStepToNanosecond (uint64_t ts);
@@ -329,7 +329,7 @@ private:
    * @brief Convert a normalized nanosecond time step into a
    * simulator time step (in Time resolution units).
    *
-   * @param ns The nanosecond count step to be converted
+   * @param [in] ns The nanosecond count step to be converted
    * @returns The simulation time step to be interpreted in appropriate units.
    */
   uint64_t NanosecondToTimeStep (uint64_t ns);

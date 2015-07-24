@@ -94,7 +94,7 @@ protected:
    * receives a packet), sets the condition and signals the scheduler
    * it needs to re-evaluate.
    *
-   * @param ns The target normalized real time we should wait for.
+   * @param [in] ns The target normalized real time we should wait for.
    * @returns @c true if we reached the target time,
    *          @c false if we retured because the condition was set.
    */
@@ -118,7 +118,7 @@ protected:
    * Signal().  In either case, we are done waiting.  If the timeout happened,
    * we return @c true; if a Signal happened we return @c false.
    *
-   * @param ns The target normalized real time we should wait for.
+   * @param [in] ns The target normalized real time we should wait for.
    * @returns @c true if we reached the target time,
    *          @c false if we retured because the condition was set.
    */
@@ -139,8 +139,8 @@ protected:
    * @brief Compute a correction to the nominal delay to account for
    * realtime drift since the last DoSynchronize.
    *
-   * @param nsNow The current simulation time (in nanosecond units).
-   * @param nsDelay The simulation time we need to wait for (normalized to 
+   * @param [in] nsNow The current simulation time (in nanosecond units).
+   * @param [in] nsDelay The simulation time we need to wait for (normalized to 
    * nanosecond units).
    * @returns The corrected delay.
    */
@@ -162,14 +162,14 @@ protected:
   /**
    * @brief Convert an absolute time in ns to a @c timeval
    *
-   * @param ns Absolute time in ns.
-   * @param tv Converted @c timeval.
+   * @param [in] ns Absolute time in ns.
+   * @param [out] tv Converted @c timeval.
    */
   void NsToTimeval (int64_t ns, struct timeval *tv);
   /**
    * @brief Convert a @c timeval to absolute time, in ns.
    *
-   * @param tv The input @c timeval.
+   * @param [in] tv The input @c timeval.
    * @returns The absolute time, in ns.
    */
   uint64_t TimevalToNs (struct timeval *tv);
@@ -177,9 +177,9 @@ protected:
   /**
    * @brief Add two @c timeval.
    *
-   * @param tv1 The first @c timeval.
-   * @param tv2 The second @c timeval.
-   * @param result The sum of @c tv1 and @c tv2.
+   * @param [in]  tv1 The first @c timeval.
+   * @param [in]  tv2 The second @c timeval.
+   * @param [out] result The sum of @c tv1 and @c tv2.
    */
   void TimevalAdd (
     struct timeval *tv1, 

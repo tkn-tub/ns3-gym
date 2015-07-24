@@ -80,7 +80,7 @@ public:
   /**
    * Construct from a floating point value.
    *
-   * \param [in] v floating value to represent
+   * \param [in] v Floating value to represent
    */
   inline int64x64_t (double v)
     : _v (v) {}
@@ -92,7 +92,7 @@ public:
   /**
    * Construct from an integral type.
    *
-   * \param [in] v integer value to represent
+   * \param [in] v Integer value to represent
    */
   inline int64x64_t (int v)
     : _v (v) {}
@@ -154,7 +154,7 @@ private:
   /**
    * Get the high and low portions of this value.
    *
-   * \return a pair of the high and low words
+   * \return A pair of the high and low words
    */
   std::pair<int64_t, uint64_t> GetHighLow (void) const
     {

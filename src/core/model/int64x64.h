@@ -160,7 +160,7 @@ inline bool operator >= (const int64x64_t & lhs, const int64x64_t & rhs)
  * all digits of the fractional part are printed, up to the
  * representation limit of 20 digits; trailing zeros are omitted.
  *
- * \param [in] os The output stream.
+ * \param [in,out] os The output stream.
  * \param [in] value The numerical value to print.
  * \returns The stream.
  */
@@ -169,7 +169,7 @@ std::ostream &operator << (std::ostream &os, const int64x64_t &value);
  * \ingroup highprec
  * Input streamer for int64x64_t.
  *
- * \param [in] is The input stream.
+ * \param [in,out] is The input stream.
  * \param [out] value The numerical value to set.
  * \returns The stream.
  */
@@ -178,7 +178,7 @@ std::istream &operator >> (std::istream &is, int64x64_t &value);
 /**
  * \ingroup highprec
  * Absolute value.
- * \param value The value to operate on.
+ * \param [in] value The value to operate on.
  * \return The absolute value of \p value.
  */
 inline int64x64_t Abs (const int64x64_t &value)

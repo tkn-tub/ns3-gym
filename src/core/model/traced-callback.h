@@ -67,7 +67,7 @@ public:
   /**
    * Append a Callback to the chain (without a context).
    *
-   * \param callback Callback to add to chain.
+   * \param [in] callback Callback to add to chain.
    */
   void ConnectWithoutContext (const CallbackBase & callback);
   /**
@@ -76,21 +76,21 @@ public:
    * The context string will be provided as the first argument
    * to the Callback.
    *
-   * \param callback Callback to add to chain.
-   * \param path Context string to provide when invoking the Callback.
+   * \param [in] callback Callback to add to chain.
+   * \param [in] path Context string to provide when invoking the Callback.
    */
   void Connect (const CallbackBase & callback, std::string path);
   /**
    * Remove from the chain a Callback which was connected without a context.
    *
-   * \param callback Callback to remove from the chain.
+   * \param [in] callback Callback to remove from the chain.
    */
   void DisconnectWithoutContext (const CallbackBase & callback);
   /**
    * Remove from the chain a Callback which was connected with a context.
    *
-   * \param callback Callback to remove from the chain.
-   * \param path Context path which was used to connect the Callback.
+   * \param [in] callback Callback to remove from the chain.
+   * \param [in] path Context path which was used to connect the Callback.
    */
   void Disconnect (const CallbackBase & callback, std::string path);
   /**
@@ -106,15 +106,15 @@ public:
   /**
    * \copybrief operator()()
    * \tparam T1 \deduced Type of the first argument to the functor.
-   * \param a1 The first argument to the functor.
+   * \param [in] a1 The first argument to the functor.
    */
   void operator() (T1 a1) const;
   /**
    * \copybrief operator()()
    * \tparam T1 \deduced Type of the first argument to the functor.
    * \tparam T2 \deduced Type of the second argument to the functor.
-   * \param a1 The first argument to the functor.
-   * \param a2 The second argument to the functor.
+   * \param [in] a1 The first argument to the functor.
+   * \param [in] a2 The second argument to the functor.
    */
   void operator() (T1 a1, T2 a2) const;
   /**
@@ -122,9 +122,9 @@ public:
    * \tparam T1 \deduced Type of the first argument to the functor.
    * \tparam T2 \deduced Type of the second argument to the functor.
    * \tparam T3 \deduced Type of the third argument to the functor.
-   * \param a1 The first argument to the functor.
-   * \param a2 The second argument to the functor.
-   * \param a3 The third argument to the functor.
+   * \param [in] a1 The first argument to the functor.
+   * \param [in] a2 The second argument to the functor.
+   * \param [in] a3 The third argument to the functor.
    */
   void operator() (T1 a1, T2 a2, T3 a3) const;
   /**
@@ -133,10 +133,10 @@ public:
    * \tparam T2 \deduced Type of the second argument to the functor.
    * \tparam T3 \deduced Type of the third argument to the functor.
    * \tparam T4 \deduced Type of the fourth argument to the functor.
-   * \param a1 The first argument to the functor.
-   * \param a2 The second argument to the functor.
-   * \param a3 The third argument to the functor.
-   * \param a4 The fourth argument to the functor.
+   * \param [in] a1 The first argument to the functor.
+   * \param [in] a2 The second argument to the functor.
+   * \param [in] a3 The third argument to the functor.
+   * \param [in] a4 The fourth argument to the functor.
    */
   void operator() (T1 a1, T2 a2, T3 a3, T4 a4) const;
   /**
@@ -146,11 +146,11 @@ public:
    * \tparam T3 \deduced Type of the third argument to the functor.
    * \tparam T4 \deduced Type of the fourth argument to the functor.
    * \tparam T5 \deduced Type of the fifth argument to the functor.
-   * \param a1 The first argument to the functor.
-   * \param a2 The second argument to the functor.
-   * \param a3 The third argument to the functor.
-   * \param a4 The fourth argument to the functor.
-   * \param a5 The fifth argument to the functor.
+   * \param [in] a1 The first argument to the functor.
+   * \param [in] a2 The second argument to the functor.
+   * \param [in] a3 The third argument to the functor.
+   * \param [in] a4 The fourth argument to the functor.
+   * \param [in] a5 The fifth argument to the functor.
    */
   void operator() (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5) const;
   /**
@@ -161,12 +161,12 @@ public:
    * \tparam T4 \deduced Type of the fourth argument to the functor.
    * \tparam T5 \deduced Type of the fifth argument to the functor.
    * \tparam T6 \deduced Type of the sixth argument to the functor.
-   * \param a1 The first argument to the functor.
-   * \param a2 The second argument to the functor.
-   * \param a3 The third argument to the functor.
-   * \param a4 The fourth argument to the functor.
-   * \param a5 The fifth argument to the functor.
-   * \param a6 The sixth argument to the functor.
+   * \param [in] a1 The first argument to the functor.
+   * \param [in] a2 The second argument to the functor.
+   * \param [in] a3 The third argument to the functor.
+   * \param [in] a4 The fourth argument to the functor.
+   * \param [in] a5 The fifth argument to the functor.
+   * \param [in] a6 The sixth argument to the functor.
    */
   void operator() (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5, T6 a6) const;
   /**
@@ -178,13 +178,13 @@ public:
    * \tparam T5 \deduced Type of the fifth argument to the functor.
    * \tparam T6 \deduced Type of the sixth argument to the functor.
    * \tparam T7 \deduced Type of the seventh argument to the functor.
-   * \param a1 The first argument to the functor.
-   * \param a2 The second argument to the functor.
-   * \param a3 The third argument to the functor.
-   * \param a4 The fourth argument to the functor.
-   * \param a5 The fifth argument to the functor.
-   * \param a6 The sixth argument to the functor.
-   * \param a7 The seventh argument to the functor.
+   * \param [in] a1 The first argument to the functor.
+   * \param [in] a2 The second argument to the functor.
+   * \param [in] a3 The third argument to the functor.
+   * \param [in] a4 The fourth argument to the functor.
+   * \param [in] a5 The fifth argument to the functor.
+   * \param [in] a6 The sixth argument to the functor.
+   * \param [in] a7 The seventh argument to the functor.
    */
   void operator() (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5, T6 a6, T7 a7) const;
   /**
@@ -197,14 +197,14 @@ public:
    * \tparam T6 \deduced Type of the sixth argument to the functor.
    * \tparam T7 \deduced Type of the seventh argument to the functor.
    * \tparam T8 \deduced Type of the eighth argument to the functor.
-   * \param a1 The first argument to the functor.
-   * \param a2 The second argument to the functor.
-   * \param a3 The third argument to the functor.
-   * \param a4 The fourth argument to the functor.
-   * \param a5 The fifth argument to the functor.
-   * \param a6 The sixth argument to the functor.
-   * \param a7 The seventh argument to the functor.
-   * \param a8 The eighth argument to the functor.
+   * \param [in] a1 The first argument to the functor.
+   * \param [in] a2 The second argument to the functor.
+   * \param [in] a3 The third argument to the functor.
+   * \param [in] a4 The fourth argument to the functor.
+   * \param [in] a5 The fifth argument to the functor.
+   * \param [in] a6 The sixth argument to the functor.
+   * \param [in] a7 The seventh argument to the functor.
+   * \param [in] a8 The eighth argument to the functor.
    */
   void operator() (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5, T6 a6, T7 a7, T8 a8) const;
   /**@}*/

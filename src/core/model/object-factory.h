@@ -57,7 +57,7 @@ public:
   /**
    * Construct a factory for a specific TypeId by name.
    *
-   * \param typeId The name of the TypeId this factory should create.
+   * \param [in] typeId The name of the TypeId this factory should create.
    */
   ObjectFactory (std::string typeId);
 
@@ -65,7 +65,7 @@ public:
   /**
    * Set the TypeId of the Objects to be created by this factory.
    *
-   * \param tid The TypeId of the object to instantiate.
+   * \param [in] tid The TypeId of the object to instantiate.
    */
   void SetTypeId (TypeId tid);
   void SetTypeId (const char *tid);
@@ -75,8 +75,8 @@ public:
   /**
    * Set an attribute to be set during construction.
    *
-   * \param name The name of the attribute to set.
-   * \param value The value of the attribute to set.
+   * \param [in] name The name of the attribute to set.
+   * \param [in] value The value of the attribute to set.
    */
   void Set (std::string name, const AttributeValue &value);
 
@@ -112,7 +112,7 @@ private:
    * The configuration will be printed as a string with the form
    * "<TypeId-name>[<attribute-name>=<attribute-value>|...]"
    *
-   * \param [in] os The stream.
+   * \param [in,out] os The stream.
    * \param [in] factory The ObjectFactory.
    * \returns The stream.
    */
@@ -123,7 +123,7 @@ private:
    * The configuration should be in the form
    * "<TypeId-name>[<attribute-name>=<attribute-value>|...]"
    *
-   * \param [in] is The input stream.
+   * \param [in,out] is The input stream.
    * \param [out] factory The factory to configure as described by the stream.
    * \return The stream.
    */
@@ -147,37 +147,39 @@ std::istream & operator >> (std::istream &is, ObjectFactory &factory);
  * Allocate an Object on the heap and initialize with a set of attributes.
  *
  * \tparam T \explicit The requested Object type.
- * \param n1 Name of attribute
- * \param v1 Value of attribute
- * \param n2 Name of attribute
- * \param v2 Value of attribute
- * \param n3 Name of attribute
- * \param v3 Value of attribute
- * \param n4 Name of attribute
- * \param v4 Value of attribute
- * \param n5 Name of attribute
- * \param v5 Value of attribute
- * \param n6 Name of attribute
- * \param v6 Value of attribute
- * \param n7 Name of attribute
- * \param v7 Value of attribute
- * \param n8 Name of attribute
- * \param v8 Value of attribute
- * \param n9 Name of attribute
- * \param v9 Value of attribute
+ * \param [in] n1 Name of attribute
+ * \param [in] v1 Value of attribute
+ * \param [in] n2 Name of attribute
+ * \param [in] v2 Value of attribute
+ * \param [in] n3 Name of attribute
+ * \param [in] v3 Value of attribute
+ * \param [in] n4 Name of attribute
+ * \param [in] v4 Value of attribute
+ * \param [in] n5 Name of attribute
+ * \param [in] v5 Value of attribute
+ * \param [in] n6 Name of attribute
+ * \param [in] v6 Value of attribute
+ * \param [in] n7 Name of attribute
+ * \param [in] v7 Value of attribute
+ * \param [in] n8 Name of attribute
+ * \param [in] v8 Value of attribute
+ * \param [in] n9 Name of attribute
+ * \param [in] v9 Value of attribute
  * \returns A pointer to a newly allocated object.
  */
 template <typename T>
 Ptr<T> 
-CreateObjectWithAttributes (std::string n1 = "", const AttributeValue & v1 = EmptyAttributeValue (),
-                            std::string n2 = "", const AttributeValue & v2 = EmptyAttributeValue (),
-                            std::string n3 = "", const AttributeValue & v3 = EmptyAttributeValue (),
-                            std::string n4 = "", const AttributeValue & v4 = EmptyAttributeValue (),
-                            std::string n5 = "", const AttributeValue & v5 = EmptyAttributeValue (),
-                            std::string n6 = "", const AttributeValue & v6 = EmptyAttributeValue (),
-                            std::string n7 = "", const AttributeValue & v7 = EmptyAttributeValue (),
-                            std::string n8 = "", const AttributeValue & v8 = EmptyAttributeValue (),
-                            std::string n9 = "", const AttributeValue & v9 = EmptyAttributeValue ());
+CreateObjectWithAttributes
+  (std::string n1 = "", const AttributeValue & v1 = EmptyAttributeValue (),
+   std::string n2 = "", const AttributeValue & v2 = EmptyAttributeValue (),
+   std::string n3 = "", const AttributeValue & v3 = EmptyAttributeValue (),
+   std::string n4 = "", const AttributeValue & v4 = EmptyAttributeValue (),
+   std::string n5 = "", const AttributeValue & v5 = EmptyAttributeValue (),
+   std::string n6 = "", const AttributeValue & v6 = EmptyAttributeValue (),
+   std::string n7 = "", const AttributeValue & v7 = EmptyAttributeValue (),
+   std::string n8 = "", const AttributeValue & v8 = EmptyAttributeValue (),
+   std::string n9 = "", const AttributeValue & v9 = EmptyAttributeValue ()
+   );
 
 
 ATTRIBUTE_HELPER_HEADER (ObjectFactory);

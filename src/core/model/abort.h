@@ -34,7 +34,7 @@
  *
  * \brief Unconditional abnormal program termination with a message.
  *
- * \param msg The message to output when this macro is hit.
+ * \param [in] msg The message to output when this macro is hit.
  *
  * This macro is essentially equivalent to NS_FATAL_ERROR,
  * except it prepends the error message with the string
@@ -59,7 +59,7 @@
  *
  * \brief Abnormal program termination if a condition is \c true.
  *
- * \param cond The condition to be evaluated.
+ * \param [in] cond The condition to be evaluated.
  *
  * This is similar to \c NS_ASSERT(!(cond)), except this check
  * is enabled in all builds. If \c cond is evaluated to \c true,
@@ -89,8 +89,8 @@
  * \brief Abnormal program termination if a condition is \c true,
  * with a message.
  *
- * \param cond The ondition to be evaluated.
- * \param msg The message to output when cond is \c true.
+ * \param [in] cond The condition to be evaluated.
+ * \param [in] msg The message to output when cond is \c true.
  *
  * This is similar to NS_ASSERT_MSG(!(cond)), except this
  * check is enabled in all builds. If \c cond is evaluated to
@@ -119,7 +119,7 @@
  *
  * \brief Abnormal program termination if a condition is \c false.
  *
- * \param cond The condition to be evaluated.
+ * \param [in] cond The condition to be evaluated.
  *
  * This is an alias for NS_ABORT_IF(!(cond))
  *
@@ -134,8 +134,8 @@
  * \brief Abnormal program termination if a condition is \c false,
  * with a message.
  *
- * \param cond Thecondition to be evaluated.
- * \param msg The message to output if cond is false.
+ * \param [in] cond The condition to be evaluated.
+ * \param [in] msg The message to output if cond is false.
  *
  * This is an alias for NS_ABORT_MSG_IF(!(cond))
  *

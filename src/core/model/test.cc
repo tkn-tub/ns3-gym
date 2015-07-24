@@ -96,8 +96,8 @@ struct TestCaseFailure
 /**
  * Output streamer for TestCaseFailure.
  *
- * \param os The output stream.
- * \param failure The TestCaseFailure to print.
+ * \param [in,out] os The output stream.
+ * \param [in] failure The TestCaseFailure to print.
  * \returns The stream.
  */
 std::ostream & operator << (std::ostream & os, const TestCaseFailure & failure)
@@ -201,18 +201,18 @@ private:
   /**
    * Print the test report.
    *
-   * \param test The TestCase to print.
-   * \param os The output stream.
-   * \param xml Generate XML output if \c true.
-   * \param level Indentation level.
+   * \param [in] test The TestCase to print.
+   * \param [in,out] os The output stream.
+   * \param [in] xml Generate XML output if \c true.
+   * \param [in] level Indentation level.
    */
   void PrintReport (TestCase *test, std::ostream *os, bool xml, int level);
   /**
    * Print the list of all requested test suites.
    *
-   * \param begin Iterator to the first TestCase to print.
-   * \param end Iterator to the end of the list.
-   * \param printTestType Preprend the test type label if \c true.
+   * \param [in] begin Iterator to the first TestCase to print.
+   * \param [in] end Iterator to the end of the list.
+   * \param [in] printTestType Preprend the test type label if \c true.
    */
   void PrintTestNameList (std::list<TestCase *>::const_iterator begin, 
                           std::list<TestCase *>::const_iterator end,
@@ -622,7 +622,7 @@ struct Indent
 {
   /**
    * Constructor.
-   * \param level The number of steps.  A step is "  ".
+   * \param [in] level The number of steps.  A step is "  ".
    */
   Indent (int level);
   /** The number of steps. */
@@ -635,8 +635,8 @@ Indent::Indent (int _level)
 }
 /**
  * Output streamer for Indent.
- * \param os The output stream.
- * \param val The Indent object.
+ * \param [in,out] os The output stream.
+ * \param [in] val The Indent object.
  * \returns The stream.
  */
 std::ostream &operator << (std::ostream &os, const Indent &val)

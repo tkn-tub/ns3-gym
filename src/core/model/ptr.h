@@ -94,8 +94,8 @@ private:
    * to returning to the caller so the caller is
    * responsible for calling Unref himself.
    *
-   * \param p smart pointer
-   * \return the pointer managed by this smart pointer.
+   * \param [in] p Smart pointer
+   * \return The pointer managed by this smart pointer.
    */
   template <typename U>
   friend U *GetPointer (const Ptr<U> &p);
@@ -106,8 +106,8 @@ private:
    * to returning to the caller so the caller is not
    * responsible for calling Unref himself.
    *
-   * \param p smart pointer
-   * \return the pointer managed by this smart pointer.
+   * \param [in] p Smart pointer
+   * \return The pointer managed by this smart pointer.
    */
   template <typename U>
   friend U *PeekPointer (const Ptr<U> &p);
@@ -126,15 +126,15 @@ public:
    * same, so that object is deleted if no more references to it
    * remain.
    *
-   * \param ptr raw pointer to manage
+   * \param [in] ptr Raw pointer to manage
    */
   Ptr (T *ptr);
   /**
    * Create a smart pointer which points to the object pointed to by
    * the input raw pointer ptr.
    *
-   * \param ptr raw pointer to manage
-   * \param ref if set to true, this method calls Ref, otherwise,
+   * \param [in] ptr Raw pointer to manage
+   * \param [in] ref if set to true, this method calls Ref, otherwise,
    *        it does not call Ref.
    */
   Ptr (T *ptr, bool ref);
@@ -189,7 +189,7 @@ public:
    *   Ptr<..> p = ...;
    *   if (!p) ...
    * \endcode
-   * \returns true if the underlying pointer is NULL.
+   * \returns \c true if the underlying pointer is NULL.
    */
   bool operator! ();
   /**
@@ -225,7 +225,7 @@ Ptr<T> Create (void);
 /**
  * \tparam T  \explicit The type of class object to create.
  * \tparam T1 \deduced The type of the first constructor argument.
- * \param  a1 The first constructor argument.
+ * \param  [in] a1 The first constructor argument.
  * \return A Ptr to the newly created \c T.
  */
 template <typename T,
@@ -236,8 +236,8 @@ Ptr<T> Create (T1 a1);
  * \tparam T  \explicit The type of class object to create.
  * \tparam T1 \deduced The type of the first constructor argument.
  * \tparam T2 \deduced The type of the second constructor argument.
- * \param  a1 The first constructor argument.
- * \param  a2 The second constructor argument.
+ * \param  [in] a1 The first constructor argument.
+ * \param  [in] a2 The second constructor argument.
  * \return A Ptr to the newly created \c T.
  */
 template <typename T,
@@ -249,9 +249,9 @@ Ptr<T> Create (T1 a1, T2 a2);
  * \tparam T1 \deduced The type of the first constructor argument.
  * \tparam T2 \deduced The type of the second constructor argument.
  * \tparam T3 \deduced The type of the third constructor argument.
- * \param  a1 The first constructor argument.
- * \param  a2 The second constructor argument.
- * \param  a3 The third constructor argument.
+ * \param  [in] a1 The first constructor argument.
+ * \param  [in] a2 The second constructor argument.
+ * \param  [in] a3 The third constructor argument.
  * \return A Ptr to the newly created \c T.
  */
 template <typename T,
@@ -265,10 +265,10 @@ Ptr<T> Create (T1 a1, T2 a2, T3 a3);
  * \tparam T2 \deduced The type of the second constructor argument.
  * \tparam T3 \deduced The type of the third constructor argument.
  * \tparam T4 \deduced The type of the fourth constructor argument.
- * \param  a1 The first constructor argument.
- * \param  a2 The second constructor argument.
- * \param  a3 The third constructor argument.
- * \param  a4 The fourth constructor argument.
+ * \param  [in] a1 The first constructor argument.
+ * \param  [in] a2 The second constructor argument.
+ * \param  [in] a3 The third constructor argument.
+ * \param  [in] a4 The fourth constructor argument.
  * \return A Ptr to the newly created \c T.
  */
 template <typename T,
@@ -283,11 +283,11 @@ Ptr<T> Create (T1 a1, T2 a2, T3 a3, T4 a4);
  * \tparam T3 \deduced The type of the third constructor argument.
  * \tparam T4 \deduced The type of the fourth constructor argument.
  * \tparam T5 \deduced The type of the fifth constructor argument.
- * \param  a1 The first constructor argument.
- * \param  a2 The second constructor argument.
- * \param  a3 The third constructor argument.
- * \param  a4 The fourth constructor argument.
- * \param  a5 The fifth constructor argument.
+ * \param  [in] a1 The first constructor argument.
+ * \param  [in] a2 The second constructor argument.
+ * \param  [in] a3 The third constructor argument.
+ * \param  [in] a4 The fourth constructor argument.
+ * \param  [in] a5 The fifth constructor argument.
  * \return A Ptr to the newly created \c T.
  */
 template <typename T,
@@ -304,12 +304,12 @@ Ptr<T> Create (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5);
  * \tparam T4 \deduced The type of the fourth constructor argument.
  * \tparam T5 \deduced The type of the fifth constructor argument.
  * \tparam T6 \deduced The type of the sixth constructor argument.
- * \param  a1 The first constructor argument.
- * \param  a2 The second constructor argument.
- * \param  a3 The third constructor argument.
- * \param  a4 The fourth constructor argument.
- * \param  a5 The fifth constructor argument.
- * \param  a6 The sixth constructor argument.
+ * \param  [in] a1 The first constructor argument.
+ * \param  [in] a2 The second constructor argument.
+ * \param  [in] a3 The third constructor argument.
+ * \param  [in] a4 The fourth constructor argument.
+ * \param  [in] a5 The fifth constructor argument.
+ * \param  [in] a6 The sixth constructor argument.
  * \return A Ptr to the newly created \c T.
  */
 template <typename T,
@@ -327,13 +327,13 @@ Ptr<T> Create (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5, T6 a6);
  * \tparam T5 \deduced The type of the fifth constructor argument.
  * \tparam T6 \deduced The type of the sixth constructor argument.
  * \tparam T7 \deduced The type of the seventh constructor argument.
- * \param  a1 The first constructor argument.
- * \param  a2 The second constructor argument.
- * \param  a3 The third constructor argument.
- * \param  a4 The fourth constructor argument.
- * \param  a5 The fifth constructor argument.
- * \param  a6 The sixth constructor argument.
- * \param  a7 The seventh constructor argument.
+ * \param  [in] a1 The first constructor argument.
+ * \param  [in] a2 The second constructor argument.
+ * \param  [in] a3 The third constructor argument.
+ * \param  [in] a4 The fourth constructor argument.
+ * \param  [in] a5 The fifth constructor argument.
+ * \param  [in] a6 The sixth constructor argument.
+ * \param  [in] a7 The seventh constructor argument.
  * \return A Ptr to the newly created \c T.
  */
 template <typename T,
@@ -347,7 +347,7 @@ Ptr<T> Create (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5, T6 a6, T7 a7);
 /**
  * \ingroup ptr
  * Output streamer.
- * \param [in] os The output stream.
+ * \param [in,out] os The output stream.
  * \param [in] p The Ptr.
  * \returns The stream.
  */
@@ -372,7 +372,7 @@ std::ostream &operator << (std::ostream &os, const Ptr<T> &p);
  * \tparam T2 \deduced Type of the object on the rhs.
  * \param [in] lhs The left operand.
  * \param [in] rhs The right operand.
- * \return true if the operands point to the same underlying object.
+ * \return \c true if the operands point to the same underlying object.
  */
 /** @{ */
 template <typename T1, typename T2>
@@ -403,7 +403,7 @@ bool operator == (Ptr<T1> const &lhs, Ptr<T2> const &rhs);
  * \tparam T2 \deduced Type of the object on the rhs.
  * \param [in] lhs The left operand.
  * \param [in] rhs The right operand.
- * \return true if the operands point to the same underlying object.
+ * \return \c true if the operands point to the same underlying object.
  */
 /** @{ */
 template <typename T1, typename T2>
@@ -442,7 +442,7 @@ bool operator >= (const Ptr<T> &lhs, const Ptr<T> &rhs);
  *
  * \tparam T1 \deduced The type to return in a Ptr.
  * \tparam T2 \deduced The type of the underlying object.
- * \param p The original \c const Ptr.
+ * \param [in] p The original \c const Ptr.
  * \return A non-const Ptr.
  */
 template <typename T1, typename T2>
@@ -466,8 +466,8 @@ template <typename T>
 struct CallbackTraits<Ptr<T> >
 {
   /**
-   * \param p object pointer
-   * \return a reference to the object pointed to by p
+   * \param [in] p Object pointer
+   * \return A reference to the object pointed to by p
    */
   static T & GetReference (Ptr<T> const p)
   {
@@ -491,8 +491,8 @@ template <typename T>
 struct EventMemberImplObjTraits<Ptr<T> >
 {
   /**
-   * \param p object pointer
-   * \return a reference to the object pointed to by p
+   * \param [in] p Object pointer
+   * \return A reference to the object pointed to by p
    */
   static T &GetReference (Ptr<T> p) {
     return *PeekPointer (p);
@@ -649,7 +649,7 @@ bool operator >= (const Ptr<T> &lhs, const Ptr<T> &rhs)
  *
  * \tparam T1 \deduced The desired type to cast to.
  * \tparam T2 \deduced The type of the original Ptr.
- * \param p The original Ptr.
+ * \param [in] p The original Ptr.
  * \return The result of the cast.
  */
 /** @{ */
@@ -678,7 +678,7 @@ StaticCast (Ptr<T2> const&p)
 /**
  * Return a deep copy of a Ptr.
  *
- * \param object The object Ptr to copy.
+ * \param [in] object The object Ptr to copy.
  * \returns The copy.
  */
 /** @{ */

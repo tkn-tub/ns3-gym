@@ -206,14 +206,14 @@ public:
   /**
    * Copy constructor
    *
-   * \param cmd the CommandLine to copy from
+   * \param [in] cmd The CommandLine to copy from
    */
   CommandLine (const CommandLine &cmd);
   /**
    * Assignment
    *
-   * \param cmd the CommandLine to assign from
-   * \return the CommandLine
+   * \param [in] cmd The CommandLine to assign from
+   * \return The CommandLine
    */
   CommandLine &operator = (const CommandLine &cmd);
   /** Destructor */
@@ -222,16 +222,16 @@ public:
   /**
    * Supply the program usage and documentation.
    *
-   * \param usage Program usage message to write with \c --help.
+   * \param [in] usage Program usage message to write with \c --help.
    */
   void Usage (const std::string usage);
   
   /**
    * Add a program argument, assigning to POD
    *
-   * \param name the name of the program-supplied argument
-   * \param help the help text used by \c \-\-PrintHelp
-   * \param value a reference to the variable where the
+   * \param [in] name The name of the program-supplied argument
+   * \param [in] help The help text used by \c \-\-PrintHelp
+   * \param [out] value A reference to the variable where the
    *        value parsed will be stored (if no value
    *        is parsed, this variable is not modified).
    */
@@ -243,9 +243,9 @@ public:
   /**
    * Add a program argument, using a Callback to parse the value
    *
-   * \param name the name of the program-supplied argument
-   * \param help the help text used by \c --help
-   * \param callback a Callback function that will be invoked to parse and
+   * \param [in] name The name of the program-supplied argument
+   * \param [in] help The help text used by \c --help
+   * \param [in] callback A Callback function that will be invoked to parse and
    *   store the value.
    *
    * The callback should have the signature
@@ -258,8 +258,8 @@ public:
   /**
    * Add a program argument as a shorthand for an Attribute.
    *
-   * \param name the name of the program-supplied argument.
-   * \param attributePath the fully-qualified name of the Attribute
+   * \param [in] name The name of the program-supplied argument.
+   * \param [out] attributePath The fully-qualified name of the Attribute
    */
   void AddValue (const std::string &name,
                  const std::string &attributePath);
@@ -267,9 +267,9 @@ public:
   /**
    * Parse the program arguments
    *
-   * \param argc the 'argc' variable: number of arguments (including the
+   * \param [in] argc The 'argc' variable: number of arguments (including the
    *        main program name as first element).
-   * \param argv the 'argv' variable: a null-terminated array of strings,
+   * \param [in] argv The 'argv' variable: a null-terminated array of strings,
    *        each of which identifies a command-line argument.
    * 
    * Obviously, this method will parse the input command-line arguments and
@@ -283,7 +283,7 @@ public:
   /**
    * Get the program name
    *
-   * \return the program name.  Only valid after calling Parse()
+   * \return The program name.  Only valid after calling Parse()
    */
   std::string GetName () const;
 
@@ -320,16 +320,16 @@ private:
     /**
      * Parse from a string.
      *
-     * \param value the string representation
-     * \return true if parsing the value succeeded
+     * \param [in] value The string representation
+     * \return \c true if parsing the value succeeded
      */
     virtual bool Parse (const std::string value) = 0;
     /**
-     * \return true if this item have a default value?
+     * \return \c true if this item have a default value?
      */
     virtual bool HasDefault () const;
     /**
-     * \return the default value
+     * \return The default value
      */
     virtual std::string GetDefault () const;
   };
@@ -345,8 +345,8 @@ private:
     /**
      * Parse from a string.
      *
-     * \param value the string representation
-     * \return true if parsing the value succeeded
+     * \param [in] value The string representation
+     * \return \c true if parsing the value succeeded
      */
     virtual bool Parse (const std::string value);
 
@@ -367,8 +367,8 @@ private:
     /**
      * Parse from a string.
      *
-     * \param value the string representation
-     * \return true if parsing the value succeeded
+     * \param [in] value The string representation
+     * \return \c true if parsing the value succeeded
      */
     virtual bool Parse (const std::string value);
     Callback<bool, std::string> m_callback;  /**< The Callback */
@@ -378,16 +378,16 @@ private:
    * Match name against the program or general arguments,
    * and dispatch to the appropriate handler.
    *
-   * \param name the argument name
-   * \param value the command line value
+   * \param [in] name The argument name
+   * \param [in] value The command line value
    */
   void HandleArgument (const std::string &name, const std::string &value) const;
   /**
    * Callback function to handle attributes.
    *
-   * \param name The full name of the Attribute.
-   * \param value The value to assign to \p name.
-   * \return true if the value was set successfully, false otherwise.
+   * \param [in] name The full name of the Attribute.
+   * \param [in] value The value to assign to \p name.
+   * \return \c true if the value was set successfully, false otherwise.
    */  
   static bool HandleAttribute (const std::string name, const std::string value);
 
@@ -396,33 +396,33 @@ private:
   /**
    * Handler for \c \-\-PrintAttributes:  print the attributes for a given type.
    *
-   * \param os the output stream.
-   * \param type the TypeId whose Attributes should be displayed
+   * \param [in,out] os the output stream.
+   * \param [in] type The TypeId whose Attributes should be displayed
    */
   void PrintAttributes (std::ostream &os, const std::string &type) const;
   /**
    * Handler for \c \-\-PrintGroup:  print all types belonging to a given group.
    *
-   * \param os the output stream.
-   * \param group the name of the TypeId group to display
+   * \param [in,out] os The output stream.
+   * \param [in] group The name of the TypeId group to display
    */
   void PrintGroup (std::ostream &os, const std::string &group) const;
   /**
    * Handler for \c \-\-PrintTypeIds:  print all TypeId names.
    *
-   * \param os the output stream.
+   * \param [in,out] os The output stream.
    */
   void PrintTypeIds (std::ostream &os) const;
   /**
    * Handler for \c \-\-PrintGroups:  print all TypeId group names
    *
-   * \param os the output stream.
+   * \param [in,out] os The output stream.
    */
   void PrintGroups (std::ostream &os) const;
   /**
    * Copy constructor
    *
-   * \param cmd CommandLine to copy
+   * \param [in] cmd CommandLine to copy
    */
   void Copy (const CommandLine &cmd);
   /** Remove all arguments, Usage(), name */
@@ -448,9 +448,9 @@ namespace CommandLineHelper {
    * \ingroup commandlinehelper
    * \brief Helpers to specialize CommandLine::UserItem::Parse() on bool
    *
-   * \param value the argument name
-   * \param val the argument location
-   * \return true if parsing was successful
+   * \param [in] value The argument name
+   * \param [out] val The argument location
+   * \return \c true if parsing was successful
    * @{
    */
   template <typename T>
@@ -463,8 +463,8 @@ namespace CommandLineHelper {
    * \ingroup commandlinehelper
    * \brief Helper to specialize CommandLine::UserItem::GetDefault() on bool
    *
-   * \param val the argument value
-   * \return the string representation of value
+   * \param [in] val The argument value
+   * \return The string representation of value
    * @{
    */
   template <typename T>

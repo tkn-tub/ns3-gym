@@ -55,9 +55,9 @@ public:
   /**
    * Start a new read thread.
    *
-   * \param fd A valid file descriptor open for reading.
+   * \param [in] fd A valid file descriptor open for reading.
    *
-   * \param readCallback A callback to invoke when new data is
+   * \param [in] readCallback A callback to invoke when new data is
    * available.
    */
   void Start (int fd, Callback<void, uint8_t *, ssize_t> readCallback);
@@ -80,8 +80,8 @@ protected:
     /**
      * Construct from a buffer of a given length.
      *
-     * \param buf The buffer.
-     * \param len The size of the buffer, in bytes.
+     * \param [in] buf The buffer.
+     * \param [in] len The size of the buffer, in bytes.
      */
     Data (uint8_t *buf, ssize_t len) : m_buf (buf), m_len (len) {}
     /** The read data buffer. */

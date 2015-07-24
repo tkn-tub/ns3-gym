@@ -141,7 +141,7 @@ MakeSimpleAttributeChecker (std::string name, std::string underlying)
  * Define the attribute accessor functions \c MakeTypeAccessor
  * for class \p type.
  *
- * \param type the name of the class
+ * \param [in] type The name of the class
  *
  * This macro defines and generates the code for the implementation 
  * of the \c MakeTypeAccessor template functions. This macro is typically
@@ -167,8 +167,8 @@ MakeSimpleAttributeChecker (std::string name, std::string underlying)
  * Declare the attribute value class \p \<name>Value
  * for underlying class \p type.
  *
- * \param type The underlying type name
- * \param name The token to use in defining the accessor name.
+ * \param [in] type The underlying type name
+ * \param [in] name The token to use in defining the accessor name.
  *
  * This macro declares the class \c TypeValue associated with class \c type.
  * This macro is typically invoked in the class header file.
@@ -207,7 +207,7 @@ MakeSimpleAttributeChecker (std::string name, std::string underlying)
  * Declare the attribute value class \p \<Name>Value
  * for the class \p Name
  *
- * \param Name the name of the class.
+ * \param [in] Name The name of the class.
  *
  * This macro declares the class \c NameValue associated to class \c Name.
  * This macro is typically invoked in the class header file.
@@ -222,7 +222,7 @@ MakeSimpleAttributeChecker (std::string name, std::string underlying)
  * Define the conversion operators class \p type and
  * Attribute instances.
  *
- * \param type the name of the class
+ * \param [in] type The name of the class
  *
  * This macro defines the conversion operators for class \c type to and
  * from instances of type Attribute.
@@ -239,7 +239,7 @@ MakeSimpleAttributeChecker (std::string name, std::string underlying)
  * Declare the AttributeChecker class \p \<type>Checker
  * and the \c MakeTypeChecker function for class \p type.
  *
- * \param type the name of the class
+ * \param [in] type The name of the class
  *
  * This macro declares the \p \<type>Checker class and the associated
  * \c MakeTypeChecker function.
@@ -261,8 +261,8 @@ MakeSimpleAttributeChecker (std::string name, std::string underlying)
  * the attribute value class \p \<name>Value 
  * of the underlying class \p type.
  *
- * \param type The underlying type name
- * \param name The token to use in defining the accessor name.
+ * \param [in] type The underlying type name
+ * \param [in] name The token to use in defining the accessor name.
  *
  * This macro implements the \p \<type>Value class methods
  * (including the \p \<type>Value::SerializeToString
@@ -305,7 +305,7 @@ MakeSimpleAttributeChecker (std::string name, std::string underlying)
  * Define the class methods belonging to
  * attribute value class \p \<type>Value for class \p type.
  *
- * \param type the name of the class.
+ * \param [in] type The name of the class.
  *
  * This macro implements the \p \<type>Value class methods
  * (including the \p \<type>Value::SerializeToString
@@ -322,7 +322,7 @@ MakeSimpleAttributeChecker (std::string name, std::string underlying)
  *
  * Define the \c MakeTypeChecker function for class \p type.
  *
- * \param type the name of the class
+ * \param [in] type The name of the class
  *
  * This macro implements the \c MakeTypeChecker function.
  *
@@ -339,8 +339,8 @@ MakeSimpleAttributeChecker (std::string name, std::string underlying)
  *
  * Define the \c MakeTypeChecker function for class \p type.
  *
- * \param type the name of the class.
- * \param name the string name of the underlying type.
+ * \param [in] type The name of the class.
+ * \param [in] name The string name of the underlying type.
  *
  * This macro implements the \c MakeTypeChecker function
  * for class \p type.
@@ -358,7 +358,7 @@ MakeSimpleAttributeChecker (std::string name, std::string underlying)
  *
  * Declare the attribute value, accessor and checkers for class \p type
  *
- * \param type the name of the class
+ * \param [in] type The name of the class
  *
  * This macro declares:
  *
@@ -384,7 +384,7 @@ MakeSimpleAttributeChecker (std::string name, std::string underlying)
  *
  * Define the attribute value, accessor and checkers for class \p type
  *
- * \param type the name of the class
+ * \param [in] type The name of the class
  *
  * This macro implements
  *

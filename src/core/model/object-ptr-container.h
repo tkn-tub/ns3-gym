@@ -72,7 +72,7 @@ public:
   /**
    * Get a specific Object.
    *
-   * \param i The index of the requested object.
+   * \param [in] i The index of the requested object.
    * \returns The requested object
    */
   Ptr<Object> Get (uint32_t i) const;
@@ -88,15 +88,15 @@ public:
    *
    * Note this serializes the Ptr values, not the Objects themselves.
    *
-   * \param checker The checker to use (currently not used.)
+   * \param [in] checker The checker to use (currently not used.)
    * \returns The string form of the Objects.
    */
   virtual std::string SerializeToString (Ptr<const AttributeChecker> checker) const;
   /**
    * Deserialize from a string. (Not implemented; raises a fatal error.)
    *
-   * \param value The serialized string form.
-   * \param checker The checker to use.
+   * \param [in] value The serialized string form.
+   * \param [in] checker The checker to use.
    * \returns \c true.
    */
   virtual bool DeserializeFromString (std::string value, Ptr<const AttributeChecker> checker);

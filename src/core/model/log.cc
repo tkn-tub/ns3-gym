@@ -488,7 +488,7 @@ LogComponentPrintList (void)
  * Check if a log component exists.
  * This is private to the logging implementation.
  *
- * \param componentName The putative log component name.
+ * \param [in] componentName The putative log component name.
  * \returns \c true if \c componentName exists.
  */
 static bool ComponentExists(std::string componentName) 

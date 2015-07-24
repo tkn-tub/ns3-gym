@@ -39,9 +39,9 @@ class Vector3D
 {
 public:
   /**
-   * \param _x x coordinate of vector
-   * \param _y y coordinate of vector
-   * \param _z z coordinate of vector
+   * \param [in] _x X coordinate of vector
+   * \param [in] _y Y coordinate of vector
+   * \param [in] _z Z coordinate of vector
    *
    * Create vector (_x, _y, _z)
    */
@@ -76,8 +76,8 @@ class Vector2D
 {
 public:
   /**
-   * \param _x x coordinate of vector
-   * \param _y y coordinate of vector
+   * \param [in] _x X coordinate of vector
+   * \param [in] _y Y coordinate of vector
    *
    * Create vector (_x, _y)
    */
@@ -101,15 +101,15 @@ public:
 };
 
 /**
- * \param a one point
- * \param b another point
- * \returns the cartesian distance between a and b.
+ * \param [in] a One point
+ * \param [in] b Another point
+ * \returns The cartesian distance between a and b.
  */
 double CalculateDistance (const Vector3D &a, const Vector3D &b);
 /**
- * \param a one point
- * \param b another point
- * \returns the cartesian distance between a and b.
+ * \param [in] a One point
+ * \param [in] b Another point
+ * \returns The cartesian distance between a and b.
  */
 double CalculateDistance (const Vector2D &a, const Vector2D &b);
 

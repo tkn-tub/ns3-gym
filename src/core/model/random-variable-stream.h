@@ -113,7 +113,7 @@ public:
 
   /**
    * \brief Specifies the stream number for this RNG stream.
-   * \param stream The stream number for this RNG stream.
+   * \param [in] stream The stream number for this RNG stream.
    * -1 means "allocate a stream number automatically".
    */
   void SetStream (int64_t stream);
@@ -127,7 +127,7 @@ public:
 
   /**
    * \brief Specify whether antithetic values should be generated.
-   * \param isAntithetic If \c true antithetic value will be generated.
+   * \param [in] isAntithetic If \c true antithetic value will be generated.
    */
   void SetAntithetic(bool isAntithetic);
 
@@ -159,7 +159,7 @@ private:
   /**
    * Copy constructor.  These objects are not copyable.
    *
-   * \param o The RandomVariableStream to copy in construction.
+   * \param [in] o The RandomVariableStream to copy in construction.
    * \internal
    * Theoretically, it is possible to give them good copy semantics
    * but not enough time to iron out the details.
@@ -168,7 +168,7 @@ private:
   /**
    * Assignment operator.  These objects can't be copied by assignement.
    *
-   * \param o The RandomVariableStream to copy.
+   * \param [in] o The RandomVariableStream to copy.
    * \return lvalue RandomVariableStream.
    *
    * \internal
@@ -262,8 +262,8 @@ public:
    *
    * \note The upper limit is excluded from the output range.
    *
-   * \param min Low end of the range (included).
-   * \param max High end of the range (excluded).
+   * \param [in] min Low end of the range (included).
+   * \param [in] max High end of the range (excluded).
    * \return A floating point random value.
    */
   double GetValue (double min, double max);
@@ -274,8 +274,8 @@ public:
    *
    * \note The upper limit is included in the output range.
    *
-   * \param min Low end of the range.
-   * \param max High end of the range.
+   * \param [in] min Low end of the range.
+   * \param [in] max High end of the range.
    * \return A random unsigned integer value.
    */
   uint32_t GetInteger (uint32_t min, uint32_t max);
@@ -336,13 +336,13 @@ public:
 
   /**
    * \brief Get the next random value, as a double equal to the argument.
-   * \param constant The value to return.
+   * \param [in] constant The value to return.
    * \return The floating point argument.
    */
   double GetValue (double constant);
   /**
    * \brief Get the next random value, as an integer equal to the argument.
-   * \param constant The value to return.
+   * \param [in] constant The value to return.
    * \return The integer argument.
    */
   uint32_t GetInteger (uint32_t constant);
@@ -567,8 +567,8 @@ public:
   /**
    * \brief Get the next random value, as a double from
    * the exponential distribution with the specified mean and upper bound.
-   * \param mean Mean value of the unbounded exponential distribution.
-   * \param bound Upper bound on values returned.
+   * \param [in] mean Mean value of the unbounded exponential distribution.
+   * \param [in] bound Upper bound on values returned.
    * \return A floating point random value.
    */
   double GetValue (double mean, double bound);
@@ -576,8 +576,8 @@ public:
   /**
    * \brief Get the next random value, as an unsigned integer from
    * the exponential distribution with the specified mean and upper bound.
-   * \param mean Mean value of the unbounded exponential distributuion.
-   * \param bound Upper bound on values returned.
+   * \param [in] mean Mean value of the unbounded exponential distributuion.
+   * \param [in] bound Upper bound on values returned.
    * \return A random unsigned integer value.
    */
   uint32_t GetInteger (uint32_t mean, uint32_t bound);
@@ -675,9 +675,9 @@ public:
 
   /**
    * \brief Returns a random double from a Pareto distribution with the specified mean, shape, and upper bound.
-   * \param mean Mean parameter for the Pareto distribution.
-   * \param shape Shape parameter for the Pareto distribution.
-   * \param bound Upper bound on values returned.
+   * \param [in] mean Mean parameter for the Pareto distribution.
+   * \param [in] shape Shape parameter for the Pareto distribution.
+   * \param [in] bound Upper bound on values returned.
    * \return A floating point random value.
    *
    * Note that antithetic values are being generated if
@@ -708,9 +708,9 @@ public:
 
   /**
    * \brief Returns a random unsigned integer from a Pareto distribution with the specified mean, shape, and upper bound.
-   * \param mean Mean parameter for the Pareto distribution.
-   * \param shape Shape parameter for the Pareto distribution.
-   * \param bound Upper bound on values returned.
+   * \param [in] mean Mean parameter for the Pareto distribution.
+   * \param [in] shape Shape parameter for the Pareto distribution.
+   * \param [in] bound Upper bound on values returned.
    * \return A random unsigned integer value.
    *
    * Note that antithetic values are being generated if
@@ -905,9 +905,9 @@ public:
 
   /**
    * \brief Returns a random double from a Weibull distribution with the specified scale, shape, and upper bound.
-   * \param scale Scale parameter for the Weibull distribution.
-   * \param shape Shape parameter for the Weibull distribution.
-   * \param bound Upper bound on values returned.
+   * \param [in] scale Scale parameter for the Weibull distribution.
+   * \param [in] shape Shape parameter for the Weibull distribution.
+   * \param [in] bound Upper bound on values returned.
    * \return A floating point random value.
    *
    * Note that antithetic values are being generated if
@@ -932,9 +932,9 @@ public:
 
   /**
    * \brief Returns a random unsigned integer from a Weibull distribution with the specified scale, shape, and upper bound.
-   * \param scale Scale parameter for the Weibull distribution.
-   * \param shape Shape parameter for the Weibull distribution.
-   * \param bound Upper bound on values returned.
+   * \param [in] scale Scale parameter for the Weibull distribution.
+   * \param [in] shape Shape parameter for the Weibull distribution.
+   * \param [in] bound Upper bound on values returned.
    * \return A random unsigned integer value.
    *
    * Note that antithetic values are being generated if
@@ -1094,9 +1094,9 @@ public:
 
   /**
    * \brief Returns a random double from a normal distribution with the specified mean, variance, and bound.
-   * \param mean Mean value for the normal distribution.
-   * \param variance Variance value for the normal distribution.
-   * \param bound Bound on values returned.
+   * \param [in] mean Mean value for the normal distribution.
+   * \param [in] variance Variance value for the normal distribution.
+   * \param [in] bound Bound on values returned.
    * \return A floating point random value.
    *
    * Note that antithetic values are being generated if m_isAntithetic
@@ -1132,9 +1132,9 @@ public:
 
   /**
    * \brief Returns a random unsigned integer from a normal distribution with the specified mean, variance, and bound.
-   * \param mean Mean value for the normal distribution.
-   * \param variance Variance value for the normal distribution.
-   * \param bound Bound on values returned.
+   * \param [in] mean Mean value for the normal distribution.
+   * \param [in] variance Variance value for the normal distribution.
+   * \param [in] bound Bound on values returned.
    * \return A random unsigned integer value.
    *
    * Note that antithetic values are being generated if m_isAntithetic
@@ -1334,8 +1334,8 @@ public:
 
   /**
    * \brief Returns a random double from a log-normal distribution with the specified mu and sigma.
-   * \param mu Mu value for the log-normal distribution.
-   * \param sigma Sigma value for the log-normal distribution.
+   * \param [in] mu Mu value for the log-normal distribution.
+   * \param [in] sigma Sigma value for the log-normal distribution.
    * \return A floating point random value.
    *
    * Note that antithetic values are being generated if m_isAntithetic
@@ -1369,8 +1369,8 @@ public:
 
   /**
    * \brief Returns a random unsigned integer from a log-normal distribution with the specified mu and sigma.
-   * \param mu Mu value for the log-normal distribution.
-   * \param sigma Sigma value for the log-normal distribution.
+   * \param [in] mu Mu value for the log-normal distribution.
+   * \param [in] sigma Sigma value for the log-normal distribution.
    * \return A random unsigned integer value.
    *
    * Note that antithetic values are being generated if m_isAntithetic
@@ -1543,8 +1543,8 @@ public:
 
   /**
    * \brief Returns a random double from a gamma distribution with the specified alpha and beta.
-   * \param alpha Alpha value for the gamma distribution.
-   * \param beta Beta value for the gamma distribution.
+   * \param [in] alpha Alpha value for the gamma distribution.
+   * \param [in] beta Beta value for the gamma distribution.
    * \return A floating point random value.
    *
    * Note that antithetic values are being generated if m_isAntithetic
@@ -1558,8 +1558,8 @@ public:
 
   /**
    * \brief Returns a random unsigned integer from a gamma distribution with the specified alpha and beta.
-   * \param alpha Alpha value for the gamma distribution.
-   * \param beta Beta value for the gamma distribution.
+   * \param [in] alpha Alpha value for the gamma distribution.
+   * \param [in] beta Beta value for the gamma distribution.
    * \return A random unsigned integer value.
    *
    * Note that antithetic values are being generated if m_isAntithetic
@@ -1605,9 +1605,9 @@ public:
 private:
   /**
    * \brief Returns a random double from a normal distribution with the specified mean, variance, and bound.
-   * \param mean Mean value for the normal distribution.
-   * \param variance Variance value for the normal distribution.
-   * \param bound Bound on values returned.
+   * \param [in] mean Mean value for the normal distribution.
+   * \param [in] variance Variance value for the normal distribution.
+   * \param [in] bound Bound on values returned.
    * \return A floating point random value.
    *
    * Note that antithetic values are being generated if m_isAntithetic
@@ -1720,8 +1720,8 @@ public:
 
   /**
    * \brief Returns a random double from an Erlang distribution with the specified k and lambda.
-   * \param k K value for the Erlang distribution.
-   * \param lambda Lambda value for the Erlang distribution.
+   * \param [in] k K value for the Erlang distribution.
+   * \param [in] lambda Lambda value for the Erlang distribution.
    * \return A floating point random value.
    *
    * Note that antithetic values are being generated if m_isAntithetic
@@ -1735,8 +1735,8 @@ public:
 
   /**
    * \brief Returns a random unsigned integer from an Erlang distribution with the specified k and lambda.
-   * \param k K value for the Erlang distribution.
-   * \param lambda Lambda value for the Erlang distribution.
+   * \param [in] k K value for the Erlang distribution.
+   * \param [in] lambda Lambda value for the Erlang distribution.
    * \return A random unsigned integer value.
    *
    * Note that antithetic values are being generated if m_isAntithetic
@@ -1782,8 +1782,8 @@ public:
 private:
   /**
    * \brief Returns a random double from an exponential distribution with the specified mean and upper bound.
-   * \param mean Mean value of the random variables.
-   * \param bound Upper bound on values returned.
+   * \param [in] mean Mean value of the random variables.
+   * \param [in] bound Upper bound on values returned.
    * \return A floating point random value.
    *
    * Note that antithetic values are being generated if
@@ -1878,9 +1878,9 @@ public:
 
   /**
    * \brief Returns a random double from a triangular distribution with the specified mean, min, and max.
-   * \param mean Mean value for the triangular distribution.
-   * \param min Low end of the range.
-   * \param max High end of the range.
+   * \param [in] mean Mean value for the triangular distribution.
+   * \param [in] min Low end of the range.
+   * \param [in] max High end of the range.
    * \return A floating point random value.
    *
    * Note that antithetic values are being generated if
@@ -1918,9 +1918,9 @@ public:
 
   /**
    * \brief Returns a random unsigned integer from a triangular distribution with the specified mean, min, and max.
-   * \param mean Mean value for the triangular distribution.
-   * \param min Low end of the range.
-   * \param max High end of the range.
+   * \param [in] mean Mean value for the triangular distribution.
+   * \param [in] min Low end of the range.
+   * \param [in] max High end of the range.
    * \return A random unsigned integer value.
    *
    * Note that antithetic values are being generated if
@@ -2135,8 +2135,8 @@ public:
 
   /**
    * \brief Returns a random double from a Zipf distribution with the specified n and alpha.
-   * \param n N value for the Zipf distribution.
-   * \param alpha Alpha value for the Zipf distribution.
+   * \param [in] n N value for the Zipf distribution.
+   * \param [in] alpha Alpha value for the Zipf distribution.
    * \return A floating point random value.
    *
    * Note that antithetic values are being generated if m_isAntithetic
@@ -2150,8 +2150,8 @@ public:
 
   /**
    * \brief Returns a random unsigned integer from a Zipf distribution with the specified n and alpha.
-   * \param n N value for the Zipf distribution.
-   * \param alpha Alpha value for the Zipf distribution.
+   * \param [in] n N value for the Zipf distribution.
+   * \param [in] alpha Alpha value for the Zipf distribution.
    * \return A random unsigned integer value.
    *
    * Note that antithetic values are being generated if m_isAntithetic
@@ -2269,7 +2269,7 @@ public:
 
   /**
    * \brief Returns a random double from a zeta distribution with the specified alpha.
-   * \param alpha Alpha value for the zeta distribution.
+   * \param [in] alpha Alpha value for the zeta distribution.
    * \return A floating point random value.
    *
    * Note that antithetic values are being generated if m_isAntithetic
@@ -2283,7 +2283,7 @@ public:
 
   /**
    * \brief Returns a random unsigned integer from a zeta distribution with the specified alpha.
-   * \param alpha Alpha value for the zeta distribution.
+   * \param [in] alpha Alpha value for the zeta distribution.
    * \return A random unsigned integer value.
    *
    * Note that antithetic values are being generated if m_isAntithetic
@@ -2384,8 +2384,8 @@ public:
 
   /**
    * \brief Sets the array of values that holds the predetermined sequence.
-   * \param values Array of random values to return in sequence.
-   * \param length Number of values in the array.
+   * \param [in] values Array of random values to return in sequence.
+   * \param [in] length Number of values in the array.
    *
    * Note that the values in the array are copied and stored
    * (deep-copy).
@@ -2465,8 +2465,8 @@ public:
 
   /**
    * \brief Specifies a point in the empirical distribution
-   * \param v The function value for this point
-   * \param c Probability that the function is less than or equal to v
+   * \param [in] v The function value for this point
+   * \param [in] c Probability that the function is less than or equal to v
    */
   void CDF (double v, double c);  // Value, prob <= Value
 

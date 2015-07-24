@@ -75,7 +75,7 @@ public:
 
   /**
    * Set the value of the underlying condition.
-   * @param condition value
+   * @param [in] condition value
    */
   void SetCondition (bool condition);
 
@@ -106,8 +106,8 @@ public:
   /**
    * Wait a maximum of ns nanoseconds for the condition to be true.  If the
    * wait times out, return true else return false.
-   * @param ns maximum of nanoseconds to wait
-   * @returns true if the timer expired, otherwise return false.
+   * @param [in] ns maximum of nanoseconds to wait
+   * @returns \c true if the timer expired, otherwise return \c false.
    */
   bool TimedWait (uint64_t ns);
 	

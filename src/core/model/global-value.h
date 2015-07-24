@@ -62,12 +62,12 @@ public:
 
   /**
    * Constructor.
-   * \param name the name of this global value.
-   * \param help some help text which describes the purpose of this
+   * \param [in] name the name of this global value.
+   * \param [in] help some help text which describes the purpose of this
    *        global value.
-   * \param initialValue the value to assign to this global value
+   * \param [in] initialValue the value to assign to this global value
    *        during construction.
-   * \param checker a pointer to an AttributeChecker which can verify
+   * \param [in] checker a pointer to an AttributeChecker which can verify
    *        that any user-supplied value to override the initial
    *        value matches the requested type constraints.
    */
@@ -77,29 +77,29 @@ public:
 
   /**
    * Get the name.
-   * \returns the name of this GlobalValue.
+   * \returns The name of this GlobalValue.
    */
   std::string GetName (void) const;
   /**
    * Get the help string.
-   * \returns the help text of this GlobalValue.
+   * \returns The help text of this GlobalValue.
    */
   std::string GetHelp (void) const;
   /**
    * Get the value.
    * \param [out] value The AttributeValue to set to the value
    *                    of this GlobalValue
-   * \returns the current value of this GlobalValue.
+   * \returns The current value of this GlobalValue.
    */
   void GetValue (AttributeValue &value) const;
   /**
    * Get the AttributeChecker.
-   * \returns the checker associated to this GlobalValue.
+   * \returns The checker associated to this GlobalValue.
    */
   Ptr<const AttributeChecker> GetChecker (void) const;
   /**
    * Set the value of this GlobalValue.
-   * \param value the new value to set in this GlobalValue.
+   * \param [in] value the new value to set in this GlobalValue.
    * \returns \c true if the Global Value was set successfully.
    */
   bool SetValue (const AttributeValue &value);
@@ -111,8 +111,8 @@ public:
    * Iterate over the set of GlobalValues until a matching name is found
    * and then set its value with GlobalValue::SetValue.
    *
-   * \param name the name of the global value
-   * \param value the value to set in the requested global value.
+   * \param [in] name the name of the global value
+   * \param [in] value the value to set in the requested global value.
    *
    * This method cannot fail. It will crash if the input is not valid.
    */
@@ -122,20 +122,21 @@ public:
    * Iterate over the set of GlobalValues until a matching name is found
    * and then set its value with GlobalValue::SetValue.
    *
-   * \param name the name of the global value
-   * \param value the value to set in the requested global value.
-   * \returns true if the value could be set successfully, false otherwise.
+   * \param [in] name the name of the global value
+   * \param [in] value the value to set in the requested global value.
+   * \returns \c true if the value could be set successfully,
+   *          \c false otherwise.
    */
   static bool BindFailSafe (std::string name, const AttributeValue &value);
 
   /**
    * The Begin iterator.
-   * \returns an iterator which represents a pointer to the first GlobalValue registered.
+   * \returns An iterator which represents a pointer to the first GlobalValue registered.
    */
   static Iterator Begin (void);
   /**
    * The End iterator.
-   * \returns an iterator which represents a pointer to the last GlobalValue registered.
+   * \returns An iterator which represents a pointer to the last GlobalValue registered.
    */
   static Iterator End (void);
 
@@ -143,10 +144,10 @@ public:
   /** 
    * Finds the GlobalValue with the given name and returns its value
    * 
-   * \param name the name of the GlobalValue to be found
-   * \param value where to store the value of the found GlobalValue
+   * \param [in] name the name of the GlobalValue to be found
+   * \param [out] value where to store the value of the found GlobalValue
    * 
-   * \return true if the GlobalValue was found, false otherwise
+   * \return \c true if the GlobalValue was found, \c false otherwise
    */
   static bool GetValueByNameFailSafe (std::string name, AttributeValue &value);
 
@@ -157,8 +158,8 @@ public:
    * This method cannot fail, i.e., it will trigger a
    * NS_FATAL_ERROR if the requested GlobalValue is not found.
    * 
-   * \param name the name of the GlobalValue to be found
-   * \param value where to store the value of the found GlobalValue
+   * \param [in] name the name of the GlobalValue to be found
+   * \param [out] value where to store the value of the found GlobalValue
    */
   static void GetValueByName (std::string name, AttributeValue &value);
 

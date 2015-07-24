@@ -53,7 +53,7 @@ namespace FatalImpl {
  * this function should ensure the stream remains valid until
  * it had been unregistered.
  *
- * \param stream The stream to be flushed on abnormal exit.
+ * \param [in] stream The stream to be flushed on abnormal exit.
  */
 void RegisterStream (std::ostream* stream);
 
@@ -68,7 +68,7 @@ void RegisterStream (std::ostream* stream);
  *
  * If the stream is not registered, nothing will happen.
  *
- * \param stream The stream to be unregistered.
+ * \param [in] stream The stream to be unregistered.
  */
 void UnregisterStream (std::ostream* stream);
 

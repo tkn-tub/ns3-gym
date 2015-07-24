@@ -108,13 +108,14 @@ public:
    */
   Timer ();
   /**
-   * \param destroyPolicy the event lifetime management policies to use for destroy events
+   * \param [in] destroyPolicy the event lifetime management policies
+   * to use for destroy events
    */
   Timer (enum DestroyPolicy destroyPolicy);
   ~Timer ();
 
   /**
-   * \param fn the function
+   * \param [in] fn the function
    *
    * Store this function in this Timer for later use by Timer::Schedule.
    */
@@ -122,67 +123,68 @@ public:
   void SetFunction (FN fn);
 
   /**
-   * \param memPtr the member function pointer
-   * \param objPtr the pointer to object
+   * \param [in] memPtr the member function pointer
+   * \param [in] objPtr the pointer to object
    *
-   * Store this function and object in this Timer for later use by Timer::Schedule.
+   * Store this function and object in this Timer for later use by
+   * Timer::Schedule.
    */
   template <typename MEM_PTR, typename OBJ_PTR>
   void SetFunction (MEM_PTR memPtr, OBJ_PTR objPtr);
 
 
   /**
-   * \param a1 the first argument
+   * \param [in] a1 the first argument
    *
    * Store this argument in this Timer for later use by Timer::Schedule.
    */
   template <typename T1>
   void SetArguments (T1 a1);
   /**
-   * \param a1 the first argument
-   * \param a2 the second argument
+   * \param [in] a1 the first argument
+   * \param [in] a2 the second argument
    *
    * Store these arguments in this Timer for later use by Timer::Schedule.
    */
   template <typename T1, typename T2>
   void SetArguments (T1 a1, T2 a2);
   /**
-   * \param a1 the first argument
-   * \param a2 the second argument
-   * \param a3 the third argument
+   * \param [in] a1 the first argument
+   * \param [in] a2 the second argument
+   * \param [in] a3 the third argument
    *
    * Store these arguments in this Timer for later use by Timer::Schedule.
    */
   template <typename T1, typename T2, typename T3>
   void SetArguments (T1 a1, T2 a2, T3 a3);
   /**
-   * \param a1 the first argument
-   * \param a2 the second argument
-   * \param a3 the third argument
-   * \param a4 the fourth argument
+   * \param [in] a1 the first argument
+   * \param [in] a2 the second argument
+   * \param [in] a3 the third argument
+   * \param [in] a4 the fourth argument
    *
    * Store these arguments in this Timer for later use by Timer::Schedule.
    */
   template <typename T1, typename T2, typename T3, typename T4>
   void SetArguments (T1 a1, T2 a2, T3 a3, T4 a4);
   /**
-   * \param a1 the first argument
-   * \param a2 the second argument
-   * \param a3 the third argument
-   * \param a4 the fourth argument
-   * \param a5 the fifth argument
+   * \param [in] a1 the first argument
+   * \param [in] a2 the second argument
+   * \param [in] a3 the third argument
+   * \param [in] a4 the fourth argument
+   * \param [in] a5 the fifth argument
    *
    * Store these arguments in this Timer for later use by Timer::Schedule.
    */
   template <typename T1, typename T2, typename T3, typename T4, typename T5>
   void SetArguments (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5);
   /**
-   * \param a1 the first argument
-   * \param a2 the second argument
-   * \param a3 the third argument
-   * \param a4 the fourth argument
-   * \param a5 the fifth argument
-   * \param a6 the sixth argument
+   * \param [in] a1 the first argument
+   * \param [in] a2 the second argument
+   * \param [in] a3 the third argument
+   * \param [in] a4 the fourth argument
+   * \param [in] a5 the fifth argument
+   * \param [in] a6 the sixth argument
    *
    * Store these arguments in this Timer for later use by Timer::Schedule.
    */
@@ -190,17 +192,17 @@ public:
   void SetArguments (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5, T6 a6);
 
   /**
-   * \param delay the delay
+   * \param [in] delay The delay
    *
    * The next call to Schedule will schedule the timer with this delay.
    */
   void SetDelay (const Time &delay);
   /**
-   * \returns the currently-configured delay for the next Schedule.
+   * \returns The currently-configured delay for the next Schedule.
    */
   Time GetDelay (void) const;
   /**
-   * \returns the amount of time left until this timer expires.
+   * \returns The amount of time left until this timer expires.
    *
    * This method returns zero if the timer is in EXPIRED state.
    */
@@ -216,20 +218,22 @@ public:
    */
   void Remove (void);
   /**
-   * \return true if there is no currently-running event, false otherwise.
+   * \return \c true if there is no currently-running event,
+   * \c false otherwise.
    */
   bool IsExpired (void) const;
   /**
-   * \return true if there is a currently-running event, false otherwise.
+   * \return \c true if there is a currently-running event,
+   * \c false otherwise.
    */
   bool IsRunning (void) const;
   /**
-   * \returns true if this timer was suspended and not yet resumed, false
-   *          otherwise.
+   * \returns \c true if this timer was suspended and not yet resumed,
+   * \c false otherwise.
    */
   bool IsSuspended (void) const;
   /**
-   * \returns the current state of the timer.
+   * \returns The current state of the timer.
    */
   enum Timer::State GetState (void) const;
   /**
@@ -238,7 +242,7 @@ public:
    */
   void Schedule (void);
   /**
-   * \param delay the delay to use
+   * \param [in] delay the delay to use
    *
    * Schedule a new event using the specified delay (ignore the delay set by
    * Timer::SetDelay), function, and arguments.

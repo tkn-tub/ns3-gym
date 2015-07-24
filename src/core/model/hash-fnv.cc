@@ -368,9 +368,9 @@ enum fnv_type {
  * fnv_32a_buf - perform a 32 bit Fowler/Noll/Vo FNV-1a hash on a buffer
  *
  * input:
- * \param	buf	start of buffer to hash
- * \param	len	length of buffer in octets
- * \param	hval	previous hash value or 0 if first call
+ * \param  [in] buf	start of buffer to hash
+ * \param  [in] len	length of buffer in octets
+ * \param  [in] hval	previous hash value or 0 if first call
  *
  * \returns		32 bit hash as a static hash type.
  *
@@ -408,8 +408,8 @@ fnv_32a_buf(void *buf, size_t len, Fnv32_t hval)
  * fnv_32a_str - perform a 32 bit Fowler/Noll/Vo FNV-1a hash on a string
  *
  * input:
- * \param	str	string to hash
- * \param	hval	previous hash value or 0 if first call
+ * \param  [in] str	string to hash
+ * \param  [in] hval	previous hash value or 0 if first call
  *
  * \returns		32 bit hash as a static hash type
  *
@@ -531,9 +531,9 @@ const Fnv64_t fnv1a_64_init = { 0x84222325, 0xcbf29ce4 };
  * fnv_64a_buf - perform a 64 bit Fowler/Noll/Vo FNV-1a hash on a buffer
  *
  * input:
- * \param	buf	start of buffer to hash
- * \param	len	length of buffer in octets
- * \param	hval	previous hash value or 0 if first call
+ * \param  [in] buf	start of buffer to hash
+ * \param  [in] len	length of buffer in octets
+ * \param  [in] hval	previous hash value or 0 if first call
  *
  * \returns		64 bit hash as a static hash type
  *
@@ -637,8 +637,8 @@ fnv_64a_buf(void *buf, size_t len, Fnv64_t hval)
  * fnv_64a_str - perform a 64 bit Fowler/Noll/Vo FNV-1a hash on a buffer
  *
  * input:
- * \param	str	string to hash
- * \param	hval	previous hash value or 0 if first call
+ * \param  [in] str	string to hash
+ * \param  [in] hval	previous hash value or 0 if first call
  *
  * \returns		64 bit hash as a static hash type
  *

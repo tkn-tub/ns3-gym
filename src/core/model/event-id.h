@@ -100,15 +100,15 @@ public:
 private:
   /**
    * Test if two EventId's are equal.
-   * \param a The first EventId.
-   * \param b The second EventId.
+   * \param [in] a The first EventId.
+   * \param [in] b The second EventId.
    * \return \c true if the \p a and \p b represent the same event.
    */
   friend bool operator == (const EventId &a, const EventId &b);
   /**
    * Test if two EventId's are not equal.
-   * \param a The first EventId.
-   * \param b The second EventId.
+   * \param [in] a The first EventId.
+   * \param [in] b The second EventId.
    * \return \c true if the \p a and \p b are not the same event.
    */
   friend bool operator != (const EventId &a, const EventId &b);

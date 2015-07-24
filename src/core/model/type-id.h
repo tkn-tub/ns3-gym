@@ -100,7 +100,7 @@ public:
   /**
    * Get a TypeId by name.
    *
-   * \param name The name of the requested TypeId
+   * \param [in] name The name of the requested TypeId
    * \returns The unique id associated with the requested name. 
    *
    * This method cannot fail: it will crash if the input 
@@ -110,16 +110,16 @@ public:
   /**
    * Get a TypeId by name.
    * 
-   * \param name The name of the requested TypeId
-   * \param tid A pointer to the TypeId instance where the 
-   *        result of this function should be stored.
+   * \param [in]  name The name of the requested TypeId
+   * \param [out] tid A pointer to the TypeId instance where the 
+   *              result of this function should be stored.
    * \returns \c true if the requested name was found.
    */
   static bool LookupByNameFailSafe (std::string name, TypeId *tid);
   /**
    * Get a TypeId by hash.
    *
-   * \param hash The hash to lookup
+   * \param [in] hash The hash to lookup
    * \returns The unique id associated with the requested hash.
    *
    * This method cannot fail: it will crash if the input 
@@ -129,9 +129,9 @@ public:
   /**
    * Get a TypeId by hash.
    *
-   * \param hash The hash of the requested TypeId
-   * \param tid A pointer to the TypeId instance where the 
-   *        result of this function should be stored.
+   * \param [in]  hash The hash of the requested TypeId
+   * \param [out] tid A pointer to the TypeId instance where the 
+   *              result of this function should be stored.
    * \returns \c true if the requested hash was found.
    */
   static bool LookupByHashFailSafe (hash_t hash, TypeId *tid);
@@ -145,15 +145,15 @@ public:
   /**
    * Get a TypeId by index.
    *
-   * \param i Index of the TypeId.
-   * \returns he TypeId instance whose index is \c i.
+   * \param [in] i Index of the TypeId.
+   * \returns The TypeId instance whose index is \c i.
    */
   static TypeId GetRegistered (uint32_t i);
 
   /**
    * Constructor.
    *
-   * \param name The name of the interface to construct.
+   * \param [in] name The name of the interface to construct.
    *
    * No two instances can share the same name. The name is expected to be
    * the full c++ typename of associated c++ object.
@@ -183,7 +183,7 @@ public:
   /**
    * Check if this TypeId is a child of another.
    *
-   * \param other A parent TypeId
+   * \param [in] other A parent TypeId
    * \returns \c true if the input TypeId is really a parent of this TypeId.
    *
    * Calling this method is roughly similar to calling dynamic_cast
@@ -236,14 +236,14 @@ public:
   /**
    * Get Attribute information by index.
    *
-   * \param i Index into attribute array
+   * \param [in] i Index into attribute array
    * \returns The information associated to attribute whose index is \p i.
    */
   struct TypeId::AttributeInformation GetAttribute(uint32_t i) const;
   /**
    * Get the Attribute name by index.
    *
-   * \param i Index into attribute array
+   * \param [in] i Index into attribute array
    * \returns The full name associated to the attribute whose index is \p i.
    */
   std::string GetAttributeFullName (uint32_t i) const;
@@ -273,7 +273,7 @@ public:
   /**
    * Get the trace source by index.
    *
-   * \param i Index into trace source array.
+   * \param [in] i Index into trace source array.
    * \returns Detailed information about the requested trace source.
    */
   struct TypeId::TraceSourceInformation GetTraceSource(uint32_t i) const;
@@ -281,7 +281,7 @@ public:
   /**
    * Set the parent TypeId.
    *
-   * \param tid The TypeId of the base class.
+   * \param [in] tid The TypeId of the base class.
    * \return This TypeId instance.
    *
    * Record in this TypeId which TypeId is the TypeId
@@ -303,7 +303,7 @@ public:
   /**
    * Set the group name.
    *
-   * \param groupName The name of the group this TypeId belongs to.
+   * \param [in] groupName The name of the group this TypeId belongs to.
    * \returns This TypeId instance.
    *
    * The group name is purely an advisory information used to 
@@ -323,7 +323,7 @@ public:
    * A ridiculously large reported size is a symptom that the
    * type hasn't been registered.
    *
-   * \param size The size of the object, in bytes.
+   * \param [in] size The size of the object, in bytes.
    * \returns This TypeId instance.
    */
   TypeId SetSize (std::size_t size);
@@ -341,12 +341,14 @@ public:
   /**
    * Record in this TypeId the fact that a new attribute exists.
    *
-   * \param name The name of the new attribute
-   * \param help Some help text which describes the purpose of this
-   *        attribute.
-   * \param initialValue The initial value for this attribute.
-   * \param accessor An instance of the associated AttributeAccessor subclass.
-   * \param checker An instance of the associated AttributeChecker subclass.
+   * \param [in] name The name of the new attribute
+   * \param [in] help Some help text which describes the purpose of this
+   *             attribute.
+   * \param [in] initialValue The initial value for this attribute.
+   * \param [in] accessor An instance of the associated AttributeAccessor
+   *             subclass.
+   * \param [in] checker An instance of the associated AttributeChecker
+   *             subclass.
    * \returns This TypeId instance
    */
   TypeId AddAttribute (std::string name,
@@ -358,8 +360,8 @@ public:
   /**
    * Set the initial value of an Attribute.
    *
-   * \param i The attribute to manipulate
-   * \param initialValue The new initial value to use for this attribute.
+   * \param [in] i The attribute to manipulate
+   * \param [in] initialValue The new initial value to use for this attribute.
    * \returns \c true if the call was successfuly.
    */
   bool SetAttributeInitialValue(uint32_t i, 
@@ -368,13 +370,15 @@ public:
   /**
    * Record in this TypeId the fact that a new attribute exists.
    *
-   * \param name The name of the new attribute
-   * \param help Some help text which describes the purpose of this
+   * \param [in] name The name of the new attribute
+   * \param [in] help Some help text which describes the purpose of this
    *        attribute
-   * \param flags Flags which describe how this attribute can be read and/or written.
-   * \param initialValue The initial value for this attribute.
-   * \param accessor An instance of the associated AttributeAccessor subclass.
-   * \param checker An instance of the associated AttributeChecker subclass.
+   * \param [in] flags Flags which describe how this attribute can be read and/or written.
+   * \param [in] initialValue The initial value for this attribute.
+   * \param [in] accessor An instance of the associated AttributeAccessor
+   *             subclass.
+   * \param [in] checker An instance of the associated AttributeChecker
+   *             subclass.
    * \returns This TypeId instance
    */
   TypeId AddAttribute (std::string name,
@@ -387,11 +391,11 @@ public:
   /**
    * Record a new TraceSource.
    *
-   * \param name The name of the new trace source
-   * \param help Some help text which describes the purpose of this
-   *        trace source.
-   * \param accessor A pointer to a TraceSourceAccessor which can be
-   *        used to connect/disconnect sinks to this trace source.
+   * \param [in] name The name of the new trace source
+   * \param [in] help Some help text which describes the purpose of this
+   *             trace source.
+   * \param [in] accessor A pointer to a TraceSourceAccessor which can be
+   *             used to connect/disconnect sinks to this trace source.
    * \returns this TypeId instance.
    */
   TypeId AddTraceSource (std::string name,
@@ -402,13 +406,14 @@ public:
   /**
    * Record a new TraceSource.
    *
-   * \param name The name of the new trace source
-   * \param help Some help text which describes the purpose of this
-   *        trace source.
-   * \param accessor A pointer to a TraceSourceAccessor which can be
-   *        used to connect/disconnect sinks to this trace source.
-   * \param callback Fully qualified typedef name for the callback signature.
-   *        Generally this should begin with the "ns3::" namespace qualifier.
+   * \param [in] name The name of the new trace source
+   * \param [in] help Some help text which describes the purpose of this
+   *             trace source.
+   * \param [in] accessor A pointer to a TraceSourceAccessor which can be
+   *             used to connect/disconnect sinks to this trace source.
+   * \param [in] callback Fully qualified typedef name for the callback
+   *             signature.  Generally this should begin with the
+   *             "ns3::" namespace qualifier.
    * \returns This TypeId instance.
    */
   TypeId AddTraceSource (std::string name,
@@ -425,9 +430,10 @@ public:
   /**
    * Find an Attribute by name.
    *
-   * \param name The name of the requested attribute
-   * \param info A pointer to the TypeId::AttributeInformation data structure
-   *        where the result value of this method will be stored.
+   * \param [in]  name The name of the requested attribute
+   * \param [out] info A pointer to the TypeId::AttributeInformation
+   *              data structure where the result value of this method
+   *              will be stored.
    * \returns \c true if the requested attribute could be found.
    */
   bool LookupAttributeByName (std::string name, struct AttributeInformation *info) const;
@@ -436,9 +442,10 @@ public:
    *
    * If no matching trace source is found, this method returns zero.
    *
-   * \param name The name of the requested trace source
-   * \returns The trace source accessor which can be used to connect and disconnect
-   *          trace sinks with the requested trace source on an object instance.
+   * \param [in] name The name of the requested trace source
+   * \returns The trace source accessor which can be used to connect
+   *  and disconnect trace sinks with the requested trace source on
+   *  an object instance.
    */
   Ptr<const TraceSourceAccessor> LookupTraceSourceByName (std::string name) const;
 
@@ -454,8 +461,8 @@ public:
   /**
    * Set the internal id of this TypeId.
    *
-   * \param tid The internal integer which uniquely identifies this TypeId.
-   *            This TypeId should already have been registered.
+   * \param [in] tid The internal integer which uniquely identifies
+   *            this TypeId.  This TypeId should already have been registered.
    *
    * Typically this is used in serialization/deserialization.
    *
@@ -512,7 +519,7 @@ private:
  * \relates TypeId
  * Output streamer.
  *
- * \param [in] os The output stream.
+ * \param [in,out] os The output stream.
  * \param [in] tid The TypeId.
  * \returns The output stream.
  */
@@ -520,7 +527,7 @@ std::ostream & operator << (std::ostream &os, TypeId tid);
 /**
  * \relates TypeId
  * Input Streamer.
- * \param [in] is The input stream.
+ * \param [in,out] is The input stream.
  * \param [out] tid The TypeId to set from the stream.
  * \returns The input stream.
  */

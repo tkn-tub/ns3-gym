@@ -155,9 +155,9 @@ private:
   template <typename T>
   inline Ptr<T> GetObject (void) const;
   /**
-   * Get a pointer to the requested aggregated Object.
+   * Get a pointer to the requested aggregated Object by TypeId.
    * 
-   * \param tid The TypeId of the requested Object.
+   * \param [in] tid The TypeId of the requested Object.
    * \returns A pointer to the requested Object, or zero
    *          if it could not be found.
    */
@@ -181,7 +181,7 @@ private:
   /**
    * Aggregate two Objects together.
    *
-   * \param other The other Object pointer
+   * \param [in] other The other Object pointer
    *
    * This method aggregates the two Objects together: after this
    * method returns, it becomes possible to call GetObject()
@@ -265,7 +265,7 @@ protected:
   /**
    * Copy an Object.
    *
-   * \param o the Object to copy.
+   * \param [in] o the Object to copy.
    *
    * Allow subclasses to implement a copy constructor.
    *
@@ -289,7 +289,7 @@ private:
   /**
    * Copy an Object.
    *
-   * \param object A pointer to the object to copy.
+   * \param [in] object A pointer to the object to copy.
    * \returns A copy of the input object.
    *
    * This method invoke the copy constructor of the input object
@@ -338,7 +338,7 @@ private:
   /**
    * Find an Object of TypeId tid in the aggregates of this Object.
    *
-   * \param tid The TypeId we're looking for
+   * \param [in] tid The TypeId we're looking for
    * \return The matching Object, if it is found
    */
   Ptr<Object> DoGetObject (TypeId tid) const;
@@ -363,7 +363,7 @@ private:
   /**
    * Set the TypeId of this Object.
    
-   * \param tid The TypeId value to set.
+   * \param [in] tid The TypeId value to set.
    *
    * Invoked from ns3::CreateObject only.
    * Initialize the \c m_tid member variable to
@@ -373,7 +373,7 @@ private:
   /**
    * Initialize all member variables registered as Attributes of this TypeId.
    *
-   * \param attributes The attribute values used to initialize
+   * \param [in] attributes The attribute values used to initialize
    *        the member variables of this Object's instance.
    *
    * Invoked from ns3::ObjectFactory::Create and ns3::CreateObject only.
@@ -385,8 +385,8 @@ private:
   /**
    * Keep the list of aggregates in most-recently-used order
    *
-   * \param aggregates The list of aggregated Objects.
-   * \param i The most recently used entry in the list.
+   * \param [in,out] aggregates The list of aggregated Objects.
+   * \param [in] i The most recently used entry in the list.
    */
   void UpdateSortedArray (struct Aggregates *aggregates, uint32_t i) const;
   /**
@@ -529,7 +529,7 @@ Ptr<T> CreateObject (void)
  * \copybrief CreateObject()
  * \tparam T \explicit The type of the derived object to construct.
  * \tparam T1 \deduced The type of the constructor argument.
- * \param a1 The constructor argument
+ * \param [in] a1 The constructor argument
  * \return The derived object.
  */
 template <typename T, typename T1>
@@ -543,8 +543,8 @@ Ptr<T> CreateObject (T1 a1)
  * \tparam T \explicit The type of the derived object to construct.
  * \tparam T1 \deduced The type of the first constructor argument.
  * \tparam T2 \deduced The type of the second constructor argument.
- * \param a1 The constructor first argument
- * \param a2 The constructor second argument
+ * \param [in] a1 The constructor first argument
+ * \param [in] a2 The constructor second argument
  * \return The derived object.
  */
 template <typename T, typename T1, typename T2>
@@ -559,9 +559,9 @@ Ptr<T> CreateObject (T1 a1, T2 a2)
  * \tparam T1 \deduced The type of the first constructor argument.
  * \tparam T2 \deduced The type of the second constructor argument.
  * \tparam T3 \deduced The type of the third constructor argument.
- * \param a1 The constructor first argument
- * \param a2 The constructor second argument
- * \param a3 The constructor third argument
+ * \param [in] a1 The constructor first argument
+ * \param [in] a2 The constructor second argument
+ * \param [in] a3 The constructor third argument
  * \return The derived object.
  */
 template <typename T, typename T1, typename T2, typename T3>
@@ -577,10 +577,10 @@ Ptr<T> CreateObject (T1 a1, T2 a2, T3 a3)
  * \tparam T2 \deduced The type of the second constructor argument.
  * \tparam T3 \deduced The type of the third constructor argument.
  * \tparam T4 \deduced The type of the fourth constructor argument.
- * \param a1 The constructor first argument
- * \param a2 The constructor second argument
- * \param a3 The constructor third argument
- * \param a4 The constructor fourth argument
+ * \param [in] a1 The constructor first argument
+ * \param [in] a2 The constructor second argument
+ * \param [in] a3 The constructor third argument
+ * \param [in] a4 The constructor fourth argument
  * \return The derived object.
  */
 template <typename T, typename T1, typename T2, typename T3, typename T4>
@@ -597,11 +597,11 @@ Ptr<T> CreateObject (T1 a1, T2 a2, T3 a3, T4 a4)
  * \tparam T3 \deduced The type of the third constructor argument.
  * \tparam T4 \deduced The type of the fourth constructor argument.
  * \tparam T5 \deduced The type of the fifth constructor argument.
- * \param a1 The constructor first argument
- * \param a2 The constructor second argument
- * \param a3 The constructor third argument
- * \param a4 The constructor fourth argument
- * \param a5 The constructor fifth argument
+ * \param [in] a1 The constructor first argument
+ * \param [in] a2 The constructor second argument
+ * \param [in] a3 The constructor third argument
+ * \param [in] a4 The constructor fourth argument
+ * \param [in] a5 The constructor fifth argument
  * \return The derived object.
  */
 template <typename T, typename T1, typename T2, typename T3, typename T4, typename T5>
@@ -619,12 +619,12 @@ Ptr<T> CreateObject (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5)
  * \tparam T4 \deduced The type of the fourth constructor argument.
  * \tparam T5 \deduced The type of the fifth constructor argument.
  * \tparam T6 \deduced The type of the sixth constructor argument.
- * \param a1 The constructor first argument
- * \param a2 The constructor second argument
- * \param a3 The constructor third argument
- * \param a4 The constructor fourth argument
- * \param a5 The constructor fifth argument
- * \param a6 The constructor sixth argument
+ * \param [in] a1 The constructor first argument
+ * \param [in] a2 The constructor second argument
+ * \param [in] a3 The constructor third argument
+ * \param [in] a4 The constructor fourth argument
+ * \param [in] a5 The constructor fifth argument
+ * \param [in] a6 The constructor sixth argument
  * \return The derived object.
  */
 template <typename T, typename T1, typename T2, typename T3, typename T4, typename T5, typename T6>
@@ -643,13 +643,13 @@ Ptr<T> CreateObject (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5, T6 a6)
  * \tparam T5 \deduced The type of the fifth constructor argument.
  * \tparam T6 \deduced The type of the sixth constructor argument.
  * \tparam T7 \deduced The type of the seventh constructor argument.
- * \param a1 The constructor first argument
- * \param a2 The constructor second argument
- * \param a3 The constructor third argument
- * \param a4 The constructor fourth argument
- * \param a5 The constructor fifth argument
- * \param a6 The constructor sixth argument
- * \param a7 The constructor seventh argument
+ * \param [in] a1 The constructor first argument
+ * \param [in] a2 The constructor second argument
+ * \param [in] a3 The constructor third argument
+ * \param [in] a4 The constructor fourth argument
+ * \param [in] a5 The constructor fifth argument
+ * \param [in] a6 The constructor sixth argument
+ * \param [in] a7 The constructor seventh argument
  * \return The derived object.
  */
 template <typename T, typename T1, typename T2, typename T3, typename T4, typename T5, typename T6, typename T7>

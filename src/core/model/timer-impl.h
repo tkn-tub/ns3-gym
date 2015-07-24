@@ -53,15 +53,15 @@ public:
   /**@{*/
   /**
    * \tparam T1 \deduced Type of the first argument.
-   * \param a1 The first argument
+   * \param [in] a1 The first argument
    */
   template <typename T1>
   void SetArgs (T1 a1);
   /**
    * \tparam T1 \deduced Type of the first argument.
    * \tparam T2 \deduced Type of the second argument.
-   * \param a1 the first argument
-   * \param a2 the second argument
+   * \param [in] a1 the first argument
+   * \param [in] a2 the second argument
    */
   template <typename T1, typename T2>
   void SetArgs (T1 a1, T2 a2);
@@ -69,9 +69,9 @@ public:
    * \tparam T1 \deduced Type of the first argument.
    * \tparam T2 \deduced Type of the second argument.
    * \tparam T3 \deduced Type of the third argument.
-   * \param a1 the first argument
-   * \param a2 the second argument
-   * \param a3 the third argument
+   * \param [in] a1 the first argument
+   * \param [in] a2 the second argument
+   * \param [in] a3 the third argument
    */
   template <typename T1, typename T2, typename T3>
   void SetArgs (T1 a1, T2 a2, T3 a3);
@@ -80,10 +80,10 @@ public:
    * \tparam T2 \deduced Type of the second argument.
    * \tparam T3 \deduced Type of the third argument.
    * \tparam T4 \deduced Type of the fourth argument.
-   * \param a1 the first argument
-   * \param a2 the second argument
-   * \param a3 the third argument
-   * \param a4 the fourth argument
+   * \param [in] a1 the first argument
+   * \param [in] a2 the second argument
+   * \param [in] a3 the third argument
+   * \param [in] a4 the fourth argument
    */
   template <typename T1, typename T2, typename T3,
             typename T4>
@@ -94,11 +94,11 @@ public:
    * \tparam T3 \deduced Type of the third argument.
    * \tparam T4 \deduced Type of the fourth argument.
    * \tparam T5 \deduced Type of the fifth argument.
-   * \param a1 the first argument
-   * \param a2 the second argument
-   * \param a3 the third argument
-   * \param a4 the fourth argument
-   * \param a5 the fifth argument
+   * \param [in] a1 the first argument
+   * \param [in] a2 the second argument
+   * \param [in] a3 the third argument
+   * \param [in] a4 the fourth argument
+   * \param [in] a5 the fifth argument
    */
   template <typename T1, typename T2, typename T3,
             typename T4, typename T5>
@@ -110,12 +110,12 @@ public:
    * \tparam T4 \deduced Type of the fourth argument.
    * \tparam T5 \deduced Type of the fifth argument.
    * \tparam T6 \deduced Type of the sixth argument.
-   * \param a1 the first argument
-   * \param a2 the second argument
-   * \param a3 the third argument
-   * \param a4 the fourth argument
-   * \param a5 the fifth argument
-   * \param a6 the sixth argument
+   * \param [in] a1 the first argument
+   * \param [in] a2 the second argument
+   * \param [in] a3 the third argument
+   * \param [in] a4 the fourth argument
+   * \param [in] a5 the fifth argument
+   * \param [in] a6 the sixth argument
    */
   template <typename T1, typename T2, typename T3,
             typename T4, typename T5, typename T6>
@@ -125,7 +125,7 @@ public:
   /**
    * Schedule the callback for a future time.
    *
-   * \param delay The amount of time until the timer expires.
+   * \param [in] delay The amount of time until the timer expires.
    * \returns The scheduled EventId.
    */
   virtual EventId Schedule (const Time &delay) = 0;
@@ -155,7 +155,7 @@ struct TimerImplOne : public TimerImpl
   /**
    * Bind the arguments to be used when the callback function is invoked.
    *
-   * \param a1 The first argument.
+   * \param [in] a1 The first argument.
    */
   virtual void SetArguments (T1 a1) = 0;
 };
@@ -166,8 +166,8 @@ struct TimerImplTwo : public TimerImpl
   /**
    * Bind the arguments to be used when the callback function is invoked.
    *
-   * \param a1 The first argument.
-   * \param a2 The second argument.
+   * \param [in] a1 The first argument.
+   * \param [in] a2 The second argument.
    */
   virtual void SetArguments (T1 a1,T2 a2) = 0;
 };
@@ -178,9 +178,9 @@ struct TimerImplThree : public TimerImpl
   /**
    * Bind the arguments to be used when the callback function is invoked.
    *
-   * \param a1 The first argument.
-   * \param a2 The second argument.
-   * \param a3 The third argument.
+   * \param [in] a1 The first argument.
+   * \param [in] a2 The second argument.
+   * \param [in] a3 The third argument.
    */
   virtual void SetArguments (T1 a1,T2 a2,T3 a3) = 0;
 };
@@ -191,10 +191,10 @@ struct TimerImplFour : public TimerImpl
   /**
    * Bind the arguments to be used when the callback function is invoked.
    *
-   * \param a1 The first argument.
-   * \param a2 The second argument.
-   * \param a3 The third argument.
-   * \param a4 The fourth argument.
+   * \param [in] a1 The first argument.
+   * \param [in] a2 The second argument.
+   * \param [in] a3 The third argument.
+   * \param [in] a4 The fourth argument.
    */
   virtual void SetArguments (T1 a1,T2 a2,T3 a3, T4 a4) = 0;
 };
@@ -205,11 +205,11 @@ struct TimerImplFive : public TimerImpl
   /**
    * Bind the arguments to be used when the callback function is invoked.
    *
-   * \param a1 The first argument.
-   * \param a2 The second argument.
-   * \param a3 The third argument.
-   * \param a4 The fourth argument.
-   * \param a5 The fifth argument.
+   * \param [in] a1 The first argument.
+   * \param [in] a2 The second argument.
+   * \param [in] a3 The third argument.
+   * \param [in] a4 The fourth argument.
+   * \param [in] a5 The fifth argument.
    */
   virtual void SetArguments (T1 a1,T2 a2,T3 a3, T4 a4, T5 a5) = 0;
 };
@@ -220,12 +220,12 @@ struct TimerImplSix : public TimerImpl
   /**
    * Bind the arguments to be used when the callback function is invoked.
    *
-   * \param a1 The first argument.
-   * \param a2 The second argument.
-   * \param a3 The third argument.
-   * \param a4 The fourth argument.
-   * \param a5 The fifth argument.
-   * \param a6 The sixth argument.
+   * \param [in] a1 The first argument.
+   * \param [in] a2 The second argument.
+   * \param [in] a3 The third argument.
+   * \param [in] a4 The fourth argument.
+   * \param [in] a5 The fifth argument.
+   * \param [in] a6 The sixth argument.
    */
   virtual void SetArguments (T1 a1,T2 a2,T3 a3, T4 a4, T5 a5, T6 a6) = 0;
 };
@@ -245,7 +245,7 @@ struct TimerTraits
  * Make a TimerImpl from a function pointer taking varying numbers of arguments.
  *
  * \tparam FN \deduced Function signature type of the callback function.
- * \param fn The function pointer to invoke when the timer expires.
+ * \param [in] fn The function pointer to invoke when the timer expires.
  * \returns The TimerImpl.
  */
 template <typename FN>
@@ -603,7 +603,7 @@ struct TimerImplMemberTraits<T *>
   /**
    * Convert a pointer type to a reference.
    *
-   * \param p The pointer.
+   * \param [in] p The pointer.
    * \returns A reference to the object pointed to by \c p.
    */
   static T &GetReference (T *p)
@@ -618,8 +618,8 @@ struct TimerImplMemberTraits<T *>
  *
  * \tparam MEM_PTR \deduced Class method function signature type.
  * \tparam OBJ_PTR \deduced Class type.
- * \param memPtr Class method to invoke when the timer expires.
- * \param objPtr Object instance pointer.
+ * \param [in] memPtr Class method to invoke when the timer expires.
+ * \param [in] objPtr Object instance pointer.
  * \returns The TimerImpl.
  */
 template <typename MEM_PTR, typename OBJ_PTR>

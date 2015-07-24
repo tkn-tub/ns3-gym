@@ -71,7 +71,7 @@ class Simulator
 {
 public:
   /**
-   * @param impl A new simulator implementation.
+   * @param [in] impl A new simulator implementation.
    *
    * The simulator provides a mechanism to swap out different implementations.
    * For example, the default implementation is a single-threaded simulator
@@ -105,7 +105,7 @@ public:
 
   /**
    * @brief Set the scheduler type with an ObjectFactory.
-   * @param schedulerFactory The configured ObjectFactory.
+   * @param [in] schedulerFactory The configured ObjectFactory.
    *
    * The event scheduler can be set at any time: the events scheduled
    * in the previous scheduler will be transfered to the new scheduler
@@ -164,7 +164,7 @@ public:
    * expiration time of the next event to be processed is greater than
    * or equal to the stop time.  The stop time is relative to the
    * current simulation time.
-   * @param delay The stop time, relative to the current time.
+   * @param [in] delay The stop time, relative to the current time.
    */
   static void Stop (Time const &delay);
 
@@ -183,9 +183,9 @@ public:
    *
    * @tparam MEM @inferred Class method function signature type.
    * @tparam OBJ @inferred Class type of the object.
-   * @param delay The relative expiration time of the event.
-   * @param mem_ptr Member method pointer to invoke
-   * @param obj The object on which to invoke the member method
+   * @param [in] delay The relative expiration time of the event.
+   * @param [in] mem_ptr Member method pointer to invoke
+   * @param [in] obj The object on which to invoke the member method
    * @returns The id for the scheduled event.
    */
   template <typename MEM, typename OBJ>
@@ -196,10 +196,10 @@ public:
    * @tparam MEM @inferred Class method function signature type.
    * @tparam OBJ @inferred Class type of the object.
    * @tparam T1 @inferred Type of first argument.
-   * @param delay The relative expiration time of the event.
-   * @param mem_ptr Member method pointer to invoke
-   * @param obj The object on which to invoke the member method
-   * @param a1 The first argument to pass to the invoked method
+   * @param [in] delay The relative expiration time of the event.
+   * @param [in] mem_ptr Member method pointer to invoke
+   * @param [in] obj The object on which to invoke the member method
+   * @param [in] a1 The first argument to pass to the invoked method
    * @returns The id for the scheduled event.
    */
   template <typename MEM, typename OBJ, typename T1>
@@ -211,11 +211,11 @@ public:
    * @tparam OBJ @inferred Class type of the object.
    * @tparam T1 @inferred Type of first argument.
    * @tparam T2 @inferred Type of second argument.
-   * @param delay The relative expiration time of the event.
-   * @param mem_ptr Member method pointer to invoke
-   * @param obj The object on which to invoke the member method
-   * @param a1 The first argument to pass to the invoked method
-   * @param a2 The second argument to pass to the invoked method
+   * @param [in] delay The relative expiration time of the event.
+   * @param [in] mem_ptr Member method pointer to invoke
+   * @param [in] obj The object on which to invoke the member method
+   * @param [in] a1 The first argument to pass to the invoked method
+   * @param [in] a2 The second argument to pass to the invoked method
    * @returns The id for the scheduled event.
    */
   template <typename MEM, typename OBJ, typename T1, typename T2>
@@ -228,12 +228,12 @@ public:
    * @tparam T1 @inferred Type of first argument.
    * @tparam T2 @inferred Type of second argument.
    * @tparam T3 @inferred Type of third argument.
-   * @param delay The relative expiration time of the event.
-   * @param mem_ptr Member method pointer to invoke
-   * @param obj The object on which to invoke the member method
-   * @param a1 The first argument to pass to the invoked method
-   * @param a2 The second argument to pass to the invoked method
-   * @param a3 The third argument to pass to the invoked method
+   * @param [in] delay The relative expiration time of the event.
+   * @param [in] mem_ptr Member method pointer to invoke
+   * @param [in] obj The object on which to invoke the member method
+   * @param [in] a1 The first argument to pass to the invoked method
+   * @param [in] a2 The second argument to pass to the invoked method
+   * @param [in] a3 The third argument to pass to the invoked method
    * @returns The id for the scheduled event.
    */
   template <typename MEM, typename OBJ, 
@@ -248,13 +248,13 @@ public:
    * @tparam T2 @inferred Type of second argument.
    * @tparam T3 @inferred Type of third argument.
    * @tparam T4 @inferred Type of fourth argument.
-   * @param delay The relative expiration time of the event.
-   * @param mem_ptr Member method pointer to invoke
-   * @param obj The object on which to invoke the member method
-   * @param a1 The first argument to pass to the invoked method
-   * @param a2 The second argument to pass to the invoked method
-   * @param a3 The third argument to pass to the invoked method
-   * @param a4 The fourth argument to pass to the invoked method
+   * @param [in] delay The relative expiration time of the event.
+   * @param [in] mem_ptr Member method pointer to invoke
+   * @param [in] obj The object on which to invoke the member method
+   * @param [in] a1 The first argument to pass to the invoked method
+   * @param [in] a2 The second argument to pass to the invoked method
+   * @param [in] a3 The third argument to pass to the invoked method
+   * @param [in] a4 The fourth argument to pass to the invoked method
    * @returns The id for the scheduled event.
    */
   template <typename MEM, typename OBJ, 
@@ -270,14 +270,14 @@ public:
    * @tparam T3 @inferred Type of third argument.
    * @tparam T4 @inferred Type of fourth argument.
    * @tparam T5 @inferred Type of fifth argument.
-   * @param delay The relative expiration time of the event.
-   * @param mem_ptr Member method pointer to invoke
-   * @param obj The object on which to invoke the member method
-   * @param a1 The first argument to pass to the invoked method
-   * @param a2 The second argument to pass to the invoked method
-   * @param a3 The third argument to pass to the invoked method
-   * @param a4 The fourth argument to pass to the invoked method
-   * @param a5 The fifth argument to pass to the invoked method
+   * @param [in] delay The relative expiration time of the event.
+   * @param [in] mem_ptr Member method pointer to invoke
+   * @param [in] obj The object on which to invoke the member method
+   * @param [in] a1 The first argument to pass to the invoked method
+   * @param [in] a2 The second argument to pass to the invoked method
+   * @param [in] a3 The third argument to pass to the invoked method
+   * @param [in] a4 The fourth argument to pass to the invoked method
+   * @param [in] a5 The fifth argument to pass to the invoked method
    * @returns The id for the scheduled event.
    */
   template <typename MEM, typename OBJ, 
@@ -289,8 +289,8 @@ public:
    *
    * When the event expires (when it becomes due to be run), the
    * function will be invoked with any supplied arguments.
-   * @param delay The relative expiration time of the event.
-   * @param f The function to invoke
+   * @param [in] delay The relative expiration time of the event.
+   * @param [in] f The function to invoke
    * @returns The id for the scheduled event.
    */
   static EventId Schedule (Time const &delay, void (*f)(void));
@@ -299,9 +299,9 @@ public:
    * @see Schedule(const Time&,(*)())
    * @tparam U1 @inferred Formal type of the first argument to the function.
    * @tparam T1 @inferred Actual type of the first argument.
-   * @param delay The relative expiration time of the event.
-   * @param f The function to invoke
-   * @param a1 The first argument to pass to the function to invoke.
+   * @param [in] delay The relative expiration time of the event.
+   * @param [in] f The function to invoke
+   * @param [in] a1 The first argument to pass to the function to invoke.
    * @returns The id for the scheduled event.
    */
   template <typename U1, typename T1>
@@ -313,10 +313,10 @@ public:
    * @tparam U2 @inferred Formal type of the second argument to the function.
    * @tparam T1 @inferred Actual type of the first argument.
    * @tparam T2 @inferred Actual type of the second argument.
-   * @param delay The relative expiration time of the event.
-   * @param f The function to invoke
-   * @param a1 The first argument to pass to the function to invoke
-   * @param a2 The second argument to pass to the function to invoke
+   * @param [in] delay The relative expiration time of the event.
+   * @param [in] f The function to invoke
+   * @param [in] a1 The first argument to pass to the function to invoke
+   * @param [in] a2 The second argument to pass to the function to invoke
    * @returns The id for the scheduled event.
    */
   template <typename U1, typename U2,
@@ -331,11 +331,11 @@ public:
    * @tparam T1 @inferred Actual type of the first argument.
    * @tparam T2 @inferred Actual type of the second argument.
    * @tparam T3 @inferred Actual type of the third argument.
-   * @param delay The relative expiration time of the event.
-   * @param f The function to invoke
-   * @param a1 The first argument to pass to the function to invoke
-   * @param a2 The second argument to pass to the function to invoke
-   * @param a3 The third argument to pass to the function to invoke
+   * @param [in] delay The relative expiration time of the event.
+   * @param [in] f The function to invoke
+   * @param [in] a1 The first argument to pass to the function to invoke
+   * @param [in] a2 The second argument to pass to the function to invoke
+   * @param [in] a3 The third argument to pass to the function to invoke
    * @returns The id for the scheduled event.
    */
   template <typename U1, typename U2, typename U3,
@@ -352,12 +352,12 @@ public:
    * @tparam T2 @inferred Actual type of the second argument.
    * @tparam T3 @inferred Actual type of the third argument.
    * @tparam T4 @inferred Actual type of the fourth argument.
-   * @param delay The relative expiration time of the event.
-   * @param f The function to invoke
-   * @param a1 The first argument to pass to the function to invoke
-   * @param a2 The second argument to pass to the function to invoke
-   * @param a3 The third argument to pass to the function to invoke
-   * @param a4 The fourth argument to pass to the function to invoke
+   * @param [in] delay The relative expiration time of the event.
+   * @param [in] f The function to invoke
+   * @param [in] a1 The first argument to pass to the function to invoke
+   * @param [in] a2 The second argument to pass to the function to invoke
+   * @param [in] a3 The third argument to pass to the function to invoke
+   * @param [in] a4 The fourth argument to pass to the function to invoke
    * @returns The id for the scheduled event.
    */
   template <typename U1, typename U2, typename U3, typename U4, 
@@ -376,13 +376,13 @@ public:
    * @tparam T3 @inferred Actual type of the third argument.
    * @tparam T4 @inferred Actual type of the fourth argument.
    * @tparam T5 @inferred Actual type of the fifth argument.
-   * @param delay The relative expiration time of the event.
-   * @param f The function to invoke
-   * @param a1 The first argument to pass to the function to invoke
-   * @param a2 The second argument to pass to the function to invoke
-   * @param a3 The third argument to pass to the function to invoke
-   * @param a4 The fourth argument to pass to the function to invoke
-   * @param a5 The fifth argument to pass to the function to invoke
+   * @param [in] delay The relative expiration time of the event.
+   * @param [in] f The function to invoke
+   * @param [in] a1 The first argument to pass to the function to invoke
+   * @param [in] a2 The second argument to pass to the function to invoke
+   * @param [in] a3 The third argument to pass to the function to invoke
+   * @param [in] a4 The fourth argument to pass to the function to invoke
+   * @param [in] a5 The fifth argument to pass to the function to invoke
    * @returns The id for the scheduled event.
    */
   template <typename U1, typename U2, typename U3, typename U4, typename U5,
@@ -405,10 +405,10 @@ public:
    * @see Schedule(const Time&,MEM,OBJ)
    * @tparam MEM @inferred Class method function signature type.
    * @tparam OBJ @inferred Class type of the object.
-   * @param context User-specified context parameter
-   * @param delay The relative expiration time of the event.
-   * @param mem_ptr Member method pointer to invoke
-   * @param obj The object on which to invoke the member method
+   * @param [in] context User-specified context parameter
+   * @param [in] delay The relative expiration time of the event.
+   * @param [in] mem_ptr Member method pointer to invoke
+   * @param [in] obj The object on which to invoke the member method
    */
   template <typename MEM, typename OBJ>
   static void ScheduleWithContext (uint32_t context, Time const &delay, MEM mem_ptr, OBJ obj);
@@ -418,11 +418,11 @@ public:
    * @tparam MEM @inferred Class method function signature type.
    * @tparam OBJ @inferred Class type of the object.
    * @tparam T1 @inferred Type of first argument.
-   * @param context User-specified context parameter
-   * @param delay The relative expiration time of the event.
-   * @param mem_ptr Member method pointer to invoke
-   * @param obj The object on which to invoke the member method
-   * @param a1 The first argument to pass to the invoked method
+   * @param [in] context User-specified context parameter
+   * @param [in] delay The relative expiration time of the event.
+   * @param [in] mem_ptr Member method pointer to invoke
+   * @param [in] obj The object on which to invoke the member method
+   * @param [in] a1 The first argument to pass to the invoked method
    */
   template <typename MEM, typename OBJ, typename T1>
   static void ScheduleWithContext (uint32_t context, Time const &delay, MEM mem_ptr, OBJ obj, T1 a1);
@@ -433,12 +433,12 @@ public:
    * @tparam OBJ @inferred Class type of the object.
    * @tparam T1 @inferred Type of first argument.
    * @tparam T2 @inferred Type of second argument.
-   * @param context User-specified context parameter
-   * @param delay The relative expiration time of the event.
-   * @param mem_ptr Member method pointer to invoke
-   * @param obj The object on which to invoke the member method
-   * @param a1 The first argument to pass to the invoked method
-   * @param a2 The second argument to pass to the invoked method
+   * @param [in] context User-specified context parameter
+   * @param [in] delay The relative expiration time of the event.
+   * @param [in] mem_ptr Member method pointer to invoke
+   * @param [in] obj The object on which to invoke the member method
+   * @param [in] a1 The first argument to pass to the invoked method
+   * @param [in] a2 The second argument to pass to the invoked method
    */
   template <typename MEM, typename OBJ, typename T1, typename T2>
   static void ScheduleWithContext (uint32_t context, Time const &delay, MEM mem_ptr, OBJ obj, T1 a1, T2 a2);
@@ -450,13 +450,13 @@ public:
    * @tparam T1 @inferred Type of first argument.
    * @tparam T2 @inferred Type of second argument.
    * @tparam T3 @inferred Type of third argument.
-   * @param context User-specified context parameter
-   * @param delay The relative expiration time of the event.
-   * @param mem_ptr Member method pointer to invoke
-   * @param obj The object on which to invoke the member method
-   * @param a1 The first argument to pass to the invoked method
-   * @param a2 The second argument to pass to the invoked method
-   * @param a3 The third argument to pass to the invoked method
+   * @param [in] context User-specified context parameter
+   * @param [in] delay The relative expiration time of the event.
+   * @param [in] mem_ptr Member method pointer to invoke
+   * @param [in] obj The object on which to invoke the member method
+   * @param [in] a1 The first argument to pass to the invoked method
+   * @param [in] a2 The second argument to pass to the invoked method
+   * @param [in] a3 The third argument to pass to the invoked method
    */
   template <typename MEM, typename OBJ, 
             typename T1, typename T2, typename T3>
@@ -470,14 +470,14 @@ public:
    * @tparam T2 @inferred Type of second argument.
    * @tparam T3 @inferred Type of third argument.
    * @tparam T4 @inferred Type of fourth argument.
-   * @param context User-specified context parameter
-   * @param delay The relative expiration time of the event.
-   * @param mem_ptr Member method pointer to invoke
-   * @param obj The object on which to invoke the member method
-   * @param a1 The first argument to pass to the invoked method
-   * @param a2 The second argument to pass to the invoked method
-   * @param a3 The third argument to pass to the invoked method
-   * @param a4 The fourth argument to pass to the invoked method
+   * @param [in] context User-specified context parameter
+   * @param [in] delay The relative expiration time of the event.
+   * @param [in] mem_ptr Member method pointer to invoke
+   * @param [in] obj The object on which to invoke the member method
+   * @param [in] a1 The first argument to pass to the invoked method
+   * @param [in] a2 The second argument to pass to the invoked method
+   * @param [in] a3 The third argument to pass to the invoked method
+   * @param [in] a4 The fourth argument to pass to the invoked method
    */
   template <typename MEM, typename OBJ, 
             typename T1, typename T2, typename T3, typename T4>
@@ -492,15 +492,15 @@ public:
    * @tparam T3 @inferred Type of third argument.
    * @tparam T4 @inferred Type of fourth argument.
    * @tparam T5 @inferred Type of fifth argument.
-   * @param context User-specified context parameter
-   * @param delay The relative expiration time of the event.
-   * @param mem_ptr Member method pointer to invoke
-   * @param obj The object on which to invoke the member method
-   * @param a1 The first argument to pass to the invoked method
-   * @param a2 The second argument to pass to the invoked method
-   * @param a3 The third argument to pass to the invoked method
-   * @param a4 The fourth argument to pass to the invoked method
-   * @param a5 The fifth argument to pass to the invoked method
+   * @param [in] context User-specified context parameter
+   * @param [in] delay The relative expiration time of the event.
+   * @param [in] mem_ptr Member method pointer to invoke
+   * @param [in] obj The object on which to invoke the member method
+   * @param [in] a1 The first argument to pass to the invoked method
+   * @param [in] a2 The second argument to pass to the invoked method
+   * @param [in] a3 The third argument to pass to the invoked method
+   * @param [in] a4 The fourth argument to pass to the invoked method
+   * @param [in] a5 The fifth argument to pass to the invoked method
    */
   template <typename MEM, typename OBJ, 
             typename T1, typename T2, typename T3, typename T4, typename T5>
@@ -513,9 +513,9 @@ public:
    * function will be invoked with any supplied arguments.
    *
    * This method is thread-safe: it can be called from any thread.
-   * @param context User-specified context parameter
-   * @param delay The relative expiration time of the event.
-   * @param f The function to invoke
+   * @param [in] context User-specified context parameter
+   * @param [in] delay The relative expiration time of the event.
+   * @param [in] f The function to invoke
    */
   static void ScheduleWithContext (uint32_t context, Time const &delay, void (*f)(void));
 
@@ -523,10 +523,10 @@ public:
    * @see ScheduleWithContext(uint32_t,const Time&,(*)())
    * @tparam U1 @inferred Formal type of the first argument to the function.
    * @tparam T1 @inferred Actual type of the first argument.
-   * @param context User-specified context parameter
-   * @param delay The relative expiration time of the event.
-   * @param f The function to invoke
-   * @param a1 The first argument to pass to the function to invoke
+   * @param [in] context User-specified context parameter
+   * @param [in] delay The relative expiration time of the event.
+   * @param [in] f The function to invoke
+   * @param [in] a1 The first argument to pass to the function to invoke
    */
   template <typename U1,
             typename T1>
@@ -538,11 +538,11 @@ public:
    * @tparam U2 @inferred Formal type of the second argument to the function.
    * @tparam T1 @inferred Actual type of the first argument.
    * @tparam T2 @inferred Actual type of the second argument.
-   * @param context User-specified context parameter
-   * @param delay The relative expiration time of the event.
-   * @param f The function to invoke
-   * @param a1 The first argument to pass to the function to invoke
-   * @param a2 The second argument to pass to the function to invoke
+   * @param [in] context User-specified context parameter
+   * @param [in] delay The relative expiration time of the event.
+   * @param [in] f The function to invoke
+   * @param [in] a1 The first argument to pass to the function to invoke
+   * @param [in] a2 The second argument to pass to the function to invoke
    */
   template <typename U1, typename U2,
             typename T1, typename T2>
@@ -556,12 +556,12 @@ public:
    * @tparam T1 @inferred Actual type of the first argument.
    * @tparam T2 @inferred Actual type of the second argument.
    * @tparam T3 @inferred Actual type of the third argument.
-   * @param context User-specified context parameter
-   * @param delay The relative expiration time of the event.
-   * @param f The function to invoke
-   * @param a1 The first argument to pass to the function to invoke
-   * @param a2 The second argument to pass to the function to invoke
-   * @param a3 The third argument to pass to the function to invoke
+   * @param [in] context User-specified context parameter
+   * @param [in] delay The relative expiration time of the event.
+   * @param [in] f The function to invoke
+   * @param [in] a1 The first argument to pass to the function to invoke
+   * @param [in] a2 The second argument to pass to the function to invoke
+   * @param [in] a3 The third argument to pass to the function to invoke
    */
   template <typename U1, typename U2, typename U3,
             typename T1, typename T2, typename T3>
@@ -577,13 +577,13 @@ public:
    * @tparam T2 @inferred Actual type of the second argument.
    * @tparam T3 @inferred Actual type of the third argument.
    * @tparam T4 @inferred Actual type of the fourth argument.
-   * @param context User-specified context parameter
-   * @param delay The relative expiration time of the event.
-   * @param f The function to invoke
-   * @param a1 The first argument to pass to the function to invoke
-   * @param a2 The second argument to pass to the function to invoke
-   * @param a3 The third argument to pass to the function to invoke
-   * @param a4 The fourth argument to pass to the function to invoke
+   * @param [in] context User-specified context parameter
+   * @param [in] delay The relative expiration time of the event.
+   * @param [in] f The function to invoke
+   * @param [in] a1 The first argument to pass to the function to invoke
+   * @param [in] a2 The second argument to pass to the function to invoke
+   * @param [in] a3 The third argument to pass to the function to invoke
+   * @param [in] a4 The fourth argument to pass to the function to invoke
    */
   template <typename U1, typename U2, typename U3, typename U4, 
             typename T1, typename T2, typename T3, typename T4>
@@ -601,14 +601,14 @@ public:
    * @tparam T3 @inferred Actual type of the third argument.
    * @tparam T4 @inferred Actual type of the fourth argument.
    * @tparam T5 @inferred Actual type of the fifth argument.
-   * @param context User-specified context parameter
-   * @param delay The relative expiration time of the event.
-   * @param f The function to invoke
-   * @param a1 The first argument to pass to the function to invoke
-   * @param a2 The second argument to pass to the function to invoke
-   * @param a3 The third argument to pass to the function to invoke
-   * @param a4 The fourth argument to pass to the function to invoke
-   * @param a5 The fifth argument to pass to the function to invoke
+   * @param [in] context User-specified context parameter
+   * @param [in] delay The relative expiration time of the event.
+   * @param [in] f The function to invoke
+   * @param [in] a1 The first argument to pass to the function to invoke
+   * @param [in] a2 The second argument to pass to the function to invoke
+   * @param [in] a3 The third argument to pass to the function to invoke
+   * @param [in] a4 The fourth argument to pass to the function to invoke
+   * @param [in] a5 The fifth argument to pass to the function to invoke
    */
   template <typename U1, typename U2, typename U3, typename U4, typename U5,
             typename T1, typename T2, typename T3, typename T4, typename T5>
@@ -627,8 +627,8 @@ public:
    *
    * @tparam MEM @inferred Class method function signature type.
    * @tparam OBJ @inferred Class type of the object.
-   * @param mem_ptr Member method pointer to invoke
-   * @param obj The object on which to invoke the member method
+   * @param [in] mem_ptr Member method pointer to invoke
+   * @param [in] obj The object on which to invoke the member method
    * @return The EventId of the scheduled event.
    */
   template <typename MEM, typename OBJ>
@@ -639,9 +639,9 @@ public:
    * @tparam MEM @inferred Class method function signature type.
    * @tparam OBJ @inferred Class type of the object.
    * @tparam T1 @inferred Type of first argument.
-   * @param mem_ptr Member method pointer to invoke
-   * @param obj The object on which to invoke the member method
-   * @param a1 The first argument to pass to the invoked method
+   * @param [in] mem_ptr Member method pointer to invoke
+   * @param [in] obj The object on which to invoke the member method
+   * @param [in] a1 The first argument to pass to the invoked method
    * @return The EventId of the scheduled event.
    */
   template <typename MEM, typename OBJ, 
@@ -654,10 +654,10 @@ public:
    * @tparam OBJ @inferred Class type of the object.
    * @tparam T1 @inferred Type of first argument.
    * @tparam T2 @inferred Type of second argument.
-   * @param mem_ptr Member method pointer to invoke
-   * @param obj The object on which to invoke the member method
-   * @param a1 The first argument to pass to the invoked method
-   * @param a2 The second argument to pass to the invoked method
+   * @param [in] mem_ptr Member method pointer to invoke
+   * @param [in] obj The object on which to invoke the member method
+   * @param [in] a1 The first argument to pass to the invoked method
+   * @param [in] a2 The second argument to pass to the invoked method
    * @return The EventId of the scheduled event.
    */
   template <typename MEM, typename OBJ, 
@@ -671,11 +671,11 @@ public:
    * @tparam T1 @inferred Type of first argument.
    * @tparam T2 @inferred Type of second argument.
    * @tparam T3 @inferred Type of third argument.
-   * @param mem_ptr Member method pointer to invoke
-   * @param obj The object on which to invoke the member method
-   * @param a1 The first argument to pass to the invoked method
-   * @param a2 The second argument to pass to the invoked method
-   * @param a3 The third argument to pass to the invoked method
+   * @param [in] mem_ptr Member method pointer to invoke
+   * @param [in] obj The object on which to invoke the member method
+   * @param [in] a1 The first argument to pass to the invoked method
+   * @param [in] a2 The second argument to pass to the invoked method
+   * @param [in] a3 The third argument to pass to the invoked method
    * @return The EventId of the scheduled event.
    */
   template <typename MEM, typename OBJ, 
@@ -690,12 +690,12 @@ public:
    * @tparam T2 @inferred Type of second argument.
    * @tparam T3 @inferred Type of third argument.
    * @tparam T4 @inferred Type of fourth argument.
-   * @param mem_ptr Member method pointer to invoke
-   * @param obj The object on which to invoke the member method
-   * @param a1 The first argument to pass to the invoked method
-   * @param a2 The second argument to pass to the invoked method
-   * @param a3 The third argument to pass to the invoked method
-   * @param a4 The fourth argument to pass to the invoked method
+   * @param [in] mem_ptr Member method pointer to invoke
+   * @param [in] obj The object on which to invoke the member method
+   * @param [in] a1 The first argument to pass to the invoked method
+   * @param [in] a2 The second argument to pass to the invoked method
+   * @param [in] a3 The third argument to pass to the invoked method
+   * @param [in] a4 The fourth argument to pass to the invoked method
    * @return The EventId of the scheduled event.
    */
   template <typename MEM, typename OBJ, 
@@ -711,13 +711,13 @@ public:
    * @tparam T3 @inferred Type of third argument.
    * @tparam T4 @inferred Type of fourth argument.
    * @tparam T5 @inferred Type of fifth argument.
-   * @param mem_ptr Member method pointer to invoke
-   * @param obj The object on which to invoke the member method
-   * @param a1 The first argument to pass to the invoked method
-   * @param a2 The second argument to pass to the invoked method
-   * @param a3 The third argument to pass to the invoked method
-   * @param a4 The fourth argument to pass to the invoked method
-   * @param a5 The fifth argument to pass to the invoked method
+   * @param [in] mem_ptr Member method pointer to invoke
+   * @param [in] obj The object on which to invoke the member method
+   * @param [in] a1 The first argument to pass to the invoked method
+   * @param [in] a2 The second argument to pass to the invoked method
+   * @param [in] a3 The third argument to pass to the invoked method
+   * @param [in] a4 The fourth argument to pass to the invoked method
+   * @param [in] a5 The fifth argument to pass to the invoked method
    * @return The EventId of the scheduled event.
    */
   template <typename MEM, typename OBJ, 
@@ -729,7 +729,7 @@ public:
    *
    * When the event expires (when it becomes due to be run), the
    * function will be invoked with any supplied arguments.
-   * @param f The function to invoke
+   * @param [in] f The function to invoke
    * @return The EventId of the scheduled event.
    */
   static EventId ScheduleNow (void (*f)(void));
@@ -738,8 +738,8 @@ public:
    * @see ScheduleNow(*)
    * @tparam U1 @inferred Formal type of the first argument to the function.
    * @tparam T1 @inferred Actual type of the first argument.
-   * @param f The function to invoke
-   * @param a1 The first argument to pass to the function to invoke
+   * @param [in] f The function to invoke
+   * @param [in] a1 The first argument to pass to the function to invoke
    * @return The EventId of the scheduled event.
    */
   template <typename U1,
@@ -752,9 +752,9 @@ public:
    * @tparam U2 @inferred Formal type of the second argument to the function.
    * @tparam T1 @inferred Actual type of the first argument.
    * @tparam T2 @inferred Actual type of the second argument.
-   * @param f The function to invoke
-   * @param a1 The first argument to pass to the function to invoke
-   * @param a2 The second argument to pass to the function to invoke
+   * @param [in] f The function to invoke
+   * @param [in] a1 The first argument to pass to the function to invoke
+   * @param [in] a2 The second argument to pass to the function to invoke
    * @return The EventId of the scheduled event.
    */
   template <typename U1, typename U2,
@@ -769,10 +769,10 @@ public:
    * @tparam T1 @inferred Actual type of the first argument.
    * @tparam T2 @inferred Actual type of the second argument.
    * @tparam T3 @inferred Actual type of the third argument.
-   * @param f The function to invoke
-   * @param a1 The first argument to pass to the function to invoke
-   * @param a2 The second argument to pass to the function to invoke
-   * @param a3 The third argument to pass to the function to invoke
+   * @param [in] f The function to invoke
+   * @param [in] a1 The first argument to pass to the function to invoke
+   * @param [in] a2 The second argument to pass to the function to invoke
+   * @param [in] a3 The third argument to pass to the function to invoke
    * @return The EventId of the scheduled event.
    */
   template <typename U1, typename U2, typename U3,
@@ -789,11 +789,11 @@ public:
    * @tparam T2 @inferred Actual type of the second argument.
    * @tparam T3 @inferred Actual type of the third argument.
    * @tparam T4 @inferred Actual type of the fourth argument.
-   * @param f The function to invoke
-   * @param a1 The first argument to pass to the function to invoke
-   * @param a2 The second argument to pass to the function to invoke
-   * @param a3 The third argument to pass to the function to invoke
-   * @param a4 The fourth argument to pass to the function to invoke
+   * @param [in] f The function to invoke
+   * @param [in] a1 The first argument to pass to the function to invoke
+   * @param [in] a2 The second argument to pass to the function to invoke
+   * @param [in] a3 The third argument to pass to the function to invoke
+   * @param [in] a4 The fourth argument to pass to the function to invoke
    * @return The EventId of the scheduled event.
    */
   template <typename U1, typename U2, typename U3, typename U4,
@@ -812,12 +812,12 @@ public:
    * @tparam T3 @inferred Actual type of the third argument.
    * @tparam T4 @inferred Actual type of the fourth argument.
    * @tparam T5 @inferred Actual type of the fifth argument.
-   * @param f The function to invoke
-   * @param a1 The first argument to pass to the function to invoke
-   * @param a2 The second argument to pass to the function to invoke
-   * @param a3 The third argument to pass to the function to invoke
-   * @param a4 The fourth argument to pass to the function to invoke
-   * @param a5 The fifth argument to pass to the function to invoke
+   * @param [in] f The function to invoke
+   * @param [in] a1 The first argument to pass to the function to invoke
+   * @param [in] a2 The second argument to pass to the function to invoke
+   * @param [in] a3 The third argument to pass to the function to invoke
+   * @param [in] a4 The fourth argument to pass to the function to invoke
+   * @param [in] a5 The fifth argument to pass to the function to invoke
    * @return The EventId of the scheduled event.
    */
   template <typename U1, typename U2, typename U3, typename U4, typename U5,
@@ -838,8 +838,8 @@ public:
    *
    * @tparam MEM @inferred Class method function signature type.
    * @tparam OBJ @inferred Class type of the object.
-   * @param mem_ptr Member method pointer to invoke
-   * @param obj The object on which to invoke the member method
+   * @param [in] mem_ptr Member method pointer to invoke
+   * @param [in] obj The object on which to invoke the member method
    * @return The EventId of the scheduled event.
    */
   template <typename MEM, typename OBJ>
@@ -850,9 +850,9 @@ public:
    * @tparam MEM @inferred Class method function signature type.
    * @tparam OBJ @inferred Class type of the object.
    * @tparam T1 @inferred Type of first argument.
-   * @param mem_ptr Member method pointer to invoke
-   * @param obj The object on which to invoke the member method
-   * @param a1 The first argument to pass to the invoked method
+   * @param [in] mem_ptr Member method pointer to invoke
+   * @param [in] obj The object on which to invoke the member method
+   * @param [in] a1 The first argument to pass to the invoked method
    * @return The EventId of the scheduled event.
    */
   template <typename MEM, typename OBJ, 
@@ -865,10 +865,10 @@ public:
    * @tparam OBJ @inferred Class type of the object.
    * @tparam T1 @inferred Type of first argument.
    * @tparam T2 @inferred Type of second argument.
-   * @param mem_ptr Member method pointer to invoke
-   * @param obj The object on which to invoke the member method
-   * @param a1 The first argument to pass to the invoked method
-   * @param a2 The second argument to pass to the invoked method
+   * @param [in] mem_ptr Member method pointer to invoke
+   * @param [in] obj The object on which to invoke the member method
+   * @param [in] a1 The first argument to pass to the invoked method
+   * @param [in] a2 The second argument to pass to the invoked method
    * @return The EventId of the scheduled event.
    */
   template <typename MEM, typename OBJ,
@@ -882,11 +882,11 @@ public:
    * @tparam T1 @inferred Type of first argument.
    * @tparam T2 @inferred Type of second argument.
    * @tparam T3 @inferred Type of third argument.
-   * @param mem_ptr Member method pointer to invoke
-   * @param obj The object on which to invoke the member method
-   * @param a1 The first argument to pass to the invoked method
-   * @param a2 The second argument to pass to the invoked method
-   * @param a3 The third argument to pass to the invoked method
+   * @param [in] mem_ptr Member method pointer to invoke
+   * @param [in] obj The object on which to invoke the member method
+   * @param [in] a1 The first argument to pass to the invoked method
+   * @param [in] a2 The second argument to pass to the invoked method
+   * @param [in] a3 The third argument to pass to the invoked method
    * @return The EventId of the scheduled event.
    */
   template <typename MEM, typename OBJ, 
@@ -901,12 +901,12 @@ public:
    * @tparam T2 @inferred Type of second argument.
    * @tparam T3 @inferred Type of third argument.
    * @tparam T4 @inferred Type of fourth argument.
-   * @param mem_ptr Member method pointer to invoke
-   * @param obj The object on which to invoke the member method
-   * @param a1 The first argument to pass to the invoked method
-   * @param a2 The second argument to pass to the invoked method
-   * @param a3 The third argument to pass to the invoked method
-   * @param a4 The fourth argument to pass to the invoked method
+   * @param [in] mem_ptr Member method pointer to invoke
+   * @param [in] obj The object on which to invoke the member method
+   * @param [in] a1 The first argument to pass to the invoked method
+   * @param [in] a2 The second argument to pass to the invoked method
+   * @param [in] a3 The third argument to pass to the invoked method
+   * @param [in] a4 The fourth argument to pass to the invoked method
    * @return The EventId of the scheduled event.
    */
   template <typename MEM, typename OBJ, 
@@ -922,13 +922,13 @@ public:
    * @tparam T3 @inferred Type of third argument.
    * @tparam T4 @inferred Type of fourth argument.
    * @tparam T5 @inferred Type of fifth argument.
-   * @param mem_ptr Member method pointer to invoke
-   * @param obj The object on which to invoke the member method
-   * @param a1 The first argument to pass to the invoked method
-   * @param a2 The second argument to pass to the invoked method
-   * @param a3 The third argument to pass to the invoked method
-   * @param a4 The fourth argument to pass to the invoked method
-   * @param a5 The fifth argument to pass to the invoked method
+   * @param [in] mem_ptr Member method pointer to invoke
+   * @param [in] obj The object on which to invoke the member method
+   * @param [in] a1 The first argument to pass to the invoked method
+   * @param [in] a2 The second argument to pass to the invoked method
+   * @param [in] a3 The third argument to pass to the invoked method
+   * @param [in] a4 The fourth argument to pass to the invoked method
+   * @param [in] a5 The fifth argument to pass to the invoked method
    * @return The EventId of the scheduled event.
    */
   template <typename MEM, typename OBJ, 
@@ -939,7 +939,7 @@ public:
    * @copybrief ScheduleDestroy(MEM,OBJ)
    * When Simulator::Destroy() is called, the
    * function will be invoked with any supplied arguments.
-   * @param f The function to invoke
+   * @param [in] f The function to invoke
    * @return The EventId of the scheduled event.
    */
   static EventId ScheduleDestroy (void (*f)(void));
@@ -948,8 +948,8 @@ public:
    * @see ScheduleDestory((*)())
    * @tparam U1 @inferred Formal type of the first argument to the function.
    * @tparam T1 @inferred Actual type of the first argument.
-   * @param f The function to invoke
-   * @param a1 The first argument to pass to the function to invoke
+   * @param [in] f The function to invoke
+   * @param [in] a1 The first argument to pass to the function to invoke
    * @return The EventId of the scheduled event.
    */
   template <typename U1,
@@ -962,9 +962,9 @@ public:
    * @tparam U2 @inferred Formal type of the second argument to the function.
    * @tparam T1 @inferred Actual type of the first argument.
    * @tparam T2 @inferred Actual type of the second argument.
-   * @param f The function to invoke
-   * @param a1 The first argument to pass to the function to invoke
-   * @param a2 The second argument to pass to the function to invoke
+   * @param [in] f The function to invoke
+   * @param [in] a1 The first argument to pass to the function to invoke
+   * @param [in] a2 The second argument to pass to the function to invoke
    * @return The EventId of the scheduled event.
    */
   template <typename U1, typename U2,
@@ -979,10 +979,10 @@ public:
    * @tparam T1 @inferred Actual type of the first argument.
    * @tparam T2 @inferred Actual type of the second argument.
    * @tparam T3 @inferred Actual type of the third argument.
-   * @param f The function to invoke
-   * @param a1 The first argument to pass to the function to invoke
-   * @param a2 The second argument to pass to the function to invoke
-   * @param a3 The third argument to pass to the function to invoke
+   * @param [in] f The function to invoke
+   * @param [in] a1 The first argument to pass to the function to invoke
+   * @param [in] a2 The second argument to pass to the function to invoke
+   * @param [in] a3 The third argument to pass to the function to invoke
    * @return The EventId of the scheduled event.
    */
   template <typename U1, typename U2, typename U3,
@@ -999,11 +999,11 @@ public:
    * @tparam T2 @inferred Actual type of the second argument.
    * @tparam T3 @inferred Actual type of the third argument.
    * @tparam T4 @inferred Actual type of the fourth argument.
-   * @param f The function to invoke
-   * @param a1 The first argument to pass to the function to invoke
-   * @param a2 The second argument to pass to the function to invoke
-   * @param a3 The third argument to pass to the function to invoke
-   * @param a4 The fourth argument to pass to the function to invoke
+   * @param [in] f The function to invoke
+   * @param [in] a1 The first argument to pass to the function to invoke
+   * @param [in] a2 The second argument to pass to the function to invoke
+   * @param [in] a3 The third argument to pass to the function to invoke
+   * @param [in] a4 The fourth argument to pass to the function to invoke
    * @return The EventId of the scheduled event.
    */
   template <typename U1, typename U2, typename U3, typename U4,
@@ -1022,12 +1022,12 @@ public:
    * @tparam T3 @inferred Actual type of the third argument.
    * @tparam T4 @inferred Actual type of the fourth argument.
    * @tparam T5 @inferred Actual type of the fifth argument.
-   * @param f The function to invoke
-   * @param a1 The first argument to pass to the function to invoke
-   * @param a2 The second argument to pass to the function to invoke
-   * @param a3 The third argument to pass to the function to invoke
-   * @param a4 The fourth argument to pass to the function to invoke
-   * @param a5 The fifth argument to pass to the function to invoke
+   * @param [in] f The function to invoke
+   * @param [in] a1 The first argument to pass to the function to invoke
+   * @param [in] a2 The second argument to pass to the function to invoke
+   * @param [in] a3 The third argument to pass to the function to invoke
+   * @param [in] a4 The fourth argument to pass to the function to invoke
+   * @param [in] a5 The fifth argument to pass to the function to invoke
    * @return The EventId of the scheduled event.
    */
   template <typename U1, typename U2, typename U3, typename U4, typename U5,
@@ -1046,7 +1046,7 @@ public:
    * Note that it is not possible to remove events which were scheduled
    * for the "destroy" time. Doing so will result in a program error (crash).
    *
-   * @param id The event to remove from the list of scheduled events.
+   * @param [in] id The event to remove from the list of scheduled events.
    */
   static void Remove (const EventId &id);
 
@@ -1061,7 +1061,7 @@ public:
    * Note that it is not possible to cancel events which were scheduled
    * for the "destroy" time. Doing so will result in a program error (crash).
    * 
-   * @param id the event to cancel
+   * @param [in] id the event to cancel
    */
   static void Cancel (const EventId &id);
 
@@ -1076,7 +1076,7 @@ public:
    * which means that if the code executed by the event calls
    * this function, it will get true.
    *
-   * @param id The event to test for expiration.
+   * @param [in] id The event to test for expiration.
    * @returns @c true if the event has expired, false otherwise.
    */
   static bool IsExpired (const EventId &id);
@@ -1091,7 +1091,7 @@ public:
   /**
    * Get the remaining time until this event will execute.
    *
-   * @param id The event id to analyse.
+   * @param [in] id The event id to analyse.
    * @return The delay left until the input event id expires.
    *          if the event is not running, this method returns
    *          zero.
@@ -1118,8 +1118,8 @@ public:
   /**
    * Schedule a future event execution (in the same context).
    *
-   * @param delay Delay until the event expires.
-   * @param event The event to schedule.
+   * @param [in] delay Delay until the event expires.
+   * @param [in] event The event to schedule.
    * @returns A unique identifier for the newly-scheduled event.
    */
   static EventId Schedule (Time const &delay, const Ptr<EventImpl> &event);
@@ -1128,9 +1128,9 @@ public:
    * Schedule a future event execution (in a different context).
    * This method is thread-safe: it can be called from any thread.
    *
-   * @param delay Delay until the event expires.
-   * @param context Event context.
-   * @param event The event to schedule.
+   * @param [in] delay Delay until the event expires.
+   * @param [in] context Event context.
+   * @param [in] event The event to schedule.
    * @returns A unique identifier for the newly-scheduled event.
    */
   static void ScheduleWithContext (uint32_t context, const Time &delay, EventImpl *event);
@@ -1139,7 +1139,7 @@ public:
    * Schedule an event to run at the end of the simulation, after
    * the Stop() time or condition has been reached.
    *
-   * @param event The event to schedule.
+   * @param [in] event The event to schedule.
    * @returns A unique identifier for the newly-scheduled event.
    */
   static EventId ScheduleDestroy (const Ptr<EventImpl> &event);
@@ -1147,7 +1147,7 @@ public:
   /**
    * Schedule an event to run at the current virtual time.
    *
-   * @param event The event to schedule.
+   * @param [in] event The event to schedule.
    * @returns A unique identifier for the newly-scheduled event.
    */
   static EventId ScheduleNow (const Ptr<EventImpl> &event);

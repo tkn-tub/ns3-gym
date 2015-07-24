@@ -158,7 +158,7 @@ namespace {
  *
  * This is private to the fatal implementation.
  *
- * \param sig The signal condition.
+ * \param [in] sig The signal condition.
  */
 void sigHandler (int sig)
 {

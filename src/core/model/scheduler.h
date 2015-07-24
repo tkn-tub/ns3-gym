@@ -101,13 +101,13 @@ public:
   /**
    * Insert a new Event in the schedule.
    *
-   * \param ev Event to store in the event list
+   * \param [in] ev Event to store in the event list
    */
   virtual void Insert (const Event &ev) = 0;
   /**
    * Test if the schedule is empty.
    *
-   * \returns true if the event list is empty and false otherwise.
+   * \returns \c true if the event list is empty and \c false otherwise.
    */
   virtual bool IsEmpty (void) const = 0;
   /**
@@ -115,7 +115,7 @@ public:
    *
    * This method cannot be invoked if the list is empty.
    *
-   * \returns a pointer to the next earliest event. The caller
+   * \returns A pointer to the next earliest event. The caller
    *      takes ownership of the returned pointer.
    */
   virtual Event PeekNext (void) const = 0;
@@ -132,7 +132,7 @@ public:
    *
    * This method cannot be invoked if the list is empty.
    *
-   * \param ev the event to remove
+   * \param [in] ev The event to remove
    */
   virtual void Remove (const Event &ev) = 0;
 };

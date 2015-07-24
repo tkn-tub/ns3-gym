@@ -52,15 +52,15 @@ public:
   /**
    * Construct from explicit seed, stream and substream values.
    *
-   * \param seed The starting seed.
-   * \param stream The stream number.
-   * \param substream The sub-stream number.
+   * \param [in] seed The starting seed.
+   * \param [in] stream The stream number.
+   * \param [in] substream The sub-stream number.
    */
   RngStream (uint32_t seed, uint64_t stream, uint64_t substream);
   /**
    * Copy constructor.
    *
-   * \param r The RngStream to copy.
+   * \param [in] r The RngStream to copy.
    */
   RngStream (const RngStream & r);
   /**
@@ -75,9 +75,9 @@ private:
   /**
    * Advance \p state of the RNG by leaps and bounds.
    *
-   * \param nth The stream or substream index.
-   * \param by The log2 base of \p nth.
-   * \param state The state vector to advance.
+   * \param [in] nth The stream or substream index.
+   * \param [in] by The log2 base of \p nth.
+   * \param [in] state The state vector to advance.
    */
   void AdvanceNthBy (uint64_t nth, int by, double state[6]);
 
