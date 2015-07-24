@@ -121,7 +121,7 @@ void Ipv6Interface::DoSetup ()
     {
       icmpv6 = proto->GetObject <Icmpv6L4Protocol> ();
     }
-  if (icmpv6)
+  if (icmpv6 && !m_ndCache)
     {
       m_ndCache = icmpv6->CreateCache (m_device, this);
     }
@@ -179,6 +179,7 @@ void Ipv6Interface::SetUp ()
     {
       return;
     }
+  DoSetup ();
   m_ifup = true;
 }
 

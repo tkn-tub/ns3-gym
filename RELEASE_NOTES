@@ -37,6 +37,7 @@ Bugs fixed
 - Bug 2136 - The usage of tid in wifi and wave module shall be "if (tid > 7)" rather than "if (tid >= 7)"
 - Bug 2132 - TCP RST packets were incorrectly formatted if no endpoints matched
 - Bug 2138 - SimpleNetDevice could send overlapped packets
+- Bug 2148 - Ipv6Interface::SetUp doesn't re-create the Link-Local addresses
 - Bug 2153 - Incorrect power limits in wifi power control algorithms
 - Bug 2154 - Incorrect power calculation in wifi power adaptation examples
 - Bug 2156 - Duplicate packets when using two level aggregation
