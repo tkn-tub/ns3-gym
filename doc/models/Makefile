@@ -38,7 +38,7 @@ SOURCES = \
 	$(SRC)/energy/doc/energy.rst \
 	$(SRC)/fd-net-device/doc/fd-net-device.rst \
 	$(SRC)/tap-bridge/doc/tap.rst \
-	$(SRC)/mesh/doc/mesh.rst \
+	$(SRC)/mesh/doc/source/mesh.rst \
 	$(SRC)/lte/doc/source/lte.rst \
 	$(SRC)/lte/doc/source/lte-user.rst \
 	$(SRC)/lte/doc/source/lte-design.rst \

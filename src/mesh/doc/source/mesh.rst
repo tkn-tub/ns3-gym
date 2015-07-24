@@ -7,4 +7,3 @@ Wi-Fi Mesh Module Documentation
     mesh-user
     mesh-testing
     mesh-references
-~                            
