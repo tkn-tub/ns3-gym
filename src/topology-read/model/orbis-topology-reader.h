@@ -46,7 +46,7 @@ class OrbisTopologyReader : public TopologyReader
 public:
   /**
    * \brief Get the type ID.
-   * \return the object TypeId
+   * \return the object TypeId.
    */
   static TypeId GetTypeId (void);
 
@@ -61,7 +61,7 @@ public:
    * so the input file is read line by line to figure out how many links
    * and nodes are in the topology.
    *
-   * \return the container of the nodes created (or empty container if there was an error)
+   * \return The container of the nodes created (or empty container if there was an error)
    */
   virtual NodeContainer Read (void);
 
@@ -70,13 +70,13 @@ private:
   /**
    * \brief Copy constructor
    *
-   * Defined and unimplemented to avoid misuse
+   * Defined and unimplemented to avoid misuse.
    */
   OrbisTopologyReader (const OrbisTopologyReader&);
   /**
    * \brief Copy constructor
    *
-   * Defined and unimplemented to avoid misuse
+   * Defined and unimplemented to avoid misuse.
    * \returns
    */
   OrbisTopologyReader& operator= (const OrbisTopologyReader&);

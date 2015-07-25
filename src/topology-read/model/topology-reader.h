@@ -60,74 +60,72 @@ public:
     typedef std::map<std::string, std::string>::const_iterator ConstAttributesIterator;
 
     /**
-     * \brief Constructor
-     * \param fromPtr Ptr to the node the link is orginating from
-     * \param fromName name of the node the link is orginating from
-     * \param toPtr Ptr to the node the link is directed to
-     * \param toName name of the node the link is directed to
+     * \brief Constructor.
+     * \param [in] fromPtr Ptr to the node the link is originating from.
+     * \param [in] fromName Name of the node the link is originating from.
+     * \param [in] toPtr Ptr to the node the link is directed to.
+     * \param [in] toName Name of the node the link is directed to.
      */
     Link ( Ptr<Node> fromPtr, const std::string &fromName, Ptr<Node> toPtr, const std::string &toName );
 
     /**
-     * \brief Returns a Ptr<Node> to the "from" node of the link
-     * \return a Ptr<Node> to the "from" node of the link
+     * \brief Returns a Ptr<Node> to the "from" node of the link.
+     * \return A Ptr<Node> to the "from" node of the link.
      */
     Ptr<Node> GetFromNode (void) const;
     /**
-     * \brief Returns the name of the "from" node of the link
-     * \return the name of the "from" node of the link
+     * \brief Returns the name of the "from" node of the link.
+     * \return The name of the "from" node of the link.
      */
     std::string GetFromNodeName (void) const;
     /**
-     * \brief Returns a Ptr<Node> to the "to" node of the link
-     * \return a Ptr<Node> to the "to" node of the link
+     * \brief Returns a Ptr<Node> to the "to" node of the link.
+     * \return A Ptr<Node> to the "to" node of the link.
      */
     Ptr<Node> GetToNode (void) const;
     /**
-     * \brief Returns the name of the "to" node of the link
-     * \return the name of the "to" node of the link
+     * \brief Returns the name of the "to" node of the link.
+     * \return The name of the "to" node of the link.
      */
     std::string GetToNodeName (void) const;
     /**
      * \brief Returns the value of a link attribute. The attribute must exist.
-     *
-     * \param name the name of the attribute
-     *
-     * \return the value of the attribute
+     * \param [in] Name the name of the attribute.
+     * \return The value of the attribute.
      */
     std::string GetAttribute (const std::string &name) const;
     /**
      * \brief Returns the value of a link attribute.
-     * \param name the name of the attribute
-     * \param value the value of the attribute
+     * \param [in] name The name of the attribute.
+     * \param [out] value The value of the attribute.
      *
-     * \return true if the attribute was defined, false otherwise.
+     * \return True if the attribute was defined, false otherwise.
      */
     bool GetAttributeFailSafe (const std::string &name, std::string &value) const;
     /**
      * \brief Sets an arbitrary link attribute.
-     * \param name the name of the attribute
-     * \param value the value of the attribute
+     * \param [in] name The name of the attribute.
+     * \param [in] value The value of the attribute.
      */
     void SetAttribute (const std::string &name, const std::string &value);
     /**
      * \brief Returns an iterator to the begin of the attributes.
-     * \return a const iterator to the first attribute of a link.
+     * \return A const iterator to the first attribute of a link.
      */
     ConstAttributesIterator AttributesBegin (void) const;
     /**
      * \brief Returns an iterator to the end of the attributes.
-     * \return a const iterator to the last attribute of a link.
+     * \return A const iterator to the last attribute of a link.
      */
     ConstAttributesIterator AttributesEnd (void) const;
 
 private:
     Link ();
-    std::string m_fromName; //!< Name of the node the links originates from
-    Ptr< Node > m_fromPtr;  //!< The node the links originates from
-    std::string m_toName;   //!< Name of the node the links is directed to
-    Ptr< Node > m_toPtr;    //!< The node the links is directed to
-    std::map<std::string, std::string> m_linkAttr;  ///< Container of the link attributes (if any)
+    std::string m_fromName; //!< Name of the node the links originates from.
+    Ptr< Node > m_fromPtr;  //!< The node the links originates from.
+    std::string m_toName;   //!< Name of the node the links is directed to.
+    Ptr< Node > m_toPtr;    //!< The node the links is directed to.
+    std::map<std::string, std::string> m_linkAttr;  //!< Container of the link attributes (if any).
   };
 
   /**
@@ -137,7 +135,7 @@ private:
 
   /**
    * \brief Get the type ID.
-   * \return the object TypeId
+   * \return The object TypeId.
    */
   static TypeId GetTypeId (void);
 
@@ -153,49 +151,49 @@ private:
    * reader from the choices about actual IP number assignment and
    * kind of links between nodes.
    *
-   * \return the container of the nodes created (or null if there was an error)
+   * \return The container of the nodes created (or null if there was an error).
    */
   virtual NodeContainer Read (void) = 0;
 
   /**
    * \brief Sets the input file name.
-   * \param fileName the input file name.
+   * \param [in] fileName The input file name.
    */
   void SetFileName (const std::string &fileName);
 
   /**
    * \brief Returns the input file name.
-   * \return the input file name.
+   * \return The input file name.
    */
   std::string GetFileName (void) const;
 
   /**
    * \brief Returns an iterator to the the first link in this block.
-   * \return a const iterator to the first link in this block.
+   * \return A const iterator to the first link in this block.
    */
   ConstLinksIterator LinksBegin (void) const;
 
   /**
    * \brief Returns an iterator to the the last link in this block.
-   * \return a const iterator to the last link in this block.
+   * \return A const iterator to the last link in this block.
    */
   ConstLinksIterator LinksEnd (void) const;
 
   /**
    * \brief Returns the number of links in this block.
-   * \return the number of links in this block.
+   * \return The number of links in this block.
    */
   int LinksSize (void) const;
 
   /**
    * \brief Checks if the block contains any links.
-   * \return true if there are no links in this block, false otherwise.
+   * \return True if there are no links in this block, false otherwise.
    */
   bool LinksEmpty (void) const;
 
   /**
    * \brief Adds a link to the topology.
-   * \param link the link to be added.
+   * \param link [in] The link to be added.
    */
   void AddLink (Link link);
 
@@ -204,24 +202,24 @@ private:
   /**
    * \brief Copy constructor
    *
-   * Defined and unimplemented to avoid misuse
+   * Defined and unimplemented to avoid misuse.
    */
   TopologyReader (const TopologyReader&);
   /**
    * \brief Copy constructor
    *
-   * Defined and unimplemented to avoid misuse
+   * Defined and unimplemented to avoid misuse.
    * \returns
    */
   TopologyReader& operator= (const TopologyReader&);
 
   /**
-   * the name of the input file
+   * The name of the input file.
    */
   std::string m_fileName;
 
   /**
-   * the container of the links between the nodes
+   * The container of the links between the nodes.
    */
   std::list<Link> m_linksList;
 

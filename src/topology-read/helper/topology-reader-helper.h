@@ -39,25 +39,25 @@ public:
 
   /**
    * \brief Sets the input file name.
-   * \param fileName the input file name.
+   * \param [in] fileName The input file name.
    */
   void SetFileName (const std::string fileName);
 
   /**
    * \brief Sets the input file type. Supported file types are "Orbis", "Inet", "Rocketfuel".
-   * \param fileType the input file type.
+   * \param [in] fileType The input file type.
    */
   void SetFileType (const std::string fileType);
 
   /**
    * \brief Gets a Ptr<TopologyReader> to the actual TopologyReader.
-   * \return the created Topology Reader (or null if there was an error).
+   * \return The created Topology Reader (or null if there was an error).
    */
   Ptr<TopologyReader> GetTopologyReader ();
 
 private:
-  Ptr<TopologyReader> m_inputModel;  //!< Smart pointer to the actual topology model
-  std::string m_fileName;  //!< Name of the input file
+  Ptr<TopologyReader> m_inputModel;  //!< Smart pointer to the actual topology model.
+  std::string m_fileName;  //!< Name of the input file.
   std::string m_fileType;  //!< Type of the input file (e.g., "Inet", "Orbis", etc.).
 };
 

@@ -49,7 +49,7 @@ class InetTopologyReader : public TopologyReader
 public:
   /**
    * \brief Get the type ID.
-   * \return the object TypeId
+   * \return the object TypeId.
    */
   static TypeId GetTypeId (void);
 
@@ -66,7 +66,7 @@ public:
    * Then reads until the end of the file (total links number rows) and saves
    * the structure of every single link in the topology.
    *
-   * \return the container of the nodes created (or empty container if there was an error)
+   * \return The container of the nodes created (or empty container if there was an error)
    */
   virtual NodeContainer Read (void);
 
@@ -74,13 +74,13 @@ private:
   /**
    * \brief Copy constructor
    *
-   * Defined and unimplemented to avoid misuse
+   * Defined and unimplemented to avoid misuse.
    */
   InetTopologyReader (const InetTopologyReader&);
   /**
    * \brief Copy constructor
    *
-   * Defined and unimplemented to avoid misuse
+   * Defined and unimplemented to avoid misuse.
    * \returns
    */
   InetTopologyReader& operator= (const InetTopologyReader&);
