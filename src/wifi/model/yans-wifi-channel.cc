@@ -88,6 +88,7 @@ YansWifiChannel::Send (Ptr<YansWifiPhy> sender, Ptr<const Packet> packet, double
     {
       if (sender != (*i))
         {
+          std::cout << "Checking for snd and dst equality " << sender << " == " << (*i) << std::endl;
           //For now don't account for inter channel interference
           if ((*i)->GetChannelNumber () != sender->GetChannelNumber ())
             {

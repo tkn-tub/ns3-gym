@@ -39,11 +39,11 @@ class Node;
 
 /**
  * \defgroup sixlowpan 6LoWPAN
- * \brief Performs 6LoWPAN compression of IPv6 packets as specified by RFC 4944 and RFC 6282
+ * \brief Performs 6LoWPAN compression of IPv6 packets as specified by \RFC{4944} and \RFC{6282}
  *
  * This module acts as a shim between IPv6 and a generic NetDevice.
  *
- * The module implements RFCs 4944 and 6282, with the following exceptions:
+ * The module implements \RFC{4944} and \RFC{6282}, with the following exceptions:
  * <ul>
  * <li> MESH and LOWPAN_BC0 dispatch types are not supported </li>
  * <li> HC2 encoding is not supported </li>
@@ -76,7 +76,7 @@ public:
 
   /**
    * \brief Get the type ID.
-   * \return the object TypeId
+   * \return The object TypeId.
    */
   static TypeId GetTypeId (void);
 
@@ -95,10 +95,10 @@ public:
 
   /**
    * \brief Returns the link-layer MTU for this interface.
-   * If the link-layer MTU is smaller than IPv6's minimum MTU (RFC 4944),
+   * If the link-layer MTU is smaller than IPv6's minimum MTU (\RFC{4944}),
    * 1280 will be returned.
    *
-   * \return the link-level MTU in bytes for this interface.
+   * \return The link-level MTU in bytes for this interface.
    */
   virtual uint16_t GetMtu (void) const;
   virtual bool IsLinkUp (void) const;
@@ -122,7 +122,7 @@ public:
   /**
    * \brief Returns a smart pointer to the underlying NetDevice.
    *
-   * \return a smart pointer to the underlying NetDevice.
+   * \return A smart pointer to the underlying NetDevice.
    */
   Ptr<NetDevice> GetNetDevice () const;
 
@@ -131,7 +131,7 @@ public:
    * All the packets incoming and outgoing from the NetDevice will be
    * processed by SixLowPanNetDevice.
    *
-   * \param device a smart pointer to the NetDevice to be proxied.
+   * \param [in] device A smart pointer to the NetDevice to be proxied.
    */
   void SetNetDevice (Ptr<NetDevice> device);
 
@@ -140,8 +140,8 @@ public:
    * used by this model.  Return the number of streams (possibly zero) that
    * have been assigned.
    *
-   * \param stream first stream index to use
-   * \return the number of stream indices assigned by this model
+   * \param [in] stream First stream index to use.
+   * \return the number of stream indices assigned by this model.
    */
   int64_t AssignStreams (int64_t stream);
 
@@ -149,7 +149,7 @@ public:
    * TracedCallback signature for packet send/receive events.
    *
    * \param [in] packet The packet.
-   * \param [in] sixNetDevice The SixLowPanNetDevice
+   * \param [in] sixNetDevice The SixLowPanNetDevice.
    * \param [in] ifindex The ifindex of the device.
    */
   typedef void (* RxTxTracedCallback)
@@ -162,7 +162,7 @@ public:
    *
    * \param [in] reason The reason for the drop.
    * \param [in] packet The packet.
-   * \param [in] sixNetDevice The SixLowPanNetDevice
+   * \param [in] sixNetDevice The SixLowPanNetDevice.
    * \param [in] ifindex The ifindex of the device.
    */
   typedef void (* DropTracedCallback)
@@ -177,43 +177,43 @@ private:
   /**
    * \brief Copy constructor
    *
-   * Defined and unimplemented to avoid misuse
+   * Defined and unimplemented to avoid misuse.
    */
   SixLowPanNetDevice (SixLowPanNetDevice const &);
   /**
    * \brief Copy constructor
    *
-   * Defined and unimplemented to avoid misuse
+   * Defined and unimplemented to avoid misuse.
    * \returns
    */
   SixLowPanNetDevice& operator= (SixLowPanNetDevice const &);
   /**
-   * \brief receives all the packets from a NetDevice for further processing.
-   * \param device the NetDevice the packet ws received from
-   * \param packet the received packet
-   * \param protocol the protocol (if known)
-   * \param source the source address
-   * \param destination the destination address
-   * \param packetType the packet kind (e.g., HOST, BROADCAST, etc.)
-   * \return the IPv6 link-local address
+   * \brief Receives all the packets from a NetDevice for further processing.
+   * \param [in] device The NetDevice the packet ws received from.
+   * \param [in] packet The received packet.
+   * \param [in] protocol The protocol (if known).
+   * \param [in] source The source address.
+   * \param [in] destination The destination address.
+   * \param [in] packetType The packet kind (e.g., HOST, BROADCAST, etc.).
+   * \return The IPv6 link-local address.
    */
   void ReceiveFromDevice (Ptr<NetDevice> device, Ptr<const Packet> packet, uint16_t protocol,
                           Address const &source, Address const &destination, PacketType packetType);
 
 
   /**
-   * \param packet packet sent from above down to Network Device
-   * \param source source mac address (so called "MAC spoofing")
-   * \param dest mac address of the destination (already resolved)
-   * \param protocolNumber identifies the type of payload contained in
+   * \param [in] packet Packet sent from above down to Network Device.
+   * \param [in] source Source mac address (only used if doSendFrom is true, i.e., "MAC spoofing").
+   * \param [in] dest Mac address of the destination (already resolved).
+   * \param [in] protocolNumber Identifies the type of payload contained in
    *        this packet. Used to call the right L3Protocol when the packet
    *        is received.
-   * \param doSendFrom perform a SendFrom instead of a Send
+   * \param [in] doSendFrom Perform a SendFrom instead of a Send.
    *
    *  Called from higher layer to send packet into Network Device
    *  with the specified source and destination Addresses.
    *
-   * \return whether the Send operation succeeded
+   * \return Whether the Send operation succeeded.
    */
   bool DoSend (Ptr<Packet> packet, const Address& source, const Address& dest, uint16_t protocolNumber, bool doSendFrom);
 
@@ -259,106 +259,106 @@ private:
   TracedCallback<DropReason, Ptr<const Packet>, Ptr<SixLowPanNetDevice>, uint32_t> m_dropTrace;
 
   /**
-   * \brief make a link-local address from a MAC address.
-   * \param addr the MAC address
-   * \return the IPv6 link-local address
+   * \brief Make a link-local address from a MAC address.
+   * \param [in] addr The MAC address.
+   * \return The IPv6 link-local address.
    */
   Ipv6Address MakeLinkLocalAddressFromMac (Address const &addr);
 
   /**
-   * \brief make a global address from a MAC address.
-   * \param addr the MAC address
-   * \param prefix the address prefix
-   * \return the IPv6 address
+   * \brief Make a global address from a MAC address.
+   * \param [in] addr the MAC address.
+   * \param [in] prefix The address prefix.
+   * \return The IPv6 address.
    */
   Ipv6Address MakeGlobalAddressFromMac (Address const &addr, Ipv6Address prefix);
 
   /**
    * \brief Compress the headers according to HC1 compression.
-   * \param packet the packet to be compressed
-   * \param src the MAC source address
-   * \param dst the MAC destination address
-   * \return the size of the removed headers
+   * \param [in] packet The packet to be compressed.
+   * \param [in] src The MAC source address.
+   * \param [in] dst The MAC destination address.
+   * \return The size of the removed headers.
    */
   uint32_t CompressLowPanHc1 (Ptr<Packet> packet, Address const &src, Address const &dst);
 
   /**
    * \brief Decompress the headers according to HC1 compression.
-   * \param packet the packet to be compressed
-   * \param src the MAC source address
-   * \param dst the MAC destination address
+   * \param [in] packet the packet to be compressed.
+   * \param [in] src the MAC source address.
+   * \param [in] dst the MAC destination address.
    */
   void DecompressLowPanHc1 (Ptr<Packet> packet, Address const &src, Address const &dst);
 
   /**
    * \brief Compress the headers according to IPHC compression.
-   * \param packet the packet to be compressed
-   * \param src the MAC source address
-   * \param dst the MAC destination address
-   * \return the size of the removed headers
+   * \param [in] packet The packet to be compressed.
+   * \param [in] src The MAC source address.
+   * \param [in] dst The MAC destination address.
+   * \return The size of the removed headers.
    */
   uint32_t CompressLowPanIphc (Ptr<Packet> packet, Address const &src, Address const &dst);
 
   /**
    * \brief Checks if the next header can be compressed using NHC.
-   * \param headerType the header kind to be compressed
-   * \return true if the header can be compressed
+   * \param [in] headerType The header kind to be compressed.
+   * \return True if the header can be compressed.
    */
   bool CanCompressLowPanNhc (uint8_t headerType);
 
   /**
    * \brief Decompress the headers according to IPHC compression.
-   * \param packet the packet to be compressed
-   * \param src the MAC source address
-   * \param dst the MAC destination address
+   * \param [in] packet The packet to be compressed.
+   * \param [in] src The MAC source address.
+   * \param [in] dst The MAC destination address.
    */
   void DecompressLowPanIphc (Ptr<Packet> packet, Address const &src, Address const &dst);
 
   /**
    * \brief Compress the headers according to NHC compression.
-   * \param packet the packet to be compressed
-   * \param headerType the header type
-   * \param src the MAC source address
-   * \param dst the MAC destination address
-   * \return the size of the removed headers
+   * \param [in] packet The packet to be compressed.
+   * \param [in] headerType The header type.
+   * \param [in] src The MAC source address.
+   * \param [in] dst The MAC destination address.
+   * \return The size of the removed headers.
    */
   uint32_t CompressLowPanNhc (Ptr<Packet> packet, uint8_t headerType, Address const &src, Address const &dst);
 
   /**
    * \brief Decompress the headers according to NHC compression.
-   * \param packet the packet to be compressed
-   * \param src the MAC source address
-   * \param dst the MAC destination address
-   * \param srcAddress the IPv6 source address
-   * \param dstAddress the IPv6 destination address
-   * \return the decompressed header type
+   * \param [in] packet The packet to be compressed.
+   * \param [in] src The MAC source address.
+   * \param [in] dst The MAC destination address.
+   * \param [in] srcAddress The IPv6 source address.
+   * \param [in] dstAddress The IPv6 destination address.
+   * \return The decompressed header type.
    */
   uint8_t DecompressLowPanNhc (Ptr<Packet> packet, Address const &src, Address const &dst, Ipv6Address srcAddress, Ipv6Address dstAddress);
 
   /**
    * \brief Compress the headers according to NHC compression.
-   * \param packet the packet to be compressed
-   * \param omitChecksum omit UDP checksum (if true)
-   * \return the size of the removed headers
+   * \param [in] packet The packet to be compressed.
+   * \param [in] omitChecksum Omit UDP checksum (if true).
+   * \return The size of the removed headers.
    */
   uint32_t CompressLowPanUdpNhc (Ptr<Packet> packet, bool omitChecksum);
 
   /**
    * \brief Decompress the headers according to NHC compression.
-   * \param packet the packet to be compressed
-   * \param saddr the IPv6 source address
-   * \param daddr the IPv6 destination address
+   * \param [in] packet The packet to be compressed.
+   * \param [in] saddr The IPv6 source address.
+   * \param [in] daddr The IPv6 destination address.
    */
   void DecompressLowPanUdpNhc (Ptr<Packet> packet, Ipv6Address saddr, Ipv6Address daddr);
 
   /**
-   * Fragment identifier type: src/dst address src/dst port
+   * Fragment identifier type: src/dst address src/dst port.
    */
   typedef std::pair< std::pair<Address, Address>, std::pair<uint16_t, uint16_t> > FragmentKey;
 
   /**
    * \class Fragments
-   * \brief A Set of Fragment
+   * \brief A Set of Fragment.
    */
   class Fragments : public SimpleRefCount<Fragments>
   {
@@ -375,33 +375,33 @@ public:
 
     /**
      * \brief Add a fragment to the pool.
-     * \param fragment the fragment
-     * \param fragmentOffset the offset of the fragment
+     * \param [in] fragment the fragment.
+     * \param [in] fragmentOffset the offset of the fragment.
      */
     void AddFragment (Ptr<Packet> fragment, uint16_t fragmentOffset);
 
     /**
      * \brief Add the first packet fragment. The first fragment is needed to
      * allow the post-defragmentation decompression.
-     * \param fragment the fragment
+     * \param [in] fragment The fragment.
      */
     void AddFirstFragment (Ptr<Packet> fragment);
 
     /**
      * \brief If all fragments have been added.
-     * \returns true if the packet is entire
+     * \returns True if the packet is entire.
      */
     bool IsEntire () const;
 
     /**
      * \brief Get the entire packet.
-     * \return the entire packet
+     * \return The entire packet.
      */
     Ptr<Packet> GetPacket () const;
 
     /**
      * \brief Set the packet-to-be-defragmented size.
-     * \param packetSize the packet size (bytes)
+     * \param [in] packetSize The packet size (bytes).
      */
     void SetPacketSize (uint32_t packetSize);
 
@@ -422,64 +422,64 @@ private:
     std::list<std::pair<Ptr<Packet>, uint16_t> > m_fragments;
 
     /**
-     * \brief The very first fragment
+     * \brief The very first fragment.
      */
     Ptr<Packet> m_firstFragment;
 
   };
 
   /**
-   * \brief Return the instance type identifier.
-   * \param packet the packet to be fragmented (with headers already compressed with 6LoWPAN)
-   * \param origPacketSize the size of the IP packet before the 6LoWPAN header compression, including the IP/L4 headers
-   * \param origHdrSize the size of the IP header before the 6LoWPAN header compression
-   * \param listFragments a reference to the list of the resulting packets, all with the proper headers in place
+   * \brief Performs a packet fragmentation.
+   * \param [in] packet the packet to be fragmented (with headers already compressed with 6LoWPAN).
+   * \param [in] origPacketSize the size of the IP packet before the 6LoWPAN header compression, including the IP/L4 headers.
+   * \param [in] origHdrSize the size of the IP header before the 6LoWPAN header compression.
+   * \param [out] listFragments A reference to the list of the resulting packets, all with the proper headers in place.
    */
   void DoFragmentation (Ptr<Packet> packet, uint32_t origPacketSize, uint32_t origHdrSize,
                         std::list<Ptr<Packet> >& listFragments);
 
   /**
-   * \brief Process a packet fragment
-   * \param packet the packet
-   * \param src the source MAC address
-   * \param dst the destination MAC address
-   * \param isFirst true if it is the first fragment, false otherwise
-   * \return true is the fragment completed the packet
+   * \brief Process a packet fragment.
+   * \param [in] packet The packet.
+   * \param [in] src The source MAC address.
+   * \param [in] dst The destination MAC address.
+   * \param [in] isFirst True if it is the first fragment, false otherwise.
+   * \return True is the fragment completed the packet.
    */
   bool ProcessFragment (Ptr<Packet>& packet, Address const &src, Address const &dst, bool isFirst);
 
   /**
-   * \brief Process the timeout for packet fragments
-   * \param key representing the packet fragments
-   * \param iif Input Interface
+   * \brief Process the timeout for packet fragments.
+   * \param [in] key A key representing the packet fragments.
+   * \param [in] iif Input Interface.
    */
   void HandleFragmentsTimeout ( FragmentKey key, uint32_t iif);
 
   /**
-   * \brief Drops the oldest fragment set
+   * \brief Drops the oldest fragment set.
    */
   void DropOldestFragmentSet ();
 
   /**
-   * Container for fragment key -> fragments
+   * Container for fragment key -> fragments.
    */
   typedef std::map< FragmentKey, Ptr<Fragments> > MapFragments_t;
   /**
-   * Container Iterator for fragment key -> fragments
+   * Container Iterator for fragment key -> fragments.
    */
   typedef std::map< FragmentKey, Ptr<Fragments> >::iterator MapFragmentsI_t;
   /**
-   * Container for fragment key -> exiration event
+   * Container for fragment key -> expiration event.
    */
   typedef std::map< FragmentKey, EventId > MapFragmentsTimers_t;
   /**
-   * Container Iterator for fragment key -> exiration event
+   * Container Iterator for fragment key -> expiration event.
    */
   typedef std::map< FragmentKey, EventId >::iterator MapFragmentsTimersI_t;
 
-  MapFragments_t       m_fragments; /**< Fragments hold to be rebuilt */
-  MapFragmentsTimers_t m_fragmentsTimers; /**< Timers related to fragment rebuilding */
-  Time                 m_fragmentExpirationTimeout; /**< Time limit for fragment rebuilding */
+  MapFragments_t       m_fragments; //!< Fragments hold to be rebuilt.
+  MapFragmentsTimers_t m_fragmentsTimers; //!< Timers related to fragment rebuilding.
+  Time                 m_fragmentExpirationTimeout; //!< Time limit for fragment rebuilding.
 
   /**
    * \brief How many packets can be rebuilt at the same time.
@@ -487,22 +487,22 @@ private:
    */
   uint16_t             m_fragmentReassemblyListSize;
 
-  bool m_useIphc; /**< Use IPHC or HC1 */
+  bool m_useIphc; //!< Use IPHC or HC1.
 
-  Ptr<Node> m_node; /**< Smart pointer to the Node */
-  Ptr<NetDevice> m_netDevice; /**< Smart pointer to the underlying NetDevice */
-  uint32_t m_ifIndex; /**< Interface index */
+  Ptr<Node> m_node; //!< Smart pointer to the Node.
+  Ptr<NetDevice> m_netDevice; //!< Smart pointer to the underlying NetDevice.
+  uint32_t m_ifIndex; //!< Interface index.
 
   /**
    * \brief Force the EtherType number.
-   * Also implying that the underlying NetDevice is using 48-bit Addresses, e.g., Ethernet, WiFi, etc.
+   * Also implying that the underlying NetDevice is using 48-bit Addresses, e.g., Ethernet, Wi-Fi, etc.
    */
   bool m_forceEtherType;
 
-  uint16_t m_etherType; /**< EtherType number (used only if m_forceEtherType is true) */
-  bool m_omitUdpChecksum; /**< Omit UDP checksum in NC1 encoding */
+  uint16_t m_etherType; //!< EtherType number (used only if m_forceEtherType is true).
+  bool m_omitUdpChecksum; //!< Omit UDP checksum in NC1 encoding.
 
-  uint32_t m_compressionThreshold; /**< Minimum L2 payload size */
+  uint32_t m_compressionThreshold; //!< Minimum L2 payload size.
 
   Ptr<UniformRandomVariable> m_rng; //!< Rng for the fragments tag.
 };

@@ -46,8 +46,8 @@ public:
    * Set an attribute on each ns3::SixlowpanNetDevice created by
    * SixlowpanHelper::Install.
    *
-   * \param n1 the name of the attribute to set
-   * \param v1 the value of the attribute to set
+   * \param n1 [in] The name of the attribute to set.
+   * \param v1 [in] The value of the attribute to set.
    */
   void SetDeviceAttribute (std::string n1,
                            const AttributeValue &v1);
@@ -74,8 +74,8 @@ public:
    * examples directory.
    *
    *
-   * \param c the NetDevice container
-   * \return a container with the newly created SixLowPanNetDevices
+   * \param [in] c The NetDevice container.
+   * \return A container with the newly created SixLowPanNetDevices.
    */
   NetDeviceContainer Install (NetDeviceContainer c);
 
@@ -85,15 +85,15 @@ public:
   * have been assigned. The Install() method should have previously been
   * called by the user.
   *
-  * \param c NetDeviceContainer of the set of net devices for which the
-  *          SixLowPanNetDevice should be modified to use a fixed stream
-  * \param stream first stream index to use
-  * \return the number of stream indices assigned by this helper
+  * \param [in] c NetDeviceContainer of the set of net devices for which the
+  *          SixLowPanNetDevice should be modified to use a fixed stream.
+  * \param [in] stream First stream index to use.
+  * \return The number of stream indices assigned by this helper.
   */
   int64_t AssignStreams (NetDeviceContainer c, int64_t stream);
 
 private:
-  ObjectFactory m_deviceFactory; //!< Object factory
+  ObjectFactory m_deviceFactory; //!< Object factory.
 };
 
 } // namespace ns3
