@@ -556,6 +556,18 @@ PacketTest::DoRun (void)
     tmp->AddTrailer (ATestTrailer<25> ());
     CHECK (tmp, 1, E (25, 0, 50));
   }
+
+  /* Test AddPaddingAtEnd. */
+  {
+    Ptr<Packet> tmp = Create<Packet> (0);
+    tmp->AddTrailer (ATestTrailer<100> ());
+    tmp->AddByteTag (ATestTag<25> ());
+    CHECK (tmp, 1, E (25, 0, 100));
+    tmp->RemoveAtEnd (50);
+    CHECK (tmp, 1, E (25, 0, 50));
+    tmp->AddPaddingAtEnd (50);
+    CHECK (tmp, 1, E (25, 0, 50));
+  }
 }
 //--------------------------------------
 class PacketTagListTest : public TestCase
