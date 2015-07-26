@@ -50,21 +50,15 @@ struct ByteTagListData;
  *     as-needed to emulate COW semantics.
  *
  *   - Each tag tags a unique set of bytes identified by the pair of offsets
- *     (start,end). These offsets are provided by Buffer::GetCurrentStartOffset
- *     and Buffer::GetCurrentEndOffset which means that they are relative to 
- *     the start of the 'virtual byte buffer' as explained in the documentation
- *     for the ns3::Buffer class. Whenever the origin of the offset of the Buffer
- *     instance associated to this ByteTagList instance changes, the Buffer class
- *     reports this to its container Packet class as a bool return value
- *     in Buffer::AddAtStart and Buffer::AddAtEnd. In both cases, when this happens
- *     the Packet class calls ByteTagList::AddAtEnd and ByteTagList::AddAtStart to update
- *     the byte offsets of each tag in the ByteTagList.
+ *     (start,end). These offsets are relative to the start of the packet
+ *     Whenever the origin of the offset changes, the Packet adjusts all
+ *     byte tags using ByteTagList::Adjust method.
  *
- *   - Whenever bytes are removed from the packet byte buffer, the ByteTagList offsets
- *     are never updated because we rely on the fact that they will be updated in
- *     either the next call to Packet::AddHeader or Packet::AddTrailer or when
- *     the user iterates the tag list with Packet::GetTagIterator and 
- *     TagIterator::Next.
+ *   - When packet is reduced in size, byte tags that span outside the packet
+ *     boundaries remain in ByteTagList. It is not a problem as iterator fixes
+ *     the boundaries before returning item. However, when packet is extending,
+ *     it calls ByteTagList::AddAtStart or ByteTagList::AddAtEnd to cut byte
+ *     tags that will otherwise cover new bytes.
  */
 class ByteTagList
 {
