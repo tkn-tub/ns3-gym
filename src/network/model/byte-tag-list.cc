@@ -252,46 +252,10 @@ ByteTagList::Begin (int32_t offsetStart, int32_t offsetEnd) const
     }
 }
 
-bool 
-ByteTagList::IsDirtyAtEnd (int32_t appendOffset)
-{
-  NS_LOG_FUNCTION (this << appendOffset);
-  ByteTagList::Iterator i = BeginAll ();
-  while (i.HasNext ())
-    {
-      ByteTagList::Iterator::Item item = i.Next ();
-      if (item.end > appendOffset)
-        {
-          return true;
-        }
-    }
-  return false;
-}
-
-bool 
-ByteTagList::IsDirtyAtStart (int32_t prependOffset)
-{
-  NS_LOG_FUNCTION (this << prependOffset);
-  ByteTagList::Iterator i = BeginAll ();
-  while (i.HasNext ())
-    {
-      ByteTagList::Iterator::Item item = i.Next ();
-      if (item.start < prependOffset)
-        {
-          return true;
-        }
-    }
-  return false;
-}
-
 void 
 ByteTagList::AddAtEnd (int32_t adjustment, int32_t appendOffset)
 {
   NS_LOG_FUNCTION (this << adjustment << appendOffset);
-  if (adjustment == 0 && !IsDirtyAtEnd (appendOffset))
-    {
-      return;
-    }
   ByteTagList list;
   ByteTagList::Iterator i = BeginAll ();
   while (i.HasNext ())
@@ -304,13 +268,9 @@ ByteTagList::AddAtEnd (int32_t adjustment, int32_t appendOffset)
         {
           continue;
         }
-      else if (item.start < appendOffset && item.end > appendOffset)
+      if (item.end > appendOffset)
         {
           item.end = appendOffset;
-        }
-      else
-        {
-          // nothing to do.
         }
       TagBuffer buf = list.Add (item.tid, item.size, item.start, item.end);
       buf.CopyFrom (item.buf);
@@ -322,10 +282,6 @@ void
 ByteTagList::AddAtStart (int32_t adjustment, int32_t prependOffset)
 {
   NS_LOG_FUNCTION (this << adjustment << prependOffset);
-  if (adjustment == 0 && !IsDirtyAtStart (prependOffset))
-    {
-      return;
-    }
   ByteTagList list;
   ByteTagList::Iterator i = BeginAll ();
   while (i.HasNext ())
@@ -338,13 +294,9 @@ ByteTagList::AddAtStart (int32_t adjustment, int32_t prependOffset)
         {
           continue;
         }
-      else if (item.end > prependOffset && item.start < prependOffset)
+      if (item.start < prependOffset)
         {
           item.start = prependOffset;
-        }
-      else
-        {
-          // nothing to do.
         }
       TagBuffer buf = list.Add (item.tid, item.size, item.start, item.end);
       buf.CopyFrom (item.buf);

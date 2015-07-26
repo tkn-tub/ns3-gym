@@ -227,19 +227,6 @@ private:
 
 private:
   /**
-   * \brief Check that all offsets are smaller than appendOffset
-   * \param appendOffset the append offset to check
-   * \returns true if the check is false
-   */
-  bool IsDirtyAtEnd (int32_t appendOffset);
-  /**
-   * \brief Check that all offsets are bigger than prependOffset
-   * \param prependOffset the prepend offset to check
-   * \returns true if the check is false
-   */
-  bool IsDirtyAtStart (int32_t prependOffset);
-
-  /**
    * \brief Returns an iterator pointing to the very first tag in this list.
    *
    * \returns an iterator
