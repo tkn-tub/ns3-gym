@@ -12,8 +12,8 @@ from waflib.Errors import WafError
 # feature  = TaskGen.feature
 # after = TaskGen.after
 
-## https://launchpad.net/pybindgen/
-REQUIRED_PYBINDGEN_VERSION = (0, 17, 0, 887)
+# https://github.com/gjcarneiro/pybindgen
+REQUIRED_PYBINDGEN_VERSION = '0.17.0.post41+ngd10fa60'
 REQUIRED_PYGCCXML_VERSION = (0, 9, 5)
 
 RUN_ME=-3
@@ -165,15 +165,13 @@ def configure(conf):
     else:
         out = subprocess.Popen([conf.env['PYTHON'][0], "-c",
                                 "import pybindgen.version; "
-                                "print('.'.join([str(x) for x in pybindgen.version.__version__]))"],
+                                "print(pybindgen.__version__)"],
                                 stdout=subprocess.PIPE).communicate()[0]
-        pybindgen_version_str = out.strip()
-        pybindgen_version = tuple([int(x) for x in pybindgen_version_str.split('.')])
-        conf.msg('Checking for pybindgen version', pybindgen_version_str)
+        pybindgen_version = out.strip()
+        conf.msg('Checking for pybindgen version', pybindgen_version)
         if not (pybindgen_version == REQUIRED_PYBINDGEN_VERSION):
-            Logs.warn("pybindgen (found %s), (need %s)" %
-                    (pybindgen_version_str,
-                     '.'.join([str(x) for x in REQUIRED_PYBINDGEN_VERSION])))
+            Logs.warn("pybindgen (found %r), (need %r)" %
+                      (pybindgen_version, REQUIRED_PYBINDGEN_VERSION))
             conf.report_optional_feature("python", "Python Bindings", False,
                                          "PyBindGen version not correct and newer version could not be retrieved")
             return
