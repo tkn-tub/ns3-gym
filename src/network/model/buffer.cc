@@ -689,19 +689,6 @@ Buffer::Deserialize (const uint8_t *buffer, uint32_t size)
   return (sizeCheck != 0) ? 0 : 1;
 }
 
-int32_t 
-Buffer::GetCurrentStartOffset (void) const
-{
-  NS_LOG_FUNCTION (this);
-  return m_start;
-}
-int32_t 
-Buffer::GetCurrentEndOffset (void) const
-{
-  NS_LOG_FUNCTION (this);
-  return m_end;
-}
-
 
 void
 Buffer::TransformIntoRealBuffer (void) const

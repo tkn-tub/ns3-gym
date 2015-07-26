@@ -588,17 +588,6 @@ private:
    */
   uint32_t Deserialize (const uint8_t* buffer, uint32_t size);
 
-  /**
-   * \brief Returns the current buffer start offset
-   * \return the offset
-   */
-  int32_t GetCurrentStartOffset (void) const;
-  /**
-   * \brief Returns the current buffer end offset
-   * \return the offset
-   */
-  int32_t GetCurrentEndOffset (void) const;
-
   /** 
    * Copy the specified amount of data from the buffer to the given output stream.
    * 
