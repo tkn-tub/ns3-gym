@@ -568,6 +568,20 @@ PacketTest::DoRun (void)
     tmp->AddPaddingAtEnd (50);
     CHECK (tmp, 1, E (25, 0, 50));
   }
+
+  /* Test reducing tagged packet size and increasing it back,
+   * now using padding bytes to avoid triggering dirty state
+   * in virtual buffer
+   */
+  {
+    Ptr<Packet> tmp = Create<Packet> (100);
+    tmp->AddByteTag (ATestTag<25> ());
+    CHECK (tmp, 1, E (25, 0, 100));
+    tmp->RemoveAtEnd (50);
+    CHECK (tmp, 1, E (25, 0, 50));
+    tmp->AddPaddingAtEnd (50);
+    CHECK (tmp, 1, E (25, 0, 50));
+  }
 }
 //--------------------------------------
 class PacketTagListTest : public TestCase
