@@ -508,6 +508,54 @@ PacketTest::DoRun (void)
     CHECK (tmp, 1, E (20, 1, 1001));
 #endif
   }
+
+  /* Test reducing tagged packet size and increasing it back. */
+  {
+    Ptr<Packet> tmp = Create<Packet> (0);
+    tmp->AddHeader (ATestHeader<100> ());
+    tmp->AddByteTag (ATestTag<25> ());
+    CHECK (tmp, 1, E (25, 0, 100));
+    tmp->RemoveAtStart (50);
+    CHECK (tmp, 1, E (25, 0, 50));
+    tmp->AddHeader (ATestHeader<50> ());
+    CHECK (tmp, 1, E (25, 50, 100));
+  }
+
+  /* Similar test case, but using trailer instead of header. */
+  {
+    Ptr<Packet> tmp = Create<Packet> (0);
+    tmp->AddTrailer (ATestTrailer<100> ());
+    tmp->AddByteTag (ATestTag<25> ());
+    CHECK (tmp, 1, E (25, 0, 100));
+    tmp->RemoveAtEnd (50);
+    CHECK (tmp, 1, E (25, 0, 50));
+    tmp->AddTrailer (ATestTrailer<50> ());
+    CHECK (tmp, 1, E (25, 0, 50));
+  }
+
+  /* Test reducing tagged packet size and increasing it by half. */
+  {
+    Ptr<Packet> tmp = Create<Packet> (0);
+    tmp->AddHeader (ATestHeader<100> ());
+    tmp->AddByteTag (ATestTag<25> ());
+    CHECK (tmp, 1, E (25, 0, 100));
+    tmp->RemoveAtStart (50);
+    CHECK (tmp, 1, E (25, 0, 50));
+    tmp->AddHeader (ATestHeader<25> ());
+    CHECK (tmp, 1, E (25, 25, 75));
+  }
+
+  /* Similar test case, but using trailer instead of header. */
+  {
+    Ptr<Packet> tmp = Create<Packet> (0);
+    tmp->AddTrailer (ATestTrailer<100> ());
+    tmp->AddByteTag (ATestTag<25> ());
+    CHECK (tmp, 1, E (25, 0, 100));
+    tmp->RemoveAtEnd (50);
+    CHECK (tmp, 1, E (25, 0, 50));
+    tmp->AddTrailer (ATestTrailer<25> ());
+    CHECK (tmp, 1, E (25, 0, 50));
+  }
 }
 //--------------------------------------
 class PacketTagListTest : public TestCase
