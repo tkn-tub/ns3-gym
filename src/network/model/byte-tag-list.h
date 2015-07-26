@@ -20,6 +20,7 @@
 #ifndef BYTE_TAG_LIST_H
 #define BYTE_TAG_LIST_H
 
+#define __STDC_LIMIT_MACROS
 #include <stdint.h>
 #include "ns3/type-id.h"
 #include "tag-buffer.h"
@@ -246,6 +247,8 @@ private:
    */
   void Deallocate (struct ByteTagListData *data);
 
+  int32_t m_minStart; // !< minimal start offset
+  int32_t m_maxEnd; // !< maximal end offset
   uint16_t m_used; //!< the number of used bytes in the buffer
   struct ByteTagListData *m_data; //!< the ByteTagListData structure
 };
