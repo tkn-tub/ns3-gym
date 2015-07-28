@@ -192,6 +192,7 @@ def build(bld):
     core_test = bld.create_ns3_module_test_library('core')
     core_test.source = [
         'test/attribute-test-suite.cc',
+        'test/build-profile-test-suite.cc',
         'test/callback-test-suite.cc',
         'test/command-line-test-suite.cc',
         'test/config-test-suite.cc',
@@ -297,6 +298,7 @@ def build(bld):
         'model/hash.h',
         'model/valgrind.h',
         'model/non-copyable.h',
+        'model/build-profile.h',
         ]
 
     if sys.platform == 'win32':

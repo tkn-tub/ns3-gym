@@ -312,8 +312,15 @@ def configure(conf):
         env.append_value('LINKFLAGS', '-coverage')
 
     if Options.options.build_profile == 'debug':
+        env.append_value('DEFINES', 'NS3_BUILD_PROFILE_DEBUG')
         env.append_value('DEFINES', 'NS3_ASSERT_ENABLE')
         env.append_value('DEFINES', 'NS3_LOG_ENABLE')
+
+    if Options.options.build_profile == 'release':
+        env.append_value('DEFINES', 'NS3_BUILD_PROFILE_RELEASE')
+
+    if Options.options.build_profile == 'optimized':
+        env.append_value('DEFINES', 'NS3_BUILD_PROFILE_OPTIMIZED')
 
     env['PLATFORM'] = sys.platform
     env['BUILD_PROFILE'] = Options.options.build_profile

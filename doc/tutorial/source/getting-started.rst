@@ -554,6 +554,38 @@ We already saw how you can configure Waf for ``debug`` or ``optimized`` builds::
 There is also an intermediate build profile, ``release``.  ``-d`` is a
 synonym for ``--build-profile``.
 
+The build profile controls the use of logging, assertions, and compiler optimization:
+
++--------------------+---------------------------------+-----------------------------------------------------------------+
+| Feature            | Build Profile                                                                                     |
++                    +---------------------------------+-------------------------------+---------------------------------+
+|                    | ``debug``                       | ``release``                   | ``optimized``                   |
++====================+=================================+===============================+=================================+
+| Enabled Features   | |  ``NS3_BUILD_PROFILE_DEBUG``  | ``NS3_BUILD_PROFILE_RELEASE`` | ``NS3_BUILD_PROFILE_OPTIMIZED`` |
+|                    | |  ``NS_LOG...``                |                               |                                 |
+|                    | |  ``NS_ASSERT...``             |                               |                                 |
++--------------------+---------------------------------+-------------------------------+---------------------------------+
+| Code Wrapper Macro | ``NS_BUILD_DEBUG(code)``        |  ``NS_BUILD_RELEASE(code)``   | ``NS_BUILD_OPTIMIZED(code)``    |
++--------------------+---------------------------------+-------------------------------+---------------------------------+
+| Compiler Flags     | ``-O0 -ggdb -g3``               | ``-O3 -g0``                   | ``-O3 -g``                      |
+|                    |                                 | ``-fomit-frame-pointer``      | ``-fstrict-overflow``           |
+|                    |                                 |                               | ``-march=native``               |
++--------------------+---------------------------------+-------------------------------+---------------------------------+
+
+As you can see, logging and assertions are only available in debug builds.
+Recommended practice is to develop your scenario in debug mode, then
+conduct repetitive runs (for statistics or changing parameters) in
+optimized build profile.
+
+If you have code that should only run in specific build profiles,
+use the indicated Code Wrapper macro:
+
+.. sourcecode:: cpp
+
+  NS_BUILD_DEBUG (std::cout << "Part of an output line..." << std::flush; timer.Start ());
+  DoLongInvolvedComputation ();
+  NS_BUILD_DEBUG (timer.Stop (); std::cout << "Done: " << timer << std::endl;)
+
 By default Waf puts the build artifacts in the ``build`` directory.  
 You can specify a different output directory with the ``--out``
 option, e.g.
@@ -590,8 +622,8 @@ to define some environment variables to help you avoid mistakes::
   $ ./waf configure $NS3CONFIG $NS3OPT
   $ ./waf build
 
-Compilers
-=========
+Compilers and Flags
+===================
 
 In the examples above, Waf uses the GCC C++ compiler, ``g++``, for
 building |ns3|. However, it's possible to change the C++ compiler used by Waf
@@ -613,6 +645,9 @@ More info on ``distcc`` and distributed compilation can be found on it's
 `project page
 <http://code.google.com/p/distcc/>`_
 under Documentation section.
+
+To add compiler flags, use the ``CXXFLAGS_EXTRA`` environment variable when
+you configure |ns3|.
 
 Install
 =======
