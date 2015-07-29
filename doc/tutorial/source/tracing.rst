@@ -255,7 +255,7 @@ parameter, this could be declared like,
 <http://www.parashift.com/c++-faq/pointers-to-members.html>`_ before
 writing code like this!)  What you get from this is a variable named
 simply ``pfi`` that is initialized to the value 0.  If you want to
-initialize this pointer to something meaningful, you have to have a
+initialize this pointer to something meaningful, you need to have a
 function with a matching signature.  In this case, you could provide a
 function that looks like::
 
@@ -370,7 +370,7 @@ simple Object we can work with.
         .AddTraceSource ("MyInteger",
                          "An integer value to trace.",
                          MakeTraceSourceAccessor (&MyObject::m_myInt),
-                         "ns3::Traced::Value::Int32Callback")
+                         "ns3::TracedValueCallback::Int32")
         ;
       return tid;
     }
@@ -399,11 +399,11 @@ The ``TracedValue<>`` declaration provides the infrastructure that
 drives the callback process.  Any time the underlying value is changed
 the TracedValue mechanism will provide both the old and the new value
 of that variable, in this case an ``int32_t`` value.  The trace
-sink function for this TracedValue will need the signature
+sink function ``traceSink`` for this TracedValue will need the signature
 
 ::
 
-  void (* TracedValueCallback)(const int32_t oldValue, const int32_t newValue);
+  void (* traceSink)(int32_t oldValue, int32_t newValue);
 
 All trace sinks hooking this trace source must have this signature.
 We'll discuss below how you can determine the required callback
@@ -866,7 +866,7 @@ Repeating the "CourseChange" trace source entry from
 The callback signature is given as a link to the relevant ``typedef``,
 where we find
 
-  ``typedef void (* CourseChangeCallback)(const std::string context, Ptr<const MobilityModel> * model);``
+  ``typedef void (* CourseChangeCallback)(std::string context, Ptr<const MobilityModel> * model);``
 					  
   **TracedCallback** signature for course change notifications.
 
@@ -932,7 +932,7 @@ Callback function that takes a string context, then the template
 arguments::
 
   void
-  CourseChange (const std::string context, Ptr<const MobilityModel> model)
+  CourseChange (std::string context, Ptr<const MobilityModel> model)
   {
     ...
   }
@@ -942,7 +942,7 @@ visible in your local file, you can add the keyword ``static`` and
 come up with::
 
   static void
-  CourseChange (const std::string path, Ptr<const MobilityModel> model)
+  CourseChange (std::string path, Ptr<const MobilityModel> model)
   {
     ...
   }
@@ -1204,11 +1204,12 @@ the callback process.  On use of any of the operators above with a
 ``TracedValue`` it will provide both the old and the new value of that
 variable, in this case an ``int32_t`` value.  By inspection of the
 ``TracedValue`` declaration, we know the trace sink function will have
-arguments ``(const int32_t oldValue, const int32_t newValue)``.  The
+arguments ``(int32_t oldValue, int32_t newValue)``.  The
 return type for a ``TracedValue`` callback function is always
-``void``, so the expected callback signature will be::
+``void``, so the expected callback signature for the sink function
+``traceSink`` will be::
 
-  void (* TracedValueCallback)(const int32_t oldValue, const int32_t newValue);
+  void (* traceSink)(int32_t oldValue, int32_t newValue);
 
 The ``.AddTraceSource`` in the ``GetTypeId`` method provides the
 "hooks" used for connecting the trace source to the outside world
@@ -1217,7 +1218,7 @@ agruments to ``AddTraceSource``: the Attribute name for the Config
 system, a help string, and the address of the TracedValue class data
 member.
 
-The final string argument, "ns3::Traced::Value::Int32" in the example,
+The final string argument, "ns3::TracedValueCallback::Int32" in the example,
 is the name of a ``typedef`` for the callback function signature.  We
 require these signatures to be defined, and give the fully qualified
 type name to ``AddTraceSource``, so the API documentation can link a
@@ -1271,12 +1272,12 @@ the list of TraceSources you will find
 
   * **CongestionWindow**: The TCP connnection's congestion window
 
-    Callback signature:  **ns3::Traced::Value::Uint322Callback**
+    Callback signature:  **ns3::TracedValueCallback::Uint32**
 
 Clicking on the callback ``typedef`` link we see the signature
 you now know to expect::
 
-    typedef void(* ns3::Traced::Value::Int32Callback)(const int32_t oldValue, const int32_t newValue)
+    typedef void(* ns3::TracedValueCallback::Int32)(int32_t oldValue, int32_t newValue)
 
 You should now understand this code completely.  If we have a pointer
 to the ``TcpNewReno``, we can ``TraceConnect`` to the

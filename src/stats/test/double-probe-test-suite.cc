@@ -64,7 +64,7 @@ SampleEmitter::GetTypeId (void)
     .SetParent<Object> ()
     .AddTraceSource ("Emitter", "XX",
                      MakeTraceSourceAccessor (&SampleEmitter::m_trace),
-                     "ns3::TracedValue::DoubleCallback")
+                     "ns3::TracedValueCallback::Double")
   ;
   return tid;
 }

@@ -69,7 +69,7 @@ BasicEnergySource::GetTypeId (void)
     .AddTraceSource ("RemainingEnergy",
                      "Remaining energy at BasicEnergySource.",
                      MakeTraceSourceAccessor (&BasicEnergySource::m_remainingEnergyJ),
-                     "ns3::TracedValue::DoubleCallback")
+                     "ns3::TracedValueCallback::Double")
   ;
   return tid;
 }

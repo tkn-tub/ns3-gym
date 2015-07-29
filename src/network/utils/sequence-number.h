@@ -482,6 +482,8 @@ typedef SequenceNumber<uint16_t, int16_t> SequenceNumber16;
  */
 typedef SequenceNumber<uint8_t, int8_t> SequenceNumber8;
 
+namespace TracedValueCallback {
+
 /**
  * \ingroup network
  * TracedValue callback signature for SequenceNumber32
@@ -489,8 +491,10 @@ typedef SequenceNumber<uint8_t, int8_t> SequenceNumber8;
  * \param [in] oldValue original value of the traced variable
  * \param [in] newValue new value of the traced variable
  */
-typedef void (* SequenceNumber32TracedValueCallback)(const SequenceNumber32 oldValue,
-                                                     const SequenceNumber32 newValue);
+typedef void (* SequenceNumber32)(SequenceNumber32 oldValue,
+                                  SequenceNumber32 newValue);
+
+}  // namespace TracedValueCallback
 
 } // namespace ns3
 

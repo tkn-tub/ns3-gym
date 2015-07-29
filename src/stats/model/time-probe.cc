@@ -45,7 +45,7 @@ TimeProbe::GetTypeId ()
     .AddTraceSource ("Output",
                      "The double valued (units of seconds) probe output",
                      MakeTraceSourceAccessor (&TimeProbe::m_output),
-                     "ns3::TracedValue::DoubleCallback")
+                     "ns3::TracedValueCallback::Double")
   ;
   return tid;
 }

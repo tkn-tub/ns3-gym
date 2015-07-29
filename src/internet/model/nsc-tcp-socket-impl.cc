@@ -58,11 +58,11 @@ NscTcpSocketImpl::GetTypeId ()
     .AddTraceSource ("CongestionWindow",
                      "The TCP connection's congestion window",
                      MakeTraceSourceAccessor (&NscTcpSocketImpl::m_cWnd),
-                     "ns3::TracedValue::Uint32Callback")
+                     "ns3::TracedValueCallback::Uint32")
     .AddTraceSource ("SlowStartThreshold",
                      "TCP slow start threshold (bytes)",
                      MakeTraceSourceAccessor (&NscTcpSocketImpl::m_ssThresh),
-                     "ns3::TracedValue::Uint32Callback")
+                     "ns3::TracedValueCallback::Uint32")
     .AddTraceSource ("State",
                      "TCP state",
                      MakeTraceSourceAccessor (&NscTcpSocketImpl::m_state),

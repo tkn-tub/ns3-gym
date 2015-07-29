@@ -83,7 +83,7 @@ WifiRadioEnergyModel::GetTypeId (void)
     .AddTraceSource ("TotalEnergyConsumption",
                      "Total energy consumption of the radio device.",
                      MakeTraceSourceAccessor (&WifiRadioEnergyModel::m_totalEnergyConsumption),
-                     "ns3::TracedValue::DoubleCallback")
+                     "ns3::TracedValueCallback::Double")
   ; 
   return tid;
 }

@@ -184,23 +184,23 @@ TypeId CoDelQueue::GetTypeId (void)
     .AddTraceSource ("Count",
                      "CoDel count",
                      MakeTraceSourceAccessor (&CoDelQueue::m_count),
-                     "ns3::TracedValue::Uint32Callback")
+                     "ns3::TracedValueCallback::Uint32")
     .AddTraceSource ("DropCount",
                      "CoDel drop count",
                      MakeTraceSourceAccessor (&CoDelQueue::m_dropCount),
-                     "ns3::TracedValue::Uint32Callback")
+                     "ns3::TracedValueCallback::Uint32")
     .AddTraceSource ("LastCount",
                      "CoDel lastcount",
                      MakeTraceSourceAccessor (&CoDelQueue::m_lastCount),
-                     "ns3::TracedValue::Uint32Callback")
+                     "ns3::TracedValueCallback::Uint32")
     .AddTraceSource ("DropState",
                      "Dropping state",
                      MakeTraceSourceAccessor (&CoDelQueue::m_dropping),
-                     "ns3::TracedValue::BoolCallback")
+                     "ns3::TracedValueCallback::Bool")
     .AddTraceSource ("BytesInQueue",
                      "Number of bytes in the queue",
                      MakeTraceSourceAccessor (&CoDelQueue::m_bytesInQueue),
-                     "ns3::TracedValue::Uint32Callback")
+                     "ns3::TracedValueCallback::Uint32")
     .AddTraceSource ("Sojourn",
                      "Time in the queue",
                      MakeTraceSourceAccessor (&CoDelQueue::m_sojourn),
@@ -208,7 +208,7 @@ TypeId CoDelQueue::GetTypeId (void)
     .AddTraceSource ("DropNext",
                      "Time until next packet drop",
                      MakeTraceSourceAccessor (&CoDelQueue::m_dropNext),
-                     "ns3::TracedValue::Uint32Callback")
+                     "ns3::TracedValueCallback::Uint32")
   ;
 
   return tid;

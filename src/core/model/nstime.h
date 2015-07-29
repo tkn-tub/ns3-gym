@@ -531,15 +531,6 @@ public:
    */
   TimeWithUnit As (const enum Unit unit) const;
 
-  /**
-   * TracedValue callback signature for Time
-   *
-   * \param [in] oldValue Original value of the traced variable
-   * \param [in] newValue New value of the traced variable
-   */
-  typedef void (* TracedValueCallback)(const Time oldValue,
-                                       const Time newValue);
-  
 private:
   /** How to convert between other units and the current unit. */
   struct Information
@@ -717,6 +708,17 @@ private:
 
 };  // class Time
 
+namespace TracedValueCallback {
+  
+  /**
+   * TracedValue callback signature for Time
+   *
+   * \param [in] oldValue Original value of the traced variable
+   * \param [in] newValue New value of the traced variable
+   */
+  typedef void (* Time)(Time oldValue, Time newValue);
+  
+}  // namespace TracedValueCallback
 
 /// Force static initialization of Time
 static bool NS_UNUSED_GLOBAL (g_TimeStaticInit) = Time::StaticInit ();

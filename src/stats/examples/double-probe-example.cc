@@ -66,7 +66,7 @@ Emitter::GetTypeId (void)
     .AddTraceSource ("Counter",
                      "sample counter",
                      MakeTraceSourceAccessor (&Emitter::m_counter),
-                     "ns3::TracedValue::DoubleCallback")
+                     "ns3::TracedValueCallback::Double")
   ;
   return tid;
 }
