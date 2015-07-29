@@ -92,31 +92,6 @@ std::list<std::ostream*> *GetStreamList (void)
   return *pstreams;
 }
 
-/**
- * \ingroup fatalimpl
- * \brief Destructor for the list of fatal streams.
- *
- * \todo Is this ever called?
- * Not obvious that it is.  Test with something like
- * \code
- *   main (int argc, char ** argv)
- *   {
- *     NS_FATAL_MSG ("Aborting.")
- *   }
- * \endcode
- * Then run under valgrind or the debugger.  If this isn't called,
- * try adding the call to \c sigHandler.
- */
-struct destructor
-{
-  ~destructor ()
-  {
-    NS_LOG_FUNCTION (this);
-    std::list<std::ostream*> **pstreams = PeekStreamList ();
-    delete *pstreams;
-    *pstreams = 0;
-  }
-};
 }  // anonymous namespace
 
 void
