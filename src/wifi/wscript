@@ -140,6 +140,7 @@ def build(bld):
         'model/status-code.h',
         'model/capability-information.h',
         'model/dcf-manager.h',
+        'model/mac-tx-middle.h', 
         'model/mac-rx-middle.h', 
         'model/mac-low.h',
         'model/originator-block-ack-agreement.h',
