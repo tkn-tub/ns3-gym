@@ -156,9 +156,8 @@ BufferTest::DoRun (void)
   buff64.AddAtStart (8);
   i = buff64.Begin ();
   i.WriteU64 (0x0123456789ABCDEFllu);
-  ENSURE_WRITTEN_BYTES (buff64, 8, 0xef, 0xcd, 0xab, 0x89, 0x67, 0x45, 0x23, 0x01);
   i = buff64.Begin ();
-  NS_TEST_ASSERT_MSG_EQ (i.ReadLsbtohU64 (), 0x0123456789abcdefllu, "Could not read expected value");
+  NS_TEST_ASSERT_MSG_EQ (i.ReadU64 (), 0x0123456789abcdefllu, "Could not read expected value");
   i = buff64.Begin ();
   i.WriteHtolsbU64 (0x0123456789ABCDEFllu);
   ENSURE_WRITTEN_BYTES (buff64, 8, 0xef, 0xcd, 0xab, 0x89, 0x67, 0x45, 0x23, 0x01);
