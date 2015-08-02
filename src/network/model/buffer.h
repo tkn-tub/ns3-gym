@@ -561,14 +561,6 @@ private:
   inline Buffer::Iterator End (void) const;
 
   /**
-   * \brief Create a full copy of the buffer, including
-   * all the internal structures.
-   *
-   * \returns a copy of the buffer
-   */
-  Buffer CreateFullCopy (void) const;
-
-  /**
    * \brief Return the number of bytes required for serialization.
    * \return the number of bytes.
    */
@@ -697,6 +689,14 @@ private:
      */
     uint8_t m_data[1];
   };
+
+  /**
+   * \brief Create a full copy of the buffer, including
+   * all the internal structures.
+   *
+   * \returns a copy of the buffer
+   */
+  Buffer CreateFullCopy (void) const;
 
   /**
    * \brief Transform a "Virtual byte buffer" into a "Real byte buffer"
