@@ -253,6 +253,33 @@ benchC (uint32_t n)
   }
 }
 
+static void
+benchFragment (uint32_t n)
+{
+  BenchHeader<25> ipv4;
+  BenchHeader<8> udp;
+
+  for (uint32_t i= 0; i < n; i++) {
+    Ptr<Packet> p = Create<Packet> (2000);
+    p->AddHeader (udp);
+    p->AddHeader (ipv4);
+
+    Ptr<Packet> frag0 = p->CreateFragment (0, 250);
+    Ptr<Packet> frag1 = p->CreateFragment (250, 250);
+    Ptr<Packet> frag2 = p->CreateFragment (500, 500);
+    Ptr<Packet> frag3 = p->CreateFragment (1000, 500);
+    Ptr<Packet> frag4 = p->CreateFragment (1500, 500);
+
+    /* Mix fragments in different order */
+    frag2->AddAtEnd (frag3);
+    frag4->AddAtEnd (frag1);
+    frag2->AddAtEnd (frag4);
+    frag0->AddAtEnd (frag2);
+
+    frag0->RemoveHeader (ipv4);
+    frag0->RemoveHeader (udp);
+  }
+}
 
 static void
 runBench (void (*bench) (uint32_t), uint32_t n, char const *name)
@@ -301,6 +328,7 @@ int main (int argc, char *argv[])
   runBench (&benchB, n, "Just add headers");
   runBench (&benchC, n, "Remove by func call");
   runBench (&benchD, n, "Intermixed add/remove headers and tags");
+  runBench (&benchFragment, n, "Fragmentation and concatenation");
 
   return 0;
 }
