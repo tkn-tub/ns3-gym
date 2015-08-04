@@ -36,7 +36,8 @@
 #include "ns3/unix-fd-reader.h"
 #include "ns3/system-mutex.h"
 
-#include <string.h>
+#include <utility>
+#include <queue>
 
 namespace ns3 {
 
@@ -63,7 +64,7 @@ public:
 
 private:
   FdReader::Data DoRead (void);
-  
+
   uint32_t m_bufferSize; //!< size of the read buffer
 };
 
@@ -216,7 +217,7 @@ private:
   /**
    * Forward the frame to the appropriate callback for processing
    */
-  void ForwardUp (uint8_t *buf, ssize_t len);
+  void ForwardUp (void);
 
   /**
    * Start Sending a Packet Down the Wire.
@@ -298,14 +299,13 @@ private:
   /**
    * Number of packets that were received and scheduled for read but not yeat read.
    */
-  uint32_t m_pendingReadCount;
-  
+  std::queue< std::pair<uint8_t *, ssize_t> > m_pendingQueue;
+
   /**
    * Maximum number of packets that can be received and scheduled for read but not yeat read.
    */
   uint32_t m_maxPendingReads;
-  
-   
+
   /**
    * Mutex to increase pending read counter.
    */

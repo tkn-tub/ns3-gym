@@ -84,6 +84,8 @@ void
 DefaultSimulatorImpl::DoDispose (void)
 {
   NS_LOG_FUNCTION (this);
+  ProcessEventsWithContext ();
+
   while (!m_events->IsEmpty ())
     {
       Scheduler::Event next = m_events->RemoveNext ();

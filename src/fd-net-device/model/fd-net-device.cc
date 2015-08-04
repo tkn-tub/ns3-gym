@@ -168,12 +168,12 @@ FdNetDevice::GetTypeId (void)
 FdNetDevice::FdNetDevice ()
   : m_node (0),
     m_ifIndex (0),
-    m_mtu (1500), // Defaults to Ethernet v2 MTU 
+    // Defaults to Ethernet v2 MTU
+    m_mtu (1500),
     m_fd (-1),
     m_fdReader (0),
     m_isBroadcast (true),
     m_isMulticast (false),
-    m_pendingReadCount (0),
     m_startEvent (),
     m_stopEvent ()
 {
@@ -188,6 +188,18 @@ FdNetDevice::FdNetDevice (FdNetDevice const &)
 FdNetDevice::~FdNetDevice ()
 {
   NS_LOG_FUNCTION (this);
+
+  {
+    CriticalSection cs (m_pendingReadMutex);
+
+    while (!m_pendingQueue.empty ())
+      {
+        std::pair<uint8_t *, ssize_t> next = m_pendingQueue.front ();
+        m_pendingQueue.pop ();
+
+        free (next.first);
+      }
+  }
 }
 
 void
@@ -249,7 +261,7 @@ FdNetDevice::StartDevice (void)
 
   m_fdReader = Create<FdNetDeviceFdReader> ();
   // 22 bytes covers 14 bytes Ethernet header with possible 8 bytes LLC/SNAP
-  m_fdReader->SetBufferSize(m_mtu + 22);  
+  m_fdReader->SetBufferSize (m_mtu + 22);
   m_fdReader->Start (m_fd, MakeCallback (&FdNetDevice::ReceiveCallback, this));
 
   NotifyLinkUp ();
@@ -281,26 +293,28 @@ FdNetDevice::ReceiveCallback (uint8_t *buf, ssize_t len)
 
   {
     CriticalSection cs (m_pendingReadMutex);
-    if (m_pendingReadCount >= m_maxPendingReads)
+    if (m_pendingQueue.size () >= m_maxPendingReads)
       {
         NS_LOG_WARN ("Packet dropped");
         skip = true;
       }
     else
       {
-        ++m_pendingReadCount;
+        m_pendingQueue.push (std::make_pair (buf, len));
       }
   }
 
   if (skip)
     {
-      struct timespec time = { 0, 100000000L }; // 100 ms
+      struct timespec time = {
+        0, 100000000L
+      };                                        // 100 ms
       nanosleep (&time, NULL);
     }
   else
     {
-      Simulator::ScheduleWithContext (m_nodeId, Time (0), MakeEvent (&FdNetDevice::ForwardUp, this, buf, len));
-   }
+      Simulator::ScheduleWithContext (m_nodeId, Time (0), MakeEvent (&FdNetDevice::ForwardUp, this));
+    }
 }
 
 /**
@@ -368,17 +382,22 @@ RemovePIHeader (uint8_t *&buf, ssize_t &len)
 }
 
 void
-FdNetDevice::ForwardUp (uint8_t *buf, ssize_t len)
+FdNetDevice::ForwardUp (void)
 {
-  NS_LOG_FUNCTION (this << buf << len);
 
-  if (m_pendingReadCount > 0)
-    {
-      {
-        CriticalSection cs (m_pendingReadMutex);
-        --m_pendingReadCount;
-      }
-    }
+  uint8_t *buf = 0; 
+  ssize_t len = 0;
+
+  {
+    CriticalSection cs (m_pendingReadMutex);
+    std::pair<uint8_t *, ssize_t> next = m_pendingQueue.front ();
+    m_pendingQueue.pop ();
+
+    buf = next.first;
+    len = next.second;
+  }
+
+  NS_LOG_FUNCTION (this << buf << len);
 
   // We need to remove the PI header and ignore it
   if (m_encapMode == DIXPI)
