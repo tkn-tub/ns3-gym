@@ -305,11 +305,10 @@ Buffer::GetInternalEnd (void) const
   return m_end - (m_zeroAreaEnd - m_zeroAreaStart);
 }
 
-bool
+void
 Buffer::AddAtStart (uint32_t start)
 {
   NS_LOG_FUNCTION (this << start);
-  bool dirty;
   NS_ASSERT (CheckInternalState ());
   bool isDirty = m_data->m_count > 1 && m_start > m_data->m_dirtyStart;
   if (m_start >= start && !isDirty)
@@ -321,7 +320,6 @@ Buffer::AddAtStart (uint32_t start)
        */
       NS_ASSERT (m_data->m_count == 1 || m_start == m_data->m_dirtyStart);
       m_start -= start;
-      dirty = m_start > m_data->m_dirtyStart;
       // update dirty area
       m_data->m_dirtyStart = m_start;
     } 
@@ -347,20 +345,15 @@ Buffer::AddAtStart (uint32_t start)
       // update dirty area
       m_data->m_dirtyStart = m_start;
       m_data->m_dirtyEnd = m_end;
-
-      dirty = true;
-
     }
   m_maxZeroAreaStart = std::max (m_maxZeroAreaStart, m_zeroAreaStart);
   LOG_INTERNAL_STATE ("add start=" << start << ", ");
   NS_ASSERT (CheckInternalState ());
-  return dirty;
 }
-bool
+void
 Buffer::AddAtEnd (uint32_t end)
 {
   NS_LOG_FUNCTION (this << end);
-  bool dirty;
   NS_ASSERT (CheckInternalState ());
   bool isDirty = m_data->m_count > 1 && m_end < m_data->m_dirtyEnd;
   if (GetInternalEnd () + end <= m_data->m_size && !isDirty)
@@ -374,9 +367,6 @@ Buffer::AddAtEnd (uint32_t end)
       m_end += end;
       // update dirty area.
       m_data->m_dirtyEnd = m_end;
-
-      dirty = m_end < m_data->m_dirtyEnd;
-
     } 
   else
     {
@@ -400,15 +390,10 @@ Buffer::AddAtEnd (uint32_t end)
       // update dirty area
       m_data->m_dirtyStart = m_start;
       m_data->m_dirtyEnd = m_end;
-
-      dirty = true;
-
     } 
   m_maxZeroAreaStart = std::max (m_maxZeroAreaStart, m_zeroAreaStart);
   LOG_INTERNAL_STATE ("add end=" << end << ", ");
   NS_ASSERT (CheckInternalState ());
-
-  return dirty;
 }
 
 void

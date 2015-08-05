@@ -496,7 +496,6 @@ private:
 
   /**
    * \param start size to reserve
-   * \returns true if the buffer needed resizing, false otherwise.
    *
    * Add bytes at the start of the Buffer. The
    * content of these bytes is undefined but debugging
@@ -504,10 +503,9 @@ private:
    * Any call to this method invalidates any Iterator
    * pointing to this Buffer.
    */
-  bool AddAtStart (uint32_t start);
+  void AddAtStart (uint32_t start);
   /**
    * \param end size to reserve
-   * \returns true if the buffer needed resizing, false otherwise.
    *
    * Add bytes at the end of the Buffer. The
    * content of these bytes is undefined but debugging
@@ -515,7 +513,7 @@ private:
    * Any call to this method invalidates any Iterator
    * pointing to this Buffer.
    */
-  bool AddAtEnd (uint32_t end);
+  void AddAtEnd (uint32_t end);
 
   /**
    * \param o the buffer to append to the end of this buffer.
