@@ -255,12 +255,9 @@ Packet::AddHeader (const Header &header)
   uint32_t size = header.GetSerializedSize ();
   NS_LOG_FUNCTION (this << header.GetInstanceTypeId ().GetName () << size);
   uint32_t orgStart = m_buffer.GetCurrentStartOffset ();
-  bool resized = m_buffer.AddAtStart (size);
-  if (resized)
-    {
-      m_byteTagList.AddAtStart (m_buffer.GetCurrentStartOffset () + size - orgStart,
-                                m_buffer.GetCurrentStartOffset () + size);
-    }
+  m_buffer.AddAtStart (size);
+  m_byteTagList.AddAtStart (m_buffer.GetCurrentStartOffset () + size - orgStart,
+                            m_buffer.GetCurrentStartOffset () + size);
   header.Serialize (m_buffer.Begin ());
   m_metadata.AddHeader (header, size);
 }
@@ -286,12 +283,9 @@ Packet::AddTrailer (const Trailer &trailer)
   uint32_t size = trailer.GetSerializedSize ();
   NS_LOG_FUNCTION (this << trailer.GetInstanceTypeId ().GetName () << size);
   uint32_t orgStart = m_buffer.GetCurrentStartOffset ();
-  bool resized = m_buffer.AddAtEnd (size);
-  if (resized)
-    {
-      m_byteTagList.AddAtEnd (m_buffer.GetCurrentStartOffset () - orgStart,
-                              m_buffer.GetCurrentEndOffset () - size);
-    }
+  m_buffer.AddAtEnd (size);
+  m_byteTagList.AddAtEnd (m_buffer.GetCurrentStartOffset () - orgStart,
+                          m_buffer.GetCurrentEndOffset () - size);
   Buffer::Iterator end = m_buffer.End ();
   trailer.Serialize (end);
   m_metadata.AddTrailer (trailer, size);
@@ -333,13 +327,10 @@ void
 Packet::AddPaddingAtEnd (uint32_t size)
 {
   NS_LOG_FUNCTION (this << size);
-  uint32_t orgEnd = m_buffer.GetCurrentEndOffset ();
-  bool resized = m_buffer.AddAtEnd (size);
-  if (resized)
-    {
-      m_byteTagList.AddAtEnd (m_buffer.GetCurrentEndOffset () - orgEnd,
-                              m_buffer.GetCurrentEndOffset () - size);
-    }
+  uint32_t orgStart = m_buffer.GetCurrentStartOffset ();
+  m_buffer.AddAtEnd (size);
+  m_byteTagList.AddAtEnd (m_buffer.GetCurrentStartOffset () - orgStart,
+                          m_buffer.GetCurrentEndOffset () - size);
   m_metadata.AddPaddingAtEnd (size);
 }
 void 
