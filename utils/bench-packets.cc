@@ -24,6 +24,8 @@
 #include <sstream>
 #include <string>
 #include <stdlib.h> // for exit ()
+#include <limits>
+#include <algorithm>
 
 using namespace ns3;
 
@@ -281,18 +283,31 @@ benchFragment (uint32_t n)
   }
 }
 
-static void
-runBench (void (*bench) (uint32_t), uint32_t n, char const *name)
+static uint64_t
+runBenchOneIteration (void (*bench) (uint32_t), uint32_t n)
 {
   SystemWallClockMs time;
   time.Start ();
   (*bench) (n);
   uint64_t deltaMs = time.End ();
+  return deltaMs;
+}
+
+
+static void
+runBench (void (*bench) (uint32_t), uint32_t n, uint32_t minIterations, char const *name)
+{
+  uint64_t minDelay = std::numeric_limits<uint64_t>::max();
+  for (uint32_t i = 0; i < minIterations; i++)
+    {
+      uint64_t delay = runBenchOneIteration(bench, n);
+      minDelay = std::min(minDelay, delay);
+    }
   double ps = n;
   ps *= 1000;
-  ps /= deltaMs;
+  ps /= minDelay;
   std::cout << ps << " packets/s"
-            << " (" << deltaMs << " ms elapsed)\t"
+            << " (" << minDelay << " ms elapsed)\t"
             << name
             << std::endl;
 }
@@ -300,6 +315,7 @@ runBench (void (*bench) (uint32_t), uint32_t n, char const *name)
 int main (int argc, char *argv[])
 {
   uint32_t n = 0;
+  uint32_t minIterations = 10;
   while (argc > 0) {
       if (strncmp ("--n=", argv[0],strlen ("--n=")) == 0) 
         {
@@ -307,6 +323,13 @@ int main (int argc, char *argv[])
           std::istringstream iss;
           iss.str (nAscii);
           iss >> n;
+        }
+      if (strncmp ("--min-iterations=", argv[0],strlen ("--min-iterations=")) == 0) 
+        {
+          char const *nAscii = argv[0] + strlen ("--min-iterations=");
+          std::istringstream iss;
+          iss.str (nAscii);
+          iss >> minIterations;
         }
       if (strncmp ("--enable-printing", argv[0], strlen ("--enable-printing")) == 0)
         {
@@ -324,11 +347,11 @@ int main (int argc, char *argv[])
   std::cout << "Running bench-packets with n=" << n << std::endl;
   std::cout << "All tests begin by adding UDP and IPv4 headers." << std::endl;
 
-  runBench (&benchA, n, "Copy packet, remove headers");
-  runBench (&benchB, n, "Just add headers");
-  runBench (&benchC, n, "Remove by func call");
-  runBench (&benchD, n, "Intermixed add/remove headers and tags");
-  runBench (&benchFragment, n, "Fragmentation and concatenation");
+  runBench (&benchA, n, minIterations, "Copy packet, remove headers");
+  runBench (&benchB, n, minIterations, "Just add headers");
+  runBench (&benchC, n, minIterations, "Remove by func call");
+  runBench (&benchD, n, minIterations, "Intermixed add/remove headers and tags");
+  runBench (&benchFragment, n, minIterations, "Fragmentation and concatenation");
 
   return 0;
 }
