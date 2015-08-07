@@ -315,7 +315,7 @@ runBench (void (*bench) (uint32_t), uint32_t n, uint32_t minIterations, char con
 int main (int argc, char *argv[])
 {
   uint32_t n = 0;
-  uint32_t minIterations = 10;
+  uint32_t minIterations = 1;
   while (argc > 0) {
       if (strncmp ("--n=", argv[0],strlen ("--n=")) == 0) 
         {
