@@ -106,8 +106,8 @@ ByteTagList::Iterator::PrepareForNext (void)
       TagBuffer buf = TagBuffer (m_current, m_end);
       m_nextTid = buf.ReadU32 ();
       m_nextSize = buf.ReadU32 ();
-      m_nextStart = buf.ReadU32 ();
-      m_nextEnd = buf.ReadU32 ();
+      m_nextStart = buf.ReadU32 () + m_adjustment;
+      m_nextEnd = buf.ReadU32 () + m_adjustment;
       if (m_nextStart >= m_offsetEnd || m_nextEnd <= m_offsetStart)
         {
           m_current += 4 + 4 + 4 + 4 + m_nextSize;
@@ -118,13 +118,14 @@ ByteTagList::Iterator::PrepareForNext (void)
         }
     }
 }
-ByteTagList::Iterator::Iterator (uint8_t *start, uint8_t *end, int32_t offsetStart, int32_t offsetEnd)
+ByteTagList::Iterator::Iterator (uint8_t *start, uint8_t *end, int32_t offsetStart, int32_t offsetEnd, int32_t adjustment)
   : m_current (start),
     m_end (end),
     m_offsetStart (offsetStart),
-    m_offsetEnd (offsetEnd)
+    m_offsetEnd (offsetEnd),
+    m_adjustment (adjustment)
 {
-  NS_LOG_FUNCTION (this << &start << &end << offsetStart << offsetEnd);
+  NS_LOG_FUNCTION (this << &start << &end << offsetStart << offsetEnd << adjustment);
   PrepareForNext ();
 }
 
@@ -139,6 +140,7 @@ ByteTagList::Iterator::GetOffsetStart (void) const
 ByteTagList::ByteTagList ()
   : m_minStart (INT32_MAX),
     m_maxEnd (INT32_MIN),
+    m_adjustment (0),
     m_used (0),
     m_data (0)
 {
@@ -147,6 +149,7 @@ ByteTagList::ByteTagList ()
 ByteTagList::ByteTagList (const ByteTagList &o)
   : m_minStart (o.m_minStart),
     m_maxEnd (o.m_maxEnd),
+    m_adjustment (o.m_adjustment),
     m_used (o.m_used),
     m_data (o.m_data)
 {
@@ -167,6 +170,7 @@ ByteTagList::operator = (const ByteTagList &o)
   Deallocate (m_data);
   m_minStart = o.m_minStart;
   m_maxEnd = o.m_maxEnd;
+  m_adjustment = o.m_adjustment;
   m_data = o.m_data;
   m_used = o.m_used;
   if (m_data != 0)
@@ -206,15 +210,15 @@ ByteTagList::Add (TypeId tid, uint32_t bufferSize, int32_t start, int32_t end)
                              &m_data->data[spaceNeeded]);
   tag.WriteU32 (tid.GetUid ());
   tag.WriteU32 (bufferSize);
-  tag.WriteU32 (start);
-  tag.WriteU32 (end);
-  if (start < m_minStart)
+  tag.WriteU32 (start - m_adjustment);
+  tag.WriteU32 (end - m_adjustment);
+  if (start - m_adjustment < m_minStart)
     {
-      m_minStart = start;
+      m_minStart = start - m_adjustment;
     }
-  if (end > m_maxEnd)
+  if (end - m_adjustment > m_maxEnd)
     {
-      m_maxEnd = end;
+      m_maxEnd = end - m_adjustment;
     }
   m_used = spaceNeeded;
   m_data->dirty = m_used;
@@ -241,6 +245,7 @@ ByteTagList::RemoveAll (void)
   Deallocate (m_data);
   m_minStart = INT32_MAX;
   m_maxEnd = INT32_MIN;
+  m_adjustment = 0;
   m_data = 0;
   m_used = 0;
 }
@@ -260,11 +265,11 @@ ByteTagList::Begin (int32_t offsetStart, int32_t offsetEnd) const
   NS_LOG_FUNCTION (this << offsetStart << offsetEnd);
   if (m_data == 0)
     {
-      return Iterator (0, 0, offsetStart, offsetEnd);
+      return Iterator (0, 0, offsetStart, offsetEnd, 0);
     }
   else
     {
-      return Iterator (m_data->data, &m_data->data[m_used], offsetStart, offsetEnd);
+      return Iterator (m_data->data, &m_data->data[m_used], offsetStart, offsetEnd, m_adjustment);
     }
 }
 
@@ -272,7 +277,8 @@ void
 ByteTagList::AddAtEnd (int32_t adjustment, int32_t appendOffset)
 {
   NS_LOG_FUNCTION (this << adjustment << appendOffset);
-  if (adjustment == 0 && m_maxEnd <= appendOffset)
+  m_adjustment += adjustment;
+  if (m_maxEnd <= appendOffset - m_adjustment)
     {
       return;
     }
@@ -281,8 +287,6 @@ ByteTagList::AddAtEnd (int32_t adjustment, int32_t appendOffset)
   while (i.HasNext ())
     {
       ByteTagList::Iterator::Item item = i.Next ();
-      item.start += adjustment;
-      item.end += adjustment;
 
       if (item.start >= appendOffset)
         {
@@ -306,7 +310,8 @@ void
 ByteTagList::AddAtStart (int32_t adjustment, int32_t prependOffset)
 {
   NS_LOG_FUNCTION (this << adjustment << prependOffset);
-  if (adjustment == 0 && m_minStart >= prependOffset)
+  m_adjustment += adjustment;
+  if (m_minStart >= prependOffset - m_adjustment)
     {
       return;
     }
@@ -316,8 +321,6 @@ ByteTagList::AddAtStart (int32_t adjustment, int32_t prependOffset)
   while (i.HasNext ())
     {
       ByteTagList::Iterator::Item item = i.Next ();
-      item.start += adjustment;
-      item.end += adjustment;
 
       if (item.end <= prependOffset)
         {

@@ -126,8 +126,9 @@ private:
      * \param end End tag
      * \param offsetStart offset to the start of the tag from the virtual byte buffer
      * \param offsetEnd offset to the end of the tag from the virtual byte buffer
+     * \param adjustment adjustment to byte tag offsets
      */
-    Iterator (uint8_t *start, uint8_t *end, int32_t offsetStart, int32_t offsetEnd);
+    Iterator (uint8_t *start, uint8_t *end, int32_t offsetStart, int32_t offsetEnd, int32_t m_adjustment);
 
     /**
      * \brief Prepare the iterator for the next tag
@@ -137,6 +138,7 @@ private:
     uint8_t *m_end;         //!< End tag
     int32_t m_offsetStart;  //!< Offset to the start of the tag from the virtual byte buffer
     int32_t m_offsetEnd;    //!< Offset to the end of the tag from the virtual byte buffer
+    int32_t m_adjustment;   //!< Adjustment to byte tag offsets
     uint32_t m_nextTid;     //!< TypeId of the next tag
     uint32_t m_nextSize;    //!< Size of the next tag
     int32_t m_nextStart;    //!< Start of the next tag
@@ -249,6 +251,7 @@ private:
 
   int32_t m_minStart; // !< minimal start offset
   int32_t m_maxEnd; // !< maximal end offset
+  int32_t m_adjustment; // !< adjustment to byte tag offsets
   uint16_t m_used; //!< the number of used bytes in the buffer
   struct ByteTagListData *m_data; //!< the ByteTagListData structure
 };
