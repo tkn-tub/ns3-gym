@@ -274,10 +274,9 @@ ByteTagList::Begin (int32_t offsetStart, int32_t offsetEnd) const
 }
 
 void 
-ByteTagList::AddAtEnd (int32_t adjustment, int32_t appendOffset)
+ByteTagList::AddAtEnd (int32_t appendOffset)
 {
-  NS_LOG_FUNCTION (this << adjustment << appendOffset);
-  m_adjustment += adjustment;
+  NS_LOG_FUNCTION (this << appendOffset);
   if (m_maxEnd <= appendOffset - m_adjustment)
     {
       return;
@@ -307,10 +306,9 @@ ByteTagList::AddAtEnd (int32_t adjustment, int32_t appendOffset)
 }
 
 void 
-ByteTagList::AddAtStart (int32_t adjustment, int32_t prependOffset)
+ByteTagList::AddAtStart (int32_t prependOffset)
 {
-  NS_LOG_FUNCTION (this << adjustment << prependOffset);
-  m_adjustment += adjustment;
+  NS_LOG_FUNCTION (this << prependOffset);
   if (m_minStart >= prependOffset - m_adjustment)
     {
       return;

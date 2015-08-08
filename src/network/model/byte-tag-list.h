@@ -207,26 +207,29 @@ private:
    */
   ByteTagList::Iterator Begin (int32_t offsetStart, int32_t offsetEnd) const;
 
+  /*
+   * Adjust the offsets stored internally by the adjustment delta.
+   *
+   * \param adjustment value to change stored offsets by
+   */
+  inline void Adjust (int32_t adjustment);
+
   /**
-   * Adjust the offsets stored internally by the adjustment delta and
-   * make sure that all offsets are smaller than appendOffset which represents
+   * Make sure that all offsets are smaller than appendOffset which represents
    * the location where new bytes have been added to the byte buffer.
    * 
-   * \param adjustment value to change stored offsets by
    * \param appendOffset maximum offset value
    *
    */
-  void AddAtEnd (int32_t adjustment, int32_t appendOffset);
+  void AddAtEnd (int32_t appendOffset);
   /**
-   * Adjust the offsets stored internally by the adjustment delta and
-   * make sure that all offsets are bigger than prependOffset which represents
+   * Make sure that all offsets are bigger than prependOffset which represents
    * the location where new bytes have been added to the byte buffer.
    *
-   * \param adjustment value to change stored offsets byte
    * \param prependOffset minimum offset value
    *
    */
-  void AddAtStart (int32_t adjustment, int32_t prependOffset);
+  void AddAtStart (int32_t prependOffset);
 
 private:
   /**
@@ -255,6 +258,12 @@ private:
   uint16_t m_used; //!< the number of used bytes in the buffer
   struct ByteTagListData *m_data; //!< the ByteTagListData structure
 };
+
+void
+ByteTagList::Adjust (int32_t adjustment)
+{
+  m_adjustment += adjustment;
+}
 
 } // namespace ns3
 

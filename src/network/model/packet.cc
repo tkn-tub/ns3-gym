@@ -256,8 +256,8 @@ Packet::AddHeader (const Header &header)
   NS_LOG_FUNCTION (this << header.GetInstanceTypeId ().GetName () << size);
   uint32_t orgStart = m_buffer.GetCurrentStartOffset ();
   m_buffer.AddAtStart (size);
-  m_byteTagList.AddAtStart (m_buffer.GetCurrentStartOffset () + size - orgStart,
-                            m_buffer.GetCurrentStartOffset () + size);
+  m_byteTagList.Adjust (m_buffer.GetCurrentStartOffset () + size - orgStart);
+  m_byteTagList.AddAtStart (m_buffer.GetCurrentStartOffset () + size);
   header.Serialize (m_buffer.Begin ());
   m_metadata.AddHeader (header, size);
 }
@@ -284,8 +284,8 @@ Packet::AddTrailer (const Trailer &trailer)
   NS_LOG_FUNCTION (this << trailer.GetInstanceTypeId ().GetName () << size);
   uint32_t orgStart = m_buffer.GetCurrentStartOffset ();
   m_buffer.AddAtEnd (size);
-  m_byteTagList.AddAtEnd (m_buffer.GetCurrentStartOffset () - orgStart,
-                          m_buffer.GetCurrentEndOffset () - size);
+  m_byteTagList.Adjust (m_buffer.GetCurrentStartOffset () - orgStart);
+  m_byteTagList.AddAtEnd (m_buffer.GetCurrentEndOffset () - size);
   Buffer::Iterator end = m_buffer.End ();
   trailer.Serialize (end);
   m_metadata.AddTrailer (trailer, size);
@@ -315,11 +315,11 @@ Packet::AddAtEnd (Ptr<const Packet> packet)
   uint32_t bEnd = packet->m_buffer.GetCurrentEndOffset ();
   m_buffer.AddAtEnd (packet->m_buffer);
   uint32_t appendPrependOffset = m_buffer.GetCurrentEndOffset () - packet->m_buffer.GetSize ();
-  m_byteTagList.AddAtEnd (m_buffer.GetCurrentStartOffset () - aStart, 
-                          appendPrependOffset);
+  m_byteTagList.Adjust (m_buffer.GetCurrentStartOffset () - aStart);
+  m_byteTagList.AddAtEnd (appendPrependOffset);
   ByteTagList copy = packet->m_byteTagList;
-  copy.AddAtStart (m_buffer.GetCurrentEndOffset () - bEnd,
-                   appendPrependOffset);
+  copy.Adjust (m_buffer.GetCurrentEndOffset () - bEnd);
+  copy.AddAtStart (appendPrependOffset);
   m_byteTagList.Add (copy);
   m_metadata.AddAtEnd (packet->m_metadata);
 }
@@ -329,8 +329,8 @@ Packet::AddPaddingAtEnd (uint32_t size)
   NS_LOG_FUNCTION (this << size);
   uint32_t orgStart = m_buffer.GetCurrentStartOffset ();
   m_buffer.AddAtEnd (size);
-  m_byteTagList.AddAtEnd (m_buffer.GetCurrentStartOffset () - orgStart,
-                          m_buffer.GetCurrentEndOffset () - size);
+  m_byteTagList.Adjust (m_buffer.GetCurrentStartOffset () - orgStart);
+  m_byteTagList.AddAtEnd (m_buffer.GetCurrentEndOffset () - size);
   m_metadata.AddPaddingAtEnd (size);
 }
 void 
