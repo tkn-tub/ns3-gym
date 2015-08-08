@@ -284,6 +284,24 @@ benchFragment (uint32_t n)
   }
 }
 
+static void
+benchByteTags (uint32_t n)
+{
+  for (uint32_t i = 0; i < n; i++)
+    {
+      Ptr<Packet> p = Create<Packet> (2000);
+      for (uint32_t j = 0; j < 100; j++)
+        {
+          BenchTag<0> tag;
+          p->AddByteTag (tag);
+        }
+      Ptr<Packet> q = Create<Packet> (1000);
+
+      // This should trigger adjustment of all byte tags
+      q->AddAtEnd (p);
+    }
+}
+
 static uint64_t
 runBenchOneIteration (void (*bench) (uint32_t), uint32_t n)
 {
@@ -340,6 +358,7 @@ int main (int argc, char *argv[])
   runBench (&benchC, n, minIterations, "Remove by func call");
   runBench (&benchD, n, minIterations, "Intermixed add/remove headers and tags");
   runBench (&benchFragment, n, minIterations, "Fragmentation and concatenation");
+  runBench (&benchByteTags, n, minIterations, "Benchmark byte tags");
 
   return 0;
 }
