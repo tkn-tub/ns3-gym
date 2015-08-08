@@ -17,6 +17,7 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
+#include "ns3/command-line.h"
 #include "ns3/system-wall-clock-ms.h"
 #include "ns3/packet.h"
 #include "ns3/packet-metadata.h"
@@ -316,28 +317,15 @@ int main (int argc, char *argv[])
 {
   uint32_t n = 0;
   uint32_t minIterations = 1;
-  while (argc > 0) {
-      if (strncmp ("--n=", argv[0],strlen ("--n=")) == 0) 
-        {
-          char const *nAscii = argv[0] + strlen ("--n=");
-          std::istringstream iss;
-          iss.str (nAscii);
-          iss >> n;
-        }
-      if (strncmp ("--min-iterations=", argv[0],strlen ("--min-iterations=")) == 0) 
-        {
-          char const *nAscii = argv[0] + strlen ("--min-iterations=");
-          std::istringstream iss;
-          iss.str (nAscii);
-          iss >> minIterations;
-        }
-      if (strncmp ("--enable-printing", argv[0], strlen ("--enable-printing")) == 0)
-        {
-          Packet::EnablePrinting ();
-        }
-      argc--;
-      argv++;
-  }
+  bool enablePrinting = false;
+
+  CommandLine cmd;
+  cmd.Usage ("Benchmark Packet class");
+  cmd.AddValue ("n", "number of iterations", n);
+  cmd.AddValue ("min-iterations", "number of subiterations to minimize iteration time over", minIterations);
+  cmd.AddValue ("enable-printing", "enable packet printing", enablePrinting);
+  cmd.Parse (argc, argv);
+
   if (n == 0)
     {
       std::cerr << "Error-- number of packets must be specified " <<
