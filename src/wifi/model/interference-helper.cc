@@ -344,7 +344,7 @@ InterferenceHelper::CalculatePlcpHeaderPer (Ptr<const InterferenceHelper::Event>
   if (preamble == WIFI_PREAMBLE_HT_MF)
     {
       //mode for PLCP header fields sent with HT modulation
-      htHeaderMode = WifiPhy::GetHTPlcpHeaderMode (payloadMode, preamble);
+      htHeaderMode = WifiPhy::GetHTPlcpHeaderMode (payloadMode);
     }
   WifiMode headerMode = WifiPhy::GetPlcpHeaderMode (payloadMode, preamble);
   Time plcpHeaderStart = (*j).GetTime () + WifiPhy::GetPlcpPreambleDuration (payloadMode, preamble); //packet start time + preamble

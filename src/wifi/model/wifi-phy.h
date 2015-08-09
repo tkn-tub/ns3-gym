@@ -216,14 +216,14 @@ public:
 
   /**
    * \param packet the packet to send
-   * \param txvector the txvector that has tx parameters such as mode, the transmission mode to use to send
+   * \param txVector the TXVECTOR that has tx parameters such as mode, the transmission mode to use to send
    *        this packet, and txPowerLevel, a power level to use to send this packet. The real transmission
    *        power is calculated as txPowerMin + txPowerLevel * (txPowerMax - txPowerMin) / nTxLevels
    * \param preamble the type of preamble to use to send this packet.
    * \param packetType the type of the packet 0 is not A-MPDU, 1 is a MPDU that is part of an A-MPDU and 2 is the last MPDU in an A-MPDU
    * \param mpduReferenceNumber the A-MPDU reference number (must be a different value for each A-MPDU but the same for each subframe within one A-MPDU)
    */
-  virtual void SendPacket (Ptr<const Packet> packet, WifiTxVector txvector, enum WifiPreamble preamble, uint8_t packetType, uint32_t mpduReferenceNumber) = 0;
+  virtual void SendPacket (Ptr<const Packet> packet, WifiTxVector txVector, enum WifiPreamble preamble, uint8_t packetType, uint32_t mpduReferenceNumber) = 0;
 
   /**
    * \param listener the new listener
@@ -298,7 +298,7 @@ public:
 
   /**
    * \param size the number of bytes in the packet to send
-   * \param txvector the transmission parameters used for this packet
+   * \param txVector the TXVECTOR used for the transmission of this packet
    * \param preamble the type of preamble to use for this packet.
    * \param frequency the channel center frequency (MHz)
    * \param packetType the type of the packet 0 is not A-MPDU, 1 is a MPDU that is part of an A-MPDU and 2 is the last MPDU in an A-MPDU
@@ -306,31 +306,30 @@ public:
    *
    * \return the total amount of time this PHY will stay busy for the transmission of these bytes.
    */
-  Time CalculateTxDuration (uint32_t size, WifiTxVector txvector, enum WifiPreamble preamble, double frequency, uint8_t packetType, uint8_t incFlag);
+  Time CalculateTxDuration (uint32_t size, WifiTxVector txVector, enum WifiPreamble preamble, double frequency, uint8_t packetType, uint8_t incFlag);
 
   /**
-   * \param txvector the transmission parameters used for this packet
+   * \param txVector the TXVECTOR used for the transmission of this packet
    * \param preamble the type of preamble to use for this packet.
    *
    * \return the total amount of time this PHY will stay busy for the transmission of the PLCP preamble and PLCP header.
    */
-  Time CalculatePlcpPreambleAndHeaderDuration (WifiTxVector txvector, enum WifiPreamble preamble);
+  Time CalculatePlcpPreambleAndHeaderDuration (WifiTxVector txVector, enum WifiPreamble preamble);
 
   /**
    * \param preamble the type of preamble
-   * \param txvector the transmission parameters used for this packet
+   * \param txVector the transmission parameters used for this packet
    *
    * \return the training symbol duration
    */
-  static Time GetPlcpHtTrainingSymbolDuration (WifiPreamble preamble, WifiTxVector txvector);
+  static Time GetPlcpHtTrainingSymbolDuration (WifiPreamble preamble, WifiTxVector txVector);
   /**
    * \param payloadMode the WifiMode use for the transmission of the payload
-   * \param preamble the type of preamble
    *
    * \return the WifiMode used for the transmission of the HT-SIG and the HT training fields
    *         in Mixed Format and greenfield format PLCP header
    */
-  static WifiMode GetHTPlcpHeaderMode (WifiMode payloadMode, WifiPreamble preamble);
+  static WifiMode GetHTPlcpHeaderMode (WifiMode payloadMode);
   /**
    * \param preamble the type of preamble
    *
@@ -360,7 +359,7 @@ public:
   static Time GetPlcpPreambleDuration (WifiMode payloadMode, WifiPreamble preamble);
   /**
    * \param size the number of bytes in the packet to send
-   * \param txvector the transmission parameters used for this packet
+   * \param txVector the TXVECTOR used for the transmission of this packet
    * \param preamble the type of preamble to use for this packet
    * \param frequency the channel center frequency (MHz)
    * \param packetType the type of the packet (0 is not A-MPDU, 1 is a MPDU that is part of an A-MPDU and 2 is the last MPDU in an A-MPDU)
@@ -368,7 +367,7 @@ public:
    *
    * \return the duration of the payload
    */
-  Time GetPayloadDuration (uint32_t size, WifiTxVector txvector, WifiPreamble preamble, double frequency, uint8_t packetType, uint8_t incFlag);
+  Time GetPayloadDuration (uint32_t size, WifiTxVector txVector, WifiPreamble preamble, double frequency, uint8_t packetType, uint8_t incFlag);
 
   /**
    * The WifiPhy::GetNModes() and WifiPhy::GetMode() methods are used
@@ -1011,14 +1010,14 @@ public:
    * \param rate the PHY data rate in units of 500kbps (i.e., the same
    *        units used both for the radiotap and for the prism header)
    * \param preamble the preamble of the packet
-   * \param txVector the txvector that holds rx parameters
+   * \param txVector the TXVECTOR that holds rx parameters
    * \param aMpdu the type of the packet (0 is not A-MPDU, 1 is a MPDU that is part of an A-MPDU and 2 is the last MPDU in an A-MPDU)
    *        and the A-MPDU reference number (must be a different value for each A-MPDU but the same for each subframe within one A-MPDU)
    * \param signalNoise signal power and noise power in dBm
    */
   void NotifyMonitorSniffRx (Ptr<const Packet> packet, uint16_t channelFreqMhz,
                              uint16_t channelNumber, uint32_t rate, WifiPreamble preamble,
-                             WifiTxVector txvector, struct mpduInfo aMpdu, struct signalNoiseDbm signalNoise);
+                             WifiTxVector txVector, struct mpduInfo aMpdu, struct signalNoiseDbm signalNoise);
 
   /**
    * TracedCallback signature for monitor mode receive events.
@@ -1036,14 +1035,14 @@ public:
    * \param rate the PHY data rate in units of 500kbps (i.e., the same
    *        units used both for the radiotap and for the prism header)
    * \param preamble the preamble of the packet
-   * \param txVector the txvector that holds rx parameters
+   * \param txVector the TXVECTOR that holds rx parameters
    * \param aMpdu the type of the packet (0 is not A-MPDU, 1 is a MPDU that is part of an A-MPDU and 2 is the last MPDU in an A-MPDU)
    *        and the A-MPDU reference number (must be a different value for each A-MPDU but the same for each subframe within one A-MPDU)
    * \param signalNoise signal power and noise power in dBm
    */
   typedef void (* MonitorSnifferRxCallback)(Ptr<const Packet> packet, uint16_t channelFreqMhz,
                                             uint16_t channelNumber, uint32_t rate, WifiPreamble preamble,
-                                            WifiTxVector txvector, struct mpduInfo aMpdu, struct signalNoiseDbm signalNoise);
+                                            WifiTxVector txVector, struct mpduInfo aMpdu, struct signalNoiseDbm signalNoise);
 
   /**
    * Public method used to fire a MonitorSniffer trace for a wifi packet being transmitted.
@@ -1056,13 +1055,13 @@ public:
    * \param rate the PHY data rate in units of 500kbps (i.e., the same
    *        units used both for the radiotap and for the prism header)
    * \param preamble the preamble of the packet
-   * \param txVector the txvector that holds tx parameters
+   * \param txVector the TXVECTOR that holds tx parameters
    * \param aMpdu the type of the packet (0 is not A-MPDU, 1 is a MPDU that is part of an A-MPDU and 2 is the last MPDU in an A-MPDU)
    *        and the A-MPDU reference number (must be a different value for each A-MPDU but the same for each subframe within one A-MPDU)
    */
   void NotifyMonitorSniffTx (Ptr<const Packet> packet, uint16_t channelFreqMhz,
                              uint16_t channelNumber, uint32_t rate, WifiPreamble preamble,
-                             WifiTxVector txvector, struct mpduInfo aMpdu);
+                             WifiTxVector txVector, struct mpduInfo aMpdu);
 
   /**
    * TracedCallback signature for monitor mode transmit events.
@@ -1074,13 +1073,13 @@ public:
    * \param rate the PHY data rate in units of 500kbps (i.e., the same
    *        units used both for the radiotap and for the prism header)
    * \param preamble the preamble of the packet
-   * \param txVector the txvector that holds tx parameters
+   * \param txVector the TXVECTOR that holds tx parameters
    * \param aMpdu the type of the packet (0 is not A-MPDU, 1 is a MPDU that is part of an A-MPDU and 2 is the last MPDU in an A-MPDU)
    *        and the A-MPDU reference number (must be a different value for each A-MPDU but the same for each subframe within one A-MPDU)
    */
   typedef void (* MonitorSnifferTxCallback)(const Ptr<const Packet> packet, uint16_t channelFreqMhz,
                                             uint16_t channelNumber, uint32_t rate, WifiPreamble preamble,
-                                            WifiTxVector txvector, struct mpduInfo aMpdu);
+                                            WifiTxVector txVector, struct mpduInfo aMpdu);
 
   /**
    * Assign a fixed random variable stream number to the random variables

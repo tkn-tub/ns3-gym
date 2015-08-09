@@ -118,7 +118,7 @@ WifiPhy::~WifiPhy ()
 }
 
 WifiMode
-WifiPhy::GetHTPlcpHeaderMode (WifiMode payloadMode, WifiPreamble preamble)
+WifiPhy::GetHTPlcpHeaderMode (WifiMode payloadMode)
 {
   switch (payloadMode.GetBandwidth ())
     {
@@ -131,22 +131,22 @@ WifiPhy::GetHTPlcpHeaderMode (WifiMode payloadMode, WifiPreamble preamble)
 }
 
 Time
-WifiPhy::GetPlcpHtTrainingSymbolDuration (WifiPreamble preamble, WifiTxVector txvector)
+WifiPhy::GetPlcpHtTrainingSymbolDuration (WifiPreamble preamble, WifiTxVector txVector)
 {
   uint8_t Ndltf, Neltf;
   //We suppose here that STBC = 0.
   //If STBC > 0, we need a different mapping between Nss and Nltf (IEEE 802.11n-2012 standard, page 1682).
-  if (txvector.GetNss () < 3)
+  if (txVector.GetNss () < 3)
     {
-      Ndltf = txvector.GetNss ();
+      Ndltf = txVector.GetNss ();
     }
   else
     {
       Ndltf = 4;
     }
-  if (txvector.GetNess () < 3)
+  if (txVector.GetNess () < 3)
     {
-      Neltf = txvector.GetNess ();
+      Neltf = txVector.GetNess ();
     }
   else
     {
@@ -334,9 +334,9 @@ WifiPhy::GetPlcpPreambleDuration (WifiMode payloadMode, WifiPreamble preamble)
 }
 
 Time
-WifiPhy::GetPayloadDuration (uint32_t size, WifiTxVector txvector, WifiPreamble preamble, double frequency, uint8_t packetType, uint8_t incFlag)
+WifiPhy::GetPayloadDuration (uint32_t size, WifiTxVector txVector, WifiPreamble preamble, double frequency, uint8_t packetType, uint8_t incFlag)
 {
-  WifiMode payloadMode = txvector.GetMode ();
+  WifiMode payloadMode = txVector.GetMode ();
   NS_LOG_FUNCTION (size << payloadMode);
 
   switch (payloadMode.GetModulationClass ())
@@ -432,7 +432,7 @@ WifiPhy::GetPayloadDuration (uint32_t size, WifiTxVector txvector, WifiPreamble 
           }
         else
           {
-            switch (payloadMode.GetDataRate () / (txvector.GetNss ()))
+            switch (payloadMode.GetDataRate () / (txVector.GetNss ()))
               {
               //shortGi
               case 7200000:
@@ -456,7 +456,7 @@ WifiPhy::GetPayloadDuration (uint32_t size, WifiTxVector txvector, WifiPreamble 
               }
           }
 
-        if (txvector.IsStbc ())
+        if (txVector.IsStbc ())
           {
             m_Stbc = 2;
           }
@@ -470,7 +470,7 @@ WifiPhy::GetPayloadDuration (uint32_t size, WifiTxVector txvector, WifiPreamble 
 
         //IEEE Std 802.11n, section 20.3.11, equation (20-32)
         uint32_t numSymbols;
-        double numDataBitsPerSymbol = payloadMode.GetDataRate () * txvector.GetNss () * symbolDuration.GetNanoSeconds () / 1e9;
+        double numDataBitsPerSymbol = payloadMode.GetDataRate () * txVector.GetNss () * symbolDuration.GetNanoSeconds () / 1e9;
 
         if (packetType == 1 && preamble != WIFI_PREAMBLE_NONE)
           {
@@ -537,21 +537,21 @@ WifiPhy::GetPayloadDuration (uint32_t size, WifiTxVector txvector, WifiPreamble 
 }
 
 Time
-WifiPhy::CalculatePlcpPreambleAndHeaderDuration (WifiTxVector txvector, WifiPreamble preamble)
+WifiPhy::CalculatePlcpPreambleAndHeaderDuration (WifiTxVector txVector, WifiPreamble preamble)
 {
-  WifiMode payloadMode = txvector.GetMode ();
+  WifiMode payloadMode = txVector.GetMode ();
   Time duration = GetPlcpPreambleDuration (payloadMode, preamble)
     + GetPlcpHeaderDuration (payloadMode, preamble)
     + GetPlcpHtSigHeaderDuration (preamble)
-    + GetPlcpHtTrainingSymbolDuration (preamble, txvector);
+    + GetPlcpHtTrainingSymbolDuration (preamble, txVector);
   return duration;
 }
 
 Time
-WifiPhy::CalculateTxDuration (uint32_t size, WifiTxVector txvector, WifiPreamble preamble, double frequency, uint8_t packetType, uint8_t incFlag)
+WifiPhy::CalculateTxDuration (uint32_t size, WifiTxVector txVector, WifiPreamble preamble, double frequency, uint8_t packetType, uint8_t incFlag)
 {
-  Time duration = CalculatePlcpPreambleAndHeaderDuration (txvector, preamble)
-    + GetPayloadDuration (size, txvector, preamble, frequency, packetType, incFlag);
+  Time duration = CalculatePlcpPreambleAndHeaderDuration (txVector, preamble)
+    + GetPayloadDuration (size, txVector, preamble, frequency, packetType, incFlag);
   return duration;
 }
 
@@ -592,15 +592,15 @@ WifiPhy::NotifyRxDrop (Ptr<const Packet> packet)
 }
 
 void
-WifiPhy::NotifyMonitorSniffRx (Ptr<const Packet> packet, uint16_t channelFreqMhz, uint16_t channelNumber, uint32_t rate, WifiPreamble preamble, WifiTxVector txvector, struct mpduInfo aMpdu, struct signalNoiseDbm signalNoise)
+WifiPhy::NotifyMonitorSniffRx (Ptr<const Packet> packet, uint16_t channelFreqMhz, uint16_t channelNumber, uint32_t rate, WifiPreamble preamble, WifiTxVector txVector, struct mpduInfo aMpdu, struct signalNoiseDbm signalNoise)
 {
-  m_phyMonitorSniffRxTrace (packet, channelFreqMhz, channelNumber, rate, preamble, txvector, aMpdu, signalNoise);
+  m_phyMonitorSniffRxTrace (packet, channelFreqMhz, channelNumber, rate, preamble, txVector, aMpdu, signalNoise);
 }
 
 void
-WifiPhy::NotifyMonitorSniffTx (Ptr<const Packet> packet, uint16_t channelFreqMhz, uint16_t channelNumber, uint32_t rate, WifiPreamble preamble, WifiTxVector txvector, struct mpduInfo aMpdu)
+WifiPhy::NotifyMonitorSniffTx (Ptr<const Packet> packet, uint16_t channelFreqMhz, uint16_t channelNumber, uint32_t rate, WifiPreamble preamble, WifiTxVector txVector, struct mpduInfo aMpdu)
 {
-  m_phyMonitorSniffTxTrace (packet, channelFreqMhz, channelNumber, rate, preamble, txvector, aMpdu);
+  m_phyMonitorSniffTxTrace (packet, channelFreqMhz, channelNumber, rate, preamble, txVector, aMpdu);
 }
 
 

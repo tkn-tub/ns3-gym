@@ -167,7 +167,6 @@ TxDurationTest::DoRun (void)
 {
   bool retval = true;
 
-
   //IEEE Std 802.11-2007 Table 18-2 "Example of LENGTH calculations for CCK"
   retval = retval
     && CheckPayloadDuration (1023, WifiPhy::GetDsssRate11Mbps (), WIFI_PREAMBLE_LONG, 744)
@@ -218,15 +217,18 @@ TxDurationTest::DoRun (void)
 
   //values from http://mailman.isi.edu/pipermail/ns-developers/2009-July/006226.html
   retval = retval && CheckTxDuration (14, WifiPhy::GetDsssRate1Mbps (), WIFI_PREAMBLE_LONG, 304);
-
-  NS_TEST_EXPECT_MSG_EQ (retval, true, "an 802.11b duration failed");
-
-  //values from
-  //http://www.oreillynet.com/pub/a/wireless/2003/08/08/wireless_throughput.html
+  
+  //values from http://www.oreillynet.com/pub/a/wireless/2003/08/08/wireless_throughput.html
   retval = retval
     && CheckTxDuration (1536, WifiPhy::GetDsssRate11Mbps (), WIFI_PREAMBLE_LONG, 1310)
     && CheckTxDuration (76, WifiPhy::GetDsssRate11Mbps (), WIFI_PREAMBLE_LONG, 248)
-    && CheckTxDuration (14, WifiPhy::GetDsssRate11Mbps (), WIFI_PREAMBLE_LONG, 203)
+    && CheckTxDuration (14, WifiPhy::GetDsssRate11Mbps (), WIFI_PREAMBLE_LONG, 203);
+    
+  NS_TEST_EXPECT_MSG_EQ (retval, true, "an 802.11b duration failed");
+    
+  //802.11a durations
+  //values from http://www.oreillynet.com/pub/a/wireless/2003/08/08/wireless_throughput.html
+  retval = retval
     && CheckTxDuration (1536, WifiPhy::GetOfdmRate54Mbps (), WIFI_PREAMBLE_LONG, 248)
     && CheckTxDuration (76, WifiPhy::GetOfdmRate54Mbps (), WIFI_PREAMBLE_LONG, 32)
     && CheckTxDuration (14, WifiPhy::GetOfdmRate54Mbps (), WIFI_PREAMBLE_LONG, 24);
@@ -243,36 +245,36 @@ TxDurationTest::DoRun (void)
 
   //802.11n durations
   retval = retval
-    && CheckTxDuration (1536,WifiPhy::GetOfdmRate65MbpsBW20MHz (), WIFI_PREAMBLE_HT_MF,228)
-    && CheckTxDuration (76, WifiPhy::GetOfdmRate65MbpsBW20MHz (), WIFI_PREAMBLE_HT_MF,48)
-    && CheckTxDuration (14, WifiPhy::GetOfdmRate65MbpsBW20MHz (), WIFI_PREAMBLE_HT_MF,40)
-    && CheckTxDuration (1536,WifiPhy::GetOfdmRate65MbpsBW20MHz (), WIFI_PREAMBLE_HT_GF,220)
-    && CheckTxDuration (76, WifiPhy::GetOfdmRate65MbpsBW20MHz (), WIFI_PREAMBLE_HT_GF,40)
-    && CheckTxDuration (14, WifiPhy::GetOfdmRate65MbpsBW20MHz (), WIFI_PREAMBLE_HT_GF,32)
-    && CheckTxDuration (1536,WifiPhy::GetOfdmRate7_2MbpsBW20MHz (), WIFI_PREAMBLE_HT_MF,1746)
-    && CheckTxDuration (76, WifiPhy::GetOfdmRate7_2MbpsBW20MHz (), WIFI_PREAMBLE_HT_MF,126)
-    && CheckTxDuration (14, WifiPhy::GetOfdmRate7_2MbpsBW20MHz (), WIFI_PREAMBLE_HT_MF,57.6)
-    && CheckTxDuration (1536,WifiPhy::GetOfdmRate7_2MbpsBW20MHz (), WIFI_PREAMBLE_HT_GF,1738)
-    && CheckTxDuration (76, WifiPhy::GetOfdmRate7_2MbpsBW20MHz (), WIFI_PREAMBLE_HT_GF,118)
-    && CheckTxDuration (14, WifiPhy::GetOfdmRate7_2MbpsBW20MHz (), WIFI_PREAMBLE_HT_GF,49.6)
-    && CheckTxDuration (1536, WifiPhy::GetOfdmRate65MbpsBW20MHzShGi (), WIFI_PREAMBLE_HT_MF,226.8)
-    && CheckTxDuration (76, WifiPhy::GetOfdmRate65MbpsBW20MHzShGi (), WIFI_PREAMBLE_HT_MF,46.8)
-    && CheckTxDuration (14, WifiPhy::GetOfdmRate65MbpsBW20MHzShGi (), WIFI_PREAMBLE_HT_MF,39.6)
-    && CheckTxDuration (1536, WifiPhy::GetOfdmRate65MbpsBW20MHzShGi (), WIFI_PREAMBLE_HT_GF,218.8)
-    && CheckTxDuration (76, WifiPhy::GetOfdmRate65MbpsBW20MHzShGi (), WIFI_PREAMBLE_HT_GF,38.8)
-    && CheckTxDuration (14, WifiPhy::GetOfdmRate65MbpsBW20MHzShGi (), WIFI_PREAMBLE_HT_GF,31.6)
-    && CheckTxDuration (1536,WifiPhy::GetOfdmRate135MbpsBW40MHz (), WIFI_PREAMBLE_HT_MF,128)
-    && CheckTxDuration (76,WifiPhy::GetOfdmRate135MbpsBW40MHz (), WIFI_PREAMBLE_HT_MF,44)
-    && CheckTxDuration (14,WifiPhy::GetOfdmRate135MbpsBW40MHz (), WIFI_PREAMBLE_HT_MF,40)
-    && CheckTxDuration (1536,WifiPhy::GetOfdmRate135MbpsBW40MHz (), WIFI_PREAMBLE_HT_GF,120)
-    && CheckTxDuration (76,WifiPhy::GetOfdmRate135MbpsBW40MHz (), WIFI_PREAMBLE_HT_GF,36)
-    && CheckTxDuration (14,WifiPhy::GetOfdmRate135MbpsBW40MHz (), WIFI_PREAMBLE_HT_GF,32)
-    && CheckTxDuration (1536,WifiPhy::GetOfdmRate150MbpsBW40MHz (), WIFI_PREAMBLE_HT_MF,118.8)
-    && CheckTxDuration (76,WifiPhy::GetOfdmRate150MbpsBW40MHz (), WIFI_PREAMBLE_HT_MF,43.2)
-    && CheckTxDuration (14,WifiPhy::GetOfdmRate150MbpsBW40MHz (), WIFI_PREAMBLE_HT_MF,39.6)
-    && CheckTxDuration (1536,WifiPhy::GetOfdmRate150MbpsBW40MHz (), WIFI_PREAMBLE_HT_GF,110.8)
-    && CheckTxDuration (76,WifiPhy::GetOfdmRate150MbpsBW40MHz (), WIFI_PREAMBLE_HT_GF,35.2)
-    && CheckTxDuration (14,WifiPhy::GetOfdmRate150MbpsBW40MHz (), WIFI_PREAMBLE_HT_GF,31.6);
+    && CheckTxDuration (1536,WifiPhy::GetOfdmRate65MbpsBW20MHz (), WIFI_PREAMBLE_HT_MF, 228)
+    && CheckTxDuration (76, WifiPhy::GetOfdmRate65MbpsBW20MHz (), WIFI_PREAMBLE_HT_MF, 48)
+    && CheckTxDuration (14, WifiPhy::GetOfdmRate65MbpsBW20MHz (), WIFI_PREAMBLE_HT_MF, 40)
+    && CheckTxDuration (1536,WifiPhy::GetOfdmRate65MbpsBW20MHz (), WIFI_PREAMBLE_HT_GF, 220)
+    && CheckTxDuration (76, WifiPhy::GetOfdmRate65MbpsBW20MHz (), WIFI_PREAMBLE_HT_GF, 40)
+    && CheckTxDuration (14, WifiPhy::GetOfdmRate65MbpsBW20MHz (), WIFI_PREAMBLE_HT_GF, 32)
+    && CheckTxDuration (1536,WifiPhy::GetOfdmRate7_2MbpsBW20MHz (), WIFI_PREAMBLE_HT_MF, 1746)
+    && CheckTxDuration (76, WifiPhy::GetOfdmRate7_2MbpsBW20MHz (), WIFI_PREAMBLE_HT_MF, 126)
+    && CheckTxDuration (14, WifiPhy::GetOfdmRate7_2MbpsBW20MHz (), WIFI_PREAMBLE_HT_MF, 57.6)
+    && CheckTxDuration (1536,WifiPhy::GetOfdmRate7_2MbpsBW20MHz (), WIFI_PREAMBLE_HT_GF, 1738)
+    && CheckTxDuration (76, WifiPhy::GetOfdmRate7_2MbpsBW20MHz (), WIFI_PREAMBLE_HT_GF, 118)
+    && CheckTxDuration (14, WifiPhy::GetOfdmRate7_2MbpsBW20MHz (), WIFI_PREAMBLE_HT_GF, 49.6)
+    && CheckTxDuration (1536, WifiPhy::GetOfdmRate65MbpsBW20MHzShGi (), WIFI_PREAMBLE_HT_MF, 226.8)
+    && CheckTxDuration (76, WifiPhy::GetOfdmRate65MbpsBW20MHzShGi (), WIFI_PREAMBLE_HT_MF, 46.8)
+    && CheckTxDuration (14, WifiPhy::GetOfdmRate65MbpsBW20MHzShGi (), WIFI_PREAMBLE_HT_MF, 39.6)
+    && CheckTxDuration (1536, WifiPhy::GetOfdmRate65MbpsBW20MHzShGi (), WIFI_PREAMBLE_HT_GF, 218.8)
+    && CheckTxDuration (76, WifiPhy::GetOfdmRate65MbpsBW20MHzShGi (), WIFI_PREAMBLE_HT_GF, 38.8)
+    && CheckTxDuration (14, WifiPhy::GetOfdmRate65MbpsBW20MHzShGi (), WIFI_PREAMBLE_HT_GF, 31.6)
+    && CheckTxDuration (1536,WifiPhy::GetOfdmRate135MbpsBW40MHz (), WIFI_PREAMBLE_HT_MF, 128)
+    && CheckTxDuration (76,WifiPhy::GetOfdmRate135MbpsBW40MHz (), WIFI_PREAMBLE_HT_MF, 44)
+    && CheckTxDuration (14,WifiPhy::GetOfdmRate135MbpsBW40MHz (), WIFI_PREAMBLE_HT_MF, 40)
+    && CheckTxDuration (1536,WifiPhy::GetOfdmRate135MbpsBW40MHz (), WIFI_PREAMBLE_HT_GF, 120)
+    && CheckTxDuration (76,WifiPhy::GetOfdmRate135MbpsBW40MHz (), WIFI_PREAMBLE_HT_GF, 36)
+    && CheckTxDuration (14,WifiPhy::GetOfdmRate135MbpsBW40MHz (), WIFI_PREAMBLE_HT_GF, 32)
+    && CheckTxDuration (1536,WifiPhy::GetOfdmRate150MbpsBW40MHz (), WIFI_PREAMBLE_HT_MF, 118.8)
+    && CheckTxDuration (76,WifiPhy::GetOfdmRate150MbpsBW40MHz (), WIFI_PREAMBLE_HT_MF, 43.2)
+    && CheckTxDuration (14,WifiPhy::GetOfdmRate150MbpsBW40MHz (), WIFI_PREAMBLE_HT_MF, 39.6)
+    && CheckTxDuration (1536,WifiPhy::GetOfdmRate150MbpsBW40MHz (), WIFI_PREAMBLE_HT_GF, 110.8)
+    && CheckTxDuration (76,WifiPhy::GetOfdmRate150MbpsBW40MHz (), WIFI_PREAMBLE_HT_GF, 35.2)
+    && CheckTxDuration (14,WifiPhy::GetOfdmRate150MbpsBW40MHz (), WIFI_PREAMBLE_HT_GF, 31.6);
 
   NS_TEST_EXPECT_MSG_EQ (retval, true, "an 802.11n duration failed");
 }

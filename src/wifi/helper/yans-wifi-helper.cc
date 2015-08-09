@@ -256,7 +256,7 @@ PcapSniffTxEvent (
   uint16_t             channelNumber,
   uint32_t             rate,
   WifiPreamble         preamble,
-  WifiTxVector         txvector,
+  WifiTxVector         txVector,
   struct mpduInfo      aMpdu)
 {
   uint32_t dlt = file->GetDataLinkType ();
@@ -286,7 +286,7 @@ PcapSniffTxEvent (
             frameFlags |= RadiotapHeader::FRAME_FLAG_SHORT_PREAMBLE;
           }
 
-        if (txvector.IsShortGuardInterval ())
+        if (txVector.IsShortGuardInterval ())
           {
             frameFlags |= RadiotapHeader::FRAME_FLAG_SHORT_GUARD;
           }
@@ -330,13 +330,13 @@ PcapSniffTxEvent (
             mcsRate = rate - 128;
 
             mcsKnown |= RadiotapHeader::MCS_KNOWN_BANDWIDTH;
-            if (txvector.GetMode ().GetBandwidth () == 40000000)
+            if (txVector.GetMode ().GetBandwidth () == 40000000)
               {
                 mcsFlags |= RadiotapHeader::MCS_FLAGS_BANDWIDTH_40;
               }
 
             mcsKnown |= RadiotapHeader::MCS_KNOWN_GUARD_INTERVAL;
-            if (txvector.IsShortGuardInterval ())
+            if (txVector.IsShortGuardInterval ())
               {
                 mcsFlags |= RadiotapHeader::MCS_FLAGS_GUARD_INTERVAL;
               }
@@ -348,11 +348,11 @@ PcapSniffTxEvent (
               }
 
             mcsKnown |= RadiotapHeader::MCS_KNOWN_NESS;
-            if (txvector.GetNess () & 0x01) //bit 1
+            if (txVector.GetNess () & 0x01) //bit 1
               {
                 mcsFlags |= RadiotapHeader::MCS_FLAGS_NESS_BIT_0;
               }
-            if (txvector.GetNess () & 0x02) //bit 2
+            if (txVector.GetNess () & 0x02) //bit 2
               {
                 mcsKnown |= RadiotapHeader::MCS_KNOWN_NESS_BIT_1;
               }
@@ -360,7 +360,7 @@ PcapSniffTxEvent (
             mcsKnown |= RadiotapHeader::MCS_KNOWN_FEC_TYPE; //only BCC is currently supported
 
             mcsKnown |= RadiotapHeader::MCS_KNOWN_STBC;
-            if (txvector.IsStbc ())
+            if (txVector.IsStbc ())
               {
                 mcsFlags |= RadiotapHeader::MCS_FLAGS_STBC_STREAMS;
               }
@@ -368,7 +368,7 @@ PcapSniffTxEvent (
             header.SetMcsFields (mcsKnown, mcsFlags, mcsRate);
           }
 
-        if (txvector.IsAggregation ())
+        if (txVector.IsAggregation ())
           {
             uint16_t ampduStatusFlags = RadiotapHeader::A_MPDU_STATUS_NONE;
             ampduStatusFlags |= RadiotapHeader::A_MPDU_STATUS_DELIMITER_CRC_KNOWN;
@@ -403,7 +403,7 @@ PcapSniffRxEvent (
   uint16_t              channelNumber,
   uint32_t              rate,
   WifiPreamble          preamble,
-  WifiTxVector          txvector,
+  WifiTxVector          txVector,
   struct mpduInfo       aMpdu,
   struct signalNoiseDbm signalNoise)
 {
@@ -434,7 +434,7 @@ PcapSniffRxEvent (
             frameFlags |= RadiotapHeader::FRAME_FLAG_SHORT_PREAMBLE;
           }
 
-        if (txvector.IsShortGuardInterval ())
+        if (txVector.IsShortGuardInterval ())
           {
             frameFlags |= RadiotapHeader::FRAME_FLAG_SHORT_GUARD;
           }
@@ -481,13 +481,13 @@ PcapSniffRxEvent (
             mcsRate = rate - 128;
 
             mcsKnown |= RadiotapHeader::MCS_KNOWN_BANDWIDTH;
-            if (txvector.GetMode ().GetBandwidth () == 40000000)
+            if (txVector.GetMode ().GetBandwidth () == 40000000)
               {
                 mcsFlags |= RadiotapHeader::MCS_FLAGS_BANDWIDTH_40;
               }
 
             mcsKnown |= RadiotapHeader::MCS_KNOWN_GUARD_INTERVAL;
-            if (txvector.IsShortGuardInterval ())
+            if (txVector.IsShortGuardInterval ())
               {
                 mcsFlags |= RadiotapHeader::MCS_FLAGS_GUARD_INTERVAL;
               }
@@ -499,11 +499,11 @@ PcapSniffRxEvent (
               }
 
             mcsKnown |= RadiotapHeader::MCS_KNOWN_NESS;
-            if (txvector.GetNess () & 0x01) //bit 1
+            if (txVector.GetNess () & 0x01) //bit 1
               {
                 mcsFlags |= RadiotapHeader::MCS_FLAGS_NESS_BIT_0;
               }
-            if (txvector.GetNess () & 0x02) //bit 2
+            if (txVector.GetNess () & 0x02) //bit 2
               {
                 mcsKnown |= RadiotapHeader::MCS_KNOWN_NESS_BIT_1;
               }
@@ -511,7 +511,7 @@ PcapSniffRxEvent (
             mcsKnown |= RadiotapHeader::MCS_KNOWN_FEC_TYPE; //only BCC is currently supported
 
             mcsKnown |= RadiotapHeader::MCS_KNOWN_STBC;
-            if (txvector.IsStbc ())
+            if (txVector.IsStbc ())
               {
                 mcsFlags |= RadiotapHeader::MCS_FLAGS_STBC_STREAMS;
               }
@@ -519,7 +519,7 @@ PcapSniffRxEvent (
             header.SetMcsFields (mcsKnown, mcsFlags, mcsRate);
           }
 
-        if (txvector.IsAggregation ())
+        if (txVector.IsAggregation ())
           {
             uint16_t ampduStatusFlags = 0;
             ampduStatusFlags |= RadiotapHeader::A_MPDU_STATUS_DELIMITER_CRC_KNOWN;

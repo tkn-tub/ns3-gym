@@ -71,6 +71,7 @@ public:
    * \param shortGuardInterval enable or disable short guard interval
    * \param nss the number of spatial STBC streams (NSS)
    * \param ness the number of extension spatial streams (NESS)
+   * \param aggregation enable or disable MPDU aggregation
    * \param stbc enable or disable STBC
    */
   WifiTxVector (WifiMode mode,
@@ -82,7 +83,7 @@ public:
                 bool aggregation,
                 bool stbc);
   /**
-   * \returns the txvector payload mode
+   * \returns the selected payload transmission mode
    */
   WifiMode GetMode (void) const;
   /**

@@ -160,13 +160,13 @@ WifiTxVector::SetStbc (bool stbc)
 
 std::ostream & operator << ( std::ostream &os, const WifiTxVector &v)
 {
-  os << "mode:" << v.GetMode () <<
-    " txpwrlvl:" << (uint32_t)v.GetTxPowerLevel () <<
-    " retries:" << (uint32_t)v.GetRetries () <<
+  os << "mode: " << v.GetMode () <<
+    " txpwrlvl: " << (uint32_t)v.GetTxPowerLevel () <<
+    " retries: " << (uint32_t)v.GetRetries () <<
     " Short GI: " << v.IsShortGuardInterval () <<
     " Nss: " << (uint32_t)v.GetNss () <<
     " Ness: " << (uint32_t)v.GetNess () <<
-    " MPDU aggregation" << v.IsAggregation () <<
+    " MPDU aggregation: " << v.IsAggregation () <<
     " STBC: " << v.IsStbc ();
   return os;
 }

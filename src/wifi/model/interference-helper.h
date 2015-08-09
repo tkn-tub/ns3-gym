@@ -52,13 +52,12 @@ public:
      * Create an Event with the given parameters.
      *
      * \param size packet size
-     * \param txvector TXVECTOR of the packet
+     * \param txVector TXVECTOR of the packet
      * \param preamble preamble type
      * \param duration duration of the signal
      * \param rxPower the receive power (w)
-     * \param txvector TXVECTOR of the packet
      */
-    Event (uint32_t size, WifiTxVector txvector,
+    Event (uint32_t size, WifiTxVector txVector,
            enum WifiPreamble preamble,
            Time duration, double rxPower);
     ~Event ();
@@ -173,14 +172,14 @@ private:
    * Add the packet-related signal to interference helper.
    *
    * \param size packet size
-   * \param txvector TXVECTOR of the packet
+   * \param txVector TXVECTOR of the packet
    * \param preamble Wi-Fi preamble for the packet
    * \param duration the duration of the signal
    * \param rxPower receive power (W)
    *
    * \return InterferenceHelper::Event
    */
-  Ptr<InterferenceHelper::Event> Add (uint32_t size, WifiTxVector txvector,
+  Ptr<InterferenceHelper::Event> Add (uint32_t size, WifiTxVector txVector,
                                       enum WifiPreamble preamble,
                                       Time duration, double rxPower);
 
