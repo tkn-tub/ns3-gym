@@ -151,7 +151,7 @@ TvSpectrumTransmitter::GetMobility ()
 }
 
 Ptr<NetDevice>
-TvSpectrumTransmitter::GetDevice ()
+TvSpectrumTransmitter::GetDevice () const
 {
   NS_LOG_FUNCTION (this);
   return m_netDevice;

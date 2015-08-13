@@ -73,7 +73,7 @@ LteSimpleSpectrumPhy::GetTypeId (void)
 
 
 Ptr<NetDevice>
-LteSimpleSpectrumPhy::GetDevice ()
+LteSimpleSpectrumPhy::GetDevice () const
 {
   NS_LOG_FUNCTION (this);
   return m_device;

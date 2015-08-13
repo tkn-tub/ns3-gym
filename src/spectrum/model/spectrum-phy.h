@@ -63,7 +63,7 @@ public:
    *
    * @return a Ptr to the associated NetDevice instance
    */
-  virtual Ptr<NetDevice> GetDevice () = 0;
+  virtual Ptr<NetDevice> GetDevice () const = 0;
 
   /**
    * Set the mobility model associated with this device.

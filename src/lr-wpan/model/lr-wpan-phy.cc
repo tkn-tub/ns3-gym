@@ -194,7 +194,7 @@ LrWpanPhy::DoDispose (void)
 }
 
 Ptr<NetDevice>
-LrWpanPhy::GetDevice (void)
+LrWpanPhy::GetDevice (void) const
 {
   NS_LOG_FUNCTION (this);
   return m_device;

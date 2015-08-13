@@ -98,7 +98,7 @@ WaveformGenerator::GetTypeId (void)
 
 
 Ptr<NetDevice>
-WaveformGenerator::GetDevice ()
+WaveformGenerator::GetDevice () const
 {
   return m_netDevice;
 }

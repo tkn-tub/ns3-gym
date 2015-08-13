@@ -99,7 +99,7 @@ SpectrumAnalyzer::GetTypeId (void)
 
 
 Ptr<NetDevice>
-SpectrumAnalyzer::GetDevice ()
+SpectrumAnalyzer::GetDevice () const
 {
   return m_netDevice;
 }

@@ -135,7 +135,7 @@ HalfDuplexIdealPhy::GetTypeId (void)
 
 
 Ptr<NetDevice>
-HalfDuplexIdealPhy::GetDevice ()
+HalfDuplexIdealPhy::GetDevice () const
 {
   NS_LOG_FUNCTION (this);
   return m_netDevice;

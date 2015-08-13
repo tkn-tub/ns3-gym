@@ -94,7 +94,7 @@ LtePhy::SetDevice (Ptr<LteNetDevice> d)
 
 
 Ptr<LteNetDevice>
-LtePhy::GetDevice ()
+LtePhy::GetDevice () const
 {
   NS_LOG_FUNCTION (this);
   return m_netDevice;
