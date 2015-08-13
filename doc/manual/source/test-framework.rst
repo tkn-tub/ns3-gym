@@ -10,52 +10,45 @@ examples.  A Python test program ``test.py`` serves as the test
 execution manager; ``test.py`` can run test code and examples to
 look for regressions, can output the results into a number of forms, and
 can manage code coverage analysis tools.  On top of this, we layer 
-*Buildbots* that are automated build robots that perform
+*buildslaves* that are automated build robots that perform
 robustness testing by running the test framework on different systems
 and with different configuration options.
 
-BuildBots
-*********
+Buildslaves
+***********
 
-At the highest level of |ns3| testing are the buildbots (build robots).  
+At the highest level of |ns3| testing are the buildslaves (build robots).  
 If you are unfamiliar with
-this system look at `<http://djmitche.github.com/buildbot/docs/0.7.11/>`_.  
+this system look at `<https://ns-buildmaster.ee.washington.edu:8010/>`_.
 This is an open-source automated system that allows |ns3| to be rebuilt
-and tested each time something has changed.  By running the buildbots on a number
+and tested daily.  By running the buildbots on a number
 of different systems we can ensure that |ns3| builds and executes
 properly on all of its supported systems.
 
-Users (and developers) typically will not interact with the buildbot system other 
+Users (and developers) typically will not interact with the buildslave system other 
 than to read its messages regarding test results.  If a failure is detected in 
 one of the automated build and test jobs, the buildbot will send an email to the
-*ns-developers* mailing list.  This email will look something like
+*ns-commits* mailing list.  This email will look something like
 
 .. sourcecode:  text
 
-  The Buildbot has detected a new failure of osx-ppc-g++-4.2 on NsNam.
-  Full details are available at:
-   http://ns-regression.ee.washington.edu:8010/builders/osx-ppc-g%2B%2B-4.2/builds/0
-  
-  Buildbot URL: http://ns-regression.ee.washington.edu:8010/
-  
-  Buildslave for this Build: darwin-ppc
-  
-  Build Reason: The web-page 'force build' button was pressed by 'ww': ww
-  
-  Build Source Stamp: HEAD
-  Blamelist: 
-  
-  BUILD FAILED: failed shell_5 shell_6 shell_7 shell_8 shell_9 shell_10 shell_11 shell_12 
-  
-  sincerely,
-  -The Buildbot
+  [Ns-commits] Build failed in Jenkins: daily-ubuntu-without-valgrind » Ubuntu-64-15.04 #926
 
-In the full details URL shown in the email, one can search for the keyword 
-``failed`` and select the ``stdio`` link for the corresponding step to see
-the reason for the failure.
+  ...
+  281 of 285 tests passed (281 passed, 3 skipped, 1 failed, 0 crashed, 0 valgrind errors)
+  List of SKIPped tests:
+    ns3-tcp-cwnd
+    ns3-tcp-interoperability
+    nsc-tcp-loss
+  List of FAILed tests:
+    random-variable-stream-generators
+  + exit 1
+  Build step 'Execute shell' marked build as failure
 
-The buildbot will do its job quietly if there are no errors, and the system will
-undergo build and test cycles every day to verify that all is well.
+In the full details URL shown in the email, one can find links to the detailed test output.
+
+The buildslave system will do its job quietly if there are no errors, and the 
+system will undergo build and test cycles every day to verify that all is well.
 
 Test.py
 *******
@@ -73,7 +66,7 @@ have been built by doing the following
 ::
 
   $ ./waf configure --enable-examples --enable-tests
-  $ ./waf
+  $ ./waf build
 
 By default, ``test.py`` will run all available tests and report status
 back in a very concise form.  Running the command
@@ -90,7 +83,7 @@ indications followed by the kind of test that was run and its display name.
   Waf: Entering directory `/home/craigdo/repos/ns-3-allinone-test/ns-3-dev/build'
   Waf: Leaving directory `/home/craigdo/repos/ns-3-allinone-test/ns-3-dev/build'
   'build' finished successfully (0.939s)
-  FAIL: TestSuite ns3-wifi-propagation-loss-models
+  FAIL: TestSuite propagation-loss-model
   PASS: TestSuite object-name-service
   PASS: TestSuite pcap-file-object
   PASS: TestSuite ns3-tcp-cwnd
@@ -178,25 +171,25 @@ to be specified.  Running the command
 
 ::
 
-  $ ./test.py --suite=ns3-wifi-propagation-loss-models
+  $ ./test.py --suite=propagation-loss-model
 
 or equivalently
 
 ::
 
-  $ ./test.py -s ns3-wifi-propagation-loss-models
+  $ ./test.py -s propagation-loss-model
 
 results in that single test suite being run.
 
 .. sourcecode:: text
 
-  FAIL: TestSuite ns3-wifi-propagation-loss-models
+  FAIL: TestSuite propagation-loss-model
 
 To find detailed information regarding the failure, one must specify the kind
 of output desired.  For example, most people will probably be interested in
 a text file::
 
-  $ ./test.py --suite=ns3-wifi-propagation-loss-models --text=results.txt
+  $ ./test.py --suite=propagation-loss-model --text=results.txt
 
 This will result in that single test suite being run with the test status written to 
 the file ''results.txt''.
@@ -205,7 +198,7 @@ You should find something similar to the following in that file
 
 .. sourcecode:: text
 
-  FAIL: Test Suite ''ns3-wifi-propagation-loss-models'' (real 0.02 user 0.01 system 0.00)
+  FAIL: Test Suite ''propagation-loss-model'' (real 0.02 user 0.01 system 0.00)
   PASS: Test Case "Check ... Friis ... model ..." (real 0.01 user 0.00 system 0.00)
   FAIL: Test Case "Check ... Log Distance ... model" (real 0.01 user 0.01 system 0.00)
     Details:
@@ -282,31 +275,39 @@ will result in a list of the test suite being displayed, similar to
   Waf: Entering directory `/home/craigdo/repos/ns-3-allinone-test/ns-3-dev/build'
   Waf: Leaving directory `/home/craigdo/repos/ns-3-allinone-test/ns-3-dev/build'
   'build' finished successfully (0.939s)
-  histogram
-  ns3-wifi-interference
-  ns3-tcp-cwnd
-  ns3-tcp-interoperability
-  sample
-  devices-mesh-flame
-  devices-mesh-dot11s
-  devices-mesh
+
+  Test Type    Test Name
+  ---------    ---------
+  performance  many-uniform-random-variables-one-get-value-call
+  performance  one-uniform-random-variable-many-get-value-calls
+  performance  type-id-perf
+  system       buildings-pathloss-test
+  system       buildings-shadowing-test
+  system       devices-mesh-dot11s-regression
+  system       devices-mesh-flame-regression
+  system       epc-gtpu
   ...
-  object-name-service
-  callback
-  attributes
-  config
-  global-value
-  command-line
-  basic-random-number
-  object
+  unit         wimax-phy-layer
+  unit         wimax-service-flow
+  unit         wimax-ss-mac-layer
+  unit         wimax-tlv
+  example      adhoc-aloha-ideal-phy
+  example      adhoc-aloha-ideal-phy-matrix-propagation-loss-model
+  example      adhoc-aloha-ideal-phy-with-microwave-oven
+  example      aodv
+  ...
 
 Any of these listed suites can be selected to be run by itself using the 
-``--suite`` option as shown above.
+``--suite`` option as shown above.  Examples are handled differently.
 
 Similarly to test suites, one can run a single C++ example program
 using the ``--example`` option.  Note that the relative path for the
 example does not need to be included and that the executables built
-for C++ examples do not have extensions.  Entering
+for C++ examples do not have extensions.  Furthermore, the example
+must be registered as an example to the test framework; it is not
+sufficient to create an example and run it through test.py; it must
+be added to the relevant ``examples-to-run.py`` file, explained below.
+Entering
 
 ::
 
@@ -369,12 +370,12 @@ will result in a list of the currently built test suites being displayed, simila
 
 .. sourcecode:: text
 
-  ns3-wifi-propagation-loss-models
+  propagation-loss-model
   ns3-tcp-cwnd
   ns3-tcp-interoperability
-  pcap-file-object
+  pcap-file
   object-name-service
-  random-number-generators
+  random-variable-stream-generators
 
 Note the absence of the ``Waf`` build messages.
 
@@ -553,19 +554,35 @@ You should see something like the following
 
 .. sourcecode:: text
 
-  Waf: Entering directory `/home/craigdo/repos/ns-3-allinone-test/ns-3-dev/build'
-  Waf: Leaving directory `/home/craigdo/repos/ns-3-allinone-test/ns-3-dev/build'
-  'build' finished successfully (0.353s)
-  --assert:               Tell tests to segfault (like assert) if an error is detected
-  --basedir=dir:          Set the base directory (where to find src) to ''dir''
-  --tempdir=dir:          Set the temporary directory (where to find data files) to ''dir''
-  --constrain=test-type:  Constrain checks to test suites of type ''test-type''
-  --help:                 Print this message
-  --kinds:                List all of the available kinds of tests
-  --list:                 List all of the test suites (optionally constrained by test-type)
-  --out=file-name:        Set the test status output file to ''file-name''
-  --suite=suite-name:     Run the test suite named ''suite-name''
-  --verbose:              Turn on messages in the run test suites
+  Usage: /home/craigdo/repos/ns-3-allinone-test/ns-3-dev/build/utils/ns3-dev-test-runner-debug [OPTIONS]
+
+  Options: 
+  --help                 : print these options
+  --print-test-name-list : print the list of names of tests available
+  --list                 : an alias for --print-test-name-list
+  --print-test-types     : print the type of tests along with their names
+  --print-test-type-list : print the list of types of tests available
+  --print-temp-dir       : print name of temporary directory before running 
+                           the tests
+  --test-type=TYPE       : process only tests of type TYPE
+  --test-name=NAME       : process only test whose name matches NAME
+  --suite=NAME           : an alias (here for compatibility reasons only) 
+                           for --test-name=NAME
+  --assert-on-failure    : when a test fails, crash immediately (useful
+                           when running under a debugger
+  --stop-on-failure      : when a test fails, stop immediately
+  --fullness=FULLNESS    : choose the duration of tests to run: QUICK, 
+                           EXTENSIVE, or TAKES_FOREVER, where EXTENSIVE 
+                           includes QUICK and TAKES_FOREVER includes 
+                           QUICK and EXTENSIVE (only QUICK tests are 
+                           run by default)
+  --verbose              : print details of test execution
+  --xml                  : format test run output as xml
+  --tempdir=DIR          : set temp dir for tests to store output files
+  --datadir=DIR          : set data dir for tests to read reference files
+  --out=FILE             : send test result to FILE instead of standard output
+  --append=FILE          : append test result to FILE instead of standard output
+
 
 There are a number of things available to you which will be familiar to you if
 you have looked at ``test.py``.  This should be expected since the test-
@@ -575,7 +592,7 @@ the examples are really not |ns3| tests.  ``test.py`` runs them
 as if they were to present a unified testing environment, but they are really
 completely different and not to be found here.
 
-The first new option that appears here, but not in test.py is the ``--assert``
+The first new option that appears here, but not in test.py is the ``--assert-on-failure``
 option.  This option is useful when debugging a test case when running under a 
 debugger like ``gdb``.  When selected, this option tells the underlying
 test case to cause a segmentation violation if an error is detected.  This has
@@ -586,36 +603,23 @@ option something like,
 ::
 
   $ ./waf shell
-  $ cd build/debug/utils
-  $ gdb test-runner
-  $ run --suite=global-value --assert
+  $ cd build/utils
+  $ gdb ns3-dev-test-runner-debug
+  $ run --suite=global-value --assert-on-failure 
 
 If an error is then found in the global-value test suite, a segfault would be 
 generated and the (source level) debugger would stop at the ``NS_TEST_ASSERT_MSG``
 that detected the error.
 
-Another new option that appears here is the ``--basedir`` option.  It turns out
-that some tests may need to reference the source directory of the |ns3|  
-distribution to find local data, so a base directory is always required to run
-a test.
+To run one of the tests directly from the test-runner 
+using ``waf``, you will need to specify the test suite to run.
+So you could use the shell and do::
 
-If you run a test from test.py, the Python program will provide the basedir 
-option for you.  To run one of the tests directly from the test-runner 
-using ``waf``, you will need to specify the test suite to run along with 
-the base directory.  So you could use the shell and do::
+  $ ./waf --run "test-runner --suite=pcap-file"
 
-  $ ./waf --run "test-runner --basedir=`pwd` --suite=pcap-file-object"
+|ns3| logging is available when you run it this way, such as:
 
-Note the ''backward'' quotation marks on the ``pwd`` command.  
-
-If you are running the test suite out of a debugger, it can be quite painful 
-to remember and constantly type the absolute path of the distribution base 
-directory.
-Because of this, if you omit the basedir, the test-runner will try to figure one
-out for you.  It begins in the current working directory and walks up the 
-directory tree looking for a directory file with files named ``VERSION`` and
-``LICENSE.``  If it finds one, it assumes that must be the basedir and provides
-it for you.
+  $ NS_LOG="Packet" ./waf --run "test-runner --suite=pcap-file"
 
 Test output
 +++++++++++
@@ -624,7 +628,7 @@ Many test suites need to write temporary files (such as pcap files)
 in the process of running the tests.  The tests then need a temporary directory
 to write to.  The Python test utility (test.py) will provide a temporary file
 automatically, but if run stand-alone this temporary directory must be provided.
-Just as in the basedir case, it can be annoying to continually have to provide
+It can be annoying to continually have to provide
 a ``--tempdir``, so the test runner will figure one out for you if you don't
 provide one.  It first looks for environment variables named ``TMP`` and 
 ``TEMP`` and uses those.  If neither ``TMP`` nor ``TEMP`` are defined
@@ -656,63 +660,15 @@ and test output can be found in the ``testpy-output/`` directory.
 Reporting of test failures
 ++++++++++++++++++++++++++
 
-When you run a test suite using the test-runner it will run the test quietly
-by default.  The only indication that you will get that the test passed is 
-the *absence* of a message from ``waf`` saying that the program 
-returned something other than a zero exit code.  To get some output from the
-test, you need to specify an output file to which the tests will write their 
-XML status using the ``--out`` option.  You need to be careful interpreting
-the results because the test suites will *append* results onto this file.
+When you run a test suite using the test-runner it will run the test 
+and report PASS or FAIL.
+To run more quietly, you need to specify an output file to which the tests will write their status using the ``--out`` option.  
 Try,
 
 ::
 
-  $ ./waf --run "test-runner --basedir=`pwd` --suite=pcap-file-object --out=myfile.xml"
+  $ ./waf --run "test-runner --suite=pcap-file --out=myfile.txt"
 
-If you look at the file ``myfile.xml`` you should see something like,
-
-.. sourcecode:: xml
-
-  <TestSuite>
-    <SuiteName>pcap-file-object</SuiteName>
-    <TestCase>
-      <CaseName>Check to see that PcapFile::Open with mode ''w'' works</CaseName>
-      <CaseResult>PASS</CaseResult>
-      <CaseTime>real 0.00 user 0.00 system 0.00</CaseTime>
-    </TestCase>
-    <TestCase>
-      <CaseName>Check to see that PcapFile::Open with mode ''r'' works</CaseName>
-      <CaseResult>PASS</CaseResult>
-      <CaseTime>real 0.00 user 0.00 system 0.00</CaseTime>
-    </TestCase>
-    <TestCase>
-      <CaseName>Check to see that PcapFile::Open with mode ''a'' works</CaseName>
-      <CaseResult>PASS</CaseResult>
-      <CaseTime>real 0.00 user 0.00 system 0.00</CaseTime>
-    </TestCase>
-    <TestCase>
-      <CaseName>Check to see that PcapFileHeader is managed correctly</CaseName>
-      <CaseResult>PASS</CaseResult>
-      <CaseTime>real 0.00 user 0.00 system 0.00</CaseTime>
-    </TestCase>
-    <TestCase>
-      <CaseName>Check to see that PcapRecordHeader is managed correctly</CaseName>
-      <CaseResult>PASS</CaseResult>
-      <CaseTime>real 0.00 user 0.00 system 0.00</CaseTime>
-    </TestCase>
-    <TestCase>
-      <CaseName>Check to see that PcapFile can read out a known good pcap file</CaseName>
-      <CaseResult>PASS</CaseResult>
-      <CaseTime>real 0.00 user 0.00 system 0.00</CaseTime>
-    </TestCase>
-    <SuiteResult>PASS</SuiteResult>
-    <SuiteTime>real 0.00 user 0.00 system 0.00</SuiteTime>
-  </TestSuite>
-
-If you are familiar with XML this should be fairly self-explanatory.  It is 
-also not a complete XML file since test suites are designed to have their
-output appended to a master XML status file as described in the ``test.py``
-section.
 
 Debugging test suite failures
 +++++++++++++++++++++++++++++
@@ -738,8 +694,8 @@ arguments as needed, but basedir is the minimum needed)::
   There is NO WARRANTY, to the extent permitted by law.  Type "show copying"
   and "show warranty" for details.
   This GDB was configured as "x86_64-linux-gnu"...
-  (gdb) r --basedir=`pwd`
-  Starting program: <..>/build/debug/utils/test-runner --basedir=`pwd`
+  (gdb) r --suite=
+  Starting program: <..>/build/utils/ns3-dev-test-runner-debug --suite=ns3-wifi-interference
   [Thread debugging using libthread_db enabled]
   assert failed. file=../src/core/model/type-id.cc, line=138, cond="uid <= m_information.size () && uid != 0"
   ...
@@ -749,7 +705,7 @@ such as::
 
   VALGR: TestSuite devices-mesh-dot11s-regression
 
-  $ ./waf --command-template="valgrind %s --basedir=`pwd` --suite=devices-mesh-dot11s-regression" --run test-runner
+  $ ./waf --command-template="valgrind %s --suite=devices-mesh-dot11s-regression" --run test-runner
 
 Class TestRunner
 ****************
@@ -800,10 +756,17 @@ as a ''unit'' test with the display name, ``my-test-suite-name``.
     AddTestCase (new MyTestCase, TestCase::QUICK);
   }
   
-  MyTestSuite myTestSuite;
+  static MyTestSuite myTestSuite;
 
 The base class takes care of all of the registration and reporting required to
 be a good citizen in the test framework.
+
+Avoid putting initialization logic into the test suite or test case 
+constructors.  This is
+because an instance of the test suite is created at run time 
+(due to the static variable above) regardless of whether the test is being 
+run or not.  Instead, the TestCase provides a virtual ``DoSetup`` method
+that can be specialized to perform setup before ``DoRun`` is called.
 
 Test Case
 *********
@@ -814,13 +777,15 @@ Mixtures of these models may be used.
 
 In order to create a new test case in the system, all one has to do is to inherit
 from the  ``TestCase`` base class, override the constructor to give the test 
-case a name and override the ``DoRun`` method to run the test.
+case a name and override the ``DoRun`` method to run the test.  Optionally,
+override also the ``DoSetup`` method.
 
 .. sourcecode:: cpp
 
   class MyTestCase : public TestCase
   {
     MyTestCase ();
+    virtual void DoSetup (void);
     virtual void DoRun (void);
   };
   
