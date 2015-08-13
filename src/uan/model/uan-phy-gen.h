@@ -260,7 +260,7 @@ public:
   virtual double GetRxThresholdDb (void);
   virtual double GetCcaThresholdDb (void);
   virtual Ptr<UanChannel> GetChannel (void) const;
-  virtual Ptr<UanNetDevice> GetDevice (void);
+  virtual Ptr<UanNetDevice> GetDevice (void) const;
   virtual Ptr<UanTransducer> GetTransducer (void);
   virtual void SetChannel (Ptr<UanChannel> channel);
   virtual void SetDevice (Ptr<UanNetDevice> device);

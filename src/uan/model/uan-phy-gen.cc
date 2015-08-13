@@ -809,7 +809,7 @@ UanPhyGen::GetChannel (void) const
 }
 
 Ptr<UanNetDevice>
-UanPhyGen::GetDevice (void)
+UanPhyGen::GetDevice (void) const
 {
   return m_device;
 }

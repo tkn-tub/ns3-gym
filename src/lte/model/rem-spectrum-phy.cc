@@ -103,7 +103,7 @@ RemSpectrumPhy::GetMobility ()
 }
 
 Ptr<NetDevice>
-RemSpectrumPhy::GetDevice ()
+RemSpectrumPhy::GetDevice () const
 {
   return 0;
 }

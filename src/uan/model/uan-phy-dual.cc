@@ -498,7 +498,7 @@ UanPhyDual::GetChannel (void) const
   return m_phy1->GetChannel ();
 }
 Ptr<UanNetDevice>
-UanPhyDual::GetDevice (void)
+UanPhyDual::GetDevice (void) const
 {
   return m_phy1->GetDevice ();
 }

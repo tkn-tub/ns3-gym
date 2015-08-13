@@ -345,7 +345,7 @@ public:
    *
    * \return The net device.
    */
-  virtual Ptr<UanNetDevice> GetDevice (void) = 0;
+  virtual Ptr<UanNetDevice> GetDevice (void) const = 0;
 
   /**
    * Attach to a channel.

@@ -126,7 +126,7 @@ public:
   virtual bool IsStateTx (void);
   virtual bool IsStateCcaBusy (void);
   virtual Ptr<UanChannel> GetChannel (void) const;
-  virtual Ptr<UanNetDevice> GetDevice (void);
+  virtual Ptr<UanNetDevice> GetDevice (void) const;
   virtual void SetChannel (Ptr<UanChannel> channel);
   virtual void SetDevice (Ptr<UanNetDevice> device);
   virtual void SetMac (Ptr<UanMac> mac);

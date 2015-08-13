@@ -272,7 +272,7 @@ public:
    */
   Ptr<SpectrumChannel> GetChannel (void);
   void SetDevice (Ptr<NetDevice> d);
-  Ptr<NetDevice> GetDevice (void);
+  Ptr<NetDevice> GetDevice (void) const;
 
   /**
    * Set the attached antenna.
