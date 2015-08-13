@@ -46,10 +46,10 @@ public:
 
   /**
    * A pure virtual method that must be implemented in the subclass.
-   * This method returns the probability that the given 'chuck' of the
+   * This method returns the probability that the given 'chunk' of the
    * packet will be successfully received by the PHY.
    *
-   * A chuck can be viewed as a part of a packet with equal SNR.
+   * A chunk can be viewed as a part of a packet with equal SNR.
    * The probability of successfully receiving the chunk depends on
    * the mode, the SNR, and the size of the chunk.
    *
