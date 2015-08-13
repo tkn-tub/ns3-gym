@@ -85,7 +85,7 @@ ATTRIBUTE_CHECKER_IMPLEMENT (Callback);
 namespace ns3 {
 
 std::string
-CallbackBase::Demangle (const std::string& mangled)
+CallbackImplBase::Demangle (const std::string& mangled)
 {
   NS_LOG_FUNCTION (mangled);
 
