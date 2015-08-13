@@ -132,9 +132,13 @@ private:
 
   ///\name Interaction with HWMP MAC plugin
   //\{
+  ///\brief Handler for receiving Path Request
   void ReceivePreq (IePreq preq, Mac48Address from, uint32_t interface, Mac48Address fromMp, uint32_t metric);
+  ///\brief Handler for receiving Path Reply
   void ReceivePrep (IePrep prep, Mac48Address from, uint32_t interface, Mac48Address fromMp, uint32_t metric);
+  ///\brief Handler for receiving Path Error
   void ReceivePerr (std::vector<FailedDestination>, Mac48Address from, uint32_t interface, Mac48Address fromMp);
+   ///\brief Send Path Reply
   void SendPrep (
     Mac48Address src,
     Mac48Address dst,
@@ -263,7 +267,7 @@ private:
   std::vector<QueuedPacket> m_rqueue;
   
   /// \name HWMP-protocol parameters
-  /// These are all Aattributes
+  /// These are all Attributes
   /// \{
   uint16_t m_maxQueueSize;
   uint8_t m_dot11MeshHWMPmaxPREQretries;
