@@ -564,7 +564,7 @@ YansWifiPhy::StartReceivePreambleAndHeader (Ptr<Packet> packet,
                                             enum WifiPreamble preamble,
                                             struct mpduInfo aMpdu, Time rxDuration)
 {
-  //This function should be later split to check separately wether plcp preamble and plcp header can be successfully received.
+  //This function should be later split to check separately whether plcp preamble and plcp header can be successfully received.
   //Note: plcp preamble reception is not yet modeled.
   NS_LOG_FUNCTION (this << packet << rxPowerDbm << txVector.GetMode () << preamble << (uint32_t)aMpdu.packetType);
   AmpduTag ampduTag;
