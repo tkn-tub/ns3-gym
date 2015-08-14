@@ -926,10 +926,10 @@ def register_Ns3Simulator_methods(root_module, cls):
                    'void', 
                    [], 
                    is_static=True)
-    ## simulator.h (module 'core'): static void ns3::Simulator::Stop(ns3::Time const & time) [member function]
+    ## simulator.h (module 'core'): static void ns3::Simulator::Stop(ns3::Time const & delay) [member function]
     cls.add_method('Stop', 
                    'void', 
-                   [param('ns3::Time const &', 'time')], 
+                   [param('ns3::Time const &', 'delay')], 
                    is_static=True)
     return
 
@@ -1317,6 +1317,11 @@ def register_Ns3TypeId_methods(root_module, cls):
     cls.add_method('SetParent', 
                    'ns3::TypeId', 
                    [param('ns3::TypeId', 'tid')])
+    ## type-id.h (module 'core'): ns3::TypeId ns3::TypeId::SetParent() [member function]
+    cls.add_method('SetParent', 
+                   'ns3::TypeId', 
+                   [], 
+                   template_parameters=['ns3::Object'])
     ## type-id.h (module 'core'): ns3::TypeId ns3::TypeId::SetSize(std::size_t size) [member function]
     cls.add_method('SetSize', 
                    'ns3::TypeId', 
@@ -2106,6 +2111,11 @@ def register_Ns3DataCalculator_methods(root_module, cls):
                    'std::string', 
                    [], 
                    is_const=True)
+    ## data-calculator.h (module 'stats'): static ns3::TypeId ns3::DataCalculator::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
     ## data-calculator.h (module 'stats'): void ns3::DataCalculator::Output(ns3::DataOutputCallback & callback) const [member function]
     cls.add_method('Output', 
                    'void', 
@@ -2228,6 +2238,11 @@ def register_Ns3DataCollector_methods(root_module, cls):
                    'std::string', 
                    [], 
                    is_const=True)
+    ## data-collector.h (module 'stats'): static ns3::TypeId ns3::DataCollector::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
     ## data-collector.h (module 'stats'): std::_List_iterator<std::pair<std::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::basic_string<char, std::char_traits<char>, std::allocator<char> > > > ns3::DataCollector::MetadataBegin() [member function]
     cls.add_method('MetadataBegin', 
                    'std::_List_iterator< std::pair< std::basic_string< char, std::char_traits< char >, std::allocator< char > >, std::basic_string< char, std::char_traits< char >, std::allocator< char > > > >', 
@@ -2253,6 +2268,11 @@ def register_Ns3DataOutputInterface_methods(root_module, cls):
                    'std::string', 
                    [], 
                    is_const=True)
+    ## data-output-interface.h (module 'stats'): static ns3::TypeId ns3::DataOutputInterface::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
     ## data-output-interface.h (module 'stats'): void ns3::DataOutputInterface::Output(ns3::DataCollector & dc) [member function]
     cls.add_method('Output', 
                    'void', 
@@ -2649,6 +2669,11 @@ def register_Ns3MinMaxAvgTotalCalculator__Double_methods(root_module, cls):
     cls.add_constructor([param('ns3::MinMaxAvgTotalCalculator< double > const &', 'arg0')])
     ## basic-data-calculators.h (module 'stats'): ns3::MinMaxAvgTotalCalculator<double>::MinMaxAvgTotalCalculator() [constructor]
     cls.add_constructor([])
+    ## basic-data-calculators.h (module 'stats'): static ns3::TypeId ns3::MinMaxAvgTotalCalculator<double>::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
     ## basic-data-calculators.h (module 'stats'): void ns3::MinMaxAvgTotalCalculator<double>::Output(ns3::DataOutputCallback & callback) const [member function]
     cls.add_method('Output', 
                    'void', 
@@ -2754,6 +2779,11 @@ def register_Ns3OmnetDataOutput_methods(root_module, cls):
     cls.add_constructor([param('ns3::OmnetDataOutput const &', 'arg0')])
     ## omnet-data-output.h (module 'stats'): ns3::OmnetDataOutput::OmnetDataOutput() [constructor]
     cls.add_constructor([])
+    ## omnet-data-output.h (module 'stats'): static ns3::TypeId ns3::OmnetDataOutput::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
     ## omnet-data-output.h (module 'stats'): void ns3::OmnetDataOutput::Output(ns3::DataCollector & dc) [member function]
     cls.add_method('Output', 
                    'void', 
@@ -2798,6 +2828,11 @@ def register_Ns3SqliteDataOutput_methods(root_module, cls):
     cls.add_constructor([param('ns3::SqliteDataOutput const &', 'arg0')])
     ## sqlite-data-output.h (module 'stats'): ns3::SqliteDataOutput::SqliteDataOutput() [constructor]
     cls.add_constructor([])
+    ## sqlite-data-output.h (module 'stats'): static ns3::TypeId ns3::SqliteDataOutput::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
     ## sqlite-data-output.h (module 'stats'): void ns3::SqliteDataOutput::Output(ns3::DataCollector & dc) [member function]
     cls.add_method('Output', 
                    'void', 
@@ -2815,6 +2850,11 @@ def register_Ns3TimeMinMaxAvgTotalCalculator_methods(root_module, cls):
     cls.add_constructor([param('ns3::TimeMinMaxAvgTotalCalculator const &', 'arg0')])
     ## time-data-calculators.h (module 'stats'): ns3::TimeMinMaxAvgTotalCalculator::TimeMinMaxAvgTotalCalculator() [constructor]
     cls.add_constructor([])
+    ## time-data-calculators.h (module 'stats'): static ns3::TypeId ns3::TimeMinMaxAvgTotalCalculator::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
     ## time-data-calculators.h (module 'stats'): void ns3::TimeMinMaxAvgTotalCalculator::Output(ns3::DataOutputCallback & callback) const [member function]
     cls.add_method('Output', 
                    'void', 

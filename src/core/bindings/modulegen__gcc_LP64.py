@@ -72,6 +72,8 @@ def register_types(module):
     module.add_class('LogComponent')
     ## names.h (module 'core'): ns3::Names [class]
     module.add_class('Names')
+    ## non-copyable.h (module 'core'): ns3::NonCopyable [class]
+    module.add_class('NonCopyable', destructor_visibility='protected')
     ## object-base.h (module 'core'): ns3::ObjectBase [class]
     module.add_class('ObjectBase', allow_subclassing=True)
     ## object.h (module 'core'): ns3::ObjectDeleter [struct]
@@ -426,6 +428,7 @@ def register_methods(root_module):
     register_Ns3IntToType__6_methods(root_module, root_module['ns3::IntToType< 6 >'])
     register_Ns3LogComponent_methods(root_module, root_module['ns3::LogComponent'])
     register_Ns3Names_methods(root_module, root_module['ns3::Names'])
+    register_Ns3NonCopyable_methods(root_module, root_module['ns3::NonCopyable'])
     register_Ns3ObjectBase_methods(root_module, root_module['ns3::ObjectBase'])
     register_Ns3ObjectDeleter_methods(root_module, root_module['ns3::ObjectDeleter'])
     register_Ns3ObjectFactory_methods(root_module, root_module['ns3::ObjectFactory'])
@@ -933,6 +936,12 @@ def register_Ns3Names_methods(root_module, cls):
                    is_static=True)
     return
 
+def register_Ns3NonCopyable_methods(root_module, cls):
+    ## non-copyable.h (module 'core'): ns3::NonCopyable::NonCopyable() [constructor]
+    cls.add_constructor([], 
+                        visibility='protected')
+    return
+
 def register_Ns3ObjectBase_methods(root_module, cls):
     ## object-base.h (module 'core'): ns3::ObjectBase::ObjectBase() [constructor]
     cls.add_constructor([])
@@ -1096,8 +1105,8 @@ def register_Ns3RngSeedManager_methods(root_module, cls):
 def register_Ns3RngStream_methods(root_module, cls):
     ## rng-stream.h (module 'core'): ns3::RngStream::RngStream(uint32_t seed, uint64_t stream, uint64_t substream) [constructor]
     cls.add_constructor([param('uint32_t', 'seed'), param('uint64_t', 'stream'), param('uint64_t', 'substream')])
-    ## rng-stream.h (module 'core'): ns3::RngStream::RngStream(ns3::RngStream const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::RngStream const &', 'arg0')])
+    ## rng-stream.h (module 'core'): ns3::RngStream::RngStream(ns3::RngStream const & r) [copy constructor]
+    cls.add_constructor([param('ns3::RngStream const &', 'r')])
     ## rng-stream.h (module 'core'): double ns3::RngStream::RandU01() [member function]
     cls.add_method('RandU01', 
                    'double', 
@@ -1189,10 +1198,10 @@ def register_Ns3Simulator_methods(root_module, cls):
                    'void', 
                    [], 
                    is_static=True)
-    ## simulator.h (module 'core'): static void ns3::Simulator::Stop(ns3::Time const & time) [member function]
+    ## simulator.h (module 'core'): static void ns3::Simulator::Stop(ns3::Time const & delay) [member function]
     cls.add_method('Stop', 
                    'void', 
-                   [param('ns3::Time const &', 'time')], 
+                   [param('ns3::Time const &', 'delay')], 
                    is_static=True)
     return
 
@@ -2088,10 +2097,10 @@ def register_Ns3SimulatorImpl_methods(root_module, cls):
                    'void', 
                    [], 
                    is_pure_virtual=True, is_virtual=True)
-    ## simulator-impl.h (module 'core'): ns3::EventId ns3::SimulatorImpl::Schedule(ns3::Time const & time, ns3::EventImpl * event) [member function]
+    ## simulator-impl.h (module 'core'): ns3::EventId ns3::SimulatorImpl::Schedule(ns3::Time const & delay, ns3::EventImpl * event) [member function]
     cls.add_method('Schedule', 
                    'ns3::EventId', 
-                   [param('ns3::Time const &', 'time'), param('ns3::EventImpl *', 'event')], 
+                   [param('ns3::Time const &', 'delay'), param('ns3::EventImpl *', 'event')], 
                    is_pure_virtual=True, is_virtual=True)
     ## simulator-impl.h (module 'core'): ns3::EventId ns3::SimulatorImpl::ScheduleDestroy(ns3::EventImpl * event) [member function]
     cls.add_method('ScheduleDestroy', 
@@ -2103,10 +2112,10 @@ def register_Ns3SimulatorImpl_methods(root_module, cls):
                    'ns3::EventId', 
                    [param('ns3::EventImpl *', 'event')], 
                    is_pure_virtual=True, is_virtual=True)
-    ## simulator-impl.h (module 'core'): void ns3::SimulatorImpl::ScheduleWithContext(uint32_t context, ns3::Time const & time, ns3::EventImpl * event) [member function]
+    ## simulator-impl.h (module 'core'): void ns3::SimulatorImpl::ScheduleWithContext(uint32_t context, ns3::Time const & delay, ns3::EventImpl * event) [member function]
     cls.add_method('ScheduleWithContext', 
                    'void', 
-                   [param('uint32_t', 'context'), param('ns3::Time const &', 'time'), param('ns3::EventImpl *', 'event')], 
+                   [param('uint32_t', 'context'), param('ns3::Time const &', 'delay'), param('ns3::EventImpl *', 'event')], 
                    is_pure_virtual=True, is_virtual=True)
     ## simulator-impl.h (module 'core'): void ns3::SimulatorImpl::SetScheduler(ns3::ObjectFactory schedulerFactory) [member function]
     cls.add_method('SetScheduler', 
@@ -2118,10 +2127,10 @@ def register_Ns3SimulatorImpl_methods(root_module, cls):
                    'void', 
                    [], 
                    is_pure_virtual=True, is_virtual=True)
-    ## simulator-impl.h (module 'core'): void ns3::SimulatorImpl::Stop(ns3::Time const & time) [member function]
+    ## simulator-impl.h (module 'core'): void ns3::SimulatorImpl::Stop(ns3::Time const & delay) [member function]
     cls.add_method('Stop', 
                    'void', 
-                   [param('ns3::Time const &', 'time')], 
+                   [param('ns3::Time const &', 'delay')], 
                    is_pure_virtual=True, is_virtual=True)
     return
 
@@ -3084,10 +3093,10 @@ def register_Ns3DefaultSimulatorImpl_methods(root_module, cls):
                    'void', 
                    [], 
                    is_virtual=True)
-    ## default-simulator-impl.h (module 'core'): ns3::EventId ns3::DefaultSimulatorImpl::Schedule(ns3::Time const & time, ns3::EventImpl * event) [member function]
+    ## default-simulator-impl.h (module 'core'): ns3::EventId ns3::DefaultSimulatorImpl::Schedule(ns3::Time const & delay, ns3::EventImpl * event) [member function]
     cls.add_method('Schedule', 
                    'ns3::EventId', 
-                   [param('ns3::Time const &', 'time'), param('ns3::EventImpl *', 'event')], 
+                   [param('ns3::Time const &', 'delay'), param('ns3::EventImpl *', 'event')], 
                    is_virtual=True)
     ## default-simulator-impl.h (module 'core'): ns3::EventId ns3::DefaultSimulatorImpl::ScheduleDestroy(ns3::EventImpl * event) [member function]
     cls.add_method('ScheduleDestroy', 
@@ -3099,10 +3108,10 @@ def register_Ns3DefaultSimulatorImpl_methods(root_module, cls):
                    'ns3::EventId', 
                    [param('ns3::EventImpl *', 'event')], 
                    is_virtual=True)
-    ## default-simulator-impl.h (module 'core'): void ns3::DefaultSimulatorImpl::ScheduleWithContext(uint32_t context, ns3::Time const & time, ns3::EventImpl * event) [member function]
+    ## default-simulator-impl.h (module 'core'): void ns3::DefaultSimulatorImpl::ScheduleWithContext(uint32_t context, ns3::Time const & delay, ns3::EventImpl * event) [member function]
     cls.add_method('ScheduleWithContext', 
                    'void', 
-                   [param('uint32_t', 'context'), param('ns3::Time const &', 'time'), param('ns3::EventImpl *', 'event')], 
+                   [param('uint32_t', 'context'), param('ns3::Time const &', 'delay'), param('ns3::EventImpl *', 'event')], 
                    is_virtual=True)
     ## default-simulator-impl.h (module 'core'): void ns3::DefaultSimulatorImpl::SetScheduler(ns3::ObjectFactory schedulerFactory) [member function]
     cls.add_method('SetScheduler', 
@@ -3114,10 +3123,10 @@ def register_Ns3DefaultSimulatorImpl_methods(root_module, cls):
                    'void', 
                    [], 
                    is_virtual=True)
-    ## default-simulator-impl.h (module 'core'): void ns3::DefaultSimulatorImpl::Stop(ns3::Time const & time) [member function]
+    ## default-simulator-impl.h (module 'core'): void ns3::DefaultSimulatorImpl::Stop(ns3::Time const & delay) [member function]
     cls.add_method('Stop', 
                    'void', 
-                   [param('ns3::Time const &', 'time')], 
+                   [param('ns3::Time const &', 'delay')], 
                    is_virtual=True)
     ## default-simulator-impl.h (module 'core'): void ns3::DefaultSimulatorImpl::DoDispose() [member function]
     cls.add_method('DoDispose', 
@@ -3205,10 +3214,10 @@ def register_Ns3EmpiricalRandomVariable_methods(root_module, cls):
                    'double', 
                    [], 
                    is_virtual=True)
-    ## random-variable-stream.h (module 'core'): double ns3::EmpiricalRandomVariable::Interpolate(double arg0, double arg1, double arg2, double arg3, double arg4) [member function]
+    ## random-variable-stream.h (module 'core'): double ns3::EmpiricalRandomVariable::Interpolate(double c1, double c2, double v1, double v2, double r) [member function]
     cls.add_method('Interpolate', 
                    'double', 
-                   [param('double', 'arg0'), param('double', 'arg1'), param('double', 'arg2'), param('double', 'arg3'), param('double', 'arg4')], 
+                   [param('double', 'c1'), param('double', 'c2'), param('double', 'v1'), param('double', 'v2'), param('double', 'r')], 
                    visibility='private', is_virtual=True)
     ## random-variable-stream.h (module 'core'): void ns3::EmpiricalRandomVariable::Validate() [member function]
     cls.add_method('Validate', 
@@ -4001,10 +4010,10 @@ def register_Ns3RealtimeSimulatorImpl_methods(root_module, cls):
                    'void', 
                    [], 
                    is_virtual=True)
-    ## realtime-simulator-impl.h (module 'core'): ns3::EventId ns3::RealtimeSimulatorImpl::Schedule(ns3::Time const & time, ns3::EventImpl * event) [member function]
+    ## realtime-simulator-impl.h (module 'core'): ns3::EventId ns3::RealtimeSimulatorImpl::Schedule(ns3::Time const & delay, ns3::EventImpl * event) [member function]
     cls.add_method('Schedule', 
                    'ns3::EventId', 
-                   [param('ns3::Time const &', 'time'), param('ns3::EventImpl *', 'event')], 
+                   [param('ns3::Time const &', 'delay'), param('ns3::EventImpl *', 'event')], 
                    is_virtual=True)
     ## realtime-simulator-impl.h (module 'core'): ns3::EventId ns3::RealtimeSimulatorImpl::ScheduleDestroy(ns3::EventImpl * event) [member function]
     cls.add_method('ScheduleDestroy', 
@@ -4016,10 +4025,10 @@ def register_Ns3RealtimeSimulatorImpl_methods(root_module, cls):
                    'ns3::EventId', 
                    [param('ns3::EventImpl *', 'event')], 
                    is_virtual=True)
-    ## realtime-simulator-impl.h (module 'core'): void ns3::RealtimeSimulatorImpl::ScheduleRealtime(ns3::Time const & time, ns3::EventImpl * event) [member function]
+    ## realtime-simulator-impl.h (module 'core'): void ns3::RealtimeSimulatorImpl::ScheduleRealtime(ns3::Time const & delay, ns3::EventImpl * event) [member function]
     cls.add_method('ScheduleRealtime', 
                    'void', 
-                   [param('ns3::Time const &', 'time'), param('ns3::EventImpl *', 'event')])
+                   [param('ns3::Time const &', 'delay'), param('ns3::EventImpl *', 'event')])
     ## realtime-simulator-impl.h (module 'core'): void ns3::RealtimeSimulatorImpl::ScheduleRealtimeNow(ns3::EventImpl * event) [member function]
     cls.add_method('ScheduleRealtimeNow', 
                    'void', 
@@ -4028,14 +4037,14 @@ def register_Ns3RealtimeSimulatorImpl_methods(root_module, cls):
     cls.add_method('ScheduleRealtimeNowWithContext', 
                    'void', 
                    [param('uint32_t', 'context'), param('ns3::EventImpl *', 'event')])
-    ## realtime-simulator-impl.h (module 'core'): void ns3::RealtimeSimulatorImpl::ScheduleRealtimeWithContext(uint32_t context, ns3::Time const & time, ns3::EventImpl * event) [member function]
+    ## realtime-simulator-impl.h (module 'core'): void ns3::RealtimeSimulatorImpl::ScheduleRealtimeWithContext(uint32_t context, ns3::Time const & delay, ns3::EventImpl * event) [member function]
     cls.add_method('ScheduleRealtimeWithContext', 
                    'void', 
-                   [param('uint32_t', 'context'), param('ns3::Time const &', 'time'), param('ns3::EventImpl *', 'event')])
-    ## realtime-simulator-impl.h (module 'core'): void ns3::RealtimeSimulatorImpl::ScheduleWithContext(uint32_t context, ns3::Time const & time, ns3::EventImpl * event) [member function]
+                   [param('uint32_t', 'context'), param('ns3::Time const &', 'delay'), param('ns3::EventImpl *', 'event')])
+    ## realtime-simulator-impl.h (module 'core'): void ns3::RealtimeSimulatorImpl::ScheduleWithContext(uint32_t context, ns3::Time const & delay, ns3::EventImpl * event) [member function]
     cls.add_method('ScheduleWithContext', 
                    'void', 
-                   [param('uint32_t', 'context'), param('ns3::Time const &', 'time'), param('ns3::EventImpl *', 'event')], 
+                   [param('uint32_t', 'context'), param('ns3::Time const &', 'delay'), param('ns3::EventImpl *', 'event')], 
                    is_virtual=True)
     ## realtime-simulator-impl.h (module 'core'): void ns3::RealtimeSimulatorImpl::SetHardLimit(ns3::Time limit) [member function]
     cls.add_method('SetHardLimit', 
@@ -4055,10 +4064,10 @@ def register_Ns3RealtimeSimulatorImpl_methods(root_module, cls):
                    'void', 
                    [], 
                    is_virtual=True)
-    ## realtime-simulator-impl.h (module 'core'): void ns3::RealtimeSimulatorImpl::Stop(ns3::Time const & time) [member function]
+    ## realtime-simulator-impl.h (module 'core'): void ns3::RealtimeSimulatorImpl::Stop(ns3::Time const & delay) [member function]
     cls.add_method('Stop', 
                    'void', 
-                   [param('ns3::Time const &', 'time')], 
+                   [param('ns3::Time const &', 'delay')], 
                    is_virtual=True)
     ## realtime-simulator-impl.h (module 'core'): void ns3::RealtimeSimulatorImpl::DoDispose() [member function]
     cls.add_method('DoDispose', 
