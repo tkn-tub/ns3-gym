@@ -506,6 +506,7 @@ EdcaTxopN::NotifyAccessGranted (void)
 
           uint16_t sequence = m_txMiddle->GetNextSequenceNumberfor (&m_currentHdr);
           m_currentHdr.SetSequenceNumber (sequence);
+          m_stationManager->UpdateFragmentationThreshold ();
           m_currentHdr.SetFragmentNumber (0);
           m_currentHdr.SetNoMoreFragments ();
           m_currentHdr.SetNoRetry ();

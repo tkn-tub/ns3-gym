@@ -862,7 +862,7 @@ WifiRemoteStationManager::DoSetFragmentationThreshold (uint32_t threshold)
        * ASN.1 encoding of the MAC and PHY MIB (256 ... 8000)
        */
       NS_LOG_WARN ("Fragmentation threshold should be larger than 256. Setting to 256.");
-      m_fragmentationThreshold = 256;
+      m_nextFragmentationThreshold = 256;
     }
   else
     {
@@ -873,13 +873,19 @@ WifiRemoteStationManager::DoSetFragmentationThreshold (uint32_t threshold)
       if (threshold % 2 != 0)
         {
           NS_LOG_WARN ("Fragmentation threshold should be an even number. Setting to " << threshold - 1);
-          m_fragmentationThreshold = threshold - 1;
+          m_nextFragmentationThreshold = threshold - 1;
         }
       else
         {
-          m_fragmentationThreshold = threshold;
+          m_nextFragmentationThreshold = threshold;
         }
     }
+}
+
+void
+WifiRemoteStationManager::UpdateFragmentationThreshold (void)
+{
+  m_fragmentationThreshold = m_nextFragmentationThreshold;
 }
 
 uint32_t

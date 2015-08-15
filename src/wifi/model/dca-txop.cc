@@ -445,6 +445,7 @@ DcaTxop::NotifyAccessGranted (void)
       NS_ASSERT (m_currentPacket != 0);
       uint16_t sequence = m_txMiddle->GetNextSequenceNumberfor (&m_currentHdr);
       m_currentHdr.SetSequenceNumber (sequence);
+      m_stationManager->UpdateFragmentationThreshold ();
       m_currentHdr.SetFragmentNumber (0);
       m_currentHdr.SetNoMoreFragments ();
       m_currentHdr.SetNoRetry ();

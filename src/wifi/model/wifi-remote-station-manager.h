@@ -157,6 +157,11 @@ public:
    */
   void SetFragmentationThreshold (uint32_t threshold);
   /**
+   * Typically called to update the fragmentation threshold at the start of a new transmission.
+   * This avoid that the fragmentation threshold gets changed during a transmission (see bug 730).
+   */
+  void UpdateFragmentationThreshold (void);
+  /**
    * Records HT capabilities of the remote station.
    *
    * \param from the address of the station being recorded
@@ -999,7 +1004,8 @@ private:
   uint32_t m_maxSsrc;  //!< Maximum STA short retry count (SSRC)
   uint32_t m_maxSlrc;  //!< Maximum STA long retry count (SLRC)
   uint32_t m_rtsCtsThreshold;  //!< Threshold for RTS/CTS
-  uint32_t m_fragmentationThreshold;  //!< Threshold for fragmentation
+  uint32_t m_fragmentationThreshold;  //!< Current threshold for fragmentation
+  uint32_t m_nextFragmentationThreshold;  //!< Threshold for fragmentation that will be used for the next transmission
   uint8_t m_defaultTxPowerLevel;  //!< Default tranmission power level
   WifiMode m_nonUnicastMode;  //!< Transmission mode for non-unicast DATA frames
 
