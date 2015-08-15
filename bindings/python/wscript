@@ -278,11 +278,15 @@ int main ()
 
     gccxml_version_line = os.popen(gccxml[0] + " --version").readline().strip()
     m = re.match( "^GCC-XML version (\d\.\d(\.\d)?)$", gccxml_version_line)
-    gccxml_version = m.group(1)
-    gccxml_version_ok = ([int(s) for s in gccxml_version.split('.')] >= [0, 9])
+    try:
+        gccxml_version = m.group(1)
+        gccxml_version_ok = ([int(s) for s in gccxml_version.split('.')] >= [0, 9])
+    except AttributeError:
+        gccxml_version = gccxml_version_line
+        gccxml_version_ok = False
     conf.msg('Checking for gccxml version', gccxml_version)
     if not gccxml_version_ok:
-        Logs.warn("gccxml too old, need version >= 0.9; automatic scanning of API definitions will not be possible")
+        Logs.warn("gccxml version unknown or too old, need version >= 0.9; automatic scanning of API definitions will not be possible")
         conf.report_optional_feature("pygccxml", "Python API Scanning Support", False,
                                      "gccxml too old")
         return
