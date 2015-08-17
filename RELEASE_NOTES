@@ -27,12 +27,22 @@ Bugs fixed
 ----------
 - Bug 730 - Enabling fragmentation at run-time breaks simulation
 - Bug 1249 - doxygen comments on device-level SetMobility ()
+- Bug 1482 - mesh module was producing fatal error with ASCII and netanim traces
 - Bug 1736 - default dot11EDCATableMSDULifetime
+- Bug 1901 - mesh module producing malformed pcaps
 - Bug 1929 - TcpL4Protocol::Send must indicate the source address to routing (if known)
+- Bug 1982 - AODV and mesh modules use random variables before seeds can be set
+- Bug 2058 - TCP window update can shrink left edge of window
+- Bug 2063 - FdNetDevice::SendFrom assert does not account for headers correctly
+- Bug 2082:  Empirical RV fails if value provided in CDF function is negative
+- Bug 2093 - MultiModelSpectrumChannel::GetDevice only works for 0-th index
 - Bug 2096 - Wrong pcap information when MPDU aggregation is used
 - Bug 2108 - Erroneous implementation in InterferenceHelper
+- Bug 2119 - Fix memory leaks in FdNetDevice test due to non-executed events
 - Bug 2124 - UdpSocketImpl::ShutdownRecv doesn't stop the Ipv[4,6]EndPointDemux
+- Bug 2125 - subclasses must chain up to base class NotifyNewAggregate
 - Bug 2126 - LrWpanNetDevice silently accepts no mobility on the node
+- Bug 2127 - Scheduler benchmark utility works in first run only
 - Bug 2130 - Allow SimpleChannel to simulate hidden terminals.
 - Bug 2135 - TCP doesn't honor the socket's output interface
 - Bug 2136 - The usage of tid in wifi and wave module shall be "if (tid > 7)" rather than "if (tid >= 7)"
