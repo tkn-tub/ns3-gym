@@ -294,6 +294,14 @@ public:
    */
   void SetQosTxopLimit (uint8_t txop);
   /**
+   * Set the Mesh Control Present flag for the QoS header.
+   */
+  void SetQosMeshControlPresent ();
+  /**
+   * Clear the Mesh Control Present flag for the QoS header.
+   */
+  void SetQosNoMeshControlPresent ();
+  /**
    * Set order bit in the frame control field.
    */
   void SetOrder (void);

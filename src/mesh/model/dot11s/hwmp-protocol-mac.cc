@@ -203,6 +203,7 @@ HwmpProtocolMac::UpdateOutcomingFrame (Ptr<Packet> packet, WifiMacHeader & heade
   meshHdr.SetMeshTtl (tag.GetTtl ());
   packet->AddHeader (meshHdr);
   header.SetAddr1 (tag.GetAddress ());
+  header.SetQosMeshControlPresent ();
   return true;
 }
 WifiActionHeader

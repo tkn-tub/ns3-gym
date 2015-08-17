@@ -447,6 +447,21 @@ void WifiMacHeader::SetQosTxopLimit (uint8_t txop)
   m_qosStuff = txop;
 }
 
+void WifiMacHeader::SetQosMeshControlPresent (void)
+{
+  // mark bit 0 of this variable instead of bit 8, since m_qosStuff is
+  // shifted by one byte when serialized
+  m_qosStuff = m_qosStuff | 0x01; // bit 8 of QoS Control Field
+}
+
+void WifiMacHeader::SetQosNoMeshControlPresent ()
+{
+  // clear bit 0 of this variable instead of bit 8, since m_qosStuff is
+  // shifted by one byte when serialized
+  m_qosStuff = m_qosStuff & 0xfe; // bit 8 of QoS Control Field
+}
+
+
 Mac48Address
 WifiMacHeader::GetAddr1 (void) const
 {
