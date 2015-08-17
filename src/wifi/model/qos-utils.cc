@@ -27,6 +27,7 @@ namespace ns3 {
 AcIndex
 QosUtilsMapTidToAc (uint8_t tid)
 {
+  NS_ASSERT_MSG (tid < 8, "Tid " << (uint16_t) tid << " out of range");
   switch (tid)
     {
     case 0:
