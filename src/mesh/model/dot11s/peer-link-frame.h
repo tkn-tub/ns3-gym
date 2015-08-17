@@ -28,13 +28,12 @@
 #include "ie-dot11s-id.h"
 namespace ns3
 {
-class MeshWifiInterfaceMac;
 namespace dot11s
 {
 /**
  * \ingroup dot11s
  *
- * \brief 802.11s Peer link management frame
+ * \brief 802.11s Peer link open management frame
  * 
  * Peer link management frame included the following (see chapters 7.4.12.1-7.4.12.3 of 802.11s):
  * - Subtype field
@@ -42,12 +41,12 @@ namespace dot11s
  * - Supported rates
  * - Mesh ID of mesh
  */
-class PeerLinkFrameStart : public Header
+class PeerLinkOpenStart : public Header
 {
 public:
-  PeerLinkFrameStart ();
+  PeerLinkOpenStart ();
   ///\brief fields:
-  struct PlinkFrameStartFields
+  struct PlinkOpenStartFields
   {
     uint8_t subtype;
     IePeeringProtocol protocol; //Peering protocol version - in all subtypes - 3 octets
@@ -58,11 +57,8 @@ public:
     IeConfiguration config;     //open and confirm
     uint16_t reasonCode;        //close only
   };
-  ///\attention: must be set before deserialize, before only multihop
-  //action header knows about subtype
-  void SetPlinkFrameSubtype (uint8_t subtype);
-  void SetPlinkFrameStart (PlinkFrameStartFields);
-  PlinkFrameStartFields GetFields () const;
+  void SetPlinkOpenStart (PlinkOpenStartFields);
+  PlinkOpenStartFields GetFields () const;
 
   // Inherited from header:
   static  TypeId   GetTypeId ();
@@ -82,13 +78,126 @@ private:
   IeConfiguration m_config;
   uint16_t m_reasonCode;
 
-  friend bool operator== (const PeerLinkFrameStart & a, const PeerLinkFrameStart & b);
+  friend bool operator== (const PeerLinkOpenStart & a, const PeerLinkOpenStart & b);
 
-  PeerLinkFrameStart& operator= (const PeerLinkFrameStart &);
-  PeerLinkFrameStart (const PeerLinkFrameStart &);
+  PeerLinkOpenStart& operator= (const PeerLinkOpenStart &);
+  PeerLinkOpenStart (const PeerLinkOpenStart &);
 
 };
-bool operator== (const PeerLinkFrameStart & a, const PeerLinkFrameStart & b);
+
+bool operator== (const PeerLinkOpenStart & a, const PeerLinkOpenStart & b);
+
+/**
+ * \ingroup dot11s
+ *
+ * \brief 802.11s Peer link close management frame
+ * 
+ * Peer link management frame included the following (see chapters 7.4.12.1-7.4.12.3 of 802.11s):
+ * - Subtype field
+ * - Association ID field
+ * - Supported rates
+ * - Mesh ID of mesh
+ */
+class PeerLinkCloseStart : public Header
+{
+public:
+  PeerLinkCloseStart ();
+  ///\brief fields:
+  struct PlinkCloseStartFields
+  {
+    uint8_t subtype;
+    IePeeringProtocol protocol; //Peering protocol version - in all subtypes - 3 octets
+    uint16_t capability;        //open and confirm
+    uint16_t aid;               //confirm only
+    SupportedRates rates;       //open and confirm
+    IeMeshId meshId;            //open and close
+    IeConfiguration config;     //open and confirm
+    uint16_t reasonCode;        //close only
+  };
+  void SetPlinkCloseStart (PlinkCloseStartFields);
+  PlinkCloseStartFields GetFields () const;
+
+  // Inherited from header:
+  static  TypeId   GetTypeId ();
+  virtual TypeId   GetInstanceTypeId () const;
+  virtual void     Print (std::ostream &os) const;
+  virtual uint32_t GetSerializedSize () const;
+  virtual void     Serialize (Buffer::Iterator start) const;
+  virtual uint32_t Deserialize (Buffer::Iterator start);
+
+private:
+  uint8_t m_subtype;
+  IePeeringProtocol m_protocol;
+  uint16_t m_capability;
+  uint16_t m_aid;
+  SupportedRates m_rates;
+  IeMeshId m_meshId;
+  IeConfiguration m_config;
+  uint16_t m_reasonCode;
+
+  friend bool operator== (const PeerLinkCloseStart & a, const PeerLinkCloseStart & b);
+
+  PeerLinkCloseStart& operator= (const PeerLinkCloseStart &);
+  PeerLinkCloseStart (const PeerLinkCloseStart &);
+
+};
+bool operator== (const PeerLinkCloseStart & a, const PeerLinkCloseStart & b);
+
+/**
+ * \ingroup dot11s
+ *
+ * \brief 802.11s Peer link confirm management frame
+ * 
+ * Peer link management frame included the following (see chapters 7.4.12.1-7.4.12.3 of 802.11s):
+ * - Subtype field
+ * - Association ID field
+ * - Supported rates
+ * - Mesh ID of mesh
+ */
+class PeerLinkConfirmStart : public Header
+{
+public:
+  PeerLinkConfirmStart ();
+  ///\brief fields:
+  struct PlinkConfirmStartFields
+  {
+    uint8_t subtype;
+    IePeeringProtocol protocol; //Peering protocol version - in all subtypes - 3 octets
+    uint16_t capability;        //open and confirm
+    uint16_t aid;               //confirm only
+    SupportedRates rates;       //open and confirm
+    IeMeshId meshId;            //open and close
+    IeConfiguration config;     //open and confirm
+    uint16_t reasonCode;        //close only
+  };
+  void SetPlinkConfirmStart (PlinkConfirmStartFields);
+  PlinkConfirmStartFields GetFields () const;
+
+  // Inherited from header:
+  static  TypeId   GetTypeId ();
+  virtual TypeId   GetInstanceTypeId () const;
+  virtual void     Print (std::ostream &os) const;
+  virtual uint32_t GetSerializedSize () const;
+  virtual void     Serialize (Buffer::Iterator start) const;
+  virtual uint32_t Deserialize (Buffer::Iterator start);
+
+private:
+  uint8_t m_subtype;
+  IePeeringProtocol m_protocol;
+  uint16_t m_capability;
+  uint16_t m_aid;
+  SupportedRates m_rates;
+  IeMeshId m_meshId;
+  IeConfiguration m_config;
+  uint16_t m_reasonCode;
+
+  friend bool operator== (const PeerLinkConfirmStart & a, const PeerLinkConfirmStart & b);
+
+  PeerLinkConfirmStart& operator= (const PeerLinkConfirmStart &);
+  PeerLinkConfirmStart (const PeerLinkConfirmStart &);
+
+};
+bool operator== (const PeerLinkConfirmStart & a, const PeerLinkConfirmStart & b);
 } // namespace dot11s
 } // namespace ns3
 #endif
