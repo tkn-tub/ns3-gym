@@ -558,10 +558,18 @@ def register_types_ns3_dot11s(module):
     module.add_class('PeerLink', parent=root_module['ns3::Object'])
     ## peer-link.h (module 'mesh'): ns3::dot11s::PeerLink::PeerState [enumeration]
     module.add_enum('PeerState', ['IDLE', 'OPN_SNT', 'CNF_RCVD', 'OPN_RCVD', 'ESTAB', 'HOLDING'], outer_class=root_module['ns3::dot11s::PeerLink'])
-    ## peer-link-frame.h (module 'mesh'): ns3::dot11s::PeerLinkFrameStart [class]
-    module.add_class('PeerLinkFrameStart', parent=root_module['ns3::Header'])
-    ## peer-link-frame.h (module 'mesh'): ns3::dot11s::PeerLinkFrameStart::PlinkFrameStartFields [struct]
-    module.add_class('PlinkFrameStartFields', outer_class=root_module['ns3::dot11s::PeerLinkFrameStart'])
+    ## peer-link-frame.h (module 'mesh'): ns3::dot11s::PeerLinkCloseStart [class]
+    module.add_class('PeerLinkCloseStart', parent=root_module['ns3::Header'])
+    ## peer-link-frame.h (module 'mesh'): ns3::dot11s::PeerLinkCloseStart::PlinkCloseStartFields [struct]
+    module.add_class('PlinkCloseStartFields', outer_class=root_module['ns3::dot11s::PeerLinkCloseStart'])
+    ## peer-link-frame.h (module 'mesh'): ns3::dot11s::PeerLinkConfirmStart [class]
+    module.add_class('PeerLinkConfirmStart', parent=root_module['ns3::Header'])
+    ## peer-link-frame.h (module 'mesh'): ns3::dot11s::PeerLinkConfirmStart::PlinkConfirmStartFields [struct]
+    module.add_class('PlinkConfirmStartFields', outer_class=root_module['ns3::dot11s::PeerLinkConfirmStart'])
+    ## peer-link-frame.h (module 'mesh'): ns3::dot11s::PeerLinkOpenStart [class]
+    module.add_class('PeerLinkOpenStart', parent=root_module['ns3::Header'])
+    ## peer-link-frame.h (module 'mesh'): ns3::dot11s::PeerLinkOpenStart::PlinkOpenStartFields [struct]
+    module.add_class('PlinkOpenStartFields', outer_class=root_module['ns3::dot11s::PeerLinkOpenStart'])
     ## peer-management-protocol.h (module 'mesh'): ns3::dot11s::PeerManagementProtocol [class]
     module.add_class('PeerManagementProtocol', parent=root_module['ns3::Object'])
     module.add_container('std::vector< std::pair< unsigned int, ns3::Mac48Address > >', 'std::pair< unsigned int, ns3::Mac48Address >', container_type=u'vector')
@@ -784,8 +792,12 @@ def register_methods(root_module):
     register_Ns3Dot11sIeRann_methods(root_module, root_module['ns3::dot11s::IeRann'])
     register_Ns3Dot11sMeshHeader_methods(root_module, root_module['ns3::dot11s::MeshHeader'])
     register_Ns3Dot11sPeerLink_methods(root_module, root_module['ns3::dot11s::PeerLink'])
-    register_Ns3Dot11sPeerLinkFrameStart_methods(root_module, root_module['ns3::dot11s::PeerLinkFrameStart'])
-    register_Ns3Dot11sPeerLinkFrameStartPlinkFrameStartFields_methods(root_module, root_module['ns3::dot11s::PeerLinkFrameStart::PlinkFrameStartFields'])
+    register_Ns3Dot11sPeerLinkCloseStart_methods(root_module, root_module['ns3::dot11s::PeerLinkCloseStart'])
+    register_Ns3Dot11sPeerLinkCloseStartPlinkCloseStartFields_methods(root_module, root_module['ns3::dot11s::PeerLinkCloseStart::PlinkCloseStartFields'])
+    register_Ns3Dot11sPeerLinkConfirmStart_methods(root_module, root_module['ns3::dot11s::PeerLinkConfirmStart'])
+    register_Ns3Dot11sPeerLinkConfirmStartPlinkConfirmStartFields_methods(root_module, root_module['ns3::dot11s::PeerLinkConfirmStart::PlinkConfirmStartFields'])
+    register_Ns3Dot11sPeerLinkOpenStart_methods(root_module, root_module['ns3::dot11s::PeerLinkOpenStart'])
+    register_Ns3Dot11sPeerLinkOpenStartPlinkOpenStartFields_methods(root_module, root_module['ns3::dot11s::PeerLinkOpenStart::PlinkOpenStartFields'])
     register_Ns3Dot11sPeerManagementProtocol_methods(root_module, root_module['ns3::dot11s::PeerManagementProtocol'])
     register_Ns3FlameFlameHeader_methods(root_module, root_module['ns3::flame::FlameHeader'])
     register_Ns3FlameFlameProtocol_methods(root_module, root_module['ns3::flame::FlameProtocol'])
@@ -5755,6 +5767,10 @@ def register_Ns3WifiMacHeader_methods(root_module, cls):
     cls.add_method('SetQosEosp', 
                    'void', 
                    [])
+    ## wifi-mac-header.h (module 'wifi'): void ns3::WifiMacHeader::SetQosMeshControlPresent() [member function]
+    cls.add_method('SetQosMeshControlPresent', 
+                   'void', 
+                   [])
     ## wifi-mac-header.h (module 'wifi'): void ns3::WifiMacHeader::SetQosNoAck() [member function]
     cls.add_method('SetQosNoAck', 
                    'void', 
@@ -5765,6 +5781,10 @@ def register_Ns3WifiMacHeader_methods(root_module, cls):
                    [])
     ## wifi-mac-header.h (module 'wifi'): void ns3::WifiMacHeader::SetQosNoEosp() [member function]
     cls.add_method('SetQosNoEosp', 
+                   'void', 
+                   [])
+    ## wifi-mac-header.h (module 'wifi'): void ns3::WifiMacHeader::SetQosNoMeshControlPresent() [member function]
+    cls.add_method('SetQosNoMeshControlPresent', 
                    'void', 
                    [])
     ## wifi-mac-header.h (module 'wifi'): void ns3::WifiMacHeader::SetQosNormalAck() [member function]
@@ -6769,6 +6789,10 @@ def register_Ns3WifiRemoteStationManager_methods(root_module, cls):
                    'void', 
                    [param('ns3::Ptr< ns3::WifiPhy >', 'phy')], 
                    is_virtual=True)
+    ## wifi-remote-station-manager.h (module 'wifi'): void ns3::WifiRemoteStationManager::UpdateFragmentationThreshold() [member function]
+    cls.add_method('UpdateFragmentationThreshold', 
+                   'void', 
+                   [])
     ## wifi-remote-station-manager.h (module 'wifi'): void ns3::WifiRemoteStationManager::DoDispose() [member function]
     cls.add_method('DoDispose', 
                    'void', 
@@ -8465,15 +8489,25 @@ def register_Ns3Mac48AddressValue_methods(root_module, cls):
     return
 
 def register_Ns3MeshInformationElementVector_methods(root_module, cls):
-    ## mesh-information-element-vector.h (module 'mesh'): ns3::MeshInformationElementVector::MeshInformationElementVector() [constructor]
-    cls.add_constructor([])
     ## mesh-information-element-vector.h (module 'mesh'): ns3::MeshInformationElementVector::MeshInformationElementVector(ns3::MeshInformationElementVector const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::MeshInformationElementVector const &', 'arg0')])
+    ## mesh-information-element-vector.h (module 'mesh'): ns3::MeshInformationElementVector::MeshInformationElementVector() [constructor]
+    cls.add_constructor([])
     ## mesh-information-element-vector.h (module 'mesh'): uint32_t ns3::MeshInformationElementVector::DeserializeSingleIe(ns3::Buffer::Iterator start) [member function]
     cls.add_method('DeserializeSingleIe', 
                    'uint32_t', 
                    [param('ns3::Buffer::Iterator', 'start')], 
                    is_virtual=True)
+    ## mesh-information-element-vector.h (module 'mesh'): ns3::TypeId ns3::MeshInformationElementVector::GetInstanceTypeId() const [member function]
+    cls.add_method('GetInstanceTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## mesh-information-element-vector.h (module 'mesh'): static ns3::TypeId ns3::MeshInformationElementVector::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
     return
 
 def register_Ns3MeshL2RoutingProtocol_methods(root_module, cls):
@@ -11573,76 +11607,184 @@ def register_Ns3Dot11sPeerLink_methods(root_module, cls):
                    is_const=True)
     return
 
-def register_Ns3Dot11sPeerLinkFrameStart_methods(root_module, cls):
+def register_Ns3Dot11sPeerLinkCloseStart_methods(root_module, cls):
     cls.add_binary_comparison_operator('==')
-    ## peer-link-frame.h (module 'mesh'): ns3::dot11s::PeerLinkFrameStart::PeerLinkFrameStart() [constructor]
+    ## peer-link-frame.h (module 'mesh'): ns3::dot11s::PeerLinkCloseStart::PeerLinkCloseStart() [constructor]
     cls.add_constructor([])
-    ## peer-link-frame.h (module 'mesh'): uint32_t ns3::dot11s::PeerLinkFrameStart::Deserialize(ns3::Buffer::Iterator start) [member function]
+    ## peer-link-frame.h (module 'mesh'): uint32_t ns3::dot11s::PeerLinkCloseStart::Deserialize(ns3::Buffer::Iterator start) [member function]
     cls.add_method('Deserialize', 
                    'uint32_t', 
                    [param('ns3::Buffer::Iterator', 'start')], 
                    is_virtual=True)
-    ## peer-link-frame.h (module 'mesh'): ns3::dot11s::PeerLinkFrameStart::PlinkFrameStartFields ns3::dot11s::PeerLinkFrameStart::GetFields() const [member function]
+    ## peer-link-frame.h (module 'mesh'): ns3::dot11s::PeerLinkCloseStart::PlinkCloseStartFields ns3::dot11s::PeerLinkCloseStart::GetFields() const [member function]
     cls.add_method('GetFields', 
-                   'ns3::dot11s::PeerLinkFrameStart::PlinkFrameStartFields', 
+                   'ns3::dot11s::PeerLinkCloseStart::PlinkCloseStartFields', 
                    [], 
                    is_const=True)
-    ## peer-link-frame.h (module 'mesh'): ns3::TypeId ns3::dot11s::PeerLinkFrameStart::GetInstanceTypeId() const [member function]
+    ## peer-link-frame.h (module 'mesh'): ns3::TypeId ns3::dot11s::PeerLinkCloseStart::GetInstanceTypeId() const [member function]
     cls.add_method('GetInstanceTypeId', 
                    'ns3::TypeId', 
                    [], 
                    is_const=True, is_virtual=True)
-    ## peer-link-frame.h (module 'mesh'): uint32_t ns3::dot11s::PeerLinkFrameStart::GetSerializedSize() const [member function]
+    ## peer-link-frame.h (module 'mesh'): uint32_t ns3::dot11s::PeerLinkCloseStart::GetSerializedSize() const [member function]
     cls.add_method('GetSerializedSize', 
                    'uint32_t', 
                    [], 
                    is_const=True, is_virtual=True)
-    ## peer-link-frame.h (module 'mesh'): static ns3::TypeId ns3::dot11s::PeerLinkFrameStart::GetTypeId() [member function]
+    ## peer-link-frame.h (module 'mesh'): static ns3::TypeId ns3::dot11s::PeerLinkCloseStart::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
-    ## peer-link-frame.h (module 'mesh'): void ns3::dot11s::PeerLinkFrameStart::Print(std::ostream & os) const [member function]
+    ## peer-link-frame.h (module 'mesh'): void ns3::dot11s::PeerLinkCloseStart::Print(std::ostream & os) const [member function]
     cls.add_method('Print', 
                    'void', 
                    [param('std::ostream &', 'os')], 
                    is_const=True, is_virtual=True)
-    ## peer-link-frame.h (module 'mesh'): void ns3::dot11s::PeerLinkFrameStart::Serialize(ns3::Buffer::Iterator start) const [member function]
+    ## peer-link-frame.h (module 'mesh'): void ns3::dot11s::PeerLinkCloseStart::Serialize(ns3::Buffer::Iterator start) const [member function]
     cls.add_method('Serialize', 
                    'void', 
                    [param('ns3::Buffer::Iterator', 'start')], 
                    is_const=True, is_virtual=True)
-    ## peer-link-frame.h (module 'mesh'): void ns3::dot11s::PeerLinkFrameStart::SetPlinkFrameStart(ns3::dot11s::PeerLinkFrameStart::PlinkFrameStartFields arg0) [member function]
-    cls.add_method('SetPlinkFrameStart', 
+    ## peer-link-frame.h (module 'mesh'): void ns3::dot11s::PeerLinkCloseStart::SetPlinkCloseStart(ns3::dot11s::PeerLinkCloseStart::PlinkCloseStartFields arg0) [member function]
+    cls.add_method('SetPlinkCloseStart', 
                    'void', 
-                   [param('ns3::dot11s::PeerLinkFrameStart::PlinkFrameStartFields', 'arg0')])
-    ## peer-link-frame.h (module 'mesh'): void ns3::dot11s::PeerLinkFrameStart::SetPlinkFrameSubtype(uint8_t subtype) [member function]
-    cls.add_method('SetPlinkFrameSubtype', 
-                   'void', 
-                   [param('uint8_t', 'subtype')])
+                   [param('ns3::dot11s::PeerLinkCloseStart::PlinkCloseStartFields', 'arg0')])
     return
 
-def register_Ns3Dot11sPeerLinkFrameStartPlinkFrameStartFields_methods(root_module, cls):
-    ## peer-link-frame.h (module 'mesh'): ns3::dot11s::PeerLinkFrameStart::PlinkFrameStartFields::PlinkFrameStartFields() [constructor]
+def register_Ns3Dot11sPeerLinkCloseStartPlinkCloseStartFields_methods(root_module, cls):
+    ## peer-link-frame.h (module 'mesh'): ns3::dot11s::PeerLinkCloseStart::PlinkCloseStartFields::PlinkCloseStartFields() [constructor]
     cls.add_constructor([])
-    ## peer-link-frame.h (module 'mesh'): ns3::dot11s::PeerLinkFrameStart::PlinkFrameStartFields::PlinkFrameStartFields(ns3::dot11s::PeerLinkFrameStart::PlinkFrameStartFields const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::dot11s::PeerLinkFrameStart::PlinkFrameStartFields const &', 'arg0')])
-    ## peer-link-frame.h (module 'mesh'): ns3::dot11s::PeerLinkFrameStart::PlinkFrameStartFields::aid [variable]
-    cls.add_instance_attribute('aid', 'uint16_t', is_const=False)
-    ## peer-link-frame.h (module 'mesh'): ns3::dot11s::PeerLinkFrameStart::PlinkFrameStartFields::capability [variable]
-    cls.add_instance_attribute('capability', 'uint16_t', is_const=False)
-    ## peer-link-frame.h (module 'mesh'): ns3::dot11s::PeerLinkFrameStart::PlinkFrameStartFields::config [variable]
-    cls.add_instance_attribute('config', 'ns3::dot11s::IeConfiguration', is_const=False)
-    ## peer-link-frame.h (module 'mesh'): ns3::dot11s::PeerLinkFrameStart::PlinkFrameStartFields::meshId [variable]
+    ## peer-link-frame.h (module 'mesh'): ns3::dot11s::PeerLinkCloseStart::PlinkCloseStartFields::PlinkCloseStartFields(ns3::dot11s::PeerLinkCloseStart::PlinkCloseStartFields const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::dot11s::PeerLinkCloseStart::PlinkCloseStartFields const &', 'arg0')])
+    ## peer-link-frame.h (module 'mesh'): ns3::dot11s::PeerLinkCloseStart::PlinkCloseStartFields::meshId [variable]
     cls.add_instance_attribute('meshId', 'ns3::dot11s::IeMeshId', is_const=False)
-    ## peer-link-frame.h (module 'mesh'): ns3::dot11s::PeerLinkFrameStart::PlinkFrameStartFields::protocol [variable]
+    ## peer-link-frame.h (module 'mesh'): ns3::dot11s::PeerLinkCloseStart::PlinkCloseStartFields::protocol [variable]
     cls.add_instance_attribute('protocol', 'ns3::dot11s::IePeeringProtocol', is_const=False)
-    ## peer-link-frame.h (module 'mesh'): ns3::dot11s::PeerLinkFrameStart::PlinkFrameStartFields::rates [variable]
+    return
+
+def register_Ns3Dot11sPeerLinkConfirmStart_methods(root_module, cls):
+    cls.add_binary_comparison_operator('==')
+    ## peer-link-frame.h (module 'mesh'): ns3::dot11s::PeerLinkConfirmStart::PeerLinkConfirmStart() [constructor]
+    cls.add_constructor([])
+    ## peer-link-frame.h (module 'mesh'): uint32_t ns3::dot11s::PeerLinkConfirmStart::Deserialize(ns3::Buffer::Iterator start) [member function]
+    cls.add_method('Deserialize', 
+                   'uint32_t', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_virtual=True)
+    ## peer-link-frame.h (module 'mesh'): ns3::dot11s::PeerLinkConfirmStart::PlinkConfirmStartFields ns3::dot11s::PeerLinkConfirmStart::GetFields() const [member function]
+    cls.add_method('GetFields', 
+                   'ns3::dot11s::PeerLinkConfirmStart::PlinkConfirmStartFields', 
+                   [], 
+                   is_const=True)
+    ## peer-link-frame.h (module 'mesh'): ns3::TypeId ns3::dot11s::PeerLinkConfirmStart::GetInstanceTypeId() const [member function]
+    cls.add_method('GetInstanceTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## peer-link-frame.h (module 'mesh'): uint32_t ns3::dot11s::PeerLinkConfirmStart::GetSerializedSize() const [member function]
+    cls.add_method('GetSerializedSize', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## peer-link-frame.h (module 'mesh'): static ns3::TypeId ns3::dot11s::PeerLinkConfirmStart::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## peer-link-frame.h (module 'mesh'): void ns3::dot11s::PeerLinkConfirmStart::Print(std::ostream & os) const [member function]
+    cls.add_method('Print', 
+                   'void', 
+                   [param('std::ostream &', 'os')], 
+                   is_const=True, is_virtual=True)
+    ## peer-link-frame.h (module 'mesh'): void ns3::dot11s::PeerLinkConfirmStart::Serialize(ns3::Buffer::Iterator start) const [member function]
+    cls.add_method('Serialize', 
+                   'void', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_const=True, is_virtual=True)
+    ## peer-link-frame.h (module 'mesh'): void ns3::dot11s::PeerLinkConfirmStart::SetPlinkConfirmStart(ns3::dot11s::PeerLinkConfirmStart::PlinkConfirmStartFields arg0) [member function]
+    cls.add_method('SetPlinkConfirmStart', 
+                   'void', 
+                   [param('ns3::dot11s::PeerLinkConfirmStart::PlinkConfirmStartFields', 'arg0')])
+    return
+
+def register_Ns3Dot11sPeerLinkConfirmStartPlinkConfirmStartFields_methods(root_module, cls):
+    ## peer-link-frame.h (module 'mesh'): ns3::dot11s::PeerLinkConfirmStart::PlinkConfirmStartFields::PlinkConfirmStartFields() [constructor]
+    cls.add_constructor([])
+    ## peer-link-frame.h (module 'mesh'): ns3::dot11s::PeerLinkConfirmStart::PlinkConfirmStartFields::PlinkConfirmStartFields(ns3::dot11s::PeerLinkConfirmStart::PlinkConfirmStartFields const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::dot11s::PeerLinkConfirmStart::PlinkConfirmStartFields const &', 'arg0')])
+    ## peer-link-frame.h (module 'mesh'): ns3::dot11s::PeerLinkConfirmStart::PlinkConfirmStartFields::aid [variable]
+    cls.add_instance_attribute('aid', 'uint16_t', is_const=False)
+    ## peer-link-frame.h (module 'mesh'): ns3::dot11s::PeerLinkConfirmStart::PlinkConfirmStartFields::capability [variable]
+    cls.add_instance_attribute('capability', 'uint16_t', is_const=False)
+    ## peer-link-frame.h (module 'mesh'): ns3::dot11s::PeerLinkConfirmStart::PlinkConfirmStartFields::config [variable]
+    cls.add_instance_attribute('config', 'ns3::dot11s::IeConfiguration', is_const=False)
+    ## peer-link-frame.h (module 'mesh'): ns3::dot11s::PeerLinkConfirmStart::PlinkConfirmStartFields::protocol [variable]
+    cls.add_instance_attribute('protocol', 'ns3::dot11s::IePeeringProtocol', is_const=False)
+    ## peer-link-frame.h (module 'mesh'): ns3::dot11s::PeerLinkConfirmStart::PlinkConfirmStartFields::rates [variable]
     cls.add_instance_attribute('rates', 'ns3::SupportedRates', is_const=False)
-    ## peer-link-frame.h (module 'mesh'): ns3::dot11s::PeerLinkFrameStart::PlinkFrameStartFields::reasonCode [variable]
-    cls.add_instance_attribute('reasonCode', 'uint16_t', is_const=False)
-    ## peer-link-frame.h (module 'mesh'): ns3::dot11s::PeerLinkFrameStart::PlinkFrameStartFields::subtype [variable]
-    cls.add_instance_attribute('subtype', 'uint8_t', is_const=False)
+    return
+
+def register_Ns3Dot11sPeerLinkOpenStart_methods(root_module, cls):
+    cls.add_binary_comparison_operator('==')
+    ## peer-link-frame.h (module 'mesh'): ns3::dot11s::PeerLinkOpenStart::PeerLinkOpenStart() [constructor]
+    cls.add_constructor([])
+    ## peer-link-frame.h (module 'mesh'): uint32_t ns3::dot11s::PeerLinkOpenStart::Deserialize(ns3::Buffer::Iterator start) [member function]
+    cls.add_method('Deserialize', 
+                   'uint32_t', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_virtual=True)
+    ## peer-link-frame.h (module 'mesh'): ns3::dot11s::PeerLinkOpenStart::PlinkOpenStartFields ns3::dot11s::PeerLinkOpenStart::GetFields() const [member function]
+    cls.add_method('GetFields', 
+                   'ns3::dot11s::PeerLinkOpenStart::PlinkOpenStartFields', 
+                   [], 
+                   is_const=True)
+    ## peer-link-frame.h (module 'mesh'): ns3::TypeId ns3::dot11s::PeerLinkOpenStart::GetInstanceTypeId() const [member function]
+    cls.add_method('GetInstanceTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## peer-link-frame.h (module 'mesh'): uint32_t ns3::dot11s::PeerLinkOpenStart::GetSerializedSize() const [member function]
+    cls.add_method('GetSerializedSize', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## peer-link-frame.h (module 'mesh'): static ns3::TypeId ns3::dot11s::PeerLinkOpenStart::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## peer-link-frame.h (module 'mesh'): void ns3::dot11s::PeerLinkOpenStart::Print(std::ostream & os) const [member function]
+    cls.add_method('Print', 
+                   'void', 
+                   [param('std::ostream &', 'os')], 
+                   is_const=True, is_virtual=True)
+    ## peer-link-frame.h (module 'mesh'): void ns3::dot11s::PeerLinkOpenStart::Serialize(ns3::Buffer::Iterator start) const [member function]
+    cls.add_method('Serialize', 
+                   'void', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_const=True, is_virtual=True)
+    ## peer-link-frame.h (module 'mesh'): void ns3::dot11s::PeerLinkOpenStart::SetPlinkOpenStart(ns3::dot11s::PeerLinkOpenStart::PlinkOpenStartFields arg0) [member function]
+    cls.add_method('SetPlinkOpenStart', 
+                   'void', 
+                   [param('ns3::dot11s::PeerLinkOpenStart::PlinkOpenStartFields', 'arg0')])
+    return
+
+def register_Ns3Dot11sPeerLinkOpenStartPlinkOpenStartFields_methods(root_module, cls):
+    ## peer-link-frame.h (module 'mesh'): ns3::dot11s::PeerLinkOpenStart::PlinkOpenStartFields::PlinkOpenStartFields() [constructor]
+    cls.add_constructor([])
+    ## peer-link-frame.h (module 'mesh'): ns3::dot11s::PeerLinkOpenStart::PlinkOpenStartFields::PlinkOpenStartFields(ns3::dot11s::PeerLinkOpenStart::PlinkOpenStartFields const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::dot11s::PeerLinkOpenStart::PlinkOpenStartFields const &', 'arg0')])
+    ## peer-link-frame.h (module 'mesh'): ns3::dot11s::PeerLinkOpenStart::PlinkOpenStartFields::capability [variable]
+    cls.add_instance_attribute('capability', 'uint16_t', is_const=False)
+    ## peer-link-frame.h (module 'mesh'): ns3::dot11s::PeerLinkOpenStart::PlinkOpenStartFields::config [variable]
+    cls.add_instance_attribute('config', 'ns3::dot11s::IeConfiguration', is_const=False)
+    ## peer-link-frame.h (module 'mesh'): ns3::dot11s::PeerLinkOpenStart::PlinkOpenStartFields::meshId [variable]
+    cls.add_instance_attribute('meshId', 'ns3::dot11s::IeMeshId', is_const=False)
+    ## peer-link-frame.h (module 'mesh'): ns3::dot11s::PeerLinkOpenStart::PlinkOpenStartFields::protocol [variable]
+    cls.add_instance_attribute('protocol', 'ns3::dot11s::IePeeringProtocol', is_const=False)
+    ## peer-link-frame.h (module 'mesh'): ns3::dot11s::PeerLinkOpenStart::PlinkOpenStartFields::rates [variable]
+    cls.add_instance_attribute('rates', 'ns3::SupportedRates', is_const=False)
     return
 
 def register_Ns3Dot11sPeerManagementProtocol_methods(root_module, cls):
