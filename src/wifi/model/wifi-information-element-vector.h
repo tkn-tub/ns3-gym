@@ -42,7 +42,7 @@ class WifiInformationElementVector : public Header
 {
 public:
   WifiInformationElementVector ();
-  ~WifiInformationElementVector ();
+  virtual ~WifiInformationElementVector ();
 
   static TypeId GetTypeId ();
   TypeId GetInstanceTypeId () const;

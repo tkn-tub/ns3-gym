@@ -36,6 +36,33 @@
 
 namespace ns3 {
 
+NS_OBJECT_ENSURE_REGISTERED (MeshInformationElementVector);
+
+MeshInformationElementVector::MeshInformationElementVector ()
+{
+}
+
+MeshInformationElementVector::~MeshInformationElementVector ()
+{
+}
+
+
+TypeId
+MeshInformationElementVector::GetTypeId ()
+{
+  static TypeId tid = TypeId ("ns3::MeshInformationElementVector")
+    .SetParent<WifiInformationElementVector> ()
+    .SetGroupName ("Mesh")
+    .AddConstructor<MeshInformationElementVector> ();
+  return tid;
+}
+
+TypeId
+MeshInformationElementVector::GetInstanceTypeId () const
+{
+  return GetTypeId ();
+}
+
 uint32_t
 MeshInformationElementVector::DeserializeSingleIe (Buffer::Iterator start)
 {

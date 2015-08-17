@@ -67,7 +67,7 @@ private:
   /// Beacon header
   MgtBeaconHeader m_header;
   /// List of information elements added
-  WifiInformationElementVector m_elements;
+  MeshInformationElementVector m_elements;
 };
 
 }

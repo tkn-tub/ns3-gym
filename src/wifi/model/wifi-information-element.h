@@ -88,6 +88,35 @@ typedef uint8_t WifiInformationElementId;
 // 128 to 220 are reserved in 802.11-2007
 #define IE_VENDOR_SPECIFIC                     ((WifiInformationElementId)221)
 // 222 to 255 are reserved in 802.11-2007
+#define IE11S_LINK_METRIC_REPORT               ((WifiInformationElementId)115)
+#define IE11S_CONGESTION_NOTIFICATION          ((WifiInformationElementId)116)
+#define IE11S_SUPP_MBSS_REG_CLASSES_CHANNELS   ((WifiInformationElementId)23)
+#define IE11S_MESH_CHANNEL_SWITCH_ANNOUNCEMENT ((WifiInformationElementId)24)
+#define IE11S_MESH_TIM                         ((WifiInformationElementId)25)
+#define IE11S_AWAKE_WINDOW                     ((WifiInformationElementId)119)
+#define IE11S_BEACON_TIMING                    ((WifiInformationElementId)120)
+#define IE11S_MCCAOP_SETUP_REQUEST             ((WifiInformationElementId)121)
+#define IE11S_MCCAOP_SETUP_REPLY               ((WifiInformationElementId)122)
+#define IE11S_MCCAOP_ADVERTISEMENT             ((WifiInformationElementId)123)
+#define IE11S_MCCAOP_RESERVATION_TEARDOWN      ((WifiInformationElementId)31)
+#define IE11S_PORTAL_ANNOUNCEMENT              ((WifiInformationElementId)32)
+#define IE11S_PROXY_UPDATE                     ((WifiInformationElementId)137)
+#define IE11S_PROXY_UPDATE_CONFIRMATION        ((WifiInformationElementId)138)
+#define IE11S_ABBREVIATED_HANDSHAKE            ((WifiInformationElementId)39)
+/* begin of open80211s-compatible IDs */
+#define IE11S_MESH_CONFIGURATION               ((WifiInformationElementId)113)
+#define IE11S_MESH_ID                          ((WifiInformationElementId)114)
+#define IE11S_PEERING_MANAGEMENT               ((WifiInformationElementId)117)
+/* end of open80211s-compatible IDs */
+#define IE11S_RANN                             ((WifiInformationElementId)126)
+/* begin of open80211s-compatible IDs */
+#define IE11S_PREQ                             ((WifiInformationElementId)130)
+#define IE11S_PREP                             ((WifiInformationElementId)131)
+#define IE11S_PERR                             ((WifiInformationElementId)132)
+/* end of open80211s-compatible IDs */
+#define IE11S_MESH_PEERING_PROTOCOL_VERSION    ((WifiInformationElementId)74)
+
+
 
 
 /**

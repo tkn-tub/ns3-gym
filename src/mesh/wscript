@@ -57,7 +57,6 @@ def build(bld):
     headers = bld(features='ns3header')
     headers.module = 'mesh'
     headers.source = [
-        'model/mesh-information-element.h',
         'model/mesh-information-element-vector.h',
         'model/mesh-point-device.h',
         'model/mesh-l2-routing-protocol.h',
