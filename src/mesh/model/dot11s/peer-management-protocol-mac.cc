@@ -82,7 +82,7 @@ PeerManagementProtocolMac::Receive (Ptr<Packet> const_packet, const WifiMacHeade
       // Beacon shall not be dropped. May be needed to another plugins
       return true;
     }
-  uint16_t aid;
+  uint16_t aid = 0;  // applicable only in Confirm message
   IeConfiguration config;
   if (header.IsAction ())
     {
