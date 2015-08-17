@@ -473,6 +473,8 @@ public:
 
 
 private:
+  std::string CategoryValueToString (CategoryValue value) const;
+  std::string SelfProtectedActionValueToString (SelfProtectedActionValue value) const;
   uint8_t m_category; //!< Category of the action
   uint8_t m_actionValue; //!< Action value
 };

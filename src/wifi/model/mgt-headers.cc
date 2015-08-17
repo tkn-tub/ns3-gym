@@ -20,6 +20,7 @@
  * Author: Mirko Banchi <mk.banchi@gmail.com>
  */
 
+#include <sstream>
 #include "mgt-headers.h"
 #include "ns3/simulator.h"
 #include "ns3/assert.h"
@@ -729,9 +730,68 @@ WifiActionHeader::GetInstanceTypeId () const
   return GetTypeId ();
 }
 
+std::string
+WifiActionHeader::CategoryValueToString (CategoryValue value) const
+{
+  if (value == BLOCK_ACK)
+    {
+      return "BlockAck"; 
+    }
+  else if (value == MESH)
+    {  
+      return "Mesh";
+    }
+  else if (value == SELF_PROTECTED)
+    {
+      return "SelfProtected";
+    }
+  else if (value == VENDOR_SPECIFIC_ACTION)
+    {
+      return "VendorSpecificAction";
+    }
+  else
+    {
+      std::ostringstream convert;
+      convert << value;
+      return convert.str ();
+    }
+}
+std::string
+WifiActionHeader::SelfProtectedActionValueToString (SelfProtectedActionValue value) const
+{
+  if (value == PEER_LINK_OPEN)
+    {
+      return "PeerLinkOpen";
+    }
+  else if (value == PEER_LINK_CONFIRM)
+    {
+      return "PeerLinkConfirm";
+    }
+  else if (value == PEER_LINK_CLOSE)
+    {
+      return "PeerLinkClose";
+    }
+  else if (value == GROUP_KEY_INFORM)
+    {
+      return "GroupKeyInform";
+    }
+  else if (value == GROUP_KEY_ACK)
+    {
+      return "GroupKeyAck";
+    }
+  else
+    {
+      std::ostringstream convert;
+      convert << value;
+      return convert.str ();
+    }
+}
+
 void
 WifiActionHeader::Print (std::ostream &os) const
 {
+  os << "category=" << CategoryValueToString ((CategoryValue) m_category) 
+     << ", value=" << SelfProtectedActionValueToString ((SelfProtectedActionValue) m_actionValue);
 }
 
 uint32_t

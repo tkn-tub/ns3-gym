@@ -218,10 +218,7 @@ PeerLinkFrameStartTest::DoRun ()
   {
     PeerLinkOpenStart a;
     PeerLinkOpenStart::PlinkOpenStartFields fields;
-    fields.subtype = (uint8_t)(WifiActionHeader::PEER_LINK_OPEN);
     fields.capability = 0;
-    fields.aid = 101;
-    fields.reasonCode = 12;
     fields.meshId = IeMeshId ("qwertyuiop");
     a.SetPlinkOpenStart (fields);
     Ptr<Packet> packet = Create<Packet> ();
@@ -233,11 +230,8 @@ PeerLinkFrameStartTest::DoRun ()
   {
     PeerLinkConfirmStart a;
     PeerLinkConfirmStart::PlinkConfirmStartFields fields;
-    fields.subtype = (uint8_t)(WifiActionHeader::PEER_LINK_CONFIRM);
     fields.capability = 0;
     fields.aid = 1234;
-    fields.reasonCode = 12;
-    fields.meshId = IeMeshId ("qwerty");
     a.SetPlinkConfirmStart (fields);
     Ptr<Packet> packet = Create<Packet> ();
     packet->AddHeader (a);
@@ -248,11 +242,7 @@ PeerLinkFrameStartTest::DoRun ()
   {
     PeerLinkCloseStart a;
     PeerLinkCloseStart::PlinkCloseStartFields fields;
-    fields.subtype = (uint8_t)(WifiActionHeader::PEER_LINK_CLOSE);
-    fields.capability = 0;
-    fields.aid = 10;
     fields.meshId = IeMeshId ("qqq");
-    fields.reasonCode = 12;
     a.SetPlinkCloseStart (fields);
     Ptr<Packet> packet = Create<Packet> ();
     packet->AddHeader (a);

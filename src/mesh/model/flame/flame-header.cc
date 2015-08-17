@@ -52,8 +52,8 @@ FlameHeader::GetInstanceTypeId (void) const
 void
 FlameHeader::Print (std::ostream &os) const
 {
-  os << "Cost             = " << (uint16_t) m_cost << std::endl << "Sequence number  = " << m_seqno
-     << std::endl << "Orig Destination = " << m_origDst << std::endl << "Orig Source      = " << m_origSrc << std::endl;
+  os << "Cost= " << (uint16_t) m_cost << ", Sequence number= " << m_seqno
+     << ", Orig Destination= " << m_origDst << ", Orig Source= " << m_origSrc;
 }
 uint32_t
 FlameHeader::GetSerializedSize (void) const

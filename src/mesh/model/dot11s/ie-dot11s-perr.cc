@@ -37,14 +37,13 @@ IePerr::ElementId () const
 void
 IePerr::Print (std::ostream &os) const
 {
-  os << std::endl << "<information_element id=" << ElementId () << ">" << std::endl;
-  os << "Number of failed destinations: = " << m_addressUnits.size ();
+  os << "PERR=(Number of failed destinations=" << m_addressUnits.size ();
   for (unsigned int j = 0; j < m_addressUnits.size (); j++)
     {
-      os << "Failed destination address: = " << m_addressUnits[j].destination << ", sequence number = "
-         << m_addressUnits[j].seqnum;
+      os << "(Failed destination address=" << m_addressUnits[j].destination << ", sequence number = "
+         << m_addressUnits[j].seqnum << ")";
     }
-  os << std::endl << "</information_element>" << std::endl;
+  os << ")";
 }
 uint8_t
 IePerr::GetNumOfDest () const

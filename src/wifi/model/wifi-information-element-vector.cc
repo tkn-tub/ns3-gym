@@ -115,7 +115,12 @@ WifiInformationElementVector::DeserializeSingleIe (Buffer::Iterator start)
 void
 WifiInformationElementVector::Print (std::ostream & os) const
 {
-  /// \todo
+  for (IE_VECTOR::const_iterator i = m_elements.begin (); i != m_elements.end (); i++)
+    {
+       os << "(";
+      (*i)->Print (os);
+       os << ")";
+    }
 }
 
 void

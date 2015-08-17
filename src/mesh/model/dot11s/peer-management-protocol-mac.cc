@@ -104,7 +104,6 @@ PeerManagementProtocolMac::Receive (Ptr<Packet> const_packet, const WifiMacHeade
           PeerLinkOpenStart peerFrame;
           packet->RemoveHeader (peerFrame);
           fields = peerFrame.GetFields ();
-          NS_ASSERT (fields.subtype == actionValue.selfProtectedAction); 
           if (!fields.meshId.IsEqual ( *(m_protocol->GetMeshId ())))
             {
               m_protocol->ConfigurationMismatch (m_ifIndex, peerAddress);
@@ -119,7 +118,6 @@ PeerManagementProtocolMac::Receive (Ptr<Packet> const_packet, const WifiMacHeade
               m_stats.brokenMgt++;
               return false;
             }
-          aid = fields.aid;
           config = fields.config;
         }
       else if (actionValue.selfProtectedAction == WifiActionHeader::PEER_LINK_CONFIRM)
@@ -128,7 +126,6 @@ PeerManagementProtocolMac::Receive (Ptr<Packet> const_packet, const WifiMacHeade
           PeerLinkConfirmStart peerFrame;
           packet->RemoveHeader (peerFrame);
           fields = peerFrame.GetFields ();
-          NS_ASSERT (fields.subtype == actionValue.selfProtectedAction); 
           if (!(m_parent->CheckSupportedRates (fields.rates)))
             {
               m_protocol->ConfigurationMismatch (m_ifIndex, peerAddress);
@@ -145,7 +142,6 @@ PeerManagementProtocolMac::Receive (Ptr<Packet> const_packet, const WifiMacHeade
           PeerLinkCloseStart peerFrame;
           packet->RemoveHeader (peerFrame);
           fields = peerFrame.GetFields ();
-          NS_ASSERT (fields.subtype == actionValue.selfProtectedAction); 
           if (!fields.meshId.IsEqual ( *(m_protocol->GetMeshId ())))
             {
               m_protocol->ConfigurationMismatch (m_ifIndex, peerAddress);
@@ -153,12 +149,10 @@ PeerManagementProtocolMac::Receive (Ptr<Packet> const_packet, const WifiMacHeade
               m_stats.brokenMgt++;
               return false;
             }
-          aid = fields.aid;
-          config = fields.config;
         }
       else
         {
-          NS_FATAL_ERROR ("Unknown subtype" << actionValue.selfProtectedAction);
+          NS_FATAL_ERROR ("Unknown Self-protected Action type: " << actionValue.selfProtectedAction);
         }
       Ptr<IePeerManagement> peerElement;
       //Peer Management element is the last element in this frame - so, we can use MeshInformationElementVector
@@ -167,21 +161,21 @@ PeerManagementProtocolMac::Receive (Ptr<Packet> const_packet, const WifiMacHeade
       peerElement = DynamicCast<IePeerManagement>(elements.FindFirst (IE11S_PEERING_MANAGEMENT));
 
       NS_ASSERT (peerElement != 0);
-      //Check taht frame subtype corresponds peer link subtype
+      //Check that frame subtype corresponds to peer link subtype
       if (peerElement->SubtypeIsOpen ())
         {
           m_stats.rxOpen++;
-         NS_ASSERT (actionValue.selfProtectedAction == WifiActionHeader::PEER_LINK_OPEN);
+          NS_ASSERT (actionValue.selfProtectedAction == WifiActionHeader::PEER_LINK_OPEN);
         }
       if (peerElement->SubtypeIsConfirm ())
         {
           m_stats.rxConfirm++;
-       NS_ASSERT (actionValue.selfProtectedAction == WifiActionHeader::PEER_LINK_CONFIRM); 
+          NS_ASSERT (actionValue.selfProtectedAction == WifiActionHeader::PEER_LINK_CONFIRM); 
         }
       if (peerElement->SubtypeIsClose ())
         {
           m_stats.rxClose++;
-           NS_ASSERT (actionValue.selfProtectedAction == WifiActionHeader::PEER_LINK_CLOSE); 
+          NS_ASSERT (actionValue.selfProtectedAction == WifiActionHeader::PEER_LINK_CLOSE); 
         }
       //Deliver Peer link management frame to protocol:
       m_protocol->ReceivePeerLinkFrame (m_ifIndex, peerAddress, peerMpAddress, aid, *peerElement, config);
@@ -256,7 +250,6 @@ PeerManagementProtocolMac::SendPeerLinkManagementFrame (Mac48Address peerAddress
       m_stats.txOpen++;
       WifiActionHeader::ActionValue action;
       action.selfProtectedAction = WifiActionHeader::PEER_LINK_OPEN;
-      fields.subtype = WifiActionHeader::PEER_LINK_OPEN;
       actionHdr.SetAction (WifiActionHeader::SELF_PROTECTED, action); 
       plinkOpen.SetPlinkOpenStart (fields);
       packet->AddHeader (plinkOpen);
@@ -267,7 +260,6 @@ PeerManagementProtocolMac::SendPeerLinkManagementFrame (Mac48Address peerAddress
       PeerLinkConfirmStart::PlinkConfirmStartFields fields;
       fields.rates = m_parent->GetSupportedRates ();
       fields.capability = 0;
-      fields.meshId = *(m_protocol->GetMeshId ());
       fields.config = meshConfig;
       PeerLinkConfirmStart plinkConfirm;
       WifiActionHeader actionHdr;
@@ -275,7 +267,6 @@ PeerManagementProtocolMac::SendPeerLinkManagementFrame (Mac48Address peerAddress
       WifiActionHeader::ActionValue action;
       action.selfProtectedAction = WifiActionHeader::PEER_LINK_CONFIRM; 
       fields.aid = aid;
-      fields.subtype = WifiActionHeader::PEER_LINK_CONFIRM;
       actionHdr.SetAction (WifiActionHeader::SELF_PROTECTED, action); 
       plinkConfirm.SetPlinkConfirmStart (fields);
       packet->AddHeader (plinkConfirm);
@@ -284,17 +275,12 @@ PeerManagementProtocolMac::SendPeerLinkManagementFrame (Mac48Address peerAddress
   if (peerElement.SubtypeIsClose ())
     {
       PeerLinkCloseStart::PlinkCloseStartFields fields;
-      fields.rates = m_parent->GetSupportedRates ();
-      fields.capability = 0;
       fields.meshId = *(m_protocol->GetMeshId ());
-      fields.config = meshConfig;
       PeerLinkCloseStart plinkClose;
       WifiActionHeader actionHdr;
       m_stats.txClose++;
       WifiActionHeader::ActionValue action;
       action.selfProtectedAction = WifiActionHeader::PEER_LINK_CLOSE; 
-      fields.subtype = WifiActionHeader::PEER_LINK_CLOSE;
-      fields.reasonCode = peerElement.GetReasonCode ();
       actionHdr.SetAction (WifiActionHeader::SELF_PROTECTED, action); 
       plinkClose.SetPlinkCloseStart (fields);
       packet->AddHeader (plinkClose);

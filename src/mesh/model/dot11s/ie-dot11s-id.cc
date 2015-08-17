@@ -115,9 +115,7 @@ IeMeshId::DeserializeInformationField (Buffer::Iterator start, uint8_t length)
 void
 IeMeshId::Print (std::ostream& os) const
 {
-  os << std::endl << "<information_element id=" << ElementId () << ">" << std::endl;
-  os << "meshId =  " << PeekString ();
-  os << "</information_element>" << std::endl;
+  os << "MeshId=(meshId=" << PeekString () << ")";
 }
 bool
 operator== (const IeMeshId & a, const IeMeshId & b)

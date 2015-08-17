@@ -189,12 +189,10 @@ IePrep::GetInformationFieldSize () const
 void
 IePrep::Print (std::ostream& os) const
 {
-  os << std::endl << "<information_element id=" << ElementId () << ">" << std::endl;
-  os << "Flags:        = " << m_flags << std::endl << "Hopcount:     = " << m_hopcount << std::endl << "TTL:          = " << m_ttl
-     << std::endl<< "Destination:  = " << m_destinationAddress << std::endl << "Dest. seqnum: = " << m_destSeqNumber
-     << std::endl << "Lifetime:     = " << m_lifetime << std::endl<< "Metric:       = " << m_metric << std::endl << "Originator:   = "
-     << m_originatorAddress << std::endl << "Orig. seqnum: = " << m_originatorSeqNumber << std::endl;
-  os << "</information_element>" << std::endl;
+  os << "PREP=(Flags=" << m_flags << ", Hopcount=" << m_hopcount << ", TTL=" << m_ttl
+     << ",Destination=" << m_destinationAddress << ", Dest. seqnum=" << m_destSeqNumber
+     << ", Lifetime=" << m_lifetime << ", Metric=" << m_metric << ", Originator="
+     << m_originatorAddress << ", Orig. seqnum=" << m_originatorSeqNumber << ")";
 }
 bool
 operator== (const IePrep & a, const IePrep & b)

@@ -151,13 +151,12 @@ IePeerManagement::DeserializeInformationField (Buffer::Iterator start, uint8_t l
 void
 IePeerManagement::Print (std::ostream& os) const
 {
-  os << std::endl << "<information_element id=" << ElementId () << ">" << std::endl;
-  os << " Subtype:      = " << (uint16_t) m_subtype << std::endl;
-  os << " Length:       = " << (uint16_t) m_length << std::endl;
-  os << " LocalLinkId:  = " << m_localLinkId << std::endl;
-  os << " PeerLinkId:   = " << m_peerLinkId << std::endl;
-  os << " ReasonCode:   = " << m_reasonCode << std::endl;
-  os << "</information_element>" << std::endl;
+  os << "PeerMgmt=(Subtype=" << (uint16_t) m_subtype
+     << ", Length=" << (uint16_t) m_length
+     << ", LocalLinkId=" << m_localLinkId
+     << ", PeerLinkId=" << m_peerLinkId
+     << ", ReasonCode=" << m_reasonCode
+     << ")";
 }
 bool
 operator== (const IePeerManagement & a, const IePeerManagement & b)

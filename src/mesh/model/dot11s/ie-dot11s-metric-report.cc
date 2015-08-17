@@ -66,9 +66,7 @@ IeLinkMetricReport::DeserializeInformationField (Buffer::Iterator start, uint8_t
 void
 IeLinkMetricReport::Print (std::ostream& os) const
 {
-  os << std::endl << "<information_element id=" << ElementId () << ">" << std::endl;
-  os << "Metric = " << m_metric;
-  os << "</information_element>" << std::endl;
+  os << "Metric=" << m_metric;
 }
 bool
 operator== (const IeLinkMetricReport & a, const IeLinkMetricReport & b)

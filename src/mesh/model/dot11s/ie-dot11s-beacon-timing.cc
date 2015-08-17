@@ -130,14 +130,13 @@ IeBeaconTiming::GetInformationFieldSize () const
 void
 IeBeaconTiming::Print (std::ostream& os) const
 {
-  os << std::endl << "<information_element id=" << ElementId () << ">" << std::endl;
-  os << "Number of units: " << (uint16_t) m_numOfUnits << std::endl;
+  os << "BeaconTiming=(Number of units=" << (uint16_t) m_numOfUnits;
   for (NeighboursTimingUnitsList::const_iterator j = m_neighbours.begin (); j != m_neighbours.end (); j++)
     {
-      os << "AID=" << (uint16_t)(*j)->GetAid () << ", Last beacon was at " << (*j)->GetLastBeacon ()
-         << ", with beacon interval " << (*j)->GetBeaconInterval () << std::endl;
+      os << "(AID=" << (uint16_t)(*j)->GetAid () << ", Last beacon at=" << (*j)->GetLastBeacon ()
+         << ", with beacon interval=" << (*j)->GetBeaconInterval () << ")";
     }
-  os << "</information_element>" << std::endl;
+  os << ")";
 }
 void
 IeBeaconTiming::SerializeInformationField (Buffer::Iterator i) const

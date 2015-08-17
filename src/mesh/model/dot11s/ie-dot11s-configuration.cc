@@ -151,15 +151,14 @@ IeConfiguration::DeserializeInformationField (Buffer::Iterator i, uint8_t length
 void
 IeConfiguration::Print (std::ostream& os) const
 {
-  os << std::endl << "<information_element id=" << ElementId () << ">" << std::endl;
-  os << "Number of neighbors:               = " << (uint16_t) m_neighbors
-     << std::endl << "Active Path Selection Protocol ID: = " << (uint32_t) m_APSPId
-     << std::endl << "Active Path Selection Metric ID:   = " << (uint32_t) m_APSMId
-     << std::endl << "Congestion Control Mode ID:        = " << (uint32_t) m_CCMId
-     << std::endl << "Synchronize protocol ID:           = " << (uint32_t) m_SPId
-     << std::endl << "Authentication protocol ID:        = " << (uint32_t) m_APId
-     << std::endl << "Capabilities:                      = " << m_meshCap.GetUint8 () << std::endl;
-  os << "</information_element>" << std::endl;
+  os << "MeshConfiguration=(neighbors=" << (uint16_t) m_neighbors
+     << ", Active Path Selection Protocol ID=" << (uint32_t) m_APSPId
+     << ", Active Path Selection Metric ID=" << (uint32_t) m_APSMId
+     << ", Congestion Control Mode ID=" << (uint32_t) m_CCMId
+     << ", Synchronize protocol ID=" << (uint32_t) m_SPId
+     << ", Authentication protocol ID=" << (uint32_t) m_APId
+     << ", Capabilities=" << m_meshCap.GetUint8 ();
+  os << ")";
 }
 void
 IeConfiguration::SetRouting (dot11sPathSelectionProtocol routingId)
