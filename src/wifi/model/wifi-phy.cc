@@ -95,12 +95,12 @@ WifiPhy::GetTypeId (void)
                      "Trace source simulating a wifi device in monitor mode "
                      "sniffing all received frames",
                      MakeTraceSourceAccessor (&WifiPhy::m_phyMonitorSniffRxTrace),
-                     "ns3::WifiPhy::MonitorSnifferRxCallback")
+                     "ns3::WifiPhy::MonitorSnifferRxTracedCallback")
     .AddTraceSource ("MonitorSnifferTx",
                      "Trace source simulating the capability of a wifi device "
                      "in monitor mode to sniff all frames being transmitted",
                      MakeTraceSourceAccessor (&WifiPhy::m_phyMonitorSniffTxTrace),
-                     "ns3::WifiPhy::MonitorSnifferTxCallback")
+                     "ns3::WifiPhy::MonitorSnifferTxTracedCallback")
   ;
   return tid;
 }

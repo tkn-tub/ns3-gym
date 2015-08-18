@@ -126,12 +126,12 @@ TypeId WimaxNetDevice::GetTypeId (void)
     .AddTraceSource ("Rx",
                      "Receive trace",
                      MakeTraceSourceAccessor (&WimaxNetDevice::m_traceRx),
-                     "ns3::Packet::TracedCallback")
+                     "ns3::WimaxNetDevice::TxRxTracedCallback")
 
     .AddTraceSource ("Tx",
                      "Transmit trace",
                      MakeTraceSourceAccessor (&WimaxNetDevice::m_traceTx),
-                     "ns3::Packet::TracedCallback");
+                     "ns3::WimaxNetDevice::TxRxTracedCallback");
   return tid;
 }
 

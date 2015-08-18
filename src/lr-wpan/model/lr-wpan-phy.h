@@ -26,6 +26,7 @@
 
 #include <ns3/spectrum-phy.h>
 #include <ns3/traced-callback.h>
+#include <ns3/traced-value.h>
 #include <ns3/event-id.h>
 
 namespace ns3 {
@@ -117,6 +118,19 @@ typedef enum
   IEEE_802_15_4_PHY_READ_ONLY = 0xb,
   IEEE_802_15_4_PHY_UNSPECIFIED = 0xc // all cases not covered by ieee802.15.4
 } LrWpanPhyEnumeration;
+
+namespace TracedValueCallback
+{
+/**
+ * \ingroup lr-wpan
+ * TracedValue callback signature for LrWpanPhyEnumeration.
+ *
+ * \param [in] oldValue original value of the traced variable
+ * \param [in] newValue new value of the traced variable
+ */
+  typedef void (* LrWpanPhyEnumeration)(LrWpanPhyEnumeration oldValue,
+                                        LrWpanPhyEnumeration newValue);
+}  // namespace TracedValueCallback
 
 /**
  * \ingroup lr-wpan
@@ -468,20 +482,13 @@ public:
    * \param [in] time The time of the state change.
    * \param [in] oldState The old state.
    * \param [in] newState The new state.
+   * \deprecated The LrWpanPhyEnumeration state is now accessible as the
+   * TracedValue \c TrxStateValue.  The \c TrxState TracedCallback will
+   * be removed in a future release.
    */
   typedef void (* StateTracedCallback)
-    (const Time time,
-     const LrWpanPhyEnumeration oldState, const LrWpanPhyEnumeration newState);
+    (Time time, LrWpanPhyEnumeration oldState, LrWpanPhyEnumeration newState);
 
-  /**
-   * TracedCallback signature for end receive events.
-   *
-   * \param [in] packet The packet.
-   * \param [in] sinr The received SINR.
-   */
-  typedef void (* RxEndTracedCallback)
-    (const Ptr<const Packet> packet, const double sinr);
-    
 protected:
   /**
    * The data and symbol rates for the different PHY options.
@@ -659,6 +666,9 @@ private:
    * The trace source fired when the phy layer changes the transceiver state.
    *
    * \see class CallBackTraceSource
+   * \deprecated The LrWpanPhyEnumeration state is now accessible as the
+   * TracedValue \c TrxStateValue.  This TracedCallback will
+   * be removed in a future release.
    */
   TracedCallback<Time, LrWpanPhyEnumeration, LrWpanPhyEnumeration> m_trxStateLogger;
 
@@ -706,7 +716,7 @@ private:
   /**
    * The current transceiver state.
    */
-  LrWpanPhyEnumeration m_trxState;
+  TracedValue<LrWpanPhyEnumeration> m_trxState;
 
   /**
    * The next pending state to applied after the current action of the PHY is

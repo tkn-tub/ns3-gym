@@ -132,6 +132,7 @@ struct PhyTransmissionStatParameters
    *  TracedCallback signature.
    *
    * \param [in] params Value of the PhyTransmissionionStatParameters.
+   * \todo The argument should be passed by const reference, since it's large.
    */
   typedef void (* TracedCallback)(const PhyTransmissionStatParameters params);
   
@@ -156,6 +157,7 @@ struct PhyReceptionStatParameters
    *  TracedCallback signature.
    *
    * \param [in] params Value of the PhyReceptionStatParameters.
+   * \todo The argument should be passed by const reference, since it's large.
    */
   typedef void (* TracedCallback)(const PhyReceptionStatParameters params);
   

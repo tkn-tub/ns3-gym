@@ -105,11 +105,11 @@ AparfWifiManager::GetTypeId (void)
     .AddTraceSource ("PowerChange",
                      "The transmission power has change",
                      MakeTraceSourceAccessor (&AparfWifiManager::m_powerChange),
-                     "ns3::AparfWifiManager::PowerChangeTracedCallback")
+                     "ns3::WifiRemoteStationManager::PowerChangeTracedCallback")
     .AddTraceSource ("RateChange",
                      "The transmission rate has change",
                      MakeTraceSourceAccessor (&AparfWifiManager::m_rateChange),
-                     "ns3::AparfWifiManager::RateChangeTracedCallback")
+                     "ns3::WifiRemoteStationManager::RateChangeTracedCallback")
   ;
   return tid;
 }

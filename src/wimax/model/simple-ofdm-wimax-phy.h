@@ -273,6 +273,8 @@ private:
    * the medium.
    *
    * \see class CallBackTraceSource
+   * \deprecated The non-const \c Ptr<PacketBurst> argument is deprecated
+   * and will be changed to \c Ptrc<PacketBurst> in a future release.
    */
   TracedCallback <Ptr<PacketBurst > >  m_phyTxBeginTrace;
 
@@ -281,6 +283,8 @@ private:
    * the medium.
    *
    * \see class CallBackTraceSource
+   * \deprecated The non-const \c Ptr<PacketBurst> argument is deprecated
+   * and will be changed to \c Ptrc<PacketBurst> in a future release.
    */
   TracedCallback<Ptr<PacketBurst > > m_phyTxEndTrace;
 
@@ -289,6 +293,8 @@ private:
    * to transmit it.
    *
    * \see class CallBackTraceSource
+   * \deprecated The non-const \c Ptr<PacketBurst> argument is deprecated
+   * and will be changed to \c Ptrc<PacketBurst> in a future release.
    */
   TracedCallback<Ptr<PacketBurst > > m_phyTxDropTrace;
 
@@ -297,6 +303,8 @@ private:
    * the medium.
    *
    * \see class CallBackTraceSource
+   * \deprecated The non-const \c Ptr<PacketBurst> argument is deprecated
+   * and will be changed to \c Ptrc<PacketBurst> in a future release.
    */
   TracedCallback<Ptr<PacketBurst > > m_phyRxBeginTrace;
 
@@ -305,6 +313,8 @@ private:
    * the medium.
    *
    * \see class CallBackTraceSource
+   * \deprecated The non-const \c Ptr<PacketBurst> argument is deprecated
+   * and will be changed to \c Ptrc<PacketBurst> in a future release.
    */
   TracedCallback<Ptr<PacketBurst > > m_phyRxEndTrace;
 
@@ -312,6 +322,8 @@ private:
    * The trace source fired when the phy layer drops a packet it has received.
    *
    * \see class CallBackTraceSource
+   * \deprecated The non-const \c Ptr<PacketBurst> argument is deprecated
+   * and will be changed to \c Ptrc<PacketBurst> in a future release.
    */
   TracedCallback<Ptr<PacketBurst > > m_phyRxDropTrace;
 

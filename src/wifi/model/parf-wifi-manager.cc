@@ -73,11 +73,11 @@ ParfWifiManager::GetTypeId (void)
     .AddTraceSource ("PowerChange",
                      "The transmission power has change",
                      MakeTraceSourceAccessor (&ParfWifiManager::m_powerChange),
-                     "ns3::ParfWifiManager::PowerChangeTracedCallback")
+                     "ns3::WifiRemoteStationManager::PowerChangeTracedCallback")
     .AddTraceSource ("RateChange",
                      "The transmission rate has change",
                      MakeTraceSourceAccessor (&ParfWifiManager::m_rateChange),
-                     "ns3::ParfWifiManager::RateChangeTracedCallback")
+                     "ns3::WifiRemoteStationManager::RateChangeTracedCallback")
   ;
   return tid;
 }

@@ -283,7 +283,7 @@ private:
   TracedValue<int8_t> m_intSrc1;
   TracedValue<int8_t> m_intSrc2;
 
-  typedef void (* NumericTracedCallback) (const double, const int, const float);
+  typedef void (* NumericTracedCallback) (double, int, float);
   TracedCallback<double, int, float> m_cb;
   TracedValue<ValueClassTest> m_valueSrc;
   Ptr<Derived> m_ptr;

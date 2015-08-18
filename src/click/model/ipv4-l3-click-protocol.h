@@ -264,8 +264,11 @@ private:
 
   Ptr<Node> m_node;
 
+  /** \todo Remove; this TracedCallback is never invoked. */
   TracedCallback<const Ipv4Header &, Ptr<const Packet>, uint32_t> m_sendOutgoingTrace;
+  /** \todo Remove: this TracedCallback is never invoked. */
   TracedCallback<const Ipv4Header &, Ptr<const Packet>, uint32_t> m_unicastForwardTrace;
+  /** \todo This TracedCallback is invoked but not accessible. */
   TracedCallback<const Ipv4Header &, Ptr<const Packet>, uint32_t> m_localDeliverTrace;
 
   SocketList m_sockets;

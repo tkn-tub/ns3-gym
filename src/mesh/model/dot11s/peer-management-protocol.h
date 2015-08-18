@@ -166,11 +166,11 @@ public:
   /**
    * TracedCallback signature for link open/close events.
    *
-   * \param [in] myIface MAC address of my interface.
-   * \param [in] peerIface MAC address of peer interface.
+   * \param [in] src MAC address of source interface.
+   * \param [in] dst MAC address of destination interface.
    */
   typedef void (* LinkOpenCloseTracedCallback)
-    (const Mac48Address myIface, const Mac48Address peerIface);
+    (Mac48Address src, const Mac48Address dst);
    
 
 private:

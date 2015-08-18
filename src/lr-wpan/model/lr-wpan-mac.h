@@ -26,6 +26,7 @@
 
 #include <ns3/object.h>
 #include <ns3/traced-callback.h>
+#include <ns3/traced-value.h>
 #include <ns3/mac16-address.h>
 #include <ns3/mac64-address.h>
 #include <ns3/sequence-number.h>
@@ -73,6 +74,20 @@ typedef enum
   CHANNEL_IDLE,          //!< CHANNEL_IDLE
   SET_PHY_TX_ON          //!< SET_PHY_TX_ON
 } LrWpanMacState;
+
+namespace TracedValueCallback {
+
+/**
+ * \ingroup lr-wpan
+ * TracedValue callback signature for LrWpanMacState.
+ *
+ * \param [in] oldValue original value of the traced variable
+ * \param [in] newValue new value of the traced variable
+ */
+  typedef void (* LrWpanMacState)(LrWpanMacState oldValue,
+                                  LrWpanMacState newValue);
+
+}  // namespace TracedValueCallback
 
 /**
  * \ingroup lr-wpan
@@ -526,17 +541,19 @@ public:
    * \param [in] backoffs The number of CSMA backoffs.
    */
   typedef void (* SentTracedCallback)
-    (const Ptr<const Packet> packet, const uint8_t retries,
-     const uint8_t backoffs);
+    (Ptr<const Packet> packet, uint8_t retries, uint8_t backoffs);
 
   /**
    * TracedCallback signature for LrWpanMacState change events.
    *
    * \param [in] oldValue The original state value.
    * \param [in] newValue The new state value.
+   * \deprecated The LrWpanMacState is now accessible as the
+   * TracedValue \c MacStateValue. The \c MacState TracedCallback will
+   * be removed in a future release.
    */
   typedef void (* StateTracedCallback)
-    (const LrWpanMacState oldState, const LrWpanMacState newState);
+    (LrWpanMacState oldState, LrWpanMacState newState);
   
 protected:
   // Inherited from Object.
@@ -717,7 +734,9 @@ private:
    * A trace source that fires when the LrWpanMac changes states.
    * Parameters are the old mac state and the new mac state.
    *
-   * \todo This should be a TracedValue
+   * \deprecated This TracedCallback is deprecated and will be
+   * removed in a future release,  Instead, use the \c MacStateValue
+   * TracedValue.
    */
   TracedCallback<LrWpanMacState, LrWpanMacState> m_macStateLogger;
 
@@ -747,7 +766,7 @@ private:
   /**
    * The current state of the MAC layer.
    */
-  LrWpanMacState m_lrWpanMacState;
+  TracedValue<LrWpanMacState> m_lrWpanMacState;
 
   /**
    * The current association status of the MAC layer.

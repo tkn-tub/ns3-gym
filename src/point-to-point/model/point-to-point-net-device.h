@@ -164,11 +164,6 @@ public:
 
   virtual bool IsLinkUp (void) const;
 
-  /**
-   * TracedCallback signature for link changed event.
-   */
-  typedef void (* LinkChangeTracedCallback) (void);
-  
   virtual void AddLinkChangeCallback (Callback<void> callback);
 
   virtual bool IsBroadcast (void) const;

@@ -507,8 +507,11 @@ public:
    *  TracedCallback signature for SpectrumValue.
    *
    * \param [in] value Value of the traced variable.
+   * \deprecated The non-const \c Ptr<SpectrumPhy> argument
+   * is deprecated and will be changed to \c Ptr<const SpectrumPhy>
+   * in a future release.
    */
-  typedef void (* TracedCallback)(const Ptr<const SpectrumValue> value);
+  typedef void (* TracedCallback)(Ptr<SpectrumValue> value);
 
 
 private:

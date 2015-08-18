@@ -48,7 +48,7 @@ PacketProbe::GetTypeId ()
     .AddTraceSource ( "OutputBytes",
                       "The number of bytes in the packet",
                       MakeTraceSourceAccessor (&PacketProbe::m_outputBytes),
-                      "ns3::Packet::PacketSizeTracedCallback")
+                      "ns3::Packet::SizeTracedCallback")
   ;
   return tid;
 }

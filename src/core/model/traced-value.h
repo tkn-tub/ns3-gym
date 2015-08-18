@@ -56,8 +56,10 @@ namespace ns3 {
  *        values used by the various model components.
  *
  * Additional callback function signatures defined elsewhere:
- *   - Time::TracedValueCallback
- *   - ns3::SequenceNumber32TracedValueCallback
+ *   - TracedValueCallback::Time
+ *   - TracedValueCallback::SequenceNumber32
+ *   - TracedValueCallback::LrWpanMacState
+ *   - TracedValueCallback::LrWpanPhyEnumeration
  */
 
 /**
@@ -68,11 +70,14 @@ namespace ns3 {
 namespace TracedValueCallback {
 
   /**
+   * \name TracedValueCallback Signatures for POD.
+   * @{
+   */
+  /**
    *  TracedValue Callback signature for POD.
    *
    * \param [in] oldValue original value of the traced variable
    * \param [in] newValue new value of the traced variable
-   * @{
    */
   typedef void (* Bool)  (bool     oldValue, bool     newValue);
   typedef void (* Int8)  (int8_t   oldValue, int8_t   newValue);

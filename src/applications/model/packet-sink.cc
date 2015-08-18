@@ -58,7 +58,7 @@ PacketSink::GetTypeId (void)
     .AddTraceSource ("Rx",
                      "A packet has been received",
                      MakeTraceSourceAccessor (&PacketSink::m_rxTrace),
-                     "ns3::Packet::PacketAddressTracedCallback")
+                     "ns3::Packet::AddressTracedCallback")
   ;
   return tid;
 }

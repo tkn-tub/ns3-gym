@@ -589,6 +589,25 @@ public:
    */
   uint32_t GetNumberOfTransmitAntennas (void);
 
+  /**
+   * TracedCallback signature for power change events.
+   *
+   * \param [in] power The new power.
+   * \param [in] address The remote station MAC address.
+   */
+  typedef void (*PowerChangeTracedCallback)
+    (uint8_t power, Mac48Address remoteAddress);
+
+  /**
+   * TracedCallback signature for rate change events.
+   *
+   * \param [in] rate The new rate.
+   * \param [in] address The remote station MAC address.
+   */
+  typedef void (*RateChangeTracedCallback)
+    (uint32_t rate, Mac48Address remoteAddress);
+
+
 
 protected:
   virtual void DoDispose (void);

@@ -245,8 +245,7 @@ public:
    * \param [in] interface
    */
   typedef void (* SentTracedCallback)
-    (const Ipv4Header & header, const Ptr<const Packet> packet,
-     const uint32_t interface);
+    (const Ipv4Header & header, Ptr<const Packet> packet, uint32_t interface);
    
   /**
    * TracedCallback signature for packet transmission or reception events.
@@ -254,10 +253,11 @@ public:
    * \param [in] packet The packet.
    * \param [in] ipv4
    * \param [in] interface
+   * \deprecated The non-const \c Ptr<Ipv4> argument is deprecated
+   * and will be changed to \c Ptr<const Ipv4> in a future release.
    */
   typedef void (* TxRxTracedCallback)
-    (const Ptr<const Packet> packet, const Ptr<const Ipv4> ipv4, 
-     const uint32_t interface);
+    (Ptr<const Packet> packet, Ptr<Ipv4> ipv4, uint32_t interface);
 
   /**
    * TracedCallback signature for packet drop events.
@@ -267,11 +267,13 @@ public:
    * \param [in] reason The reason the packet was dropped.
    * \param [in] ipv4
    * \param [in] interface
+   * \deprecated The non-const \c Ptr<Ipv4> argument is deprecated
+   * and will be changed to \c Ptr<const Ipv4> in a future release.
    */
   typedef void (* DropTracedCallback)
-    (const Ipv4Header & header, const Ptr<const Packet> packet,
-     const DropReason reason, const Ptr<const Ipv4> ipv4,
-     const uint32_t interface);
+    (const Ipv4Header & header, Ptr<const Packet> packet,
+     DropReason reason, Ptr<Ipv4> ipv4,
+     uint32_t interface);
    
 protected:
 
@@ -456,11 +458,17 @@ private:
 
   // The following two traces pass a packet with an IP header
   /// Trace of transmitted packets
+  /// \deprecated The non-const \c Ptr<Ipv4> argument is deprecated
+  /// and will be changed to \c Ptr<const Ipv4> in a future release.
   TracedCallback<Ptr<const Packet>, Ptr<Ipv4>,  uint32_t> m_txTrace;
   /// Trace of received packets
+  /// \deprecated The non-const \c Ptr<Ipv4> argument is deprecated
+  /// and will be changed to \c Ptr<const Ipv4> in a future release.
   TracedCallback<Ptr<const Packet>, Ptr<Ipv4>, uint32_t> m_rxTrace;
   // <ip-header, payload, reason, ifindex> (ifindex not valid if reason is DROP_NO_ROUTE)
   /// Trace of dropped packets
+  /// \deprecated The non-const \c Ptr<Ipv4> argument is deprecated
+  /// and will be changed to \c Ptr<const Ipv4> in a future release.
   TracedCallback<const Ipv4Header &, Ptr<const Packet>, DropReason, Ptr<Ipv4>, uint32_t> m_dropTrace;
 
   Ptr<Ipv4RoutingProtocol> m_routingProtocol; //!< Routing protocol associated with the stack

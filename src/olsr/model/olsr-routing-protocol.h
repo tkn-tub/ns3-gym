@@ -126,7 +126,7 @@ public:
    *
    * \param [in] size Final routing table size.
    */
-  typedef void (* TableChangeTracedCallback) (const uint32_t size);
+  typedef void (* TableChangeTracedCallback) (uint32_t size);
 
 private:
   std::set<uint32_t> m_interfaceExclusions;

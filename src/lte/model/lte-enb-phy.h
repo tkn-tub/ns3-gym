@@ -291,17 +291,18 @@ public:
    * \param [in] sinrLinear
    */
   typedef void (* ReportUeSinrTracedCallback)
-    (const uint16_t cellId, const uint16_t rnti, const double sinrLinear);
+    (uint16_t cellId, uint16_t rnti, double sinrLinear);
 
   /**
    * TracedCallback signature for the linear average of SRS SINRs.
    *
    * \param [in] cellId
    * \param [in] spectrumValue
+   * \deprecated The non-const \c Ptr<SpectrumValue> argument is deprecated
+   * and will be changed to \c Ptr<const SpectrumValue> in a future release.
    */
   typedef void (* ReportInterferenceTracedCallback)
-    (const uint16_t cellId, const Ptr<const SpectrumValue> spectrumValue);
-
+    (uint16_t cellId, Ptr<SpectrumValue> spectrumValue);
 
 private:
 
@@ -416,6 +417,8 @@ private:
    * The `ReportInterference` trace source. Reporting the interference per PHY
    * RB (TS 36.214 section 5.2.2, measured on DATA). Exporting cell ID and
    * interference linear power per RB basis.
+   * \deprecated The non-const \c Ptr<SpectrumValue> argument is deprecated
+   * and will be changed to \c Ptr<const SpectrumValue> in a future release.
    */
   TracedCallback<uint16_t, Ptr<SpectrumValue> > m_reportInterferenceTrace;
   /**

@@ -83,22 +83,8 @@ public:
    *  TracedCallback signature.
    *
    * \param [in] model Value of the MobilityModel.
-   * @{
    */
-  typedef void (* TracedCallback)(const Ptr<const MobilityModel> model);
-  
-  /**
-   * TracedCallback signature for course change notifications.
-   *
-   * If the callback is connected using Config::ConnectWithoutContext()
-   * omit the \c context argument from the signature.
-   *
-   * \param [in] context The context string, supplied by the Trace source.
-   * \param [in] model The MobilityModel which is changing course.
-   */
-  typedef void (* CourseChangeTracedCallback)
-    (const std::string context, const Ptr<const MobilityModel> model);
-  
+  typedef void (* TracedCallback)(Ptr<const MobilityModel> model);
   
 protected:
   /**

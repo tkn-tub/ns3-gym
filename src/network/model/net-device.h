@@ -131,6 +131,10 @@ public:
    */
   virtual bool IsLinkUp (void) const = 0;
   /**
+   * TracedCallback signature for link changed event.
+   */
+  typedef void (* LinkChangeTracedCallback) (void);
+  /**
    * \param callback the callback to invoke
    *
    * Add a callback invoked whenever the link 
@@ -188,12 +192,12 @@ public:
   virtual Address GetMulticast (Ipv4Address multicastGroup) const = 0;
 
   /**
-* \brief Get the MAC multicast address corresponding
-* to the IPv6 address provided.
-* \param addr IPv6 address
-* \return the MAC multicast address
-* \warning Calling this method is invalid if IsMulticast returns not true.
-*/
+   * \brief Get the MAC multicast address corresponding
+   * to the IPv6 address provided.
+   * \param addr IPv6 address
+   * \return the MAC multicast address
+   * \warning Calling this method is invalid if IsMulticast returns not true.
+   */
   virtual Address GetMulticast (Ipv6Address addr) const = 0;
 
   /**

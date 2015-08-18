@@ -187,7 +187,7 @@ public:
   void SwitchFromSleep (Time duration);
 
   /** \todo Why is this public? */
-  TracedCallback<Time,Time,enum WifiPhy::State> m_stateLogger;
+  TracedCallback<Time, Time, enum WifiPhy::State> m_stateLogger;
 
   /**
    * TracedCallback signature for state changes.
@@ -197,7 +197,8 @@ public:
    *             the \p state.
    * \param [in] state The state.
    */
-  typedef void (* StateTracedCallback)(const Time start, const Time duration, const WifiPhy::State state);
+  typedef void (* StateTracedCallback)
+    (Time start, Time duration, WifiPhy::State state);
 
   /**
    * TracedCallback signature for receive end ok event.
@@ -207,8 +208,8 @@ public:
    * \param [in] mode   The transmission mode of the packet.
    * \param [in] preamble The preamble of the packet.
    */
-  typedef void (* RxOkTracedCallback)(const Ptr<const Packet> packet, const double snr,
-                                      const WifiMode mode, const WifiPreamble preamble);
+  typedef void (* RxOkTracedCallback)
+    (Ptr<const Packet> packet, double snr, WifiMode mode, WifiPreamble preamble);
 
   /**
    * TracedCallback signature for receive end error event.
@@ -216,7 +217,8 @@ public:
    * \param [in] packet The received packet.
    * \param [in] snr    The SNR of the received packet.
    */
-  typedef void (* RxEndErrorTracedCallback)(const Ptr<const Packet> packet, const double snr);
+  typedef void (* RxEndErrorTracedCallback)
+    (Ptr<const Packet> packet, double snr);
 
   /**
    * TracedCallback signature for transmit event.
@@ -226,8 +228,9 @@ public:
    * \param [in] preamble The preamble of the packet.
    * \param [in] power  The transmit power level.
    */
-  typedef void (* TxTracedCallback)(const Ptr<const Packet> packet, const WifiMode mode,
-                                    const WifiPreamble preamble, const uint8_t power);
+  typedef void (* TxTracedCallback)
+    (Ptr<const Packet> packet, WifiMode mode,
+     WifiPreamble preamble, uint8_t power);
 
 
 private:

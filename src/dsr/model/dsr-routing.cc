@@ -343,7 +343,7 @@ TypeId DsrRouting::GetTypeId ()
     .AddTraceSource ("Tx",
                      "Send DSR packet.",
                      MakeTraceSourceAccessor (&DsrRouting::m_txPacketTrace),
-                     "ns3::DsrOptionSRHeader::TracedCallback")
+                     "ns3::dsr::DsrOptionSRHeader::TracedCallback")
     .AddTraceSource ("Drop",
                      "Drop DSR packet",
                      MakeTraceSourceAccessor (&DsrRouting::m_dropTrace),

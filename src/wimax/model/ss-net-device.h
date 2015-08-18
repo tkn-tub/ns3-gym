@@ -350,8 +350,10 @@ private:
   Ptr<SsServiceFlowManager> m_serviceFlowManager;
   Ptr<IpcsClassifier> m_classifier;
 
-  TracedCallback<Ptr<const Packet>, Mac48Address, Cid*> m_traceSSRx;
-  TracedCallback<Ptr<const PacketBurst>, Mac48Address, Cid*, WimaxPhy::ModulationType> m_traceSSTx;
+  TracedCallback<Ptr<const Packet>, Mac48Address, const Cid &> m_traceSSRx;
+  /** \todo Remove: this TracedCallback is never invoked. */
+  TracedCallback<Ptr<const PacketBurst>, Mac48Address, const Cid &,
+                 WimaxPhy::ModulationType> m_traceSSTx;
 
   /**
    * The trace source fired when packets come into the "top" of the device

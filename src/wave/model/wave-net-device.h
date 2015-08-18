@@ -352,6 +352,10 @@ private:
   Ptr<ChannelCoordinator> m_channelCoordinator;
   Ptr<VsaManager> m_vsaManager;
   TxProfile *m_txProfile;
+  /**
+   * \todo The Address arguments should be passed
+   * by const reference, since they are large.
+   */
   TracedCallback<Address, Address> m_addressChange;
 
   // copy from WifiNetDevice

@@ -93,17 +93,6 @@ public:
    */
   virtual void ConnectByPath (std::string path);
 
-  /**
-   * TracedCallback signature for PacketProbe events.
-   *
-   * \param [in] packet The packet.
-   * \param [in] ipv4 
-   * \param [in] interface
-   */
-  typedef void (* TracedCallback)
-    (const Ptr<const Packet> packet, const Ptr<const Ipv4> ipv4,
-     const uint32_t interface);
-
 private:
   /**
    * \brief Method to connect to an underlying ns3::TraceSource with

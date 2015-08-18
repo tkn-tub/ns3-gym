@@ -45,11 +45,11 @@ ApplicationPacketProbe::GetTypeId ()
                       "The packet plus its socket address that serve "
                       "as the output for this probe",
                       MakeTraceSourceAccessor (&ApplicationPacketProbe::m_output),
-                      "ns3::Packet::PacketAddressTracedCallback")
+                      "ns3::Packet::AddressTracedCallback")
     .AddTraceSource ( "OutputBytes",
                       "The number of bytes in the packet",
                       MakeTraceSourceAccessor (&ApplicationPacketProbe::m_outputBytes),
-                      "ns3::Packet::PacketSizeTracedCallback")
+                      "ns3::Packet::SizeTracedCallback")
   ;
   return tid;
 }

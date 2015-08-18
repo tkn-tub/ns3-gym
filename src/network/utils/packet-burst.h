@@ -80,7 +80,7 @@ public:
    *
    * \param [in] burst The PacketBurst
    */
-  typedef void (* TracedCallback)(const Ptr<const PacketBurst> burst);
+  typedef void (* TracedCallback)(Ptr<const PacketBurst> burst);
 
   
 private:

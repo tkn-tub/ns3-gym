@@ -132,9 +132,9 @@ public:
    * \param [in] tbs1Size
    */
   typedef void (* DlSchedulingTracedCallback)
-    (const uint32_t frame, const uint32_t subframe, const uint16_t rnti,
-     const uint8_t mcs0, const uint16_t tbs0Size,
-     const uint8_t mcs1, const uint16_t tbs1Size);
+    (uint32_t frame, uint32_t subframe,  uint16_t rnti,
+     uint8_t mcs0, uint16_t tbs0Size,
+     uint8_t mcs1, uint16_t tbs1Size);
 
   /**
    *  TracedCallback signature for UL scheduling events.
@@ -146,8 +146,8 @@ public:
    * \param [in] tbsSize
    */
   typedef void (* UlSchedulingTracedCallback)
-    (const uint32_t frame, const uint32_t subframe, const uint16_t rnti,
-     const uint8_t mcs, const uint16_t tbsSize);
+    (uint32_t frame, uint32_t subframe, uint16_t rnti,
+     uint8_t mcs, uint16_t tbsSize);
   
 private:
 
@@ -252,12 +252,14 @@ private:
    * Frame number, Subframe number, RNTI, MCS of TB1, size of TB1,
    * MCS of TB2 (0 if not present), size of TB2 (0 if not present)
    */
-  TracedCallback<uint32_t, uint32_t, uint16_t, uint8_t, uint16_t, uint8_t, uint16_t> m_dlScheduling;
+  TracedCallback<uint32_t, uint32_t, uint16_t,
+                 uint8_t, uint16_t, uint8_t, uint16_t> m_dlScheduling;
   /**
    * Trace information regarding UL scheduling
    * Frame number, Subframe number, RNTI, MCS of TB, size of TB
    */
-  TracedCallback<uint32_t, uint32_t, uint16_t, uint8_t, uint16_t> m_ulScheduling;
+  TracedCallback<uint32_t, uint32_t, uint16_t,
+                 uint8_t, uint16_t> m_ulScheduling;
   
   uint8_t m_macChTtiDelay; // delay of MAC, PHY and channel in terms of TTIs
 

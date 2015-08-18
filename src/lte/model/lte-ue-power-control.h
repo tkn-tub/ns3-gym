@@ -95,7 +95,7 @@ public:
    * \param [in] power The current TX power.
    */
   typedef void (* TxPowerTracedCallback)
-    (const uint16_t cellId, const uint16_t rnti, const double power);
+    (uint16_t cellId, uint16_t rnti, double power);
 
 private:
   void SetSubChannelMask (std::vector <int> mask);

@@ -134,7 +134,7 @@ public:
    *
    * \param [in] value Current value of the Mac48Address
    */
-  typedef void (* TracedCallback)(const Mac48Address value);
+  typedef void (* TracedCallback)(Mac48Address value);
   
 private:
   /**

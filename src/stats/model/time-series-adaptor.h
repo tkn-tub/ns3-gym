@@ -115,7 +115,7 @@ public:
   /**
    * TracedCallback signature for output trace.
    *
-   * \param [in] now The current Time.
+   * \param [in] now The current time, in seconds.
    * \param [in] data The new data value.
    */
   typedef void (* OutputTracedCallback) (const double now, const double data);
