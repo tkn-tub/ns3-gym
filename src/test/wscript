@@ -22,8 +22,6 @@ def build(bld):
     test_test = bld.create_ns3_module_test_library('test')
     test_test.source = [
         'csma-system-test-suite.cc',
-        'ns3wifi/wifi-interference-test-suite.cc',
-        'ns3wifi/wifi-msdu-aggregator-test-suite.cc',
         'ns3tcp/ns3tcp-cwnd-test-suite.cc',
         'ns3tcp/ns3tcp-interop-test-suite.cc',
         'ns3tcp/ns3tcp-loss-test-suite.cc',
@@ -32,5 +30,7 @@ def build(bld):
         'ns3tcp/ns3tcp-state-test-suite.cc',
         'ns3tcp/nsctcp-loss-test-suite.cc',
         'ns3tcp/ns3tcp-socket-writer.cc',
+        'ns3wifi/wifi-interference-test-suite.cc',
+        'ns3wifi/wifi-msdu-aggregator-test-suite.cc',
         ]
 

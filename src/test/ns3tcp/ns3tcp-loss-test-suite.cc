@@ -118,10 +118,10 @@ Ns3TcpLossTestCase::DoSetup (void)
 {
   //
   // We expect there to be a file called ns3tcp-state-response-vectors.pcap in
-  // response-vectors/ of this directory
+  // the data directory
   //
   std::ostringstream oss;
-  oss << "/response-vectors/ns3tcp-loss-" << m_tcpModel << m_testCase << "-response-vectors.pcap";
+  oss << "ns3tcp-loss-" << m_tcpModel << m_testCase << "-response-vectors.pcap";
   m_pcapFilename = CreateDataDirFilename(oss.str ());
 
   if (m_writeVectors)
@@ -453,7 +453,8 @@ public:
 Ns3TcpLossTestSuite::Ns3TcpLossTestSuite ()
   : TestSuite ("ns3-tcp-loss", SYSTEM)
 {
-  SetDataDir (NS_TEST_SOURCEDIR);
+  // We can't use NS_TEST_SOURCEDIR variable here because we use subdirectories
+  SetDataDir ("src/test/ns3tcp/response-vectors");
   Packet::EnablePrinting ();  // Enable packet metadata for all test cases
 
   AddTestCase (new Ns3TcpLossTestCase ("Tahoe", 0), TestCase::QUICK);
