@@ -129,7 +129,9 @@ Ns3TcpStateTestCase::DoSetup (void)
   else
     {
       m_pcapFile.Open (m_pcapFilename, std::ios::in|std::ios::binary);
-      NS_ABORT_MSG_UNLESS (m_pcapFile.GetDataLinkType () == PCAP_LINK_TYPE, "Wrong response vectors in directory");
+      NS_ABORT_MSG_UNLESS (m_pcapFile.GetDataLinkType () == PCAP_LINK_TYPE,
+                           "Wrong response vectors in directory: opening " <<
+                           m_pcapFilename);
     }
 }
 
