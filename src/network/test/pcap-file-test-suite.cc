@@ -211,7 +211,7 @@ private:
 };
 
 ReadModeCreateTestCase::ReadModeCreateTestCase ()
-  : TestCase ("Check to see that PcapFile::Open with mode \"std::ios::in\" works")
+  : TestCase ("Check to see that PcapFile::Open with mode std::ios::in works")
 {
 }
 
@@ -320,7 +320,7 @@ private:
 };
 
 AppendModeCreateTestCase::AppendModeCreateTestCase ()
-  : TestCase ("Check to see that PcapFile::Open with mode \"std::ios::app\" works")
+  : TestCase ("Check to see that PcapFile::Open with mode std::ios::app works")
 {
 }
 

@@ -296,34 +296,42 @@ TestCase::~TestCase ()
 void
 TestCase::AddTestCase (TestCase *testCase, enum TestCase::TestDuration duration)
 {
-  // Record this for use later when all test cases are run.
-  testCase->m_duration = duration;
+  NS_LOG_FUNCTION (&testCase << duration);
 
-  NS_LOG_FUNCTION (&testCase);
-  m_children.push_back (testCase);
-  testCase->m_parent = this;
+  // Test names are used to create temporary directories,
+  // so we test for illegal characters.
+  //
+  // Windows: <>:"/\|?*
+  //   http://msdn.microsoft.com/en-us/library/aa365247(v=vs.85).aspx
+  // Mac:     : (deprecated, was path separator in Mac OS Classic, pre X)
+  // Unix:    / (and .. may give trouble?)
+  //
+  // The Windows list is too restrictive:  we like to label
+  // tests with "val = v1 * v2" or "v1 < 3" or "case: foo --> bar"
+  // So we allow ':<>*" 
 
-  std::string::size_type slash, antislash;
-  slash = testCase->m_name.find ("/");
-  antislash = testCase->m_name.find ("\\");
-  if (slash != std::string::npos || antislash != std::string::npos)
+  std::string badchars = "\"/\\|?*";
+  // Badchar Class  Regex          Count of failing test names
+  // All            ":<>\"/\\|?*"  611
+  // Allow ':'      "<>\"/\\|?*"   128
+  // Allow ':<>'    "\"/\\|?*"      12
+  // Allow ':<>*'    "\"/\\|?"       0
+
+  std::string::size_type badch = testCase->m_name.find_first_of (badchars);
+  if (badch != std::string::npos)
     {
-      std::string fullname = testCase->m_name;
-      TestCase *current = testCase->m_parent;
-      while (current != 0)
-        {
-          fullname = current->m_name + "/" + fullname;
-          current = current->m_parent;
-        }
-      if (slash != std::string::npos)
-        {
-          NS_FATAL_ERROR ("Invalid test name: cannot contain slashes: \"" << fullname << "\"");
-        }
-      if (antislash != std::string::npos)
-        {
-          NS_FATAL_ERROR ("Invalid test name: cannot contain antislashes: \"" << fullname << "\"");
-        }
+      /*
+        To count the bad test names, use NS_LOG_UNCOND instead
+        of NS_FATAL_ERROR, and the command
+        $ ./waf --run "test-runner --list" 2>&1 | grep "^Invalid" | wc
+      */
+      NS_LOG_UNCOND ("Invalid test name: cannot contain any of '"
+                      << badchars << "': " << testCase->m_name);
     }
+
+  testCase->m_duration = duration;
+  testCase->m_parent = this;
+  m_children.push_back (testCase);
 }
 
 bool
