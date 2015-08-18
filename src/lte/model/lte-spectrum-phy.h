@@ -453,8 +453,8 @@ private:
   TracedCallback<Ptr<const PacketBurst> > m_phyTxStartTrace;
   TracedCallback<Ptr<const PacketBurst> > m_phyTxEndTrace;
   TracedCallback<Ptr<const PacketBurst> > m_phyRxStartTrace;
-  TracedCallback<Ptr<const Packet> > m_phyRxEndOkTrace;
-  TracedCallback<Ptr<const Packet> > m_phyRxEndErrorTrace;
+  TracedCallback<Ptr<const Packet> >      m_phyRxEndOkTrace;
+  TracedCallback<Ptr<const Packet> >      m_phyRxEndErrorTrace;
 
   LtePhyRxDataEndErrorCallback   m_ltePhyRxDataEndErrorCallback;
   LtePhyRxDataEndOkCallback      m_ltePhyRxDataEndOkCallback;

@@ -123,7 +123,7 @@ public:
    * \param [in] mode The UanTxMode.
    */
   typedef void (* PacketModeTracedCallback)
-    (const Ptr<const Packet> packet, const UanTxMode & mode);
+    (Ptr<const Packet> packet, UanTxMode mode);
 
 };  // class UanMac
 

@@ -1039,10 +1039,14 @@ public:
    * \param aMpdu the type of the packet (0 is not A-MPDU, 1 is a MPDU that is part of an A-MPDU and 2 is the last MPDU in an A-MPDU)
    *        and the A-MPDU reference number (must be a different value for each A-MPDU but the same for each subframe within one A-MPDU)
    * \param signalNoise signal power and noise power in dBm
+   * \todo WifiTxVector should be passed by const reference because
+   * of its size.
    */
-  typedef void (* MonitorSnifferRxCallback)(Ptr<const Packet> packet, uint16_t channelFreqMhz,
-                                            uint16_t channelNumber, uint32_t rate, WifiPreamble preamble,
-                                            WifiTxVector txVector, struct mpduInfo aMpdu, struct signalNoiseDbm signalNoise);
+  typedef void (* MonitorSnifferRxCallback)
+    (Ptr<const Packet> packet, uint16_t channelFreqMhz,
+     uint16_t channelNumber, uint32_t rate, WifiPreamble preamble,
+     WifiTxVector txVector, struct mpduInfo aMpdu,
+     struct signalNoiseDbm signalNoise);
 
   /**
    * Public method used to fire a MonitorSniffer trace for a wifi packet being transmitted.
@@ -1076,10 +1080,13 @@ public:
    * \param txVector the TXVECTOR that holds tx parameters
    * \param aMpdu the type of the packet (0 is not A-MPDU, 1 is a MPDU that is part of an A-MPDU and 2 is the last MPDU in an A-MPDU)
    *        and the A-MPDU reference number (must be a different value for each A-MPDU but the same for each subframe within one A-MPDU)
+   * \todo WifiTxVector should be passed by const reference because
+   * of its size.
    */
-  typedef void (* MonitorSnifferTxCallback)(const Ptr<const Packet> packet, uint16_t channelFreqMhz,
-                                            uint16_t channelNumber, uint32_t rate, WifiPreamble preamble,
-                                            WifiTxVector txVector, struct mpduInfo aMpdu);
+  typedef void (* MonitorSnifferTxCallback)
+    (const Ptr<const Packet> packet, uint16_t channelFreqMhz,
+     uint16_t channelNumber, uint32_t rate, WifiPreamble preamble,
+     WifiTxVector txVector, struct mpduInfo aMpdu);
 
   /**
    * Assign a fixed random variable stream number to the random variables
@@ -1214,8 +1221,12 @@ private:
    * ieee80211_input_monitor()
    *
    * \see class CallBackTraceSource
+   * \todo WifiTxVector and signalNoiseDbm should be be passed as
+   * const  references because of their sizes.
    */
-  TracedCallback<Ptr<const Packet>, uint16_t, uint16_t, uint32_t, WifiPreamble, WifiTxVector, struct mpduInfo, struct signalNoiseDbm> m_phyMonitorSniffRxTrace;
+  TracedCallback<Ptr<const Packet>, uint16_t, uint16_t, uint32_t,
+                 WifiPreamble, WifiTxVector,
+                 struct mpduInfo, struct signalNoiseDbm> m_phyMonitorSniffRxTrace;
 
   /**
    * A trace source that emulates a wifi device in monitor mode
@@ -1226,8 +1237,12 @@ private:
    * ieee80211_input_monitor()
    *
    * \see class CallBackTraceSource
+   * \todo WifiTxVector should be passed by const reference because
+   * of its size.
    */
-  TracedCallback<Ptr<const Packet>, uint16_t, uint16_t, uint32_t, WifiPreamble, WifiTxVector, struct mpduInfo> m_phyMonitorSniffTxTrace;
+  TracedCallback<Ptr<const Packet>, uint16_t, uint16_t, uint32_t,
+                 WifiPreamble, WifiTxVector,
+                 struct mpduInfo> m_phyMonitorSniffTxTrace;
 
   uint32_t m_totalAmpduNumSymbols; //!< Number of symbols previously transmitted for the MPDUs in an A-MPDU, used for the computation of the number of symbols needed for the last MPDU in the A-MPDU
   uint32_t m_totalAmpduSize;       //!< Total size of the previously transmitted MPDUs in an A-MPDU, used for the computation of the number of symbols needed for the last MPDU in the A-MPDU

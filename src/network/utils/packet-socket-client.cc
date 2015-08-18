@@ -62,7 +62,7 @@ PacketSocketClient::GetTypeId (void)
                    MakeUintegerChecker<uint32_t> ())
     .AddTraceSource ("Tx", "A packet has been sent",
                      MakeTraceSourceAccessor (&PacketSocketClient::m_txTrace),
-                     "ns3::Packet::PacketAddressTracedCallback")
+                     "ns3::Packet::AddressTracedCallback")
   ;
   return tid;
 }

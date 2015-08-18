@@ -45,11 +45,11 @@ Ipv4PacketProbe::GetTypeId ()
                       "The packet plus its IPv4 object and interface "
                       "that serve as the output for this probe",
                       MakeTraceSourceAccessor (&Ipv4PacketProbe::m_output),
-                      "ns3::Ipv4PacketProbe::TracedCallback")
+                      "ns3::Ipv4L3Protocol::TxRxTracedCallback")
     .AddTraceSource ( "OutputBytes",
                       "The number of bytes in the packet",
                       MakeTraceSourceAccessor (&Ipv4PacketProbe::m_outputBytes),
-                      "ns3::Packet::PacketSizeTracedCallback")
+                      "ns3::Packet::SizeTracedCallback")
   ;
   return tid;
 }

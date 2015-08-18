@@ -148,6 +148,37 @@ public:
    * \return \c true if we are equal
    */
   virtual bool IsEqual (Ptr<const CallbackImplBase> other) const = 0;
+  /** Get the type as a string. */
+  virtual std::string GetTypeid (void) const = 0;
+
+protected:
+  /**
+   * \param [in] mangled The mangled string
+   * \return The demangled form of mangled
+   */
+  static std::string Demangle (const std::string& mangled);
+  /**
+   * Helper to get the C++ typeid as a string.
+   *
+   * \tparam T The type of the argument.
+   * \param t The object.
+   * \returns The result of applying typeid to the argument.
+   */
+  template <typename T>
+  static std::string GetCppTypeid (void)
+  {
+    std::string typeName;
+    try
+      {
+        typeName = typeid (T).name ();
+        typeName = Demangle (typeName);
+      }
+    catch (const std::bad_typeid &e)
+      {
+        typeName = e.what ();
+      }
+    return typeName;
+  }
 };
 
 /**
@@ -169,6 +200,17 @@ class CallbackImpl<R,empty,empty,empty,empty,empty,empty,empty,empty,empty> : pu
 public:
   virtual ~CallbackImpl () {}
   virtual R operator() (void) = 0;      //!< Abstract operator
+  virtual std::string GetTypeid (void) const
+  {
+    return DoGetTypeid ();
+  }
+  static std::string DoGetTypeid (void)
+  {
+    static std::string id = "CallbackImpl<" +
+      GetCppTypeid<R> () +
+      ">";
+    return id;
+  }
 };
 /** CallbackImpl class with one argument. */
 template <typename R, typename T1>
@@ -176,6 +218,18 @@ class CallbackImpl<R,T1,empty,empty,empty,empty,empty,empty,empty,empty> : publi
 public:
   virtual ~CallbackImpl () {}
   virtual R operator() (T1) = 0;        //!< Abstract operator
+  virtual std::string GetTypeid (void) const
+  {
+    return DoGetTypeid ();
+  }
+  static std::string DoGetTypeid (void)
+  {
+    static std::string id = "CallbackImpl<" +
+      GetCppTypeid<R> () + "," +
+      GetCppTypeid<T1> () +
+      ">";
+    return id;
+  }
 };
 /** CallbackImpl class with two arguments. */
 template <typename R, typename T1, typename T2>
@@ -183,6 +237,19 @@ class CallbackImpl<R,T1,T2,empty,empty,empty,empty,empty,empty,empty> : public C
 public:
   virtual ~CallbackImpl () {}
   virtual R operator() (T1, T2) = 0;    //!< Abstract operator
+  virtual std::string GetTypeid (void) const
+  {
+    return DoGetTypeid ();
+  }
+  static std::string DoGetTypeid (void)
+  {
+    static std::string id = "CallbackImpl<" +
+      GetCppTypeid<R> () + "," +
+      GetCppTypeid<T1> () + "," +
+      GetCppTypeid<T2> () +
+      ">";
+    return id;
+  }
 };
 /** CallbackImpl class with three arguments. */
 template <typename R, typename T1, typename T2, typename T3>
@@ -190,6 +257,20 @@ class CallbackImpl<R,T1,T2,T3,empty,empty,empty,empty,empty,empty> : public Call
 public:
   virtual ~CallbackImpl () {}
   virtual R operator() (T1, T2, T3) = 0;  //!< Abstract operator
+  virtual std::string GetTypeid (void) const
+  {
+    return DoGetTypeid ();
+  }
+  static std::string DoGetTypeid (void)
+  {
+    static std::string id = "CallbackImpl<" +
+      GetCppTypeid<R> () + "," +
+      GetCppTypeid<T1> () + "," +
+      GetCppTypeid<T2> () + "," +
+      GetCppTypeid<T3> () +
+      ">";
+    return id;
+  }
 };
 /** CallbackImpl class with four arguments. */
 template <typename R, typename T1, typename T2, typename T3, typename T4>
@@ -197,6 +278,21 @@ class CallbackImpl<R,T1,T2,T3,T4,empty,empty,empty,empty,empty> : public Callbac
 public:
   virtual ~CallbackImpl () {}
   virtual R operator() (T1, T2, T3, T4) = 0;  //!< Abstract operator
+  virtual std::string GetTypeid (void) const
+  {
+    return DoGetTypeid ();
+  }
+  static std::string DoGetTypeid (void)
+  {
+    static std::string id = "CallbackImpl<" +
+      GetCppTypeid<R> () + "," +
+      GetCppTypeid<T1> () + "," +
+      GetCppTypeid<T2> () + "," +
+      GetCppTypeid<T3> () + "," +
+      GetCppTypeid<T4> () +
+      ">";
+    return id;
+  }
 };
 /** CallbackImpl class with five arguments. */
 template <typename R, typename T1, typename T2, typename T3, typename T4, typename T5>
@@ -204,6 +300,22 @@ class CallbackImpl<R,T1,T2,T3,T4,T5,empty,empty,empty,empty> : public CallbackIm
 public:
   virtual ~CallbackImpl () {}
   virtual R operator() (T1, T2, T3, T4, T5) = 0;  //!< Abstract operator
+  virtual std::string GetTypeid (void) const
+  {
+    return DoGetTypeid ();
+  }
+  static std::string DoGetTypeid (void)
+  {
+    static std::string id = "CallbackImpl<" +
+      GetCppTypeid<R> () + "," +
+      GetCppTypeid<T1> () + "," +
+      GetCppTypeid<T2> () + "," +
+      GetCppTypeid<T3> () + "," +
+      GetCppTypeid<T4> () + "," +
+      GetCppTypeid<T5> () +
+      ">";
+    return id;
+  }
 };
 /** CallbackImpl class with six arguments. */
 template <typename R, typename T1, typename T2, typename T3, typename T4, typename T5, typename T6>
@@ -211,6 +323,23 @@ class CallbackImpl<R,T1,T2,T3,T4,T5,T6,empty,empty,empty> : public CallbackImplB
 public:
   virtual ~CallbackImpl () {}
   virtual R operator() (T1, T2, T3, T4, T5, T6) = 0;  //!< Abstract operator
+  virtual std::string GetTypeid (void) const
+  {
+    return DoGetTypeid ();
+  }
+  static std::string DoGetTypeid (void)
+  {
+    static std::string id = "CallbackImpl<" +
+      GetCppTypeid<R> () + "," +
+      GetCppTypeid<T1> () + "," +
+      GetCppTypeid<T2> () + "," +
+      GetCppTypeid<T3> () + "," +
+      GetCppTypeid<T4> () + "," +
+      GetCppTypeid<T5> () + "," +
+      GetCppTypeid<T6> () +
+      ">";
+    return id;
+  }
 };
 /** CallbackImpl class with seven arguments. */
 template <typename R, typename T1, typename T2, typename T3, typename T4, typename T5, typename T6, typename T7>
@@ -218,6 +347,24 @@ class CallbackImpl<R,T1,T2,T3,T4,T5,T6,T7,empty,empty> : public CallbackImplBase
 public:
   virtual ~CallbackImpl () {}
   virtual R operator() (T1, T2, T3, T4, T5, T6, T7) = 0;  //!< Abstract operator
+  virtual std::string GetTypeid (void) const
+  {
+    return DoGetTypeid ();
+  }
+  static std::string DoGetTypeid (void)
+  {
+    static std::string id = "CallbackImpl<" +
+      GetCppTypeid<R> () + "," +
+      GetCppTypeid<T1> () + "," +
+      GetCppTypeid<T2> () + "," +
+      GetCppTypeid<T3> () + "," +
+      GetCppTypeid<T4> () + "," +
+      GetCppTypeid<T5> () + "," +
+      GetCppTypeid<T6> () + "," +
+      GetCppTypeid<T7> () +
+      ">";
+    return id;
+  }
 };
 /** CallbackImpl class with eight arguments. */
 template <typename R, typename T1, typename T2, typename T3, typename T4, typename T5, typename T6, typename T7, typename T8>
@@ -225,6 +372,25 @@ class CallbackImpl<R,T1,T2,T3,T4,T5,T6,T7,T8,empty> : public CallbackImplBase {
 public:
   virtual ~CallbackImpl () {}
   virtual R operator() (T1, T2, T3, T4, T5, T6, T7, T8) = 0;  //!< Abstract operator
+  virtual std::string GetTypeid (void) const
+  {
+    return DoGetTypeid ();
+  }
+  static std::string DoGetTypeid (void)
+  {
+    static std::string id = "CallbackImpl<" +
+      GetCppTypeid<R> () + "," +
+      GetCppTypeid<T1> () + "," +
+      GetCppTypeid<T2> () + "," +
+      GetCppTypeid<T3> () + "," +
+      GetCppTypeid<T4> () + "," +
+      GetCppTypeid<T5> () + "," +
+      GetCppTypeid<T6> () + "," +
+      GetCppTypeid<T7> () + "," +
+      GetCppTypeid<T8> () +
+      ">";
+    return id;
+  }
 };
 /** CallbackImpl class with nine arguments. */
 template <typename R, typename T1, typename T2, typename T3, typename T4, typename T5, typename T6, typename T7, typename T8, typename T9>
@@ -232,6 +398,26 @@ class CallbackImpl : public CallbackImplBase {
 public:
   virtual ~CallbackImpl () {}
   virtual R operator() (T1, T2, T3, T4, T5, T6, T7, T8, T9) = 0;  //!< Abstract operator
+  virtual std::string GetTypeid (void) const
+  {
+    return DoGetTypeid ();
+  }
+  static std::string DoGetTypeid (void)
+  {
+    static std::string id = "CallbackImpl<" +
+      GetCppTypeid<R> () + "," +
+      GetCppTypeid<T1> () + "," +
+      GetCppTypeid<T2> () + "," +
+      GetCppTypeid<T3> () + "," +
+      GetCppTypeid<T4> () + "," +
+      GetCppTypeid<T5> () + "," +
+      GetCppTypeid<T6> () + "," +
+      GetCppTypeid<T7> () + "," +
+      GetCppTypeid<T8> () + "," +
+      GetCppTypeid<T9> () +
+      ">";
+    return id;
+  }
 };
 /**@}*/
 
@@ -915,12 +1101,6 @@ protected:
    */
   CallbackBase (Ptr<CallbackImplBase> impl) : m_impl (impl) {}
   Ptr<CallbackImplBase> m_impl;         //!< the pimpl
-
-  /**
-   * \param [in] mangled The mangled string
-   * \return The demangled form of mangled
-   */
-  static std::string Demangle (const std::string& mangled);
 };
 
 /**
@@ -1216,8 +1396,8 @@ public:
    *
    * \param [in] other Callback
    */
-  void Assign (const CallbackBase &other) {
-    DoAssign (other.GetImpl ());
+  bool Assign (const CallbackBase &other) {
+    return DoAssign (other.GetImpl ());
   }
 private:
   /** \return The pimpl pointer */
@@ -1231,7 +1411,8 @@ private:
    * \return \c true if other can be dynamic_cast to my type
    */
   bool DoCheckType (Ptr<const CallbackImplBase> other) const {
-    if (other != 0 && dynamic_cast<const CallbackImpl<R,T1,T2,T3,T4,T5,T6,T7,T8,T9> *> (PeekPointer (other)) != 0)
+    if (other != 0 &&
+        dynamic_cast<const CallbackImpl<R,T1,T2,T3,T4,T5,T6,T7,T8,T9> *> (PeekPointer (other)) != 0)
       {
         return true;
       }
@@ -1249,17 +1430,18 @@ private:
    *
    * \param [in] other Callback Ptr to adopt from
    */
-  void DoAssign (Ptr<const CallbackImplBase> other) {
+  bool DoAssign (Ptr<const CallbackImplBase> other) {
     if (!DoCheckType (other))
       {
-        const CallbackImplBase * otherRaw = PeekPointer (other);
-        Ptr<CallbackImpl<R,T1,T2,T3,T4,T5,T6,T7,T8,T9> > expected;
-        CallbackImpl<R,T1,T2,T3,T4,T5,T6,T7,T8,T9> * expectedRaw = PeekPointer (expected);
-        NS_FATAL_ERROR ("Incompatible types. (feed to \"c++filt -t\" if needed)" << std::endl <<
-                        "got=" << Demangle ( typeid (*otherRaw).name () ) << std::endl <<
-                        "expected=" << Demangle ( typeid (*expectedRaw).name () ));
+        std::string othTid = other->GetTypeid ();
+        std::string myTid = CallbackImpl<R,T1,T2,T3,T4,T5,T6,T7,T8,T9>::DoGetTypeid ();
+        NS_FATAL_ERROR_CONT ("Incompatible types. (feed to \"c++filt -t\" if needed)" << std::endl <<
+                        "got=" << othTid << std::endl <<
+                        "expected=" << myTid);
+        return false;
       }
     m_impl = const_cast<CallbackImplBase *> (PeekPointer (other));
+    return true;
   }
 };
 
@@ -1740,7 +1922,8 @@ bool CallbackValue::GetAccessor (T &value) const
 {
   if (value.CheckType (m_value))
     {
-      value.Assign (m_value);
+      if (!value.Assign (m_value))
+        NS_FATAL_ERROR_NO_MSG ();
       return true;
     }
   return false;

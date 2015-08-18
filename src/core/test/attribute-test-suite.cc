@@ -195,7 +195,7 @@ public:
                      MakeValueClassTestChecker ())
       .AddTraceSource ("Source1", "help test",
                        MakeTraceSourceAccessor (&AttributeObjectTest::m_intSrc1),
-                       "ns3::TracedValue::Int8Callback")
+                       "ns3::TracedValueCallback::Int8")
       .AddTraceSource ("Source2", "help text",
                        MakeTraceSourceAccessor (&AttributeObjectTest::m_cb),
                        "ns3::AttributeObjectTest::NumericTracedCallback")
@@ -283,7 +283,7 @@ private:
   TracedValue<int8_t> m_intSrc1;
   TracedValue<int8_t> m_intSrc2;
 
-  typedef void (* NumericTracedCallback) (const double, const int, const float);
+  typedef void (* NumericTracedCallback) (double, int, float);
   TracedCallback<double, int, float> m_cb;
   TracedValue<ValueClassTest> m_valueSrc;
   Ptr<Derived> m_ptr;

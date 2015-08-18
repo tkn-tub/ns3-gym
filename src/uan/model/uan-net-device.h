@@ -154,7 +154,7 @@ public:
    * \param [in] address The source address.
    */
   typedef void (* RxTxTracedCallback)
-    (const Ptr<const Packet> packet, const UanAddress address);
+    (Ptr<const Packet> packet, UanAddress address);
   
 private:
   /**

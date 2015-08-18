@@ -48,7 +48,7 @@ WifiPhyStateHelper::GetTypeId (void)
     .AddTraceSource ("RxError",
                      "A packet has been received unsuccessfully.",
                      MakeTraceSourceAccessor (&WifiPhyStateHelper::m_rxErrorTrace),
-                     "ns3::WifiPhyStateHelper::RxErrorTracedCallback")
+                     "ns3::WifiPhyStateHelper::RxEndErrorTracedCallback")
     .AddTraceSource ("Tx", "Packet transmission is starting.",
                      MakeTraceSourceAccessor (&WifiPhyStateHelper::m_txTrace),
                      "ns3::WifiPhyStateHelper::TxTracedCallback")

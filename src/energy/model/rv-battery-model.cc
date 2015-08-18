@@ -83,7 +83,7 @@ RvBatteryModel::GetTypeId (void)
     .AddTraceSource ("RvBatteryModelBatteryLevel",
                      "RV battery model battery level.",
                      MakeTraceSourceAccessor (&RvBatteryModel::m_batteryLevel),
-                     "ns3::TracedValue::DoubleCallback")
+                     "ns3::TracedValueCallback::Double")
     .AddTraceSource ("RvBatteryModelBatteryLifetime",
                      "RV battery model battery lifetime.",
                      MakeTraceSourceAccessor (&RvBatteryModel::m_lifetime),

@@ -84,7 +84,7 @@ TypeId DsrOptions::GetTypeId ()
     .AddTraceSource ("Rx",
                      "Receive DSR packet.",
                      MakeTraceSourceAccessor (&DsrOptions::m_rxPacketTrace),
-                     "ns3::Packet::TracedCallback")
+                     "ns3::dsr::DsrOptionSRHeader::TracedCallback")
   ;
   return tid;
 }

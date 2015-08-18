@@ -137,11 +137,13 @@ protected:
    * \param [in] rxDevice the Receiving NetDevice.
    * \param [in] duration The amount of time to transmit the packet.
    * \param [in] lastBitTime Last bit receive time (relative to now)
+   * \deprecated The non-const \c Ptr<NetDevice> argument is deprecated
+   * and will be changed to \c Ptr<const NetDevice> in a future release.
    */
   typedef void (* TxRxAnimationCallback)
-    (const Ptr<const Packet> packet,
-     const Ptr<const NetDevice> txDevice, const Ptr<const NetDevice> rxDevice,
-     const Time duration, const Time lastBitTime);
+    (Ptr<const Packet> packet,
+     Ptr<NetDevice> txDevice, Ptr<NetDevice> rxDevice,
+     Time duration, Time lastBitTime);
                     
 private:
   /** Each point to point link has exactly two net devices. */
@@ -158,12 +160,14 @@ private:
    * packet receipt time.
    *
    * \see class CallBackTraceSource
+   * \deprecated The non-const \c Ptr<NetDevice> argument is deprecated
+   * and will be changed to \c Ptr<const NetDevice> in a future release.
    */
-  TracedCallback<Ptr<const Packet>, // Packet being transmitted
-                 Ptr<NetDevice>,    // Transmitting NetDevice
-                 Ptr<NetDevice>,    // Receiving NetDevice
-                 Time,              // Amount of time to transmit the pkt
-                 Time               // Last bit receive time (relative to now)
+  TracedCallback<Ptr<const Packet>,     // Packet being transmitted
+                 Ptr<NetDevice>,  // Transmitting NetDevice
+                 Ptr<NetDevice>,  // Receiving NetDevice
+                 Time,                  // Amount of time to transmit the pkt
+                 Time                   // Last bit receive time (relative to now)
                  > m_txrxPointToPoint;
 
   /** \brief Wire states

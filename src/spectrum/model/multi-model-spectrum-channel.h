@@ -173,6 +173,11 @@ private:
 
   double m_maxLossDb;
 
+  /**
+   * \deprecated The non-const \c Ptr<SpectrumPhy> argument
+   * is deprecated and will be changed to \c Ptr<const SpectrumPhy>
+   * in a future release.
+   */
   TracedCallback<Ptr<SpectrumPhy>, Ptr<SpectrumPhy>, double > m_pathLossTrace;
 };
 

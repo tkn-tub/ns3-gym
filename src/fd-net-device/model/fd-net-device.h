@@ -387,6 +387,8 @@ private:
    * The trace source fired when the phy layer drops a packet as it tries
    * to transmit it.
    *
+   * \todo Remove: this TracedCallback is never invoked.
+   *
    * \see class CallBackTraceSource
    */
   TracedCallback<Ptr<const Packet> > m_phyTxDropTrace;

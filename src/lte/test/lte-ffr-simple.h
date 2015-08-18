@@ -68,6 +68,14 @@ public:
   friend class MemberLteFfrSapProvider<LteFfrSimple>;
   friend class MemberLteFfrRrcSapProvider<LteFfrSimple>;
 
+  /**
+   * TracedCallback signature for change of PdschConfigDedicated.
+   *
+   * \param [in] rnti
+   * \param [in] pdschPa PdschConfiDedicated.pa
+   */
+  typedef void (* PdschTracedCallback)(uint16_t rnti, uint8_t pdschPa);
+
 protected:
   // inherited from Object
   virtual void DoInitialize ();
@@ -119,8 +127,6 @@ private:
   bool m_changePdschConfigDedicated;
 
   LteRrcSap::PdschConfigDedicated m_pdschConfigDedicated;
-
-  typedef void (* PdschTracedCallback)(uint16_t, uint8_t);
 
   TracedCallback<uint16_t, uint8_t> m_changePdschConfigDedicatedTrace;
 

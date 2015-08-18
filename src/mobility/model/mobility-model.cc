@@ -47,7 +47,7 @@ MobilityModel::GetTypeId (void)
     .AddTraceSource ("CourseChange", 
                      "The value of the position and/or velocity vector changed",
                      MakeTraceSourceAccessor (&MobilityModel::m_courseChangeTrace),
-                     "ns3::MobilityModel::CourseChangeTracedCallback")
+                     "ns3::MobilityModel::TracedCallback")
   ;
   return tid;
 }

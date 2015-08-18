@@ -77,6 +77,10 @@ LrWpanPhy::GetTypeId (void)
     .SetParent<SpectrumPhy> ()
     .SetGroupName ("LrWpan")
     .AddConstructor<LrWpanPhy> ()
+    .AddTraceSource ("TrxStateValue",
+                     "The state of the transceiver",
+                     MakeTraceSourceAccessor (&LrWpanPhy::m_trxState),
+                     "ns3::TracedValueCallback::LrWpanPhyEnumeration")
     .AddTraceSource ("TrxState",
                      "The state of the transceiver",
                      MakeTraceSourceAccessor (&LrWpanPhy::m_trxStateLogger),
@@ -106,7 +110,7 @@ LrWpanPhy::GetTypeId (void)
                      "completely received from the channel medium "
                      "by the device",
                      MakeTraceSourceAccessor (&LrWpanPhy::m_phyRxEndTrace),
-                     "ns3::LrWpanPhy::RxEndTracedCallback")
+                     "ns3::Packet::SinrTracedCallback")
     .AddTraceSource ("PhyRxDrop",
                      "Trace source indicating a packet has been "
                      "dropped by the device during reception",

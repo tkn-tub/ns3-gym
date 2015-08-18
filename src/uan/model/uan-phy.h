@@ -210,7 +210,7 @@ public:
    * \param [in] mode The channel mode.
    */
   typedef void (* TracedCallback)
-    (const Ptr<const Packet> pkt, const double sinr, const UanTxMode mode);
+    (Ptr<const Packet> pkt, double sinr, UanTxMode mode);
 
   
   /**

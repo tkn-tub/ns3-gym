@@ -56,10 +56,41 @@ namespace ns3 {
  *        values used by the various model components.
  *
  * Additional callback function signatures defined elsewhere:
- *   - Time::TracedValueCallback
- *   - ns3::SequenceNumber32TracedValueCallback
+ *   - TracedValueCallback::Time
+ *   - TracedValueCallback::SequenceNumber32
+ *   - TracedValueCallback::LrWpanMacState
+ *   - TracedValueCallback::LrWpanPhyEnumeration
  */
 
+/**
+ * \ingroup tracing
+ *
+ * \brief TracedValue Callback function types.
+ */
+namespace TracedValueCallback {
+
+  /**
+   * \name TracedValueCallback Signatures for POD.
+   * @{
+   */
+  /**
+   *  TracedValue Callback signature for POD.
+   *
+   * \param [in] oldValue original value of the traced variable
+   * \param [in] newValue new value of the traced variable
+   */
+  typedef void (* Bool)  (bool     oldValue, bool     newValue);
+  typedef void (* Int8)  (int8_t   oldValue, int8_t   newValue);
+  typedef void (* Uint8) (uint8_t  oldValue, uint8_t  newValue);
+  typedef void (* Int16) (int16_t  oldValue, int16_t  newValue);
+  typedef void (* Uint16)(uint16_t oldValue, uint16_t newValue);
+  typedef void (* Int32) (int32_t  oldValue, int32_t  newValue);
+  typedef void (* Uint32)(uint32_t oldValue, uint32_t newValue);
+  typedef void (* Double)(double   oldValue, double   newValue);
+  /**@}*/
+}  // namespace TracedValueCallback
+
+  
 /**
  * \ingroup tracing
  *
@@ -223,23 +254,6 @@ public:
     Set (tmp);
     return old;
   }
-  /**@}*/
-
-  /**
-   *  TracedValue Callback signature for POD.
-   *
-   * \param [in] oldValue original value of the traced variable
-   * \param [in] newValue new value of the traced variable
-   * @{
-   */
-  typedef void (* BoolCallback)  (const bool     oldValue, const bool     newValue);
-  typedef void (* Int8Callback)  (const int8_t   oldValue, const int8_t   newValue);
-  typedef void (* Uint8Callback) (const uint8_t  oldValue, const uint8_t  newValue);
-  typedef void (* Int16Callback) (const int16_t  oldValue, const int16_t  newValue);
-  typedef void (* Uint16Callback)(const uint16_t oldValue, const uint16_t newValue);
-  typedef void (* Int32Callback) (const int32_t  oldValue, const int32_t  newValue);
-  typedef void (* Uint32Callback)(const uint32_t oldValue, const uint32_t newValue);
-  typedef void (* DoubleCallback)(const double   oldValue, const double   newValue);
   /**@}*/
 
 private:

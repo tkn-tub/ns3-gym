@@ -29,6 +29,7 @@
 #include "byte-tag-list.h"
 #include "packet-tag-list.h"
 #include "nix-vector.h"
+#include "ns3/mac48-address.h"
 #include "ns3/callback.h"
 #include "ns3/assert.h"
 #include "ns3/ptr.h"
@@ -660,16 +661,25 @@ public:
    *
    * \param [in] packet The packet.
    */
-  typedef void (* TracedCallback) (const Ptr<const Packet> packet);
+  typedef void (* TracedCallback) (Ptr<const Packet> packet);
   
   /**
-   * TracedCallback signature for packet and address.
+   * TracedCallback signature for packet and Address.
    *
    * \param [in] packet The packet.
    * \param [in] address The address.
    */
-  typedef void (* PacketAddressTracedCallback)
-    (const Ptr<const Packet> packet, const Address &address);
+  typedef void (* AddressTracedCallback)
+    (Ptr<const Packet> packet, const Address &address);
+  
+  /**
+   * TracedCallback signature for packet and Mac48Address.
+   *
+   * \param [in] packet The packet.
+   * \param [in] mac The Mac48Address.
+   */
+  typedef void (* Mac48AddressTracedCallback)
+    (Ptr<const Packet> packet, Mac48Address mac);
   
   /**
    * TracedCallback signature for changes in packet size.
@@ -677,9 +687,19 @@ public:
    * \param [in] oldSize The previous packet's size.
    * \param [in] newSize The actual packet's size.
    */
-  typedef void (* PacketSizeTracedCallback)
-    (const uint32_t oldSize, const uint32_t newSize);
+  typedef void (* SizeTracedCallback)
+    (uint32_t oldSize, uint32_t newSize);
 
+  /**
+   * TracedCallback signature for packet and SINR.
+   *
+   * \param [in] packet The packet.
+   * \param [in] sinr The received SINR.
+   */
+  typedef void (* SinrTracedCallback)
+    (Ptr<const Packet> packet, double sinr);
+    
+  
 private:
   /**
    * \brief Constructor

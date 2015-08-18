@@ -275,9 +275,9 @@ protected:
    * to understand that this copy constructor will _not_
    * copy aggregated Objects, _i.e_, if your Object instance
    * is already aggregated to another Object and if you invoke
-   * this copy constructor, the new )bject instance will be
+   * this copy constructor, the new Object instance will be
    * a pristine standalone Object instance not aggregated to
-   * any other )bject. It is thus _your_ responsability
+   * any other Object. It is thus _your_ responsibility
    * as a caller of this method to do what needs to be done
    * (if it is needed) to ensure that the Object stays in a
    * valid state.

@@ -40,7 +40,7 @@ SimpleDeviceEnergyModel::GetTypeId (void)
     .AddTraceSource ("TotalEnergyConsumption",
                      "Total energy consumption of the radio device.",
                      MakeTraceSourceAccessor (&SimpleDeviceEnergyModel::m_totalEnergyConsumption),
-                     "ns3::TracedValue::DoubleCallback")
+                     "ns3::TracedValueCallback::Double")
   ;
   return tid;
 }

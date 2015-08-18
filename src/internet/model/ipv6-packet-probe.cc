@@ -46,11 +46,11 @@ Ipv6PacketProbe::GetTypeId ()
                       "The packet plus its IPv6 object and interface "
                       "that serve as the output for this probe",
                       MakeTraceSourceAccessor (&Ipv6PacketProbe::m_output),
-                      "ns3::Ipv6PacketProbe::TracedCallback")
+                      "ns3::Ipv6L3Protocol::TxRxTracedCallback")
     .AddTraceSource ( "OutputBytes",
                       "The number of bytes in the packet",
                       MakeTraceSourceAccessor (&Ipv6PacketProbe::m_outputBytes),
-                      "ns3::Packet::PacketSizeTracedCallback")
+                      "ns3::Packet::SizeTracedCallback")
   ;
   return tid;
 }

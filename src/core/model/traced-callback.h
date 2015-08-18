@@ -264,7 +264,8 @@ void
 TracedCallback<T1,T2,T3,T4,T5,T6,T7,T8>::ConnectWithoutContext (const CallbackBase & callback)
 {
   Callback<void,T1,T2,T3,T4,T5,T6,T7,T8> cb;
-  cb.Assign (callback);
+  if (!cb.Assign (callback))
+    NS_FATAL_ERROR_NO_MSG();
   m_callbackList.push_back (cb);
 }
 template<typename T1, typename T2,
@@ -275,7 +276,8 @@ void
 TracedCallback<T1,T2,T3,T4,T5,T6,T7,T8>::Connect (const CallbackBase & callback, std::string path)
 {
   Callback<void,std::string,T1,T2,T3,T4,T5,T6,T7,T8> cb;
-  cb.Assign (callback);
+  if (!cb.Assign (callback))
+    NS_FATAL_ERROR ("when connecting to " << path);
   Callback<void,T1,T2,T3,T4,T5,T6,T7,T8> realCb = cb.Bind (path);
   m_callbackList.push_back (realCb);
 }
@@ -307,7 +309,8 @@ void
 TracedCallback<T1,T2,T3,T4,T5,T6,T7,T8>::Disconnect (const CallbackBase & callback, std::string path)
 {
   Callback<void,std::string,T1,T2,T3,T4,T5,T6,T7,T8> cb;
-  cb.Assign (callback);
+  if (!cb.Assign (callback))
+    NS_FATAL_ERROR ("when disconnecting from " << path);
   Callback<void,T1,T2,T3,T4,T5,T6,T7,T8> realCb = cb.Bind (path);
   DisconnectWithoutContext (realCb);
 }

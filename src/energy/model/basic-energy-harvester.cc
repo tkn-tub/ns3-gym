@@ -55,11 +55,11 @@ BasicEnergyHarvester::GetTypeId (void)
   .AddTraceSource ("HarvestedPower",
                    "Harvested power by the BasicEnergyHarvester.",
                    MakeTraceSourceAccessor (&BasicEnergyHarvester::m_harvestedPower),
-                   "ns3::TracedValue::DoubleCallback")
+                   "ns3::TracedValueCallback::Double")
   .AddTraceSource ("TotalEnergyHarvested",
                    "Total energy harvested by the harvester.",
                    MakeTraceSourceAccessor (&BasicEnergyHarvester::m_totalEnergyHarvestedJ),
-                   "ns3::TracedValue::DoubleCallback")
+                   "ns3::TracedValueCallback::Double")
   ;
   return tid;
 }

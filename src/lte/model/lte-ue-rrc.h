@@ -254,7 +254,7 @@ public:
    * \param [in] cellId
    */
   typedef void (* CellSelectionTracedCallback)
-    (const uint64_t imsi, const uint16_t cellId);
+    (uint64_t imsi, uint16_t cellId);
 
   /**
    * TracedCallback signature for imsi, cellId and rnti events.
@@ -264,7 +264,7 @@ public:
    * \param [in] rnti
    */
   typedef void (* ImsiCidRntiTracedCallback)
-    (const uint64_t imsi, const uint16_t cellId, const uint16_t rnti);
+    (uint64_t imsi, uint16_t cellId, uint16_t rnti);
 
   /**
    * TracedCallback signature for MIBRecieved, Sib1Received and
@@ -276,8 +276,7 @@ public:
    * \param [in] otherCid
    */
   typedef void (* MibSibHandoverTracedCallback)
-    (const uint64_t imsi, const uint16_t cellId, const uint16_t rnti,
-     const uint16_t otherCid);
+    (uint64_t imsi, uint16_t cellId, uint16_t rnti, uint16_t otherCid);
 
   /**
    * TracedCallback signature for state transition events.
@@ -289,8 +288,8 @@ public:
    * \param [in] newState
    */
   typedef void (* StateTracedCallback)
-    (const uint64_t imsi, const uint16_t cellId, const uint16_t rnti,
-     const State oldState, const State newState);
+    (uint64_t imsi, uint16_t cellId, uint16_t rnti,
+     State oldState, State newState);
 
 
 private:

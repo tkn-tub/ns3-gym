@@ -94,7 +94,7 @@ TypeId SimpleOfdmWimaxPhy::GetTypeId (void)
 
     .AddTraceSource ("Rx", "Receive trace",
                      MakeTraceSourceAccessor (&SimpleOfdmWimaxPhy::m_traceRx),
-                     "ns3::PacketBurst::Traced::Ptr")
+                     "ns3::PacketBurst::TracedCallback")
     .AddTraceSource ("Tx", "Transmit trace",
                      MakeTraceSourceAccessor (&SimpleOfdmWimaxPhy::m_traceTx),
                      "ns3::PacketBurst::TracedCallback")

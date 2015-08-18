@@ -141,7 +141,7 @@ TcpSocketBase::GetTypeId (void)
     .AddTraceSource ("RWND",
                      "Remote side's flow control window",
                      MakeTraceSourceAccessor (&TcpSocketBase::m_rWnd),
-                     "ns3::TracedValue::Uint32Callback")
+                     "ns3::TracedValueCallback::Uint32")
     .AddTraceSource ("HighestRxSequence",
                      "Highest sequence number received from peer",
                      MakeTraceSourceAccessor (&TcpSocketBase::m_highRxMark),
@@ -153,11 +153,11 @@ TcpSocketBase::GetTypeId (void)
     .AddTraceSource ("CongestionWindow",
                      "The TCP connection's congestion window",
                      MakeTraceSourceAccessor (&TcpSocketBase::m_cWnd),
-                     "ns3::TracedValue::Uint32Callback")
+                     "ns3::TracedValueCallback::Uint32")
     .AddTraceSource ("SlowStartThreshold",
                      "TCP slow start threshold (bytes)",
                      MakeTraceSourceAccessor (&TcpSocketBase::m_ssThresh),
-                     "ns3::TracedValue::Uint32Callback")
+                     "ns3::TracedValueCallback::Uint32")
   ;
   return tid;
 }

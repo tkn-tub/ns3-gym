@@ -120,7 +120,7 @@ public:
    * \param [in] size Packet size.
    */
   typedef void (* PduTxTracedCallback)
-    (const uint16_t rnti, const uint8_t lcid, const uint32_t size);
+    (uint16_t rnti, uint8_t lcid, uint32_t size);
 
   /**
    * TracedCallback signature for PDU receive event.

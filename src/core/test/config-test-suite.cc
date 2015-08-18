@@ -98,7 +98,7 @@ ConfigTestObject::GetTypeId (void)
                    MakeIntegerChecker<int16_t> ())
     .AddTraceSource ("Source", "XX",
                      MakeTraceSourceAccessor (&ConfigTestObject::m_trace),
-                     "ns3::TracedValue::Int16Callback")
+                     "ns3::TracedValueCallback::Int16")
   ;
   return tid;
 }

@@ -101,10 +101,13 @@ public:
    * \param [in] txPhy The TX SpectrumPhy instance.
    * \param [in] rxPhy The RX SpectrumPhy instance.
    * \param [in] lossDb The loss value, in dB.
+   * \deprecated The non-const `Ptr<SpectrumValue>` is
+   * deprecated and will be changed to Ptr<const SpectrumValue>`
+   * in a future release.
    */
   typedef void (* LossTracedCallback)
-    (const Ptr<const SpectrumPhy> txPhy, const Ptr<const SpectrumPhy> rxPhy,
-     const double lossDb);
+    (Ptr<SpectrumPhy> txPhy, Ptr<SpectrumPhy> rxPhy,
+     double lossDb);
   
 };
 

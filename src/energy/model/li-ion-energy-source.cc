@@ -106,7 +106,7 @@ LiIonEnergySource::GetTypeId (void)
     .AddTraceSource ("RemainingEnergy",
                      "Remaining energy at BasicEnergySource.",
                      MakeTraceSourceAccessor (&LiIonEnergySource::m_remainingEnergyJ),
-                     "ns3::TracedValue::DoubleCallback")
+                     "ns3::TracedValueCallback::Double")
   ;
   return tid;
 }

@@ -170,7 +170,7 @@ public:
    */
   void SetBandwidthManager (Ptr<BandwidthManager> bandwidthManager);
 
-  /*
+  /**
    * \brief Creates the initial ranging and broadcast connections
    */
   void CreateDefaultConnections (void);
@@ -219,8 +219,34 @@ public:
   NetDevice::PromiscReceiveCallback GetPromiscReceiveCallback (void);
   virtual bool SupportsSendFrom (void) const;
 
-  TracedCallback<Ptr<const Packet>, const Mac48Address&> m_traceRx;
-  TracedCallback<Ptr<const Packet>, const Mac48Address&> m_traceTx;
+  /**
+   * TracedCallback signature for packet and Mac48Address.
+   *
+   * \param [in] packet The packet.
+   * \param [in] mac The Mac48Address.
+   * \deprecated The `const Mac48Address &` argument is deprecated
+   * and will be changed to \c Mac48Address in a future release.
+   * The TracedCallback signature will then match \c Packet::Mac48Address
+   * and this typedef can be removed.
+   */
+  typedef void (* TxRxTracedCallback)
+    (Ptr<const Packet> packet, const Mac48Address & mac);
+  /**
+   * \deprecated The `const Mac48Address &` argument is deprecated
+   * and will be changed to \c Mac48Address in a future release.
+   * The TracedCallback signature will then match \c Packet::Mac48Address
+   * and this typedef can be removed.
+   * \todo This member variable should be private.
+   */
+  TracedCallback<Ptr<const Packet>, const Mac48Address &> m_traceRx;
+  /**
+   * \deprecated The `const Mac48Address &` argument is deprecated
+   * and will be changed to \c Mac48Address in a future release.
+   * The TracedCallback signature will then match \c Packet::Mac48Address
+   * and this typedef can be removed.
+   * \todo This member variable should be private.
+   */
+  TracedCallback<Ptr<const Packet>, const Mac48Address &> m_traceTx;
 
   virtual void DoDispose (void);
   virtual Address GetMulticast (Ipv6Address addr) const;

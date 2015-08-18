@@ -151,11 +151,13 @@ public:
    * \param [in] packet The packet.
    * \param [in] sixNetDevice The SixLowPanNetDevice.
    * \param [in] ifindex The ifindex of the device.
+   * \deprecated The non-const \c Ptr<SixLowPanNetDevice> argument
+   * is deprecated and will be changed to \c Ptr<const SixLowPanNetDevice>
+   * in a future release.
    */
   typedef void (* RxTxTracedCallback)
-    (const Ptr<const Packet> packet,
-     const Ptr<const SixLowPanNetDevice> sixNetDevice,
-     const uint32_t ifindex);
+    (Ptr<const Packet> packet, Ptr<SixLowPanNetDevice> sixNetDevice,
+     uint32_t ifindex);
 
   /**
    * TracedCallback signature for
@@ -164,11 +166,14 @@ public:
    * \param [in] packet The packet.
    * \param [in] sixNetDevice The SixLowPanNetDevice.
    * \param [in] ifindex The ifindex of the device.
+   * \deprecated The non-const \c Ptr<SixLowPanNetDevice> argument
+   * is deprecated and will be changed to \c Ptr<const SixLowPanNetDevice>
+   * in a future release.
    */
   typedef void (* DropTracedCallback)
-    (const DropReason reason, const Ptr<const Packet> packet,
-     const Ptr<const SixLowPanNetDevice> sixNetDevice,
-     const uint32_t ifindex);
+    (DropReason reason, Ptr<const Packet> packet,
+     Ptr<SixLowPanNetDevice> sixNetDevice,
+     uint32_t ifindex);
    
 protected:
   virtual void DoDispose (void);
@@ -234,6 +239,9 @@ private:
    * \li Packet received (including 6LoWPAN header)
    * \li Ptr to SixLowPanNetDevice
    * \li interface index
+   * \deprecated The non-const \c Ptr<SixLowPanNetDevice> argument
+   * is deprecated and will be changed to \c Ptr<const SixLowPanNetDevice>
+   * in a future release.
    */
   TracedCallback<Ptr<const Packet>, Ptr<SixLowPanNetDevice>, uint32_t> m_txTrace;
 
@@ -244,6 +252,9 @@ private:
    * \li Packet received (including 6LoWPAN header)
    * \li Ptr to SixLowPanNetDevice
    * \li interface index
+   * \deprecated The non-const \c Ptr<SixLowPanNetDevice> argument
+   * is deprecated and will be changed to \c Ptr<const SixLowPanNetDevice>
+   * in a future release.
    */
   TracedCallback<Ptr<const Packet>, Ptr<SixLowPanNetDevice>, uint32_t> m_rxTrace;
 
@@ -255,6 +266,9 @@ private:
    * \li Packet dropped (including 6LoWPAN header)
    * \li Ptr to SixLowPanNetDevice
    * \li interface index
+   * \deprecated The non-const \c Ptr<SixLowPanNetDevice> argument
+   * is deprecated and will be changed to \c Ptr<const SixLowPanNetDevice>
+   * in a future release.
    */
   TracedCallback<DropReason, Ptr<const Packet>, Ptr<SixLowPanNetDevice>, uint32_t> m_dropTrace;
 

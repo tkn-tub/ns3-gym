@@ -64,7 +64,7 @@ TcpWestwood::GetTypeId (void)
                     MakeEnumChecker(TcpWestwood::WESTWOOD, "Westwood",TcpWestwood::WESTWOODPLUS, "WestwoodPlus"))
       .AddTraceSource("EstimatedBW", "The estimated bandwidth",
                     MakeTraceSourceAccessor(&TcpWestwood::m_currentBW),
-                      "ns3::TracedValue::DoubleCallback");
+                      "ns3::TracedValueCallback::Double");
   return tid;
 }
 

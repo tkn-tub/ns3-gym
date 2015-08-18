@@ -254,11 +254,11 @@ UanMacRc::GetTypeId (void)
     .AddTraceSource ("Enqueue",
                      "A  (data) packet arrived at MAC for transmission.",
                      MakeTraceSourceAccessor (&UanMacRc::m_enqueueLogger),
-                     "ns3::UanMac::PacketModeTracedCallback")
+                     "ns3::UanMacRc::QueueTracedCallback")
     .AddTraceSource ("Dequeue",
                      "A  (data) packet was passed down to PHY from MAC.",
                      MakeTraceSourceAccessor (&UanMacRc::m_dequeueLogger),
-                     "ns3::UanMac::PacketModeTracedCallback")
+                     "ns3::UanMacRc::QueueTracedCallback")
     .AddTraceSource ("RX",
                      "A packet was destined for and received at this MAC layer.",
                      MakeTraceSourceAccessor (&UanMacRc::m_rxLogger),
