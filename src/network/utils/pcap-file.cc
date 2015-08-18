@@ -28,6 +28,7 @@
 #include "ns3/buffer.h"
 #include "pcap-file.h"
 #include "ns3/log.h"
+#include "ns3/build-profile.h"
 //
 // This file is used as part of the ns-3 test framework, so please refrain from 
 // adding any ns-3 specific constructs such as Packet to this file.
@@ -397,6 +398,7 @@ PcapFile::WritePacketHeader (uint32_t tsSec, uint32_t tsUsec, uint32_t totalLen)
   m_file.write ((const char *)&header.m_tsUsec, sizeof(header.m_tsUsec));
   m_file.write ((const char *)&header.m_inclLen, sizeof(header.m_inclLen));
   m_file.write ((const char *)&header.m_origLen, sizeof(header.m_origLen));
+  NS_BUILD_DEBUG(m_file.flush());
   return inclLen;
 }
 
@@ -406,6 +408,7 @@ PcapFile::Write (uint32_t tsSec, uint32_t tsUsec, uint8_t const * const data, ui
   NS_LOG_FUNCTION (this << tsSec << tsUsec << &data << totalLen);
   uint32_t inclLen = WritePacketHeader (tsSec, tsUsec, totalLen);
   m_file.write ((const char *)data, inclLen);
+  NS_BUILD_DEBUG(m_file.flush());
 }
 
 void 
@@ -414,6 +417,7 @@ PcapFile::Write (uint32_t tsSec, uint32_t tsUsec, Ptr<const Packet> p)
   NS_LOG_FUNCTION (this << tsSec << tsUsec << p);
   uint32_t inclLen = WritePacketHeader (tsSec, tsUsec, p->GetSize ());
   p->CopyData (&m_file, inclLen);
+  NS_BUILD_DEBUG(m_file.flush());
 }
 
 void 
