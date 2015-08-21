@@ -157,9 +157,9 @@ DefaultChannelScheduler::AssignAlternatingAccess (uint32_t channelNumber, bool i
         }
     }
 
-  // if we need immediately switch SCH in CCHI, or we are in SCHI now,
+  // if we need immediately switch to AlternatingAccess,
   // we switch to specific SCH.
-  if ((immediate || m_coordinator->IsSchInterval ()))
+  if ((immediate && m_coordinator->IsSchInterval ()))
     {
       NS_ASSERT (m_channelNumber == CCH);
       SwitchToNextChannel (CCH, sch);
@@ -329,7 +329,12 @@ DefaultChannelScheduler::AssignDefaultCchAccess (void)
     }
   // CCH MAC is to attach single-PHY device and wake up for transmission.
   Ptr<OcbWifiMac> cchMacEntity = m_device->GetMac (CCH);
-  m_phy->SetChannelNumber (CCH);
+  if (Now ().GetMilliSeconds() != 0)
+    {
+	  m_phy->SetChannelNumber (CCH);
+	  Time switchTime = m_phy->GetChannelSwitchDelay ();
+	  cchMacEntity->MakeVirtualBusy (switchTime);
+    }
   cchMacEntity->SetWifiPhy (m_phy);
   cchMacEntity->Resume ();
 

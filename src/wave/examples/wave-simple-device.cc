@@ -115,13 +115,6 @@ WaveNetDeviceExample::SendOneWsmpPacket  (uint32_t channel, uint32_t seq)
   seqTs.SetSeq (seq);
   p->AddHeader (seqTs);
   sender->SendX  (p, bssWildcard, WSMP_PROT_NUMBER, txInfo);
-
-  Ptr<Packet> p2  = Create<Packet> (100);
-  SeqTsHeader seqTs2;
-  seqTs2.SetSeq (seq + 1);
-  p2->AddHeader (seqTs2);
-  receiver->SendX  (p2, bssWildcard, WSMP_PROT_NUMBER, txInfo);
-
 }
 
 void
@@ -140,19 +133,19 @@ WaveNetDeviceExample::SendWsmpExample ()
 
   // send WSMP packets
   // the first packet will be queued currently and be transmitted in next SCH interval
-  //Simulator::Schedule (Seconds (1.0), &WaveNetDeviceExample::SendOneWsmpPacket,  this, SCH1, 1);
+  Simulator::Schedule (Seconds (1.0), &WaveNetDeviceExample::SendOneWsmpPacket,  this, SCH1, 1);
   // the second packet will be queued currently and then be transmitted , because of in the CCH interval.
   Simulator::Schedule (Seconds (1.0), &WaveNetDeviceExample::SendOneWsmpPacket,  this, CCH, 2);
   // the third packet will be dropped because of no channel access for SCH2.
-  //Simulator::Schedule (Seconds (1.0), &WaveNetDeviceExample::SendOneWsmpPacket,  this, SCH2, 3);
+  Simulator::Schedule (Seconds (1.0), &WaveNetDeviceExample::SendOneWsmpPacket,  this, SCH2, 3);
 
   // release SCH access
-  //Simulator::Schedule (Seconds (2.0), &WaveNetDevice::StopSch, sender, SCH1);
-  //Simulator::Schedule (Seconds (2.0), &WaveNetDevice::StopSch, receiver, SCH1);
+  Simulator::Schedule (Seconds (2.0), &WaveNetDevice::StopSch, sender, SCH1);
+  Simulator::Schedule (Seconds (2.0), &WaveNetDevice::StopSch, receiver, SCH1);
   // the fourth packet will be queued and be transmitted because of default CCH access assigned automatically.
-  //Simulator::Schedule (Seconds (3.0), &WaveNetDeviceExample::SendOneWsmpPacket,  this, CCH, 4);
+  Simulator::Schedule (Seconds (3.0), &WaveNetDeviceExample::SendOneWsmpPacket,  this, CCH, 4);
   // the fifth packet will be dropped because of no SCH1 access assigned
-  //Simulator::Schedule (Seconds (3.0), &WaveNetDeviceExample::SendOneWsmpPacket,  this, SCH1, 5);
+  Simulator::Schedule (Seconds (3.0), &WaveNetDeviceExample::SendOneWsmpPacket,  this, SCH1, 5);
 
   Simulator::Stop (Seconds (5.0));
   Simulator::Run ();
