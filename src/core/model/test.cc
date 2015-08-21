@@ -310,7 +310,7 @@ TestCase::AddTestCase (TestCase *testCase, enum TestCase::TestDuration duration)
   // tests with "val = v1 * v2" or "v1 < 3" or "case: foo --> bar"
   // So we allow ':<>*" 
 
-  std::string badchars = "\"/\\|?*";
+  std::string badchars = "\"/\\|?";
   // Badchar Class  Regex          Count of failing test names
   // All            ":<>\"/\\|?*"  611
   // Allow ':'      "<>\"/\\|?*"   128
