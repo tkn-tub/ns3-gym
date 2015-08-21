@@ -232,11 +232,11 @@ struct NonConstReferenced
 }  // anonymous namespace
 
 
-class TracedCallbackTestCase : public TestCase
+class TracedCallbackTypedefTestCase : public TestCase
 {
 public:
-  TracedCallbackTestCase ();
-  virtual ~TracedCallbackTestCase () {}
+  TracedCallbackTypedefTestCase ();
+  virtual ~TracedCallbackTypedefTestCase () {}
   
 private:
   
@@ -367,15 +367,15 @@ private:
 
   virtual void DoRun (void);
 
-};  // TracedCallbackTestCase
+};  // TracedCallbackTypedefTestCase
 
-TracedCallbackTestCase::TracedCallbackTestCase ()
+TracedCallbackTypedefTestCase::TracedCallbackTypedefTestCase ()
   : TestCase ("Check basic TracedCallback operation")
 {
 }
 
 void
-TracedCallbackTestCase::DoRun (void)
+TracedCallbackTypedefTestCase::DoRun (void)
 {
 
 #define DUPE(U, T1)                                                     \
@@ -641,7 +641,7 @@ public:
 TracedCallbackTestSuite::TracedCallbackTestSuite ()
   : TestSuite ("traced-callback", UNIT)
 {
-  AddTestCase (new TracedCallbackTestCase, TestCase::QUICK);
+  AddTestCase (new TracedCallbackTypedefTestCase, TestCase::QUICK);
 }
 
 static TracedCallbackTestSuite tracedCallbackTestSuite;
