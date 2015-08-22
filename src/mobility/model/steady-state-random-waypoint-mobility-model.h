@@ -98,7 +98,7 @@ private:
   double m_minY; //!< minimum y value of traveling region (m)
   double m_maxY; //!< maximum y value of traveling region (m)
   double m_z; //!< z value of traveling region
-  Ptr<RandomRectanglePositionAllocator> m_position; //!< position allocator
+  Ptr<RandomBoxPositionAllocator> m_position; //!< position allocator
   double m_minPause; //!< minimum pause value (s)
   double m_maxPause; //!< maximum pause value (s)
   Ptr<UniformRandomVariable> m_pause; //!< random variable for pause values

@@ -115,13 +115,17 @@ SteadyStateRandomWaypointMobilityModel::DoInitializePrivate (void)
   m_speed->SetAttribute ("Max", DoubleValue (m_maxSpeed));
   NS_ASSERT (m_minX < m_maxX);
   NS_ASSERT (m_minY < m_maxY);
-  m_position = CreateObject<RandomRectanglePositionAllocator> ();
+  m_position = CreateObject<RandomBoxPositionAllocator> ();
   m_x->SetAttribute ("Min", DoubleValue (m_minX));
   m_x->SetAttribute ("Max", DoubleValue (m_maxX));
   m_y->SetAttribute ("Min", DoubleValue (m_minY));
   m_y->SetAttribute ("Max", DoubleValue (m_maxY));
   m_position->SetX (m_x);
   m_position->SetY (m_y);
+  Ptr<ConstantRandomVariable> z = CreateObject<ConstantRandomVariable> ();
+  z->SetAttribute ("Constant", DoubleValue (m_z));
+  m_position->SetZ (z);
+
   NS_ASSERT (m_minPause <= m_maxPause);
   m_pause->SetAttribute ("Min", DoubleValue (m_minPause));
   m_pause->SetAttribute ("Max", DoubleValue (m_maxPause));

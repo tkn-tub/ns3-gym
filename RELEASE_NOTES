@@ -34,7 +34,7 @@ Bugs fixed
 - Bug 1982 - AODV and mesh modules use random variables before seeds can be set
 - Bug 2058 - TCP window update can shrink left edge of window
 - Bug 2063 - FdNetDevice::SendFrom assert does not account for headers correctly
-- Bug 2082:  Empirical RV fails if value provided in CDF function is negative
+- Bug 2082 - Empirical RV fails if value provided in CDF function is negative
 - Bug 2093 - MultiModelSpectrumChannel::GetDevice only works for 0-th index
 - Bug 2096 - Wrong pcap information when MPDU aggregation is used
 - Bug 2108 - Erroneous implementation in InterferenceHelper
@@ -52,6 +52,7 @@ Bugs fixed
 - Bug 2153 - Incorrect power limits in wifi power control algorithms
 - Bug 2154 - Incorrect power calculation in wifi power adaptation examples
 - Bug 2156 - Duplicate packets when using two level aggregation
+- Bug 2166 - SteadyStateRandomWaypointMobilityModel directs the node to the ground
 
 Known issues
 ------------
