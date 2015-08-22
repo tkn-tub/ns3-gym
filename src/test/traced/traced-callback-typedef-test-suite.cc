@@ -82,7 +82,7 @@ TYPENAME (Ipv6L3Protocol::TxRxTracedCallback);
 TYPENAME (LrWpanMac::SentTracedCallback);
 TYPENAME (LrWpanMac::StateTracedCallback);
 TYPENAME (LrWpanPhy::StateTracedCallback);
-TYPENAME (LteEnbMac::DlSchedulingTracedCallback);
+// TYPENAME (LteEnbMac::DlSchedulingTracedCallback);
 TYPENAME (LteEnbMac::UlSchedulingTracedCallback);
 TYPENAME (LteEnbPhy::ReportInterferenceTracedCallback);
 TYPENAME (LteEnbPhy::ReportUeSinrTracedCallback);
