@@ -232,7 +232,7 @@ public:
 };
 
 TracedValueCallbackTestSuite::TracedValueCallbackTestSuite ()
-  : TestSuite ("tracedvalue-callback", UNIT)
+  : TestSuite ("traced-value-callback", UNIT)
 {
   AddTestCase (new TracedValueCallbackTestCase, TestCase::QUICK);
 }

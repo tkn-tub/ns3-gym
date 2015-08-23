@@ -632,16 +632,16 @@ TracedCallbackTypedefTestCase::DoRun (void)
          empty, empty, empty);
 }
 
-class TracedCallbackTestSuite : public TestSuite
+class TracedCallbackTypedefTestSuite : public TestSuite
 {
 public:
-  TracedCallbackTestSuite ();
+  TracedCallbackTypedefTestSuite ();
 };
 
-TracedCallbackTestSuite::TracedCallbackTestSuite ()
-  : TestSuite ("traced-callback", UNIT)
+TracedCallbackTypedefTestSuite::TracedCallbackTypedefTestSuite ()
+  : TestSuite ("traced-callback-typedef", SYSTEM)
 {
   AddTestCase (new TracedCallbackTypedefTestCase, TestCase::QUICK);
 }
 
-static TracedCallbackTestSuite tracedCallbackTestSuite;
+static TracedCallbackTypedefTestSuite tracedCallbackTypedefTestSuite;
