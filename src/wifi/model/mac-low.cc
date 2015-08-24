@@ -811,19 +811,25 @@ MacLow::ReceiveError (Ptr<const Packet> packet, double rxSnr)
       (*n).first->PeekHeader (hdr);
       if (hdr.IsQosData ())
         {
-          NS_LOG_DEBUG ("last a-mpdu subframe detected/sendImmediateBlockAck from=" << hdr.GetAddr2 ());
-          m_sendAckEvent = Simulator::Schedule (GetSifs (),
-                                                &MacLow::SendBlockAckAfterAmpdu, this,
-                                                hdr.GetQosTid (),
-                                                hdr.GetAddr2 (),
-                                                hdr.GetDuration (),
-                                                m_currentTxVector);
+          uint8_t tid = hdr.GetQosTid ();
+          AgreementsI it = m_bAckAgreements.find (std::make_pair (hdr.GetAddr2 (), tid));
+          if (it != m_bAckAgreements.end ())
+            {
+              NS_LOG_DEBUG ("last a-mpdu subframe detected/sendImmediateBlockAck from=" << hdr.GetAddr2 ());
+              m_sendAckEvent = Simulator::Schedule (GetSifs (),
+                                                    &MacLow::SendBlockAckAfterAmpdu, this,
+                                                    hdr.GetQosTid (),
+                                                    hdr.GetAddr2 (),
+                                                    hdr.GetDuration (),
+                                                    m_currentTxVector);
+              m_receivedAtLeastOneMpdu = false;
+            }
         }
       else if (hdr.IsBlockAckReq ())
         {
           NS_LOG_DEBUG ("last a-mpdu subframe is BAR");
+          m_receivedAtLeastOneMpdu = false;
         }
-      m_receivedAtLeastOneMpdu = false;
     }
   else if (m_txParams.MustWaitFastAck ())
     {
@@ -2671,7 +2677,7 @@ MacLow::DeaggregateAmpduAndReceive (Ptr<Packet> aggregatedPacket, double rxSnr, 
             }
           else if (firsthdr.IsData () || firsthdr.IsQosData ())
             {
-              NS_LOG_DEBUG ("Deaggregate packet with sequence=" << firsthdr.GetSequenceNumber ());
+              NS_LOG_DEBUG ("Deaggregate packet from " << firsthdr.GetAddr2 () << " with sequence=" << firsthdr.GetSequenceNumber ());
               ReceiveOk ((*n).first, rxSnr, txVector, preamble, ampduSubframe);
               if (firsthdr.IsQosAck ())
                 {
