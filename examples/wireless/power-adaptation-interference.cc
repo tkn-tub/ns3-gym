@@ -102,7 +102,7 @@ private:
   void SetupPhy (Ptr<WifiPhy> phy);
   Time GetCalcTxTime (WifiMode mode);
 
-  std::map<Mac48Address, uint32_t> actualPower;
+  std::map<Mac48Address, double> actualPower;
   std::map<Mac48Address, WifiMode> actualMode;
   uint32_t m_bytesTotal;
   double totalEnergy;
@@ -195,7 +195,7 @@ NodeStatistics::PhyCallback (std::string path, Ptr<const Packet> packet)
 
   if (head.GetType() == WIFI_MAC_DATA)
     {
-      totalEnergy += pow(10, actualPower[dest] / 10) * GetCalcTxTime (actualMode[dest]).GetSeconds ();
+      totalEnergy += pow (10.0, actualPower[dest] / 10.0) * GetCalcTxTime (actualMode[dest]).GetSeconds ();
       totalTime += GetCalcTxTime (actualMode[dest]).GetSeconds ();
     }
 }
