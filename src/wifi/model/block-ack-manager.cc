@@ -334,6 +334,10 @@ BlockAckManager::PeekNextPacket (WifiMacHeader &hdr, Mac48Address recipient, uin
   std::list<PacketQueueI>::iterator it = m_retryPackets.begin ();
   for (; it != m_retryPackets.end (); it++)
     {
+      if (!(*it)->hdr.IsQosData ())
+        {
+          NS_FATAL_ERROR ("Packet in blockAck manager retry queue is not Qos Data");
+        }
       if ((*it)->hdr.GetAddr1 () == recipient && (*it)->hdr.GetQosTid () == tid)
         {
           if (QosUtilsIsOldPacket (agreement->second.first.GetStartingSequence (),(*it)->hdr.GetSequenceNumber ()))
@@ -386,6 +390,10 @@ BlockAckManager::RemovePacket (uint8_t tid, Mac48Address recipient, uint16_t seq
   std::list<PacketQueueI>::iterator it = m_retryPackets.begin ();
   for (; it != m_retryPackets.end (); it++)
     {
+      if (!(*it)->hdr.IsQosData ())
+        {
+          NS_FATAL_ERROR ("Packet in blockAck manager retry queue is not Qos Data");
+        }
       if ((*it)->hdr.GetAddr1 () == recipient && (*it)->hdr.GetQosTid () == tid && (*it)->hdr.GetSequenceNumber () == seqnumber)
         {
           WifiMacHeader hdr = (*it)->hdr;
@@ -459,6 +467,10 @@ BlockAckManager::GetNRetryNeededPackets (Mac48Address recipient, uint8_t tid) co
       std::list<PacketQueueI>::const_iterator it = m_retryPackets.begin ();
       while (it != m_retryPackets.end ())
         {
+          if (!(*it)->hdr.IsQosData ())
+            {
+              NS_FATAL_ERROR ("Packet in blockAck manager retry queue is not Qos Data");
+            }
           if ((*it)->hdr.GetAddr1 () == recipient && (*it)->hdr.GetQosTid () == tid)
             {
               currentSeq = (*it)->hdr.GetSequenceNumber ();
@@ -500,6 +512,10 @@ BlockAckManager::AlreadyExists (uint16_t currentSeq, Mac48Address recipient, uin
   while (it != m_retryPackets.end ())
     {
       NS_LOG_FUNCTION (this << (*it)->hdr.GetType ());
+      if (!(*it)->hdr.IsQosData ())
+        {
+          NS_FATAL_ERROR ("Packet in blockAck manager retry queue is not Qos Data");
+        }
       if ((*it)->hdr.GetAddr1 () == recipient && (*it)->hdr.GetQosTid () == tid && currentSeq == (*it)->hdr.GetSequenceNumber ())
         {
           return true;
@@ -886,6 +902,10 @@ BlockAckManager::GetSeqNumOfNextRetryPacket (Mac48Address recipient, uint8_t tid
   std::list<PacketQueueI>::const_iterator it = m_retryPackets.begin ();
   while (it != m_retryPackets.end ())
     {
+      if (!(*it)->hdr.IsQosData ())
+        {
+          NS_FATAL_ERROR ("Packet in blockAck manager retry queue is not Qos Data");
+        }
       if ((*it)->hdr.GetAddr1 () == recipient && (*it)->hdr.GetQosTid () == tid)
         {
           return (*it)->hdr.GetSequenceNumber ();

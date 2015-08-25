@@ -681,7 +681,15 @@ EdcaTxopN::MissedCts (void)
           NS_LOG_DEBUG ("Transmit Block Ack Request");
           CtrlBAckRequestHeader reqHdr;
           reqHdr.SetType (COMPRESSED_BLOCK_ACK);
-          uint8_t tid = m_currentHdr.GetQosTid ();
+          uint8_t tid = 0;
+          if (m_currentHdr.IsQosData ())
+            {
+              tid = m_currentHdr.GetQosTid ();
+            }
+          else
+            {
+              NS_FATAL_ERROR ("Current packet is not Qos Data");
+            }
           reqHdr.SetStartingSequence (m_txMiddle->PeekNextSequenceNumberfor (&m_currentHdr));
           reqHdr.SetTidInfo (tid);
           reqHdr.SetHtImmediateAck (true);
@@ -823,7 +831,15 @@ EdcaTxopN::MissedAck (void)
           NS_LOG_DEBUG ("Transmit Block Ack Request");
           CtrlBAckRequestHeader reqHdr;
           reqHdr.SetType (COMPRESSED_BLOCK_ACK);
-          uint8_t tid = m_currentHdr.GetQosTid ();
+          uint8_t tid = 0;
+          if (m_currentHdr.IsQosData ())
+            {
+              tid = m_currentHdr.GetQosTid ();
+            }
+          else
+            {
+              NS_FATAL_ERROR ("Current packet is not Qos Data");
+            }
           reqHdr.SetStartingSequence (m_txMiddle->PeekNextSequenceNumberfor (&m_currentHdr));
           reqHdr.SetTidInfo (tid);
           reqHdr.SetHtImmediateAck (true);
@@ -1226,9 +1242,17 @@ void
 EdcaTxopN::VerifyBlockAck (void)
 {
   NS_LOG_FUNCTION (this);
-  uint8_t tid = m_currentHdr.GetQosTid ();
+  uint8_t tid = 0;
   Mac48Address recipient = m_currentHdr.GetAddr1 ();
   uint16_t sequence = m_currentHdr.GetSequenceNumber ();
+  if (m_currentHdr.IsQosData ())
+    {
+      tid = m_currentHdr.GetQosTid ();
+    }
+  else
+    {
+      NS_FATAL_ERROR ("Current packet is not Qos Data");
+    }
   if (m_baManager->ExistsAgreementInState (recipient, tid, OriginatorBlockAckAgreement::INACTIVE))
     {
       m_baManager->SwitchToBlockAckIfNeeded (recipient, tid, sequence);
@@ -1268,6 +1292,7 @@ EdcaTxopN::CompleteTx (void)
 void
 EdcaTxopN::CompleteMpduTx (Ptr<const Packet> packet, WifiMacHeader hdr, Time tstamp)
 {
+  NS_ASSERT (m_currentHdr.IsQosData ());
   m_baManager->StorePacket (packet, hdr, tstamp);
   m_baManager->NotifyMpduTransmission (hdr.GetAddr1 (), hdr.GetQosTid (),
                                        m_txMiddle->GetNextSeqNumberByTidAndAddress (hdr.GetQosTid (),
