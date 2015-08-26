@@ -1242,17 +1242,9 @@ void
 EdcaTxopN::VerifyBlockAck (void)
 {
   NS_LOG_FUNCTION (this);
-  uint8_t tid = 0;
+  uint8_t tid = m_currentHdr.GetQosTid ();
   Mac48Address recipient = m_currentHdr.GetAddr1 ();
   uint16_t sequence = m_currentHdr.GetSequenceNumber ();
-  if (m_currentHdr.IsQosData ())
-    {
-      tid = m_currentHdr.GetQosTid ();
-    }
-  else
-    {
-      NS_FATAL_ERROR ("Current packet is not Qos Data");
-    }
   if (m_baManager->ExistsAgreementInState (recipient, tid, OriginatorBlockAckAgreement::INACTIVE))
     {
       m_baManager->SwitchToBlockAckIfNeeded (recipient, tid, sequence);
@@ -1292,7 +1284,7 @@ EdcaTxopN::CompleteTx (void)
 void
 EdcaTxopN::CompleteMpduTx (Ptr<const Packet> packet, WifiMacHeader hdr, Time tstamp)
 {
-  NS_ASSERT (m_currentHdr.IsQosData ());
+  NS_ASSERT (hdr.IsQosData ());
   m_baManager->StorePacket (packet, hdr, tstamp);
   m_baManager->NotifyMpduTransmission (hdr.GetAddr1 (), hdr.GetQosTid (),
                                        m_txMiddle->GetNextSeqNumberByTidAndAddress (hdr.GetQosTid (),
