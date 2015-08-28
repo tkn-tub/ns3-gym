@@ -518,10 +518,11 @@ private:
   class AnimXmlElement
   {
     public:
-    AnimXmlElement (std::string tagName);
+    AnimXmlElement (std::string tagName, bool emptyElement=true);
     template <typename T>
     void AddAttribute (std::string attribute, T value);
     void Close ();
+    void CloseElement ();
     void CloseTag ();
     void AddLineBreak ();
     void Add (AnimXmlElement e);
@@ -529,6 +530,7 @@ private:
   private:
     std::string m_tagName;
     std::string m_elementString;
+    bool m_emptyElement;
 
   };
 
