@@ -1144,7 +1144,7 @@ OpenFlowSwitchNetDevice::ReceivePacketOut (const void *msg)
     }
 
   sw_flow_key key;
-  flow_extract (buffer, opo->in_port, &key.flow); // ntohs(opo->in_port)
+  flow_extract (buffer, ntohs(opo->in_port), &key.flow); // ntohs(opo->in_port)
 
   uint16_t v_code = ofi::ValidateActions (&key, opo->actions, actions_len);
   if (v_code != ACT_VALIDATION_OK)
@@ -1287,7 +1287,7 @@ OpenFlowSwitchNetDevice::AddFlow (const ofp_flow_mod *ofm)
         {
           sw_flow_key key;
           flow_used (flow, buffer);
-          flow_extract (buffer, ofm->match.in_port, &key.flow); // ntohs(ofm->match.in_port);
+          flow_extract (buffer, ntohs(ofm->match.in_port), &key.flow); // ntohs(ofm->match.in_port);
           ofi::ExecuteActions (this, ofm->buffer_id, buffer, &key, ofm->actions, actions_len, false);
           ofpbuf_delete (buffer);
         }
@@ -1328,7 +1328,7 @@ OpenFlowSwitchNetDevice::ModFlow (const ofp_flow_mod *ofm)
       if (buffer)
         {
           sw_flow_key skb_key;
-          flow_extract (buffer, ofm->match.in_port, &skb_key.flow); // ntohs(ofm->match.in_port);
+          flow_extract (buffer, ntohs(ofm->match.in_port), &skb_key.flow); // ntohs(ofm->match.in_port);
           ofi::ExecuteActions (this, ofm->buffer_id, buffer, &skb_key, ofm->actions, actions_len, false);
           ofpbuf_delete (buffer);
         }
