@@ -37,6 +37,7 @@ Bugs fixed
 - Bug 2082 - Empirical RV fails if value provided in CDF function is negative
 - Bug 2093 - MultiModelSpectrumChannel::GetDevice only works for 0-th index
 - Bug 2096 - Wrong pcap information when MPDU aggregation is used
+- Bug 2104 - Sequence Number passed to QosUtilsMapSeqControlToUniqueInteger instead of Sequence Control
 - Bug 2108 - Erroneous implementation in InterferenceHelper
 - Bug 2119 - Fix memory leaks in FdNetDevice test due to non-executed events
 - Bug 2124 - UdpSocketImpl::ShutdownRecv doesn't stop the Ipv[4,6]EndPointDemux
