@@ -530,6 +530,11 @@ public:
    */
   void SetMpduAggregator (Ptr<MpduAggregator> aggregator);
   /**
+   *
+   * \return the attached MpduAggregator
+   */
+  Ptr<MpduAggregator> GetMpduAggregator (void);
+  /**
    * Set MAC address of this MacLow.
    *
    * \param ad Mac48Address of this MacLow

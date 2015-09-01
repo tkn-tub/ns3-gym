@@ -2650,6 +2650,12 @@ MacLow::SetMpduAggregator (Ptr<MpduAggregator> aggregator)
   m_mpduAggregator = aggregator;
 }
 
+Ptr<MpduAggregator>
+MacLow::GetMpduAggregator (void)
+{
+  return m_mpduAggregator;
+}
+
 void
 MacLow::DeaggregateAmpduAndReceive (Ptr<Packet> aggregatedPacket, double rxSnr, WifiTxVector txVector, WifiPreamble preamble)
 {
@@ -2746,17 +2752,20 @@ MacLow::StopMpduAggregation (Ptr<const Packet> peekedPacket, WifiMacHeader peeke
 
   if (peekedPacket == 0)
     {
+      NS_LOG_DEBUG ("no more packets in queue");
       return true;
     }
 
   //An HT STA shall not transmit a PPDU that has a duration that is greater than aPPDUMaxTime (10 milliseconds)
   if (m_phy->CalculateTxDuration (aggregatedPacket->GetSize () + peekedPacket->GetSize () + peekedHdr.GetSize () + WIFI_MAC_FCS_LENGTH, dataTxVector, preamble, m_phy->GetFrequency (), 0, 0) > MilliSeconds (10))
     {
+      NS_LOG_DEBUG ("no more packets can be aggregated to satisfy PPDU <= aPPDUMaxTime");
       return true;
     }
 
   if (!m_mpduAggregator->CanBeAggregated (peekedPacket->GetSize () + peekedHdr.GetSize () + WIFI_MAC_FCS_LENGTH, aggregatedPacket, size))
     {
+      NS_LOG_DEBUG ("no more packets can be aggregated because the maximum A-MPDU size has been reached");
       return true;
     }
 
