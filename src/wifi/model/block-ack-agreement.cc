@@ -76,6 +76,14 @@ BlockAckAgreement::SetStartingSequence (uint16_t seq)
 }
 
 void
+BlockAckAgreement::SetStartingSequenceControl (uint16_t seq)
+{
+  NS_LOG_FUNCTION (this << seq);
+  NS_ASSERT (((seq >> 4) & 0x0fff) < 4096);
+  m_startingSeq = (seq >> 4) & 0x0fff;
+}
+
+void
 BlockAckAgreement::SetImmediateBlockAck (void)
 {
   NS_LOG_FUNCTION (this);
@@ -135,7 +143,7 @@ uint16_t
 BlockAckAgreement::GetStartingSequenceControl (void) const
 {
   NS_LOG_FUNCTION (this);
-  uint16_t seqControl = (m_startingSeq << 4) | 0xfff0;
+  uint16_t seqControl = (m_startingSeq << 4) & 0xfff0;
   return seqControl;
 }
 

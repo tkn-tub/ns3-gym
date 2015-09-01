@@ -922,6 +922,12 @@ MgtAddBaRequestHeader::SetStartingSequence (uint16_t seq)
 }
 
 void
+MgtAddBaRequestHeader::SetStartingSequenceControl (uint16_t seqControl)
+{
+  m_startingSeq = (seqControl >> 4) & 0x0fff;
+}
+
+void
 MgtAddBaRequestHeader::SetAmsduSupport (bool supported)
 {
   m_amsduSupport = supported;
@@ -967,12 +973,6 @@ uint16_t
 MgtAddBaRequestHeader::GetStartingSequenceControl (void) const
 {
   return (m_startingSeq << 4) & 0xfff0;
-}
-
-void
-MgtAddBaRequestHeader::SetStartingSequenceControl (uint16_t seqControl)
-{
-  m_startingSeq = (seqControl >> 4) & 0x0fff;
 }
 
 uint16_t

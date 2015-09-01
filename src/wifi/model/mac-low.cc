@@ -1069,7 +1069,7 @@ MacLow::ReceiveOk (Ptr<Packet> packet, double rxSnr, WifiTxVector txVector, Wifi
               NS_LOG_DEBUG ("rx QoS unicast/sendAck from=" << hdr.GetAddr2 ());
               AgreementsI it = m_bAckAgreements.find (std::make_pair (hdr.GetAddr2 (), hdr.GetQosTid ()));
 
-              RxCompleteBufferedPacketsWithSmallerSequence (it->second.first.GetStartingSequence (),
+              RxCompleteBufferedPacketsWithSmallerSequence (it->second.first.GetStartingSequenceControl (),
                                                             hdr.GetAddr2 (), hdr.GetQosTid ());
               RxCompleteBufferedPacketsUntilFirstLost (hdr.GetAddr2 (), hdr.GetQosTid ());
               NS_ASSERT (m_sendAckEvent.IsExpired ());
@@ -2269,7 +2269,7 @@ MacLow::ReceiveMpdu (Ptr<Packet> packet, WifiMacHeader hdr)
                       int16_t bufferSize = (*it).second.first.GetBufferSize ();
                       uint16_t sum = ((uint16_t)(std::abs (winEnd - bufferSize + 1))) % 4096;
                       (*it).second.first.SetStartingSequence (sum);
-                      RxCompleteBufferedPacketsWithSmallerSequence ((*it).second.first.GetStartingSequence (), originator, tid);
+                      RxCompleteBufferedPacketsWithSmallerSequence ((*it).second.first.GetStartingSequenceControl (), originator, tid);
                     }
                 }
               RxCompleteBufferedPacketsUntilFirstLost (originator, tid); //forwards up packets starting from winstart and set winstart to last +1
@@ -2362,7 +2362,7 @@ MacLow::DestroyBlockAckAgreement (Mac48Address originator, uint8_t tid)
   AgreementsI it = m_bAckAgreements.find (std::make_pair (originator, tid));
   if (it != m_bAckAgreements.end ())
     {
-      RxCompleteBufferedPacketsWithSmallerSequence (it->second.first.GetStartingSequence (), originator, tid);
+      RxCompleteBufferedPacketsWithSmallerSequence (it->second.first.GetStartingSequenceControl (), originator, tid);
       RxCompleteBufferedPacketsUntilFirstLost (originator, tid);
       m_bAckAgreements.erase (it);
 
@@ -2384,11 +2384,11 @@ MacLow::RxCompleteBufferedPacketsWithSmallerSequence (uint16_t seq, Mac48Address
       uint16_t guard = 0;
       if (last != (*it).second.second.end ())
         {
-          guard = (*it).second.second.begin ()->second.GetSequenceControl () & 0xfff0;
+          guard = (*it).second.second.begin ()->second.GetSequenceControl ();
         }
       BufferedPacketI i = (*it).second.second.begin ();
       for (; i != (*it).second.second.end ()
-           && QosUtilsMapSeqControlToUniqueInteger ((*i).second.GetSequenceNumber (), endSequence) < mappedStart; )
+           && QosUtilsMapSeqControlToUniqueInteger ((*i).second.GetSequenceControl (), endSequence) < mappedStart; )
         {
           if (guard == (*i).second.GetSequenceControl ())
             {
@@ -2402,13 +2402,13 @@ MacLow::RxCompleteBufferedPacketsWithSmallerSequence (uint16_t seq, Mac48Address
                   m_rxCallback ((*last).first, &(*last).second);
                   last++;
                   /* go to next packet */
-                  while (i != (*it).second.second.end () && ((guard >> 4) & 0x0fff) == (*i).second.GetSequenceNumber ())
+                  while (i != (*it).second.second.end () && guard == (*i).second.GetSequenceControl ())
                     {
                       i++;
                     }
                   if (i != (*it).second.second.end ())
                     {
-                      guard = (*i).second.GetSequenceControl () & 0xfff0;
+                      guard = (*i).second.GetSequenceControl ();
                       last = i;
                     }
                 }
@@ -2420,13 +2420,13 @@ MacLow::RxCompleteBufferedPacketsWithSmallerSequence (uint16_t seq, Mac48Address
           else
             {
               /* go to next packet */
-              while (i != (*it).second.second.end () && ((guard >> 4) & 0x0fff) == (*i).second.GetSequenceNumber ())
+              while (i != (*it).second.second.end () && guard == (*i).second.GetSequenceControl ())
                 {
                   i++;
                 }
               if (i != (*it).second.second.end ())
                 {
-                  guard = (*i).second.GetSequenceControl () & 0xfff0;
+                  guard = (*i).second.GetSequenceControl ();
                   last = i;
                 }
             }
@@ -2441,9 +2441,7 @@ MacLow::RxCompleteBufferedPacketsUntilFirstLost (Mac48Address originator, uint8_
   AgreementsI it = m_bAckAgreements.find (std::make_pair (originator, tid));
   if (it != m_bAckAgreements.end ())
     {
-      uint16_t startingSeqCtrl = ((*it).second.first.GetStartingSequence () << 4) & 0xfff0;
-      uint16_t guard = startingSeqCtrl;
-
+      uint16_t guard = (*it).second.first.GetStartingSequenceControl ();
       BufferedPacketI lastComplete = (*it).second.second.begin ();
       BufferedPacketI i = (*it).second.second.begin ();
       for (; i != (*it).second.second.end () && guard == (*i).second.GetSequenceControl (); i++)
@@ -2460,7 +2458,7 @@ MacLow::RxCompleteBufferedPacketsUntilFirstLost (Mac48Address originator, uint8_
             }
           guard = (*i).second.IsMoreFragments () ? (guard + 1) : ((guard + 16) & 0xfff0);
         }
-      (*it).second.first.SetStartingSequence ((guard >> 4) & 0x0fff);
+      (*it).second.first.SetStartingSequenceControl (guard);
       /* All packets already forwarded to WifiMac must be removed from buffer:
       [begin (), lastComplete) */
       (*it).second.second.erase ((*it).second.second.begin (), lastComplete);
@@ -2593,7 +2591,7 @@ MacLow::SendBlockAckAfterBlockAckRequest (const CtrlBAckRequestHeader reqHdr, Ma
               /* All packets with smaller sequence than starting sequence control must be passed up to Wifimac
                * See 9.10.3 in IEEE 802.11e standard.
                */
-              RxCompleteBufferedPacketsWithSmallerSequence (reqHdr.GetStartingSequence (), originator, tid);
+              RxCompleteBufferedPacketsWithSmallerSequence (reqHdr.GetStartingSequenceControl (), originator, tid);
               RxCompleteBufferedPacketsUntilFirstLost (originator, tid);
             }
           else
@@ -2602,7 +2600,7 @@ MacLow::SendBlockAckAfterBlockAckRequest (const CtrlBAckRequestHeader reqHdr, Ma
                 {
                   (*it).second.first.SetStartingSequence (reqHdr.GetStartingSequence ());
                   (*it).second.first.SetWinEnd (((*it).second.first.GetStartingSequence () + (*it).second.first.GetBufferSize () - 1) % 4096);
-                  RxCompleteBufferedPacketsWithSmallerSequence (reqHdr.GetStartingSequence (), originator, tid);
+                  RxCompleteBufferedPacketsWithSmallerSequence (reqHdr.GetStartingSequenceControl (), originator, tid);
                   RxCompleteBufferedPacketsUntilFirstLost (originator, tid);
                   (*it).second.first.SetWinEnd (((*it).second.first.GetStartingSequence () + (*it).second.first.GetBufferSize () - 1) % 4096);
                 }

@@ -63,6 +63,12 @@ public:
    */
   void SetStartingSequence (uint16_t seq);
   /**
+   * Set starting sequence control.
+   *
+   * \param seq the starting sequence control
+   */
+  void SetStartingSequenceControl (uint16_t seq);
+  /**
    * Set Block ACK policy to immediate ACK.
    */
   void SetImmediateBlockAck (void);
@@ -113,7 +119,7 @@ public:
    */
   uint16_t GetStartingSequence (void) const;
   /**
-   * Return the starting squence control
+   * Return the starting sequence control
    *
    * \return starting sequence control
    */
