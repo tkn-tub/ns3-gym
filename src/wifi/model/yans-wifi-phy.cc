@@ -772,6 +772,8 @@ YansWifiPhy::SendPacket (Ptr<const Packet> packet, WifiTxVector txVector, WifiPr
     }
 
   Time txDuration = CalculateTxDuration (packet->GetSize (), txVector, preamble, GetFrequency (), packetType, 1);
+  NS_ASSERT (txDuration > NanoSeconds (0));
+
   if (m_state->IsStateRx ())
     {
       m_endPlcpRxEvent.Cancel ();
