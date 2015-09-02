@@ -466,7 +466,18 @@ OpenFlowSwitchNetDevice::BufferFromPacket (Ptr<const Packet> constPacket, Addres
   eth_header* eth_h = (eth_header*)buffer->l2;
   dst.CopyTo (eth_h->eth_dst);              // Destination Mac Address
   src.CopyTo (eth_h->eth_src);              // Source Mac Address
-  eth_h->eth_type = htons (ETH_TYPE_IP);    // Ether Type
+  if (protocol == ArpL3Protocol::PROT_NUMBER)
+    {
+      eth_h->eth_type = htons (ETH_TYPE_ARP);    // Ether Type
+    }
+  else if (protocol == Ipv4L3Protocol::PROT_NUMBER)
+    {
+      eth_h->eth_type = htons (ETH_TYPE_IP);    // Ether Type
+    }
+  else
+    {
+      NS_LOG_WARN ("Protocol unsupported: " << protocol);
+    }
   NS_LOG_INFO ("Parsed EthernetHeader");
 
   l2_length = ETH_HEADER_LEN;
