@@ -116,9 +116,13 @@ SetTestSuiteSeed (void)
 class RandomVariableStreamUniformTestCase : public TestCase
 {
 public:
-  static const uint32_t N_RUNS = 5;
-  static const uint32_t N_BINS = 50;
+  // We want the number of observations in each bin to be > 5
+  // The following values should yield many more than 5 per bin
+  static const uint32_t N_BINS = 100;
   static const uint32_t N_MEASUREMENTS = 1000000;
+
+  // Number of times to wrap the Chi-Squared test and retry
+  static const uint32_t N_RUNS = 2;
 
   RandomVariableStreamUniformTestCase ();
   virtual ~RandomVariableStreamUniformTestCase ();
@@ -181,19 +185,24 @@ RandomVariableStreamUniformTestCase::DoRun (void)
 {
   SetTestSuiteSeed ();
 
-  double sum = 0.;
-  double maxStatistic = gsl_cdf_chisq_Qinv (0.05, N_BINS);
+  double confidence = 0.99;
+  double maxStatistic = gsl_cdf_chisq_Pinv (confidence, (N_BINS-1));
+  NS_LOG_DEBUG ("Chi square required at " << confidence << " confidence for " << N_BINS << " bins is " << maxStatistic);
 
+  double result = maxStatistic;
+  // If chi-squared test fails, re-try it up to N_RUNS times
   for (uint32_t i = 0; i < N_RUNS; ++i)
     {
       Ptr<UniformRandomVariable> u = CreateObject<UniformRandomVariable> ();
-      double result = ChiSquaredTest (u);
-      sum += result;
+      result = ChiSquaredTest (u);
+      NS_LOG_DEBUG ("Chi square result is " << result);
+      if (result < maxStatistic)
+        {
+          break;
+        }
     }
 
-  sum /= (double)N_RUNS;
-
-  NS_TEST_ASSERT_MSG_LT (sum, maxStatistic, "Chi-squared statistic out of range");
+  NS_TEST_ASSERT_MSG_LT (result, maxStatistic, "Chi-squared statistic out of range");
 
   double min = 0.0;
   double max = 10.0;
