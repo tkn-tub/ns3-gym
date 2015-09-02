@@ -444,10 +444,11 @@ OpenFlowSwitchNetDevice::AddVPort (const ofp_vport_mod *ovpm)
 }
 
 ofpbuf *
-OpenFlowSwitchNetDevice::BufferFromPacket (Ptr<Packet> packet, Address src, Address dst, int mtu, uint16_t protocol)
+OpenFlowSwitchNetDevice::BufferFromPacket (Ptr<const Packet> constPacket, Address src, Address dst, int mtu, uint16_t protocol)
 {
   NS_LOG_INFO ("Creating Openflow buffer from packet.");
 
+  Ptr<Packet> packet = constPacket->Copy ();
   /*
    * Allocate buffer with some headroom to add headers in forwarding
    * to the controller or adding a vlan tag, plus an extra 2 bytes to
@@ -460,19 +461,15 @@ OpenFlowSwitchNetDevice::BufferFromPacket (Ptr<Packet> packet, Address src, Addr
 
   int l2_length = 0, l3_length = 0, l4_length = 0;
 
-  // Load headers
-  EthernetHeader eth_hd;
-  if (packet->PeekHeader (eth_hd))
-    {
-      buffer->l2 = new eth_header;
-      eth_header* eth_h = (eth_header*)buffer->l2;
-      dst.CopyTo (eth_h->eth_dst);              // Destination Mac Address
-      src.CopyTo (eth_h->eth_src);              // Source Mac Address
-      eth_h->eth_type = htons (ETH_TYPE_IP);    // Ether Type
-      NS_LOG_INFO ("Parsed EthernetHeader");
+  //Parse Ethernet header
+  buffer->l2 = new eth_header;
+  eth_header* eth_h = (eth_header*)buffer->l2;
+  dst.CopyTo (eth_h->eth_dst);              // Destination Mac Address
+  src.CopyTo (eth_h->eth_src);              // Source Mac Address
+  eth_h->eth_type = htons (ETH_TYPE_IP);    // Ether Type
+  NS_LOG_INFO ("Parsed EthernetHeader");
 
-      l2_length = ETH_HEADER_LEN;
-    }
+  l2_length = ETH_HEADER_LEN;
 
   // We have to wrap this because PeekHeader has an assert fail if we check for an Ipv4Header that isn't there.
   if (protocol == Ipv4L3Protocol::PROT_NUMBER)
@@ -493,6 +490,7 @@ OpenFlowSwitchNetDevice::BufferFromPacket (Ptr<Packet> packet, Address src, Addr
           ip_h->ip_dst      = htonl (ip_hd.GetDestination ().Get ()); // Destination Address
           ip_h->ip_csum     = csum (&ip_h, sizeof ip_h);        // Header Checksum
           NS_LOG_INFO ("Parsed Ipv4Header");
+          packet->RemoveHeader (ip_hd);
 
           l3_length = IP_HEADER_LEN;
         }
@@ -515,6 +513,7 @@ OpenFlowSwitchNetDevice::BufferFromPacket (Ptr<Packet> packet, Address src, Addr
           arp_h->ar_hln = sizeof arp_h->ar_tha;                         // Hardware address length.
           arp_h->ar_pln = sizeof arp_h->ar_tpa;                         // Protocol address length.
           NS_LOG_INFO ("Parsed ArpHeader");
+          packet->RemoveHeader (arp_hd);
 
           l3_length = ARP_ETH_HEADER_LEN;
         }
@@ -539,6 +538,7 @@ OpenFlowSwitchNetDevice::BufferFromPacket (Ptr<Packet> packet, Address src, Addr
               tcp_h->tcp_urg = tcp_hd.GetUrgentPointer ();      // Urgent Pointer
               tcp_h->tcp_csum = csum (&tcp_h, sizeof tcp_h);    // Header Checksum
               NS_LOG_INFO ("Parsed TcpHeader");
+              packet->RemoveHeader (tcp_hd);
 
               l4_length = TCP_HEADER_LEN;
             }
@@ -562,13 +562,14 @@ OpenFlowSwitchNetDevice::BufferFromPacket (Ptr<Packet> packet, Address src, Addr
               udp_csum = csum_continue (udp_csum, udp_h, sizeof udp_h);
               udp_h->udp_csum = csum_finish (csum_continue (udp_csum, buffer->data, buffer->size)); // Header Checksum
               NS_LOG_INFO ("Parsed UdpHeader");
+              packet->RemoveHeader (udp_hd);
 
               l4_length = UDP_HEADER_LEN;
             }
         }
     }
 
-  // Load Packet data into buffer data
+  // Load any remaining packet data into buffer data
   packet->CopyData ((uint8_t*)buffer->data, packet->GetSize ());
 
   if (buffer->l4)

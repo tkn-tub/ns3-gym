@@ -272,7 +272,7 @@ protected:
    * \param protocol The protocol defining the packet.
    * \return The OpenFlow Buffer created from the packet.
    */
-  ofpbuf * BufferFromPacket (Ptr<Packet> packet, Address src, Address dst, int mtu, uint16_t protocol);
+  ofpbuf * BufferFromPacket (Ptr<const Packet> packet, Address src, Address dst, int mtu, uint16_t protocol);
 
 private:
   /**
