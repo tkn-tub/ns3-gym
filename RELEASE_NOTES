@@ -54,6 +54,7 @@ Bugs fixed
 - Bug 2154 - Incorrect power calculation in wifi power adaptation examples
 - Bug 2156 - Duplicate packets when using two level aggregation
 - Bug 2166 - SteadyStateRandomWaypointMobilityModel directs the node to the ground
+- Bug 2173 - WifiInformationElement::DeserializeIfPresent attempts to read beyond the end of buffer
 
 Known issues
 ------------
