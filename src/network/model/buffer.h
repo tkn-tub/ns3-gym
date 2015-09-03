@@ -992,7 +992,7 @@ uint8_t
 Buffer::Iterator::PeekU8 (void)
 {
   NS_ASSERT_MSG (m_current >= m_dataStart &&
-                 m_current <= m_dataEnd,
+                 m_current < m_dataEnd,
                  GetReadErrorMessage ());
 
   if (m_current < m_zeroStart)

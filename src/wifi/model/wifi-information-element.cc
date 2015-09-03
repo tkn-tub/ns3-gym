@@ -61,6 +61,10 @@ WifiInformationElement::Deserialize (Buffer::Iterator i)
 Buffer::Iterator
 WifiInformationElement::DeserializeIfPresent (Buffer::Iterator i)
 {
+  if (i.IsEnd ())
+    {
+      return i;
+    }
   Buffer::Iterator start = i;
   uint8_t elementId = i.ReadU8 ();
 
