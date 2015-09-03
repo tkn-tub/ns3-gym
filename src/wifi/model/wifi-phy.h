@@ -15,7 +15,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
+ * Authors: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
+ *          Sébastien Deronne <sebastien.deronne@gmail.com>
  */
 
 #ifndef WIFI_PHY_H
@@ -309,7 +310,7 @@ public:
   Time CalculateTxDuration (uint32_t size, WifiTxVector txVector, enum WifiPreamble preamble, double frequency, uint8_t packetType, uint8_t incFlag);
 
   /**
-   * \param txVector the TXVECTOR used for the transmission of this packet
+   * \param txVector the transmission parameters used for this packet
    * \param preamble the type of preamble to use for this packet.
    *
    * \return the total amount of time this PHY will stay busy for the transmission of the PLCP preamble and PLCP header.
@@ -329,7 +330,13 @@ public:
    * \return the WifiMode used for the transmission of the HT-SIG and the HT training fields
    *         in Mixed Format and greenfield format PLCP header
    */
-  static WifiMode GetHTPlcpHeaderMode (WifiMode payloadMode);
+  static WifiMode GetHtPlcpHeaderMode (WifiMode payloadMode);
+  /**
+   * \param payloadMode the WifiMode use for the transmission of the payload
+   *
+   * \return the WifiMode used for the transmission of the VHT-STF, VHT-LTF and VHT-SIG-B fields
+   */
+  static WifiMode GetVhtPlcpHeaderMode (WifiMode payloadMode);
   /**
    * \param preamble the type of preamble
    *
@@ -337,26 +344,45 @@ public:
    */
   static Time GetPlcpHtSigHeaderDuration (WifiPreamble preamble);
   /**
+   * \param preamble the type of preamble
+   *
+   * \return the duration of the VHT-SIG-A1 in PLCP header
+   */
+  static Time GetPlcpVhtSigA1Duration (WifiPreamble preamble);
+  /**
+   * \param preamble the type of preamble
+   *
+   * \return the duration of the VHT-SIG-A2 in PLCP header
+   */
+  static Time GetPlcpVhtSigA2Duration (WifiPreamble preamble);
+  /**
+   * \param preamble the type of preamble
+   *
+   * \return the duration of the VHT-SIG-B in PLCP header
+   */
+  static Time GetPlcpVhtSigBDuration (WifiPreamble preamble);
+  /**
    * \param payloadMode the WifiMode use for the transmission of the payload
    * \param preamble the type of preamble
+   * \param txVector the transmission parameters used for this packet
    *
    * \return the WifiMode used for the transmission of the PLCP header
    */
-  static WifiMode GetPlcpHeaderMode (WifiMode payloadMode, WifiPreamble preamble);
+  static WifiMode GetPlcpHeaderMode (WifiMode payloadMode, WifiPreamble preamble, WifiTxVector txVector);
   /**
-   * \param payloadMode the WifiMode use for the transmission of the payload
+   * \param txVector the transmission parameters used for this packet
    * \param preamble the type of preamble
    *
    * \return the duration of the PLCP header
    */
-  static Time GetPlcpHeaderDuration (WifiMode payloadMode, WifiPreamble preamble);
+  static Time GetPlcpHeaderDuration (WifiTxVector txVector, WifiPreamble preamble);
   /**
-   * \param payloadMode the WifiMode use for the transmission of the payload
+   * \param txVector the transmission parameters used for this packet
    * \param preamble the type of preamble
    *
    * \return the duration of the PLCP preamble
    */
-  static Time GetPlcpPreambleDuration (WifiMode payloadMode, WifiPreamble preamble);
+  static Time GetPlcpPreambleDuration (WifiTxVector txVector, WifiPreamble preamble);
   /**
    * \param size the number of bytes in the packet to send
    * \param txVector the TXVECTOR used for the transmission of this packet
@@ -483,26 +509,7 @@ public:
    *
    * \return the MCS index whose index is specified.
    */
-  virtual uint8_t GetMcs (uint8_t mcs) const = 0;
-
-  /**
-  * For a given WifiMode finds the corresponding MCS value and returns it
-  * as defined in the IEEE 802.11n standard
-  *
-  * \param mode the WifiMode
-  *
-  * \return the MCS number that corresponds to the given WifiMode
-  */
-  virtual uint32_t WifiModeToMcs (WifiMode mode) = 0;
-  /**
-   * For a given MCS finds the corresponding WifiMode and returns it
-   * as defined in the IEEE 802.11n standard.
-   *
-   * \param mcs the MCS number
-   *
-   * \return the WifiMode that corresponds to the given MCS number
-   */
-  virtual WifiMode McsToWifiMode (uint8_t mcs) = 0;
+  virtual WifiMode GetMcs (uint8_t mcs) const = 0;
 
   /**
    * \brief Set channel number.
@@ -756,200 +763,260 @@ public:
    * \return a WifiMode for OFDM at 13.5Mbps with 5MHz channel spacing
    */
   static WifiMode GetOfdmRate13_5MbpsBW5MHz ();
+
   /**
-   * Return a WifiMode for OFDM at 6.5Mbps with 20MHz channel spacing.
+   * Return MCS 0 from HT MCS values.
    *
-   * \return a WifiMode for OFDM at 6.5Mbps with 20MHz channel spacing
+   * \return MCS 0 from HT MCS values
    */
-  static WifiMode GetOfdmRate6_5MbpsBW20MHz ();
+  static WifiMode GetHtMcs0 ();
   /**
-   * Return a WifiMode for OFDM at 13Mbps with 20MHz channel spacing.
+   * Return MCS 1 from HT MCS values.
    *
-   * \return a WifiMode for OFDM at 13Mbps with 20MHz channel spacing
+   * \return MCS 1 from HT MCS values
    */
-  static WifiMode GetOfdmRate13MbpsBW20MHz ();
+  static WifiMode GetHtMcs1 ();
   /**
-   * Return a WifiMode for OFDM at 19.5Mbps with 20MHz channel spacing.
+   * Return MCS 2 from HT MCS values.
    *
-   * \return a WifiMode for OFDM at 19.5Mbps with 20MHz channel spacing
+   * \return MCS 2 from HT MCS values
    */
-  static WifiMode GetOfdmRate19_5MbpsBW20MHz ();
+  static WifiMode GetHtMcs2 ();
   /**
-   * Return a WifiMode for OFDM at 26Mbps with 20MHz channel spacing.
+   * Return MCS 3 from HT MCS values.
    *
-   * \return a WifiMode for OFDM at 26Mbps with 20MHz channel spacing
+   * \return MCS 3 from HT MCS values
    */
-  static WifiMode GetOfdmRate26MbpsBW20MHz ();
+  static WifiMode GetHtMcs3 ();
   /**
-   * Return a WifiMode for OFDM at 39Mbps with 20MHz channel spacing.
+   * Return MCS 4 from HT MCS values.
    *
-   * \return a WifiMode for OFDM at 39Mbps with 20MHz channel spacing
+   * \return MCS 4 from HT MCS values
    */
-  static WifiMode GetOfdmRate39MbpsBW20MHz ();
+  static WifiMode GetHtMcs4 ();
   /**
-   * Return a WifiMode for OFDM at 52Mbps with 20MHz channel spacing.
+   * Return MCS 5 from HT MCS values.
    *
-   * \return a WifiMode for OFDM at 52Mbps with 20MHz channel spacing
+   * \return MCS 5 from HT MCS values
    */
-  static WifiMode GetOfdmRate52MbpsBW20MHz ();
+  static WifiMode GetHtMcs5 ();
   /**
-   * Return a WifiMode for OFDM at 58.5Mbps with 20MHz channel spacing.
+   * Return MCS 6 from HT MCS values.
    *
-   * \return a WifiMode for OFDM at 58.5Mbps with 20MHz channel spacing
+   * \return MCS 6 from HT MCS values
    */
-  static WifiMode GetOfdmRate58_5MbpsBW20MHz ();
+  static WifiMode GetHtMcs6 ();
   /**
-   * Return a WifiMode for OFDM at 65Mbps with 20MHz channel spacing.
+   * Return MCS 7 from HT MCS values.
    *
-   * \return a WifiMode for OFDM at 65Mbps with 20MHz channel spacing
+   * \return MCS 7 from HT MCS values
    */
-  static WifiMode GetOfdmRate65MbpsBW20MHz ();
+  static WifiMode GetHtMcs7 ();
   /**
-   * Return a WifiMode for OFDM at 13.5Mbps with 40MHz channel spacing.
+   * Return MCS 8 from HT MCS values.
    *
-   * \return a WifiMode for OFDM at 13.5Mbps with 40MHz channel spacing
+   * \return MCS 8 from HT MCS values
    */
-  static WifiMode GetOfdmRate13_5MbpsBW40MHz ();
+  static WifiMode GetHtMcs8 ();
   /**
-   * Return a WifiMode for OFDM at 27Mbps with 40MHz channel spacing.
+   * Return MCS 9 from HT MCS values.
    *
-   * \return a WifiMode for OFDM at 27Mbps with 40MHz channel spacing
+   * \return MCS 9 from HT MCS values
    */
-  static WifiMode GetOfdmRate27MbpsBW40MHz ();
+  static WifiMode GetHtMcs9 ();
   /**
-   * Return a WifiMode for OFDM at 40.5Mbps with 40MHz channel spacing.
+   * Return MCS 10 from HT MCS values.
    *
-   * \return a WifiMode for OFDM at 40.5Mbps with 40MHz channel spacing
+   * \return MCS 10 from HT MCS values
    */
-  static WifiMode GetOfdmRate40_5MbpsBW40MHz ();
+  static WifiMode GetHtMcs10 ();
   /**
-   * Return a WifiMode for OFDM at 54Mbps with 40MHz channel spacing.
+   * Return MCS 11 from HT MCS values.
    *
-   * \return a WifiMode for OFDM at 54Mbps with 40MHz channel spacing
+   * \return MCS 11 from HT MCS values
    */
-  static WifiMode GetOfdmRate54MbpsBW40MHz ();
+  static WifiMode GetHtMcs11 ();
   /**
-   * Return a WifiMode for OFDM at 81Mbps with 40MHz channel spacing.
+   * Return MCS 12 from HT MCS values.
    *
-   * \return a WifiMode for OFDM at 81Mbps with 40MHz channel spacing
+   * \return MCS 12 from HT MCS values
    */
-  static WifiMode GetOfdmRate81MbpsBW40MHz ();
+  static WifiMode GetHtMcs12 ();
   /**
-   * Return a WifiMode for OFDM at 108Mbps with 40MHz channel spacing.
+   * Return MCS 13 from HT MCS values.
    *
-   * \return a WifiMode for OFDM at 108Mbps with 40MHz channel spacing
+   * \return MCS 13 from HT MCS values
    */
-  static WifiMode GetOfdmRate108MbpsBW40MHz ();
+  static WifiMode GetHtMcs13 ();
   /**
-   * Return a WifiMode for OFDM at 121.5Mbps with 40MHz channel spacing.
+   * Return MCS 14 from HT MCS values.
    *
-   * \return a WifiMode for OFDM at 121.5Mbps with 40MHz channel spacing
+   * \return MCS 14 from HT MCS values
    */
-  static WifiMode GetOfdmRate121_5MbpsBW40MHz ();
+  static WifiMode GetHtMcs14 ();
   /**
-   * Return a WifiMode for OFDM at 135Mbps with 40MHz channel spacing.
+   * Return MCS 15 from HT MCS values.
    *
-   * \return a WifiMode for OFDM at 135Mbps with 40MHz channel spacing
+   * \return MCS 15 from HT MCS values
    */
-  static WifiMode GetOfdmRate135MbpsBW40MHz ();
+  static WifiMode GetHtMcs15 ();
   /**
-   * Return a WifiMode for OFDM at 7.2Mbps with 20MHz channel spacing.
+   * Return MCS 16 from HT MCS values.
    *
-   * \return a WifiMode for OFDM at 7.2Mbps with 20MHz channel spacing
+   * \return MCS 16 from HT MCS values
    */
-  static WifiMode GetOfdmRate7_2MbpsBW20MHz ();
+  static WifiMode GetHtMcs16 ();
   /**
-   * Return a WifiMode for OFDM at 14.4Mbps with 20MHz channel spacing.
+   * Return MCS 17 from HT MCS values.
    *
-   * \return a WifiMode for OFDM at 14.4Mbps with 20MHz channel spacing
+   * \return MCS 17 from HT MCS values
    */
-  static WifiMode GetOfdmRate14_4MbpsBW20MHz ();
+  static WifiMode GetHtMcs17 ();
   /**
-   * Return a WifiMode for OFDM at 21.7Mbps with 20MHz channel spacing.
+   * Return MCS 18 from HT MCS values.
    *
-   * \return a WifiMode for OFDM at 21.7Mbps with 20MHz channel spacing
+   * \return MCS 18 from HT MCS values
    */
-  static WifiMode GetOfdmRate21_7MbpsBW20MHz ();
+  static WifiMode GetHtMcs18 ();
   /**
-   * Return a WifiMode for OFDM at 28.9Mbps with 20MHz channel spacing.
+   * Return MCS 19 from HT MCS values.
    *
-   * \return a WifiMode for OFDM at 28.9Mbps with 20MHz channel spacing
+   * \return MCS 19 from HT MCS values
    */
-  static WifiMode GetOfdmRate28_9MbpsBW20MHz ();
+  static WifiMode GetHtMcs19 ();
   /**
-   * Return a WifiMode for OFDM at 43.3Mbps with 20MHz channel spacing.
+   * Return MCS 20 from HT MCS values.
    *
-   * \return a WifiMode for OFDM at 43.3Mbps with 20MHz channel spacing
+   * \return MCS 20 from HT MCS values
    */
-  static WifiMode GetOfdmRate43_3MbpsBW20MHz ();
+  static WifiMode GetHtMcs20 ();
   /**
-   * Return a WifiMode for OFDM at 57.8Mbps with 20MHz channel spacing.
+   * Return MCS 21 from HT MCS values.
    *
-   * \return a WifiMode for OFDM at 57.8Mbps with 20MHz channel spacing
+   * \return MCS 21 from HT MCS values
    */
-  static WifiMode GetOfdmRate57_8MbpsBW20MHz ();
+  static WifiMode GetHtMcs21 ();
   /**
-   * Return a WifiMode for OFDM at 65Mbps with 20MHz channel spacing.
-   * The rate supports short guard interval.
+   * Return MCS 22 from HT MCS values.
    *
-   * \return a WifiMode for OFDM at 65Mbps with 20MHz channel spacing
+   * \return MCS 22 from HT MCS values
    */
-  static WifiMode GetOfdmRate65MbpsBW20MHzShGi ();
+  static WifiMode GetHtMcs22 ();
   /**
-   * Return a WifiMode for OFDM at 72.2Mbps with 20MHz channel spacing.
+   * Return MCS 23 from HT MCS values.
    *
-   * \return a WifiMode for OFDM at 72.2Mbps with 20MHz channel spacing
+   * \return MCS 23 from HT MCS values
    */
-  static WifiMode GetOfdmRate72_2MbpsBW20MHz ();
+  static WifiMode GetHtMcs23 ();
   /**
-   * Return a WifiMode for OFDM at 15Mbps with 40MHz channel spacing.
+   * Return MCS 24 from HT MCS values.
    *
-   * \return a WifiMode for OFDM at 15Mbps with 40MHz channel spacing
+   * \return MCS 24 from HT MCS values
    */
-  static WifiMode GetOfdmRate15MbpsBW40MHz ();
+  static WifiMode GetHtMcs24 ();
   /**
-   * Return a WifiMode for OFDM at 30Mbps with 40MHz channel spacing.
+   * Return MCS 25 from HT MCS values.
    *
-   * \return a WifiMode for OFDM at 30Mbps with 40MHz channel spacing
+   * \return MCS 25 from HT MCS values
    */
-  static WifiMode GetOfdmRate30MbpsBW40MHz ();
+  static WifiMode GetHtMcs25 ();
   /**
-   * Return a WifiMode for OFDM at 45Mbps with 40MHz channel spacing.
+   * Return MCS 26 from HT MCS values.
    *
-   * \return a WifiMode for OFDM at 45Mbps with 40MHz channel spacing
+   * \return MCS 26 from HT MCS values
    */
-  static WifiMode GetOfdmRate45MbpsBW40MHz ();
+  static WifiMode GetHtMcs26 ();
   /**
-   * Return a WifiMode for OFDM at 60Mbps with 40MHz channel spacing.
+   * Return MCS 27 from HT MCS values.
    *
-   * \return a WifiMode for OFDM at 60Mbps with 40MHz channel spacing
+   * \return MCS 27 from HT MCS values
    */
-  static WifiMode GetOfdmRate60MbpsBW40MHz ();
+  static WifiMode GetHtMcs27 ();
   /**
-   * Return a WifiMode for OFDM at 90Mbps with 40MHz channel spacing.
+   * Return MCS 28 from HT MCS values.
    *
-   * \return a WifiMode for OFDM at 90Mbps with 40MHz channel spacing
+   * \return MCS 28 from HT MCS values
    */
-  static WifiMode GetOfdmRate90MbpsBW40MHz ();
+  static WifiMode GetHtMcs28 ();
   /**
-   * Return a WifiMode for OFDM at 120Mbps with 40MHz channel spacing.
+   * Return MCS 29 from HT MCS values.
    *
-   * \return a WifiMode for OFDM at 120Mbps with 40MHz channel spacing
+   * \return MCS 29 from HT MCS values
    */
-  static WifiMode GetOfdmRate120MbpsBW40MHz ();
+  static WifiMode GetHtMcs29 ();
   /**
-   * Return a WifiMode for OFDM at 135Mbps with 40MHz channel spacing.
-   * The rate supports short guard interval.
+   * Return MCS 30 from HT MCS values.
    *
-   * \return a WifiMode for OFDM at 135Mbps with 40MHz channel spacing
+   * \return MCS 30 from HT MCS values
    */
-  static WifiMode GetOfdmRate135MbpsBW40MHzShGi ();
+  static WifiMode GetHtMcs30 ();
   /**
-   * Return a WifiMode for OFDM at 150Mbps with 40MHz channel spacing.
+   * Return MCS 31 from HT MCS values.
    *
-   * \return a WifiMode for OFDM at 150Mbps with 40MHz channel spacing
+   * \return MCS 31 from HT MCS values
    */
-  static WifiMode GetOfdmRate150MbpsBW40MHz ();
+  static WifiMode GetHtMcs31 ();
+
+  /**
+   * Return MCS 0 from VHT MCS values.
+   *
+   * \return MCS 0 from VHT MCS values
+   */
+  static WifiMode GetVhtMcs0 ();
+  /**
+   * Return MCS 1 from VHT MCS values.
+   *
+   * \return MCS 1 from VHT MCS values
+   */
+  static WifiMode GetVhtMcs1 ();
+  /**
+   * Return MCS 2 from VHT MCS values.
+   *
+   * \return MCS 2 from VHT MCS values
+   */
+  static WifiMode GetVhtMcs2 ();
+  /**
+   * Return MCS 3 from VHT MCS values.
+   *
+   * \return MCS 3 from VHT MCS values
+   */
+  static WifiMode GetVhtMcs3 ();
+  /**
+   * Return MCS 4 from VHT MCS values.
+   *
+   * \return MCS 4 from VHT MCS values
+   */
+  static WifiMode GetVhtMcs4 ();
+  /**
+   * Return MCS 5 from VHT MCS values.
+   *
+   * \return MCS 5 from VHT MCS values
+   */
+  static WifiMode GetVhtMcs5 ();
+  /**
+   * Return MCS 6 from VHT MCS values.
+   *
+   * \return MCS 6 from VHT MCS values
+   */
+  static WifiMode GetVhtMcs6 ();
+  /**
+   * Return MCS 7 from VHT MCS values.
+   *
+   * \return MCS 7 from VHT MCS values
+   */
+  static WifiMode GetVhtMcs7 ();
+  /**
+   * Return MCS 8 from VHT MCS values.
+   *
+   * \return MCS 8 from VHT MCS values
+   */
+  static WifiMode GetVhtMcs8 ();
+  /**
+   * Return MCS 9 from VHT MCS values.
+   *
+   * \return MCS 9 from VHT MCS values
+   */
+  static WifiMode GetVhtMcs9 ();
 
   /**
    * Public method used to fire a PhyTxBegin trace.
@@ -1042,11 +1109,10 @@ public:
    * \todo WifiTxVector should be passed by const reference because
    * of its size.
    */
-  typedef void (* MonitorSnifferRxCallback)
-    (Ptr<const Packet> packet, uint16_t channelFreqMhz,
-     uint16_t channelNumber, uint32_t rate, WifiPreamble preamble,
-     WifiTxVector txVector, struct mpduInfo aMpdu,
-     struct signalNoiseDbm signalNoise);
+  typedef void (* MonitorSnifferRxCallback)(Ptr<const Packet> packet, uint16_t channelFreqMhz,
+                                            uint16_t channelNumber, uint32_t rate, WifiPreamble preamble,
+                                            WifiTxVector txVector, struct mpduInfo aMpdu,
+                                            struct signalNoiseDbm signalNoise);
 
   /**
    * Public method used to fire a MonitorSniffer trace for a wifi packet being transmitted.
@@ -1083,10 +1149,9 @@ public:
    * \todo WifiTxVector should be passed by const reference because
    * of its size.
    */
-  typedef void (* MonitorSnifferTxCallback)
-    (const Ptr<const Packet> packet, uint16_t channelFreqMhz,
-     uint16_t channelNumber, uint32_t rate, WifiPreamble preamble,
-     WifiTxVector txVector, struct mpduInfo aMpdu);
+  typedef void (* MonitorSnifferTxCallback)(const Ptr<const Packet> packet, uint16_t channelFreqMhz,
+                                            uint16_t channelNumber, uint32_t rate, WifiPreamble preamble,
+                                            WifiTxVector txVector, struct mpduInfo aMpdu);
 
   /**
    * Assign a fixed random variable stream number to the random variables
@@ -1143,7 +1208,7 @@ public:
    */
   virtual void SetStbc (bool stbc) = 0;
   /**
-   * \return true if STBC is supported, false otherwise
+   *  \return true if STBC is supported, false otherwise
    */
   virtual bool GetStbc (void) const = 0;
   /**
@@ -1155,13 +1220,13 @@ public:
    */
   virtual bool GetGreenfield (void) const = 0;
   /**
-   * \return true if channel bonding 40 MHz is supported, false otherwise
+   * \return the channel width
    */
-  virtual bool GetChannelBonding (void) const = 0;
+  virtual uint32_t GetChannelWidth (void) const = 0;
   /**
-   * \param channelbonding Enable or disable channel bonding
+   * \param channelwidth channel width
    */
-  virtual void SetChannelBonding (bool channelbonding) = 0;
+  virtual void SetChannelWidth (uint32_t channelwidth) = 0;
 
 
 private:

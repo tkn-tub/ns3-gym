@@ -669,6 +669,7 @@ EdcaTxopN::MissedCts (void)
   if (!NeedRtsRetransmission ())
     {
       NS_LOG_DEBUG ("Cts Fail");
+      m_currentPacket = 0;
       m_stationManager->ReportFinalRtsFailed (m_currentHdr.GetAddr1 (), &m_currentHdr);
       if (!m_txFailedCallback.IsNull ())
         {
@@ -677,10 +678,6 @@ EdcaTxopN::MissedCts (void)
       if (GetAmpduExist ())
         {
           m_low->FlushAggregateQueue ();
-
-          NS_LOG_DEBUG ("Transmit Block Ack Request");
-          CtrlBAckRequestHeader reqHdr;
-          reqHdr.SetType (COMPRESSED_BLOCK_ACK);
           uint8_t tid = 0;
           if (m_currentHdr.IsQosData ())
             {
@@ -690,28 +687,31 @@ EdcaTxopN::MissedCts (void)
             {
               NS_FATAL_ERROR ("Current packet is not Qos Data");
             }
-          reqHdr.SetStartingSequence (m_txMiddle->PeekNextSequenceNumberfor (&m_currentHdr));
-          reqHdr.SetTidInfo (tid);
-          reqHdr.SetHtImmediateAck (true);
-          Ptr<Packet> bar = Create<Packet> ();
-          bar->AddHeader (reqHdr);
-          Bar request (bar, m_currentHdr.GetAddr1 (), tid, reqHdr.MustSendHtImmediateAck ());
-          m_currentBar = request;
-          WifiMacHeader hdr;
-          hdr.SetType (WIFI_MAC_CTL_BACKREQ);
-          hdr.SetAddr1 (request.recipient);
-          hdr.SetAddr2 (m_low->GetAddress ());
-          hdr.SetAddr3 (m_low->GetBssid ());
-          hdr.SetDsNotTo ();
-          hdr.SetDsNotFrom ();
-          hdr.SetNoRetry ();
-          hdr.SetNoMoreFragments ();
-          m_currentPacket = request.bar;
-          m_currentHdr = hdr;
-        }
-      else
-        {
-          m_currentPacket = 0;
+
+          if (GetBaAgreementExists (m_currentHdr.GetAddr1 (), tid))
+            {
+              NS_LOG_DEBUG ("Transmit Block Ack Request");
+              CtrlBAckRequestHeader reqHdr;
+              reqHdr.SetType (COMPRESSED_BLOCK_ACK);
+              reqHdr.SetStartingSequence (m_txMiddle->PeekNextSequenceNumberfor (&m_currentHdr));
+              reqHdr.SetTidInfo (tid);
+              reqHdr.SetHtImmediateAck (true);
+              Ptr<Packet> bar = Create<Packet> ();
+              bar->AddHeader (reqHdr);
+              Bar request (bar, m_currentHdr.GetAddr1 (), tid, reqHdr.MustSendHtImmediateAck ());
+              m_currentBar = request;
+              WifiMacHeader hdr;
+              hdr.SetType (WIFI_MAC_CTL_BACKREQ);
+              hdr.SetAddr1 (request.recipient);
+              hdr.SetAddr2 (m_low->GetAddress ());
+              hdr.SetAddr3 (m_low->GetBssid ());
+              hdr.SetDsNotTo ();
+              hdr.SetDsNotFrom ();
+              hdr.SetNoRetry ();
+              hdr.SetNoMoreFragments ();
+              m_currentPacket = request.bar;
+              m_currentHdr = hdr;
+            }
         }
       //to reset the dcf.
       m_dcf->ResetCw ();
@@ -817,20 +817,14 @@ EdcaTxopN::MissedAck (void)
     {
       NS_LOG_DEBUG ("Ack Fail");
       m_stationManager->ReportFinalDataFailed (m_currentHdr.GetAddr1 (), &m_currentHdr);
+      //to reset the dcf.
+      m_currentPacket = 0;
       if (!m_txFailedCallback.IsNull ())
         {
           m_txFailedCallback (m_currentHdr);
         }
-      if (!GetAmpduExist ())
+      if (GetAmpduExist ())
         {
-          //to reset the dcf.
-          m_currentPacket = 0;
-        }
-      else
-        {
-          NS_LOG_DEBUG ("Transmit Block Ack Request");
-          CtrlBAckRequestHeader reqHdr;
-          reqHdr.SetType (COMPRESSED_BLOCK_ACK);
           uint8_t tid = 0;
           if (m_currentHdr.IsQosData ())
             {
@@ -840,24 +834,32 @@ EdcaTxopN::MissedAck (void)
             {
               NS_FATAL_ERROR ("Current packet is not Qos Data");
             }
-          reqHdr.SetStartingSequence (m_txMiddle->PeekNextSequenceNumberfor (&m_currentHdr));
-          reqHdr.SetTidInfo (tid);
-          reqHdr.SetHtImmediateAck (true);
-          Ptr<Packet> bar = Create<Packet> ();
-          bar->AddHeader (reqHdr);
-          Bar request (bar, m_currentHdr.GetAddr1 (), tid, reqHdr.MustSendHtImmediateAck ());
-          m_currentBar = request;
-          WifiMacHeader hdr;
-          hdr.SetType (WIFI_MAC_CTL_BACKREQ);
-          hdr.SetAddr1 (request.recipient);
-          hdr.SetAddr2 (m_low->GetAddress ());
-          hdr.SetAddr3 (m_low->GetBssid ());
-          hdr.SetDsNotTo ();
-          hdr.SetDsNotFrom ();
-          hdr.SetNoRetry ();
-          hdr.SetNoMoreFragments ();
-          m_currentPacket = request.bar;
-          m_currentHdr = hdr;
+
+          if (GetBaAgreementExists (m_currentHdr.GetAddr1 (), tid))
+            {
+              //send Block ACK Request in order to shift WinStart at the receiver
+              NS_LOG_DEBUG ("Transmit Block Ack Request");
+              CtrlBAckRequestHeader reqHdr;
+              reqHdr.SetType (COMPRESSED_BLOCK_ACK);
+              reqHdr.SetStartingSequence (m_txMiddle->PeekNextSequenceNumberfor (&m_currentHdr));
+              reqHdr.SetTidInfo (tid);
+              reqHdr.SetHtImmediateAck (true);
+              Ptr<Packet> bar = Create<Packet> ();
+              bar->AddHeader (reqHdr);
+              Bar request (bar, m_currentHdr.GetAddr1 (), tid, reqHdr.MustSendHtImmediateAck ());
+              m_currentBar = request;
+              WifiMacHeader hdr;
+              hdr.SetType (WIFI_MAC_CTL_BACKREQ);
+              hdr.SetAddr1 (request.recipient);
+              hdr.SetAddr2 (m_low->GetAddress ());
+              hdr.SetAddr3 (m_low->GetBssid ());
+              hdr.SetDsNotTo ();
+              hdr.SetDsNotFrom ();
+              hdr.SetNoRetry ();
+              hdr.SetNoMoreFragments ();
+              m_currentPacket = request.bar;
+              m_currentHdr = hdr;
+            }
         }
       m_dcf->ResetCw ();
     }

@@ -286,17 +286,30 @@ RraaWifiManager::DoGetDataTxVector (WifiRemoteStation *st,
                                     uint32_t size)
 {
   RraaWifiRemoteStation *station = (RraaWifiRemoteStation *) st;
+  uint32_t channelWidth = GetChannelWidth (station);
+  if (channelWidth >= 40)
+    {
+      //avoid to use legacy rate adaptation algorithms for IEEE 802.11n/ac
+      channelWidth = 20;
+    }
   if (!station->m_initialized)
     {
       ResetCountersBasic (station);
     }
-  return WifiTxVector (GetSupported (station, station->m_rate), GetDefaultTxPowerLevel (), GetLongRetryCount (station), GetShortGuardInterval (station), Min (GetNumberOfReceiveAntennas (station), GetNumberOfTransmitAntennas ()), GetNess (station), GetAggregation (station), GetStbc (station));
+  return WifiTxVector (GetSupported (station, station->m_rate), GetDefaultTxPowerLevel (), GetLongRetryCount (station), false, 1, 0, channelWidth, GetAggregation (station), false);
 }
 
 WifiTxVector
 RraaWifiManager::DoGetRtsTxVector (WifiRemoteStation *st)
 {
-  return WifiTxVector (GetSupported (st, 0), GetDefaultTxPowerLevel (), GetShortRetryCount (st), GetShortGuardInterval (st), Min (GetNumberOfReceiveAntennas (st), GetNumberOfTransmitAntennas ()), GetNess (st), GetAggregation (st), GetStbc (st));
+  RraaWifiRemoteStation *station = (RraaWifiRemoteStation *) st;
+  uint32_t channelWidth = GetChannelWidth (station);
+  if (channelWidth >= 40)
+    {
+      //avoid to use legacy rate adaptation algorithms for IEEE 802.11n/ac
+      channelWidth = 20;
+    }
+  return WifiTxVector (GetSupported (st, 0), GetDefaultTxPowerLevel (), GetShortRetryCount (st), false, 1, 0, channelWidth, GetAggregation (station), false);
 }
 
 bool
@@ -375,13 +388,13 @@ RraaWifiManager::GetThresholds (RraaWifiRemoteStation *station,
                                 uint32_t rate) const
 {
   WifiMode mode = GetSupported (station, rate);
-  return GetThresholds (mode);
+  return GetThresholds (mode, station);
 }
 
 struct RraaWifiManager::ThresholdsItem
-RraaWifiManager::GetThresholds (WifiMode mode) const
+RraaWifiManager::GetThresholds (WifiMode mode, RraaWifiRemoteStation *station) const
 {
-  switch (mode.GetDataRate () / 1000000)
+  switch (mode.GetDataRate (GetChannelWidth (station), GetShortGuardInterval (station), 1) / 1000000)
     {
     case 54:
       {

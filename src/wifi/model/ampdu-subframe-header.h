@@ -63,6 +63,12 @@ public:
    */
   void SetLength (uint16_t length);
   /**
+  * Set the EOF field.
+  *
+  * \param eof
+  */
+  void SetEof (bool eof);
+  /**
    * Return the CRC field.
    *
    * \return the CRC field
@@ -80,11 +86,18 @@ public:
    * \return the length field
    */
   uint16_t GetLength (void) const;
+  /**
+   * Return the EOF field.
+   *
+   * \return the EOF field
+   */
+  bool GetEof (void) const;
 
-private:
+protected:
   uint8_t m_crc;     //!< CRC field
   uint8_t m_sig;     //!< SIG field
   uint16_t m_length; //!< length field
+  bool m_eof;        //!< EOF field
 };
 
 } //namespace ns3

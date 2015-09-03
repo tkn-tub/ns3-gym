@@ -102,8 +102,8 @@ int main (int argc, char *argv[])
   wifi.SetStandard (WIFI_PHY_STANDARD_80211n_5GHZ);
   //We consider a constant bitrate since HT rate adaptation algorithms are not supported yet in the simulator
   wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager",
-                                "DataMode", StringValue ("OfdmRate65MbpsBW20MHz"),
-                                "ControlMode", StringValue ("OfdmRate6_5MbpsBW20MHz"));
+                                "DataMode", StringValue ("HtMcs7"),
+                                "ControlMode", StringValue ("HtMcs0"));
   HtWifiMacHelper mac = HtWifiMacHelper::Default ();
 
   Ssid ssid = Ssid ("simple-two-level-aggregation");

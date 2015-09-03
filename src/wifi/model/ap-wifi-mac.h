@@ -28,6 +28,7 @@
 #include "amsdu-subframe-header.h"
 #include "supported-rates.h"
 #include "ns3/random-variable-stream.h"
+#include "vht-capabilities.h"
 
 namespace ns3 {
 
@@ -185,6 +186,12 @@ private:
    * \return the HT capability that we support
    */
   HtCapabilities GetHtCapabilities (void) const;
+  /**
+   * Return the VHT capability of the current AP.
+   *
+   * \return the VHT capability that we support
+   */
+  VhtCapabilities GetVhtCapabilities (void) const;
   /**
    * Return an instance of SupportedRates that contains all rates that we support
    * including HT rates.

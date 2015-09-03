@@ -1,6 +1,6 @@
 /* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
 /*
- * Copyright (c) 2009 MIRKO BANCHI
+ * Copyright (c) 2015 SEBASTIEN DERONNE
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -15,8 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * Authors: Mirko Banchi <mk.banchi@gmail.com>
- *          Sebastien Deronne <sebastien.deronne@gmail.com>
+ * Author: Sebastien Deronne <sebastien.deronne@gmail.com>
  */
 #include "ns3/core-module.h"
 #include "ns3/network-module.h"
@@ -26,7 +25,7 @@
 #include "ns3/ipv4-global-routing-helper.h"
 #include "ns3/internet-module.h"
 
-//This is a simple example of an IEEE 802.11n Wi-Fi network.
+//This is a simple example of an IEEE 802.11ac Wi-Fi network.
 //
 //Network topology:
 //
@@ -42,7 +41,7 @@
 
 using namespace ns3;
 
-NS_LOG_COMPONENT_DEFINE ("ht-wifi-network");
+NS_LOG_COMPONENT_DEFINE ("vht-wifi-network");
 
 int main (int argc, char *argv[])
 {
@@ -54,10 +53,15 @@ int main (int argc, char *argv[])
   cmd.Parse (argc,argv);
 
   std::cout << "MCS value" << "\t\t" << "Channel width" << "\t\t" << "short GI" << "\t\t" << "Throughput" << '\n';
-  for (int i = 0; i <= 7; i++) //MCS
+  for (int i = 0; i <= 9; i++) //MCS
     {
-      for (int j = 20; j <= 40; ) //channel width
+      for (int j = 20; j <= 160; ) //channel width
         {
+          if (i == 9 && j == 20)
+            {
+              j *= 2;
+              continue;
+            }
           for (int k = 0; k < 2; k++) //GI: 0 and 1
             {
               uint32_t payloadSize; //1500 byte IP packet
@@ -84,10 +88,10 @@ int main (int argc, char *argv[])
               phy.Set ("ShortGuardEnabled", BooleanValue (k));
 
               WifiHelper wifi = WifiHelper::Default ();
-              wifi.SetStandard (WIFI_PHY_STANDARD_80211n_5GHZ);
-              HtWifiMacHelper mac = HtWifiMacHelper::Default ();
+              wifi.SetStandard (WIFI_PHY_STANDARD_80211ac);
+              VhtWifiMacHelper mac = VhtWifiMacHelper::Default ();
 
-              Ssid ssid = Ssid ("ns380211n");
+              Ssid ssid = Ssid ("ns380211ac");
 
               std::stringstream sstmp;
               std::string strtmp, dataRate;
@@ -95,7 +99,7 @@ int main (int argc, char *argv[])
 
               sstmp << i;
               sstmp >> strtmp;
-              dataRate = "HtMcs" + strtmp;
+              dataRate = "VhtMcs" + strtmp;
               DataRate = StringValue (dataRate);
 
               wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager","DataMode", DataRate,

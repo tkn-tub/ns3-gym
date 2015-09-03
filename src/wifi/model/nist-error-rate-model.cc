@@ -80,6 +80,14 @@ NistErrorRateModel::Get64QamBer (double snr) const
   NS_LOG_INFO ("64-Qam" << " snr=" << snr << " ber=" << ber);
   return ber;
 }
+double
+NistErrorRateModel::Get256QamBer (double snr) const
+{
+  double z = std::sqrt (snr / (85.0 * 2.0));
+  double ber = 15.0 / 32.0 * 0.5 * erfc (z);
+  NS_LOG_INFO ("256-Qam" << " snr=" << snr << " ber=" << ber);
+  return ber;
+}
 
 double
 NistErrorRateModel::GetFecBpskBer (double snr, uint32_t nbits,
@@ -213,15 +221,31 @@ NistErrorRateModel::GetFec64QamBer (double snr, uint32_t nbits,
 }
 
 double
-NistErrorRateModel::GetChunkSuccessRate (WifiMode mode, double snr, uint32_t nbits) const
+NistErrorRateModel::GetFec256QamBer (double snr, uint32_t nbits,
+                                     uint32_t bValue) const
+{
+  double ber = Get256QamBer (snr);
+  if (ber == 0.0)
+    {
+      return 1.0;
+    }
+  double pe = CalculatePe (ber, bValue);
+  pe = std::min (pe, 1.0);
+  double pms = std::pow (1 - pe, static_cast<double> (nbits));
+  return pms;
+}
+
+double
+NistErrorRateModel::GetChunkSuccessRate (WifiMode mode, WifiTxVector txVector, double snr, uint32_t nbits) const
 {
   if (mode.GetModulationClass () == WIFI_MOD_CLASS_ERP_OFDM
       || mode.GetModulationClass () == WIFI_MOD_CLASS_OFDM
-      || mode.GetModulationClass () == WIFI_MOD_CLASS_HT)
+      || mode.GetModulationClass () == WIFI_MOD_CLASS_HT
+      || mode.GetModulationClass () == WIFI_MOD_CLASS_VHT)
     {
-      if (mode.GetConstellationSize () == 2)
+      if (mode.GetConstellationSize (1) == 2)
         {
-          if (mode.GetCodeRate () == WIFI_CODE_RATE_1_2)
+          if (mode.GetCodeRate (1) == WIFI_CODE_RATE_1_2)
             {
               return GetFecBpskBer (snr,
                                     nbits,
@@ -234,9 +258,9 @@ NistErrorRateModel::GetChunkSuccessRate (WifiMode mode, double snr, uint32_t nbi
                                     3); //b value
             }
         }
-      else if (mode.GetConstellationSize () == 4)
+      else if (mode.GetConstellationSize (1) == 4)
         {
-          if (mode.GetCodeRate () == WIFI_CODE_RATE_1_2)
+          if (mode.GetCodeRate (1) == WIFI_CODE_RATE_1_2)
             {
               return GetFecQpskBer (snr,
                                     nbits,
@@ -249,9 +273,9 @@ NistErrorRateModel::GetChunkSuccessRate (WifiMode mode, double snr, uint32_t nbi
                                     3); //b value
             }
         }
-      else if (mode.GetConstellationSize () == 16)
+      else if (mode.GetConstellationSize (1) == 16)
         {
-          if (mode.GetCodeRate () == WIFI_CODE_RATE_1_2)
+          if (mode.GetCodeRate (1) == WIFI_CODE_RATE_1_2)
             {
               return GetFec16QamBer (snr,
                                      nbits,
@@ -264,15 +288,15 @@ NistErrorRateModel::GetChunkSuccessRate (WifiMode mode, double snr, uint32_t nbi
                                      3); //b value
             }
         }
-      else if (mode.GetConstellationSize () == 64)
+      else if (mode.GetConstellationSize (1) == 64)
         {
-          if (mode.GetCodeRate () == WIFI_CODE_RATE_2_3)
+          if (mode.GetCodeRate (1) == WIFI_CODE_RATE_2_3)
             {
               return GetFec64QamBer (snr,
                                      nbits,
                                      2); //b value
             }
-          else if (mode.GetCodeRate () == WIFI_CODE_RATE_5_6)
+          else if (mode.GetCodeRate (1) == WIFI_CODE_RATE_5_6)
             {
               return GetFec64QamBer (snr,
                                      nbits,
@@ -285,10 +309,27 @@ NistErrorRateModel::GetChunkSuccessRate (WifiMode mode, double snr, uint32_t nbi
                                      3); //b value
             }
         }
+      else if (mode.GetConstellationSize (1) == 256)
+        {
+          if (mode.GetCodeRate (1) == WIFI_CODE_RATE_5_6)
+            {
+              return GetFec256QamBer (snr,
+                                      nbits,
+                                      5     // b value
+                                      );
+            }
+          else
+            {
+              return GetFec256QamBer (snr,
+                                      nbits,
+                                      3     // b value
+                                      );
+            }
+        }
     }
-  else if (mode.GetModulationClass () == WIFI_MOD_CLASS_DSSS)
+  else if (mode.GetModulationClass () == WIFI_MOD_CLASS_DSSS || mode.GetModulationClass () == WIFI_MOD_CLASS_HR_DSSS)
     {
-      switch (mode.GetDataRate ())
+      switch (mode.GetDataRate (20, 0, 1))
         {
         case 1000000:
           return DsssErrorRateModel::GetDsssDbpskSuccessRate (snr, nbits);
@@ -298,6 +339,8 @@ NistErrorRateModel::GetChunkSuccessRate (WifiMode mode, double snr, uint32_t nbi
           return DsssErrorRateModel::GetDsssDqpskCck5_5SuccessRate (snr, nbits);
         case 11000000:
           return DsssErrorRateModel::GetDsssDqpskCck11SuccessRate (snr, nbits);
+        default:
+          NS_ASSERT ("undefined DSSS/HR-DSSS datarate");
         }
     }
   return 0;

@@ -306,6 +306,108 @@ public:
    */
   uint16_t GetAmpduStatusFlags (void) const;
 
+  enum
+  {
+    VHT_KNOWN_NONE                         = 0x0000, /**< No flags set */
+    VHT_KNOWN_STBC                         = 0x0001, /**< Space-time block coding (1 if all spatial streams of all users have STBC, 0 otherwise). */
+    VHT_KNOWN_TXOP_PS_NOT_ALLOWED          = 0x0002, /**< TXOP_PS_NOT_ALLOWED known */
+    VHT_KNOWN_GUARD_INTERVAL               = 0x0004, /**< Guard interval */
+    VHT_KNOWN_SHORT_GI_NSYM_DISAMBIGUATION = 0x0008, /**< Short GI NSYM disambiguation known */
+    VHT_KNOWN_LDPC_EXTRA_OFDM_SYMBOL       = 0x0010, /**< LDPC extra OFDM symbol known */
+    VHT_KNOWN_BEAMFORMED                   = 0x0020, /**< Beamformed known/applicable (this flag should be set to zero for MU PPDUs). */
+    VHT_KNOWN_BANDWIDTH                    = 0x0040, /**< Bandwidth known */
+    VHT_KNOWN_GROUP_ID                     = 0x0080, /**< Group ID known */
+    VHT_KNOWN_PARTIAL_AID                  = 0x0100, /**< Partial AID known/applicable */
+  };
+
+  enum
+  {
+    VHT_FLAGS_NONE                         = 0x00, /**< No flags set */
+    VHT_FLAGS_STBC                         = 0x01, /**< Set if all spatial streams of all users have space-time block coding */
+    VHT_FLAGS_TXOP_PS_NOT_ALLOWED          = 0x02, /**< Set if STAs may not doze during TXOP (valid only for AP transmitters). */
+    VHT_FLAGS_GUARD_INTERVAL               = 0x04, /**< Short guard interval */
+    VHT_FLAGS_SHORT_GI_NSYM_DISAMBIGUATION = 0x08, /**< Set if NSYM mod 10 = 9 (valid only if short GI is used).*/
+    VHT_FLAGS__LDPC_EXTRA_OFDM_SYMBOL      = 0x10, /**< Set if one or more users are using LDPC and the encoding process resulted in extra OFDM symbol(s) */
+    VHT_FLAGS_BEAMFORMED                   = 0x20, /**< Set if beamforming is used (valid for SU PPDUs only). */
+  };
+
+  /**
+   * @brief Set the VHT fields
+   *
+   * @param known The kwown flags.
+   * @param flags The flags to set.
+   * @param bandwidth The bandwidth value.
+   * @param mcs_nss The mcs_nss value.
+   * @param coding The coding value.
+   * @param group_id The group_id value.
+   * @param partial_aid The partial_aid value.
+   */
+  void SetVhtFields (uint16_t known, uint8_t flags,
+                     uint8_t bandwidth, uint8_t mcs_nss [4],
+                     uint8_t coding, uint8_t group_id,
+                     uint16_t partial_aid);
+
+  /**
+   * @brief Get the VHT known bitmap.
+   *
+   * @returns The MCS known bitmap.
+   */
+  uint16_t GetVhtKnown (void) const;
+  /**
+   * @brief Get the VHT flags.
+   *
+   * @returns The VHT flags.
+   */
+  uint8_t GetVhtFlags (void) const;
+  /**
+   * @brief Get the VHT bandwidth field value.
+   *
+   * @returns The VHT bandwidth field value.
+   */
+  uint8_t GetVhtBandwidth (void) const;
+  /**
+   * @brief Get the VHT mcs_nss field value for user 1.
+   *
+   * @returns The VHT mcs_nss field value for user 1.
+   */
+  uint8_t GetVhtMcsNssUser1 () const;
+  /**
+   * @brief Get the VHT mcs_nss field value for user 2.
+   *
+   * @returns The VHT mcs_nss field value for user 2.
+   */
+  uint8_t GetVhtMcsNssUser2 () const;
+  /**
+   * @brief Get the VHT mcs_nss field value for user 3.
+   *
+   * @returns The VHT mcs_nss field value for user 3.
+   */
+  uint8_t GetVhtMcsNssUser3 () const;
+  /**
+   * @brief Get the VHT mcs_nss field value for user 4.
+   *
+   * @returns The VHT mcs_nss field value for user 4.
+   */
+  uint8_t GetVhtMcsNssUser4 () const;
+  /**
+   * @brief Get the VHT coding field value.
+   *
+   * @returns The VHT coding field value.
+   */
+  uint8_t GetVhtCoding (void) const;
+  /**
+   * @brief Get the VHT group_id field value.
+   *
+   * @returns The VHT group_id field value.
+   */
+  uint8_t GetVhtGroupId (void) const;
+  /**
+   * @brief Get the VHT partial_aid field value.
+   *
+   * @returns The VHT partial_aid field value.
+   */
+  uint8_t GetVhtPartialAid (void) const;
+
 
 private:
   enum
@@ -351,6 +453,15 @@ private:
   uint32_t m_ampduStatusRef;      //!< A-MPDU Status Flags, reference number.
   uint16_t m_ampduStatusFlags;    //!< A-MPDU Status Flags, information about the received A-MPDU.
   uint8_t m_ampduStatusCRC;       //!< A-MPDU Status Flags, delimiter CRC value.
+
+  uint8_t m_vhtPad;         //!< VHT padding.
+  uint16_t m_vhtKnown;      //!< VHT known field.
+  uint8_t m_vhtFlags;       //!< VHT flags field.
+  uint8_t m_vhtBandwidth;   //!< VHT bandwidth field.
+  uint8_t m_vhtMcsNss[4];   //!< VHT mcs_nss field.
+  uint8_t m_vhtCoding;      //!< VHT coding field.
+  uint8_t m_vhtGroupId;     //!< VHT group_id field.
+  uint16_t m_vhtPartialAid; //!< VHT partial_aid field.
 };
 
 } // namespace ns3

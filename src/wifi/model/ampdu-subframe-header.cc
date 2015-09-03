@@ -43,7 +43,8 @@ AmpduSubframeHeader::GetInstanceTypeId (void) const
 }
 
 AmpduSubframeHeader::AmpduSubframeHeader ()
-  : m_length (0)
+  : m_length (0),
+    m_eof (0)
 {
 }
 
@@ -60,7 +61,7 @@ AmpduSubframeHeader::GetSerializedSize () const
 void
 AmpduSubframeHeader::Serialize (Buffer::Iterator i) const
 {
-  i.WriteHtolsbU16 (m_length);
+  i.WriteHtolsbU16 ((m_eof << 15) | m_length);
   i.WriteU8 (m_crc);
   i.WriteU8 (m_sig);
 }
@@ -69,7 +70,9 @@ uint32_t
 AmpduSubframeHeader::Deserialize (Buffer::Iterator start)
 {
   Buffer::Iterator i = start;
-  m_length = i.ReadLsbtohU16 ();
+  uint16_t field = i.ReadLsbtohU16 ();
+  m_eof = (field & 0x8000) >> 15;
+  m_length = (field & 0x3fff);
   m_crc = i.ReadU8 ();
   m_sig = i.ReadU8 ();
   return i.GetDistanceFrom (start);
@@ -78,7 +81,7 @@ AmpduSubframeHeader::Deserialize (Buffer::Iterator start)
 void
 AmpduSubframeHeader::Print (std::ostream &os) const
 {
-  os << "length = " << m_length << ", CRC = " << m_crc << ", Signature = " << m_sig;
+  os << "EOF = " << m_eof << "length = " << m_length << ", CRC = " << m_crc << ", Signature = " << m_sig;
 }
 
 void
@@ -99,6 +102,12 @@ AmpduSubframeHeader::SetLength (uint16_t length)
   m_length = length;
 }
 
+void
+AmpduSubframeHeader::SetEof (bool eof)
+{
+  m_eof = eof;
+}
+
 uint8_t
 AmpduSubframeHeader::GetCrc (void) const
 {
@@ -115,6 +124,12 @@ uint16_t
 AmpduSubframeHeader::GetLength (void) const
 {
   return m_length;
+}
+
+bool
+AmpduSubframeHeader::GetEof (void) const
+{
+  return m_eof;
 }
 
 } //namespace ns3

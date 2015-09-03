@@ -41,11 +41,13 @@ ErrorRateModel::CalculateSnr (WifiMode txMode, double ber) const
   low = 1e-25;
   high = 1e25;
   precision = 1e-12;
+  WifiTxVector txVector;
+  txVector.SetMode (txMode);
   while (high - low > precision)
     {
       NS_ASSERT (high >= low);
       double middle = low + (high - low) / 2;
-      if ((1 - GetChunkSuccessRate (txMode, middle, 1)) > ber)
+      if ((1 - GetChunkSuccessRate (txMode, txVector, middle, 1)) > ber)
         {
           low = middle;
         }

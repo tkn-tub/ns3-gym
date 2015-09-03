@@ -3,7 +3,7 @@
  * Copyright (c) 2009 MIRKO BANCHI
  *
  * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as 
+ * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
  *
  * This program is distributed in the hope that it will be useful,
@@ -56,105 +56,109 @@ int main (int argc, char *argv[])
   uint64_t simulationTime = 10; //seconds
   uint32_t nMsdus = 1;
   bool enableRts = 0;
-    
+
   CommandLine cmd;
-  cmd.AddValue("nMsdus", "Number of aggregated MSDUs", nMsdus); //number of aggregated MSDUs specified by the user
-  cmd.AddValue("payloadSize", "Payload size in bytes", payloadSize);
-  cmd.AddValue("enableRts", "Enable RTS/CTS", enableRts);
-  cmd.AddValue("simulationTime", "Simulation time in seconds", simulationTime);
+  cmd.AddValue ("nMsdus", "Number of aggregated MSDUs", nMsdus); //number of aggregated MSDUs specified by the user
+  cmd.AddValue ("payloadSize", "Payload size in bytes", payloadSize);
+  cmd.AddValue ("enableRts", "Enable RTS/CTS", enableRts);
+  cmd.AddValue ("simulationTime", "Simulation time in seconds", simulationTime);
   cmd.Parse (argc, argv);
- 
-  if(!enableRts)
-    Config::SetDefault ("ns3::WifiRemoteStationManager::RtsCtsThreshold", StringValue ("999999"));
+
+  if (!enableRts)
+    {
+      Config::SetDefault ("ns3::WifiRemoteStationManager::RtsCtsThreshold", StringValue ("999999"));
+    }
   else
-    Config::SetDefault ("ns3::WifiRemoteStationManager::RtsCtsThreshold", StringValue ("0"));
-    
+    {
+      Config::SetDefault ("ns3::WifiRemoteStationManager::RtsCtsThreshold", StringValue ("0"));
+    }
+
   Config::SetDefault ("ns3::WifiRemoteStationManager::FragmentationThreshold", StringValue ("990000"));
-    
+
   NodeContainer wifiStaNode;
   wifiStaNode.Create (1);
   NodeContainer wifiApNode;
-  wifiApNode.Create(1);
-    
+  wifiApNode.Create (1);
+
   YansWifiChannelHelper channel = YansWifiChannelHelper::Default ();
   YansWifiPhyHelper phy = YansWifiPhyHelper::Default ();
   phy.SetPcapDataLinkType (YansWifiPhyHelper::DLT_IEEE802_11_RADIO);
-  phy.SetChannel (channel.Create());
-    
+  phy.SetChannel (channel.Create ());
+
   WifiHelper wifi = WifiHelper::Default ();
   wifi.SetStandard (WIFI_PHY_STANDARD_80211n_5GHZ);
-  wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager", "DataMode", StringValue("OfdmRate65MbpsBW20MHz"), "ControlMode", StringValue("OfdmRate6_5MbpsBW20MHz"));
+  wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager", "DataMode", StringValue ("HtMcs7"), "ControlMode", StringValue ("HtMcs0"));
   HtWifiMacHelper mac = HtWifiMacHelper::Default ();
 
   Ssid ssid = Ssid ("simple-msdu-aggregation");
   mac.SetType ("ns3::StaWifiMac",
                "Ssid", SsidValue (ssid),
                "ActiveProbing", BooleanValue (false));
-    
-  mac.SetMsduAggregatorForAc (AC_BE, "ns3::MsduStandardAggregator", 
-                              "MaxAmsduSize", UintegerValue (nMsdus*(payloadSize+100))); //enable MSDU aggregation for AC_BE with a maximum aggregated size of nMsdus*(payloadSize+100) bytes, i.e. nMsdus aggregated packets in an A-MSDU
+
+  mac.SetMsduAggregatorForAc (AC_BE, "ns3::MsduStandardAggregator",
+                              "MaxAmsduSize", UintegerValue (nMsdus * (payloadSize + 100))); //enable MSDU aggregation for AC_BE with a maximum aggregated size of nMsdus*(payloadSize+100) bytes, i.e. nMsdus aggregated packets in an A-MSDU
 
   NetDeviceContainer staDevice;
   staDevice = wifi.Install (phy, mac, wifiStaNode);
 
   mac.SetType ("ns3::ApWifiMac",
                "Ssid", SsidValue (ssid));
-    
-  mac.SetMsduAggregatorForAc (AC_BE, "ns3::MsduStandardAggregator", 
-                              "MaxAmsduSize", UintegerValue (nMsdus*(payloadSize+100))); //enable MSDU aggregation for AC_BE with a maximum aggregated size of nMsdus*(payloadSize+100) bytes, i.e. nMsdus aggregated packets in an A-MSDU
-    
+
+  mac.SetMsduAggregatorForAc (AC_BE, "ns3::MsduStandardAggregator",
+                              "MaxAmsduSize", UintegerValue (nMsdus * (payloadSize + 100))); //enable MSDU aggregation for AC_BE with a maximum aggregated size of nMsdus*(payloadSize+100) bytes, i.e. nMsdus aggregated packets in an A-MSDU
+
   NetDeviceContainer apDevice;
   apDevice = wifi.Install (phy, mac, wifiApNode);
- 
+
   /* Setting mobility model */
   MobilityHelper mobility;
   Ptr<ListPositionAllocator> positionAlloc = CreateObject<ListPositionAllocator> ();
-    
+
   positionAlloc->Add (Vector (0.0, 0.0, 0.0));
   positionAlloc->Add (Vector (1.0, 0.0, 0.0));
   mobility.SetPositionAllocator (positionAlloc);
-    
+
   mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
-    
+
   mobility.Install (wifiApNode);
   mobility.Install (wifiStaNode);
-    
+
   /* Internet stack*/
   InternetStackHelper stack;
   stack.Install (wifiApNode);
   stack.Install (wifiStaNode);
- 
+
   Ipv4AddressHelper address;
-    
+
   address.SetBase ("192.168.1.0", "255.255.255.0");
   Ipv4InterfaceContainer StaInterface;
   StaInterface = address.Assign (staDevice);
   Ipv4InterfaceContainer ApInterface;
   ApInterface = address.Assign (apDevice);
-    
+
   /* Setting applications */
   UdpServerHelper myServer (9);
   ApplicationContainer serverApp = myServer.Install (wifiStaNode.Get (0));
   serverApp.Start (Seconds (0.0));
-  serverApp.Stop (Seconds (simulationTime+1));
-    
+  serverApp.Stop (Seconds (simulationTime + 1));
+
   UdpClientHelper myClient (StaInterface.GetAddress (0), 9);
   myClient.SetAttribute ("MaxPackets", UintegerValue (4294967295u));
   myClient.SetAttribute ("Interval", TimeValue (Time ("0.00002"))); //packets/s
   myClient.SetAttribute ("PacketSize", UintegerValue (payloadSize));
-    
+
   ApplicationContainer clientApp = myClient.Install (wifiApNode.Get (0));
   clientApp.Start (Seconds (1.0));
-  clientApp.Stop (Seconds (simulationTime+1));
-    
-  Simulator::Stop (Seconds (simulationTime+1));
-    
+  clientApp.Stop (Seconds (simulationTime + 1));
+
+  Simulator::Stop (Seconds (simulationTime + 1));
+
   Simulator::Run ();
   Simulator::Destroy ();
-    
-  uint32_t totalPacketsThrough = DynamicCast<UdpServer>(serverApp.Get (0))->GetReceived ();
-  double throughput = totalPacketsThrough*payloadSize*8/(simulationTime*1000000.0);
+
+  uint32_t totalPacketsThrough = DynamicCast<UdpServer> (serverApp.Get (0))->GetReceived ();
+  double throughput = totalPacketsThrough * payloadSize * 8 / (simulationTime * 1000000.0);
   std::cout << "Throughput: " << throughput << " Mbit/s" << '\n';
-    
-    return 0;
+
+  return 0;
 }

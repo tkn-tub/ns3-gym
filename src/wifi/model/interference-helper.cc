@@ -234,17 +234,17 @@ InterferenceHelper::AppendEvent (Ptr<InterferenceHelper::Event> event)
 
 
 double
-InterferenceHelper::CalculateSnr (double signal, double noiseInterference, WifiMode mode) const
+InterferenceHelper::CalculateSnr (double signal, double noiseInterference, uint32_t channelWidth) const
 {
   //thermal noise at 290K in J/s = W
   static const double BOLTZMANN = 1.3803e-23;
   //Nt is the power of thermal noise in W
-  double Nt = BOLTZMANN * 290.0 * mode.GetBandwidth ();
+  double Nt = BOLTZMANN * 290.0 * channelWidth * 1000000;
   //receiver noise Floor (W) which accounts for thermal noise and non-idealities of the receiver
   double noiseFloor = m_noiseFigure * Nt;
   double noise = noiseFloor + noiseInterference;
   double snr = signal / noise; //linear scale
-  NS_LOG_DEBUG ("signal(W)= " << signal << ", noise(W)=" << noiseFloor << ", interference(W)=" << noiseInterference << ", snr(linear)=" << snr);
+  NS_LOG_DEBUG ("bandwidth(MHz)=" << channelWidth << ", signal(W)= " << signal << ", noise(W)=" << noiseFloor << ", interference(W)=" << noiseInterference << ", snr(linear)=" << snr);
   return snr;
 }
 
@@ -267,15 +267,15 @@ InterferenceHelper::CalculateNoiseInterferenceW (Ptr<InterferenceHelper::Event> 
 }
 
 double
-InterferenceHelper::CalculateChunkSuccessRate (double snir, Time duration, WifiMode mode) const
+InterferenceHelper::CalculateChunkSuccessRate (double snir, Time duration, WifiMode mode, WifiTxVector txVector) const
 {
   if (duration == NanoSeconds (0))
     {
       return 1.0;
     }
-  uint32_t rate = mode.GetPhyRate ();
+  uint32_t rate = mode.GetPhyRate (txVector.GetChannelWidth (), txVector.IsShortGuardInterval (), 1);
   uint64_t nbits = (uint64_t)(rate * duration.GetSeconds ());
-  double csr = m_errorRateModel->GetChunkSuccessRate (mode, snir, (uint32_t)nbits);
+  double csr = m_errorRateModel->GetChunkSuccessRate (mode, txVector, snir, (uint32_t)nbits);
   return csr;
 }
 
@@ -288,10 +288,10 @@ InterferenceHelper::CalculatePlcpPayloadPer (Ptr<const InterferenceHelper::Event
   Time previous = (*j).GetTime ();
   WifiMode payloadMode = event->GetPayloadMode ();
   WifiPreamble preamble = event->GetPreambleType ();
-  Time plcpHeaderStart = (*j).GetTime () + WifiPhy::GetPlcpPreambleDuration (payloadMode, preamble); //packet start time + preamble
-  Time plcpHsigHeaderStart = plcpHeaderStart + WifiPhy::GetPlcpHeaderDuration (payloadMode, preamble); //packet start time + preamble + L-SIG
-  Time plcpHtTrainingSymbolsStart = plcpHsigHeaderStart + WifiPhy::GetPlcpHtSigHeaderDuration (preamble); //packet start time + preamble + L-SIG + HT-SIG
-  Time plcpPayloadStart = plcpHtTrainingSymbolsStart + WifiPhy::GetPlcpHtTrainingSymbolDuration (preamble,event->GetTxVector ()); //packet start time + preamble + L-SIG + HT-SIG + HT Training
+  Time plcpHeaderStart = (*j).GetTime () + WifiPhy::GetPlcpPreambleDuration (event->GetTxVector (), preamble); //packet start time + preamble
+  Time plcpHsigHeaderStart = plcpHeaderStart + WifiPhy::GetPlcpHeaderDuration (event->GetTxVector (), preamble); //packet start time + preamble + L-SIG
+  Time plcpHtTrainingSymbolsStart = plcpHsigHeaderStart + WifiPhy::GetPlcpHtSigHeaderDuration (preamble) + WifiPhy::GetPlcpVhtSigA1Duration (preamble) + WifiPhy::GetPlcpVhtSigA2Duration (preamble); //packet start time + preamble + L-SIG + HT-SIG or VHT-SIG-A (A1 + A2)
+  Time plcpPayloadStart = plcpHtTrainingSymbolsStart + WifiPhy::GetPlcpHtTrainingSymbolDuration (preamble, event->GetTxVector ()) + WifiPhy::GetPlcpVhtSigBDuration (preamble); //packet start time + preamble + L-SIG + HT-SIG or VHT-SIG-A (A1 + A2) + (V)HT Training + VHT-SIG-B
   double noiseInterferenceW = (*j).GetDelta ();
   double powerW = event->GetRxPowerW ();
   j++;
@@ -305,9 +305,9 @@ InterferenceHelper::CalculatePlcpPayloadPer (Ptr<const InterferenceHelper::Event
         {
           psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
                                                           noiseInterferenceW,
-                                                          payloadMode),
+                                                          event->GetTxVector ().GetChannelWidth ()),
                                             current - previous,
-                                            payloadMode);
+                                            payloadMode, event->GetTxVector ());
 
           NS_LOG_DEBUG ("Both previous and current point to the payload: mode=" << payloadMode << ", psr=" << psr);
         }
@@ -316,9 +316,9 @@ InterferenceHelper::CalculatePlcpPayloadPer (Ptr<const InterferenceHelper::Event
         {
           psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
                                                           noiseInterferenceW,
-                                                          payloadMode),
+                                                          event->GetTxVector ().GetChannelWidth ()),
                                             current - plcpPayloadStart,
-                                            payloadMode);
+                                            payloadMode, event->GetTxVector ());
           NS_LOG_DEBUG ("previous is before payload and current is in the payload: mode=" << payloadMode << ", psr=" << psr);
         }
 
@@ -344,13 +344,18 @@ InterferenceHelper::CalculatePlcpHeaderPer (Ptr<const InterferenceHelper::Event>
   if (preamble == WIFI_PREAMBLE_HT_MF)
     {
       //mode for PLCP header fields sent with HT modulation
-      htHeaderMode = WifiPhy::GetHTPlcpHeaderMode (payloadMode);
+      htHeaderMode = WifiPhy::GetHtPlcpHeaderMode (payloadMode);
     }
-  WifiMode headerMode = WifiPhy::GetPlcpHeaderMode (payloadMode, preamble);
-  Time plcpHeaderStart = (*j).GetTime () + WifiPhy::GetPlcpPreambleDuration (payloadMode, preamble); //packet start time + preamble
-  Time plcpHsigHeaderStart = plcpHeaderStart + WifiPhy::GetPlcpHeaderDuration (payloadMode, preamble); //packet start time + preamble + L-SIG
-  Time plcpHtTrainingSymbolsStart = plcpHsigHeaderStart + WifiPhy::GetPlcpHtSigHeaderDuration (preamble); //packet start time + preamble + L-SIG + HT-SIG
-  Time plcpPayloadStart = plcpHtTrainingSymbolsStart + WifiPhy::GetPlcpHtTrainingSymbolDuration (preamble, event->GetTxVector ()); //packet start time + preamble + L-SIG + HT-SIG + HT Training
+  else if (preamble == WIFI_PREAMBLE_VHT)
+    {
+      //mode for PLCP header fields sent with VHT modulation
+      htHeaderMode = WifiPhy::GetVhtPlcpHeaderMode (payloadMode);
+    }
+  WifiMode headerMode = WifiPhy::GetPlcpHeaderMode (payloadMode, preamble, event->GetTxVector ());
+  Time plcpHeaderStart = (*j).GetTime () + WifiPhy::GetPlcpPreambleDuration (event->GetTxVector (), preamble); //packet start time + preamble
+  Time plcpHsigHeaderStart = plcpHeaderStart + WifiPhy::GetPlcpHeaderDuration (event->GetTxVector (), preamble); //packet start time + preamble + L-SIG
+  Time plcpHtTrainingSymbolsStart = plcpHsigHeaderStart + WifiPhy::GetPlcpHtSigHeaderDuration (preamble) + WifiPhy::GetPlcpVhtSigA1Duration (preamble) + WifiPhy::GetPlcpVhtSigA2Duration (preamble); //packet start time + preamble + L-SIG + HT-SIG or VHT-SIG-A (A1 + A2)
+  Time plcpPayloadStart = plcpHtTrainingSymbolsStart + WifiPhy::GetPlcpHtTrainingSymbolDuration (preamble, event->GetTxVector ()) + WifiPhy::GetPlcpVhtSigBDuration (preamble); //packet start time + preamble + L-SIG + HT-SIG or VHT-SIG-A (A1 + A2) + (V)HT Training + VHT-SIG-B
   double noiseInterferenceW = (*j).GetDelta ();
   double powerW = event->GetRxPowerW ();
   j++;
@@ -365,8 +370,8 @@ InterferenceHelper::CalculatePlcpHeaderPer (Ptr<const InterferenceHelper::Event>
           psr *= 1;
           NS_LOG_DEBUG ("Case 1 - previous and current after playload start: nothing to do");
         }
-      //Case 2: previous is in HT-SIG or in HT training: Non HT will not enter here since it didn't enter in the last two and they are all the same for non HT
-      else if (previous >= plcpHsigHeaderStart)
+      //Case 2: previous is in (V)HT training or in VHT-SIG-B: Non (V)HT will not enter here since it didn't enter in the last two and they are all the same for non (V)HT
+      else if (previous >= plcpHtTrainingSymbolsStart)
         {
           NS_ASSERT ((preamble != WIFI_PREAMBLE_LONG) && (preamble != WIFI_PREAMBLE_SHORT));
           //Case 2a: current after payload start
@@ -374,155 +379,400 @@ InterferenceHelper::CalculatePlcpHeaderPer (Ptr<const InterferenceHelper::Event>
             {
               psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
                                                               noiseInterferenceW,
-                                                              htHeaderMode),
+                                                              event->GetTxVector ().GetChannelWidth ()),
                                                 plcpPayloadStart - previous,
-                                                htHeaderMode);
+                                                htHeaderMode, event->GetTxVector ());
 
-              NS_LOG_DEBUG ("Case 2a - previous is in HT-SIG or in HT training and current after payload start: mode=" << htHeaderMode << ", psr=" << psr);
+              NS_LOG_DEBUG ("Case 2a - previous is in (V)HT training or in VHT-SIG-B and current after payload start: mode=" << htHeaderMode << ", psr=" << psr);
             }
-          //Case 2b: current is in HT-SIG or in HT training
+          //Case 2b: current is in (V)HT training or in VHT-SIG-B
           else
             {
               psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
                                                               noiseInterferenceW,
-                                                              htHeaderMode),
+                                                              event->GetTxVector ().GetChannelWidth ()),
                                                 current - previous,
-                                                htHeaderMode);
+                                                htHeaderMode, event->GetTxVector ());
 
-              NS_LOG_DEBUG ("Case 2b - previous is in HT-SIG or in HT training and current is in HT-SIG or in HT training: mode=" << htHeaderMode << ", psr=" << psr);
+              NS_LOG_DEBUG ("Case 2b - previous is in (V)HT training or in VHT-SIG-B and current is in (V)HT training or in VHT-SIG-B: mode=" << htHeaderMode << ", psr=" << psr);
             }
         }
-      //Case 3: previous in L-SIG: GF will not reach here because it will execute the previous if and exit
-      else if (previous >= plcpHeaderStart)
+      //Case 3: previous is in HT-SIG or VHT-SIG-A: Non (V)HT will not enter here since it didn't enter in the last two and they are all the same for non (V)HT
+      else if (previous >= plcpHsigHeaderStart)
         {
-          NS_ASSERT (preamble != WIFI_PREAMBLE_HT_GF);
+          NS_ASSERT ((preamble != WIFI_PREAMBLE_LONG) && (preamble != WIFI_PREAMBLE_SHORT));
           //Case 3a: current after payload start
           if (current >= plcpPayloadStart)
             {
-              //Case 3ai: Non HT format (No HT-SIG or Training Symbols)
-              if (preamble == WIFI_PREAMBLE_LONG || preamble == WIFI_PREAMBLE_SHORT)
+              psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
+                                                              noiseInterferenceW,
+                                                              event->GetTxVector ().GetChannelWidth ()),
+                                                plcpPayloadStart - plcpHtTrainingSymbolsStart,
+                                                htHeaderMode, event->GetTxVector ());
+
+              //Case 3ai: VHT format
+              if (preamble == WIFI_PREAMBLE_VHT)
                 {
+                  //VHT-SIG-A is sent using legacy OFDM modulation
                   psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
                                                                   noiseInterferenceW,
-                                                                  headerMode),
-                                                    plcpPayloadStart - previous,
-                                                    headerMode);
+                                                                  event->GetTxVector ().GetChannelWidth ()),
+                                                    plcpHtTrainingSymbolsStart - previous,
+                                                    headerMode, event->GetTxVector ());
 
-                  NS_LOG_DEBUG ("Case 3ai - previous in L-SIG and current after payload start: mode=" << headerMode << ", psr=" << psr);
+                  NS_LOG_DEBUG ("Case 3ai - previous is in VHT-SIG-A and current after payload start: VHT mode=" << htHeaderMode << ", non-VHT mode=" << headerMode << ", psr=" << psr);
                 }
-              //Case 3aii: HT mixed format
+              //Case 3aii: HT mixed format of HT greenfield
               else
                 {
                   psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
                                                                   noiseInterferenceW,
-                                                                  htHeaderMode),
-                                                    plcpPayloadStart - plcpHsigHeaderStart,
-                                                    htHeaderMode);
+                                                                  event->GetTxVector ().GetChannelWidth ()),
+                                                    plcpHtTrainingSymbolsStart - previous,
+                                                    htHeaderMode, event->GetTxVector ());
+
+                  NS_LOG_DEBUG ("Case 3aii - previous is in HT-SIG and current after payload start: mode=" << htHeaderMode << ", psr=" << psr);
+                }
+            }
+          //Case 3b: current is in (V)HT training or in VHT-SIG-B
+          else if (current >= plcpHtTrainingSymbolsStart)
+            {
+              psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
+                                                              noiseInterferenceW,
+                                                              event->GetTxVector ().GetChannelWidth ()),
+                                                current - plcpHtTrainingSymbolsStart,
+                                                htHeaderMode, event->GetTxVector ());
+
+              //Case 3bi: VHT format
+              if (preamble == WIFI_PREAMBLE_VHT)
+                {
+                  //VHT-SIG-A is sent using legacy OFDM modulation
+                  psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
+                                                                  noiseInterferenceW,
+                                                                  event->GetTxVector ().GetChannelWidth ()),
+                                                    plcpHtTrainingSymbolsStart - previous,
+                                                    headerMode, event->GetTxVector ());
+
+                  NS_LOG_DEBUG ("Case 3bi - previous is in VHT-SIG-A and current is in VHT training or in VHT-SIG-B: VHT mode=" << htHeaderMode << ", non-VHT mode=" << headerMode << ", psr=" << psr);
+                }
+              //Case 3bii: HT mixed format of HT greenfield
+              else
+                {
+                  psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
+                                                                  noiseInterferenceW,
+                                                                  event->GetTxVector ().GetChannelWidth ()),
+                                                    plcpHtTrainingSymbolsStart - previous,
+                                                    htHeaderMode, event->GetTxVector ());
+
+                  NS_LOG_DEBUG ("Case 3bii - previous is in HT-SIG and current is in HT training: mode=" << htHeaderMode << ", psr=" << psr);
+                }
+            }
+          //Case 3c: current with previous in HT-SIG or VHT-SIG-A
+          else
+            {
+              //Case 3bi: VHT format
+              if (preamble == WIFI_PREAMBLE_VHT)
+                {
+                  //VHT-SIG-A is sent using legacy OFDM modulation
+                  psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
+                                                                  noiseInterferenceW,
+                                                                  event->GetTxVector ().GetChannelWidth ()),
+                                                    current - previous,
+                                                    headerMode, event->GetTxVector ());
+
+                  NS_LOG_DEBUG ("Case 3ci - previous with current in VHT-SIG-A: VHT mode=" << htHeaderMode << ", non-VHT mode=" << headerMode << ", psr=" << psr);
+                }
+              //Case 3bii: HT mixed format of HT greenfield
+              else
+                {
+                  psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
+                                                                  noiseInterferenceW,
+                                                                  event->GetTxVector ().GetChannelWidth ()),
+                                                    current - previous,
+                                                    htHeaderMode, event->GetTxVector ());
+
+                  NS_LOG_DEBUG ("Case 3cii - previous with current in HT-SIG: mode=" << htHeaderMode << ", psr=" << psr);
+                }
+            }
+        }
+      //Case 4: previous in L-SIG: HT GF will not reach here because it will execute the previous if and exit
+      else if (previous >= plcpHeaderStart)
+        {
+          NS_ASSERT (preamble != WIFI_PREAMBLE_HT_GF);
+          //Case 4a: current after payload start
+          if (current >= plcpPayloadStart)
+            {
+              //Case 4ai: Non (V)HT format
+              if (preamble == WIFI_PREAMBLE_LONG || preamble == WIFI_PREAMBLE_SHORT)
+                {
+                  psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
+                                                                  noiseInterferenceW,
+                                                                  event->GetTxVector ().GetChannelWidth ()),
+                                                    plcpPayloadStart - previous,
+                                                    headerMode, event->GetTxVector ());
+
+                  NS_LOG_DEBUG ("Case 4ai - previous in L-SIG and current after payload start: mode=" << headerMode << ", psr=" << psr);
+                }
+              //Case 4aii: VHT format
+              else if (preamble == WIFI_PREAMBLE_VHT)
+                {
+                  psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
+                                                                  noiseInterferenceW,
+                                                                  event->GetTxVector ().GetChannelWidth ()),
+                                                    plcpPayloadStart - plcpHtTrainingSymbolsStart,
+                                                    htHeaderMode, event->GetTxVector ());
 
                   psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
                                                                   noiseInterferenceW,
-                                                                  headerMode),
-                                                    plcpHsigHeaderStart - previous,
-                                                    headerMode);
+                                                                  event->GetTxVector ().GetChannelWidth ()),
+                                                    plcpHtTrainingSymbolsStart - previous,
+                                                    headerMode, event->GetTxVector ());
 
-                  NS_LOG_DEBUG ("Case 3aii - previous in L-SIG and current after payload start: HT mode=" << htHeaderMode << ", non-HT mode=" << headerMode << ", psr=" << psr);
+                  NS_LOG_DEBUG ("Case 4aii - previous is in L-SIG and current after payload start: VHT mode=" << htHeaderMode << ", non-VHT mode=" << headerMode << ", psr=" << psr);
+                }
+              //Case 4aiii: HT mixed format
+              else
+                {
+                  psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
+                                                                  noiseInterferenceW,
+                                                                  event->GetTxVector ().GetChannelWidth ()),
+                                                    plcpPayloadStart - plcpHsigHeaderStart,
+                                                    htHeaderMode, event->GetTxVector ());
+
+                  psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
+                                                                  noiseInterferenceW,
+                                                                  event->GetTxVector ().GetChannelWidth ()),
+                                                    plcpHsigHeaderStart - previous,
+                                                    headerMode, event->GetTxVector ());
+
+                  NS_LOG_DEBUG ("Case 4aiii - previous in L-SIG and current after payload start: HT mode=" << htHeaderMode << ", non-HT mode=" << headerMode << ", psr=" << psr);
                 }
             }
-          //Case 3b: current in HT-SIG or in HT training symbol. Non HT will not come here since it went in previous if or if the previous if is not true this will be not true
+          //Case 4b: current is in (V)HT training or in VHT-SIG-B. Non (V)HT will not come here since it went in previous if or if the previous if is not true this will be not true
+          else if (current >= plcpHtTrainingSymbolsStart)
+            {
+              NS_ASSERT ((preamble != WIFI_PREAMBLE_LONG) && (preamble != WIFI_PREAMBLE_SHORT));
+
+              //Case 4bi: VHT format
+              if (preamble == WIFI_PREAMBLE_VHT)
+                {
+                  psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
+                                                                  noiseInterferenceW,
+                                                                  event->GetTxVector ().GetChannelWidth ()),
+                                                    current - plcpHtTrainingSymbolsStart,
+                                                    htHeaderMode, event->GetTxVector ());
+
+                  psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
+                                                                  noiseInterferenceW,
+                                                                  event->GetTxVector ().GetChannelWidth ()),
+                                                    plcpHtTrainingSymbolsStart - previous,
+                                                    headerMode, event->GetTxVector ());
+
+                  NS_LOG_DEBUG ("Case 4bi - previous is in L-SIG and current in VHT training or in VHT-SIG-B: VHT mode=" << htHeaderMode << ", non-VHT mode=" << headerMode << ", psr=" << psr);
+                }
+              //Case 4bii: HT mixed format
+              else
+                {
+                  psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
+                                                                  noiseInterferenceW,
+                                                                  event->GetTxVector ().GetChannelWidth ()),
+                                                    current - plcpHsigHeaderStart,
+                                                    htHeaderMode, event->GetTxVector ());
+
+                  psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
+                                                                  noiseInterferenceW,
+                                                                  event->GetTxVector ().GetChannelWidth ()),
+                                                    plcpHsigHeaderStart - previous,
+                                                    headerMode, event->GetTxVector ());
+
+                  NS_LOG_DEBUG ("Case 4bii - previous in L-SIG and current in HT training: HT mode=" << htHeaderMode << ", non-HT mode=" << headerMode << ", psr=" << psr);
+                }
+            }
+          //Case 4c: current in HT-SIG or in VHT-SIG-A. Non (V)HT will not come here since it went in previous if or if the previous if is not true this will be not true
           else if (current >= plcpHsigHeaderStart)
             {
               NS_ASSERT ((preamble != WIFI_PREAMBLE_LONG) && (preamble != WIFI_PREAMBLE_SHORT));
 
-              psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
-                                                              noiseInterferenceW,
-                                                              htHeaderMode),
-                                                current - plcpHsigHeaderStart,
-                                                htHeaderMode);
-              psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
-                                                              noiseInterferenceW,
-                                                              headerMode),
-                                                plcpHsigHeaderStart - previous,
-                                                headerMode);
+              //Case 4ci: VHT format
+              if (preamble == WIFI_PREAMBLE_VHT)
+                {
+                  psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
+                                                                  noiseInterferenceW,
+                                                                  event->GetTxVector ().GetChannelWidth ()),
+                                                    current - previous,
+                                                    headerMode, event->GetTxVector ());
 
-              NS_LOG_DEBUG ("Case 3b - previous in L-SIG and current in HT-SIG or in HT training symbol: HT mode=" << htHeaderMode << ", non-HT mode=" << headerMode << ", psr=" << psr);
+                  NS_LOG_DEBUG ("Case 4ci - previous is in L-SIG and current in VHT-SIG-A: mode=" << headerMode << ", psr=" << psr);
+                }
+              //Case 4cii: HT mixed format
+              else
+                {
+                  psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
+                                                                  noiseInterferenceW,
+                                                                  event->GetTxVector ().GetChannelWidth ()),
+                                                    current - plcpHsigHeaderStart,
+                                                    htHeaderMode, event->GetTxVector ());
+
+                  psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
+                                                                  noiseInterferenceW,
+                                                                  event->GetTxVector ().GetChannelWidth ()),
+                                                    plcpHsigHeaderStart - previous,
+                                                    headerMode, event->GetTxVector ());
+
+                  NS_LOG_DEBUG ("Case 4cii - previous in L-SIG and current in HT-SIG: HT mode=" << htHeaderMode << ", non-HT mode=" << headerMode << ", psr=" << psr);
+                }
             }
-          //Case 3c: current with previous in L-SIG
+          //Case 4d: current with previous in L-SIG
           else
             {
               psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
                                                               noiseInterferenceW,
-                                                              headerMode),
+                                                              event->GetTxVector ().GetChannelWidth ()),
                                                 current - previous,
-                                                headerMode);
+                                                headerMode, event->GetTxVector ());
 
               NS_LOG_DEBUG ("Case 3c - current with previous in L-SIG: mode=" << headerMode << ", psr=" << psr);
             }
         }
-      //Case 4: previous is in the preamble works for all cases
+      //Case 5: previous is in the preamble works for all cases
       else
         {
+          //Case 5a: current after payload start
           if (current >= plcpPayloadStart)
             {
-              //Non HT format (No HT-SIG or Training Symbols)
+              //Case 5ai: Non HT format (No HT-SIG or Training Symbols)
               if (preamble == WIFI_PREAMBLE_LONG || preamble == WIFI_PREAMBLE_SHORT)
                 {
                   psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
                                                                   noiseInterferenceW,
-                                                                  headerMode),
+                                                                  event->GetTxVector ().GetChannelWidth ()),
                                                     plcpPayloadStart - plcpHeaderStart,
-                                                    headerMode);
+                                                    headerMode, event->GetTxVector ());
 
-                  NS_LOG_DEBUG ("Case 4a - previous is in the preamble: mode=" << headerMode << ", psr=" << psr);
+                  NS_LOG_DEBUG ("Case 5a - previous is in the preamble and current is after payload start: mode=" << headerMode << ", psr=" << psr);
                 }
-              //HT format
+              //Case 5aii: VHT format
+              else if (preamble == WIFI_PREAMBLE_VHT)
+                {
+                  psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
+                                                                  noiseInterferenceW,
+                                                                  event->GetTxVector ().GetChannelWidth ()),
+                                                    plcpPayloadStart - plcpHtTrainingSymbolsStart,
+                                                    htHeaderMode, event->GetTxVector ());
+
+                  psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
+                                                                  noiseInterferenceW,
+                                                                  event->GetTxVector ().GetChannelWidth ()),
+                                                    plcpHtTrainingSymbolsStart - plcpHeaderStart,
+                                                    headerMode, event->GetTxVector ());
+
+                  NS_LOG_DEBUG ("Case 5aii - previous is in the preamble and current is after payload start: VHT mode=" << htHeaderMode << ", non-VHT mode=" << headerMode << ", psr=" << psr);
+                }
+
+              //Case 5aiii: HT format
               else
                 {
                   psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
                                                                   noiseInterferenceW,
-                                                                  htHeaderMode),
+                                                                  event->GetTxVector ().GetChannelWidth ()),
                                                     plcpPayloadStart - plcpHsigHeaderStart,
-                                                    htHeaderMode);
+                                                    htHeaderMode, event->GetTxVector ());
 
                   psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
                                                                   noiseInterferenceW,
-                                                                  headerMode),
+                                                                  event->GetTxVector ().GetChannelWidth ()),
                                                     plcpHsigHeaderStart - plcpHeaderStart, //HT GF: plcpHsigHeaderStart - plcpHeaderStart = 0
-                                                    headerMode);
+                                                    headerMode, event->GetTxVector ());
 
-                  NS_LOG_DEBUG ("Case 4a - previous is in the preamble: HT mode=" << htHeaderMode << ", non-HT mode=" << headerMode << ", psr=" << psr);
+                  NS_LOG_DEBUG ("Case 4a - previous is in the preamble and current is after payload start: HT mode=" << htHeaderMode << ", non-HT mode=" << headerMode << ", psr=" << psr);
                 }
             }
-          //non HT will not come here
+          //Case 5b: current is in (V)HT training or in VHT-SIG-B. Non (V)HT will not come here since it went in previous if or if the previous if is not true this will be not true
+          else if (current >= plcpHtTrainingSymbolsStart)
+            {
+              NS_ASSERT ((preamble != WIFI_PREAMBLE_LONG) && (preamble != WIFI_PREAMBLE_SHORT));
+
+              //Case 5bi: VHT format
+              if (preamble == WIFI_PREAMBLE_VHT)
+                {
+                  psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
+                                                                  noiseInterferenceW,
+                                                                  event->GetTxVector ().GetChannelWidth ()),
+                                                    current - plcpHtTrainingSymbolsStart,
+                                                    htHeaderMode, event->GetTxVector ());
+
+                  psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
+                                                                  noiseInterferenceW,
+                                                                  event->GetTxVector ().GetChannelWidth ()),
+                                                    plcpHtTrainingSymbolsStart - plcpHeaderStart,
+                                                    headerMode, event->GetTxVector ());
+
+                  NS_LOG_DEBUG ("Case 5bi - previous is in the preamble and current in VHT training or in VHT-SIG-B: VHT mode=" << htHeaderMode << ", non-VHT mode=" << headerMode << ", psr=" << psr);
+                }
+              //Case 45ii: HT mixed format
+              else
+                {
+                  psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
+                                                                  noiseInterferenceW,
+                                                                  event->GetTxVector ().GetChannelWidth ()),
+                                                    current - plcpHsigHeaderStart,
+                                                    htHeaderMode, event->GetTxVector ());
+
+                  psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
+                                                                  noiseInterferenceW,
+                                                                  event->GetTxVector ().GetChannelWidth ()),
+                                                    plcpHsigHeaderStart - plcpHeaderStart,
+                                                    headerMode, event->GetTxVector ());
+
+                  NS_LOG_DEBUG ("Case 5bii - previous is in the preamble and current in HT training: HT mode=" << htHeaderMode << ", non-HT mode=" << headerMode << ", psr=" << psr);
+                }
+            }
+          //Case 5c: current in HT-SIG or in VHT-SIG-A. Non (V)HT will not come here since it went in previous if or if the previous if is not true this will be not true
           else if (current >= plcpHsigHeaderStart)
             {
               NS_ASSERT ((preamble != WIFI_PREAMBLE_LONG) && (preamble != WIFI_PREAMBLE_SHORT));
 
-              psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
-                                                              noiseInterferenceW,
-                                                              htHeaderMode),
-                                                current - plcpHsigHeaderStart,
-                                                htHeaderMode);
+              //Case 5ci: VHT format
+              if (preamble == WIFI_PREAMBLE_VHT)
+                {
+                  psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
+                                                                  noiseInterferenceW,
+                                                                  event->GetTxVector ().GetChannelWidth ()),
+                                                    current - plcpHeaderStart,
+                                                    headerMode, event->GetTxVector ());
 
-              psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
-                                                              noiseInterferenceW,
-                                                              headerMode),
-                                                plcpHsigHeaderStart - plcpHeaderStart, //HT GF: plcpHsigHeaderStart - plcpHeaderStart = 0
-                                                headerMode);
+                  NS_LOG_DEBUG ("Case 5ci - previous is in preamble and current in VHT-SIG-A: mode=" << headerMode << ", psr=" << psr);
+                }
+              //Case 5cii: HT mixed format
+              else
+                {
+                  psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
+                                                                  noiseInterferenceW,
+                                                                  event->GetTxVector ().GetChannelWidth ()),
+                                                    current - plcpHsigHeaderStart,
+                                                    htHeaderMode, event->GetTxVector ());
 
-              NS_LOG_DEBUG ("Case 4b - previous is in the preamble: HT mode=" << htHeaderMode << ", non-HT mode=" << headerMode << ", psr=" << psr);
+                  psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
+                                                                  noiseInterferenceW,
+                                                                  event->GetTxVector ().GetChannelWidth ()),
+                                                    plcpHsigHeaderStart - plcpHeaderStart, //HT GF: plcpHsigHeaderStart - plcpHeaderStart = 0
+                                                    headerMode, event->GetTxVector ());
+
+                  NS_LOG_DEBUG ("Case 5cii - previous in preamble and current in HT-SIG: HT mode=" << htHeaderMode << ", non-HT mode=" << headerMode << ", psr=" << psr);
+                }
             }
-          //GF will not come here
+          //Case 5d: current is in L-SIG. HT GF will not come here
           else if (current >= plcpHeaderStart)
             {
               NS_ASSERT (preamble != WIFI_PREAMBLE_HT_GF);
 
               psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
                                                               noiseInterferenceW,
-                                                              headerMode),
+                                                              event->GetTxVector ().GetChannelWidth ()),
                                                 current - plcpHeaderStart,
-                                                headerMode);
+                                                headerMode, event->GetTxVector ());
 
-              NS_LOG_DEBUG ("Case 4c - previous is in the preamble: mode=" << headerMode << ", psr=" << psr);
+              NS_LOG_DEBUG ("Case 5d - previous is in the preamble and current is in L-SIG: mode=" << headerMode << ", psr=" << psr);
             }
         }
 
@@ -542,7 +792,7 @@ InterferenceHelper::CalculatePlcpPayloadSnrPer (Ptr<InterferenceHelper::Event> e
   double noiseInterferenceW = CalculateNoiseInterferenceW (event, &ni);
   double snr = CalculateSnr (event->GetRxPowerW (),
                              noiseInterferenceW,
-                             event->GetPayloadMode ());
+                             event->GetTxVector ().GetChannelWidth ());
 
   /* calculate the SNIR at the start of the packet and accumulate
    * all SNIR changes in the snir vector.
@@ -562,7 +812,7 @@ InterferenceHelper::CalculatePlcpHeaderSnrPer (Ptr<InterferenceHelper::Event> ev
   double noiseInterferenceW = CalculateNoiseInterferenceW (event, &ni);
   double snr = CalculateSnr (event->GetRxPowerW (),
                              noiseInterferenceW,
-                             WifiPhy::GetPlcpHeaderMode (event->GetPayloadMode (), event->GetPreambleType ()));
+                             event->GetTxVector ().GetChannelWidth ());
 
   /* calculate the SNIR at the start of the plcp header and accumulate
    * all SNIR changes in the snir vector.

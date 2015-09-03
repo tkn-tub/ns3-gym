@@ -413,8 +413,7 @@ protected:
 
   /**
     * This Boolean is set \c true iff this WifiMac is to model
-    * 802.11n. It is exposed through the
-    * attribute system.
+    * 802.11n. It is exposed through the attribute system.
     *
     * At the moment, this flag is the sole selection between HT and
     * non-HT operation for the STA (whether IBSS, AP, or
@@ -433,11 +432,29 @@ protected:
    */
   void SetHtSupported (bool enable);
   /**
-   * Return whether the device supports QoS.
+   * Return whether the device supports HT.
    *
    * \return true if HT is supported, false otherwise
    */
   bool GetHtSupported () const;
+
+  /**
+  * This Boolean is set \c true iff this WifiMac is to model
+  * 802.11ac. It is exposed through the attribute system.
+  */
+  bool m_vhtSupported;
+  /**
+   * Enable or disable HT support for the device.
+   *
+   * \param enable whether VHT is supported
+   */
+  void SetVhtSupported (bool enable);
+  /**
+   * Return whether the device supports VHT.
+   *
+   * \return true if VHT is supported, false otherwise
+   */
+  bool GetVhtSupported () const;
 
 
 private:

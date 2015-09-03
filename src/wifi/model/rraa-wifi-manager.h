@@ -120,10 +120,11 @@ private:
    * Get a threshold for the given mode.
    *
    * \param mode
+   * \param station
    *
    * \return threshold
    */
-  struct ThresholdsItem GetThresholds (WifiMode mode) const;
+  struct ThresholdsItem GetThresholds (WifiMode mode, RraaWifiRemoteStation *station) const;
   /**
    * Get a threshold for the given station and mode index.
    *

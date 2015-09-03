@@ -64,7 +64,7 @@ TwoLevelAggregationTest::DoRun (void)
    */
   m_factory = ObjectFactory ();
   m_factory.SetTypeId ("ns3::ConstantRateWifiManager");
-  m_factory.Set ("DataMode", StringValue ("OfdmRate65MbpsBW20MHz"));
+  m_factory.Set ("DataMode", StringValue ("HtMcs7"));
   m_manager = m_factory.Create<WifiRemoteStationManager> ();
   m_manager->SetupPhy (m_phy);
 

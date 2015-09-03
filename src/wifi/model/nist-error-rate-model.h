@@ -43,7 +43,7 @@ public:
 
   NistErrorRateModel ();
 
-  virtual double GetChunkSuccessRate (WifiMode mode, double snr, uint32_t nbits) const;
+  virtual double GetChunkSuccessRate (WifiMode mode, WifiTxVector txVector, double snr, uint32_t nbits) const;
 
 
 private:
@@ -89,6 +89,13 @@ private:
    */
   double Get64QamBer (double snr) const;
   /**
+   * Return BER of QAM256 at the given SNR.
+   *
+   * \param snr snr value
+   * \return BER of QAM256 at the given SNR
+   */
+  double Get256QamBer (double snr) const;
+  /**
    * Return BER of BPSK at the given SNR after applying FEC.
    *
    * \param snr snr value
@@ -132,6 +139,16 @@ private:
    */
   double GetFec64QamBer (double snr, uint32_t nbits,
                          uint32_t bValue) const;
+  /**
+   * Return BER of QAM256 at the given SNR after applying FEC.
+   *
+   * \param snr snr value
+   * \param nbits the number of bits in the chunk
+   * \param bValue
+   * \return BER of QAM256 at the given SNR after applying FEC
+   */
+  double GetFec256QamBer (double snr, uint32_t nbits,
+                          uint32_t bValue) const;
 };
 
 } //namespace ns3

@@ -37,6 +37,7 @@
 #include "amsdu-subframe-header.h"
 #include "mgt-headers.h"
 #include "ht-capabilities.h"
+#include "vht-capabilities.h"
 
 /*
  * The state machine for this STA is:
@@ -181,12 +182,15 @@ StaWifiMac::SendProbeRequest (void)
   MgtProbeRequestHeader probe;
   probe.SetSsid (GetSsid ());
   probe.SetSupportedRates (GetSupportedRates ());
-  if (m_htSupported)
+  if (m_htSupported || m_vhtSupported)
     {
       probe.SetHtCapabilities (GetHtCapabilities ());
       hdr.SetNoOrder ();
     }
-
+  if (m_vhtSupported)
+    {
+      probe.SetVhtCapabilities (GetVhtCapabilities ());
+    }
   packet->AddHeader (probe);
 
   //The standard is not clear on the correct queue for management
@@ -218,12 +222,15 @@ StaWifiMac::SendAssociationRequest (void)
   MgtAssocRequestHeader assoc;
   assoc.SetSsid (GetSsid ());
   assoc.SetSupportedRates (GetSupportedRates ());
-  if (m_htSupported)
+  if (m_htSupported || m_vhtSupported)
     {
       assoc.SetHtCapabilities (GetHtCapabilities ());
       hdr.SetNoOrder ();
     }
-
+  if (m_vhtSupported)
+    {
+      assoc.SetVhtCapabilities (GetVhtCapabilities ());
+    }
   packet->AddHeader (assoc);
 
   //The standard is not clear on the correct queue for management
@@ -391,7 +398,7 @@ StaWifiMac::Enqueue (Ptr<const Packet> packet, Mac48Address to)
     {
       hdr.SetTypeData ();
     }
-  if (m_htSupported)
+  if (m_htSupported || m_vhtSupported)
     {
       hdr.SetNoOrder ();
     }
@@ -565,14 +572,24 @@ StaWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
                   HtCapabilities htcapabilities = assocResp.GetHtCapabilities ();
                   m_stationManager->AddStationHtCapabilities (hdr->GetAddr2 (),htcapabilities);
                 }
+              if (m_vhtSupported)
+                {
+                  VhtCapabilities vhtcapabilities = assocResp.GetVhtCapabilities ();
+                  m_stationManager->AddStationVhtCapabilities (hdr->GetAddr2 (), vhtcapabilities);
+                }
 
               for (uint32_t i = 0; i < m_phy->GetNModes (); i++)
                 {
                   WifiMode mode = m_phy->GetMode (i);
-                  if (rates.IsSupportedRate (mode.GetDataRate ()))
+                  uint32_t channelWidth = m_phy->GetChannelWidth ();
+                  if (channelWidth > 20)
+                    {
+                      channelWidth = 20;
+                    }
+                  if (rates.IsSupportedRate (mode.GetDataRate (channelWidth, false, 1)))
                     {
                       m_stationManager->AddSupportedMode (hdr->GetAddr2 (), mode);
-                      if (rates.IsBasicRate (mode.GetDataRate ()))
+                      if (rates.IsBasicRate (mode.GetDataRate (channelWidth, false, 1)))
                         {
                           m_stationManager->AddBasicMode (mode);
                         }
@@ -583,8 +600,21 @@ StaWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
                   HtCapabilities htcapabilities = assocResp.GetHtCapabilities ();
                   for (uint32_t i = 0; i < m_phy->GetNMcs (); i++)
                     {
-                      uint8_t mcs = m_phy->GetMcs (i);
-                      if (htcapabilities.IsSupportedMcs (mcs))
+                      WifiMode mcs = m_phy->GetMcs (i);
+                      if (mcs.GetModulationClass () == WIFI_MOD_CLASS_HT && htcapabilities.IsSupportedMcs (mcs.GetMcsValue ()))
+                        {
+                          m_stationManager->AddSupportedMcs (hdr->GetAddr2 (), mcs);
+                          //here should add a control to add basic MCS when it is implemented
+                        }
+                    }
+                }
+              if (m_vhtSupported)
+                {
+                  VhtCapabilities vhtcapabilities = assocResp.GetVhtCapabilities ();
+                  for (uint32_t i = 0; i < m_phy->GetNMcs (); i++)
+                    {
+                      WifiMode mcs = m_phy->GetMcs (i);
+                      if (mcs.GetModulationClass () == WIFI_MOD_CLASS_VHT && vhtcapabilities.IsSupportedTxMcs (mcs.GetMcsValue ()))
                         {
                           m_stationManager->AddSupportedMcs (hdr->GetAddr2 (), mcs);
                           //here should add a control to add basic MCS when it is implemented
@@ -615,7 +645,7 @@ SupportedRates
 StaWifiMac::GetSupportedRates (void) const
 {
   SupportedRates rates;
-  if (m_htSupported)
+  if (m_htSupported || m_vhtSupported)
     {
       for (uint32_t i = 0; i < m_phy->GetNBssMembershipSelectors (); i++)
         {
@@ -625,7 +655,12 @@ StaWifiMac::GetSupportedRates (void) const
   for (uint32_t i = 0; i < m_phy->GetNModes (); i++)
     {
       WifiMode mode = m_phy->GetMode (i);
-      rates.AddSupportedRate (mode.GetDataRate ());
+      uint32_t channelWidth = m_phy->GetChannelWidth ();
+      if (channelWidth > 20)
+        {
+          channelWidth = 20;
+        }
+      rates.AddSupportedRate (mode.GetDataRate (channelWidth, false, 1));
     }
   return rates;
 }
@@ -635,26 +670,65 @@ StaWifiMac::GetHtCapabilities (void) const
 {
   HtCapabilities capabilities;
   capabilities.SetHtSupported (1);
-  capabilities.SetLdpc (m_phy->GetLdpc ());
-  capabilities.SetSupportedChannelWidth (m_phy->GetChannelBonding ());
-  capabilities.SetShortGuardInterval20 (m_phy->GetGuardInterval ());
-  capabilities.SetShortGuardInterval40 (m_phy->GetChannelBonding () && m_phy->GetGuardInterval ());
-  capabilities.SetGreenfield (m_phy->GetGreenfield ());
-  capabilities.SetMaxAmsduLength (1); //hardcoded for now (TBD)
-  capabilities.SetLSigProtectionSupport (!m_phy->GetGreenfield ());
-  capabilities.SetMaxAmpduLength (3); //hardcoded for now (TBD)
-  uint64_t maxSupportedRate = 0; //in bit/s
-  for (uint8_t i = 0; i < m_phy->GetNMcs (); i++)
+  if (m_htSupported)
     {
-      capabilities.SetRxMcsBitmask (m_phy->GetMcs (i));
-      if (((m_phy->McsToWifiMode (i)).GetDataRate ()) > maxSupportedRate)
+      capabilities.SetLdpc (m_phy->GetLdpc ());
+      capabilities.SetSupportedChannelWidth (m_phy->GetChannelWidth () == 40);
+      capabilities.SetShortGuardInterval20 (m_phy->GetGuardInterval ());
+      capabilities.SetShortGuardInterval40 (m_phy->GetChannelWidth () == 40 && m_phy->GetGuardInterval ());
+      capabilities.SetGreenfield (m_phy->GetGreenfield ());
+      capabilities.SetMaxAmsduLength (1); //hardcoded for now (TBD)
+      capabilities.SetLSigProtectionSupport (!m_phy->GetGreenfield ());
+      capabilities.SetMaxAmpduLength (3); //hardcoded for now (TBD)
+      uint64_t maxSupportedRate = 0; //in bit/s
+      for (uint8_t i = 0; i < m_phy->GetNMcs (); i++)
         {
-          maxSupportedRate = (m_phy->McsToWifiMode (i)).GetDataRate ();
+          WifiMode mcs = m_phy->GetMcs (i);
+          capabilities.SetRxMcsBitmask (mcs.GetMcsValue ());
+          if (mcs.GetDataRate (m_phy->GetGuardInterval (), m_phy->GetGuardInterval (), 1) > maxSupportedRate)
+            {
+              maxSupportedRate = mcs.GetDataRate (m_phy->GetGuardInterval (), m_phy->GetGuardInterval (), 1);
+            }
         }
+      capabilities.SetRxHighestSupportedDataRate (maxSupportedRate / 1e6); //in Mbit/s
+      capabilities.SetTxMcsSetDefined (m_phy->GetNMcs () > 0);
+      capabilities.SetTxMaxNSpatialStreams (m_phy->GetNumberOfTransmitAntennas ());
     }
-  capabilities.SetRxHighestSupportedDataRate (maxSupportedRate / 1e6); //in Mbit/s
-  capabilities.SetTxMcsSetDefined (m_phy->GetNMcs () > 0);
-  capabilities.SetTxMaxNSpatialStreams (m_phy->GetNumberOfTransmitAntennas ());
+  return capabilities;
+}
+
+VhtCapabilities
+StaWifiMac::GetVhtCapabilities (void) const
+{
+  VhtCapabilities capabilities;
+  capabilities.SetVhtSupported (1);
+  if (m_vhtSupported)
+    {
+      if (m_phy->GetChannelWidth () == 160)
+        {
+          capabilities.SetSupportedChannelWidthSet (1);
+        }
+      else
+        {
+          capabilities.SetSupportedChannelWidthSet (0);
+        }
+      capabilities.SetMaxMpduLength (2); //hardcoded for now (TBD)
+      capabilities.SetRxLdpc (m_phy->GetLdpc ());
+      capabilities.SetShortGuardIntervalFor80Mhz ((m_phy->GetChannelWidth () == 80) && m_phy->GetGuardInterval ());
+      capabilities.SetShortGuardIntervalFor160Mhz ((m_phy->GetChannelWidth () == 160) && m_phy->GetGuardInterval ());
+      capabilities.SetMaxAmpduLengthExponent (7); //hardcoded for now (TBD)
+      uint8_t maxMcs = 0;
+      for (uint8_t i = 0; i < m_phy->GetNMcs (); i++)
+        {
+          WifiMode mcs = m_phy->GetMcs (i);
+          if (mcs.GetMcsValue () > maxMcs)
+            {
+              maxMcs = mcs.GetMcsValue ();
+            }
+        }
+      capabilities.SetRxMcsMap (maxMcs, 1); //Only 1 SS is currently supported
+      capabilities.SetTxMcsMap (maxMcs, 1); //Only 1 SS is currently supported
+    }
   return capabilities;
 }
 

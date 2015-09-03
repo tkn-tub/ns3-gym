@@ -285,11 +285,11 @@ private:
    *
    * \param signal
    * \param noiseInterference
-   * \param mode
+   * \param channelWidth
    *
    * \return SNR in liear ratio
    */
-  double CalculateSnr (double signal, double noiseInterference, WifiMode mode) const;
+  double CalculateSnr (double signal, double noiseInterference, uint32_t channelWidth) const;
   /**
    * Calculate the success rate of the chunk given the SINR, duration, and Wi-Fi mode.
    * The duration and mode are used to calculate how many bits are present in the chunk.
@@ -297,10 +297,11 @@ private:
    * \param snir SINR
    * \param duration
    * \param mode
+   * \param txVector
    *
    * \return the success rate
    */
-  double CalculateChunkSuccessRate (double snir, Time duration, WifiMode mode) const;
+  double CalculateChunkSuccessRate (double snir, Time duration, WifiMode mode, WifiTxVector txVector) const;
   /**
    * Calculate the error rate of the given plcp payload. The plcp payload can be divided into
    * multiple chunks (e.g. due to interference from other transmissions).

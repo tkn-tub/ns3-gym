@@ -17,6 +17,7 @@
  *
  * Authors: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  *          Ghada Badawy <gbadawy@gmail.com>
+ *          Sébastien Deronne <sebastien.deronne@gmail.com>
  */
 
 #ifndef YANS_WIFI_PHY_H
@@ -40,6 +41,7 @@
 
 namespace ns3 {
 
+#define VHT_PHY 126
 #define HT_PHY 127
 
 class YansWifiChannel;
@@ -297,7 +299,7 @@ public:
   virtual uint32_t GetNModes (void) const;
   virtual WifiMode GetMode (uint32_t mode) const;
   virtual bool IsModeSupported (WifiMode mode) const;
-  virtual bool IsMcsSupported (WifiMode mode);
+  virtual bool IsMcsSupported (WifiMode mcs);
   virtual double CalculateSnr (WifiMode txMode, double ber) const;
   virtual Ptr<WifiChannel> GetChannel (void) const;
 
@@ -385,17 +387,17 @@ public:
    */
   virtual bool GetGreenfield (void) const;
   /**
-   * Return whether channel bonding is supported.
+   * Return channel width.
    *
-   * \return true if channel bonding is supported, false otherwise
+   * \return channel width
    */
-  virtual bool GetChannelBonding (void) const;
+  virtual uint32_t GetChannelWidth (void) const;
   /**
-   * Enable or disable channel bonding support.
+   * Set channel width.
    *
-   * \param channelbonding Enable or disable channel bonding
+   * \param channel width
    */
-  virtual void SetChannelBonding (bool channelbonding);
+  virtual void SetChannelWidth (uint32_t channelwidth);
 
   virtual uint32_t GetNBssMembershipSelectors (void) const;
   virtual uint32_t GetBssMembershipSelector (uint32_t selector) const;
@@ -405,11 +407,7 @@ public:
    * \return the number of MCS supported by this phy
    */
   virtual uint8_t GetNMcs (void) const;
-  virtual uint8_t GetMcs (uint8_t mcs) const;
-
-  virtual uint32_t WifiModeToMcs (WifiMode mode);
-  virtual WifiMode McsToWifiMode (uint8_t mcs);
-
+  virtual WifiMode GetMcs (uint8_t mcs) const;
 
 private:
   virtual void DoInitialize (void);
@@ -446,6 +444,11 @@ private:
    * supported rates for 802.11n standard.
    */
   void Configure80211n (void);
+  /**
+   * Configure YansWifiPhy with appropriate channel frequency and
+   * supported rates for 802.11ac standard.
+   */
+  void Configure80211ac (void);
   /**
    * Return the energy detection threshold.
    *
@@ -524,7 +527,7 @@ private:
   bool     m_stbc;                  //!< Flag if STBC is used
   bool     m_greenfield;            //!< Flag if GreenField format is supported
   bool     m_guardInterval;         //!< Flag if short guard interval is used
-  bool     m_channelBonding;        //!< Flag if channel bonding is used
+  uint32_t m_channelWidth;          //!< Channel width
 
 
   /**
@@ -564,9 +567,9 @@ private:
    * mandatory rates".
    */
   WifiModeList m_deviceRateSet;
+  WifiModeList m_deviceMcsSet;
 
   std::vector<uint32_t> m_bssMembershipSelectorSet;
-  std::vector<uint8_t> m_deviceMcsSet;
   EventId m_endRxEvent;
   EventId m_endPlcpRxEvent;
 

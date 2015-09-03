@@ -42,9 +42,9 @@ To create a WifiNetDevice, users need to configure mainly five steps:
   configuration of WifiPhy is the error rate model, which is the one that actually 
   calculates the probability of successfully decoding the frame based on the signal.
 * Configure WifiMac: this step is more on related to the architecture and device level.
-  The users configure the wifi architecture (i.e. ad-hoc or ap-sta) and whether QoS (802.11e) and/or HT (802.11n) features are supported or not.
+  The users configure the wifi architecture (i.e. ad-hoc or ap-sta) and whether QoS (802.11e), HT (802.11n) and/or VHT (802.11ac) features are supported or not.
 * Create WifiDevice: at this step, users configure the desired wifi standard
-  (e.g. **802.11b**, **802.11g**, **802.11a** or **802.11n**) and rate control algorithm
+  (e.g. **802.11b**, **802.11g**, **802.11a**, **802.11n** or **802.11ac**) and rate control algorithm
 * Configure mobility: finally, mobility model is (usually) required before WifiNetDevice
   can be used.
 
@@ -113,14 +113,38 @@ Note that we haven't actually created any WifiPhy objects yet; we've just
 prepared the YansWifiPhyHelper by telling it which channel it is connected to.
 The Phy objects are created in the next step.
 
-802.11n PHY layer can use either 20 or 40 MHz channel width, and either long (800 ns) or short (400 ns) OFDM guard intervals. To configure those parameters, the following lines of code could be used (in this example, it configures a 40 MHz channel width with a short guard interval)::
+802.11n/ac PHY layer can use either either long (800 ns) or short (400 ns) OFDM guard intervals. To configure this parameter, the following line of code could be used (in this example, it enables the support of a short guard interval)::
 
- wifiPhyHelper.Set (« ChannelBonding,BooleanValue(true));
- wifiPhyHelper.Set ("ShortGuardEnabled",BooleanValue(true));
+ wifiPhyHelper.Set ("ShortGuardEnabled", BooleanValue(true));
 
 Furthermore, 802.11n provides an optional mode (GreenField mode) to reduce preamble durations and which is only compatible with 802.11n devices. This mode is enabled as follows::
 
  wifiPhyHelper.Set ("GreenfieldEnabled",BooleanValue(true));
+
+802.11n PHY layer can support both 20 (default) or 40 MHz channel width, and 802.11ac PHY layer can use either 20, 40, 80 (default) or 160 MHz channel width. Since the channel width value is overwritten by ``WifiHelper::SetStandard``, this should be done post-install using ``Config::Set``::
+
+  WifiHelper wifi = WifiHelper::Default ();
+  wifi.SetStandard (WIFI_PHY_STANDARD_80211ac);
+  wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager", "DataMode", StringValue("VHtMcs9"), "ControlMode", StringValue("VhtMcs0"));
+  VhtWifiMacHelper mac = VhtWifiMacHelper::Default ();
+
+  //Install PHY and MAC
+  Ssid ssid = Ssid ("ns3-wifi");
+  mac.SetType ("ns3::StaWifiMac",
+  "Ssid", SsidValue (ssid),
+  "ActiveProbing", BooleanValue (false));
+
+  NetDeviceContainer staDevice;
+  staDevice = wifi.Install (phy, mac, wifiStaNode);
+
+  mac.SetType ("ns3::ApWifiMac",
+  "Ssid", SsidValue (ssid));
+
+  NetDeviceContainer apDevice;
+  apDevice = wifi.Install (phy, mac, wifiApNode);
+
+  //Once install is done, we overwrite the channel width value
+  Config::Set ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Phy/ChannelWidth", UintegerValue (160));
 
 WifiMacHelper
 =============
@@ -128,7 +152,7 @@ WifiMacHelper
 The next step is to configure the MAC model.
 We use WifiMacHelper to accomplish this.
 WifiMacHelper takes care of both the MAC low model and MAC high model.
-A user must decide if 802.11/WMM-style QoS and/or 802.11n-style High throughput (HT) support is required.
+A user must decide if 802.11/WMM-style QoS and/or 802.11n-style High throughput (HT) and/or 802.11ac-style Very High throughput (VHT) support is required.
 
 NqosWifiMacHelper and QosWifiMacHelper
 ++++++++++++++++++++++++++++++++++++++
@@ -138,7 +162,7 @@ object factory to create instances of a ``ns3::WifiMac``. They are used to
 configure MAC parameters like type of MAC.  
 
 The former, ``ns3::NqosWifiMacHelper``, supports creation of MAC
-instances that do not have 802.11e/WMM-style QoS nor 802.11n-style High throughput (HT) support enabled. 
+instances that do not have 802.11e/WMM-style QoS nor 802.11n-style High throughput (HT) nor 802.11ac-style Very High throughput (VHT) support enabled.
 
 For example the following user code configures a non-QoS and non-HT MAC that
 will be a non-AP STA in an infrastructure network where the AP has
@@ -203,6 +227,13 @@ SSID ``ns-3-ssid``::
 
 This object can be also used to set in the same way as ``ns3::QosWifiMacHelper``.
 
+VhtWifiMacHelper
++++++++++++++++
+
+The ``ns3::VhtWifiMacHelper`` configures an
+object factory to create instances of a ``ns3::WifiMac``. It is used to
+supports creation of MAC instances that have 802.11ac-style Very High throughput (VHT) and QoS support enabled. This object is similar to ``HtWifiMacHelper``.
+
 WifiHelper
 ==========
 
@@ -229,7 +260,7 @@ In order to change parameters that are overwritten by ``WifiHelper::SetStandard`
 
   WifiHelper wifi = WifiHelper::Default ();
   wifi.SetStandard (WIFI_PHY_STANDARD_80211n_2_4GHZ);
-  wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager", "DataMode", StringValue("OfdmRate65MbpsBW20MHz"), "ControlMode", StringValue("OfdmRate6_5MbpsBW20MHz"));
+  wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager", "DataMode", StringValue("HtMcs7"), "ControlMode", StringValue("HtMcs0"));
   HtWifiMacHelper mac = HtWifiMacHelper::Default ();
 
   //Install PHY and MAC
@@ -393,6 +424,5 @@ Note on the current implementation
 * 802.11g does not support 9 microseconds slot
 * PHY_RXSTART is not supported
 * 802.11e TXOP is not supported
-* 802.11n MIMO is not supported
-* hybrid aggregation is not supported
-
+* 802.11n/ac MIMO is not supported
+* 802.11n/ac beamforming is not supported

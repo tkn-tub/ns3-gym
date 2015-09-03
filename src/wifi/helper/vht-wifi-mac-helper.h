@@ -1,6 +1,6 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
- * Copyright (c) 2009 MIRKO BANCHI
+ * Copyright (c) 2014 SEBASTIEN DERONNE
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -15,11 +15,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * Author: Ghada Badawy <gbadawy@gmail.com>
+ * Author: Sébastien Deronne <sebastien.deronne@gmail.com>
  */
 
-#ifndef HT_WIFI_MAC_HELPER_H
-#define HT_WIFI_MAC_HELPER_H
+#ifndef VHT_WIFI_MAC_HELPER_H
+#define VHT_WIFI_MAC_HELPER_H
 
 #include "wifi-helper.h"
 #include "ns3/qos-utils.h"
@@ -29,32 +29,33 @@
 namespace ns3 {
 
 /**
- * \brief create HT-enabled MAC layers for a ns3::WifiNetDevice.
+ * \brief create VHT-enabled MAC layers for a ns3::WifiNetDevice.
  *
  * This class can create MACs of type ns3::ApWifiMac, ns3::StaWifiMac,
- * and, ns3::AdhocWifiMac, with QosSupported and HTSupported attributes set to True.
+ * and, ns3::AdhocWifiMac, with QosSupported, HTSupported and VHTSupported attributes set to True.
  */
-class HtWifiMacHelper : public QosWifiMacHelper
+class VhtWifiMacHelper : public QosWifiMacHelper
 {
 public:
   /**
-   * Create a HtWifiMacHelper that is used to make life easier when working
+   * Create a VhtWifiMacHelper that is used to make life easier when working
    * with Wifi devices using a QOS MAC layer.
    */
-  HtWifiMacHelper ();
+  VhtWifiMacHelper ();
 
   /**
-   * Destroy a HtWifiMacHelper
+   * \internal
+   * Destroy a VhtWifiMacHelper
    */
-  virtual ~HtWifiMacHelper ();
+  virtual ~VhtWifiMacHelper ();
 
   /**
    * Create a mac helper in a default working state.
    */
-  static HtWifiMacHelper Default (void);
+  static VhtWifiMacHelper Default (void);
 
 };
 
 } //namespace ns3
 
-#endif /* HT_WIFI_MAC_HELPER_H */
+#endif /* VHT_WIFI_MAC_HELPER_H */

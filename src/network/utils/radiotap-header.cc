@@ -42,7 +42,14 @@ RadiotapHeader::RadiotapHeader ()
     m_antennaNoise (0),
     m_ampduStatusRef (0),
     m_ampduStatusFlags (0),
-    m_ampduStatusCRC (0)
+    m_ampduStatusCRC (0),
+    m_vhtPad (0),
+    m_vhtKnown (0),
+    m_vhtFlags (0),
+    m_vhtBandwidth (0),
+    m_vhtCoding (0),
+    m_vhtGroupId (0),
+    m_vhtPartialAid (0)
 {
   NS_LOG_FUNCTION (this);
 }
@@ -238,17 +245,17 @@ RadiotapHeader::Serialize (Buffer::Iterator start) const
   //
   if (m_present & RADIOTAP_VHT) // bit 21
     {
-      //not yet implemented
-      start.WriteU16 (0);
-      start.WriteU8 (0);
-      start.WriteU8 (0);
-      start.WriteU8 (0);
-      start.WriteU8 (0);
-      start.WriteU8 (0);
-      start.WriteU8 (0);
-      start.WriteU8 (0);
-      start.WriteU8 (0);
-      start.WriteU16 (0);
+      start.WriteU8 (0, m_vhtPad);
+      start.WriteU16 (m_vhtKnown);
+      start.WriteU8 (m_vhtFlags);
+      start.WriteU8 (m_vhtBandwidth);
+      for (uint8_t i = 0; i < 4; i++)
+        {
+          start.WriteU8 (m_vhtMcsNss[i]);
+        }
+      start.WriteU8 (m_vhtCoding);
+      start.WriteU8 (m_vhtGroupId);
+      start.WriteU16 (m_vhtPartialAid);
     }
 }
 
@@ -450,18 +457,19 @@ RadiotapHeader::Deserialize (Buffer::Iterator start)
   //
   if (m_present & RADIOTAP_VHT) // bit 21
     {
-      //not yet implemented
-      start.ReadU16 ();
-      start.ReadU8 ();
-      start.ReadU8 ();
-      start.ReadU8 ();
-      start.ReadU8 ();
-      start.ReadU8 ();
-      start.ReadU8 ();
-      start.ReadU8 ();
-      start.ReadU8 ();
-      start.ReadU16 ();
-      bytesRead += 12;
+      m_vhtPad = ((2 - bytesRead % 2) % 2);
+      start.Next (m_vhtPad);
+      m_vhtKnown = start.ReadU16 ();
+      m_vhtFlags = start.ReadU8 ();
+      m_vhtBandwidth = start.ReadU8 ();
+      for (uint8_t i = 0; i < 4; i++)
+        {
+          m_vhtMcsNss[i] = start.ReadU8 ();
+        }
+      m_vhtCoding = start.ReadU8 ();
+      m_vhtGroupId = start.ReadU8 ();
+      m_vhtPartialAid = start.ReadU16 ();
+      bytesRead += (12 + m_vhtPad);
     }
 
   NS_ASSERT_MSG (m_length == bytesRead, "RadiotapHeader::Deserialize(): expected and actual lengths inconsistent");
@@ -482,7 +490,17 @@ RadiotapHeader::Print (std::ostream &os) const
      << " mcsKnown=" << m_mcsKnown
      << " mcsFlags=" << m_mcsFlags
      << " mcsRate=" << m_mcsRate
-     << " ampduStatusFlags=" << (int16_t) m_ampduStatusFlags;
+     << " ampduStatusFlags=" << (int16_t) m_ampduStatusFlags
+     << " vhtKnown=" << m_vhtKnown
+     << " vhtFlags=" << m_vhtFlags
+     << " vhtBandwidth=" << m_vhtBandwidth
+     << " vhtMcsNss for user 1=" << m_vhtMcsNss[0]
+     << " vhtMcsNss for user 2=" << m_vhtMcsNss[1]
+     << " vhtMcsNss for user 3=" << m_vhtMcsNss[2]
+     << " vhtMcsNss for user 4=" << m_vhtMcsNss[3]
+     << " vhtCoding=" << m_vhtCoding
+     << " vhtGroupId=" << m_vhtGroupId
+     << " vhtPartialAid=" << m_vhtPartialAid;
 }
 
 void
@@ -714,6 +732,100 @@ RadiotapHeader::GetAmpduStatusFlags () const
 {
   NS_LOG_FUNCTION (this);
   return m_ampduStatusFlags;
+}
+
+void
+RadiotapHeader::SetVhtFields (uint16_t known, uint8_t flags, uint8_t bandwidth, uint8_t mcs_nss[4], uint8_t coding, uint8_t group_id, uint16_t partial_aid)
+{
+  NS_LOG_FUNCTION (this << known << flags << mcs_nss[0] << mcs_nss[1] << mcs_nss[2] << mcs_nss[3] << coding << group_id << partial_aid);
+  m_vhtKnown = known;
+  m_vhtFlags = flags;
+  m_vhtBandwidth = bandwidth;
+  for (uint8_t i = 0; i < 4; i++)
+    {
+      m_vhtMcsNss[i] = mcs_nss[i];
+    }
+  m_vhtCoding = coding;
+  m_vhtGroupId = group_id;
+  m_vhtPartialAid = partial_aid;
+  if (!(m_present & RADIOTAP_VHT))
+    {
+      m_vhtPad = ((2 - m_length % 2) % 2);
+      m_present |= RADIOTAP_VHT;
+      m_length += (12 + m_vhtPad);
+    }
+
+  NS_LOG_LOGIC (this << " m_length=" << m_length << " m_present=0x" << std::hex << m_present << std::dec);
+}
+
+uint16_t
+RadiotapHeader::GetVhtKnown () const
+{
+  NS_LOG_FUNCTION (this);
+  return m_vhtKnown;
+}
+
+uint8_t
+RadiotapHeader::GetVhtFlags () const
+{
+  NS_LOG_FUNCTION (this);
+  return m_vhtFlags;
+}
+
+uint8_t
+RadiotapHeader::GetVhtBandwidth () const
+{
+  NS_LOG_FUNCTION (this);
+  return m_vhtBandwidth;
+}
+
+uint8_t
+RadiotapHeader::GetVhtMcsNssUser1 () const
+{
+  NS_LOG_FUNCTION (this);
+  return m_vhtMcsNss[0];
+}
+
+uint8_t
+RadiotapHeader::GetVhtMcsNssUser2 () const
+{
+  NS_LOG_FUNCTION (this);
+  return m_vhtMcsNss[1];
+}
+
+uint8_t
+RadiotapHeader::GetVhtMcsNssUser3 () const
+{
+  NS_LOG_FUNCTION (this);
+  return m_vhtMcsNss[2];
+}
+
+uint8_t
+RadiotapHeader::GetVhtMcsNssUser4 () const
+{
+  NS_LOG_FUNCTION (this);
+  return m_vhtMcsNss[3];
+}
+
+uint8_t
+RadiotapHeader::GetVhtCoding () const
+{
+  NS_LOG_FUNCTION (this);
+  return m_vhtCoding;
+}
+
+uint8_t
+RadiotapHeader::GetVhtGroupId () const
+{
+  NS_LOG_FUNCTION (this);
+  return m_vhtGroupId;
+}
+
+uint8_t
+RadiotapHeader::GetVhtPartialAid () const
+{
+  NS_LOG_FUNCTION (this);
+  return m_vhtPartialAid;
 }
 
 } // namespace ns3

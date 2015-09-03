@@ -49,11 +49,17 @@ def build(bld):
     obj = bld.create_ns3_program('ofdm-ht-validation', ['core', 'mobility', 'wifi', 'config-store', 'stats'])
     obj.source = 'ofdm-ht-validation.cc'
 
+    obj = bld.create_ns3_program('ofdm-vht-validation', ['core', 'mobility', 'wifi', 'config-store', 'stats'])
+    obj.source = 'ofdm-vht-validation.cc'
+
     obj = bld.create_ns3_program('wifi-hidden-terminal', ['internet', 'mobility', 'wifi', 'applications', 'propagation', 'flow-monitor'])
     obj.source = 'wifi-hidden-terminal.cc'
 
     obj = bld.create_ns3_program('ht-wifi-network', ['core','internet', 'mobility', 'wifi', 'applications', 'propagation'])
     obj.source = 'ht-wifi-network.cc'
+
+    obj = bld.create_ns3_program('vht-wifi-network', ['core','internet', 'mobility', 'wifi', 'applications', 'propagation'])
+    obj.source = 'vht-wifi-network.cc'
 
     obj = bld.create_ns3_program('wifi-timing-attributes', ['core','internet', 'mobility', 'wifi', 'applications', 'propagation'])
     obj.source = 'wifi-timing-attributes.cc'

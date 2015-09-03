@@ -26,6 +26,7 @@ namespace ns3 {
 
 WifiTxVector::WifiTxVector ()
   : m_retries (0),
+    m_channelWidth (20),
     m_shortGuardInterval (false),
     m_nss (1),
     m_ness (0),
@@ -38,10 +39,11 @@ WifiTxVector::WifiTxVector ()
 
 WifiTxVector::WifiTxVector (WifiMode mode, uint8_t powerLevel, uint8_t retries,
                             bool shortGuardInterval, uint8_t nss, uint8_t ness,
-                            bool aggregation, bool stbc)
+                            uint32_t channelWidth, bool aggregation, bool stbc)
   : m_mode (mode),
     m_txPowerLevel (powerLevel),
     m_retries (retries),
+    m_channelWidth (channelWidth),
     m_shortGuardInterval (shortGuardInterval),
     m_nss (nss),
     m_ness (ness),
@@ -76,6 +78,12 @@ uint8_t
 WifiTxVector::GetRetries (void) const
 {
   return m_retries;
+}
+
+uint32_t
+WifiTxVector::GetChannelWidth (void) const
+{
+  return m_channelWidth;
 }
 
 bool
@@ -129,6 +137,12 @@ WifiTxVector::SetRetries (uint8_t retries)
 }
 
 void
+WifiTxVector::SetChannelWidth (uint32_t channelWidth)
+{
+  m_channelWidth = channelWidth;
+}
+
+void
 WifiTxVector::SetShortGuardInterval (bool guardinterval)
 {
   m_shortGuardInterval = guardinterval;
@@ -163,6 +177,7 @@ std::ostream & operator << ( std::ostream &os, const WifiTxVector &v)
   os << "mode: " << v.GetMode () <<
     " txpwrlvl: " << (uint32_t)v.GetTxPowerLevel () <<
     " retries: " << (uint32_t)v.GetRetries () <<
+    " channel width: " << v.GetChannelWidth () <<
     " Short GI: " << v.IsShortGuardInterval () <<
     " Nss: " << (uint32_t)v.GetNss () <<
     " Ness: " << (uint32_t)v.GetNess () <<

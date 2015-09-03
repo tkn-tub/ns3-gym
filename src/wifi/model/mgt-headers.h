@@ -16,8 +16,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
- * Author: Mirko Banchi <mk.banchi@gmail.com>
+ * Authors: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
+ *          Mirko Banchi <mk.banchi@gmail.com>
  */
 
 #ifndef MGT_HEADERS_H
@@ -31,6 +31,8 @@
 #include "supported-rates.h"
 #include "ssid.h"
 #include "ht-capabilities.h"
+#include "ht-capabilities.h"
+#include "vht-capabilities.h"
 
 namespace ns3 {
 
@@ -68,6 +70,18 @@ public:
    * \param htcapabilities HT capabilities
    */
   void SetHtCapabilities (HtCapabilities htcapabilities);
+  /**
+    * Set the VHT capabilities.
+    *
+    * \param vhtcapabilities VHT capabilities
+    */
+  void SetVhtCapabilities (VhtCapabilities vhtcapabilities);
+  /**
+  * Return the VHT capabilities.
+  *
+  * \return VHT capabilities
+  */
+  VhtCapabilities GetVhtCapabilities (void) const;
 
   /**
    * Return the HT capabilities.
@@ -75,6 +89,7 @@ public:
    * \return HT capabilities
    */
   HtCapabilities GetHtCapabilities (void) const;
+
   /**
    * Return the Service Set Identifier (SSID).
    *
@@ -112,6 +127,7 @@ private:
   CapabilityInformation m_capability; //!< Capability information
   HtCapabilities m_htCapability;      //!< HT capabilities
   uint16_t m_listenInterval;
+  VhtCapabilities m_vhtCapability;    //!< VHT capabilities
 };
 
 
@@ -143,7 +159,18 @@ public:
    * \return HT capabilities
    */
   HtCapabilities GetHtCapabilities (void) const;
-
+  /**
+    * Set the VHT capabilities.
+    *
+    * \param vhtcapabilities VHT capabilities
+    */
+  void SetVhtCapabilities (VhtCapabilities vhtcapabilities);
+  /**
+  * Return the VHT capabilities.
+  *
+  * \return VHT capabilities
+  */
+  VhtCapabilities GetVhtCapabilities (void) const;
   /**
    * Set the HT capabilities.
    *
@@ -174,13 +201,13 @@ public:
   virtual void Serialize (Buffer::Iterator start) const;
   virtual uint32_t Deserialize (Buffer::Iterator start);
 
-
 private:
-  SupportedRates m_rates;             //!< List of supported rates
+  SupportedRates m_rates; //!< List of supported rates
   CapabilityInformation m_capability; //!< Capability information
-  StatusCode m_code;                  //!< Status code
+  StatusCode m_code; //!< Status code
   uint16_t m_aid;
-  HtCapabilities m_htCapability;      //!< HT capabilities
+  HtCapabilities m_htCapability; //!< HT capabilities
+  VhtCapabilities m_vhtCapability; //!< VHT capabilities
 };
 
 
@@ -223,6 +250,18 @@ public:
    * \return HT capabilities
    */
   HtCapabilities GetHtCapabilities (void) const;
+  /**
+   * Set the VHT capabilities.
+   *
+   * \param vhtcapabilities VHT capabilities
+   */
+  void SetVhtCapabilities (VhtCapabilities vhtcapabilities);
+  /**
+  * Return the VHT capabilities.
+  *
+  * \return VHT capabilities
+  */
+  VhtCapabilities GetVhtCapabilities (void) const;
 
   /**
    * Set the HT capabilities.
@@ -247,6 +286,7 @@ private:
   Ssid m_ssid;                   //!< Service Set ID (SSID)
   SupportedRates m_rates;        //!< List of supported rates
   HtCapabilities m_htCapability; //!< HT capabilities
+  VhtCapabilities m_vhtCapability; //!< VHT capabilities
 };
 
 
@@ -284,7 +324,18 @@ public:
    * \return HT capabilities
    */
   HtCapabilities GetHtCapabilities (void) const;
-
+  /**
+   * Set the VHT capabilities.
+   *
+   * \param vhtcapabilities VHT capabilities
+   */
+  void SetVhtCapabilities (VhtCapabilities vhtcapabilities);
+  /**
+  * Return the VHT capabilities.
+  *
+  * \return VHT capabilities
+  */
+  VhtCapabilities GetVhtCapabilities (void) const;
   /**
    * Set the HT capabilities.
    *
@@ -327,7 +378,6 @@ public:
   virtual void Serialize (Buffer::Iterator start) const;
   virtual uint32_t Deserialize (Buffer::Iterator start);
 
-
 private:
   uint64_t m_timestamp;               //!< Timestamp
   Ssid m_ssid;                        //!< Service set ID (SSID)
@@ -335,6 +385,7 @@ private:
   SupportedRates m_rates;             //!< List of supported rates
   CapabilityInformation m_capability; //!< Capability information
   HtCapabilities m_htCapability;      //!< HT capabilities
+  VhtCapabilities m_vhtCapability;    //!< VHT capabilities
 };
 
 

@@ -60,7 +60,7 @@ public:
 
   YansErrorRateModel ();
 
-  virtual double GetChunkSuccessRate (WifiMode mode, double snr, uint32_t nbits) const;
+  virtual double GetChunkSuccessRate (WifiMode mode, WifiTxVector txVector, double snr, uint32_t nbits) const;
 
 
 private:

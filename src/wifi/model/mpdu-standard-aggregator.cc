@@ -82,15 +82,45 @@ MpduStandardAggregator::Aggregate (Ptr<const Packet> packet, Ptr<Packet> aggrega
 }
 
 void
-MpduStandardAggregator::AddHeaderAndPad (Ptr<Packet> packet, bool last)
+MpduStandardAggregator::AggregateVhtSingleMpdu (Ptr<const Packet> packet, Ptr<Packet> aggregatedPacket)
+{
+  NS_LOG_FUNCTION (this);
+  Ptr<Packet> currentPacket;
+  AmpduSubframeHeader currentHdr;
+
+  uint32_t padding = CalculatePadding (aggregatedPacket);
+  if (padding)
+    {
+      Ptr<Packet> pad = Create<Packet> (padding);
+      aggregatedPacket->AddAtEnd (pad);
+    }
+
+  currentHdr.SetEof (1);
+  currentHdr.SetCrc (1);
+  currentHdr.SetSig ();
+  currentHdr.SetLength (packet->GetSize ());
+  currentPacket = packet->Copy ();
+
+  currentPacket->AddHeader (currentHdr);
+  aggregatedPacket->AddAtEnd (currentPacket);
+}
+
+void
+MpduStandardAggregator::AddHeaderAndPad (Ptr<Packet> packet, bool last, bool vhtSingleMpdu)
 {
   NS_LOG_FUNCTION (this);
   AmpduSubframeHeader currentHdr;
+
   //This is called to prepare packets from the aggregate queue to be sent so no need to check total size since it has already been
   //done before when deciding how many packets to add to the queue
   currentHdr.SetCrc (1);
   currentHdr.SetSig ();
   currentHdr.SetLength (packet->GetSize ());
+  if (vhtSingleMpdu)
+    {
+      currentHdr.SetEof (1);
+    }
+
   packet->AddHeader (currentHdr);
   uint32_t padding = CalculatePadding (packet);
 

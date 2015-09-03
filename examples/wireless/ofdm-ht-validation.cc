@@ -33,14 +33,15 @@ int main (int argc, char *argv[])
   std::ofstream nistfile ("nist-frame-success-rate-n.plt");
   std::vector <std::string> modes;
 
-  modes.push_back ("OfdmRate6_5MbpsBW20MHz");
-  modes.push_back ("OfdmRate13MbpsBW20MHz");
-  modes.push_back ("OfdmRate19_5MbpsBW20MHz");
-  modes.push_back ("OfdmRate26MbpsBW20MHz");
-  modes.push_back ("OfdmRate39MbpsBW20MHz");
-  modes.push_back ("OfdmRate52MbpsBW20MHz");
-  modes.push_back ("OfdmRate58_5MbpsBW20MHz");
-  modes.push_back ("OfdmRate65MbpsBW20MHz");
+  modes.push_back ("HtMcs0");
+  modes.push_back ("HtMcs1");
+  modes.push_back ("HtMcs2");
+  modes.push_back ("HtMcs3");
+  modes.push_back ("HtMcs4");
+  modes.push_back ("HtMcs5");
+  modes.push_back ("HtMcs6");
+  modes.push_back ("HtMcs7");
+
 
   CommandLine cmd;
   cmd.AddValue ("FrameSize", "The frame size", FrameSize);
@@ -48,6 +49,7 @@ int main (int argc, char *argv[])
 
   Gnuplot yansplot = Gnuplot ("yans-frame-success-rate-n.eps");
   Gnuplot nistplot = Gnuplot ("nist-frame-success-rate-n.eps");
+  WifiTxVector txVector;
 
   Ptr <YansErrorRateModel> yans = CreateObject<YansErrorRateModel> ();
   Ptr <NistErrorRateModel> nist = CreateObject<NistErrorRateModel> ();
@@ -57,12 +59,13 @@ int main (int argc, char *argv[])
       std::cout << modes[i] << std::endl;
       Gnuplot2dDataset yansdataset (modes[i]);
       Gnuplot2dDataset nistdataset (modes[i]);
+      txVector.SetMode (modes[i]);
 
       for (double snr = -5.0; snr <= 30.0; snr += 0.1)
         {
-          double ps = yans->GetChunkSuccessRate (WifiMode (modes[i]), std::pow (10.0,snr / 10.0), FrameSize * 8);
+          double ps = yans->GetChunkSuccessRate (WifiMode (modes[i]), txVector, std::pow (10.0,snr / 10.0), FrameSize * 8);
           yansdataset.Add (snr, ps);
-          ps = nist->GetChunkSuccessRate (WifiMode (modes[i]), std::pow (10.0,snr / 10.0), FrameSize * 8);
+          ps = nist->GetChunkSuccessRate (WifiMode (modes[i]), txVector, std::pow (10.0,snr / 10.0), FrameSize * 8);
           nistdataset.Add (snr, ps);
         }
 

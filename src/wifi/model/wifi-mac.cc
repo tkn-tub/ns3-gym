@@ -314,6 +314,9 @@ WifiMac::ConfigureStandard (enum WifiPhyStandard standard)
     case WIFI_PHY_STANDARD_80211n_5GHZ:
       Configure80211n_5Ghz ();
       break;
+    case WIFI_PHY_STANDARD_80211ac:
+      Configure80211ac ();
+      break;
     default:
       NS_ASSERT (false);
       break;
@@ -392,6 +395,12 @@ WifiMac::Configure80211n_5Ghz (void)
   SetRifs (MicroSeconds (2));
   SetBasicBlockAckTimeout (GetSifs () + GetSlot () + GetDefaultBasicBlockAckDelay () + GetDefaultMaxPropagationDelay () * 2);
   SetCompressedBlockAckTimeout (GetSifs () + GetSlot () + GetDefaultCompressedBlockAckDelay () + GetDefaultMaxPropagationDelay () * 2);
+}
+
+void
+WifiMac::Configure80211ac (void)
+{
+  Configure80211n_5Ghz ();
 }
 
 void

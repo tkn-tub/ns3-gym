@@ -71,6 +71,7 @@ public:
    * \param shortGuardInterval enable or disable short guard interval
    * \param nss the number of spatial STBC streams (NSS)
    * \param ness the number of extension spatial streams (NESS)
+   * \param channelWidth the channel width in MHz
    * \param aggregation enable or disable MPDU aggregation
    * \param stbc enable or disable STBC
    */
@@ -80,6 +81,7 @@ public:
                 bool shortGuardInterval,
                 uint8_t nss,
                 uint8_t ness,
+                uint32_t channelWidth,
                 bool aggregation,
                 bool stbc);
   /**
@@ -112,6 +114,16 @@ public:
    * \param retries
    */
   void SetRetries (uint8_t retries);
+  /**
+   * \returns the channel width (in MHz)
+   */
+  uint32_t GetChannelWidth (void) const;
+  /**
+   * Sets the selected channelWidth (in MHz)
+   *
+   * \param channelWidth
+   */
+  void SetChannelWidth (uint32_t channelWidth);
   /**
    * \returns if ShortGuardInterval is used or not
    */
@@ -178,7 +190,7 @@ private:
                                  to PMD_TXPWRLVL.request */
   uint8_t  m_retries;            /**< The DATA_RETRIES/RTS_RETRIES parameter
                                  for Click radiotap information */
-
+  uint32_t m_channelWidth;       /**< channel width in MHz */
   bool     m_shortGuardInterval; /**< true if short GI is going to be used */
   uint8_t  m_nss;                /**< number of streams */
   uint8_t  m_ness;               /**< number of streams in beamforming */
@@ -187,7 +199,6 @@ private:
 
   bool     m_modeInitialized;         //*< Internal initialization flag */
   bool     m_txPowerLevelInitialized; //*< Internal initialization flag */
-
 };
 
 /**

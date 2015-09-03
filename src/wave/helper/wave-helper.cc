@@ -168,7 +168,7 @@ PcapSniffTxEvent (
             mcsRate = rate - 128;
 
             mcsKnown |= RadiotapHeader::MCS_KNOWN_BANDWIDTH;
-            if (txVector.GetMode ().GetBandwidth () == 40000000)
+            if (txVector.GetChannelWidth () == 40000000)
               {
                 mcsFlags |= RadiotapHeader::MCS_FLAGS_BANDWIDTH_40;
               }
@@ -211,17 +211,63 @@ PcapSniffTxEvent (
             uint16_t ampduStatusFlags = RadiotapHeader::A_MPDU_STATUS_NONE;
             ampduStatusFlags |= RadiotapHeader::A_MPDU_STATUS_DELIMITER_CRC_KNOWN;
             ampduStatusFlags |= RadiotapHeader::A_MPDU_STATUS_LAST_KNOWN;
-            if (aMpdu.packetType == 2)
-              {
-                ampduStatusFlags |= RadiotapHeader::A_MPDU_STATUS_LAST;
-              }
             /* For PCAP file, MPDU Delimiter and Padding should be removed by the MAC Driver */
             AmpduSubframeHeader hdr;
             uint32_t extractedLength;
             p->RemoveHeader (hdr);
             extractedLength = hdr.GetLength ();
             p = p->CreateFragment (0, static_cast<uint32_t> (extractedLength));
+            if (aMpdu.packetType == 2 || (hdr.GetEof () == true && hdr.GetLength () > 0))
+              {
+                ampduStatusFlags |= RadiotapHeader::A_MPDU_STATUS_LAST;
+              }
             header.SetAmpduStatus (aMpdu.referenceNumber, ampduStatusFlags, hdr.GetCrc ());
+          }
+
+        if (preamble == WIFI_PREAMBLE_VHT)
+          {
+            uint16_t vhtKnown = RadiotapHeader::VHT_KNOWN_NONE;
+            uint8_t vhtFlags = RadiotapHeader::VHT_FLAGS_NONE;
+            uint8_t vhtBandwidth = 0;
+            uint8_t vhtMcsNss[4] = {0,0,0,0};
+            uint8_t vhtCoding = 0;
+            uint8_t vhtGroupId = 0;
+            uint16_t vhtPartialAid = 0;
+
+            vhtKnown |= RadiotapHeader::VHT_KNOWN_STBC;
+            if (txVector.IsStbc ())
+              {
+                vhtFlags |= RadiotapHeader::VHT_FLAGS_STBC;
+              }
+
+            vhtKnown |= RadiotapHeader::VHT_KNOWN_GUARD_INTERVAL;
+            if (txVector.IsShortGuardInterval ())
+              {
+                vhtFlags |= RadiotapHeader::VHT_FLAGS_GUARD_INTERVAL;
+              }
+
+            vhtKnown |= RadiotapHeader::VHT_KNOWN_BEAMFORMED; //Beamforming is currently not supported
+
+            vhtKnown |= RadiotapHeader::VHT_KNOWN_BANDWIDTH;
+            //not all bandwidth values are currently supported
+            if (txVector.GetChannelWidth () == 40000000)
+              {
+                vhtBandwidth = 1;
+              }
+            else if (txVector.GetChannelWidth () == 80000000)
+              {
+                vhtBandwidth = 4;
+              }
+            else if (txVector.GetChannelWidth () == 160000000)
+              {
+                vhtBandwidth = 11;
+              }
+
+            //only SU PPDUs are currently supported
+            vhtMcsNss[0] |= (txVector.GetNss () & 0x0f);
+            vhtMcsNss[0] |= (((rate - 128) << 4) & 0xf0);
+
+            header.SetVhtFields (vhtKnown, vhtFlags, vhtBandwidth, vhtMcsNss, vhtCoding, vhtGroupId, vhtPartialAid);
           }
 
         p->AddHeader (header);
@@ -319,7 +365,7 @@ PcapSniffRxEvent (
             mcsRate = rate - 128;
 
             mcsKnown |= RadiotapHeader::MCS_KNOWN_BANDWIDTH;
-            if (txVector.GetMode ().GetBandwidth () == 40000000)
+            if (txVector.GetChannelWidth () == 40000000)
               {
                 mcsFlags |= RadiotapHeader::MCS_FLAGS_BANDWIDTH_40;
               }
@@ -362,17 +408,63 @@ PcapSniffRxEvent (
             uint16_t ampduStatusFlags = 0;
             ampduStatusFlags |= RadiotapHeader::A_MPDU_STATUS_DELIMITER_CRC_KNOWN;
             ampduStatusFlags |= RadiotapHeader::A_MPDU_STATUS_LAST_KNOWN;
-            if (aMpdu.packetType == 2)
-              {
-                ampduStatusFlags |= RadiotapHeader::A_MPDU_STATUS_LAST;
-              }
             /* For PCAP file, MPDU Delimiter and Padding should be removed by the MAC Driver */
             AmpduSubframeHeader hdr;
             uint32_t extractedLength;
             p->RemoveHeader (hdr);
             extractedLength = hdr.GetLength ();
             p = p->CreateFragment (0, static_cast<uint32_t> (extractedLength));
+            if (aMpdu.packetType == 2 || (hdr.GetEof () == true && hdr.GetLength () > 0))
+              {
+                ampduStatusFlags |= RadiotapHeader::A_MPDU_STATUS_LAST;
+              }
             header.SetAmpduStatus (aMpdu.referenceNumber, ampduStatusFlags, hdr.GetCrc ());
+          }
+
+        if (preamble == WIFI_PREAMBLE_VHT)
+          {
+            uint16_t vhtKnown = RadiotapHeader::VHT_KNOWN_NONE;
+            uint8_t vhtFlags = RadiotapHeader::VHT_FLAGS_NONE;
+            uint8_t vhtBandwidth = 0;
+            uint8_t vhtMcsNss[4] = {0,0,0,0};
+            uint8_t vhtCoding = 0;
+            uint8_t vhtGroupId = 0;
+            uint16_t vhtPartialAid = 0;
+
+            vhtKnown |= RadiotapHeader::VHT_KNOWN_STBC;
+            if (txVector.IsStbc ())
+              {
+                vhtFlags |= RadiotapHeader::VHT_FLAGS_STBC;
+              }
+
+            vhtKnown |= RadiotapHeader::VHT_KNOWN_GUARD_INTERVAL;
+            if (txVector.IsShortGuardInterval ())
+              {
+                vhtFlags |= RadiotapHeader::VHT_FLAGS_GUARD_INTERVAL;
+              }
+
+            vhtKnown |= RadiotapHeader::VHT_KNOWN_BEAMFORMED; //Beamforming is currently not supported
+
+            vhtKnown |= RadiotapHeader::VHT_KNOWN_BANDWIDTH;
+            //not all bandwidth values are currently supported
+            if (txVector.GetChannelWidth () == 40000000)
+              {
+                vhtBandwidth = 1;
+              }
+            else if (txVector.GetChannelWidth () == 80000000)
+              {
+                vhtBandwidth = 4;
+              }
+            else if (txVector.GetChannelWidth () == 160000000)
+              {
+                vhtBandwidth = 11;
+              }
+
+            //only SU PPDUs are currently supported
+            vhtMcsNss[0] |= (txVector.GetNss () & 0x0f);
+            vhtMcsNss[0] |= (((rate - 128) << 4) & 0xf0);
+
+            header.SetVhtFields (vhtKnown, vhtFlags, vhtBandwidth, vhtMcsNss, vhtCoding, vhtGroupId, vhtPartialAid);
           }
 
         p->AddHeader (header);

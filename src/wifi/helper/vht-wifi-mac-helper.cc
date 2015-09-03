@@ -1,6 +1,6 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
- * Copyright (c) 2009 MIRKO BANCHI
+ * Copyright (c) 2014 SEBASTIEN DERONNE
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -15,10 +15,10 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * Author: Ghada Badawy <gbadawy@gmail.com>
+ * Author: Sébastien Deronne <sebastien.deronne@gmail.com>
  */
 
-#include "ht-wifi-mac-helper.h"
+#include "vht-wifi-mac-helper.h"
 #include "ns3/wifi-mac.h"
 #include "ns3/edca-txop-n.h"
 #include "ns3/pointer.h"
@@ -27,22 +27,29 @@
 
 namespace ns3 {
 
-HtWifiMacHelper::HtWifiMacHelper ()
+VhtWifiMacHelper::VhtWifiMacHelper ()
 {
 }
 
-HtWifiMacHelper::~HtWifiMacHelper ()
+VhtWifiMacHelper::~VhtWifiMacHelper ()
 {
 }
 
-HtWifiMacHelper
-HtWifiMacHelper::Default (void)
+VhtWifiMacHelper
+VhtWifiMacHelper::Default (void)
 {
-  HtWifiMacHelper helper;
+  VhtWifiMacHelper helper;
 
   helper.SetType ("ns3::StaWifiMac",
                   "QosSupported", BooleanValue (true),
-                  "HtSupported", BooleanValue (true));
+                  "HtSupported", BooleanValue (true), //by default, it also supports HT features
+                  "VhtSupported", BooleanValue (true));
+
+  //MPDU aggregation is always supported
+  helper.SetMpduAggregatorForAc (AC_VO, "ns3::MpduStandardAggregator");
+  helper.SetMpduAggregatorForAc (AC_VI, "ns3::MpduStandardAggregator");
+  helper.SetMpduAggregatorForAc (AC_BE, "ns3::MpduStandardAggregator");
+  helper.SetMpduAggregatorForAc (AC_BK, "ns3::MpduStandardAggregator");
 
   return helper;
 }
