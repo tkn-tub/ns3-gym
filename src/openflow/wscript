@@ -16,14 +16,13 @@ def required_boost_libs(conf):
 
 def configure(conf):
     if not conf.env['LIB_BOOST']:
-	conf.report_optional_feature("openflow", "NS-3 OpenFlow Integration", False,
+        conf.report_optional_feature("openflow", "NS-3 OpenFlow Integration", False,
 				     "Required boost libraries not found")
 
         # Add this module to the list of modules that won't be built
         # if they are enabled.
         conf.env['MODULES_NOT_BUILT'].append('openflow')
-
-	return 
+        return 
 
     present_boost_libs = []
     for boost_lib_name in conf.env['LIB_BOOST']:
@@ -35,19 +34,18 @@ def configure(conf):
 
     missing_boost_libs = [lib for lib in REQUIRED_BOOST_LIBS if lib not in present_boost_libs]
     if missing_boost_libs != []:
-	conf.report_optional_feature("openflow", "NS-3 OpenFlow Integration", False,
+        conf.report_optional_feature("openflow", "NS-3 OpenFlow Integration", False,
 				     "Required boost libraries not found, missing: %s" % ', '.join(missing_boost_libs))
 
         # Add this module to the list of modules that won't be built
         # if they are enabled.
         conf.env['MODULES_NOT_BUILT'].append('openflow')
-
-	return 
+        return 
 
     if Options.options.with_openflow:
-	if os.path.isdir(Options.options.with_openflow):
-	    conf.msg("Checking for OpenFlow location", ("%s (given)" % Options.options.with_openflow))
-	    conf.env['WITH_OPENFLOW'] = os.path.abspath(Options.options.with_openflow)
+        if os.path.isdir(Options.options.with_openflow):
+            conf.msg("Checking for OpenFlow location", ("%s (given)" % Options.options.with_openflow))
+            conf.env['WITH_OPENFLOW'] = os.path.abspath(Options.options.with_openflow)
     else:
         # bake.py uses ../../build, while ns-3-dev uses ../openflow.
         lib_to_check = 'libopenflow.a'
@@ -59,19 +57,18 @@ def configure(conf):
             conf.env['WITH_OPENFLOW'] = os.path.abspath(openflow_bake_build_dir)
         elif os.path.isdir(openflow_dir):
             conf.msg("Checking for OpenFlow location", ("%s (guessed)" % openflow_dir))
-	    conf.env['WITH_OPENFLOW'] = os.path.abspath(openflow_dir)
+            conf.env['WITH_OPENFLOW'] = os.path.abspath(openflow_dir)
         del openflow_bake_build_dir
         del openflow_bake_lib_dir
-	del openflow_dir
+        del openflow_dir
     if not conf.env['WITH_OPENFLOW']:
-	conf.msg("Checking for OpenFlow location", False)
-	conf.report_optional_feature("openflow", "NS-3 OpenFlow Integration", False,
+        conf.msg("Checking for OpenFlow location", False)
+        conf.report_optional_feature("openflow", "NS-3 OpenFlow Integration", False,
 				     "OpenFlow not enabled (see option --with-openflow)")
         # Add this module to the list of modules that won't be built
         # if they are enabled.
         conf.env['MODULES_NOT_BUILT'].append('openflow')
-
-	return 
+        return 
 
     test_code = '''
 #include "openflow/openflow.h"
@@ -164,8 +161,8 @@ def build(bld):
         ]
 
     if bld.env['OPENFLOW'] and bld.env['DL'] and bld.env['XML2']:
-	obj.use.extend('OPENFLOW DL XML2'.split())
-	obj_test.use.extend('OPENFLOW DL XML2'.split())
+        obj.use.extend('OPENFLOW DL XML2'.split())
+        obj_test.use.extend('OPENFLOW DL XML2'.split())
 
     headers = bld(features='ns3header')
     headers.module = 'openflow'
@@ -173,16 +170,15 @@ def build(bld):
         ]
 
     if bld.env['ENABLE_OPENFLOW']:
-	obj.source.append('model/openflow-interface.cc')
+        obj.source.append('model/openflow-interface.cc')
         obj.source.append('model/openflow-switch-net-device.cc')
-	obj.source.append('helper/openflow-switch-helper.cc')
+        obj.source.append('helper/openflow-switch-helper.cc')
 
         obj.env.append_value('DEFINES', 'NS3_OPENFLOW')
-
-	obj_test.source.append('test/openflow-switch-test-suite.cc')
-	headers.source.append('model/openflow-interface.h')
+        obj_test.source.append('test/openflow-switch-test-suite.cc')
+        headers.source.append('model/openflow-interface.h')
         headers.source.append('model/openflow-switch-net-device.h')
-	headers.source.append('helper/openflow-switch-helper.h')
+        headers.source.append('helper/openflow-switch-helper.h')
 
     if bld.env['ENABLE_EXAMPLES'] and bld.env['ENABLE_OPENFLOW']:
         bld.recurse('examples')

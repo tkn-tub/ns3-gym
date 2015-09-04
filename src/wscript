@@ -1,6 +1,6 @@
 
 ## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
-
+from __future__ import print_function
 import os, os.path
 import sys
 import shutil
@@ -406,7 +406,7 @@ class ns3pcfile_task(Task.Task):
             if dep.startswith('ns3-'):
                 dep_name = dep[4:]
                 requires.append("libns%s-%s%s" % (wutils.VERSION, dep_name, env.BUILD_SUFFIX))
-        print >> outfile, """\
+        print("""\
 prefix=%s
 libdir=%s
 includedir=%s
@@ -418,7 +418,7 @@ Libs: %s
 Cflags: %s
 Requires: %s\
 """ % (prefix, libdir, includedir,
-       name, name, wutils.VERSION, ' '.join(libs), ' '.join(cflags), ' '.join(requires))
+       name, name, wutils.VERSION, ' '.join(libs), ' '.join(cflags), ' '.join(requires)), file=outfile)
         outfile.close()
 
     def run(self):
@@ -492,8 +492,8 @@ class ns3header_task(Task.Task):
             up = m.update
             up(self.__class__.__name__.encode())
             for x in self.inputs + self.outputs:
-                up(x.abspath())
-            up(self.mode)
+                up(x.abspath().encode())
+            up(self.mode.encode())
             if self.mode == 'remove':
                 up(self.header_to_remove.abspath().encode())
             self.uid_ = m.digest()
@@ -515,13 +515,13 @@ class ns3header_task(Task.Task):
             outputs = [node.abspath() for node in self.outputs]
             for src, dst in zip(inputs, outputs):
                 try:
-                    os.chmod(dst, 0600)
+                    os.chmod(dst, 0o600)
                 except OSError:
                     pass
                 shutil.copy2(src, dst)
                 ## make the headers in builddir read-only, to prevent
                 ## accidental modification
-                os.chmod(dst, 0400)
+                os.chmod(dst, 0o400)
             return 0
         else:
             assert len(self.inputs) == 0
@@ -529,7 +529,7 @@ class ns3header_task(Task.Task):
             out_file_name = self.header_to_remove.abspath()
             try:
                 os.unlink(out_file_name)
-            except OSError, ex:
+            except OSError as ex:
                 if ex.errno != 2:
                     raise
             return 0
@@ -584,8 +584,8 @@ class ns3privateheader_task(Task.Task):
             up = m.update
             up(self.__class__.__name__.encode())
             for x in self.inputs + self.outputs:
-                up(x.abspath())
-            up(self.mode)
+                up(x.abspath().encode())
+            up(self.mode.encode())
             if self.mode == 'remove':
                 up(self.header_to_remove.abspath().encode())
             self.uid_ = m.digest()
@@ -607,13 +607,13 @@ class ns3privateheader_task(Task.Task):
             outputs = [node.abspath() for node in self.outputs]
             for src, dst in zip(inputs, outputs):
                 try:
-                    os.chmod(dst, 0600)
+                    os.chmod(dst, 0o600)
                 except OSError:
                     pass
                 shutil.copy2(src, dst)
                 ## make the headers in builddir read-only, to prevent
                 ## accidental modification
-                os.chmod(dst, 0400)
+                os.chmod(dst, 0o400)
             return 0
         else:
             assert len(self.inputs) == 0
@@ -621,7 +621,7 @@ class ns3privateheader_task(Task.Task):
             out_file_name = self.header_to_remove.abspath()
             try:
                 os.unlink(out_file_name)
-            except OSError, ex:
+            except OSError as ex:
                 if ex.errno != 2:
                     raise
             return 0
@@ -659,41 +659,41 @@ class gen_ns3_module_header_task(Task.Task):
             out_file_name = self.header_to_remove.abspath()
             try:
                 os.unlink(out_file_name)
-            except OSError, ex:
+            except OSError as ex:
                 if ex.errno != 2:
                     raise
             return 0
         assert len(self.outputs) == 1
         out_file_name = self.outputs[0].get_bld().abspath()#self.env)
         header_files = [os.path.basename(node.abspath()) for node in self.inputs]
-        outfile = file(out_file_name, "w")
+        outfile = open(out_file_name, "w")
         header_files.sort()
 
-        print >> outfile, """
+        print("""
 #ifdef NS3_MODULE_COMPILATION
 # error "Do not include ns3 module aggregator headers from other modules; these are meant only for end user scripts."
 #endif
 
 #ifndef NS3_MODULE_%s
-    """ % (self.module.upper().replace('-', '_'),)
+    """ % (self.module.upper().replace('-', '_'),), file=outfile)
 
     #     if self.module_deps:
     #         print >> outfile, "// Module dependencies:"
     #     for dep in self.module_deps:
     #         print >> outfile, "#include \"%s-module.h\"" % dep
 
-        print >> outfile
-        print >> outfile, "// Module headers:"
+        print(file=outfile)
+        print("// Module headers:", file=outfile)
         for header in header_files:
-            print >> outfile, "#include \"%s\"" % (header,)
+            print("#include \"%s\"" % (header,), file=outfile)
 
-        print >> outfile, "#endif"
+        print("#endif", file=outfile)
 
         outfile.close()
         return 0
 
     def sig_explicit_deps(self):
-        self.m.update('\n'.join([node.abspath() for node in self.inputs]))
+        self.m.update('\n'.join([node.abspath() for node in self.inputs]).encode('utf-8'))
         return self.m.digest()
 
     def unique_id(self):

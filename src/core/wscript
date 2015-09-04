@@ -32,8 +32,8 @@ def options(opt):
                          "the implementation-defined numerical precision may "
                          "be less than the other implementations.  "
                          "[Allowed Values: %s]"
-                         % ", ".join([repr(p) for p in int64x64.keys()])),
-                   choices=int64x64.keys(),
+                         % ", ".join([repr(p) for p in list(int64x64.keys())])),
+                   choices=list(int64x64.keys()),
                    dest='int64x64_impl')
                    
     opt.add_option('--disable-pthread',

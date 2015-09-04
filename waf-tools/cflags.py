@@ -153,8 +153,8 @@ def options(opt):
 			     "Build profiles control the default compilation flags"
 			     " used for C/C++ programs, if CCFLAGS/CXXFLAGS are not"
 			     " set set in the environment. [Allowed Values: %s]"
-			     % ", ".join([repr(p) for p in profiles.keys()])),
-		       choices=profiles.keys(),
+			     % ", ".join([repr(p) for p in list(profiles.keys())])),
+		       choices=list(profiles.keys()),
 		       dest='build_profile')
 
 def configure(conf):

@@ -80,17 +80,17 @@ class command_task(Task.Task):
 		namespace.update(env=self.env, SRC=self.inputs, TGT=self.outputs)
 		for cmd in pipeline.pipeline:
 			if isinstance(cmd, shellcmd.Command):
-				if isinstance(cmd.stdin, basestring):
+				if isinstance(cmd.stdin, str):
 					cmd.stdin = self._subst_arg(cmd.stdin, 'in', namespace)
-				if isinstance(cmd.stdout, basestring):
+				if isinstance(cmd.stdout, str):
 					cmd.stdout = self._subst_arg(cmd.stdout, 'out', namespace)
-				if isinstance(cmd.stderr, basestring):
+				if isinstance(cmd.stderr, str):
 					cmd.stderr = self._subst_arg(cmd.stderr, 'out', namespace)
-				for argI in xrange(len(cmd.argv)):
+				for argI in range(len(cmd.argv)):
 					cmd.argv[argI] = self._subst_arg(cmd.argv[argI], None, namespace)
 				if cmd.env_vars is not None:
 					env_vars = dict()
-					for name, value in cmd.env_vars.iteritems():
+					for name, value in cmd.env_vars.items():
 						env_vars[name] = self._subst_arg(value, None, namespace)
 					cmd.env_vars = env_vars
 			elif isinstance(cmd, shellcmd.Chdir):

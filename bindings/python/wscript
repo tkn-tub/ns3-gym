@@ -1,4 +1,5 @@
 ## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
+from __future__ import print_function
 import types
 import re
 import os
@@ -88,19 +89,19 @@ def configure(conf):
 
     try:
         conf.load('python')
-    except Errors.ConfigurationError, ex:
+    except Errors.ConfigurationError as ex:
         conf.report_optional_feature("python", "Python Bindings", False,
                                      "The python interpreter was not found")
         return
     try:
         conf.check_python_version((2,3))
-    except Errors.ConfigurationError, ex:
+    except Errors.ConfigurationError as ex:
         conf.report_optional_feature("python", "Python Bindings", False,
                                      "The python found version is too low (2.3 required)")
         return
     try:
         conf.check_python_headers()
-    except Errors.ConfigurationError, ex:
+    except Errors.ConfigurationError as ex:
         conf.report_optional_feature("python", "Python Bindings", False,
                                      "Python library or headers missing")
         return
@@ -415,12 +416,12 @@ class gen_ns3_compat_pymod_task(Task.Task):
     def run(self):
         assert len(self.outputs) == 1
         outfile = file(self.outputs[0].abspath(), "w")
-        print >> outfile, "import warnings"
-        print >> outfile, 'warnings.warn("the ns3 module is a compatibility layer '\
-            'and should not be used in newly written code", DeprecationWarning, stacklevel=2)'
-        print >> outfile
+        print("import warnings", file=outfile)
+        print('warnings.warn("the ns3 module is a compatibility layer '\
+            'and should not be used in newly written code", DeprecationWarning, stacklevel=2)', file=outfile)
+        print(file=outfile)
         for module in self.bld.env['PYTHON_MODULES_BUILT']:
-            print >> outfile, "from ns.%s import *" % (module.replace('-', '_'))
+            print("from ns.%s import *" % (module.replace('-', '_')), file=outfile)
         outfile.close()
         return 0
 
@@ -466,7 +467,7 @@ def build(bld):
                     scan_modules.append(mod.name.split('ns3-')[1])
         else:
             scan_modules = Options.options.apiscan.split(',')
-        print "Modules to scan: ", scan_modules
+        print("Modules to scan: ", scan_modules)
         for target, cflags in scan_targets:
             group = bld.get_group(bld.current_group)
             for module in scan_modules:
@@ -488,4 +489,3 @@ def build(bld):
 
     # note: the actual build commands for the python bindings are in
     # src/wscript, not here.
-

@@ -1,6 +1,7 @@
 ## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
 
 # python lib modules
+from __future__ import print_function
 import sys
 import shutil
 import types
@@ -54,7 +55,7 @@ cflags.default_profile = 'debug'
 Configure.autoconfig = 0
 
 # the following two variables are used by the target "waf dist"
-VERSION = file("VERSION", "rt").read().strip()
+VERSION = open("VERSION", "rt").read().strip()
 APPNAME = 'ns'
 
 wutils.VERSION = VERSION
@@ -106,14 +107,14 @@ def print_module_names(names):
     # Print the list of module names in 3 columns.
     i = 1
     for name in names:
-        print name.ljust(25),
+        print(name.ljust(25), end=' ')
         if i == 3:
-                print
+                print()
                 i = 0
         i = i+1
 
     if i != 1:
-        print
+        print()
 
 def options(opt):
     # options provided by the modules
@@ -232,7 +233,7 @@ def _check_compilation_flag(conf, flag, mode='cxx', linkflags=None):
         flag_str = 'flags ' + ' '.join(l)
     else:
         flag_str = 'flag ' + ' '.join(l)
-    if flag_str > 28:
+    if len(flag_str) > 28:
         flag_str = flag_str[:28] + "..."
 
     conf.start_msg('Checking for compilation %s support' % (flag_str,))
@@ -532,12 +533,12 @@ def configure(conf):
             conf.env.append_value(confvar, value)
 
     # Write a summary of optional features status
-    print "---- Summary of optional NS-3 features:"
-    print "%-30s: %s%s%s" % ("Build profile", Logs.colors('GREEN'),
-                             Options.options.build_profile, Logs.colors('NORMAL'))
+    print("---- Summary of optional NS-3 features:")
+    print("%-30s: %s%s%s" % ("Build profile", Logs.colors('GREEN'),
+                             Options.options.build_profile, Logs.colors('NORMAL')))
     bld = wutils.bld
-    print "%-30s: %s%s%s" % ("Build directory", Logs.colors('GREEN'),
-                             Options.options.out, Logs.colors('NORMAL'))
+    print("%-30s: %s%s%s" % ("Build directory", Logs.colors('GREEN'),
+                             Options.options.out, Logs.colors('NORMAL')))
     
     
     for (name, caption, was_enabled, reason_not_enabled) in conf.env['NS3_OPTIONAL_FEATURES']:
@@ -547,7 +548,7 @@ def configure(conf):
         else:
             status = 'not enabled (%s)' % reason_not_enabled
             color = 'RED'
-        print "%-30s: %s%s%s" % (caption, Logs.colors(color), status, Logs.colors('NORMAL'))
+        print("%-30s: %s%s%s" % (caption, Logs.colors(color), status, Logs.colors('NORMAL')))
 
 
 class SuidBuild_task(Task.Task):
@@ -559,14 +560,14 @@ class SuidBuild_task(Task.Task):
         self.m_display = 'build-suid'
         try:
             program_obj = wutils.find_program(self.generator.name, self.generator.env)
-        except ValueError, ex:
+        except ValueError as ex:
             raise WafError(str(ex))
         program_node = program_obj.path.find_or_declare(program_obj.target)
         self.filename = program_node.get_bld().abspath()
 
 
     def run(self):
-        print >> sys.stderr, 'setting suid bit on executable ' + self.filename
+        print('setting suid bit on executable ' + self.filename, file=sys.stderr)
         if subprocess.Popen(['sudo', 'chown', 'root', self.filename]).wait():
             return 1
         if subprocess.Popen(['sudo', 'chmod', 'u+s', self.filename]).wait():
@@ -907,8 +908,8 @@ def shutdown(ctx):
     if (env['PRINT_BUILT_MODULES_AT_END']):
 
         # Print the list of built modules.
-        print
-        print 'Modules built:'
+        print()
+        print('Modules built:')
         names_without_prefix = []
         for name in env['NS3_ENABLED_MODULES']:
             name1 = name[len('ns3-'):]
@@ -916,13 +917,13 @@ def shutdown(ctx):
                 name1 += " (no Python)"
             names_without_prefix.append(name1)
         print_module_names(names_without_prefix)
-        print
+        print()
 
         # Print the list of enabled modules that were not built.
         if env['MODULES_NOT_BUILT']:
-            print 'Modules not built (see ns-3 tutorial for explanation):'
+            print('Modules not built (see ns-3 tutorial for explanation):')
             print_module_names(env['MODULES_NOT_BUILT'])
-            print
+            print()
 
         # Set this so that the lists won't be printed until the next
         # build is done.
@@ -967,15 +968,13 @@ def shutdown(ctx):
 class CheckContext(Context.Context):
     """run the equivalent of the old ns-3 unit tests using test.py"""
     cmd = 'check'
-
     def execute(self):
-
         # first we execute the build
-	bld = Context.create_context("build")
-	bld.options = Options.options # provided for convenience
-	bld.cmd = "build"
-	bld.execute()
-
+        bld = Context.create_context("build")
+        bld.options = Options.options # provided for convenience
+        bld.cmd = "build"
+        bld.execute()
+        
         wutils.bld = bld
         wutils.run_python_program("test.py -n -c core", bld.env)
 
@@ -1062,19 +1061,18 @@ def check_shell(bld):
 class Ns3ShellContext(Context.Context):
     """run a shell with an environment suitably modified to run locally built programs"""
     cmd = 'shell'
-
+    
     def execute(self):
-
         # first we execute the build
-	bld = Context.create_context("build")
-	bld.options = Options.options # provided for convenience
-	bld.cmd = "build"
-	bld.execute()
+        bld = Context.create_context("build")
+        bld.options = Options.options # provided for convenience
+        bld.cmd = "build"
+        bld.execute()
 
         # Set this so that the lists won't be printed when the user
         # exits the shell.
         bld.env['PRINT_BUILT_MODULES_AT_END'] = False
-
+        
         if sys.platform == 'win32':
             shell = os.environ.get("COMSPEC", "cmd.exe")
         else:
@@ -1144,10 +1142,10 @@ class Ns3DoxygenContext(Context.Context):
     cmd = 'doxygen'
     def execute(self):
         # first we execute the build
-	bld = Context.create_context("build")
-	bld.options = Options.options # provided for convenience
-	bld.cmd = "build"
-	bld.execute()
+        bld = Context.create_context("build")
+        bld.options = Options.options # provided for convenience
+        bld.cmd = "build"
+        bld.execute()
         _doxygen(bld)
 
 class Ns3SphinxContext(Context.Context):
@@ -1156,8 +1154,8 @@ class Ns3SphinxContext(Context.Context):
     cmd = 'sphinx'
 
     def sphinx_build(self, path):
-        print
-        print "[waf] Building sphinx docs for " + path
+        print()
+        print("[waf] Building sphinx docs for " + path)
         if subprocess.Popen(["make", "SPHINXOPTS=-N", "-k",
                              "html", "singlehtml", "latexpdf" ],
                             cwd=path).wait() :

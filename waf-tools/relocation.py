@@ -12,7 +12,7 @@ change the node representing the project directory. Just call:
 Note that if the project directory name changes, the signatures for the tasks using
 files in that directory will change, causing a partial build.
 """
-
+from __future__ import print_function
 import os
 from waflib import Build, ConfigSet, Task, Utils, Errors
 from waflib.TaskGen import feature, before_method, after_method
@@ -47,10 +47,10 @@ def init_dirs(self):
 		d = self.root.find_node(srcdir)
 		if d and srcdir != self.top_dir and getattr(d, 'children', ''):
 			srcnode = self.root.make_node(self.top_dir)
-			print("relocating the source directory %r -> %r" % (srcdir, self.top_dir))
+			print(("relocating the source directory %r -> %r" % (srcdir, self.top_dir)))
 			srcnode.children = {}
 
-			for (k, v) in d.children.items():
+			for (k, v) in list(d.children.items()):
 				srcnode.children[k] = v
 				v.parent = srcnode
 			d.children = {}

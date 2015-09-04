@@ -68,7 +68,7 @@ def find_program(program_name, env):
 
 def get_proc_env(os_env=None):
     env = bld.env
-    if sys.platform == 'linux2':
+    if sys.platform == 'linux2' or sys.platform == 'linux':
         pathvar = 'LD_LIBRARY_PATH'
     elif sys.platform == 'darwin':
         pathvar = 'DYLD_LIBRARY_PATH'
@@ -90,9 +90,9 @@ def get_proc_env(os_env=None):
 
     if pathvar is not None:
         if pathvar in proc_env:
-            proc_env[pathvar] = os.pathsep.join(list(env['NS3_MODULE_PATH']) + [proc_env[pathvar]])
+            proc_env[pathvar] = os.pathsep.join(list(str(env['NS3_MODULE_PATH'])) + [proc_env[pathvar]])
         else:
-            proc_env[pathvar] = os.pathsep.join(list(env['NS3_MODULE_PATH']))
+            proc_env[pathvar] = os.pathsep.join(list(str(env['NS3_MODULE_PATH'])))
 
     pymoddir = bld.path.find_dir('bindings/python').get_bld().abspath()
     pyvizdir = bld.path.find_dir('src/visualizer').abspath()
@@ -133,13 +133,13 @@ def run_argv(argv, env, os_env=None, cwd=None, force_no_valgrind=False):
         else:
             try:
                 retval = subprocess.Popen(argv, env=proc_env, cwd=cwd).wait()
-            except WindowsError, ex:
+            except WindowsError as ex:
                 raise WafError("Command %s raised exception %s" % (argv, ex))
     if retval:
         signame = None
         if retval < 0: # signal?
             import signal
-            for name, val in vars(signal).iteritems():
+            for name, val in vars(signal).items():
                 if len(name) > 3 and name[:3] == 'SIG' and name[3] != '_':
                     if val == -retval:
                         signame = name
@@ -167,7 +167,7 @@ def get_run_program(program_string, command_template=None):
 
         try:
             program_obj = find_program(program_name, env)
-        except ValueError, ex:
+        except ValueError as ex:
             raise WafError(str(ex))
 
         program_node = program_obj.path.find_or_declare(program_obj.target)
@@ -183,7 +183,7 @@ def get_run_program(program_string, command_template=None):
         program_name = program_string
         try:
             program_obj = find_program(program_name, env)
-        except ValueError, ex:
+        except ValueError as ex:
             raise WafError(str(ex))
 
         program_node = program_obj.path.find_or_declare(program_obj.target)

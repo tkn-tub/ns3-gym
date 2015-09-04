@@ -65,7 +65,7 @@ def configure(conf):
         conf.msg("Checking for NSC location", False)
         conf.report_optional_feature("nsc", "Network Simulation Cradle", False,
                                      "NSC not found (see option --with-nsc)")
-	return
+        return
     
     if Options.platform in ['linux', 'freebsd']:
         arch = os.uname()[4]

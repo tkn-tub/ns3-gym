@@ -14,6 +14,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
+from __future__ import print_function
 import shlex
 import subprocess
 import sys
@@ -23,7 +24,7 @@ import os
 env_var_rx = re.compile(r"^([a-zA-Z0-9_]+)=(\S+)$")
 
 def debug(message):
-    print >> sys.stderr, message
+    print(message, file=sys.stderr)
 
 
 if sys.platform == 'win32':
@@ -127,7 +128,7 @@ class Pipeline(object):
             tokens = shlex.split(command)
         debug("command: shlex: %r" % (tokens,))
 
-        BEGIN, COMMAND, CHDIR, STDERR, STDOUT, STDIN = range(6)
+        BEGIN, COMMAND, CHDIR, STDERR, STDOUT, STDIN = list(range(6))
         state = BEGIN
         self.current_command = None
         env_vars = dict()
@@ -215,7 +216,7 @@ class Pipeline(object):
         files_to_close = []
         piped_commands = []
         piped_commands_display = []
-        BEGIN, PIPE = range(2)
+        BEGIN, PIPE = list(range(2))
         state = BEGIN
         cwd = '.'
         while pipeline:
@@ -233,7 +234,7 @@ class Pipeline(object):
             cmd = node
             if verbose:
                 if cmd.env_vars:
-                    env_vars_str = ' '.join(['%s=%s' % (key, val) for key, val in cmd.env_vars.iteritems()])
+                    env_vars_str = ' '.join(['%s=%s' % (key, val) for key, val in cmd.env_vars.items()])
                     piped_commands_display.append("%s %s" % (env_vars_str, ' '.join(cmd.argv)))
                 else:
                     piped_commands_display.append(' '.join(cmd.argv))
@@ -295,7 +296,7 @@ class Pipeline(object):
                 try:
                     retval = self._exec_piped_commands(piped_commands)
                     if verbose:
-                        print "%s: exit code %i" % (' '.join(piped_commands_display), retval)
+                        print("%s: exit code %i" % (' '.join(piped_commands_display), retval))
                 finally:
                     for f in files_to_close:
                         if f is not dev_null:
@@ -318,10 +319,10 @@ class Pipeline(object):
                         files_to_close = []
                     if this_retval == 0:
                         if verbose:
-                            print "%s: exit code %i (|| is short-circuited)" % (' '.join(piped_commands_display), retval)
+                            print("%s: exit code %i (|| is short-circuited)" % (' '.join(piped_commands_display), retval))
                         return this_retval
                     if verbose:
-                        print "%s: exit code %i (|| proceeds)" % (' '.join(piped_commands_display), retval)
+                        print("%s: exit code %i (|| proceeds)" % (' '.join(piped_commands_display), retval))
                     state = BEGIN
                     piped_commands = []
                     piped_commands_display = []
@@ -336,10 +337,10 @@ class Pipeline(object):
                         files_to_close = []
                     if this_retval != 0:
                         if verbose:
-                            print "%s: exit code %i (&& is short-circuited)" % (' '.join(piped_commands_display), retval)
+                            print("%s: exit code %i (&& is short-circuited)" % (' '.join(piped_commands_display), retval))
                         return this_retval
                     if verbose:
-                        print "%s: exit code %i (&& proceeds)" % (' '.join(piped_commands_display), retval)
+                        print("%s: exit code %i (&& proceeds)" % (' '.join(piped_commands_display), retval))
                     state = BEGIN
                     piped_commands = []
                     piped_commands_display = []
@@ -349,7 +350,7 @@ class Pipeline(object):
 def _main():
     pipeline = Pipeline()
     pipeline.parse('./foo.py 2>&1 < xxx | cat && ls')
-    print pipeline.run()
+    print(pipeline.run())
 
 if __name__ == '__main__':
     _main()
