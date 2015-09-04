@@ -582,7 +582,7 @@ StaWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
                 {
                   WifiMode mode = m_phy->GetMode (i);
                   uint32_t channelWidth = m_phy->GetChannelWidth ();
-                  if (channelWidth > 20)
+                  if (channelWidth >= 40)
                     {
                       channelWidth = 20;
                     }
@@ -656,7 +656,7 @@ StaWifiMac::GetSupportedRates (void) const
     {
       WifiMode mode = m_phy->GetMode (i);
       uint32_t channelWidth = m_phy->GetChannelWidth ();
-      if (channelWidth > 20)
+      if (channelWidth >= 40)
         {
           channelWidth = 20;
         }

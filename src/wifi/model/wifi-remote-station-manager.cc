@@ -621,8 +621,8 @@ WifiRemoteStationManager::GetDataTxVector (Mac48Address address, const WifiMacHe
       WifiTxVector v;
       v.SetMode (GetNonUnicastMode ());
       v.SetTxPowerLevel (m_defaultTxPowerLevel);
-      v.SetChannelWidth (20);
-      v.SetShortGuardInterval (false);
+      v.SetChannelWidth (m_wifiPhy->GetChannelWidth ());
+      v.SetShortGuardInterval (m_wifiPhy->GetGuardInterval ());
       v.SetNss (1);
       v.SetNess (0);
       v.SetStbc (false);
