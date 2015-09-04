@@ -1048,6 +1048,14 @@ TcpSocketBase::DoForwardUp (Ptr<Packet> packet, const Address &fromAddress,
     {
       UpdateWindowSize (tcpHeader);
     }
+  else if (tcpHeader.GetFlags () & TcpHeader::SYN)
+    {
+      /* The window field in a segment where the SYN bit is set (i.e., a <SYN>
+       * or <SYN,ACK>) MUST NOT be scaled (from RFC 7323 page 9). But should be
+       * saved anyway..
+       */
+      m_rWnd = tcpHeader.GetWindowSize ();
+    }
 
   // TCP state machine code in different process functions
   // C.f.: tcp_rcv_state_process() in tcp_input.c in Linux kernel
