@@ -158,7 +158,7 @@ public:
      */
     enum TagData_e
     {
-      MAX_SIZE = 20           /**< Size of serialization buffer #data */
+      MAX_SIZE = 21           /**< Size of serialization buffer #data */
   };
 
     uint8_t data[MAX_SIZE];   /**< Serialization buffer */
