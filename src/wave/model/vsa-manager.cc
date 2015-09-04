@@ -174,6 +174,7 @@ VsaManager::DoSendVsa (enum VsaTransmitInterval  interval, uint32_t channel,
   vsc->AddPacketTag (qosTag);
 
   WifiTxVector txVector;
+  txVector.SetChannelWidth (10);
   txVector.SetTxPowerLevel (manager->GetManagementPowerLevel (channel));
   txVector.SetMode (manager->GetManagementDataRate (channel));
   HigherLayerTxVectorTag tag = HigherLayerTxVectorTag (txVector, manager->GetManagementAdaptable (channel));

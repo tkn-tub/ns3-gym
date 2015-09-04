@@ -82,6 +82,7 @@ WaveMacLow::GetDataTxVector (Ptr<const Packet> packet, const WifiMacHeader *hdr)
   WifiTxVector txHigher = datatag.GetTxVector ();
   WifiTxVector txMac = MacLow::GetDataTxVector (packet, hdr);
   WifiTxVector txAdapter;
+  txAdapter.SetChannelWidth (10);
   // the DataRate set by higher layer is the minimum data rate
   // which is the lower bound for the actual data rate.
   if (txHigher.GetMode ().GetDataRate (txHigher.GetChannelWidth (), txHigher.IsShortGuardInterval (), 1) > txMac.GetMode ().GetDataRate (txMac.GetChannelWidth (), txMac.IsShortGuardInterval (), 1))
