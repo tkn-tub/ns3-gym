@@ -2575,9 +2575,10 @@ TcpSocketBase::ReadOptions (const TcpHeader& header)
         }
     }
 
+  bool timestampAttribute = m_timestampEnabled;
   m_timestampEnabled = false;
 
-  if (header.HasOption (TcpOption::TS))
+  if (header.HasOption (TcpOption::TS) && timestampAttribute)
     {
       m_timestampEnabled = true;
       ProcessOptionTimestamp (header.GetOption (TcpOption::TS));
