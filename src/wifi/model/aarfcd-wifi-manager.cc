@@ -305,7 +305,7 @@ AarfcdWifiManager::DoGetDataTxVector (WifiRemoteStation *st, uint32_t size)
   NS_LOG_FUNCTION (this << st << size);
   AarfcdWifiRemoteStation *station = (AarfcdWifiRemoteStation *) st;
   uint32_t channelWidth = GetChannelWidth (station);
-  if (channelWidth >= 40)
+  if (channelWidth > 20 && channelWidth != 22)
     {
       //avoid to use legacy rate adaptation algorithms for IEEE 802.11n/ac
       channelWidth = 20;
@@ -321,7 +321,7 @@ AarfcdWifiManager::DoGetRtsTxVector (WifiRemoteStation *st)
   /// RTS only by picking a single rate within the BasicRateSet.
   AarfcdWifiRemoteStation *station = (AarfcdWifiRemoteStation *) st;
   uint32_t channelWidth = GetChannelWidth (station);
-  if (channelWidth >= 40)
+  if (channelWidth > 20 && channelWidth != 22)
     {
       //avoid to use legacy rate adaptation algorithms for IEEE 802.11n/ac
       channelWidth = 20;
