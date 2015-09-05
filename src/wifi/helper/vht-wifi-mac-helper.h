@@ -21,6 +21,7 @@
 #ifndef VHT_WIFI_MAC_HELPER_H
 #define VHT_WIFI_MAC_HELPER_H
 
+#include "ns3/string.h"
 #include "wifi-helper.h"
 #include "ns3/qos-utils.h"
 #include "qos-wifi-mac-helper.h"
@@ -54,6 +55,10 @@ public:
    */
   static VhtWifiMacHelper Default (void);
 
+  /**
+   * Converts a VHT MCS value into a DataRate value
+   */
+  static StringValue DataRateForMcs (int mcs);
 };
 
 } //namespace ns3

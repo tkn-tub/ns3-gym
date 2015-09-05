@@ -90,20 +90,13 @@ int main (int argc, char *argv[])
               WifiHelper wifi = WifiHelper::Default ();
               wifi.SetStandard (WIFI_PHY_STANDARD_80211ac);
               VhtWifiMacHelper mac = VhtWifiMacHelper::Default ();
-
-              Ssid ssid = Ssid ("ns380211ac");
-
-              std::stringstream sstmp;
-              std::string strtmp, dataRate;
-              StringValue DataRate;
-
-              sstmp << i;
-              sstmp >> strtmp;
-              dataRate = "VhtMcs" + strtmp;
-              DataRate = StringValue (dataRate);
-
+                
+              StringValue DataRate = VhtWifiMacHelper::DataRateForMcs (i);
               wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager","DataMode", DataRate,
                                             "ControlMode", DataRate);
+                
+              Ssid ssid = Ssid ("ns3-80211ac");
+
               mac.SetType ("ns3::StaWifiMac",
                            "Ssid", SsidValue (ssid),
                            "ActiveProbing", BooleanValue (false));
@@ -210,7 +203,7 @@ int main (int argc, char *argv[])
                   uint32_t totalPacketsThrough = DynamicCast<PacketSink> (sinkApp.Get (0))->GetTotalRx ();
                   throughput = totalPacketsThrough * 8 / (simulationTime * 1000000.0); //Mbit/s
                 }
-              std::cout << dataRate << "\t\t\t" << j << " MHz\t\t\t" << k << "\t\t\t" << throughput << " Mbit/s" << std::endl;
+              std::cout << i << "\t\t\t" << j << " MHz\t\t\t" << k << "\t\t\t" << throughput << " Mbit/s" << std::endl;
             }
           j *= 2;
         }

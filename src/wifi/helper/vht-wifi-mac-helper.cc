@@ -54,4 +54,17 @@ VhtWifiMacHelper::Default (void)
   return helper;
 }
 
+StringValue
+VhtWifiMacHelper::DataRateForMcs (int mcs)
+{
+  std::stringstream sstmp;
+  std::string strtmp, dataRate;
+
+  sstmp << mcs;
+  sstmp >> strtmp;
+  dataRate = "VhtMcs" + strtmp;
+  
+  return StringValue (dataRate);
+}
+
 } //namespace ns3
