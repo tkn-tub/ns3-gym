@@ -581,15 +581,10 @@ StaWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
               for (uint32_t i = 0; i < m_phy->GetNModes (); i++)
                 {
                   WifiMode mode = m_phy->GetMode (i);
-                  uint32_t channelWidth = m_phy->GetChannelWidth ();
-                  if (channelWidth >= 40)
-                    {
-                      channelWidth = 20;
-                    }
-                  if (rates.IsSupportedRate (mode.GetDataRate (channelWidth, false, 1)))
+                  if (rates.IsSupportedRate (mode.GetDataRate (m_phy->GetChannelWidth (), false, 1)))
                     {
                       m_stationManager->AddSupportedMode (hdr->GetAddr2 (), mode);
-                      if (rates.IsBasicRate (mode.GetDataRate (channelWidth, false, 1)))
+                      if (rates.IsBasicRate (mode.GetDataRate (m_phy->GetChannelWidth (), false, 1)))
                         {
                           m_stationManager->AddBasicMode (mode);
                         }
@@ -655,12 +650,7 @@ StaWifiMac::GetSupportedRates (void) const
   for (uint32_t i = 0; i < m_phy->GetNModes (); i++)
     {
       WifiMode mode = m_phy->GetMode (i);
-      uint32_t channelWidth = m_phy->GetChannelWidth ();
-      if (channelWidth >= 40)
-        {
-          channelWidth = 20;
-        }
-      rates.AddSupportedRate (mode.GetDataRate (channelWidth, false, 1));
+      rates.AddSupportedRate (mode.GetDataRate (m_phy->GetChannelWidth (), false, 1));
     }
   return rates;
 }

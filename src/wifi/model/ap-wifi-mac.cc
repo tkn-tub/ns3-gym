@@ -315,12 +315,7 @@ ApWifiMac::GetSupportedRates (void) const
   for (uint32_t i = 0; i < m_phy->GetNModes (); i++)
     {
       WifiMode mode = m_phy->GetMode (i);
-      uint32_t channelWidth = m_phy->GetChannelWidth ();
-      if (channelWidth >= 40)
-        {
-          channelWidth = 20;
-        }
-      rates.AddSupportedRate (mode.GetDataRate (channelWidth, false, 1));
+      rates.AddSupportedRate (mode.GetDataRate (m_phy->GetChannelWidth (), false, 1));
       //Add rates that are part of the BSSBasicRateSet (manufacturer dependent!)
       //here we choose to add the mandatory rates to the BSSBasicRateSet,
       //exept for 802.11b where we assume that only the non HR-DSSS rates are part of the BSSBasicRateSet
@@ -333,12 +328,7 @@ ApWifiMac::GetSupportedRates (void) const
   for (uint32_t j = 0; j < m_stationManager->GetNBasicModes (); j++)
     {
       WifiMode mode = m_stationManager->GetBasicMode (j);
-      uint32_t channelWidth = m_phy->GetChannelWidth ();
-      if (channelWidth >= 40)
-        {
-          channelWidth = 20;
-        }
-      rates.SetBasicRate (mode.GetDataRate (channelWidth, false, 1));
+      rates.SetBasicRate (mode.GetDataRate (m_phy->GetChannelWidth (), false, 1));
     }
 
   return rates;
@@ -645,12 +635,7 @@ ApWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
               for (uint32_t i = 0; i < m_stationManager->GetNBasicModes (); i++)
                 {
                   WifiMode mode = m_stationManager->GetBasicMode (i);
-                  uint32_t channelWidth = m_phy->GetChannelWidth ();
-                  if (channelWidth >= 40)
-                    {
-                      channelWidth = 20;
-                    }
-                  if (!rates.IsSupportedRate (mode.GetDataRate (channelWidth, false, 1)))
+                  if (!rates.IsSupportedRate (mode.GetDataRate (m_phy->GetChannelWidth (), false, 1)))
                     {
                       problem = true;
                       break;
@@ -698,12 +683,7 @@ ApWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
                   for (uint32_t j = 0; j < m_phy->GetNModes (); j++)
                     {
                       WifiMode mode = m_phy->GetMode (j);
-                      uint32_t channelWidth = m_phy->GetChannelWidth ();
-                      if (channelWidth >= 40)
-                        {
-                          channelWidth = 20;
-                        }
-                      if (rates.IsSupportedRate (mode.GetDataRate (channelWidth, false, 1)))
+                      if (rates.IsSupportedRate (mode.GetDataRate (m_phy->GetChannelWidth (), false, 1)))
                         {
                           m_stationManager->AddSupportedMode (from, mode);
                         }
