@@ -17,6 +17,7 @@
  *
  * Author: Sebastien Deronne <sebastien.deronne@gmail.com>
  */
+
 #include "ns3/core-module.h"
 #include "ns3/network-module.h"
 #include "ns3/applications-module.h"
@@ -25,16 +26,19 @@
 #include "ns3/ipv4-global-routing-helper.h"
 #include "ns3/internet-module.h"
 
-//This is a simple example of an IEEE 802.11ac Wi-Fi network.
+// This is a simple example in order to show how to configure an IEEE 802.11ac Wi-Fi network.
 //
-//Network topology:
+// It ouputs the UDP or TCP goodput for every VHT bitrate value, which depends on the MCS value (0 to 9, where 9 is
+// forbidden when the channel width is 20 MHz), the channel width (20, 40, 80 or 160 MHz) and the guard interval (long
+// or short). The PHY bitrate is constant over all the simulation run. The user can also specify the distance between
+// the access point and the station: the larger the distance the smaller the goodput.
 //
-//  Wifi 192.168.1.0
+// The simulation assumes a single station in an infrastructure network:
 //
-//         AP
-//    *    *
-//    |    |
-//    n1   n2
+//  STA     AP
+//    *     *
+//    |     |
+//   n1     n2
 //
 //Packets in this simulation aren't marked with a QosTag so they are considered
 //belonging to BestEffort Access Class (AC_BE).
@@ -47,7 +51,10 @@ int main (int argc, char *argv[])
 {
   bool udp = true;
   double simulationTime = 10; //seconds
+  double distance = 1.0; //meters
+
   CommandLine cmd;
+  cmd.AddValue ("distance", "Distance in meters between the station and the access point", distance);
   cmd.AddValue ("simulationTime", "Simulation time in seconds", simulationTime);
   cmd.AddValue ("udp", "UDP if set to 1, TCP otherwise", udp);
   cmd.Parse (argc,argv);
@@ -118,7 +125,7 @@ int main (int argc, char *argv[])
               Ptr<ListPositionAllocator> positionAlloc = CreateObject<ListPositionAllocator> ();
 
               positionAlloc->Add (Vector (0.0, 0.0, 0.0));
-              positionAlloc->Add (Vector (1.0, 0.0, 0.0));
+              positionAlloc->Add (Vector (distance, 0.0, 0.0));
               mobility.SetPositionAllocator (positionAlloc);
 
               mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
