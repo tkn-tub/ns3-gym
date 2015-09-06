@@ -63,6 +63,7 @@ Bugs fixed
 - Bug 2171 - power-adaptation-distance.cc:202:22: error: call to 'pow' is ambiguous
 - Bug 2173 - WifiInformationElement::DeserializeIfPresent attempts to read beyond the end of buffer
 - Bug 2174 - m_rWnd not updated when segments without ACK are received
+- Bug 2177 - Ipv6ExtensionFragmentHeader length is initialized to a wrong value.
 
 Known issues
 ------------
