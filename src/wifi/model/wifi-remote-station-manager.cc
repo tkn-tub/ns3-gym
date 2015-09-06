@@ -345,7 +345,8 @@ WifiRemoteStationManager::GetTypeId (void)
 }
 
 WifiRemoteStationManager::WifiRemoteStationManager ()
-  : m_htSupported (false)
+  : m_htSupported (false),
+    m_vhtSupported (false)
 {
 }
 
