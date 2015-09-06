@@ -20,7 +20,7 @@ on the IEEE 802.11 standard [ieee80211]_. We will go into more detail below but 
 |ns3| provides models for these aspects of 802.11:
 
 * basic 802.11 DCF with **infrastructure** and **adhoc** modes
-* **802.11a**, **802.11b**, **802.11g** and **802.11n** (both 2.4 and 5 GHz bands) physical layers
+* **802.11a**, **802.11b**, **802.11g**, **802.11n** (both 2.4 and 5 GHz bands) and **802.11ac** physical layers
 * **MSDU aggregation** and **MPDU aggregation** extensions of 802.11n, and both can be combined together (two-level aggregation)
 * QoS-based EDCA and queueing extensions of **802.11e**
 * the ability to use different propagation loss models and propagation delay models,
@@ -31,7 +31,7 @@ on the IEEE 802.11 standard [ieee80211]_. We will go into more detail below but 
 
 The set of 802.11 models provided in |ns3| attempts to provide an accurate
 MAC-level implementation of the 802.11 specification and to provide a
-not-so-slow PHY-level model of the 802.11a specification and a not-so-slow PHY-level model of the 802.11a/b/g/n specifications.
+not-so-slow PHY-level model of the 802.11a/b/g/n/ac specifications.
 
 In |ns3|, nodes can have multiple WifiNetDevices on separate channels, and the
 WifiNetDevice can coexist with other device types; this removes an architectural
@@ -74,7 +74,10 @@ beacons, and that accepts every attempt to associate.
 These three MAC high models share a common parent in
 ``ns3::RegularWifiMac``, which exposes, among other MAC
 configuration, an attribute ``QosSupported`` that allows
-configuration of 802.11e/WMM-style QoS support and an attribute ``HtSupported`` that allows configuration of 802.11n High Throughput style support.
+configuration of 802.11e/WMM-style QoS support, an attribute
+``HtSupported`` that allows configuration of 802.11n High Throughput
+style support an attribute ``VhtSupported`` that allows configuration
+of 802.11ac Very High Throughput style support.
 
 MAC low layer
 ==============
@@ -121,7 +124,6 @@ The WifiChannel subclass can be used to connect together a set of
 ``ns3::WifiNetDevice`` network interfaces. The class ``ns3::WifiPhy`` is the
 object within the WifiNetDevice that receives bits from the channel.  
 For the channel propagation modeling, the propagation module is used; see section :ref:`Propagation` for details.
-
 
 This section summarizes the description of the BER calculations found in the
 yans paper taking into account the Forward Error Correction present in 802.11a
@@ -353,10 +355,10 @@ Note on the current implementation
 * PHY_RXSTART is not supported
 * 802.11e TXOP is not supported
 * 802.11n MIMO is not supported
+* 802.11n/ac MIMO is not supported
+* 802.11n/ac beamforming is not supported
 * PLCP preamble reception is not modeled
 * BSSBasicRateSet for 802.11b has been assumed to be 1-2 Mbit/s
-* BSSBasicRateSet for 802.11a has been assumed to be 6-12-24 Mbit/s
+* BSSBasicRateSet for 802.11a/g has been assumed to be 6-12-24 Mbit/s
 * cases where RTS/CTS and ACK are transmitted using HT formats are not supported
-* rate control algorithms are not aware of HT rates; they will only use the 802.11a BSSBasicRateSet when 802.11n is configured
-
-
+* Only ``ConstantRateWifiManager`` is supported by **802.11n** or **802.11ac**
