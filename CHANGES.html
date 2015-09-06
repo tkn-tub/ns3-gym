@@ -57,9 +57,24 @@ us a note on ns-developers mailing list.</p>
 </ul>
 <h2>Changes to existing API:</h2>
 <ul>
-<li> The signatures on several TcpHeader methods were changed to take const arguments.</li>
-<li> class TcpL4Protocol replaces Send() methods with SendPacket(), and adds new methods to AddSocket() and RemoveSocket() from a node.  Also, a new PacketReceived() method was introduced to get the TCP header of an incoming packet and check its checksum.</li>
-<li> The CongestionWindow and SlowStartThreshold trace sources have been moved from the TCP subclasses such as NewReno, Reno, Tahoe, and Westwood to the TcpSocketBase class.</li>
+  <li> The signatures on several TcpHeader methods were changed to take const arguments.</li>
+  <li> class TcpL4Protocol replaces Send() methods with SendPacket(), and adds new methods to AddSocket() and RemoveSocket() from a node.  Also, a new PacketReceived() method was introduced to get the TCP header of an incoming packet and check its checksum.</li>
+  <li> The CongestionWindow and SlowStartThreshold trace sources have been moved from the TCP subclasses such as NewReno, Reno, Tahoe, and Westwood to the TcpSocketBase class.</li>
+  <li>In 'src/wifi', several changes were made to enable partial 802.11ac support:
+    <ul>
+      <li>A new helper (VhtWifiMacHelper) was added to set up a Very high throughput (VHT) MAC entity.</li>
+      <li>A new standard value has been added that enables the new 11ac data rates.</li>
+      <li>A new 11ac preamble has been added.</li>
+      <li>A new information element has been added:  VhtCapabilities. This information element is added to the MAC frame header if the node is a VHT node. This VhtCapabilites information element is used to advertise the VHT capabilites of the node to other nodes in the network.</li>
+    </ul>
+  <li> WifiMode has been refactored:
+    <ul>
+      <li>11n data rates are now renamed according to their MCS value. E.g. OfdmRate65MbpsBW20MHz has been renamed into HtMcs7. 11ac data rates have been defined according to this new renaming.</li>
+      <li>HtWifiMacHelper and VhtWifiMacHelper provide a helper to convert a MCS value into a data rate value.</li>
+      <li>The channel width is no longer tied to the wifimode. It is now included in the TXVECTOR.</li>
+      <li>The physical bitrate is no longer tied to the wifimode. It is computed based on the selected wifimode and on the TXVECTOR parameters (channel width, guard interval and number of spatial streams).</li>
+    </ul>
+  </li>
 </ul>
 <h2>Changes to build system:</h2>
 <ul>
