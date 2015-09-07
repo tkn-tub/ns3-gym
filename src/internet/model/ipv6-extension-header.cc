@@ -68,7 +68,10 @@ uint8_t Ipv6ExtensionHeader::GetNextHeader () const
 
 void Ipv6ExtensionHeader::SetLength (uint16_t length)
 {
-  NS_ASSERT_MSG (!(length & 0x7), "Invalid Ipv6ExtensionHeader Length");
+  NS_ASSERT_MSG (!(length & 0x7), "Invalid Ipv6ExtensionHeader Length, must be a multiple of 8 bytes.");
+  NS_ASSERT_MSG (length > 0, "Invalid Ipv6ExtensionHeader Length, must be greater than 0.");
+  NS_ASSERT_MSG (length < 2048, "Invalid Ipv6ExtensionHeader Length, must be a lower than 2048.");
+
   m_length = (length >> 3) - 1;
 }
 
