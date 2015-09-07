@@ -282,6 +282,10 @@ ArpCache::PrintArpCache (Ptr<OutputStreamWrapper> stream)
         {
           *os << " DELAY\n";
         }
+      else if (i->second->IsPermanent ())
+	{
+	  *os << " PERMANENT\n";
+	}
       else
         {
           *os << " STALE\n";
@@ -313,6 +317,24 @@ ArpCache::Add (Ipv4Address to)
   return entry;
 }
 
+void
+ArpCache::Remove (ArpCache::Entry *entry)
+{
+  NS_LOG_FUNCTION (this << entry);
+  
+  for (CacheI i = m_arpCache.begin (); i != m_arpCache.end (); i++)
+    {
+      if ((*i).second == entry)
+        {
+          m_arpCache.erase (i);
+          entry->ClearPendingPacket (); //clear the pending packets for entry's ipaddress
+          delete entry;
+          return;
+        }
+    }
+  NS_LOG_WARN ("Entry not found in this ARP Cache");
+}
+
 ArpCache::Entry::Entry (ArpCache *arp)
   : m_arp (arp),
     m_state (ALIVE),
@@ -340,12 +362,19 @@ ArpCache::Entry::IsWaitReply (void)
   NS_LOG_FUNCTION (this);
   return (m_state == WAIT_REPLY) ? true : false;
 }
+bool
+ArpCache::Entry::IsPermanent (void)
+{
+  NS_LOG_FUNCTION (this);
+  return (m_state == PERMANENT) ? true : false;
+}
 
 
 void 
 ArpCache::Entry::MarkDead (void) 
 {
   NS_LOG_FUNCTION (this);
+  NS_ASSERT (m_state == ALIVE || m_state == WAIT_REPLY || m_state == DEAD);
   m_state = DEAD;
   ClearRetries ();
   UpdateSeen ();
@@ -360,7 +389,15 @@ ArpCache::Entry::MarkAlive (Address macAddress)
   ClearRetries ();
   UpdateSeen ();
 }
-
+void
+ArpCache::Entry::MarkPermanent (void)
+{
+  NS_LOG_FUNCTION (this);
+  NS_ASSERT (!m_macAddress.IsInvalid ());
+  m_state = PERMANENT;
+  ClearRetries ();
+  UpdateSeen ();
+}
 bool
 ArpCache::Entry::UpdateWaitReply (Ptr<Packet> waiting)
 {
@@ -395,13 +432,19 @@ ArpCache::Entry::GetMacAddress (void) const
   NS_LOG_FUNCTION (this);
   return m_macAddress;
 }
+void 
+ArpCache::Entry::SetMacAddresss (Address macAddress)
+{
+  NS_LOG_FUNCTION (this);
+  m_macAddress = macAddress;
+}
 Ipv4Address 
 ArpCache::Entry::GetIpv4Address (void) const
 {
   NS_LOG_FUNCTION (this);
   return m_ipv4Address;
 }
-void 
+void
 ArpCache::Entry::SetIpv4Address (Ipv4Address destination)
 {
   NS_LOG_FUNCTION (this << destination);
@@ -418,6 +461,8 @@ ArpCache::Entry::GetTimeout (void) const
       return m_arp->GetDeadTimeout ();
     case ArpCache::Entry::ALIVE:
       return m_arp->GetAliveTimeout ();
+    case ArpCache::Entry::PERMANENT:
+      return Time::Max ();
     default:
       NS_ASSERT (false);
       return Seconds (0);
@@ -451,6 +496,12 @@ ArpCache::Entry::DequeuePending (void)
       m_pending.pop_front ();
       return p;
     }
+}
+void 
+ArpCache::Entry::ClearPendingPacket (void)
+{
+  NS_LOG_FUNCTION (this);
+  m_pending.clear ();
 }
 void 
 ArpCache::Entry::UpdateSeen (void)

@@ -289,7 +289,7 @@ ArpL3Protocol::Lookup (Ptr<Packet> packet, Ipv4Address destination,
               entry->MarkWaitReply (packet);
               Simulator::Schedule (Time (MilliSeconds (m_requestJitter->GetValue ())), &ArpL3Protocol::SendArpRequest, this, cache, destination);
             } 
-          else if (entry->IsWaitReply ()) 
+          else
             {
               NS_FATAL_ERROR ("Test for possibly unreachable code-- please file a bug report, with a test case, if this is ever hit");
             }
@@ -317,6 +317,17 @@ ArpL3Protocol::Lookup (Ptr<Packet> packet, Ipv4Address destination,
                 {
                   m_dropTrace (packet);
                 }
+            }
+          else if (entry-> IsPermanent ())
+            {
+              NS_LOG_LOGIC ("node="<<m_node->GetId ()<<
+                            ", permanent for " << destination << "valid -- send");
+              *hardwareDestination = entry->GetMacAddress ();
+              return true;
+            }
+          else
+            {
+              NS_LOG_LOGIC ("Test for possibly unreachable code-- please file a bug report, with a test case, if this is ever hit");
             }
         }
     }
