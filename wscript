@@ -479,6 +479,13 @@ def configure(conf):
 
     conf.report_optional_feature("ENABLE_EXAMPLES", "Build examples", env['ENABLE_EXAMPLES'], 
                                  why_not_examples)
+    try:
+        for dir in os.listdir('examples'):
+            if dir.startswith('.') or dir == 'CVS':
+                continue
+            conf.env.append_value('EXAMPLE_DIRECTORIES', dir)
+    except OSError:
+        return
 
     env['VALGRIND_FOUND'] = False
     try:
