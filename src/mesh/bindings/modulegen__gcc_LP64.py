@@ -540,14 +540,14 @@ def register_types_ns3_dot11s(module):
     module.add_enum('dot11sSynchronizationProtocolIdentifier', ['SYNC_NEIGHBOUR_OFFSET', 'SYNC_NULL'])
     ## ie-dot11s-configuration.h (module 'mesh'): ns3::dot11s::dot11sCongestionControlMode [enumeration]
     module.add_enum('dot11sCongestionControlMode', ['CONGESTION_SIGNALING', 'CONGESTION_NULL'])
+    ## ie-dot11s-configuration.h (module 'mesh'): ns3::dot11s::dot11sAuthenticationProtocol [enumeration]
+    module.add_enum('dot11sAuthenticationProtocol', ['AUTH_NULL', 'AUTH_SAE', 'AUTH_IEEE'])
     ## ie-dot11s-configuration.h (module 'mesh'): ns3::dot11s::dot11sPathSelectionMetric [enumeration]
     module.add_enum('dot11sPathSelectionMetric', ['METRIC_AIRTIME'])
     ## ie-dot11s-peer-management.h (module 'mesh'): ns3::dot11s::PmpReasonCode [enumeration]
     module.add_enum('PmpReasonCode', ['REASON11S_PEERING_CANCELLED', 'REASON11S_MESH_MAX_PEERS', 'REASON11S_MESH_CAPABILITY_POLICY_VIOLATION', 'REASON11S_MESH_CLOSE_RCVD', 'REASON11S_MESH_MAX_RETRIES', 'REASON11S_MESH_CONFIRM_TIMEOUT', 'REASON11S_MESH_INVALID_GTK', 'REASON11S_MESH_INCONSISTENT_PARAMETERS', 'REASON11S_MESH_INVALID_SECURITY_CAPABILITY', 'REASON11S_RESERVED'])
     ## ie-dot11s-configuration.h (module 'mesh'): ns3::dot11s::dot11sPathSelectionProtocol [enumeration]
     module.add_enum('dot11sPathSelectionProtocol', ['PROTOCOL_HWMP'])
-    ## ie-dot11s-configuration.h (module 'mesh'): ns3::dot11s::dot11sAuthenticationProtocol [enumeration]
-    module.add_enum('dot11sAuthenticationProtocol', ['AUTH_NULL', 'AUTH_SAE', 'AUTH_IEEE'])
     ## ie-dot11s-preq.h (module 'mesh'): ns3::dot11s::DestinationAddressUnit [class]
     module.add_class('DestinationAddressUnit', parent=root_module['ns3::SimpleRefCount< ns3::dot11s::DestinationAddressUnit, ns3::empty, ns3::DefaultDeleter<ns3::dot11s::DestinationAddressUnit> >'])
     ## ie-dot11s-configuration.h (module 'mesh'): ns3::dot11s::Dot11sMeshCapability [class]
@@ -2847,7 +2847,7 @@ def register_Ns3PacketTagListTagData_methods(root_module, cls):
     ## packet-tag-list.h (module 'network'): ns3::PacketTagList::TagData::count [variable]
     cls.add_instance_attribute('count', 'uint32_t', is_const=False)
     ## packet-tag-list.h (module 'network'): ns3::PacketTagList::TagData::data [variable]
-    cls.add_instance_attribute('data', 'uint8_t [ 20 ]', is_const=False)
+    cls.add_instance_attribute('data', 'uint8_t [ 21 ]', is_const=False)
     ## packet-tag-list.h (module 'network'): ns3::PacketTagList::TagData::next [variable]
     cls.add_instance_attribute('next', 'ns3::PacketTagList::TagData *', is_const=False)
     ## packet-tag-list.h (module 'network'): ns3::PacketTagList::TagData::tid [variable]

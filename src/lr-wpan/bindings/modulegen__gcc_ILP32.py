@@ -20,20 +20,20 @@ def module_init():
 def register_types(module):
     root_module = module.get_root()
     
+    ## lr-wpan-phy.h (module 'lr-wpan'): ns3::LrWpanPhyEnumeration [enumeration]
+    module.add_enum('LrWpanPhyEnumeration', ['IEEE_802_15_4_PHY_BUSY', 'IEEE_802_15_4_PHY_BUSY_RX', 'IEEE_802_15_4_PHY_BUSY_TX', 'IEEE_802_15_4_PHY_FORCE_TRX_OFF', 'IEEE_802_15_4_PHY_IDLE', 'IEEE_802_15_4_PHY_INVALID_PARAMETER', 'IEEE_802_15_4_PHY_RX_ON', 'IEEE_802_15_4_PHY_SUCCESS', 'IEEE_802_15_4_PHY_TRX_OFF', 'IEEE_802_15_4_PHY_TX_ON', 'IEEE_802_15_4_PHY_UNSUPPORTED_ATTRIBUTE', 'IEEE_802_15_4_PHY_READ_ONLY', 'IEEE_802_15_4_PHY_UNSPECIFIED'])
     ## lr-wpan-mac.h (module 'lr-wpan'): ns3::LrWpanTxOption [enumeration]
     module.add_enum('LrWpanTxOption', ['TX_OPTION_NONE', 'TX_OPTION_ACK', 'TX_OPTION_GTS', 'TX_OPTION_INDIRECT'])
     ## lr-wpan-mac.h (module 'lr-wpan'): ns3::LrWpanMcpsDataConfirmStatus [enumeration]
     module.add_enum('LrWpanMcpsDataConfirmStatus', ['IEEE_802_15_4_SUCCESS', 'IEEE_802_15_4_TRANSACTION_OVERFLOW', 'IEEE_802_15_4_TRANSACTION_EXPIRED', 'IEEE_802_15_4_CHANNEL_ACCESS_FAILURE', 'IEEE_802_15_4_INVALID_ADDRESS', 'IEEE_802_15_4_INVALID_GTS', 'IEEE_802_15_4_NO_ACK', 'IEEE_802_15_4_COUNTER_ERROR', 'IEEE_802_15_4_FRAME_TOO_LONG', 'IEEE_802_15_4_UNAVAILABLE_KEY', 'IEEE_802_15_4_UNSUPPORTED_SECURITY', 'IEEE_802_15_4_INVALID_PARAMETER'])
-    ## lr-wpan-phy.h (module 'lr-wpan'): ns3::LrWpanPhyOption [enumeration]
-    module.add_enum('LrWpanPhyOption', ['IEEE_802_15_4_868MHZ_BPSK', 'IEEE_802_15_4_915MHZ_BPSK', 'IEEE_802_15_4_868MHZ_ASK', 'IEEE_802_15_4_915MHZ_ASK', 'IEEE_802_15_4_868MHZ_OQPSK', 'IEEE_802_15_4_915MHZ_OQPSK', 'IEEE_802_15_4_2_4GHZ_OQPSK', 'IEEE_802_15_4_INVALID_PHY_OPTION'])
-    ## lr-wpan-phy.h (module 'lr-wpan'): ns3::LrWpanPhyEnumeration [enumeration]
-    module.add_enum('LrWpanPhyEnumeration', ['IEEE_802_15_4_PHY_BUSY', 'IEEE_802_15_4_PHY_BUSY_RX', 'IEEE_802_15_4_PHY_BUSY_TX', 'IEEE_802_15_4_PHY_FORCE_TRX_OFF', 'IEEE_802_15_4_PHY_IDLE', 'IEEE_802_15_4_PHY_INVALID_PARAMETER', 'IEEE_802_15_4_PHY_RX_ON', 'IEEE_802_15_4_PHY_SUCCESS', 'IEEE_802_15_4_PHY_TRX_OFF', 'IEEE_802_15_4_PHY_TX_ON', 'IEEE_802_15_4_PHY_UNSUPPORTED_ATTRIBUTE', 'IEEE_802_15_4_PHY_READ_ONLY', 'IEEE_802_15_4_PHY_UNSPECIFIED'])
     ## lr-wpan-phy.h (module 'lr-wpan'): ns3::LrWpanPibAttributeIdentifier [enumeration]
     module.add_enum('LrWpanPibAttributeIdentifier', ['phyCurrentChannel', 'phyChannelsSupported', 'phyTransmitPower', 'phyCCAMode', 'phyCurrentPage', 'phyMaxFrameDuration', 'phySHRDuration', 'phySymbolsPerOctet'])
-    ## lr-wpan-mac.h (module 'lr-wpan'): ns3::LrWpanAssociationStatus [enumeration]
-    module.add_enum('LrWpanAssociationStatus', ['ASSOCIATED', 'PAN_AT_CAPACITY', 'PAN_ACCESS_DENIED', 'ASSOCIATED_WITHOUT_ADDRESS', 'DISASSOCIATED'])
     ## lr-wpan-mac.h (module 'lr-wpan'): ns3::LrWpanMacState [enumeration]
     module.add_enum('LrWpanMacState', ['MAC_IDLE', 'MAC_CSMA', 'MAC_SENDING', 'MAC_ACK_PENDING', 'CHANNEL_ACCESS_FAILURE', 'CHANNEL_IDLE', 'SET_PHY_TX_ON'])
+    ## lr-wpan-phy.h (module 'lr-wpan'): ns3::LrWpanPhyOption [enumeration]
+    module.add_enum('LrWpanPhyOption', ['IEEE_802_15_4_868MHZ_BPSK', 'IEEE_802_15_4_915MHZ_BPSK', 'IEEE_802_15_4_868MHZ_ASK', 'IEEE_802_15_4_915MHZ_ASK', 'IEEE_802_15_4_868MHZ_OQPSK', 'IEEE_802_15_4_915MHZ_OQPSK', 'IEEE_802_15_4_2_4GHZ_OQPSK', 'IEEE_802_15_4_INVALID_PHY_OPTION'])
+    ## lr-wpan-mac.h (module 'lr-wpan'): ns3::LrWpanAssociationStatus [enumeration]
+    module.add_enum('LrWpanAssociationStatus', ['ASSOCIATED', 'PAN_AT_CAPACITY', 'PAN_ACCESS_DENIED', 'ASSOCIATED_WITHOUT_ADDRESS', 'DISASSOCIATED'])
     ## lr-wpan-mac.h (module 'lr-wpan'): ns3::LrWpanAddressMode [enumeration]
     module.add_enum('LrWpanAddressMode', ['NO_PANID_ADDR', 'ADDR_MODE_RESERVED', 'SHORT_ADDR', 'EXT_ADDR'])
     ## address.h (module 'network'): ns3::Address [class]
@@ -94,6 +94,10 @@ def register_types(module):
     module.add_class('Mac16Address', import_from_module='ns.network')
     ## mac16-address.h (module 'network'): ns3::Mac16Address [class]
     root_module['ns3::Mac16Address'].implicitly_converts_to(root_module['ns3::Address'])
+    ## mac48-address.h (module 'network'): ns3::Mac48Address [class]
+    module.add_class('Mac48Address', import_from_module='ns.network')
+    ## mac48-address.h (module 'network'): ns3::Mac48Address [class]
+    root_module['ns3::Mac48Address'].implicitly_converts_to(root_module['ns3::Address'])
     ## mac64-address.h (module 'network'): ns3::Mac64Address [class]
     module.add_class('Mac64Address', import_from_module='ns.network')
     ## mac64-address.h (module 'network'): ns3::Mac64Address [class]
@@ -152,6 +156,10 @@ def register_types(module):
     module.add_class('TagBuffer', import_from_module='ns.network')
     ## nstime.h (module 'core'): ns3::TimeWithUnit [class]
     module.add_class('TimeWithUnit', import_from_module='ns.core')
+    ## traced-value.h (module 'core'): ns3::TracedValue<ns3::LrWpanMacState> [class]
+    module.add_class('TracedValue', template_parameters=['ns3::LrWpanMacState'])
+    ## traced-value.h (module 'core'): ns3::TracedValue<ns3::LrWpanPhyEnumeration> [class]
+    module.add_class('TracedValue', template_parameters=['ns3::LrWpanPhyEnumeration'])
     ## type-id.h (module 'core'): ns3::TypeId [class]
     module.add_class('TypeId', import_from_module='ns.core')
     ## type-id.h (module 'core'): ns3::TypeId::AttributeFlag [enumeration]
@@ -232,16 +240,28 @@ def register_types(module):
     module.add_class('AttributeChecker', allow_subclassing=False, automatic_type_narrowing=True, import_from_module='ns.core', parent=root_module['ns3::SimpleRefCount< ns3::AttributeChecker, ns3::empty, ns3::DefaultDeleter<ns3::AttributeChecker> >'])
     ## attribute.h (module 'core'): ns3::AttributeValue [class]
     module.add_class('AttributeValue', allow_subclassing=False, automatic_type_narrowing=True, import_from_module='ns.core', parent=root_module['ns3::SimpleRefCount< ns3::AttributeValue, ns3::empty, ns3::DefaultDeleter<ns3::AttributeValue> >'])
+    ## boolean.h (module 'core'): ns3::BooleanChecker [class]
+    module.add_class('BooleanChecker', import_from_module='ns.core', parent=root_module['ns3::AttributeChecker'])
+    ## boolean.h (module 'core'): ns3::BooleanValue [class]
+    module.add_class('BooleanValue', import_from_module='ns.core', parent=root_module['ns3::AttributeValue'])
     ## callback.h (module 'core'): ns3::CallbackChecker [class]
     module.add_class('CallbackChecker', import_from_module='ns.core', parent=root_module['ns3::AttributeChecker'])
     ## callback.h (module 'core'): ns3::CallbackImplBase [class]
     module.add_class('CallbackImplBase', import_from_module='ns.core', parent=root_module['ns3::SimpleRefCount< ns3::CallbackImplBase, ns3::empty, ns3::DefaultDeleter<ns3::CallbackImplBase> >'])
     ## callback.h (module 'core'): ns3::CallbackValue [class]
     module.add_class('CallbackValue', import_from_module='ns.core', parent=root_module['ns3::AttributeValue'])
+    ## double.h (module 'core'): ns3::DoubleValue [class]
+    module.add_class('DoubleValue', import_from_module='ns.core', parent=root_module['ns3::AttributeValue'])
     ## attribute.h (module 'core'): ns3::EmptyAttributeValue [class]
     module.add_class('EmptyAttributeValue', import_from_module='ns.core', parent=root_module['ns3::AttributeValue'])
+    ## enum.h (module 'core'): ns3::EnumChecker [class]
+    module.add_class('EnumChecker', import_from_module='ns.core', parent=root_module['ns3::AttributeChecker'])
+    ## enum.h (module 'core'): ns3::EnumValue [class]
+    module.add_class('EnumValue', import_from_module='ns.core', parent=root_module['ns3::AttributeValue'])
     ## event-impl.h (module 'core'): ns3::EventImpl [class]
     module.add_class('EventImpl', import_from_module='ns.core', parent=root_module['ns3::SimpleRefCount< ns3::EventImpl, ns3::empty, ns3::DefaultDeleter<ns3::EventImpl> >'])
+    ## integer.h (module 'core'): ns3::IntegerValue [class]
+    module.add_class('IntegerValue', import_from_module='ns.core', parent=root_module['ns3::AttributeValue'])
     ## ipv4-address.h (module 'network'): ns3::Ipv4AddressChecker [class]
     module.add_class('Ipv4AddressChecker', import_from_module='ns.network', parent=root_module['ns3::AttributeChecker'])
     ## ipv4-address.h (module 'network'): ns3::Ipv4AddressValue [class]
@@ -276,6 +296,10 @@ def register_types(module):
     module.add_class('Mac16AddressChecker', import_from_module='ns.network', parent=root_module['ns3::AttributeChecker'])
     ## mac16-address.h (module 'network'): ns3::Mac16AddressValue [class]
     module.add_class('Mac16AddressValue', import_from_module='ns.network', parent=root_module['ns3::AttributeValue'])
+    ## mac48-address.h (module 'network'): ns3::Mac48AddressChecker [class]
+    module.add_class('Mac48AddressChecker', import_from_module='ns.network', parent=root_module['ns3::AttributeChecker'])
+    ## mac48-address.h (module 'network'): ns3::Mac48AddressValue [class]
+    module.add_class('Mac48AddressValue', import_from_module='ns.network', parent=root_module['ns3::AttributeValue'])
     ## mac64-address.h (module 'network'): ns3::Mac64AddressChecker [class]
     module.add_class('Mac64AddressChecker', import_from_module='ns.network', parent=root_module['ns3::AttributeChecker'])
     ## mac64-address.h (module 'network'): ns3::Mac64AddressValue [class]
@@ -302,6 +326,8 @@ def register_types(module):
     module.add_class('TypeIdChecker', import_from_module='ns.core', parent=root_module['ns3::AttributeChecker'])
     ## type-id.h (module 'core'): ns3::TypeIdValue [class]
     module.add_class('TypeIdValue', import_from_module='ns.core', parent=root_module['ns3::AttributeValue'])
+    ## uinteger.h (module 'core'): ns3::UintegerValue [class]
+    module.add_class('UintegerValue', import_from_module='ns.core', parent=root_module['ns3::AttributeValue'])
     ## address.h (module 'network'): ns3::AddressChecker [class]
     module.add_class('AddressChecker', import_from_module='ns.network', parent=root_module['ns3::AttributeChecker'])
     ## address.h (module 'network'): ns3::AddressValue [class]
@@ -335,9 +361,6 @@ def register_types(module):
     typehandlers.add_type_alias(u'ns3::Callback< void, ns3::McpsDataIndicationParams, ns3::Ptr< ns3::Packet >, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', u'ns3::McpsDataIndicationCallback')
     typehandlers.add_type_alias(u'ns3::Callback< void, ns3::McpsDataIndicationParams, ns3::Ptr< ns3::Packet >, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >*', u'ns3::McpsDataIndicationCallback*')
     typehandlers.add_type_alias(u'ns3::Callback< void, ns3::McpsDataIndicationParams, ns3::Ptr< ns3::Packet >, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >&', u'ns3::McpsDataIndicationCallback&')
-    typehandlers.add_type_alias(u'void ( * ) ( ns3::SequenceNumber32, ns3::SequenceNumber32 ) *', u'ns3::SequenceNumber32TracedValueCallback')
-    typehandlers.add_type_alias(u'void ( * ) ( ns3::SequenceNumber32, ns3::SequenceNumber32 ) **', u'ns3::SequenceNumber32TracedValueCallback*')
-    typehandlers.add_type_alias(u'void ( * ) ( ns3::SequenceNumber32, ns3::SequenceNumber32 ) *&', u'ns3::SequenceNumber32TracedValueCallback&')
     typehandlers.add_type_alias(u'ns3::Callback< void, ns3::McpsDataConfirmParams, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', u'ns3::McpsDataConfirmCallback')
     typehandlers.add_type_alias(u'ns3::Callback< void, ns3::McpsDataConfirmParams, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >*', u'ns3::McpsDataConfirmCallback*')
     typehandlers.add_type_alias(u'ns3::Callback< void, ns3::McpsDataConfirmParams, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >&', u'ns3::McpsDataConfirmCallback&')
@@ -361,6 +384,18 @@ def register_types(module):
     
     nested_module = module.add_cpp_namespace('Hash')
     register_types_ns3_Hash(nested_module)
+    
+    
+    ## Register a nested module for the namespace TracedValueCallback
+    
+    nested_module = module.add_cpp_namespace('TracedValueCallback')
+    register_types_ns3_TracedValueCallback(nested_module)
+    
+    
+    ## Register a nested module for the namespace internal
+    
+    nested_module = module.add_cpp_namespace('internal')
+    register_types_ns3_internal(nested_module)
     
 
 def register_types_ns3_FatalImpl(module):
@@ -397,6 +432,50 @@ def register_types_ns3_Hash_Function(module):
     ## hash-murmur3.h (module 'core'): ns3::Hash::Function::Murmur3 [class]
     module.add_class('Murmur3', import_from_module='ns.core', parent=root_module['ns3::Hash::Implementation'])
 
+def register_types_ns3_TracedValueCallback(module):
+    root_module = module.get_root()
+    
+    typehandlers.add_type_alias(u'void ( * ) ( bool, bool ) *', u'ns3::TracedValueCallback::Bool')
+    typehandlers.add_type_alias(u'void ( * ) ( bool, bool ) **', u'ns3::TracedValueCallback::Bool*')
+    typehandlers.add_type_alias(u'void ( * ) ( bool, bool ) *&', u'ns3::TracedValueCallback::Bool&')
+    typehandlers.add_type_alias(u'void ( * ) ( double, double ) *', u'ns3::TracedValueCallback::Double')
+    typehandlers.add_type_alias(u'void ( * ) ( double, double ) **', u'ns3::TracedValueCallback::Double*')
+    typehandlers.add_type_alias(u'void ( * ) ( double, double ) *&', u'ns3::TracedValueCallback::Double&')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::SequenceNumber32, ns3::SequenceNumber32 ) *', u'ns3::TracedValueCallback::SequenceNumber32')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::SequenceNumber32, ns3::SequenceNumber32 ) **', u'ns3::TracedValueCallback::SequenceNumber32*')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::SequenceNumber32, ns3::SequenceNumber32 ) *&', u'ns3::TracedValueCallback::SequenceNumber32&')
+    typehandlers.add_type_alias(u'void ( * ) ( uint8_t, uint8_t ) *', u'ns3::TracedValueCallback::Uint8')
+    typehandlers.add_type_alias(u'void ( * ) ( uint8_t, uint8_t ) **', u'ns3::TracedValueCallback::Uint8*')
+    typehandlers.add_type_alias(u'void ( * ) ( uint8_t, uint8_t ) *&', u'ns3::TracedValueCallback::Uint8&')
+    typehandlers.add_type_alias(u'void ( * ) ( uint32_t, uint32_t ) *', u'ns3::TracedValueCallback::Uint32')
+    typehandlers.add_type_alias(u'void ( * ) ( uint32_t, uint32_t ) **', u'ns3::TracedValueCallback::Uint32*')
+    typehandlers.add_type_alias(u'void ( * ) ( uint32_t, uint32_t ) *&', u'ns3::TracedValueCallback::Uint32&')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Time, ns3::Time ) *', u'ns3::TracedValueCallback::Time')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Time, ns3::Time ) **', u'ns3::TracedValueCallback::Time*')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Time, ns3::Time ) *&', u'ns3::TracedValueCallback::Time&')
+    typehandlers.add_type_alias(u'void ( * ) ( int16_t, int16_t ) *', u'ns3::TracedValueCallback::Int16')
+    typehandlers.add_type_alias(u'void ( * ) ( int16_t, int16_t ) **', u'ns3::TracedValueCallback::Int16*')
+    typehandlers.add_type_alias(u'void ( * ) ( int16_t, int16_t ) *&', u'ns3::TracedValueCallback::Int16&')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::LrWpanPhyEnumeration, ns3::LrWpanPhyEnumeration ) *', u'ns3::TracedValueCallback::LrWpanPhyEnumeration')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::LrWpanPhyEnumeration, ns3::LrWpanPhyEnumeration ) **', u'ns3::TracedValueCallback::LrWpanPhyEnumeration*')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::LrWpanPhyEnumeration, ns3::LrWpanPhyEnumeration ) *&', u'ns3::TracedValueCallback::LrWpanPhyEnumeration&')
+    typehandlers.add_type_alias(u'void ( * ) ( int32_t, int32_t ) *', u'ns3::TracedValueCallback::Int32')
+    typehandlers.add_type_alias(u'void ( * ) ( int32_t, int32_t ) **', u'ns3::TracedValueCallback::Int32*')
+    typehandlers.add_type_alias(u'void ( * ) ( int32_t, int32_t ) *&', u'ns3::TracedValueCallback::Int32&')
+    typehandlers.add_type_alias(u'void ( * ) ( int8_t, int8_t ) *', u'ns3::TracedValueCallback::Int8')
+    typehandlers.add_type_alias(u'void ( * ) ( int8_t, int8_t ) **', u'ns3::TracedValueCallback::Int8*')
+    typehandlers.add_type_alias(u'void ( * ) ( int8_t, int8_t ) *&', u'ns3::TracedValueCallback::Int8&')
+    typehandlers.add_type_alias(u'void ( * ) ( uint16_t, uint16_t ) *', u'ns3::TracedValueCallback::Uint16')
+    typehandlers.add_type_alias(u'void ( * ) ( uint16_t, uint16_t ) **', u'ns3::TracedValueCallback::Uint16*')
+    typehandlers.add_type_alias(u'void ( * ) ( uint16_t, uint16_t ) *&', u'ns3::TracedValueCallback::Uint16&')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::LrWpanMacState, ns3::LrWpanMacState ) *', u'ns3::TracedValueCallback::LrWpanMacState')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::LrWpanMacState, ns3::LrWpanMacState ) **', u'ns3::TracedValueCallback::LrWpanMacState*')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::LrWpanMacState, ns3::LrWpanMacState ) *&', u'ns3::TracedValueCallback::LrWpanMacState&')
+
+def register_types_ns3_internal(module):
+    root_module = module.get_root()
+    
+
 def register_methods(root_module):
     register_Ns3Address_methods(root_module, root_module['ns3::Address'])
     register_Ns3AsciiTraceHelper_methods(root_module, root_module['ns3::AsciiTraceHelper'])
@@ -423,6 +502,7 @@ def register_methods(root_module):
     register_Ns3LrWpanPhyPpduHeaderSymbolNumber_methods(root_module, root_module['ns3::LrWpanPhyPpduHeaderSymbolNumber'])
     register_Ns3LrWpanSpectrumValueHelper_methods(root_module, root_module['ns3::LrWpanSpectrumValueHelper'])
     register_Ns3Mac16Address_methods(root_module, root_module['ns3::Mac16Address'])
+    register_Ns3Mac48Address_methods(root_module, root_module['ns3::Mac48Address'])
     register_Ns3Mac64Address_methods(root_module, root_module['ns3::Mac64Address'])
     register_Ns3McpsDataConfirmParams_methods(root_module, root_module['ns3::McpsDataConfirmParams'])
     register_Ns3McpsDataIndicationParams_methods(root_module, root_module['ns3::McpsDataIndicationParams'])
@@ -448,6 +528,8 @@ def register_methods(root_module):
     register_Ns3Tag_methods(root_module, root_module['ns3::Tag'])
     register_Ns3TagBuffer_methods(root_module, root_module['ns3::TagBuffer'])
     register_Ns3TimeWithUnit_methods(root_module, root_module['ns3::TimeWithUnit'])
+    register_Ns3TracedValue__Ns3LrWpanMacState_methods(root_module, root_module['ns3::TracedValue< ns3::LrWpanMacState >'])
+    register_Ns3TracedValue__Ns3LrWpanPhyEnumeration_methods(root_module, root_module['ns3::TracedValue< ns3::LrWpanPhyEnumeration >'])
     register_Ns3TypeId_methods(root_module, root_module['ns3::TypeId'])
     register_Ns3TypeIdAttributeInformation_methods(root_module, root_module['ns3::TypeId::AttributeInformation'])
     register_Ns3TypeIdTraceSourceInformation_methods(root_module, root_module['ns3::TypeId::TraceSourceInformation'])
@@ -481,11 +563,17 @@ def register_methods(root_module):
     register_Ns3AttributeAccessor_methods(root_module, root_module['ns3::AttributeAccessor'])
     register_Ns3AttributeChecker_methods(root_module, root_module['ns3::AttributeChecker'])
     register_Ns3AttributeValue_methods(root_module, root_module['ns3::AttributeValue'])
+    register_Ns3BooleanChecker_methods(root_module, root_module['ns3::BooleanChecker'])
+    register_Ns3BooleanValue_methods(root_module, root_module['ns3::BooleanValue'])
     register_Ns3CallbackChecker_methods(root_module, root_module['ns3::CallbackChecker'])
     register_Ns3CallbackImplBase_methods(root_module, root_module['ns3::CallbackImplBase'])
     register_Ns3CallbackValue_methods(root_module, root_module['ns3::CallbackValue'])
+    register_Ns3DoubleValue_methods(root_module, root_module['ns3::DoubleValue'])
     register_Ns3EmptyAttributeValue_methods(root_module, root_module['ns3::EmptyAttributeValue'])
+    register_Ns3EnumChecker_methods(root_module, root_module['ns3::EnumChecker'])
+    register_Ns3EnumValue_methods(root_module, root_module['ns3::EnumValue'])
     register_Ns3EventImpl_methods(root_module, root_module['ns3::EventImpl'])
+    register_Ns3IntegerValue_methods(root_module, root_module['ns3::IntegerValue'])
     register_Ns3Ipv4AddressChecker_methods(root_module, root_module['ns3::Ipv4AddressChecker'])
     register_Ns3Ipv4AddressValue_methods(root_module, root_module['ns3::Ipv4AddressValue'])
     register_Ns3Ipv4MaskChecker_methods(root_module, root_module['ns3::Ipv4MaskChecker'])
@@ -503,6 +591,8 @@ def register_methods(root_module):
     register_Ns3LrWpanSpectrumSignalParameters_methods(root_module, root_module['ns3::LrWpanSpectrumSignalParameters'])
     register_Ns3Mac16AddressChecker_methods(root_module, root_module['ns3::Mac16AddressChecker'])
     register_Ns3Mac16AddressValue_methods(root_module, root_module['ns3::Mac16AddressValue'])
+    register_Ns3Mac48AddressChecker_methods(root_module, root_module['ns3::Mac48AddressChecker'])
+    register_Ns3Mac48AddressValue_methods(root_module, root_module['ns3::Mac48AddressValue'])
     register_Ns3Mac64AddressChecker_methods(root_module, root_module['ns3::Mac64AddressChecker'])
     register_Ns3Mac64AddressValue_methods(root_module, root_module['ns3::Mac64AddressValue'])
     register_Ns3NetDevice_methods(root_module, root_module['ns3::NetDevice'])
@@ -515,6 +605,7 @@ def register_methods(root_module):
     register_Ns3TimeValue_methods(root_module, root_module['ns3::TimeValue'])
     register_Ns3TypeIdChecker_methods(root_module, root_module['ns3::TypeIdChecker'])
     register_Ns3TypeIdValue_methods(root_module, root_module['ns3::TypeIdValue'])
+    register_Ns3UintegerValue_methods(root_module, root_module['ns3::UintegerValue'])
     register_Ns3AddressChecker_methods(root_module, root_module['ns3::AddressChecker'])
     register_Ns3AddressValue_methods(root_module, root_module['ns3::AddressValue'])
     register_Ns3LrWpanNetDevice_methods(root_module, root_module['ns3::LrWpanNetDevice'])
@@ -1112,11 +1203,6 @@ def register_Ns3CallbackBase_methods(root_module, cls):
     ## callback.h (module 'core'): ns3::CallbackBase::CallbackBase(ns3::Ptr<ns3::CallbackImplBase> impl) [constructor]
     cls.add_constructor([param('ns3::Ptr< ns3::CallbackImplBase >', 'impl')], 
                         visibility='protected')
-    ## callback.h (module 'core'): static std::string ns3::CallbackBase::Demangle(std::string const & mangled) [member function]
-    cls.add_method('Demangle', 
-                   'std::string', 
-                   [param('std::string const &', 'mangled')], 
-                   is_static=True, visibility='protected')
     return
 
 def register_Ns3EventId_methods(root_module, cls):
@@ -1622,10 +1708,10 @@ def register_Ns3Ipv6Prefix_methods(root_module, cls):
     return
 
 def register_Ns3LrWpanEdPower_methods(root_module, cls):
-    ## lr-wpan-phy.h (module 'lr-wpan'): ns3::LrWpanEdPower::LrWpanEdPower() [constructor]
-    cls.add_constructor([])
     ## lr-wpan-phy.h (module 'lr-wpan'): ns3::LrWpanEdPower::LrWpanEdPower(ns3::LrWpanEdPower const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::LrWpanEdPower const &', 'arg0')])
+    ## lr-wpan-phy.h (module 'lr-wpan'): ns3::LrWpanEdPower::LrWpanEdPower() [constructor]
+    cls.add_constructor([])
     ## lr-wpan-phy.h (module 'lr-wpan'): ns3::LrWpanEdPower::averagePower [variable]
     cls.add_instance_attribute('averagePower', 'double', is_const=False)
     ## lr-wpan-phy.h (module 'lr-wpan'): ns3::LrWpanEdPower::lastUpdate [variable]
@@ -1732,6 +1818,78 @@ def register_Ns3Mac16Address_methods(root_module, cls):
                    [param('uint8_t *', 'buffer')], 
                    is_const=True)
     ## mac16-address.h (module 'network'): static bool ns3::Mac16Address::IsMatchingType(ns3::Address const & address) [member function]
+    cls.add_method('IsMatchingType', 
+                   'bool', 
+                   [param('ns3::Address const &', 'address')], 
+                   is_static=True)
+    return
+
+def register_Ns3Mac48Address_methods(root_module, cls):
+    cls.add_binary_comparison_operator('<')
+    cls.add_binary_comparison_operator('!=')
+    cls.add_output_stream_operator()
+    cls.add_binary_comparison_operator('==')
+    ## mac48-address.h (module 'network'): ns3::Mac48Address::Mac48Address(ns3::Mac48Address const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::Mac48Address const &', 'arg0')])
+    ## mac48-address.h (module 'network'): ns3::Mac48Address::Mac48Address() [constructor]
+    cls.add_constructor([])
+    ## mac48-address.h (module 'network'): ns3::Mac48Address::Mac48Address(char const * str) [constructor]
+    cls.add_constructor([param('char const *', 'str')])
+    ## mac48-address.h (module 'network'): static ns3::Mac48Address ns3::Mac48Address::Allocate() [member function]
+    cls.add_method('Allocate', 
+                   'ns3::Mac48Address', 
+                   [], 
+                   is_static=True)
+    ## mac48-address.h (module 'network'): static ns3::Mac48Address ns3::Mac48Address::ConvertFrom(ns3::Address const & address) [member function]
+    cls.add_method('ConvertFrom', 
+                   'ns3::Mac48Address', 
+                   [param('ns3::Address const &', 'address')], 
+                   is_static=True)
+    ## mac48-address.h (module 'network'): void ns3::Mac48Address::CopyFrom(uint8_t const * buffer) [member function]
+    cls.add_method('CopyFrom', 
+                   'void', 
+                   [param('uint8_t const *', 'buffer')])
+    ## mac48-address.h (module 'network'): void ns3::Mac48Address::CopyTo(uint8_t * buffer) const [member function]
+    cls.add_method('CopyTo', 
+                   'void', 
+                   [param('uint8_t *', 'buffer')], 
+                   is_const=True)
+    ## mac48-address.h (module 'network'): static ns3::Mac48Address ns3::Mac48Address::GetBroadcast() [member function]
+    cls.add_method('GetBroadcast', 
+                   'ns3::Mac48Address', 
+                   [], 
+                   is_static=True)
+    ## mac48-address.h (module 'network'): static ns3::Mac48Address ns3::Mac48Address::GetMulticast(ns3::Ipv4Address address) [member function]
+    cls.add_method('GetMulticast', 
+                   'ns3::Mac48Address', 
+                   [param('ns3::Ipv4Address', 'address')], 
+                   is_static=True)
+    ## mac48-address.h (module 'network'): static ns3::Mac48Address ns3::Mac48Address::GetMulticast(ns3::Ipv6Address address) [member function]
+    cls.add_method('GetMulticast', 
+                   'ns3::Mac48Address', 
+                   [param('ns3::Ipv6Address', 'address')], 
+                   is_static=True)
+    ## mac48-address.h (module 'network'): static ns3::Mac48Address ns3::Mac48Address::GetMulticast6Prefix() [member function]
+    cls.add_method('GetMulticast6Prefix', 
+                   'ns3::Mac48Address', 
+                   [], 
+                   is_static=True)
+    ## mac48-address.h (module 'network'): static ns3::Mac48Address ns3::Mac48Address::GetMulticastPrefix() [member function]
+    cls.add_method('GetMulticastPrefix', 
+                   'ns3::Mac48Address', 
+                   [], 
+                   is_static=True)
+    ## mac48-address.h (module 'network'): bool ns3::Mac48Address::IsBroadcast() const [member function]
+    cls.add_method('IsBroadcast', 
+                   'bool', 
+                   [], 
+                   is_const=True)
+    ## mac48-address.h (module 'network'): bool ns3::Mac48Address::IsGroup() const [member function]
+    cls.add_method('IsGroup', 
+                   'bool', 
+                   [], 
+                   is_const=True)
+    ## mac48-address.h (module 'network'): static bool ns3::Mac48Address::IsMatchingType(ns3::Address const & address) [member function]
     cls.add_method('IsMatchingType', 
                    'bool', 
                    [param('ns3::Address const &', 'address')], 
@@ -2230,7 +2388,7 @@ def register_Ns3PacketTagListTagData_methods(root_module, cls):
     ## packet-tag-list.h (module 'network'): ns3::PacketTagList::TagData::count [variable]
     cls.add_instance_attribute('count', 'uint32_t', is_const=False)
     ## packet-tag-list.h (module 'network'): ns3::PacketTagList::TagData::data [variable]
-    cls.add_instance_attribute('data', 'uint8_t [ 20 ]', is_const=False)
+    cls.add_instance_attribute('data', 'uint8_t [ 21 ]', is_const=False)
     ## packet-tag-list.h (module 'network'): ns3::PacketTagList::TagData::next [variable]
     cls.add_instance_attribute('next', 'ns3::PacketTagList::TagData *', is_const=False)
     ## packet-tag-list.h (module 'network'): ns3::PacketTagList::TagData::tid [variable]
@@ -2598,6 +2756,74 @@ def register_Ns3TimeWithUnit_methods(root_module, cls):
     cls.add_constructor([param('ns3::TimeWithUnit const &', 'arg0')])
     ## nstime.h (module 'core'): ns3::TimeWithUnit::TimeWithUnit(ns3::Time const time, ns3::Time::Unit const unit) [constructor]
     cls.add_constructor([param('ns3::Time const', 'time'), param('ns3::Time::Unit const', 'unit')])
+    return
+
+def register_Ns3TracedValue__Ns3LrWpanMacState_methods(root_module, cls):
+    ## traced-value.h (module 'core'): ns3::TracedValue<ns3::LrWpanMacState>::TracedValue() [constructor]
+    cls.add_constructor([])
+    ## traced-value.h (module 'core'): ns3::TracedValue<ns3::LrWpanMacState>::TracedValue(ns3::TracedValue<ns3::LrWpanMacState> const & o) [copy constructor]
+    cls.add_constructor([param('ns3::TracedValue< ns3::LrWpanMacState > const &', 'o')])
+    ## traced-value.h (module 'core'): ns3::TracedValue<ns3::LrWpanMacState>::TracedValue(ns3::LrWpanMacState const & v) [constructor]
+    cls.add_constructor([param('ns3::LrWpanMacState const &', 'v')])
+    ## traced-value.h (module 'core'): void ns3::TracedValue<ns3::LrWpanMacState>::Connect(ns3::CallbackBase const & cb, std::basic_string<char,std::char_traits<char>,std::allocator<char> > path) [member function]
+    cls.add_method('Connect', 
+                   'void', 
+                   [param('ns3::CallbackBase const &', 'cb'), param('std::string', 'path')])
+    ## traced-value.h (module 'core'): void ns3::TracedValue<ns3::LrWpanMacState>::ConnectWithoutContext(ns3::CallbackBase const & cb) [member function]
+    cls.add_method('ConnectWithoutContext', 
+                   'void', 
+                   [param('ns3::CallbackBase const &', 'cb')])
+    ## traced-value.h (module 'core'): void ns3::TracedValue<ns3::LrWpanMacState>::Disconnect(ns3::CallbackBase const & cb, std::basic_string<char,std::char_traits<char>,std::allocator<char> > path) [member function]
+    cls.add_method('Disconnect', 
+                   'void', 
+                   [param('ns3::CallbackBase const &', 'cb'), param('std::string', 'path')])
+    ## traced-value.h (module 'core'): void ns3::TracedValue<ns3::LrWpanMacState>::DisconnectWithoutContext(ns3::CallbackBase const & cb) [member function]
+    cls.add_method('DisconnectWithoutContext', 
+                   'void', 
+                   [param('ns3::CallbackBase const &', 'cb')])
+    ## traced-value.h (module 'core'): ns3::LrWpanMacState ns3::TracedValue<ns3::LrWpanMacState>::Get() const [member function]
+    cls.add_method('Get', 
+                   'ns3::LrWpanMacState', 
+                   [], 
+                   is_const=True)
+    ## traced-value.h (module 'core'): void ns3::TracedValue<ns3::LrWpanMacState>::Set(ns3::LrWpanMacState const & v) [member function]
+    cls.add_method('Set', 
+                   'void', 
+                   [param('ns3::LrWpanMacState const &', 'v')])
+    return
+
+def register_Ns3TracedValue__Ns3LrWpanPhyEnumeration_methods(root_module, cls):
+    ## traced-value.h (module 'core'): ns3::TracedValue<ns3::LrWpanPhyEnumeration>::TracedValue() [constructor]
+    cls.add_constructor([])
+    ## traced-value.h (module 'core'): ns3::TracedValue<ns3::LrWpanPhyEnumeration>::TracedValue(ns3::TracedValue<ns3::LrWpanPhyEnumeration> const & o) [copy constructor]
+    cls.add_constructor([param('ns3::TracedValue< ns3::LrWpanPhyEnumeration > const &', 'o')])
+    ## traced-value.h (module 'core'): ns3::TracedValue<ns3::LrWpanPhyEnumeration>::TracedValue(ns3::LrWpanPhyEnumeration const & v) [constructor]
+    cls.add_constructor([param('ns3::LrWpanPhyEnumeration const &', 'v')])
+    ## traced-value.h (module 'core'): void ns3::TracedValue<ns3::LrWpanPhyEnumeration>::Connect(ns3::CallbackBase const & cb, std::basic_string<char,std::char_traits<char>,std::allocator<char> > path) [member function]
+    cls.add_method('Connect', 
+                   'void', 
+                   [param('ns3::CallbackBase const &', 'cb'), param('std::string', 'path')])
+    ## traced-value.h (module 'core'): void ns3::TracedValue<ns3::LrWpanPhyEnumeration>::ConnectWithoutContext(ns3::CallbackBase const & cb) [member function]
+    cls.add_method('ConnectWithoutContext', 
+                   'void', 
+                   [param('ns3::CallbackBase const &', 'cb')])
+    ## traced-value.h (module 'core'): void ns3::TracedValue<ns3::LrWpanPhyEnumeration>::Disconnect(ns3::CallbackBase const & cb, std::basic_string<char,std::char_traits<char>,std::allocator<char> > path) [member function]
+    cls.add_method('Disconnect', 
+                   'void', 
+                   [param('ns3::CallbackBase const &', 'cb'), param('std::string', 'path')])
+    ## traced-value.h (module 'core'): void ns3::TracedValue<ns3::LrWpanPhyEnumeration>::DisconnectWithoutContext(ns3::CallbackBase const & cb) [member function]
+    cls.add_method('DisconnectWithoutContext', 
+                   'void', 
+                   [param('ns3::CallbackBase const &', 'cb')])
+    ## traced-value.h (module 'core'): ns3::LrWpanPhyEnumeration ns3::TracedValue<ns3::LrWpanPhyEnumeration>::Get() const [member function]
+    cls.add_method('Get', 
+                   'ns3::LrWpanPhyEnumeration', 
+                   [], 
+                   is_const=True)
+    ## traced-value.h (module 'core'): void ns3::TracedValue<ns3::LrWpanPhyEnumeration>::Set(ns3::LrWpanPhyEnumeration const & v) [member function]
+    cls.add_method('Set', 
+                   'void', 
+                   [param('ns3::LrWpanPhyEnumeration const &', 'v')])
     return
 
 def register_Ns3TypeId_methods(root_module, cls):
@@ -4038,6 +4264,47 @@ def register_Ns3AttributeValue_methods(root_module, cls):
                    is_pure_virtual=True, is_const=True, is_virtual=True)
     return
 
+def register_Ns3BooleanChecker_methods(root_module, cls):
+    ## boolean.h (module 'core'): ns3::BooleanChecker::BooleanChecker() [constructor]
+    cls.add_constructor([])
+    ## boolean.h (module 'core'): ns3::BooleanChecker::BooleanChecker(ns3::BooleanChecker const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::BooleanChecker const &', 'arg0')])
+    return
+
+def register_Ns3BooleanValue_methods(root_module, cls):
+    cls.add_output_stream_operator()
+    ## boolean.h (module 'core'): ns3::BooleanValue::BooleanValue(ns3::BooleanValue const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::BooleanValue const &', 'arg0')])
+    ## boolean.h (module 'core'): ns3::BooleanValue::BooleanValue() [constructor]
+    cls.add_constructor([])
+    ## boolean.h (module 'core'): ns3::BooleanValue::BooleanValue(bool value) [constructor]
+    cls.add_constructor([param('bool', 'value')])
+    ## boolean.h (module 'core'): ns3::Ptr<ns3::AttributeValue> ns3::BooleanValue::Copy() const [member function]
+    cls.add_method('Copy', 
+                   'ns3::Ptr< ns3::AttributeValue >', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## boolean.h (module 'core'): bool ns3::BooleanValue::DeserializeFromString(std::string value, ns3::Ptr<ns3::AttributeChecker const> checker) [member function]
+    cls.add_method('DeserializeFromString', 
+                   'bool', 
+                   [param('std::string', 'value'), param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
+                   is_virtual=True)
+    ## boolean.h (module 'core'): bool ns3::BooleanValue::Get() const [member function]
+    cls.add_method('Get', 
+                   'bool', 
+                   [], 
+                   is_const=True)
+    ## boolean.h (module 'core'): std::string ns3::BooleanValue::SerializeToString(ns3::Ptr<ns3::AttributeChecker const> checker) const [member function]
+    cls.add_method('SerializeToString', 
+                   'std::string', 
+                   [param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
+                   is_const=True, is_virtual=True)
+    ## boolean.h (module 'core'): void ns3::BooleanValue::Set(bool value) [member function]
+    cls.add_method('Set', 
+                   'void', 
+                   [param('bool', 'value')])
+    return
+
 def register_Ns3CallbackChecker_methods(root_module, cls):
     ## callback.h (module 'core'): ns3::CallbackChecker::CallbackChecker() [constructor]
     cls.add_constructor([])
@@ -4050,11 +4317,21 @@ def register_Ns3CallbackImplBase_methods(root_module, cls):
     cls.add_constructor([])
     ## callback.h (module 'core'): ns3::CallbackImplBase::CallbackImplBase(ns3::CallbackImplBase const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::CallbackImplBase const &', 'arg0')])
+    ## callback.h (module 'core'): std::string ns3::CallbackImplBase::GetTypeid() const [member function]
+    cls.add_method('GetTypeid', 
+                   'std::string', 
+                   [], 
+                   is_pure_virtual=True, is_const=True, is_virtual=True)
     ## callback.h (module 'core'): bool ns3::CallbackImplBase::IsEqual(ns3::Ptr<ns3::CallbackImplBase const> other) const [member function]
     cls.add_method('IsEqual', 
                    'bool', 
                    [param('ns3::Ptr< ns3::CallbackImplBase const >', 'other')], 
                    is_pure_virtual=True, is_const=True, is_virtual=True)
+    ## callback.h (module 'core'): static std::string ns3::CallbackImplBase::Demangle(std::string const & mangled) [member function]
+    cls.add_method('Demangle', 
+                   'std::string', 
+                   [param('std::string const &', 'mangled')], 
+                   is_static=True, visibility='protected')
     return
 
 def register_Ns3CallbackValue_methods(root_module, cls):
@@ -4085,6 +4362,39 @@ def register_Ns3CallbackValue_methods(root_module, cls):
                    [param('ns3::CallbackBase', 'base')])
     return
 
+def register_Ns3DoubleValue_methods(root_module, cls):
+    ## double.h (module 'core'): ns3::DoubleValue::DoubleValue() [constructor]
+    cls.add_constructor([])
+    ## double.h (module 'core'): ns3::DoubleValue::DoubleValue(ns3::DoubleValue const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::DoubleValue const &', 'arg0')])
+    ## double.h (module 'core'): ns3::DoubleValue::DoubleValue(double const & value) [constructor]
+    cls.add_constructor([param('double const &', 'value')])
+    ## double.h (module 'core'): ns3::Ptr<ns3::AttributeValue> ns3::DoubleValue::Copy() const [member function]
+    cls.add_method('Copy', 
+                   'ns3::Ptr< ns3::AttributeValue >', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## double.h (module 'core'): bool ns3::DoubleValue::DeserializeFromString(std::string value, ns3::Ptr<ns3::AttributeChecker const> checker) [member function]
+    cls.add_method('DeserializeFromString', 
+                   'bool', 
+                   [param('std::string', 'value'), param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
+                   is_virtual=True)
+    ## double.h (module 'core'): double ns3::DoubleValue::Get() const [member function]
+    cls.add_method('Get', 
+                   'double', 
+                   [], 
+                   is_const=True)
+    ## double.h (module 'core'): std::string ns3::DoubleValue::SerializeToString(ns3::Ptr<ns3::AttributeChecker const> checker) const [member function]
+    cls.add_method('SerializeToString', 
+                   'std::string', 
+                   [param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
+                   is_const=True, is_virtual=True)
+    ## double.h (module 'core'): void ns3::DoubleValue::Set(double const & value) [member function]
+    cls.add_method('Set', 
+                   'void', 
+                   [param('double const &', 'value')])
+    return
+
 def register_Ns3EmptyAttributeValue_methods(root_module, cls):
     ## attribute.h (module 'core'): ns3::EmptyAttributeValue::EmptyAttributeValue(ns3::EmptyAttributeValue const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::EmptyAttributeValue const &', 'arg0')])
@@ -4105,6 +4415,84 @@ def register_Ns3EmptyAttributeValue_methods(root_module, cls):
                    'std::string', 
                    [param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
                    is_const=True, visibility='private', is_virtual=True)
+    return
+
+def register_Ns3EnumChecker_methods(root_module, cls):
+    ## enum.h (module 'core'): ns3::EnumChecker::EnumChecker(ns3::EnumChecker const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::EnumChecker const &', 'arg0')])
+    ## enum.h (module 'core'): ns3::EnumChecker::EnumChecker() [constructor]
+    cls.add_constructor([])
+    ## enum.h (module 'core'): void ns3::EnumChecker::Add(int value, std::string name) [member function]
+    cls.add_method('Add', 
+                   'void', 
+                   [param('int', 'value'), param('std::string', 'name')])
+    ## enum.h (module 'core'): void ns3::EnumChecker::AddDefault(int value, std::string name) [member function]
+    cls.add_method('AddDefault', 
+                   'void', 
+                   [param('int', 'value'), param('std::string', 'name')])
+    ## enum.h (module 'core'): bool ns3::EnumChecker::Check(ns3::AttributeValue const & value) const [member function]
+    cls.add_method('Check', 
+                   'bool', 
+                   [param('ns3::AttributeValue const &', 'value')], 
+                   is_const=True, is_virtual=True)
+    ## enum.h (module 'core'): bool ns3::EnumChecker::Copy(ns3::AttributeValue const & src, ns3::AttributeValue & dst) const [member function]
+    cls.add_method('Copy', 
+                   'bool', 
+                   [param('ns3::AttributeValue const &', 'src'), param('ns3::AttributeValue &', 'dst')], 
+                   is_const=True, is_virtual=True)
+    ## enum.h (module 'core'): ns3::Ptr<ns3::AttributeValue> ns3::EnumChecker::Create() const [member function]
+    cls.add_method('Create', 
+                   'ns3::Ptr< ns3::AttributeValue >', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## enum.h (module 'core'): std::string ns3::EnumChecker::GetUnderlyingTypeInformation() const [member function]
+    cls.add_method('GetUnderlyingTypeInformation', 
+                   'std::string', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## enum.h (module 'core'): std::string ns3::EnumChecker::GetValueTypeName() const [member function]
+    cls.add_method('GetValueTypeName', 
+                   'std::string', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## enum.h (module 'core'): bool ns3::EnumChecker::HasUnderlyingTypeInformation() const [member function]
+    cls.add_method('HasUnderlyingTypeInformation', 
+                   'bool', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    return
+
+def register_Ns3EnumValue_methods(root_module, cls):
+    ## enum.h (module 'core'): ns3::EnumValue::EnumValue(ns3::EnumValue const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::EnumValue const &', 'arg0')])
+    ## enum.h (module 'core'): ns3::EnumValue::EnumValue() [constructor]
+    cls.add_constructor([])
+    ## enum.h (module 'core'): ns3::EnumValue::EnumValue(int value) [constructor]
+    cls.add_constructor([param('int', 'value')])
+    ## enum.h (module 'core'): ns3::Ptr<ns3::AttributeValue> ns3::EnumValue::Copy() const [member function]
+    cls.add_method('Copy', 
+                   'ns3::Ptr< ns3::AttributeValue >', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## enum.h (module 'core'): bool ns3::EnumValue::DeserializeFromString(std::string value, ns3::Ptr<ns3::AttributeChecker const> checker) [member function]
+    cls.add_method('DeserializeFromString', 
+                   'bool', 
+                   [param('std::string', 'value'), param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
+                   is_virtual=True)
+    ## enum.h (module 'core'): int ns3::EnumValue::Get() const [member function]
+    cls.add_method('Get', 
+                   'int', 
+                   [], 
+                   is_const=True)
+    ## enum.h (module 'core'): std::string ns3::EnumValue::SerializeToString(ns3::Ptr<ns3::AttributeChecker const> checker) const [member function]
+    cls.add_method('SerializeToString', 
+                   'std::string', 
+                   [param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
+                   is_const=True, is_virtual=True)
+    ## enum.h (module 'core'): void ns3::EnumValue::Set(int value) [member function]
+    cls.add_method('Set', 
+                   'void', 
+                   [param('int', 'value')])
     return
 
 def register_Ns3EventImpl_methods(root_module, cls):
@@ -4129,6 +4517,39 @@ def register_Ns3EventImpl_methods(root_module, cls):
                    'void', 
                    [], 
                    is_pure_virtual=True, visibility='protected', is_virtual=True)
+    return
+
+def register_Ns3IntegerValue_methods(root_module, cls):
+    ## integer.h (module 'core'): ns3::IntegerValue::IntegerValue() [constructor]
+    cls.add_constructor([])
+    ## integer.h (module 'core'): ns3::IntegerValue::IntegerValue(ns3::IntegerValue const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::IntegerValue const &', 'arg0')])
+    ## integer.h (module 'core'): ns3::IntegerValue::IntegerValue(int64_t const & value) [constructor]
+    cls.add_constructor([param('int64_t const &', 'value')])
+    ## integer.h (module 'core'): ns3::Ptr<ns3::AttributeValue> ns3::IntegerValue::Copy() const [member function]
+    cls.add_method('Copy', 
+                   'ns3::Ptr< ns3::AttributeValue >', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## integer.h (module 'core'): bool ns3::IntegerValue::DeserializeFromString(std::string value, ns3::Ptr<ns3::AttributeChecker const> checker) [member function]
+    cls.add_method('DeserializeFromString', 
+                   'bool', 
+                   [param('std::string', 'value'), param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
+                   is_virtual=True)
+    ## integer.h (module 'core'): int64_t ns3::IntegerValue::Get() const [member function]
+    cls.add_method('Get', 
+                   'int64_t', 
+                   [], 
+                   is_const=True)
+    ## integer.h (module 'core'): std::string ns3::IntegerValue::SerializeToString(ns3::Ptr<ns3::AttributeChecker const> checker) const [member function]
+    cls.add_method('SerializeToString', 
+                   'std::string', 
+                   [param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
+                   is_const=True, is_virtual=True)
+    ## integer.h (module 'core'): void ns3::IntegerValue::Set(int64_t const & value) [member function]
+    cls.add_method('Set', 
+                   'void', 
+                   [param('int64_t const &', 'value')])
     return
 
 def register_Ns3Ipv4AddressChecker_methods(root_module, cls):
@@ -4888,6 +5309,46 @@ def register_Ns3Mac16AddressValue_methods(root_module, cls):
                    [param('ns3::Mac16Address const &', 'value')])
     return
 
+def register_Ns3Mac48AddressChecker_methods(root_module, cls):
+    ## mac48-address.h (module 'network'): ns3::Mac48AddressChecker::Mac48AddressChecker() [constructor]
+    cls.add_constructor([])
+    ## mac48-address.h (module 'network'): ns3::Mac48AddressChecker::Mac48AddressChecker(ns3::Mac48AddressChecker const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::Mac48AddressChecker const &', 'arg0')])
+    return
+
+def register_Ns3Mac48AddressValue_methods(root_module, cls):
+    ## mac48-address.h (module 'network'): ns3::Mac48AddressValue::Mac48AddressValue() [constructor]
+    cls.add_constructor([])
+    ## mac48-address.h (module 'network'): ns3::Mac48AddressValue::Mac48AddressValue(ns3::Mac48AddressValue const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::Mac48AddressValue const &', 'arg0')])
+    ## mac48-address.h (module 'network'): ns3::Mac48AddressValue::Mac48AddressValue(ns3::Mac48Address const & value) [constructor]
+    cls.add_constructor([param('ns3::Mac48Address const &', 'value')])
+    ## mac48-address.h (module 'network'): ns3::Ptr<ns3::AttributeValue> ns3::Mac48AddressValue::Copy() const [member function]
+    cls.add_method('Copy', 
+                   'ns3::Ptr< ns3::AttributeValue >', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## mac48-address.h (module 'network'): bool ns3::Mac48AddressValue::DeserializeFromString(std::string value, ns3::Ptr<ns3::AttributeChecker const> checker) [member function]
+    cls.add_method('DeserializeFromString', 
+                   'bool', 
+                   [param('std::string', 'value'), param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
+                   is_virtual=True)
+    ## mac48-address.h (module 'network'): ns3::Mac48Address ns3::Mac48AddressValue::Get() const [member function]
+    cls.add_method('Get', 
+                   'ns3::Mac48Address', 
+                   [], 
+                   is_const=True)
+    ## mac48-address.h (module 'network'): std::string ns3::Mac48AddressValue::SerializeToString(ns3::Ptr<ns3::AttributeChecker const> checker) const [member function]
+    cls.add_method('SerializeToString', 
+                   'std::string', 
+                   [param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
+                   is_const=True, is_virtual=True)
+    ## mac48-address.h (module 'network'): void ns3::Mac48AddressValue::Set(ns3::Mac48Address const & value) [member function]
+    cls.add_method('Set', 
+                   'void', 
+                   [param('ns3::Mac48Address const &', 'value')])
+    return
+
 def register_Ns3Mac64AddressChecker_methods(root_module, cls):
     ## mac64-address.h (module 'network'): ns3::Mac64AddressChecker::Mac64AddressChecker() [constructor]
     cls.add_constructor([])
@@ -5498,6 +5959,39 @@ def register_Ns3TypeIdValue_methods(root_module, cls):
                    [param('ns3::TypeId const &', 'value')])
     return
 
+def register_Ns3UintegerValue_methods(root_module, cls):
+    ## uinteger.h (module 'core'): ns3::UintegerValue::UintegerValue() [constructor]
+    cls.add_constructor([])
+    ## uinteger.h (module 'core'): ns3::UintegerValue::UintegerValue(ns3::UintegerValue const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::UintegerValue const &', 'arg0')])
+    ## uinteger.h (module 'core'): ns3::UintegerValue::UintegerValue(uint64_t const & value) [constructor]
+    cls.add_constructor([param('uint64_t const &', 'value')])
+    ## uinteger.h (module 'core'): ns3::Ptr<ns3::AttributeValue> ns3::UintegerValue::Copy() const [member function]
+    cls.add_method('Copy', 
+                   'ns3::Ptr< ns3::AttributeValue >', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## uinteger.h (module 'core'): bool ns3::UintegerValue::DeserializeFromString(std::string value, ns3::Ptr<ns3::AttributeChecker const> checker) [member function]
+    cls.add_method('DeserializeFromString', 
+                   'bool', 
+                   [param('std::string', 'value'), param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
+                   is_virtual=True)
+    ## uinteger.h (module 'core'): uint64_t ns3::UintegerValue::Get() const [member function]
+    cls.add_method('Get', 
+                   'uint64_t', 
+                   [], 
+                   is_const=True)
+    ## uinteger.h (module 'core'): std::string ns3::UintegerValue::SerializeToString(ns3::Ptr<ns3::AttributeChecker const> checker) const [member function]
+    cls.add_method('SerializeToString', 
+                   'std::string', 
+                   [param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
+                   is_const=True, is_virtual=True)
+    ## uinteger.h (module 'core'): void ns3::UintegerValue::Set(uint64_t const & value) [member function]
+    cls.add_method('Set', 
+                   'void', 
+                   [param('uint64_t const &', 'value')])
+    return
+
 def register_Ns3AddressChecker_methods(root_module, cls):
     ## address.h (module 'network'): ns3::AddressChecker::AddressChecker() [constructor]
     cls.add_constructor([])
@@ -5828,6 +6322,8 @@ def register_functions(root_module):
     module = root_module
     register_functions_ns3_FatalImpl(module.get_submodule('FatalImpl'), root_module)
     register_functions_ns3_Hash(module.get_submodule('Hash'), root_module)
+    register_functions_ns3_TracedValueCallback(module.get_submodule('TracedValueCallback'), root_module)
+    register_functions_ns3_internal(module.get_submodule('internal'), root_module)
     return
 
 def register_functions_ns3_FatalImpl(module, root_module):
@@ -5838,6 +6334,12 @@ def register_functions_ns3_Hash(module, root_module):
     return
 
 def register_functions_ns3_Hash_Function(module, root_module):
+    return
+
+def register_functions_ns3_TracedValueCallback(module, root_module):
+    return
+
+def register_functions_ns3_internal(module, root_module):
     return
 
 def main():

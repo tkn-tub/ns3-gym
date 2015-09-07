@@ -580,6 +580,10 @@ def register_types(module):
     module.add_class('SsidValue', parent=root_module['ns3::AttributeValue'])
     ## sta-wifi-mac.h (module 'wifi'): ns3::StaWifiMac [class]
     module.add_class('StaWifiMac', parent=root_module['ns3::RegularWifiMac'])
+    ## string.h (module 'core'): ns3::StringChecker [class]
+    module.add_class('StringChecker', import_from_module='ns.core', parent=root_module['ns3::AttributeChecker'])
+    ## string.h (module 'core'): ns3::StringValue [class]
+    module.add_class('StringValue', import_from_module='ns.core', parent=root_module['ns3::AttributeValue'])
     ## supported-rates.h (module 'wifi'): ns3::SupportedRates [class]
     module.add_class('SupportedRates', parent=root_module['ns3::WifiInformationElement'])
     ## nstime.h (module 'core'): ns3::TimeValue [class]
@@ -741,12 +745,12 @@ def register_types_ns3_TracedValueCallback(module):
     typehandlers.add_type_alias(u'void ( * ) ( uint32_t, uint32_t ) *', u'ns3::TracedValueCallback::Uint32')
     typehandlers.add_type_alias(u'void ( * ) ( uint32_t, uint32_t ) **', u'ns3::TracedValueCallback::Uint32*')
     typehandlers.add_type_alias(u'void ( * ) ( uint32_t, uint32_t ) *&', u'ns3::TracedValueCallback::Uint32&')
-    typehandlers.add_type_alias(u'void ( * ) ( int16_t, int16_t ) *', u'ns3::TracedValueCallback::Int16')
-    typehandlers.add_type_alias(u'void ( * ) ( int16_t, int16_t ) **', u'ns3::TracedValueCallback::Int16*')
-    typehandlers.add_type_alias(u'void ( * ) ( int16_t, int16_t ) *&', u'ns3::TracedValueCallback::Int16&')
     typehandlers.add_type_alias(u'void ( * ) ( ns3::Time, ns3::Time ) *', u'ns3::TracedValueCallback::Time')
     typehandlers.add_type_alias(u'void ( * ) ( ns3::Time, ns3::Time ) **', u'ns3::TracedValueCallback::Time*')
     typehandlers.add_type_alias(u'void ( * ) ( ns3::Time, ns3::Time ) *&', u'ns3::TracedValueCallback::Time&')
+    typehandlers.add_type_alias(u'void ( * ) ( int16_t, int16_t ) *', u'ns3::TracedValueCallback::Int16')
+    typehandlers.add_type_alias(u'void ( * ) ( int16_t, int16_t ) **', u'ns3::TracedValueCallback::Int16*')
+    typehandlers.add_type_alias(u'void ( * ) ( int16_t, int16_t ) *&', u'ns3::TracedValueCallback::Int16&')
 
 def register_types_ns3_internal(module):
     root_module = module.get_root()
@@ -998,6 +1002,8 @@ def register_methods(root_module):
     register_Ns3SsidChecker_methods(root_module, root_module['ns3::SsidChecker'])
     register_Ns3SsidValue_methods(root_module, root_module['ns3::SsidValue'])
     register_Ns3StaWifiMac_methods(root_module, root_module['ns3::StaWifiMac'])
+    register_Ns3StringChecker_methods(root_module, root_module['ns3::StringChecker'])
+    register_Ns3StringValue_methods(root_module, root_module['ns3::StringValue'])
     register_Ns3SupportedRates_methods(root_module, root_module['ns3::SupportedRates'])
     register_Ns3TimeValue_methods(root_module, root_module['ns3::TimeValue'])
     register_Ns3TypeIdChecker_methods(root_module, root_module['ns3::TypeIdChecker'])
@@ -3719,7 +3725,7 @@ def register_Ns3PacketTagListTagData_methods(root_module, cls):
     ## packet-tag-list.h (module 'network'): ns3::PacketTagList::TagData::count [variable]
     cls.add_instance_attribute('count', 'uint32_t', is_const=False)
     ## packet-tag-list.h (module 'network'): ns3::PacketTagList::TagData::data [variable]
-    cls.add_instance_attribute('data', 'uint8_t [ 20 ]', is_const=False)
+    cls.add_instance_attribute('data', 'uint8_t [ 21 ]', is_const=False)
     ## packet-tag-list.h (module 'network'): ns3::PacketTagList::TagData::next [variable]
     cls.add_instance_attribute('next', 'ns3::PacketTagList::TagData *', is_const=False)
     ## packet-tag-list.h (module 'network'): ns3::PacketTagList::TagData::tid [variable]
@@ -6768,6 +6774,11 @@ def register_Ns3VhtWifiMacHelper_methods(root_module, cls):
     cls.add_constructor([param('ns3::VhtWifiMacHelper const &', 'arg0')])
     ## vht-wifi-mac-helper.h (module 'wifi'): ns3::VhtWifiMacHelper::VhtWifiMacHelper() [constructor]
     cls.add_constructor([])
+    ## vht-wifi-mac-helper.h (module 'wifi'): static ns3::StringValue ns3::VhtWifiMacHelper::DataRateForMcs(int mcs) [member function]
+    cls.add_method('DataRateForMcs', 
+                   'ns3::StringValue', 
+                   [param('int', 'mcs')], 
+                   is_static=True)
     ## vht-wifi-mac-helper.h (module 'wifi'): static ns3::VhtWifiMacHelper ns3::VhtWifiMacHelper::Default() [member function]
     cls.add_method('Default', 
                    'ns3::VhtWifiMacHelper', 
@@ -12252,6 +12263,11 @@ def register_Ns3HtWifiMacHelper_methods(root_module, cls):
     cls.add_constructor([param('ns3::HtWifiMacHelper const &', 'arg0')])
     ## ht-wifi-mac-helper.h (module 'wifi'): ns3::HtWifiMacHelper::HtWifiMacHelper() [constructor]
     cls.add_constructor([])
+    ## ht-wifi-mac-helper.h (module 'wifi'): static ns3::StringValue ns3::HtWifiMacHelper::DataRateForMcs(int mcs) [member function]
+    cls.add_method('DataRateForMcs', 
+                   'ns3::StringValue', 
+                   [param('int', 'mcs')], 
+                   is_static=True)
     ## ht-wifi-mac-helper.h (module 'wifi'): static ns3::HtWifiMacHelper ns3::HtWifiMacHelper::Default() [member function]
     cls.add_method('Default', 
                    'ns3::HtWifiMacHelper', 
@@ -14601,6 +14617,46 @@ def register_Ns3StaWifiMac_methods(root_module, cls):
                    'void', 
                    [param('ns3::Ptr< ns3::Packet >', 'packet'), param('ns3::WifiMacHeader const *', 'hdr')], 
                    visibility='private', is_virtual=True)
+    return
+
+def register_Ns3StringChecker_methods(root_module, cls):
+    ## string.h (module 'core'): ns3::StringChecker::StringChecker() [constructor]
+    cls.add_constructor([])
+    ## string.h (module 'core'): ns3::StringChecker::StringChecker(ns3::StringChecker const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::StringChecker const &', 'arg0')])
+    return
+
+def register_Ns3StringValue_methods(root_module, cls):
+    ## string.h (module 'core'): ns3::StringValue::StringValue() [constructor]
+    cls.add_constructor([])
+    ## string.h (module 'core'): ns3::StringValue::StringValue(ns3::StringValue const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::StringValue const &', 'arg0')])
+    ## string.h (module 'core'): ns3::StringValue::StringValue(std::string const & value) [constructor]
+    cls.add_constructor([param('std::string const &', 'value')])
+    ## string.h (module 'core'): ns3::Ptr<ns3::AttributeValue> ns3::StringValue::Copy() const [member function]
+    cls.add_method('Copy', 
+                   'ns3::Ptr< ns3::AttributeValue >', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## string.h (module 'core'): bool ns3::StringValue::DeserializeFromString(std::string value, ns3::Ptr<ns3::AttributeChecker const> checker) [member function]
+    cls.add_method('DeserializeFromString', 
+                   'bool', 
+                   [param('std::string', 'value'), param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
+                   is_virtual=True)
+    ## string.h (module 'core'): std::string ns3::StringValue::Get() const [member function]
+    cls.add_method('Get', 
+                   'std::string', 
+                   [], 
+                   is_const=True)
+    ## string.h (module 'core'): std::string ns3::StringValue::SerializeToString(ns3::Ptr<ns3::AttributeChecker const> checker) const [member function]
+    cls.add_method('SerializeToString', 
+                   'std::string', 
+                   [param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
+                   is_const=True, is_virtual=True)
+    ## string.h (module 'core'): void ns3::StringValue::Set(std::string const & value) [member function]
+    cls.add_method('Set', 
+                   'void', 
+                   [param('std::string const &', 'value')])
     return
 
 def register_Ns3SupportedRates_methods(root_module, cls):

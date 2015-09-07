@@ -242,6 +242,10 @@ def register_types(module):
     module.add_enum('', ['MCS_FLAGS_NONE', 'MCS_FLAGS_BANDWIDTH_40', 'MCS_FLAGS_BANDWIDTH_20L', 'MCS_FLAGS_BANDWIDTH_20U', 'MCS_FLAGS_GUARD_INTERVAL', 'MCS_FLAGS_HT_GREENFIELD', 'MCS_FLAGS_FEC_TYPE', 'MCS_FLAGS_STBC_STREAMS', 'MCS_FLAGS_NESS_BIT_0'], outer_class=root_module['ns3::RadiotapHeader'], import_from_module='ns.network')
     ## radiotap-header.h (module 'network'): ns3::RadiotapHeader [enumeration]
     module.add_enum('', ['A_MPDU_STATUS_NONE', 'A_MPDU_STATUS_REPORT_ZERO_LENGTH', 'A_MPDU_STATUS_IS_ZERO_LENGTH', 'A_MPDU_STATUS_LAST_KNOWN', 'A_MPDU_STATUS_LAST', 'A_MPDU_STATUS_DELIMITER_CRC_ERROR', 'A_MPDU_STATUS_DELIMITER_CRC_KNOWN'], outer_class=root_module['ns3::RadiotapHeader'], import_from_module='ns.network')
+    ## radiotap-header.h (module 'network'): ns3::RadiotapHeader [enumeration]
+    module.add_enum('', ['VHT_KNOWN_NONE', 'VHT_KNOWN_STBC', 'VHT_KNOWN_TXOP_PS_NOT_ALLOWED', 'VHT_KNOWN_GUARD_INTERVAL', 'VHT_KNOWN_SHORT_GI_NSYM_DISAMBIGUATION', 'VHT_KNOWN_LDPC_EXTRA_OFDM_SYMBOL', 'VHT_KNOWN_BEAMFORMED', 'VHT_KNOWN_BANDWIDTH', 'VHT_KNOWN_GROUP_ID', 'VHT_KNOWN_PARTIAL_AID'], outer_class=root_module['ns3::RadiotapHeader'], import_from_module='ns.network')
+    ## radiotap-header.h (module 'network'): ns3::RadiotapHeader [enumeration]
+    module.add_enum('', ['VHT_FLAGS_NONE', 'VHT_FLAGS_STBC', 'VHT_FLAGS_TXOP_PS_NOT_ALLOWED', 'VHT_FLAGS_GUARD_INTERVAL', 'VHT_FLAGS_SHORT_GI_NSYM_DISAMBIGUATION', 'VHT_FLAGS__LDPC_EXTRA_OFDM_SYMBOL', 'VHT_FLAGS_BEAMFORMED'], outer_class=root_module['ns3::RadiotapHeader'], import_from_module='ns.network')
     ## random-variable-stream.h (module 'core'): ns3::RandomVariableStream [class]
     module.add_class('RandomVariableStream', import_from_module='ns.core', parent=root_module['ns3::Object'])
     ## red-queue.h (module 'network'): ns3::RedQueue [class]
@@ -552,9 +556,6 @@ def register_types(module):
     typehandlers.add_type_alias(u'ns3::SequenceNumber< unsigned char, signed char >', u'ns3::SequenceNumber8')
     typehandlers.add_type_alias(u'ns3::SequenceNumber< unsigned char, signed char >*', u'ns3::SequenceNumber8*')
     typehandlers.add_type_alias(u'ns3::SequenceNumber< unsigned char, signed char >&', u'ns3::SequenceNumber8&')
-    typehandlers.add_type_alias(u'void ( * ) ( ns3::SequenceNumber32, ns3::SequenceNumber32 ) *', u'ns3::SequenceNumber32TracedValueCallback')
-    typehandlers.add_type_alias(u'void ( * ) ( ns3::SequenceNumber32, ns3::SequenceNumber32 ) **', u'ns3::SequenceNumber32TracedValueCallback*')
-    typehandlers.add_type_alias(u'void ( * ) ( ns3::SequenceNumber32, ns3::SequenceNumber32 ) *&', u'ns3::SequenceNumber32TracedValueCallback&')
     typehandlers.add_type_alias(u'ns3::Callback< void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', u'ns3::GenericPhyRxEndErrorCallback')
     typehandlers.add_type_alias(u'ns3::Callback< void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >*', u'ns3::GenericPhyRxEndErrorCallback*')
     typehandlers.add_type_alias(u'ns3::Callback< void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >&', u'ns3::GenericPhyRxEndErrorCallback&')
@@ -575,6 +576,12 @@ def register_types(module):
     
     nested_module = module.add_cpp_namespace('Hash')
     register_types_ns3_Hash(nested_module)
+    
+    
+    ## Register a nested module for the namespace TracedValueCallback
+    
+    nested_module = module.add_cpp_namespace('TracedValueCallback')
+    register_types_ns3_TracedValueCallback(nested_module)
     
     
     ## Register a nested module for the namespace addressUtils
@@ -622,6 +629,40 @@ def register_types_ns3_Hash_Function(module):
     module.add_class('Hash64', import_from_module='ns.core', parent=root_module['ns3::Hash::Implementation'])
     ## hash-murmur3.h (module 'core'): ns3::Hash::Function::Murmur3 [class]
     module.add_class('Murmur3', import_from_module='ns.core', parent=root_module['ns3::Hash::Implementation'])
+
+def register_types_ns3_TracedValueCallback(module):
+    root_module = module.get_root()
+    
+    typehandlers.add_type_alias(u'void ( * ) ( double, double ) *', u'ns3::TracedValueCallback::Double')
+    typehandlers.add_type_alias(u'void ( * ) ( double, double ) **', u'ns3::TracedValueCallback::Double*')
+    typehandlers.add_type_alias(u'void ( * ) ( double, double ) *&', u'ns3::TracedValueCallback::Double&')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::SequenceNumber32, ns3::SequenceNumber32 ) *', u'ns3::TracedValueCallback::SequenceNumber32')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::SequenceNumber32, ns3::SequenceNumber32 ) **', u'ns3::TracedValueCallback::SequenceNumber32*')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::SequenceNumber32, ns3::SequenceNumber32 ) *&', u'ns3::TracedValueCallback::SequenceNumber32&')
+    typehandlers.add_type_alias(u'void ( * ) ( int8_t, int8_t ) *', u'ns3::TracedValueCallback::Int8')
+    typehandlers.add_type_alias(u'void ( * ) ( int8_t, int8_t ) **', u'ns3::TracedValueCallback::Int8*')
+    typehandlers.add_type_alias(u'void ( * ) ( int8_t, int8_t ) *&', u'ns3::TracedValueCallback::Int8&')
+    typehandlers.add_type_alias(u'void ( * ) ( uint8_t, uint8_t ) *', u'ns3::TracedValueCallback::Uint8')
+    typehandlers.add_type_alias(u'void ( * ) ( uint8_t, uint8_t ) **', u'ns3::TracedValueCallback::Uint8*')
+    typehandlers.add_type_alias(u'void ( * ) ( uint8_t, uint8_t ) *&', u'ns3::TracedValueCallback::Uint8&')
+    typehandlers.add_type_alias(u'void ( * ) ( int32_t, int32_t ) *', u'ns3::TracedValueCallback::Int32')
+    typehandlers.add_type_alias(u'void ( * ) ( int32_t, int32_t ) **', u'ns3::TracedValueCallback::Int32*')
+    typehandlers.add_type_alias(u'void ( * ) ( int32_t, int32_t ) *&', u'ns3::TracedValueCallback::Int32&')
+    typehandlers.add_type_alias(u'void ( * ) ( bool, bool ) *', u'ns3::TracedValueCallback::Bool')
+    typehandlers.add_type_alias(u'void ( * ) ( bool, bool ) **', u'ns3::TracedValueCallback::Bool*')
+    typehandlers.add_type_alias(u'void ( * ) ( bool, bool ) *&', u'ns3::TracedValueCallback::Bool&')
+    typehandlers.add_type_alias(u'void ( * ) ( uint16_t, uint16_t ) *', u'ns3::TracedValueCallback::Uint16')
+    typehandlers.add_type_alias(u'void ( * ) ( uint16_t, uint16_t ) **', u'ns3::TracedValueCallback::Uint16*')
+    typehandlers.add_type_alias(u'void ( * ) ( uint16_t, uint16_t ) *&', u'ns3::TracedValueCallback::Uint16&')
+    typehandlers.add_type_alias(u'void ( * ) ( uint32_t, uint32_t ) *', u'ns3::TracedValueCallback::Uint32')
+    typehandlers.add_type_alias(u'void ( * ) ( uint32_t, uint32_t ) **', u'ns3::TracedValueCallback::Uint32*')
+    typehandlers.add_type_alias(u'void ( * ) ( uint32_t, uint32_t ) *&', u'ns3::TracedValueCallback::Uint32&')
+    typehandlers.add_type_alias(u'void ( * ) ( int16_t, int16_t ) *', u'ns3::TracedValueCallback::Int16')
+    typehandlers.add_type_alias(u'void ( * ) ( int16_t, int16_t ) **', u'ns3::TracedValueCallback::Int16*')
+    typehandlers.add_type_alias(u'void ( * ) ( int16_t, int16_t ) *&', u'ns3::TracedValueCallback::Int16&')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Time, ns3::Time ) *', u'ns3::TracedValueCallback::Time')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Time, ns3::Time ) **', u'ns3::TracedValueCallback::Time*')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Time, ns3::Time ) *&', u'ns3::TracedValueCallback::Time&')
 
 def register_types_ns3_addressUtils(module):
     root_module = module.get_root()
@@ -1627,11 +1668,6 @@ def register_Ns3CallbackBase_methods(root_module, cls):
     ## callback.h (module 'core'): ns3::CallbackBase::CallbackBase(ns3::Ptr<ns3::CallbackImplBase> impl) [constructor]
     cls.add_constructor([param('ns3::Ptr< ns3::CallbackImplBase >', 'impl')], 
                         visibility='protected')
-    ## callback.h (module 'core'): static std::string ns3::CallbackBase::Demangle(std::string const & mangled) [member function]
-    cls.add_method('Demangle', 
-                   'std::string', 
-                   [param('std::string const &', 'mangled')], 
-                   is_static=True, visibility='protected')
     return
 
 def register_Ns3ChannelList_methods(root_module, cls):
@@ -3101,7 +3137,7 @@ def register_Ns3PacketTagListTagData_methods(root_module, cls):
     ## packet-tag-list.h (module 'network'): ns3::PacketTagList::TagData::count [variable]
     cls.add_instance_attribute('count', 'uint32_t', is_const=False)
     ## packet-tag-list.h (module 'network'): ns3::PacketTagList::TagData::data [variable]
-    cls.add_instance_attribute('data', 'uint8_t [ 20 ]', is_const=False)
+    cls.add_instance_attribute('data', 'uint8_t [ 21 ]', is_const=False)
     ## packet-tag-list.h (module 'network'): ns3::PacketTagList::TagData::next [variable]
     cls.add_instance_attribute('next', 'ns3::PacketTagList::TagData *', is_const=False)
     ## packet-tag-list.h (module 'network'): ns3::PacketTagList::TagData::tid [variable]
@@ -4903,6 +4939,56 @@ def register_Ns3RadiotapHeader_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
+    ## radiotap-header.h (module 'network'): uint8_t ns3::RadiotapHeader::GetVhtBandwidth() const [member function]
+    cls.add_method('GetVhtBandwidth', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True)
+    ## radiotap-header.h (module 'network'): uint8_t ns3::RadiotapHeader::GetVhtCoding() const [member function]
+    cls.add_method('GetVhtCoding', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True)
+    ## radiotap-header.h (module 'network'): uint8_t ns3::RadiotapHeader::GetVhtFlags() const [member function]
+    cls.add_method('GetVhtFlags', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True)
+    ## radiotap-header.h (module 'network'): uint8_t ns3::RadiotapHeader::GetVhtGroupId() const [member function]
+    cls.add_method('GetVhtGroupId', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True)
+    ## radiotap-header.h (module 'network'): uint16_t ns3::RadiotapHeader::GetVhtKnown() const [member function]
+    cls.add_method('GetVhtKnown', 
+                   'uint16_t', 
+                   [], 
+                   is_const=True)
+    ## radiotap-header.h (module 'network'): uint8_t ns3::RadiotapHeader::GetVhtMcsNssUser1() const [member function]
+    cls.add_method('GetVhtMcsNssUser1', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True)
+    ## radiotap-header.h (module 'network'): uint8_t ns3::RadiotapHeader::GetVhtMcsNssUser2() const [member function]
+    cls.add_method('GetVhtMcsNssUser2', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True)
+    ## radiotap-header.h (module 'network'): uint8_t ns3::RadiotapHeader::GetVhtMcsNssUser3() const [member function]
+    cls.add_method('GetVhtMcsNssUser3', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True)
+    ## radiotap-header.h (module 'network'): uint8_t ns3::RadiotapHeader::GetVhtMcsNssUser4() const [member function]
+    cls.add_method('GetVhtMcsNssUser4', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True)
+    ## radiotap-header.h (module 'network'): uint8_t ns3::RadiotapHeader::GetVhtPartialAid() const [member function]
+    cls.add_method('GetVhtPartialAid', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True)
     ## radiotap-header.h (module 'network'): void ns3::RadiotapHeader::Print(std::ostream & os) const [member function]
     cls.add_method('Print', 
                    'void', 
@@ -4945,6 +5031,10 @@ def register_Ns3RadiotapHeader_methods(root_module, cls):
     cls.add_method('SetTsft', 
                    'void', 
                    [param('uint64_t', 'tsft')])
+    ## radiotap-header.h (module 'network'): void ns3::RadiotapHeader::SetVhtFields(uint16_t known, uint8_t flags, uint8_t bandwidth, uint8_t * mcs_nss, uint8_t coding, uint8_t group_id, uint16_t partial_aid) [member function]
+    cls.add_method('SetVhtFields', 
+                   'void', 
+                   [param('uint16_t', 'known'), param('uint8_t', 'flags'), param('uint8_t', 'bandwidth'), param('uint8_t *', 'mcs_nss'), param('uint8_t', 'coding'), param('uint8_t', 'group_id'), param('uint16_t', 'partial_aid')])
     return
 
 def register_Ns3RandomVariableStream_methods(root_module, cls):
@@ -6651,11 +6741,21 @@ def register_Ns3CallbackImplBase_methods(root_module, cls):
     cls.add_constructor([])
     ## callback.h (module 'core'): ns3::CallbackImplBase::CallbackImplBase(ns3::CallbackImplBase const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::CallbackImplBase const &', 'arg0')])
+    ## callback.h (module 'core'): std::string ns3::CallbackImplBase::GetTypeid() const [member function]
+    cls.add_method('GetTypeid', 
+                   'std::string', 
+                   [], 
+                   is_pure_virtual=True, is_const=True, is_virtual=True)
     ## callback.h (module 'core'): bool ns3::CallbackImplBase::IsEqual(ns3::Ptr<ns3::CallbackImplBase const> other) const [member function]
     cls.add_method('IsEqual', 
                    'bool', 
                    [param('ns3::Ptr< ns3::CallbackImplBase const >', 'other')], 
                    is_pure_virtual=True, is_const=True, is_virtual=True)
+    ## callback.h (module 'core'): static std::string ns3::CallbackImplBase::Demangle(std::string const & mangled) [member function]
+    cls.add_method('Demangle', 
+                   'std::string', 
+                   [param('std::string const &', 'mangled')], 
+                   is_static=True, visibility='protected')
     return
 
 def register_Ns3CallbackValue_methods(root_module, cls):
@@ -11268,6 +11368,7 @@ def register_functions(root_module):
     module = root_module
     register_functions_ns3_FatalImpl(module.get_submodule('FatalImpl'), root_module)
     register_functions_ns3_Hash(module.get_submodule('Hash'), root_module)
+    register_functions_ns3_TracedValueCallback(module.get_submodule('TracedValueCallback'), root_module)
     register_functions_ns3_addressUtils(module.get_submodule('addressUtils'), root_module)
     register_functions_ns3_internal(module.get_submodule('internal'), root_module)
     return
@@ -11280,6 +11381,9 @@ def register_functions_ns3_Hash(module, root_module):
     return
 
 def register_functions_ns3_Hash_Function(module, root_module):
+    return
+
+def register_functions_ns3_TracedValueCallback(module, root_module):
     return
 
 def register_functions_ns3_addressUtils(module, root_module):

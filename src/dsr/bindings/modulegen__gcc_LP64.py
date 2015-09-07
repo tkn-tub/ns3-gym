@@ -28,10 +28,10 @@ def register_types(module):
     module.add_enum('WifiModulationClass', ['WIFI_MOD_CLASS_UNKNOWN', 'WIFI_MOD_CLASS_IR', 'WIFI_MOD_CLASS_FHSS', 'WIFI_MOD_CLASS_DSSS', 'WIFI_MOD_CLASS_HR_DSSS', 'WIFI_MOD_CLASS_ERP_PBCC', 'WIFI_MOD_CLASS_DSSS_OFDM', 'WIFI_MOD_CLASS_ERP_OFDM', 'WIFI_MOD_CLASS_OFDM', 'WIFI_MOD_CLASS_HT', 'WIFI_MOD_CLASS_VHT'], import_from_module='ns.wifi')
     ## wifi-phy-standard.h (module 'wifi'): ns3::WifiPhyStandard [enumeration]
     module.add_enum('WifiPhyStandard', ['WIFI_PHY_STANDARD_80211a', 'WIFI_PHY_STANDARD_80211b', 'WIFI_PHY_STANDARD_80211g', 'WIFI_PHY_STANDARD_80211_10MHZ', 'WIFI_PHY_STANDARD_80211_5MHZ', 'WIFI_PHY_STANDARD_holland', 'WIFI_PHY_STANDARD_80211n_2_4GHZ', 'WIFI_PHY_STANDARD_80211n_5GHZ', 'WIFI_PHY_STANDARD_80211ac'], import_from_module='ns.wifi')
-    ## wifi-mode.h (module 'wifi'): ns3::WifiCodeRate [enumeration]
-    module.add_enum('WifiCodeRate', ['WIFI_CODE_RATE_UNDEFINED', 'WIFI_CODE_RATE_3_4', 'WIFI_CODE_RATE_2_3', 'WIFI_CODE_RATE_1_2', 'WIFI_CODE_RATE_5_6'], import_from_module='ns.wifi')
     ## qos-utils.h (module 'wifi'): ns3::AcIndex [enumeration]
     module.add_enum('AcIndex', ['AC_BE', 'AC_BK', 'AC_VI', 'AC_VO', 'AC_BE_NQOS', 'AC_UNDEF'], import_from_module='ns.wifi')
+    ## wifi-mode.h (module 'wifi'): ns3::WifiCodeRate [enumeration]
+    module.add_enum('WifiCodeRate', ['WIFI_CODE_RATE_UNDEFINED', 'WIFI_CODE_RATE_3_4', 'WIFI_CODE_RATE_2_3', 'WIFI_CODE_RATE_1_2', 'WIFI_CODE_RATE_5_6'], import_from_module='ns.wifi')
     ## address.h (module 'network'): ns3::Address [class]
     module.add_class('Address', import_from_module='ns.network')
     ## address.h (module 'network'): ns3::Address::MaxSize_e [enumeration]
@@ -2629,7 +2629,7 @@ def register_Ns3PacketTagListTagData_methods(root_module, cls):
     ## packet-tag-list.h (module 'network'): ns3::PacketTagList::TagData::count [variable]
     cls.add_instance_attribute('count', 'uint32_t', is_const=False)
     ## packet-tag-list.h (module 'network'): ns3::PacketTagList::TagData::data [variable]
-    cls.add_instance_attribute('data', 'uint8_t [ 20 ]', is_const=False)
+    cls.add_instance_attribute('data', 'uint8_t [ 21 ]', is_const=False)
     ## packet-tag-list.h (module 'network'): ns3::PacketTagList::TagData::next [variable]
     cls.add_instance_attribute('next', 'ns3::PacketTagList::TagData *', is_const=False)
     ## packet-tag-list.h (module 'network'): ns3::PacketTagList::TagData::tid [variable]
@@ -7532,6 +7532,10 @@ def register_Ns3ArpCache_methods(root_module, cls):
     cls.add_method('PrintArpCache', 
                    'void', 
                    [param('ns3::Ptr< ns3::OutputStreamWrapper >', 'stream')])
+    ## arp-cache.h (module 'internet'): void ns3::ArpCache::Remove(ns3::ArpCache::Entry * entry) [member function]
+    cls.add_method('Remove', 
+                   'void', 
+                   [param('ns3::ArpCache::Entry *', 'entry')])
     ## arp-cache.h (module 'internet'): void ns3::ArpCache::SetAliveTimeout(ns3::Time aliveTimeout) [member function]
     cls.add_method('SetAliveTimeout', 
                    'void', 
@@ -7568,6 +7572,10 @@ def register_Ns3ArpCacheEntry_methods(root_module, cls):
     cls.add_constructor([param('ns3::ArpCache::Entry const &', 'arg0')])
     ## arp-cache.h (module 'internet'): ns3::ArpCache::Entry::Entry(ns3::ArpCache * arp) [constructor]
     cls.add_constructor([param('ns3::ArpCache *', 'arp')])
+    ## arp-cache.h (module 'internet'): void ns3::ArpCache::Entry::ClearPendingPacket() [member function]
+    cls.add_method('ClearPendingPacket', 
+                   'void', 
+                   [])
     ## arp-cache.h (module 'internet'): void ns3::ArpCache::Entry::ClearRetries() [member function]
     cls.add_method('ClearRetries', 
                    'void', 
@@ -7608,6 +7616,10 @@ def register_Ns3ArpCacheEntry_methods(root_module, cls):
                    'bool', 
                    [], 
                    is_const=True)
+    ## arp-cache.h (module 'internet'): bool ns3::ArpCache::Entry::IsPermanent() [member function]
+    cls.add_method('IsPermanent', 
+                   'bool', 
+                   [])
     ## arp-cache.h (module 'internet'): bool ns3::ArpCache::Entry::IsWaitReply() [member function]
     cls.add_method('IsWaitReply', 
                    'bool', 
@@ -7620,6 +7632,10 @@ def register_Ns3ArpCacheEntry_methods(root_module, cls):
     cls.add_method('MarkDead', 
                    'void', 
                    [])
+    ## arp-cache.h (module 'internet'): void ns3::ArpCache::Entry::MarkPermanent() [member function]
+    cls.add_method('MarkPermanent', 
+                   'void', 
+                   [])
     ## arp-cache.h (module 'internet'): void ns3::ArpCache::Entry::MarkWaitReply(ns3::Ptr<ns3::Packet> waiting) [member function]
     cls.add_method('MarkWaitReply', 
                    'void', 
@@ -7628,6 +7644,10 @@ def register_Ns3ArpCacheEntry_methods(root_module, cls):
     cls.add_method('SetIpv4Address', 
                    'void', 
                    [param('ns3::Ipv4Address', 'destination')])
+    ## arp-cache.h (module 'internet'): void ns3::ArpCache::Entry::SetMacAddresss(ns3::Address macAddress) [member function]
+    cls.add_method('SetMacAddresss', 
+                   'void', 
+                   [param('ns3::Address', 'macAddress')])
     ## arp-cache.h (module 'internet'): bool ns3::ArpCache::Entry::UpdateWaitReply(ns3::Ptr<ns3::Packet> waiting) [member function]
     cls.add_method('UpdateWaitReply', 
                    'bool', 
