@@ -693,7 +693,7 @@ class gen_ns3_module_header_task(Task.Task):
         return 0
 
     def sig_explicit_deps(self):
-        self.m.update('\n'.join([node.abspath() for node in self.inputs]).encode('utf-8'))
+        self.m.update('\n'.join(sorted([node.abspath() for node in self.inputs])).encode('utf-8'))
         return self.m.digest()
 
     def unique_id(self):
