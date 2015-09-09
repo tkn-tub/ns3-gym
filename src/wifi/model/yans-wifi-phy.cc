@@ -162,7 +162,7 @@ YansWifiPhy::GetTypeId (void)
                                         &YansWifiPhy::SetStbc),
                    MakeBooleanChecker ())
     .AddAttribute ("GreenfieldEnabled",
-                   "Whether or not STBC is enabled.",
+                   "Whether or not Greenfield is enabled.",
                    BooleanValue (false),
                    MakeBooleanAccessor (&YansWifiPhy::GetGreenfield,
                                         &YansWifiPhy::SetGreenfield),
