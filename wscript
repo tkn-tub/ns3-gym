@@ -116,6 +116,19 @@ def print_module_names(names):
     if i != 1:
         print()
 
+# return types of some APIs differ in Python 2/3 (type string vs class bytes)
+# This method will decode('utf-8') a byte object in Python 3, 
+# and do nothing in Python 2
+def maybe_decode(input):
+    if sys.version_info < (3,):
+        return input
+    else:
+        try:
+            return input.decode('utf-8')
+        except:
+            sys.exc_clear()
+            return input
+
 def options(opt):
     # options provided by the modules
     opt.load('compiler_c')
@@ -351,7 +364,8 @@ def configure(conf):
         cxx = env['CXX']
         cxx_check_libstdcxx = cxx + ['-print-file-name=libstdc++.so']
         p = subprocess.Popen(cxx_check_libstdcxx, stdout=subprocess.PIPE)
-        libstdcxx_location = os.path.dirname(p.stdout.read().strip())
+        libstdcxx_output = maybe_decode(p.stdout.read().strip())
+        libstdcxx_location = os.path.dirname(libstdcxx_output)
         p.wait()
         if libstdcxx_location:
             conf.env.append_value('NS3_MODULE_PATH', libstdcxx_location)

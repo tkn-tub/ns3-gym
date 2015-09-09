@@ -721,7 +721,7 @@ def apply_ns3moduleheader(self):
             if ns3headers.module != self.module:
                 continue
             found_the_module = True
-            for source in ns3headers.headers:
+            for source in sorted(ns3headers.headers):
                 source = os.path.basename(source)
                 node = ns3_dir_node.find_or_declare(os.path.basename(source))
                 if node is None:

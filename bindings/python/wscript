@@ -19,6 +19,19 @@ REQUIRED_PYGCCXML_VERSION = (0, 9, 5)
 
 RUN_ME=-3
 
+# return types of some APIs differ in Python 2/3 (type string vs class bytes)
+# This method will decode('utf-8') a byte object in Python 3,
+# and do nothing in Python 2
+def maybe_decode(input):
+    if sys.version_info < (3,):
+        return input
+    else:
+        try: 
+            return input.decode('utf-8')
+        except:
+            sys.exc_clear()
+            return input
+
 def add_to_python_path(path):
     if os.environ.get('PYTHONPATH', ''):
         os.environ['PYTHONPATH'] = path + os.pathsep + os.environ.get('PYTHONPATH')
@@ -168,7 +181,7 @@ def configure(conf):
                                 "import pybindgen.version; "
                                 "print(pybindgen.__version__)"],
                                 stdout=subprocess.PIPE).communicate()[0]
-        pybindgen_version = out.strip()
+        pybindgen_version = maybe_decode(out.strip())
         conf.msg('Checking for pybindgen version', pybindgen_version)
         if not (pybindgen_version == REQUIRED_PYBINDGEN_VERSION):
             Logs.warn("pybindgen (found %r), (need %r)" %
@@ -415,7 +428,7 @@ class gen_ns3_compat_pymod_task(Task.Task):
 
     def run(self):
         assert len(self.outputs) == 1
-        outfile = file(self.outputs[0].abspath(), "w")
+        outfile = open(self.outputs[0].abspath(), "w")
         print("import warnings", file=outfile)
         print('warnings.warn("the ns3 module is a compatibility layer '\
             'and should not be used in newly written code", DeprecationWarning, stacklevel=2)', file=outfile)
