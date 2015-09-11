@@ -43,6 +43,7 @@ Bugs fixed
 - Bug 1249 - doxygen comments on device-level SetMobility ()
 - Bug 1482 - mesh module was producing fatal error with ASCII and netanim traces
 - Bug 1557 - errors in function OpenFlowSwitchNetDevice::BufferFromPacket()
+- Bug 1681 - m_lastNavStart is assigned twice continuously
 - Bug 1736 - default dot11EDCATableMSDULifetime
 - Bug 1901 - mesh module producing malformed pcaps
 - Bug 1929 - TcpL4Protocol::Send must indicate the source address to routing (if known)
