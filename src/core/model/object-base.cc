@@ -53,6 +53,7 @@ GetObjectIid (void)
   NS_LOG_FUNCTION_NOARGS ();
   TypeId tid = TypeId ("ns3::ObjectBase");
   tid.SetParent (tid);
+  tid.SetGroupName ("Core");
   return tid;
 }
 

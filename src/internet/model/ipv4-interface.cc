@@ -41,6 +41,7 @@ Ipv4Interface::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::Ipv4Interface")
     .SetParent<Object> ()
+    .SetGroupName ("Internet")
     .AddAttribute ("ArpCache",
                    "The arp cache for this ipv4 interface",
                    PointerValue (0),
