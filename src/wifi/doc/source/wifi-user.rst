@@ -421,7 +421,7 @@ Each node is equipped with 802.11b Wi-Fi device::
 Note on the current implementation
 **********************************
 
-* 802.11g does not support 9 microseconds slot
+* 802.11g supports a default of long slot time (20 microseconds)
 * PHY_RXSTART is not supported
 * 802.11e TXOP is not supported
 * 802.11n/ac MIMO is not supported
