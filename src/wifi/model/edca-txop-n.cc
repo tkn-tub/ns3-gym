@@ -669,7 +669,7 @@ EdcaTxopN::MissedCts (void)
   if (!NeedRtsRetransmission ())
     {
       NS_LOG_DEBUG ("Cts Fail");
-      m_currentPacket = 0;
+      bool resetCurrentPacket = true;
       m_stationManager->ReportFinalRtsFailed (m_currentHdr.GetAddr1 (), &m_currentHdr);
       if (!m_txFailedCallback.IsNull ())
         {
@@ -711,9 +711,14 @@ EdcaTxopN::MissedCts (void)
               hdr.SetNoMoreFragments ();
               m_currentPacket = request.bar;
               m_currentHdr = hdr;
+              resetCurrentPacket = false;
             }
         }
       //to reset the dcf.
+      if (resetCurrentPacket == true)
+        {
+          m_currentPacket = 0;
+        }
       m_dcf->ResetCw ();
     }
   else
@@ -817,8 +822,7 @@ EdcaTxopN::MissedAck (void)
     {
       NS_LOG_DEBUG ("Ack Fail");
       m_stationManager->ReportFinalDataFailed (m_currentHdr.GetAddr1 (), &m_currentHdr);
-      //to reset the dcf.
-      m_currentPacket = 0;
+      bool resetCurrentPacket = true;
       if (!m_txFailedCallback.IsNull ())
         {
           m_txFailedCallback (m_currentHdr);
@@ -859,7 +863,13 @@ EdcaTxopN::MissedAck (void)
               hdr.SetNoMoreFragments ();
               m_currentPacket = request.bar;
               m_currentHdr = hdr;
+              resetCurrentPacket = false;
             }
+        }
+      //to reset the dcf.
+      if (resetCurrentPacket == true)
+        {
+          m_currentPacket = 0;
         }
       m_dcf->ResetCw ();
     }
