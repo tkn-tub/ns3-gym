@@ -96,17 +96,20 @@ get a copy of a release by typing the following into your Linux shell
   $ cd
   $ mkdir workspace
   $ cd workspace
-  $ wget http://www.nsnam.org/release/ns-allinone-3.23.tar.bz2
-  $ tar xjf ns-allinone-3.23.tar.bz2
+  $ wget http://www.nsnam.org/release/ns-allinone-3.24.tar.bz2
+  $ tar xjf ns-allinone-3.24.tar.bz2
 
-If you change into the directory ``ns-allinone-3.23`` you should see a
-number of files::
+If you change into the directory ``ns-allinone-3.24`` you should see a
+number of files and directories:
+
+::
 
   $ ls
-  bake      constants.py   ns-3.23               README
-  build.py  netanim-3.106  pybindgen-0.17.0.886  util.py
+  bake      constants.py   ns-3.24                            README
+  build.py  netanim-3.106  pybindgen-0.17.0.post41+ngd10fa60  util.py
 
-You are now ready to build the base |ns3| distribution.
+You are now ready to build the base |ns3| distribution and may skip ahead
+to the section on building |ns3|.
 
 Downloading |ns3| Using Bake
 ++++++++++++++++++++++++++++
@@ -163,10 +166,10 @@ distribution of your choice.
 
 There are a few configuration targets available:
 
-1.  ``ns-3.23``:  the module corresponding to the release; it will download
+1.  ``ns-3.24``:  the module corresponding to the release; it will download
     components similar to the release tarball.
 2.  ``ns-3-dev``:  a similar module but using the development code tree
-3.  ``ns-allinone-3.23``:  the module that includes other optional features
+3.  ``ns-allinone-3.24``:  the module that includes other optional features
     such as click routing, openflow for |ns3|, and the Network Simulation
     Cradle
 4.  ``ns-3-allinone``:  similar to the released version of the allinone
@@ -184,7 +187,7 @@ code either by inspection of the repository list or by going to the
 `"ns-3 Releases"
 <http://www.nsnam.org/releases>`_
 web page and clicking on the latest release link.  We'll proceed in
-this tutorial example with ``ns-3.23``.
+this tutorial example with ``ns-3.24``.
 
 We are now going to use the bake tool to pull down the various pieces of 
 |ns3| you will be using.  First, we'll say a word about running bake.
@@ -210,7 +213,7 @@ full builds of ns-3-allinone (with the optional packages) typically do.
 
 Step into the workspace directory and type the following into your shell::
 
-  $ ./bake.py configure -e ns-3.23
+  $ ./bake.py configure -e ns-3.24
 
 Next, we'l ask bake to check whether we have enough tools to download
 various components.  Type::
@@ -253,20 +256,23 @@ Next, try to download the software::
 
 should yield something like::
 
-   >> Searching for system dependency pygoocanvas - OK
+   >> Downloading gccxml-ns3 (target directory:gccxml) - OK
    >> Searching for system dependency python-dev - OK
    >> Searching for system dependency pygraphviz - OK
-   >> Downloading pybindgen-0.17.0.886 - OK
+   >> Searching for system dependency pygoocanvas - OK
+   >> Searching for system dependency setuptools - OK
    >> Searching for system dependency g++ - OK
    >> Searching for system dependency qt4 - OK
+   >> Downloading pygccxml - OK
    >> Downloading netanim-3.106 - OK
-   >> Downloading ns-3.23 - OK    
+   >> Downloading pybindgen-0.17.0.post41+ngd10fa60 (target directory:pybindgen) - OK
+   >> Downloading ns-3.24 - OK
 
-The above suggests that three sources have been downloaded.  Check the
+The above suggests that five sources have been downloaded.  Check the
 ``source`` directory now and type ``ls``; one should see::
 
   $ ls
-  netanim-3.106  ns-3.23  pybindgen-0.17.0.886
+  gccxml  netanim-3.106  ns-3.24  pybindgen  pygccxml  pygccxml-1.0.0.zip
 
 You are now ready to build the |ns3| distribution.
 
@@ -285,7 +291,7 @@ native |ns3| build system, Waf, to be introduced later in this tutorial.
 
 If you downloaded
 using a tarball you should have a directory called something like 
-``ns-allinone-3.23`` under your ``~/workspace`` directory.  
+``ns-allinone-3.24`` under your ``~/workspace`` directory.  
 Type the following::
 
   $ ./build.py --enable-examples --enable-tests
@@ -301,7 +307,7 @@ You will see lots of typical compiler output messages displayed as the build
 script builds the various pieces you downloaded.  Eventually you should see the
 following::
 
-   Waf: Leaving directory `/path/to/workspace/ns-allinone-3.23/ns-3.23/build'
+   Waf: Leaving directory `/path/to/workspace/ns-allinone-3.24/ns-3.24/build'
    'build' finished successfully (6m25.032s)
   
    Modules built:
@@ -323,7 +329,7 @@ following::
    brite                     click                     openflow                 
    visualizer               
 
-   Leaving directory `./ns-3.23'
+   Leaving directory `./ns-3.24'
 
 Regarding the portion about modules not built::
 
@@ -349,11 +355,13 @@ may continue to use it to build |ns3|.  Type
 
 and you should see something like::
 
-  >> Building pybindgen-0.17.0.886 - OK
+  >> Building gccxml-ns3 - OK
+  >> Building pygccxml - OK
   >> Building netanim-3.106 - OK
-  >> Building ns-3.23 - OK
+  >> Building pybindgen-0.17.0.post41+ngd10fa60 - OK
+  >> Building ns-3.24 - OK
 
-*Hint:  you can also perform both steps, download and build by calling 'bake.py deploy'.*
+*Hint:  you can also perform both steps, download and build, by calling 'bake.py deploy'.*
 
 If there happens to be a failure, please have a look at what the following
 command tells you; it may give a hint as to a missing dependency::
