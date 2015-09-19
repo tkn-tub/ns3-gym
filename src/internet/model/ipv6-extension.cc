@@ -1020,7 +1020,6 @@ uint8_t Ipv6ExtensionLooseRouting::Process (Ptr<Packet>& packet,
       return routingHeader.GetSerializedSize ();
     }
 
-  routingHeader.SetLength (88);
   ipv6header.SetHopLimit (hopLimit - 1);
   p->AddHeader (routingHeader);
 

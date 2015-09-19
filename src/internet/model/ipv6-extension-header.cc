@@ -46,8 +46,8 @@ TypeId Ipv6ExtensionHeader::GetInstanceTypeId () const
 }
 
 Ipv6ExtensionHeader::Ipv6ExtensionHeader ()
-  : m_nextHeader (0),
-    m_length (0),
+  : m_length (0),
+    m_nextHeader (0),
     m_data (0)
 {
 }
@@ -254,7 +254,7 @@ uint32_t Ipv6ExtensionHopByHopHeader::Deserialize (Buffer::Iterator start)
   Buffer::Iterator i = start;
 
   SetNextHeader (i.ReadU8 ());
-  SetLength ((i.ReadU8 () + 1) << 3);
+  m_length = i.ReadU8 ();
   OptionField::Deserialize (i, GetLength () - 2);
 
   return GetSerializedSize ();
@@ -310,7 +310,7 @@ uint32_t Ipv6ExtensionDestinationHeader::Deserialize (Buffer::Iterator start)
   Buffer::Iterator i = start;
 
   SetNextHeader (i.ReadU8 ());
-  SetLength ((i.ReadU8 () + 1) << 3);
+  m_length = i.ReadU8 ();
   OptionField::Deserialize (i, GetLength () - 2);
 
   return GetSerializedSize ();
@@ -337,7 +337,7 @@ Ipv6ExtensionFragmentHeader::Ipv6ExtensionFragmentHeader ()
   : m_offset (0),
     m_identification (0)
 {
-  SetLength (16);
+  m_length = 0;
 }
 
 Ipv6ExtensionFragmentHeader::~Ipv6ExtensionFragmentHeader ()
@@ -392,6 +392,7 @@ void Ipv6ExtensionFragmentHeader::Serialize (Buffer::Iterator start) const
   Buffer::Iterator i = start;
 
   i.WriteU8 (GetNextHeader ());
+  // Fragment header does not carry an extension length
   i.WriteU8 (0);
   i.WriteHtonU16 (m_offset);
   i.WriteHtonU32 (m_identification);
@@ -402,7 +403,8 @@ uint32_t Ipv6ExtensionFragmentHeader::Deserialize (Buffer::Iterator start)
   Buffer::Iterator i = start;
 
   SetNextHeader (i.ReadU8 ());
-  SetLength ((i.ReadU8 () + 1) << 3);
+  // Fragment header does not carry an extension length
+  i.ReadU8 ();
   m_offset = i.ReadNtohU16 ();
   m_identification = i.ReadNtohU32 ();
 
@@ -472,7 +474,7 @@ void Ipv6ExtensionRoutingHeader::Serialize (Buffer::Iterator start) const
   Buffer::Iterator i = start;
 
   i.WriteU8 (GetNextHeader ());
-  i.WriteU8 ((GetLength () >> 3) - 1);
+  i.WriteU8 (m_length);
   i.WriteU8 (m_typeRouting);
   i.WriteU8 (m_segmentsLeft);
 }
@@ -482,7 +484,7 @@ uint32_t Ipv6ExtensionRoutingHeader::Deserialize (Buffer::Iterator start)
   Buffer::Iterator i = start;
 
   SetNextHeader (i.ReadU8 ());
-  SetLength ((i.ReadU8 () + 1) << 3);
+  m_length = i.ReadU8 ();
   m_typeRouting = i.ReadU8 ();
   m_segmentsLeft = i.ReadU8 ();
 
@@ -564,8 +566,10 @@ void Ipv6ExtensionLooseRoutingHeader::Serialize (Buffer::Iterator start) const
   Buffer::Iterator i = start;
   uint8_t buff[16];
 
+  uint8_t addressNum = m_routersAddress.size ();
+
   i.WriteU8 (GetNextHeader ());
-  i.WriteU8 ((GetLength () >> 3) - 1);
+  i.WriteU8 (addressNum*2);
   i.WriteU8 (GetTypeRouting ());
   i.WriteU8 (GetSegmentsLeft ());
   i.WriteU32 (0);
@@ -583,15 +587,17 @@ uint32_t Ipv6ExtensionLooseRoutingHeader::Deserialize (Buffer::Iterator start)
   uint8_t buff[16];
 
   SetNextHeader (i.ReadU8 ());
-  SetLength ((i.ReadU8 () + 1) << 3);
+  m_length = i.ReadU8 ();
   SetTypeRouting (i.ReadU8 ());
   SetSegmentsLeft (i.ReadU8 ());
   i.ReadU32 ();
 
-  for (std::vector<Ipv6Address>::iterator it = m_routersAddress.begin (); it != m_routersAddress.end (); it++)
+  uint8_t addressNum = m_length / 2;
+  SetNumberAddress (addressNum);
+  for (uint8_t index = 0; index < addressNum; index++)
     {
       i.Read (buff, 16);
-      it->Set (buff);
+      SetRouterAddress (index, Ipv6Address (buff));
     }
 
   return GetSerializedSize ();

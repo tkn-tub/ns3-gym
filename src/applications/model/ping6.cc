@@ -214,7 +214,6 @@ void Ping6::Send ()
     {
       Ipv6ExtensionLooseRoutingHeader routingHeader;
       routingHeader.SetNextHeader (Ipv6Header::IPV6_ICMPV6);
-      routingHeader.SetLength (m_routers.size () * 16 + 8);
       routingHeader.SetTypeRouting (0);
       routingHeader.SetSegmentsLeft (m_routers.size ());
       routingHeader.SetRoutersAddress (m_routers);
