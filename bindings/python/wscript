@@ -152,7 +152,7 @@ def configure(conf):
     else:
         # ns-3-dev uses ../pybindgen, while ns-3 releases use ../REQUIRED_PYBINDGEN_VERSION
         pybindgen_dir = os.path.join('..', "pybindgen")
-        pybindgen_release_str = "pybindgen-" + '.'.join([str(x) for x in REQUIRED_PYBINDGEN_VERSION])
+        pybindgen_release_str = "pybindgen-" + REQUIRED_PYBINDGEN_VERSION
         pybindgen_release_dir = os.path.join('..', pybindgen_release_str)
         if os.path.isdir(pybindgen_dir):
             conf.msg("Checking for pybindgen location", ("%s (guessed)" % pybindgen_dir))
