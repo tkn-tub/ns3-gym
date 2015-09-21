@@ -26,6 +26,7 @@ New user-visible features
 Bugs fixed
 ----------
 - Bug 1132 - useless for loops in block-ack-test-suite.cc
+- Bug 2183 - LiIonEnergySourceHelper is not in the energy wscript
 
 Known issues
 ------------
