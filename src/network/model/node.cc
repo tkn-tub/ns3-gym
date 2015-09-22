@@ -110,6 +110,13 @@ Node::GetId (void) const
   return m_id;
 }
 
+Time
+Node::GetLocalTime (void) const
+{
+  NS_LOG_FUNCTION (this);
+  return Simulator::Now ();
+}
+
 uint32_t
 Node::GetSystemId (void) const
 {
