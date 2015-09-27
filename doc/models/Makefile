@@ -39,6 +39,10 @@ SOURCES = \
 	$(SRC)/fd-net-device/doc/fd-net-device.rst \
 	$(SRC)/tap-bridge/doc/tap.rst \
 	$(SRC)/mesh/doc/source/mesh.rst \
+	$(SRC)/mesh/doc/source/mesh-user.rst \
+	$(SRC)/mesh/doc/source/mesh-design.rst \
+	$(SRC)/mesh/doc/source/mesh-references.rst \
+	$(SRC)/mesh/doc/source/mesh-testing.rst \
 	$(SRC)/lte/doc/source/lte.rst \
 	$(SRC)/lte/doc/source/lte-user.rst \
 	$(SRC)/lte/doc/source/lte-design.rst \

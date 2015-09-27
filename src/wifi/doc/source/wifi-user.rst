@@ -228,7 +228,7 @@ SSID ``ns-3-ssid``::
 This object can be also used to set in the same way as ``ns3::QosWifiMacHelper``.
 
 VhtWifiMacHelper
-+++++++++++++++
+++++++++++++++++
 
 The ``ns3::VhtWifiMacHelper`` configures an
 object factory to create instances of a ``ns3::WifiMac``. It is used to
