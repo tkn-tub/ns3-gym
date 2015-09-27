@@ -89,7 +89,7 @@ public:
    * \param n7 the name of the attribute to set
    * \param v7 the value of the attribute to set
    *
-   * Configure a propagation delay for this channel.
+   * Configure a Transmission Current model for this EnergySource.
    */
   void SetTxCurrentModel (std::string name,
                           std::string n0 = "", const AttributeValue &v0 = EmptyAttributeValue (),
