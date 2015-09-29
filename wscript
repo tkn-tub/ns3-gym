@@ -30,9 +30,19 @@ modules_enabled  = ['all_modules']
 examples_enabled = False
 tests_enabled    = False
 
+# Compiler warning suppressions
+
 # Bug 1868:  be conservative about -Wstrict-overflow for optimized builds
 # on older compilers; it can generate spurious warnings.  
 cc_version_warn_strict_overflow = ('4', '8', '2')
+
+# Bug 2181:  clang warnings about unused local typedefs and potentially
+# evaluated expressions affecting darwin clang/LLVM version 7.0.0 (Xcode 7)
+# or clang/LLVM version 3.6 or greater.  We must make this platform-specific.
+darwin_clang_version_warn_unused_local_typedefs = ('7', '0', '0')
+darwin_clang_version_warn_potentially_evaluated = ('7', '0', '0')
+clang_version_warn_unused_local_typedefs = ('3', '6', '0')
+clang_version_warn_potentially_evaluated = ('3', '6', '0')
 
 # Get the information out of the NS-3 configuration file.
 config_file_exists = False
@@ -374,6 +384,18 @@ def configure(conf):
             if conf.check_compilation_flag('-Wl,--soname=foo'):
                 env['WL_SONAME_SUPPORTED'] = True
 
+    # bug 2181 on clang warning suppressions
+    if conf.env['CXX_NAME'] in ['clang']:
+        if Options.platform == 'darwin':
+            if conf.env['CC_VERSION'] >= darwin_clang_version_warn_unused_local_typedefs:
+                env.append_value('CXXFLAGS', '-Wno-unused-local-typedefs')
+            if conf.env['CC_VERSION'] >= darwin_clang_version_warn_potentially_evaluated: 
+                env.append_value('CXXFLAGS', '-Wno-potentially-evaluated-expression')
+        else:
+            if conf.env['CC_VERSION'] >= clang_version_warn_unused_local_typedefs:
+                env.append_value('CXXFLAGS', '-Wno-unused-local-typedefs')
+            if conf.env['CC_VERSION'] >= clang_version_warn_potentially_evaluated: 
+                env.append_value('CXXFLAGS', '-Wno-potentially-evaluated-expression')
     env['ENABLE_STATIC_NS3'] = False
     if Options.options.enable_static:
         if Options.platform == 'darwin':
