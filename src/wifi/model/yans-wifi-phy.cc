@@ -167,6 +167,12 @@ YansWifiPhy::GetTypeId (void)
                    MakeBooleanAccessor (&YansWifiPhy::GetGreenfield,
                                         &YansWifiPhy::SetGreenfield),
                    MakeBooleanChecker ())
+    .AddAttribute ("ShortPlcpPreambleEnabled",
+                   "Whether or not short PLCP preamble is enabled.",
+                   BooleanValue (false),
+                   MakeBooleanAccessor (&YansWifiPhy::GetShortPlcpPreamble,
+                                        &YansWifiPhy::SetShortPlcpPreamble),
+                   MakeBooleanChecker ())
     .AddAttribute ("ChannelWidth",
                    "Whether 5MHz, 10MHz, 20MHz, 22MHz, 40MHz, 80 MHz or 160 MHz.",
                    UintegerValue (20),
@@ -1276,6 +1282,18 @@ bool
 YansWifiPhy::GetGreenfield (void) const
 {
   return m_greenfield;
+}
+
+bool
+YansWifiPhy::GetShortPlcpPreamble (void) const
+{
+  return m_plcpPreamble;
+}
+
+void
+YansWifiPhy::SetShortPlcpPreamble (bool preamble)
+{
+  m_plcpPreamble = preamble;
 }
 
 void

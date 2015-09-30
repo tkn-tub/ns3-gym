@@ -31,7 +31,6 @@
 #include "supported-rates.h"
 #include "ssid.h"
 #include "ht-capabilities.h"
-#include "ht-capabilities.h"
 #include "vht-capabilities.h"
 
 namespace ns3 {
@@ -65,6 +64,12 @@ public:
    */
   void SetListenInterval (uint16_t interval);
   /**
+   * Set the Capability information.
+   *
+   * \param capabilities Capability information
+   */
+  void SetCapabilities (CapabilityInformation capabilities);
+  /**
    * Set the HT capabilities.
    *
    * \param htcapabilities HT capabilities
@@ -77,18 +82,23 @@ public:
     */
   void SetVhtCapabilities (VhtCapabilities vhtcapabilities);
   /**
-  * Return the VHT capabilities.
-  *
-  * \return VHT capabilities
-  */
-  VhtCapabilities GetVhtCapabilities (void) const;
-
+   * Return the Capability information.
+   *
+   * \return Capability information
+   */
+  CapabilityInformation GetCapabilities (void) const;
   /**
    * Return the HT capabilities.
    *
    * \return HT capabilities
    */
   HtCapabilities GetHtCapabilities (void) const;
+  /**
+  * Return the VHT capabilities.
+  *
+  * \return VHT capabilities
+  */
+  VhtCapabilities GetVhtCapabilities (void) const;
 
   /**
    * Return the Service Set Identifier (SSID).
@@ -153,6 +163,18 @@ public:
    * \return the supported rates
    */
   SupportedRates GetSupportedRates (void);
+  /**
+   * Return the Capability information.
+   *
+   * \return Capability information
+   */
+  CapabilityInformation GetCapabilities (void) const;
+  /**
+   * Set the Capability information.
+   *
+   * \param capabilities Capability information
+   */
+  void SetCapabilities (CapabilityInformation capabilities);
   /**
    * Return the HT capabilities.
    *
@@ -319,17 +341,17 @@ public:
    */
   SupportedRates GetSupportedRates (void) const;
   /**
+   * Return the Capability information.
+   *
+   * \return Capability information
+   */
+  CapabilityInformation GetCapabilities (void) const;
+  /**
    * Return the HT capabilities.
    *
    * \return HT capabilities
    */
   HtCapabilities GetHtCapabilities (void) const;
-  /**
-   * Set the VHT capabilities.
-   *
-   * \param vhtcapabilities VHT capabilities
-   */
-  void SetVhtCapabilities (VhtCapabilities vhtcapabilities);
   /**
   * Return the VHT capabilities.
   *
@@ -337,11 +359,23 @@ public:
   */
   VhtCapabilities GetVhtCapabilities (void) const;
   /**
+   * Set the Capability information.
+   *
+   * \param capabilities Capability information
+   */
+  void SetCapabilities (CapabilityInformation capabilities);
+  /**
    * Set the HT capabilities.
    *
    * \param htcapabilities HT capabilities
    */
   void SetHtCapabilities (HtCapabilities htcapabilities);
+  /**
+   * Set the VHT capabilities.
+   *
+   * \param vhtcapabilities VHT capabilities
+   */
+  void SetVhtCapabilities (VhtCapabilities vhtcapabilities);
   /**
    * Set the Service Set Identifier (SSID).
    *

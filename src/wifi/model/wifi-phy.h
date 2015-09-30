@@ -1220,6 +1220,14 @@ public:
    */
   virtual bool GetGreenfield (void) const = 0;
   /**
+   * \param shortPreamble Enable or disable short PLCP preamble
+   */
+  virtual void SetShortPlcpPreamble (bool shortPreamble) = 0;
+  /**
+   * \return true if short PLCP preamble is supported, false otherwise
+   */
+  virtual bool GetShortPlcpPreamble (void) const = 0;
+  /**
    * \return the channel width
    */
   virtual uint32_t GetChannelWidth (void) const = 0;

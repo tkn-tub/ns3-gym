@@ -244,6 +244,15 @@ public:
    */
   bool GetGreenfieldSupported (Mac48Address address) const;
   /**
+   * Return whether the station supports short PLCP preamble or not.
+   *
+   * \param address the address of the station
+   *
+   * \return true if short PLCP preamble is supported by the station,
+   *         false otherwise
+   */
+  bool GetShortPreambleSupported (Mac48Address address) const;
+  /**
    * Add a given Modulation and Coding Scheme (MCS) index to
    * the set of basic MCS.
    *
@@ -285,7 +294,6 @@ public:
    */
   WifiMode GetNonUnicastMode (void) const;
 
-
   /**
    * Invoked in an AP upon disassociation of a
    * specific STA.
@@ -313,6 +321,14 @@ public:
    * \param address the address of the station being recorded
    */
   void AddAllSupportedModes (Mac48Address address);
+
+  /**
+   * Record whether the short PLCP preamble is supported by the station.
+   *
+   * \param address the address of the station
+   * \param isShortPreambleSupported whether or not short PLCP preamble is supported by the station
+   */
+  void AddSupportedPlcpPreamble (Mac48Address address, bool isShortPreambleSupported);
 
   /**
    * Return whether the station state is brand new.
@@ -712,6 +728,15 @@ protected:
    *         false otherwise
    */
   bool GetGreenfield (const WifiRemoteStation *station) const;
+  /**
+   * Return whether the station supports short PLCP preamble or not.
+   *
+   * \param station the station being queried
+   *
+   * \return true if short PLCP preamble is supported by the station,
+   *         false otherwise
+   */
+  bool GetShortPreamble (const WifiRemoteStation *station) const;
   /**
    * Return the number of receive antennas the station has.
    *
@@ -1114,7 +1139,8 @@ struct WifiRemoteStationState
   uint32_t m_ness;            //!< Number of streams in beamforming of the remote station
   bool m_stbc;                //!< Flag if STBC is used by the remote station
   bool m_aggregation;         //!< Flag if MPDU aggregation is used by the remote station
-  bool m_greenfield;          //!< Flag if green field is used by the remote station
+  bool m_greenfield;          //!< Flag if greenfield is used by the remote station
+  bool m_shortPreamble;       //!< Flag if short PLCP preamble is used by the remote station
 };
 
 /**

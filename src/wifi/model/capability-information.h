@@ -46,6 +46,14 @@ public:
    * in the capability information field.
    */
   void SetIbss (void);
+  /**
+   * Set the short preamble bit
+   * in the capability information field.
+   *
+   * shortPreamble the short preamble bit
+   *
+   */
+  void SetShortPreamble (bool shortPreamble);
 
   /**
    * Check if the Extended Service Set (ESS) bit
@@ -63,6 +71,14 @@ public:
    *         field is set to 1
    */
   bool IsIbss (void) const;
+  /**
+   * Check if the short preamble bit
+   * in the capability information field is set to 1.
+   *
+   * \return short preamble bit in the capability information
+   *         field is set to 1
+   */
+  bool IsShortPreamble (void) const;
 
   /**
    * Return the serialized size of capability

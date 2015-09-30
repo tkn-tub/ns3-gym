@@ -186,6 +186,18 @@ MgtProbeResponseHeader::GetSupportedRates (void) const
 }
 
 void
+MgtProbeResponseHeader::SetCapabilities (CapabilityInformation capabilities)
+{
+  m_capability = capabilities;
+}
+
+CapabilityInformation
+MgtProbeResponseHeader::GetCapabilities (void) const
+{
+  return m_capability;
+}
+
+void
 MgtProbeResponseHeader::SetHtCapabilities (HtCapabilities htcapabilities)
 {
   m_htCapability = htcapabilities;
@@ -358,15 +370,33 @@ MgtAssocRequestHeader::SetSupportedRates (SupportedRates rates)
 }
 
 void
+MgtAssocRequestHeader::SetListenInterval (uint16_t interval)
+{
+  m_listenInterval = interval;
+}
+
+void
+MgtAssocRequestHeader::SetCapabilities (CapabilityInformation capabilities)
+{
+  m_capability = capabilities;
+}
+
+CapabilityInformation
+MgtAssocRequestHeader::GetCapabilities (void) const
+{
+  return m_capability;
+}
+
+void
 MgtAssocRequestHeader::SetHtCapabilities (HtCapabilities htcapabilities)
 {
   m_htCapability = htcapabilities;
 }
 
-void
-MgtAssocRequestHeader::SetListenInterval (uint16_t interval)
+HtCapabilities
+MgtAssocRequestHeader::GetHtCapabilities (void) const
 {
-  m_listenInterval = interval;
+  return m_htCapability;
 }
 
 void
@@ -379,12 +409,6 @@ VhtCapabilities
 MgtAssocRequestHeader::GetVhtCapabilities (void) const
 {
   return m_vhtCapability;
-}
-
-HtCapabilities
-MgtAssocRequestHeader::GetHtCapabilities (void) const
-{
-  return m_htCapability;
 }
 
 Ssid
@@ -510,6 +534,18 @@ void
 MgtAssocResponseHeader::SetSupportedRates (SupportedRates rates)
 {
   m_rates = rates;
+}
+
+void
+MgtAssocResponseHeader::SetCapabilities (CapabilityInformation capabilities)
+{
+  m_capability = capabilities;
+}
+
+CapabilityInformation
+MgtAssocResponseHeader::GetCapabilities (void) const
+{
+  return m_capability;
 }
 
 void

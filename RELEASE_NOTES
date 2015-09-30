@@ -27,6 +27,7 @@ Bugs fixed
 ----------
 - Bug 1132 - useless for loops in block-ack-test-suite.cc
 - Bug 2183 - LiIonEnergySourceHelper is not in the energy wscript
+- Bug 2003 - Missing DSSS short PLCP preamble
 
 Known issues
 ------------

@@ -47,6 +47,16 @@ CapabilityInformation::SetIbss (void)
   Set (1);
 }
 
+void
+CapabilityInformation::SetShortPreamble (bool shortPreamble)
+{
+  NS_LOG_FUNCTION (this);
+  if (shortPreamble)
+    {
+      Set (5);
+    }
+}
+
 bool
 CapabilityInformation::IsEss (void) const
 {
@@ -59,6 +69,13 @@ CapabilityInformation::IsIbss (void) const
 {
   NS_LOG_FUNCTION (this);
   return Is (1);
+}
+
+bool
+CapabilityInformation::IsShortPreamble (void) const
+{
+  NS_LOG_FUNCTION (this);
+  return Is (5);
 }
 
 void

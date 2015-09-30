@@ -334,6 +334,14 @@ ApWifiMac::GetSupportedRates (void) const
   return rates;
 }
 
+CapabilityInformation
+ApWifiMac::GetCapabilities (void) const
+{
+  CapabilityInformation capabilities;
+  capabilities.SetShortPreamble (m_phy->GetShortPlcpPreamble ());
+  return capabilities;
+}
+
 HtCapabilities
 ApWifiMac::GetHtCapabilities (void) const
 {
@@ -417,6 +425,7 @@ ApWifiMac::SendProbeResp (Mac48Address to)
   probe.SetSsid (GetSsid ());
   probe.SetSupportedRates (GetSupportedRates ());
   probe.SetBeaconIntervalUs (m_beaconInterval.GetMicroSeconds ());
+  probe.SetCapabilities (GetCapabilities ());
   if (m_htSupported || m_vhtSupported)
     {
       probe.SetHtCapabilities (GetHtCapabilities ());
@@ -459,7 +468,7 @@ ApWifiMac::SendAssocResp (Mac48Address to, bool success)
     }
   assoc.SetSupportedRates (GetSupportedRates ());
   assoc.SetStatusCode (code);
-
+  assoc.SetCapabilities (GetCapabilities ());
   if (m_htSupported || m_vhtSupported)
     {
       assoc.SetHtCapabilities (GetHtCapabilities ());
@@ -494,6 +503,7 @@ ApWifiMac::SendOneBeacon (void)
   beacon.SetSsid (GetSsid ());
   beacon.SetSupportedRates (GetSupportedRates ());
   beacon.SetBeaconIntervalUs (m_beaconInterval.GetMicroSeconds ());
+  beacon.SetCapabilities (GetCapabilities ());
   if (m_htSupported || m_vhtSupported)
     {
       beacon.SetHtCapabilities (GetHtCapabilities ());
@@ -630,6 +640,8 @@ ApWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
               //rate set is compatible with our Basic Rate set
               MgtAssocRequestHeader assocReq;
               packet->RemoveHeader (assocReq);
+              CapabilityInformation capabilities = assocReq.GetCapabilities ();
+              m_stationManager->AddSupportedPlcpPreamble (from, capabilities.IsShortPreamble ());
               SupportedRates rates = assocReq.GetSupportedRates ();
               bool problem = false;
               for (uint32_t i = 0; i < m_stationManager->GetNBasicModes (); i++)

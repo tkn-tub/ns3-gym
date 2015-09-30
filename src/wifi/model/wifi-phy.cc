@@ -262,7 +262,7 @@ WifiPhy::GetPlcpHeaderMode (WifiMode payloadMode, WifiPreamble preamble, WifiTxV
       return WifiPhy::GetErpOfdmRate6Mbps ();
     case WIFI_MOD_CLASS_DSSS:
     case WIFI_MOD_CLASS_HR_DSSS:
-      if (preamble == WIFI_PREAMBLE_LONG)
+      if (preamble == WIFI_PREAMBLE_LONG || payloadMode == WifiPhy::GetDsssRate1Mbps ())
         {
           //(Section 16.2.3 "PLCP field definitions" and Section 17.2.2.2 "Long PPDU format"; IEEE Std 802.11-2012)
           return WifiPhy::GetDsssRate1Mbps ();
@@ -326,7 +326,7 @@ WifiPhy::GetPlcpHeaderDuration (WifiTxVector txVector, WifiPreamble preamble)
       return MicroSeconds (4);
     case WIFI_MOD_CLASS_DSSS:
     case WIFI_MOD_CLASS_HR_DSSS:
-      if (preamble == WIFI_PREAMBLE_SHORT)
+      if ((preamble == WIFI_PREAMBLE_SHORT) && (txVector.GetMode ().GetDataRate (22, 0, 1) > 1000000))
         {
           //(Section 17.2.2.3 "Short PPDU format" and Figure 17-2 "Short PPDU format"; IEEE Std 802.11-2012)
           return MicroSeconds (24);
@@ -378,7 +378,7 @@ WifiPhy::GetPlcpPreambleDuration (WifiTxVector txVector, WifiPreamble preamble)
       return MicroSeconds (16);
     case WIFI_MOD_CLASS_DSSS:
     case WIFI_MOD_CLASS_HR_DSSS:
-      if (preamble == WIFI_PREAMBLE_SHORT)
+      if ((preamble == WIFI_PREAMBLE_SHORT) && (txVector.GetMode ().GetDataRate (22, 0, 1) > 1000000))
         {
           //(Section 17.2.2.3 "Short PPDU format)" Figure 17-2 "Short PPDU format"; IEEE Std 802.11-2012)
           return MicroSeconds (72);

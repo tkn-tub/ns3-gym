@@ -24,11 +24,12 @@
 #define AP_WIFI_MAC_H
 
 #include "regular-wifi-mac.h"
+#include "capability-information.h"
 #include "ht-capabilities.h"
+#include "vht-capabilities.h"
 #include "amsdu-subframe-header.h"
 #include "supported-rates.h"
 #include "ns3/random-variable-stream.h"
-#include "vht-capabilities.h"
 
 namespace ns3 {
 
@@ -180,6 +181,12 @@ private:
    * Forward a beacon packet to the beacon special DCF.
    */
   void SendOneBeacon (void);
+  /**
+   * Return the Capability information of the current AP.
+   *
+   * \return the Capability information that we support
+   */
+  CapabilityInformation GetCapabilities (void) const;
   /**
    * Return the HT capability of the current AP.
    *

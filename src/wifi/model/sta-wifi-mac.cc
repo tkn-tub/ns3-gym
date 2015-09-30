@@ -222,6 +222,7 @@ StaWifiMac::SendAssociationRequest (void)
   MgtAssocRequestHeader assoc;
   assoc.SetSsid (GetSsid ());
   assoc.SetSupportedRates (GetSupportedRates ());
+  assoc.SetCapabilities (GetCapabilities ());
   if (m_htSupported || m_vhtSupported)
     {
       assoc.SetHtCapabilities (GetHtCapabilities ());
@@ -558,6 +559,8 @@ StaWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
         {
           MgtAssocResponseHeader assocResp;
           packet->RemoveHeader (assocResp);
+          CapabilityInformation capabilities = assocResp.GetCapabilities ();
+          m_stationManager->AddSupportedPlcpPreamble (hdr->GetAddr2 (), capabilities.IsShortPreamble ());
           if (m_assocRequestEvent.IsRunning ())
             {
               m_assocRequestEvent.Cancel ();
@@ -653,6 +656,14 @@ StaWifiMac::GetSupportedRates (void) const
       rates.AddSupportedRate (mode.GetDataRate (m_phy->GetChannelWidth (), false, 1));
     }
   return rates;
+}
+
+CapabilityInformation
+StaWifiMac::GetCapabilities (void) const
+{
+  CapabilityInformation capabilities;
+  capabilities.SetShortPreamble (m_phy->GetShortPlcpPreamble ());
+  return capabilities;
 }
 
 HtCapabilities

@@ -480,6 +480,15 @@ WifiRemoteStationManager::Reset (Mac48Address address)
 }
 
 void
+WifiRemoteStationManager::AddSupportedPlcpPreamble (Mac48Address address, bool isShortPreambleSupported)
+{
+  NS_LOG_FUNCTION (this << address << isShortPreambleSupported);
+  NS_ASSERT (!address.IsGroup ());
+  WifiRemoteStationState *state = LookupState (address);
+  state->m_shortPreamble = isShortPreambleSupported;
+}
+
+void
 WifiRemoteStationManager::AddSupportedMode (Mac48Address address, WifiMode mode)
 {
   NS_LOG_FUNCTION (this << address << mode);
@@ -1305,6 +1314,7 @@ WifiRemoteStationManager::LookupState (Mac48Address address) const
   state->m_channelWidth = m_wifiPhy->GetChannelWidth ();
   state->m_shortGuardInterval = m_wifiPhy->GetGuardInterval ();
   state->m_greenfield = m_wifiPhy->GetGreenfield ();
+  state->m_shortPreamble = m_wifiPhy->GetShortPlcpPreamble ();
   state->m_rx = 1;
   state->m_tx = 1;
   state->m_ness = 0;
@@ -1399,6 +1409,12 @@ bool
 WifiRemoteStationManager::GetGreenfieldSupported (Mac48Address address) const
 {
   return LookupState (address)->m_greenfield;
+}
+
+bool
+WifiRemoteStationManager::GetShortPreambleSupported (Mac48Address address) const
+{
+  return LookupState (address)->m_shortPreamble;
 }
 
 WifiMode
@@ -1558,6 +1574,12 @@ bool
 WifiRemoteStationManager::GetGreenfield (const WifiRemoteStation *station) const
 {
   return station->m_state->m_greenfield;
+}
+
+bool
+WifiRemoteStationManager::GetShortPreamble (const WifiRemoteStation *station) const
+{
+  return station->m_state->m_shortPreamble;
 }
 
 bool

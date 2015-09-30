@@ -1422,6 +1422,10 @@ MacLow::CalculateOverallTxTime (Ptr<const Packet> packet,
     {
       preamble = WIFI_PREAMBLE_HT_MF;
     }
+  else if (m_phy->GetShortPlcpPreamble () && m_stationManager->GetShortPreambleSupported (m_currentHdr.GetAddr1 ()))
+    {
+      preamble = WIFI_PREAMBLE_SHORT;
+    }
   else
     {
       preamble = WIFI_PREAMBLE_LONG;
@@ -1457,6 +1461,10 @@ MacLow::CalculateTransmissionTime (Ptr<const Packet> packet,
       else if (dataTxVector.GetMode ().GetModulationClass () == WIFI_MOD_CLASS_HT)
         {
           preamble = WIFI_PREAMBLE_HT_MF;
+        }
+      else if (m_phy->GetShortPlcpPreamble () && m_stationManager->GetShortPreambleSupported (m_currentHdr.GetAddr1 ()))
+        {
+          preamble = WIFI_PREAMBLE_SHORT;
         }
       else
         {
@@ -1862,6 +1870,10 @@ MacLow::StartDataTxTimers (WifiTxVector dataTxVector)
     {
       preamble = WIFI_PREAMBLE_HT_MF;
     }
+  else if (m_phy->GetShortPlcpPreamble () && m_stationManager->GetShortPreambleSupported (m_currentHdr.GetAddr1 ()))
+    {
+      preamble = WIFI_PREAMBLE_SHORT;
+    }
   else
     {
       preamble = WIFI_PREAMBLE_LONG;
@@ -1945,6 +1957,10 @@ MacLow::SendDataPacket (void)
   else if (dataTxVector.GetMode ().GetModulationClass () == WIFI_MOD_CLASS_HT)
     {
       preamble = WIFI_PREAMBLE_HT_MF;
+    }
+  else if (m_phy->GetShortPlcpPreamble () && m_stationManager->GetShortPreambleSupported (m_currentHdr.GetAddr1 ()))
+    {
+      preamble = WIFI_PREAMBLE_SHORT;
     }
   else
     {
@@ -2175,6 +2191,10 @@ MacLow::SendDataAfterCts (Mac48Address source, Time duration)
   else if (dataTxVector.GetMode ().GetModulationClass () == WIFI_MOD_CLASS_HT)
     {
       preamble = WIFI_PREAMBLE_HT_MF;
+    }
+  else if (m_phy->GetShortPlcpPreamble () && m_stationManager->GetShortPreambleSupported (m_currentHdr.GetAddr1 ()))
+    {
+      preamble = WIFI_PREAMBLE_SHORT;
     }
   else
     {
@@ -2813,6 +2833,10 @@ MacLow::StopMpduAggregation (Ptr<const Packet> peekedPacket, WifiMacHeader peeke
   else if (dataTxVector.GetMode ().GetModulationClass () == WIFI_MOD_CLASS_HT)
     {
       preamble = WIFI_PREAMBLE_HT_MF;
+    }
+  else if (m_phy->GetShortPlcpPreamble () && m_stationManager->GetShortPreambleSupported (m_currentHdr.GetAddr1 ()))
+    {
+      preamble = WIFI_PREAMBLE_SHORT;
     }
   else
     {
