@@ -1997,13 +1997,46 @@ AnimationInterface::AnimXmlElement::AnimXmlElement (std::string tagName, bool em
 
 template <typename T>
 void
-AnimationInterface::AnimXmlElement::AddAttribute (std::string attribute, T value)
+AnimationInterface::AnimXmlElement::AddAttribute (std::string attribute, T value, bool xmlEscape)
 {
   std::ostringstream oss;
   oss << std::setprecision (10);
   oss << value;
   m_elementString += attribute.c_str ();
-  m_elementString += "=\"" + oss.str () + "\" ";
+  if (xmlEscape)
+    {
+      m_elementString += "=\"";
+      std::string valueStr = oss.str ();
+      for (std::string::iterator it = valueStr.begin (); it != valueStr.end (); ++it)
+        {
+          switch (*it)
+            {
+              case '&':
+                m_elementString += "&amp;";
+                break;
+              case '\"':
+                m_elementString += "&quot;";
+                break;
+              case '\'':
+                m_elementString += "&apos;";
+                break;
+              case '<':
+                m_elementString += "&lt;";
+                break;
+              case '>':
+                m_elementString += "&gt;";
+                break;
+              default:
+                m_elementString += *it;
+                break;
+            }
+        }
+      m_elementString += "\" ";
+    }
+  else
+    {
+      m_elementString += "=\"" + oss.str () + "\" ";
+    }
 }
 
 void
@@ -2102,7 +2135,7 @@ AnimationInterface::WriteXmlUpdateLink (uint32_t fromId, uint32_t toId, std::str
   element.AddAttribute ("t", Simulator::Now ().GetSeconds ());
   element.AddAttribute ("fromId", fromId);
   element.AddAttribute ("toId", toId);
-  element.AddAttribute ("ld", linkDescription);
+  element.AddAttribute ("ld", linkDescription, true);
   element.CloseElement ();
   WriteN (element.GetElementString (), m_f);
 }
@@ -2130,9 +2163,9 @@ AnimationInterface::WriteXmlLink (uint32_t fromId, uint32_t toLp, uint32_t toId)
       lprop = m_linkProperties[p2];
     }
   
-  element.AddAttribute ("fd", lprop.fromNodeDescription); 
-  element.AddAttribute ("td", lprop.toNodeDescription); 
-  element.AddAttribute ("ld", lprop.linkDescription); 
+  element.AddAttribute ("fd", lprop.fromNodeDescription, true); 
+  element.AddAttribute ("td", lprop.toNodeDescription, true); 
+  element.AddAttribute ("ld", lprop.linkDescription, true); 
   element.CloseElement ();
   WriteN (element.GetElementString (), m_f);
 }
@@ -2143,7 +2176,7 @@ AnimationInterface::WriteXmlRouting (uint32_t nodeId, std::string routingInfo)
   AnimXmlElement element ("rt");
   element.AddAttribute ("t", Simulator::Now ().GetSeconds ());
   element.AddAttribute ("id", nodeId);
-  element.AddAttribute ("info", routingInfo.c_str ());
+  element.AddAttribute ("info", routingInfo.c_str (), true);
   element.CloseElement ();
   WriteN (element.GetElementString (), m_routingF);
 }
@@ -2184,7 +2217,7 @@ AnimationInterface::WriteXmlPRef (uint64_t animUid, uint32_t fId, double fbTx, s
   element.AddAttribute ("fbTx", fbTx);
   if (!metaInfo.empty ())
     {
-      element.AddAttribute ("meta-info", metaInfo.c_str ());
+      element.AddAttribute ("meta-info", metaInfo.c_str (), true);
     }
   element.CloseElement ();
   WriteN (element.GetElementString (),  m_f);
@@ -2212,7 +2245,7 @@ AnimationInterface::WriteXmlP (std::string pktType, uint32_t fId, double fbTx, d
   element.AddAttribute ("lbTx", lbTx);
   if (!metaInfo.empty ())
     {
-      element.AddAttribute ("meta-info", metaInfo.c_str ());
+      element.AddAttribute ("meta-info", metaInfo.c_str (), true);
     }
   element.AddAttribute ("tId", tId);
   element.AddAttribute ("fbRx", fbRx);
@@ -2303,7 +2336,7 @@ AnimationInterface::WriteXmlUpdateNodeDescription (uint32_t nodeId)
   element.AddAttribute ("id", nodeId);
   if (m_nodeDescriptions.find (nodeId) != m_nodeDescriptions.end ())
     {
-      element.AddAttribute ("descr", m_nodeDescriptions[nodeId]); 
+      element.AddAttribute ("descr", m_nodeDescriptions[nodeId], true); 
     }
   element.CloseElement ();
   WriteN (element.GetElementString (), m_f);

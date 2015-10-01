@@ -520,7 +520,7 @@ private:
     public:
     AnimXmlElement (std::string tagName, bool emptyElement=true);
     template <typename T>
-    void AddAttribute (std::string attribute, T value);
+    void AddAttribute (std::string attribute, T value, bool xmlEscape=false);
     void Close ();
     void CloseElement ();
     void CloseTag ();

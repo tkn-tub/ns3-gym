@@ -21,10 +21,10 @@ def build(bld):
                                  ['netanim', 'internet', 'mobility', 'applications', 'uan'])
     obj.source = 'uan-animation.cc'
 
-    obj = bld.create_ns3_program('dynamic_linknode',
+    obj = bld.create_ns3_program('colors-link-description',
                                  ['netanim', 'applications', 'point-to-point-layout'])
-    obj.source = 'dynamic_linknode.cc'
+    obj.source = 'colors-link-description.cc'
 
-    obj = bld.create_ns3_program('resources_demo',
+    obj = bld.create_ns3_program('resources-counters',
                                  ['netanim', 'applications', 'point-to-point-layout'])
-    obj.source = 'resources_demo.cc'
+    obj.source = 'resources-counters.cc'

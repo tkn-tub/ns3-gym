@@ -235,7 +235,7 @@ With the above statement, AnimationInterface sets the node size to scale by 1.5.
   anim.UpdateNodeCounter (89, 7, 3.4);
 
 With the above statement, AnimationInterface sets the counter with Id == 89, associated with Node 7 with the value 3.4.
-The counter with Id 89 is obtained using AnimationInterface::AddNodeCounter. An example usage for this is in src/netanim/examples/resources_demo.cc.
+The counter with Id 89 is obtained using AnimationInterface::AddNodeCounter. An example usage for this is in src/netanim/examples/resource-counters.cc.
 
 
 Step 2: Loading the XML in NetAnim
