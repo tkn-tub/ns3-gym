@@ -34,6 +34,46 @@ Known issues
 In general, known issues are tracked on the project tracker available
 at http://www.nsnam.org/bugzilla/
 
+Release 3.24.1
+==============
+
+Release 3.24.1 is a maintenance release that fixes three issues:
+- support for Xcode 7 clang compiler version
+- detection of Python bindings location
+- compilation problem on 32-bit gcc-4.4 machine
+
+The issues prevented selected systems from being able to successfully
+build ns-3, and prevented the released version from being able to
+detect the presence of pybindgen used for Python bindings.
+
+Availability
+------------
+This release is available from:
+https://www.nsnam.org/release/ns-allinone-3.24.1.tar.bz2
+
+upported platforms
+-------------------
+This release has been tested on the following platforms:
+- Ubuntu 15.04 (64 bit) with g++-4.9.2
+- Fedora Core 22 (32 bit) with g++-5.1.1
+- Fedora Core 21 (64 bit) with g++-4.9.2
+- Ubuntu 14.04 (64 bit) with g++-4.8.2
+- Ubuntu 12.04.4 (64 bit) with g++-4.6.3
+- CentOS/RHEL 6.7 (64-bit) with g++-4.4.7
+- OS X Yosemite 10.10.5 with Xcode 7 and Apple LLVM version 7.0.0
+- OS X Yosemite 10.10.5 with Xcode 6.4 and Apple LLVM version 6.1.0
+- FreeBSD 10.2-RELEASE (64 bit) with clang-3.4.1
+
+New user-visible features
+-------------------------
+Features are identical to release 3.24.
+
+Bugs fixed
+----------
+- Bug 2181 - Xcode 7.0 compiler warnings trigger build failure
+- Bug 2182 - pybindgen required version is now a string literal
+- Bug 2184 - integer overflow in MacLow
+
 Release 3.24
 ============
 
