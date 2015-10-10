@@ -26,8 +26,9 @@ New user-visible features
 Bugs fixed
 ----------
 - Bug 1132 - useless for loops in block-ack-test-suite.cc
-- Bug 2183 - LiIonEnergySourceHelper is not in the energy wscript
+- Bug 1954 - Serialized size of wifi-net-device differ for TX and RX trace
 - Bug 2003 - Missing DSSS short PLCP preamble
+- Bug 2183 - LiIonEnergySourceHelper is not in the energy wscript
 - Bug 2184 - integer overflow in MacLow
 
 Known issues
