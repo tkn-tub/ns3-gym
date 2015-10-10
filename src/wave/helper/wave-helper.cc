@@ -209,7 +209,6 @@ PcapSniffTxEvent (
         if (txVector.IsAggregation ())
           {
             uint16_t ampduStatusFlags = RadiotapHeader::A_MPDU_STATUS_NONE;
-            ampduStatusFlags |= RadiotapHeader::A_MPDU_STATUS_DELIMITER_CRC_KNOWN;
             ampduStatusFlags |= RadiotapHeader::A_MPDU_STATUS_LAST_KNOWN;
             /* For PCAP file, MPDU Delimiter and Padding should be removed by the MAC Driver */
             AmpduSubframeHeader hdr;
@@ -221,7 +220,7 @@ PcapSniffTxEvent (
               {
                 ampduStatusFlags |= RadiotapHeader::A_MPDU_STATUS_LAST;
               }
-            header.SetAmpduStatus (aMpdu.referenceNumber, ampduStatusFlags, hdr.GetCrc ());
+            header.SetAmpduStatus (aMpdu.mpduRefNumber, ampduStatusFlags, hdr.GetCrc ());
           }
 
         if (preamble == WIFI_PREAMBLE_VHT)
@@ -405,7 +404,7 @@ PcapSniffRxEvent (
 
         if (txVector.IsAggregation ())
           {
-            uint16_t ampduStatusFlags = 0;
+            uint16_t ampduStatusFlags = RadiotapHeader::A_MPDU_STATUS_NONE;
             ampduStatusFlags |= RadiotapHeader::A_MPDU_STATUS_DELIMITER_CRC_KNOWN;
             ampduStatusFlags |= RadiotapHeader::A_MPDU_STATUS_LAST_KNOWN;
             /* For PCAP file, MPDU Delimiter and Padding should be removed by the MAC Driver */
@@ -418,7 +417,7 @@ PcapSniffRxEvent (
               {
                 ampduStatusFlags |= RadiotapHeader::A_MPDU_STATUS_LAST;
               }
-            header.SetAmpduStatus (aMpdu.referenceNumber, ampduStatusFlags, hdr.GetCrc ());
+            header.SetAmpduStatus (aMpdu.mpduRefNumber, ampduStatusFlags, hdr.GetCrc ());
           }
 
         if (preamble == WIFI_PREAMBLE_VHT)

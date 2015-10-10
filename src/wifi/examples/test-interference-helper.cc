@@ -106,7 +106,7 @@ InterferenceExperiment::SendA (void) const
   WifiTxVector txVector;
   txVector.SetTxPowerLevel (m_input.txPowerLevelA);
   txVector.SetMode (WifiMode (m_input.txModeA));
-  m_txA->SendPacket (p, txVector, m_input.preamble, 0, 0);
+  m_txA->SendPacket (p, txVector, m_input.preamble, 0);
 }
 
 void
@@ -116,7 +116,7 @@ InterferenceExperiment::SendB (void) const
   WifiTxVector txVector;
   txVector.SetTxPowerLevel (m_input.txPowerLevelB);
   txVector.SetMode (WifiMode (m_input.txModeB));
-  m_txB->SendPacket (p, txVector, m_input.preamble, 0, 0);
+  m_txB->SendPacket (p, txVector, m_input.preamble, 0);
 }
 
 InterferenceExperiment::InterferenceExperiment ()

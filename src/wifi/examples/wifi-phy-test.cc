@@ -74,7 +74,7 @@ PsrExperiment::Send (void)
   WifiTxVector txVector;
   txVector.SetTxPowerLevel (m_input.txPowerLevel);
   txVector.SetMode (mode);
-  m_tx->SendPacket (p, txVector, WIFI_PREAMBLE_LONG, 0, 0);
+  m_tx->SendPacket (p, txVector, WIFI_PREAMBLE_LONG, 0);
 }
 
 void
@@ -182,7 +182,7 @@ CollisionExperiment::SendA (void) const
   WifiTxVector txVector;
   txVector.SetTxPowerLevel (m_input.txPowerLevelA);
   txVector.SetMode (WifiMode (m_input.txModeA));
-  m_txA->SendPacket (p, txVector, WIFI_PREAMBLE_LONG, 0, 0);
+  m_txA->SendPacket (p, txVector, WIFI_PREAMBLE_LONG, 0);
 }
 
 void
@@ -193,7 +193,7 @@ CollisionExperiment::SendB (void) const
   WifiTxVector txVector;
   txVector.SetTxPowerLevel (m_input.txPowerLevelB);
   txVector.SetMode (WifiMode (m_input.txModeB));
-  m_txB->SendPacket (p, txVector, WIFI_PREAMBLE_LONG, 0, 0);
+  m_txB->SendPacket (p, txVector, WIFI_PREAMBLE_LONG, 0);
 }
 
 void

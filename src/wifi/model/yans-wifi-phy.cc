@@ -190,7 +190,9 @@ YansWifiPhy::YansWifiPhy ()
     m_endPlcpRxEvent (),
     m_channelStartingFrequency (0),
     m_mpdusNum (0),
-    m_plcpSuccess (false)
+    m_plcpSuccess (false),
+    m_txMpduReferenceNumber (0xffffffff),
+    m_rxMpduReferenceNumber (0xffffffff)
 {
   NS_LOG_FUNCTION (this);
   m_random = CreateObject<UniformRandomVariable> ();
@@ -572,11 +574,12 @@ YansWifiPhy::StartReceivePreambleAndHeader (Ptr<Packet> packet,
                                             double rxPowerDbm,
                                             WifiTxVector txVector,
                                             enum WifiPreamble preamble,
-                                            struct mpduInfo aMpdu, Time rxDuration)
+                                            uint8_t packetType,
+                                            Time rxDuration)
 {
   //This function should be later split to check separately whether plcp preamble and plcp header can be successfully received.
   //Note: plcp preamble reception is not yet modeled.
-  NS_LOG_FUNCTION (this << packet << rxPowerDbm << txVector.GetMode () << preamble << (uint32_t)aMpdu.packetType);
+  NS_LOG_FUNCTION (this << packet << rxPowerDbm << txVector.GetMode () << preamble << (uint32_t)packetType);
   AmpduTag ampduTag;
   rxPowerDbm += m_rxGainDb;
   double rxPowerW = DbmToW (rxPowerDbm);
@@ -653,6 +656,7 @@ YansWifiPhy::StartReceivePreambleAndHeader (Ptr<Packet> packet,
             {
               //received the first MPDU in an MPDU
               m_mpdusNum = ampduTag.GetNoOfMpdus () - 1;
+              m_rxMpduReferenceNumber++;
             }
           else if (preamble == WIFI_PREAMBLE_NONE && packet->PeekPacketTag (ampduTag) && m_mpdusNum > 0)
             {
@@ -684,12 +688,12 @@ YansWifiPhy::StartReceivePreambleAndHeader (Ptr<Packet> packet,
             {
               NS_ASSERT (m_endPlcpRxEvent.IsExpired ());
               m_endPlcpRxEvent = Simulator::Schedule (preambleAndHeaderDuration, &YansWifiPhy::StartReceivePacket, this,
-                                                      packet, txVector, preamble, aMpdu, event);
+                                                      packet, txVector, preamble, packetType, event);
             }
 
           NS_ASSERT (m_endRxEvent.IsExpired ());
           m_endRxEvent = Simulator::Schedule (rxDuration, &YansWifiPhy::EndReceive, this,
-                                              packet, preamble, aMpdu, event);
+                                              packet, preamble, packetType, event);
         }
       else
         {
@@ -726,10 +730,10 @@ void
 YansWifiPhy::StartReceivePacket (Ptr<Packet> packet,
                                  WifiTxVector txVector,
                                  enum WifiPreamble preamble,
-                                 struct mpduInfo aMpdu,
+                                 uint8_t packetType,
                                  Ptr<InterferenceHelper::Event> event)
 {
-  NS_LOG_FUNCTION (this << packet << txVector.GetMode () << preamble << (uint32_t)aMpdu.packetType);
+  NS_LOG_FUNCTION (this << packet << txVector.GetMode () << preamble << (uint32_t)packetType);
   NS_ASSERT (IsStateRx ());
   NS_ASSERT (m_endPlcpRxEvent.IsExpired ());
   AmpduTag ampduTag;
@@ -763,7 +767,7 @@ YansWifiPhy::StartReceivePacket (Ptr<Packet> packet,
 }
 
 void
-YansWifiPhy::SendPacket (Ptr<const Packet> packet, WifiTxVector txVector, WifiPreamble preamble, uint8_t packetType, uint32_t mpduReferenceNumber)
+YansWifiPhy::SendPacket (Ptr<const Packet> packet, WifiTxVector txVector, WifiPreamble preamble, uint8_t packetType)
 {
   NS_LOG_FUNCTION (this << packet << txVector.GetMode () << txVector.GetMode ().GetDataRate (txVector.GetChannelWidth (), txVector.IsShortGuardInterval (), 1) << preamble << (uint32_t)txVector.GetTxPowerLevel () << (uint32_t)packetType);
   /* Transmission can happen if:
@@ -800,12 +804,17 @@ YansWifiPhy::SendPacket (Ptr<const Packet> packet, WifiTxVector txVector, WifiPr
     {
       dataRate500KbpsUnits = txVector.GetMode ().GetDataRate (txVector.GetChannelWidth (), txVector.IsShortGuardInterval (), 1) * txVector.GetNss () / 500000;
     }
+  if (packetType == 1 && preamble != WIFI_PREAMBLE_NONE)
+    {
+      //send the first MPDU in an MPDU
+      m_txMpduReferenceNumber++;
+    }
   struct mpduInfo aMpdu;
   aMpdu.packetType = packetType;
-  aMpdu.referenceNumber = mpduReferenceNumber;
+  aMpdu.mpduRefNumber = m_txMpduReferenceNumber;
   NotifyMonitorSniffTx (packet, (uint16_t)GetChannelFrequencyMhz (), GetChannelNumber (), dataRate500KbpsUnits, preamble, txVector, aMpdu);
   m_state->SwitchToTx (txDuration, packet, GetPowerDbm (txVector.GetTxPowerLevel ()), txVector, preamble);
-  m_channel->Send (this, packet, GetPowerDbm (txVector.GetTxPowerLevel ()) + m_txGainDb, txVector, preamble, aMpdu, txDuration);
+  m_channel->Send (this, packet, GetPowerDbm (txVector.GetTxPowerLevel ()) + m_txGainDb, txVector, preamble, packetType, txDuration);
 }
 
 uint32_t
@@ -1141,7 +1150,7 @@ YansWifiPhy::GetPowerDbm (uint8_t power) const
 }
 
 void
-YansWifiPhy::EndReceive (Ptr<Packet> packet, enum WifiPreamble preamble, struct mpduInfo aMpdu, Ptr<InterferenceHelper::Event> event)
+YansWifiPhy::EndReceive (Ptr<Packet> packet, enum WifiPreamble preamble, uint8_t packetType, Ptr<InterferenceHelper::Event> event)
 {
   NS_LOG_FUNCTION (this << packet << event);
   NS_ASSERT (IsStateRx ());
@@ -1171,6 +1180,9 @@ YansWifiPhy::EndReceive (Ptr<Packet> packet, enum WifiPreamble preamble, struct 
           struct signalNoiseDbm signalNoise;
           signalNoise.signal = RatioToDb (event->GetRxPowerW ()) + 30;
           signalNoise.noise = RatioToDb (event->GetRxPowerW () / snrPer.snr) - GetRxNoiseFigure () + 30;
+          struct mpduInfo aMpdu;
+          aMpdu.packetType = packetType;
+          aMpdu.mpduRefNumber = m_rxMpduReferenceNumber;
           NotifyMonitorSniffRx (packet, (uint16_t)GetChannelFrequencyMhz (), GetChannelNumber (), dataRate500KbpsUnits, event->GetPreambleType (), event->GetTxVector (), aMpdu, signalNoise);
           m_state->SwitchFromRxEndOk (packet, snrPer.snr, event->GetTxVector (), event->GetPreambleType ());
         }
@@ -1186,7 +1198,7 @@ YansWifiPhy::EndReceive (Ptr<Packet> packet, enum WifiPreamble preamble, struct 
       m_state->SwitchFromRxEndError (packet, snrPer.snr);
     }
 
-  if (preamble == WIFI_PREAMBLE_NONE && aMpdu.packetType == 2)
+  if (preamble == WIFI_PREAMBLE_NONE && packetType == 2)
     {
       m_plcpSuccess = false;
     }

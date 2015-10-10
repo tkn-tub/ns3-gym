@@ -48,7 +48,7 @@ struct signalNoiseDbm
 struct mpduInfo
 {
   uint8_t packetType;
-  uint32_t referenceNumber;
+  uint32_t mpduRefNumber;
 };
 
 /**
@@ -222,9 +222,8 @@ public:
    *        power is calculated as txPowerMin + txPowerLevel * (txPowerMax - txPowerMin) / nTxLevels
    * \param preamble the type of preamble to use to send this packet.
    * \param packetType the type of the packet 0 is not A-MPDU, 1 is a MPDU that is part of an A-MPDU and 2 is the last MPDU in an A-MPDU
-   * \param mpduReferenceNumber the A-MPDU reference number (must be a different value for each A-MPDU but the same for each subframe within one A-MPDU)
    */
-  virtual void SendPacket (Ptr<const Packet> packet, WifiTxVector txVector, enum WifiPreamble preamble, uint8_t packetType, uint32_t mpduReferenceNumber) = 0;
+  virtual void SendPacket (Ptr<const Packet> packet, WifiTxVector txVector, enum WifiPreamble preamble, uint8_t packetType) = 0;
 
   /**
    * \param listener the new listener
@@ -1111,8 +1110,7 @@ public:
    */
   typedef void (* MonitorSnifferRxCallback)(Ptr<const Packet> packet, uint16_t channelFreqMhz,
                                             uint16_t channelNumber, uint32_t rate, WifiPreamble preamble,
-                                            WifiTxVector txVector, struct mpduInfo aMpdu,
-                                            struct signalNoiseDbm signalNoise);
+                                            WifiTxVector txVector, struct mpduInfo aMpdu, struct signalNoiseDbm signalNoise);
 
   /**
    * Public method used to fire a MonitorSniffer trace for a wifi packet being transmitted.
@@ -1298,8 +1296,7 @@ private:
    * const  references because of their sizes.
    */
   TracedCallback<Ptr<const Packet>, uint16_t, uint16_t, uint32_t,
-                 WifiPreamble, WifiTxVector,
-                 struct mpduInfo, struct signalNoiseDbm> m_phyMonitorSniffRxTrace;
+                 WifiPreamble, WifiTxVector, struct mpduInfo, struct signalNoiseDbm> m_phyMonitorSniffRxTrace;
 
   /**
    * A trace source that emulates a wifi device in monitor mode
@@ -1314,8 +1311,7 @@ private:
    * of its size.
    */
   TracedCallback<Ptr<const Packet>, uint16_t, uint16_t, uint32_t,
-                 WifiPreamble, WifiTxVector,
-                 struct mpduInfo> m_phyMonitorSniffTxTrace;
+                 WifiPreamble, WifiTxVector, struct mpduInfo> m_phyMonitorSniffTxTrace;
 
   uint32_t m_totalAmpduNumSymbols; //!< Number of symbols previously transmitted for the MPDUs in an A-MPDU, used for the computation of the number of symbols needed for the last MPDU in the A-MPDU
   uint32_t m_totalAmpduSize;       //!< Total size of the previously transmitted MPDUs in an A-MPDU, used for the computation of the number of symbols needed for the last MPDU in the A-MPDU
