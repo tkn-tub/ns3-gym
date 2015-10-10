@@ -439,12 +439,12 @@ protected:
   bool GetHtSupported () const;
 
   /**
-  * This Boolean is set \c true iff this WifiMac is to model
-  * 802.11ac. It is exposed through the attribute system.
-  */
+   * This Boolean is set \c true iff this WifiMac is to model
+   * 802.11ac. It is exposed through the attribute system.
+   */
   bool m_vhtSupported;
   /**
-   * Enable or disable HT support for the device.
+   * Enable or disable VHT support for the device.
    *
    * \param enable whether VHT is supported
    */

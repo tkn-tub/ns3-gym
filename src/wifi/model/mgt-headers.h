@@ -76,10 +76,10 @@ public:
    */
   void SetHtCapabilities (HtCapabilities htcapabilities);
   /**
-    * Set the VHT capabilities.
-    *
-    * \param vhtcapabilities VHT capabilities
-    */
+   * Set the VHT capabilities.
+   *
+   * \param vhtcapabilities VHT capabilities
+   */
   void SetVhtCapabilities (VhtCapabilities vhtcapabilities);
   /**
    * Return the Capability information.
@@ -94,12 +94,11 @@ public:
    */
   HtCapabilities GetHtCapabilities (void) const;
   /**
-  * Return the VHT capabilities.
-  *
-  * \return VHT capabilities
-  */
+   * Return the VHT capabilities.
+   *
+   * \return VHT capabilities
+   */
   VhtCapabilities GetVhtCapabilities (void) const;
-
   /**
    * Return the Service Set Identifier (SSID).
    *
@@ -136,8 +135,8 @@ private:
   SupportedRates m_rates;             //!< List of supported rates
   CapabilityInformation m_capability; //!< Capability information
   HtCapabilities m_htCapability;      //!< HT capabilities
-  uint16_t m_listenInterval;
   VhtCapabilities m_vhtCapability;    //!< VHT capabilities
+  uint16_t m_listenInterval;
 };
 
 

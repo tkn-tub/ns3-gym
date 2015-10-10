@@ -19,6 +19,7 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  * Author: Mirko Banchi <mk.banchi@gmail.com>
  */
+
 #ifndef WIFI_MAC_HEADER_H
 #define WIFI_MAC_HEADER_H
 
@@ -34,12 +35,12 @@ namespace ns3 {
  */
 enum WifiMacType
 {
-  WIFI_MAC_CTL_RTS = 0,
+  WIFI_MAC_CTL_CTLWRAPPER = 0,
+  WIFI_MAC_CTL_RTS,
   WIFI_MAC_CTL_CTS,
   WIFI_MAC_CTL_ACK,
   WIFI_MAC_CTL_BACKREQ,
   WIFI_MAC_CTL_BACKRESP,
-  WIFI_MAC_CTL_CTLWRAPPER,
 
   WIFI_MAC_MGT_BEACON,
   WIFI_MAC_MGT_ASSOCIATION_REQUEST,
