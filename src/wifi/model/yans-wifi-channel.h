@@ -40,7 +40,7 @@ class PropagationDelayModel;
 struct Parameters
 {
   double rxPowerDbm;
-  uint8_t packetType;
+  enum mpduType type;
   Time duration;
   WifiTxVector txVector;
   WifiPreamble preamble;
@@ -92,7 +92,7 @@ public:
    * \param txPowerDbm the tx power associated to the packet
    * \param txVector the TXVECTOR associated to the packet
    * \param preamble the preamble associated to the packet
-   * \param packetType The type of the packet (values: 0 not an A-MPDU, 1 corresponds to any packets in an A-MPDU except the last one, 2 is the last packet in an A-MPDU)
+   * \param mpdutype the type of the MPDU as defined in WifiPhy::mpduType.
    * \param duration the transmission duration associated to the packet
    *
    * This method should not be invoked by normal users. It is
@@ -101,7 +101,7 @@ public:
    * e.g. PHYs that are operating on the same channel.
    */
   void Send (Ptr<YansWifiPhy> sender, Ptr<const Packet> packet, double txPowerDbm,
-             WifiTxVector txVector, WifiPreamble preamble, uint8_t packetType, Time duration) const;
+             WifiTxVector txVector, WifiPreamble preamble, enum mpduType mpdutype, Time duration) const;
 
   /**
    * Assign a fixed random variable stream number to the random variables

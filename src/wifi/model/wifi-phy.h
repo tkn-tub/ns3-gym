@@ -39,6 +39,19 @@ namespace ns3 {
 class WifiChannel;
 class NetDevice;
 
+/**
+ * This enumeration defines the type of an MPDU.
+ */
+enum mpduType
+{
+  /** The MPDU is not part of an A-MPDU */
+  NORMAL_MPDU = 0,
+  /** The MPDU is part of an A-MPDU, but is not the last aggregate */
+  MPDU_IN_AGGREGATE,
+  /** The MPDU is the last aggregate in an A-MPDU */
+  LAST_MPDU_IN_AGGREGATE
+};
+
 struct signalNoiseDbm
 {
   double signal; //in dBm
@@ -47,7 +60,7 @@ struct signalNoiseDbm
 
 struct mpduInfo
 {
-  uint8_t packetType;
+  enum mpduType type;
   uint32_t mpduRefNumber;
 };
 
@@ -221,9 +234,9 @@ public:
    *        this packet, and txPowerLevel, a power level to use to send this packet. The real transmission
    *        power is calculated as txPowerMin + txPowerLevel * (txPowerMax - txPowerMin) / nTxLevels
    * \param preamble the type of preamble to use to send this packet.
-   * \param packetType the type of the packet 0 is not A-MPDU, 1 is a MPDU that is part of an A-MPDU and 2 is the last MPDU in an A-MPDU
+   * \param mpdutype the type of the MPDU as defined in WifiPhy::mpduType.
    */
-  virtual void SendPacket (Ptr<const Packet> packet, WifiTxVector txVector, enum WifiPreamble preamble, uint8_t packetType) = 0;
+  virtual void SendPacket (Ptr<const Packet> packet, WifiTxVector txVector, enum WifiPreamble preamble, enum mpduType mpdutype) = 0;
 
   /**
    * \param listener the new listener
@@ -301,12 +314,12 @@ public:
    * \param txVector the TXVECTOR used for the transmission of this packet
    * \param preamble the type of preamble to use for this packet.
    * \param frequency the channel center frequency (MHz)
-   * \param packetType the type of the packet 0 is not A-MPDU, 1 is a MPDU that is part of an A-MPDU and 2 is the last MPDU in an A-MPDU
+   * \param mpdutype the type of the MPDU as defined in WifiPhy::mpduType.
    * \param incFlag this flag is used to indicate that the static variables need to be update or not. This function is called a couple of times for the same packet so static variables should not be increased each time.
    *
    * \return the total amount of time this PHY will stay busy for the transmission of these bytes.
    */
-  Time CalculateTxDuration (uint32_t size, WifiTxVector txVector, enum WifiPreamble preamble, double frequency, uint8_t packetType, uint8_t incFlag);
+  Time CalculateTxDuration (uint32_t size, WifiTxVector txVector, enum WifiPreamble preamble, double frequency, enum mpduType mpdutype, uint8_t incFlag);
 
   /**
    * \param txVector the transmission parameters used for this packet
@@ -387,12 +400,12 @@ public:
    * \param txVector the TXVECTOR used for the transmission of this packet
    * \param preamble the type of preamble to use for this packet
    * \param frequency the channel center frequency (MHz)
-   * \param packetType the type of the packet (0 is not A-MPDU, 1 is a MPDU that is part of an A-MPDU and 2 is the last MPDU in an A-MPDU)
+   * \param mpdutype the type of the MPDU as defined in WifiPhy::mpduType.
    * \param incFlag this flag is used to indicate that the static variables need to be update or not. This function is called a couple of times for the same packet so static variables should not be increased each time
    *
    * \return the duration of the payload
    */
-  Time GetPayloadDuration (uint32_t size, WifiTxVector txVector, WifiPreamble preamble, double frequency, uint8_t packetType, uint8_t incFlag);
+  Time GetPayloadDuration (uint32_t size, WifiTxVector txVector, WifiPreamble preamble, double frequency, enum mpduType mpdutype, uint8_t incFlag);
 
   /**
    * The WifiPhy::GetNModes() and WifiPhy::GetMode() methods are used

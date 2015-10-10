@@ -100,7 +100,7 @@ TxDurationTest::CheckPayloadDuration (uint32_t size, WifiMode payloadMode, uint3
     {
       testedFrequency = CHANNEL_36_MHZ;
     }
-  double calculatedDurationMicroSeconds = (double)phy->GetPayloadDuration (size, txVector, preamble, testedFrequency, 0, 0).GetMicroSeconds  ();
+  double calculatedDurationMicroSeconds = (double)phy->GetPayloadDuration (size, txVector, preamble, testedFrequency, NORMAL_MPDU, 0).GetMicroSeconds  ();
   if (calculatedDurationMicroSeconds != knownDurationMicroSeconds)
     {
       std::cerr << " size=" << size
@@ -115,7 +115,7 @@ TxDurationTest::CheckPayloadDuration (uint32_t size, WifiMode payloadMode, uint3
     {
       //Durations vary depending on frequency; test also 2.4 GHz (bug 1971)
       testedFrequency = CHANNEL_1_MHZ;
-      calculatedDurationMicroSeconds = (double)phy->GetPayloadDuration (size, txVector, preamble, testedFrequency, 0, 0).GetMicroSeconds ();
+      calculatedDurationMicroSeconds = (double)phy->GetPayloadDuration (size, txVector, preamble, testedFrequency, NORMAL_MPDU, 0).GetMicroSeconds ();
       if (calculatedDurationMicroSeconds != knownDurationMicroSeconds + 6)
         {
           std::cerr << " size=" << size
@@ -148,7 +148,7 @@ TxDurationTest::CheckTxDuration (uint32_t size, WifiMode payloadMode, uint32_t c
     {
       testedFrequency = CHANNEL_36_MHZ;
     }
-  double calculatedDurationMicroSeconds = ((double)phy->CalculateTxDuration (size, txVector, preamble, testedFrequency, 0, 0).GetNanoSeconds ()) / 1000;
+  double calculatedDurationMicroSeconds = ((double)phy->CalculateTxDuration (size, txVector, preamble, testedFrequency, NORMAL_MPDU, 0).GetNanoSeconds ()) / 1000;
   if (calculatedDurationMicroSeconds != knownDurationMicroSeconds)
     {
       std::cerr << " size=" << size
@@ -164,7 +164,7 @@ TxDurationTest::CheckTxDuration (uint32_t size, WifiMode payloadMode, uint32_t c
     {
       //Durations vary depending on frequency; test also 2.4 GHz (bug 1971)
       testedFrequency = CHANNEL_1_MHZ;
-      calculatedDurationMicroSeconds = ((double)phy->CalculateTxDuration (size, txVector, preamble, testedFrequency, 0, 0).GetNanoSeconds ()) / 1000;
+      calculatedDurationMicroSeconds = ((double)phy->CalculateTxDuration (size, txVector, preamble, testedFrequency, NORMAL_MPDU, 0).GetNanoSeconds ()) / 1000;
       if (calculatedDurationMicroSeconds != knownDurationMicroSeconds + 6)
         {
           std::cerr << " size=" << size

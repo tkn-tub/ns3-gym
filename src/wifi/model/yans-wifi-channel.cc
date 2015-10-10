@@ -79,7 +79,7 @@ YansWifiChannel::SetPropagationDelayModel (Ptr<PropagationDelayModel> delay)
 
 void
 YansWifiChannel::Send (Ptr<YansWifiPhy> sender, Ptr<const Packet> packet, double txPowerDbm,
-                       WifiTxVector txVector, WifiPreamble preamble, uint8_t packetType, Time duration) const
+                       WifiTxVector txVector, WifiPreamble preamble, enum mpduType mpdutype, Time duration) const
 {
   Ptr<MobilityModel> senderMobility = sender->GetMobility ()->GetObject<MobilityModel> ();
   NS_ASSERT (senderMobility != 0);
@@ -113,7 +113,7 @@ YansWifiChannel::Send (Ptr<YansWifiPhy> sender, Ptr<const Packet> packet, double
 
           struct Parameters parameters;
           parameters.rxPowerDbm = rxPowerDbm;
-          parameters.packetType = packetType;
+          parameters.type = mpdutype;
           parameters.duration = duration;
           parameters.txVector = txVector;
           parameters.preamble = preamble;
@@ -128,7 +128,7 @@ YansWifiChannel::Send (Ptr<YansWifiPhy> sender, Ptr<const Packet> packet, double
 void
 YansWifiChannel::Receive (uint32_t i, Ptr<Packet> packet, struct Parameters parameters) const
 {
-  m_phyList[i]->StartReceivePreambleAndHeader (packet, parameters.rxPowerDbm, parameters.txVector, parameters.preamble, parameters.packetType, parameters.duration);
+  m_phyList[i]->StartReceivePreambleAndHeader (packet, parameters.rxPowerDbm, parameters.txVector, parameters.preamble, parameters.type, parameters.duration);
 }
 
 uint32_t

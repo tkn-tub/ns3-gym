@@ -378,7 +378,7 @@ PcapSniffTxEvent (
             p->RemoveHeader (hdr);
             extractedLength = hdr.GetLength ();
             p = p->CreateFragment (0, static_cast<uint32_t> (extractedLength));
-            if (aMpdu.packetType == 2 || (hdr.GetEof () == true && hdr.GetLength () > 0))
+            if (aMpdu.type == LAST_MPDU_IN_AGGREGATE || (hdr.GetEof () == true && hdr.GetLength () > 0))
               {
                 ampduStatusFlags |= RadiotapHeader::A_MPDU_STATUS_LAST;
               }
@@ -575,7 +575,7 @@ PcapSniffRxEvent (
             p->RemoveHeader (hdr);
             extractedLength = hdr.GetLength ();
             p = p->CreateFragment (0, static_cast<uint32_t> (extractedLength));
-            if (aMpdu.packetType == 2 || (hdr.GetEof () == true && hdr.GetLength () > 0))
+            if (aMpdu.type == LAST_MPDU_IN_AGGREGATE || (hdr.GetEof () == true && hdr.GetLength () > 0))
               {
                 ampduStatusFlags |= RadiotapHeader::A_MPDU_STATUS_LAST;
               }

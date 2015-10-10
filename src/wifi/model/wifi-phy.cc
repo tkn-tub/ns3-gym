@@ -395,7 +395,7 @@ WifiPhy::GetPlcpPreambleDuration (WifiTxVector txVector, WifiPreamble preamble)
 }
 
 Time
-WifiPhy::GetPayloadDuration (uint32_t size, WifiTxVector txVector, WifiPreamble preamble, double frequency, uint8_t packetType, uint8_t incFlag)
+WifiPhy::GetPayloadDuration (uint32_t size, WifiTxVector txVector, WifiPreamble preamble, double frequency, enum mpduType mpdutype, uint8_t incFlag)
 {
   WifiMode payloadMode = txVector.GetMode ();
   NS_LOG_FUNCTION (size << payloadMode);
@@ -429,7 +429,7 @@ WifiPhy::GetPayloadDuration (uint32_t size, WifiTxVector txVector, WifiPreamble 
         //(Section 18.3.5.4 "Pad bits (PAD)" Equation 18-11; IEEE Std 802.11-2012)
         uint32_t numSymbols;
 
-        if (packetType == 1 && preamble != WIFI_PREAMBLE_NONE)
+        if (mpdutype == MPDU_IN_AGGREGATE && preamble != WIFI_PREAMBLE_NONE)
           {
             //First packet in an A-MPDU
             numSymbols = ceil ((16 + size * 8.0 + 6) / numDataBitsPerSymbol);
@@ -439,7 +439,7 @@ WifiPhy::GetPayloadDuration (uint32_t size, WifiTxVector txVector, WifiPreamble 
                 m_totalAmpduNumSymbols += numSymbols;
               }
           }
-        else if (packetType == 1 && preamble == WIFI_PREAMBLE_NONE)
+        else if (mpdutype == MPDU_IN_AGGREGATE && preamble == WIFI_PREAMBLE_NONE)
           {
             //consecutive packets in an A-MPDU
             numSymbols = ((size * 8.0) / numDataBitsPerSymbol);
@@ -449,7 +449,7 @@ WifiPhy::GetPayloadDuration (uint32_t size, WifiTxVector txVector, WifiPreamble 
                 m_totalAmpduNumSymbols += numSymbols;
               }
           }
-        else if (packetType == 2 && preamble == WIFI_PREAMBLE_NONE)
+        else if (mpdutype == LAST_MPDU_IN_AGGREGATE && preamble == WIFI_PREAMBLE_NONE)
           {
             //last packet in an A-MPDU
             uint32_t totalAmpduSize = m_totalAmpduSize + size;
@@ -461,7 +461,7 @@ WifiPhy::GetPayloadDuration (uint32_t size, WifiTxVector txVector, WifiPreamble 
                 m_totalAmpduNumSymbols = 0;
               }
           }
-        else if (packetType == 0 && preamble != WIFI_PREAMBLE_NONE)
+        else if (mpdutype == NORMAL_MPDU && preamble != WIFI_PREAMBLE_NONE)
           {
             //Not an A-MPDU
             numSymbols = lrint (ceil ((16 + size * 8.0 + 6.0) / numDataBitsPerSymbol));
@@ -523,7 +523,7 @@ WifiPhy::GetPayloadDuration (uint32_t size, WifiTxVector txVector, WifiPreamble 
         uint32_t numSymbols;
         double numDataBitsPerSymbol = payloadMode.GetDataRate (txVector.GetChannelWidth (), txVector.IsShortGuardInterval (), 1) * txVector.GetNss () * symbolDuration.GetNanoSeconds () / 1e9;
 
-        if (packetType == 1 && preamble != WIFI_PREAMBLE_NONE)
+        if (mpdutype == MPDU_IN_AGGREGATE && preamble != WIFI_PREAMBLE_NONE)
           {
             //First packet in an A-MPDU
             numSymbols = ceil (m_Stbc * (16 + size * 8.0 + 6 * Nes) / (m_Stbc * numDataBitsPerSymbol));
@@ -533,7 +533,7 @@ WifiPhy::GetPayloadDuration (uint32_t size, WifiTxVector txVector, WifiPreamble 
                 m_totalAmpduNumSymbols += numSymbols;
               }
           }
-        else if (packetType == 1 && preamble == WIFI_PREAMBLE_NONE)
+        else if (mpdutype == MPDU_IN_AGGREGATE && preamble == WIFI_PREAMBLE_NONE)
           {
             //consecutive packets in an A-MPDU
             numSymbols = m_Stbc * ((size * 8.0 ) / (m_Stbc * numDataBitsPerSymbol));
@@ -543,7 +543,7 @@ WifiPhy::GetPayloadDuration (uint32_t size, WifiTxVector txVector, WifiPreamble 
                 m_totalAmpduNumSymbols += numSymbols;
               }
           }
-        else if (packetType == 2 && preamble == WIFI_PREAMBLE_NONE)
+        else if (mpdutype == LAST_MPDU_IN_AGGREGATE && preamble == WIFI_PREAMBLE_NONE)
           {
             //last packet in an A-MPDU
             uint32_t totalAmpduSize = m_totalAmpduSize + size;
@@ -556,7 +556,7 @@ WifiPhy::GetPayloadDuration (uint32_t size, WifiTxVector txVector, WifiPreamble 
                 m_totalAmpduNumSymbols = 0;
               }
           }
-        else if (packetType == 0 && preamble != WIFI_PREAMBLE_NONE)
+        else if (mpdutype == NORMAL_MPDU && preamble != WIFI_PREAMBLE_NONE)
           {
             //Not an A-MPDU
             numSymbols = lrint (m_Stbc * ceil ((16 + size * 8.0 + 6.0 * Nes) / (m_Stbc * numDataBitsPerSymbol)));
@@ -566,7 +566,7 @@ WifiPhy::GetPayloadDuration (uint32_t size, WifiTxVector txVector, WifiPreamble 
             NS_FATAL_ERROR ("Wrong combination of preamble and packet type");
           }
 
-        if (payloadMode.GetModulationClass () == WIFI_MOD_CLASS_HT && frequency >= 2400 && frequency <= 2500 && ((packetType == 0 && preamble != WIFI_PREAMBLE_NONE) || (packetType == 2 && preamble == WIFI_PREAMBLE_NONE))) //at 2.4 GHz
+        if (payloadMode.GetModulationClass () == WIFI_MOD_CLASS_HT && frequency >= 2400 && frequency <= 2500 && ((mpdutype == NORMAL_MPDU && preamble != WIFI_PREAMBLE_NONE) || (mpdutype == LAST_MPDU_IN_AGGREGATE && preamble == WIFI_PREAMBLE_NONE))) //at 2.4 GHz
           {
             return Time (numSymbols * symbolDuration) + MicroSeconds (6);
           }
@@ -602,10 +602,10 @@ WifiPhy::CalculatePlcpPreambleAndHeaderDuration (WifiTxVector txVector, WifiPrea
 }
 
 Time
-WifiPhy::CalculateTxDuration (uint32_t size, WifiTxVector txVector, WifiPreamble preamble, double frequency, uint8_t packetType, uint8_t incFlag)
+WifiPhy::CalculateTxDuration (uint32_t size, WifiTxVector txVector, WifiPreamble preamble, double frequency, enum mpduType mpdutype, uint8_t incFlag)
 {
   Time duration = CalculatePlcpPreambleAndHeaderDuration (txVector, preamble)
-    + GetPayloadDuration (size, txVector, preamble, frequency, packetType, incFlag);
+    + GetPayloadDuration (size, txVector, preamble, frequency, mpdutype, incFlag);
   return duration;
 }
 

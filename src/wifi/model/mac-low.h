@@ -29,6 +29,7 @@
 
 #include "wifi-mac-header.h"
 #include "wifi-mode.h"
+#include "wifi-phy.h"
 #include "wifi-preamble.h"
 #include "wifi-remote-station-manager.h"
 #include "ctrl-headers.h"
@@ -891,9 +892,9 @@ private:
    * \param hdr
    * \param txVector
    * \param preamble
-   * \param packetType
+   * \param mpdutype
    */
-  void SendPacket (Ptr<const Packet> packet, WifiTxVector txVector, WifiPreamble preamble, uint8_t packetType);
+  void SendPacket (Ptr<const Packet> packet, WifiTxVector txVector, WifiPreamble preamble, enum mpduType mpdutype);
   /**
    * Return a TXVECTOR for the RTS frame given the destination.
    * The function consults WifiRemoteStationManager, which controls the rate
