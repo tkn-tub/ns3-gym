@@ -228,7 +228,7 @@ private:
    */
   void GotAck (double snr, WifiMode txMode);
   /**
-   * Event handler when an ACK is received.
+   * Event handler when an ACK is missed.
    */
   void MissedAck (void);
   /**

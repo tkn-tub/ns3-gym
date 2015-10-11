@@ -262,7 +262,7 @@ public:
   void GotAddBaResponse (const MgtAddBaResponseHeader *respHdr, Mac48Address recipient);
   void GotDelBaFrame (const MgtDelBaHeader *delBaHdr, Mac48Address recipient);
   /**
-   * Event handler when an ACK is received.
+   * Event handler when an ACK is missed.
    */
   void MissedAck (void);
   /**
