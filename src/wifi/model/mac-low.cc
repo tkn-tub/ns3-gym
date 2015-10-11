@@ -761,7 +761,7 @@ MacLow::StartTransmission (Ptr<const Packet> packet,
         {
           m_txParams.EnableCompressedBlockAck ();
         }
-      else
+      else if (m_currentHdr.IsQosData ())
         {
           //VHT single MPDUs are followed by normal ACKs
           m_txParams.EnableAck ();
@@ -779,7 +779,7 @@ MacLow::StartTransmission (Ptr<const Packet> packet,
             {
               m_txParams.EnableCompressedBlockAck ();
             }
-          else
+          else if (m_currentHdr.IsQosData ())
             {
               //VHT single MPDUs are followed by normal ACKs
               m_txParams.EnableAck ();
@@ -1644,7 +1644,14 @@ MacLow::ForwardDown (Ptr<const Packet> packet, const WifiMacHeader* hdr,
             }
           m_mpduAggregator->AddHeaderAndPad (newPacket, last, vhtSingleMpdu);
 
-          ampdutag.SetNoOfMpdus (queueSize);
+          if (hdr->IsBlockAckReq ())
+            {
+              ampdutag.SetNoOfMpdus (queueSize - 1);
+            }
+          else
+            {
+              ampdutag.SetNoOfMpdus (queueSize);
+            }
           newPacket->AddPacketTag (ampdutag);
           if (delay == Seconds (0))
             {
@@ -1847,7 +1854,7 @@ MacLow::SendRtsForPacket (void)
   WifiMacTrailer fcs;
   packet->AddTrailer (fcs);
 
-  ForwardDown (packet, &rts, rtsTxVector,preamble);
+  ForwardDown (packet, &rts, rtsTxVector, preamble);
 }
 
 void
