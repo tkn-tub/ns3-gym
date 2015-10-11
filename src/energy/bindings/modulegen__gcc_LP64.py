@@ -54,6 +54,8 @@ def register_types(module):
     root_module['ns3::Ipv6Address'].implicitly_converts_to(root_module['ns3::Address'])
     ## ipv6-address.h (module 'network'): ns3::Ipv6Prefix [class]
     module.add_class('Ipv6Prefix', import_from_module='ns.network')
+    ## li-ion-energy-source-helper.h (module 'energy'): ns3::LiIonEnergySourceHelper [class]
+    module.add_class('LiIonEnergySourceHelper', parent=root_module['ns3::EnergySourceHelper'])
     ## net-device-container.h (module 'network'): ns3::NetDeviceContainer [class]
     module.add_class('NetDeviceContainer', import_from_module='ns.network')
     ## node-container.h (module 'network'): ns3::NodeContainer [class]
@@ -349,6 +351,7 @@ def register_methods(root_module):
     register_Ns3Ipv4Mask_methods(root_module, root_module['ns3::Ipv4Mask'])
     register_Ns3Ipv6Address_methods(root_module, root_module['ns3::Ipv6Address'])
     register_Ns3Ipv6Prefix_methods(root_module, root_module['ns3::Ipv6Prefix'])
+    register_Ns3LiIonEnergySourceHelper_methods(root_module, root_module['ns3::LiIonEnergySourceHelper'])
     register_Ns3NetDeviceContainer_methods(root_module, root_module['ns3::NetDeviceContainer'])
     register_Ns3NodeContainer_methods(root_module, root_module['ns3::NodeContainer'])
     register_Ns3ObjectBase_methods(root_module, root_module['ns3::ObjectBase'])
@@ -1212,6 +1215,23 @@ def register_Ns3Ipv6Prefix_methods(root_module, cls):
                    'void', 
                    [param('std::ostream &', 'os')], 
                    is_const=True)
+    return
+
+def register_Ns3LiIonEnergySourceHelper_methods(root_module, cls):
+    ## li-ion-energy-source-helper.h (module 'energy'): ns3::LiIonEnergySourceHelper::LiIonEnergySourceHelper(ns3::LiIonEnergySourceHelper const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::LiIonEnergySourceHelper const &', 'arg0')])
+    ## li-ion-energy-source-helper.h (module 'energy'): ns3::LiIonEnergySourceHelper::LiIonEnergySourceHelper() [constructor]
+    cls.add_constructor([])
+    ## li-ion-energy-source-helper.h (module 'energy'): void ns3::LiIonEnergySourceHelper::Set(std::string name, ns3::AttributeValue const & v) [member function]
+    cls.add_method('Set', 
+                   'void', 
+                   [param('std::string', 'name'), param('ns3::AttributeValue const &', 'v')], 
+                   is_virtual=True)
+    ## li-ion-energy-source-helper.h (module 'energy'): ns3::Ptr<ns3::EnergySource> ns3::LiIonEnergySourceHelper::DoInstall(ns3::Ptr<ns3::Node> node) const [member function]
+    cls.add_method('DoInstall', 
+                   'ns3::Ptr< ns3::EnergySource >', 
+                   [param('ns3::Ptr< ns3::Node >', 'node')], 
+                   is_const=True, visibility='private', is_virtual=True)
     return
 
 def register_Ns3NetDeviceContainer_methods(root_module, cls):
@@ -3898,6 +3918,11 @@ def register_Ns3Node_methods(root_module, cls):
     ## node.h (module 'network'): uint32_t ns3::Node::GetId() const [member function]
     cls.add_method('GetId', 
                    'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## node.h (module 'network'): ns3::Time ns3::Node::GetLocalTime() const [member function]
+    cls.add_method('GetLocalTime', 
+                   'ns3::Time', 
                    [], 
                    is_const=True)
     ## node.h (module 'network'): uint32_t ns3::Node::GetNApplications() const [member function]
