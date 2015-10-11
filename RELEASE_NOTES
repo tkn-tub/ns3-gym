@@ -29,7 +29,6 @@ Bugs fixed
 - Bug 1954 - Serialized size of wifi-net-device differ for TX and RX trace
 - Bug 2003 - Missing DSSS short PLCP preamble
 - Bug 2183 - LiIonEnergySourceHelper is not in the energy wscript
-- Bug 2184 - integer overflow in MacLow
 
 Known issues
 ------------
