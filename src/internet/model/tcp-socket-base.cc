@@ -205,7 +205,6 @@ TcpSocketBase::TcpSocketBase (void)
     m_timestampToEcho (0),
     m_ackState (OPEN),
     m_retxThresh (3),
-    m_inFastRec (false),
     m_limitedTx (false)
 
 {
@@ -256,7 +255,6 @@ TcpSocketBase::TcpSocketBase (const TcpSocketBase& sock)
     m_timestampToEcho (sock.m_timestampToEcho),
     m_ackState (sock.m_ackState),
     m_retxThresh (sock.m_retxThresh),
-    m_inFastRec (false),
     m_limitedTx (sock.m_limitedTx)
 
 {
@@ -689,7 +687,7 @@ TcpSocketBase::Send (Ptr<Packet> p, uint32_t flags)
         { // Try to send the data out
           if (!m_sendPendingDataEvent.IsRunning ())
             {
-              m_sendPendingDataEvent = Simulator::Schedule ( TimeStep (1), &TcpSocketBase::SendPendingData, this, m_connected);
+              m_sendPendingDataEvent = Simulator::Schedule (TimeStep (1), &TcpSocketBase::SendPendingData, this, m_connected);
             }
         }
       return p->GetSize ();
@@ -1205,17 +1203,34 @@ TcpSocketBase::ReceivedAck (Ptr<Packet> packet, const TcpHeader& tcpHeader)
 
   NS_ASSERT (0 != (tcpHeader.GetFlags () & TcpHeader::ACK));
 
-  if (tcpHeader.GetAckNumber () == m_txBuffer->HeadSequence ())
-    { // Case 2: Potentially a duplicated ACK
-      if (tcpHeader.GetAckNumber () < m_nextTxSequence && packet->GetSize() == 0)
-        {
-          NS_LOG_LOGIC ("Dupack of " << tcpHeader.GetAckNumber ());
-          ++m_dupAckCount;
+  if (tcpHeader.GetAckNumber () == m_txBuffer->HeadSequence () &&
+      tcpHeader.GetAckNumber () < m_nextTxSequence &&
+      packet->GetSize () == 0)
+    {
+      // There is a DupAck
+      ++m_dupAckCount;
 
-          if (m_dupAckCount == m_retxThresh && !m_inFastRec)
-            { // triple duplicate ack triggers fast retransmit (RFC2582 sec.3 bullet #1)
+      if (m_ackState == OPEN)
+        {
+          // From Open we go Disorder
+          NS_ASSERT (m_dupAckCount == 1);
+          m_ackState = DISORDER;
+          NS_LOG_LOGIC ("Dupack. Open -> Disorder");
+        }
+      else if (m_ackState == DISORDER)
+        {
+          if (m_dupAckCount < m_retxThresh && m_limitedTx)
+            {
+              // RFC3042 Limited transmit: Send a new packet for each duplicated ACK before fast retransmit
+              NS_LOG_INFO ("Limited transmit");
+              uint32_t sz = SendDataPacket (m_nextTxSequence, m_segmentSize, true);
+              m_nextTxSequence += sz;
+            }
+          else if (m_dupAckCount == m_retxThresh)
+            {
+              // triple duplicate ack triggers fast retransmit (RFC2582 sec.3 bullet #1)
               m_recover = m_highTxMark;
-              m_inFastRec = true;
+              m_ackState = RECOVERY;
 
               m_ssThresh = GetSsThresh ();
               m_cWnd = m_ssThresh + m_dupAckCount * m_segmentSize;
@@ -1227,49 +1242,64 @@ TcpSocketBase::ReceivedAck (Ptr<Packet> packet, const TcpHeader& tcpHeader)
 
               NS_LOG_DEBUG ("DISORDER -> RECOVERY");
             }
-          else if (m_inFastRec)
-            { // Increase cwnd for every additional dupack (RFC2582, sec.3 bullet #3)
-              m_cWnd += m_segmentSize;
-              NS_LOG_INFO ("Dupack in fast recovery mode. Increase cwnd to " << m_cWnd);
-              if (!m_sendPendingDataEvent.IsRunning ())
-                {
-                  SendPendingData (m_connected);
-                }
-            }
-          else if (!m_inFastRec && m_limitedTx && m_txBuffer->SizeFromSequence (m_nextTxSequence) > 0)
-            { // RFC3042 Limited transmit: Send a new packet for each duplicated ACK before fast retransmit
-              NS_LOG_INFO ("Limited transmit");
-              uint32_t sz = SendDataPacket (m_nextTxSequence, m_segmentSize, true);
-              m_nextTxSequence += sz;                    // Advance next tx sequence
+          else
+            {
+              NS_FATAL_ERROR ("m_dupAckCount > m_retxThresh and we still are in DISORDER state");
             }
         }
-      // otherwise, the ACK is precisely equal to the nextTxSequence
-      NS_ASSERT (tcpHeader.GetAckNumber () <= m_nextTxSequence);
+      else if (m_ackState == RECOVERY)
+        { // Increase cwnd for every additional dupack (RFC2582, sec.3 bullet #3)
+          m_cWnd += m_segmentSize;
+          NS_LOG_INFO ("Dupack in fast recovery mode. Increase cwnd to " << m_cWnd);
+          if (!m_sendPendingDataEvent.IsRunning ())
+            {
+              m_sendPendingDataEvent = Simulator::Schedule (TimeStep (1), &TcpSocketBase::SendPendingData, this, m_connected);
+            }
+        }
+    }
+  else if (tcpHeader.GetAckNumber () == m_txBuffer->HeadSequence () &&
+           tcpHeader.GetAckNumber () == m_nextTxSequence)
+    {
+      // Dupack, but the ACK is precisely equal to the nextTxSequence
     }
   else if (tcpHeader.GetAckNumber () > m_txBuffer->HeadSequence ())
     { // Case 3: New ACK, reset m_dupAckCount and update m_txBuffer
       NS_LOG_LOGIC ("New ack of " << tcpHeader.GetAckNumber ());
 
-      // Check for exit condition of fast recovery
-      if (m_inFastRec && tcpHeader.GetAckNumber () < m_recover)
-        { // Partial ACK, partial window deflation (RFC2582 sec.3 bullet #5 paragraph 3)
-          m_cWnd += m_segmentSize - (tcpHeader.GetAckNumber () - m_txBuffer->HeadSequence ());
-          NS_LOG_INFO ("Partial ACK for seq " << tcpHeader.GetAckNumber () << " in fast recovery: cwnd set to " << m_cWnd);
-          m_txBuffer->DiscardUpTo(tcpHeader.GetAckNumber ());  //Bug 1850:  retransmit before newack
-          DoRetransmit (); // Assume the next seq is lost. Retransmit lost packet
-          TcpSocketBase::NewAck (tcpHeader.GetAckNumber ()); // update m_nextTxSequence and send new data if allowed by window
-          return;
+      if (m_ackState == DISORDER)
+        {
+          // The network reorder packets. Linux changes the counting lost
+          // packet algorithm from FACK to NewReno. We simply go back in Open.
+          m_ackState = OPEN;
+          NS_LOG_LOGIC ("New Ack. Disorder -> Open");
         }
-      else if (m_inFastRec && tcpHeader.GetAckNumber () >= m_recover)
-        { // Full ACK (RFC2582 sec.3 bullet #5 paragraph 2, option 1)
-          m_cWnd = std::min (m_ssThresh.Get (), BytesInFlight () + m_segmentSize);
-          m_inFastRec = false;
-          NS_LOG_INFO ("Received full ACK for seq " << tcpHeader.GetAckNumber () <<". Leaving fast recovery with cwnd set to " << m_cWnd);
+      else if (m_ackState == RECOVERY)
+        {
+          if (tcpHeader.GetAckNumber () < m_recover)
+            { // Partial ACK, partial window deflation (RFC2582 sec.3 bullet #5 paragraph 3)
+              m_cWnd += m_segmentSize - (tcpHeader.GetAckNumber () - m_txBuffer->HeadSequence ());
+              NS_LOG_INFO ("Partial ACK for seq " << tcpHeader.GetAckNumber () << " in fast recovery: cwnd set to " << m_cWnd);
+              m_txBuffer->DiscardUpTo(tcpHeader.GetAckNumber ());  //Bug 1850:  retransmit before newack
+              DoRetransmit (); // Assume the next seq is lost. Retransmit lost packet
+            }
+          else if (tcpHeader.GetAckNumber () >= m_recover)
+            {// Full ACK (RFC2582 sec.3 bullet #5 paragraph 2, option 1)
+              m_cWnd = std::min (m_ssThresh.Get (), BytesInFlight () + m_segmentSize);
+              m_ackState = OPEN;
+              NS_LOG_INFO ("Received full ACK for seq " << tcpHeader.GetAckNumber () <<". Leaving fast recovery with cwnd set to " << m_cWnd);
+            }
+        }
+      else if (m_ackState == LOSS)
+        {
+          // Go back in OPEN state
+          m_ackState = OPEN;
+          NS_LOG_LOGIC ("New Ack. Loss -> Open");
         }
 
       NewAck (tcpHeader.GetAckNumber ());
       m_dupAckCount = 0;
     }
+
   // If there is any data piggybacked, store it into m_rxBuffer
   if (packet->GetSize () > 0)
     {
@@ -2372,7 +2402,7 @@ TcpSocketBase::NewAck (SequenceNumber32 const& ack)
   // Try to send more data
   if (!m_sendPendingDataEvent.IsRunning ())
     {
-      m_sendPendingDataEvent = Simulator::Schedule ( TimeStep (1), &TcpSocketBase::SendPendingData, this, m_connected);
+      m_sendPendingDataEvent = Simulator::Schedule (TimeStep (1), &TcpSocketBase::SendPendingData, this, m_connected);
     }
 }
 
@@ -2463,8 +2493,6 @@ TcpSocketBase::PersistTimeout ()
 void
 TcpSocketBase::Retransmit ()
 {
-  m_inFastRec = false;
-
   // If erroneous timeout in closed/timed-wait state, just return
   if (m_state == CLOSED || m_state == TIME_WAIT) return;
   // If all data are received (non-closing socket and nothing to send), just return
@@ -2473,10 +2501,11 @@ TcpSocketBase::Retransmit ()
   // According to RFC2581 sec.3.1, upon RTO, ssthresh is set to half of flight
   // size and cwnd is set to 1*MSS, then the lost packet is retransmitted and
   // TCP back to slow start
-  m_ssThresh = GetSsThresh ();
   m_cWnd = m_segmentSize;
   m_nextTxSequence = m_txBuffer->HeadSequence (); // Restart from highest Ack
   m_dupAckCount = 0;
+  m_ackState = LOSS;
+  m_ssThresh = GetSsThresh ();
   NS_LOG_INFO ("RTO. Reset cwnd to " << m_cWnd <<
                ", ssthresh to " << m_ssThresh << ", restart from seqnum " << m_nextTxSequence);
   DoRetransmit ();                          // Retransmit the packet

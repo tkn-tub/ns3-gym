@@ -88,6 +88,21 @@ typedef std::deque<RttHistory> RttHistory_t;
  * this class is modified from the original NS-3 TCP socket implementation
  * (TcpSocketImpl) by Raj Bhattacharjea <raj.b@gatech.edu> of Georgia Tech.
  *
+ * Ack state machine
+ * ---------------------------
+ *
+ * The socket maintains two state machines; the TCP one, and another called
+ * "Ack state machine", which keeps track of the phase we are in. Currently,
+ * ns-3 manages the states:
+ *
+ * - OPEN
+ * - DISORDER
+ * - RECOVERY
+ * - LOSS
+ *
+ * Another one (CWR) is present but not used. For more information, see
+ * the TcpAckState_t documentation.
+ *
  *
  * Fast retransmit
  * ---------------------------
@@ -841,7 +856,6 @@ protected:
   // Fast Retransmit and Recovery
   SequenceNumber32       m_recover;      //!< Previous highest Tx seqnum for fast recovery
   uint32_t               m_retxThresh;   //!< Fast Retransmit threshold
-  bool                   m_inFastRec;    //!< currently in fast recovery
   bool                   m_limitedTx;    //!< perform limited transmit
 };
 

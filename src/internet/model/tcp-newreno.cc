@@ -78,7 +78,7 @@ TcpNewReno::NewAck (const SequenceNumber32& seq)
                 " ssthresh " << m_ssThresh);
 
   // No cWnd management while recovering
-  if (m_inFastRec && seq < m_recover)
+  if (m_ackState == RECOVERY && seq < m_recover)
     {
       TcpSocketBase::NewAck (seq);
       return;
