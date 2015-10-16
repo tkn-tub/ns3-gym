@@ -310,7 +310,6 @@ Ns3TcpLossTestCase::DoRun (void)
       LogComponentEnable ("TcpWestwood", LOG_LEVEL_ALL);
       LogComponentEnable ("TcpNewReno", LOG_LEVEL_INFO);
       LogComponentEnable ("TcpReno", LOG_LEVEL_INFO);
-      LogComponentEnable ("TcpTahoe", LOG_LEVEL_INFO);
       LogComponentEnable ("TcpSocketBase", LOG_LEVEL_INFO);
     }
 
@@ -458,12 +457,6 @@ Ns3TcpLossTestSuite::Ns3TcpLossTestSuite ()
   // We can't use NS_TEST_SOURCEDIR variable here because we use subdirectories
   SetDataDir ("src/test/ns3tcp/response-vectors");
   Packet::EnablePrinting ();  // Enable packet metadata for all test cases
-
-  AddTestCase (new Ns3TcpLossTestCase ("Tahoe", 0), TestCase::QUICK);
-  AddTestCase (new Ns3TcpLossTestCase ("Tahoe", 1), TestCase::QUICK);
-  AddTestCase (new Ns3TcpLossTestCase ("Tahoe", 2), TestCase::QUICK);
-  AddTestCase (new Ns3TcpLossTestCase ("Tahoe", 3), TestCase::QUICK);
-  AddTestCase (new Ns3TcpLossTestCase ("Tahoe", 4), TestCase::QUICK);
 
   AddTestCase (new Ns3TcpLossTestCase ("NewReno", 0), TestCase::QUICK);
   AddTestCase (new Ns3TcpLossTestCase ("NewReno", 1), TestCase::QUICK);

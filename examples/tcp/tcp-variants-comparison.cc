@@ -176,8 +176,8 @@ int main (int argc, char *argv[])
 
 
   CommandLine cmd;
-  cmd.AddValue ("transport_prot", "Transport protocol to use: TcpTahoe, "
-                " TcpNewReno, TcpWestwood, TcpWestwoodPlus ", transport_prot);
+  cmd.AddValue ("transport_prot", "Transport protocol to use: TcpNewReno, "
+                " TcpWestwood, TcpWestwoodPlus ", transport_prot);
   cmd.AddValue ("error_p", "Packet error rate", error_p);
   cmd.AddValue ("bandwidth", "Bottleneck bandwidth", bandwidth);
   cmd.AddValue ("delay", "Bottleneck delay", delay);
@@ -224,11 +224,7 @@ int main (int argc, char *argv[])
   Config::SetDefault ("ns3::TcpSocket::SndBufSize", UintegerValue (1 << 21));
 
   // Select TCP variant
-  if (transport_prot.compare ("TcpTahoe") == 0)
-    {
-      Config::SetDefault ("ns3::TcpL4Protocol::SocketType", TypeIdValue (TcpTahoe::GetTypeId ()));
-    }
-  else if (transport_prot.compare ("TcpNewReno") == 0)
+  if (transport_prot.compare ("TcpNewReno") == 0)
     {
       Config::SetDefault ("ns3::TcpL4Protocol::SocketType", TypeIdValue (TcpNewReno::GetTypeId ()));
     }
@@ -359,8 +355,7 @@ int main (int argc, char *argv[])
     {
       AddressValue remoteAddress (InetSocketAddress (sink_interfaces.GetAddress (i, 0), port));
 
-      if (transport_prot.compare ("TcpTahoe") == 0
-          || transport_prot.compare ("TcpNewReno") == 0
+      if (transport_prot.compare ("TcpNewReno") == 0
           || transport_prot.compare ("TcpWestwood") == 0
           || transport_prot.compare ("TcpWestwoodPlus") == 0
           || transport_prot.compare ("TcpHybla") == 0
