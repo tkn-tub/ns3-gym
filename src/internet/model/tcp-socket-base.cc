@@ -2475,7 +2475,7 @@ TcpSocketBase::AvailableWindow () const
 uint16_t
 TcpSocketBase::AdvertisedWindowSize () const
 {
-  uint32_t w = m_rxBuffer->MaxBufferSize () - m_rxBuffer->Size ();
+  uint32_t w = m_rxBuffer->MaxBufferSize ();
 
   w >>= m_sndScaleFactor;
 
