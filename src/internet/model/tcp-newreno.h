@@ -56,6 +56,10 @@ protected:
   virtual Ptr<TcpSocketBase> Fork (void); // Call CopyObject<TcpNewReno> to clone me
   virtual void NewAck (SequenceNumber32 const& seq); // Inc cwnd and call NewAck() of parent
   virtual uint32_t GetSsThresh ();
+
+private:
+  uint32_t SlowStart (uint32_t segmentsAcked);
+  void CongestionAvoidance (uint32_t segmentsAcked);
 };
 
 } // namespace ns3
