@@ -473,7 +473,8 @@ protected:
    * \param fromAddress the address of the remote host
    * \param toAddress the address the connection is directed to
    */
-  void CompleteFork (Ptr<Packet> p, const TcpHeader& tcpHeader, const Address& fromAddress, const Address& toAddress);
+  virtual void CompleteFork (Ptr<Packet> p, const TcpHeader& tcpHeader,
+                             const Address& fromAddress, const Address& toAddress);
 
 
 
