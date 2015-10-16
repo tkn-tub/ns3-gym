@@ -308,7 +308,7 @@ main (int argc, char *argv[])
   n3n4 = NodeContainer (c.Get (3), c.Get (4));
   n3n5 = NodeContainer (c.Get (3), c.Get (5));
 
-  Config::SetDefault ("ns3::TcpL4Protocol::SocketType", StringValue ("ns3::TcpReno"));
+  Config::SetDefault ("ns3::TcpL4Protocol::SocketType", StringValue ("ns3::TcpNewReno"));
   // 42 = headers size
   Config::SetDefault ("ns3::TcpSocket::SegmentSize", UintegerValue (1000 - 42));
   Config::SetDefault ("ns3::TcpSocket::DelAckCount", UintegerValue (1));

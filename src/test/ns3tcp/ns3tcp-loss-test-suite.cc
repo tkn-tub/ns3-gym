@@ -465,12 +465,6 @@ Ns3TcpLossTestSuite::Ns3TcpLossTestSuite ()
   AddTestCase (new Ns3TcpLossTestCase ("Tahoe", 3), TestCase::QUICK);
   AddTestCase (new Ns3TcpLossTestCase ("Tahoe", 4), TestCase::QUICK);
 
-  AddTestCase (new Ns3TcpLossTestCase ("Reno", 0), TestCase::QUICK);
-  AddTestCase (new Ns3TcpLossTestCase ("Reno", 1), TestCase::QUICK);
-  AddTestCase (new Ns3TcpLossTestCase ("Reno", 2), TestCase::QUICK);
-  AddTestCase (new Ns3TcpLossTestCase ("Reno", 3), TestCase::QUICK);
-  AddTestCase (new Ns3TcpLossTestCase ("Reno", 4), TestCase::QUICK);
-
   AddTestCase (new Ns3TcpLossTestCase ("NewReno", 0), TestCase::QUICK);
   AddTestCase (new Ns3TcpLossTestCase ("NewReno", 1), TestCase::QUICK);
   AddTestCase (new Ns3TcpLossTestCase ("NewReno", 2), TestCase::QUICK);

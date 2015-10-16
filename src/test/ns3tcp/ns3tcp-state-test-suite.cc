@@ -287,7 +287,6 @@ Ns3TcpStateTestCase::DoRun (void)
       LogComponentEnable ("ErrorModel", LOG_LEVEL_DEBUG);
       LogComponentEnable ("Ns3TcpStateTest", LOG_LEVEL_DEBUG);
       LogComponentEnable ("TcpNewReno", LOG_LEVEL_INFO);
-      LogComponentEnable ("TcpReno", LOG_LEVEL_INFO);
       LogComponentEnable ("TcpTahoe", LOG_LEVEL_INFO);
       LogComponentEnable ("TcpSocketBase", LOG_LEVEL_INFO);
     }
