@@ -118,6 +118,14 @@ TcpSocketBase::GetTypeId (void)
                    PointerValue (),
                    MakePointerAccessor (&TcpSocketBase::GetRxBuffer),
                    MakePointerChecker<TcpRxBuffer> ())
+    .AddAttribute ("ReTxThreshold", "Threshold for fast retransmit",
+                    UintegerValue (3),
+                    MakeUintegerAccessor (&TcpSocketBase::m_retxThresh),
+                    MakeUintegerChecker<uint32_t> ())
+    .AddAttribute ("LimitedTransmit", "Enable limited transmit",
+                   BooleanValue (true),
+                   MakeBooleanAccessor (&TcpSocketBase::m_limitedTx),
+                   MakeBooleanChecker ())
     .AddTraceSource ("RTO",
                      "Retransmission timeout",
                      MakeTraceSourceAccessor (&TcpSocketBase::m_rto),
@@ -195,7 +203,10 @@ TcpSocketBase::TcpSocketBase (void)
     m_rcvScaleFactor (0),
     m_timestampEnabled (true),
     m_timestampToEcho (0),
-    m_ackState (OPEN)
+    m_ackState (OPEN),
+    m_retxThresh (3),
+    m_inFastRec (false),
+    m_limitedTx (false)
 
 {
   NS_LOG_FUNCTION (this);
@@ -243,7 +254,10 @@ TcpSocketBase::TcpSocketBase (const TcpSocketBase& sock)
     m_rcvScaleFactor (sock.m_rcvScaleFactor),
     m_timestampEnabled (sock.m_timestampEnabled),
     m_timestampToEcho (sock.m_timestampToEcho),
-    m_ackState (sock.m_ackState)
+    m_ackState (sock.m_ackState),
+    m_retxThresh (sock.m_retxThresh),
+    m_inFastRec (false),
+    m_limitedTx (sock.m_limitedTx)
 
 {
   NS_LOG_FUNCTION (this);
@@ -1196,7 +1210,38 @@ TcpSocketBase::ReceivedAck (Ptr<Packet> packet, const TcpHeader& tcpHeader)
       if (tcpHeader.GetAckNumber () < m_nextTxSequence && packet->GetSize() == 0)
         {
           NS_LOG_LOGIC ("Dupack of " << tcpHeader.GetAckNumber ());
-          DupAck (tcpHeader, ++m_dupAckCount);
+          ++m_dupAckCount;
+
+          if (m_dupAckCount == m_retxThresh && !m_inFastRec)
+            { // triple duplicate ack triggers fast retransmit (RFC2582 sec.3 bullet #1)
+              m_recover = m_highTxMark;
+              m_inFastRec = true;
+
+              m_ssThresh = GetSsThresh ();
+              m_cWnd = m_ssThresh + m_dupAckCount * m_segmentSize;
+
+              NS_LOG_INFO (m_dupAckCount << " dupack. Enter fast recovery mode." <<
+                           "Reset cwnd to " << m_cWnd << ", ssthresh to " <<
+                           m_ssThresh << " at fast recovery seqnum " << m_recover);
+              DoRetransmit ();
+
+              NS_LOG_DEBUG ("DISORDER -> RECOVERY");
+            }
+          else if (m_inFastRec)
+            { // Increase cwnd for every additional dupack (RFC2582, sec.3 bullet #3)
+              m_cWnd += m_segmentSize;
+              NS_LOG_INFO ("Dupack in fast recovery mode. Increase cwnd to " << m_cWnd);
+              if (!m_sendPendingDataEvent.IsRunning ())
+                {
+                  SendPendingData (m_connected);
+                }
+            }
+          else if (!m_inFastRec && m_limitedTx && m_txBuffer->SizeFromSequence (m_nextTxSequence) > 0)
+            { // RFC3042 Limited transmit: Send a new packet for each duplicated ACK before fast retransmit
+              NS_LOG_INFO ("Limited transmit");
+              uint32_t sz = SendDataPacket (m_nextTxSequence, m_segmentSize, true);
+              m_nextTxSequence += sz;                    // Advance next tx sequence
+            }
         }
       // otherwise, the ACK is precisely equal to the nextTxSequence
       NS_ASSERT (tcpHeader.GetAckNumber () <= m_nextTxSequence);
@@ -1204,6 +1249,24 @@ TcpSocketBase::ReceivedAck (Ptr<Packet> packet, const TcpHeader& tcpHeader)
   else if (tcpHeader.GetAckNumber () > m_txBuffer->HeadSequence ())
     { // Case 3: New ACK, reset m_dupAckCount and update m_txBuffer
       NS_LOG_LOGIC ("New ack of " << tcpHeader.GetAckNumber ());
+
+      // Check for exit condition of fast recovery
+      if (m_inFastRec && tcpHeader.GetAckNumber () < m_recover)
+        { // Partial ACK, partial window deflation (RFC2582 sec.3 bullet #5 paragraph 3)
+          m_cWnd += m_segmentSize - (tcpHeader.GetAckNumber () - m_txBuffer->HeadSequence ());
+          NS_LOG_INFO ("Partial ACK for seq " << tcpHeader.GetAckNumber () << " in fast recovery: cwnd set to " << m_cWnd);
+          m_txBuffer->DiscardUpTo(tcpHeader.GetAckNumber ());  //Bug 1850:  retransmit before newack
+          DoRetransmit (); // Assume the next seq is lost. Retransmit lost packet
+          TcpSocketBase::NewAck (tcpHeader.GetAckNumber ()); // update m_nextTxSequence and send new data if allowed by window
+          return;
+        }
+      else if (m_inFastRec && tcpHeader.GetAckNumber () >= m_recover)
+        { // Full ACK (RFC2582 sec.3 bullet #5 paragraph 2, option 1)
+          m_cWnd = std::min (m_ssThresh.Get (), BytesInFlight () + m_segmentSize);
+          m_inFastRec = false;
+          NS_LOG_INFO ("Received full ACK for seq " << tcpHeader.GetAckNumber () <<". Leaving fast recovery with cwnd set to " << m_cWnd);
+        }
+
       NewAck (tcpHeader.GetAckNumber ());
       m_dupAckCount = 0;
     }
@@ -2400,9 +2463,23 @@ TcpSocketBase::PersistTimeout ()
 void
 TcpSocketBase::Retransmit ()
 {
-  m_nextTxSequence = m_txBuffer->HeadSequence (); // Start from highest Ack
+  m_inFastRec = false;
+
+  // If erroneous timeout in closed/timed-wait state, just return
+  if (m_state == CLOSED || m_state == TIME_WAIT) return;
+  // If all data are received (non-closing socket and nothing to send), just return
+  if (m_state <= ESTABLISHED && m_txBuffer->HeadSequence () >= m_highTxMark) return;
+
+  // According to RFC2581 sec.3.1, upon RTO, ssthresh is set to half of flight
+  // size and cwnd is set to 1*MSS, then the lost packet is retransmitted and
+  // TCP back to slow start
+  m_ssThresh = GetSsThresh ();
+  m_cWnd = m_segmentSize;
+  m_nextTxSequence = m_txBuffer->HeadSequence (); // Restart from highest Ack
   m_dupAckCount = 0;
-  DoRetransmit (); // Retransmit the packet
+  NS_LOG_INFO ("RTO. Reset cwnd to " << m_cWnd <<
+               ", ssthresh to " << m_ssThresh << ", restart from seqnum " << m_nextTxSequence);
+  DoRetransmit ();                          // Retransmit the packet
 }
 
 void

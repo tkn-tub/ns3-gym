@@ -97,8 +97,7 @@ public:
 protected:
   virtual Ptr<TcpSocketBase> Fork (void); // Call CopyObject<TcpTahoe> to clone me
   virtual void NewAck (SequenceNumber32 const& seq); // Inc cwnd and call NewAck() of parent
-  virtual void DupAck (const TcpHeader& t, uint32_t count);  // Treat 3 dupack as timeout
-  virtual void Retransmit (void); // Retransmit time out
+  virtual uint32_t GetSsThresh ();
 
   /**
    * Process the newly received ACK
@@ -146,8 +145,6 @@ private:
   void Filtering (void);
 
 protected:
-  bool                   m_inFastRec;              //!< Currently in fast recovery if TRUE
-
   TracedValue<double>    m_currentBW;              //!< Current value of the estimated BW
   double                 m_lastSampleBW;           //!< Last bandwidth sample
   double                 m_lastBW;                 //!< Last bandwidth sample after being filtered

@@ -87,6 +87,34 @@ typedef std::deque<RttHistory> RttHistory_t;
  * provides connection orientation and sliding window flow control. Part of
  * this class is modified from the original NS-3 TCP socket implementation
  * (TcpSocketImpl) by Raj Bhattacharjea <raj.b@gatech.edu> of Georgia Tech.
+ *
+ *
+ * Fast retransmit
+ * ---------------------------
+ *
+ * The fast retransmit enhancement is introduced in RFC 2581 and updated in
+ * RFC 5681. It basically reduces the time a sender waits before retransmitting
+ * a lost segment, through the assumption that if it receives a certain number
+ * of duplicate ACKs, a segment has been lost and it can be retransmitted.
+ * Usually it is coupled with the Limited Transmit algorithm, defined in
+ * RFC 3042.
+ *
+ * In ns-3, these algorithms are included in this class, and it is implemented inside
+ * the ReceivedAck method. The attribute which manages the number of dup ACKs
+ * necessary to start the fast retransmit algorithm is named "ReTxThreshold",
+ * and its default value is 3, while the Limited Transmit one can be enabled
+ * by setting the attribute "LimitedTransmit" to true.
+ *
+ * Fast recovery
+ * --------------------------
+ *
+ * The fast recovery algorithm is introduced RFC 2001, and it basically
+ * avoids to reset cWnd to 1 segment after sensing a loss on the channel. Instead,
+ * the slow start threshold is halved, and the cWnd is set equal to such value,
+ * plus segments for the cWnd inflation.
+ *
+ * The algorithm is implemented in the ReceivedAck method.
+ *
  */
 class TcpSocketBase : public TcpSocket
 {
@@ -612,11 +640,9 @@ protected:
   virtual void NewAck (SequenceNumber32 const& seq);
 
   /**
-   * \brief Received dupack (duplicate ACK)
-   * \param tcpHeader the packet's TCP header
-   * \param count counter of duplicate ACKs
-   */
-  virtual void DupAck (const TcpHeader& tcpHeader, uint32_t count) = 0;
+    * \brief Get the new value of slow start threshold after a loss event
+    */
+   virtual uint32_t GetSsThresh () = 0;
 
   /**
    * \brief Call Retransmit() upon RTO event
@@ -809,7 +835,14 @@ protected:
 
   EventId m_sendPendingDataEvent; //!< micro-delay event to send pending data
 
+  // Ack state
   TracedValue<TcpAckState_t> m_ackState; //!< State in the ACK state machine
+
+  // Fast Retransmit and Recovery
+  SequenceNumber32       m_recover;      //!< Previous highest Tx seqnum for fast recovery
+  uint32_t               m_retxThresh;   //!< Fast Retransmit threshold
+  bool                   m_inFastRec;    //!< currently in fast recovery
+  bool                   m_limitedTx;    //!< perform limited transmit
 };
 
 /**

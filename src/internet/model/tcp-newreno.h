@@ -55,14 +55,7 @@ public:
 protected:
   virtual Ptr<TcpSocketBase> Fork (void); // Call CopyObject<TcpNewReno> to clone me
   virtual void NewAck (SequenceNumber32 const& seq); // Inc cwnd and call NewAck() of parent
-  virtual void DupAck (const TcpHeader& t, uint32_t count);  // Halving cwnd and reset nextTxSequence
-  virtual void Retransmit (void); // Exit fast recovery upon retransmit timeout
-
-protected:
-  SequenceNumber32       m_recover;      //!< Previous highest Tx seqnum for fast recovery
-  uint32_t               m_retxThresh;   //!< Fast Retransmit threshold
-  bool                   m_inFastRec;    //!< currently in fast recovery
-  bool                   m_limitedTx;    //!< perform limited transmit
+  virtual uint32_t GetSsThresh ();
 };
 
 } // namespace ns3

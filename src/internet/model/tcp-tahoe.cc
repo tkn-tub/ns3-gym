@@ -41,22 +41,17 @@ TcpTahoe::GetTypeId (void)
     .SetParent<TcpSocketBase> ()
     .SetGroupName ("Internet")
     .AddConstructor<TcpTahoe> ()
-    .AddAttribute ("ReTxThreshold", "Threshold for fast retransmit",
-                    UintegerValue (3),
-                    MakeUintegerAccessor (&TcpTahoe::m_retxThresh),
-                    MakeUintegerChecker<uint32_t> ())
   ;
   return tid;
 }
 
-TcpTahoe::TcpTahoe (void) : m_retxThresh (3)
+TcpTahoe::TcpTahoe (void)
 {
   NS_LOG_FUNCTION (this);
 }
 
 TcpTahoe::TcpTahoe (const TcpTahoe& sock)
-  : TcpSocketBase (sock),
-    m_retxThresh (sock.m_retxThresh)
+  : TcpSocketBase (sock)
 {
   NS_LOG_FUNCTION (this);
   NS_LOG_LOGIC ("Invoked the copy constructor");
@@ -96,40 +91,21 @@ TcpTahoe::NewAck (SequenceNumber32 const& seq)
   TcpSocketBase::NewAck (seq);           // Complete newAck processing
 }
 
-/* Cut down ssthresh upon triple dupack */
-void
-TcpTahoe::DupAck (const TcpHeader& t, uint32_t count)
+uint32_t
+TcpTahoe::GetSsThresh ()
 {
-  NS_LOG_FUNCTION (this << "t " << count);
-  if (count == m_retxThresh)
-    { // triple duplicate ack triggers fast retransmit (RFC2001, sec.3)
-      NS_LOG_INFO ("Triple Dup Ack: old ssthresh " << m_ssThresh << " cwnd " << m_cWnd);
-      // fast retransmit in Tahoe means triggering RTO earlier. Tx is restarted
-      // from the highest ack and run slow start again.
-      // (Fall & Floyd 1996, sec.1)
-      m_ssThresh = std::max (static_cast<unsigned> (m_cWnd / 2), m_segmentSize * 2);  // Half ssthresh
-      m_cWnd = m_segmentSize; // Run slow start again
-      m_nextTxSequence = m_txBuffer->HeadSequence (); // Restart from highest Ack
-      NS_LOG_INFO ("Triple Dup Ack: new ssthresh " << m_ssThresh << " cwnd " << m_cWnd);
-      NS_LOG_LOGIC ("Triple Dup Ack: retransmit missing segment at " << Simulator::Now ().GetSeconds ());
-      DoRetransmit ();
+  /* Common Tahoe implementations detect congestion only from an RTO.
+   * Since this function is called in two part (Retransmit and when a DupAck is
+   * received, depending on the value of m_inFastRec we know if an RTO is expired
+   * or a triple dupack received */
+  if (m_inFastRec)
+    {
+      return 0;
     }
-}
-
-/* Retransmit timeout */
-void TcpTahoe::Retransmit (void)
-{
-  NS_LOG_FUNCTION (this);
-  NS_LOG_LOGIC (this << " ReTxTimeout Expired at time " << Simulator::Now ().GetSeconds ());
-  // If erroneous timeout in closed/timed-wait state, just return
-  if (m_state == CLOSED || m_state == TIME_WAIT) return;
-  // If all data are received (non-closing socket and nothing to send), just return
-  if (m_state <= ESTABLISHED && m_txBuffer->HeadSequence () >= m_highTxMark) return;
-
-  m_ssThresh = std::max (static_cast<unsigned> (m_cWnd / 2), m_segmentSize * 2);  // Half ssthresh
-  m_cWnd = m_segmentSize;                   // Set cwnd to 1 segSize (RFC2001, sec.2)
-  m_nextTxSequence = m_txBuffer->HeadSequence (); // Restart from highest Ack
-  DoRetransmit ();                          // Retransmit the packet
+  else
+    {
+      return std::max (2 * m_segmentSize, BytesInFlight () / 2);
+    }
 }
 
 } // namespace ns3
