@@ -1155,11 +1155,6 @@ TcpSocketBase::DoForwardUp (Ptr<Packet> packet, const Address &fromAddress,
     }
 
   // Update Rx window size, i.e. the flow control window
-  if (m_rWnd.Get () == 0 && tcpHeader.GetWindowSize () != 0 && m_persistEvent.IsRunning ())
-    { // persist probes end
-      NS_LOG_LOGIC (this << " Leaving zerowindow persist state");
-      m_persistEvent.Cancel ();
-    }
   if (tcpHeader.GetFlags () & TcpHeader::ACK)
     {
       UpdateWindowSize (tcpHeader);
@@ -1171,6 +1166,19 @@ TcpSocketBase::DoForwardUp (Ptr<Packet> packet, const Address &fromAddress,
        * saved anyway..
        */
       m_rWnd = tcpHeader.GetWindowSize ();
+    }
+
+  if (m_rWnd.Get () == 0 && m_persistEvent.IsExpired ())
+    { // Zero window: Enter persist state to send 1 byte to probe
+      NS_LOG_LOGIC (this << " Enter zerowindow persist state");
+      NS_LOG_LOGIC (this << " Cancelled ReTxTimeout event which was set to expire at " <<
+                    (Simulator::Now () + Simulator::GetDelayLeft (m_retxEvent)).GetSeconds ());
+      m_retxEvent.Cancel ();
+      NS_LOG_LOGIC ("Schedule persist timeout at time " <<
+                    Simulator::Now ().GetSeconds () << " to expire at time " <<
+                    (Simulator::Now () + m_persistTimeout).GetSeconds ());
+      m_persistEvent = Simulator::Schedule (m_persistTimeout, &TcpSocketBase::PersistTimeout, this);
+      NS_ASSERT (m_persistTimeout == Simulator::GetDelayLeft (m_persistEvent));
     }
 
   // TCP state machine code in different process functions
@@ -1222,6 +1230,21 @@ TcpSocketBase::DoForwardUp (Ptr<Packet> packet, const Address &fromAddress,
       break;
     default: // mute compiler
       break;
+    }
+
+  if (m_rWnd.Get () != 0 && m_persistEvent.IsRunning ())
+    { // persist probes end, the other end has increased the window
+      NS_ASSERT (m_connected);
+      NS_LOG_LOGIC (this << " Leaving zerowindow persist state");
+      m_persistEvent.Cancel ();
+
+      // Try to send more data, since window has been updated
+      if (!m_sendPendingDataEvent.IsRunning ())
+        {
+          m_sendPendingDataEvent = Simulator::Schedule (TimeStep (1),
+                                                        &TcpSocketBase::SendPendingData,
+                                                        this, m_connected);
+        }
     }
 }
 
@@ -2626,18 +2649,7 @@ TcpSocketBase::NewAck (SequenceNumber32 const& ack, bool resetRTO)
                     (Simulator::Now () + m_rto.Get ()).GetSeconds ());
       m_retxEvent = Simulator::Schedule (m_rto, &TcpSocketBase::ReTxTimeout, this);
     }
-  if (m_rWnd.Get () == 0 && m_persistEvent.IsExpired ())
-    { // Zero window: Enter persist state to send 1 byte to probe
-      NS_LOG_LOGIC (this << "Enter zerowindow persist state");
-      NS_LOG_LOGIC (this << "Cancelled ReTxTimeout event which was set to expire at " <<
-                    (Simulator::Now () + Simulator::GetDelayLeft (m_retxEvent)).GetSeconds ());
-      m_retxEvent.Cancel ();
-      NS_LOG_LOGIC ("Schedule persist timeout at time " <<
-                    Simulator::Now ().GetSeconds () << " to expire at time " <<
-                    (Simulator::Now () + m_persistTimeout).GetSeconds ());
-      m_persistEvent = Simulator::Schedule (m_persistTimeout, &TcpSocketBase::PersistTimeout, this);
-      NS_ASSERT (m_persistTimeout == Simulator::GetDelayLeft (m_persistEvent));
-    }
+
   // Note the highest ACK and tell app to send more
   NS_LOG_LOGIC ("TCP " << this << " NewAck " << ack <<
                 " numberAck " << (ack - m_txBuffer->HeadSequence ())); // Number bytes ack'ed
