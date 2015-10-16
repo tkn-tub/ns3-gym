@@ -117,21 +117,21 @@ TcpWestwood::NewAck (const SequenceNumber32& seq)
 { // Same as Reno
   NS_LOG_FUNCTION (this << seq);
   NS_LOG_LOGIC ("TcpWestwood receieved ACK for seq " << seq <<
-                " cwnd " << m_cWnd <<
-                " ssthresh " << m_ssThresh);
+                " cwnd " << m_tcb->m_cWnd <<
+                " ssthresh " << m_tcb->m_ssThresh);
 
   // Increase of cwnd based on current phase (slow start or congestion avoidance)
-  if (m_cWnd < m_ssThresh)
+  if (m_tcb->m_cWnd < m_tcb->m_ssThresh)
     { // Slow start mode, add one segSize to cWnd as in Reno
-      m_cWnd += m_segmentSize;
-      NS_LOG_INFO ("In SlowStart, updated to cwnd " << m_cWnd << " ssthresh " << m_ssThresh);
+      m_tcb->m_cWnd += m_tcb->m_segmentSize;
+      NS_LOG_INFO ("In SlowStart, updated to cwnd " << m_tcb->m_cWnd << " ssthresh " << m_tcb->m_ssThresh);
     }
   else
     { // Congestion avoidance mode, increase by (segSize*segSize)/cwnd as in Reno
-      double adder = static_cast<double> (m_segmentSize * m_segmentSize) / m_cWnd.Get();
+      double adder = static_cast<double> (m_tcb->m_segmentSize * m_tcb->m_segmentSize) / m_tcb->m_cWnd.Get();
       adder = std::max(1.0, adder);
-      m_cWnd += static_cast<uint32_t>(adder);
-      NS_LOG_INFO ("In CongAvoid, updated to cwnd " << m_cWnd << " ssthresh " << m_ssThresh);
+      m_tcb->m_cWnd += static_cast<uint32_t>(adder);
+      NS_LOG_INFO ("In CongAvoid, updated to cwnd " << m_tcb->m_cWnd << " ssthresh " << m_tcb->m_ssThresh);
     }
 
   // Complete newAck processing
@@ -172,14 +172,14 @@ TcpWestwood::EstimateBW (int acked, const TcpHeader& tcpHeader, Time rtt)
       // Get the time when the current ACK is received
       double currentAck = static_cast<double> (Simulator::Now().GetSeconds());
       // Calculate the BW
-      m_currentBW = acked * m_segmentSize / (currentAck - m_lastAck);
+      m_currentBW = acked * m_tcb->m_segmentSize / (currentAck - m_lastAck);
       // Update the last ACK time
       m_lastAck = currentAck;
     }
   else if (m_pType == TcpWestwood::WESTWOODPLUS)
     {
       // Calculate the BW
-      m_currentBW = m_ackedSegments * m_segmentSize / rtt.GetSeconds();
+      m_currentBW = m_ackedSegments * m_tcb->m_segmentSize / rtt.GetSeconds();
       // Reset m_ackedSegments and m_IsCount for the next sampling
       m_ackedSegments = 0;
       m_IsCount = false;
@@ -195,7 +195,7 @@ TcpWestwood::CountAck (const TcpHeader& tcpHeader)
   NS_LOG_FUNCTION (this);
 
   // Calculate the number of acknowledged segments based on the received ACK number
-  int cumul_ack = (tcpHeader.GetAckNumber() - m_prevAckNo) / m_segmentSize;
+  int cumul_ack = (tcpHeader.GetAckNumber() - m_prevAckNo) / m_tcb->m_segmentSize;
 
   if (cumul_ack == 0)
     {// A DUPACK counts for 1 segment delivered successfully

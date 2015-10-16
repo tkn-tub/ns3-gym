@@ -45,6 +45,7 @@ class Node;
 class Packet;
 class TcpL4Protocol;
 class TcpHeader;
+class TcpSocketState;
 
 /**
  * \ingroup tcp
@@ -103,6 +104,13 @@ typedef std::deque<RttHistory> RttHistory_t;
  * Another one (CWR) is present but not used. For more information, see
  * the TcpAckState_t documentation.
  *
+ *
+ * Congestion control interface
+ * ---------------------------
+ *
+ * The variables needed to congestion control subclasses have been moved inside
+ * the TcpSocketState class. It contains information on the congestion window,
+ * slow start threshold, segment size and the state of the Ack state machine.
  *
  * Fast retransmit
  * ---------------------------
@@ -243,6 +251,30 @@ public:
    * \brief Literal names of TCP states for use in log messages
    */
   static const char* const TcpAckStateName[TcpSocketBase::LAST_ACKSTATE];
+
+  /**
+   * \brief Callback pointer for cWnd trace chaining
+   */
+  TracedCallback<uint32_t, uint32_t> m_cWndTrace;
+
+  /**
+   * \brief Callback pointer for ssTh trace chaining
+   */
+  TracedCallback<uint32_t, uint32_t> m_ssThTrace;
+
+  /**
+   * \brief Callback function to hook to TcpSocketState congestion window
+   * \param oldValue old cWnd value
+   * \param newValue new cWnd value
+   */
+  void UpdateCwnd (uint32_t oldValue, uint32_t newValue);
+
+  /**
+   * \brief Callback function to hook to TcpSocketState slow start threshold
+   * \param oldValue old ssTh value
+   * \param newValue new ssTh value
+   */
+  void UpdateSsThresh (uint32_t oldValue, uint32_t newValue);
 
   // Necessary implementations of null functions from ns3::Socket
   virtual enum SocketErrno GetErrno (void) const;    // returns m_errno
@@ -828,17 +860,10 @@ protected:
   double                   m_msl;           //!< Max segment lifetime
 
   // Window management
-  uint32_t              m_segmentSize; //!< Segment size
   uint16_t              m_maxWinSize;  //!< Maximum window size to advertise
   TracedValue<uint32_t> m_rWnd;        //!< Receiver window (RCV.WND in RFC793)
   TracedValue<SequenceNumber32> m_highRxMark;     //!< Highest seqno received
   TracedValue<SequenceNumber32> m_highRxAckMark;  //!< Highest ack received
-
-  // Congestion control
-  TracedValue<uint32_t> m_cWnd;     //!< Congestion window
-  TracedValue<uint32_t> m_ssThresh; //!< Slow start threshold
-  uint32_t               m_initialCWnd;      //!< Initial cWnd value
-  uint32_t               m_initialSsThresh;  //!< Initial Slow Start Threshold value
 
   // Options
   bool    m_winScalingEnabled;    //!< Window Scale option enabled
@@ -857,6 +882,44 @@ protected:
   SequenceNumber32       m_recover;      //!< Previous highest Tx seqnum for fast recovery
   uint32_t               m_retxThresh;   //!< Fast Retransmit threshold
   bool                   m_limitedTx;    //!< perform limited transmit
+
+  // Transmission Control Block
+  Ptr<TcpSocketState> m_tcb;             //!< Congestion control informations
+};
+
+/**
+ * \brief Data structure that records the congestion state of a connection
+ *
+ * In this data structure, basic informations that should be passed between
+ * socket and the congestion control algorithm are saved. Through the code,
+ * it will be referred as Transmission Control Block (TCB), but there are some
+ * differencies. In the RFCs, the TCB contains all the variables that defines
+ * a connection, while we preferred to maintain in this class only the values
+ * that should be exchanged between socket and other parts, like congestion
+ * control algorithms.
+ *
+ */
+class TcpSocketState : public Object
+{
+public:
+  /**
+   * Get the type ID.
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
+  static TypeId GetTypeId (void);
+
+  TcpSocketState ();
+  TcpSocketState (const TcpSocketState &other);
+
+  // Congestion control
+  TracedValue<uint32_t>  m_cWnd;             //!< Congestion window
+  TracedValue<uint32_t>  m_ssThresh;         //!< Slow start threshold
+  uint32_t               m_initialCWnd;      //!< Initial cWnd value
+  uint32_t               m_initialSsThresh;  //!< Initial Slow Start Threshold value
+
+  // Segment
+  uint32_t               m_segmentSize;      //!< Segment size
 };
 
 /**
