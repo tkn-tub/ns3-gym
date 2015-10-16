@@ -23,6 +23,9 @@
 #include "ns3/ipv4-address-helper.h"
 #include "ns3/internet-stack-helper.h"
 #include "ns3/log.h"
+#include "ns3/tcp-l4-protocol.h"
+#include "../model/ipv4-end-point.h"
+#include "../model/ipv6-end-point.h"
 #include "tcp-general-test.h"
 
 namespace ns3 {

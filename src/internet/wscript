@@ -233,6 +233,7 @@ def build(bld):
         'test/tcp-header-test.cc',
         'test/tcp-general-test.cc',
         'test/tcp-error-model.cc',
+        'test/tcp-slow-start-test.cc',
         'test/udp-test.cc',
         'test/ipv6-address-generator-test-suite.cc',
         'test/ipv6-dual-stack-test-suite.cc',
