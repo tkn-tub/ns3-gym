@@ -166,6 +166,40 @@ public:
    */
   Ptr<TcpRxBuffer> GetRxBuffer (void) const;
 
+  /**
+   * \brief Definition of the ACK state machine
+   *
+   * The design of this state machine is taken from Linux v4.0, but it has been
+   * maintained in the Linux mainline from ages. It basically avoids to maintain
+   * a lot of boolean variables, and it allows to check the transitions from
+   * different algorithm in a cleaner way.
+   *
+   * These states represent the situation from a congestion control point of view:
+   * in fact, apart the OPEN state, the other states represent a situation in
+   * which there is a congestion, and different actions should be taken,
+   * depending on the case.
+   *
+   * \see ReceivedAck
+   * \see Retransmit
+   */
+  typedef enum
+  {
+    OPEN,        /**< Normal state, no dubious events */
+    DISORDER,    /**< In all the respects it is "Open",
+                  *  but requires a bit more attention. It is entered when
+                  *  we see some SACKs or dupacks. It is split of "Open" */
+    CWR,         /**< cWnd was reduced due to some Congestion Notification event.
+                  *  It can be ECN, ICMP source quench, local device congestion.
+                  *  Not used in NS-3 right now. */
+    RECOVERY,     /**< CWND was reduced, we are fast-retransmitting. */
+    LOSS,         /**< CWND was reduced due to RTO timeout or SACK reneging. */
+    LAST_ACKSTATE /**< Used only in debug messages */
+  } TcpAckState_t;
+
+  /**
+   * \brief Literal names of TCP states for use in log messages
+   */
+  static const char* const TcpAckStateName[TcpSocketBase::LAST_ACKSTATE];
 
   // Necessary implementations of null functions from ns3::Socket
   virtual enum SocketErrno GetErrno (void) const;    // returns m_errno
@@ -774,7 +808,19 @@ protected:
   uint32_t m_timestampToEcho;     //!< Timestamp to echo
 
   EventId m_sendPendingDataEvent; //!< micro-delay event to send pending data
+
+  TracedValue<TcpAckState_t> m_ackState; //!< State in the ACK state machine
 };
+
+/**
+ * \ingroup tcp
+ * TracedValue Callback signature for TcpAckState_t
+ *
+ * \param [in] oldValue original value of the traced variable
+ * \param [in] newValue new value of the traced variable
+ */
+typedef void (* TcpAckStatesTracedValueCallback)(const TcpSocketBase::TcpAckState_t oldValue,
+                                                 const TcpSocketBase::TcpAckState_t newValue);
 
 } // namespace ns3
 

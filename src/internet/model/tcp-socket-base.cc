@@ -138,6 +138,10 @@ TcpSocketBase::GetTypeId (void)
                      "TCP state",
                      MakeTraceSourceAccessor (&TcpSocketBase::m_state),
                      "ns3::TcpStatesTracedValueCallback")
+    .AddTraceSource ("AckState",
+                     "TCP ACK machine state",
+                     MakeTraceSourceAccessor (&TcpSocketBase::m_ackState),
+                     "ns3::TcpAckStatesTracedValueCallback")
     .AddTraceSource ("RWND",
                      "Remote side's flow control window",
                      MakeTraceSourceAccessor (&TcpSocketBase::m_rWnd),
@@ -190,7 +194,8 @@ TcpSocketBase::TcpSocketBase (void)
     m_sndScaleFactor (0),
     m_rcvScaleFactor (0),
     m_timestampEnabled (true),
-    m_timestampToEcho (0)
+    m_timestampToEcho (0),
+    m_ackState (OPEN)
 
 {
   NS_LOG_FUNCTION (this);
@@ -237,7 +242,8 @@ TcpSocketBase::TcpSocketBase (const TcpSocketBase& sock)
     m_sndScaleFactor (sock.m_sndScaleFactor),
     m_rcvScaleFactor (sock.m_rcvScaleFactor),
     m_timestampEnabled (sock.m_timestampEnabled),
-    m_timestampToEcho (sock.m_timestampToEcho)
+    m_timestampToEcho (sock.m_timestampToEcho),
+    m_ackState (sock.m_ackState)
 
 {
   NS_LOG_FUNCTION (this);
@@ -2783,6 +2789,13 @@ TcpSocketBase::GetRxBuffer (void) const
 {
   return m_rxBuffer;
 }
+
+const char* const
+TcpSocketBase::TcpAckStateName[TcpSocketBase::LAST_ACKSTATE] =
+{
+  "OPEN", "DISORDER", "CWR", "RECOVERY",
+  "LOSS"
+};
 
 
 //RttHistory methods
