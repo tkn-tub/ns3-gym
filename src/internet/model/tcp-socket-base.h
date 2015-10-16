@@ -406,8 +406,10 @@ protected:
   virtual uint32_t GetInitialCwnd (void) const;
   virtual void     SetConnTimeout (Time timeout);
   virtual Time     GetConnTimeout (void) const;
-  virtual void     SetConnCount (uint32_t count);
-  virtual uint32_t GetConnCount (void) const;
+  virtual void     SetSynRetries (uint32_t count);
+  virtual uint32_t GetSynRetries (void) const;
+  virtual void     SetDataRetries (uint32_t retries);
+  virtual uint32_t GetDataRetries (void) const;
   virtual void     SetDelAckTimeout (Time timeout);
   virtual Time     GetDelAckTimeout (void) const;
   virtual void     SetDelAckMaxCount (uint32_t count);
@@ -911,8 +913,10 @@ protected:
   uint32_t          m_delAckCount;     //!< Delayed ACK counter
   uint32_t          m_delAckMaxCount;  //!< Number of packet to fire an ACK before delay timeout
   bool              m_noDelay;         //!< Set to true to disable Nagle's algorithm
-  uint32_t          m_cnCount;         //!< Count of remaining connection retries
-  uint32_t          m_cnRetries;       //!< Number of connection retries before giving up
+  uint32_t          m_synCount;        //!< Count of remaining connection retries
+  uint32_t          m_synRetries;      //!< Number of connection attempts
+  uint32_t          m_dataRetrCount;   //!< Count of remaining data retransmission attempts
+  uint32_t          m_dataRetries;     //!< Number of data retransmission attempts
   TracedValue<Time> m_rto;             //!< Retransmit timeout
   Time              m_minRto;          //!< minimum value of the Retransmit timeout
   Time              m_clockGranularity; //!< Clock Granularity used in RTO calcs

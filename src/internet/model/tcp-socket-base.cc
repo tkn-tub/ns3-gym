@@ -296,7 +296,7 @@ TcpSocketBase::TcpSocketBase (const TcpSocketBase& sock)
     m_delAckCount (0),
     m_delAckMaxCount (sock.m_delAckMaxCount),
     m_noDelay (sock.m_noDelay),
-    m_cnRetries (sock.m_cnRetries),
+    m_synRetries (sock.m_synRetries),
     m_delAckTimeout (sock.m_delAckTimeout),
     m_persistTimeout (sock.m_persistTimeout),
     m_cnTimeout (sock.m_cnTimeout),
@@ -657,7 +657,8 @@ TcpSocketBase::Connect (const Address & address)
 
   // Re-initialize parameters in case this socket is being reused after CLOSE
   m_rtt->Reset ();
-  m_cnCount = m_cnRetries;
+  m_synCount = m_synRetries;
+  m_dataRetrCount = m_dataRetries;
 
   // DoConnect() will do state-checking and send a SYN packet
   return DoConnect ();
@@ -1514,6 +1515,9 @@ TcpSocketBase::ReceivedAck (Ptr<Packet> packet, const TcpHeader& tcpHeader)
                         " ssTh: " << m_tcb->m_ssThresh);
         }
 
+      // Reset the data retransmission count. We got a new ACK!
+      m_dataRetrCount = m_dataRetries;
+
       if (m_isFirstPartialAck == false)
         {
           NS_ASSERT (m_tcb->m_ackState == TcpSocketState::RECOVERY);
@@ -1528,7 +1532,6 @@ TcpSocketBase::ReceivedAck (Ptr<Packet> packet, const TcpHeader& tcpHeader)
                                                         &TcpSocketBase::SendPendingData,
                                                         this, m_connected);
         }
-
     }
 
   // If there is any data piggybacked, store it into m_rxBuffer
@@ -1594,7 +1597,7 @@ TcpSocketBase::ProcessSynSent (Ptr<Packet> packet, const TcpHeader& tcpHeader)
     { // Received SYN, move to SYN_RCVD state and respond with SYN+ACK
       NS_LOG_DEBUG ("SYN_SENT -> SYN_RCVD");
       m_state = SYN_RCVD;
-      m_cnCount = m_cnRetries;
+      m_synCount = m_synRetries;
       m_rxBuffer->SetNextRxSequence (tcpHeader.GetSequenceNumber () + SequenceNumber32 (1));
       SendEmptyPacket (TcpHeader::SYN | TcpHeader::ACK);
     }
@@ -2046,7 +2049,7 @@ TcpSocketBase::SendEmptyPacket (uint8_t flags)
   bool isAck = flags == TcpHeader::ACK;
   if (hasSyn)
     {
-      if (m_cnCount == 0)
+      if (m_synCount == 0)
         { // No more connection retries, give up
           NS_LOG_LOGIC ("Connection failed.");
           m_rtt->Reset (); //According to recommendation -> RFC 6298
@@ -2055,9 +2058,9 @@ TcpSocketBase::SendEmptyPacket (uint8_t flags)
         }
       else
         { // Exponential backoff of connection time out
-          int backoffCount = 0x1 << (m_cnRetries - m_cnCount);
+          int backoffCount = 0x1 << (m_synRetries - m_synCount);
           m_rto = m_cnTimeout * backoffCount;
-          m_cnCount--;
+          m_synCount--;
         }
     }
   if (m_endPoint != 0)
@@ -2209,7 +2212,8 @@ TcpSocketBase::CompleteFork (Ptr<Packet> p, const TcpHeader& h,
   // Change the cloned socket from LISTEN state to SYN_RCVD
   NS_LOG_DEBUG ("LISTEN -> SYN_RCVD");
   m_state = SYN_RCVD;
-  m_cnCount = m_cnRetries;
+  m_synCount = m_synRetries;
+  m_dataRetrCount = m_dataRetries;
   SetupCallback ();
   // Set the sequence number and send SYN+ACK
   m_rxBuffer->SetNextRxSequence (h.GetSequenceNumber () + SequenceNumber32 (1));
@@ -2799,7 +2803,7 @@ TcpSocketBase::DoRetransmit ()
   // Retransmit SYN packet
   if (m_state == SYN_SENT)
     {
-      if (m_cnCount > 0)
+      if (m_synCount > 0)
         {
           SendEmptyPacket (TcpHeader::SYN);
         }
@@ -2809,6 +2813,19 @@ TcpSocketBase::DoRetransmit ()
         }
       return;
     }
+
+  if (m_dataRetrCount == 0)
+    {
+      NS_LOG_INFO ("No more data retries available. Dropping connection");
+      NotifyErrorClose ();
+      DeallocateEndPoint ();
+      return;
+    }
+  else
+    {
+      --m_dataRetrCount;
+    }
+
   // Retransmit non-data packet: Only if in FIN_WAIT_1 or CLOSING state
   if (m_txBuffer->Size () == 0)
     {
@@ -2908,16 +2925,30 @@ TcpSocketBase::GetConnTimeout (void) const
 }
 
 void
-TcpSocketBase::SetConnCount (uint32_t count)
+TcpSocketBase::SetSynRetries (uint32_t count)
 {
   NS_LOG_FUNCTION (this << count);
-  m_cnRetries = count;
+  m_synRetries = count;
 }
 
 uint32_t
-TcpSocketBase::GetConnCount (void) const
+TcpSocketBase::GetSynRetries (void) const
 {
-  return m_cnRetries;
+  return m_synRetries;
+}
+
+void
+TcpSocketBase::SetDataRetries (uint32_t retries)
+{
+  NS_LOG_FUNCTION (this << retries);
+  m_dataRetries = retries;
+}
+
+uint32_t
+TcpSocketBase::GetDataRetries (void) const
+{
+  NS_LOG_FUNCTION (this);
+  return m_dataRetries;
 }
 
 void

@@ -193,8 +193,10 @@ private:
   virtual uint32_t GetInitialCwnd (void) const;
   virtual void SetConnTimeout (Time timeout);
   virtual Time GetConnTimeout (void) const;
-  virtual void SetConnCount (uint32_t count);
-  virtual uint32_t GetConnCount (void) const;
+  virtual uint32_t GetSynRetries (void) const;
+  virtual void SetSynRetries (uint32_t count);
+  virtual void SetDataRetries (uint32_t retries);
+  virtual uint32_t GetDataRetries (void) const;
   virtual void SetDelAckTimeout (Time timeout);
   virtual Time GetDelAckTimeout (void) const;
   virtual void SetDelAckMaxCount (uint32_t count);
@@ -250,7 +252,8 @@ private:
 
   // Timer-related members
   Time              m_cnTimeout;       //!< Timeout for connection retry
-  uint32_t          m_cnCount;         //!< Count of remaining connection retries
+  uint32_t          m_synRetries;      //!< Count of remaining connection retries
+  uint32_t          m_dataRetries;     //!< Count of remaining data retransmission attempts
   Time              m_persistTimeout;  //!< Time between sending 1-byte probes
 
   // Temporary queue for delivering data to application

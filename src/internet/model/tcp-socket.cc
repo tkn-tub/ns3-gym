@@ -82,10 +82,17 @@ TcpSocket::GetTypeId (void)
                                      &TcpSocket::SetConnTimeout),
                    MakeTimeChecker ())
     .AddAttribute ("ConnCount",
-                   "Number of connection attempts (SYN retransmissions) before returning failure",
+                   "Number of connection attempts (SYN retransmissions) before "
+                   "returning failure",
                    UintegerValue (6),
-                   MakeUintegerAccessor (&TcpSocket::GetConnCount,
-                                         &TcpSocket::SetConnCount),
+                   MakeUintegerAccessor (&TcpSocket::GetSynRetries,
+                                         &TcpSocket::SetSynRetries),
+                   MakeUintegerChecker<uint32_t> ())
+    .AddAttribute ("DataRetries",
+                   "Number of data retransmission attempts",
+                   UintegerValue (6),
+                   MakeUintegerAccessor (&TcpSocket::GetDataRetries,
+                                         &TcpSocket::SetDataRetries),
                    MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("DelAckTimeout",
                    "Timeout value for TCP delayed acks, in seconds",

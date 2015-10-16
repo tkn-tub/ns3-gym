@@ -119,7 +119,7 @@ NscTcpSocketImpl::NscTcpSocketImpl(const NscTcpSocketImpl& sock)
     m_initialSsThresh (sock.m_initialSsThresh),
     m_lastMeasuredRtt (Seconds (0.0)),
     m_cnTimeout (sock.m_cnTimeout),
-    m_cnCount (sock.m_cnCount),
+    m_synRetries (sock.m_synRetries),
     m_rxAvailable (0),
     m_nscTcpSocket (0),
     m_sndBufSize (sock.m_sndBufSize)
@@ -778,21 +778,35 @@ NscTcpSocketImpl::GetConnTimeout (void) const
 }
 
 void 
-NscTcpSocketImpl::SetConnCount (uint32_t count)
+NscTcpSocketImpl::SetSynRetries (uint32_t count)
 {
-  m_cnCount = count;
+  m_synRetries = count;
 }
 
 uint32_t 
-NscTcpSocketImpl::GetConnCount (void) const
+NscTcpSocketImpl::GetSynRetries (void) const
 {
-  return m_cnCount;
+  return m_synRetries;
 }
 
 void 
 NscTcpSocketImpl::SetDelAckTimeout (Time timeout)
 {
   m_delAckTimeout = timeout;
+}
+
+void
+NscTcpSocketImpl::SetDataRetries (uint32_t retries)
+{
+  NS_LOG_FUNCTION (this << retries);
+  m_dataRetries = retries;
+}
+
+uint32_t
+NscTcpSocketImpl::GetDataRetries (void) const
+{
+  NS_LOG_FUNCTION (this);
+  return m_dataRetries;
 }
 
 Time
