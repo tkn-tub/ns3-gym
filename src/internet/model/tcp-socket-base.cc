@@ -2902,7 +2902,17 @@ void
 TcpSocketBase::SetRcvBufSize (uint32_t size)
 {
   NS_LOG_FUNCTION (this << size);
+  uint32_t oldSize = GetRcvBufSize ();
+
   m_rxBuffer->SetMaxBufferSize (size);
+
+  /* The size has (manually) increased. Actively inform the other end to prevent
+   * stale zero-window states.
+   */
+  if (oldSize < size && m_connected)
+    {
+      SendEmptyPacket (TcpHeader::ACK);
+    }
 }
 
 uint32_t
