@@ -245,6 +245,9 @@ public:
    * \return the object TypeId
    */
   static TypeId GetTypeId (void);
+
+  friend class TcpGeneralTest;
+
   /**
    * Create an unbound TCP socket
    */
@@ -559,7 +562,7 @@ protected:
    *
    * \param flags the packet's flags
    */
-  void SendEmptyPacket (uint8_t flags);
+  virtual void SendEmptyPacket (uint8_t flags);
 
   /**
    * \brief Send reset and tear down this socket
