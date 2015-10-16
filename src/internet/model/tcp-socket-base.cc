@@ -2324,13 +2324,16 @@ TcpSocketBase::SendDataPacket (SequenceNumber32 seq, uint32_t maxSize, bool with
   header.SetWindowSize (AdvertisedWindowSize ());
   AddOptions (header);
 
-  if (m_retxEvent.IsExpired () )
+  if (m_retxEvent.IsExpired ())
     {
-      // RFC 6298, clause 2.5
-      Time doubledRto = m_rto + m_rto;
-      m_rto = Min (doubledRto, Time::FromDouble (60,  Time::S));
+      // Schedules retransmit timeout. If this is a retransmission, double the timer
 
-      // Schedules retransmit
+      if (seq != m_highTxMark)
+        { // This is a retransmit
+          // RFC 6298, clause 2.5
+          Time doubledRto = m_rto + m_rto;
+          m_rto = Min (doubledRto, Time::FromDouble (60,  Time::S));
+        }
 
       NS_LOG_LOGIC (this << " SendDataPacket Schedule ReTxTimeout at time " <<
                     Simulator::Now ().GetSeconds () << " to expire at time " <<
