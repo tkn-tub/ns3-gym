@@ -23,7 +23,7 @@
 #include "ns3/core-module.h"
 #include "ns3/tcp-header.h"
 #include "ns3/buffer.h"
-#include "ns3/private/tcp-option-rfc793.h"
+#include "../model/tcp-option-rfc793.h"
 
 namespace ns3 {
 

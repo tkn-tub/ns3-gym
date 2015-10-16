@@ -98,7 +98,7 @@ public:
    *
    * \param socketTypeId the socket TypeId
    */
-  Ptr<Socket> CreateSocket (TypeId socketTypeId);
+  Ptr<Socket> CreateSocket (TypeId congestionTypeId);
 
   /**
    * \brief Allocate an IPv4 Endpoint
@@ -282,7 +282,7 @@ private:
   Ipv4EndPointDemux *m_endPoints;  //!< A list of IPv4 end points.
   Ipv6EndPointDemux *m_endPoints6; //!< A list of IPv6 end points.
   TypeId m_rttTypeId;              //!< The RTT Estimator TypeId
-  TypeId m_socketTypeId;           //!< The socket TypeId
+  TypeId m_congestionTypeId;       //!< The socket TypeId
   std::vector<Ptr<TcpSocketBase> > m_sockets;      //!< list of sockets
   IpL4Protocol::DownTargetCallback m_downTarget;   //!< Callback to send packets over IPv4
   IpL4Protocol::DownTargetCallback6 m_downTarget6; //!< Callback to send packets over IPv6
