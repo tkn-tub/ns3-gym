@@ -755,8 +755,9 @@ protected:
   /**
    * \brief Update buffers w.r.t. ACK
    * \param seq the sequence number
+   * \param resetRTO indicates if RTO should be reset
    */
-  virtual void NewAck (SequenceNumber32 const& seq);
+  virtual void NewAck (SequenceNumber32 const& seq, bool resetRTO);
 
   /**
    * \brief Call Retransmit() upon RTO event

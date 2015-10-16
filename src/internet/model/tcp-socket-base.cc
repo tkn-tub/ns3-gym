@@ -1374,6 +1374,7 @@ TcpSocketBase::ReceivedAck (Ptr<Packet> packet, const TcpHeader& tcpHeader)
   else if (tcpHeader.GetAckNumber () > m_txBuffer->HeadSequence ())
     { // Case 3: New ACK, reset m_dupAckCount and update m_txBuffer
       bool callCongestionControl = true;
+      bool resetRTO = true;
 
       /* The following switch is made because m_dupAckCount can be
        * "inflated" through out-of-order segments (e.g. from retransmission,
@@ -1443,6 +1444,10 @@ TcpSocketBase::ReceivedAck (Ptr<Packet> packet, const TcpHeader& tcpHeader)
                 {
                   m_isFirstPartialAck = false;
                 }
+              else
+                {
+                  resetRTO = false;
+                }
 
               /* This partial ACK acknowledge the fact that one segment has been
                * previously lost and now successfully received. All others have
@@ -1495,7 +1500,12 @@ TcpSocketBase::ReceivedAck (Ptr<Packet> packet, const TcpHeader& tcpHeader)
                         " ssTh: " << m_tcb->m_ssThresh);
         }
 
-      NewAck (tcpHeader.GetAckNumber ());
+      if (m_isFirstPartialAck == false)
+        {
+          NS_ASSERT (m_tcb->m_ackState == TcpSocketState::RECOVERY);
+        }
+
+      NewAck (tcpHeader.GetAckNumber (), resetRTO);
 
       // Try to send more data
       if (!m_sendPendingDataEvent.IsRunning ())
@@ -2572,11 +2582,11 @@ TcpSocketBase::EstimateRtt (const TcpHeader& tcpHeader)
 // when the three-way handshake completed. This cancels retransmission timer
 // and advances Tx window
 void
-TcpSocketBase::NewAck (SequenceNumber32 const& ack)
+TcpSocketBase::NewAck (SequenceNumber32 const& ack, bool resetRTO)
 {
   NS_LOG_FUNCTION (this << ack);
 
-  if (m_state != SYN_RCVD)
+  if (m_state != SYN_RCVD && resetRTO)
     { // Set RTO unless the ACK is received in SYN_RCVD state
       NS_LOG_LOGIC (this << " Cancelled ReTxTimeout event which was set to expire at " <<
                     (Simulator::Now () + Simulator::GetDelayLeft (m_retxEvent)).GetSeconds ());
