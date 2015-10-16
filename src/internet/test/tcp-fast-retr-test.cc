@@ -216,7 +216,7 @@ TcpFastRetrTest::RcvAck (const Ptr<const TcpSocketState> tcb, const TcpHeader &h
     {
       if (h.GetAckNumber ().GetValue () < m_seqToKill)
         {
-          NS_TEST_ASSERT_MSG_EQ (GetAckStateFrom (tcb), TcpSocketState::OPEN,
+          NS_TEST_ASSERT_MSG_EQ (GetCongStateFrom (tcb), TcpSocketState::CA_OPEN,
                                  "Not in OPEN state to respond to a loss");
           NS_TEST_ASSERT_MSG_EQ (GetDupAckCount (SENDER), 0,
                                  "Dupack different than 0 but no loss detected");
@@ -229,25 +229,25 @@ TcpFastRetrTest::RcvAck (const Ptr<const TcpSocketState> tcb, const TcpHeader &h
           if (GetDupAckCount(SENDER) == 0 &&
               GetDupAckCount (SENDER) < GetReTxThreshold (SENDER))
             {
-              NS_TEST_ASSERT_MSG_EQ (GetAckStateFrom (tcb), TcpSocketState::OPEN,
+              NS_TEST_ASSERT_MSG_EQ (GetCongStateFrom (tcb), TcpSocketState::CA_OPEN,
                                      "Not in OPEN state for processing dupack");
             }
           else if (GetDupAckCount (SENDER) > 0 &&
                    GetDupAckCount (SENDER) < GetReTxThreshold (SENDER))
             {
-              NS_TEST_ASSERT_MSG_EQ (GetAckStateFrom (tcb), TcpSocketState::DISORDER,
+              NS_TEST_ASSERT_MSG_EQ (GetCongStateFrom (tcb), TcpSocketState::CA_DISORDER,
                                      "Not in DISORDER state after receiving dupacks");
             }
           else if (GetDupAckCount (SENDER) >= GetReTxThreshold (SENDER))
             {
-              NS_TEST_ASSERT_MSG_EQ (GetAckStateFrom (tcb), TcpSocketState::RECOVERY,
+              NS_TEST_ASSERT_MSG_EQ (GetCongStateFrom (tcb), TcpSocketState::CA_RECOVERY,
                                      "Not in RECOVERY state after reaching retxthresh");
             }
         }
     }
   else if (who == RECEIVER)
     {
-      NS_TEST_ASSERT_MSG_EQ (GetAckStateFrom (tcb), TcpSocketState::OPEN,
+      NS_TEST_ASSERT_MSG_EQ (GetCongStateFrom (tcb), TcpSocketState::CA_OPEN,
                              "Receiver not in OPEN state");
     }
 }
@@ -269,13 +269,13 @@ TcpFastRetrTest::ProcessedAck (const Ptr<const TcpSocketState> tcb, const TcpHea
 
           if (GetDupAckCount (SENDER) < GetReTxThreshold (SENDER))
             {
-              NS_TEST_ASSERT_MSG_EQ (GetAckStateFrom (tcb), TcpSocketState::DISORDER,
+              NS_TEST_ASSERT_MSG_EQ (GetCongStateFrom (tcb), TcpSocketState::CA_DISORDER,
                                      "DupAck less than ReTxThreshold but not "
                                      "in DISORDER state");
             }
           else
             {
-              NS_TEST_ASSERT_MSG_GT_OR_EQ (GetAckStateFrom (tcb), TcpSocketState::RECOVERY,
+              NS_TEST_ASSERT_MSG_GT_OR_EQ (GetCongStateFrom (tcb), TcpSocketState::CA_RECOVERY,
                                            "DupAck greater than ReTxThreshold but not "
                                            "in RECOVERY or LOSS state");
               m_pktWasDropped = true;
@@ -290,7 +290,7 @@ TcpFastRetrTest::ProcessedAck (const Ptr<const TcpSocketState> tcb, const TcpHea
     }
   else if (who == RECEIVER)
     {
-      NS_TEST_ASSERT_MSG_EQ (GetAckStateFrom (tcb), TcpSocketState::OPEN,
+      NS_TEST_ASSERT_MSG_EQ (GetCongStateFrom (tcb), TcpSocketState::CA_OPEN,
                              "Different state than OPEN in the receiver");
     }
 }
@@ -302,23 +302,23 @@ TcpFastRetrTest::RTOExpired(const Ptr<const TcpSocketState> tcb, SocketWho who)
 }
 
 void
-TcpFastRetrTest::AckStateTrace (const TcpSocketState::TcpAckState_t oldValue,
-                                const TcpSocketState::TcpAckState_t newValue)
+TcpFastRetrTest::CongStateTrace (const TcpSocketState::TcpCongState_t oldValue,
+                                 const TcpSocketState::TcpCongState_t newValue)
 {
   NS_LOG_FUNCTION (this << oldValue << newValue);
 
-  if (oldValue == TcpSocketState::OPEN && newValue == TcpSocketState::DISORDER)
+  if (oldValue == TcpSocketState::CA_OPEN && newValue == TcpSocketState::CA_DISORDER)
     {
     }
-  else if (oldValue == TcpSocketState::OPEN
-           && newValue == TcpSocketState::RECOVERY
+  else if (oldValue == TcpSocketState::CA_OPEN
+           && newValue == TcpSocketState::CA_RECOVERY
            && GetReTxThreshold (SENDER) > 1)
     {
       NS_TEST_ASSERT_MSG_EQ (true, false,
                              "Invalid OPEN to RECOVERY state change");
     }
-  else if (oldValue == TcpSocketState::DISORDER
-           && newValue == TcpSocketState::RECOVERY)
+  else if (oldValue == TcpSocketState::CA_DISORDER
+           && newValue == TcpSocketState::CA_RECOVERY)
     {
       NS_TEST_ASSERT_MSG_EQ (GetReTxThreshold (SENDER), GetDupAckCount (SENDER),
                              "DISORDER to RECOVERY state change but not reached "

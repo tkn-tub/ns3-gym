@@ -172,7 +172,7 @@ protected:
 * to TcpSocketMsgBase, there are many information provided to children:
 *
 * - Tracing of states inside the state machines (TCP and ACK ones, through
-*   functions AckStateTrace and TcpStateTrace)
+*   functions CongStateTrace and TcpStateTrace)
 * - cWnd tracing (through CWndTrace)
 * - Socket closing: error state, or normal state (NormalClose and ErrorClose)
 * - Packet drop, inside queue or over the link (QueueDrop, PhyDrop)
@@ -418,8 +418,8 @@ protected:
    * \param oldValue old value
    * \param newValue new value
    */
-  virtual void AckStateTrace (const TcpSocketState::TcpAckState_t oldValue,
-                              const TcpSocketState::TcpAckState_t newValue)
+  virtual void CongStateTrace (const TcpSocketState::TcpCongState_t oldValue,
+                              const TcpSocketState::TcpCongState_t newValue)
   {
   }
 
@@ -656,10 +656,10 @@ private:
  * \param tcb Transmission control block
  * \return the state of the ACK state machine
  */
-static inline TcpSocketState::TcpAckState_t
-GetAckStateFrom (Ptr<const TcpSocketState> tcb)
+static inline TcpSocketState::TcpCongState_t
+GetCongStateFrom (Ptr<const TcpSocketState> tcb)
 {
-  return tcb->m_ackState.Get ();
+  return tcb->m_congState.Get ();
 }
 
 } // namespace ns3

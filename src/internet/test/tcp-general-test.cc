@@ -181,8 +181,8 @@ TcpGeneralTest::DoRun (void)
   m_senderSocket->SetRetransmitCb (MakeCallback (&TcpGeneralTest::RtoExpiredCb, this));
   m_senderSocket->TraceConnectWithoutContext ("CongestionWindow",
                                               MakeCallback (&TcpGeneralTest::CWndTrace, this));
-  m_senderSocket->TraceConnectWithoutContext ("AckState",
-                                              MakeCallback (&TcpGeneralTest::AckStateTrace, this));
+  m_senderSocket->TraceConnectWithoutContext ("CongState",
+                                              MakeCallback (&TcpGeneralTest::CongStateTrace, this));
   m_senderSocket->TraceConnectWithoutContext ("Tx",
                                               MakeCallback (&TcpGeneralTest::TxPacketCb, this));
   m_senderSocket->TraceConnectWithoutContext ("Rx",

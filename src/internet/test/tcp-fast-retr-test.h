@@ -49,8 +49,8 @@ protected:
   virtual void ProcessedAck (const Ptr<const TcpSocketState> tcb,
                              const TcpHeader& h, SocketWho who);
 
-  virtual void AckStateTrace (const TcpSocketState::TcpAckState_t oldValue,
-                              const TcpSocketState::TcpAckState_t newValue);
+  virtual void CongStateTrace (const TcpSocketState::TcpCongState_t oldValue,
+                               const TcpSocketState::TcpCongState_t newValue);
 
   virtual void Tx (const Ptr<const Packet> p, const TcpHeader&h, SocketWho who);
   virtual void Rx (const Ptr<const Packet> p, const TcpHeader&h, SocketWho who);

@@ -148,10 +148,10 @@ TcpSocketBase::GetTypeId (void)
                      "TCP state",
                      MakeTraceSourceAccessor (&TcpSocketBase::m_state),
                      "ns3::TcpStatesTracedValueCallback")
-    .AddTraceSource ("AckState",
-                     "TCP ACK machine state",
-                     MakeTraceSourceAccessor (&TcpSocketBase::m_ackStateTrace),
-                     "ns3::TcpSocketState::TcpAckStatesTracedValueCallback")
+    .AddTraceSource ("CongState",
+                     "TCP Congestion machine state",
+                     MakeTraceSourceAccessor (&TcpSocketBase::m_congStateTrace),
+                     "ns3::TcpSocketState::TcpCongStatesTracedValueCallback")
     .AddTraceSource ("RWND",
                      "Remote side's flow control window",
                      MakeTraceSourceAccessor (&TcpSocketBase::m_rWnd),
@@ -200,10 +200,10 @@ TcpSocketState::GetTypeId (void)
                      "TCP slow start threshold (bytes)",
                      MakeTraceSourceAccessor (&TcpSocketState::m_ssThresh),
                      "ns3::TracedValue::Uint32Callback")
-    .AddTraceSource ("AckState",
-                     "TCP ACK machine state",
-                     MakeTraceSourceAccessor (&TcpSocketState::m_ackState),
-                     "ns3::TracedValue::TcpAckStatesTracedValueCallback")
+    .AddTraceSource ("CongState",
+                     "TCP Congestion machine state",
+                     MakeTraceSourceAccessor (&TcpSocketState::m_congState),
+                     "ns3::TracedValue::TcpCongStatesTracedValueCallback")
   ;
   return tid;
 }
@@ -215,7 +215,7 @@ TcpSocketState::TcpSocketState (void)
     m_initialCWnd (0),
     m_initialSsThresh (0),
     m_segmentSize (0),
-    m_ackState (OPEN)
+    m_congState (CA_OPEN)
 {
 }
 
@@ -226,14 +226,14 @@ TcpSocketState::TcpSocketState (const TcpSocketState &other)
     m_initialCWnd (other.m_initialCWnd),
     m_initialSsThresh (other.m_initialSsThresh),
     m_segmentSize (other.m_segmentSize),
-    m_ackState (other.m_ackState)
+    m_congState (other.m_congState)
 {
 }
 
 const char* const
-TcpSocketState::TcpAckStateName[TcpSocketState::LAST_ACKSTATE] =
+TcpSocketState::TcpCongStateName[TcpSocketState::CA_LAST_STATE] =
 {
-  "OPEN", "DISORDER", "CWR", "RECOVERY", "LOSS"
+  "CA_OPEN", "CA_DISORDER", "CA_CWR", "CA_RECOVERY", "CA_LOSS"
 };
 
 TcpSocketBase::TcpSocketBase (void)
@@ -284,8 +284,8 @@ TcpSocketBase::TcpSocketBase (void)
                                           MakeCallback (&TcpSocketBase::UpdateSsThresh, this));
   NS_ASSERT (ok == true);
 
-  ok = m_tcb->TraceConnectWithoutContext ("AckState",
-                                          MakeCallback (&TcpSocketBase::UpdateAckState, this));
+  ok = m_tcb->TraceConnectWithoutContext ("CongState",
+                                          MakeCallback (&TcpSocketBase::UpdateCongState, this));
   NS_ASSERT (ok == true);
 }
 
@@ -364,8 +364,8 @@ TcpSocketBase::TcpSocketBase (const TcpSocketBase& sock)
                                           MakeCallback (&TcpSocketBase::UpdateSsThresh, this));
   NS_ASSERT (ok == true);
 
-  ok = m_tcb->TraceConnectWithoutContext ("AckState",
-                                          MakeCallback (&TcpSocketBase::UpdateAckState, this));
+  ok = m_tcb->TraceConnectWithoutContext ("CongState",
+                                          MakeCallback (&TcpSocketBase::UpdateCongState, this));
   NS_ASSERT (ok == true);
 }
 
@@ -1352,16 +1352,16 @@ TcpSocketBase::ReceivedAck (Ptr<Packet> packet, const TcpHeader& tcpHeader)
       // There is a DupAck
       ++m_dupAckCount;
 
-      if (m_tcb->m_ackState == TcpSocketState::OPEN)
+      if (m_tcb->m_congState == TcpSocketState::CA_OPEN)
         {
           // From Open we go Disorder
           NS_ASSERT_MSG (m_dupAckCount == 1, "From OPEN->DISORDER but with " <<
                          m_dupAckCount << " dup ACKs");
-          m_tcb->m_ackState = TcpSocketState::DISORDER;
+          m_tcb->m_congState = TcpSocketState::CA_DISORDER;
 
           NS_LOG_DEBUG ("OPEN -> DISORDER");
         }
-      else if (m_tcb->m_ackState == TcpSocketState::DISORDER)
+      else if (m_tcb->m_congState == TcpSocketState::CA_DISORDER)
         {
           if (m_dupAckCount < m_retxThresh && m_limitedTx)
             {
@@ -1373,10 +1373,10 @@ TcpSocketBase::ReceivedAck (Ptr<Packet> packet, const TcpHeader& tcpHeader)
           else if (m_dupAckCount == m_retxThresh)
             {
               // triple duplicate ack triggers fast retransmit (RFC2582 sec.3 bullet #1)
-              NS_LOG_DEBUG (TcpSocketState::TcpAckStateName[m_tcb->m_ackState] <<
+              NS_LOG_DEBUG (TcpSocketState::TcpCongStateName[m_tcb->m_congState] <<
                             " -> RECOVERY");
               m_recover = m_highTxMark;
-              m_tcb->m_ackState = TcpSocketState::RECOVERY;
+              m_tcb->m_congState = TcpSocketState::CA_RECOVERY;
 
               m_tcb->m_ssThresh = m_congestionControl->GetSsThresh (m_tcb,
                                                                     BytesInFlight ());
@@ -1393,7 +1393,7 @@ TcpSocketBase::ReceivedAck (Ptr<Packet> packet, const TcpHeader& tcpHeader)
                               "in DISORDER state");
             }
         }
-      else if (m_tcb->m_ackState == TcpSocketState::RECOVERY)
+      else if (m_tcb->m_congState == TcpSocketState::CA_RECOVERY)
         { // Increase cwnd for every additional dupack (RFC2582, sec.3 bullet #3)
           m_tcb->m_cWnd += m_tcb->m_segmentSize;
           NS_LOG_INFO (m_dupAckCount << " Dupack received in fast recovery mode."
@@ -1435,17 +1435,17 @@ TcpSocketBase::ReceivedAck (Ptr<Packet> packet, const TcpHeader& tcpHeader)
          segsAcked = 1;
        }
 
-      if (m_tcb->m_ackState == TcpSocketState::DISORDER)
+      if (m_tcb->m_congState == TcpSocketState::CA_DISORDER)
         {
           // The network reorder packets. Linux changes the counting lost
           // packet algorithm from FACK to NewReno. We simply go back in Open.
-          m_tcb->m_ackState = TcpSocketState::OPEN;
+          m_tcb->m_congState = TcpSocketState::CA_OPEN;
           m_congestionControl->PktsAcked (m_tcb, segsAcked, m_lastRtt);
           m_dupAckCount = 0;
 
           NS_LOG_DEBUG ("DISORDER -> OPEN");
         }
-      else if (m_tcb->m_ackState == TcpSocketState::RECOVERY)
+      else if (m_tcb->m_congState == TcpSocketState::CA_RECOVERY)
         {
           if (tcpHeader.GetAckNumber () < m_recover)
             {
@@ -1512,20 +1512,20 @@ TcpSocketBase::ReceivedAck (Ptr<Packet> packet, const TcpHeader& tcpHeader)
                */
               m_congestionControl->PktsAcked (m_tcb, segsAcked, m_lastRtt);
               newSegsAcked = (tcpHeader.GetAckNumber () - m_recover) / m_tcb->m_segmentSize;
-              m_tcb->m_ackState = TcpSocketState::OPEN;
+              m_tcb->m_congState = TcpSocketState::CA_OPEN;
 
               NS_LOG_INFO ("Received full ACK for seq " << tcpHeader.GetAckNumber () <<
                            ". Leaving fast recovery with cwnd set to " << m_tcb->m_cWnd);
               NS_LOG_DEBUG ("RECOVERY -> OPEN");
             }
         }
-      else if (m_tcb->m_ackState == TcpSocketState::LOSS)
+      else if (m_tcb->m_congState == TcpSocketState::CA_LOSS)
         {
           // Go back in OPEN state
           m_isFirstPartialAck = true;
           m_congestionControl->PktsAcked (m_tcb, segsAcked, m_lastRtt);
           m_dupAckCount = 0;
-          m_tcb->m_ackState = TcpSocketState::OPEN;
+          m_tcb->m_congState = TcpSocketState::CA_OPEN;
           NS_LOG_DEBUG ("LOSS -> OPEN");
         }
 
@@ -1543,7 +1543,7 @@ TcpSocketBase::ReceivedAck (Ptr<Packet> packet, const TcpHeader& tcpHeader)
 
       if (m_isFirstPartialAck == false)
         {
-          NS_ASSERT (m_tcb->m_ackState == TcpSocketState::RECOVERY);
+          NS_ASSERT (m_tcb->m_congState == TcpSocketState::CA_RECOVERY);
         }
 
       NewAck (tcpHeader.GetAckNumber (), resetRTO);
@@ -2799,9 +2799,9 @@ TcpSocketBase::Retransmit ()
   m_nextTxSequence = m_txBuffer->HeadSequence (); // Restart from highest Ack
   m_dupAckCount = 0;
 
-  if (m_tcb->m_ackState != TcpSocketState::LOSS)
+  if (m_tcb->m_congState != TcpSocketState::CA_LOSS)
     {
-      m_tcb->m_ackState = TcpSocketState::LOSS;
+      m_tcb->m_congState = TcpSocketState::CA_LOSS;
       m_tcb->m_ssThresh = m_congestionControl->GetSsThresh (m_tcb, BytesInFlight ());
       m_tcb->m_cWnd = m_tcb->m_segmentSize;
     }
@@ -3275,10 +3275,10 @@ TcpSocketBase::UpdateSsThresh (uint32_t oldValue, uint32_t newValue)
 }
 
 void
-TcpSocketBase::UpdateAckState (TcpSocketState::TcpAckState_t oldValue,
-                               TcpSocketState::TcpAckState_t newValue)
+TcpSocketBase::UpdateCongState (TcpSocketState::TcpCongState_t oldValue,
+                                TcpSocketState::TcpCongState_t newValue)
 {
-  m_ackStateTrace (oldValue, newValue);
+  m_congStateTrace (oldValue, newValue);
 }
 
 void

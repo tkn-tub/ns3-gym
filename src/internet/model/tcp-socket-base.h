@@ -102,7 +102,7 @@ public:
   TcpSocketState (const TcpSocketState &other);
 
   /**
-   * \brief Definition of the ACK state machine
+   * \brief Definition of the Congestion state machine
    *
    * The design of this state machine is taken from Linux v4.0, but it has been
    * maintained in the Linux mainline from ages. It basically avoids to maintain
@@ -110,39 +110,39 @@ public:
    * different algorithm in a cleaner way.
    *
    * These states represent the situation from a congestion control point of view:
-   * in fact, apart the OPEN state, the other states represent a situation in
+   * in fact, apart the CA_OPEN state, the other states represent a situation in
    * which there is a congestion, and different actions should be taken,
    * depending on the case.
    *
    */
   typedef enum
   {
-    OPEN,        /**< Normal state, no dubious events */
-    DISORDER,    /**< In all the respects it is "Open",
-                  *  but requires a bit more attention. It is entered when
-                  *  we see some SACKs or dupacks. It is split of "Open" */
-    CWR,         /**< cWnd was reduced due to some Congestion Notification event.
-                  *  It can be ECN, ICMP source quench, local device congestion.
-                  *  Not used in NS-3 right now. */
-    RECOVERY,     /**< CWND was reduced, we are fast-retransmitting. */
-    LOSS,         /**< CWND was reduced due to RTO timeout or SACK reneging. */
-    LAST_ACKSTATE /**< Used only in debug messages */
-  } TcpAckState_t;
+    CA_OPEN,      /**< Normal state, no dubious events */
+    CA_DISORDER,  /**< In all the respects it is "Open",
+                    *  but requires a bit more attention. It is entered when
+                    *  we see some SACKs or dupacks. It is split of "Open" */
+    CA_CWR,       /**< cWnd was reduced due to some Congestion Notification event.
+                    *  It can be ECN, ICMP source quench, local device congestion.
+                    *  Not used in NS-3 right now. */
+    CA_RECOVERY,  /**< CWND was reduced, we are fast-retransmitting. */
+    CA_LOSS,      /**< CWND was reduced due to RTO timeout or SACK reneging. */
+    CA_LAST_STATE /**< Used only in debug messages */
+  } TcpCongState_t;
 
   /**
    * \ingroup tcp
-   * TracedValue Callback signature for TcpAckState_t
+   * TracedValue Callback signature for TcpCongState_t
    *
    * \param [in] oldValue original value of the traced variable
    * \param [in] newValue new value of the traced variable
    */
-  typedef void (* TcpAckStatesTracedValueCallback)(const TcpAckState_t oldValue,
-                                                   const TcpAckState_t newValue);
+  typedef void (* TcpCongStatesTracedValueCallback)(const TcpCongState_t oldValue,
+                                                    const TcpCongState_t newValue);
 
   /**
    * \brief Literal names of TCP states for use in log messages
    */
-  static const char* const TcpAckStateName[TcpSocketState::LAST_ACKSTATE];
+  static const char* const TcpCongStateName[TcpSocketState::CA_LAST_STATE];
 
   // Congestion control
   TracedValue<uint32_t>  m_cWnd;            //!< Congestion window
@@ -153,8 +153,7 @@ public:
   // Segment
   uint32_t               m_segmentSize;     //!< Segment size
 
-  // Ack state
-  TracedValue<TcpAckState_t> m_ackState;    //!< State in the ACK state machine
+  TracedValue<TcpCongState_t> m_congState;    //!< State in the Congestion state machine
 
   /**
    * \brief Get cwnd in segments rather than bytes
@@ -177,20 +176,20 @@ public:
  * this class is modified from the original NS-3 TCP socket implementation
  * (TcpSocketImpl) by Raj Bhattacharjea <raj.b@gatech.edu> of Georgia Tech.
  *
- * Ack state machine
+ * Congestion state machine
  * ---------------------------
  *
  * The socket maintains two state machines; the TCP one, and another called
- * "Ack state machine", which keeps track of the phase we are in. Currently,
+ * "Congestion state machine", which keeps track of the phase we are in. Currently,
  * ns-3 manages the states:
  *
- * - OPEN
- * - DISORDER
- * - RECOVERY
- * - LOSS
+ * - CA_OPEN
+ * - CA_DISORDER
+ * - CA_RECOVERY
+ * - CA_LOSS
  *
- * Another one (CWR) is present but not used. For more information, see
- * the TcpAckState_t documentation.
+ * Another one (CA_CWR) is present but not used. For more information, see
+ * the TcpCongState_t documentation.
  *
  * Congestion control interface
  * ---------------------------
@@ -203,7 +202,7 @@ public:
  * The variables needed to congestion control classes to operate correctly have
  * been moved inside the TcpSocketState class. It contains information on the
  * congestion window, slow start threshold, segment size and the state of the
- * Ack state machine.
+ * Congestion state machine.
  *
  * To track the trace inside the TcpSocketState class, a "forward" technique is
  * used, which consists in chaining callbacks from TcpSocketState to TcpSocketBase
@@ -328,9 +327,9 @@ public:
   TracedCallback<uint32_t, uint32_t> m_ssThTrace;
 
   /**
-   * \brief Callback pointer for ack state trace chaining
+   * \brief Callback pointer for congestion state trace chaining
    */
-  TracedCallback<TcpSocketState::TcpAckState_t, TcpSocketState::TcpAckState_t> m_ackStateTrace;
+  TracedCallback<TcpSocketState::TcpCongState_t, TcpSocketState::TcpCongState_t> m_congStateTrace;
 
   /**
    * \brief Callback function to hook to TcpSocketState congestion window
@@ -347,12 +346,12 @@ public:
   void UpdateSsThresh (uint32_t oldValue, uint32_t newValue);
 
   /**
-   * \brief Callback function to hook to TcpSocketState ack state
-   * \param oldValue old ack state value
-   * \param newValue new ack state value
+   * \brief Callback function to hook to TcpSocketState congestion state
+   * \param oldValue old congestion state value
+   * \param newValue new congestion state value
    */
-  void UpdateAckState (TcpSocketState::TcpAckState_t oldValue,
-                       TcpSocketState::TcpAckState_t newValue);
+  void UpdateCongState (TcpSocketState::TcpCongState_t oldValue,
+                       TcpSocketState::TcpCongState_t newValue);
 
   /**
    * \brief Install a congestion control algorithm on this socket
@@ -995,13 +994,13 @@ protected:
 
 /**
  * \ingroup tcp
- * TracedValue Callback signature for TcpAckState_t
+ * TracedValue Callback signature for TcpCongState_t
  *
  * \param [in] oldValue original value of the traced variable
  * \param [in] newValue new value of the traced variable
  */
-typedef void (* TcpAckStatesTracedValueCallback)(const TcpSocketState::TcpAckState_t oldValue,
-                                                 const TcpSocketState::TcpAckState_t newValue);
+typedef void (* TcpCongStatesTracedValueCallback)(const TcpSocketState::TcpCongState_t oldValue,
+                                                  const TcpSocketState::TcpCongState_t newValue);
 
 } // namespace ns3
 
