@@ -151,7 +151,7 @@ TcpSocketBase::GetTypeId (void)
     .AddTraceSource ("AckState",
                      "TCP ACK machine state",
                      MakeTraceSourceAccessor (&TcpSocketBase::m_ackStateTrace),
-                     "ns3::TcpAckStatesTracedValueCallback")
+                     "ns3::TcpSocketState::TcpAckStatesTracedValueCallback")
     .AddTraceSource ("RWND",
                      "Remote side's flow control window",
                      MakeTraceSourceAccessor (&TcpSocketBase::m_rWnd),
@@ -172,6 +172,14 @@ TcpSocketBase::GetTypeId (void)
                      "TCP slow start threshold (bytes)",
                      MakeTraceSourceAccessor (&TcpSocketBase::m_ssThTrace),
                      "ns3::TracedValueCallback::Uint32")
+    .AddTraceSource ("Tx",
+                     "Send tcp packet to IP protocol",
+                     MakeTraceSourceAccessor (&TcpSocketBase::m_txTrace),
+                     "ns3::TcpSocketBase::TcpTxRxTracedCallback")
+    .AddTraceSource ("Rx",
+                     "Receive tcp packet from IP protocol",
+                     MakeTraceSourceAccessor (&TcpSocketBase::m_rxTrace),
+                     "ns3::TcpSocketBase::TcpTxRxTracedCallback")
   ;
   return tid;
 }
@@ -319,7 +327,9 @@ TcpSocketBase::TcpSocketBase (const TcpSocketBase& sock)
     m_retxThresh (sock.m_retxThresh),
     m_limitedTx (sock.m_limitedTx),
     m_tcb (sock.m_tcb),
-    m_isFirstPartialAck (sock.m_isFirstPartialAck)
+    m_isFirstPartialAck (sock.m_isFirstPartialAck),
+    m_txTrace (sock.m_txTrace),
+    m_rxTrace (sock.m_rxTrace)
 {
   NS_LOG_FUNCTION (this);
   NS_LOG_LOGIC ("Invoked the copy constructor");
@@ -1117,6 +1127,8 @@ TcpSocketBase::DoForwardUp (Ptr<Packet> packet, const Address &fromAddress,
       return; // Discard invalid packet
     }
 
+  m_rxTrace (packet, tcpHeader, this);
+
   ReadOptions (tcpHeader);
 
   if (tcpHeader.GetFlags () & TcpHeader::ACK)
@@ -1178,6 +1190,7 @@ TcpSocketBase::DoForwardUp (Ptr<Packet> packet, const Address &fromAddress,
       if ((tcpHeader.GetFlags () & ~(TcpHeader::PSH | TcpHeader::URG)) != TcpHeader::RST)
         { // Since m_endPoint is not configured yet, we cannot use SendRST here
           TcpHeader h;
+          Ptr<Packet> p = Create<Packet> ();
           h.SetFlags (TcpHeader::RST);
           h.SetSequenceNumber (m_nextTxSequence);
           h.SetAckNumber (m_rxBuffer->NextRxSequence ());
@@ -1185,7 +1198,8 @@ TcpSocketBase::DoForwardUp (Ptr<Packet> packet, const Address &fromAddress,
           h.SetDestinationPort (tcpHeader.GetSourcePort ());
           h.SetWindowSize (AdvertisedWindowSize ());
           AddOptions (h);
-          m_tcp->SendPacket (Create<Packet> (), h, toAddress, fromAddress, m_boundnetdevice);
+          m_txTrace (p, h, this);
+          m_tcp->SendPacket (p, h, toAddress, fromAddress, m_boundnetdevice);
         }
       break;
     case SYN_SENT:
@@ -2056,6 +2070,9 @@ TcpSocketBase::SendEmptyPacket (uint8_t flags)
       m_tcp->SendPacket (p, header, m_endPoint6->GetLocalAddress (),
                          m_endPoint6->GetPeerAddress (), m_boundnetdevice);
     }
+
+  m_txTrace (p, header, this);
+
   if (flags & TcpHeader::ACK)
     { // If sending an ACK, cancel the delay ACK as well
       m_delAckEvent.Cancel ();
@@ -2333,6 +2350,8 @@ TcpSocketBase::SendDataPacket (SequenceNumber32 seq, uint32_t maxSize, bool with
                     remainingData << " via TcpL4Protocol to " <<  m_endPoint6->GetPeerAddress () <<
                     ". Header " << header);
     }
+
+  m_txTrace (p, header, this);
 
   // update the history of sequence numbers used to calculate the RTT
   if (isRetransmission == false)
@@ -2710,6 +2729,9 @@ TcpSocketBase::PersistTimeout ()
       m_tcp->SendPacket (p, tcpHeader, m_endPoint6->GetLocalAddress (),
                          m_endPoint6->GetPeerAddress (), m_boundnetdevice);
     }
+
+  m_txTrace (p, tcpHeader, this);
+
   NS_LOG_LOGIC ("Schedule persist timeout at time "
                 << Simulator::Now ().GetSeconds () << " to expire at time "
                 << (Simulator::Now () + m_persistTimeout).GetSeconds ());

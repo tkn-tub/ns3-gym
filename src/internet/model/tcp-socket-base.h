@@ -130,6 +130,16 @@ public:
   } TcpAckState_t;
 
   /**
+   * \ingroup tcp
+   * TracedValue Callback signature for TcpAckState_t
+   *
+   * \param [in] oldValue original value of the traced variable
+   * \param [in] newValue new value of the traced variable
+   */
+  typedef void (* TcpAckStatesTracedValueCallback)(const TcpAckState_t oldValue,
+                                                   const TcpAckState_t newValue);
+
+  /**
    * \brief Literal names of TCP states for use in log messages
    */
   static const char* const TcpAckStateName[TcpSocketState::LAST_ACKSTATE];
@@ -368,6 +378,17 @@ public:
   virtual uint32_t GetRxAvailable (void) const; // Available-to-read data size, i.e. value of m_rxAvailable
   virtual int GetSockName (Address &address) const; // Return local addr:port in address
   virtual void BindToNetDevice (Ptr<NetDevice> netdevice); // NetDevice with my m_endPoint
+
+  /**
+   * TracedCallback signature for tcp packet transmission or reception events.
+   *
+   * \param [in] packet The packet.
+   * \param [in] ipv4
+   * \param [in] interface
+   */
+  typedef void (* TcpTxRxTracedCallback)
+    (const Ptr<const Packet> packet, const TcpHeader& header,
+     const Ptr<const TcpSocketBase> socket);
 
 protected:
   // Implementing ns3::TcpSocket -- Attribute get/set
@@ -955,6 +976,13 @@ protected:
 
   // Guesses over the other connection end
   bool m_isFirstPartialAck;//!< First partial ACK during RECOVERY
+
+  // The following two traces pass a packet with a TCP header
+  TracedCallback<Ptr<const Packet>, const TcpHeader&,
+                 Ptr<const TcpSocketBase> > m_txTrace; //!< Trace of transmitted packets
+
+  TracedCallback<Ptr<const Packet>, const TcpHeader&,
+                 Ptr<const TcpSocketBase> > m_rxTrace; //!< Trace of received packets
 };
 
 /**
