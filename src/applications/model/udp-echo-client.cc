@@ -147,7 +147,7 @@ UdpEchoClient::StartApplication (void)
     }
 
   m_socket->SetRecvCallback (MakeCallback (&UdpEchoClient::HandleRead, this));
-
+  m_socket->SetAllowBroadcast (true);
   ScheduleTransmit (Seconds (0.));
 }
 

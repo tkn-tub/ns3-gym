@@ -29,6 +29,7 @@ Bugs fixed
 - Bug 1954 - Serialized size of wifi-net-device differ for TX and RX trace
 - Bug 2003 - Missing DSSS short PLCP preamble
 - Bug 2183 - LiIonEnergySourceHelper is not in the energy wscript
+- Bug 2195 - Udp[*]Client can't send packets to broadcast address
 
 Known issues
 ------------
