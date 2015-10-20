@@ -10187,10 +10187,10 @@ def register_Ns3TcpL4Protocol_methods(root_module, cls):
     cls.add_method('CreateSocket', 
                    'ns3::Ptr< ns3::Socket >', 
                    [])
-    ## tcp-l4-protocol.h (module 'internet'): ns3::Ptr<ns3::Socket> ns3::TcpL4Protocol::CreateSocket(ns3::TypeId socketTypeId) [member function]
+    ## tcp-l4-protocol.h (module 'internet'): ns3::Ptr<ns3::Socket> ns3::TcpL4Protocol::CreateSocket(ns3::TypeId congestionTypeId) [member function]
     cls.add_method('CreateSocket', 
                    'ns3::Ptr< ns3::Socket >', 
-                   [param('ns3::TypeId', 'socketTypeId')])
+                   [param('ns3::TypeId', 'congestionTypeId')])
     ## tcp-l4-protocol.h (module 'internet'): ns3::Ipv4EndPoint * ns3::TcpL4Protocol::Allocate() [member function]
     cls.add_method('Allocate', 
                    'ns3::Ipv4EndPoint *', 
