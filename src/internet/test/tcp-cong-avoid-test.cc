@@ -32,7 +32,9 @@ TcpNewRenoCongAvoidNormalTest::TcpNewRenoCongAvoidNormalTest (uint32_t segmentSi
                                                               TypeId &typeId,
                                                               const std::string &desc)
   : TcpGeneralTest (desc, packetSize, packets, Seconds (0.01), Seconds (0.5),
-                    Seconds (10), 0, 1, segmentSize, typeId, 1500)
+                    Seconds (10), 0, 1, segmentSize, typeId, 1500),
+    m_increment (0),
+    m_initial (true)
 {
 }
 
