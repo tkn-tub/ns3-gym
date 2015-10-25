@@ -50,7 +50,8 @@ TcpGeneralTest::TcpGeneralTest (const std::string &desc,
   m_interPacketInterval (pktInterval),
   m_initialSlowStartThresh (initialSlowStartThresh),
   m_initialCwnd (initialCwnd),
-  m_segmentSize (segmentSize)
+  m_segmentSize (segmentSize),
+  m_remoteAddr (Ipv4Address::GetAny (), 4477)
 {
   NS_LOG_FUNCTION (this << desc);
 }
@@ -188,16 +189,23 @@ TcpGeneralTest::DoRun (void)
   m_senderSocket->TraceConnectWithoutContext ("Rx",
                                               MakeCallback (&TcpGeneralTest::RxPacketCb, this));
 
-  InetSocketAddress remoteAddr = InetSocketAddress (serverAddress, 4477);
+  m_remoteAddr = InetSocketAddress (serverAddress, 4477);
 
-  m_senderSocket->Connect (remoteAddr);
-
+  Simulator::Schedule (Seconds (0.0),
+                       &TcpGeneralTest::DoConnect, this);
   Simulator::ScheduleWithContext (nodes.Get (0)->GetId (),
                                   m_startTime, &TcpGeneralTest::SendPacket, this,
                                   m_senderSocket, m_pktSize, m_pktCount, m_interPacketInterval);
 
   NS_LOG_INFO ("Run Simulation.");
   Simulator::Run ();
+}
+
+void
+TcpGeneralTest::DoConnect ()
+{
+  NS_LOG_INFO (this);
+  m_senderSocket->Connect (m_remoteAddr);
 }
 
 void
@@ -356,6 +364,18 @@ TcpGeneralTest::ErrorCloseCb (Ptr<Socket> socket)
     {
       NS_FATAL_ERROR ("Closed socket, but not recognized");
     }
+}
+
+void
+TcpGeneralTest::Tx (const Ptr<const Packet> p, const TcpHeader&h, SocketWho who)
+{
+  NS_LOG_FUNCTION (this << p << h << who);
+}
+
+void
+TcpGeneralTest::Rx (const Ptr<const Packet> p, const TcpHeader&h, SocketWho who)
+{
+  NS_LOG_FUNCTION (this << p << h << who);
 }
 
 void

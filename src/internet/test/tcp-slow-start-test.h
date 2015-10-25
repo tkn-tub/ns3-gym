@@ -46,10 +46,13 @@ public:
 
 protected:
   virtual void CWndTrace (uint32_t oldValue, uint32_t newValue);
+  virtual void Tx (const Ptr<const Packet> p, const TcpHeader &h, SocketWho who);
+  virtual void Rx (const Ptr<const Packet> p, const TcpHeader &h, SocketWho who);
 
-  Time     m_lastChange;
-  uint32_t m_leftSegments;
-  uint32_t m_ackedSegments;
+  uint32_t m_ackedBytes;
+  uint32_t m_sentBytes;
+  uint32_t m_totalAckedBytes;
+  uint32_t m_allowedIncrease;
 
   bool   m_initial;
 

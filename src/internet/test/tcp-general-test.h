@@ -310,6 +310,11 @@ protected:
   virtual void DoTeardown (void);
 
   /**
+   * \brief Scheduled at 0.0, SENDER starts the connection to RECEIVER
+   */
+  void DoConnect ();
+
+  /**
    * \brief Packet received
    *
    * The method processes the packet (application-layer)
@@ -502,9 +507,7 @@ protected:
    * \param h header
    * \param who the socket which has received the packet (SENDER or RECEIVER)
    */
-  virtual void Tx (const Ptr<const Packet> p, const TcpHeader&h, SocketWho who)
-  {
-  }
+  virtual void Tx (const Ptr<const Packet> p, const TcpHeader&h, SocketWho who);
 
   /**
    * \brief Packet received from IP layer
@@ -513,9 +516,7 @@ protected:
    * \param h header
    * \param who  the socket which has received the packet (SENDER or RECEIVER)
    */
-  virtual void Rx (const Ptr<const Packet> p, const TcpHeader&h, SocketWho who)
-  {
-  }
+  virtual void Rx (const Ptr<const Packet> p, const TcpHeader&h, SocketWho who);
 
   /**
    * \brief Rto has expired
@@ -648,6 +649,8 @@ private:
                        const Ptr<const TcpSocketBase> tcp);
   void ForkCb         (Ptr<TcpSocketMsgBase> tcp);
   void HandleAccept (Ptr<Socket> socket, const Address& from);
+
+  InetSocketAddress m_remoteAddr;
 };
 
 /**
