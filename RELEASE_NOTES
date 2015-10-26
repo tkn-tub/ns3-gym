@@ -22,6 +22,12 @@ To be determined.
 
 New user-visible features
 -------------------------
+(internet) The native TCP implementation has been refactored, for the following
+improvements:  1) congestion control has been aligned with the Linux
+architecture, to facilitate easier coding of new congestion control algorithms
+or porting implementations from the Linux kernel, 2) Fast Retransmit and Fast
+recovery algorithms, compliant to RFCs, are shared by all TCP variants, unlike
+previous releases.
 
 Bugs fixed
 ----------
@@ -30,6 +36,10 @@ Bugs fixed
 - Bug 2003 - Missing DSSS short PLCP preamble
 - Bug 2183 - LiIonEnergySourceHelper is not in the energy wscript
 - Bug 2195 - Udp[*]Client can't send packets to broadcast address
+- Bug 1571 - TCP zero-window and flow control window updates by the receiver
+- Bug 2041 - TCP RTO needs unit tests
+- Bug 2150 - The TCP sender keeps retransmitting and does not terminate the connection after some retries.
+- Bug 2159 - TCP advertises wrong receive window
 
 Known issues
 ------------
@@ -53,7 +63,7 @@ Availability
 This release is available from:
 https://www.nsnam.org/release/ns-allinone-3.24.1.tar.bz2
 
-upported platforms
+Supported platforms
 -------------------
 This release has been tested on the following platforms:
 - Ubuntu 15.04 (64 bit) with g++-4.9.2

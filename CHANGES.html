@@ -54,9 +54,21 @@ us a note on ns-developers mailing list.</p>
 <h1>Changes from ns-3.24 to ns-3.25</h1>
 <h2>New API:</h2>
 <ul>
+  <li> In 'src/internet/test', a new environment is created to test TCP properties.</li>
 </ul>
 <h2>Changes to existing API:</h2>
 <ul>
+  <li>TCP-related changes:
+    <ul>
+      <li>TCP Reno, 793, and Tahoe were removed.</li>
+      <li>Added the concept of Congestion State Machine inside TcpSocketBase.</li>
+      <li>Merged Fast Recovery and Fast Retransmit inside TcpSocketBase.</li>
+      <li>Some member variables have been moved from TcpSocketBase inside TcpSocketState. Attributes are not touched.</li>
+      <li>Congestion control splitted from TcpSocketBase as subclass of TcpCongestionOps.</li>
+      <li>Added Rx and Tx callbacks on TcpSocketBase.</li>
+      <li>Added attributes about the number of connection and data retransmission attempts.</li>
+    </ul>
+  </li>
 </ul>
 <h2>Changes to build system:</h2>
 <ul>
@@ -65,6 +77,15 @@ us a note on ns-developers mailing list.</p>
 <h2>Changed behavior:</h2>
 This section is for behavioral changes to the models that were not due to a bug fix.
 <ul>
+  <li>TCP behavioral changes:
+    <ul>
+      <li>TCP closes connection after a number of failed segment retries,
+        rather than trying indefinitely. The maximum number of retries, for both SYN
+        attempts and data attempts, is controlled by attributes.</li>
+      <li>Congestion algorithms not compliant with Fast Retransmit
+        and Fast Recovery (TCP 793, Reno, Tahoe) have been removed.</li>
+    </ul>
+  </li>
 </ul>
 
 <hr>
