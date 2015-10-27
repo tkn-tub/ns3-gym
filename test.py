@@ -767,6 +767,8 @@ def run_job_synchronously(shell_command, directory, valgrind, is_python, build_p
     elapsed_time = time.time() - start_time
 
     retval = proc.returncode
+    stdout_results = stdout_results.decode()
+    stderr_results = stderr_results.decode()
 
     #
     # valgrind sometimes has its own idea about what kind of memory management
@@ -1324,6 +1326,8 @@ def run_tests():
         else:
             proc = subprocess.Popen("sysctl -n hw.ncpu", shell = True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             stdout_results, stderr_results = proc.communicate()
+            stdout_results = stdout_results.decode()
+            stderr_results = stderr_results.decode()
             if len(stderr_results) == 0:
                 processors = int(stdout_results)
 
