@@ -1190,12 +1190,14 @@ YansWifiPhy::EndReceive (Ptr<Packet> packet, enum WifiPreamble preamble, enum mp
         {
           /* failure. */
           NotifyRxDrop (packet);
-          m_state->SwitchFromRxEndError (packet, snrPer.snr);
+          bool isEndOfFrame = ((mpdutype == NORMAL_MPDU && preamble != WIFI_PREAMBLE_NONE) || (mpdutype == LAST_MPDU_IN_AGGREGATE && preamble == WIFI_PREAMBLE_NONE));
+          m_state->SwitchFromRxEndError (packet, snrPer.snr, isEndOfFrame);
         }
     }
   else
     {
-      m_state->SwitchFromRxEndError (packet, snrPer.snr);
+      bool isEndOfFrame = ((mpdutype == NORMAL_MPDU && preamble != WIFI_PREAMBLE_NONE) || (mpdutype == LAST_MPDU_IN_AGGREGATE && preamble == WIFI_PREAMBLE_NONE));
+      m_state->SwitchFromRxEndError (packet, snrPer.snr, isEndOfFrame);
     }
 
   if (preamble == WIFI_PREAMBLE_NONE && mpdutype == LAST_MPDU_IN_AGGREGATE)

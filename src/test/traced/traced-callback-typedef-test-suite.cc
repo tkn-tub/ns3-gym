@@ -609,7 +609,9 @@ TracedCallbackTypedefTestCase::DoRun (void)
          const WifiMacHeader &,
          empty, empty, empty, empty);
 
-  DUPE   (WifiPhyStateHelper::RxEndErrorTracedCallback, Packet::SinrTracedCallback);
+  CHECK (WifiPhyStateHelper::RxEndErrorTracedCallback,
+         Ptr<const Packet>, double, bool,
+         empty, empty);
 
   CHECK (WifiPhyStateHelper::RxOkTracedCallback,
          Ptr<const Packet>, double, WifiMode, WifiPreamble,

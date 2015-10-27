@@ -733,11 +733,12 @@ public:
   /**
    * \param packet packet received.
    * \param rxSnr snr of packet received.
+   * \param isEndOfFrame PHY-RXEND indication.
    *
    * This method is typically invoked by the lower PHY layer to notify
    * the MAC layer that a packet was unsuccessfully received.
    */
-  void ReceiveError (Ptr<const Packet> packet, double rxSnr);
+  void ReceiveError (Ptr<const Packet> packet, double rxSnr, bool isEndOfFrame);
   /**
    * \param duration switching delay duration.
    *
@@ -1325,7 +1326,8 @@ private:
   Ptr<MpduAggregator> m_mpduAggregator; //!<
 
   Ptr<Packet> m_currentPacket;              //!< Current packet transmitted/to be transmitted
-  WifiMacHeader m_currentHdr;               //!< Header of the current packet
+  WifiMacHeader m_currentHdr;               //!< Header of the current transmitted packet
+  WifiMacHeader m_lastReceivedHdr;          //!< Header of the last received packet
   MacLowTransmissionParameters m_txParams;  //!< Transmission parameters of the current packet
   MacLowTransmissionListener *m_listener;   //!< Transmission listener for the current packet
   Mac48Address m_self;                      //!< Address of this MacLow (Mac48Address)

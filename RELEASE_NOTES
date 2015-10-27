@@ -40,6 +40,7 @@ Bugs fixed
 - Bug 2041 - TCP RTO needs unit tests
 - Bug 2150 - The TCP sender keeps retransmitting and does not terminate the connection after some retries.
 - Bug 2159 - TCP advertises wrong receive window
+- Bug 2185 - WiFi MacLow may respond to errored frames that it should ignore
 
 Known issues
 ------------

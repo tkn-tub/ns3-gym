@@ -167,8 +167,9 @@ public:
    *
    * \param packet the packet that we failed to received
    * \param snr the SNR of the received packet
+   * \param isEndOfFrame PHY-RXEND indication.
    */
-  void SwitchFromRxEndError (Ptr<const Packet> packet, double snr);
+  void SwitchFromRxEndError (Ptr<const Packet> packet, double snr, bool isEndOfFrame);
   /**
    * Switch to CCA busy.
    *
@@ -214,11 +215,12 @@ public:
   /**
    * TracedCallback signature for receive end error event.
    *
-   * \param [in] packet The received packet.
-   * \param [in] snr    The SNR of the received packet.
+   * \param [in] packet       The received packet.
+   * \param [in] snr          The SNR of the received packet.
+   * \param [in] isEndOfFrame PHY-RXEND indication..
    */
   typedef void (* RxEndErrorTracedCallback)
-    (Ptr<const Packet> packet, double snr);
+    (Ptr<const Packet> packet, double snr, bool isEndOfFrame);
 
   /**
    * TracedCallback signature for transmit event.
