@@ -628,6 +628,96 @@ TcpGeneralTest::GetClockGranularity (SocketWho who)
     }
 }
 
+TcpSocket::TcpStates_t
+TcpGeneralTest::GetTcpState (SocketWho who)
+{
+  if (who == SENDER)
+    {
+      return DynamicCast<TcpSocketMsgBase> (m_senderSocket)->m_state.Get ();
+    }
+  else if (who == RECEIVER)
+    {
+
+      return DynamicCast<TcpSocketMsgBase> (m_receiverSocket)->m_state.Get ();
+    }
+  else
+    {
+      NS_FATAL_ERROR ("Not defined");
+    }
+}
+
+uint32_t
+TcpGeneralTest::GetRWnd (SocketWho who)
+{
+  if (who == SENDER)
+    {
+      return DynamicCast<TcpSocketMsgBase> (m_senderSocket)->m_rWnd.Get ();
+    }
+  else if (who == RECEIVER)
+    {
+
+      return DynamicCast<TcpSocketMsgBase> (m_receiverSocket)->m_rWnd.Get ();
+    }
+  else
+    {
+      NS_FATAL_ERROR ("Not defined");
+    }
+}
+
+EventId
+TcpGeneralTest::GetPersistentEvent (SocketWho who)
+{
+  if (who == SENDER)
+    {
+      return DynamicCast<TcpSocketMsgBase> (m_senderSocket)->m_persistEvent;
+    }
+  else if (who == RECEIVER)
+    {
+
+      return DynamicCast<TcpSocketMsgBase> (m_receiverSocket)->m_persistEvent;
+    }
+  else
+    {
+      NS_FATAL_ERROR ("Not defined");
+    }
+}
+
+Time
+TcpGeneralTest::GetPersistentTimeout (SocketWho who)
+{
+  if (who == SENDER)
+    {
+      return DynamicCast<TcpSocketMsgBase> (m_senderSocket)->m_persistTimeout;
+    }
+  else if (who == RECEIVER)
+    {
+
+      return DynamicCast<TcpSocketMsgBase> (m_receiverSocket)->m_persistTimeout;
+    }
+  else
+    {
+      NS_FATAL_ERROR ("Not defined");
+    }
+}
+
+Ptr<TcpSocketState>
+TcpGeneralTest::GetTcb (SocketWho who)
+{
+  if (who == SENDER)
+    {
+      return DynamicCast<TcpSocketMsgBase> (m_senderSocket)->m_tcb;
+    }
+  else if (who == RECEIVER)
+    {
+
+      return DynamicCast<TcpSocketMsgBase> (m_receiverSocket)->m_tcb;
+    }
+  else
+    {
+      NS_FATAL_ERROR ("Not defined");
+    }
+}
+
 void
 TcpGeneralTest::SetRcvBufSize (SocketWho who, uint32_t size)
 {

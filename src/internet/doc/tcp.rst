@@ -158,6 +158,398 @@ Current limitations
 
 * SACK is not supported
 
+Testing TCP
++++++++++++
+
+In GSoC 2015, the TCP subsystem has been improved to support automated test
+cases on both socket functionalities and congestion control algorithms. To show
+how to write tests for TCP, here we will explain the process of creating a test
+case which reproduces a bug, firstly reported as bug 1571 in 2013, not fixed
+in years, and then put in spotlight again by the user Mahdi on 29 August, 2015.
+
+The bug regards the zero window situation, which happens when the receiver can
+not handle more data. In this case, it advertises a zero window, which causes
+the sender to pause the transmission and wait for the receiver to be ready again.
+The sender has a timer, to periodically check the receiver's window: however,
+in modern TCP implementation, when the receiver has freed a "significant" amount
+of data, the receiver itself sends an "active" window update, meaning that
+the transmission could be resumed. Nevertheless, the sender timer is still
+necessary because window updates can be lost.
+
+.. note::
+   During the text, we will assume some knowledge about the general design
+   of the TCP test infrastructure, which is explained in details into the
+   Doxygen documentation. As a brief recap, our strategy is to have a class
+   that setup a TCP connection, and which calls protected member of itself.
+   In this way, subclasses can implement the necessary members, which will
+   be called by the main TcpGeneralTest class when events occour. For example,
+   after processing an ACK, the method ProcessedAck will be invoked. Subclasses
+   interested in checking some particular things which must have happened during
+   an ACK processing, should implement the ProcessedAck method and check
+   the interesting values inside the method. To get a list of available methods,
+   please check the Doxygen documentation.
+
+We will work to write two test case, covering both situations, as said the
+sender's zero-window probing and the receiver "active" window update. Our focus
+will be on dealing with the reported problems, which are:
+
+* an ns-3 receiver does not send "active" window update when its receive buffer
+  is being freed;
+* even if the window update is artificially crafted, the transmission does not
+  resume.
+
+However, other things should be checked in the test:
+
+* Persistent timer setup
+* Persistent timer teardown if rWnd increases
+
+At first, we should define the general parameters for the TCP connection, which
+will be one-sided (one node is acting as SENDER, while the other is acting as
+RECEIVER). They are coded in the constructor of the test case, as subclass of
+TcpGeneralTest (see the doxygen documentation to discover all methods you have
+at your disposal):
+
+* Application packet size set to 500, and 20 packet in total (it means a stream
+  of 10k bytes)
+* Segment size for both SENDER and RECEIVER set to 500 bytes
+* Initial slow start threshold set to UINT32_MAX
+* Initial congestion window for the SENDER set to 10 segments (5000 bytes)
+* Congestion control: NewReno
+
+We have also to define the link properties, because the above definition does
+not work for every combination of propagation delay and sender application behavior.
+We can specify the following parameters through the same test constructor:
+
+* Link one-way propagation delay: 50 ms
+* Application packet generation interval: 10 ms
+* Application starting time: 20 s after the starting point
+
+The code is the following:
+
+.. code-block:: c++
+
+   TcpZeroWindowTest::TcpZeroWindowTest (const std::string &desc)
+      : TcpGeneralTest (desc, 500, 20, Seconds (0.01), Seconds (0.05), Seconds (2.0),
+                        0xffffffff, 10, 500)
+   {
+   }
+
+To define a zero-window situation, we choose (by design) to initiate the connection
+with a 0-byte rx buffer. This implies that the RECEIVER, in its first SYN-ACK,
+advertizes a zero window. To this aim, we implement the method
+CreateReceiverSocket, setting an Rx buffer value of 0 bytes (at line 6 of the
+following code):
+
+.. code-block:: c++
+   :linenos:
+   :emphasize-lines: 6,7,8
+
+   Ptr<TcpSocketMsgBase>
+   TcpZeroWindowTest::CreateReceiverSocket (Ptr<Node> node)
+   {
+     Ptr<TcpSocketMsgBase> socket = TcpGeneralTest::CreateReceiverSocket (node);
+
+     socket->SetAttribute("RcvBufSize", UintegerValue (0));
+     Simulator::Schedule (Seconds (10.0),
+                          &TcpZeroWindowTest::IncreaseBufSize, this);
+
+     return socket;
+   }
+
+Even so, to check the active window update, we should schedule an increase
+of the buffer size. We do this at line 7 and 8, scheduling the function
+IncreaseBufSize.
+
+.. code-block:: c++
+
+   void
+   TcpZeroWindowTest::IncreaseBufSize ()
+   {
+     SetRcvBufSize (RECEIVER, 2500);
+   }
+
+Which utilizes the SetRcvBufSize method to edit the RxBuffer object of the
+RECEIVER. As said before, check the Doxygen documentation for class TcpGeneralTest
+to be aware of the various possibility that it offers.
+
+.. note::
+   By design, we choose to mantain a close relationship between TcpSocketBase
+   and TcpGeneralClass: they are connected by a friendship relation. Since
+   friendship is not passed through inheritance, if you discover that you
+   need to access or to modify a private (or protected) member of TcpSocketBase,
+   you can do it by adding a method in the class TcpGeneralSocket. An example
+   of such method is SetRcvBufSize, which allows TcpGeneralSocket subclasses
+   to forcefully set the RxBuffer size.
+
+   .. code-block:: c++
+
+      void
+      TcpGeneralTest::SetRcvBufSize (SocketWho who, uint32_t size)
+      {
+        if (who == SENDER)
+          {
+            m_senderSocket->SetRcvBufSize (size);
+          }
+        else if (who == RECEIVER)
+          {
+            m_receiverSocket->SetRcvBufSize (size);
+          }
+        else
+          {
+            NS_FATAL_ERROR ("Not defined");
+          }
+      }
+
+After saying that, we can start to follow the TCP connection:
+
+#. At time 0.0 s the connection is opened sender side, with a SYN packet sent from
+   SENDER to RECEIVER
+#. At time 0.05 s the RECEIVER gets the SYN and replies with a SYN-ACK
+#. At time 0.10 s the SENDER gets the SYN-ACK and replies with a SYN.
+
+While the general structure is defined, and the connection is started,
+we need to define a way to check the rWnd field on the segments. To this aim,
+we can implement the methods Rx and Tx in the TcpGeneralTest subclass,
+checking each time the actions of the RECEIVER and the SENDER. These methods are
+defined in TcpGeneralTest, and they are attached to the Rx and Tx traces in the
+TcpSocketBase. We should code each single thing we want to ensure during the
+connection (it will prevent the test from changing over the time, and it ensures
+that the behavior will stay consistent through releases). We start by ensuring that
+the first SYN-ACK has 0 as advertized window size:
+
+.. code-block:: c++
+
+   void
+   TcpZeroWindowTest::Tx(const Ptr<const Packet> p, const TcpHeader &h, SocketWho who)
+   {
+     ...
+     else if (who == RECEIVER)
+       {
+         NS_LOG_INFO ("\tRECEIVER TX " << h << " size " << p->GetSize());
+
+         if (h.GetFlags () & TcpHeader::SYN)
+           {
+             NS_TEST_ASSERT_MSG_EQ (h.GetWindowSize(), 0,
+                                    "RECEIVER window size is not 0 in the SYN-ACK");
+           }
+       }
+       ....
+    }
+
+Pratically, we are checking that every SYN packet sent by the RECEIVER has the
+advertised window set to 0. The same thing is done also by checking, in the Rx
+method, that each SYN received by SENDER has the advertised window set to 0.
+Thanks to the log subsystem, we can print what is happening through messages.
+If we run the experiment, enabling the logging, we can see the following:
+
+.. code-block:: bash
+
+   ./waf shell
+   gdb --args ./build/utils/ns3-dev-test-runner-debug --test-name=tcp-zero-window-test --stop-on-failure --fullness=QUICK --assert-on-failure --verbose
+   (gdb) run
+
+   0.00s TcpZeroWindowTestSuite:Tx(): 0.00	SENDER TX 49153 > 4477 [SYN] Seq=0 Ack=0 Win=32768 ns3::TcpOptionWinScale(2) ns3::TcpOptionTS(0;0) size 36
+   0.05s TcpZeroWindowTestSuite:Rx(): 0.05	RECEIVER RX 49153 > 4477 [SYN] Seq=0 Ack=0 Win=32768 ns3::TcpOptionWinScale(2) ns3::TcpOptionTS(0;0) ns3::TcpOptionEnd(EOL) size 0
+   0.05s TcpZeroWindowTestSuite:Tx(): 0.05	RECEIVER TX 4477 > 49153 [SYN|ACK] Seq=0 Ack=1 Win=0 ns3::TcpOptionWinScale(0) ns3::TcpOptionTS(50;0) size 36
+   0.10s TcpZeroWindowTestSuite:Rx(): 0.10	SENDER RX 4477 > 49153 [SYN|ACK] Seq=0 Ack=1 Win=0 ns3::TcpOptionWinScale(0) ns3::TcpOptionTS(50;0) ns3::TcpOptionEnd(EOL) size 0
+   0.10s TcpZeroWindowTestSuite:Tx(): 0.10	SENDER TX 49153 > 4477 [ACK] Seq=1 Ack=1 Win=32768 ns3::TcpOptionTS(100;50) size 32
+   0.15s TcpZeroWindowTestSuite:Rx(): 0.15	RECEIVER RX 49153 > 4477 [ACK] Seq=1 Ack=1 Win=32768 ns3::TcpOptionTS(100;50) ns3::TcpOptionEnd(EOL) size 0
+   (...)
+
+The output is cut to show the threeway handshake. As we can see from the headers,
+the rWnd of RECEIVER is set to 0, and thankfully our tests are not failing.
+Now we need to test for the persistent timer, which sould be started by
+the SENDER after it receives the SYN-ACK. Since the Rx method is called before
+any computation on the received packet, we should utilize another method, namely
+ProcessedAck, which is the method called after each processed ACK. In the
+following, we show how to check if the persistent event is running after the
+processing of the SYN-ACK:
+
+.. code-block:: c++
+
+   void
+   TcpZeroWindowTest::ProcessedAck (const Ptr<const TcpSocketState> tcb,
+                                    const TcpHeader& h, SocketWho who)
+   {
+     if (who == SENDER)
+       {
+         if (h.GetFlags () & TcpHeader::SYN)
+           {
+             EventId persistentEvent = GetPersistentEvent (SENDER);
+             NS_TEST_ASSERT_MSG_EQ (persistentEvent.IsRunning (), true,
+                                    "Persistent event not started");
+           }
+       }
+    }
+
+Since we programmed the increase of the buffer size after 10 simulated seconds,
+we expect the persistent timer to fire before any rWnd changes. When it fires,
+the SENDER should send a window probe, and the receiver should reply reporting
+again a zero window situation. At first, we investigates on what the sender sends:
+
+..  code-block:: c++
+    :linenos:
+    :emphasize-lines: 1,6,7,11
+
+      if (Simulator::Now ().GetSeconds () <= 6.0)
+        {
+          NS_TEST_ASSERT_MSG_EQ (p->GetSize () - h.GetSerializedSize(), 0,
+                                 "Data packet sent anyway");
+        }
+      else if (Simulator::Now ().GetSeconds () > 6.0 &&
+               Simulator::Now ().GetSeconds () <= 7.0)
+        {
+          NS_TEST_ASSERT_MSG_EQ (m_zeroWindowProbe, false, "Sent another probe");
+
+          if (! m_zeroWindowProbe)
+            {
+              NS_TEST_ASSERT_MSG_EQ (p->GetSize () - h.GetSerializedSize(), 1,
+                                     "Data packet sent instead of window probe");
+              NS_TEST_ASSERT_MSG_EQ (h.GetSequenceNumber(), SequenceNumber32 (1),
+                                     "Data packet sent instead of window probe");
+              m_zeroWindowProbe = true;
+            }
+        }
+
+We divide the events by simulated time. At line 1, we check everything which
+happens before the 6.0 seconds mark, for instance that no data packets are sent,
+and that the state remains OPEN for both sender and receiver.
+
+Since the persistent timeout is initialized at 6 seconds (excercise left for the
+reader: edit the test, getting this value from the Attribute system), we need
+to check (line 6) between 6.0 and 7.0 simulated seconds that the probe is sent.
+Only one probe is allowed, and this is the reason for the check at line 11.
+
+.. code-block:: c++
+   :linenos:
+   :emphasize-lines: 6,7
+
+   if (Simulator::Now ().GetSeconds () > 6.0 &&
+       Simulator::Now ().GetSeconds () <= 7.0)
+     {
+       NS_TEST_ASSERT_MSG_EQ (h.GetSequenceNumber(), SequenceNumber32 (1),
+                              "Data packet sent instead of window probe");
+       NS_TEST_ASSERT_MSG_EQ (h.GetWindowSize(), 0,
+                              "No zero window advertised by RECEIVER");
+     }
+
+For what regards the RECEIVER, between the 6 and 7 seconds mark the most important
+thing to check is that is sends the zero window segment.
+
+Other checks are redundant; the most safe approach is to deny any other packet
+exchange between 7 and 10 seconds mark.
+
+.. code-block:: c++
+
+   else if (Simulator::Now ().GetSeconds () > 7.0 &&
+            Simulator::Now ().GetSeconds () < 10.0)
+     {
+       NS_FATAL_ERROR ("No packets should be sent before the window update");
+     }
+
+The state checks are performed at the end of the methods, since they are valid
+in every condition:
+
+.. code-block:: c++
+
+   NS_TEST_ASSERT_MSG_EQ (GetCongStateFrom (GetTcb(SENDER)), TcpSocketState::CA_OPEN,
+                          "Sender State is not OPEN");
+   NS_TEST_ASSERT_MSG_EQ (GetCongStateFrom (GetTcb(RECEIVER)), TcpSocketState::CA_OPEN,
+                          "Receiver State is not OPEN");
+
+Now, the interesting part in the Tx method is to check that after the 10.0
+seconds mark (when the RECEIVER sends the active window update) the value of
+the window should be greater than zero (and precisely, set to 2500):
+
+.. code-block:: c++
+
+   else if (Simulator::Now().GetSeconds() >= 10.0)
+     {
+       NS_TEST_ASSERT_MSG_EQ (h.GetWindowSize(), 2500,
+                              "Receiver window not updated");
+     }
+
+To be sure that the sender receives the window update, we can use the Rx
+method:
+
+.. code-block:: c++
+   :linenos:
+   :emphasize-lines: 5
+
+   if (Simulator::Now().GetSeconds() >= 10.0)
+     {
+       NS_TEST_ASSERT_MSG_EQ (h.GetWindowSize(), 2500,
+                              "Receiver window not updated");
+       m_windowUpdated = true;
+     }
+
+And check every packets, after the 10 seconds mark, that should have the
+window updated. At line 5, we also set to true a boolean variable, to check
+that we effectively reach this test.
+
+Last but not least, we implement also the NormalClose() method, to check that
+the connection ends with a success:
+
+.. code-block:: c++
+
+   void
+   TcpZeroWindowTest::NormalClose (SocketWho who)
+   {
+     if (who == SENDER)
+       {
+         m_senderFinished = true;
+       }
+     else if (who == RECEIVER)
+       {
+         m_receiverFinished = true;
+       }
+   }
+
+The method is called only if all bytes are transmitted successfully. Then, in
+the method FinalChecks(), we check all variables, which should be true (which
+indicates that we have perfectly closed the connection).
+
+.. code-block:: c++
+
+   void
+   TcpZeroWindowTest::FinalChecks ()
+   {
+     NS_TEST_ASSERT_MSG_EQ (m_zeroWindowProbe, true,
+                            "Zero window probe not sent");
+     NS_TEST_ASSERT_MSG_EQ (m_windowUpdated, true,
+                            "Window has not updated during the connection");
+     NS_TEST_ASSERT_MSG_EQ (m_senderFinished, true,
+                            "Connection not closed successfully (SENDER)");
+     NS_TEST_ASSERT_MSG_EQ (m_receiverFinished, true,
+                            "Connection not closed successfully (RECEIVER)");
+   }
+
+To run the test, the usual way is
+
+.. code-block:: bash
+
+   ./test.py -s tcp-zero-window-test
+
+   PASS: TestSuite tcp-zero-window-test
+   1 of 1 tests passed (1 passed, 0 skipped, 0 failed, 0 crashed, 0 valgrind errors)
+
+To see INFO messages, use a combination of ./waf shell and gdb (really useful):
+
+.. code-block:: bash
+
+
+    ./waf shell && gdb --args ./build/utils/ns3-dev-test-runner-debug --test-name=tcp-zero-window-test --stop-on-failure --fullness=QUICK --assert-on-failure --verbose
+
+and then, hit "Run".
+
+.. note::
+   This code magically runs without any reported errors; however, in real cases,
+   when you discover a bug you should expect the being-written test to fail (this
+   could indicate a well-written test and a bad-writted model, or a bad-written
+   test: we hope you are in the first situation). Correcting bugs is an iterative
+   process. For instance, commits created to make this test case running without
+   errors are 11633:6b74df04cf44, (others to be merged).
+
 Network Simulation Cradle
 *************************
 

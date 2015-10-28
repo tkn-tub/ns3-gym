@@ -411,6 +411,46 @@ protected:
   Time GetClockGranularity (SocketWho who);
 
   /**
+   * \brief Get the state of the TCP state machine
+   *
+   * \param who socket where check the parameter
+   * \return the state of the socket
+   */
+  TcpSocket::TcpStates_t GetTcpState (SocketWho who);
+
+  /**
+   * \brief Get the TCB from selected socket
+   *
+   * \param who socket where get the TCB
+   * \return the transmission control block
+   */
+  Ptr<TcpSocketState> GetTcb (SocketWho who);
+
+  /**
+   * \brief Get the rWnd of the selected socket
+   *
+   * \param who socket where check the parameter
+   * \return the received advertised window
+   */
+  uint32_t GetRWnd (SocketWho who);
+
+  /**
+   * \brief Get the persistent event of the selected socket
+   *
+   * \param who socket where check the parameter
+   * \return the persistent event in the selected socket
+   */
+  EventId GetPersistentEvent (SocketWho who);
+
+  /**
+   * \brief Get the persistent timeout of the selected socket
+   *
+   * \param who socket where check the parameter
+   * \return the persistent timeout in the selected socket
+   */
+  Time GetPersistentTimeout (SocketWho who);
+
+  /**
    * \brief Forcefully set a defined size for rx buffer
    *
    * \param who socket to force
