@@ -27,7 +27,7 @@ improvements:  1) congestion control has been aligned with the Linux
 architecture, to facilitate easier coding of new congestion control algorithms
 or porting implementations from the Linux kernel, 2) Fast Retransmit and Fast
 recovery algorithms, compliant to RFCs, are shared by all TCP variants, unlike
-previous releases.
+previous releases. 3) TCP Hybla and TCP HighSpeed have been added.
 
 Bugs fixed
 ----------
