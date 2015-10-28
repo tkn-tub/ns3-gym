@@ -240,6 +240,7 @@ def build(bld):
         'test/tcp-fast-retr-test.cc',
         'test/tcp-rto-test.cc',
         'test/tcp-highspeed-test.cc',
+        'test/tcp-hybla-test.cc',
         'test/udp-test.cc',
         'test/ipv6-address-generator-test-suite.cc',
         'test/ipv6-dual-stack-test-suite.cc',
