@@ -41,7 +41,7 @@ ReceivePdDataIndication (uint32_t psduLength,
 {
   NS_LOG_UNCOND ("At: " << Simulator::Now ()
                         << " Received frame size: " << psduLength << " LQI: " <<
-                 lqi);
+                 (uint16_t) lqi);
 }
 
 void SendOnePacket (Ptr<LrWpanPhy> sender, Ptr<LrWpanPhy> receiver)
