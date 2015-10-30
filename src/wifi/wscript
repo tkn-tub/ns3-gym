@@ -1,7 +1,7 @@
 ## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
 
 def build(bld):
-    obj = bld.create_ns3_module('wifi', ['network', 'internet', 'applications', 'propagation', 'energy'])
+    obj = bld.create_ns3_module('wifi', ['network', 'propagation', 'energy'])
     obj.source = [
         'model/wifi-information-element.cc',
         'model/wifi-information-element-vector.cc',
