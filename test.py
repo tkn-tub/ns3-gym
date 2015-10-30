@@ -767,8 +767,18 @@ def run_job_synchronously(shell_command, directory, valgrind, is_python, build_p
     elapsed_time = time.time() - start_time
 
     retval = proc.returncode
-    stdout_results = stdout_results.decode()
-    stderr_results = stderr_results.decode()
+    try:
+        stdout_results = stdout_results.decode()
+    except UnicodeDecodeError:
+        print("Non-decodable character in stdout output of %s" % cmd)
+        print(stdout_results)
+        retval = 1
+    try:
+        stderr_results = stderr_results.decode()
+    except UnicodeDecodeError:
+        print("Non-decodable character in stderr output of %s" % cmd)
+        print(stderr_results)
+        retval = 1
 
     #
     # valgrind sometimes has its own idea about what kind of memory management
