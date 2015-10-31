@@ -36,8 +36,8 @@ using namespace ns3;
 int main (int argc, char *argv[])
 {
   uint32_t FrameSize = 2000; //bytes
-  std::ofstream yansfile ("yans-frame-success-rate-n.plt");
-  std::ofstream nistfile ("nist-frame-success-rate-n.plt");
+  std::ofstream yansfile ("yans-frame-success-rate-ac.plt");
+  std::ofstream nistfile ("nist-frame-success-rate-ac.plt");
   std::vector <std::string> modes;
 
   modes.push_back ("VhtMcs0");
@@ -54,8 +54,8 @@ int main (int argc, char *argv[])
   cmd.AddValue ("FrameSize", "The frame size", FrameSize);
   cmd.Parse (argc, argv);
 
-  Gnuplot yansplot = Gnuplot ("yans-frame-success-rate-n.eps");
-  Gnuplot nistplot = Gnuplot ("nist-frame-success-rate-n.eps");
+  Gnuplot yansplot = Gnuplot ("yans-frame-success-rate-ac.eps");
+  Gnuplot nistplot = Gnuplot ("nist-frame-success-rate-ac.eps");
 
   Ptr <YansErrorRateModel> yans = CreateObject<YansErrorRateModel> ();
   Ptr <NistErrorRateModel> nist = CreateObject<NistErrorRateModel> ();
