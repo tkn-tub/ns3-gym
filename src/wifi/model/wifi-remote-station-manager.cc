@@ -287,6 +287,7 @@ WifiRemoteStationManager::GetTypeId (void)
                    " transmission of each packet is obtained before sending the next. Otherwise, we modelize a "
                    " high-latency device, that is a device where we cannot update our decision about tx parameters"
                    " after every packet transmission.",
+                   TypeId::ATTR_GET,
                    BooleanValue (true), //this value is ignored because there is no setter
                    MakeBooleanAccessor (&WifiRemoteStationManager::IsLowLatency),
                    MakeBooleanChecker ())
