@@ -61,7 +61,7 @@ SecondsToEmf (double seconds)
   double tmp = 16*(seconds/(OLSR_C*(1<<b))-1);
 
   // round it up.  This results in the value for 'a'
-  a = (int) std::ceil (tmp);
+  a = (int) std::ceil (tmp-0.5);
 
   // if 'a' is equal to 16: increment 'b' by one, and set 'a' to 0
   if (a == 16)
