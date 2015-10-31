@@ -23,10 +23,6 @@
 
 #include "ns3/nqos-wifi-mac-helper.h"
 #include "ns3/yans-wifi-helper.h"
-#include "ns3/internet-stack-helper.h"
-#include "ns3/ipv4-address-helper.h"
-#include "ns3/packet-sink-helper.h"
-#include "ns3/on-off-helper.h"
 #include "ns3/mobility-helper.h"
 #include "ns3/wifi-net-device.h"
 #include "ns3/adhoc-wifi-mac.h"
@@ -40,6 +36,10 @@
 #include "ns3/config.h"
 #include "ns3/boolean.h"
 #include "ns3/string.h"
+#include "ns3/packet-socket-address.h"
+#include "ns3/packet-socket-server.h"
+#include "ns3/packet-socket-client.h"
+#include "ns3/packet-socket-helper.h"
 
 using namespace ns3;
 
@@ -504,9 +504,10 @@ public:
 
 
 private:
+  uint32_t m_received;
+
   void Receive (std::string context, Ptr<const Packet> p, const Address &adr);
 
-  uint32_t m_received;
 };
 
 Bug730TestCase::Bug730TestCase ()
@@ -527,6 +528,7 @@ Bug730TestCase::Receive (std::string context, Ptr<const Packet> p, const Address
       m_received++;
     }
 }
+
 
 void
 Bug730TestCase::DoRun (void)
@@ -580,47 +582,44 @@ Bug730TestCase::DoRun (void)
   mobility.Install (wifiApNode);
   mobility.Install (wifiStaNode);
 
-  InternetStackHelper stack;
-  stack.Install (wifiApNode);
-  stack.Install (wifiStaNode);
+  Ptr<WifiNetDevice> ap_device = DynamicCast<WifiNetDevice> (apDevices.Get (0));
+  Ptr<WifiNetDevice> sta_device = DynamicCast<WifiNetDevice> (staDevices.Get (0));
 
-  Ipv4AddressHelper address;
-  address.SetBase ("10.1.1.0", "255.255.255.0");
-  Ipv4InterfaceContainer StaInterface;
-  StaInterface = address.Assign (staDevices);
-  Ipv4InterfaceContainer ApInterface;
-  ApInterface = address.Assign (apDevices);
+  PacketSocketAddress socket;
+  socket.SetSingleDevice (sta_device->GetIfIndex ());
+  socket.SetPhysicalAddress (ap_device->GetAddress ());
+  socket.SetProtocol (1);
 
-  Address sinkLocalAddress (InetSocketAddress (Ipv4Address::GetAny (), 21));
-  PacketSinkHelper sinkHelper ("ns3::TcpSocketFactory", sinkLocalAddress);
-  ApplicationContainer sinkApp = sinkHelper.Install (wifiApNode.Get (0));
-  sinkApp.Start (Seconds (1.0));
-  sinkApp.Stop (Seconds (51.0));
+  // give packet socket powers to nodes.
+  PacketSocketHelper packetSocket;
+  packetSocket.Install (wifiStaNode);
+  packetSocket.Install (wifiApNode);
 
-  OnOffHelper sourceHelper ("ns3::TcpSocketFactory", Address ());
-  sourceHelper.SetAttribute ("OnTime", StringValue ("ns3::ConstantRandomVariable[Constant=1]"));
-  sourceHelper.SetAttribute ("OffTime", StringValue ("ns3::ConstantRandomVariable[Constant=0]"));
-  AddressValue remoteAddress (InetSocketAddress (ApInterface.GetAddress (0), 21));
-  sourceHelper.SetAttribute ("Remote", remoteAddress);
-  sourceHelper.SetAttribute ("PacketSize", UintegerValue (1460));
-  sourceHelper.SetAttribute ("DataRate", StringValue ("10Mb/s"));
-  ApplicationContainer sourceApp;
-  sourceApp.Add (sourceHelper.Install (wifiStaNode.Get (0)));
-  sourceApp.Start (Seconds (1.0));
-  sourceApp.Stop (Seconds (51.0));
+  Ptr<PacketSocketClient> client = CreateObject<PacketSocketClient> ();
+  client->SetAttribute ("PacketSize", UintegerValue (1460));
+  client->SetRemote (socket);
+  wifiStaNode.Get(0)->AddApplication (client);
+  client->SetStartTime (Seconds (1));
+  client->SetStopTime (Seconds (51.0));
 
-  Config::Connect ("/NodeList/*/ApplicationList/0/$ns3::PacketSink/Rx", MakeCallback (&Bug730TestCase::Receive, this));
+  Ptr<PacketSocketServer> server = CreateObject<PacketSocketServer> ();
+  server->SetLocal (socket);
+  wifiApNode.Get(0)->AddApplication (server);
+  server->SetStartTime (Seconds (0.0));
+  server->SetStopTime (Seconds (52.0));
+
+  Config::Connect ("/NodeList/*/ApplicationList/0/$ns3::PacketSocketServer/Rx", MakeCallback (&Bug730TestCase::Receive, this));
 
   Simulator::Schedule (Seconds (10.0), Config::Set, "/NodeList/0/DeviceList/0/RemoteStationManager/FragmentationThreshold", StringValue ("800"));
 
   Simulator::Stop (Seconds (55));
   Simulator::Run ();
+
   Simulator::Destroy ();
 
   bool result = (m_received > 0);
   NS_TEST_ASSERT_MSG_EQ (result, true, "packet reception unexpectedly stopped after adapting fragmentation threshold!");
 }
-
 
 //-----------------------------------------------------------------------------
 class WifiTestSuite : public TestSuite
