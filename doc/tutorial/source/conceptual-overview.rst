@@ -469,7 +469,7 @@ final line,
     pointToPoint.SetChannelAttribute ("Delay", StringValue ("2ms"));
 
 tells the ``PointToPointHelper`` to use the value "2ms" (two milliseconds)
-as the value of the transmission delay of every point to point channel it 
+as the value of the propagation delay of every point to point channel it 
 subsequently creates.
 
 NetDeviceContainer

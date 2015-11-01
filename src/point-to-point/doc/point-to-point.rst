@@ -63,8 +63,7 @@ do we "escape" any data.
 The PointToPointChannel provides following Attributes:
 
 
-* Delay:  An ns3::Time specifying the speed of light transmission delay for the
-  channel.
+* Delay:  An ns3::Time specifying the propagation delay for the channel.
 
 Using the PointToPointNetDevice
 *******************************
