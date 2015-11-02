@@ -686,9 +686,9 @@ StaWifiMac::GetHtCapabilities (void) const
         {
           WifiMode mcs = m_phy->GetMcs (i);
           capabilities.SetRxMcsBitmask (mcs.GetMcsValue ());
-          if (mcs.GetDataRate (m_phy->GetGuardInterval (), m_phy->GetGuardInterval (), 1) > maxSupportedRate)
+          if (mcs.GetDataRate (m_phy->GetChannelWidth (), m_phy->GetGuardInterval (), 1) > maxSupportedRate)
             {
-              maxSupportedRate = mcs.GetDataRate (m_phy->GetGuardInterval (), m_phy->GetGuardInterval (), 1);
+              maxSupportedRate = mcs.GetDataRate (m_phy->GetChannelWidth (), m_phy->GetGuardInterval (), 1);
             }
         }
       capabilities.SetRxHighestSupportedDataRate (maxSupportedRate / 1e6); //in Mbit/s
