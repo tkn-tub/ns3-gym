@@ -31,6 +31,7 @@ This document is written in `reStructuredText <http://docutils.sourceforge.net/r
    dsr
    emulation-overview
    energy
+   fd-net-device
    flow-monitor
    internet-models
    lr-wpan
