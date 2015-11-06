@@ -85,8 +85,9 @@ Ipv6StaticRouting::PrintRoutingTable (Ptr<OutputStreamWrapper> stream) const
   std::ostream* os = stream->GetStream ();
 
   *os << "Node: " << m_ipv6->GetObject<Node> ()->GetId ()
-      << " Time: " << Simulator::Now ().GetSeconds () << "s "
-      << "Ipv6StaticRouting table" << std::endl;
+      << ", Time: " << Now().As (Time::S)
+      << ", Local time: " << GetObject<Node> ()->GetLocalTime ().As (Time::S)
+      << ", Ipv6StaticRouting table" << std::endl;
 
   if (GetNRoutes () > 0)
     {
@@ -125,6 +126,7 @@ Ipv6StaticRouting::PrintRoutingTable (Ptr<OutputStreamWrapper> stream) const
           *os << std::endl;
         }
     }
+  *os << std::endl;
 }
 
 void Ipv6StaticRouting::AddHostRouteTo (Ipv6Address dst, Ipv6Address nextHop, uint32_t interface, Ipv6Address prefixToUse, uint32_t metric)

@@ -254,6 +254,12 @@ void
 RoutingProtocol::PrintRoutingTable (Ptr<OutputStreamWrapper> stream) const
 {
   std::ostream* os = stream->GetStream ();
+
+  *os << "Node: " << m_ipv4->GetObject<Node> ()->GetId ()
+      << ", Time: " << Now().As (Time::S)
+      << ", Local time: " << GetObject<Node> ()->GetLocalTime ().As (Time::S)
+      << ", OLSR Routing table" << std::endl;
+
   *os << "Destination\t\tNextHop\t\tInterface\tDistance\n";
 
   for (std::map<Ipv4Address, RoutingTableEntry>::const_iterator iter = m_table.begin ();
@@ -272,9 +278,17 @@ RoutingProtocol::PrintRoutingTable (Ptr<OutputStreamWrapper> stream) const
       *os << iter->second.distance << "\t";
       *os << "\n";
     }
+
   // Also print the HNA routing table
-  *os << " HNA Routing Table:\n";
-  m_hnaRoutingTable->PrintRoutingTable (stream);
+  if (m_hnaRoutingTable->GetNRoutes () > 0)
+    {
+      *os << " HNA Routing Table: ";
+      m_hnaRoutingTable->PrintRoutingTable (stream);
+    }
+  else
+    {
+      *os << " HNA Routing Table: empty" << std::endl;
+    }
 }
 
 void RoutingProtocol::DoInitialize ()

@@ -27,6 +27,7 @@
 #include "ns3/ipv4-route.h"
 #include "ns3/ipv4-routing-table-entry.h"
 #include "ns3/boolean.h"
+#include "ns3/node.h"
 #include "ipv4-global-routing.h"
 #include "global-route-manager.h"
 
@@ -401,6 +402,12 @@ Ipv4GlobalRouting::PrintRoutingTable (Ptr<OutputStreamWrapper> stream) const
 {
   NS_LOG_FUNCTION (this << stream);
   std::ostream* os = stream->GetStream ();
+
+  *os << "Node: " << m_ipv4->GetObject<Node> ()->GetId ()
+      << ", Time: " << Now().As (Time::S)
+      << ", Local time: " << GetObject<Node> ()->GetLocalTime ().As (Time::S)
+      << ", Ipv4GlobalRouting table" << std::endl;
+
   if (GetNRoutes () > 0)
     {
       *os << "Destination     Gateway         Genmask         Flags Metric Ref    Use Iface" << std::endl;
@@ -441,6 +448,7 @@ Ipv4GlobalRouting::PrintRoutingTable (Ptr<OutputStreamWrapper> stream) const
           *os << std::endl;
         }
     }
+  *os << std::endl;
 }
 
 Ptr<Ipv4Route>

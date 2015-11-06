@@ -488,8 +488,9 @@ void RipNg::PrintRoutingTable (Ptr<OutputStreamWrapper> stream) const
   std::ostream* os = stream->GetStream ();
 
   *os << "Node: " << m_ipv6->GetObject<Node> ()->GetId ()
-      << " Time: " << Simulator::Now ().GetSeconds () << "s "
-      << "Ipv6 RIPng table" << std::endl;
+      << ", Time: " << Now().As (Time::S)
+      << ", Local time: " << GetObject<Node> ()->GetLocalTime ().As (Time::S)
+      << ", IPv6 RIPng table" << std::endl;
 
   if (!m_routes.empty ())
     {
@@ -534,6 +535,7 @@ void RipNg::PrintRoutingTable (Ptr<OutputStreamWrapper> stream) const
             }
         }
     }
+  *os << std::endl;
 }
 
 void RipNg::DoDispose ()

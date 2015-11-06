@@ -277,15 +277,15 @@ Ipv6ListRouting::PrintRoutingTable (Ptr<OutputStreamWrapper> stream) const
   NS_LOG_FUNCTION (this);
 
   *stream->GetStream () << "Node: " << m_ipv6->GetObject<Node> ()->GetId ()
-                        << " Time: " << Simulator::Now ().GetSeconds () << "s "
-                        << "Ipv6ListRouting table" << std::endl;
+                        << ", Time: " << Now().As (Time::S)
+                        << ", Local time: " << GetObject<Node> ()->GetLocalTime ().As (Time::S)
+                        << ", Ipv6ListRouting table" << std::endl;
   for (Ipv6RoutingProtocolList::const_iterator i = m_routingProtocols.begin ();
        i != m_routingProtocols.end (); i++)
     {
       *stream->GetStream () << "  Priority: " << (*i).first << " Protocol: " << (*i).second->GetInstanceTypeId () << std::endl;
       (*i).second->PrintRoutingTable (stream);
     }
-  *stream->GetStream () << std::endl;
 }
 
 void

@@ -22,12 +22,15 @@ To be determined.
 
 New user-visible features
 -------------------------
-(internet) The native TCP implementation has been refactored, for the following
-improvements:  1) congestion control has been aligned with the Linux
-architecture, to facilitate easier coding of new congestion control algorithms
-or porting implementations from the Linux kernel, 2) Fast Retransmit and Fast
-recovery algorithms, compliant to RFCs, are shared by all TCP variants, unlike
-previous releases. 3) TCP Hybla and TCP HighSpeed have been added.
+- (internet) The native TCP implementation has been refactored, for the following
+  improvements:  1) congestion control has been aligned with the Linux
+  architecture, to facilitate easier coding of new congestion control algorithms
+  or porting implementations from the Linux kernel, 2) Fast Retransmit and Fast
+  recovery algorithms, compliant to RFCs, are shared by all TCP variants, unlike
+  previous releases. 3) TCP Hybla and TCP HighSpeed have been added.
+- (general) The PrintRoutingTable* functions now print the following informations
+  each time they are called: 1) the node ID, 2) the global time, 3) the local time
+  4) the routing protocol type
 
 Bugs fixed
 ----------

@@ -712,6 +712,12 @@ Ipv4StaticRouting::PrintRoutingTable (Ptr<OutputStreamWrapper> stream) const
 {
   NS_LOG_FUNCTION (this << stream);
   std::ostream* os = stream->GetStream ();
+
+  *os << "Node: " << m_ipv4->GetObject<Node> ()->GetId ()
+      << ", Time: " << Now().As (Time::S)
+      << ", Local time: " << GetObject<Node> ()->GetLocalTime ().As (Time::S)
+      << ", Ipv4StaticRouting table" << std::endl;
+
   if (GetNRoutes () > 0)
     {
       *os << "Destination     Gateway         Genmask         Flags Metric Ref    Use Iface" << std::endl;
@@ -751,6 +757,7 @@ Ipv4StaticRouting::PrintRoutingTable (Ptr<OutputStreamWrapper> stream) const
           *os << std::endl;
         }
     }
+  *os << std::endl;
 }
 Ipv4Address
 Ipv4StaticRouting::SourceAddressSelection (uint32_t interfaceIdx, Ipv4Address dest)
