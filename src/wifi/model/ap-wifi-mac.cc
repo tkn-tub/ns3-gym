@@ -362,7 +362,8 @@ ApWifiMac::GetHtCapabilities (void) const
         {
           WifiMode mcs = m_phy->GetMcs (i);
           capabilities.SetRxMcsBitmask (mcs.GetMcsValue ());
-          if (mcs.GetDataRate (m_phy->GetChannelWidth (), m_phy->GetGuardInterval (), 1) > maxSupportedRate)
+          if ((mcs.GetModulationClass () == WIFI_MOD_CLASS_HT)
+              && (mcs.GetDataRate (m_phy->GetChannelWidth (), m_phy->GetGuardInterval (), 1) > maxSupportedRate))
             {
               maxSupportedRate = mcs.GetDataRate (m_phy->GetChannelWidth (), m_phy->GetGuardInterval (), 1);
             }
@@ -398,7 +399,8 @@ ApWifiMac::GetVhtCapabilities (void) const
       for (uint8_t i = 0; i < m_phy->GetNMcs (); i++)
         {
           WifiMode mcs = m_phy->GetMcs (i);
-          if (mcs.GetMcsValue () > maxMcs)
+          if ((mcs.GetModulationClass () == WIFI_MOD_CLASS_VHT)
+              && (mcs.GetMcsValue () > maxMcs))
             {
               maxMcs = mcs.GetMcsValue ();
             }
