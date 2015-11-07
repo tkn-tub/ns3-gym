@@ -41,23 +41,31 @@ AsciiToIpv4Host (char const *address)
 {
   NS_LOG_FUNCTION (&address);
   uint32_t host = 0;
+  uint8_t numberOfDots = 0;
+  char const *ptr = address;
+
+  NS_ASSERT_MSG (*ptr != ASCII_DOT, "Error, can not build an IPv4 address from an invalid string: " << address);
   while (true) 
     {
       uint8_t byte = 0;
-      while (*address != ASCII_DOT && *address != 0) 
+      while (*ptr != ASCII_DOT && *ptr != 0)
         {
           byte *= 10;
-          byte += *address - ASCII_ZERO;
-          address++;
+          byte += *ptr - ASCII_ZERO;
+          ptr++;
         }
       host <<= 8;
       host |= byte;
-      if (*address == 0) 
+      if (*ptr == 0)
         {
           break;
         }
-      address++;
+      ptr++;
+      numberOfDots ++;
     }
+  NS_ASSERT_MSG (*(ptr-1) != ASCII_DOT, "Error, can not build an IPv4 address from an invalid string: " << address);
+  NS_ASSERT_MSG (numberOfDots == 3, "Error, can not build an IPv4 address from an invalid string: " << address);
+
   return host;
 }
 
