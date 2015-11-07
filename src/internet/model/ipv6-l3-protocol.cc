@@ -135,7 +135,7 @@ void Ipv6L3Protocol::DoDispose ()
   /* clear protocol and interface list */
   for (L4List_t::iterator it = m_protocols.begin (); it != m_protocols.end (); ++it)
     {
-      *it = 0;
+      it->second = 0;
     }
   m_protocols.clear ();
 
@@ -707,26 +707,89 @@ void Ipv6L3Protocol::SetNode (Ptr<Node> node)
 void Ipv6L3Protocol::Insert (Ptr<IpL4Protocol> protocol)
 {
   NS_LOG_FUNCTION (this << protocol);
-  m_protocols.push_back (protocol);
+  L4ListKey_t key = std::make_pair (protocol->GetProtocolNumber (), -1);
+  if (m_protocols.find (key) != m_protocols.end ())
+    {
+      NS_LOG_WARN ("Overwriting default protocol " << int(protocol->GetProtocolNumber ()));
+    }
+  m_protocols[key] = protocol;
+}
+
+void Ipv6L3Protocol::Insert (Ptr<IpL4Protocol> protocol, uint32_t interfaceIndex)
+{
+  NS_LOG_FUNCTION (this << protocol << interfaceIndex);
+
+  L4ListKey_t key = std::make_pair (protocol->GetProtocolNumber (), interfaceIndex);
+  if (m_protocols.find (key) != m_protocols.end ())
+    {
+      NS_LOG_WARN ("Overwriting protocol " << int(protocol->GetProtocolNumber ()) << " on interface " << int(interfaceIndex));
+    }
+  m_protocols[key] = protocol;
 }
 
 void Ipv6L3Protocol::Remove (Ptr<IpL4Protocol> protocol)
 {
   NS_LOG_FUNCTION (this << protocol);
-  m_protocols.remove (protocol);
+
+  L4ListKey_t key = std::make_pair (protocol->GetProtocolNumber (), -1);
+  L4List_t::iterator iter = m_protocols.find (key);
+  if (iter == m_protocols.end ())
+    {
+      NS_LOG_WARN ("Trying to remove an non-existent default protocol " << int(protocol->GetProtocolNumber ()));
+    }
+  else
+    {
+      m_protocols.erase (key);
+    }
+}
+
+void Ipv6L3Protocol::Remove (Ptr<IpL4Protocol> protocol, uint32_t interfaceIndex)
+{
+  NS_LOG_FUNCTION (this << protocol << interfaceIndex);
+
+  L4ListKey_t key = std::make_pair (protocol->GetProtocolNumber (), interfaceIndex);
+  L4List_t::iterator iter = m_protocols.find (key);
+  if (iter == m_protocols.end ())
+    {
+      NS_LOG_WARN ("Trying to remove an non-existent protocol " << int(protocol->GetProtocolNumber ()) << " on interface " << int(interfaceIndex));
+    }
+  else
+    {
+      m_protocols.erase (key);
+    }
 }
 
 Ptr<IpL4Protocol> Ipv6L3Protocol::GetProtocol (int protocolNumber) const
 {
   NS_LOG_FUNCTION (this << protocolNumber);
 
-  for (L4List_t::const_iterator i = m_protocols.begin (); i != m_protocols.end (); ++i)
+  return GetProtocol (protocolNumber, -1);
+}
+
+Ptr<IpL4Protocol> Ipv6L3Protocol::GetProtocol (int protocolNumber, int32_t interfaceIndex) const
+{
+  NS_LOG_FUNCTION (this << protocolNumber << interfaceIndex);
+
+  L4ListKey_t key;
+  L4List_t::const_iterator i;
+  if (interfaceIndex >= 0)
     {
-      if ((*i)->GetProtocolNumber () == protocolNumber)
+      // try the interface-specific protocol.
+      key = std::make_pair (protocolNumber, interfaceIndex);
+      i = m_protocols.find (key);
+      if (i != m_protocols.end ())
         {
-          return *i;
+          return i->second;
         }
     }
+  // try the generic protocol.
+  key = std::make_pair (protocolNumber, -1);
+  i = m_protocols.find (key);
+  if (i != m_protocols.end ())
+    {
+      return i->second;
+    }
+
   return 0;
 }
 
@@ -1244,14 +1307,15 @@ void Ipv6L3Protocol::LocalDeliver (Ptr<const Packet> packet, Ipv6Header const& i
         }
       else
         {
-          protocol = GetProtocol (nextHeader);
-          // For ICMPv6 Error packets
-          Ptr<Packet> malformedPacket  = packet->Copy ();
-          malformedPacket->AddHeader (ip);
+          protocol = GetProtocol (nextHeader, iif);
 
           if (!protocol)
             {
               NS_LOG_LOGIC ("Unknown Next Header. Drop!");
+
+              // For ICMPv6 Error packets
+              Ptr<Packet> malformedPacket  = packet->Copy ();
+              malformedPacket->AddHeader (ip);
 
               if (nextHeaderPosition == 0)
                 {

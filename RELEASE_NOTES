@@ -28,9 +28,12 @@ New user-visible features
   or porting implementations from the Linux kernel, 2) Fast Retransmit and Fast
   recovery algorithms, compliant to RFCs, are shared by all TCP variants, unlike
   previous releases. 3) TCP Hybla and TCP HighSpeed have been added.
-- (general) The PrintRoutingTable* functions now print the following informations
+- (routing) The PrintRoutingTable* functions now print the following informations
   each time they are called: 1) the node ID, 2) the global time, 3) the local time
   4) the routing protocol type
+- (internet) L4 protocols (e.g., TCP, UDP, ICMP, etc.) can be demultiplexed by IP
+  according to the incoming interface. In other words, it is now possible to
+  use specialized L4 protocols according to the interface.
 
 Bugs fixed
 ----------
@@ -45,6 +48,8 @@ Bugs fixed
 - Bug 2183 - LiIonEnergySourceHelper is not in the energy wscript
 - Bug 2185 - WiFi MacLow may respond to errored frames that it should ignore
 - Bug 2195 - Udp[*]Client can't send packets to broadcast address
+- Bug 2207 - Print node ID and time when printing routing tables
+- Bug 2208 - Interface index based L4 protocols
 
 Known issues
 ------------

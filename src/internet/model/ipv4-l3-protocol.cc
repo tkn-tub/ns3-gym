@@ -125,26 +125,95 @@ void
 Ipv4L3Protocol::Insert (Ptr<IpL4Protocol> protocol)
 {
   NS_LOG_FUNCTION (this << protocol);
-  m_protocols.push_back (protocol);
-}
-Ptr<IpL4Protocol>
-Ipv4L3Protocol::GetProtocol (int protocolNumber) const
-{
-  NS_LOG_FUNCTION (this << protocolNumber);
-  for (L4List_t::const_iterator i = m_protocols.begin (); i != m_protocols.end (); ++i)
+  L4ListKey_t key = std::make_pair (protocol->GetProtocolNumber (), -1);
+  if (m_protocols.find (key) != m_protocols.end ())
     {
-      if ((*i)->GetProtocolNumber () == protocolNumber)
-        {
-          return *i;
-        }
+      NS_LOG_WARN ("Overwriting default protocol " << int(protocol->GetProtocolNumber ()));
     }
-  return 0;
+  m_protocols[key] = protocol;
 }
+
+void
+Ipv4L3Protocol::Insert (Ptr<IpL4Protocol> protocol, uint32_t interfaceIndex)
+{
+  NS_LOG_FUNCTION (this << protocol << interfaceIndex);
+
+  L4ListKey_t key = std::make_pair (protocol->GetProtocolNumber (), interfaceIndex);
+  if (m_protocols.find (key) != m_protocols.end ())
+    {
+      NS_LOG_WARN ("Overwriting protocol " << int(protocol->GetProtocolNumber ()) << " on interface " << int(interfaceIndex));
+    }
+  m_protocols[key] = protocol;
+}
+
 void
 Ipv4L3Protocol::Remove (Ptr<IpL4Protocol> protocol)
 {
   NS_LOG_FUNCTION (this << protocol);
-  m_protocols.remove (protocol);
+
+  L4ListKey_t key = std::make_pair (protocol->GetProtocolNumber (), -1);
+  L4List_t::iterator iter = m_protocols.find (key);
+  if (iter == m_protocols.end ())
+    {
+      NS_LOG_WARN ("Trying to remove an non-existent default protocol " << int(protocol->GetProtocolNumber ()));
+    }
+  else
+    {
+      m_protocols.erase (key);
+    }
+}
+
+void
+Ipv4L3Protocol::Remove (Ptr<IpL4Protocol> protocol, uint32_t interfaceIndex)
+{
+  NS_LOG_FUNCTION (this << protocol << interfaceIndex);
+
+  L4ListKey_t key = std::make_pair (protocol->GetProtocolNumber (), interfaceIndex);
+  L4List_t::iterator iter = m_protocols.find (key);
+  if (iter == m_protocols.end ())
+    {
+      NS_LOG_WARN ("Trying to remove an non-existent protocol " << int(protocol->GetProtocolNumber ()) << " on interface " << int(interfaceIndex));
+    }
+  else
+    {
+      m_protocols.erase (key);
+    }
+}
+
+Ptr<IpL4Protocol>
+Ipv4L3Protocol::GetProtocol (int protocolNumber) const
+{
+  NS_LOG_FUNCTION (this << protocolNumber);
+
+  return GetProtocol (protocolNumber, -1);
+}
+
+Ptr<IpL4Protocol>
+Ipv4L3Protocol::GetProtocol (int protocolNumber, int32_t interfaceIndex) const
+{
+  NS_LOG_FUNCTION (this << protocolNumber << interfaceIndex);
+
+  L4ListKey_t key;
+  L4List_t::const_iterator i;
+  if (interfaceIndex >= 0)
+    {
+      // try the interface-specific protocol.
+      key = std::make_pair (protocolNumber, interfaceIndex);
+      i = m_protocols.find (key);
+      if (i != m_protocols.end ())
+        {
+          return i->second;
+        }
+    }
+  // try the generic protocol.
+  key = std::make_pair (protocolNumber, -1);
+  i = m_protocols.find (key);
+  if (i != m_protocols.end ())
+    {
+      return i->second;
+    }
+
+  return 0;
 }
 
 void
@@ -222,7 +291,7 @@ Ipv4L3Protocol::DoDispose (void)
   NS_LOG_FUNCTION (this);
   for (L4List_t::iterator i = m_protocols.begin (); i != m_protocols.end (); ++i)
     {
-      *i = 0;
+      i->second = 0;
     }
   m_protocols.clear ();
 
@@ -953,7 +1022,7 @@ Ipv4L3Protocol::LocalDeliver (Ptr<const Packet> packet, Ipv4Header const&ip, uin
 
   m_localDeliverTrace (ipHeader, p, iif);
 
-  Ptr<IpL4Protocol> protocol = GetProtocol (ipHeader.GetProtocol ());
+  Ptr<IpL4Protocol> protocol = GetProtocol (ipHeader.GetProtocol (), iif);
   if (protocol != 0)
     {
       // we need to make a copy in the unlikely event we hit the
