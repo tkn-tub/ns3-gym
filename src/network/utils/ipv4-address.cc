@@ -61,6 +61,7 @@ AsciiToIpv4Host (char const *address)
           break;
         }
       ptr++;
+      NS_ASSERT_MSG (*ptr != ASCII_DOT, "Error, can not build an IPv4 address from an invalid string: " << address);
       numberOfDots ++;
     }
   NS_ASSERT_MSG (*(ptr-1) != ASCII_DOT, "Error, can not build an IPv4 address from an invalid string: " << address);
