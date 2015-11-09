@@ -50,6 +50,7 @@ Bugs fixed
 - Bug 2185 - WiFi MacLow may respond to errored frames that it should ignore
 - Bug 2195 - Udp[*]Client can't send packets to broadcast address
 - Bug 2207 - Print node ID and time when printing routing tables
+- Bug 2206 - Split internet-apps from applications
 - Bug 2208 - Interface index based L4 protocols
 
 Known issues
