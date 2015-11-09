@@ -25,17 +25,17 @@
 
 #include <map>
 
+#include "radvd-interface.h"
 #include "ns3/application.h"
 #include "ns3/socket.h"
 #include "ns3/random-variable-stream.h"
 
-#include "radvd-interface.h"
 
 namespace ns3
 {
 
 /**
- * \ingroup applications 
+ * \ingroup internet-apps
  * \defgroup radvd Radvd
  */
 

@@ -18,6 +18,7 @@
  * Author: Sebastien Vincent <vincent@clarinet.u-strasbg.fr>
  */
 
+#include "ping6.h"
 #include "ns3/log.h"
 #include "ns3/nstime.h"
 #include "ns3/simulator.h"
@@ -33,7 +34,6 @@
 #include "ns3/ipv6-header.h"
 #include "ns3/ipv6-extension-header.h"
 
-#include "ping6.h"
 
 namespace ns3 
 {
@@ -46,7 +46,7 @@ TypeId Ping6::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::Ping6")
     .SetParent<Application>()
-    .SetGroupName("Applications")
+    .SetGroupName("Internet-Apps")
     .AddConstructor<Ping6>()
     .AddAttribute ("MaxPackets", 
                    "The maximum number of packets the application will send",

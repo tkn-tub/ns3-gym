@@ -18,10 +18,10 @@
  * Author: Sebastien Vincent <vincent@clarinet.u-strasbg.fr>
  */
 
+#include "ping6-helper.h"
 #include "ns3/ping6.h"
 #include "ns3/uinteger.h"
 
-#include "ping6-helper.h"
 
 namespace ns3
 {

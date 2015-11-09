@@ -29,7 +29,7 @@ namespace ns3 {
 class Socket;
 
 /**
- * \ingroup applications
+ * \ingroup internet-apps
  * \defgroup v4ping V4Ping
  */
 

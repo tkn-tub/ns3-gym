@@ -30,7 +30,7 @@ def build(bld):
     obj.source = 'mixed-global-routing.cc'
 
     obj = bld.create_ns3_program('simple-routing-ping6',
-                                 ['csma', 'internet', 'applications'])
+                                 ['csma', 'internet', 'internet-apps'])
     obj.source = 'simple-routing-ping6.cc'
 
     obj = bld.create_ns3_program('manet-routing-compare',
@@ -38,7 +38,7 @@ def build(bld):
     obj.source = 'manet-routing-compare.cc'
 
     obj = bld.create_ns3_program('ripng-simple-network',
-                                 ['csma', 'internet', 'applications'])
+                                 ['csma', 'internet', 'internet-apps'])
     obj.source = 'ripng-simple-network.cc'
 
-    bld.register_ns3_script('simple-routing-ping6.py', ['csma', 'internet', 'applications'])
+    bld.register_ns3_script('simple-routing-ping6.py', ['csma', 'internet', 'internet-apps'])

@@ -13,8 +13,8 @@ def build(bld):
     obj = bld.create_ns3_program('csma-multicast', ['csma', 'internet', 'applications'])
     obj.source = 'csma-multicast.cc'
 
-    obj = bld.create_ns3_program('csma-raw-ip-socket', ['csma', 'internet', 'applications'])
+    obj = bld.create_ns3_program('csma-raw-ip-socket', ['csma', 'internet', 'applications', 'internet-apps'])
     obj.source = 'csma-raw-ip-socket.cc'
 
-    obj = bld.create_ns3_program('csma-ping', ['csma', 'internet', 'applications'])
+    obj = bld.create_ns3_program('csma-ping', ['csma', 'internet', 'applications', 'internet-apps'])
     obj.source = 'csma-ping.cc'

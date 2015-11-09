@@ -36,7 +36,7 @@
 #include "ns3/internet-module.h"
 #include "ns3/sixlowpan-module.h"
 #include "ns3/lr-wpan-module.h"
-#include "ns3/applications-module.h"
+#include "ns3/internet-apps-module.h"
 #include "ns3/mobility-module.h"
 
 using namespace ns3;

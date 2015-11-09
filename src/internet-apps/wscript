@@ -1,0 +1,37 @@
+# -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
+
+# def options(opt):
+#     pass
+
+# def configure(conf):
+#     conf.check_nonfatal(header_name='stdint.h', define_name='HAVE_STDINT_H')
+
+def build(bld):
+    module = bld.create_ns3_module('internet-apps', ['internet'])
+    module.source = [
+        'model/ping6.cc',
+        'model/radvd-interface.cc',
+        'model/radvd-prefix.cc',
+        'model/radvd.cc',
+        'model/v4ping.cc',
+        'helper/ping6-helper.cc',
+        'helper/radvd-helper.cc',
+        'helper/v4ping-helper.cc',
+        ]
+
+    headers = bld(features='ns3header')
+    headers.module = 'internet-apps'
+    headers.source = [
+        'model/ping6.h',
+        'model/radvd.h',
+        'model/radvd-interface.h',
+        'model/radvd-prefix.h',
+        'model/v4ping.h',
+        'helper/ping6-helper.h',
+        'helper/v4ping-helper.h',
+        'helper/radvd-helper.h',
+        ]
+
+
+    bld.ns3_python_bindings()
+

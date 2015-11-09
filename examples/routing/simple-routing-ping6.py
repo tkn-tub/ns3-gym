@@ -27,7 +27,7 @@
 #                router
 #
 
-import ns.applications
+import ns.internet_apps
 import ns.core
 import ns.csma
 import ns.internet
@@ -84,7 +84,7 @@ def main(argv):
     packetSize = 1024;
     maxPacketCount = 5;
     interPacketInterval = ns.core.Seconds(1.);
-    ping6 = ns.applications.Ping6Helper();
+    ping6 = ns.internet_apps.Ping6Helper();
 
     ping6.SetLocal(i1.GetAddress(0, 1));
     ping6.SetRemote(i2.GetAddress(1, 1)); 

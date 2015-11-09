@@ -37,7 +37,7 @@ V4Ping::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::V4Ping")
     .SetParent<Application> ()
-    .SetGroupName("Applications")
+    .SetGroupName("Internet-Apps")
     .AddConstructor<V4Ping> ()
     .AddAttribute ("Remote", 
                    "The address of the machine we want to ping.",

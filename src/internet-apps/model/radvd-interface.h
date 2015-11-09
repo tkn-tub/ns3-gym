@@ -21,10 +21,10 @@
 #ifndef RADVD_INTERFACE_H
 #define RADVD_INTERFACE_H
 
+#include "radvd-prefix.h"
 #include <list>
 #include "ns3/simple-ref-count.h"
 #include "ns3/nstime.h"
-#include "radvd-prefix.h"
 
 namespace ns3
 {

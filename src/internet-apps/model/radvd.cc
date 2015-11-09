@@ -20,6 +20,7 @@
  *         Mehdi Benamor <benamor.mehdi@ensi.rnu.tn>
  */
 
+#include "radvd.h"
 #include "ns3/log.h"
 #include "ns3/abort.h"
 #include "ns3/ipv6-address.h"
@@ -39,7 +40,6 @@
 #include "ns3/string.h"
 #include "ns3/pointer.h"
 
-#include "radvd.h"
 
 namespace ns3
 {
@@ -52,7 +52,7 @@ TypeId Radvd::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::Radvd")
     .SetParent<Application> ()
-    .SetGroupName("Applications")
+    .SetGroupName("Internet-Apps")
     .AddConstructor<Radvd> ()
     .AddAttribute ("AdvertisementJitter",
                    "Uniform variable to provide jitter between min and max values of AdvInterval",

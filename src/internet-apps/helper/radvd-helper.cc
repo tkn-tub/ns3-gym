@@ -18,13 +18,13 @@
  * Author: Tommaso Pecorella <tommaso.pecorella@unifi.it>
  */
 
+#include "radvd-helper.h"
 #include "ns3/log.h"
 #include "ns3/assert.h"
 #include "ns3/radvd.h"
 #include "ns3/radvd-interface.h"
 #include "ns3/radvd-prefix.h"
 
-#include "radvd-helper.h"
 
 namespace ns3
 {
