@@ -47,11 +47,14 @@ public:
   SpectrumPropagationLossModel ();
   virtual ~SpectrumPropagationLossModel ();
 
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId ();
 
-
   /**
-   * used to chain various instances of SpectrumPropagationLossModel
+   * Used to chain various instances of SpectrumPropagationLossModel
    *
    * @param next
    */
@@ -63,12 +66,12 @@ public:
    * @param txPsd the SpectrumValue representing the power spectral
    * density of the transmission. Watt units are to be used for radio
    * communications, and Pascal units for acoustic communications
-   * (e.g. underwater).
+   * (e.g., underwater).
    *
    * @param a sender mobility
    * @param b receiver mobility
    *
-   * @return set of values vs frequency representing the received
+   * @return set of values Vs frequency representing the received
    * power in the same units used for the txPower parameter.
    */
   Ptr<SpectrumValue> CalcRxPowerSpectralDensity (Ptr<const SpectrumValue> txPsd,
@@ -82,20 +85,19 @@ protected:
 private:
   /**
    *
-   *
-   * @param txPsd set of values vs frequency representing the
+   * @param txPsd set of values Vs frequency representing the
    * transmission power. See SpectrumChannel for details.
    * @param a sender mobility
    * @param b receiver mobility
    *
-   * @return set of values vs frequency representing the received
+   * @return set of values Vs frequency representing the received
    * power in the same units used for the txPower parameter.
    */
   virtual Ptr<SpectrumValue> DoCalcRxPowerSpectralDensity (Ptr<const SpectrumValue> txPsd,
                                                            Ptr<const MobilityModel> a,
                                                            Ptr<const MobilityModel> b) const = 0;
 
-  Ptr<SpectrumPropagationLossModel> m_next;
+  Ptr<SpectrumPropagationLossModel> m_next; //!< SpectrumPropagationLossModel chained to this one.
 };
 
 

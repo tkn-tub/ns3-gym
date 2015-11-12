@@ -39,7 +39,7 @@ class SpectrumModel;
 
 /**
  * \ingroup spectrum
- *
+ * \brief Class to allow the Spectrum Analysis
  */
 class SpectrumAnalyzerHelper
 {
@@ -48,14 +48,14 @@ public:
   ~SpectrumAnalyzerHelper ();
 
   /**
-   * set the SpectrumChannel that will be used by SpectrumPhy instances created by this helper
+   * Set the SpectrumChannel that will be used by SpectrumPhy instances created by this helper
    *
    * @param channel
    */
   void SetChannel (Ptr<SpectrumChannel> channel);
 
   /**
-   * set the SpectrumChannel that will be used by SpectrumPhy instances created by this helper
+   * Set the SpectrumChannel that will be used by SpectrumPhy instances created by this helper
    *
    * @param channelName
    */
@@ -141,13 +141,13 @@ public:
 
 
 private:
-  ObjectFactory m_phy;
-  ObjectFactory m_device;
-  ObjectFactory m_antenna;
+  ObjectFactory m_phy;      //!< Object factory for the phy objects
+  ObjectFactory m_device;   //!< Object factory for the NetDevice objects
+  ObjectFactory m_antenna;  //!< Object factory for the Antenna objects
 
-  Ptr<SpectrumChannel> m_channel;
-  Ptr<SpectrumModel> m_rxSpectrumModel;
-  std::string m_prefix;
+  Ptr<SpectrumChannel> m_channel; //!< Channel
+  Ptr<SpectrumModel> m_rxSpectrumModel; //!< Spectrum model
+  std::string m_prefix; //!< Prefix for the output files
 };
 
 

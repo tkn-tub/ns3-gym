@@ -46,6 +46,12 @@ NS_LOG_COMPONENT_DEFINE ("MultiModelSpectrumChannel");
 NS_OBJECT_ENSURE_REGISTERED (MultiModelSpectrumChannel);
 
 
+/**
+ * \brief Output stream operator
+ * \param lhs output stream
+ * \param rhs the TxSpectrumModelInfoMap to print
+ * \return an output stream
+ */
 std::ostream& operator<< (std::ostream& lhs, TxSpectrumModelInfoMap_t& rhs)
 {
   for (TxSpectrumModelInfoMap_t::iterator it = rhs.begin ();

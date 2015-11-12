@@ -33,41 +33,61 @@
 namespace ns3 {
 
 
+/**
+ * \ingroup spectrum
+ * Container: SpectrumModelUid_t, SpectrumConverter
+ */
 typedef std::map<SpectrumModelUid_t, SpectrumConverter> SpectrumConverterMap_t;
-
 
 /**
  * \ingroup spectrum
- *
+ * The Tx spectrum model information. This class is used to convert
+ * one spectrum model into another one.
  */
 class TxSpectrumModelInfo
 {
 public:
+  /**
+   * Constructor.
+   * \param txSpectrumModel the Tx Spectrum model.
+   */
   TxSpectrumModelInfo (Ptr<const SpectrumModel> txSpectrumModel);
 
-  Ptr<const SpectrumModel> m_txSpectrumModel;
-  SpectrumConverterMap_t m_spectrumConverterMap;
+  Ptr<const SpectrumModel> m_txSpectrumModel;     //!< Tx Spectrum model.
+  SpectrumConverterMap_t m_spectrumConverterMap;  //!< Spectrum converter.
 };
 
+
+/**
+ * \ingroup spectrum
+ * Container: SpectrumModelUid_t, TxSpectrumModelInfo
+ */
 typedef std::map<SpectrumModelUid_t, TxSpectrumModelInfo> TxSpectrumModelInfoMap_t;
 
 
 /**
  * \ingroup spectrum
- *
+ * The Rx spectrum model information. This class is used to convert
+ * one spectrum model into another one.
  */
 class RxSpectrumModelInfo
 {
 public:
+  /**
+   * Constructor.
+   * \param rxSpectrumModel the Rx Spectrum model.
+   */
   RxSpectrumModelInfo (Ptr<const SpectrumModel> rxSpectrumModel);
 
-  Ptr<const SpectrumModel> m_rxSpectrumModel;
-  std::set<Ptr<SpectrumPhy> > m_rxPhySet;
+  Ptr<const SpectrumModel> m_rxSpectrumModel;  //!< Rx Spectrum model.
+  std::set<Ptr<SpectrumPhy> > m_rxPhySet;      //!< Container of the Rx Spectrum phy objects.
 };
 
+/**
+ * \ingroup spectrum
+ * Container: SpectrumModelUid_t, RxSpectrumModelInfo
+ */
 typedef std::map<SpectrumModelUid_t, RxSpectrumModelInfo> RxSpectrumModelInfoMap_t;
-
-
 
 
 /**
@@ -89,6 +109,10 @@ class MultiModelSpectrumChannel : public SpectrumChannel
 public:
   MultiModelSpectrumChannel ();
 
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
 
   // inherited from SpectrumChannel
@@ -103,58 +127,55 @@ public:
   virtual uint32_t GetNDevices (void) const;
   virtual Ptr<NetDevice> GetDevice (uint32_t i) const;
 
+  /**
+   * Get the frequency-dependent propagation loss model.
+   * \returns a pointer to the propagation loss model.
+   */
   virtual Ptr<SpectrumPropagationLossModel> GetSpectrumPropagationLossModel (void);
 
 
 protected:
   void DoDispose ();
 
-
-
 private:
   /**
-   * this method checks if m_rxSpectrumModelInfoMap contains an entry
+   * This method checks if m_rxSpectrumModelInfoMap contains an entry
    * for the given TX SpectrumModel. If such entry exists, it returns
    * an interator pointing to it. If not, it creates a new entry in
    * m_txSpectrumMpodelInfoMap, and returns an iterator to it.
    *
-   * @param txSpectrumModel the TX SpectrumModel  being considered
+   * @param txSpectrumModel The TX SpectrumModel  being considered
    *
-   * @return an iterator pointing to the corresponding entry in m_txSpectrumModelInfoMap
+   * @return An iterator pointing to the corresponding entry in m_txSpectrumModelInfoMap
    */
   TxSpectrumModelInfoMap_t::const_iterator FindAndEventuallyAddTxSpectrumModel (Ptr<const SpectrumModel> txSpectrumModel);
 
   /**
-   * used internally to reschedule transmission after the propagation delay
+   * Used internally to reschedule transmission after the propagation delay.
    *
-   * @param params
-   * @param receiver
+   * @param params The signal paramters.
+   * @param receiver A pointer to the receiver SpectrumPhy.
    */
   virtual void StartRx (Ptr<SpectrumSignalParameters> params, Ptr<SpectrumPhy> receiver);
 
-
-
   /**
-   * propagation delay model to be used with this channel
-   *
+   * Propagation delay model to be used with this channel.
    */
   Ptr<PropagationDelayModel> m_propagationDelay;
 
   /**
-    * single-frequency propagation loss model to be used with this channel
-    *
-    */
+   * Single-frequency propagation loss model to be used with this channel.
+   */
   Ptr<PropagationLossModel> m_propagationLoss;
 
   /**
-   * frequency-dependent propagation loss model to be used with this channel
-   *
+   * Frequency-dependent propagation loss model to be used with this channel.
    */
   Ptr<SpectrumPropagationLossModel> m_spectrumPropagationLoss;
 
 
   /**
-   * data structure holding, for each TX SpectrumModel,  all the
+   * Data structure holding, for each TX SpectrumModel,  all the
    * converters to any RX SpectrumModel, and all the corresponding
    * SpectrumPhy instances.
    *
@@ -163,14 +184,21 @@ private:
 
 
   /**
-   * data structure holding, for each RX spectrum model, all the
+   * Data structure holding, for each RX spectrum model, all the
    * corresponding SpectrumPhy instances.
-   *
    */
   RxSpectrumModelInfoMap_t m_rxSpectrumModelInfoMap;
 
+  /**
+   * Number of devices connected to the channel.
+   */
   uint32_t m_numDevices;
 
+  /**
+   * Maximum loss [dB].
+   *
+   * Any device above this loss is considered out of range.
+   */
   double m_maxLossDb;
 
   /**

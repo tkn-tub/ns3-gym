@@ -416,6 +416,12 @@ SpectrumValue::Copy () const
 }
 
 
+/**
+ * \brief Output stream operator
+ * \param os output stream
+ * \param pvf the SpectrumValue to print
+ * \return an output stream
+ */
 std::ostream&
 operator << (std::ostream& os, const SpectrumValue& pvf)
 {

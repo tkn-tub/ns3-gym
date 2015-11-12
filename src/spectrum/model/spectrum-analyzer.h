@@ -38,7 +38,7 @@ namespace ns3 {
 /**
  * \ingroup spectrum
  *
- * Simple SpectrumPhy implemetation that averages the spectrum power
+ * Simple SpectrumPhy implementation that averages the spectrum power
  * density of incoming transmissions to produce a spectrogram.
  *
  *
@@ -52,9 +52,13 @@ public:
   SpectrumAnalyzer ();
   virtual ~SpectrumAnalyzer ();
 
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
 
-// inherited from SpectrumPhy
+  // inherited from SpectrumPhy
   void SetChannel (Ptr<SpectrumChannel> c);
   void SetMobility (Ptr<MobilityModel> m);
   void SetDevice (Ptr<NetDevice> d);
@@ -68,12 +72,12 @@ public:
   /**
    * Set the spectrum model used by the SpectrumAnalyzer to represent incoming signals
    *
-   * @param m
+   * @param m the Rx Spectrum model
    */
   void SetRxSpectrumModel (Ptr<SpectrumModel> m);
 
   /** 
-   * set the AntennaModel to be used
+   * Set the AntennaModel to be used
    * 
    * \param a the Antenna Model
    */
@@ -96,25 +100,40 @@ protected:
   void DoDispose ();
 
 private:
-  Ptr<MobilityModel> m_mobility;
-  Ptr<AntennaModel> m_antenna;
-  Ptr<NetDevice> m_netDevice;
-  Ptr<SpectrumChannel> m_channel;
+  Ptr<MobilityModel> m_mobility;    //!< Pointer to the mobility model
+  Ptr<AntennaModel> m_antenna;      //!< Pointer to the Antenna model
+  Ptr<NetDevice> m_netDevice;       //!< Pointer to the NetDevice using this object
+  Ptr<SpectrumChannel> m_channel;   //!< Pointer to the channel to be analyzed
 
+  /**
+   * Generates a report of the data collected so far.
+   *
+   * This function is called periodically.
+   */
   virtual void GenerateReport ();
 
+  /**
+   * Adds a signal to the data collected.
+   */
   void AddSignal (Ptr<const SpectrumValue> psd);
+  /**
+   * Removes a signal to the data collected.
+   */
   void SubtractSignal  (Ptr<const SpectrumValue> psd);
+  /**
+   * Updates the data about the received Energy
+   */
   void UpdateEnergyReceivedSoFar ();
 
-  Ptr<SpectrumModel> m_spectrumModel;
-  Ptr<SpectrumValue> m_sumPowerSpectralDensity;
-  Ptr<SpectrumValue> m_energySpectralDensity;
-  double m_noisePowerSpectralDensity;
-  Time m_resolution;
-  Time m_lastChangeTime;
-  bool m_active;
+  Ptr<SpectrumModel> m_spectrumModel;             //!< Spectrum model
+  Ptr<SpectrumValue> m_sumPowerSpectralDensity;   //!< Sum of the received PSD
+  Ptr<SpectrumValue> m_energySpectralDensity;     //!< Energy spectral density
+  double m_noisePowerSpectralDensity;             //!< Noise power spectral density
+  Time m_resolution;                              //!< Time resolution
+  Time m_lastChangeTime;                          //!< When the last update happened
+  bool m_active;                                  //!< True if the analyzer is active
 
+  /// TracedCallback - average power spectral density report.
   TracedCallback<Ptr<const SpectrumValue> > m_averagePowerSpectralDensityReportTrace;
 
 };

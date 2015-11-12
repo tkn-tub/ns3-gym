@@ -23,7 +23,7 @@
 
 namespace ns3 {
 
-
+/// The Wi-Fi spectrum model
 static Ptr<SpectrumModel> g_WifiSpectrumModel5Mhz;
 
 WifiSpectrumValueHelper::~WifiSpectrumValueHelper ()
@@ -34,6 +34,9 @@ WifiSpectrumValue5MhzFactory::~WifiSpectrumValue5MhzFactory ()
 {
 }
 
+/**
+ * Static class to initialize the values for the Wi-Fi spectrum model
+ */
 static class WifiSpectrumModel5MhzInitializer
 {
 public:
@@ -50,7 +53,7 @@ public:
       }
     g_WifiSpectrumModel5Mhz = Create<SpectrumModel> (bands);
   }
-} g_WifiSpectrumModel5MhzInitializerInstance;
+} g_WifiSpectrumModel5MhzInitializerInstance; //!< initialization instance for WifiSpectrumModel5Mhz
 
 
 

@@ -35,6 +35,8 @@ class SpectrumValue;
 class AntennaModel;
 
 /**
+ * \ingroup spectrum
+ *
  * This struct provides the generic signal representation to be used by
  * all wireless technologies. Any specific wireless technology is
  * allowed to define additional signal parameters by inheriting from this

@@ -49,17 +49,18 @@ namespace ns3
  * and location.
  *
  * Here is an example of how to use this class:
- *
- * TvSpectrumTransmitterHelper tvTransHelper;
- * tvTransHelper.SetChannel (channel); // provided that user has a Ptr<SpectrumChannel> ready.
- * tvTransHelper.SetAttribute ("StartFrequency", DoubleValue (524e6));
- * tvTransHelper.SetAttribute ("ChannelBandwidth", DoubleValue (6e6));
- * tvTransHelper.SetAttribute ("StartingTime", TimeValue (Seconds (0)));
- * tvTransHelper.SetAttribute ("TransmitDuration", TimeValue (Seconds (0.2)));
- * tvTransHelper.SetAttribute ("BasePsd", DoubleValue (22.22)); 
- * tvTransHelper.SetAttribute ("TvType", EnumValue (TvSpectrumTransmitter::TVTYPE_8VSB));
- * tvTransHelper.SetAttribute ("Antenna", StringValue ("ns3::IsotropicAntennaModel"));
- * tvTransHelper.Install (tvTransmitterNode); //provided that user has a NodeContainer ready.
+ * \code
+   TvSpectrumTransmitterHelper tvTransHelper;
+   tvTransHelper.SetChannel (channel); // provided that user has a Ptr<SpectrumChannel> ready.
+   tvTransHelper.SetAttribute ("StartFrequency", DoubleValue (524e6));
+   tvTransHelper.SetAttribute ("ChannelBandwidth", DoubleValue (6e6));
+   tvTransHelper.SetAttribute ("StartingTime", TimeValue (Seconds (0)));
+   tvTransHelper.SetAttribute ("TransmitDuration", TimeValue (Seconds (0.2)));
+   tvTransHelper.SetAttribute ("BasePsd", DoubleValue (22.22));
+   tvTransHelper.SetAttribute ("TvType", EnumValue (TvSpectrumTransmitter::TVTYPE_8VSB));
+   tvTransHelper.SetAttribute ("Antenna", StringValue ("ns3::IsotropicAntennaModel"));
+   tvTransHelper.Install (tvTransmitterNode); // provided that user has a NodeContainer ready.
+   \endcode
  */
 class TvSpectrumTransmitterHelper
 {
@@ -204,7 +205,7 @@ public:
   /**
    * Assigns the stream number for the uniform random number generator to use
    *
-   * @param stream first stream index to use
+   * @param streamNum first stream index to use
    * @return the number of stream indices assigned by this helper
    */
   int64_t AssignStreams (int64_t streamNum);

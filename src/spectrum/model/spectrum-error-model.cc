@@ -44,6 +44,9 @@ SpectrumErrorModel::~SpectrumErrorModel ()
 {
 }
 
+
+NS_OBJECT_ENSURE_REGISTERED (ShannonSpectrumErrorModel);
+
 /* static */
 TypeId
 ShannonSpectrumErrorModel::GetTypeId ()
@@ -55,6 +58,7 @@ ShannonSpectrumErrorModel::GetTypeId ()
     ;
   return tid;
 }
+
 void
 ShannonSpectrumErrorModel::DoDispose ()
 {

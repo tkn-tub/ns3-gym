@@ -74,7 +74,7 @@ SpectrumAnalyzer::GetTypeId (void)
     .SetGroupName ("Spectrum")
     .AddConstructor<SpectrumAnalyzer> ()
     .AddAttribute ("Resolution",
-                   "The lengh of the time interval over which the "
+                   "The length of the time interval over which the "
                    "power spectral density of incoming signals is averaged",
                    TimeValue (MilliSeconds (1)),
                    MakeTimeAccessor (&SpectrumAnalyzer::m_resolution),

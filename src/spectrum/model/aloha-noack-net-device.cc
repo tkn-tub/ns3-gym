@@ -35,6 +35,12 @@ namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("AlohaNoackNetDevice");
 
+/**
+ * \brief Output stream operator
+ * \param os output stream
+ * \param state the state to print
+ * \return an output stream
+ */
 std::ostream& operator<< (std::ostream& os, AlohaNoackNetDevice::State state)
 {
   switch (state)

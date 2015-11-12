@@ -84,13 +84,18 @@ public:
 
   /**
    *  PHY states
-   *
    */
   enum State
   {
-    IDLE, TX, RX
+    IDLE, //!< Idle state
+    TX,   //!< Transmitting state
+    RX    //!< Receiving state
   };
 
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
 
   // inherited from SpectrumPhy
@@ -105,17 +110,17 @@ public:
 
 
   /**
-   * set the Power Spectral Density of outgoing signals in power units
+   * \brief Set the Power Spectral Density of outgoing signals in power units
    * (Watt, Pascal...) per Hz.
    *
-   * @param txPsd
+   * @param txPsd Tx Power Spectral Density
    */
   void SetTxPowerSpectralDensity (Ptr<SpectrumValue> txPsd);
 
   /**
-   *
-   * @param noisePsd the Noise Power Spectral Density in power units
+   * \brief Set the Noise Power Spectral Density in power units
    * (Watt, Pascal...) per Hz.
+   * @param noisePsd the Noise Power Spectral Density
    */
   void SetNoisePowerSpectralDensity (Ptr<const SpectrumValue> noisePsd);
 
@@ -132,29 +137,30 @@ public:
   bool StartTx (Ptr<Packet> p);
 
   /**
-   * set the PHY rate to be used by this PHY.
+   * Set the PHY rate to be used by this PHY.
    *
-   * @param rate
+   * @param rate DataRate
    */
   void SetRate (DataRate rate);
 
   /**
+   * Get the PHY rate to be used by this PHY.
    *
    * @return the PHY rate used by this PHY.
    */
   DataRate GetRate () const;
 
   /**
-   * set the callback for the end of a TX, as part of the
-   * interconnections betweenthe PHY and the MAC
+   * Set the callback for the end of a TX, as part of the
+   * interconnections between the PHY and the MAC
    *
    * @param c the callback
    */
   void SetGenericPhyTxEndCallback (GenericPhyTxEndCallback c);
 
   /**
-   * set the callback for the start of RX, as part of the
-   * interconnections betweenthe PHY and the MAC
+   * Set the callback for the start of RX, as part of the
+   * interconnections between the PHY and the MAC
    *
    * @param c the callback
    */
@@ -162,7 +168,7 @@ public:
 
   /**
    * set the callback for the end of a RX in error, as part of the
-   * interconnections betweenthe PHY and the MAC
+   * interconnections between the PHY and the MAC
    *
    * @param c the callback
    */
@@ -170,7 +176,7 @@ public:
 
   /**
    * set the callback for the successful end of a RX, as part of the
-   * interconnections betweenthe PHY and the MAC
+   * interconnections between the PHY and the MAC
    *
    * @param c the callback
    */
@@ -186,52 +192,56 @@ public:
 private:
   virtual void DoDispose (void);
 
+  /**
+   * Change the PHY state
+   * \param newState new state
+   */
   void ChangeState (State newState);
+  /**
+   * End the current Tx
+   */
   void EndTx ();
+  /**
+   * About current Rx
+   */
   void AbortRx ();
+  /**
+   * End current Rx
+   */
   void EndRx ();
 
-  EventId m_endRxEventId;
+  EventId m_endRxEventId; //!< End Rx event
 
-  Ptr<MobilityModel> m_mobility;
-  Ptr<AntennaModel> m_antenna;
-  Ptr<NetDevice> m_netDevice;
-  Ptr<SpectrumChannel> m_channel;
+  Ptr<MobilityModel> m_mobility;  //!< Mobility model
+  Ptr<AntennaModel> m_antenna;    //!< Antenna model
+  Ptr<NetDevice> m_netDevice;     //!< NetDevice connected to theis phy
+  Ptr<SpectrumChannel> m_channel; //!< Channel
 
-  Ptr<SpectrumValue> m_txPsd;
-  Ptr<const SpectrumValue> m_rxPsd;
-  Ptr<Packet> m_txPacket;
-  Ptr<Packet> m_rxPacket;
+  Ptr<SpectrumValue> m_txPsd;       //!< Tx power spectral density
+  Ptr<const SpectrumValue> m_rxPsd; //!< Rx power spectral density
+  Ptr<Packet> m_txPacket; //!< Tx packet
+  Ptr<Packet> m_rxPacket; //!< Rx packet
 
-  DataRate m_rate;
+  DataRate m_rate;  //!< Datarate
+  State m_state;    //!< PHY state
 
-  State m_state;
+  TracedCallback<Ptr<const Packet> > m_phyTxStartTrace; //!< Trace - Tx start
+  TracedCallback<Ptr<const Packet> > m_phyTxEndTrace;   //!< Trace - Tx end
+  TracedCallback<Ptr<const Packet> > m_phyRxStartTrace; //!< Trace - Rx start
+  TracedCallback<Ptr<const Packet> > m_phyRxAbortTrace; //!< Trace - Rx abort
+  TracedCallback<Ptr<const Packet> > m_phyRxEndOkTrace; //!< Trace - Tx end (ok)
+  TracedCallback<Ptr<const Packet> > m_phyRxEndErrorTrace;  //!< Trace - Rx end (error)
 
-  TracedCallback<Ptr<const Packet> > m_phyTxStartTrace;
-  TracedCallback<Ptr<const Packet> > m_phyTxEndTrace;
-  TracedCallback<Ptr<const Packet> > m_phyRxStartTrace;
-  TracedCallback<Ptr<const Packet> > m_phyRxAbortTrace;
-  TracedCallback<Ptr<const Packet> > m_phyRxEndOkTrace;
-  TracedCallback<Ptr<const Packet> > m_phyRxEndErrorTrace;
+  GenericPhyTxEndCallback        m_phyMacTxEndCallback;       //!< Callback - Tx end
+  GenericPhyRxStartCallback      m_phyMacRxStartCallback;     //!< Callback - Rx start
+  GenericPhyRxEndErrorCallback   m_phyMacRxEndErrorCallback;  //!< Callback - Rx error
+  GenericPhyRxEndOkCallback      m_phyMacRxEndOkCallback;     //!< Callback - Rx end
 
-  GenericPhyTxEndCallback        m_phyMacTxEndCallback;
-  GenericPhyRxStartCallback      m_phyMacRxStartCallback;
-  GenericPhyRxEndErrorCallback   m_phyMacRxEndErrorCallback;
-  GenericPhyRxEndOkCallback      m_phyMacRxEndOkCallback;
-
-  SpectrumInterference m_interference;
+  SpectrumInterference m_interference; //!< Received interference
 
 };
 
-
-
-
-
-
 }
-
-
-
 
 
 #endif /* HALF_DUPLEX_IDEAL_PHY_H */

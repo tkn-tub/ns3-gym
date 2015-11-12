@@ -57,6 +57,10 @@ public:
   WaveformGenerator ();
   virtual ~WaveformGenerator ();
 
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
 
   // inherited from SpectrumPhy
@@ -129,21 +133,24 @@ public:
 private:
   virtual void DoDispose (void);
 
-  Ptr<MobilityModel> m_mobility;
-  Ptr<AntennaModel> m_antenna;
-  Ptr<NetDevice> m_netDevice;
-  Ptr<SpectrumChannel> m_channel;
+  Ptr<MobilityModel> m_mobility;  //!< Mobility model
+  Ptr<AntennaModel> m_antenna;    //!< Antenna model
+  Ptr<NetDevice> m_netDevice;     //!< Owning NetDevice
+  Ptr<SpectrumChannel> m_channel; //!< Channel
 
+  /**
+   * Generates a waveform
+   */
   virtual void GenerateWaveform ();
 
-  Ptr<SpectrumValue> m_txPowerSpectralDensity;
-  Time   m_period;
-  double m_dutyCycle;
-  Time m_startTime;
-  EventId m_nextWave;
+  Ptr<SpectrumValue> m_txPowerSpectralDensity; //!< Tx PSD
+  Time   m_period;    //!< Period
+  double m_dutyCycle; //!< Duty Cycle (should be in [0,1])
+  Time m_startTime;   //!< Start time
+  EventId m_nextWave; //!< Next waveform generation event
 
-  TracedCallback<Ptr<const Packet> > m_phyTxStartTrace;
-  TracedCallback<Ptr<const Packet> > m_phyTxEndTrace;
+  TracedCallback<Ptr<const Packet> > m_phyTxStartTrace; //!< TracedCallback: Tx start
+  TracedCallback<Ptr<const Packet> > m_phyTxEndTrace;   //!< TracedCallback: Tx end
 };
 
 

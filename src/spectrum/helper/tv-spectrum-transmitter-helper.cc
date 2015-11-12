@@ -34,8 +34,9 @@ namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("TvSpectrumTransmitterHelper");
 
-// NORTH AMERICA: 84 elements (index 0 - 83); valid channels = 2 - 83
+/// NORTH AMERICA: 84 elements (index 0 - 83); valid channels = 2 - 83
 const int northAmericaArrayLength = 84;
+/// NORTH AMERICA start frequencies
 const double northAmericaStartFrequencies[84] = {0, 0, 54e6, 60e6, 66e6, 76e6, 
   82e6, 174e6, 180e6, 186e6, 192e6, 198e6, 204e6, 210e6, 470e6, 476e6, 482e6, 
   488e6, 494e6, 500e6, 506e6, 512e6, 518e6, 524e6, 530e6, 536e6, 542e6, 548e6, 
@@ -45,6 +46,7 @@ const double northAmericaStartFrequencies[84] = {0, 0, 54e6, 60e6, 66e6, 76e6,
   752e6, 758e6, 764e6, 770e6, 776e6, 782e6, 788e6, 794e6, 800e6, 806e6, 812e6, 
   818e6, 824e6, 830e6, 836e6, 842e6, 848e6, 854e6, 860e6, 866e6, 872e6, 878e6, 
   884e6};
+/// NORTH AMERICA end frequencies
 const double northAmericaEndFrequencies[84] = {0, 0, 60e6, 66e6, 72e6, 82e6, 
   88e6, 180e6, 186e6, 192e6, 198e6, 204e6, 210e6, 216e6, 476e6, 482e6, 488e6, 
   494e6, 500e6, 506e6, 512e6, 518e6, 524e6, 530e6, 536e6, 542e6, 548e6, 554e6, 
@@ -55,8 +57,9 @@ const double northAmericaEndFrequencies[84] = {0, 0, 60e6, 66e6, 72e6, 82e6,
   824e6, 830e6, 836e6, 842e6, 848e6, 854e6, 860e6, 866e6, 872e6, 878e6, 884e6, 
   890e6};
 
-// EUROPE: 70 elements (index 0 - 69); valid channels = 5 - 12, 21 - 69
+/// EUROPE: 70 elements (index 0 - 69); valid channels = 5 - 12, 21 - 69
 const int europeArrayLength = 70;
+/// EUROPE start frequencies
 const double europeStartFrequencies[70] = {0, 0, 0, 0, 0, 174e6, 181e6, 188e6, 
   195e6, 202e6, 209e6, 216e6, 223e6, 0, 0, 0, 0, 0, 0, 0, 0, 470e6, 478e6, 
   486e6, 494e6, 502e6, 510e6, 518e6, 526e6, 534e6, 542e6, 550e6, 558e6, 566e6, 
@@ -64,6 +67,7 @@ const double europeStartFrequencies[70] = {0, 0, 0, 0, 0, 174e6, 181e6, 188e6,
   662e6, 670e6, 678e6, 686e6, 694e6, 702e6, 710e6, 718e6, 726e6, 734e6, 742e6, 
   750e6, 758e6, 766e6, 774e6, 782e6, 790e6, 798e6, 806e6, 814e6, 822e6, 830e6, 
   838e6, 846e6, 854e6};
+/// EUROPE end frequencies
 const double europeEndFrequencies[70] = {0, 0, 0, 0, 0, 181e6, 188e6, 195e6, 
   202e6, 209e6, 216e6, 223e6, 230e6, 0, 0, 0, 0, 0, 0, 0, 0, 478e6, 486e6, 
   494e6, 502e6, 510e6, 518e6, 526e6, 534e6, 542e6, 550e6, 558e6, 566e6, 574e6, 
@@ -72,8 +76,9 @@ const double europeEndFrequencies[70] = {0, 0, 0, 0, 0, 181e6, 188e6, 195e6,
   758e6, 766e6, 774e6, 782e6, 790e6, 798e6, 806e6, 814e6, 822e6, 830e6, 838e6, 
   846e6, 854e6, 862e6};
 
-// JAPAN: 63 elements (index 0 - 62); valid channels = 1 - 62
+/// JAPAN: 63 elements (index 0 - 62); valid channels = 1 - 62
 const int japanArrayLength = 63;
+/// JAPAN start frequencies
 const double japanStartFrequencies[63] = {0, 90e6, 96e6, 102e6, 170e6, 176e6, 
   182e6, 188e6, 192e6, 198e6, 204e6, 210e6, 216e6, 470e6, 476e6, 482e6, 488e6, 
   494e6, 500e6, 506e6, 512e6, 518e6, 524e6, 530e6, 536e6, 542e6, 548e6, 554e6, 
@@ -81,6 +86,7 @@ const double japanStartFrequencies[63] = {0, 90e6, 96e6, 102e6, 170e6, 176e6,
   626e6, 632e6, 638e6, 644e6, 650e6, 656e6, 662e6, 668e6, 674e6, 680e6, 686e6, 
   692e6, 698e6, 704e6, 710e6, 716e6, 722e6, 728e6, 734e6, 740e6, 746e6, 752e6, 
   758e6, 764e6};
+/// JAPAN end frequencies
 const double japanEndFrequencies[63] = {0, 96e6, 102e6, 108e6, 176e6, 182e6, 
   188e6, 194e6, 198e6, 204e6, 210e6, 216e6, 222e6, 476e6, 482e6, 488e6, 494e6, 
   500e6, 506e6, 512e6, 518e6, 524e6, 530e6, 536e6, 542e6, 548e6, 554e6, 560e6, 

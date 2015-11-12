@@ -44,13 +44,16 @@ namespace ns3 {
  */
 struct BandInfo
 {
-  double fl; ///< lower limit of subband
-  double fc; ///< center frequency
-  double fh; ///< upper limit of subband
+  double fl; //!< lower limit of subband
+  double fc; //!< center frequency
+  double fh; //!< upper limit of subband
 };
 
 
+/// Container of BandInfo
 typedef std::vector<BandInfo> Bands;
+
+/// Uid for SpectrumModels
 typedef uint32_t SpectrumModelUid_t;
 
 /**
@@ -63,6 +66,12 @@ typedef uint32_t SpectrumModelUid_t;
 class SpectrumModel : public SimpleRefCount<SpectrumModel>
 {
 public:
+  /**
+   * Comparison operator. Returns true if the two SpectumModels are identical
+   * \param lhs left operand
+   * \param rhs right operand
+   * \returns true if the two operands are identical
+   */
   friend bool operator== (const SpectrumModel& lhs, const SpectrumModel& rhs);
 
   /**
@@ -102,15 +111,19 @@ public:
    */
   SpectrumModelUid_t GetUid () const;
 
-
+  /**
+   * Const Iterator to the model Bands container start.
+   */
   Bands::const_iterator Begin () const;
+  /**
+   * Const Iterator to the model Bands container end.
+   */
   Bands::const_iterator End () const;
 
 private:
-  Bands m_bands;         ///< actual definition of frequency bands
-                         /// within this SpectrumModel
-  SpectrumModelUid_t m_uid;        ///< unique id for a given set of frequencies
-  static SpectrumModelUid_t m_uidCount;    ///< counter to assign m_uids
+  Bands m_bands;         //!< Actual definition of frequency bands within this SpectrumModel
+  SpectrumModelUid_t m_uid;        //!< unique id for a given set of frequencies
+  static SpectrumModelUid_t m_uidCount;    //!< counter to assign m_uids
 };
 
 

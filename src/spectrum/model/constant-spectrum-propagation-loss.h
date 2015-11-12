@@ -25,25 +25,40 @@
 
 namespace ns3 {
 
-
+/**
+ * \ingroup spectrum
+ *
+ * A Constant (fixed) propagation loss. The loss is not dependent on the distance.
+ */
 class ConstantSpectrumPropagationLossModel : public SpectrumPropagationLossModel
 {
 public:
   ConstantSpectrumPropagationLossModel ();
   ~ConstantSpectrumPropagationLossModel ();
 
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId ();
 
   virtual Ptr<SpectrumValue> DoCalcRxPowerSpectralDensity (Ptr<const SpectrumValue> txPsd,
                                                            Ptr<const MobilityModel> a,
                                                            Ptr<const MobilityModel> b) const;
-
+  /**
+   * Set the propagation loss
+   * \param lossDb the propagation loss [dB]
+   */
   void SetLossDb (double lossDb);
+  /**
+   * Get the propagation loss
+   * \returns the propagation loss [dB]
+   */
   double GetLossDb () const;
 
 protected:
-  double m_lossDb;
-  double m_lossLinear;
+  double m_lossDb;      //!< Propagation loss [dB]
+  double m_lossLinear;  //!< Propagation loss (linear)
 private:
 };
 

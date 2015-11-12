@@ -57,8 +57,8 @@ public:
     TVTYPE_COFDM
   };
   
-  TvSpectrumTransmitter (); //!< Default constructor
-  virtual ~TvSpectrumTransmitter (); //!< Destructor
+  TvSpectrumTransmitter ();
+  virtual ~TvSpectrumTransmitter ();
   
   /**
    * Register this type.

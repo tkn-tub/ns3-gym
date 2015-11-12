@@ -185,12 +185,17 @@ TvSpectrumTransmitter::GetChannel () const
   return m_channel;
 }
 
-// Used as key for map containing created spectrum models
+/// Used as key for map containing created spectrum models
 struct TvSpectrumModelId
 {
+  /**
+   * Constructor
+   * \param stFreq Start frequency [Hz]
+   * \param bwidth Bandwidth [Hz]
+   */
   TvSpectrumModelId (double stFreq, double bwidth);
-  double startFrequency;
-  double bandwidth;
+  double startFrequency;  //!< Start frequency [Hz]
+  double bandwidth;       //!< Bandwidth [Hz]
 };
 
 TvSpectrumModelId::TvSpectrumModelId (double stFreq, double bwidth)
@@ -199,6 +204,13 @@ TvSpectrumModelId::TvSpectrumModelId (double stFreq, double bwidth)
 {
 }
 
+/**
+ * Minus-than operator
+ * \param a left operand
+ * \param b right operand
+ * \returns true if the left operand has a lower starting frequency
+ *          or a smaller bandwidth (if both have the same starting freq.)
+ */
 bool
 operator < (const TvSpectrumModelId& a, const TvSpectrumModelId& b)
 {
@@ -206,7 +218,7 @@ operator < (const TvSpectrumModelId& a, const TvSpectrumModelId& b)
            ( (a.startFrequency == b.startFrequency) && (a.bandwidth < b.bandwidth) ) );
 }
 
-// Stores created spectrum models
+/// Stores created spectrum models
 static std::map<TvSpectrumModelId, Ptr<SpectrumModel> > g_tvSpectrumModelMap;
 
 /** 
