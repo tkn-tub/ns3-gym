@@ -484,7 +484,7 @@ LogComponentPrintList (void)
 }
 
 /**
- * \ingroup
+ * \ingroup logging
  * Check if a log component exists.
  * This is private to the logging implementation.
  *
@@ -511,6 +511,7 @@ static bool ComponentExists(std::string componentName)
 }
 
 /**
+ * \ingroup logging
  * Parse the \c NS_LOG environment variable.
  * This is private to the logging implementation.
  */
