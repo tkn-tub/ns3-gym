@@ -52,6 +52,7 @@ Bugs fixed
 - Bug 2207 - Print node ID and time when printing routing tables
 - Bug 2206 - Split internet-apps from applications
 - Bug 2208 - Interface index based L4 protocols
+- Bug 2219 - SixLowPanNetDevice hangs trying to decode a IPv6 Fragment extension header
 
 Known issues
 ------------

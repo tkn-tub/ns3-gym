@@ -1406,7 +1406,7 @@ SixLowPanNetDevice::DecompressLowPanNhc (Ptr<Packet> packet, Address const &src,
 
   uint32_t blobSize;
   uint8_t blobData[260];
-  blobSize = encoding.CopyBlob (blobData + 2, 260);
+  blobSize = encoding.CopyBlob (blobData + 2, 260-2);
   uint8_t paddingSize = 0;
 
   uint8_t actualEncodedHeaderType = encoding.GetEid ();
@@ -1525,6 +1525,10 @@ SixLowPanNetDevice::DecompressLowPanNhc (Ptr<Packet> packet, Address const &src,
           blobData [0] = encoding.GetNextHeader ();
         }
       blobData [1] = 0;
+
+      blob.AddAtStart (blobSize + 2);
+      blob.Begin ().Write (blobData, blobSize + 2);
+
       fragHeader.Deserialize (blob.Begin ());
       packet->AddHeader (fragHeader);
       break;
