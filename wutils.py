@@ -115,10 +115,13 @@ def run_argv(argv, env, os_env=None, cwd=None, force_no_valgrind=False):
             raise WafError("Options --command-template and --valgrind are conflicting")
         if not env['VALGRIND']:
             raise WafError("valgrind is not installed")
-        argv = [env['VALGRIND'], "--leak-check=full", "--show-reachable=yes", "--error-exitcode=1"] + argv
+        # Use the first program found in the env['VALGRIND'] list
+        argv = [env['VALGRIND'][0], "--leak-check=full", "--show-reachable=yes", "--error-exitcode=1"] + argv
         proc = subprocess.Popen(argv, env=proc_env, cwd=cwd, stderr=subprocess.PIPE)
+        stderrdata = proc.communicate()[1]
+        stderrdata = stderrdata.decode('utf-8')
         error = False
-        for line in proc.stderr:
+        for line in stderrdata:
             sys.stderr.write(line)
             if "== LEAK SUMMARY" in line:
                 error = True
