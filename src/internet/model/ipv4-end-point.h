@@ -182,27 +182,6 @@ public:
 
 private:
   /**
-   * \brief ForwardUp wrapper.
-   * \param p packet
-   * \param header the packet header
-   * \param sport source port
-   * \param incomingInterface incoming interface
-   */
-  void DoForwardUp (Ptr<Packet> p, const Ipv4Header& header, uint16_t sport,
-                    Ptr<Ipv4Interface> incomingInterface);
-  /**
-   * \brief ForwardIcmp wrapper.
-   * \param icmpSource source IP address
-   * \param icmpTtl time-to-live
-   * \param icmpType ICMP type
-   * \param icmpCode ICMP code
-   * \param icmpInfo ICMP info
-   */
-  void DoForwardIcmp (Ipv4Address icmpSource, uint8_t icmpTtl,
-                      uint8_t icmpType, uint8_t icmpCode,
-                      uint32_t icmpInfo);
-
-  /**
    * \brief The local address.
    */
   Ipv4Address m_localAddr;

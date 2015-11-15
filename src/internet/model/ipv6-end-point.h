@@ -191,26 +191,6 @@ public:
 
 private:
   /**
-   * \brief ForwardUp wrapper.
-   * \param p packet
-   * \param header the packet header
-   * \param sport source port
-   * \param incomingInterface incoming interface
-   */
-  void DoForwardUp (Ptr<Packet> p, Ipv6Header header, uint16_t sport, Ptr<Ipv6Interface> incomingInterface);
-
-  /**
-   * \brief ForwardIcmp wrapper.
-   * \param src source IPv6 address
-   * \param ttl time-to-live
-   * \param type ICMPv6 type
-   * \param code ICMPv6 code
-   * \param info ICMPv6 info
-   */
-  void DoForwardIcmp (Ipv6Address src, uint8_t ttl, uint8_t type,
-                      uint8_t code, uint32_t info);
-
-  /**
    * \brief The local address.
    */
   Ipv6Address m_localAddr;
