@@ -34,6 +34,8 @@ New user-visible features
 - (internet) L4 protocols (e.g., TCP, UDP, ICMP, etc.) can be demultiplexed by IP
   according to the incoming interface. In other words, it is now possible to
   use specialized L4 protocols according to the interface.
+- (internet) Ipv6Address::IsAllHostsMulticast() is now deprecated. FF02::3 is not
+  in the official reserved IPv6 multicast address list.
 
 Bugs fixed
 ----------

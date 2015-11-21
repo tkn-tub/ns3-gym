@@ -29,6 +29,7 @@
 #include "ns3/attribute-helper.h"
 #include "ns3/address.h"
 #include "ns3/ipv4-address.h"
+#include "ns3/deprecated.h"
 
 namespace ns3 { 
 
@@ -223,9 +224,12 @@ public:
 
   /**
    * \brief If the IPv6 address is "all hosts multicast" (ff02::3/8).
+   *
+   * This function is deprecated because the address has been removed from RFCs.
+   *
    * \return true if "all hosts multicast", false otherwise
    */
-  bool IsAllHostsMulticast () const;
+  bool IsAllHostsMulticast () const NS_DEPRECATED;
 
   /**
    * \brief If the IPv6 address is a link-local address (fe80::/64).
