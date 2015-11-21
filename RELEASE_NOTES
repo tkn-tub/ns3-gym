@@ -36,6 +36,9 @@ New user-visible features
   use specialized L4 protocols according to the interface.
 - (internet) Ipv6Address::IsAllHostsMulticast() is now deprecated. FF02::3 is not
   in the official reserved IPv6 multicast address list.
+- (internet) Ipv6Address::IsAll[Nodes,Routers]Multicast() now checks the address
+  scope beyond the simple link-local. Nodes are checked for Interface-Local, Link-Local
+  and Realm-Local, Routers for the above plus Site-Local.
 
 Bugs fixed
 ----------
