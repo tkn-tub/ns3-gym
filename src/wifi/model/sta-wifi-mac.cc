@@ -541,6 +541,18 @@ StaWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
                   return;
                 }
             }
+          for (uint32_t i = 0; i < m_phy->GetNModes (); i++)
+            {
+              WifiMode mode = m_phy->GetMode (i);
+              if (rates.IsSupportedRate (mode.GetDataRate (m_phy->GetChannelWidth (), false, 1)))
+                {
+                  m_stationManager->AddSupportedMode (hdr->GetAddr2 (), mode);
+                  if (rates.IsBasicRate (mode.GetDataRate (m_phy->GetChannelWidth (), false, 1)))
+                    {
+                      m_stationManager->AddBasicMode (mode);
+                    }
+                }
+            }
           SetBssid (hdr->GetAddr3 ());
           Time delay = MicroSeconds (probeResp.GetBeaconIntervalUs () * m_maxMissedBeacons);
           RestartBeaconWatchdog (delay);

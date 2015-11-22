@@ -1003,8 +1003,9 @@ WifiRemoteStationManager::GetControlAnswerMode (Mac48Address address, WifiMode r
   //First, search the BSS Basic Rate set
   for (WifiModeListIterator i = m_bssBasicRateSet.begin (); i != m_bssBasicRateSet.end (); i++)
     {
-      if ((!found || i->GetPhyRate (m_wifiPhy->GetChannelWidth (), m_wifiPhy->GetGuardInterval (), 1) > mode.GetPhyRate (m_wifiPhy->GetChannelWidth (), m_wifiPhy->GetGuardInterval (), 1))
-          && (i->GetPhyRate (m_wifiPhy->GetChannelWidth (), m_wifiPhy->GetGuardInterval (), 1) <= reqMode.GetPhyRate (m_wifiPhy->GetChannelWidth (), m_wifiPhy->GetGuardInterval (), 1))
+      if ((!found || i->GetPhyRate (m_wifiPhy->GetChannelWidth (), 0, 1) > mode.GetPhyRate (m_wifiPhy->GetChannelWidth (), 0, 1))
+          && (i->GetPhyRate (m_wifiPhy->GetChannelWidth (), 0, 1) <= reqMode.GetPhyRate (m_wifiPhy->GetChannelWidth (), 0, 1))
+          && (i->GetConstellationSize (1) <= reqMode.GetConstellationSize (1))
           && ((i->GetModulationClass () == reqMode.GetModulationClass ())
               || (reqMode.GetModulationClass () == WIFI_MOD_CLASS_HT)
               || (reqMode.GetModulationClass () == WIFI_MOD_CLASS_VHT)))
@@ -1024,8 +1025,8 @@ WifiRemoteStationManager::GetControlAnswerMode (Mac48Address address, WifiMode r
           mode = GetDefaultMcs ();
           for (WifiModeListIterator i = m_bssBasicMcsSet.begin (); i != m_bssBasicMcsSet.end (); i++)
             {
-              if ((!found || i->GetPhyRate (m_wifiPhy->GetChannelWidth (), m_wifiPhy->GetGuardInterval (), 1) > mode.GetPhyRate (m_wifiPhy->GetChannelWidth (), m_wifiPhy->GetGuardInterval (), 1))
-                  && i->GetPhyRate (m_wifiPhy->GetChannelWidth (), m_wifiPhy->GetGuardInterval (), 1) <= reqMode.GetPhyRate (m_wifiPhy->GetChannelWidth (), m_wifiPhy->GetGuardInterval (), 1))
+              if ((!found || i->GetPhyRate (m_wifiPhy->GetChannelWidth (), 0, 1) > mode.GetPhyRate (m_wifiPhy->GetChannelWidth (), 0, 1))
+                  && i->GetPhyRate (m_wifiPhy->GetChannelWidth (), 0, 1) <= reqMode.GetPhyRate (m_wifiPhy->GetChannelWidth (), 0, 1))
               //&& thismode.GetModulationClass () == reqMode.GetModulationClass ()) //TODO: check standard
                 {
                   mode = *i;
@@ -1076,8 +1077,9 @@ WifiRemoteStationManager::GetControlAnswerMode (Mac48Address address, WifiMode r
        * ...then it's our best choice so far.
        */
       if (thismode.IsMandatory ()
-          && (!found || thismode.GetPhyRate (m_wifiPhy->GetChannelWidth (), m_wifiPhy->GetGuardInterval (), 1) > mode.GetPhyRate (m_wifiPhy->GetChannelWidth (), m_wifiPhy->GetGuardInterval (), 1))
-          && (thismode.GetPhyRate (m_wifiPhy->GetChannelWidth (), m_wifiPhy->GetGuardInterval (), 1) <= reqMode.GetPhyRate (m_wifiPhy->GetChannelWidth (), m_wifiPhy->GetGuardInterval (), 1))
+          && (!found || thismode.GetPhyRate (m_wifiPhy->GetChannelWidth (), 0, 1) > mode.GetPhyRate (m_wifiPhy->GetChannelWidth (), 0, 1))
+          && (thismode.GetPhyRate (m_wifiPhy->GetChannelWidth (), 0, 1) <= reqMode.GetPhyRate (m_wifiPhy->GetChannelWidth (), 0, 1))
+          && (thismode.GetConstellationSize (1) <= reqMode.GetConstellationSize (1))
           && ((thismode.GetModulationClass () == reqMode.GetModulationClass ())
               || (reqMode.GetModulationClass () == WIFI_MOD_CLASS_HT)
               || (reqMode.GetModulationClass () == WIFI_MOD_CLASS_HT)))
@@ -1096,9 +1098,9 @@ WifiRemoteStationManager::GetControlAnswerMode (Mac48Address address, WifiMode r
         {
           WifiMode thismode = m_wifiPhy->GetMcs (idx);
           if (thismode.IsMandatory ()
-              && (!found || thismode.GetPhyRate (m_wifiPhy->GetChannelWidth (), m_wifiPhy->GetGuardInterval (), 1) > mode.GetPhyRate (m_wifiPhy->GetChannelWidth (), m_wifiPhy->GetGuardInterval (), 1))
-              && thismode.GetPhyRate (m_wifiPhy->GetChannelWidth (), m_wifiPhy->GetGuardInterval (), 1) <= reqMode.GetPhyRate (m_wifiPhy->GetChannelWidth (), m_wifiPhy->GetGuardInterval (), 1)
-              && thismode.GetModulationClass () == reqMode.GetModulationClass ())
+              && (!found || thismode.GetPhyRate (m_wifiPhy->GetChannelWidth (), 0, 1) > mode.GetPhyRate (m_wifiPhy->GetChannelWidth (), 0, 1))
+              && thismode.GetPhyRate (m_wifiPhy->GetChannelWidth (), 0, 1) <= reqMode.GetPhyRate (m_wifiPhy->GetChannelWidth (), 0, 1))
+              //&& thismode.GetModulationClass () == reqMode.GetModulationClass ()) //TODO: check standard
             {
               mode = thismode;
               //As above; we've found a potentially-suitable transmit
