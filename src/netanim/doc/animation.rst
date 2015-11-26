@@ -88,7 +88,7 @@ Building NetAnim
 ================
 Prerequisites
 ~~~~~~~~~~~~~
-Qt4 (4.7 and over) is required to build NetAnim. This can be obtained using the following ways:
+Qt4 (4.8 and over) is required to build NetAnim. This can be obtained using the following ways:
 
 For Debian/Ubuntu Linux distributions:
 
