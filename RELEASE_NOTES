@@ -53,6 +53,7 @@ Bugs fixed
 - Bug 2176 - Building IPv4 address from char* doesn't look reliable
 - Bug 2183 - LiIonEnergySourceHelper is not in the energy wscript
 - Bug 2185 - WiFi MacLow may respond to errored frames that it should ignore
+- Bug 2193 - Simulation fails when transmitting very small MPDU subframes
 - Bug 2195 - Udp[*]Client can't send packets to broadcast address
 - Bug 2201 - Simulation fails when active probing is used in 802.11n/ac with channel bonding enabled
 - Bug 2207 - Print node ID and time when printing routing tables

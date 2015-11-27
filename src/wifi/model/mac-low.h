@@ -887,7 +887,7 @@ private:
   void ForwardDown (Ptr<const Packet> packet, const WifiMacHeader *hdr,
                     WifiTxVector txVector, WifiPreamble preamble);
   /**
-   * Forward the packet down to WifiPhy for transmission. This is called for each MPDU when MPDU aggregation is used.
+   * Forward the MPDU down to WifiPhy for transmission. This is called for each MPDU when MPDU aggregation is used.
    *
    * \param packet
    * \param hdr
@@ -895,7 +895,7 @@ private:
    * \param preamble
    * \param mpdutype
    */
-  void SendPacket (Ptr<const Packet> packet, WifiTxVector txVector, WifiPreamble preamble, enum mpduType mpdutype);
+  void SendMpdu (Ptr<const Packet> packet, WifiTxVector txVector, WifiPreamble preamble, enum mpduType mpdutype);
   /**
    * Return a TXVECTOR for the RTS frame given the destination.
    * The function consults WifiRemoteStationManager, which controls the rate

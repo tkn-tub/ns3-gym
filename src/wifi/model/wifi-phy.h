@@ -235,6 +235,14 @@ public:
    *        this packet, and txPowerLevel, a power level to use to send this packet. The real transmission
    *        power is calculated as txPowerMin + txPowerLevel * (txPowerMax - txPowerMin) / nTxLevels
    * \param preamble the type of preamble to use to send this packet.
+   */
+  virtual void SendPacket (Ptr<const Packet> packet, WifiTxVector txVector, enum WifiPreamble preamble) = 0;
+  /**
+   * \param packet the packet to send
+   * \param txVector the TXVECTOR that has tx parameters such as mode, the transmission mode to use to send
+   *        this packet, and txPowerLevel, a power level to use to send this packet. The real transmission
+   *        power is calculated as txPowerMin + txPowerLevel * (txPowerMax - txPowerMin) / nTxLevels
+   * \param preamble the type of preamble to use to send this packet.
    * \param mpdutype the type of the MPDU as defined in WifiPhy::mpduType.
    */
   virtual void SendPacket (Ptr<const Packet> packet, WifiTxVector txVector, enum WifiPreamble preamble, enum mpduType mpdutype) = 0;
@@ -310,6 +318,15 @@ public:
    */
   virtual Time GetLastRxStartTime (void) const = 0;
 
+  /**
+   * \param size the number of bytes in the packet to send
+   * \param txVector the TXVECTOR used for the transmission of this packet
+   * \param preamble the type of preamble to use for this packet.
+   * \param frequency the channel center frequency (MHz)
+   *
+   * \return the total amount of time this PHY will stay busy for the transmission of these bytes.
+   */
+  Time CalculateTxDuration (uint32_t size, WifiTxVector txVector, enum WifiPreamble preamble, double frequency);
   /**
    * \param size the number of bytes in the packet to send
    * \param txVector the TXVECTOR used for the transmission of this packet
@@ -396,6 +413,15 @@ public:
    * \return the duration of the PLCP preamble
    */
   static Time GetPlcpPreambleDuration (WifiTxVector txVector, WifiPreamble preamble);
+  /**
+   * \param size the number of bytes in the packet to send
+   * \param txVector the TXVECTOR used for the transmission of this packet
+   * \param preamble the type of preamble to use for this packet
+   * \param frequency the channel center frequency (MHz)
+   *
+   * \return the duration of the payload
+   */
+  Time GetPayloadDuration (uint32_t size, WifiTxVector txVector, WifiPreamble preamble, double frequency);
   /**
    * \param size the number of bytes in the packet to send
    * \param txVector the TXVECTOR used for the transmission of this packet
@@ -1327,7 +1353,7 @@ private:
   TracedCallback<Ptr<const Packet>, uint16_t, uint16_t, uint32_t,
                  WifiPreamble, WifiTxVector, struct mpduInfo> m_phyMonitorSniffTxTrace;
 
-  uint32_t m_totalAmpduNumSymbols; //!< Number of symbols previously transmitted for the MPDUs in an A-MPDU, used for the computation of the number of symbols needed for the last MPDU in the A-MPDU
+  double m_totalAmpduNumSymbols;   //!< Number of symbols previously transmitted for the MPDUs in an A-MPDU, used for the computation of the number of symbols needed for the last MPDU in the A-MPDU
   uint32_t m_totalAmpduSize;       //!< Total size of the previously transmitted MPDUs in an A-MPDU, used for the computation of the number of symbols needed for the last MPDU in the A-MPDU
 };
 

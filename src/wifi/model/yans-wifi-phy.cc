@@ -767,6 +767,12 @@ YansWifiPhy::StartReceivePacket (Ptr<Packet> packet,
 }
 
 void
+YansWifiPhy::SendPacket (Ptr<const Packet> packet, WifiTxVector txVector, WifiPreamble preamble)
+{
+  SendPacket (packet, txVector, preamble, NORMAL_MPDU);
+}
+
+void
 YansWifiPhy::SendPacket (Ptr<const Packet> packet, WifiTxVector txVector, WifiPreamble preamble, enum mpduType mpdutype)
 {
   NS_LOG_FUNCTION (this << packet << txVector.GetMode () << txVector.GetMode ().GetDataRate (txVector.GetChannelWidth (), txVector.IsShortGuardInterval (), 1) << preamble << (uint32_t)txVector.GetTxPowerLevel () << (uint32_t)mpdutype);
