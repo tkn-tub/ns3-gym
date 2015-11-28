@@ -76,7 +76,7 @@ class Array2D
       {
         for (size_t i = 0; i < m_xMax; i++)
           delete[] p[i];
-        delete p;
+        delete[] p;
         p = 0;
       }
 
