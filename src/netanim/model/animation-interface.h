@@ -49,6 +49,8 @@ namespace ns3 {
 #define MAX_PKTS_PER_TRACE_FILE 100000
 #define PURGE_INTERVAL 5
 #define NETANIM_VERSION "netanim-3.106"
+#define CHECK_STARTED_INTIMEWINDOW {if (!m_started || !IsInTimeWindow ()) return;}
+#define CHECK_STARTED_INTIMEWINDOW_TRACKPACKETS {if (!m_started || !IsInTimeWindow () || !m_trackPackets) return;}
 
 
 struct NodeSize;
@@ -635,6 +637,7 @@ private:
   bool IsPacketPending (uint64_t animUid, ProtocolType protocolType);
   void PurgePendingPackets (ProtocolType protocolType);
   AnimUidPacketInfoMap * ProtocolTypeToPendingPackets (ProtocolType protocolType);
+  std::string ProtocolTypeToString (ProtocolType protocolType);
   void AddPendingPacket (ProtocolType protocolType, uint64_t animUid, AnimPacketInfo pktInfo);
   uint64_t GetAnimUidFromPacket (Ptr <const Packet>);
   void AddToIpv4AddressNodeIdTable (std::string, uint32_t);
@@ -723,6 +726,8 @@ private:
   void UanPhyGenRxTrace (std::string context,
                          Ptr<const Packet>);
   void RemainingEnergyTrace (std::string context, double previousEnergy, double currentEnergy);
+  void GenericWirelessTxTrace (std::string context, Ptr<const Packet>, ProtocolType protocolType);
+  void GenericWirelessRxTrace (std::string context, Ptr<const Packet>, ProtocolType protocolType);
 
   
   void ConnectCallbacks ();
@@ -735,6 +740,7 @@ private:
   Vector GetPosition (Ptr <Node> n);
   Vector UpdatePosition (Ptr <Node> n);
   Vector UpdatePosition (Ptr <Node> n, Vector v);
+  Vector UpdatePosition (Ptr <NetDevice> ndev);
   bool NodeHasMoved (Ptr <Node> n, Vector newLocation);
   std::vector < Ptr <Node> > GetMovedNodes ();
   void MobilityCourseChangeTrace (Ptr <const MobilityModel> mob);
