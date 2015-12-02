@@ -42,6 +42,8 @@ New user-visible features
 - (internet) Ipv6 routing protocols must now *not* forward packets to upper layers
   unless for extremey specific cases. The Ipv6L3protocol handles almost all the
   packets directed to the host.
+- (internet) Ipv6 can now reject packets directed to an address not configured on 
+  the interface they are received from (Strong End System Model, RFC 1222).
 
 Bugs fixed
 ----------
@@ -64,6 +66,7 @@ Bugs fixed
 - Bug 2208 - Interface index based L4 protocols
 - Bug 2211 - Ipv{4,6}EndPoint can cause memory corruption
 - Bug 2219 - SixLowPanNetDevice hangs trying to decode a IPv6 Fragment extension header
+- Bug 2233 - Implement RFC 1222 - Strong End System Model
 - Bug 2238 - Ipv6 routing reorganization
 
 Known issues

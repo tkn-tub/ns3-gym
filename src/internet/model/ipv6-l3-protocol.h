@@ -695,6 +695,11 @@ private:
   uint8_t m_defaultTclass;
 
   /**
+   * \brief Rejects packets directed to an interface with wrong address (\RFC{1222}).
+   */
+  bool m_strongEndSystemModel;
+
+  /**
    * \brief Routing protocol.
    */
   Ptr<Ipv6RoutingProtocol> m_routingProtocol;

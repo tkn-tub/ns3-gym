@@ -84,6 +84,11 @@ TypeId Ipv6L3Protocol::GetTypeId ()
                    MakeBooleanAccessor (&Ipv6L3Protocol::SetSendIcmpv6Redirect,
                                         &Ipv6L3Protocol::GetSendIcmpv6Redirect),
                    MakeBooleanChecker ())
+    .AddAttribute ("StrongEndSystemModel",
+                   "Reject packets for an address not configured on the interface they're coming from (RFC1222).",
+                   BooleanValue (true),
+                   MakeBooleanAccessor (&Ipv6L3Protocol::m_strongEndSystemModel),
+                   MakeBooleanChecker ())
     .AddTraceSource ("Tx",
                      "Send IPv6 packet to outgoing interface.",
                      MakeTraceSourceAccessor (&Ipv6L3Protocol::m_txTrace),
@@ -1010,12 +1015,6 @@ void Ipv6L3Protocol::Receive (Ptr<NetDevice> device, Ptr<const Packet> p, uint16
       return;
     }
 
-  /// \todo  Configurable option to enable \RFC{1222} Strong End System Model
-  // Right now, we will be permissive and allow a source to send us
-  // a packet to one of our other interface addresses; that is, the
-  // destination unicast address does not match one of the iif addresses,
-  // but we check our other interfaces.  This could be an option
-  // (to remove the outer loop immediately below and just check iif).
   for (uint32_t j = 0; j < GetNInterfaces (); j++)
     {
       for (uint32_t i = 0; i < GetNAddresses (j); i++)
@@ -1024,15 +1023,20 @@ void Ipv6L3Protocol::Receive (Ptr<NetDevice> device, Ptr<const Packet> p, uint16
           Ipv6Address addr = iaddr.GetAddress ();
           if (addr.IsEqual (hdr.GetDestinationAddress ()))
             {
+              bool rightInterface = false;
               if (j == interface)
                 {
                   NS_LOG_LOGIC ("For me (destination " << addr << " match)");
+                  rightInterface = true;
                 }
               else
                 {
                   NS_LOG_LOGIC ("For me (destination " << addr << " match) on another interface " << hdr.GetDestinationAddress ());
                 }
-              LocalDeliver (packet, hdr, interface);
+              if (rightInterface || !m_strongEndSystemModel)
+                {
+                  LocalDeliver (packet, hdr, interface);
+                }
               return;
             }
           NS_LOG_LOGIC ("Address " << addr << " not a match");
