@@ -510,6 +510,38 @@ Socket::IsIpv6RecvHopLimit (void) const
   return m_ipv6RecvHopLimit;
 }
 
+void
+Socket::Ipv6JoinGroup (Ipv6Address address, Ipv6MulticastFilterMode filterMode, std::vector<Ipv6Address> sourceAddresses)
+{
+  NS_LOG_FUNCTION (this<<address<<&filterMode<<&sourceAddresses);
+  NS_ASSERT_MSG (false,"Ipv6JoinGroup not implemented on this socket");
+}
+
+void
+Socket::Ipv6JoinGroup (Ipv6Address address)
+{
+  NS_LOG_FUNCTION (this<<address);
+
+  // Join Group. Note that joining a group with no sources means joining without source restrictions.
+  std::vector<Ipv6Address> sourceAddresses;
+  Ipv6JoinGroup (address, EXCLUDE, sourceAddresses);
+}
+
+void
+Socket::Ipv6LeaveGroup (void)
+{
+  NS_LOG_FUNCTION (this);
+  if(m_ipv6MulticastGroupAddress.IsAny () )
+    {
+      NS_LOG_INFO (" The socket was not bound to any group.");
+      return;
+    }
+  // Leave Group. Note that joining a group with no sources means leaving it.
+  std::vector<Ipv6Address> sourceAddresses;
+  Ipv6JoinGroup (m_ipv6MulticastGroupAddress, INCLUDE, sourceAddresses);
+  m_ipv6MulticastGroupAddress = Ipv6Address::GetAny ();
+}
+
 /***************************************************************
  *           Socket Tags
  ***************************************************************/

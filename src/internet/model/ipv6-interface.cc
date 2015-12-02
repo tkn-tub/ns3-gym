@@ -94,16 +94,19 @@ void Ipv6Interface::DoSetup ()
         {
           Ipv6InterfaceAddress ifaddr = Ipv6InterfaceAddress (Ipv6Address::MakeAutoconfiguredLinkLocalAddress (Mac64Address::ConvertFrom (addr)), Ipv6Prefix (64));
           AddAddress (ifaddr);
+          m_linkLocalAddress = ifaddr;
         }
       else if (Mac48Address::IsMatchingType (addr))
         {
           Ipv6InterfaceAddress ifaddr = Ipv6InterfaceAddress (Ipv6Address::MakeAutoconfiguredLinkLocalAddress (Mac48Address::ConvertFrom (addr)), Ipv6Prefix (64));
           AddAddress (ifaddr);
+          m_linkLocalAddress = ifaddr;
         }
       else if (Mac16Address::IsMatchingType (addr))
         {
           Ipv6InterfaceAddress ifaddr = Ipv6InterfaceAddress (Ipv6Address::MakeAutoconfiguredLinkLocalAddress (Mac16Address::ConvertFrom (addr)), Ipv6Prefix (64));
           AddAddress (ifaddr);
+          m_linkLocalAddress = ifaddr;
         }
       else
         {
@@ -213,13 +216,14 @@ bool Ipv6Interface::AddAddress (Ipv6InterfaceAddress iface)
     {
       for (Ipv6InterfaceAddressListCI it = m_addresses.begin (); it != m_addresses.end (); ++it)
         {
-          if ((*it).GetAddress () == addr)
+          if (it->first.GetAddress () == addr)
             {
               return false;
             }
         }
 
-      m_addresses.push_back (iface);
+      Ipv6Address solicited = Ipv6Address::MakeSolicitedAddress (iface.GetAddress ());
+      m_addresses.push_back (std::make_pair (iface, solicited));
 
       if (!addr.IsAny () || !addr.IsLocalhost ())
         {
@@ -249,16 +253,23 @@ Ipv6InterfaceAddress Ipv6Interface::GetLinkLocalAddress () const
   /* IPv6 interface has always at least one IPv6 link-local address */
   NS_LOG_FUNCTION_NOARGS ();
 
+  return m_linkLocalAddress;
+}
+
+bool Ipv6Interface::IsSolicitedMulticastAddress (Ipv6Address address) const
+{
+  /* IPv6 interface has always at least one IPv6 Solicited Multicast address */
+  NS_LOG_FUNCTION (this << address);
+
   for (Ipv6InterfaceAddressListCI it = m_addresses.begin (); it != m_addresses.end (); ++it)
-    {
-      if ((*it).GetAddress ().IsLinkLocal ())
-        {
-          return (*it);
-        }
-    }
-  NS_ASSERT_MSG (false, "No link-local address on interface " << this);
-  Ipv6InterfaceAddress addr;
-  return addr; /* quiet compiler */
+     {
+       if (it->second == address)
+         {
+           return true;
+         }
+     }
+
+  return false;
 }
 
 Ipv6InterfaceAddress Ipv6Interface::GetAddress (uint32_t index) const
@@ -272,7 +283,7 @@ Ipv6InterfaceAddress Ipv6Interface::GetAddress (uint32_t index) const
         {
           if (i == index)
             {
-              return (*it);
+              return it->first;
             }
           i++;
         }
@@ -303,7 +314,7 @@ Ipv6InterfaceAddress Ipv6Interface::RemoveAddress (uint32_t index)
     {
       if (i == index)
         {
-          Ipv6InterfaceAddress iface = (*it);
+          Ipv6InterfaceAddress iface = it->first;
           m_addresses.erase (it);
           return iface;
         }
@@ -329,9 +340,9 @@ Ipv6Interface::RemoveAddress(Ipv6Address address)
 
   for (Ipv6InterfaceAddressListI it = m_addresses.begin (); it != m_addresses.end (); ++it)
     {
-      if((*it).GetAddress() == address)
+      if(it->first.GetAddress () == address)
         {
-          Ipv6InterfaceAddress iface = (*it);
+          Ipv6InterfaceAddress iface = it->first;
           m_addresses.erase(it);
           return iface;
         }
@@ -345,7 +356,7 @@ Ipv6InterfaceAddress Ipv6Interface::GetAddressMatchingDestination (Ipv6Address d
 
   for (Ipv6InterfaceAddressList::const_iterator it = m_addresses.begin (); it != m_addresses.end (); ++it)
     {
-      Ipv6InterfaceAddress ifaddr = (*it);
+      Ipv6InterfaceAddress ifaddr = it->first;
 
       if (ifaddr.GetPrefix ().IsMatch (ifaddr.GetAddress (), dst))
         {
@@ -381,7 +392,7 @@ void Ipv6Interface::Send (Ptr<Packet> p, Ipv6Address dest)
   /* check if destination is for one of our interface */
   for (Ipv6InterfaceAddressListCI it = m_addresses.begin (); it != m_addresses.end (); ++it)
     {
-      if (dest == (*it).GetAddress ())
+      if (dest == it->first.GetAddress ())
         {
           ipv6->Receive (m_device, p, Ipv6L3Protocol::PROT_NUMBER,
                          m_device->GetBroadcast (),
@@ -483,9 +494,9 @@ void Ipv6Interface::SetState (Ipv6Address address, Ipv6InterfaceAddress::State_e
 
   for (Ipv6InterfaceAddressListI it = m_addresses.begin (); it != m_addresses.end (); ++it)
     {
-      if ((*it).GetAddress () == address)
+      if (it->first.GetAddress () == address)
         {
-          (*it).SetState (state);
+          it->first.SetState (state);
           return;
         }
     }
@@ -498,9 +509,9 @@ void Ipv6Interface::SetNsDadUid (Ipv6Address address, uint32_t uid)
 
   for (Ipv6InterfaceAddressListI it = m_addresses.begin (); it != m_addresses.end (); ++it)
     {
-      if ((*it).GetAddress () == address)
+      if (it->first.GetAddress () == address)
         {
-          (*it).SetNsDadUid (uid);
+          it->first.SetNsDadUid (uid);
           return;
         }
     }

@@ -454,7 +454,48 @@ public:
     (const Ipv6Header & header, Ptr<const Packet> packet,
      DropReason reason, Ptr<Ipv6> ipv6,
      uint32_t interface);
-   
+
+  /**
+   * Adds a multicast address to the list of addresses to pass to local deliver.
+   * \param address the address.
+   */
+  void AddMulticastAddress (Ipv6Address address);
+
+  /**
+   * Adds a multicast address to the list of addresses to pass to local deliver.
+   * \param address the address.
+   * \param interface the incoming interface.
+   */
+  void AddMulticastAddress (Ipv6Address address, uint32_t interface);
+
+  /**
+   * Removes a multicast address from the list of addresses to pass to local deliver.
+   * \param address the address.
+   */
+  void RemoveMulticastAddress (Ipv6Address address);
+
+  /**
+   * Removes a multicast address from the list of addresses to pass to local deliver.
+   * \param address the address.
+   * \param interface the incoming interface.
+   */
+  void RemoveMulticastAddress (Ipv6Address address, uint32_t interface);
+
+  /**
+   * Checks if the address has been registered.
+   * \param address the address.
+   * \return true if the address is registered.
+   */
+  bool IsRegisteredMulticastAddress (Ipv6Address address) const;
+
+  /**
+   * Checks if the address has been registered for a specific interface.
+   * \param address the address.
+   * \param interface the incoming interface.
+   * \return true if the address is registered.
+   */
+  bool IsRegisteredMulticastAddress (Ipv6Address address, uint32_t interface) const;
+
 protected:
   /**
    * \brief Dispose object.
@@ -718,6 +759,51 @@ private:
    * \brief Allow ICMPv6 Redirect sending state
    */
   bool m_sendIcmpv6Redirect;
+
+  /**
+   * \brief IPv6 multicast addresses / interface key.
+   */
+  typedef std::pair<Ipv6Address, uint64_t> Ipv6RegisteredMulticastAddressKey_t;
+
+  /**
+   * \brief Container of the IPv6 multicast addresses.
+   */
+  typedef std::map<Ipv6RegisteredMulticastAddressKey_t, uint32_t> Ipv6RegisteredMulticastAddress_t;
+
+  /**
+   * \brief Container Iterator of the IPv6 multicast addresses.
+   */
+  typedef std::map<Ipv6RegisteredMulticastAddressKey_t, uint32_t>::iterator Ipv6RegisteredMulticastAddressIter_t;
+
+  /**
+   * \brief Container Const Iterator of the IPv6 multicast addresses.
+   */
+  typedef std::map<Ipv6RegisteredMulticastAddressKey_t, uint32_t>::const_iterator Ipv6RegisteredMulticastAddressCIter_t;
+
+  /**
+   * \brief Container of the IPv6 multicast addresses.
+   */
+  typedef std::map<Ipv6Address, uint32_t> Ipv6RegisteredMulticastAddressNoInterface_t;
+
+  /**
+   * \brief Container Iterator of the IPv6 multicast addresses.
+   */
+  typedef std::map<Ipv6Address, uint32_t>::iterator Ipv6RegisteredMulticastAddressNoInterfaceIter_t;
+
+  /**
+   * \brief Container Const Iterator of the IPv6 multicast addresses.
+   */
+  typedef std::map<Ipv6Address, uint32_t>::const_iterator Ipv6RegisteredMulticastAddressNoInterfaceCIter_t;
+
+  /**
+   * \brief List of multicast IP addresses of interest, divided per interface.
+   */
+  Ipv6RegisteredMulticastAddress_t m_multicastAddresses;
+
+  /**
+   * \brief List of multicast IP addresses of interest for all the interfaces.
+   */
+  Ipv6RegisteredMulticastAddressNoInterface_t m_multicastAddressesNoInterface;
 };
 
 } /* namespace ns3 */

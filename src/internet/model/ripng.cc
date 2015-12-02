@@ -119,6 +119,7 @@ void RipNg::DoInitialize ()
       if (m_interfaceExclusions.find (i) == m_interfaceExclusions.end ())
         {
           activeInterface = true;
+          m_ipv6->SetForwarding (i, true);
         }
 
       for (uint32_t j = 0; j < m_ipv6->GetNAddresses (i); j++)
@@ -290,6 +291,7 @@ void RipNg::NotifyInterfaceUp (uint32_t i)
   if (m_interfaceExclusions.find (i) == m_interfaceExclusions.end ())
     {
       activeInterface = true;
+      m_ipv6->SetForwarding (i, true);
     }
 
   for (uint32_t j = 0; j < m_ipv6->GetNAddresses (i); j++)

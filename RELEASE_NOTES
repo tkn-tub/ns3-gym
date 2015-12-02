@@ -44,6 +44,9 @@ New user-visible features
   packets directed to the host.
 - (internet) Ipv6 can now reject packets directed to an address not configured on 
   the interface they are received from (Strong End System Model, RFC 1222).
+- (internet) UDP and Ipv6 RAW sockets can now join Ipv6 multicast groups.
+  Incomin packets will be filtered according to if there's a socket listening to
+  that group. Source filtering is left to the application.
 
 Bugs fixed
 ----------
@@ -67,6 +70,7 @@ Bugs fixed
 - Bug 2211 - Ipv{4,6}EndPoint can cause memory corruption
 - Bug 2219 - SixLowPanNetDevice hangs trying to decode a IPv6 Fragment extension header
 - Bug 2233 - Implement RFC 1222 - Strong End System Model
+- Bug 2234 - Ipv6L3Protocol should trash multicast packets not interesting for the node
 - Bug 2238 - Ipv6 routing reorganization
 
 Known issues

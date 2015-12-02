@@ -201,6 +201,13 @@ public:
   Ipv6InterfaceAddress GetLinkLocalAddress () const;
 
   /**
+   * \brief Checks if the address is a Solicited Multicast address for this interface.
+   * \param address the address to check.
+   * \return true if it is a solicited multicast address.
+   */
+  bool IsSolicitedMulticastAddress (Ipv6Address address) const;
+
+  /**
    * \brief Get an address from IPv6 interface.
    * \param index index
    * \return Ipv6InterfaceAddress address whose index is i
@@ -266,17 +273,17 @@ private:
   /**
    * \brief Container for the Ipv6InterfaceAddresses.
    */
-  typedef std::list<Ipv6InterfaceAddress> Ipv6InterfaceAddressList;
+  typedef std::list<std::pair<Ipv6InterfaceAddress, Ipv6Address> > Ipv6InterfaceAddressList;
 
   /**
    * \brief Container Iterator for the Ipv6InterfaceAddresses.
    */
-  typedef std::list<Ipv6InterfaceAddress>::iterator Ipv6InterfaceAddressListI;
+  typedef std::list<std::pair<Ipv6InterfaceAddress, Ipv6Address> >::iterator Ipv6InterfaceAddressListI;
 
   /**
    * \brief Const Container Iterator for the Ipv6InterfaceAddresses.
    */
-  typedef std::list<Ipv6InterfaceAddress>::const_iterator Ipv6InterfaceAddressListCI;
+  typedef std::list<std::pair<Ipv6InterfaceAddress, Ipv6Address> >::const_iterator Ipv6InterfaceAddressListCI;
 
   /**
    * \brief Initialize interface.
@@ -287,6 +294,11 @@ private:
    * \brief The addresses assigned to this interface.
    */
   Ipv6InterfaceAddressList m_addresses;
+
+  /**
+   * \brief The link-local addresses assigned to this interface.
+   */
+  Ipv6InterfaceAddress m_linkLocalAddress;
 
   /**
    * \brief The state of this interface.

@@ -98,6 +98,7 @@ public:
   virtual void BindToNetDevice (Ptr<NetDevice> netdevice);
   virtual bool SetAllowBroadcast (bool allowBroadcast);
   virtual bool GetAllowBroadcast () const;
+  virtual void Ipv6JoinGroup (Ipv6Address address, Socket::Ipv6MulticastFilterMode filterMode, std::vector<Ipv6Address> sourceAddresses);
 
 private:
   // Attributes set through UdpSocket base class 

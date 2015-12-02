@@ -613,6 +613,7 @@ Ipv6RipngSplitHorizonStrategyTest::DoRun (void)
   Ptr<SocketFactory> rxSocketFactory = listener->GetObject<UdpSocketFactory> ();
   Ptr<Socket> rxSocket = rxSocketFactory->CreateSocket ();
   NS_TEST_EXPECT_MSG_EQ (rxSocket->Bind (Inet6SocketAddress (Ipv6Address ("ff02::9"), 521)), 0, "trivial");
+  rxSocket->BindToNetDevice (listenerDev);
   rxSocket->SetRecvCallback (MakeCallback (&Ipv6RipngSplitHorizonStrategyTest::ReceivePktProbe, this));
 
   // ------ Now the tests ------------

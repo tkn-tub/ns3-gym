@@ -534,7 +534,7 @@ void Ipv6L3Protocol::SetUp (uint32_t i)
     }
   else
     {
-      NS_LOG_LOGIC ("Interface " << int(i) << " is set to be down for IPv6. Reason: not respecting minimum IPv6 MTU (1280 octects)");
+      NS_LOG_LOGIC ("Interface " << int(i) << " is set to be down for IPv6. Reason: not respecting minimum IPv6 MTU (1280 octets)");
     }
 }
 
@@ -1006,14 +1006,28 @@ void Ipv6L3Protocol::Receive (Ptr<NetDevice> device, Ptr<const Packet> p, uint16
         }
     }
 
-  // \todo At the moment, forward up any multicast packet.
-  // This is wrong. We should only forward up what the node is interested into
-  // and try to route anything other than ff01 or ff02.
-  if (hdr.GetDestinationAddress ().IsLinkLocalMulticast ())
+  if (hdr.GetDestinationAddress ().IsAllNodesMulticast ())
     {
       LocalDeliver (packet, hdr, interface);
       return;
     }
+  else if (hdr.GetDestinationAddress ().IsAllRoutersMulticast() && ipv6Interface->IsForwarding ())
+    {
+      LocalDeliver (packet, hdr, interface);
+      return;
+    }
+  else if (hdr.GetDestinationAddress ().IsMulticast ())
+    {
+      bool isSolicited = ipv6Interface->IsSolicitedMulticastAddress (hdr.GetDestinationAddress ());
+      bool isRegisteredOnInterface = IsRegisteredMulticastAddress (hdr.GetDestinationAddress (), interface);
+      bool isRegisteredGlobally = IsRegisteredMulticastAddress (hdr.GetDestinationAddress ());
+      if (isSolicited || isRegisteredGlobally || isRegisteredOnInterface)
+        {
+          LocalDeliver (packet, hdr, interface);
+          // do not return, the packet could be handled by a routing protocol
+        }
+    }
+
 
   for (uint32_t j = 0; j < GetNInterfaces (); j++)
     {
@@ -1492,6 +1506,84 @@ void Ipv6L3Protocol::RegisterOptions ()
 void Ipv6L3Protocol::ReportDrop (Ipv6Header ipHeader, Ptr<Packet> p, DropReason dropReason)
 {
   m_dropTrace (ipHeader, p, dropReason, m_node->GetObject<Ipv6> (), 0);
+}
+
+void Ipv6L3Protocol::AddMulticastAddress (Ipv6Address address, uint32_t interface)
+{
+  NS_LOG_FUNCTION (address << interface);
+
+  if (!address.IsMulticast ())
+    {
+      NS_LOG_WARN ("Not adding a non-multicast address " << address);
+      return;
+    }
+
+  Ipv6RegisteredMulticastAddressKey_t key = std::make_pair (address, interface);
+  m_multicastAddresses[key]++;
+}
+
+void Ipv6L3Protocol::AddMulticastAddress (Ipv6Address address)
+{
+  NS_LOG_FUNCTION (address);
+
+  if (!address.IsMulticast ())
+    {
+      NS_LOG_WARN ("Not adding a non-multicast address " << address);
+      return;
+    }
+
+  m_multicastAddressesNoInterface[address]++;
+}
+
+void Ipv6L3Protocol::RemoveMulticastAddress (Ipv6Address address, uint32_t interface)
+{
+  NS_LOG_FUNCTION (address << interface);
+
+  Ipv6RegisteredMulticastAddressKey_t key = std::make_pair (address, interface);
+
+  m_multicastAddresses[key]--;
+  if (m_multicastAddresses[key] == 0)
+    {
+      m_multicastAddresses.erase (key);
+    }
+}
+
+void Ipv6L3Protocol::RemoveMulticastAddress (Ipv6Address address)
+{
+  NS_LOG_FUNCTION (address);
+
+  m_multicastAddressesNoInterface[address]--;
+  if (m_multicastAddressesNoInterface[address] == 0)
+    {
+      m_multicastAddressesNoInterface.erase (address);
+    }
+}
+
+bool Ipv6L3Protocol::IsRegisteredMulticastAddress (Ipv6Address address, uint32_t interface) const
+{
+  NS_LOG_FUNCTION (address << interface);
+
+  Ipv6RegisteredMulticastAddressKey_t key = std::make_pair (address, interface);
+  Ipv6RegisteredMulticastAddressCIter_t iter = m_multicastAddresses.find (key);
+
+  if (iter == m_multicastAddresses.end ())
+    {
+      return false;
+    }
+  return true;
+}
+
+bool Ipv6L3Protocol::IsRegisteredMulticastAddress (Ipv6Address address) const
+{
+  NS_LOG_FUNCTION (address);
+
+  Ipv6RegisteredMulticastAddressNoInterfaceCIter_t iter = m_multicastAddressesNoInterface.find (address);
+
+  if (iter == m_multicastAddressesNoInterface.end ())
+    {
+      return false;
+    }
+  return true;
 }
 
 } /* namespace ns3 */
