@@ -590,12 +590,14 @@ bool Ipv6StaticRouting::RouteInput (Ptr<const Packet> p, const Ipv6Header &heade
   uint32_t iif = m_ipv6->GetInterfaceForDevice (idev);
   Ipv6Address dst = header.GetDestinationAddress ();
 
+  // Multicast recognition; handle local delivery here
   if (dst.IsMulticast ())
     {
       NS_LOG_LOGIC ("Multicast destination");
       Ptr<Ipv6MulticastRoute> mrtentry = LookupStatic (header.GetSourceAddress (),
                                                        header.GetDestinationAddress (), m_ipv6->GetInterfaceForDevice (idev));
 
+      // \todo check if we want to forward up the packet
       if (mrtentry)
         {
           NS_LOG_LOGIC ("Multicast route found");
@@ -609,39 +611,14 @@ bool Ipv6StaticRouting::RouteInput (Ptr<const Packet> p, const Ipv6Header &heade
         }
     }
 
-  /// \todo  Configurable option to enable \RFC{1222} Strong End System Model
-  // Right now, we will be permissive and allow a source to send us
-  // a packet to one of our other interface addresses; that is, the
-  // destination unicast address does not match one of the iif addresses,
-  // but we check our other interfaces.  This could be an option
-  // (to remove the outer loop immediately below and just check iif).
-  for (uint32_t j = 0; j < m_ipv6->GetNInterfaces (); j++)
-    {
-      for (uint32_t i = 0; i < m_ipv6->GetNAddresses (j); i++)
-        {
-          Ipv6InterfaceAddress iaddr = m_ipv6->GetAddress (j, i);
-          Ipv6Address addr = iaddr.GetAddress ();
-          if (addr.IsEqual (header.GetDestinationAddress ()))
-            {
-              if (j == iif)
-                {
-                  NS_LOG_LOGIC ("For me (destination " << addr << " match)");
-                }
-              else
-                {
-                  NS_LOG_LOGIC ("For me (destination " << addr << " match) on another interface " << header.GetDestinationAddress ());
-                }
-              lcb (p, header, iif);
-              return true;
-            }
-          NS_LOG_LOGIC ("Address " << addr << " not a match");
-        }
-    }
   // Check if input device supports IP forwarding
   if (m_ipv6->IsForwarding (iif) == false)
     {
       NS_LOG_LOGIC ("Forwarding disabled for this interface");
-      ecb (p, header, Socket::ERROR_NOROUTETOHOST);
+      if (!ecb.IsNull ())
+        {
+          ecb (p, header, Socket::ERROR_NOROUTETOHOST);
+        }
       return false;
     }
   // Next, try to find a route

@@ -169,7 +169,6 @@
 #include "ns3/ipv4-list-routing-helper.h"
 #include "ns3/ipv4-static-routing-helper.h"
 #include "ns3/ipv4-global-routing-helper.h"
-#include "ns3/ipv6-list-routing-helper.h"
 #include "ns3/ipv6-static-routing-helper.h"
 #include "ns3/ipv6-extension.h"
 #include "ns3/ipv6-extension-demux.h"
@@ -250,13 +249,11 @@ InternetStackHelper::Initialize ()
   Ipv4StaticRoutingHelper staticRouting;
   Ipv4GlobalRoutingHelper globalRouting;
   Ipv4ListRoutingHelper listRouting;
-  Ipv6ListRoutingHelper listRoutingv6;
   Ipv6StaticRoutingHelper staticRoutingv6;
   listRouting.Add (staticRouting, 0);
   listRouting.Add (globalRouting, -10);
-  listRoutingv6.Add (staticRoutingv6, 0);
   SetRoutingHelper (listRouting);
-  SetRoutingHelper (listRoutingv6);
+  SetRoutingHelper (staticRoutingv6);
 }
 
 InternetStackHelper::~InternetStackHelper ()

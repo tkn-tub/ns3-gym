@@ -1001,6 +1001,44 @@ void Ipv6L3Protocol::Receive (Ptr<NetDevice> device, Ptr<const Packet> p, uint16
         }
     }
 
+  // \todo At the moment, forward up any multicast packet.
+  // This is wrong. We should only forward up what the node is interested into
+  // and try to route anything other than ff01 or ff02.
+  if (hdr.GetDestinationAddress ().IsLinkLocalMulticast ())
+    {
+      LocalDeliver (packet, hdr, interface);
+      return;
+    }
+
+  /// \todo  Configurable option to enable \RFC{1222} Strong End System Model
+  // Right now, we will be permissive and allow a source to send us
+  // a packet to one of our other interface addresses; that is, the
+  // destination unicast address does not match one of the iif addresses,
+  // but we check our other interfaces.  This could be an option
+  // (to remove the outer loop immediately below and just check iif).
+  for (uint32_t j = 0; j < GetNInterfaces (); j++)
+    {
+      for (uint32_t i = 0; i < GetNAddresses (j); i++)
+        {
+          Ipv6InterfaceAddress iaddr = GetAddress (j, i);
+          Ipv6Address addr = iaddr.GetAddress ();
+          if (addr.IsEqual (hdr.GetDestinationAddress ()))
+            {
+              if (j == interface)
+                {
+                  NS_LOG_LOGIC ("For me (destination " << addr << " match)");
+                }
+              else
+                {
+                  NS_LOG_LOGIC ("For me (destination " << addr << " match) on another interface " << hdr.GetDestinationAddress ());
+                }
+              LocalDeliver (packet, hdr, interface);
+              return;
+            }
+          NS_LOG_LOGIC ("Address " << addr << " not a match");
+        }
+    }
+
   if (!m_routingProtocol->RouteInput (packet, hdr, device,
                                       MakeCallback (&Ipv6L3Protocol::IpForward, this),
                                       MakeCallback (&Ipv6L3Protocol::IpMulticastForward, this),
@@ -1008,8 +1046,7 @@ void Ipv6L3Protocol::Receive (Ptr<NetDevice> device, Ptr<const Packet> p, uint16
                                       MakeCallback (&Ipv6L3Protocol::RouteInputError, this)))
     {
       NS_LOG_WARN ("No route found for forwarding packet.  Drop.");
-      GetIcmpv6 ()->SendErrorDestinationUnreachable (p->Copy (), hdr.GetSourceAddress (), Icmpv6Header::ICMPV6_NO_ROUTE);
-      m_dropTrace (hdr, packet, DROP_NO_ROUTE, m_node->GetObject<Ipv6> (), interface);
+      // Drop trace and ICMPs are courtesy of RouteInputError
     }
 }
 
@@ -1368,7 +1405,15 @@ void Ipv6L3Protocol::RouteInputError (Ptr<const Packet> p, const Ipv6Header& ipH
 {
   NS_LOG_FUNCTION (this << p << ipHeader << sockErrno);
   NS_LOG_LOGIC ("Route input failure-- dropping packet to " << ipHeader << " with errno " << sockErrno);
+
   m_dropTrace (ipHeader, p, DROP_ROUTE_ERROR, m_node->GetObject<Ipv6> (), 0);
+
+  if (!ipHeader.GetDestinationAddress ().IsMulticast ())
+    {
+      Ptr<Packet> packet = p->Copy ();
+      packet->AddHeader (ipHeader);
+      GetIcmpv6 ()->SendErrorDestinationUnreachable (packet, ipHeader.GetSourceAddress (), Icmpv6Header::ICMPV6_NO_ROUTE);
+    }
 }
 
 Ipv6Header Ipv6L3Protocol::BuildHeader (Ipv6Address src, Ipv6Address dst, uint8_t protocol, uint16_t payloadSize, uint8_t ttl, uint8_t tclass)

@@ -39,6 +39,9 @@ New user-visible features
 - (internet) Ipv6Address::IsAll[Nodes,Routers]Multicast() now checks the address
   scope beyond the simple link-local. Nodes are checked for Interface-Local, Link-Local
   and Realm-Local, Routers for the above plus Site-Local.
+- (internet) Ipv6 routing protocols must now *not* forward packets to upper layers
+  unless for extremey specific cases. The Ipv6L3protocol handles almost all the
+  packets directed to the host.
 
 Bugs fixed
 ----------
@@ -61,6 +64,7 @@ Bugs fixed
 - Bug 2208 - Interface index based L4 protocols
 - Bug 2211 - Ipv{4,6}EndPoint can cause memory corruption
 - Bug 2219 - SixLowPanNetDevice hangs trying to decode a IPv6 Fragment extension header
+- Bug 2238 - Ipv6 routing reorganization
 
 Known issues
 ------------

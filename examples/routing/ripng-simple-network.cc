@@ -162,6 +162,8 @@ int main (int argc, char **argv)
 
   Ipv6ListRoutingHelper listRH;
   listRH.Add (ripNgRouting, 0);
+  Ipv6StaticRoutingHelper staticRh;
+  listRH.Add (staticRh, 5);
 
   InternetStackHelper internetv6;
   internetv6.SetIpv4StackInstall (false);

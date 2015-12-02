@@ -101,101 +101,39 @@ Ipv6ListRouting::RouteInput (Ptr<const Packet> p, const Ipv6Header &header, Ptr<
                              UnicastForwardCallback ucb, MulticastForwardCallback mcb,
                              LocalDeliverCallback lcb, ErrorCallback ecb)
 {
-  bool retVal = false;
   NS_LOG_FUNCTION (p << header << idev);
   NS_LOG_LOGIC ("RouteInput logic for node: " << m_ipv6->GetObject<Node> ()->GetId ());
 
   NS_ASSERT (m_ipv6 != 0);
   // Check if input device supports IP
   NS_ASSERT (m_ipv6->GetInterfaceForDevice (idev) >= 0);
-  uint32_t iif = m_ipv6->GetInterfaceForDevice (idev);
   Ipv6Address dst = header.GetDestinationAddress ();
 
-  // Multicast recognition; handle local delivery here
-  //
-  if (dst.IsMulticast ())
-    {
-#ifdef NOTYET
-      if (m_ipv6->MulticastCheckGroup (iif, dst))
-#endif
-      if (true)
-        {
-          NS_LOG_LOGIC ("Multicast packet for me-- local deliver");
-          Ptr<Packet> packetCopy = p->Copy ();
-          // Here may want to disable lcb callback in recursive RouteInput
-          // call below
-          lcb (packetCopy, header, iif);
-          // Fall through-- we may also need to forward this
-          retVal = true;
-        }
-
-      /* do not forward link-local multicast address */
-      if (dst.IsLinkLocalMulticast ())
-        {
-          return retVal;
-        }
-
-      for (Ipv6RoutingProtocolList::const_iterator rprotoIter =
-             m_routingProtocols.begin (); rprotoIter != m_routingProtocols.end ();
-           rprotoIter++)
-        {
-          NS_LOG_LOGIC ("Multicast packet for me-- trying to forward");
-          if ((*rprotoIter).second->RouteInput (p, header, idev, ucb, mcb, lcb, ecb))
-            {
-              retVal = true;
-            }
-        }
-      return retVal;
-    }
-
-  /// \todo  Configurable option to enable \RFC{1222} Strong End System Model
-  // Right now, we will be permissive and allow a source to send us
-  // a packet to one of our other interface addresses; that is, the
-  // destination unicast address does not match one of the iif addresses,
-  // but we check our other interfaces.  This could be an option
-  // (to remove the outer loop immediately below and just check iif).
-  for (uint32_t j = 0; j < m_ipv6->GetNInterfaces (); j++)
-    {
-      for (uint32_t i = 0; i < m_ipv6->GetNAddresses (j); i++)
-        {
-          Ipv6InterfaceAddress iaddr = m_ipv6->GetAddress (j, i);
-          Ipv6Address addr = iaddr.GetAddress ();
-          if (addr.IsEqual (header.GetDestinationAddress ()))
-            {
-              if (j == iif)
-                {
-                  NS_LOG_LOGIC ("For me (destination " << addr << " match)");
-                }
-              else
-                {
-                  NS_LOG_LOGIC ("For me (destination " << addr << " match) on another interface " << header.GetDestinationAddress ());
-                }
-              lcb (p, header, iif);
-              return true;
-            }
-          NS_LOG_LOGIC ("Address " << addr << " not a match");
-        }
-    }
   // Check if input device supports IP forwarding
+  uint32_t iif = m_ipv6->GetInterfaceForDevice (idev);
   if (m_ipv6->IsForwarding (iif) == false)
     {
       NS_LOG_LOGIC ("Forwarding disabled for this interface");
       ecb (p, header, Socket::ERROR_NOROUTETOHOST);
       return false;
     }
-  // Next, try to find a route
-  for (Ipv6RoutingProtocolList::const_iterator rprotoIter =
-         m_routingProtocols.begin ();
+
+  // We disable error callback for the called protocols.
+  ErrorCallback nullEcb = MakeNullCallback<void, Ptr<const Packet>, const Ipv6Header &, Socket::SocketErrno > ();
+
+  for (Ipv6RoutingProtocolList::const_iterator rprotoIter = m_routingProtocols.begin ();
        rprotoIter != m_routingProtocols.end ();
        rprotoIter++)
     {
-      if ((*rprotoIter).second->RouteInput (p, header, idev, ucb, mcb, lcb, ecb))
+      if ((*rprotoIter).second->RouteInput (p, header, idev, ucb, mcb, lcb, nullEcb))
         {
           return true;
         }
     }
+
   // No routing protocol has found a route.
-  return retVal;
+  ecb (p, header, Socket::ERROR_NOROUTETOHOST);
+  return false;
 }
 
 void
