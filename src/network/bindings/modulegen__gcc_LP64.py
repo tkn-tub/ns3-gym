@@ -268,6 +268,8 @@ def register_types(module):
     module.add_enum('SocketErrno', ['ERROR_NOTERROR', 'ERROR_ISCONN', 'ERROR_NOTCONN', 'ERROR_MSGSIZE', 'ERROR_AGAIN', 'ERROR_SHUTDOWN', 'ERROR_OPNOTSUPP', 'ERROR_AFNOSUPPORT', 'ERROR_INVAL', 'ERROR_BADF', 'ERROR_NOROUTETOHOST', 'ERROR_NODEV', 'ERROR_ADDRNOTAVAIL', 'ERROR_ADDRINUSE', 'SOCKET_ERRNO_LAST'], outer_class=root_module['ns3::Socket'])
     ## socket.h (module 'network'): ns3::Socket::SocketType [enumeration]
     module.add_enum('SocketType', ['NS3_SOCK_STREAM', 'NS3_SOCK_SEQPACKET', 'NS3_SOCK_DGRAM', 'NS3_SOCK_RAW'], outer_class=root_module['ns3::Socket'])
+    ## socket.h (module 'network'): ns3::Socket::Ipv6MulticastFilterMode [enumeration]
+    module.add_enum('Ipv6MulticastFilterMode', ['INCLUDE', 'EXCLUDE'], outer_class=root_module['ns3::Socket'])
     ## socket.h (module 'network'): ns3::SocketAddressTag [class]
     module.add_class('SocketAddressTag', parent=root_module['ns3::Tag'])
     ## socket-factory.h (module 'network'): ns3::SocketFactory [class]
@@ -479,6 +481,7 @@ def register_types(module):
     ## packetbb.h (module 'network'): ns3::PbbAddressTlv [class]
     module.add_class('PbbAddressTlv', parent=root_module['ns3::PbbTlv'])
     module.add_container('std::list< ns3::Ptr< ns3::Packet > >', 'ns3::Ptr< ns3::Packet >', container_type=u'list')
+    module.add_container('std::vector< ns3::Ipv6Address >', 'ns3::Ipv6Address', container_type=u'vector')
     module.add_container('std::list< unsigned int >', 'unsigned int', container_type=u'list')
     typehandlers.add_type_alias(u'ns3::Callback< void, ns3::Ptr< ns3::Packet const >, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', u'ns3::GenericPhyTxEndCallback')
     typehandlers.add_type_alias(u'ns3::Callback< void, ns3::Ptr< ns3::Packet const >, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >*', u'ns3::GenericPhyTxEndCallback*')
@@ -2031,7 +2034,7 @@ def register_Ns3Ipv6Address_methods(root_module, cls):
     cls.add_method('IsAllHostsMulticast', 
                    'bool', 
                    [], 
-                   is_const=True)
+                   deprecated=True, is_const=True)
     ## ipv6-address.h (module 'network'): bool ns3::Ipv6Address::IsAllNodesMulticast() const [member function]
     cls.add_method('IsAllNodesMulticast', 
                    'bool', 
@@ -5021,6 +5024,21 @@ def register_Ns3Socket_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
+    ## socket.h (module 'network'): void ns3::Socket::Ipv6JoinGroup(ns3::Ipv6Address address, ns3::Socket::Ipv6MulticastFilterMode filterMode, std::vector<ns3::Ipv6Address,std::allocator<ns3::Ipv6Address> > sourceAddresses) [member function]
+    cls.add_method('Ipv6JoinGroup', 
+                   'void', 
+                   [param('ns3::Ipv6Address', 'address'), param('ns3::Socket::Ipv6MulticastFilterMode', 'filterMode'), param('std::vector< ns3::Ipv6Address >', 'sourceAddresses')], 
+                   is_virtual=True)
+    ## socket.h (module 'network'): void ns3::Socket::Ipv6JoinGroup(ns3::Ipv6Address address) [member function]
+    cls.add_method('Ipv6JoinGroup', 
+                   'void', 
+                   [param('ns3::Ipv6Address', 'address')], 
+                   is_virtual=True)
+    ## socket.h (module 'network'): void ns3::Socket::Ipv6LeaveGroup() [member function]
+    cls.add_method('Ipv6LeaveGroup', 
+                   'void', 
+                   [], 
+                   is_virtual=True)
     ## socket.h (module 'network'): bool ns3::Socket::IsIpRecvTos() const [member function]
     cls.add_method('IsIpRecvTos', 
                    'bool', 

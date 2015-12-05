@@ -420,6 +420,8 @@ def register_types(module):
     module.add_enum('SocketErrno', ['ERROR_NOTERROR', 'ERROR_ISCONN', 'ERROR_NOTCONN', 'ERROR_MSGSIZE', 'ERROR_AGAIN', 'ERROR_SHUTDOWN', 'ERROR_OPNOTSUPP', 'ERROR_AFNOSUPPORT', 'ERROR_INVAL', 'ERROR_BADF', 'ERROR_NOROUTETOHOST', 'ERROR_NODEV', 'ERROR_ADDRNOTAVAIL', 'ERROR_ADDRINUSE', 'SOCKET_ERRNO_LAST'], outer_class=root_module['ns3::Socket'], import_from_module='ns.network')
     ## socket.h (module 'network'): ns3::Socket::SocketType [enumeration]
     module.add_enum('SocketType', ['NS3_SOCK_STREAM', 'NS3_SOCK_SEQPACKET', 'NS3_SOCK_DGRAM', 'NS3_SOCK_RAW'], outer_class=root_module['ns3::Socket'], import_from_module='ns.network')
+    ## socket.h (module 'network'): ns3::Socket::Ipv6MulticastFilterMode [enumeration]
+    module.add_enum('Ipv6MulticastFilterMode', ['INCLUDE', 'EXCLUDE'], outer_class=root_module['ns3::Socket'], import_from_module='ns.network')
     ## socket.h (module 'network'): ns3::SocketAddressTag [class]
     module.add_class('SocketAddressTag', import_from_module='ns.network', parent=root_module['ns3::Tag'])
     ## socket-factory.h (module 'network'): ns3::SocketFactory [class]
@@ -735,10 +737,10 @@ def register_types(module):
     module.add_container('std::vector< unsigned int >', 'unsigned int', container_type=u'vector')
     module.add_container('std::vector< bool >', 'bool', container_type=u'vector')
     module.add_container('std::list< ns3::RipNgRte >', 'ns3::RipNgRte', container_type=u'list')
+    module.add_container('std::vector< ns3::Ipv6Address >', 'ns3::Ipv6Address', container_type=u'vector')
     module.add_container('std::map< ns3::SequenceNumber< unsigned int, int >, ns3::Ptr< ns3::Packet > >', ('ns3::SequenceNumber< unsigned int, int >', 'ns3::Ptr< ns3::Packet >'), container_type=u'map')
     module.add_container('std::list< ns3::Ptr< ns3::Packet > >', 'ns3::Ptr< ns3::Packet >', container_type=u'list')
     module.add_container('std::map< unsigned int, unsigned int >', ('unsigned int', 'unsigned int'), container_type=u'map')
-    module.add_container('std::vector< ns3::Ipv6Address >', 'ns3::Ipv6Address', container_type=u'vector')
     module.add_container('std::set< unsigned int >', 'unsigned int', container_type=u'set')
     typehandlers.add_type_alias(u'ns3::SequenceNumber< short unsigned int, short int >', u'ns3::SequenceNumber16')
     typehandlers.add_type_alias(u'ns3::SequenceNumber< short unsigned int, short int >*', u'ns3::SequenceNumber16*')
@@ -3034,7 +3036,7 @@ def register_Ns3Ipv6Address_methods(root_module, cls):
     cls.add_method('IsAllHostsMulticast', 
                    'bool', 
                    [], 
-                   is_const=True)
+                   deprecated=True, is_const=True)
     ## ipv6-address.h (module 'network'): bool ns3::Ipv6Address::IsAllNodesMulticast() const [member function]
     cls.add_method('IsAllNodesMulticast', 
                    'bool', 
@@ -8355,6 +8357,21 @@ def register_Ns3Socket_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
+    ## socket.h (module 'network'): void ns3::Socket::Ipv6JoinGroup(ns3::Ipv6Address address, ns3::Socket::Ipv6MulticastFilterMode filterMode, std::vector<ns3::Ipv6Address, std::allocator<ns3::Ipv6Address> > sourceAddresses) [member function]
+    cls.add_method('Ipv6JoinGroup', 
+                   'void', 
+                   [param('ns3::Ipv6Address', 'address'), param('ns3::Socket::Ipv6MulticastFilterMode', 'filterMode'), param('std::vector< ns3::Ipv6Address >', 'sourceAddresses')], 
+                   is_virtual=True)
+    ## socket.h (module 'network'): void ns3::Socket::Ipv6JoinGroup(ns3::Ipv6Address address) [member function]
+    cls.add_method('Ipv6JoinGroup', 
+                   'void', 
+                   [param('ns3::Ipv6Address', 'address')], 
+                   is_virtual=True)
+    ## socket.h (module 'network'): void ns3::Socket::Ipv6LeaveGroup() [member function]
+    cls.add_method('Ipv6LeaveGroup', 
+                   'void', 
+                   [], 
+                   is_virtual=True)
     ## socket.h (module 'network'): bool ns3::Socket::IsIpRecvTos() const [member function]
     cls.add_method('IsIpRecvTos', 
                    'bool', 
@@ -13791,6 +13808,11 @@ def register_Ns3Ipv6Interface_methods(root_module, cls):
                    'bool', 
                    [], 
                    is_const=True)
+    ## ipv6-interface.h (module 'internet'): bool ns3::Ipv6Interface::IsSolicitedMulticastAddress(ns3::Ipv6Address address) const [member function]
+    cls.add_method('IsSolicitedMulticastAddress', 
+                   'bool', 
+                   [param('ns3::Ipv6Address', 'address')], 
+                   is_const=True)
     ## ipv6-interface.h (module 'internet'): bool ns3::Ipv6Interface::IsUp() const [member function]
     cls.add_method('IsUp', 
                    'bool', 
@@ -14075,6 +14097,32 @@ def register_Ns3Ipv6L3Protocol_methods(root_module, cls):
                    'void', 
                    [param('ns3::Ipv6Header', 'ipHeader'), param('ns3::Ptr< ns3::Packet >', 'p'), param('ns3::Ipv6L3Protocol::DropReason', 'dropReason')], 
                    is_virtual=True)
+    ## ipv6-l3-protocol.h (module 'internet'): void ns3::Ipv6L3Protocol::AddMulticastAddress(ns3::Ipv6Address address) [member function]
+    cls.add_method('AddMulticastAddress', 
+                   'void', 
+                   [param('ns3::Ipv6Address', 'address')])
+    ## ipv6-l3-protocol.h (module 'internet'): void ns3::Ipv6L3Protocol::AddMulticastAddress(ns3::Ipv6Address address, uint32_t interface) [member function]
+    cls.add_method('AddMulticastAddress', 
+                   'void', 
+                   [param('ns3::Ipv6Address', 'address'), param('uint32_t', 'interface')])
+    ## ipv6-l3-protocol.h (module 'internet'): void ns3::Ipv6L3Protocol::RemoveMulticastAddress(ns3::Ipv6Address address) [member function]
+    cls.add_method('RemoveMulticastAddress', 
+                   'void', 
+                   [param('ns3::Ipv6Address', 'address')])
+    ## ipv6-l3-protocol.h (module 'internet'): void ns3::Ipv6L3Protocol::RemoveMulticastAddress(ns3::Ipv6Address address, uint32_t interface) [member function]
+    cls.add_method('RemoveMulticastAddress', 
+                   'void', 
+                   [param('ns3::Ipv6Address', 'address'), param('uint32_t', 'interface')])
+    ## ipv6-l3-protocol.h (module 'internet'): bool ns3::Ipv6L3Protocol::IsRegisteredMulticastAddress(ns3::Ipv6Address address) const [member function]
+    cls.add_method('IsRegisteredMulticastAddress', 
+                   'bool', 
+                   [param('ns3::Ipv6Address', 'address')], 
+                   is_const=True)
+    ## ipv6-l3-protocol.h (module 'internet'): bool ns3::Ipv6L3Protocol::IsRegisteredMulticastAddress(ns3::Ipv6Address address, uint32_t interface) const [member function]
+    cls.add_method('IsRegisteredMulticastAddress', 
+                   'bool', 
+                   [param('ns3::Ipv6Address', 'address'), param('uint32_t', 'interface')], 
+                   is_const=True)
     ## ipv6-l3-protocol.h (module 'internet'): void ns3::Ipv6L3Protocol::DoDispose() [member function]
     cls.add_method('DoDispose', 
                    'void', 
