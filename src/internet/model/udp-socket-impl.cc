@@ -1199,10 +1199,6 @@ UdpSocketImpl::Ipv6JoinGroup (Ipv6Address address, Socket::Ipv6MulticastFilterMo
   // We can join only one multicast group (or change its params)
   NS_ASSERT_MSG ((m_ipv6MulticastGroupAddress == address || m_ipv6MulticastGroupAddress.IsAny ()), "Can join only one IPv6 multicast group.");
 
-  if (!m_ipv6MulticastGroupAddress.IsAny ())
-    {
-      Ipv6LeaveGroup ();
-    }
   m_ipv6MulticastGroupAddress = address;
 
   Ptr<Ipv6L3Protocol> ipv6l3 = m_node->GetObject <Ipv6L3Protocol> ();
