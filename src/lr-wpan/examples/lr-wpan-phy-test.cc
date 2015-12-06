@@ -71,7 +71,7 @@ int main (int argc, char *argv[])
   Ptr<ConstantPositionMobilityModel> senderMobility = CreateObject<ConstantPositionMobilityModel> ();
   sender->SetMobility (senderMobility);
   Ptr<ConstantPositionMobilityModel> receiverMobility = CreateObject<ConstantPositionMobilityModel> ();
-  receiver->SetMobility (senderMobility);
+  receiver->SetMobility (receiverMobility);
 
 
   sender->SetPlmeSetTRXStateConfirmCallback (MakeCallback (&GetSetTRXStateConfirm));

@@ -72,6 +72,7 @@ Bugs fixed
 - Bug 2233 - Implement RFC 1222 - Strong End System Model
 - Bug 2234 - Ipv6L3Protocol should trash multicast packets not interesting for the node
 - Bug 2238 - Ipv6 routing reorganization
+- Bug 2242 - Mobility of both sender PHY and receiver PHY set to sender mobility in lr-wpan-phy-test.cc example.
 
 Known issues
 ------------
