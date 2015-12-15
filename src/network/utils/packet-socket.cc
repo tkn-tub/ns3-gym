@@ -469,7 +469,7 @@ int
 PacketSocket::GetSockName (Address &address) const
 {
   NS_LOG_FUNCTION (this << address);
-  PacketSocketAddress ad = PacketSocketAddress::ConvertFrom (address);
+  PacketSocketAddress ad;
 
   ad.SetProtocol (m_protocol);
   if (m_isSingleDevice)
