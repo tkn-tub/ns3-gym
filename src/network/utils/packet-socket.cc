@@ -474,7 +474,7 @@ PacketSocket::GetSockName (Address &address) const
   ad.SetProtocol (m_protocol);
   if (m_isSingleDevice)
     {
-      Ptr<NetDevice> device = m_node->GetDevice (ad.GetSingleDevice ());
+      Ptr<NetDevice> device = m_node->GetDevice (m_device);
       ad.SetPhysicalAddress (device->GetAddress ());
       ad.SetSingleDevice (m_device);
     }
