@@ -73,6 +73,8 @@ Bugs fixed
 - Bug 2234 - Ipv6L3Protocol should trash multicast packets not interesting for the node
 - Bug 2238 - Ipv6 routing reorganization
 - Bug 2242 - Mobility of both sender PHY and receiver PHY set to sender mobility in lr-wpan-phy-test.cc example.
+- Bug 2141 - TCP DataSent callback now correctly notifies sent data, without missing bytes in particular conditions
+- Bug 1999 - PointToPointRemoteChannel invokes PointToPointChannel constructor
 
 Known issues
 ------------
