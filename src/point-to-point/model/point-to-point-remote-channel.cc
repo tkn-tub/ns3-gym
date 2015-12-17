@@ -45,6 +45,7 @@ PointToPointRemoteChannel::GetTypeId (void)
 }
 
 PointToPointRemoteChannel::PointToPointRemoteChannel ()
+  : PointToPointChannel ()
 {
 }
 
