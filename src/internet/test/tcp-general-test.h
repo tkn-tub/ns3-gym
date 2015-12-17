@@ -569,6 +569,16 @@ protected:
   }
 
   /**
+   * \brief Notifying application for sent data
+   *
+   * \param size the amount of bytes transmitted
+   * \param who where the RTO has expired (SENDER or RECEIVER)
+   */
+  virtual void DataSent (uint32_t size, SocketWho who)
+  {
+  }
+
+  /**
    * \brief Performs the (eventual) final checks through test asserts
    *
    */
@@ -687,6 +697,7 @@ private:
                        const Ptr<const TcpSocketBase> tcp);
   void RtoExpiredCb   (const Ptr<const TcpSocketState> tcb,
                        const Ptr<const TcpSocketBase> tcp);
+  void DataSentCb     (Ptr<Socket> socket, uint32_t size);
   void ForkCb         (Ptr<TcpSocketMsgBase> tcp);
   void HandleAccept (Ptr<Socket> socket, const Address& from);
 

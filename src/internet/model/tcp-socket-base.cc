@@ -2430,9 +2430,9 @@ TcpSocketBase::SendDataPacket (SequenceNumber32 seq, uint32_t maxSize, bool with
     }
 
   // Notify the application of the data being sent unless this is a retransmit
-  if (seq == m_highTxMark)
+  if (seq + sz > m_highTxMark)
     {
-      Simulator::ScheduleNow (&TcpSocketBase::NotifyDataSent, this, sz);
+      Simulator::ScheduleNow (&TcpSocketBase::NotifyDataSent, this, (seq + sz - m_highTxMark.Get ()));
     }
   // Update highTxMark
   m_highTxMark = std::max (seq + sz, m_highTxMark.Get ());

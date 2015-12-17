@@ -180,6 +180,7 @@ TcpGeneralTest::DoRun (void)
   m_senderSocket->SetRcvAckCb (MakeCallback (&TcpGeneralTest::RcvAckCb, this));
   m_senderSocket->SetProcessedAckCb (MakeCallback (&TcpGeneralTest::ProcessedAckCb, this));
   m_senderSocket->SetRetransmitCb (MakeCallback (&TcpGeneralTest::RtoExpiredCb, this));
+  m_senderSocket->SetDataSentCallback(MakeCallback (&TcpGeneralTest::DataSentCb, this));
   m_senderSocket->TraceConnectWithoutContext ("CongestionWindow",
                                               MakeCallback (&TcpGeneralTest::CWndTrace, this));
   m_senderSocket->TraceConnectWithoutContext ("CongState",
@@ -241,7 +242,7 @@ TcpGeneralTest::CreateSocket (Ptr<Node> node, TypeId socketType,
   socketFactory.SetTypeId (socketType);
 
   Ptr<RttEstimator> rtt = rttFactory.Create<RttEstimator> ();
-  Ptr<TcpSocketMsgBase> socket = socketFactory.Create <TcpSocketMsgBase> ();
+  Ptr<TcpSocketMsgBase> socket = DynamicCast<TcpSocketMsgBase> (socketFactory.Create ());
   Ptr<TcpCongestionOps> algo = congestionAlgorithmFactory.Create<TcpCongestionOps> ();
 
   socket->SetNode (node);
@@ -342,6 +343,23 @@ TcpGeneralTest::RtoExpiredCb (const Ptr<const TcpSocketState> tcb,
   else if (tcp->GetNode () == m_senderSocket->GetNode ())
     {
       RTOExpired (tcb, SENDER);
+    }
+  else
+    {
+      NS_FATAL_ERROR ("Closed socket, but not recognized");
+    }
+}
+
+void
+TcpGeneralTest::DataSentCb (Ptr<Socket> socket, uint32_t size)
+{
+  if (socket->GetNode () == m_receiverSocket->GetNode ())
+    {
+      DataSent (size, RECEIVER);
+    }
+  else if (socket->GetNode () == m_senderSocket->GetNode ())
+    {
+      DataSent (size, SENDER);
     }
   else
     {
