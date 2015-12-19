@@ -39,29 +39,29 @@ NS_LOG_COMPONENT_DEFINE ("DsrGraReplyTable");
   
 namespace dsr {
 
-NS_OBJECT_ENSURE_REGISTERED (GraReply);
+NS_OBJECT_ENSURE_REGISTERED (DsrGraReply);
 
-TypeId GraReply::GetTypeId ()
+TypeId DsrGraReply::GetTypeId ()
 {
-  static TypeId tid = TypeId ("ns3::dsr::GraReply")
+  static TypeId tid = TypeId ("ns3::dsr::DsrGraReply")
     .SetParent<Object> ()
     .SetGroupName ("Dsr")
-    .AddConstructor<GraReply> ()
+    .AddConstructor<DsrGraReply> ()
   ;
   return tid;
 }
 
-GraReply::GraReply ()
+DsrGraReply::DsrGraReply ()
 {
 }
 
-GraReply::~GraReply ()
+DsrGraReply::~DsrGraReply ()
 {
   NS_LOG_FUNCTION_NOARGS ();
 }
 
 bool
-GraReply::FindAndUpdate (Ipv4Address replyTo, Ipv4Address replyFrom, Time gratReplyHoldoff)
+DsrGraReply::FindAndUpdate (Ipv4Address replyTo, Ipv4Address replyFrom, Time gratReplyHoldoff)
 {
   Purge ();  // purge the gratuitous reply table
   for (std::vector<GraReplyEntry>::iterator i = m_graReply.begin ();
@@ -78,14 +78,14 @@ GraReply::FindAndUpdate (Ipv4Address replyTo, Ipv4Address replyFrom, Time gratRe
 }
 
 bool
-GraReply::AddEntry (GraReplyEntry & graTableEntry)
+DsrGraReply::AddEntry (GraReplyEntry & graTableEntry)
 {
   m_graReply.push_back (graTableEntry);
   return true;
 }
 
 void
-GraReply::Purge ()
+DsrGraReply::Purge ()
 {
   /*
    * Purge the expired gratuitous reply entries

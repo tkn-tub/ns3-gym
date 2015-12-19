@@ -42,11 +42,11 @@ namespace dsr {
  * \ingroup dsr
  * \brief DSR Error Buffer Entry
  */
-class ErrorBuffEntry
+class DsrErrorBuffEntry
 {
 public:
   /**
-   * Create an ErrorBuffEntry with the given parameters.
+   * Create an DsrErrorBuffEntry with the given parameters.
    *
    * \param pa packet
    * \param d IPv4 address of the destination
@@ -55,7 +55,7 @@ public:
    * \param exp expiration time
    * \param p protocol number
    */
-  ErrorBuffEntry (Ptr<const Packet> pa = 0, Ipv4Address d = Ipv4Address (), Ipv4Address s = Ipv4Address (),
+  DsrErrorBuffEntry (Ptr<const Packet> pa = 0, Ipv4Address d = Ipv4Address (), Ipv4Address s = Ipv4Address (),
                   Ipv4Address n = Ipv4Address (), Time exp = Simulator::Now (), uint8_t p = 0)
     : m_packet (pa),
       m_dst (d),
@@ -67,10 +67,10 @@ public:
   }
   /**
    * Compare send buffer entries
-   * \param o another ErrorBuffEntry
+   * \param o another DsrErrorBuffEntry
    * \return true if equal
    */
-  bool operator== (ErrorBuffEntry const & o) const
+  bool operator== (DsrErrorBuffEntry const & o) const
   {
     return ((m_packet == o.m_packet) && (m_source == o.m_source) && (m_nextHop == o.m_nextHop) && (m_dst == o.m_dst) && (m_expire == o.m_expire));
   }
@@ -145,19 +145,19 @@ private:
  * \brief DSR error buffer
  */
 /************************************************************************************************************************/
-class ErrorBuffer
+class DsrErrorBuffer
 {
 public:
   /**
    * Default constructor
    */
-  ErrorBuffer ()
+  DsrErrorBuffer ()
   {
   }
   /// Push entry in queue, if there is no entry with the same packet and destination address in queue.
-  bool Enqueue (ErrorBuffEntry & entry);
+  bool Enqueue (DsrErrorBuffEntry & entry);
   /// Return first found (the earliest) entry for given destination
-  bool Dequeue (Ipv4Address dst, ErrorBuffEntry & entry);
+  bool Dequeue (Ipv4Address dst, DsrErrorBuffEntry & entry);
   /// Remove all packets with the error link
   void DropPacketForErrLink (Ipv4Address source, Ipv4Address nextHop);
   /// Finds whether a packet with destination dst exists in the queue
@@ -183,26 +183,26 @@ public:
     m_errorBufferTimeout = t;
   }
 
-  std::vector<ErrorBuffEntry> & GetBuffer ()
+  std::vector<DsrErrorBuffEntry> & GetBuffer ()
   {
     return m_errorBuffer;
   }
 
 private:
   /// The send buffer to cache unsent packet
-  std::vector<ErrorBuffEntry> m_errorBuffer;
+  std::vector<DsrErrorBuffEntry> m_errorBuffer;
   /// Remove all expired entries
   void Purge ();
   /// Notify that packet is dropped from queue by timeout
-  void Drop (ErrorBuffEntry en, std::string reason);
+  void Drop (DsrErrorBuffEntry en, std::string reason);
   /// Notify that packet is dropped from queue by timeout
-  void DropLink (ErrorBuffEntry en, std::string reason);
+  void DropLink (DsrErrorBuffEntry en, std::string reason);
   /// The maximum number of packets that we allow a routing protocol to buffer.
   uint32_t m_maxLen;
   /// The maximum period of time that a routing protocol is allowed to buffer a packet for, seconds.
   Time m_errorBufferTimeout;
   /// Check if the send buffer entry is the same or not
-  static bool LinkEqual (ErrorBuffEntry en, const std::vector<Ipv4Address> link)
+  static bool LinkEqual (DsrErrorBuffEntry en, const std::vector<Ipv4Address> link)
   {
     return ((en.GetSource () == link[0]) && (en.GetNextHop () == link[1]));
   }

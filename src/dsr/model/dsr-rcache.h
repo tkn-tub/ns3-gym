@@ -118,17 +118,17 @@ struct Link
   void Print () const;
 };
 
-class LinkStab
+class DsrLinkStab
 {
 public:
   /**
    * \brief Constructor
    */
-  LinkStab (Time linkStab = Simulator::Now ());
+  DsrLinkStab (Time linkStab = Simulator::Now ());
   /**
    * \brief Destructor
    */
-  virtual ~LinkStab ();
+  virtual ~DsrLinkStab ();
 
   /**
    * \brief set/get the link stability
@@ -152,12 +152,12 @@ private:
   Time m_linkStability;
 };
 
-class NodeStab
+class DsrNodeStab
 {
 public:
 
-  NodeStab (Time nodeStab = Simulator::Now ());
-  virtual ~NodeStab ();
+  DsrNodeStab (Time nodeStab = Simulator::Now ());
+  virtual ~DsrNodeStab ();
 
   void SetNodeStability (Time nodeStab)
   {
@@ -171,14 +171,14 @@ private:
   Time m_nodeStability;
 };
 
-class RouteCacheEntry
+class DsrRouteCacheEntry
 {
 public:
   typedef std::vector<Ipv4Address> IP_VECTOR;                ///< Define the vector to hold Ip address
   typedef std::vector<Ipv4Address>::iterator Iterator;       ///< Define the iterator
 
-  RouteCacheEntry (IP_VECTOR const  & ip = IP_VECTOR (), Ipv4Address dst = Ipv4Address (), Time exp = Simulator::Now ());
-  virtual ~RouteCacheEntry ();
+  DsrRouteCacheEntry (IP_VECTOR const  & ip = IP_VECTOR (), Ipv4Address dst = Ipv4Address (), Time exp = Simulator::Now ());
+  virtual ~DsrRouteCacheEntry ();
 
   /// Mark entry as "down" (i.e. disable it)
   void Invalidate (Time badLinkLifetime);
@@ -233,7 +233,7 @@ public:
    * \brief Compare the route cache entry
    * \return true if equal
    */
-  bool operator== (RouteCacheEntry const & o) const
+  bool operator== (DsrRouteCacheEntry const & o) const
   {
     if (m_path.size () != o.m_path.size ())
       {
@@ -282,23 +282,23 @@ private:
  * \brief DSR route request queue
  * Since DSR is an on demand routing we queue requests while looking for route.
  */
-class RouteCache : public Object
+class DsrRouteCache : public Object
 {
 public:
 
   static TypeId GetTypeId ();
 
-  RouteCache ();
-  virtual ~RouteCache ();
+  DsrRouteCache ();
+  virtual ~DsrRouteCache ();
 
   /**
    * \brief Remove the aged route cache entries when the route cache is full
    */
-  void RemoveLastEntry (std::list<RouteCacheEntry> & rtVector);
+  void RemoveLastEntry (std::list<DsrRouteCacheEntry> & rtVector);
   /**
    * \brief Define the vector of route entries.
    */
-  typedef std::list<RouteCacheEntry::IP_VECTOR> routeVector;
+  typedef std::list<DsrRouteCacheEntry::IP_VECTOR> routeVector;
 
   // Fields
   bool GetSubRoute () const
@@ -393,14 +393,14 @@ public:
    * \param rt route cache entry
    * \return true in success
    */
-  bool AddRoute (RouteCacheEntry & rt);
+  bool AddRoute (DsrRouteCacheEntry & rt);
   /**
    * \brief Lookup route cache entry with destination address dst
    * \param id destination address
    * \param rt entry with destination address id, if exists
    * \return true on success
    */
-  bool LookupRoute (Ipv4Address id, RouteCacheEntry & rt);
+  bool LookupRoute (Ipv4Address id, DsrRouteCacheEntry & rt);
   /**
    * \brief Print the route vector elements
    * \param vec the route vector
@@ -410,13 +410,13 @@ public:
    * \brief Print all the route vector elements from the route list
    * \param route the route list
    */
-  void PrintRouteVector (std::list<RouteCacheEntry> route);
+  void PrintRouteVector (std::list<DsrRouteCacheEntry> route);
   /**
    * \brief Find the same route in the route cache
    * \param rt entry with destination address dst, if exists
    * \param rtVector the route vector
    */
-  bool FindSameRoute (RouteCacheEntry & rt, std::list<RouteCacheEntry> & rtVector);
+  bool FindSameRoute (DsrRouteCacheEntry & rt, std::list<DsrRouteCacheEntry> & rtVector);
   /**
    * \brief Delete the route with certain destination address
    * \param dst the destination address of the routes that should be deleted
@@ -533,8 +533,8 @@ public:
   }
 
 private:
-  RouteCache & operator= (RouteCache const &);
-  RouteCacheEntry::IP_VECTOR m_vector;                  ///< The route vector to save the ip addresses for intermediate nodes.
+  DsrRouteCache & operator= (DsrRouteCache const &);
+  DsrRouteCacheEntry::IP_VECTOR m_vector;               ///< The route vector to save the ip addresses for intermediate nodes.
   uint32_t m_maxCacheLen;                               ///< The maximum number of packets that we allow a routing protocol to buffer.
   Time     RouteCacheTimeout;                           ///< The maximum period of time that dsr is allowed to for an unused route.
   Time     m_badLinkLifetime;                           ///< The time for which the neighboring node is put into the blacklist.
@@ -549,7 +549,7 @@ private:
   /**
    * Define the route cache data structure
    */
-  typedef std::list<RouteCacheEntry> routeEntryVector;
+  typedef std::list<DsrRouteCacheEntry> routeEntryVector;
 
   std::map<Ipv4Address, routeEntryVector> m_sortedRoutes;       ///< Map the ipv4Address to route entry vector
 
@@ -574,15 +574,15 @@ private:
    */
   std::map<Ipv4Address, std::map<Ipv4Address, uint32_t> > m_netGraph;
 
-  std::map<Ipv4Address, RouteCacheEntry::IP_VECTOR> m_bestRoutesTable_link;     ///< for link route cache
-  std::map<Link, LinkStab> m_linkCache;                                         ///< The data structure to store link info
-  std::map<Ipv4Address, NodeStab> m_nodeCache;                                  ///< The data structure to store node info
+  std::map<Ipv4Address, DsrRouteCacheEntry::IP_VECTOR> m_bestRoutesTable_link;     ///< for link route cache
+  std::map<Link, DsrLinkStab> m_linkCache;                                         ///< The data structure to store link info
+  std::map<Ipv4Address, DsrNodeStab> m_nodeCache;                                  ///< The data structure to store node info
   /**
    * \brief used by LookupRoute when LinkCache
    * \param id the ip address we are looking for
    * \param rt the route cache entry to store the found one
    */
-  bool LookupRoute_Link (Ipv4Address id, RouteCacheEntry & rt);
+  bool LookupRoute_Link (Ipv4Address id, DsrRouteCacheEntry & rt);
   /**
    * \brief increase the stability of the node
    * \param node the ip address of the node we want to increase stability
@@ -602,7 +602,7 @@ public:
    */
   void SetCacheType (std::string type);
   bool IsLinkCache ();
-  bool AddRoute_Link (RouteCacheEntry::IP_VECTOR nodelist, Ipv4Address node);
+  bool AddRoute_Link (DsrRouteCacheEntry::IP_VECTOR nodelist, Ipv4Address node);
   /**
    *  \brief USE MAXWEIGHT TO REPRESENT MAX; USE BROADCAST ADDRESS TO REPRESENT NULL PRECEEDING ADDRESS
    *  \param source The source address the routes based on
@@ -615,7 +615,7 @@ public:
    * amount of time since that link was last used. When a link is used in a route chosen for a packet originated or
    * salvaged by this node, the link's lifetime is set to be at least UseExtends into the future
    */
-  void UseExtends (RouteCacheEntry::IP_VECTOR rt);
+  void UseExtends (DsrRouteCacheEntry::IP_VECTOR rt);
   /**
    *  \brief Update the Net Graph for the link and node cache has changed
    */

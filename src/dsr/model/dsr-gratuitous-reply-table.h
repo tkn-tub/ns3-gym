@@ -62,14 +62,14 @@ struct GraReplyEntry
  * \ingroup dsr
  * \brief maintain the gratuitous reply
  */
-class GraReply  : public Object
+class DsrGraReply  : public Object
 {
 public:
 
   static TypeId GetTypeId ();
 
-  GraReply ();
-  virtual ~GraReply ();
+  DsrGraReply ();
+  virtual ~DsrGraReply ();
 
   /// Set the gratuitous reply table size
   void SetGraTableSize (uint32_t g)

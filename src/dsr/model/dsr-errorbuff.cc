@@ -43,17 +43,17 @@ NS_LOG_COMPONENT_DEFINE ("DsrErrorBuffer");
 namespace dsr {
 
 uint32_t
-ErrorBuffer::GetSize ()
+DsrErrorBuffer::GetSize ()
 {
   Purge ();
   return m_errorBuffer.size ();
 }
 
 bool
-ErrorBuffer::Enqueue (ErrorBuffEntry & entry)
+DsrErrorBuffer::Enqueue (DsrErrorBuffEntry & entry)
 {
   Purge ();
-  for (std::vector<ErrorBuffEntry>::const_iterator i = m_errorBuffer.begin (); i
+  for (std::vector<DsrErrorBuffEntry>::const_iterator i = m_errorBuffer.begin (); i
        != m_errorBuffer.end (); ++i)
     {
       NS_LOG_INFO ("packet id " << i->GetPacket ()->GetUid () << " " << entry.GetPacket ()->GetUid () << " source " << i->GetSource () << " " << entry.GetSource ()
@@ -82,7 +82,7 @@ ErrorBuffer::Enqueue (ErrorBuffEntry & entry)
 }
 
 void
-ErrorBuffer::DropPacketForErrLink (Ipv4Address source, Ipv4Address nextHop)
+DsrErrorBuffer::DropPacketForErrLink (Ipv4Address source, Ipv4Address nextHop)
 {
   NS_LOG_FUNCTION (this << source << nextHop);
   Purge ();
@@ -93,7 +93,7 @@ ErrorBuffer::DropPacketForErrLink (Ipv4Address source, Ipv4Address nextHop)
   /*
    * Drop the packet with the error link source----------nextHop
    */
-  for (std::vector<ErrorBuffEntry>::iterator i = m_errorBuffer.begin (); i
+  for (std::vector<DsrErrorBuffEntry>::iterator i = m_errorBuffer.begin (); i
        != m_errorBuffer.end (); ++i)
     {
       if (LinkEqual (*i, link))
@@ -102,17 +102,17 @@ ErrorBuffer::DropPacketForErrLink (Ipv4Address source, Ipv4Address nextHop)
         }
     }
   m_errorBuffer.erase (std::remove_if (m_errorBuffer.begin (), m_errorBuffer.end (),
-                                       std::bind2nd (std::ptr_fun (ErrorBuffer::LinkEqual), link)), m_errorBuffer.end ());
+                                       std::bind2nd (std::ptr_fun (DsrErrorBuffer::LinkEqual), link)), m_errorBuffer.end ());
 }
 
 bool
-ErrorBuffer::Dequeue (Ipv4Address dst, ErrorBuffEntry & entry)
+DsrErrorBuffer::Dequeue (Ipv4Address dst, DsrErrorBuffEntry & entry)
 {
   Purge ();
   /*
    * Dequeue the entry with destination address dst
    */
-  for (std::vector<ErrorBuffEntry>::iterator i = m_errorBuffer.begin (); i != m_errorBuffer.end (); ++i)
+  for (std::vector<DsrErrorBuffEntry>::iterator i = m_errorBuffer.begin (); i != m_errorBuffer.end (); ++i)
     {
       if (i->GetDestination () == dst)
         {
@@ -126,12 +126,12 @@ ErrorBuffer::Dequeue (Ipv4Address dst, ErrorBuffEntry & entry)
 }
 
 bool
-ErrorBuffer::Find (Ipv4Address dst)
+DsrErrorBuffer::Find (Ipv4Address dst)
 {
   /*
    * Make sure if the send buffer contains entry with certain dst
    */
-  for (std::vector<ErrorBuffEntry>::const_iterator i = m_errorBuffer.begin (); i
+  for (std::vector<DsrErrorBuffEntry>::const_iterator i = m_errorBuffer.begin (); i
        != m_errorBuffer.end (); ++i)
     {
       if (i->GetDestination () == dst)
@@ -146,7 +146,7 @@ ErrorBuffer::Find (Ipv4Address dst)
 struct IsExpired
 {
   bool
-  operator() (ErrorBuffEntry const & e) const
+  operator() (DsrErrorBuffEntry const & e) const
   {
     // NS_LOG_DEBUG("Expire time for packet in req queue: "<<e.GetExpireTime ());
     return (e.GetExpireTime () < Seconds (0));
@@ -154,14 +154,14 @@ struct IsExpired
 };
 
 void
-ErrorBuffer::Purge ()
+DsrErrorBuffer::Purge ()
 {
   /*
    * Purge the buffer to eliminate expired entries
    */
   NS_LOG_DEBUG ("The error buffer size " << m_errorBuffer.size ());
   IsExpired pred;
-  for (std::vector<ErrorBuffEntry>::iterator i = m_errorBuffer.begin (); i
+  for (std::vector<DsrErrorBuffEntry>::iterator i = m_errorBuffer.begin (); i
        != m_errorBuffer.end (); ++i)
     {
       if (pred (*i))
@@ -175,7 +175,7 @@ ErrorBuffer::Purge ()
 }
 
 void
-ErrorBuffer::Drop (ErrorBuffEntry en, std::string reason)
+DsrErrorBuffer::Drop (DsrErrorBuffEntry en, std::string reason)
 {
   NS_LOG_LOGIC (reason << en.GetPacket ()->GetUid () << " " << en.GetDestination ());
 //  en.GetErrorCallback () (en.GetPacket (), en.GetDestination (),
@@ -184,7 +184,7 @@ ErrorBuffer::Drop (ErrorBuffEntry en, std::string reason)
 }
 
 void
-ErrorBuffer::DropLink (ErrorBuffEntry en, std::string reason)
+DsrErrorBuffer::DropLink (DsrErrorBuffEntry en, std::string reason)
 {
   NS_LOG_LOGIC (reason << en.GetPacket ()->GetUid () << " " << en.GetSource () << " " << en.GetNextHop ());
 //  en.GetErrorCallback () (en.GetPacket (), en.GetDestination (),

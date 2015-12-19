@@ -129,11 +129,11 @@ struct PassiveKey
  * \ingroup dsr
  * \brief DSR Maintain Buffer Entry
  */
-class MaintainBuffEntry
+class DsrMaintainBuffEntry
 {
 public:
   /**
-   * Construct a MaintainBuffEntry with the given parameters
+   * Construct a DsrMaintainBuffEntry with the given parameters
    *
    * \param pa packet
    * \param us our IPv4 address
@@ -144,7 +144,7 @@ public:
    * \param segs number of segments left
    * \param exp expiration time
    */
-  MaintainBuffEntry (Ptr<const Packet> pa = 0, Ipv4Address us = Ipv4Address (),
+  DsrMaintainBuffEntry (Ptr<const Packet> pa = 0, Ipv4Address us = Ipv4Address (),
                      Ipv4Address n = Ipv4Address (), Ipv4Address s = Ipv4Address (), Ipv4Address dst = Ipv4Address (),
                      uint16_t ackId = 0, uint8_t segs = 0, Time exp = Simulator::Now ())
     : m_packet (pa),
@@ -247,19 +247,19 @@ private:
  * \brief DSR maintain buffer
  */
 /************************************************************************************************************************/
-class MaintainBuffer
+class DsrMaintainBuffer
 {
 public:
   /**
    * Default constructor
    */
-  MaintainBuffer ()
+  DsrMaintainBuffer ()
   {
   }
   /// Push entry in queue, if there is no entry with the same packet and destination address in queue.
-  bool Enqueue (MaintainBuffEntry & entry);
+  bool Enqueue (DsrMaintainBuffEntry & entry);
   /// Return first found (the earliest) entry for given destination
-  bool Dequeue (Ipv4Address dst, MaintainBuffEntry & entry);
+  bool Dequeue (Ipv4Address dst, DsrMaintainBuffEntry & entry);
   /// Remove all packets with destination IP address dst
   void DropPacketWithNextHop (Ipv4Address nextHop);
   /// Finds whether a packet with destination dst exists in the queue
@@ -285,17 +285,17 @@ public:
     m_maintainBufferTimeout = t;
   }
   /// Verify if all the elements in the maintainence buffer entry is the same
-  bool AllEqual (MaintainBuffEntry & entry);
+  bool AllEqual (DsrMaintainBuffEntry & entry);
   /// Verify if the maintain buffer entry is the same in every field for link ack
-  bool LinkEqual (MaintainBuffEntry & entry);
+  bool LinkEqual (DsrMaintainBuffEntry & entry);
   /// Verify if the maintain buffer entry is the same in every field for network ack
-  bool NetworkEqual (MaintainBuffEntry & entry);
+  bool NetworkEqual (DsrMaintainBuffEntry & entry);
   /// Verify if the maintain buffer entry is the same in every field for promiscuous ack
-  bool PromiscEqual (MaintainBuffEntry & entry);
+  bool PromiscEqual (DsrMaintainBuffEntry & entry);
 
 private:
   /// The vector of maintain buffer entries
-  std::vector<MaintainBuffEntry> m_maintainBuffer;
+  std::vector<DsrMaintainBuffEntry> m_maintainBuffer;
   std::vector<NetworkKey> m_allNetworkKey;
   /// Remove all expired entries
   void Purge ();
@@ -304,7 +304,7 @@ private:
   /// The maximum period of time that a routing protocol is allowed to buffer a packet for, seconds.
   Time m_maintainBufferTimeout;
   /// Verify if the maintain buffer is equal or not
-  static bool IsEqual (MaintainBuffEntry en, const Ipv4Address nextHop)
+  static bool IsEqual (DsrMaintainBuffEntry en, const Ipv4Address nextHop)
   {
     return (en.GetNextHop () == nextHop);
   }

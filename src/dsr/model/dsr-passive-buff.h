@@ -42,11 +42,11 @@ namespace dsr {
  * \ingroup dsr
  * \brief DSR Passive Buffer Entry
  */
-class PassiveBuffEntry
+class DsrPassiveBuffEntry
 {
 public:
   /**
-   * Construct a PassiveBuffEntry with the given parameters
+   * Construct a DsrPassiveBuffEntry with the given parameters
    *
    * \param pa packet
    * \param d IPv4 address of the destination
@@ -58,7 +58,7 @@ public:
    * \param exp expiration time
    * \param p protocol number
    */
-  PassiveBuffEntry (Ptr<const Packet> pa = 0, Ipv4Address d = Ipv4Address (), Ipv4Address s = Ipv4Address (),
+  DsrPassiveBuffEntry (Ptr<const Packet> pa = 0, Ipv4Address d = Ipv4Address (), Ipv4Address s = Ipv4Address (),
                   Ipv4Address n = Ipv4Address (), uint16_t i = 0, uint16_t f = 0, uint8_t seg = 0, Time exp = Simulator::Now (),
                   uint8_t p = 0)
     : m_packet (pa),
@@ -76,7 +76,7 @@ public:
    * Compare send buffer entries
    * \return true if equal
    */
-  bool operator== (PassiveBuffEntry const & o) const
+  bool operator== (DsrPassiveBuffEntry const & o) const
   {
     return ((m_packet == o.m_packet) && (m_source == o.m_source) && (m_nextHop == o.m_nextHop) && (m_dst == o.m_dst) && (m_expire == o.m_expire));
   }
@@ -179,23 +179,23 @@ private:
  * \brief DSR passive buffer
  */
 /************************************************************************************************************************/
-class PassiveBuffer  : public Object
+class DsrPassiveBuffer  : public Object
 {
 public:
 
   static TypeId GetTypeId ();
 
-  PassiveBuffer ();
-  virtual ~PassiveBuffer ();
+  DsrPassiveBuffer ();
+  virtual ~DsrPassiveBuffer ();
 
   /// Push entry in queue, if there is no entry with the same packet and destination address in queue.
-  bool Enqueue (PassiveBuffEntry & entry);
+  bool Enqueue (DsrPassiveBuffEntry & entry);
   /// Return first found (the earliest) entry for given destination
-  bool Dequeue (Ipv4Address dst, PassiveBuffEntry & entry);
+  bool Dequeue (Ipv4Address dst, DsrPassiveBuffEntry & entry);
   /// Finds whether a packet with destination dst exists in the queue
   bool Find (Ipv4Address dst);
   /// Check if all the entries in passive buffer entry is all equal or not
-  bool AllEqual (PassiveBuffEntry & entry);
+  bool AllEqual (DsrPassiveBuffEntry & entry);
   /// Number of entries
   uint32_t GetSize ();
 
@@ -219,19 +219,19 @@ public:
 
 private:
   /// The send buffer to cache unsent packet
-  std::vector<PassiveBuffEntry> m_passiveBuffer;
+  std::vector<DsrPassiveBuffEntry> m_passiveBuffer;
   /// Remove all expired entries
   void Purge ();
   /// Notify that packet is dropped from queue by timeout
-  void Drop (PassiveBuffEntry en, std::string reason);
+  void Drop (DsrPassiveBuffEntry en, std::string reason);
   /// Notify that packet is dropped from queue by timeout
-  void DropLink (PassiveBuffEntry en, std::string reason);
+  void DropLink (DsrPassiveBuffEntry en, std::string reason);
   /// The maximum number of packets that we allow a routing protocol to buffer.
   uint32_t m_maxLen;
   /// The maximum period of time that a routing protocol is allowed to buffer a packet for, seconds.
   Time m_passiveBufferTimeout;
   /// Check if the send buffer entry is the same or not
-  static bool LinkEqual (PassiveBuffEntry en, const std::vector<Ipv4Address> link)
+  static bool LinkEqual (DsrPassiveBuffEntry en, const std::vector<Ipv4Address> link)
   {
     return ((en.GetSource () == link[0]) && (en.GetNextHop () == link[1]));
   }

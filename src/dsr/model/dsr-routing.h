@@ -126,40 +126,40 @@ public:
    * \brief Set the route cache.
    * \param r the route cache to set
    */
-  void SetRouteCache (Ptr<dsr::RouteCache> r);
+  void SetRouteCache (Ptr<dsr::DsrRouteCache> r);
   /**
    * \brief Get the route cache.
    * \return the route cache
    */
-  Ptr<dsr::RouteCache> GetRouteCache () const;
+  Ptr<dsr::DsrRouteCache> GetRouteCache () const;
   /**
    * \brief Set the node.
    * \param r the request table to set
    */
-  void SetRequestTable (Ptr<dsr::RreqTable> r);
+  void SetRequestTable (Ptr<dsr::DsrRreqTable> r);
   /**
     * \brief Get the request table.
     * \return the request table
     */
-  Ptr<dsr::RreqTable> GetRequestTable () const;
+  Ptr<dsr::DsrRreqTable> GetRequestTable () const;
   /**
    * \brief Set the node.
    * \param r the passive buffer to set
    */
-  void SetPassiveBuffer (Ptr<dsr::PassiveBuffer> r);
+  void SetPassiveBuffer (Ptr<dsr::DsrPassiveBuffer> r);
   /**
     * \brief Get the passive buffer
     * \return the passive buffer
     */
-  Ptr<dsr::PassiveBuffer> GetPassiveBuffer () const;
+  Ptr<dsr::DsrPassiveBuffer> GetPassiveBuffer () const;
 
   /// functions used to direct to route cache
   //\{
   bool IsLinkCache ();
-  void UseExtends (RouteCacheEntry::IP_VECTOR rt);
-  bool LookupRoute (Ipv4Address id, RouteCacheEntry & rt);
-  bool AddRoute_Link (RouteCacheEntry::IP_VECTOR nodelist, Ipv4Address source);
-  bool AddRoute (RouteCacheEntry & rt);
+  void UseExtends (DsrRouteCacheEntry::IP_VECTOR rt);
+  bool LookupRoute (Ipv4Address id, DsrRouteCacheEntry & rt);
+  bool AddRoute_Link (DsrRouteCacheEntry::IP_VECTOR nodelist, Ipv4Address source);
+  bool AddRoute (DsrRouteCacheEntry & rt);
   void DeleteAllRoutesIncludeLink (Ipv4Address errorSrc, Ipv4Address unreachNode, Ipv4Address node);
   bool UpdateRouteEntry (Ipv4Address dst);
   bool FindSourceEntry (Ipv4Address src, Ipv4Address dst, uint16_t id);
@@ -307,7 +307,7 @@ public:
   /**
   * \brief Cancel all the packet timers
   */
-  void CancelPacketAllTimer (MaintainBuffEntry & mb);
+  void CancelPacketAllTimer (DsrMaintainBuffEntry & mb);
   /**
    * \brief Cancel the passive timer
    */
@@ -319,15 +319,15 @@ public:
   /**
    * \brief Cancel the network packet retransmission timer for a specific maintenance entry
    */
-  void CancelNetworkPacketTimer (MaintainBuffEntry & mb);
+  void CancelNetworkPacketTimer (DsrMaintainBuffEntry & mb);
   /**
    * \brief Cancel the passive packet retransmission timer for a specific maintenance entry
    */
-  void CancelPassivePacketTimer (MaintainBuffEntry & mb);
+  void CancelPassivePacketTimer (DsrMaintainBuffEntry & mb);
   /**
    * \brief Cancel the link packet retransmission timer for a specific maintenance entry
    */
-  void CancelLinkPacketTimer (MaintainBuffEntry & mb);
+  void CancelLinkPacketTimer (DsrMaintainBuffEntry & mb);
   /**
    * \brief Cancel the packet retransmission timer for a all maintenance entries with nextHop address
    */
@@ -341,14 +341,14 @@ public:
    * \param mb maintainenace buffer entry
    * \param protocol the protocol number
    */
-  void ScheduleLinkPacketRetry   (MaintainBuffEntry & mb,
+  void ScheduleLinkPacketRetry   (DsrMaintainBuffEntry & mb,
                                   uint8_t protocol);
   /**
    * \brief Schedule the packet retransmission based on passive acknowledgment
    * \param mb maintainenace buffer entry
    * \param protocol the protocol number
    */
-  void SchedulePassivePacketRetry   (MaintainBuffEntry & mb,
+  void SchedulePassivePacketRetry   (DsrMaintainBuffEntry & mb,
                                      uint8_t protocol);
   /**
    * \brief Schedule the packet retransmission based on network layer acknowledgment
@@ -356,23 +356,23 @@ public:
    * \param isFirst see if this is the first packet retry or not
    * \param protocol the protocol number
    */
-  void ScheduleNetworkPacketRetry   (MaintainBuffEntry & mb,
+  void ScheduleNetworkPacketRetry   (DsrMaintainBuffEntry & mb,
                                      bool isFirst,
                                      uint8_t protocol);
   /**
    * \brief This function deals with packet retransmission timer expire using link acknowledgment
    */
-  void LinkScheduleTimerExpire  (MaintainBuffEntry & mb,
+  void LinkScheduleTimerExpire  (DsrMaintainBuffEntry & mb,
                                  uint8_t protocol);
   /**
    * \brief This function deals with packet retransmission timer expire using network acknowledgment
    */
-  void NetworkScheduleTimerExpire  (MaintainBuffEntry & mb,
+  void NetworkScheduleTimerExpire  (DsrMaintainBuffEntry & mb,
                                     uint8_t protocol);
   /**
    * \brief This function deals with packet retransmission timer expire using passive acknowledgment
    */
-  void PassiveScheduleTimerExpire  (MaintainBuffEntry & mb,
+  void PassiveScheduleTimerExpire  (DsrMaintainBuffEntry & mb,
                                     uint8_t protocol);
   /**
    * \brief Forward the packet using the route saved in the source route option header
@@ -654,9 +654,9 @@ private:
 
   Time  m_sendBufferTimeout;                            ///< The maximum period of time that a routing protocol is allowed to buffer a packet for.
 
-  SendBuffer m_sendBuffer;                              ///< The send buffer
+  DsrSendBuffer m_sendBuffer;                           ///< The send buffer
 
-  ErrorBuffer m_errorBuffer;                            ///< The error buffer to save the error messages
+  DsrErrorBuffer m_errorBuffer;                         ///< The error buffer to save the error messages
 
   uint32_t  m_maxMaintainLen;                           ///< Max # of entries for maintainance buffer
 
@@ -670,7 +670,7 @@ private:
 
   uint32_t  m_maxEntriesEachDst;                        ///< Max number of route entries to save for each destination
 
-  MaintainBuffer m_maintainBuffer;                      ///< The declaration of maintain buffer
+  DsrMaintainBuffer m_maintainBuffer;                   ///< The declaration of maintain buffer
 
   uint32_t m_requestId;                                 ///< The id assigned to each route request
 
@@ -742,11 +742,11 @@ private:
 
   std::map<LinkKey, Timer> m_linkAckTimer;              ///< The timer for link acknowledgment
 
-  Ptr<dsr::RouteCache> m_routeCache;                    ///< A "drop-front" queue used by the routing layer to cache routes found.
+  Ptr<dsr::DsrRouteCache> m_routeCache;                 ///< A "drop-front" queue used by the routing layer to cache routes found.
 
-  Ptr<dsr::RreqTable> m_rreqTable;                      ///< A "drop-front" queue used by the routing layer to cache route request sent.
+  Ptr<dsr::DsrRreqTable> m_rreqTable;                   ///< A "drop-front" queue used by the routing layer to cache route request sent.
 
-  Ptr<dsr::PassiveBuffer> m_passiveBuffer;              ///< A "drop-front" queue used by the routing layer to cache route request sent.
+  Ptr<dsr::DsrPassiveBuffer> m_passiveBuffer;           ///< A "drop-front" queue used by the routing layer to cache route request sent.
 
   uint32_t m_numPriorityQueues;                         ///< The number of priority queues used
 
@@ -754,7 +754,7 @@ private:
 
   std::map<uint32_t, Ptr<dsr::DsrNetworkQueue> > m_priorityQueue;   ///< priority queues
 
-  GraReply m_graReply;                                  ///< The gratuitous route reply.
+  DsrGraReply m_graReply;                               ///< The gratuitous route reply.
 
   DsrNetworkQueue m_networkQueue;                       ///< The network queue.
 

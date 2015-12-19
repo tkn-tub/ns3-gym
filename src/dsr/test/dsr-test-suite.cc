@@ -350,12 +350,12 @@ DsrCacheEntryTest::~DsrCacheEntryTest ()
 void
 DsrCacheEntryTest::DoRun ()
 {
-  Ptr<dsr::RouteCache> rcache = CreateObject<dsr::RouteCache> ();
+  Ptr<dsr::DsrRouteCache> rcache = CreateObject<dsr::DsrRouteCache> ();
   std::vector<Ipv4Address> ip;
   ip.push_back (Ipv4Address ("0.0.0.0"));
   ip.push_back (Ipv4Address ("0.0.0.1"));
   Ipv4Address dst = Ipv4Address ("0.0.0.1");
-  dsr::RouteCacheEntry entry (ip, dst, Seconds (1));
+  dsr::DsrRouteCacheEntry entry (ip, dst, Seconds (1));
   NS_TEST_EXPECT_MSG_EQ (entry.GetVector ().size (), 2, "trivial");
   NS_TEST_EXPECT_MSG_EQ (entry.GetDestination (), Ipv4Address ("0.0.0.1"), "trivial");
   NS_TEST_EXPECT_MSG_EQ (entry.GetExpireTime (), Seconds (1), "trivial");
@@ -374,8 +374,8 @@ DsrCacheEntryTest::DoRun ()
   ip2.push_back (Ipv4Address ("1.1.1.0"));
   ip2.push_back (Ipv4Address ("1.1.1.1"));
   Ipv4Address dst2 = Ipv4Address ("1.1.1.1");
-  dsr::RouteCacheEntry entry2 (ip2, dst2, Seconds (2));
-  dsr::RouteCacheEntry newEntry;
+  dsr::DsrRouteCacheEntry entry2 (ip2, dst2, Seconds (2));
+  dsr::DsrRouteCacheEntry newEntry;
   NS_TEST_EXPECT_MSG_EQ (rcache->AddRoute (entry2), true, "trivial");
   NS_TEST_EXPECT_MSG_EQ (rcache->LookupRoute (dst2, newEntry), true, "trivial");
   NS_TEST_EXPECT_MSG_EQ (rcache->DeleteRoute (Ipv4Address ("2.2.2.2")), false, "trivial");
@@ -395,7 +395,7 @@ public:
   void CheckSizeLimit ();
   void CheckTimeout ();
 
-  dsr::SendBuffer q;
+  dsr::DsrSendBuffer q;
 };
 DsrSendBuffTest::DsrSendBuffTest ()
   : TestCase ("DSR SendBuff"),
@@ -415,7 +415,7 @@ DsrSendBuffTest::DoRun ()
 
   Ptr<const Packet> packet = Create<Packet> ();
   Ipv4Address dst1 = Ipv4Address ("0.0.0.1");
-  dsr::SendBuffEntry e1 (packet, dst1, Seconds (1));
+  dsr::DsrSendBuffEntry e1 (packet, dst1, Seconds (1));
   q.Enqueue (e1);
   q.Enqueue (e1);
   q.Enqueue (e1);
@@ -427,11 +427,11 @@ DsrSendBuffTest::DoRun ()
   NS_TEST_EXPECT_MSG_EQ (q.GetSize (), 0, "trivial");
 
   Ipv4Address dst2 = Ipv4Address ("0.0.0.2");
-  dsr::SendBuffEntry e2 (packet, dst2, Seconds (1));
+  dsr::DsrSendBuffEntry e2 (packet, dst2, Seconds (1));
   q.Enqueue (e1);
   q.Enqueue (e2);
   Ptr<Packet> packet2 = Create<Packet> ();
-  dsr::SendBuffEntry e3 (packet2, dst2, Seconds (1));
+  dsr::DsrSendBuffEntry e3 (packet2, dst2, Seconds (1));
   NS_TEST_EXPECT_MSG_EQ (q.Dequeue (Ipv4Address ("0.0.0.3"), e3), false, "trivial");
   NS_TEST_EXPECT_MSG_EQ (q.Dequeue (Ipv4Address ("0.0.0.2"), e3), true, "trivial");
   NS_TEST_EXPECT_MSG_EQ (q.Find (Ipv4Address ("0.0.0.2")), false, "trivial");
@@ -440,7 +440,7 @@ DsrSendBuffTest::DoRun ()
   NS_TEST_EXPECT_MSG_EQ (q.GetSize (), 2, "trivial");
   Ptr<Packet> packet4 = Create<Packet> ();
   Ipv4Address dst4 = Ipv4Address ("0.0.0.4");
-  dsr::SendBuffEntry e4 (packet4, dst4, Seconds (20));
+  dsr::DsrSendBuffEntry e4 (packet4, dst4, Seconds (20));
   q.Enqueue (e4);
   NS_TEST_EXPECT_MSG_EQ (q.GetSize (), 3, "trivial");
   q.DropPacketWithDst (Ipv4Address ("0.0.0.4"));
@@ -458,7 +458,7 @@ DsrSendBuffTest::CheckSizeLimit ()
 {
   Ptr<Packet> packet = Create<Packet> ();
   Ipv4Address dst;
-  dsr::SendBuffEntry e1 (packet, dst, Seconds (1));
+  dsr::DsrSendBuffEntry e1 (packet, dst, Seconds (1));
 
   for (uint32_t i = 0; i < q.GetMaxQueueLen (); ++i)
     {

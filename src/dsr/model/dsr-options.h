@@ -236,11 +236,11 @@ protected:
   /**
    * \brief The route request table.
    */
-  Ptr<dsr::RreqTable> m_rreqTable;
+  Ptr<dsr::DsrRreqTable> m_rreqTable;
   /**
    * \brief The route cache table.
    */
-  Ptr<dsr::RouteCache> m_routeCache;
+  Ptr<dsr::DsrRouteCache> m_routeCache;
   /**
    * \brief The ipv4 route.
    */
@@ -346,7 +346,7 @@ private:
   /**
    * \brief The route cache.
    */
-  Ptr<dsr::RouteCache> m_routeCache;
+  Ptr<dsr::DsrRouteCache> m_routeCache;
   /**
    * \brief The ipv4.
    */
@@ -382,7 +382,7 @@ private:
   /**
    * \brief The route cache.
    */
-  Ptr<dsr::RouteCache> m_routeCache;
+  Ptr<dsr::DsrRouteCache> m_routeCache;
   /**
    * \brief The ip layer 3.
    */
@@ -461,7 +461,7 @@ private:
   /**
    * \brief The route cache.
    */
-  Ptr<dsr::RouteCache> m_routeCache;
+  Ptr<dsr::DsrRouteCache> m_routeCache;
   /**
    * \brief The ipv4 layer 3.
    */
@@ -497,7 +497,7 @@ private:
   /**
    * \brief The route cache.
    */
-  Ptr<dsr::RouteCache> m_routeCache;
+  Ptr<dsr::DsrRouteCache> m_routeCache;
   /**
    * \brief The ipv4 layer 3.
    */
@@ -533,7 +533,7 @@ private:
   /**
    * \brief The route cache.
    */
-  Ptr<dsr::RouteCache> m_routeCache;
+  Ptr<dsr::DsrRouteCache> m_routeCache;
   /**
    * \brief The ipv4 layer 3.
    */

@@ -36,34 +36,34 @@
 
 namespace ns3 {
 
-NS_LOG_COMPONENT_DEFINE ("RreqTable");
+NS_LOG_COMPONENT_DEFINE ("DsrRreqTable");
   
 namespace dsr {
 
-NS_OBJECT_ENSURE_REGISTERED (RreqTable);
+NS_OBJECT_ENSURE_REGISTERED (DsrRreqTable);
 
-TypeId RreqTable::GetTypeId ()
+TypeId DsrRreqTable::GetTypeId ()
 {
-  static TypeId tid = TypeId ("ns3::dsr::RreqTable")
+  static TypeId tid = TypeId ("ns3::dsr::DsrRreqTable")
     .SetParent<Object> ()
     .SetGroupName ("Dsr")
-    .AddConstructor<RreqTable> ()
+    .AddConstructor<DsrRreqTable> ()
   ;
   return tid;
 }
 
-RreqTable::RreqTable ()
+DsrRreqTable::DsrRreqTable ()
   : m_linkStates (PROBABLE)
 {
 }
 
-RreqTable::~RreqTable ()
+DsrRreqTable::~DsrRreqTable ()
 {
   NS_LOG_FUNCTION_NOARGS ();
 }
 
 void
-RreqTable::RemoveLeastExpire (std::map<Ipv4Address, RreqTableEntry > & rreqDstMap)
+DsrRreqTable::RemoveLeastExpire (std::map<Ipv4Address, RreqTableEntry > & rreqDstMap)
 {
   NS_LOG_FUNCTION (this);
   Ipv4Address firstExpire;
@@ -83,7 +83,7 @@ RreqTable::RemoveLeastExpire (std::map<Ipv4Address, RreqTableEntry > & rreqDstMa
 }
 
 void
-RreqTable::FindAndUpdate (Ipv4Address dst)
+DsrRreqTable::FindAndUpdate (Ipv4Address dst)
 {
   NS_LOG_FUNCTION (this << dst);
   std::map<Ipv4Address, RreqTableEntry >::const_iterator i =
@@ -116,7 +116,7 @@ RreqTable::FindAndUpdate (Ipv4Address dst)
 }
 
 void
-RreqTable::RemoveRreqEntry (Ipv4Address dst)
+DsrRreqTable::RemoveRreqEntry (Ipv4Address dst)
 {
   NS_LOG_FUNCTION (this << dst);
   std::map<Ipv4Address, RreqTableEntry >::const_iterator i =
@@ -133,7 +133,7 @@ RreqTable::RemoveRreqEntry (Ipv4Address dst)
 }
 
 uint32_t
-RreqTable::GetRreqCnt (Ipv4Address dst)
+DsrRreqTable::GetRreqCnt (Ipv4Address dst)
 {
   NS_LOG_FUNCTION (this << dst);
   std::map<Ipv4Address, RreqTableEntry >::const_iterator i =
@@ -156,7 +156,7 @@ RreqTable::GetRreqCnt (Ipv4Address dst)
  * Essentially a counter
  */
 uint32_t
-RreqTable::CheckUniqueRreqId (Ipv4Address dst)
+DsrRreqTable::CheckUniqueRreqId (Ipv4Address dst)
 {
   NS_LOG_LOGIC ("The size of id cache " << m_rreqIdCache.size ());
   std::map<Ipv4Address, uint32_t>::const_iterator i =
@@ -188,7 +188,7 @@ RreqTable::CheckUniqueRreqId (Ipv4Address dst)
 }
 
 uint32_t
-RreqTable::GetRreqSize ()
+DsrRreqTable::GetRreqSize ()
 {
   return m_rreqIdCache.size ();
 }
@@ -199,7 +199,7 @@ RreqTable::GetRreqSize ()
  */
 
 void
-RreqTable::Invalidate ()
+DsrRreqTable::Invalidate ()
 {
   if (m_linkStates == QUESTIONABLE)
     {
@@ -209,7 +209,7 @@ RreqTable::Invalidate ()
 }
 
 BlackList*
-RreqTable::FindUnidirectional (Ipv4Address neighbor)
+DsrRreqTable::FindUnidirectional (Ipv4Address neighbor)
 {
   PurgeNeighbor ();  // purge the neighbor cache
   for (std::vector<BlackList>::iterator i = m_blackList.begin ();
@@ -224,7 +224,7 @@ RreqTable::FindUnidirectional (Ipv4Address neighbor)
 }
 
 bool
-RreqTable::MarkLinkAsUnidirectional (Ipv4Address neighbor, Time blacklistTimeout)
+DsrRreqTable::MarkLinkAsUnidirectional (Ipv4Address neighbor, Time blacklistTimeout)
 {
   NS_LOG_LOGIC ("Add neighbor address in blacklist " << m_blackList.size ());
   for (std::vector<BlackList>::iterator i = m_blackList.begin (); i != m_blackList.end (); i++)
@@ -243,7 +243,7 @@ RreqTable::MarkLinkAsUnidirectional (Ipv4Address neighbor, Time blacklistTimeout
 }
 
 void
-RreqTable::PurgeNeighbor ()
+DsrRreqTable::PurgeNeighbor ()
 {
   /*
    * Purge the expired blacklist entries
@@ -253,17 +253,17 @@ RreqTable::PurgeNeighbor ()
 }
 
 bool
-RreqTable::FindSourceEntry (Ipv4Address src, Ipv4Address dst, uint16_t id)
+DsrRreqTable::FindSourceEntry (Ipv4Address src, Ipv4Address dst, uint16_t id)
 {
   NS_LOG_FUNCTION (this << src << dst << id);
-  ReceivedRreqEntry rreqEntry;
+  DsrReceivedRreqEntry rreqEntry;
   rreqEntry.SetDestination (dst);
   rreqEntry.SetIdentification (id);
-  std::list<ReceivedRreqEntry> receivedRreqEntryList;
+  std::list<DsrReceivedRreqEntry> receivedRreqEntryList;
   /*
    * this function will return false if the entry is not found, true if duplicate entry find
    */
-  std::map<Ipv4Address, std::list<ReceivedRreqEntry> >::const_iterator i = m_sourceRreqMap.find (src);
+  std::map<Ipv4Address, std::list<DsrReceivedRreqEntry> >::const_iterator i = m_sourceRreqMap.find (src);
   if (i == m_sourceRreqMap.end ())
     {
       NS_LOG_LOGIC ("The source request table entry for " << src << " not found");
@@ -287,7 +287,7 @@ RreqTable::FindSourceEntry (Ipv4Address src, Ipv4Address dst, uint16_t id)
         }
       Ipv4Address src = i->first;
       // We loop the receive rreq entry to find duplicate
-      for (std::list<ReceivedRreqEntry>::const_iterator j = receivedRreqEntryList.begin (); j != receivedRreqEntryList.end (); ++j)
+      for (std::list<DsrReceivedRreqEntry>::const_iterator j = receivedRreqEntryList.begin (); j != receivedRreqEntryList.end (); ++j)
         {
           if (*j == rreqEntry)          /// Check if we have found one duplication entry or not
             {

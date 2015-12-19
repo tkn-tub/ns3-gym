@@ -76,6 +76,7 @@ Bugs fixed
 - Bug 2238 - Ipv6 routing reorganization
 - Bug 2242 - Mobility of both sender PHY and receiver PHY set to sender mobility in lr-wpan-phy-test.cc example.
 - Bug 2243 - TCP Socket Fork() fails to copy some parameters, causing connections to close prematurely on retransmit
+- Bug 2246 - Some DSR LogComponents and classes are not defined in a unique way.
 
 Known issues
 ------------

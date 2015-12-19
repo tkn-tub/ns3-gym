@@ -66,9 +66,9 @@ main (int argc, char *argv[])
   LogComponentEnable ("DsrFsHeader", LOG_LEVEL_ALL);
   LogComponentEnable ("DsrGraReplyTable", LOG_LEVEL_ALL);
   LogComponentEnable ("DsrSendBuffer", LOG_LEVEL_ALL);
-  LogComponentEnable ("RouteCache", LOG_LEVEL_ALL);
+  LogComponentEnable ("DsrRouteCache", LOG_LEVEL_ALL);
   LogComponentEnable ("DsrMaintainBuffer", LOG_LEVEL_ALL);
-  LogComponentEnable ("RreqTable", LOG_LEVEL_ALL);
+  LogComponentEnable ("DsrRreqTable", LOG_LEVEL_ALL);
   LogComponentEnable ("DsrErrorBuffer", LOG_LEVEL_ALL);
   LogComponentEnable ("DsrNetworkQueue", LOG_LEVEL_ALL);
 #endif
