@@ -188,12 +188,23 @@ Auto-generated IPv6 adddresses
 ##############################
 
 This is accomplished by relying on the RADVD protocol, implemented by the class
-:cpp:class:`Radvd`. At the time there is no helper for this application, and the
-use is rather difficult (see ``examples/ipv6/radvd.cc``).
+:cpp:class:`Radvd`. A helper class is available, which can be used to ease the most
+common tasks, e.g., setting up a prefix on an interface, if it is announced periodically,
+and if the router is the default router for that interface.
+
+A fine grain configuration is possible though the :cpp:class:`RadvdInterface` class, which
+allows to setup every parameter of the announced router advetisement on a given interface.
+
+It is worth mentioning that the configurations must be set up before installing the 
+application in the node.
 
 Upon using this method, the nodes will acquire dynamically (i.e., during the simulation)
 one (or more) global address(es) according to the RADVD configuration. 
 These addresses will be bases on the RADVD announced prefix and the node's EUI-64.
+
+Examples of RADVD use are shown in ``examples/ipv6/radvd.cc`` 
+and ``examples/ipv6/radvd-two-prefix.cc``.
+
 
 Random-generated IPv6 adddresses
 ################################
