@@ -219,7 +219,7 @@ private:
   Ptr<Node> m_node;
 
   /**
-   * \brief The prefix IP6 address.
+   * \brief The prefix IPv6 address.
    */
   Ipv6Address m_prefix;
 

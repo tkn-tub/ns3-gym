@@ -33,6 +33,10 @@ uint32_t Ipv6AutoconfiguredPrefix::m_prefixId = 0;
 
 Ipv6AutoconfiguredPrefix::Ipv6AutoconfiguredPrefix (Ptr<Node> node, uint32_t interface, Ipv6Address prefix, Ipv6Prefix mask, uint32_t preferredLifeTime, uint32_t validLifeTime, Ipv6Address router)
 {
+  if (preferredLifeTime+validLifeTime == 0)
+    {
+      NS_LOG_WARN ("Ipv6AutoconfiguredPrefix: Preferred and Valid Lifetimes are zero, the address will be removed immediately.");
+    }
   m_node = node;
   m_interface = interface;
   m_validLifeTime = validLifeTime;
@@ -73,6 +77,10 @@ uint32_t Ipv6AutoconfiguredPrefix::GetInterface () const
 void Ipv6AutoconfiguredPrefix::SetPreferredLifeTime (uint32_t t)
 {
   m_preferredLifeTime = t;
+  if (m_preferredLifeTime+m_validLifeTime == 0)
+    {
+      NS_LOG_WARN ("Ipv6AutoconfiguredPrefix: Preferred and Valid Lifetimes are zero, the address will be removed immediately.");
+    }
 }
 
 uint32_t Ipv6AutoconfiguredPrefix::GetPreferredLifeTime () const
@@ -83,6 +91,10 @@ uint32_t Ipv6AutoconfiguredPrefix::GetPreferredLifeTime () const
 void Ipv6AutoconfiguredPrefix::SetValidLifeTime (uint32_t t)
 {
   m_validLifeTime = t;
+  if (m_preferredLifeTime+m_validLifeTime == 0)
+    {
+      NS_LOG_WARN ("Ipv6AutoconfiguredPrefix: Preferred and Valid Lifetimes are zero, the address will be removed immediately.");
+    }
 }
 
 uint32_t Ipv6AutoconfiguredPrefix::GetValidLifeTime () const
