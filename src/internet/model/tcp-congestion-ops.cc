@@ -22,7 +22,7 @@
 
 namespace ns3 {
 
-NS_LOG_COMPONENT_DEFINE ("TcpNewReno");
+NS_LOG_COMPONENT_DEFINE ("TcpCongestionOps");
 
 NS_OBJECT_ENSURE_REGISTERED (TcpCongestionOps);
 

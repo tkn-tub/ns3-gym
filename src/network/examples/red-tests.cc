@@ -253,9 +253,6 @@ BuildAppsTest (uint32_t test)
 int
 main (int argc, char *argv[])
 {
-  // LogComponentEnable ("RedExamples", LOG_LEVEL_INFO);
-  // LogComponentEnable ("TcpNewReno", LOG_LEVEL_INFO);
-  // LogComponentEnable ("RedQueue", LOG_LEVEL_FUNCTION);
   LogComponentEnable ("RedQueue", LOG_LEVEL_INFO);
 
   uint32_t redTest;

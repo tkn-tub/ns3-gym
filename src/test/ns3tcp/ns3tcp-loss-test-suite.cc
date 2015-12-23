@@ -308,8 +308,7 @@ Ns3TcpLossTestCase::DoRun (void)
       LogComponentEnable ("Ns3TcpLossTest", LOG_LEVEL_ALL);
       LogComponentEnable ("ErrorModel", LOG_LEVEL_DEBUG);
       LogComponentEnable ("TcpWestwood", LOG_LEVEL_ALL);
-      LogComponentEnable ("TcpNewReno", LOG_LEVEL_INFO);
-      LogComponentEnable ("TcpReno", LOG_LEVEL_INFO);
+      LogComponentEnable ("TcpCongestionOps", LOG_LEVEL_INFO);
       LogComponentEnable ("TcpSocketBase", LOG_LEVEL_INFO);
     }
 
