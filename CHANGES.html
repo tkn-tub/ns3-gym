@@ -60,7 +60,8 @@ us a note on ns-developers mailing list.</p>
 <ul>
   <li>TCP-related changes:
     <ul>
-      <li>TCP Reno, 793, and Tahoe were removed.</li>
+      <li>Classes TcpRfc793, TcpTahoe, and TcpReno were removed.</li>
+      <li>The 'TcpNewReno' log component was effectively replaced by 'TcpCongestionOps'
       <li>TCP Hybla and HighSpeed have been added.</li>
       <li>Added the concept of Congestion State Machine inside TcpSocketBase.</li>
       <li>Merged Fast Recovery and Fast Retransmit inside TcpSocketBase.</li>
