@@ -32,10 +32,10 @@ foreach my $time (@simTime)
             my $timeStats = Statistics::Descriptive::Full->new();
             for ( my $iteration = 0 ; $iteration < $nIterations ; $iteration++ )
             {
-               $launch = "time ./waf --run \'lena-profiling --simTime=$time --nUe=$ue --nEnb=$enb --nFloors=$floor\'";
+               $launch = "time -f \"real%E\" ./waf --run \'lena-profiling --simTime=$time --nUe=$ue --nEnb=$enb --nFloors=$floor\'";
                print "$launch\n";
                capture { system($launch ) } \$out, \$err;
-               $err =~ /real(.+)m(.+)s/;
+               $err =~ /real(.+):(.+)/;
                my $minutes = $1;
                my $seconds = $minutes * 60 + $2;
                $timeStats->add_data($seconds);
