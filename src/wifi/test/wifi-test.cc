@@ -536,8 +536,6 @@ Bug730TestCase::DoRun (void)
   m_received = 0;
 
   Config::SetDefault ("ns3::WifiRemoteStationManager::FragmentationThreshold", StringValue ("2304"));
-  Config::SetDefault ("ns3::TcpSocket::DelAckCount", UintegerValue (2));
-  Config::SetDefault ("ns3::TcpSocket::SegmentSize", UintegerValue (1460));
 
   NodeContainer wifiStaNode;
   wifiStaNode.Create (1);
