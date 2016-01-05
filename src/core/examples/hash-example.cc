@@ -331,16 +331,16 @@ public:
    *  Expanding for large \f$ k \f$ we get
    *
    * \f{eqnarray*}{
-   *   E(c) &=& \frac{1}{k} {n \choose 2}
-   *            - \frac{1}{{{k^2}}} {n \choose 3}
-   *            + \frac{1}{{{k^3}}} {n \choose 4}
+   *   E(c) &=& \frac{1}{k} \binom{n}{2}
+   *            - \frac{1}{{{k^2}}} \binom{n}{3}
+   *            + \frac{1}{{{k^3}}} \binom{n}{4}
    *            -  \ldots \\
-   *        &=& \frac{1}{k} {n \choose 2}
+   *        &=& \frac{1}{k} \binom{n}{2}
    *            \left[ {1 - \frac{{n - 2}}{{3k}}
    *                      + \frac{{\left( {n - 2} \right)
    *                               \left( {n - 3} \right)}}{{12{k^2}}}
    *                      -  \ldots } \right] \\
-   *        &=& \frac{1}{k} {n \choose 2}
+   *        &=& \frac{1}{k} \binom{n}{2}
    *            \left\{ {1 - \frac{{n - 2}}{{3k}}
    *                         \left[ {1 + \frac{{n - 3}}{{4k}}
    *                                   -  \ldots }
