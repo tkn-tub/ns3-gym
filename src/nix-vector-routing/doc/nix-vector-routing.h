@@ -36,21 +36,25 @@
  *
  * \section api API and Usage
  *
- * The Nix-vector routing protocol must be added to a list of routing 
- * protocols.  It is important that list routing is utilized.
+ * The Nix-vector routing protocol at the moment does not handle local
+ * delivery. As a consequence, it must be used along with another routing
+ * protocol, with the obvious candidate being Ipv4StaticRouting.
+ * Moreover, Ipv4StaticRouting must have a higher precedence than
+ * Nix-vector routing.
  *
- *    Example:
- *
- *    Ipv4NixVectorHelper nixRouting;
- *    Ipv4StaticRoutingHelper staticRouting;
- *
- *    Ipv4ListRoutingHelper list;
- *    list.Add (staticRouting, 0);
- *    list.Add (nixRouting, 10);
- *
- *    InternetStackHelper stack;
- *    stack.SetRoutingHelper (list);
- *    stack.Install (allNodes);
+ * Example:
+ * \code
+   Ipv4NixVectorHelper nixRouting;
+   Ipv4StaticRoutingHelper staticRouting;
+
+   Ipv4ListRoutingHelper list;
+   list.Add (staticRouting, 0);
+   list.Add (nixRouting, 10);
+
+   InternetStackHelper stack;
+   stack.SetRoutingHelper (list);
+   stack.Install (allNodes);
+ * \endcode
  *
  * \section impl Implementation
  *
@@ -65,4 +69,6 @@
  * current node extracts the appropriate neighbor-index from the 
  * nix-vector and transmits the packet through the corresponding 
  * net-device.  This continues until the packet reaches the destination.
- * */
+ *
+ */
+
