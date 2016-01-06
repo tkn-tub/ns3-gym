@@ -577,14 +577,14 @@ TcpSocketBase::Bind (const Address &address)
 void
 TcpSocketBase::InitializeCwnd (void)
 {
-  m_tcb->m_cWnd = m_tcb->m_initialCWnd * m_tcb->m_segmentSize;
-  m_tcb->m_ssThresh = m_tcb->m_initialSsThresh;
+  m_tcb->m_cWnd = GetInitialCwnd() * GetSegSize();
+  m_tcb->m_ssThresh = GetInitialSSThresh();
 }
 
 void
 TcpSocketBase::SetInitialSSThresh (uint32_t threshold)
 {
-  NS_ABORT_MSG_UNLESS (m_state == CLOSED,
+  NS_ABORT_MSG_UNLESS ( (m_state == CLOSED) || threshold == m_tcb->m_initialSsThresh,
     "TcpSocketBase::SetSSThresh() cannot change initial ssThresh after connection started.");
 
   m_tcb->m_initialSsThresh = threshold;
@@ -599,7 +599,7 @@ TcpSocketBase::GetInitialSSThresh (void) const
 void
 TcpSocketBase::SetInitialCwnd (uint32_t cwnd)
 {
-  NS_ABORT_MSG_UNLESS (m_state == CLOSED,
+  NS_ABORT_MSG_UNLESS ( (m_state == CLOSED) || cwnd == m_tcb->m_initialCWnd,
     "TcpSocketBase::SetInitialCwnd() cannot change initial cwnd after connection started.");
 
   m_tcb->m_initialCWnd = cwnd;
@@ -643,7 +643,8 @@ TcpSocketBase::Connect (const Address & address)
 
       // Get the appropriate local address and port number from the routing protocol and set up endpoint
       if (SetupEndpoint () != 0)
-        { // Route to destination does not exist
+        {
+          NS_LOG_ERROR("Route to destination does not exist ?!");
           return -1;
         }
     }
