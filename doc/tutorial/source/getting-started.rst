@@ -504,6 +504,13 @@ the |ns3| programs by simply typing
 Okay, sorry, I made you build the |ns3| part of the system twice,
 but now you know how to change the configuration and build optimized code.
 
+A command exists for checking which profile is currently active
+for an already configured project:
+
+  $ ./waf --check-profile
+  Waf: Entering directory `/path/to/ns-3-allinone/ns-3.24/build'
+  Build profile: debug
+
 The build.py script discussed above supports also the ``--enable-examples``
 and ``enable-tests`` arguments, but in general, does not directly support
 other waf options; for example, this will not work:

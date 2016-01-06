@@ -746,6 +746,11 @@ def _find_ns3_module(self, name):
 def build(bld):
     env = bld.env
 
+    if Options.options.check_profile:
+        print("Build profile: %s" % Options.options.build_profile)
+        raise SystemExit(0)
+        return
+
     # If --enabled-modules option was given, then print a warning
     # message and exit this function.
     if Options.options.enable_modules:
