@@ -184,7 +184,13 @@ TcpSocketBase::GetTypeId (void)
   return tid;
 }
 
-// TcpSocketState
+TypeId
+TcpSocketBase::GetInstanceTypeId () const
+{
+  return TcpSocketBase::GetTypeId ();
+}
+
+
 TypeId
 TcpSocketState::GetTypeId (void)
 {

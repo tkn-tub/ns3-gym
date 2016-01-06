@@ -245,6 +245,12 @@ public:
    */
   static TypeId GetTypeId (void);
 
+  /**
+   * \brief Get the instance TypeId
+   * \return the instance TypeId
+   */
+  virtual TypeId GetInstanceTypeId () const;
+
   friend class TcpGeneralTest;
 
   /**
