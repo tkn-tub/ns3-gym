@@ -156,9 +156,9 @@ def options(opt):
 			     % ", ".join([repr(p) for p in list(profiles.keys())])),
 		       choices=list(profiles.keys()),
 		       dest='build_profile')
-        opt.add_option('--check-profile',
-                       help=('print out current build profile'),
-                       default=False, dest='check_profile', action="store_true")
+	opt.add_option('--check-profile',
+		       help=('print out current build profile'),
+		       default=False, dest='check_profile', action="store_true")
 def configure(conf):
 	cc = conf.env['COMPILER_CC'] or None
 	cxx = conf.env['COMPILER_CXX'] or None
