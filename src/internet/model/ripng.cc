@@ -224,7 +224,10 @@ bool RipNg::RouteInput (Ptr<const Packet> p, const Ipv6Header &header, Ptr<const
       header.GetSourceAddress ().IsLinkLocal ())
     {
       NS_LOG_LOGIC ("Dropping packet not for me and with src or dst LinkLocal");
-      ecb (p, header, Socket::ERROR_NOROUTETOHOST);
+      if (!ecb.IsNull ())
+        {
+          ecb (p, header, Socket::ERROR_NOROUTETOHOST);
+        }
       return false;
     }
 
