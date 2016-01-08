@@ -546,10 +546,12 @@ def configure(conf):
                                  conf.env['ENABLE_GSL'],
                                  "GSL not found")
 
-    have_crypto = conf.check_cxx( msg="Checking for libgcrypt", lib="gcrypt",
-        define_name="HAVE_CRYPTO", mandatory=False)
+    conf.find_program('libgcrypt-config', var='LIBGCRYPT_CONFIG', msg="python-config", mandatory=False)
+    if env.LIBGCRYPT_CONFIG:
+        conf.check_cfg(path=env.LIBGCRYPT_CONFIG, msg="Checking for libgcrypt", args='--cflags --libs', package='',
+                                     define_name="HAVE_CRYPTO", global_define=True, uselib_store='GCRYPT', mandatory=False)
     conf.report_optional_feature("libgcrypt", "Gcrypt library",
-                                 have_crypto, "libgcrypt not found: you can use libgcrypt-config to find its location.")
+                                 conf.env.HAVE_GCRYPT, "libgcrypt not found: you can use libgcrypt-config to find its location.")
 
 
     # for compiling C code, copy over the CXX* flags
