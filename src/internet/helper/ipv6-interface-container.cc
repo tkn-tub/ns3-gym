@@ -96,6 +96,7 @@ void Ipv6InterfaceContainer::SetDefaultRouteInAllNodes (uint32_t router)
 
   for (other = 0; other < m_interfaces.size (); other++)
     {
+      std::cout << "Checking " << other << " Vs " << router << std::endl;
       if (other != router)
         {
           Ptr<Ipv6StaticRouting> routing = 0;
@@ -103,6 +104,7 @@ void Ipv6InterfaceContainer::SetDefaultRouteInAllNodes (uint32_t router)
 
           ipv6 = m_interfaces[other].first;
           routing = routingHelper.GetStaticRouting (ipv6);
+          NS_ASSERT_MSG (routing != 0, "Default router setup failed because no Ipv6StaticRouting was found on the node.");
           routing->SetDefaultRoute (routerAddress, m_interfaces[other].second);
         }
     }
@@ -141,6 +143,7 @@ void Ipv6InterfaceContainer::SetDefaultRouteInAllNodes (Ipv6Address routerAddres
 
           Ptr<Ipv6> ipv6 = m_interfaces[other].first;
           routing = routingHelper.GetStaticRouting (ipv6);
+          NS_ASSERT_MSG (routing != 0, "Default router setup failed because no Ipv6StaticRouting was found on the node.");
           routing->SetDefaultRoute (routerAddress, m_interfaces[other].second);
         }
     }
@@ -160,6 +163,7 @@ void Ipv6InterfaceContainer::SetDefaultRoute (uint32_t i, uint32_t router)
   Ipv6StaticRoutingHelper routingHelper;
 
   routing = routingHelper.GetStaticRouting (ipv6);
+  NS_ASSERT_MSG (routing != 0, "Default router setup failed because no Ipv6StaticRouting was found on the node.");
   routing->SetDefaultRoute (routerAddress, m_interfaces[i].second);
 }
 
@@ -196,6 +200,7 @@ void Ipv6InterfaceContainer::SetDefaultRoute (uint32_t i, Ipv6Address routerAddr
   Ipv6StaticRoutingHelper routingHelper;
 
   routing = routingHelper.GetStaticRouting (ipv6);
+  NS_ASSERT_MSG (routing != 0, "Default router setup failed because no Ipv6StaticRouting was found on the node.");
   routing->SetDefaultRoute (routerLinkLocalAddress, m_interfaces[i].second);
 }
 
