@@ -257,7 +257,7 @@ int Ipv6RawSocketImpl::SendTo (Ptr<Packet> p, uint32_t flags, const Address& toA
           // Return only payload size (as Linux does).
           NotifyDataSent (pktSize);
           NotifySend (GetTxAvailable ());
-          return pktSize - hdr.GetSerializedSize ();
+          return pktSize;
         }
       else
         {
