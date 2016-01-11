@@ -72,7 +72,7 @@ void Ipv6InterfaceContainer::Add (std::string ipv6Name, uint32_t interface)
   m_interfaces.push_back (std::make_pair (ipv6, interface));
 }
 
-void Ipv6InterfaceContainer::Add (Ipv6InterfaceContainer& c)
+void Ipv6InterfaceContainer::Add (const Ipv6InterfaceContainer& c)
 {
   for (InterfaceVector::const_iterator it = c.m_interfaces.begin (); it != c.m_interfaces.end (); it++)
     {

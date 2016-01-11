@@ -66,7 +66,7 @@ public:
    * Concatenate the entries in the other container with ours.
    * \param other container
    */
-  void Add (Ipv4InterfaceContainer other);
+  void Add (const Ipv4InterfaceContainer& other);
 
   /**
    * \brief Get an iterator which refers to the first pair in the 

@@ -156,7 +156,7 @@ public:
    * \brief Fusion with another Ipv6InterfaceContainer.
    * \param c container
    */
-  void Add (Ipv6InterfaceContainer& c);
+  void Add (const Ipv6InterfaceContainer& c);
 
   /**
    * \brief Add a couple of name/interface.
