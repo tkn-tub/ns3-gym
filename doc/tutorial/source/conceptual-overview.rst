@@ -308,12 +308,14 @@ Along the left side, you will find a graphical representation of the structure
 of the documentation.  A good place to start is the ``NS-3 Modules``
 "book" in the |ns3| navigation tree.  If you expand ``Modules`` 
 you will see a list of |ns3| module documentation.  The concept of 
-module here ties directly into the module include files discussed above.  The |ns3| logging subsystem is discussed in the ``C++ Constructs Used by All Modules`` 
-section, so go ahead and expand that documentation node.  Now, expand the 
-``Debugging`` book and then select the ``Logging`` page.
+module here ties directly into the module include files discussed above.  The |ns3| logging subsystem is discussed in the :ref:`UsingLogging` section, so
+we'll get to it later in this tutorial, but you can find out about the above
+statement by looking at the ``Core`` module, then expanding the 
+``Debugging tools`` book, and then selecting the ``Logging`` page.  Click
+on ``Logging``.
 
 You should now be looking at the Doxygen documentation for the Logging module.
-In the list of ``#define``'s at the top of the page you will see the entry
+In the list of ``Macros``'s at the top of the page you will see the entry
 for ``NS_LOG_COMPONENT_DEFINE``.  Before jumping in, it would probably be 
 good to look for the "Detailed Description" of the logging module to get a 
 feel for the overall operation.  You can either scroll down or select the
