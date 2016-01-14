@@ -75,7 +75,7 @@ private:
   /**
    * Return BER of BPSK with the given parameters.
    *
-   * \param snr snr value
+   * \param snr SNR ratio (not dB)
    * \param signalSpread
    * \param phyRate
    *
@@ -85,7 +85,7 @@ private:
   /**
    * Return BER of QAM-m with the given parameters.
    *
-   * \param snr snr value
+   * \param snr SNR ratio (not dB)
    * \param m
    * \param signalSpread
    * \param phyRate
@@ -133,7 +133,7 @@ private:
    */
   double CalculatePd (double ber, unsigned int d) const;
   /**
-   * \param snr
+   * \param snr SNR ratio (not dB)
    * \param nbits
    * \param signalSpread
    * \param phyRate
@@ -146,7 +146,7 @@ private:
                         uint32_t signalSpread, uint32_t phyRate,
                         uint32_t dFree, uint32_t adFree) const;
   /**
-   * \param snr
+   * \param snr SNR ratio (not dB)
    * \param nbits
    * \param signalSpread
    * \param phyRate

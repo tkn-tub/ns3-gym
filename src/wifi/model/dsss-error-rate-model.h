@@ -78,7 +78,7 @@ public:
   /**
    * Return the chunk success rate of the differential BPSK.
    *
-   * \param sinr the SINR of the chunk
+   * \param sinr the SINR ratio (not dB) of the chunk
    * \param nbits the size of the chunk
    *
    * \return the chunk success rate of the differential BPSK
@@ -87,7 +87,7 @@ public:
   /**
    * Return the chunk success rate of the differential encoded QPSK.
    *
-   * \param sinr the SINR of the chunk
+   * \param sinr the SINR ratio (not dB) of the chunk
    * \param nbits the size of the chunk
    *
    * \return the chunk success rate of the differential encoded QPSK.
@@ -97,7 +97,7 @@ public:
    * Return the chunk success rate of the differential encoded QPSK for
    * 5.5Mbps data rate.
    *
-   * \param sinr the SINR of the chunk
+   * \param sinr the SINR ratio (not dB) of the chunk
    * \param nbits the size of the chunk
    *
    * \return the chunk success rate of the differential encoded QPSK for
@@ -107,7 +107,7 @@ public:
    * Return the chunk success rate of the differential encoded QPSK for
    * 11Mbps data rate.
    *
-   * \param sinr the SINR of the chunk
+   * \param sinr the SINR ratio (not dB) of the chunk
    * \param nbits the size of the chunk
    *
    * \return the chunk success rate of the differential encoded QPSK for

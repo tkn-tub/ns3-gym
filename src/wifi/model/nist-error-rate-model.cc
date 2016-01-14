@@ -48,6 +48,7 @@ NistErrorRateModel::NistErrorRateModel ()
 double
 NistErrorRateModel::GetBpskBer (double snr) const
 {
+  NS_LOG_FUNCTION (this << snr);
   double z = std::sqrt (snr);
   double ber = 0.5 * erfc (z);
   NS_LOG_INFO ("bpsk snr=" << snr << " ber=" << ber);
@@ -57,6 +58,7 @@ NistErrorRateModel::GetBpskBer (double snr) const
 double
 NistErrorRateModel::GetQpskBer (double snr) const
 {
+  NS_LOG_FUNCTION (this << snr);
   double z = std::sqrt (snr / 2.0);
   double ber = 0.5 * erfc (z);
   NS_LOG_INFO ("qpsk snr=" << snr << " ber=" << ber);
@@ -66,6 +68,7 @@ NistErrorRateModel::GetQpskBer (double snr) const
 double
 NistErrorRateModel::Get16QamBer (double snr) const
 {
+  NS_LOG_FUNCTION (this << snr);
   double z = std::sqrt (snr / (5.0 * 2.0));
   double ber = 0.75 * 0.5 * erfc (z);
   NS_LOG_INFO ("16-Qam" << " snr=" << snr << " ber=" << ber);
@@ -75,6 +78,7 @@ NistErrorRateModel::Get16QamBer (double snr) const
 double
 NistErrorRateModel::Get64QamBer (double snr) const
 {
+  NS_LOG_FUNCTION (this << snr);
   double z = std::sqrt (snr / (21.0 * 2.0));
   double ber = 7.0 / 12.0 * 0.5 * erfc (z);
   NS_LOG_INFO ("64-Qam" << " snr=" << snr << " ber=" << ber);
@@ -83,6 +87,7 @@ NistErrorRateModel::Get64QamBer (double snr) const
 double
 NistErrorRateModel::Get256QamBer (double snr) const
 {
+  NS_LOG_FUNCTION (this << snr);
   double z = std::sqrt (snr / (85.0 * 2.0));
   double ber = 15.0 / 32.0 * 0.5 * erfc (z);
   NS_LOG_INFO ("256-Qam" << " snr=" << snr << " ber=" << ber);
@@ -93,6 +98,7 @@ double
 NistErrorRateModel::GetFecBpskBer (double snr, uint32_t nbits,
                                    uint32_t bValue) const
 {
+  NS_LOG_FUNCTION (this << snr << nbits << bValue);
   double ber = GetBpskBer (snr);
   if (ber == 0.0)
     {
@@ -108,6 +114,7 @@ double
 NistErrorRateModel::GetFecQpskBer (double snr, uint32_t nbits,
                                    uint32_t bValue) const
 {
+  NS_LOG_FUNCTION (this << snr << nbits << bValue);
   double ber = GetQpskBer (snr);
   if (ber == 0.0)
     {
@@ -122,6 +129,7 @@ NistErrorRateModel::GetFecQpskBer (double snr, uint32_t nbits,
 double
 NistErrorRateModel::CalculatePe (double p, uint32_t bValue) const
 {
+  NS_LOG_FUNCTION (this << p << bValue);
   double D = std::sqrt (4.0 * p * (1.0 - p));
   double pe = 1.0;
   if (bValue == 1)
@@ -194,6 +202,7 @@ double
 NistErrorRateModel::GetFec16QamBer (double snr, uint32_t nbits,
                                     uint32_t bValue) const
 {
+  NS_LOG_FUNCTION (this << snr << nbits << bValue);
   double ber = Get16QamBer (snr);
   if (ber == 0.0)
     {
@@ -209,6 +218,7 @@ double
 NistErrorRateModel::GetFec64QamBer (double snr, uint32_t nbits,
                                     uint32_t bValue) const
 {
+  NS_LOG_FUNCTION (this << snr << nbits << bValue);
   double ber = Get64QamBer (snr);
   if (ber == 0.0)
     {
@@ -224,6 +234,7 @@ double
 NistErrorRateModel::GetFec256QamBer (double snr, uint32_t nbits,
                                      uint32_t bValue) const
 {
+  NS_LOG_FUNCTION (this << snr << nbits << bValue);
   double ber = Get256QamBer (snr);
   if (ber == 0.0)
     {
@@ -238,6 +249,7 @@ NistErrorRateModel::GetFec256QamBer (double snr, uint32_t nbits,
 double
 NistErrorRateModel::GetChunkSuccessRate (WifiMode mode, WifiTxVector txVector, double snr, uint32_t nbits) const
 {
+  NS_LOG_FUNCTION (this << mode << txVector.GetMode () << snr << nbits);
   if (mode.GetModulationClass () == WIFI_MOD_CLASS_ERP_OFDM
       || mode.GetModulationClass () == WIFI_MOD_CLASS_OFDM
       || mode.GetModulationClass () == WIFI_MOD_CLASS_HT

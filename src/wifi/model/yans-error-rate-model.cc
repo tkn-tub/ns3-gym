@@ -54,6 +54,7 @@ YansErrorRateModel::Log2 (double val) const
 double
 YansErrorRateModel::GetBpskBer (double snr, uint32_t signalSpread, uint32_t phyRate) const
 {
+  NS_LOG_FUNCTION (this << snr << signalSpread << phyRate);
   double EbNo = snr * signalSpread / phyRate;
   double z = std::sqrt (EbNo);
   double ber = 0.5 * erfc (z);
@@ -64,6 +65,7 @@ YansErrorRateModel::GetBpskBer (double snr, uint32_t signalSpread, uint32_t phyR
 double
 YansErrorRateModel::GetQamBer (double snr, unsigned int m, uint32_t signalSpread, uint32_t phyRate) const
 {
+  NS_LOG_FUNCTION (this << snr << m << signalSpread << phyRate);
   double EbNo = snr * signalSpread / phyRate;
   double z = std::sqrt ((1.5 * Log2 (m) * EbNo) / (m - 1.0));
   double z1 = ((1.0 - 1.0 / std::sqrt (m)) * erfc (z));
@@ -127,6 +129,7 @@ YansErrorRateModel::CalculatePdEven (double ber, unsigned int d) const
 double
 YansErrorRateModel::CalculatePd (double ber, unsigned int d) const
 {
+  NS_LOG_FUNCTION (this << ber << d);
   double pd;
   if ((d % 2) == 0)
     {
@@ -144,6 +147,7 @@ YansErrorRateModel::GetFecBpskBer (double snr, double nbits,
                                    uint32_t signalSpread, uint32_t phyRate,
                                    uint32_t dFree, uint32_t adFree) const
 {
+  NS_LOG_FUNCTION (this << snr << nbits << signalSpread << phyRate << dFree << adFree);
   double ber = GetBpskBer (snr, signalSpread, phyRate);
   if (ber == 0.0)
     {
@@ -163,6 +167,7 @@ YansErrorRateModel::GetFecQamBer (double snr, uint32_t nbits,
                                   uint32_t m, uint32_t dFree,
                                   uint32_t adFree, uint32_t adFreePlusOne) const
 {
+  NS_LOG_FUNCTION (this << snr << nbits << signalSpread << phyRate << m << dFree << adFree << adFreePlusOne);
   double ber = GetQamBer (snr, m, signalSpread, phyRate);
   if (ber == 0.0)
     {
@@ -182,6 +187,7 @@ YansErrorRateModel::GetFecQamBer (double snr, uint32_t nbits,
 double
 YansErrorRateModel::GetChunkSuccessRate (WifiMode mode, WifiTxVector txVector, double snr, uint32_t nbits) const
 {
+  NS_LOG_FUNCTION (this << mode << txVector.GetMode () << snr << nbits);
   if (mode.GetModulationClass () == WIFI_MOD_CLASS_ERP_OFDM
       || mode.GetModulationClass () == WIFI_MOD_CLASS_OFDM
       || mode.GetModulationClass () == WIFI_MOD_CLASS_HT
