@@ -26,7 +26,7 @@ namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("DsssErrorRateModel");
 
-#ifndef ENABLE_GSL
+#ifndef HAVE_GSL
 const double DsssErrorRateModel::WLAN_SIR_PERFECT = 10.0;
 const double DsssErrorRateModel::WLAN_SIR_IMPOSSIBLE = 0.1;
 #endif
@@ -61,7 +61,7 @@ double
 DsssErrorRateModel::GetDsssDqpskCck5_5SuccessRate (double sinr, uint32_t nbits)
 {
   NS_LOG_FUNCTION_NOARGS ();
-#ifdef ENABLE_GSL
+#ifdef HAVE_GSL
   //symbol error probability
   double EbN0 = sinr * 22000000.0 / 1375000.0 / 4.0;
   double sep = SymbolErrorProb16Cck (4.0 * EbN0 / 2.0);
@@ -95,7 +95,8 @@ double
 DsssErrorRateModel::GetDsssDqpskCck11SuccessRate (double sinr, uint32_t nbits)
 {
   NS_LOG_FUNCTION_NOARGS ();
-#ifdef ENABLE_GSL
+#ifdef HAVE_GSL
+  NS_LOG_DEBUG ("GSL enabled ");
   //symbol error probability
   double EbN0 = sinr * 22000000.0 / 1375000.0 / 8.0;
   double sep = SymbolErrorProb256Cck (8.0 * EbN0 / 2.0);
@@ -127,7 +128,7 @@ DsssErrorRateModel::GetDsssDqpskCck11SuccessRate (double sinr, uint32_t nbits)
 #endif
 }
 
-#ifdef ENABLE_GSL
+#ifdef HAVE_GSL
 double
 IntegralFunction (double x, void *params)
 {
