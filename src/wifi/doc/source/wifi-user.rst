@@ -417,17 +417,3 @@ Each node is equipped with 802.11b Wi-Fi device::
   mobility.Install (sta);
 
   // other set up (e.g. InternetStack, Application)
-
-Note on the current implementation
-**********************************
-
-* 802.11g supports a default of long slot time (20 microseconds)
-* PHY_RXSTART is not supported
-* 802.11e TXOP is not supported
-* 802.11n/ac MIMO is not supported
-* 802.11n/ac beamforming is not supported
-* PLCP preamble reception is not modeled
-* BSSBasicRateSet for 802.11b has been assumed to be 1-2 Mbit/s
-* BSSBasicRateSet for 802.11a/g has been assumed to be 6-12-24 Mbit/s
-* cases where RTS/CTS and ACK are transmitted using HT formats are not supported
-* Only ``ConstantRateWifiManager`` is supported by **802.11n** or **802.11ac**
