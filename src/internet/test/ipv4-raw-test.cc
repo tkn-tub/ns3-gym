@@ -140,7 +140,7 @@ Ipv4RawSocketImplTest::DoSendData_IpHdr (Ptr<Socket> socket, std::string to)
   p->AddHeader (ipHeader);
 
   NS_TEST_EXPECT_MSG_EQ (socket->SendTo (p, 0, realTo),
-                         123, to);
+                         143, to);
   socket->SetAttribute ("IpHeaderInclude", BooleanValue (false));
 }
 

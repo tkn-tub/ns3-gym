@@ -244,6 +244,7 @@ Ipv4RawSocketImpl::SendTo (Ptr<Packet> p, uint32_t flags,
             }
           else
             {
+              pktSize += header.GetSerializedSize ();
               ipv4->SendWithHeader (p, header, route);
             }
           NotifyDataSent (pktSize);

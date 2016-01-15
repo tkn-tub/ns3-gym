@@ -128,7 +128,7 @@ Ipv4HeaderTest::DoSendData_IpHdr_Dscp (Ptr<Socket> socket, std::string to, Ipv4H
   p->AddHeader (ipHeader);
 
   NS_TEST_EXPECT_MSG_EQ (socket->SendTo (p, 0, realTo),
-                         123, to);
+                         143, to);
   socket->SetAttribute ("IpHeaderInclude", BooleanValue (false));
 }
 
