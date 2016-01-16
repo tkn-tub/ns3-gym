@@ -330,7 +330,7 @@ PcapSniffTxEvent (
             mcsRate = rate - 128;
 
             mcsKnown |= RadiotapHeader::MCS_KNOWN_BANDWIDTH;
-            if (txVector.GetChannelWidth () == 40000000)
+            if (txVector.GetChannelWidth () == 40)
               {
                 mcsFlags |= RadiotapHeader::MCS_FLAGS_BANDWIDTH_40;
               }
@@ -411,15 +411,15 @@ PcapSniffTxEvent (
 
             vhtKnown |= RadiotapHeader::VHT_KNOWN_BANDWIDTH;
             //not all bandwidth values are currently supported
-            if (txVector.GetChannelWidth () == 40000000)
+            if (txVector.GetChannelWidth () == 40)
               {
                 vhtBandwidth = 1;
               }
-            else if (txVector.GetChannelWidth () == 80000000)
+            else if (txVector.GetChannelWidth () == 80)
               {
                 vhtBandwidth = 4;
               }
-            else if (txVector.GetChannelWidth () == 160000000)
+            else if (txVector.GetChannelWidth () == 160)
               {
                 vhtBandwidth = 11;
               }
@@ -526,7 +526,7 @@ PcapSniffRxEvent (
             mcsRate = rate - 128;
 
             mcsKnown |= RadiotapHeader::MCS_KNOWN_BANDWIDTH;
-            if (txVector.GetChannelWidth () == 40000000)
+            if (txVector.GetChannelWidth () == 40)
               {
                 mcsFlags |= RadiotapHeader::MCS_FLAGS_BANDWIDTH_40;
               }
@@ -608,15 +608,15 @@ PcapSniffRxEvent (
 
             vhtKnown |= RadiotapHeader::VHT_KNOWN_BANDWIDTH;
             //not all bandwidth values are currently supported
-            if (txVector.GetChannelWidth () == 40000000)
+            if (txVector.GetChannelWidth () == 40)
               {
                 vhtBandwidth = 1;
               }
-            else if (txVector.GetChannelWidth () == 80000000)
+            else if (txVector.GetChannelWidth () == 80)
               {
                 vhtBandwidth = 4;
               }
-            else if (txVector.GetChannelWidth () == 160000000)
+            else if (txVector.GetChannelWidth () == 160)
               {
                 vhtBandwidth = 11;
               }
