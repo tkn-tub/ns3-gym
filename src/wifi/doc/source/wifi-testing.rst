@@ -36,7 +36,6 @@ Figure :ref:`fig-clear-channel-80211b`.
 
 .. figure:: figures/clear-channel.*
    :align: center
-   :width: 80%
 
    Clear channel (AWGN) error model for 802.11b
 
@@ -50,7 +49,6 @@ in Figure :ref:`fig-nist-frame-success-rate`.
 
 .. figure:: figures/nist-frame-success-rate.*
    :align: center
-   :width: 80%
 
    Frame error rate (NIST model) for OFDM Wi-Fi
 

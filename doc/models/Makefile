@@ -110,6 +110,8 @@ SOURCEFIGS = \
 	$(SRC)/internet/doc/routing-specialization.dia \
 	$(SRC)/wifi/doc/source/figures/WifiArchitecture.dia \
 	$(SRC)/wifi/doc/source/figures/snir.dia \
+	$(SRC)/wifi/doc/source/figures/clear-channel.eps \
+	$(SRC)/wifi/doc/source/figures/nist-frame-success-rate.eps \
 	$(SRC)/wimax/doc/WimaxArchitecture.dia \
 	$(SRC)/lte/doc/source/figures/epc-ctrl-arch.dia \
 	$(SRC)/lte/doc/source/figures/epc-data-flow-dl.dia \
@@ -353,7 +355,9 @@ IMAGES_EPS = \
 	$(FIGURES)/lr-wpan-arch.eps \
 	$(FIGURES)/802-15-4-ber.eps \
 	$(FIGURES)/802-15-4-per-sens.eps \
-	$(FIGURES)/802-15-4-psr-distance.eps 
+	$(FIGURES)/802-15-4-psr-distance.eps \
+	$(FIGURES)/clear-channel.eps \
+	$(FIGURES)/nist-frame-success-rate.eps
 
 # rescale pdf figures as necessary
 $(FIGURES)/testbed.pdf_width = 5in
@@ -406,6 +410,8 @@ $(FIGURES)/spectrum-analyzer-example.pdf_width = 15cm
 $(FIGURES)/spectrum-tv-rand-geo-points.pdf_width = 8cm
 $(FIGURES)/lr-wpan-primitives.pdf_width = 3in
 $(FIGURES)/lr-wpan-arch.pdf_width = 2in
+$(FIGURES)/clear-channel.pdf_width = 12cm
+$(FIGURES)/nist-frame-success-rate.pdf_width = 12cm
 
 IMAGES_PNG = ${IMAGES_EPS:.eps=.png}
 IMAGES_PDF = ${IMAGES_EPS:.eps=.pdf}

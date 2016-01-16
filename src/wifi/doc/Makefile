@@ -1,8 +1,7 @@
 EPSTOPDF = epstopdf
 DIA = dia
 DOT = dot
-CONVERT = convert -density 250
-
+CONVERT = convert -density 120
 
 SOURCE = source
 FIGURES = $(SOURCE)/figures
