@@ -437,13 +437,25 @@ bool SixLowPanNetDevice::DoSend (Ptr<Packet> packet,
       protocolNumber = m_etherType;
     }
 
-  if (m_useIphc)
+  if (origPacketSize > m_compressionThreshold)
     {
-      origHdrSize += CompressLowPanIphc (packet, m_netDevice->GetAddress (), dest);
+      if (m_useIphc)
+        {
+          NS_LOG_LOGIC ("Compressing packet using IPHC");
+          origHdrSize += CompressLowPanIphc (packet, m_netDevice->GetAddress (), dest);
+        }
+      else
+        {
+          NS_LOG_LOGIC ("Compressing packet using HC1");
+          origHdrSize += CompressLowPanHc1 (packet, m_netDevice->GetAddress (), dest);
+        }
     }
   else
     {
-      origHdrSize += CompressLowPanHc1 (packet, m_netDevice->GetAddress (), dest);
+      NS_LOG_LOGIC ("Compressed packet too short, using uncompressed one");
+      packet = origPacket;
+      SixLowPanIpv6 ipv6UncompressedHdr;
+      packet->AddHeader (ipv6UncompressedHdr);
     }
 
   if ( packet->GetSize () > m_netDevice->GetMtu () )
@@ -471,14 +483,6 @@ bool SixLowPanNetDevice::DoSend (Ptr<Packet> packet,
     }
   else
     {
-      if (packet->GetSize () < m_compressionThreshold)
-        {
-          NS_LOG_LOGIC ("Compressed packet too short, using uncompressed one");
-          packet = origPacket;
-          SixLowPanIpv6 ipv6UncompressedHdr;
-          packet->AddHeader (ipv6UncompressedHdr);
-        }
-
       m_txTrace (packet, m_node->GetObject<SixLowPanNetDevice> (), GetIfIndex ());
       if (doSendFrom)
         {

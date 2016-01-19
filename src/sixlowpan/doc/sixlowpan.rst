@@ -62,8 +62,8 @@ The attributes are:
 The CompressionThreshold attribute is similar to Contiki's SICSLOWPAN_CONF_MIN_MAC_PAYLOAD
 option. If a compressed packet size is less than the threshold, the uncompressed version is
 used (plus one byte for the correct dispatch header).
-This option is useful only when a MAC with specific requirement for minimum frame size is 
-used (e.g., ContikiMAC).
+This option is useful when a MAC requires a minimum frame size (e.g., ContikiMAC) and the 
+compression would violate the requirement.
 
 The last two attributes are needed to use the module with a NetDevice other than 802.15.4, as
 neither IANA or IEEE did reserve an EtherType for 6LoWPAN. As a consequence there might be a

@@ -82,6 +82,7 @@ Bugs fixed
 - Bug 2257 - Ipv[4,6]InterfaceContainer::Add are not consistent
 - Bug 2259 - GSL not successfully enabled for Wi-Fi DSSS error rate model
 - Bug 2267 - Wrong channel bandwidth value in pcap files
+- Bug 2272 - SixLowPan NetDevice can not send uncompressed packets larger than 802.15.4 MTU
 
 Known issues
 ------------
