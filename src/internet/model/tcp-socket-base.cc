@@ -582,13 +582,6 @@ TcpSocketBase::Bind (const Address &address)
 }
 
 void
-TcpSocketBase::InitializeCwnd (void)
-{
-  m_tcb->m_cWnd = GetInitialCwnd () * GetSegSize ();
-  m_tcb->m_ssThresh = GetInitialSSThresh ();
-}
-
-void
 TcpSocketBase::SetInitialSSThresh (uint32_t threshold)
 {
   NS_ABORT_MSG_UNLESS ( (m_state == CLOSED) || threshold == m_tcb->m_initialSsThresh,
@@ -618,19 +611,11 @@ TcpSocketBase::GetInitialCwnd (void) const
   return m_tcb->m_initialCWnd;
 }
 
-void
-TcpSocketBase::ScaleSsThresh (uint8_t scaleFactor)
-{
-  m_tcb->m_ssThresh <<= scaleFactor;
-}
-
 /* Inherit from Socket class: Initiate connection to a remote address:port */
 int
 TcpSocketBase::Connect (const Address & address)
 {
   NS_LOG_FUNCTION (this << address);
-
-  InitializeCwnd ();
 
   // If haven't do so, Bind() this socket first
   if (InetSocketAddress::IsMatchingType (address) && m_endPoint6 == 0)
@@ -705,8 +690,6 @@ int
 TcpSocketBase::Listen (void)
 {
   NS_LOG_FUNCTION (this);
-
-  InitializeCwnd ();
 
   // Linux quits EINVAL if we're not in CLOSED state, so match what they do
   if (m_state != CLOSED)
@@ -1184,24 +1167,23 @@ TcpSocketBase::DoForwardUp (Ptr<Packet> packet, const Address &fromAddress,
 
   ReadOptions (tcpHeader);
 
-  if (tcpHeader.GetFlags () & TcpHeader::ACK)
-    {
-      EstimateRtt (tcpHeader);
-    }
-
-  // Update Rx window size, i.e. the flow control window
-  if (tcpHeader.GetFlags () & TcpHeader::ACK)
-    {
-      UpdateWindowSize (tcpHeader);
-    }
-  else if (tcpHeader.GetFlags () & TcpHeader::SYN)
+  if (tcpHeader.GetFlags () & TcpHeader::SYN)
     {
       /* The window field in a segment where the SYN bit is set (i.e., a <SYN>
        * or <SYN,ACK>) MUST NOT be scaled (from RFC 7323 page 9). But should be
        * saved anyway..
        */
       m_rWnd = tcpHeader.GetWindowSize ();
+
+      m_tcb->m_cWnd = GetInitialCwnd () * GetSegSize ();
+      m_tcb->m_ssThresh = GetInitialSSThresh ();
     }
+  else if (tcpHeader.GetFlags () & TcpHeader::ACK)
+    {
+      EstimateRtt (tcpHeader);
+      UpdateWindowSize (tcpHeader);
+    }
+
 
   if (m_rWnd.Get () == 0 && m_persistEvent.IsExpired ())
     { // Zero window: Enter persist state to send 1 byte to probe
@@ -3101,7 +3083,6 @@ TcpSocketBase::ReadOptions (const TcpHeader& header)
             {
               m_winScalingEnabled = true;
               ProcessOptionWScale (header.GetOption (TcpOption::WINSCALE));
-              ScaleSsThresh (m_rcvWindShift);
             }
         }
     }

@@ -895,25 +895,6 @@ protected:
    */
   void AddOptionTimestamp (TcpHeader& header);
 
-  /**
-   * \brief Scale the initial SsThresh value to the correct one
-   *
-   * Set the initial SsThresh to the largest possible advertised window
-   * according to the sender scale factor.
-   *
-   * \param scaleFactor the sender scale factor
-   */
-  virtual void ScaleSsThresh (uint8_t scaleFactor);
-
-  /**
-   * \brief Initialize congestion window
-   *
-   * Default cWnd to 1 MSS (RFC2001, sec.1) and must
-   * not be larger than 2 MSS (RFC2581, sec.3.1). Both m_initiaCWnd and
-   * m_segmentSize are set by the attribute system in ns3::TcpSocket.
-   */
-  virtual void InitializeCwnd ();
-
 protected:
   // Counters and events
   EventId           m_retxEvent;       //!< Retransmission event
