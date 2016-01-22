@@ -269,8 +269,7 @@ TcpSocketBase::TcpSocketBase (void)
     m_node (0),
     m_tcp (0),
     m_rtt (0),
-    m_nextTxSequence (0),
-    // Change this for non-zero initial sequence number
+    m_nextTxSequence (0), // Change this for non-zero initial sequence number
     m_highTxMark (0),
     m_state (CLOSED),
     m_errno (ERROR_NOTERROR),
@@ -292,7 +291,7 @@ TcpSocketBase::TcpSocketBase (void)
     m_timestampEnabled (true),
     m_timestampToEcho (0),
     m_sendPendingDataEvent (),
-    m_recover (0),
+    m_recover (0), // Set to the initial sequence number
     m_retxThresh (3),
     m_limitedTx (false),
     m_congestionControl (0),
@@ -1420,14 +1419,7 @@ TcpSocketBase::ReceivedAck (Ptr<Packet> packet, const TcpHeader& tcpHeader)
         }
       else if (m_tcb->m_congState == TcpSocketState::CA_DISORDER)
         {
-          if (m_dupAckCount < m_retxThresh && m_limitedTx)
-            {
-              // RFC3042 Limited transmit: Send a new packet for each duplicated ACK before fast retransmit
-              NS_LOG_INFO ("Limited transmit");
-              uint32_t sz = SendDataPacket (m_nextTxSequence, m_tcb->m_segmentSize, true);
-              m_nextTxSequence += sz;
-            }
-          else if (m_dupAckCount == m_retxThresh)
+          if ((m_dupAckCount == m_retxThresh) && ((m_highRxAckMark - 1) > m_recover))
             {
               // triple duplicate ack triggers fast retransmit (RFC2582 sec.3 bullet #1)
               NS_LOG_DEBUG (TcpSocketState::TcpCongStateName[m_tcb->m_congState] <<
@@ -1444,10 +1436,12 @@ TcpSocketBase::ReceivedAck (Ptr<Packet> packet, const TcpHeader& tcpHeader)
                            m_tcb->m_ssThresh << " at fast recovery seqnum " << m_recover);
               DoRetransmit ();
             }
-          else
+          else if (m_limitedTx)
             {
-              NS_FATAL_ERROR ("m_dupAckCount > m_retxThresh and we still are "
-                              "in DISORDER state");
+              // RFC3042 Limited transmit: Send a new packet for each duplicated ACK before fast retransmit
+              NS_LOG_INFO ("Limited transmit");
+              uint32_t sz = SendDataPacket (m_nextTxSequence, m_tcb->m_segmentSize, true);
+              m_nextTxSequence += sz;
             }
         }
       else if (m_tcb->m_congState == TcpSocketState::CA_RECOVERY)
@@ -2751,6 +2745,7 @@ TcpSocketBase::ReTxTimeout ()
       return;
     }
 
+  m_recover = m_highTxMark;
   Retransmit ();
 }
 
