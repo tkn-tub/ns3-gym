@@ -1166,8 +1166,6 @@ TcpSocketBase::DoForwardUp (Ptr<Packet> packet, const Address &fromAddress,
 
   m_rxTrace (packet, tcpHeader, this);
 
-  ReadOptions (tcpHeader);
-
   if (tcpHeader.GetFlags () & TcpHeader::SYN)
     {
       /* The window field in a segment where the SYN bit is set (i.e., a <SYN>
@@ -1175,6 +1173,15 @@ TcpSocketBase::DoForwardUp (Ptr<Packet> packet, const Address &fromAddress,
        * saved anyway..
        */
       m_rWnd = tcpHeader.GetWindowSize ();
+
+      if (tcpHeader.HasOption (TcpOption::WINSCALE) && m_winScalingEnabled)
+        {
+          ProcessOptionWScale (tcpHeader.GetOption (TcpOption::WINSCALE));
+        }
+      else
+        {
+          m_winScalingEnabled = false;
+        }
 
       // When receiving a <SYN> or <SYN-ACK> we should adapt TS to the other end
       if (tcpHeader.HasOption (TcpOption::TS) && m_timestampEnabled)
@@ -3102,26 +3109,6 @@ bool
 TcpSocketBase::GetAllowBroadcast (void) const
 {
   return false;
-}
-
-void
-TcpSocketBase::ReadOptions (const TcpHeader& header)
-{
-  NS_LOG_FUNCTION (this << header);
-
-  if ((header.GetFlags () & TcpHeader::SYN))
-    {
-      if (m_winScalingEnabled)
-        {
-          m_winScalingEnabled = false;
-
-          if (header.HasOption (TcpOption::WINSCALE))
-            {
-              m_winScalingEnabled = true;
-              ProcessOptionWScale (header.GetOption (TcpOption::WINSCALE));
-            }
-        }
-    }
 }
 
 void

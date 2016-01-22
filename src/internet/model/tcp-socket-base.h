@@ -824,20 +824,6 @@ protected:
    */
   virtual void DoRetransmit (void);
 
-  /**
-   * \brief Read TCP options from incoming packets
-   *
-   * This method sequentially checks each kind of option, and if it
-   * is present in the header, starts its processing.
-   *
-   * To deal with hosts which don't have the option enabled (or
-   * implemented) we disable all options, and then re-enable them
-   * if in the packet there is the option itself.
-   *
-   * \param tcpHeader the packet's TCP header
-   */
-  virtual void ReadOptions (const TcpHeader& tcpHeader);
-
   /** \brief Add options to TcpHeader
    *
    * Test each option, and if it is enabled on our side, add it
