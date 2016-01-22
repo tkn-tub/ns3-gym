@@ -52,7 +52,8 @@ class TcpHeader;
  *
  * \brief Helper class to store RTT measurements
  */
-class RttHistory {
+class RttHistory
+{
 public:
   /**
    * \brief Constructor - builds an RttHistory with the given parameters
@@ -160,7 +161,10 @@ public:
    *
    * \return Congestion window in segments
    */
-  uint32_t GetCwndInSegments () const { return m_cWnd / m_segmentSize; }
+  uint32_t GetCwndInSegments () const
+  {
+    return m_cWnd / m_segmentSize;
+  }
 };
 
 /**
@@ -357,7 +361,7 @@ public:
    * \param newValue new congestion state value
    */
   void UpdateCongState (TcpSocketState::TcpCongState_t oldValue,
-                       TcpSocketState::TcpCongState_t newValue);
+                        TcpSocketState::TcpCongState_t newValue);
 
   /**
    * \brief Install a congestion control algorithm on this socket
@@ -394,9 +398,8 @@ public:
    * \param [in] ipv4
    * \param [in] interface
    */
-  typedef void (* TcpTxRxTracedCallback)
-    (const Ptr<const Packet> packet, const TcpHeader& header,
-     const Ptr<const TcpSocketBase> socket);
+  typedef void (* TcpTxRxTracedCallback)(const Ptr<const Packet> packet, const TcpHeader& header,
+                                         const Ptr<const TcpSocketBase> socket);
 
 protected:
   // Implementing ns3::TcpSocket -- Attribute get/set
@@ -742,10 +745,10 @@ protected:
   virtual uint16_t AdvertisedWindowSize (void) const;
 
   /**
-   * \brief Update the receiver window (RWND) based on the value of the 
+   * \brief Update the receiver window (RWND) based on the value of the
    * window field in the header.
    *
-   * This method suppresses updates unless one of the following three 
+   * This method suppresses updates unless one of the following three
    * conditions holds:  1) segment contains new data (advancing the right
    * edge of the receive buffer), 2) segment does not contain new data
    * but the segment acks new data (highest sequence number acked advances),
@@ -823,7 +826,7 @@ protected:
 
   /**
    * \brief Read TCP options from incoming packets
-   *  
+   *
    * This method sequentially checks each kind of option, and if it
    * is present in the header, starts its processing.
    *
@@ -984,11 +987,11 @@ protected:
   bool                   m_limitedTx;    //!< perform limited transmit
 
   // Transmission Control Block
-  Ptr<TcpSocketState>    m_tcb  ;             //!< Congestion control informations
+  Ptr<TcpSocketState>    m_tcb;               //!< Congestion control informations
   Ptr<TcpCongestionOps>  m_congestionControl; //!< Congestion control
 
   // Guesses over the other connection end
-  bool m_isFirstPartialAck;//!< First partial ACK during RECOVERY
+  bool m_isFirstPartialAck; //!< First partial ACK during RECOVERY
 
   // The following two traces pass a packet with a TCP header
   TracedCallback<Ptr<const Packet>, const TcpHeader&,
