@@ -283,6 +283,7 @@ TcpSocketBase::TcpSocketBase (void)
     m_maxWinSize (0),
     m_rWnd (0),
     m_highRxMark (0),
+    m_highTxAck (0),
     m_highRxAckMark (0),
     m_bytesAckedNotProcessed (0),
     m_winScalingEnabled (false),
@@ -1175,11 +1176,42 @@ TcpSocketBase::DoForwardUp (Ptr<Packet> packet, const Address &fromAddress,
        */
       m_rWnd = tcpHeader.GetWindowSize ();
 
+      // When receiving a <SYN> or <SYN-ACK> we should adapt TS to the other end
+      if (tcpHeader.HasOption (TcpOption::TS) && m_timestampEnabled)
+        {
+          ProcessOptionTimestamp (tcpHeader.GetOption (TcpOption::TS),
+                                  tcpHeader.GetSequenceNumber ());
+        }
+      else
+        {
+          m_timestampEnabled = false;
+        }
+
+      // Initialize cWnd and ssThresh
       m_tcb->m_cWnd = GetInitialCwnd () * GetSegSize ();
       m_tcb->m_ssThresh = GetInitialSSThresh ();
     }
   else if (tcpHeader.GetFlags () & TcpHeader::ACK)
     {
+      NS_ASSERT (!(tcpHeader.GetFlags () & TcpHeader::SYN));
+      if (m_timestampEnabled)
+        {
+          if (!tcpHeader.HasOption (TcpOption::TS))
+            {
+              // Ignoring segment without TS, RFC 7323
+              NS_LOG_LOGIC ("At state " << TcpStateName[m_state] <<
+                            " received packet of seq [" << seq <<
+                            ":" << seq + packet->GetSize () <<
+                            ") without TS option. Silently discard it");
+              return;
+            }
+          else
+            {
+              ProcessOptionTimestamp (tcpHeader.GetOption (TcpOption::TS),
+                                      tcpHeader.GetSequenceNumber ());
+            }
+        }
+
       EstimateRtt (tcpHeader);
       UpdateWindowSize (tcpHeader);
     }
@@ -2121,6 +2153,10 @@ TcpSocketBase::SendEmptyPacket (uint8_t flags)
     { // If sending an ACK, cancel the delay ACK as well
       m_delAckEvent.Cancel ();
       m_delAckCount = 0;
+      if (m_highTxAck < header.GetAckNumber ())
+        {
+          m_highTxAck = header.GetAckNumber ();
+        }
     }
   if (m_retxEvent.IsExpired () && (hasSyn || hasFin) && !isAck )
     { // Retransmit SYN / SYN+ACK / FIN / FIN+ACK to guard against lost
@@ -3086,15 +3122,6 @@ TcpSocketBase::ReadOptions (const TcpHeader& header)
             }
         }
     }
-
-  bool timestampAttribute = m_timestampEnabled;
-  m_timestampEnabled = false;
-
-  if (header.HasOption (TcpOption::TS) && timestampAttribute)
-    {
-      m_timestampEnabled = true;
-      ProcessOptionTimestamp (header.GetOption (TcpOption::TS));
-    }
 }
 
 void
@@ -3180,12 +3207,17 @@ TcpSocketBase::AddOptionWScale (TcpHeader &header)
 }
 
 void
-TcpSocketBase::ProcessOptionTimestamp (const Ptr<const TcpOption> option)
+TcpSocketBase::ProcessOptionTimestamp (const Ptr<const TcpOption> option,
+                                       const SequenceNumber32 &seq)
 {
   NS_LOG_FUNCTION (this << option);
 
   Ptr<const TcpOptionTS> ts = DynamicCast<const TcpOptionTS> (option);
-  m_timestampToEcho = ts->GetTimestamp ();
+
+  if (seq == m_rxBuffer->NextRxSequence () && seq <= m_highTxAck)
+    {
+      m_timestampToEcho = ts->GetTimestamp ();
+    }
 
   NS_LOG_INFO (m_node->GetId () << " Got timestamp=" <<
                m_timestampToEcho << " and Echo="     << ts->GetEcho ());

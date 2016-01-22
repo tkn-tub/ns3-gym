@@ -882,9 +882,11 @@ protected:
    * to utilize later to calculate RTT.
    *
    * \see EstimateRtt
-   * \param option Option from the packet
+   * \param option Option from the segment
+   * \param seq Sequence number of the segment
    */
-  void ProcessOptionTimestamp (const Ptr<const TcpOption> option);
+  void ProcessOptionTimestamp (const Ptr<const TcpOption> option,
+                               const SequenceNumber32 &seq);
   /**
    * \brief Add the timestamp option to the header
    *
@@ -949,6 +951,7 @@ protected:
   uint16_t              m_maxWinSize;  //!< Maximum window size to advertise
   TracedValue<uint32_t> m_rWnd;        //!< Receiver window (RCV.WND in RFC793)
   TracedValue<SequenceNumber32> m_highRxMark;     //!< Highest seqno received
+  SequenceNumber32 m_highTxAck;                   //!< Highest ack sent
   TracedValue<SequenceNumber32> m_highRxAckMark;  //!< Highest ack received
   uint32_t                      m_bytesAckedNotProcessed;  //!< Bytes acked, but not processed
 
