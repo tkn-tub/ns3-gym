@@ -1158,10 +1158,26 @@ TcpSocketBase::DoForwardUp (Ptr<Packet> packet, const Address &fromAddress,
   // Peel off TCP header and do validity checking
   TcpHeader tcpHeader;
   uint32_t bytesRemoved = packet->RemoveHeader (tcpHeader);
+  SequenceNumber32 seq = tcpHeader.GetSequenceNumber ();
   if (bytesRemoved == 0 || bytesRemoved > 60)
     {
       NS_LOG_ERROR ("Bytes removed: " << bytesRemoved << " invalid");
       return; // Discard invalid packet
+    }
+  else if (packet->GetSize () > 0 && OutOfRange (seq, seq + packet->GetSize ()))
+    {
+      // Discard fully out of range data packets
+      NS_LOG_LOGIC ("At state " << TcpStateName[m_state] <<
+                    " received packet of seq [" << seq <<
+                    ":" << seq + packet->GetSize () <<
+                    ") out of range [" << m_rxBuffer->NextRxSequence () << ":" <<
+                    m_rxBuffer->MaxRxSequence () << ")");
+      // Acknowledgement should be sent for all unacceptable packets (RFC793, p.69)
+      if (m_state == ESTABLISHED && !(tcpHeader.GetFlags () & TcpHeader::RST))
+        {
+          SendEmptyPacket (TcpHeader::ACK);
+        }
+      return;
     }
 
   m_rxTrace (packet, tcpHeader, this);
@@ -1171,23 +1187,6 @@ TcpSocketBase::DoForwardUp (Ptr<Packet> packet, const Address &fromAddress,
   if (tcpHeader.GetFlags () & TcpHeader::ACK)
     {
       EstimateRtt (tcpHeader);
-    }
-
-  // Discard fully out of range data packets
-  if (packet->GetSize ()
-      && OutOfRange (tcpHeader.GetSequenceNumber (), tcpHeader.GetSequenceNumber () + packet->GetSize ()))
-    {
-      NS_LOG_LOGIC ("At state " << TcpStateName[m_state] <<
-                    " received packet of seq [" << tcpHeader.GetSequenceNumber () <<
-                    ":" << tcpHeader.GetSequenceNumber () + packet->GetSize () <<
-                    ") out of range [" << m_rxBuffer->NextRxSequence () << ":" <<
-                    m_rxBuffer->MaxRxSequence () << ")");
-      // Acknowledgement should be sent for all unacceptable packets (RFC793, p.69)
-      if (m_state == ESTABLISHED && !(tcpHeader.GetFlags () & TcpHeader::RST))
-        {
-          SendEmptyPacket (TcpHeader::ACK);
-        }
-      return;
     }
 
   // Update Rx window size, i.e. the flow control window

@@ -80,6 +80,7 @@ Bugs fixed
 - Bug 2254 - Ipv[4,6]RawSocket can return the wrong number of bytes sent.
 - Bug 2255 - Ipv6RawSocket does not call data sent callbacks.
 - Bug 2257 - Ipv[4,6]InterfaceContainer::Add are not consistent
+- Bug 2258 - TcpSocketBase updated options and RTT for out of range segments.
 - Bug 2259 - GSL not successfully enabled for Wi-Fi DSSS error rate model
 - Bug 2267 - Wrong channel bandwidth value in pcap files
 - Bug 2272 - SixLowPan NetDevice can not send uncompressed packets larger than 802.15.4 MTU
