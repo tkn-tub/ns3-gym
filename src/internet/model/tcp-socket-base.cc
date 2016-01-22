@@ -1363,7 +1363,8 @@ TcpSocketBase::ReceivedAck (Ptr<Packet> packet, const TcpHeader& tcpHeader)
   NS_ASSERT (0 != (tcpHeader.GetFlags () & TcpHeader::ACK));
   NS_ASSERT (m_tcb->m_segmentSize > 0);
 
-  uint32_t bytesAcked = tcpHeader.GetAckNumber () - m_txBuffer->HeadSequence ();
+  SequenceNumber32 ackNumber = tcpHeader.GetAckNumber ();
+  uint32_t bytesAcked = ackNumber - m_txBuffer->HeadSequence ();
   uint32_t segsAcked  = bytesAcked / m_tcb->m_segmentSize;
   m_bytesAckedNotProcessed += bytesAcked % m_tcb->m_segmentSize;
 
@@ -1377,12 +1378,12 @@ TcpSocketBase::ReceivedAck (Ptr<Packet> packet, const TcpHeader& tcpHeader)
                 " Segments acked: " << segsAcked <<
                 " bytes left: " << m_bytesAckedNotProcessed);
 
-  NS_LOG_DEBUG ("ACK of " << tcpHeader.GetAckNumber () <<
+  NS_LOG_DEBUG ("ACK of " << ackNumber <<
                 " SND.UNA=" << m_txBuffer->HeadSequence () <<
                 " SND.NXT=" << m_nextTxSequence);
 
-  if (tcpHeader.GetAckNumber () == m_txBuffer->HeadSequence ()
-      && tcpHeader.GetAckNumber () < m_nextTxSequence
+  if (ackNumber == m_txBuffer->HeadSequence ()
+      && ackNumber < m_nextTxSequence
       && packet->GetSize () == 0)
     {
       // There is a DupAck
@@ -1440,12 +1441,12 @@ TcpSocketBase::ReceivedAck (Ptr<Packet> packet, const TcpHeader& tcpHeader)
       // Artificially call PktsAcked. After all, one segment has been ACKed.
       m_congestionControl->PktsAcked (m_tcb, 1, m_lastRtt);
     }
-  else if (tcpHeader.GetAckNumber () == m_txBuffer->HeadSequence ()
-           && tcpHeader.GetAckNumber () == m_nextTxSequence)
+  else if (ackNumber == m_txBuffer->HeadSequence ()
+           && ackNumber == m_nextTxSequence)
     {
       // Dupack, but the ACK is precisely equal to the nextTxSequence
     }
-  else if (tcpHeader.GetAckNumber () > m_txBuffer->HeadSequence ())
+  else if (ackNumber > m_txBuffer->HeadSequence ())
     { // Case 3: New ACK, reset m_dupAckCount and update m_txBuffer
       bool callCongestionControl = true;
       bool resetRTO = true;
@@ -1483,7 +1484,7 @@ TcpSocketBase::ReceivedAck (Ptr<Packet> packet, const TcpHeader& tcpHeader)
         }
       else if (m_tcb->m_congState == TcpSocketState::CA_RECOVERY)
         {
-          if (tcpHeader.GetAckNumber () < m_recover)
+          if (ackNumber < m_recover)
             {
               /* Partial ACK.
                * In case of partial ACK, retransmit the first unacknowledged
@@ -1511,7 +1512,7 @@ TcpSocketBase::ReceivedAck (Ptr<Packet> packet, const TcpHeader& tcpHeader)
 
               callCongestionControl = false; // No congestion control on cWnd show be invoked
               m_dupAckCount -= segsAcked;    // Update the dupAckCount
-              m_txBuffer->DiscardUpTo (tcpHeader.GetAckNumber ());  //Bug 1850:  retransmit before newack
+              m_txBuffer->DiscardUpTo (ackNumber);  //Bug 1850:  retransmit before newack
               DoRetransmit (); // Assume the next seq is lost. Retransmit lost packet
 
               if (m_isFirstPartialAck)
@@ -1529,12 +1530,12 @@ TcpSocketBase::ReceivedAck (Ptr<Packet> packet, const TcpHeader& tcpHeader)
                */
               m_congestionControl->PktsAcked (m_tcb, 1, m_lastRtt);
 
-              NS_LOG_INFO ("Partial ACK for seq " << tcpHeader.GetAckNumber () <<
+              NS_LOG_INFO ("Partial ACK for seq " << ackNumber <<
                            " in fast recovery: cwnd set to " << m_tcb->m_cWnd <<
                            " recover seq: " << m_recover <<
                            " dupAck count: " << m_dupAckCount);
             }
-          else if (tcpHeader.GetAckNumber () >= m_recover)
+          else if (ackNumber >= m_recover)
             { // Full ACK (RFC2582 sec.3 bullet #5 paragraph 2, option 1)
               m_tcb->m_cWnd = std::min (m_tcb->m_ssThresh.Get (),
                                         BytesInFlight () + m_tcb->m_segmentSize);
@@ -1547,10 +1548,10 @@ TcpSocketBase::ReceivedAck (Ptr<Packet> packet, const TcpHeader& tcpHeader)
                * except the (maybe) new ACKs which come from a new window
                */
               m_congestionControl->PktsAcked (m_tcb, segsAcked, m_lastRtt);
-              newSegsAcked = (tcpHeader.GetAckNumber () - m_recover) / m_tcb->m_segmentSize;
+              newSegsAcked = (ackNumber - m_recover) / m_tcb->m_segmentSize;
               m_tcb->m_congState = TcpSocketState::CA_OPEN;
 
-              NS_LOG_INFO ("Received full ACK for seq " << tcpHeader.GetAckNumber () <<
+              NS_LOG_INFO ("Received full ACK for seq " << ackNumber <<
                            ". Leaving fast recovery with cwnd set to " << m_tcb->m_cWnd);
               NS_LOG_DEBUG ("RECOVERY -> OPEN");
             }
@@ -1582,7 +1583,7 @@ TcpSocketBase::ReceivedAck (Ptr<Packet> packet, const TcpHeader& tcpHeader)
           NS_ASSERT (m_tcb->m_congState == TcpSocketState::CA_RECOVERY);
         }
 
-      NewAck (tcpHeader.GetAckNumber (), resetRTO);
+      NewAck (ackNumber, resetRTO);
 
       // Try to send more data
       if (!m_sendPendingDataEvent.IsRunning ())
