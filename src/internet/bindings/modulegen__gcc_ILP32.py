@@ -738,7 +738,6 @@ def register_types(module):
     module.add_container('std::vector< bool >', 'bool', container_type=u'vector')
     module.add_container('std::list< ns3::RipNgRte >', 'ns3::RipNgRte', container_type=u'list')
     module.add_container('std::vector< ns3::Ipv6Address >', 'ns3::Ipv6Address', container_type=u'vector')
-    module.add_container('std::map< ns3::SequenceNumber< unsigned int, int >, ns3::Ptr< ns3::Packet > >', ('ns3::SequenceNumber< unsigned int, int >', 'ns3::Ptr< ns3::Packet >'), container_type=u'map')
     module.add_container('std::list< ns3::Ptr< ns3::Packet > >', 'ns3::Ptr< ns3::Packet >', container_type=u'list')
     module.add_container('std::map< unsigned int, unsigned int >', ('unsigned int', 'unsigned int'), container_type=u'map')
     module.add_container('std::set< unsigned int >', 'unsigned int', container_type=u'set')
@@ -8983,10 +8982,20 @@ def register_Ns3TcpHeader_methods(root_module, cls):
                    'uint8_t', 
                    [], 
                    is_const=True)
+    ## tcp-header.h (module 'internet'): uint8_t ns3::TcpHeader::GetMaxOptionLength() const [member function]
+    cls.add_method('GetMaxOptionLength', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True)
     ## tcp-header.h (module 'internet'): ns3::Ptr<ns3::TcpOption> ns3::TcpHeader::GetOption(uint8_t kind) const [member function]
     cls.add_method('GetOption', 
                    'ns3::Ptr< ns3::TcpOption >', 
                    [param('uint8_t', 'kind')], 
+                   is_const=True)
+    ## tcp-header.h (module 'internet'): uint8_t ns3::TcpHeader::GetOptionLength() const [member function]
+    cls.add_method('GetOptionLength', 
+                   'uint8_t', 
+                   [], 
                    is_const=True)
     ## tcp-header.h (module 'internet'): ns3::SequenceNumber32 ns3::TcpHeader::GetSequenceNumber() const [member function]
     cls.add_method('GetSequenceNumber', 
@@ -9279,20 +9288,6 @@ def register_Ns3TcpRxBuffer_methods(root_module, cls):
                    'uint32_t', 
                    [], 
                    is_const=True)
-    ## tcp-rx-buffer.h (module 'internet'): ns3::TcpRxBuffer::m_availBytes [variable]
-    cls.add_instance_attribute('m_availBytes', 'uint32_t', is_const=False)
-    ## tcp-rx-buffer.h (module 'internet'): ns3::TcpRxBuffer::m_data [variable]
-    cls.add_instance_attribute('m_data', 'std::map< ns3::SequenceNumber< unsigned int, int >, ns3::Ptr< ns3::Packet > >', is_const=False)
-    ## tcp-rx-buffer.h (module 'internet'): ns3::TcpRxBuffer::m_finSeq [variable]
-    cls.add_instance_attribute('m_finSeq', 'ns3::SequenceNumber32', is_const=False)
-    ## tcp-rx-buffer.h (module 'internet'): ns3::TcpRxBuffer::m_gotFin [variable]
-    cls.add_instance_attribute('m_gotFin', 'bool', is_const=False)
-    ## tcp-rx-buffer.h (module 'internet'): ns3::TcpRxBuffer::m_maxBuffer [variable]
-    cls.add_instance_attribute('m_maxBuffer', 'uint32_t', is_const=False)
-    ## tcp-rx-buffer.h (module 'internet'): ns3::TcpRxBuffer::m_nextRxSeq [variable]
-    cls.add_instance_attribute('m_nextRxSeq', 'ns3::TracedValue< ns3::SequenceNumber< unsigned int, int > >', is_const=False)
-    ## tcp-rx-buffer.h (module 'internet'): ns3::TcpRxBuffer::m_size [variable]
-    cls.add_instance_attribute('m_size', 'uint32_t', is_const=False)
     return
 
 def register_Ns3TcpSocket_methods(root_module, cls):
@@ -9799,11 +9794,6 @@ def register_Ns3TcpSocketBase_methods(root_module, cls):
                    'bool', 
                    [], 
                    is_const=True, visibility='protected', is_virtual=True)
-    ## tcp-socket-base.h (module 'internet'): void ns3::TcpSocketBase::InitializeCwnd() [member function]
-    cls.add_method('InitializeCwnd', 
-                   'void', 
-                   [], 
-                   visibility='protected', is_virtual=True)
     ## tcp-socket-base.h (module 'internet'): void ns3::TcpSocketBase::LastAckTimeout() [member function]
     cls.add_method('LastAckTimeout', 
                    'void', 
@@ -9849,10 +9839,10 @@ def register_Ns3TcpSocketBase_methods(root_module, cls):
                    'void', 
                    [param('ns3::Ptr< ns3::Packet >', 'packet'), param('ns3::TcpHeader const &', 'tcpHeader'), param('ns3::Address const &', 'fromAddress'), param('ns3::Address const &', 'toAddress')], 
                    visibility='protected')
-    ## tcp-socket-base.h (module 'internet'): void ns3::TcpSocketBase::ProcessOptionTimestamp(ns3::Ptr<const ns3::TcpOption> const option) [member function]
+    ## tcp-socket-base.h (module 'internet'): void ns3::TcpSocketBase::ProcessOptionTimestamp(ns3::Ptr<const ns3::TcpOption> const option, ns3::SequenceNumber32 const & seq) [member function]
     cls.add_method('ProcessOptionTimestamp', 
                    'void', 
-                   [param('ns3::Ptr< ns3::TcpOption const > const', 'option')], 
+                   [param('ns3::Ptr< ns3::TcpOption const > const', 'option'), param('ns3::SequenceNumber32 const &', 'seq')], 
                    visibility='protected')
     ## tcp-socket-base.h (module 'internet'): void ns3::TcpSocketBase::ProcessOptionWScale(ns3::Ptr<const ns3::TcpOption> const option) [member function]
     cls.add_method('ProcessOptionWScale', 
@@ -9879,11 +9869,6 @@ def register_Ns3TcpSocketBase_methods(root_module, cls):
                    'void', 
                    [], 
                    visibility='protected', is_virtual=True)
-    ## tcp-socket-base.h (module 'internet'): void ns3::TcpSocketBase::ReadOptions(ns3::TcpHeader const & tcpHeader) [member function]
-    cls.add_method('ReadOptions', 
-                   'void', 
-                   [param('ns3::TcpHeader const &', 'tcpHeader')], 
-                   visibility='protected', is_virtual=True)
     ## tcp-socket-base.h (module 'internet'): void ns3::TcpSocketBase::ReceivedAck(ns3::Ptr<ns3::Packet> packet, ns3::TcpHeader const & tcpHeader) [member function]
     cls.add_method('ReceivedAck', 
                    'void', 
@@ -9898,11 +9883,6 @@ def register_Ns3TcpSocketBase_methods(root_module, cls):
     cls.add_method('Retransmit', 
                    'void', 
                    [], 
-                   visibility='protected', is_virtual=True)
-    ## tcp-socket-base.h (module 'internet'): void ns3::TcpSocketBase::ScaleSsThresh(uint8_t scaleFactor) [member function]
-    cls.add_method('ScaleSsThresh', 
-                   'void', 
-                   [param('uint8_t', 'scaleFactor')], 
                    visibility='protected', is_virtual=True)
     ## tcp-socket-base.h (module 'internet'): uint32_t ns3::TcpSocketBase::SendDataPacket(ns3::SequenceNumber32 seq, uint32_t maxSize, bool withAck) [member function]
     cls.add_method('SendDataPacket', 
