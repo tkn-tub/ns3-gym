@@ -39,32 +39,31 @@ ns-3 TCP
 Until ns-3.10 release, |ns3| contained a port of the TCP model from `GTNetS
 <http://www.ece.gatech.edu/research/labs/MANIACS/GTNetS/index.html>`_. 
 This implementation was substantially rewritten by Adriam Tam for ns-3.10.
+In 2015, the TCP module has been redesigned during the GSoC summer code,
+in order to create a friendly environment for creating and carrying out
+automated tests. One of the main change involves congestion control algorithms,
+and how they are implemented.
+
+Before ns-3.25 release, a congestion control was considered as a stand-alone TCP
+through an inheritance relation: each congestion control (e.g. TcpNewReno) was
+a subclass of TcpSocketBase, reimplementing some inherited methods. One of
+the fundamental principle of the GSoC proposal was avoiding this inheritance,
+by making each congestion control a separate class, and making an interface
+to exchange important data between TcpSocketBase and congestion modules.
+For instance, such modularity is already used in Linux.
+
+Along with congestion control, Fast Retransmit and Fast Recovery algorithms
+have been touched; in previous releases, these algorithms were demanded to
+TcpSocketBase subclasses. Starting from ns-3.25, they have been merged inside
+TcpSocketBase. In future releases, they can be extracted as separate modules,
+following the congestion control design.
+
 The model is a full TCP, in that it is bidirectional and attempts to model the
 connection setup and close logic. 
 
-The implementation of TCP is contained in the following files:
+Please see the doxygen documentation for an in-depth view of the design
+and the implementation details.
 
-.. sourcecode:: text
-
-    src/internet/model/tcp-header.{cc,h}
-    src/internet/model/tcp-l4-protocol.{cc,h}
-    src/internet/model/tcp-socket-factory-impl.{cc,h}
-    src/internet/model/tcp-socket-base.{cc,h}
-    src/internet/model/tcp-tx-buffer.{cc,h}
-    src/internet/model/tcp-rx-buffer.{cc,h}
-    src/internet/model/tcp-rfc793.{cc,h}
-    src/internet/model/tcp-tahoe.{cc,h}
-    src/internet/model/tcp-reno.{cc,h}
-    src/internet/model/tcp-westwood.{cc,h}
-    src/internet/model/tcp-newreno.{cc,h}
-    src/internet/model/rtt-estimator.{cc,h}
-    src/network/model/sequence-number.{cc,h}
-
-Different variants of TCP congestion control are supported by subclassing
-the common base class :cpp:class:`TcpSocketBase`.  Several variants
-are supported, including :rfc:`793` (no congestion control), Tahoe, Reno, Westwood,
-Westwood+, and NewReno.  NewReno is used by default.  See the Usage section of this
-document for on how to change the default TCP variant used in simulation.
 
 Usage
 +++++
@@ -153,15 +152,50 @@ Several TCP validation test results can be found in the
 `wiki page <http://www.nsnam.org/wiki/New_TCP_Socket_Architecture>`_ 
 describing this implementation.
 
+Writing a new congestion control algorithm
+++++++++++++++++++++++++++++++++++++++++++
+
+Writing (or porting) a congestion control algorithms from scratch (or from
+other systems) is a process completely separated from the internals of
+TcpSocketBase since ns-3.25 release.
+
+All operations that are demanded to a congestion control are contained in
+the class TcpCongestionOps. It mimics the structure tcp_congestion_ops of
+Linux, and the following operations are defined:
+
+.. code-block:: c++
+
+  virtual std::string GetName () const;
+  virtual uint32_t GetSsThresh (Ptr<const TcpSocketState> tcb, uint32_t bytesInFlight);
+  virtual void IncreaseWindow (Ptr<TcpSocketState> tcb, uint32_t segmentsAcked);
+  virtual void PktsAcked (Ptr<TcpSocketState> tcb, uint32_t segmentsAcked,const Time& rtt);
+  virtual Ptr<TcpCongestionOps> Fork ();
+
+The most interesting methods to write are, for sure, GetSsThresh and IncreaseWindow.
+The latter is called when TcpSocketBase decides that it is time to increase
+the congestion window. Many informations are available in the Transmission
+Control Block, and the method should increase cWnd and/or ssThresh based
+on the number of the segments acked.
+
+GetSsThresh is called whenever the socket needs an updated value of the
+slow start threshold. This happens after a loss; congestion control algorithms
+are then asked to lower such value, and to return it.
+
+PktsAcked is used in case the algorithm needs timing information (such as
+RTT), and it is called each time an ACK is received.
+
+
 Current limitations
 +++++++++++++++++++
 
 * SACK is not supported
+* TcpCongestionOps interface does not contain every possible Linux operation
+* Fast retransmit / fast recovery are bound with TcpSocketBase
 
 Testing TCP
 +++++++++++
 
-In GSoC 2015, the TCP subsystem has been improved to support automated test
+Starting from ns-3.25 release, the TCP subsystem has been improved to support automated test
 cases on both socket functionalities and congestion control algorithms. To show
 how to write tests for TCP, here we will explain the process of creating a test
 case which reproduces a bug, firstly reported as bug 1571 in 2013, not fixed
@@ -274,7 +308,7 @@ to be aware of the various possibility that it offers.
 
 .. note::
    By design, we choose to mantain a close relationship between TcpSocketBase
-   and TcpGeneralClass: they are connected by a friendship relation. Since
+   and TcpGeneralTest: they are connected by a friendship relation. Since
    friendship is not passed through inheritance, if you discover that you
    need to access or to modify a private (or protected) member of TcpSocketBase,
    you can do it by adding a method in the class TcpGeneralSocket. An example
