@@ -124,7 +124,8 @@ public:
    * \returns a packet
    */
   Ptr<Packet> Extract (uint32_t maxSize);
-public:
+
+private:
   /// container for data stored in the buffer
   typedef std::map<SequenceNumber32, Ptr<Packet> >::iterator BufIterator;
   TracedValue<SequenceNumber32> m_nextRxSeq; //!< Seqnum of the first missing byte in data (RCV.NXT)
