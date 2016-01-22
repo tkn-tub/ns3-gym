@@ -972,9 +972,9 @@ protected:
   uint32_t                      m_bytesAckedNotProcessed;  //!< Bytes acked, but not processed
 
   // Options
-  bool    m_winScalingEnabled;    //!< Window Scale option enabled
-  uint8_t m_sndScaleFactor;       //!< Sent Window Scale (i.e., the one of the node)
-  uint8_t m_rcvScaleFactor;       //!< Received Window Scale (i.e., the one of the peer)
+  bool    m_winScalingEnabled; //!< Window Scale option enabled (RFC 7323)
+  uint8_t m_rcvWindShift;      //!< Window shift to apply to outgoing segments
+  uint8_t m_sndWindShift;      //!< Window shift to apply to incoming segments
 
   bool     m_timestampEnabled;    //!< Timestamp option enabled
   uint32_t m_timestampToEcho;     //!< Timestamp to echo

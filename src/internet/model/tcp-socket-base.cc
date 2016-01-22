@@ -286,8 +286,8 @@ TcpSocketBase::TcpSocketBase (void)
     m_highRxAckMark (0),
     m_bytesAckedNotProcessed (0),
     m_winScalingEnabled (false),
-    m_sndScaleFactor (0),
-    m_rcvScaleFactor (0),
+    m_rcvWindShift (0),
+    m_sndWindShift (0),
     m_timestampEnabled (true),
     m_timestampToEcho (0),
     m_sendPendingDataEvent (),
@@ -355,8 +355,8 @@ TcpSocketBase::TcpSocketBase (const TcpSocketBase& sock)
     m_highRxAckMark (sock.m_highRxAckMark),
     m_bytesAckedNotProcessed (sock.m_bytesAckedNotProcessed),
     m_winScalingEnabled (sock.m_winScalingEnabled),
-    m_sndScaleFactor (sock.m_sndScaleFactor),
-    m_rcvScaleFactor (sock.m_rcvScaleFactor),
+    m_rcvWindShift (sock.m_rcvWindShift),
+    m_sndWindShift (sock.m_sndWindShift),
     m_timestampEnabled (sock.m_timestampEnabled),
     m_timestampToEcho (sock.m_timestampToEcho),
     m_recover (sock.m_recover),
@@ -2543,7 +2543,7 @@ TcpSocketBase::AdvertisedWindowSize () const
 {
   uint32_t w = m_rxBuffer->MaxBufferSize ();
 
-  w >>= m_sndScaleFactor;
+  w >>= m_rcvWindShift;
 
   if (w > m_maxWinSize)
     {
@@ -3101,7 +3101,7 @@ TcpSocketBase::ReadOptions (const TcpHeader& header)
             {
               m_winScalingEnabled = true;
               ProcessOptionWScale (header.GetOption (TcpOption::WINSCALE));
-              ScaleSsThresh (m_sndScaleFactor);
+              ScaleSsThresh (m_rcvWindShift);
             }
         }
     }
@@ -3142,16 +3142,16 @@ TcpSocketBase::ProcessOptionWScale (const Ptr<const TcpOption> option)
 
   // In naming, we do the contrary of RFC 1323. The received scaling factor
   // is Rcv.Wind.Scale (and not Snd.Wind.Scale)
-  m_rcvScaleFactor = ws->GetScale ();
+  m_sndWindShift = ws->GetScale ();
 
-  if (m_rcvScaleFactor > 14)
+  if (m_sndWindShift > 14)
     {
-      NS_LOG_WARN ("Possible error; m_rcvScaleFactor exceeds 14: " << m_rcvScaleFactor);
-      m_rcvScaleFactor = 14;
+      NS_LOG_WARN ("Possible error; m_sndWindShift exceeds 14: " << m_sndWindShift);
+      m_sndWindShift = 14;
     }
 
   NS_LOG_INFO (m_node->GetId () << " Received a scale factor of " <<
-               static_cast<int> (m_rcvScaleFactor));
+               static_cast<int> (m_sndWindShift));
 }
 
 uint8_t
@@ -3189,13 +3189,13 @@ TcpSocketBase::AddOptionWScale (TcpHeader &header)
   // In naming, we do the contrary of RFC 1323. The sended scaling factor
   // is Snd.Wind.Scale (and not Rcv.Wind.Scale)
 
-  m_sndScaleFactor = CalculateWScale ();
-  option->SetScale (m_sndScaleFactor);
+  m_rcvWindShift = CalculateWScale ();
+  option->SetScale (m_rcvWindShift);
 
   header.AppendOption (option);
 
   NS_LOG_INFO (m_node->GetId () << " Send a scaling factor of " <<
-               static_cast<int> (m_sndScaleFactor));
+               static_cast<int> (m_rcvWindShift));
 }
 
 void
@@ -3231,7 +3231,7 @@ void TcpSocketBase::UpdateWindowSize (const TcpHeader &header)
   //  If the connection is not established, the window size is always
   //  updated
   uint32_t receivedWindow = header.GetWindowSize ();
-  receivedWindow <<= m_rcvScaleFactor;
+  receivedWindow <<= m_sndWindShift;
   NS_LOG_INFO ("Received (scaled) window is " << receivedWindow << " bytes");
   if (m_state < ESTABLISHED)
     {
