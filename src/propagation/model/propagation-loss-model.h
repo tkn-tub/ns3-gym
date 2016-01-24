@@ -629,17 +629,24 @@ private:
  * \ingroup propagation
  *
  * \brief Nakagami-m fast fading propagation loss model.
+ * 
+ * This propagation loss model implements the Nakagami-m fast fading
+ * model, which accounts for the variations in signal strength due to multipath
+ * fading. The model does not account for the path loss due to the
+ * distance traveled by the signal, hence for typical simulation usage it
+ * is recommended to consider using it in combination with other models
+ * that take into account this aspect. 
  *
  * The Nakagami-m distribution is applied to the power level. The probability
  * density function is defined as
- * \f[ p(x; m, \omega) = \frac{2 m^m}{\Gamma(m) \omega^m} x^{2m - 1} e^{-\frac{m}{\omega} x^2} = 2 x \cdot p_{\text{Gamma}}(x^2, m, \frac{m}{\omega}) \f]
+ * \f[ p(x; m, \omega) = \frac{2 m^m}{\Gamma(m) \omega^m} x^{2m - 1} e^{-\frac{m}{\omega} x^2}  \f]
  * with \f$ m \f$ the fading depth parameter and \f$ \omega \f$ the average received power.
  *
  * It is implemented by either a ns3::GammaRandomVariable or a 
  * ns3::ErlangRandomVariable random variable.
  *
- * Like in ns3::ThreeLogDistancePropagationLossModel, the m parameter is varied
- * over three distance fields:
+ * The implementation of the model allows to specify different values of the m parameter (and hence different fading profiles)
+ * for three different distance ranges:
  * \f[ \underbrace{0 \cdots\cdots}_{m_0} \underbrace{d_1 \cdots\cdots}_{m_1} \underbrace{d_2 \cdots\cdots}_{m_2} \infty \f]
  *
  * For m = 1 the Nakagami-m distribution equals the Rayleigh distribution. Thus

@@ -267,21 +267,27 @@ propagation loss.
 NakagamiPropagationLossModel
 ============================
 
-This propagation loss model implements Nakagami-m fast fading propagation loss model.
+This propagation loss model implements the Nakagami-m fast fading
+model, which accounts for the variations in signal strength due to multipath
+fading. The model does not account for the path loss due to the
+distance traveled by the signal, hence for typical simulation usage it
+is recommended to consider using it in combination with other models
+that take into account this aspect. 
 
 The Nakagami-m distribution is applied to the power level. The probability density function is defined as
 
 .. math::
 
-  p(x; m, \omega) = \frac{2 m^m}{\Gamma(m) \omega^m} x^{2m - 1} e^{-\frac{m}{\omega} x^2} = 2 x \cdot p_{\text{Gamma}}(x^2, m, \frac{m}{\omega})
+  p(x; m, \omega) = \frac{2 m^m}{\Gamma(m) \omega^m} x^{2m - 1} e^{-\frac{m}{\omega} x^2} )
   
 with :math:`m` the fading depth parameter and :math:`\omega` the average received power.
 
 It is implemented by either a :cpp:class:`GammaRandomVariable` or a :cpp:class:`ErlangRandomVariable`
 random variable.
 
-Like in :cpp:class:ThreeLogDistancePropagationLossModel`, the :math:`m` parameter is varied
-over three distance fields:
+The implementation of the model allows to specify different values of
+the :math:`m` parameter (and hence different fast fading profiles)
+for three different distance ranges:
 
 .. math::
 
