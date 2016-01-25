@@ -18,6 +18,8 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 
+#define __STDC_LIMIT_MACROS
+
 #include "ns3/object.h"
 #include "ns3/log.h"
 #include "ns3/uinteger.h"
