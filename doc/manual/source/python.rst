@@ -77,7 +77,7 @@ waf contains some options that automatically update the python path to find the 
 
 .. sourcecode:: bash
 
-  $ ./waf --shell
+  $ ./waf shell
   $ python examples/wireless/mixed-wireless.py
 
 and the other is to use the --pyrun option to waf:
@@ -90,14 +90,14 @@ To run a python script under the C debugger:
 
 .. sourcecode:: bash
 
-  $ ./waf --shell
+  $ ./waf shell
   $ gdb --args python examples/wireless/mixed-wireless.py
 
 To run your own Python script that calls |ns3| and that has this path, ``/path/to/your/example/my-script.py``, do the following:
 
 .. sourcecode:: bash
 
-  $ ./waf --shell
+  $ ./waf shell
   $ python /path/to/your/example/my-script.py
 
 Caveats
