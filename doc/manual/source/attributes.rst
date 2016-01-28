@@ -41,8 +41,8 @@ specificity, these are:
 | :cpp:class:`ObjectFactory`            | Affects all instances created with  |
 |                                       | the factory.                        |
 +---------------------------------------+-------------------------------------+
-| :cpp:func:`XHelperSetAttribute ()`    | Affects all instances created by    |
-|                                       | the helper.                         |
+| Helper methods with (string/          | Affects all instances created by    |
+| AttributeValue) parameter pairs       | the helper.                         |
 +---------------------------------------+-------------------------------------+
 | | :cpp:func:`MyClass::SetX ()`        | Alters this particular instance.    |
 | | :cpp:func:`Object::SetAttribute ()` | Generally this is the only form     |
@@ -691,12 +691,12 @@ What additional things must be done to enable it to hold attributes?
 
 Let's assume our new class, called :cpp:class:`ns3::MyMobility`,
 is a type of mobility model.  First, the class should inherit from
-it's parent class, :cpp:class:`ns3::MobilityModel`.
+its parent class, :cpp:class:`ns3::MobilityModel`.
 In the ``my-mobility.h`` header file::
 
     namespace ns3 {
     
-    class MyClass : public MobilityModel
+    class MyMobility : public MobilityModel
     {
 
 This requires we declare the :cpp:func:`GetTypeId ()` function. 
