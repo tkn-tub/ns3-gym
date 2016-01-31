@@ -89,8 +89,8 @@ public:
   /**
    * \param os output stream
    * This method is used by Packet::Print to print the 
-   * content of a trailer as ascii data to a c++ output stream.
-   * Although the trailer is free to format its output as it
+   * content of a header as ascii data to a c++ output stream.
+   * Although the header is free to format its output as it
    * wishes, it is recommended to follow a few rules to integrate
    * with the packet pretty printer: start with flags, small field 
    * values located between a pair of parens. Values should be separated 
