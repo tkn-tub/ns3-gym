@@ -363,9 +363,9 @@ def indent_files(files, diff=False, debug=False, level=0, inplace=False):
             failed.append([src, dst])
     if len(failed) > 0:
         if not diff:
-            print 'Found %u badly indented files:' % len(failed)
+            print('Found %u badly indented files:' % len(failed))
             for src,dst in failed:
-                print '  ' + src
+                print('  ' + src)
         else:
             for src,dst in failed:
                 s = open(src, 'r').readlines()
@@ -422,7 +422,7 @@ def run_as_main():
         file = options.file
         if not os.path.exists(file) or \
                 not os.path.isfile(file):
-            print 'file %s does not exist' % file
+            print('file %s does not exist' % file)
             sys.exit(1)
         indent_files([file], diff=options.diff, 
                      debug=options.debug,

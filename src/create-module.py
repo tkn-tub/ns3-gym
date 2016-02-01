@@ -1,4 +1,5 @@
 #! /usr/bin/env python
+from __future__ import print_function
 import sys
 from optparse import OptionParser
 import os
@@ -322,21 +323,21 @@ def main(argv):
 
     modname = args[0].lower()
     if False in [word.isalnum() for word in modname.split("-")]:
-        print >> sys.stderr, "Module name should only contain alphanumeric characters and dashes"
+        print("Module name should only contain alphanumeric characters and dashes", file=sys.stderr)
         return 2
     assert os.path.sep not in modname
 
     moduledir = os.path.join(os.path.dirname(__file__), modname)
 
     if os.path.exists(moduledir):
-        print >> sys.stderr, "Module %r already exists" % (modname,)
+        print("Module %r already exists" % (modname,), file=sys.stderr)
         return 2
 
     print("Creating module %r, "
           "run './waf configure' to include it in the build" % (modname,))
 
     os.mkdir(moduledir)
-    wscript = file(os.path.join(moduledir, "wscript"), "wt")
+    wscript = open(os.path.join(moduledir, "wscript"), "wt")
     wscript.write(WSCRIPT_TEMPLATE % dict(MODULE=modname))
     wscript.close()
 
@@ -347,11 +348,11 @@ def main(argv):
     modeldir = os.path.join(moduledir, "model")
     os.mkdir(modeldir)
 
-    model_cc = file(os.path.join(moduledir, "model", "%s.cc" % modname), "wt")
+    model_cc = open(os.path.join(moduledir, "model", "%s.cc" % modname), "wt")
     model_cc.write(MODEL_CC_TEMPLATE % dict(MODULE=modname))
     model_cc.close()
 
-    model_h = file(os.path.join(moduledir, "model", "%s.h" % modname), "wt")
+    model_h = open(os.path.join(moduledir, "model", "%s.h" % modname), "wt")
     model_h.write(MODEL_H_TEMPLATE % dict(MODULE=modname, INCLUDE_GUARD="%s_H" % (modname.replace("-", "_").upper()),))
     model_h.close()
 
@@ -362,7 +363,7 @@ def main(argv):
     # 
     testdir = os.path.join(moduledir, "test")
     os.mkdir(testdir)
-    test_cc = file(os.path.join(moduledir, "test", "%s-test-suite.cc" % modname), "wt")
+    test_cc = open(os.path.join(moduledir, "test", "%s-test-suite.cc" % modname), "wt")
     test_cc.write(TEST_CC_TEMPLATE % dict(MODULE=modname,
                                           CAPITALIZED=''.join([word.capitalize() for word in modname.split('-')]),
                                           COMPOUND=''.join([modname.split('-')[0]] + [word.capitalize() for word in modname.split('-')[1:]]),
@@ -377,11 +378,11 @@ def main(argv):
     helperdir = os.path.join(moduledir, "helper")
     os.mkdir(helperdir)
 
-    helper_cc = file(os.path.join(moduledir, "helper", "%s-helper.cc" % modname), "wt")
+    helper_cc = open(os.path.join(moduledir, "helper", "%s-helper.cc" % modname), "wt")
     helper_cc.write(HELPER_CC_TEMPLATE % dict(MODULE=modname))
     helper_cc.close()
 
-    helper_h = file(os.path.join(moduledir, "helper", "%s-helper.h" % modname), "wt")
+    helper_h = open(os.path.join(moduledir, "helper", "%s-helper.h" % modname), "wt")
     helper_h.write(HELPER_H_TEMPLATE % dict(MODULE=modname, INCLUDE_GUARD="%s_HELPER_H" % (modname.replace("-", "_").upper()),))
     helper_h.close()
 
@@ -391,11 +392,11 @@ def main(argv):
     examplesdir = os.path.join(moduledir, "examples")
     os.mkdir(examplesdir)
 
-    examples_wscript = file(os.path.join(examplesdir, "wscript"), "wt")
+    examples_wscript = open(os.path.join(examplesdir, "wscript"), "wt")
     examples_wscript.write(EXAMPLES_WSCRIPT_TEMPLATE % dict(MODULE=modname))
     examples_wscript.close()
 
-    example_cc = file(os.path.join(moduledir, "examples", "%s-example.cc" % modname), "wt")
+    example_cc = open(os.path.join(moduledir, "examples", "%s-example.cc" % modname), "wt")
     example_cc.write(EXAMPLE_CC_TEMPLATE % dict(MODULE=modname))
     example_cc.close()
 
@@ -405,7 +406,7 @@ def main(argv):
     docdir = os.path.join(moduledir, "doc")
     os.mkdir(docdir)
 
-    doc_rst = file(os.path.join(moduledir, "doc", "%s.rst" % modname), "wt")
+    doc_rst = open(os.path.join(moduledir, "doc", "%s.rst" % modname), "wt")
     doc_rst.write(DOC_RST_TEMPLATE % dict(MODULE=modname))
     doc_rst.close()
 
