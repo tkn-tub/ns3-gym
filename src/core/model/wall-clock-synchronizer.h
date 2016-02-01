@@ -35,10 +35,13 @@ namespace ns3 {
  * @brief Class used for synchronizing the simulation events to a real-time
  * "wall clock" using Posix clock functions.
  *
- * Enable this synchronizer using:
+ * This synchronizer is used as part of the RealtimeSimulatorImpl.  It is
+ * typically not explicitly enabled by users but instead is implicitly 
+ * enabled when the simulator implementation type is set to real-time; e.g.:
  *
  * @code
- *   DefaultValue::Bind ("Synchronizer", "WallClockSynchronizer");
+ *   GlobalValue::Bind ("SimulatorImplementationType",
+ *                      StringValue ("ns3::RealtimeSimulatorImpl"));
  * @endcode
  *
  * before calling any simulator functions.
