@@ -489,53 +489,25 @@ Ipv4GlobalRouting::RouteInput  (Ptr<const Packet> p, const Ipv4Header &header, P
   NS_ASSERT (m_ipv4->GetInterfaceForDevice (idev) >= 0);
   uint32_t iif = m_ipv4->GetInterfaceForDevice (idev);
 
-  if (header.GetDestination ().IsMulticast ())
+  if (m_ipv4->IsDestinationAddress (header.GetDestination (), iif))
     {
-      NS_LOG_LOGIC ("Multicast destination-- returning false");
-      return false; // Let other routing protocols try to handle this
-    }
-
-  if (header.GetDestination ().IsBroadcast ())
-    {
-      NS_LOG_LOGIC ("For me (Ipv4Addr broadcast address)");
-      /// \todo  Local Deliver for broadcast
-      /// \todo  Forward broadcast
-    }
-
-  /// \todo  Configurable option to enable \RFC{1222} Strong End System Model
-  // Right now, we will be permissive and allow a source to send us
-  // a packet to one of our other interface addresses; that is, the
-  // destination unicast address does not match one of the iif addresses,
-  // but we check our other interfaces.  This could be an option
-  // (to remove the outer loop immediately below and just check iif).
-  for (uint32_t j = 0; j < m_ipv4->GetNInterfaces (); j++)
-    {
-      for (uint32_t i = 0; i < m_ipv4->GetNAddresses (j); i++)
+      if (!lcb.IsNull ())
         {
-          Ipv4InterfaceAddress iaddr = m_ipv4->GetAddress (j, i);
-          Ipv4Address addr = iaddr.GetLocal ();
-          if (addr.IsEqual (header.GetDestination ()))
-            {
-              if (j == iif)
-                {
-                  NS_LOG_LOGIC ("For me (destination " << addr << " match)");
-                }
-              else
-                {
-                  NS_LOG_LOGIC ("For me (destination " << addr << " match) on another interface " << header.GetDestination ());
-                }
-              lcb (p, header, iif);
-              return true;
-            }
-          if (header.GetDestination ().IsEqual (iaddr.GetBroadcast ()))
-            {
-              NS_LOG_LOGIC ("For me (interface broadcast address)");
-              lcb (p, header, iif);
-              return true;
-            }
-          NS_LOG_LOGIC ("Address "<< addr << " not a match");
+          NS_LOG_LOGIC ("Local delivery to " << header.GetDestination ());
+          lcb (p, header, iif);
+          return true;
+        }
+      else
+        {
+          // The local delivery callback is null.  This may be a multicast
+          // or broadcast packet, so return false so that another
+          // multicast routing protocol can handle it.  It should be possible
+          // to extend this to explicitly check whether it is a unicast
+          // packet, and invoke the error callback if so
+          return false;
         }
     }
+
   // Check if input device supports IP forwarding
   if (m_ipv4->IsForwarding (iif) == false)
     {

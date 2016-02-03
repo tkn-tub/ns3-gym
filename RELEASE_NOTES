@@ -91,6 +91,7 @@ Bugs fixed
 - Bug 2266 - NixRouting info are not copied during a packet fragmentation.
 - Bug 2267 - Wrong channel bandwidth value in pcap files
 - Bug 2272 - SixLowPan NetDevice can not send uncompressed packets larger than 802.15.4 MTU
+- Bug 2273 - WeakEs model should be enforced in Static and Global routing
 - Bug 2279 - Ipv[4,6]L3Protocol::GetInterfaceForDevice speedup.
 - Bug 2286 - Support for SLL header (de)serialization.
 
