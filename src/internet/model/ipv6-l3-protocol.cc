@@ -150,6 +150,7 @@ void Ipv6L3Protocol::DoDispose ()
       *it = 0;
     }
   m_interfaces.clear ();
+  m_reverseInterfacesContainer.clear ();
 
   /* remove raw sockets */
   for (SocketList::iterator it = m_sockets.begin (); it != m_sockets.end (); ++it)
@@ -205,6 +206,7 @@ uint32_t Ipv6L3Protocol::AddIpv6Interface (Ptr<Ipv6Interface> interface)
   uint32_t index = m_nInterfaces;
 
   m_interfaces.push_back (interface);
+  m_reverseInterfacesContainer[interface->GetDevice ()] = index;
   m_nInterfaces++;
   return index;
 }
@@ -282,16 +284,13 @@ Ptr<NetDevice> Ipv6L3Protocol::GetNetDevice (uint32_t i)
 int32_t Ipv6L3Protocol::GetInterfaceForDevice (Ptr<const NetDevice> device) const
 {
   NS_LOG_FUNCTION (this << device);
-  int32_t index = 0;
 
-  for (Ipv6InterfaceList::const_iterator it = m_interfaces.begin (); it != m_interfaces.end (); it++)
+  Ipv6InterfaceReverseContainer::const_iterator iter = m_reverseInterfacesContainer.find (device);
+  if (iter != m_reverseInterfacesContainer.end ())
     {
-      if ((*it)->GetDevice () == device)
-        {
-          return index;
-        }
-      index++;
+      return (*iter).second;
     }
+
   return -1;
 }
 
@@ -936,31 +935,24 @@ void Ipv6L3Protocol::Receive (Ptr<NetDevice> device, Ptr<const Packet> p, uint16
 {
   NS_LOG_FUNCTION (this << device << p << protocol << from << to << packetType);
   NS_LOG_LOGIC ("Packet from " << from << " received on node " << m_node->GetId ());
-  uint32_t interface = 0;
+
+  int32_t interface = GetInterfaceForDevice(device);
+  NS_ASSERT_MSG (interface != -1, "Received a packet from an interface that is not known to IPv6");
+
+  Ptr<Ipv6Interface> ipv6Interface = m_interfaces[interface];
   Ptr<Packet> packet = p->Copy ();
-  Ptr<Ipv6Interface> ipv6Interface = 0;
 
-  for (Ipv6InterfaceList::const_iterator it = m_interfaces.begin (); it != m_interfaces.end (); it++)
+  if (ipv6Interface->IsUp ())
     {
-      ipv6Interface = *it;
-
-      if (ipv6Interface->GetDevice () == device)
-        {
-          if (ipv6Interface->IsUp ())
-            {
-              m_rxTrace (packet, m_node->GetObject<Ipv6> (), interface);
-              break;
-            }
-          else
-            {
-              NS_LOG_LOGIC ("Dropping received packet-- interface is down");
-              Ipv6Header hdr;
-              packet->RemoveHeader (hdr);
-              m_dropTrace (hdr, packet, DROP_INTERFACE_DOWN, m_node->GetObject<Ipv6> (), interface);
-              return;
-            }
-        }
-      interface++;
+      m_rxTrace (packet, m_node->GetObject<Ipv6> (), interface);
+    }
+  else
+    {
+      NS_LOG_LOGIC ("Dropping received packet-- interface is down");
+      Ipv6Header hdr;
+      packet->RemoveHeader (hdr);
+      m_dropTrace (hdr, packet, DROP_INTERFACE_DOWN, m_node->GetObject<Ipv6> (), interface);
+      return;
     }
 
   Ipv6Header hdr;
@@ -1031,29 +1023,27 @@ void Ipv6L3Protocol::Receive (Ptr<NetDevice> device, Ptr<const Packet> p, uint16
 
   for (uint32_t j = 0; j < GetNInterfaces (); j++)
     {
-      for (uint32_t i = 0; i < GetNAddresses (j); i++)
+      if (j == interface || !m_strongEndSystemModel)
         {
-          Ipv6InterfaceAddress iaddr = GetAddress (j, i);
-          Ipv6Address addr = iaddr.GetAddress ();
-          if (addr.IsEqual (hdr.GetDestinationAddress ()))
+          for (uint32_t i = 0; i < GetNAddresses (j); i++)
             {
-              bool rightInterface = false;
-              if (j == interface)
+              Ipv6InterfaceAddress iaddr = GetAddress (j, i);
+              Ipv6Address addr = iaddr.GetAddress ();
+              if (addr.IsEqual (hdr.GetDestinationAddress ()))
                 {
-                  NS_LOG_LOGIC ("For me (destination " << addr << " match)");
-                  rightInterface = true;
-                }
-              else
-                {
-                  NS_LOG_LOGIC ("For me (destination " << addr << " match) on another interface " << hdr.GetDestinationAddress ());
-                }
-              if (rightInterface || !m_strongEndSystemModel)
-                {
+                  if (j == interface)
+                    {
+                      NS_LOG_LOGIC ("For me (destination " << addr << " match)");
+                    }
+                  else
+                    {
+                      NS_LOG_LOGIC ("For me (destination " << addr << " match) on another interface " << hdr.GetDestinationAddress ());
+                    }
                   LocalDeliver (packet, hdr, interface);
+                  return;
                 }
-              return;
+              NS_LOG_LOGIC ("Address " << addr << " not a match");
             }
-          NS_LOG_LOGIC ("Address " << addr << " not a match");
         }
     }
 

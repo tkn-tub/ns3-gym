@@ -356,6 +356,10 @@ Ptr<Ipv6Route> Ipv6StaticRouting::LookupStatic (Ipv6Address dst, Ptr<NetDevice> 
               rtentry->SetDestination (route->GetDest ());
               rtentry->SetGateway (route->GetGateway ());
               rtentry->SetOutputDevice (m_ipv6->GetNetDevice (interfaceIdx));
+              if (maskLen == 128)
+                {
+                  break;
+                }
             }
         }
     }

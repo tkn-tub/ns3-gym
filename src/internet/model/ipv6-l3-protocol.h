@@ -517,7 +517,12 @@ private:
   /**
    * \brief Container of the IPv6 Interfaces.
    */
-  typedef std::list<Ptr<Ipv6Interface> > Ipv6InterfaceList;
+  typedef std::vector<Ptr<Ipv6Interface> > Ipv6InterfaceList;
+
+  /**
+   * \brief Container of NetDevices registered to IPv6 and their interface indexes.
+   */
+  typedef std::map<Ptr<const NetDevice>, uint32_t > Ipv6InterfaceReverseContainer;
 
   /**
    * \brief Container of the IPv6 Raw Sockets.
@@ -719,6 +724,11 @@ private:
    * \brief List of IPv6 interfaces.
    */
   Ipv6InterfaceList m_interfaces;
+
+  /**
+   * Container of NetDevice / Interface index associations.
+   */
+  Ipv6InterfaceReverseContainer m_reverseInterfacesContainer;
 
   /**
    * \brief Number of IPv6 interfaces managed by the stack.

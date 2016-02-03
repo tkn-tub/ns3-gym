@@ -284,6 +284,10 @@ Ipv4StaticRouting::LookupStatic (Ipv4Address dest, Ptr<NetDevice> oif)
           rtentry->SetSource (SourceAddressSelection (interfaceIdx, route->GetDest ()));
           rtentry->SetGateway (route->GetGateway ());
           rtentry->SetOutputDevice (m_ipv4->GetNetDevice (interfaceIdx));
+          if (masklen == 32)
+            {
+              break;
+            }
         }
     }
   if (rtentry != 0)

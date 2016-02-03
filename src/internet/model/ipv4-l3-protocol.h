@@ -464,6 +464,10 @@ private:
    */
   typedef std::vector<Ptr<Ipv4Interface> > Ipv4InterfaceList;
   /**
+   * \brief Container of NetDevices registered to IPv4 and their interface indexes.
+   */
+  typedef std::map<Ptr<const NetDevice>, uint32_t > Ipv4InterfaceReverseContainer;
+  /**
    * \brief Container of the IPv4 Raw Sockets.
    */
   typedef std::list<Ptr<Ipv4RawSocketImpl> > SocketList;
@@ -482,6 +486,7 @@ private:
   bool m_weakEsModel;    //!< Weak ES model state
   L4List_t m_protocols;  //!< List of transport protocol.
   Ipv4InterfaceList m_interfaces; //!< List of IPv4 interfaces.
+  Ipv4InterfaceReverseContainer m_reverseInterfacesContainer; //!< Container of NetDevice / Interface index associations.
   uint8_t m_defaultTos;  //!< Default TOS
   uint8_t m_defaultTtl;  //!< Default TTL
   std::map<std::pair<uint64_t, uint8_t>, uint16_t> m_identification; //!< Identification (for each {src, dst, proto} tuple)
