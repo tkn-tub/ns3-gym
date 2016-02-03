@@ -236,7 +236,9 @@ Packet::CreateFragment (uint32_t start, uint32_t length) const
   PacketMetadata metadata = m_metadata.CreateFragment (start, end);
   // again, call the constructor directly rather than
   // through Create because it is private.
-  return Ptr<Packet> (new Packet (buffer, byteTagList, m_packetTagList, metadata), false);
+  Ptr<Packet> ret = Ptr<Packet> (new Packet (buffer, byteTagList, m_packetTagList, metadata), false);
+  ret->SetNixVector (GetNixVector ());
+  return ret;
 }
 
 void

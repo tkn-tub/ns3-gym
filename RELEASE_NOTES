@@ -88,6 +88,7 @@ Bugs fixed
 - Bug 2258 - TcpSocketBase updated options and RTT for out of range segments.
 - Bug 2259 - GSL not successfully enabled for Wi-Fi DSSS error rate model
 - Bug 2262 - Corrected initial slow start threshold value
+- Bug 2266 - NixRouting info are not copied during a packet fragmentation.
 - Bug 2267 - Wrong channel bandwidth value in pcap files
 - Bug 2272 - SixLowPan NetDevice can not send uncompressed packets larger than 802.15.4 MTU
 - Bug 2286 - Support for SLL header (de)serialization.

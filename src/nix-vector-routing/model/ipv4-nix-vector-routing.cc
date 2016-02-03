@@ -143,7 +143,7 @@ Ipv4NixVectorRouting::GetNixVector (Ptr<Node> source, Ipv4Address dest, Ptr<NetD
   /// Do not process packets to self (see \bugid{1308})
   if (source == destNode)
     {
-      NS_LOG_DEBUG ("Do not processs packets to self");
+      NS_LOG_DEBUG ("Do not process packets to self");
       return 0;
     }
   else
