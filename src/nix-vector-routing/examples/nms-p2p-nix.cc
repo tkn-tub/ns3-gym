@@ -44,8 +44,6 @@
 #include "ns3/onoff-application.h"
 #include "ns3/packet-sink.h"
 #include "ns3/simulator.h"
-#include "ns3/ipv4-static-routing-helper.h"
-#include "ns3/ipv4-list-routing-helper.h"
 #include "ns3/ipv4-nix-vector-helper.h"
 
 using namespace ns3;
@@ -126,7 +124,7 @@ main (int argc, char *argv[])
   TIMER_TYPE t0, t1, t2;
   TIMER_NOW (t0);
   std::cout << " ==== DARPA NMS CAMPUS NETWORK SIMULATION ====" << std::endl;
-  LogComponentEnable ("OnOffApplication", LOG_LEVEL_INFO);
+  // LogComponentEnable ("OnOffApplication", LOG_LEVEL_INFO);
 
   int nCN = 2, nLANClients = 42;
   bool nix = true;
@@ -174,16 +172,10 @@ main (int argc, char *argv[])
   p2p_100mb1ms.SetChannelAttribute ("Delay", StringValue ("1ms"));
 
   // Setup NixVector Routing
-  Ipv4NixVectorHelper nixRouting;
-  Ipv4StaticRoutingHelper staticRouting;
-
-  Ipv4ListRoutingHelper list;
-  list.Add (staticRouting, 0);
-  list.Add (nixRouting, 10);
-
   if (nix)
     {
-      stack.SetRoutingHelper (list); // has effect on the next Install ()
+      Ipv4NixVectorHelper nixRouting;
+      stack.SetRoutingHelper (nixRouting); // has effect on the next Install ()
     }
 
   // Create Campus Networks

@@ -46,8 +46,6 @@
 #include "ns3/packet-sink-helper.h"
 #include "ns3/point-to-point-helper.h"
 #include "ns3/mpi-interface.h"
-#include "ns3/ipv4-static-routing-helper.h"
-#include "ns3/ipv4-list-routing-helper.h"
 #include "ns3/ipv4-nix-vector-helper.h"
 
 using namespace ns3;
@@ -148,15 +146,9 @@ main (int argc, char *argv[])
   p2p_100mb1ms.SetDeviceAttribute ("DataRate", StringValue ("100Mbps"));
   p2p_100mb1ms.SetChannelAttribute ("Delay", StringValue ("1ms"));
 
-  Ipv4NixVectorHelper nixRouting;
-  Ipv4StaticRoutingHelper staticRouting;
-
-  Ipv4ListRoutingHelper list;
-  list.Add (staticRouting, 0);
-  list.Add (nixRouting, 10);
-
   if (nix)
     {
+      Ipv4NixVectorHelper nixRouting;
       stack.SetRoutingHelper (list); // has effect on the next Install ()
     }
 

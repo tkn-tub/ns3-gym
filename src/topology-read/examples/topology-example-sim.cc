@@ -31,8 +31,6 @@
 #include "ns3/internet-module.h"
 #include "ns3/point-to-point-module.h"
 #include "ns3/applications-module.h"
-#include "ns3/ipv4-static-routing-helper.h"
-#include "ns3/ipv4-list-routing-helper.h"
 #include "ns3/ipv4-nix-vector-helper.h"
 
 #include "ns3/topology-read-module.h"
@@ -101,13 +99,7 @@ int main (int argc, char *argv[])
 
   // Setup NixVector Routing
   Ipv4NixVectorHelper nixRouting;
-  Ipv4StaticRoutingHelper staticRouting;
-
-  Ipv4ListRoutingHelper listRH;
-  listRH.Add (staticRouting, 0);
-  listRH.Add (nixRouting, 10);
-
-  stack.SetRoutingHelper (listRH);  // has effect on the next Install ()
+  stack.SetRoutingHelper (nixRouting);  // has effect on the next Install ()
   stack.Install (nodes);
 
   NS_LOG_INFO ("creating ip4 addresses");

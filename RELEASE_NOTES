@@ -81,6 +81,7 @@ Bugs fixed
 - Bug 2243 - TCP Socket Fork() fails to copy some parameters, causing connections to close prematurely on retransmit
 - Bug 2246 - Some DSR LogComponents and classes are not defined in a unique way.
 - Bug 2247 - Disabled Fast retransmit after an RTO
+- Bug 2252 - Nix needs StaticRouting to work
 - Bug 2254 - Ipv[4,6]RawSocket can return the wrong number of bytes sent.
 - Bug 2255 - Ipv6RawSocket does not call data sent callbacks.
 - Bug 2257 - Ipv[4,6]InterfaceContainer::Add are not consistent

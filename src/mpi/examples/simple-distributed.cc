@@ -45,8 +45,6 @@
 #include "ns3/network-module.h"
 #include "ns3/mpi-interface.h"
 #include "ns3/ipv4-global-routing-helper.h"
-#include "ns3/ipv4-static-routing-helper.h"
-#include "ns3/ipv4-list-routing-helper.h"
 #include "ns3/point-to-point-helper.h"
 #include "ns3/internet-stack-helper.h"
 #include "ns3/ipv4-nix-vector-helper.h"
@@ -161,15 +159,9 @@ main (int argc, char *argv[])
     }
 
   InternetStackHelper stack;
-  Ipv4NixVectorHelper nixRouting;
-  Ipv4StaticRoutingHelper staticRouting;
-
-  Ipv4ListRoutingHelper list;
-  list.Add (staticRouting, 0);
-  list.Add (nixRouting, 10);
-
   if (nix)
     {
+      Ipv4NixVectorHelper nixRouting;
       stack.SetRoutingHelper (list); // has effect on the next Install ()
     }
 

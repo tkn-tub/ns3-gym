@@ -34,28 +34,6 @@
  * efficient adaptation to link failures.  It simply flushes all nix-vector 
  * routing caches. Finally, IPv6 is not supported.
  *
- * \section api API and Usage
- *
- * The Nix-vector routing protocol at the moment does not handle local
- * delivery. As a consequence, it must be used along with another routing
- * protocol, with the obvious candidate being Ipv4StaticRouting.
- * Moreover, Ipv4StaticRouting must have a higher precedence than
- * Nix-vector routing.
- *
- * Example:
- * \code
-   Ipv4NixVectorHelper nixRouting;
-   Ipv4StaticRoutingHelper staticRouting;
-
-   Ipv4ListRoutingHelper list;
-   list.Add (staticRouting, 0);
-   list.Add (nixRouting, 10);
-
-   InternetStackHelper stack;
-   stack.SetRoutingHelper (list);
-   stack.Install (allNodes);
- * \endcode
- *
  * \section impl Implementation
  *
  * ns-3 nix-vector-routing performs on-demand route computation using 

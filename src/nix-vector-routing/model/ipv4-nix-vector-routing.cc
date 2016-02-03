@@ -619,6 +619,31 @@ Ipv4NixVectorRouting::RouteInput (Ptr<const Packet> p, const Ipv4Header &header,
 
   CheckCacheStateAndFlush ();
 
+  NS_ASSERT (m_ipv4 != 0);
+  // Check if input device supports IP
+  NS_ASSERT (m_ipv4->GetInterfaceForDevice (idev) >= 0);
+  uint32_t iif = m_ipv4->GetInterfaceForDevice (idev);
+
+  // Local delivery
+  if (m_ipv4->IsDestinationAddress (header.GetDestination (), iif))
+    {
+      if (!lcb.IsNull ())
+        {
+          NS_LOG_LOGIC ("Local delivery to " << header.GetDestination ());
+          lcb (p, header, iif);
+          return true;
+        }
+      else
+        {
+          // The local delivery callback is null.  This may be a multicast
+          // or broadcast packet, so return false so that another
+          // multicast routing protocol can handle it.  It should be possible
+          // to extend this to explicitly check whether it is a unicast
+          // packet, and invoke the error callback if so
+          return false;
+        }
+    }
+
   Ptr<Ipv4Route> rtentry;
 
   // Get the nix-vector from the packet
