@@ -47,6 +47,8 @@ New user-visible features
 - (internet) UDP and Ipv6 RAW sockets can now join Ipv6 multicast groups.
   Incomin packets will be filtered according to if there's a socket listening to
   that group. Source filtering is left to the application.
+- (network) ns-3 is now capable of serializing cooked (SLL) headers. This is used 
+  in DCE to allow the generation of pcap directly readable by wireshark.
 
 Bugs fixed
 ----------
@@ -87,6 +89,7 @@ Bugs fixed
 - Bug 2262 - Corrected initial slow start threshold value
 - Bug 2267 - Wrong channel bandwidth value in pcap files
 - Bug 2272 - SixLowPan NetDevice can not send uncompressed packets larger than 802.15.4 MTU
+- Bug 2286 - Support for SLL header (de)serialization.
 
 Known issues
 ------------
