@@ -936,8 +936,8 @@ void Ipv6L3Protocol::Receive (Ptr<NetDevice> device, Ptr<const Packet> p, uint16
   NS_LOG_FUNCTION (this << device << p << protocol << from << to << packetType);
   NS_LOG_LOGIC ("Packet from " << from << " received on node " << m_node->GetId ());
 
-  int32_t interface = GetInterfaceForDevice(device);
-  NS_ASSERT_MSG (interface != -1, "Received a packet from an interface that is not known to IPv6");
+  NS_ASSERT_MSG (GetInterfaceForDevice(device) != -1, "Received a packet from an interface that is not known to IPv6");
+  uint32_t interface = GetInterfaceForDevice(device);
 
   Ptr<Ipv6Interface> ipv6Interface = m_interfaces[interface];
   Ptr<Packet> packet = p->Copy ();
