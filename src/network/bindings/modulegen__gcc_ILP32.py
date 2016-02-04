@@ -4926,7 +4926,6 @@ def register_Ns3SimpleRefCount__Ns3TraceSourceAccessor_Ns3Empty_Ns3DefaultDelete
     return
 
 def register_Ns3SllHeader_methods(root_module, cls):
-    cls.add_output_stream_operator()
     ## sll-header.h (module 'network'): ns3::SllHeader::SllHeader(ns3::SllHeader const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::SllHeader const &', 'arg0')])
     ## sll-header.h (module 'network'): ns3::SllHeader::SllHeader() [constructor]

@@ -78,36 +78,37 @@ public:
     * \return the object TypeId
     */
   static TypeId GetTypeId (void);
-  TypeId GetInstanceTypeId (void) const;
 
   SllHeader ();
   virtual ~SllHeader ();
 
   /**
+    * \return ARP header type field in network byte order
     *  The ARPHRD_ type field is in network byte order; it contains a Linux ARPHRD_ value for the link-layer device type.
     */
   uint16_t GetArpType () const;
-
-  /**
-    * \return Packet type
-    */
-  PacketType GetPacketType () const;
 
   /**
     * \param arphw ARP protocol hardware identifier
     */
   void SetArpType (uint16_t arphdType);
 
+   /**
+    * \return Packet type
+    */
+  enum PacketType GetPacketType () const;
+
   /**
     * \param type Depends on source and address of the packet
     */
   void SetPacketType (PacketType type);
 
-  //! Inherited
+  //! Inherited from ObjectBase
+  virtual TypeId GetInstanceTypeId (void) const;
+  //! Inherited from Header
   virtual uint32_t GetSerializedSize (void) const;
   virtual void Serialize (Buffer::Iterator start) const;
   virtual uint32_t Deserialize (Buffer::Iterator start);
-
   virtual void Print (std::ostream &os) const;
 
 protected:
@@ -118,10 +119,6 @@ protected:
   uint64_t m_address;
   uint16_t m_protocolType;
 };
-
-
-
-std::ostream & operator << (std::ostream &os, const SllHeader &header);
 
 } // namespace ns3
 

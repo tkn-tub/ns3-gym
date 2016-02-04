@@ -73,6 +73,12 @@ SllHeader::SetArpType (uint16_t arphdType)
   m_arphdType = arphdType;
 }
 
+SllHeader::PacketType
+SllHeader::GetPacketType (void) const
+{
+  return m_packetType;
+}
+
 void
 SllHeader::SetPacketType (PacketType type)
 {
