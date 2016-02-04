@@ -167,9 +167,9 @@ TcpFastRetrTest::Tx (const Ptr<const Packet> p, const TcpHeader &h, SocketWho wh
           m_rcvNextExpAck -= GetSegSize (SENDER);
         }
 
-      if (m_rcvNextExpAck.GetValue () == 50001)
+      if (m_rcvNextExpAck.GetValue () >= 50001)
         {
-          m_rcvNextExpAck += 1;
+          m_rcvNextExpAck = 50002;
         }
 
       NS_TEST_ASSERT_MSG_EQ (h.GetAckNumber (), m_rcvNextExpAck,
@@ -189,18 +189,10 @@ TcpFastRetrTest::Tx (const Ptr<const Packet> p, const TcpHeader &h, SocketWho wh
             case 1:
               m_rcvNextExpAck += GetSegSize (SENDER);
               break;
+            case 50002:
+              break;
             default:
               m_rcvNextExpAck += GetSegSize (SENDER) * GetDelAckCount (SENDER);
-
-              // FIN seq
-              if (m_rcvNextExpAck.GetValue () == 50001)
-                {
-                  m_rcvNextExpAck += 1;
-                }
-              else if (m_rcvNextExpAck.GetValue () > 50002)
-                {
-                  m_rcvNextExpAck = 50002;
-                }
             }
         }
     }

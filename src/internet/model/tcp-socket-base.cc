@@ -1415,6 +1415,14 @@ TcpSocketBase::ReceivedAck (Ptr<Packet> packet, const TcpHeader& tcpHeader)
                          m_dupAckCount << " dup ACKs");
           m_tcb->m_congState = TcpSocketState::CA_DISORDER;
 
+          if (m_limitedTx && m_txBuffer->SizeFromSequence (m_nextTxSequence) > 0)
+            {
+              // RFC3042 Limited transmit: Send a new packet for each duplicated ACK before fast retransmit
+              NS_LOG_INFO ("Limited transmit");
+              uint32_t sz = SendDataPacket (m_nextTxSequence, m_tcb->m_segmentSize, true);
+              m_nextTxSequence += sz;
+            }
+
           NS_LOG_DEBUG ("OPEN -> DISORDER");
         }
       else if (m_tcb->m_congState == TcpSocketState::CA_DISORDER)
@@ -1436,7 +1444,7 @@ TcpSocketBase::ReceivedAck (Ptr<Packet> packet, const TcpHeader& tcpHeader)
                            m_tcb->m_ssThresh << " at fast recovery seqnum " << m_recover);
               DoRetransmit ();
             }
-          else if (m_limitedTx)
+          else if (m_limitedTx && m_txBuffer->SizeFromSequence (m_nextTxSequence) > 0)
             {
               // RFC3042 Limited transmit: Send a new packet for each duplicated ACK before fast retransmit
               NS_LOG_INFO ("Limited transmit");

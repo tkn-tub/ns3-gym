@@ -46,7 +46,7 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("Ns3TcpStateTest");
 
-const bool WRITE_VECTORS = false;           // set to true to write response vectors
+const bool WRITE_VECTORS = true;           // set to true to write response vectors
 const bool WRITE_LOGGING = false;           // set to true to write logging
 const uint32_t PCAP_LINK_TYPE = 1187373554; // Some large random number -- we use to verify data was written by this program
 const uint32_t PCAP_SNAPLEN   = 64;         // Don't bother to save much data
