@@ -115,8 +115,8 @@ main (int argc, char *argv[])
   wifiChannel.AddPropagationLoss ("ns3::FixedRssLossModel","Rss",DoubleValue (-80));
   wifiPhy.SetChannel (wifiChannel.Create ());
 
-  // Add a non-QoS upper mac, and disable rate control
-  NqosWifiMacHelper wifiMac = NqosWifiMacHelper::Default ();
+  // Add an upper mac and disable rate control
+  WifiMacHelper wifiMac = WifiMacHelper::Default ();
   wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager",
                                 "DataMode",StringValue (phyMode),
                                 "ControlMode",StringValue (phyMode));

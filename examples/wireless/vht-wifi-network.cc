@@ -94,13 +94,14 @@ int main (int argc, char *argv[])
               // Set guard interval
               phy.Set ("ShortGuardEnabled", BooleanValue (k));
 
-              WifiHelper wifi = WifiHelper::Default ();
+              WifiHelper wifi;
               wifi.SetStandard (WIFI_PHY_STANDARD_80211ac);
-              VhtWifiMacHelper mac = VhtWifiMacHelper::Default ();
+              WifiMacHelper mac;
                 
-              StringValue DataRate = VhtWifiMacHelper::DataRateForMcs (i);
-              wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager","DataMode", DataRate,
-                                            "ControlMode", DataRate);
+              std::ostringstream oss;
+              oss << "VhtMcs" << i;
+              wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager","DataMode", StringValue (oss.str ()),
+                                            "ControlMode", StringValue (oss.str ()));
                 
               Ssid ssid = Ssid ("ns3-80211ac");
 

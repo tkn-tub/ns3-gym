@@ -469,6 +469,40 @@ private:
    */
   void SetupEdcaQueue (enum AcIndex ac);
 
+  void SetVoMaxAmsduSize (uint32_t size);
+  void SetViMaxAmsduSize (uint32_t size);
+  void SetBeMaxAmsduSize (uint32_t size);
+  void SetBkMaxAmsduSize (uint32_t size);
+
+  void SetVoMaxAmpduSize (uint32_t size);
+  void SetViMaxAmpduSize (uint32_t size);
+  void SetBeMaxAmpduSize (uint32_t size);
+  void SetBkMaxAmpduSize (uint32_t size);
+  
+  void SetVoBlockAckThreshold (uint8_t threshold);
+  void SetViBlockAckThreshold (uint8_t threshold);
+  void SetBeBlockAckThreshold (uint8_t threshold);
+  void SetBkBlockAckThreshold (uint8_t threshold);
+  
+  void SetVoBlockAckInactivityTimeout (uint16_t timeout);
+  void SetViBlockAckInactivityTimeout (uint16_t timeout);
+  void SetBeBlockAckInactivityTimeout (uint16_t timeout);
+  void SetBkBlockAckInactivityTimeout (uint16_t timeout);
+  
+  void ConfigureAggregation (void);
+  void EnableAggregation (void);
+  void DisableAggregation (void);
+
+  uint32_t m_voMaxAmsduSize;
+  uint32_t m_viMaxAmsduSize;
+  uint32_t m_beMaxAmsduSize;
+  uint32_t m_bkMaxAmsduSize;
+
+  uint32_t m_voMaxAmpduSize;
+  uint32_t m_viMaxAmpduSize;
+  uint32_t m_beMaxAmpduSize;
+  uint32_t m_bkMaxAmpduSize;
+
   TracedCallback<const WifiMacHeader &> m_txOkCallback;
   TracedCallback<const WifiMacHeader &> m_txErrCallback;
 };

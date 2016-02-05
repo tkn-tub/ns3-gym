@@ -146,8 +146,8 @@ int main (int argc, char *argv[])
   YansWifiChannelHelper wifiChannel = YansWifiChannelHelper::Default ();
   wifiPhy.SetChannel (wifiChannel.Create ());
 
-  // Add a non-QoS upper mac, and set the selected tx power level
-  NqosWifiMacHelper wifiMac = NqosWifiMacHelper::Default ();
+  // Add a mac and set the selected tx power level
+  WifiMacHelper wifiMac;
   wifi.SetRemoteStationManager ("ns3::ArfWifiManager", "DefaultTxPowerLevel", UintegerValue (txPowerLevel));
   // Set it to adhoc mode
   wifiMac.SetType ("ns3::AdhocWifiMac");

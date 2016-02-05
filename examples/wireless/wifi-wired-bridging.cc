@@ -110,8 +110,8 @@ int main (int argc, char *argv[])
       Ipv4InterfaceContainer apInterface;
       MobilityHelper mobility;
       BridgeHelper bridge;
-      WifiHelper wifi = WifiHelper::Default ();
-      NqosWifiMacHelper wifiMac = NqosWifiMacHelper::Default ();
+      WifiHelper wifi;
+      WifiMacHelper wifiMac;
       YansWifiChannelHelper wifiChannel = YansWifiChannelHelper::Default ();
       wifiPhy.SetChannel (wifiChannel.Create ());
 

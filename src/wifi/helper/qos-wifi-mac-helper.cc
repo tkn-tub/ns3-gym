@@ -20,12 +20,12 @@
 
 #include "qos-wifi-mac-helper.h"
 #include "ns3/msdu-aggregator.h"
+#include "ns3/mpdu-aggregator.h"
 #include "ns3/wifi-mac.h"
 #include "ns3/edca-txop-n.h"
 #include "ns3/pointer.h"
 #include "ns3/boolean.h"
 #include "ns3/uinteger.h"
-#include "ns3/mpdu-aggregator.h"
 #include "ns3/mac-low.h"
 
 namespace ns3 {
@@ -61,7 +61,10 @@ QosWifiMacHelper::SetType (std::string type,
                            std::string n4, const AttributeValue &v4,
                            std::string n5, const AttributeValue &v5,
                            std::string n6, const AttributeValue &v6,
-                           std::string n7, const AttributeValue &v7)
+                           std::string n7, const AttributeValue &v7,
+                           std::string n8, const AttributeValue &v8,
+                           std::string n9, const AttributeValue &v9,
+                           std::string n10, const AttributeValue &v10)
 {
   m_mac.SetTypeId (type);
   m_mac.Set (n0, v0);
@@ -72,6 +75,9 @@ QosWifiMacHelper::SetType (std::string type,
   m_mac.Set (n5, v5);
   m_mac.Set (n6, v6);
   m_mac.Set (n7, v7);
+  m_mac.Set (n8, v8);
+  m_mac.Set (n9, v9);
+  m_mac.Set (n10, v10);
 }
 
 void
@@ -81,8 +87,8 @@ QosWifiMacHelper::SetMsduAggregatorForAc (AcIndex ac, std::string type,
                                           std::string n2, const AttributeValue &v2,
                                           std::string n3, const AttributeValue &v3)
 {
-  std::map<AcIndex, ObjectFactory>::iterator it = m_aggregators.find (ac);
-  if (it != m_aggregators.end ())
+  std::map<AcIndex, ObjectFactory>::iterator it = m_msduAggregators.find (ac);
+  if (it != m_msduAggregators.end ())
     {
       it->second.SetTypeId (type);
       it->second.Set (n0, v0);
@@ -98,23 +104,36 @@ QosWifiMacHelper::SetMsduAggregatorForAc (AcIndex ac, std::string type,
       factory.Set (n1, v1);
       factory.Set (n2, v2);
       factory.Set (n3, v3);
-      m_aggregators.insert (std::make_pair (ac, factory));
+      m_msduAggregators.insert (std::make_pair (ac, factory));
     }
 }
 
 void
-QosWifiMacHelper::SetMpduAggregatorForAc (enum AcIndex ac, std::string name,
+QosWifiMacHelper::SetMpduAggregatorForAc (enum AcIndex ac, std::string type,
                                           std::string n0, const AttributeValue &v0,
                                           std::string n1, const AttributeValue &v1,
                                           std::string n2, const AttributeValue &v2,
                                           std::string n3, const AttributeValue &v3)
 {
-  m_mpduAggregator = ObjectFactory ();
-  m_mpduAggregator.SetTypeId (name);
-  m_mpduAggregator.Set (n0, v0);
-  m_mpduAggregator.Set (n1, v1);
-  m_mpduAggregator.Set (n2, v2);
-  m_mpduAggregator.Set (n3, v3);
+  std::map<AcIndex, ObjectFactory>::iterator it = m_mpduAggregators.find (ac);
+  if (it != m_mpduAggregators.end ())
+    {
+      it->second.SetTypeId (type);
+      it->second.Set (n0, v0);
+      it->second.Set (n1, v1);
+      it->second.Set (n2, v2);
+      it->second.Set (n3, v3);
+    }
+  else
+    {
+      ObjectFactory factory;
+      factory.SetTypeId (type);
+      factory.Set (n0, v0);
+      factory.Set (n1, v1);
+      factory.Set (n2, v2);
+      factory.Set (n3, v3);
+      m_mpduAggregators.insert (std::make_pair (ac, factory));
+    }
 }
 
 void
@@ -132,27 +151,31 @@ QosWifiMacHelper::SetBlockAckInactivityTimeoutForAc (enum AcIndex ac, uint16_t t
 void
 QosWifiMacHelper::Setup (Ptr<WifiMac> mac, enum AcIndex ac, std::string dcaAttrName) const
 {
-  std::map<AcIndex, ObjectFactory>::const_iterator it = m_aggregators.find (ac);
   PointerValue ptr;
   mac->GetAttribute (dcaAttrName, ptr);
   Ptr<EdcaTxopN> edca = ptr.Get<EdcaTxopN> ();
 
-  if (m_mpduAggregator.GetTypeId ().GetUid () != 0)
+  std::map<AcIndex, ObjectFactory>::const_iterator it_msdu = m_msduAggregators.find (ac);
+  if (it_msdu != m_msduAggregators.end ())
     {
-      Ptr<MpduAggregator> mpduaggregator = m_mpduAggregator.Create<MpduAggregator> ();
-      Ptr<MacLow> low = edca->Low ();
-      low->SetMpduAggregator (mpduaggregator);
+      ObjectFactory factory = it_msdu->second;
+      Ptr<MsduAggregator> msduAggregator = factory.Create<MsduAggregator> ();
+      edca->SetMsduAggregator (msduAggregator);
     }
-  if (it != m_aggregators.end ())
+
+  std::map<AcIndex, ObjectFactory>::const_iterator it_mpdu = m_mpduAggregators.find (ac);
+  if (it_mpdu != m_mpduAggregators.end ())
     {
-      ObjectFactory factory = it->second;
-      Ptr<MsduAggregator> aggregator = factory.Create<MsduAggregator> ();
-      edca->SetMsduAggregator (aggregator);
+      ObjectFactory factory = it_mpdu->second;
+      Ptr<MpduAggregator> mpduAggregator = factory.Create<MpduAggregator> ();
+      edca->SetMpduAggregator (mpduAggregator);
     }
+    
   if (m_bAckThresholds.find (ac) != m_bAckThresholds.end ())
     {
       edca->SetBlockAckThreshold (m_bAckThresholds.find (ac)->second);
     }
+    
   if (m_bAckInactivityTimeouts.find (ac) != m_bAckInactivityTimeouts.end ())
     {
       edca->SetBlockAckInactivityTimeout (m_bAckInactivityTimeouts.find (ac)->second);

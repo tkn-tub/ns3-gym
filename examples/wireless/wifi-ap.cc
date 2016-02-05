@@ -128,7 +128,7 @@ int main (int argc, char *argv[])
   // disable fragmentation
   Config::SetDefault ("ns3::WifiRemoteStationManager::FragmentationThreshold", StringValue ("2200"));
 
-  WifiHelper wifi = WifiHelper::Default ();
+  WifiHelper wifi;
   MobilityHelper mobility;
   NodeContainer stas;
   NodeContainer ap;
@@ -142,7 +142,7 @@ int main (int argc, char *argv[])
   packetSocket.Install (stas);
   packetSocket.Install (ap);
 
-  NqosWifiMacHelper wifiMac = NqosWifiMacHelper::Default ();
+  WifiMacHelper wifiMac;
   YansWifiPhyHelper wifiPhy = YansWifiPhyHelper::Default ();
   YansWifiChannelHelper wifiChannel = YansWifiChannelHelper::Default ();
   wifiPhy.SetChannel (wifiChannel.Create ());

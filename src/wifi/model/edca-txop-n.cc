@@ -32,6 +32,7 @@
 #include "random-stream.h"
 #include "wifi-mac-queue.h"
 #include "msdu-aggregator.h"
+#include "mpdu-aggregator.h"
 #include "mgt-headers.h"
 #include "qos-blocked-destinations.h"
 
@@ -203,6 +204,10 @@ public:
   {
     return m_txop->GetMsduAggregator ();
   }
+  virtual Ptr<MpduAggregator> GetMpduAggregator (void) const
+  {
+    return m_txop->GetMpduAggregator ();
+  }
   virtual Mac48Address GetSrcAddressForAggregation (const WifiMacHeader &hdr)
   {
     return m_txop->MapSrcAddressForAggregation (hdr);
@@ -225,21 +230,6 @@ EdcaTxopN::GetTypeId (void)
     .SetParent<ns3::Dcf> ()
     .SetGroupName ("Wifi")
     .AddConstructor<EdcaTxopN> ()
-    .AddAttribute ("BlockAckThreshold",
-                   "If number of packets in this queue reaches this value, "
-                   "block ack mechanism is used. If this value is 0, block ack is never used.",
-                   UintegerValue (0),
-                   MakeUintegerAccessor (&EdcaTxopN::SetBlockAckThreshold,
-                                         &EdcaTxopN::GetBlockAckThreshold),
-                   MakeUintegerChecker<uint8_t> (0, 64))
-    .AddAttribute ("BlockAckInactivityTimeout",
-                   "Represents max time (blocks of 1024 micro seconds) allowed for block ack"
-                   "inactivity. If this value isn't equal to 0 a timer start after that a"
-                   "block ack setup is completed and will be reset every time that a block"
-                   "ack frame is received. If this value is 0, block ack inactivity timeout won't be used.",
-                   UintegerValue (0),
-                   MakeUintegerAccessor (&EdcaTxopN::SetBlockAckInactivityTimeout),
-                   MakeUintegerChecker<uint16_t> ())
     .AddAttribute ("Queue",
                    "The WifiMacQueue object",
                    PointerValue (),
@@ -252,7 +242,8 @@ EdcaTxopN::GetTypeId (void)
 EdcaTxopN::EdcaTxopN ()
   : m_manager (0),
     m_currentPacket (0),
-    m_aggregator (0),
+    m_msduAggregator (0),
+    m_mpduAggregator (0),
     m_typeOfStation (STA),
     m_blockAckType (COMPRESSED_BLOCK_ACK),
     m_ampduExist (false)
@@ -299,7 +290,8 @@ EdcaTxopN::DoDispose (void)
   m_baManager = 0;
   m_blockAckListener = 0;
   m_txMiddle = 0;
-  m_aggregator = 0;
+  m_msduAggregator = 0;
+  m_mpduAggregator = 0;
 }
 
 bool
@@ -495,7 +487,6 @@ EdcaTxopN::NotifyAccessGranted (void)
               return;
             }
           if (m_currentHdr.IsQosData () && !m_currentHdr.GetAddr1 ().IsBroadcast ()
-              && m_blockAckThreshold > 0
               && !m_baManager->ExistsAgreement (m_currentHdr.GetAddr1 (), m_currentHdr.GetQosTid ())
               && SetupBlockAckIfNeeded ())
             {
@@ -578,11 +569,11 @@ EdcaTxopN::NotifyAccessGranted (void)
               && m_queue->PeekByTidAndAddress (&peekedHdr, m_currentHdr.GetQosTid (),
                                                WifiMacHeader::ADDR1, m_currentHdr.GetAddr1 (), &tstamp)
               && !m_currentHdr.GetAddr1 ().IsBroadcast ()
-              && m_aggregator != 0 && !m_currentHdr.IsRetry ())
+              && m_msduAggregator != 0 && !m_currentHdr.IsRetry ())
             {
               /* here is performed aggregation */
               Ptr<Packet> currentAggregatedPacket = Create<Packet> ();
-              m_aggregator->Aggregate (m_currentPacket, currentAggregatedPacket,
+              m_msduAggregator->Aggregate (m_currentPacket, currentAggregatedPacket,
                                        MapSrcAddressForAggregation (peekedHdr),
                                        MapDestAddressForAggregation (peekedHdr));
               bool aggregated = false;
@@ -592,7 +583,7 @@ EdcaTxopN::NotifyAccessGranted (void)
                                                                              m_currentHdr.GetAddr1 (), &tstamp);
               while (peekedPacket != 0)
                 {
-                  aggregated = m_aggregator->Aggregate (peekedPacket, currentAggregatedPacket,
+                  aggregated = m_msduAggregator->Aggregate (peekedPacket, currentAggregatedPacket,
                                                         MapSrcAddressForAggregation (peekedHdr),
                                                         MapDestAddressForAggregation (peekedHdr));
                   if (aggregated)
@@ -944,7 +935,13 @@ EdcaTxopN::MissedBlockAck (void)
 Ptr<MsduAggregator>
 EdcaTxopN::GetMsduAggregator (void) const
 {
-  return m_aggregator;
+  return m_msduAggregator;
+}
+
+Ptr<MpduAggregator>
+EdcaTxopN::GetMpduAggregator (void) const
+{
+  return m_mpduAggregator;
 }
 
 void
@@ -1168,7 +1165,14 @@ void
 EdcaTxopN::SetMsduAggregator (Ptr<MsduAggregator> aggr)
 {
   NS_LOG_FUNCTION (this << aggr);
-  m_aggregator = aggr;
+  m_msduAggregator = aggr;
+}
+
+void
+EdcaTxopN::SetMpduAggregator (Ptr<MpduAggregator> aggr)
+{
+  NS_LOG_FUNCTION (this << aggr);
+  m_mpduAggregator = aggr;
 }
 
 void
@@ -1240,7 +1244,7 @@ EdcaTxopN::VerifyBlockAck (void)
     {
       m_baManager->SwitchToBlockAckIfNeeded (recipient, tid, sequence);
     }
-  if ((m_baManager->ExistsAgreementInState (recipient, tid, OriginatorBlockAckAgreement::ESTABLISHED)) && (m_low->GetMpduAggregator () == 0))
+  if ((m_baManager->ExistsAgreementInState (recipient, tid, OriginatorBlockAckAgreement::ESTABLISHED)) && (GetMpduAggregator () == 0))
     {
       m_currentHdr.SetQosAckPolicy (WifiMacHeader::BLOCK_ACK);
     }
@@ -1291,7 +1295,7 @@ EdcaTxopN::SetupBlockAckIfNeeded ()
 
   uint32_t packets = m_queue->GetNPacketsByTidAndAddress (tid, WifiMacHeader::ADDR1, recipient);
 
-  if (packets >= m_blockAckThreshold)
+  if ((m_blockAckThreshold > 0 && packets >= m_blockAckThreshold) || (packets > 1 && m_mpduAggregator != 0) || m_stationManager->HasVhtSupported ())
     {
       /* Block ack setup */
       uint16_t startingSequence = m_txMiddle->GetNextSeqNumberByTidAndAddress (tid, recipient);

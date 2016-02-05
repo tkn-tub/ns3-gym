@@ -149,7 +149,7 @@ main (int argc, char *argv[])
   // our container
   //
   WifiHelper wifi;
-  NqosWifiMacHelper mac = NqosWifiMacHelper::Default ();
+  WifiMacHelper mac;
   mac.SetType ("ns3::AdhocWifiMac");
   wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager",
                                 "DataMode", StringValue ("OfdmRate54Mbps"));
@@ -283,8 +283,8 @@ main (int argc, char *argv[])
       //
       // Create an infrastructure network
       //
-      WifiHelper wifiInfra = WifiHelper::Default ();
-      NqosWifiMacHelper macInfra = NqosWifiMacHelper::Default ();
+      WifiHelper wifiInfra;
+      WifiMacHelper macInfra;
       wifiPhy.SetChannel (wifiChannel.Create ());
       // Create unique ssids for these networks
       std::string ssidString ("wifi-infra");

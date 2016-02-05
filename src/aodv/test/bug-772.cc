@@ -37,7 +37,7 @@
 #include "ns3/pcap-file.h"
 #include "ns3/aodv-helper.h"
 #include "ns3/v4ping-helper.h"
-#include "ns3/nqos-wifi-mac-helper.h"
+#include "ns3/default-mac-helper.h"
 #include "ns3/config.h"
 #include "ns3/inet-socket-address.h"
 #include "ns3/data-rate.h"
@@ -116,7 +116,7 @@ Bug772ChainTest::CreateDevices ()
 {
   int64_t streamsUsed = 0;
   // 1. Setup WiFi
-  NqosWifiMacHelper wifiMac = NqosWifiMacHelper::Default ();
+  WifiMacHelper wifiMac;
   wifiMac.SetType ("ns3::AdhocWifiMac");
   YansWifiPhyHelper wifiPhy = YansWifiPhyHelper::Default ();
   // This test suite output was originally based on YansErrorRateModel
@@ -124,7 +124,7 @@ Bug772ChainTest::CreateDevices ()
   YansWifiChannelHelper wifiChannel = YansWifiChannelHelper::Default ();
   Ptr<YansWifiChannel> chan = wifiChannel.Create ();
   wifiPhy.SetChannel (chan);
-  WifiHelper wifi = WifiHelper::Default ();
+  WifiHelper wifi;
   wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager", "DataMode", StringValue ("OfdmRate6Mbps"), "RtsCtsThreshold", StringValue ("2200"));
   NetDeviceContainer devices = wifi.Install (wifiPhy, wifiMac, *m_nodes); 
 

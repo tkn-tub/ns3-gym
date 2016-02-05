@@ -52,6 +52,7 @@ int main (int argc, char *argv[])
   uint32_t payloadSize = 1472; //bytes
   uint64_t simulationTime = 10; //seconds
   uint32_t nMpdus = 1;
+  uint32_t maxAmpduSize = 0;
   bool enableRts = 0;
 
   CommandLine cmd;
@@ -72,6 +73,9 @@ int main (int argc, char *argv[])
 
   Config::SetDefault ("ns3::WifiRemoteStationManager::FragmentationThreshold", StringValue ("990000"));
 
+  //Set the maximum size for A-MPDU with regards to the payload size
+  maxAmpduSize = nMpdus * (payloadSize + 200);
+
   // Set the maximum wireless range to 5 meters in order to reproduce a hidden nodes scenario, i.e. the distance between hidden stations is larger than 5 meters
   Config::SetDefault ("ns3::RangePropagationLossModel::MaxRange", DoubleValue (5));
 
@@ -87,24 +91,16 @@ int main (int argc, char *argv[])
   phy.SetPcapDataLinkType (YansWifiPhyHelper::DLT_IEEE802_11_RADIO);
   phy.SetChannel (channel.Create ());
 
-  WifiHelper wifi = WifiHelper::Default ();
+  WifiHelper wifi;
   wifi.SetStandard (WIFI_PHY_STANDARD_80211n_5GHZ);
   wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager", "DataMode", StringValue ("HtMcs7"), "ControlMode", StringValue ("HtMcs0"));
-  HtWifiMacHelper mac = HtWifiMacHelper::Default ();
+  WifiMacHelper mac;
 
   Ssid ssid = Ssid ("simple-mpdu-aggregation");
   mac.SetType ("ns3::StaWifiMac",
                "Ssid", SsidValue (ssid),
-               "ActiveProbing", BooleanValue (false));
-
-  if (nMpdus > 1)
-    {
-      mac.SetBlockAckThresholdForAc (AC_BE, 2);             //enable Block ACK when A-MPDU is enabled
-
-    }
-  mac.SetMpduAggregatorForAc (AC_BE,"ns3::MpduStandardAggregator",
-                              "MaxAmpduSize", UintegerValue (nMpdus * (payloadSize + 100))); //enable MPDU aggregation for AC_BE with a maximum aggregated size of nMpdus*(payloadSize+100) bytes,
-                                                                                             //i.e. nMpdus aggregated packets in an A-MPDU
+               "ActiveProbing", BooleanValue (false),
+               "BE_MaxAmpduSize", UintegerValue (maxAmpduSize));
 
   NetDeviceContainer staDevices;
   staDevices = wifi.Install (phy, mac, wifiStaNodes);
@@ -112,16 +108,8 @@ int main (int argc, char *argv[])
   mac.SetType ("ns3::ApWifiMac",
                "Ssid", SsidValue (ssid),
                "BeaconInterval", TimeValue (MicroSeconds (102400)),
-               "BeaconGeneration", BooleanValue (true));
-
-  if (nMpdus > 1)
-    {
-      mac.SetBlockAckThresholdForAc (AC_BE, 2);             //enable Block ACK when A-MPDU is enabled
-
-    }
-  mac.SetMpduAggregatorForAc (AC_BE,"ns3::MpduStandardAggregator",
-                              "MaxAmpduSize", UintegerValue (nMpdus * (payloadSize + 100))); //enable MPDU aggregation for AC_BE with a maximum aggregated size of nMpdus*(payloadSize+100) bytes,
-                                                                                             //i.e. nMpdus aggregated packets in an A-MPDU
+               "BeaconGeneration", BooleanValue (true),
+               "BE_MaxAmpduSize", UintegerValue (maxAmpduSize));
 
   NetDeviceContainer apDevice;
   apDevice = wifi.Install (phy, mac, wifiApNode);

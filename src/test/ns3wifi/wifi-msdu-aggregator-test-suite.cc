@@ -17,21 +17,20 @@
  *
  * Author: Dean Armstrong <deanarm@gmail.com>
  */
+
 #include "ns3/test.h"
 #include "ns3/simulator.h"
 #include "ns3/log.h"
-
+#include "ns3/uinteger.h"
 #include "ns3/boolean.h"
 #include "ns3/string.h"
 #include "ns3/double.h"
-
 #include "ns3/ssid.h"
 #include "ns3/data-rate.h"
 #include "ns3/inet-socket-address.h"
 #include "ns3/packet-sink.h"
-
 #include "ns3/wifi-helper.h"
-#include "ns3/qos-wifi-mac-helper.h"
+#include "ns3/default-mac-helper.h"
 #include "ns3/yans-wifi-helper.h"
 #include "ns3/mobility-helper.h"
 #include "ns3/internet-stack-helper.h"
@@ -62,9 +61,9 @@ WifiMsduAggregatorThroughputTest::WifiMsduAggregatorThroughputTest ()
 void
 WifiMsduAggregatorThroughputTest::DoRun (void)
 {
-  WifiHelper wifi = WifiHelper::Default ();
+  WifiHelper wifi;
 
-  QosWifiMacHelper wifiMac = QosWifiMacHelper::Default ();
+  WifiMacHelper wifiMac;
   YansWifiPhyHelper wifiPhy = YansWifiPhyHelper::Default ();
   YansWifiChannelHelper wifiChannel = YansWifiChannelHelper::Default ();
   wifiPhy.SetChannel (wifiChannel.Create ());
@@ -85,17 +84,19 @@ WifiMsduAggregatorThroughputTest::DoRun (void)
   NodeContainer ap;
   ap.Create (1);
   wifiMac.SetType ("ns3::ApWifiMac",
+                   "QosSupported", BooleanValue (true),
                    "Ssid", SsidValue (ssid),
                    "BeaconGeneration", BooleanValue (true),
-                   "BeaconInterval", TimeValue (MicroSeconds (102400)));
-  wifiMac.SetMsduAggregatorForAc (AC_BE, "ns3::MsduStandardAggregator",
-                                  "MaxAmsduSize", UintegerValue (4000));
+                   "BeaconInterval", TimeValue (MicroSeconds (102400)),
+                   "BE_MaxAmsduSize", UintegerValue (4000));
+
   NetDeviceContainer apDev = wifi.Install (wifiPhy, wifiMac, ap);
 
   // Setup one STA, which will be the sink for traffic in this test.
   NodeContainer sta;
   sta.Create (1);
   wifiMac.SetType ("ns3::StaWifiMac",
+                   "QosSupported", BooleanValue (true),
                    "Ssid", SsidValue (ssid),
                    "ActiveProbing", BooleanValue (false));
   NetDeviceContainer staDev = wifi.Install (wifiPhy, wifiMac, sta);

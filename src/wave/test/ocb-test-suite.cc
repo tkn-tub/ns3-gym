@@ -30,7 +30,7 @@
 #include "ns3/position-allocator.h"
 #include "ns3/packet-socket-helper.h"
 #include "ns3/mobility-helper.h"
-#include "ns3/nqos-wifi-mac-helper.h"
+#include "ns3/default-mac-helper.h"
 #include "ns3/wifi-net-device.h"
 #include "ns3/packet-socket-server.h"
 #include "ns3/packet-socket-client.h"
@@ -198,12 +198,12 @@ OcbWifiMacTestCase::ConfigureApStaMode (Ptr<Node> static_node, Ptr<Node> mobile_
   wifiPhy.SetChannel (wifiChannel.Create ());
 
   Ssid ssid = Ssid ("wifi-default");
-  NqosWifiMacHelper wifiStaMac = NqosWifiMacHelper::Default ();
+  WifiMacHelper wifiStaMac;
   wifiStaMac.SetType ("ns3::StaWifiMac", "Ssid", SsidValue (ssid));
-  NqosWifiMacHelper wifiApMac = NqosWifiMacHelper::Default ();
+  WifiMacHelper wifiApMac;
   wifiApMac.SetType ("ns3::ApWifiMac","Ssid", SsidValue (ssid));
 
-  WifiHelper wifi = WifiHelper::Default ();
+  WifiHelper wifi;
   wifi.SetStandard (WIFI_PHY_STANDARD_80211_10MHZ);
   wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager",
                                 "DataMode", StringValue ("OfdmRate6MbpsBW10MHz"),
@@ -219,10 +219,10 @@ OcbWifiMacTestCase::ConfigureAdhocMode (Ptr<Node> static_node, Ptr<Node> mobile_
   YansWifiPhyHelper wifiPhy = YansWifiPhyHelper::Default ();
   wifiPhy.SetChannel (wifiChannel.Create ());
 
-  NqosWifiMacHelper wifiMac = NqosWifiMacHelper::Default ();
+  WifiMacHelper wifiMac;
   wifiMac.SetType ("ns3::AdhocWifiMac");
 
-  WifiHelper wifi = WifiHelper::Default ();
+  WifiHelper wifi;
   wifi.SetStandard (WIFI_PHY_STANDARD_80211_10MHZ);
   wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager",
                                 "DataMode", StringValue ("OfdmRate6MbpsBW10MHz"),

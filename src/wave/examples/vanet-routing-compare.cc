@@ -2280,8 +2280,8 @@ VanetRoutingExperiment::SetupAdhocDevices ()
   wavePhy.Set ("TxPowerStart",DoubleValue (m_txp));
   wavePhy.Set ("TxPowerEnd", DoubleValue (m_txp));
 
-  // Add a non-QoS upper mac, and disable rate control
-  NqosWifiMacHelper wifiMac = NqosWifiMacHelper::Default ();
+  // Add an upper mac and disable rate control
+  WifiMacHelper wifiMac;
   wifiMac.SetType ("ns3::AdhocWifiMac");
   QosWaveMacHelper waveMac = QosWaveMacHelper::Default ();
 

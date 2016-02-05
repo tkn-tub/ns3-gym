@@ -36,7 +36,6 @@
 #include "yans-wifi-phy.h"
 #include "ampdu-tag.h"
 #include "wifi-mac-queue.h"
-#include "mpdu-standard-aggregator.h"
 
 #undef NS_LOG_APPEND_CONTEXT
 #define NS_LOG_APPEND_CONTEXT std::clog << "[mac=" << m_self << "] "
@@ -114,6 +113,11 @@ MacLowAggregationCapableTransmissionListener::GetNRetryNeededPackets (Mac48Addre
 }
 Ptr<MsduAggregator>
 MacLowAggregationCapableTransmissionListener::GetMsduAggregator (void) const
+{
+  return 0;
+}
+Ptr<MpduAggregator>
+MacLowAggregationCapableTransmissionListener::GetMpduAggregator (void) const
 {
   return 0;
 }
@@ -360,7 +364,6 @@ MacLow::MacLow ()
     m_sendDataEvent (),
     m_waitSifsEvent (),
     m_endTxNoAckEvent (),
-    m_mpduAggregator (0),
     m_currentPacket (0),
     m_listener (0),
     m_phyMacLowListener (0),
@@ -434,7 +437,6 @@ MacLow::DoDispose (void)
       delete m_phyMacLowListener;
       m_phyMacLowListener = 0;
     }
-  m_mpduAggregator = 0;
   m_sentMpdus = 0;
   m_aggregateQueue = 0;
   m_ampdu = false;
@@ -1640,7 +1642,11 @@ MacLow::ForwardDown (Ptr<const Packet> packet, const WifiMacHeader* hdr,
               last = true;
               mpdutype = LAST_MPDU_IN_AGGREGATE;
             }
-          m_mpduAggregator->AddHeaderAndPad (newPacket, last, vhtSingleMpdu);
+
+          uint8_t tid = GetTid (packet, *hdr);
+          AcIndex ac = QosUtilsMapTidToAc (tid);
+          std::map<AcIndex, MacLowAggregationCapableTransmissionListener*>::const_iterator listenerIt = m_edcaListeners.find (ac);
+          listenerIt->second->GetMpduAggregator ()->AddHeaderAndPad (newPacket, last, vhtSingleMpdu);
 
           if (hdr->IsBlockAckReq ())
             {
@@ -2726,18 +2732,6 @@ MacLow::RegisterBlockAckListenerForAc (enum AcIndex ac, MacLowAggregationCapable
 }
 
 void
-MacLow::SetMpduAggregator (Ptr<MpduAggregator> aggregator)
-{
-  m_mpduAggregator = aggregator;
-}
-
-Ptr<MpduAggregator>
-MacLow::GetMpduAggregator (void)
-{
-  return m_mpduAggregator;
-}
-
-void
 MacLow::DeaggregateAmpduAndReceive (Ptr<Packet> aggregatedPacket, double rxSnr, WifiTxVector txVector, WifiPreamble preamble)
 {
   m_currentTxVector = txVector;
@@ -2826,6 +2820,11 @@ MacLow::StopMpduAggregation (Ptr<const Packet> peekedPacket, WifiMacHeader peeke
 {
   WifiPreamble preamble;
   WifiTxVector dataTxVector = GetDataTxVector (m_currentPacket, &m_currentHdr);
+
+  uint8_t tid = GetTid (peekedPacket, peekedHdr);
+  AcIndex ac = QosUtilsMapTidToAc (tid);
+  std::map<AcIndex, MacLowAggregationCapableTransmissionListener*>::const_iterator listenerIt = m_edcaListeners.find (ac);
+
   if (dataTxVector.GetMode ().GetModulationClass () == WIFI_MOD_CLASS_VHT)
     {
       preamble = WIFI_PREAMBLE_VHT;
@@ -2860,7 +2859,7 @@ MacLow::StopMpduAggregation (Ptr<const Packet> peekedPacket, WifiMacHeader peeke
       return true;
     }
 
-  if (!m_mpduAggregator->CanBeAggregated (peekedPacket->GetSize () + peekedHdr.GetSize () + WIFI_MAC_FCS_LENGTH, aggregatedPacket, size))
+  if (!listenerIt->second->GetMpduAggregator ()->CanBeAggregated (peekedPacket->GetSize () + peekedHdr.GetSize () + WIFI_MAC_FCS_LENGTH, aggregatedPacket, size))
     {
       NS_LOG_DEBUG ("no more packets can be aggregated because the maximum A-MPDU size has been reached");
       return true;
@@ -2890,7 +2889,7 @@ MacLow::AggregateToAmpdu (Ptr<const Packet> packet, const WifiMacHeader hdr)
       NS_ASSERT (listenerIt != m_edcaListeners.end ());
       queue = listenerIt->second->GetQueue ();
 
-      if (!hdr.GetAddr1 ().IsBroadcast () && m_mpduAggregator != 0)
+      if (!hdr.GetAddr1 ().IsBroadcast () && listenerIt->second->GetMpduAggregator () != 0)
         {
           //Have to make sure that their exist a block Ack agreement before sending an AMPDU (BlockAck Manager)
           if (listenerIt->second->GetBlockAckAgreementExists (hdr.GetAddr1 (), tid))
@@ -2919,7 +2918,7 @@ MacLow::AggregateToAmpdu (Ptr<const Packet> packet, const WifiMacHeader hdr)
                   WifiMacTrailer fcs;
                   newPacket->AddTrailer (fcs);
 
-                  aggregated = m_mpduAggregator->Aggregate (newPacket, currentAggregatedPacket);
+                  aggregated = listenerIt->second->GetMpduAggregator ()->Aggregate (newPacket, currentAggregatedPacket);
 
                   if (aggregated)
                     {
@@ -2990,7 +2989,7 @@ MacLow::AggregateToAmpdu (Ptr<const Packet> packet, const WifiMacHeader hdr)
                   newPacket->AddHeader (peekedHdr);
                   WifiMacTrailer fcs;
                   newPacket->AddTrailer (fcs);
-                  aggregated = m_mpduAggregator->Aggregate (newPacket, currentAggregatedPacket);
+                  aggregated = listenerIt->second->GetMpduAggregator ()->Aggregate (newPacket, currentAggregatedPacket);
                   if (aggregated)
                     {
                       m_aggregateQueue->Enqueue (aggPacket, peekedHdr);
@@ -3092,7 +3091,7 @@ MacLow::AggregateToAmpdu (Ptr<const Packet> packet, const WifiMacHeader hdr)
                       newPacket->AddHeader (peekedHdr);
                       WifiMacTrailer fcs;
                       newPacket->AddTrailer (fcs);
-                      m_mpduAggregator->Aggregate (newPacket, currentAggregatedPacket);
+                      listenerIt->second->GetMpduAggregator ()->Aggregate (newPacket, currentAggregatedPacket);
                     }
                   if (qosPolicy == 0)
                     {
@@ -3126,7 +3125,7 @@ MacLow::AggregateToAmpdu (Ptr<const Packet> packet, const WifiMacHeader hdr)
               peekedHdr.SetQosAckPolicy (WifiMacHeader::NORMAL_ACK);
 
               currentAggregatedPacket = Create<Packet> ();
-              m_mpduAggregator->AggregateVhtSingleMpdu (packet, currentAggregatedPacket);
+              listenerIt->second->GetMpduAggregator ()->AggregateVhtSingleMpdu (packet, currentAggregatedPacket);
               m_aggregateQueue->Enqueue (packet, peekedHdr);
               m_sentMpdus = 1;
 

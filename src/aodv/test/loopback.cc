@@ -36,7 +36,7 @@
 #include "ns3/pcap-file.h"
 #include "ns3/aodv-helper.h"
 #include "ns3/v4ping.h"
-#include "ns3/nqos-wifi-mac-helper.h"
+#include "ns3/default-mac-helper.h"
 #include "ns3/config.h"
 #include "ns3/constant-position-mobility-model.h"
 #include "ns3/names.h"
@@ -118,12 +118,12 @@ LoopbackTestCase::DoRun ()
   m->SetPosition (Vector (0, 0, 0));
   nodes.Get (0)->AggregateObject (m);
   // Setup WiFi
-  NqosWifiMacHelper wifiMac = NqosWifiMacHelper::Default ();
+  WifiMacHelper wifiMac;
   wifiMac.SetType ("ns3::AdhocWifiMac");
   YansWifiPhyHelper wifiPhy = YansWifiPhyHelper::Default ();
   YansWifiChannelHelper wifiChannel = YansWifiChannelHelper::Default ();
   wifiPhy.SetChannel (wifiChannel.Create ());
-  WifiHelper wifi = WifiHelper::Default ();
+  WifiHelper wifi;
   wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager", "DataMode", StringValue ("OfdmRate6Mbps"), "RtsCtsThreshold", StringValue ("2200"));
   NetDeviceContainer devices = wifi.Install (wifiPhy, wifiMac, nodes); 
 

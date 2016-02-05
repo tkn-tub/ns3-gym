@@ -21,7 +21,7 @@
  *          Sébastien Deronne <sebastien.deronne@gmail.com> (Case for bug 730)
  */
 
-#include "ns3/nqos-wifi-mac-helper.h"
+#include "ns3/default-mac-helper.h"
 #include "ns3/yans-wifi-helper.h"
 #include "ns3/mobility-helper.h"
 #include "ns3/wifi-net-device.h"
@@ -547,13 +547,13 @@ Bug730TestCase::DoRun (void)
   YansWifiPhyHelper phy = YansWifiPhyHelper::Default ();
   phy.SetChannel (channel.Create ());
 
-  WifiHelper wifi = WifiHelper::Default ();
+  WifiHelper wifi;
   wifi.SetStandard (WIFI_PHY_STANDARD_80211b);
   wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager",
                                 "DataMode", StringValue ("DsssRate1Mbps"),
                                 "ControlMode", StringValue ("DsssRate1Mbps"));
 
-  NqosWifiMacHelper mac = NqosWifiMacHelper::Default ();
+  WifiMacHelper mac;
   Ssid ssid = Ssid ("ns-3-ssid");
   mac.SetType ("ns3::StaWifiMac",
                "Ssid", SsidValue (ssid),

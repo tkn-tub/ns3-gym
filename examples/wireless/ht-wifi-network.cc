@@ -92,7 +92,8 @@ int main (int argc, char *argv[])
               // Set guard interval
               phy.Set ("ShortGuardEnabled", BooleanValue (k));
 
-              WifiHelper wifi = WifiHelper::Default ();
+              WifiMacHelper mac;
+              WifiHelper wifi;
               if (frequency == 5.0)
                 {
                   wifi.SetStandard (WIFI_PHY_STANDARD_80211n_5GHZ);
@@ -108,10 +109,10 @@ int main (int argc, char *argv[])
                   return 0;
                 }
 
-              HtWifiMacHelper mac = HtWifiMacHelper::Default ();
-              StringValue DataRate = HtWifiMacHelper::DataRateForMcs (i);
-              wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager","DataMode", DataRate,
-                                            "ControlMode", DataRate);
+              std::ostringstream oss;
+              oss << "HtMcs" << i;
+              wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager","DataMode", StringValue (oss.str ()),
+                                            "ControlMode", StringValue (oss.str ()));
                 
               Ssid ssid = Ssid ("ns3-80211n");
 

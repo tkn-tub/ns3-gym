@@ -265,7 +265,7 @@ DsdvManetExample::SetupMobility ()
 void
 DsdvManetExample::CreateDevices (std::string tr_name)
 {
-  NqosWifiMacHelper wifiMac = NqosWifiMacHelper::Default ();
+  WifiMacHelper wifiMac;
   wifiMac.SetType ("ns3::AdhocWifiMac");
   YansWifiPhyHelper wifiPhy = YansWifiPhyHelper::Default ();
   YansWifiChannelHelper wifiChannel;

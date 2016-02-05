@@ -175,9 +175,9 @@ int main (int argc, char *argv[])
   NodeContainer wifiStaNodes;
   wifiStaNodes.Create (1);
 
-  WifiHelper wifi = WifiHelper::Default ();
+  WifiHelper wifi;
   wifi.SetStandard (WIFI_PHY_STANDARD_80211a);
-  NqosWifiMacHelper wifiMac = NqosWifiMacHelper::Default ();
+  WifiMacHelper wifiMac;
   YansWifiPhyHelper wifiPhy = YansWifiPhyHelper::Default ();
   YansWifiChannelHelper wifiChannel = YansWifiChannelHelper::Default ();
 

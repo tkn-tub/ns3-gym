@@ -280,6 +280,9 @@ public:
   virtual Ptr<MsduAggregator> GetMsduAggregator (void) const;
   /**
    */
+  virtual Ptr<MpduAggregator> GetMpduAggregator (void) const;
+  /**
+   */
   virtual Mac48Address GetSrcAddressForAggregation (const WifiMacHeader &hdr);
   /**
    */
@@ -524,17 +527,6 @@ public:
    * \param manager WifiRemoteStationManager associated with this MacLow
    */
   void SetWifiRemoteStationManager (Ptr<WifiRemoteStationManager> manager);
-  /**
-   * Set up MpduAggregator associated with this MacLow.
-   *
-   * \param aggregator MpduAggregator associated with this MacLow
-   */
-  void SetMpduAggregator (Ptr<MpduAggregator> aggregator);
-  /**
-   *
-   * \return the attached MpduAggregator
-   */
-  Ptr<MpduAggregator> GetMpduAggregator (void);
   /**
    * Set MAC address of this MacLow.
    *

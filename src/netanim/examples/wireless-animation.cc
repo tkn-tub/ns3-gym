@@ -56,11 +56,10 @@ main (int argc, char *argv[])
   YansWifiPhyHelper phy = YansWifiPhyHelper::Default ();
   phy.SetChannel (channel.Create ());
 
-  WifiHelper wifi = WifiHelper::Default ();
+  WifiHelper wifi;
   wifi.SetRemoteStationManager ("ns3::AarfWifiManager");
 
-  NqosWifiMacHelper mac = NqosWifiMacHelper::Default ();
-
+  WifiMacHelper mac;
   Ssid ssid = Ssid ("ns-3-ssid");
   mac.SetType ("ns3::StaWifiMac",
                "Ssid", SsidValue (ssid),

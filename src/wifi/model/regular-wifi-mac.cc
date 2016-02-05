@@ -30,7 +30,8 @@
 #include "dcf.h"
 #include "dcf-manager.h"
 #include "wifi-phy.h"
-#include "msdu-aggregator.h"
+#include "msdu-standard-aggregator.h"
+#include "mpdu-standard-aggregator.h"
 
 namespace ns3 {
 
@@ -137,6 +138,126 @@ RegularWifiMac::GetWifiRemoteStationManager () const
 }
 
 void
+RegularWifiMac::SetVoMaxAmsduSize (uint32_t size)
+{
+  NS_LOG_FUNCTION (this << size);
+  m_voMaxAmsduSize = size;
+  ConfigureAggregation ();
+}
+
+void
+RegularWifiMac::SetViMaxAmsduSize (uint32_t size)
+{
+  NS_LOG_FUNCTION (this << size);
+  m_viMaxAmsduSize = size;
+  ConfigureAggregation ();
+}
+
+void
+RegularWifiMac::SetBeMaxAmsduSize (uint32_t size)
+{
+  NS_LOG_FUNCTION (this << size);
+  m_beMaxAmsduSize = size;
+  ConfigureAggregation ();
+}
+
+void
+RegularWifiMac::SetBkMaxAmsduSize (uint32_t size)
+{
+  NS_LOG_FUNCTION (this << size);
+  m_bkMaxAmsduSize = size;
+  ConfigureAggregation ();
+}
+
+void
+RegularWifiMac::SetVoMaxAmpduSize (uint32_t size)
+{
+  NS_LOG_FUNCTION (this << size);
+  m_voMaxAmpduSize = size;
+  ConfigureAggregation ();
+}
+
+void
+RegularWifiMac::SetViMaxAmpduSize (uint32_t size)
+{
+  NS_LOG_FUNCTION (this << size);
+  m_viMaxAmpduSize = size;
+  ConfigureAggregation ();
+}
+
+void
+RegularWifiMac::SetBeMaxAmpduSize (uint32_t size)
+{
+  NS_LOG_FUNCTION (this << size);
+  m_beMaxAmpduSize = size;
+  ConfigureAggregation ();
+}
+
+void
+RegularWifiMac::SetBkMaxAmpduSize (uint32_t size)
+{
+  NS_LOG_FUNCTION (this << size);
+  m_bkMaxAmpduSize = size;
+  ConfigureAggregation ();
+}
+
+void
+RegularWifiMac::SetVoBlockAckThreshold (uint8_t threshold)
+{
+  NS_LOG_FUNCTION (this << threshold);
+  GetVOQueue ()->SetBlockAckThreshold (threshold);
+}
+
+void
+RegularWifiMac::SetViBlockAckThreshold (uint8_t threshold)
+{
+  NS_LOG_FUNCTION (this << threshold);
+  GetVIQueue ()->SetBlockAckThreshold (threshold);
+}
+
+void
+RegularWifiMac::SetBeBlockAckThreshold (uint8_t threshold)
+{
+  NS_LOG_FUNCTION (this << threshold);
+  GetBEQueue ()->SetBlockAckThreshold (threshold);
+}
+
+void
+RegularWifiMac::SetBkBlockAckThreshold (uint8_t threshold)
+{
+  NS_LOG_FUNCTION (this << threshold);
+  GetBKQueue ()->SetBlockAckThreshold (threshold);
+}
+
+void
+RegularWifiMac::SetVoBlockAckInactivityTimeout (uint16_t timeout)
+{
+  NS_LOG_FUNCTION (this << timeout);
+  GetVOQueue ()->SetBlockAckInactivityTimeout (timeout);
+}
+
+void
+RegularWifiMac::SetViBlockAckInactivityTimeout (uint16_t timeout)
+{
+  NS_LOG_FUNCTION (this << timeout);
+  GetVIQueue ()->SetBlockAckInactivityTimeout (timeout);
+}
+
+void
+RegularWifiMac::SetBeBlockAckInactivityTimeout (uint16_t timeout)
+{
+  NS_LOG_FUNCTION (this << timeout);
+  GetBEQueue ()->SetBlockAckInactivityTimeout (timeout);
+}
+
+void
+RegularWifiMac::SetBkBlockAckInactivityTimeout (uint16_t timeout)
+{
+  NS_LOG_FUNCTION (this << timeout);
+  GetBKQueue ()->SetBlockAckInactivityTimeout (timeout);
+}
+
+void
 RegularWifiMac::SetupEdcaQueue (enum AcIndex ac)
 {
   NS_LOG_FUNCTION (this << ac);
@@ -153,6 +274,7 @@ RegularWifiMac::SetupEdcaQueue (enum AcIndex ac)
   edca->SetTxFailedCallback (MakeCallback (&RegularWifiMac::TxFailed, this));
   edca->SetAccessCategory (ac);
   edca->CompleteConfig ();
+
   m_edca.insert (std::make_pair (ac, edca));
 }
 
@@ -245,7 +367,7 @@ RegularWifiMac::SetLinkDownCallback (Callback<void> linkDown)
 void
 RegularWifiMac::SetQosSupported (bool enable)
 {
-  NS_LOG_FUNCTION (this);
+  NS_LOG_FUNCTION (this << enable);
   m_qosSupported = enable;
 }
 
@@ -258,8 +380,20 @@ RegularWifiMac::GetQosSupported () const
 void
 RegularWifiMac::SetHtSupported (bool enable)
 {
-  NS_LOG_FUNCTION (this);
+  NS_LOG_FUNCTION (this << enable);
   m_htSupported = enable;
+  if (enable)
+    {
+      SetQosSupported (true);
+    }
+  if (!enable && !m_vhtSupported)
+    {
+      DisableAggregation ();
+    }
+  else
+    {
+      EnableAggregation ();
+    }
 }
 
 bool
@@ -271,8 +405,20 @@ RegularWifiMac::GetVhtSupported () const
 void
 RegularWifiMac::SetVhtSupported (bool enable)
 {
-  NS_LOG_FUNCTION (this);
+  NS_LOG_FUNCTION (this << enable);
   m_vhtSupported = enable;
+  if (enable)
+    {
+      SetQosSupported (true);
+    }
+  if (!enable && !m_htSupported)
+    {
+      DisableAggregation ();
+    }
+  else
+    {
+      EnableAggregation ();
+    }
 }
 
 bool
@@ -684,6 +830,102 @@ RegularWifiMac::GetTypeId (void)
                    MakeBooleanAccessor (&RegularWifiMac::SetCtsToSelfSupported,
                                         &RegularWifiMac::GetCtsToSelfSupported),
                    MakeBooleanChecker ())
+    .AddAttribute ("VO_MaxAmsduSize",
+                   "Maximum length in bytes of an A-MSDU for AC_VO access class",
+                   UintegerValue (0),
+                   MakeUintegerAccessor (&RegularWifiMac::SetVoMaxAmsduSize),
+                   MakeUintegerChecker<uint32_t> ())
+    .AddAttribute ("VI_MaxAmsduSize",
+                   "Maximum length in bytes of an A-MSDU for AC_VI access class",
+                   UintegerValue (0),
+                   MakeUintegerAccessor (&RegularWifiMac::SetViMaxAmsduSize),
+                   MakeUintegerChecker<uint32_t> ())
+    .AddAttribute ("BE_MaxAmsduSize",
+                   "Maximum length in bytes of an A-MSDU for AC_BE access class",
+                   UintegerValue (0),
+                   MakeUintegerAccessor (&RegularWifiMac::SetBeMaxAmsduSize),
+                   MakeUintegerChecker<uint32_t> ())
+    .AddAttribute ("BK_MaxAmsduSize",
+                   "Maximum length in bytes of an A-MSDU for AC_BK access class",
+                   UintegerValue (0),
+                   MakeUintegerAccessor (&RegularWifiMac::SetBkMaxAmsduSize),
+                   MakeUintegerChecker<uint32_t> ())
+    .AddAttribute ("VO_MaxAmpduSize",
+                   "Maximum length in bytes of an A-MPDU for AC_VO access class",
+                   UintegerValue (0),
+                   MakeUintegerAccessor (&RegularWifiMac::SetVoMaxAmpduSize),
+                   MakeUintegerChecker<uint32_t> ())
+    .AddAttribute ("VI_MaxAmpduSize",
+                   "Maximum length in bytes of an A-MPDU for AC_VI access class",
+                   UintegerValue (65535),
+                   MakeUintegerAccessor (&RegularWifiMac::SetViMaxAmpduSize),
+                   MakeUintegerChecker<uint32_t> ())
+    .AddAttribute ("BE_MaxAmpduSize",
+                   "Maximum length in bytes of an A-MPDU for AC_BE access class",
+                   UintegerValue (65535),
+                   MakeUintegerAccessor (&RegularWifiMac::SetBeMaxAmpduSize),
+                   MakeUintegerChecker<uint32_t> ())
+    .AddAttribute ("BK_MaxAmpduSize",
+                   "Maximum length in bytes of an A-MPDU for AC_BK access class",
+                   UintegerValue (0),
+                   MakeUintegerAccessor (&RegularWifiMac::SetBkMaxAmpduSize),
+                   MakeUintegerChecker<uint32_t> ())
+    .AddAttribute ("VO_BlockAckThreshold",
+                   "If number of packets in VO queue reaches this value, "
+                   "block ack mechanism is used. If this value is 0, block ack is never used.",
+                   UintegerValue (0),
+                   MakeUintegerAccessor (&RegularWifiMac::SetVoBlockAckThreshold),
+                   MakeUintegerChecker<uint8_t> (0, 64))
+    .AddAttribute ("VI_BlockAckThreshold",
+                   "If number of packets in VI queue reaches this value, "
+                   "block ack mechanism is used. If this value is 0, block ack is never used.",
+                   UintegerValue (0),
+                   MakeUintegerAccessor (&RegularWifiMac::SetViBlockAckThreshold),
+                   MakeUintegerChecker<uint8_t> (0, 64))
+    .AddAttribute ("BE_BlockAckThreshold",
+                   "If number of packets in BE queue reaches this value, "
+                   "block ack mechanism is used. If this value is 0, block ack is never used.",
+                   UintegerValue (0),
+                   MakeUintegerAccessor (&RegularWifiMac::SetBeBlockAckThreshold),
+                   MakeUintegerChecker<uint8_t> (0, 64))
+    .AddAttribute ("BK_BlockAckThreshold",
+                   "If number of packets in BK queue reaches this value, "
+                   "block ack mechanism is used. If this value is 0, block ack is never used.",
+                   UintegerValue (0),
+                   MakeUintegerAccessor (&RegularWifiMac::SetBkBlockAckThreshold),
+                   MakeUintegerChecker<uint8_t> (0, 64))
+    .AddAttribute ("VO_BlockAckInactivityTimeout",
+                   "Represents max time (blocks of 1024 micro seconds) allowed for block ack"
+                   "inactivity for AC_VO. If this value isn't equal to 0 a timer start after that a"
+                   "block ack setup is completed and will be reset every time that a block ack"
+                   "frame is received. If this value is 0, block ack inactivity timeout won't be used.",
+                   UintegerValue (0),
+                   MakeUintegerAccessor (&RegularWifiMac::SetVoBlockAckInactivityTimeout),
+                   MakeUintegerChecker<uint16_t> ())
+    .AddAttribute ("VI_BlockAckInactivityTimeout",
+                   "Represents max time (blocks of 1024 micro seconds) allowed for block ack"
+                   "inactivity for AC_VI. If this value isn't equal to 0 a timer start after that a"
+                   "block ack setup is completed and will be reset every time that a block ack"
+                   "frame is received. If this value is 0, block ack inactivity timeout won't be used.",
+                   UintegerValue (0),
+                   MakeUintegerAccessor (&RegularWifiMac::SetViBlockAckInactivityTimeout),
+                   MakeUintegerChecker<uint16_t> ())
+    .AddAttribute ("BE_BlockAckInactivityTimeout",
+                   "Represents max time (blocks of 1024 micro seconds) allowed for block ack"
+                   "inactivity for AC_BE. If this value isn't equal to 0 a timer start after that a"
+                   "block ack setup is completed and will be reset every time that a block ack"
+                   "frame is received. If this value is 0, block ack inactivity timeout won't be used.",
+                   UintegerValue (0),
+                   MakeUintegerAccessor (&RegularWifiMac::SetBeBlockAckInactivityTimeout),
+                   MakeUintegerChecker<uint16_t> ())
+    .AddAttribute ("BK_BlockAckInactivityTimeout",
+                   "Represents max time (blocks of 1024 micro seconds) allowed for block ack"
+                   "inactivity for AC_BK. If this value isn't equal to 0 a timer start after that a"
+                   "block ack setup is completed and will be reset every time that a block ack"
+                   "frame is received. If this value is 0, block ack inactivity timeout won't be used.",
+                   UintegerValue (0),
+                   MakeUintegerAccessor (&RegularWifiMac::SetBkBlockAckInactivityTimeout),
+                   MakeUintegerChecker<uint16_t> ())
     .AddAttribute ("DcaTxop", "The DcaTxop object",
                    PointerValue (),
                    MakePointerAccessor (&RegularWifiMac::GetDcaTxop),
@@ -723,19 +965,21 @@ RegularWifiMac::GetTypeId (void)
 void
 RegularWifiMac::FinishConfigureStandard (enum WifiPhyStandard standard)
 {
-  uint32_t cwmin;
-  uint32_t cwmax;
-
+  NS_LOG_FUNCTION (this << standard);
+  uint32_t cwmin = 0;
+  uint32_t cwmax = 0;
   switch (standard)
     {
+    case WIFI_PHY_STANDARD_80211ac:
+      SetVhtSupported (true);
+    case WIFI_PHY_STANDARD_80211n_5GHZ:
+    case WIFI_PHY_STANDARD_80211n_2_4GHZ:
+      SetHtSupported (true);
     case WIFI_PHY_STANDARD_holland:
     case WIFI_PHY_STANDARD_80211a:
     case WIFI_PHY_STANDARD_80211g:
     case WIFI_PHY_STANDARD_80211_10MHZ:
     case WIFI_PHY_STANDARD_80211_5MHZ:
-    case WIFI_PHY_STANDARD_80211n_5GHZ:
-    case WIFI_PHY_STANDARD_80211n_2_4GHZ:
-    case WIFI_PHY_STANDARD_80211ac:
       cwmin = 15;
       cwmax = 1023;
       break;
@@ -770,6 +1014,75 @@ RegularWifiMac::TxFailed (const WifiMacHeader &hdr)
 {
   NS_LOG_FUNCTION (this << hdr);
   m_txErrCallback (hdr);
+}
+
+void
+RegularWifiMac::ConfigureAggregation (void)
+{
+  NS_LOG_FUNCTION (this);
+  if (GetVOQueue ()->GetMsduAggregator () != 0)
+    {
+      GetVOQueue ()->GetMsduAggregator ()->SetMaxAmsduSize (m_voMaxAmsduSize);
+    }
+  if (GetVIQueue ()->GetMsduAggregator () != 0)
+    {
+      GetVIQueue ()->GetMsduAggregator ()->SetMaxAmsduSize (m_viMaxAmsduSize);
+    }
+  if (GetBEQueue ()->GetMsduAggregator () != 0)
+    {
+      GetBEQueue ()->GetMsduAggregator ()->SetMaxAmsduSize (m_beMaxAmsduSize);
+    }
+  if (GetBKQueue ()->GetMsduAggregator () != 0)
+    {
+      GetBKQueue ()->GetMsduAggregator ()->SetMaxAmsduSize (m_bkMaxAmsduSize);
+    }
+  if (GetVOQueue ()->GetMpduAggregator () != 0)
+    {
+      GetVOQueue ()->GetMpduAggregator ()->SetMaxAmpduSize (m_voMaxAmpduSize);
+    }
+  if (GetVIQueue ()->GetMpduAggregator () != 0)
+    {
+      GetVIQueue ()->GetMpduAggregator ()->SetMaxAmpduSize (m_viMaxAmpduSize);
+    }
+  if (GetBEQueue ()->GetMpduAggregator () != 0)
+    {
+      GetBEQueue ()->GetMpduAggregator ()->SetMaxAmpduSize (m_beMaxAmpduSize);
+    }
+  if (GetBKQueue ()->GetMpduAggregator () != 0)
+    {
+      GetBKQueue ()->GetMpduAggregator ()->SetMaxAmpduSize (m_bkMaxAmpduSize);
+    }
+}
+
+void
+RegularWifiMac::EnableAggregation (void)
+{
+  NS_LOG_FUNCTION (this);
+  for (EdcaQueues::iterator i = m_edca.begin (); i != m_edca.end (); ++i)
+  {
+    if (i->second->GetMsduAggregator () == 0)
+      {
+        Ptr<MsduStandardAggregator> msduAggregator = CreateObject<MsduStandardAggregator> ();
+        i->second->SetMsduAggregator (msduAggregator);
+      }
+    if (i->second->GetMpduAggregator () == 0)
+      {
+        Ptr<MpduStandardAggregator> mpduAggregator = CreateObject<MpduStandardAggregator> ();
+        i->second->SetMpduAggregator (mpduAggregator);
+      }
+  }
+  ConfigureAggregation ();
+}
+
+void
+RegularWifiMac::DisableAggregation (void)
+{
+  NS_LOG_FUNCTION (this);
+  for (EdcaQueues::iterator i = m_edca.begin (); i != m_edca.end (); ++i)
+  {
+    i->second->SetMsduAggregator (0);
+    i->second->SetMpduAggregator (0);
+  }
 }
 
 } //namespace ns3

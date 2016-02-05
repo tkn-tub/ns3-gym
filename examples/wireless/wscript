@@ -22,9 +22,6 @@ def build(bld):
     obj = bld.create_ns3_program('wifi-wired-bridging', ['internet', 'mobility', 'wifi', 'csma', 'bridge', 'applications'])
     obj.source = 'wifi-wired-bridging.cc'
 
-    obj = bld.create_ns3_program('simple-msdu-aggregation', ['internet', 'mobility', 'wifi', 'applications'])
-    obj.source = 'simple-msdu-aggregation.cc'
-
     obj = bld.create_ns3_program('multirate', ['internet', 'mobility', 'wifi', 'stats', 'flow-monitor', 'olsr', 'applications', 'point-to-point'])
     obj.source = 'multirate.cc'
 
@@ -76,11 +73,8 @@ def build(bld):
     obj = bld.create_ns3_program('rate-adaptation-distance', ['core', 'mobility', 'wifi', 'applications', 'flow-monitor'])
     obj.source = 'rate-adaptation-distance.cc'
 
-    obj = bld.create_ns3_program('simple-mpdu-aggregation', ['internet', 'mobility', 'wifi', 'applications'])
-    obj.source = 'simple-mpdu-aggregation.cc'
-
-    obj = bld.create_ns3_program('simple-two-level-aggregation', ['internet', 'mobility', 'wifi', 'applications'])
-    obj.source = 'simple-two-level-aggregation.cc'
+    obj = bld.create_ns3_program('wifi-aggregation', ['internet', 'mobility', 'wifi', 'applications'])
+    obj.source = 'wifi-aggregation.cc'
 
     obj = bld.create_ns3_program('simple-ht-hidden-stations', ['internet', 'mobility', 'wifi', 'applications'])    
     obj.source = 'simple-ht-hidden-stations.cc'

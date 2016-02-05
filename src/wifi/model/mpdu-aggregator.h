@@ -48,6 +48,9 @@ public:
   typedef std::list<std::pair<Ptr<Packet>, AmpduSubframeHeader> >::const_iterator DeaggregatedMpdusCI;
 
   static TypeId GetTypeId (void);
+
+  virtual void SetMaxAmpduSize (uint32_t maxSize) = 0;
+  virtual uint32_t GetMaxAmpduSize (void) const = 0;
   /**
    * \param packet Packet we have to insert into <i>aggregatedPacket</i>.
    * \param aggregatedPacket Packet that will contain <i>packet</i>, if aggregation is possible.

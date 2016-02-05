@@ -37,7 +37,7 @@ public:
   Experiment ();
   Experiment (std::string name);
   Gnuplot2dDataset Run (const WifiHelper &wifi, const YansWifiPhyHelper &wifiPhy,
-                        const NqosWifiMacHelper &wifiMac, const YansWifiChannelHelper &wifiChannel);
+                        const WifiMacHelper &wifiMac, const YansWifiChannelHelper &wifiChannel);
 private:
   void ReceivePacket (Ptr<Socket> socket);
   void SetPosition (Ptr<Node> node, Vector position);
@@ -112,7 +112,7 @@ Experiment::SetupPacketReceive (Ptr<Node> node)
 
 Gnuplot2dDataset
 Experiment::Run (const WifiHelper &wifi, const YansWifiPhyHelper &wifiPhy,
-                 const NqosWifiMacHelper &wifiMac, const YansWifiChannelHelper &wifiChannel)
+                 const WifiMacHelper &wifiMac, const YansWifiChannelHelper &wifiChannel)
 {
   m_bytesTotal = 0;
 
@@ -125,7 +125,7 @@ Experiment::Run (const WifiHelper &wifi, const YansWifiPhyHelper &wifiPhy,
   YansWifiPhyHelper phy = wifiPhy;
   phy.SetChannel (wifiChannel.Create ());
 
-  NqosWifiMacHelper mac = wifiMac;
+  WifiMacHelper mac = wifiMac;
   NetDeviceContainer devices = wifi.Install (phy, mac, c);
 
   MobilityHelper mobility;
@@ -172,9 +172,9 @@ int main (int argc, char *argv[])
   Gnuplot gnuplot = Gnuplot ("reference-rates.png");
 
   Experiment experiment;
-  WifiHelper wifi = WifiHelper::Default ();
+  WifiHelper wifi;
   wifi.SetStandard (WIFI_PHY_STANDARD_80211a);
-  NqosWifiMacHelper wifiMac = NqosWifiMacHelper::Default ();
+  WifiMacHelper wifiMac;
   YansWifiPhyHelper wifiPhy = YansWifiPhyHelper::Default ();
   YansWifiChannelHelper wifiChannel = YansWifiChannelHelper::Default ();
   Gnuplot2dDataset dataset;

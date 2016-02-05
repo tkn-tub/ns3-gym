@@ -82,12 +82,12 @@ int main (int argc, char *argv[])
   phy.SetChannel (channel.Create ());
 
   //Default IEEE 802.11n (2.4 GHz)
-  WifiHelper wifi = WifiHelper::Default ();
+  WifiHelper wifi;
   wifi.SetStandard (WIFI_PHY_STANDARD_80211n_2_4GHZ);
   wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager",
                                 "DataMode", StringValue("OfdmRate65MbpsBW20MHz"),
                                 "ControlMode", StringValue("OfdmRate6_5MbpsBW20MHz"));
-  HtWifiMacHelper mac = HtWifiMacHelper::Default ();
+  WifiMacHelper mac;
 
   //Install PHY and MAC
   Ssid ssid = Ssid ("ns3-wifi");

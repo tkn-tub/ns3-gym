@@ -26,6 +26,8 @@
 #include "ns3/mac-low.h"
 #include "ns3/edca-txop-n.h"
 #include "ns3/yans-wifi-phy.h"
+#include "ns3/msdu-standard-aggregator.h"
+#include "ns3/mpdu-standard-aggregator.h"
 
 using namespace ns3;
 
@@ -41,8 +43,8 @@ private:
   Ptr<EdcaTxopN> m_edca;
   Ptr<WifiRemoteStationManager> m_manager;
   ObjectFactory m_factory;
-  Ptr<MpduAggregator> m_mpduAggregator;
-  Ptr<MsduAggregator> m_msduAggregator;
+  Ptr<MsduStandardAggregator> msduAggregator;
+  Ptr<MpduStandardAggregator> mpduAggregator;
 };
 
 TwoLevelAggregationTest::TwoLevelAggregationTest ()
@@ -84,17 +86,14 @@ TwoLevelAggregationTest::DoRun (void)
   /*
    * Configure aggregation.
    */
-  m_factory = ObjectFactory ();
-  m_factory.SetTypeId ("ns3::MsduStandardAggregator");
-  m_factory.Set ("MaxAmsduSize", UintegerValue (4095));
-  m_msduAggregator = m_factory.Create<MsduAggregator> ();
-  m_edca->SetMsduAggregator (m_msduAggregator);
+  msduAggregator = CreateObject<MsduStandardAggregator> ();
+  mpduAggregator = CreateObject<MpduStandardAggregator> ();
+  
+  msduAggregator->SetMaxAmsduSize (4095);
+  mpduAggregator->SetMaxAmpduSize (65535);
 
-  m_factory = ObjectFactory ();
-  m_factory.SetTypeId ("ns3::MpduStandardAggregator");
-  m_factory.Set ("MaxAmpduSize", UintegerValue (65535));
-  m_mpduAggregator = m_factory.Create<MpduAggregator> ();
-  m_low->SetMpduAggregator (m_mpduAggregator);
+  m_edca->SetMsduAggregator (msduAggregator);
+  m_edca->SetMpduAggregator (mpduAggregator);
 
   /*
    * Create dummy packets of 1500 bytes and fill mac header fields that will be used for the tests.
@@ -141,11 +140,11 @@ TwoLevelAggregationTest::DoRun (void)
    * It checks whether MSDU aggregation has been rejected because the maximum MPDU size is set to 0 (returned packet should be equal to 0).
    * This test is needed to ensure that no packets are removed from the queue in MacLow::PerformMsduAggregation, since aggregation will no occur in MacLow::AggregateToAmpdu.
    */
-  m_factory = ObjectFactory ();
+  /*m_factory = ObjectFactory ();
   m_factory.SetTypeId ("ns3::MpduStandardAggregator");
   m_factory.Set ("MaxAmpduSize", UintegerValue (0));
   m_mpduAggregator = m_factory.Create<MpduAggregator> ();
-  m_low->SetMpduAggregator (m_mpduAggregator);
+  m_low->SetMpduAggregator (m_mpduAggregator);*/
 
   m_edca->GetEdcaQueue ()->Enqueue (pkt, hdr);
   packet = m_low->PerformMsduAggregation (peekedPacket, &peekedHdr, &tstamp, currentAggregatedPacket, 0);
@@ -160,11 +159,7 @@ TwoLevelAggregationTest::DoRun (void)
    * It checks whether MSDU aggregation has been rejected because there is no packets ready in the queue (returned packet should be equal to 0).
    * This test is needed to ensure that there is no issue when the queue is empty.
    */
-  m_factory = ObjectFactory ();
-  m_factory.SetTypeId ("ns3::MpduStandardAggregator");
-  m_factory.Set ("MaxAmpduSize", UintegerValue (4095));
-  m_mpduAggregator = m_factory.Create<MpduAggregator> ();
-  m_low->SetMpduAggregator (m_mpduAggregator);
+  mpduAggregator->SetMaxAmpduSize (4095);
 
   m_edca->GetEdcaQueue ()->Remove (pkt);
   m_edca->GetEdcaQueue ()->Remove (pkt);

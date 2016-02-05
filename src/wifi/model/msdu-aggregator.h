@@ -42,6 +42,10 @@ public:
   typedef std::list<std::pair<Ptr<Packet>, AmsduSubframeHeader> >::const_iterator DeaggregatedMsdusCI;
 
   static TypeId GetTypeId (void);
+
+  virtual void SetMaxAmsduSize (uint32_t maxSize) = 0;
+  virtual uint32_t GetMaxAmsduSize (void) const = 0;
+
   /* Adds <i>packet</i> to <i>aggregatedPacket</i>. In concrete aggregator's implementation is
    * specified how and if <i>packet</i> can be added to <i>aggregatedPacket</i>. If <i>packet</i>
    * can be added returns true, false otherwise.

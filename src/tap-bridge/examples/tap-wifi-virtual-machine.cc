@@ -104,14 +104,14 @@ main (int argc, char *argv[])
   //
   // We're going to use 802.11 A so set up a wifi helper to reflect that.
   //
-  WifiHelper wifi = WifiHelper::Default ();
+  WifiHelper wifi;
   wifi.SetStandard (WIFI_PHY_STANDARD_80211a);
   wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager", "DataMode", StringValue ("OfdmRate54Mbps"));
 
   //
   // No reason for pesky access points, so we'll use an ad-hoc network.
   //
-  NqosWifiMacHelper wifiMac = NqosWifiMacHelper::Default ();
+  WifiMacHelper wifiMac = WifiMacHelper::Default ();
   wifiMac.SetType ("ns3::AdhocWifiMac");
 
   //

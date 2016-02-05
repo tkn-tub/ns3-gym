@@ -40,7 +40,7 @@ public:
   Experiment ();
   Experiment (std::string name);
   uint32_t Run (const WifiHelper &wifi, const YansWifiPhyHelper &wifiPhy,
-                const NqosWifiMacHelper &wifiMac, const YansWifiChannelHelper &wifiChannel);
+                const WifiMacHelper &wifiMac, const YansWifiChannelHelper &wifiChannel);
 private:
   void ReceivePacket (Ptr<Socket> socket);
   void SetPosition (Ptr<Node> node, Vector position);
@@ -116,7 +116,7 @@ Experiment::GenerateTraffic (Ptr<Socket> socket, uint32_t pktSize,
 
 uint32_t
 Experiment::Run (const WifiHelper &wifi, const YansWifiPhyHelper &wifiPhy,
-                 const NqosWifiMacHelper &wifiMac, const YansWifiChannelHelper &wifiChannel)
+                 const WifiMacHelper &wifiMac, const YansWifiChannelHelper &wifiChannel)
 {
   m_pktsTotal = 0;
 
@@ -129,7 +129,7 @@ Experiment::Run (const WifiHelper &wifi, const YansWifiPhyHelper &wifiPhy,
   YansWifiPhyHelper phy = wifiPhy;
   phy.SetChannel (wifiChannel.Create ());
 
-  NqosWifiMacHelper mac = wifiMac;
+  WifiMacHelper mac = wifiMac;
   NetDeviceContainer devices = wifi.Install (phy, mac, c);
 
   MobilityHelper mobility;
@@ -194,7 +194,7 @@ int main (int argc, char *argv[])
  
           WifiHelper wifi;
           wifi.SetStandard (WIFI_PHY_STANDARD_80211b);
-          NqosWifiMacHelper wifiMac = NqosWifiMacHelper::Default ();
+          WifiMacHelper wifiMac;
           Config::SetDefault ("ns3::WifiRemoteStationManager::NonUnicastMode",
                               StringValue (modes[i]));
           wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager",

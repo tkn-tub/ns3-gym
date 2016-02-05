@@ -36,6 +36,9 @@ public:
   static TypeId GetTypeId (void);
   MsduStandardAggregator ();
   ~MsduStandardAggregator ();
+
+  virtual void SetMaxAmsduSize (uint32_t maxSize);
+  virtual uint32_t GetMaxAmsduSize (void) const;
   /**
    * \param packet Packet we have to insert into <i>aggregatedPacket</i>.
    * \param aggregatedPacket Packet that will contain <i>packet</i>, if aggregation is possible,

@@ -55,7 +55,10 @@ NqosWifiMacHelper::SetType (std::string type,
                             std::string n4, const AttributeValue &v4,
                             std::string n5, const AttributeValue &v5,
                             std::string n6, const AttributeValue &v6,
-                            std::string n7, const AttributeValue &v7)
+                            std::string n7, const AttributeValue &v7,
+                            std::string n8, const AttributeValue &v8,
+                            std::string n9, const AttributeValue &v9,
+                            std::string n10, const AttributeValue &v10)
 {
   m_mac.SetTypeId (type);
   m_mac.Set (n0, v0);
@@ -66,6 +69,9 @@ NqosWifiMacHelper::SetType (std::string type,
   m_mac.Set (n5, v5);
   m_mac.Set (n6, v6);
   m_mac.Set (n7, v7);
+  m_mac.Set (n8, v8);
+  m_mac.Set (n9, v9);
+  m_mac.Set (n10, v10);
 }
 
 Ptr<WifiMac>

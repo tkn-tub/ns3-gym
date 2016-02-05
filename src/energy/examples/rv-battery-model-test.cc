@@ -31,7 +31,7 @@
 #include "ns3/config.h"
 #include "ns3/string.h"
 #include "ns3/yans-wifi-helper.h"
-#include "ns3/nqos-wifi-mac-helper.h"
+#include "ns3/default-mac-helper.h"
 #include <cmath>
 
 using namespace ns3;
@@ -744,8 +744,8 @@ BatteryLifetimeTest::ConstantLoadTest (double load, Time expLifetime)
   wifiChannel.SetPropagationDelay ("ns3::ConstantSpeedPropagationDelayModel");
   wifiPhy.SetChannel (wifiChannel.Create ());
 
-  // Add a non-QoS upper MAC, and disable rate control
-  NqosWifiMacHelper wifiMac = NqosWifiMacHelper::Default ();
+  // Add a MAC and disable rate control
+  WifiMacHelper wifiMac;
   wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager",
                                 "DataMode", StringValue (phyMode),
                                 "ControlMode", StringValue (phyMode));
@@ -831,8 +831,8 @@ BatteryLifetimeTest::VariableLoadTest (std::vector<double> loads,
   wifiChannel.SetPropagationDelay ("ns3::ConstantSpeedPropagationDelayModel");
   wifiPhy.SetChannel (wifiChannel.Create ());
 
-  // Add a non-QoS upper MAC, and disable rate control
-  NqosWifiMacHelper wifiMac = NqosWifiMacHelper::Default ();
+  // Add a MAC and disable rate control
+  WifiMacHelper wifiMac;
   wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager",
                                 "DataMode", StringValue (phyMode),
                                 "ControlMode", StringValue (phyMode));

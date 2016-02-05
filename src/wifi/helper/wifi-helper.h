@@ -30,11 +30,11 @@
 #include "ns3/net-device-container.h"
 #include "ns3/wifi-phy-standard.h"
 #include "ns3/trace-helper.h"
+#include "ns3/wifi-mac-helper.h"
 
 namespace ns3 {
 
 class WifiPhy;
-class WifiMac;
 class WifiNetDevice;
 class Node;
 
@@ -67,26 +67,6 @@ public:
 
 
 /**
- * \brief create MAC objects
- *
- * This base class must be implemented by new MAC implementation which wish to integrate
- * with the \ref ns3::WifiHelper class.
- */
-class WifiMacHelper
-{
-public:
-  virtual ~WifiMacHelper ();
-  /**
-   * \returns a new MAC object.
-   *
-   * Subclasses must implement this method to allow the ns3::WifiHelper class
-   * to create MAC objects from ns3::WifiHelper::Install.
-   */
-  virtual Ptr<WifiMac> Create (void) const = 0;
-};
-
-
-/**
  * \brief helps to create WifiNetDevice objects
  *
  * This class can help to create a large set of similar
@@ -101,6 +81,10 @@ public:
   /**
    * Create a Wifi helper in an empty state: all its parameters
    * must be set before calling ns3::WifiHelper::Install
+   *
+   * The default state is defined as being an Adhoc MAC layer with an ARF rate control algorithm
+   * and both objects using their default attribute values. 
+   * By default, configure MAC and PHY for 802.11a.
    */
   WifiHelper ();
 
@@ -110,8 +94,11 @@ public:
    * The default state is defined as being an Adhoc MAC layer with an ARF rate control algorithm
    * and both objects using their default attribute values. By default, configure MAC and PHY
    * for 802.11a.
+   *
+   * \deprecated This method will go away in future versions of ns-3.
+   * The constructor of the class is now performing the same job, which makes this function useless.
    */
-  static WifiHelper Default (void);
+  static WifiHelper Default (void) NS_DEPRECATED;
 
   /**
    * \param type the type of ns3::WifiRemoteStationManager to create.

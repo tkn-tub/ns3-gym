@@ -26,6 +26,10 @@
 
 #include <map>
 
+/**
+ * (Deprecated) ns3::QosWifiMacHelper declaration.
+ */
+
 namespace ns3 {
 
 /**
@@ -73,6 +77,12 @@ public:
    * \param v6 the value of the attribute to set
    * \param n7 the name of the attribute to set
    * \param v7 the value of the attribute to set
+   * \param n8 the name of the attribute to set
+   * \param v8 the value of the attribute to set
+   * \param n9 the name of the attribute to set
+   * \param v9 the value of the attribute to set
+   * \param n10 the name of the attribute to set
+   * \param v10 the value of the attribute to set
    *
    * All the attributes specified in this method should exist
    * in the requested mac.
@@ -85,7 +95,10 @@ public:
                         std::string n4 = "", const AttributeValue &v4 = EmptyAttributeValue (),
                         std::string n5 = "", const AttributeValue &v5 = EmptyAttributeValue (),
                         std::string n6 = "", const AttributeValue &v6 = EmptyAttributeValue (),
-                        std::string n7 = "", const AttributeValue &v7 = EmptyAttributeValue ());
+                        std::string n7 = "", const AttributeValue &v7 = EmptyAttributeValue (),
+                        std::string n8 = "", const AttributeValue &v8 = EmptyAttributeValue (),
+                        std::string n9 = "", const AttributeValue &v9 = EmptyAttributeValue (),
+                        std::string n10 = "", const AttributeValue &v10 = EmptyAttributeValue ());
   /**
    * Set the class, type and attributes for the Msdu aggregator
    *
@@ -169,8 +182,8 @@ private:
   virtual Ptr<WifiMac> Create (void) const;
   void Setup (Ptr<WifiMac> mac, enum AcIndex ac, std::string dcaAttrName) const;
 
-  std::map<AcIndex, ObjectFactory> m_aggregators;
-  ObjectFactory m_mpduAggregator;
+  std::map<AcIndex, ObjectFactory> m_msduAggregators;
+  std::map<AcIndex, ObjectFactory> m_mpduAggregators;
   /*
    * Next maps contain, for every access category, the values for
    * block ack threshold and block ack inactivity timeout.
