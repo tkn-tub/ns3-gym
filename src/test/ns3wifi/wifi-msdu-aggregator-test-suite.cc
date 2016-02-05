@@ -30,7 +30,6 @@
 #include "ns3/inet-socket-address.h"
 #include "ns3/packet-sink.h"
 #include "ns3/wifi-helper.h"
-#include "ns3/default-mac-helper.h"
 #include "ns3/yans-wifi-helper.h"
 #include "ns3/mobility-helper.h"
 #include "ns3/internet-stack-helper.h"
@@ -62,7 +61,6 @@ void
 WifiMsduAggregatorThroughputTest::DoRun (void)
 {
   WifiHelper wifi;
-
   WifiMacHelper wifiMac;
   YansWifiPhyHelper wifiPhy = YansWifiPhyHelper::Default ();
   YansWifiChannelHelper wifiChannel = YansWifiChannelHelper::Default ();

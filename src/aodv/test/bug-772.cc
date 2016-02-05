@@ -37,7 +37,6 @@
 #include "ns3/pcap-file.h"
 #include "ns3/aodv-helper.h"
 #include "ns3/v4ping-helper.h"
-#include "ns3/default-mac-helper.h"
 #include "ns3/config.h"
 #include "ns3/inet-socket-address.h"
 #include "ns3/data-rate.h"

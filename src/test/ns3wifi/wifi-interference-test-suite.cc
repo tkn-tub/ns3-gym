@@ -44,7 +44,6 @@
 #include "ns3/wifi-net-device.h"
 #include "ns3/mobility-helper.h"
 #include "ns3/constant-position-mobility-model.h"
-#include "ns3/default-mac-helper.h"
 #include "ns3/simulator.h"
 
 using namespace ns3;

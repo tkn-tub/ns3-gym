@@ -23,7 +23,7 @@
  */
 #ifndef WAVE_MAC_HELPER_H
 #define WAVE_MAC_HELPER_H
-#include "ns3/default-mac-helper.h"
+#include "ns3/wifi-mac-helper.h"
 
 namespace ns3 {
 

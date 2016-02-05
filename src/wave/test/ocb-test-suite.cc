@@ -30,7 +30,6 @@
 #include "ns3/position-allocator.h"
 #include "ns3/packet-socket-helper.h"
 #include "ns3/mobility-helper.h"
-#include "ns3/default-mac-helper.h"
 #include "ns3/wifi-net-device.h"
 #include "ns3/packet-socket-server.h"
 #include "ns3/packet-socket-client.h"

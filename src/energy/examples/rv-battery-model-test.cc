@@ -31,7 +31,6 @@
 #include "ns3/config.h"
 #include "ns3/string.h"
 #include "ns3/yans-wifi-helper.h"
-#include "ns3/default-mac-helper.h"
 #include <cmath>
 
 using namespace ns3;

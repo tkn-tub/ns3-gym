@@ -34,7 +34,6 @@
 #include "ns3/mobility-model.h"
 #include "ns3/pcap-file.h"
 #include "ns3/aodv-helper.h"
-#include "ns3/default-mac-helper.h"
 #include "ns3/config.h"
 #include "ns3/pcap-test.h"
 #include "ns3/rng-seed-manager.h"

@@ -21,7 +21,6 @@
  *          Sébastien Deronne <sebastien.deronne@gmail.com> (Case for bug 730)
  */
 
-#include "ns3/default-mac-helper.h"
 #include "ns3/yans-wifi-helper.h"
 #include "ns3/mobility-helper.h"
 #include "ns3/wifi-net-device.h"
