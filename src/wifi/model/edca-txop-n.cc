@@ -548,13 +548,10 @@ EdcaTxopN::NotifyAccessGranted (void)
         {
           params.EnableAck ();
         }
-      if (NeedFragmentation () && ((m_currentHdr.IsQosData ()
-                                    && !m_currentHdr.IsQosAmsdu ())
-                                   ||
-                                   (m_currentHdr.IsData ()
-                                    && !m_currentHdr.IsQosData () && m_currentHdr.IsQosAmsdu ()))
-          && (m_blockAckThreshold == 0
-              || m_blockAckType == BASIC_BLOCK_ACK))
+      if (((m_currentHdr.IsQosData () && !m_currentHdr.IsQosAmsdu ())
+           ||(m_currentHdr.IsData () && !m_currentHdr.IsQosData () && m_currentHdr.IsQosAmsdu ()))
+          && (m_blockAckThreshold == 0 || m_blockAckType == BASIC_BLOCK_ACK)
+          && NeedFragmentation ())
         {
           //With COMPRESSED_BLOCK_ACK fragmentation must be avoided.
           params.DisableRts ();
@@ -618,16 +615,6 @@ EdcaTxopN::NotifyAccessGranted (void)
                   currentAggregatedPacket = 0;
                   NS_LOG_DEBUG ("tx unicast A-MSDU");
                 }
-            }
-          if (NeedRts ())
-            {
-              params.EnableRts ();
-              NS_LOG_DEBUG ("tx unicast rts");
-            }
-          else
-            {
-              params.DisableRts ();
-              NS_LOG_DEBUG ("tx unicast");
             }
           params.DisableNextData ();
           m_low->StartTransmission (m_currentPacket, &m_currentHdr,
@@ -982,14 +969,6 @@ EdcaTxopN::StartAccessIfNeeded (void)
     {
       m_manager->RequestAccess (m_dcf);
     }
-}
-
-bool
-EdcaTxopN::NeedRts (void)
-{
-  NS_LOG_FUNCTION (this);
-  return m_stationManager->NeedRts (m_currentHdr.GetAddr1 (), &m_currentHdr,
-                                    m_currentPacket);
 }
 
 bool

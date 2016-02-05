@@ -282,46 +282,50 @@ WifiRemoteStationManager::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::WifiRemoteStationManager")
     .SetParent<Object> ()
     .SetGroupName ("Wifi")
-    .AddAttribute ("IsLowLatency", "If true, we attempt to modelize a so-called low-latency device: a device"
-                   " where decisions about tx parameters can be made on a per-packet basis and feedback about the"
-                   " transmission of each packet is obtained before sending the next. Otherwise, we modelize a "
-                   " high-latency device, that is a device where we cannot update our decision about tx parameters"
-                   " after every packet transmission.",
+    .AddAttribute ("IsLowLatency",
+                   "If true, we attempt to modelize a so-called low-latency device: "
+                   "a device where decisions about tx parameters can be made on a per-packet basis and "
+                   "feedback about the transmission of each packet is obtained before sending the next. "
+                   "Otherwise, we modelize a high-latency device, that is a device where we cannot update "
+                   "our decision about tx parameters after every packet transmission.",
                    TypeId::ATTR_GET,
                    BooleanValue (true), //this value is ignored because there is no setter
                    MakeBooleanAccessor (&WifiRemoteStationManager::IsLowLatency),
                    MakeBooleanChecker ())
-    .AddAttribute ("MaxSsrc", "The maximum number of retransmission attempts for an RTS. This value"
-                   " will not have any effect on some rate control algorithms.",
+    .AddAttribute ("MaxSsrc",
+                   "The maximum number of retransmission attempts for an RTS. "
+                   " This value will not have any effect on some rate control algorithms.",
                    UintegerValue (7),
                    MakeUintegerAccessor (&WifiRemoteStationManager::m_maxSsrc),
                    MakeUintegerChecker<uint32_t> ())
-    .AddAttribute ("MaxSlrc", "The maximum number of retransmission attempts for a DATA packet. This value"
-                   " will not have any effect on some rate control algorithms.",
+    .AddAttribute ("MaxSlrc",
+                   "The maximum number of retransmission attempts for a DATA packet. "
+                   "This value will not have any effect on some rate control algorithms.",
                    UintegerValue (7),
                    MakeUintegerAccessor (&WifiRemoteStationManager::m_maxSlrc),
                    MakeUintegerChecker<uint32_t> ())
-    .AddAttribute ("RtsCtsThreshold", "If  the size of the data packet + LLC header + MAC header + FCS trailer is bigger than "
-                   "this value, we use an RTS/CTS handshake before sending the data, as per IEEE Std. 802.11-2012, Section 9.3.5. "
+    .AddAttribute ("RtsCtsThreshold",
+                   "If the size of the PSDU is bigger than this value, we use an RTS/CTS handshake before sending the data frame."
                    "This value will not have any effect on some rate control algorithms.",
-                   UintegerValue (2346),
+                   UintegerValue (65535),
                    MakeUintegerAccessor (&WifiRemoteStationManager::m_rtsCtsThreshold),
                    MakeUintegerChecker<uint32_t> ())
-    .AddAttribute ("FragmentationThreshold", "If the size of the data packet + LLC header + MAC header + FCS trailer is bigger"
-                   "than this value, we fragment it such that the size of the fragments are equal or smaller "
-                   "than this value, as per IEEE Std. 802.11-2012, Section 9.5. "
+    .AddAttribute ("FragmentationThreshold",
+                   "If the size of the PSDU is bigger than this value, we fragment it such that the size of the fragments are equal or smaller. "
+                   "This value does not apply when it is carried in an A-MPDU. "
                    "This value will not have any effect on some rate control algorithms.",
                    UintegerValue (2346),
                    MakeUintegerAccessor (&WifiRemoteStationManager::DoSetFragmentationThreshold,
                                          &WifiRemoteStationManager::DoGetFragmentationThreshold),
                    MakeUintegerChecker<uint32_t> ())
-    .AddAttribute ("NonUnicastMode", "Wifi mode used for non-unicast transmissions.",
+    .AddAttribute ("NonUnicastMode",
+                   "Wifi mode used for non-unicast transmissions.",
                    WifiModeValue (),
                    MakeWifiModeAccessor (&WifiRemoteStationManager::m_nonUnicastMode),
                    MakeWifiModeChecker ())
-    .AddAttribute ("DefaultTxPowerLevel", "Default power level to be used for transmissions. "
-                   "This is the power level that is used by all those WifiManagers that do not"
-                   "implement TX power control.",
+    .AddAttribute ("DefaultTxPowerLevel",
+                   "Default power level to be used for transmissions. "
+                   "This is the power level that is used by all those WifiManagers that do not implement TX power control.",
                    UintegerValue (0),
                    MakeUintegerAccessor (&WifiRemoteStationManager::m_defaultTxPowerLevel),
                    MakeUintegerChecker<uint8_t> ())

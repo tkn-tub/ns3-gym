@@ -323,14 +323,6 @@ DcaTxop::Low (void)
   return m_low;
 }
 
-bool
-DcaTxop::NeedRts (Ptr<const Packet> packet, const WifiMacHeader *header)
-{
-  NS_LOG_FUNCTION (this << packet << header);
-  return m_stationManager->NeedRts (header->GetAddr1 (), header,
-                                    packet);
-}
-
 void
 DcaTxop::DoInitialize ()
 {
@@ -475,14 +467,6 @@ DcaTxop::NotifyAccessGranted (void)
         {
           WifiMacHeader hdr;
           Ptr<Packet> fragment = GetFragmentPacket (&hdr);
-          if (NeedRts (fragment, &hdr))
-            {
-              params.EnableRts ();
-            }
-          else
-            {
-              params.DisableRts ();
-            }
           if (IsLastFragment ())
             {
               NS_LOG_DEBUG ("fragmenting last fragment size=" << fragment->GetSize ());
@@ -498,16 +482,6 @@ DcaTxop::NotifyAccessGranted (void)
         }
       else
         {
-          if (NeedRts (m_currentPacket, &m_currentHdr))
-            {
-              params.EnableRts ();
-              NS_LOG_DEBUG ("tx unicast rts");
-            }
-          else
-            {
-              params.DisableRts ();
-              NS_LOG_DEBUG ("tx unicast");
-            }
           params.DisableNextData ();
           Low ()->StartTransmission (m_currentPacket, &m_currentHdr,
                                      params, m_transmissionListener);

@@ -1014,6 +1014,13 @@ private:
    */
   Time GetBlockAckDuration (Mac48Address to, WifiTxVector blockAckReqTxVector, enum BlockAckType type) const;
   /**
+   * Check if the current packet should be sent with a RTS protection.
+   *
+   * \return true if RTS protection should be used,
+   *         false otherwise
+   */
+  bool NeedRts (void);
+  /**
    * Check if CTS-to-self mechanism should be used for the current packet.
    *
    * \return true if CTS-to-self mechanism should be used for the current packet,

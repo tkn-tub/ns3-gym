@@ -786,6 +786,15 @@ MacLow::StartTransmission (Ptr<const Packet> packet,
             }
         }
     }
+    
+  if (NeedRts ())
+    {
+      m_txParams.EnableRts ();
+    }
+  else
+    {
+      m_txParams.DisableRts ();
+    }
 
   NS_LOG_DEBUG ("startTx size=" << GetSize (m_currentPacket, &m_currentHdr) <<
                 ", to=" << m_currentHdr.GetAddr1 () << ", listener=" << m_listener);
@@ -796,7 +805,7 @@ MacLow::StartTransmission (Ptr<const Packet> packet,
     }
   else
     {
-      if (NeedCtsToSelf () && m_ctsToSelfSupported)
+      if (m_ctsToSelfSupported && NeedCtsToSelf ())
         {
           SendCtsToSelf ();
         }
@@ -808,6 +817,14 @@ MacLow::StartTransmission (Ptr<const Packet> packet,
 
   /* When this method completes, we have taken ownership of the medium. */
   NS_ASSERT (m_phy->IsStateTx ());
+}
+
+bool
+MacLow::NeedRts (void)
+{
+  return m_stationManager->NeedRts (m_currentHdr.GetAddr1 (),
+                                    &m_currentHdr,
+                                    m_currentPacket);
 }
 
 bool

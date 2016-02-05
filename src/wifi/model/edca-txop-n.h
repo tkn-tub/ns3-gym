@@ -288,13 +288,6 @@ public:
    */
   void StartAccessIfNeeded (void);
   /**
-   * Check if the current packet should be sent with a RTS protection.
-   *
-   * \return true if RTS protection should be used,
-   *         false otherwise
-   */
-  bool NeedRts (void);
-  /**
    * Check if RTS should be re-transmitted if CTS was missed.
    *
    * \return true if RTS should be re-transmitted,

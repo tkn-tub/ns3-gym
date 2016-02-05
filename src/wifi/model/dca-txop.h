@@ -256,16 +256,6 @@ private:
   void StartAccessIfNeeded (void);
 
   /**
-   * Check if the current packet should be sent with a RTS protection.
-   *
-   * \param packet
-   * \param header
-   *
-   * \return true if RTS protection should be used,
-   *         false otherwise
-   */
-  bool NeedRts (Ptr<const Packet> packet, const WifiMacHeader *header);
-  /**
    * Check if RTS should be re-transmitted if CTS was missed.
    *
    * \return true if RTS should be re-transmitted,
