@@ -64,8 +64,10 @@ public:
    * \param flowId the flow identifier
    * \param packetId the packet identifier
    * \param packetSize the packet size
+   * \param src packet source address
+   * \param dst packet destination address
    */
-  Ipv4FlowProbeTag (uint32_t flowId, uint32_t packetId, uint32_t packetSize);
+  Ipv4FlowProbeTag (uint32_t flowId, uint32_t packetId, uint32_t packetSize, Ipv4Address src, Ipv4Address dst);
   /**
    * \brief Set the flow identifier
    * \param flowId the flow identifier
@@ -96,11 +98,21 @@ public:
    * \returns the packet size
    */
   uint32_t GetPacketSize (void) const;
+  /**
+   * \brief Checks if the addresses stored in tag are matching
+   * the arguments.
+   *
+   * This check is important for IP over IP encapsulation.
+   *
+   * \returns True if the addresses are matching.
+   */
+  bool IsSrcDstValid (Ipv4Address src, Ipv4Address dst) const;
 private:
   uint32_t m_flowId;      //!< flow identifier
   uint32_t m_packetId;    //!< packet identifier
   uint32_t m_packetSize;  //!< packet size
-
+  Ipv4Address m_src;      //!< IP source
+  Ipv4Address m_dst;      //!< IP destination
 };
 
 TypeId 
@@ -121,7 +133,7 @@ Ipv4FlowProbeTag::GetInstanceTypeId (void) const
 uint32_t 
 Ipv4FlowProbeTag::GetSerializedSize (void) const
 {
-  return 4 + 4 + 4;
+  return 4 + 4 + 4 + 8;
 }
 void 
 Ipv4FlowProbeTag::Serialize (TagBuffer buf) const
@@ -129,6 +141,12 @@ Ipv4FlowProbeTag::Serialize (TagBuffer buf) const
   buf.WriteU32 (m_flowId);
   buf.WriteU32 (m_packetId);
   buf.WriteU32 (m_packetSize);
+
+  uint8_t tBuf[4];
+  m_src.Serialize (tBuf);
+  buf.Write (tBuf, 4);
+  m_dst.Serialize (tBuf);
+  buf.Write (tBuf, 4);
 }
 void 
 Ipv4FlowProbeTag::Deserialize (TagBuffer buf)
@@ -136,21 +154,27 @@ Ipv4FlowProbeTag::Deserialize (TagBuffer buf)
   m_flowId = buf.ReadU32 ();
   m_packetId = buf.ReadU32 ();
   m_packetSize = buf.ReadU32 ();
+
+  uint8_t tBuf[4];
+  buf.Read (tBuf, 4);
+  m_src = Ipv4Address::Deserialize (tBuf);
+  buf.Read (tBuf, 4);
+  m_dst = Ipv4Address::Deserialize (tBuf);
 }
 void 
 Ipv4FlowProbeTag::Print (std::ostream &os) const
 {
   os << "FlowId=" << m_flowId;
-  os << "PacketId=" << m_packetId;
-  os << "PacketSize=" << m_packetSize;
+  os << " PacketId=" << m_packetId;
+  os << " PacketSize=" << m_packetSize;
 }
 Ipv4FlowProbeTag::Ipv4FlowProbeTag ()
   : Tag () 
 {
 }
 
-Ipv4FlowProbeTag::Ipv4FlowProbeTag (uint32_t flowId, uint32_t packetId, uint32_t packetSize)
-  : Tag (), m_flowId (flowId), m_packetId (packetId), m_packetSize (packetSize)
+Ipv4FlowProbeTag::Ipv4FlowProbeTag (uint32_t flowId, uint32_t packetId, uint32_t packetSize, Ipv4Address src, Ipv4Address dst)
+  : Tag (), m_flowId (flowId), m_packetId (packetId), m_packetSize (packetSize), m_src (src), m_dst (dst)
 {
 }
 
@@ -183,7 +207,12 @@ uint32_t
 Ipv4FlowProbeTag::GetPacketSize (void) const
 {
   return m_packetSize;
-} 
+}
+bool
+Ipv4FlowProbeTag::IsSrcDstValid (Ipv4Address src, Ipv4Address dst) const
+{
+  return ((m_src == src) && (m_dst == dst));
+}
 
 ////////////////////////////////////////
 // Ipv4FlowProbe class implementation //
@@ -264,6 +293,13 @@ Ipv4FlowProbe::SendOutgoingLogger (const Ipv4Header &ipHeader, Ptr<const Packet>
       return;
     }
 
+  Ipv4FlowProbeTag fTag;
+  bool found = ipPayload->FindFirstMatchingByteTag (fTag);
+  if (found)
+    {
+      return;
+    }
+
   if (m_classifier->Classify (ipHeader, ipPayload, &flowId, &packetId))
     {
       uint32_t size = (ipPayload->GetSize () + ipHeader.GetSerializedSize ());
@@ -273,7 +309,7 @@ Ipv4FlowProbe::SendOutgoingLogger (const Ipv4Header &ipHeader, Ptr<const Packet>
 
       // tag the packet with the flow id and packet id, so that the packet can be identified even
       // when Ipv4Header is not accessible at some non-IPv4 protocol layer
-      Ipv4FlowProbeTag fTag (flowId, packetId, size);
+      Ipv4FlowProbeTag fTag (flowId, packetId, size, ipHeader.GetSource (), ipHeader.GetDestination ());
       ipPayload->AddByteTag (fTag);
     }
 }
@@ -286,6 +322,17 @@ Ipv4FlowProbe::ForwardLogger (const Ipv4Header &ipHeader, Ptr<const Packet> ipPa
 
   if (found)
     {
+      if (!ipHeader.IsLastFragment () || ipHeader.GetFragmentOffset () != 0)
+        {
+          NS_LOG_WARN ("Not counting fragmented packets");
+          return;
+        }
+      if (!fTag.IsSrcDstValid (ipHeader.GetSource (), ipHeader.GetDestination ()))
+        {
+          NS_LOG_LOGIC ("Not reporting encapsulated packet");
+          return;
+        }
+
       FlowId flowId = fTag.GetFlowId ();
       FlowPacketId packetId = fTag.GetPacketId ();
 
@@ -303,11 +350,18 @@ Ipv4FlowProbe::ForwardUpLogger (const Ipv4Header &ipHeader, Ptr<const Packet> ip
 
   if (found)
     {
+      if (!fTag.IsSrcDstValid (ipHeader.GetSource (), ipHeader.GetDestination ()))
+        {
+          NS_LOG_LOGIC ("Not reporting encapsulated packet");
+          return;
+        }
+
       FlowId flowId = fTag.GetFlowId ();
       FlowPacketId packetId = fTag.GetPacketId ();
 
       uint32_t size = (ipPayload->GetSize () + ipHeader.GetSerializedSize ());
-      NS_LOG_DEBUG ("ReportLastRx ("<<this<<", "<<flowId<<", "<<packetId<<", "<<size<<");");
+      NS_LOG_DEBUG ("ReportLastRx ("<<this<<", "<<flowId<<", "<<packetId<<", "<<size<<"); "
+                                     << ipHeader << *ipPayload);
       m_flowMonitor->ReportLastRx (this, flowId, packetId, size);
     }
 }
