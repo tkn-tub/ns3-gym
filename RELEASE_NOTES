@@ -60,6 +60,7 @@ Bugs fixed
 - Bug 2003 - Missing DSSS short PLCP preamble
 - Bug 2041 - TCP RTO needs unit tests
 - Bug 2068 - Timestamp option conforms to RFC 7323
+- Bug 2116 - refactoring aggregation API
 - Bug 2141 - TCP DataSent callback now correctly notifies sent data, without missing bytes in particular conditions
 - Bug 2150 - The TCP sender keeps retransmitting and does not terminate the connection after some retries.
 - Bug 2159 - TCP advertises wrong receive window
@@ -73,6 +74,7 @@ Bugs fixed
 - Bug 2206 - Split internet-apps from applications
 - Bug 2208 - Interface index based L4 protocols
 - Bug 2211 - Ipv{4,6}EndPoint can cause memory corruption
+- Bug 2213 - Inconsistencies may exist between the selected WifiMacHelper and the chosen 802.11 version
 - Bug 2219 - SixLowPanNetDevice hangs trying to decode a IPv6 Fragment extension header
 - Bug 2233 - Implement RFC 1222 - Strong End System Model
 - Bug 2234 - Ipv6L3Protocol should trash multicast packets not interesting for the node
@@ -90,6 +92,7 @@ Bugs fixed
 - Bug 2262 - Corrected initial slow start threshold value
 - Bug 2266 - NixRouting info are not copied during a packet fragmentation.
 - Bug 2267 - Wrong channel bandwidth value in pcap files
+- Bug 2271 - Decision to enable RTS/CTS handshake for A-MPDUs should be based on the comparison between RtsCtsThreshold and the total A-MPDU size
 - Bug 2272 - SixLowPan NetDevice can not send uncompressed packets larger than 802.15.4 MTU
 - Bug 2273 - WeakEs model should be enforced in Static and Global routing
 - Bug 2279 - Ipv[4,6]L3Protocol::GetInterfaceForDevice speedup.
