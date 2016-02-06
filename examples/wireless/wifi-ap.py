@@ -124,7 +124,7 @@ def main(argv):
 
     ssid = ns.wifi.Ssid("wifi-default")
     wifi.SetRemoteStationManager("ns3::ArfWifiManager")
-    wifiMac = ns.wifi.NqosWifiMacHelper.Default()
+    wifiMac = ns.wifi.WifiMacHelper()
 
     # setup stas.
     wifiMac.SetType("ns3::StaWifiMac",

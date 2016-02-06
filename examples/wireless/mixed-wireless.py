@@ -131,7 +131,7 @@ def main(argv):
     #  our container
     # 
     wifi = ns.wifi.WifiHelper()
-    mac = ns.wifi.NqosWifiMacHelper.Default()
+    mac = ns.wifi.WifiMacHelper()
     mac.SetType("ns3::AdhocWifiMac")
     wifi.SetRemoteStationManager("ns3::ConstantRateWifiManager",
                                   "DataMode", ns.core.StringValue("OfdmRate54Mbps"))
@@ -260,7 +260,7 @@ def main(argv):
         wifiInfra = ns.wifi.WifiHelper.Default()
         wifiPhy.SetChannel(wifiChannel.Create())
         wifiInfra.SetRemoteStationManager('ns3::ArfWifiManager')
-        macInfra = ns.wifi.NqosWifiMacHelper.Default();
+        macInfra = ns.wifi.WifiMacHelper();
         macInfra.SetType("ns3::StaWifiMac",
                          "Ssid", ns.wifi.SsidValue(ssid),
                          "ActiveProbing", ns.core.BooleanValue(False))

@@ -50,7 +50,7 @@ def main(argv):
     cmd.Parse(argv)
 
     wifi = ns.wifi.WifiHelper.Default()
-    wifiMac = ns.wifi.DefaultWifiMacHelper.Default()
+    wifiMac = ns.wifi.WifiMacHelper()
     wifiPhy = ns.wifi.YansWifiPhyHelper.Default()
     wifiChannel = ns.wifi.YansWifiChannelHelper.Default()
     wifiPhy.SetChannel(wifiChannel.Create())

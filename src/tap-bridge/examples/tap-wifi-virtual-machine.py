@@ -44,14 +44,14 @@ def main(argv):
     #
     # We're going to use 802.11 A so set up a wifi helper to reflect that.
     #
-    wifi = ns.wifi.WifiHelper.Default()
+    wifi = ns.wifi.WifiHelper()
     wifi.SetStandard (ns.wifi.WIFI_PHY_STANDARD_80211a);
     wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager", "DataMode", ns.core.StringValue ("OfdmRate54Mbps"));
 
     #
     # No reason for pesky access points, so we'll use an ad-hoc network.
     #
-    wifiMac = ns.wifi.DefaultWifiMacHelper.Default()
+    wifiMac = ns.wifi.WifiMacHelper
     wifiMac.SetType ("ns3::AdhocWifiMac");
 
     #

@@ -141,7 +141,7 @@ main (int argc, char *argv[])
 
   Ssid ssid = Ssid ("left");
   WifiHelper wifi;
-  WifiMacHelper wifiMac = WifiMacHelper::Default ();
+  WifiMacHelper wifiMac;
   wifi.SetRemoteStationManager ("ns3::ArfWifiManager");
 
   wifiMac.SetType ("ns3::ApWifiMac",

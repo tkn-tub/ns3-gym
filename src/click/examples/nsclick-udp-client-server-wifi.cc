@@ -116,7 +116,7 @@ main (int argc, char *argv[])
   wifiPhy.SetChannel (wifiChannel.Create ());
 
   // Add an upper mac and disable rate control
-  WifiMacHelper wifiMac = WifiMacHelper::Default ();
+  WifiMacHelper wifiMac = WifiMacHelper;
   wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager",
                                 "DataMode",StringValue (phyMode),
                                 "ControlMode",StringValue (phyMode));

@@ -111,7 +111,7 @@ main (int argc, char *argv[])
   //
   // No reason for pesky access points, so we'll use an ad-hoc network.
   //
-  WifiMacHelper wifiMac = WifiMacHelper::Default ();
+  WifiMacHelper wifiMac;
   wifiMac.SetType ("ns3::AdhocWifiMac");
 
   //
