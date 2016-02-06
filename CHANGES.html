@@ -55,6 +55,7 @@ us a note on ns-developers mailing list.</p>
 <h2>New API:</h2>
 <ul>
   <li> In 'src/internet/test', a new environment is created to test TCP properties.</li>
+  <li> In 'src/wifi', a new helper (WifiMacHelper) is added and is a merged helper from all previously existing MAC helpers (NqosWifiMacHelper, QosWifiMacHelper, HtWifiMacHelper and VhtWifiMacHelper).</li>
 </ul>
 <h2>Changes to existing API:</h2>
 <ul>
@@ -71,9 +72,11 @@ us a note on ns-developers mailing list.</p>
       <li>Added attributes about the number of connection and data retransmission attempts.</li>
     </ul>
   </li>
-  <li> ns-3 is now capable of serializing SLL (a.k.a. cooked) headers. 
+  <li> ns-3 is now capable of serializing SLL (a.k.a. cooked) headers.
        This is used in DCE to allow the generation of pcap directly readable by wireshark.
   </li>
+  <li> In the WifiHelper class in the wifi module, Default has been declared deprecated. This is now immediately handled by the constructor of the class.</li>
+  <li> The API for configuring 802.11n/ac aggregation has been modified to be more user friendly. As any MAC layer attributes, aggregation parameters can now also be configured through WifiMacHelper::SetType. </li>
 </ul>
 <h2>Changes to build system:</h2>
 <ul>
@@ -92,6 +95,7 @@ This section is for behavioral changes to the models that were not due to a bug 
         and Fast Recovery (TCP 793, Reno, Tahoe) have been removed.</li>
     </ul>
   </li>
+  <li> 802.11n/ac MPDU aggregation is now enabled by default for both AC_BE and AC_VI.</li>
 </ul>
 
 <hr>

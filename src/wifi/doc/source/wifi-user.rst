@@ -123,13 +123,14 @@ Furthermore, 802.11n provides an optional mode (GreenField mode) to reduce pream
 
 802.11n PHY layer can support both 20 (default) or 40 MHz channel width, and 802.11ac PHY layer can use either 20, 40, 80 (default) or 160 MHz channel width. Since the channel width value is overwritten by ``WifiHelper::SetStandard``, this should be done post-install using ``Config::Set``::
 
-  WifiHelper wifi = WifiHelper::Default ();
+  WifiHelper wifi;
   wifi.SetStandard (WIFI_PHY_STANDARD_80211ac);
   wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager", "DataMode", StringValue("VHtMcs9"), "ControlMode", StringValue("VhtMcs0"));
-  VhtWifiMacHelper mac = VhtWifiMacHelper::Default ();
 
   //Install PHY and MAC
   Ssid ssid = Ssid ("ns3-wifi");
+  WifiMacHelper mac;
+
   mac.SetType ("ns3::StaWifiMac",
   "Ssid", SsidValue (ssid),
   "ActiveProbing", BooleanValue (false));
@@ -149,41 +150,28 @@ Furthermore, 802.11n provides an optional mode (GreenField mode) to reduce pream
 WifiMacHelper
 =============
 
-The next step is to configure the MAC model.
-We use WifiMacHelper to accomplish this.
-WifiMacHelper takes care of both the MAC low model and MAC high model.
-A user must decide if 802.11/WMM-style QoS and/or 802.11n-style High throughput (HT) and/or 802.11ac-style Very High throughput (VHT) support is required.
+The next step is to configure the MAC model. We use WifiMacHelper to accomplish this.
+WifiMacHelper takes care of both the MAC low model and MAC high model, and configures an object factory to create instances of a ``ns3::WifiMac``.
+It is used to configure MAC parameters like type of MAC, and to select whether 802.11/WMM-style QoS and/or 802.11n-style High throughput (HT) and/or 802.11ac-style Very High throughput (VHT) support are/is required.
 
-NqosWifiMacHelper and QosWifiMacHelper
-++++++++++++++++++++++++++++++++++++++
+By default, it creates an ad-hoc MAC instance that does not have 802.11e/WMM-style QoS nor 802.11n-style High throughput (HT) nor 802.11ac-style Very High throughput (VHT) support enabled.
 
-The ``ns3::NqosWifiMacHelper`` and ``ns3::QosWifiMacHelper`` configure an
-object factory to create instances of a ``ns3::WifiMac``. They are used to
-configure MAC parameters like type of MAC.  
-
-The former, ``ns3::NqosWifiMacHelper``, supports creation of MAC
-instances that do not have 802.11e/WMM-style QoS nor 802.11n-style High throughput (HT) nor 802.11ac-style Very High throughput (VHT) support enabled.
-
-For example the following user code configures a non-QoS and non-HT MAC that
+For example the following user code configures a non-QoS and non-(V)HT MAC that
 will be a non-AP STA in an infrastructure network where the AP has
 SSID ``ns-3-ssid``::
 
-    NqosWifiMacHelper wifiMacHelper = NqosWifiMacHelper::Default ();
+    WifiMacHelper wifiMacHelper;
     Ssid ssid = Ssid ("ns-3-ssid");
     wifiMacHelper.SetType ("ns3::StaWifiMac",
                           "Ssid", SsidValue (ssid),
                           "ActiveProbing", BooleanValue (false));
 
-To create MAC instances with QoS support enabled,
-``ns3::QosWifiMacHelper`` is used in place of
-``ns3::NqosWifiMacHelper``.
+The following code shows how to create an AP with QoS enabled::
 
-The following code shows an example use of ``ns3::QosWifiMacHelper`` to 
-create an AP with QoS enabled::
-
-  QosWifiMacHelper wifiMacHelper = QosWifiMacHelper::Default ();
+  WifiMacHelper wifiMacHelper;
   wifiMacHelper.SetType ("ns3::ApWifiMac",
                          "Ssid", SsidValue (ssid),
+                         "QosSupported", BooleanValue (true),
                          "BeaconGeneration", BooleanValue (true),
                          "BeaconInterval", TimeValue (Seconds (2.5)));
 
@@ -198,41 +186,45 @@ considered belonging to **AC_BE**.
 
 To create ad-hoc MAC instances, simply use ``ns3::AdhocWifiMac`` instead of ``ns3::StaWifiMac`` or ``ns3::ApWifiMac``.
 
-HtWifiMacHelper
-+++++++++++++++
+When selecting **802.11n** as the desired wifi standard, both 802.11e/WMM-style QoS and 802.11n-style High throughput (HT) support gets enabled.
+Similarly, When selecting **802.11ac** as the desired wifi standard, 802.11e/WMM-style QoS, 802.11n-style High throughput (HT) and 802.11ac-style Very High throughput (VHT) support gets enabled.
 
-The ``ns3::HtWifiMacHelper`` configures an
-object factory to create instances of a ``ns3::WifiMac``. It is used to
-supports creation of MAC instances that have 802.11n-style High throughput (HT) and QoS support enabled. In particular, this object can be also used to set:
+For MAC instances that have QoS support enabled, the ``ns3::WifiMacHelper`` can be also used to set:
 
-* an MSDU aggregator for a particular Access Category (AC) in order to use 
-  802.11n MSDU aggregation feature;
-* block ack parameters like threshold (number of packets for which block ack
-  mechanism should be used) and inactivity timeout.
+* block ack threshold (number of packets for which block ack mechanism should be used);
+* block ack inactivity timeout.
 
-For example the following user code configures a HT MAC that
-will be a non-AP STA with QoS enabled, aggregation on AC_VO, and Block Ack on AC_BE, in an infrastructure network where the AP has
-SSID ``ns-3-ssid``::
+For example the following user code configures a MAC that will be a non-AP STA with QoS enabled and a block ack threshold for AC_BE set to 2 packets,
+in an infrastructure network where the AP has SSID ``ns-3-ssid``::
 
-    HtWifiMacHelper wifiMacHelper = HtWifiMacHelper::Default ();
+    WifiMacHelper wifiMacHelper;
     Ssid ssid = Ssid ("ns-3-ssid");
     wifiMacHelper.SetType ("ns3::StaWifiMac",
                           "Ssid", SsidValue (ssid),
+                          "QosSupported", BooleanValue (true),
+                          "BE_BlockAckThreshold", UintegerValue (2),
                           "ActiveProbing", BooleanValue (false));
 
-    wifiMacHelper.SetMsduAggregatorForAc (AC_VO, "ns3::MsduStandardAggregator",
-                                          "MaxAmsduSize", UintegerValue (3839));
-    wifiMacHelper.SetBlockAckThresholdForAc (AC_BE, 10);
-    wifiMacHelper.SetBlockAckInactivityTimeoutForAc (AC_BE, 5);
+For MAC instances that have 802.11n-style High throughput (HT) and/or 802.11ac-style Very High throughput (VHT) support enabled, the ``ns3::WifiMacHelper`` can be also used to set:
 
-This object can be also used to set in the same way as ``ns3::QosWifiMacHelper``.
+* MSDU aggregation parameters for a particular Access Category (AC) in order to use 802.11n/ac A-MSDU feature;
+* MPDU aggregation parameters for a particular Access Category (AC) in order to use 802.11n/ac A-MPDU feature.
 
-VhtWifiMacHelper
-++++++++++++++++
+By defaut, MSDU aggration feature is disabled for all ACs and MPDU aggregation is enabled for AC_VI and AC_BE, with a maximum aggregation size of 65535 bytes.
 
-The ``ns3::VhtWifiMacHelper`` configures an
-object factory to create instances of a ``ns3::WifiMac``. It is used to
-supports creation of MAC instances that have 802.11ac-style Very High throughput (VHT) and QoS support enabled. This object is similar to ``HtWifiMacHelper``.
+For example the following user code configures a MAC that will be a non-AP STA with HT and QoS enabled, MPDU aggregation enabled for AC_VO with a maximum aggregation size of 65535 bytes, and MSDU aggregation enabled for AC_BE with a maximum aggregation size of 7935 bytes,
+in an infrastructure network where the AP has SSID ``ns-3-ssid``::
+
+    WifiHelper wifi;
+    wifi.SetStandard (WIFI_PHY_STANDARD_80211n_5GHZ);
+
+    WifiMacHelper wifiMacHelper;
+    Ssid ssid = Ssid ("ns-3-ssid");
+    wifiMacHelper.SetType ("ns3::StaWifiMac",
+                          "Ssid", SsidValue (ssid),
+                          "VO_MaxAmpduSize", UintegerValue (65535),
+                          "BE_MaxAmsduSize", UintegerValue (7935),
+                          "ActiveProbing", BooleanValue (false));
 
 WifiHelper
 ==========
@@ -240,7 +232,7 @@ WifiHelper
 We're now ready to create WifiNetDevices. First, let's create
 a WifiHelper with default settings::
 
-  WifiHelper wifiHelper = WifiHelper::Default ();
+  WifiHelper wifiHelper;
 
 What does this do?  It sets the default wifi standard to **802.11a** and sets the RemoteStationManager to
 ``ns3::ArfWifiManager``.  You can change the RemoteStationManager by calling the
@@ -258,13 +250,14 @@ WifiMac, and a WifiPhy (connected to the matching WifiChannel).
 The ``WifiHelper::SetStandard`` method set various default timing parameters as defined in the selected standard version, overwriting values that may exist or have been previously configured.
 In order to change parameters that are overwritten by ``WifiHelper::SetStandard``, this should be done post-install using ``Config::Set``::
 
-  WifiHelper wifi = WifiHelper::Default ();
+  WifiHelper wifi;
   wifi.SetStandard (WIFI_PHY_STANDARD_80211n_2_4GHZ);
   wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager", "DataMode", StringValue("HtMcs7"), "ControlMode", StringValue("HtMcs0"));
-  HtWifiMacHelper mac = HtWifiMacHelper::Default ();
 
   //Install PHY and MAC
   Ssid ssid = Ssid ("ns3-wifi");
+
+  WifiMacHelper mac;
   mac.SetType ("ns3::StaWifiMac",
   "Ssid", SsidValue (ssid),
   "ActiveProbing", BooleanValue (false));
@@ -336,7 +329,7 @@ Finally, we manually place them by using the ``ns3::ListPositionAllocator``::
   wifiPhy.SetChannel (wifiChannel.Create ());
 
   // Add a non-QoS upper mac, and disable rate control (i.e. ConstantRateWifiManager)
-  NqosWifiMacHelper wifiMac = NqosWifiMacHelper::Default ();
+  WifiMacHelper wifiMac;
   wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager",
                                 "DataMode",StringValue (phyMode),
                                 "ControlMode",StringValue (phyMode));
@@ -385,7 +378,7 @@ Each node is equipped with 802.11b Wi-Fi device::
   wifiPhy.SetChannel (wifiChannel.Create ());
 
   // Add a non-QoS upper mac, and disable rate control
-  NqosWifiMacHelper wifiMac = NqosWifiMacHelper::Default ();
+  WifiMacHelper wifiMac;
   wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager",
                                 "DataMode",StringValue (phyMode),
                                 "ControlMode",StringValue (phyMode));
