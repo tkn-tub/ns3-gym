@@ -149,7 +149,7 @@ main (int argc, char *argv[])
   if (nix)
     {
       Ipv4NixVectorHelper nixRouting;
-      stack.SetRoutingHelper (list); // has effect on the next Install ()
+      stack.SetRoutingHelper (nixRouting); // has effect on the next Install ()
     }
 
   // Create Campus Networks
