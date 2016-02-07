@@ -235,7 +235,7 @@ Ipv4StaticRouting::LookupStatic (Ipv4Address dest, Ptr<NetDevice> oif)
       rtentry->SetDestination (dest);
       rtentry->SetGateway (Ipv4Address::GetZero ());
       rtentry->SetOutputDevice (oif);
-      rtentry->SetSource (m_ipv4->GetAddress (oif->GetIfIndex (), 0).GetLocal ());
+      rtentry->SetSource (m_ipv4->GetAddress (m_ipv4->GetInterfaceForDevice (oif), 0).GetLocal ());
       return rtentry;
     }
 
@@ -281,7 +281,7 @@ Ipv4StaticRouting::LookupStatic (Ipv4Address dest, Ptr<NetDevice> oif)
           uint32_t interfaceIdx = route->GetInterface ();
           rtentry = Create<Ipv4Route> ();
           rtentry->SetDestination (route->GetDest ());
-          rtentry->SetSource (SourceAddressSelection (interfaceIdx, route->GetDest ()));
+          rtentry->SetSource (m_ipv4->SourceAddressSelection (interfaceIdx, route->GetDest ()));
           rtentry->SetGateway (route->GetGateway ());
           rtentry->SetOutputDevice (m_ipv4->GetNetDevice (interfaceIdx));
           if (masklen == 32)
@@ -740,32 +740,6 @@ Ipv4StaticRouting::PrintRoutingTable (Ptr<OutputStreamWrapper> stream) const
         }
     }
   *os << std::endl;
-}
-Ipv4Address
-Ipv4StaticRouting::SourceAddressSelection (uint32_t interfaceIdx, Ipv4Address dest)
-{
-  NS_LOG_FUNCTION (this << interfaceIdx << " " << dest);
-  if (m_ipv4->GetNAddresses (interfaceIdx) == 1)  // common case
-    {
-      return m_ipv4->GetAddress (interfaceIdx, 0).GetLocal ();
-    }
-  // no way to determine the scope of the destination, so adopt the
-  // following rule:  pick the first available address (index 0) unless
-  // a subsequent address is on link (in which case, pick the primary
-  // address if there are multiple)
-  Ipv4Address candidate = m_ipv4->GetAddress (interfaceIdx, 0).GetLocal ();
-  for (uint32_t i = 0; i < m_ipv4->GetNAddresses (interfaceIdx); i++)
-    {
-      Ipv4InterfaceAddress test = m_ipv4->GetAddress (interfaceIdx, i);
-      if (test.GetLocal ().CombineMask (test.GetMask ()) == dest.CombineMask (test.GetMask ()))
-        {
-          if (test.IsSecondary () == false) 
-            {
-              return test.GetLocal ();
-            }
-        }
-    }
-  return candidate;
 }
 
 } // namespace ns3

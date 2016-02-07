@@ -418,14 +418,6 @@ private:
                                         uint32_t interface);
 
   /**
-   * \brief Choose the source address to use with destination address.
-   * \param interface interface index
-   * \param dest IPv4 destination address
-   * \return IPv4 source address to use
-   */
-  Ipv4Address SourceAddressSelection (uint32_t interface, Ipv4Address dest);
-
-  /**
    * \brief the forwarding table for network.
    */
   NetworkRoutes m_networkRoutes;

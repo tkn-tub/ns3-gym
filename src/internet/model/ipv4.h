@@ -360,6 +360,14 @@ public:
   virtual void SetForwarding (uint32_t interface, bool val) = 0;
 
   /**
+   * \brief Choose the source address to use with destination address.
+   * \param interface interface index
+   * \param dest IPv4 destination address
+   * \return IPv4 source address to use
+   */
+  virtual Ipv4Address SourceAddressSelection (uint32_t interface, Ipv4Address dest) = 0;
+
+  /**
    * \param protocolNumber number of protocol to lookup
    *        in this L4 Demux
    * \returns a matching L4 Protocol
@@ -368,6 +376,14 @@ public:
    * to forward packets up the stack to the right protocol.
    */
   virtual Ptr<IpL4Protocol> GetProtocol (int protocolNumber) const = 0;
+
+  /**
+   * \brief Get L4 protocol by protocol number for the specified interface.
+   * \param protocolNumber protocol number
+   * \param interfaceIndex interface index, -1 means "any" interface.
+   * \return corresponding IpL4Protocol or 0 if not found
+   */
+  virtual Ptr<IpL4Protocol> GetProtocol (int protocolNumber, int32_t interfaceIndex) const = 0;
 
   /**
    * \brief Creates a raw socket

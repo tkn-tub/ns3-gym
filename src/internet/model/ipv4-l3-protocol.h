@@ -144,22 +144,8 @@ public:
    */
   void Insert (Ptr<IpL4Protocol> protocol, uint32_t interfaceIndex);
 
-  /**
-   * \param protocolNumber number of protocol to lookup
-   *        in this L4 Demux
-   * \returns a matching L4 Protocol
-   *
-   * This method is typically called by lower layers
-   * to forward packets up the stack to the right protocol.
-   */
+  virtual Ipv4Address SourceAddressSelection (uint32_t interface, Ipv4Address dest);
   virtual Ptr<IpL4Protocol> GetProtocol (int protocolNumber) const;
-
-  /**
-   * \brief Get L4 protocol by protocol number for the specified interface.
-   * \param protocolNumber protocol number
-   * \param interfaceIndex interface index, -1 means "any" interface.
-   * \return corresponding IpL4Protocol or 0 if not found
-   */
   virtual Ptr<IpL4Protocol> GetProtocol (int protocolNumber, int32_t interfaceIndex) const;
 
   /**
@@ -194,7 +180,7 @@ public:
    * \param device network device
    * \param p the packet
    * \param protocol protocol value
-   * \param from address of the correspondant
+   * \param from address of the correspondent
    * \param to address of the destination
    * \param packetType type of the packet
    */

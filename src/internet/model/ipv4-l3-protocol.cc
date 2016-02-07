@@ -1124,6 +1124,33 @@ Ipv4L3Protocol::RemoveAddress (uint32_t i, Ipv4Address address)
   return false;
 }
 
+Ipv4Address
+Ipv4L3Protocol::SourceAddressSelection (uint32_t interfaceIdx, Ipv4Address dest)
+{
+  NS_LOG_FUNCTION (this << interfaceIdx << " " << dest);
+  if (GetNAddresses (interfaceIdx) == 1)  // common case
+    {
+      return GetAddress (interfaceIdx, 0).GetLocal ();
+    }
+  // no way to determine the scope of the destination, so adopt the
+  // following rule:  pick the first available address (index 0) unless
+  // a subsequent address is on link (in which case, pick the primary
+  // address if there are multiple)
+  Ipv4Address candidate = GetAddress (interfaceIdx, 0).GetLocal ();
+  for (uint32_t i = 0; i < GetNAddresses (interfaceIdx); i++)
+    {
+      Ipv4InterfaceAddress test = GetAddress (interfaceIdx, i);
+      if (test.GetLocal ().CombineMask (test.GetMask ()) == dest.CombineMask (test.GetMask ()))
+        {
+          if (test.IsSecondary () == false)
+            {
+              return test.GetLocal ();
+            }
+        }
+    }
+  return candidate;
+}
+
 Ipv4Address 
 Ipv4L3Protocol::SelectSourceAddress (Ptr<const NetDevice> device,
                                      Ipv4Address dst, Ipv4InterfaceAddress::InterfaceAddressScope_e scope)
