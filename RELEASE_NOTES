@@ -99,6 +99,7 @@ Bugs fixed
 - Bug 2279 - Ipv[4,6]L3Protocol::GetInterfaceForDevice speedup.
 - Bug 2286 - Support for SLL header (de)serialization.
 - Bug 2287 - FlowMonitor is confused by IP over IP.
+- Bug 2288 - Ipv4 broadcast and multicast packets are replicated on all the interfaces.
 
 Known issues
 ------------

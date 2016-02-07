@@ -96,7 +96,6 @@ void Ipv6InterfaceContainer::SetDefaultRouteInAllNodes (uint32_t router)
 
   for (other = 0; other < m_interfaces.size (); other++)
     {
-      std::cout << "Checking " << other << " Vs " << router << std::endl;
       if (other != router)
         {
           Ptr<Ipv6StaticRouting> routing = 0;

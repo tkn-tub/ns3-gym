@@ -714,14 +714,29 @@ Ipv4L3Protocol::Send (Ptr<Packet> packet,
            ifaceIter != m_interfaces.end (); ifaceIter++, ifaceIndex++)
         {
           Ptr<Ipv4Interface> outInterface = *ifaceIter;
-          Ptr<Packet> packetCopy = packet->Copy ();
+          bool sendIt = false;
+          if (source == Ipv4Address::GetAny ())
+            {
+              sendIt = true;
+            }
+          for (uint32_t index = 0; index < outInterface->GetNAddresses (); index++)
+            {
+              if (outInterface->GetAddress (index).GetLocal () == source)
+                {
+                  sendIt = true;
+                }
+            }
+          if (sendIt)
+            {
+              Ptr<Packet> packetCopy = packet->Copy ();
 
-          NS_ASSERT (packetCopy->GetSize () <= outInterface->GetDevice ()->GetMtu ());
+              NS_ASSERT (packetCopy->GetSize () <= outInterface->GetDevice ()->GetMtu ());
 
-          m_sendOutgoingTrace (ipHeader, packetCopy, ifaceIndex);
-          packetCopy->AddHeader (ipHeader);
-          m_txTrace (packetCopy, m_node->GetObject<Ipv4> (), ifaceIndex);
-          outInterface->Send (packetCopy, destination);
+              m_sendOutgoingTrace (ipHeader, packetCopy, ifaceIndex);
+              packetCopy->AddHeader (ipHeader);
+              m_txTrace (packetCopy, m_node->GetObject<Ipv4> (), ifaceIndex);
+              outInterface->Send (packetCopy, destination);
+            }
         }
       return;
     }
