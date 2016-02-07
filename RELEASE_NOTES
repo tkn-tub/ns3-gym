@@ -49,6 +49,7 @@ New user-visible features
   that group. Source filtering is left to the application.
 - (network) ns-3 is now capable of serializing cooked (SLL) headers. This is used 
   in DCE to allow the generation of pcap directly readable by wireshark.
+- (internet) It is now possible to set custom values for RipNg Link Down (standard is 16).
 
 Bugs fixed
 ----------

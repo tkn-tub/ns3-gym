@@ -39,13 +39,13 @@ class RipNgHelper : public Ipv6RoutingHelper
 {
 public:
   /*
-   * Construct an RipngHelper to make life easier while adding RIPng
+   * Construct an RipNgHelper to make life easier while adding RIPng
    * routing to nodes.
    */
   RipNgHelper ();
 
   /**
-   * \brief Construct an RipngHelper from another previously
+   * \brief Construct an RipNgHelper from another previously
    * initialized instance (Copy Constructor).
    */
   RipNgHelper (const RipNgHelper &);
@@ -53,7 +53,7 @@ public:
   virtual ~RipNgHelper ();
 
   /**
-   * \returns pointer to clone of this Ipv4NixVectorHelper
+   * \returns pointer to clone of this RipNgHelper
    *
    * This method is mainly for internal use by the other helpers;
    * clients are expected to free the dynamic memory allocated by this method
@@ -72,7 +72,7 @@ public:
    * \param name the name of the attribute to set
    * \param value the value of the attribute to set.
    *
-   * This method controls the attributes of ns3::Ripng
+   * This method controls the attributes of ns3::RipNg
    */
   void Set (std::string name, const AttributeValue &value);
 

@@ -31,6 +31,7 @@
 #include "ns3/ripng-header.h"
 #include "ns3/udp-header.h"
 #include "ns3/enum.h"
+#include "ns3/uinteger.h"
 #include "ns3/ipv6-packet-info-tag.h"
 
 #define RIPNG_ALL_NODE "ff02::9"
@@ -89,7 +90,11 @@ RipNg::GetTypeId (void)
                    MakeEnumChecker (RipNg::NO_SPLIT_HORIZON, "NoSplitHorizon",
                                     RipNg::SPLIT_HORIZON, "SplitHorizon",
                                     RipNg::POISON_REVERSE, "PoisonReverse"))
-  ;
+    .AddAttribute ("LinkDownValue", "Value for link down in count to infinity.",
+                   UintegerValue (16),
+                   MakeUintegerAccessor (&RipNg::m_linkDown),
+                   MakeUintegerChecker<uint8_t> ())
+    ;
   return tid;
 }
 
@@ -268,7 +273,7 @@ void RipNg::NotifyInterfaceUp (uint32_t i)
       Ipv6Prefix networkMask = address.GetPrefix ();
       Ipv6Address networkAddress = address.GetAddress ().CombinePrefix (networkMask);
 
-      if (address != Ipv6Address () && networkMask != Ipv6Prefix ())
+      if (address.GetScope () == Ipv6InterfaceAddress::GLOBAL)
         {
           AddNetworkRouteTo (networkAddress, networkMask, i);
         }
@@ -382,7 +387,7 @@ void RipNg::NotifyAddAddress (uint32_t interface, Ipv6InterfaceAddress address)
   Ipv6Address networkAddress = address.GetAddress ().CombinePrefix (address.GetPrefix ());
   Ipv6Prefix networkMask = address.GetPrefix ();
 
-  if (address.GetAddress () != Ipv6Address () && address.GetPrefix () != Ipv6Prefix ())
+  if (address.GetScope () == Ipv6InterfaceAddress::GLOBAL)
     {
       AddNetworkRouteTo (networkAddress, networkMask, interface);
     }
@@ -663,7 +668,7 @@ void RipNg::InvalidateRoute (RipNgRoutingTableEntry *route)
       if (it->first == route)
         {
           route->SetRouteStatus (RipNgRoutingTableEntry::RIPNG_INVALID);
-          route->SetRouteMetric (16);
+          route->SetRouteMetric (m_linkDown);
           route->SetRouteChanged (true);
           if (it->second.IsRunning ())
             {
@@ -766,7 +771,7 @@ void RipNg::HandleRequests (RipNgHeader requestHdr, Ipv6Address senderAddress, u
     {
       if (rtes.begin ()->GetPrefix () == Ipv6Address::GetAny () &&
           rtes.begin ()->GetPrefixLen () == 0 &&
-          rtes.begin ()->GetRouteMetric () == 16)
+          rtes.begin ()->GetRouteMetric () == m_linkDown)
         {
           // Output whole thing. Use Split Horizon
           if (m_interfaceExclusions.find (incomingInterface) == m_interfaceExclusions.end ())
@@ -799,7 +804,7 @@ void RipNg::HandleRequests (RipNgHeader requestHdr, Ipv6Address senderAddress, u
                 {
                   bool splitHorizoning = (rtIter->first->GetInterface () == incomingInterface);
 
-                  Ipv6InterfaceAddress rtDestAddr = Ipv6InterfaceAddress(rtIter->first->GetDestNetwork ());
+                  Ipv6InterfaceAddress rtDestAddr = Ipv6InterfaceAddress (rtIter->first->GetDestNetwork (), rtIter->first->GetDestNetworkPrefix ());
 
                   bool isGlobal = (rtDestAddr.GetScope () == Ipv6InterfaceAddress::GLOBAL);
                   bool isDefaultRoute = ((rtIter->first->GetDestNetwork () == Ipv6Address::GetAny ()) &&
@@ -814,7 +819,7 @@ void RipNg::HandleRequests (RipNgHeader requestHdr, Ipv6Address senderAddress, u
                       rte.SetPrefixLen (rtIter->first->GetDestNetworkPrefix ().GetPrefixLength ());
                       if (m_splitHorizonStrategy == POISON_REVERSE && splitHorizoning)
                         {
-                          rte.SetRouteMetric (16);
+                          rte.SetRouteMetric (m_linkDown);
                         }
                       else
                         {
@@ -882,7 +887,7 @@ void RipNg::HandleRequests (RipNgHeader requestHdr, Ipv6Address senderAddress, u
           bool found = false;
           for (RoutesI rtIter = m_routes.begin (); rtIter != m_routes.end (); rtIter++)
             {
-              Ipv6InterfaceAddress rtDestAddr = Ipv6InterfaceAddress(rtIter->first->GetDestNetwork ());
+              Ipv6InterfaceAddress rtDestAddr = Ipv6InterfaceAddress(rtIter->first->GetDestNetwork (), rtIter->first->GetDestNetworkPrefix ());
               if ((rtDestAddr.GetScope () == Ipv6InterfaceAddress::GLOBAL) &&
                   (rtIter->first->GetRouteStatus () == RipNgRoutingTableEntry::RIPNG_VALID))
                 {
@@ -903,7 +908,7 @@ void RipNg::HandleRequests (RipNgHeader requestHdr, Ipv6Address senderAddress, u
             }
           if (!found)
             {
-              iter->SetRouteMetric (16);
+              iter->SetRouteMetric (m_linkDown);
               iter->SetRouteTag (0);
               hdr.AddRte (*iter);
             }
@@ -943,7 +948,7 @@ void RipNg::HandleResponses (RipNgHeader hdr, Ipv6Address senderAddress, uint32_
   for (std::list<RipNgRte>::iterator iter = rtes.begin ();
       iter != rtes.end (); iter++)
     {
-      if (iter->GetRouteMetric () == 0 || iter->GetRouteMetric () > 16)
+      if (iter->GetRouteMetric () == 0 || iter->GetRouteMetric () > m_linkDown)
         {
           NS_LOG_LOGIC ("Ignoring an update message with malformed metric: " << int (iter->GetRouteMetric ()));
           return;
@@ -977,7 +982,11 @@ void RipNg::HandleResponses (RipNgHeader hdr, Ipv6Address senderAddress, uint32_
         {
           interfaceMetric = m_interfaceMetrics[incomingInterface];
         }
-      uint8_t rteMetric = std::min (iter->GetRouteMetric () + interfaceMetric, 16);
+      uint16_t rteMetric = iter->GetRouteMetric () + interfaceMetric;
+      if (rteMetric > m_linkDown)
+        {
+          rteMetric = m_linkDown;
+        }
       RoutesI it;
       bool found = false;
       for (it = m_routes.begin (); it != m_routes.end (); it++)
@@ -1029,7 +1038,7 @@ void RipNg::HandleResponses (RipNgHeader hdr, Ipv6Address senderAddress, uint32_
               else if (rteMetric > it->first->GetRouteMetric () && senderAddress == it->first->GetGateway ())
                 {
                   it->second.Cancel ();
-                  if (rteMetric < 16)
+                  if (rteMetric < m_linkDown)
                     {
                       it->first->SetRouteMetric (rteMetric);
                       it->first->SetRouteStatus (RipNgRoutingTableEntry::RIPNG_VALID);
@@ -1046,7 +1055,7 @@ void RipNg::HandleResponses (RipNgHeader hdr, Ipv6Address senderAddress, uint32_
                 }
             }
         }
-      if (!found && rteMetric != 16)
+      if (!found && rteMetric != m_linkDown)
         {
           NS_LOG_LOGIC ("Received a RTE with new route, adding.");
 
@@ -1091,7 +1100,7 @@ void RipNg::DoSendRouteUpdate (bool periodic)
           for (RoutesI rtIter = m_routes.begin (); rtIter != m_routes.end (); rtIter++)
             {
               bool splitHorizoning = (rtIter->first->GetInterface () == interface);
-              Ipv6InterfaceAddress rtDestAddr = Ipv6InterfaceAddress(rtIter->first->GetDestNetwork ());
+              Ipv6InterfaceAddress rtDestAddr = Ipv6InterfaceAddress(rtIter->first->GetDestNetwork (), rtIter->first->GetDestNetworkPrefix ());
 
               NS_LOG_DEBUG ("Processing RT " << rtDestAddr << " " << int(rtIter->first->IsRouteChanged ()));
 
@@ -1108,7 +1117,7 @@ void RipNg::DoSendRouteUpdate (bool periodic)
                   rte.SetPrefixLen (rtIter->first->GetDestNetworkPrefix ().GetPrefixLength ());
                   if (m_splitHorizonStrategy == POISON_REVERSE && splitHorizoning)
                     {
-                      rte.SetRouteMetric (16);
+                      rte.SetRouteMetric (m_linkDown);
                     }
                   else
                     {
@@ -1220,7 +1229,7 @@ void RipNg::SetInterfaceMetric (uint32_t interface, uint8_t metric)
 {
   NS_LOG_FUNCTION (this << interface << int (metric));
 
-  if (metric < 16)
+  if (metric < m_linkDown)
     {
       m_interfaceMetrics[interface] = metric;
     }
@@ -1242,7 +1251,7 @@ void RipNg::SendRouteRequest ()
   RipNgRte rte;
   rte.SetPrefix (Ipv6Address::GetAny ());
   rte.SetPrefixLen (0);
-  rte.SetRouteMetric (16);
+  rte.SetRouteMetric (m_linkDown);
 
   hdr.AddRte (rte);
   p->AddHeader (hdr);
@@ -1272,19 +1281,19 @@ void RipNg::AddDefaultRouteTo (Ipv6Address nextHop, uint32_t interface)
  */
 
 RipNgRoutingTableEntry::RipNgRoutingTableEntry ()
-  : m_tag (0), m_metric (16), m_status (RIPNG_INVALID), m_changed (false)
+  : m_tag (0), m_metric (0), m_status (RIPNG_INVALID), m_changed (false)
 {
 }
 
 RipNgRoutingTableEntry::RipNgRoutingTableEntry (Ipv6Address network, Ipv6Prefix networkPrefix, Ipv6Address nextHop, uint32_t interface, Ipv6Address prefixToUse)
   : Ipv6RoutingTableEntry ( RipNgRoutingTableEntry::CreateNetworkRouteTo (network, networkPrefix, nextHop, interface, prefixToUse) ),
-    m_tag (0), m_metric (16), m_status (RIPNG_INVALID), m_changed (false)
+    m_tag (0), m_metric (0), m_status (RIPNG_INVALID), m_changed (false)
 {
 }
 
 RipNgRoutingTableEntry::RipNgRoutingTableEntry (Ipv6Address network, Ipv6Prefix networkPrefix, uint32_t interface)
   : Ipv6RoutingTableEntry ( Ipv6RoutingTableEntry::CreateNetworkRouteTo (network, networkPrefix, interface) ),
-    m_tag (0), m_metric (16), m_status (RIPNG_INVALID), m_changed (false)
+    m_tag (0), m_metric (0), m_status (RIPNG_INVALID), m_changed (false)
 {
 }
 

@@ -407,6 +407,7 @@ private:
   SplitHorizonType_e m_splitHorizonStrategy; //!< Split Horizon strategy
 
   bool m_initialized; //!< flag to allow socket's late-creation.
+  uint8_t m_linkDown; //!< Link down value.
 };
 
 } // namespace ns3
