@@ -106,6 +106,14 @@ public:
    */
   void Print (std::ostream &os) const;
   /**
+    * \return true if address is 0.0.0.0; false otherwise
+    */
+  bool IsAny (void) const;
+  /**
+    * \return true if address is 127.0.0.1; false otherwise
+    */
+  bool IsLocalhost (void) const;
+  /**
     * \return true if address is 255.255.255.255; false otherwise
     */
   bool IsBroadcast (void) const;

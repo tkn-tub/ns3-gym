@@ -265,6 +265,20 @@ Ipv4Address::IsSubnetDirectedBroadcast (Ipv4Mask const &mask) const
 }
 
 bool
+Ipv4Address::IsAny (void) const
+{
+  NS_LOG_FUNCTION (this);
+  return (m_address == 0x00000000U);
+}
+
+bool
+Ipv4Address::IsLocalhost (void) const
+{
+  NS_LOG_FUNCTION (this);
+  return (m_address == 0x7f000001U);
+}
+
+bool
 Ipv4Address::IsBroadcast (void) const
 {
   NS_LOG_FUNCTION (this);
