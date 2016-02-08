@@ -61,15 +61,23 @@ DcfState::SetAifsn (uint32_t aifsn)
 void
 DcfState::SetCwMin (uint32_t minCw)
 {
+  bool changed = (m_cwMin == minCw);
   m_cwMin = minCw;
-  ResetCw ();
+  if (changed == true)
+    {
+      ResetCw ();
+    }
 }
 
 void
 DcfState::SetCwMax (uint32_t maxCw)
 {
+  bool changed = (m_cwMax == maxCw);
   m_cwMax = maxCw;
-  ResetCw ();
+  if (changed == true)
+    {
+      ResetCw ();
+    }
 }
 
 uint32_t
