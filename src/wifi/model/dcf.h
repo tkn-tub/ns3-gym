@@ -35,15 +35,15 @@ public:
   static TypeId GetTypeId (void);
 
   /**
-   * Set the minimum congestion window size.
+   * Set the minimum contention window size.
    *
-   * \param minCw the minimum congestion window size
+   * \param minCw the minimum contention window size
    */
   virtual void SetMinCw (uint32_t minCw) = 0;
   /**
-   * Set the maximum congestion window size.
+   * Set the maximum contention window size.
    *
-   * \param maxCw the maximum congestion window size
+   * \param maxCw the maximum contention window size
    */
   virtual void SetMaxCw (uint32_t maxCw) = 0;
   /**
@@ -54,15 +54,15 @@ public:
    */
   virtual void SetAifsn (uint32_t aifsn) = 0;
   /**
-   * Return the minimum congestion window size.
+   * Return the minimum contention window size.
    *
-   * \return the minimum congestion window size
+   * \return the minimum contention window size
    */
   virtual uint32_t GetMinCw (void) const = 0;
   /**
-   * Return the maximum congestion window size.
+   * Return the maximum contention window size.
    *
-   * \return the maximum congestion window size
+   * \return the maximum contention window size
    */
   virtual uint32_t GetMaxCw (void) const = 0;
   /**
