@@ -8,7 +8,7 @@
 #
 # See test.py for more information.
 cpp_examples = [
-    ("nsclick-simple-lan", "ENABLE_CLICK == True", "False"),
+    ("nsclick-simple-lan", "NSCLICK == True", "False"),
 ]
 
 # A list of Python examples to run in order to ensure that they remain
