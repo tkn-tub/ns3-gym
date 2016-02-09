@@ -7,8 +7,10 @@
 #     (example_name, do_run, do_valgrind_run).
 #
 # See test.py for more information.
+#    Below test is disabled for now
+#    ("nsclick-simple-lan", "NSCLICK == True", "False"),
 cpp_examples = [
-    ("nsclick-simple-lan", "NSCLICK == True", "False"),
+    ("nsclick-simple-lan", "False", "False"),
 ]
 
 # A list of Python examples to run in order to ensure that they remain
