@@ -80,7 +80,7 @@ Ipv4L3ClickProtocol::DoDispose (void)
   NS_LOG_FUNCTION (this);
   for (L4List_t::iterator i = m_protocols.begin (); i != m_protocols.end (); ++i)
     {
-      *i = 0;
+      i->second = 0;
     }
   m_protocols.clear ();
 
@@ -89,6 +89,8 @@ Ipv4L3ClickProtocol::DoDispose (void)
       *i = 0;
     }
   m_interfaces.clear ();
+  m_reverseInterfacesContainer.clear ();
+
   m_sockets.clear ();
   m_node = 0;
   m_routingProtocol = 0;
@@ -197,15 +199,10 @@ Ipv4L3ClickProtocol::GetInterfaceForDevice (
 {
   NS_LOG_FUNCTION (this << device->GetIfIndex ());
 
-  int32_t interface = 0;
-  for (Ipv4InterfaceList::const_iterator i = m_interfaces.begin ();
-       i != m_interfaces.end ();
-       i++, interface++)
+  Ipv4InterfaceReverseContainer::const_iterator iter = m_reverseInterfacesContainer.find (device);
+  if (iter != m_reverseInterfacesContainer.end ())
     {
-      if ((*i)->GetDevice () == device)
-        {
-          return interface;
-        }
+      return (*iter).second;
     }
 
   return -1;
@@ -459,6 +456,33 @@ Ipv4L3ClickProtocol::RemoveAddress (uint32_t i, Ipv4Address address)
 }
 
 Ipv4Address
+Ipv4L3ClickProtocol::SourceAddressSelection (uint32_t interfaceIdx, Ipv4Address dest)
+{
+  NS_LOG_FUNCTION (this << interfaceIdx << " " << dest);
+  if (GetNAddresses (interfaceIdx) == 1)  // common case
+    {
+      return GetAddress (interfaceIdx, 0).GetLocal ();
+    }
+  // no way to determine the scope of the destination, so adopt the
+  // following rule:  pick the first available address (index 0) unless
+  // a subsequent address is on link (in which case, pick the primary
+  // address if there are multiple)
+  Ipv4Address candidate = GetAddress (interfaceIdx, 0).GetLocal ();
+  for (uint32_t i = 0; i < GetNAddresses (interfaceIdx); i++)
+    {
+      Ipv4InterfaceAddress test = GetAddress (interfaceIdx, i);
+      if (test.GetLocal ().CombineMask (test.GetMask ()) == dest.CombineMask (test.GetMask ()))
+        {
+          if (test.IsSecondary () == false)
+            {
+              return test.GetLocal ();
+            }
+        }
+    }
+  return candidate;
+}
+
+Ipv4Address
 Ipv4L3ClickProtocol::SelectSourceAddress (Ptr<const NetDevice> device,
                                           Ipv4Address dst, Ipv4InterfaceAddress::InterfaceAddressScope_e scope)
 {
@@ -630,6 +654,7 @@ Ipv4L3ClickProtocol::AddIpv4Interface (Ptr<Ipv4Interface>interface)
   NS_LOG_FUNCTION (this << interface);
   uint32_t index = m_interfaces.size ();
   m_interfaces.push_back (interface);
+  m_reverseInterfacesContainer[interface->GetDevice ()] = index;
   return index;
 }
 
@@ -757,29 +782,20 @@ Ipv4L3ClickProtocol::Receive ( Ptr<NetDevice> device, Ptr<const Packet> p, uint1
 {
   NS_LOG_FUNCTION (this << device << p << from << to);
 
+  NS_LOG_LOGIC ("Packet from " << from << " received on node " <<
+                m_node->GetId ());
+
   // Forward packet to raw sockets, if any
   if (protocol == Ipv4L3ClickProtocol::PROT_NUMBER && m_sockets.size () > 0)
     {
       Ptr<Packet> packetForRawSocket = p->Copy ();
-      uint32_t interface = 0;
-      Ptr<Ipv4Interface> ipv4Interface;
-      for (Ipv4InterfaceList::const_iterator i = m_interfaces.begin ();
-           i != m_interfaces.end ();
-           i++, interface++)
+      int32_t interface = GetInterfaceForDevice(device);
+      NS_ASSERT_MSG (interface != -1, "Received a packet from an interface that is not known to IPv4");
+      Ptr<Ipv4Interface> ipv4Interface = m_interfaces[interface];
+      if (!ipv4Interface->IsUp ())
         {
-          ipv4Interface = *i;
-          if (ipv4Interface->GetDevice () == device)
-            {
-              if (ipv4Interface->IsUp ())
-                {
-                  break;
-                }
-              else
-                {
-                  NS_LOG_LOGIC ("Dropping received packet -- interface is down");
-                  return;
-                }
-            }
+          NS_LOG_LOGIC ("Dropping received packet -- interface is down");
+          return;
         }
 
       Ipv4Header ipHeader;
@@ -878,22 +894,97 @@ Ipv4L3ClickProtocol::GetIcmp (void) const
 void
 Ipv4L3ClickProtocol::Insert (Ptr<IpL4Protocol> protocol)
 {
-  m_protocols.push_back (protocol);
+  NS_LOG_FUNCTION (this << protocol);
+  L4ListKey_t key = std::make_pair (protocol->GetProtocolNumber (), -1);
+  if (m_protocols.find (key) != m_protocols.end ())
+    {
+      NS_LOG_WARN ("Overwriting default protocol " << int(protocol->GetProtocolNumber ()));
+    }
+  m_protocols[key] = protocol;
+}
+
+void
+Ipv4L3ClickProtocol::Insert (Ptr<IpL4Protocol> protocol, uint32_t interfaceIndex)
+{
+  NS_LOG_FUNCTION (this << protocol << interfaceIndex);
+
+  L4ListKey_t key = std::make_pair (protocol->GetProtocolNumber (), interfaceIndex);
+  if (m_protocols.find (key) != m_protocols.end ())
+    {
+      NS_LOG_WARN ("Overwriting protocol " << int(protocol->GetProtocolNumber ()) << " on interface " << int(interfaceIndex));
+    }
+  m_protocols[key] = protocol;
+}
+
+void
+Ipv4L3ClickProtocol::Remove (Ptr<IpL4Protocol> protocol)
+{
+  NS_LOG_FUNCTION (this << protocol);
+
+  L4ListKey_t key = std::make_pair (protocol->GetProtocolNumber (), -1);
+  L4List_t::iterator iter = m_protocols.find (key);
+  if (iter == m_protocols.end ())
+    {
+      NS_LOG_WARN ("Trying to remove an non-existent default protocol " << int(protocol->GetProtocolNumber ()));
+    }
+  else
+    {
+      m_protocols.erase (key);
+    }
+}
+
+void
+Ipv4L3ClickProtocol::Remove (Ptr<IpL4Protocol> protocol, uint32_t interfaceIndex)
+{
+  NS_LOG_FUNCTION (this << protocol << interfaceIndex);
+
+  L4ListKey_t key = std::make_pair (protocol->GetProtocolNumber (), interfaceIndex);
+  L4List_t::iterator iter = m_protocols.find (key);
+  if (iter == m_protocols.end ())
+    {
+      NS_LOG_WARN ("Trying to remove an non-existent protocol " << int(protocol->GetProtocolNumber ()) << " on interface " << int(interfaceIndex));
+    }
+  else
+    {
+      m_protocols.erase (key);
+    }
 }
 
 Ptr<IpL4Protocol>
 Ipv4L3ClickProtocol::GetProtocol (int protocolNumber) const
 {
-  for (L4List_t::const_iterator i = m_protocols.begin (); i != m_protocols.end (); ++i)
-    {
-      if ((*i)->GetProtocolNumber () == protocolNumber)
-        {
-          return *i;
-        }
-    }
-  return 0;
+  NS_LOG_FUNCTION (this << protocolNumber);
+
+  return GetProtocol (protocolNumber, -1);
 }
 
+Ptr<IpL4Protocol>
+Ipv4L3ClickProtocol::GetProtocol (int protocolNumber, int32_t interfaceIndex) const
+{
+  NS_LOG_FUNCTION (this << protocolNumber << interfaceIndex);
+
+  L4ListKey_t key;
+  L4List_t::const_iterator i;
+  if (interfaceIndex >= 0)
+    {
+      // try the interface-specific protocol.
+      key = std::make_pair (protocolNumber, interfaceIndex);
+      i = m_protocols.find (key);
+      if (i != m_protocols.end ())
+        {
+          return i->second;
+        }
+    }
+  // try the generic protocol.
+  key = std::make_pair (protocolNumber, -1);
+  i = m_protocols.find (key);
+  if (i != m_protocols.end ())
+    {
+      return i->second;
+    }
+
+  return 0;
+}
 
 } // namespace ns3
 

@@ -483,12 +483,26 @@ Ipv4ClickRouting::RouteOutput (Ptr<Packet> p, const Ipv4Header &header, Ptr<NetD
   header.GetDestination ().Print (addr);
   // Probe the Click Routing Table for the required IP
   // This returns a string of the form "InterfaceID GatewayAddr"
+  NS_LOG_DEBUG ("Probe click routing table for " << addr.str ());
   std::string s = ReadHandler (m_clickRoutingTableElement, addr.str ());
+  NS_LOG_DEBUG ("string from click routing table: " << s);
 
-  int pos = s.find (" ");
-
-  int interfaceId = atoi (s.substr (0, pos).c_str ());
-  Ipv4Address destination (s.substr (pos + 1).c_str ());
+  size_t pos = s.find (" ");
+  Ipv4Address destination;
+  int interfaceId;
+  if (pos == std::string::npos)
+    {
+      // Only an interface ID is found
+      destination = Ipv4Address ("0.0.0.0");
+      interfaceId = atoi (s.c_str ());
+      NS_LOG_DEBUG ("case 1:  destination " << destination << " interfaceId " << interfaceId);
+    }
+  else
+    {
+      interfaceId = atoi (s.substr (0, pos).c_str ());
+      Ipv4Address destination (s.substr (pos + 1).c_str ());
+      NS_LOG_DEBUG ("case 2:  destination " << destination << " interfaceId " << interfaceId);
+    }
 
   if (interfaceId != -1)
     {
