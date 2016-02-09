@@ -104,53 +104,13 @@ public:
    */
   void SetNode (Ptr<Node> node);
 
-  /**
-   * \brief Add a L4 protocol.
-   * \param protocol L4 protocol
-   */
   virtual void Insert (Ptr<IpL4Protocol> protocol);
-
-  /**
-   * \brief Add a L4 protocol to a specific interface.
-   *
-   * This may be called multiple times for multiple interfaces for the same
-   * protocol.  To insert for all interfaces, use the separate
-   * Insert (Ptr<IpL4Protocol> protocol) method.
-   *
-   * Setting a protocol on a specific interface will overwrite the
-   * previously bound protocol.
-   *
-   * \param protocol L4 protocol.
-   * \param interfaceIndex interface index.
-   */
   virtual void Insert (Ptr<IpL4Protocol> protocol, uint32_t interfaceIndex);
 
-  /**
-   * \brief Remove a L4 protocol.
-   * \param protocol L4 protocol to remove.
-   */
   virtual void Remove (Ptr<IpL4Protocol> protocol);
-
-  /**
-   * \brief Remove a L4 protocol from a specific interface.
-   * \param protocol L4 protocol to remove.
-   * \param interfaceIndex interface index.
-   */
   virtual void Remove (Ptr<IpL4Protocol> protocol, uint32_t interfaceIndex);
 
-  /**
-   * \brief Get L4 protocol by protocol number.
-   * \param protocolNumber protocol number
-   * \return corresponding IpL4Protocol or 0 if not found
-   */
   virtual Ptr<IpL4Protocol> GetProtocol (int protocolNumber) const;
-
-  /**
-   * \brief Get L4 protocol by protocol number for the specified interface.
-   * \param protocolNumber protocol number
-   * \param interfaceIndex interface index, -1 means "any" interface.
-   * \return corresponding IpL4Protocol or 0 if not found
-   */
   virtual Ptr<IpL4Protocol> GetProtocol (int protocolNumber, int32_t interfaceIndex) const;
 
   /**
@@ -184,7 +144,7 @@ public:
    * \param device network device
    * \param p the packet
    * \param protocol next header value
-   * \param from address of the correspondant
+   * \param from address of the correspondent
    * \param to address of the destination
    * \param packetType type of the packet
    */
