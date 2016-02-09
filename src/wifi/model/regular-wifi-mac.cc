@@ -39,7 +39,9 @@ NS_LOG_COMPONENT_DEFINE ("RegularWifiMac");
 
 NS_OBJECT_ENSURE_REGISTERED (RegularWifiMac);
 
-RegularWifiMac::RegularWifiMac ()
+RegularWifiMac::RegularWifiMac () :
+  m_htSupported (0),
+  m_vhtSupported (0)
 {
   NS_LOG_FUNCTION (this);
   m_rxMiddle = new MacRxMiddle ();
