@@ -108,7 +108,7 @@ public:
    * \brief Add a L4 protocol.
    * \param protocol L4 protocol
    */
-  void Insert (Ptr<IpL4Protocol> protocol);
+  virtual void Insert (Ptr<IpL4Protocol> protocol);
 
   /**
    * \brief Add a L4 protocol to a specific interface.
@@ -123,20 +123,20 @@ public:
    * \param protocol L4 protocol.
    * \param interfaceIndex interface index.
    */
-  void Insert (Ptr<IpL4Protocol> protocol, uint32_t interfaceIndex);
+  virtual void Insert (Ptr<IpL4Protocol> protocol, uint32_t interfaceIndex);
 
   /**
    * \brief Remove a L4 protocol.
    * \param protocol L4 protocol to remove.
    */
-  void Remove (Ptr<IpL4Protocol> protocol);
+  virtual void Remove (Ptr<IpL4Protocol> protocol);
 
   /**
    * \brief Remove a L4 protocol from a specific interface.
    * \param protocol L4 protocol to remove.
    * \param interfaceIndex interface index.
    */
-  void Remove (Ptr<IpL4Protocol> protocol, uint32_t interfaceIndex);
+  virtual void Remove (Ptr<IpL4Protocol> protocol, uint32_t interfaceIndex);
 
   /**
    * \brief Get L4 protocol by protocol number.
@@ -190,17 +190,7 @@ public:
    */
   void Receive (Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t protocol, const Address &from, const Address &to, NetDevice::PacketType packetType);
 
-  /**
-   * \brief Higher-level layers call this method to send a packet
-   * down the stack to the MAC and PHY layers.
-   *
-   * \param packet packet to send
-   * \param source source address of packet
-   * \param destination address of packet
-   * \param protocol number of packet
-   * \param route route to take
-   */
-  void Send (Ptr<Packet> packet, Ipv6Address source, Ipv6Address destination, uint8_t protocol, Ptr<Ipv6Route> route);
+  virtual void Send (Ptr<Packet> packet, Ipv6Address source, Ipv6Address destination, uint8_t protocol, Ptr<Ipv6Route> route);
 
   /**
    * \brief Set routing protocol for this stack.

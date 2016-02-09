@@ -126,14 +126,14 @@ void Icmpv6L4Protocol::NotifyNewAggregate ()
       Ptr<Node> node = this->GetObject<Node> ();
       if (node != 0)
         {
-          Ptr<Ipv6L3Protocol> ipv6 = this->GetObject<Ipv6L3Protocol> ();
+          Ptr<Ipv6> ipv6 = this->GetObject<Ipv6> ();
           if (ipv6 != 0 && m_downTarget.IsNull ())
             {
               SetNode (node);
               ipv6->Insert (this);
               Ptr<Ipv6RawSocketFactoryImpl> rawFactory = CreateObject<Ipv6RawSocketFactoryImpl> ();
               ipv6->AggregateObject (rawFactory);
-              SetDownTarget6 (MakeCallback (&Ipv6L3Protocol::Send, ipv6));
+              SetDownTarget6 (MakeCallback (&Ipv6::Send, ipv6));
             }
         }
     }

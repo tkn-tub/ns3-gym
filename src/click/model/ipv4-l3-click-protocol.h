@@ -72,58 +72,13 @@ public:
   Ipv4L3ClickProtocol ();
   virtual ~Ipv4L3ClickProtocol ();
 
-  /**
-   * \param protocol a template for the protocol to add to this L4 Demux.
-   * \returns the L4Protocol effectively added.
-   *
-   * Invoke Copy on the input template to get a copy of the input
-   * protocol which can be used on the Node on which this L4 Demux
-   * is running. The new L4Protocol is registered internally as
-   * a working L4 Protocol and returned from this method.
-   * The caller does not get ownership of the returned pointer.
-   */
-  void Insert (Ptr<IpL4Protocol> protocol);
+  virtual void Insert (Ptr<IpL4Protocol> protocol);
+  virtual void Insert (Ptr<IpL4Protocol> protocol, uint32_t interfaceIndex);
 
-  /**
-   * \brief Add a L4 protocol to a specific interface.
-   *
-   * This may be called multiple times for multiple interfaces for the same
-   * protocol.  To insert for all interfaces, use the separate
-   * Insert (Ptr<IpL4Protocol> protocol) method.
-   *
-   * Setting a protocol on a specific interface will overwrite the
-   * previously bound protocol.
-   *
-   * \param protocol L4 protocol.
-   * \param interfaceIndex interface index.
-   */
-  void Insert (Ptr<IpL4Protocol> protocol, uint32_t interfaceIndex);
+  virtual void Remove (Ptr<IpL4Protocol> protocol);
+  virtual void Remove (Ptr<IpL4Protocol> protocol, uint32_t interfaceIndex);
 
-  /**
-   * \param protocol protocol to remove from this demux.
-   *
-   * The input value to this method should be the value
-   * returned from the Ipv4L4Protocol::Insert method.
-   */
-  void Remove (Ptr<IpL4Protocol> protocol);
-
-  /**
-   * \brief Remove a L4 protocol from a specific interface.
-   * \param protocol L4 protocol to remove.
-   * \param interfaceIndex interface index.
-   */
-  void Remove (Ptr<IpL4Protocol> protocol, uint32_t interfaceIndex);
-
-  /**
-   * \param protocolNumber number of protocol to lookup
-   *        in this L4 Demux
-   * \returns a matching L4 Protocol
-   *
-   * This method is typically called by lower layers
-   * to forward packets up the stack to the right protocol.
-   */
   virtual Ptr<IpL4Protocol> GetProtocol (int protocolNumber) const;
-
   virtual Ptr<IpL4Protocol> GetProtocol (int protocolNumber, int32_t interfaceIndex) const;
 
   virtual Ipv4Address SourceAddressSelection (uint32_t interface, Ipv4Address dest);

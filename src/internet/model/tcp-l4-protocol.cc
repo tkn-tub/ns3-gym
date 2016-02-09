@@ -112,7 +112,7 @@ TcpL4Protocol::NotifyNewAggregate ()
   NS_LOG_FUNCTION (this);
   Ptr<Node> node = this->GetObject<Node> ();
   Ptr<Ipv4> ipv4 = this->GetObject<Ipv4> ();
-  Ptr<Ipv6L3Protocol> ipv6 = node->GetObject<Ipv6L3Protocol> ();
+  Ptr<Ipv6> ipv6 = node->GetObject<Ipv6> ();
 
   if (m_node == 0)
     {
@@ -138,7 +138,7 @@ TcpL4Protocol::NotifyNewAggregate ()
   if (ipv6 != 0 && m_downTarget6.IsNull ())
     {
       ipv6->Insert (this);
-      this->SetDownTarget6 (MakeCallback (&Ipv6L3Protocol::Send, ipv6));
+      this->SetDownTarget6 (MakeCallback (&Ipv6::Send, ipv6));
     }
   IpL4Protocol::NotifyNewAggregate ();
 }

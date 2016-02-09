@@ -159,12 +159,46 @@ public:
   virtual void SendWithHeader (Ptr<Packet> packet, Ipv4Header ipHeader, Ptr<Ipv4Route> route) = 0;
 
   /**
-   * \param protocol a pointer to the protocol to add to this L4 Demux.
+   * \param protocol a template for the protocol to add to this L4 Demux.
+   * \returns the L4Protocol effectively added.
    *
-   * Adds a protocol to an internal list of L4 protocols.
-   *
+   * Invoke Copy on the input template to get a copy of the input
+   * protocol which can be used on the Node on which this L4 Demux
+   * is running. The new L4Protocol is registered internally as
+   * a working L4 Protocol and returned from this method.
+   * The caller does not get ownership of the returned pointer.
    */
   virtual void Insert (Ptr<IpL4Protocol> protocol) = 0;
+
+  /**
+   * \brief Add a L4 protocol to a specific interface.
+   *
+   * This may be called multiple times for multiple interfaces for the same
+   * protocol.  To insert for all interfaces, use the separate
+   * Insert (Ptr<IpL4Protocol> protocol) method.
+   *
+   * Setting a protocol on a specific interface will overwrite the
+   * previously bound protocol.
+   *
+   * \param protocol L4 protocol.
+   * \param interfaceIndex interface index.
+   */
+  virtual void Insert (Ptr<IpL4Protocol> protocol, uint32_t interfaceIndex) = 0;
+
+  /**
+   * \param protocol protocol to remove from this demux.
+   *
+   * The input value to this method should be the value
+   * returned from the Ipv4L4Protocol::Insert method.
+   */
+  virtual void Remove (Ptr<IpL4Protocol> protocol) = 0;
+
+  /**
+   * \brief Remove a L4 protocol from a specific interface.
+   * \param protocol L4 protocol to remove.
+   * \param interfaceIndex interface index.
+   */
+  virtual void Remove (Ptr<IpL4Protocol> protocol, uint32_t interfaceIndex) = 0;
 
   /**
    * \brief Determine whether address and interface corresponding to

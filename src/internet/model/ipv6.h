@@ -39,6 +39,7 @@ class NetDevice;
 class Packet;
 class Ipv6RoutingProtocol;
 class IpL4Protocol;
+class Ipv6Route;
 
 /**
  * \ingroup internet
@@ -313,11 +314,65 @@ public:
   virtual Ipv6Address SourceAddressSelection (uint32_t interface, Ipv6Address dest) = 0;
 
   /**
+   * \brief Add a L4 protocol.
+   * \param protocol L4 protocol
+   */
+  virtual void Insert (Ptr<IpL4Protocol> protocol) = 0;
+
+  /**
+   * \brief Add a L4 protocol to a specific interface.
+   *
+   * This may be called multiple times for multiple interfaces for the same
+   * protocol.  To insert for all interfaces, use the separate
+   * Insert (Ptr<IpL4Protocol> protocol) method.
+   *
+   * Setting a protocol on a specific interface will overwrite the
+   * previously bound protocol.
+   *
+   * \param protocol L4 protocol.
+   * \param interfaceIndex interface index.
+   */
+  virtual void Insert (Ptr<IpL4Protocol> protocol, uint32_t interfaceIndex) = 0;
+
+  /**
+   * \brief Remove a L4 protocol.
+   * \param protocol L4 protocol to remove.
+   */
+  virtual void Remove (Ptr<IpL4Protocol> protocol) = 0;
+
+  /**
+   * \brief Remove a L4 protocol from a specific interface.
+   * \param protocol L4 protocol to remove.
+   * \param interfaceIndex interface index.
+   */
+  virtual void Remove (Ptr<IpL4Protocol> protocol, uint32_t interfaceIndex) = 0;
+
+  /**
    * \brief Get L4 protocol by protocol number.
    * \param protocolNumber protocol number
-   * \return corresponding Ipv6L4Protocol or 0 if not found
+   * \return corresponding IpL4Protocol or 0 if not found
    */
   virtual Ptr<IpL4Protocol> GetProtocol (int protocolNumber) const = 0;
+
+  /**
+   * \brief Get L4 protocol by protocol number for the specified interface.
+   * \param protocolNumber protocol number
+   * \param interfaceIndex interface index, -1 means "any" interface.
+   * \return corresponding IpL4Protocol or 0 if not found
+   */
+  virtual Ptr<IpL4Protocol> GetProtocol (int protocolNumber, int32_t interfaceIndex) const = 0;
+
+  /**
+   * \brief Higher-level layers call this method to send a packet
+   * down the stack to the MAC and PHY layers.
+   *
+   * \param packet packet to send
+   * \param source source address of packet
+   * \param destination address of packet
+   * \param protocol number of packet
+   * \param route route to take
+   */
+  virtual void Send (Ptr<Packet> packet, Ipv6Address source, Ipv6Address destination, uint8_t protocol, Ptr<Ipv6Route> route) = 0;
 
   /**
    * \brief Register the IPv6 Extensions.
