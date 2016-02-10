@@ -43,6 +43,12 @@ void ReceivePacket (Ptr<Socket> socket)
 int main (int argc, char *argv[])
 {
 #ifdef NS3_CLICK
+  std::string clickConfigFolder = "src/click/examples";
+
+  CommandLine cmd;
+  cmd.AddValue ("clickConfigFolder", "Base folder for click configuration files", clickConfigFolder);
+  cmd.Parse (argc, argv);
+
   NodeContainer csmaNodes;
   csmaNodes.Create (2);
 
@@ -58,7 +64,7 @@ int main (int argc, char *argv[])
 
   // Install Click on node A
   ClickInternetStackHelper clickinternet;
-  clickinternet.SetClickFile (csmaNodes.Get (0), "src/click/examples/nsclick-lan-single-interface.click");
+  clickinternet.SetClickFile (csmaNodes.Get (0), clickConfigFolder + "/nsclick-lan-single-interface.click");
   clickinternet.SetRoutingTableElement (csmaNodes.Get (0), "rt");
   clickinternet.Install (csmaNodes.Get (0));
 

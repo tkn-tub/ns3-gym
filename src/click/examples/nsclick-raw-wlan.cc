@@ -45,6 +45,11 @@ int main (int argc, char *argv[])
 {
 #ifdef NS3_CLICK
   double rss = -80;
+  std::string clickConfigFolder = "src/click/examples";
+
+  CommandLine cmd;
+  cmd.AddValue ("clickConfigFolder", "Base folder for click configuration files", clickConfigFolder);
+  cmd.Parse (argc, argv);
 
   // Setup nodes
   NodeContainer wifiNodes;
@@ -103,7 +108,7 @@ int main (int argc, char *argv[])
 
   // Install Click on node A
   ClickInternetStackHelper clickinternet;
-  clickinternet.SetClickFile (wifiNodes.Get (0), "src/click/examples/nsclick-wifi-single-interface.click");
+  clickinternet.SetClickFile (wifiNodes.Get (0), clickConfigFolder + "/nsclick-wifi-single-interface.click");
   clickinternet.SetRoutingTableElement (wifiNodes.Get (0), "rt");
   clickinternet.Install (wifiNodes.Get (0));
 

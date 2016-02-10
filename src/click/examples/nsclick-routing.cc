@@ -47,6 +47,11 @@ int
 main (int argc, char *argv[])
 {
 #ifdef NS3_CLICK
+  std::string clickConfigFolder = "src/click/examples";
+
+  CommandLine cmd;
+  cmd.AddValue ("clickConfigFolder", "Base folder for click configuration files", clickConfigFolder);
+  cmd.Parse (argc, argv);
 
 //
 // Explicitly create the nodes required by the topology (shown above).
@@ -59,9 +64,9 @@ main (int argc, char *argv[])
 // Install Click on the nodes
 //
   ClickInternetStackHelper clickinternet;
-  clickinternet.SetClickFile (n.Get (0), "src/click/examples/nsclick-routing-node0.click");
-  clickinternet.SetClickFile (n.Get (1), "src/click/examples/nsclick-ip-router.click");
-  clickinternet.SetClickFile (n.Get (2), "src/click/examples/nsclick-routing-node2.click");
+  clickinternet.SetClickFile (n.Get (0), clickConfigFolder + "/nsclick-routing-node0.click");
+  clickinternet.SetClickFile (n.Get (1), clickConfigFolder + "/nsclick-ip-router.click");
+  clickinternet.SetClickFile (n.Get (2), clickConfigFolder + "/nsclick-routing-node2.click");
   clickinternet.SetRoutingTableElement (n.Get (0), "kernel/rt");
   clickinternet.SetRoutingTableElement (n.Get (1), "u/rt");
   clickinternet.SetRoutingTableElement (n.Get (2), "kernel/rt");

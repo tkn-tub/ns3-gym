@@ -71,6 +71,11 @@ int
 main (int argc, char *argv[])
 {
 #ifdef NS3_CLICK
+  std::string clickConfigFolder = "src/click/examples";
+
+  CommandLine cmd;
+  cmd.AddValue ("clickConfigFolder", "Base folder for click configuration files", clickConfigFolder);
+  cmd.Parse (argc, argv);
 
   //
   // Enable logging
@@ -138,14 +143,14 @@ main (int argc, char *argv[])
   // Install Click on the nodes
   //
   ClickInternetStackHelper clickinternet;
-  clickinternet.SetClickFile (n.Get (0), "src/click/examples/nsclick-wifi-single-interface.click");
-  clickinternet.SetClickFile (n.Get (1), "src/click/examples/nsclick-wifi-single-interface.click");
-  clickinternet.SetClickFile (n.Get (2), "src/click/examples/nsclick-wifi-single-interface.click");
+  clickinternet.SetClickFile (n.Get (0), clickConfigFolder + "/nsclick-wifi-single-interface.click");
+  clickinternet.SetClickFile (n.Get (1), clickConfigFolder + "/nsclick-wifi-single-interface.click");
+  clickinternet.SetClickFile (n.Get (2), clickConfigFolder + "/nsclick-wifi-single-interface.click");
 
   // Node 4 is to run in promiscuous mode. This can be verified
   // from the pcap trace Node4_in_eth0.pcap generated after running
   // this script.
-  clickinternet.SetClickFile (n.Get (3), "src/click/examples/nsclick-wifi-single-interface-promisc.click");
+  clickinternet.SetClickFile (n.Get (3), clickConfigFolder + "/nsclick-wifi-single-interface-promisc.click");
   clickinternet.SetRoutingTableElement (n, "rt");
   clickinternet.Install (n);
   Ipv4AddressHelper ipv4;
