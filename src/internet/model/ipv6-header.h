@@ -185,10 +185,6 @@ public:
 
 private:
   /**
-   * \brief The version (always equal to 6).
-   */
-  uint32_t m_version : 4;
-  /**
    * \brief The traffic class.
    */
   uint32_t m_trafficClass : 8;

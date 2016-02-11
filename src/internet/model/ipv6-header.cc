@@ -32,8 +32,7 @@ NS_LOG_COMPONENT_DEFINE ("Ipv6Header");
 NS_OBJECT_ENSURE_REGISTERED (Ipv6Header);
 
 Ipv6Header::Ipv6Header ()
-  : m_version (6),
-    m_trafficClass (0),
+  : m_trafficClass (0),
     m_flowLabel (1),
     m_payloadLength (0),
     m_nextHeader (0),
@@ -130,8 +129,7 @@ TypeId Ipv6Header::GetInstanceTypeId (void) const
 
 void Ipv6Header::Print (std::ostream& os) const
 {
-  os << "("
-  "Version " << m_version << " "
+  os << "(Version 6 "
      << "Traffic class 0x" << std::hex << m_trafficClass << std::dec << " "
      << "Flow Label 0x" << std::hex << m_flowLabel << std::dec << " "
      << "Payload Length " << m_payloadLength << " "
@@ -168,9 +166,11 @@ uint32_t Ipv6Header::Deserialize (Buffer::Iterator start)
   uint32_t vTcFl = 0;
 
   vTcFl = i.ReadNtohU32 ();
-  m_version = vTcFl >> 28;
-
-  NS_ASSERT ((m_version) == 6);
+  if ((vTcFl >> 28) != 6)
+    {
+      NS_LOG_WARN ("Trying to decode a non-IPv6 header, refusing to do it.");
+      return 0;
+    }
 
   m_trafficClass = (uint8_t)((vTcFl >> 20) & 0x000000ff);
   m_flowLabel = vTcFl & 0xfff00000;
