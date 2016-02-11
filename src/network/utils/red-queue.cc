@@ -421,14 +421,8 @@ double
 RedQueue::Estimator (uint32_t nQueued, uint32_t m, double qAvg, double qW)
 {
   NS_LOG_FUNCTION (this << nQueued << m << qAvg << qW);
-  double newAve;
 
-  newAve = qAvg;
-  while (--m >= 1)
-    {
-      newAve *= 1.0 - qW;
-    }
-  newAve *= 1.0 - qW;
+  double newAve = qAvg * pow(1.0-qW, m);
   newAve += qW * nQueued;
 
   // implement adaptive RED
