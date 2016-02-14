@@ -185,6 +185,11 @@ public:
     void MarkDelay ();
 
     /**
+     * \brief Change the state to this entry to PERMANENT.
+     */
+    void MarkPermanent ();
+
+    /**
      * \brief Add a packet (or replace old value) in the queue.
      * \param p packet to add
      */
@@ -224,6 +229,12 @@ public:
      * \return true if the entry is in PROBE state, false otherwise
      */
     bool IsProbe () const;
+
+    /**
+     * \brief Is the entry PERMANENT
+     * \return true if the entry is in PERMANENT state, false otherwise
+     */
+    bool IsPermanent () const;
 
     /**
      * \brief Get the MAC address of this entry.
@@ -328,7 +339,8 @@ private:
       REACHABLE, /**< Mapping exists between IPv6 and L2 addresses */
       STALE, /**< Mapping is stale */
       DELAY, /**< Try to wait contact from remote host */
-      PROBE /**< Try to contact IPv6 address to know again its L2 address */
+      PROBE, /**< Try to contact IPv6 address to know again its L2 address */
+      PERMANENT /**< Permanent Mapping exists between IPv6 and L2 addresses */
     };
 
     /**

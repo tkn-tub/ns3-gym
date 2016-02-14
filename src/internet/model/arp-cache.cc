@@ -392,8 +392,9 @@ ArpCache::Entry::MarkAlive (Address macAddress)
 void
 ArpCache::Entry::MarkPermanent (void)
 {
-  NS_LOG_FUNCTION (this);
+  NS_LOG_FUNCTION (this << m_macAddress);
   NS_ASSERT (!m_macAddress.IsInvalid ());
+
   m_state = PERMANENT;
   ClearRetries ();
   UpdateSeen ();

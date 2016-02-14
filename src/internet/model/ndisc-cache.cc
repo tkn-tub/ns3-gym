@@ -187,10 +187,18 @@ void NdiscCache::PrintNdiscCache (Ptr<OutputStreamWrapper> stream)
         {
           *os << " PROBE\n";
         }
-      else
+      else if (i->second->IsStale ())
         {
           *os << " STALE\n";
         }
+      else if (i->second->IsPermanent ())
+	{
+	  *os << " PERMANENT\n";
+	}
+      else
+	{
+	  NS_FATAL_ERROR ("Test for possibly unreachable code-- please file a bug report, with a test case, if this is ever hit");
+	}
     }
 }
 
@@ -495,6 +503,13 @@ void NdiscCache::Entry::MarkDelay ()
   m_state = DELAY;
 }
 
+void NdiscCache::Entry::MarkPermanent ()
+{
+  NS_LOG_FUNCTION_NOARGS ();
+  StopNudTimer ();
+  m_state = PERMANENT;
+}
+
 bool NdiscCache::Entry::IsStale () const
 {
   NS_LOG_FUNCTION_NOARGS ();
@@ -523,6 +538,12 @@ bool NdiscCache::Entry::IsProbe () const
 {
   NS_LOG_FUNCTION_NOARGS ();
   return (m_state == PROBE);
+}
+
+bool NdiscCache::Entry::IsPermanent () const
+{
+  NS_LOG_FUNCTION_NOARGS ();
+  return (m_state == PERMANENT);
 }
 
 Address NdiscCache::Entry::GetMacAddress () const

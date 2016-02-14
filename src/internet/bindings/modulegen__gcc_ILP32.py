@@ -14802,6 +14802,11 @@ def register_Ns3NdiscCacheEntry_methods(root_module, cls):
                    'bool', 
                    [], 
                    is_const=True)
+    ## ndisc-cache.h (module 'internet'): bool ns3::NdiscCache::Entry::IsPermanent() const [member function]
+    cls.add_method('IsPermanent', 
+                   'bool', 
+                   [], 
+                   is_const=True)
     ## ndisc-cache.h (module 'internet'): bool ns3::NdiscCache::Entry::IsProbe() const [member function]
     cls.add_method('IsProbe', 
                    'bool', 
@@ -14830,6 +14835,10 @@ def register_Ns3NdiscCacheEntry_methods(root_module, cls):
     cls.add_method('MarkIncomplete', 
                    'void', 
                    [param('ns3::Ptr< ns3::Packet >', 'p')])
+    ## ndisc-cache.h (module 'internet'): void ns3::NdiscCache::Entry::MarkPermanent() [member function]
+    cls.add_method('MarkPermanent', 
+                   'void', 
+                   [])
     ## ndisc-cache.h (module 'internet'): void ns3::NdiscCache::Entry::MarkProbe() [member function]
     cls.add_method('MarkProbe', 
                    'void', 
