@@ -1616,6 +1616,10 @@ MacLow::ForwardDown (Ptr<const Packet> packet, const WifiMacHeader* hdr,
       bool vhtSingleMpdu = false;
       bool last = false;
       enum mpduType mpdutype = NORMAL_MPDU;
+      
+      uint8_t tid = GetTid (packet, *hdr);
+      AcIndex ac = QosUtilsMapTidToAc (tid);
+      std::map<AcIndex, MacLowAggregationCapableTransmissionListener*>::const_iterator listenerIt = m_edcaListeners.find (ac);
 
       if (queueSize == 1)
         {
@@ -1643,9 +1647,6 @@ MacLow::ForwardDown (Ptr<const Packet> packet, const WifiMacHeader* hdr,
               mpdutype = LAST_MPDU_IN_AGGREGATE;
             }
 
-          uint8_t tid = GetTid (packet, *hdr);
-          AcIndex ac = QosUtilsMapTidToAc (tid);
-          std::map<AcIndex, MacLowAggregationCapableTransmissionListener*>::const_iterator listenerIt = m_edcaListeners.find (ac);
           listenerIt->second->GetMpduAggregator ()->AddHeaderAndPad (newPacket, last, vhtSingleMpdu);
 
           if (hdr->IsBlockAckReq ())
@@ -2877,6 +2878,7 @@ MacLow::AggregateToAmpdu (Ptr<const Packet> packet, const WifiMacHeader hdr)
   WifiMacHeader peekedHdr;
   newPacket = packet->Copy ();
   Ptr<Packet> currentAggregatedPacket;
+  CtrlBAckRequestHeader blockAckReq;
   //missing hdr.IsAck() since we have no means of knowing the Tid of the Ack yet
   if (hdr.IsQosData () || hdr.IsBlockAck ()|| hdr.IsBlockAckReq ())
     {
@@ -2932,7 +2934,6 @@ MacLow::AggregateToAmpdu (Ptr<const Packet> packet, const WifiMacHeader hdr)
                 {
                   blockAckSize = packet->GetSize () + hdr.GetSize () + WIFI_MAC_FCS_LENGTH;
                   qosPolicy = 3; //if the last subrame is block ack req then set ack policy of all frames to blockack
-                  CtrlBAckRequestHeader blockAckReq;
                   packet->PeekHeader (blockAckReq);
                   startingSequenceNumber = blockAckReq.GetStartingSequence ();
                 }
@@ -3092,6 +3093,7 @@ MacLow::AggregateToAmpdu (Ptr<const Packet> packet, const WifiMacHeader hdr)
                       WifiMacTrailer fcs;
                       newPacket->AddTrailer (fcs);
                       listenerIt->second->GetMpduAggregator ()->Aggregate (newPacket, currentAggregatedPacket);
+                      currentAggregatedPacket->AddHeader (blockAckReq);
                     }
                   if (qosPolicy == 0)
                     {

@@ -1429,6 +1429,7 @@ EdcaTxopN::SendAddBaRequest (Mac48Address dest, uint8_t tid, uint16_t startSeq,
 
   uint16_t sequence = m_txMiddle->GetNextSequenceNumberfor (&m_currentHdr);
   m_currentHdr.SetSequenceNumber (sequence);
+  m_stationManager->UpdateFragmentationThreshold ();
   m_currentHdr.SetFragmentNumber (0);
   m_currentHdr.SetNoMoreFragments ();
   m_currentHdr.SetNoRetry ();
