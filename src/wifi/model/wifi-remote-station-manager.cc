@@ -27,6 +27,7 @@
 #include "ns3/boolean.h"
 #include "ns3/double.h"
 #include "ns3/uinteger.h"
+#include "ns3/enum.h"
 #include "ns3/wifi-phy.h"
 #include "ns3/wifi-mac.h"
 #include "ns3/trace-source-accessor.h"
@@ -329,6 +330,13 @@ WifiRemoteStationManager::GetTypeId (void)
                    UintegerValue (0),
                    MakeUintegerAccessor (&WifiRemoteStationManager::m_defaultTxPowerLevel),
                    MakeUintegerChecker<uint8_t> ())
+    .AddAttribute ("ProtectionMode",
+                   "Protection mode used when non-ERP STAs are connected to an ERP AP: Rts-Cts or Cts-To-Self",
+                   EnumValue (WifiRemoteStationManager::CTS_TO_SELF),
+                   MakeEnumAccessor (&WifiRemoteStationManager::SetProtectionMode,
+                                     &WifiRemoteStationManager::GetProtectionMode),
+                   MakeEnumChecker (WifiRemoteStationManager::RTS_CTS, "Rts-Cts",
+                                    WifiRemoteStationManager::CTS_TO_SELF, "Cts-To-Self"))
     .AddTraceSource ("MacTxRtsFailed",
                      "The transmission of a RTS by the MAC layer has failed",
                      MakeTraceSourceAccessor (&WifiRemoteStationManager::m_macTxRtsFailed),
@@ -351,7 +359,10 @@ WifiRemoteStationManager::GetTypeId (void)
 
 WifiRemoteStationManager::WifiRemoteStationManager ()
   : m_htSupported (false),
-    m_vhtSupported (false)
+    m_vhtSupported (false),
+    m_useProtection (false),
+    m_shortPreambleEnabled (false),
+    m_shortSlotTimeEnabled (false)
 {
 }
 
@@ -430,6 +441,42 @@ WifiRemoteStationManager::SetFragmentationThreshold (uint32_t threshold)
   DoSetFragmentationThreshold (threshold);
 }
 
+void
+WifiRemoteStationManager::SetProtectionMode (WifiRemoteStationManager::ProtectionMode mode)
+{
+  m_protectionMode = mode;
+}
+
+void
+WifiRemoteStationManager::SetShortPreambleEnabled (bool enable)
+{
+  m_shortPreambleEnabled = enable;
+}
+
+void
+WifiRemoteStationManager::SetShortSlotTimeEnabled (bool enable)
+{
+  m_shortSlotTimeEnabled = enable;
+}
+
+bool
+WifiRemoteStationManager::GetShortSlotTimeEnabled (void) const
+{
+  return m_shortSlotTimeEnabled;
+}
+
+bool
+WifiRemoteStationManager::GetShortPreambleEnabled (void) const
+{
+  return m_shortPreambleEnabled;
+}
+
+WifiRemoteStationManager::ProtectionMode
+WifiRemoteStationManager::GetProtectionMode (void) const
+{
+  return m_protectionMode;
+}
+
 bool
 WifiRemoteStationManager::HasHtSupported (void) const
 {
@@ -494,6 +541,15 @@ WifiRemoteStationManager::AddSupportedPlcpPreamble (Mac48Address address, bool i
 }
 
 void
+WifiRemoteStationManager::AddSupportedErpSlotTime (Mac48Address address, bool isShortSlotTimeSupported)
+{
+  NS_LOG_FUNCTION (this << address << isShortSlotTimeSupported);
+  NS_ASSERT (!address.IsGroup ());
+  WifiRemoteStationState *state = LookupState (address);
+  state->m_shortSlotTime = isShortSlotTimeSupported;
+}
+
+void
 WifiRemoteStationManager::AddSupportedMode (Mac48Address address, WifiMode mode)
 {
   NS_LOG_FUNCTION (this << address << mode);
@@ -537,6 +593,18 @@ WifiRemoteStationManager::AddSupportedMcs (Mac48Address address, WifiMode mcs)
         }
     }
   state->m_operationalMcsSet.push_back (mcs);
+}
+
+bool
+WifiRemoteStationManager::GetShortPreambleSupported (Mac48Address address) const
+{
+  return LookupState (address)->m_shortPreamble;
+}
+
+bool
+WifiRemoteStationManager::GetShortSlotTimeSupported (Mac48Address address) const
+{
+  return LookupState (address)->m_shortSlotTime;
 }
 
 bool
@@ -795,9 +863,17 @@ WifiRemoteStationManager::ReportRxOk (Mac48Address address, const WifiMacHeader 
 
 bool
 WifiRemoteStationManager::NeedRts (Mac48Address address, const WifiMacHeader *header,
-                                   Ptr<const Packet> packet)
+                                   Ptr<const Packet> packet, WifiTxVector txVector)
 {
-  NS_LOG_FUNCTION (this << address << *header << packet);
+  WifiMode mode = txVector.GetMode ();
+  NS_LOG_FUNCTION (this << address << *header << packet << mode);
+  if (m_protectionMode == RTS_CTS
+      && mode.GetModulationClass () == WIFI_MOD_CLASS_ERP_OFDM
+      && m_useProtection)
+    {
+      NS_LOG_DEBUG ("WifiRemoteStationManager::NeedRTS returning true to protect non-ERP stations");
+      return true;
+    }
   if (address.IsGroup ())
     {
       return false;
@@ -809,21 +885,19 @@ WifiRemoteStationManager::NeedRts (Mac48Address address, const WifiMacHeader *he
 bool
 WifiRemoteStationManager::NeedCtsToSelf (WifiTxVector txVector)
 {
-  NS_LOG_FUNCTION (this << txVector);
   WifiMode mode = txVector.GetMode ();
-  //search for the BSS Basic Rate set, if the used mode is in the basic set then there is no need for Cts To Self
-  for (WifiModeListIterator i = m_bssBasicRateSet.begin (); i != m_bssBasicRateSet.end (); i++)
+  NS_LOG_FUNCTION (this << mode);
+  if (m_protectionMode == CTS_TO_SELF
+      && mode.GetModulationClass () == WIFI_MOD_CLASS_ERP_OFDM
+      && m_useProtection)
     {
-      if (mode == *i)
-        {
-          NS_LOG_DEBUG ("WifiRemoteStationManager::NeedCtsToSelf returning false");
-          return false;
-        }
+      NS_LOG_DEBUG ("WifiRemoteStationManager::NeedCtsToSelf returning true to protect non-ERP stations");
+      return true;
     }
-  if (HasHtSupported ())
+  else if (!m_useProtection)
     {
-      //search for the BSS Basic MCS set, if the used mode is in the basic set then there is no need for Cts To Self
-      for (WifiModeListIterator i = m_bssBasicMcsSet.begin (); i != m_bssBasicMcsSet.end (); i++)
+    //search for the BSS Basic Rate set, if the used mode is in the basic set then there is no need for Cts To Self
+      for (WifiModeListIterator i = m_bssBasicRateSet.begin (); i != m_bssBasicRateSet.end (); i++)
         {
           if (mode == *i)
             {
@@ -831,9 +905,34 @@ WifiRemoteStationManager::NeedCtsToSelf (WifiTxVector txVector)
               return false;
             }
         }
+      if (HasHtSupported ())
+        {
+          //search for the BSS Basic MCS set, if the used mode is in the basic set then there is no need for Cts To Self
+          for (WifiModeListIterator i = m_bssBasicMcsSet.begin (); i != m_bssBasicMcsSet.end (); i++)
+            {
+              if (mode == *i)
+                {
+                  NS_LOG_DEBUG ("WifiRemoteStationManager::NeedCtsToSelf returning false");
+                  return false;
+                }
+            }
+        }
+      NS_LOG_DEBUG ("WifiRemoteStationManager::NeedCtsToSelf returning true");
+      return true;
     }
-  NS_LOG_DEBUG ("WifiRemoteStationManager::NeedCtsToSelf returning true");
-  return true;
+  return false;
+}
+
+void
+WifiRemoteStationManager::SetUseProtection (bool enable)
+{
+  m_useProtection = enable;
+}
+
+bool
+WifiRemoteStationManager::GetUseProtection (void) const
+{
+  return m_useProtection;
 }
 
 bool
@@ -1321,7 +1420,6 @@ WifiRemoteStationManager::LookupState (Mac48Address address) const
   state->m_channelWidth = m_wifiPhy->GetChannelWidth ();
   state->m_shortGuardInterval = m_wifiPhy->GetGuardInterval ();
   state->m_greenfield = m_wifiPhy->GetGreenfield ();
-  state->m_shortPreamble = m_wifiPhy->GetShortPlcpPreamble ();
   state->m_rx = 1;
   state->m_tx = 1;
   state->m_ness = 0;
@@ -1418,12 +1516,6 @@ WifiRemoteStationManager::GetGreenfieldSupported (Mac48Address address) const
   return LookupState (address)->m_greenfield;
 }
 
-bool
-WifiRemoteStationManager::GetShortPreambleSupported (Mac48Address address) const
-{
-  return LookupState (address)->m_shortPreamble;
-}
-
 WifiMode
 WifiRemoteStationManager::GetDefaultMode (void) const
 {
@@ -1479,8 +1571,48 @@ WifiRemoteStationManager::GetNBasicModes (void) const
 WifiMode
 WifiRemoteStationManager::GetBasicMode (uint32_t i) const
 {
-  NS_ASSERT (i < m_bssBasicRateSet.size ());
+  NS_ASSERT (i < GetNBasicModes ());
   return m_bssBasicRateSet[i];
+}
+
+uint32_t
+WifiRemoteStationManager::GetNNonErpBasicModes (void) const
+{
+  uint32_t size = 0;
+  for (WifiModeListIterator i = m_bssBasicRateSet.begin (); i != m_bssBasicRateSet.end (); i++)
+  {
+    if (i->GetModulationClass () == WIFI_MOD_CLASS_ERP_OFDM)
+      {
+        continue;
+      }
+    size++;
+  }
+  return size;
+}
+
+WifiMode
+WifiRemoteStationManager::GetNonErpBasicMode (uint32_t i) const
+{
+  NS_ASSERT (i < GetNNonErpBasicModes ());
+  uint32_t index = 0;
+  bool found = false;
+  for (WifiModeListIterator j = m_bssBasicRateSet.begin (); j != m_bssBasicRateSet.end (); )
+  {
+    if (i == index)
+      {
+        found = true;
+      }
+    if (j->GetModulationClass () != WIFI_MOD_CLASS_ERP_OFDM)
+      {
+        if (found)
+          {
+            break;
+          }
+      }
+    index++;
+    j++;
+  }
+  return m_bssBasicRateSet[index];
 }
 
 void
@@ -1506,7 +1638,7 @@ WifiRemoteStationManager::GetNBasicMcs (void) const
 WifiMode
 WifiRemoteStationManager::GetBasicMcs (uint32_t i) const
 {
-  NS_ASSERT (i < m_bssBasicMcsSet.size ());
+  NS_ASSERT (i < GetNBasicMcs ());
   return m_bssBasicMcsSet[i];
 }
 
@@ -1565,6 +1697,34 @@ WifiRemoteStationManager::GetMcsSupported (const WifiRemoteStation *station, uin
   return station->m_state->m_operationalMcsSet[i];
 }
 
+WifiMode
+WifiRemoteStationManager::GetNonErpSupported (const WifiRemoteStation *station, uint32_t i) const
+{
+  NS_ASSERT (i < GetNNonErpSupported (station));
+  //IEEE 802.11g standard defines that if the protection mechanism is enabled, Rts, Cts and Cts-To-Self
+  //frames should select a rate in the BSSBasicRateSet that corresponds to an 802.11b basic rate.
+  //This is a implemented here to avoid changes in every RAA, but should maybe be moved in case it breaks standard rules.
+  uint32_t index = 0;
+  bool found = false;
+  for (WifiModeListIterator j = station->m_state->m_operationalRateSet.begin (); j != station->m_state->m_operationalRateSet.end (); )
+  {
+    if (i == index)
+      {
+        found = true;
+      }
+    if (j->GetModulationClass () != WIFI_MOD_CLASS_ERP_OFDM)
+      {
+        if (found)
+          {
+            break;
+          }
+      }
+    index++;
+    j++;
+  }
+  return station->m_state->m_operationalRateSet[index];
+}
+
 uint32_t
 WifiRemoteStationManager::GetChannelWidth (const WifiRemoteStation *station) const
 {
@@ -1581,12 +1741,6 @@ bool
 WifiRemoteStationManager::GetGreenfield (const WifiRemoteStation *station) const
 {
   return station->m_state->m_greenfield;
-}
-
-bool
-WifiRemoteStationManager::GetShortPreamble (const WifiRemoteStation *station) const
-{
-  return station->m_state->m_shortPreamble;
 }
 
 bool
@@ -1653,6 +1807,21 @@ uint32_t
 WifiRemoteStationManager::GetNMcsSupported (const WifiRemoteStation *station) const
 {
   return station->m_state->m_operationalMcsSet.size ();
+}
+
+uint32_t
+WifiRemoteStationManager::GetNNonErpSupported (const WifiRemoteStation *station) const
+{
+  uint32_t size = 0;
+  for (WifiModeListIterator i = station->m_state->m_operationalRateSet.begin (); i != station->m_state->m_operationalRateSet.end (); i++)
+  {
+    if (i->GetModulationClass () == WIFI_MOD_CLASS_ERP_OFDM)
+      {
+        continue;
+      }
+    size++;
+  }
+  return size;
 }
 
 void

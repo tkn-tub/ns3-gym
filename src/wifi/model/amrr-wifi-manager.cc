@@ -356,8 +356,16 @@ AmrrWifiManager::DoGetRtsTxVector (WifiRemoteStation *st)
       channelWidth = 20;
     }
   UpdateMode (station);
-  /// \todo can we implement something smarter ?
-  return WifiTxVector (GetSupported (station, 0), GetDefaultTxPowerLevel (), GetLongRetryCount (station), false, 1, 0, channelWidth, GetAggregation (station), false);
+  WifiTxVector rtsTxVector;
+  if (GetUseProtection () == false)
+    {
+      rtsTxVector = WifiTxVector (GetSupported (station, 0), GetDefaultTxPowerLevel (), GetLongRetryCount (station), false, 1, 0, channelWidth, GetAggregation (station), false);
+    }
+  else
+    {
+      rtsTxVector = WifiTxVector (GetNonErpSupported (station, 0), GetDefaultTxPowerLevel (), GetLongRetryCount (station), false, 1, 0, channelWidth, GetAggregation (station), false);
+    }
+  return rtsTxVector;
 }
 
 bool

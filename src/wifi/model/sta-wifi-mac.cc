@@ -489,6 +489,7 @@ StaWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
     {
       MgtBeaconHeader beacon;
       packet->RemoveHeader (beacon);
+      CapabilityInformation capabilities = beacon.GetCapabilities ();
       bool goodBeacon = false;
       if (GetSsid ().IsBroadcast ()
           || beacon.GetSsid ().IsEqual (GetSsid ()))
@@ -513,6 +514,34 @@ StaWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
           Time delay = MicroSeconds (beacon.GetBeaconIntervalUs () * m_maxMissedBeacons);
           RestartBeaconWatchdog (delay);
           SetBssid (hdr->GetAddr3 ());
+          bool isShortPreambleEnabled = capabilities.IsShortPreamble ();
+          if (m_erpSupported)
+            {
+              ErpInformation erpInformation = beacon.GetErpInformation ();
+              isShortPreambleEnabled &= !erpInformation.GetBarkerPreambleMode ();
+              if (erpInformation.GetUseProtection() == true)
+                {
+                  m_stationManager->SetUseProtection (true);
+                }
+              else
+                {
+                  m_stationManager->SetUseProtection (false);
+                }
+              if (capabilities.IsShortSlotTime () == true)
+                {
+                  //enable short slot time and set cwMin to 15
+                  SetSlot (MicroSeconds (9));
+                  ConfigureContentionWindow (15, 1023);
+                }
+              else
+                {
+                  //disable short slot time and set cwMin to 31
+                  SetSlot (MicroSeconds (20));
+                  ConfigureContentionWindow (31, 1023);
+                }
+            }
+          m_stationManager->SetShortPreambleEnabled (isShortPreambleEnabled);
+          m_stationManager->SetShortSlotTimeEnabled (capabilities.IsShortSlotTime ());
         }
       if (goodBeacon && m_state == BEACON_MISSED)
         {
@@ -527,6 +556,7 @@ StaWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
         {
           MgtProbeResponseHeader probeResp;
           packet->RemoveHeader (probeResp);
+          CapabilityInformation capabilities = probeResp.GetCapabilities ();
           if (!probeResp.GetSsid ().IsEqual (GetSsid ()))
             {
               //not a probe resp for our ssid.
@@ -553,6 +583,34 @@ StaWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
                     }
                 }
             }
+            
+          bool isShortPreambleEnabled = capabilities.IsShortPreamble ();
+          if (m_erpSupported)
+            {
+              ErpInformation erpInformation = probeResp.GetErpInformation ();
+              if (erpInformation.GetUseProtection() == true)
+                {
+                  m_stationManager->SetUseProtection (true);
+                }
+              else
+                {
+                  m_stationManager->SetUseProtection (false);
+                }
+              if (capabilities.IsShortSlotTime () == true)
+                {
+                  //enable short slot time and set cwMin to 15
+                  SetSlot (MicroSeconds (9));
+                  ConfigureContentionWindow (15, 1023);
+                }
+              else
+                {
+                  //disable short slot time and set cwMin to 31
+                  SetSlot (MicroSeconds (20));
+                  ConfigureContentionWindow (31, 1023);
+                }
+            }
+          m_stationManager->SetShortPreambleEnabled (isShortPreambleEnabled);
+          m_stationManager->SetShortSlotTimeEnabled (capabilities.IsShortSlotTime ());
           SetBssid (hdr->GetAddr3 ());
           Time delay = MicroSeconds (probeResp.GetBeaconIntervalUs () * m_maxMissedBeacons);
           RestartBeaconWatchdog (delay);
@@ -571,8 +629,6 @@ StaWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
         {
           MgtAssocResponseHeader assocResp;
           packet->RemoveHeader (assocResp);
-          CapabilityInformation capabilities = assocResp.GetCapabilities ();
-          m_stationManager->AddSupportedPlcpPreamble (hdr->GetAddr2 (), capabilities.IsShortPreamble ());
           if (m_assocRequestEvent.IsRunning ())
             {
               m_assocRequestEvent.Cancel ();
@@ -581,7 +637,28 @@ StaWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
             {
               SetState (ASSOCIATED);
               NS_LOG_DEBUG ("assoc completed");
+              CapabilityInformation capabilities = assocResp.GetCapabilities ();
               SupportedRates rates = assocResp.GetSupportedRates ();
+              bool isShortPreambleEnabled = capabilities.IsShortPreamble ();
+              if (m_erpSupported)
+                {
+                  ErpInformation erpInformation = assocResp.GetErpInformation ();
+                  isShortPreambleEnabled &= !erpInformation.GetBarkerPreambleMode ();
+                  if (m_stationManager->GetShortSlotTimeEnabled ())
+                    {
+                      //enable short slot time and set cwMin to 15
+                      SetSlot (MicroSeconds (9));
+                      ConfigureContentionWindow (15, 1023);
+                    }
+                  else
+                    {
+                      //disable short slot time and set cwMin to 31
+                      SetSlot (MicroSeconds (20));
+                      ConfigureContentionWindow (31, 1023);
+                    }
+                }
+              m_stationManager->SetShortPreambleEnabled (isShortPreambleEnabled);
+              m_stationManager->SetShortSlotTimeEnabled (capabilities.IsShortSlotTime ());
               if (m_htSupported)
                 {
                   HtCapabilities htcapabilities = assocResp.GetHtCapabilities ();
@@ -674,7 +751,8 @@ CapabilityInformation
 StaWifiMac::GetCapabilities (void) const
 {
   CapabilityInformation capabilities;
-  capabilities.SetShortPreamble (m_phy->GetShortPlcpPreamble ());
+  capabilities.SetShortPreamble (m_phy->GetShortPlcpPreambleSupported () || m_erpSupported);
+  capabilities.SetShortSlotTime (GetShortSlotTimeSupported () && m_erpSupported);
   return capabilities;
 }
 

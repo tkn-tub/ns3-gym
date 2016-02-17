@@ -57,6 +57,16 @@ CapabilityInformation::SetShortPreamble (bool shortPreamble)
     }
 }
 
+void
+CapabilityInformation::SetShortSlotTime (bool shortSlotTime)
+{
+  NS_LOG_FUNCTION (this);
+  if (shortSlotTime)
+    {
+      Set (10);
+    }
+}
+
 bool
 CapabilityInformation::IsEss (void) const
 {
@@ -76,6 +86,13 @@ CapabilityInformation::IsShortPreamble (void) const
 {
   NS_LOG_FUNCTION (this);
   return Is (5);
+}
+
+bool
+CapabilityInformation::IsShortSlotTime (void) const
+{
+  NS_LOG_FUNCTION (this);
+  return Is (10);
 }
 
 void

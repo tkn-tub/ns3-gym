@@ -63,6 +63,7 @@ Bugs fixed
 - Bug 2041 - TCP RTO needs unit tests
 - Bug 2068 - Timestamp option conforms to RFC 7323
 - Bug 2116 - refactoring aggregation API
+- Bug 2120 - 802.11g networks are not compatible with 802.11b clients
 - Bug 2141 - TCP DataSent callback now correctly notifies sent data, without missing bytes in particular conditions
 - Bug 2150 - The TCP sender keeps retransmitting and does not terminate the connection after some retries.
 - Bug 2159 - TCP advertises wrong receive window

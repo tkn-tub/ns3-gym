@@ -29,6 +29,7 @@
 #include "vht-capabilities.h"
 #include "amsdu-subframe-header.h"
 #include "supported-rates.h"
+#include "erp-information.h"
 #include "ns3/random-variable-stream.h"
 
 namespace ns3 {
@@ -99,6 +100,19 @@ public:
    * Start beacon transmission immediately.
    */
   void StartBeaconing (void);
+  /**
+   * Determine whether short slot time should be enabled or not in the BSS.
+   * Typically, true is returned only when there is no non-erp stations associated
+   * to the AP, and that short slot time is supported by the AP and by all other
+   * ERP stations that are associated to the AP. Otherwise, false is returned.
+   */
+  bool GetShortSlotTimeEnabled (void) const;
+  /**
+   * Determine whether short preamble should be enabled or not in the BSS.
+   * Typically, true is returned only when the AP and all associated 
+   * stations support short PLCP preamble.
+   */
+  bool GetShortPreambleEnabled (void) const;
 
   /**
    * Assign a fixed random variable stream number to the random variables
@@ -188,6 +202,12 @@ private:
    */
   CapabilityInformation GetCapabilities (void) const;
   /**
+   * Return the ERP information of the current AP.
+   *
+   * \return the ERP information that we support
+   */
+  ErpInformation GetErpInformation (void) const;
+  /**
    * Return the HT capability of the current AP.
    *
    * \return the HT capability that we support
@@ -218,16 +238,21 @@ private:
    * \return true if beacons are periodically generated, false otherwise
    */
   bool GetBeaconGeneration (void) const;
+  
+  bool GetUseProtection (void) const;
 
   virtual void DoDispose (void);
   virtual void DoInitialize (void);
 
   Ptr<DcaTxop> m_beaconDca;                  //!< Dedicated DcaTxop for beacons
   Time m_beaconInterval;                     //!< Interval between beacons
-  bool m_enableBeaconGeneration;             //!< Flag if beacons are being generated
+  bool m_enableBeaconGeneration;             //!< Flag whether beacons are being generated
   EventId m_beaconEvent;                     //!< Event to generate one beacon
   Ptr<UniformRandomVariable> m_beaconJitter; //!< UniformRandomVariable used to randomize the time of the first beacon
-  bool m_enableBeaconJitter;                 //!< Flag if the first beacon should be generated at random time
+  bool m_enableBeaconJitter;                 //!< Flag whether the first beacon should be generated at random time
+  std::list<Mac48Address> m_staList;         //!< List of all stations currently associated to the AP
+  std::list<Mac48Address> m_nonErpStations;  //!< List of all 802.11b stations currently associated to the AP
+  bool m_enableNonErpProtection;             //!< Flag whether protection mechanism is used or not when non-ERP STAs are present within the BSS
 };
 
 } //namespace ns3

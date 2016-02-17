@@ -144,7 +144,8 @@ YansWifiPhy::GetTypeId (void)
                                          &YansWifiPhy::SetNumberOfReceiveAntennas),
                    MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("ShortGuardEnabled",
-                   "Whether or not short guard interval is enabled.",
+                   "Whether or not short guard interval is enabled."
+                   "This parameter is only valuable for 802.11n/ac STAs and APs.",
                    BooleanValue (false),
                    MakeBooleanAccessor (&YansWifiPhy::GetGuardInterval,
                                         &YansWifiPhy::SetGuardInterval),
@@ -162,16 +163,19 @@ YansWifiPhy::GetTypeId (void)
                                         &YansWifiPhy::SetStbc),
                    MakeBooleanChecker ())
     .AddAttribute ("GreenfieldEnabled",
-                   "Whether or not Greenfield is enabled.",
+                   "Whether or not Greenfield is enabled."
+                   "This parameter is only valuable for 802.11n STAs and APs.",
                    BooleanValue (false),
                    MakeBooleanAccessor (&YansWifiPhy::GetGreenfield,
                                         &YansWifiPhy::SetGreenfield),
                    MakeBooleanChecker ())
-    .AddAttribute ("ShortPlcpPreambleEnabled",
-                   "Whether or not short PLCP preamble is enabled.",
+    .AddAttribute ("ShortPlcpPreambleSupported",
+                   "Whether or not short PLCP preamble is supported."
+                   "This parameter is only valuable for 802.11b STAs and APs."
+                   "Note: 802.11g APs and STAs always support short PLCP preamble.",
                    BooleanValue (false),
-                   MakeBooleanAccessor (&YansWifiPhy::GetShortPlcpPreamble,
-                                        &YansWifiPhy::SetShortPlcpPreamble),
+                   MakeBooleanAccessor (&YansWifiPhy::GetShortPlcpPreambleSupported,
+                                        &YansWifiPhy::SetShortPlcpPreambleSupported),
                    MakeBooleanChecker ())
     .AddAttribute ("ChannelWidth",
                    "Whether 5MHz, 10MHz, 20MHz, 22MHz, 40MHz, 80 MHz or 160 MHz.",
@@ -1305,15 +1309,15 @@ YansWifiPhy::GetGreenfield (void) const
 }
 
 bool
-YansWifiPhy::GetShortPlcpPreamble (void) const
+YansWifiPhy::GetShortPlcpPreambleSupported (void) const
 {
-  return m_plcpPreamble;
+  return m_shortPreamble;
 }
 
 void
-YansWifiPhy::SetShortPlcpPreamble (bool preamble)
+YansWifiPhy::SetShortPlcpPreambleSupported (bool enable)
 {
-  m_plcpPreamble = preamble;
+  m_shortPreamble = enable;
 }
 
 void

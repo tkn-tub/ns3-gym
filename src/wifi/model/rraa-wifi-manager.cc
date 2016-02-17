@@ -309,7 +309,16 @@ RraaWifiManager::DoGetRtsTxVector (WifiRemoteStation *st)
       //avoid to use legacy rate adaptation algorithms for IEEE 802.11n/ac
       channelWidth = 20;
     }
-  return WifiTxVector (GetSupported (st, 0), GetDefaultTxPowerLevel (), GetShortRetryCount (st), false, 1, 0, channelWidth, GetAggregation (station), false);
+  WifiTxVector rtsTxVector;
+  if (GetUseProtection () == false)
+    {
+      rtsTxVector = WifiTxVector (GetSupported (st, 0), GetDefaultTxPowerLevel (), GetShortRetryCount (st), false, 1, 0, channelWidth, GetAggregation (station), false);
+    }
+  else
+    {
+      rtsTxVector = WifiTxVector (GetNonErpSupported (st, 0), GetDefaultTxPowerLevel (), GetShortRetryCount (st), false, 1, 0, channelWidth, GetAggregation (station), false);
+    }
+  return rtsTxVector;
 }
 
 bool

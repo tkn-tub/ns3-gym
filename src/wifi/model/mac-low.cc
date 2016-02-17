@@ -807,7 +807,7 @@ MacLow::StartTransmission (Ptr<const Packet> packet,
     }
   else
     {
-      if (m_ctsToSelfSupported && NeedCtsToSelf ())
+      if ((m_ctsToSelfSupported || m_stationManager->GetUseProtection ()) && NeedCtsToSelf ())
         {
           SendCtsToSelf ();
         }
@@ -824,9 +824,9 @@ MacLow::StartTransmission (Ptr<const Packet> packet,
 bool
 MacLow::NeedRts (void)
 {
-  return m_stationManager->NeedRts (m_currentHdr.GetAddr1 (),
-                                    &m_currentHdr,
-                                    m_currentPacket);
+  WifiTxVector dataTxVector = GetDataTxVector (m_currentPacket, &m_currentHdr);
+  return m_stationManager->NeedRts (m_currentHdr.GetAddr1 (), &m_currentHdr,
+                                    m_currentPacket, dataTxVector);
 }
 
 bool
@@ -1271,7 +1271,16 @@ Time
 MacLow::GetAckDuration (WifiTxVector ackTxVector) const
 {
   NS_ASSERT (ackTxVector.GetMode ().GetModulationClass () != WIFI_MOD_CLASS_HT); //ACK should always use non-HT PPDU (HT PPDU cases not supported yet)
-  return m_phy->CalculateTxDuration (GetAckSize (), ackTxVector, WIFI_PREAMBLE_LONG, m_phy->GetFrequency ());
+  WifiPreamble preamble;
+  if (m_stationManager->GetShortPreambleEnabled ())
+    {
+      preamble = WIFI_PREAMBLE_SHORT;
+    }
+  else
+    {
+      preamble = WIFI_PREAMBLE_LONG;
+    }
+  return m_phy->CalculateTxDuration (GetAckSize (), ackTxVector, preamble, m_phy->GetFrequency ());
 }
 
 Time
@@ -1285,6 +1294,10 @@ MacLow::GetBlockAckDuration (Mac48Address to, WifiTxVector blockAckReqTxVector, 
   if (blockAckReqTxVector.GetMode ().GetModulationClass () == WIFI_MOD_CLASS_HT && type == BASIC_BLOCK_ACK)
     {
       preamble = WIFI_PREAMBLE_HT_MF;
+    }
+  else if (m_stationManager->GetShortPreambleEnabled ())
+    {
+      preamble = WIFI_PREAMBLE_SHORT;
     }
   else
     {
@@ -1304,7 +1317,16 @@ Time
 MacLow::GetCtsDuration (WifiTxVector ctsTxVector) const
 {
   NS_ASSERT (ctsTxVector.GetMode ().GetModulationClass () != WIFI_MOD_CLASS_HT); //CTS should always use non-HT PPDU (HT PPDU cases not supported yet)
-  return m_phy->CalculateTxDuration (GetCtsSize (), ctsTxVector, WIFI_PREAMBLE_LONG, m_phy->GetFrequency ());
+  WifiPreamble preamble;
+  if (m_stationManager->GetShortPreambleEnabled ())
+    {
+      preamble = WIFI_PREAMBLE_SHORT;
+    }
+  else
+    {
+      preamble = WIFI_PREAMBLE_LONG;
+    }
+  return m_phy->CalculateTxDuration (GetCtsSize (), ctsTxVector, preamble, m_phy->GetFrequency ());
 }
 
 uint32_t
@@ -1399,9 +1421,13 @@ MacLow::CalculateOverallTxTime (Ptr<const Packet> packet,
         {
           preamble = WIFI_PREAMBLE_HT_GF;
         }
+      //Otherwise, RTS should always use non-HT PPDU (HT PPDU cases not supported yet)
+      else if (m_stationManager->GetShortPreambleEnabled ())
+        {
+          preamble = WIFI_PREAMBLE_SHORT;
+        }
       else
         {
-          //Otherwise, RTS should always use non-HT PPDU (HT PPDU cases not supported yet)
           preamble = WIFI_PREAMBLE_LONG;
         }
       txTime += m_phy->CalculateTxDuration (GetRtsSize (), rtsTxVector, preamble, m_phy->GetFrequency ());
@@ -1421,7 +1447,7 @@ MacLow::CalculateOverallTxTime (Ptr<const Packet> packet,
     {
       preamble = WIFI_PREAMBLE_HT_MF;
     }
-  else if (m_phy->GetShortPlcpPreamble () && m_stationManager->GetShortPreambleSupported (m_currentHdr.GetAddr1 ()))
+  else if (m_stationManager->GetShortPreambleEnabled ())
     {
       preamble = WIFI_PREAMBLE_SHORT;
     }
@@ -1461,7 +1487,7 @@ MacLow::CalculateTransmissionTime (Ptr<const Packet> packet,
         {
           preamble = WIFI_PREAMBLE_HT_MF;
         }
-      else if (m_phy->GetShortPlcpPreamble () && m_stationManager->GetShortPreambleSupported (m_currentHdr.GetAddr1 ()))
+      else if (m_stationManager->GetShortPreambleEnabled ())
         {
           preamble = WIFI_PREAMBLE_SHORT;
         }
@@ -1803,7 +1829,12 @@ MacLow::SendRtsForPacket (void)
     {
       preamble = WIFI_PREAMBLE_HT_GF;
     }
-  else //Otherwise, RTS should always use non-HT PPDU (HT PPDU cases not supported yet)
+  //Otherwise, RTS should always use non-HT PPDU (HT PPDU cases not supported yet)
+  else if (m_stationManager->GetShortPreambleEnabled ())
+    {
+      preamble = WIFI_PREAMBLE_SHORT;
+    }
+  else
     {
       preamble = WIFI_PREAMBLE_LONG;
     }
@@ -1881,7 +1912,7 @@ MacLow::StartDataTxTimers (WifiTxVector dataTxVector)
     {
       preamble = WIFI_PREAMBLE_HT_MF;
     }
-  else if (m_phy->GetShortPlcpPreamble () && m_stationManager->GetShortPreambleSupported (m_currentHdr.GetAddr1 ()))
+  else if (m_stationManager->GetShortPreambleEnabled ())
     {
       preamble = WIFI_PREAMBLE_SHORT;
     }
@@ -1969,7 +2000,7 @@ MacLow::SendDataPacket (void)
     {
       preamble = WIFI_PREAMBLE_HT_MF;
     }
-  else if (m_phy->GetShortPlcpPreamble () && m_stationManager->GetShortPreambleSupported (m_currentHdr.GetAddr1 ()))
+  else if (m_stationManager->GetShortPreambleEnabled ())
     {
       preamble = WIFI_PREAMBLE_SHORT;
     }
@@ -2053,12 +2084,16 @@ MacLow::SendCtsToSelf (void)
   cts.SetNoRetry ();
   cts.SetAddr1 (m_self);
 
-  WifiTxVector ctsTxVector = GetCtsToSelfTxVector (m_currentPacket, &m_currentHdr);
+  WifiTxVector ctsTxVector = GetRtsTxVector (m_currentPacket, &m_currentHdr);
 
   WifiPreamble preamble;
   if (ctsTxVector.GetMode ().GetModulationClass () == WIFI_MOD_CLASS_HT)
     {
       preamble = WIFI_PREAMBLE_HT_MF;
+    }
+  else if (m_stationManager->GetShortPreambleEnabled ())
+    {
+      preamble = WIFI_PREAMBLE_SHORT;
     }
   else
     {
@@ -2162,8 +2197,19 @@ MacLow::SendCtsAfterRts (Mac48Address source, Time duration, WifiTxVector rtsTxV
   SnrTag tag;
   tag.Set (rtsSnr);
   packet->AddPacketTag (tag);
+  
+  WifiPreamble preamble;
+  if (m_stationManager->GetShortPreambleEnabled ())
+    {
+      preamble = WIFI_PREAMBLE_SHORT;
+    }
+  else
+    {
+      preamble = WIFI_PREAMBLE_LONG;
+    }
 
-  ForwardDown (packet, &cts, ctsTxVector, WIFI_PREAMBLE_LONG);
+  //CTS should always use non-HT PPDU (HT PPDU cases not supported yet)
+  ForwardDown (packet, &cts, ctsTxVector, preamble);
 }
 
 void
@@ -2203,7 +2249,7 @@ MacLow::SendDataAfterCts (Mac48Address source, Time duration)
     {
       preamble = WIFI_PREAMBLE_HT_MF;
     }
-  else if (m_phy->GetShortPlcpPreamble () && m_stationManager->GetShortPreambleSupported (m_currentHdr.GetAddr1 ()))
+  else if (m_stationManager->GetShortPreambleEnabled ())
     {
       preamble = WIFI_PREAMBLE_SHORT;
     }
@@ -2319,9 +2365,19 @@ MacLow::SendAckAfterData (Mac48Address source, Time duration, WifiMode dataTxMod
   SnrTag tag;
   tag.Set (dataSnr);
   packet->AddPacketTag (tag);
+  
+  WifiPreamble preamble;
+  if (m_stationManager->GetShortPreambleEnabled ())
+    {
+      preamble = WIFI_PREAMBLE_SHORT;
+    }
+  else
+    {
+      preamble = WIFI_PREAMBLE_LONG;
+    }
 
   //ACK should always use non-HT PPDU (HT PPDU cases not supported yet)
-  ForwardDown (packet, &ack, ackTxVector, WIFI_PREAMBLE_LONG);
+  ForwardDown (packet, &ack, ackTxVector, preamble);
 }
 
 bool
@@ -2616,10 +2672,15 @@ MacLow::SendBlockAckResponse (const CtrlBAckResponseHeader* blockAck, Mac48Addre
     {
       preamble = WIFI_PREAMBLE_HT_MF;
     }
+  else if (m_stationManager->GetShortPreambleEnabled ())
+    {
+      preamble = WIFI_PREAMBLE_SHORT;
+    }
   else
     {
       preamble = WIFI_PREAMBLE_LONG;
     }
+
   ForwardDown (packet, &hdr, blockAckReqTxVector, preamble);
   m_currentPacket = 0;
 }
@@ -2838,7 +2899,7 @@ MacLow::StopMpduAggregation (Ptr<const Packet> peekedPacket, WifiMacHeader peeke
     {
       preamble = WIFI_PREAMBLE_HT_MF;
     }
-  else if (m_phy->GetShortPlcpPreamble () && m_stationManager->GetShortPreambleSupported (m_currentHdr.GetAddr1 ()))
+  else if (m_stationManager->GetShortPreambleEnabled ())
     {
       preamble = WIFI_PREAMBLE_SHORT;
     }

@@ -21,6 +21,7 @@
 #include "wifi-mac.h"
 #include "dcf.h"
 #include "ns3/uinteger.h"
+#include "ns3/boolean.h"
 #include "ns3/trace-source-accessor.h"
 
 namespace ns3 {
@@ -351,10 +352,9 @@ WifiMac::Configure80211g (void)
 {
   SetSifs (MicroSeconds (10));
   // Slot time defaults to the "long slot time" of 20 us in the standard
-  // according to mixed 802.11b/g deployments.  Short slot time is supported
-  // if the user sets the slot to 9 us *after* calling Configure80211g().
-  // The other parameters below should also be adjusted accordingly as they
-  // depend on slot time.
+  // according to mixed 802.11b/g deployments.  Short slot time is enabled
+  // if the user sets the ShortSlotTimeSupported flag to true and when the BSS
+  // consists of only ERP STAs capable of supporting this option.
   SetSlot (MicroSeconds (20));
   SetEifsNoDifs (MicroSeconds (10 + 304));
   SetPifs (MicroSeconds (10 + 20));

@@ -388,15 +388,15 @@ public:
   /**
    * Enable or disable short PLCP preamble.
    *
-   * \param sets short PLCP preamble is supported or not
+   * \param preamble sets whether short PLCP preamble is supported or not
    */
-  virtual void SetShortPlcpPreamble (bool preamble);
+  virtual void SetShortPlcpPreambleSupported (bool preamble);
   /**
    * Return whether short PLCP preamble is supported.
    *
    * \returns if short PLCP preamble is supported or not
    */
-  virtual bool GetShortPlcpPreamble (void) const;
+  virtual bool GetShortPlcpPreambleSupported (void) const;
   /**
    * Return channel width.
    *
@@ -538,7 +538,7 @@ private:
   bool     m_greenfield;            //!< Flag if GreenField format is supported
   bool     m_guardInterval;         //!< Flag if short guard interval is used
   uint32_t m_channelWidth;          //!< Channel width
-  bool     m_plcpPreamble;          //!< Flag if short PLCP preamble is used
+  bool     m_shortPreamble;         //!< Flag if short PLCP preamble is supported
 
   /**
    * This vector holds the set of transmission modes that this

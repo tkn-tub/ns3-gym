@@ -119,7 +119,6 @@ public:
    *               false otherwise
    */
   void SetCtsToSelfSupported (bool enable);
-
   /**
    * Return whether the device supports CTS-to-self
    * capability.
@@ -128,6 +127,22 @@ public:
    *         false otherwise.
    */
   bool GetCtsToSelfSupported () const;
+
+  /**
+   * Enable or disable short slot time feature.
+   *
+   * \param enable true if short slot time is to be supported,
+   *               false otherwise
+   */
+  virtual void SetShortSlotTimeSupported (bool enable);
+  /**
+   * \return whether the device supports short slot time capability.
+   *
+   * \return true if short slot time is supported,
+   *         false otherwise.
+   */
+  virtual bool GetShortSlotTimeSupported (void) const;
+
   /**
    * \return the MAC address associated to this MAC layer.
    */
@@ -313,6 +328,15 @@ protected:
    * chain up to this implementation to deal with the remainder.
    */
   virtual void FinishConfigureStandard (enum WifiPhyStandard standard);
+  
+  /**
+   * \param cwMin the minimum congestion window size
+   * \param cwMax the maximum congestion window size
+   *
+   * This method is called to set the minimum and the maximum
+   * contention window size.
+   */
+  void ConfigureContentionWindow (uint32_t cwMin, uint32_t cwMax);
 
   /**
    * This method is invoked by a subclass to specify what type of
@@ -455,6 +479,24 @@ protected:
    * \return true if VHT is supported, false otherwise
    */
   bool GetVhtSupported () const;
+  
+  /**
+   * This Boolean is set \c true iff this WifiMac is to model
+   * 802.11g. It is exposed through the attribute system.
+   */
+  bool m_erpSupported;
+  /**
+   * Enable or disable ERP support for the device.
+   *
+   * \param enable whether ERP is supported
+   */
+  void SetErpSupported (bool enable);
+  /**
+   * Return whether the device supports ERP.
+   *
+   * \return true if ERP is supported, false otherwise
+   */
+  bool GetErpSupported () const;
 
 
 private:
@@ -505,6 +547,8 @@ private:
 
   TracedCallback<const WifiMacHeader &> m_txOkCallback;
   TracedCallback<const WifiMacHeader &> m_txErrCallback;
+  
+  bool m_shortSlotTimeSupported;
 };
 
 } //namespace ns3

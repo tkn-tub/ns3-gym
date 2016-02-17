@@ -187,15 +187,32 @@ IdealWifiManager::DoGetRtsTxVector (WifiRemoteStation *st)
   //ensure correct packet delivery.
   double maxThreshold = 0.0;
   WifiMode maxMode = GetDefaultMode ();
-  for (uint32_t i = 0; i < GetNBasicModes (); i++)
+  if (GetUseProtection () == false)
     {
-      WifiMode mode = GetBasicMode (i);
-      double threshold = GetSnrThreshold (mode);
-      if (threshold > maxThreshold
-          && threshold < station->m_lastSnr)
+      for (uint32_t i = 0; i < GetNBasicModes (); i++)
         {
-          maxThreshold = threshold;
-          maxMode = mode;
+          WifiMode mode = GetBasicMode (i);
+          double threshold = GetSnrThreshold (mode);
+          if (threshold > maxThreshold
+              && threshold < station->m_lastSnr)
+            {
+              maxThreshold = threshold;
+              maxMode = mode;
+            }
+        }
+    }
+  else
+    {
+      for (uint32_t i = 0; i < GetNNonErpBasicModes (); i++)
+        {
+          WifiMode mode = GetNonErpBasicMode (i);
+          double threshold = GetSnrThreshold (mode);
+          if (threshold > maxThreshold
+              && threshold < station->m_lastSnr)
+            {
+              maxThreshold = threshold;
+              maxMode = mode;
+            }
         }
     }
   uint32_t channelWidth = GetChannelWidth (station);

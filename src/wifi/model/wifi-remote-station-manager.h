@@ -92,6 +92,12 @@ public:
 
   WifiRemoteStationManager ();
   virtual ~WifiRemoteStationManager ();
+  
+  enum ProtectionMode
+  {
+    RTS_CTS = 0,
+    CTS_TO_SELF
+  };
 
   /**
    * Set up PHY associated with this device since it is the object that
@@ -200,6 +206,57 @@ public:
    * \return true if VHT capability support is enabled, false otherwise
    */
   bool HasVhtSupported (void) const;
+  /**
+   * Sets the protection mode.
+   *
+   * \param mode the protection mode
+   */
+  void SetProtectionMode (ProtectionMode mode);
+  /**
+   * Return the protection mode.
+   *
+   * \return the protection mode
+   */
+  ProtectionMode GetProtectionMode (void) const;
+  /**
+   * Enable or disable protection for non-ERP stations.
+   *
+   * \param enable enable or disable protection for non-ERP stations
+   */
+  void SetUseProtection (bool enable);
+  /**
+   * Return whether the device supports protection of non-ERP stations.
+   *
+   * \return true if protection for non-ERP stations is enabled, 
+   *         false otherwise
+   */
+  bool GetUseProtection (void) const;
+  /**
+   * Enable or disable short PLCP preambles.
+   *
+   * \param enable enable or disable short PLCP preambles
+   */
+  void SetShortPreambleEnabled (bool enable);
+  /**
+   * Return whether the device uses short PLCP preambles.
+   *
+   * \return true if short PLCP preambles are enabled,
+   *         false otherwise
+   */
+  bool GetShortPreambleEnabled (void) const;
+  /**
+   * Enable or disable short slot time.
+   *
+   * \param enable enable or disable short slot time
+   */
+  void SetShortSlotTimeEnabled (bool enable);
+  /**
+   * Return whether the device uses short slot time.
+   *
+   * \return true if short slot time is enabled,
+   *         false otherwise
+   */
+  bool GetShortSlotTimeEnabled (void) const;
 
   /**
    * Reset the station, invoked in a STA upon dis-association or in an AP upon reboot.
@@ -235,6 +292,20 @@ public:
    */
   WifiMode GetBasicMode (uint32_t i) const;
   /**
+   * Return the number of non-ERP basic modes we support.
+   *
+   * \return the number of basic modes we support
+   */
+  uint32_t GetNNonErpBasicModes (void) const;
+  /**
+   * Return a basic mode from the set of basic modes that is not an ERP mode.
+   *
+   * \param i index of the basic mode in the basic mode set
+   *
+   * \return the basic mode at the given index
+   */
+  WifiMode GetNonErpBasicMode (uint32_t i) const;
+  /**
    * Return whether the station supports Greenfield or not.
    *
    * \param address the address of the station
@@ -252,6 +323,15 @@ public:
    *         false otherwise
    */
   bool GetShortPreambleSupported (Mac48Address address) const;
+  /**
+   * Return whether the station supports short ERP slot time or not.
+   *
+   * \param address the address of the station
+   *
+   * \return true if short ERP slot time is supported by the station,
+   *         false otherwise
+   */
+  bool GetShortSlotTimeSupported (Mac48Address address) const;
   /**
    * Add a given Modulation and Coding Scheme (MCS) index to
    * the set of basic MCS.
@@ -321,7 +401,6 @@ public:
    * \param address the address of the station being recorded
    */
   void AddAllSupportedModes (Mac48Address address);
-
   /**
    * Record whether the short PLCP preamble is supported by the station.
    *
@@ -329,7 +408,13 @@ public:
    * \param isShortPreambleSupported whether or not short PLCP preamble is supported by the station
    */
   void AddSupportedPlcpPreamble (Mac48Address address, bool isShortPreambleSupported);
-
+  /**
+   * Record whether the short ERP slot time is supported by the station.
+   *
+   * \param address the address of the station
+   * \param isShortSlotTimeSupported whether or not short ERP slot time is supported by the station
+   */
+  void AddSupportedErpSlotTime (Mac48Address address, bool isShortSlotTimeSupported);
   /**
    * Return whether the station state is brand new.
    *
@@ -511,12 +596,13 @@ public:
    * \param address remote address
    * \param header MAC header
    * \param packet the packet to send
+   * \param txVector the TXVECTOR of the packet to send
    *
    * \return true if we want to use an RTS/CTS handshake for this
    *         packet before sending it, false otherwise.
    */
   bool NeedRts (Mac48Address address, const WifiMacHeader *header,
-                Ptr<const Packet> packet);
+                Ptr<const Packet> packet, WifiTxVector txVector);
   /**
    * Return if we need to do Cts-to-self before sending a DATA.
    *
@@ -685,6 +771,23 @@ protected:
    */
   uint32_t GetNMcsSupported (const WifiRemoteStation *station) const;
   /**
+   * Return whether non-ERP mode associated with the specified station at the specified index.
+   *
+   * \param station the station being queried
+   * \param i the index
+   *
+   * \return WifiMode at the given index of the specified station
+   */
+  WifiMode GetNonErpSupported (const WifiRemoteStation *station, uint32_t i) const;
+  /**
+   * Return the number of non-ERP modes supported by the given station.
+   *
+   * \param station the station being queried
+   *
+   * \return the number of non-ERP modes supported by the given station
+   */
+  uint32_t GetNNonErpSupported (const WifiRemoteStation *station) const;
+  /**
    * Return the channel width supported by the station.
    *
    * \param station the station being queried
@@ -728,15 +831,7 @@ protected:
    *         false otherwise
    */
   bool GetGreenfield (const WifiRemoteStation *station) const;
-  /**
-   * Return whether the station supports short PLCP preamble or not.
-   *
-   * \param station the station being queried
-   *
-   * \return true if short PLCP preamble is supported by the station,
-   *         false otherwise
-   */
-  bool GetShortPreamble (const WifiRemoteStation *station) const;
+
   /**
    * Return the number of receive antennas the station has.
    *
@@ -1081,6 +1176,10 @@ private:
   uint32_t m_nextFragmentationThreshold;  //!< Threshold for fragmentation that will be used for the next transmission
   uint8_t m_defaultTxPowerLevel;  //!< Default tranmission power level
   WifiMode m_nonUnicastMode;  //!< Transmission mode for non-unicast DATA frames
+  bool m_useProtection; //!< flag if protection for non-ERP stations against ERP transmissions is enabled
+  bool m_shortPreambleEnabled; //!< flag if short PLCP preamble is enabled
+  bool m_shortSlotTimeEnabled; //!< flag if short slot time is enabled
+  ProtectionMode m_protectionMode; //!< Protection mode for ERP stations when non-ERP stations are detected
 
   /**
    * The trace source fired when the transmission of a single RTS has failed
@@ -1137,10 +1236,11 @@ struct WifiRemoteStationState
   uint32_t m_rx;              //!< Number of RX antennas of the remote station
   uint32_t m_tx;              //!< Number of TX antennas of the remote station
   uint32_t m_ness;            //!< Number of streams in beamforming of the remote station
-  bool m_stbc;                //!< Flag if STBC is used by the remote station
+  bool m_stbc;                //!< Flag if STBC is supported by the remote station
   bool m_aggregation;         //!< Flag if MPDU aggregation is used by the remote station
-  bool m_greenfield;          //!< Flag if greenfield is used by the remote station
-  bool m_shortPreamble;       //!< Flag if short PLCP preamble is used by the remote station
+  bool m_greenfield;          //!< Flag if greenfield is supported by the remote station
+  bool m_shortPreamble;       //!< Flag if short PLCP preamble is supported by the remote station
+  bool m_shortSlotTime;       //!< Flag if short ERP slot time is supported by the remote station
 };
 
 /**

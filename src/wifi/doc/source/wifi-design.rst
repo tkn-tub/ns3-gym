@@ -169,7 +169,6 @@ so-called ``ConstantRateWifiManager`` can be used by those standards at
 this time.  Support for 802.11n and ac is evolving.  Some additional details
 are as follows:
 
-* 802.11g does not support 9 microseconds slot
 * 802.11e TXOP is not supported
 * BSSBasicRateSet for 802.11b has been assumed to be 1-2 Mbit/s
 * BSSBasicRateSet for 802.11a/g has been assumed to be 6-12-24 Mbit/s

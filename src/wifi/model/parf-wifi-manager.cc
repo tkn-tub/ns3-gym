@@ -317,7 +317,16 @@ ParfWifiManager::DoGetRtsTxVector (WifiRemoteStation *st)
       //avoid to use legacy rate adaptation algorithms for IEEE 802.11n/ac
       channelWidth = 20;
     }
-  return WifiTxVector (GetSupported (station, 0), GetDefaultTxPowerLevel (), GetShortRetryCount (station), false, 1, 0, channelWidth, GetAggregation (station), false);
+  WifiTxVector rtsTxVector;
+  if (GetUseProtection () == false)
+    {
+      rtsTxVector = WifiTxVector (GetSupported (station, 0), GetDefaultTxPowerLevel (), GetShortRetryCount (station), false, 1, 0, channelWidth, GetAggregation (station), false);
+    }
+  else
+    {
+      rtsTxVector = WifiTxVector (GetNonErpSupported (station, 0), GetDefaultTxPowerLevel (), GetShortRetryCount (station), false, 1, 0, channelWidth, GetAggregation (station), false);
+    }
+  return rtsTxVector;
 }
 
 bool

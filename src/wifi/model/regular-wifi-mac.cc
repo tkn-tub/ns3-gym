@@ -41,7 +41,8 @@ NS_OBJECT_ENSURE_REGISTERED (RegularWifiMac);
 
 RegularWifiMac::RegularWifiMac () :
   m_htSupported (0),
-  m_vhtSupported (0)
+  m_vhtSupported (0),
+  m_erpSupported (0)
 {
   NS_LOG_FUNCTION (this);
   m_rxMiddle = new MacRxMiddle ();
@@ -429,6 +430,19 @@ RegularWifiMac::GetHtSupported () const
   return m_htSupported;
 }
 
+bool
+RegularWifiMac::GetErpSupported () const
+{
+  return m_erpSupported;
+}
+
+void
+RegularWifiMac::SetErpSupported (bool enable)
+{
+  NS_LOG_FUNCTION (this);
+  m_erpSupported = enable;
+}
+
 void
 RegularWifiMac::SetCtsToSelfSupported (bool enable)
 {
@@ -604,6 +618,19 @@ void
 RegularWifiMac::SetPromisc (void)
 {
   m_low->SetPromisc ();
+}
+
+void
+RegularWifiMac::SetShortSlotTimeSupported (bool enable)
+{
+  NS_LOG_FUNCTION (this << enable);
+  m_shortSlotTimeSupported = enable;
+}
+
+bool
+RegularWifiMac::GetShortSlotTimeSupported (void) const
+{
+  return m_shortSlotTimeSupported;
 }
 
 void
@@ -809,66 +836,66 @@ RegularWifiMac::GetTypeId (void)
     .SetParent<WifiMac> ()
     .SetGroupName ("Wifi")
     .AddAttribute ("QosSupported",
-                   "This Boolean attribute is set to enable 802.11e/WMM-style QoS support at this STA",
+                   "This Boolean attribute is set to enable 802.11e/WMM-style QoS support at this STA.",
                    BooleanValue (false),
                    MakeBooleanAccessor (&RegularWifiMac::SetQosSupported,
                                         &RegularWifiMac::GetQosSupported),
                    MakeBooleanChecker ())
     .AddAttribute ("HtSupported",
-                   "This Boolean attribute is set to enable 802.11n support at this STA",
+                   "This Boolean attribute is set to enable 802.11n support at this STA.",
                    BooleanValue (false),
                    MakeBooleanAccessor (&RegularWifiMac::SetHtSupported,
                                         &RegularWifiMac::GetHtSupported),
                    MakeBooleanChecker ())
     .AddAttribute ("VhtSupported",
-                   "This Boolean attribute is set to enable 802.11ac support at this STA",
+                   "This Boolean attribute is set to enable 802.11ac support at this STA.",
                    BooleanValue (false),
                    MakeBooleanAccessor (&RegularWifiMac::SetVhtSupported,
                                         &RegularWifiMac::GetVhtSupported),
                    MakeBooleanChecker ())
     .AddAttribute ("CtsToSelfSupported",
-                   "Use CTS to Self when using a rate that is not in the basic set rate",
+                   "Use CTS to Self when using a rate that is not in the basic rate set.",
                    BooleanValue (false),
                    MakeBooleanAccessor (&RegularWifiMac::SetCtsToSelfSupported,
                                         &RegularWifiMac::GetCtsToSelfSupported),
                    MakeBooleanChecker ())
     .AddAttribute ("VO_MaxAmsduSize",
-                   "Maximum length in bytes of an A-MSDU for AC_VO access class",
+                   "Maximum length in bytes of an A-MSDU for AC_VO access class.",
                    UintegerValue (0),
                    MakeUintegerAccessor (&RegularWifiMac::SetVoMaxAmsduSize),
                    MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("VI_MaxAmsduSize",
-                   "Maximum length in bytes of an A-MSDU for AC_VI access class",
+                   "Maximum length in bytes of an A-MSDU for AC_VI access class.",
                    UintegerValue (0),
                    MakeUintegerAccessor (&RegularWifiMac::SetViMaxAmsduSize),
                    MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("BE_MaxAmsduSize",
-                   "Maximum length in bytes of an A-MSDU for AC_BE access class",
+                   "Maximum length in bytes of an A-MSDU for AC_BE access class.",
                    UintegerValue (0),
                    MakeUintegerAccessor (&RegularWifiMac::SetBeMaxAmsduSize),
                    MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("BK_MaxAmsduSize",
-                   "Maximum length in bytes of an A-MSDU for AC_BK access class",
+                   "Maximum length in bytes of an A-MSDU for AC_BK access class.",
                    UintegerValue (0),
                    MakeUintegerAccessor (&RegularWifiMac::SetBkMaxAmsduSize),
                    MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("VO_MaxAmpduSize",
-                   "Maximum length in bytes of an A-MPDU for AC_VO access class",
+                   "Maximum length in bytes of an A-MPDU for AC_VO access class.",
                    UintegerValue (0),
                    MakeUintegerAccessor (&RegularWifiMac::SetVoMaxAmpduSize),
                    MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("VI_MaxAmpduSize",
-                   "Maximum length in bytes of an A-MPDU for AC_VI access class",
+                   "Maximum length in bytes of an A-MPDU for AC_VI access class.",
                    UintegerValue (65535),
                    MakeUintegerAccessor (&RegularWifiMac::SetViMaxAmpduSize),
                    MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("BE_MaxAmpduSize",
-                   "Maximum length in bytes of an A-MPDU for AC_BE access class",
+                   "Maximum length in bytes of an A-MPDU for AC_BE access class.",
                    UintegerValue (65535),
                    MakeUintegerAccessor (&RegularWifiMac::SetBeMaxAmpduSize),
                    MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("BK_MaxAmpduSize",
-                   "Maximum length in bytes of an A-MPDU for AC_BK access class",
+                   "Maximum length in bytes of an A-MPDU for AC_BK access class.",
                    UintegerValue (0),
                    MakeUintegerAccessor (&RegularWifiMac::SetBkMaxAmpduSize),
                    MakeUintegerChecker<uint32_t> ())
@@ -928,36 +955,43 @@ RegularWifiMac::GetTypeId (void)
                    UintegerValue (0),
                    MakeUintegerAccessor (&RegularWifiMac::SetBkBlockAckInactivityTimeout),
                    MakeUintegerChecker<uint16_t> ())
-    .AddAttribute ("DcaTxop", "The DcaTxop object",
+    .AddAttribute ("ShortSlotTimeSupported",
+                   "Whether or not short slot time is supported (only used by ERP APs or STAs).",
+                   BooleanValue (true),
+                   MakeBooleanAccessor (&WifiMac::GetShortSlotTimeSupported,
+                                        &WifiMac::SetShortSlotTimeSupported),
+                   MakeBooleanChecker ())
+    .AddAttribute ("DcaTxop",
+                   "The DcaTxop object.",
                    PointerValue (),
                    MakePointerAccessor (&RegularWifiMac::GetDcaTxop),
                    MakePointerChecker<DcaTxop> ())
     .AddAttribute ("VO_EdcaTxopN",
-                   "Queue that manages packets belonging to AC_VO access class",
+                   "Queue that manages packets belonging to AC_VO access class.",
                    PointerValue (),
                    MakePointerAccessor (&RegularWifiMac::GetVOQueue),
                    MakePointerChecker<EdcaTxopN> ())
     .AddAttribute ("VI_EdcaTxopN",
-                   "Queue that manages packets belonging to AC_VI access class",
+                   "Queue that manages packets belonging to AC_VI access class.",
                    PointerValue (),
                    MakePointerAccessor (&RegularWifiMac::GetVIQueue),
                    MakePointerChecker<EdcaTxopN> ())
     .AddAttribute ("BE_EdcaTxopN",
-                   "Queue that manages packets belonging to AC_BE access class",
+                   "Queue that manages packets belonging to AC_BE access class.",
                    PointerValue (),
                    MakePointerAccessor (&RegularWifiMac::GetBEQueue),
                    MakePointerChecker<EdcaTxopN> ())
     .AddAttribute ("BK_EdcaTxopN",
-                   "Queue that manages packets belonging to AC_BK access class",
+                   "Queue that manages packets belonging to AC_BK access class.",
                    PointerValue (),
                    MakePointerAccessor (&RegularWifiMac::GetBKQueue),
                    MakePointerChecker<EdcaTxopN> ())
     .AddTraceSource ("TxOkHeader",
-                     "The header of successfully transmitted packet",
+                     "The header of successfully transmitted packet.",
                      MakeTraceSourceAccessor (&RegularWifiMac::m_txOkCallback),
                      "ns3::WifiMacHeader::TracedCallback")
     .AddTraceSource ("TxErrHeader",
-                     "The header of unsuccessfully transmitted packet",
+                     "The header of unsuccessfully transmitted packet.",
                      MakeTraceSourceAccessor (&RegularWifiMac::m_txErrCallback),
                      "ns3::WifiMacHeader::TracedCallback")
   ;
@@ -975,16 +1009,18 @@ RegularWifiMac::FinishConfigureStandard (enum WifiPhyStandard standard)
     case WIFI_PHY_STANDARD_80211ac:
       SetVhtSupported (true);
     case WIFI_PHY_STANDARD_80211n_5GHZ:
-    case WIFI_PHY_STANDARD_80211n_2_4GHZ:
       SetHtSupported (true);
     case WIFI_PHY_STANDARD_holland:
     case WIFI_PHY_STANDARD_80211a:
-    case WIFI_PHY_STANDARD_80211g:
     case WIFI_PHY_STANDARD_80211_10MHZ:
     case WIFI_PHY_STANDARD_80211_5MHZ:
       cwmin = 15;
       cwmax = 1023;
       break;
+    case WIFI_PHY_STANDARD_80211n_2_4GHZ:
+      SetHtSupported (true);
+    case WIFI_PHY_STANDARD_80211g:
+      m_erpSupported = true;
     case WIFI_PHY_STANDARD_80211b:
       cwmin = 31;
       cwmax = 1023;
@@ -993,15 +1029,21 @@ RegularWifiMac::FinishConfigureStandard (enum WifiPhyStandard standard)
       NS_FATAL_ERROR ("Unsupported WifiPhyStandard in RegularWifiMac::FinishConfigureStandard ()");
     }
 
+  ConfigureContentionWindow (cwmin, cwmax);
+}
+
+void
+RegularWifiMac::ConfigureContentionWindow (uint32_t cwMin, uint32_t cwMax)
+{
   //The special value of AC_BE_NQOS which exists in the Access
   //Category enumeration allows us to configure plain old DCF.
-  ConfigureDcf (m_dca, cwmin, cwmax, AC_BE_NQOS);
+  ConfigureDcf (m_dca, cwMin, cwMax, AC_BE_NQOS);
 
   //Now we configure the EDCA functions
   for (EdcaQueues::iterator i = m_edca.begin (); i != m_edca.end (); ++i)
-    {
-      ConfigureDcf (i->second, cwmin, cwmax, i->first);
-    }
+  {
+    ConfigureDcf (i->second, cwMin, cwMax, i->first);
+  }
 }
 
 void

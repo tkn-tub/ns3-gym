@@ -65,10 +65,9 @@ public:
    * \param pifs the pifs duration.
    */
   virtual void SetPifs (Time pifs) = 0;
-/**
+  /**
    * \param rifs the rifs duration.
    */
-
   virtual void SetRifs (Time rifs) = 0;
   /**
    * \param ctsTimeout the duration of a CTS timeout.
@@ -84,6 +83,23 @@ public:
    * Unused for now.
    */
   void SetMaxPropagationDelay (Time delay);
+  /**
+   * \param ssid the current ssid of this MAC layer.
+   */
+  virtual void SetSsid (Ssid ssid) = 0;
+  /**
+   * \param enable true if short slot time is to be supported,
+   *               false otherwise
+   */
+  virtual void SetShortSlotTimeSupported (bool enable) = 0;
+  /**
+   * \brief Sets the interface in promiscuous mode.
+   *
+   * Enables promiscuous mode on the interface. Note that any further
+   * filtering on the incoming frame path may affect the overall
+   * behavior.
+   */
+  virtual void SetPromisc (void) = 0;
 
   /**
    * \return the current RIFS duration.
@@ -138,21 +154,13 @@ public:
    */
   virtual void SetAddress (Mac48Address address) = 0;
   /**
-   * \param ssid the current ssid of this MAC layer.
-   */
-  virtual void SetSsid (Ssid ssid) = 0;
-  /**
    * \return the bssid of the network this device belongs to.
    */
   virtual Mac48Address GetBssid (void) const = 0;
   /**
-   * \brief Sets the interface in promiscuous mode.
-   *
-   * Enables promiscuous mode on the interface. Note that any further
-   * filtering on the incoming frame path may affect the overall
-   * behavior.
+   * \return whether the device supports short slot time capability.
    */
-  virtual void SetPromisc (void) = 0;
+  virtual bool GetShortSlotTimeSupported (void) const = 0;
 
   /**
    * \param packet the packet to send.

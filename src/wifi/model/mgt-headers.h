@@ -32,6 +32,7 @@
 #include "ssid.h"
 #include "ht-capabilities.h"
 #include "vht-capabilities.h"
+#include "erp-information.h"
 
 namespace ns3 {
 
@@ -181,16 +182,22 @@ public:
    */
   HtCapabilities GetHtCapabilities (void) const;
   /**
-    * Set the VHT capabilities.
-    *
-    * \param vhtcapabilities VHT capabilities
-    */
+   * Return the ERP information.
+   *
+   * \return the ERP information
+   */
+  ErpInformation GetErpInformation (void) const;
+  /**
+   * Set the VHT capabilities.
+   *
+   * \param vhtcapabilities VHT capabilities
+   */
   void SetVhtCapabilities (VhtCapabilities vhtcapabilities);
   /**
-  * Return the VHT capabilities.
-  *
-  * \return VHT capabilities
-  */
+   * Return the VHT capabilities.
+   *
+   * \return VHT capabilities
+   */
   VhtCapabilities GetVhtCapabilities (void) const;
   /**
    * Set the HT capabilities.
@@ -210,6 +217,12 @@ public:
    * \param code the status code
    */
   void SetStatusCode (StatusCode code);
+  /**
+   * Set the ERP information.
+   *
+   * \param erpInformation the ERP information
+   */
+  void SetErpInformation (ErpInformation erpInformation);
 
   /**
    * Register this type.
@@ -222,6 +235,7 @@ public:
   virtual void Serialize (Buffer::Iterator start) const;
   virtual uint32_t Deserialize (Buffer::Iterator start);
 
+
 private:
   SupportedRates m_rates; //!< List of supported rates
   CapabilityInformation m_capability; //!< Capability information
@@ -229,6 +243,7 @@ private:
   uint16_t m_aid;
   HtCapabilities m_htCapability; //!< HT capabilities
   VhtCapabilities m_vhtCapability; //!< VHT capabilities
+  ErpInformation m_erpInformation;    //!< ERP information
 };
 
 
@@ -266,6 +281,12 @@ public:
    */
   SupportedRates GetSupportedRates (void) const;
   /**
+   * Set the HT capabilities.
+   *
+   * \param htcapabilities HT capabilities
+   */
+  void SetHtCapabilities (HtCapabilities htcapabilities);
+  /**
    * Return the HT capabilities.
    *
    * \return HT capabilities
@@ -285,13 +306,6 @@ public:
   VhtCapabilities GetVhtCapabilities (void) const;
 
   /**
-   * Set the HT capabilities.
-   *
-   * \param htcapabilities HT capabilities
-   */
-  void SetHtCapabilities (HtCapabilities htcapabilities);
-
-  /**
    * Register this type.
    * \return The TypeId.
    */
@@ -304,9 +318,9 @@ public:
 
 
 private:
-  Ssid m_ssid;                   //!< Service Set ID (SSID)
-  SupportedRates m_rates;        //!< List of supported rates
-  HtCapabilities m_htCapability; //!< HT capabilities
+  Ssid m_ssid;                     //!< Service Set ID (SSID)
+  SupportedRates m_rates;          //!< List of supported rates
+  HtCapabilities m_htCapability;   //!< HT capabilities
   VhtCapabilities m_vhtCapability; //!< VHT capabilities
 };
 
@@ -352,11 +366,17 @@ public:
    */
   HtCapabilities GetHtCapabilities (void) const;
   /**
-  * Return the VHT capabilities.
-  *
-  * \return VHT capabilities
-  */
+   * Return the VHT capabilities.
+   *
+   * \return VHT capabilities
+   */
   VhtCapabilities GetVhtCapabilities (void) const;
+  /**
+   * Return the ERP information.
+   *
+   * \return the ERP information
+   */
+  ErpInformation GetErpInformation (void) const;
   /**
    * Set the Capability information.
    *
@@ -394,6 +414,12 @@ public:
    */
   void SetSupportedRates (SupportedRates rates);
   /**
+   * Set the ERP information.
+   *
+   * \param erpInformation the ERP information
+   */
+  void SetErpInformation (ErpInformation erpInformation);
+  /**
    * Return the time stamp.
    *
    * \return time stamp
@@ -411,6 +437,7 @@ public:
   virtual void Serialize (Buffer::Iterator start) const;
   virtual uint32_t Deserialize (Buffer::Iterator start);
 
+
 private:
   uint64_t m_timestamp;               //!< Timestamp
   Ssid m_ssid;                        //!< Service set ID (SSID)
@@ -419,6 +446,7 @@ private:
   CapabilityInformation m_capability; //!< Capability information
   HtCapabilities m_htCapability;      //!< HT capabilities
   VhtCapabilities m_vhtCapability;    //!< VHT capabilities
+  ErpInformation m_erpInformation;    //!< ERP information
 };
 
 
