@@ -1494,7 +1494,11 @@ TcpSocketBase::ReceivedAck (Ptr<Packet> packet, const TcpHeader& tcpHeader)
           segsAcked = 1;
         }
 
-      if (m_tcb->m_congState == TcpSocketState::CA_DISORDER)
+      if (m_tcb->m_congState == TcpSocketState::CA_OPEN)
+        {
+          m_congestionControl->PktsAcked (m_tcb, segsAcked, m_lastRtt);
+        }
+      else if (m_tcb->m_congState == TcpSocketState::CA_DISORDER)
         {
           // The network reorder packets. Linux changes the counting lost
           // packet algorithm from FACK to NewReno. We simply go back in Open.
