@@ -378,6 +378,8 @@ def register_types(module):
     module.add_class('WifiPhyStateHelper', parent=root_module['ns3::Object'])
     ## wifi-remote-station-manager.h (module 'wifi'): ns3::WifiRemoteStationManager [class]
     module.add_class('WifiRemoteStationManager', parent=root_module['ns3::Object'])
+    ## wifi-remote-station-manager.h (module 'wifi'): ns3::WifiRemoteStationManager::ProtectionMode [enumeration]
+    module.add_enum('ProtectionMode', ['RTS_CTS', 'CTS_TO_SELF'], outer_class=root_module['ns3::WifiRemoteStationManager'])
     ## wifi-tx-current-model.h (module 'wifi'): ns3::WifiTxCurrentModel [class]
     module.add_class('WifiTxCurrentModel', parent=root_module['ns3::Object'])
     ## yans-wifi-phy.h (module 'wifi'): ns3::YansWifiPhy [class]
@@ -462,6 +464,12 @@ def register_types(module):
     module.add_class('EnumValue', import_from_module='ns.core', parent=root_module['ns3::AttributeValue'])
     ## random-variable-stream.h (module 'core'): ns3::ErlangRandomVariable [class]
     module.add_class('ErlangRandomVariable', import_from_module='ns.core', parent=root_module['ns3::RandomVariableStream'])
+    ## erp-information.h (module 'wifi'): ns3::ErpInformation [class]
+    module.add_class('ErpInformation', parent=root_module['ns3::WifiInformationElement'])
+    ## erp-information.h (module 'wifi'): ns3::ErpInformationChecker [class]
+    module.add_class('ErpInformationChecker', parent=root_module['ns3::AttributeChecker'])
+    ## erp-information.h (module 'wifi'): ns3::ErpInformationValue [class]
+    module.add_class('ErpInformationValue', parent=root_module['ns3::AttributeValue'])
     ## error-rate-model.h (module 'wifi'): ns3::ErrorRateModel [class]
     module.add_class('ErrorRateModel', parent=root_module['ns3::Object'])
     ## event-impl.h (module 'core'): ns3::EventImpl [class]
@@ -947,6 +955,9 @@ def register_methods(root_module):
     register_Ns3EnumChecker_methods(root_module, root_module['ns3::EnumChecker'])
     register_Ns3EnumValue_methods(root_module, root_module['ns3::EnumValue'])
     register_Ns3ErlangRandomVariable_methods(root_module, root_module['ns3::ErlangRandomVariable'])
+    register_Ns3ErpInformation_methods(root_module, root_module['ns3::ErpInformation'])
+    register_Ns3ErpInformationChecker_methods(root_module, root_module['ns3::ErpInformationChecker'])
+    register_Ns3ErpInformationValue_methods(root_module, root_module['ns3::ErpInformationValue'])
     register_Ns3ErrorRateModel_methods(root_module, root_module['ns3::ErrorRateModel'])
     register_Ns3EventImpl_methods(root_module, root_module['ns3::EventImpl'])
     register_Ns3ExponentialRandomVariable_methods(root_module, root_module['ns3::ExponentialRandomVariable'])
@@ -1977,6 +1988,11 @@ def register_Ns3CapabilityInformation_methods(root_module, cls):
                    'bool', 
                    [], 
                    is_const=True)
+    ## capability-information.h (module 'wifi'): bool ns3::CapabilityInformation::IsShortSlotTime() const [member function]
+    cls.add_method('IsShortSlotTime', 
+                   'bool', 
+                   [], 
+                   is_const=True)
     ## capability-information.h (module 'wifi'): ns3::Buffer::Iterator ns3::CapabilityInformation::Serialize(ns3::Buffer::Iterator start) const [member function]
     cls.add_method('Serialize', 
                    'ns3::Buffer::Iterator', 
@@ -1994,6 +2010,10 @@ def register_Ns3CapabilityInformation_methods(root_module, cls):
     cls.add_method('SetShortPreamble', 
                    'void', 
                    [param('bool', 'shortPreamble')])
+    ## capability-information.h (module 'wifi'): void ns3::CapabilityInformation::SetShortSlotTime(bool shortSlotTime) [member function]
+    cls.add_method('SetShortSlotTime', 
+                   'void', 
+                   [param('bool', 'shortSlotTime')])
     return
 
 def register_Ns3DcfManager_methods(root_module, cls):
@@ -2523,6 +2543,11 @@ def register_Ns3Ipv4Address_methods(root_module, cls):
                    'ns3::Ipv4Address', 
                    [], 
                    is_static=True)
+    ## ipv4-address.h (module 'network'): bool ns3::Ipv4Address::IsAny() const [member function]
+    cls.add_method('IsAny', 
+                   'bool', 
+                   [], 
+                   is_const=True)
     ## ipv4-address.h (module 'network'): bool ns3::Ipv4Address::IsBroadcast() const [member function]
     cls.add_method('IsBroadcast', 
                    'bool', 
@@ -2535,6 +2560,11 @@ def register_Ns3Ipv4Address_methods(root_module, cls):
                    is_const=True)
     ## ipv4-address.h (module 'network'): bool ns3::Ipv4Address::IsLocalMulticast() const [member function]
     cls.add_method('IsLocalMulticast', 
+                   'bool', 
+                   [], 
+                   is_const=True)
+    ## ipv4-address.h (module 'network'): bool ns3::Ipv4Address::IsLocalhost() const [member function]
+    cls.add_method('IsLocalhost', 
                    'bool', 
                    [], 
                    is_const=True)
@@ -4786,6 +4816,8 @@ def register_Ns3WifiRemoteStationState_methods(root_module, cls):
     cls.add_instance_attribute('m_shortGuardInterval', 'bool', is_const=False)
     ## wifi-remote-station-manager.h (module 'wifi'): ns3::WifiRemoteStationState::m_shortPreamble [variable]
     cls.add_instance_attribute('m_shortPreamble', 'bool', is_const=False)
+    ## wifi-remote-station-manager.h (module 'wifi'): ns3::WifiRemoteStationState::m_shortSlotTime [variable]
+    cls.add_instance_attribute('m_shortSlotTime', 'bool', is_const=False)
     ## wifi-remote-station-manager.h (module 'wifi'): ns3::WifiRemoteStationState::m_stbc [variable]
     cls.add_instance_attribute('m_stbc', 'bool', is_const=False)
     ## wifi-remote-station-manager.h (module 'wifi'): ns3::WifiRemoteStationState::m_tx [variable]
@@ -5466,6 +5498,11 @@ def register_Ns3MgtAssocResponseHeader_methods(root_module, cls):
                    'ns3::CapabilityInformation', 
                    [], 
                    is_const=True)
+    ## mgt-headers.h (module 'wifi'): ns3::ErpInformation ns3::MgtAssocResponseHeader::GetErpInformation() const [member function]
+    cls.add_method('GetErpInformation', 
+                   'ns3::ErpInformation', 
+                   [], 
+                   is_const=True)
     ## mgt-headers.h (module 'wifi'): ns3::HtCapabilities ns3::MgtAssocResponseHeader::GetHtCapabilities() const [member function]
     cls.add_method('GetHtCapabilities', 
                    'ns3::HtCapabilities', 
@@ -5513,6 +5550,10 @@ def register_Ns3MgtAssocResponseHeader_methods(root_module, cls):
     cls.add_method('SetCapabilities', 
                    'void', 
                    [param('ns3::CapabilityInformation', 'capabilities')])
+    ## mgt-headers.h (module 'wifi'): void ns3::MgtAssocResponseHeader::SetErpInformation(ns3::ErpInformation erpInformation) [member function]
+    cls.add_method('SetErpInformation', 
+                   'void', 
+                   [param('ns3::ErpInformation', 'erpInformation')])
     ## mgt-headers.h (module 'wifi'): void ns3::MgtAssocResponseHeader::SetHtCapabilities(ns3::HtCapabilities htcapabilities) [member function]
     cls.add_method('SetHtCapabilities', 
                    'void', 
@@ -5683,6 +5724,11 @@ def register_Ns3MgtProbeResponseHeader_methods(root_module, cls):
                    'ns3::CapabilityInformation', 
                    [], 
                    is_const=True)
+    ## mgt-headers.h (module 'wifi'): ns3::ErpInformation ns3::MgtProbeResponseHeader::GetErpInformation() const [member function]
+    cls.add_method('GetErpInformation', 
+                   'ns3::ErpInformation', 
+                   [], 
+                   is_const=True)
     ## mgt-headers.h (module 'wifi'): ns3::HtCapabilities ns3::MgtProbeResponseHeader::GetHtCapabilities() const [member function]
     cls.add_method('GetHtCapabilities', 
                    'ns3::HtCapabilities', 
@@ -5740,6 +5786,10 @@ def register_Ns3MgtProbeResponseHeader_methods(root_module, cls):
     cls.add_method('SetCapabilities', 
                    'void', 
                    [param('ns3::CapabilityInformation', 'capabilities')])
+    ## mgt-headers.h (module 'wifi'): void ns3::MgtProbeResponseHeader::SetErpInformation(ns3::ErpInformation erpInformation) [member function]
+    cls.add_method('SetErpInformation', 
+                   'void', 
+                   [param('ns3::ErpInformation', 'erpInformation')])
     ## mgt-headers.h (module 'wifi'): void ns3::MgtProbeResponseHeader::SetHtCapabilities(ns3::HtCapabilities htcapabilities) [member function]
     cls.add_method('SetHtCapabilities', 
                    'void', 
@@ -7141,6 +7191,11 @@ def register_Ns3WifiMac_methods(root_module, cls):
                    'ns3::Time', 
                    [], 
                    is_pure_virtual=True, is_const=True, is_virtual=True)
+    ## wifi-mac.h (module 'wifi'): bool ns3::WifiMac::GetShortSlotTimeSupported() const [member function]
+    cls.add_method('GetShortSlotTimeSupported', 
+                   'bool', 
+                   [], 
+                   is_pure_virtual=True, is_const=True, is_virtual=True)
     ## wifi-mac.h (module 'wifi'): ns3::Time ns3::WifiMac::GetSifs() const [member function]
     cls.add_method('GetSifs', 
                    'ns3::Time', 
@@ -7259,6 +7314,11 @@ def register_Ns3WifiMac_methods(root_module, cls):
     cls.add_method('SetRifs', 
                    'void', 
                    [param('ns3::Time', 'rifs')], 
+                   is_pure_virtual=True, is_virtual=True)
+    ## wifi-mac.h (module 'wifi'): void ns3::WifiMac::SetShortSlotTimeSupported(bool enable) [member function]
+    cls.add_method('SetShortSlotTimeSupported', 
+                   'void', 
+                   [param('bool', 'enable')], 
                    is_pure_virtual=True, is_virtual=True)
     ## wifi-mac.h (module 'wifi'): void ns3::WifiMac::SetSifs(ns3::Time sifs) [member function]
     cls.add_method('SetSifs', 
@@ -8391,8 +8451,8 @@ def register_Ns3WifiPhy_methods(root_module, cls):
                    'ns3::Time', 
                    [param('ns3::WifiPreamble', 'preamble')], 
                    is_static=True)
-    ## wifi-phy.h (module 'wifi'): bool ns3::WifiPhy::GetShortPlcpPreamble() const [member function]
-    cls.add_method('GetShortPlcpPreamble', 
+    ## wifi-phy.h (module 'wifi'): bool ns3::WifiPhy::GetShortPlcpPreambleSupported() const [member function]
+    cls.add_method('GetShortPlcpPreambleSupported', 
                    'bool', 
                    [], 
                    is_pure_virtual=True, is_const=True, is_virtual=True)
@@ -8618,10 +8678,10 @@ def register_Ns3WifiPhy_methods(root_module, cls):
                    'void', 
                    [param('ns3::Callback< void, ns3::Ptr< ns3::Packet >, double, ns3::WifiTxVector, ns3::WifiPreamble, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'callback')], 
                    is_pure_virtual=True, is_virtual=True)
-    ## wifi-phy.h (module 'wifi'): void ns3::WifiPhy::SetShortPlcpPreamble(bool shortPreamble) [member function]
-    cls.add_method('SetShortPlcpPreamble', 
+    ## wifi-phy.h (module 'wifi'): void ns3::WifiPhy::SetShortPlcpPreambleSupported(bool preamble) [member function]
+    cls.add_method('SetShortPlcpPreambleSupported', 
                    'void', 
-                   [param('bool', 'shortPreamble')], 
+                   [param('bool', 'preamble')], 
                    is_pure_virtual=True, is_virtual=True)
     ## wifi-phy.h (module 'wifi'): void ns3::WifiPhy::SetSleepMode() [member function]
     cls.add_method('SetSleepMode', 
@@ -8772,6 +8832,10 @@ def register_Ns3WifiRemoteStationManager_methods(root_module, cls):
     cls.add_method('AddStationVhtCapabilities', 
                    'void', 
                    [param('ns3::Mac48Address', 'from'), param('ns3::VhtCapabilities', 'vhtcapabilities')])
+    ## wifi-remote-station-manager.h (module 'wifi'): void ns3::WifiRemoteStationManager::AddSupportedErpSlotTime(ns3::Mac48Address address, bool isShortSlotTimeSupported) [member function]
+    cls.add_method('AddSupportedErpSlotTime', 
+                   'void', 
+                   [param('ns3::Mac48Address', 'address'), param('bool', 'isShortSlotTimeSupported')])
     ## wifi-remote-station-manager.h (module 'wifi'): void ns3::WifiRemoteStationManager::AddSupportedMcs(ns3::Mac48Address address, ns3::WifiMode mcs) [member function]
     cls.add_method('AddSupportedMcs', 
                    'void', 
@@ -8875,6 +8939,16 @@ def register_Ns3WifiRemoteStationManager_methods(root_module, cls):
                    'uint32_t', 
                    [], 
                    is_const=True)
+    ## wifi-remote-station-manager.h (module 'wifi'): uint32_t ns3::WifiRemoteStationManager::GetNNonErpBasicModes() const [member function]
+    cls.add_method('GetNNonErpBasicModes', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## wifi-remote-station-manager.h (module 'wifi'): ns3::WifiMode ns3::WifiRemoteStationManager::GetNonErpBasicMode(uint32_t i) const [member function]
+    cls.add_method('GetNonErpBasicMode', 
+                   'ns3::WifiMode', 
+                   [param('uint32_t', 'i')], 
+                   is_const=True)
     ## wifi-remote-station-manager.h (module 'wifi'): ns3::WifiMode ns3::WifiRemoteStationManager::GetNonUnicastMode() const [member function]
     cls.add_method('GetNonUnicastMode', 
                    'ns3::WifiMode', 
@@ -8884,6 +8958,11 @@ def register_Ns3WifiRemoteStationManager_methods(root_module, cls):
     cls.add_method('GetNumberOfTransmitAntennas', 
                    'uint32_t', 
                    [])
+    ## wifi-remote-station-manager.h (module 'wifi'): ns3::WifiRemoteStationManager::ProtectionMode ns3::WifiRemoteStationManager::GetProtectionMode() const [member function]
+    cls.add_method('GetProtectionMode', 
+                   'ns3::WifiRemoteStationManager::ProtectionMode', 
+                   [], 
+                   is_const=True)
     ## wifi-remote-station-manager.h (module 'wifi'): uint32_t ns3::WifiRemoteStationManager::GetRtsCtsThreshold() const [member function]
     cls.add_method('GetRtsCtsThreshold', 
                    'uint32_t', 
@@ -8893,8 +8972,23 @@ def register_Ns3WifiRemoteStationManager_methods(root_module, cls):
     cls.add_method('GetRtsTxVector', 
                    'ns3::WifiTxVector', 
                    [param('ns3::Mac48Address', 'address'), param('ns3::WifiMacHeader const *', 'header'), param('ns3::Ptr< ns3::Packet const >', 'packet')])
+    ## wifi-remote-station-manager.h (module 'wifi'): bool ns3::WifiRemoteStationManager::GetShortPreambleEnabled() const [member function]
+    cls.add_method('GetShortPreambleEnabled', 
+                   'bool', 
+                   [], 
+                   is_const=True)
     ## wifi-remote-station-manager.h (module 'wifi'): bool ns3::WifiRemoteStationManager::GetShortPreambleSupported(ns3::Mac48Address address) const [member function]
     cls.add_method('GetShortPreambleSupported', 
+                   'bool', 
+                   [param('ns3::Mac48Address', 'address')], 
+                   is_const=True)
+    ## wifi-remote-station-manager.h (module 'wifi'): bool ns3::WifiRemoteStationManager::GetShortSlotTimeEnabled() const [member function]
+    cls.add_method('GetShortSlotTimeEnabled', 
+                   'bool', 
+                   [], 
+                   is_const=True)
+    ## wifi-remote-station-manager.h (module 'wifi'): bool ns3::WifiRemoteStationManager::GetShortSlotTimeSupported(ns3::Mac48Address address) const [member function]
+    cls.add_method('GetShortSlotTimeSupported', 
                    'bool', 
                    [param('ns3::Mac48Address', 'address')], 
                    is_const=True)
@@ -8903,6 +8997,11 @@ def register_Ns3WifiRemoteStationManager_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
+    ## wifi-remote-station-manager.h (module 'wifi'): bool ns3::WifiRemoteStationManager::GetUseProtection() const [member function]
+    cls.add_method('GetUseProtection', 
+                   'bool', 
+                   [], 
+                   is_const=True)
     ## wifi-remote-station-manager.h (module 'wifi'): bool ns3::WifiRemoteStationManager::HasHtSupported() const [member function]
     cls.add_method('HasHtSupported', 
                    'bool', 
@@ -8944,10 +9043,10 @@ def register_Ns3WifiRemoteStationManager_methods(root_module, cls):
     cls.add_method('NeedFragmentation', 
                    'bool', 
                    [param('ns3::Mac48Address', 'address'), param('ns3::WifiMacHeader const *', 'header'), param('ns3::Ptr< ns3::Packet const >', 'packet')])
-    ## wifi-remote-station-manager.h (module 'wifi'): bool ns3::WifiRemoteStationManager::NeedRts(ns3::Mac48Address address, ns3::WifiMacHeader const * header, ns3::Ptr<ns3::Packet const> packet) [member function]
+    ## wifi-remote-station-manager.h (module 'wifi'): bool ns3::WifiRemoteStationManager::NeedRts(ns3::Mac48Address address, ns3::WifiMacHeader const * header, ns3::Ptr<ns3::Packet const> packet, ns3::WifiTxVector txVector) [member function]
     cls.add_method('NeedRts', 
                    'bool', 
-                   [param('ns3::Mac48Address', 'address'), param('ns3::WifiMacHeader const *', 'header'), param('ns3::Ptr< ns3::Packet const >', 'packet')])
+                   [param('ns3::Mac48Address', 'address'), param('ns3::WifiMacHeader const *', 'header'), param('ns3::Ptr< ns3::Packet const >', 'packet'), param('ns3::WifiTxVector', 'txVector')])
     ## wifi-remote-station-manager.h (module 'wifi'): bool ns3::WifiRemoteStationManager::NeedRtsRetransmission(ns3::Mac48Address address, ns3::WifiMacHeader const * header, ns3::Ptr<ns3::Packet const> packet) [member function]
     cls.add_method('NeedRtsRetransmission', 
                    'bool', 
@@ -9028,10 +9127,26 @@ def register_Ns3WifiRemoteStationManager_methods(root_module, cls):
     cls.add_method('SetMaxSsrc', 
                    'void', 
                    [param('uint32_t', 'maxSsrc')])
+    ## wifi-remote-station-manager.h (module 'wifi'): void ns3::WifiRemoteStationManager::SetProtectionMode(ns3::WifiRemoteStationManager::ProtectionMode mode) [member function]
+    cls.add_method('SetProtectionMode', 
+                   'void', 
+                   [param('ns3::WifiRemoteStationManager::ProtectionMode', 'mode')])
     ## wifi-remote-station-manager.h (module 'wifi'): void ns3::WifiRemoteStationManager::SetRtsCtsThreshold(uint32_t threshold) [member function]
     cls.add_method('SetRtsCtsThreshold', 
                    'void', 
                    [param('uint32_t', 'threshold')])
+    ## wifi-remote-station-manager.h (module 'wifi'): void ns3::WifiRemoteStationManager::SetShortPreambleEnabled(bool enable) [member function]
+    cls.add_method('SetShortPreambleEnabled', 
+                   'void', 
+                   [param('bool', 'enable')])
+    ## wifi-remote-station-manager.h (module 'wifi'): void ns3::WifiRemoteStationManager::SetShortSlotTimeEnabled(bool enable) [member function]
+    cls.add_method('SetShortSlotTimeEnabled', 
+                   'void', 
+                   [param('bool', 'enable')])
+    ## wifi-remote-station-manager.h (module 'wifi'): void ns3::WifiRemoteStationManager::SetUseProtection(bool enable) [member function]
+    cls.add_method('SetUseProtection', 
+                   'void', 
+                   [param('bool', 'enable')])
     ## wifi-remote-station-manager.h (module 'wifi'): void ns3::WifiRemoteStationManager::SetVhtSupported(bool enable) [member function]
     cls.add_method('SetVhtSupported', 
                    'void', 
@@ -9090,6 +9205,11 @@ def register_Ns3WifiRemoteStationManager_methods(root_module, cls):
                    'uint32_t', 
                    [param('ns3::WifiRemoteStation const *', 'station')], 
                    is_const=True, visibility='protected')
+    ## wifi-remote-station-manager.h (module 'wifi'): uint32_t ns3::WifiRemoteStationManager::GetNNonErpSupported(ns3::WifiRemoteStation const * station) const [member function]
+    cls.add_method('GetNNonErpSupported', 
+                   'uint32_t', 
+                   [param('ns3::WifiRemoteStation const *', 'station')], 
+                   is_const=True, visibility='protected')
     ## wifi-remote-station-manager.h (module 'wifi'): uint32_t ns3::WifiRemoteStationManager::GetNSupported(ns3::WifiRemoteStation const * station) const [member function]
     cls.add_method('GetNSupported', 
                    'uint32_t', 
@@ -9099,6 +9219,11 @@ def register_Ns3WifiRemoteStationManager_methods(root_module, cls):
     cls.add_method('GetNess', 
                    'uint32_t', 
                    [param('ns3::WifiRemoteStation const *', 'station')], 
+                   is_const=True, visibility='protected')
+    ## wifi-remote-station-manager.h (module 'wifi'): ns3::WifiMode ns3::WifiRemoteStationManager::GetNonErpSupported(ns3::WifiRemoteStation const * station, uint32_t i) const [member function]
+    cls.add_method('GetNonErpSupported', 
+                   'ns3::WifiMode', 
+                   [param('ns3::WifiRemoteStation const *', 'station'), param('uint32_t', 'i')], 
                    is_const=True, visibility='protected')
     ## wifi-remote-station-manager.h (module 'wifi'): uint32_t ns3::WifiRemoteStationManager::GetNumberOfReceiveAntennas(ns3::WifiRemoteStation const * station) const [member function]
     cls.add_method('GetNumberOfReceiveAntennas', 
@@ -9117,11 +9242,6 @@ def register_Ns3WifiRemoteStationManager_methods(root_module, cls):
                    is_const=True, visibility='protected')
     ## wifi-remote-station-manager.h (module 'wifi'): bool ns3::WifiRemoteStationManager::GetShortGuardInterval(ns3::WifiRemoteStation const * station) const [member function]
     cls.add_method('GetShortGuardInterval', 
-                   'bool', 
-                   [param('ns3::WifiRemoteStation const *', 'station')], 
-                   is_const=True, visibility='protected')
-    ## wifi-remote-station-manager.h (module 'wifi'): bool ns3::WifiRemoteStationManager::GetShortPreamble(ns3::WifiRemoteStation const * station) const [member function]
-    cls.add_method('GetShortPreamble', 
                    'bool', 
                    [param('ns3::WifiRemoteStation const *', 'station')], 
                    is_const=True, visibility='protected')
@@ -9488,8 +9608,8 @@ def register_Ns3YansWifiPhy_methods(root_module, cls):
                    'double', 
                    [], 
                    is_const=True)
-    ## yans-wifi-phy.h (module 'wifi'): bool ns3::YansWifiPhy::GetShortPlcpPreamble() const [member function]
-    cls.add_method('GetShortPlcpPreamble', 
+    ## yans-wifi-phy.h (module 'wifi'): bool ns3::YansWifiPhy::GetShortPlcpPreambleSupported() const [member function]
+    cls.add_method('GetShortPlcpPreambleSupported', 
                    'bool', 
                    [], 
                    is_const=True, is_virtual=True)
@@ -9674,8 +9794,8 @@ def register_Ns3YansWifiPhy_methods(root_module, cls):
     cls.add_method('SetRxNoiseFigure', 
                    'void', 
                    [param('double', 'noiseFigureDb')])
-    ## yans-wifi-phy.h (module 'wifi'): void ns3::YansWifiPhy::SetShortPlcpPreamble(bool preamble) [member function]
-    cls.add_method('SetShortPlcpPreamble', 
+    ## yans-wifi-phy.h (module 'wifi'): void ns3::YansWifiPhy::SetShortPlcpPreambleSupported(bool preamble) [member function]
+    cls.add_method('SetShortPlcpPreambleSupported', 
                    'void', 
                    [param('bool', 'preamble')], 
                    is_virtual=True)
@@ -11878,6 +11998,115 @@ def register_Ns3ErlangRandomVariable_methods(root_module, cls):
                    'uint32_t', 
                    [], 
                    is_virtual=True)
+    return
+
+def register_Ns3ErpInformation_methods(root_module, cls):
+    cls.add_output_stream_operator()
+    ## erp-information.h (module 'wifi'): ns3::ErpInformation::ErpInformation(ns3::ErpInformation const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::ErpInformation const &', 'arg0')])
+    ## erp-information.h (module 'wifi'): ns3::ErpInformation::ErpInformation() [constructor]
+    cls.add_constructor([])
+    ## erp-information.h (module 'wifi'): uint8_t ns3::ErpInformation::DeserializeInformationField(ns3::Buffer::Iterator start, uint8_t length) [member function]
+    cls.add_method('DeserializeInformationField', 
+                   'uint8_t', 
+                   [param('ns3::Buffer::Iterator', 'start'), param('uint8_t', 'length')], 
+                   is_virtual=True)
+    ## erp-information.h (module 'wifi'): ns3::WifiInformationElementId ns3::ErpInformation::ElementId() const [member function]
+    cls.add_method('ElementId', 
+                   'ns3::WifiInformationElementId', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## erp-information.h (module 'wifi'): uint8_t ns3::ErpInformation::GetBarkerPreambleMode() const [member function]
+    cls.add_method('GetBarkerPreambleMode', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True)
+    ## erp-information.h (module 'wifi'): uint8_t ns3::ErpInformation::GetInformationFieldSize() const [member function]
+    cls.add_method('GetInformationFieldSize', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## erp-information.h (module 'wifi'): uint8_t ns3::ErpInformation::GetNonErpPresent() const [member function]
+    cls.add_method('GetNonErpPresent', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True)
+    ## erp-information.h (module 'wifi'): uint16_t ns3::ErpInformation::GetSerializedSize() const [member function]
+    cls.add_method('GetSerializedSize', 
+                   'uint16_t', 
+                   [], 
+                   is_const=True)
+    ## erp-information.h (module 'wifi'): uint8_t ns3::ErpInformation::GetUseProtection() const [member function]
+    cls.add_method('GetUseProtection', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True)
+    ## erp-information.h (module 'wifi'): ns3::Buffer::Iterator ns3::ErpInformation::Serialize(ns3::Buffer::Iterator start) const [member function]
+    cls.add_method('Serialize', 
+                   'ns3::Buffer::Iterator', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_const=True)
+    ## erp-information.h (module 'wifi'): void ns3::ErpInformation::SerializeInformationField(ns3::Buffer::Iterator start) const [member function]
+    cls.add_method('SerializeInformationField', 
+                   'void', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_const=True, is_virtual=True)
+    ## erp-information.h (module 'wifi'): void ns3::ErpInformation::SetBarkerPreambleMode(uint8_t barkerPreambleMode) [member function]
+    cls.add_method('SetBarkerPreambleMode', 
+                   'void', 
+                   [param('uint8_t', 'barkerPreambleMode')])
+    ## erp-information.h (module 'wifi'): void ns3::ErpInformation::SetErpSupported(uint8_t erpSupported) [member function]
+    cls.add_method('SetErpSupported', 
+                   'void', 
+                   [param('uint8_t', 'erpSupported')])
+    ## erp-information.h (module 'wifi'): void ns3::ErpInformation::SetNonErpPresent(uint8_t nonErpPresent) [member function]
+    cls.add_method('SetNonErpPresent', 
+                   'void', 
+                   [param('uint8_t', 'nonErpPresent')])
+    ## erp-information.h (module 'wifi'): void ns3::ErpInformation::SetUseProtection(uint8_t useProtection) [member function]
+    cls.add_method('SetUseProtection', 
+                   'void', 
+                   [param('uint8_t', 'useProtection')])
+    return
+
+def register_Ns3ErpInformationChecker_methods(root_module, cls):
+    ## erp-information.h (module 'wifi'): ns3::ErpInformationChecker::ErpInformationChecker() [constructor]
+    cls.add_constructor([])
+    ## erp-information.h (module 'wifi'): ns3::ErpInformationChecker::ErpInformationChecker(ns3::ErpInformationChecker const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::ErpInformationChecker const &', 'arg0')])
+    return
+
+def register_Ns3ErpInformationValue_methods(root_module, cls):
+    ## erp-information.h (module 'wifi'): ns3::ErpInformationValue::ErpInformationValue() [constructor]
+    cls.add_constructor([])
+    ## erp-information.h (module 'wifi'): ns3::ErpInformationValue::ErpInformationValue(ns3::ErpInformationValue const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::ErpInformationValue const &', 'arg0')])
+    ## erp-information.h (module 'wifi'): ns3::ErpInformationValue::ErpInformationValue(ns3::ErpInformation const & value) [constructor]
+    cls.add_constructor([param('ns3::ErpInformation const &', 'value')])
+    ## erp-information.h (module 'wifi'): ns3::Ptr<ns3::AttributeValue> ns3::ErpInformationValue::Copy() const [member function]
+    cls.add_method('Copy', 
+                   'ns3::Ptr< ns3::AttributeValue >', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## erp-information.h (module 'wifi'): bool ns3::ErpInformationValue::DeserializeFromString(std::string value, ns3::Ptr<ns3::AttributeChecker const> checker) [member function]
+    cls.add_method('DeserializeFromString', 
+                   'bool', 
+                   [param('std::string', 'value'), param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
+                   is_virtual=True)
+    ## erp-information.h (module 'wifi'): ns3::ErpInformation ns3::ErpInformationValue::Get() const [member function]
+    cls.add_method('Get', 
+                   'ns3::ErpInformation', 
+                   [], 
+                   is_const=True)
+    ## erp-information.h (module 'wifi'): std::string ns3::ErpInformationValue::SerializeToString(ns3::Ptr<ns3::AttributeChecker const> checker) const [member function]
+    cls.add_method('SerializeToString', 
+                   'std::string', 
+                   [param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
+                   is_const=True, is_virtual=True)
+    ## erp-information.h (module 'wifi'): void ns3::ErpInformationValue::Set(ns3::ErpInformation const & value) [member function]
+    cls.add_method('Set', 
+                   'void', 
+                   [param('ns3::ErpInformation const &', 'value')])
     return
 
 def register_Ns3ErrorRateModel_methods(root_module, cls):
@@ -14371,6 +14600,16 @@ def register_Ns3RegularWifiMac_methods(root_module, cls):
                    'bool', 
                    [], 
                    is_const=True)
+    ## regular-wifi-mac.h (module 'wifi'): void ns3::RegularWifiMac::SetShortSlotTimeSupported(bool enable) [member function]
+    cls.add_method('SetShortSlotTimeSupported', 
+                   'void', 
+                   [param('bool', 'enable')], 
+                   is_virtual=True)
+    ## regular-wifi-mac.h (module 'wifi'): bool ns3::RegularWifiMac::GetShortSlotTimeSupported() const [member function]
+    cls.add_method('GetShortSlotTimeSupported', 
+                   'bool', 
+                   [], 
+                   is_const=True, is_virtual=True)
     ## regular-wifi-mac.h (module 'wifi'): ns3::Mac48Address ns3::RegularWifiMac::GetAddress() const [member function]
     cls.add_method('GetAddress', 
                    'ns3::Mac48Address', 
@@ -14521,6 +14760,11 @@ def register_Ns3RegularWifiMac_methods(root_module, cls):
                    'void', 
                    [param('ns3::WifiPhyStandard', 'standard')], 
                    visibility='protected', is_virtual=True)
+    ## regular-wifi-mac.h (module 'wifi'): void ns3::RegularWifiMac::ConfigureContentionWindow(uint32_t cwMin, uint32_t cwMax) [member function]
+    cls.add_method('ConfigureContentionWindow', 
+                   'void', 
+                   [param('uint32_t', 'cwMin'), param('uint32_t', 'cwMax')], 
+                   visibility='protected')
     ## regular-wifi-mac.h (module 'wifi'): void ns3::RegularWifiMac::SetTypeOfStation(ns3::TypeOfStation type) [member function]
     cls.add_method('SetTypeOfStation', 
                    'void', 
@@ -14583,6 +14827,16 @@ def register_Ns3RegularWifiMac_methods(root_module, cls):
                    visibility='protected')
     ## regular-wifi-mac.h (module 'wifi'): bool ns3::RegularWifiMac::GetVhtSupported() const [member function]
     cls.add_method('GetVhtSupported', 
+                   'bool', 
+                   [], 
+                   is_const=True, visibility='protected')
+    ## regular-wifi-mac.h (module 'wifi'): void ns3::RegularWifiMac::SetErpSupported(bool enable) [member function]
+    cls.add_method('SetErpSupported', 
+                   'void', 
+                   [param('bool', 'enable')], 
+                   visibility='protected')
+    ## regular-wifi-mac.h (module 'wifi'): bool ns3::RegularWifiMac::GetErpSupported() const [member function]
+    cls.add_method('GetErpSupported', 
                    'bool', 
                    [], 
                    is_const=True, visibility='protected')
@@ -15833,6 +16087,16 @@ def register_Ns3ApWifiMac_methods(root_module, cls):
     cls.add_method('StartBeaconing', 
                    'void', 
                    [])
+    ## ap-wifi-mac.h (module 'wifi'): bool ns3::ApWifiMac::GetShortSlotTimeEnabled() const [member function]
+    cls.add_method('GetShortSlotTimeEnabled', 
+                   'bool', 
+                   [], 
+                   is_const=True)
+    ## ap-wifi-mac.h (module 'wifi'): bool ns3::ApWifiMac::GetShortPreambleEnabled() const [member function]
+    cls.add_method('GetShortPreambleEnabled', 
+                   'bool', 
+                   [], 
+                   is_const=True)
     ## ap-wifi-mac.h (module 'wifi'): int64_t ns3::ApWifiMac::AssignStreams(int64_t stream) [member function]
     cls.add_method('AssignStreams', 
                    'int64_t', 
@@ -16063,6 +16327,10 @@ def register_Ns3HashFunctionMurmur3_methods(root_module, cls):
 
 def register_functions(root_module):
     module = root_module
+    ## erp-information.h (module 'wifi'): extern ns3::Ptr<ns3::AttributeChecker const> ns3::MakeErpInformationChecker() [free function]
+    module.add_function('MakeErpInformationChecker', 
+                        'ns3::Ptr< ns3::AttributeChecker const >', 
+                        [])
     ## ht-capabilities.h (module 'wifi'): extern ns3::Ptr<ns3::AttributeChecker const> ns3::MakeHtCapabilitiesChecker() [free function]
     module.add_function('MakeHtCapabilitiesChecker', 
                         'ns3::Ptr< ns3::AttributeChecker const >', 
