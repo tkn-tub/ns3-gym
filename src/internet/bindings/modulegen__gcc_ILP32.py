@@ -344,6 +344,8 @@ def register_types(module):
     module.add_class('Ipv6ExtensionRoutingHeader', parent=root_module['ns3::Ipv6ExtensionHeader'])
     ## ipv6-header.h (module 'internet'): ns3::Ipv6Header [class]
     module.add_class('Ipv6Header', parent=root_module['ns3::Header'])
+    ## ipv6-header.h (module 'internet'): ns3::Ipv6Header::DscpType [enumeration]
+    module.add_enum('DscpType', ['DscpDefault', 'DSCP_CS1', 'DSCP_AF11', 'DSCP_AF12', 'DSCP_AF13', 'DSCP_CS2', 'DSCP_AF21', 'DSCP_AF22', 'DSCP_AF23', 'DSCP_CS3', 'DSCP_AF31', 'DSCP_AF32', 'DSCP_AF33', 'DSCP_CS4', 'DSCP_AF41', 'DSCP_AF42', 'DSCP_AF43', 'DSCP_CS5', 'DSCP_EF', 'DSCP_CS6', 'DSCP_CS7'], outer_class=root_module['ns3::Ipv6Header'])
     ## ipv6-header.h (module 'internet'): ns3::Ipv6Header::NextHeader_e [enumeration]
     module.add_enum('NextHeader_e', ['IPV6_EXT_HOP_BY_HOP', 'IPV6_IPV4', 'IPV6_TCP', 'IPV6_UDP', 'IPV6_IPV6', 'IPV6_EXT_ROUTING', 'IPV6_EXT_FRAGMENTATION', 'IPV6_EXT_CONFIDENTIALITY', 'IPV6_EXT_AUTHENTIFICATION', 'IPV6_ICMPV6', 'IPV6_EXT_END', 'IPV6_EXT_DESTINATION', 'IPV6_SCTP', 'IPV6_EXT_MOBILITY', 'IPV6_UDP_LITE'], outer_class=root_module['ns3::Ipv6Header'])
     ## ipv6-list-routing-helper.h (module 'internet'): ns3::Ipv6ListRoutingHelper [class]
@@ -7132,9 +7134,19 @@ def register_Ns3Ipv6Header_methods(root_module, cls):
                    'uint32_t', 
                    [param('ns3::Buffer::Iterator', 'start')], 
                    is_virtual=True)
+    ## ipv6-header.h (module 'internet'): std::string ns3::Ipv6Header::DscpTypeToString(ns3::Ipv6Header::DscpType dscp) const [member function]
+    cls.add_method('DscpTypeToString', 
+                   'std::string', 
+                   [param('ns3::Ipv6Header::DscpType', 'dscp')], 
+                   is_const=True)
     ## ipv6-header.h (module 'internet'): ns3::Ipv6Address ns3::Ipv6Header::GetDestinationAddress() const [member function]
     cls.add_method('GetDestinationAddress', 
                    'ns3::Ipv6Address', 
+                   [], 
+                   is_const=True)
+    ## ipv6-header.h (module 'internet'): ns3::Ipv6Header::DscpType ns3::Ipv6Header::GetDscp() const [member function]
+    cls.add_method('GetDscp', 
+                   'ns3::Ipv6Header::DscpType', 
                    [], 
                    is_const=True)
     ## ipv6-header.h (module 'internet'): uint32_t ns3::Ipv6Header::GetFlowLabel() const [member function]
@@ -7196,6 +7208,10 @@ def register_Ns3Ipv6Header_methods(root_module, cls):
     cls.add_method('SetDestinationAddress', 
                    'void', 
                    [param('ns3::Ipv6Address', 'dst')])
+    ## ipv6-header.h (module 'internet'): void ns3::Ipv6Header::SetDscp(ns3::Ipv6Header::DscpType dscp) [member function]
+    cls.add_method('SetDscp', 
+                   'void', 
+                   [param('ns3::Ipv6Header::DscpType', 'dscp')])
     ## ipv6-header.h (module 'internet'): void ns3::Ipv6Header::SetFlowLabel(uint32_t flow) [member function]
     cls.add_method('SetFlowLabel', 
                    'void', 

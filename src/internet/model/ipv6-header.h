@@ -34,6 +34,47 @@ class Ipv6Header : public Header
 {
 public:
   /**
+   * \enum DscpType
+   * \brief DiffServ Code Points
+   * Code Points defined in
+   * Assured Forwarding (AF) \RFC{2597}
+   * Expedited Forwarding (EF) \RFC{2598}
+   * Default and Class Selector (CS) \RFC{2474}
+   */
+  enum DscpType
+    {
+      DscpDefault = 0x00,
+
+      // Prefixed with "DSCP" to avoid name clash (bug 1723)
+      DSCP_CS1 = 0x20,
+      DSCP_AF11 = 0x28,
+      DSCP_AF12 = 0x30,
+      DSCP_AF13 = 0x38,
+
+      DSCP_CS2 = 0x40,
+      DSCP_AF21 = 0x48,
+      DSCP_AF22 = 0x50,
+      DSCP_AF23 = 0x58,
+
+      DSCP_CS3 = 0x60,
+      DSCP_AF31 = 0x68,
+      DSCP_AF32 = 0x70,
+      DSCP_AF33 = 0x78,
+
+      DSCP_CS4 = 0x80,
+      DSCP_AF41 = 0x88,
+      DSCP_AF42 = 0x90,
+      DSCP_AF43 = 0x98,
+
+      DSCP_CS5 = 0xA0,
+      DSCP_EF = 0xB8,
+
+      DSCP_CS6 = 0xC0,
+      DSCP_CS7 = 0xE0
+
+    };
+
+  /**
    * \enum NextHeader_e
    * \brief IPv6 next-header value
    */
@@ -84,6 +125,23 @@ public:
    * \return the traffic value
    */
   uint8_t GetTrafficClass (void) const;
+
+  /**
+   * \brief Set DSCP Field
+   * \param dscp DSCP value
+   */
+  void SetDscp (DscpType dscp);
+
+  /**
+   * \returns the DSCP field of this packet.
+   */
+  DscpType GetDscp (void) const;
+
+  /**
+   * \param dscp the dscp
+   * \returns std::string of DSCPType
+   */
+  std::string DscpTypeToString (DscpType dscp) const;
 
   /**
    * \brief Set the "Flow label" field.
