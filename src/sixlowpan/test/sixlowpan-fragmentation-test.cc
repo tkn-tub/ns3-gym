@@ -35,14 +35,8 @@
 #include "ns3/inet-socket-address.h"
 #include "ns3/boolean.h"
 
-#include "ns3/ipv6-static-routing.h"
-#include "ns3/ipv6-list-routing.h"
-#include "ns3/inet6-socket-address.h"
 #include "ns3/sixlowpan-net-device.h"
-
-#include "ns3/udp-l4-protocol.h"
-
-#include "ns3/ipv6-l3-protocol.h"
+#include "ns3/internet-stack-helper.h"
 #include "ns3/icmpv6-l4-protocol.h"
 
 #include <string>
@@ -51,41 +45,11 @@
 
 using namespace ns3;
 
-class UdpSocketImpl;
-
-static void
-AddInternetStack (Ptr<Node> node)
-{
-  //IPV6
-  Ptr<Ipv6L3Protocol> ipv6 = CreateObject<Ipv6L3Protocol> ();
-
-  //Routing for Ipv6
-  Ptr<Ipv6ListRouting> ipv6Routing = CreateObject<Ipv6ListRouting> ();
-  ipv6->SetRoutingProtocol (ipv6Routing);
-  Ptr<Ipv6StaticRouting> ipv6staticRouting = CreateObject<Ipv6StaticRouting> ();
-  ipv6Routing->AddRoutingProtocol (ipv6staticRouting, 0);
-  node->AggregateObject (ipv6);
-
-  //ICMPv6
-  Ptr<Icmpv6L4Protocol> icmp6 = CreateObject<Icmpv6L4Protocol> ();
-  node->AggregateObject (icmp6);
-
-  //Ipv6 Extensions
-  ipv6->RegisterExtensions ();
-  ipv6->RegisterOptions ();
-
-  //UDP
-  Ptr<UdpL4Protocol> udp = CreateObject<UdpL4Protocol> ();
-  node->AggregateObject (udp);
-}
-
-
 class SixlowpanFragmentationTest : public TestCase
 {
   Ptr<Packet> m_sentPacketClient;
   Ptr<Packet> m_receivedPacketClient;
   Ptr<Packet> m_receivedPacketServer;
-
 
   Ptr<Socket> m_socketServer;
   Ptr<Socket> m_socketClient;
@@ -122,6 +86,9 @@ SixlowpanFragmentationTest::SixlowpanFragmentationTest ()
   m_socketServer = 0;
   m_data = 0;
   m_dataSize = 0;
+  m_size = 0;
+  m_icmpType = 0;
+  m_icmpCode = 0;
 }
 
 SixlowpanFragmentationTest::~SixlowpanFragmentationTest ()
@@ -256,12 +223,13 @@ void
 SixlowpanFragmentationTest::DoRun (void)
 {
   // Create topology
-
+  InternetStackHelper internet;
+  internet.SetIpv4StackInstall (false);
   Packet::EnablePrinting ();
 
   // Receiver Node
   Ptr<Node> serverNode = CreateObject<Node> ();
-  AddInternetStack (serverNode);
+  internet.Install (serverNode);
   Ptr<SimpleNetDevice> serverDev;
   Ptr<BinaryErrorSixlowModel> serverDevErrorModel = CreateObject<BinaryErrorSixlowModel> ();
   {
@@ -292,7 +260,7 @@ SixlowpanFragmentationTest::DoRun (void)
 
   // Sender Node
   Ptr<Node> clientNode = CreateObject<Node> ();
-  AddInternetStack (clientNode);
+  internet.Install (clientNode);
   Ptr<SimpleNetDevice> clientDev;
   Ptr<BinaryErrorSixlowModel> clientDevErrorModel = CreateObject<BinaryErrorSixlowModel> ();
   {

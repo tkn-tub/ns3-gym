@@ -31,12 +31,7 @@
 #include "ns3/log.h"
 #include "ns3/node.h"
 #include "ns3/inet6-socket-address.h"
-
-#include "ns3/ipv6-l3-protocol.h"
-#include "ns3/icmpv6-l4-protocol.h"
-#include "ns3/udp-l4-protocol.h"
-#include "ns3/ipv6-list-routing.h"
-#include "ns3/ipv6-static-routing.h"
+#include "ns3/internet-stack-helper.h"
 
 #include "ns3/sixlowpan-net-device.h"
 
@@ -44,29 +39,6 @@
 #include <limits>
 
 using namespace ns3;
-
-static void
-AddInternetStack6 (Ptr<Node> node)
-{
-  //IPV6
-  Ptr<Ipv6L3Protocol> ipv6 = CreateObject<Ipv6L3Protocol> ();
-  //Routing for Ipv6
-  Ptr<Ipv6ListRouting> ipv6Routing = CreateObject<Ipv6ListRouting> ();
-  ipv6->SetRoutingProtocol (ipv6Routing);
-  Ptr<Ipv6StaticRouting> ipv6staticRouting = CreateObject<Ipv6StaticRouting> ();
-  ipv6Routing->AddRoutingProtocol (ipv6staticRouting, 0);
-  node->AggregateObject (ipv6);
-  //ICMP
-  Ptr<Icmpv6L4Protocol> icmp = CreateObject<Icmpv6L4Protocol> ();
-  node->AggregateObject (icmp);
-  //Ipv6 Extensions
-  ipv6->RegisterExtensions ();
-  ipv6->RegisterOptions ();
-  //UDP
-  Ptr<UdpL4Protocol> udp = CreateObject<UdpL4Protocol> ();
-  node->AggregateObject (udp);
-}
-
 
 class SixlowpanIphcImplTest : public TestCase
 {
@@ -127,10 +99,12 @@ void
 SixlowpanIphcImplTest::DoRun (void)
 {
   // Create topology
+  InternetStackHelper internet;
+  internet.SetIpv4StackInstall (false);
 
   // Receiver Node
   Ptr<Node> rxNode = CreateObject<Node> ();
-  AddInternetStack6 (rxNode);
+  internet.Install (rxNode);
   Ptr<SimpleNetDevice> rxDev;
   { // first interface
     rxDev = CreateObject<SimpleNetDevice> ();
@@ -152,7 +126,7 @@ SixlowpanIphcImplTest::DoRun (void)
 
   // Sender Node
   Ptr<Node> txNode = CreateObject<Node> ();
-  AddInternetStack6 (txNode);
+  internet.Install (txNode);
   Ptr<SimpleNetDevice> txDev;
   {
     txDev = CreateObject<SimpleNetDevice> ();
