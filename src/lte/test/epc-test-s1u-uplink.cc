@@ -399,8 +399,8 @@ EpcS1uUlTestCase::DoRun ()
           Ptr<ArpCache> ueArpCache = ueLteIpv4Iface->GetArpCache (); 
           ueArpCache->SetAliveTimeout (Seconds (1000));          
           ArpCache::Entry* arpCacheEntry = ueArpCache->Add (gwAddr);
-          arpCacheEntry->MarkWaitReply(0);
-          arpCacheEntry->MarkAlive (Mac48Address::GetBroadcast ()); 
+          arpCacheEntry->SetMacAddresss (Mac48Address::GetBroadcast ());
+          arpCacheEntry->MarkPermanent ();
   
           
           PacketSinkHelper packetSinkHelper ("ns3::UdpSocketFactory", 
