@@ -608,17 +608,20 @@ ApWifiMac::SendOneBeacon (void)
   //If a STA that does not support Short Slot Time associates,
   //the AP shall use long slot time beginning at the first Beacon
   //subsequent to the association of the long slot time STA.
-  if (GetShortSlotTimeEnabled () == true)
+  if (m_erpSupported)
     {
-      //Enable short slot time and set cwMin to 15
-      SetSlot (MicroSeconds (9));
-      ConfigureContentionWindow (15, 1023);
-    }
-  else
-    {
-      //Disable short slot time and set CWmin to 31
-      SetSlot (MicroSeconds (20));
-      ConfigureContentionWindow (31, 1023);
+    if (GetShortSlotTimeEnabled () == true)
+      {
+        //Enable short slot time and set cwMin to 15
+        SetSlot (MicroSeconds (9));
+        ConfigureContentionWindow (15, 1023);
+      }
+    else
+      {
+        //Disable short slot time and set CWmin to 31
+        SetSlot (MicroSeconds (20));
+        ConfigureContentionWindow (31, 1023);
+      }
     }
 }
 
