@@ -79,6 +79,7 @@ Bugs fixed
 - Bug 2211 - Ipv{4,6}EndPoint can cause memory corruption
 - Bug 2213 - Inconsistencies may exist between the selected WifiMacHelper and the chosen 802.11 version
 - Bug 2219 - SixLowPanNetDevice hangs trying to decode a IPv6 Fragment extension header
+- Bug 2224 - scope of GetAmpduExist() in EdcaTxopN
 - Bug 2233 - Implement RFC 1222 - Strong End System Model
 - Bug 2234 - Ipv6L3Protocol should trash multicast packets not interesting for the node
 - Bug 2238 - Ipv6 routing reorganization

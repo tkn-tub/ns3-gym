@@ -222,7 +222,7 @@ public:
    * of an A-MPDU with ImmediateBlockAck policy (i.e. no BAR is scheduled)
    */
   virtual void CompleteTransfer (Mac48Address address, uint8_t tid);
-  virtual void SetAmpdu (bool ampdu);
+  virtual void SetAmpdu (Mac48Address dest, bool enableAmpdu);
   /**
    * This function stores an MPDU (part of an A-MPDU) in blockackagreement (i.e. the sender is waiting
    * for a blockack containing the sequence number of this MPDU).

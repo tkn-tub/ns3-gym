@@ -72,7 +72,7 @@ MacLowAggregationCapableTransmissionListener::MacLowAggregationCapableTransmissi
 MacLowAggregationCapableTransmissionListener::~MacLowAggregationCapableTransmissionListener ()
 {
 }
-void MacLowAggregationCapableTransmissionListener::SetAmpdu (bool ampdu)
+void MacLowAggregationCapableTransmissionListener::SetAmpdu (Mac48Address dest, bool enableAmpdu)
 {
 }
 void MacLowAggregationCapableTransmissionListener::CompleteTransfer (Mac48Address address, uint8_t tid)
@@ -3168,7 +3168,7 @@ MacLow::AggregateToAmpdu (Ptr<const Packet> packet, const WifiMacHeader hdr)
                   newPacket = currentAggregatedPacket;
                   newPacket->AddPacketTag (ampdutag);
                   NS_LOG_DEBUG ("tx unicast A-MPDU");
-                  listenerIt->second->SetAmpdu (true);
+                  listenerIt->second->SetAmpdu (hdr.GetAddr2 (), true);
                 }
               else
                 {
@@ -3210,7 +3210,7 @@ MacLow::AggregateToAmpdu (Ptr<const Packet> packet, const WifiMacHeader hdr)
               newPacket->AddPacketTag (ampdutag);
 
               NS_LOG_DEBUG ("tx unicast VHT single MPDU with sequence number " << hdr.GetSequenceNumber ());
-              listenerIt->second->SetAmpdu (true);
+              listenerIt->second->SetAmpdu (hdr.GetAddr2 (), true);
             }
         }
     }

@@ -164,9 +164,9 @@ public:
   {
     m_txop->CompleteAmpduTransfer (recipient, tid);
   }
-  virtual void SetAmpdu (bool ampdu)
+  virtual void SetAmpdu (Mac48Address dest, bool enableAmpdu)
   {
-    return m_txop->SetAmpduExist (ampdu);
+    return m_txop->SetAmpduExist (dest, enableAmpdu);
   }
   virtual void CompleteMpduTx (Ptr<const Packet> packet, WifiMacHeader hdr, Time tstamp)
   {
@@ -245,8 +245,7 @@ EdcaTxopN::EdcaTxopN ()
     m_msduAggregator (0),
     m_mpduAggregator (0),
     m_typeOfStation (STA),
-    m_blockAckType (COMPRESSED_BLOCK_ACK),
-    m_ampduExist (false)
+    m_blockAckType (COMPRESSED_BLOCK_ACK)
 {
   NS_LOG_FUNCTION (this);
   m_transmissionListener = new EdcaTxopN::TransmissionListener (this);
@@ -610,7 +609,7 @@ EdcaTxopN::NotifyAccessGranted (void)
           params.DisableNextData ();
           m_low->StartTransmission (m_currentPacket, &m_currentHdr,
                                     params, m_transmissionListener);
-          if (!GetAmpduExist ())
+          if (!GetAmpduExist (m_currentHdr.GetAddr1 ()))
             {
               CompleteTx ();
             }
@@ -653,7 +652,7 @@ EdcaTxopN::MissedCts (void)
         {
           m_txFailedCallback (m_currentHdr);
         }
-      if (GetAmpduExist ())
+      if (GetAmpduExist (m_currentHdr.GetAddr1 ()))
         {
           m_low->FlushAggregateQueue ();
           uint8_t tid = 0;
@@ -805,7 +804,7 @@ EdcaTxopN::MissedAck (void)
         {
           m_txFailedCallback (m_currentHdr);
         }
-      if (GetAmpduExist ())
+      if (GetAmpduExist (m_currentHdr.GetAddr1 ()))
         {
           uint8_t tid = 0;
           if (m_currentHdr.IsQosData ())
@@ -868,7 +867,7 @@ EdcaTxopN::MissedBlockAck (void)
   NS_LOG_DEBUG ("missed block ack");
   if (NeedBarRetransmission ())
     {
-      if (!GetAmpduExist ())
+      if (!GetAmpduExist (m_currentHdr.GetAddr1 ()))
         {
           //should i report this to station addressed by ADDR1?
           NS_LOG_DEBUG ("Retransmit block ack request");
@@ -1250,14 +1249,27 @@ EdcaTxopN::VerifyBlockAck (void)
     }
 }
 
-bool EdcaTxopN::GetAmpduExist (void)
+bool EdcaTxopN::GetAmpduExist (Mac48Address dest)
 {
-  return m_ampduExist;
+  NS_LOG_FUNCTION (this << dest);
+  if (m_aMpduEnabled.find (dest) != m_aMpduEnabled.end ())
+    {
+      return m_aMpduEnabled.find (dest)->second;
+    }
+  return false;
 }
 
-void EdcaTxopN::SetAmpduExist (bool ampdu)
+void EdcaTxopN::SetAmpduExist (Mac48Address dest, bool enableAmpdu)
 {
-  m_ampduExist = ampdu;
+  NS_LOG_FUNCTION (this << dest << enableAmpdu);
+  if (m_aMpduEnabled.find (dest) != m_aMpduEnabled.end () && m_aMpduEnabled.find (dest)->second != enableAmpdu)
+    {
+      m_aMpduEnabled.erase (m_aMpduEnabled.find (dest));
+    }
+  if (m_aMpduEnabled.find (dest) == m_aMpduEnabled.end ())
+    {
+      m_aMpduEnabled.insert (std::make_pair (dest, enableAmpdu));
+    }
 }
 
 void
