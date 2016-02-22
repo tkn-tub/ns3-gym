@@ -105,6 +105,7 @@ Bugs fixed
 - Bug 2288 - Ipv4 broadcast and multicast packets are replicated on all the interfaces.
 - Bug 2292 - Uninitialized variables since commit 7c60a9f8f271
 - Bug 2293 - Red Queue Estimator spins when trying to compute queue average size under long idle times.
+- Bug 2302 - Fixing RTT calculation inside TCP Socket
 
 Known issues
 ------------
