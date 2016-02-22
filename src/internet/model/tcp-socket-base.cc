@@ -2164,6 +2164,9 @@ TcpSocketBase::SendEmptyPacket (uint8_t flags)
           UpdateRttHistory (s, 0, true);
         }
     }
+
+  m_txTrace (p, header, this);
+
   if (m_endPoint != 0)
     {
       m_tcp->SendPacket (p, header, m_endPoint->GetLocalAddress (),
@@ -2174,8 +2177,6 @@ TcpSocketBase::SendEmptyPacket (uint8_t flags)
       m_tcp->SendPacket (p, header, m_endPoint6->GetLocalAddress (),
                          m_endPoint6->GetPeerAddress (), m_boundnetdevice);
     }
-
-  m_txTrace (p, header, this);
 
   if (flags & TcpHeader::ACK)
     { // If sending an ACK, cancel the delay ACK as well
@@ -2447,6 +2448,8 @@ TcpSocketBase::SendDataPacket (SequenceNumber32 seq, uint32_t maxSize, bool with
       m_retxEvent = Simulator::Schedule (m_rto, &TcpSocketBase::ReTxTimeout, this);
     }
 
+  m_txTrace (p, header, this);
+
   if (m_endPoint)
     {
       m_tcp->SendPacket (p, header, m_endPoint->GetLocalAddress (),
@@ -2463,8 +2466,6 @@ TcpSocketBase::SendDataPacket (SequenceNumber32 seq, uint32_t maxSize, bool with
                     remainingData << " via TcpL4Protocol to " <<  m_endPoint6->GetPeerAddress () <<
                     ". Header " << header);
     }
-
-  m_txTrace (p, header, this);
 
   UpdateRttHistory (seq, sz, isRetransmission);
 
@@ -2834,6 +2835,8 @@ TcpSocketBase::PersistTimeout ()
     }
   AddOptions (tcpHeader);
 
+  m_txTrace (p, tcpHeader, this);
+
   if (m_endPoint != 0)
     {
       m_tcp->SendPacket (p, tcpHeader, m_endPoint->GetLocalAddress (),
@@ -2844,8 +2847,6 @@ TcpSocketBase::PersistTimeout ()
       m_tcp->SendPacket (p, tcpHeader, m_endPoint6->GetLocalAddress (),
                          m_endPoint6->GetPeerAddress (), m_boundnetdevice);
     }
-
-  m_txTrace (p, tcpHeader, this);
 
   NS_LOG_LOGIC ("Schedule persist timeout at time "
                 << Simulator::Now ().GetSeconds () << " to expire at time "

@@ -89,7 +89,7 @@ TcpZeroWindowTest::Tx (const Ptr<const Packet> p, const TcpHeader &h, SocketWho 
 
       if (Simulator::Now ().GetSeconds () <= 6.0)
         {
-          NS_TEST_ASSERT_MSG_EQ (p->GetSize () - h.GetSerializedSize (), 0,
+          NS_TEST_ASSERT_MSG_EQ (p->GetSize (), 0,
                                  "Data packet sent anyway");
         }
       else if (Simulator::Now ().GetSeconds () > 6.0
@@ -99,7 +99,7 @@ TcpZeroWindowTest::Tx (const Ptr<const Packet> p, const TcpHeader &h, SocketWho 
 
           if (!m_zeroWindowProbe)
             {
-              NS_TEST_ASSERT_MSG_EQ (p->GetSize () - h.GetSerializedSize (), 1,
+              NS_TEST_ASSERT_MSG_EQ (p->GetSize (), 1,
                                      "Data packet sent instead of window probe");
               NS_TEST_ASSERT_MSG_EQ (h.GetSequenceNumber (), SequenceNumber32 (1),
                                      "Data packet sent instead of window probe");
