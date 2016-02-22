@@ -22,12 +22,12 @@ def register_types(module):
     
     ## propagation-environment.h (module 'propagation'): ns3::EnvironmentType [enumeration]
     module.add_enum('EnvironmentType', ['UrbanEnvironment', 'SubUrbanEnvironment', 'OpenAreasEnvironment'], import_from_module='ns.propagation')
+    ## ht-operations.h (module 'wifi'): ns3::HtProtectionType [enumeration]
+    module.add_enum('HtProtectionType', ['NO_PROTECTION', 'NON_MEMBER_PROTECTION', 'TWENTY_MHZ_PROTECTION', 'MIXED_MODE_PROTECTION'])
     ## qos-utils.h (module 'wifi'): ns3::AcIndex [enumeration]
     module.add_enum('AcIndex', ['AC_BE', 'AC_BK', 'AC_VI', 'AC_VO', 'AC_BE_NQOS', 'AC_UNDEF'])
     ## wifi-mac-header.h (module 'wifi'): ns3::WifiMacType [enumeration]
     module.add_enum('WifiMacType', ['WIFI_MAC_CTL_CTLWRAPPER', 'WIFI_MAC_CTL_RTS', 'WIFI_MAC_CTL_CTS', 'WIFI_MAC_CTL_ACK', 'WIFI_MAC_CTL_BACKREQ', 'WIFI_MAC_CTL_BACKRESP', 'WIFI_MAC_MGT_BEACON', 'WIFI_MAC_MGT_ASSOCIATION_REQUEST', 'WIFI_MAC_MGT_ASSOCIATION_RESPONSE', 'WIFI_MAC_MGT_DISASSOCIATION', 'WIFI_MAC_MGT_REASSOCIATION_REQUEST', 'WIFI_MAC_MGT_REASSOCIATION_RESPONSE', 'WIFI_MAC_MGT_PROBE_REQUEST', 'WIFI_MAC_MGT_PROBE_RESPONSE', 'WIFI_MAC_MGT_AUTHENTICATION', 'WIFI_MAC_MGT_DEAUTHENTICATION', 'WIFI_MAC_MGT_ACTION', 'WIFI_MAC_MGT_ACTION_NO_ACK', 'WIFI_MAC_MGT_MULTIHOP_ACTION', 'WIFI_MAC_DATA', 'WIFI_MAC_DATA_CFACK', 'WIFI_MAC_DATA_CFPOLL', 'WIFI_MAC_DATA_CFACK_CFPOLL', 'WIFI_MAC_DATA_NULL', 'WIFI_MAC_DATA_NULL_CFACK', 'WIFI_MAC_DATA_NULL_CFPOLL', 'WIFI_MAC_DATA_NULL_CFACK_CFPOLL', 'WIFI_MAC_QOSDATA', 'WIFI_MAC_QOSDATA_CFACK', 'WIFI_MAC_QOSDATA_CFPOLL', 'WIFI_MAC_QOSDATA_CFACK_CFPOLL', 'WIFI_MAC_QOSDATA_NULL', 'WIFI_MAC_QOSDATA_NULL_CFPOLL', 'WIFI_MAC_QOSDATA_NULL_CFACK_CFPOLL'])
-    ## propagation-environment.h (module 'propagation'): ns3::CitySize [enumeration]
-    module.add_enum('CitySize', ['SmallCity', 'MediumCity', 'LargeCity'], import_from_module='ns.propagation')
     ## wifi-preamble.h (module 'wifi'): ns3::WifiPreamble [enumeration]
     module.add_enum('WifiPreamble', ['WIFI_PREAMBLE_LONG', 'WIFI_PREAMBLE_SHORT', 'WIFI_PREAMBLE_HT_MF', 'WIFI_PREAMBLE_HT_GF', 'WIFI_PREAMBLE_VHT', 'WIFI_PREAMBLE_NONE'])
     ## wifi-phy.h (module 'wifi'): ns3::mpduType [enumeration]
@@ -44,6 +44,8 @@ def register_types(module):
     module.add_enum('TypeOfStation', ['STA', 'AP', 'ADHOC_STA', 'MESH', 'HT_STA', 'HT_AP', 'HT_ADHOC_STA', 'OCB'])
     ## ctrl-headers.h (module 'wifi'): ns3::BlockAckType [enumeration]
     module.add_enum('BlockAckType', ['BASIC_BLOCK_ACK', 'COMPRESSED_BLOCK_ACK', 'MULTI_TID_BLOCK_ACK'])
+    ## propagation-environment.h (module 'propagation'): ns3::CitySize [enumeration]
+    module.add_enum('CitySize', ['SmallCity', 'MediumCity', 'LargeCity'], import_from_module='ns.propagation')
     ## address.h (module 'network'): ns3::Address [class]
     module.add_class('Address', import_from_module='ns.network')
     ## address.h (module 'network'): ns3::Address::MaxSize_e [enumeration]
@@ -490,6 +492,12 @@ def register_types(module):
     module.add_class('HtCapabilitiesChecker', parent=root_module['ns3::AttributeChecker'])
     ## ht-capabilities.h (module 'wifi'): ns3::HtCapabilitiesValue [class]
     module.add_class('HtCapabilitiesValue', parent=root_module['ns3::AttributeValue'])
+    ## ht-operations.h (module 'wifi'): ns3::HtOperations [class]
+    module.add_class('HtOperations', parent=root_module['ns3::WifiInformationElement'])
+    ## ht-operations.h (module 'wifi'): ns3::HtOperationsChecker [class]
+    module.add_class('HtOperationsChecker', parent=root_module['ns3::AttributeChecker'])
+    ## ht-operations.h (module 'wifi'): ns3::HtOperationsValue [class]
+    module.add_class('HtOperationsValue', parent=root_module['ns3::AttributeValue'])
     ## ht-wifi-mac-helper.h (module 'wifi'): ns3::HtWifiMacHelper [class]
     module.add_class('HtWifiMacHelper', parent=root_module['ns3::QosWifiMacHelper'])
     ## ideal-wifi-manager.h (module 'wifi'): ns3::IdealWifiManager [class]
@@ -969,6 +977,9 @@ def register_methods(root_module):
     register_Ns3HtCapabilities_methods(root_module, root_module['ns3::HtCapabilities'])
     register_Ns3HtCapabilitiesChecker_methods(root_module, root_module['ns3::HtCapabilitiesChecker'])
     register_Ns3HtCapabilitiesValue_methods(root_module, root_module['ns3::HtCapabilitiesValue'])
+    register_Ns3HtOperations_methods(root_module, root_module['ns3::HtOperations'])
+    register_Ns3HtOperationsChecker_methods(root_module, root_module['ns3::HtOperationsChecker'])
+    register_Ns3HtOperationsValue_methods(root_module, root_module['ns3::HtOperationsValue'])
     register_Ns3HtWifiMacHelper_methods(root_module, root_module['ns3::HtWifiMacHelper'])
     register_Ns3IdealWifiManager_methods(root_module, root_module['ns3::IdealWifiManager'])
     register_Ns3IntegerValue_methods(root_module, root_module['ns3::IntegerValue'])
@@ -2147,6 +2158,11 @@ def register_Ns3DcfState_methods(root_module, cls):
                    'bool', 
                    [], 
                    is_const=True)
+    ## dcf-manager.h (module 'wifi'): bool ns3::DcfState::IsEdca() const [member function]
+    cls.add_method('IsEdca', 
+                   'bool', 
+                   [], 
+                   is_pure_virtual=True, is_const=True, is_virtual=True)
     ## dcf-manager.h (module 'wifi'): void ns3::DcfState::ResetCw() [member function]
     cls.add_method('ResetCw', 
                    'void', 
@@ -5509,6 +5525,11 @@ def register_Ns3MgtAssocResponseHeader_methods(root_module, cls):
                    'ns3::HtCapabilities', 
                    [], 
                    is_const=True)
+    ## mgt-headers.h (module 'wifi'): ns3::HtOperations ns3::MgtAssocResponseHeader::GetHtOperations() const [member function]
+    cls.add_method('GetHtOperations', 
+                   'ns3::HtOperations', 
+                   [], 
+                   is_const=True)
     ## mgt-headers.h (module 'wifi'): ns3::TypeId ns3::MgtAssocResponseHeader::GetInstanceTypeId() const [member function]
     cls.add_method('GetInstanceTypeId', 
                    'ns3::TypeId', 
@@ -5559,6 +5580,10 @@ def register_Ns3MgtAssocResponseHeader_methods(root_module, cls):
     cls.add_method('SetHtCapabilities', 
                    'void', 
                    [param('ns3::HtCapabilities', 'htcapabilities')])
+    ## mgt-headers.h (module 'wifi'): void ns3::MgtAssocResponseHeader::SetHtOperations(ns3::HtOperations htoperations) [member function]
+    cls.add_method('SetHtOperations', 
+                   'void', 
+                   [param('ns3::HtOperations', 'htoperations')])
     ## mgt-headers.h (module 'wifi'): void ns3::MgtAssocResponseHeader::SetStatusCode(ns3::StatusCode code) [member function]
     cls.add_method('SetStatusCode', 
                    'void', 
@@ -5735,6 +5760,11 @@ def register_Ns3MgtProbeResponseHeader_methods(root_module, cls):
                    'ns3::HtCapabilities', 
                    [], 
                    is_const=True)
+    ## mgt-headers.h (module 'wifi'): ns3::HtOperations ns3::MgtProbeResponseHeader::GetHtOperations() const [member function]
+    cls.add_method('GetHtOperations', 
+                   'ns3::HtOperations', 
+                   [], 
+                   is_const=True)
     ## mgt-headers.h (module 'wifi'): ns3::TypeId ns3::MgtProbeResponseHeader::GetInstanceTypeId() const [member function]
     cls.add_method('GetInstanceTypeId', 
                    'ns3::TypeId', 
@@ -5795,6 +5825,10 @@ def register_Ns3MgtProbeResponseHeader_methods(root_module, cls):
     cls.add_method('SetHtCapabilities', 
                    'void', 
                    [param('ns3::HtCapabilities', 'htcapabilities')])
+    ## mgt-headers.h (module 'wifi'): void ns3::MgtProbeResponseHeader::SetHtOperations(ns3::HtOperations htoperations) [member function]
+    cls.add_method('SetHtOperations', 
+                   'void', 
+                   [param('ns3::HtOperations', 'htoperations')])
     ## mgt-headers.h (module 'wifi'): void ns3::MgtProbeResponseHeader::SetSsid(ns3::Ssid ssid) [member function]
     cls.add_method('SetSsid', 
                    'void', 
@@ -8998,8 +9032,8 @@ def register_Ns3WifiRemoteStationManager_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
-    ## wifi-remote-station-manager.h (module 'wifi'): bool ns3::WifiRemoteStationManager::GetUseProtection() const [member function]
-    cls.add_method('GetUseProtection', 
+    ## wifi-remote-station-manager.h (module 'wifi'): bool ns3::WifiRemoteStationManager::GetUseNonErpProtection() const [member function]
+    cls.add_method('GetUseNonErpProtection', 
                    'bool', 
                    [], 
                    is_const=True)
@@ -9144,8 +9178,8 @@ def register_Ns3WifiRemoteStationManager_methods(root_module, cls):
     cls.add_method('SetShortSlotTimeEnabled', 
                    'void', 
                    [param('bool', 'enable')])
-    ## wifi-remote-station-manager.h (module 'wifi'): void ns3::WifiRemoteStationManager::SetUseProtection(bool enable) [member function]
-    cls.add_method('SetUseProtection', 
+    ## wifi-remote-station-manager.h (module 'wifi'): void ns3::WifiRemoteStationManager::SetUseNonErpProtection(bool enable) [member function]
+    cls.add_method('SetUseNonErpProtection', 
                    'void', 
                    [param('bool', 'enable')])
     ## wifi-remote-station-manager.h (module 'wifi'): void ns3::WifiRemoteStationManager::SetVhtSupported(bool enable) [member function]
@@ -12468,6 +12502,16 @@ def register_Ns3HtCapabilities_methods(root_module, cls):
                    'uint8_t', 
                    [], 
                    is_const=True)
+    ## ht-capabilities.h (module 'wifi'): uint8_t ns3::HtCapabilities::GetTxRxMcsSetUnequal() const [member function]
+    cls.add_method('GetTxRxMcsSetUnequal', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True)
+    ## ht-capabilities.h (module 'wifi'): uint8_t ns3::HtCapabilities::GetTxUnequalModulation() const [member function]
+    cls.add_method('GetTxUnequalModulation', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True)
     ## ht-capabilities.h (module 'wifi'): bool ns3::HtCapabilities::IsSupportedMcs(uint8_t mcs) [member function]
     cls.add_method('IsSupportedMcs', 
                    'bool', 
@@ -12558,6 +12602,14 @@ def register_Ns3HtCapabilities_methods(root_module, cls):
     cls.add_method('SetTxMcsSetDefined', 
                    'void', 
                    [param('uint8_t', 'txmcssetdefined')])
+    ## ht-capabilities.h (module 'wifi'): void ns3::HtCapabilities::SetTxRxMcsSetUnequal(uint8_t txrxmcssetunequal) [member function]
+    cls.add_method('SetTxRxMcsSetUnequal', 
+                   'void', 
+                   [param('uint8_t', 'txrxmcssetunequal')])
+    ## ht-capabilities.h (module 'wifi'): void ns3::HtCapabilities::SetTxUnequalModulation(uint8_t txunequalmodulation) [member function]
+    cls.add_method('SetTxUnequalModulation', 
+                   'void', 
+                   [param('uint8_t', 'txunequalmodulation')])
     return
 
 def register_Ns3HtCapabilitiesChecker_methods(root_module, cls):
@@ -12598,6 +12650,299 @@ def register_Ns3HtCapabilitiesValue_methods(root_module, cls):
     cls.add_method('Set', 
                    'void', 
                    [param('ns3::HtCapabilities const &', 'value')])
+    return
+
+def register_Ns3HtOperations_methods(root_module, cls):
+    cls.add_output_stream_operator()
+    ## ht-operations.h (module 'wifi'): ns3::HtOperations::HtOperations(ns3::HtOperations const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::HtOperations const &', 'arg0')])
+    ## ht-operations.h (module 'wifi'): ns3::HtOperations::HtOperations() [constructor]
+    cls.add_constructor([])
+    ## ht-operations.h (module 'wifi'): uint8_t ns3::HtOperations::DeserializeInformationField(ns3::Buffer::Iterator start, uint8_t length) [member function]
+    cls.add_method('DeserializeInformationField', 
+                   'uint8_t', 
+                   [param('ns3::Buffer::Iterator', 'start'), param('uint8_t', 'length')], 
+                   is_virtual=True)
+    ## ht-operations.h (module 'wifi'): ns3::WifiInformationElementId ns3::HtOperations::ElementId() const [member function]
+    cls.add_method('ElementId', 
+                   'ns3::WifiInformationElementId', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## ht-operations.h (module 'wifi'): uint64_t ns3::HtOperations::GetBasicMcsSet1() const [member function]
+    cls.add_method('GetBasicMcsSet1', 
+                   'uint64_t', 
+                   [], 
+                   is_const=True)
+    ## ht-operations.h (module 'wifi'): uint64_t ns3::HtOperations::GetBasicMcsSet2() const [member function]
+    cls.add_method('GetBasicMcsSet2', 
+                   'uint64_t', 
+                   [], 
+                   is_const=True)
+    ## ht-operations.h (module 'wifi'): uint8_t ns3::HtOperations::GetDualBeacon() const [member function]
+    cls.add_method('GetDualBeacon', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True)
+    ## ht-operations.h (module 'wifi'): uint8_t ns3::HtOperations::GetDualCtsProtection() const [member function]
+    cls.add_method('GetDualCtsProtection', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True)
+    ## ht-operations.h (module 'wifi'): uint8_t ns3::HtOperations::GetHtProtection() const [member function]
+    cls.add_method('GetHtProtection', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True)
+    ## ht-operations.h (module 'wifi'): uint8_t ns3::HtOperations::GetInformationFieldSize() const [member function]
+    cls.add_method('GetInformationFieldSize', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## ht-operations.h (module 'wifi'): uint8_t ns3::HtOperations::GetInformationSubset1() const [member function]
+    cls.add_method('GetInformationSubset1', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True)
+    ## ht-operations.h (module 'wifi'): uint16_t ns3::HtOperations::GetInformationSubset2() const [member function]
+    cls.add_method('GetInformationSubset2', 
+                   'uint16_t', 
+                   [], 
+                   is_const=True)
+    ## ht-operations.h (module 'wifi'): uint16_t ns3::HtOperations::GetInformationSubset3() const [member function]
+    cls.add_method('GetInformationSubset3', 
+                   'uint16_t', 
+                   [], 
+                   is_const=True)
+    ## ht-operations.h (module 'wifi'): uint8_t ns3::HtOperations::GetLSigTxopProtectionFullSupport() const [member function]
+    cls.add_method('GetLSigTxopProtectionFullSupport', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True)
+    ## ht-operations.h (module 'wifi'): uint8_t ns3::HtOperations::GetNonGfHtStasPresent() const [member function]
+    cls.add_method('GetNonGfHtStasPresent', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True)
+    ## ht-operations.h (module 'wifi'): uint8_t ns3::HtOperations::GetObssNonHtStasPresent() const [member function]
+    cls.add_method('GetObssNonHtStasPresent', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True)
+    ## ht-operations.h (module 'wifi'): uint8_t ns3::HtOperations::GetPcoActive() const [member function]
+    cls.add_method('GetPcoActive', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True)
+    ## ht-operations.h (module 'wifi'): uint8_t ns3::HtOperations::GetPhase() const [member function]
+    cls.add_method('GetPhase', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True)
+    ## ht-operations.h (module 'wifi'): uint8_t ns3::HtOperations::GetPrimaryChannel() const [member function]
+    cls.add_method('GetPrimaryChannel', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True)
+    ## ht-operations.h (module 'wifi'): uint8_t ns3::HtOperations::GetRifsMode() const [member function]
+    cls.add_method('GetRifsMode', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True)
+    ## ht-operations.h (module 'wifi'): uint16_t ns3::HtOperations::GetRxHighestSupportedDataRate() const [member function]
+    cls.add_method('GetRxHighestSupportedDataRate', 
+                   'uint16_t', 
+                   [], 
+                   is_const=True)
+    ## ht-operations.h (module 'wifi'): uint8_t ns3::HtOperations::GetSecondaryChannelOffset() const [member function]
+    cls.add_method('GetSecondaryChannelOffset', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True)
+    ## ht-operations.h (module 'wifi'): uint16_t ns3::HtOperations::GetSerializedSize() const [member function]
+    cls.add_method('GetSerializedSize', 
+                   'uint16_t', 
+                   [], 
+                   is_const=True)
+    ## ht-operations.h (module 'wifi'): uint8_t ns3::HtOperations::GetStaChannelWidth() const [member function]
+    cls.add_method('GetStaChannelWidth', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True)
+    ## ht-operations.h (module 'wifi'): uint8_t ns3::HtOperations::GetStbcBeacon() const [member function]
+    cls.add_method('GetStbcBeacon', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True)
+    ## ht-operations.h (module 'wifi'): uint8_t ns3::HtOperations::GetTxMaxNSpatialStreams() const [member function]
+    cls.add_method('GetTxMaxNSpatialStreams', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True)
+    ## ht-operations.h (module 'wifi'): uint8_t ns3::HtOperations::GetTxMcsSetDefined() const [member function]
+    cls.add_method('GetTxMcsSetDefined', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True)
+    ## ht-operations.h (module 'wifi'): uint8_t ns3::HtOperations::GetTxRxMcsSetUnequal() const [member function]
+    cls.add_method('GetTxRxMcsSetUnequal', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True)
+    ## ht-operations.h (module 'wifi'): uint8_t ns3::HtOperations::GetTxUnequalModulation() const [member function]
+    cls.add_method('GetTxUnequalModulation', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True)
+    ## ht-operations.h (module 'wifi'): bool ns3::HtOperations::IsSupportedMcs(uint8_t mcs) [member function]
+    cls.add_method('IsSupportedMcs', 
+                   'bool', 
+                   [param('uint8_t', 'mcs')])
+    ## ht-operations.h (module 'wifi'): ns3::Buffer::Iterator ns3::HtOperations::Serialize(ns3::Buffer::Iterator start) const [member function]
+    cls.add_method('Serialize', 
+                   'ns3::Buffer::Iterator', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_const=True)
+    ## ht-operations.h (module 'wifi'): void ns3::HtOperations::SerializeInformationField(ns3::Buffer::Iterator start) const [member function]
+    cls.add_method('SerializeInformationField', 
+                   'void', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_const=True, is_virtual=True)
+    ## ht-operations.h (module 'wifi'): void ns3::HtOperations::SetBasicMcsSet(uint64_t ctrl1, uint64_t ctrl2) [member function]
+    cls.add_method('SetBasicMcsSet', 
+                   'void', 
+                   [param('uint64_t', 'ctrl1'), param('uint64_t', 'ctrl2')])
+    ## ht-operations.h (module 'wifi'): void ns3::HtOperations::SetDualBeacon(uint8_t dualbeacon) [member function]
+    cls.add_method('SetDualBeacon', 
+                   'void', 
+                   [param('uint8_t', 'dualbeacon')])
+    ## ht-operations.h (module 'wifi'): void ns3::HtOperations::SetDualCtsProtection(uint8_t dualctsprotection) [member function]
+    cls.add_method('SetDualCtsProtection', 
+                   'void', 
+                   [param('uint8_t', 'dualctsprotection')])
+    ## ht-operations.h (module 'wifi'): void ns3::HtOperations::SetHtProtection(uint8_t htprotection) [member function]
+    cls.add_method('SetHtProtection', 
+                   'void', 
+                   [param('uint8_t', 'htprotection')])
+    ## ht-operations.h (module 'wifi'): void ns3::HtOperations::SetHtSupported(uint8_t htsupported) [member function]
+    cls.add_method('SetHtSupported', 
+                   'void', 
+                   [param('uint8_t', 'htsupported')])
+    ## ht-operations.h (module 'wifi'): void ns3::HtOperations::SetInformationSubset1(uint8_t ctrl) [member function]
+    cls.add_method('SetInformationSubset1', 
+                   'void', 
+                   [param('uint8_t', 'ctrl')])
+    ## ht-operations.h (module 'wifi'): void ns3::HtOperations::SetInformationSubset2(uint16_t ctrl) [member function]
+    cls.add_method('SetInformationSubset2', 
+                   'void', 
+                   [param('uint16_t', 'ctrl')])
+    ## ht-operations.h (module 'wifi'): void ns3::HtOperations::SetInformationSubset3(uint16_t ctrl) [member function]
+    cls.add_method('SetInformationSubset3', 
+                   'void', 
+                   [param('uint16_t', 'ctrl')])
+    ## ht-operations.h (module 'wifi'): void ns3::HtOperations::SetLSigTxopProtectionFullSupport(uint8_t lsigtxopprotectionfullsupport) [member function]
+    cls.add_method('SetLSigTxopProtectionFullSupport', 
+                   'void', 
+                   [param('uint8_t', 'lsigtxopprotectionfullsupport')])
+    ## ht-operations.h (module 'wifi'): void ns3::HtOperations::SetNonGfHtStasPresent(uint8_t nongfhtstaspresent) [member function]
+    cls.add_method('SetNonGfHtStasPresent', 
+                   'void', 
+                   [param('uint8_t', 'nongfhtstaspresent')])
+    ## ht-operations.h (module 'wifi'): void ns3::HtOperations::SetObssNonHtStasPresent(uint8_t obssnonhtstaspresent) [member function]
+    cls.add_method('SetObssNonHtStasPresent', 
+                   'void', 
+                   [param('uint8_t', 'obssnonhtstaspresent')])
+    ## ht-operations.h (module 'wifi'): void ns3::HtOperations::SetPcoActive(uint8_t pcoactive) [member function]
+    cls.add_method('SetPcoActive', 
+                   'void', 
+                   [param('uint8_t', 'pcoactive')])
+    ## ht-operations.h (module 'wifi'): void ns3::HtOperations::SetPhase(uint8_t pcophase) [member function]
+    cls.add_method('SetPhase', 
+                   'void', 
+                   [param('uint8_t', 'pcophase')])
+    ## ht-operations.h (module 'wifi'): void ns3::HtOperations::SetPrimaryChannel(uint8_t ctrl) [member function]
+    cls.add_method('SetPrimaryChannel', 
+                   'void', 
+                   [param('uint8_t', 'ctrl')])
+    ## ht-operations.h (module 'wifi'): void ns3::HtOperations::SetRifsMode(uint8_t rifsmode) [member function]
+    cls.add_method('SetRifsMode', 
+                   'void', 
+                   [param('uint8_t', 'rifsmode')])
+    ## ht-operations.h (module 'wifi'): void ns3::HtOperations::SetRxHighestSupportedDataRate(uint16_t maxsupportedrate) [member function]
+    cls.add_method('SetRxHighestSupportedDataRate', 
+                   'void', 
+                   [param('uint16_t', 'maxsupportedrate')])
+    ## ht-operations.h (module 'wifi'): void ns3::HtOperations::SetRxMcsBitmask(uint8_t index) [member function]
+    cls.add_method('SetRxMcsBitmask', 
+                   'void', 
+                   [param('uint8_t', 'index')])
+    ## ht-operations.h (module 'wifi'): void ns3::HtOperations::SetSecondaryChannelOffset(uint8_t secondarychanneloffset) [member function]
+    cls.add_method('SetSecondaryChannelOffset', 
+                   'void', 
+                   [param('uint8_t', 'secondarychanneloffset')])
+    ## ht-operations.h (module 'wifi'): void ns3::HtOperations::SetStaChannelWidth(uint8_t stachannelwidth) [member function]
+    cls.add_method('SetStaChannelWidth', 
+                   'void', 
+                   [param('uint8_t', 'stachannelwidth')])
+    ## ht-operations.h (module 'wifi'): void ns3::HtOperations::SetStbcBeacon(uint8_t stbcbeacon) [member function]
+    cls.add_method('SetStbcBeacon', 
+                   'void', 
+                   [param('uint8_t', 'stbcbeacon')])
+    ## ht-operations.h (module 'wifi'): void ns3::HtOperations::SetTxMaxNSpatialStreams(uint8_t maxtxspatialstreams) [member function]
+    cls.add_method('SetTxMaxNSpatialStreams', 
+                   'void', 
+                   [param('uint8_t', 'maxtxspatialstreams')])
+    ## ht-operations.h (module 'wifi'): void ns3::HtOperations::SetTxMcsSetDefined(uint8_t txmcssetdefined) [member function]
+    cls.add_method('SetTxMcsSetDefined', 
+                   'void', 
+                   [param('uint8_t', 'txmcssetdefined')])
+    ## ht-operations.h (module 'wifi'): void ns3::HtOperations::SetTxRxMcsSetUnequal(uint8_t txrxmcssetunequal) [member function]
+    cls.add_method('SetTxRxMcsSetUnequal', 
+                   'void', 
+                   [param('uint8_t', 'txrxmcssetunequal')])
+    ## ht-operations.h (module 'wifi'): void ns3::HtOperations::SetTxUnequalModulation(uint8_t txunequalmodulation) [member function]
+    cls.add_method('SetTxUnequalModulation', 
+                   'void', 
+                   [param('uint8_t', 'txunequalmodulation')])
+    return
+
+def register_Ns3HtOperationsChecker_methods(root_module, cls):
+    ## ht-operations.h (module 'wifi'): ns3::HtOperationsChecker::HtOperationsChecker() [constructor]
+    cls.add_constructor([])
+    ## ht-operations.h (module 'wifi'): ns3::HtOperationsChecker::HtOperationsChecker(ns3::HtOperationsChecker const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::HtOperationsChecker const &', 'arg0')])
+    return
+
+def register_Ns3HtOperationsValue_methods(root_module, cls):
+    ## ht-operations.h (module 'wifi'): ns3::HtOperationsValue::HtOperationsValue() [constructor]
+    cls.add_constructor([])
+    ## ht-operations.h (module 'wifi'): ns3::HtOperationsValue::HtOperationsValue(ns3::HtOperationsValue const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::HtOperationsValue const &', 'arg0')])
+    ## ht-operations.h (module 'wifi'): ns3::HtOperationsValue::HtOperationsValue(ns3::HtOperations const & value) [constructor]
+    cls.add_constructor([param('ns3::HtOperations const &', 'value')])
+    ## ht-operations.h (module 'wifi'): ns3::Ptr<ns3::AttributeValue> ns3::HtOperationsValue::Copy() const [member function]
+    cls.add_method('Copy', 
+                   'ns3::Ptr< ns3::AttributeValue >', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## ht-operations.h (module 'wifi'): bool ns3::HtOperationsValue::DeserializeFromString(std::string value, ns3::Ptr<ns3::AttributeChecker const> checker) [member function]
+    cls.add_method('DeserializeFromString', 
+                   'bool', 
+                   [param('std::string', 'value'), param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
+                   is_virtual=True)
+    ## ht-operations.h (module 'wifi'): ns3::HtOperations ns3::HtOperationsValue::Get() const [member function]
+    cls.add_method('Get', 
+                   'ns3::HtOperations', 
+                   [], 
+                   is_const=True)
+    ## ht-operations.h (module 'wifi'): std::string ns3::HtOperationsValue::SerializeToString(ns3::Ptr<ns3::AttributeChecker const> checker) const [member function]
+    cls.add_method('SerializeToString', 
+                   'std::string', 
+                   [param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
+                   is_const=True, is_virtual=True)
+    ## ht-operations.h (module 'wifi'): void ns3::HtOperationsValue::Set(ns3::HtOperations const & value) [member function]
+    cls.add_method('Set', 
+                   'void', 
+                   [param('ns3::HtOperations const &', 'value')])
     return
 
 def register_Ns3HtWifiMacHelper_methods(root_module, cls):
@@ -16336,6 +16681,10 @@ def register_functions(root_module):
                         [])
     ## ht-capabilities.h (module 'wifi'): extern ns3::Ptr<ns3::AttributeChecker const> ns3::MakeHtCapabilitiesChecker() [free function]
     module.add_function('MakeHtCapabilitiesChecker', 
+                        'ns3::Ptr< ns3::AttributeChecker const >', 
+                        [])
+    ## ht-operations.h (module 'wifi'): extern ns3::Ptr<ns3::AttributeChecker const> ns3::MakeHtOperationsChecker() [free function]
+    module.add_function('MakeHtOperationsChecker', 
                         'ns3::Ptr< ns3::AttributeChecker const >', 
                         [])
     ## ssid.h (module 'wifi'): extern ns3::Ptr<ns3::AttributeChecker const> ns3::MakeSsidChecker() [free function]
