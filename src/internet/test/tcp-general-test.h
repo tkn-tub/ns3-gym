@@ -60,9 +60,11 @@ public:
   }
 
   typedef Callback<void, Ptr<const Packet>, const TcpHeader&,
-                   Ptr<const TcpSocketBase> > AckManagementCallback;
+                   Ptr<const TcpSocketBase> > AckManagementCb;
   typedef Callback<void, Ptr<const TcpSocketState>,
-                   Ptr<const TcpSocketBase> > RetrCallback;
+                   Ptr<const TcpSocketBase> > RetrCb;
+  typedef Callback<void, Ptr<const TcpSocketBase>, const SequenceNumber32&,
+                   uint32_t, bool> UpdateRttCallback;
 
   /**
    * \brief Set the callback invoked when an ACK is received (at the beginning
@@ -70,7 +72,7 @@ public:
    *
    * \param cb callback
    */
-  void SetRcvAckCb (AckManagementCallback cb);
+  void SetRcvAckCb (AckManagementCb cb);
 
   /**
    * \brief Set the callback invoked when an ACK is received and processed
@@ -78,14 +80,14 @@ public:
    *
    * \param cb callback
    */
-  void SetProcessedAckCb (AckManagementCallback cb);
+  void SetProcessedAckCb (AckManagementCb cb);
 
   /**
    * \brief Set the callback invoked after the processing of a retransmit timeout
    *
    * \param cb callback
    */
-  void SetRetransmitCb (RetrCallback cb);
+  void SetRetransmitCb (RetrCb cb);
 
   /**
    * \brief Set the callback invoked after the forking
@@ -93,18 +95,28 @@ public:
    */
   void SetForkCb (Callback<void, Ptr<TcpSocketMsgBase> > cb);
 
+  /**
+   * \brief Set the callback invoked when we update rtt history
+   *
+   * \param cb callback
+   */
+  void SetUpdateRttHistoryCb (UpdateRttCallback cb);
+
 protected:
   virtual void ReceivedAck (Ptr<Packet> packet, const TcpHeader& tcpHeader);
   virtual void Retransmit (void);
   virtual Ptr<TcpSocketBase> Fork (void);
   virtual void CompleteFork (Ptr<Packet> p, const TcpHeader& tcpHeader,
                              const Address& fromAddress, const Address& toAddress);
+  virtual void UpdateRttHistory (const SequenceNumber32 &seq, uint32_t sz,
+                                 bool isRetransmission);
 
 private:
-  AckManagementCallback m_rcvAckCb;
-  AckManagementCallback m_processedAckCb;
-  RetrCallback m_retrCallback;
+  AckManagementCb m_rcvAckCb;
+  AckManagementCb m_processedAckCb;
+  RetrCb m_retrCallback;
   Callback<void, Ptr<TcpSocketMsgBase> > m_forkCb;
+  UpdateRttCallback m_updateRttCb;
 };
 
 
@@ -129,16 +141,17 @@ public:
 
   TcpSocketSmallAcks ()
     : TcpSocketMsgBase (),
-    m_bytesToAck (125),
-    m_bytesLeftToBeAcked (0),
-    m_lastAckedSeq (1)
+      m_bytesToAck (125),
+      m_bytesLeftToBeAcked (0),
+      m_lastAckedSeq (1)
   {
   }
 
-  TcpSocketSmallAcks (const TcpSocketSmallAcks &other) : TcpSocketMsgBase (other),
-    m_bytesToAck (other.m_bytesToAck),
-    m_bytesLeftToBeAcked (other.m_bytesLeftToBeAcked),
-    m_lastAckedSeq (other.m_lastAckedSeq)
+  TcpSocketSmallAcks (const TcpSocketSmallAcks &other) 
+    : TcpSocketMsgBase (other),
+      m_bytesToAck (other.m_bytesToAck),
+      m_bytesLeftToBeAcked (other.m_bytesLeftToBeAcked),
+      m_lastAckedSeq (other.m_lastAckedSeq)
   {
   }
 
@@ -464,7 +477,7 @@ protected:
    * \param newValue new value
    */
   virtual void CongStateTrace (const TcpSocketState::TcpCongState_t oldValue,
-                              const TcpSocketState::TcpCongState_t newValue)
+                               const TcpSocketState::TcpCongState_t newValue)
   {
   }
 
@@ -577,6 +590,18 @@ protected:
    * \param who where the RTO has expired (SENDER or RECEIVER)
    */
   virtual void RTOExpired (const Ptr<const TcpSocketState> tcb, SocketWho who)
+  {
+  }
+
+  /**
+   * \brief Updated the Rtt history
+   * \param seq Sequence inserted
+   * \param sz size
+   * \param isRetransmission self-explanatory
+   * \param who where the rtt history was updated
+   */
+  virtual void UpdatedRttHistory (const SequenceNumber32 & seq, uint32_t sz,
+                                  bool isRetransmission, SocketWho who)
   {
   }
 
@@ -709,6 +734,8 @@ private:
                        const Ptr<const TcpSocketBase> tcp);
   void RtoExpiredCb   (const Ptr<const TcpSocketState> tcb,
                        const Ptr<const TcpSocketBase> tcp);
+  void UpdateRttHistoryCb (Ptr<const TcpSocketBase> tcp, const SequenceNumber32&seq,
+                           uint32_t sz, bool isRetransmission);
   void DataSentCb     (Ptr<Socket> socket, uint32_t size);
   void ForkCb         (Ptr<TcpSocketMsgBase> tcp);
   void HandleAccept (Ptr<Socket> socket, const Address& from);

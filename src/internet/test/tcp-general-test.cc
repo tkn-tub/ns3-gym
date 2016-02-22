@@ -164,6 +164,7 @@ TcpGeneralTest::DoRun (void)
   m_receiverSocket->SetProcessedAckCb (MakeCallback (&TcpGeneralTest::ProcessedAckCb, this));
   m_receiverSocket->SetRetransmitCb (MakeCallback (&TcpGeneralTest::RtoExpiredCb, this));
   m_receiverSocket->SetForkCb (MakeCallback (&TcpGeneralTest::ForkCb, this));
+  m_receiverSocket->SetUpdateRttHistoryCb (MakeCallback (&TcpGeneralTest::UpdateRttHistoryCb, this));
   m_receiverSocket->TraceConnectWithoutContext ("Tx",
                                                 MakeCallback (&TcpGeneralTest::TxPacketCb, this));
   m_receiverSocket->TraceConnectWithoutContext ("Rx",
@@ -181,6 +182,7 @@ TcpGeneralTest::DoRun (void)
   m_senderSocket->SetProcessedAckCb (MakeCallback (&TcpGeneralTest::ProcessedAckCb, this));
   m_senderSocket->SetRetransmitCb (MakeCallback (&TcpGeneralTest::RtoExpiredCb, this));
   m_senderSocket->SetDataSentCallback (MakeCallback (&TcpGeneralTest::DataSentCb, this));
+  m_senderSocket->SetUpdateRttHistoryCb (MakeCallback (&TcpGeneralTest::UpdateRttHistoryCb, this));
   m_senderSocket->TraceConnectWithoutContext ("CongestionWindow",
                                               MakeCallback (&TcpGeneralTest::CWndTrace, this));
   m_senderSocket->TraceConnectWithoutContext ("CongState",
@@ -327,6 +329,25 @@ TcpGeneralTest::NormalCloseCb (Ptr<Socket> socket)
   else if (socket->GetNode () == m_senderSocket->GetNode ())
     {
       NormalClose (SENDER);
+    }
+  else
+    {
+      NS_FATAL_ERROR ("Closed socket, but not recognized");
+    }
+}
+
+void
+TcpGeneralTest::UpdateRttHistoryCb (Ptr<const TcpSocketBase> tcp,
+                                    const SequenceNumber32 & seq, uint32_t sz,
+                                    bool isRetransmission)
+{
+  if (tcp->GetNode () == m_receiverSocket->GetNode ())
+    {
+      UpdatedRttHistory (seq, sz, isRetransmission, RECEIVER);
+    }
+  else if (tcp->GetNode () == m_senderSocket->GetNode ())
+    {
+      UpdatedRttHistory (seq, sz, isRetransmission, SENDER);
     }
   else
     {
@@ -775,21 +796,21 @@ TcpSocketMsgBase::Fork (void)
 }
 
 void
-TcpSocketMsgBase::SetRcvAckCb (AckManagementCallback cb)
+TcpSocketMsgBase::SetRcvAckCb (AckManagementCb cb)
 {
   NS_ASSERT (!cb.IsNull ());
   m_rcvAckCb = cb;
 }
 
 void
-TcpSocketMsgBase::SetProcessedAckCb (AckManagementCallback cb)
+TcpSocketMsgBase::SetProcessedAckCb (AckManagementCb cb)
 {
   NS_ASSERT (!cb.IsNull ());
   m_processedAckCb = cb;
 }
 
 void
-TcpSocketMsgBase::SetRetransmitCb (RetrCallback cb)
+TcpSocketMsgBase::SetRetransmitCb (RetrCb cb)
 {
   NS_ASSERT (!cb.IsNull ());
   m_retrCallback = cb;
@@ -819,6 +840,24 @@ TcpSocketMsgBase::SetForkCb (Callback<void, Ptr<TcpSocketMsgBase> > cb)
 {
   NS_ASSERT (!cb.IsNull ());
   m_forkCb = cb;
+}
+
+void
+TcpSocketMsgBase::SetUpdateRttHistoryCb (UpdateRttCallback cb)
+{
+  NS_ASSERT (!cb.IsNull ());
+  m_updateRttCb = cb;
+}
+
+void
+TcpSocketMsgBase::UpdateRttHistory (const SequenceNumber32 &seq, uint32_t sz,
+                                    bool isRetransmission)
+{
+  TcpSocketBase::UpdateRttHistory (seq, sz, isRetransmission);
+  if (!m_updateRttCb.IsNull ())
+    {
+      m_updateRttCb (this, seq, sz, isRetransmission);
+    }
 }
 
 void
