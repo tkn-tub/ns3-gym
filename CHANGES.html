@@ -69,6 +69,7 @@ us a note on ns-developers mailing list.</p>
       <li>Some member variables have been moved from TcpSocketBase inside TcpSocketState. Attributes are not touched.</li>
       <li>Congestion control splitted from TcpSocketBase as subclass of TcpCongestionOps.</li>
       <li>Added Rx and Tx callbacks on TcpSocketBase.</li>
+      <li>Added BytesInFlight trace source on TcpSocketBase. The trace is updated when the implementation requests the value.</li>
       <li>Added attributes about the number of connection and data retransmission attempts.</li>
     </ul>
   </li>

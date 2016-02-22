@@ -156,6 +156,10 @@ TcpSocketBase::GetTypeId (void)
                      "Remote side's flow control window",
                      MakeTraceSourceAccessor (&TcpSocketBase::m_rWnd),
                      "ns3::TracedValueCallback::Uint32")
+    .AddTraceSource ("BytesInFlight",
+                     "Socket estimation of bytes in flight",
+                     MakeTraceSourceAccessor (&TcpSocketBase::m_bytesInFlight),
+                     "ns3::TracedValueCallback::Uint32")
     .AddTraceSource ("HighestRxSequence",
                      "Highest sequence number received from peer",
                      MakeTraceSourceAccessor (&TcpSocketBase::m_highRxMark),
@@ -285,6 +289,7 @@ TcpSocketBase::TcpSocketBase (void)
     m_highTxAck (0),
     m_highRxAckMark (0),
     m_bytesAckedNotProcessed (0),
+    m_bytesInFlight (0),
     m_winScalingEnabled (false),
     m_rcvWindShift (0),
     m_sndWindShift (0),
@@ -354,6 +359,7 @@ TcpSocketBase::TcpSocketBase (const TcpSocketBase& sock)
     m_highRxMark (sock.m_highRxMark),
     m_highRxAckMark (sock.m_highRxAckMark),
     m_bytesAckedNotProcessed (sock.m_bytesAckedNotProcessed),
+    m_bytesInFlight (sock.m_bytesInFlight),
     m_winScalingEnabled (sock.m_winScalingEnabled),
     m_rcvWindShift (sock.m_rcvWindShift),
     m_sndWindShift (sock.m_sndWindShift),
@@ -2571,10 +2577,19 @@ TcpSocketBase::UnAckDataCount () const
 }
 
 uint32_t
-TcpSocketBase::BytesInFlight () const
+TcpSocketBase::BytesInFlight ()
 {
   NS_LOG_FUNCTION (this);
-  return m_highTxMark.Get () - m_txBuffer->HeadSequence ();
+  uint32_t bytesInFlight = m_highTxMark.Get () - m_txBuffer->HeadSequence ();
+
+  // m_bytesInFlight is traced; avoid useless assignments which would fire
+  // fruitlessly the callback
+  if (m_bytesInFlight != bytesInFlight)
+    {
+      m_bytesInFlight = bytesInFlight;
+    }
+
+  return bytesInFlight;
 }
 
 uint32_t

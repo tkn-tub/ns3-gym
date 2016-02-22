@@ -724,7 +724,7 @@ protected:
    * \brief Return total bytes in flight
    * \returns total bytes in flight
    */
-  virtual uint32_t BytesInFlight (void) const;
+  virtual uint32_t BytesInFlight (void);
 
   /**
    * \brief Return the max possible number of unacked bytes
@@ -951,6 +951,7 @@ protected:
   SequenceNumber32 m_highTxAck;                   //!< Highest ack sent
   TracedValue<SequenceNumber32> m_highRxAckMark;  //!< Highest ack received
   uint32_t                      m_bytesAckedNotProcessed;  //!< Bytes acked, but not processed
+  TracedValue<uint32_t>         m_bytesInFlight; //!< Bytes in flight
 
   // Options
   bool    m_winScalingEnabled; //!< Window Scale option enabled (RFC 7323)
