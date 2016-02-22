@@ -645,6 +645,7 @@ def register_types(module):
     ## dca-txop.h (module 'wifi'): ns3::DcaTxop [class]
     module.add_class('DcaTxop', parent=root_module['ns3::Dcf'])
     module.add_container('ns3::WifiModeList', 'ns3::WifiMode', container_type=u'vector')
+    module.add_container('std::map< ns3::Mac48Address, bool >', ('ns3::Mac48Address', 'bool'), container_type=u'map')
     module.add_container('std::list< std::pair< ns3::Ptr< ns3::Packet >, ns3::AmpduSubframeHeader > >', 'std::pair< ns3::Ptr< ns3::Packet >, ns3::AmpduSubframeHeader >', container_type=u'list')
     module.add_container('std::list< std::pair< ns3::Ptr< ns3::Packet >, ns3::AmsduSubframeHeader > >', 'std::pair< ns3::Ptr< ns3::Packet >, ns3::AmsduSubframeHeader >', container_type=u'list')
     typehandlers.add_type_alias(u'std::vector< ns3::RateInfo, std::allocator< ns3::RateInfo > >', u'ns3::MinstrelRate')
@@ -3075,10 +3076,10 @@ def register_Ns3MacLowAggregationCapableTransmissionListener_methods(root_module
                    'void', 
                    [param('uint8_t', 'tid'), param('ns3::Mac48Address', 'recipient'), param('uint16_t', 'seqnumber')], 
                    is_virtual=True)
-    ## mac-low.h (module 'wifi'): void ns3::MacLowAggregationCapableTransmissionListener::SetAmpdu(bool ampdu) [member function]
+    ## mac-low.h (module 'wifi'): void ns3::MacLowAggregationCapableTransmissionListener::SetAmpdu(ns3::Mac48Address dest, bool enableAmpdu) [member function]
     cls.add_method('SetAmpdu', 
                    'void', 
-                   [param('bool', 'ampdu')], 
+                   [param('ns3::Mac48Address', 'dest'), param('bool', 'enableAmpdu')], 
                    is_virtual=True)
     return
 
@@ -11306,6 +11307,8 @@ def register_Ns3DoubleValue_methods(root_module, cls):
     return
 
 def register_Ns3EdcaTxopN_methods(root_module, cls):
+    ## edca-txop-n.h (module 'wifi'): ns3::EdcaTxopN::m_aMpduEnabled [variable]
+    cls.add_instance_attribute('m_aMpduEnabled', 'std::map< ns3::Mac48Address, bool >', is_const=False)
     ## edca-txop-n.h (module 'wifi'): static ns3::TypeId ns3::EdcaTxopN::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
@@ -11585,14 +11588,14 @@ def register_Ns3EdcaTxopN_methods(root_module, cls):
     cls.add_method('CompleteMpduTx', 
                    'void', 
                    [param('ns3::Ptr< ns3::Packet const >', 'packet'), param('ns3::WifiMacHeader', 'hdr'), param('ns3::Time', 'tstamp')])
-    ## edca-txop-n.h (module 'wifi'): bool ns3::EdcaTxopN::GetAmpduExist() [member function]
+    ## edca-txop-n.h (module 'wifi'): bool ns3::EdcaTxopN::GetAmpduExist(ns3::Mac48Address dest) [member function]
     cls.add_method('GetAmpduExist', 
                    'bool', 
-                   [])
-    ## edca-txop-n.h (module 'wifi'): void ns3::EdcaTxopN::SetAmpduExist(bool ampdu) [member function]
+                   [param('ns3::Mac48Address', 'dest')])
+    ## edca-txop-n.h (module 'wifi'): void ns3::EdcaTxopN::SetAmpduExist(ns3::Mac48Address dest, bool enableAmpdu) [member function]
     cls.add_method('SetAmpduExist', 
                    'void', 
-                   [param('bool', 'ampdu')])
+                   [param('ns3::Mac48Address', 'dest'), param('bool', 'enableAmpdu')])
     ## edca-txop-n.h (module 'wifi'): uint16_t ns3::EdcaTxopN::GetNextSequenceNumberfor(ns3::WifiMacHeader * hdr) [member function]
     cls.add_method('GetNextSequenceNumberfor', 
                    'uint16_t', 
