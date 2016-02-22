@@ -807,7 +807,7 @@ MacLow::StartTransmission (Ptr<const Packet> packet,
     }
   else
     {
-      if ((m_ctsToSelfSupported || m_stationManager->GetUseProtection ()) && NeedCtsToSelf ())
+      if ((m_ctsToSelfSupported || m_stationManager->GetUseNonErpProtection ()) && NeedCtsToSelf ())
         {
           SendCtsToSelf ();
         }

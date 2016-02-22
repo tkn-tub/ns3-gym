@@ -1,0 +1,519 @@
+/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/*
+ * Copyright (c) 2016 Sébastien Deronne
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation;
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * Author: Sébastien Deronne <sebastien.deronne@gmail.com>
+ */
+
+#include "ht-operations.h"
+#include "ns3/assert.h"
+#include "ns3/log.h"
+
+namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("HtOperations");
+
+HtOperations::HtOperations ()
+  : m_primaryChannel (0),
+    m_secondaryChannelOffset (0),
+    m_staChannelWidth (0),
+    m_rifsMode (0),
+    m_reservedInformationSubset1 (0),
+    m_htProtection (0),
+    m_nonGfHtStasPresent (0),
+    m_reservedInformationSubset2_1 (0),
+    m_obssNonHtStasPresent (0),
+    m_reservedInformationSubset2_2 (0),
+    m_reservedInformationSubset3_1 (0),
+    m_dualBeacon (0),
+    m_dualCtsProtection (0),
+    m_stbcBeacon (0),
+    m_lSigTxopProtectionFullSupport (0),
+    m_pcoActive (0),
+    m_pcoPhase (0),
+    m_reservedInformationSubset3_2 (0),
+    m_reservedMcsSet1 (0),
+    m_rxHighestSupportedDataRate (0),
+    m_reservedMcsSet2 (0),
+    m_txMcsSetDefined (0),
+    m_txRxMcsSetUnequal (0),
+    m_txMaxNSpatialStreams (0),
+    m_txUnequalModulation (0),
+    m_reservedMcsSet3 (0),
+    m_htSupported (0)
+{
+  for (uint32_t k = 0; k < MAX_SUPPORTED_MCS; k++)
+    {
+      m_rxMcsBitmask[k] = 0;
+    }
+}
+
+WifiInformationElementId
+HtOperations::ElementId () const
+{
+  return IE_HT_OPERATIONS;
+}
+
+void
+HtOperations::SetHtSupported (uint8_t htsupported)
+{
+  m_htSupported = htsupported;
+}
+
+uint8_t
+HtOperations::GetInformationFieldSize () const
+{
+  //we should not be here if ht is not supported
+  NS_ASSERT (m_htSupported > 0);
+  return 22;
+}
+
+void
+HtOperations::SetPrimaryChannel (uint8_t ctrl)
+{
+  m_primaryChannel = ctrl;
+}
+
+void
+HtOperations::SetSecondaryChannelOffset (uint8_t secondarychanneloffset)
+{
+  m_secondaryChannelOffset = secondarychanneloffset;
+}
+
+void
+HtOperations::SetStaChannelWidth (uint8_t stachannelwidth)
+{
+  m_staChannelWidth = stachannelwidth;
+}
+
+void
+HtOperations::SetRifsMode (uint8_t rifsmode)
+{
+  m_rifsMode = rifsmode;
+}
+
+void
+HtOperations::SetHtProtection (uint8_t htprotection)
+{
+  m_htProtection = htprotection;
+}
+
+void
+HtOperations::SetNonGfHtStasPresent (uint8_t nongfhtstaspresent)
+{
+  m_nonGfHtStasPresent = nongfhtstaspresent;
+}
+
+void
+HtOperations::SetObssNonHtStasPresent (uint8_t obssnonhtstaspresent)
+{
+  m_obssNonHtStasPresent = obssnonhtstaspresent;
+}
+
+void
+HtOperations::SetDualBeacon (uint8_t dualbeacon)
+{
+  m_dualBeacon = dualbeacon;
+}
+
+void
+HtOperations::SetDualCtsProtection (uint8_t dualctsprotection)
+{
+  m_dualCtsProtection = dualctsprotection;
+}
+
+void
+HtOperations::SetStbcBeacon (uint8_t stbcbeacon)
+{
+  m_stbcBeacon = stbcbeacon;
+}
+
+void
+HtOperations::SetLSigTxopProtectionFullSupport (uint8_t lsigtxopprotectionfullsupport)
+{
+  m_lSigTxopProtectionFullSupport = lsigtxopprotectionfullsupport;
+}
+
+void
+HtOperations::SetPcoActive (uint8_t pcoactive)
+{
+  m_pcoActive = pcoactive;
+}
+
+void
+HtOperations::SetPhase (uint8_t pcophase)
+{
+  m_pcoPhase = pcophase;
+}
+
+void
+HtOperations::SetRxMcsBitmask (uint8_t index)
+{
+  m_rxMcsBitmask[index] = 1;
+}
+
+void
+HtOperations::SetRxHighestSupportedDataRate (uint16_t maxsupportedrate)
+{
+  m_rxHighestSupportedDataRate = maxsupportedrate;
+}
+
+void
+HtOperations::SetTxMcsSetDefined (uint8_t txmcssetdefined)
+{
+  m_txMcsSetDefined = txmcssetdefined;
+}
+
+void
+HtOperations::SetTxRxMcsSetUnequal (uint8_t txrxmcssetunequal)
+{
+  m_txRxMcsSetUnequal = txrxmcssetunequal;
+}
+
+void
+HtOperations::SetTxMaxNSpatialStreams (uint8_t maxtxspatialstreams)
+{
+  m_txMaxNSpatialStreams = maxtxspatialstreams;
+}
+
+void
+HtOperations::SetTxUnequalModulation (uint8_t txunequalmodulation)
+{
+  m_txUnequalModulation = txunequalmodulation;
+}
+
+uint8_t
+HtOperations::GetPrimaryChannel (void) const
+{
+  return m_primaryChannel;
+}
+
+uint8_t
+HtOperations::GetSecondaryChannelOffset (void) const
+{
+  return m_secondaryChannelOffset;
+}
+
+uint8_t
+HtOperations::GetStaChannelWidth (void) const
+{
+  return m_staChannelWidth;
+}
+
+uint8_t
+HtOperations::GetRifsMode (void) const
+{
+  return m_rifsMode;
+}
+
+uint8_t
+HtOperations::GetHtProtection (void) const
+{
+  return m_htProtection;
+}
+
+uint8_t
+HtOperations::GetNonGfHtStasPresent (void) const
+{
+  return m_nonGfHtStasPresent;
+}
+
+uint8_t
+HtOperations::GetObssNonHtStasPresent (void) const
+{
+  return m_obssNonHtStasPresent;
+}
+
+uint8_t
+HtOperations::GetDualBeacon (void) const
+{
+  return m_dualBeacon;
+}
+
+uint8_t
+HtOperations::GetDualCtsProtection (void) const
+{
+  return m_dualCtsProtection;
+}
+
+uint8_t
+HtOperations::GetStbcBeacon (void) const
+{
+  return m_stbcBeacon;
+}
+
+uint8_t
+HtOperations::GetLSigTxopProtectionFullSupport (void) const
+{
+  return m_lSigTxopProtectionFullSupport;
+}
+
+uint8_t
+HtOperations::GetPcoActive (void) const
+{
+  return m_pcoActive;
+}
+
+uint8_t
+HtOperations::GetPhase (void) const
+{
+  return m_pcoPhase;
+}
+
+bool
+HtOperations::IsSupportedMcs (uint8_t mcs)
+{
+  if (m_rxMcsBitmask[mcs] == 1)
+    {
+      return true;
+    }
+  return false;
+}
+
+uint16_t
+HtOperations::GetRxHighestSupportedDataRate (void) const
+{
+  return m_rxHighestSupportedDataRate;
+}
+
+uint8_t
+HtOperations::GetTxMcsSetDefined (void) const
+{
+  return m_txMcsSetDefined;
+}
+
+uint8_t
+HtOperations::GetTxRxMcsSetUnequal (void) const
+{
+  return m_txRxMcsSetUnequal;
+}
+
+uint8_t
+HtOperations::GetTxMaxNSpatialStreams (void) const
+{
+  return m_txMaxNSpatialStreams;
+}
+
+uint8_t
+HtOperations::GetTxUnequalModulation (void) const
+{
+  return m_txUnequalModulation;
+}
+
+Buffer::Iterator
+HtOperations::Serialize (Buffer::Iterator i) const
+{
+  if (m_htSupported < 1)
+    {
+      return i;
+    }
+  return WifiInformationElement::Serialize (i);
+}
+
+uint16_t
+HtOperations::GetSerializedSize () const
+{
+  if (m_htSupported < 1)
+    {
+      return 0;
+    }
+  return WifiInformationElement::GetSerializedSize ();
+}
+
+uint8_t
+HtOperations::GetInformationSubset1 (void) const
+{
+  uint16_t val = 0;
+  val |= m_secondaryChannelOffset & 0x03;
+  val |= (m_staChannelWidth & 0x01) << 2;
+  val |= (m_rifsMode & 0x01) << 3;
+  val |= (m_reservedInformationSubset1 & 0x0f) << 4;
+  return val;
+}
+
+void
+HtOperations::SetInformationSubset1 (uint8_t ctrl)
+{
+  m_secondaryChannelOffset = ctrl & 0x03;
+  m_staChannelWidth = (ctrl >> 2) & 0x01;
+  m_rifsMode = (ctrl >> 3) & 0x01;
+  m_reservedInformationSubset1 = (ctrl >> 4) & 0x0f;
+}
+
+uint16_t
+HtOperations::GetInformationSubset2 (void) const
+{
+  uint16_t val = 0;
+  val |= m_htProtection & 0x03;
+  val |= (m_nonGfHtStasPresent & 0x01) << 2;
+  val |= (m_reservedInformationSubset2_1 & 0x01) << 3;
+  val |= (m_obssNonHtStasPresent & 0x01) << 4;
+  val |= (m_reservedInformationSubset2_1 & 0x07ff) << 5;
+  return val;
+}
+
+void
+HtOperations::SetInformationSubset2 (uint16_t ctrl)
+{
+  m_htProtection = ctrl & 0x03;
+  m_nonGfHtStasPresent = (ctrl >> 2) & 0x01;
+  m_reservedInformationSubset2_1 = (ctrl >> 3) & 0x01;
+  m_obssNonHtStasPresent = (ctrl >> 4) & 0x01;
+  m_reservedInformationSubset2_1 = (ctrl >> 5) & 0x07ff;
+}
+
+uint16_t
+HtOperations::GetInformationSubset3 (void) const
+{
+  uint16_t val = 0;
+  val |= m_reservedInformationSubset3_1 & 0x3f;
+  val |= (m_dualBeacon & 0x01) << 6;
+  val |= (m_dualCtsProtection & 0x01) << 7;
+  val |= (m_stbcBeacon & 0x01) << 8;
+  val |= (m_lSigTxopProtectionFullSupport & 0x01) << 9;
+  val |= (m_pcoActive & 0x01) << 10;
+  val |= (m_pcoPhase & 0x01) << 11;
+  val |= (m_reservedInformationSubset3_2 & 0x0f) << 12;
+  return val;
+}
+
+void
+HtOperations::SetInformationSubset3 (uint16_t ctrl)
+{
+  m_reservedInformationSubset3_1 = ctrl & 0x3f;
+  m_dualBeacon = (ctrl >> 6) & 0x01;
+  m_dualCtsProtection = (ctrl >> 7) & 0x01;
+  m_stbcBeacon = (ctrl >> 8) & 0x01;
+  m_lSigTxopProtectionFullSupport = (ctrl >> 9) & 0x01;
+  m_pcoActive = (ctrl >> 10) & 0x01;
+  m_pcoPhase = (ctrl >> 11) & 0x01;
+  m_reservedInformationSubset3_2 = (ctrl >> 12) & 0x0f;
+}
+
+void
+HtOperations::SetBasicMcsSet (uint64_t ctrl1, uint64_t ctrl2)
+{
+  for (uint64_t i = 0; i < 77; i++)
+    {
+      if (i < 64)
+        {
+          m_rxMcsBitmask[i] = (ctrl1 >> i) & 0x01;
+        }
+      else
+        {
+          m_rxMcsBitmask[i] = (ctrl2 >> (i - 64)) & 0x01;
+        }
+    }
+  m_reservedMcsSet1 = (ctrl2 >> 13) & 0x07;
+  m_rxHighestSupportedDataRate = (ctrl2 >> 16) & 0x03ff;
+  m_reservedMcsSet2 = (ctrl2 >> 26) & 0x3f;
+  m_txMcsSetDefined = (ctrl2 >> 32) & 0x01;
+  m_txRxMcsSetUnequal = (ctrl2 >> 33) & 0x01;
+  m_txMaxNSpatialStreams = (ctrl2 >> 34) & 0x03;
+  m_txUnequalModulation = (ctrl2 >> 36) & 0x01;
+  m_reservedMcsSet3 = (ctrl2 >> 37) & 0x07ffffff;
+}
+
+uint64_t
+HtOperations::GetBasicMcsSet1 (void) const
+{
+  uint64_t val = 0;
+  for (uint64_t i = 63; i > 0; i--)
+    {
+      val = (val << 1) | (m_rxMcsBitmask[i] & 0x01);
+    }
+  val = (val << 1) | (m_rxMcsBitmask[0] & 0x01);
+  return val;
+}
+
+uint64_t
+HtOperations::GetBasicMcsSet2 (void) const
+{
+  uint64_t val = 0;
+  val = val | (m_reservedMcsSet3 & 0x07ffffff);
+  val = (val << 1) | (m_txUnequalModulation & 0x01);
+  val = (val << 2) | (m_txMaxNSpatialStreams & 0x03);
+  val = (val << 1) | (m_txRxMcsSetUnequal & 0x01);
+  val = (val << 1) | (m_txMcsSetDefined & 0x01);
+  val = (val << 6) | (m_reservedMcsSet2 & 0x3f);
+  val = (val << 10) | (m_rxHighestSupportedDataRate & 0x3ff);
+  val = (val << 3) | (m_reservedMcsSet1 & 0x07);
+
+  for (uint64_t i = 13; i > 0; i--)
+    {
+      val = (val << 1) | ( m_rxMcsBitmask[i + 63] & 0x01);
+    }
+  return val;
+}
+
+void
+HtOperations::SerializeInformationField (Buffer::Iterator start) const
+{
+  if (m_htSupported == 1)
+    {
+      //write the corresponding value for each bit
+      start.WriteU8 (GetPrimaryChannel ());
+      start.WriteU8 (GetInformationSubset1 ());
+      start.WriteU16 (GetInformationSubset2 ());
+      start.WriteU16 (GetInformationSubset3 ());
+      start.WriteHtolsbU64 (GetBasicMcsSet1 ());
+      start.WriteHtolsbU64 (GetBasicMcsSet2 ());
+    }
+}
+
+uint8_t
+HtOperations::DeserializeInformationField (Buffer::Iterator start,
+                                             uint8_t length)
+{
+  Buffer::Iterator i = start;
+  uint8_t primarychannel = i.ReadU8 ();
+  uint8_t informationsubset1 = i.ReadU8 ();
+  uint8_t informationsubset2 = i.ReadU16 ();
+  uint8_t informationsubset3 = i.ReadU16 ();
+  uint64_t mcsset1 = i.ReadLsbtohU64 ();
+  uint64_t mcsset2 = i.ReadLsbtohU64 ();
+  SetPrimaryChannel (primarychannel);
+  SetInformationSubset1 (informationsubset1);
+  SetInformationSubset2 (informationsubset2);
+  SetInformationSubset3 (informationsubset3);
+  SetBasicMcsSet (mcsset1, mcsset2);
+  return length;
+}
+
+ATTRIBUTE_HELPER_CPP (HtOperations);
+
+std::ostream &
+operator << (std::ostream &os, const HtOperations &htoperations)
+{
+  os <<  bool (htoperations.GetStaChannelWidth ())
+     << "|" << bool (htoperations.GetRifsMode ())
+     << "|" << bool (htoperations.GetDualCtsProtection());
+    
+  return os;
+}
+
+std::istream &operator >> (std::istream &is, HtOperations &htoperations)
+{
+  bool c1, c2, c3;
+  is >> c1 >> c2 >> c3;
+  htoperations.SetStaChannelWidth (c1);
+  htoperations.SetRifsMode (c2);
+  htoperations.SetDualCtsProtection (c3);
+  
+  return is;
+}
+
+} //namespace ns3

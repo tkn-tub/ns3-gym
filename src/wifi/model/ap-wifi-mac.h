@@ -26,6 +26,7 @@
 #include "regular-wifi-mac.h"
 #include "capability-information.h"
 #include "ht-capabilities.h"
+#include "ht-operations.h"
 #include "vht-capabilities.h"
 #include "amsdu-subframe-header.h"
 #include "supported-rates.h"
@@ -214,6 +215,12 @@ private:
    */
   HtCapabilities GetHtCapabilities (void) const;
   /**
+   * Return the HT operations of the current AP.
+   *
+   * \return the HT operations that we support
+   */
+  HtOperations GetHtOperations (void) const;
+  /**
    * Return the VHT capability of the current AP.
    *
    * \return the VHT capability that we support
@@ -238,8 +245,13 @@ private:
    * \return true if beacons are periodically generated, false otherwise
    */
   bool GetBeaconGeneration (void) const;
-  
-  bool GetUseProtection (void) const;
+  /**
+   * Return whether protection for non-ERP stations is used in the BSS.
+   *
+   * \return true if protection for non-ERP stations is used in the BSS, 
+   *         false otherwise
+   */
+  bool GetUseNonErpProtection (void) const;
 
   virtual void DoDispose (void);
   virtual void DoInitialize (void);
@@ -251,7 +263,8 @@ private:
   Ptr<UniformRandomVariable> m_beaconJitter; //!< UniformRandomVariable used to randomize the time of the first beacon
   bool m_enableBeaconJitter;                 //!< Flag whether the first beacon should be generated at random time
   std::list<Mac48Address> m_staList;         //!< List of all stations currently associated to the AP
-  std::list<Mac48Address> m_nonErpStations;  //!< List of all 802.11b stations currently associated to the AP
+  std::list<Mac48Address> m_nonErpStations;  //!< List of all non-ERP stations currently associated to the AP
+  std::list<Mac48Address> m_nonHtStations;   //!< List of all non-HT stations currently associated to the AP
   bool m_enableNonErpProtection;             //!< Flag whether protection mechanism is used or not when non-ERP STAs are present within the BSS
 };
 

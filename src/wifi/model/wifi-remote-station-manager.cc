@@ -360,7 +360,7 @@ WifiRemoteStationManager::GetTypeId (void)
 WifiRemoteStationManager::WifiRemoteStationManager ()
   : m_htSupported (false),
     m_vhtSupported (false),
-    m_useProtection (false),
+    m_useNonErpProtection (false),
     m_shortPreambleEnabled (false),
     m_shortSlotTimeEnabled (false)
 {
@@ -868,8 +868,10 @@ WifiRemoteStationManager::NeedRts (Mac48Address address, const WifiMacHeader *he
   WifiMode mode = txVector.GetMode ();
   NS_LOG_FUNCTION (this << address << *header << packet << mode);
   if (m_protectionMode == RTS_CTS
-      && mode.GetModulationClass () == WIFI_MOD_CLASS_ERP_OFDM
-      && m_useProtection)
+      && ((mode.GetModulationClass () == WIFI_MOD_CLASS_ERP_OFDM)
+      || (mode.GetModulationClass () == WIFI_MOD_CLASS_HT)
+      || (mode.GetModulationClass () == WIFI_MOD_CLASS_VHT))
+      && m_useNonErpProtection)
     {
       NS_LOG_DEBUG ("WifiRemoteStationManager::NeedRTS returning true to protect non-ERP stations");
       return true;
@@ -888,13 +890,15 @@ WifiRemoteStationManager::NeedCtsToSelf (WifiTxVector txVector)
   WifiMode mode = txVector.GetMode ();
   NS_LOG_FUNCTION (this << mode);
   if (m_protectionMode == CTS_TO_SELF
-      && mode.GetModulationClass () == WIFI_MOD_CLASS_ERP_OFDM
-      && m_useProtection)
+      && ((mode.GetModulationClass () == WIFI_MOD_CLASS_ERP_OFDM)
+      || (mode.GetModulationClass () == WIFI_MOD_CLASS_HT)
+      || (mode.GetModulationClass () == WIFI_MOD_CLASS_VHT))
+      && m_useNonErpProtection)
     {
       NS_LOG_DEBUG ("WifiRemoteStationManager::NeedCtsToSelf returning true to protect non-ERP stations");
       return true;
     }
-  else if (!m_useProtection)
+  else if (!m_useNonErpProtection)
     {
     //search for the BSS Basic Rate set, if the used mode is in the basic set then there is no need for Cts To Self
       for (WifiModeListIterator i = m_bssBasicRateSet.begin (); i != m_bssBasicRateSet.end (); i++)
@@ -924,15 +928,15 @@ WifiRemoteStationManager::NeedCtsToSelf (WifiTxVector txVector)
 }
 
 void
-WifiRemoteStationManager::SetUseProtection (bool enable)
+WifiRemoteStationManager::SetUseNonErpProtection (bool enable)
 {
-  m_useProtection = enable;
+  m_useNonErpProtection = enable;
 }
 
 bool
-WifiRemoteStationManager::GetUseProtection (void) const
+WifiRemoteStationManager::GetUseNonErpProtection (void) const
 {
-  return m_useProtection;
+  return m_useNonErpProtection;
 }
 
 bool

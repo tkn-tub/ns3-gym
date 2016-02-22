@@ -83,7 +83,9 @@ typedef uint8_t WifiInformationElementId;
 #define IE_RSN                                 ((WifiInformationElementId)48)
 // 49 is reserved in 802.11-2007
 #define IE_EXTENDED_SUPPORTED_RATES            ((WifiInformationElementId)50)
-// 51 to 126 are reserved in 802.11-2007
+// 51 to 60 are reserved in 802.11-2007
+#define IE_HT_OPERATIONS                       ((WifiInformationElementId)61)
+// 62 to 126 are reserved in 802.11-2007
 #define IE_EXTENDED_CAPABILITIES               ((WifiInformationElementId)127)
 // 128 to 190 are reserved in 802.11-2007
 #define IE_VHT_CAPABILITIES                    ((WifiInformationElementId)191)

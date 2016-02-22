@@ -95,7 +95,7 @@ public:
   
   enum ProtectionMode
   {
-    RTS_CTS = 0,
+    RTS_CTS,
     CTS_TO_SELF
   };
 
@@ -223,14 +223,14 @@ public:
    *
    * \param enable enable or disable protection for non-ERP stations
    */
-  void SetUseProtection (bool enable);
+  void SetUseNonErpProtection (bool enable);
   /**
    * Return whether the device supports protection of non-ERP stations.
    *
    * \return true if protection for non-ERP stations is enabled, 
    *         false otherwise
    */
-  bool GetUseProtection (void) const;
+  bool GetUseNonErpProtection (void) const;
   /**
    * Enable or disable short PLCP preambles.
    *
@@ -1176,7 +1176,7 @@ private:
   uint32_t m_nextFragmentationThreshold;  //!< Threshold for fragmentation that will be used for the next transmission
   uint8_t m_defaultTxPowerLevel;  //!< Default tranmission power level
   WifiMode m_nonUnicastMode;  //!< Transmission mode for non-unicast DATA frames
-  bool m_useProtection; //!< flag if protection for non-ERP stations against ERP transmissions is enabled
+  bool m_useNonErpProtection; //!< flag if protection for non-ERP stations against ERP transmissions is enabled
   bool m_shortPreambleEnabled; //!< flag if short PLCP preamble is enabled
   bool m_shortSlotTimeEnabled; //!< flag if short slot time is enabled
   ProtectionMode m_protectionMode; //!< Protection mode for ERP stations when non-ERP stations are detected

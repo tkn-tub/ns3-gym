@@ -503,7 +503,7 @@ MinstrelWifiManager::DoGetRtsTxVector (WifiRemoteStation *st)
       channelWidth = 20;
     }
   WifiTxVector rtsTxVector;
-  if (GetUseProtection () == false)
+  if (GetUseNonErpProtection () == false)
     {
       rtsTxVector = WifiTxVector (GetSupported (station, 0), GetDefaultTxPowerLevel (), GetShortRetryCount (station), false, 1, 0, channelWidth, GetAggregation (station), false);
     }

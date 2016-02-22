@@ -187,7 +187,7 @@ IdealWifiManager::DoGetRtsTxVector (WifiRemoteStation *st)
   //ensure correct packet delivery.
   double maxThreshold = 0.0;
   WifiMode maxMode = GetDefaultMode ();
-  if (GetUseProtection () == false)
+  if (GetUseNonErpProtection () == false)
     {
       for (uint32_t i = 0; i < GetNBasicModes (); i++)
         {

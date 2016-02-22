@@ -904,15 +904,11 @@ void
 YansWifiPhy::Configure80211g (void)
 {
   NS_LOG_FUNCTION (this);
-  m_channelStartingFrequency = 2407; //2.407 GHz
+  Configure80211b ();
   SetChannelWidth (20); //20 MHz
 
-  m_deviceRateSet.push_back (WifiPhy::GetDsssRate1Mbps ());
-  m_deviceRateSet.push_back (WifiPhy::GetDsssRate2Mbps ());
-  m_deviceRateSet.push_back (WifiPhy::GetDsssRate5_5Mbps ());
   m_deviceRateSet.push_back (WifiPhy::GetErpOfdmRate6Mbps ());
   m_deviceRateSet.push_back (WifiPhy::GetErpOfdmRate9Mbps ());
-  m_deviceRateSet.push_back (WifiPhy::GetDsssRate11Mbps ());
   m_deviceRateSet.push_back (WifiPhy::GetErpOfdmRate12Mbps ());
   m_deviceRateSet.push_back (WifiPhy::GetErpOfdmRate18Mbps ());
   m_deviceRateSet.push_back (WifiPhy::GetErpOfdmRate24Mbps ());
@@ -973,23 +969,16 @@ void
 YansWifiPhy::Configure80211n (void)
 {
   NS_LOG_FUNCTION (this);
-  SetChannelWidth (20); //20 MHz
   if (m_channelStartingFrequency >= 2400 && m_channelStartingFrequency <= 2500) //at 2.4 GHz
     {
-      m_deviceRateSet.push_back (WifiPhy::GetDsssRate1Mbps ());
-      m_deviceRateSet.push_back (WifiPhy::GetDsssRate2Mbps ());
-      m_deviceRateSet.push_back (WifiPhy::GetDsssRate5_5Mbps ());
-      m_deviceRateSet.push_back (WifiPhy::GetErpOfdmRate6Mbps ());
-      m_deviceRateSet.push_back (WifiPhy::GetDsssRate11Mbps ());
-      m_deviceRateSet.push_back (WifiPhy::GetErpOfdmRate12Mbps ());
-      m_deviceRateSet.push_back (WifiPhy::GetErpOfdmRate24Mbps ());
+      Configure80211b ();
+      Configure80211g ();
     }
   if (m_channelStartingFrequency >= 5000 && m_channelStartingFrequency <= 6000) //at 5 GHz
     {
-      m_deviceRateSet.push_back (WifiPhy::GetOfdmRate6Mbps ());
-      m_deviceRateSet.push_back (WifiPhy::GetOfdmRate12Mbps ());
-      m_deviceRateSet.push_back (WifiPhy::GetOfdmRate24Mbps ());
+      Configure80211a ();
     }
+  SetChannelWidth (20); //20 MHz
 
   m_deviceMcsSet.push_back (WifiPhy::GetHtMcs0 ());
   m_deviceMcsSet.push_back (WifiPhy::GetHtMcs1 ());
@@ -1007,21 +996,9 @@ void
 YansWifiPhy::Configure80211ac (void)
 {
   NS_LOG_FUNCTION (this);
-  m_channelStartingFrequency = 5e3;   //5.000 GHz
+  m_channelStartingFrequency = 5e3; //5.000 GHz
+  Configure80211n ();
   SetChannelWidth (80); //80 MHz
-
-  m_deviceRateSet.push_back (WifiPhy::GetOfdmRate6Mbps ());
-  m_deviceRateSet.push_back (WifiPhy::GetOfdmRate12Mbps ());
-  m_deviceRateSet.push_back (WifiPhy::GetOfdmRate24Mbps ());
-
-  m_deviceMcsSet.push_back (WifiPhy::GetHtMcs0 ());
-  m_deviceMcsSet.push_back (WifiPhy::GetHtMcs1 ());
-  m_deviceMcsSet.push_back (WifiPhy::GetHtMcs2 ());
-  m_deviceMcsSet.push_back (WifiPhy::GetHtMcs3 ());
-  m_deviceMcsSet.push_back (WifiPhy::GetHtMcs4 ());
-  m_deviceMcsSet.push_back (WifiPhy::GetHtMcs5 ());
-  m_deviceMcsSet.push_back (WifiPhy::GetHtMcs6 ());
-  m_deviceMcsSet.push_back (WifiPhy::GetHtMcs7 ());
 
   m_deviceMcsSet.push_back (WifiPhy::GetVhtMcs0 ());
   m_deviceMcsSet.push_back (WifiPhy::GetVhtMcs1 ());

@@ -31,6 +31,7 @@
 #include "supported-rates.h"
 #include "ssid.h"
 #include "ht-capabilities.h"
+#include "ht-operations.h"
 #include "vht-capabilities.h"
 #include "erp-information.h"
 
@@ -182,6 +183,12 @@ public:
    */
   HtCapabilities GetHtCapabilities (void) const;
   /**
+   * Return the HT operations.
+   *
+   * \return HT operations
+   */
+  HtOperations GetHtOperations (void) const;
+  /**
    * Return the ERP information.
    *
    * \return the ERP information
@@ -205,6 +212,12 @@ public:
    * \param htcapabilities HT capabilities
    */
   void SetHtCapabilities (HtCapabilities htcapabilities);
+  /**
+   * Set the HT operations.
+   *
+   * \param htoperations HT operations
+   */
+  void SetHtOperations (HtOperations htoperations);
   /**
    * Set the supported rates.
    *
@@ -242,6 +255,7 @@ private:
   StatusCode m_code; //!< Status code
   uint16_t m_aid;
   HtCapabilities m_htCapability; //!< HT capabilities
+  HtOperations m_htOperations; //!< HT operations
   VhtCapabilities m_vhtCapability; //!< VHT capabilities
   ErpInformation m_erpInformation;    //!< ERP information
 };
@@ -366,6 +380,12 @@ public:
    */
   HtCapabilities GetHtCapabilities (void) const;
   /**
+   * Return the HT operations.
+   *
+   * \return HT operations
+   */
+  HtOperations GetHtOperations (void) const;
+  /**
    * Return the VHT capabilities.
    *
    * \return VHT capabilities
@@ -389,6 +409,12 @@ public:
    * \param htcapabilities HT capabilities
    */
   void SetHtCapabilities (HtCapabilities htcapabilities);
+  /**
+   * Set the HT operations.
+   *
+   * \param htoperations HT operations
+   */
+  void SetHtOperations (HtOperations htoperations);
   /**
    * Set the VHT capabilities.
    *
@@ -445,6 +471,7 @@ private:
   SupportedRates m_rates;             //!< List of supported rates
   CapabilityInformation m_capability; //!< Capability information
   HtCapabilities m_htCapability;      //!< HT capabilities
+  HtOperations m_htOperations;        //!< HT operations
   VhtCapabilities m_vhtCapability;    //!< VHT capabilities
   ErpInformation m_erpInformation;    //!< ERP information
 };

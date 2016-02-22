@@ -37,6 +37,7 @@
 #include "amsdu-subframe-header.h"
 #include "mgt-headers.h"
 #include "ht-capabilities.h"
+#include "ht-operations.h"
 #include "vht-capabilities.h"
 
 /*
@@ -521,11 +522,11 @@ StaWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
               isShortPreambleEnabled &= !erpInformation.GetBarkerPreambleMode ();
               if (erpInformation.GetUseProtection() == true)
                 {
-                  m_stationManager->SetUseProtection (true);
+                  m_stationManager->SetUseNonErpProtection (true);
                 }
               else
                 {
-                  m_stationManager->SetUseProtection (false);
+                  m_stationManager->SetUseNonErpProtection (false);
                 }
               if (capabilities.IsShortSlotTime () == true)
                 {
@@ -590,11 +591,11 @@ StaWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
               ErpInformation erpInformation = probeResp.GetErpInformation ();
               if (erpInformation.GetUseProtection() == true)
                 {
-                  m_stationManager->SetUseProtection (true);
+                  m_stationManager->SetUseNonErpProtection (true);
                 }
               else
                 {
-                  m_stationManager->SetUseProtection (false);
+                  m_stationManager->SetUseNonErpProtection (false);
                 }
               if (capabilities.IsShortSlotTime () == true)
                 {
@@ -662,6 +663,7 @@ StaWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
               if (m_htSupported)
                 {
                   HtCapabilities htcapabilities = assocResp.GetHtCapabilities ();
+                  HtOperations htOperations = assocResp.GetHtOperations ();
                   m_stationManager->AddStationHtCapabilities (hdr->GetAddr2 (),htcapabilities);
                 }
               if (m_vhtSupported)

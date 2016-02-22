@@ -100,7 +100,9 @@ public:
   void SetRxMcsBitmask (uint8_t index);
   void SetRxHighestSupportedDataRate (uint16_t maxsupportedrate);
   void SetTxMcsSetDefined (uint8_t txmcssetdefined);
+  void SetTxRxMcsSetUnequal (uint8_t txrxmcssetunequal);
   void SetTxMaxNSpatialStreams (uint8_t maxtxspatialstreams);
+  void SetTxUnequalModulation (uint8_t txunequalmodulation);
 
   /*
    * Return the HT Capabilties Info field in the HT Capabilities information element.
@@ -159,7 +161,9 @@ public:
   bool IsSupportedMcs (uint8_t mcs);
   uint16_t GetRxHighestSupportedDataRate (void) const;
   uint8_t GetTxMcsSetDefined (void) const;
+  uint8_t GetTxRxMcsSetUnequal (void) const;
   uint8_t GetTxMaxNSpatialStreams (void) const;
+  uint8_t GetTxUnequalModulation (void) const;
 
   WifiInformationElementId ElementId () const;
   uint8_t GetInformationFieldSize () const;
