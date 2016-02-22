@@ -504,6 +504,18 @@ protected:
   }
 
   /**
+   * \brief Bytes in flight changes
+   *
+   * This applies only for sender socket.
+   *
+   * \param oldValue old value
+   * \param newValue new value
+   */
+  virtual void BytesInFlightTrace (uint32_t oldValue, uint32_t newValue)
+  {
+  }
+
+  /**
    * \brief Socket closed normally
    * \param who the socket closed (SENDER or RECEIVER)
    */

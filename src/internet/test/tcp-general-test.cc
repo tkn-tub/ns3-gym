@@ -193,6 +193,8 @@ TcpGeneralTest::DoRun (void)
                                               MakeCallback (&TcpGeneralTest::RxPacketCb, this));
   m_senderSocket->TraceConnectWithoutContext ("RTT",
                                               MakeCallback (&TcpGeneralTest::RttTrace, this));
+  m_senderSocket->TraceConnectWithoutContext ("BytesInFlight",
+                                              MakeCallback (&TcpGeneralTest::BytesInFlightTrace, this));
 
   m_remoteAddr = InetSocketAddress (serverAddress, 4477);
 
