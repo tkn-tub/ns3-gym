@@ -1433,7 +1433,7 @@ TcpSocketBase::ReceivedAck (Ptr<Packet> packet, const TcpHeader& tcpHeader)
         }
       else if (m_tcb->m_congState == TcpSocketState::CA_DISORDER)
         {
-          if ((m_dupAckCount == m_retxThresh) && ((m_highRxAckMark - 1) > m_recover))
+          if ((m_dupAckCount == m_retxThresh) && (m_highRxAckMark >= m_recover))
             {
               // triple duplicate ack triggers fast retransmit (RFC2582 sec.3 bullet #1)
               NS_LOG_DEBUG (TcpSocketState::TcpCongStateName[m_tcb->m_congState] <<
