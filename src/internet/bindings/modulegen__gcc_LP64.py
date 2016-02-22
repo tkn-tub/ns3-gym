@@ -9650,11 +9650,11 @@ def register_Ns3TcpSocketBase_methods(root_module, cls):
                    'uint32_t', 
                    [], 
                    is_const=True, visibility='protected', is_virtual=True)
-    ## tcp-socket-base.h (module 'internet'): uint32_t ns3::TcpSocketBase::BytesInFlight() const [member function]
+    ## tcp-socket-base.h (module 'internet'): uint32_t ns3::TcpSocketBase::BytesInFlight() [member function]
     cls.add_method('BytesInFlight', 
                    'uint32_t', 
                    [], 
-                   is_const=True, visibility='protected', is_virtual=True)
+                   visibility='protected', is_virtual=True)
     ## tcp-socket-base.h (module 'internet'): uint8_t ns3::TcpSocketBase::CalculateWScale() const [member function]
     cls.add_method('CalculateWScale', 
                    'uint8_t', 
@@ -10020,6 +10020,11 @@ def register_Ns3TcpSocketBase_methods(root_module, cls):
                    'uint32_t', 
                    [], 
                    is_const=True, visibility='protected', is_virtual=True)
+    ## tcp-socket-base.h (module 'internet'): void ns3::TcpSocketBase::UpdateRttHistory(ns3::SequenceNumber32 const & seq, uint32_t sz, bool isRetransmission) [member function]
+    cls.add_method('UpdateRttHistory', 
+                   'void', 
+                   [param('ns3::SequenceNumber32 const &', 'seq'), param('uint32_t', 'sz'), param('bool', 'isRetransmission')], 
+                   visibility='protected', is_virtual=True)
     ## tcp-socket-base.h (module 'internet'): void ns3::TcpSocketBase::UpdateWindowSize(ns3::TcpHeader const & header) [member function]
     cls.add_method('UpdateWindowSize', 
                    'void', 
