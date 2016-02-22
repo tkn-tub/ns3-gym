@@ -788,6 +788,17 @@ protected:
   virtual void EstimateRtt (const TcpHeader& tcpHeader);
 
   /**
+   * \brief Update the RTT history, when we send TCP segments
+   *
+   * \param seq The sequence number of the TCP segment
+   * \param sz The segment's size
+   * \param isRetransmission Whether or not the segment is a retransmission
+   */
+
+  virtual void UpdateRttHistory (const SequenceNumber32 &seq, uint32_t sz,
+                                 bool isRetransmission);
+
+  /**
    * \brief Update buffers w.r.t. ACK
    * \param seq the sequence number
    * \param resetRTO indicates if RTO should be reset

@@ -1196,6 +1196,12 @@ TcpSocketBase::DoForwardUp (Ptr<Packet> packet, const Address &fromAddress,
       // Initialize cWnd and ssThresh
       m_tcb->m_cWnd = GetInitialCwnd () * GetSegSize ();
       m_tcb->m_ssThresh = GetInitialSSThresh ();
+
+      if (tcpHeader.GetFlags () & TcpHeader::ACK)
+        {
+          EstimateRtt (tcpHeader);
+          m_highRxAckMark = tcpHeader.GetAckNumber ();
+        }
     }
   else if (tcpHeader.GetFlags () & TcpHeader::ACK)
     {
@@ -2148,6 +2154,15 @@ TcpSocketBase::SendEmptyPacket (uint8_t flags)
           m_rto = m_cnTimeout * backoffCount;
           m_synCount--;
         }
+
+      if (m_synRetries - 1 == m_synCount)
+        {
+          UpdateRttHistory (s, 0, false);
+        }
+      else
+        { // This is SYN retransmission
+          UpdateRttHistory (s, 0, true);
+        }
     }
   if (m_endPoint != 0)
     {
@@ -2333,7 +2348,8 @@ TcpSocketBase::SendDataPacket (SequenceNumber32 seq, uint32_t maxSize, bool with
   NS_LOG_FUNCTION (this << seq << maxSize << withAck);
 
   bool isRetransmission = false;
-  if ( seq == m_txBuffer->HeadSequence () )
+  if (seq == m_txBuffer->HeadSequence ()
+      && m_txBuffer->HeadSequence () != m_highRxAckMark)
     {
       isRetransmission = true;
     }
@@ -2450,10 +2466,28 @@ TcpSocketBase::SendDataPacket (SequenceNumber32 seq, uint32_t maxSize, bool with
 
   m_txTrace (p, header, this);
 
+  UpdateRttHistory (seq, sz, isRetransmission);
+
+  // Notify the application of the data being sent unless this is a retransmit
+  if (seq + sz > m_highTxMark)
+    {
+      Simulator::ScheduleNow (&TcpSocketBase::NotifyDataSent, this, (seq + sz - m_highTxMark.Get ()));
+    }
+  // Update highTxMark
+  m_highTxMark = std::max (seq + sz, m_highTxMark.Get ());
+  return sz;
+}
+
+void
+TcpSocketBase::UpdateRttHistory (const SequenceNumber32 &seq, uint32_t sz,
+                                 bool isRetransmission)
+{
+  NS_LOG_FUNCTION (this);
+
   // update the history of sequence numbers used to calculate the RTT
   if (isRetransmission == false)
     { // This is the next expected one, just log at end
-      m_history.push_back (RttHistory (seq, sz, Simulator::Now () ));
+      m_history.push_back (RttHistory (seq, sz, Simulator::Now ()));
     }
   else
     { // This is a retransmit, find in list and mark as re-tx
@@ -2467,15 +2501,6 @@ TcpSocketBase::SendDataPacket (SequenceNumber32 seq, uint32_t maxSize, bool with
             }
         }
     }
-
-  // Notify the application of the data being sent unless this is a retransmit
-  if (seq + sz > m_highTxMark)
-    {
-      Simulator::ScheduleNow (&TcpSocketBase::NotifyDataSent, this, (seq + sz - m_highTxMark.Get ()));
-    }
-  // Update highTxMark
-  m_highTxMark = std::max (seq + sz, m_highTxMark.Get ());
-  return sz;
 }
 
 /* Send as much pending data as possible according to the Tx window. Note that
