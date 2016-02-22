@@ -776,7 +776,6 @@ ApWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
               m_stationManager->AddSupportedPlcpPreamble (from, capabilities.IsShortPreamble ());
               SupportedRates rates = assocReq.GetSupportedRates ();
               bool problem = false;
-              bool isVhtStation = false;
               bool isHtStation = false;
               bool isOfdmStation = false;
               bool isErpStation = false;
@@ -845,7 +844,6 @@ ApWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
                   VhtCapabilities vhtcapabilities = assocReq.GetVhtCapabilities ();
                   if (vhtcapabilities.GetVhtCapabilitiesInfo () != 0)
                     {
-                      isVhtStation = true;
                       for (uint32_t i = 0; i < m_stationManager->GetNBasicMcs (); i++)
                         {
                           WifiMode mcs = m_stationManager->GetBasicMcs (i);
