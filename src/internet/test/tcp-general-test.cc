@@ -41,17 +41,17 @@ TcpGeneralTest::TcpGeneralTest (const std::string &desc,
                                 TypeId congestionControl,
                                 uint32_t mtu)
   : TestCase (desc),
-  m_congControlTypeId (congestionControl),
-  m_propagationDelay (propagationDelay),
-  m_startTime (startTime),
-  m_mtu (mtu),
-  m_pktSize (pktSize),
-  m_pktCount (pktCount),
-  m_interPacketInterval (pktInterval),
-  m_initialSlowStartThresh (initialSlowStartThresh),
-  m_initialCwnd (initialCwnd),
-  m_segmentSize (segmentSize),
-  m_remoteAddr (Ipv4Address::GetAny (), 4477)
+    m_congControlTypeId (congestionControl),
+    m_propagationDelay (propagationDelay),
+    m_startTime (startTime),
+    m_mtu (mtu),
+    m_pktSize (pktSize),
+    m_pktCount (pktCount),
+    m_interPacketInterval (pktInterval),
+    m_initialSlowStartThresh (initialSlowStartThresh),
+    m_initialCwnd (initialCwnd),
+    m_segmentSize (segmentSize),
+    m_remoteAddr (Ipv4Address::GetAny (), 4477)
 {
   NS_LOG_FUNCTION (this << desc);
 }
@@ -180,7 +180,7 @@ TcpGeneralTest::DoRun (void)
   m_senderSocket->SetRcvAckCb (MakeCallback (&TcpGeneralTest::RcvAckCb, this));
   m_senderSocket->SetProcessedAckCb (MakeCallback (&TcpGeneralTest::ProcessedAckCb, this));
   m_senderSocket->SetRetransmitCb (MakeCallback (&TcpGeneralTest::RtoExpiredCb, this));
-  m_senderSocket->SetDataSentCallback(MakeCallback (&TcpGeneralTest::DataSentCb, this));
+  m_senderSocket->SetDataSentCallback (MakeCallback (&TcpGeneralTest::DataSentCb, this));
   m_senderSocket->TraceConnectWithoutContext ("CongestionWindow",
                                               MakeCallback (&TcpGeneralTest::CWndTrace, this));
   m_senderSocket->TraceConnectWithoutContext ("CongState",
@@ -189,6 +189,8 @@ TcpGeneralTest::DoRun (void)
                                               MakeCallback (&TcpGeneralTest::TxPacketCb, this));
   m_senderSocket->TraceConnectWithoutContext ("Rx",
                                               MakeCallback (&TcpGeneralTest::RxPacketCb, this));
+  m_senderSocket->TraceConnectWithoutContext ("RTT",
+                                              MakeCallback (&TcpGeneralTest::RttTrace, this));
 
   m_remoteAddr = InetSocketAddress (serverAddress, 4477);
 
@@ -528,7 +530,7 @@ TcpGeneralTest::GetDelAckCount (SocketWho who)
 }
 
 Time
-TcpGeneralTest::GetDelAckTimeout(SocketWho who)
+TcpGeneralTest::GetDelAckTimeout (SocketWho who)
 {
   if (who == SENDER)
     {

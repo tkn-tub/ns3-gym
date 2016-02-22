@@ -479,6 +479,18 @@ protected:
   }
 
   /**
+   * \brief Rtt changes
+   *
+   * This applies only for sender socket.
+   *
+   * \param oldValue old value
+   * \param newValue new value
+   */
+  virtual void RttTrace (Time oldTime, Time newTime)
+  {
+  }
+
+  /**
    * \brief Socket closed normally
    * \param who the socket closed (SENDER or RECEIVER)
    */
