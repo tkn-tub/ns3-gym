@@ -2796,6 +2796,7 @@ MacLow::RegisterBlockAckListenerForAc (enum AcIndex ac, MacLowAggregationCapable
 void
 MacLow::DeaggregateAmpduAndReceive (Ptr<Packet> aggregatedPacket, double rxSnr, WifiTxVector txVector, WifiPreamble preamble)
 {
+  NS_LOG_FUNCTION (this);
   m_currentTxVector = txVector;
   AmpduTag ampdu;
   bool normalAck = false;

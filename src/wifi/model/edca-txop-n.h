@@ -35,6 +35,8 @@
 #include <map>
 #include <list>
 
+class AmpduAggregationTest;
+
 namespace ns3 {
 
 class DcfState;
@@ -83,6 +85,9 @@ enum TypeOfStation
 class EdcaTxopN : public Dcf
 {
 public:
+  // Allow test cases to access private members
+  friend class ::AmpduAggregationTest;
+
   /**
    * typedef for a callback to invoke when a
    * packet transmission was completed successfully.

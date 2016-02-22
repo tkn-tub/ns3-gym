@@ -47,6 +47,7 @@
 #include "msdu-aggregator.h"
 
 class TwoLevelAggregationTest;
+class AmpduAggregationTest;
 
 namespace ns3 {
 
@@ -491,6 +492,7 @@ class MacLow : public Object
 public:
   // Allow test cases to access private members
   friend class ::TwoLevelAggregationTest;
+  friend class ::AmpduAggregationTest;
   /**
    * typedef for a callback for MacLowRx
    */
