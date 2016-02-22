@@ -50,6 +50,16 @@ public:
   virtual ~DcfState ();
 
   /**
+   * \return whether this DCF state is an EDCA state
+   *
+   * This method, which must be overridden in derived classes,
+   * indicates whether DCF or EDCAF rules should be used for this
+   * channel access function. This affects the behavior of DcfManager
+   * when dealing with this instance. 
+   */
+  virtual bool IsEdca (void) const = 0;
+
+  /**
    * \param aifsn the number of slots which make up an AIFS for a specific DCF.
    *        a DIFS corresponds to an AIFSN = 2.
    *

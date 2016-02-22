@@ -31,6 +31,7 @@ class DcfStateTest : public DcfState
 public:
   DcfStateTest (DcfManagerTest *test, uint32_t i);
   void QueueTx (uint64_t txTime, uint64_t expectedGrantTime);
+  bool IsEdca (void) const;
 
 
 private:
@@ -111,6 +112,12 @@ DcfStateTest::DcfStateTest (DcfManagerTest *test, uint32_t i)
   : m_test (test),
     m_i (i)
 {
+}
+
+bool
+DcfStateTest::IsEdca (void) const
+{
+  return false;
 }
 
 void

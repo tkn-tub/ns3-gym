@@ -48,7 +48,10 @@ public:
     : m_txop (txop)
   {
   }
-
+  virtual bool IsEdca (void) const
+  {
+    return false;
+  }
 private:
   virtual void DoNotifyAccessGranted (void)
   {

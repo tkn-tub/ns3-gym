@@ -51,6 +51,11 @@ public:
   {
   }
 
+  virtual bool IsEdca (void) const
+  {
+    return true;
+  }
+
 private:
   virtual void DoNotifyAccessGranted (void)
   {

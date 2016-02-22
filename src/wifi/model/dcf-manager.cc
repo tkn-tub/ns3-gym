@@ -645,6 +645,21 @@ DcfManager::UpdateBackoff (void)
         {
           uint32_t nus = (Simulator::Now () - backoffStart).GetMicroSeconds ();
           uint32_t nIntSlots = nus / m_slotTimeUs;
+          /*
+           * EDCA behaves slightly different to DCA. For EDCA we
+           * decrement once at the slot boundary at the end of AIFS as
+           * well as once at the end of each clear slot
+           * thereafter. For DCA we only decrement at the end of each
+           * clear slot after DIFS. We account for the extra backoff
+           * by incrementing the slot count here in the case of
+           * EDCA. The if statement whose body we are in has confirmed
+           * that a minimum of AIFS has elapsed since last busy
+           * medium.
+           */
+          if (state->IsEdca ())
+            {
+              nIntSlots++;
+            }
           uint32_t n = std::min (nIntSlots, state->GetBackoffSlots ());
           MY_DEBUG ("dcf " << k << " dec backoff slots=" << n);
           Time backoffUpdateBound = backoffStart + MicroSeconds (n * m_slotTimeUs);
