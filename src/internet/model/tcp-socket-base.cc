@@ -299,6 +299,7 @@ TcpSocketBase::TcpSocketBase (void)
     m_recover (0), // Set to the initial sequence number
     m_retxThresh (3),
     m_limitedTx (false),
+    m_retransOut (0),
     m_congestionControl (0),
     m_isFirstPartialAck (true)
 {
@@ -368,6 +369,7 @@ TcpSocketBase::TcpSocketBase (const TcpSocketBase& sock)
     m_recover (sock.m_recover),
     m_retxThresh (sock.m_retxThresh),
     m_limitedTx (sock.m_limitedTx),
+    m_retransOut (sock.m_retransOut),
     m_isFirstPartialAck (sock.m_isFirstPartialAck),
     m_txTrace (sock.m_txTrace),
     m_rxTrace (sock.m_rxTrace)
@@ -1517,6 +1519,7 @@ TcpSocketBase::ReceivedAck (Ptr<Packet> packet, const TcpHeader& tcpHeader)
           m_tcb->m_congState = TcpSocketState::CA_OPEN;
           m_congestionControl->PktsAcked (m_tcb, segsAcked, m_lastRtt);
           m_dupAckCount = 0;
+          m_retransOut = 0;
 
           NS_LOG_DEBUG ("DISORDER -> OPEN");
         }
@@ -1550,6 +1553,7 @@ TcpSocketBase::ReceivedAck (Ptr<Packet> packet, const TcpHeader& tcpHeader)
 
               callCongestionControl = false; // No congestion control on cWnd show be invoked
               m_dupAckCount -= segsAcked;    // Update the dupAckCount
+              m_retransOut--;  // at least one retransmission has reached the other side
               m_txBuffer->DiscardUpTo (ackNumber);  //Bug 1850:  retransmit before newack
               DoRetransmit (); // Assume the next seq is lost. Retransmit lost packet
 
@@ -1579,6 +1583,7 @@ TcpSocketBase::ReceivedAck (Ptr<Packet> packet, const TcpHeader& tcpHeader)
                                         BytesInFlight () + m_tcb->m_segmentSize);
               m_isFirstPartialAck = true;
               m_dupAckCount = 0;
+              m_retransOut = 0;
 
               /* This FULL ACK acknowledge the fact that one segment has been
                * previously lost and now successfully received. All others have
@@ -1600,6 +1605,7 @@ TcpSocketBase::ReceivedAck (Ptr<Packet> packet, const TcpHeader& tcpHeader)
           m_isFirstPartialAck = true;
           m_congestionControl->PktsAcked (m_tcb, segsAcked, m_lastRtt);
           m_dupAckCount = 0;
+          m_retransOut = 0;
           m_tcb->m_congState = TcpSocketState::CA_OPEN;
           NS_LOG_DEBUG ("LOSS -> OPEN");
         }
@@ -2580,7 +2586,26 @@ uint32_t
 TcpSocketBase::BytesInFlight ()
 {
   NS_LOG_FUNCTION (this);
-  uint32_t bytesInFlight = m_highTxMark.Get () - m_txBuffer->HeadSequence ();
+  // Previous (see bug 1783):
+  // uint32_t bytesInFlight = m_highTxMark.Get () - m_txBuffer->HeadSequence ();
+  // RFC 4898 page 23
+  // PipeSize=SND.NXT-SND.UNA+(retransmits-dupacks)*CurMSS
+
+  // flightSize == UnAckDataCount (), but we avoid the call to save log lines
+  uint32_t flightSize = m_nextTxSequence.Get () - m_txBuffer->HeadSequence ();
+  uint32_t duplicatedSize;
+  uint32_t bytesInFlight;
+
+  if (m_retransOut > m_dupAckCount)
+    {
+      duplicatedSize = (m_retransOut - m_dupAckCount)*m_tcb->m_segmentSize;
+      bytesInFlight = flightSize + duplicatedSize;
+    }
+  else
+    {
+      duplicatedSize = (m_dupAckCount - m_retransOut)*m_tcb->m_segmentSize;
+      bytesInFlight = duplicatedSize > flightSize ? 0 : flightSize - duplicatedSize;
+    }
 
   // m_bytesInFlight is traced; avoid useless assignments which would fire
   // fruitlessly the callback
@@ -2914,15 +2939,15 @@ TcpSocketBase::Retransmit ()
    * are not able to retransmit anything because of local congestion.
    */
 
-  m_nextTxSequence = m_txBuffer->HeadSequence (); // Restart from highest Ack
-  m_dupAckCount = 0;
-
   if (m_tcb->m_congState != TcpSocketState::CA_LOSS)
     {
       m_tcb->m_congState = TcpSocketState::CA_LOSS;
       m_tcb->m_ssThresh = m_congestionControl->GetSsThresh (m_tcb, BytesInFlight ());
       m_tcb->m_cWnd = m_tcb->m_segmentSize;
     }
+
+  m_nextTxSequence = m_txBuffer->HeadSequence (); // Restart from highest Ack
+  m_dupAckCount = 0;
 
   NS_LOG_DEBUG ("RTO. Reset cwnd to " <<  m_tcb->m_cWnd << ", ssthresh to " <<
                 m_tcb->m_ssThresh << ", restart from seqnum " << m_nextTxSequence);
@@ -2971,6 +2996,8 @@ TcpSocketBase::DoRetransmit ()
 
   // Retransmit a data packet: Call SendDataPacket
   uint32_t sz = SendDataPacket (m_txBuffer->HeadSequence (), m_tcb->m_segmentSize, true);
+  ++m_retransOut;
+
   // In case of RTO, advance m_nextTxSequence
   m_nextTxSequence = std::max (m_nextTxSequence.Get (), m_txBuffer->HeadSequence () + sz);
 
