@@ -71,7 +71,7 @@ protected:
   virtual void Tx (const Ptr<const Packet> p, const TcpHeader&h, SocketWho who);
   virtual void FinalChecks ();
 
-  void PktDropped (const Ipv4Header &ipH, const TcpHeader& tcpH);
+  void PktDropped (const Ipv4Header &ipH, const TcpHeader& tcpH, Ptr<const Packet> p);
 
 private:
   uint32_t m_senderSentSegments;

@@ -320,7 +320,7 @@ TcpFastRetrTest::CongStateTrace (const TcpSocketState::TcpCongState_t oldValue,
 
 
 void
-TcpFastRetrTest::PktDropped (const Ipv4Header &ipH, const TcpHeader& tcpH)
+TcpFastRetrTest::PktDropped (const Ipv4Header &ipH, const TcpHeader& tcpH, Ptr<const Packet> p)
 {
   NS_LOG_FUNCTION (this << ipH << tcpH);
 

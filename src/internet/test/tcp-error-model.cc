@@ -60,7 +60,7 @@ TcpGeneralErrorModel::DoCorrupt (Ptr<Packet> p)
 
   if (toDrop)
     {
-      m_dropCallback (ipHeader, tcpHeader);
+      m_dropCallback (ipHeader, tcpHeader, p);
     }
 
   p->AddHeader (tcpHeader);
@@ -94,7 +94,7 @@ TcpSeqErrorModel::ShouldDrop (const Ipv4Header &ipHeader, const TcpHeader &tcpHe
       SequenceNumber32 toKill = m_seqToKill.front();
       NS_LOG_INFO ("Analyzing seq=" << tcpHeader.GetSequenceNumber () <<
                    " killing=" << toKill);
-      if (tcpHeader.GetSequenceNumber() >= toKill)
+      if (tcpHeader.GetSequenceNumber() == toKill)
         {
           NS_LOG_INFO ("segment " << toKill << " dropped");
           toDrop = true;

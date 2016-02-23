@@ -243,7 +243,8 @@ TcpTimeRtoTest::RTOExpired (const Ptr<const TcpSocketState> tcb, SocketWho who)
 }
 
 void
-TcpTimeRtoTest::PktDropped (const Ipv4Header &ipH, const TcpHeader& tcpH)
+TcpTimeRtoTest::PktDropped (const Ipv4Header &ipH, const TcpHeader& tcpH,
+                            Ptr<const Packet> p)
 {
   NS_LOG_INFO (Simulator::Now ().GetSeconds () << "\tDROPPED! " << tcpH);
 }

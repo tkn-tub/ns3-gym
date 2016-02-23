@@ -38,7 +38,7 @@ public:
   static TypeId GetTypeId (void);
   TcpGeneralErrorModel ();
 
-  void SetDropCallback (Callback<void, const Ipv4Header&, const TcpHeader&> cb)
+  void SetDropCallback (Callback<void, const Ipv4Header&, const TcpHeader&, Ptr<const Packet> > cb)
   {
     m_dropCallback = cb;
   }
@@ -50,7 +50,7 @@ protected:
 
 private:
   virtual bool DoCorrupt (Ptr<Packet> p);
-  Callback<void, const Ipv4Header&, const TcpHeader&> m_dropCallback;
+  Callback<void, const Ipv4Header&, const TcpHeader&, Ptr<const Packet> > m_dropCallback;
 };
 
 /**
