@@ -64,7 +64,6 @@ protected:
 private:
   uint32_t m_segmentSize;
   uint32_t m_packetSize;
-  uint32_t initialSsTh;
   uint32_t m_packets;
 };
 
