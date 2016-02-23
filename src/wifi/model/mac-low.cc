@@ -843,6 +843,13 @@ MacLow::ReceiveError (Ptr<const Packet> packet, double rxSnr, bool isEndOfFrame)
   NS_LOG_DEBUG ("rx failed ");
   if (isEndOfFrame == true && m_receivedAtLeastOneMpdu == true)
     {
+      WifiMacHeader hdr;
+      packet->PeekHeader (hdr);
+      if (hdr.GetAddr1 () != m_self)
+        {
+          NS_LOG_DEBUG ("hdr addr1 " << hdr.GetAddr1 () << "not for me (" << m_self << "); returning");
+          return;
+        }
       NS_ASSERT (m_lastReceivedHdr.IsQosData ());
       NS_LOG_DEBUG ("last a-mpdu subframe detected/sendImmediateBlockAck from=" << m_lastReceivedHdr.GetAddr2 ());
       m_sendAckEvent = Simulator::Schedule (GetSifs (),
