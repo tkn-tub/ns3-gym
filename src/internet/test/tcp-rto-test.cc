@@ -28,11 +28,25 @@ namespace ns3 {
 NS_LOG_COMPONENT_DEFINE ("TcpRtoTest");
 
 TcpRtoTest::TcpRtoTest (TypeId &congControl, const std::string &desc)
-  : TcpGeneralTest (desc, 500, 100, Seconds (0.01), Seconds (0.5),
-                    Seconds (10), 0, 1, 500, congControl, 1500),
-  m_rtoExpired (false),
-  m_segmentReceived (false)
+  : TcpGeneralTest (desc),
+    m_rtoExpired (false),
+    m_segmentReceived (false)
 {
+  m_congControlTypeId = congControl;
+}
+
+void
+TcpRtoTest::ConfigureEnvironment ()
+{
+  TcpGeneralTest::ConfigureEnvironment ();
+  SetAppPktCount (100);
+}
+
+void
+TcpRtoTest::ConfigureProperties ()
+{
+  TcpGeneralTest::ConfigureProperties ();
+  SetInitialSsThresh (SENDER, 0);
 }
 
 Ptr<TcpSocketMsgBase>
@@ -114,13 +128,20 @@ TcpRtoTest::FinalChecks ()
 // TcpTimeRtoTest
 
 TcpTimeRtoTest::TcpTimeRtoTest (TypeId &congControl, const std::string &desc)
-  :   TcpGeneralTest (desc, 500, 100, Seconds (0.01), Seconds (0.5),
-                      Seconds (10), 0xffff, 1, 500, congControl, 1500),
-  m_senderSentSegments (0),
-  m_closed (false)
+  :   TcpGeneralTest (desc),
+    m_senderSentSegments (0),
+    m_closed (false)
 {
-
+  m_congControlTypeId = congControl;
 }
+
+void
+TcpTimeRtoTest::ConfigureEnvironment ()
+{
+  TcpGeneralTest::ConfigureEnvironment ();
+  SetAppPktCount (100);
+}
+
 
 Ptr<TcpSocketMsgBase>
 TcpTimeRtoTest::CreateSenderSocket (Ptr<Node> node)

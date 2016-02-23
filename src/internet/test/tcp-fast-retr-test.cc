@@ -27,17 +27,31 @@ NS_LOG_COMPONENT_DEFINE ("TcpFastRetrTest");
 
 TcpFastRetrTest::TcpFastRetrTest (TypeId typeId, uint32_t seqToKill,
                                   const std::string &msg)
-  : TcpGeneralTest (msg, 500, 100, Seconds (0.01), Seconds (0.5), Seconds (10),
-                    0, 1, 500, typeId, 1500),
-  m_pktDropped (false),
-  m_pktWasDropped (false),
-  m_seqToKill (seqToKill),
-  m_dupAckReceived (0),
-  m_sndNextExpSeq (0),
-  m_rcvNextExpAck (1),
-  m_countRetr (0),
-  m_bytesRcvButNotAcked (0)
+  : TcpGeneralTest (msg),
+    m_pktDropped (false),
+    m_pktWasDropped (false),
+    m_seqToKill (seqToKill),
+    m_dupAckReceived (0),
+    m_sndNextExpSeq (0),
+    m_rcvNextExpAck (1),
+    m_countRetr (0),
+    m_bytesRcvButNotAcked (0)
 {
+  m_congControlTypeId = typeId;
+}
+
+void
+TcpFastRetrTest::ConfigureProperties ()
+{
+  TcpGeneralTest::ConfigureProperties ();
+  SetInitialSsThresh (SENDER, 0);
+}
+
+void
+TcpFastRetrTest::ConfigureEnvironment ()
+{
+  TcpGeneralTest::ConfigureEnvironment ();
+  SetAppPktCount (100);
 }
 
 Ptr<ErrorModel>
@@ -218,7 +232,7 @@ TcpFastRetrTest::RcvAck (const Ptr<const TcpSocketState> tcb, const TcpHeader &h
           NS_TEST_ASSERT_MSG_EQ (GetDupAckCount (SENDER), m_dupAckReceived,
                                  "Dupack count differs");
 
-          if (GetDupAckCount(SENDER) == 0 &&
+          if (GetDupAckCount (SENDER) == 0 &&
               GetDupAckCount (SENDER) < GetReTxThreshold (SENDER))
             {
               NS_TEST_ASSERT_MSG_EQ (GetCongStateFrom (tcb), TcpSocketState::CA_OPEN,
@@ -288,7 +302,7 @@ TcpFastRetrTest::ProcessedAck (const Ptr<const TcpSocketState> tcb, const TcpHea
 }
 
 void
-TcpFastRetrTest::RTOExpired(const Ptr<const TcpSocketState> tcb, SocketWho who)
+TcpFastRetrTest::RTOExpired (const Ptr<const TcpSocketState> tcb, SocketWho who)
 {
   NS_ASSERT_MSG (true == false, "RTO isn't expected here");
 }

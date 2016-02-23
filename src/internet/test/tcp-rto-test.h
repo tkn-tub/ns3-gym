@@ -47,6 +47,8 @@ protected:
   virtual void ProcessedAck (const Ptr<const TcpSocketState> tcb,
                              const TcpHeader& h, SocketWho who);
   virtual void FinalChecks ();
+  virtual void ConfigureProperties ();
+  virtual void ConfigureEnvironment ();
 
 private:
   bool m_rtoExpired;
@@ -70,6 +72,8 @@ protected:
   virtual void RTOExpired (const Ptr<const TcpSocketState> tcb, SocketWho who);
   virtual void Tx (const Ptr<const Packet> p, const TcpHeader&h, SocketWho who);
   virtual void FinalChecks ();
+
+  virtual void ConfigureEnvironment ();
 
   void PktDropped (const Ipv4Header &ipH, const TcpHeader& tcpH, Ptr<const Packet> p);
 

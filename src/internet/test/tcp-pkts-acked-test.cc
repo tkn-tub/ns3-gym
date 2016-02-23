@@ -50,6 +50,8 @@ protected:
   virtual Ptr<TcpSocketMsgBase> CreateSenderSocket (Ptr<Node> node);
   virtual void Rx (const Ptr<const Packet> p, const TcpHeader&h, SocketWho who);
 
+  virtual void ConfigureEnvironment ();
+
   void FinalChecks ();
 
 private:
@@ -94,11 +96,18 @@ DummyCongControl::GetTypeId (void)
 }
 
 TcpPktsAckedOpenTest::TcpPktsAckedOpenTest (const std::string &desc)
-  : TcpGeneralTest (desc, 500, 20, Seconds (0.01), Seconds (0.05), Seconds (2.0),
-                    0xffffffff,1, 500),
+  : TcpGeneralTest (desc),
     m_segmentsAcked (0),
     m_segmentsReceived (0)
 {
+}
+
+void
+TcpPktsAckedOpenTest::ConfigureEnvironment ()
+{
+  TcpGeneralTest::ConfigureEnvironment ();
+  SetAppPktCount (20);
+  SetMTU (500);
 }
 
 Ptr<TcpSocketMsgBase>

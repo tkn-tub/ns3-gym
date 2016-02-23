@@ -37,7 +37,7 @@ namespace ns3 {
  * \see CWndTrace
  */
 class
-  TcpSlowStartNormalTest : public TcpGeneralTest
+TcpSlowStartNormalTest : public TcpGeneralTest
 {
 public:
   TcpSlowStartNormalTest (uint32_t segmentSize, uint32_t packetSize,
@@ -48,6 +48,11 @@ protected:
   virtual void CWndTrace (uint32_t oldValue, uint32_t newValue);
   virtual void Tx (const Ptr<const Packet> p, const TcpHeader &h, SocketWho who);
   virtual void Rx (const Ptr<const Packet> p, const TcpHeader &h, SocketWho who);
+  void QueueDrop (SocketWho who);
+  void PhyDrop (SocketWho who);
+
+  virtual void ConfigureEnvironment ();
+  virtual void ConfigureProperties ();
 
   uint32_t m_ackedBytes;
   uint32_t m_sentBytes;
@@ -56,6 +61,11 @@ protected:
 
   bool   m_initial;
 
+private:
+  uint32_t m_segmentSize;
+  uint32_t m_packetSize;
+  uint32_t initialSsTh;
+  uint32_t m_packets;
 };
 
 /**
@@ -67,7 +77,7 @@ protected:
  * Slow start behavior should not change.
  */
 class
-  TcpSlowStartAttackerTest : public TcpSlowStartNormalTest
+TcpSlowStartAttackerTest : public TcpSlowStartNormalTest
 {
 public:
   TcpSlowStartAttackerTest (uint32_t segmentSize, uint32_t packetSize,

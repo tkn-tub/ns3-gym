@@ -147,7 +147,7 @@ public:
   {
   }
 
-  TcpSocketSmallAcks (const TcpSocketSmallAcks &other) 
+  TcpSocketSmallAcks (const TcpSocketSmallAcks &other)
     : TcpSocketMsgBase (other),
       m_bytesToAck (other.m_bytesToAck),
       m_bytesLeftToBeAcked (other.m_bytesLeftToBeAcked),
@@ -213,25 +213,12 @@ public:
   /**
    * \brief TcpGeneralTest constructor
    *
-   * \param pktSize application packet size
-   * \param pktCount count of application packet to generate
-   * \param pktInterval (application) interval between each generated packet
-   * \param propagationDelay propagation delay of the channel
-   * \param startTime time of the first application-generated packet
-   * \param mtu MTU of the environment
+   * Please use the method ConfigureEnvironment () to configure other
+   * parameters than the test description.
+   *
    * \param desc description of the test
    */
-  TcpGeneralTest (const std::string &desc,
-                  uint32_t pktSize = 500,
-                  uint32_t pktCount = 10,
-                  const Time& pktInterval = Seconds (0.01),
-                  const Time& propagationDelay = Seconds (0.5),
-                  const Time& startTime = Seconds (10),
-                  uint32_t initialSlowStartThresh = 0xffff,
-                  uint32_t initialCwnd = 1,
-                  uint32_t segmentSize = 500,
-                  TypeId   congestionControl = TcpNewReno::GetTypeId (),
-                  uint32_t mtu = 1500);
+  TcpGeneralTest (const std::string &desc);
   ~TcpGeneralTest ();
 
   /**
@@ -314,8 +301,27 @@ protected:
    * As environment, two socket are connected through a SimpleChannel. Each device
    * has an MTU of 1500 bytes, and the application starts to send packet at
    * 10s of simulated time, through SendPacket.
+   *
+   * If you need to change parameters of the environment, please inherit an
+   * implement the method ConfigureEnvironment (); that will be called at the
+   * beginning of this method. To configure Socket parameters (i.e. parameters
+   * that should be applied after socket have been created) use ConfigureProperties.
+   *
+   * Please do not use any Config:: statements.
+   *
+   * \see ConfigureEnvironment
    */
   virtual void DoRun (void);
+
+  /**
+   * \brief Change the configuration of the evironment
+   */
+  virtual void ConfigureEnvironment (void);
+
+  /**
+   * \brief Change the configuration of the socket properties
+   */
+  virtual void ConfigureProperties (void);
 
   /**
    * \brief Teardown the TCP test
@@ -361,6 +367,18 @@ protected:
    * \return retransmission threshold
    */
   uint32_t GetReTxThreshold (SocketWho who);
+
+  /**
+   * \brief Get the initial slow start threshold
+   * \return initial slow start threshold
+   */
+  uint32_t GetInitialSsThresh (SocketWho who);
+
+  /**
+   * \brief Get the initial congestion window
+   * \return initial cwnd
+   */
+  uint32_t GetInitialCwnd (SocketWho who);
 
   /**
    * \brief Get the number of dupack received
@@ -472,6 +490,83 @@ protected:
   void SetRcvBufSize (SocketWho who, uint32_t size);
 
   /**
+   * \brief Forcefully set the segment size
+   *
+   * \param who socket to force
+   * \param segmentSize segmentSize
+   */
+  void SetSegmentSize (SocketWho who, uint32_t segmentSize);
+
+  /**
+   * \brief Forcefully set the initial cwnd
+   *
+   * \param who socket to force
+   * \param initialCwnd size of the initial cwnd
+   */
+  void SetInitialCwnd (SocketWho who, uint32_t initialCwnd);
+
+  /**
+   * \brief Forcefully set the initial ssth
+   *
+   * \param who socket to force
+   * \param initialSsThresh size of the initial ssth
+   */
+  void SetInitialSsThresh (SocketWho who, uint32_t initialSsThresh);
+
+  /**
+   * \brief Set app packet size
+   *
+   * The application will generate packet of this size.
+   *
+   * \param pktSize size of the packet
+   */
+  void SetAppPktSize (uint32_t pktSize) { m_pktSize = pktSize; }
+
+  /**
+   * \brief Set app packet count
+   *
+   * The application will generate this count of packets.
+   *
+   * \param pktCount count of packets to generate
+   */
+  void SetAppPktCount (uint32_t pktCount) { m_pktCount = pktCount; }
+
+  /**
+   * \brief Interval between app-generated packet
+   *
+   * \param pktInterval interval
+   */
+  void SetAppPktInterval (Time pktInterval) { m_interPacketInterval = pktInterval; }
+
+  /**
+   * \brief Propagation delay of the bottleneck link
+   *
+   * \param propDelay propagation delay
+   */
+  void SetPropagationDelay (Time propDelay) { m_propagationDelay = propDelay; }
+
+  /**
+   * \brief Set the initial time at which the application sends the first data packet
+   *
+   * \param startTime start time
+   */
+  void SetTransmitStart (Time startTime) { m_startTime = startTime; }
+
+  /**
+   * \brief Congestion control of the sender socket
+   *
+   * \param congControl typeid of the congestion control algorithm
+   */
+  void SetCongestionControl (TypeId congControl) { m_congControlTypeId = congControl; }
+
+  /**
+   * \brief MTU of the bottleneck link
+   *
+   * \param mtu MTU
+   */
+  void SetMTU (uint32_t mtu) { m_mtu = mtu; }
+
+  /**
    * \brief State on Ack state machine changes
    * \param oldValue old value
    * \param newValue new value
@@ -500,6 +595,19 @@ protected:
    * \param newValue new value
    */
   virtual void RttTrace (Time oldTime, Time newTime)
+  {
+  }
+
+  /**
+   *  \brief Slow start threshold changes
+   *
+   * This applies only for sender socket.
+   *
+   *
+   * \param oldValue old value
+   * \param newValue new value
+   */
+  virtual void SsThreshTrace (uint32_t oldValue, uint32_t newValue)
   {
   }
 
@@ -690,25 +798,6 @@ protected:
     return m_interPacketInterval;
   }
 
-  /**
-   * \brief Get the initial slow start threshold
-   * \return initial slow start threshold
-   */
-  uint32_t GetInitialSsThresh () const
-  {
-    return m_initialSlowStartThresh;
-  }
-
-  /**
-   * \brief Get the initial congestion window
-   * \return initial cwnd
-   */
-  uint32_t GetInitialCwnd () const
-  {
-    return m_initialCwnd;
-  }
-
-
   TypeId   m_congControlTypeId;      //!< Congestion control
 
 private:
@@ -723,9 +812,6 @@ private:
   uint32_t m_pktCount;             //!< Count of the application packet
   Time     m_interPacketInterval;  //!< Time between sending application packet
                                    //   down to tcp socket
-  uint32_t m_initialSlowStartThresh; //!< Initial slow start threshold
-  uint32_t m_initialCwnd;            //!< Initial congestion window
-  uint32_t m_segmentSize;            //!< Segment size
 
   Ptr<TcpSocketMsgBase> m_senderSocket;   //!< Pointer to sender socket
   Ptr<TcpSocketMsgBase> m_receiverSocket; //!< Pointer to receiver socket

@@ -48,7 +48,7 @@ namespace ns3 {
  * it checks that the increment has not passed the 1 MSS limit.
  */
 class
-  TcpNewRenoCongAvoidNormalTest : public TcpGeneralTest
+TcpNewRenoCongAvoidNormalTest : public TcpGeneralTest
 {
 public:
   TcpNewRenoCongAvoidNormalTest (uint32_t segmentSize, uint32_t packetSize,
@@ -61,6 +61,13 @@ protected:
   void NormalClose (SocketWho who);
   void Check ();
 
+  void ConfigureEnvironment ();
+  void ConfigureProperties ();
+
+private:
+  uint32_t m_segmentSize;
+  uint32_t m_packetSize;
+  uint32_t m_packets;
   uint32_t m_increment;
   EventId m_event;
   bool   m_initial;

@@ -50,19 +50,33 @@ protected:
   virtual void RttTrace (Time oldTime, Time newTime);
   void FinalChecks ();
 
+  virtual void ConfigureEnvironment ();
+
 private:
   bool m_enableTs;
   bool m_rttChanged;
   SequenceNumber32 m_highestTxSeq;
+  uint32_t m_pktCount;
 };
 
-TcpRttEstimationTest::TcpRttEstimationTest (const std::string &desc, bool enableTs, uint32_t dataPkt)
-  : TcpGeneralTest (desc, 500, dataPkt, Seconds (0.01), Seconds (0.05), Seconds (2.0),
-                    0xffffffff,1, 500),
+TcpRttEstimationTest::TcpRttEstimationTest (const std::string &desc, bool enableTs,
+                                            uint32_t pktCount)
+  : TcpGeneralTest (desc),
     m_enableTs (enableTs),
     m_rttChanged (false),
-    m_highestTxSeq (0)
+    m_highestTxSeq (0),
+    m_pktCount (pktCount)
 {
+}
+
+void
+TcpRttEstimationTest::ConfigureEnvironment ()
+{
+  TcpGeneralTest::ConfigureEnvironment ();
+  SetAppPktCount (m_pktCount);
+  SetPropagationDelay (MilliSeconds (50));
+  SetTransmitStart (Seconds (2.0));
+  SetMTU (500);
 }
 
 Ptr<TcpSocketMsgBase>

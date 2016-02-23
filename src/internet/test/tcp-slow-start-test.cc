@@ -34,14 +34,46 @@ TcpSlowStartNormalTest::TcpSlowStartNormalTest (uint32_t segmentSize,
                                                 uint32_t packets,
                                                 TypeId &typeId,
                                                 const std::string &desc)
-  : TcpGeneralTest (desc, packetSize, packets, Seconds (0.01), Seconds (0.5),
-                    Seconds (10), initSsTh, 1, segmentSize, typeId, 1500),
-  m_ackedBytes (0),
-  m_sentBytes (0),
-  m_totalAckedBytes (0),
-  m_allowedIncrease (0),
-  m_initial (true)
+  : TcpGeneralTest (desc),
+    m_ackedBytes (0),
+    m_sentBytes (0),
+    m_totalAckedBytes (0),
+    m_allowedIncrease (0),
+    m_initial (true),
+    m_segmentSize (segmentSize),
+    m_packetSize (packetSize),
+    m_packets (packets)
 {
+  m_congControlTypeId = typeId;
+}
+
+void
+TcpSlowStartNormalTest::ConfigureEnvironment ()
+{
+  TcpGeneralTest::ConfigureEnvironment ();
+  SetAppPktCount (m_packets);
+  SetAppPktSize (m_packetSize);
+}
+
+void
+TcpSlowStartNormalTest::ConfigureProperties ()
+{
+  TcpGeneralTest::ConfigureProperties ();
+  SetInitialSsThresh (SENDER, 400000);
+  SetSegmentSize (SENDER, m_segmentSize);
+  SetSegmentSize (RECEIVER, m_segmentSize);
+}
+
+void
+TcpSlowStartNormalTest::QueueDrop (SocketWho who)
+{
+  NS_FATAL_ERROR ("Drop on the queue; cannot validate slow start");
+}
+
+void
+TcpSlowStartNormalTest::PhyDrop (SocketWho who)
+{
+  NS_FATAL_ERROR ("Drop on the phy: cannot validate slow start");
 }
 
 /**
@@ -71,7 +103,7 @@ TcpSlowStartNormalTest::CWndTrace (uint32_t oldValue, uint32_t newValue)
 
   // The increase in RFC should be <= of segSize. In ns-3 we force = segSize
   NS_TEST_ASSERT_MSG_EQ (increase, segSize, "Increase different than segsize");
-  NS_TEST_ASSERT_MSG_LT_OR_EQ (newValue, GetInitialSsThresh (), "cWnd increased over ssth");
+  NS_TEST_ASSERT_MSG_LT_OR_EQ (newValue, GetInitialSsThresh (SENDER), "cWnd increased over ssth");
 
   NS_LOG_INFO ("Incremented cWnd by " << segSize << " bytes in Slow Start " <<
                "achieving a value of " << newValue);
@@ -98,7 +130,7 @@ TcpSlowStartNormalTest::Rx (const Ptr<const Packet> p, const TcpHeader &h, Socke
 
   if (who == SENDER && Simulator::Now ().GetSeconds () > 5.0)
     {
-      uint32_t acked = h.GetAckNumber().GetValue() - m_totalAckedBytes - 1;
+      uint32_t acked = h.GetAckNumber ().GetValue () - m_totalAckedBytes - 1;
       m_totalAckedBytes += acked;
       m_ackedBytes += acked;
 

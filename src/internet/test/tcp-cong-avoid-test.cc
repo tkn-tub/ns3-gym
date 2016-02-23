@@ -31,11 +31,30 @@ TcpNewRenoCongAvoidNormalTest::TcpNewRenoCongAvoidNormalTest (uint32_t segmentSi
                                                               uint32_t packets,
                                                               TypeId &typeId,
                                                               const std::string &desc)
-  : TcpGeneralTest (desc, packetSize, packets, Seconds (0.01), Seconds (0.5),
-                    Seconds (10), 0, 1, segmentSize, typeId, 1500),
+  : TcpGeneralTest (desc),
+    m_segmentSize (segmentSize),
+    m_packetSize (packetSize),
+    m_packets (packets),
     m_increment (0),
     m_initial (true)
 {
+  m_congControlTypeId = typeId;
+}
+
+void
+TcpNewRenoCongAvoidNormalTest::ConfigureEnvironment ()
+{
+  TcpGeneralTest::ConfigureEnvironment ();
+  SetAppPktSize (m_packetSize);
+  SetAppPktCount (m_packets);
+  SetMTU (1500);
+}
+
+void TcpNewRenoCongAvoidNormalTest::ConfigureProperties ()
+{
+  TcpGeneralTest::ConfigureProperties ();
+  SetSegmentSize (SENDER, m_segmentSize);
+  SetInitialSsThresh (SENDER, 0);
 }
 
 /**

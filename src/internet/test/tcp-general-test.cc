@@ -32,25 +32,9 @@ namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("TcpGeneralTest");
 
-TcpGeneralTest::TcpGeneralTest (const std::string &desc,
-                                uint32_t pktSize, uint32_t pktCount,
-                                const Time& pktInterval,
-                                const Time& propagationDelay, const Time& startTime,
-                                uint32_t initialSlowStartThresh, uint32_t initialCwnd,
-                                uint32_t segmentSize,
-                                TypeId congestionControl,
-                                uint32_t mtu)
+TcpGeneralTest::TcpGeneralTest (const std::string &desc)
   : TestCase (desc),
-    m_congControlTypeId (congestionControl),
-    m_propagationDelay (propagationDelay),
-    m_startTime (startTime),
-    m_mtu (mtu),
-    m_pktSize (pktSize),
-    m_pktCount (pktCount),
-    m_interPacketInterval (pktInterval),
-    m_initialSlowStartThresh (initialSlowStartThresh),
-    m_initialCwnd (initialCwnd),
-    m_segmentSize (segmentSize),
+    m_congControlTypeId (TcpNewReno::GetTypeId ()),
     m_remoteAddr (Ipv4Address::GetAny (), 4477)
 {
   NS_LOG_FUNCTION (this << desc);
@@ -105,8 +89,34 @@ TcpGeneralTest::DoTeardown (void)
 }
 
 void
+TcpGeneralTest::ConfigureEnvironment ()
+{
+  NS_LOG_FUNCTION (this);
+
+  SetCongestionControl (m_congControlTypeId);
+  SetPropagationDelay (MilliSeconds (500));
+  SetTransmitStart (Seconds (10));
+  SetAppPktSize (500);
+  SetAppPktCount (10);
+  SetAppPktInterval (MilliSeconds (1));
+  SetMTU (1500);
+}
+
+void
+TcpGeneralTest::ConfigureProperties ()
+{
+  NS_LOG_FUNCTION (this);
+  SetInitialCwnd (SENDER, 1);
+  SetInitialSsThresh (SENDER, UINT32_MAX);
+  SetSegmentSize (SENDER, 500);
+  SetSegmentSize (RECEIVER, 500);
+}
+
+void
 TcpGeneralTest::DoRun (void)
 {
+  ConfigureEnvironment ();
+
   NS_LOG_INFO ("Create nodes.");
   NodeContainer nodes;
   nodes.Create (2);
@@ -170,10 +180,7 @@ TcpGeneralTest::DoRun (void)
   m_receiverSocket->TraceConnectWithoutContext ("Rx",
                                                 MakeCallback (&TcpGeneralTest::RxPacketCb, this));
 
-  InetSocketAddress local = InetSocketAddress (Ipv4Address::GetAny (), 4477);
-  m_receiverSocket->Bind (local);
-  m_receiverSocket->Listen ();
-  m_receiverSocket->ShutdownSend ();
+  InetSocketAddress local = InetSocketAddress (Ipv4Address::GetAny (), 4477);  m_receiverSocket->Bind (local);
 
   m_senderSocket = CreateSenderSocket (nodes.Get (0));
   m_senderSocket->SetCloseCallbacks (MakeCallback (&TcpGeneralTest::NormalCloseCb, this),
@@ -185,6 +192,8 @@ TcpGeneralTest::DoRun (void)
   m_senderSocket->SetUpdateRttHistoryCb (MakeCallback (&TcpGeneralTest::UpdateRttHistoryCb, this));
   m_senderSocket->TraceConnectWithoutContext ("CongestionWindow",
                                               MakeCallback (&TcpGeneralTest::CWndTrace, this));
+  m_senderSocket->TraceConnectWithoutContext ("SlowStartThreshold",
+                                              MakeCallback (&TcpGeneralTest::SsThreshTrace, this));
   m_senderSocket->TraceConnectWithoutContext ("CongState",
                                               MakeCallback (&TcpGeneralTest::CongStateTrace, this));
   m_senderSocket->TraceConnectWithoutContext ("Tx",
@@ -197,6 +206,11 @@ TcpGeneralTest::DoRun (void)
                                               MakeCallback (&TcpGeneralTest::BytesInFlightTrace, this));
 
   m_remoteAddr = InetSocketAddress (serverAddress, 4477);
+
+  ConfigureProperties ();
+
+  m_receiverSocket->Listen ();
+  m_receiverSocket->ShutdownSend ();
 
   Simulator::Schedule (Seconds (0.0),
                        &TcpGeneralTest::DoConnect, this);
@@ -255,10 +269,6 @@ TcpGeneralTest::CreateSocket (Ptr<Node> node, TypeId socketType,
   socket->SetTcp (node->GetObject<TcpL4Protocol> ());
   socket->SetRtt (rtt);
   socket->SetCongestionControlAlgorithm (algo);
-
-  socket->SetAttribute ("InitialSlowStartThreshold", UintegerValue (m_initialSlowStartThresh));
-  socket->SetAttribute ("SegmentSize", UintegerValue (m_segmentSize));
-  socket->SetAttribute ("InitialCwnd", UintegerValue (m_initialCwnd));
 
   return socket;
 }
@@ -586,6 +596,40 @@ TcpGeneralTest::GetSegSize (SocketWho who)
     }
 }
 
+uint32_t
+TcpGeneralTest::GetInitialCwnd (SocketWho who)
+{
+  if (who == SENDER)
+    {
+      return DynamicCast<TcpSocketMsgBase> (m_senderSocket)->GetInitialCwnd ();
+    }
+  else if (who == RECEIVER)
+    {
+      return DynamicCast<TcpSocketMsgBase> (m_receiverSocket)->GetInitialCwnd ();
+    }
+  else
+    {
+      NS_FATAL_ERROR ("Not defined");
+    }
+}
+
+uint32_t
+TcpGeneralTest::GetInitialSsThresh (SocketWho who)
+{
+  if (who == SENDER)
+    {
+      return DynamicCast<TcpSocketMsgBase> (m_senderSocket)->GetInitialSSThresh ();
+    }
+  else if (who == RECEIVER)
+    {
+      return DynamicCast<TcpSocketMsgBase> (m_receiverSocket)->GetInitialSSThresh ();
+    }
+  else
+    {
+      NS_FATAL_ERROR ("Not defined");
+    }
+}
+
 Time
 TcpGeneralTest::GetRto (SocketWho who)
 {
@@ -771,6 +815,57 @@ TcpGeneralTest::SetRcvBufSize (SocketWho who, uint32_t size)
   else if (who == RECEIVER)
     {
       m_receiverSocket->SetRcvBufSize (size);
+    }
+  else
+    {
+      NS_FATAL_ERROR ("Not defined");
+    }
+}
+
+void
+TcpGeneralTest::SetSegmentSize (SocketWho who, uint32_t segmentSize)
+{
+  if (who == SENDER)
+    {
+      m_senderSocket->SetSegSize (segmentSize);
+    }
+  else if (who == RECEIVER)
+    {
+      m_receiverSocket->SetSegSize (segmentSize);
+    }
+  else
+    {
+      NS_FATAL_ERROR ("Not defined");
+    }
+}
+
+void
+TcpGeneralTest::SetInitialCwnd (SocketWho who, uint32_t initialCwnd)
+{
+  if (who == SENDER)
+    {
+      m_senderSocket->SetInitialCwnd (initialCwnd);
+    }
+  else if (who == RECEIVER)
+    {
+      m_receiverSocket->SetInitialCwnd (initialCwnd);
+    }
+  else
+    {
+      NS_FATAL_ERROR ("Not defined");
+    }
+}
+
+void
+TcpGeneralTest::SetInitialSsThresh (SocketWho who, uint32_t initialSsThresh)
+{
+  if (who == SENDER)
+    {
+      m_senderSocket->SetInitialSSThresh (initialSsThresh);
+    }
+  else if (who == RECEIVER)
+    {
+      m_receiverSocket->SetInitialSSThresh (initialSsThresh);
     }
   else
     {

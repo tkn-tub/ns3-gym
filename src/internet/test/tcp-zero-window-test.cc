@@ -42,6 +42,9 @@ protected:
   void NormalClose (SocketWho who);
   void FinalChecks ();
 
+  virtual void ConfigureEnvironment ();
+  virtual void ConfigureProperties ();
+
   void IncreaseBufSize ();
 
 protected:
@@ -53,13 +56,29 @@ protected:
 };
 
 TcpZeroWindowTest::TcpZeroWindowTest (const std::string &desc)
-  : TcpGeneralTest (desc, 500, 20, Seconds (0.01), Seconds (0.05), Seconds (2.0),
-                    0xffffffff, 10, 500),
-  m_zeroWindowProbe (false),
-  m_windowUpdated (false),
-  m_senderFinished (false),
-  m_receiverFinished (false)
+  : TcpGeneralTest (desc),
+    m_zeroWindowProbe (false),
+    m_windowUpdated (false),
+    m_senderFinished (false),
+    m_receiverFinished (false)
 {
+}
+
+void
+TcpZeroWindowTest::ConfigureEnvironment ()
+{
+  TcpGeneralTest::ConfigureEnvironment ();
+  SetAppPktCount (20);
+  SetMTU (500);
+  SetTransmitStart (Seconds (2.0));
+  SetPropagationDelay (MilliSeconds (50));
+}
+
+void
+TcpZeroWindowTest::ConfigureProperties ()
+{
+  TcpGeneralTest::ConfigureProperties ();
+  SetInitialCwnd (SENDER, 10);
 }
 
 void

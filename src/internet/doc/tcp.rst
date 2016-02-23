@@ -237,11 +237,20 @@ However, other things should be checked in the test:
 * Persistent timer setup
 * Persistent timer teardown if rWnd increases
 
-At first, we should define the general parameters for the TCP connection, which
+To construct the test case, just derive from the TcpGeneralTest class:
+
+The code is the following:
+
+.. code-block:: c++
+
+   TcpZeroWindowTest::TcpZeroWindowTest (const std::string &desc)
+      : TcpGeneralTest (desc)
+   {
+   }
+
+Then, we should define the general parameters for the TCP connection, which
 will be one-sided (one node is acting as SENDER, while the other is acting as
-RECEIVER). They are coded in the constructor of the test case, as subclass of
-TcpGeneralTest (see the doxygen documentation to discover all methods you have
-at your disposal):
+RECEIVER):
 
 * Application packet size set to 500, and 20 packet in total (it means a stream
   of 10k bytes)
@@ -252,21 +261,51 @@ at your disposal):
 
 We have also to define the link properties, because the above definition does
 not work for every combination of propagation delay and sender application behavior.
-We can specify the following parameters through the same test constructor:
 
 * Link one-way propagation delay: 50 ms
 * Application packet generation interval: 10 ms
 * Application starting time: 20 s after the starting point
 
-The code is the following:
+To define the properties of the environment (e.g. properties which should be
+set before the object creation, such as propagation delay) we implement the method
+ConfigureEnvironment:
 
 .. code-block:: c++
 
-   TcpZeroWindowTest::TcpZeroWindowTest (const std::string &desc)
-      : TcpGeneralTest (desc, 500, 20, Seconds (0.01), Seconds (0.05), Seconds (2.0),
-                        0xffffffff, 10, 500)
+   void
+   TcpZeroWindowTest::ConfigureEnvironment ()
    {
+     TcpGeneralTest::ConfigureEnvironment ();
+     SetAppPktCount (20);
+     SetMTU (500);
+     SetTransmitStart (Seconds (2.0));
+     SetPropagationDelay (MilliSeconds (50));
    }
+
+For other properties, set after the object creation, we can use ConfigureProperties.
+The difference is that some values, for example initial congestion window
+or initial slow start threshold, are applicable only to a single instance, not
+to every instance we have. Usually, methods which requires an id and a value
+are meant to be called inside ConfigureProperties. Please see the doxygen
+documentation for an exhaustive list of the tunable properties.
+
+.. code-block:: c++
+
+   void
+   TcpZeroWindowTest::ConfigureProperties ()
+   {
+     TcpGeneralTest::ConfigureProperties ();
+     SetInitialCwnd (SENDER, 10);
+   }
+
+To see the default value for the experiment, please see the implementation of
+both methods inside TcpGeneralTest class.
+
+.. note::
+   If some configuration parameters are missing, add a method called
+   "SetSomeValue" which takes as input the value only (if it is meant to be
+   called inside ConfigureEnvironment) or the socket and the value (if it is
+   meant to be called inside ConfigureProperties).
 
 To define a zero-window situation, we choose (by design) to initiate the connection
 with a 0-byte rx buffer. This implies that the RECEIVER, in its first SYN-ACK,

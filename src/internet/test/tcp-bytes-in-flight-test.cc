@@ -48,6 +48,7 @@ protected:
   virtual void BytesInFlightTrace (uint32_t oldValue, uint32_t newValue);
 
   void PktDropped (const Ipv4Header &ipH, const TcpHeader& tcpH, Ptr<const Packet> p);
+  void ConfigureEnvironment ();
 
   void FinalChecks ();
 
@@ -60,9 +61,9 @@ private:
   std::vector<uint32_t> m_toDrop;     // List of SequenceNumber to drop
 };
 
-TcpBytesInFlightTest::TcpBytesInFlightTest (const std::string &desc, std::vector<uint32_t> &toDrop)
-  : TcpGeneralTest (desc, 500, 30, Seconds (0.01), Seconds (0.05), Seconds (2.0),
-                    0xffffffff,1, 500),
+TcpBytesInFlightTest::TcpBytesInFlightTest (const std::string &desc,
+                                            std::vector<uint32_t> &toDrop)
+  : TcpGeneralTest (desc),
     m_realBytesInFlight (0),
     m_guessedBytesInFlight (0),
     m_dupAckRecv (0),
@@ -70,6 +71,16 @@ TcpBytesInFlightTest::TcpBytesInFlightTest (const std::string &desc, std::vector
     m_greatestSeqSent (0),
     m_toDrop (toDrop)
 {
+}
+
+void
+TcpBytesInFlightTest::ConfigureEnvironment ()
+{
+  TcpGeneralTest::ConfigureEnvironment ();
+  SetAppPktCount (30);
+  SetPropagationDelay (MilliSeconds (50));
+  SetTransmitStart (Seconds (2.0));
+
 }
 
 Ptr<ErrorModel>

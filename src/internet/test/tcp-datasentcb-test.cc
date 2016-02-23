@@ -66,7 +66,7 @@ TcpSocketHalfAck::Fork (void)
 }
 
 void
-TcpSocketHalfAck::ReceivedData(Ptr<Packet> packet, const TcpHeader &tcpHeader)
+TcpSocketHalfAck::ReceivedData (Ptr<Packet> packet, const TcpHeader &tcpHeader)
 {
   NS_LOG_FUNCTION (this << packet << tcpHeader);
   static uint32_t times = 1;
@@ -74,7 +74,7 @@ TcpSocketHalfAck::ReceivedData(Ptr<Packet> packet, const TcpHeader &tcpHeader)
   Ptr<Packet> halved = packet->Copy ();
 
   if (times % 2 == 0)
-    halved->RemoveAtEnd (packet->GetSize() / 2);
+    halved->RemoveAtEnd (packet->GetSize () / 2);
 
   times++;
 
@@ -95,7 +95,9 @@ class TcpDataSentCbTestCase : public TcpGeneralTest
 {
 public:
   TcpDataSentCbTestCase (const std::string &desc, uint32_t size, uint32_t packets) :
-    TcpGeneralTest (desc, size, packets),
+    TcpGeneralTest (desc),
+    m_pktSize (size),
+    m_pktCount (packets),
     m_notifiedData (0)
   { }
 
@@ -103,12 +105,22 @@ protected:
   virtual Ptr<TcpSocketMsgBase> CreateReceiverSocket (Ptr<Node> node);
 
   virtual void DataSent (uint32_t size, SocketWho who);
-
+  virtual void ConfigureEnvironment ();
   virtual void FinalChecks ();
 
 private:
+  uint32_t m_pktSize;
+  uint32_t m_pktCount;
   uint32_t m_notifiedData;
 };
+
+void
+TcpDataSentCbTestCase::ConfigureEnvironment ()
+{
+  TcpGeneralTest::ConfigureEnvironment ();
+  SetAppPktCount (m_pktCount);
+  SetAppPktSize (m_pktSize);
+}
 
 void
 TcpDataSentCbTestCase::DataSent (uint32_t size, SocketWho who)
@@ -119,9 +131,9 @@ TcpDataSentCbTestCase::DataSent (uint32_t size, SocketWho who)
 }
 
 void
-TcpDataSentCbTestCase::FinalChecks()
+TcpDataSentCbTestCase::FinalChecks ()
 {
-  NS_TEST_ASSERT_MSG_EQ (m_notifiedData, GetPktSize () * GetPktCount () ,
+  NS_TEST_ASSERT_MSG_EQ (m_notifiedData, GetPktSize () * GetPktCount (),
                          "Notified more data than application sent");
 }
 
