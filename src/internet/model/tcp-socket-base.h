@@ -894,6 +894,17 @@ protected:
    */
   void AddOptionTimestamp (TcpHeader& header);
 
+  /**
+   * \brief Performs a safe subtraction between a and b (a-b)
+   *
+   * Safe is used to indicate that, if b>a, the results returned is 0.
+   *
+   * \param a first number
+   * \param b second number
+   * \return 0 if b>0, (a-b) otherwise
+   */
+  static uint32_t SafeSubtraction (uint32_t a, uint32_t b);
+
 protected:
   // Counters and events
   EventId           m_retxEvent;       //!< Retransmission event

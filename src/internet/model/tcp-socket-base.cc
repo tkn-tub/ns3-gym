@@ -1542,18 +1542,17 @@ TcpSocketBase::ReceivedAck (Ptr<Packet> packet, const TcpHeader& tcpHeader)
                * fast recovery procedure (i.e., if any duplicate ACKs subsequently
                * arrive, execute step 4 of Section 3.2 of [RFC5681]).
                 */
+              m_tcb->m_cWnd = SafeSubtraction (m_tcb->m_cWnd, bytesAcked);
+
               if (segsAcked >= 1)
                 {
-                  m_tcb->m_cWnd += m_tcb->m_segmentSize - bytesAcked;
-                }
-              else
-                {
-                  m_tcb->m_cWnd -= bytesAcked;
+                  m_tcb->m_cWnd += m_tcb->m_segmentSize;
                 }
 
               callCongestionControl = false; // No congestion control on cWnd show be invoked
-              m_dupAckCount -= segsAcked;    // Update the dupAckCount
-              m_retransOut--;  // at least one retransmission has reached the other side
+              m_dupAckCount = SafeSubtraction (m_dupAckCount, segsAcked); // Update the dupAckCount
+              m_retransOut  = SafeSubtraction (m_retransOut, 1);  // at least one retransmission
+                                                                  // has reached the other side
               m_txBuffer->DiscardUpTo (ackNumber);  //Bug 1850:  retransmit before newack
               DoRetransmit (); // Assume the next seq is lost. Retransmit lost packet
 
@@ -3412,6 +3411,17 @@ Ptr<TcpSocketBase>
 TcpSocketBase::Fork (void)
 {
   return CopyObject<TcpSocketBase> (this);
+}
+
+uint32_t
+TcpSocketBase::SafeSubtraction (uint32_t a, uint32_t b)
+{
+  if (a > b)
+    {
+      return a-b;
+    }
+
+  return 0;
 }
 
 //RttHistory methods
