@@ -16,6 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
+#define __STDC_LIMIT_MACROS
 #include "ns3/test.h"
 #include "ns3/node-container.h"
 #include "ns3/tcp-socket-base.h"
