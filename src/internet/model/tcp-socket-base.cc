@@ -2360,8 +2360,7 @@ TcpSocketBase::SendDataPacket (SequenceNumber32 seq, uint32_t maxSize, bool with
   NS_LOG_FUNCTION (this << seq << maxSize << withAck);
 
   bool isRetransmission = false;
-  if (seq == m_txBuffer->HeadSequence ()
-      && m_txBuffer->HeadSequence () != m_highRxAckMark)
+  if (seq != m_highTxMark)
     {
       isRetransmission = true;
     }
@@ -2446,7 +2445,7 @@ TcpSocketBase::SendDataPacket (SequenceNumber32 seq, uint32_t maxSize, bool with
     {
       // Schedules retransmit timeout. If this is a retransmission, double the timer
 
-      if (seq != m_highTxMark)
+      if (isRetransmission)
         { // This is a retransmit
           // RFC 6298, clause 2.5
           Time doubledRto = m_rto + m_rto;

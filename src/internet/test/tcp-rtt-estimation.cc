@@ -57,6 +57,7 @@ private:
   bool m_rttChanged;
   SequenceNumber32 m_highestTxSeq;
   uint32_t m_pktCount;
+  uint32_t m_dataCount;
 };
 
 TcpRttEstimationTest::TcpRttEstimationTest (const std::string &desc, bool enableTs,
@@ -65,7 +66,8 @@ TcpRttEstimationTest::TcpRttEstimationTest (const std::string &desc, bool enable
     m_enableTs (enableTs),
     m_rttChanged (false),
     m_highestTxSeq (0),
-    m_pktCount (pktCount)
+    m_pktCount (pktCount),
+    m_dataCount (0)
 {
 }
 
@@ -111,11 +113,12 @@ TcpRttEstimationTest::Tx (const Ptr<const Packet> p, const TcpHeader &h, SocketW
       if (m_highestTxSeq < h.GetSequenceNumber ())
         {
           m_highestTxSeq = h.GetSequenceNumber ();
+          m_dataCount = 0;
         }
 
       Ptr<RttEstimator> rttEstimator = GetRttEstimator (SENDER);
       NS_ASSERT (rttEstimator != 0);
-      NS_LOG_DEBUG ("S Rx: seq=" << h.GetSequenceNumber () << " ack=" << h.GetAckNumber ());
+      NS_LOG_DEBUG ("S Tx: seq=" << h.GetSequenceNumber () << " ack=" << h.GetAckNumber ());
       NS_TEST_ASSERT_MSG_NE (rttEstimator->GetEstimate (), Seconds (1),
                              "Default Estimate for the RTT");
     }
@@ -134,23 +137,33 @@ void
 TcpRttEstimationTest::UpdatedRttHistory (const SequenceNumber32 & seq, uint32_t sz,
                                          bool isRetransmission, SocketWho who)
 {
+  if (sz == 0)
+    {
+      return;
+    }
+
   if (seq < m_highestTxSeq)
     {
       NS_TEST_ASSERT_MSG_EQ (isRetransmission, true,
                              "A retransmission is not flagged as such");
     }
-  else
+  else if (seq == m_highestTxSeq && m_dataCount == 0)
     {
       NS_TEST_ASSERT_MSG_EQ (isRetransmission, false,
                              "Incorrectly flagging seq as retransmission");
+      m_dataCount++;
     }
-
+  else if (seq == m_highestTxSeq && m_dataCount > 0)
+    {
+      NS_TEST_ASSERT_MSG_EQ (isRetransmission, true,
+                             "A retransmission is not flagged as such");
+    }
 }
 
 void
 TcpRttEstimationTest::RttTrace (Time oldTime, Time newTime)
 {
-  NS_LOG_DEBUG ("Rtt changed to " << newTime);
+  NS_LOG_DEBUG ("Rtt changed to " << newTime.GetSeconds ());
   m_rttChanged = true;
 }
 
@@ -158,6 +171,45 @@ void
 TcpRttEstimationTest::FinalChecks ()
 {
   NS_TEST_ASSERT_MSG_EQ (m_rttChanged, true, "Rtt was not updated");
+}
+
+//-----------------------------------------------------------------------------
+class TcpRttEstimationWithLossTest : public TcpRttEstimationTest
+{
+public:
+  TcpRttEstimationWithLossTest (const std::string &desc, bool enableTs,
+                                uint32_t pktCount, std::vector<uint32_t> toDrop);
+
+protected:
+  Ptr<ErrorModel> CreateReceiverErrorModel ();
+
+private:
+  std::vector<uint32_t> m_toDrop;
+};
+
+TcpRttEstimationWithLossTest::TcpRttEstimationWithLossTest (const std::string &desc,
+                                                            bool enableTs,
+                                                            uint32_t pktCount,
+                                                            std::vector<uint32_t> toDrop)
+  : TcpRttEstimationTest (desc, enableTs, pktCount),
+    m_toDrop (toDrop)
+{
+
+}
+
+Ptr<ErrorModel>
+TcpRttEstimationWithLossTest::CreateReceiverErrorModel ()
+{
+  Ptr<TcpSeqErrorModel> errorModel = CreateObject<TcpSeqErrorModel> ();
+
+  std::vector<uint32_t>::iterator it;
+
+  for (it = m_toDrop.begin (); it != m_toDrop.end (); ++it)
+    {
+      errorModel->AddSeqToKill (SequenceNumber32 ((*it)));
+    }
+
+  return errorModel;
 }
 
 //-----------------------------------------------------------------------------
@@ -175,7 +227,45 @@ public:
                  TestCase::QUICK);
     AddTestCase (new TcpRttEstimationTest ("RTT estimation, no ts, some data", false, 10),
                  TestCase::QUICK);
+
+    std::vector<uint32_t> toDrop;
+    toDrop.push_back (501);
+
+    AddTestCase (new TcpRttEstimationWithLossTest ("RTT estimation, no ts,"
+                                                   " some data, with retr",
+                                                   false, 10, toDrop),
+                 TestCase::QUICK);
+    AddTestCase (new TcpRttEstimationWithLossTest ("RTT estimation, ts,"
+                                                   " some data, with retr",
+                                                   true, 10, toDrop),
+                 TestCase::QUICK);
+
+    toDrop.push_back (501);
+    AddTestCase (new TcpRttEstimationWithLossTest ("RTT estimation, no ts,"
+                                                   " some data, with retr",
+                                                   false, 10, toDrop),
+                 TestCase::QUICK);
+    AddTestCase (new TcpRttEstimationWithLossTest ("RTT estimation, ts,"
+                                                   " some data, with retr",
+                                                   true, 10, toDrop),
+                 TestCase::QUICK);
+
+    toDrop.push_back (54001);
+    toDrop.push_back (58001);
+    toDrop.push_back (58501);
+    toDrop.push_back (60001);
+    toDrop.push_back (68501);
+    AddTestCase (new TcpRttEstimationWithLossTest ("RTT estimation, no ts,"
+                                                   " a lot of data, with retr",
+                                                   false, 1000, toDrop),
+                 TestCase::QUICK);
+    AddTestCase (new TcpRttEstimationWithLossTest ("RTT estimation, ts,"
+                                                   " a lot of data, with retr",
+                                                   true, 1000, toDrop),
+                 TestCase::QUICK);
   }
+
 } g_tcpRttEstimationTestSuite;
 
 } // namespace ns3
+

@@ -362,6 +362,15 @@ protected:
   uint32_t GetSegSize (SocketWho who);
 
   /**
+   * \brief Get the highest tx mark of the node specified
+   *
+   * \param who node to get the parameter from
+   *
+   * \return mark of the specified node
+   */
+  SequenceNumber32 GetHighestTxMark (SocketWho who);
+
+  /**
    * \brief Get the retransmission threshold
    * \param who node to get the parameter from
    * \return retransmission threshold

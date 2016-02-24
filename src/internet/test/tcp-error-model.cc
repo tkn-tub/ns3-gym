@@ -58,7 +58,7 @@ TcpGeneralErrorModel::DoCorrupt (Ptr<Packet> p)
 
   bool toDrop = ShouldDrop (ipHeader, tcpHeader, p->GetSize ());
 
-  if (toDrop)
+  if (toDrop && ! m_dropCallback.IsNull ())
     {
       m_dropCallback (ipHeader, tcpHeader, p);
     }
