@@ -488,6 +488,22 @@ PacketSocket::GetSockName (Address &address) const
   return 0;
 }
 
+int
+PacketSocket::GetPeerName (Address &address) const
+{
+  NS_LOG_FUNCTION (this << address);
+
+  if (m_state != STATE_CONNECTED)
+    {
+      m_errno = ERROR_NOTCONN;
+      return -1;
+    }
+
+  address = m_destAddr;
+
+  return 0;
+}
+
 bool
 PacketSocket::SetAllowBroadcast (bool allowBroadcast)
 {

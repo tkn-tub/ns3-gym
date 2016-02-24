@@ -134,6 +134,22 @@ int Ipv6RawSocketImpl::GetSockName (Address& address) const
   return 0;
 }
 
+int
+Ipv6RawSocketImpl::GetPeerName (Address& address) const
+{
+  NS_LOG_FUNCTION (this << address);
+
+  if (m_dst.IsAny ())
+    {
+      m_err = ERROR_NOTCONN;
+      return -1;
+    }
+
+  address = Inet6SocketAddress (m_dst, 0);
+
+  return 0;
+}
+
 int Ipv6RawSocketImpl::Close ()
 {
   NS_LOG_FUNCTION_NOARGS ();

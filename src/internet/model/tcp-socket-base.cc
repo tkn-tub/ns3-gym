@@ -920,6 +920,35 @@ TcpSocketBase::GetSockName (Address &address) const
   return 0;
 }
 
+int
+TcpSocketBase::GetPeerName (Address &address) const
+{
+  NS_LOG_FUNCTION (this << address);
+
+  if (!m_endPoint && !m_endPoint6)
+    {
+      m_errno = ERROR_NOTCONN;
+      return -1;
+    }
+
+  if (m_endPoint)
+    {
+      address = InetSocketAddress (m_endPoint->GetPeerAddress (),
+                                   m_endPoint->GetPeerPort ());
+    }
+  else if (m_endPoint6)
+    {
+      address = Inet6SocketAddress (m_endPoint6->GetPeerAddress (),
+                                    m_endPoint6->GetPeerPort ());
+    }
+  else
+    {
+      NS_ASSERT (false);
+    }
+
+  return 0;
+}
+
 /* Inherit from Socket class: Bind this socket to the specified NetDevice */
 void
 TcpSocketBase::BindToNetDevice (Ptr<NetDevice> netdevice)

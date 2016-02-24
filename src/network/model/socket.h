@@ -578,6 +578,13 @@ public:
   virtual int GetSockName (Address &address) const = 0; 
 
   /**
+   * \brief Get the peer address of a connected socket.
+   * \param address the address this socket is connected to.
+   * \returns 0 if success, -1 otherwise
+   */
+  virtual int GetPeerName (Address &address) const = 0;
+
+  /**
    * \brief Bind a socket to specific device.
    *
    * This method corresponds to using setsockopt() SO_BINDTODEVICE

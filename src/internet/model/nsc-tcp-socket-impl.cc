@@ -480,6 +480,21 @@ NscTcpSocketImpl::GetSockName (Address &address) const
   return 0;
 }
 
+int
+NscTcpSocketImpl::GetPeerName (Address &address) const
+{
+  NS_LOG_FUNCTION (this << address);
+
+  if (!m_endPoint)
+    {
+      m_errno = ERROR_NOTCONN;
+      return -1;
+    }
+  address = InetSocketAddress (m_endPoint->GetPeerAddress (),
+                               m_endPoint->GetPeerPort ());
+  return 0;
+}
+
 uint32_t
 NscTcpSocketImpl::GetRxAvailable (void) const
 {

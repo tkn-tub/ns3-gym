@@ -342,7 +342,17 @@ TcpTestCase::SetupDefaultSim (void)
   source->SetRecvCallback (MakeCallback (&TcpTestCase::SourceHandleRecv, this));
   source->SetSendCallback (MakeCallback (&TcpTestCase::SourceHandleSend, this));
 
-  source->Connect (serverremoteaddr);
+  Address peerAddress;
+  int err = source->GetPeerName (peerAddress);
+  NS_TEST_EXPECT_MSG_EQ (err, -1, "socket GetPeerName() should fail when socket is not connected");
+  NS_TEST_EXPECT_MSG_EQ (source->GetErrno (), Socket::ERROR_NOTCONN, "socket error code should be ERROR_NOTCONN");
+
+  err = source->Connect (serverremoteaddr);
+  NS_TEST_EXPECT_MSG_EQ (err, 0, "socket Connect() should succeed");
+
+  err = source->GetPeerName (peerAddress);
+  NS_TEST_EXPECT_MSG_EQ (err, 0, "socket GetPeerName() should succeed when socket is connected");
+  NS_TEST_EXPECT_MSG_EQ (peerAddress, serverremoteaddr, "address from socket GetPeerName() should equal the connected address");
 }
 
 void
@@ -378,7 +388,17 @@ TcpTestCase::SetupDefaultSim6 (void)
   source->SetRecvCallback (MakeCallback (&TcpTestCase::SourceHandleRecv, this));
   source->SetSendCallback (MakeCallback (&TcpTestCase::SourceHandleSend, this));
 
-  source->Connect (serverremoteaddr);
+  Address peerAddress;
+  int err = source->GetPeerName (peerAddress);
+  NS_TEST_EXPECT_MSG_EQ (err, -1, "socket GetPeerName() should fail when socket is not connected");
+  NS_TEST_EXPECT_MSG_EQ (source->GetErrno (), Socket::ERROR_NOTCONN, "socket error code should be ERROR_NOTCONN");
+
+  err = source->Connect (serverremoteaddr);
+  NS_TEST_EXPECT_MSG_EQ (err, 0, "socket Connect() should succeed");
+
+  err = source->GetPeerName (peerAddress);
+  NS_TEST_EXPECT_MSG_EQ (err, 0, "socket GetPeerName() should succeed when socket is connected");
+  NS_TEST_EXPECT_MSG_EQ (peerAddress, serverremoteaddr, "address from socket GetPeerName() should equal the connected address");
 }
 
 Ptr<Node>

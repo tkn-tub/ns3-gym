@@ -910,6 +910,35 @@ UdpSocketImpl::GetSockName (Address &address) const
   return 0;
 }
 
+int
+UdpSocketImpl::GetPeerName (Address &address) const
+{
+  NS_LOG_FUNCTION (this << address);
+
+  if (!m_connected)
+    {
+      m_errno = ERROR_NOTCONN;
+      return -1;
+    }
+
+  if (Ipv4Address::IsMatchingType (m_defaultAddress))
+    {
+      Ipv4Address addr = Ipv4Address::ConvertFrom (m_defaultAddress);
+      address = InetSocketAddress (addr, m_defaultPort);
+    }
+  else if (Ipv6Address::IsMatchingType (m_defaultAddress))
+    {
+      Ipv6Address addr = Ipv6Address::ConvertFrom (m_defaultAddress);
+      address = Inet6SocketAddress (addr, m_defaultPort);
+    }
+  else
+    {
+      NS_ASSERT_MSG (false, "unexpected address type");
+    }
+
+  return 0;
+}
+
 int 
 UdpSocketImpl::MulticastJoinGroup (uint32_t interface, const Address &groupAddress)
 {

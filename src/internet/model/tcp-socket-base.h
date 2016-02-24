@@ -389,6 +389,7 @@ public:
   virtual uint32_t GetTxAvailable (void) const; // Available Tx buffer size
   virtual uint32_t GetRxAvailable (void) const; // Available-to-read data size, i.e. value of m_rxAvailable
   virtual int GetSockName (Address &address) const; // Return local addr:port in address
+  virtual int GetPeerName (Address &address) const;
   virtual void BindToNetDevice (Ptr<NetDevice> netdevice); // NetDevice with my m_endPoint
 
   /**
@@ -947,7 +948,7 @@ protected:
 
   // State-related attributes
   TracedValue<TcpStates_t> m_state;         //!< TCP state
-  enum SocketErrno         m_errno;         //!< Socket error code
+  mutable enum SocketErrno m_errno;         //!< Socket error code
   bool                     m_closeNotified; //!< Told app to close socket
   bool                     m_closeOnEmpty;  //!< Close socket upon tx buffer emptied
   bool                     m_shutdownSend;  //!< Send no longer allowed

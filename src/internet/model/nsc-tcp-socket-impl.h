@@ -85,6 +85,7 @@ public:
 
   virtual enum SocketErrno GetErrno (void) const;
   virtual enum SocketType GetSocketType (void) const;
+  virtual int GetPeerName (Address &address) const;
   virtual Ptr<Node> GetNode (void) const;
   virtual int Bind (void);
   virtual int Bind6 (void);
@@ -225,7 +226,7 @@ private:
   Ipv4Address m_localAddress;   //!< local address
   uint16_t m_localPort;         //!< local port
   InetSocketAddress m_peerAddress; //!< peer IP and port
-  enum SocketErrno m_errno;     //!< last error number
+  mutable enum SocketErrno m_errno; //!< last error number
   bool m_shutdownSend;          //!< Send no longer allowed
   bool m_shutdownRecv;          //!< Receive no longer allowed
   bool m_connected;             //!< Connection established

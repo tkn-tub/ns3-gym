@@ -95,6 +95,7 @@ public:
   virtual int Bind6 ();
 
   virtual int GetSockName (Address& address) const;
+  virtual int GetPeerName (Address& address) const;
 
   virtual int Close ();
   virtual int ShutdownSend ();
@@ -184,7 +185,7 @@ private:
   /**
    * \brief Last error number.
    */
-  enum Socket::SocketErrno m_err;
+  mutable enum Socket::SocketErrno m_err;
 
   /**
    * \brief Node.

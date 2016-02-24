@@ -276,6 +276,22 @@ Ipv4RawSocketImplTest::DoRun (void)
   m_receivedPacket = 0;
   m_receivedPacket2 = 0;
 
+  // Simple getpeername tests
+
+  Address peerAddress;
+  int err = txSocket->GetPeerName (peerAddress);
+  NS_TEST_EXPECT_MSG_EQ (err, -1, "socket GetPeerName() should fail when socket is not connected");
+  NS_TEST_EXPECT_MSG_EQ (txSocket->GetErrno (), Socket::ERROR_NOTCONN, "socket error code should be ERROR_NOTCONN");
+
+  InetSocketAddress peer ("10.0.0.1", 1234);
+  err = txSocket->Connect (peer);
+  NS_TEST_EXPECT_MSG_EQ (err, 0, "socket Connect() should succeed");
+
+  err = txSocket->GetPeerName (peerAddress);
+  NS_TEST_EXPECT_MSG_EQ (err, 0, "socket GetPeerName() should succeed when socket is connected");
+  peer.SetPort (0);
+  NS_TEST_EXPECT_MSG_EQ (peerAddress, peer, "address from socket GetPeerName() should equal the connected address");
+
   Simulator::Destroy ();
 }
 //-----------------------------------------------------------------------------

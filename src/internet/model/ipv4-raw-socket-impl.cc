@@ -131,6 +131,21 @@ Ipv4RawSocketImpl::GetSockName (Address &address) const
   address = InetSocketAddress (m_src, 0);
   return 0;
 }
+int
+Ipv4RawSocketImpl::GetPeerName (Address &address) const
+{
+  NS_LOG_FUNCTION (this << address);
+
+  if (m_dst == Ipv4Address::GetAny ())
+    {
+      m_err = ERROR_NOTCONN;
+      return -1;
+    }
+
+  address = InetSocketAddress (m_dst, 0);
+
+  return 0;
+}
 int 
 Ipv4RawSocketImpl::Close (void)
 {
