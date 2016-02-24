@@ -2820,7 +2820,7 @@ MacLow::DeaggregateAmpduAndReceive (Ptr<Packet> aggregatedPacket, double rxSnr, 
       NotifyNav ((*n).first, firsthdr, preamble);
 
       bool vhtSingleMpdu = (*n).second.GetEof ();
-      if (vhtSingleMpdu == true)
+      if (vhtSingleMpdu)
         {
           //If the MPDU is sent as a VHT single MPDU (EOF=1 in A-MPDU subframe header), then the responder sends an ACK.
           NS_LOG_DEBUG ("Receive VHT single MPDU");
@@ -2829,7 +2829,10 @@ MacLow::DeaggregateAmpduAndReceive (Ptr<Packet> aggregatedPacket, double rxSnr, 
 
       if (firsthdr.GetAddr1 () == m_self)
         {
-          m_receivedAtLeastOneMpdu = true;
+          if (!vhtSingleMpdu)
+            {
+              m_receivedAtLeastOneMpdu = true;
+            }
           if (firsthdr.IsAck () || firsthdr.IsBlockAck () || firsthdr.IsBlockAckReq ())
             {
               ReceiveOk ((*n).first, rxSnr, txVector, preamble, ampduSubframe);
