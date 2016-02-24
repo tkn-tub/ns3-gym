@@ -665,7 +665,7 @@ StaWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
                 {
                   HtCapabilities htcapabilities = assocResp.GetHtCapabilities ();
                   HtOperations htOperations = assocResp.GetHtOperations ();
-                  m_stationManager->AddStationHtCapabilities (hdr->GetAddr2 (),htcapabilities);
+                  m_stationManager->AddStationHtCapabilities (hdr->GetAddr2 (), htcapabilities);
                 }
               if (m_vhtSupported)
                 {
@@ -788,7 +788,7 @@ StaWifiMac::GetHtCapabilities (void) const
             }
           capabilities.SetRxMcsBitmask (mcs.GetMcsValue ());
           uint8_t nss = (mcs.GetMcsValue () / 8) + 1;
-          NS_ASSERT (nss > 0 && nss < 4);
+          NS_ASSERT (nss > 0 && nss < 5);
           if (mcs.GetDataRate (m_phy->GetChannelWidth (), m_phy->GetGuardInterval (), nss) > maxSupportedRate)
             {
               maxSupportedRate = mcs.GetDataRate (m_phy->GetChannelWidth (), m_phy->GetGuardInterval (), nss);

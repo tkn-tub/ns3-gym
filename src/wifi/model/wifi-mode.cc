@@ -108,11 +108,6 @@ WifiMode::GetDataRate (uint32_t channelWidth, bool isShortGuardInterval, uint8_t
 {
   struct WifiModeFactory::WifiModeItem *item = WifiModeFactory::GetFactory ()->Get (m_uid);
   uint64_t dataRate = 0;
-  if (nss > 1)
-    {
-      NS_FATAL_ERROR ("MIMO is not supported");
-      return 0;
-    }
   if (item->modClass == WIFI_MOD_CLASS_DSSS)
     {
       dataRate = (11000000 / 11) * log2 (GetConstellationSize (nss));
@@ -164,12 +159,16 @@ WifiMode::GetDataRate (uint32_t channelWidth, bool isShortGuardInterval, uint8_t
     }
   else if (item->modClass == WIFI_MOD_CLASS_HT || item->modClass == WIFI_MOD_CLASS_VHT)
     {
-      if (item->modClass == WIFI_MOD_CLASS_VHT && item->mcsValue == 9)
+      if (item->modClass == WIFI_MOD_CLASS_VHT && item->mcsValue == 9 && nss != 3)
         {
-          //VHT MCS 9 forbidden at 20 MHz
+          //VHT MCS 9 forbidden at 20 MHz (only allowed when NSS = 3)
           NS_ASSERT (channelWidth != 20);
         }
-
+      if (item->modClass == WIFI_MOD_CLASS_VHT && item->mcsValue == 6 && nss == 3)
+        {
+          //VHT MCS 6 forbidden at 80 MHz when NSS = 3
+          NS_ASSERT (channelWidth != 80);
+        }
       double symbolRate;
       if (!isShortGuardInterval)
         {

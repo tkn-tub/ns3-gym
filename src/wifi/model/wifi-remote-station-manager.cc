@@ -1428,6 +1428,7 @@ WifiRemoteStationManager::LookupState (Mac48Address address) const
   state->m_channelWidth = m_wifiPhy->GetChannelWidth ();
   state->m_shortGuardInterval = m_wifiPhy->GetGuardInterval ();
   state->m_greenfield = m_wifiPhy->GetGreenfield ();
+  state->m_rx = 1;
   state->m_ness = 0;
   state->m_aggregation = false;
   state->m_stbc = false;
@@ -1491,6 +1492,7 @@ WifiRemoteStationManager::AddStationHtCapabilities (Mac48Address from, HtCapabil
       state->m_channelWidth = 20;
     }
   state->m_greenfield = htCapabilities.GetGreenfield ();
+  state->m_rx = htCapabilities.GetRxHighestSupportedAntennas ();
 }
 
 void
@@ -1759,6 +1761,12 @@ bool
 WifiRemoteStationManager::GetStbc (const WifiRemoteStation *station) const
 {
   return station->m_state->m_stbc;
+}
+
+uint8_t
+WifiRemoteStationManager::GetNumberOfSupportedRxAntennas (const WifiRemoteStation *station) const
+{
+  return station->m_state->m_rx;
 }
 
 uint32_t

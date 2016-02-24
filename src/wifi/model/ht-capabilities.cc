@@ -249,13 +249,29 @@ HtCapabilities::GetRxMcsBitmask ()
 }
 
 bool
-HtCapabilities::IsSupportedMcs (uint8_t mcs)
+HtCapabilities::IsSupportedMcs (uint8_t mcs) const
 {
   if (m_rxMcsBitmask[mcs] == 1)
     {
       return true;
     }
   return false;
+}
+
+uint8_t
+HtCapabilities::GetRxHighestSupportedAntennas (void) const
+{
+  for (uint8_t nRx = 2; nRx <= 4; nRx++)
+  {
+    for (uint8_t mcs = (nRx - 1) * 8; mcs <= ((7 * nRx) + (nRx - 1)); mcs++)
+    {
+      if (IsSupportedMcs (mcs) == false)
+        {
+          return (nRx - 1);
+        }
+    }
+  }
+  return 4;
 }
 
 uint16_t

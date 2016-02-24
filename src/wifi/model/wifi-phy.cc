@@ -513,16 +513,114 @@ WifiPhy::GetPayloadDuration (uint32_t size, WifiTxVector txVector, WifiPreamble 
           }
 
         //check tables 20-35 and 20-36 in the .11n standard to get cases when nes = 2
-        //check tables 22-30 to 22-61 in the .11ac standard to get cases when nes > 1
-        double Nes;
-        if (txVector.GetChannelWidth () == 160
-            && (payloadMode.GetUniqueName () == "VhtMcs7" || payloadMode.GetUniqueName () == "VhtMcs8" || payloadMode.GetUniqueName () == "VhtMcs9"))
+        double Nes = 1;
+        if (payloadMode.GetUniqueName () == "HtMcs21"
+           || payloadMode.GetUniqueName () == "HtMcs22"
+           || payloadMode.GetUniqueName () == "HtMcs23"
+           || payloadMode.GetUniqueName () == "HtMcs28"
+           || payloadMode.GetUniqueName () == "HtMcs29"
+           || payloadMode.GetUniqueName () == "HtMcs30"
+           || payloadMode.GetUniqueName () == "HtMcs31")
           {
             Nes = 2;
           }
-        else
+        //check tables 22-30 to 22-61 in the .11ac standard to get cases when nes > 1
+        //todo: improve logic to reduce the number of if cases
+        //todo: extend to NSS > 4 for VHT rates
+        if (txVector.GetChannelWidth () == 40
+            && txVector.GetNss () == 3
+            && payloadMode.GetMcsValue () >= 8)
           {
-            Nes = 1;
+            Nes = 2;
+          }
+        if (txVector.GetChannelWidth () == 80
+            && txVector.GetNss () == 2
+            && payloadMode.GetMcsValue () >= 7)
+          {
+            Nes = 2;
+          }
+        if (txVector.GetChannelWidth () == 80
+            && txVector.GetNss () == 3
+            && payloadMode.GetMcsValue () >= 7)
+          {
+            Nes = 2;
+          }
+        if (txVector.GetChannelWidth () == 80
+            && txVector.GetNss () == 3
+            && payloadMode.GetMcsValue () == 9)
+          {
+            Nes = 3;
+          }
+        if (txVector.GetChannelWidth () == 80
+            && txVector.GetNss () == 4
+            && payloadMode.GetMcsValue () >= 4)
+          {
+            Nes = 2;
+          }
+        if (txVector.GetChannelWidth () == 80
+            && txVector.GetNss () == 4
+            && payloadMode.GetMcsValue () >= 7)
+          {
+            Nes = 3;
+          }
+        if (txVector.GetChannelWidth () == 160
+            && payloadMode.GetMcsValue () >= 7)
+          {
+            Nes = 2;
+          }
+        if (txVector.GetChannelWidth () == 160
+            && txVector.GetNss () == 2
+            && payloadMode.GetMcsValue () >= 4)
+          {
+            Nes = 2;
+          }
+        if (txVector.GetChannelWidth () == 160
+            && txVector.GetNss () == 2
+            && payloadMode.GetMcsValue () >= 7)
+          {
+            Nes = 3;
+          }
+        if (txVector.GetChannelWidth () == 160
+            && txVector.GetNss () == 3
+            && payloadMode.GetMcsValue () >= 3)
+          {
+            Nes = 2;
+          }
+        if (txVector.GetChannelWidth () == 160
+            && txVector.GetNss () == 3
+            && payloadMode.GetMcsValue () >= 5)
+          {
+            Nes = 3;
+          }
+        if (txVector.GetChannelWidth () == 160
+            && txVector.GetNss () == 3
+            && payloadMode.GetMcsValue () >= 7)
+          {
+            Nes = 4;
+          }
+        if (txVector.GetChannelWidth () == 160
+            && txVector.GetNss () == 4
+            && payloadMode.GetMcsValue () >= 2)
+          {
+            Nes = 2;
+          }
+        if (txVector.GetChannelWidth () == 160
+            && txVector.GetNss () == 4
+            && payloadMode.GetMcsValue () >= 4)
+          {
+            Nes = 3;
+          }
+        if (txVector.GetChannelWidth () == 160
+            && txVector.GetNss () == 4
+            && payloadMode.GetMcsValue () >= 5)
+          {
+            Nes = 4;
+          }
+        if (txVector.GetChannelWidth () == 160
+            && txVector.GetNss () == 4
+            && payloadMode.GetMcsValue () >= 7)
+          {
+            Nes = 6;
           }
 
         //IEEE Std 802.11n, section 20.3.11, equation (20-32)

@@ -446,7 +446,7 @@ ApWifiMac::GetHtCapabilities (void) const
             }
           capabilities.SetRxMcsBitmask (mcs.GetMcsValue ());
           uint8_t nss = (mcs.GetMcsValue () / 8) + 1;
-          NS_ASSERT (nss > 0 && nss < 4);
+          NS_ASSERT (nss > 0 && nss < 5);
           if (mcs.GetDataRate (m_phy->GetChannelWidth (), m_phy->GetGuardInterval (), nss) > maxSupportedRate)
             {
               maxSupportedRate = mcs.GetDataRate (m_phy->GetChannelWidth (), m_phy->GetGuardInterval (), nss);
@@ -899,7 +899,7 @@ ApWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
                   if (m_htSupported)
                     {
                       HtCapabilities htcapabilities = assocReq.GetHtCapabilities ();
-                      m_stationManager->AddStationHtCapabilities (from,htcapabilities);
+                      m_stationManager->AddStationHtCapabilities (from, htcapabilities);
                       for (uint32_t j = 0; j < m_phy->GetNMcs (); j++)
                         {
                           WifiMode mcs = m_phy->GetMcs (j);

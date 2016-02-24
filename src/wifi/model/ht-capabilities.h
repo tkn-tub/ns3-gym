@@ -158,7 +158,8 @@ public:
   uint8_t GetMaxAmpduLength (void) const;
 
   uint8_t* GetRxMcsBitmask ();
-  bool IsSupportedMcs (uint8_t mcs);
+  bool IsSupportedMcs (uint8_t mcs) const;
+  uint8_t GetRxHighestSupportedAntennas (void) const;
   uint16_t GetRxHighestSupportedDataRate (void) const;
   uint8_t GetTxMcsSetDefined (void) const;
   uint8_t GetTxRxMcsSetUnequal (void) const;
