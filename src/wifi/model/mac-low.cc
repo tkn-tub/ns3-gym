@@ -2853,31 +2853,34 @@ MacLow::DeaggregateAmpduAndReceive (Ptr<Packet> aggregatedPacket, double rxSnr, 
             }
         }
 
-      if (normalAck && (ampdu.GetNoOfMpdus () == 1) && !vhtSingleMpdu)
+      if (ampdu.GetNoOfMpdus () == 1 && !vhtSingleMpdu)
         {
-          //send block Ack
-          if (firsthdr.IsBlockAckReq ())
+          if (normalAck)
             {
-              NS_FATAL_ERROR ("Sending a BlockAckReq with QosPolicy equal to Normal Ack");
-            }
-          uint8_t tid = firsthdr.GetQosTid ();
-          AgreementsI it = m_bAckAgreements.find (std::make_pair (firsthdr.GetAddr2 (), tid));
-          if (it != m_bAckAgreements.end ())
-            {
-              NS_ASSERT (m_sendAckEvent.IsExpired ());
-              /* See section 11.5.3 in IEEE 802.11 for mean of this timer */
-              ResetBlockAckInactivityTimerIfNeeded (it->second.first);
-              NS_LOG_DEBUG ("rx A-MPDU/sendImmediateBlockAck from=" << firsthdr.GetAddr2 ());
-              m_sendAckEvent = Simulator::Schedule (GetSifs (),
-                                                    &MacLow::SendBlockAckAfterAmpdu, this,
-                                                    firsthdr.GetQosTid (),
-                                                    firsthdr.GetAddr2 (),
-                                                    firsthdr.GetDuration (),
-                                                    txVector);
-            }
-          else
-            {
-              NS_LOG_DEBUG ("There's not a valid agreement for this block ack request.");
+              //send block Ack
+              if (firsthdr.IsBlockAckReq ())
+                {
+                  NS_FATAL_ERROR ("Sending a BlockAckReq with QosPolicy equal to Normal Ack");
+                }
+              uint8_t tid = firsthdr.GetQosTid ();
+              AgreementsI it = m_bAckAgreements.find (std::make_pair (firsthdr.GetAddr2 (), tid));
+              if (it != m_bAckAgreements.end ())
+                {
+                  NS_ASSERT (m_sendAckEvent.IsExpired ());
+                  /* See section 11.5.3 in IEEE 802.11 for mean of this timer */
+                  ResetBlockAckInactivityTimerIfNeeded (it->second.first);
+                  NS_LOG_DEBUG ("rx A-MPDU/sendImmediateBlockAck from=" << firsthdr.GetAddr2 ());
+                  m_sendAckEvent = Simulator::Schedule (GetSifs (),
+                                                        &MacLow::SendBlockAckAfterAmpdu, this,
+                                                        firsthdr.GetQosTid (),
+                                                        firsthdr.GetAddr2 (),
+                                                        firsthdr.GetDuration (),
+                                                        txVector);
+                }
+              else
+                {
+                  NS_LOG_DEBUG ("There's not a valid agreement for this block ack request.");
+                }
             }
           m_receivedAtLeastOneMpdu = false;
         }

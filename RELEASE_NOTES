@@ -110,6 +110,7 @@ Bugs fixed
 - Bug 2297 - 802.11n/ac networks are not compatible with legacy clients
 - Bug 2302 - Fixing RTT calculation inside TCP Socket
 - Bug 2303 - WifiMacQueue::GetSize should cleanup queue beforehand
+- Bug 2307 - m_receivedAtLeastOneMpdu is not always reset
 
 Known issues
 ------------
