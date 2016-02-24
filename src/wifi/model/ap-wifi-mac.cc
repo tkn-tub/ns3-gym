@@ -349,10 +349,10 @@ ApWifiMac::GetSupportedRates (void) const
 {
   NS_LOG_FUNCTION (this);
   SupportedRates rates;
-  //If it is an HT-AP then add the BSSMembershipSelectorSet
-  //which only includes 127 for HT now. The standard says that the BSSMembershipSelectorSet
+  //If it is an HT-AP or VHT-AP, then add the BSSMembershipSelectorSet
+  //The standard says that the BSSMembershipSelectorSet
   //must have its MSB set to 1 (must be treated as a Basic Rate)
-  //Also the standard mentioned that at leat 1 element should be included in the SupportedRates the rest can be in the ExtendedSupportedRates
+  //Also the standard mentioned that at least 1 element should be included in the SupportedRates the rest can be in the ExtendedSupportedRates
   if (m_htSupported || m_vhtSupported)
     {
       for (uint32_t i = 0; i < m_phy->GetNBssMembershipSelectors (); i++)
@@ -360,17 +360,22 @@ ApWifiMac::GetSupportedRates (void) const
           rates.SetBasicRate (m_phy->GetBssMembershipSelector (i));
         }
     }
+  // 
+  uint8_t nss = 1;  // Number of spatial streams is 1 for non-MIMO modes
   //Send the set of supported rates and make sure that we indicate
   //the Basic Rate set in this set of supported rates.
   for (uint32_t i = 0; i < m_phy->GetNModes (); i++)
     {
       WifiMode mode = m_phy->GetMode (i);
-      rates.AddSupportedRate (mode.GetDataRate (m_phy->GetChannelWidth (), false, 1));
+      uint64_t modeDataRate = mode.GetDataRate (m_phy->GetChannelWidth (), false, nss);
+      NS_LOG_DEBUG ("Adding supported rate of " << modeDataRate);
+      rates.AddSupportedRate (modeDataRate);
       //Add rates that are part of the BSSBasicRateSet (manufacturer dependent!)
       //here we choose to add the mandatory rates to the BSSBasicRateSet,
-      //exept for 802.11b where we assume that only the non HR-DSSS rates are part of the BSSBasicRateSet
+      //except for 802.11b where we assume that only the non HR-DSSS rates are part of the BSSBasicRateSet
       if (mode.IsMandatory () && (mode.GetModulationClass () != WIFI_MOD_CLASS_HR_DSSS))
         {
+          NS_LOG_DEBUG ("Adding basic mode " << mode.GetUniqueName ());
           m_stationManager->AddBasicMode (mode);
         }
     }
@@ -378,7 +383,9 @@ ApWifiMac::GetSupportedRates (void) const
   for (uint32_t j = 0; j < m_stationManager->GetNBasicModes (); j++)
     {
       WifiMode mode = m_stationManager->GetBasicMode (j);
-      rates.SetBasicRate (mode.GetDataRate (m_phy->GetChannelWidth (), false, 1));
+      uint64_t modeDataRate = mode.GetDataRate (m_phy->GetChannelWidth (), false, nss);
+      NS_LOG_DEBUG ("Setting basic rate " << mode.GetUniqueName ());
+      rates.SetBasicRate (modeDataRate);
     }
 
   return rates;
@@ -433,16 +440,22 @@ ApWifiMac::GetHtCapabilities (void) const
       for (uint8_t i = 0; i < m_phy->GetNMcs (); i++)
         {
           WifiMode mcs = m_phy->GetMcs (i);
-          capabilities.SetRxMcsBitmask (mcs.GetMcsValue ());
-          if ((mcs.GetModulationClass () == WIFI_MOD_CLASS_HT)
-              && (mcs.GetDataRate (m_phy->GetChannelWidth (), m_phy->GetGuardInterval (), 1) > maxSupportedRate))
+          if (mcs.GetModulationClass () != WIFI_MOD_CLASS_HT)
             {
-              maxSupportedRate = mcs.GetDataRate (m_phy->GetChannelWidth (), m_phy->GetGuardInterval (), 1);
+              continue;
+            }
+          capabilities.SetRxMcsBitmask (mcs.GetMcsValue ());
+          uint8_t nss = (mcs.GetMcsValue () / 8) + 1;
+          NS_ASSERT (nss > 0 && nss < 4);
+          if (mcs.GetDataRate (m_phy->GetChannelWidth (), m_phy->GetGuardInterval (), nss) > maxSupportedRate)
+            {
+              maxSupportedRate = mcs.GetDataRate (m_phy->GetChannelWidth (), m_phy->GetGuardInterval (), nss);
+              NS_LOG_DEBUG ("Updating maxSupportedRate to " << maxSupportedRate);
             }
         }
       capabilities.SetRxHighestSupportedDataRate (maxSupportedRate / 1e6); //in Mbit/s
       capabilities.SetTxMcsSetDefined (m_phy->GetNMcs () > 0);
-      capabilities.SetTxMaxNSpatialStreams (m_phy->GetNumberOfTransmitAntennas ());
+      capabilities.SetTxMaxNSpatialStreams (m_phy->GetSupportedTxSpatialStreams ());
     }
   return capabilities;
 }
@@ -496,8 +509,15 @@ ApWifiMac::GetVhtCapabilities (void) const
               maxMcs = mcs.GetMcsValue ();
             }
         }
-      capabilities.SetRxMcsMap (maxMcs, 1); //Only 1 SS is currently supported
-      capabilities.SetTxMcsMap (maxMcs, 1); //Only 1 SS is currently supported
+      // Support same MaxMCS for each spatial stream 
+      for (uint8_t nss = 1; nss <= m_phy->GetSupportedRxSpatialStreams (); nss++)
+        {
+          capabilities.SetRxMcsMap (maxMcs, nss);
+        }
+      for (uint8_t nss = 1; nss <= m_phy->GetSupportedTxSpatialStreams (); nss++)
+        {
+          capabilities.SetTxMcsMap (maxMcs, nss);
+        }
     }
   return capabilities;
 }
@@ -783,7 +803,8 @@ ApWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
               for (uint32_t i = 0; i < m_stationManager->GetNBasicModes (); i++)
                 {
                   WifiMode mode = m_stationManager->GetBasicMode (i);
-                  if (!rates.IsSupportedRate (mode.GetDataRate (m_phy->GetChannelWidth (), false, 1)))
+                  uint8_t nss = 1; // Assume 1 spatial stream in basic mode
+                  if (!rates.IsSupportedRate (mode.GetDataRate (m_phy->GetChannelWidth (), false, nss)))
                     {
                       if ((mode.GetModulationClass () == WIFI_MOD_CLASS_DSSS) || (mode.GetModulationClass () == WIFI_MOD_CLASS_HR_DSSS))
                         {
@@ -869,7 +890,8 @@ ApWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
                   for (uint32_t j = 0; j < m_phy->GetNModes (); j++)
                     {
                       WifiMode mode = m_phy->GetMode (j);
-                      if (rates.IsSupportedRate (mode.GetDataRate (m_phy->GetChannelWidth (), false, 1)))
+                      uint8_t nss = 1; // Assume 1 spatial stream in basic mode
+                      if (rates.IsSupportedRate (mode.GetDataRate (m_phy->GetChannelWidth (), false, nss)))
                         {
                           m_stationManager->AddSupportedMode (from, mode);
                         }

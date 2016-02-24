@@ -483,13 +483,13 @@ public:
   virtual bool IsModeSupported (WifiMode mode) const = 0;
 
   /**
-   * \param txMode the transmission mode
+   * \param txVector the transmission vector
    * \param ber the probability of bit error rate
    *
    * \return the minimum snr which is required to achieve
-   *          the requested ber for the specified transmission mode. (W/W)
+   *          the requested ber for the specified transmission vector. (W/W)
    */
-  virtual double CalculateSnr (WifiMode txMode, double ber) const = 0;
+  virtual double CalculateSnr (WifiTxVector txVector, double ber) const = 0;
 
   /**
   * The WifiPhy::NBssMembershipSelectors() method is used
@@ -1273,7 +1273,22 @@ public:
    * \param channelwidth channel width
    */
   virtual void SetChannelWidth (uint32_t channelwidth) = 0;
-
+  /**
+   * \return the maximum number of supported Rx spatial streams
+   */
+  virtual uint8_t GetSupportedRxSpatialStreams (void) const = 0;
+  /**
+   * \return the maximum number of supported Tx spatial streams
+   */
+  virtual uint8_t GetSupportedTxSpatialStreams (void) const = 0;
+  /**
+   * \param width channel width (in MHz) to support
+   */
+  virtual void AddSupportedChannelWidth (uint32_t width) = 0;
+  /**
+   * \return a vector containing the supported channel widths, values in MHz
+   */
+  virtual std::vector<uint32_t> GetSupportedChannelWidthSet (void) const = 0;
 
 private:
   /**

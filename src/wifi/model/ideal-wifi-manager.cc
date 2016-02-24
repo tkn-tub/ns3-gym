@@ -72,7 +72,8 @@ IdealWifiManager::SetupPhy (Ptr<WifiPhy> phy)
   for (uint32_t i = 0; i < nModes; i++)
     {
       WifiMode mode = phy->GetMode (i);
-      AddModeSnrThreshold (mode, phy->CalculateSnr (mode, m_ber));
+      WifiTxVector txVector (mode, 0, 0, false, 1, 1, 20, false, false);
+      AddModeSnrThreshold (mode, phy->CalculateSnr (txVector, m_ber));
     }
 
   WifiRemoteStationManager::SetupPhy (phy);

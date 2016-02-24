@@ -299,7 +299,7 @@ public:
   virtual WifiMode GetMode (uint32_t mode) const;
   virtual bool IsModeSupported (WifiMode mode) const;
   virtual bool IsMcsSupported (WifiMode mcs);
-  virtual double CalculateSnr (WifiMode txMode, double ber) const;
+  virtual double CalculateSnr (WifiTxVector txVector, double ber) const;
   virtual Ptr<WifiChannel> GetChannel (void) const;
 
   virtual void ConfigureStandard (enum WifiPhyStandard standard);
@@ -410,6 +410,10 @@ public:
    */
   virtual void SetChannelWidth (uint32_t channelwidth);
 
+  virtual uint8_t GetSupportedRxSpatialStreams (void) const;
+  virtual uint8_t GetSupportedTxSpatialStreams (void) const;
+  virtual void AddSupportedChannelWidth (uint32_t width);
+  virtual std::vector<uint32_t> GetSupportedChannelWidthSet (void) const;
   virtual uint32_t GetNBssMembershipSelectors (void) const;
   virtual uint32_t GetBssMembershipSelector (uint32_t selector) const;
   virtual WifiModeList GetMembershipSelectorModes (uint32_t selector);
@@ -538,6 +542,7 @@ private:
   bool     m_greenfield;            //!< Flag if GreenField format is supported
   bool     m_guardInterval;         //!< Flag if short guard interval is used
   uint32_t m_channelWidth;          //!< Channel width
+  std::vector<uint32_t> m_supportedChannelWidthSet; //!< Supported channel width
   bool     m_shortPreamble;         //!< Flag if short PLCP preamble is supported
 
   /**

@@ -90,10 +90,32 @@ public:
   uint8_t GetTxStbc () const;
   uint8_t GetMaxAmpduLengthExponent () const;
 
-  //MCS and NSS field information
+  // MCS and NSS field information
+  // For each value of NSS ranging from 1 to 8, we need to encode two bits.
+  // The value 0 indicates that the maximum MCS for that spatial stream is 7.
+  // The value 1 indicates that the maximum MCS for that spatial stream is 8.
+  // The value 2 indicates that the maximum MCS for that spatial stream is 9.
+  //
+  // The maps may be set all at once by passing in a 16-bit field corresponding
+  // to the above, or incrementally for each NSS separately, where the 
+  // MCS value must be in the range 7-9.
+  /**
+   * \param map The 16-bit encoding of Max MCS for each of 8 spatial streams
+   */
   void SetRxMcsMap (uint16_t map);
+  /**
+   * \param mcs Max MCS value (between 7 and 9)
+   * \param nss Spatial stream for which the Max MCS value is being set
+   */
   void SetRxMcsMap (uint8_t mcs, uint8_t nss);
+  /**
+   * \param map The 16-bit encoding of Max MCS for each of 8 spatial streams
+   */
   void SetTxMcsMap (uint16_t map);
+  /**
+   * \param mcs Max MCS value (between 7 and 9)
+   * \param nss Spatial stream for which the Max MCS value is being set
+   */
   void SetTxMcsMap (uint8_t mcs, uint8_t nss);
   void SetRxHighestSupportedLgiDataRate (uint16_t supporteddatarate);
   void SetTxHighestSupportedLgiDataRate (uint16_t supporteddatarate);

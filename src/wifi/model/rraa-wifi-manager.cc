@@ -403,7 +403,8 @@ RraaWifiManager::GetThresholds (RraaWifiRemoteStation *station,
 struct RraaWifiManager::ThresholdsItem
 RraaWifiManager::GetThresholds (WifiMode mode, RraaWifiRemoteStation *station) const
 {
-  switch (mode.GetDataRate (GetChannelWidth (station), GetShortGuardInterval (station), 1) / 1000000)
+  uint8_t nss = 1;  // This RAA only supports 1 spatial stream
+  switch (mode.GetDataRate (GetChannelWidth (station), GetShortGuardInterval (station), nss) / 1000000)
     {
     case 54:
       {

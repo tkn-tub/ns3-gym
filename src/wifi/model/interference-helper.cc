@@ -273,7 +273,7 @@ InterferenceHelper::CalculateChunkSuccessRate (double snir, Time duration, WifiM
     {
       return 1.0;
     }
-  uint32_t rate = mode.GetPhyRate (txVector.GetChannelWidth (), txVector.IsShortGuardInterval (), 1);
+  uint32_t rate = mode.GetPhyRate (txVector);
   uint64_t nbits = (uint64_t)(rate * duration.GetSeconds ());
   double csr = m_errorRateModel->GetChunkSuccessRate (mode, txVector, snir, (uint32_t)nbits);
   return csr;
