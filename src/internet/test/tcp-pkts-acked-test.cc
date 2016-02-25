@@ -38,13 +38,14 @@ NS_LOG_COMPONENT_DEFINE ("TcpPktsAckedTestSuite");
  * \see DummyCongControl
  * \see FinalChecks
  */
+class DummyCongControl;
+
 class TcpPktsAckedOpenTest : public TcpGeneralTest
 {
 public:
   TcpPktsAckedOpenTest (const std::string &desc);
 
-  void PktsAckedCalled (Ptr<TcpSocketState> tcb, uint32_t segmentsAcked,
-                        const Time &rtt);
+  void PktsAckedCalled (uint32_t segmentsAcked);
 
 protected:
   virtual Ptr<TcpSocketMsgBase> CreateSenderSocket (Ptr<Node> node);
@@ -57,6 +58,8 @@ protected:
 private:
   uint32_t m_segmentsAcked;    //! Contains the number of times PktsAcked is called
   uint32_t m_segmentsReceived; //! Contains the ack number received
+
+  Ptr<DummyCongControl> m_congCtl;
 };
 
 /**
@@ -70,18 +73,19 @@ public:
   DummyCongControl ()
   {
   }
-  DummyCongControl (TcpPktsAckedOpenTest *test)
+  void SetCallback (Callback<void, uint32_t> test)
   {
     m_test = test;
   }
 
-  void PktsAcked (Ptr<TcpSocketState> tcb, uint32_t segmentsAcked, const Time &rtt)
+  void PktsAcked (Ptr<TcpSocketState> tcb, uint32_t segmentsAcked,
+                  const Time& rtt)
   {
-    m_test->PktsAckedCalled (tcb, segmentsAcked, rtt);
+    m_test (segmentsAcked);
   }
 
 private:
-  TcpPktsAckedOpenTest *m_test;
+  Callback<void, uint32_t> m_test;
 };
 
 TypeId
@@ -114,14 +118,15 @@ Ptr<TcpSocketMsgBase>
 TcpPktsAckedOpenTest::CreateSenderSocket (Ptr<Node> node)
 {
   Ptr<TcpSocketMsgBase> s = TcpGeneralTest::CreateSenderSocket (node);
-  s->SetCongestionControlAlgorithm (new DummyCongControl (this));
+  m_congCtl = CreateObject<DummyCongControl> ();
+  m_congCtl->SetCallback (MakeCallback (&ns3::TcpPktsAckedOpenTest::PktsAckedCalled, this));
+  s->SetCongestionControlAlgorithm (m_congCtl);
 
   return s;
 }
 
 void
-TcpPktsAckedOpenTest::PktsAckedCalled (Ptr<TcpSocketState> tcb, uint32_t segmentsAcked,
-                                       const Time &rtt)
+TcpPktsAckedOpenTest::PktsAckedCalled (uint32_t segmentsAcked)
 {
   m_segmentsAcked += segmentsAcked;
 }
