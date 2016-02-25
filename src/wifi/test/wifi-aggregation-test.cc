@@ -232,6 +232,8 @@ AmpduAggregationTest::DoRun (void)
   m_edca->GetEdcaQueue ()->Remove (pkt3);
 
   Simulator::Destroy ();
+  delete m_txMiddle;
+  delete m_dcfManager;
 }
 
 
