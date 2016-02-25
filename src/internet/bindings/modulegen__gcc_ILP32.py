@@ -9910,6 +9910,11 @@ def register_Ns3TcpSocketBase_methods(root_module, cls):
                    'void', 
                    [], 
                    visibility='protected', is_virtual=True)
+    ## tcp-socket-base.h (module 'internet'): static uint32_t ns3::TcpSocketBase::SafeSubtraction(uint32_t a, uint32_t b) [member function]
+    cls.add_method('SafeSubtraction', 
+                   'uint32_t', 
+                   [param('uint32_t', 'a'), param('uint32_t', 'b')], 
+                   is_static=True, visibility='protected')
     ## tcp-socket-base.h (module 'internet'): uint32_t ns3::TcpSocketBase::SendDataPacket(ns3::SequenceNumber32 seq, uint32_t maxSize, bool withAck) [member function]
     cls.add_method('SendDataPacket', 
                    'uint32_t', 
