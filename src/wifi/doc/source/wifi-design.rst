@@ -146,8 +146,8 @@ found in practice.
 The physical layer and channel models operate on a per-packet basis, with
 no frequency-selective propagation or interference effects.  Detailed
 link simulations are not performed, nor are frequency-selective fading
-or interference models available.  Directional antennas and MIMO are also
-not supported at this time.  For additive white gaussian noise (AWGN) 
+or interference models available.  Directional antennas are also not
+supported at this time.  For additive white gaussian noise (AWGN)
 scenarios, or wideband interference scenarios, performance is governed
 by the application of analytical models (based on modulation and factors
 such as channel width) to the received signal-to-noise ratio, where noise
@@ -155,8 +155,9 @@ combines the effect of thermal noise and of interference from other Wi-Fi
 packets.  Moreover, interference from other technologies is not modeled.
 The following details pertain to the physical layer and channel models:
 
-* 802.11n MIMO is not supported
-* 802.11n/ac MIMO is not supported
+* 802.11n/ac MIMO currently uses the same 802.11n/ac SISO Yans and Nist error rate models
+* 802.11ac MU-MIMO is not supported
+* Antenna diversity is not supported
 * 802.11n/ac beamforming is not supported
 * PLCP preamble reception is not modeled
 * PHY_RXSTART is not supported

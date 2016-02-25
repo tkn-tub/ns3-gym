@@ -79,5 +79,8 @@ def build(bld):
     obj = bld.create_ns3_program('simple-ht-hidden-stations', ['internet', 'mobility', 'wifi', 'applications'])    
     obj.source = 'simple-ht-hidden-stations.cc'
 
+    obj = bld.create_ns3_program('80211n-mimo', ['core','internet', 'mobility', 'wifi', 'applications', 'propagation'])
+    obj.source = '80211n-mimo.cc'
+
     obj = bld.create_ns3_program('mixed-bg-network', ['internet', 'mobility', 'wifi', 'applications'])    
     obj.source = 'mixed-bg-network.cc'
