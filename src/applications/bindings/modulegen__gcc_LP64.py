@@ -5364,6 +5364,11 @@ def register_Ns3Socket_methods(root_module, cls):
                    'ns3::Ptr< ns3::Node >', 
                    [], 
                    is_pure_virtual=True, is_const=True, is_virtual=True)
+    ## socket.h (module 'network'): int ns3::Socket::GetPeerName(ns3::Address & address) const [member function]
+    cls.add_method('GetPeerName', 
+                   'int', 
+                   [param('ns3::Address &', 'address')], 
+                   is_pure_virtual=True, is_const=True, is_virtual=True)
     ## socket.h (module 'network'): uint32_t ns3::Socket::GetRxAvailable() const [member function]
     cls.add_method('GetRxAvailable', 
                    'uint32_t', 
@@ -8589,6 +8594,11 @@ def register_Ns3PacketSocket_methods(root_module, cls):
     cls.add_method('GetNode', 
                    'ns3::Ptr< ns3::Node >', 
                    [], 
+                   is_const=True, is_virtual=True)
+    ## packet-socket.h (module 'network'): int ns3::PacketSocket::GetPeerName(ns3::Address & address) const [member function]
+    cls.add_method('GetPeerName', 
+                   'int', 
+                   [param('ns3::Address &', 'address')], 
                    is_const=True, is_virtual=True)
     ## packet-socket.h (module 'network'): uint32_t ns3::PacketSocket::GetRxAvailable() const [member function]
     cls.add_method('GetRxAvailable', 

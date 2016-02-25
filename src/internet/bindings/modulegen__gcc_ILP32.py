@@ -8357,6 +8357,11 @@ def register_Ns3Socket_methods(root_module, cls):
                    'ns3::Ptr< ns3::Node >', 
                    [], 
                    is_pure_virtual=True, is_const=True, is_virtual=True)
+    ## socket.h (module 'network'): int ns3::Socket::GetPeerName(ns3::Address & address) const [member function]
+    cls.add_method('GetPeerName', 
+                   'int', 
+                   [param('ns3::Address &', 'address')], 
+                   is_pure_virtual=True, is_const=True, is_virtual=True)
     ## socket.h (module 'network'): uint32_t ns3::Socket::GetRxAvailable() const [member function]
     cls.add_method('GetRxAvailable', 
                    'uint32_t', 
@@ -9509,6 +9514,11 @@ def register_Ns3TcpSocketBase_methods(root_module, cls):
     cls.add_method('GetNode', 
                    'ns3::Ptr< ns3::Node >', 
                    [], 
+                   is_const=True, is_virtual=True)
+    ## tcp-socket-base.h (module 'internet'): int ns3::TcpSocketBase::GetPeerName(ns3::Address & address) const [member function]
+    cls.add_method('GetPeerName', 
+                   'int', 
+                   [param('ns3::Address &', 'address')], 
                    is_const=True, is_virtual=True)
     ## tcp-socket-base.h (module 'internet'): uint32_t ns3::TcpSocketBase::GetRxAvailable() const [member function]
     cls.add_method('GetRxAvailable', 
@@ -12779,6 +12789,11 @@ def register_Ns3Ipv4RawSocketImpl_methods(root_module, cls):
     cls.add_method('GetNode', 
                    'ns3::Ptr< ns3::Node >', 
                    [], 
+                   is_const=True, is_virtual=True)
+    ## ipv4-raw-socket-impl.h (module 'internet'): int ns3::Ipv4RawSocketImpl::GetPeerName(ns3::Address & address) const [member function]
+    cls.add_method('GetPeerName', 
+                   'int', 
+                   [param('ns3::Address &', 'address')], 
                    is_const=True, is_virtual=True)
     ## ipv4-raw-socket-impl.h (module 'internet'): uint32_t ns3::Ipv4RawSocketImpl::GetRxAvailable() const [member function]
     cls.add_method('GetRxAvailable', 
