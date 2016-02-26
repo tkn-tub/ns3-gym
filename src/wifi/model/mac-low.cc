@@ -3181,7 +3181,7 @@ MacLow::AggregateToAmpdu (Ptr<const Packet> packet, const WifiMacHeader hdr)
                   newPacket = currentAggregatedPacket;
                   newPacket->AddPacketTag (ampdutag);
                   NS_LOG_DEBUG ("tx unicast A-MPDU");
-                  listenerIt->second->SetAmpdu (hdr.GetAddr2 (), true);
+                  listenerIt->second->SetAmpdu (hdr.GetAddr1 (), true);
                 }
               else
                 {
