@@ -240,7 +240,17 @@ public:
             else:
                 kwargs = {}
             try:
-                arguments.append(Parameter.new(str(param_ctype), arg_name, **kwargs))
+                param = Parameter.new(str(param_ctype), arg_name, **kwargs)
+                cpp_class = getattr(param, "cpp_class", None)
+                if isinstance(cpp_class, cppclass.CppClass):
+                    # check if the "helper class" can be constructed
+                    if cpp_class.helper_class is not None:
+                        cpp_class.helper_class.generate_forward_declarations(
+                            MemoryCodeSink())
+                        if cpp_class.helper_class.cannot_be_constructed:
+                            cpp_class.helper_class = None
+                            cpp_class.helper_class_disabled = True
+                arguments.append(param)
             except (typehandlers.TypeLookupError, typehandlers.TypeConfigurationError) as ex:
                 warnings.warn("***** Unable to register callback; parameter '%s %s' error (used in %s): %r"
                               % (arg_type, arg_name, cls_name, ex),
