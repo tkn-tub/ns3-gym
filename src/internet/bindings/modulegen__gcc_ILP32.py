@@ -206,12 +206,18 @@ def register_types(module):
     module.add_class('PcapHelperForIpv4', allow_subclassing=True)
     ## internet-trace-helper.h (module 'internet'): ns3::PcapHelperForIpv6 [class]
     module.add_class('PcapHelperForIpv6', allow_subclassing=True)
+    ## rip-helper.h (module 'internet'): ns3::RipHelper [class]
+    module.add_class('RipHelper', parent=root_module['ns3::Ipv4RoutingHelper'])
     ## ripng-helper.h (module 'internet'): ns3::RipNgHelper [class]
     module.add_class('RipNgHelper', parent=root_module['ns3::Ipv6RoutingHelper'])
     ## ripng.h (module 'internet'): ns3::RipNgRoutingTableEntry [class]
     module.add_class('RipNgRoutingTableEntry', parent=root_module['ns3::Ipv6RoutingTableEntry'])
     ## ripng.h (module 'internet'): ns3::RipNgRoutingTableEntry::Status_e [enumeration]
     module.add_enum('Status_e', ['RIPNG_VALID', 'RIPNG_INVALID'], outer_class=root_module['ns3::RipNgRoutingTableEntry'])
+    ## rip.h (module 'internet'): ns3::RipRoutingTableEntry [class]
+    module.add_class('RipRoutingTableEntry', parent=root_module['ns3::Ipv4RoutingTableEntry'])
+    ## rip.h (module 'internet'): ns3::RipRoutingTableEntry::Status_e [enumeration]
+    module.add_enum('Status_e', ['RIP_VALID', 'RIP_INVALID'], outer_class=root_module['ns3::RipRoutingTableEntry'])
     ## tcp-socket-base.h (module 'internet'): ns3::RttHistory [class]
     module.add_class('RttHistory')
     ## global-route-manager-impl.h (module 'internet'): ns3::SPFVertex [class]
@@ -376,12 +382,18 @@ def register_types(module):
     module.add_enum('QueueMode', ['QUEUE_MODE_PACKETS', 'QUEUE_MODE_BYTES'], outer_class=root_module['ns3::Queue'], import_from_module='ns.network')
     ## random-variable-stream.h (module 'core'): ns3::RandomVariableStream [class]
     module.add_class('RandomVariableStream', import_from_module='ns.core', parent=root_module['ns3::Object'])
+    ## rip-header.h (module 'internet'): ns3::RipHeader [class]
+    module.add_class('RipHeader', parent=root_module['ns3::Header'])
+    ## rip-header.h (module 'internet'): ns3::RipHeader::Command_e [enumeration]
+    module.add_enum('Command_e', ['REQUEST', 'RESPONSE'], outer_class=root_module['ns3::RipHeader'])
     ## ripng-header.h (module 'internet'): ns3::RipNgHeader [class]
     module.add_class('RipNgHeader', parent=root_module['ns3::Header'])
     ## ripng-header.h (module 'internet'): ns3::RipNgHeader::Command_e [enumeration]
     module.add_enum('Command_e', ['REQUEST', 'RESPONSE'], outer_class=root_module['ns3::RipNgHeader'])
     ## ripng-header.h (module 'internet'): ns3::RipNgRte [class]
     module.add_class('RipNgRte', parent=root_module['ns3::Header'])
+    ## rip-header.h (module 'internet'): ns3::RipRte [class]
+    module.add_class('RipRte', parent=root_module['ns3::Header'])
     ## rtt-estimator.h (module 'internet'): ns3::RttEstimator [class]
     module.add_class('RttEstimator', parent=root_module['ns3::Object'])
     ## rtt-estimator.h (module 'internet'): ns3::RttMeanDeviation [class]
@@ -686,6 +698,10 @@ def register_types(module):
     module.add_class('ParetoRandomVariable', import_from_module='ns.core', parent=root_module['ns3::RandomVariableStream'])
     ## probe.h (module 'stats'): ns3::Probe [class]
     module.add_class('Probe', import_from_module='ns.stats', parent=root_module['ns3::DataCollectionObject'])
+    ## rip.h (module 'internet'): ns3::Rip [class]
+    module.add_class('Rip', parent=root_module['ns3::Ipv4RoutingProtocol'])
+    ## rip.h (module 'internet'): ns3::Rip::SplitHorizonType_e [enumeration]
+    module.add_enum('SplitHorizonType_e', ['NO_SPLIT_HORIZON', 'SPLIT_HORIZON', 'POISON_REVERSE'], outer_class=root_module['ns3::Rip'])
     ## ripng.h (module 'internet'): ns3::RipNg [class]
     module.add_class('RipNg', parent=root_module['ns3::Ipv6RoutingProtocol'])
     ## ripng.h (module 'internet'): ns3::RipNg::SplitHorizonType_e [enumeration]
@@ -738,6 +754,7 @@ def register_types(module):
     module.add_class('LoopbackNetDevice', parent=root_module['ns3::NetDevice'])
     module.add_container('std::vector< unsigned int >', 'unsigned int', container_type=u'vector')
     module.add_container('std::vector< bool >', 'bool', container_type=u'vector')
+    module.add_container('std::list< ns3::RipRte >', 'ns3::RipRte', container_type=u'list')
     module.add_container('std::list< ns3::RipNgRte >', 'ns3::RipNgRte', container_type=u'list')
     module.add_container('std::vector< ns3::Ipv6Address >', 'ns3::Ipv6Address', container_type=u'vector')
     module.add_container('std::list< ns3::Ptr< ns3::Packet > >', 'ns3::Ptr< ns3::Packet >', container_type=u'list')
@@ -930,8 +947,10 @@ def register_methods(root_module):
     register_Ns3PcapHelperForDevice_methods(root_module, root_module['ns3::PcapHelperForDevice'])
     register_Ns3PcapHelperForIpv4_methods(root_module, root_module['ns3::PcapHelperForIpv4'])
     register_Ns3PcapHelperForIpv6_methods(root_module, root_module['ns3::PcapHelperForIpv6'])
+    register_Ns3RipHelper_methods(root_module, root_module['ns3::RipHelper'])
     register_Ns3RipNgHelper_methods(root_module, root_module['ns3::RipNgHelper'])
     register_Ns3RipNgRoutingTableEntry_methods(root_module, root_module['ns3::RipNgRoutingTableEntry'])
+    register_Ns3RipRoutingTableEntry_methods(root_module, root_module['ns3::RipRoutingTableEntry'])
     register_Ns3RttHistory_methods(root_module, root_module['ns3::RttHistory'])
     register_Ns3SPFVertex_methods(root_module, root_module['ns3::SPFVertex'])
     register_Ns3SequenceNumber32_methods(root_module, root_module['ns3::SequenceNumber32'])
@@ -995,8 +1014,10 @@ def register_methods(root_module):
     register_Ns3PcapFileWrapper_methods(root_module, root_module['ns3::PcapFileWrapper'])
     register_Ns3Queue_methods(root_module, root_module['ns3::Queue'])
     register_Ns3RandomVariableStream_methods(root_module, root_module['ns3::RandomVariableStream'])
+    register_Ns3RipHeader_methods(root_module, root_module['ns3::RipHeader'])
     register_Ns3RipNgHeader_methods(root_module, root_module['ns3::RipNgHeader'])
     register_Ns3RipNgRte_methods(root_module, root_module['ns3::RipNgRte'])
+    register_Ns3RipRte_methods(root_module, root_module['ns3::RipRte'])
     register_Ns3RttEstimator_methods(root_module, root_module['ns3::RttEstimator'])
     register_Ns3RttMeanDeviation_methods(root_module, root_module['ns3::RttMeanDeviation'])
     register_Ns3SequentialRandomVariable_methods(root_module, root_module['ns3::SequentialRandomVariable'])
@@ -1132,6 +1153,7 @@ def register_methods(root_module):
     register_Ns3Packet_methods(root_module, root_module['ns3::Packet'])
     register_Ns3ParetoRandomVariable_methods(root_module, root_module['ns3::ParetoRandomVariable'])
     register_Ns3Probe_methods(root_module, root_module['ns3::Probe'])
+    register_Ns3Rip_methods(root_module, root_module['ns3::Rip'])
     register_Ns3RipNg_methods(root_module, root_module['ns3::RipNg'])
     register_Ns3StringChecker_methods(root_module, root_module['ns3::StringChecker'])
     register_Ns3StringValue_methods(root_module, root_module['ns3::StringValue'])
@@ -4410,6 +4432,43 @@ def register_Ns3PcapHelperForIpv6_methods(root_module, cls):
                    is_pure_virtual=True, is_virtual=True)
     return
 
+def register_Ns3RipHelper_methods(root_module, cls):
+    ## rip-helper.h (module 'internet'): ns3::RipHelper::RipHelper() [constructor]
+    cls.add_constructor([])
+    ## rip-helper.h (module 'internet'): ns3::RipHelper::RipHelper(ns3::RipHelper const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::RipHelper const &', 'arg0')])
+    ## rip-helper.h (module 'internet'): ns3::RipHelper * ns3::RipHelper::Copy() const [member function]
+    cls.add_method('Copy', 
+                   'ns3::RipHelper *', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## rip-helper.h (module 'internet'): ns3::Ptr<ns3::Ipv4RoutingProtocol> ns3::RipHelper::Create(ns3::Ptr<ns3::Node> node) const [member function]
+    cls.add_method('Create', 
+                   'ns3::Ptr< ns3::Ipv4RoutingProtocol >', 
+                   [param('ns3::Ptr< ns3::Node >', 'node')], 
+                   is_const=True, is_virtual=True)
+    ## rip-helper.h (module 'internet'): void ns3::RipHelper::Set(std::string name, ns3::AttributeValue const & value) [member function]
+    cls.add_method('Set', 
+                   'void', 
+                   [param('std::string', 'name'), param('ns3::AttributeValue const &', 'value')])
+    ## rip-helper.h (module 'internet'): int64_t ns3::RipHelper::AssignStreams(ns3::NodeContainer c, int64_t stream) [member function]
+    cls.add_method('AssignStreams', 
+                   'int64_t', 
+                   [param('ns3::NodeContainer', 'c'), param('int64_t', 'stream')])
+    ## rip-helper.h (module 'internet'): void ns3::RipHelper::SetDefaultRouter(ns3::Ptr<ns3::Node> node, ns3::Ipv4Address nextHop, uint32_t interface) [member function]
+    cls.add_method('SetDefaultRouter', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Node >', 'node'), param('ns3::Ipv4Address', 'nextHop'), param('uint32_t', 'interface')])
+    ## rip-helper.h (module 'internet'): void ns3::RipHelper::ExcludeInterface(ns3::Ptr<ns3::Node> node, uint32_t interface) [member function]
+    cls.add_method('ExcludeInterface', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Node >', 'node'), param('uint32_t', 'interface')])
+    ## rip-helper.h (module 'internet'): void ns3::RipHelper::SetInterfaceMetric(ns3::Ptr<ns3::Node> node, uint32_t interface, uint8_t metric) [member function]
+    cls.add_method('SetInterfaceMetric', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Node >', 'node'), param('uint32_t', 'interface'), param('uint8_t', 'metric')])
+    return
+
 def register_Ns3RipNgHelper_methods(root_module, cls):
     ## ripng-helper.h (module 'internet'): ns3::RipNgHelper::RipNgHelper() [constructor]
     cls.add_constructor([])
@@ -4490,6 +4549,54 @@ def register_Ns3RipNgRoutingTableEntry_methods(root_module, cls):
                    'void', 
                    [param('ns3::RipNgRoutingTableEntry::Status_e', 'status')])
     ## ripng.h (module 'internet'): void ns3::RipNgRoutingTableEntry::SetRouteTag(uint16_t routeTag) [member function]
+    cls.add_method('SetRouteTag', 
+                   'void', 
+                   [param('uint16_t', 'routeTag')])
+    return
+
+def register_Ns3RipRoutingTableEntry_methods(root_module, cls):
+    cls.add_output_stream_operator()
+    ## rip.h (module 'internet'): ns3::RipRoutingTableEntry::RipRoutingTableEntry(ns3::RipRoutingTableEntry const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::RipRoutingTableEntry const &', 'arg0')])
+    ## rip.h (module 'internet'): ns3::RipRoutingTableEntry::RipRoutingTableEntry() [constructor]
+    cls.add_constructor([])
+    ## rip.h (module 'internet'): ns3::RipRoutingTableEntry::RipRoutingTableEntry(ns3::Ipv4Address network, ns3::Ipv4Mask networkPrefix, ns3::Ipv4Address nextHop, uint32_t interface) [constructor]
+    cls.add_constructor([param('ns3::Ipv4Address', 'network'), param('ns3::Ipv4Mask', 'networkPrefix'), param('ns3::Ipv4Address', 'nextHop'), param('uint32_t', 'interface')])
+    ## rip.h (module 'internet'): ns3::RipRoutingTableEntry::RipRoutingTableEntry(ns3::Ipv4Address network, ns3::Ipv4Mask networkPrefix, uint32_t interface) [constructor]
+    cls.add_constructor([param('ns3::Ipv4Address', 'network'), param('ns3::Ipv4Mask', 'networkPrefix'), param('uint32_t', 'interface')])
+    ## rip.h (module 'internet'): uint8_t ns3::RipRoutingTableEntry::GetRouteMetric() const [member function]
+    cls.add_method('GetRouteMetric', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True)
+    ## rip.h (module 'internet'): ns3::RipRoutingTableEntry::Status_e ns3::RipRoutingTableEntry::GetRouteStatus() const [member function]
+    cls.add_method('GetRouteStatus', 
+                   'ns3::RipRoutingTableEntry::Status_e', 
+                   [], 
+                   is_const=True)
+    ## rip.h (module 'internet'): uint16_t ns3::RipRoutingTableEntry::GetRouteTag() const [member function]
+    cls.add_method('GetRouteTag', 
+                   'uint16_t', 
+                   [], 
+                   is_const=True)
+    ## rip.h (module 'internet'): bool ns3::RipRoutingTableEntry::IsRouteChanged() const [member function]
+    cls.add_method('IsRouteChanged', 
+                   'bool', 
+                   [], 
+                   is_const=True)
+    ## rip.h (module 'internet'): void ns3::RipRoutingTableEntry::SetRouteChanged(bool changed) [member function]
+    cls.add_method('SetRouteChanged', 
+                   'void', 
+                   [param('bool', 'changed')])
+    ## rip.h (module 'internet'): void ns3::RipRoutingTableEntry::SetRouteMetric(uint8_t routeMetric) [member function]
+    cls.add_method('SetRouteMetric', 
+                   'void', 
+                   [param('uint8_t', 'routeMetric')])
+    ## rip.h (module 'internet'): void ns3::RipRoutingTableEntry::SetRouteStatus(ns3::RipRoutingTableEntry::Status_e status) [member function]
+    cls.add_method('SetRouteStatus', 
+                   'void', 
+                   [param('ns3::RipRoutingTableEntry::Status_e', 'status')])
+    ## rip.h (module 'internet'): void ns3::RipRoutingTableEntry::SetRouteTag(uint16_t routeTag) [member function]
     cls.add_method('SetRouteTag', 
                    'void', 
                    [param('uint16_t', 'routeTag')])
@@ -7852,6 +7959,71 @@ def register_Ns3RandomVariableStream_methods(root_module, cls):
                    is_const=True, visibility='protected')
     return
 
+def register_Ns3RipHeader_methods(root_module, cls):
+    cls.add_output_stream_operator()
+    ## rip-header.h (module 'internet'): ns3::RipHeader::RipHeader(ns3::RipHeader const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::RipHeader const &', 'arg0')])
+    ## rip-header.h (module 'internet'): ns3::RipHeader::RipHeader() [constructor]
+    cls.add_constructor([])
+    ## rip-header.h (module 'internet'): void ns3::RipHeader::AddRte(ns3::RipRte rte) [member function]
+    cls.add_method('AddRte', 
+                   'void', 
+                   [param('ns3::RipRte', 'rte')])
+    ## rip-header.h (module 'internet'): void ns3::RipHeader::ClearRtes() [member function]
+    cls.add_method('ClearRtes', 
+                   'void', 
+                   [])
+    ## rip-header.h (module 'internet'): uint32_t ns3::RipHeader::Deserialize(ns3::Buffer::Iterator start) [member function]
+    cls.add_method('Deserialize', 
+                   'uint32_t', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_virtual=True)
+    ## rip-header.h (module 'internet'): ns3::RipHeader::Command_e ns3::RipHeader::GetCommand() const [member function]
+    cls.add_method('GetCommand', 
+                   'ns3::RipHeader::Command_e', 
+                   [], 
+                   is_const=True)
+    ## rip-header.h (module 'internet'): ns3::TypeId ns3::RipHeader::GetInstanceTypeId() const [member function]
+    cls.add_method('GetInstanceTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## rip-header.h (module 'internet'): std::list<ns3::RipRte, std::allocator<ns3::RipRte> > ns3::RipHeader::GetRteList() const [member function]
+    cls.add_method('GetRteList', 
+                   'std::list< ns3::RipRte >', 
+                   [], 
+                   is_const=True)
+    ## rip-header.h (module 'internet'): uint16_t ns3::RipHeader::GetRteNumber() const [member function]
+    cls.add_method('GetRteNumber', 
+                   'uint16_t', 
+                   [], 
+                   is_const=True)
+    ## rip-header.h (module 'internet'): uint32_t ns3::RipHeader::GetSerializedSize() const [member function]
+    cls.add_method('GetSerializedSize', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## rip-header.h (module 'internet'): static ns3::TypeId ns3::RipHeader::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## rip-header.h (module 'internet'): void ns3::RipHeader::Print(std::ostream & os) const [member function]
+    cls.add_method('Print', 
+                   'void', 
+                   [param('std::ostream &', 'os')], 
+                   is_const=True, is_virtual=True)
+    ## rip-header.h (module 'internet'): void ns3::RipHeader::Serialize(ns3::Buffer::Iterator start) const [member function]
+    cls.add_method('Serialize', 
+                   'void', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_const=True, is_virtual=True)
+    ## rip-header.h (module 'internet'): void ns3::RipHeader::SetCommand(ns3::RipHeader::Command_e command) [member function]
+    cls.add_method('SetCommand', 
+                   'void', 
+                   [param('ns3::RipHeader::Command_e', 'command')])
+    return
+
 def register_Ns3RipNgHeader_methods(root_module, cls):
     cls.add_output_stream_operator()
     ## ripng-header.h (module 'internet'): ns3::RipNgHeader::RipNgHeader(ns3::RipNgHeader const & arg0) [copy constructor]
@@ -7989,6 +8161,89 @@ def register_Ns3RipNgRte_methods(root_module, cls):
     cls.add_method('SetRouteTag', 
                    'void', 
                    [param('uint16_t', 'routeTag')])
+    return
+
+def register_Ns3RipRte_methods(root_module, cls):
+    cls.add_output_stream_operator()
+    ## rip-header.h (module 'internet'): ns3::RipRte::RipRte(ns3::RipRte const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::RipRte const &', 'arg0')])
+    ## rip-header.h (module 'internet'): ns3::RipRte::RipRte() [constructor]
+    cls.add_constructor([])
+    ## rip-header.h (module 'internet'): uint32_t ns3::RipRte::Deserialize(ns3::Buffer::Iterator start) [member function]
+    cls.add_method('Deserialize', 
+                   'uint32_t', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_virtual=True)
+    ## rip-header.h (module 'internet'): ns3::TypeId ns3::RipRte::GetInstanceTypeId() const [member function]
+    cls.add_method('GetInstanceTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## rip-header.h (module 'internet'): ns3::Ipv4Address ns3::RipRte::GetNextHop() const [member function]
+    cls.add_method('GetNextHop', 
+                   'ns3::Ipv4Address', 
+                   [], 
+                   is_const=True)
+    ## rip-header.h (module 'internet'): ns3::Ipv4Address ns3::RipRte::GetPrefix() const [member function]
+    cls.add_method('GetPrefix', 
+                   'ns3::Ipv4Address', 
+                   [], 
+                   is_const=True)
+    ## rip-header.h (module 'internet'): uint32_t ns3::RipRte::GetRouteMetric() const [member function]
+    cls.add_method('GetRouteMetric', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## rip-header.h (module 'internet'): uint16_t ns3::RipRte::GetRouteTag() const [member function]
+    cls.add_method('GetRouteTag', 
+                   'uint16_t', 
+                   [], 
+                   is_const=True)
+    ## rip-header.h (module 'internet'): uint32_t ns3::RipRte::GetSerializedSize() const [member function]
+    cls.add_method('GetSerializedSize', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## rip-header.h (module 'internet'): ns3::Ipv4Mask ns3::RipRte::GetSubnetMask() const [member function]
+    cls.add_method('GetSubnetMask', 
+                   'ns3::Ipv4Mask', 
+                   [], 
+                   is_const=True)
+    ## rip-header.h (module 'internet'): static ns3::TypeId ns3::RipRte::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## rip-header.h (module 'internet'): void ns3::RipRte::Print(std::ostream & os) const [member function]
+    cls.add_method('Print', 
+                   'void', 
+                   [param('std::ostream &', 'os')], 
+                   is_const=True, is_virtual=True)
+    ## rip-header.h (module 'internet'): void ns3::RipRte::Serialize(ns3::Buffer::Iterator start) const [member function]
+    cls.add_method('Serialize', 
+                   'void', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_const=True, is_virtual=True)
+    ## rip-header.h (module 'internet'): void ns3::RipRte::SetNextHop(ns3::Ipv4Address nextHop) [member function]
+    cls.add_method('SetNextHop', 
+                   'void', 
+                   [param('ns3::Ipv4Address', 'nextHop')])
+    ## rip-header.h (module 'internet'): void ns3::RipRte::SetPrefix(ns3::Ipv4Address prefix) [member function]
+    cls.add_method('SetPrefix', 
+                   'void', 
+                   [param('ns3::Ipv4Address', 'prefix')])
+    ## rip-header.h (module 'internet'): void ns3::RipRte::SetRouteMetric(uint32_t routeMetric) [member function]
+    cls.add_method('SetRouteMetric', 
+                   'void', 
+                   [param('uint32_t', 'routeMetric')])
+    ## rip-header.h (module 'internet'): void ns3::RipRte::SetRouteTag(uint16_t routeTag) [member function]
+    cls.add_method('SetRouteTag', 
+                   'void', 
+                   [param('uint16_t', 'routeTag')])
+    ## rip-header.h (module 'internet'): void ns3::RipRte::SetSubnetMask(ns3::Ipv4Mask subnetMask) [member function]
+    cls.add_method('SetSubnetMask', 
+                   'void', 
+                   [param('ns3::Ipv4Mask', 'subnetMask')])
     return
 
 def register_Ns3RttEstimator_methods(root_module, cls):
@@ -15553,6 +15808,94 @@ def register_Ns3Probe_methods(root_module, cls):
                    'bool', 
                    [], 
                    is_const=True, is_virtual=True)
+    return
+
+def register_Ns3Rip_methods(root_module, cls):
+    ## rip.h (module 'internet'): ns3::Rip::Rip(ns3::Rip const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::Rip const &', 'arg0')])
+    ## rip.h (module 'internet'): ns3::Rip::Rip() [constructor]
+    cls.add_constructor([])
+    ## rip.h (module 'internet'): void ns3::Rip::AddDefaultRouteTo(ns3::Ipv4Address nextHop, uint32_t interface) [member function]
+    cls.add_method('AddDefaultRouteTo', 
+                   'void', 
+                   [param('ns3::Ipv4Address', 'nextHop'), param('uint32_t', 'interface')])
+    ## rip.h (module 'internet'): int64_t ns3::Rip::AssignStreams(int64_t stream) [member function]
+    cls.add_method('AssignStreams', 
+                   'int64_t', 
+                   [param('int64_t', 'stream')])
+    ## rip.h (module 'internet'): std::set<unsigned int, std::less<unsigned int>, std::allocator<unsigned int> > ns3::Rip::GetInterfaceExclusions() const [member function]
+    cls.add_method('GetInterfaceExclusions', 
+                   'std::set< unsigned int >', 
+                   [], 
+                   is_const=True)
+    ## rip.h (module 'internet'): uint8_t ns3::Rip::GetInterfaceMetric(uint32_t interface) const [member function]
+    cls.add_method('GetInterfaceMetric', 
+                   'uint8_t', 
+                   [param('uint32_t', 'interface')], 
+                   is_const=True)
+    ## rip.h (module 'internet'): static ns3::TypeId ns3::Rip::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## rip.h (module 'internet'): void ns3::Rip::NotifyAddAddress(uint32_t interface, ns3::Ipv4InterfaceAddress address) [member function]
+    cls.add_method('NotifyAddAddress', 
+                   'void', 
+                   [param('uint32_t', 'interface'), param('ns3::Ipv4InterfaceAddress', 'address')], 
+                   is_virtual=True)
+    ## rip.h (module 'internet'): void ns3::Rip::NotifyInterfaceDown(uint32_t interface) [member function]
+    cls.add_method('NotifyInterfaceDown', 
+                   'void', 
+                   [param('uint32_t', 'interface')], 
+                   is_virtual=True)
+    ## rip.h (module 'internet'): void ns3::Rip::NotifyInterfaceUp(uint32_t interface) [member function]
+    cls.add_method('NotifyInterfaceUp', 
+                   'void', 
+                   [param('uint32_t', 'interface')], 
+                   is_virtual=True)
+    ## rip.h (module 'internet'): void ns3::Rip::NotifyRemoveAddress(uint32_t interface, ns3::Ipv4InterfaceAddress address) [member function]
+    cls.add_method('NotifyRemoveAddress', 
+                   'void', 
+                   [param('uint32_t', 'interface'), param('ns3::Ipv4InterfaceAddress', 'address')], 
+                   is_virtual=True)
+    ## rip.h (module 'internet'): void ns3::Rip::PrintRoutingTable(ns3::Ptr<ns3::OutputStreamWrapper> stream) const [member function]
+    cls.add_method('PrintRoutingTable', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::OutputStreamWrapper >', 'stream')], 
+                   is_const=True, is_virtual=True)
+    ## rip.h (module 'internet'): bool ns3::Rip::RouteInput(ns3::Ptr<ns3::Packet const> p, ns3::Ipv4Header const & header, ns3::Ptr<const ns3::NetDevice> idev, ns3::Callback<void,ns3::Ptr<ns3::Ipv4Route>,ns3::Ptr<const ns3::Packet>,const ns3::Ipv4Header&,ns3::empty,ns3::empty,ns3::empty,ns3::empty,ns3::empty,ns3::empty> ucb, ns3::Callback<void,ns3::Ptr<ns3::Ipv4MulticastRoute>,ns3::Ptr<const ns3::Packet>,const ns3::Ipv4Header&,ns3::empty,ns3::empty,ns3::empty,ns3::empty,ns3::empty,ns3::empty> mcb, ns3::Callback<void,ns3::Ptr<const ns3::Packet>,const ns3::Ipv4Header&,unsigned int,ns3::empty,ns3::empty,ns3::empty,ns3::empty,ns3::empty,ns3::empty> lcb, ns3::Callback<void,ns3::Ptr<const ns3::Packet>,const ns3::Ipv4Header&,ns3::Socket::SocketErrno,ns3::empty,ns3::empty,ns3::empty,ns3::empty,ns3::empty,ns3::empty> ecb) [member function]
+    cls.add_method('RouteInput', 
+                   'bool', 
+                   [param('ns3::Ptr< ns3::Packet const >', 'p'), param('ns3::Ipv4Header const &', 'header'), param('ns3::Ptr< ns3::NetDevice const >', 'idev'), param('ns3::Callback< void, ns3::Ptr< ns3::Ipv4Route >, ns3::Ptr< ns3::Packet const >, ns3::Ipv4Header const &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'ucb'), param('ns3::Callback< void, ns3::Ptr< ns3::Ipv4MulticastRoute >, ns3::Ptr< ns3::Packet const >, ns3::Ipv4Header const &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'mcb'), param('ns3::Callback< void, ns3::Ptr< ns3::Packet const >, ns3::Ipv4Header const &, unsigned int, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'lcb'), param('ns3::Callback< void, ns3::Ptr< ns3::Packet const >, ns3::Ipv4Header const &, ns3::Socket::SocketErrno, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'ecb')], 
+                   is_virtual=True)
+    ## rip.h (module 'internet'): ns3::Ptr<ns3::Ipv4Route> ns3::Rip::RouteOutput(ns3::Ptr<ns3::Packet> p, ns3::Ipv4Header const & header, ns3::Ptr<ns3::NetDevice> oif, ns3::Socket::SocketErrno & sockerr) [member function]
+    cls.add_method('RouteOutput', 
+                   'ns3::Ptr< ns3::Ipv4Route >', 
+                   [param('ns3::Ptr< ns3::Packet >', 'p'), param('ns3::Ipv4Header const &', 'header'), param('ns3::Ptr< ns3::NetDevice >', 'oif'), param('ns3::Socket::SocketErrno &', 'sockerr')], 
+                   is_virtual=True)
+    ## rip.h (module 'internet'): void ns3::Rip::SetInterfaceExclusions(std::set<unsigned int, std::less<unsigned int>, std::allocator<unsigned int> > exceptions) [member function]
+    cls.add_method('SetInterfaceExclusions', 
+                   'void', 
+                   [param('std::set< unsigned int >', 'exceptions')])
+    ## rip.h (module 'internet'): void ns3::Rip::SetInterfaceMetric(uint32_t interface, uint8_t metric) [member function]
+    cls.add_method('SetInterfaceMetric', 
+                   'void', 
+                   [param('uint32_t', 'interface'), param('uint8_t', 'metric')])
+    ## rip.h (module 'internet'): void ns3::Rip::SetIpv4(ns3::Ptr<ns3::Ipv4> ipv4) [member function]
+    cls.add_method('SetIpv4', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Ipv4 >', 'ipv4')], 
+                   is_virtual=True)
+    ## rip.h (module 'internet'): void ns3::Rip::DoDispose() [member function]
+    cls.add_method('DoDispose', 
+                   'void', 
+                   [], 
+                   visibility='protected', is_virtual=True)
+    ## rip.h (module 'internet'): void ns3::Rip::DoInitialize() [member function]
+    cls.add_method('DoInitialize', 
+                   'void', 
+                   [], 
+                   visibility='protected', is_virtual=True)
     return
 
 def register_Ns3RipNg_methods(root_module, cls):
