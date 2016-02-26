@@ -25,6 +25,10 @@ def build(bld):
                                  ['point-to-point', 'applications', 'internet'])
     obj.source = 'tcp-bulk-send.cc'
 
+    obj = bld.create_ns3_program('tcp-pcap-nanosec-example',
+                                 ['point-to-point', 'applications', 'internet'])
+    obj.source = 'tcp-pcap-nanosec-example.cc'
+
     obj = bld.create_ns3_program('tcp-nsc-comparison',
                                  ['point-to-point', 'internet', 'applications', 'flow-monitor'])
 

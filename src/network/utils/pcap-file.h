@@ -116,7 +116,8 @@ public:
   void Init (uint32_t dataLinkType, 
              uint32_t snapLen = SNAPLEN_DEFAULT, 
              int32_t timeZoneCorrection = ZONE_DEFAULT,
-             bool swapMode = false);
+             bool swapMode = false,
+             bool nanosecMode = false);
 
   /**
    * \brief Write next packet to file
@@ -191,6 +192,14 @@ public:
    */
   bool GetSwapMode (void);
 
+  /**
+   * \brief Get the nanosecond mode of the file.
+   *
+   * IsNanoSecMode returns true if the packet timestamps in the PCAP 
+   * file have nanosecond resolution.
+   */
+   bool IsNanoSecMode (void);
+ 
   /**
    * \brief Returns the magic number of the pcap file as defined by the magic_number
    * field in the pcap global header.
@@ -357,6 +366,7 @@ private:
   std::fstream   m_file;        //!< file stream
   PcapFileHeader m_fileHeader;  //!< file header
   bool m_swapMode;              //!< swap mode
+  bool m_nanosecMode;           //!< nanosecond timestamp mode
 };
 
 } // namespace ns3

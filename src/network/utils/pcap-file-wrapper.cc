@@ -17,6 +17,7 @@
  */
 
 #include "ns3/log.h"
+#include "ns3/boolean.h"
 #include "ns3/uinteger.h"
 #include "ns3/buffer.h"
 #include "ns3/header.h"
@@ -40,6 +41,11 @@ PcapFileWrapper::GetTypeId (void)
                    UintegerValue (PcapFile::SNAPLEN_DEFAULT),
                    MakeUintegerAccessor (&PcapFileWrapper::m_snapLen),
                    MakeUintegerChecker<uint32_t> (0, PcapFile::SNAPLEN_DEFAULT))
+    .AddAttribute ("NanosecMode",
+                   "Whether packet timestamps in the PCAP file are nanoseconds or microseconds(default).",
+                   BooleanValue (false),
+                   MakeBooleanAccessor (&PcapFileWrapper::m_nanosecMode),
+                   MakeBooleanChecker())
   ;
   return tid;
 }
@@ -53,9 +59,8 @@ PcapFileWrapper::PcapFileWrapper ()
 PcapFileWrapper::~PcapFileWrapper ()
 {
   NS_LOG_FUNCTION (this);
-  Close ();
+  Close ();   
 }
-
 
 bool 
 PcapFileWrapper::Fail (void) const
@@ -63,6 +68,7 @@ PcapFileWrapper::Fail (void) const
   NS_LOG_FUNCTION (this);
   return m_file.Fail ();
 }
+
 bool 
 PcapFileWrapper::Eof (void) const
 {
@@ -101,11 +107,11 @@ PcapFileWrapper::Init (uint32_t dataLinkType, uint32_t snapLen, int32_t tzCorrec
   NS_LOG_FUNCTION (this << dataLinkType << snapLen << tzCorrection);
   if (snapLen != std::numeric_limits<uint32_t>::max ())
     {
-      m_file.Init (dataLinkType, snapLen, tzCorrection);
+      m_file.Init (dataLinkType, snapLen, tzCorrection, false, m_nanosecMode);
     } 
   else
     {
-      m_file.Init (dataLinkType, m_snapLen, tzCorrection);
+      m_file.Init (dataLinkType, m_snapLen, tzCorrection, false, m_nanosecMode);
     } 
 }
 
@@ -113,33 +119,92 @@ void
 PcapFileWrapper::Write (Time t, Ptr<const Packet> p)
 {
   NS_LOG_FUNCTION (this << t << p);
-  uint64_t current = t.GetMicroSeconds ();
-  uint64_t s = current / 1000000;
-  uint64_t us = current % 1000000;
-
-  m_file.Write (s, us, p);
+  if (m_file.IsNanoSecMode())
+    {
+      uint64_t current = t.GetNanoSeconds ();
+      uint64_t s       = current / 1000000000;
+      uint64_t ns      = current % 1000000000;
+      m_file.Write (s, ns, p);
+    }
+  else
+    {
+      uint64_t current = t.GetMicroSeconds ();
+      uint64_t s       = current / 1000000;
+      uint64_t us      = current % 1000000;
+      m_file.Write (s, us, p);
+    }
 }
 
 void
 PcapFileWrapper::Write (Time t, const Header &header, Ptr<const Packet> p)
 {
   NS_LOG_FUNCTION (this << t << &header << p);
-  uint64_t current = t.GetMicroSeconds ();
-  uint64_t s = current / 1000000;
-  uint64_t us = current % 1000000;
-
-  m_file.Write (s, us, header, p);
+  if (m_file.IsNanoSecMode())
+    {
+      uint64_t current = t.GetNanoSeconds ();
+      uint64_t s       = current / 1000000000;
+      uint64_t ns      = current % 1000000000;
+      m_file.Write (s, ns, header, p);
+    }
+  else
+    {
+      uint64_t current = t.GetMicroSeconds ();
+      uint64_t s       = current / 1000000;
+      uint64_t us      = current % 1000000;
+      m_file.Write (s, us, header, p);
+    }
 }
 
 void
 PcapFileWrapper::Write (Time t, uint8_t const *buffer, uint32_t length)
 {
   NS_LOG_FUNCTION (this << t << &buffer << length);
-  uint64_t current = t.GetMicroSeconds ();
-  uint64_t s = current / 1000000;
-  uint64_t us = current % 1000000;
+  if (m_file.IsNanoSecMode())
+    {
+      uint64_t current = t.GetNanoSeconds ();
+      uint64_t s       = current / 1000000000;
+      uint64_t ns      = current % 1000000000;
+      m_file.Write (s, ns, buffer, length);
+    }
+  else
+    {
+      uint64_t current = t.GetMicroSeconds ();
+      uint64_t s       = current / 1000000;
+      uint64_t us      = current % 1000000;
+      m_file.Write (s, us, buffer, length);
+    }
+}
 
-  m_file.Write (s, us, buffer, length);
+Ptr<Packet> 
+PcapFileWrapper::Read (Time &t)
+{
+  uint32_t tsSec;
+  uint32_t tsUsec;
+  uint32_t inclLen;
+  uint32_t origLen;
+  uint32_t readLen;
+
+  uint32_t maxBytes=65536;
+  uint8_t  datbuf[maxBytes];
+
+  m_file.Read (datbuf,maxBytes,tsSec,tsUsec,inclLen,origLen,readLen);
+
+  if (m_file.Fail())
+    {
+      return 0;
+    }
+
+  if (m_file.IsNanoSecMode())
+    {
+      t = NanoSeconds(tsSec*1000000000ULL+tsUsec);
+    }
+  else
+    {
+      t = MicroSeconds(tsSec*1000000ULL+tsUsec);
+    }
+
+  return Create<Packet> (datbuf,origLen);
+
 }
 
 uint32_t

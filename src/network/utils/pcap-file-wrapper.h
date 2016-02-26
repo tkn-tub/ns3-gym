@@ -143,6 +143,14 @@ public:
   void Write (Time t, uint8_t const *buffer, uint32_t length);
 
   /**
+   * \brief Read the next packet from the file. Returns a pointer to ns3::Packet
+   * 
+   * \param t Reference to packet timestamp as ns3::Time.
+   * 
+   */
+  Ptr<Packet> Read (Time &t);
+
+/**
    * \brief Returns the magic number of the pcap file as defined by the magic_number
    * field in the pcap global header.
    *
@@ -215,6 +223,7 @@ public:
 private:
   PcapFile m_file; //!< Pcap file
   uint32_t m_snapLen; //!< max length of saved packets
+  bool     m_nanosecMode; //!< Timestamps in nanosecond mode
 };
 
 } // namespace ns3
