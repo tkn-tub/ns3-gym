@@ -215,7 +215,7 @@ is finally used to populate the routes themselves.
 Unicast routing
 ***************
 
-There are presently seven unicast routing protocols defined for IPv4 and three for
+There are presently eigth unicast routing protocols defined for IPv4 and three for
 IPv6:
 
 * class Ipv4StaticRouting (covering both unicast and multicast)
@@ -230,6 +230,7 @@ IPv6:
   manager, if that is used)
 * class Ipv4NixVectorRouting (a more efficient version of global routing that
   stores source routes in a packet header field)
+* class Rip - the IPv4 RIPv2 protocol (:rfc:`2453`)
 * class Ipv6ListRouting (used to store a prioritized list of routing protocols)
 * class Ipv6StaticRouting 
 * class RipNg - the IPv6 RIPng protocol (:rfc:`2080`)
@@ -334,27 +335,30 @@ respond to dynamic changes to a device's IP address or link up/down
 notifications; i.e. the topology changes are due to loss/gain of connectivity
 over a wireless channel.
 
-RIPng
-+++++
+RIP and RIPng
++++++++++++++
+
+The RIPv2 protocol for IPv4 is described in the :rfc:`2453`, and it consolidates
+a number of improvements over the base protocol defined in :rfc:`1058`.
 
 This IPv6 routing protocol (:rfc:`2080`) is the evolution of the well-known 
-RIPv1 anf RIPv2 (see :rfc:`1058` and :rfc:`1723`) routing protocols for IPv4.
+RIPv1 (see :rfc:`1058` and :rfc:`1723`) routing protocol for IPv4.
 
-The protocol is very simple, and it is normally suitable for flat, simple 
+The protocols are very simple, and are normally suitable for flat, simple 
 network topologies.
 
-RIPng is strongly based on RIPv1 and RIPv2, and it have the very same goals and
-limitations. In particular, RIP considers any route with a metric equal or greater 
+RIPv1, RIPv2, and RIPng have the very same goals and limitations. 
+In particular, RIP considers any route with a metric equal or greater 
 than 16 as unreachable. As a consequence, the maximum number of hops is the
 network must be less than 15 (the number of routers is not set).
 Users are encouraged to read :rfc:`2080` and :rfc:`1058` to fully understand
-RIPng behaviour and limitations.
+RIP behaviour and limitations.
 
 
 Routing convergence
 ~~~~~~~~~~~~~~~~~~~
 
-RIPng uses a Distance-Vector algorithm, and routes are updated according to
+RIP uses a Distance-Vector algorithm, and routes are updated according to
 the Bellman-Ford algorithm (sometimes known as Ford-Fulkerson algorithm).
 The algorithm has a convergence time of O(\|V\|*\|E\|) where \|V\| and \|E\| 
 are the number of vertices (routers) and edges (links) respectively.
@@ -365,7 +369,7 @@ cooldown, the toplogy can require some time to be stabilized.
 
 Users should be aware that, during routing tables construction, the routers 
 might drop packets. Data traffic should be sent only after a time long
-enough to allow RIPng to build the network topology.
+enough to allow RIP to build the network topology.
 Usually 80 seconds should be enough to have a suboptimal (but working)
 routing setup. This includes the time needed to propagate the routes to the
 most distant router (16 hops) with Triggered Updates.
@@ -375,13 +379,15 @@ time might be quite high, and it might be even higher than the initial
 setup time. Moreover, the network topology recovery is affected by
 the Split Horizoning strategy.
 
-The example ``examples/routing/ripng-simple-network.cc`` shows both the
-network setup and network recovery phases.
+The examples ``examples/routing/ripng-simple-network.cc`` and 
+``examples/routing/rip-simple-network.cc``
+shows both the network setup and network recovery phases.
 
 Split Horizoning
 ~~~~~~~~~~~~~~~~
 
-Split Horizon is a strategy to prevent routing instability. Three options are possible:
+Split Horizon is a strategy to prevent routing instability.
+Three options are possible:
 
 * No Split Horizon
 * Split Horizon
@@ -394,7 +400,7 @@ Poison Reverse will advertise the route on the interface from which it
 was learned, but with a metric of 16 (infinity).
 For a full analysis of the three techniques, see :rfc:`1058`, section 2.2.
 
-The example ``ripng-simple-network.cc`` is based on the network toplogy
+The examples are based on the network toplogy
 described in the RFC, but it does not show the effect described there.
 
 The reason are the Triggered Updates, together with the fact that when a 
@@ -410,18 +416,19 @@ remanins valid.
 Default routes
 ~~~~~~~~~~~~~~
 
-RIPng protocol should be installed *only* on routers. As a consequence, 
+RIP protocol should be installed *only* on routers. As a consequence, 
 nodes will not know what is the default router.
 
 To overcome this limitation, users should either install the default route
-manually (e.g., by resorting to Ipv6StaticRouting), or by using RADVd.
+manually (e.g., by resorting to Ipv4StaticRouting or Ipv6StaticRouting), or 
+by using RADVd (in case of IPv6).
 RADVd is available in |ns3| in the Applications module, and it is strongly 
 suggested.
  
 Protocol parameters and options
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The RIPng |ns3| implementation allows to change all the timers associated 
+The RIP |ns3| implementations allow to change all the timers associated 
 with route updates and routes lifetime.
 
 Moreover, users can change the interface metrics on a per-node basis.
@@ -431,11 +438,14 @@ selected on a per-node basis, with the choices being "no split horizon",
 "split horizon" and "poison reverse". See :rfc:`2080` for further details,
 and :rfc:`1058` for a complete discussion on the split horizoning strategies.
 
+Moreover, it is possible to use a non-standard value for Link Down Value (i.e.,
+the value after which a link is considered down). The defaul is value is 16. 
+
 Limitations
 ~~~~~~~~~~~
 
 There is no support for the Next Hop option (:rfc:`2080`, Section 2.1.1).
-The Next Hop option is useful when RIPng is not being run on all of the 
+The Next Hop option is useful when RIP is not being run on all of the 
 routers on a network.
 Support for this option may be considered in the future.
 

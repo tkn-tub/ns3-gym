@@ -206,6 +206,9 @@ def build(bld):
         'model/ripng.cc',
         'model/ripng-header.cc',
         'helper/ripng-helper.cc',
+        'model/rip.cc',
+        'model/rip-header.cc',
+        'helper/rip-helper.cc',
         ]
 
     internet_test = bld.create_ns3_module_test_library('internet')
@@ -256,6 +259,8 @@ def build(bld):
         'test/codel-queue-test-suite.cc',
         'test/tcp-endpoint-bug2211.cc',
         'test/tcp-datasentcb-test.cc',
+        'test/ipv4-rip-test.cc',
+        
         ]
     privateheaders = bld(features='ns3privateheader')
     privateheaders.module = 'internet'
@@ -351,6 +356,9 @@ def build(bld):
         'model/ripng.h',
         'model/ripng-header.h',
         'helper/ripng-helper.h',
+        'model/rip.h',
+        'model/rip-header.h',
+        'helper/rip-helper.h',
        ]
 
     if bld.env['NSC_ENABLED']:
