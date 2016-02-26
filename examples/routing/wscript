@@ -47,4 +47,3 @@ def build(bld):
                                  ['csma', 'internet', 'internet-apps'])
     obj.source = 'rip-simple-network.cc'
 
-    
