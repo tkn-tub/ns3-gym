@@ -46,31 +46,31 @@ public:
       DscpDefault = 0x00,
 
       // Prefixed with "DSCP" to avoid name clash (bug 1723)
-      DSCP_CS1 = 0x20,
-      DSCP_AF11 = 0x28,
-      DSCP_AF12 = 0x30,
-      DSCP_AF13 = 0x38,
+      DSCP_CS1  = 0x08, // octal 010
+      DSCP_AF11 = 0x0A, // octal 012
+      DSCP_AF12 = 0x0C, // octal 014
+      DSCP_AF13 = 0x0E, // octal 016
 
-      DSCP_CS2 = 0x40,
-      DSCP_AF21 = 0x48,
-      DSCP_AF22 = 0x50,
-      DSCP_AF23 = 0x58,
+      DSCP_CS2  = 0x10, // octal 020
+      DSCP_AF21 = 0x12, // octal 022
+      DSCP_AF22 = 0x14, // octal 024
+      DSCP_AF23 = 0x16, // octal 026
 
-      DSCP_CS3 = 0x60,
-      DSCP_AF31 = 0x68,
-      DSCP_AF32 = 0x70,
-      DSCP_AF33 = 0x78,
+      DSCP_CS3  = 0x18, // octal 030
+      DSCP_AF31 = 0x1A, // octal 032
+      DSCP_AF32 = 0x1C, // octal 034
+      DSCP_AF33 = 0x1E, // octal 036
 
-      DSCP_CS4 = 0x80,
-      DSCP_AF41 = 0x88,
-      DSCP_AF42 = 0x90,
-      DSCP_AF43 = 0x98,
+      DSCP_CS4  = 0x20, // octal 040
+      DSCP_AF41 = 0x22, // octal 042
+      DSCP_AF42 = 0x24, // octal 044
+      DSCP_AF43 = 0x26, // octal 046
 
-      DSCP_CS5 = 0xA0,
-      DSCP_EF = 0xB8,
+      DSCP_CS5  = 0x28, // octal 050
+      DSCP_EF   = 0x2E, // octal 056
 
-      DSCP_CS6 = 0xC0,
-      DSCP_CS7 = 0xE0
+      DSCP_CS6  = 0x30, // octal 060
+      DSCP_CS7  = 0x38  // octal 070
 
     };
 

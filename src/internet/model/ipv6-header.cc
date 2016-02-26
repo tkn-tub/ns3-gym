@@ -189,14 +189,14 @@ void Ipv6Header::SetDscp (DscpType dscp)
 {
   NS_LOG_FUNCTION (this << dscp);
   m_trafficClass &= 0x3; // Clear out the DSCP part, retain 2 bits of ECN
-  m_trafficClass |= dscp;
+  m_trafficClass |= (dscp << 2);
 }
 
 Ipv6Header::DscpType Ipv6Header::GetDscp (void) const
 {
   NS_LOG_FUNCTION (this);
   // Extract only first 6 bits of TOS byte, i.e 0xFC
-  return DscpType (m_trafficClass & 0xFC);
+  return DscpType ((m_trafficClass & 0xFC) >> 2);
 }
 
 std::string Ipv6Header::DscpTypeToString (DscpType dscp) const

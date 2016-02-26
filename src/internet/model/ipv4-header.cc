@@ -90,7 +90,7 @@ Ipv4Header::SetDscp (DscpType dscp)
 {
   NS_LOG_FUNCTION (this << dscp);
   m_tos &= 0x3; // Clear out the DSCP part, retain 2 bits of ECN
-  m_tos |= dscp;
+  m_tos |= (dscp << 2);
 }
 
 void
@@ -106,7 +106,7 @@ Ipv4Header::GetDscp (void) const
 {
   NS_LOG_FUNCTION (this);
   // Extract only first 6 bits of TOS byte, i.e 0xFC
-  return DscpType (m_tos & 0xFC);
+  return DscpType ((m_tos & 0xFC) >> 2);
 }
 
 std::string 
