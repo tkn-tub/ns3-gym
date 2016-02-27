@@ -161,8 +161,7 @@ void Ping6::Send ()
 {
   NS_LOG_FUNCTION_NOARGS ();
   NS_ASSERT (m_sendEvent.IsExpired ());
-  Ptr<Packet> p = 0;
-  uint8_t* data = new uint8_t[m_size];
+
   Ipv6Address src;
   Ptr<Ipv6> ipv6 = GetNode ()->GetObject<Ipv6> ();
 
@@ -188,14 +187,21 @@ void Ping6::Send ()
       src = m_localAddress;
     }
 
-  NS_ASSERT_MSG (m_size >= 4, "ICMPv6 echo request payload size must be >= 4");
+  uint32_t size = m_size;
+  if (m_size<4)
+    {
+      NS_LOG_WARN ("ICMPv6 echo request payload size must be >= 4");
+      size = 4;
+    }
+
+  uint8_t* data = new uint8_t[size];
+  memset(data, 0, size);
   data[0] = 0xDE;
   data[1] = 0xAD;
   data[2] = 0xBE;
   data[3] = 0xEF;
 
-  p = Create<Packet> (data, 4);
-  p->AddAtEnd (Create<Packet> (m_size - 4));
+  Ptr<Packet> p = Create<Packet> (data, size);
   Icmpv6Echo req (1);
 
   req.SetId (0xBEEF);
