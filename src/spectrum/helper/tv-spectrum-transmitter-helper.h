@@ -35,6 +35,8 @@
 #include <ns3/tv-spectrum-transmitter.h>
 #include "ns3/object-factory.h"
 
+class TvHelperDistributionTestCase;
+
 namespace ns3
 {
 
@@ -66,6 +68,8 @@ class TvSpectrumTransmitterHelper
 {
 
 public:
+  friend class ::TvHelperDistributionTestCase;
+
   /**
    * geographical region that TV transmitters are being set up in
    */
