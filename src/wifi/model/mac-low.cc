@@ -1682,14 +1682,7 @@ MacLow::ForwardDown (Ptr<const Packet> packet, const WifiMacHeader* hdr,
 
           listenerIt->second->GetMpduAggregator ()->AddHeaderAndPad (newPacket, last, vhtSingleMpdu);
 
-          if (hdr->IsBlockAckReq ())
-            {
-              ampdutag.SetNoOfMpdus (queueSize - 1);
-            }
-          else
-            {
-              ampdutag.SetNoOfMpdus (queueSize);
-            }
+          ampdutag.SetNoOfMpdus (queueSize);
           newPacket->AddPacketTag (ampdutag);
           
           if (delay == Seconds (0))
