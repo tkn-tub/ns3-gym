@@ -102,6 +102,7 @@ Bugs fixed
 - Bug 2271 - Decision to enable RTS/CTS handshake for A-MPDUs should be based on the comparison between RtsCtsThreshold and the total A-MPDU size
 - Bug 2272 - SixLowPan NetDevice can not send uncompressed packets larger than 802.15.4 MTU
 - Bug 2273 - WeakEs model should be enforced in Static and Global routing
+- Bug 2275 - AdhocWifiMac not compatible with 802.11n/ac
 - Bug 2279 - Ipv[4,6]L3Protocol::GetInterfaceForDevice speedup.
 - Bug 2283 - Add capability to use pcap trace files with nanosecond precision timestamps
 - Bug 2286 - Support for SLL header (de)serialization.
@@ -115,6 +116,9 @@ Bugs fixed
 - Bug 2303 - WifiMacQueue::GetSize should cleanup queue beforehand
 - Bug 2304 - DSCP Set/Get are using 8 bit values instead of 6
 - Bug 2307 - m_receivedAtLeastOneMpdu is not always reset
+- Bug 2311 - save Ht/Vht capabilities info on a per-station basis
+- Bug 2313 - Assert failed when using aggregation and RTS/CTS
+- Bug 2315 - Problem when BACK Request is part of an A-MPDU
 
 Known issues
 ------------
