@@ -754,6 +754,24 @@ protected:
    */
   uint32_t GetNSupported (const WifiRemoteStation *station) const;
   /**
+   * Return whether the given station is HT capable.
+   *
+   * \param station the station being queried
+   *
+   * \return true if the station has HT capabilities,
+   *         false otherwise
+   */
+  bool GetHtSupported (const WifiRemoteStation *station) const;
+  /**
+   * Return whether the given station is VHT capable.
+   *
+   * \param station the station being queried
+   *
+   * \return true if the station has VHT capabilities,
+   *         false otherwise
+   */
+  bool GetVhtSupported (const WifiRemoteStation *station) const;
+  /**
    * Return the WifiMode supported by the specified station at the specified index.
    *
    * \param station the station being queried
@@ -761,6 +779,7 @@ protected:
    *
    * \return the WifiMode at the given index of the specified station
    */
+
   WifiMode GetMcsSupported (const WifiRemoteStation *station, uint32_t i) const;
   /**
    * Return the number of MCS supported by the given station.
@@ -1232,6 +1251,8 @@ struct WifiRemoteStationState
   bool m_greenfield;          //!< Flag if greenfield is supported by the remote station
   bool m_shortPreamble;       //!< Flag if short PLCP preamble is supported by the remote station
   bool m_shortSlotTime;       //!< Flag if short ERP slot time is supported by the remote station
+  bool m_htSupported;         //!< Flag if HT is supported by the station
+  bool m_vhtSupported;        //!< Flag if VHT is supported by the station
 };
 
 /**

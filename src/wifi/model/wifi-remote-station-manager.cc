@@ -1432,6 +1432,8 @@ WifiRemoteStationManager::LookupState (Mac48Address address) const
   state->m_ness = 0;
   state->m_aggregation = false;
   state->m_stbc = false;
+  state->m_htSupported = false;
+  state->m_vhtSupported = false;
   const_cast<WifiRemoteStationManager *> (this)->m_states.push_back (state);
   NS_LOG_DEBUG ("WifiRemoteStationManager::LookupState returning new state");
   return state;
@@ -1491,6 +1493,7 @@ WifiRemoteStationManager::AddStationHtCapabilities (Mac48Address from, HtCapabil
     {
       state->m_channelWidth = 20;
     }
+  state->m_htSupported = true;
   state->m_greenfield = htCapabilities.GetGreenfield ();
   state->m_rx = htCapabilities.GetRxHighestSupportedAntennas ();
 }
@@ -1516,6 +1519,7 @@ WifiRemoteStationManager::AddStationVhtCapabilities (Mac48Address from, VhtCapab
     {
       state->m_channelWidth = m_wifiPhy->GetChannelWidth ();
     }
+  state->m_vhtSupported = true;
 }
 
 bool
@@ -1803,6 +1807,18 @@ uint32_t
 WifiRemoteStationManager::GetNSupported (const WifiRemoteStation *station) const
 {
   return station->m_state->m_operationalRateSet.size ();
+}
+
+bool
+WifiRemoteStationManager::GetHtSupported (const WifiRemoteStation *station) const
+{
+  return station->m_state->m_htSupported;
+}
+
+bool
+WifiRemoteStationManager::GetVhtSupported (const WifiRemoteStation *station) const
+{
+  return station->m_state->m_vhtSupported;
 }
 
 uint32_t
