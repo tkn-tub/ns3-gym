@@ -177,18 +177,6 @@ private:
    * \return the Capability information that we support
    */
   CapabilityInformation GetCapabilities (void) const;
-  /**
-   * Return the HT capability of the current STA.
-   *
-   * \return the HT capability that we support
-   */
-  HtCapabilities GetHtCapabilities (void) const;
-  /**
-   * Return the VHT capability of the current STA.
-   *
-   * \return the VHT capability that we support
-   */
-  VhtCapabilities GetVhtCapabilities (void) const;
 
   enum MacState m_state;
   Time m_probeRequestTimeout;

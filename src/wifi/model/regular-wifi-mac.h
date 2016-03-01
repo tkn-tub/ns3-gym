@@ -220,6 +220,18 @@ public:
    * \return the station manager attached to this MAC.
    */
   virtual Ptr<WifiRemoteStationManager> GetWifiRemoteStationManager (void) const;
+  /**
+   * Return the HT capability of the device.
+   *
+   * \return the HT capability that we support
+   */
+  HtCapabilities GetHtCapabilities (void) const;
+  /**
+   * Return the VHT capability of the device.
+   *
+   * \return the VHT capability that we support
+   */
+  VhtCapabilities GetVhtCapabilities (void) const;
 
   /**
    * This type defines the callback of a higher layer that a

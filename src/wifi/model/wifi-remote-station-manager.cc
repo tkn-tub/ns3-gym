@@ -579,6 +579,18 @@ WifiRemoteStationManager::AddAllSupportedModes (Mac48Address address)
 }
 
 void
+WifiRemoteStationManager::AddAllSupportedMcs (Mac48Address address)
+{
+  NS_ASSERT (!address.IsGroup ());
+  WifiRemoteStationState *state = LookupState (address);
+  state->m_operationalMcsSet.clear ();
+  for (uint32_t i = 0; i < m_wifiPhy->GetNMcs (); i++)
+    {
+      state->m_operationalMcsSet.push_back (m_wifiPhy->GetMcs (i));
+    }
+}
+
+void
 WifiRemoteStationManager::AddSupportedMcs (Mac48Address address, WifiMode mcs)
 {
   NS_LOG_FUNCTION (this << address << mcs);

@@ -209,23 +209,11 @@ private:
    */
   ErpInformation GetErpInformation (void) const;
   /**
-   * Return the HT capability of the current AP.
-   *
-   * \return the HT capability that we support
-   */
-  HtCapabilities GetHtCapabilities (void) const;
-  /**
    * Return the HT operations of the current AP.
    *
    * \return the HT operations that we support
    */
   HtOperations GetHtOperations (void) const;
-  /**
-   * Return the VHT capability of the current AP.
-   *
-   * \return the VHT capability that we support
-   */
-  VhtCapabilities GetVhtCapabilities (void) const;
   /**
    * Return an instance of SupportedRates that contains all rates that we support
    * including HT rates.
