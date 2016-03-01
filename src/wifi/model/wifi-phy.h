@@ -194,7 +194,7 @@ public:
    * arg2: snr of packet
    * arg3: PHY-RXEND flag
    */
-  typedef Callback<void, Ptr<const Packet>, double, bool> RxErrorCallback;
+  typedef Callback<void, Ptr<Packet>, double, bool> RxErrorCallback;
 
   static TypeId GetTypeId (void);
 

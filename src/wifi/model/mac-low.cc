@@ -533,7 +533,7 @@ void
 MacLow::ResetPhy (void)
 {
   m_phy->SetReceiveOkCallback (MakeNullCallback<void, Ptr<Packet>, double, WifiTxVector, enum WifiPreamble> ());
-  m_phy->SetReceiveErrorCallback (MakeNullCallback<void, Ptr<const Packet>, double, bool> ());
+  m_phy->SetReceiveErrorCallback (MakeNullCallback<void, Ptr<Packet>, double, bool> ());
   RemovePhyMacLowListener (m_phy);
   m_phy = 0;
 }
@@ -837,14 +837,15 @@ MacLow::NeedCtsToSelf (void)
 }
 
 void
-MacLow::ReceiveError (Ptr<const Packet> packet, double rxSnr, bool isEndOfFrame)
+MacLow::ReceiveError (Ptr<Packet> packet, double rxSnr, bool isEndOfFrame)
 {
   NS_LOG_FUNCTION (this << packet << rxSnr << isEndOfFrame);
   NS_LOG_DEBUG ("rx failed ");
   if (isEndOfFrame == true && m_receivedAtLeastOneMpdu == true)
     {
       WifiMacHeader hdr;
-      packet->PeekHeader (hdr);
+      MpduAggregator::DeaggregatedMpdus mpdu = MpduAggregator::Deaggregate (packet);
+      mpdu.begin ()->first->PeekHeader (hdr);
       if (hdr.GetAddr1 () != m_self)
         {
           NS_LOG_DEBUG ("hdr addr1 " << hdr.GetAddr1 () << "not for me (" << m_self << "); returning");
@@ -1684,7 +1685,7 @@ MacLow::ForwardDown (Ptr<const Packet> packet, const WifiMacHeader* hdr,
 
           ampdutag.SetNoOfMpdus (queueSize);
           newPacket->AddPacketTag (ampdutag);
-          
+
           if (delay == Seconds (0))
             {
               if (!vhtSingleMpdu)
