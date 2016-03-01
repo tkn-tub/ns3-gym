@@ -234,8 +234,7 @@ OnoeWifiManager::UpdateMode (OnoeWifiRemoteStation *station)
 }
 
 WifiTxVector
-OnoeWifiManager::DoGetDataTxVector (WifiRemoteStation *st,
-                                    uint32_t size)
+OnoeWifiManager::DoGetDataTxVector (WifiRemoteStation *st)
 {
   OnoeWifiRemoteStation *station = (OnoeWifiRemoteStation *)st;
   UpdateMode (station);

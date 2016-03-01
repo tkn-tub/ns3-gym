@@ -151,7 +151,7 @@ IdealWifiManager::DoReportFinalDataFailed (WifiRemoteStation *station)
 }
 
 WifiTxVector
-IdealWifiManager::DoGetDataTxVector (WifiRemoteStation *st, uint32_t size)
+IdealWifiManager::DoGetDataTxVector (WifiRemoteStation *st)
 {
   IdealWifiRemoteStation *station = (IdealWifiRemoteStation *)st;
   //We search within the Supported rate set the mode with the

@@ -204,9 +204,9 @@ ArfWifiManager::DoReportFinalDataFailed (WifiRemoteStation *station)
 }
 
 WifiTxVector
-ArfWifiManager::DoGetDataTxVector (WifiRemoteStation *st, uint32_t size)
+ArfWifiManager::DoGetDataTxVector (WifiRemoteStation *st)
 {
-  NS_LOG_FUNCTION (this << st << size);
+  NS_LOG_FUNCTION (this << st);
   ArfWifiRemoteStation *station = (ArfWifiRemoteStation *) st;
   uint32_t channelWidth = GetChannelWidth (station);
   if (channelWidth > 20 && channelWidth != 22)

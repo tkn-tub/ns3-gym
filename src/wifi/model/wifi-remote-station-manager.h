@@ -482,7 +482,6 @@ public:
    * \param address remote address
    * \param header MAC header
    * \param packet the packet to queue
-   * \param fullPacketSize the size of the packet after its 802.11 MAC header has been added.
    *
    * This method is typically invoked just before queuing a packet for transmission.
    * It is a no-op unless the IsLowLatency attribute of the attached ns3::WifiRemoteStationManager
@@ -490,24 +489,23 @@ public:
    * the packet as a tag. These tx parameters are later retrieved from GetDadaMode and GetRtsMode.
    */
   void PrepareForQueue (Mac48Address address, const WifiMacHeader *header,
-                        Ptr<const Packet> packet, uint32_t fullPacketSize);
+                        Ptr<const Packet> packet);
 
   /**
    * \param address remote address
    * \param header MAC header
    * \param packet the packet to send
-   * \param fullPacketSize the size of the packet after its 802.11 MAC header has been added.
    *
-   * \return the transmission mode to use to send this packet
+   * \return the TXVECTOR to use to send this packet
    */
   WifiTxVector GetDataTxVector (Mac48Address address, const WifiMacHeader *header,
-                                Ptr<const Packet> packet, uint32_t fullPacketSize);
+                                Ptr<const Packet> packet);
   /**
    * \param address remote address
    * \param header MAC header
    * \param packet the packet to send
    *
-   * \return the transmission mode to use to send the RTS prior to the
+   * \return the TXVECTOR to use to send the RTS prior to the
    *         transmission of the data packet itself.
    */
   WifiTxVector GetRtsTxVector (Mac48Address address, const WifiMacHeader *header,
@@ -972,14 +970,13 @@ private:
   virtual WifiRemoteStation* DoCreateStation (void) const = 0;
   /**
     * \param station the station that we need to communicate
-    * \param size size of the packet or fragment we want to send
     *
-    * \return the transmission mode to use to send a packet to the station
+    * \return the TXVECTOR to use to send a packet to the station
     *
     * Note: This method is called before sending a unicast packet or a fragment
     *       of a unicast packet to decide which transmission mode to use.
     */
-  virtual WifiTxVector DoGetDataTxVector (WifiRemoteStation *station, uint32_t size) = 0;
+  virtual WifiTxVector DoGetDataTxVector (WifiRemoteStation *station) = 0;
   /**
    * \param station the station that we need to communicate
    *

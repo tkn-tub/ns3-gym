@@ -282,8 +282,7 @@ RraaWifiManager::DoReportFinalDataFailed (WifiRemoteStation *st)
 }
 
 WifiTxVector
-RraaWifiManager::DoGetDataTxVector (WifiRemoteStation *st,
-                                    uint32_t size)
+RraaWifiManager::DoGetDataTxVector (WifiRemoteStation *st)
 {
   RraaWifiRemoteStation *station = (RraaWifiRemoteStation *) st;
   uint32_t channelWidth = GetChannelWidth (station);

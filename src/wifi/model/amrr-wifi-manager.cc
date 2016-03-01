@@ -291,9 +291,9 @@ AmrrWifiManager::UpdateMode (AmrrWifiRemoteStation *station)
 }
 
 WifiTxVector
-AmrrWifiManager::DoGetDataTxVector (WifiRemoteStation *st, uint32_t size)
+AmrrWifiManager::DoGetDataTxVector (WifiRemoteStation *st)
 {
-  NS_LOG_FUNCTION (this << st << size);
+  NS_LOG_FUNCTION (this << st);
   AmrrWifiRemoteStation *station = (AmrrWifiRemoteStation *)st;
   UpdateMode (station);
   NS_ASSERT (station->m_txrate < GetNSupported (station));

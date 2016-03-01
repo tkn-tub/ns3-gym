@@ -678,17 +678,16 @@ WifiRemoteStationManager::RecordDisassociated (Mac48Address address)
 }
 
 void
-WifiRemoteStationManager::PrepareForQueue (Mac48Address address, const WifiMacHeader *header,
-                                           Ptr<const Packet> packet, uint32_t fullPacketSize)
+WifiRemoteStationManager::PrepareForQueue (Mac48Address address, const WifiMacHeader *header, Ptr<const Packet> packet)
 {
-  NS_LOG_FUNCTION (this << address << *header << packet << fullPacketSize);
+  NS_LOG_FUNCTION (this << address << *header << packet);
   if (IsLowLatency () || address.IsGroup ())
     {
       return;
     }
   WifiRemoteStation *station = Lookup (address, header);
   WifiTxVector rts = DoGetRtsTxVector (station);
-  WifiTxVector data = DoGetDataTxVector (station, fullPacketSize);
+  WifiTxVector data = DoGetDataTxVector (station);
   WifiTxVector ctstoself = DoGetCtsToSelfTxVector ();
   HighLatencyDataTxVectorTag datatag;
   HighLatencyRtsTxVectorTag rtstag;
@@ -707,10 +706,9 @@ WifiRemoteStationManager::PrepareForQueue (Mac48Address address, const WifiMacHe
 }
 
 WifiTxVector
-WifiRemoteStationManager::GetDataTxVector (Mac48Address address, const WifiMacHeader *header,
-                                           Ptr<const Packet> packet, uint32_t fullPacketSize)
+WifiRemoteStationManager::GetDataTxVector (Mac48Address address, const WifiMacHeader *header, Ptr<const Packet> packet)
 {
-  NS_LOG_FUNCTION (this << address << *header << packet << fullPacketSize);
+  NS_LOG_FUNCTION (this << address << *header << packet);
   if (address.IsGroup ())
     {
       WifiTxVector v;
@@ -734,7 +732,7 @@ WifiRemoteStationManager::GetDataTxVector (Mac48Address address, const WifiMacHe
       (void) found;
       return datatag.GetDataTxVector ();
     }
-  return DoGetDataTxVector (Lookup (address, header), fullPacketSize);
+  return DoGetDataTxVector (Lookup (address, header));
 }
 
 WifiTxVector

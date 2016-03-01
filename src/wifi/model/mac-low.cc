@@ -1379,9 +1379,7 @@ MacLow::GetDataTxVector (Ptr<const Packet> packet, const WifiMacHeader *hdr) con
 {
   Mac48Address to = hdr->GetAddr1 ();
   WifiMacTrailer fcs;
-  uint32_t size =  packet->GetSize () + hdr->GetSize () + fcs.GetSerializedSize ();
-  //size is not used in anything!! will not worry about aggregation
-  return m_stationManager->GetDataTxVector (to, hdr, packet, size);
+  return m_stationManager->GetDataTxVector (to, hdr, packet);
 }
 
 WifiTxVector

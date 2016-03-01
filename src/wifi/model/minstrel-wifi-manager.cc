@@ -470,8 +470,7 @@ MinstrelWifiManager::UpdateRetry (MinstrelWifiRemoteStation *station)
 }
 
 WifiTxVector
-MinstrelWifiManager::DoGetDataTxVector (WifiRemoteStation *st,
-                                        uint32_t size)
+MinstrelWifiManager::DoGetDataTxVector (WifiRemoteStation *st)
 {
   MinstrelWifiRemoteStation *station = (MinstrelWifiRemoteStation *) st;
   uint32_t channelWidth = GetChannelWidth (station);
