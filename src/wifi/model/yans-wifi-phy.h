@@ -465,6 +465,11 @@ private:
    */
   void Configure80211ac (void);
   /**
+   * Configure the device Mcs set with the appropriate HtMcs modes for
+   * the number of available transmit spatial streams
+   */
+  void ConfigureHtDeviceMcsSet (void);
+  /**
    * Return the energy detection threshold.
    *
    * \return the energy detection threshold.

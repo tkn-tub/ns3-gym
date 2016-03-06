@@ -126,6 +126,7 @@ Bugs fixed
 - Bug 2320 - Add method to check whether a WifiTxVector contains a valid combination of WifiMode, number of spatial streams and channel width
 - Bug 2321 - Wifi rate managers should not be triggered for each MPDU when A-MPDU is used
 - Bug 2327 - CWmin value selection for 802.11g is not compliant with the standard rules
+- Bug 2328 - changes to antenna configuration should update HT MCS set
 
 Known issues
 ------------

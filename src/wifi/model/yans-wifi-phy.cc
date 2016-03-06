@@ -968,6 +968,75 @@ YansWifiPhy::ConfigureHolland (void)
 }
 
 void
+YansWifiPhy::ConfigureHtDeviceMcsSet (void)
+{
+  NS_LOG_FUNCTION (this);
+
+  bool htFound = false;
+  for (std::vector<uint32_t>::size_type i = 0; i < m_bssMembershipSelectorSet.size (); i++)
+    {
+      if (m_bssMembershipSelectorSet[i] == HT_PHY)
+        {
+          htFound = true;
+          break;
+        }
+    }
+  if (htFound)
+    {
+      // erase all HtMcs modes from deviceMcsSet
+      size_t index = m_deviceMcsSet.size () - 1;
+      for (std::vector<WifiMode>::reverse_iterator rit = m_deviceMcsSet.rbegin (); rit != m_deviceMcsSet.rend(); ++rit, --index)
+        {
+          if (m_deviceMcsSet[index].GetModulationClass ()== WIFI_MOD_CLASS_HT)
+            {
+              m_deviceMcsSet.erase (m_deviceMcsSet.begin () + index);
+            }
+        }
+      m_deviceMcsSet.push_back (WifiPhy::GetHtMcs0 ());
+      m_deviceMcsSet.push_back (WifiPhy::GetHtMcs1 ());
+      m_deviceMcsSet.push_back (WifiPhy::GetHtMcs2 ());
+      m_deviceMcsSet.push_back (WifiPhy::GetHtMcs3 ());
+      m_deviceMcsSet.push_back (WifiPhy::GetHtMcs4 ());
+      m_deviceMcsSet.push_back (WifiPhy::GetHtMcs5 ());
+      m_deviceMcsSet.push_back (WifiPhy::GetHtMcs6 ());
+      m_deviceMcsSet.push_back (WifiPhy::GetHtMcs7 ());
+      if (GetSupportedTxSpatialStreams () > 1)
+        {
+          m_deviceMcsSet.push_back (WifiPhy::GetHtMcs8 ());
+          m_deviceMcsSet.push_back (WifiPhy::GetHtMcs9 ());
+          m_deviceMcsSet.push_back (WifiPhy::GetHtMcs10 ());
+          m_deviceMcsSet.push_back (WifiPhy::GetHtMcs11 ());
+          m_deviceMcsSet.push_back (WifiPhy::GetHtMcs12 ());
+          m_deviceMcsSet.push_back (WifiPhy::GetHtMcs13 ());
+          m_deviceMcsSet.push_back (WifiPhy::GetHtMcs14 ());
+          m_deviceMcsSet.push_back (WifiPhy::GetHtMcs15 ());
+        }
+      if (GetSupportedTxSpatialStreams () > 2)
+        {
+          m_deviceMcsSet.push_back (WifiPhy::GetHtMcs16 ());
+          m_deviceMcsSet.push_back (WifiPhy::GetHtMcs17 ());
+          m_deviceMcsSet.push_back (WifiPhy::GetHtMcs18 ());
+          m_deviceMcsSet.push_back (WifiPhy::GetHtMcs19 ());
+          m_deviceMcsSet.push_back (WifiPhy::GetHtMcs20 ());
+          m_deviceMcsSet.push_back (WifiPhy::GetHtMcs21 ());
+          m_deviceMcsSet.push_back (WifiPhy::GetHtMcs22 ());
+          m_deviceMcsSet.push_back (WifiPhy::GetHtMcs23 ());
+        }
+      if (GetSupportedTxSpatialStreams () > 3)
+        {
+          m_deviceMcsSet.push_back (WifiPhy::GetHtMcs24 ());
+          m_deviceMcsSet.push_back (WifiPhy::GetHtMcs25 ());
+          m_deviceMcsSet.push_back (WifiPhy::GetHtMcs26 ());
+          m_deviceMcsSet.push_back (WifiPhy::GetHtMcs27 ());
+          m_deviceMcsSet.push_back (WifiPhy::GetHtMcs28 ());
+          m_deviceMcsSet.push_back (WifiPhy::GetHtMcs29 ());
+          m_deviceMcsSet.push_back (WifiPhy::GetHtMcs30 ());
+          m_deviceMcsSet.push_back (WifiPhy::GetHtMcs31 ());
+        }
+    }
+}
+
+void
 YansWifiPhy::Configure80211n (void)
 {
   NS_LOG_FUNCTION (this);
@@ -981,50 +1050,8 @@ YansWifiPhy::Configure80211n (void)
       Configure80211a ();
     }
   SetChannelWidth (20); //20 MHz
-
-  m_deviceMcsSet.push_back (WifiPhy::GetHtMcs0 ());
-  m_deviceMcsSet.push_back (WifiPhy::GetHtMcs1 ());
-  m_deviceMcsSet.push_back (WifiPhy::GetHtMcs2 ());
-  m_deviceMcsSet.push_back (WifiPhy::GetHtMcs3 ());
-  m_deviceMcsSet.push_back (WifiPhy::GetHtMcs4 ());
-  m_deviceMcsSet.push_back (WifiPhy::GetHtMcs5 ());
-  m_deviceMcsSet.push_back (WifiPhy::GetHtMcs6 ());
-  m_deviceMcsSet.push_back (WifiPhy::GetHtMcs7 ());
-  if (GetNumberOfTransmitAntennas () > 1)
-  {
-    m_deviceMcsSet.push_back (WifiPhy::GetHtMcs8 ());
-    m_deviceMcsSet.push_back (WifiPhy::GetHtMcs9 ());
-    m_deviceMcsSet.push_back (WifiPhy::GetHtMcs10 ());
-    m_deviceMcsSet.push_back (WifiPhy::GetHtMcs11 ());
-    m_deviceMcsSet.push_back (WifiPhy::GetHtMcs12 ());
-    m_deviceMcsSet.push_back (WifiPhy::GetHtMcs13 ());
-    m_deviceMcsSet.push_back (WifiPhy::GetHtMcs14 ());
-    m_deviceMcsSet.push_back (WifiPhy::GetHtMcs15 ());
-  }
-  if (GetNumberOfTransmitAntennas () > 2)
-  {
-    m_deviceMcsSet.push_back (WifiPhy::GetHtMcs16 ());
-    m_deviceMcsSet.push_back (WifiPhy::GetHtMcs17 ());
-    m_deviceMcsSet.push_back (WifiPhy::GetHtMcs18 ());
-    m_deviceMcsSet.push_back (WifiPhy::GetHtMcs19 ());
-    m_deviceMcsSet.push_back (WifiPhy::GetHtMcs20 ());
-    m_deviceMcsSet.push_back (WifiPhy::GetHtMcs21 ());
-    m_deviceMcsSet.push_back (WifiPhy::GetHtMcs22 ());
-    m_deviceMcsSet.push_back (WifiPhy::GetHtMcs23 ());
-  }
-  if (GetNumberOfTransmitAntennas () > 3)
-  {
-    m_deviceMcsSet.push_back (WifiPhy::GetHtMcs24 ());
-    m_deviceMcsSet.push_back (WifiPhy::GetHtMcs25 ());
-    m_deviceMcsSet.push_back (WifiPhy::GetHtMcs26 ());
-    m_deviceMcsSet.push_back (WifiPhy::GetHtMcs27 ());
-    m_deviceMcsSet.push_back (WifiPhy::GetHtMcs28 ());
-    m_deviceMcsSet.push_back (WifiPhy::GetHtMcs29 ());
-    m_deviceMcsSet.push_back (WifiPhy::GetHtMcs30 ());
-    m_deviceMcsSet.push_back (WifiPhy::GetHtMcs31 ());
-  }
-
   m_bssMembershipSelectorSet.push_back (HT_PHY);
+  ConfigureHtDeviceMcsSet ();
 }
 
 void
@@ -1246,6 +1273,7 @@ void
 YansWifiPhy::SetNumberOfTransmitAntennas (uint32_t tx)
 {
   m_numberOfTransmitters = tx;
+  ConfigureHtDeviceMcsSet ();
 }
 
 void
