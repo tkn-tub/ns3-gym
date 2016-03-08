@@ -175,6 +175,7 @@
 #include "ns3/ipv6-extension-header.h"
 #include "ns3/icmpv6-l4-protocol.h"
 #include "ns3/global-router-interface.h"
+#include "ns3/traffic-control-layer.h"
 #include <limits>
 #include <map>
 
@@ -473,6 +474,7 @@ InternetStackHelper::Install (Ptr<Node> node) const
 
   if (m_ipv4Enabled || m_ipv6Enabled)
     {
+      CreateAndAggregateObjectFromTypeId (node, "ns3::TrafficControlLayer");
       CreateAndAggregateObjectFromTypeId (node, "ns3::UdpL4Protocol");
       node->AggregateObject (m_tcpFactory.Create<Object> ());
       Ptr<PacketSocketFactory> factory = CreateObject<PacketSocketFactory> ();
