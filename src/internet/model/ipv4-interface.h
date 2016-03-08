@@ -23,7 +23,7 @@
 #define IPV4_INTERFACE_H
 
 #include <list>
-#include "ns3/ipv4-address.h"
+#include "ns3/ipv4-header.h"
 #include "ns3/ipv4-interface-address.h"
 #include "ns3/ptr.h"
 #include "ns3/object.h"
@@ -145,12 +145,13 @@ public:
 
   /**
    * \param p packet to send
+   * \param hdr IPv4 header
    * \param dest next hop address of packet.
    *
    * This method will eventually call the private
    * SendTo method which must be implemented by subclasses.
    */ 
-  void Send (Ptr<Packet> p, Ipv4Address dest);
+  void Send (Ptr<Packet> p, const Ipv4Header & hdr, Ipv4Address dest);
 
   /**
    * \param address The Ipv4InterfaceAddress to add to the interface

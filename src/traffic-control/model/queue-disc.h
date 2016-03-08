@@ -77,6 +77,15 @@ public:
   void SetTxQueueIndex (uint8_t txq);
 
   /**
+   * \brief Add the header to the packet
+   *
+   * Subclasses may keep header and payload separate to allow manipulating the header,
+   * so this method allows to add the header to the packet before sending the packet
+   * to the device.
+   */
+  virtual void AddHeader (void) = 0;
+
+  /**
    * \brief Print the item contents.
    * \param os output stream in which the data should be printed.
    */

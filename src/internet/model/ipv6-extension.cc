@@ -421,12 +421,9 @@ uint8_t Ipv6ExtensionFragment::Process (Ptr<Packet>& packet,
   return 0;
 }
 
-void Ipv6ExtensionFragment::GetFragments (Ptr<Packet> packet, uint32_t maxFragmentSize, std::list<Ptr<Packet> >& listFragments)
+void Ipv6ExtensionFragment::GetFragments (Ptr<Packet> packet, Ipv6Header ipv6Header, uint32_t maxFragmentSize, std::list<Ipv6PayloadHeaderPair>& listFragments)
 {
   Ptr<Packet> p = packet->Copy ();
-
-  Ipv6Header ipv6Header;
-  p->RemoveHeader (ipv6Header);
 
   uint8_t nextHeader = ipv6Header.GetNextHeader ();
   uint8_t ipv6HeaderSize = ipv6Header.GetSerializedSize ();
@@ -579,11 +576,12 @@ void Ipv6ExtensionFragment::GetFragments (Ptr<Packet> packet, uint32_t maxFragme
         }
 
       ipv6Header.SetPayloadLength (fragment->GetSize ());
-      fragment->AddHeader (ipv6Header);
 
       std::ostringstream oss;
+      oss << ipv6Header;
       fragment->Print (oss);
-      listFragments.push_back (fragment);
+
+      listFragments.push_back (Ipv6PayloadHeaderPair (fragment, ipv6Header));
     }
   while (moreFragment);
 

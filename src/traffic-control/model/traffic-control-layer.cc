@@ -275,13 +275,12 @@ TrafficControlLayer::Receive (Ptr<NetDevice> device, Ptr<const Packet> p,
 }
 
 void
-TrafficControlLayer::Send (Ptr<NetDevice> device, Ptr<Packet> packet,
-                           const Address &dest, uint16_t protocolNumber)
+TrafficControlLayer::Send (Ptr<NetDevice> device, Ptr<QueueDiscItem> item)
 {
-  NS_LOG_FUNCTION (this << device << packet << dest << protocolNumber);
+  NS_LOG_FUNCTION (this << device << item);
 
   NS_LOG_DEBUG ("Send packet to device " << device << " protocol number " <<
-                protocolNumber);
+                item->GetProtocol ());
 
   std::map<Ptr<NetDevice>, NetDeviceInfo>::iterator qdMap = m_netDeviceQueueToQueueDiscMap.find (device);
   NS_ASSERT (qdMap != m_netDeviceQueueToQueueDiscMap.end ());
@@ -289,23 +288,23 @@ TrafficControlLayer::Send (Ptr<NetDevice> device, Ptr<Packet> packet,
   NS_ASSERT (devQueueIface);
 
   // determine the transmission queue of the device where the packet will be enqueued
-  uint8_t txq = devQueueIface->GetSelectedQueue (Create<QueueDiscItem> (packet, dest, protocolNumber));
+  uint8_t txq = devQueueIface->GetSelectedQueue (item);
   NS_ASSERT (txq < devQueueIface->GetTxQueuesN ());
 
   if (qdMap->second.second.empty ())
     {
-      // The device has no attached queue disc, thus send the packet
-      // directly to the device if the selected queue is not stopped
+      // The device has no attached queue disc, thus add the header to the packet and
+      // send it directly to the device if the selected queue is not stopped
       if (!devQueueIface->GetTxQueue (txq)->IsStopped ())
         {
-          device->Send (packet, dest, protocolNumber);
+          item->AddHeader ();
+          device->Send (item->GetPacket (), item->GetAddress (), item->GetProtocol ());
         }
     }
   else
     {
       // Enqueue the packet in the queue disc associated with the netdevice queue
       // selected for the packet and try to dequeue packets from such queue disc
-      Ptr<QueueDiscItem> item = Create<QueueDiscItem> (packet, dest, protocolNumber);
       item->SetTxQueueIndex (txq);
 
       Ptr<QueueDisc> qDisc = qdMap->second.second[txq];

@@ -35,7 +35,6 @@
 #include "ipv6-l3-protocol.h"
 #include "ipv6-interface.h"
 #include "icmpv6-l4-protocol.h"
-#include "ndisc-cache.h"
 
 namespace ns3 {
 
@@ -185,11 +184,11 @@ void Icmpv6L4Protocol::DoDAD (Ipv6Address target, Ptr<Ipv6Interface> interface)
 
   /** \todo disable multicast loopback to prevent NS probing to be received by the sender */
 
-  Ptr<Packet> p = ForgeNS ("::",Ipv6Address::MakeSolicitedAddress (target), target, interface->GetDevice ()->GetAddress ());
+  NdiscCache::Ipv6PayloadHeaderPair p = ForgeNS ("::",Ipv6Address::MakeSolicitedAddress (target), target, interface->GetDevice ()->GetAddress ());
 
   /* update last packet UID */
-  interface->SetNsDadUid (target, p->GetUid ());
-  Simulator::Schedule (Time (MilliSeconds (m_solicitationJitter->GetValue ())), &Ipv6Interface::Send, interface, p, Ipv6Address::MakeSolicitedAddress (target));
+  interface->SetNsDadUid (target, p.first->GetUid ());
+  Simulator::Schedule (Time (MilliSeconds (m_solicitationJitter->GetValue ())), &Ipv6Interface::Send, interface, p.first, p.second, Ipv6Address::MakeSolicitedAddress (target));
 }
 
 enum IpL4Protocol::RxStatus Icmpv6L4Protocol::Receive (Ptr<Packet> packet, Ipv4Header const &header,  Ptr<Ipv4Interface> interface)
@@ -377,7 +376,7 @@ void Icmpv6L4Protocol::ReceiveLLA (Icmpv6OptionLinkLayerAddress lla, Ipv6Address
     }
   else
     {
-      std::list<Ptr<Packet> > waiting;
+      std::list<NdiscCache::Ipv6PayloadHeaderPair> waiting;
       if (entry->IsIncomplete ())
         {
           entry->StopNudTimer ();
@@ -385,9 +384,9 @@ void Icmpv6L4Protocol::ReceiveLLA (Icmpv6OptionLinkLayerAddress lla, Ipv6Address
           waiting = entry->MarkReachable (lla.GetAddress ());
           entry->StartReachableTimer ();
           // send out waiting packet
-          for (std::list<Ptr<Packet> >::const_iterator it = waiting.begin (); it != waiting.end (); it++)
+          for (std::list<NdiscCache::Ipv6PayloadHeaderPair>::const_iterator it = waiting.begin (); it != waiting.end (); it++)
             {
-              cache->GetInterface ()->Send (*it, src);
+              cache->GetInterface ()->Send (it->first, it->second, src);
             }
           entry->ClearWaitingPacket ();
         }
@@ -407,9 +406,9 @@ void Icmpv6L4Protocol::ReceiveLLA (Icmpv6OptionLinkLayerAddress lla, Ipv6Address
                   waiting = entry->MarkReachable (lla.GetAddress ());
                   if (entry->IsProbe ())
                     {
-                      for (std::list<Ptr<Packet> >::const_iterator it = waiting.begin (); it != waiting.end (); it++)
+                      for (std::list<NdiscCache::Ipv6PayloadHeaderPair>::const_iterator it = waiting.begin (); it != waiting.end (); it++)
                         {
-                          cache->GetInterface ()->Send (*it, src);
+                          cache->GetInterface ()->Send (it->first, it->second, src);
                         }
                     }
                   if (!entry->IsPermanent ())
@@ -548,13 +547,13 @@ void Icmpv6L4Protocol::HandleNS (Ptr<Packet> packet, Ipv6Address const &src, Ipv
     }
 
   hardwareAddress = interface->GetDevice ()->GetAddress ();
-  Ptr<Packet> p = ForgeNA (target.IsLinkLocal () ? interface->GetLinkLocalAddress ().GetAddress () : ifaddr.GetAddress (), src.IsAny () ? Ipv6Address::GetAllNodesMulticast () : src, &hardwareAddress, flags );
-  interface->Send (p,  src.IsAny () ? Ipv6Address::GetAllNodesMulticast () : src);
+  NdiscCache::Ipv6PayloadHeaderPair p = ForgeNA (target.IsLinkLocal () ? interface->GetLinkLocalAddress ().GetAddress () : ifaddr.GetAddress (), src.IsAny () ? Ipv6Address::GetAllNodesMulticast () : src, &hardwareAddress, flags );
+  interface->Send (p.first, p.second, src.IsAny () ? Ipv6Address::GetAllNodesMulticast () : src);
 
   /* not a NS for us discard it */
 }
 
-Ptr<Packet> Icmpv6L4Protocol::ForgeRS (Ipv6Address src, Ipv6Address dst, Address hardwareAddress)
+NdiscCache::Ipv6PayloadHeaderPair Icmpv6L4Protocol::ForgeRS (Ipv6Address src, Ipv6Address dst, Address hardwareAddress)
 {
   NS_LOG_FUNCTION (this << src << dst << hardwareAddress);
   Ptr<Packet> p = Create<Packet> ();
@@ -574,12 +573,10 @@ Ptr<Packet> Icmpv6L4Protocol::ForgeRS (Ipv6Address src, Ipv6Address dst, Address
   ipHeader.SetPayloadLength (p->GetSize ());
   ipHeader.SetHopLimit (255);
 
-  p->AddHeader (ipHeader);
-
-  return p;
+  return NdiscCache::Ipv6PayloadHeaderPair (p, ipHeader);
 }
 
-Ptr<Packet> Icmpv6L4Protocol::ForgeEchoRequest (Ipv6Address src, Ipv6Address dst, uint16_t id, uint16_t seq, Ptr<Packet> data)
+NdiscCache::Ipv6PayloadHeaderPair Icmpv6L4Protocol::ForgeEchoRequest (Ipv6Address src, Ipv6Address dst, uint16_t id, uint16_t seq, Ptr<Packet> data)
 {
   NS_LOG_FUNCTION (this << src << dst << id << seq << data);
   Ptr<Packet> p = data->Copy ();
@@ -598,9 +595,7 @@ Ptr<Packet> Icmpv6L4Protocol::ForgeEchoRequest (Ipv6Address src, Ipv6Address dst
   ipHeader.SetPayloadLength (p->GetSize ());
   ipHeader.SetHopLimit (255);
 
-  p->AddHeader (ipHeader);
-
-  return p;
+  return NdiscCache::Ipv6PayloadHeaderPair (p, ipHeader);
 }
 
 void Icmpv6L4Protocol::HandleNA (Ptr<Packet> packet, Ipv6Address const &src, Ipv6Address const &dst, Ptr<Ipv6Interface> interface)
@@ -615,7 +610,7 @@ void Icmpv6L4Protocol::HandleNA (Ptr<Packet> packet, Ipv6Address const &src, Ipv
   Address hardwareAddress;
   NdiscCache::Entry* entry = 0;
   Ptr<NdiscCache> cache = FindCache (interface->GetDevice ());
-  std::list<Ptr<Packet> > waiting;
+  std::list<NdiscCache::Ipv6PayloadHeaderPair> waiting;
 
   /* check if we have something in our cache */
   entry = cache->Lookup (target);
@@ -673,9 +668,9 @@ void Icmpv6L4Protocol::HandleNA (Ptr<Packet> packet, Ipv6Address const &src, Ipv
           waiting = entry->MarkReachable (lla.GetAddress ());
           entry->StartReachableTimer ();
           /* send out waiting packet */
-          for (std::list<Ptr<Packet> >::const_iterator it = waiting.begin (); it != waiting.end (); it++)
+          for (std::list<NdiscCache::Ipv6PayloadHeaderPair>::const_iterator it = waiting.begin (); it != waiting.end (); it++)
             {
-              cache->GetInterface ()->Send (*it, src);
+              cache->GetInterface ()->Send (it->first, it->second, src);
             }
           entry->ClearWaitingPacket ();
         }
@@ -716,9 +711,9 @@ void Icmpv6L4Protocol::HandleNA (Ptr<Packet> packet, Ipv6Address const &src, Ipv
                       if (entry->IsProbe ())
                         {
                           waiting = entry->MarkReachable (lla.GetAddress ());
-                          for (std::list<Ptr<Packet> >::const_iterator it = waiting.begin (); it != waiting.end (); it++)
+                          for (std::list<NdiscCache::Ipv6PayloadHeaderPair>::const_iterator it = waiting.begin (); it != waiting.end (); it++)
                             {
-                              cache->GetInterface ()->Send (*it, src);
+                              cache->GetInterface ()->Send (it->first, it->second, src);
                             }
                           entry->ClearWaitingPacket ();
                         }
@@ -1185,7 +1180,7 @@ void Icmpv6L4Protocol::SendRedirection (Ptr<Packet> redirectedPacket, Ipv6Addres
   SendMessage (p, src, dst, 64);
 }
 
-Ptr<Packet> Icmpv6L4Protocol::ForgeNA (Ipv6Address src, Ipv6Address dst, Address* hardwareAddress, uint8_t flags)
+NdiscCache::Ipv6PayloadHeaderPair Icmpv6L4Protocol::ForgeNA (Ipv6Address src, Ipv6Address dst, Address* hardwareAddress, uint8_t flags)
 {
   NS_LOG_FUNCTION (this << src << dst << hardwareAddress << (uint32_t)flags);
   Ptr<Packet> p = Create<Packet> ();
@@ -1222,12 +1217,10 @@ Ptr<Packet> Icmpv6L4Protocol::ForgeNA (Ipv6Address src, Ipv6Address dst, Address
   ipHeader.SetPayloadLength (p->GetSize ());
   ipHeader.SetHopLimit (255);
 
-  p->AddHeader (ipHeader);
-
-  return p;
+  return NdiscCache::Ipv6PayloadHeaderPair (p, ipHeader);
 }
 
-Ptr<Packet> Icmpv6L4Protocol::ForgeNS (Ipv6Address src, Ipv6Address dst, Ipv6Address target, Address hardwareAddress)
+NdiscCache::Ipv6PayloadHeaderPair Icmpv6L4Protocol::ForgeNS (Ipv6Address src, Ipv6Address dst, Ipv6Address target, Address hardwareAddress)
 {
   NS_LOG_FUNCTION (this << src << dst << target << hardwareAddress);
   Ptr<Packet> p = Create<Packet> ();
@@ -1253,9 +1246,7 @@ Ptr<Packet> Icmpv6L4Protocol::ForgeNS (Ipv6Address src, Ipv6Address dst, Ipv6Add
   ipHeader.SetPayloadLength (p->GetSize ());
   ipHeader.SetHopLimit (255);
 
-  p->AddHeader (ipHeader);
-
-  return p;
+  return NdiscCache::Ipv6PayloadHeaderPair (p, ipHeader);
 }
 
 Ptr<NdiscCache> Icmpv6L4Protocol::FindCache (Ptr<NetDevice> device)
@@ -1318,9 +1309,9 @@ bool Icmpv6L4Protocol::Lookup (Ipv6Address dst, Ptr<NetDevice> device, Ptr<Ndisc
   return false;
 }
 
-bool Icmpv6L4Protocol::Lookup (Ptr<Packet> p, Ipv6Address dst, Ptr<NetDevice> device, Ptr<NdiscCache> cache, Address* hardwareDestination)
+bool Icmpv6L4Protocol::Lookup (Ptr<Packet> p, const Ipv6Header & ipHeader, Ipv6Address dst, Ptr<NetDevice> device, Ptr<NdiscCache> cache, Address* hardwareDestination)
 {
-  NS_LOG_FUNCTION (this << p << dst << device << cache << hardwareDestination);
+  NS_LOG_FUNCTION (this << p << ipHeader << dst << device << cache << hardwareDestination);
 
   if (!cache)
     {
@@ -1353,7 +1344,7 @@ bool Icmpv6L4Protocol::Lookup (Ptr<Packet> p, Ipv6Address dst, Ptr<NetDevice> de
       else /* INCOMPLETE or PROBE */
         {
           /* queue packet */
-          entry->AddWaitingPacket (p);
+          entry->AddWaitingPacket (NdiscCache::Ipv6PayloadHeaderPair (p, ipHeader));
           return false;
         }
     }
@@ -1364,7 +1355,7 @@ bool Icmpv6L4Protocol::Lookup (Ptr<Packet> p, Ipv6Address dst, Ptr<NetDevice> de
        */
       Ipv6Address addr;
       NdiscCache::Entry* entry = cache->Add (dst);
-      entry->MarkIncomplete (p);
+      entry->MarkIncomplete (NdiscCache::Ipv6PayloadHeaderPair (p, ipHeader));
       entry->SetRouter (false);
 
       if (dst.IsLinkLocal ())

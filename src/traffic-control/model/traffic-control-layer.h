@@ -30,6 +30,7 @@
 namespace ns3 {
 
 class Packet;
+class QueueDiscItem;
 
 /**
  * \ingroup traffic-control
@@ -181,15 +182,10 @@ public:
   /**
    * \brief Called from upper layer to queue a packet for the transmission.
    *
-   * \param packet packet sent from above
-   * \param dest mac address of the destination (already resolved)
-   * \param protocolNumber identifies the type of payload contained in
-   *        this packet. Used to call the right L3Protocol when the packet
-   *        is received.
-   *
+   * \param device the device the packet must be sent to
+   * \param item a queue item including a packet and additional information
    */
-  virtual void Send (Ptr<NetDevice> device, Ptr<Packet> packet,
-                     const Address& dest, uint16_t protocolNumber);
+  virtual void Send (Ptr<NetDevice> device, Ptr<QueueDiscItem> item);
 
 protected:
 

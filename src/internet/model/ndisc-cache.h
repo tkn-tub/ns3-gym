@@ -38,6 +38,7 @@ namespace ns3
 
 class NetDevice;
 class Ipv6Interface;
+class Ipv6Header;
 
 /**
  * \class NdiscCache
@@ -132,6 +133,11 @@ public:
   void PrintNdiscCache (Ptr<OutputStreamWrapper> stream);
 
   /**
+   * \brief Pair of a packet and an Ipv4 header.
+   */
+  typedef std::pair<Ptr<Packet>, Ipv6Header> Ipv6PayloadHeaderPair;
+
+  /**
    * \class Entry
    * \brief A record that holds information about an NdiscCache entry.
    */
@@ -148,14 +154,14 @@ public:
      * \brief Changes the state to this entry to INCOMPLETE.
      * \param p packet that wait to be sent
      */
-    void MarkIncomplete (Ptr<Packet> p);
+    void MarkIncomplete (Ipv6PayloadHeaderPair p);
 
     /**
      * \brief Changes the state to this entry to REACHABLE.
      * \param mac MAC address
      * \return the list of packet waiting
      */
-    std::list<Ptr<Packet> > MarkReachable (Address mac);
+    std::list<Ipv6PayloadHeaderPair> MarkReachable (Address mac);
 
     /**
      * \brief Changes the state to this entry to PROBE.
@@ -167,7 +173,7 @@ public:
      * \param mac L2 address
      * \return the list of packet waiting
      */
-    std::list<Ptr<Packet> > MarkStale (Address mac);
+    std::list<Ipv6PayloadHeaderPair> MarkStale (Address mac);
 
     /**
      * \brief Changes the state to this entry to STALE.
@@ -193,7 +199,7 @@ public:
      * \brief Add a packet (or replace old value) in the queue.
      * \param p packet to add
      */
-    void AddWaitingPacket (Ptr<Packet> p);
+    void AddWaitingPacket (Ipv6PayloadHeaderPair p);
 
     /**
      * \brief Clear the waiting packet list.
@@ -361,7 +367,7 @@ private:
     /**
      * \brief The list of packet waiting.
      */
-    std::list<Ptr<Packet> > m_waiting;
+    std::list<Ipv6PayloadHeaderPair> m_waiting;
 
     /**
      * \brief Type of node (router or host).

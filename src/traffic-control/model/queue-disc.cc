@@ -538,6 +538,11 @@ QueueDisc::DequeuePacket ()
       if (m_devQueueIface->GetTxQueuesN ()>1 || !m_devQueueIface->GetTxQueue (0)->IsStopped ())
         {
           item = Dequeue ();
+          // If the item is not null, add the header to the packet.
+          if (item != 0)
+            {
+              item->AddHeader ();
+            }
           // Here, Linux tries bulk dequeues
         }
     }

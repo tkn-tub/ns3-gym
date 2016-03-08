@@ -380,6 +380,7 @@ public:
   /**
    * TracedCallback signature for packet transmission or reception events.
    *
+   * \param [in] header The Ipv6Header.
    * \param [in] packet The packet.
    * \param [in] ipv6
    * \param [in] interface
@@ -498,6 +499,18 @@ private:
    * \brief Iterator of the container of the IPv6 Autoconfigured addresses.
    */
   typedef std::list< Ptr<Ipv6AutoconfiguredPrefix> >::iterator Ipv6AutoconfiguredPrefixListI;
+
+  /**
+   * \brief Make a copy of the packet, add the header and invoke the TX trace callback
+   * \param ipHeader the IP header that will be added to the packet
+   * \param packet the packet
+   * \param ipv6 the Ipv6 protocol
+   * \param interface the interface index
+   *
+   * Note: If the TracedCallback API ever is extended, we could consider
+   * to check for connected functions before adding the header
+   */
+  void CallTxTrace (const Ipv6Header & ipHeader, Ptr<Packet> packet, Ptr<Ipv6> ipv6, uint32_t interface);
 
   /**
    * \brief Callback to trace TX (transmission) packets.

@@ -23,7 +23,7 @@
 
 #include <list>
 
-#include "ns3/ipv6-address.h"
+#include "ns3/ipv6-header.h"
 #include "ns3/ipv6-interface-address.h"
 #include "ns3/ptr.h"
 #include "ns3/object.h"
@@ -187,12 +187,13 @@ public:
   /**
    * \brief Send a packet through this interface.
    * \param p packet to send
+   * \param hdr IPv6 header
    * \param dest next hop address of packet.
    *
    * \note This method will eventually call the private SendTo
    * method which must be implemented by subclasses.
    */
-  void Send (Ptr<Packet> p, Ipv6Address dest);
+  void Send (Ptr<Packet> p, const Ipv6Header & hdr, Ipv6Address dest);
 
   /**
    * \brief Add an IPv6 address.

@@ -233,6 +233,7 @@ public:
   /**
    * TracedCallback signature for packet transmission or reception events.
    *
+   * \param [in] header The Ipv4Header.
    * \param [in] packet The packet.
    * \param [in] ipv4
    * \param [in] interface
@@ -386,12 +387,18 @@ private:
   bool IsUnicast (Ipv4Address ad, Ipv4Mask interfaceMask) const;
 
   /**
+   * \brief Pair of a packet and an Ipv4 header.
+   */
+  typedef std::pair<Ptr<Packet>, Ipv4Header> Ipv4PayloadHeaderPair;
+
+  /**
    * \brief Fragment a packet
    * \param packet the packet
+   * \param ipHeader the IPv4 header
    * \param outIfaceMtu the MTU of the interface
    * \param listFragments the list of fragments
    */
-  void DoFragmentation (Ptr<Packet> packet, uint32_t outIfaceMtu, std::list<Ptr<Packet> >& listFragments);
+  void DoFragmentation (Ptr<Packet> packet, const Ipv4Header & ipv4Header, uint32_t outIfaceMtu, std::list<Ipv4PayloadHeaderPair>& listFragments);
 
   /**
    * \brief Process a packet fragment
@@ -409,7 +416,19 @@ private:
    * \param iif Input Interface
    */
   void HandleFragmentsTimeout ( std::pair<uint64_t, uint32_t> key, Ipv4Header & ipHeader, uint32_t iif);
-  
+
+  /**
+   * \brief Make a copy of the packet, add the header and invoke the TX trace callback
+   * \param ipHeader the IP header that will be added to the packet
+   * \param packet the packet
+   * \param ipv4 the Ipv4 protocol
+   * \param interface the interface index
+   *
+   * Note: If the TracedCallback API ever is extended, we could consider
+   * to check for connected functions before adding the header
+   */
+  void CallTxTrace (const Ipv4Header & ipHeader, Ptr<Packet> packet, Ptr<Ipv4> ipv4, uint32_t interface);
+
   /**
    * \brief Container of the IPv4 Interfaces.
    */

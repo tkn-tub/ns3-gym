@@ -23,6 +23,7 @@
 #include "ns3/packet.h"
 
 #include "ipv6-interface.h"
+#include "ipv6-queue-disc-item.h"
 #include "ns3/net-device.h"
 #include "loopback-net-device.h"
 #include "ns3/mac16-address.h"
@@ -379,7 +380,7 @@ Ipv6InterfaceAddress Ipv6Interface::GetAddressMatchingDestination (Ipv6Address d
   return ret; /* quiet compiler */
 }
 
-void Ipv6Interface::Send (Ptr<Packet> p, Ipv6Address dest)
+void Ipv6Interface::Send (Ptr<Packet> p, const Ipv6Header & hdr, Ipv6Address dest)
 {
   NS_LOG_FUNCTION (this << p << dest);
 
@@ -397,6 +398,7 @@ void Ipv6Interface::Send (Ptr<Packet> p, Ipv6Address dest)
       /** \todo additional checks needed here (such as whether multicast
        * goes to loopback)?
        */
+      p->AddHeader (hdr);
       m_device->Send (p, m_device->GetBroadcast (), Ipv6L3Protocol::PROT_NUMBER);
       return;
     }
@@ -408,6 +410,7 @@ void Ipv6Interface::Send (Ptr<Packet> p, Ipv6Address dest)
     {
       if (dest == it->first.GetAddress ())
         {
+          p->AddHeader (hdr);
           m_tc->Receive (m_device, p, Ipv6L3Protocol::PROT_NUMBER,
                          m_device->GetBroadcast (),
                          m_device->GetBroadcast (),
@@ -437,19 +440,19 @@ void Ipv6Interface::Send (Ptr<Packet> p, Ipv6Address dest)
       else
         {
           NS_LOG_LOGIC ("NDISC Lookup");
-          found = icmpv6->Lookup (p, dest, GetDevice (), m_ndCache, &hardwareDestination);
+          found = icmpv6->Lookup (p, hdr, dest, GetDevice (), m_ndCache, &hardwareDestination);
         }
 
       if (found)
         {
           NS_LOG_LOGIC ("Address Resolved.  Send.");
-          m_tc->Send (m_device, p, hardwareDestination, Ipv6L3Protocol::PROT_NUMBER);
+          m_tc->Send (m_device, Create<Ipv6QueueDiscItem> (p, hardwareDestination, Ipv6L3Protocol::PROT_NUMBER, hdr));
         }
     }
   else
     {
       NS_LOG_LOGIC ("Doesn't need ARP");
-      m_tc->Send (m_device, p, m_device->GetBroadcast (), Ipv6L3Protocol::PROT_NUMBER);
+      m_tc->Send (m_device, Create<Ipv6QueueDiscItem> (p, m_device->GetBroadcast (), Ipv6L3Protocol::PROT_NUMBER, hdr));
     }
 }
 
