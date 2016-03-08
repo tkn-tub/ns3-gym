@@ -79,6 +79,7 @@ SOURCES = \
 	$(SRC)/traffic-control/doc/queue-discs.rst \
 	$(SRC)/traffic-control/doc/pfifo-fast.rst \
 	$(SRC)/traffic-control/doc/red.rst \
+	$(SRC)/traffic-control/doc/codel.rst \
 	$(SRC)/spectrum/doc/spectrum.rst \
 	$(SRC)/stats/doc/adaptor.rst \
 	$(SRC)/stats/doc/aggregator.rst \

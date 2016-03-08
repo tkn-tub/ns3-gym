@@ -7,3 +7,4 @@ Traffic Control Layer
    queue-discs
    pfifo-fast
    red
+   codel

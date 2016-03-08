@@ -28,17 +28,16 @@
 #ifndef CODEL_H
 #define CODEL_H
 
-#include <queue>
 #include "ns3/packet.h"
-#include "ns3/queue.h"
+#include "ns3/queue-disc.h"
 #include "ns3/nstime.h"
 #include "ns3/simulator.h"
 #include "ns3/string.h"
 #include "ns3/traced-value.h"
 #include "ns3/trace-source-accessor.h"
 
-class CoDelQueueNewtonStepTest;  // Forward declaration for unit test
-class CoDelQueueControlLawTest;  // Forward declaration for unit test
+class CoDelQueueDiscNewtonStepTest;  // Forward declaration for unit test
+class CoDelQueueDiscControlLawTest;  // Forward declaration for unit test
 
 namespace ns3 {
 
@@ -55,12 +54,12 @@ static const int  CODEL_SHIFT = 10;
 class TraceContainer;
 
 /**
- * \ingroup queue
+ * \ingroup traffic-control
  *
- * \brief A CoDel packet queue
+ * \brief A CoDel packet queue disc
  */
 
-class CoDelQueue : public Queue
+class CoDelQueueDisc : public QueueDisc
 {
 public:
   /**
@@ -71,27 +70,27 @@ public:
   static TypeId GetTypeId (void);
 
   /**
-   * \brief CoDelQueue Constructor
+   * \brief CoDelQueueDisc Constructor
    *
    * Creates a CoDel queue
    */
-  CoDelQueue ();
+  CoDelQueueDisc ();
 
-  virtual ~CoDelQueue ();
+  virtual ~CoDelQueueDisc ();
 
   /**
    * \brief Set the operating mode of this device.
    *
    * \param mode The operating mode of this device.
    */
-  void SetMode (CoDelQueue::QueueMode mode);
+  void SetMode (Queue::QueueMode mode);
 
   /**
    * \brief Get the encapsulation mode of this device.
    *
    * \returns The encapsulation mode of this device.
    */
-  CoDelQueue::QueueMode  GetMode (void);
+  Queue::QueueMode  GetMode (void);
 
   /**
    * \brief Get the current value of the queue in bytes or packets.
@@ -137,15 +136,15 @@ public:
   uint32_t GetDropNext (void);
 
 private:
-  friend class::CoDelQueueNewtonStepTest;  // Test code
-  friend class::CoDelQueueControlLawTest;  // Test code
+  friend class::CoDelQueueDiscNewtonStepTest;  // Test code
+  friend class::CoDelQueueDiscControlLawTest;  // Test code
   /**
    * \brief Add a packet to the queue
    *
    * \param item The item to be added
    * \returns True if the packet can be added, False if the packet is dropped due to full queue
    */
-  virtual bool DoEnqueue (Ptr<QueueItem> item);
+  virtual bool DoEnqueue (Ptr<QueueDiscItem> item);
 
   /**
    * \brief Remove a packet from queue based on the current state
@@ -156,9 +155,10 @@ private:
    *
    * \returns The packet that is examined
    */
-  virtual Ptr<QueueItem> DoDequeue (void);
+  virtual Ptr<QueueDiscItem> DoDequeue (void);
 
-  virtual Ptr<const QueueItem> DoPeek (void) const;
+  virtual Ptr<const QueueDiscItem> DoPeek (void) const;
+  virtual bool CheckConfig (void);
 
   /**
    * \brief Calculate the reciprocal square root of m_count by using Newton's method
@@ -223,10 +223,10 @@ private:
    */
   uint32_t Time2CoDel (Time t);
 
-  std::queue<Ptr<QueueItem> > m_packets;  //!< The packet queue
+  virtual void InitializeParams (void);
+
   uint32_t m_maxPackets;                  //!< Max # of packets accepted by the queue
   uint32_t m_maxBytes;                    //!< Max # of bytes accepted by the queue
-  TracedValue<uint32_t> m_bytesInQueue;   //!< The total number of bytes in queue
   uint32_t m_minBytes;                    //!< Minimum bytes in queue to allow a packet drop
   Time m_interval;                        //!< 100 ms sliding minimum time window width
   Time m_target;                          //!< 5 ms target queue delay
@@ -242,7 +242,7 @@ private:
   uint32_t m_state3;                      //!< Number of times we enter drop state and drop the fist packet
   uint32_t m_states;                      //!< Total number of times we are in state 1, state 2, or state 3
   uint32_t m_dropOverLimit;               //!< The number of packets dropped due to full queue
-  QueueMode     m_mode;                   //!< The operating mode (Bytes or packets)
+  Queue::QueueMode     m_mode;                   //!< The operating mode (Bytes or packets)
   TracedValue<Time> m_sojourn;            //!< Time in queue
 };
 

@@ -29,11 +29,13 @@
 #include "ns3/enum.h"
 #include "ns3/uinteger.h"
 #include "ns3/abort.h"
-#include "codel-queue.h"
+#include "codel-queue-disc.h"
+#include "ns3/object-factory.h"
+#include "ns3/drop-tail-queue.h"
 
 namespace ns3 {
 
-NS_LOG_COMPONENT_DEFINE ("CoDelQueue");
+NS_LOG_COMPONENT_DEFINE ("CoDelQueueDisc");
 
 /**
  * Performs a reciprocal divide, similar to the
@@ -142,83 +144,77 @@ CoDelTimestampTag::GetTxTime (void) const
   return TimeStep (m_creationTime);
 }
 
-NS_OBJECT_ENSURE_REGISTERED (CoDelQueue);
+NS_OBJECT_ENSURE_REGISTERED (CoDelQueueDisc);
 
-TypeId CoDelQueue::GetTypeId (void)
+TypeId CoDelQueueDisc::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::CoDelQueue")
-    .SetParent<Queue> ()
-    .SetGroupName ("Internet")
-    .AddConstructor<CoDelQueue> ()
+  static TypeId tid = TypeId ("ns3::CoDelQueueDisc")
+    .SetParent<QueueDisc> ()
+    .SetGroupName ("TrafficControl")
+    .AddConstructor<CoDelQueueDisc> ()
     .AddAttribute ("Mode",
                    "Whether to use Bytes (see MaxBytes) or Packets (see MaxPackets) as the maximum queue size metric.",
-                   EnumValue (QUEUE_MODE_BYTES),
-                   MakeEnumAccessor (&CoDelQueue::SetMode),
-                   MakeEnumChecker (QUEUE_MODE_BYTES, "QUEUE_MODE_BYTES",
-                                    QUEUE_MODE_PACKETS, "QUEUE_MODE_PACKETS"))
+                   EnumValue (Queue::QUEUE_MODE_BYTES),
+                   MakeEnumAccessor (&CoDelQueueDisc::SetMode),
+                   MakeEnumChecker (Queue::QUEUE_MODE_BYTES, "QUEUE_MODE_BYTES",
+                                    Queue::QUEUE_MODE_PACKETS, "QUEUE_MODE_PACKETS"))
     .AddAttribute ("MaxPackets",
-                   "The maximum number of packets accepted by this CoDelQueue.",
+                   "The maximum number of packets accepted by this CoDelQueueDisc.",
                    UintegerValue (DEFAULT_CODEL_LIMIT),
-                   MakeUintegerAccessor (&CoDelQueue::m_maxPackets),
+                   MakeUintegerAccessor (&CoDelQueueDisc::m_maxPackets),
                    MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("MaxBytes",
-                   "The maximum number of bytes accepted by this CoDelQueue.",
+                   "The maximum number of bytes accepted by this CoDelQueueDisc.",
                    UintegerValue (1500 * DEFAULT_CODEL_LIMIT),
-                   MakeUintegerAccessor (&CoDelQueue::m_maxBytes),
+                   MakeUintegerAccessor (&CoDelQueueDisc::m_maxBytes),
                    MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("MinBytes",
                    "The CoDel algorithm minbytes parameter.",
                    UintegerValue (1500),
-                   MakeUintegerAccessor (&CoDelQueue::m_minBytes),
+                   MakeUintegerAccessor (&CoDelQueueDisc::m_minBytes),
                    MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("Interval",
                    "The CoDel algorithm interval",
                    StringValue ("100ms"),
-                   MakeTimeAccessor (&CoDelQueue::m_interval),
+                   MakeTimeAccessor (&CoDelQueueDisc::m_interval),
                    MakeTimeChecker ())
     .AddAttribute ("Target",
                    "The CoDel algorithm target queue delay",
                    StringValue ("5ms"),
-                   MakeTimeAccessor (&CoDelQueue::m_target),
+                   MakeTimeAccessor (&CoDelQueueDisc::m_target),
                    MakeTimeChecker ())
     .AddTraceSource ("Count",
                      "CoDel count",
-                     MakeTraceSourceAccessor (&CoDelQueue::m_count),
+                     MakeTraceSourceAccessor (&CoDelQueueDisc::m_count),
                      "ns3::TracedValueCallback::Uint32")
     .AddTraceSource ("DropCount",
                      "CoDel drop count",
-                     MakeTraceSourceAccessor (&CoDelQueue::m_dropCount),
+                     MakeTraceSourceAccessor (&CoDelQueueDisc::m_dropCount),
                      "ns3::TracedValueCallback::Uint32")
     .AddTraceSource ("LastCount",
                      "CoDel lastcount",
-                     MakeTraceSourceAccessor (&CoDelQueue::m_lastCount),
+                     MakeTraceSourceAccessor (&CoDelQueueDisc::m_lastCount),
                      "ns3::TracedValueCallback::Uint32")
     .AddTraceSource ("DropState",
                      "Dropping state",
-                     MakeTraceSourceAccessor (&CoDelQueue::m_dropping),
+                     MakeTraceSourceAccessor (&CoDelQueueDisc::m_dropping),
                      "ns3::TracedValueCallback::Bool")
-    .AddTraceSource ("BytesInQueue",
-                     "Number of bytes in the queue",
-                     MakeTraceSourceAccessor (&CoDelQueue::m_bytesInQueue),
-                     "ns3::TracedValueCallback::Uint32")
     .AddTraceSource ("Sojourn",
                      "Time in the queue",
-                     MakeTraceSourceAccessor (&CoDelQueue::m_sojourn),
+                     MakeTraceSourceAccessor (&CoDelQueueDisc::m_sojourn),
                      "ns3::Time::TracedValueCallback")
     .AddTraceSource ("DropNext",
                      "Time until next packet drop",
-                     MakeTraceSourceAccessor (&CoDelQueue::m_dropNext),
+                     MakeTraceSourceAccessor (&CoDelQueueDisc::m_dropNext),
                      "ns3::TracedValueCallback::Uint32")
   ;
 
   return tid;
 }
 
-CoDelQueue::CoDelQueue ()
-  : Queue (),
-    m_packets (),
+CoDelQueueDisc::CoDelQueueDisc ()
+  : QueueDisc (),
     m_maxBytes (),
-    m_bytesInQueue (0),
     m_count (0),
     m_dropCount (0),
     m_lastCount (0),
@@ -236,13 +232,13 @@ CoDelQueue::CoDelQueue ()
   NS_LOG_FUNCTION (this);
 }
 
-CoDelQueue::~CoDelQueue ()
+CoDelQueueDisc::~CoDelQueueDisc ()
 {
   NS_LOG_FUNCTION (this);
 }
 
 void
-CoDelQueue::NewtonStep (void)
+CoDelQueueDisc::NewtonStep (void)
 {
   NS_LOG_FUNCTION (this);
   uint32_t invsqrt = ((uint32_t) m_recInvSqrt) << REC_INV_SQRT_SHIFT;
@@ -255,44 +251,44 @@ CoDelQueue::NewtonStep (void)
 }
 
 uint32_t
-CoDelQueue::ControlLaw (uint32_t t)
+CoDelQueueDisc::ControlLaw (uint32_t t)
 {
   NS_LOG_FUNCTION (this);
   return t + ReciprocalDivide (Time2CoDel (m_interval), m_recInvSqrt << REC_INV_SQRT_SHIFT);
 }
 
 void
-CoDelQueue::SetMode (CoDelQueue::QueueMode mode)
+CoDelQueueDisc::SetMode (Queue::QueueMode mode)
 {
   NS_LOG_FUNCTION (mode);
   m_mode = mode;
 }
 
-CoDelQueue::QueueMode
-CoDelQueue::GetMode (void)
+Queue::QueueMode
+CoDelQueueDisc::GetMode (void)
 {
   NS_LOG_FUNCTION (this);
   return m_mode;
 }
 
 bool
-CoDelQueue::DoEnqueue (Ptr<QueueItem> item)
+CoDelQueueDisc::DoEnqueue (Ptr<QueueDiscItem> item)
 {
   NS_LOG_FUNCTION (this << item);
   Ptr<Packet> p = item->GetPacket ();
 
-  if (m_mode == QUEUE_MODE_PACKETS && (m_packets.size () + 1 > m_maxPackets))
+  if (m_mode == Queue::QUEUE_MODE_PACKETS && (GetInternalQueue (0)->GetNPackets () + 1 > m_maxPackets))
     {
       NS_LOG_LOGIC ("Queue full (at max packets) -- droppping pkt");
-      Drop (p);
+      Drop (item);
       ++m_dropOverLimit;
       return false;
     }
 
-  if (m_mode == QUEUE_MODE_BYTES && (m_bytesInQueue + item->GetPacketSize () > m_maxBytes))
+  if (m_mode == Queue::QUEUE_MODE_BYTES && (GetInternalQueue (0)->GetNBytes () + item->GetPacketSize () > m_maxBytes))
     {
       NS_LOG_LOGIC ("Queue full (packet would exceed max bytes) -- droppping pkt");
-      Drop (p);
+      Drop (item);
       ++m_dropOverLimit;
       return false;
     }
@@ -300,18 +296,17 @@ CoDelQueue::DoEnqueue (Ptr<QueueItem> item)
   // Tag packet with current time for DoDequeue() to compute sojourn time
   CoDelTimestampTag tag;
   p->AddPacketTag (tag);
+  
+  GetInternalQueue (0)->Enqueue (item);
 
-  m_bytesInQueue += item->GetPacketSize ();
-  m_packets.push (item);
-
-  NS_LOG_LOGIC ("Number packets " << m_packets.size ());
-  NS_LOG_LOGIC ("Number bytes " << m_bytesInQueue);
+  NS_LOG_LOGIC ("Number packets " << GetInternalQueue (0)->GetNPackets ());
+  NS_LOG_LOGIC ("Number bytes " << GetInternalQueue (0)->GetNBytes ());
 
   return true;
 }
 
 bool
-CoDelQueue::OkToDrop (Ptr<Packet> p, uint32_t now)
+CoDelQueueDisc::OkToDrop (Ptr<Packet> p, uint32_t now)
 {
   NS_LOG_FUNCTION (this);
   CoDelTimestampTag tag;
@@ -326,7 +321,7 @@ CoDelQueue::OkToDrop (Ptr<Packet> p, uint32_t now)
   uint32_t sojournTime = Time2CoDel (delta);
 
   if (CoDelTimeBefore (sojournTime, Time2CoDel (m_target))
-      || m_bytesInQueue < m_minBytes)
+      || GetInternalQueue (0)->GetNBytes () < m_minBytes)
     {
       // went below so we'll stay below for at least q->interval
       NS_LOG_LOGIC ("Sojourn time is below target or number of bytes in queue is less than minBytes; packet should not be dropped");
@@ -352,12 +347,12 @@ CoDelQueue::OkToDrop (Ptr<Packet> p, uint32_t now)
   return okToDrop;
 }
 
-Ptr<QueueItem>
-CoDelQueue::DoDequeue (void)
+Ptr<QueueDiscItem>
+CoDelQueueDisc::DoDequeue (void)
 {
   NS_LOG_FUNCTION (this);
 
-  if (m_packets.empty ())
+  if (GetInternalQueue (0)->IsEmpty ())
     {
       // Leave dropping state when queue is empty
       m_dropping = false;
@@ -366,14 +361,12 @@ CoDelQueue::DoDequeue (void)
       return 0;
     }
   uint32_t now = CoDelGetTime ();
-  Ptr<QueueItem> item = m_packets.front ();
-  m_packets.pop ();
+  Ptr<QueueDiscItem> item = StaticCast<QueueDiscItem> (GetInternalQueue (0)->Dequeue ());
   Ptr<Packet> p = item->GetPacket ();
-  m_bytesInQueue -= item->GetPacketSize ();
 
   NS_LOG_LOGIC ("Popped " << item);
-  NS_LOG_LOGIC ("Number packets remaining " << m_packets.size ());
-  NS_LOG_LOGIC ("Number bytes remaining " << m_bytesInQueue);
+  NS_LOG_LOGIC ("Number packets remaining " << GetInternalQueue (0)->GetNPackets ());
+  NS_LOG_LOGIC ("Number bytes remaining " << GetInternalQueue (0)->GetNBytes ());
 
   // Determine if p should be dropped
   bool okToDrop = OkToDrop (p, now);
@@ -401,31 +394,24 @@ CoDelQueue::DoDequeue (void)
               // rates so high that the next drop should happen now,
               // hence the while loop.
               NS_LOG_LOGIC ("Sojourn time is still above target and it's time for next drop; dropping " << p);
-              Drop (p);
-
-              // p was in queue, trace dequeue and update stats manually
-              m_traceDequeue (p);
-              m_nBytes -= item->GetPacketSize ();
-              m_nPackets--;
+              Drop (item);
 
               ++m_dropCount;
               ++m_count;
               NewtonStep ();
-              if (m_packets.empty ())
+              if (GetInternalQueue (0)->IsEmpty ())
                 {
                   m_dropping = false;
                   NS_LOG_LOGIC ("Queue empty");
                   ++m_states;
                   return 0;
                 }
-              item = m_packets.front ();
-              m_packets.pop ();
+              item = StaticCast<QueueDiscItem> (GetInternalQueue (0)->Dequeue ());
               p = item ->GetPacket ();
-              m_bytesInQueue -= item->GetPacketSize ();
 
               NS_LOG_LOGIC ("Popped " << item);
-              NS_LOG_LOGIC ("Number packets remaining " << m_packets.size ());
-              NS_LOG_LOGIC ("Number bytes remaining " << m_bytesInQueue);
+              NS_LOG_LOGIC ("Number packets remaining " << GetInternalQueue (0)->GetNPackets ());
+              NS_LOG_LOGIC ("Number bytes remaining " << GetInternalQueue (0)->GetNBytes ());
 
               if (!OkToDrop (p, now))
                 {
@@ -453,14 +439,9 @@ CoDelQueue::DoDequeue (void)
           // Drop the first packet and enter dropping state unless the queue is empty
           NS_LOG_LOGIC ("Sojourn time goes above target, dropping the first packet " << p << " and entering the dropping state");
           ++m_dropCount;
-          Drop (p);
+          Drop (item);
 
-          // p was in queue, trace the dequeue and update stats manually
-          m_traceDequeue (p);
-          m_nBytes -= item->GetPacketSize ();
-          m_nPackets--;
-
-          if (m_packets.empty ())
+          if (GetInternalQueue (0)->IsEmpty ())
             {
               m_dropping = false;
               okToDrop = false;
@@ -469,14 +450,12 @@ CoDelQueue::DoDequeue (void)
             }
           else
             {
-              item = m_packets.front ();
-              m_packets.pop ();
+              item = StaticCast<QueueDiscItem> (GetInternalQueue (0)->Dequeue ());
               p = item->GetPacket ();
-              m_bytesInQueue -= item->GetPacketSize ();
 
               NS_LOG_LOGIC ("Popped " << item);
-              NS_LOG_LOGIC ("Number packets remaining " << m_packets.size ());
-              NS_LOG_LOGIC ("Number bytes remaining " << m_bytesInQueue);
+              NS_LOG_LOGIC ("Number packets remaining " << GetInternalQueue (0)->GetNPackets ());
+              NS_LOG_LOGIC ("Number bytes remaining " << GetInternalQueue (0)->GetNBytes ());
 
               okToDrop = OkToDrop (p, now);
               m_dropping = true;
@@ -509,16 +488,16 @@ CoDelQueue::DoDequeue (void)
 }
 
 uint32_t
-CoDelQueue::GetQueueSize (void)
+CoDelQueueDisc::GetQueueSize (void)
 {
   NS_LOG_FUNCTION (this);
-  if (GetMode () == QUEUE_MODE_BYTES)
+  if (GetMode () == Queue::QUEUE_MODE_BYTES)
     {
-      return m_bytesInQueue;
+      return GetInternalQueue (0)->GetNBytes ();
     }
-  else if (GetMode () == QUEUE_MODE_PACKETS)
+  else if (GetMode () == Queue::QUEUE_MODE_PACKETS)
     {
-      return m_packets.size ();
+      return GetInternalQueue (0)->GetNPackets ();
     }
   else
     {
@@ -527,84 +506,142 @@ CoDelQueue::GetQueueSize (void)
 }
 
 uint32_t
-CoDelQueue::GetDropOverLimit (void)
+CoDelQueueDisc::GetDropOverLimit (void)
 {
   return m_dropOverLimit;
 }
 
 uint32_t
-CoDelQueue::GetDropCount (void)
+CoDelQueueDisc::GetDropCount (void)
 {
   return m_dropCount;
 }
 
 Time
-CoDelQueue::GetTarget (void)
+CoDelQueueDisc::GetTarget (void)
 {
   return m_target;
 }
 
 Time
-CoDelQueue::GetInterval (void)
+CoDelQueueDisc::GetInterval (void)
 {
   return m_interval;
 }
 
 uint32_t
-CoDelQueue::GetDropNext (void)
+CoDelQueueDisc::GetDropNext (void)
 {
   return m_dropNext;
 }
 
-Ptr<const QueueItem>
-CoDelQueue::DoPeek (void) const
+Ptr<const QueueDiscItem>
+CoDelQueueDisc::DoPeek (void) const
 {
   NS_LOG_FUNCTION (this);
 
-  if (m_packets.empty ())
+  if (GetInternalQueue (0)->IsEmpty ())
     {
       NS_LOG_LOGIC ("Queue empty");
       return 0;
     }
 
-  Ptr<QueueItem> item = m_packets.front ();
+  Ptr<const QueueDiscItem> item = StaticCast<const QueueDiscItem> (GetInternalQueue (0)->Peek ());
 
-  NS_LOG_LOGIC ("Number packets " << m_packets.size ());
-  NS_LOG_LOGIC ("Number bytes " << m_bytesInQueue);
+  NS_LOG_LOGIC ("Number packets " << GetInternalQueue (0)->GetNPackets ());
+  NS_LOG_LOGIC ("Number bytes " << GetInternalQueue (0)->GetNBytes ());
 
   return item;
 }
 
 bool
-CoDelQueue::CoDelTimeAfter (uint32_t a, uint32_t b)
+CoDelQueueDisc::CoDelTimeAfter (uint32_t a, uint32_t b)
 {
   return  ((int)(a) - (int)(b) > 0);
 }
 
 bool
-CoDelQueue::CoDelTimeAfterEq (uint32_t a, uint32_t b)
+CoDelQueueDisc::CoDelTimeAfterEq (uint32_t a, uint32_t b)
 {
   return ((int)(a) - (int)(b) >= 0);
 }
 
 bool
-CoDelQueue::CoDelTimeBefore (uint32_t a, uint32_t b)
+CoDelQueueDisc::CoDelTimeBefore (uint32_t a, uint32_t b)
 {
   return  ((int)(a) - (int)(b) < 0);
 }
 
 bool
-CoDelQueue::CoDelTimeBeforeEq (uint32_t a, uint32_t b)
+CoDelQueueDisc::CoDelTimeBeforeEq (uint32_t a, uint32_t b)
 {
   return ((int)(a) - (int)(b) <= 0);
 }
 
 uint32_t
-CoDelQueue::Time2CoDel (Time t)
+CoDelQueueDisc::Time2CoDel (Time t)
 {
   return (t.GetNanoSeconds () >> CODEL_SHIFT);
 }
 
+bool
+CoDelQueueDisc::CheckConfig (void)
+{
+  NS_LOG_FUNCTION (this);
+  if (GetNQueueDiscClasses () > 0)
+    {
+      NS_LOG_ERROR ("CoDelQueueDisc cannot have classes");
+      return false;
+    }
+
+  if (GetNPacketFilters () > 0)
+    {
+      NS_LOG_ERROR ("CoDelQueueDisc cannot have packet filters");
+      return false;
+    }
+
+  if (GetNInternalQueues () == 0)
+    {
+      // create a DropTail queue
+      Ptr<Queue> queue = CreateObjectWithAttributes<DropTailQueue> ("Mode", EnumValue (m_mode));
+      if (m_mode == Queue::QUEUE_MODE_PACKETS)
+        {
+          queue->SetMaxPackets (m_maxPackets);
+        }
+      else
+        {
+          queue->SetMaxBytes (m_maxBytes);
+        }
+      AddInternalQueue (queue);
+    }
+
+  if (GetNInternalQueues () != 1)
+    {
+      NS_LOG_ERROR ("CoDelQueueDisc needs 1 internal queue");
+      return false;
+    }
+
+  if (GetInternalQueue (0)->GetMode () != m_mode)
+    {
+      NS_LOG_ERROR ("The mode of the provided queue does not match the mode set on the CoDelQueueDisc");
+      return false;
+    }
+
+  if ((m_mode ==  Queue::QUEUE_MODE_PACKETS && GetInternalQueue (0)->GetMaxPackets () < m_maxPackets) ||
+      (m_mode ==  Queue::QUEUE_MODE_BYTES && GetInternalQueue (0)->GetMaxBytes () < m_maxBytes))
+    {
+      NS_LOG_ERROR ("The size of the internal queue is less than the queue disc limit");
+      return false;
+    }
+
+  return true;
+}
+
+void
+CoDelQueueDisc::InitializeParams (void)
+{
+  NS_LOG_FUNCTION (this);
+}
 
 } // namespace ns3
 
