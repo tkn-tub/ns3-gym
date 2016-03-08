@@ -40,6 +40,88 @@ class Packet;
  * \ingroup network
  * \defgroup netdevice Network Device
  */
+
+/**
+ * \ingroup netdevice
+ * \brief Base class to represent items of packet Queues
+ *
+ * An item stored in an ns-3 packet Queue contains a packet and possibly other
+ * information. An item of the base class only contains a packet. Subclasses
+ * can be derived from this base class to allow items to contain additional
+ * information.
+ */
+class QueueItem : public SimpleRefCount<QueueItem>
+{
+public:
+  /**
+   * \brief Create a queue item containing a packet.
+   * \param p the packet included in the created item.
+   */
+  QueueItem (Ptr<Packet> p);
+
+  virtual ~QueueItem ();
+
+  /**
+   * \return the packet included in this item.
+   */
+  Ptr<Packet> GetPacket (void) const;
+
+  /**
+   * \brief Use this method (instead of GetPacket ()->GetSize ()) to get the packet size
+   *
+   * Subclasses may keep header and payload separate to allow manipulating the header,
+   * so using this method ensures that the correct packet size is returned.
+   *
+   * \return the size of the packet included in this item.
+   */
+  virtual uint32_t GetPacketSize (void) const;
+
+  /**
+   * \brief Print the item contents.
+   * \param os output stream in which the data should be printed.
+   */
+  virtual void Print (std::ostream &os) const;
+
+  /**
+   * TracedCallback signature for Ptr<QueueItem>
+   *
+   * \param [in] item The queue item.
+   */
+  typedef void (* TracedCallback) (Ptr<const QueueItem> item);
+
+private:
+  /**
+   * \brief Default constructor
+   *
+   * Defined and unimplemented to avoid misuse
+   */
+  QueueItem ();
+  /**
+   * \brief Copy constructor
+   *
+   * Defined and unimplemented to avoid misuse
+   */
+  QueueItem (const QueueItem &);
+  /**
+   * \brief Assignment operator
+   *
+   * Defined and unimplemented to avoid misuse
+   * \returns
+   */
+  QueueItem &operator = (const QueueItem &);
+
+  Ptr<Packet> m_packet;
+};
+
+/**
+ * \brief Stream insertion operator.
+ *
+ * \param os the stream
+ * \param item the item
+ * \returns a reference to the stream
+ */
+std::ostream& operator<< (std::ostream& os, const QueueItem &item);
+
 /**
  * \ingroup netdevice
  *

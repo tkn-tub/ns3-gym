@@ -64,11 +64,11 @@ public:
   DropTailQueue::QueueMode GetMode (void) const;
 
 private:
-  virtual bool DoEnqueue (Ptr<Packet> p);
-  virtual Ptr<Packet> DoDequeue (void);
-  virtual Ptr<const Packet> DoPeek (void) const;
+  virtual bool DoEnqueue (Ptr<QueueItem> item);
+  virtual Ptr<QueueItem> DoDequeue (void);
+  virtual Ptr<const QueueItem> DoPeek (void) const;
 
-  std::queue<Ptr<Packet> > m_packets; //!< the packets in the queue
+  std::queue<Ptr<QueueItem> > m_packets; //!< the items in the queue
   uint32_t m_maxPackets;              //!< max packets in the queue
   uint32_t m_maxBytes;                //!< max bytes in the queue
   uint32_t m_bytesInQueue;            //!< actual bytes in the queue

@@ -125,55 +125,55 @@ CoDelQueueBasicEnqueueDequeue::DoRun (void)
   p6 = Create<Packet> (pktSize);
 
   QueueTestSize (queue, 0 * modeSize, "There should be no packets in queue");
-  queue->Enqueue (p1);
+  queue->Enqueue (Create<QueueItem> (p1));
   QueueTestSize (queue, 1 * modeSize, "There should be one packet in queue");
-  queue->Enqueue (p2);
+  queue->Enqueue (Create<QueueItem> (p2));
   QueueTestSize (queue, 2 * modeSize, "There should be two packets in queue");
-  queue->Enqueue (p3);
+  queue->Enqueue (Create<QueueItem> (p3));
   QueueTestSize (queue, 3 * modeSize, "There should be three packets in queue");
-  queue->Enqueue (p4);
+  queue->Enqueue (Create<QueueItem> (p4));
   QueueTestSize (queue, 4 * modeSize, "There should be four packets in queue");
-  queue->Enqueue (p5);
+  queue->Enqueue (Create<QueueItem> (p5));
   QueueTestSize (queue, 5 * modeSize, "There should be five packets in queue");
-  queue->Enqueue (p6);
+  queue->Enqueue (Create<QueueItem> (p6));
   QueueTestSize (queue, 6 * modeSize, "There should be six packets in queue");
 
   NS_TEST_EXPECT_MSG_EQ (queue->GetDropOverLimit (), 0, "There should be no packets being dropped due to full queue");
 
-  Ptr<Packet> p;
+  Ptr<QueueItem> item;
 
-  p = queue->Dequeue ();
-  NS_TEST_EXPECT_MSG_EQ ((p != 0), true, "I want to remove the first packet");
+  item = queue->Dequeue ();
+  NS_TEST_EXPECT_MSG_EQ ((item != 0), true, "I want to remove the first packet");
   QueueTestSize (queue, 5 * modeSize, "There should be five packets in queue");
-  NS_TEST_EXPECT_MSG_EQ (p->GetUid (), p1->GetUid (), "was this the first packet ?");
+  NS_TEST_EXPECT_MSG_EQ (item->GetPacket ()->GetUid (), p1->GetUid (), "was this the first packet ?");
 
-  p = queue->Dequeue ();
-  NS_TEST_EXPECT_MSG_EQ ((p != 0), true, "I want to remove the second packet");
+  item = queue->Dequeue ();
+  NS_TEST_EXPECT_MSG_EQ ((item != 0), true, "I want to remove the second packet");
   QueueTestSize (queue, 4 * modeSize, "There should be four packets in queue");
-  NS_TEST_EXPECT_MSG_EQ (p->GetUid (), p2->GetUid (), "Was this the second packet ?");
+  NS_TEST_EXPECT_MSG_EQ (item->GetPacket ()->GetUid (), p2->GetUid (), "Was this the second packet ?");
 
-  p = queue->Dequeue ();
-  NS_TEST_EXPECT_MSG_EQ ((p != 0), true, "I want to remove the third packet");
+  item = queue->Dequeue ();
+  NS_TEST_EXPECT_MSG_EQ ((item != 0), true, "I want to remove the third packet");
   QueueTestSize (queue, 3 * modeSize, "There should be three packets in queue");
-  NS_TEST_EXPECT_MSG_EQ (p->GetUid (), p3->GetUid (), "Was this the third packet ?");
+  NS_TEST_EXPECT_MSG_EQ (item->GetPacket ()->GetUid (), p3->GetUid (), "Was this the third packet ?");
 
-  p = queue->Dequeue ();
-  NS_TEST_EXPECT_MSG_EQ ((p != 0), true, "I want to remove the forth packet");
+  item = queue->Dequeue ();
+  NS_TEST_EXPECT_MSG_EQ ((item != 0), true, "I want to remove the forth packet");
   QueueTestSize (queue, 2 * modeSize, "There should be two packets in queue");
-  NS_TEST_EXPECT_MSG_EQ (p->GetUid (), p4->GetUid (), "Was this the fourth packet ?");
+  NS_TEST_EXPECT_MSG_EQ (item->GetPacket ()->GetUid (), p4->GetUid (), "Was this the fourth packet ?");
 
-  p = queue->Dequeue ();
-  NS_TEST_EXPECT_MSG_EQ ((p != 0), true, "I want to remove the fifth packet");
+  item = queue->Dequeue ();
+  NS_TEST_EXPECT_MSG_EQ ((item != 0), true, "I want to remove the fifth packet");
   QueueTestSize (queue, 1 * modeSize, "There should be one packet in queue");
-  NS_TEST_EXPECT_MSG_EQ (p->GetUid (), p5->GetUid (), "Was this the fifth packet ?");
+  NS_TEST_EXPECT_MSG_EQ (item->GetPacket ()->GetUid (), p5->GetUid (), "Was this the fifth packet ?");
 
-  p = queue->Dequeue ();
-  NS_TEST_EXPECT_MSG_EQ ((p != 0), true, "I want to remove the last packet");
+  item = queue->Dequeue ();
+  NS_TEST_EXPECT_MSG_EQ ((item != 0), true, "I want to remove the last packet");
   QueueTestSize (queue, 0 * modeSize, "There should be zero packet in queue");
-  NS_TEST_EXPECT_MSG_EQ (p->GetUid (), p6->GetUid (), "Was this the sixth packet ?");
+  NS_TEST_EXPECT_MSG_EQ (item->GetPacket ()->GetUid (), p6->GetUid (), "Was this the sixth packet ?");
 
-  p = queue->Dequeue ();
-  NS_TEST_EXPECT_MSG_EQ ((p == 0), true, "There are really no packets in queue");
+  item = queue->Dequeue ();
+  NS_TEST_EXPECT_MSG_EQ ((item == 0), true, "There are really no packets in queue");
 
   NS_TEST_EXPECT_MSG_EQ (queue->GetDropCount (), 0, "There should be no packet drops according to CoDel algorithm");
 }
@@ -242,9 +242,9 @@ CoDelQueueBasicOverflow::DoRun (void)
                          "Verify that we can actually set the attribute MinBytes");
 
   Enqueue (queue, pktSize, 500);
-  queue->Enqueue (p1);
-  queue->Enqueue (p2);
-  queue->Enqueue (p3);
+  queue->Enqueue (Create<QueueItem> (p1));
+  queue->Enqueue (Create<QueueItem> (p2));
+  queue->Enqueue (Create<QueueItem> (p3));
 
   QueueTestSize (queue, 500 * modeSize, "There should be 500 packets in queue");
   NS_TEST_EXPECT_MSG_EQ (queue->GetDropOverLimit (), 3, "There should be three packets being dropped due to full queue");
@@ -255,7 +255,7 @@ CoDelQueueBasicOverflow::Enqueue (Ptr<CoDelQueue> queue, uint32_t size, uint32_t
 {
   for (uint32_t i = 0; i < nPkt; i++)
     {
-      queue->Enqueue (Create<Packet> (size));
+      queue->Enqueue (Create<QueueItem> (Create<Packet> (size)));
     }
 }
 
@@ -435,7 +435,7 @@ CoDelQueueBasicDrop::Enqueue (Ptr<CoDelQueue> queue, uint32_t size, uint32_t nPk
 {
   for (uint32_t i = 0; i < nPkt; i++)
     {
-      queue->Enqueue (Create<Packet> (size));
+      queue->Enqueue (Create<QueueItem> (Create<Packet> (size)));
     }
 }
 
@@ -455,7 +455,7 @@ CoDelQueueBasicDrop::Dequeue (Ptr<CoDelQueue> queue, uint32_t modeSize)
 
   if (initialQSize != 0)
     {
-      Ptr<Packet> p = queue->Dequeue ();
+      Ptr<QueueItem> item = queue->Dequeue ();
       if (initialDropCount == 0 && currentTime > queue->GetTarget ())
         {
           if (currentTime < queue->GetInterval ())

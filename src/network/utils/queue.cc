@@ -63,20 +63,20 @@ Queue::~Queue()
 
 
 bool 
-Queue::Enqueue (Ptr<Packet> p)
+Queue::Enqueue (Ptr<QueueItem> item)
 {
-  NS_LOG_FUNCTION (this << p);
+  NS_LOG_FUNCTION (this << item);
 
   //
   // If DoEnqueue fails, Queue::Drop is called by the subclass
   //
-  bool retval = DoEnqueue (p);
+  bool retval = DoEnqueue (item);
   if (retval)
     {
       NS_LOG_LOGIC ("m_traceEnqueue (p)");
-      m_traceEnqueue (p);
+      m_traceEnqueue (item->GetPacket ());
 
-      uint32_t size = p->GetSize ();
+      uint32_t size = item->GetPacketSize ();
       m_nBytes += size;
       m_nTotalReceivedBytes += size;
 
@@ -86,25 +86,26 @@ Queue::Enqueue (Ptr<Packet> p)
   return retval;
 }
 
-Ptr<Packet>
+Ptr<QueueItem>
 Queue::Dequeue (void)
 {
   NS_LOG_FUNCTION (this);
 
-  Ptr<Packet> packet = DoDequeue ();
+  Ptr<QueueItem> item = DoDequeue ();
 
-  if (packet != 0)
+  if (item != 0)
     {
-      NS_ASSERT (m_nBytes >= packet->GetSize ());
+      Ptr<Packet> packet = item->GetPacket ();
+      NS_ASSERT (m_nBytes >= item->GetPacketSize ());
       NS_ASSERT (m_nPackets > 0);
 
-      m_nBytes -= packet->GetSize ();
+      m_nBytes -= item->GetPacketSize ();
       m_nPackets--;
 
       NS_LOG_LOGIC ("m_traceDequeue (packet)");
       m_traceDequeue (packet);
     }
-  return packet;
+  return item;
 }
 
 void
@@ -117,7 +118,7 @@ Queue::DequeueAll (void)
     }
 }
 
-Ptr<const Packet>
+Ptr<const QueueItem>
 Queue::Peek (void) const
 {
   NS_LOG_FUNCTION (this);

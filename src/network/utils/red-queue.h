@@ -177,9 +177,9 @@ public:
   int64_t AssignStreams (int64_t stream);
 
 private:
-  virtual bool DoEnqueue (Ptr<Packet> p);
-  virtual Ptr<Packet> DoDequeue (void);
-  virtual Ptr<const Packet> DoPeek (void) const;
+  virtual bool DoEnqueue (Ptr<QueueItem> item);
+  virtual Ptr<QueueItem> DoDequeue (void);
+  virtual Ptr<const QueueItem> DoPeek (void) const;
 
   /**
    * \brief Initialize the queue parameters.
@@ -233,7 +233,7 @@ private:
   double ModifyP (double p, uint32_t count, uint32_t countBytes,
                   uint32_t meanPktSize, bool wait, uint32_t size);
 
-  std::list<Ptr<Packet> > m_packets; //!< packets in the queue
+  std::list<Ptr<QueueItem> > m_packets; //!< packets in the queue
 
   uint32_t m_bytesInQueue; //!< bytes in the queue
   bool m_hasRedStarted; //!< True if RED has started

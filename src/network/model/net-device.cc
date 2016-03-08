@@ -22,10 +22,48 @@
 #include "ns3/log.h"
 #include "ns3/uinteger.h"
 #include "net-device.h"
+#include "packet.h"
 
 namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("NetDevice");
+
+QueueItem::QueueItem (Ptr<Packet> p)
+{
+  m_packet = p;
+}
+
+QueueItem::~QueueItem()
+{
+  NS_LOG_FUNCTION (this);
+  m_packet = 0;
+}
+
+Ptr<Packet>
+QueueItem::GetPacket (void) const
+{
+  return m_packet;
+}
+
+uint32_t
+QueueItem::GetPacketSize (void) const
+{
+  NS_ASSERT (m_packet != 0);
+  return m_packet->GetSize ();
+}
+
+void
+QueueItem::Print (std::ostream& os) const
+{
+  os << GetPacket();
+}
+
+std::ostream & operator << (std::ostream &os, const QueueItem &item)
+{
+  item.Print (os);
+  return os;
+}
+
 
 NS_OBJECT_ENSURE_REGISTERED (NetDevice);
 

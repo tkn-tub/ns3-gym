@@ -47,34 +47,34 @@ DropTailQueueTestCase::DoRun (void)
   p4 = Create<Packet> ();
 
   NS_TEST_EXPECT_MSG_EQ (queue->GetNPackets (), 0, "There should be no packets in there");
-  queue->Enqueue (p1);
+  queue->Enqueue (Create<QueueItem> (p1));
   NS_TEST_EXPECT_MSG_EQ (queue->GetNPackets (), 1, "There should be one packet in there");
-  queue->Enqueue (p2);
+  queue->Enqueue (Create<QueueItem> (p2));
   NS_TEST_EXPECT_MSG_EQ (queue->GetNPackets (), 2, "There should be two packets in there");
-  queue->Enqueue (p3);
+  queue->Enqueue (Create<QueueItem> (p3));
   NS_TEST_EXPECT_MSG_EQ (queue->GetNPackets (), 3, "There should be three packets in there");
-  queue->Enqueue (p4); // will be dropped
+  queue->Enqueue (Create<QueueItem> (p4)); // will be dropped
   NS_TEST_EXPECT_MSG_EQ (queue->GetNPackets (), 3, "There should be still three packets in there");
 
-  Ptr<Packet> p;
+  Ptr<QueueItem> item;
 
-  p = queue->Dequeue ();
-  NS_TEST_EXPECT_MSG_EQ ((p != 0), true, "I want to remove the first packet");
+  item = queue->Dequeue ();
+  NS_TEST_EXPECT_MSG_EQ ((item != 0), true, "I want to remove the first packet");
   NS_TEST_EXPECT_MSG_EQ (queue->GetNPackets (), 2, "There should be two packets in there");
-  NS_TEST_EXPECT_MSG_EQ (p->GetUid (), p1->GetUid (), "was this the first packet ?");
+  NS_TEST_EXPECT_MSG_EQ (item->GetPacket ()->GetUid (), p1->GetUid (), "was this the first packet ?");
 
-  p = queue->Dequeue ();
-  NS_TEST_EXPECT_MSG_EQ ((p != 0), true, "I want to remove the second packet");
+  item = queue->Dequeue ();
+  NS_TEST_EXPECT_MSG_EQ ((item != 0), true, "I want to remove the second packet");
   NS_TEST_EXPECT_MSG_EQ (queue->GetNPackets (), 1, "There should be one packet in there");
-  NS_TEST_EXPECT_MSG_EQ (p->GetUid (), p2->GetUid (), "Was this the second packet ?");
+  NS_TEST_EXPECT_MSG_EQ (item->GetPacket ()->GetUid (), p2->GetUid (), "Was this the second packet ?");
 
-  p = queue->Dequeue ();
-  NS_TEST_EXPECT_MSG_EQ ((p != 0), true, "I want to remove the third packet");
+  item = queue->Dequeue ();
+  NS_TEST_EXPECT_MSG_EQ ((item != 0), true, "I want to remove the third packet");
   NS_TEST_EXPECT_MSG_EQ (queue->GetNPackets (), 0, "There should be no packets in there");
-  NS_TEST_EXPECT_MSG_EQ (p->GetUid (), p3->GetUid (), "Was this the third packet ?");
+  NS_TEST_EXPECT_MSG_EQ (item->GetPacket ()->GetUid (), p3->GetUid (), "Was this the third packet ?");
 
-  p = queue->Dequeue ();
-  NS_TEST_EXPECT_MSG_EQ ((p == 0), true, "There are really no packets in there");
+  item = queue->Dequeue ();
+  NS_TEST_EXPECT_MSG_EQ ((item == 0), true, "There are really no packets in there");
 }
 
 static class DropTailQueueTestSuite : public TestSuite

@@ -280,8 +280,8 @@ PointToPointNetDevice::TransmitComplete (void)
   m_phyTxEndTrace (m_currentPkt);
   m_currentPkt = 0;
 
-  Ptr<Packet> p = m_queue->Dequeue ();
-  if (p == 0)
+  Ptr<QueueItem> item = m_queue->Dequeue ();
+  if (item == 0)
     {
       //
       // No packet was on the queue, so we just exit.
@@ -292,6 +292,7 @@ PointToPointNetDevice::TransmitComplete (void)
   //
   // Got another packet off of the queue, so start the transmit process agin.
   //
+  Ptr<Packet> p = item->GetPacket ();
   m_snifferTrace (p);
   m_promiscSnifferTrace (p);
   TransmitStart (p);
@@ -535,14 +536,14 @@ PointToPointNetDevice::Send (
   //
   // We should enqueue and dequeue the packet to hit the tracing hooks.
   //
-  if (m_queue->Enqueue (packet))
+  if (m_queue->Enqueue (Create<QueueItem> (packet)))
     {
       //
       // If the channel is ready for transition we send the packet right now
       // 
       if (m_txMachineState == READY)
         {
-          packet = m_queue->Dequeue ();
+          packet = m_queue->Dequeue ()->GetPacket ();
           m_snifferTrace (packet);
           m_promiscSnifferTrace (packet);
           return TransmitStart (packet);

@@ -142,10 +142,10 @@ private:
   /**
    * \brief Add a packet to the queue
    *
-   * \param p The packet to be added
+   * \param item The item to be added
    * \returns True if the packet can be added, False if the packet is dropped due to full queue
    */
-  virtual bool DoEnqueue (Ptr<Packet> p);
+  virtual bool DoEnqueue (Ptr<QueueItem> item);
 
   /**
    * \brief Remove a packet from queue based on the current state
@@ -156,9 +156,9 @@ private:
    *
    * \returns The packet that is examined
    */
-  virtual Ptr<Packet> DoDequeue (void);
+  virtual Ptr<QueueItem> DoDequeue (void);
 
-  virtual Ptr<const Packet> DoPeek (void) const;
+  virtual Ptr<const QueueItem> DoPeek (void) const;
 
   /**
    * \brief Calculate the reciprocal square root of m_count by using Newton's method
@@ -223,7 +223,7 @@ private:
    */
   uint32_t Time2CoDel (Time t);
 
-  std::queue<Ptr<Packet> > m_packets;     //!< The packet queue
+  std::queue<Ptr<QueueItem> > m_packets;  //!< The packet queue
   uint32_t m_maxPackets;                  //!< Max # of packets accepted by the queue
   uint32_t m_maxBytes;                    //!< Max # of bytes accepted by the queue
   TracedValue<uint32_t> m_bytesInQueue;   //!< The total number of bytes in queue

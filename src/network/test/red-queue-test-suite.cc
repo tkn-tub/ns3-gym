@@ -86,43 +86,43 @@ RedQueueTestCase::RunRedTest (StringValue mode)
   p8 = Create<Packet> (pktSize);
 
   NS_TEST_EXPECT_MSG_EQ (queue->GetQueueSize (), 0 * modeSize, "There should be no packets in there");
-  queue->Enqueue (p1);
+  queue->Enqueue (Create<QueueItem> (p1));
   NS_TEST_EXPECT_MSG_EQ (queue->GetQueueSize (), 1 * modeSize, "There should be one packet in there");
-  queue->Enqueue (p2);
+  queue->Enqueue (Create<QueueItem> (p2));
   NS_TEST_EXPECT_MSG_EQ (queue->GetQueueSize (), 2 * modeSize, "There should be two packets in there");
-  queue->Enqueue (p3);
-  queue->Enqueue (p4);
-  queue->Enqueue (p5);
-  queue->Enqueue (p6);
-  queue->Enqueue (p7);
-  queue->Enqueue (p8);
+  queue->Enqueue (Create<QueueItem> (p3));
+  queue->Enqueue (Create<QueueItem> (p4));
+  queue->Enqueue (Create<QueueItem> (p5));
+  queue->Enqueue (Create<QueueItem> (p6));
+  queue->Enqueue (Create<QueueItem> (p7));
+  queue->Enqueue (Create<QueueItem> (p8));
   NS_TEST_EXPECT_MSG_EQ (queue->GetQueueSize (), 8 * modeSize, "There should be eight packets in there");
 
-  Ptr<Packet> p;
+  Ptr<QueueItem> item;
 
-  p = queue->Dequeue ();
-  NS_TEST_EXPECT_MSG_EQ ((p != 0), true, "I want to remove the first packet");
+  item = queue->Dequeue ();
+  NS_TEST_EXPECT_MSG_EQ ((item != 0), true, "I want to remove the first packet");
   NS_TEST_EXPECT_MSG_EQ (queue->GetQueueSize (), 7 * modeSize, "There should be seven packets in there");
-  NS_TEST_EXPECT_MSG_EQ (p->GetUid (), p1->GetUid (), "was this the first packet ?");
+  NS_TEST_EXPECT_MSG_EQ (item->GetPacket ()->GetUid (), p1->GetUid (), "was this the first packet ?");
 
-  p = queue->Dequeue ();
-  NS_TEST_EXPECT_MSG_EQ ((p != 0), true, "I want to remove the second packet");
+  item = queue->Dequeue ();
+  NS_TEST_EXPECT_MSG_EQ ((item != 0), true, "I want to remove the second packet");
   NS_TEST_EXPECT_MSG_EQ (queue->GetQueueSize (), 6 * modeSize, "There should be six packet in there");
-  NS_TEST_EXPECT_MSG_EQ (p->GetUid (), p2->GetUid (), "Was this the second packet ?");
+  NS_TEST_EXPECT_MSG_EQ (item->GetPacket ()->GetUid (), p2->GetUid (), "Was this the second packet ?");
 
-  p = queue->Dequeue ();
-  NS_TEST_EXPECT_MSG_EQ ((p != 0), true, "I want to remove the third packet");
+  item = queue->Dequeue ();
+  NS_TEST_EXPECT_MSG_EQ ((item != 0), true, "I want to remove the third packet");
   NS_TEST_EXPECT_MSG_EQ (queue->GetQueueSize (), 5 * modeSize, "There should be five packets in there");
-  NS_TEST_EXPECT_MSG_EQ (p->GetUid (), p3->GetUid (), "Was this the third packet ?");
+  NS_TEST_EXPECT_MSG_EQ (item->GetPacket ()->GetUid (), p3->GetUid (), "Was this the third packet ?");
 
-  p = queue->Dequeue ();
-  p = queue->Dequeue ();
-  p = queue->Dequeue ();
-  p = queue->Dequeue ();
-  p = queue->Dequeue ();
+  item = queue->Dequeue ();
+  item = queue->Dequeue ();
+  item = queue->Dequeue ();
+  item = queue->Dequeue ();
+  item = queue->Dequeue ();
 
-  p = queue->Dequeue ();
-  NS_TEST_EXPECT_MSG_EQ ((p == 0), true, "There are really no packets in there");
+  item = queue->Dequeue ();
+  NS_TEST_EXPECT_MSG_EQ ((item == 0), true, "There are really no packets in there");
 
 
   // test 2: more data, but with no drops
@@ -257,7 +257,7 @@ RedQueueTestCase::Enqueue (Ptr<RedQueue> queue, uint32_t size, uint32_t nPkt)
 {
   for (uint32_t i = 0; i < nPkt; i++)
     {
-      queue->Enqueue (Create<Packet> (size));
+      queue->Enqueue (Create<QueueItem> (Create<Packet> (size)));
     }
 }
 

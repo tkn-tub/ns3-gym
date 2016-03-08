@@ -444,11 +444,11 @@ SimpleNetDevice::SendFrom (Ptr<Packet> p, const Address& source, const Address& 
 
   p->AddPacketTag (tag);
 
-  if (m_queue->Enqueue (p))
+  if (m_queue->Enqueue (Create<QueueItem> (p)))
     {
       if (m_queue->GetNPackets () == 1 && !TransmitCompleteEvent.IsRunning ())
         {
-          p = m_queue->Dequeue ();
+          p = m_queue->Dequeue ()->GetPacket ();
           p->RemovePacketTag (tag);
           Time txTime = Time (0);
           if (m_bps > DataRate (0))
@@ -477,7 +477,7 @@ SimpleNetDevice::TransmitComplete ()
       return;
     }
 
-  Ptr<Packet> packet = m_queue->Dequeue ();
+  Ptr<Packet> packet = m_queue->Dequeue ()->GetPacket ();
 
   SimpleTag tag;
   packet->RemovePacketTag (tag);
