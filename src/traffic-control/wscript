@@ -13,6 +13,7 @@ def build(bld):
       'model/packet-filter.cc',
       'model/queue-disc.cc',
       'model/pfifo-fast-queue-disc.cc',
+      'model/red-queue-disc.cc',
       'helper/traffic-control-helper.cc',
       'helper/queue-disc-container.cc'
         ]
@@ -29,6 +30,7 @@ def build(bld):
       'model/packet-filter.h',
       'model/queue-disc.h',
       'model/pfifo-fast-queue-disc.h',
+      'model/red-queue-disc.h',
       'helper/traffic-control-helper.h',
       'helper/queue-disc-container.h'
         ]

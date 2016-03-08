@@ -58,12 +58,11 @@
  * [0] S.Floyd, K.Fall http://icir.org/floyd/papers/redsims.ps
  */
 
-#ifndef RED_QUEUE_H
-#define RED_QUEUE_H
+#ifndef RED_QUEUE_DISC_H
+#define RED_QUEUE_DISC_H
 
-#include <queue>
 #include "ns3/packet.h"
-#include "ns3/queue.h"
+#include "ns3/queue-disc.h"
 #include "ns3/nstime.h"
 #include "ns3/boolean.h"
 #include "ns3/data-rate.h"
@@ -75,11 +74,11 @@ class TraceContainer;
 class UniformRandomVariable;
 
 /**
- * \ingroup queue
+ * \ingroup traffic-control
  *
- * \brief A RED packet queue
+ * \brief A RED packet queue disc
  */
-class RedQueue : public Queue
+class RedQueueDisc : public QueueDisc
 {
 public:
   /**
@@ -88,18 +87,18 @@ public:
    */
   static TypeId GetTypeId (void);
   /**
-   * \brief RedQueue Constructor
+   * \brief RedQueueDisc Constructor
    *
-   * Create a RED queue
+   * Create a RED queue disc
    */
-  RedQueue ();
+  RedQueueDisc ();
 
   /**
    * \brief Destructor
    *
    * Destructor
    */ 
-  virtual ~RedQueue ();
+  virtual ~RedQueueDisc ();
 
   /**
    * \brief Stats
@@ -127,7 +126,7 @@ public:
    *
    * \param mode The operating mode of this queue.
    */
-  void SetMode (RedQueue::QueueMode mode);
+  void SetMode (Queue::QueueMode mode);
 
   /**
    * \brief Get the encapsulation mode of this queue.
@@ -135,7 +134,7 @@ public:
    *
    * \returns The encapsulation mode of this queue.
    */
-  RedQueue::QueueMode GetMode (void);
+  Queue::QueueMode GetMode (void);
 
   /**
    * \brief Get the current value of the queue in bytes or packets.
@@ -176,10 +175,17 @@ public:
   */
   int64_t AssignStreams (int64_t stream);
 
+protected:
+  /**
+   * \brief Dispose of the object
+   */
+  virtual void DoDispose (void);
+
 private:
-  virtual bool DoEnqueue (Ptr<QueueItem> item);
-  virtual Ptr<QueueItem> DoDequeue (void);
-  virtual Ptr<const QueueItem> DoPeek (void) const;
+  virtual bool DoEnqueue (Ptr<QueueDiscItem> item);
+  virtual Ptr<QueueDiscItem> DoDequeue (void);
+  virtual Ptr<const QueueDiscItem> DoPeek (void) const;
+  virtual bool CheckConfig (void);
 
   /**
    * \brief Initialize the queue parameters.
@@ -189,7 +195,7 @@ private:
    * This should be fixed, but it would require some extra parameters,
    * and didn't seem worth the trouble...
    */
-  void InitializeParams (void);
+  virtual void InitializeParams (void);
   /**
    * \brief Compute the average queue size
    * \param nQueued number of queued packets
@@ -200,12 +206,12 @@ private:
    */
   double Estimator (uint32_t nQueued, uint32_t m, double qAvg, double qW);
   /**
-   * \brief Check if packet p needs to be dropped due to probability mark
-   * \param p packet
+   * \brief Check if a packet needs to be dropped due to probability mark
+   * \param item queue item
    * \param qSize queue size
    * \returns 0 for no drop/mark, 1 for drop
    */
-  uint32_t DropEarly (Ptr<Packet> p, uint32_t qSize);
+  uint32_t DropEarly (Ptr<QueueDiscItem> item, uint32_t qSize);
   /**
    * \brief Returns a probability using these function parameters for the DropEarly function
    * \param qAvg Average queue length
@@ -233,14 +239,10 @@ private:
   double ModifyP (double p, uint32_t count, uint32_t countBytes,
                   uint32_t meanPktSize, bool wait, uint32_t size);
 
-  std::list<Ptr<QueueItem> > m_packets; //!< packets in the queue
-
-  uint32_t m_bytesInQueue; //!< bytes in the queue
-  bool m_hasRedStarted; //!< True if RED has started
   Stats m_stats; //!< RED statistics
 
   // ** Variables supplied by user
-  QueueMode m_mode;         //!< Mode (Bytes or packets)
+  Queue::QueueMode m_mode;  //!< Mode (Bytes or packets)
   uint32_t m_meanPktSize;   //!< Avg pkt size
   uint32_t m_idlePktSize;   //!< Avg pkt size used during idle times
   bool m_isWait;            //!< True for waiting between dropped packets
@@ -282,4 +284,4 @@ private:
 
 }; // namespace ns3
 
-#endif // RED_QUEUE_H
+#endif // RED_QUEUE_DISC_H

@@ -6,3 +6,4 @@ Traffic Control Layer
    traffic-control-layer
    queue-discs
    pfifo-fast
+   red
