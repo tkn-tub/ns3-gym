@@ -34,8 +34,8 @@ def build(bld):
 
     obj.source = 'tcp-nsc-comparison.cc'
     
-    #obj = bld.create_ns3_program('tcp-variants-comparison',
-    #                             ['point-to-point', 'internet', 'applications', 'flow-monitor'])
+    obj = bld.create_ns3_program('tcp-variants-comparison',
+                                 ['point-to-point', 'internet', 'applications', 'flow-monitor'])
 
-    #obj.source = 'tcp-variants-comparison.cc'
+    obj.source = 'tcp-variants-comparison.cc'
     

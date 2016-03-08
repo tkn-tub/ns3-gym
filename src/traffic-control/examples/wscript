@@ -9,3 +9,9 @@ def build(bld):
     obj = bld.create_ns3_program('pfifo-vs-red', ['point-to-point', 'point-to-point-layout', 'internet', 'applications', 'traffic-control'])
     obj.source = 'pfifo-vs-red.cc'
 
+    obj = bld.create_ns3_program('codel-vs-pfifo-basic-test', ['point-to-point','network', 'internet', 'applications', 'traffic-control'])
+    obj.source = 'codel-vs-pfifo-basic-test.cc'
+    
+    obj = bld.create_ns3_program('codel-vs-pfifo-asymmetric', ['point-to-point','network', 'internet', 'applications', 'traffic-control'])
+    obj.source = 'codel-vs-pfifo-asymmetric.cc'
+

@@ -16,11 +16,12 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Truc Anh N Nguyen <trucanh524@gmail.com>
+ * Modified by:   Pasquale Imputato <p.imputato@gmail.com>
  *
  */
 
 /*
- * This is an example that compares CoDel and DropTail queues using a
+ * This is an example that compares CoDel and PfifoFast queues using a
  * typical cable modem topology and delay
  * (total RTT 37 ms as measured by Measuring Broadband America)
  *
@@ -33,9 +34,9 @@
  *  --------       --------    (2)--------        -------
  *          10gigE         5 Mb/s          gigE
  *           15 ms         6 ms            0.1 ms
- *                                                                     -----------------
- * (1) DropTail queue , 256K bytes
- * (2) DropTail, CoDel, FqCoDel, SfqCoDel, etc.
+ *
+ * (1) PfifoFast queue , 256K bytes
+ * (2) PfifoFast, CoDel
  *
  * The server initiates a bulk send TCP transfer to the host.
  * The host initiates a bulk send TCP transfer to the server.
@@ -62,10 +63,11 @@
 #include "ns3/enum.h"
 #include "ns3/event-id.h"
 #include "ns3/ipv4-global-routing-helper.h"
+#include "ns3/traffic-control-module.h"
 
 using namespace ns3;
 
-NS_LOG_COMPONENT_DEFINE ("CoDelDropTailAsymmetricTest");
+NS_LOG_COMPONENT_DEFINE ("CoDelPfifoFastAsymmetricTest");
 
 static void
 CwndTracer (Ptr<OutputStreamWrapper>stream, uint32_t oldval, uint32_t newval)
@@ -107,7 +109,7 @@ TraceSojourn (std::string sojournTrFileName)
   else
     {
       Ptr<OutputStreamWrapper> stream = ascii.CreateFileStream (sojournTrFileName.c_str ());
-      Config::ConnectWithoutContext ("/NodeList/2/DeviceList/1/$ns3::PointToPointNetDevice/TxQueue/$ns3::CoDelQueue/Sojourn", MakeBoundCallback (&SojournTracer, stream));
+      Config::ConnectWithoutContext ("/NodeList/2/$ns3::TrafficControlLayer/RootQueueDiscList/0/$ns3::CoDelQueueDisc/Sojourn", MakeBoundCallback (&SojournTracer, stream));
     }
 }
 
@@ -129,14 +131,14 @@ TraceQueueLength (std::string queueLengthTrFileName)
   else
     {
       Ptr<OutputStreamWrapper> stream = ascii.CreateFileStream (queueLengthTrFileName.c_str ());
-      Config::ConnectWithoutContext ("/NodeList/2/DeviceList/1/$ns3::PointToPointNetDevice/TxQueue/$ns3::CoDelQueue/BytesInQueue", MakeBoundCallback (&QueueLengthTracer, stream));
+      Config::ConnectWithoutContext ("/NodeList/2/$ns3::TrafficControlLayer/RootQueueDiscList/0/BytesInQueue", MakeBoundCallback (&QueueLengthTracer, stream));
     }
 }
 
 static void
-EveryDropTracer (Ptr<OutputStreamWrapper>stream, Ptr<const Packet> p)
+EveryDropTracer (Ptr<OutputStreamWrapper>stream, Ptr<const QueueItem> item)
 {
-  *stream->GetStream () << Simulator::Now ().GetSeconds () << " " << p << std::endl;
+  *stream->GetStream () << Simulator::Now ().GetSeconds () << " " << item << std::endl;
 }
 
 static void
@@ -151,7 +153,7 @@ TraceEveryDrop (std::string everyDropTrFileName)
   else
     {
       Ptr<OutputStreamWrapper> stream = ascii.CreateFileStream (everyDropTrFileName.c_str ());
-      Config::ConnectWithoutContext ("/NodeList/2/DeviceList/1/$ns3::PointToPointNetDevice/TxQueue/Drop", MakeBoundCallback (&EveryDropTracer, stream));
+      Config::ConnectWithoutContext ("/NodeList/2/$ns3::TrafficControlLayer/RootQueueDiscList/0/Drop", MakeBoundCallback (&EveryDropTracer, stream));
     }
 }
 
@@ -182,7 +184,7 @@ TraceDroppingState (std::string dropStateTrFileName)
   else
     {
       Ptr<OutputStreamWrapper> stream = ascii.CreateFileStream (dropStateTrFileName.c_str ());
-      Config::ConnectWithoutContext ("/NodeList/2/DeviceList/1/$ns3::PointToPointNetDevice/TxQueue/$ns3::CoDelQueue/DropState", MakeBoundCallback (&DroppingStateTracer, stream));
+      Config::ConnectWithoutContext ("/NodeList/2/$ns3::TrafficControlLayer/RootQueueDiscList/0/$ns3::CoDelQueueDisc/DropState", MakeBoundCallback (&DroppingStateTracer, stream));
     }
 }
 
@@ -221,7 +223,7 @@ int main (int argc, char *argv[])
   std::string routerLanDataRate = "10Gbps";
   std::string hostLanDataRate = "10Gbps";
 
-  std::string routerWanQueueType = "CoDel";           // outbound cable router queue
+  std::string routerWanQueueDiscType = "CoDel";           // outbound cable router queue
   uint32_t pktSize = 1458;                // in bytes. 1458 to prevent fragments
   uint32_t queueSize = 1000;              // in packets
   uint32_t numOfUpLoadBulkFlows = 1;      // # of upload bulk transfer flows
@@ -233,7 +235,7 @@ int main (int argc, char *argv[])
   float startTime = 0.1;
   float simDuration = 60;        //in seconds
 
-  std::string fileNamePrefix = "codel-vs-droptail-asymmetric";
+  std::string fileNamePrefix = "codel-vs-pfifo-fast-asymmetric";
   bool logging = true;
 
   CommandLine cmd;
@@ -246,7 +248,8 @@ int main (int argc, char *argv[])
   cmd.AddValue ("routerWanDataRate", "Router WAN net device data rate", routerWanDataRate);
   cmd.AddValue ("routerLanDataRate", "Router LAN net device data rate", routerLanDataRate);
   cmd.AddValue ("hostLanDataRate", "Host LAN net device data rate", hostLanDataRate);
-  cmd.AddValue ("routerWanQueueType", "Router WAN net device queue type", routerWanQueueType);
+  cmd.AddValue ("routerWanQueueDiscType", "Router WAN queue disc type: "
+                "PfifoFast, CoDel", routerWanQueueDiscType);
   cmd.AddValue ("queueSize", "Queue size in packets", queueSize);
   cmd.AddValue ("pktSize", "Packet size in bytes", pktSize);
   cmd.AddValue ("numOfUpLoadBulkFlows", "Number of upload bulk transfer flows", numOfUpLoadBulkFlows);
@@ -261,26 +264,25 @@ int main (int argc, char *argv[])
 
   float stopTime = startTime + simDuration;
 
-  std::string pcapFileName = fileNamePrefix + "-" + routerWanQueueType;
-  std::string cwndTrFileName = fileNamePrefix + "-" + routerWanQueueType + "-cwnd" + ".tr";
-  std::string attributeFileName = fileNamePrefix + "-" + routerWanQueueType + ".attr";
-  std::string sojournTrFileName = fileNamePrefix + "-" + routerWanQueueType + "-sojourn" + ".tr";
-  std::string queueLengthTrFileName = fileNamePrefix + "-" + routerWanQueueType + "-length" + ".tr";
-  std::string everyDropTrFileName = fileNamePrefix + "-" + routerWanQueueType + "-drop" + ".tr";
-  std::string dropStateTrFileName = fileNamePrefix + "-" + routerWanQueueType + "-drop-state" + ".tr";
+  std::string pcapFileName = fileNamePrefix + "-" + routerWanQueueDiscType;
+  std::string cwndTrFileName = fileNamePrefix + "-" + routerWanQueueDiscType + "-cwnd" + ".tr";
+  std::string attributeFileName = fileNamePrefix + "-" + routerWanQueueDiscType + ".attr";
+  std::string sojournTrFileName = fileNamePrefix + "-" + routerWanQueueDiscType + "-sojourn" + ".tr";
+  std::string queueLengthTrFileName = fileNamePrefix + "-" + routerWanQueueDiscType + "-length" + ".tr";
+  std::string everyDropTrFileName = fileNamePrefix + "-" + routerWanQueueDiscType + "-drop" + ".tr";
+  std::string dropStateTrFileName = fileNamePrefix + "-" + routerWanQueueDiscType + "-drop-state" + ".tr";
   if (logging)
     {
-      //LogComponentEnable ("CoDelDropTailAsymmetricTest", LOG_LEVEL_ALL);
+      //LogComponentEnable ("CoDelPfifoFastAsymmetricTest", LOG_LEVEL_ALL);
       //LogComponentEnable ("BulkSendApplication", LOG_LEVEL_INFO);
-      //LogComponentEnable ("DropTailQueue", LOG_LEVEL_ALL);
-      LogComponentEnable ("CoDelQueue", LOG_LEVEL_FUNCTION);
+      //LogComponentEnable ("PfifoFastQueue", LOG_LEVEL_ALL);
+      LogComponentEnable ("CoDelQueueDisc", LOG_LEVEL_FUNCTION);
     }
 
   // Queue defaults
-  Config::SetDefault ("ns3::DropTailQueue::MaxPackets", UintegerValue (queueSize));
-  Config::SetDefault ("ns3::CoDelQueue::MaxPackets", UintegerValue (queueSize));
-  Config::SetDefault ("ns3::DropTailQueue::Mode", StringValue ("QUEUE_MODE_PACKETS"));
-  Config::SetDefault ("ns3::CoDelQueue::Mode", StringValue ("QUEUE_MODE_PACKETS"));
+  Config::SetDefault ("ns3::PfifoFastQueueDisc::Limit", UintegerValue (queueSize));
+  Config::SetDefault ("ns3::CoDelQueueDisc::MaxPackets", UintegerValue (queueSize));
+  Config::SetDefault ("ns3::CoDelQueueDisc::Mode", StringValue ("QUEUE_MODE_PACKETS"));
 
   // Create the nodes
   NS_LOG_INFO ("Create nodes");
@@ -306,10 +308,6 @@ int main (int argc, char *argv[])
 
   Config::SetDefault ("ns3::TcpSocket::SegmentSize", UintegerValue (pktSize));
 
-  NS_LOG_INFO ("Install Internet stack on all nodes");
-  InternetStackHelper stack;
-  stack.InstallAll ();
-
   NS_LOG_INFO ("Create channels and install net devices on nodes");
   PointToPointHelper p2p;
 
@@ -328,22 +326,8 @@ int main (int argc, char *argv[])
   Names::Add ("router/wan", cmtsRouterDev.Get (1));
   Ptr<PointToPointNetDevice> cmtsWanDev = DynamicCast<PointToPointNetDevice> (cmtsRouterDev.Get (0));
   cmtsWanDev->SetAttribute ("DataRate", StringValue (cmtsWanDataRate));
-  Ptr<Queue> queue = cmtsWanDev->GetQueue ();
-  DynamicCast<DropTailQueue> (queue)->SetMode (DropTailQueue::QUEUE_MODE_BYTES);
-  DynamicCast<DropTailQueue> (queue)->SetAttribute ("MaxBytes", UintegerValue (256000));
-
   Ptr<PointToPointNetDevice> routerWanDev = DynamicCast<PointToPointNetDevice> (cmtsRouterDev.Get (1));
   routerWanDev->SetAttribute ("DataRate", StringValue (routerWanDataRate));
-  if (routerWanQueueType.compare ("DropTail") == 0)
-    {
-      Ptr<Queue> dropTail = CreateObject<DropTailQueue> ();
-      routerWanDev->SetQueue (dropTail);
-    }
-  else if (routerWanQueueType.compare ("CoDel") == 0)
-    {
-      Ptr<Queue> codel = CreateObject<CoDelQueue> ();
-      routerWanDev->SetQueue (codel);
-    }
 
   p2p.SetChannelAttribute ("Delay", StringValue (routerHostDelay));
   NetDeviceContainer routerHostDev = p2p.Install (routerHost);
@@ -353,6 +337,34 @@ int main (int argc, char *argv[])
   routerLanDev->SetAttribute ("DataRate", StringValue (routerLanDataRate));
   Ptr<PointToPointNetDevice> hostLanDev = DynamicCast<PointToPointNetDevice> (routerHostDev.Get (1));
   hostLanDev->SetAttribute ("DataRate", StringValue (hostLanDataRate));
+
+  NS_LOG_INFO ("Install Internet stack on all nodes");
+  InternetStackHelper stack;
+  stack.InstallAll ();
+
+  TrafficControlHelper tchPfifo;
+  uint32_t handle = tchPfifo.SetRootQueueDisc ("ns3::PfifoFastQueueDisc");
+  tchPfifo.AddPacketFilter (handle, "ns3::PfifoFastIpv4PacketFilter");
+
+  TrafficControlHelper tchCoDel;
+  tchCoDel.SetRootQueueDisc ("ns3::CoDelQueueDisc");
+
+  tchPfifo.Install (serverCmtsDev);
+  tchPfifo.Install (cmtsWanDev);
+  if (routerWanQueueDiscType.compare ("PfifoFast") == 0)
+    {
+      tchPfifo.Install (routerWanDev);
+    }
+  else if (routerWanQueueDiscType.compare ("CoDel") == 0)
+    {
+      tchCoDel.Install (routerWanDev);
+    }
+  else
+    {
+      NS_LOG_DEBUG ("Invalid router WAN queue disc type");
+      exit (1);
+    }  
+  tchPfifo.Install (routerHostDev);
 
   NS_LOG_INFO ("Assign IP Addresses");
   Ipv4AddressHelper ipv4;
@@ -408,7 +420,7 @@ int main (int argc, char *argv[])
 
   Simulator::Schedule (Seconds (0.00001), &TraceCwnd, cwndTrFileName);
   TraceEveryDrop (everyDropTrFileName);
-  if (routerWanQueueType.compare ("CoDel") == 0)
+  if (routerWanQueueDiscType.compare ("CoDel") == 0)
     {
       TraceSojourn (sojournTrFileName);
       TraceQueueLength (queueLengthTrFileName);

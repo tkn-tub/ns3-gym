@@ -49,6 +49,7 @@
 #include "ns3/event-id.h"
 #include "ns3/flow-monitor-helper.h"
 #include "ns3/ipv4-global-routing-helper.h"
+#include "ns3/traffic-control-module.h"
 
 using namespace ns3;
 
@@ -172,7 +173,7 @@ int main (int argc, char *argv[])
   uint32_t run = 0;
   bool flow_monitor = false;
   bool pcap = false;
-  std::string queue_type = "ns3::DropTailQueue";
+  std::string queue_disc_type = "ns3::PfifoFastQueueDisc";
 
 
   CommandLine cmd;
@@ -192,7 +193,7 @@ int main (int argc, char *argv[])
   cmd.AddValue ("run", "Run index (for setting repeatable seeds)", run);
   cmd.AddValue ("flow_monitor", "Enable flow monitor", flow_monitor);
   cmd.AddValue ("pcap_tracing", "Enable or disable PCAP tracing", pcap);
-  cmd.AddValue ("queue_type", "Queue type for gateway (e.g. ns3::CoDelQueue)", queue_type);
+  cmd.AddValue ("queue_disc_type", "Queue disc type for gateway (e.g. ns3::CoDelQueueDisc)", queue_disc_type);
   cmd.Parse (argc, argv);
 
   SeedManager::SetSeed (1);
@@ -201,7 +202,7 @@ int main (int argc, char *argv[])
   // User may find it convenient to enable logging
   //LogComponentEnable("TcpVariantsComparison", LOG_LEVEL_ALL);
   //LogComponentEnable("BulkSendApplication", LOG_LEVEL_INFO);
-  //LogComponentEnable("DropTailQueue", LOG_LEVEL_ALL);
+  //LogComponentEnable("PfifoFastQueueDisc", LOG_LEVEL_ALL);
 
   // Calculate the ADU size
   Header* temp_header = new Ipv4Header ();
@@ -271,6 +272,13 @@ int main (int argc, char *argv[])
   InternetStackHelper stack;
   stack.InstallAll ();
 
+  TrafficControlHelper tchPfifo;
+  uint32_t handle = tchPfifo.SetRootQueueDisc ("ns3::PfifoFastQueueDisc");
+  tchPfifo.AddPacketFilter (handle, "ns3::PfifoFastIpv4PacketFilter");
+
+  TrafficControlHelper tchCoDel;
+  tchCoDel.SetRootQueueDisc ("ns3::CoDelQueueDisc");
+
   Ipv4AddressHelper address;
   address.SetBase ("10.0.0.0", "255.255.255.0");
 
@@ -287,61 +295,38 @@ int main (int argc, char *argv[])
   Time access_d (access_delay);
   Time bottle_d (delay);
 
-  Config::SetDefault ("ns3::DropTailQueue::Mode", EnumValue (DropTailQueue::QUEUE_MODE_BYTES));
-  Config::SetDefault ("ns3::CoDelQueue::Mode", EnumValue (CoDelQueue::QUEUE_MODE_BYTES));
+  Config::SetDefault ("ns3::CoDelQueueDisc::Mode", EnumValue (Queue::QUEUE_MODE_BYTES));
 
   uint32_t size = (std::min (access_b, bottle_b).GetBitRate () / 8) *
     ((access_d + bottle_d) * 2).GetSeconds ();
+
+  Config::SetDefault ("ns3::PfifoFastQueueDisc::Limit", UintegerValue (size / mtu_bytes));
+  Config::SetDefault ("ns3::CoDelQueueDisc::MaxBytes", UintegerValue (size));
 
   for (int i = 0; i < num_flows; i++)
     {
       NetDeviceContainer devices;
       devices = LocalLink.Install (sources.Get (i), gateways.Get (0));
+      tchPfifo.Install (devices);
       address.NewNetwork ();
       Ipv4InterfaceContainer interfaces = address.Assign (devices);
 
-      for (uint32_t j = 0; j <= 1; ++j)
-        {
-          Ptr<PointToPointNetDevice> link;
-
-          link = DynamicCast<PointToPointNetDevice> (devices.Get (j));
-
-          Ptr<DropTailQueue> q = CreateObject <DropTailQueue> ();
-          q->SetMode (DropTailQueue::QUEUE_MODE_BYTES);
-          q->SetAttribute ("MaxBytes", UintegerValue (size));
-          link->SetQueue (q);
-        }
-
       devices = UnReLink.Install (gateways.Get (0), sinks.Get (i));
+      if (queue_disc_type.compare ("ns3::PfifoFastQueueDisc") == 0)
+        {
+          tchPfifo.Install (devices);
+        }
+      else if (queue_disc_type.compare ("ns3::CoDelQueueDisc") == 0)
+        {
+          tchCoDel.Install (devices);
+        }
+      else
+        {
+          NS_FATAL_ERROR ("Queue not recognized. Allowed values are ns3::CoDelQueueDisc or ns3::PfifoFastQueueDisc");
+        }
       address.NewNetwork ();
       interfaces = address.Assign (devices);
       sink_interfaces.Add (interfaces.Get (1));
-
-      for (uint32_t j = 0; j <= 1; ++j)
-        {
-          Ptr<PointToPointNetDevice> link;
-
-          link = DynamicCast<PointToPointNetDevice> (devices.Get (j));
-
-          if (queue_type.compare ("ns3::DropTailQueue") == 0)
-            {
-              Ptr<DropTailQueue> q = CreateObject <DropTailQueue> ();
-              q->SetMode (DropTailQueue::QUEUE_MODE_BYTES);
-              q->SetAttribute ("MaxBytes", UintegerValue (size));
-              link->SetQueue (q);
-            }
-          else if (queue_type.compare ("ns3::CoDelQueue") == 0)
-            {
-              Ptr<CoDelQueue> q = CreateObject <CoDelQueue> ();
-              q->SetMode (CoDelQueue::QUEUE_MODE_BYTES);
-              q->SetAttribute ("MaxBytes", UintegerValue (size));
-              link->SetQueue (q);
-            }
-          else
-            {
-              NS_FATAL_ERROR ("Queue not recognized. Allowed values are ns3::CoDelQueue or ns3::DropTailQueue");
-            }
-        }
     }
 
   NS_LOG_INFO ("Initialize Global Routing.");

@@ -16,14 +16,15 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Truc Anh N Nguyen <trucanh524@gmail.com>
+ * Modified by:   Pasquale Imputato <p.imputato@gmail.com>
  *
  */
 
 /*
- * This is a basic example that compares CoDel and DropTail queues using a simple, single-flow topology:
+ * This is a basic example that compares CoDel and PfifoFast queues using a simple, single-flow topology:
  *
  * source -------------------------- router ------------------------ sink
- *          100 Mb/s, 0.1 ms        droptail       5 Mb/s, 5ms
+ *          100 Mb/s, 0.1 ms       pfifofast       5 Mb/s, 5ms
  *                                 or codel        bottleneck
  *
  * The source generates traffic across the network using BulkSendApplication.
@@ -47,10 +48,11 @@
 #include "ns3/enum.h"
 #include "ns3/event-id.h"
 #include "ns3/ipv4-global-routing-helper.h"
+#include "ns3/traffic-control-module.h"
 
 using namespace ns3;
 
-NS_LOG_COMPONENT_DEFINE ("CoDelDropTailBasicTest");
+NS_LOG_COMPONENT_DEFINE ("CoDelPfifoFastBasicTest");
 
 static void
 CwndTracer (Ptr<OutputStreamWrapper>stream, uint32_t oldval, uint32_t newval)
@@ -81,15 +83,15 @@ int main (int argc, char *argv[])
   std::string accessBandwidth = "100Mbps";
   std::string accessDelay = "0.1ms";
 
-  std::string queueType = "DropTail";       //DropTail or CoDel
+  std::string queueDiscType = "PfifoFast";       //PfifoFast or CoDel
   uint32_t queueSize = 1000;      //in packets
   uint32_t pktSize = 1458;        //in bytes. 1458 to prevent fragments
   float startTime = 0.1;
   float simDuration = 60;        //in seconds
 
   bool isPcapEnabled = true;
-  std::string pcapFileName = "pcapFileDropTail.pcap";
-  std::string cwndTrFileName = "cwndDropTail.tr";
+  std::string pcapFileName = "pcapFilePfifoFast.pcap";
+  std::string cwndTrFileName = "cwndPfifoFast.tr";
   bool logging = false;
 
   CommandLine cmd;
@@ -97,7 +99,7 @@ int main (int argc, char *argv[])
   cmd.AddValue ("bottleneckDelay", "Bottleneck delay", bottleneckDelay);
   cmd.AddValue ("accessBandwidth", "Access link bandwidth", accessBandwidth);
   cmd.AddValue ("accessDelay", "Access link delay", accessDelay);
-  cmd.AddValue ("queueType", "Queue type: DropTail, CoDel", queueType);
+  cmd.AddValue ("queueDiscType", "Queue disc type: PfifoFast, CoDel", queueDiscType);
   cmd.AddValue ("queueSize", "Queue size in packets", queueSize);
   cmd.AddValue ("pktSize", "Packet size in bytes", pktSize);
   cmd.AddValue ("startTime", "Simulation start time", startTime);
@@ -112,10 +114,10 @@ int main (int argc, char *argv[])
 
   if (logging)
     {
-      LogComponentEnable ("CoDelDropTailBasicTest", LOG_LEVEL_ALL);
+      LogComponentEnable ("CoDelPfifoFastBasicTest", LOG_LEVEL_ALL);
       LogComponentEnable ("BulkSendApplication", LOG_LEVEL_INFO);
-      LogComponentEnable ("DropTailQueue", LOG_LEVEL_ALL);
-      LogComponentEnable ("CoDelQueue", LOG_LEVEL_ALL);
+      LogComponentEnable ("PfifoFastQueueDisc", LOG_LEVEL_ALL);
+      LogComponentEnable ("CoDelQueueDisc", LOG_LEVEL_ALL);
     }
 
   // Enable checksum
@@ -141,27 +143,15 @@ int main (int argc, char *argv[])
   bottleneckLink.SetDeviceAttribute ("DataRate", StringValue (bottleneckBandwidth));
   bottleneckLink.SetChannelAttribute ("Delay", StringValue (bottleneckDelay));
 
-  // Configure the queue
-  if (queueType.compare ("DropTail") == 0)
-    {
-      bottleneckLink.SetQueue ("ns3::DropTailQueue",
-                               "Mode", StringValue ("QUEUE_MODE_PACKETS"),
-                               "MaxPackets", UintegerValue (queueSize));
-    }
-  else if (queueType.compare ("CoDel") == 0)
-    {
-      bottleneckLink.SetQueue ("ns3::CoDelQueue",
-                               "Mode", StringValue ("QUEUE_MODE_PACKETS"),
-                               "MaxPackets", UintegerValue (queueSize));
-    }
-  else
-    {
-      NS_LOG_DEBUG ("Invalid queue type");
-      exit (1);
-    }
-
   InternetStackHelper stack;
   stack.InstallAll ();
+
+  TrafficControlHelper tchPfifo;
+  uint32_t handle = tchPfifo.SetRootQueueDisc ("ns3::PfifoFastQueueDisc");
+  tchPfifo.AddPacketFilter (handle, "ns3::PfifoFastIpv4PacketFilter");
+
+  TrafficControlHelper tchCoDel;
+  tchCoDel.SetRootQueueDisc ("ns3::CoDelQueueDisc");
 
   Ipv4AddressHelper address;
   address.SetBase ("10.0.0.0", "255.255.255.0");
@@ -170,13 +160,28 @@ int main (int argc, char *argv[])
   // and the channels between the source/sink and the gateway
   Ipv4InterfaceContainer sinkInterface;
 
-  NetDeviceContainer devices;
-  devices = accessLink.Install (source.Get (0), gateway.Get (0));
+  NetDeviceContainer devicesAccessLink, devicesBottleneckLink;
+
+  devicesAccessLink = accessLink.Install (source.Get (0), gateway.Get (0));
+  tchPfifo.Install (devicesAccessLink);
   address.NewNetwork ();
-  Ipv4InterfaceContainer interfaces = address.Assign (devices);
-  devices = bottleneckLink.Install (gateway.Get (0), sink.Get (0));
+  Ipv4InterfaceContainer interfaces = address.Assign (devicesAccessLink);
+
+  devicesBottleneckLink = bottleneckLink.Install (gateway.Get (0), sink.Get (0));
   address.NewNetwork ();
-  interfaces = address.Assign (devices);
+  if (queueDiscType.compare ("PfifoFast") == 0)
+    {
+      tchPfifo.Install (devicesBottleneckLink);
+    }
+  else if (queueDiscType.compare ("CoDel") == 0)
+    {
+      tchCoDel.Install (devicesBottleneckLink);
+    }
+  else
+    {
+      NS_ABORT_MSG ("Invalid queue disc type: Use --queueDiscType=PfifoFast or --queueDiscType=CoDel");
+    }
+  interfaces = address.Assign (devicesBottleneckLink);
 
   sinkInterface.Add (interfaces.Get (1));
 
