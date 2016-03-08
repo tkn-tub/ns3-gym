@@ -225,6 +225,7 @@ PointToPointNetDevice::DoDispose ()
   m_receiveErrorModel = 0;
   m_currentPkt = 0;
   m_queue = 0;
+  m_queueInterface = 0;
   NetDevice::DoDispose ();
 }
 
