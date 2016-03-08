@@ -17,11 +17,13 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  * Modified by Emmanuelle Laprise to remove dependence on LLC headers
+ * Modified by Stefano Avallone to add NetDeviceQueue and NetDeviceQueueInterface
  */
 #ifndef NET_DEVICE_H
 #define NET_DEVICE_H
 
 #include <string>
+#include <vector>
 #include <stdint.h>
 #include "ns3/callback.h"
 #include "ns3/object.h"
@@ -121,6 +123,184 @@ private:
  * \returns a reference to the stream
  */
 std::ostream& operator<< (std::ostream& os, const QueueItem &item);
+
+/**
+ * \ingroup netdevice
+ *
+ * \brief Network device transmission queue
+ *
+ * This class stores information about a single transmission queue
+ * of a network device that is exposed to queue discs. Such information
+ * includes the state of the transmission queue (whether it has been
+ * stopped or not) and data used by techniques such as Byte Queue Limits.
+ *
+ * This class roughly models the struct netdev_queue of Linux.
+ * \todo Implement BQL
+ */
+class NetDeviceQueue : public SimpleRefCount<NetDeviceQueue>
+{
+public:
+  NetDeviceQueue ();
+  virtual ~NetDeviceQueue();
+
+  /**
+   * Called by the device to start this (hardware) transmission queue.
+   * This is the analogous to the netif_tx_start_queue function of the Linux kernel.
+   */
+  virtual void Start (void);
+
+  /**
+   * Called by the device to stop this (hardware) transmission queue.
+   * This is the analogous to the netif_tx_stop_queue function of the Linux kernel.
+   */
+  virtual void Stop (void);
+
+  /**
+   * Called by the device to wake the queue disc associated with this
+   * (hardware) transmission queue. This is done by invoking the wake callback.
+   * This is the analogous to the netif_tx_wake_queue function of the Linux kernel.
+   */
+  virtual void Wake (void);
+
+  /**
+   * \brief Get the status of the device transmission queue.
+   * \return true if the (hardware) transmission queue is stopped.
+   *
+   * Called by queue discs to enquire about the status of a given transmission queue.
+   * This is the analogous to the netif_tx_queue_stopped function of the Linux kernel.
+   */
+  bool IsStopped (void) const;
+
+  /// Callback invoked by netdevices to wake upper layers
+  typedef Callback< void > WakeCallback;
+
+  /**
+   * \brief Set the wake callback
+   * \param cb the callback to set
+   *
+   * Called by the traffic control layer to set the wake callback. The wake callback
+   * is invoked by the device whenever it is needed to "wake" the upper layers (i.e.,
+   * solicitate the queue disc associated with this transmission queue (in case of
+   * multi-queue aware queue discs) or to the network device (otherwise) to send
+   * packets down to the device).
+   */
+  virtual void SetWakeCallback (WakeCallback cb);
+
+  /**
+   * \brief Check whether a wake callback has been set on this device queue.
+   * \return true if the wake callback has been set.
+   */
+  virtual bool HasWakeCallbackSet (void) const;
+
+private:
+  bool m_stopped;   //!< Status of the transmission queue
+  WakeCallback m_wakeCallback;   //!< Wake callback
+};
+
+
+/**
+ * \ingroup netdevice
+ *
+ * \brief Network device transmission queue interface
+ *
+ * This interface is required by the traffic control layer to access the information
+ * about the status of the transmission queues of a device. Thus, every NetDevice
+ * (but loopback) needs to create this interface. NetDevices supporting flow control
+ * can start and stop their device transmission queues and wake the upper layers through
+ * this interface. By default, a NetDeviceQueueInterface object is created with a single
+ * device transmission queue. Therefore, multi-queue devices need to call SetTxQueuesN
+ * to create additional queues (before a root queue disc is installed, i.e., typically
+ * before an IPv4/IPv6 address is assigned to the device), implement a GetSelectedQueue
+ * method and pass a callback to such a method through the SetSelectedQueueCallback method.
+ */
+class NetDeviceQueueInterface : public Object
+{
+public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
+  static TypeId GetTypeId (void);
+
+  /**
+   * \brief Constructor
+   *
+   * Creates one NetDeviceQueue by default
+   */
+  NetDeviceQueueInterface ();
+  virtual ~NetDeviceQueueInterface ();
+
+  /**
+   * \brief Get the i-th transmission queue of the device.
+   * \return the i-th transmission queue of the device.
+   *
+   * The index of the first transmission queue is zero.
+   */
+  Ptr<NetDeviceQueue> GetTxQueue (uint8_t i) const;
+
+  /**
+   * \brief Get the number of device transmission queues.
+   * \return the number of device transmission queues.
+   */
+  uint8_t GetTxQueuesN (void) const;
+
+  /**
+   * \brief Set the number of device transmission queues.
+   * \param numTxQueues number of device transmission queues.
+   *
+   * Called by a device to set the number of device transmission queues.
+   * This method can be called by a NetDevice at initialization time only, because
+   * it is not possible to change the number of device transmission queues after
+   * the wake callbacks have been set on the device queues.
+   */
+  void SetTxQueuesN (uint8_t numTxQueues);
+
+  /// Callback invoked to determine the tx queue selected for a given packet
+  typedef Callback< uint8_t, Ptr<QueueItem> > SelectQueueCallback;
+
+  /**
+   * \brief Set the select queue callback
+   * \param cb the callback to set
+   *
+   * Called by a device to set the select queue callback, i.e., the method used
+   * to select a device transmission queue for a given packet
+   */
+  void SetSelectQueueCallback (SelectQueueCallback cb);
+
+  /**
+   * \brief Get the id of the transmission queue selected for the given packet
+   * \return the id of the transmission queue selected for the given packet
+   *
+   * Called by the traffic control when it needs to determine which device
+   * transmission queue a given packet must be enqueued into. This function
+   * calls the select queue callback, if set by the device. Return 0 otherwise.
+   */
+  uint8_t GetSelectedQueue (Ptr<QueueItem> item) const;
+
+  /**
+   * \brief Return true if a queue disc is installed on the device.
+   * \return true if a queue disc is installed on the device.
+   */
+  bool IsQueueDiscInstalled (void) const;
+
+  /**
+   * \brief Set the member variable indicating whether a queue disc is installed or not
+   * \param installed the value for the member variable indicating whether a queue disc is installed or not
+   */
+  void SetQueueDiscInstalled (bool installed);
+
+protected:
+  /**
+   * \brief Dispose of the object
+   */
+  virtual void DoDispose (void);
+
+private:
+  std::vector< Ptr<NetDeviceQueue> > m_txQueuesVector;   //!< Device transmission queues
+  SelectQueueCallback m_selectQueueCallback;   //!< Select queue callback
+  bool m_queueDiscInstalled;   //!< Boolean value indicating whether a queue disc is installed or not
+};
+
 
 /**
  * \ingroup netdevice
