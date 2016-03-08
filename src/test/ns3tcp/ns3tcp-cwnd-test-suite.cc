@@ -433,7 +433,7 @@ Ns3TcpCwndTestCase2::DoRun (void)
 { 
   NS_LOG_DEBUG ("Starting test case 2");
   // Set up some default values for the simulation.
-  Config::SetDefault ("ns3::DropTailQueue::MaxPackets", UintegerValue (4));
+  Config::SetDefault ("ns3::Queue::MaxPackets", UintegerValue (4));
 
   NodeContainer n0n1;
   n0n1.Create (2);

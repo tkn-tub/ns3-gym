@@ -20,19 +20,17 @@
 #define DROPTAIL_H
 
 #include <queue>
-#include "ns3/packet.h"
 #include "ns3/queue.h"
 
 namespace ns3 {
-
-class TraceContainer;
 
 /**
  * \ingroup queue
  *
  * \brief A FIFO packet queue that drops tail-end packets on overflow
  */
-class DropTailQueue : public Queue {
+class DropTailQueue : public Queue
+{
 public:
   /**
    * \brief Get the type ID.
@@ -48,31 +46,12 @@ public:
 
   virtual ~DropTailQueue();
 
-  /**
-   * Set the operating mode of this device.
-   *
-   * \param mode The operating mode of this device.
-   *
-   */
-  void SetMode (DropTailQueue::QueueMode mode);
-
-  /**
-   * Get the encapsulation mode of this device.
-   *
-   * \returns The encapsulation mode of this device.
-   */
-  DropTailQueue::QueueMode GetMode (void) const;
-
 private:
   virtual bool DoEnqueue (Ptr<QueueItem> item);
   virtual Ptr<QueueItem> DoDequeue (void);
   virtual Ptr<const QueueItem> DoPeek (void) const;
 
   std::queue<Ptr<QueueItem> > m_packets; //!< the items in the queue
-  uint32_t m_maxPackets;              //!< max packets in the queue
-  uint32_t m_maxBytes;                //!< max bytes in the queue
-  uint32_t m_bytesInQueue;            //!< actual bytes in the queue
-  QueueMode m_mode;                   //!< queue mode (packets or bytes limited)
 };
 
 } // namespace ns3
