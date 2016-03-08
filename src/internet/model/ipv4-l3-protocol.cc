@@ -32,6 +32,7 @@
 #include "ns3/ipv4-header.h"
 #include "ns3/boolean.h"
 #include "ns3/ipv4-routing-table-entry.h"
+#include "ns3/traffic-control-layer.h"
 
 #include "loopback-net-device.h"
 #include "arp-l3-protocol.h"
@@ -371,12 +372,21 @@ uint32_t
 Ipv4L3Protocol::AddInterface (Ptr<NetDevice> device)
 {
   NS_LOG_FUNCTION (this << device);
+  NS_ASSERT (m_node != 0);
 
-  Ptr<Node> node = GetObject<Node> ();
-  node->RegisterProtocolHandler (MakeCallback (&Ipv4L3Protocol::Receive, this), 
-                                 Ipv4L3Protocol::PROT_NUMBER, device);
-  node->RegisterProtocolHandler (MakeCallback (&ArpL3Protocol::Receive, PeekPointer (GetObject<ArpL3Protocol> ())),
-                                 ArpL3Protocol::PROT_NUMBER, device);
+  Ptr<TrafficControlLayer> tc = m_node->GetObject<TrafficControlLayer> ();
+
+  NS_ASSERT (tc != 0);
+
+  m_node->RegisterProtocolHandler (MakeCallback (&TrafficControlLayer::Receive, tc),
+                                   Ipv4L3Protocol::PROT_NUMBER, device);
+  m_node->RegisterProtocolHandler (MakeCallback (&TrafficControlLayer::Receive, tc),
+                                   ArpL3Protocol::PROT_NUMBER, device);
+
+  tc->RegisterProtocolHandler (MakeCallback (&Ipv4L3Protocol::Receive, this),
+                               Ipv4L3Protocol::PROT_NUMBER, device);
+  tc->RegisterProtocolHandler (MakeCallback (&ArpL3Protocol::Receive, PeekPointer (GetObject<ArpL3Protocol> ())),
+                               ArpL3Protocol::PROT_NUMBER, device);
 
   Ptr<Ipv4Interface> interface = CreateObject<Ipv4Interface> ();
   interface->SetNode (m_node);

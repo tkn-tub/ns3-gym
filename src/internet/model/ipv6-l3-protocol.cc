@@ -30,6 +30,7 @@
 #include "ns3/ipv6-route.h"
 #include "ns3/mac16-address.h"
 #include "ns3/mac64-address.h"
+#include "ns3/traffic-control-layer.h"
 
 #include "loopback-net-device.h"
 #include "ipv6-l3-protocol.h"
@@ -190,10 +191,18 @@ Ptr<Ipv6RoutingProtocol> Ipv6L3Protocol::GetRoutingProtocol () const
 uint32_t Ipv6L3Protocol::AddInterface (Ptr<NetDevice> device)
 {
   NS_LOG_FUNCTION (this << device);
-  Ptr<Node> node = GetObject<Node> ();
   Ptr<Ipv6Interface> interface = CreateObject<Ipv6Interface> ();
 
-  node->RegisterProtocolHandler (MakeCallback (&Ipv6L3Protocol::Receive, this), Ipv6L3Protocol::PROT_NUMBER, device);
+  Ptr<TrafficControlLayer> tc = m_node->GetObject<TrafficControlLayer> ();
+
+  NS_ASSERT (tc != 0);
+
+  m_node->RegisterProtocolHandler (MakeCallback (&TrafficControlLayer::Receive, tc),
+                                   Ipv6L3Protocol::PROT_NUMBER, device);
+
+  tc->RegisterProtocolHandler (MakeCallback (&Ipv6L3Protocol::Receive, this),
+                               Ipv6L3Protocol::PROT_NUMBER, device);
+
   interface->SetNode (m_node);
   interface->SetDevice (device);
   interface->SetForwarding (m_ipForward);
