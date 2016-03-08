@@ -7,11 +7,3 @@ def build(bld):
     obj = bld.create_ns3_program('main-simple',
                                  ['network', 'internet', 'applications'])
     obj.source = 'main-simple.cc'
-    
-    obj = bld.create_ns3_program('codel-vs-droptail-basic-test',
-                                 ['point-to-point','network', 'internet', 'applications'])
-    obj.source = 'codel-vs-droptail-basic-test.cc'
-
-    obj = bld.create_ns3_program('codel-vs-droptail-asymmetric',
-                                 ['point-to-point','network', 'internet', 'applications'])
-    obj.source = 'codel-vs-droptail-asymmetric.cc'

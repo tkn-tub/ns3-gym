@@ -8,5 +8,4 @@ Internet Models (IP, TCP, Routing, UDP, Internet Applications, Codel)
    ipv6
    routing-overview
    tcp
-   codel
    internet-apps
