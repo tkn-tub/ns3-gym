@@ -47,6 +47,7 @@ This document is written in `reStructuredText <http://docutils.sourceforge.net/r
    spectrum
    sixlowpan
    topology
+   traffic-control
    uan
    wave
    wifi

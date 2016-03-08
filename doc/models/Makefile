@@ -17,6 +17,7 @@ SOURCES = \
 	source/internet-models.rst \
 	source/network.rst \
 	source/emulation-overview.rst \
+	source/traffic-control.rst \
 	$(SRC)/antenna/doc/source/antenna.rst \
 	$(SRC)/antenna/doc/source/antenna-design.rst \
 	$(SRC)/antenna/doc/source/antenna-user.rst \
@@ -75,6 +76,7 @@ SOURCES = \
 	$(SRC)/wimax/doc/wimax.rst \
 	$(SRC)/uan/doc/uan.rst \
 	$(SRC)/topology-read/doc/topology.rst \
+	$(SRC)/traffic-control/doc/traffic-control-layer.rst \
 	$(SRC)/spectrum/doc/spectrum.rst \
 	$(SRC)/stats/doc/adaptor.rst \
 	$(SRC)/stats/doc/aggregator.rst \

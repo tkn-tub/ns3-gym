@@ -1,0 +1,7 @@
+# -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
+
+def build(bld):
+    pass
+#    obj = bld.create_ns3_program('traffic-control-example', ['traffic-control'])
+#    obj.source = 'traffic-control-example.cc'
+
