@@ -86,6 +86,11 @@ PointToPointTest::DoRun (void)
   a->AddDevice (devA);
   b->AddDevice (devB);
 
+  Ptr<NetDeviceQueueInterface> ifaceA = CreateObject<NetDeviceQueueInterface> ();
+  devA->AggregateObject (ifaceA);
+  Ptr<NetDeviceQueueInterface> ifaceB = CreateObject<NetDeviceQueueInterface> ();
+  devB->AggregateObject (ifaceB);
+
   Simulator::Schedule (Seconds (1.0), &PointToPointTest::SendOnePacket, this, devA);
 
   Simulator::Run ();
