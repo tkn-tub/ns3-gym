@@ -14,6 +14,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: John Abraham <john.abraham@gatech.edu> 
+ * Modified by:   Pasquale Imputato <p.imputato@gmail.com>
  *
  */
 
@@ -24,6 +25,7 @@
 #include "ns3/point-to-point-module.h"
 #include "ns3/applications-module.h"
 #include "ns3/point-to-point-layout-module.h"
+#include "ns3/traffic-control-module.h"
 
 #include <iostream>
 #include <iomanip>
@@ -37,65 +39,64 @@ int main (int argc, char *argv[])
   uint32_t    nLeaf = 5; 
   uint32_t    maxPackets = 100;
   uint32_t    modeBytes  = 0;
+  uint32_t    queueDiscLimitPackets = 1000;
   double      minTh = 50;
   double      maxTh = 80;
   uint32_t    pktSize = 512;
   std::string appDataRate = "10Mbps";
-  std::string queueType = "DropTail";
+  std::string queueDiscType = "PfifoFast";
   uint16_t port = 5001;
   std::string bottleNeckLinkBw = "1Mbps";
   std::string bottleNeckLinkDelay = "50ms";
 
   CommandLine cmd;
   cmd.AddValue ("nLeaf",     "Number of left and right side leaf nodes", nLeaf);
-  cmd.AddValue ("maxPackets","Max Packets allowed in the queue", maxPackets);
-  cmd.AddValue ("queueType", "Set Queue type to DropTail or RED", queueType);
+  cmd.AddValue ("maxPackets","Max Packets allowed in the device queue", maxPackets);
+  cmd.AddValue ("queueDiscLimitPackets","Max Packets allowed in the queue disc", queueDiscLimitPackets);
+  cmd.AddValue ("queueDiscType", "Set QueueDisc type to PfifoFast or RED", queueDiscType);
   cmd.AddValue ("appPktSize", "Set OnOff App Packet Size", pktSize);
   cmd.AddValue ("appDataRate", "Set OnOff App DataRate", appDataRate);
-  cmd.AddValue ("modeBytes", "Set Queue mode to Packets <0> or bytes <1>", modeBytes);
+  cmd.AddValue ("modeBytes", "Set QueueDisc mode to Packets <0> or bytes <1>", modeBytes);
 
   cmd.AddValue ("redMinTh", "RED queue minimum threshold", minTh);
   cmd.AddValue ("redMaxTh", "RED queue maximum threshold", maxTh);
   cmd.Parse (argc,argv);
 
-  if ((queueType != "RED") && (queueType != "DropTail"))
+  if ((queueDiscType != "RED") && (queueDiscType != "PfifoFast"))
     {
-      NS_ABORT_MSG ("Invalid queue type: Use --queueType=RED or --queueType=DropTail");
+      NS_ABORT_MSG ("Invalid queue disc type: Use --queueDiscType=RED or --queueDiscType=PfifoFast");
     }
 
   Config::SetDefault ("ns3::OnOffApplication::PacketSize", UintegerValue (pktSize));
   Config::SetDefault ("ns3::OnOffApplication::DataRate", StringValue (appDataRate));
 
+  Config::SetDefault ("ns3::Queue::Mode", StringValue ("QUEUE_MODE_PACKETS"));
+  Config::SetDefault ("ns3::Queue::MaxPackets", UintegerValue (maxPackets));
 
   if (!modeBytes)
-    {
-      Config::SetDefault ("ns3::DropTailQueue::Mode", StringValue ("QUEUE_MODE_PACKETS"));
-      Config::SetDefault ("ns3::DropTailQueue::MaxPackets", UintegerValue (maxPackets));
-      Config::SetDefault ("ns3::RedQueue::Mode", StringValue ("QUEUE_MODE_PACKETS"));
-      Config::SetDefault ("ns3::RedQueue::QueueLimit", UintegerValue (maxPackets));
-    }
+  {
+    Config::SetDefault ("ns3::RedQueueDisc::Mode", StringValue ("QUEUE_MODE_PACKETS"));
+    Config::SetDefault ("ns3::RedQueueDisc::QueueLimit", UintegerValue (queueDiscLimitPackets));
+    Config::SetDefault ("ns3::PfifoFastQueueDisc::Limit", UintegerValue (queueDiscLimitPackets));
+  }
   else 
-    {
-      Config::SetDefault ("ns3::DropTailQueue::Mode", StringValue ("QUEUE_MODE_BYTES"));
-      Config::SetDefault ("ns3::DropTailQueue::MaxBytes", UintegerValue (maxPackets * pktSize));
-      Config::SetDefault ("ns3::RedQueue::Mode", StringValue ("QUEUE_MODE_BYTES"));
-      Config::SetDefault ("ns3::RedQueue::QueueLimit", UintegerValue (maxPackets * pktSize));
-      minTh *= pktSize; 
-      maxTh *= pktSize;
-    }
+  {
+    Config::SetDefault ("ns3::RedQueueDisc::Mode", StringValue ("QUEUE_MODE_BYTES"));
+    Config::SetDefault ("ns3::RedQueueDisc::QueueLimit", UintegerValue (queueDiscLimitPackets * pktSize));
+    minTh *= pktSize;
+    maxTh *= pktSize;
+  }
+
+  Config::SetDefault ("ns3::RedQueueDisc::MinTh", DoubleValue (minTh));
+  Config::SetDefault ("ns3::RedQueueDisc::MaxTh", DoubleValue (maxTh));
+  Config::SetDefault ("ns3::RedQueueDisc::LinkBandwidth", StringValue (bottleNeckLinkBw));
+  Config::SetDefault ("ns3::RedQueueDisc::LinkDelay", StringValue (bottleNeckLinkDelay));
 
   // Create the point-to-point link helpers
   PointToPointHelper bottleNeckLink;
   bottleNeckLink.SetDeviceAttribute  ("DataRate", StringValue (bottleNeckLinkBw));
   bottleNeckLink.SetChannelAttribute ("Delay", StringValue (bottleNeckLinkDelay));
-  if (queueType == "RED")
-    {
-      bottleNeckLink.SetQueue ("ns3::RedQueue",
-                               "MinTh", DoubleValue (minTh),
-                               "MaxTh", DoubleValue (maxTh),
-                               "LinkBandwidth", StringValue (bottleNeckLinkBw),
-                               "LinkDelay", StringValue (bottleNeckLinkDelay));
-    }
+
   PointToPointHelper pointToPointLeaf;
   pointToPointLeaf.SetDeviceAttribute    ("DataRate", StringValue ("10Mbps"));
   pointToPointLeaf.SetChannelAttribute   ("Delay", StringValue ("1ms"));
@@ -106,7 +107,29 @@ int main (int argc, char *argv[])
 
   // Install Stack
   InternetStackHelper stack;
-  d.InstallStack (stack);
+  for (uint32_t i = 0; i < d.LeftCount (); ++i)
+    {
+     stack.Install (d.GetLeft (i));
+    }
+  for (uint32_t i = 0; i < d.RightCount (); ++i)
+    {
+     stack.Install (d.GetRight (i));
+    }
+
+  if (queueDiscType == "PfifoFast")
+    {
+      stack.Install (d.GetLeft ());
+      stack.Install (d.GetRight ());
+    }
+  else if (queueDiscType == "RED")
+    {
+      stack.Install (d.GetLeft ());
+      stack.Install (d.GetRight ());
+      TrafficControlHelper tchBottleneck;
+      tchBottleneck.SetRootQueueDisc ("ns3::RedQueueDisc");
+      tchBottleneck.Install (d.GetLeft ()->GetDevice (0));
+      tchBottleneck.Install (d.GetRight ()->GetDevice (0));
+    }
 
   // Assign IP Addresses
   d.AssignIpv4Addresses (Ipv4AddressHelper ("10.1.1.0", "255.255.255.0"),
@@ -150,8 +173,8 @@ int main (int argc, char *argv[])
       Ptr <PacketSink> pktSink = DynamicCast <PacketSink> (app);
       totalRxBytesCounter += pktSink->GetTotalRx ();
     }
-  NS_LOG_UNCOND ("----------------------------\nQueue Type:" 
-                 << queueType 
+  NS_LOG_UNCOND ("----------------------------\nQueueDisc Type:" 
+                 << queueDiscType 
                  << "\nGoodput Bytes/sec:" 
                  << totalRxBytesCounter/Simulator::Now ().GetSeconds ()); 
   NS_LOG_UNCOND ("----------------------------");

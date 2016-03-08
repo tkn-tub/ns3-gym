@@ -2,6 +2,10 @@
 
 def build(bld):
     pass
-#    obj = bld.create_ns3_program('traffic-control-example', ['traffic-control'])
-#    obj.source = 'traffic-control-example.cc'
+
+    obj = bld.create_ns3_program('red-tests', ['point-to-point', 'internet', 'applications', 'flow-monitor', 'traffic-control'])
+    obj.source = 'red-tests.cc'
+
+    obj = bld.create_ns3_program('pfifo-vs-red', ['point-to-point', 'point-to-point-layout', 'internet', 'applications', 'traffic-control'])
+    obj.source = 'pfifo-vs-red.cc'
 

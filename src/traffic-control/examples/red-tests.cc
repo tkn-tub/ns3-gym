@@ -15,6 +15,7 @@
  *
  * Authors: Marcos Talau <talau@users.sourceforge.net>
  *          Duy Nguyen <duy@soe.ucsc.edu>
+ * Modified by:   Pasquale Imputato <p.imputato@gmail.com>
  *
  */
 
@@ -43,6 +44,7 @@
 #include "ns3/flow-monitor-helper.h"
 #include "ns3/point-to-point-module.h"
 #include "ns3/applications-module.h"
+#include "ns3/traffic-control-module.h"
 
 using namespace ns3;
 
@@ -75,9 +77,9 @@ std::stringstream filePlotQueue;
 std::stringstream filePlotQueueAvg;
 
 void
-CheckQueueSize (Ptr<Queue> queue)
+CheckQueueSize (Ptr<QueueDisc> queue)
 {
-  uint32_t qSize = StaticCast<RedQueue> (queue)->GetQueueSize ();
+  uint32_t qSize = StaticCast<RedQueueDisc> (queue)->GetQueueSize ();
 
   avgQueueSize += qSize;
   checkTimes++;
@@ -253,7 +255,7 @@ BuildAppsTest (uint32_t test)
 int
 main (int argc, char *argv[])
 {
-  LogComponentEnable ("RedQueue", LOG_LEVEL_INFO);
+  LogComponentEnable ("RedQueueDisc", LOG_LEVEL_INFO);
 
   uint32_t redTest;
   std::string redLinkDataRate = "1.5Mbps";
@@ -315,32 +317,41 @@ main (int argc, char *argv[])
 
   // RED params
   NS_LOG_INFO ("Set RED params");
-  Config::SetDefault ("ns3::RedQueue::Mode", StringValue ("QUEUE_MODE_PACKETS"));
-  Config::SetDefault ("ns3::RedQueue::MeanPktSize", UintegerValue (meanPktSize));
-  Config::SetDefault ("ns3::RedQueue::Wait", BooleanValue (true));
-  Config::SetDefault ("ns3::RedQueue::Gentle", BooleanValue (true));
-  Config::SetDefault ("ns3::RedQueue::QW", DoubleValue (0.002));
-  Config::SetDefault ("ns3::RedQueue::MinTh", DoubleValue (5));
-  Config::SetDefault ("ns3::RedQueue::MaxTh", DoubleValue (15));
-  Config::SetDefault ("ns3::RedQueue::QueueLimit", UintegerValue (25));
+  Config::SetDefault ("ns3::RedQueueDisc::Mode", StringValue ("QUEUE_MODE_PACKETS"));
+  Config::SetDefault ("ns3::RedQueueDisc::MeanPktSize", UintegerValue (meanPktSize));
+  Config::SetDefault ("ns3::RedQueueDisc::Wait", BooleanValue (true));
+  Config::SetDefault ("ns3::RedQueueDisc::Gentle", BooleanValue (true));
+  Config::SetDefault ("ns3::RedQueueDisc::QW", DoubleValue (0.002));
+  Config::SetDefault ("ns3::RedQueueDisc::MinTh", DoubleValue (5));
+  Config::SetDefault ("ns3::RedQueueDisc::MaxTh", DoubleValue (15));
+  Config::SetDefault ("ns3::RedQueueDisc::QueueLimit", UintegerValue (1000));
 
   if (redTest == 3) // test like 1, but with bad params
     {
-      Config::SetDefault ("ns3::RedQueue::MaxTh", DoubleValue (10));
-      Config::SetDefault ("ns3::RedQueue::QW", DoubleValue (0.003));
+      Config::SetDefault ("ns3::RedQueueDisc::MaxTh", DoubleValue (10));
+      Config::SetDefault ("ns3::RedQueueDisc::QW", DoubleValue (0.003));
     }
   else if (redTest == 5) // test 5, same of test 4, but in byte mode
     {
-      Config::SetDefault ("ns3::RedQueue::Mode", StringValue ("QUEUE_MODE_BYTES"));
-      Config::SetDefault ("ns3::RedQueue::Ns1Compat", BooleanValue (true));
-      Config::SetDefault ("ns3::RedQueue::MinTh", DoubleValue (5 * meanPktSize));
-      Config::SetDefault ("ns3::RedQueue::MaxTh", DoubleValue (15 * meanPktSize));
-      Config::SetDefault ("ns3::RedQueue::QueueLimit", UintegerValue (25 * meanPktSize));
+      Config::SetDefault ("ns3::RedQueueDisc::Mode", StringValue ("QUEUE_MODE_BYTES"));
+      Config::SetDefault ("ns3::RedQueueDisc::Ns1Compat", BooleanValue (true));
+      Config::SetDefault ("ns3::RedQueueDisc::MinTh", DoubleValue (5 * meanPktSize));
+      Config::SetDefault ("ns3::RedQueueDisc::MaxTh", DoubleValue (15 * meanPktSize));
+      Config::SetDefault ("ns3::RedQueueDisc::QueueLimit", UintegerValue (1000 * meanPktSize));
     }
 
   NS_LOG_INFO ("Install internet stack on all nodes.");
   InternetStackHelper internet;
   internet.Install (c);
+
+  TrafficControlHelper tchPfifo;
+  uint16_t handle = tchPfifo.SetRootQueueDisc ("ns3::PfifoFastQueueDisc");
+  tchPfifo.AddInternalQueues (handle, 3, "ns3::DropTailQueue", "MaxPackets", UintegerValue (1000));
+  tchPfifo.AddPacketFilter (handle, "ns3::PfifoFastIpv4PacketFilter");
+
+  TrafficControlHelper tchRed;
+  tchRed.SetRootQueueDisc ("ns3::RedQueueDisc", "LinkBandwidth", StringValue (redLinkDataRate),
+                           "LinkDelay", StringValue (redLinkDelay));
 
   NS_LOG_INFO ("Create channels");
   PointToPointHelper p2p;
@@ -349,28 +360,32 @@ main (int argc, char *argv[])
   p2p.SetDeviceAttribute ("DataRate", StringValue ("10Mbps"));
   p2p.SetChannelAttribute ("Delay", StringValue ("2ms"));
   NetDeviceContainer devn0n2 = p2p.Install (n0n2);
+  tchPfifo.Install (devn0n2);
 
   p2p.SetQueue ("ns3::DropTailQueue");
   p2p.SetDeviceAttribute ("DataRate", StringValue ("10Mbps"));
   p2p.SetChannelAttribute ("Delay", StringValue ("3ms"));
   NetDeviceContainer devn1n2 = p2p.Install (n1n2);
+  tchPfifo.Install (devn1n2);
 
-  p2p.SetQueue ("ns3::RedQueue", // only backbone link has RED queue
-                "LinkBandwidth", StringValue (redLinkDataRate),
-                "LinkDelay", StringValue (redLinkDelay)); 
+  p2p.SetQueue ("ns3::DropTailQueue");
   p2p.SetDeviceAttribute ("DataRate", StringValue (redLinkDataRate));
   p2p.SetChannelAttribute ("Delay", StringValue (redLinkDelay));
   NetDeviceContainer devn2n3 = p2p.Install (n2n3);
+  // only backbone link has RED queue disc
+  QueueDiscContainer queueDiscs = tchRed.Install (devn2n3);
 
   p2p.SetQueue ("ns3::DropTailQueue");
   p2p.SetDeviceAttribute ("DataRate", StringValue ("10Mbps"));
   p2p.SetChannelAttribute ("Delay", StringValue ("4ms"));
   NetDeviceContainer devn3n4 = p2p.Install (n3n4);
+  tchPfifo.Install (devn3n4);
 
   p2p.SetQueue ("ns3::DropTailQueue");
   p2p.SetDeviceAttribute ("DataRate", StringValue ("10Mbps"));
   p2p.SetChannelAttribute ("Delay", StringValue ("5ms"));
   NetDeviceContainer devn3n5 = p2p.Install (n3n5);
+  tchPfifo.Install (devn3n5);
 
   NS_LOG_INFO ("Assign IP Addresses");
   Ipv4AddressHelper ipv4;
@@ -396,12 +411,11 @@ main (int argc, char *argv[])
   if (redTest == 5) 
     {
       // like in ns2 test, r2 -> r1, have a queue in packet mode
-      Ptr<PointToPointNetDevice> nd = StaticCast<PointToPointNetDevice> (devn2n3.Get (1));
-      Ptr<Queue> queue = nd->GetQueue ();
+      Ptr<QueueDisc> queue = queueDiscs.Get (1);
 
-      StaticCast<RedQueue> (queue)->SetMode (RedQueue::QUEUE_MODE_PACKETS);
-      StaticCast<RedQueue> (queue)->SetTh (5, 15);
-      StaticCast<RedQueue> (queue)->SetQueueLimit (25);
+      StaticCast<RedQueueDisc> (queue)->SetMode (Queue::QUEUE_MODE_PACKETS);
+      StaticCast<RedQueueDisc> (queue)->SetTh (5, 15);
+      StaticCast<RedQueueDisc> (queue)->SetQueueLimit (1000);
     }
 
   BuildAppsTest (redTest);
@@ -428,8 +442,7 @@ main (int argc, char *argv[])
 
       remove (filePlotQueue.str ().c_str ());
       remove (filePlotQueueAvg.str ().c_str ());
-      Ptr<PointToPointNetDevice> nd = StaticCast<PointToPointNetDevice> (devn2n3.Get (0));
-      Ptr<Queue> queue = nd->GetQueue ();
+      Ptr<QueueDisc> queue = queueDiscs.Get (0);
       Simulator::ScheduleNow (&CheckQueueSize, queue);
     }
 
@@ -446,15 +459,13 @@ main (int argc, char *argv[])
 
   if (printRedStats)
     {
-      Ptr<PointToPointNetDevice> nd = StaticCast<PointToPointNetDevice> (devn2n3.Get (0));
-      RedQueue::Stats st = StaticCast<RedQueue> (nd->GetQueue ())->GetStats ();
+      RedQueueDisc::Stats st = StaticCast<RedQueueDisc> (queueDiscs.Get (0))->GetStats ();
       std::cout << "*** RED stats from Node 2 queue ***" << std::endl;
       std::cout << "\t " << st.unforcedDrop << " drops due prob mark" << std::endl;
       std::cout << "\t " << st.forcedDrop << " drops due hard mark" << std::endl;
       std::cout << "\t " << st.qLimDrop << " drops due queue full" << std::endl;
 
-      nd = StaticCast<PointToPointNetDevice> (devn2n3.Get (1));
-      st = StaticCast<RedQueue> (nd->GetQueue ())->GetStats ();
+      st = StaticCast<RedQueueDisc> (queueDiscs.Get (1))->GetStats ();
       std::cout << "*** RED stats from Node 3 queue ***" << std::endl;
       std::cout << "\t " << st.unforcedDrop << " drops due prob mark" << std::endl;
       std::cout << "\t " << st.forcedDrop << " drops due hard mark" << std::endl;
