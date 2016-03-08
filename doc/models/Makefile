@@ -77,6 +77,7 @@ SOURCES = \
 	$(SRC)/uan/doc/uan.rst \
 	$(SRC)/topology-read/doc/topology.rst \
 	$(SRC)/traffic-control/doc/traffic-control-layer.rst \
+	$(SRC)/traffic-control/doc/queue-discs.rst \
 	$(SRC)/spectrum/doc/spectrum.rst \
 	$(SRC)/stats/doc/adaptor.rst \
 	$(SRC)/stats/doc/aggregator.rst \
@@ -266,6 +267,8 @@ SOURCEFIGS = \
 	$(SRC)/spectrum/doc/spectrum-tv-rand-geo-points.eps \
 	$(SRC)/spectrum/doc/spectrum-tv-8vsb.png \
 	$(SRC)/spectrum/doc/spectrum-tv-cofdm.png \
+	$(SRC)/traffic-control/doc/classful-queue-disc.dia \
+	$(SRC)/traffic-control/doc/multi-queue-aware-queue-disc.dia \
 	$(SRC)/lr-wpan/doc/lr-wpan-arch.dia \
 	$(SRC)/lr-wpan/doc/lr-wpan-data-example.dia \
 	$(SRC)/lr-wpan/doc/lr-wpan-primitives.dia \
@@ -352,6 +355,8 @@ IMAGES_EPS = \
 	$(FIGURES)/auvmobility-classes.eps \
 	$(FIGURES)/spectrum-analyzer-example.eps \
 	$(FIGURES)/spectrum-tv-rand-geo-points.eps \
+	$(FIGURES)/classful-queue-disc.eps \
+	$(FIGURES)/multi-queue-aware-queue-disc.eps \
 	$(FIGURES)/lr-wpan-primitives.eps \
 	$(FIGURES)/lr-wpan-data-example.eps \
 	$(FIGURES)/lr-wpan-arch.eps \

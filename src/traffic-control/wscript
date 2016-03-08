@@ -9,7 +9,9 @@
 def build(bld):
     module = bld.create_ns3_module('traffic-control', ['core'])
     module.source = [
-      'model/traffic-control-layer.cc'
+      'model/traffic-control-layer.cc',
+      'model/packet-filter.cc',
+      'model/queue-disc.cc'
         ]
 
     module_test = bld.create_ns3_module_test_library('traffic-control')
@@ -19,7 +21,9 @@ def build(bld):
     headers = bld(features='ns3header')
     headers.module = 'traffic-control'
     headers.source = [
-      'model/traffic-control-layer.h'
+      'model/traffic-control-layer.h',
+      'model/packet-filter.h',
+      'model/queue-disc.h'
         ]
 
     if bld.env.ENABLE_EXAMPLES:
