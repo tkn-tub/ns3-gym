@@ -12,7 +12,9 @@ def build(bld):
       'model/traffic-control-layer.cc',
       'model/packet-filter.cc',
       'model/queue-disc.cc',
-      'model/pfifo-fast-queue-disc.cc'
+      'model/pfifo-fast-queue-disc.cc',
+      'helper/traffic-control-helper.cc',
+      'helper/queue-disc-container.cc'
         ]
 
     module_test = bld.create_ns3_module_test_library('traffic-control')
@@ -25,7 +27,9 @@ def build(bld):
       'model/traffic-control-layer.h',
       'model/packet-filter.h',
       'model/queue-disc.h',
-      'model/pfifo-fast-queue-disc.h'
+      'model/pfifo-fast-queue-disc.h',
+      'helper/traffic-control-helper.h',
+      'helper/queue-disc-container.h'
         ]
 
     if bld.env.ENABLE_EXAMPLES:
