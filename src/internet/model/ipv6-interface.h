@@ -35,6 +35,7 @@ namespace ns3
 class NetDevice;
 class Packet;
 class Node;
+class TrafficControlLayer;
 class NdiscCache;
 
 /**
@@ -76,6 +77,12 @@ public:
    * \param device NetDevice
    */
   void SetDevice (Ptr<NetDevice> device);
+
+  /**
+   * \brief Set the TrafficControlLayer.
+   * \param tc TrafficControlLayer object
+   */
+  void SetTrafficControl (Ptr<TrafficControlLayer> tc);
 
   /**
    * \brief Get the NetDevice.
@@ -324,6 +331,11 @@ private:
    * \brief NetDevice associated with this interface.
    */
   Ptr<NetDevice> m_device;
+
+  /**
+   * \brief TrafficControlLayer associated with this interface.
+   */
+  Ptr<TrafficControlLayer> m_tc;
 
   /**
    * \brief Neighbor cache.

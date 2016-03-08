@@ -391,6 +391,7 @@ Ipv4L3Protocol::AddInterface (Ptr<NetDevice> device)
   Ptr<Ipv4Interface> interface = CreateObject<Ipv4Interface> ();
   interface->SetNode (m_node);
   interface->SetDevice (device);
+  interface->SetTrafficControl (tc);
   interface->SetForwarding (m_ipForward);
   return AddIpv4Interface (interface);
 }

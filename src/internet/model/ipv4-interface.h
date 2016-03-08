@@ -33,6 +33,7 @@ namespace ns3 {
 class NetDevice;
 class Packet;
 class Node;
+class TrafficControlLayer;
 class ArpCache;
 
 /**
@@ -68,6 +69,11 @@ public:
    * \param device NetDevice
    */
   void SetDevice (Ptr<NetDevice> device);
+  /**
+   * \brief Set the TrafficControlLayer.
+   * \param tc TrafficControlLayer object
+   */
+  void SetTrafficControl (Ptr<TrafficControlLayer> tc);
   /**
    * \brief Set ARP cache used by this interface
    * \param arpCache the ARP cache
@@ -210,6 +216,7 @@ private:
   Ipv4InterfaceAddressList m_ifaddrs; //!< Address list
   Ptr<Node> m_node; //!< The associated node
   Ptr<NetDevice> m_device; //!< The associated NetDevice
+  Ptr<TrafficControlLayer> m_tc; //!< The associated TrafficControlLayer
   Ptr<ArpCache> m_cache; //!< ARP cache
 };
 

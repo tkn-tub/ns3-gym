@@ -205,6 +205,7 @@ uint32_t Ipv6L3Protocol::AddInterface (Ptr<NetDevice> device)
 
   interface->SetNode (m_node);
   interface->SetDevice (device);
+  interface->SetTrafficControl (tc);
   interface->SetForwarding (m_ipForward);
   return AddIpv6Interface (interface);
 }
