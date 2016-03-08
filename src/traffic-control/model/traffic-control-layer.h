@@ -1,6 +1,7 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2015 Natale Patriciello <natale.patriciello@gmail.com>
+ *               2016 Stefano Avallone <stavallo@unina.it>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -22,12 +23,17 @@
 #include "ns3/address.h"
 #include "ns3/net-device.h"
 #include "ns3/node.h"
+#include "queue-disc.h"
+#include <map>
+#include <vector>
 
 namespace ns3 {
 
 class Packet;
 
 /**
+ * \ingroup traffic-control
+ *
  * \brief Traffic control layer definition
  *
  * This layer stays between NetDevices (L2) and any network protocol (e.g. IP).
@@ -37,7 +43,9 @@ class Packet;
  * Basically, we manage both IN and OUT directions (sometimes called RX and TX,
  * respectively). The OUT direction is easy to follow, since it involves
  * direct calls: upper layer (e.g. IP) calls the Send method on an instance of
- * this class, which then call the Send method of some NetDevice.
+ * this class, which then calls the Enqueue method of the QueueDisc associated
+ * with the device. The Dequeue method of the QueueDisc finally calls the Send
+ * method of the NetDevice.
  *
  * The IN direction uses a little trick to reduce dependencies between modules.
  * In simple words, we use Callbacks to connect upper layer (which should register
@@ -112,6 +120,48 @@ public:
                                 uint16_t protocolType,
                                 Ptr<NetDevice> device);
 
+  /// Typedef for queue disc vector
+  typedef std::vector<Ptr<QueueDisc> > QueueDiscVector;
+
+  /**
+   * \brief Perform the operations that the traffic control layer needs to do when
+   *        an IPv4/v6 interface is added to a device
+   * \param device the device which the IPv4/v6 interface has been added to
+   *
+   * This method creates a NetDeviceQueueInterface for the device
+   */
+  virtual void SetupDevice (Ptr<NetDevice> device);
+
+  /**
+   * \brief This method can be used to set the root queue disc installed on a device
+   *
+   * \param device the device on which the provided queue disc will be installed
+   * \param qDisc the queue disc to be installed as root queue disc on device
+   */
+  virtual void SetRootQueueDiscOnDevice (Ptr<NetDevice> device, Ptr<QueueDisc> qDisc);
+
+  /**
+   * \brief This method can be used to get the root queue disc installed on a device
+   *
+   * \param device the device on which the requested root queue disc is installed
+   * \return the root queue disc installed on the given device
+   */
+  virtual Ptr<QueueDisc> GetRootQueueDiscOnDevice (Ptr<NetDevice> device);
+
+  /**
+   * \brief This method can be used to remove the root queue disc (and associated
+   *        filters, classes and queues) installed on a device
+   *
+   * \param device the device on which the installed queue disc will be deleted
+   */
+  virtual void DeleteRootQueueDiscOnDevice (Ptr<NetDevice> device);
+
+  /**
+   * \brief Set node associated with this stack.
+   * \param node node to set
+   */
+  void SetNode (Ptr<Node> node);
+
   /**
    * \brief Called by NetDevices, incoming packet
    *
@@ -141,6 +191,12 @@ public:
   virtual void Send (Ptr<NetDevice> device, Ptr<Packet> packet,
                      const Address& dest, uint16_t protocolNumber);
 
+protected:
+
+  virtual void DoDispose (void);
+  virtual void DoInitialize (void);
+  virtual void NotifyNewAggregate (void);
+
 private:
   /**
    * \brief Protocol handler entry.
@@ -156,6 +212,24 @@ private:
   /// Typedef for protocol handlers container
   typedef std::vector<struct ProtocolHandlerEntry> ProtocolHandlerList;
 
+  /// Typedef for queue disc vector
+  typedef std::pair<Ptr<NetDeviceQueueInterface>, QueueDiscVector> NetDeviceInfo;
+
+  /**
+   * \brief Lookup a given Ptr<NetDevice> in the node's list of devices
+   * \param device the device to lookup
+   * \return the index of device in the node's list of devices, if it is
+   *         found, and the number of devices, otherwise
+   */
+  uint32_t GetDeviceIndex (Ptr<NetDevice> device);
+
+  /// The node this TrafficControlLayer object is aggregated to
+  Ptr<Node> m_node;
+  /// This vector stores the root queue discs installed on all the devices of the node.
+  /// Devices are sorted as in Node::m_devices
+  QueueDiscVector m_rootQueueDiscs;
+  /// This map plays the role of the qdisc field of the netdev_queue struct in Linux
+  std::map<Ptr<NetDevice>, NetDeviceInfo> m_netDeviceQueueToQueueDiscMap;
   ProtocolHandlerList m_handlers;  //!< List of upper-layer handlers
 };
 
