@@ -16,11 +16,12 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Truc Anh N Nguyen <trucanh524@gmail.com>
+ * Modified by:   Pasquale Imputato <p.imputato@gmail.com>
  *
  */
 
 #include "ns3/test.h"
-#include "ns3/codel-queue.h"
+#include "ns3/codel-queue-disc.h"
 #include "ns3/uinteger.h"
 #include "ns3/string.h"
 #include "ns3/double.h"
@@ -28,6 +29,7 @@
 #include "ns3/simulator.h"
 #include "ns3/network-module.h"
 #include "ns3/core-module.h"
+#include "ns3/ipv4-queue-disc-item.h"
 
 using namespace ns3;
 
@@ -56,19 +58,19 @@ static uint32_t _reciprocal_scale (uint32_t val, uint32_t ep_ro)
 
 
 // Test 1: simple enqueue/dequeue with no drops
-class CoDelQueueBasicEnqueueDequeue : public TestCase
+class CoDelQueueDiscBasicEnqueueDequeue : public TestCase
 {
 public:
-  CoDelQueueBasicEnqueueDequeue (std::string mode);
+  CoDelQueueDiscBasicEnqueueDequeue (std::string mode);
   virtual void DoRun (void);
 
-  void QueueTestSize (Ptr<CoDelQueue> queue, uint32_t size, std::string error)
+  void QueueTestSize (Ptr<CoDelQueueDisc> queue, uint32_t size, std::string error)
   {
-    if (queue->GetMode () == CoDelQueue::QUEUE_MODE_BYTES)
+    if (queue->GetMode () == Queue::QUEUE_MODE_BYTES)
       {
         NS_TEST_EXPECT_MSG_EQ (queue->GetNBytes (), size, error);
       }
-    else if (queue->GetMode () == CoDelQueue::QUEUE_MODE_PACKETS)
+    else if (queue->GetMode () == Queue::QUEUE_MODE_PACKETS)
       {
         NS_TEST_EXPECT_MSG_EQ (queue->GetNPackets (), size, error);
       }
@@ -80,25 +82,29 @@ private:
   StringValue m_mode;
 };
 
-CoDelQueueBasicEnqueueDequeue::CoDelQueueBasicEnqueueDequeue (std::string mode)
+CoDelQueueDiscBasicEnqueueDequeue::CoDelQueueDiscBasicEnqueueDequeue (std::string mode)
   : TestCase ("Basic enqueue and dequeue operations, and attribute setting for " + mode)
 {
   m_mode = StringValue (mode);
 }
 
 void
-CoDelQueueBasicEnqueueDequeue::DoRun (void)
+CoDelQueueDiscBasicEnqueueDequeue::DoRun (void)
 {
-  Ptr<CoDelQueue> queue = CreateObject<CoDelQueue> ();
+  Ptr<CoDelQueueDisc> queue = CreateObject<CoDelQueueDisc> ();
 
   uint32_t pktSize = 1000;
   uint32_t modeSize = 0;
+  
+  Ipv4Header ipHeader;
+  uint32_t headerSize = ipHeader.GetSerializedSize ();
+  Address dest;
 
   NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("Mode", m_mode), true,
                          "Verify that we can actually set the attribute Mode");
   NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("MaxPackets", UintegerValue (1500)), true,
                          "Verify that we can actually set the attribute MaxPackets");
-  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("MaxBytes", UintegerValue (pktSize * 1500)), true,
+  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("MaxBytes", UintegerValue ((pktSize + headerSize) * 1500)), true,
                          "Verify that we can actually set the attribute MaxBytes");
   NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("MinBytes", UintegerValue (pktSize)), true,
                          "Verify that we can actually set the attribute MinBytes");
@@ -107,14 +113,15 @@ CoDelQueueBasicEnqueueDequeue::DoRun (void)
   NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("Target", StringValue ("4ms")), true,
                          "Verify that we can actually set the attribute Target");
 
-  if (queue->GetMode () == CoDelQueue::QUEUE_MODE_BYTES)
+  if (queue->GetMode () == Queue::QUEUE_MODE_BYTES)
     {
-      modeSize = pktSize;
+      modeSize = pktSize + headerSize;
     }
-  else if (queue->GetMode () == CoDelQueue::QUEUE_MODE_PACKETS)
+  else if (queue->GetMode () == Queue::QUEUE_MODE_PACKETS)
     {
       modeSize = 1;
     }
+  queue->Initialize ();
 
   Ptr<Packet> p1, p2, p3, p4, p5, p6;
   p1 = Create<Packet> (pktSize);
@@ -125,73 +132,73 @@ CoDelQueueBasicEnqueueDequeue::DoRun (void)
   p6 = Create<Packet> (pktSize);
 
   QueueTestSize (queue, 0 * modeSize, "There should be no packets in queue");
-  queue->Enqueue (Create<QueueItem> (p1));
+  queue->Enqueue (Create<Ipv4QueueDiscItem> (p1, dest, 0, ipHeader));
   QueueTestSize (queue, 1 * modeSize, "There should be one packet in queue");
-  queue->Enqueue (Create<QueueItem> (p2));
+  queue->Enqueue (Create<Ipv4QueueDiscItem> (p2, dest, 0, ipHeader));
   QueueTestSize (queue, 2 * modeSize, "There should be two packets in queue");
-  queue->Enqueue (Create<QueueItem> (p3));
+  queue->Enqueue (Create<Ipv4QueueDiscItem> (p3, dest, 0, ipHeader));
   QueueTestSize (queue, 3 * modeSize, "There should be three packets in queue");
-  queue->Enqueue (Create<QueueItem> (p4));
+  queue->Enqueue (Create<Ipv4QueueDiscItem> (p4, dest, 0, ipHeader));
   QueueTestSize (queue, 4 * modeSize, "There should be four packets in queue");
-  queue->Enqueue (Create<QueueItem> (p5));
+  queue->Enqueue (Create<Ipv4QueueDiscItem> (p5, dest, 0, ipHeader));
   QueueTestSize (queue, 5 * modeSize, "There should be five packets in queue");
-  queue->Enqueue (Create<QueueItem> (p6));
+  queue->Enqueue (Create<Ipv4QueueDiscItem> (p6, dest, 0, ipHeader));
   QueueTestSize (queue, 6 * modeSize, "There should be six packets in queue");
 
   NS_TEST_EXPECT_MSG_EQ (queue->GetDropOverLimit (), 0, "There should be no packets being dropped due to full queue");
 
-  Ptr<QueueItem> item;
+  Ptr<Ipv4QueueDiscItem> item;
 
-  item = queue->Dequeue ();
+  item = DynamicCast<Ipv4QueueDiscItem> (queue->Dequeue ());
   NS_TEST_EXPECT_MSG_EQ ((item != 0), true, "I want to remove the first packet");
   QueueTestSize (queue, 5 * modeSize, "There should be five packets in queue");
   NS_TEST_EXPECT_MSG_EQ (item->GetPacket ()->GetUid (), p1->GetUid (), "was this the first packet ?");
 
-  item = queue->Dequeue ();
+  item = DynamicCast<Ipv4QueueDiscItem> (queue->Dequeue ());
   NS_TEST_EXPECT_MSG_EQ ((item != 0), true, "I want to remove the second packet");
   QueueTestSize (queue, 4 * modeSize, "There should be four packets in queue");
   NS_TEST_EXPECT_MSG_EQ (item->GetPacket ()->GetUid (), p2->GetUid (), "Was this the second packet ?");
 
-  item = queue->Dequeue ();
+  item = DynamicCast<Ipv4QueueDiscItem> (queue->Dequeue ());
   NS_TEST_EXPECT_MSG_EQ ((item != 0), true, "I want to remove the third packet");
   QueueTestSize (queue, 3 * modeSize, "There should be three packets in queue");
   NS_TEST_EXPECT_MSG_EQ (item->GetPacket ()->GetUid (), p3->GetUid (), "Was this the third packet ?");
 
-  item = queue->Dequeue ();
+  item = DynamicCast<Ipv4QueueDiscItem> (queue->Dequeue ());
   NS_TEST_EXPECT_MSG_EQ ((item != 0), true, "I want to remove the forth packet");
   QueueTestSize (queue, 2 * modeSize, "There should be two packets in queue");
   NS_TEST_EXPECT_MSG_EQ (item->GetPacket ()->GetUid (), p4->GetUid (), "Was this the fourth packet ?");
 
-  item = queue->Dequeue ();
+  item = DynamicCast<Ipv4QueueDiscItem> (queue->Dequeue ());
   NS_TEST_EXPECT_MSG_EQ ((item != 0), true, "I want to remove the fifth packet");
   QueueTestSize (queue, 1 * modeSize, "There should be one packet in queue");
   NS_TEST_EXPECT_MSG_EQ (item->GetPacket ()->GetUid (), p5->GetUid (), "Was this the fifth packet ?");
 
-  item = queue->Dequeue ();
+  item = DynamicCast<Ipv4QueueDiscItem> (queue->Dequeue ());
   NS_TEST_EXPECT_MSG_EQ ((item != 0), true, "I want to remove the last packet");
   QueueTestSize (queue, 0 * modeSize, "There should be zero packet in queue");
   NS_TEST_EXPECT_MSG_EQ (item->GetPacket ()->GetUid (), p6->GetUid (), "Was this the sixth packet ?");
 
-  item = queue->Dequeue ();
+  item = DynamicCast<Ipv4QueueDiscItem> (queue->Dequeue ());
   NS_TEST_EXPECT_MSG_EQ ((item == 0), true, "There are really no packets in queue");
 
   NS_TEST_EXPECT_MSG_EQ (queue->GetDropCount (), 0, "There should be no packet drops according to CoDel algorithm");
 }
 
 // Test 2: enqueue with drops due to queue overflow
-class CoDelQueueBasicOverflow : public TestCase
+class CoDelQueueDiscBasicOverflow : public TestCase
 {
 public:
-  CoDelQueueBasicOverflow (std::string mode);
+  CoDelQueueDiscBasicOverflow (std::string mode);
   virtual void DoRun (void);
 
-  void QueueTestSize (Ptr<CoDelQueue> queue, uint32_t size, std::string error)
+  void QueueTestSize (Ptr<CoDelQueueDisc> queue, uint32_t size, std::string error)
   {
-    if (queue->GetMode () == CoDelQueue::QUEUE_MODE_BYTES)
+    if (queue->GetMode () == Queue::QUEUE_MODE_BYTES)
       {
         NS_TEST_EXPECT_MSG_EQ (queue->GetNBytes (), size, error);
       }
-    else if (queue->GetMode () == CoDelQueue::QUEUE_MODE_PACKETS)
+    else if (queue->GetMode () == Queue::QUEUE_MODE_PACKETS)
       {
         NS_TEST_EXPECT_MSG_EQ (queue->GetNPackets (), size, error);
       }
@@ -200,31 +207,35 @@ public:
   }
 
 private:
-  void Enqueue (Ptr<CoDelQueue> queue, uint32_t size, uint32_t nPkt);
+  void Enqueue (Ptr<CoDelQueueDisc> queue, uint32_t size, uint32_t nPkt);
   StringValue m_mode;
 };
 
-CoDelQueueBasicOverflow::CoDelQueueBasicOverflow (std::string mode)
+CoDelQueueDiscBasicOverflow::CoDelQueueDiscBasicOverflow (std::string mode)
   : TestCase ("Basic overflow behavior for " + mode)
 {
   m_mode = StringValue (mode);
 }
 
 void
-CoDelQueueBasicOverflow::DoRun (void)
+CoDelQueueDiscBasicOverflow::DoRun (void)
 {
-  Ptr<CoDelQueue> queue = CreateObject<CoDelQueue> ();
+  Ptr<CoDelQueueDisc> queue = CreateObject<CoDelQueueDisc> ();
   uint32_t pktSize = 1000;
   uint32_t modeSize = 0;
 
   NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("Mode", m_mode), true,
                          "Verify that we can actually set the attribute Mode");
 
-  if (queue->GetMode () == CoDelQueue::QUEUE_MODE_BYTES)
+  Ipv4Header ipHeader;
+  uint32_t headerSize = ipHeader.GetSerializedSize ();
+  Address dest;
+
+  if (queue->GetMode () == Queue::QUEUE_MODE_BYTES)
     {
-      modeSize = pktSize;
+      modeSize = pktSize + headerSize;
     }
-  else if (queue->GetMode () == CoDelQueue::QUEUE_MODE_PACKETS)
+  else if (queue->GetMode () == Queue::QUEUE_MODE_PACKETS)
     {
       modeSize = 1;
     }
@@ -236,50 +247,54 @@ CoDelQueueBasicOverflow::DoRun (void)
 
   NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("MaxPackets", UintegerValue (500)), true,
                          "Verify that we can actually set the attribute MaxPackets");
-  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("MaxBytes", UintegerValue (pktSize * 500)), true,
+  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("MaxBytes", UintegerValue ((pktSize + headerSize) * 500)), true,
                          "Verify that we can actually set the attribute MaxBytes");
   NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("MinBytes", UintegerValue (pktSize)), true,
                          "Verify that we can actually set the attribute MinBytes");
 
+  queue->Initialize ();
+
   Enqueue (queue, pktSize, 500);
-  queue->Enqueue (Create<QueueItem> (p1));
-  queue->Enqueue (Create<QueueItem> (p2));
-  queue->Enqueue (Create<QueueItem> (p3));
+  queue->Enqueue (Create<Ipv4QueueDiscItem> (p1, dest, 0, ipHeader));
+  queue->Enqueue (Create<Ipv4QueueDiscItem> (p2, dest, 0, ipHeader));
+  queue->Enqueue (Create<Ipv4QueueDiscItem> (p3, dest, 0, ipHeader));
 
   QueueTestSize (queue, 500 * modeSize, "There should be 500 packets in queue");
   NS_TEST_EXPECT_MSG_EQ (queue->GetDropOverLimit (), 3, "There should be three packets being dropped due to full queue");
 }
 
 void
-CoDelQueueBasicOverflow::Enqueue (Ptr<CoDelQueue> queue, uint32_t size, uint32_t nPkt)
+CoDelQueueDiscBasicOverflow::Enqueue (Ptr<CoDelQueueDisc> queue, uint32_t size, uint32_t nPkt)
 {
+  Ipv4Header ipHeader;
+  Address dest;
   for (uint32_t i = 0; i < nPkt; i++)
     {
-      queue->Enqueue (Create<QueueItem> (Create<Packet> (size)));
+      queue->Enqueue (Create<Ipv4QueueDiscItem> (Create<Packet> (size), dest, 0, ipHeader));
     }
 }
 
 // Test 3: NewtonStep unit test
 // test against explicit port of Linux implementation
-class CoDelQueueNewtonStepTest : public TestCase
+class CoDelQueueDiscNewtonStepTest : public TestCase
 {
 public:
-  CoDelQueueNewtonStepTest ();
+  CoDelQueueDiscNewtonStepTest ();
   virtual void DoRun (void);
 };
 
-CoDelQueueNewtonStepTest::CoDelQueueNewtonStepTest ()
+CoDelQueueDiscNewtonStepTest::CoDelQueueDiscNewtonStepTest ()
   : TestCase ("NewtonStep arithmetic unit test")
 {
 }
 
 void
-CoDelQueueNewtonStepTest::DoRun (void)
+CoDelQueueDiscNewtonStepTest::DoRun (void)
 {
-  Ptr<CoDelQueue> queue = CreateObject<CoDelQueue> ();
+  Ptr<CoDelQueueDisc> queue = CreateObject<CoDelQueueDisc> ();
 
   // Spot check a few points in the expected operational range of
-  // CoDelQueue's m_count and m_recInvSqrt variables
+  // CoDelQueueDisc's m_count and m_recInvSqrt variables
   uint32_t count = 2;
   uint16_t recInvSqrt = 65535;
   queue->m_count = count;
@@ -301,15 +316,15 @@ CoDelQueueNewtonStepTest::DoRun (void)
 
 // Test 4: ControlLaw unit test
 // test against explicit port of Linux implementation
-class CoDelQueueControlLawTest : public TestCase
+class CoDelQueueDiscControlLawTest : public TestCase
 {
 public:
-  CoDelQueueControlLawTest ();
+  CoDelQueueDiscControlLawTest ();
   virtual void DoRun (void);
-  uint32_t _codel_control_law (Ptr<CoDelQueue> queue, uint32_t t);
+  uint32_t _codel_control_law (Ptr<CoDelQueueDisc> queue, uint32_t t);
 };
 
-CoDelQueueControlLawTest::CoDelQueueControlLawTest ()
+CoDelQueueDiscControlLawTest::CoDelQueueDiscControlLawTest ()
   : TestCase ("ControlLaw arithmetic unit test")
 {
 }
@@ -317,16 +332,16 @@ CoDelQueueControlLawTest::CoDelQueueControlLawTest ()
 // The following code borrowed from Linux codel.h,
 // except the addition of queue parameter
 uint32_t
-CoDelQueueControlLawTest::_codel_control_law (Ptr<CoDelQueue> queue, uint32_t t)
+CoDelQueueDiscControlLawTest::_codel_control_law (Ptr<CoDelQueueDisc> queue, uint32_t t)
 {
   return t + _reciprocal_scale (queue->Time2CoDel (queue->m_interval), queue->m_recInvSqrt << REC_INV_SQRT_SHIFT_ns3);
 }
 // End Linux borrrow
 
 void
-CoDelQueueControlLawTest::DoRun (void)
+CoDelQueueDiscControlLawTest::DoRun (void)
 {
-  Ptr<CoDelQueue> queue = CreateObject<CoDelQueue> ();
+  Ptr<CoDelQueueDisc> queue = CreateObject<CoDelQueueDisc> ();
 
   /* Spot check a few points of m_dropNext
    The integer approximations in Linux should be within
@@ -346,19 +361,19 @@ CoDelQueueControlLawTest::DoRun (void)
 }
 
 // Test 5: enqueue/dequeue with drops according to CoDel algorithm
-class CoDelQueueBasicDrop : public TestCase
+class CoDelQueueDiscBasicDrop : public TestCase
 {
 public:
-  CoDelQueueBasicDrop (std::string mode);
+  CoDelQueueDiscBasicDrop (std::string mode);
   virtual void DoRun (void);
 
-  void QueueTestSize (Ptr<CoDelQueue> queue, uint32_t size, std::string error)
+  void QueueTestSize (Ptr<CoDelQueueDisc> queue, uint32_t size, std::string error)
   {
-    if (queue->GetMode () == CoDelQueue::QUEUE_MODE_BYTES)
+    if (queue->GetMode () == Queue::QUEUE_MODE_BYTES)
       {
         NS_TEST_EXPECT_MSG_EQ (queue->GetNBytes (), size, error);
       }
-    else if (queue->GetMode () == CoDelQueue::QUEUE_MODE_PACKETS)
+    else if (queue->GetMode () == Queue::QUEUE_MODE_PACKETS)
       {
         NS_TEST_EXPECT_MSG_EQ (queue->GetNPackets (), size, error);
       }
@@ -367,14 +382,14 @@ public:
   }
 
 private:
-  void Enqueue (Ptr<CoDelQueue> queue, uint32_t size, uint32_t nPkt);
-  void Dequeue (Ptr<CoDelQueue> queue, uint32_t modeSize);
+  void Enqueue (Ptr<CoDelQueueDisc> queue, uint32_t size, uint32_t nPkt);
+  void Dequeue (Ptr<CoDelQueueDisc> queue, uint32_t modeSize);
   void DropNextTracer (uint32_t oldVal, uint32_t newVal);
   StringValue m_mode;
   uint32_t m_dropNextCount;    //count the number of times m_dropNext is recalculated
 };
 
-CoDelQueueBasicDrop::CoDelQueueBasicDrop (std::string mode)
+CoDelQueueDiscBasicDrop::CoDelQueueDiscBasicDrop (std::string mode)
   : TestCase ("Basic drop operations for " + mode)
 {
   m_mode = StringValue (mode);
@@ -382,29 +397,32 @@ CoDelQueueBasicDrop::CoDelQueueBasicDrop (std::string mode)
 }
 
 void
-CoDelQueueBasicDrop::DropNextTracer (uint32_t oldVal, uint32_t newVal)
+CoDelQueueDiscBasicDrop::DropNextTracer (uint32_t oldVal, uint32_t newVal)
 {
   m_dropNextCount++;
 }
 
 void
-CoDelQueueBasicDrop::DoRun (void)
+CoDelQueueDiscBasicDrop::DoRun (void)
 {
-  Ptr<CoDelQueue> queue = CreateObject<CoDelQueue> ();
+  Ptr<CoDelQueueDisc> queue = CreateObject<CoDelQueueDisc> ();
   uint32_t pktSize = 1000;
   uint32_t modeSize = 0;
 
   NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("Mode", m_mode), true,
                          "Verify that we can actually set the attribute Mode");
-
-  if (queue->GetMode () == CoDelQueue::QUEUE_MODE_BYTES)
+  
+  uint32_t headerSize = 20; // size of Ipv4 header
+  if (queue->GetMode () == Queue::QUEUE_MODE_BYTES)
     {
-      modeSize = pktSize;
+      modeSize = pktSize + headerSize;
     }
-  else if (queue->GetMode () == CoDelQueue::QUEUE_MODE_PACKETS)
+  else if (queue->GetMode () == Queue::QUEUE_MODE_PACKETS)
     {
       modeSize = 1;
     }
+
+  queue->Initialize ();
 
   Enqueue (queue, pktSize, 20);
   NS_TEST_EXPECT_MSG_EQ (queue->GetQueueSize (), 20 * modeSize, "There should be 20 packets in queue.");
@@ -412,35 +430,37 @@ CoDelQueueBasicDrop::DoRun (void)
   // Although the first dequeue occurs with a sojourn time above target
   // the dequeue should be successful in this interval
   Time waitUntilFirstDequeue =  2 * queue->GetTarget ();
-  Simulator::Schedule (waitUntilFirstDequeue, &CoDelQueueBasicDrop::Dequeue, this, queue, modeSize);
+  Simulator::Schedule (waitUntilFirstDequeue, &CoDelQueueDiscBasicDrop::Dequeue, this, queue, modeSize);
 
   // This dequeue should cause a drop
   Time waitUntilSecondDequeue = waitUntilFirstDequeue + 2 * queue->GetInterval ();
-  Simulator::Schedule (waitUntilSecondDequeue, &CoDelQueueBasicDrop::Dequeue, this, queue, modeSize);
+  Simulator::Schedule (waitUntilSecondDequeue, &CoDelQueueDiscBasicDrop::Dequeue, this, queue, modeSize);
 
   // Although we are in dropping state, it's not time for next drop
   // the dequeue should not cause a drop
-  Simulator::Schedule (waitUntilSecondDequeue, &CoDelQueueBasicDrop::Dequeue, this, queue, modeSize);
+  Simulator::Schedule (waitUntilSecondDequeue, &CoDelQueueDiscBasicDrop::Dequeue, this, queue, modeSize);
 
   // In dropping time and it's time for next drop
   // the dequeue should cause additional packet drops
-  Simulator::Schedule (waitUntilSecondDequeue * 2, &CoDelQueueBasicDrop::Dequeue, this, queue, modeSize);
+  Simulator::Schedule (waitUntilSecondDequeue * 2, &CoDelQueueDiscBasicDrop::Dequeue, this, queue, modeSize);
 
   Simulator::Run ();
   Simulator::Destroy ();
 }
 
 void
-CoDelQueueBasicDrop::Enqueue (Ptr<CoDelQueue> queue, uint32_t size, uint32_t nPkt)
+CoDelQueueDiscBasicDrop::Enqueue (Ptr<CoDelQueueDisc> queue, uint32_t size, uint32_t nPkt)
 {
+  Ipv4Header ipHeader;
+  Address dest;
   for (uint32_t i = 0; i < nPkt; i++)
     {
-      queue->Enqueue (Create<QueueItem> (Create<Packet> (size)));
+      queue->Enqueue (Create<Ipv4QueueDiscItem> (Create<Packet> (size), dest, 0, ipHeader));
     }
 }
 
 void
-CoDelQueueBasicDrop::Dequeue (Ptr<CoDelQueue> queue, uint32_t modeSize)
+CoDelQueueDiscBasicDrop::Dequeue (Ptr<CoDelQueueDisc> queue, uint32_t modeSize)
 {
   uint32_t initialDropCount = queue->GetDropCount ();
   uint32_t initialQSize = queue->GetQueueSize ();
@@ -450,12 +470,12 @@ CoDelQueueBasicDrop::Dequeue (Ptr<CoDelQueue> queue, uint32_t modeSize)
 
   if (initialDropCount > 0 && currentTime.GetMicroSeconds () >= initialDropNext)
     {
-      queue->TraceConnectWithoutContext ("DropNext", MakeCallback (&CoDelQueueBasicDrop::DropNextTracer, this));
+      queue->TraceConnectWithoutContext ("DropNext", MakeCallback (&CoDelQueueDiscBasicDrop::DropNextTracer, this));
     }
 
   if (initialQSize != 0)
     {
-      Ptr<QueueItem> item = queue->Dequeue ();
+      Ptr<Ipv4QueueDiscItem> item = DynamicCast<Ipv4QueueDiscItem> (queue->Dequeue ());
       if (initialDropCount == 0 && currentTime > queue->GetTarget ())
         {
           if (currentTime < queue->GetInterval ())
@@ -500,24 +520,24 @@ CoDelQueueBasicDrop::Dequeue (Ptr<CoDelQueue> queue, uint32_t modeSize)
     }
 }
 
-static class CoDelQueueTestSuite : public TestSuite
+static class CoDelQueueDiscTestSuite : public TestSuite
 {
 public:
-  CoDelQueueTestSuite ()
-    : TestSuite ("codel-queue", UNIT)
+  CoDelQueueDiscTestSuite ()
+    : TestSuite ("codel-queue-disc", UNIT)
   {
     // Test 1: simple enqueue/dequeue with no drops
-    AddTestCase (new CoDelQueueBasicEnqueueDequeue ("QUEUE_MODE_PACKETS"), TestCase::QUICK);
-    AddTestCase (new CoDelQueueBasicEnqueueDequeue ("QUEUE_MODE_BYTES"), TestCase::QUICK);
+    AddTestCase (new CoDelQueueDiscBasicEnqueueDequeue ("QUEUE_MODE_PACKETS"), TestCase::QUICK);
+    AddTestCase (new CoDelQueueDiscBasicEnqueueDequeue ("QUEUE_MODE_BYTES"), TestCase::QUICK);
     // Test 2: enqueue with drops due to queue overflow
-    AddTestCase (new CoDelQueueBasicOverflow ("QUEUE_MODE_PACKETS"), TestCase::QUICK);
-    AddTestCase (new CoDelQueueBasicOverflow ("QUEUE_MODE_BYTES"), TestCase::QUICK);
+    AddTestCase (new CoDelQueueDiscBasicOverflow ("QUEUE_MODE_PACKETS"), TestCase::QUICK);
+    AddTestCase (new CoDelQueueDiscBasicOverflow ("QUEUE_MODE_BYTES"), TestCase::QUICK);
     // Test 3: test NewtonStep() against explicit port of Linux implementation
-    AddTestCase (new CoDelQueueNewtonStepTest (), TestCase::QUICK);
+    AddTestCase (new CoDelQueueDiscNewtonStepTest (), TestCase::QUICK);
     // Test 4: test ControlLaw() against explicit port of Linux implementation
-    AddTestCase (new CoDelQueueControlLawTest (), TestCase::QUICK);
+    AddTestCase (new CoDelQueueDiscControlLawTest (), TestCase::QUICK);
     // Test 5: enqueue/dequeue with drops according to CoDel algorithm
-    AddTestCase (new CoDelQueueBasicDrop ("QUEUE_MODE_PACKETS"), TestCase::QUICK);
-    AddTestCase (new CoDelQueueBasicDrop ("QUEUE_MODE_PACKETS"), TestCase::QUICK);
+    AddTestCase (new CoDelQueueDiscBasicDrop ("QUEUE_MODE_PACKETS"), TestCase::QUICK);
+    AddTestCase (new CoDelQueueDiscBasicDrop ("QUEUE_MODE_BYTES"), TestCase::QUICK);
   }
 } g_coDelQueueTestSuite;
