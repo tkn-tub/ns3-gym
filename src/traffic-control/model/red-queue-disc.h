@@ -143,6 +143,34 @@ public:
    */
   uint32_t GetQueueSize (void);
 
+   /**
+    * \brief Set the alpha value to adapt m_curMaxP.
+    *
+    * \param alpha The value of alpha to adapt m_curMaxP.
+    */
+   void SetAredAlpha (double alpha);
+
+   /**
+    * \brief Get the alpha value to adapt m_curMaxP.
+    *
+    * \returns The alpha value to adapt m_curMaxP.
+    */
+   double GetAredAlpha (void);
+
+   /**
+    * \brief Set the beta value to adapt m_curMaxP.
+    *
+    * \param beta The value of beta to adapt m_curMaxP.
+    */
+   void SetAredBeta (double beta);
+
+   /**
+    * \brief Get the beta value to adapt m_curMaxP.
+    *
+    * \returns The beta value to adapt m_curMaxP.
+    */
+   double GetAredBeta (void);
+
   /**
    * \brief Set the limit of the queue.
    *
@@ -205,6 +233,12 @@ private:
    * \returns new average queue size
    */
   double Estimator (uint32_t nQueued, uint32_t m, double qAvg, double qW);
+   /**
+    * \brief Update m_curMaxP
+    * \param newAve new average queue length
+    * \param now Current Time
+    */
+  void UpdateMaxP (double newAve, Time now);
   /**
    * \brief Check if a packet needs to be dropped due to probability mark
    * \param item queue item
@@ -247,11 +281,20 @@ private:
   uint32_t m_idlePktSize;   //!< Avg pkt size used during idle times
   bool m_isWait;            //!< True for waiting between dropped packets
   bool m_isGentle;          //!< True to increases dropping prob. slowly when ave queue exceeds maxthresh
+  bool m_isARED;            //!< True to enable Adaptive RED
+  bool m_isAdaptMaxP;       //!< True to adapt m_curMaxP
   double m_minTh;           //!< Min avg length threshold (bytes)
   double m_maxTh;           //!< Max avg length threshold (bytes), should be >= 2*minTh
   uint32_t m_queueLimit;    //!< Queue limit in bytes / packets
   double m_qW;              //!< Queue weight given to cur queue size sample
   double m_lInterm;         //!< The max probability of dropping a packet
+  Time m_targetDelay;       //!< Target average queuing delay in ARED
+  Time m_interval;          //!< Time interval to update m_curMaxP
+  double m_top;             //!< Upper bound for m_curMaxP in ARED
+  double m_bottom;          //!< Lower bound for m_curMaxP in ARED
+  double m_alpha;           //!< Increment parameter for m_curMaxP in ARED
+  double m_beta;            //!< Decrement parameter for m_curMaxP in ARED
+  Time m_rtt;               //!< Rtt to be considered while automatically setting m_bottom in ARED
   bool m_isNs1Compat;       //!< Ns-1 compatibility
   DataRate m_linkBandwidth; //!< Link bandwidth
   Time m_linkDelay;         //!< Link delay
@@ -263,6 +306,7 @@ private:
   double m_vC;              //!< (1.0 - m_curMaxP) / m_maxTh - used in "gentle" mode
   double m_vD;              //!< 2.0 * m_curMaxP - 1.0 - used in "gentle" mode
   double m_curMaxP;         //!< Current max_p
+  Time m_lastSet;           //!< Last time m_curMaxP was updated
   double m_vProb;           //!< Prob. of packet drop
   uint32_t m_countBytes;    //!< Number of bytes since last drop
   uint32_t m_old;           //!< 0 when average queue first exceeds threshold
