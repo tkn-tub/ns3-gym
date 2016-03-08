@@ -24,6 +24,7 @@ def build(bld):
       'test/pfifo-fast-queue-disc-test-suite.cc',
       'test/red-queue-disc-test-suite.cc',
       'test/codel-queue-disc-test-suite.cc',
+      'test/adaptive-red-queue-disc-test-suite.cc',
         ]
 
     headers = bld(features='ns3header')
