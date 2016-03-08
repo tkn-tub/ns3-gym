@@ -45,6 +45,7 @@
 #include "ns3/ipv4-list-routing.h"
 #include "ns3/udp-l4-protocol.h"
 #include "ns3/tcp-l4-protocol.h"
+#include "ns3/traffic-control-layer.h"
 #include "ns3/simulator.h"
 #include "ns3/node.h"
 
@@ -72,6 +73,9 @@ AddInternetStack (Ptr<Node> node)
   //UDP
   Ptr<UdpL4Protocol> udp = CreateObject<UdpL4Protocol> ();
   node->AggregateObject (udp);
+  // Traffic Control
+  Ptr<TrafficControlLayer> tc = CreateObject<TrafficControlLayer> ();
+  node->AggregateObject (tc);
 }
 
 }
@@ -87,7 +91,7 @@ private:
 };
 
 Ipv4PacketInfoTagTest::Ipv4PacketInfoTagTest ()
-  : TestCase ("Ipv4PacketInfoTagTest") 
+  : TestCase ("Ipv4PacketInfoTagTest")
 {
 }
 
@@ -164,7 +168,7 @@ Ipv4PacketInfoTagTest::DoRun (void)
   socket->SetRecvPktInfo (true);
   socket->SetRecvCallback (MakeCallback (&Ipv4PacketInfoTagTest::RxCb, this));
 
-  // receive on loopback 
+  // receive on loopback
   Simulator::ScheduleWithContext (socket->GetNode ()->GetId (), Seconds (0),
                                   &Ipv4PacketInfoTagTest::DoSendData, this, socket, "127.0.0.1");
   Simulator::Run ();
@@ -183,7 +187,7 @@ Ipv4PacketInfoTagTest::DoRun (void)
   socket->SetRecvPktInfo (true);
   socket->SetRecvCallback (MakeCallback (&Ipv4PacketInfoTagTest::RxCb, this));
 
-  // receive on loopback 
+  // receive on loopback
   Simulator::ScheduleWithContext (socket->GetNode ()->GetId (), Seconds (0),
                                   &Ipv4PacketInfoTagTest::DoSendData, this, socket, "127.0.0.1");
   Simulator::Run ();

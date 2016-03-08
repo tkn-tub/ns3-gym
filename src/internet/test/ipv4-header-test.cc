@@ -1,7 +1,7 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2010 Hajime Tazaki
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
@@ -38,6 +38,7 @@
 #include "ns3/icmpv4-l4-protocol.h"
 #include "ns3/ipv4-list-routing.h"
 #include "ns3/ipv4-static-routing.h"
+#include "ns3/traffic-control-layer.h"
 
 #include <string>
 #include <sstream>
@@ -67,7 +68,10 @@ AddInternetStack (Ptr<Node> node)
   node->AggregateObject (icmp);
   // //Ipv4Raw
   // Ptr<Ipv4UdpL4Protocol> udp = CreateObject<UdpL4Protocol> ();
-  // node->AggregateObject(udp); 
+  // node->AggregateObject(udp);
+  // Traffic Control
+  Ptr<TrafficControlLayer> tc = CreateObject<TrafficControlLayer> ();
+  node->AggregateObject (tc);
 }
 
 
@@ -88,7 +92,7 @@ public:
 
 
 Ipv4HeaderTest::Ipv4HeaderTest ()
-  : TestCase ("IPv4 Header Test") 
+  : TestCase ("IPv4 Header Test")
 {
 }
 
@@ -231,7 +235,7 @@ Ipv4HeaderTest::DoRun (void)
       m_receivedPacket->RemoveAllByteTags ();
       m_receivedPacket = 0;
     }
- 
+
   // Ecn tests
   std::cout << "Ecn Test\n";
   std::vector <Ipv4Header::EcnType> vEcnTypes;
@@ -239,7 +243,7 @@ Ipv4HeaderTest::DoRun (void)
   vEcnTypes.push_back (Ipv4Header::ECN_ECT1);
   vEcnTypes.push_back (Ipv4Header::ECN_ECT0);
   vEcnTypes.push_back (Ipv4Header::ECN_CE);
-  
+
   for (uint32_t i = 0; i < vEcnTypes.size (); i++)
     {
       SendData_IpHdr_Dscp (txSocket, "10.0.0.1", Ipv4Header::DscpDefault, vEcnTypes [i]);
@@ -252,7 +256,7 @@ Ipv4HeaderTest::DoRun (void)
     }
 
 
- 
+
   Simulator::Destroy ();
 }
 //-----------------------------------------------------------------------------

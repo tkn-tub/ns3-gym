@@ -2,7 +2,7 @@
 /*
  * Copyright (c) 2007 Georgia Tech Research Corporation
  * Copyright (c) 2009 INRIA
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
@@ -45,6 +45,7 @@
 #include "ns3/icmpv6-l4-protocol.h"
 #include "ns3/udp-l4-protocol.h"
 #include "ns3/tcp-l4-protocol.h"
+#include "ns3/traffic-control-layer.h"
 
 #include <string>
 
@@ -101,7 +102,7 @@ static std::string Name (std::string str, uint32_t totalStreamSize,
                          bool useIpv6)
 {
   std::ostringstream oss;
-  oss << str << " total=" << totalStreamSize << " sourceWrite=" << sourceWriteSize 
+  oss << str << " total=" << totalStreamSize << " sourceWrite=" << sourceWriteSize
       << " sourceRead=" << sourceReadSize << " serverRead=" << serverReadSize
       << " serverWrite=" << serverWriteSize << " useIpv6=" << useIpv6;
   return oss.str ();
@@ -120,8 +121,8 @@ TcpTestCase::TcpTestCase (uint32_t totalStreamSize,
                           uint32_t serverWriteSize,
                           uint32_t serverReadSize,
                           bool useIpv6)
-  : TestCase (Name ("Send string data from client to server and back", 
-                    totalStreamSize, 
+  : TestCase (Name ("Send string data from client to server and back",
+                    totalStreamSize,
                     sourceWriteSize,
                     serverReadSize,
                     serverWriteSize,
@@ -168,9 +169,9 @@ TcpTestCase::DoRun (void)
   NS_TEST_EXPECT_MSG_EQ (m_currentSourceTxBytes, m_totalBytes, "Source sent all bytes");
   NS_TEST_EXPECT_MSG_EQ (m_currentServerRxBytes, m_totalBytes, "Server received all bytes");
   NS_TEST_EXPECT_MSG_EQ (m_currentSourceRxBytes, m_totalBytes, "Source received all bytes");
-  NS_TEST_EXPECT_MSG_EQ (memcmp (m_sourceTxPayload, m_serverRxPayload, m_totalBytes), 0, 
+  NS_TEST_EXPECT_MSG_EQ (memcmp (m_sourceTxPayload, m_serverRxPayload, m_totalBytes), 0,
                          "Server received expected data buffers");
-  NS_TEST_EXPECT_MSG_EQ (memcmp (m_sourceTxPayload, m_sourceRxPayload, m_totalBytes), 0, 
+  NS_TEST_EXPECT_MSG_EQ (memcmp (m_sourceTxPayload, m_sourceRxPayload, m_totalBytes), 0,
                          "Source received back expected data buffers");
 }
 void
@@ -200,7 +201,7 @@ TcpTestCase::ServerHandleRecv (Ptr<Socket> sock)
         {
           NS_FATAL_ERROR ("Server could not read stream at byte " << m_currentServerRxBytes);
         }
-      NS_TEST_EXPECT_MSG_EQ ((m_currentServerRxBytes + p->GetSize () <= m_totalBytes), true, 
+      NS_TEST_EXPECT_MSG_EQ ((m_currentServerRxBytes + p->GetSize () <= m_totalBytes), true,
                              "Server received too many bytes");
       NS_LOG_DEBUG ("Server recv data=\"" << GetString (p) << "\"");
       p->CopyData (&m_serverRxPayload[m_currentServerRxBytes], p->GetSize ());
@@ -256,7 +257,7 @@ TcpTestCase::SourceHandleRecv (Ptr<Socket> sock)
         {
           NS_FATAL_ERROR ("Source could not read stream at byte " << m_currentSourceRxBytes);
         }
-      NS_TEST_EXPECT_MSG_EQ ((m_currentSourceRxBytes + p->GetSize () <= m_totalBytes), true, 
+      NS_TEST_EXPECT_MSG_EQ ((m_currentSourceRxBytes + p->GetSize () <= m_totalBytes), true,
                              "Source received too many bytes");
       NS_LOG_DEBUG ("Source recv data=\"" << GetString (p) << "\"");
       p->CopyData (&m_sourceRxPayload[m_currentSourceRxBytes], p->GetSize ());
@@ -292,6 +293,9 @@ TcpTestCase::CreateInternetNode ()
   //TCP
   Ptr<TcpL4Protocol> tcp = CreateObject<TcpL4Protocol> ();
   node->AggregateObject (tcp);
+  // Traffic Control
+  Ptr<TrafficControlLayer> tc = CreateObject<TrafficControlLayer> ();
+  node->AggregateObject (tc);
   return node;
 }
 
@@ -425,6 +429,9 @@ TcpTestCase::CreateInternetNode6 ()
   //TCP
   Ptr<TcpL4Protocol> tcp = CreateObject<TcpL4Protocol> ();
   node->AggregateObject (tcp);
+  // Traffic Control
+  Ptr<TrafficControlLayer> tc = CreateObject<TrafficControlLayer> ();
+  node->AggregateObject (tc);
   return node;
 }
 

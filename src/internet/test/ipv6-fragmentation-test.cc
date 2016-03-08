@@ -55,6 +55,7 @@
 
 #include "ns3/ipv6-l3-protocol.h"
 #include "ns3/icmpv6-l4-protocol.h"
+#include "ns3/traffic-control-layer.h"
 
 #include <string>
 #include <limits>
@@ -108,6 +109,10 @@ AddInternetStack (Ptr<Node> node)
   //UDP
   Ptr<UdpL4Protocol> udp = CreateObject<UdpL4Protocol> ();
   node->AggregateObject (udp);
+
+  // Traffic Control
+  Ptr<TrafficControlLayer> tc = CreateObject<TrafficControlLayer> ();
+  node->AggregateObject (tc);
 }
 
 

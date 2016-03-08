@@ -2,7 +2,7 @@
 /*
  * Copyright (c) 2007 Georgia Tech Research Corporation
  * Copyright (c) 2009 INRIA
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
@@ -44,6 +44,7 @@
 #include "ns3/icmpv6-l4-protocol.h"
 #include "ns3/udp-l4-protocol.h"
 #include "ns3/tcp-l4-protocol.h"
+#include "ns3/traffic-control-layer.h"
 
 #include <string>
 
@@ -131,6 +132,10 @@ CreateDualStackNode ()
   //Ipv6 Extensions
   ipv6->RegisterExtensions ();
   ipv6->RegisterOptions ();
+
+  // Traffic Control
+  Ptr<TrafficControlLayer> tc = CreateObject<TrafficControlLayer> ();
+  node->AggregateObject (tc);
 
   return node;
 }

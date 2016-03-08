@@ -1,7 +1,7 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2013 Universita' di Firenze
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
@@ -38,6 +38,8 @@
 #include "ns3/udp-l4-protocol.h"
 #include "ns3/ipv4-static-routing.h"
 
+#include "ns3/traffic-control-layer.h"
+
 #include <string>
 #include <limits>
 
@@ -62,6 +64,9 @@ AddInternetStack (Ptr<Node> node)
   //UDP
   Ptr<UdpL4Protocol> udp = CreateObject<UdpL4Protocol> ();
   node->AggregateObject (udp);
+  //Traffic Control
+  Ptr<TrafficControlLayer> tc = CreateObject<TrafficControlLayer> ();
+  node->AggregateObject (tc);
 }
 
 
@@ -79,7 +84,7 @@ public:
 };
 
 Ipv4ForwardingTest::Ipv4ForwardingTest ()
-  : TestCase ("UDP socket implementation") 
+  : TestCase ("UDP socket implementation")
 {
 }
 

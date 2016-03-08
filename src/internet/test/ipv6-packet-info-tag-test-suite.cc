@@ -44,6 +44,7 @@
 #include "ns3/uinteger.h"
 #include "ns3/boolean.h"
 #include "ns3/node.h"
+#include "ns3/traffic-control-layer.h"
 
 using namespace ns3;
 
@@ -66,6 +67,10 @@ AddInternetStack (Ptr<Node> node)
   /* register IPv6 extensions and options */
   ipv6->RegisterExtensions ();
   ipv6->RegisterOptions ();
+
+  // Traffic Control
+  Ptr<TrafficControlLayer> tc = CreateObject<TrafficControlLayer> ();
+  node->AggregateObject (tc);
 }
 
 class Ipv6PacketInfoTagTest : public TestCase
@@ -79,7 +84,7 @@ private:
 };
 
 Ipv6PacketInfoTagTest::Ipv6PacketInfoTagTest ()
-  : TestCase ("Ipv6PacketInfoTagTest") 
+  : TestCase ("Ipv6PacketInfoTagTest")
 {
 }
 
@@ -157,7 +162,7 @@ Ipv6PacketInfoTagTest::DoRun (void)
   socket->SetRecvPktInfo (true);
   socket->SetRecvCallback (MakeCallback (&Ipv6PacketInfoTagTest::RxCb, this));
 
-  // receive on loopback 
+  // receive on loopback
   Simulator::ScheduleWithContext (socket->GetNode ()->GetId (), Seconds (0),
                                   &Ipv6PacketInfoTagTest::DoSendData, this, socket, "::1");
   Simulator::Run ();
@@ -167,7 +172,7 @@ Ipv6PacketInfoTagTest::DoRun (void)
   std::stringstream dst;
   dst << ifaceAddr1.GetAddress ();
   Simulator::ScheduleWithContext (socket2->GetNode ()->GetId (), Seconds (0),
-                                  &Ipv6PacketInfoTagTest::DoSendData, this, socket, 
+                                  &Ipv6PacketInfoTagTest::DoSendData, this, socket,
                                   dst.str ());
   Simulator::Run ();
 
@@ -180,7 +185,7 @@ Ipv6PacketInfoTagTest::DoRun (void)
   socket->SetRecvPktInfo (true);
   socket->SetRecvCallback (MakeCallback (&Ipv6PacketInfoTagTest::RxCb, this));
 
-  // receive on loopback 
+  // receive on loopback
   Simulator::ScheduleWithContext (socket->GetNode ()->GetId (), Seconds (0),
                                   &Ipv6PacketInfoTagTest::DoSendData, this, socket, "::1");
   Simulator::Run ();
