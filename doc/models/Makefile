@@ -77,6 +77,7 @@ SOURCES = \
 	$(SRC)/topology-read/doc/topology.rst \
 	$(SRC)/traffic-control/doc/traffic-control-layer.rst \
 	$(SRC)/traffic-control/doc/queue-discs.rst \
+	$(SRC)/traffic-control/doc/pfifo-fast.rst \
 	$(SRC)/spectrum/doc/spectrum.rst \
 	$(SRC)/stats/doc/adaptor.rst \
 	$(SRC)/stats/doc/aggregator.rst \
