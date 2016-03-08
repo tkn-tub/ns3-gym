@@ -7,11 +7,10 @@ Queues
    ============= Subsection (#.#.#)
    ############# Paragraph (no number)
 
-This section documents a few queue objects, typically associated with
-NetDevice models, that are maintained as part of the ``network`` module:
+This section documents the queue object, typically associated with
+NetDevice models, that is maintained as part of the ``network`` module:
 
 * DropTail
-* Random Early Detection 
 
 Model Description
 *****************
@@ -32,11 +31,13 @@ Design
 ======
 
 An abstract base class, class Queue, is typically used and subclassed
-for specific scheduling and drop policies.  Common operations
-include:
+for specific scheduling and drop policies. A class QueueItem is introduced
+to model the items stored in a queue. The base class QueueItem only contains
+a pointer to a packet. Subclasses may be defined to store additional information.
+Common operations provided by the base class Queue include:
 
-* ``bool Enqueue (Ptr<Packet> p)``:  Enqueue a packet
-* ``Ptr<Packet> Dequeue (void)``:  Dequeue a packet
+* ``bool Enqueue (Ptr<QueueItem> item)``:  Enqueue a packet
+* ``Ptr<QueueItem> Dequeue (void)``:  Dequeue a packet
 * ``uint32_t GetNPackets (void)``:  Get the queue depth, in packets
 * ``uint32_t GetNBytes (void)``:  Get the queue depth, in packets
 
@@ -54,27 +55,6 @@ DropTail
 This is a basic first-in-first-out (FIFO) queue that performs a tail drop
 when the queue is full.
 
-Random Early Detection
-######################
-
-Random Early Detection (RED) is a queue variant that aims to provide
-early signals to transport protocol congestion control (e.g. TCP) that
-congestion is imminent, so that they back off their rate gracefully
-rather than with a bunch of tail-drop losses (possibly incurring
-TCP timeout).  The model in ns-3 is a port of Sally Floyd's ns-2
-RED model.
-
-Scope and Limitations
-=====================
-
-The RED model just supports default RED.  Adaptive RED is not supported.
-
-References
-==========
-
-The RED queue aims to be close to the results cited in:
-S.Floyd, K.Fall http://icir.org/floyd/papers/redsims.ps
-
 Usage
 *****
 
@@ -82,8 +62,7 @@ Helpers
 =======
 
 A typical usage pattern is to create a device helper and to configure
-the queue type and attributes from the helper, such as this example
-from ``src/network/examples/red-tests.cc``:
+the queue type and attributes from the helper, such as this example:
 
 .. sourcecode:: cpp
 
@@ -99,33 +78,13 @@ from ``src/network/examples/red-tests.cc``:
   p2p.SetChannelAttribute ("Delay", StringValue ("3ms"));
   NetDeviceContainer devn1n2 = p2p.Install (n1n2);
 
-  p2p.SetQueue ("ns3::RedQueue", // only backbone link has RED queue
-                "LinkBandwidth", StringValue (redLinkDataRate),
-                "LinkDelay", StringValue (redLinkDelay));
-  p2p.SetDeviceAttribute ("DataRate", StringValue (redLinkDataRate));
-  p2p.SetChannelAttribute ("Delay", StringValue (redLinkDelay));
+  p2p.SetQueue ("ns3::DropTailQueue",
+                "LinkBandwidth", StringValue (linkDataRate),
+                "LinkDelay", StringValue (linkDelay));
+  p2p.SetDeviceAttribute ("DataRate", StringValue (linkDataRate));
+  p2p.SetChannelAttribute ("Delay", StringValue (linkDelay));
   NetDeviceContainer devn2n3 = p2p.Install (n2n3);
 
-
-Attributes
-==========
-
-The RED queue contains a number of attributes that control the RED
-policies:
-
-* Mode (bytes or packets)
-* MeanPktSize
-* IdlePktSize
-* Wait (time)
-* Gentle mode
-* MinTh, MaxTh
-* QueueLimit
-* Queue weight
-* LInterm
-* LinkBandwidth
-* LinkDelay
-
-Consult the ns-3 documentation for explanation of these attributes.
 
 Output
 ======
@@ -154,12 +113,5 @@ Examples
 ========
 
 The drop-tail queue is used in several examples, such as 
-``examples/udp/udp-echo.cc``.  The RED queue example is found at
-``src/network/examples/red-tests.cc``.
-
-Validation
-**********
-
-The RED model has been validated and the report is currently stored
-at: https://github.com/downloads/talau/ns-3-tcp-red/report-red-ns3.pdf 
+``examples/udp/udp-echo.cc``.
 
