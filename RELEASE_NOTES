@@ -121,6 +121,7 @@ Bugs fixed
 - Bug 2315 - Problem when BACK Request is part of an A-MPDU
 - Bug 2316 - MacLow shall use a single TXVECTOR for all MPDUs belonging to a same A-MPDU
 - Bug 2318 - MPDU Aggregation fails with TCP
+- Bug 2319 - BlockAckTimeout value is too low for 802.11n operating at 2.4 GHz
 - Bug 2321 - Wifi rate managers should not be triggered for each MPDU when A-MPDU is used
 
 Known issues
