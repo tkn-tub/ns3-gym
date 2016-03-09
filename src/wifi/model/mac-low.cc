@@ -846,8 +846,16 @@ MacLow::ReceiveError (Ptr<Packet> packet, double rxSnr, bool isEndOfFrame)
   if (isEndOfFrame == true && m_receivedAtLeastOneMpdu == true)
     {
       WifiMacHeader hdr;
-      MpduAggregator::DeaggregatedMpdus mpdu = MpduAggregator::Deaggregate (packet);
-      mpdu.begin ()->first->PeekHeader (hdr);
+      AmpduTag ampdu;
+      if (packet->RemovePacketTag (ampdu))
+        {
+          MpduAggregator::DeaggregatedMpdus mpdu = MpduAggregator::Deaggregate (packet);
+          mpdu.begin ()->first->PeekHeader (hdr);
+        }
+      else
+        {
+          packet->PeekHeader (hdr);
+        }
       if (hdr.GetAddr1 () != m_self)
         {
           NS_LOG_DEBUG ("hdr addr1 " << hdr.GetAddr1 () << "not for me (" << m_self << "); returning");
