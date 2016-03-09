@@ -665,9 +665,15 @@ EdcaTxopN::MissedCts (void)
             {
               tid = m_currentHdr.GetQosTid ();
             }
+          else if (m_currentHdr.IsBlockAckReq ())
+            {
+              CtrlBAckRequestHeader baReqHdr;
+              m_currentPacket->PeekHeader (baReqHdr);
+              tid = baReqHdr.GetTidInfo ();
+            }
           else
             {
-              NS_FATAL_ERROR ("Current packet is not Qos Data");
+              NS_FATAL_ERROR ("Current packet is not Qos Data nor BlockAckReq");
             }
 
           if (GetBaAgreementExists (m_currentHdr.GetAddr1 (), tid))
