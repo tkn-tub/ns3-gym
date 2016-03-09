@@ -530,15 +530,13 @@ StaWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
                 }
               if (capabilities.IsShortSlotTime () == true)
                 {
-                  //enable short slot time and set cwMin to 15
+                  //enable short slot time
                   SetSlot (MicroSeconds (9));
-                  ConfigureContentionWindow (15, 1023);
                 }
               else
                 {
-                  //disable short slot time and set cwMin to 31
+                  //disable short slot time
                   SetSlot (MicroSeconds (20));
-                  ConfigureContentionWindow (31, 1023);
                 }
             }
           m_stationManager->SetShortPreambleEnabled (isShortPreambleEnabled);
@@ -589,26 +587,36 @@ StaWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
           bool isShortPreambleEnabled = capabilities.IsShortPreamble ();
           if (m_erpSupported)
             {
-              ErpInformation erpInformation = probeResp.GetErpInformation ();
-              if (erpInformation.GetUseProtection() == true)
-                {
-                  m_stationManager->SetUseNonErpProtection (true);
-                }
-              else
-                {
-                  m_stationManager->SetUseNonErpProtection (false);
-                }
-              if (capabilities.IsShortSlotTime () == true)
-                {
-                  //enable short slot time and set cwMin to 15
-                  SetSlot (MicroSeconds (9));
-                  ConfigureContentionWindow (15, 1023);
-                }
-              else
+              bool isErpAllowed = false;
+              for (uint32_t i = 0; i < m_phy->GetNModes (); i++)
+              {
+                WifiMode mode = m_phy->GetMode (i);
+                if (mode.GetModulationClass () == WIFI_MOD_CLASS_ERP_OFDM && rates.IsSupportedRate (mode.GetDataRate (m_phy->GetChannelWidth (), false, 1)))
+                  {
+                    isErpAllowed = true;
+                    break;
+                  }
+              }
+              if (!isErpAllowed)
                 {
                   //disable short slot time and set cwMin to 31
                   SetSlot (MicroSeconds (20));
                   ConfigureContentionWindow (31, 1023);
+                }
+              else
+                {
+                  ErpInformation erpInformation = probeResp.GetErpInformation ();
+                  isShortPreambleEnabled &= !erpInformation.GetBarkerPreambleMode ();
+                  if (m_stationManager->GetShortSlotTimeEnabled ())
+                    {
+                      //enable short slot time
+                      SetSlot (MicroSeconds (9));
+                    }
+                  else
+                    {
+                      //disable short slot time
+                      SetSlot (MicroSeconds (20));
+                    }
                 }
             }
           m_stationManager->SetShortPreambleEnabled (isShortPreambleEnabled);
@@ -644,19 +652,36 @@ StaWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
               bool isShortPreambleEnabled = capabilities.IsShortPreamble ();
               if (m_erpSupported)
                 {
-                  ErpInformation erpInformation = assocResp.GetErpInformation ();
-                  isShortPreambleEnabled &= !erpInformation.GetBarkerPreambleMode ();
-                  if (m_stationManager->GetShortSlotTimeEnabled ())
-                    {
-                      //enable short slot time and set cwMin to 15
-                      SetSlot (MicroSeconds (9));
-                      ConfigureContentionWindow (15, 1023);
-                    }
-                  else
+                  bool isErpAllowed = false;
+                  for (uint32_t i = 0; i < m_phy->GetNModes (); i++)
+                  {
+                    WifiMode mode = m_phy->GetMode (i);
+                    if (mode.GetModulationClass () == WIFI_MOD_CLASS_ERP_OFDM && rates.IsSupportedRate (mode.GetDataRate (m_phy->GetChannelWidth (), false, 1)))
+                      {
+                        isErpAllowed = true;
+                        break;
+                      }
+                  }
+                  if (!isErpAllowed)
                     {
                       //disable short slot time and set cwMin to 31
                       SetSlot (MicroSeconds (20));
                       ConfigureContentionWindow (31, 1023);
+                    }
+                  else
+                    {
+                      ErpInformation erpInformation = assocResp.GetErpInformation ();
+                      isShortPreambleEnabled &= !erpInformation.GetBarkerPreambleMode ();
+                      if (m_stationManager->GetShortSlotTimeEnabled ())
+                        {
+                          //enable short slot time
+                          SetSlot (MicroSeconds (9));
+                        }
+                      else
+                        {
+                          //disable short slot time
+                          SetSlot (MicroSeconds (20));
+                        }
                     }
                 }
               m_stationManager->SetShortPreambleEnabled (isShortPreambleEnabled);

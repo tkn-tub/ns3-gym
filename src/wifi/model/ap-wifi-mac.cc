@@ -577,15 +577,13 @@ ApWifiMac::SendOneBeacon (void)
     {
     if (GetShortSlotTimeEnabled () == true)
       {
-        //Enable short slot time and set cwMin to 15
+        //Enable short slot time
         SetSlot (MicroSeconds (9));
-        ConfigureContentionWindow (15, 1023);
       }
     else
       {
-        //Disable short slot time and set CWmin to 31
+        //Disable short slot time
         SetSlot (MicroSeconds (20));
-        ConfigureContentionWindow (31, 1023);
       }
     }
 }

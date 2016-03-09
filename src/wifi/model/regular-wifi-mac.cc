@@ -1091,7 +1091,10 @@ RegularWifiMac::FinishConfigureStandard (enum WifiPhyStandard standard)
     case WIFI_PHY_STANDARD_80211ac:
       SetVhtSupported (true);
     case WIFI_PHY_STANDARD_80211n_5GHZ:
+    case WIFI_PHY_STANDARD_80211n_2_4GHZ:
       SetHtSupported (true);
+    case WIFI_PHY_STANDARD_80211g:
+      m_erpSupported = true;
     case WIFI_PHY_STANDARD_holland:
     case WIFI_PHY_STANDARD_80211a:
     case WIFI_PHY_STANDARD_80211_10MHZ:
@@ -1099,10 +1102,6 @@ RegularWifiMac::FinishConfigureStandard (enum WifiPhyStandard standard)
       cwmin = 15;
       cwmax = 1023;
       break;
-    case WIFI_PHY_STANDARD_80211n_2_4GHZ:
-      SetHtSupported (true);
-    case WIFI_PHY_STANDARD_80211g:
-      m_erpSupported = true;
     case WIFI_PHY_STANDARD_80211b:
       cwmin = 31;
       cwmax = 1023;
