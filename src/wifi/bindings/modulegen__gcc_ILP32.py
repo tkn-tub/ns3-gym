@@ -3187,10 +3187,10 @@ def register_Ns3MacLowTransmissionListener_methods(root_module, cls):
                    'void', 
                    [], 
                    is_pure_virtual=True, is_virtual=True)
-    ## mac-low.h (module 'wifi'): void ns3::MacLowTransmissionListener::MissedBlockAck() [member function]
+    ## mac-low.h (module 'wifi'): void ns3::MacLowTransmissionListener::MissedBlockAck(uint32_t nMpdus) [member function]
     cls.add_method('MissedBlockAck', 
                    'void', 
-                   [], 
+                   [param('uint32_t', 'nMpdus')], 
                    is_virtual=True)
     ## mac-low.h (module 'wifi'): void ns3::MacLowTransmissionListener::MissedCts() [member function]
     cls.add_method('MissedCts', 
@@ -4615,6 +4615,11 @@ def register_Ns3WifiMode_methods(root_module, cls):
     cls.add_method('GetModulationClass', 
                    'ns3::WifiModulationClass', 
                    [], 
+                   is_const=True)
+    ## wifi-mode.h (module 'wifi'): ns3::WifiMode ns3::WifiMode::GetNonHtReferenceRate(uint8_t nss) const [member function]
+    cls.add_method('GetNonHtReferenceRate', 
+                   'ns3::WifiMode', 
+                   [param('uint8_t', 'nss')], 
                    is_const=True)
     ## wifi-mode.h (module 'wifi'): uint64_t ns3::WifiMode::GetPhyRate(uint32_t channelWidth, bool isShortGuardInterval, uint8_t nss) const [member function]
     cls.add_method('GetPhyRate', 
@@ -8691,6 +8696,11 @@ def register_Ns3WifiPhy_methods(root_module, cls):
                    'bool', 
                    [], 
                    is_pure_virtual=True, is_virtual=True)
+    ## wifi-phy.h (module 'wifi'): static bool ns3::WifiPhy::IsValidTxVector(ns3::WifiTxVector txVector) [member function]
+    cls.add_method('IsValidTxVector', 
+                   'bool', 
+                   [param('ns3::WifiTxVector', 'txVector')], 
+                   is_static=True)
     ## wifi-phy.h (module 'wifi'): void ns3::WifiPhy::NotifyMonitorSniffRx(ns3::Ptr<ns3::Packet const> packet, uint16_t channelFreqMhz, uint16_t channelNumber, uint32_t rate, ns3::WifiPreamble preamble, ns3::WifiTxVector txVector, ns3::mpduInfo aMpdu, ns3::signalNoiseDbm signalNoise) [member function]
     cls.add_method('NotifyMonitorSniffRx', 
                    'void', 
@@ -9190,6 +9200,10 @@ def register_Ns3WifiRemoteStationManager_methods(root_module, cls):
     cls.add_method('RecordWaitAssocTxOk', 
                    'void', 
                    [param('ns3::Mac48Address', 'address')])
+    ## wifi-remote-station-manager.h (module 'wifi'): void ns3::WifiRemoteStationManager::ReportAmpduTxStatus(ns3::Mac48Address address, uint8_t tid, uint32_t nSuccessfulMpdus, uint32_t nFailedMpdus) [member function]
+    cls.add_method('ReportAmpduTxStatus', 
+                   'void', 
+                   [param('ns3::Mac48Address', 'address'), param('uint8_t', 'tid'), param('uint32_t', 'nSuccessfulMpdus'), param('uint32_t', 'nFailedMpdus')])
     ## wifi-remote-station-manager.h (module 'wifi'): void ns3::WifiRemoteStationManager::ReportDataFailed(ns3::Mac48Address address, ns3::WifiMacHeader const * header) [member function]
     cls.add_method('ReportDataFailed', 
                    'void', 
@@ -9508,6 +9522,11 @@ def register_Ns3WifiRemoteStationManager_methods(root_module, cls):
     cls.add_method('DoNeedRtsRetransmission', 
                    'bool', 
                    [param('ns3::WifiRemoteStation *', 'station'), param('ns3::Ptr< ns3::Packet const >', 'packet'), param('bool', 'normally')], 
+                   visibility='private', is_virtual=True)
+    ## wifi-remote-station-manager.h (module 'wifi'): void ns3::WifiRemoteStationManager::DoReportAmpduTxStatus(ns3::WifiRemoteStation * station, uint32_t nSuccessfulMpdus, uint32_t nFailedMpdus) [member function]
+    cls.add_method('DoReportAmpduTxStatus', 
+                   'void', 
+                   [param('ns3::WifiRemoteStation *', 'station'), param('uint32_t', 'nSuccessfulMpdus'), param('uint32_t', 'nFailedMpdus')], 
                    visibility='private', is_virtual=True)
     ## wifi-remote-station-manager.h (module 'wifi'): void ns3::WifiRemoteStationManager::DoReportDataFailed(ns3::WifiRemoteStation * station) [member function]
     cls.add_method('DoReportDataFailed', 
@@ -11608,10 +11627,10 @@ def register_Ns3EdcaTxopN_methods(root_module, cls):
     cls.add_method('GotBlockAck', 
                    'void', 
                    [param('ns3::CtrlBAckResponseHeader const *', 'blockAck'), param('ns3::Mac48Address', 'recipient'), param('ns3::WifiMode', 'txMode')])
-    ## edca-txop-n.h (module 'wifi'): void ns3::EdcaTxopN::MissedBlockAck() [member function]
+    ## edca-txop-n.h (module 'wifi'): void ns3::EdcaTxopN::MissedBlockAck(uint32_t nMpdus) [member function]
     cls.add_method('MissedBlockAck', 
                    'void', 
-                   [])
+                   [param('uint32_t', 'nMpdus')])
     ## edca-txop-n.h (module 'wifi'): void ns3::EdcaTxopN::GotAddBaResponse(ns3::MgtAddBaResponseHeader const * respHdr, ns3::Mac48Address recipient) [member function]
     cls.add_method('GotAddBaResponse', 
                    'void', 
