@@ -7,7 +7,7 @@
 #     conf.check_nonfatal(header_name='stdint.h', define_name='HAVE_STDINT_H')
 
 def build(bld):
-    module = bld.create_ns3_module('traffic-control', ['core'])
+    module = bld.create_ns3_module('traffic-control', ['core', 'network'])
     module.source = [
       'model/traffic-control-layer.cc',
       'model/packet-filter.cc',
@@ -43,5 +43,5 @@ def build(bld):
     if bld.env.ENABLE_EXAMPLES:
         bld.recurse('examples')
 
-    # bld.ns3_python_bindings()
+    bld.ns3_python_bindings()
 
