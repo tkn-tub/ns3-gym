@@ -1635,7 +1635,7 @@ MacLow::ForwardDown (Ptr<const Packet> packet, const WifiMacHeader* hdr,
                 ", mode=" << txVector.GetMode  () <<
                 ", duration=" << hdr->GetDuration () <<
                 ", seq=0x" << std::hex << m_currentHdr.GetSequenceControl () << std::dec);
-  if (!m_ampdu || hdr->IsRts ())
+  if (!m_ampdu || hdr->IsRts () || hdr->IsBlockAck ())
     {
       m_phy->SendPacket (packet, txVector, preamble);
     }
@@ -2883,6 +2883,12 @@ MacLow::DeaggregateAmpduAndReceive (Ptr<Packet> aggregatedPacket, double rxSnr, 
 bool
 MacLow::StopMpduAggregation (Ptr<const Packet> peekedPacket, WifiMacHeader peekedHdr, Ptr<Packet> aggregatedPacket, uint16_t size) const
 {
+  if (peekedPacket == 0)
+    {
+      NS_LOG_DEBUG ("no more packets in queue");
+      return true;
+    }
+
   WifiPreamble preamble;
 
   uint8_t tid = GetTid (peekedPacket, peekedHdr);
@@ -2908,12 +2914,6 @@ MacLow::StopMpduAggregation (Ptr<const Packet> peekedPacket, WifiMacHeader peeke
   else
     {
       preamble = WIFI_PREAMBLE_LONG;
-    }
-
-  if (peekedPacket == 0)
-    {
-      NS_LOG_DEBUG ("no more packets in queue");
-      return true;
     }
 
   //An HT STA shall not transmit a PPDU that has a duration that is greater than aPPDUMaxTime (10 milliseconds)
