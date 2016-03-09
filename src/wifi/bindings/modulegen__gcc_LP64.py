@@ -4616,9 +4616,9 @@ def register_Ns3WifiMode_methods(root_module, cls):
                    'ns3::WifiModulationClass', 
                    [], 
                    is_const=True)
-    ## wifi-mode.h (module 'wifi'): ns3::WifiMode ns3::WifiMode::GetNonHtReferenceRate(uint8_t nss) const [member function]
+    ## wifi-mode.h (module 'wifi'): uint64_t ns3::WifiMode::GetNonHtReferenceRate(uint8_t nss) const [member function]
     cls.add_method('GetNonHtReferenceRate', 
-                   'ns3::WifiMode', 
+                   'uint64_t', 
                    [param('uint8_t', 'nss')], 
                    is_const=True)
     ## wifi-mode.h (module 'wifi'): uint64_t ns3::WifiMode::GetPhyRate(uint32_t channelWidth, bool isShortGuardInterval, uint8_t nss) const [member function]
