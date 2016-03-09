@@ -1559,6 +1559,42 @@ WifiPhy::GetVhtMcs9 ()
   return mcs;
 }
 
+bool
+WifiPhy::IsValidTxVector (WifiTxVector txVector)
+{
+  uint32_t chWidth = txVector.GetChannelWidth();
+  uint8_t nss = txVector.GetNss();
+  std::string modeName = txVector.GetMode().GetUniqueName();
+
+  if (chWidth == 20)
+    {
+      if (nss != 3 && nss != 6)
+        {
+          return (modeName != "VhtMcs9");
+        }
+    }
+  else if (chWidth == 80)
+    {
+      if (nss == 3 || nss == 7)
+        {
+          return (modeName != "VhtMcs6");
+        }
+      else if (nss == 6)
+        {
+          return (modeName != "VhtMcs9");
+        }
+    }
+  else if (chWidth == 160)
+    {
+      if (nss == 3)
+        {
+          return (modeName != "VhtMcs9");
+        }
+    }
+
+  return true;
+}
+
 std::ostream& operator<< (std::ostream& os, enum WifiPhy::State state)
 {
   switch (state)
