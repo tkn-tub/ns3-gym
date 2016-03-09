@@ -234,6 +234,7 @@ def build(bld):
         'test/ipv6-packet-info-tag-test-suite.cc',
         'test/ipv6-test.cc',
         'test/ipv6-raw-test.cc',
+        'test/pfifo-fast-queue-disc-test-suite.cc',
         'test/tcp-test.cc',
         'test/tcp-timestamp-test.cc',
         'test/tcp-wscaling-test.cc',

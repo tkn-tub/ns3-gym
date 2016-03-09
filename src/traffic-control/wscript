@@ -21,7 +21,6 @@ def build(bld):
 
     module_test = bld.create_ns3_module_test_library('traffic-control')
     module_test.source = [
-      'test/pfifo-fast-queue-disc-test-suite.cc',
       'test/red-queue-disc-test-suite.cc',
       'test/codel-queue-disc-test-suite.cc',
         ]
