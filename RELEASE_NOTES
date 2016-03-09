@@ -119,6 +119,7 @@ Bugs fixed
 - Bug 2311 - save Ht/Vht capabilities info on a per-station basis
 - Bug 2313 - Assert failed when using aggregation and RTS/CTS
 - Bug 2315 - Problem when BACK Request is part of an A-MPDU
+- Bug 2316 - MacLow shall use a single TXVECTOR for all MPDUs belonging to a same A-MPDU
 
 Known issues
 ------------

@@ -143,6 +143,8 @@ AmpduAggregationTest::DoRun (void)
    */
   m_low->m_currentHdr = hdr;
   m_low->m_currentPacket = pkt->Copy();
+  m_low->m_currentTxVector = m_low->GetDataTxVector (m_low->m_currentPacket, &m_low->m_currentHdr);
+
   bool isAmpdu = m_low->IsAmpdu (pkt, hdr);
   NS_TEST_EXPECT_MSG_EQ (isAmpdu, false, "a single packet should not result in an A-MPDU");
   NS_TEST_EXPECT_MSG_EQ (m_low->m_aggregateQueue->GetSize (), 0, "aggregation queue is not flushed");
@@ -331,6 +333,7 @@ TwoLevelAggregationTest::DoRun (void)
                                                                                  &tstamp);
   m_low->m_currentPacket = peekedPacket->Copy ();
   m_low->m_currentHdr = peekedHdr;
+  m_low->m_currentTxVector = m_low->GetDataTxVector (m_low->m_currentPacket, &m_low->m_currentHdr);
 
   Ptr<Packet> packet = m_low->PerformMsduAggregation (peekedPacket, &peekedHdr, &tstamp, currentAggregatedPacket, 0);
 
