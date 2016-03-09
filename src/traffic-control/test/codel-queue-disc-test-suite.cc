@@ -29,7 +29,6 @@
 #include "ns3/simulator.h"
 #include "ns3/network-module.h"
 #include "ns3/core-module.h"
-#include "ns3/ipv4-queue-disc-item.h"
 
 using namespace ns3;
 
@@ -56,6 +55,32 @@ static uint32_t _reciprocal_scale (uint32_t val, uint32_t ep_ro)
 }
 // End Linux borrow
 
+
+class CodelQueueDiscTestItem : public QueueDiscItem {
+public:
+  CodelQueueDiscTestItem (Ptr<Packet> p, const Address & addr, uint16_t protocol);
+  virtual ~CodelQueueDiscTestItem ();
+  virtual void AddHeader (void);
+
+private:
+  CodelQueueDiscTestItem ();
+  CodelQueueDiscTestItem (const CodelQueueDiscTestItem &);
+  CodelQueueDiscTestItem &operator = (const CodelQueueDiscTestItem &);
+};
+
+CodelQueueDiscTestItem::CodelQueueDiscTestItem (Ptr<Packet> p, const Address & addr, uint16_t protocol)
+  : QueueDiscItem (p, addr, protocol)
+{
+}
+
+CodelQueueDiscTestItem::~CodelQueueDiscTestItem ()
+{
+}
+
+void
+CodelQueueDiscTestItem::AddHeader (void)
+{
+}
 
 // Test 1: simple enqueue/dequeue with no drops
 class CoDelQueueDiscBasicEnqueueDequeue : public TestCase
@@ -96,15 +121,13 @@ CoDelQueueDiscBasicEnqueueDequeue::DoRun (void)
   uint32_t pktSize = 1000;
   uint32_t modeSize = 0;
   
-  Ipv4Header ipHeader;
-  uint32_t headerSize = ipHeader.GetSerializedSize ();
   Address dest;
 
   NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("Mode", m_mode), true,
                          "Verify that we can actually set the attribute Mode");
   NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("MaxPackets", UintegerValue (1500)), true,
                          "Verify that we can actually set the attribute MaxPackets");
-  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("MaxBytes", UintegerValue ((pktSize + headerSize) * 1500)), true,
+  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("MaxBytes", UintegerValue (pktSize * 1500)), true,
                          "Verify that we can actually set the attribute MaxBytes");
   NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("MinBytes", UintegerValue (pktSize)), true,
                          "Verify that we can actually set the attribute MinBytes");
@@ -115,7 +138,7 @@ CoDelQueueDiscBasicEnqueueDequeue::DoRun (void)
 
   if (queue->GetMode () == Queue::QUEUE_MODE_BYTES)
     {
-      modeSize = pktSize + headerSize;
+      modeSize = pktSize;
     }
   else if (queue->GetMode () == Queue::QUEUE_MODE_PACKETS)
     {
@@ -132,54 +155,54 @@ CoDelQueueDiscBasicEnqueueDequeue::DoRun (void)
   p6 = Create<Packet> (pktSize);
 
   QueueTestSize (queue, 0 * modeSize, "There should be no packets in queue");
-  queue->Enqueue (Create<Ipv4QueueDiscItem> (p1, dest, 0, ipHeader));
+  queue->Enqueue (Create<CodelQueueDiscTestItem> (p1, dest, 0));
   QueueTestSize (queue, 1 * modeSize, "There should be one packet in queue");
-  queue->Enqueue (Create<Ipv4QueueDiscItem> (p2, dest, 0, ipHeader));
+  queue->Enqueue (Create<CodelQueueDiscTestItem> (p2, dest, 0));
   QueueTestSize (queue, 2 * modeSize, "There should be two packets in queue");
-  queue->Enqueue (Create<Ipv4QueueDiscItem> (p3, dest, 0, ipHeader));
+  queue->Enqueue (Create<CodelQueueDiscTestItem> (p3, dest, 0));
   QueueTestSize (queue, 3 * modeSize, "There should be three packets in queue");
-  queue->Enqueue (Create<Ipv4QueueDiscItem> (p4, dest, 0, ipHeader));
+  queue->Enqueue (Create<CodelQueueDiscTestItem> (p4, dest, 0));
   QueueTestSize (queue, 4 * modeSize, "There should be four packets in queue");
-  queue->Enqueue (Create<Ipv4QueueDiscItem> (p5, dest, 0, ipHeader));
+  queue->Enqueue (Create<CodelQueueDiscTestItem> (p5, dest, 0));
   QueueTestSize (queue, 5 * modeSize, "There should be five packets in queue");
-  queue->Enqueue (Create<Ipv4QueueDiscItem> (p6, dest, 0, ipHeader));
+  queue->Enqueue (Create<CodelQueueDiscTestItem> (p6, dest, 0));
   QueueTestSize (queue, 6 * modeSize, "There should be six packets in queue");
 
   NS_TEST_EXPECT_MSG_EQ (queue->GetDropOverLimit (), 0, "There should be no packets being dropped due to full queue");
 
-  Ptr<Ipv4QueueDiscItem> item;
+  Ptr<QueueDiscItem> item;
 
-  item = DynamicCast<Ipv4QueueDiscItem> (queue->Dequeue ());
+  item = queue->Dequeue ();
   NS_TEST_EXPECT_MSG_EQ ((item != 0), true, "I want to remove the first packet");
   QueueTestSize (queue, 5 * modeSize, "There should be five packets in queue");
   NS_TEST_EXPECT_MSG_EQ (item->GetPacket ()->GetUid (), p1->GetUid (), "was this the first packet ?");
 
-  item = DynamicCast<Ipv4QueueDiscItem> (queue->Dequeue ());
+  item = queue->Dequeue ();
   NS_TEST_EXPECT_MSG_EQ ((item != 0), true, "I want to remove the second packet");
   QueueTestSize (queue, 4 * modeSize, "There should be four packets in queue");
   NS_TEST_EXPECT_MSG_EQ (item->GetPacket ()->GetUid (), p2->GetUid (), "Was this the second packet ?");
 
-  item = DynamicCast<Ipv4QueueDiscItem> (queue->Dequeue ());
+  item = queue->Dequeue ();
   NS_TEST_EXPECT_MSG_EQ ((item != 0), true, "I want to remove the third packet");
   QueueTestSize (queue, 3 * modeSize, "There should be three packets in queue");
   NS_TEST_EXPECT_MSG_EQ (item->GetPacket ()->GetUid (), p3->GetUid (), "Was this the third packet ?");
 
-  item = DynamicCast<Ipv4QueueDiscItem> (queue->Dequeue ());
+  item = queue->Dequeue ();
   NS_TEST_EXPECT_MSG_EQ ((item != 0), true, "I want to remove the forth packet");
   QueueTestSize (queue, 2 * modeSize, "There should be two packets in queue");
   NS_TEST_EXPECT_MSG_EQ (item->GetPacket ()->GetUid (), p4->GetUid (), "Was this the fourth packet ?");
 
-  item = DynamicCast<Ipv4QueueDiscItem> (queue->Dequeue ());
+  item = queue->Dequeue ();
   NS_TEST_EXPECT_MSG_EQ ((item != 0), true, "I want to remove the fifth packet");
   QueueTestSize (queue, 1 * modeSize, "There should be one packet in queue");
   NS_TEST_EXPECT_MSG_EQ (item->GetPacket ()->GetUid (), p5->GetUid (), "Was this the fifth packet ?");
 
-  item = DynamicCast<Ipv4QueueDiscItem> (queue->Dequeue ());
+  item = queue->Dequeue ();
   NS_TEST_EXPECT_MSG_EQ ((item != 0), true, "I want to remove the last packet");
   QueueTestSize (queue, 0 * modeSize, "There should be zero packet in queue");
   NS_TEST_EXPECT_MSG_EQ (item->GetPacket ()->GetUid (), p6->GetUid (), "Was this the sixth packet ?");
 
-  item = DynamicCast<Ipv4QueueDiscItem> (queue->Dequeue ());
+  item = queue->Dequeue ();
   NS_TEST_EXPECT_MSG_EQ ((item == 0), true, "There are really no packets in queue");
 
   NS_TEST_EXPECT_MSG_EQ (queue->GetDropCount (), 0, "There should be no packet drops according to CoDel algorithm");
@@ -227,13 +250,11 @@ CoDelQueueDiscBasicOverflow::DoRun (void)
   NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("Mode", m_mode), true,
                          "Verify that we can actually set the attribute Mode");
 
-  Ipv4Header ipHeader;
-  uint32_t headerSize = ipHeader.GetSerializedSize ();
   Address dest;
 
   if (queue->GetMode () == Queue::QUEUE_MODE_BYTES)
     {
-      modeSize = pktSize + headerSize;
+      modeSize = pktSize;
     }
   else if (queue->GetMode () == Queue::QUEUE_MODE_PACKETS)
     {
@@ -247,7 +268,7 @@ CoDelQueueDiscBasicOverflow::DoRun (void)
 
   NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("MaxPackets", UintegerValue (500)), true,
                          "Verify that we can actually set the attribute MaxPackets");
-  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("MaxBytes", UintegerValue ((pktSize + headerSize) * 500)), true,
+  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("MaxBytes", UintegerValue (pktSize * 500)), true,
                          "Verify that we can actually set the attribute MaxBytes");
   NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("MinBytes", UintegerValue (pktSize)), true,
                          "Verify that we can actually set the attribute MinBytes");
@@ -255,9 +276,9 @@ CoDelQueueDiscBasicOverflow::DoRun (void)
   queue->Initialize ();
 
   Enqueue (queue, pktSize, 500);
-  queue->Enqueue (Create<Ipv4QueueDiscItem> (p1, dest, 0, ipHeader));
-  queue->Enqueue (Create<Ipv4QueueDiscItem> (p2, dest, 0, ipHeader));
-  queue->Enqueue (Create<Ipv4QueueDiscItem> (p3, dest, 0, ipHeader));
+  queue->Enqueue (Create<CodelQueueDiscTestItem> (p1, dest, 0));
+  queue->Enqueue (Create<CodelQueueDiscTestItem> (p2, dest, 0));
+  queue->Enqueue (Create<CodelQueueDiscTestItem> (p3, dest, 0));
 
   QueueTestSize (queue, 500 * modeSize, "There should be 500 packets in queue");
   NS_TEST_EXPECT_MSG_EQ (queue->GetDropOverLimit (), 3, "There should be three packets being dropped due to full queue");
@@ -266,11 +287,10 @@ CoDelQueueDiscBasicOverflow::DoRun (void)
 void
 CoDelQueueDiscBasicOverflow::Enqueue (Ptr<CoDelQueueDisc> queue, uint32_t size, uint32_t nPkt)
 {
-  Ipv4Header ipHeader;
   Address dest;
   for (uint32_t i = 0; i < nPkt; i++)
     {
-      queue->Enqueue (Create<Ipv4QueueDiscItem> (Create<Packet> (size), dest, 0, ipHeader));
+      queue->Enqueue (Create<CodelQueueDiscTestItem> (Create<Packet> (size), dest, 0));
     }
 }
 
@@ -412,10 +432,9 @@ CoDelQueueDiscBasicDrop::DoRun (void)
   NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("Mode", m_mode), true,
                          "Verify that we can actually set the attribute Mode");
   
-  uint32_t headerSize = 20; // size of Ipv4 header
   if (queue->GetMode () == Queue::QUEUE_MODE_BYTES)
     {
-      modeSize = pktSize + headerSize;
+      modeSize = pktSize;
     }
   else if (queue->GetMode () == Queue::QUEUE_MODE_PACKETS)
     {
@@ -451,11 +470,10 @@ CoDelQueueDiscBasicDrop::DoRun (void)
 void
 CoDelQueueDiscBasicDrop::Enqueue (Ptr<CoDelQueueDisc> queue, uint32_t size, uint32_t nPkt)
 {
-  Ipv4Header ipHeader;
   Address dest;
   for (uint32_t i = 0; i < nPkt; i++)
     {
-      queue->Enqueue (Create<Ipv4QueueDiscItem> (Create<Packet> (size), dest, 0, ipHeader));
+      queue->Enqueue (Create<CodelQueueDiscTestItem> (Create<Packet> (size), dest, 0));
     }
 }
 
@@ -475,7 +493,7 @@ CoDelQueueDiscBasicDrop::Dequeue (Ptr<CoDelQueueDisc> queue, uint32_t modeSize)
 
   if (initialQSize != 0)
     {
-      Ptr<Ipv4QueueDiscItem> item = DynamicCast<Ipv4QueueDiscItem> (queue->Dequeue ());
+      Ptr<QueueDiscItem> item = queue->Dequeue ();
       if (initialDropCount == 0 && currentTime > queue->GetTarget ())
         {
           if (currentTime < queue->GetInterval ())

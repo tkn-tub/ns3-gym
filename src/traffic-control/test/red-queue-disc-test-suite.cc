@@ -28,9 +28,34 @@
 #include "ns3/double.h"
 #include "ns3/log.h"
 #include "ns3/simulator.h"
-#include "ns3/ipv4-queue-disc-item.h"
 
 using namespace ns3;
+
+class RedQueueDiscTestItem : public QueueDiscItem {
+public:
+  RedQueueDiscTestItem (Ptr<Packet> p, const Address & addr, uint16_t protocol);
+  virtual ~RedQueueDiscTestItem ();
+  virtual void AddHeader (void);
+
+private:
+  RedQueueDiscTestItem ();
+  RedQueueDiscTestItem (const RedQueueDiscTestItem &);
+  RedQueueDiscTestItem &operator = (const RedQueueDiscTestItem &);
+};
+
+RedQueueDiscTestItem::RedQueueDiscTestItem (Ptr<Packet> p, const Address & addr, uint16_t protocol)
+  : QueueDiscItem (p, addr, protocol)
+{
+}
+
+RedQueueDiscTestItem::~RedQueueDiscTestItem ()
+{
+}
+
+void
+RedQueueDiscTestItem::AddHeader (void)
+{
+}
 
 class RedQueueDiscTestCase : public TestCase
 {
@@ -70,13 +95,12 @@ RedQueueDiscTestCase::RunRedTest (StringValue mode)
   NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("QW", DoubleValue (0.002)), true,
                          "Verify that we can actually set the attribute QW");
 
-  Ipv4Header ipHeader;
   Address dest;
   
   if (queue->GetMode () == Queue::QUEUE_MODE_BYTES)
     {
       pktSize = 1000;
-      modeSize = pktSize + ipHeader.GetSerializedSize ();
+      modeSize = pktSize;
       queue->SetTh (minTh * modeSize, maxTh * modeSize);
       queue->SetQueueLimit (qSize * modeSize);
     }
@@ -93,42 +117,42 @@ RedQueueDiscTestCase::RunRedTest (StringValue mode)
 
   queue->Initialize ();
   NS_TEST_EXPECT_MSG_EQ (queue->GetQueueSize (), 0 * modeSize, "There should be no packets in there");
-  queue->Enqueue (Create<Ipv4QueueDiscItem> (p1, dest, 0, ipHeader));
+  queue->Enqueue (Create<RedQueueDiscTestItem> (p1, dest, 0));
   NS_TEST_EXPECT_MSG_EQ (queue->GetQueueSize (), 1 * modeSize, "There should be one packet in there");
-  queue->Enqueue (Create<Ipv4QueueDiscItem> (p2, dest, 0, ipHeader));
+  queue->Enqueue (Create<RedQueueDiscTestItem> (p2, dest, 0));
   NS_TEST_EXPECT_MSG_EQ (queue->GetQueueSize (), 2 * modeSize, "There should be two packets in there");
-  queue->Enqueue (Create<Ipv4QueueDiscItem> (p3, dest, 0, ipHeader));
-  queue->Enqueue (Create<Ipv4QueueDiscItem> (p4, dest, 0, ipHeader));
-  queue->Enqueue (Create<Ipv4QueueDiscItem> (p5, dest, 0, ipHeader));
-  queue->Enqueue (Create<Ipv4QueueDiscItem> (p6, dest, 0, ipHeader));
-  queue->Enqueue (Create<Ipv4QueueDiscItem> (p7, dest, 0, ipHeader));
-  queue->Enqueue (Create<Ipv4QueueDiscItem> (p8, dest, 0, ipHeader));
+  queue->Enqueue (Create<RedQueueDiscTestItem> (p3, dest, 0));
+  queue->Enqueue (Create<RedQueueDiscTestItem> (p4, dest, 0));
+  queue->Enqueue (Create<RedQueueDiscTestItem> (p5, dest, 0));
+  queue->Enqueue (Create<RedQueueDiscTestItem> (p6, dest, 0));
+  queue->Enqueue (Create<RedQueueDiscTestItem> (p7, dest, 0));
+  queue->Enqueue (Create<RedQueueDiscTestItem> (p8, dest, 0));
   NS_TEST_EXPECT_MSG_EQ (queue->GetQueueSize (), 8 * modeSize, "There should be eight packets in there");
 
-  Ptr<Ipv4QueueDiscItem> item;
+  Ptr<QueueDiscItem> item;
 
-  item = StaticCast<Ipv4QueueDiscItem> (queue->Dequeue ());
+  item = queue->Dequeue ();
   NS_TEST_EXPECT_MSG_EQ ((item != 0), true, "I want to remove the first packet");
   NS_TEST_EXPECT_MSG_EQ (queue->GetQueueSize (), 7 * modeSize, "There should be seven packets in there");
   NS_TEST_EXPECT_MSG_EQ (item->GetPacket ()->GetUid (), p1->GetUid (), "was this the first packet ?");
 
-  item = StaticCast<Ipv4QueueDiscItem> (queue->Dequeue ());
+  item = queue->Dequeue ();
   NS_TEST_EXPECT_MSG_EQ ((item != 0), true, "I want to remove the second packet");
   NS_TEST_EXPECT_MSG_EQ (queue->GetQueueSize (), 6 * modeSize, "There should be six packet in there");
   NS_TEST_EXPECT_MSG_EQ (item->GetPacket ()->GetUid (), p2->GetUid (), "Was this the second packet ?");
 
-  item = StaticCast<Ipv4QueueDiscItem> (queue->Dequeue ());
+  item = queue->Dequeue ();
   NS_TEST_EXPECT_MSG_EQ ((item != 0), true, "I want to remove the third packet");
   NS_TEST_EXPECT_MSG_EQ (queue->GetQueueSize (), 5 * modeSize, "There should be five packets in there");
   NS_TEST_EXPECT_MSG_EQ (item->GetPacket ()->GetUid (), p3->GetUid (), "Was this the third packet ?");
 
-  item = StaticCast<Ipv4QueueDiscItem> (queue->Dequeue ());
-  item = StaticCast<Ipv4QueueDiscItem> (queue->Dequeue ());
-  item = StaticCast<Ipv4QueueDiscItem> (queue->Dequeue ());
-  item = StaticCast<Ipv4QueueDiscItem> (queue->Dequeue ());
-  item = StaticCast<Ipv4QueueDiscItem> (queue->Dequeue ());
+  item = queue->Dequeue ();
+  item = queue->Dequeue ();
+  item = queue->Dequeue ();
+  item = queue->Dequeue ();
+  item = queue->Dequeue ();
 
-  item = StaticCast<Ipv4QueueDiscItem> (queue->Dequeue ());
+  item = queue->Dequeue ();
   NS_TEST_EXPECT_MSG_EQ ((item == 0), true, "There are really no packets in there");
 
 
@@ -268,11 +292,10 @@ RedQueueDiscTestCase::RunRedTest (StringValue mode)
 void 
 RedQueueDiscTestCase::Enqueue (Ptr<RedQueueDisc> queue, uint32_t size, uint32_t nPkt)
 {
-  Ipv4Header ipHeader;
   Address dest;
   for (uint32_t i = 0; i < nPkt; i++)
     {
-      queue->Enqueue (Create<Ipv4QueueDiscItem> (Create<Packet> (size), dest, 0, ipHeader));
+      queue->Enqueue (Create<RedQueueDiscTestItem> (Create<Packet> (size), dest, 0));
     }
 }
 
