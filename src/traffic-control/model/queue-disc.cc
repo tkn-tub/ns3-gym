@@ -23,6 +23,7 @@
 #include "ns3/pointer.h"
 #include "ns3/object-vector.h"
 #include "ns3/packet.h"
+#include "ns3/unused.h"
 #include "queue-disc.h"
 
 namespace ns3 {
@@ -209,7 +210,9 @@ QueueDisc::DoInitialize (void)
     }
 
   // Check the configuration and initialize the parameters of this queue disc
-  NS_ASSERT_MSG (CheckConfig (), "The queue disc configuration is not correct");
+  bool ok = CheckConfig ();
+  NS_ASSERT_MSG (ok, "The queue disc configuration is not correct");
+  NS_UNUSED (ok); // suppress compiler warning
   InitializeParams ();
 
   // Check the configuration and initialize the parameters of the child queue discs
