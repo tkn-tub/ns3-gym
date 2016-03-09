@@ -21,7 +21,8 @@ def build(bld):
                                   'flow-monitor', 'internet', 'lr-wpan',
                                   'lte', 'mesh', 'mobility', 'olsr',
                                   'point-to-point', 'sixlowpan', 'stats',
-                                  'uan', 'wifi', 'internet-apps'])
+                                  'uan', 'wifi', 'internet-apps',
+                                  'point-to-point-layout'])
 
     headers = bld(features='ns3header')
     headers.module = 'test'
