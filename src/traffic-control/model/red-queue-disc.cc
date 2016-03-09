@@ -62,7 +62,6 @@
 #include "ns3/double.h"
 #include "ns3/simulator.h"
 #include "ns3/abort.h"
-#include "ns3/random-variable-stream.h"
 #include "red-queue-disc.h"
 #include "ns3/drop-tail-queue.h"
 

@@ -27,13 +27,13 @@
 #include "ns3/ipv4-interface-address.h"
 #include "ns3/ptr.h"
 #include "ns3/object.h"
+#include "ns3/traffic-control-layer.h"
 
 namespace ns3 {
 
 class NetDevice;
 class Packet;
 class Node;
-class TrafficControlLayer;
 class ArpCache;
 
 /**

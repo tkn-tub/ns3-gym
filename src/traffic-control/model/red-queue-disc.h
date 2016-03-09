@@ -67,11 +67,11 @@
 #include "ns3/boolean.h"
 #include "ns3/data-rate.h"
 #include "ns3/nstime.h"
+#include "ns3/random-variable-stream.h"
 
 namespace ns3 {
 
 class TraceContainer;
-class UniformRandomVariable;
 
 /**
  * \ingroup traffic-control
