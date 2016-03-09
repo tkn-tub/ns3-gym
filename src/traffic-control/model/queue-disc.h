@@ -532,7 +532,6 @@ private:
   Ptr<NetDevice> m_device;          //!< The NetDevice on which this queue discipline is installed
   Ptr<NetDeviceQueueInterface> m_devQueueIface;   //!< NetDevice queue interface
   bool m_running;                   //!< The queue disc is performing multiple dequeue operations
-  bool m_InitCompleted;             //!< True if the config has been verified and the parameters initialized
   Ptr<QueueDiscItem> m_requeued;    //!< The last packet that failed to be transmitted
 
   /// Traced callback: fired when a packet is enqueued

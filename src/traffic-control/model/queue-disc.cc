@@ -179,8 +179,7 @@ QueueDisc::QueueDisc ()
      m_nTotalDroppedBytes (0),
      m_nTotalRequeuedPackets (0),
      m_nTotalRequeuedBytes (0),
-     m_running (false),
-     m_InitCompleted (false)
+     m_running (false)
 {
   NS_LOG_FUNCTION (this);
 }
