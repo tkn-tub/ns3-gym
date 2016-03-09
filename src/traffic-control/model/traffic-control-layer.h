@@ -195,6 +195,16 @@ protected:
 
 private:
   /**
+   * \brief Copy constructor
+   * Disable default implementation to avoid misuse
+   */
+  TrafficControlLayer (TrafficControlLayer const &);
+  /**
+   * \brief Assignment operator
+   * Disable default implementation to avoid misuse
+   */
+  TrafficControlLayer& operator= (TrafficControlLayer const &);
+  /**
    * \brief Protocol handler entry.
    * This structure is used to demultiplex all the protocols.
    */
