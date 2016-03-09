@@ -119,9 +119,9 @@ public:
   {
     m_txop->GotBlockAck (blockAck, source,txMode);
   }
-  virtual void MissedBlockAck (void)
+  virtual void MissedBlockAck (uint32_t nMpdus)
   {
-    m_txop->MissedBlockAck ();
+    m_txop->MissedBlockAck (nMpdus);
   }
   virtual void StartNext (void)
   {
@@ -864,10 +864,31 @@ EdcaTxopN::MissedAck (void)
 }
 
 void
-EdcaTxopN::MissedBlockAck (void)
+EdcaTxopN::MissedBlockAck (uint32_t nMpdus)
 {
   NS_LOG_FUNCTION (this);
   NS_LOG_DEBUG ("missed block ack");
+  uint8_t tid = 0;
+  if (m_currentHdr.IsQosData ())
+    {
+      tid = m_currentHdr.GetQosTid ();
+    }
+  else if (m_currentHdr.IsBlockAckReq ())
+    {
+      CtrlBAckRequestHeader baReqHdr;
+      m_currentPacket->PeekHeader (baReqHdr);
+      tid = baReqHdr.GetTidInfo ();
+    }
+  else if (m_currentHdr.IsBlockAck ())
+    {
+      CtrlBAckResponseHeader baRespHdr;
+      m_currentPacket->PeekHeader (baRespHdr);
+      tid = baRespHdr.GetTidInfo ();
+    }
+  if (GetAmpduExist (m_currentHdr.GetAddr1 ()))
+    {
+      m_stationManager->ReportAmpduTxStatus (m_currentHdr.GetAddr1 (), tid, 0, nMpdus);
+    }
   if (NeedBarRetransmission ())
     {
       if (!GetAmpduExist (m_currentHdr.GetAddr1 ()))
@@ -882,24 +903,20 @@ EdcaTxopN::MissedBlockAck (void)
           NS_LOG_DEBUG ("Transmit Block Ack Request");
           CtrlBAckRequestHeader reqHdr;
           reqHdr.SetType (COMPRESSED_BLOCK_ACK);
-          uint8_t tid = 0;
           if (m_currentHdr.IsQosData ())
             {
-              tid = m_currentHdr.GetQosTid ();
               reqHdr.SetStartingSequence (m_currentHdr.GetSequenceNumber ());
             }
           else if (m_currentHdr.IsBlockAckReq ())
             {
               CtrlBAckRequestHeader baReqHdr;
               m_currentPacket->PeekHeader (baReqHdr);
-              tid = baReqHdr.GetTidInfo ();
               reqHdr.SetStartingSequence (baReqHdr.GetStartingSequence ());
             }
           else if (m_currentHdr.IsBlockAck ())
             {
               CtrlBAckResponseHeader baRespHdr;
               m_currentPacket->PeekHeader (baRespHdr);
-              tid = baRespHdr.GetTidInfo ();
               reqHdr.SetStartingSequence (m_currentHdr.GetSequenceNumber ());
             }
           reqHdr.SetTidInfo (tid);

@@ -109,6 +109,8 @@ public:
    */
   virtual void GotBlockAck (const CtrlBAckResponseHeader *blockAck, Mac48Address source, WifiMode txMode);
   /**
+   * \param nMpdus number of MPDUs that were transmitted in the unsuccesful A-MPDU transmission
+   *
    * ns3::MacLow did not receive an expected BLOCK_ACK within
    * BlockAckTimeout. This method is used only for immediate
    * block ack variant. With delayed block ack, the MissedAck method will be
@@ -117,7 +119,7 @@ public:
    * will send the block ack back to the tx station which will reply with a
    * normal ack to the rx station.
    */
-  virtual void MissedBlockAck (void);
+  virtual void MissedBlockAck (uint32_t nMpdus);
   /**
    * Invoked when ns3::MacLow wants to start a new transmission
    * as configured by MacLowTransmissionParameters::EnableNextData.
@@ -1374,6 +1376,7 @@ private:
   WifiTxVector m_currentTxVector;     //!< TXVECTOR used for the current packet transmission
   bool m_receivedAtLeastOneMpdu;      //!< Flag whether an MPDU has already been successfully received while receiving an A-MPDU
   std::vector<Item> m_txPackets;      //!< Contain temporary items to be sent with the next A-MPDU transmission, once RTS/CTS exchange has succeeded. It is not used in other cases.
+  uint32_t m_nTxMpdus;                //!<Holds the number of transmitted MPDUs in the last A-MPDU transmission
 };
 
 } //namespace ns3

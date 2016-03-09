@@ -871,6 +871,16 @@ WifiRemoteStationManager::ReportRxOk (Mac48Address address, const WifiMacHeader 
   DoReportRxOk (station, rxSnr, txMode);
 }
 
+void
+WifiRemoteStationManager::ReportAmpduTxStatus (Mac48Address address, uint8_t tid,
+                                               uint32_t nSuccessfulMpdus, uint32_t nFailedMpdus)
+{
+  NS_LOG_FUNCTION (this << address << (uint16_t)tid << nSuccessfulMpdus << nFailedMpdus);
+  NS_ASSERT (!address.IsGroup ());
+  WifiRemoteStation *station = Lookup (address, tid);
+  DoReportAmpduTxStatus (station, nSuccessfulMpdus, nFailedMpdus);
+}
+
 bool
 WifiRemoteStationManager::NeedRts (Mac48Address address, const WifiMacHeader *header,
                                    Ptr<const Packet> packet, WifiTxVector txVector)
@@ -1703,6 +1713,12 @@ WifiRemoteStationManager::DoNeedFragmentation (WifiRemoteStation *station,
                                                Ptr<const Packet> packet, bool normally)
 {
   return normally;
+}
+
+void
+WifiRemoteStationManager::DoReportAmpduTxStatus (WifiRemoteStation *station, uint32_t nSuccessfulMpdus, uint32_t nFailedMpdus)
+{
+  NS_LOG_DEBUG ("DoReportAmpduTxStatus received but the manager does not handle A-MPDUs!");
 }
 
 WifiMode

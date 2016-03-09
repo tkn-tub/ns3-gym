@@ -268,7 +268,7 @@ public:
   /**
    * Event handler when a Block ACK timeout has occurred.
    */
-  void MissedBlockAck (void);
+  void MissedBlockAck (uint32_t nMpdus);
   void GotAddBaResponse (const MgtAddBaResponseHeader *respHdr, Mac48Address recipient);
   void GotDelBaFrame (const MgtDelBaHeader *delBaHdr, Mac48Address recipient);
   /**

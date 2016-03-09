@@ -536,6 +536,8 @@ BlockAckManager::NotifyGotBlockAck (const CtrlBAckResponseHeader *blockAck, Mac4
       if (ExistsAgreementInState (recipient, tid, OriginatorBlockAckAgreement::ESTABLISHED))
         {
           bool foundFirstLost = false;
+          uint32_t nSuccessfulMpdus = 0;
+          uint32_t nFailedMpdus = 0;
           AgreementsI it = m_agreements.find (std::make_pair (recipient, tid));
           PacketQueueI queueEnd = it->second.second.end ();
 
@@ -558,6 +560,7 @@ BlockAckManager::NotifyGotBlockAck (const CtrlBAckResponseHeader *blockAck, Mac4
                   if (blockAck->IsFragmentReceived ((*queueIt).hdr.GetSequenceNumber (),
                                                     (*queueIt).hdr.GetFragmentNumber ()))
                     {
+                      nSuccessfulMpdus++;
                       queueIt = it->second.second.erase (queueIt);
                     }
                   else
@@ -568,12 +571,11 @@ BlockAckManager::NotifyGotBlockAck (const CtrlBAckResponseHeader *blockAck, Mac4
                           sequenceFirstLost = (*queueIt).hdr.GetSequenceNumber ();
                           (*it).second.first.SetStartingSequence (sequenceFirstLost);
                         }
-
+                      nFailedMpdus++;
                       if (!AlreadyExists ((*queueIt).hdr.GetSequenceNumber (),recipient,tid))
                         {
                           InsertInRetryQueue (queueIt);
                         }
-
                       queueIt++;
                     }
                 }
@@ -588,8 +590,7 @@ BlockAckManager::NotifyGotBlockAck (const CtrlBAckResponseHeader *blockAck, Mac4
                       while (queueIt != queueEnd
                              && (*queueIt).hdr.GetSequenceNumber () == currentSeq)
                         {
-                          //notify remote station of successful transmission
-                          m_stationManager->ReportDataOk ((*queueIt).hdr.GetAddr1 (), &(*queueIt).hdr, 0, txMode, 0);
+                          nSuccessfulMpdus++;
                           if (!m_txOkCallback.IsNull ())
                             {
                               m_txOkCallback ((*queueIt).hdr);
@@ -605,8 +606,7 @@ BlockAckManager::NotifyGotBlockAck (const CtrlBAckResponseHeader *blockAck, Mac4
                           sequenceFirstLost = (*queueIt).hdr.GetSequenceNumber ();
                           (*it).second.first.SetStartingSequence (sequenceFirstLost);
                         }
-                      //notify remote station of unsuccessful transmission
-                      m_stationManager->ReportDataFailed ((*queueIt).hdr.GetAddr1 (), &(*queueIt).hdr);
+                      nFailedMpdus++;
                       if (!m_txFailedCallback.IsNull ())
                         {
                           m_txFailedCallback ((*queueIt).hdr);
@@ -619,6 +619,7 @@ BlockAckManager::NotifyGotBlockAck (const CtrlBAckResponseHeader *blockAck, Mac4
                     }
                 }
             }
+          m_stationManager->ReportAmpduTxStatus (recipient, tid, nSuccessfulMpdus, nFailedMpdus);
           uint16_t newSeq = m_txMiddle->GetNextSeqNumberByTidAndAddress (tid, recipient);
           if ((foundFirstLost && !SwitchToBlockAckIfNeeded (recipient, tid, sequenceFirstLost))
               || (!foundFirstLost && !SwitchToBlockAckIfNeeded (recipient, tid, newSeq)))
