@@ -178,14 +178,14 @@ public:
    */
   enum WifiModulationClass GetModulationClass () const;  
   /**
-   * \returns the WifiMode which represents the non-HT Reference Rate
+   * \returns the rate (in bps) of the non-HT Reference Rate
    * which corresponds to the HT MCS of this WifiMode.
    *
    * To convert an HT MCS to is corresponding non-HT Reference Rate
-   * use the modulation and coding rate determined by the HT MCS
-   * and get the non-HT reference rate by lookup into Table 9-5 of IEEE 802.11-2012.
+   * use the modulation and coding rate of the HT MCS
+   * and lookup in Table 9-5 of IEEE 802.11-2012.
    */
-  WifiMode GetNonHtReferenceRate (uint8_t nss) const;
+  uint64_t GetNonHtReferenceRate (uint8_t nss) const;
 
   /**
    * Create an invalid WifiMode. Calling any method on the

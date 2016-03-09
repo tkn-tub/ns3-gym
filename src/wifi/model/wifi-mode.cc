@@ -390,10 +390,10 @@ WifiMode::GetModulationClass () const
   return item->modClass;
 }
 
-WifiMode
+uint64_t
 WifiMode::GetNonHtReferenceRate (uint8_t nss) const
 {
-  WifiMode mode;
+  uint64_t dataRate;
   struct WifiModeFactory::WifiModeItem *item = WifiModeFactory::GetFactory ()->Get (m_uid);
   if (item->modClass == WIFI_MOD_CLASS_HT || item->modClass == WIFI_MOD_CLASS_VHT)
     {
@@ -402,75 +402,39 @@ WifiMode::GetNonHtReferenceRate (uint8_t nss) const
         {
         case 2:
           if (codeRate == WIFI_CODE_RATE_1_2)
-            mode = WifiModeFactory::CreateWifiMode ("OfdmRate6Mbps",
-                                                    WIFI_MOD_CLASS_OFDM,
-                                                    true,
-                                                    WIFI_CODE_RATE_1_2,
-                                                    2);
+            dataRate = 6000000;
           else if (codeRate == WIFI_CODE_RATE_3_4)
-            mode = WifiModeFactory::CreateWifiMode ("OfdmRate9Mbps",
-                                                    WIFI_MOD_CLASS_OFDM,
-                                                    false,
-                                                    WIFI_CODE_RATE_3_4,
-                                                    2);
+            dataRate = 9000000;
           else
             NS_FATAL_ERROR ("Trying to get reference rate for a MCS with wrong combination of coding rate and modulation");
           break;
         case 4:
           if (codeRate == WIFI_CODE_RATE_1_2)
-            mode = WifiModeFactory::CreateWifiMode ("OfdmRate12Mbps",
-                                                    WIFI_MOD_CLASS_OFDM,
-                                                    true,
-                                                    WIFI_CODE_RATE_1_2,
-                                                    4);
+            dataRate = 12000000;
           else if (codeRate == WIFI_CODE_RATE_3_4)
-            mode = WifiModeFactory::CreateWifiMode ("OfdmRate18Mbps",
-                                                    WIFI_MOD_CLASS_OFDM,
-                                                    false,
-                                                    WIFI_CODE_RATE_3_4,
-                                                    4);
+            dataRate = 18000000;
           else
             NS_FATAL_ERROR ("Trying to get reference rate for a MCS with wrong combination of coding rate and modulation");
           break;
         case 16:
           if (codeRate == WIFI_CODE_RATE_1_2)
-            mode = WifiModeFactory::CreateWifiMode ("OfdmRate24Mbps",
-                                                    WIFI_MOD_CLASS_OFDM,
-                                                    true,
-                                                    WIFI_CODE_RATE_1_2,
-                                                    16);
+            dataRate = 24000000;
           else if (codeRate == WIFI_CODE_RATE_3_4)
-            mode = WifiModeFactory::CreateWifiMode ("OfdmRate36Mbps",
-                                                    WIFI_MOD_CLASS_OFDM,
-                                                    false,
-                                                    WIFI_CODE_RATE_3_4,
-                                                    16);
+            dataRate = 36000000;
           else
             NS_FATAL_ERROR ("Trying to get reference rate for a MCS with wrong combination of coding rate and modulation");
           break;
         case 64:
           if (codeRate == WIFI_CODE_RATE_1_2 || codeRate == WIFI_CODE_RATE_2_3)
-            mode = WifiModeFactory::CreateWifiMode ("OfdmRate48Mbps",
-                                                    WIFI_MOD_CLASS_OFDM,
-                                                    false,
-                                                    WIFI_CODE_RATE_2_3,
-                                                    64);
+            dataRate = 48000000;
           else if (codeRate == WIFI_CODE_RATE_3_4 || codeRate == WIFI_CODE_RATE_5_6)
-            mode = WifiModeFactory::CreateWifiMode ("OfdmRate54Mbps",
-                                                    WIFI_MOD_CLASS_OFDM,
-                                                    false,
-                                                    WIFI_CODE_RATE_3_4,
-                                                    64);
+            dataRate = 54000000;
           else
             NS_FATAL_ERROR ("Trying to get reference rate for a MCS with wrong combination of coding rate and modulation");
           break;
         case 256:
           if (codeRate == WIFI_CODE_RATE_3_4 || codeRate == WIFI_CODE_RATE_5_6)
-            mode = WifiModeFactory::CreateWifiMode ("OfdmRate54Mbps",
-                                               WIFI_MOD_CLASS_OFDM,
-                                               false,
-                                               WIFI_CODE_RATE_3_4,
-                                               64);
+            dataRate = 54000000;
           else
             NS_FATAL_ERROR ("Trying to get reference rate for a MCS with wrong combination of coding rate and modulation");
           break;
@@ -479,9 +443,10 @@ WifiMode::GetNonHtReferenceRate (uint8_t nss) const
         }
     }
   else
-    mode = *this;
-
-  return mode;
+    {
+      NS_FATAL_ERROR ("Trying to get reference rate for a non-HT rate");
+    }
+  return dataRate;
 }
 
 WifiMode::WifiMode ()
