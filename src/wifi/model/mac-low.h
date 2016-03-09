@@ -1324,8 +1324,6 @@ private:
   EventId m_navCounterResetCtsMissed;   //!< Event to reset NAV when CTS is not received
   EventId m_waitRifsEvent;              //!< Wait for RIFS event
 
-  Ptr<MpduAggregator> m_mpduAggregator; //!<
-
   Ptr<Packet> m_currentPacket;              //!< Current packet transmitted/to be transmitted
   WifiMacHeader m_currentHdr;               //!< Header of the current transmitted packet
   WifiMacHeader m_lastReceivedHdr;          //!< Header of the last received packet
