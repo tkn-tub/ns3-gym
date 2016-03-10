@@ -11,3 +11,7 @@ def build(bld):
     obj = bld.create_ns3_program('test-interference-helper',
         ['core', 'mobility', 'network', 'wifi'])
     obj.source = 'test-interference-helper.cc'
+
+    obj = bld.create_ns3_program('ideal-wifi-manager-example',
+        ['core', 'network', 'wifi', 'stats', 'mobility', 'propagation'])
+    obj.source = 'ideal-wifi-manager-example.cc'
