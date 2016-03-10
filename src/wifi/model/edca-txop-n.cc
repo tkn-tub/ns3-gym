@@ -115,9 +115,9 @@ public:
   {
     m_txop->MissedAck ();
   }
-  virtual void GotBlockAck (const CtrlBAckResponseHeader *blockAck, Mac48Address source, WifiMode txMode)
+  virtual void GotBlockAck (const CtrlBAckResponseHeader *blockAck, Mac48Address source, double rxSnr, WifiMode txMode, double dataSnr)
   {
-    m_txop->GotBlockAck (blockAck, source,txMode);
+    m_txop->GotBlockAck (blockAck, source, rxSnr, txMode, dataSnr);
   }
   virtual void MissedBlockAck (uint32_t nMpdus)
   {
@@ -893,7 +893,7 @@ EdcaTxopN::MissedBlockAck (uint32_t nMpdus)
     }
   if (GetAmpduExist (m_currentHdr.GetAddr1 ()))
     {
-      m_stationManager->ReportAmpduTxStatus (m_currentHdr.GetAddr1 (), tid, 0, nMpdus);
+      m_stationManager->ReportAmpduTxStatus (m_currentHdr.GetAddr1 (), tid, 0, nMpdus, 0, 0);
     }
   if (NeedBarRetransmission ())
     {
@@ -1241,11 +1241,11 @@ EdcaTxopN::GotDelBaFrame (const MgtDelBaHeader *delBaHdr, Mac48Address recipient
 }
 
 void
-EdcaTxopN::GotBlockAck (const CtrlBAckResponseHeader *blockAck, Mac48Address recipient, WifiMode txMode)
+EdcaTxopN::GotBlockAck (const CtrlBAckResponseHeader *blockAck, Mac48Address recipient, double rxSnr, WifiMode txMode, double dataSnr)
 {
-  NS_LOG_FUNCTION (this << blockAck << recipient);
+  NS_LOG_FUNCTION (this << blockAck << recipient << rxSnr << txMode.GetUniqueName () << dataSnr);
   NS_LOG_DEBUG ("got block ack from=" << recipient);
-  m_baManager->NotifyGotBlockAck (blockAck, recipient, txMode);
+  m_baManager->NotifyGotBlockAck (blockAck, recipient, rxSnr, txMode, dataSnr);
   if (!m_txOkCallback.IsNull ())
     {
       m_txOkCallback (m_currentHdr);

@@ -51,7 +51,7 @@ MacLowTransmissionListener::~MacLowTransmissionListener ()
 {
 }
 void
-MacLowTransmissionListener::GotBlockAck (const CtrlBAckResponseHeader *blockAck, Mac48Address source, WifiMode mode)
+MacLowTransmissionListener::GotBlockAck (const CtrlBAckResponseHeader *blockAck, Mac48Address source, double rxSnr, WifiMode mode, double dataSnr)
 {
 }
 void
@@ -868,7 +868,8 @@ MacLow::ReceiveError (Ptr<Packet> packet, double rxSnr, bool isEndOfFrame)
                                             m_lastReceivedHdr.GetQosTid (),
                                             m_lastReceivedHdr.GetAddr2 (),
                                             m_lastReceivedHdr.GetDuration (),
-                                            m_currentTxVector);
+                                            m_currentTxVector,
+                                            rxSnr);
       m_receivedAtLeastOneMpdu = false;
     }
   if (m_txParams.MustWaitFastAck ())
@@ -1037,11 +1038,13 @@ MacLow::ReceiveOk (Ptr<Packet> packet, double rxSnr, WifiTxVector txVector, Wifi
            && m_blockAckTimeoutEvent.IsRunning ())
     {
       NS_LOG_DEBUG ("got block ack from " << hdr.GetAddr2 ());
+      SnrTag tag;
+      packet->RemovePacketTag (tag);
       CtrlBAckResponseHeader blockAck;
       packet->RemoveHeader (blockAck);
       m_blockAckTimeoutEvent.Cancel ();
       NotifyAckTimeoutResetNow ();
-      m_listener->GotBlockAck (&blockAck, hdr.GetAddr2 (), txVector.GetMode ());
+      m_listener->GotBlockAck (&blockAck, hdr.GetAddr2 (), rxSnr, txVector.GetMode (), tag.Get ());
       m_sentMpdus = 0;
       m_ampdu = false;
       FlushAggregateQueue ();
@@ -1072,7 +1075,8 @@ MacLow::ReceiveOk (Ptr<Packet> packet, double rxSnr, WifiTxVector txVector, Wifi
                                                         blockAckReq,
                                                         hdr.GetAddr2 (),
                                                         hdr.GetDuration (),
-                                                        txVector.GetMode ());
+                                                        txVector.GetMode (),
+                                                        rxSnr);
                 }
               else
                 {
@@ -2616,7 +2620,7 @@ MacLow::RxCompleteBufferedPacketsUntilFirstLost (Mac48Address originator, uint8_
 }
 void
 MacLow::SendBlockAckResponse (const CtrlBAckResponseHeader* blockAck, Mac48Address originator, bool immediate,
-                              Time duration, WifiMode blockAckReqTxMode)
+                              Time duration, WifiMode blockAckReqTxMode, double rxSnr)
 {
   Ptr<Packet> packet = Create<Packet> ();
   packet->AddHeader (*blockAck);
@@ -2684,15 +2688,17 @@ MacLow::SendBlockAckResponse (const CtrlBAckResponseHeader* blockAck, Mac48Addre
     {
       preamble = WIFI_PREAMBLE_LONG;
     }
-
+  SnrTag tag;
+  tag.Set (rxSnr);
+  packet->AddPacketTag (tag);
   ForwardDown (packet, &hdr, blockAckReqTxVector, preamble);
   m_currentPacket = 0;
 }
 
 void
-MacLow::SendBlockAckAfterAmpdu (uint8_t tid, Mac48Address originator, Time duration, WifiTxVector blockAckReqTxVector)
+MacLow::SendBlockAckAfterAmpdu (uint8_t tid, Mac48Address originator, Time duration, WifiTxVector blockAckReqTxVector, double rxSnr)
 {
-  NS_LOG_FUNCTION (this);
+  NS_LOG_FUNCTION (this << (uint16_t) tid << originator << duration.As (Time::S) << blockAckReqTxVector << rxSnr);
   CtrlBAckResponseHeader blockAck;
   uint16_t seqNumber = 0;
   BlockAckCachesI i = m_bAckCaches.find (std::make_pair (originator, tid));
@@ -2708,12 +2714,12 @@ MacLow::SendBlockAckAfterAmpdu (uint8_t tid, Mac48Address originator, Time durat
   NS_LOG_DEBUG ("Got Implicit block Ack Req with seq " << seqNumber);
   (*i).second.FillBlockAckBitmap (&blockAck);
 
-  SendBlockAckResponse (&blockAck, originator, immediate, duration, blockAckReqTxVector.GetMode  ());
+  SendBlockAckResponse (&blockAck, originator, immediate, duration, blockAckReqTxVector.GetMode (), rxSnr);
 }
 
 void
 MacLow::SendBlockAckAfterBlockAckRequest (const CtrlBAckRequestHeader reqHdr, Mac48Address originator,
-                                          Time duration, WifiMode blockAckReqTxMode)
+                                          Time duration, WifiMode blockAckReqTxMode, double rxSnr)
 {
   NS_LOG_FUNCTION (this);
   CtrlBAckResponseHeader blockAck;
@@ -2771,7 +2777,7 @@ MacLow::SendBlockAckAfterBlockAckRequest (const CtrlBAckRequestHeader reqHdr, Ma
       NS_FATAL_ERROR ("Multi-tid block ack is not supported.");
     }
 
-  SendBlockAckResponse (&blockAck, originator, immediate, duration, blockAckReqTxMode);
+  SendBlockAckResponse (&blockAck, originator, immediate, duration, blockAckReqTxMode, rxSnr);
 }
 
 void
@@ -2872,7 +2878,8 @@ MacLow::DeaggregateAmpduAndReceive (Ptr<Packet> aggregatedPacket, double rxSnr, 
                                                         firsthdr.GetQosTid (),
                                                         firsthdr.GetAddr2 (),
                                                         firsthdr.GetDuration (),
-                                                        txVector);
+                                                        txVector,
+                                                        rxSnr);
                 }
               else
                 {

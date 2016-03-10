@@ -595,7 +595,7 @@ public:
    * A value of 0 means that the Block ACK was missed.
    * \param nFailedMpdus number of unsuccessfully transmitted MPDUs.
    */
-  void ReportAmpduTxStatus (Mac48Address address, uint8_t tid, uint32_t nSuccessfulMpdus, uint32_t nFailedMpdus);
+  void ReportAmpduTxStatus (Mac48Address address, uint8_t tid, uint32_t nSuccessfulMpdus, uint32_t nFailedMpdus, double rxSnr, double dataSnr);
 
   /**
    * \param address remote address
@@ -1106,7 +1106,7 @@ private:
    *        A value of 0 means that the Block ACK was missed.
    * \param nFailedMpdus number of unsuccessfully transmitted MPDUs.
    */
-  virtual void DoReportAmpduTxStatus (WifiRemoteStation *station, uint32_t nSuccessfulMpdus, uint32_t nFailedMpdus);
+  virtual void DoReportAmpduTxStatus (WifiRemoteStation *station, uint32_t nSuccessfulMpdus, uint32_t nFailedMpdus, double rxSnr, double dataSnr);
 
   /**
    * Return the state of the station associated with the given address.

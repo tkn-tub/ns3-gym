@@ -97,7 +97,9 @@ public:
   /**
    * \param blockAck Block ack response header
    * \param source Address of block ack sender
+   * \param rxSnr received SNR of block ack response
    * \param txMode mode of block ack response
+   * \param dataSnr SNR conveyed from remote station (received data SNR)
    *
    * Invoked when ns3::MacLow receives a block ack frame.
    * Block ack frame is received after a block ack request
@@ -107,7 +109,7 @@ public:
    * queue that intends to be notified by MacLow of reception
    * of a block ack must redefine this function.
    */
-  virtual void GotBlockAck (const CtrlBAckResponseHeader *blockAck, Mac48Address source, WifiMode txMode);
+  virtual void GotBlockAck (const CtrlBAckResponseHeader *blockAck, Mac48Address source, double rxSnr, WifiMode txMode, double dataSnr);
   /**
    * \param nMpdus number of MPDUs that were transmitted in the unsuccesful A-MPDU transmission
    *
@@ -1220,15 +1222,16 @@ private:
    * \param originator
    * \param duration
    * \param blockAckReqTxMode
+   * \param rxSnr
    */
   void SendBlockAckAfterBlockAckRequest (const CtrlBAckRequestHeader reqHdr, Mac48Address originator,
-                                         Time duration, WifiMode blockAckReqTxMode);
+                                         Time duration, WifiMode blockAckReqTxMode, double rxSnr);
   /**
    * Invoked after an A-MPDU has been received. Looks for corresponding
    * block ack agreement and creates block ack bitmap on a received packets basis.
    */
   void SendBlockAckAfterAmpdu (uint8_t tid, Mac48Address originator,
-                               Time duration, WifiTxVector blockAckReqTxVector);
+                               Time duration, WifiTxVector blockAckReqTxVector, double rxSnr);
   /**
    * This method creates block ack frame with header equals to <i>blockAck</i> and start its transmission.
    *
@@ -1237,9 +1240,10 @@ private:
    * \param immediate
    * \param duration
    * \param blockAckReqTxMode
+   * \param rxSnr
    */
   void SendBlockAckResponse (const CtrlBAckResponseHeader* blockAck, Mac48Address originator, bool immediate,
-                             Time duration, WifiMode blockAckReqTxMode);
+                             Time duration, WifiMode blockAckReqTxMode, double rxSnr);
   /**
    * Every time that a block ack request or a packet with ack policy equals to <i>block ack</i>
    * are received, if a relative block ack agreement exists and the value of inactivity timeout

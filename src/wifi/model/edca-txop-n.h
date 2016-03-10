@@ -262,9 +262,11 @@ public:
    *
    * \param blockAck
    * \param recipient
+   * \param rxSnr SNR of the block ack itself
    * \param txMode
+   * \param dataSnr reported data SNR from the peer
    */
-  void GotBlockAck (const CtrlBAckResponseHeader *blockAck, Mac48Address recipient, WifiMode txMode);
+  void GotBlockAck (const CtrlBAckResponseHeader *blockAck, Mac48Address recipient, double rxSnr, WifiMode txMode, double dataSnr);
   /**
    * Event handler when a Block ACK timeout has occurred.
    */

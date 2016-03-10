@@ -526,9 +526,9 @@ BlockAckManager::AlreadyExists (uint16_t currentSeq, Mac48Address recipient, uin
 }
 
 void
-BlockAckManager::NotifyGotBlockAck (const CtrlBAckResponseHeader *blockAck, Mac48Address recipient, WifiMode txMode)
+BlockAckManager::NotifyGotBlockAck (const CtrlBAckResponseHeader *blockAck, Mac48Address recipient, double rxSnr, WifiMode txMode, double dataSnr)
 {
-  NS_LOG_FUNCTION (this << blockAck << recipient);
+  NS_LOG_FUNCTION (this << blockAck << recipient << rxSnr << txMode.GetUniqueName () << dataSnr);
   uint16_t sequenceFirstLost = 0;
   if (!blockAck->IsMultiTid ())
     {
@@ -619,7 +619,7 @@ BlockAckManager::NotifyGotBlockAck (const CtrlBAckResponseHeader *blockAck, Mac4
                     }
                 }
             }
-          m_stationManager->ReportAmpduTxStatus (recipient, tid, nSuccessfulMpdus, nFailedMpdus);
+          m_stationManager->ReportAmpduTxStatus (recipient, tid, nSuccessfulMpdus, nFailedMpdus, rxSnr, dataSnr);
           uint16_t newSeq = m_txMiddle->GetNextSeqNumberByTidAndAddress (tid, recipient);
           if ((foundFirstLost && !SwitchToBlockAckIfNeeded (recipient, tid, sequenceFirstLost))
               || (!foundFirstLost && !SwitchToBlockAckIfNeeded (recipient, tid, newSeq)))

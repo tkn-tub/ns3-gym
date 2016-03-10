@@ -164,14 +164,16 @@ public:
   /**
    * \param blockAck The received block ack frame.
    * \param recipient Sender of block ack frame.
+   * \param rxSnr received SNR of the block ack frame itself
    * \param txMode mode of block ack frame.
+   * \param dataSnr data SNR reported by remote station
    *
    * Invoked upon receipt of a block ack frame. Typically, this function, is called
    * by ns3::EdcaTxopN object. Performs a check on which MPDUs, previously sent
    * with ack policy set to Block Ack, were correctly received by the recipient.
    * An acknowledged MPDU is removed from the buffer, retransmitted otherwise.
    */
-  void NotifyGotBlockAck (const CtrlBAckResponseHeader *blockAck, Mac48Address recipient, WifiMode txMode);
+  void NotifyGotBlockAck (const CtrlBAckResponseHeader *blockAck, Mac48Address recipient, double rxSnr, WifiMode txMode, double dataSnr);
   /**
    * \param recipient Address of peer station involved in block ack mechanism.
    * \param tid Traffic ID.
