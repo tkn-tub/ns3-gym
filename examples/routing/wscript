@@ -47,3 +47,6 @@ def build(bld):
                                  ['csma', 'internet', 'internet-apps'])
     obj.source = 'rip-simple-network.cc'
 
+    obj = bld.create_ns3_program('global-routing-multi-switch-plus-router',
+                                 ['core', 'network', 'applications', 'internet', 'bridge', 'csma', 'point-to-point', 'csma', 'internet'])
+    obj.source = 'global-routing-multi-switch-plus-router.cc'
