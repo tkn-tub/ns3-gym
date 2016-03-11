@@ -37,18 +37,16 @@
 #include "ns3/udp-header.h"
 #include "ns3/olsr-header.h"
 
-namespace ns3
-{
-namespace olsr
-{
+namespace ns3 {
+namespace olsr {
 
-HelloRegressionTest::HelloRegressionTest() : 
+HelloRegressionTest::HelloRegressionTest () :
   TestCase ("Test OLSR Hello messages generation"),
   m_time (Seconds (5)), m_countA (0), m_countB (0)
 {
 }
 
-HelloRegressionTest::~HelloRegressionTest()
+HelloRegressionTest::~HelloRegressionTest ()
 {
 }
 
@@ -133,7 +131,7 @@ HelloRegressionTest::ReceivePktProbeA (Ptr<Socket> socket)
     }
 
   std::vector<olsr::MessageHeader::Hello::LinkMessage>::const_iterator iter;
-  for (iter = hello.linkMessages.begin (); iter != hello.linkMessages.end (); iter ++)
+  for (iter = hello.linkMessages.begin (); iter != hello.linkMessages.end (); iter++)
     {
       if (m_countA == 1)
         {
@@ -148,7 +146,7 @@ HelloRegressionTest::ReceivePktProbeA (Ptr<Socket> socket)
       NS_TEST_EXPECT_MSG_EQ (iter->neighborInterfaceAddresses[0], Ipv4Address ("10.1.1.1"), "Only one neighbor.");
     }
 
-  m_countA ++;
+  m_countA++;
 }
 
 void
@@ -181,7 +179,7 @@ HelloRegressionTest::ReceivePktProbeB (Ptr<Socket> socket)
     }
 
   std::vector<olsr::MessageHeader::Hello::LinkMessage>::const_iterator iter;
-  for (iter = hello.linkMessages.begin (); iter != hello.linkMessages.end (); iter ++)
+  for (iter = hello.linkMessages.begin (); iter != hello.linkMessages.end (); iter++)
     {
       if (m_countA == 1)
         {
@@ -196,7 +194,7 @@ HelloRegressionTest::ReceivePktProbeB (Ptr<Socket> socket)
       NS_TEST_EXPECT_MSG_EQ (iter->neighborInterfaceAddresses[0], Ipv4Address ("10.1.1.2"), "Only one neighbor.");
     }
 
-  m_countB ++;
+  m_countB++;
 }
 
 }

@@ -23,15 +23,13 @@
 #include "ns3/nstime.h"
 #include "ns3/node-container.h"
 
-namespace ns3
-{
-namespace olsr
-{
-  /** See \bugid{780} */
+namespace ns3 {
+namespace olsr {
+/** See \bugid{780} */
 class Bug780Test : public TestCase
 {
 public:
-  Bug780Test (); 
+  Bug780Test ();
   ~Bug780Test ();
 private:
   /// Total simulation time

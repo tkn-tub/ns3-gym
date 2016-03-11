@@ -157,11 +157,11 @@ public:
 class MessageHeader : public Header
 {
 public:
-
   /**
    * Message type
    */
-  enum MessageType {
+  enum MessageType
+  {
     HELLO_MESSAGE = 1,
     TC_MESSAGE    = 2,
     MID_MESSAGE   = 3,
@@ -340,7 +340,7 @@ public:
      * \param messageSize the message size.
      * \returns the number of bytes read.
      */
-   uint32_t Deserialize (Buffer::Iterator start, uint32_t messageSize);
+    uint32_t Deserialize (Buffer::Iterator start, uint32_t messageSize);
   };
 
   /**
@@ -373,12 +373,13 @@ public:
      (etc.)
   \endverbatim
   */
- struct Hello
+  struct Hello
   {
     /**
      * Link message item
      */
-    struct LinkMessage {
+    struct LinkMessage
+    {
       uint8_t linkCode;       //!< Link code
       std::vector<Ipv4Address> neighborInterfaceAddresses;  //!< Neighbor interface address container.
     };
@@ -436,25 +437,25 @@ public:
     uint32_t Deserialize (Buffer::Iterator start, uint32_t messageSize);
   };
 
- /**
-  * \ingroup olsr
-  * TC Message Format
-  *
-  \verbatim
-    0                   1                   2                   3
-    0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-   |              ANSN             |           Reserved            |
-   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-   |               Advertised Neighbor Main Address                |
-   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-   |               Advertised Neighbor Main Address                |
-   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-   |                              ...                              |
-   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-  \endverbatim
-  */
- struct Tc
+  /**
+   * \ingroup olsr
+   * TC Message Format
+   *
+   \verbatim
+     0                   1                   2                   3
+     0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    |              ANSN             |           Reserved            |
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    |               Advertised Neighbor Main Address                |
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    |               Advertised Neighbor Main Address                |
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    |                              ...                              |
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   \endverbatim
+   */
+  struct Tc
   {
     std::vector<Ipv4Address> neighborAddresses; //!< Neighbor address container.
     uint16_t ansn;  //!< Advertised Neighbor Sequence Number.
@@ -486,35 +487,35 @@ public:
      * \param messageSize the message size.
      * \returns the number of bytes read.
      */
-   uint32_t Deserialize (Buffer::Iterator start, uint32_t messageSize);
+    uint32_t Deserialize (Buffer::Iterator start, uint32_t messageSize);
   };
 
 
- /**
-  * \ingroup olsr
-  * HNA (Host Network Association) Message Format
-  *
-  \verbatim
-    0                   1                   2                   3
-    0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-   |                         Network Address                       |
-   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-   |                             Netmask                           |
-   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-   |                         Network Address                       |
-   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-   |                             Netmask                           |
-   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-   |                              ...                              |
-   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-  \endverbatim
-  */
+  /**
+   * \ingroup olsr
+   * HNA (Host Network Association) Message Format
+   *
+   \verbatim
+     0                   1                   2                   3
+     0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    |                         Network Address                       |
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    |                             Netmask                           |
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    |                         Network Address                       |
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    |                             Netmask                           |
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    |                              ...                              |
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   \endverbatim
+   */
   struct Hna
   {
-   /**
-    * Association item structure.
-    */
+    /**
+     * Association item structure.
+     */
     struct Association
     {
       Ipv4Address address; //!< IPv4 Address.
@@ -554,7 +555,6 @@ public:
   };
 
 private:
-
   /**
    * Structure holding the message content.
    */
@@ -567,7 +567,6 @@ private:
   } m_message; //!< The actual message being carried.
 
 public:
-
   /**
    * Set the message type to MID and return the message content.
    * \returns The MID message.
@@ -702,8 +701,10 @@ static inline std::ostream& operator<< (std::ostream& os, const MessageList & me
        messageIter != messages.end (); messageIter++)
     {
       messageIter->Print (os);
-      if (messageIter+1 != messages.end ())
-        os << ", ";
+      if (messageIter + 1 != messages.end ())
+        {
+          os << ", ";
+        }
     }
   os << "]";
   return os;

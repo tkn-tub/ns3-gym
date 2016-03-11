@@ -17,7 +17,7 @@
 
 // OLSR was observed to not converge in simple 3-nodes varying topology.
 // https://www.nsnam.org/bugzilla/show_bug.cgi?id=780
-// tcpdump -r bug780-0-0.pcap -nn -tt icmp | wc  
+// tcpdump -r bug780-0-0.pcap -nn -tt icmp | wc
 // should show about 395 packets; there is a ping outage from time
 // 123-127 due to the mobility.
 
@@ -40,18 +40,16 @@
 #include "ns3/icmpv4.h"
 #include "bug780-test.h"
 
-namespace ns3
-{
-namespace olsr
-{
+namespace ns3 {
+namespace olsr {
 
-Bug780Test::Bug780Test() : 
+Bug780Test::Bug780Test () :
   TestCase ("Test OLSR bug 780"),
   m_time (Seconds (200.0)), m_seq (0), m_recvCount (0)
 {
 }
 
-Bug780Test::~Bug780Test()
+Bug780Test::~Bug780Test ()
 {
 }
 
@@ -162,7 +160,7 @@ Bug780Test::Receive (Ptr<Socket> socket)
       p->RemoveHeader (icmp);
       if (icmp.GetType () == Icmpv4Header::ECHO_REPLY)
         {
-          m_recvCount ++;
+          m_recvCount++;
         }
     }
 }

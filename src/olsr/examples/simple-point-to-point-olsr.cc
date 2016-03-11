@@ -32,7 +32,7 @@
 // - CBR/UDP flows from n0 to n4, and from n3 to n1
 // - UDP packet size of 210 bytes, with per-packet interval 0.00375 sec.
 //   (i.e., DataRate of 448,000 bps)
-// - DropTail queues 
+// - DropTail queues
 // - Tracing of queues and packet receptions to file "simple-point-to-point-olsr.tr"
 
 #include <iostream>
@@ -53,16 +53,16 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("SimplePointToPointOlsrExample");
 
-int 
+int
 main (int argc, char *argv[])
 {
   // Users may find it convenient to turn on explicit debugging
   // for selected modules; the below lines suggest how to do this
-#if 0 
+#if 0
   LogComponentEnable ("SimpleGlobalRoutingExample", LOG_LEVEL_INFO);
 #endif
 
-  // Set up some default values for the simulation.  Use the 
+  // Set up some default values for the simulation.  Use the
 
   Config::SetDefault ("ns3::OnOffApplication::PacketSize", UintegerValue (210));
   Config::SetDefault ("ns3::OnOffApplication::DataRate", StringValue ("448kb/s"));
@@ -130,7 +130,7 @@ main (int argc, char *argv[])
   NS_LOG_INFO ("Create Applications.");
   uint16_t port = 9;   // Discard port (RFC 863)
 
-  OnOffHelper onoff ("ns3::UdpSocketFactory", 
+  OnOffHelper onoff ("ns3::UdpSocketFactory",
                      InetSocketAddress (i34.GetAddress (1), port));
   onoff.SetConstantRate (DataRate ("448kb/s"));
 

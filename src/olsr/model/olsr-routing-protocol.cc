@@ -1,6 +1,6 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
- * Copyright (c) 2004 Francisco J. Ros 
+ * Copyright (c) 2004 Francisco J. Ros
  * Copyright (c) 2007 INESC Porto
  *
  * This program is free software; you can redistribute it and/or modify
@@ -141,14 +141,14 @@
 namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("OlsrRoutingProtocol");
-  
+
 namespace olsr {
 
 /********** OLSR class **********/
 
 NS_OBJECT_ENSURE_REGISTERED (RoutingProtocol);
 
-TypeId 
+TypeId
 RoutingProtocol::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::olsr::RoutingProtocol")
@@ -195,12 +195,12 @@ RoutingProtocol::GetTypeId (void)
 
 RoutingProtocol::RoutingProtocol ()
   : m_routingTableAssociation (0),
-    m_ipv4 (0),
-    m_helloTimer (Timer::CANCEL_ON_DESTROY),
-    m_tcTimer (Timer::CANCEL_ON_DESTROY),
-    m_midTimer (Timer::CANCEL_ON_DESTROY),
-    m_hnaTimer (Timer::CANCEL_ON_DESTROY),
-    m_queuedMessagesTimer (Timer::CANCEL_ON_DESTROY)
+  m_ipv4 (0),
+  m_helloTimer (Timer::CANCEL_ON_DESTROY),
+  m_tcTimer (Timer::CANCEL_ON_DESTROY),
+  m_midTimer (Timer::CANCEL_ON_DESTROY),
+  m_hnaTimer (Timer::CANCEL_ON_DESTROY),
+  m_queuedMessagesTimer (Timer::CANCEL_ON_DESTROY)
 {
   m_uniformRandomVariable = CreateObject<UniformRandomVariable> ();
 
@@ -256,7 +256,7 @@ RoutingProtocol::PrintRoutingTable (Ptr<OutputStreamWrapper> stream) const
   std::ostream* os = stream->GetStream ();
 
   *os << "Node: " << m_ipv4->GetObject<Node> ()->GetId ()
-      << ", Time: " << Now().As (Time::S)
+      << ", Time: " << Now ().As (Time::S)
       << ", Local time: " << GetObject<Node> ()->GetLocalTime ().As (Time::S)
       << ", OLSR Routing table" << std::endl;
 
@@ -319,7 +319,9 @@ void RoutingProtocol::DoInitialize ()
     {
       Ipv4Address addr = m_ipv4->GetAddress (i, 0).GetLocal ();
       if (addr == loopback)
-        continue;
+        {
+          continue;
+        }
 
       if (addr != m_mainAddress)
         {
@@ -333,11 +335,13 @@ void RoutingProtocol::DoInitialize ()
           NS_ASSERT (GetMainAddress (addr) == m_mainAddress);
         }
 
-      if(m_interfaceExclusions.find (i) != m_interfaceExclusions.end ())
-        continue;
+      if (m_interfaceExclusions.find (i) != m_interfaceExclusions.end ())
+        {
+          continue;
+        }
 
       // Create a socket to listen only on this interface
-      Ptr<Socket> socket = Socket::CreateSocket (GetObject<Node> (), 
+      Ptr<Socket> socket = Socket::CreateSocket (GetObject<Node> (),
                                                  UdpSocketFactory::GetTypeId ());
       socket->SetAllowBroadcast (true);
       InetSocketAddress inetAddr (m_ipv4->GetAddress (i, 0).GetLocal (), OLSR_PORT_NUMBER);
@@ -352,7 +356,7 @@ void RoutingProtocol::DoInitialize ()
       canRunOlsr = true;
     }
 
-  if(canRunOlsr)
+  if (canRunOlsr)
     {
       HelloTimerExpire ();
       TcTimerExpire ();
@@ -406,7 +410,9 @@ RoutingProtocol::RecvOlsr (Ptr<Socket> socket)
     {
       MessageHeader messageHeader;
       if (packet->RemoveHeader (messageHeader) == 0)
-        NS_ASSERT (false);
+        {
+          NS_ASSERT (false);
+        }
 
       sizeLeft -= messageHeader.GetSerializedSize ();
 
@@ -481,7 +487,7 @@ RoutingProtocol::RecvOlsr (Ptr<Socket> socket)
                             << "s OLSR node " << m_mainAddress
                             <<  " received HNA message of size " << messageHeader.GetSerializedSize ());
               ProcessHna (messageHeader, senderIfaceAddr);
-              break; 
+              break;
 
             default:
               NS_LOG_DEBUG ("OLSR message type " <<
@@ -542,7 +548,9 @@ RoutingProtocol::Degree (NeighborTuple const &tuple)
           const NeighborTuple *nb_tuple =
             m_state.FindNeighborTuple (nb2hop_tuple.neighborMainAddr);
           if (nb_tuple == NULL)
-            degree++;
+            {
+              degree++;
+            }
         }
     }
   return degree;
@@ -556,7 +564,7 @@ namespace {
 /// \param neighborMainAddr Neighbor main address.
 /// \param N2 Reference to the 2-hop neighbor set.
 ///
-void 
+void
 CoverTwoHopNeighbors (Ipv4Address neighborMainAddr, TwoHopNeighborSet & N2)
 {
   // first gather all 2-hop neighbors to be removed
@@ -676,7 +684,9 @@ RoutingProtocol::MprComputation ()
         next++;
         os << iter->neighborMainAddr << "->" << iter->twoHopNeighborAddr;
         if (next != N2.end ())
-          os << ", ";
+          {
+            os << ", ";
+          }
       }
     os << "]";
     NS_LOG_DEBUG ("N2: " << os.str ());
@@ -741,7 +751,7 @@ RoutingProtocol::MprComputation ()
     {
       if (coveredTwoHopNeighbors.find (twoHopNeigh->twoHopNeighborAddr) != coveredTwoHopNeighbors.end ())
         {
-          // This works correctly only because it is known that twoHopNeigh is reachable by exactly one neighbor, 
+          // This works correctly only because it is known that twoHopNeigh is reachable by exactly one neighbor,
           // so only one record in N2 exists for each of them. This record is erased here.
           NS_LOG_LOGIC ("2-hop neigh. " << twoHopNeigh->twoHopNeighborAddr << " is already covered by an MPR.");
           twoHopNeigh = N2.erase (twoHopNeigh);
@@ -768,7 +778,9 @@ RoutingProtocol::MprComputation ()
             next++;
             os << iter->neighborMainAddr << "->" << iter->twoHopNeighborAddr;
             if (next != N2.end ())
-              os << ", ";
+              {
+                os << ", ";
+              }
           }
         os << "]";
         NS_LOG_DEBUG ("Step 4 iteration: N2=" << os.str ());
@@ -790,7 +802,9 @@ RoutingProtocol::MprComputation ()
             {
               TwoHopNeighborTuple const &nb2hop_tuple = *it2;
               if (nb_tuple.neighborMainAddr == nb2hop_tuple.neighborMainAddr)
-                r++;
+                {
+                  r++;
+                }
             }
           rs.insert (r);
           reachability[r].push_back (&nb_tuple);
@@ -860,7 +874,9 @@ RoutingProtocol::MprComputation ()
         next++;
         os << *iter;
         if (next != mprSet.end ())
-          os << ", ";
+          {
+            os << ", ";
+          }
       }
     os << "]";
     NS_LOG_DEBUG ("Computed MPR set for node " << m_mainAddress << ": " << os.str ());
@@ -877,9 +893,13 @@ RoutingProtocol::GetMainAddress (Ipv4Address iface_addr) const
     m_state.FindIfaceAssocTuple (iface_addr);
 
   if (tuple != NULL)
-    return tuple->mainAddr;
+    {
+      return tuple->mainAddr;
+    }
   else
-    return iface_addr;
+    {
+      return iface_addr;
+    }
 }
 
 void
@@ -1083,7 +1103,9 @@ RoutingProtocol::RoutingTableComputation ()
         }
 
       if (!added)
-        break;
+        {
+          break;
+        }
     }
 
   // 4. For each entry in the multiple interface association base
@@ -1164,8 +1186,8 @@ RoutingProtocol::RoutingTableComputation ()
       for (routeIndex = 0; routeIndex < m_hnaRoutingTable->GetNRoutes (); routeIndex++)
         {
           Ipv4RoutingTableEntry route = m_hnaRoutingTable->GetRoute (routeIndex);
-          if (route.GetDestNetwork () == tuple.networkAddr &&
-              route.GetDestNetworkMask () == tuple.netmask)
+          if (route.GetDestNetwork () == tuple.networkAddr
+              && route.GetDestNetworkMask () == tuple.netmask)
             {
               break;
             }
@@ -1175,13 +1197,13 @@ RoutingProtocol::RoutingTableComputation ()
         {
           addRoute = true;
         }
-      else if(gatewayEntryExists && m_hnaRoutingTable->GetMetric (routeIndex) > gatewayEntry.distance)
+      else if (gatewayEntryExists && m_hnaRoutingTable->GetMetric (routeIndex) > gatewayEntry.distance)
         {
           m_hnaRoutingTable->RemoveRoute (routeIndex);
           addRoute = true;
         }
 
-      if(addRoute && gatewayEntryExists)
+      if (addRoute && gatewayEntryExists)
         {
           m_hnaRoutingTable->AddNetworkRouteTo (tuple.networkAddr,
                                                 tuple.netmask,
@@ -1262,7 +1284,9 @@ RoutingProtocol::ProcessTc (const olsr::MessageHeader &msg,
   // 1-hop neighborhood of this node, the message MUST be discarded.
   const LinkTuple *link_tuple = m_state.FindSymLinkTuple (senderIface, now);
   if (link_tuple == NULL)
-    return;
+    {
+      return;
+    }
 
   // 2. If there exist some tuple in the topology set where:
   //    T_last_addr == originator address AND
@@ -1272,7 +1296,9 @@ RoutingProtocol::ProcessTc (const olsr::MessageHeader &msg,
   const TopologyTuple *topologyTuple =
     m_state.FindNewerTopologyTuple (msg.GetOriginatorAddress (), tc.ansn);
   if (topologyTuple != NULL)
-    return;
+    {
+      return;
+    }
 
   // 3. All tuples in the topology set where:
   //    T_last_addr == originator address AND
@@ -1306,7 +1332,7 @@ RoutingProtocol::ProcessTc (const olsr::MessageHeader &msg,
           //      T_last_addr = originator address,
           //      T_seq       = ANSN,
           //      T_time      = current time + validity time.
-          TopologyTuple topologyTuple;;
+          TopologyTuple topologyTuple;
           topologyTuple.destAddr = addr;
           topologyTuple.lastAddr = msg.GetOriginatorAddress ();
           topologyTuple.sequenceNumber = tc.ansn;
@@ -1419,7 +1445,9 @@ RoutingProtocol::ProcessHna (const olsr::MessageHeader &msg,
   // 1-hop neighborhood of this node, the message MUST be discarded.
   const LinkTuple *link_tuple = m_state.FindSymLinkTuple (senderIface, now);
   if (link_tuple == NULL)
-    return;
+    {
+      return;
+    }
 
   // 2. Otherwise, for each (network address, netmask) pair in the
   // message:
@@ -1435,7 +1463,7 @@ RoutingProtocol::ProcessHna (const olsr::MessageHeader &msg,
       //          A_netmask      == netmask
       //      then the holding time for that tuple MUST be set to:
       //          A_time         =  current time + validity time
-      if(tuple != NULL)
+      if (tuple != NULL)
         {
           tuple->expirationTime = now + msg.GetVTime ();
         }
@@ -1476,7 +1504,9 @@ RoutingProtocol::ForwardDefault (olsr::MessageHeader olsrMessage,
   // 1-hop neighborhood the message must not be forwarded
   const LinkTuple *linkTuple = m_state.FindSymLinkTuple (senderAddress, now);
   if (linkTuple == NULL)
-    return;
+    {
+      return;
+    }
 
   // If the message has already been considered for forwarding,
   // it must not be retransmitted again
@@ -1542,7 +1572,7 @@ RoutingProtocol::QueueMessage (const olsr::MessageHeader &message, Time delay)
 }
 
 void
-RoutingProtocol::SendPacket (Ptr<Packet> packet, 
+RoutingProtocol::SendPacket (Ptr<Packet> packet,
                              const MessageList &containedMessages)
 {
   NS_LOG_DEBUG ("OLSR node " << m_mainAddress << " sending a OLSR packet");
@@ -1760,10 +1790,14 @@ RoutingProtocol::SendMid ()
     {
       Ipv4Address addr = m_ipv4->GetAddress (i, 0).GetLocal ();
       if (addr != m_mainAddress && addr != loopback && m_interfaceExclusions.find (i) == m_interfaceExclusions.end ())
-        mid.interfaceAddresses.push_back (addr);
+        {
+          mid.interfaceAddresses.push_back (addr);
+        }
     }
   if (mid.interfaceAddresses.size () == 0)
-    return;
+    {
+      return;
+    }
 
   msg.SetVTime (OLSR_MID_HOLD_TIME);
   msg.SetOriginatorAddress (m_mainAddress);
@@ -1935,10 +1969,18 @@ RoutingProtocol::LinkSensing (const olsr::MessageHeader &msg,
       const char *linkTypeName;
       switch (lt)
         {
-        case OLSR_UNSPEC_LINK: linkTypeName = "UNSPEC_LINK"; break;
-        case OLSR_ASYM_LINK: linkTypeName = "ASYM_LINK"; break;
-        case OLSR_SYM_LINK: linkTypeName = "SYM_LINK"; break;
-        case OLSR_LOST_LINK: linkTypeName = "LOST_LINK"; break;
+        case OLSR_UNSPEC_LINK:
+          linkTypeName = "UNSPEC_LINK";
+          break;
+        case OLSR_ASYM_LINK:
+          linkTypeName = "ASYM_LINK";
+          break;
+        case OLSR_SYM_LINK:
+          linkTypeName = "SYM_LINK";
+          break;
+        case OLSR_LOST_LINK:
+          linkTypeName = "LOST_LINK";
+          break;
           /*  no default, since lt must be in 0..3, covered above
         default: linkTypeName = "(invalid value!)";
           */
@@ -1947,10 +1989,17 @@ RoutingProtocol::LinkSensing (const olsr::MessageHeader &msg,
       const char *neighborTypeName;
       switch (nt)
         {
-        case OLSR_NOT_NEIGH: neighborTypeName = "NOT_NEIGH"; break;
-        case OLSR_SYM_NEIGH: neighborTypeName = "SYM_NEIGH"; break;
-        case OLSR_MPR_NEIGH: neighborTypeName = "MPR_NEIGH"; break;
-        default: neighborTypeName = "(invalid value!)";
+        case OLSR_NOT_NEIGH:
+          neighborTypeName = "NOT_NEIGH";
+          break;
+        case OLSR_SYM_NEIGH:
+          neighborTypeName = "SYM_NEIGH";
+          break;
+        case OLSR_MPR_NEIGH:
+          neighborTypeName = "MPR_NEIGH";
+          break;
+        default:
+          neighborTypeName = "(invalid value!)";
         }
 
       NS_LOG_DEBUG ("Looking at HELLO link messages with Link Type "
@@ -1960,9 +2009,9 @@ RoutingProtocol::LinkSensing (const olsr::MessageHeader &msg,
 #endif // NS3_LOG_ENABLE
 
       // We must not process invalid advertised links
-      if ((lt == OLSR_SYM_LINK && nt == OLSR_NOT_NEIGH) ||
-          (nt != OLSR_SYM_NEIGH && nt != OLSR_MPR_NEIGH
-           && nt != OLSR_NOT_NEIGH))
+      if ((lt == OLSR_SYM_LINK && nt == OLSR_NOT_NEIGH)
+          || (nt != OLSR_SYM_NEIGH && nt != OLSR_MPR_NEIGH
+              && nt != OLSR_NOT_NEIGH))
         {
           NS_LOG_LOGIC ("HELLO link code is invalid => IGNORING");
           continue;
@@ -2206,7 +2255,8 @@ RoutingProtocol::PopulateMprSelectorSet (const olsr::MessageHeader &msg,
 /// \param p the packet which couldn't be delivered by the MAC layer.
 ///
 void
-OLSR::mac_failed (Ptr<Packet> p) {
+OLSR::mac_failed (Ptr<Packet> p)
+{
   double now              = Simulator::Now ();
   struct hdr_ip* ih       = HDR_IP (p);
   struct hdr_cmn* ch      = HDR_CMN (p);
@@ -2216,13 +2266,15 @@ OLSR::mac_failed (Ptr<Packet> p) {
          OLSR::node_id (ra_addr ()),
          OLSR::node_id (ch->next_hop ()));
 
-  if ((u_int32_t)ih->daddr () == IP_BROADCAST) {
+  if ((u_int32_t)ih->daddr () == IP_BROADCAST)
+    {
       drop (p, DROP_RTR_MAC_CALLBACK);
       return;
     }
 
   OLSR_link_tuple* link_tuple = state_.find_link_tuple (ch->next_hop ());
-  if (link_tuple != NULL) {
+  if (link_tuple != NULL)
+    {
       link_tuple->lost_time () = now + OLSR_NEIGHB_HOLD_TIME;
       link_tuple->time ()      = now + OLSR_NEIGHB_HOLD_TIME;
       nb_loss (link_tuple);
@@ -2592,9 +2644,13 @@ RoutingProtocol::LinkTupleTimerExpire (Ipv4Address neighborIfaceAddr)
   else if (tuple->symTime < now)
     {
       if (m_linkTupleTimerFirstTime)
-        m_linkTupleTimerFirstTime = false;
+        {
+          m_linkTupleTimerFirstTime = false;
+        }
       else
-        NeighborLoss (*tuple);
+        {
+          NeighborLoss (*tuple);
+        }
 
       m_events.Track (Simulator::Schedule (DELAY (tuple->time),
                                            &RoutingProtocol::LinkTupleTimerExpire, this,
@@ -2731,7 +2787,9 @@ RoutingProtocol::Lookup (Ipv4Address const &dest,
     m_table.find (dest);
   // If there is no route to "dest", return NULL
   if (it == m_table.end ())
-    return false;
+    {
+      return false;
+    }
   outEntry = it->second;
   return true;
 }
@@ -2744,7 +2802,9 @@ RoutingProtocol::FindSendEntry (RoutingTableEntry const &entry,
   while (outEntry.destAddr != outEntry.nextAddr)
     {
       if (not Lookup (outEntry.nextAddr, outEntry))
-        return false;
+        {
+          return false;
+        }
     }
   return true;
 }
@@ -2768,9 +2828,9 @@ RoutingProtocol::RouteOutput (Ptr<Packet> p, const Ipv4Header &header, Ptr<NetDe
       if (oif && m_ipv4->GetInterfaceForDevice (oif) != static_cast<int> (interfaceIdx))
         {
           // We do not attempt to perform a constrained routing search
-          // if the caller specifies the oif; we just enforce that 
-          // that the found route matches the requested outbound interface 
-          NS_LOG_DEBUG ("Olsr node " << m_mainAddress 
+          // if the caller specifies the oif; we just enforce that
+          // that the found route matches the requested outbound interface
+          NS_LOG_DEBUG ("Olsr node " << m_mainAddress
                                      << ": RouteOutput for dest=" << header.GetDestination ()
                                      << " Route interface " << interfaceIdx
                                      << " does not match requested output interface "
@@ -2781,15 +2841,18 @@ RoutingProtocol::RouteOutput (Ptr<Packet> p, const Ipv4Header &header, Ptr<NetDe
       rtentry = Create<Ipv4Route> ();
       rtentry->SetDestination (header.GetDestination ());
       // the source address is the interface address that matches
-      // the destination address (when multiple are present on the 
+      // the destination address (when multiple are present on the
       // outgoing interface, one is selected via scoping rules)
       NS_ASSERT (m_ipv4);
       uint32_t numOifAddresses = m_ipv4->GetNAddresses (interfaceIdx);
       NS_ASSERT (numOifAddresses > 0);
       Ipv4InterfaceAddress ifAddr;
-      if (numOifAddresses == 1) {
+      if (numOifAddresses == 1)
+        {
           ifAddr = m_ipv4->GetAddress (interfaceIdx, 0);
-        } else {
+        }
+      else
+        {
           /// \todo Implment IP aliasing and OLSR
           NS_FATAL_ERROR ("XXX Not implemented yet:  IP aliasing and OLSR");
         }
@@ -2797,7 +2860,7 @@ RoutingProtocol::RouteOutput (Ptr<Packet> p, const Ipv4Header &header, Ptr<NetDe
       rtentry->SetGateway (entry2.nextAddr);
       rtentry->SetOutputDevice (m_ipv4->GetNetDevice (interfaceIdx));
       sockerr = Socket::ERROR_NOTERROR;
-      NS_LOG_DEBUG ("Olsr node " << m_mainAddress 
+      NS_LOG_DEBUG ("Olsr node " << m_mainAddress
                                  << ": RouteOutput for dest=" << header.GetDestination ()
                                  << " --> nextHop=" << entry2.nextAddr
                                  << " interface=" << entry2.interface);
@@ -2805,7 +2868,7 @@ RoutingProtocol::RouteOutput (Ptr<Packet> p, const Ipv4Header &header, Ptr<NetDe
       found = true;
     }
   else
-    { 
+    {
       rtentry = m_hnaRoutingTable->RouteOutput (p, header, oif, sockerr);
 
       if (rtentry)
@@ -2817,7 +2880,7 @@ RoutingProtocol::RouteOutput (Ptr<Packet> p, const Ipv4Header &header, Ptr<NetDe
 
   if (!found)
     {
-      NS_LOG_DEBUG ("Olsr node " << m_mainAddress 
+      NS_LOG_DEBUG ("Olsr node " << m_mainAddress
                                  << ": RouteOutput for dest=" << header.GetDestination ()
                                  << " No route to host");
       sockerr = Socket::ERROR_NOROUTETOHOST;
@@ -2825,7 +2888,7 @@ RoutingProtocol::RouteOutput (Ptr<Packet> p, const Ipv4Header &header, Ptr<NetDe
   return rtentry;
 }
 
-bool RoutingProtocol::RouteInput  (Ptr<const Packet> p, 
+bool RoutingProtocol::RouteInput  (Ptr<const Packet> p,
                                    const Ipv4Header &header, Ptr<const NetDevice> idev,
                                    UnicastForwardCallback ucb, MulticastForwardCallback mcb,
                                    LocalDeliverCallback lcb, ErrorCallback ecb)
@@ -2838,7 +2901,7 @@ bool RoutingProtocol::RouteInput  (Ptr<const Packet> p,
   // Consume self-originated packets
   if (IsMyOwnAddress (origin) == true)
     {
-      return true; 
+      return true;
     }
 
   // Local delivery
@@ -2855,7 +2918,7 @@ bool RoutingProtocol::RouteInput  (Ptr<const Packet> p,
       else
         {
           // The local delivery callback is null.  This may be a multicast
-          // or broadcast packet, so return false so that another 
+          // or broadcast packet, so return false so that another
           // multicast routing protocol can handle it.  It should be possible
           // to extend this to explicitly check whether it is a unicast
           // packet, and invoke the error callback if so
@@ -2865,12 +2928,14 @@ bool RoutingProtocol::RouteInput  (Ptr<const Packet> p,
 
   // Forwarding
   Ptr<Ipv4Route> rtentry;
-  RoutingTableEntry entry1, entry2; 
+  RoutingTableEntry entry1, entry2;
   if (Lookup (header.GetDestination (), entry1))
-    { 
+    {
       bool foundSendEntry = FindSendEntry (entry1, entry2);
       if (!foundSendEntry)
-        NS_FATAL_ERROR ("FindSendEntry failure");
+        {
+          NS_FATAL_ERROR ("FindSendEntry failure");
+        }
       rtentry = Create<Ipv4Route> ();
       rtentry->SetDestination (header.GetDestination ());
       uint32_t interfaceIdx = entry2.interface;
@@ -2881,9 +2946,12 @@ bool RoutingProtocol::RouteInput  (Ptr<const Packet> p,
       uint32_t numOifAddresses = m_ipv4->GetNAddresses (interfaceIdx);
       NS_ASSERT (numOifAddresses > 0);
       Ipv4InterfaceAddress ifAddr;
-      if (numOifAddresses == 1) {
+      if (numOifAddresses == 1)
+        {
           ifAddr = m_ipv4->GetAddress (interfaceIdx, 0);
-        } else {
+        }
+      else
+        {
           /// \todo Implment IP aliasing and OLSR
           NS_FATAL_ERROR ("XXX Not implemented yet:  IP aliasing and OLSR");
         }
@@ -2901,7 +2969,7 @@ bool RoutingProtocol::RouteInput  (Ptr<const Packet> p,
     }
   else
     {
-      if(m_hnaRoutingTable->RouteInput (p, header, idev, ucb, mcb, lcb, ecb))
+      if (m_hnaRoutingTable->RouteInput (p, header, idev, ucb, mcb, lcb, ecb))
         {
           return true;
         }
@@ -2909,7 +2977,7 @@ bool RoutingProtocol::RouteInput  (Ptr<const Packet> p,
         {
 
 #ifdef NS3_LOG_ENABLE
-          NS_LOG_DEBUG ("Olsr node " << m_mainAddress 
+          NS_LOG_DEBUG ("Olsr node " << m_mainAddress
                                      << ": RouteInput for dest=" << header.GetDestination ()
                                      << " --> NOT FOUND; ** Dumping routing table...");
 
@@ -2927,18 +2995,22 @@ bool RoutingProtocol::RouteInput  (Ptr<const Packet> p,
         }
     }
 }
-void 
+void
 RoutingProtocol::NotifyInterfaceUp (uint32_t i)
-{}
-void 
+{
+}
+void
 RoutingProtocol::NotifyInterfaceDown (uint32_t i)
-{}
-void 
+{
+}
+void
 RoutingProtocol::NotifyAddAddress (uint32_t interface, Ipv4InterfaceAddress address)
-{}
-void 
+{
+}
+void
 RoutingProtocol::NotifyRemoveAddress (uint32_t interface, Ipv4InterfaceAddress address)
-{}
+{
+}
 
 
 void
@@ -3040,7 +3112,7 @@ RoutingProtocol::Dump (void)
        iter != m_state.GetTwoHopNeighbors ().end (); iter++)
     {
       if (now < iter->expirationTime)
-        { 
+        {
           NS_LOG_DEBUG ("  " << *iter);
         }
     }

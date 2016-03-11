@@ -18,10 +18,10 @@
  *
  */
 
-// 
+//
 // This script, adapted from examples/wireless/wifi-simple-adhoc illustrates
 // the use of OLSR HNA.
-// 
+//
 // Network Topology:
 //
 //             |------ OLSR ------|   |---- non-OLSR ----|
@@ -74,14 +74,14 @@ void ReceivePacket (Ptr<Socket> socket)
   NS_LOG_UNCOND ("Received one packet!");
 }
 
-static void GenerateTraffic (Ptr<Socket> socket, uint32_t pktSize, 
+static void GenerateTraffic (Ptr<Socket> socket, uint32_t pktSize,
                              uint32_t pktCount, Time pktInterval )
 {
   if (pktCount > 0)
     {
       socket->Send (Create<Packet> (pktSize));
-      Simulator::Schedule (pktInterval, &GenerateTraffic, 
-                           socket, pktSize,pktCount-1, pktInterval);
+      Simulator::Schedule (pktInterval, &GenerateTraffic,
+                           socket, pktSize,pktCount - 1, pktInterval);
     }
   else
     {
@@ -121,7 +121,7 @@ int main (int argc, char *argv[])
   // turn off RTS/CTS for frames below 2200 bytes
   Config::SetDefault ("ns3::WifiRemoteStationManager::RtsCtsThreshold", StringValue ("2200"));
   // Fix non-unicast data rate to be the same as that of unicast
-  Config::SetDefault ("ns3::WifiRemoteStationManager::NonUnicastMode", 
+  Config::SetDefault ("ns3::WifiRemoteStationManager::NonUnicastMode",
                       StringValue (phyMode));
 
   NodeContainer olsrNodes;
@@ -141,7 +141,7 @@ int main (int argc, char *argv[])
   YansWifiPhyHelper wifiPhy =  YansWifiPhyHelper::Default ();
   // This is one parameter that matters when using FixedRssLossModel
   // set it to zero; otherwise, gain will be added
-  wifiPhy.Set ("RxGain", DoubleValue (0) ); 
+  wifiPhy.Set ("RxGain", DoubleValue (0) );
   // ns-3 supports RadioTap and Prism tracing extensions for 802.11b
   wifiPhy.SetPcapDataLinkType (YansWifiPhyHelper::DLT_IEEE802_11_RADIO);
 
@@ -166,8 +166,8 @@ int main (int argc, char *argv[])
   csma.SetChannelAttribute ("Delay", TimeValue (MilliSeconds (2)));
   NetDeviceContainer csmaDevices = csma.Install (NodeContainer (csmaNodes.Get (0), olsrNodes.Get (1)));
 
-  // Note that with FixedRssLossModel, the positions below are not 
-  // used for received signal strength. 
+  // Note that with FixedRssLossModel, the positions below are not
+  // used for received signal strength.
   MobilityHelper mobility;
   Ptr<ListPositionAllocator> positionAlloc = CreateObject<ListPositionAllocator> ();
   positionAlloc->Add (Vector (0.0, 0.0, 0.0));
@@ -242,7 +242,7 @@ int main (int argc, char *argv[])
       hnaEntries->AddNetworkRouteTo (Ipv4Address ("172.16.1.0"), Ipv4Mask ("255.255.255.0"), uint32_t (2), uint32_t (1));
       olsrrp_Gw->SetRoutingTableAssociation (hnaEntries);
     }
- 
+
   if (assocMethod2)
     {
       // Specify the required associations directly.
@@ -254,7 +254,7 @@ int main (int argc, char *argv[])
   csma.EnablePcap ("olsr-hna", csmaDevices, false);
 
   Simulator::ScheduleWithContext (source->GetNode ()->GetId (),
-                                  Seconds (15.0), &GenerateTraffic, 
+                                  Seconds (15.0), &GenerateTraffic,
                                   source, packetSize, numPackets, interPacketInterval);
 
   Simulator::Stop (Seconds (20.0));

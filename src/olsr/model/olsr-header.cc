@@ -30,7 +30,7 @@
 #define OLSR_PKT_HEADER_SIZE 4
 
 namespace ns3 {
-  
+
 NS_LOG_COMPONENT_DEFINE ("OlsrHeader");
 
 namespace olsr {
@@ -51,17 +51,18 @@ SecondsToEmf (double seconds)
   int a, b = 0;
 
   // find the largest integer 'b' such that: T/C >= 2^b
-  for (b = 0; (seconds/OLSR_C) >= (1 << b); ++b)
-    ;
-  NS_ASSERT ((seconds/OLSR_C) < (1 << b));
+  for (b = 0; (seconds / OLSR_C) >= (1 << b); ++b)
+    {
+    }
+  NS_ASSERT ((seconds / OLSR_C) < (1 << b));
   b--;
-  NS_ASSERT ((seconds/OLSR_C) >= (1 << b));
+  NS_ASSERT ((seconds / OLSR_C) >= (1 << b));
 
   // compute the expression 16*(T/(C*(2^b))-1), which may not be a integer
-  double tmp = 16*(seconds/(OLSR_C*(1<<b))-1);
+  double tmp = 16 * (seconds / (OLSR_C * (1 << b)) - 1);
 
   // round it up.  This results in the value for 'a'
-  a = (int) std::ceil (tmp-0.5);
+  a = (int) std::ceil (tmp - 0.5);
 
   // if 'a' is equal to 16: increment 'b' by one, and set 'a' to 0
   if (a == 16)
@@ -90,7 +91,7 @@ EmfToSeconds (uint8_t olsrFormat)
   int a = (olsrFormat >> 4);
   int b = (olsrFormat & 0xf);
   // value = C*(1+a/16)*2^b [in seconds]
-  return OLSR_C * (1 + a/16.0) * (1 << b);
+  return OLSR_C * (1 + a / 16.0) * (1 << b);
 }
 
 
@@ -123,13 +124,13 @@ PacketHeader::GetInstanceTypeId (void) const
   return GetTypeId ();
 }
 
-uint32_t 
+uint32_t
 PacketHeader::GetSerializedSize (void) const
 {
   return OLSR_PKT_HEADER_SIZE;
 }
 
-void 
+void
 PacketHeader::Print (std::ostream &os) const
 {
   /// \todo
@@ -207,7 +208,7 @@ MessageHeader::GetSerializedSize (void) const
   return size;
 }
 
-void 
+void
 MessageHeader::Print (std::ostream &os) const
 {
   /// \todo
@@ -282,13 +283,13 @@ MessageHeader::Deserialize (Buffer::Iterator start)
 
 // ---------------- OLSR MID Message -------------------------------
 
-uint32_t 
+uint32_t
 MessageHeader::Mid::GetSerializedSize (void) const
 {
   return this->interfaceAddresses.size () * IPV4_ADDRESS_SIZE;
 }
 
-void 
+void
 MessageHeader::Mid::Print (std::ostream &os) const
 {
   /// \todo
@@ -318,7 +319,9 @@ MessageHeader::Mid::Deserialize (Buffer::Iterator start, uint32_t messageSize)
   this->interfaceAddresses.erase (this->interfaceAddresses.begin (),
                                   this->interfaceAddresses.end ());
   for (int n = 0; n < numAddresses; ++n)
-    this->interfaceAddresses.push_back (Ipv4Address (i.ReadNtohU32 ()));
+    {
+      this->interfaceAddresses.push_back (Ipv4Address (i.ReadNtohU32 ()));
+    }
   return GetSerializedSize ();
 }
 
@@ -326,7 +329,7 @@ MessageHeader::Mid::Deserialize (Buffer::Iterator start, uint32_t messageSize)
 
 // ---------------- OLSR HELLO Message -------------------------------
 
-uint32_t 
+uint32_t
 MessageHeader::Hello::GetSerializedSize (void) const
 {
   uint32_t size = 4;
@@ -340,7 +343,7 @@ MessageHeader::Hello::GetSerializedSize (void) const
   return size;
 }
 
-void 
+void
 MessageHeader::Hello::Print (std::ostream &os) const
 {
   /// \todo
@@ -417,13 +420,13 @@ MessageHeader::Hello::Deserialize (Buffer::Iterator start, uint32_t messageSize)
 
 // ---------------- OLSR TC Message -------------------------------
 
-uint32_t 
+uint32_t
 MessageHeader::Tc::GetSerializedSize (void) const
 {
   return 4 + this->neighborAddresses.size () * IPV4_ADDRESS_SIZE;
 }
 
-void 
+void
 MessageHeader::Tc::Print (std::ostream &os) const
 {
   /// \todo
@@ -459,7 +462,9 @@ MessageHeader::Tc::Deserialize (Buffer::Iterator start, uint32_t messageSize)
   int numAddresses = (messageSize - 4) / IPV4_ADDRESS_SIZE;
   this->neighborAddresses.clear ();
   for (int n = 0; n < numAddresses; ++n)
-    this->neighborAddresses.push_back (Ipv4Address (i.ReadNtohU32 ()));
+    {
+      this->neighborAddresses.push_back (Ipv4Address (i.ReadNtohU32 ()));
+    }
 
   return messageSize;
 }
@@ -467,13 +472,13 @@ MessageHeader::Tc::Deserialize (Buffer::Iterator start, uint32_t messageSize)
 
 // ---------------- OLSR HNA Message -------------------------------
 
-uint32_t 
+uint32_t
 MessageHeader::Hna::GetSerializedSize (void) const
 {
-  return 2*this->associations.size () * IPV4_ADDRESS_SIZE;
+  return 2 * this->associations.size () * IPV4_ADDRESS_SIZE;
 }
 
-void 
+void
 MessageHeader::Hna::Print (std::ostream &os) const
 {
   /// \todo
@@ -496,7 +501,7 @@ MessageHeader::Hna::Deserialize (Buffer::Iterator start, uint32_t messageSize)
 {
   Buffer::Iterator i = start;
 
-  NS_ASSERT (messageSize % (IPV4_ADDRESS_SIZE*2) == 0);
+  NS_ASSERT (messageSize % (IPV4_ADDRESS_SIZE * 2) == 0);
   int numAddresses = messageSize / IPV4_ADDRESS_SIZE / 2;
   this->associations.clear ();
   for (int n = 0; n < numAddresses; ++n)

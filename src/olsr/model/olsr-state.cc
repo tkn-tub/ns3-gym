@@ -1,6 +1,6 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
- * Copyright (c) 2004 Francisco J. Ros 
+ * Copyright (c) 2004 Francisco J. Ros
  * Copyright (c) 2007 INESC Porto
  *
  * This program is free software; you can redistribute it and/or modify
@@ -41,7 +41,9 @@ OlsrState::FindMprSelectorTuple (Ipv4Address const &mainAddr)
        it != m_mprSelectorSet.end (); it++)
     {
       if (it->mainAddr == mainAddr)
-        return &(*it);
+        {
+          return &(*it);
+        }
     }
   return NULL;
 }
@@ -64,7 +66,7 @@ void
 OlsrState::EraseMprSelectorTuples (const Ipv4Address &mainAddr)
 {
   for (MprSelectorSet::iterator it = m_mprSelectorSet.begin ();
-       it != m_mprSelectorSet.end ();)
+       it != m_mprSelectorSet.end (); )
     {
       if (it->mainAddr == mainAddr)
         {
@@ -95,7 +97,9 @@ OlsrState::PrintMprSelectorSet () const
       next++;
       os << iter->mainAddr;
       if (next != m_mprSelectorSet.end ())
-        os << ", ";
+        {
+          os << ", ";
+        }
     }
   os << "]";
   return os.str ();
@@ -111,7 +115,9 @@ OlsrState::FindNeighborTuple (Ipv4Address const &mainAddr)
        it != m_neighborSet.end (); it++)
     {
       if (it->neighborMainAddr == mainAddr)
-        return &(*it);
+        {
+          return &(*it);
+        }
     }
   return NULL;
 }
@@ -123,7 +129,9 @@ OlsrState::FindSymNeighborTuple (Ipv4Address const &mainAddr) const
        it != m_neighborSet.end (); it++)
     {
       if (it->neighborMainAddr == mainAddr && it->status == NeighborTuple::STATUS_SYM)
-        return &(*it);
+        {
+          return &(*it);
+        }
     }
   return NULL;
 }
@@ -135,7 +143,9 @@ OlsrState::FindNeighborTuple (Ipv4Address const &mainAddr, uint8_t willingness)
        it != m_neighborSet.end (); it++)
     {
       if (it->neighborMainAddr == mainAddr && it->willingness == willingness)
-        return &(*it);
+        {
+          return &(*it);
+        }
     }
   return NULL;
 }
@@ -221,7 +231,7 @@ OlsrState::EraseTwoHopNeighborTuples (const Ipv4Address &neighborMainAddr,
                                       const Ipv4Address &twoHopNeighborAddr)
 {
   for (TwoHopNeighborSet::iterator it = m_twoHopNeighborSet.begin ();
-       it != m_twoHopNeighborSet.end ();)
+       it != m_twoHopNeighborSet.end (); )
     {
       if (it->neighborMainAddr == neighborMainAddr
           && it->twoHopNeighborAddr == twoHopNeighborAddr)
@@ -239,7 +249,7 @@ void
 OlsrState::EraseTwoHopNeighborTuples (const Ipv4Address &neighborMainAddr)
 {
   for (TwoHopNeighborSet::iterator it = m_twoHopNeighborSet.begin ();
-       it != m_twoHopNeighborSet.end ();)
+       it != m_twoHopNeighborSet.end (); )
     {
       if (it->neighborMainAddr == neighborMainAddr)
         {
@@ -287,7 +297,9 @@ OlsrState::FindDuplicateTuple (Ipv4Address const &addr, uint16_t sequenceNumber)
        it != m_duplicateSet.end (); it++)
     {
       if (it->address == addr && it->sequenceNumber == sequenceNumber)
-        return &(*it);
+        {
+          return &(*it);
+        }
     }
   return NULL;
 }
@@ -321,7 +333,9 @@ OlsrState::FindLinkTuple (Ipv4Address const & ifaceAddr)
        it != m_linkSet.end (); it++)
     {
       if (it->neighborIfaceAddr == ifaceAddr)
-        return &(*it);
+        {
+          return &(*it);
+        }
     }
   return NULL;
 }
@@ -335,9 +349,13 @@ OlsrState::FindSymLinkTuple (Ipv4Address const &ifaceAddr, Time now)
       if (it->neighborIfaceAddr == ifaceAddr)
         {
           if (it->symTime > now)
-            return &(*it);
+            {
+              return &(*it);
+            }
           else
-            break;
+            {
+              break;
+            }
         }
     }
   return NULL;
@@ -374,7 +392,9 @@ OlsrState::FindTopologyTuple (Ipv4Address const &destAddr,
        it != m_topologySet.end (); it++)
     {
       if (it->destAddr == destAddr && it->lastAddr == lastAddr)
-        return &(*it);
+        {
+          return &(*it);
+        }
     }
   return NULL;
 }
@@ -386,7 +406,9 @@ OlsrState::FindNewerTopologyTuple (Ipv4Address const & lastAddr, uint16_t ansn)
        it != m_topologySet.end (); it++)
     {
       if (it->lastAddr == lastAddr && it->sequenceNumber > ansn)
-        return &(*it);
+        {
+          return &(*it);
+        }
     }
   return NULL;
 }
@@ -409,7 +431,7 @@ void
 OlsrState::EraseOlderTopologyTuples (const Ipv4Address &lastAddr, uint16_t ansn)
 {
   for (TopologySet::iterator it = m_topologySet.begin ();
-       it != m_topologySet.end ();)
+       it != m_topologySet.end (); )
     {
       if (it->lastAddr == lastAddr && it->sequenceNumber < ansn)
         {
@@ -437,7 +459,9 @@ OlsrState::FindIfaceAssocTuple (Ipv4Address const &ifaceAddr)
        it != m_ifaceAssocSet.end (); it++)
     {
       if (it->ifaceAddr == ifaceAddr)
-        return &(*it);
+        {
+          return &(*it);
+        }
     }
   return NULL;
 }
@@ -449,7 +473,9 @@ OlsrState::FindIfaceAssocTuple (Ipv4Address const &ifaceAddr) const
        it != m_ifaceAssocSet.end (); it++)
     {
       if (it->ifaceAddr == ifaceAddr)
-        return &(*it);
+        {
+          return &(*it);
+        }
     }
   return NULL;
 }
@@ -482,7 +508,9 @@ OlsrState::FindNeighborInterfaces (const Ipv4Address &neighborMainAddr) const
        it != m_ifaceAssocSet.end (); it++)
     {
       if (it->mainAddr == neighborMainAddr)
-        retval.push_back (it->ifaceAddr);
+        {
+          retval.push_back (it->ifaceAddr);
+        }
     }
   return retval;
 }
@@ -543,4 +571,5 @@ OlsrState::InsertAssociation (const Association &tuple)
   m_associations.push_back (tuple);
 }
 
-}} // namespace olsr, ns3
+}
+}  // namespace olsr, ns3

@@ -38,19 +38,17 @@
 #include "ns3/simple-net-device-helper.h"
 #include "ns3/simple-net-device.h"
 
-namespace ns3
-{
-namespace olsr
-{
+namespace ns3 {
+namespace olsr {
 
-TcRegressionTest::TcRegressionTest() : 
+TcRegressionTest::TcRegressionTest () :
   TestCase ("Test OLSR Topology Control message generation"),
   m_time (Seconds (20)),
   m_countA (0), m_countB (0), m_countC (0)
 {
 }
 
-TcRegressionTest::~TcRegressionTest()
+TcRegressionTest::~TcRegressionTest ()
 {
 }
 
@@ -185,7 +183,7 @@ TcRegressionTest::ReceivePktProbeA (Ptr<Socket> socket)
           NS_TEST_EXPECT_MSG_EQ (hello.linkMessages[1].neighborInterfaceAddresses[0], Ipv4Address ("10.1.1.1"), int(m_countA) << " - Neighbor.");
         }
     }
-  m_countA ++;
+  m_countA++;
 }
 
 void
@@ -207,8 +205,8 @@ TcRegressionTest::ReceivePktProbeB (Ptr<Socket> socket)
   receivedPacketProbe->RemoveHeader (msgHdr);
   const olsr::MessageHeader::Hello &hello = msgHdr.GetHello ();
 
-  if (m_countB == 0 || m_countB == 2 || m_countB == 5 || m_countB == 6 || m_countB == 8 ||
-      m_countB == 10 || m_countB == 13 || m_countB == 15 || m_countB == 17 || m_countB == 19)
+  if (m_countB == 0 || m_countB == 2 || m_countB == 5 || m_countB == 6 || m_countB == 8
+      || m_countB == 10 || m_countB == 13 || m_countB == 15 || m_countB == 17 || m_countB == 19)
     {
       NS_TEST_EXPECT_MSG_EQ (msgHdr.GetOriginatorAddress (), Ipv4Address ("10.1.1.3"), "Originator address.");
     }
@@ -240,7 +238,7 @@ TcRegressionTest::ReceivePktProbeB (Ptr<Socket> socket)
       NS_TEST_EXPECT_MSG_EQ (hello.linkMessages[0].neighborInterfaceAddresses[0], Ipv4Address ("10.1.1.2"), int(m_countC) << " - Neighbor.");
     }
 
-  m_countB ++;
+  m_countB++;
 }
 
 // Note: this is identical to ReceivePktProbeA, but the packet counter needs to be different.
@@ -308,7 +306,7 @@ TcRegressionTest::ReceivePktProbeC (Ptr<Socket> socket)
           NS_TEST_EXPECT_MSG_EQ (hello.linkMessages[1].neighborInterfaceAddresses[0], Ipv4Address ("10.1.1.1"), int(m_countC) << " - Neighbor.");
         }
     }
-  m_countC ++;
+  m_countC++;
 }
 
 }

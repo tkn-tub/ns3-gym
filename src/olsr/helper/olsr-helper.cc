@@ -37,10 +37,10 @@ OlsrHelper::OlsrHelper (const OlsrHelper &o)
   m_interfaceExclusions = o.m_interfaceExclusions;
 }
 
-OlsrHelper* 
-OlsrHelper::Copy (void) const 
+OlsrHelper*
+OlsrHelper::Copy (void) const
 {
-  return new OlsrHelper (*this); 
+  return new OlsrHelper (*this);
 }
 
 void
@@ -48,7 +48,7 @@ OlsrHelper::ExcludeInterface (Ptr<Node> node, uint32_t interface)
 {
   std::map< Ptr<Node>, std::set<uint32_t> >::iterator it = m_interfaceExclusions.find (node);
 
-  if(it == m_interfaceExclusions.end ())
+  if (it == m_interfaceExclusions.end ())
     {
       std::set<uint32_t> interfaces;
       interfaces.insert (interface);
@@ -61,14 +61,14 @@ OlsrHelper::ExcludeInterface (Ptr<Node> node, uint32_t interface)
     }
 }
 
-Ptr<Ipv4RoutingProtocol> 
+Ptr<Ipv4RoutingProtocol>
 OlsrHelper::Create (Ptr<Node> node) const
 {
   Ptr<olsr::RoutingProtocol> agent = m_agentFactory.Create<olsr::RoutingProtocol> ();
 
   std::map<Ptr<Node>, std::set<uint32_t> >::const_iterator it = m_interfaceExclusions.find (node);
 
-  if(it != m_interfaceExclusions.end ())
+  if (it != m_interfaceExclusions.end ())
     {
       agent->SetInterfaceExclusions (it->second);
     }
@@ -77,13 +77,13 @@ OlsrHelper::Create (Ptr<Node> node) const
   return agent;
 }
 
-void 
+void
 OlsrHelper::Set (std::string name, const AttributeValue &value)
 {
   m_agentFactory.Set (name, value);
 }
 
-int64_t 
+int64_t
 OlsrHelper::AssignStreams (NodeContainer c, int64_t stream)
 {
   int64_t currentStream = stream;
@@ -108,7 +108,7 @@ OlsrHelper::AssignStreams (NodeContainer c, int64_t stream)
           int16_t priority;
           Ptr<Ipv4RoutingProtocol> listProto;
           Ptr<olsr::RoutingProtocol> listOlsr;
-          for (uint32_t i = 0; i < list->GetNRoutingProtocols (); i++) 
+          for (uint32_t i = 0; i < list->GetNRoutingProtocols (); i++)
             {
               listProto = list->GetRoutingProtocol (i, priority);
               listOlsr = DynamicCast<olsr::RoutingProtocol> (listProto);

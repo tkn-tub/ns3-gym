@@ -24,7 +24,8 @@
 
 using namespace ns3;
 
-class OlsrEmfTestCase : public TestCase {
+class OlsrEmfTestCase : public TestCase
+{
 public:
   OlsrEmfTestCase ();
   virtual void DoRun (void);
@@ -47,7 +48,8 @@ OlsrEmfTestCase::DoRun (void)
 }
 
 
-class OlsrMidTestCase : public TestCase {
+class OlsrMidTestCase : public TestCase
+{
 public:
   OlsrMidTestCase ();
   virtual void DoRun (void);
@@ -153,7 +155,8 @@ OlsrMidTestCase::DoRun (void)
 }
 
 
-class OlsrHelloTestCase : public TestCase {
+class OlsrHelloTestCase : public TestCase
+{
 public:
   OlsrHelloTestCase ();
   virtual void DoRun (void);
@@ -213,7 +216,8 @@ OlsrHelloTestCase::DoRun (void)
 
 }
 
-class OlsrTcTestCase : public TestCase {
+class OlsrTcTestCase : public TestCase
+{
 public:
   OlsrTcTestCase ();
   virtual void DoRun (void);
@@ -251,7 +255,8 @@ OlsrTcTestCase::DoRun (void)
 
 }
 
-class OlsrHnaTestCase : public TestCase {
+class OlsrHnaTestCase : public TestCase
+{
 public:
   OlsrHnaTestCase ();
   virtual void DoRun (void);
@@ -302,7 +307,7 @@ public:
   OlsrTestSuite ();
 } g_olsrTestSuite;
 
-OlsrTestSuite::OlsrTestSuite()
+OlsrTestSuite::OlsrTestSuite ()
   : TestSuite ("routing-olsr-header", UNIT)
 {
   AddTestCase (new OlsrHnaTestCase (), TestCase::QUICK);

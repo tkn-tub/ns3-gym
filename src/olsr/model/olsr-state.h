@@ -1,6 +1,6 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
- * Copyright (c) 2004 Francisco J. Ros 
+ * Copyright (c) 2004 Francisco J. Ros
  * Copyright (c) 2007 INESC Porto
  *
  * This program is free software; you can redistribute it and/or modify
@@ -49,9 +49,9 @@ protected:
   Associations m_associations;  //!< The node's local Host Network Associations that will be advertised using HNA messages.
 
 public:
-
   OlsrState ()
-  {}
+  {
+  }
 
   // MPR selector
 
@@ -430,6 +430,7 @@ public:
 
 };
 
-}} // namespace olsr,ns3
+}
+}  // namespace olsr,ns3
 
 #endif /* OLSR_STATE_H */

@@ -51,7 +51,7 @@ namespace olsr {
 
 ///
 /// \defgroup olsr OLSR Routing
-/// This section documents the API of the ns-3 OLSR module. For a generic 
+/// This section documents the API of the ns-3 OLSR module. For a generic
 /// functional description, please refer to the ns-3 manual.
 
 /// \ingroup olsr
@@ -64,8 +64,10 @@ struct RoutingTableEntry
   uint32_t distance; //!< Distance in hops to the destination.
 
   RoutingTableEntry () : // default values
-                         destAddr (), nextAddr (),
-                         interface (0), distance (0) {};
+    destAddr (), nextAddr (),
+    interface (0), distance (0)
+  {
+  }
 };
 
 class RoutingProtocol;
@@ -108,14 +110,14 @@ public:
    */
   std::vector<RoutingTableEntry> GetRoutingTableEntries () const;
 
- /**
-  * Assign a fixed random variable stream number to the random variables
-  * used by this model.  Return the number of streams (possibly zero) that
-  * have been assigned.
-  *
-  * \param stream first stream index to use
-  * \return the number of stream indices assigned by this model
-  */
+  /**
+   * Assign a fixed random variable stream number to the random variables
+   * used by this model.  Return the number of streams (possibly zero) that
+   * have been assigned.
+   *
+   * \param stream first stream index to use
+   * \return the number of stream indices assigned by this model
+   */
   int64_t AssignStreams (int64_t stream);
 
   /**
@@ -124,8 +126,7 @@ public:
    * \param [in] header
    * \param [in] messages
    */
-  typedef void (* PacketTxRxTracedCallback)
-    (const PacketHeader & header, const MessageList & messages);
+  typedef void (* PacketTxRxTracedCallback)(const PacketHeader & header, const MessageList & messages);
 
   /**
    * TracedCallback signature for routing table computation.
@@ -200,7 +201,7 @@ private:
   Ptr<Ipv4StaticRouting> m_hnaRoutingTable; //!< Routing table for HNA routes
 
   EventGarbageCollector m_events; //!< Running events.
-	
+
   uint16_t m_packetSequenceNumber;    //!< Packets sequence number counter.
   uint16_t m_messageSequenceNumber;   //!< Messages sequence number counter.
   uint16_t m_ansn;  //!< Advertised Neighbor Set sequence number.
@@ -223,7 +224,10 @@ private:
    * Returns the routing table size.
    * \return The routing table size.
    */
-  uint32_t GetSize () const { return m_table.size (); }
+  uint32_t GetSize () const
+  {
+    return m_table.size ();
+  }
 
   /**
    * \brief Deletes the entry whose destination address is given.
@@ -500,7 +504,7 @@ private:
   /**
    * \brief Creates a new %OLSR HELLO message which is buffered for being sent later on.
    */
- void SendHello ();
+  void SendHello ();
 
   /**
    * \brief Creates a new %OLSR TC message which is buffered for being sent later on.
@@ -763,7 +767,7 @@ private:
   TracedCallback <uint32_t> m_routingTableChanged;
 
   /// Provides uniform random variables.
-  Ptr<UniformRandomVariable> m_uniformRandomVariable;  
+  Ptr<UniformRandomVariable> m_uniformRandomVariable;
 
 };
 
