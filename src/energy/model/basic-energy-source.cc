@@ -207,10 +207,6 @@ BasicEnergySource::HandleEnergyDrainedEvent (void)
   NS_LOG_FUNCTION (this);
   NS_LOG_DEBUG ("BasicEnergySource:Energy depleted!");
   NotifyEnergyDrained (); // notify DeviceEnergyModel objects
-  if (m_remainingEnergyJ <= 0)
-    {
-      m_remainingEnergyJ = 0; // energy never goes below 0
-    }
 }
 
 void
@@ -230,7 +226,16 @@ BasicEnergySource::CalculateRemainingEnergy (void)
   NS_ASSERT (duration.GetSeconds () >= 0);
   // energy = current * voltage * time
   double energyToDecreaseJ = totalCurrentA * m_supplyVoltageV * duration.GetSeconds ();
-  m_remainingEnergyJ -= energyToDecreaseJ;
+
+  if (m_remainingEnergyJ < energyToDecreaseJ) 
+    {
+      m_remainingEnergyJ = 0; // energy never goes below 0
+    } 
+  else 
+    {
+      m_remainingEnergyJ -= energyToDecreaseJ;
+    }  
+
   NS_LOG_DEBUG ("BasicEnergySource:Remaining energy = " << m_remainingEnergyJ);
 }
 
