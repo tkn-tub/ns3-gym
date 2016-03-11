@@ -30,6 +30,8 @@
 namespace ns3 {
 
 /**
+ * \ingroup olsr
+ *
  * \brief Helper class that adds OLSR routing to nodes.
  *
  * This class is expected to be used in conjunction with 

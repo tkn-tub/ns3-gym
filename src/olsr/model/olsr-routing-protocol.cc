@@ -550,7 +550,11 @@ RoutingProtocol::Degree (NeighborTuple const &tuple)
 
 namespace {
 ///
-/// \brief Remove all covered 2-hop neighbors from N2 set. This is a helper function used by MprComputation algorithm.
+/// \brief Remove all covered 2-hop neighbors from N2 set.
+/// This is a helper function used by MprComputation algorithm.
+///
+/// \param neighborMainAddr Neighbor main address.
+/// \param N2 Reference to the 2-hop neighbor set.
 ///
 void 
 CoverTwoHopNeighbors (Ipv4Address neighborMainAddr, TwoHopNeighborSet & N2)
@@ -579,9 +583,6 @@ CoverTwoHopNeighbors (Ipv4Address neighborMainAddr, TwoHopNeighborSet & N2)
 }
 } // anonymous namespace
 
-///
-/// \brief Computates MPR set of a node following \RFC{3626} hints.
-///
 void
 RoutingProtocol::MprComputation ()
 {
@@ -869,12 +870,6 @@ RoutingProtocol::MprComputation ()
   m_state.SetMprSet (mprSet);
 }
 
-///
-/// \brief Gets the main address associated with a given interface address.
-///
-/// \param iface_addr the interface address.
-/// \return the corresponding main address.
-///
 Ipv4Address
 RoutingProtocol::GetMainAddress (Ipv4Address iface_addr) const
 {
@@ -887,9 +882,6 @@ RoutingProtocol::GetMainAddress (Ipv4Address iface_addr) const
     return iface_addr;
 }
 
-///
-/// \brief Creates the routing table of the node following \RFC{3626} hints.
-///
 void
 RoutingProtocol::RoutingTableComputation ()
 {
@@ -1205,16 +1197,6 @@ RoutingProtocol::RoutingTableComputation ()
 }
 
 
-///
-/// \brief Processes a HELLO message following \RFC{3626} specification.
-///
-/// Link sensing and population of the Neighbor Set, 2-hop Neighbor Set and MPR
-/// Selector Set are performed.
-///
-/// \param msg the %OLSR message which contains the HELLO message.
-/// \param receiver_iface the address of the interface where the message was received from.
-/// \param sender_iface the address of the interface where the message was sent from.
-///
 void
 RoutingProtocol::ProcessHello (const olsr::MessageHeader &msg,
                                const Ipv4Address &receiverIface,
@@ -1269,15 +1251,6 @@ RoutingProtocol::ProcessHello (const olsr::MessageHeader &msg,
   PopulateMprSelectorSet (msg, hello);
 }
 
-///
-/// \brief Processes a TC message following \RFC{3626} specification.
-///
-/// The Topology Set is updated (if needed) with the information of
-/// the received TC message.
-///
-/// \param msg the %OLSR message which contains the TC message.
-/// \param sender_iface the address of the interface where the message was sent from.
-///
 void
 RoutingProtocol::ProcessTc (const olsr::MessageHeader &msg,
                             const Ipv4Address &senderIface)
@@ -1364,15 +1337,6 @@ RoutingProtocol::ProcessTc (const olsr::MessageHeader &msg,
 #endif // NS3_LOG_ENABLE
 }
 
-///
-/// \brief Processes a MID message following \RFC{3626} specification.
-///
-/// The Interface Association Set is updated (if needed) with the information
-/// of the received MID message.
-///
-/// \param msg the %OLSR message which contains the MID message.
-/// \param sender_iface the address of the interface where the message was sent from.
-///
 void
 RoutingProtocol::ProcessMid (const olsr::MessageHeader &msg,
                              const Ipv4Address &senderIface)
@@ -1443,15 +1407,6 @@ RoutingProtocol::ProcessMid (const olsr::MessageHeader &msg,
   NS_LOG_DEBUG ("Node " << m_mainAddress << " ProcessMid from " << senderIface << " -> END.");
 }
 
-///
-/// \brief Processes a HNA message following \RFC{3626} specification.
-///
-/// The Host Network Association Set is updated (if needed) with the information
-/// of the received HNA message.
-///
-/// \param msg the %OLSR message which contains the HNA message.
-/// \param sender_iface the address of the interface where the message was sent from.
-///
 void
 RoutingProtocol::ProcessHna (const olsr::MessageHeader &msg,
                              const Ipv4Address &senderIface)
@@ -1509,17 +1464,6 @@ RoutingProtocol::ProcessHna (const olsr::MessageHeader &msg,
     }
 }
 
-///
-/// \brief OLSR's default forwarding algorithm.
-///
-/// See \RFC{3626} for details.
-///
-/// \param p the %OLSR packet which has been received.
-/// \param msg the %OLSR message which must be forwarded.
-/// \param dup_tuple NULL if the message has never been considered for forwarding,
-/// or a duplicate tuple in other case.
-/// \param local_iface the address of the interface where the message was received from.
-///
 void
 RoutingProtocol::ForwardDefault (olsr::MessageHeader olsrMessage,
                                  DuplicateTuple *duplicated,
@@ -1586,15 +1530,6 @@ RoutingProtocol::ForwardDefault (olsr::MessageHeader olsrMessage,
     }
 }
 
-///
-/// \brief Enques an %OLSR message which will be sent with a delay of (0, delay].
-///
-/// This buffering system is used in order to piggyback several %OLSR messages in
-/// a same %OLSR packet.
-///
-/// \param msg the %OLSR message which must be sent.
-/// \param delay maximum delay the %OLSR message is going to be buffered.
-///
 void
 RoutingProtocol::QueueMessage (const olsr::MessageHeader &message, Time delay)
 {
@@ -1630,13 +1565,6 @@ RoutingProtocol::SendPacket (Ptr<Packet> packet,
     }
 }
 
-///
-/// \brief Creates as many %OLSR packets as needed in order to send all buffered
-/// %OLSR messages.
-///
-/// Maximum number of messages which can be contained in an %OLSR packet is
-/// dictated by OLSR_MAX_MSGS constant.
-///
 void
 RoutingProtocol::SendQueuedMessages ()
 {
@@ -1673,9 +1601,6 @@ RoutingProtocol::SendQueuedMessages ()
   m_queuedMessages.clear ();
 }
 
-///
-/// \brief Creates a new %OLSR HELLO message which is buffered for being sent later on.
-///
 void
 RoutingProtocol::SendHello ()
 {
@@ -1784,9 +1709,6 @@ RoutingProtocol::SendHello ()
   QueueMessage (msg, JITTER);
 }
 
-///
-/// \brief Creates a new %OLSR TC message which is buffered for being sent later on.
-///
 void
 RoutingProtocol::SendTc ()
 {
@@ -1811,9 +1733,6 @@ RoutingProtocol::SendTc ()
   QueueMessage (msg, JITTER);
 }
 
-///
-/// \brief Creates a new %OLSR MID message which is buffered for being sent later on.
-///
 void
 RoutingProtocol::SendMid ()
 {
@@ -1855,9 +1774,6 @@ RoutingProtocol::SendMid ()
   QueueMessage (msg, JITTER);
 }
 
-///
-/// \brief Creates a new %OLSR HNA message which is buffered for being sent later on.
-///
 void
 RoutingProtocol::SendHna ()
 {
@@ -1891,11 +1807,6 @@ RoutingProtocol::SendHna ()
   QueueMessage (msg, JITTER);
 }
 
-///
-/// \brief Injects the specified (networkAddr, netmask) tuple in the list of
-///        local HNA associations to be sent by the node via HNA messages.
-///        If this tuple already exists, nothing is done.
-///
 void
 RoutingProtocol::AddHostNetworkAssociation (Ipv4Address networkAddr, Ipv4Mask netmask)
 {
@@ -1917,11 +1828,6 @@ RoutingProtocol::AddHostNetworkAssociation (Ipv4Address networkAddr, Ipv4Mask ne
   m_state.InsertAssociation ( (Association) { networkAddr, netmask} );
 }
 
-///
-/// \brief Removes the specified (networkAddr, netmask) tuple from the list of
-///        local HNA associations to be sent by the node via HNA messages.
-///        If this tuple does not exist, nothing is done (see "OlsrState::EraseAssociation()").
-///
 void
 RoutingProtocol::RemoveHostNetworkAssociation (Ipv4Address networkAddr, Ipv4Mask netmask)
 {
@@ -1929,16 +1835,6 @@ RoutingProtocol::RemoveHostNetworkAssociation (Ipv4Address networkAddr, Ipv4Mask
   m_state.EraseAssociation ( (Association) { networkAddr, netmask} );
 }
 
-///
-/// \brief Associates the specified Ipv4StaticRouting routing table
-///        to the OLSR routing protocol. Entries from this associated
-///        routing table that use non-olsr outgoing interfaces are added
-///        to the list of local HNA associations so that they are included
-///        in HNA messages sent by the node.
-///        If this method is called more than once, entries from the old
-///        association are deleted before entries from the new one are added.
-/// \param routingTable the Ipv4StaticRouting routing table to be associated.
-///
 void
 RoutingProtocol::SetRoutingTableAssociation (Ptr<Ipv4StaticRouting> routingTable)
 {
@@ -1984,11 +1880,6 @@ RoutingProtocol::SetRoutingTableAssociation (Ptr<Ipv4StaticRouting> routingTable
                 "the associated routing table: " << m_state.GetAssociations ().size ());
 }
 
-///
-/// \brief Tests whether or not the specified route uses a non-OLSR outgoing interface.
-///        Returns true if the outgoing interface of the specified route is a non-OLSR interface.
-///        Returns false otherwise.
-///
 bool
 RoutingProtocol::UsesNonOlsrOutgoingInterface (const Ipv4RoutingTableEntry &route)
 {
@@ -1998,9 +1889,6 @@ RoutingProtocol::UsesNonOlsrOutgoingInterface (const Ipv4RoutingTableEntry &rout
   return ci != m_interfaceExclusions.end ();
 }
 
-///
-/// \brief Updates Link Set according to a new received HELLO message
-/// (following \RFC{3626} specification). Neighbor Set is also updated if needed.
 void
 RoutingProtocol::LinkSensing (const olsr::MessageHeader &msg,
                               const olsr::MessageHeader::Hello &hello,
@@ -2135,9 +2023,6 @@ RoutingProtocol::LinkSensing (const olsr::MessageHeader &msg,
                     << ": LinkSensing END");
 }
 
-///
-/// \brief Updates the Neighbor Set according to the information contained in
-/// a new received HELLO message (following \RFC{3626}).
 void
 RoutingProtocol::PopulateNeighborSet (const olsr::MessageHeader &msg,
                                       const olsr::MessageHeader::Hello &hello)
@@ -2149,10 +2034,6 @@ RoutingProtocol::PopulateNeighborSet (const olsr::MessageHeader &msg,
     }
 }
 
-
-///
-/// \brief Updates the 2-hop Neighbor Set according to the information contained
-/// in a new received HELLO message (following \RFC{3626}).
 void
 RoutingProtocol::PopulateTwoHopNeighborSet (const olsr::MessageHeader &msg,
                                             const olsr::MessageHeader::Hello &hello)
@@ -2260,11 +2141,6 @@ RoutingProtocol::PopulateTwoHopNeighborSet (const olsr::MessageHeader &msg,
   NS_LOG_DEBUG ("Olsr node " << m_mainAddress << ": PopulateTwoHopNeighborSet END");
 }
 
-
-
-///
-/// \brief Updates the MPR Selector Set according to the information contained in
-/// a new received HELLO message (following \RFC{3626}).
 void
 RoutingProtocol::PopulateMprSelectorSet (const olsr::MessageHeader &msg,
                                          const olsr::MessageHeader::Hello &hello)
@@ -2324,7 +2200,7 @@ RoutingProtocol::PopulateMprSelectorSet (const olsr::MessageHeader &msg,
 #if 0
 ///
 /// \brief Drops a given packet because it couldn't be delivered to the corresponding
-/// destination by the MAC layer. This may cause a neighbor loss, and appropiate
+/// destination by the MAC layer. This may cause a neighbor loss, and appropriate
 /// actions are then taken.
 ///
 /// \param p the packet which couldn't be delivered by the MAC layer.
@@ -2358,13 +2234,6 @@ OLSR::mac_failed (Ptr<Packet> p) {
 
 
 
-///
-/// \brief Performs all actions needed when a neighbor loss occurs.
-///
-/// Neighbor Set, 2-hop Neighbor Set, MPR Set and MPR Selector Set are updated.
-///
-/// \param tuple link tuple with the information of the link to the neighbor which has been lost.
-///
 void
 RoutingProtocol::NeighborLoss (const LinkTuple &tuple)
 {
@@ -2379,11 +2248,6 @@ RoutingProtocol::NeighborLoss (const LinkTuple &tuple)
   RoutingTableComputation ();
 }
 
-///
-/// \brief Adds a duplicate tuple to the Duplicate Set.
-///
-/// \param tuple the duplicate tuple to be added.
-///
 void
 RoutingProtocol::AddDuplicateTuple (const DuplicateTuple &tuple)
 {
@@ -2395,11 +2259,6 @@ RoutingProtocol::AddDuplicateTuple (const DuplicateTuple &tuple)
   m_state.InsertDuplicateTuple (tuple);
 }
 
-///
-/// \brief Removes a duplicate tuple from the Duplicate Set.
-///
-/// \param tuple the duplicate tuple to be removed.
-///
 void
 RoutingProtocol::RemoveDuplicateTuple (const DuplicateTuple &tuple)
 {
@@ -2431,11 +2290,6 @@ RoutingProtocol::LinkTupleAdded (const LinkTuple &tuple, uint8_t willingness)
   AddNeighborTuple (nb_tuple);
 }
 
-///
-/// \brief Removes a link tuple from the Link Set.
-///
-/// \param tuple the link tuple to be removed.
-///
 void
 RoutingProtocol::RemoveLinkTuple (const LinkTuple &tuple)
 {
@@ -2447,12 +2301,6 @@ RoutingProtocol::RemoveLinkTuple (const LinkTuple &tuple)
   m_state.EraseLinkTuple (tuple);
 }
 
-///
-/// \brief This function is invoked when a link tuple is updated. Its aim is to
-/// also update the corresponding neighbor tuple if it is needed.
-///
-/// \param tuple the link tuple which has been updated.
-///
 void
 RoutingProtocol::LinkTupleUpdated (const LinkTuple &tuple, uint8_t willingness)
 {
@@ -2509,11 +2357,6 @@ RoutingProtocol::LinkTupleUpdated (const LinkTuple &tuple, uint8_t willingness)
     }
 }
 
-///
-/// \brief Adds a neighbor tuple to the Neighbor Set.
-///
-/// \param tuple the neighbor tuple to be added.
-///
 void
 RoutingProtocol::AddNeighborTuple (const NeighborTuple &tuple)
 {
@@ -2527,11 +2370,6 @@ RoutingProtocol::AddNeighborTuple (const NeighborTuple &tuple)
   IncrementAnsn ();
 }
 
-///
-/// \brief Removes a neighbor tuple from the Neighbor Set.
-///
-/// \param tuple the neighbor tuple to be removed.
-///
 void
 RoutingProtocol::RemoveNeighborTuple (const NeighborTuple &tuple)
 {
@@ -2545,11 +2383,6 @@ RoutingProtocol::RemoveNeighborTuple (const NeighborTuple &tuple)
   IncrementAnsn ();
 }
 
-///
-/// \brief Adds a 2-hop neighbor tuple to the 2-hop Neighbor Set.
-///
-/// \param tuple the 2-hop neighbor tuple to be added.
-///
 void
 RoutingProtocol::AddTwoHopNeighborTuple (const TwoHopNeighborTuple &tuple)
 {
@@ -2562,11 +2395,6 @@ RoutingProtocol::AddTwoHopNeighborTuple (const TwoHopNeighborTuple &tuple)
   m_state.InsertTwoHopNeighborTuple (tuple);
 }
 
-///
-/// \brief Removes a 2-hop neighbor tuple from the 2-hop Neighbor Set.
-///
-/// \param tuple the 2-hop neighbor tuple to be removed.
-///
 void
 RoutingProtocol::RemoveTwoHopNeighborTuple (const TwoHopNeighborTuple &tuple)
 {
@@ -2585,13 +2413,6 @@ RoutingProtocol::IncrementAnsn ()
   m_ansn = (m_ansn + 1) % (OLSR_MAX_SEQ_NUM + 1);
 }
 
-///
-/// \brief Adds an MPR selector tuple to the MPR Selector Set.
-///
-/// Advertised Neighbor Sequence Number (ANSN) is also updated.
-///
-/// \param tuple the MPR selector tuple to be added.
-///
 void
 RoutingProtocol::AddMprSelectorTuple (const MprSelectorTuple  &tuple)
 {
@@ -2604,13 +2425,6 @@ RoutingProtocol::AddMprSelectorTuple (const MprSelectorTuple  &tuple)
   IncrementAnsn ();
 }
 
-///
-/// \brief Removes an MPR selector tuple from the MPR Selector Set.
-///
-/// Advertised Neighbor Sequence Number (ANSN) is also updated.
-///
-/// \param tuple the MPR selector tuple to be removed.
-///
 void
 RoutingProtocol::RemoveMprSelectorTuple (const MprSelectorTuple &tuple)
 {
@@ -2623,11 +2437,6 @@ RoutingProtocol::RemoveMprSelectorTuple (const MprSelectorTuple &tuple)
   IncrementAnsn ();
 }
 
-///
-/// \brief Adds a topology tuple to the Topology Set.
-///
-/// \param tuple the topology tuple to be added.
-///
 void
 RoutingProtocol::AddTopologyTuple (const TopologyTuple &tuple)
 {
@@ -2641,11 +2450,6 @@ RoutingProtocol::AddTopologyTuple (const TopologyTuple &tuple)
   m_state.InsertTopologyTuple (tuple);
 }
 
-///
-/// \brief Removes a topology tuple from the Topology Set.
-///
-/// \param tuple the topology tuple to be removed.
-///
 void
 RoutingProtocol::RemoveTopologyTuple (const TopologyTuple &tuple)
 {
@@ -2659,11 +2463,6 @@ RoutingProtocol::RemoveTopologyTuple (const TopologyTuple &tuple)
   m_state.EraseTopologyTuple (tuple);
 }
 
-///
-/// \brief Adds an interface association tuple to the Interface Association Set.
-///
-/// \param tuple the interface association tuple to be added.
-///
 void
 RoutingProtocol::AddIfaceAssocTuple (const IfaceAssocTuple &tuple)
 {
@@ -2676,11 +2475,6 @@ RoutingProtocol::AddIfaceAssocTuple (const IfaceAssocTuple &tuple)
   m_state.InsertIfaceAssocTuple (tuple);
 }
 
-///
-/// \brief Removes an interface association tuple from the Interface Association Set.
-///
-/// \param tuple the interface association tuple to be removed.
-///
 void
 RoutingProtocol::RemoveIfaceAssocTuple (const IfaceAssocTuple &tuple)
 {
@@ -2693,29 +2487,17 @@ RoutingProtocol::RemoveIfaceAssocTuple (const IfaceAssocTuple &tuple)
   m_state.EraseIfaceAssocTuple (tuple);
 }
 
-///
-/// \brief Adds a host network association tuple to the Association Set.
-///
-/// \param tuple the host network association tuple to be added.
-///
 void
 RoutingProtocol::AddAssociationTuple (const AssociationTuple &tuple)
 {
   m_state.InsertAssociationTuple (tuple);
 }
 
-///
-/// \brief Removes a host network association tuple from the Association Set.
-///
-/// \param tuple the host network association tuple to be removed.
-///
 void
 RoutingProtocol::RemoveAssociationTuple (const AssociationTuple &tuple)
 {
   m_state.EraseAssociationTuple (tuple);
 }
-
-
 
 uint16_t RoutingProtocol::GetPacketSequenceNumber ()
 {
@@ -2723,18 +2505,12 @@ uint16_t RoutingProtocol::GetPacketSequenceNumber ()
   return m_packetSequenceNumber;
 }
 
-/// Increments message sequence number and returns the new value.
 uint16_t RoutingProtocol::GetMessageSequenceNumber ()
 {
   m_messageSequenceNumber = (m_messageSequenceNumber + 1) % (OLSR_MAX_SEQ_NUM + 1);
   return m_messageSequenceNumber;
 }
 
-
-///
-/// \brief Sends a HELLO message and reschedules the HELLO timer.
-/// \param e The event which has expired.
-///
 void
 RoutingProtocol::HelloTimerExpire ()
 {
@@ -2742,10 +2518,6 @@ RoutingProtocol::HelloTimerExpire ()
   m_helloTimer.Schedule (m_helloInterval);
 }
 
-///
-/// \brief Sends a TC message (if there exists any MPR selector) and reschedules the TC timer.
-/// \param e The event which has expired.
-///
 void
 RoutingProtocol::TcTimerExpire ()
 {
@@ -2760,10 +2532,6 @@ RoutingProtocol::TcTimerExpire ()
   m_tcTimer.Schedule (m_tcInterval);
 }
 
-///
-/// \brief Sends a MID message (if the node has more than one interface) and resets the MID timer.
-/// \param e The event which has expired.
-///
 void
 RoutingProtocol::MidTimerExpire ()
 {
@@ -2771,9 +2539,6 @@ RoutingProtocol::MidTimerExpire ()
   m_midTimer.Schedule (m_midInterval);
 }
 
-///
-/// \brief Sends an HNA message (if the node has associated hosts/networks) and reschedules the HNA timer.
-///
 void
 RoutingProtocol::HnaTimerExpire ()
 {
@@ -2788,13 +2553,6 @@ RoutingProtocol::HnaTimerExpire ()
   m_hnaTimer.Schedule (m_hnaInterval);
 }
 
-///
-/// \brief Removes tuple if expired. Else timer is rescheduled to expire at tuple.expirationTime.
-///
-/// The task of actually removing the tuple is left to the OLSR agent.
-///
-/// \param tuple The tuple which has expired.
-///
 void
 RoutingProtocol::DupTupleTimerExpire (Ipv4Address address, uint16_t sequenceNumber)
 {
@@ -2816,17 +2574,6 @@ RoutingProtocol::DupTupleTimerExpire (Ipv4Address address, uint16_t sequenceNumb
     }
 }
 
-///
-/// \brief Removes tuple_ if expired. Else if symmetric time
-/// has expired then it is assumed a neighbor loss and agent_->nb_loss()
-/// is called. In this case the timer is rescheduled to expire at
-/// tuple_->time(). Otherwise the timer is rescheduled to expire at
-/// the minimum between tuple_->time() and tuple_->sym_time().
-///
-/// The task of actually removing the tuple is left to the OLSR agent.
-///
-/// \param e The event which has expired.
-///
 void
 RoutingProtocol::LinkTupleTimerExpire (Ipv4Address neighborIfaceAddr)
 {
@@ -2861,13 +2608,6 @@ RoutingProtocol::LinkTupleTimerExpire (Ipv4Address neighborIfaceAddr)
     }
 }
 
-///
-/// \brief Removes tuple_ if expired. Else the timer is rescheduled to expire at tuple_->time().
-///
-/// The task of actually removing the tuple is left to the OLSR agent.
-///
-/// \param e The event which has expired.
-///
 void
 RoutingProtocol::Nb2hopTupleTimerExpire (Ipv4Address neighborMainAddr, Ipv4Address twoHopNeighborAddr)
 {
@@ -2889,13 +2629,6 @@ RoutingProtocol::Nb2hopTupleTimerExpire (Ipv4Address neighborMainAddr, Ipv4Addre
     }
 }
 
-///
-/// \brief Removes tuple_ if expired. Else the timer is rescheduled to expire at tuple_->time().
-///
-/// The task of actually removing the tuple is left to the OLSR agent.
-///
-/// \param e The event which has expired.
-///
 void
 RoutingProtocol::MprSelTupleTimerExpire (Ipv4Address mainAddr)
 {
@@ -2916,13 +2649,6 @@ RoutingProtocol::MprSelTupleTimerExpire (Ipv4Address mainAddr)
     }
 }
 
-///
-/// \brief Removes tuple_ if expired. Else the timer is rescheduled to expire at tuple_->time().
-///
-/// The task of actually removing the tuple is left to the OLSR agent.
-///
-/// \param e The event which has expired.
-///
 void
 RoutingProtocol::TopologyTupleTimerExpire (Ipv4Address destAddr, Ipv4Address lastAddr)
 {
@@ -2943,10 +2669,6 @@ RoutingProtocol::TopologyTupleTimerExpire (Ipv4Address destAddr, Ipv4Address las
     }
 }
 
-///
-/// \brief Removes tuple_ if expired. Else timer is rescheduled to expire at tuple_->time().
-/// \param e The event which has expired.
-///
 void
 RoutingProtocol::IfaceAssocTupleTimerExpire (Ipv4Address ifaceAddr)
 {
@@ -2967,9 +2689,6 @@ RoutingProtocol::IfaceAssocTupleTimerExpire (Ipv4Address ifaceAddr)
     }
 }
 
-/// \brief Removes tuple_ if expired. Else timer is rescheduled to expire at tuple_->time().
-/// \param e The event which has expired.
-///
 void
 RoutingProtocol::AssociationTupleTimerExpire (Ipv4Address gatewayAddr, Ipv4Address networkAddr, Ipv4Mask netmask)
 {
@@ -2990,9 +2709,6 @@ RoutingProtocol::AssociationTupleTimerExpire (Ipv4Address gatewayAddr, Ipv4Addre
     }
 }
 
-///
-/// \brief Clears the routing table and frees the memory assigned to each one of its entries.
-///
 void
 RoutingProtocol::Clear ()
 {
@@ -3000,22 +2716,12 @@ RoutingProtocol::Clear ()
   m_table.clear ();
 }
 
-///
-/// \brief Deletes the entry whose destination address is given.
-/// \param dest address of the destination node.
-///
 void
 RoutingProtocol::RemoveEntry (Ipv4Address const &dest)
 {
   m_table.erase (dest);
 }
 
-///
-/// \brief Looks up an entry for the specified destination address.
-/// \param dest destination address.
-/// \param outEntry output parameter to hold the routing entry result, if fuond
-/// \return true if found, false if not found
-///
 bool
 RoutingProtocol::Lookup (Ipv4Address const &dest,
                          RoutingTableEntry &outEntry) const
@@ -3030,22 +2736,6 @@ RoutingProtocol::Lookup (Ipv4Address const &dest,
   return true;
 }
 
-///
-/// \brief Finds the appropiate entry which must be used in order to forward
-/// a data packet to a next hop (given a destination).
-///
-/// Imagine a routing table like this: [A,B] [B,C] [C,C]; being each pair of the
-/// form [dest addr,next-hop addr]. In this case, if this function is invoked with
-/// [A,B] then pair [C,C] is returned because C is the next hop that must be used
-/// to forward a data packet destined to A. That is, C is a neighbor of this node,
-/// but B isn't. This function finds the appropiate neighbor for forwarding a packet.
-///
-/// \param entry the routing table entry which indicates the destination node
-/// we are interested in.
-/// \return the appropiate routing table entry which indicates the next
-/// hop which must be used for forwarding a data packet, or NULL
-/// if there is no such entry.
-///
 bool
 RoutingProtocol::FindSendEntry (RoutingTableEntry const &entry,
                                 RoutingTableEntry &outEntry) const
@@ -3251,16 +2941,6 @@ RoutingProtocol::NotifyRemoveAddress (uint32_t interface, Ipv4InterfaceAddress a
 {}
 
 
-///
-/// \brief Adds a new entry into the routing table.
-///
-/// If an entry for the given destination existed, it is deleted and freed.
-///
-/// \param dest address of the destination node.
-/// \param next address of the next hop node.
-/// \param iface address of the local interface.
-/// \param dist distance to the destination node.
-///
 void
 RoutingProtocol::AddEntry (Ipv4Address const &dest,
                            Ipv4Address const &next,
