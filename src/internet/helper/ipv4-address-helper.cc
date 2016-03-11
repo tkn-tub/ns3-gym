@@ -161,15 +161,13 @@ Ipv4AddressHelper::Assign (const NetDeviceContainer &c)
       ipv4->SetUp (interface);
       retval.Add (ipv4, interface);
 
+      // Install the default traffic control configuration if the traffic
+      // control layer has been aggregated, if this is not 
+      // a loopback interface, and there is no queue disc installed already
       Ptr<TrafficControlLayer> tc = node->GetObject<TrafficControlLayer> ();
-
-      NS_ASSERT_MSG (tc, "Ipv4AddressHelper::Assign(): NetDevice is associated"
-                     "with a node without the Traffic Control layer installed");
-
-      // Install the default traffic control configuration, if this is not a loopback
-      // interface and there is no queue disc installed already
-      if (DynamicCast<LoopbackNetDevice> (device) == 0 && tc->GetRootQueueDiscOnDevice (device) == 0)
+      if (tc && DynamicCast<LoopbackNetDevice> (device) == 0 && tc->GetRootQueueDiscOnDevice (device) == 0)
         {
+          NS_LOG_LOGIC ("Installing default traffic control configuration");
           TrafficControlHelper tcHelper = TrafficControlHelper::Default ();
           tcHelper.Install (device);
         }
