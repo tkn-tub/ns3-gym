@@ -791,7 +791,8 @@ GlobalRouter::ProcessSingleBroadcastLink (Ptr<NetDevice> nd, GlobalRoutingLSA *p
   // this is a stub network.  If we find another router, then what we have here
   // is a transit network.
   //
-  if (AnotherRouterOnLink (nd, true) == false)
+  ClearBridgesVisited ();
+  if (AnotherRouterOnLink (nd) == false)
     {
       //
       // This is a net device connected to a stub network
@@ -830,7 +831,8 @@ GlobalRouter::ProcessSingleBroadcastLink (Ptr<NetDevice> nd, GlobalRoutingLSA *p
       // gets the IP interface address of the designated router in this 
       // case.
       //
-      Ipv4Address desigRtr = FindDesignatedRouterForLink (nd, true);
+      ClearBridgesVisited ();
+      Ipv4Address desigRtr = FindDesignatedRouterForLink (nd);
 
       //
       // Let's double-check that any designated router we find out on our
@@ -926,7 +928,8 @@ GlobalRouter::ProcessBridgedBroadcastLink (Ptr<NetDevice> nd, GlobalRoutingLSA *
       // by the presence of another router on the network segment.  If we find
       // another router on any of our bridged links, we are a transit network.
       //
-      if (AnotherRouterOnLink (ndTemp, true))
+      ClearBridgesVisited ();
+      if (AnotherRouterOnLink (ndTemp))
         {
           areTransitNetwork = true;
 
@@ -937,7 +940,8 @@ GlobalRouter::ProcessBridgedBroadcastLink (Ptr<NetDevice> nd, GlobalRoutingLSA *
           // for the lowest address on each segment and pick the lowest of them
           // all.
           //
-          Ipv4Address desigRtrTemp = FindDesignatedRouterForLink (ndTemp, true);
+          ClearBridgesVisited ();
+          Ipv4Address desigRtrTemp = FindDesignatedRouterForLink (ndTemp);
 
           //
           // Let's double-check that any designated router we find out on our
@@ -1243,9 +1247,9 @@ GlobalRouter::BuildNetworkLSAs (NetDeviceContainer c)
 // connecting to the channel becomes the designated router for the link.
 //
 Ipv4Address
-GlobalRouter::FindDesignatedRouterForLink (Ptr<NetDevice> ndLocal, bool allowRecursion) const
+GlobalRouter::FindDesignatedRouterForLink (Ptr<NetDevice> ndLocal) const
 {
-  NS_LOG_FUNCTION (this << ndLocal << allowRecursion);
+  NS_LOG_FUNCTION (this << ndLocal);
 
   Ptr<Channel> ch = ndLocal->GetChannel ();
   uint32_t nDevices = ch->GetNDevices ();
@@ -1282,6 +1286,15 @@ GlobalRouter::FindDesignatedRouterForLink (Ptr<NetDevice> ndLocal, bool allowRec
           NS_LOG_LOGIC ("Device is bridged by BridgeNetDevice " << bnd);
 
           //
+          // When enumerating a bridge, don't count the netdevice we came in on
+          //
+          if (ndLocal == ndOther)
+            {
+              NS_LOG_LOGIC ("Skip -- it is where we came from.");
+              continue;
+            }
+
+          //
           // It is possible that the bridge net device is sitting under a
           // router, so we have to check for the presence of that router
           // before we run off and follow all the links
@@ -1315,6 +1328,19 @@ GlobalRouter::FindDesignatedRouterForLink (Ptr<NetDevice> ndLocal, bool allowRec
                 }
             }
 
+          // 
+          // Check if we have seen this bridge net device already while
+          // recursively enumerating an L2 broadcast domain. If it is new 
+          // to us, go ahead and process it. If we have already processed it,
+          // move to the next
+          // 
+          if(BridgeHasAlreadyBeenVisited(bnd))
+            {
+              NS_ABORT_MSG ("ERROR: L2 forwarding loop detected!");
+            }
+
+          MarkBridgeAsVisited(bnd);
+
           NS_LOG_LOGIC ("Looking through bridge ports of bridge net device " << bnd);
           for (uint32_t j = 0; j < bnd->GetNBridgePorts (); ++j)
             {
@@ -1326,13 +1352,10 @@ GlobalRouter::FindDesignatedRouterForLink (Ptr<NetDevice> ndLocal, bool allowRec
                   continue;
                 }
 
-              if (allowRecursion)
-                {
-                  NS_LOG_LOGIC ("Recursively looking for routers down bridge port " << ndBridged);
-                  Ipv4Address addrOther = FindDesignatedRouterForLink (ndBridged, false);
-                  desigRtr = addrOther < desigRtr ? addrOther : desigRtr;
-                  NS_LOG_LOGIC ("designated router now " << desigRtr);
-                }
+              NS_LOG_LOGIC ("Recursively looking for routers down bridge port " << ndBridged);
+              Ipv4Address addrOther = FindDesignatedRouterForLink (ndBridged);
+              desigRtr = addrOther < desigRtr ? addrOther : desigRtr;
+              NS_LOG_LOGIC ("designated router now " << desigRtr);
             }
         }
       else
@@ -1380,9 +1403,9 @@ GlobalRouter::FindDesignatedRouterForLink (Ptr<NetDevice> ndLocal, bool allowRec
 // when there is a bridged net device on the other side.
 //
 bool
-GlobalRouter::AnotherRouterOnLink (Ptr<NetDevice> nd, bool allowRecursion) const
+GlobalRouter::AnotherRouterOnLink (Ptr<NetDevice> nd) const
 {
-  NS_LOG_FUNCTION (this << nd << allowRecursion);
+  NS_LOG_FUNCTION (this << nd);
 
   Ptr<Channel> ch = nd->GetChannel ();
   if (!ch)
@@ -1426,6 +1449,20 @@ GlobalRouter::AnotherRouterOnLink (Ptr<NetDevice> nd, bool allowRecursion) const
       if (bnd)
         {
           NS_LOG_LOGIC ("Device is bridged by net device " << bnd);
+
+          // 
+          // Check if we have seen this bridge net device already while
+          // recursively enumerating an L2 broadcast domain. If it is new 
+          // to us, go ahead and process it. If we have already processed it,
+          // move to the next
+          // 
+          if(BridgeHasAlreadyBeenVisited(bnd))
+            {
+              NS_ABORT_MSG ("ERROR: L2 forwarding loop detected!");
+            }
+
+          MarkBridgeAsVisited(bnd);
+
           NS_LOG_LOGIC ("Looking through bridge ports of bridge net device " << bnd);
           for (uint32_t j = 0; j < bnd->GetNBridgePorts (); ++j)
             {
@@ -1437,14 +1474,11 @@ GlobalRouter::AnotherRouterOnLink (Ptr<NetDevice> nd, bool allowRecursion) const
                   continue;
                 }
 
-              if (allowRecursion)
+              NS_LOG_LOGIC ("Recursively looking for routers on bridge port " << ndBridged);
+              if (AnotherRouterOnLink (ndBridged))
                 {
-                  NS_LOG_LOGIC ("Recursively looking for routers on bridge port " << ndBridged);
-                  if (AnotherRouterOnLink (ndBridged, false))
-                    {
-                      NS_LOG_LOGIC ("Found routers on bridge port, return true");
-                      return true;
-                    }
+                  NS_LOG_LOGIC ("Found routers on bridge port, return true");
+                  return true;
                 }
             }
           NS_LOG_LOGIC ("No routers on bridged net device, return false");
@@ -1698,5 +1732,41 @@ GlobalRouter::NetDeviceIsBridged (Ptr<NetDevice> nd) const
   NS_LOG_LOGIC ("Net device " << nd << " is not bridged");
   return 0;
 }
+
+//
+// Start a new enumeration of an L2 broadcast domain by clearing m_bridgesVisited
+//
+void 
+GlobalRouter::ClearBridgesVisited (void) const
+{
+  m_bridgesVisited.clear();
+}
+
+//
+// Check if we have already visited a given bridge net device by searching m_bridgesVisited
+//
+bool
+GlobalRouter::BridgeHasAlreadyBeenVisited (Ptr<BridgeNetDevice> bridgeNetDevice) const
+{
+  std::vector<Ptr<BridgeNetDevice> >::iterator iter;
+  for (iter = m_bridgesVisited.begin (); iter != m_bridgesVisited.end (); ++iter)
+    {
+      if (bridgeNetDevice == *iter)
+        {
+          return true;
+        }
+    }
+  return false;
+}
+
+//
+// Remember that we visited a bridge net device by adding it to m_bridgesVisited
+//
+void 
+GlobalRouter::MarkBridgeAsVisited (Ptr<BridgeNetDevice> bridgeNetDevice) const
+{
+  m_bridgesVisited.push_back (bridgeNetDevice);
+}
+
 
 } // namespace ns3
