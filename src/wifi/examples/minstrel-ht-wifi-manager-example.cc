@@ -128,6 +128,8 @@ int main (int argc, char *argv[])
   int ap1_y = 0;
   int sta1_x = 5;
   int sta1_y = 0;
+  uint16_t nss = 1;
+  bool shortGuardInterval = false;
   uint32_t channelWidth = 20;
   std::string standard ("802.11b");
   StandardInfo selectedStandard;
@@ -140,13 +142,52 @@ int main (int argc, char *argv[])
   cmd.AddValue ("stepTime", "Time on each step (seconds)", stepTime);
   cmd.AddValue ("broadcast", "Send broadcast instead of unicast", broadcast);
   cmd.AddValue ("channelWidth", "Set channel width (valid only for 802.11n or ac)", channelWidth);
-  cmd.AddValue ("standard", "Set standard (802.11a, 802.11b, 802.11g, 802.11n-5GHz, 802.11ac, and others...)", standard);
+  cmd.AddValue ("shortGuard", "Set short guard interval (802.11n/ac)", shortGuardInterval);
+  cmd.AddValue ("nss", "Set nss (valid only for 802.11n or ac)", nss);
+  cmd.AddValue ("standard", "Set standard (02.11a, 802.11b, 802.11g, 802.11n-5GHz, 802.11n-2.4GHz, 802.11ac, 802.11-holland, 802.11-10MHz, 802.11-5MHz)", standard);
   cmd.Parse (argc, argv);
+  
+  if (standard == "802.11b")
+    {
+      NS_ABORT_MSG_IF (channelWidth != 20 && channelWidth != 22, "Invalid channel width for standard " << standard);
+      NS_ABORT_MSG_IF (nss != 1, "Invalid nss for standard " << standard);
+    }
+  else if (standard == "802.11a" || standard == "802.11g")
+    {
+      NS_ABORT_MSG_IF (channelWidth != 20, "Invalid channel width for standard " << standard);
+      NS_ABORT_MSG_IF (nss != 1, "Invalid nss for standard " << standard);
+    }
+  else if (standard == "802.11n-5GHz" || standard == "802.11n-2.4GHz")
+    {
+      NS_ABORT_MSG_IF (channelWidth != 20 && channelWidth != 40, "Invalid channel width for standard " << standard);
+      NS_ABORT_MSG_IF (nss == 0 || nss > 4, "Invalid nss " << nss << " for standard " << standard);
+    }
+  else if (standard == "802.11ac")
+    {
+      NS_ABORT_MSG_IF (channelWidth != 20 && channelWidth != 40 && channelWidth != 80 && channelWidth != 160, "Invalid channel width for standard " << standard);
+      NS_ABORT_MSG_IF (nss == 0 || nss > 4, "Invalid nss " << nss << " for standard " << standard);
+    }
 
   outfileName.append (standard);
+  if (standard == "802.11n-5GHz" || standard == "802.11n-2.4GHz" || standard == "802.11ac")
+    {
+      std::ostringstream oss;
+      std::string gi;
+      if (shortGuardInterval)
+        {
+          gi = "SGI";
+        }
+      else
+        {
+          gi = "LGI";
+        }
+      oss << "-" << channelWidth << "MHz-" << gi << "-" <<nss << "SS";
+      outfileName += oss.str ();
+    }
   std::string tmp = outfileName + ".plt";
   std::ofstream outfile (tmp.c_str ());
-  Gnuplot gnuplot = Gnuplot (outfileName + ".eps");
+  tmp = outfileName + ".eps";
+  Gnuplot gnuplot = Gnuplot (tmp.c_str ());
 
   // The first number is channel width, second is minimum SNR, third is maximum
   // SNR, fourth and fifth provide xrange axis limits, and sixth the yaxis
@@ -154,15 +195,12 @@ int main (int argc, char *argv[])
   standards.push_back (StandardInfo ("802.11a", WIFI_PHY_STANDARD_80211a, 20, false, 3, 27, 0, 30, 60));
   standards.push_back (StandardInfo ("802.11b", WIFI_PHY_STANDARD_80211b, 22, false, -5, 11, -6, 15, 15));
   standards.push_back (StandardInfo ("802.11g", WIFI_PHY_STANDARD_80211g, 20, false, -5, 27, -6, 30, 80));
-  standards.push_back (StandardInfo ("802.11n-5GHz", WIFI_PHY_STANDARD_80211n_5GHZ, 20, false, 5, 30, 0, 35, 80));
-  standards.push_back (StandardInfo ("802.11n-5GHz-40MHz", WIFI_PHY_STANDARD_80211n_5GHZ, 40, false, 5, 30, 0, 35, 80));
-  standards.push_back (StandardInfo ("802.11n-5GHz-SGI", WIFI_PHY_STANDARD_80211n_5GHZ, 20, true, 5, 30, 0, 35, 80));
-  standards.push_back (StandardInfo ("802.11n-5GHz-40MHz-SGI", WIFI_PHY_STANDARD_80211n_5GHZ, 40, true, 5, 30, 0, 35, 80));
-  standards.push_back (StandardInfo ("802.11n-2.4GHz", WIFI_PHY_STANDARD_80211n_2_4GHZ, 20, false, 5, 30, 0, 35, 80));
-  standards.push_back (StandardInfo ("802.11ac", WIFI_PHY_STANDARD_80211ac, 20, false, 5, 30, 0, 35, 80));
-  standards.push_back (StandardInfo ("802.11ac-40MHz", WIFI_PHY_STANDARD_80211ac, 40, false, 5, 30, 0, 35, 80));
-  standards.push_back (StandardInfo ("802.11ac-80MHz", WIFI_PHY_STANDARD_80211ac, 80, false, 5, 30, 0, 35, 80));
-  standards.push_back (StandardInfo ("802.11ac-160MHz", WIFI_PHY_STANDARD_80211ac, 160, false, 5, 30, 0, 35, 80));
+  standards.push_back (StandardInfo ("802.11n-5GHz", WIFI_PHY_STANDARD_80211n_5GHZ, channelWidth, shortGuardInterval, 5, 30, 0, 35, 80));
+  standards.push_back (StandardInfo ("802.11n-2.4GHz", WIFI_PHY_STANDARD_80211n_2_4GHZ, channelWidth, shortGuardInterval, 5, 30, 0, 35, 80));
+  standards.push_back (StandardInfo ("802.11ac", WIFI_PHY_STANDARD_80211ac, channelWidth, shortGuardInterval, 5, 30, 0, 35, 80));
+  standards.push_back (StandardInfo ("802.11-holland", WIFI_PHY_STANDARD_holland, 20, false, 3, 27, 0, 30, 60));
+  standards.push_back (StandardInfo ("802.11-10MHz", WIFI_PHY_STANDARD_80211_10MHZ, 10, false, 3, 27, 0, 30, 60));
+  standards.push_back (StandardInfo ("802.11-5MHz", WIFI_PHY_STANDARD_80211_5MHZ, 10, false, 3, 27, 0, 30, 60));
 
   for (std::vector<StandardInfo>::size_type i = 0; i != standards.size (); i++)
     {
@@ -234,6 +272,8 @@ int main (int argc, char *argv[])
   Ptr<WifiNetDevice> wnd = nd->GetObject<WifiNetDevice> ();
   Ptr<WifiPhy> wifiPhyPtr = wnd->GetPhy ();
   wifiPhyPtr->SetChannelWidth (selectedStandard.m_width);
+  wifiPhyPtr->SetNumberOfTransmitAntennas (nss);
+  wifiPhyPtr->SetNumberOfReceiveAntennas (nss);
   noiseDbm += 10 * log10 (selectedStandard.m_width * 1000000);
   NS_LOG_DEBUG ("Channel width " << wifiPhyPtr->GetChannelWidth () << " noiseDbm " << noiseDbm);
 
@@ -294,9 +334,25 @@ int main (int argc, char *argv[])
   yMaxStr << selectedStandard.m_yMax;
   yRangeStr.append (yMaxStr.str ());
   yRangeStr.append ("]");
+  
+  std::ostringstream widthStrStr;
+  std::ostringstream nssStrStr;
+  std::string title ("Wi-Fi Minstrel ht rate control: ");
+  title.append (standard);
+  title.append (" channel width: ");
+  widthStrStr << selectedStandard.m_width;
+  title.append (widthStrStr.str ());
+  title.append (" MHz nss: ");
+  nssStrStr << nss;
+  title.append (nssStrStr.str ());
+  if (shortGuardInterval == true)
+    {
+      title.append (" shortGuard: true");
+    }
 
   gnuplot.SetTerminal ("postscript eps color enh \"Times-BoldItalic\"");
   gnuplot.SetLegend ("SNR (dB)", "Rate (Mb/s)");
+  gnuplot.SetTitle (title);
   gnuplot.SetExtra  ("set xrange [0:50]");
   gnuplot.SetExtra  ("set yrange [0:150]");
   gnuplot.SetExtra  ("set key reverse left Left");
