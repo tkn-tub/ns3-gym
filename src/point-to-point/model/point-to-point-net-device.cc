@@ -210,8 +210,8 @@ void
 PointToPointNetDevice::DoInitialize (void)
 {
   NS_LOG_FUNCTION (this);
-  // A NetDeviceQueueInterface object must have been aggregated to this device
-  // by the traffic control layer
+  // The traffic control layer, if installed, has aggregated a
+  // NetDeviceQueueInterface object to this device
   m_queueInterface = GetObject<NetDeviceQueueInterface> ();
   NetDevice::DoInitialize ();
 }
@@ -292,14 +292,20 @@ PointToPointNetDevice::TransmitComplete (void)
   m_phyTxEndTrace (m_currentPkt);
   m_currentPkt = 0;
 
-  NS_ASSERT (m_queueInterface);
-  Ptr<NetDeviceQueue> txq = m_queueInterface->GetTxQueue (0);
+  Ptr<NetDeviceQueue> txq;
+  if (m_queueInterface)
+  {
+    txq = m_queueInterface->GetTxQueue (0);
+  }
 
   Ptr<QueueItem> item = m_queue->Dequeue ();
   if (item == 0)
     {
       NS_LOG_LOGIC ("No pending packets in device queue after tx complete");
-      txq->Wake ();
+      if (txq)
+      {
+        txq->Wake ();
+      }
       return;
     }
 
@@ -309,7 +315,7 @@ PointToPointNetDevice::TransmitComplete (void)
   // layers because otherwise a packet is sent to the device while the machine
   // state is busy, thus causing the assert in TransmitStart to fail.
   //
-  if (txq->IsStopped ())
+  if (txq && txq->IsStopped ())
     {
       txq->Start ();
     }
@@ -532,10 +538,13 @@ PointToPointNetDevice::Send (
   const Address &dest, 
   uint16_t protocolNumber)
 {
-  NS_ASSERT (m_queueInterface);
-  Ptr<NetDeviceQueue> txq = m_queueInterface->GetTxQueue (0);
+  Ptr<NetDeviceQueue> txq;
+  if (m_queueInterface)
+  {
+    txq = m_queueInterface->GetTxQueue (0);
+  }
 
-  NS_ASSERT_MSG (!txq->IsStopped (), "Send should not be called when the device is stopped");
+  NS_ASSERT_MSG (!txq || !txq->IsStopped (), "Send should not be called when the device is stopped");
 
   NS_LOG_FUNCTION (this << packet << dest << protocolNumber);
   NS_LOG_LOGIC ("p=" << packet << ", dest=" << &dest);
@@ -580,7 +589,10 @@ PointToPointNetDevice::Send (
   // Enqueue may fail (overflow). Stop the tx queue, so that the upper layers
   // do not send packets until there is room in the queue again.
   m_macTxDropTrace (packet);
-  txq->Stop ();
+  if (txq)
+  {
+    txq->Stop ();
+  }
   return false;
 }
 
