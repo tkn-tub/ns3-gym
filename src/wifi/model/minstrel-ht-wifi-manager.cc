@@ -1059,8 +1059,7 @@ MinstrelHtWifiManager::SetNextSample (MinstrelHtWifiRemoteStation *station)
   uint8_t index = station->m_groupsTable[station->m_sampleGroup].m_index;
   uint8_t col = station->m_groupsTable[sampleGroup].m_col;
 
-  if (index >= station->m_nModes
-      || !station->m_groupsTable[sampleGroup].m_ratesTable[station->m_sampleTable[index][col]].supported)
+  if (index >= station->m_nModes)
     {
       station->m_groupsTable[station->m_sampleGroup].m_index = 0;
       station->m_groupsTable[station->m_sampleGroup].m_col++;
@@ -1100,56 +1099,43 @@ MinstrelHtWifiManager::FindRate (MinstrelHtWifiRemoteStation *station)
       McsGroup sampleGroup = m_minstrelGroups[sampleGroupId];
       HtRateInfo sampleRateInfo = station->m_groupsTable[sampleGroupId].m_ratesTable[sampleRateId];
 
-      /**
-       * Sampling might add some overhead to the frame.
-       * Hence, don't use sampling for the currently used rates.
-       *
-       * Also do not sample if the probability is already higher than 95%
-       * to avoid wasting airtime.
-       */
-      NS_LOG_DEBUG ("Use sample rate? MaxTpRate= " << station->m_maxTpRate << " CurrentRate= " << station->m_txrate <<
-                    " SampleRate= " << sampleIdx << " SampleProb= " << sampleRateInfo.ewmaProb);
-      if (sampleIdx != station->m_maxTpRate && sampleIdx != station->m_maxTpRate2
-          && sampleIdx != station->m_maxProbRate && sampleRateInfo.ewmaProb <= 95)
+      if (sampleRateInfo.supported)
         {
-
           /**
-           * Make sure that lower rates get sampled only occasionally,
-           * if the link is working perfectly.
+           * Sampling might add some overhead to the frame.
+           * Hence, don't use sampling for the currently used rates.
+           *
+           * Also do not sample if the probability is already higher than 95%
+           * to avoid wasting airtime.
            */
-
-          uint32_t maxTpGroupId = GetGroupId (station->m_maxTpRate);
-          uint32_t maxTp2GroupId = GetGroupId (station->m_maxTpRate2);
-          uint32_t maxTp2RateId = GetRateId (station->m_maxTpRate2);
-          uint32_t maxProbGroupId = GetGroupId (station->m_maxProbRate);
-          uint32_t maxProbRateId = GetRateId (station->m_maxProbRate);
-
-          uint8_t maxTpStreams = m_minstrelGroups[maxTpGroupId].streams;
-          uint8_t sampleStreams = m_minstrelGroups[sampleGroupId].streams;
-
-          Time sampleDuration = sampleRateInfo.perfectTxTime;
-          Time maxTp2Duration = station->m_groupsTable[maxTp2GroupId].m_ratesTable[maxTp2RateId].perfectTxTime;
-          Time maxProbDuration = station->m_groupsTable[maxProbGroupId].m_ratesTable[maxProbRateId].perfectTxTime;
-
-          NS_LOG_DEBUG ("Use sample rate? SampleDuration= " << sampleDuration << " maxTp2Duration= " << maxTp2Duration <<
-                        " maxProbDuration= " << maxProbDuration << " sampleStreams= " << (uint32_t)sampleStreams <<
-                        " maxTpStreams= " << (uint32_t)maxTpStreams);
-          if (sampleDuration < maxTp2Duration || (sampleStreams <= maxTpStreams - 1 && sampleDuration < maxProbDuration))
+          NS_LOG_DEBUG ("Use sample rate? MaxTpRate= " << station->m_maxTpRate << " CurrentRate= " << station->m_txrate <<
+                        " SampleRate= " << sampleIdx << " SampleProb= " << sampleRateInfo.ewmaProb);
+          if (sampleIdx != station->m_maxTpRate && sampleIdx != station->m_maxTpRate2
+              && sampleIdx != station->m_maxProbRate && sampleRateInfo.ewmaProb <= 95)
             {
-              /// Set flag that we are currently sampling.
-              station->m_isSampling = true;
 
-              /// set the rate that we're currently sampling
-              station->m_sampleRate = sampleIdx;
+              /**
+               * Make sure that lower rates get sampled only occasionally,
+               * if the link is working perfectly.
+               */
 
-              NS_LOG_DEBUG ("FindRate " << "sampleRate=" << sampleIdx);
-              station->m_sampleTries--;
-              return sampleIdx;
-            }
-          else
-            {
-              station->m_numSamplesSlow++;
-              if (sampleRateInfo.numSamplesSkipped >= 20 && station->m_numSamplesSlow <= 2)
+              uint32_t maxTpGroupId = GetGroupId (station->m_maxTpRate);
+              uint32_t maxTp2GroupId = GetGroupId (station->m_maxTpRate2);
+              uint32_t maxTp2RateId = GetRateId (station->m_maxTpRate2);
+              uint32_t maxProbGroupId = GetGroupId (station->m_maxProbRate);
+              uint32_t maxProbRateId = GetRateId (station->m_maxProbRate);
+
+              uint8_t maxTpStreams = m_minstrelGroups[maxTpGroupId].streams;
+              uint8_t sampleStreams = m_minstrelGroups[sampleGroupId].streams;
+
+              Time sampleDuration = sampleRateInfo.perfectTxTime;
+              Time maxTp2Duration = station->m_groupsTable[maxTp2GroupId].m_ratesTable[maxTp2RateId].perfectTxTime;
+              Time maxProbDuration = station->m_groupsTable[maxProbGroupId].m_ratesTable[maxProbRateId].perfectTxTime;
+
+              NS_LOG_DEBUG ("Use sample rate? SampleDuration= " << sampleDuration << " maxTp2Duration= " << maxTp2Duration <<
+                            " maxProbDuration= " << maxProbDuration << " sampleStreams= " << (uint32_t)sampleStreams <<
+                            " maxTpStreams= " << (uint32_t)maxTpStreams);
+              if (sampleDuration < maxTp2Duration || (sampleStreams <= maxTpStreams - 1 && sampleDuration < maxProbDuration))
                 {
                   /// Set flag that we are currently sampling.
                   station->m_isSampling = true;
@@ -1160,6 +1146,22 @@ MinstrelHtWifiManager::FindRate (MinstrelHtWifiRemoteStation *station)
                   NS_LOG_DEBUG ("FindRate " << "sampleRate=" << sampleIdx);
                   station->m_sampleTries--;
                   return sampleIdx;
+                }
+              else
+                {
+                  station->m_numSamplesSlow++;
+                  if (sampleRateInfo.numSamplesSkipped >= 20 && station->m_numSamplesSlow <= 2)
+                    {
+                      /// Set flag that we are currently sampling.
+                      station->m_isSampling = true;
+
+                      /// set the rate that we're currently sampling
+                      station->m_sampleRate = sampleIdx;
+
+                      NS_LOG_DEBUG ("FindRate " << "sampleRate=" << sampleIdx);
+                      station->m_sampleTries--;
+                      return sampleIdx;
+                    }
                 }
             }
         }
