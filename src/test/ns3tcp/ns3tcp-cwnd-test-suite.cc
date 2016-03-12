@@ -31,6 +31,7 @@
 #include "ns3/ipv4-address-helper.h"
 #include "ns3/packet-sink-helper.h"
 #include "ns3/tcp-socket-factory.h"
+#include "ns3/traffic-control-helper.h"
 #include "ns3/simulator.h"
 
 using namespace ns3;
@@ -226,12 +227,13 @@ void
 Ns3TcpCwndTestCase1::CwndChange (uint32_t oldCwnd, uint32_t newCwnd)
 {
   CwndEvent event;
-  NS_LOG_DEBUG ("Cwnd change event at " << Now ().As (Time::S) << " " << oldCwnd << " " << newCwnd);
 
   event.m_oldCwnd = oldCwnd;
   event.m_newCwnd = newCwnd;
 
   m_responses.Add (event);
+
+  NS_LOG_DEBUG ("Cwnd change event " << m_responses.GetN () << " at " << Now ().As (Time::S) << " " << oldCwnd << " " << newCwnd);
 }
 
 void
@@ -420,12 +422,12 @@ void
 Ns3TcpCwndTestCase2::CwndChange (uint32_t oldCwnd, uint32_t newCwnd)
 {
   CwndEvent event;
-  NS_LOG_DEBUG ("Cwnd change event at " << Now ().As (Time::S) << " " << oldCwnd << " " << newCwnd);
 
   event.m_oldCwnd = oldCwnd;
   event.m_newCwnd = newCwnd;
 
   m_responses.Add (event);
+  NS_LOG_DEBUG ("Cwnd change event " << m_responses.GetN () << " at " << Now ().As (Time::S) << " " << oldCwnd << " " << newCwnd);
 }
 
 void
@@ -473,6 +475,12 @@ Ns3TcpCwndTestCase2::DoRun (void)
 
   // and setup ip routing tables to get total ip-level connectivity.
   Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
+
+  // Disable traffic control layer so that drops occur
+  TrafficControlHelper tch;
+  tch.Uninstall (dev0);
+  tch.Uninstall (dev1);
+  tch.Uninstall (dev2);
 
   // Set up the apps
   uint16_t servPort = 50000;
@@ -524,45 +532,47 @@ Ns3TcpCwndTestCase2::DoRun (void)
   //
   
   const uint32_t MSS = 536;
-  const uint32_t N_EVENTS = 38;
+  const uint32_t N_EVENTS = 40;
 
   CwndEvent event;
 
+  NS_LOG_DEBUG ("Number of response events: " << m_responses.GetN ());
   NS_TEST_ASSERT_MSG_EQ (m_responses.GetN (), N_EVENTS, "Unexpected number of cwnd change events");
 
   // Ignore the first event logged (i=0) when m_cWnd goes from 0 to MSS bytes
   VerifyCwndRun (1, 10, 2 * MSS, MSS);
   
-  // At the point of loss, sndNxt = 15009; sndUna = 9113, so there are 
-  // 11 segments outstanding.  Cut ssthresh to 11/2 and cwnd to (11/2 + 3)
-  // Cwnd should be back to (11/2 + 3) = 8.5*MSS
+  // At the point of loss, sndNxt = 15545; sndUna = 9113.  FlightSize is 4824, 
+  // so there are 9 segments outstanding.  Cut ssthresh to 9/2 (2412) and 
+  // cwnd to (9/2 + 3) = 4020
   event = m_responses.Get (10);
-  NS_TEST_ASSERT_MSG_EQ (event.m_newCwnd, (MSS * 17)/2, "Wrong new cwnd value in cwnd change event " << 10);
+  NS_TEST_ASSERT_MSG_EQ (event.m_newCwnd, (MSS * 15)/2, "Wrong new cwnd value in cwnd change event " << 10);
 
   // Verify that cwnd increments by one for a few segments
-  // from 9.5 at index 11 to 12.5 at index 14
-  VerifyCwndRun (11, 14, (MSS * 19)/2, MSS);
-  
-  // partial ack at event 15, cwnd reset from 6700 (12.5*MSS) to 5628 (10.5*MSS)
-  // ack of 3 segments, so deflate by 3, and add back one
-  NS_TEST_ASSERT_MSG_EQ (m_responses.Get (15).m_newCwnd, (MSS * 21)/2, "Wrong new cwnd value in cwnd change event " << 15);
+  // from 8.5 at index 11 to 12.5 at index 15
+  VerifyCwndRun (11, 15, (MSS * 17)/2, MSS);
 
-  // partial ack again of 3 segments after one more acks, cwnd reset to 9.5 
-  NS_TEST_ASSERT_MSG_EQ (m_responses.Get (17).m_newCwnd, (MSS * 19)/2, "Wrong new cwnd value in cwnd change event " << 17);
+  // partial ack at event 16, cwnd reset from 6700 (12.5*MSS) to 5092 (9.5*MSS)
+  NS_TEST_ASSERT_MSG_EQ (m_responses.Get (16).m_newCwnd, (MSS * 19)/2, "Wrong new cwnd value in cwnd change event " << 16);
+
+  // partial ack again of 3 segments after one more acks, cwnd reset to 7.5 
+  NS_TEST_ASSERT_MSG_EQ (m_responses.Get (18).m_newCwnd, (MSS * 15)/2, "Wrong new cwnd value in cwnd change event " << 18);
 
   //DUP ACKS in remaining fast recovery
-  VerifyCwndRun (18, 19, (MSS * 21)/2, MSS);
+  VerifyCwndRun (18, 20, (MSS * 15)/2, MSS);
 
-  // another partial ack
-  //DUP ACKS in remaining fast recovery
-  VerifyCwndRun (21, 23, (MSS * 21)/2, MSS);
+  // Process another partial ack
+  VerifyCwndRun (21, 24, (MSS * 13)/2, MSS);
+ 
+  //Leaving fast recovery at event 25; set cwnd to 3 segments
+  NS_TEST_ASSERT_MSG_EQ (m_responses.Get (25).m_newCwnd,  (MSS * 3), "Wrong new cwnd value in cwnd change event " << 25);  
   
-  //Leaving fast recovery at event 24; set cwnd to 11/2 from above
-  NS_TEST_ASSERT_MSG_EQ (m_responses.Get (24).m_newCwnd,  (MSS * 11)/2, "Wrong new cwnd value in cwnd change event " << 24);  
-  
-  uint32_t cwnd = 11 * MSS/2;
+  // Until ssthresh, each event will increase cwnd by MSS
+  NS_TEST_ASSERT_MSG_EQ (m_responses.Get (26).m_newCwnd, (4 * MSS), "Wrong new cwnd value in cwnd change event " << 26); 
+  NS_TEST_ASSERT_MSG_EQ (m_responses.Get (27).m_newCwnd, (5 * MSS), "Wrong new cwnd value in cwnd change event " << 27); 
   //In CongAvoid each event will increase cwnd by (MSS * MSS / cwnd)
-  for (uint32_t i = 25; i < N_EVENTS; ++i)
+  uint32_t cwnd = 5 * MSS;
+  for (uint32_t i = 28; i < N_EVENTS; ++i)
     {
       double adder = static_cast<double> (MSS * MSS) / cwnd;
       adder = std::max (1.0, adder);

@@ -22,7 +22,7 @@ def build(bld):
                                   'lte', 'mesh', 'mobility', 'olsr',
                                   'point-to-point', 'sixlowpan', 'stats',
                                   'uan', 'wifi', 'internet-apps',
-                                  'point-to-point-layout'])
+                                  'point-to-point-layout', 'traffic-control'])
 
     headers = bld(features='ns3header')
     headers.module = 'test'
