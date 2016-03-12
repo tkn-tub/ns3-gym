@@ -70,8 +70,7 @@ void set_nw_addr (ofpbuf *buffer, sw_flow_key *key, const ofp_action_header *ah)
 void set_tp_port (ofpbuf *buffer, sw_flow_key *key, const ofp_action_header *ah);
 void set_mpls_label (ofpbuf *buffer, sw_flow_key *key, const ofp_action_header *ah);
 void set_mpls_exp (ofpbuf *buffer, sw_flow_key *key, const ofp_action_header *ah);
-#include "openflow/private/pt_act.h" // The function below is defined in pt_act.c
-void update_checksums (ofpbuf *buffer, const sw_flow_key *key, uint32_t old_word, uint32_t new_word);
+#include "openflow/private/pt_act.h"
 
 #undef list
 #undef private
