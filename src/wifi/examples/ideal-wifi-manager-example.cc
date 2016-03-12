@@ -77,7 +77,7 @@ struct StandardInfo
   {
     m_name = "none";
   }
-  StandardInfo (std::string name, enum WifiPhyStandard standard, uint32_t width, double snrLow, double snrHigh, double xMin, double xMax, double yMax) 
+  StandardInfo (std::string name, enum WifiPhyStandard standard, uint32_t width, bool sgi, double snrLow, double snrHigh, double xMin, double xMax, double yMax)
    : m_name (name),
      m_standard (standard),
      m_width (width),
@@ -168,6 +168,22 @@ int main (int argc, char *argv[])
   std::string dataName = "ideal-wifi-manager-example-";
   plotName += standard;
   dataName += standard;
+  if (standard == "802.11n-5GHz" || standard == "802.11n-2.4GHz" || standard == "802.11ac")
+    {
+      std::ostringstream oss;
+      std::string gi;
+      if (shortGuardInterval)
+        {
+          gi = "SGI";
+        }
+      else
+        {
+          gi = "LGI";
+        }
+      oss << "-" << channelWidth << "MHz-" << gi << "-" <<nss << "SS";
+      plotName += oss.str ();
+      dataName += oss.str ();
+    }
   plotName += ".eps";
   dataName += ".plt";
   std::ofstream outfile (dataName.c_str ());
@@ -180,15 +196,15 @@ int main (int argc, char *argv[])
   // The first number is channel width, second is minimum SNR, third is maximum
   // SNR, fourth and fifth provide xrange axis limits, and sixth the yaxis
   // maximum
-  standards.push_back (StandardInfo ("802.11a", WIFI_PHY_STANDARD_80211a, 20, 3, 27, 0, 30, 60));
-  standards.push_back (StandardInfo ("802.11b", WIFI_PHY_STANDARD_80211b, 22, -5, 11, -6, 15, 15));
-  standards.push_back (StandardInfo ("802.11g", WIFI_PHY_STANDARD_80211g, 20, -5, 27, -6, 30, 60));
-  standards.push_back (StandardInfo ("802.11n-5GHz", WIFI_PHY_STANDARD_80211n_5GHZ, channelWidth, 3, 30, 0, 35, 80 * channelRateFactor));
-  standards.push_back (StandardInfo ("802.11n-2.4GHz", WIFI_PHY_STANDARD_80211n_2_4GHZ, channelWidth, 3, 30, 0, 35, 80 * channelRateFactor));
-  standards.push_back (StandardInfo ("802.11ac", WIFI_PHY_STANDARD_80211ac, channelWidth, 5, 35, 0, 40, 120 * channelRateFactor));
-  standards.push_back (StandardInfo ("802.11-holland", WIFI_PHY_STANDARD_holland, 20, 3, 27, 0, 30, 60));
-  standards.push_back (StandardInfo ("802.11-10MHz", WIFI_PHY_STANDARD_80211_10MHZ, 10, 3, 27, 0, 30, 60));
-  standards.push_back (StandardInfo ("802.11-5MHz", WIFI_PHY_STANDARD_80211_5MHZ, 10, 3, 27, 0, 30, 60));
+  standards.push_back (StandardInfo ("802.11a", WIFI_PHY_STANDARD_80211a, 20, false, 3, 27, 0, 30, 60));
+  standards.push_back (StandardInfo ("802.11b", WIFI_PHY_STANDARD_80211b, 22, false, -5, 11, -6, 15, 15));
+  standards.push_back (StandardInfo ("802.11g", WIFI_PHY_STANDARD_80211g, 20, false, -5, 27, -6, 30, 60));
+  standards.push_back (StandardInfo ("802.11n-5GHz", WIFI_PHY_STANDARD_80211n_5GHZ, channelWidth, shortGuardInterval, 3, 30, 0, 35, 80 * channelRateFactor));
+  standards.push_back (StandardInfo ("802.11n-2.4GHz", WIFI_PHY_STANDARD_80211n_2_4GHZ, channelWidth, shortGuardInterval, 3, 30, 0, 35, 80 * channelRateFactor));
+  standards.push_back (StandardInfo ("802.11ac", WIFI_PHY_STANDARD_80211ac, channelWidth, shortGuardInterval, 5, 35, 0, 40, 120 * channelRateFactor));
+  standards.push_back (StandardInfo ("802.11-holland", WIFI_PHY_STANDARD_holland, 20, false, 3, 27, 0, 30, 60));
+  standards.push_back (StandardInfo ("802.11-10MHz", WIFI_PHY_STANDARD_80211_10MHZ, 10, false, 3, 27, 0, 30, 60));
+  standards.push_back (StandardInfo ("802.11-5MHz", WIFI_PHY_STANDARD_80211_5MHZ, 10, false, 3, 27, 0, 30, 60));
  
   for (std::vector<StandardInfo>::size_type i = 0; i != standards.size(); i++)
     {
