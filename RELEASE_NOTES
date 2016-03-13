@@ -10,6 +10,9 @@ Consult the file CHANGES.html for more detailed information about changed
 API and behavior across ns-3 releases.
 
 Release 3-dev
+=============
+
+Release 3.25
 ============
 
 Availability
@@ -18,40 +21,92 @@ This release is not yet available.
 
 Supported platforms
 -------------------
-To be determined.
+This release has been tested on the following platforms:
+- Ubuntu 15.10 (64 bit) with g++-5.2.1
+- Ubuntu 14.04 (64 bit) with g++-4.8.2
+- Fedora Core 23 (64 bit) with g++-5.3.1
+- Fedora Core 22 (32 bit) with g++-5.1.1
+- Fedora Core 21 (64 bit) with g++-4.9.2
+- CentOS/RHEL 6.7 (64-bit) with g++-4.4.7
+- OS X El Capitan 10.11.3 with Xcode 7.2.1 and Apple LLVM version 7.0.2
+- OS X Yosemite 10.10.5 with Xcode 7.2.1 and Apple LLVM version 7.0.2
+- FreeBSD 10.2-RELEASE (64 bit) with clang-3.4.1
 
 New user-visible features
 -------------------------
-- (internet) The native TCP implementation has been refactored, for the following
-  improvements:  1) congestion control has been aligned with the Linux
-  architecture, to facilitate easier coding of new congestion control algorithms
-  or porting implementations from the Linux kernel, 2) Fast Retransmit and Fast
-  recovery algorithms, compliant to RFCs, are shared by all TCP variants, unlike
-  previous releases. 3) TCP Hybla and TCP HighSpeed have been added.
-- (routing) The PrintRoutingTable* functions now print the following informations
-  each time they are called: 1) the node ID, 2) the global time, 3) the local time
-  4) the routing protocol type
-- (internet) L4 protocols (e.g., TCP, UDP, ICMP, etc.) can be demultiplexed by IP
-  according to the incoming interface. In other words, it is now possible to
-  use specialized L4 protocols according to the interface.
-- (internet) Ipv6Address::IsAllHostsMulticast() is now deprecated. FF02::3 is not
-  in the official reserved IPv6 multicast address list.
-- (internet) Ipv6Address::IsAll[Nodes,Routers]Multicast() now checks the address
-  scope beyond the simple link-local. Nodes are checked for Interface-Local, Link-Local
-  and Realm-Local, Routers for the above plus Site-Local.
-- (internet) Ipv6 routing protocols must now *not* forward packets to upper layers
-  unless for extremey specific cases. The Ipv6L3protocol handles almost all the
-  packets directed to the host.
-- (internet) Ipv6 can now reject packets directed to an address not configured on 
-  the interface they are received from (Strong End System Model, RFC 1222).
+- (internet) The native TCP implementation has been refactored, for the 
+  following improvements:  
+    1) congestion control has been aligned with the Linux architecture, 
+       to facilitate easier coding of new congestion control algorithms
+        or porting implementations from the Linux kernel, 
+    2) Fast Retransmit and Fast Recovery algorithms, compliant to RFCs, are 
+       shared by all TCP variants, unlike previous releases. 
+    3) TCP Hybla and TCP HighSpeed variants have been added.
+
+- (routing) The PrintRoutingTable* functions now print the following information
+  each time they are called: 
+    1) the node ID, 
+    2) the global time, 
+    3) the local time (allowing for future introduction of per-node clocks), 
+    4) the routing protocol type
+
+- (traffic control) A traffic control sublayer has been added with the aim of
+  introducing an equivalent of the Linux Traffic +Control infrastructure into 
+  ns-3. This layer sits in between the NetDevices (L2) and the network 
+  protocol (e.g. IP). It is in charge of processing packets and performing 
+  actions on them: scheduling, dropping, marking, policing, etc.  Initial
+  support for flow control has been added to the PointToPointNetDevice;
+  backward-compatible support for other device types is provided.
+
+- (traffic control) A three band priority queue modelled after Linux
+  pfifo_fast queueing discipline has been added.
+
+- (traffic control) Adaptive RED extensions have been added to the RED model
+
+- (wifi) A number of changes related to improving support for 802.11n/ac
+  models have been introduced.
+  1) Two rate controls compatible with High Throughput (HT) Wi-Fi modes
+     (e.g. 802.11n/ac), Ideal and MinstrelHT, have been added  
+  2) Support for multiple spatial streams (MIMO) using existing SISO
+     error models
+  3) The WiFi helper API for the WifiMac sublayer, and the configuration
+     of HT modes and parameters, has been simplified
+  4) Better support for backward compatibilty with legacy modes
+
+- (wifi) 802.11g was made backward compatible with 802.11b networks
+
+- (internet) L4 protocols (e.g., TCP, UDP, ICMP, etc.) can be demultiplexed 
+  by IP according to the incoming interface. In other words, it is now 
+  possible to use specialized L4 protocols according to the interface.
+
+- (internet) Ipv6Address::IsAllHostsMulticast() is now deprecated. 
+  FF02::3 is not in the official reserved IPv6 multicast address list.
+
+- (internet) Ipv6Address::IsAll[Nodes,Routers]Multicast() now checks the 
+  address scope beyond the simple link-local. Nodes are checked for 
+  Interface-Local, Link-Local and Realm-Local, Routers for the above plus 
+  Site-Local.
+
+- (internet) Ipv6 routing protocols must now *not* forward packets to upper 
+  layers unless for extremey specific cases. The Ipv6L3protocol handles 
+  almost all the packets directed to the host.
+
+- (internet) Ipv6 can now reject packets directed to an address not configured 
+  on the interface they are received from (Strong End System Model, RFC 1222).
+
 - (internet) UDP and Ipv6 RAW sockets can now join Ipv6 multicast groups.
-  Incomin packets will be filtered according to if there's a socket listening to
-  that group. Source filtering is left to the application.
-- (network) ns-3 is now capable of serializing cooked (SLL) headers. This is used 
-  in DCE to allow the generation of pcap directly readable by wireshark.
-- (internet) It is now possible to set custom values for RipNg Link Down (standard is 16).
+  Incoming packets will be filtered according to if there's a socket listening 
+  to that group. Source filtering is left to the application.
+
+- (network) ns-3 is now capable of serializing cooked (SLL) headers. This is 
+  used in DCE to allow the generation of pcap directly readable by wireshark.
+
+- (internet) It is now possible to set custom values for RipNg Link Down 
+  (standard is 16).
+
 - (internet) permanent (static) NDISC entries can be created for IPv6
-- (internet) IPv4 RIPv2 protocol is now available.
+
+- (internet) IPv4 RIPv2 protocol model is now available.
 
 Bugs fixed
 ----------
@@ -65,6 +120,7 @@ Bugs fixed
 - Bug 2003 - Missing DSSS short PLCP preamble
 - Bug 2041 - TCP RTO needs unit tests
 - Bug 2068 - Timestamp option conforms to RFC 7323
+- Bug 2102 - Make global routing robust to bridged links
 - Bug 2116 - refactoring aggregation API
 - Bug 2120 - 802.11g networks are not compatible with 802.11b clients
 - Bug 2141 - TCP DataSent callback now correctly notifies sent data, without missing bytes in particular conditions
@@ -72,13 +128,15 @@ Bugs fixed
 - Bug 2159 - TCP advertises wrong receive window
 - Bug 2176 - Building IPv4 address from char* doesn't look reliable
 - Bug 2183 - LiIonEnergySourceHelper is not in the energy wscript
+- Bug 2184 - Integer overflow in Wi-Fi MacLow; remove dependency between tx and rx reference number field in MPDU status
 - Bug 2185 - WiFi MacLow may respond to errored frames that it should ignore
 - Bug 2193 - Simulation fails when transmitting very small MPDU subframes
 - Bug 2195 - Udp[*]Client can't send packets to broadcast address
 - Bug 2201 - Simulation fails when active probing is used in 802.11n/ac with channel bonding enabled
-- Bug 2207 - Print node ID and time when printing routing tables
 - Bug 2206 - Split internet-apps from applications
+- Bug 2207 - Print node ID and time when printing routing tables
 - Bug 2208 - Interface index based L4 protocols
+- Bug 2210 - set Order field to 0 for HT/VHT 
 - Bug 2211 - Ipv{4,6}EndPoint can cause memory corruption
 - Bug 2213 - Inconsistencies may exist between the selected WifiMacHelper and the chosen 802.11 version
 - Bug 2219 - SixLowPanNetDevice hangs trying to decode a IPv6 Fragment extension header
@@ -90,6 +148,7 @@ Bugs fixed
 - Bug 2243 - TCP Socket Fork() fails to copy some parameters, causing connections to close prematurely on retransmit
 - Bug 2246 - Some DSR LogComponents and classes are not defined in a unique way.
 - Bug 2247 - Disabled Fast retransmit after an RTO
+- Bug 2249 - LTE perl speed tests possibly broken
 - Bug 2252 - Nix needs StaticRouting to work
 - Bug 2254 - Ipv[4,6]RawSocket can return the wrong number of bytes sent.
 - Bug 2255 - Ipv6RawSocket does not call data sent callbacks.
@@ -109,6 +168,7 @@ Bugs fixed
 - Bug 2287 - FlowMonitor is confused by IP over IP.
 - Bug 2288 - Ipv4 broadcast and multicast packets are replicated on all the interfaces.
 - Bug 2289 - RIP v2 implementation
+- Bug 2290 - Cannot run click examples from test.py
 - Bug 2292 - Uninitialized variables since commit 7c60a9f8f271
 - Bug 2293 - Red Queue Estimator spins when trying to compute queue average size under long idle times.
 - Bug 2297 - 802.11n/ac networks are not compatible with legacy clients
@@ -127,6 +187,7 @@ Bugs fixed
 - Bug 2321 - Wifi rate managers should not be triggered for each MPDU when A-MPDU is used
 - Bug 2327 - CWmin value selection for 802.11g is not compliant with the standard rules
 - Bug 2328 - changes to antenna configuration should update HT MCS set
+- Bug 2331 - Wrong mobility model in vanet-routing-compare example
 - Bug 2332 - Assert failed when using aggregation and two pairs of AP-STA
 
 Known issues
