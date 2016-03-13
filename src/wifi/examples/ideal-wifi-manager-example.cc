@@ -204,7 +204,7 @@ int main (int argc, char *argv[])
   standards.push_back (StandardInfo ("802.11ac", WIFI_PHY_STANDARD_80211ac, channelWidth, shortGuardInterval, 5, 35, 0, 40, 120 * channelRateFactor));
   standards.push_back (StandardInfo ("802.11-holland", WIFI_PHY_STANDARD_holland, 20, false, 3, 27, 0, 30, 60));
   standards.push_back (StandardInfo ("802.11-10MHz", WIFI_PHY_STANDARD_80211_10MHZ, 10, false, 3, 27, 0, 30, 60));
-  standards.push_back (StandardInfo ("802.11-5MHz", WIFI_PHY_STANDARD_80211_5MHZ, 10, false, 3, 27, 0, 30, 60));
+  standards.push_back (StandardInfo ("802.11-5MHz", WIFI_PHY_STANDARD_80211_5MHZ, 5, false, 3, 27, 0, 30, 60));
  
   for (std::vector<StandardInfo>::size_type i = 0; i != standards.size(); i++)
     {
