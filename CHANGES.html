@@ -55,6 +55,12 @@ us a note on ns-developers mailing list.</p>
 <h2>New API:</h2>
 <ul>
   <li> In 'src/internet/test', a new environment is created to test TCP properties.</li>
+  <li> The 'src/traffic-control' module has been added, with new API for adding and configuring queue discs and packet filters.</li>
+  <li> Related to traffic control, a new interface has been added to the
+NetDevice to provide a queue interface to access device queue state and
+register callbacks used for flow control.</li>
+  <li> In 'src/wifi', a new rate control (MinstrelHT) has been added for
+802.11n/ac modes.</li>
   <li> In 'src/wifi', a new helper (WifiMacHelper) is added and is a merged helper from all previously existing MAC helpers (NqosWifiMacHelper, QosWifiMacHelper, HtWifiMacHelper and VhtWifiMacHelper).</li>
   <li> It is now possible to use RIPv2 in IPv4 network simulations.</li>
 </ul>
@@ -79,10 +85,17 @@ us a note on ns-developers mailing list.</p>
   </li>
   <li> In the WifiHelper class in the wifi module, Default has been declared deprecated. This is now immediately handled by the constructor of the class.</li>
   <li> The API for configuring 802.11n/ac aggregation has been modified to be more user friendly. As any MAC layer attributes, aggregation parameters can now also be configured through WifiMacHelper::SetType. </li>
+  <li> The class Queue and subclasses derived from it have been changed in two ways:
+  <ul>
+    <li></li>
+    <li>Queues no longer enqueue simple Packets but instead enqueue QueueItem objects, which include Packet but possibly other information such as headers.</li>
+    <li>The attributes governing the mode of operation (packets or bytes) and the maximum size have been moved to base class Queue.</li>
+  </ul>
+  </li>
 </ul>
 <h2>Changes to build system:</h2>
 <ul>
-  <li> Waf was upgraded to 1.8.13</li>
+  <li> Waf was upgraded to 1.8.19</li>
   <li> A new waf build option, --check-profile, was added to allow users to check the currently active build profile.  It is discussed in bug 2202 in the tracker.</li>
 </ul>
 <h2>Changed behavior:</h2>
@@ -98,6 +111,7 @@ This section is for behavioral changes to the models that were not due to a bug 
     </ul>
   </li>
   <li> 802.11n/ac MPDU aggregation is now enabled by default for both AC_BE and AC_VI.</li>
+  <li> The introduction of the traffic control layer leads to some additional buffering by default in the stack; when a device queue fills up, additional packets become enqueued at the traffic control layer.</li>
 </ul>
 
 <hr>
