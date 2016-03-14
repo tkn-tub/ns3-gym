@@ -45,6 +45,16 @@ There are 2 branches to ``CoDelQueueDisc::DoDequeue ()``:
 
 2. If the queue is not in the dropping state, the routine enters the dropping state and drop the first packet if ``CoDelQueueDisc::ShouldDrop ()`` returns ``true`` (meaning the sojourn time has gone above `m_target` for at least `m_interval` for the first time or it has gone above again after the queue leaves the dropping state). 
 
+The CoDel queue disc does not require packet filters, does not admit
+child queue discs and uses a single internal queue. If not provided by
+the user, a DropTail queue operating in the same mode (packet or byte)
+as the queue disc and having a size equal to the CoDel MaxPackets or
+MaxBytes attribute (depending on the mode) is created. If the user
+provides an internal queue, such a queue must operate in the same mode
+as the queue disc and have a size not less than the CoDel MaxPackets or
+MaxBytes attribute (depending on the mode).
+
+
 References
 ==========
 

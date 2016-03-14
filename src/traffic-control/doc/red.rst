@@ -22,10 +22,10 @@ examples mentioned below).
 The RED queue disc does not require packet filters, does not admit
 child queue discs and uses a single internal queue. If not provided by
 the user, a DropTail queue operating in the same mode (packet or byte)
-as the queue disc and having a size equal to the RED queue limit attribute
+as the queue disc and having a size equal to the RED QueueLimit attribute
 is created. If the user provides an internal queue, such a queue must
 operate in the same mode as the queue disc and have a size not less than
-the RED queue limit attribute.
+the RED QueueLimit attribute.
 
 Adaptive Random Early Detection (ARED)
 ======================================
