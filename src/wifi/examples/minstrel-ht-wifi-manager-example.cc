@@ -268,14 +268,24 @@ int main (int argc, char *argv[])
   // Set channel width
   // Adjust noise for channel width
   // Obtain pointer to the WifiPhy
-  Ptr<NetDevice> nd = clientDevice.Get (0);
-  Ptr<WifiNetDevice> wnd = nd->GetObject<WifiNetDevice> ();
-  Ptr<WifiPhy> wifiPhyPtr = wnd->GetPhy ();
-  wifiPhyPtr->SetChannelWidth (selectedStandard.m_width);
-  wifiPhyPtr->SetNumberOfTransmitAntennas (nss);
-  wifiPhyPtr->SetNumberOfReceiveAntennas (nss);
+  Ptr<NetDevice> ndClient = clientDevice.Get (0);
+  Ptr<WifiNetDevice> wndClient = ndClient->GetObject<WifiNetDevice> ();
+  Ptr<WifiPhy> wifiPhyPtrClient = wndClient->GetPhy ();
+  wifiPhyPtrClient->SetChannelWidth (selectedStandard.m_width);
+  wifiPhyPtrClient->SetNumberOfTransmitAntennas (nss);
+  wifiPhyPtrClient->SetNumberOfReceiveAntennas (nss);
   noiseDbm += 10 * log10 (selectedStandard.m_width * 1000000);
-  NS_LOG_DEBUG ("Channel width " << wifiPhyPtr->GetChannelWidth () << " noiseDbm " << noiseDbm);
+  NS_LOG_DEBUG ("Channel width " << wifiPhyPtrClient->GetChannelWidth () << " noiseDbm " << noiseDbm);
+
+  // Set channel width
+  // Adjust noise for channel width
+  // Obtain pointer to the WifiPhy
+  Ptr<NetDevice> ndServer = serverDevice.Get (0);
+  Ptr<WifiNetDevice> wndServer = ndServer->GetObject<WifiNetDevice> ();
+  Ptr<WifiPhy> wifiPhyPtrServer = wndServer->GetPhy ();
+  wifiPhyPtrServer->SetChannelWidth (selectedStandard.m_width);
+  wifiPhyPtrServer->SetNumberOfTransmitAntennas (nss);
+  wifiPhyPtrServer->SetNumberOfReceiveAntennas (nss);
 
   double rssCurrent = (selectedStandard.m_snrHigh + noiseDbm);
   rssLossModel->SetRss (rssCurrent);
