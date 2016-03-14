@@ -113,6 +113,7 @@ Bugs fixed
 - Bug 1132 - useless for loops in block-ack-test-suite.cc
 - Bug 1205 - EDCA is incorrectly modelled as DCF
 - Bug 1571 - TCP zero-window and flow control window updates by the receiver
+- Bug 1631 - Acoustic modem Energy consumption calc is wrong
 - Bug 1761 - Rounding with olsr::EmfToSeconds
 - Bug 1783 - BytesInFlight value fixed
 - Bug 1954 - Serialized size of wifi-net-device differ for TX and RX trace

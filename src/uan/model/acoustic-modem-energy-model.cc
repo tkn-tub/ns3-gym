@@ -200,20 +200,20 @@ AcousticModemEnergyModel::ChangeState (int newState)
 
   // energy to decrease = current * voltage * time
   double energyToDecrease = 0.0;
-  double supplyVoltage = m_source->GetSupplyVoltage ();
+
   switch (m_currentState)
     {
     case UanPhy::TX:
-      energyToDecrease = duration.GetSeconds () * m_txPowerW * supplyVoltage;
+      energyToDecrease = duration.GetSeconds () * m_txPowerW;
       break;
     case UanPhy::RX:
-      energyToDecrease = duration.GetSeconds () * m_rxPowerW * supplyVoltage;
+      energyToDecrease = duration.GetSeconds () * m_rxPowerW;
       break;
     case UanPhy::IDLE:
-      energyToDecrease = duration.GetSeconds () * m_idlePowerW * supplyVoltage;
+      energyToDecrease = duration.GetSeconds () * m_idlePowerW;
       break;
     case UanPhy::SLEEP:
-      energyToDecrease = duration.GetSeconds () * m_sleepPowerW * supplyVoltage;
+      energyToDecrease = duration.GetSeconds () * m_sleepPowerW;
       break;
     default:
       NS_FATAL_ERROR ("AcousticModemEnergyModel:Undefined radio state!");
