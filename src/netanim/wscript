@@ -3,7 +3,7 @@
 import wutils
 
 # Required NetAnim version
-NETANIM_RELEASE_NAME = "netanim-3.106"
+NETANIM_RELEASE_NAME = "netanim-3.107"
 
 def build (bld) :
     module = bld.create_ns3_module ('netanim', ['internet', 'mobility', 'wimax', 'wifi', 'csma', 'lte', 'uan', 'energy'])
