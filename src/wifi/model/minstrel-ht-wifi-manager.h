@@ -55,8 +55,9 @@ struct McsGroup
   uint8_t sgi;
   uint32_t chWidth;
   bool isVht;
+  bool isSupported;
 
-  // To accurately account for TX times, we separate the TX time of the first 
+  // To accurately account for TX times, we separate the TX time of the first
   // MPDU in an A-MPDU from the rest of the MPDUs.
   TxTime ratesTxTimeTable;
   TxTime ratesFirstMpduTxTimeTable;
@@ -81,6 +82,8 @@ struct HtRateInfo
   Time perfectTxTime;
 
   bool supported;               //!< If the rate is supported.
+
+  uint32_t mcsIndex;            //!< The index in the operationalMcsSet of the WifiRemoteStationManager.
 
   uint32_t retryCount;          //!< Retry limit.
   uint32_t adjustedRetryCount;  //!< Adjust the retry limit for this rate.
@@ -149,7 +152,7 @@ typedef std::vector<std::vector<uint32_t> > HtSampleRate;
  * Constants for maximum values.
  */
 
-static const uint8_t MAX_SUPPORTED_STREAMS = 2;  //!< Maximal number of streams supported by the phy layer.
+static const uint8_t MAX_SUPPORTED_STREAMS = 4;  //!< Maximal number of streams supported by the phy layer.
 static const uint8_t MAX_HT_STREAM_GROUPS = 4;   //!< Maximal number of groups per stream in HT (2 possible channel widths and 2 possible SGI configurations).
 static const uint8_t MAX_VHT_STREAM_GROUPS = 8;  //!< Maximal number of groups per stream in VHT (4 possible channel widths and 2 possible SGI configurations).
 static const uint8_t MAX_HT_GROUP_RATES = 8;     //!< Number of rates (or MCS) per HT group.
@@ -196,6 +199,7 @@ public:
 
 private:
   // Overriden from base class.
+  virtual void DoInitialize (void);
   virtual WifiRemoteStation * DoCreateStation (void) const;
   virtual void DoReportRxOk (WifiRemoteStation *station,
                              double rxSnr, WifiMode txMode);
@@ -319,20 +323,32 @@ private:
    * global index and vice versa.
    */
 
-  /// Return the rate index inside a group.
-  uint32_t  GetRateId (uint32_t index);
+  /// Return the rateId inside a group, from the global index.
+  uint32_t GetRateId (uint32_t index);
 
-  /// Return the group id from global index.
+  /// Return the groupId from the global index.
   uint32_t GetGroupId (uint32_t index);
 
-  /// Returns the global index corresponding to the MCS inside a group.
-  uint32_t GetIndex (uint32_t groupid, uint32_t mcsIndex);
+  /// Returns the global index corresponding to the groupId and rateId.
+  uint32_t GetIndex (uint32_t groupId, uint32_t rateId);
 
-  /// Calculates the group id from the number of streams, if using sgi and the channel width used.
-  uint32_t GetGroupId (uint8_t txstreams, uint8_t sgi, uint32_t chWidth);
+  /// Returns the groupId of a HT MCS with the given number of streams, if using sgi and the channel width used.
+  uint32_t GetHtGroupId (uint8_t txstreams, uint8_t sgi, uint32_t chWidth);
 
-  /// Calculates the group id from the number of streams, if using sgi and the channel width used.
+  /// Returns the groupId of a VHT MCS with the given number of streams, if using sgi and the channel width used.
   uint32_t GetVhtGroupId (uint8_t txstreams, uint8_t sgi, uint32_t chWidth);
+
+  /// Returns the lowest global index of the rates supported by the station.
+  uint32_t GetLowestIndex (MinstrelHtWifiRemoteStation *station);
+
+  /// Returns the lowest global index of the rates supported by in the group.
+  uint32_t GetLowestIndex (MinstrelHtWifiRemoteStation *station, uint32_t groupId);
+
+  /// Returns a list of only the VHT MCS supported by the device.
+  WifiModeList GetVhtDeviceMcsList (void) const;
+
+  /// Returns a list of only the HT MCS supported by the device.
+  WifiModeList GetHtDeviceMcsList (void) const;
 
   Time m_updateStats;         //!< How frequent do we calculate the stats (1/10 seconds).
   double m_lookAroundRate;    //!< The % to try other rates than our current rate.
@@ -344,7 +360,6 @@ private:
 
   uint8_t m_numGroups;         //!< Number of groups Minstrel should consider.
   uint8_t m_numRates;          //!< Number of rates per group Minstrel should consider.
-  uint8_t m_maxChWidth;        //!< Number of rates per group Minstrel should consider.
 
   bool m_useVhtOnly;           //!< If only VHT MCS should be used, instead of HT and VHT.
 
