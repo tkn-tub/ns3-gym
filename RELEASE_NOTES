@@ -27,6 +27,7 @@ This release has been tested on the following platforms:
 - Fedora Core 23 (64 bit) with g++-5.3.1
 - Fedora Core 22 (32 bit) with g++-5.1.1
 - Fedora Core 21 (64 bit) with g++-4.9.2
+- Arch Linux (64 bit) with g++-5.3.0 and clang++-3.7.1
 - CentOS/RHEL 6.7 (64-bit) with g++-4.4.7
 - OS X El Capitan 10.11.3 with Xcode 7.2.1 and Apple LLVM version 7.0.2
 - OS X Yosemite 10.10.5 with Xcode 7.2.1 and Apple LLVM version 7.0.2
