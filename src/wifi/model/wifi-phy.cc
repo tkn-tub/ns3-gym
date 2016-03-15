@@ -243,14 +243,14 @@ WifiPhy::GetPlcpHeaderMode (WifiMode payloadMode, WifiPreamble preamble, WifiTxV
     case WIFI_MOD_CLASS_VHT:
       switch (txVector.GetChannelWidth ())
         {
-        case 5000000:
+        case 5:
           return WifiPhy::GetOfdmRate1_5MbpsBW5MHz ();
-        case 10000000:
+        case 10:
           return WifiPhy::GetOfdmRate3MbpsBW10MHz ();
-        case 20000000:
-        case 40000000:
-        case 80000000:
-        case 160000000:
+        case 20:
+        case 40:
+        case 80:
+        case 160:
         default:
           //(Section 18.3.2 "PLCP frame format"; IEEE Std 802.11-2012)
           //actually this is only the first part of the PlcpHeader,
@@ -291,7 +291,7 @@ WifiPhy::GetPlcpHeaderDuration (WifiTxVector txVector, WifiPreamble preamble)
       {
         switch (txVector.GetChannelWidth ())
           {
-          case 20000000:
+          case 20:
           default:
             //(Section 18.3.3 "PLCP preamble (SYNC))" and Figure 18-4 "OFDM training structure"; IEEE Std 802.11-2012)
             //also (Section 18.3.2.4 "Timing related parameters" Table 18-5 "Timing-related parameters"; IEEE Std 802.11-2012)
@@ -300,10 +300,10 @@ WifiPhy::GetPlcpHeaderDuration (WifiTxVector txVector, WifiPreamble preamble)
             //header, see Section 18.3.2 and Figure 18-1) is sent using the
             //payload mode.
             return MicroSeconds (4);
-          case 10000000:
+          case 10:
             //(Section 18.3.2.4 "Timing related parameters" Table 18-5 "Timing-related parameters"; IEEE Std 802.11-2012)
             return MicroSeconds (8);
-          case 5000000:
+          case 5:
             //(Section 18.3.2.4 "Timing related parameters" Table 18-5 "Timing-related parameters"; IEEE Std 802.11-2012)
             return MicroSeconds (16);
           }
@@ -355,16 +355,16 @@ WifiPhy::GetPlcpPreambleDuration (WifiTxVector txVector, WifiPreamble preamble)
       {
         switch (txVector.GetChannelWidth ())
           {
-          case 20000000:
+          case 20:
           default:
             //(Section 18.3.3 "PLCP preamble (SYNC))" Figure 18-4 "OFDM training structure"
             //also Section 18.3.2.3 "Modulation-dependent parameters" Table 18-4 "Modulation-dependent parameters"; IEEE Std 802.11-2012)
             return MicroSeconds (16);
-          case 10000000:
+          case 10:
             //(Section 18.3.3 "PLCP preamble (SYNC))" Figure 18-4 "OFDM training structure"
             //also Section 18.3.2.3 "Modulation-dependent parameters" Table 18-4 "Modulation-dependent parameters"; IEEE Std 802.11-2012)
             return MicroSeconds (32);
-          case 5000000:
+          case 5:
             //(Section 18.3.3 "PLCP preamble (SYNC))" Figure 18-4 "OFDM training structure"
             //also Section 18.3.2.3 "Modulation-dependent parameters" Table 18-4 "Modulation-dependent parameters"; IEEE Std 802.11-2012)
             return MicroSeconds (64);
@@ -417,14 +417,14 @@ WifiPhy::GetPayloadDuration (uint32_t size, WifiTxVector txVector, WifiPreamble 
 
         switch (txVector.GetChannelWidth ())
           {
-          case 20000000:
+          case 20:
           default:
             symbolDuration = MicroSeconds (4);
             break;
-          case 10000000:
+          case 10:
             symbolDuration = MicroSeconds (8);
             break;
-          case 5000000:
+          case 5:
             symbolDuration = MicroSeconds (16);
             break;
           }
