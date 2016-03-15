@@ -624,7 +624,7 @@ WifiPhy::GetPayloadDuration (uint32_t size, WifiTxVector txVector, WifiPreamble 
           }
 
         //IEEE Std 802.11n, section 20.3.11, equation (20-32)
-        double numDataBitsPerSymbol = payloadMode.GetDataRate (txVector.GetChannelWidth (), txVector.IsShortGuardInterval (), 1) * txVector.GetNss () * symbolDuration.GetNanoSeconds () / 1e9;
+        double numDataBitsPerSymbol = payloadMode.GetDataRate (txVector.GetChannelWidth (), txVector.IsShortGuardInterval (), txVector.GetNss ()) * symbolDuration.GetNanoSeconds () / 1e9;
         double numSymbols;
 
         if (mpdutype == MPDU_IN_AGGREGATE && preamble != WIFI_PREAMBLE_NONE)
