@@ -126,6 +126,9 @@ int main (int argc, char *argv[])
       GlobalValue::Bind ("ChecksumEnabled", BooleanValue (true));
     }
 
+  Config::SetDefault ("ns3::Queue::Mode", StringValue ("QUEUE_MODE_PACKETS"));
+  Config::SetDefault ("ns3::Queue::MaxPackets", UintegerValue (queueSize));
+
   // Create gateway, source, and sink
   NodeContainer gateway;
   gateway.Create (1);
