@@ -7,8 +7,11 @@ Queues
    ============= Subsection (#.#.#)
    ############# Paragraph (no number)
 
-This section documents the queue object, typically associated with
-NetDevice models, that is maintained as part of the ``network`` module:
+This section documents the queue object, which is typically used by NetDevices
+and QueueDiscs to store packets.
+
+Packets stored in a queue can be managed according to different policies.
+Currently, the following policies are available:
 
 * DropTail
 
@@ -17,7 +20,7 @@ Model Description
 
 The source code for the new module lives in the directory ``src/network/utils``.
 
-ns-3 provides a couple of classic queue models and the ability to
+ns-3 provides the classic droptail queue model and the ability to
 trace certain queue operations such as enqueuing, dequeuing, and dropping.
 These may be added to certain NetDevice objects that take a Ptr<Queue>
 pointer.
@@ -26,6 +29,8 @@ Note that not all device models use these queue models.
 In particular, WiFi, WiMax, and LTE use specialized device queues.
 The queue models described here are more often used with simpler ns-3 
 device models such as PointToPoint and Csma.
+
+All the queuing disciplines, instead, make use of the queue model defined here.
 
 Design
 ======
@@ -48,6 +53,14 @@ There are three trace sources that may be hooked:
 * ``Enqueue``
 * ``Dequeue``
 * ``Drop``
+
+Also, three attributes are defined in the Queue base class:
+
+* ``Mode``: whether the capacity of the queue is measured in packets or bytes
+* ``MaxPackets``: the maximum number of packets accepted by the queue in packet mode
+* ``MaxBytes``: the maximum number of bytes accepted by the queue in byte mode
+
+The Enqueue method does not allow to store a packet if the queue capacity is exceeded.
 
 DropTail
 ########
