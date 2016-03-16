@@ -11,7 +11,7 @@ By associating this file descriptor with different things on the host
 system, different capabilities can be provided.  For instance, the
 FdNetDevice can be associated with an underlying packet socket to provide
 emulation capabilities.  This allows |ns3| simulations
-to send data on a "real" network. The second kind, called a ``Tap``
+to send data on a "real" network. The second kind, called a ``TapBridge``
 ``NetDevice`` allows a "real" host to participate in an |ns3| simulation as if
 it were one of the simulated nodes. An |ns3| simulation may be constructed with
 any combination of simulated or emulated devices.
@@ -80,7 +80,8 @@ We expect the typical use case for this environment will be to analyze the
 behavior of native applications and protocol suites in the presence of large
 simulated |ns3| networks.
 
-.. toctree::
+For more details:
 
-  fd-net-device
-  tap
+* :doc:`FdNetDevice <fd-net-device>` chapter.
+* :doc:`TapBridge <tap>` chapter.
+

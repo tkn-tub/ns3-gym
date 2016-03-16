@@ -46,6 +46,7 @@ This document is written in `reStructuredText <http://docutils.sourceforge.net/r
    propagation
    spectrum
    sixlowpan
+   tap
    topology
    traffic-control
    uan
