@@ -161,11 +161,48 @@ static const uint8_t MAX_HT_WIDTH = 40;          //!< Maximal channel width.
 static const uint8_t MAX_VHT_WIDTH = 160;        //!< Maximal channel width.
 
 /**
- * \author Ghada Badawy
  * \brief Implementation of Minstrel HT Rate Control Algorithm
  * \ingroup wifi
  *
- * http://lwn.net/Articles/376765/
+ * Minstrel-HT is a rate adaptation mechanism for the 802.11n/ac standard 
+ * based on Minstrel, and is based on the approach of probing the channel
+ * to dynamically learn about working rates that can be supported.  
+ * Minstrel-HT is designed for high-latency devices that implement a 
+ * Multiple Rate Retry (MRR) chain. This kind of device does 
+ * not give feedback for every frame retransmission, but only when a frame 
+ * was correctly transmitted (an ACK is received) or a frame transmission 
+ * completely fails (all retransmission attempts fail).
+ * The MRR chain is used to advise the hardware about which rate to use 
+ * when retransmitting a frame.
+ * 
+ * Minstrel-HT adapts the MCS, channel width, number of streams, and 
+ * short guard interval (enabled or disabled).  For keeping statistics,
+ * it arranges MCS in groups, where each group is defined by the 
+ * tuple (#streams, SGI, channel width).  There is a vector of all groups 
+ * supported by the PHY layer of the transmitter; for each group, the 
+ * capabilities and the estimated duration of its rates are maintained.
+ *
+ * Each station maintains a table of groups statistics. For each group, a flag 
+ * indicates if the group is supported by the station. Different stations 
+ * communicating with an AP can have different capabilities.
+ *
+ * Stats are updated per A-MPDU when receiving AmpduTxStatus. If the number 
+ * of successful or failed MPDUs is greater than zero (a BlockAck was 
+ * received), the rates are also updated.
+ * If the number of successful and failed MPDUs is zero (BlockAck timeout), 
+ * then the rate selected is based on the MRR chain.
+ * 
+ * On each update interval, it sets the maxThrRate, the secondmaxThrRate 
+ * and the maxProbRate for the MRR chain. These rates are only used when 
+ * an entire A-MPDU fails and is retried.
+ * 
+ * Differently from legacy minstrel, sampling is not done based on 
+ * "lookaround ratio", but assuring all rates are sampled at least once 
+ * each interval. However, it samples less often the low rates and high 
+ * probability of error rates.
+ *
+ * When this rate control is configured but HT and VHT are not supported, 
+ * Minstrel-HT uses legacy Minstrel (minstrel-wifi-manager) for rate control.
  */
 class MinstrelHtWifiManager : public WifiRemoteStationManager
 {
@@ -185,8 +222,8 @@ public:
    */
   int64_t AssignStreams (int64_t stream);
 
+  // Inherited from WifiRemoteStationManager
   virtual void SetupPhy (Ptr<WifiPhy> phy);
-
   virtual void SetupMac (Ptr<WifiMac> mac);
 
   /**

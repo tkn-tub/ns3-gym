@@ -112,12 +112,43 @@ struct MinstrelWifiRemoteStation : public WifiRemoteStation
 
 
 /**
- * \author Duy Nguyen
  * \brief Implementation of Minstrel Rate Control Algorithm
  * \ingroup wifi
  *
- * Porting Minstrel from Madwifi and Linux Kernel
- * http://linuxwireless.org/en/developers/Documentation/mac80211/RateControl/minstrel
+ * Minstrel is a rate control algorithm implemented in MadWifi and Linux.
+ * The basic principle is to probe the environment and adapt the rate
+ * based on statistics collected on the probability of successful 
+ * transmission.  The algorithm adapts the rate to the highest rate
+ * that it considers successful, and spends a fraction of its time
+ * doing 'look around' by trying other rates.
+ *
+ * Minstrel is appropriate for non-HT/VHT configurations; for HT/VHT
+ * (i.e. 802.11n/ac), users should use MinstrelHtWifiManager instead.
+ *
+ * Some notes on this implementation follow.  The implementation has
+ * been adapted to bring it closer to the Linux implementation.
+ * For each rate, a new parameter samplesSkipped is added. This parameter 
+ * is intended to solve an issue regarding the sampling of low rates when 
+ * a high rate is working well, which leads to outdated statistics. 
+ * This change makes throughput a bit lower in simple, stable scenarios,
+ * but may help in dynamic scenarios to react faster and more accurately 
+ * to changes.
+ * 
+ * Related to the previous, the logic for deciding when to sample random
+ * rates is as follows.  When a sample rate is deffered to the second MRR 
+ * chain stage, a new parameter (numSamplesDeferred) is increased. This 
+ * paramters is used (jointly with sampleCount) to compare current 
+ * sample count with the lookaround rate.
+ * 
+ * Also related with sampling, another parameter sampleLimit is added.
+ * This parameter limits the number of times a very low or very high 
+ * probability rate is sampled, avoiding to try a poorly working sample 
+ * rate too often.
+ *
+ * When updating the EWMA probability of a rate for the first time, it does
+ * not apply EWMA but instead assigns the entire probability. 
+ * Since the EWMA probability is initialized to zero, this generates 
+ * a more accurate EWMA.
  */
 class MinstrelWifiManager : public WifiRemoteStationManager
 {
@@ -127,8 +158,8 @@ public:
   MinstrelWifiManager ();
   virtual ~MinstrelWifiManager ();
 
+  // Inherited from WifiRemoteStationManager
   virtual void SetupPhy (Ptr<WifiPhy> phy);
-
   virtual void SetupMac (Ptr<WifiMac> mac);
 
   /**
