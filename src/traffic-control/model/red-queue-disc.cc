@@ -382,7 +382,8 @@ RedQueueDisc::DoEnqueue (Ptr<QueueDiscItem> item)
       m_old = 0;
     }
 
-  if (nQueued >= m_queueLimit)
+  if ((GetMode () == Queue::QUEUE_MODE_PACKETS && nQueued >= m_queueLimit) ||
+      (GetMode () == Queue::QUEUE_MODE_BYTES && nQueued + item->GetPacketSize() > m_queueLimit))
     {
       NS_LOG_DEBUG ("\t Dropping due to Queue Full " << nQueued);
       dropType = DTYPE_FORCED;
