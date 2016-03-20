@@ -87,10 +87,16 @@ register callbacks used for flow control.</li>
   <li> The API for configuring 802.11n/ac aggregation has been modified to be more user friendly. As any MAC layer attributes, aggregation parameters can now also be configured through WifiMacHelper::SetType. </li>
   <li> The class Queue and subclasses derived from it have been changed in two ways:
   <ul>
-    <li></li>
     <li>Queues no longer enqueue simple Packets but instead enqueue QueueItem objects, which include Packet but possibly other information such as headers.</li>
     <li>The attributes governing the mode of operation (packets or bytes) and the maximum size have been moved to base class Queue.</li>
   </ul>
+  </li>
+  <li> Users of advanced queues (RED, CoDel) who have been using them directly in the NetDevice will need to adjust to the following changes:
+    <ul>
+      <li> RED and CoDel are no longer specializations of the Queue classe, but are now specializations of the new QueueDisc class. This means that RED and CoDel can now be installed in the context of the new Traffic Control layer instead of as queues in (some) NetDevices. The reason for such a change is to make the ns-3 stack much more similar to that of real operating systems (Linux has been taken as a reference).  Queuing disciplines such as RED and CoDel can now be tested with all the NetDevices, including WifiNetDevices. </li>
+      <li> NetDevices still use queues to buffer packets. The only subclass of Queue currently available for this purpose is DropTailQueue. If one wants to approximate the old behavior, one needs to set the DropTailQueue MaxPackets attribute to very low values, e.g., 1.</li>
+      <li> The Traffic Control layer features a mechanism by which packets dropped by the NetDevice are requeued in the queue disc (more precisely: if NetDevice::Send returns false, the packet is requeued), so that they are retransmitted later. This means that the MAC drop traces may include packets that have not been actually lost, because they have been dropped by the device, requeued by the traffic control layer and successfully retransmitted. To get the correct number of packets that have been actually lost, one has to subtract the number of packets requeued from the number of packets dropped as reported by the MAC drop trace. </li>
+    </ul>
   </li>
 </ul>
 <h2>Changes to build system:</h2>
