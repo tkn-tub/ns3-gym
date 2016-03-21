@@ -976,8 +976,7 @@ MinstrelHtWifiManager::DoGetRtsTxVector (WifiRemoteStation *st)
       uint32_t mcsIndex = station->m_groupsTable[groupId].m_ratesTable[rateId].mcsIndex;
 
       WifiMode lastRate = GetMcsSupported (station, mcsIndex);
-      uint8_t streams = m_minstrelGroups[groupId].streams;
-      uint64_t lastDataRate = lastRate.GetNonHtReferenceRate (streams);
+      uint64_t lastDataRate = lastRate.GetNonHtReferenceRate ();
       uint32_t nBasicRates = GetNBasicModes ();
 
       WifiMode rtsRate;

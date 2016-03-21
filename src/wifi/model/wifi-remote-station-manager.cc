@@ -1107,6 +1107,28 @@ WifiRemoteStationManager::IsLastFragment (Mac48Address address, const WifiMacHea
   return isLast;
 }
 
+bool
+WifiRemoteStationManager::IsAllowedControlAnswerModulationClass (enum WifiModulationClass modClassReq, enum WifiModulationClass modClassAnswer) const
+{
+  switch (modClassReq)
+    {
+    case WIFI_MOD_CLASS_DSSS:
+      return (modClassAnswer == WIFI_MOD_CLASS_DSSS);
+    case WIFI_MOD_CLASS_HR_DSSS:
+      return (modClassAnswer == WIFI_MOD_CLASS_DSSS || modClassAnswer == WIFI_MOD_CLASS_HR_DSSS);
+    case WIFI_MOD_CLASS_ERP_OFDM:
+      return (modClassAnswer == WIFI_MOD_CLASS_DSSS || modClassAnswer == WIFI_MOD_CLASS_HR_DSSS || modClassAnswer == WIFI_MOD_CLASS_ERP_OFDM);
+    case WIFI_MOD_CLASS_OFDM:
+      return (modClassAnswer == WIFI_MOD_CLASS_OFDM);
+    case WIFI_MOD_CLASS_HT:
+    case WIFI_MOD_CLASS_VHT:
+      return true;
+    default:
+      NS_FATAL_ERROR ("Modulation class not defined");
+      return false;
+    }
+}
+
 WifiMode
 WifiRemoteStationManager::GetControlAnswerMode (Mac48Address address, WifiMode reqMode)
 {
@@ -1127,17 +1149,12 @@ WifiRemoteStationManager::GetControlAnswerMode (Mac48Address address, WifiMode r
   NS_LOG_FUNCTION (this << address << reqMode);
   WifiMode mode = GetDefaultMode ();
   bool found = false;
-  uint8_t nss = 1;  // Use one spatial stream for control response
   //First, search the BSS Basic Rate set
   for (WifiModeListIterator i = m_bssBasicRateSet.begin (); i != m_bssBasicRateSet.end (); i++)
     {
-      if ((!found || i->GetPhyRate (m_wifiPhy->GetChannelWidth (), 0, nss) > mode.GetPhyRate (m_wifiPhy->GetChannelWidth (), 0, nss))
-          && (i->GetPhyRate (m_wifiPhy->GetChannelWidth (), 0, nss) <= reqMode.GetPhyRate (m_wifiPhy->GetChannelWidth (), 0, nss))
-          && (i->GetConstellationSize (nss) <= reqMode.GetConstellationSize (nss))
-          && ((i->GetModulationClass () == reqMode.GetModulationClass ())
-              || (reqMode.GetModulationClass () == WIFI_MOD_CLASS_HT)
-              || (reqMode.GetModulationClass () == WIFI_MOD_CLASS_VHT)))
-
+      if ((!found || i->IsHigherDataRate (mode))
+          && (!i->IsHigherDataRate (reqMode))
+          && (IsAllowedControlAnswerModulationClass (reqMode.GetModulationClass (), i->GetModulationClass ())))
         {
           mode = *i;
           //We've found a potentially-suitable transmit rate, but we
@@ -1146,7 +1163,6 @@ WifiRemoteStationManager::GetControlAnswerMode (Mac48Address address, WifiMode r
           found = true;
         }
     }
-  nss = 1;  // Continue the assumption that MIMO not used for control response
   if (HasHtSupported () || HasVhtSupported ())
     {
       if (!found)
@@ -1154,9 +1170,9 @@ WifiRemoteStationManager::GetControlAnswerMode (Mac48Address address, WifiMode r
           mode = GetDefaultMcs ();
           for (WifiModeListIterator i = m_bssBasicMcsSet.begin (); i != m_bssBasicMcsSet.end (); i++)
             {
-              if ((!found || i->GetPhyRate (m_wifiPhy->GetChannelWidth (), 0, nss) > mode.GetPhyRate (m_wifiPhy->GetChannelWidth (), 0, nss))
-                  && i->GetPhyRate (m_wifiPhy->GetChannelWidth (), 0, nss) <= reqMode.GetPhyRate (m_wifiPhy->GetChannelWidth (), 0, nss))
-              //&& thismode.GetModulationClass () == reqMode.GetModulationClass ()) //TODO: check standard
+              if ((!found || i->IsHigherDataRate (mode))
+                  && (!i->IsHigherDataRate (reqMode))
+                  && (i->GetModulationClass () == reqMode.GetModulationClass ()))
                 {
                   mode = *i;
                   //We've found a potentially-suitable transmit rate, but we
@@ -1192,11 +1208,9 @@ WifiRemoteStationManager::GetControlAnswerMode (Mac48Address address, WifiMode r
    * \todo Note that we're ignoring the last sentence for now, because
    * there is not yet any manipulation here of PHY options.
    */
-  nss = 1;  // Continue the assumption that MIMO not used for control response
   for (uint32_t idx = 0; idx < m_wifiPhy->GetNModes (); idx++)
     {
       WifiMode thismode = m_wifiPhy->GetMode (idx);
-
       /* If the rate:
        *
        *  - is a mandatory rate for the PHY, and
@@ -1207,13 +1221,9 @@ WifiRemoteStationManager::GetControlAnswerMode (Mac48Address address, WifiMode r
        * ...then it's our best choice so far.
        */
       if (thismode.IsMandatory ()
-          && (!found || thismode.GetPhyRate (m_wifiPhy->GetChannelWidth (), 0, nss) > mode.GetPhyRate (m_wifiPhy->GetChannelWidth (), 0, nss))
-          && (thismode.GetPhyRate (m_wifiPhy->GetChannelWidth (), 0, nss) <= reqMode.GetPhyRate (m_wifiPhy->GetChannelWidth (), 0, nss))
-          && (thismode.GetConstellationSize (nss) <= reqMode.GetConstellationSize (nss))
-          && ((thismode.GetModulationClass () == reqMode.GetModulationClass ())
-              || (reqMode.GetModulationClass () == WIFI_MOD_CLASS_HT)
-              || (reqMode.GetModulationClass () == WIFI_MOD_CLASS_HT)))
-
+          && (!found || thismode.IsHigherDataRate (mode))
+          && (!thismode.IsHigherDataRate (reqMode))
+          && (IsAllowedControlAnswerModulationClass (reqMode.GetModulationClass (), thismode.GetModulationClass ())))
         {
           mode = thismode;
           //As above; we've found a potentially-suitable transmit
@@ -1222,16 +1232,15 @@ WifiRemoteStationManager::GetControlAnswerMode (Mac48Address address, WifiMode r
           found = true;
         }
     }
-  nss = 1;  // Continue the assumption that MIMO not used for control response
   if (HasHtSupported () || HasVhtSupported ())
     {
       for (uint32_t idx = 0; idx < m_wifiPhy->GetNMcs (); idx++)
         {
           WifiMode thismode = m_wifiPhy->GetMcs (idx);
           if (thismode.IsMandatory ()
-              && (!found || thismode.GetPhyRate (m_wifiPhy->GetChannelWidth (), 0, nss) > mode.GetPhyRate (m_wifiPhy->GetChannelWidth (), 0, nss))
-              && thismode.GetPhyRate (m_wifiPhy->GetChannelWidth (), 0, nss) <= reqMode.GetPhyRate (m_wifiPhy->GetChannelWidth (), 0, nss))
-              //&& thismode.GetModulationClass () == reqMode.GetModulationClass ()) //TODO: check standard
+              && (!found || thismode.IsHigherDataRate (mode))
+              && (!thismode.IsHigherCodeRate(reqMode))
+              && (thismode.GetModulationClass () == reqMode.GetModulationClass ()))
             {
               mode = thismode;
               //As above; we've found a potentially-suitable transmit

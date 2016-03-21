@@ -192,6 +192,7 @@ Bugs fixed
 - Bug 2331 - Wrong mobility model in vanet-routing-compare example
 - Bug 2332 - Assert failed when using aggregation and two pairs of AP-STA
 - Bug 2337 - WifiPhy uses channel width in Hz iso MHz
+- Bug 2338 - WifiMode selected for control frames may sometimes be invalid
 
 Known issues
 ------------

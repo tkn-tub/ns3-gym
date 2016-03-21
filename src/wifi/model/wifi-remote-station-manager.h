@@ -1140,6 +1140,18 @@ private:
    */
   WifiRemoteStation* Lookup (Mac48Address address, const WifiMacHeader *header) const;
 
+  /**
+   * Return whether the modulation class of the selected mode for the 
+   * control answer frame is allowed.
+   *
+   * \param modClassReq modulation class of the request frame
+   * \param modClassAnswer modulation class of the answer frame
+   *
+   * \return true if the modulation class of the selected mode for the 
+   * control answer frame is allowed, false otherwise
+   */
+  bool IsAllowedControlAnswerModulationClass (enum WifiModulationClass modClassReq, enum WifiModulationClass modClassAnswer) const;
+
   WifiMode GetControlAnswerMode (Mac48Address address, WifiMode reqMode);
 
   /**

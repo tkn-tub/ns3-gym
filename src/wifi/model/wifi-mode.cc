@@ -73,9 +73,11 @@ std::istream & operator >> (std::istream &is, WifiMode &mode)
 uint64_t
 WifiMode::GetPhyRate (uint32_t channelWidth, bool isShortGuardInterval, uint8_t nss) const
 {
+  //TODO: nss > 4 not supported yet
+  NS_ASSERT (nss <= 4);
   uint32_t dataRate, phyRate;
   dataRate = GetDataRate (channelWidth, isShortGuardInterval, nss);
-  switch (GetCodeRate (nss))
+  switch (GetCodeRate ())
     {
     case WIFI_CODE_RATE_5_6:
       phyRate = dataRate * 6 / 5;
@@ -106,15 +108,17 @@ WifiMode::GetPhyRate (WifiTxVector txVector) const
 uint64_t
 WifiMode::GetDataRate (uint32_t channelWidth, bool isShortGuardInterval, uint8_t nss) const
 {
+  //TODO: nss > 4 not supported yet
+  NS_ASSERT (nss <= 4);
   struct WifiModeFactory::WifiModeItem *item = WifiModeFactory::GetFactory ()->Get (m_uid);
   uint64_t dataRate = 0;
   if (item->modClass == WIFI_MOD_CLASS_DSSS)
     {
-      dataRate = (11000000 / 11) * log2 (GetConstellationSize (nss));
+      dataRate = (11000000 / 11) * log2 (GetConstellationSize ());
     }
   else if (item->modClass == WIFI_MOD_CLASS_HR_DSSS)
     {
-      dataRate = (11000000 / 8) * log2 (GetConstellationSize (nss));
+      dataRate = (11000000 / 8) * log2 (GetConstellationSize ());
     }
   else if (item->modClass == WIFI_MOD_CLASS_OFDM || item->modClass == WIFI_MOD_CLASS_ERP_OFDM)
     {
@@ -136,7 +140,7 @@ WifiMode::GetDataRate (uint32_t channelWidth, bool isShortGuardInterval, uint8_t
         }
 
       double codingRate;
-      switch (GetCodeRate (nss))
+      switch (GetCodeRate ())
         {
         case WIFI_CODE_RATE_3_4:
           codingRate = (3.0 / 4.0);
@@ -153,7 +157,7 @@ WifiMode::GetDataRate (uint32_t channelWidth, bool isShortGuardInterval, uint8_t
           break;
         }
 
-      uint32_t numberOfBitsPerSubcarrier = log2 (GetConstellationSize (nss));
+      uint32_t numberOfBitsPerSubcarrier = log2 (GetConstellationSize ());
 
       dataRate = lrint (ceil (symbolRate * usableSubCarriers * numberOfBitsPerSubcarrier * codingRate));
     }
@@ -198,7 +202,7 @@ WifiMode::GetDataRate (uint32_t channelWidth, bool isShortGuardInterval, uint8_t
         }
 
       double codingRate;
-      switch (GetCodeRate (nss))
+      switch (GetCodeRate ())
         {
         case WIFI_CODE_RATE_5_6:
           codingRate = (5.0 / 6.0);
@@ -218,7 +222,7 @@ WifiMode::GetDataRate (uint32_t channelWidth, bool isShortGuardInterval, uint8_t
           break;
         }
 
-      uint32_t numberOfBitsPerSubcarrier = log2 (GetConstellationSize (nss));
+      uint32_t numberOfBitsPerSubcarrier = log2 (GetConstellationSize ());
 
       dataRate = lrint (ceil (symbolRate * usableSubCarriers * numberOfBitsPerSubcarrier * codingRate));
     }
@@ -237,12 +241,11 @@ WifiMode::GetDataRate (WifiTxVector txVector) const
 }
 
 enum WifiCodeRate
-WifiMode::GetCodeRate (uint8_t nss) const
+WifiMode::GetCodeRate (void) const
 {
   struct WifiModeFactory::WifiModeItem *item = WifiModeFactory::GetFactory ()->Get (m_uid);
   if (item->modClass == WIFI_MOD_CLASS_HT)
     {
-      NS_ASSERT (nss <= 4);
       switch (item->mcsValue % 8)
         {
         case 0:
@@ -263,7 +266,6 @@ WifiMode::GetCodeRate (uint8_t nss) const
     }
   else if (item->modClass == WIFI_MOD_CLASS_VHT)
     {
-      NS_ASSERT (nss <= 8);
       switch (item->mcsValue)
         {
         case 0:
@@ -291,13 +293,11 @@ WifiMode::GetCodeRate (uint8_t nss) const
 }
 
 uint16_t
-WifiMode::GetConstellationSize (uint8_t nss) const
+WifiMode::GetConstellationSize (void) const
 {
   struct WifiModeFactory::WifiModeItem *item = WifiModeFactory::GetFactory ()->Get (m_uid);
   if (item->modClass == WIFI_MOD_CLASS_HT)
     {
-      NS_ASSERT (nss <= 4);
-      NS_ASSERT ((item->mcsValue - (8 * (nss - 1))) >= 0 || (item->mcsValue - (8 * (nss - 1))) <= 7);
       switch (item->mcsValue % 8)
         {
         case 0:
@@ -318,7 +318,6 @@ WifiMode::GetConstellationSize (uint8_t nss) const
     }
   else if (item->modClass == WIFI_MOD_CLASS_VHT)
     {
-      NS_ASSERT (nss <= 8);
       switch (item->mcsValue)
         {
         case 0:
@@ -391,14 +390,14 @@ WifiMode::GetModulationClass () const
 }
 
 uint64_t
-WifiMode::GetNonHtReferenceRate (uint8_t nss) const
+WifiMode::GetNonHtReferenceRate (void) const
 {
   uint64_t dataRate;
   struct WifiModeFactory::WifiModeItem *item = WifiModeFactory::GetFactory ()->Get (m_uid);
   if (item->modClass == WIFI_MOD_CLASS_HT || item->modClass == WIFI_MOD_CLASS_VHT)
     {
-      WifiCodeRate codeRate = GetCodeRate(nss);
-      switch(GetConstellationSize(nss))
+      WifiCodeRate codeRate = GetCodeRate();
+      switch(GetConstellationSize())
         {
         case 2:
           if (codeRate == WIFI_CODE_RATE_1_2)
@@ -447,6 +446,83 @@ WifiMode::GetNonHtReferenceRate (uint8_t nss) const
       NS_FATAL_ERROR ("Trying to get reference rate for a non-HT rate");
     }
   return dataRate;
+}
+
+bool
+WifiMode::IsHigherCodeRate (WifiMode mode) const
+{
+  WifiCodeRate codeRate = mode.GetCodeRate ();
+  switch (GetCodeRate ())
+    {
+    case WIFI_CODE_RATE_1_2:
+      return false; //This is the smallest code rate.
+    case WIFI_CODE_RATE_2_3:
+      return (codeRate == WIFI_CODE_RATE_1_2);
+    case WIFI_CODE_RATE_3_4:
+      return (codeRate == WIFI_CODE_RATE_1_2 || codeRate == WIFI_CODE_RATE_2_3);
+    case WIFI_CODE_RATE_5_6:
+      return (codeRate == WIFI_CODE_RATE_1_2 || codeRate == WIFI_CODE_RATE_2_3 || codeRate == WIFI_CODE_RATE_3_4);
+    default:
+      NS_FATAL_ERROR ("Wifi Code Rate not defined");
+      return false;
+    }
+}
+
+bool
+WifiMode::IsHigherDataRate (WifiMode mode) const
+{
+  struct WifiModeFactory::WifiModeItem *item = WifiModeFactory::GetFactory ()->Get (m_uid);
+  switch(item->modClass)
+    {
+    case WIFI_MOD_CLASS_DSSS:
+      if (mode.GetModulationClass () == WIFI_MOD_CLASS_DSSS)
+        {
+          return (GetConstellationSize () > mode.GetConstellationSize ());
+        }
+      else
+        {
+          return false;
+        }
+    case WIFI_MOD_CLASS_HR_DSSS:
+      if (mode.GetModulationClass () == WIFI_MOD_CLASS_DSSS)
+        {
+          return true;
+        }
+      else
+        {
+          return (GetConstellationSize () > mode.GetConstellationSize ());
+        }
+    case WIFI_MOD_CLASS_ERP_OFDM:
+    case WIFI_MOD_CLASS_OFDM:
+    case WIFI_MOD_CLASS_HT:
+    case WIFI_MOD_CLASS_VHT:
+      if (mode.GetModulationClass () == WIFI_MOD_CLASS_DSSS)
+        {
+          return true;
+        }
+      else if (mode.GetModulationClass () == WIFI_MOD_CLASS_HR_DSSS)
+        {
+          return (mode.GetConstellationSize () > GetConstellationSize ());
+        }
+      else
+        {
+          if (GetConstellationSize () > mode.GetConstellationSize ())
+            {
+              return true;
+            }
+          else if (GetConstellationSize () == mode.GetConstellationSize ())
+            {
+              return IsHigherCodeRate (mode);
+            }
+          else
+            {
+              return false;
+            }
+        }
+    default:
+      NS_FATAL_ERROR ("Modulation class not defined");
+      return false;
+    }
 }
 
 WifiMode::WifiMode ()

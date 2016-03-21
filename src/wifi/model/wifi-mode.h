@@ -136,19 +136,13 @@ public:
    */
   uint64_t GetDataRate (WifiTxVector txVector) const;
   /**
-   *
-   * \param nss the considered number of streams
-   *
    * \returns the coding rate of this transmission mode
    */
-  enum WifiCodeRate GetCodeRate (uint8_t nss) const;
+  enum WifiCodeRate GetCodeRate (void) const;
   /**
-   *
-   * \param nss the considered number of streams
-   *
    * \returns the size of the modulation constellation.
    */
-  uint16_t GetConstellationSize (uint8_t nss) const;
+  uint16_t GetConstellationSize (void) const;
   /**
    * \returns the MCS value.
    */
@@ -185,7 +179,17 @@ public:
    * use the modulation and coding rate of the HT MCS
    * and lookup in Table 9-5 of IEEE 802.11-2012.
    */
-  uint64_t GetNonHtReferenceRate (uint8_t nss) const;
+  uint64_t GetNonHtReferenceRate (void) const;
+  /**
+   * \returns true if this WifiMode has a
+   * a code rate strictly higher than mode.
+   */
+  bool IsHigherCodeRate (WifiMode mode) const;
+  /**
+   * \returns true if this WifiMode has a
+   * a rate strictly higher than mode.
+   */
+  bool IsHigherDataRate (WifiMode mode) const;
 
   /**
    * Create an invalid WifiMode. Calling any method on the
