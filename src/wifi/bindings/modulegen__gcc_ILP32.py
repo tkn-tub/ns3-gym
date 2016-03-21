@@ -2525,6 +2525,8 @@ def register_Ns3HtRateInfo_methods(root_module, cls):
     cls.add_instance_attribute('ewmaProb', 'double', is_const=False)
     ## minstrel-ht-wifi-manager.h (module 'wifi'): ns3::HtRateInfo::ewmsdProb [variable]
     cls.add_instance_attribute('ewmsdProb', 'double', is_const=False)
+    ## minstrel-ht-wifi-manager.h (module 'wifi'): ns3::HtRateInfo::mcsIndex [variable]
+    cls.add_instance_attribute('mcsIndex', 'uint32_t', is_const=False)
     ## minstrel-ht-wifi-manager.h (module 'wifi'): ns3::HtRateInfo::numRateAttempt [variable]
     cls.add_instance_attribute('numRateAttempt', 'uint32_t', is_const=False)
     ## minstrel-ht-wifi-manager.h (module 'wifi'): ns3::HtRateInfo::numRateSuccess [variable]
@@ -3463,6 +3465,8 @@ def register_Ns3McsGroup_methods(root_module, cls):
     cls.add_constructor([param('ns3::McsGroup const &', 'arg0')])
     ## minstrel-ht-wifi-manager.h (module 'wifi'): ns3::McsGroup::chWidth [variable]
     cls.add_instance_attribute('chWidth', 'uint32_t', is_const=False)
+    ## minstrel-ht-wifi-manager.h (module 'wifi'): ns3::McsGroup::isSupported [variable]
+    cls.add_instance_attribute('isSupported', 'bool', is_const=False)
     ## minstrel-ht-wifi-manager.h (module 'wifi'): ns3::McsGroup::isVht [variable]
     cls.add_instance_attribute('isVht', 'bool', is_const=False)
     ## minstrel-ht-wifi-manager.h (module 'wifi'): ns3::McsGroup::ratesFirstMpduTxTimeTable [variable]
@@ -4748,15 +4752,15 @@ def register_Ns3WifiMode_methods(root_module, cls):
     cls.add_constructor([])
     ## wifi-mode.h (module 'wifi'): ns3::WifiMode::WifiMode(std::string name) [constructor]
     cls.add_constructor([param('std::string', 'name')])
-    ## wifi-mode.h (module 'wifi'): ns3::WifiCodeRate ns3::WifiMode::GetCodeRate(uint8_t nss) const [member function]
+    ## wifi-mode.h (module 'wifi'): ns3::WifiCodeRate ns3::WifiMode::GetCodeRate() const [member function]
     cls.add_method('GetCodeRate', 
                    'ns3::WifiCodeRate', 
-                   [param('uint8_t', 'nss')], 
+                   [], 
                    is_const=True)
-    ## wifi-mode.h (module 'wifi'): uint16_t ns3::WifiMode::GetConstellationSize(uint8_t nss) const [member function]
+    ## wifi-mode.h (module 'wifi'): uint16_t ns3::WifiMode::GetConstellationSize() const [member function]
     cls.add_method('GetConstellationSize', 
                    'uint16_t', 
-                   [param('uint8_t', 'nss')], 
+                   [], 
                    is_const=True)
     ## wifi-mode.h (module 'wifi'): uint64_t ns3::WifiMode::GetDataRate(uint32_t channelWidth, bool isShortGuardInterval, uint8_t nss) const [member function]
     cls.add_method('GetDataRate', 
@@ -4778,10 +4782,10 @@ def register_Ns3WifiMode_methods(root_module, cls):
                    'ns3::WifiModulationClass', 
                    [], 
                    is_const=True)
-    ## wifi-mode.h (module 'wifi'): uint64_t ns3::WifiMode::GetNonHtReferenceRate(uint8_t nss) const [member function]
+    ## wifi-mode.h (module 'wifi'): uint64_t ns3::WifiMode::GetNonHtReferenceRate() const [member function]
     cls.add_method('GetNonHtReferenceRate', 
                    'uint64_t', 
-                   [param('uint8_t', 'nss')], 
+                   [], 
                    is_const=True)
     ## wifi-mode.h (module 'wifi'): uint64_t ns3::WifiMode::GetPhyRate(uint32_t channelWidth, bool isShortGuardInterval, uint8_t nss) const [member function]
     cls.add_method('GetPhyRate', 
@@ -4802,6 +4806,16 @@ def register_Ns3WifiMode_methods(root_module, cls):
     cls.add_method('GetUniqueName', 
                    'std::string', 
                    [], 
+                   is_const=True)
+    ## wifi-mode.h (module 'wifi'): bool ns3::WifiMode::IsHigherCodeRate(ns3::WifiMode mode) const [member function]
+    cls.add_method('IsHigherCodeRate', 
+                   'bool', 
+                   [param('ns3::WifiMode', 'mode')], 
+                   is_const=True)
+    ## wifi-mode.h (module 'wifi'): bool ns3::WifiMode::IsHigherDataRate(ns3::WifiMode mode) const [member function]
+    cls.add_method('IsHigherDataRate', 
+                   'bool', 
+                   [param('ns3::WifiMode', 'mode')], 
                    is_const=True)
     ## wifi-mode.h (module 'wifi'): bool ns3::WifiMode::IsMandatory() const [member function]
     cls.add_method('IsMandatory', 
@@ -14162,6 +14176,11 @@ def register_Ns3MinstrelHtWifiManager_methods(root_module, cls):
     cls.add_method('DoGetRtsTxVector', 
                    'ns3::WifiTxVector', 
                    [param('ns3::WifiRemoteStation *', 'station')], 
+                   visibility='private', is_virtual=True)
+    ## minstrel-ht-wifi-manager.h (module 'wifi'): void ns3::MinstrelHtWifiManager::DoInitialize() [member function]
+    cls.add_method('DoInitialize', 
+                   'void', 
+                   [], 
                    visibility='private', is_virtual=True)
     ## minstrel-ht-wifi-manager.h (module 'wifi'): bool ns3::MinstrelHtWifiManager::DoNeedDataRetransmission(ns3::WifiRemoteStation * st, ns3::Ptr<ns3::Packet const> packet, bool normally) [member function]
     cls.add_method('DoNeedDataRetransmission', 
