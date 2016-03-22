@@ -26,14 +26,51 @@
 #include "ns3/applications-module.h"
 #include "ns3/traffic-control-module.h"
 
-// This simple example shows how to use TrafficControlHelper to install a QueueDisc on a device.
-// The default QueueDisc is a pfifo_fast with max number of packets equal to 1000 (as in Linux)
+// This simple example shows how to use TrafficControlHelper to install a 
+// QueueDisc on a device.
+//
+// The default QueueDisc is a pfifo_fast with max number of packets equal to 
+// 1000 (as in Linux).   However, in this example, we change from the default 
+// to instead use a ns3::RedQueueDisc with a MaxPackets value of 10000.
 //
 // Network topology
 //
 //       10.1.1.0
 // n0 -------------- n1
 //    point-to-point
+//
+// The output will consist of a number of traced changes to queue lengths
+// such as:
+//
+//    DevicePacketsInQueue 0 to 1
+//    TcPacketsInQueue 5 to 4
+//    TcPacketsInQueue 4 to 5
+//    DevicePacketsInQueue 1 to 0
+//
+// and an average throughput: 
+//
+//    Average throughput: 8.72854 Mbit/s
+//
+// The final output displays the number of drops at the TC layer and the
+// netdevice layer.  These statistics highlight the fact that for
+// PointToPointNetDevice, the drops at the device layer are actually
+// requeued at the TC layer, so the true packet drops (39 in this case)
+// must be traced at the TC layer.
+//
+//    *** Source stats ***
+//    Number of packets dropped by the TC layer: 39
+//    Number of packets dropped by the netdevice: 3914
+//    Number of packets requeued by the TC layer: 3914
+//    Number of actually lost packets: 39
+//
+// If one were to increase the size of the PointToPointNetDevice's
+// DropTailQueue from 1 to a larger number (e.g. 1000), one would observe
+// that the number of packets dropped would go to zero, but the latency
+// and QoS would not be controllable.  This is the so-called bufferbloat
+// problem, and illustrates the importance of having a small device queue
+// so that the standing queues build in the traffic control layer where
+// they can be managed by advanced queue discs rather than in the 
+// device layer.
 
 using namespace ns3;
 
