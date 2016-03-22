@@ -77,7 +77,7 @@ main (int argc, char *argv[])
   PointToPointHelper pointToPoint;
   pointToPoint.SetDeviceAttribute ("DataRate", StringValue ("10Mbps"));
   pointToPoint.SetChannelAttribute ("Delay", StringValue ("2ms"));
-  pointToPoint.SetQueue ("ns3::DropTailQueue", "Mode", StringValue ("QUEUE_MODE_PACKETS"), "MaxPackets", UintegerValue (1000));
+  pointToPoint.SetQueue ("ns3::DropTailQueue", "Mode", StringValue ("QUEUE_MODE_PACKETS"), "MaxPackets", UintegerValue (1));
 
   NetDeviceContainer devices;
   devices = pointToPoint.Install (nodes);
@@ -86,10 +86,9 @@ main (int argc, char *argv[])
   stack.Install (nodes);
 
   TrafficControlHelper tch;
-  uint16_t handle = tch.SetRootQueueDisc ("ns3::PfifoFastQueueDisc");
-  // Add three internal queues corresponding to the three bands used by PfifoFast
-  tch.AddInternalQueues (handle, 3, "ns3::DropTailQueue", "MaxPackets", UintegerValue (1000));
-  tch.AddPacketFilter (handle, "ns3::PfifoFastIpv4PacketFilter");
+  uint16_t handle = tch.SetRootQueueDisc ("ns3::RedQueueDisc");
+  // Add the internal queue used by Red
+  tch.AddInternalQueues (handle, 1, "ns3::DropTailQueue", "MaxPackets", UintegerValue (10000));
   QueueDiscContainer qdiscs = tch.Install (devices);
 
   Ptr<QueueDisc> q = qdiscs.Get (1);
@@ -137,7 +136,14 @@ main (int argc, char *argv[])
   double thr = 0;
   uint32_t totalPacketsThr = DynamicCast<PacketSink> (sinkApp.Get (0))->GetTotalRx ();
   thr = totalPacketsThr * 8 / (simulationTime * 1000000.0); //Mbit/s
-  std::cout << thr << " Mbit/s" <<std::endl;
+  std::cout << "Average throughput: " << thr << " Mbit/s" <<std::endl;
+  std::cout << "*** Source stats ***" << std::endl;
+  std::cout << "Number of packets dropped by the TC layer: " << q->GetTotalDroppedPackets () << std::endl;
+  std::cout << "Number of packets dropped by the netdevice: " << queue->GetTotalDroppedPackets () << std::endl;
+  std::cout << "Number of packets requeued by the TC layer: " << q->GetTotalRequeuedPackets () << std::endl;
+  std::cout << "Number of actually lost packets: " << q->GetTotalDroppedPackets ()
+                                                      + queue->GetTotalDroppedPackets ()
+                                                      - q->GetTotalRequeuedPackets () << std::endl;
 
   return 0;
 }
