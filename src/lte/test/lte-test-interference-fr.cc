@@ -84,8 +84,7 @@ LteInterferenceHardFrTestCase::LteInterferenceHardFrTestCase (std::string name, 
   : TestCase ("Test: " + name),
     m_d1 (d1),
     m_d2 (d2),
-    m_expectedDlSinrDb (10 * std::log10 (dlSinr)),
-    m_expectedUlSinrDb (10 * std::log10 (ulSinr))
+    m_expectedDlSinrDb (10 * std::log10 (dlSinr))
 {
   NS_LOG_INFO ("Creating LteInterferenceFrTestCase");
 }
@@ -246,9 +245,7 @@ LteInterferenceStrictFrTestCase::LteInterferenceStrictFrTestCase (std::string na
     m_d1 (d1),
     m_d2 (d2),
     m_commonDlSinrDb (10 * std::log10 (commonDlSinr)),
-    m_commonUlSinrDb (10 * std::log10 (commonUlSinr)),
     m_edgeDlSinrDb (10 * std::log10 (edgeDlSinr)),
-    m_edgeUlSinrDb (10 * std::log10 (edgeUlSinr)),
     m_rspqThreshold (rspqThreshold)
 {
   NS_LOG_INFO ("Creating LteInterferenceFrTestCase");

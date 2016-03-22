@@ -50,7 +50,6 @@ private:
   double m_d1;
   double m_d2;
   double m_expectedDlSinrDb;
-  double m_expectedUlSinrDb;
 };
 
 class LteInterferenceStrictFrTestCase : public TestCase
@@ -67,9 +66,7 @@ private:
   double m_d1;
   double m_d2;
   double m_commonDlSinrDb;
-  double m_commonUlSinrDb;
   double m_edgeDlSinrDb;
-  double m_edgeUlSinrDb;
 
   uint32_t m_rspqThreshold;
 };
