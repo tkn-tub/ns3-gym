@@ -26,8 +26,8 @@ There are two important abstract base classes:
 There are presently three implementations of TCP available for |ns3|.
 
 * a natively implemented TCP for ns-3
-* support for the `Network Simulation Cradle (NSC) <http://www.wand.net.nz/~stj2/nsc/>`_
-* support for `Direct Code Exectution (DCE) <http://http://www.nsnam.org/~thehajime/ns-3-dce-doc/getting-started.html>`_
+* support for the `Network Simulation Cradle (NSC) <http://www.wand.net.nz/~stj2/nsc/>`__
+* support for `Direct Code Execution (DCE) <https://www.nsnam.org/overview/projects/direct-code-execution/>`__
 
 It should also be mentioned that various ways of combining virtual machines
 with |ns3| makes available also some additional TCP implementations, but
@@ -36,34 +36,36 @@ those are out of scope for this chapter.
 ns-3 TCP
 ********
 
-Until ns-3.10 release, |ns3| contained a port of the TCP model from `GTNetS
+In brief, the native |ns3| TCP model supports a full bidirectional TCP with
+connection setup and close logic.  Several congestion control algorithms
+are supported, with NewReno the default, and Westwood, Hybla, and HighSpeed
+also supported.  Multipath-TCP and TCP Selective Acknowledgements (SACK)
+are not yet supported in the |ns3| releases.
+
+Model history
++++++++++++++
+
+Until the ns-3.10 release, |ns3| contained a port of the TCP model from `GTNetS
 <http://www.ece.gatech.edu/research/labs/MANIACS/GTNetS/index.html>`_. 
 This implementation was substantially rewritten by Adriam Tam for ns-3.10.
-In 2015, the TCP module has been redesigned during the GSoC summer code,
-in order to create a friendly environment for creating and carrying out
-automated tests. One of the main change involves congestion control algorithms,
-and how they are implemented.
+In 2015, the TCP module has been redesigned in order to create a better 
+environment for creating and carrying out automated tests. One of the main 
+changes involves congestion control algorithms, and how they are implemented.
 
 Before ns-3.25 release, a congestion control was considered as a stand-alone TCP
 through an inheritance relation: each congestion control (e.g. TcpNewReno) was
-a subclass of TcpSocketBase, reimplementing some inherited methods. One of
+a subclass of TcpSocketBase, reimplementing some inherited methods. The
+architecture was redone to avoid this inheritance,
 the fundamental principle of the GSoC proposal was avoiding this inheritance,
 by making each congestion control a separate class, and making an interface
-to exchange important data between TcpSocketBase and congestion modules.
-For instance, such modularity is already used in Linux.
+to exchange important data between TcpSocketBase and the congestion modules.
+For instance, similar modularity is used in Linux.
 
 Along with congestion control, Fast Retransmit and Fast Recovery algorithms
-have been touched; in previous releases, these algorithms were demanded to
+have been modified; in previous releases, these algorithms were demanded to
 TcpSocketBase subclasses. Starting from ns-3.25, they have been merged inside
 TcpSocketBase. In future releases, they can be extracted as separate modules,
 following the congestion control design.
-
-The model is a full TCP, in that it is bidirectional and attempts to model the
-connection setup and close logic. 
-
-Please see the doxygen documentation for an in-depth view of the design
-and the implementation details.
-
 
 Usage
 +++++
@@ -107,7 +109,7 @@ To set the default socket type before any internet stack-related objects are
 created, one may put the following statement at the top of the simulation
 program:: 
 
-  Config::SetDefault ("ns3::TcpL4Protocol::SocketType", StringValue ("ns3::TcpTahoe")); 
+  Config::SetDefault ("ns3::TcpL4Protocol::SocketType", StringValue ("ns3::TcpNewReno")); 
 
 For users who wish to have a pointer to the actual socket (so that
 socket operations like Bind(), setting socket options, etc. can be
@@ -121,18 +123,18 @@ the Node container "n0n1" is accessed
 to get the zeroth element, and a socket is created on this node::
 
   // Create and bind the socket...
-  TypeId tid = TypeId::LookupByName ("ns3::TcpTahoe");
+  TypeId tid = TypeId::LookupByName ("ns3::TcpNewReno");
   Config::Set ("/NodeList/*/$ns3::TcpL4Protocol/SocketType", TypeIdValue (tid));
   Ptr<Socket> localSocket =
     Socket::CreateSocket (n0n1.Get (0), TcpSocketFactory::GetTypeId ());
 
 Above, the "*" wild card for node number is passed to the attribute
 configuration system, so that all future sockets on all nodes are set to 
-Tahoe, not just on node 'n0n1.Get (0)'.  If one wants to limit it to just 
+NewReno, not just on node 'n0n1.Get (0)'.  If one wants to limit it to just 
 the specified node, one would have to do something like::
 
   // Create and bind the socket...
-  TypeId tid = TypeId::LookupByName ("ns3::TcpTahoe");
+  TypeId tid = TypeId::LookupByName ("ns3::TcpNewReno");
   std::stringstream nodeId;
   nodeId << n0n1.Get (0)->GetId ();
   std::string specificNode = "/NodeList/" + nodeId.str () + "/$ns3::TcpL4Protocol/SocketType";
@@ -148,7 +150,44 @@ how sockets are used in |ns3|.
 Validation
 ++++++++++
 
-Several TCP validation test results can be found in the
+The following tests are found in the ``src/internet/test`` directory.  In
+general, TCP tests inherit from a class called :cpp:class:`TcpGeneralTest`,
+which provides common operations to set up test scenarios involving TCP
+objects.  For more information on how to write new tests, see the
+section below on :ref:`Writing-tcp-tests`.
+
+* **tcp:** Basic transmission of string of data from client to server
+* **tcp-bytes-in-flight-test:** TCP correctly estimates bytes in flight under loss conditions
+* **tcp-cong-avoid-test:** TCP congestion avoidance for different packet sizes
+* **tcp-datasentcb:** Check TCP's 'data sent' callback
+* **tcp-endpoint-bug2211-test:** A test for an issue that was causing stack overflow
+* **tcp-fast-retr-test:** Fast Retransmit testing
+* **tcp-header:** Unit tests on the TCP header
+* **tcp-highspeed-test:** Unit tests on the Highspeed congestion control
+* **tcp-hybla-test:** Unit tests on the Hybla congestion control
+* **tcp-option:** Unit tests on TCP options
+* **tcp-pkts-acked-test:** Unit test the number of time that PktsAcked is called
+* **tcp-rto-test:** Unit test behavior after a RTO timeout occurs
+* **tcp-rtt-estimation-test:** Check RTT calculations, including retransmission cases
+* **tcp-slow-start-test:** Check behavior of slow start
+* **tcp-timestamp:** Unit test on the timestamp option
+* **tcp-wscaling:** Unit test on the window scaling option
+* **tcp-zero-window-test:** Unit test persist behavior for zero window conditions
+
+Several tests have dependencies outside of the ``internet`` module, so they
+are located in a system test directory called ``src/test/ns3tcp``.  Three
+of these six tests involve use of the Network Simulation Cradle, and are
+disabled if NSC is not enabled in the build.  
+
+* **ns3-tcp-cwnd:** Check to see that ns-3 TCP congestion control works against liblinux2.6.26.so implementation
+* **ns3-tcp-interoperability:** Check to see that ns-3 TCP interoperates with liblinux2.6.26.so implementation
+* **ns3-tcp-loss:** Check behavior of ns-3 TCP upon packet losses
+* **nsc-tcp-loss:** Check behavior of NSC TCP upon packet losses
+* **ns3-tcp-no-delay:** Check that ns-3 TCP Nagle"s algorithm works correctly and that it can be disabled
+* **ns3-tcp-socket:** Check that ns-3 TCP successfully transfers an application data write of various sizes
+* **ns3-tcp-state:** Check the operation of the TCP state machine for several cases
+ 
+Several TCP validation test results can also be found in the
 `wiki page <http://www.nsnam.org/wiki/New_TCP_Socket_Architecture>`_ 
 describing this implementation.
 
@@ -157,9 +196,9 @@ Writing a new congestion control algorithm
 
 Writing (or porting) a congestion control algorithms from scratch (or from
 other systems) is a process completely separated from the internals of
-TcpSocketBase since ns-3.25 release.
+TcpSocketBase.
 
-All operations that are demanded to a congestion control are contained in
+All operations that are delegated to a congestion control are contained in
 the class TcpCongestionOps. It mimics the structure tcp_congestion_ops of
 Linux, and the following operations are defined:
 
@@ -171,11 +210,11 @@ Linux, and the following operations are defined:
   virtual void PktsAcked (Ptr<TcpSocketState> tcb, uint32_t segmentsAcked,const Time& rtt);
   virtual Ptr<TcpCongestionOps> Fork ();
 
-The most interesting methods to write are, for sure, GetSsThresh and IncreaseWindow.
+The most interesting methods to write are GetSsThresh and IncreaseWindow.
 The latter is called when TcpSocketBase decides that it is time to increase
-the congestion window. Many informations are available in the Transmission
+the congestion window. Much information is available in the Transmission
 Control Block, and the method should increase cWnd and/or ssThresh based
-on the number of the segments acked.
+on the number of segments acked.
 
 GetSsThresh is called whenever the socket needs an updated value of the
 slow start threshold. This happens after a loss; congestion control algorithms
@@ -184,37 +223,39 @@ are then asked to lower such value, and to return it.
 PktsAcked is used in case the algorithm needs timing information (such as
 RTT), and it is called each time an ACK is received.
 
-
 Current limitations
 +++++++++++++++++++
 
 * SACK is not supported
 * TcpCongestionOps interface does not contain every possible Linux operation
-* Fast retransmit / fast recovery are bound with TcpSocketBase
+* Fast retransmit / fast recovery are bound with TcpSocketBase, thereby preventing easy simulation of TCP Tahoe
 
-Testing TCP
-+++++++++++
+.. _Writing-tcp-tests:
 
-Starting from ns-3.25 release, the TCP subsystem has been improved to support automated test
-cases on both socket functionalities and congestion control algorithms. To show
-how to write tests for TCP, here we will explain the process of creating a test
-case which reproduces a bug, firstly reported as bug 1571 in 2013, not fixed
-in years, and then put in spotlight again by the user Mahdi on 29 August, 2015.
+Writing TCP tests
++++++++++++++++++
 
-The bug regards the zero window situation, which happens when the receiver can
+The TCP subsystem supports automated test
+cases on both socket functions and congestion control algorithms. To show
+how to write tests for TCP, here we explain the process of creating a test
+case that reproduces a bug (#1571 in the project bug tracker).
+
+The bug concerns the zero window situation, which happens when the receiver can
 not handle more data. In this case, it advertises a zero window, which causes
-the sender to pause the transmission and wait for the receiver to be ready again.
-The sender has a timer, to periodically check the receiver's window: however,
-in modern TCP implementation, when the receiver has freed a "significant" amount
+the sender to pause transmission and wait for the receiver to increase the
+window.
+
+The sender has a timer to periodically check the receiver's window: however, in
+modern TCP implementations, when the receiver has freed a "significant" amount
 of data, the receiver itself sends an "active" window update, meaning that
 the transmission could be resumed. Nevertheless, the sender timer is still
 necessary because window updates can be lost.
 
 .. note::
    During the text, we will assume some knowledge about the general design
-   of the TCP test infrastructure, which is explained in details into the
-   Doxygen documentation. As a brief recap, our strategy is to have a class
-   that setup a TCP connection, and which calls protected member of itself.
+   of the TCP test infrastructure, which is explained in detail into the
+   Doxygen documentation. As a brief summary, the strategy is to have a class
+   that sets up a TCP connection, and that calls protected members of itself.
    In this way, subclasses can implement the necessary members, which will
    be called by the main TcpGeneralTest class when events occour. For example,
    after processing an ACK, the method ProcessedAck will be invoked. Subclasses
@@ -223,7 +264,7 @@ necessary because window updates can be lost.
    the interesting values inside the method. To get a list of available methods,
    please check the Doxygen documentation.
 
-We will work to write two test case, covering both situations, as said the
+We describe the writing of two test case, covering both situations: the
 sender's zero-window probing and the receiver "active" window update. Our focus
 will be on dealing with the reported problems, which are:
 
@@ -237,7 +278,7 @@ However, other things should be checked in the test:
 * Persistent timer setup
 * Persistent timer teardown if rWnd increases
 
-To construct the test case, just derive from the TcpGeneralTest class:
+To construct the test case, one first derives from the TcpGeneralTest class:
 
 The code is the following:
 
@@ -248,11 +289,11 @@ The code is the following:
    {
    }
 
-Then, we should define the general parameters for the TCP connection, which
+Then, one should define the general parameters for the TCP connection, which
 will be one-sided (one node is acting as SENDER, while the other is acting as
 RECEIVER):
 
-* Application packet size set to 500, and 20 packet in total (it means a stream
+* Application packet size set to 500, and 20 packets in total (meaning a stream
   of 10k bytes)
 * Segment size for both SENDER and RECEIVER set to 500 bytes
 * Initial slow start threshold set to UINT32_MAX
@@ -267,8 +308,8 @@ not work for every combination of propagation delay and sender application behav
 * Application starting time: 20 s after the starting point
 
 To define the properties of the environment (e.g. properties which should be
-set before the object creation, such as propagation delay) we implement the method
-ConfigureEnvironment:
+set before the object creation, such as propagation delay) one next implements
+ehe method ConfigureEnvironment:
 
 .. code-block:: c++
 
@@ -282,11 +323,12 @@ ConfigureEnvironment:
      SetPropagationDelay (MilliSeconds (50));
    }
 
-For other properties, set after the object creation, we can use ConfigureProperties.
-The difference is that some values, for example initial congestion window
+For other properties, set after the object creation, one can use 
+ConfigureProperties ().
+The difference is that some values, such as initial congestion window
 or initial slow start threshold, are applicable only to a single instance, not
-to every instance we have. Usually, methods which requires an id and a value
-are meant to be called inside ConfigureProperties. Please see the doxygen
+to every instance we have. Usually, methods that requires an id and a value
+are meant to be called inside ConfigureProperties (). Please see the doxygen
 documentation for an exhaustive list of the tunable properties.
 
 .. code-block:: c++
@@ -309,7 +351,7 @@ both methods inside TcpGeneralTest class.
 
 To define a zero-window situation, we choose (by design) to initiate the connection
 with a 0-byte rx buffer. This implies that the RECEIVER, in its first SYN-ACK,
-advertizes a zero window. To this aim, we implement the method
+advertises a zero window. This can be accomplished by implementing the method
 CreateReceiverSocket, setting an Rx buffer value of 0 bytes (at line 6 of the
 following code):
 
@@ -343,14 +385,14 @@ IncreaseBufSize.
 
 Which utilizes the SetRcvBufSize method to edit the RxBuffer object of the
 RECEIVER. As said before, check the Doxygen documentation for class TcpGeneralTest
-to be aware of the various possibility that it offers.
+to be aware of the various possibilities that it offers.
 
 .. note::
    By design, we choose to mantain a close relationship between TcpSocketBase
    and TcpGeneralTest: they are connected by a friendship relation. Since
-   friendship is not passed through inheritance, if you discover that you
-   need to access or to modify a private (or protected) member of TcpSocketBase,
-   you can do it by adding a method in the class TcpGeneralSocket. An example
+   friendship is not passed through inheritance, if one discovers that one
+   needs to access or to modify a private (or protected) member of TcpSocketBase,
+   one can do so by adding a method in the class TcpGeneralSocket. An example
    of such method is SetRcvBufSize, which allows TcpGeneralSocket subclasses
    to forcefully set the RxBuffer size.
 
@@ -373,7 +415,7 @@ to be aware of the various possibility that it offers.
           }
       }
 
-After saying that, we can start to follow the TCP connection:
+Next, we can start to follow the TCP connection:
 
 #. At time 0.0 s the connection is opened sender side, with a SYN packet sent from
    SENDER to RECEIVER
@@ -385,10 +427,10 @@ we need to define a way to check the rWnd field on the segments. To this aim,
 we can implement the methods Rx and Tx in the TcpGeneralTest subclass,
 checking each time the actions of the RECEIVER and the SENDER. These methods are
 defined in TcpGeneralTest, and they are attached to the Rx and Tx traces in the
-TcpSocketBase. We should code each single thing we want to ensure during the
+TcpSocketBase. One should write small tests for every detail that one wants to ensure during the
 connection (it will prevent the test from changing over the time, and it ensures
 that the behavior will stay consistent through releases). We start by ensuring that
-the first SYN-ACK has 0 as advertized window size:
+the first SYN-ACK has 0 as advertised window size:
 
 .. code-block:: c++
 
@@ -484,11 +526,11 @@ again a zero window situation. At first, we investigates on what the sender send
             }
         }
 
-We divide the events by simulated time. At line 1, we check everything which
-happens before the 6.0 seconds mark, for instance that no data packets are sent,
+We divide the events by simulated time. At line 1, we check everything that
+happens before the 6.0 seconds mark; for instance, that no data packets are sent,
 and that the state remains OPEN for both sender and receiver.
 
-Since the persistent timeout is initialized at 6 seconds (excercise left for the
+Since the persist timeout is initialized at 6 seconds (excercise left for the
 reader: edit the test, getting this value from the Attribute system), we need
 to check (line 6) between 6.0 and 7.0 simulated seconds that the probe is sent.
 Only one probe is allowed, and this is the reason for the check at line 11.
@@ -506,11 +548,11 @@ Only one probe is allowed, and this is the reason for the check at line 11.
                               "No zero window advertised by RECEIVER");
      }
 
-For what regards the RECEIVER, between the 6 and 7 seconds mark the most important
-thing to check is that is sends the zero window segment.
+For the RECEIVER, the interval between 6 and 7 seconds is when the zero-window
+segment is sent.
 
-Other checks are redundant; the most safe approach is to deny any other packet
-exchange between 7 and 10 seconds mark.
+Other checks are redundant; the safest approach is to deny any other packet
+exchange between the 7 and 10 seconds mark.
 
 .. code-block:: c++
 
@@ -556,7 +598,7 @@ method:
        m_windowUpdated = true;
      }
 
-And check every packets, after the 10 seconds mark, that should have the
+We check every packet after the 10 seconds mark to see if it has the
 window updated. At line 5, we also set to true a boolean variable, to check
 that we effectively reach this test.
 
@@ -617,9 +659,9 @@ and then, hit "Run".
 
 .. note::
    This code magically runs without any reported errors; however, in real cases,
-   when you discover a bug you should expect the being-written test to fail (this
+   when you discover a bug you should expect the existing test to fail (this
    could indicate a well-written test and a bad-writted model, or a bad-written
-   test: we hope you are in the first situation). Correcting bugs is an iterative
+   test; hopefull the first situation). Correcting bugs is an iterative
    process. For instance, commits created to make this test case running without
    errors are 11633:6b74df04cf44, (others to be merged).
 
@@ -642,7 +684,7 @@ was added to |ns3| in September 2008 (ns-3.2 release).  This section
 describes the |ns3| port of NSC and how to use it.
 
 To some extent, NSC has been superseded by the Linux kernel support within 
-`Direct Code Execution (DCE) <http://www.nsnam.org/docs/dce/manual/singlehtml/index.html>`_.  However, NSC is still available through the bake build
+`Direct Code Execution (DCE) <http://www.nsnam.org/docs/dce/manual/singlehtml/index.html>`__.  However, NSC is still available through the bake build
 system.  NSC supports Linux kernels 2.6.18 and 2.6.26, but newer
 versions of the kernel have not been ported.  
 
