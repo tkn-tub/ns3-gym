@@ -58,6 +58,6 @@ The configuration of the Radvd application mimics the one of the radvd Linux pro
 Examples and use
 ****************
 
-All the applications are extensively used in the top-level ``examples'' 
+All the applications are extensively used in the top-level ``examples`` 
 directories. The users are encouraged to check the scripts therein to have a 
 clear overview of the various options and usage tricks.
