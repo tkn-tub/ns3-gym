@@ -12,7 +12,7 @@ Error model
 ***********
 
 Validation results for the 802.11b error model are available in this
-`technical report <http://www.nsnam.org/~pei/80211b.pdf>`_
+`technical report <http://www.nsnam.org/~pei/80211b.pdf>`__
 
 Two clarifications on the results should be noted.  First, Figure 1-4
 of the above reference
@@ -40,7 +40,7 @@ Figure :ref:`fig-clear-channel-80211b`.
    Clear channel (AWGN) error model for 802.11b
 
 Validation results for the 802.11 OFDM error model are available in this
-`technical report <https://www.nsnam.org/~pei/80211ofdm.pdf>`_.  The curves
+`technical report <https://www.nsnam.org/~pei/80211ofdm.pdf>`__.  The curves
 can be reproduced by running the ``ofdm-validation.cc`` example program
 in the ``examples/wireless`` directory, and the figure is reproduced below
 in Figure :ref:`fig-nist-frame-success-rate`.
