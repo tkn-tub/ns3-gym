@@ -25,6 +25,7 @@ New user-visible features
 
 Bugs fixed
 ----------
+- Bug 2346 - SixLowPan ConpressionThreshold can be violated 
 
 Known issues
 ------------
