@@ -54,7 +54,8 @@ The implementation is modular and provides roughly three sublayers of models:
   in Wifi such as the MAC-level beacon generation, probing, and association 
   state machines, and a set of **Rate control algorithms**.  In the literature,
   this sublayer is sometimes called the **upper MAC** and consists of more 
-  software-oriented implementations vs. time-critical hardware implementations.  
+  software-oriented implementations vs. time-critical hardware implementations. 
+
 Next, we provide an design overview of each layer, shown in 
 Figure :ref:`wifi-architecture`.
 
@@ -198,7 +199,7 @@ The WifiChannel model exists to interconnect WifiPhy objects so that packets
 sent by one Phy are received by some or all other Phys on the channel.
 
 YansWifiChannel
-~~~~~~~~~~~~~~~
+###############
 
 This is the only channel model presently in the |ns3| wifi module.  The 
 ``ns3::YansWifiChannel`` implementation uses the propagation loss and 
@@ -242,7 +243,7 @@ There is currently one implementation of the ``WifiPhy``, which is the
 * **ErrorModel**:  Computes a probability of error for a given SNR
 
 YansWifiPhy and WifiPhyStateHelper
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+##################################
 
 Class ``ns3::YansWifiPhy`` is responsible for taking packets passed to
 it from the MAC (the ``ns3::MacLow`` object) and sending them onto the
@@ -319,7 +320,7 @@ process, they are remembered by the InterferenceHelper object for purposes
 of SINR computation and making clear channel assessment decisions.
 
 InterferenceHelper
-~~~~~~~~~~~~~~~~~~
+##################
 
 The InterferenceHelper is an object that tracks all incoming packets and
 calculates probability of error values for packets being received, and
@@ -347,7 +348,7 @@ Error Rate (PER) for
 the modulation and coding scheme being used for the transmission.  
 
 ErrorModel
-~~~~~~~~~~
+##########
 
 The error models are described in more detail in outside references.  Please refer to [pei80211ofdm]_, [pei80211b]_, [lacage2006yans]_, [Haccoun]_ and [Frenger]_ for a detailed description of the available BER/PER models.
 
@@ -387,9 +388,9 @@ As a result, there are three error models:
    802.11b 1 Mbps and 2 Mbps error models are based on classical modulation
    analysis.  If GNU GSL is installed, the 5.5 Mbps and 11 Mbps from 
    [pursley2009]_ are used; otherwise, a backup Matlab model is used.
-#.  ``ns3::NistErrorRateModel``: is the default for OFDM modes and reuses
+#. ``ns3::NistErrorRateModel``: is the default for OFDM modes and reuses
    ``ns3::DsssErrorRateModel`` for 802.11b modes. 
-#.  ``ns3::YansErrorRateModel``: is the legacy for OFDM modes and reuses
+#. ``ns3::YansErrorRateModel``: is the legacy for OFDM modes and reuses
    ``ns3::DsssErrorRateModel`` for 802.11b modes. 
 
 Users should select either Nist or Yans models for OFDM (Nist is default), 
@@ -469,7 +470,7 @@ Algorithms in literature:
 * ``AparfWifiManager`` [chevillat2005aparf]_
 
 ConstantRateWifiManager
-~~~~~~~~~~~~~~~~~~~~~~~
+#######################
 
 The constant rate control algorithm always uses the same
 transmission mode for every packet. Users can set a desired
@@ -502,7 +503,7 @@ Available attributes:
   all 'request' control packets
 
 IdealWifiManager
-~~~~~~~~~~~~~~~~
+################
 
 The ideal rate control algorithm selects the best
 mode according to the SNR of the previous packet sent.
@@ -522,7 +523,7 @@ Available attribute:
   that is used to calculate the SNR threshold for each mode.
 
 MinstrelWifiManager
-~~~~~~~~~~~~~~~~~~~
+###################
 
 The minstrel rate control algorithm is a rate control algorithm originated from
 madwifi project.  It is currently the default rate control algorithm of the Linux kernel.
