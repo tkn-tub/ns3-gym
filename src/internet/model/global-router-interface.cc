@@ -29,6 +29,7 @@
 #include "ns3/bridge-net-device.h"
 #include "ipv4-global-routing.h"
 #include "global-router-interface.h"
+#include "loopback-net-device.h"
 #include <vector>
 
 namespace ns3 {
@@ -638,6 +639,11 @@ GlobalRouter::DiscoverLSAs ()
   for (uint32_t i = 0; i < numDevices; ++i)
     {
       Ptr<NetDevice> ndLocal = node->GetDevice (i);
+
+      if (DynamicCast <LoopbackNetDevice> (ndLocal))
+        {
+          continue;
+        }
 
       //
       // There is an assumption that bridge ports must never have an IP address 
