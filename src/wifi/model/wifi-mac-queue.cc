@@ -23,6 +23,7 @@
 #include "ns3/simulator.h"
 #include "ns3/packet.h"
 #include "ns3/uinteger.h"
+#include "ns3/enum.h"
 #include "wifi-mac-queue.h"
 #include "qos-blocked-destinations.h"
 
@@ -54,6 +55,11 @@ WifiMacQueue::GetTypeId (void)
                    TimeValue (MilliSeconds (500.0)),
                    MakeTimeAccessor (&WifiMacQueue::m_maxDelay),
                    MakeTimeChecker ())
+    .AddAttribute ("DropPolicy", "Upon enqueue with full queue, drop oldest (DropOldest) or newest (DropNewest) packet",
+                   EnumValue (DROP_NEWEST),
+                   MakeEnumAccessor (&WifiMacQueue::m_dropPolicy),
+                   MakeEnumChecker (WifiMacQueue::DROP_OLDEST, "DropOldest",
+                                    WifiMacQueue::DROP_NEWEST, "DropNewest"))
   ;
   return tid;
 }
@@ -98,7 +104,15 @@ WifiMacQueue::Enqueue (Ptr<const Packet> packet, const WifiMacHeader &hdr)
   Cleanup ();
   if (m_size == m_maxSize)
     {
-      return;
+      if (m_dropPolicy == DROP_NEWEST)
+        {
+          return;
+        }
+      else if (m_dropPolicy == DROP_OLDEST)
+        {
+          m_queue.pop_front ();
+          m_size--;
+        }
     }
   Time now = Simulator::Now ();
   m_queue.push_back (Item (packet, hdr, now));

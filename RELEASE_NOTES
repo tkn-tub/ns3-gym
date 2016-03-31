@@ -39,6 +39,7 @@ Bugs fixed
 - Bug 2329 - TCP Veno implementation
 - Bug 2333 - TCP Scalable implementation
 - Bug 2347 - LrWpan Ascii traces are hooked to the wrong traces.
+- Bug 2352 - Add 'drop oldest' drop policy to WifiMacQueue
 - Bug 2353 - TCP Vegas implementation
 - Bug 2375 - Flowmonitor parse crashes when no pkt is received
 - Bug 2377 - SocketIpTosTag and SocketIpv6TclassTag may be added twice in UDP

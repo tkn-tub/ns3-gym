@@ -55,6 +55,12 @@ public:
   WifiMacQueue ();
   ~WifiMacQueue ();
 
+  enum DropPolicy
+  {
+    DROP_NEWEST,
+    DROP_OLDEST
+  };
+
   /**
    * Set the maximum queue size.
    *
@@ -271,6 +277,7 @@ protected:
   uint32_t m_size;     //!< Current queue size
   uint32_t m_maxSize;  //!< Queue capacity
   Time m_maxDelay;     //!< Time to live for packets in the queue
+  enum DropPolicy m_dropPolicy; //!< Drop behavior of queue
 };
 
 } //namespace ns3
