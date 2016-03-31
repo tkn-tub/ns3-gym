@@ -367,13 +367,13 @@ LrWpanHelper::EnableAsciiInternal (
       // The Mac and Phy objects have the trace sources for these
       //
 
-      asciiTraceHelper.HookDefaultReceiveSinkWithoutContext<LrWpanNetDevice> (device, "MacRx", theStream);
+      asciiTraceHelper.HookDefaultReceiveSinkWithoutContext<LrWpanMac> (device->GetMac (), "MacRx", theStream);
 
       device->GetMac ()->TraceConnectWithoutContext ("MacTx", MakeBoundCallback (&AsciiLrWpanMacTransmitSinkWithoutContext, theStream));
 
-      asciiTraceHelper.HookDefaultEnqueueSinkWithoutContext<LrWpanNetDevice> (device, "MacTxEnqueue", theStream);
-      asciiTraceHelper.HookDefaultDequeueSinkWithoutContext<LrWpanNetDevice> (device, "MacTxDequeue", theStream);
-      asciiTraceHelper.HookDefaultDropSinkWithoutContext<LrWpanNetDevice> (device, "MacTxDrop", theStream);
+      asciiTraceHelper.HookDefaultEnqueueSinkWithoutContext<LrWpanMac> (device->GetMac (), "MacTxEnqueue", theStream);
+      asciiTraceHelper.HookDefaultDequeueSinkWithoutContext<LrWpanMac> (device->GetMac (), "MacTxDequeue", theStream);
+      asciiTraceHelper.HookDefaultDropSinkWithoutContext<LrWpanMac> (device->GetMac (), "MacTxDrop", theStream);
 
       return;
     }

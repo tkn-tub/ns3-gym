@@ -25,7 +25,8 @@ New user-visible features
 
 Bugs fixed
 ----------
-- Bug 2346 - SixLowPan ConpressionThreshold can be violated 
+- Bug 2346 - SixLowPan ConpressionThreshold can be violated.
+- Bug 2347 - LrWpan Ascii traces are hooked to the wrong traces.
 
 Known issues
 ------------
