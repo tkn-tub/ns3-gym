@@ -975,6 +975,32 @@ void Ipv6L3Protocol::Receive (Ptr<NetDevice> device, Ptr<const Packet> p, uint16
       packet->RemoveAtEnd (packet->GetSize () - hdr.GetPayloadLength ());
     }
 
+  // the packet is valid, we update the NDISC cache entry (if present)
+  Ptr<NdiscCache> ndiscCache = ipv6Interface->GetNdiscCache ();
+  if (ndiscCache)
+    {
+      // case one, it's a a direct routing.
+      NdiscCache::Entry *entry = ndiscCache->Lookup (hdr.GetSourceAddress ());
+      if (entry)
+        {
+          entry->UpdateReachableTimer ();
+        }
+      else
+        {
+          // It's not in the direct routing, so it's the router, and it could have multiple IP addresses.
+          // In doubt, update all of them.
+          // Note: it's a confirmed behavior for Linux routers.
+          std::list<NdiscCache::Entry *> entryList = ndiscCache->LookupInverse (from);
+          std::list<NdiscCache::Entry *>::iterator iter;
+          for (iter = entryList.begin (); iter != entryList.end (); iter ++)
+            {
+              (*iter)->UpdateReachableTimer ();
+            }
+        }
+    }
+
+
+
   /* forward up to IPv6 raw sockets */
   for (SocketList::iterator it = m_sockets.begin (); it != m_sockets.end (); ++it)
     {

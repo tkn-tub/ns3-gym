@@ -100,6 +100,23 @@ NdiscCache::Entry* NdiscCache::Lookup (Ipv6Address dst)
   return 0;
 }
 
+std::list<NdiscCache::Entry*> NdiscCache::LookupInverse (Address dst)
+{
+  NS_LOG_FUNCTION (this << dst);
+
+  std::list<NdiscCache::Entry *> entryList;
+  for (CacheI i = m_ndCache.begin (); i != m_ndCache.end (); i++)
+    {
+      NdiscCache::Entry *entry = (*i).second;
+      if (entry->GetMacAddress () == dst)
+        {
+          entryList.push_back (entry);
+        }
+    }
+  return entryList;
+}
+
+
 NdiscCache::Entry* NdiscCache::Add (Ipv6Address to)
 {
   NS_LOG_FUNCTION (this << to);
@@ -397,11 +414,6 @@ Time NdiscCache::Entry::GetLastReachabilityConfirmation () const
   return m_lastReachabilityConfirmation;
 }
 
-void NdiscCache::Entry::UpdateLastReachabilityconfirmation ()
-{
-  NS_LOG_FUNCTION_NOARGS ();
-}
-
 void NdiscCache::Entry::StartReachableTimer ()
 {
   NS_LOG_FUNCTION_NOARGS ();
@@ -410,9 +422,25 @@ void NdiscCache::Entry::StartReachableTimer ()
       m_nudTimer.Cancel ();
     }
 
+  m_lastReachabilityConfirmation = Simulator::Now ();
   m_nudTimer.SetFunction (&NdiscCache::Entry::FunctionReachableTimeout, this);
   m_nudTimer.SetDelay (MilliSeconds (Icmpv6L4Protocol::REACHABLE_TIME));
   m_nudTimer.Schedule ();
+}
+
+void NdiscCache::Entry::UpdateReachableTimer ()
+{
+  NS_LOG_FUNCTION_NOARGS ();
+
+  if (m_state == REACHABLE)
+    {
+      m_lastReachabilityConfirmation = Simulator::Now ();
+      if (m_nudTimer.IsRunning ())
+        {
+          m_nudTimer.Cancel ();
+        }
+      m_nudTimer.Schedule ();
+    }
 }
 
 void NdiscCache::Entry::StartProbeTimer ()

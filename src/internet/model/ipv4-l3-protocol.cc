@@ -36,6 +36,7 @@
 
 #include "loopback-net-device.h"
 #include "arp-l3-protocol.h"
+#include "arp-cache.h"
 #include "ipv4-l3-protocol.h"
 #include "icmpv4-l4-protocol.h"
 #include "ipv4-interface.h"
@@ -596,6 +597,36 @@ Ipv4L3Protocol::Receive ( Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t p
       NS_LOG_LOGIC ("Dropping received packet -- checksum not ok");
       m_dropTrace (ipHeader, packet, DROP_BAD_CHECKSUM, m_node->GetObject<Ipv4> (), interface);
       return;
+    }
+
+  // the packet is valid, we update the ARP cache entry (if present)
+  Ptr<ArpCache> arpCache = ipv4Interface->GetArpCache ();
+  if (arpCache)
+    {
+      // case one, it's a a direct routing.
+      ArpCache::Entry *entry = arpCache->Lookup (ipHeader.GetSource ());
+      if (entry)
+        {
+          if (entry->IsAlive ())
+            {
+              entry->UpdateSeen ();
+            }
+        }
+      else
+        {
+          // It's not in the direct routing, so it's the router, and it could have multiple IP addresses.
+          // In doubt, update all of them.
+          // Note: it's a confirmed behavior for Linux routers.
+          std::list<ArpCache::Entry *> entryList = arpCache->LookupInverse (from);
+          std::list<ArpCache::Entry *>::iterator iter;
+          for (iter = entryList.begin (); iter != entryList.end (); iter ++)
+            {
+              if ((*iter)->IsAlive ())
+                {
+                  (*iter)->UpdateSeen ();
+                }
+            }
+        }
     }
 
   for (SocketList::iterator i = m_sockets.begin (); i != m_sockets.end (); ++i)

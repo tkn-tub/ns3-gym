@@ -148,6 +148,13 @@ public:
    */
   ArpCache::Entry *Lookup (Ipv4Address destination);
   /**
+   * \brief Do lookup in the ARP cache against a MAC address
+   * \param destination The destination MAC address to lookup
+   * of
+   * \return A std::list of ArpCache::Entry with info about layer 2
+   */
+  std::list<ArpCache::Entry *> LookupInverse (Address destination);
+  /**
    * \brief Add an Ipv4Address to this ARP cache
    */
   ArpCache::Entry *Add (Ipv4Address to);
@@ -269,6 +276,11 @@ public:
      */
     void ClearRetries (void);
 
+    /**
+     * \brief Update the entry when seeing a packet
+     */
+    void UpdateSeen (void);
+
 private:
     /**
      * \brief ARP cache entry states
@@ -279,11 +291,6 @@ private:
       DEAD,
       PERMANENT
     };
-
-    /**
-     * \brief Update the entry when seeing a packet
-     */
-    void UpdateSeen (void);
 
     /**
      * \brief Returns the entry timeout

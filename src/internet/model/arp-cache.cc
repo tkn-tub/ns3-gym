@@ -295,6 +295,24 @@ ArpCache::PrintArpCache (Ptr<OutputStreamWrapper> stream)
     }
 }
 
+std::list<ArpCache::Entry *>
+ArpCache::LookupInverse (Address to)
+{
+  NS_LOG_FUNCTION (this << to);
+
+  std::list<ArpCache::Entry *> entryList;
+  for (CacheI i = m_arpCache.begin (); i != m_arpCache.end (); i++)
+    {
+      ArpCache::Entry *entry = (*i).second;
+      if (entry->GetMacAddress () == to)
+        {
+          entryList.push_back (entry);
+        }
+    }
+  return entryList;
+}
+
+
 ArpCache::Entry *
 ArpCache::Lookup (Ipv4Address to)
 {
