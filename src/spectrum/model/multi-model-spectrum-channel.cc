@@ -438,14 +438,21 @@ void
 MultiModelSpectrumChannel::AddPropagationLossModel (Ptr<PropagationLossModel> loss)
 {
   NS_LOG_FUNCTION (this << loss);
-  NS_ASSERT (m_propagationLoss == 0);
+  if (m_propagationLoss)
+    {
+      loss->SetNext (m_propagationLoss);
+    }
   m_propagationLoss = loss;
 }
 
 void
 MultiModelSpectrumChannel::AddSpectrumPropagationLossModel (Ptr<SpectrumPropagationLossModel> loss)
 {
-  NS_ASSERT (m_spectrumPropagationLoss == 0);
+  NS_LOG_FUNCTION (this << loss);
+  if (m_spectrumPropagationLoss)
+    {
+      loss->SetNext (m_spectrumPropagationLoss);
+    }
   m_spectrumPropagationLoss = loss;
 }
 

@@ -55,7 +55,7 @@ public:
   static TypeId GetTypeId (void);
 
   /**
-   * Set the single-frequency propagation loss model to be used
+   * Add the single-frequency propagation loss model to be used
    * \warning only models that do not depend on the TX power should be used.
    *
    * \param loss a pointer to the propagation loss model to be used.
@@ -63,13 +63,13 @@ public:
   virtual void AddPropagationLossModel (Ptr<PropagationLossModel> loss) = 0;
 
   /**
-   * Set the frequency-dependent propagation loss model to be used
+   * Add the frequency-dependent propagation loss model to be used
    * \param loss a pointer to the propagation loss model to be used.
    */
   virtual void AddSpectrumPropagationLossModel (Ptr<SpectrumPropagationLossModel> loss) = 0;
 
   /**
-   * Set the  propagation delay model to be used
+   * Set the propagation delay model to be used
    * \param delay Ptr to the propagation delay model to be used.
    */
   virtual void SetPropagationDelayModel (Ptr<PropagationDelayModel> delay) = 0;
