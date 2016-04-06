@@ -257,6 +257,9 @@ public:
                         std::string n07 = "", const AttributeValue &v07 = EmptyAttributeValue (),
                         std::string n08 = "", const AttributeValue &v08 = EmptyAttributeValue ());
 
+  /**
+   * Container type for Class IDs
+   */
   typedef std::vector<uint16_t> ClassIdList;
 
   /**
@@ -351,6 +354,9 @@ public:
                               std::string n14 = "", const AttributeValue &v14 = EmptyAttributeValue (),
                               std::string n15 = "", const AttributeValue &v15 = EmptyAttributeValue ());
 
+  /**
+   * Container type for Handlers
+   */
   typedef std::vector<uint16_t> HandleList;
 
   /**
