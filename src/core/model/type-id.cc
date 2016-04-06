@@ -332,6 +332,7 @@ private:
   hashmap_t m_hashmap;
 
 
+  /** IidManager constants. */
   enum {
     /**
      * Hash chaining flag.

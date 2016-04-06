@@ -166,7 +166,7 @@ public:
    * current simulation time.
    * @param [in] delay The stop time, relative to the current time.
    */
-  static void Stop (Time const &delay);
+  static void Stop (const Time &delay);
 
   /**
    * @name Schedule events (in the same context) to run at a future time.
@@ -285,7 +285,10 @@ public:
   static EventId Schedule (Time const &delay, MEM mem_ptr, OBJ obj, 
                            T1 a1, T2 a2, T3 a3, T4 a4, T5 a5);
   /**
-   * @copybrief Schedule(const Time&,MEM,OBJ)
+   * Schedule an event to expire after @p delay.
+   * This can be thought of as scheduling an event
+   * for the current simulation time plus the @p delay  passed as a
+   * parameter.
    *
    * When the event expires (when it becomes due to be run), the
    * function will be invoked with any supplied arguments.
@@ -507,7 +510,9 @@ public:
   static void ScheduleWithContext (uint32_t context, Time const &delay, MEM mem_ptr, OBJ obj, 
                                    T1 a1, T2 a2, T3 a3, T4 a4, T5 a5);
   /**
-   * @copybrief ScheduleWithContext(uint32_t,const Time&,MEM,OBJ)
+   * Schedule an event with the given context.
+   * A context of 0xffffffff means no context is specified.
+   * This method is thread-safe: it can be called from any thread.
    *
    * When the event expires (when it becomes due to be run), the
    * function will be invoked with any supplied arguments.
@@ -1122,7 +1127,7 @@ public:
    * @param [in] event The event to schedule.
    * @returns A unique identifier for the newly-scheduled event.
    */
-  static EventId Schedule (Time const &delay, const Ptr<EventImpl> &event);
+  static EventId Schedule (const Time &delay, const Ptr<EventImpl> &event);
 
   /**
    * Schedule a future event execution (in a different context).

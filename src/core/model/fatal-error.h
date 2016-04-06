@@ -55,16 +55,15 @@
 /**
  * \ingroup fatal
  *
- * \brief Fatal error reporting implementation.
+ * \brief Fatal error reporting with no message, implementation.
  *
  * When this macro is hit at runtime the error details will
- * printed to \c stderr, including the supplied \c msg,
- * and the file name and line number.  Optionally, if \c fatal is true,
- * the macro will invoke \c std::terminate().  If \c fatal is false,
+ * printed to \c stderr, including the file name and line number.
+ * Optionally, if \c fatal is true, the macro
+ * will invoke \c std::terminate().  If \c fatal is false,
  * the invoking function should return an error code to its caller,
  * which is expected to call NS_FATAL_ERROR to cause termination.
  *
- * \param [in] msg The error message to print, if not empty.
  * \param [in] fatal Call \c std::terminate() if true.
  *
  * This macro is enabled unconditionally in all builds,
@@ -81,6 +80,24 @@
   while (false)
 
 
+/**
+ * \ingroup fatal
+ *
+ * \brief Fatal error reporting with a message, implementation.
+ *
+ * When this macro is hit at runtime the error details will
+ * printed to \c stderr, including the message, file name and line number.
+ * Optionally, if \c fatal is true, the macro
+ * will invoke \c std::terminate().  If \c fatal is false,
+ * the invoking function should return an error code to its caller,
+ * which is expected to call NS_FATAL_ERROR to cause termination.
+ *
+ * \param [in] msg The error message to print, if not empty.
+ * \param [in] fatal Call \c std::terminate() if true.
+ *
+ * This macro is enabled unconditionally in all builds,
+ * including debug and optimized builds.
+ */
 #define NS_FATAL_ERROR_IMPL(msg,fatal) \
   do                                                    \
     {                                                   \

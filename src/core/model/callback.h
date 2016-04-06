@@ -148,7 +148,10 @@ public:
    * \return \c true if we are equal
    */
   virtual bool IsEqual (Ptr<const CallbackImplBase> other) const = 0;
-  /** Get the type as a string. */
+  /**
+   * Get the name of this object type.
+   * \return The object type as a string.
+   */
   virtual std::string GetTypeid (void) const = 0;
 
 protected:
@@ -161,8 +164,7 @@ protected:
    * Helper to get the C++ typeid as a string.
    *
    * \tparam T The type of the argument.
-   * \param t The object.
-   * \returns The result of applying typeid to the argument.
+   * \returns The result of applying typeid to the template type \p T.
    */
   template <typename T>
   static std::string GetCppTypeid (void)
@@ -204,6 +206,7 @@ public:
   {
     return DoGetTypeid ();
   }
+  /** \copydoc GetTypeid(). */
   static std::string DoGetTypeid (void)
   {
     static std::string id = "CallbackImpl<" +
@@ -222,6 +225,7 @@ public:
   {
     return DoGetTypeid ();
   }
+  /** \copydoc GetTypeid(). */
   static std::string DoGetTypeid (void)
   {
     static std::string id = "CallbackImpl<" +
@@ -241,6 +245,7 @@ public:
   {
     return DoGetTypeid ();
   }
+  /** \copydoc GetTypeid(). */
   static std::string DoGetTypeid (void)
   {
     static std::string id = "CallbackImpl<" +
@@ -261,6 +266,7 @@ public:
   {
     return DoGetTypeid ();
   }
+  /** \copydoc GetTypeid(). */
   static std::string DoGetTypeid (void)
   {
     static std::string id = "CallbackImpl<" +
@@ -282,6 +288,7 @@ public:
   {
     return DoGetTypeid ();
   }
+  /** \copydoc GetTypeid(). */
   static std::string DoGetTypeid (void)
   {
     static std::string id = "CallbackImpl<" +
@@ -304,6 +311,7 @@ public:
   {
     return DoGetTypeid ();
   }
+  /** \copydoc GetTypeid(). */
   static std::string DoGetTypeid (void)
   {
     static std::string id = "CallbackImpl<" +
@@ -327,6 +335,7 @@ public:
   {
     return DoGetTypeid ();
   }
+  /** \copydoc GetTypeid(). */
   static std::string DoGetTypeid (void)
   {
     static std::string id = "CallbackImpl<" +
@@ -351,6 +360,7 @@ public:
   {
     return DoGetTypeid ();
   }
+  /** \copydoc GetTypeid(). */
   static std::string DoGetTypeid (void)
   {
     static std::string id = "CallbackImpl<" +
@@ -376,6 +386,7 @@ public:
   {
     return DoGetTypeid ();
   }
+  /** \copydoc GetTypeid(). */
   static std::string DoGetTypeid (void)
   {
     static std::string id = "CallbackImpl<" +
@@ -402,6 +413,7 @@ public:
   {
     return DoGetTypeid ();
   }
+  /** \copydoc GetTypeid(). */
   static std::string DoGetTypeid (void)
   {
     static std::string id = "CallbackImpl<" +
@@ -1395,6 +1407,7 @@ public:
    * Adopt the other's implementation, if type compatible
    *
    * \param [in] other Callback
+   * \returns \c true if \p other was type-compatible and could be adopted.
    */
   bool Assign (const CallbackBase &other) {
     return DoAssign (other.GetImpl ());
@@ -1425,11 +1438,7 @@ private:
         return false;
       }
   }
-  /**
-   * Adopt the other's implementation, if type compatible
-   *
-   * \param [in] other Callback Ptr to adopt from
-   */
+  /** \copydoc Assign */
   bool DoAssign (Ptr<const CallbackImplBase> other) {
     if (!DoCheckType (other))
       {
