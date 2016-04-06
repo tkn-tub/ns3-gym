@@ -143,10 +143,10 @@ public:
   void Write (Time t, uint8_t const *buffer, uint32_t length);
 
   /**
-   * \brief Read the next packet from the file. Returns a pointer to ns3::Packet
+   * \brief Read the next packet from the file.
    * 
    * \param t Reference to packet timestamp as ns3::Time.
-   * 
+   * \returns a pointer to ns3::Packet.
    */
   Ptr<Packet> Read (Time &t);
 

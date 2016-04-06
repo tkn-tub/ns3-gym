@@ -122,7 +122,7 @@ private:
      * \param offsetEnd offset to the end of the tag from the virtual byte buffer
      * \param adjustment adjustment to byte tag offsets
      */
-    Iterator (uint8_t *start, uint8_t *end, int32_t offsetStart, int32_t offsetEnd, int32_t m_adjustment);
+    Iterator (uint8_t *start, uint8_t *end, int32_t offsetStart, int32_t offsetEnd, int32_t adjustment);
 
     /**
      * \brief Prepare the iterator for the next tag
@@ -201,7 +201,7 @@ private:
    */
   ByteTagList::Iterator Begin (int32_t offsetStart, int32_t offsetEnd) const;
 
-  /*
+  /**
    * Adjust the offsets stored internally by the adjustment delta.
    *
    * \param adjustment value to change stored offsets by
@@ -246,9 +246,9 @@ private:
    */
   void Deallocate (struct ByteTagListData *data);
 
-  int32_t m_minStart; // !< minimal start offset
-  int32_t m_maxEnd; // !< maximal end offset
-  int32_t m_adjustment; // !< adjustment to byte tag offsets
+  int32_t m_minStart; //!< minimal start offset
+  int32_t m_maxEnd; //!< maximal end offset
+  int32_t m_adjustment; //!< adjustment to byte tag offsets
   uint16_t m_used; //!< the number of used bytes in the buffer
   struct ByteTagListData *m_data; //!< the ByteTagListData structure
 };

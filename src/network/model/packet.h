@@ -711,6 +711,12 @@ private:
   Packet (const Buffer &buffer, const ByteTagList &byteTagList, 
           const PacketTagList &packetTagList, const PacketMetadata &metadata);
 
+  /**
+   * \brief Deserializes a packet.
+   * \param [in] buffer the input buffer.
+   * \param [in] size the buffer size.
+   * \returns the number of deserialized bytes.
+   */
   uint32_t Deserialize (uint8_t const*buffer, uint32_t size);
 
   Buffer m_buffer;                //!< the packet buffer (it's actual contents)

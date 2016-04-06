@@ -102,7 +102,7 @@ class Tag;
  *     any other #PacketTagList's, hence this is a \c const function.
  *
  *   - Copy constructor (PacketTagList(const PacketTagList & o))
- *     and assignment (#operator=(const PacketTagList & o)
+ *     and assignment (#operator=(const PacketTagList & o))
  *     simply join the tree at the same place as the original
  *     PacketTagList \c o, incrementing the \c count.
  *     For assignment, the old branch is deleted, up to

@@ -38,32 +38,36 @@ namespace ns3 {
   * \see http://www.tcpdump.org/linktypes/LINKTYPE_LINUX_SLL.html
   * \see https://wiki.wireshark.org/SLL
   *
-  * \verbatim
-  * +---------------------------+
-  * |         Packet type       |
-  * |         (2 Octets)        |
-  * +---------------------------+
-  * |        ARPHRD_ type       |
-  * |         (2 Octets)        |
-  * +---------------------------+
-  * | Link-layer address length |
-  * |         (2 Octets)        |
-  * +---------------------------+
-  * |    Link-layer address     |
-  * |         (8 Octets)        |
-  * +---------------------------+
-  * |        Protocol type      |
-  * |         (2 Octets)        |
-  * +---------------------------+
-  * |           Payload         |
-  * .                           .
-  * .                           .
-  * .                           .
-  * \endverbatim
+  \verbatim
+    +---------------------------+
+    |         Packet type       |
+    |         (2 Octets)        |
+    +---------------------------+
+    |        ARPHRD_ type       |
+    |         (2 Octets)        |
+    +---------------------------+
+    | Link-layer address length |
+    |         (2 Octets)        |
+    +---------------------------+
+    |    Link-layer address     |
+    |         (8 Octets)        |
+    +---------------------------+
+    |        Protocol type      |
+    |         (2 Octets)        |
+    +---------------------------+
+    |           Payload         |
+    .                           .
+    .                           .
+    .                           .
+   \endverbatim
   */
 class SllHeader : public Header
 {
 public:
+
+  /**
+   * Type of the packet.
+   */
   enum PacketType
   {
     UNICAST_FROM_PEER_TO_ME = 0, /**< the packet was specifically sent to us by somebody else */
@@ -74,33 +78,33 @@ public:
   };
 
   /**
-    * \brief Get the type ID.
-    * \return the object TypeId
-    */
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
 
   SllHeader ();
   virtual ~SllHeader ();
 
   /**
-    * \return ARP header type field in network byte order
-    *  The ARPHRD_ type field is in network byte order; it contains a Linux ARPHRD_ value for the link-layer device type.
-    */
+   * \return ARP header type field in network byte order
+   *  The ARPHRD_ type field is in network byte order; it contains a Linux ARPHRD_ value for the link-layer device type.
+   */
   uint16_t GetArpType () const;
 
   /**
-    * \param arphw ARP protocol hardware identifier
-    */
+   * \param arphdType ARP protocol hardware identifier
+   */
   void SetArpType (uint16_t arphdType);
 
-   /**
-    * \return Packet type
-    */
+  /**
+   * \return Packet type
+   */
   enum PacketType GetPacketType () const;
 
   /**
-    * \param type Depends on source and address of the packet
-    */
+   * \param type Depends on source and address of the packet
+   */
   void SetPacketType (PacketType type);
 
   //! Inherited from ObjectBase
@@ -113,11 +117,11 @@ public:
 
 protected:
   // declared in packet order
-  PacketType m_packetType;
-  uint16_t m_arphdType;   /**< ARP protocol hardware identifier */
-  uint16_t m_addressLength;
-  uint64_t m_address;
-  uint16_t m_protocolType;
+  PacketType m_packetType;  /**< Packet type */
+  uint16_t m_arphdType;     /**< ARP protocol hardware identifier */
+  uint16_t m_addressLength; /**< Address length */
+  uint64_t m_address;       /**< Address */
+  uint16_t m_protocolType;  /**< protocol type */
 };
 
 } // namespace ns3

@@ -108,6 +108,9 @@ public:
    * \param swapMode Flag indicating a difference in endianness of the 
    * writing system. Defaults to false.
    *
+   * \param nanosecMode Flag indicating the time resolution of the writing
+   * system. Default to false.
+   *
    * \return false if the open succeeds, true otherwise.
    *
    * \warning Calling this method on an existing file will result in the loss
@@ -195,7 +198,7 @@ public:
   /**
    * \brief Get the nanosecond mode of the file.
    *
-   * IsNanoSecMode returns true if the packet timestamps in the PCAP 
+   * \returns true if the packet timestamps in the PCAP
    * file have nanosecond resolution.
    */
    bool IsNanoSecMode (void);
@@ -279,6 +282,7 @@ public:
    * \param  f2         Second PCAP file name
    * \param  sec        [out] Time stamp of first different packet, seconds. Undefined if files doesn't differ.
    * \param  usec       [out] Time stamp of first different packet, microseconds. Undefined if files doesn't differ.
+   * \param  packets    [out] Number of first different packet. Total number of parsed packets if files doesn't differ.
    * \param  snapLen    Snap length (if used)
    */
   static bool Diff (std::string const & f1, std::string const & f2, 

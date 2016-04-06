@@ -112,6 +112,9 @@ private:
    */
   QueueItem &operator = (const QueueItem &);
 
+  /**
+   * The packet contained in the queue item.
+   */
   Ptr<Packet> m_packet;
 };
 
@@ -232,6 +235,8 @@ public:
 
   /**
    * \brief Get the i-th transmission queue of the device.
+   *
+   * \param i the index of the requested queue.
    * \return the i-th transmission queue of the device.
    *
    * The index of the first transmission queue is zero.
@@ -259,17 +264,19 @@ public:
   typedef Callback< uint8_t, Ptr<QueueItem> > SelectQueueCallback;
 
   /**
-   * \brief Set the select queue callback
-   * \param cb the callback to set
+   * \brief Set the select queue callback.
+   * \param cb the callback to set.
    *
    * Called by a device to set the select queue callback, i.e., the method used
-   * to select a device transmission queue for a given packet
+   * to select a device transmission queue for a given packet.
    */
   void SetSelectQueueCallback (SelectQueueCallback cb);
 
   /**
-   * \brief Get the id of the transmission queue selected for the given packet
-   * \return the id of the transmission queue selected for the given packet
+   * \brief Get the id of the transmission queue selected for the given packet.
+   *
+   * \param item the packet.
+   * \return the id of the transmission queue selected for the given packet.
    *
    * Called by the traffic control when it needs to determine which device
    * transmission queue a given packet must be enqueued into. This function
