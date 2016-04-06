@@ -88,15 +88,16 @@ public:
    * of the TCP protocol
    */
   Ptr<Socket> CreateSocket (void);
+
   /**
-   * \brief Create a TCP socket using the specified TypeId
+   * \brief Create a TCP socket using the specified congestion control algorithm TypeId
    *
    * \return A smart Socket pointer to a TcpSocket allocated by this instance
    * of the TCP protocol
    *
-   * \warning using a socketTypeId other than TCP is a bad idea.
+   * \warning using a congestionTypeId other than TCP is a bad idea.
    *
-   * \param socketTypeId the socket TypeId
+   * \param congestionTypeId the congestion control algorithm TypeId
    */
   Ptr<Socket> CreateSocket (TypeId congestionTypeId);
 

@@ -90,8 +90,8 @@ private:
    */
   Ipv4QueueDiscItem &operator = (const Ipv4QueueDiscItem &);
 
-  Ipv4Header m_header;
-  bool m_headerAdded;
+  Ipv4Header m_header;  //!< The IPv4 header.
+  bool m_headerAdded;   //!< True if the header has already been added to the packet.
 };
 
 } // namespace ns3

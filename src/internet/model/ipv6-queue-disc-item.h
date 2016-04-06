@@ -90,8 +90,8 @@ private:
    */
   Ipv6QueueDiscItem &operator = (const Ipv6QueueDiscItem &);
 
-  Ipv6Header m_header;
-  bool m_headerAdded;
+  Ipv6Header m_header;  //!< The IPv6 header.
+  bool m_headerAdded;   //!< True if the header has already been added to the packet.
 };
 
 } // namespace ns3

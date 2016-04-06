@@ -52,6 +52,11 @@ public:
   static TypeId GetTypeId (void);
 
   TcpCongestionOps ();
+
+  /**
+   * \brief Copy constructor.
+   * \param other object to copy.
+   */
   TcpCongestionOps (const TcpCongestionOps &other);
 
   virtual ~TcpCongestionOps ();
@@ -146,6 +151,11 @@ public:
   static TypeId GetTypeId (void);
 
   TcpNewReno ();
+
+  /**
+   * \brief Copy constructor.
+   * \param sock object to copy.
+   */
   TcpNewReno (const TcpNewReno& sock);
 
   ~TcpNewReno ();

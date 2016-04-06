@@ -181,7 +181,7 @@ private:
 
   /**
    * \brief Set the number of data transmission retries before giving up.
-   * \param count the number of data transmission retries
+   * \param retries the number of data transmission retries
    */
   virtual void SetDataRetries (uint32_t retries) = 0;
 

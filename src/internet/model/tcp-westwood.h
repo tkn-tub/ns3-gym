@@ -112,15 +112,15 @@ private:
   /**
    * Update the total number of acknowledged packets during the current RTT
    *
-   * \param acked the number of packets the currently received ACK acknowledges
+   * \param [in] acked the number of packets the currently received ACK acknowledges
    */
   void UpdateAckedSegments (int acked);
 
   /**
    * Estimate the network's bandwidth
    *
-   * \param acked the number of acknowledged packets
-   * \param rtt the RTT estimation
+   * \param [in] rtt the RTT estimation.
+   * \param [in] tcb the socket state.
    */
   void EstimateBW (const Time& rtt, Ptr<TcpSocketState> tcb);
 

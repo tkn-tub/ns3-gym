@@ -100,6 +100,11 @@ public:
   static TypeId GetTypeId (void);
 
   TcpSocketState ();
+
+  /**
+   * \brief Copy constructor.
+   * \param other object to copy.
+   */
   TcpSocketState (const TcpSocketState &other);
 
   /**

@@ -148,7 +148,19 @@ public:
 
 private:
   virtual int32_t DoClassify (Ptr<QueueDiscItem> item) const;
+
+  /**
+   * \brief Converts a TOS field value into a priority band.
+   * \param tos The tos to convert.
+   * \returns The converted band value.
+   */
   uint32_t TosToBand (uint8_t tos) const;
+
+  /**
+   * \brief Converts a DSCP field value into a priority band.
+   * \param dscpType The DSCP to convert.
+   * \returns The converted band value.
+   */
   uint32_t DscpToBand (Ipv4Header::DscpType dscpType) const;
 
   Ipv4TrafficClassMode m_trafficClassMode; //!< traffic class mode

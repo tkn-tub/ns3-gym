@@ -291,10 +291,12 @@ public:
   typedef std::pair<Ptr<Packet>, Ipv6Header> Ipv6PayloadHeaderPair;
 
   /**
-   * \brief Fragment a packet
-   * \param packet the packet
-   * \param fragmentSize the maximal size of the fragment (unfragmentable part + fragmentation header + fragmentable part)
-   * \param listFragments the list of fragments
+   * \brief Fragment a packet.
+   *
+   * \param packet the packet.
+   * \param ipv6Header the IPv6 header.
+   * \param fragmentSize the maximal size of the fragment (unfragmentable part + fragmentation header + fragmentable part).
+   * \param listFragments the list of fragments.
    */
   void GetFragments (Ptr<Packet> packet, Ipv6Header ipv6Header, uint32_t fragmentSize, std::list<Ipv6PayloadHeaderPair>& listFragments);
 

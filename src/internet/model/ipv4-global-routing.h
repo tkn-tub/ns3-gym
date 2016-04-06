@@ -258,6 +258,12 @@ private:
   /// iterator of container of Ipv4RoutingTableEntry (routes to external AS)
   typedef std::list<Ipv4RoutingTableEntry *>::iterator ASExternalRoutesI;
 
+  /**
+   * \brief Lookup in the forwarding table for destination.
+   * \param dest destination address
+   * \param oif output interface if any (put 0 otherwise)
+   * \return Ipv4Route to route the packet to reach dest address
+   */
   Ptr<Ipv4Route> LookupGlobal (Ipv4Address dest, Ptr<NetDevice> oif = 0);
 
   HostRoutes m_hostRoutes;             //!< Routes to hosts

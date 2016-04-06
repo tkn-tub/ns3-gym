@@ -121,14 +121,14 @@ public:
   uint32_t GetRouteMetric (void) const;
 
   /**
-   * \brief Set the route metric.
-   * \param routeMetric The route metric.
+   * \brief Set the next hop.
+   * \param nextHop The next hop.
    */
   void SetNextHop (Ipv4Address nextHop);
 
   /**
-   * \brief Get the route metric.
-   * \returns The route metric.
+   * \brief Get the next hop.
+   * \returns The next hop.
    */
   Ipv4Address GetNextHop (void) const;
 

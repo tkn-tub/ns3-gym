@@ -394,11 +394,11 @@ private:
   /**
    * \brief Fragment a packet
    * \param packet the packet
-   * \param ipHeader the IPv4 header
+   * \param ipv4Header the IPv4 header
    * \param outIfaceMtu the MTU of the interface
    * \param listFragments the list of fragments
    */
-  void DoFragmentation (Ptr<Packet> packet, const Ipv4Header & ipv4Header, uint32_t outIfaceMtu, std::list<Ipv4PayloadHeaderPair>& listFragments);
+  void DoFragmentation (Ptr<Packet> packet, const Ipv4Header& ipv4Header, uint32_t outIfaceMtu, std::list<Ipv4PayloadHeaderPair>& listFragments);
 
   /**
    * \brief Process a packet fragment

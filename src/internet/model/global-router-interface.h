@@ -847,6 +847,9 @@ private:
 
   // Declared mutable so that const member functions can clear it
   // (supporting the logical constness of the search methods of this class) 
+  /**
+   * Container of bridges visited.
+   */
   mutable std::vector<Ptr<BridgeNetDevice> > m_bridgesVisited;
   /**
    * Clear the list of bridges visited on the link 

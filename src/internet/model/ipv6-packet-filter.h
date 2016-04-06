@@ -99,6 +99,12 @@ public:
 
 private:
   virtual int32_t DoClassify (Ptr<QueueDiscItem> item) const;
+
+  /**
+   * \brief Converts a DSCP field value into a priority band.
+   * \param dscpType The DSCP to convert.
+   * \returns The converted band value.
+   */
   uint32_t DscpToBand (Ipv6Header::DscpType dscpType) const;
 };
 
