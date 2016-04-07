@@ -613,6 +613,7 @@ BlockAckManager::NotifyGotBlockAck (const CtrlBAckResponseHeader *blockAck, Mac4
                                                     (*queueIt).hdr.GetFragmentNumber ()))
                     {
                       nSuccessfulMpdus++;
+                      RemoveFromRetryQueue (recipient, tid, (*queueIt).hdr.GetSequenceNumber ());
                       queueIt = it->second.second.erase (queueIt);
                     }
                   else
@@ -636,9 +637,9 @@ BlockAckManager::NotifyGotBlockAck (const CtrlBAckResponseHeader *blockAck, Mac4
             {
               for (PacketQueueI queueIt = it->second.second.begin (); queueIt != queueEnd; )
                 {
-                  if (blockAck->IsPacketReceived ((*queueIt).hdr.GetSequenceNumber ()))
+                  uint16_t currentSeq = (*queueIt).hdr.GetSequenceNumber ();
+                  if (blockAck->IsPacketReceived (currentSeq))
                     {
-                      uint16_t currentSeq = (*queueIt).hdr.GetSequenceNumber ();
                       while (queueIt != queueEnd
                              && (*queueIt).hdr.GetSequenceNumber () == currentSeq)
                         {
@@ -647,6 +648,7 @@ BlockAckManager::NotifyGotBlockAck (const CtrlBAckResponseHeader *blockAck, Mac4
                             {
                               m_txOkCallback ((*queueIt).hdr);
                             }
+                          RemoveFromRetryQueue (recipient, tid, currentSeq);
                           queueIt = it->second.second.erase (queueIt);
                         }
                     }
@@ -872,6 +874,26 @@ bool BlockAckManager::NeedBarRetransmission (uint8_t tid, uint16_t seqNumber, Ma
 }
 
 void
+BlockAckManager::RemoveFromRetryQueue (Mac48Address address, uint8_t tid, uint16_t seq)
+{
+  /* remove retry packet iterator if it's present in retry queue */
+  std::list<PacketQueueI>::iterator it = m_retryPackets.begin ();
+  while (it != m_retryPackets.end ())
+    {
+      if ((*it)->hdr.GetAddr1 () == address
+          && (*it)->hdr.GetQosTid () == tid
+          && (*it)->hdr.GetSequenceNumber () == seq)
+        {
+          it = m_retryPackets.erase (it);
+        }
+      else
+        {
+          it++;
+        }
+    }
+}
+
+void
 BlockAckManager::CleanupBuffers (void)
 {
   NS_LOG_FUNCTION (this);
@@ -892,20 +914,9 @@ BlockAckManager::CleanupBuffers (void)
             }
           else
             {
-              /* remove retry packet iterator if it's present in retry queue */
-              for (std::list<PacketQueueI>::iterator it = m_retryPackets.begin (); it != m_retryPackets.end (); )
-                {
-                  if ((*it)->hdr.GetAddr1 () == j->second.first.GetPeer ()
-                      && (*it)->hdr.GetQosTid () == j->second.first.GetTid ()
-                      && (*it)->hdr.GetSequenceNumber () == i->hdr.GetSequenceNumber ())
-                    {
-                      it = m_retryPackets.erase (it);
-                    }
-                  else
-                    {
-                      it++;
-                    }
-                }
+              RemoveFromRetryQueue (j->second.first.GetPeer (),
+                                    j->second.first.GetTid (),
+                                    i->hdr.GetSequenceNumber ());
             }
         }
       j->second.second.erase (j->second.second.begin (), end);

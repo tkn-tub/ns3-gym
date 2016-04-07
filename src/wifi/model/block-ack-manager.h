@@ -479,6 +479,16 @@ private:
   void InsertInRetryQueue (PacketQueueI item);
 
   /**
+   * Remove items from retransmission queue.
+   * This method should be called when packets are acknowledged.
+   *
+   * \param address recipient mac address of the packet to be removed
+   * \param tid Traffic ID of the packet to be removed
+   * \param seq sequence number of the packet to be removed
+   */
+  void RemoveFromRetryQueue (Mac48Address address, uint8_t tid, uint16_t seq);
+
+  /**
    * This data structure contains, for each block ack agreement (recipient, tid), a set of packets
    * for which an ack by block ack is requested.
    * Every packet or fragment indicated as correctly received in block ack frame is

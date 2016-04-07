@@ -33,6 +33,7 @@ Bugs fixed
 - Bug 2248 - tcp: TCP SACK added after reviews
 - Bug 2256 - tcp: bytes in flight now updated in TcpTxBuffer
 - Bug 2263 - Support processing of multiple TCP options
+- Bug 2367 - BlockAckManager does not remove iterators to freed items
 - Bug 2450 - LogDistancePropagationLossModel is not continuous
 - Bug 2463 - create trace source to trace the TXOP time that is actually used
 - Bug 2471 - unable to disable Block Ack agreement for 802.11n 
