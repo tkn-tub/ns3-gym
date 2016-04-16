@@ -64,7 +64,10 @@
 //     # chown root.root build/src/fd-net-device/ns3-dev-tap-device-creator
 //     # sudo chmod 4755 build/src/fd-net-device/ns3-dev-tap-device-creator
 //
-
+//  4)  The example can be executed as follows using waf:
+//  
+//     ./waf --run fd-tap-ping --command-template="%s --tapNetwork=<TAP-network-address> --tapMask=<TAP-network-mask>" 
+//
 
 #include "ns3/abort.h"
 #include "ns3/core-module.h"
