@@ -255,6 +255,7 @@ def build(bld):
         'test/tcp-vegas-test.cc',
         'test/tcp-scalable-test.cc',
         'test/tcp-veno-test.cc',
+        'test/tcp-bic-test.cc',
         'test/tcp-zero-window-test.cc',
         'test/tcp-pkts-acked-test.cc',
         'test/tcp-rtt-estimation.cc',

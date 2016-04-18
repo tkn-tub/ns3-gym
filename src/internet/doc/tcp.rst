@@ -348,6 +348,9 @@ section below on :ref:`Writing-tcp-tests`.
 * **tcp-highspeed-test:** Unit tests on the Highspeed congestion control
 * **tcp-hybla-test:** Unit tests on the Hybla congestion control
 * **tcp-vegas-test:** Unit tests on the Vegas congestion control
+* **tcp-veno-test:** Unit tests on the Veno congestion control
+* **tcp-scalable-test:** Unit tests on the Scalable congestion control
+* **tcp-bic-test:** Unit tests on the Vegas congestion control
 * **tcp-option:** Unit tests on TCP options
 * **tcp-pkts-acked-test:** Unit test the number of time that PktsAcked is called
 * **tcp-rto-test:** Unit test behavior after a RTO timeout occurs
