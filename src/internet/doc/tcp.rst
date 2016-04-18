@@ -147,6 +147,90 @@ and either connect() and send() (for a TCP client) or bind(), listen(), and
 accept() (for a TCP server). See :ref:`Sockets-APIs` for a review of
 how sockets are used in |ns3|.
 
+Congestion Control Algorithms
++++++++++++++++++++++++++++++
+Here follows a list of supported TCP congestion control algorithms. For an
+academic peer-reviewed paper on these congestion control algorithms, see
+http://dl.acm.org/citation.cfm?id=2756518 .
+
+New Reno
+^^^^^^^^
+New Reno algorithm introduces partial ACKs inside the well-established Reno
+algorithm. This and other modifications are described in RFC 6582. We have two
+possible congestion window increment strategy: slow start and congestion
+avoidance. Taken from RFC 5681:
+
+  During slow start, a TCP increments cwnd by at most SMSS bytes for
+  each ACK received that cumulatively acknowledges new data.  Slow
+  start ends when cwnd exceeds ssthresh (or, optionally, when it
+  reaches it, as noted above) or when congestion is observed.  While
+  traditionally TCP implementations have increased cwnd by precisely
+  SMSS bytes upon receipt of an ACK covering new data, we RECOMMEND
+  that TCP implementations increase cwnd, per:
+
+  cwnd += min (N, SMSS)                      (2)
+
+  where N is the number of previously unacknowledged bytes acknowledged
+  in the incoming ACK.
+
+During congestion avoidance, cwnd is incremented by roughly 1 full-sized
+segment per round-trip time (RTT).
+
+For each congestion event, the slow start threshold is halved.
+
+High Speed
+^^^^^^^^^^
+TCP HighSpeed is designed for high-capacity channels or, in general, for
+TCP connections with large congestion windows.
+Conceptually, with respect to the standard TCP, HighSpeed makes the
+cWnd grow faster during the probing phases and accelerates the
+cWnd recovery from losses.
+This behavior is executed only when the window grows beyond a
+certain threshold, which allows TCP Highspeed to be friendly with standard
+TCP in environments with heavy congestion, without introducing new dangers
+of congestion collapse.
+
+Mathematically:
+
+  cWnd = cWnd + a(cWnd)/cWnd
+
+The function a() is calculated using a fixed RTT the value 100 ms (the
+lookup table for this function is taken from RFC 3649). For each congestion
+event, the slow start threshold is decreased by a value that depends on the
+size of the slow start threshold itself. Then, the congestion window is set
+to such value.
+
+   cWnd <- (1-b(cWnd))cWnd
+
+The lookup table for the function b() is taken from the same RFC.
+More information at: http://dl.acm.org/citation.cfm?id=2756518
+
+Hybla
+^^^^^
+The key idea behind TCP Hybla is to obtain for long RTT connections the same
+instantaneous transmission rate of a reference TCP connection with lower RTT.
+With analytical steps, it is shown that this goal can be achieved by
+modifying the time scale, in order for the throughput to be independent from
+the RTT. This independence is obtained through the use of a coefficient rho.
+
+This coefficient is used to calculate both the slow start threshold
+and the congestion window when in slow start and in congestion avoidance,
+respectively.
+
+More information at: http://dl.acm.org/citation.cfm?id=2756518
+
+Westwood
+^^^^^^^^
+Westwood and Westwood+ employ the AIAD (Additive Increase/Adaptive Decrease)·
+congestion control paradigm. When a congestion episode happens,·
+instead of halving the cwnd, these protocols try to estimate the network's
+bandwidth and use the estimated value to adjust the cwnd.·
+While Westwood performs the bandwidth sampling every ACK reception,·
+Westwood+ samples the bandwidth every RTT.
+
+More information at: http://dl.acm.org/citation.cfm?id=381704 and
+http://dl.acm.org/citation.cfm?id=2512757
+
 Validation
 ++++++++++
 
