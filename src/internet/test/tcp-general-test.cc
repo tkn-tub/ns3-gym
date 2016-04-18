@@ -600,18 +600,7 @@ TcpGeneralTest::GetSegSize (SocketWho who)
 SequenceNumber32
 TcpGeneralTest::GetHighestTxMark (SocketWho who)
 {
-  if (who == SENDER)
-    {
-      return DynamicCast<TcpSocketMsgBase> (m_senderSocket)->m_highTxMark;
-    }
-  else if (who == RECEIVER)
-    {
-      return DynamicCast<TcpSocketMsgBase> (m_receiverSocket)->m_highTxMark;
-    }
-  else
-    {
-      NS_FATAL_ERROR ("Not defined");
-    }
+  return GetTcb (who)->m_highTxMark;
 }
 
 uint32_t

@@ -143,7 +143,7 @@ TcpSocketBase::GetTypeId (void)
                      "ns3::SequenceNumber32TracedValueCallback")
     .AddTraceSource ("HighestSequence",
                      "Highest sequence number ever sent in socket's life time",
-                     MakeTraceSourceAccessor (&TcpSocketBase::m_highTxMark),
+                     MakeTraceSourceAccessor (&TcpSocketBase::m_highTxMarkTrace),
                      "ns3::SequenceNumber32TracedValueCallback")
     .AddTraceSource ("State",
                      "TCP state",
@@ -215,6 +215,10 @@ TcpSocketState::GetTypeId (void)
                      "TCP Congestion machine state",
                      MakeTraceSourceAccessor (&TcpSocketState::m_congState),
                      "ns3::TracedValue::TcpCongStatesTracedValueCallback")
+    .AddTraceSource ("HighestSequence",
+                     "Highest sequence number received from peer",
+                     MakeTraceSourceAccessor (&TcpSocketState::m_highTxMark),
+                     "ns3::SequenceNumber32TracedValueCallback")
   ;
   return tid;
 }
@@ -226,7 +230,8 @@ TcpSocketState::TcpSocketState (void)
     m_initialCWnd (0),
     m_initialSsThresh (0),
     m_segmentSize (0),
-    m_congState (CA_OPEN)
+    m_congState (CA_OPEN),
+    m_highTxMark (0)
 {
 }
 
@@ -237,7 +242,8 @@ TcpSocketState::TcpSocketState (const TcpSocketState &other)
     m_initialCWnd (other.m_initialCWnd),
     m_initialSsThresh (other.m_initialSsThresh),
     m_segmentSize (other.m_segmentSize),
-    m_congState (other.m_congState)
+    m_congState (other.m_congState),
+    m_highTxMark (other.m_highTxMark)
 {
 }
 
@@ -275,7 +281,8 @@ TcpSocketBase::TcpSocketBase (void)
     m_tcp (0),
     m_rtt (0),
     m_nextTxSequence (0), // Change this for non-zero initial sequence number
-    m_highTxMark (0),
+    m_rxBuffer (0),
+    m_txBuffer (0),
     m_state (CLOSED),
     m_errno (ERROR_NOTERROR),
     m_closeNotified (false),
@@ -322,6 +329,10 @@ TcpSocketBase::TcpSocketBase (void)
   ok = m_tcb->TraceConnectWithoutContext ("CongState",
                                           MakeCallback (&TcpSocketBase::UpdateCongState, this));
   NS_ASSERT (ok == true);
+
+  ok = m_tcb->TraceConnectWithoutContext ("HighestSequence",
+                                          MakeCallback (&TcpSocketBase::UpdateHighTxMark, this));
+  NS_ASSERT (ok == true);
 }
 
 TcpSocketBase::TcpSocketBase (const TcpSocketBase& sock)
@@ -347,7 +358,6 @@ TcpSocketBase::TcpSocketBase (const TcpSocketBase& sock)
     m_node (sock.m_node),
     m_tcp (sock.m_tcp),
     m_nextTxSequence (sock.m_nextTxSequence),
-    m_highTxMark (sock.m_highTxMark),
     m_state (sock.m_state),
     m_errno (sock.m_errno),
     m_closeNotified (sock.m_closeNotified),
@@ -411,6 +421,9 @@ TcpSocketBase::TcpSocketBase (const TcpSocketBase& sock)
   ok = m_tcb->TraceConnectWithoutContext ("CongState",
                                           MakeCallback (&TcpSocketBase::UpdateCongState, this));
   NS_ASSERT (ok == true);
+
+  ok = m_tcb->TraceConnectWithoutContext ("HighestSequence",
+                                          MakeCallback (&TcpSocketBase::UpdateHighTxMark, this));
 }
 
 TcpSocketBase::~TcpSocketBase (void)
@@ -1369,13 +1382,13 @@ TcpSocketBase::ProcessEstablished (Ptr<Packet> packet, const TcpHeader& tcpHeade
 
           // TODO: RFC 5961 5.2 [Blind Data Injection Attack].[Mitigation]
         }
-      else if (tcpHeader.GetAckNumber () > m_highTxMark)
+      else if (tcpHeader.GetAckNumber () > m_tcb->m_highTxMark)
         {
           // If the ACK acks something not yet sent (SEG.ACK > HighTxMark) then
           // send an ACK, drop the segment, and return.
           // Pag. 72 RFC 793
           NS_LOG_LOGIC ("Ignored ack of " << tcpHeader.GetAckNumber () <<
-                        " HighTxMark = " << m_highTxMark);
+                        " HighTxMark = " << m_tcb->m_highTxMark);
 
           SendEmptyPacket (TcpHeader::ACK);
         }
@@ -1478,7 +1491,7 @@ TcpSocketBase::ReceivedAck (Ptr<Packet> packet, const TcpHeader& tcpHeader)
               // triple duplicate ack triggers fast retransmit (RFC2582 sec.3 bullet #1)
               NS_LOG_DEBUG (TcpSocketState::TcpCongStateName[m_tcb->m_congState] <<
                             " -> RECOVERY");
-              m_recover = m_highTxMark;
+              m_recover = m_tcb->m_highTxMark;
               m_congestionControl->CongestionStateSet (m_tcb, TcpSocketState::CA_RECOVERY);
               m_tcb->m_congState = TcpSocketState::CA_RECOVERY;
 
@@ -1750,7 +1763,7 @@ TcpSocketBase::ProcessSynSent (Ptr<Packet> packet, const TcpHeader& tcpHeader)
       m_connected = true;
       m_retxEvent.Cancel ();
       m_rxBuffer->SetNextRxSequence (tcpHeader.GetSequenceNumber () + SequenceNumber32 (1));
-      m_highTxMark = ++m_nextTxSequence;
+      m_tcb->m_highTxMark = ++m_nextTxSequence;
       m_txBuffer->SetHeadSequence (m_nextTxSequence);
       SendEmptyPacket (TcpHeader::ACK);
       SendPendingData (m_connected);
@@ -1792,7 +1805,7 @@ TcpSocketBase::ProcessSynRcvd (Ptr<Packet> packet, const TcpHeader& tcpHeader,
       m_state = ESTABLISHED;
       m_connected = true;
       m_retxEvent.Cancel ();
-      m_highTxMark = ++m_nextTxSequence;
+      m_tcb->m_highTxMark = ++m_nextTxSequence;
       m_txBuffer->SetHeadSequence (m_nextTxSequence);
       if (m_endPoint)
         {
@@ -1826,7 +1839,7 @@ TcpSocketBase::ProcessSynRcvd (Ptr<Packet> packet, const TcpHeader& tcpHeader,
         { // In-sequence FIN before connection complete. Set up connection and close.
           m_connected = true;
           m_retxEvent.Cancel ();
-          m_highTxMark = ++m_nextTxSequence;
+          m_tcb->m_highTxMark = ++m_nextTxSequence;
           m_txBuffer->SetHeadSequence (m_nextTxSequence);
           if (m_endPoint)
             {
@@ -1880,7 +1893,7 @@ TcpSocketBase::ProcessWait (Ptr<Packet> packet, const TcpHeader& tcpHeader)
     { // Process the ACK, and if in FIN_WAIT_1, conditionally move to FIN_WAIT_2
       ReceivedAck (packet, tcpHeader);
       if (m_state == FIN_WAIT_1 && m_txBuffer->Size () == 0
-          && tcpHeader.GetAckNumber () == m_highTxMark + SequenceNumber32 (1))
+          && tcpHeader.GetAckNumber () == m_tcb->m_highTxMark + SequenceNumber32 (1))
         { // This ACK corresponds to the FIN sent
           NS_LOG_DEBUG ("FIN_WAIT_1 -> FIN_WAIT_2");
           m_state = FIN_WAIT_2;
@@ -1918,7 +1931,7 @@ TcpSocketBase::ProcessWait (Ptr<Packet> packet, const TcpHeader& tcpHeader)
           NS_LOG_DEBUG ("FIN_WAIT_1 -> CLOSING");
           m_state = CLOSING;
           if (m_txBuffer->Size () == 0
-              && tcpHeader.GetAckNumber () == m_highTxMark + SequenceNumber32 (1))
+              && tcpHeader.GetAckNumber () == m_tcb->m_highTxMark + SequenceNumber32 (1))
             { // This ACK corresponds to the FIN sent
               TimeWait ();
             }
@@ -2399,7 +2412,7 @@ TcpSocketBase::SendDataPacket (SequenceNumber32 seq, uint32_t maxSize, bool with
   NS_LOG_FUNCTION (this << seq << maxSize << withAck);
 
   bool isRetransmission = false;
-  if (seq != m_highTxMark)
+  if (seq != m_tcb->m_highTxMark)
     {
       isRetransmission = true;
     }
@@ -2519,12 +2532,13 @@ TcpSocketBase::SendDataPacket (SequenceNumber32 seq, uint32_t maxSize, bool with
   UpdateRttHistory (seq, sz, isRetransmission);
 
   // Notify the application of the data being sent unless this is a retransmit
-  if (seq + sz > m_highTxMark)
+  if (seq + sz > m_tcb->m_highTxMark)
     {
-      Simulator::ScheduleNow (&TcpSocketBase::NotifyDataSent, this, (seq + sz - m_highTxMark.Get ()));
+      Simulator::ScheduleNow (&TcpSocketBase::NotifyDataSent, this,
+                             (seq + sz - m_tcb->m_highTxMark.Get ()));
     }
   // Update highTxMark
-  m_highTxMark = std::max (seq + sz, m_highTxMark.Get ());
+  m_tcb->m_highTxMark = std::max (seq + sz, m_tcb->m_highTxMark.Get ());
   return sz;
 }
 
@@ -2855,12 +2869,12 @@ TcpSocketBase::ReTxTimeout ()
       return;
     }
   // If all data are received (non-closing socket and nothing to send), just return
-  if (m_state <= ESTABLISHED && m_txBuffer->HeadSequence () >= m_highTxMark)
+  if (m_state <= ESTABLISHED && m_txBuffer->HeadSequence () >= m_tcb->m_highTxMark)
     {
       return;
     }
 
-  m_recover = m_highTxMark;
+  m_recover = m_tcb->m_highTxMark;
   Retransmit ();
 }
 
@@ -2940,7 +2954,7 @@ TcpSocketBase::Retransmit ()
       return;
     }
   // If all data are received (non-closing socket and nothing to send), just return
-  if (m_state <= ESTABLISHED && m_txBuffer->HeadSequence () >= m_highTxMark)
+  if (m_state <= ESTABLISHED && m_txBuffer->HeadSequence () >= m_tcb->m_highTxMark)
     {
       return;
     }
@@ -3437,6 +3451,12 @@ TcpSocketBase::UpdateCongState (TcpSocketState::TcpCongState_t oldValue,
                                 TcpSocketState::TcpCongState_t newValue)
 {
   m_congStateTrace (oldValue, newValue);
+}
+
+void
+TcpSocketBase::UpdateHighTxMark (SequenceNumber32 oldValue, SequenceNumber32 newValue)
+{
+  m_highTxMarkTrace (oldValue, newValue);
 }
 
 void

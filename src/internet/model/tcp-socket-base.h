@@ -160,6 +160,7 @@ public:
   uint32_t               m_segmentSize;     //!< Segment size
 
   TracedValue<TcpCongState_t> m_congState;    //!< State in the Congestion state machine
+  TracedValue<SequenceNumber32> m_highTxMark; //!< Highest seqno ever sent, regardless of ReTx
 
   /**
    * \brief Get cwnd in segments rather than bytes
@@ -169,6 +170,16 @@ public:
   uint32_t GetCwndInSegments () const
   {
     return m_cWnd / m_segmentSize;
+  }
+
+  /**
+   * \brief Get slow start thresh in segments rather than bytes
+   *
+   * \return Slow start threshold in segments
+   */
+  uint32_t GetSsThreshInSegments () const
+  {
+    return m_ssThresh / m_segmentSize;
   }
 };
 
@@ -347,6 +358,11 @@ public:
   TracedCallback<TcpSocketState::TcpCongState_t, TcpSocketState::TcpCongState_t> m_congStateTrace;
 
   /**
+    * \brief Callback pointer for high tx mark chaining
+    */
+  TracedCallback <SequenceNumber32, SequenceNumber32> m_highTxMarkTrace;
+
+  /**
    * \brief Callback function to hook to TcpSocketState congestion window
    * \param oldValue old cWnd value
    * \param newValue new cWnd value
@@ -367,6 +383,13 @@ public:
    */
   void UpdateCongState (TcpSocketState::TcpCongState_t oldValue,
                         TcpSocketState::TcpCongState_t newValue);
+
+  /**
+   * \brief Callback function to hook to TcpSocketState high tx mark
+   * \param oldValue old high tx mark
+   * \param newValue new high tx mark
+   */
+  void UpdateHighTxMark (SequenceNumber32 oldValue, SequenceNumber32 newValue);
 
   /**
    * \brief Install a congestion control algorithm on this socket
@@ -947,7 +970,6 @@ protected:
 
   // Rx and Tx buffer management
   TracedValue<SequenceNumber32> m_nextTxSequence; //!< Next seqnum to be sent (SND.NXT), ReTx pushes it back
-  TracedValue<SequenceNumber32> m_highTxMark;     //!< Highest seqno ever sent, regardless of ReTx
   Ptr<TcpRxBuffer>              m_rxBuffer;       //!< Rx buffer (reordering buffer)
   Ptr<TcpTxBuffer>              m_txBuffer;       //!< Tx buffer
 
