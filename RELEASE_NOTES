@@ -25,6 +25,7 @@ New user-visible features
 - (internet) Added TCP Vegas congestion control algorithm
 - (internet) Added TCP Scalable congestion control algorithm
 - (internet) Added TCP Veno congestion control algorithm
+- (internet) Added TCP Bic congestion control algorithm
 
 Bugs fixed
 ----------

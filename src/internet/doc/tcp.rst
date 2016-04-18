@@ -306,6 +306,29 @@ rate as in Reno.
 
 More informations at: http://dx.doi.org/10.1109/JSAC.2002.807336
 
+Bic
+^^^
+
+In TCP Bic the congestion control problem is viewed as a search
+problem. Taking as a starting point the current window value
+and as a target point the last maximum window value
+(i.e. the cWnd value just before the loss event) a binary search
+technique can be used to update the cWnd value at the midpoint between
+the two, directly or using an additive increase strategy if the distance from
+the current window is too large.
+
+This way, assuming a no-loss period, the congestion window logarithmically
+approaches the maximum value of cWnd until the difference between it and cWnd
+falls below a preset threshold. After reaching such a value (or the maximum
+window is unknown, i.e. the binary search does not start at all) the algorithm
+switches to probing the new maximum window with a 'slow start' strategy.
+
+If a loss occur in either these phases, the current window (before the loss)
+can be treated as the new maximum, and the reduced (with a multiplicative
+decrease factor Beta) window size can be used as the new minimum.
+
+More informations at: http://ieeexplore.ieee.org/xpl/articleDetails.jsp?arnumber=1354672
+
 Validation
 ++++++++++
 
