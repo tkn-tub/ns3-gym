@@ -181,7 +181,8 @@ TcpGeneralTest::DoRun (void)
   m_receiverSocket->TraceConnectWithoutContext ("Rx",
                                                 MakeCallback (&TcpGeneralTest::RxPacketCb, this));
 
-  InetSocketAddress local = InetSocketAddress (Ipv4Address::GetAny (), 4477);  m_receiverSocket->Bind (local);
+  InetSocketAddress local = InetSocketAddress (Ipv4Address::GetAny (), 4477);
+  m_receiverSocket->Bind (local);
 
   m_senderSocket = CreateSenderSocket (nodes.Get (0));
   m_senderSocket->SetCloseCallbacks (MakeCallback (&TcpGeneralTest::NormalCloseCb, this),
@@ -1001,7 +1002,7 @@ TcpSocketSmallAcks::SendEmptyPacket (uint8_t flags)
 {
   Ptr<Packet> p = Create<Packet> ();
   TcpHeader header;
-  SequenceNumber32 s = m_nextTxSequence;
+  SequenceNumber32 s = m_tcb->m_nextTxSequence;
 
   /*
    * Add tags for each socket option.

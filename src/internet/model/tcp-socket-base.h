@@ -161,6 +161,7 @@ public:
 
   TracedValue<TcpCongState_t> m_congState;    //!< State in the Congestion state machine
   TracedValue<SequenceNumber32> m_highTxMark; //!< Highest seqno ever sent, regardless of ReTx
+  TracedValue<SequenceNumber32> m_nextTxSequence; //!< Next seqnum to be sent (SND.NXT), ReTx pushes it back
 
   /**
    * \brief Get cwnd in segments rather than bytes
@@ -358,9 +359,14 @@ public:
   TracedCallback<TcpSocketState::TcpCongState_t, TcpSocketState::TcpCongState_t> m_congStateTrace;
 
   /**
-    * \brief Callback pointer for high tx mark chaining
-    */
+   * \brief Callback pointer for high tx mark chaining
+   */
   TracedCallback <SequenceNumber32, SequenceNumber32> m_highTxMarkTrace;
+
+  /**
+   * \brief Callback pointer for next tx sequence chaining
+   */
+  TracedCallback<SequenceNumber32, SequenceNumber32> m_nextTxSequenceTrace;
 
   /**
    * \brief Callback function to hook to TcpSocketState congestion window
@@ -390,6 +396,13 @@ public:
    * \param newValue new high tx mark
    */
   void UpdateHighTxMark (SequenceNumber32 oldValue, SequenceNumber32 newValue);
+
+  /**
+   * \brief Callback function to hook to TcpSocketState next tx sequence
+   * \param oldValue old nextTxSeq value
+   * \param newValue new nextTxSeq value
+   */
+  void UpdateNextTxSequence (SequenceNumber32 oldValue, SequenceNumber32 newValue);
 
   /**
    * \brief Install a congestion control algorithm on this socket
@@ -969,7 +982,6 @@ protected:
   Ptr<RttEstimator> m_rtt; //!< Round trip time estimator
 
   // Rx and Tx buffer management
-  TracedValue<SequenceNumber32> m_nextTxSequence; //!< Next seqnum to be sent (SND.NXT), ReTx pushes it back
   Ptr<TcpRxBuffer>              m_rxBuffer;       //!< Rx buffer (reordering buffer)
   Ptr<TcpTxBuffer>              m_txBuffer;       //!< Tx buffer
 
