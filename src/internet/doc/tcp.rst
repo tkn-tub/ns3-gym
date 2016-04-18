@@ -255,6 +255,26 @@ modified through the Attribute system.
 
 More informations at: http://dx.doi.org/10.1109/49.464716
 
+Scalable
+^^^^^^^^
+Scalable improves TCP performance to better utilize the available bandwidth of
+a highspeed wide area network by altering NewReno congestion window adjustment
+algorithm.  When congestion has not been detected, for each ACK received in an
+RTT, Scalable increases its cwnd per:
+
+  cwnd = cwnd + 0.01                  (1)
+
+Following Linux implementation of Scalable, we use 50 instead of 100 to account
+for delayed ACK.
+
+On the first detection of congestion in a given RTT, cwnd is reduced based on
+the following equation:
+
+  cwnd = cwnd - ceil(0.125 * cwnd)       (2)
+
+
+More informations at: http://dl.acm.org/citation.cfm?id=956989
+
 Validation
 ++++++++++
 

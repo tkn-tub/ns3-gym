@@ -178,7 +178,8 @@ int main (int argc, char *argv[])
 
   CommandLine cmd;
   cmd.AddValue ("transport_prot", "Transport protocol to use: TcpNewReno, "
-                " TcpWestwood, TcpWestwoodPlus ", transport_prot);
+                "TcpHybla, TcpHighSpeed, TcpVegas, TcpScalable, TcpWestwood, "
+                "TcpWestwoodPlus ", transport_prot);
   cmd.AddValue ("error_p", "Packet error rate", error_p);
   cmd.AddValue ("bandwidth", "Bottleneck bandwidth", bandwidth);
   cmd.AddValue ("delay", "Bottleneck delay", delay);
@@ -228,6 +229,22 @@ int main (int argc, char *argv[])
   if (transport_prot.compare ("TcpNewReno") == 0)
     {
       Config::SetDefault ("ns3::TcpL4Protocol::SocketType", TypeIdValue (TcpNewReno::GetTypeId ()));
+    }
+  else if (transport_prot.compare ("TcpHybla") == 0)
+    {
+      Config::SetDefault ("ns3::TcpL4Protocol::SocketType", TypeIdValue (TcpHybla::GetTypeId ()));
+    }
+  else if (transport_prot.compare ("TcpHighSpeed") == 0)
+    {
+      Config::SetDefault ("ns3::TcpL4Protocol::SocketType", TypeIdValue (TcpHighSpeed::GetTypeId ()));
+    }
+  else if (transport_prot.compare ("TcpVegas") == 0)
+    {
+      Config::SetDefault ("ns3::TcpL4Protocol::SocketType", TypeIdValue (TcpVegas::GetTypeId ()));
+    }
+  else if (transport_prot.compare ("TcpScalable") == 0)
+    {
+      Config::SetDefault ("ns3::TcpL4Protocol::SocketType", TypeIdValue (TcpScalable::GetTypeId ()));
     }
   else if (transport_prot.compare ("TcpWestwood") == 0)
     { // the default protocol type in ns3::TcpWestwood is WESTWOOD
@@ -345,8 +362,8 @@ int main (int argc, char *argv[])
           || transport_prot.compare ("TcpWestwoodPlus") == 0
           || transport_prot.compare ("TcpHybla") == 0
           || transport_prot.compare ("TcpHighSpeed") == 0
-          || transport_prot.compare ("TcpBic") == 0
-          || transport_prot.compare ("TcpCubic") == 0)
+          || transport_prot.compare ("TcpVegas") == 0
+          || transport_prot.compare ("TcpScalable") == 0)
         {
           Config::SetDefault ("ns3::TcpSocket::SegmentSize", UintegerValue (tcp_adu_size));
           BulkSendHelper ftp ("ns3::TcpSocketFactory", Address ());
