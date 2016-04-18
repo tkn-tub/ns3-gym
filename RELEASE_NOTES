@@ -52,6 +52,7 @@ Bugs fixed
 - Bug 2352 - Add 'drop oldest' drop policy to WifiMacQueue
 - Bug 2353 - TCP Vegas implementation
 - Bug 2375 - Flowmonitor parse crashes when no pkt is received
+- Bug 2376 - New A-MPDU might not be received if MPDUs of a previous A-MPDU are lost
 - Bug 2377 - SocketIpTosTag and SocketIpv6TclassTag may be added twice in UDP
 - Bug 2378 - A-MPDU variables are not correctly reset in YansWifiPhy when a PLCP preamble/header failed
 - Bug 2380 - EdcaTxopN fails to retrieve TID for ADDBA requests, ADDBA responses and DELBA frames

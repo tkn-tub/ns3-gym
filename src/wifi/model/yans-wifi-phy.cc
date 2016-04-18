@@ -671,6 +671,11 @@ YansWifiPhy::StartReceivePreambleAndHeader (Ptr<Packet> packet,
                   m_mpdusNum--;
                 }
             }
+          else if (preamble != WIFI_PREAMBLE_NONE && packet->PeekPacketTag (ampduTag) && m_mpdusNum > 0)
+            {
+              NS_LOG_DEBUG ("New A-MPDU started while " << m_mpdusNum << " MPDUs from previous are lost");
+              m_mpdusNum = ampduTag.GetRemainingNbOfMpdus ();
+            }
           else if (preamble != WIFI_PREAMBLE_NONE && m_mpdusNum > 0 )
             {
               NS_LOG_DEBUG ("Didn't receive the last MPDUs from an A-MPDU " << m_mpdusNum);
