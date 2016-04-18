@@ -275,6 +275,37 @@ the following equation:
 
 More informations at: http://dl.acm.org/citation.cfm?id=956989
 
+Veno
+^^^^
+
+TCP Veno enhances Reno algorithm for more effectively dealing with random
+packet loss in wireless access networks by employing Vegas's method in
+estimating the backlog at the bottleneck queue to distinguish between
+congestive and non-congestive states.
+
+The backlog (the number of packets accumulated at the bottleneck queue) is
+calculated using Equation (1):
+  N = Actual * (RTT - BaseRTT) = Diff * BaseRTT        (1)
+where
+  Diff = Expected - Actual = cwnd/BaseRTT - cwnd/RTT
+
+Veno makes decision on cwnd modification based on the calculated N and its
+predefined threshold beta.
+
+Specifically, it refines the additive increase algorithm of Reno so that the
+connection can stay longer in the stable state by incrementing cwnd by
+1/cwnd for every other new ACK received after the available bandwidth has
+been fully utilized, i.e. when N exceeds beta.  Otherwise, Veno increases
+its cwnd by 1/cwnd upon every new ACK receipt as in Reno.
+
+In the multiplicative decrease algorithm, when Veno is in the non-congestive
+state, i.e. when N is less than beta, Veno decrements its cwnd by only 1/5
+because the loss encountered is more likely a corruption-based loss than a
+congestion-based.  Only when N is greater than beta, Veno halves its sending
+rate as in Reno.
+
+More informations at: http://dx.doi.org/10.1109/JSAC.2002.807336
+
 Validation
 ++++++++++
 
