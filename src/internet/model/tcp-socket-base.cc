@@ -50,6 +50,7 @@
 #include "tcp-option-winscale.h"
 #include "tcp-option-ts.h"
 #include "rtt-estimator.h"
+#include "tcp-congestion-ops.h"
 
 #include <math.h>
 #include <algorithm>
@@ -1456,6 +1457,8 @@ TcpSocketBase::ReceivedAck (Ptr<Packet> packet, const TcpHeader& tcpHeader)
           // From Open we go Disorder
           NS_ASSERT_MSG (m_dupAckCount == 1, "From OPEN->DISORDER but with " <<
                          m_dupAckCount << " dup ACKs");
+
+          m_congestionControl->CongestionStateSet (m_tcb, TcpSocketState::CA_DISORDER);
           m_tcb->m_congState = TcpSocketState::CA_DISORDER;
 
           if (m_limitedTx && m_txBuffer->SizeFromSequence (m_nextTxSequence) > 0)
@@ -1476,6 +1479,7 @@ TcpSocketBase::ReceivedAck (Ptr<Packet> packet, const TcpHeader& tcpHeader)
               NS_LOG_DEBUG (TcpSocketState::TcpCongStateName[m_tcb->m_congState] <<
                             " -> RECOVERY");
               m_recover = m_highTxMark;
+              m_congestionControl->CongestionStateSet (m_tcb, TcpSocketState::CA_RECOVERY);
               m_tcb->m_congState = TcpSocketState::CA_RECOVERY;
 
               m_tcb->m_ssThresh = m_congestionControl->GetSsThresh (m_tcb,
@@ -1545,6 +1549,7 @@ TcpSocketBase::ReceivedAck (Ptr<Packet> packet, const TcpHeader& tcpHeader)
         {
           // The network reorder packets. Linux changes the counting lost
           // packet algorithm from FACK to NewReno. We simply go back in Open.
+          m_congestionControl->CongestionStateSet (m_tcb, TcpSocketState::CA_OPEN);
           m_tcb->m_congState = TcpSocketState::CA_OPEN;
           m_congestionControl->PktsAcked (m_tcb, segsAcked, m_lastRtt);
           m_dupAckCount = 0;
@@ -1620,6 +1625,7 @@ TcpSocketBase::ReceivedAck (Ptr<Packet> packet, const TcpHeader& tcpHeader)
                */
               m_congestionControl->PktsAcked (m_tcb, segsAcked, m_lastRtt);
               newSegsAcked = (ackNumber - m_recover) / m_tcb->m_segmentSize;
+              m_congestionControl->CongestionStateSet (m_tcb, TcpSocketState::CA_OPEN);
               m_tcb->m_congState = TcpSocketState::CA_OPEN;
 
               NS_LOG_INFO ("Received full ACK for seq " << ackNumber <<
@@ -1634,6 +1640,7 @@ TcpSocketBase::ReceivedAck (Ptr<Packet> packet, const TcpHeader& tcpHeader)
           m_congestionControl->PktsAcked (m_tcb, segsAcked, m_lastRtt);
           m_dupAckCount = 0;
           m_retransOut = 0;
+          m_congestionControl->CongestionStateSet (m_tcb, TcpSocketState::CA_OPEN);
           m_tcb->m_congState = TcpSocketState::CA_OPEN;
           NS_LOG_DEBUG ("LOSS -> OPEN");
         }
@@ -1715,6 +1722,7 @@ TcpSocketBase::ProcessSynSent (Ptr<Packet> packet, const TcpHeader& tcpHeader)
   if (tcpflags == 0)
     { // Bare data, accept it and move to ESTABLISHED state. This is not a normal behaviour. Remove this?
       NS_LOG_DEBUG ("SYN_SENT -> ESTABLISHED");
+      m_congestionControl->CongestionStateSet (m_tcb, TcpSocketState::CA_OPEN);
       m_state = ESTABLISHED;
       m_connected = true;
       m_retxEvent.Cancel ();
@@ -1737,6 +1745,7 @@ TcpSocketBase::ProcessSynSent (Ptr<Packet> packet, const TcpHeader& tcpHeader)
            && m_nextTxSequence + SequenceNumber32 (1) == tcpHeader.GetAckNumber ())
     { // Handshake completed
       NS_LOG_DEBUG ("SYN_SENT -> ESTABLISHED");
+      m_congestionControl->CongestionStateSet (m_tcb, TcpSocketState::CA_OPEN);
       m_state = ESTABLISHED;
       m_connected = true;
       m_retxEvent.Cancel ();
@@ -1779,6 +1788,7 @@ TcpSocketBase::ProcessSynRcvd (Ptr<Packet> packet, const TcpHeader& tcpHeader,
       // possibly due to ACK lost in 3WHS. If in-sequence ACK is received, the
       // handshake is completed nicely.
       NS_LOG_DEBUG ("SYN_RCVD -> ESTABLISHED");
+      m_congestionControl->CongestionStateSet (m_tcb, TcpSocketState::CA_OPEN);
       m_state = ESTABLISHED;
       m_connected = true;
       m_retxEvent.Cancel ();
@@ -2968,6 +2978,7 @@ TcpSocketBase::Retransmit ()
 
   if (m_tcb->m_congState != TcpSocketState::CA_LOSS)
     {
+      m_congestionControl->CongestionStateSet (m_tcb, TcpSocketState::CA_LOSS);
       m_tcb->m_congState = TcpSocketState::CA_LOSS;
       m_tcb->m_ssThresh = m_congestionControl->GetSsThresh (m_tcb, BytesInFlight ());
       m_tcb->m_cWnd = m_tcb->m_segmentSize;

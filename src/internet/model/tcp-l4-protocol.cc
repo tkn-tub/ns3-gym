@@ -41,6 +41,7 @@
 #include "ipv6-routing-protocol.h"
 #include "tcp-socket-factory-impl.h"
 #include "tcp-socket-base.h"
+#include "tcp-congestion-ops.h"
 #include "rtt-estimator.h"
 
 #include <vector>

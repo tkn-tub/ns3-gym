@@ -22,6 +22,7 @@
 #include "ns3/simple-net-device.h"
 #include "ns3/error-model.h"
 #include "ns3/tcp-socket-base.h"
+#include "ns3/tcp-congestion-ops.h"
 #include "ns3/test.h"
 
 namespace ns3 {

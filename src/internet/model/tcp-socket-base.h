@@ -36,7 +36,6 @@
 #include "tcp-tx-buffer.h"
 #include "tcp-rx-buffer.h"
 #include "rtt-estimator.h"
-#include "tcp-congestion-ops.h"
 
 namespace ns3 {
 
@@ -46,6 +45,7 @@ class Node;
 class Packet;
 class TcpL4Protocol;
 class TcpHeader;
+class TcpCongestionOps;
 
 /**
  * \ingroup tcp
