@@ -35,6 +35,7 @@ Bugs fixed
 - Bug 2333 - TCP Scalable implementation
 - Bug 2347 - LrWpan Ascii traces are hooked to the wrong traces.
 - Bug 2353 - TCP Vegas implementation
+- Bug 2377 - SocketIpTosTag and SocketIpv6TclassTag may be added twice in UDP
 
 Known issues
 ------------

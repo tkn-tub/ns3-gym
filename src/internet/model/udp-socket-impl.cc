@@ -812,13 +812,6 @@ UdpSocketImpl::SendTo (Ptr<Packet> p, uint32_t flags, const Address &address)
   NS_LOG_FUNCTION (this << p << flags << address);
   if (InetSocketAddress::IsMatchingType (address))
     {
-      if (IsManualIpTos ())
-        {
-          SocketIpTosTag ipTosTag;
-          ipTosTag.SetTos (GetIpTos ());
-          p->AddPacketTag (ipTosTag);
-        }
-
       InetSocketAddress transport = InetSocketAddress::ConvertFrom (address);
       Ipv4Address ipv4 = transport.GetIpv4 ();
       uint16_t port = transport.GetPort ();
@@ -826,13 +819,6 @@ UdpSocketImpl::SendTo (Ptr<Packet> p, uint32_t flags, const Address &address)
     }
   else if (Inet6SocketAddress::IsMatchingType (address))
     {
-      if (IsManualIpv6Tclass ())
-        {
-          SocketIpv6TclassTag ipTclassTag;
-          ipTclassTag.SetTclass (GetIpv6Tclass ());
-          p->AddPacketTag (ipTclassTag);
-        }
-
       Inet6SocketAddress transport = Inet6SocketAddress::ConvertFrom (address);
       Ipv6Address ipv6 = transport.GetIpv6 ();
       uint16_t port = transport.GetPort ();
