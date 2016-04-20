@@ -133,10 +133,22 @@ def main(argv):
             proto = {6: 'TCP', 17: 'UDP'} [t.protocol]
             print "FlowID: %i (%s %s/%s --> %s/%i)" % \
                 (flow.flowId, proto, t.sourceAddress, t.sourcePort, t.destinationAddress, t.destinationPort)
-            print "\tTX bitrate: %.2f kbit/s" % (flow.txBitrate*1e-3,)
-            print "\tRX bitrate: %.2f kbit/s" % (flow.rxBitrate*1e-3,)
-            print "\tMean Delay: %.2f ms" % (flow.delayMean*1e3,)
-            print "\tPacket Loss Ratio: %.2f %%" % (flow.packetLossRatio*100)
+            if flow.txBitrate is None:
+                print "\tTX bitrate: None"
+            else:
+                print "\tTX bitrate: %.2f kbit/s" % (flow.txBitrate*1e-3,)
+            if flow.rxBitrate is None:
+                print "\tRX bitrate: None"
+            else:
+                print "\tRX bitrate: %.2f kbit/s" % (flow.rxBitrate*1e-3,)
+            if flow.delayMean is None:
+                print "\tMean Delay: None"
+            else:
+                print "\tMean Delay: %.2f ms" % (flow.delayMean*1e3,)
+            if flow.packetLossRatio is None:
+                print "\tPacket Loss Ratio: None"
+            else:
+                print "\tPacket Loss Ratio: %.2f %%" % (flow.packetLossRatio*100)
 
 
 if __name__ == '__main__':
