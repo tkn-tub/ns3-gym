@@ -1,7 +1,7 @@
 ## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
 
 def build(bld):
-    obj = bld.create_ns3_program('energy-model-example', ['core', 'mobility', 'wifi', 'energy', 'internet'])
+    obj = bld.create_ns3_program('energy-model-example', ['core', 'mobility', 'wifi', 'energy', 'internet', 'config-store'])
     obj.source = 'energy-model-example.cc'
-    obj = bld.create_ns3_program('energy-model-with-harvesting-example', ['core', 'mobility', 'wifi', 'energy', 'internet'])
+    obj = bld.create_ns3_program('energy-model-with-harvesting-example', ['core', 'mobility', 'wifi', 'energy', 'internet', 'config-store'])
     obj.source = 'energy-model-with-harvesting-example.cc'
