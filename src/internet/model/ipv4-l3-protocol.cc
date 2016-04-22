@@ -1070,7 +1070,7 @@ Ipv4L3Protocol::LocalDeliver (Ptr<const Packet> packet, Ipv4Header const&ip, uin
         }
       NS_LOG_LOGIC ("Got last fragment, Packet is complete " << *p );
       ipHeader.SetFragmentOffset (0);
-      ipHeader.SetPayloadSize (p->GetSize () + ipHeader.GetSerializedSize ());
+      ipHeader.SetPayloadSize (p->GetSize ());
     }
 
   m_localDeliverTrace (ipHeader, p, iif);
