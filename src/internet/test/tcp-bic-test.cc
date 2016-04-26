@@ -43,6 +43,7 @@ public:
 private:
   virtual void DoRun (void);
   uint32_t Update (Ptr<TcpSocketState> tcb);
+  void ExecuteTest (void);
 
   uint32_t m_cWnd;
   uint32_t m_segmentSize;
@@ -76,6 +77,14 @@ TcpBicIncrementTest::DoRun ()
   m_state->m_segmentSize = m_segmentSize;
   m_state->m_ssThresh = m_ssThresh;
 
+  Simulator::Schedule (Seconds (0.0), &TcpBicIncrementTest::ExecuteTest, this);
+  Simulator::Run ();
+  Simulator::Destroy ();
+}
+
+void
+TcpBicIncrementTest::ExecuteTest ()
+{
   uint32_t segCwnd = m_cWnd / m_segmentSize;
 
   uint32_t ackCnt = Update (m_state);
@@ -171,6 +180,7 @@ public:
 
 private:
   virtual void DoRun (void);
+  void ExecuteTest (void);
 
   uint32_t m_cWnd;
   uint32_t m_segmentSize;
@@ -200,6 +210,14 @@ TcpBicDecrementTest::DoRun ()
   m_state->m_cWnd = m_cWnd;
   m_state->m_segmentSize = m_segmentSize;
 
+  Simulator::Schedule (Seconds (0.0), &TcpBicDecrementTest::ExecuteTest, this);
+  Simulator::Run ();
+  Simulator::Destroy ();
+}
+
+void
+TcpBicDecrementTest::ExecuteTest ()
+{
   Ptr<TcpBic> cong = CreateObject <TcpBic> ();
   cong->m_lastMaxCwnd = m_lastMaxCwnd;
   cong->SetAttribute ("FastConvergence", m_fastConvergence);
