@@ -138,6 +138,21 @@ WScalingTestCase::Tx (const Ptr<const Packet> p, const TcpHeader &h, SocketWho w
         {
           NS_TEST_ASSERT_MSG_EQ (h.HasOption (TcpOption::WINSCALE), true,
                                  "wscale enabled but option disabled");
+
+          if (who == RECEIVER)
+            {
+              uint16_t advWin = h.GetWindowSize ();
+              uint32_t maxSize = GetRxBuffer (RECEIVER)->MaxBufferSize ();
+
+              if (maxSize > 65535)
+                {
+                  NS_TEST_ASSERT_MSG_EQ (advWin, 65535, "Scaling SYN segment");
+                }
+              else
+                {
+                  NS_TEST_ASSERT_MSG_EQ (advWin, maxSize, "Not advertising all window");
+                }
+            }
         }
 
       if (who == SENDER)
@@ -151,6 +166,18 @@ WScalingTestCase::Tx (const Ptr<const Packet> p, const TcpHeader &h, SocketWho w
             {
               NS_TEST_ASSERT_MSG_EQ (h.HasOption (TcpOption::WINSCALE), true,
                                      "wscale enabled but option disabled");
+
+              uint16_t advWin = h.GetWindowSize ();
+              uint32_t maxSize = GetRxBuffer (SENDER)->MaxBufferSize ();
+
+              if (maxSize > 65535)
+                {
+                  NS_TEST_ASSERT_MSG_EQ (advWin, 65535, "Scaling SYN segment");
+                }
+              else
+                {
+                  NS_TEST_ASSERT_MSG_EQ (advWin, maxSize, "Not advertising all window");
+                }
             }
         }
       else if (who == RECEIVER)
@@ -184,6 +211,8 @@ public:
     AddTestCase (new WScalingTestCase (WScalingTestCase::ENABLED, 65535, 200000, "WS only client"), TestCase::QUICK);
     AddTestCase (new WScalingTestCase (WScalingTestCase::ENABLED, 131072, 65535, "WS only server"), TestCase::QUICK);
     AddTestCase (new WScalingTestCase (WScalingTestCase::ENABLED, 65535, 131072, "WS only client"), TestCase::QUICK);
+    AddTestCase (new WScalingTestCase (WScalingTestCase::ENABLED, 4000, 4000, "WS small window, all"), TestCase::QUICK);
+    AddTestCase (new WScalingTestCase (WScalingTestCase::ENABLED_SENDER, 4000, 4000, "WS small window, sender"), TestCase::QUICK);
   }
 
 } g_tcpWScalingTestSuite;

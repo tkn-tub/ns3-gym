@@ -2214,6 +2214,11 @@ TcpSocketBase::SendEmptyPacket (uint8_t flags)
   bool isAck = flags == TcpHeader::ACK;
   if (hasSyn)
     {
+      if (m_winScalingEnabled)
+        { // The window scaling option is set only on SYN packets
+          AddOptionWScale (header);
+        }
+
       if (m_synCount == 0)
         { // No more connection retries, give up
           NS_LOG_LOGIC ("Connection failed.");
@@ -3252,12 +3257,6 @@ void
 TcpSocketBase::AddOptions (TcpHeader& header)
 {
   NS_LOG_FUNCTION (this << header);
-
-  // The window scaling option is set only on SYN packets
-  if (m_winScalingEnabled && (header.GetFlags () & TcpHeader::SYN))
-    {
-      AddOptionWScale (header);
-    }
 
   if (m_timestampEnabled)
     {

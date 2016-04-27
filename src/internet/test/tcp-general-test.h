@@ -468,6 +468,14 @@ protected:
   Ptr<TcpSocketState> GetTcb (SocketWho who);
 
   /**
+   * \brief Get the Rx buffer from selected socket
+   *
+   * \param who socket where get the TCB
+   * \return the rx buffer
+   */
+  Ptr<TcpRxBuffer> GetRxBuffer (SocketWho who);
+
+  /**
    * \brief Get the rWnd of the selected socket
    *
    * \param who socket where check the parameter
