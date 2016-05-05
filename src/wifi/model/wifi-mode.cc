@@ -165,13 +165,11 @@ WifiMode::GetDataRate (uint32_t channelWidth, bool isShortGuardInterval, uint8_t
     {
       if (item->modClass == WIFI_MOD_CLASS_VHT && item->mcsValue == 9 && nss != 3)
         {
-          //VHT MCS 9 forbidden at 20 MHz (only allowed when NSS = 3)
-          NS_ASSERT (channelWidth != 20);
+          NS_ASSERT_MSG (channelWidth != 20, "VHT MCS 9 forbidden at 20 MHz (only allowed when NSS = 3)");
         }
       if (item->modClass == WIFI_MOD_CLASS_VHT && item->mcsValue == 6 && nss == 3)
         {
-          //VHT MCS 6 forbidden at 80 MHz when NSS = 3
-          NS_ASSERT (channelWidth != 80);
+          NS_ASSERT_MSG (channelWidth != 80, "VHT MCS 6 forbidden at 80 MHz when NSS = 3");
         }
       double symbolRate;
       if (!isShortGuardInterval)
