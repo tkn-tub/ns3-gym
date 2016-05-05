@@ -363,9 +363,9 @@ int main (int argc, char *argv[])
   gnuplot.SetTerminal ("postscript eps color enh \"Times-BoldItalic\"");
   gnuplot.SetLegend ("SNR (dB)", "Rate (Mb/s)");
   gnuplot.SetTitle (title);
-  gnuplot.SetExtra  ("set xrange [0:50]");
-  gnuplot.SetExtra  ("set yrange [0:150]");
-  gnuplot.SetExtra  ("set key reverse left Left");
+  gnuplot.SetExtra  (xRangeStr);
+  gnuplot.AppendExtra (yRangeStr);
+  gnuplot.AppendExtra  ("set key reverse left Left");
   gnuplot.GenerateOutput (outfile);
   outfile.close ();
   return 0;
