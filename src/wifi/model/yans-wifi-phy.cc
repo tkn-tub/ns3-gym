@@ -644,15 +644,11 @@ YansWifiPhy::StartReceivePreambleAndHeader (Ptr<Packet> packet,
     case YansWifiPhy::IDLE:
       if (rxPowerW > m_edThresholdW) //checked here, no need to check in the payload reception (current implementation assumes constant rx power over the packet duration)
         {
-          if (preamble == WIFI_PREAMBLE_NONE && m_mpdusNum == 0)
+          if (preamble == WIFI_PREAMBLE_NONE && (m_mpdusNum == 0 || m_plcpSuccess == false))
             {
-              NS_LOG_DEBUG ("drop packet because no preamble has been received");
-              NotifyRxDrop (packet);
-              goto maybeCcaBusy;
-            }
-          else if (preamble == WIFI_PREAMBLE_NONE && m_plcpSuccess == false) //A-MPDU reception fails
-            {
-              NS_LOG_DEBUG ("Drop MPDU because no plcp has been received");
+              m_plcpSuccess = false;
+              m_mpdusNum = 0;
+              NS_LOG_DEBUG ("drop packet because no PLCP preamble/header has been received");
               NotifyRxDrop (packet);
               goto maybeCcaBusy;
             }
