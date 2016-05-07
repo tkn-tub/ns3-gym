@@ -38,7 +38,17 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("Ns3TcpInteropTest");
 
+// The below boolean constants should only be changed to 'true'       
+// during test debugging (i.e. do not commit the value 'true')
+
+// set to 'true' to have the test suite overwrite the response vectors
+// stored in the test directory.  This should only be done if you are
+// convinced through other means (e.g. pcap tracing or logging) that the
+// revised vectors are the correct ones.  In other words, don't simply
+// enable this to true to clear a failing test without looking at the
+// results closely.
 const bool WRITE_VECTORS = false;           // set to true to write response vectors
+const bool WRITE_PCAP = false;              // set to true to write out pcap
 const uint32_t PCAP_LINK_TYPE = 1187373553; // Some large random number -- we use to verify data was written by this program
 const uint32_t PCAP_SNAPLEN   = 64;         // Don't bother to save much data
 
@@ -94,10 +104,11 @@ private:
   std::string m_pcapFilename;
   PcapFile m_pcapFile;
   bool m_writeVectors;
+  bool m_writeResults;
 };
 
 Ns3TcpInteroperabilityTestCase::Ns3TcpInteroperabilityTestCase ()
-  : TestCase ("Check to see that the ns-3 TCP can work with liblinux2.6.26.so"), m_writeVectors (WRITE_VECTORS)
+  : TestCase ("Check to see that the ns-3 TCP can work with liblinux2.6.26.so"), m_writeVectors (WRITE_VECTORS), m_writeResults (WRITE_PCAP)
 {
 }
 
@@ -286,9 +297,9 @@ Ns3TcpInteroperabilityTestCase::DoRun (void)
   // will be checked during the actual execution of the test.
   //
 
-  if (m_writeVectors)
+  if (m_writeResults)
     {
-      pointToPoint.EnablePcapAll ("tcp-interop");
+      pointToPoint.EnablePcapAll ("ns3-tcp-interop");
     }
 
   Simulator::Stop (Seconds (20));

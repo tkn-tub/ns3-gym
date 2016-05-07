@@ -46,7 +46,17 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("Ns3TcpStateTest");
 
+// The below boolean constants should only be changed to 'true' 
+// during test debugging (i.e. do not commit the value 'true')
+
+// set to 'true' to have the test suite overwrite the response vectors
+// stored in the test directory.  This should only be done if you are
+// convinced through other means (e.g. pcap tracing or logging) that the
+// revised vectors are the correct ones.  In other words, don't simply
+// enable this to true to clear a failing test without looking at the
+// results closely.  
 const bool WRITE_VECTORS = false;           // set to true to write response vectors
+const bool WRITE_PCAP = false;              // set to true to write out pcap
 const bool WRITE_LOGGING = false;           // set to true to write logging
 const uint32_t PCAP_LINK_TYPE = 1187373554; // Some large random number -- we use to verify data was written by this program
 const uint32_t PCAP_SNAPLEN   = 64;         // Don't bother to save much data
@@ -92,7 +102,7 @@ Ns3TcpStateTestCase::Ns3TcpStateTestCase ()
     m_totalTxBytes (20000),
     m_currentTxBytes (0),
     m_writeVectors (WRITE_VECTORS),
-    m_writeResults (false),
+    m_writeResults (WRITE_PCAP),
     m_writeLogging (WRITE_LOGGING),
     m_needToClose (true)
 {
@@ -104,7 +114,7 @@ Ns3TcpStateTestCase::Ns3TcpStateTestCase (uint32_t testCase)
     m_totalTxBytes (20000),
     m_currentTxBytes (0),
     m_writeVectors (WRITE_VECTORS),
-    m_writeResults (false),
+    m_writeResults (WRITE_PCAP),
     m_writeLogging (WRITE_LOGGING),
     m_needToClose (true)
 {
