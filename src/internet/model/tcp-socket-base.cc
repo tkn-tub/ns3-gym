@@ -2204,11 +2204,11 @@ TcpSocketBase::SendEmptyPacket (uint8_t flags)
       header.SetDestinationPort (m_endPoint6->GetPeerPort ());
     }
   AddOptions (header);
-  header.SetWindowSize (AdvertisedWindowSize ());
 
   // RFC 6298, clause 2.4
   m_rto = Max (m_rtt->GetEstimate () + Max (m_clockGranularity, m_rtt->GetVariation () * 4), m_minRto);
 
+  uint16_t windowSize = AdvertisedWindowSize ();
   bool hasSyn = flags & TcpHeader::SYN;
   bool hasFin = flags & TcpHeader::FIN;
   bool isAck = flags == TcpHeader::ACK;
@@ -2241,7 +2241,10 @@ TcpSocketBase::SendEmptyPacket (uint8_t flags)
         { // This is SYN retransmission
           UpdateRttHistory (s, 0, true);
         }
+
+      windowSize = AdvertisedWindowSize (false);
     }
+  header.SetWindowSize (windowSize);
 
   m_txTrace (p, header, this);
 
@@ -2702,19 +2705,22 @@ TcpSocketBase::AvailableWindow () const
 }
 
 uint16_t
-TcpSocketBase::AdvertisedWindowSize () const
+TcpSocketBase::AdvertisedWindowSize (bool scale) const
 {
+  NS_LOG_FUNCTION (this << scale);
   uint32_t w = m_rxBuffer->MaxBufferSize ();
 
-  w >>= m_rcvWindShift;
-
+  if (scale)
+    {
+      w >>= m_rcvWindShift;
+    }
   if (w > m_maxWinSize)
     {
-      NS_LOG_WARN ("There is a loss in the adv win size, wrt buffer size");
       w = m_maxWinSize;
+      NS_LOG_WARN ("Adv window size truncated to " << m_maxWinSize << "; possibly to avoid overflow of the 16-bit integer");
     }
-
-  return (uint16_t) w;
+  NS_LOG_DEBUG ("Returning AdvertisedWindowSize of " << static_cast<uint16_t> (w));
+  return static_cast<uint16_t> (w);
 }
 
 // Receipt of new packet, put into Rx buffer

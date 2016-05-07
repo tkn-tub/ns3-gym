@@ -783,9 +783,11 @@ protected:
 
   /**
    * \brief The amount of Rx window announced to the peer
+   * \param scale indicate if the window should be scaled. True for
+   * almost all cases, except when we are sending a SYN
    * \returns size of Rx window announced to the peer
    */
-  virtual uint16_t AdvertisedWindowSize (void) const;
+  virtual uint16_t AdvertisedWindowSize (bool scale = true) const;
 
   /**
    * \brief Update the receiver window (RWND) based on the value of the
