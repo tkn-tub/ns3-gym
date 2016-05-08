@@ -103,7 +103,7 @@ Ns3TcpLossTestCase::Ns3TcpLossTestCase ()
     m_totalTxBytes (200000),
     m_currentTxBytes (0),
     m_writeVectors (WRITE_VECTORS),
-    m_writeResults (false),
+    m_writeResults (WRITE_PCAP),
     m_writeLogging (WRITE_LOGGING),
     m_needToClose (true),
     m_tcpModel ("ns3::TcpWestwood")
@@ -116,7 +116,7 @@ Ns3TcpLossTestCase::Ns3TcpLossTestCase (std::string tcpModel, uint32_t testCase)
     m_totalTxBytes (200000),
     m_currentTxBytes (0),
     m_writeVectors (WRITE_VECTORS),
-    m_writeResults (false),
+    m_writeResults (WRITE_PCAP),
     m_writeLogging (WRITE_LOGGING),
     m_needToClose (true),
     m_tcpModel (tcpModel)
