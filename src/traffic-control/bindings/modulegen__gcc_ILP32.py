@@ -2879,6 +2879,11 @@ def register_Ns3Queue_methods(root_module, cls):
     cls.add_method('ResetStatistics', 
                    'void', 
                    [])
+    ## queue.h (module 'network'): void ns3::Queue::SetDropCallback(ns3::Callback<void, ns3::Ptr<ns3::QueueItem>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> cb) [member function]
+    cls.add_method('SetDropCallback', 
+                   'void', 
+                   [param('ns3::Callback< void, ns3::Ptr< ns3::QueueItem >, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'cb')], 
+                   is_virtual=True)
     ## queue.h (module 'network'): void ns3::Queue::SetMaxBytes(uint32_t maxBytes) [member function]
     cls.add_method('SetMaxBytes', 
                    'void', 
@@ -2891,10 +2896,10 @@ def register_Ns3Queue_methods(root_module, cls):
     cls.add_method('SetMode', 
                    'void', 
                    [param('ns3::Queue::QueueMode', 'mode')])
-    ## queue.h (module 'network'): void ns3::Queue::Drop(ns3::Ptr<ns3::Packet> p) [member function]
+    ## queue.h (module 'network'): void ns3::Queue::Drop(ns3::Ptr<ns3::QueueItem> item) [member function]
     cls.add_method('Drop', 
                    'void', 
-                   [param('ns3::Ptr< ns3::Packet >', 'p')], 
+                   [param('ns3::Ptr< ns3::QueueItem >', 'item')], 
                    visibility='protected')
     ## queue.h (module 'network'): ns3::Ptr<ns3::QueueItem> ns3::Queue::DoDequeue() [member function]
     cls.add_method('DoDequeue', 
@@ -3044,6 +3049,11 @@ def register_Ns3QueueDisc_methods(root_module, cls):
     cls.add_method('SetNetDevice', 
                    'void', 
                    [param('ns3::Ptr< ns3::NetDevice >', 'device')])
+    ## queue-disc.h (module 'traffic-control'): void ns3::QueueDisc::SetParentDropCallback(ns3::Callback<void, ns3::Ptr<ns3::QueueItem>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> cb) [member function]
+    cls.add_method('SetParentDropCallback', 
+                   'void', 
+                   [param('ns3::Callback< void, ns3::Ptr< ns3::QueueItem >, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'cb')], 
+                   is_virtual=True)
     ## queue-disc.h (module 'traffic-control'): void ns3::QueueDisc::SetQuota(uint32_t const quota) [member function]
     cls.add_method('SetQuota', 
                    'void', 
@@ -3059,10 +3069,10 @@ def register_Ns3QueueDisc_methods(root_module, cls):
                    'void', 
                    [], 
                    visibility='protected', is_virtual=True)
-    ## queue-disc.h (module 'traffic-control'): void ns3::QueueDisc::Drop(ns3::Ptr<ns3::QueueDiscItem> item) [member function]
+    ## queue-disc.h (module 'traffic-control'): void ns3::QueueDisc::Drop(ns3::Ptr<ns3::QueueItem> item) [member function]
     cls.add_method('Drop', 
                    'void', 
-                   [param('ns3::Ptr< ns3::QueueDiscItem >', 'item')], 
+                   [param('ns3::Ptr< ns3::QueueItem >', 'item')], 
                    visibility='protected')
     ## queue-disc.h (module 'traffic-control'): bool ns3::QueueDisc::CheckConfig() [member function]
     cls.add_method('CheckConfig', 
@@ -3703,11 +3713,11 @@ def register_Ns3TrafficControlLayer_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_const=True, is_virtual=True)
-    ## traffic-control-layer.h (module 'traffic-control'): ns3::Ptr<ns3::QueueDisc> ns3::TrafficControlLayer::GetRootQueueDiscOnDevice(ns3::Ptr<ns3::NetDevice> device) [member function]
+    ## traffic-control-layer.h (module 'traffic-control'): ns3::Ptr<ns3::QueueDisc> ns3::TrafficControlLayer::GetRootQueueDiscOnDevice(ns3::Ptr<ns3::NetDevice> device) const [member function]
     cls.add_method('GetRootQueueDiscOnDevice', 
                    'ns3::Ptr< ns3::QueueDisc >', 
                    [param('ns3::Ptr< ns3::NetDevice >', 'device')], 
-                   is_virtual=True)
+                   is_const=True, is_virtual=True)
     ## traffic-control-layer.h (module 'traffic-control'): static ns3::TypeId ns3::TrafficControlLayer::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
