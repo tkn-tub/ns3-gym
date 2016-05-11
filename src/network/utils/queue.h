@@ -190,16 +190,28 @@ public:
   double GetDroppedPacketsPerSecondVariance (void);
 #endif
 
+  /// Callback set by the object (e.g., a queue disc) that wants to be notified of a packet drop
+  typedef Callback<void, Ptr<QueueItem> > DropCallback;
+
+  /**
+   * \brief Set the drop callback
+   * \param cb the callback to set
+   *
+   * Called when a queue is added to a queue disc in order to set a
+   * callback to the Drop method of the queue disc.
+   */
+  virtual void SetDropCallback (DropCallback cb);
+
 protected:
   /**
    * \brief Drop a packet
-   * \param p packet that was dropped
+   * \param item item that was dropped
    *
    * This method is called by the base class when a packet is dropped because
    * the queue is full and by the subclasses to notify parent (this class) that
    * a packet has been dropped for other reasons.
    */
-  void Drop (Ptr<Packet> p);
+  void Drop (Ptr<QueueItem> item);
 
 private:
   /**
@@ -219,6 +231,12 @@ private:
    */
   virtual Ptr<const QueueItem> DoPeek (void) const = 0;
 
+  /**
+   *  \brief Notification of a packet drop
+   *  \param item item that was dropped
+   */
+  void NotifyDrop (Ptr<QueueItem> item);
+
   /// Traced callback: fired when a packet is enqueued
   TracedCallback<Ptr<const Packet> > m_traceEnqueue;
   /// Traced callback: fired when a packet is dequeued
@@ -236,6 +254,7 @@ private:
   uint32_t m_maxPackets;              //!< max packets in the queue
   uint32_t m_maxBytes;                //!< max bytes in the queue
   QueueMode m_mode;                   //!< queue mode (packets or bytes limited)
+  DropCallback m_dropCallback;        //!< drop callback
 };
 
 } // namespace ns3

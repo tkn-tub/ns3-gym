@@ -313,6 +313,9 @@ void
 QueueDisc::AddInternalQueue (Ptr<Queue> queue)
 {
   NS_LOG_FUNCTION (this);
+  // set the drop callback on the internal queue, so that the queue disc is
+  // notified of packets dropped by the internal queue
+  queue->SetDropCallback (MakeCallback (&QueueDisc::Drop, this));
   m_queues.push_back (queue);
 }
 

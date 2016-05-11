@@ -87,15 +87,14 @@ PfifoFastQueueDisc::DoEnqueue (Ptr<QueueDiscItem> item)
       band = ret;
     }
 
-  if (!GetInternalQueue(band)->Enqueue (item))
-    {
-      NS_LOG_LOGIC ("Enqueue failed -- dropping pkt");
-      Drop (item);
-      return false;
-    }
+  bool retval = GetInternalQueue(band)->Enqueue (item);
+
+  // If Queue::Enqueue fails, QueueDisc::Drop is called by the internal queue
+  // because QueueDisc::AddInternalQueue sets the drop callback
+
   NS_LOG_LOGIC ("Number packets band " << band << ": " << GetInternalQueue(band)->GetNPackets ());
 
-  return true;
+  return retval;
 }
 
 Ptr<QueueDiscItem>

@@ -410,12 +410,15 @@ RedQueueDisc::DoEnqueue (Ptr<QueueDiscItem> item)
       return false;
     }
 
-  GetInternalQueue (0)->Enqueue (item);
+  bool retval = GetInternalQueue (0)->Enqueue (item);
+
+  // If Queue::Enqueue fails, QueueDisc::Drop is called by the internal queue
+  // because QueueDisc::AddInternalQueue sets the drop callback
 
   NS_LOG_LOGIC ("Number packets " << GetInternalQueue (0)->GetNPackets ());
   NS_LOG_LOGIC ("Number bytes " << GetInternalQueue (0)->GetNBytes ());
 
-  return true;
+  return retval;
 }
 
 /*
