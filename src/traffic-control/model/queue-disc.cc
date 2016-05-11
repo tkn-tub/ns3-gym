@@ -118,6 +118,7 @@ void
 QueueDiscClass::SetQueueDisc (Ptr<QueueDisc> qd)
 {
   NS_LOG_FUNCTION (this);
+  NS_ABORT_MSG_IF (m_queueDisc, "Cannot set the queue disc on a class already having an attached queue disc");
   m_queueDisc = qd;
 }
 
@@ -353,6 +354,13 @@ QueueDisc::AddQueueDiscClass (Ptr<QueueDiscClass> qdClass)
 {
   NS_LOG_FUNCTION (this);
   NS_ABORT_MSG_IF (qdClass->GetQueueDisc () == 0, "Cannot add a class with no attached queue disc");
+  // the child queue disc cannot be one with wake mode equal to WAKE_CHILD because
+  // such queue discs do not implement the enqueue/dequeue methods
+  NS_ABORT_MSG_IF (qdClass->GetQueueDisc ()->GetWakeMode () == WAKE_CHILD,
+                   "A queue disc with WAKE_CHILD as wake mode can only be a root queue disc");
+  // set the parent drop callback on the child queue disc, so that it can notify
+  // packet drops to the parent queue disc
+  qdClass->GetQueueDisc ()->SetParentDropCallback (MakeCallback (&QueueDisc::Drop, this));
   m_classes.push_back (qdClass);
 }
 
@@ -390,9 +398,24 @@ QueueDisc::GetWakeMode (void)
 }
 
 void
-QueueDisc::Drop (Ptr<QueueDiscItem> item)
+QueueDisc::SetParentDropCallback (ParentDropCallback cb)
+{
+  m_parentDropCallback = cb;
+}
+
+void
+QueueDisc::Drop (Ptr<QueueItem> item)
 {
   NS_LOG_FUNCTION (this << item);
+
+  // if the wake mode of this queue disc is WAKE_CHILD, packets are directly
+  // enqueued/dequeued from the child queue discs, thus this queue disc does not
+  // keep valid packets/bytes counters and no actions need to be performed.
+  if (this->GetWakeMode () == WAKE_CHILD)
+    {
+      return;
+    }
+
   NS_ASSERT_MSG (m_nPackets >= 1u, "No packet in the queue disc, cannot drop");
   NS_ASSERT_MSG (m_nBytes >= item->GetPacketSize (), "The size of the packet that"
                  << " is reported to be dropped is greater than the amount of bytes"
@@ -405,6 +428,19 @@ QueueDisc::Drop (Ptr<QueueDiscItem> item)
 
   NS_LOG_LOGIC ("m_traceDrop (p)");
   m_traceDrop (item);
+
+  NotifyParentDrop (item);
+}
+
+void
+QueueDisc::NotifyParentDrop (Ptr<QueueItem> item)
+{
+  NS_LOG_FUNCTION (this << item);
+  // the parent drop callback is clearly null on root queue discs
+  if (!m_parentDropCallback.IsNull ())
+    {
+      m_parentDropCallback (item);
+    }
 }
 
 bool

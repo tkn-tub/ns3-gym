@@ -421,6 +421,18 @@ public:
    */
   WakeMode GetWakeMode (void);
 
+  /// Callback invoked by a child queue disc to notify the parent of a packet drop
+  typedef Callback<void, Ptr<QueueItem> > ParentDropCallback;
+
+  /**
+   * \brief Set the parent drop callback
+   * \param cb the callback to set
+   *
+   * Called when a queue disc class is added to a queue disc in order to set a
+   * callback to the Drop method of the parent queue disc.
+   */
+  virtual void SetParentDropCallback (ParentDropCallback cb);
+
 protected:
   /**
    * \brief Dispose of the object
@@ -437,9 +449,14 @@ protected:
    *  \param item item that was dropped
    *  This method is called by subclasses to notify parent (this class) of packet drops.
    */
-  void Drop (Ptr<QueueDiscItem> item);
+  void Drop (Ptr<QueueItem> item);
 
 private:
+  /**
+   *  \brief Notify the parent queue disc of a packet drop
+   *  \param item item that was dropped
+   */
+  void NotifyParentDrop (Ptr<QueueItem> item);
 
   /**
    * This function actually enqueues a packet into the queue disc.
@@ -533,6 +550,7 @@ private:
   Ptr<NetDeviceQueueInterface> m_devQueueIface;   //!< NetDevice queue interface
   bool m_running;                   //!< The queue disc is performing multiple dequeue operations
   Ptr<QueueDiscItem> m_requeued;    //!< The last packet that failed to be transmitted
+  ParentDropCallback m_parentDropCallback;   //!< Parent drop callback
 
   /// Traced callback: fired when a packet is enqueued
   TracedCallback<Ptr<const QueueItem> > m_traceEnqueue;
