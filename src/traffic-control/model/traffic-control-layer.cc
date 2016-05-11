@@ -19,7 +19,7 @@
 
 #include "traffic-control-layer.h"
 #include "ns3/log.h"
-#include "ns3/object-vector.h"
+#include "ns3/object-map.h"
 #include "ns3/packet.h"
 #include "ns3/queue-disc.h"
 
@@ -37,9 +37,10 @@ TrafficControlLayer::GetTypeId (void)
     .SetGroupName ("TrafficControl")
     .AddConstructor<TrafficControlLayer> ()
     .AddAttribute ("RootQueueDiscList", "The list of root queue discs associated to this Traffic Control layer.",
-                   ObjectVectorValue (),
-                   MakeObjectVectorAccessor (&TrafficControlLayer::m_rootQueueDiscs),
-                   MakeObjectVectorChecker<QueueDisc> ())
+                   ObjectMapValue (),
+                   MakeObjectMapAccessor (&TrafficControlLayer::GetNDevices,
+                                          &TrafficControlLayer::GetRootQueueDiscOnDeviceByIndex),
+                   MakeObjectMapChecker<QueueDisc> ())
   ;
   return tid;
 }
@@ -61,9 +62,8 @@ TrafficControlLayer::DoDispose (void)
 {
   NS_LOG_FUNCTION (this);
   m_node = 0;
-  m_rootQueueDiscs.clear ();
   m_handlers.clear ();
-  m_netDeviceQueueToQueueDiscMap.clear ();
+  m_netDevices.clear ();
   Object::DoDispose ();
 }
 
@@ -71,46 +71,44 @@ void
 TrafficControlLayer::DoInitialize (void)
 {
   NS_LOG_FUNCTION (this);
-  for (uint32_t j = 0; j < m_rootQueueDiscs.size (); j++)
+  std::map<Ptr<NetDevice>, NetDeviceInfo>::iterator ndi;
+  for (ndi = m_netDevices.begin (); ndi != m_netDevices.end (); ndi++)
     {
-      if (m_rootQueueDiscs[j])
+      if (ndi->second.rootQueueDisc)
         {
-          Ptr<NetDevice> device = m_node->GetDevice (j);
           // NetDevices supporting flow control can set the number of device transmission
           // queues through the NetDevice queue interface during initialization. Thus,
           // ensure that the device has completed initialization
-          device->Initialize ();
+          ndi->first->Initialize ();
 
-          std::map<Ptr<NetDevice>, NetDeviceInfo>::iterator qdMap = m_netDeviceQueueToQueueDiscMap.find (device);
-          NS_ASSERT (qdMap != m_netDeviceQueueToQueueDiscMap.end ());
-          Ptr<NetDeviceQueueInterface> devQueueIface = qdMap->second.first;
+          Ptr<NetDeviceQueueInterface> devQueueIface = ndi->second.ndqi;
           NS_ASSERT (devQueueIface);
 
           devQueueIface->SetQueueDiscInstalled (true);
 
           // set the wake callbacks on netdevice queues
-           if (m_rootQueueDiscs[j]->GetWakeMode () == QueueDisc::WAKE_ROOT)
+           if (ndi->second.rootQueueDisc->GetWakeMode () == QueueDisc::WAKE_ROOT)
             {
               for (uint32_t i = 0; i < devQueueIface->GetTxQueuesN (); i++)
                 {
-                  devQueueIface->GetTxQueue (i)->SetWakeCallback (MakeCallback (&QueueDisc::Run, m_rootQueueDiscs[j]));
-                  qdMap->second.second.push_back (m_rootQueueDiscs[j]);
+                  devQueueIface->GetTxQueue (i)->SetWakeCallback (MakeCallback (&QueueDisc::Run, ndi->second.rootQueueDisc));
+                  ndi->second.queueDiscsToWake.push_back (ndi->second.rootQueueDisc);
                 }
             }
-          else if (m_rootQueueDiscs[j]->GetWakeMode () == QueueDisc::WAKE_CHILD)
+          else if (ndi->second.rootQueueDisc->GetWakeMode () == QueueDisc::WAKE_CHILD)
             {
-              NS_ASSERT_MSG (m_rootQueueDiscs[j]->GetNQueueDiscClasses () == devQueueIface->GetTxQueuesN (),
+              NS_ASSERT_MSG (ndi->second.rootQueueDisc->GetNQueueDiscClasses () == devQueueIface->GetTxQueuesN (),
                              "The number of child queue discs does not match the number of netdevice queues");
               for (uint32_t i = 0; i < devQueueIface->GetTxQueuesN (); i++)
                 {
                   devQueueIface->GetTxQueue (i)->SetWakeCallback (MakeCallback (&QueueDisc::Run,
-                                                                  m_rootQueueDiscs[j]->GetQueueDiscClass (i)->GetQueueDisc ()));
-                  qdMap->second.second.push_back (m_rootQueueDiscs[j]->GetQueueDiscClass (i)->GetQueueDisc ());
+                                                                  ndi->second.rootQueueDisc->GetQueueDiscClass (i)->GetQueueDisc ()));
+                  ndi->second.queueDiscsToWake.push_back (ndi->second.rootQueueDisc->GetQueueDiscClass (i)->GetQueueDisc ());
                 }
             }
 
           // initialize the queue disc
-          m_rootQueueDiscs[j]->Initialize ();
+          ndi->second.rootQueueDisc->Initialize ();
         }
     }
   Object::DoInitialize ();
@@ -121,7 +119,9 @@ TrafficControlLayer::SetupDevice (Ptr<NetDevice> device)
 {
   NS_LOG_FUNCTION (this << device);
 
-  // ensure this setup is done just once (in case of dual stack nodes)
+  // ensure this setup is done just once. SetupDevice is called by Ipv4L3Protocol
+  // and Ipv6L3Protocol when they add an interface, thus it might be called twice
+  // in case of dual stack nodes
   if (device->GetObject<NetDeviceQueueInterface> ())
     {
       NS_LOG_DEBUG ("The setup for this device has been already done.");
@@ -132,11 +132,22 @@ TrafficControlLayer::SetupDevice (Ptr<NetDevice> device)
   Ptr<NetDeviceQueueInterface> devQueueIface = CreateObject<NetDeviceQueueInterface> ();
   device->AggregateObject (devQueueIface);
 
-  // store a pointer to the created queue interface
-  NS_ASSERT_MSG (m_netDeviceQueueToQueueDiscMap.find (device) == m_netDeviceQueueToQueueDiscMap.end (),
-                 "This is a bug: SetupDevice should be called only once per device");
+  // create an entry in the m_netDevices map for this device, if not existing yet.
+  // If the tc helper is invoked (to install a queue disc) before the creation of the
+  // Ipv{4,6}Interface, an entry for this device will be already present in the map
+  std::map<Ptr<NetDevice>, NetDeviceInfo>::iterator ndi = m_netDevices.find (device);
 
-  m_netDeviceQueueToQueueDiscMap[device] = NetDeviceInfo (devQueueIface, QueueDiscVector ());
+  if (ndi == m_netDevices.end ())
+    {
+      NetDeviceInfo entry = {0, devQueueIface, QueueDiscVector ()};
+      m_netDevices[device] = entry;
+    }
+  else
+    {
+      NS_ASSERT_MSG (ndi->second.ndqi == 0, "This is a bug, there is no netdevice queue interface "
+                     << "aggregated to the device but the pointer is not null.");
+      ndi->second.ndqi = devQueueIface;
+    }
 }
 
 void
@@ -160,35 +171,46 @@ TrafficControlLayer::RegisterProtocolHandler (Node::ProtocolHandler handler,
 void
 TrafficControlLayer::SetRootQueueDiscOnDevice (Ptr<NetDevice> device, Ptr<QueueDisc> qDisc)
 {
-  NS_LOG_FUNCTION (this << device);
+  NS_LOG_FUNCTION (this << device << qDisc);
 
-  uint32_t index = GetDeviceIndex (device);
-  NS_ASSERT_MSG (index < m_node->GetNDevices (), "The provided device does not belong to"
-                 << " the node which this TrafficControlLayer object is aggregated to"  );
-  if (index >= m_rootQueueDiscs.size ())
+  std::map<Ptr<NetDevice>, NetDeviceInfo>::iterator ndi = m_netDevices.find (device);
+
+  if (ndi == m_netDevices.end ())
     {
-      m_rootQueueDiscs.resize (index+1);
+      // SetupDevice has not been called yet. This may happen when the tc helper is
+      // invoked (to install a queue disc) before the creation of the Ipv{4,6}Interface
+      NetDeviceInfo entry = {qDisc, 0, QueueDiscVector ()};
+      m_netDevices[device] = entry;
     }
-
-  NS_ASSERT_MSG (m_rootQueueDiscs[index] == 0, "Cannot install a root queue disc on a "
-                 << "device already having one. Delete the existing queue disc first.");
-
-  m_rootQueueDiscs[index] = qDisc;
+  else
+    {
+      NS_ASSERT_MSG (ndi->second.rootQueueDisc == 0, "Cannot install a root queue disc on a "
+                     << "device already having one. Delete the existing queue disc first.");
+      ndi->second.rootQueueDisc = qDisc;
+    }
 }
 
 Ptr<QueueDisc>
-TrafficControlLayer::GetRootQueueDiscOnDevice (Ptr<NetDevice> device)
+TrafficControlLayer::GetRootQueueDiscOnDevice (Ptr<NetDevice> device) const
 {
   NS_LOG_FUNCTION (this << device);
 
-  uint32_t index = GetDeviceIndex (device);
-  NS_ASSERT_MSG (index < m_node->GetNDevices (), "The provided device does not belong to"
-                 << " the node which this TrafficControlLayer object is aggregated to"  );
-  if (index >= m_rootQueueDiscs.size ())
+  std::map<Ptr<NetDevice>, NetDeviceInfo>::const_iterator ndi = m_netDevices.find (device);
+
+  if (ndi == m_netDevices.end ())
     {
-      m_rootQueueDiscs.resize (index+1);
+      NS_LOG_WARN ("GetRootQueueDiscOnDevice should not be called before the "
+                   << "device is setup or a queue disc is installed on the device.");
+      return 0;
     }
-  return m_rootQueueDiscs[index];
+  return ndi->second.rootQueueDisc;
+}
+
+Ptr<QueueDisc>
+TrafficControlLayer::GetRootQueueDiscOnDeviceByIndex (uint32_t index) const
+{
+  NS_LOG_FUNCTION (this << index);
+  return GetRootQueueDiscOnDevice (m_node->GetDevice (index));
 }
 
 void
@@ -196,15 +218,14 @@ TrafficControlLayer::DeleteRootQueueDiscOnDevice (Ptr<NetDevice> device)
 {
   NS_LOG_FUNCTION (this << device);
 
-  uint32_t index = GetDeviceIndex (device);
-  NS_ASSERT_MSG (index < m_node->GetNDevices (), "The provided device does not belong to"
-                 << " the node which this TrafficControlLayer object is aggregated to"  );
+  std::map<Ptr<NetDevice>, NetDeviceInfo>::iterator ndi = m_netDevices.find (device);
 
-  NS_ASSERT_MSG (index < m_rootQueueDiscs.size () && m_rootQueueDiscs[index] != 0, "No root queue disc"
+  NS_ASSERT_MSG (ndi != m_netDevices.end () && ndi->second.rootQueueDisc != 0, "No root queue disc"
                  << " installed on device " << device);
 
   // remove the root queue disc
-  m_rootQueueDiscs[index] = 0;
+  ndi->second.rootQueueDisc = 0;
+  ndi->second.queueDiscsToWake.clear ();
 }
 
 void
@@ -232,13 +253,11 @@ TrafficControlLayer::NotifyNewAggregate ()
 }
 
 uint32_t
-TrafficControlLayer::GetDeviceIndex (Ptr<NetDevice> device)
+TrafficControlLayer::GetNDevices (void) const
 {
-  NS_LOG_FUNCTION (this << device);
-  uint32_t i;
-  for (i = 0; i < m_node->GetNDevices () && device != m_node->GetDevice (i); i++);
-  return i;
+  return m_netDevices.size();
 }
+
 
 void
 TrafficControlLayer::Receive (Ptr<NetDevice> device, Ptr<const Packet> p,
@@ -282,16 +301,16 @@ TrafficControlLayer::Send (Ptr<NetDevice> device, Ptr<QueueDiscItem> item)
   NS_LOG_DEBUG ("Send packet to device " << device << " protocol number " <<
                 item->GetProtocol ());
 
-  std::map<Ptr<NetDevice>, NetDeviceInfo>::iterator qdMap = m_netDeviceQueueToQueueDiscMap.find (device);
-  NS_ASSERT (qdMap != m_netDeviceQueueToQueueDiscMap.end ());
-  Ptr<NetDeviceQueueInterface> devQueueIface = qdMap->second.first;
+  std::map<Ptr<NetDevice>, NetDeviceInfo>::iterator ndi = m_netDevices.find (device);
+  NS_ASSERT (ndi != m_netDevices.end ());
+  Ptr<NetDeviceQueueInterface> devQueueIface = ndi->second.ndqi;
   NS_ASSERT (devQueueIface);
 
   // determine the transmission queue of the device where the packet will be enqueued
   uint8_t txq = devQueueIface->GetSelectedQueue (item);
   NS_ASSERT (txq < devQueueIface->GetTxQueuesN ());
 
-  if (qdMap->second.second.empty ())
+  if (ndi->second.rootQueueDisc == 0)
     {
       // The device has no attached queue disc, thus add the header to the packet and
       // send it directly to the device if the selected queue is not stopped
@@ -307,7 +326,7 @@ TrafficControlLayer::Send (Ptr<NetDevice> device, Ptr<QueueDiscItem> item)
       // selected for the packet and try to dequeue packets from such queue disc
       item->SetTxQueueIndex (txq);
 
-      Ptr<QueueDisc> qDisc = qdMap->second.second[txq];
+      Ptr<QueueDisc> qDisc = ndi->second.queueDiscsToWake[txq];
       NS_ASSERT (qDisc);
       qDisc->Enqueue (item);
       qDisc->Run ();

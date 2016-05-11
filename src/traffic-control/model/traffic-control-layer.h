@@ -147,7 +147,7 @@ public:
    * \param device the device on which the requested root queue disc is installed
    * \return the root queue disc installed on the given device
    */
-  virtual Ptr<QueueDisc> GetRootQueueDiscOnDevice (Ptr<NetDevice> device);
+  virtual Ptr<QueueDisc> GetRootQueueDiscOnDevice (Ptr<NetDevice> device) const;
 
   /**
    * \brief This method can be used to remove the root queue disc (and associated
@@ -215,27 +215,34 @@ private:
     bool promiscuous;              //!< true if it is a promiscuous handler
   };
 
+  /**
+   * \brief Information to store for each device
+   */
+  struct NetDeviceInfo {
+    Ptr<QueueDisc> rootQueueDisc;       //!< the root queue disc on the device
+    Ptr<NetDeviceQueueInterface> ndqi;  //!< the netdevice queue interface
+    QueueDiscVector queueDiscsToWake;   //!< the vector of queue discs to wake
+  };
+
   /// Typedef for protocol handlers container
   typedef std::vector<struct ProtocolHandlerEntry> ProtocolHandlerList;
 
-  /// Typedef for queue disc vector
-  typedef std::pair<Ptr<NetDeviceQueueInterface>, QueueDiscVector> NetDeviceInfo;
-
   /**
-   * \brief Lookup a given Ptr<NetDevice> in the node's list of devices
-   * \param device the device to lookup
-   * \return the index of device in the node's list of devices, if it is
-   *         found, and the number of devices, otherwise
+   * \brief Required by the object map accessor
+   * \return the number of devices in the m_netDevices map
    */
-  uint32_t GetDeviceIndex (Ptr<NetDevice> device);
+  uint32_t GetNDevices (void) const;
+  /**
+   * \brief Required by the object map accessor
+   * \param index the index of the device in the node's device list
+   * \return the root queue disc installed on the specified device
+   */
+  Ptr<QueueDisc> GetRootQueueDiscOnDeviceByIndex (uint32_t index) const;
 
   /// The node this TrafficControlLayer object is aggregated to
   Ptr<Node> m_node;
-  /// This vector stores the root queue discs installed on all the devices of the node.
-  /// Devices are sorted as in Node::m_devices
-  QueueDiscVector m_rootQueueDiscs;
-  /// This map plays the role of the qdisc field of the netdev_queue struct in Linux
-  std::map<Ptr<NetDevice>, NetDeviceInfo> m_netDeviceQueueToQueueDiscMap;
+  /// Map storing the required information for each device with a queue disc installed
+  std::map<Ptr<NetDevice>, NetDeviceInfo> m_netDevices;
   ProtocolHandlerList m_handlers;  //!< List of upper-layer handlers
 };
 
