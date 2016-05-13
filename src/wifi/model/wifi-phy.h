@@ -1297,6 +1297,38 @@ public:
    * \return a vector containing the supported channel widths, values in MHz
    */
   virtual std::vector<uint32_t> GetSupportedChannelWidthSet (void) const = 0;
+  /**
+   * Convert from dBm to Watts.
+   *
+   * \param dbm the power in dBm
+   *
+   * \return the equivalent Watts for the given dBm
+   */
+  double DbmToW (double dbm) const;
+  /**
+   * Convert from dB to ratio.
+   *
+   * \param db
+   *
+   * \return ratio
+   */
+  double DbToRatio (double db) const;
+  /**
+   * Convert from Watts to dBm.
+   *
+   * \param w the power in Watts
+   *
+   * \return the equivalent dBm for the given Watts
+   */
+  double WToDbm (double w) const;
+  /**
+   * Convert from ratio to dB.
+   *
+   * \param ratio
+   *
+   * \return dB
+   */
+  double RatioToDb (double ratio) const;
 
 private:
   /**

@@ -1145,32 +1145,6 @@ YansWifiPhy::GetLastRxStartTime (void) const
 }
 
 double
-YansWifiPhy::DbToRatio (double dB) const
-{
-  double ratio = std::pow (10.0, dB / 10.0);
-  return ratio;
-}
-
-double
-YansWifiPhy::DbmToW (double dBm) const
-{
-  double mW = std::pow (10.0, dBm / 10.0);
-  return mW / 1000.0;
-}
-
-double
-YansWifiPhy::WToDbm (double w) const
-{
-  return 10.0 * std::log10 (w * 1000.0);
-}
-
-double
-YansWifiPhy::RatioToDb (double ratio) const
-{
-  return 10.0 * std::log10 (ratio);
-}
-
-double
 YansWifiPhy::GetEdThresholdW (void) const
 {
   return m_edThresholdW;

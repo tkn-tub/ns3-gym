@@ -476,38 +476,6 @@ private:
    */
   double GetEdThresholdW (void) const;
   /**
-   * Convert from dBm to Watts.
-   *
-   * \param dbm the power in dBm
-   *
-   * \return the equivalent Watts for the given dBm
-   */
-  double DbmToW (double dbm) const;
-  /**
-   * Convert from dB to ratio.
-   *
-   * \param db
-   *
-   * \return ratio
-   */
-  double DbToRatio (double db) const;
-  /**
-   * Convert from Watts to dBm.
-   *
-   * \param w the power in Watts
-   *
-   * \return the equivalent dBm for the given Watts
-   */
-  double WToDbm (double w) const;
-  /**
-   * Convert from ratio to dB.
-   *
-   * \param ratio
-   *
-   * \return dB
-   */
-  double RatioToDb (double ratio) const;
-  /**
    * Get the power of the given power level in dBm.
    * In YansWifiPhy implementation, the power levels are equally spaced (in dBm).
    *

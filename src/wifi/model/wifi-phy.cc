@@ -1595,6 +1595,32 @@ WifiPhy::IsValidTxVector (WifiTxVector txVector)
   return true;
 }
 
+double
+WifiPhy::DbToRatio (double dB) const
+{
+  double ratio = std::pow (10.0, dB / 10.0);
+  return ratio;
+}
+
+double
+WifiPhy::DbmToW (double dBm) const
+{
+  double mW = std::pow (10.0, dBm / 10.0);
+  return mW / 1000.0;
+}
+
+double
+WifiPhy::WToDbm (double w) const
+{
+  return 10.0 * std::log10 (w * 1000.0);
+}
+
+double
+WifiPhy::RatioToDb (double ratio) const
+{
+  return 10.0 * std::log10 (ratio);
+}
+
 std::ostream& operator<< (std::ostream& os, enum WifiPhy::State state)
 {
   switch (state)
