@@ -25,6 +25,7 @@
 #include "ns3/object.h"
 #include "ns3/mac48-address.h"
 #include "ns3/packet.h"
+#include "ns3/traced-value.h"
 #include "wifi-mode.h"
 #include "wifi-mac-header.h"
 #include "wifi-remote-station-manager.h"
@@ -562,6 +563,8 @@ private:
   Time m_currentPacketTimestamp;
   uint16_t m_blockAckInactivityTimeout;
   struct Bar m_currentBar;
+  TracedValue<uint32_t> m_backoffTrace;
+  TracedValue<uint32_t> m_cwTrace;
 };
 
 } //namespace ns3

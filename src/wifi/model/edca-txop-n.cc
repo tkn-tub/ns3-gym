@@ -240,6 +240,14 @@ EdcaTxopN::GetTypeId (void)
                    PointerValue (),
                    MakePointerAccessor (&EdcaTxopN::GetEdcaQueue),
                    MakePointerChecker<WifiMacQueue> ())
+    .AddTraceSource ("BackoffTrace",
+                     "Trace source for backoff values",
+                     MakeTraceSourceAccessor (&EdcaTxopN::m_backoffTrace),
+                     "ns3::TracedValue::Uint32Callback")
+    .AddTraceSource ("CwTrace",
+                     "Trace source for contention window values",
+                     MakeTraceSourceAccessor (&EdcaTxopN::m_cwTrace),
+                     "ns3::TracedValue::Uint32Callback")
   ;
   return tid;
 }
@@ -632,7 +640,8 @@ void
 EdcaTxopN::NotifyCollision (void)
 {
   NS_LOG_FUNCTION (this);
-  m_dcf->StartBackoffNow (m_rng->GetNext (0, m_dcf->GetCw ()));
+  m_backoffTrace = m_rng->GetNext (0, m_dcf->GetCw ());
+  m_dcf->StartBackoffNow (m_backoffTrace);
   RestartAccessIfNeeded ();
 }
 
@@ -708,12 +717,15 @@ EdcaTxopN::MissedCts (void)
           m_currentPacket = 0;
         }
       m_dcf->ResetCw ();
+      m_cwTrace = m_dcf->GetCw ();
     }
   else
     {
       m_dcf->UpdateFailedCw ();
+      m_cwTrace = m_dcf->GetCw ();
     }
-  m_dcf->StartBackoffNow (m_rng->GetNext (0, m_dcf->GetCw ()));
+  m_backoffTrace = m_rng->GetNext (0, m_dcf->GetCw ());
+  m_dcf->StartBackoffNow (m_backoffTrace);
   RestartAccessIfNeeded ();
 }
 
@@ -790,7 +802,9 @@ EdcaTxopN::GotAck (double snr, WifiMode txMode)
       m_currentPacket = 0;
 
       m_dcf->ResetCw ();
-      m_dcf->StartBackoffNow (m_rng->GetNext (0, m_dcf->GetCw ()));
+      m_cwTrace = m_dcf->GetCw ();
+      m_backoffTrace = m_rng->GetNext (0, m_dcf->GetCw ());
+      m_dcf->StartBackoffNow (m_backoffTrace);
       RestartAccessIfNeeded ();
     }
   else
@@ -858,14 +872,17 @@ EdcaTxopN::MissedAck (void)
           m_currentPacket = 0;
         }
       m_dcf->ResetCw ();
+      m_cwTrace = m_dcf->GetCw ();
     }
   else
     {
       NS_LOG_DEBUG ("Retransmit");
       m_currentHdr.SetRetry ();
       m_dcf->UpdateFailedCw ();
+      m_cwTrace = m_dcf->GetCw ();
     }
-  m_dcf->StartBackoffNow (m_rng->GetNext (0, m_dcf->GetCw ()));
+  m_backoffTrace = m_rng->GetNext (0, m_dcf->GetCw ());
+  m_dcf->StartBackoffNow (m_backoffTrace);
   RestartAccessIfNeeded ();
 }
 
@@ -945,6 +962,7 @@ EdcaTxopN::MissedBlockAck (uint32_t nMpdus)
           m_currentHdr = hdr;
         }
       m_dcf->UpdateFailedCw ();
+      m_cwTrace = m_dcf->GetCw ();
     }
   else
     {
@@ -952,8 +970,10 @@ EdcaTxopN::MissedBlockAck (uint32_t nMpdus)
       //to reset the dcf.
       m_currentPacket = 0;
       m_dcf->ResetCw ();
+      m_cwTrace = m_dcf->GetCw ();
     }
-  m_dcf->StartBackoffNow (m_rng->GetNext (0, m_dcf->GetCw ()));
+  m_backoffTrace = m_rng->GetNext (0, m_dcf->GetCw ());
+  m_dcf->StartBackoffNow (m_backoffTrace);
   RestartAccessIfNeeded ();
 }
 
@@ -1081,7 +1101,9 @@ EdcaTxopN::EndTxNoAck (void)
   NS_LOG_DEBUG ("a transmission that did not require an ACK just finished");
   m_currentPacket = 0;
   m_dcf->ResetCw ();
-  m_dcf->StartBackoffNow (m_rng->GetNext (0, m_dcf->GetCw ()));
+  m_cwTrace = m_dcf->GetCw ();
+  m_backoffTrace = m_rng->GetNext (0, m_dcf->GetCw ());
+  m_dcf->StartBackoffNow (m_backoffTrace);
   StartAccessIfNeeded ();
 }
 
@@ -1252,7 +1274,9 @@ EdcaTxopN::GotBlockAck (const CtrlBAckResponseHeader *blockAck, Mac48Address rec
     }
   m_currentPacket = 0;
   m_dcf->ResetCw ();
-  m_dcf->StartBackoffNow (m_rng->GetNext (0, m_dcf->GetCw ()));
+  m_cwTrace = m_dcf->GetCw ();
+  m_backoffTrace = m_rng->GetNext (0, m_dcf->GetCw ());
+  m_dcf->StartBackoffNow (m_backoffTrace);
   RestartAccessIfNeeded ();
 }
 
@@ -1528,7 +1552,9 @@ EdcaTxopN::DoInitialize ()
 {
   NS_LOG_FUNCTION (this);
   m_dcf->ResetCw ();
-  m_dcf->StartBackoffNow (m_rng->GetNext (0, m_dcf->GetCw ()));
+  m_cwTrace = m_dcf->GetCw ();
+  m_backoffTrace = m_rng->GetNext (0, m_dcf->GetCw ());
+  m_dcf->StartBackoffNow (m_backoffTrace);
   ns3::Dcf::DoInitialize ();
 }
 

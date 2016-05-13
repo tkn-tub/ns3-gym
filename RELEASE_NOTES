@@ -41,6 +41,7 @@ Bugs fixed
 - Bug 2383 - IPv4 header for reassembled packets reports a wrong payload size
 - Bug 2392 - SYN segment advertised window should not be scaled
 - Bug 2396 - move utility functions to WifiPhy
+- Bug 2397 - add backoff and cw tracing to EDCA
 
 Known issues
 ------------
