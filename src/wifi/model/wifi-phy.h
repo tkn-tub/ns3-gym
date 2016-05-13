@@ -192,9 +192,8 @@ public:
   /**
    * arg1: packet received unsuccessfully
    * arg2: snr of packet
-   * arg3: PHY-RXEND flag
    */
-  typedef Callback<void, Ptr<Packet>, double, bool> RxErrorCallback;
+  typedef Callback<void, Ptr<Packet>, double> RxErrorCallback;
 
   static TypeId GetTypeId (void);
 

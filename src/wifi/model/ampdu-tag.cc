@@ -15,7 +15,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * Author: Ghada Badawy <gbadawy@gmail.com>
+ * Authors: Ghada Badawy <gbadawy@gmail.com>
+ *          Sébastien Deronne <sebastien.deronne@gmail.com>
  */
 
 #include "ampdu-tag.h"
@@ -48,7 +49,9 @@ AmpduTag::GetInstanceTypeId (void) const
 }
 
 AmpduTag::AmpduTag ()
-  : m_ampdu (0)
+  : m_ampdu (0),
+    m_nbOfMpdus (0),
+    m_duration (Seconds(0))
 {
 }
 
@@ -59,30 +62,42 @@ AmpduTag::SetAmpdu (bool supported)
 }
 
 void
-AmpduTag::SetNoOfMpdus (uint8_t noofmpdus)
+AmpduTag::SetRemainingNbOfMpdus (uint8_t nbofmpdus)
 {
-  NS_ASSERT (noofmpdus <= 64);
-  m_noOfMpdus = noofmpdus;
+  NS_ASSERT (nbofmpdus <= 64);
+  m_nbOfMpdus = nbofmpdus;
+}
+
+void
+AmpduTag::SetRemainingAmpduDuration (Time duration)
+{
+  NS_ASSERT (m_duration <= MilliSeconds(10));
+  m_duration = duration;
 }
 
 uint32_t
 AmpduTag::GetSerializedSize (void) const
 {
-  return 2;
+  return (2 + sizeof (Time));
 }
 
 void
 AmpduTag::Serialize (TagBuffer i) const
 {
   i.WriteU8 (m_ampdu);
-  i.WriteU8 (m_noOfMpdus);
+  i.WriteU8 (m_nbOfMpdus);
+  int64_t duration = m_duration.GetTimeStep ();
+  i.Write ((const uint8_t *)&duration, sizeof(int64_t));
 }
 
 void
 AmpduTag::Deserialize (TagBuffer i)
 {
   m_ampdu = i.ReadU8 ();
-  m_noOfMpdus = i.ReadU8 ();
+  m_nbOfMpdus = i.ReadU8 ();
+  int64_t duration;
+  i.Read ((uint8_t *)&duration, 8);
+  m_duration = Time (duration);
 }
 
 bool
@@ -92,15 +107,23 @@ AmpduTag::GetAmpdu () const
 }
 
 uint8_t
-AmpduTag::GetNoOfMpdus () const
+AmpduTag::GetRemainingNbOfMpdus () const
 {
-  return m_noOfMpdus;
+  return m_nbOfMpdus;
+}
+
+Time
+AmpduTag::GetRemainingAmpduDuration () const
+{
+  return m_duration;
 }
 
 void
 AmpduTag::Print (std::ostream &os) const
 {
-  os << "A-MPDU exists=" << m_ampdu;
+  os << "A-MPDU exists=" << m_ampdu
+     << " Remaining number of MPDUs=" << m_nbOfMpdus
+     << " Remaining A-MPDU duration=" << m_duration;
 }
 
 } //namespace ns3

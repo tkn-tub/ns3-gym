@@ -442,14 +442,14 @@ WifiPhyStateHelper::SwitchFromRxEndOk (Ptr<Packet> packet, double snr, WifiTxVec
 }
 
 void
-WifiPhyStateHelper::SwitchFromRxEndError (Ptr<Packet> packet, double snr, bool isEndOfFrame)
+WifiPhyStateHelper::SwitchFromRxEndError (Ptr<Packet> packet, double snr)
 {
   m_rxErrorTrace (packet, snr);
   NotifyRxEndError ();
   DoSwitchFromRx ();
   if (!m_rxErrorCallback.IsNull ())
     {
-      m_rxErrorCallback (packet, snr, isEndOfFrame);
+      m_rxErrorCallback (packet, snr);
     }
 }
 

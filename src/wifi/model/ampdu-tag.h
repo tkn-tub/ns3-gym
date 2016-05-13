@@ -15,13 +15,15 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * Author: Ghada Badawy <gbadawy@gmail.com>
+ * Authors: Ghada Badawy <gbadawy@gmail.com>
+ *          Sébastien Deronne <sebastien.deronne@gmail.com>
  */
 
 #ifndef AMPDU_TAG_H
 #define AMPDU_TAG_H
 
 #include "ns3/packet.h"
+#include "ns3/nstime.h"
 
 namespace ns3 {
 
@@ -48,11 +50,17 @@ public:
    */
   void SetAmpdu (bool supported);
   /**
-   * \param noofmpdus the number of MPDUs
+   * \param nbofmpdus the remaining number of MPDUs
    *
-   * Set the number of MPDUs in the A-MPDU.
+   * Set the remaining number of MPDUs in the A-MPDU.
    */
-  void SetNoOfMpdus (uint8_t noofmpdus);
+  void SetRemainingNbOfMpdus (uint8_t nbofmpdus);
+  /**
+   * \param duration the remaining duration of the A-MPDU
+   *
+   * Set the remaining duration of the A-MPDU.
+   */
+  void SetRemainingAmpduDuration (Time duration);
 
   virtual void Serialize (TagBuffer i) const;
   virtual void Deserialize (TagBuffer i);
@@ -67,15 +75,22 @@ public:
    */
   bool GetAmpdu (void) const;
   /**
-   * \return the number of MPDUs in an A-MPDU
+   * \return the remaining number of MPDUs in an A-MPDU
    *
-   * Returns the number of MPDUs in an A-MPDU
+   * Returns the remaining number of MPDUs in an A-MPDU
    */
-  uint8_t GetNoOfMpdus (void) const;
+  uint8_t GetRemainingNbOfMpdus (void) const;
+  /**
+   * \return the remaining duration of an A-MPDU
+   *
+   * Returns the remaining duration of an A-MPDU
+   */
+  Time GetRemainingAmpduDuration (void) const;
 
 private:
   uint8_t m_ampdu;     //!< Flag whether it is an A-MPDU
-  uint8_t m_noOfMpdus; //!< number of MPDUs in the A-MPDU
+  uint8_t m_nbOfMpdus; //!< Remaining number of MPDUs in the A-MPDU
+  Time m_duration;     //!< Remaining duration of the A-MPDU in nanoseconds
 };
 
 } //namespace ns3

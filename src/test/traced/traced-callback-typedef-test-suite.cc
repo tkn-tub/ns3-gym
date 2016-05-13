@@ -610,8 +610,8 @@ TracedCallbackTypedefTestCase::DoRun (void)
          empty, empty, empty, empty);
 
   CHECK (WifiPhyStateHelper::RxEndErrorTracedCallback,
-         Ptr<const Packet>, double, bool,
-         empty, empty);
+         Ptr<const Packet>, double,
+         empty, empty, empty);
 
   CHECK (WifiPhyStateHelper::RxOkTracedCallback,
          Ptr<const Packet>, double, WifiMode, WifiPreamble,

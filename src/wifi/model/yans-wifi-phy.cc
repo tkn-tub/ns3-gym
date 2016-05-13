@@ -655,16 +655,16 @@ YansWifiPhy::StartReceivePreambleAndHeader (Ptr<Packet> packet,
           else if (preamble != WIFI_PREAMBLE_NONE && packet->PeekPacketTag (ampduTag) && m_mpdusNum == 0)
             {
               //received the first MPDU in an MPDU
-              m_mpdusNum = ampduTag.GetNoOfMpdus () - 1;
+              m_mpdusNum = ampduTag.GetRemainingNbOfMpdus ();
               m_rxMpduReferenceNumber++;
             }
           else if (preamble == WIFI_PREAMBLE_NONE && packet->PeekPacketTag (ampduTag) && m_mpdusNum > 0)
             {
               //received the other MPDUs that are part of the A-MPDU
-              if (ampduTag.GetNoOfMpdus () < m_mpdusNum)
+              if (ampduTag.GetRemainingNbOfMpdus () < (m_mpdusNum - 1))
                 {
-                  NS_LOG_DEBUG ("Missing MPDU from the A-MPDU " << m_mpdusNum - ampduTag.GetNoOfMpdus ());
-                  m_mpdusNum = ampduTag.GetNoOfMpdus ();
+                  NS_LOG_DEBUG ("Missing MPDU from the A-MPDU " << m_mpdusNum - ampduTag.GetRemainingNbOfMpdus ());
+                  m_mpdusNum = ampduTag.GetRemainingNbOfMpdus ();
                 }
               else
                 {
@@ -1235,14 +1235,12 @@ YansWifiPhy::EndReceive (Ptr<Packet> packet, enum WifiPreamble preamble, enum mp
         {
           /* failure. */
           NotifyRxDrop (packet);
-          bool isEndOfFrame = ((mpdutype == NORMAL_MPDU && preamble != WIFI_PREAMBLE_NONE) || (mpdutype == LAST_MPDU_IN_AGGREGATE && preamble == WIFI_PREAMBLE_NONE));
-          m_state->SwitchFromRxEndError (packet, snrPer.snr, isEndOfFrame);
+          m_state->SwitchFromRxEndError (packet, snrPer.snr);
         }
     }
   else
     {
-      bool isEndOfFrame = ((mpdutype == NORMAL_MPDU && preamble != WIFI_PREAMBLE_NONE) || (mpdutype == LAST_MPDU_IN_AGGREGATE && preamble == WIFI_PREAMBLE_NONE));
-      m_state->SwitchFromRxEndError (packet, snrPer.snr, isEndOfFrame);
+      m_state->SwitchFromRxEndError (packet, snrPer.snr);
     }
 
   if (preamble == WIFI_PREAMBLE_NONE && mpdutype == LAST_MPDU_IN_AGGREGATE)

@@ -736,7 +736,7 @@ public:
    * This method is typically invoked by the lower PHY layer to notify
    * the MAC layer that a packet was unsuccessfully received.
    */
-  void ReceiveError (Ptr<Packet> packet, double rxSnr, bool isEndOfFrame);
+  void ReceiveError (Ptr<Packet> packet, double rxSnr);
   /**
    * \param duration switching delay duration.
    *
@@ -1378,7 +1378,6 @@ private:
   uint8_t m_sentMpdus;                //!< Number of transmitted MPDUs in an A-MPDU that have not been acknowledged yet
   Ptr<WifiMacQueue> m_aggregateQueue; //!< Queue used for MPDU aggregation
   WifiTxVector m_currentTxVector;     //!< TXVECTOR used for the current packet transmission
-  bool m_receivedAtLeastOneMpdu;      //!< Flag whether an MPDU has already been successfully received while receiving an A-MPDU
   std::vector<Item> m_txPackets;      //!< Contain temporary items to be sent with the next A-MPDU transmission, once RTS/CTS exchange has succeeded. It is not used in other cases.
   uint32_t m_nTxMpdus;                //!<Holds the number of transmitted MPDUs in the last A-MPDU transmission
 };
