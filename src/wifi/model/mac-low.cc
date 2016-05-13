@@ -1130,6 +1130,13 @@ MacLow::ReceiveOk (Ptr<Packet> packet, double rxSnr, WifiTxVector txVector, Wifi
         }
       else if (hdr.IsData () || hdr.IsMgt ())
         {
+          if (hdr.IsProbeResp ())
+            {
+              // Apply SNR tag for probe response quality measurements
+              SnrTag tag;
+              tag.Set (rxSnr);
+              packet->AddPacketTag (tag);
+            }
           if (hdr.IsMgt () && ampduSubframe)
             {
               NS_FATAL_ERROR ("Received management packet as part of an A-MPDU");
@@ -1159,6 +1166,13 @@ MacLow::ReceiveOk (Ptr<Packet> packet, double rxSnr, WifiTxVector txVector, Wifi
           if (hdr.IsData () || hdr.IsMgt ())
             {
               NS_LOG_DEBUG ("rx group from=" << hdr.GetAddr2 ());
+              if (hdr.IsBeacon ())
+                {
+                  // Apply SNR tag for beacon quality measurements
+                  SnrTag tag;
+                  tag.Set (rxSnr);
+                  packet->AddPacketTag (tag);
+                }
               goto rxPacket;
             }
           else

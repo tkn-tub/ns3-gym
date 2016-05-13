@@ -42,6 +42,7 @@ Bugs fixed
 - Bug 2392 - SYN segment advertised window should not be scaled
 - Bug 2396 - move utility functions to WifiPhy
 - Bug 2397 - add backoff and cw tracing to EDCA
+- Bug 2398 - add SNR tag to beacons and probe responses
 
 Known issues
 ------------
