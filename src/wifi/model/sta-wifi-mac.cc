@@ -617,6 +617,7 @@ StaWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
                       //disable short slot time
                       SetSlot (MicroSeconds (20));
                     }
+                  ConfigureContentionWindow (15, 1023);
                 }
             }
           m_stationManager->SetShortPreambleEnabled (isShortPreambleEnabled);
@@ -682,6 +683,7 @@ StaWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
                           //disable short slot time
                           SetSlot (MicroSeconds (20));
                         }
+                      ConfigureContentionWindow (15, 1023);
                     }
                 }
               m_stationManager->SetShortPreambleEnabled (isShortPreambleEnabled);
