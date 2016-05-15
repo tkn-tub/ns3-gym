@@ -96,6 +96,7 @@ public:
   // Inherited methods:
   virtual void SetEnergyModelCallback (DeviceEnergyModel::ChangeStateCallback callback);
   virtual void EnergyDepletionHandler (void);
+  virtual void EnergyRechargeHandler (void);
   virtual void SendPacket (Ptr<Packet> pkt, uint32_t modeNum);
 
   /**

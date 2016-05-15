@@ -28,6 +28,7 @@
 #include "ns3/nstime.h"
 #include "ns3/device-energy-model.h"
 #include "ns3/random-variable-stream.h"
+#include "ns3/event-id.h"
 #include <list>
 
 namespace ns3 {
@@ -240,6 +241,7 @@ public:
   // Inherited methods
   virtual void SetEnergyModelCallback (DeviceEnergyModel::ChangeStateCallback cb);
   virtual void EnergyDepletionHandler (void);
+  virtual void EnergyRechargeHandler (void);
   virtual void SendPacket (Ptr<Packet> pkt, uint32_t modeNum);
   virtual void RegisterListener (UanPhyListener *listener);
   virtual void StartRxPacket (Ptr<Packet> pkt, double rxPowerDb, UanTxMode txMode, UanPdp pdp);
@@ -298,6 +300,7 @@ private:
   double m_ccaThreshDb;             //!< CCA busy threshold.
 
   Ptr<Packet> m_pktRx;              //!< Received packet.
+  Ptr<Packet> m_pktTx;              //!< Sent packet.
   double m_minRxSinrDb;             //!< Minimum receive SINR during packet reception.
   double m_rxRecvPwrDb;             //!< Receiver power.
   Time m_pktRxArrTime;              //!< Packet arrival time.
@@ -305,7 +308,9 @@ private:
   UanTxMode m_pktRxMode;            //!< Packet transmission mode at receiver.
 
   bool m_cleared;                   //!< Flag when we've been cleared.
-  bool m_disabled;                  //!< Energy depleted. 
+  
+  EventId m_txEndEvent;             //!< Tx event
+  EventId m_rxEndEvent;             //!< Rx event
 
   /** Provides uniform random variables. */
   Ptr<UniformRandomVariable> m_pg;

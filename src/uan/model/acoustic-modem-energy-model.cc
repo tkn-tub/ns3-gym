@@ -190,6 +190,18 @@ AcousticModemEnergyModel::SetEnergyDepletionCallback (
 }
 
 void
+AcousticModemEnergyModel::SetEnergyRechargeCallback (
+  AcousticModemEnergyRechargeCallback callback)
+{
+  NS_LOG_FUNCTION (this);
+  if (callback.IsNull ())
+    {
+      NS_LOG_DEBUG ("AcousticModemEnergyModel:Setting NULL energy recharge callback!");
+    }
+  m_energyRechargeCallback = callback;
+}
+
+void
 AcousticModemEnergyModel::ChangeState (int newState)
 {
   NS_LOG_FUNCTION (this << newState);
@@ -215,6 +227,9 @@ AcousticModemEnergyModel::ChangeState (int newState)
     case UanPhy::SLEEP:
       energyToDecrease = duration.GetSeconds () * m_sleepPowerW;
       break;
+    case UanPhy::DISABLED:
+      energyToDecrease = 0;
+      break;
     default:
       NS_FATAL_ERROR ("AcousticModemEnergyModel:Undefined radio state!");
     }
@@ -228,8 +243,11 @@ AcousticModemEnergyModel::ChangeState (int newState)
   // notify energy source
   m_source->UpdateEnergySource ();
 
-  // update current state & last update time stamp
-  SetMicroModemState (newState);
+  if (m_currentState != UanPhy::DISABLED)
+    {
+      // update current state & last update time stamp
+      SetMicroModemState (newState);
+    }
 
   // some debug message
   NS_LOG_DEBUG ("AcousticModemEnergyModel:Total energy consumption at node #" <<
@@ -250,6 +268,24 @@ AcousticModemEnergyModel::HandleEnergyDepletion (void)
   // invoke the phy energy depletion handler
   Ptr<UanNetDevice> dev = m_node->GetDevice (0)->GetObject<UanNetDevice> ();
   dev->GetPhy ()->EnergyDepletionHandler ();
+  SetMicroModemState(UanPhy::DISABLED);
+}
+
+void
+AcousticModemEnergyModel::HandleEnergyRecharged (void)
+{
+  NS_LOG_FUNCTION (this);
+  NS_LOG_DEBUG ("AcousticModemEnergyModel:Energy is recharged at node #" <<
+                m_node->GetId ());
+  // invoke energy recharge callback, if set.
+  if (!m_energyRechargeCallback.IsNull ())
+    {
+      m_energyRechargeCallback ();
+    }
+  // invoke the phy energy recharge handler
+  Ptr<UanNetDevice> dev = m_node->GetDevice (0)->GetObject<UanNetDevice> ();
+  dev->GetPhy ()->EnergyRechargeHandler ();
+  SetMicroModemState(UanPhy::IDLE);
 }
 
 /*
@@ -269,7 +305,7 @@ double
 AcousticModemEnergyModel::DoGetCurrentA (void) const
 {
   NS_LOG_FUNCTION (this);
-
+  
   double supplyVoltage = m_source->GetSupplyVoltage ();
   NS_ASSERT (supplyVoltage != 0.0);
   double stateCurrent = 0.0;
@@ -286,6 +322,9 @@ AcousticModemEnergyModel::DoGetCurrentA (void) const
       break;
     case UanPhy::SLEEP:
       stateCurrent = m_sleepPowerW / supplyVoltage;
+      break;
+    case UanPhy::DISABLED:
+      stateCurrent = 0.0;
       break;
     default:
       NS_FATAL_ERROR ("AcousticModemEnergyModel:Undefined radio state!");
@@ -322,6 +361,9 @@ AcousticModemEnergyModel::SetMicroModemState (const int state)
           break;
         case UanPhy::SLEEP:
           stateName = "SLEEP";
+          break;
+        case UanPhy::DISABLED:
+          stateName = "DISABLED";
           break;
         }
       NS_LOG_DEBUG ("AcousticModemEnergyModel:Switching to state: " << stateName <<

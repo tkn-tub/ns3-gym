@@ -358,8 +358,8 @@ UanPhyGen::UanPhyGen ()
     m_rxThreshDb (0),
     m_ccaThreshDb (0),
     m_pktRx (0),
-    m_cleared (false),
-    m_disabled (false)
+    m_pktTx (0),
+    m_cleared (false)
 {
   m_pg = CreateObject<UniformRandomVariable> ();
 
@@ -513,15 +513,37 @@ UanPhyGen::EnergyDepletionHandler ()
   NS_LOG_FUNCTION (this);
   NS_LOG_DEBUG ("Energy depleted at node " << m_device->GetNode ()->GetId () <<
                 ", stopping rx/tx activities");
+  
+  m_state = DISABLED;
+  if(m_txEndEvent.IsRunning ())
+    {
+      Simulator::Cancel (m_txEndEvent);
+      NotifyTxDrop (m_pktTx);
+      m_pktTx = 0;
+    }
+  if(m_rxEndEvent.IsRunning ())
+    {
+      Simulator::Cancel (m_rxEndEvent);
+      NotifyRxDrop (m_pktRx);
+      m_pktRx = 0;
+    }
+}
 
-  m_disabled = true;
+void
+UanPhyGen::EnergyRechargeHandler ()
+{
+  NS_LOG_FUNCTION (this);
+  NS_LOG_DEBUG ("Energy recharged at node " << m_device->GetNode ()->GetId () <<
+                ", restoring rx/tx activities");
+
+  m_state = IDLE;
 }
 
 void
 UanPhyGen::SendPacket (Ptr<Packet> pkt, uint32_t modeNum)
 {
   NS_LOG_DEBUG ("PHY " << m_mac->GetAddress () << ": Transmitting packet");
-  if (m_disabled)
+  if (m_state == DISABLED)
     {
       NS_LOG_DEBUG ("Energy depleted, node cannot transmit any packet. Dropping.");
       return;
@@ -550,7 +572,8 @@ UanPhyGen::SendPacket (Ptr<Packet> pkt, uint32_t modeNum)
   m_state = TX;
   UpdatePowerConsumption (TX);
   double txdelay = pkt->GetSize () * 8.0 / txMode.GetDataRateBps ();
-  Simulator::Schedule (Seconds (txdelay), &UanPhyGen::TxEndEvent, this);
+  m_pktTx = pkt;
+  m_txEndEvent = Simulator::Schedule (Seconds (txdelay), &UanPhyGen::TxEndEvent, this);
   NS_LOG_DEBUG ("PHY " << m_mac->GetAddress () << " notifying listeners");
   NotifyListenersTxStart (Seconds (txdelay));
   m_txLogger (pkt, m_txPwrDb, txMode);
@@ -559,7 +582,7 @@ UanPhyGen::SendPacket (Ptr<Packet> pkt, uint32_t modeNum)
 void
 UanPhyGen::TxEndEvent ()
 {
-  if (m_state == SLEEP || m_disabled == true)
+  if (m_state == SLEEP || m_state == DISABLED)
     {
       NS_LOG_DEBUG ("Transmission ended but node sleeping or dead");
       return;
@@ -588,15 +611,12 @@ UanPhyGen::RegisterListener (UanPhyListener *listener)
 void
 UanPhyGen::StartRxPacket (Ptr<Packet> pkt, double rxPowerDb, UanTxMode txMode, UanPdp pdp)
 {
-  if (m_disabled)
+  switch (m_state)
     {
+    case DISABLED:
       NS_LOG_DEBUG ("Energy depleted, node cannot receive any packet. Dropping.");
       NotifyRxDrop(pkt);    // traced source netanim
       return;
-    }
-
-  switch (m_state)
-    {
     case TX:
       NotifyRxDrop(pkt);    // traced source netanim
       NS_ASSERT (false);
@@ -644,7 +664,7 @@ UanPhyGen::StartRxPacket (Ptr<Packet> pkt, double rxPowerDb, UanTxMode txMode, U
             m_pktRxMode = txMode;
             m_pktRxPdp = pdp;
             double txdelay = pkt->GetSize () * 8.0 / txMode.GetDataRateBps ();
-            Simulator::Schedule (Seconds (txdelay), &UanPhyGen::RxEndEvent, this, pkt, rxPowerDb, txMode);
+            m_rxEndEvent = Simulator::Schedule (Seconds (txdelay), &UanPhyGen::RxEndEvent, this, pkt, rxPowerDb, txMode);
             NotifyListenersRxStart ();
           }
 
@@ -672,7 +692,7 @@ UanPhyGen::RxEndEvent (Ptr<Packet> pkt, double rxPowerDb, UanTxMode txMode)
       return;
     }
 
-  if (m_disabled || m_state == SLEEP)
+  if (m_state == DISABLED || m_state == SLEEP)
     {
       NS_LOG_DEBUG ("Sleep mode or dead. Dropping packet");
       m_pktRx = 0;

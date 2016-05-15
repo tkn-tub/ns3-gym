@@ -182,7 +182,8 @@ public:
     CCABUSY,  //!< Channel busy.
     RX,       //!< Receiving.
     TX,       //!< Transmitting.
-    SLEEP     //!< Sleeping.
+    SLEEP,    //!< Sleeping.
+    DISABLED  //!< Disabled.
   };
 
   /**
@@ -223,6 +224,10 @@ public:
    * Handle the energy depletion event.
    */
   virtual void EnergyDepletionHandler (void) = 0;
+  /**
+   * Handle the energy recharge event.
+   */
+  virtual void EnergyRechargeHandler (void) = 0;
   /**
    * Send a packet using a specific transmission mode.
    *

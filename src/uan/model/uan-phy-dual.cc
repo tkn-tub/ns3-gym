@@ -253,6 +253,12 @@ UanPhyDual::EnergyDepletionHandler ()
 }
 
 void
+UanPhyDual::EnergyRechargeHandler ()
+{
+  NS_LOG_DEBUG ("Not Implemented");
+}
+
+void
 UanPhyDual::SendPacket (Ptr<Packet> pkt, uint32_t modeNum)
 {
   if (modeNum <= m_phy1->GetNModes () - 1)
