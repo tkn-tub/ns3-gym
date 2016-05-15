@@ -231,7 +231,7 @@ def register_types(module):
     ## uan-phy.h (module 'uan'): ns3::UanPhy [class]
     module.add_class('UanPhy', parent=root_module['ns3::Object'])
     ## uan-phy.h (module 'uan'): ns3::UanPhy::State [enumeration]
-    module.add_enum('State', ['IDLE', 'CCABUSY', 'RX', 'TX', 'SLEEP'], outer_class=root_module['ns3::UanPhy'])
+    module.add_enum('State', ['IDLE', 'CCABUSY', 'RX', 'TX', 'SLEEP', 'DISABLED'], outer_class=root_module['ns3::UanPhy'])
     ## uan-phy.h (module 'uan'): ns3::UanPhyCalcSinr [class]
     module.add_class('UanPhyCalcSinr', parent=root_module['ns3::Object'])
     ## uan-phy-gen.h (module 'uan'): ns3::UanPhyCalcSinrDefault [class]
@@ -4713,6 +4713,11 @@ def register_Ns3UanPhy_methods(root_module, cls):
                    'void', 
                    [], 
                    is_pure_virtual=True, is_virtual=True)
+    ## uan-phy.h (module 'uan'): void ns3::UanPhy::EnergyRechargeHandler() [member function]
+    cls.add_method('EnergyRechargeHandler', 
+                   'void', 
+                   [], 
+                   is_pure_virtual=True, is_virtual=True)
     ## uan-phy.h (module 'uan'): double ns3::UanPhy::GetCcaThresholdDb() [member function]
     cls.add_method('GetCcaThresholdDb', 
                    'double', 
@@ -5014,6 +5019,11 @@ def register_Ns3UanPhyDual_methods(root_module, cls):
                    is_virtual=True)
     ## uan-phy-dual.h (module 'uan'): void ns3::UanPhyDual::EnergyDepletionHandler() [member function]
     cls.add_method('EnergyDepletionHandler', 
+                   'void', 
+                   [], 
+                   is_virtual=True)
+    ## uan-phy-dual.h (module 'uan'): void ns3::UanPhyDual::EnergyRechargeHandler() [member function]
+    cls.add_method('EnergyRechargeHandler', 
                    'void', 
                    [], 
                    is_virtual=True)
@@ -5353,6 +5363,11 @@ def register_Ns3UanPhyGen_methods(root_module, cls):
                    is_virtual=True)
     ## uan-phy-gen.h (module 'uan'): void ns3::UanPhyGen::EnergyDepletionHandler() [member function]
     cls.add_method('EnergyDepletionHandler', 
+                   'void', 
+                   [], 
+                   is_virtual=True)
+    ## uan-phy-gen.h (module 'uan'): void ns3::UanPhyGen::EnergyRechargeHandler() [member function]
+    cls.add_method('EnergyRechargeHandler', 
                    'void', 
                    [], 
                    is_virtual=True)
@@ -8391,6 +8406,10 @@ def register_Ns3AcousticModemEnergyModel_methods(root_module, cls):
                    is_virtual=True)
     ## acoustic-modem-energy-model.h (module 'uan'): void ns3::AcousticModemEnergyModel::SetEnergyDepletionCallback(ns3::Callback<void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> callback) [member function]
     cls.add_method('SetEnergyDepletionCallback', 
+                   'void', 
+                   [param('ns3::Callback< void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'callback')])
+    ## acoustic-modem-energy-model.h (module 'uan'): void ns3::AcousticModemEnergyModel::SetEnergyRechargeCallback(ns3::Callback<void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> callback) [member function]
+    cls.add_method('SetEnergyRechargeCallback', 
                    'void', 
                    [param('ns3::Callback< void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'callback')])
     ## acoustic-modem-energy-model.h (module 'uan'): void ns3::AcousticModemEnergyModel::SetEnergySource(ns3::Ptr<ns3::EnergySource> source) [member function]
