@@ -18,6 +18,13 @@ This release is not yet available.
 
 Supported platforms
 -------------------
+This release is intended to work on systems with the following minimal
+requirements:
+- g++-4.8 or later
+- clang-3.3 or later
+- Python 2.7 (Python 2 series)
+- Python 3.4 or later (Python 3 series)
+
 This release has been tested on the following platforms:
 
 New user-visible features
