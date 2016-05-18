@@ -64,10 +64,15 @@ public:
    */
   bool Enqueue (Ptr<QueueItem> item);
   /**
-   * Remove an item from the front of the Queue
+   * Remove an item from the front of the Queue, counting it as dequeued
    * \return 0 if the operation was not successful; the item otherwise.
    */
   Ptr<QueueItem> Dequeue (void);
+  /**
+   * Remove an item from the front of the Queue, counting it as dropped
+   * \return 0 if the operation was not successful; the item otherwise.
+   */
+  Ptr<QueueItem>  Remove (void);
   /**
    * Get a copy of the item at the front of the queue without removing it
    * \return 0 if the operation was not successful; the item otherwise.
@@ -221,10 +226,15 @@ private:
    */
   virtual bool DoEnqueue (Ptr<QueueItem> item) = 0;
   /**
-   * Pull an item from the queue
+   * Pull the item to dequeue from the queue
    * \return the item.
    */
   virtual Ptr<QueueItem> DoDequeue (void) = 0;
+  /**
+   * Pull the item to drop from the queue
+   * \return the item.
+   */
+  virtual Ptr<QueueItem> DoRemove (void) = 0;
   /**
    * Peek the front item in the queue
    * \return the item.

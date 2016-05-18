@@ -72,6 +72,20 @@ DropTailQueue::DoDequeue (void)
   return item;
 }
 
+Ptr<QueueItem>
+DropTailQueue::DoRemove (void)
+{
+  NS_LOG_FUNCTION (this);
+  NS_ASSERT (m_packets.size () == GetNPackets ());
+
+  Ptr<QueueItem> item = m_packets.front ();
+  m_packets.pop ();
+
+  NS_LOG_LOGIC ("Removed " << item);
+
+  return item;
+}
+
 Ptr<const QueueItem>
 DropTailQueue::DoPeek (void) const
 {

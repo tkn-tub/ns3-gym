@@ -49,6 +49,7 @@ public:
 private:
   virtual bool DoEnqueue (Ptr<QueueItem> item);
   virtual Ptr<QueueItem> DoDequeue (void);
+  virtual Ptr<QueueItem> DoRemove (void);
   virtual Ptr<const QueueItem> DoPeek (void) const;
 
   std::queue<Ptr<QueueItem> > m_packets; //!< the items in the queue
