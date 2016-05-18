@@ -611,29 +611,40 @@ QueueDisc::Transmit (Ptr<QueueDiscItem> item)
 {
   NS_LOG_FUNCTION (this << item);
   NS_ASSERT (m_devQueueIface);
-  bool ret = false;
 
-  if (!m_devQueueIface->GetTxQueue (item->GetTxQueueIndex ())->IsStopped ())
-    {
-      // send a copy of the packet because the device might add the
-      // MAC header even if the transmission is unsuccessful (see BUG 2284)
-      Ptr<Packet> copy = item->GetPacket ()->Copy ();
-      ret = m_device->Send (copy, item->GetAddress (), item->GetProtocol ());
-    }
-
-  // If the transmission did not happen or failed, requeue the item
-  if (!ret)
+  // if the device queue is stopped, requeue the packet and return false.
+  // Note that if the underlying device is tc-unaware, packets are never
+  // requeued because the queues of tc-unaware devices are never stopped
+  if (m_devQueueIface->GetTxQueue (item->GetTxQueueIndex ())->IsStopped ())
     {
       Requeue (item);
+      return false;
     }
 
-  // If the transmission succeeded but now the queue is stopped, return false
-  if (ret && m_devQueueIface->GetTxQueue (item->GetTxQueueIndex ())->IsStopped ())
+  m_device->Send (item->GetPacket (), item->GetAddress (), item->GetProtocol ());
+
+  // the behavior here slightly diverges from Linux. In Linux, it is advised that
+  // the function called when a packet needs to be transmitted (ndo_start_xmit)
+  // should always return NETDEV_TX_OK, which means that the packet is consumed by
+  // the device driver and thus is not requeued. However, the ndo_start_xmit function
+  // of the device driver is allowed to return NETDEV_TX_BUSY (and hence the packet
+  // is requeued) when there is no room for the received packet in the device queue,
+  // despite the queue is not stopped. This case is considered as a corner case or
+  // an hard error, and should be avoided.
+  // Here, we do not handle such corner case and always assume that the packet is
+  // consumed by the netdevice. Thus, we ignore the value returned by Send and a
+  // packet sent to a netdevice is never requeued. The reason is that the semantics
+  // of the value returned by NetDevice::Send does not match that of the value
+  // returned by ndo_start_xmit.
+
+  // if the queue disc is empty or the device queue is now stopped, return false so
+  // that the Run method does not attempt to dequeue other packets and exits
+  if (GetNPackets () == 0 || m_devQueueIface->GetTxQueue (item->GetTxQueueIndex ())->IsStopped ())
     {
-      ret = false;
+      return false;
     }
 
-  return ret;
+  return true;
 }
 
 } // namespace ns3

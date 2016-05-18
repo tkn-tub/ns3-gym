@@ -180,10 +180,11 @@ The qdisc field of the Linux struct netdev_queue, however, cannot be
 similarly stored in a NetDeviceQueue object, because it would make the network module
 depend on the traffic-control module. Instead, this information is stored in the
 TrafficControlLayer object aggregated to each node. In particular, a TrafficControlLayer
-object holds a map which stores, for each NetDevice, a vector of Ptr<QueueDisc>.
-The size of such a vector is the number of device transmission queues and each
-element of this vector is a pointer to the queue disc to activate when the above
-problems occur. The traffic control layer takes care of configuring such a map
+object holds a struct NetDeviceInfo which stores, for each NetDevice, a pointer to the
+root queue disc installed on the device, a pointer to the netdevice queue interface
+(see below) aggregated to the device, and a vector of pointers (one for each device
+transmission queue) to the queue discs to activate when the above
+problems occur. The traffic control layer takes care of configuring such a vector
 at initialization time, based on the "wake mode" of the root queue disc. If the
 wake mode of the root queue disc is WAKE_ROOT, then all the elements of the vector
 are pointers to the root queue disc. If the wake mode of the root queue disc is
@@ -210,12 +211,6 @@ map looks like in case of a classful root queue disc whose wake mode is WAKE_CHI
 
     Setup of a multi-queue aware queue disc
 
-Besides the map described above, a TrafficControlLayer object also stores a vector
-of Ptr<QueueDisc> representing the root queue discs installed on all the devices of
-the node. This vector has as many elements as the number of devices. In this vector,
-devices are sorted as in Node::m_devices. This vector is accessible through the
-RootQueueDiscList attribute.
-
 A NetDeviceQueueInterface object is used by the traffic control layer to access the
 information stored in the NetDeviceQueue objects, retrieve the number of transmission
 queues of the device and get the transmission queue selected for the transmission of a
@@ -228,7 +223,8 @@ interface). In particular:
   Ipv{4,6}L3Protocol::AddInterface, which calls TrafficControlLayer::SetupDevice, which \
   creates the queue interface and aggregates it to device.
 
-* at initialization time, devices supporting flow control can cache the pointer to the \
+* when notified that a netdevice queue interface has been aggregated, traffic control \
+  aware devices can cache the pointer to the \
   netdevice queue interface created by the traffic contol layer into a member variable. \
   Also, multi-queue devices can set the number of device transmission queues and set the \
   select queue callback through the netdevice queue interface
@@ -237,5 +233,49 @@ interface). In particular:
   that the netdevice has set the number of device transmission queues, if it has to do so) \
   completes the installation of the queue discs by setting the wake callbacks on the device \
   transmission queues (through the netdevice queue interface). Also, the traffic control \
-  sets a flag in the device queue interface if a queue disc is present on that device and \
-  calls the Initialize method of the queue disc.
+  calls the Initialize method of the root queue discs.
+
+Requeue
+========
+In Linux, a packet dequeued from a queue disc can be requeued (i.e., stored somewhere
+and sent to the device at a later time) in some circumstances. Firstly, the function
+used to dequeue a packet (dequeue_skb) actually dequeues a packet only if the device
+is multi-queue or the (unique) device queue is not stopped. If a packet has been
+dequeued from the queue disc, it is passed to the sch_direct_xmit function for
+transmission to the device. This function checks whether the device queue the packet is destined
+to is stopped, in which case the packet is requeued. Otherwise, the packet is sent to the device.
+If the device returns NETDEV_TX_BUSY, the packet is requeued. However, it is advised that
+the function called to send a packet to the device (ndo_start_xmit) should always
+return NETDEV_TX_OK, which means that the packet is consumed by the device driver
+and thus needs not to be requeued. However, the ndo_start_xmit function of the device
+driver is allowed to return NETDEV_TX_BUSY (and hence the packet is requeued) when
+there is no room for the received packet in the device queue, despite the queue is
+not stopped. This case is considered as a corner case or an hard error, and should be avoided.
+
+ns-3 implements the requeue mechanism in a similar manner, the only difference being
+that packets are not requeued when such corner cases occur. Basically, the method used
+to dequeue a packet (QueueDisc::DequeuePacket) actually dequeues a packet only if the
+device is multi-queue or the (unique) device queue is not stopped. If a packet has been
+dequeued from the queue disc, it is passed to the QueueDisc::Transmit method for
+transmission to the device. This method checks whether the device queue the packet is destined
+to is stopped, in which case the packet is requeued. Otherwise, the packet is sent to the device.
+We request netdevices to stop a device queue when it is not able to store another packet,
+so as to avoid the situation in which a packet is received that cannot be enqueued while
+the device queue is not stopped. Should such a corner case occur, the netdevice drops
+the packet but, unlike Linux, the value returned by NetDevice::Send is ignored and the
+packet is not requeued.
+
+
+The way the requeue mechanism is implemented in ns-3 has the following implications:
+
+* if the underlying device has a single queue, no packet will ever be requeued. Indeed, \
+  if the device queue is not stopped when QueueDisc::DequeuePacket is called, it will \
+  not be stopped also when QueueDisc::Transmit is called, hence the packet is not requeued \
+  (recall that a packet is not requeued after being sent to the device, as the value \
+  returned by NetDevice::Send is ignored).
+* if the underlying device does not implement flow control, i.e., it does not stop its queue(s), \
+  no packet will ever be requeued (recall that a packet is only requeued by QueueDisc::Transmit \
+  when the device queue the packet is destined to is stopped)
+
+It turns out that packets may only be requeued when the underlying device is multi-queue
+and supports flow control.

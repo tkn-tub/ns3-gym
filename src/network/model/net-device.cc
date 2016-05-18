@@ -131,7 +131,6 @@ TypeId NetDeviceQueueInterface::GetTypeId (void)
 }
 
 NetDeviceQueueInterface::NetDeviceQueueInterface ()
-  : m_queueDiscInstalled (false)
 {
   NS_LOG_FUNCTION (this);
   Ptr<NetDeviceQueue> devQueue = Create<NetDeviceQueue> ();
@@ -200,20 +199,6 @@ NetDeviceQueueInterface::GetSelectedQueue (Ptr<QueueItem> item) const
   }
   return 0;
 }
-
-bool
-NetDeviceQueueInterface::IsQueueDiscInstalled (void) const
-{
-  return m_queueDiscInstalled;
-}
-
-void
-NetDeviceQueueInterface::SetQueueDiscInstalled (bool installed)
-{
-  NS_LOG_FUNCTION (this << installed);
-  m_queueDiscInstalled = installed;
-}
-
 
 NS_OBJECT_ENSURE_REGISTERED (NetDevice);
 

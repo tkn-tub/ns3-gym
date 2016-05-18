@@ -518,17 +518,18 @@ private:
   /**
    * Modelled after the Linux function dev_requeue_skb (net/sched/sch_generic.c)
    * Requeues a packet whose transmission failed.
-   * \param p the packet to requeue
+   * \param item the packet to requeue
    */
-  void Requeue (Ptr<QueueDiscItem> p);
+  void Requeue (Ptr<QueueDiscItem> item);
 
   /**
    * Modelled after the Linux function sch_direct_xmit (net/sched/sch_generic.c)
-   * Sends a packet to the device and requeues it in case transmission fails.
-   * \param p the packet to transmit
-   * \return true if the transmission succeeded and the queue is not stopped
+   * Sends a packet to the device if the device queue is not stopped, and requeues
+   * it otherwise.
+   * \param item the packet to transmit
+   * \return true if the device queue is not stopped and the queue disc is not empty
    */
-  bool Transmit (Ptr<QueueDiscItem> p);
+  bool Transmit (Ptr<QueueDiscItem> item);
 
   static const uint32_t DEFAULT_QUOTA = 64; //!< Default quota (as in /proc/sys/net/core/dev_weight)
 

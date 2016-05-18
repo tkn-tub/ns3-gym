@@ -284,18 +284,6 @@ public:
    */
   uint8_t GetSelectedQueue (Ptr<QueueItem> item) const;
 
-  /**
-   * \brief Return true if a queue disc is installed on the device.
-   * \return true if a queue disc is installed on the device.
-   */
-  bool IsQueueDiscInstalled (void) const;
-
-  /**
-   * \brief Set the member variable indicating whether a queue disc is installed or not
-   * \param installed the value for the member variable indicating whether a queue disc is installed or not
-   */
-  void SetQueueDiscInstalled (bool installed);
-
 protected:
   /**
    * \brief Dispose of the object
@@ -305,7 +293,6 @@ protected:
 private:
   std::vector< Ptr<NetDeviceQueue> > m_txQueuesVector;   //!< Device transmission queues
   SelectQueueCallback m_selectQueueCallback;   //!< Select queue callback
-  bool m_queueDiscInstalled;   //!< Boolean value indicating whether a queue disc is installed or not
 };
 
 
@@ -340,6 +327,20 @@ private:
  * layer 3 protocols through its GetMulticast methods: the current
  * API has been optimized to make it easy to add new MAC protocols,
  * not to add new layer 3 protocols.
+ *
+ * Devices aiming to be Traffic Control aware must implement a NotifyNewAggregate
+ * method to perform the following operations:
+ *   - cache the pointer to the netdevice queue interface aggregated to the device
+ *   - set the number of device transmission queues through the netdevice queue
+ *     interface, if the device is multi-queue
+ *   - set the select queue callback through the netdevice queue interface, if
+ *     the device is multi-queue
+ * In order to support flow control, a Traffic Control aware device must:
+ *   - stop a device queue when there is no room for another packet. It must
+ *     be avoided the situation in which a packet is received while the queue
+ *     is not stopped and there is no room for the packet in the queue. Should
+ *     such a situation occur, the device queue should be immediately stopped
+ *   - wake up the queue disc when the device queue is empty.
  */
 class NetDevice : public Object
 {

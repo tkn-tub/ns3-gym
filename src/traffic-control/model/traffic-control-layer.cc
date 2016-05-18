@@ -84,8 +84,6 @@ TrafficControlLayer::DoInitialize (void)
           Ptr<NetDeviceQueueInterface> devQueueIface = ndi->second.ndqi;
           NS_ASSERT (devQueueIface);
 
-          devQueueIface->SetQueueDiscInstalled (true);
-
           // set the wake callbacks on netdevice queues
            if (ndi->second.rootQueueDisc->GetWakeMode () == QueueDisc::WAKE_ROOT)
             {
