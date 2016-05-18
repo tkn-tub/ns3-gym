@@ -84,6 +84,12 @@ void
 V4Ping::DoDispose (void)
 {
   NS_LOG_FUNCTION (this);
+
+  if (m_next.IsRunning ())
+    {
+      StopApplication ();
+    }
+
   m_socket = 0;
   Application::DoDispose ();
 }
@@ -261,8 +267,15 @@ void
 V4Ping::StopApplication (void)
 {
   NS_LOG_FUNCTION (this);
-  m_next.Cancel ();
-  m_socket->Close ();
+
+  if (m_next.IsRunning ())
+    {
+      m_next.Cancel ();
+    }
+  if (m_socket)
+    {
+      m_socket->Close ();
+    }
 
   if (m_verbose)
     {

@@ -29,6 +29,7 @@ New user-visible features
 
 Bugs fixed
 ----------
+- Bug 1977 - v4Ping verbose output when not explicitly stopped
 - Bug 2057 - ARP and Ndisc caches should be updated by receiving valid L3 packets
 - Bug 2346 - SixLowPan ConpressionThreshold can be violated.
 - Bug 2329 - TCP Veno implementation
