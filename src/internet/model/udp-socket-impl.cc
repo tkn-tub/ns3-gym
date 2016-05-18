@@ -387,6 +387,7 @@ UdpSocketImpl::Connect (const Address & address)
     }
   else
     {
+      NotifyConnectionFailed ();
       return -1;
     }
 
