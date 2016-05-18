@@ -19,22 +19,11 @@
  *
  */
 
-#include "ns3/test.h"
-#include "ns3/red-queue-disc.h"
-#include "ns3/drop-tail-queue.h"
-#include "ns3/uinteger.h"
-#include "ns3/string.h"
-#include "ns3/double.h"
-#include "ns3/log.h"
-#include "ns3/simulator.h"
-#include "ns3/ipv4-queue-disc-item.h"
-
 #include "ns3/core-module.h"
 #include "ns3/network-module.h"
 #include "ns3/internet-module.h"
 #include "ns3/point-to-point-module.h"
 #include "ns3/applications-module.h"
-#include "ns3/point-to-point-layout-module.h"
 #include "ns3/traffic-control-module.h"
 
 using namespace ns3;
@@ -78,6 +67,7 @@ AutoRedQueueDiscTestCase::RunAutoRedDiscTest (StringValue mode)
   double maxTh = 150 * modeSize;
   uint32_t qSize = 300 * modeSize;
 
+
   // test 1: Verify automatic setting of QW. [QW = 0.0 with default LinkBandwidth]
   NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("Mode", mode), true,
                          "Verify that we can actually set the attribute Mode");
@@ -92,18 +82,8 @@ AutoRedQueueDiscTestCase::RunAutoRedDiscTest (StringValue mode)
   queue->Initialize ();
   Enqueue (queue, pktSize, 300);
   RedQueueDisc::Stats st = StaticCast<RedQueueDisc> (queue)->GetStats ();
-  if (queue->GetMode () == Queue::QUEUE_MODE_PACKETS)
-    {
-      NS_TEST_EXPECT_MSG_EQ (st.unforcedDrop, 0, "There should be zero dropped packets due to probability mark");
-      NS_TEST_EXPECT_MSG_EQ (st.forcedDrop, 0, "There should be zero dropped packets due to hard mark");
-      NS_TEST_EXPECT_MSG_EQ (st.qLimDrop, 0, "There should be zero dropped packets due to queue full");
-    }
-  else if (queue->GetMode () == Queue::QUEUE_MODE_BYTES)
-    {
-      NS_TEST_EXPECT_MSG_EQ (st.unforcedDrop, 0, "There should be zero dropped packets due to probability mark");
-      NS_TEST_EXPECT_MSG_EQ (st.forcedDrop, 0, "There should be zero dropped packets due to hard mark");
-      NS_TEST_EXPECT_MSG_EQ (st.qLimDrop, 0, "There should be zero dropped packets due to queue full");
-    }
+  uint32_t drops = st.unforcedDrop + st.forcedDrop + st.qLimDrop;
+  NS_TEST_EXPECT_MSG_EQ (drops, 0, "There should be zero dropped packets");
 
 
   // test 2: Verify automatic setting of QW. [QW = 0.0 with lesser LinkBandwidth]
@@ -123,18 +103,8 @@ AutoRedQueueDiscTestCase::RunAutoRedDiscTest (StringValue mode)
   queue->Initialize ();
   Enqueue (queue, pktSize, 300);
   st = StaticCast<RedQueueDisc> (queue)->GetStats ();
-  if (queue->GetMode () == Queue::QUEUE_MODE_PACKETS)
-    {
-      NS_TEST_EXPECT_MSG_EQ (st.unforcedDrop, 44, "There should be 44 dropped packets due to probability mark");
-      NS_TEST_EXPECT_MSG_EQ (st.forcedDrop, 0, "There should be zero dropped packets due to hard mark");
-      NS_TEST_EXPECT_MSG_EQ (st.qLimDrop, 0, "There should be zero dropped packets due to queue full");
-    }
-  else if (queue->GetMode () == Queue::QUEUE_MODE_BYTES)
-    {
-      NS_TEST_EXPECT_MSG_EQ (st.unforcedDrop, 45, "There should be 45 dropped packets due to probability mark");
-      NS_TEST_EXPECT_MSG_EQ (st.forcedDrop, 0, "There should be zero dropped packets due to hard mark");
-      NS_TEST_EXPECT_MSG_EQ (st.qLimDrop, 0, "There should be zero dropped packets due to queue full");
-    }
+  drops = st.unforcedDrop + st.forcedDrop + st.qLimDrop;
+  NS_TEST_EXPECT_MSG_NE (drops, 0, "There should be some dropped packets");
 
 
   // test 3: Verify automatic setting of QW. [QW = -1.0 with default LinkBandwidth]
@@ -152,18 +122,8 @@ AutoRedQueueDiscTestCase::RunAutoRedDiscTest (StringValue mode)
   queue->Initialize ();
   Enqueue (queue, pktSize, 300);
   st = StaticCast<RedQueueDisc> (queue)->GetStats ();
-  if (queue->GetMode () == Queue::QUEUE_MODE_PACKETS)
-    {
-      NS_TEST_EXPECT_MSG_EQ (st.unforcedDrop, 0, "There should be zero dropped packets due to probability mark");
-      NS_TEST_EXPECT_MSG_EQ (st.forcedDrop, 0, "There should be zero dropped packets due to hard mark");
-      NS_TEST_EXPECT_MSG_EQ (st.qLimDrop, 0, "There should be zero dropped packets due to queue full");
-    }
-  else if (queue->GetMode () == Queue::QUEUE_MODE_BYTES)
-    {
-      NS_TEST_EXPECT_MSG_EQ (st.unforcedDrop, 0, "There should be zero dropped packets due to probability mark");
-      NS_TEST_EXPECT_MSG_EQ (st.forcedDrop, 0, "There should be zero dropped packets due to hard mark");
-      NS_TEST_EXPECT_MSG_EQ (st.qLimDrop, 0, "There should be zero dropped packets due to queue full");
-    }
+  drops = st.unforcedDrop + st.forcedDrop + st.qLimDrop;
+  NS_TEST_EXPECT_MSG_EQ (drops, 0, "There should be zero dropped packets");
 
 
   // test 4: Verify automatic setting of QW. [QW = -1.0 with lesser LinkBandwidth]
@@ -183,18 +143,8 @@ AutoRedQueueDiscTestCase::RunAutoRedDiscTest (StringValue mode)
   queue->Initialize ();
   Enqueue (queue, pktSize, 300);
   st = StaticCast<RedQueueDisc> (queue)->GetStats ();
-  if (queue->GetMode () == Queue::QUEUE_MODE_PACKETS)
-    {
-      NS_TEST_EXPECT_MSG_EQ (st.unforcedDrop, 32, "There should be 32 dropped packets due to probability mark");
-      NS_TEST_EXPECT_MSG_EQ (st.forcedDrop, 0, "There should be zero dropped packets due to hard mark");
-      NS_TEST_EXPECT_MSG_EQ (st.qLimDrop, 0, "There should be zero dropped packets due to queue full");
-    }
-  else if (queue->GetMode () == Queue::QUEUE_MODE_BYTES)
-    {
-      NS_TEST_EXPECT_MSG_EQ (st.unforcedDrop, 33, "There should be 33 dropped packets due to probability mark");
-      NS_TEST_EXPECT_MSG_EQ (st.forcedDrop, 0, "There should be zero dropped packets due to hard mark");
-      NS_TEST_EXPECT_MSG_EQ (st.qLimDrop, 0, "There should be zero dropped packets due to queue full");
-    }
+  drops = st.unforcedDrop + st.forcedDrop + st.qLimDrop;
+  NS_TEST_EXPECT_MSG_NE (drops, 0, "There should be some dropped packets");
 
 
   // test 5: Verify automatic setting of QW. [QW = -2.0 with default LinkBandwidth]
@@ -212,18 +162,8 @@ AutoRedQueueDiscTestCase::RunAutoRedDiscTest (StringValue mode)
   queue->Initialize ();
   Enqueue (queue, pktSize, 300);
   st = StaticCast<RedQueueDisc> (queue)->GetStats ();
-  if (queue->GetMode () == Queue::QUEUE_MODE_PACKETS)
-    {
-      NS_TEST_EXPECT_MSG_EQ (st.unforcedDrop, 29, "There should be 29 dropped packets due to probability mark");
-      NS_TEST_EXPECT_MSG_EQ (st.forcedDrop, 0, "There should be zero dropped packets due to hard mark");
-      NS_TEST_EXPECT_MSG_EQ (st.qLimDrop, 0, "There should be zero dropped packets due to queue full");
-    }
-  else if (queue->GetMode () == Queue::QUEUE_MODE_BYTES)
-    {
-      NS_TEST_EXPECT_MSG_EQ (st.unforcedDrop, 30, "There should be 30 dropped packets due to probability mark");
-      NS_TEST_EXPECT_MSG_EQ (st.forcedDrop, 0, "There should be zero dropped packets due to hard mark");
-      NS_TEST_EXPECT_MSG_EQ (st.qLimDrop, 0, "There should be zero dropped packets due to queue full");
-    }
+  uint32_t test5 = st.unforcedDrop + st.forcedDrop + st.qLimDrop;
+  NS_TEST_EXPECT_MSG_NE (test5, 0, "There should be some dropped packets");
 
 
   // test 6: Verify automatic setting of QW. [QW = -2.0 with lesser LinkBandwidth]
@@ -243,18 +183,8 @@ AutoRedQueueDiscTestCase::RunAutoRedDiscTest (StringValue mode)
   queue->Initialize ();
   Enqueue (queue, pktSize, 300);
   st = StaticCast<RedQueueDisc> (queue)->GetStats ();
-  if (queue->GetMode () == Queue::QUEUE_MODE_PACKETS)
-    {
-      NS_TEST_EXPECT_MSG_EQ (st.unforcedDrop, 44, "There should be 44 dropped packets due to probability mark");
-      NS_TEST_EXPECT_MSG_EQ (st.forcedDrop, 0, "There should be zero dropped packets due to hard mark");
-      NS_TEST_EXPECT_MSG_EQ (st.qLimDrop, 0, "There should be zero dropped packets due to queue full");
-    }
-  else if (queue->GetMode () == Queue::QUEUE_MODE_BYTES)
-    {
-      NS_TEST_EXPECT_MSG_EQ (st.unforcedDrop, 46, "There should be 46 dropped packets  due to probability mark");
-      NS_TEST_EXPECT_MSG_EQ (st.forcedDrop, 0, "There should be zero dropped packets due to hard mark");
-      NS_TEST_EXPECT_MSG_EQ (st.qLimDrop, 0, "There should be zero dropped packets due to queue full");
-    }
+  uint32_t test6 = st.unforcedDrop + st.forcedDrop + st.qLimDrop;
+  NS_TEST_EXPECT_MSG_GT (test6, test5, "Test 6 should have more drops than Test 5");
 
 
   // test 7: Verify automatic setting of minTh and maxTh. [minTh = maxTh = 0.0, with default LinkBandwidth]
@@ -275,18 +205,9 @@ AutoRedQueueDiscTestCase::RunAutoRedDiscTest (StringValue mode)
   queue->Initialize ();
   Enqueue (queue, pktSize, 300);
   st = StaticCast<RedQueueDisc> (queue)->GetStats ();
-  if (queue->GetMode () == Queue::QUEUE_MODE_PACKETS)
-    {
-      NS_TEST_EXPECT_MSG_EQ (st.unforcedDrop, 20, "There should be 20 dropped packets due to probability mark");
-      NS_TEST_EXPECT_MSG_EQ (st.forcedDrop, 113, "There should be 113 dropped packets due to hard mark");
-      NS_TEST_EXPECT_MSG_EQ (st.qLimDrop, 0, "There should be zero dropped packets due to queue full");
-    }
-  else if (queue->GetMode () == Queue::QUEUE_MODE_BYTES)
-    {
-      NS_TEST_EXPECT_MSG_EQ (st.unforcedDrop, 21, "There should be 21 dropped packets due to probability mark");
-      NS_TEST_EXPECT_MSG_EQ (st.forcedDrop, 113, "There should be 113 dropped packets due to hard mark");
-      NS_TEST_EXPECT_MSG_EQ (st.qLimDrop, 0, "There should be zero dropped packets due to queue full");
-    }
+  drops = st.unforcedDrop + st.forcedDrop + st.qLimDrop;
+  NS_TEST_EXPECT_MSG_NE (drops, 0, "There should be some dropped packets");
+  NS_TEST_EXPECT_MSG_GT (st.forcedDrop, st.unforcedDrop, "There should be more packets dropped due to hard mark");
 
 
   // test 8: Verify automatic setting of minTh and maxTh. [minTh = maxTh = 0.0, with higher LinkBandwidth]
@@ -309,18 +230,8 @@ AutoRedQueueDiscTestCase::RunAutoRedDiscTest (StringValue mode)
   queue->Initialize ();
   Enqueue (queue, pktSize, 300);
   st = StaticCast<RedQueueDisc> (queue)->GetStats ();
-  if (queue->GetMode () == Queue::QUEUE_MODE_PACKETS)
-    {
-      NS_TEST_EXPECT_MSG_EQ (st.unforcedDrop, 0, "There should be zero dropped packets due to probability mark");
-      NS_TEST_EXPECT_MSG_EQ (st.forcedDrop, 0, "There should be zero dropped packets due to hard mark");
-      NS_TEST_EXPECT_MSG_EQ (st.qLimDrop, 0, "There should be zero dropped packets due to queue full");
-    }
-  else if (queue->GetMode () == Queue::QUEUE_MODE_BYTES)
-    {
-      NS_TEST_EXPECT_MSG_EQ (st.unforcedDrop, 0, "There should be zero dropped packets due to probability mark");
-      NS_TEST_EXPECT_MSG_EQ (st.forcedDrop, 0, "There should be zero dropped packets due to hard mark");
-      NS_TEST_EXPECT_MSG_EQ (st.qLimDrop, 0, "There should be zero dropped packets due to queue full");
-    }
+  drops = st.unforcedDrop + st.forcedDrop + st.qLimDrop;
+  NS_TEST_EXPECT_MSG_EQ (drops, 0, "There should be zero dropped packets");
 }
 
 void
@@ -361,12 +272,45 @@ AdaptiveRedQueueDiscTestCase::AdaptiveRedQueueDiscTestCase ()
 void
 AdaptiveRedQueueDiscTestCase::RunAdaptiveRedDiscTest (StringValue mode)
 {
-  uint32_t    pktSize = 500;
+  uint32_t    pktSize = 1000;
   uint32_t    modeSize = 1;             // 1 for packets; pktSize for bytes
-  uint32_t    nLeaf = 3;
+  std::string aredLinkDataRate = "1.5Mbps";
+  std::string aredLinkDelay = "20ms";
 
-  Config::SetDefault ("ns3::OnOffApplication::PacketSize", UintegerValue (pktSize));
-  Config::SetDefault ("ns3::OnOffApplication::DataRate", StringValue ("10Mbps"));
+  double global_start_time = 0.0;
+  double global_stop_time = 7.0;
+  double sink_start_time = global_start_time;
+  double sink_stop_time = global_stop_time + 3.0;
+  double client_start_time = global_start_time + 1.5;
+  double client_stop_time = global_stop_time - 2.0;
+
+  NodeContainer n0n2;
+  NodeContainer n1n2;
+  NodeContainer n2n3;
+  NodeContainer n3n4;
+  NodeContainer n3n5;
+
+  Ipv4InterfaceContainer i0i2;
+  Ipv4InterfaceContainer i1i2;
+  Ipv4InterfaceContainer i2i3;
+  Ipv4InterfaceContainer i3i4;
+  Ipv4InterfaceContainer i3i5;
+
+  NodeContainer c;
+  c.Create (6);
+  n0n2 = NodeContainer (c.Get (0), c.Get (2));
+  n1n2 = NodeContainer (c.Get (1), c.Get (2));
+  n2n3 = NodeContainer (c.Get (2), c.Get (3));
+  n3n4 = NodeContainer (c.Get (3), c.Get (4));
+  n3n5 = NodeContainer (c.Get (3), c.Get (5));
+
+  Config::SetDefault ("ns3::TcpL4Protocol::SocketType", StringValue ("ns3::TcpNewReno"));
+  // 42 = headers size
+  Config::SetDefault ("ns3::TcpSocket::SegmentSize", UintegerValue (1000 - 42));
+  Config::SetDefault ("ns3::TcpSocket::DelAckCount", UintegerValue (1));
+  GlobalValue::Bind ("ChecksumEnabled", BooleanValue (false));
+
+  uint32_t meanPktSize = 1000;
 
   Ptr<RedQueueDisc> queue = CreateObject<RedQueueDisc> ();
 
@@ -380,94 +324,128 @@ AdaptiveRedQueueDiscTestCase::RunAdaptiveRedDiscTest (StringValue mode)
       modeSize = pktSize + ipHeader.GetSerializedSize ();
     }
 
-  uint32_t    qSize = 100 * modeSize;
+  uint32_t    qSize = 25 * modeSize;
 
   Config::SetDefault ("ns3::RedQueueDisc::ARED", BooleanValue (true));
   Config::SetDefault ("ns3::RedQueueDisc::LInterm", DoubleValue (10.0));
   Config::SetDefault ("ns3::RedQueueDisc::QueueLimit", UintegerValue (qSize));
-  Config::SetDefault ("ns3::RedQueueDisc::MeanPktSize", UintegerValue (pktSize + ipHeader.GetSerializedSize ()));
+  Config::SetDefault ("ns3::RedQueueDisc::MeanPktSize", UintegerValue (meanPktSize + ipHeader.GetSerializedSize ()));
+  Config::SetDefault ("ns3::RedQueueDisc::TargetDelay", TimeValue (Seconds (0.2)));
 
-  // Create the point-to-point link helpers
-  PointToPointHelper bottleNeckLink;
-  bottleNeckLink.SetDeviceAttribute  ("DataRate", StringValue ("1.5Mbps"));
-  bottleNeckLink.SetChannelAttribute ("Delay", StringValue ("20ms"));
+  InternetStackHelper internet;
+  internet.Install (c);
 
-  PointToPointHelper pointToPointLeaf;
-  pointToPointLeaf.SetDeviceAttribute    ("DataRate", StringValue ("10Mbps"));
-  pointToPointLeaf.SetChannelAttribute   ("Delay", StringValue ("1ms"));
+  TrafficControlHelper tchPfifo;
+  uint16_t handle = tchPfifo.SetRootQueueDisc ("ns3::PfifoFastQueueDisc");
+  tchPfifo.AddInternalQueues (handle, 3, "ns3::DropTailQueue", "MaxPackets", UintegerValue (1000));
+  tchPfifo.AddPacketFilter (handle, "ns3::PfifoFastIpv4PacketFilter");
 
-  PointToPointDumbbellHelper d (nLeaf, pointToPointLeaf,
-                                nLeaf, pointToPointLeaf,
-                                bottleNeckLink);
+  TrafficControlHelper tchRed;
+  tchRed.SetRootQueueDisc ("ns3::RedQueueDisc", "LinkBandwidth", StringValue (aredLinkDataRate),
+                           "LinkDelay", StringValue (aredLinkDelay));
 
-  // Install Stack
-  InternetStackHelper stack;
-  for (uint32_t i = 0; i < d.LeftCount (); ++i)
-    {
-      stack.Install (d.GetLeft (i));
-    }
-  for (uint32_t i = 0; i < d.RightCount (); ++i)
-    {
-      stack.Install (d.GetRight (i));
-    }
+  PointToPointHelper p2p;
 
-  stack.Install (d.GetLeft ());
-  stack.Install (d.GetRight ());
-  TrafficControlHelper tchBottleneck;
-  tchBottleneck.SetRootQueueDisc ("ns3::RedQueueDisc");
-  tchBottleneck.Install (d.GetLeft ()->GetDevice (0));
-  tchBottleneck.Install (d.GetRight ()->GetDevice (0));
+  NetDeviceContainer devn0n2;
+  NetDeviceContainer devn1n2;
+  NetDeviceContainer devn2n3;
+  NetDeviceContainer devn3n4;
+  NetDeviceContainer devn3n5;
 
-  // Assign IP Addresses
-  d.AssignIpv4Addresses (Ipv4AddressHelper ("10.1.1.0", "255.255.255.0"),
-                         Ipv4AddressHelper ("10.2.1.0", "255.255.255.0"),
-                         Ipv4AddressHelper ("10.3.1.0", "255.255.255.0"));
+  QueueDiscContainer queueDiscs;
 
-  // Install on/off app on all right side nodes
-  OnOffHelper clientHelper ("ns3::TcpSocketFactory", Address ());
-  clientHelper.SetAttribute ("OnTime", StringValue ("ns3::UniformRandomVariable[Min=0.,Max=1.]"));
-  clientHelper.SetAttribute ("OffTime", StringValue ("ns3::UniformRandomVariable[Min=0.,Max=1.]"));
-  Address sinkLocalAddress (InetSocketAddress (Ipv4Address::GetAny (), 5001));
-  PacketSinkHelper packetSinkHelper ("ns3::TcpSocketFactory", sinkLocalAddress);
-  ApplicationContainer sinkApps;
-  for (uint32_t i = 0; i < d.LeftCount (); ++i)
-    {
-      sinkApps.Add (packetSinkHelper.Install (d.GetLeft (i)));
-    }
-  sinkApps.Start (Seconds (0.0));
-  sinkApps.Stop (Seconds (30.0));
+  p2p.SetQueue ("ns3::DropTailQueue");
+  p2p.SetDeviceAttribute ("DataRate", StringValue ("10Mbps"));
+  p2p.SetChannelAttribute ("Delay", StringValue ("2ms"));
+  devn0n2 = p2p.Install (n0n2);
+  tchPfifo.Install (devn0n2);
 
-  ApplicationContainer clientApps;
-  for (uint32_t i = 0; i < d.RightCount (); ++i)
-    {
-      // Create an on/off app sending packets to the left side
-      AddressValue remoteAddress (InetSocketAddress (d.GetLeftIpv4Address (i), 5001));
-      clientHelper.SetAttribute ("Remote", remoteAddress);
-      clientApps.Add (clientHelper.Install (d.GetRight (i)));
-    }
-  clientApps.Start (Seconds (1.0)); // Start 1 second after sink
-  clientApps.Stop (Seconds (15.0)); // Stop before the sink
+  p2p.SetQueue ("ns3::DropTailQueue");
+  p2p.SetDeviceAttribute ("DataRate", StringValue ("10Mbps"));
+  p2p.SetChannelAttribute ("Delay", StringValue ("3ms"));
+  devn1n2 = p2p.Install (n1n2);
+  tchPfifo.Install (devn1n2);
 
+  p2p.SetQueue ("ns3::DropTailQueue");
+  p2p.SetDeviceAttribute ("DataRate", StringValue (aredLinkDataRate));
+  p2p.SetChannelAttribute ("Delay", StringValue (aredLinkDelay));
+  devn2n3 = p2p.Install (n2n3);
+  // only backbone link has ARED queue disc
+  queueDiscs = tchRed.Install (devn2n3);
+
+  p2p.SetQueue ("ns3::DropTailQueue");
+  p2p.SetDeviceAttribute ("DataRate", StringValue ("10Mbps"));
+  p2p.SetChannelAttribute ("Delay", StringValue ("4ms"));
+  devn3n4 = p2p.Install (n3n4);
+  tchPfifo.Install (devn3n4);
+
+  p2p.SetQueue ("ns3::DropTailQueue");
+  p2p.SetDeviceAttribute ("DataRate", StringValue ("10Mbps"));
+  p2p.SetChannelAttribute ("Delay", StringValue ("5ms"));
+  devn3n5 = p2p.Install (n3n5);
+  tchPfifo.Install (devn3n5);
+
+  Ipv4AddressHelper ipv4;
+  ipv4.SetBase ("10.1.1.0", "255.255.255.0");
+  i0i2 = ipv4.Assign (devn0n2);
+  ipv4.SetBase ("10.1.2.0", "255.255.255.0");
+  i1i2 = ipv4.Assign (devn1n2);
+  ipv4.SetBase ("10.1.3.0", "255.255.255.0");
+  i2i3 = ipv4.Assign (devn2n3);
+  ipv4.SetBase ("10.1.4.0", "255.255.255.0");
+  i3i4 = ipv4.Assign (devn3n4);
+  ipv4.SetBase ("10.1.5.0", "255.255.255.0");
+  i3i5 = ipv4.Assign (devn3n5);
+
+  // Set up the routing
   Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
 
+  // SINK is in the right side
+  uint16_t port = 50000;
+  Address sinkLocalAddress (InetSocketAddress (Ipv4Address::GetAny (), port));
+  PacketSinkHelper sinkHelper ("ns3::TcpSocketFactory", sinkLocalAddress);
+  ApplicationContainer sinkApp = sinkHelper.Install (n3n4.Get (1));
+  sinkApp.Start (Seconds (sink_start_time));
+  sinkApp.Stop (Seconds (sink_stop_time));
+
+  // Connection one
+  // Clients are in left side
+  /*
+   * Create the OnOff applications to send TCP to the server
+   * onoffhelper is a client that send data to TCP destination
+  */
+  OnOffHelper clientHelper1 ("ns3::TcpSocketFactory", Address ());
+  clientHelper1.SetAttribute ("OnTime", StringValue ("ns3::ConstantRandomVariable[Constant=1]"));
+  clientHelper1.SetAttribute ("OffTime", StringValue ("ns3::ConstantRandomVariable[Constant=0]"));
+  clientHelper1.SetAttribute ("PacketSize", UintegerValue (pktSize));
+  clientHelper1.SetAttribute ("DataRate", DataRateValue (DataRate ("100Mbps")));
+
+  // Connection two
+  OnOffHelper clientHelper2 ("ns3::TcpSocketFactory", Address ());
+  clientHelper2.SetAttribute ("OnTime", StringValue ("ns3::ConstantRandomVariable[Constant=1]"));
+  clientHelper2.SetAttribute ("OffTime", StringValue ("ns3::ConstantRandomVariable[Constant=0]"));
+  clientHelper2.SetAttribute ("PacketSize", UintegerValue (pktSize));
+  clientHelper2.SetAttribute ("DataRate", DataRateValue (DataRate ("100Mbps")));
+
+  ApplicationContainer clientApps1;
+  AddressValue remoteAddress (InetSocketAddress (i3i4.GetAddress (1), port));
+  clientHelper1.SetAttribute ("Remote", remoteAddress);
+  clientApps1.Add (clientHelper1.Install (n0n2.Get (0)));
+  clientApps1.Start (Seconds (client_start_time));
+  clientApps1.Stop (Seconds (client_stop_time));
+
+  ApplicationContainer clientApps2;
+  clientHelper2.SetAttribute ("Remote", remoteAddress);
+  clientApps2.Add (clientHelper2.Install (n1n2.Get (0)));
+  clientApps2.Start (Seconds (client_start_time));
+  clientApps2.Stop (Seconds (client_stop_time));
+
+  Simulator::Stop (Seconds (sink_stop_time));
   Simulator::Run ();
 
-  uint32_t totalRxBytesCounter = 0;
-  for (uint32_t i = 0; i < sinkApps.GetN (); i++)
-    {
-      Ptr <Application> app = sinkApps.Get (i);
-      Ptr <PacketSink> pktSink = DynamicCast <PacketSink> (app);
-      totalRxBytesCounter += pktSink->GetTotalRx ();
-    }
+  RedQueueDisc::Stats st = StaticCast<RedQueueDisc> (queueDiscs.Get (0))->GetStats ();
 
-  if (queue->GetMode () == Queue::QUEUE_MODE_PACKETS)
-    {
-      NS_TEST_EXPECT_MSG_EQ (totalRxBytesCounter, 2605000, "Total received bytes should be 2605000");
-    }
-  else if (queue->GetMode () == Queue::QUEUE_MODE_BYTES)
-    {
-      NS_TEST_EXPECT_MSG_EQ (totalRxBytesCounter, 2557000, "Total received bytes should be 2557000");
-    }
+  NS_TEST_EXPECT_MSG_LT (st.unforcedDrop, st.forcedDrop, "forcedDrop should be more than unforcedDrop");
 
   Simulator::Destroy ();
 }
