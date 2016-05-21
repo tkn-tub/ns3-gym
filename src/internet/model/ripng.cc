@@ -702,8 +702,13 @@ void RipNg::Receive (Ptr<Socket> socket)
 {
   NS_LOG_FUNCTION (this << socket);
 
-  Ptr<Packet> packet = socket->Recv ();
-  NS_LOG_INFO ("Received " << *packet);
+  Address sender;
+  Ptr<Packet> packet = socket->RecvFrom (sender);
+  Inet6SocketAddress senderAddr = Inet6SocketAddress::ConvertFrom (sender);
+  NS_LOG_INFO ("Received " << *packet << " from " << senderAddr);
+
+  Ipv6Address senderAddress = senderAddr.GetIpv6 ();
+  uint16_t senderPort = senderAddr.GetPort ();
 
   Ipv6PacketInfoTag interfaceInfo;
   if (!packet->RemovePacketTag (interfaceInfo))
@@ -721,14 +726,6 @@ void RipNg::Receive (Ptr<Socket> socket)
       NS_ABORT_MSG ("No incoming Hop Count on RIPng message, aborting.");
     }
   uint8_t hopLimit = hoplimitTag.GetHopLimit ();
-
-  SocketAddressTag tag;
-  if (!packet->RemovePacketTag (tag))
-    {
-      NS_ABORT_MSG ("No incoming sender address on RIPng message, aborting.");
-    }
-  Ipv6Address senderAddress = Inet6SocketAddress::ConvertFrom (tag.GetAddress ()).GetIpv6 ();
-  uint16_t senderPort = Inet6SocketAddress::ConvertFrom (tag.GetAddress ()).GetPort ();
 
   int32_t interfaceForAddress = m_ipv6->GetInterfaceForAddress (senderAddress);
   if (interfaceForAddress != -1)

@@ -711,8 +711,13 @@ void Rip::Receive (Ptr<Socket> socket)
 {
   NS_LOG_FUNCTION (this << socket);
 
-  Ptr<Packet> packet = socket->Recv ();
-  NS_LOG_INFO ("Received " << *packet);
+  Address sender;
+  Ptr<Packet> packet = socket->RecvFrom (sender);
+  InetSocketAddress senderAddr = InetSocketAddress::ConvertFrom (sender);
+  NS_LOG_INFO ("Received " << *packet << " from " << senderAddr);
+
+  Ipv4Address senderAddress = senderAddr.GetIpv4 ();
+  uint16_t senderPort = senderAddr.GetPort ();
 
   Ipv4PacketInfoTag interfaceInfo;
   if (!packet->RemovePacketTag (interfaceInfo))
@@ -730,14 +735,6 @@ void Rip::Receive (Ptr<Socket> socket)
       NS_ABORT_MSG ("No incoming Hop Count on RIP message, aborting.");
     }
   uint8_t hopLimit = hoplimitTag.GetTtl ();
-
-  SocketAddressTag tag;
-  if (!packet->RemovePacketTag (tag))
-    {
-      NS_ABORT_MSG ("No incoming sender address on RIP message, aborting.");
-    }
-  Ipv4Address senderAddress = InetSocketAddress::ConvertFrom (tag.GetAddress ()).GetIpv4 ();
-  uint16_t senderPort = InetSocketAddress::ConvertFrom (tag.GetAddress ()).GetPort ();
 
   int32_t interfaceForAddress = m_ipv4->GetInterfaceForAddress (senderAddress);
   if (interfaceForAddress != -1)
