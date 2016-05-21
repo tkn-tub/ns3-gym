@@ -319,17 +319,14 @@ void BsmApplication::ReceiveWavePacket (Ptr<Socket> socket)
   NS_LOG_FUNCTION (this);
 
   Ptr<Packet> packet;
-  while ((packet = socket->Recv ()))
+  Address senderAddr;
+  while ((packet = socket->RecvFrom (senderAddr)))
     {
       Ptr<Node> rxNode = socket->GetNode ();
 
-      SocketAddressTag tag;
-      bool found;
-      found = packet->PeekPacketTag (tag);
-
-      if (found)
+      if (InetSocketAddress::IsMatchingType (senderAddr))
         {
-          InetSocketAddress addr = InetSocketAddress::ConvertFrom (tag.GetAddress ());
+          InetSocketAddress addr = InetSocketAddress::ConvertFrom (senderAddr);
           int nodes = m_adhocTxInterfaces->GetN ();
           for (int i = 0; i < nodes; i++)
             {

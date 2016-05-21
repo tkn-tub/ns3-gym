@@ -46,6 +46,7 @@ Bugs fixed
 - Bug 2398 - add SNR tag to beacons and probe responses
 - Bug 2406 - Poor 802.11g performance in ad-hoc mode
 - Bug 2414 - UdpSocket doesn't call NotifyConnectionFailed
+- Bug 2419 - BsmApplication should use RecvFrom and not SocketAddressTag
 
 Known issues
 ------------
