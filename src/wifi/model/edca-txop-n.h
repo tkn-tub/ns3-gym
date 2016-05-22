@@ -524,6 +524,10 @@ private:
    * if an established block ack agreement exists with the receiver.
    */
   void VerifyBlockAck (void);
+  /**
+   * Get Traffic ID of the current packet.
+   */
+  uint8_t GetCurrentTid ();
 
   AcIndex m_ac;
   class Dcf;

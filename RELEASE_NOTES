@@ -39,6 +39,7 @@ Bugs fixed
 - Bug 2375 - Flowmonitor parse crashes when no pkt is received
 - Bug 2377 - SocketIpTosTag and SocketIpv6TclassTag may be added twice in UDP
 - Bug 2378 - A-MPDU variables are not correctly reset in YansWifiPhy when a PLCP preamble/header failed
+- Bug 2380 - EdcaTxopN fails to retrieve TID for ADDBA requests, ADDBA responses and DELBA frames
 - Bug 2383 - IPv4 header for reassembled packets reports a wrong payload size
 - Bug 2392 - SYN segment advertised window should not be scaled
 - Bug 2396 - move utility functions to WifiPhy
