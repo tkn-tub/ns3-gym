@@ -172,13 +172,6 @@ private:
    */
   int DoSend (Ptr<Packet> p);
   /**
-   * \brief Send a packet to a specific destination
-   * \param p packet
-   * \param daddr destination address
-   * \returns 0 on success, -1 on failure
-   */
-  int DoSendTo (Ptr<Packet> p, const Address &daddr);
-  /**
    * \brief Send a packet to a specific destination and port (IPv4)
    * \param p packet
    * \param daddr destination address

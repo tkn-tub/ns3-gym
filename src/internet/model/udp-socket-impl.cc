@@ -443,49 +443,15 @@ UdpSocketImpl::DoSend (Ptr<Packet> p)
       return -1;
     } 
 
-  return DoSendTo (p, (const Address)m_defaultAddress);
-}
-
-int
-UdpSocketImpl::DoSendTo (Ptr<Packet> p, const Address &address)
-{
-  NS_LOG_FUNCTION (this << p << address);
-
-  if (!m_connected)
+  if (Ipv4Address::IsMatchingType (m_defaultAddress))
     {
-      NS_LOG_LOGIC ("Not connected");
-      if (InetSocketAddress::IsMatchingType(address) == true)
-        {
-          InetSocketAddress transport = InetSocketAddress::ConvertFrom (address);
-          Ipv4Address ipv4 = transport.GetIpv4 ();
-          uint16_t port = transport.GetPort ();
-          return DoSendTo (p, ipv4, port);
-        }
-      else if (Inet6SocketAddress::IsMatchingType(address) == true)
-        {
-          Inet6SocketAddress transport = Inet6SocketAddress::ConvertFrom (address);
-          Ipv6Address ipv6 = transport.GetIpv6 ();
-          uint16_t port = transport.GetPort ();
-          return DoSendTo (p, ipv6, port);
-        }
-      else
-        {
-          return -1;
-        }
+      return DoSendTo (p, Ipv4Address::ConvertFrom (m_defaultAddress), m_defaultPort);
     }
-  else
+  else if (Ipv6Address::IsMatchingType (m_defaultAddress))
     {
-      // connected UDP socket must use default addresses
-      NS_LOG_LOGIC ("Connected");
-      if (Ipv4Address::IsMatchingType(m_defaultAddress))
-        {
-          return DoSendTo (p, Ipv4Address::ConvertFrom(m_defaultAddress), m_defaultPort);
-        }
-      else if (Ipv6Address::IsMatchingType(m_defaultAddress))
-        {
-          return DoSendTo (p, Ipv6Address::ConvertFrom(m_defaultAddress), m_defaultPort);
-        }
+      return DoSendTo (p, Ipv6Address::ConvertFrom (m_defaultAddress), m_defaultPort);
     }
+
   m_errno = ERROR_AFNOSUPPORT;
   return(-1);
 }
