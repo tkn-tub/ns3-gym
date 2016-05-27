@@ -56,7 +56,9 @@ NS_LOG_COMPONENT_DEFINE ("RealtimeFdNetDeviceSaturationExample");
 int
 main (int argc, char *argv[])
 {
-
+  CommandLine cmd;
+  cmd.Parse (argc, argv);
+  
   uint16_t sinkPort = 8000;
   uint32_t packetSize = 10000; // bytes
   std::string dataRate("1000Mb/s");

@@ -29,6 +29,7 @@
 #include "ns3/simulator.h"
 #include "ns3/double.h"
 #include "ns3/config.h"
+#include "ns3/command-line.h"
 #include "ns3/string.h"
 #include "ns3/yans-wifi-helper.h"
 #include <cmath>
@@ -636,6 +637,9 @@ BatteryLifetimeTest::CreateLoadProfiles (void)
 int
 main (int argc, char **argv)
 {
+  CommandLine cmd;
+  cmd.Parse (argc, argv);
+  
   NS_LOG_DEBUG ("Constant load run.");
 
   BatteryLifetimeTest test;

@@ -25,6 +25,9 @@ import ns.tap_bridge
 import ns.wifi
 
 def main(argv):
+
+    ns.core.CommandLine().Parse(argv)
+    
     #
     # We are interacting with the outside, real, world.  This means we have to 
     # interact in real-time and therefore we have to use the real-time simulator

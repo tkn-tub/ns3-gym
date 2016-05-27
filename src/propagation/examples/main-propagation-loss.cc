@@ -23,6 +23,7 @@
 #include "ns3/constant-position-mobility-model.h"
 
 #include "ns3/config.h"
+#include "ns3/command-line.h"
 #include "ns3/string.h"
 #include "ns3/boolean.h"
 #include "ns3/double.h"
@@ -218,6 +219,9 @@ TestDeterministicByTime (Ptr<PropagationLossModel> model,
 
 int main (int argc, char *argv[])
 {
+  CommandLine cmd;
+  cmd.Parse (argc, argv);
+  
   GnuplotCollection gnuplots ("main-propagation-loss.pdf");
 
   {

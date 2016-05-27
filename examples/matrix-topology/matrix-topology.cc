@@ -99,6 +99,9 @@ int main (int argc, char *argv[])
   std::string adj_mat_file_name ("examples/matrix-topology/adjacency_matrix.txt");
   std::string node_coordinates_file_name ("examples/matrix-topology/node_coordinates.txt");
 
+  CommandLine cmd;
+  cmd.Parse (argc, argv);
+  
   // ---------- End of Simulation Variables ----------------------------------
 
   // ---------- Read Adjacency Matrix ----------------------------------------

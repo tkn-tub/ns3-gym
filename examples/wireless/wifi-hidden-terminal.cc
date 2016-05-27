@@ -177,6 +177,9 @@ void experiment (bool enableCtsRts)
 
 int main (int argc, char **argv)
 {
+  CommandLine cmd;
+  cmd.Parse (argc, argv);
+  
   std::cout << "Hidden station experiment with RTS/CTS disabled:\n" << std::flush;
   experiment (false);
   std::cout << "------------------------------------------------\n";

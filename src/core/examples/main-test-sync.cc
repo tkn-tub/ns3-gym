@@ -145,6 +145,9 @@ test (void)
 int
 main (int argc, char *argv[])
 {
+  CommandLine cmd;
+  cmd.Parse (argc, argv);
+  
   while (true)
     {
       test ();

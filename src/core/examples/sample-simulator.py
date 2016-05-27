@@ -48,7 +48,8 @@ def CancelledEvent():
     print "I should never be called... "
 
 def main(dummy_argv):
-
+    ns.core.CommandLine().Parse(dummy_argv)
+    
     model = MyModel()
     v = ns.core.UniformRandomVariable()
     v.SetAttribute("Min", ns.core.DoubleValue (10))

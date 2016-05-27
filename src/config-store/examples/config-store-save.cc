@@ -30,6 +30,9 @@ NS_OBJECT_ENSURE_REGISTERED (ConfigExample);
 // 
 int main (int argc, char *argv[])
 {
+  CommandLine cmd;
+  cmd.Parse (argc, argv);
+  
   Config::SetDefault ("ns3::ConfigExample::TestInt16", IntegerValue (-5));
 
   Ptr<ConfigExample> a_obj = CreateObject<ConfigExample> ();

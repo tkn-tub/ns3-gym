@@ -41,6 +41,9 @@ using namespace ns3;
  */
 int main (int argc, char** argv)
 {
+  CommandLine cmd;
+  cmd.Parse (argc, argv);
+  
   /* random seed and run number; adjust these to change random draws */
   RngSeedManager::SetSeed(1);
   RngSeedManager::SetRun(3);

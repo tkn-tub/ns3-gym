@@ -15,6 +15,7 @@
  *
  * Author: Junling Bu <linlinjavaer@gmail.com>
  */
+#include "ns3/command-line.h"
 #include "ns3/node.h"
 #include "ns3/packet.h"
 #include "ns3/simulator.h"
@@ -249,6 +250,9 @@ WaveNetDeviceExample::SendWsaExample ()
 int
 main (int argc, char *argv[])
 {
+  CommandLine cmd;
+  cmd.Parse (argc, argv);
+  
   WaveNetDeviceExample example;
   std::cout << "run WAVE WSMP routing service case:" << std::endl;
   example.SendWsmpExample ();

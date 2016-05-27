@@ -38,6 +38,9 @@ using namespace ns3;
 
 int main (int argc, char** argv)
 {
+  CommandLine cmd;
+  cmd.Parse (argc, argv);
+  
 #if 0
   LogComponentEnable ("Ping6Application", LOG_LEVEL_ALL);
   LogComponentEnable ("LrWpanMac",LOG_LEVEL_ALL);
