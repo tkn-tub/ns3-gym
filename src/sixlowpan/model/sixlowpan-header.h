@@ -200,7 +200,7 @@ public:
 
   /**
    * \brief Set the "Hop limit" field (TTL).
-   * \param [in] Limit The hop limit value.
+   * \param [in] limit The hop limit value.
    */
   void SetHopLimit (uint8_t limit);
 

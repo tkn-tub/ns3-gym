@@ -94,7 +94,7 @@ public:
    * propagation delay (baseRtt).
    *
    * \param tcb internal congestion state
-   * \param segementsAcked count of segments ACKed
+   * \param segmentsAcked count of segments ACKed
    * \param rtt last RTT
    *
    */

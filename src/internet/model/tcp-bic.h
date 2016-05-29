@@ -84,6 +84,11 @@ public:
    * \brief Constructor
    */
   TcpBic ();
+
+  /**
+   * Copy constructor.
+   * \param sock The socket to copy from.
+   */
   TcpBic (const TcpBic &sock);
 
   virtual std::string GetName () const;

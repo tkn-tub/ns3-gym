@@ -90,7 +90,7 @@ public:
     std::string GetToNodeName (void) const;
     /**
      * \brief Returns the value of a link attribute. The attribute must exist.
-     * \param [in] Name the name of the attribute.
+     * \param [in] name the name of the attribute.
      * \return The value of the attribute.
      */
     std::string GetAttribute (const std::string &name) const;

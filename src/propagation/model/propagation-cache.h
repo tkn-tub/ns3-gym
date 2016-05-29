@@ -85,6 +85,19 @@ private:
     Ptr<const MobilityModel> m_srcMobility; //!< 1st node mobility model
     Ptr<const MobilityModel> m_dstMobility; //!< 2nd node mobility model
     uint32_t m_spectrumModelUid; //!< model UID
+
+    /**
+     * Less-than operator.
+     *
+     * The goal of this operator is just to provide a stable comparison
+     * to be used in containers requiring a order (of any kind).
+     *
+     * If the models are different, the comparison is based on their Uid.
+     * Otherwise, the comparison is based on the pointers of the Mobility models.
+     *
+     * \param other Right value of the operator.
+     * \returns True if the Left value is less than the Right value.
+     */
     bool operator < (const PropagationPathIdentifier & other) const
     {
       if (m_spectrumModelUid != other.m_spectrumModelUid)

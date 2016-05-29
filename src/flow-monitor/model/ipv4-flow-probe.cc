@@ -104,6 +104,8 @@ public:
    *
    * This check is important for IP over IP encapsulation.
    *
+   * \param src Source address.
+   * \param dst Destination address.
    * \returns True if the addresses are matching.
    */
   bool IsSrcDstValid (Ipv4Address src, Ipv4Address dst) const;
