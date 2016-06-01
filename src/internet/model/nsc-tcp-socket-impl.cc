@@ -461,14 +461,7 @@ NscTcpSocketImpl::RecvFrom (uint32_t maxSize, uint32_t flags,
 {
   NS_LOG_FUNCTION (this << maxSize << flags);
   Ptr<Packet> packet = Recv (maxSize, flags);
-  if (packet != 0)
-    {
-      SocketAddressTag tag;
-      bool found;
-      found = packet->PeekPacketTag (tag);
-      NS_ASSERT (found);
-      fromAddress = tag.GetAddress ();
-    }
+  GetPeerName (fromAddress);
   return packet;
 }
 
@@ -630,10 +623,6 @@ bool NscTcpSocketImpl::ReadPendingData (void)
 
   Ptr<Packet> p =  Create<Packet> (buffer, len);
 
-  SocketAddressTag tag;
-
-  tag.SetAddress (m_peerAddress);
-  p->AddPacketTag (tag);
   m_deliveryQueue.push (p);
   m_rxAvailable += p->GetSize ();
 

@@ -546,67 +546,6 @@ Socket::Ipv6LeaveGroup (void)
  *           Socket Tags
  ***************************************************************/
 
-SocketAddressTag::SocketAddressTag ()
-{
-  NS_LOG_FUNCTION (this);
-}
-
-void 
-SocketAddressTag::SetAddress (Address addr)
-{
-  NS_LOG_FUNCTION (this << addr);
-  m_address = addr;
-}
-
-Address 
-SocketAddressTag::GetAddress (void) const
-{
-  NS_LOG_FUNCTION (this);
-  return m_address;
-}
-
-NS_OBJECT_ENSURE_REGISTERED (SocketAddressTag);
-
-TypeId
-SocketAddressTag::GetTypeId (void)
-{
-  static TypeId tid = TypeId ("ns3::SocketAddressTag")
-    .SetParent<Tag> ()
-    .SetGroupName("Network")
-    .AddConstructor<SocketAddressTag> ()
-  ;
-  return tid;
-}
-TypeId
-SocketAddressTag::GetInstanceTypeId (void) const
-{
-  return GetTypeId ();
-}
-uint32_t
-SocketAddressTag::GetSerializedSize (void) const
-{
-  NS_LOG_FUNCTION (this);
-  return m_address.GetSerializedSize ();
-}
-void
-SocketAddressTag::Serialize (TagBuffer i) const
-{
-  NS_LOG_FUNCTION (this << &i);
-  m_address.Serialize (i);
-}
-void
-SocketAddressTag::Deserialize (TagBuffer i)
-{
-  NS_LOG_FUNCTION (this << &i);
-  m_address.Deserialize (i);
-}
-void
-SocketAddressTag::Print (std::ostream &os) const
-{
-  NS_LOG_FUNCTION (this << &os);
-  os << "address=" << m_address;
-}
-
 SocketIpTtlTag::SocketIpTtlTag ()
 {
   NS_LOG_FUNCTION (this);

@@ -26,9 +26,12 @@ New user-visible features
 - (internet) Added TCP Scalable congestion control algorithm
 - (internet) Added TCP Veno congestion control algorithm
 - (internet) Added TCP Bic congestion control algorithm
+- (network) SocketAddressTag has been removed from the codebase.
+  Users can use RecvFrom (for UDP) or GetPeerName (for TCP) instead.
 
 Bugs fixed
 ----------
+- Bug 231 - Avoid adding SocketAddressTag (at all)
 - Bug 1939 - Aggregating the same object to two nodes produce unexpected results
 - Bug 1977 - v4Ping verbose output when not explicitly stopped
 - Bug 2057 - ARP and Ndisc caches should be updated by receiving valid L3 packets

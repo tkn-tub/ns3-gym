@@ -807,22 +807,10 @@ Ptr<Packet>
 UdpSocketImpl::Recv (uint32_t maxSize, uint32_t flags)
 {
   NS_LOG_FUNCTION (this << maxSize << flags);
-  if (m_deliveryQueue.empty () )
-    {
-      m_errno = ERROR_AGAIN;
-      return 0;
-    }
-  Ptr<Packet> p = m_deliveryQueue.front ();
-  if (p->GetSize () <= maxSize) 
-    {
-      m_deliveryQueue.pop ();
-      m_rxAvailable -= p->GetSize ();
-    }
-  else
-    {
-      p = 0; 
-    }
-  return p;
+
+  Address fromAddress;
+  Ptr<Packet> packet = RecvFrom (maxSize, flags, fromAddress);
+  return packet;
 }
 
 Ptr<Packet>
@@ -830,16 +818,25 @@ UdpSocketImpl::RecvFrom (uint32_t maxSize, uint32_t flags,
                          Address &fromAddress)
 {
   NS_LOG_FUNCTION (this << maxSize << flags);
-  Ptr<Packet> packet = Recv (maxSize, flags);
-  if (packet != 0)
+
+  if (m_deliveryQueue.empty () )
     {
-      SocketAddressTag tag;
-      bool found;
-      found = packet->PeekPacketTag (tag);
-      NS_ASSERT (found);
-      fromAddress = tag.GetAddress ();
+      m_errno = ERROR_AGAIN;
+      return 0;
     }
-  return packet;
+  Ptr<Packet> p = m_deliveryQueue.front ().first;
+  fromAddress = m_deliveryQueue.front ().second;
+
+  if (p->GetSize () <= maxSize)
+    {
+      m_deliveryQueue.pop ();
+      m_rxAvailable -= p->GetSize ();
+    }
+  else
+    {
+      p = 0;
+    }
+  return p;
 }
 
 int
@@ -1000,10 +997,7 @@ UdpSocketImpl::ForwardUp (Ptr<Packet> packet, Ipv4Header header, uint16_t port,
   if ((m_rxAvailable + packet->GetSize ()) <= m_rcvBufSize)
     {
       Address address = InetSocketAddress (header.GetSource (), port);
-      SocketAddressTag tag;
-      tag.SetAddress (address);
-      packet->AddPacketTag (tag);
-      m_deliveryQueue.push (packet);
+      m_deliveryQueue.push (std::make_pair (packet, address));
       m_rxAvailable += packet->GetSize ();
       NotifyDataRecv ();
     }
@@ -1029,7 +1023,7 @@ UdpSocketImpl::ForwardUp6 (Ptr<Packet> packet, Ipv6Header header, uint16_t port,
       return;
     }
 
-  // Should check via getsockopt ()..
+  // Should check via getsockopt ().
   if (IsRecvPktInfo ())
     {
       Ipv6PacketInfoTag tag;
@@ -1038,7 +1032,7 @@ UdpSocketImpl::ForwardUp6 (Ptr<Packet> packet, Ipv6Header header, uint16_t port,
       packet->AddPacketTag (tag);
     }
 
-  //Check only version 6 options
+  // Check only version 6 options
   if (IsIpv6RecvTclass ())
     {
       SocketIpv6TclassTag ipTclassTag;
@@ -1056,10 +1050,7 @@ UdpSocketImpl::ForwardUp6 (Ptr<Packet> packet, Ipv6Header header, uint16_t port,
   if ((m_rxAvailable + packet->GetSize ()) <= m_rcvBufSize)
     {
       Address address = Inet6SocketAddress (header.GetSourceAddress (), port);
-      SocketAddressTag tag;
-      tag.SetAddress (address);
-      packet->AddPacketTag (tag);
-      m_deliveryQueue.push (packet);
+      m_deliveryQueue.push (std::make_pair (packet, address));
       m_rxAvailable += packet->GetSize ();
       NotifyDataRecv ();
     }

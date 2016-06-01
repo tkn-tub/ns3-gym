@@ -662,18 +662,15 @@ RoutingHelper::SetupRoutingMessages (NodeContainer & c,
 }
 
 static inline std::string
-PrintReceivedRoutingPacket (Ptr<Socket> socket, Ptr<Packet> packet)
+PrintReceivedRoutingPacket (Ptr<Socket> socket, Ptr<Packet> packet, Address srcAddress)
 {
-  SocketAddressTag tag;
-  bool found;
-  found = packet->PeekPacketTag (tag);
   std::ostringstream oss;
 
   oss << Simulator::Now ().GetSeconds () << " " << socket->GetNode ()->GetId ();
 
-  if (found)
+  if (InetSocketAddress::IsMatchingType (srcAddress))
     {
-      InetSocketAddress addr = InetSocketAddress::ConvertFrom (tag.GetAddress ());
+      InetSocketAddress addr = InetSocketAddress::ConvertFrom (srcAddress);
       oss << " received one packet from " << addr.GetIpv4 ();
     }
   else
@@ -687,7 +684,8 @@ void
 RoutingHelper::ReceiveRoutingPacket (Ptr<Socket> socket)
 {
   Ptr<Packet> packet;
-  while ((packet = socket->Recv ()))
+  Address srcAddress;
+  while ((packet = socket->RecvFrom (srcAddress)))
     {
       // application data, for goodput
       uint32_t RxRoutingBytes = packet->GetSize ();
@@ -695,7 +693,7 @@ RoutingHelper::ReceiveRoutingPacket (Ptr<Socket> socket)
       GetRoutingStats ().IncRxPkts ();
       if (m_log != 0)
         {
-          NS_LOG_UNCOND (m_protocolName + " " + PrintReceivedRoutingPacket (socket, packet));
+          NS_LOG_UNCOND (m_protocolName + " " + PrintReceivedRoutingPacket (socket, packet, srcAddress));
         }
     }
 }

@@ -183,11 +183,6 @@ EpcSgwPgwApplication::RecvFromS1uSocket (Ptr<Socket> socket)
   packet->RemoveHeader (gtpu);
   uint32_t teid = gtpu.GetTeid ();
 
-  /// \internal
-  /// Workaround for \bugid{231}
-  SocketAddressTag tag;
-  packet->RemovePacketTag (tag);
-
   SendToTunDevice (packet, teid);
 }
 

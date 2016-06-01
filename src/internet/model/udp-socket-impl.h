@@ -228,7 +228,7 @@ private:
   bool                     m_connected;       //!< Connection established
   bool                     m_allowBroadcast;  //!< Allow send broadcast packets
 
-  std::queue<Ptr<Packet> > m_deliveryQueue; //!< Queue for incoming packets
+  std::queue<std::pair<Ptr<Packet>, Address> > m_deliveryQueue; //!< Queue for incoming packets
   uint32_t m_rxAvailable;                   //!< Number of available bytes to be received
 
   // Socket attributes

@@ -479,11 +479,10 @@ void Ipv6RipngSplitHorizonStrategyTest::ReceivePktProbe (Ptr<Socket> socket)
 {
   uint32_t availableData;
   availableData = socket->GetRxAvailable ();
-  Ptr<Packet> receivedPacketProbe = socket->Recv (std::numeric_limits<uint32_t>::max (), 0);
+  Address srcAddr;
+  Ptr<Packet> receivedPacketProbe = socket->RecvFrom (std::numeric_limits<uint32_t>::max (), 0, srcAddr);
   NS_ASSERT (availableData == receivedPacketProbe->GetSize ());
-  SocketAddressTag tag;
-  receivedPacketProbe->RemovePacketTag (tag);
-  Ipv6Address senderAddress = Inet6SocketAddress::ConvertFrom (tag.GetAddress ()).GetIpv6 ();
+  Ipv6Address senderAddress = Inet6SocketAddress::ConvertFrom (srcAddr).GetIpv6 ();
 
   if (senderAddress == "fe80::200:ff:fe00:4")
     {

@@ -863,19 +863,6 @@ TcpSocketBase::Recv (uint32_t maxSize, uint32_t flags)
       return Create<Packet> (); // Send EOF on connection close
     }
   Ptr<Packet> outPacket = m_rxBuffer->Extract (maxSize);
-  if (outPacket != 0 && outPacket->GetSize () != 0)
-    {
-      SocketAddressTag tag;
-      if (m_endPoint != 0)
-        {
-          tag.SetAddress (InetSocketAddress (m_endPoint->GetPeerAddress (), m_endPoint->GetPeerPort ()));
-        }
-      else if (m_endPoint6 != 0)
-        {
-          tag.SetAddress (Inet6SocketAddress (m_endPoint6->GetPeerAddress (), m_endPoint6->GetPeerPort ()));
-        }
-      outPacket->AddPacketTag (tag);
-    }
   return outPacket;
 }
 

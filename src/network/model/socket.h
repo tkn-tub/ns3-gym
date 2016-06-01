@@ -999,54 +999,6 @@ private:
 };
 
 /**
- * \brief This class implements a tag that carries an address
- * of a packet across the socket interface.
- */
-class SocketAddressTag : public Tag
-{
-public:
-  SocketAddressTag ();
-
-  /**
-   * \brief Set the tag's address
-   *
-   * \param addr the address
-   */
-  void SetAddress (Address addr);
-
-  /**
-   * \brief Get the tag's address
-   *
-   * \returns the address
-   */
-  Address GetAddress (void) const;
-
-  /**
-   * \brief Get the type ID.
-   * \return the object TypeId
-   */
-  static TypeId GetTypeId (void);
-
-  // inherited function, no need to doc.
-  virtual TypeId GetInstanceTypeId (void) const;
-
-  // inherited function, no need to doc.
-  virtual uint32_t GetSerializedSize (void) const;
-
-  // inherited function, no need to doc.
-  virtual void Serialize (TagBuffer i) const;
-
-  // inherited function, no need to doc.
-  virtual void Deserialize (TagBuffer i);
-
-  // inherited function, no need to doc.
-  virtual void Print (std::ostream &os) const;
-
-private:
-  Address m_address; //!< the address carried by the tag
-};
-
-/**
  * \brief This class implements a tag that carries the socket-specific
  * TTL of a packet to the IP layer
  */

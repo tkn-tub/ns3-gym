@@ -113,8 +113,6 @@ class Tunnel
   {
     Ptr<Packet> packet = socket->Recv (65535, 0);
     NS_LOG_DEBUG ("N3SocketRecv: " << *packet);
-    SocketAddressTag socketAddressTag;
-    packet->RemovePacketTag (socketAddressTag);
     m_n3Tap->Receive (packet, 0x0800, m_n3Tap->GetAddress (), m_n3Tap->GetAddress (), NetDevice::PACKET_HOST);
   }
 
@@ -122,8 +120,6 @@ class Tunnel
   {
     Ptr<Packet> packet = socket->Recv (65535, 0);
     NS_LOG_DEBUG ("N0SocketRecv: " << *packet);
-    SocketAddressTag socketAddressTag;
-    packet->RemovePacketTag (socketAddressTag);
     m_n0Tap->Receive (packet, 0x0800, m_n0Tap->GetAddress (), m_n0Tap->GetAddress (), NetDevice::PACKET_HOST);
   }
 
@@ -131,8 +127,6 @@ class Tunnel
   {
     Ptr<Packet> packet = socket->Recv (65535, 0);
     NS_LOG_DEBUG ("N1SocketRecv: " << *packet);
-    SocketAddressTag socketAddressTag;
-    packet->RemovePacketTag (socketAddressTag);
     m_n1Tap->Receive (packet, 0x0800, m_n1Tap->GetAddress (), m_n1Tap->GetAddress (), NetDevice::PACKET_HOST);
   }
 

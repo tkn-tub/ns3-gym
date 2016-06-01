@@ -57,6 +57,15 @@ us a note on ns-developers mailing list.</p>
 </ul>
 <h2>Changes to existing API:</h2>
 <ul>
+<li>SocketAddressTag was a long-standing API glitch. It was used to replicate 
+    the RecvFrom effect (i.e., to know the source address of packet) without 
+    calling RecvFrom.
+    This option is more harmful than useful, because in case of tunnels the 
+    new tag needs to replace the old one. Moreover, there is no real need 
+    to create a new API when there is a perfectly working one (i.e., RecvFrom).
+    As a consequence, SocketAddressTag has been completely removed from ns-3.
+    Users can use RecvFrom (for UDP), GetPeerName (for TCP), or similar. 
+</li>
 </ul>
 <h2>Changes to build system:</h2>
 <ul>

@@ -243,11 +243,6 @@ EpcEnbApplication::RecvFromLteSocket (Ptr<Socket> socket)
   NS_ASSERT (socket == m_lteSocket);
   Ptr<Packet> packet = socket->Recv ();
 
-  /// \internal
-  /// Workaround for \bugid{231}
-  SocketAddressTag satag;
-  packet->RemovePacketTag (satag);
-
   EpsBearerTag tag;
   bool found = packet->RemovePacketTag (tag);
   NS_ASSERT (found);
@@ -280,11 +275,6 @@ EpcEnbApplication::RecvFromS1uSocket (Ptr<Socket> socket)
   std::map<uint32_t, EpsFlowId_t>::iterator it = m_teidRbidMap.find (teid);
   NS_ASSERT (it != m_teidRbidMap.end ());
 
-  /// \internal
-  /// Workaround for \bugid{231}
-  SocketAddressTag tag;
-  packet->RemovePacketTag (tag);
-  
   SendToLteSocket (packet, it->second.m_rnti, it->second.m_bid);
 }
 
