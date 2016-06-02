@@ -9470,10 +9470,10 @@ def register_Ns3TcpCongestionOps_methods(root_module, cls):
     cls.add_constructor([])
     ## tcp-congestion-ops.h (module 'internet'): ns3::TcpCongestionOps::TcpCongestionOps(ns3::TcpCongestionOps const & other) [copy constructor]
     cls.add_constructor([param('ns3::TcpCongestionOps const &', 'other')])
-    ## tcp-congestion-ops.h (module 'internet'): void ns3::TcpCongestionOps::CongestionStateSet(ns3::Ptr<ns3::TcpSocketState> tcb, ns3::TcpSocketState::TcpCongState_t const newstate) [member function]
+    ## tcp-congestion-ops.h (module 'internet'): void ns3::TcpCongestionOps::CongestionStateSet(ns3::Ptr<ns3::TcpSocketState> tcb, ns3::TcpSocketState::TcpCongState_t const newState) [member function]
     cls.add_method('CongestionStateSet', 
                    'void', 
-                   [param('ns3::Ptr< ns3::TcpSocketState >', 'tcb'), param('ns3::TcpSocketState::TcpCongState_t const', 'newstate')], 
+                   [param('ns3::Ptr< ns3::TcpSocketState >', 'tcb'), param('ns3::TcpSocketState::TcpCongState_t const', 'newState')], 
                    is_virtual=True)
     ## tcp-congestion-ops.h (module 'internet'): ns3::Ptr<ns3::TcpCongestionOps> ns3::TcpCongestionOps::Fork() [member function]
     cls.add_method('Fork', 
