@@ -77,13 +77,20 @@ TcpBic::TcpBic ()
 
 TcpBic::TcpBic (const TcpBic &sock)
   : TcpCongestionOps (sock),
+    m_fastConvergence (sock.m_fastConvergence),
+    m_beta (sock.m_beta),
+    m_maxIncr (sock.m_maxIncr),
+    m_lowWnd (sock.m_lowWnd),
+    m_smoothPart (sock.m_smoothPart),
     m_cWndCnt (sock.m_cWndCnt),
     m_lastMaxCwnd (sock.m_lastMaxCwnd),
     m_lastCwnd (sock.m_lastCwnd),
-    m_epochStart (sock.m_epochStart)
+    m_epochStart (sock.m_epochStart),
+    m_b (sock.m_b)
 {
   NS_LOG_FUNCTION (this);
 }
+
 
 void
 TcpBic::IncreaseWindow (Ptr<TcpSocketState> tcb, uint32_t segmentsAcked)
