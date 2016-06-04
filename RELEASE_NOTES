@@ -54,7 +54,7 @@ Bugs fixed
 - Bug 2414 - UdpSocket doesn't call NotifyConnectionFailed
 - Bug 2419 - BsmApplication should use RecvFrom and not SocketAddressTag
 - Bug 2425 - UdpSocketImpl simplification
-- Bug 2461 - Bic does not copy private parameters
+- Bug 2433 - Bic does not copy private parameters
 
 Known issues
 ------------
