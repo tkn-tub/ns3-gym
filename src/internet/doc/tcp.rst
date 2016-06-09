@@ -361,6 +361,75 @@ halved as in Reno.
 
 More information: http://www.csc.lsu.edu/~sjpark/cs7601/4-YeAH_TCP.pdf
 
+Illinois
+^^^^^^^^
+
+TCP Illinois is a hybrid congestion control algorithm designed for
+high-speed networks.  Illinois implements a Concave-AIMD (or C-AIMD)
+algorithm that uses packet loss as the primary congestion signal to
+determine the direction of window update and queueing delay as the
+secondary congestion signal to determine the amount of change.
+
+The additive increase and multiplicative decrease factors (denoted as
+alpha and beta, respectively) are functions of the current average queueing
+delay da as shown in Equations (1) and (2).  To improve the protocol
+robustness against sudden fluctuations in its delay sampling,
+Illinois allows the increment of alpha to alphaMax
+only if da stays below d1 for a some (theta) amount of time.
+
+                              / alphaMax          if da <= d1
+                      alpha =                                         (1)
+                              \ k1 / (k2 + da)    otherwise
+
+                             / betaMin            if da <= d2
+                      beta =   k3 + k4da          if d2 < da < d3      (2)
+                             \ betaMax            otherwise
+
+where the calculations of k1, k2, k3, and k4 are shown in Equations (3), (4),
+(5), and (6).
+ 
+           k1 = (dm - d1)(alphaMin)alphaMax / (alphaMax - alphaMin)    (3)
+
+           k2 = ((dm - d1)alphaMin / (alphaMax - alphaMin)) - d1       (4)
+
+           k3 = ((alphaMin)d3 - (alphaMax)d2) / (d3 - d2)              (5)
+
+           k4 = (alphaMax - alphaMin) / (d3 - d2)                      (6)
+
+with da the current average queueing delay calculated in Equation  (7) where
+                  Ta is the average RTT (sumRtt / cntRtt in the implementation) and
+                  Tmin (baseRtt in the implementation) is the minimum RTT ever seen
+     dm the maximum (average) queueing delay calculated in Equation (8) where
+                  Tmax (maxRtt in the implementation) is the maximum RTT ever seen
+
+           da = Ta - Tmin          (7)
+
+           dm = Tmax - Tmin         (8)
+
+     di (i = 1,2,3) are calculated in Equation (9) (0 <= eta_1 < 1, and
+                   0 <= eta_2 <= eta_3 <=1)
+
+           di = (eta_i)dm            (9)
+
+Illinois only executes its adaptation of alpha and beta when cwnd exceeds a threshold
+called winThresh.  Otherwise, it sets alpha and beta to the base values of 1 and 0.5,
+respectively.
+
+Following the implementation of Illinois in the Linux kernel, we use the following
+default parameter settings:
+
+     alphaMin = 0.3      (0.1 in the Illinois paper)
+     alphaMax = 10.0
+     betaMin = 0.125
+     betaMax = 0.5
+     winThresh = 15      (10 in the Illinois paper)
+     theta = 5
+     eta1 = 0.01
+     eta2 = 0.1
+     eta3 = 0.8
+
+More information: http://www.doi.org/10.1145/1190095.1190166
+
 Validation
 ++++++++++
 
@@ -384,6 +453,7 @@ section below on :ref:`Writing-tcp-tests`.
 * **tcp-scalable-test:** Unit tests on the Scalable congestion control
 * **tcp-bic-test:** Unit tests on the BIC congestion control
 * **tcp-yeah-test:** Unit tests on the YeAH congestion control
+* **tcp-illinois-test:** Unit tests on the Illinois congestion control
 * **tcp-option:** Unit tests on TCP options
 * **tcp-pkts-acked-test:** Unit test the number of time that PktsAcked is called
 * **tcp-rto-test:** Unit test behavior after a RTO timeout occurs

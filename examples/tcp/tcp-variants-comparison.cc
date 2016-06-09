@@ -179,7 +179,7 @@ int main (int argc, char *argv[])
   CommandLine cmd;
   cmd.AddValue ("transport_prot", "Transport protocol to use: TcpNewReno, "
                 "TcpHybla, TcpHighSpeed, TcpVegas, TcpScalable, TcpVeno, "
-                "TcpBic, TcpYeah, TcpWestwood, TcpWestwoodPlus ", transport_prot);
+                "TcpBic, TcpYeah, TcpIllinois, TcpWestwood, TcpWestwoodPlus ", transport_prot);
   cmd.AddValue ("error_p", "Packet error rate", error_p);
   cmd.AddValue ("bandwidth", "Bottleneck bandwidth", bandwidth);
   cmd.AddValue ("delay", "Bottleneck delay", delay);
@@ -256,7 +256,11 @@ int main (int argc, char *argv[])
     }
   else if (transport_prot.compare ("TcpYeah") == 0)
     {
-	  Config::SetDefault ("ns3::TcpL4Protocol::SocketType", TypeIdValue (TcpYeah::GetTypeId ()));
+      Config::SetDefault ("ns3::TcpL4Protocol::SocketType", TypeIdValue (TcpYeah::GetTypeId ()));
+    }
+  else if (transport_prot.compare ("TcpIllinois") == 0)
+    {
+      Config::SetDefault ("ns3::TcpL4Protocol::SocketType", TypeIdValue (TcpIllinois::GetTypeId ()));
     }
   else if (transport_prot.compare ("TcpWestwood") == 0)
     { // the default protocol type in ns3::TcpWestwood is WESTWOOD
@@ -378,7 +382,8 @@ int main (int argc, char *argv[])
           || transport_prot.compare ("TcpVeno") == 0
           || transport_prot.compare ("TcpBic") == 0
           || transport_prot.compare ("TcpScalable") == 0
-          || transport_prot.compare ("TcpYeah") == 0)
+          || transport_prot.compare ("TcpYeah") == 0
+          || transport_prot.compare ("TcpIllinois") == 0)
         {
           Config::SetDefault ("ns3::TcpSocket::SegmentSize", UintegerValue (tcp_adu_size));
           BulkSendHelper ftp ("ns3::TcpSocketFactory", Address ());
