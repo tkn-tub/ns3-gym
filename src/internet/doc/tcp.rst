@@ -329,6 +329,38 @@ decrease factor Beta) window size can be used as the new minimum.
 
 More informations at: http://ieeexplore.ieee.org/xpl/articleDetails.jsp?arnumber=1354672
 
+YeAH
+^^^^
+
+YeAH-TCP (Yet Another HighSpeed TCP) is a heuristic designed to balance various
+requirements of a state-of-the-art congestion control algorithm:
+1) fully exploit the link capacity of high BDP networks while inducing a small
+number of congestion events
+2) compete friendly with Reno flows
+3) achieve intra and RTT fairness
+4) robust to random losses
+5) achieve high performance regardless of buffer size
+
+YeAH operates between 2 modes: Fast and Slow mode.  In the Fast mode when the queue
+occupancy is small and the network congestion level is low, YeAH increments
+its congestion window according to the aggressive STCP rule.  When the number of packets
+in the queue grows beyond a threshold and the network congestion level is high, YeAH enters
+its Slow mode, acting as Reno with a decongestion algorithm.  YeAH employs Vegas' mechanism
+for calculating the backlog as in Equation (1).  The estimation of the network congestion
+level is shown in Equation (2).
+
+                  Q = (RTT - BaseRTT) (cwnd / RTT)    (1)
+                  L = (RTT - BaseRTT) / BaseRTT       (2)
+
+To ensure TCP friendliness, YeAH also implements an algorithm to detect the presence of legacy
+Reno flows.  Upon the receipt of 3 duplicate ACKs, YeAH decreases its slow start threshold
+according to Equation (3) if it's not competing with Reno flows.  Otherwise,  the ssthresh is
+halved as in Reno.
+
+                  ssthresh = min{max{cwnd/8, Q}, cwnd/2}
+
+More information: http://www.csc.lsu.edu/~sjpark/cs7601/4-YeAH_TCP.pdf
+
 Validation
 ++++++++++
 
@@ -350,7 +382,8 @@ section below on :ref:`Writing-tcp-tests`.
 * **tcp-vegas-test:** Unit tests on the Vegas congestion control
 * **tcp-veno-test:** Unit tests on the Veno congestion control
 * **tcp-scalable-test:** Unit tests on the Scalable congestion control
-* **tcp-bic-test:** Unit tests on the Vegas congestion control
+* **tcp-bic-test:** Unit tests on the BIC congestion control
+* **tcp-yeah-test:** Unit tests on the YeAH congestion control
 * **tcp-option:** Unit tests on TCP options
 * **tcp-pkts-acked-test:** Unit test the number of time that PktsAcked is called
 * **tcp-rto-test:** Unit test behavior after a RTO timeout occurs

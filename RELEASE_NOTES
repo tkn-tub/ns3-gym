@@ -33,6 +33,7 @@ New user-visible features
 - (internet) Added TCP Scalable congestion control algorithm
 - (internet) Added TCP Veno congestion control algorithm
 - (internet) Added TCP Bic congestion control algorithm
+- (internet) Added TCP YeAH congestion control algorithm
 - (network) SocketAddressTag has been removed from the codebase.
   Users can use RecvFrom (for UDP) or GetPeerName (for TCP) instead.
 
