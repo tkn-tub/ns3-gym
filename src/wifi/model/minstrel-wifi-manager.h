@@ -124,6 +124,8 @@ struct MinstrelWifiRemoteStation : public WifiRemoteStation
  *
  * Minstrel is appropriate for non-HT/VHT configurations; for HT/VHT
  * (i.e. 802.11n/ac), users should use MinstrelHtWifiManager instead.
+ * Minstrel will error exit if the user tries to configure it with a
+ * Wi-Fi MAC that has VhtSupported or HtSupported set.
  *
  * Some notes on this implementation follow.  The implementation has
  * been adapted to bring it closer to the Linux implementation.
@@ -161,6 +163,8 @@ public:
   // Inherited from WifiRemoteStationManager
   virtual void SetupPhy (Ptr<WifiPhy> phy);
   virtual void SetupMac (Ptr<WifiMac> mac);
+  virtual void SetHtSupported (bool enable);
+  virtual void SetVhtSupported (bool enable);
 
   /**
    * Assign a fixed random variable stream number to the random variables

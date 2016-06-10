@@ -38,6 +38,10 @@ struct OnoeWifiRemoteStation;
  * rate control algorithm for the madwifi driver. I am not aware of
  * any publication or reference about this algorithm beyond the madwifi
  * source code.
+ *
+ * This RAA does not support HT or VHT modes and will error exit
+ * if the user tries to configure this RAA with a Wi-Fi MAC that
+ * has VhtSupported or HtSupported set.
  */
 class OnoeWifiManager : public WifiRemoteStationManager
 {
@@ -46,6 +50,9 @@ public:
 
   OnoeWifiManager ();
 
+  // Inherited from WifiRemoteStationManager
+  virtual void SetHtSupported (bool enable);
+  virtual void SetVhtSupported (bool enable);
 
 private:
   //overriden from base class

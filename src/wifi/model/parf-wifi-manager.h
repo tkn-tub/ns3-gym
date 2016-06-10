@@ -36,6 +36,9 @@ struct ParfWifiRemoteStation;
  * Wireless Networks, Kluwer Academic Publishers, 2007, 13, 737-755
  * http://www.cs.odu.edu/~nadeem/classes/cs795-WNS-S13/papers/enter-006.pdf
  *
+ * This RAA does not support HT or VHT modes and will error exit
+ * if the user tries to configure this RAA with a Wi-Fi MAC that
+ * has VhtSupported or HtSupported set.
  */
 class ParfWifiManager : public WifiRemoteStationManager
 {
@@ -48,7 +51,10 @@ public:
   ParfWifiManager ();
   virtual ~ParfWifiManager ();
 
+  // Inherited from WifiRemoteStationManager
   virtual void SetupPhy (Ptr<WifiPhy> phy);
+  virtual void SetHtSupported (bool enable);
+  virtual void SetVhtSupported (bool enable);
 
 
 private:

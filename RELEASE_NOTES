@@ -40,6 +40,7 @@ New user-visible features
 Bugs fixed
 ----------
 - Bug 231 - Avoid adding SocketAddressTag (at all)
+- Bug 1797 - Rate adaptation algorithms don't work with new 802.11n/ac standards
 - Bug 1939 - Aggregating the same object to two nodes produce unexpected results
 - Bug 1977 - v4Ping verbose output when not explicitly stopped
 - Bug 2057 - ARP and Ndisc caches should be updated by receiving valid L3 packets

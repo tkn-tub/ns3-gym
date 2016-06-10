@@ -36,6 +36,10 @@ struct AmrrWifiRemoteStation;
  * was initially described in <i>IEEE 802.11 Rate Adaptation:
  * A Practical Approach</i>, by M. Lacage, M.H. Manshaei, and
  * T. Turletti.
+ *
+ * This RAA does not support HT or VHT modes and will error exit
+ * if the user tries to configure this RAA with a Wi-Fi MAC that
+ * has VhtSupported or HtSupported set.
  */
 class AmrrWifiManager : public WifiRemoteStationManager
 {
@@ -44,6 +48,9 @@ public:
 
   AmrrWifiManager ();
 
+  // Inherited from WifiRemoteStationManager
+  virtual void SetHtSupported (bool enable);
+  virtual void SetVhtSupported (bool enable);
 
 private:
   //overriden from base class

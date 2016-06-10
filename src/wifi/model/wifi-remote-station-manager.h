@@ -187,7 +187,7 @@ public:
    *
    * \param enable enable or disable HT capability support
    */
-  void SetHtSupported (bool enable);
+  virtual void SetHtSupported (bool enable);
   /**
    * Return whether the device has HT capability support enabled.
    *
@@ -199,7 +199,7 @@ public:
    *
    * \param enable enable or disable VHT capability support
    */
-  void SetVhtSupported (bool enable);
+  virtual void SetVhtSupported (bool enable);
   /**
    * Return whether the device has VHT capability support enabled.
    *

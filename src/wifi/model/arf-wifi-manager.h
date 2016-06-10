@@ -39,6 +39,10 @@ namespace ns3 {
  * in XXX (I cannot find back the original paper which described how
  * the time-based timer could be easily replaced with a packet-based
  * timer.)
+ *
+ * This RAA does not support HT or VHT modes and will error exit
+ * if the user tries to configure this RAA with a Wi-Fi MAC that
+ * has VhtSupported or HtSupported set.
  */
 class ArfWifiManager : public WifiRemoteStationManager
 {
@@ -47,6 +51,9 @@ public:
   ArfWifiManager ();
   virtual ~ArfWifiManager ();
 
+  // Inherited from WifiRemoteStationManager
+  virtual void SetHtSupported (bool enable);
+  virtual void SetVhtSupported (bool enable);
 
 private:
   //overriden from base class

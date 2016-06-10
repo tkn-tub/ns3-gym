@@ -404,5 +404,26 @@ AarfcdWifiManager::ResetRtsWnd (AarfcdWifiRemoteStation *station)
   station->m_rtsWnd = m_minRtsWnd;
 }
 
+void
+AarfcdWifiManager::SetHtSupported (bool enable)
+{
+  //HT is not supported by this algorithm.
+  if (enable)
+    {
+      NS_FATAL_ERROR ("WifiRemoteStationManager selected does not support HT rates");
+    }
+}
+
+void
+AarfcdWifiManager::SetVhtSupported (bool enable)
+{
+  //VHT is not supported by this algorithm.
+  if (enable)
+    {
+      NS_FATAL_ERROR ("WifiRemoteStationManager selected does not support VHT rates");
+    }
+}
+
+
 
 } //namespace ns3
