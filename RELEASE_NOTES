@@ -63,6 +63,7 @@ Bugs fixed
 - Bug 2414 - UdpSocket doesn't call NotifyConnectionFailed
 - Bug 2419 - BsmApplication should use RecvFrom and not SocketAddressTag
 - Bug 2425 - UdpSocketImpl simplification
+- Bug 2427 - 802.11ac selects wrong slot duration
 - Bug 2433 - Bic does not copy private parameters
 - Bug 2436 - SendBlockAckAfterAmpdu is called even if the A-MPDU frame is not addressed to the station
 
