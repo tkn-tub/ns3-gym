@@ -64,7 +64,6 @@ private:
   uint32_t m_doingRenoNow;
   uint32_t m_cntRtt;
   uint32_t m_renoCount;
-  uint32_t m_fastCount;
 };
 
 TcpYeahIncrementTest::TcpYeahIncrementTest (uint32_t cWnd,
@@ -86,8 +85,7 @@ TcpYeahIncrementTest::TcpYeahIncrementTest (uint32_t cWnd,
     m_minRtt (minRtt),
     m_doingRenoNow (0),
     m_cntRtt (4),
-    m_renoCount (2),
-    m_fastCount (0)
+    m_renoCount (2)
 {
 }
 
