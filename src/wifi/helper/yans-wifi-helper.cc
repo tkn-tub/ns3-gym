@@ -248,8 +248,8 @@ YansWifiPhyHelper::Create (Ptr<Node> node, Ptr<NetDevice> device) const
   return phy;
 }
 
-static void
-PcapSniffTxEvent (
+void
+YansWifiPhyHelper::PcapSniffTxEvent (
   Ptr<PcapFileWrapper> file,
   Ptr<const Packet>    packet,
   uint16_t             channelFreqMhz,
@@ -440,8 +440,8 @@ PcapSniffTxEvent (
     }
 }
 
-static void
-PcapSniffRxEvent (
+void
+YansWifiPhyHelper::PcapSniffRxEvent (
   Ptr<PcapFileWrapper>  file,
   Ptr<const Packet>     packet,
   uint16_t              channelFreqMhz,
@@ -692,8 +692,8 @@ YansWifiPhyHelper::EnablePcapInternal (std::string prefix, Ptr<NetDevice> nd, bo
 
   Ptr<PcapFileWrapper> file = pcapHelper.CreateFile (filename, std::ios::out, m_pcapDlt);
 
-  phy->TraceConnectWithoutContext ("MonitorSnifferTx", MakeBoundCallback (&PcapSniffTxEvent, file));
-  phy->TraceConnectWithoutContext ("MonitorSnifferRx", MakeBoundCallback (&PcapSniffRxEvent, file));
+  phy->TraceConnectWithoutContext ("MonitorSnifferTx", MakeBoundCallback (&YansWifiPhyHelper::PcapSniffTxEvent, file));
+  phy->TraceConnectWithoutContext ("MonitorSnifferRx", MakeBoundCallback (&YansWifiPhyHelper::PcapSniffRxEvent, file));
 }
 
 void
