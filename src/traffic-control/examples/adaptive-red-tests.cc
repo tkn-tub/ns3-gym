@@ -482,201 +482,45 @@ main (int argc, char *argv[])
 
   RedQueueDisc::Stats st = StaticCast<RedQueueDisc> (queueDiscs.Get (0))->GetStats ();
 
-  if (aredTest == 1)
+  if (aredTest == 1 || aredTest == 2 || aredTest == 13)
     {
-      if (st.unforcedDrop > 2)
+      if (st.unforcedDrop > st.forcedDrop)
         {
-          std::cout << "Drops due to prob mark should be around 1" << std::endl;
+          std::cout << "Drops due to prob mark should be less than the drops due to hard mark" << std::endl;
           exit (-1);
         }
-      else if (st.forcedDrop < 137 || st.forcedDrop > 139)
+
+      if (st.qLimDrop == 0)
         {
-          std::cout << "Drops due to hard mark not in expected range, should be around 138" << std::endl;
-          exit (-1);
-        }
-      else if (st.qLimDrop < 137 || st.qLimDrop > 139)
-        {
-          std::cout << "Drops due to queue full not in expected range, should be around 138" << std::endl;
+          std::cout << "There should be some drops due to queue full" << std::endl;
           exit (-1);
         }
     }
-  else if (aredTest == 2)
+  else if (aredTest == 6 || aredTest == 7 || aredTest == 8 || aredTest == 9 || aredTest == 10 || aredTest == 14 || aredTest ==15)
     {
-      if (st.unforcedDrop < 6 || st.unforcedDrop > 17)
+      if (st.unforcedDrop > st.forcedDrop)
         {
-          std::cout << "Drops due to prob mark not in expected range, should be around 14" << std::endl;
+          std::cout << "Drops due to prob mark should be less than the drops due to hard mark" << std::endl;
           exit (-1);
         }
-      else if (st.forcedDrop < 122 || st.forcedDrop > 133)
+
+      if (st.qLimDrop != 0)
         {
-          std::cout << "Drops due to hard mark not in expected range, should be around 126" << std::endl;
-          exit (-1);
-        }
-      else if (st.qLimDrop < 122 || st.qLimDrop > 133)
-        {
-          std::cout << "Drops due to queue full not in expected range, should be around 126" << std::endl;
-          exit (-1);
-        }
-    }
-  else if (aredTest == 6)
-    {
-      if (st.unforcedDrop < 32 || st.unforcedDrop > 56)
-        {
-          std::cout << "Drops due to prob mark not in expected range, should be around 48" << std::endl;
-          exit (-1);
-        }
-      else if (st.forcedDrop < 185 || st.forcedDrop > 202)
-        {
-          std::cout << "Drops due to hard mark not in expected range, should be around 201" << std::endl;
-          exit (-1);
-        }
-      else if (st.qLimDrop != 0)
-        {
-          std::cout << "There should be no drops due to queue full" << std::endl;
-          exit (-1);
-        }
-    }
-  else if (aredTest == 7)
-    {
-      if (st.unforcedDrop < 76 || st.unforcedDrop > 119)
-        {
-          std::cout << "Number of drops due to prob mark is not in expected range, should be around 110" << std::endl;
-          exit (-1);
-        }
-      else if (st.forcedDrop < 133 || st.forcedDrop > 138)
-        {
-          std::cout << "Number of drops due to hard mark is not in expected range, should be around 137" << std::endl;
-          exit (-1);
-        }
-      else if (st.qLimDrop != 0)
-        {
-          std::cout << "There should be no drops due to queue full" << std::endl;
-          exit (-1);
-        }
-    }
-  else if (aredTest == 8)
-    {
-      if (st.unforcedDrop < 32 || st.unforcedDrop > 56)
-        {
-          std::cout << "Number of drops due to prob mark is not in expected range, should be around 48" << std::endl;
-          exit (-1);
-        }
-      else if (st.forcedDrop < 185 || st.forcedDrop > 202)
-        {
-          std::cout << "Drops due to hard mark not in expected range, should be around 201" << std::endl;
-          exit (-1);
-        }
-      else if (st.qLimDrop != 0)
-        {
-          std::cout << "There should be no drops due to queue full" << std::endl;
-          exit (-1);
-        }
-    }
-  else if (aredTest == 9)
-    {
-      if (st.unforcedDrop < 38 || st.unforcedDrop > 69)
-        {
-          std::cout << "Number of drops due to prob mark is not in expected range, should be around 61" << std::endl;
-          exit (-1);
-        }
-      else if (st.forcedDrop < 178 || st.forcedDrop > 191)
-        {
-          std::cout << "Number of drops due to hard mark is not in expected range, should be around 187" << std::endl;
-          exit (-1);
-        }
-      else if (st.qLimDrop != 0)
-        {
-          std::cout << "There should be no drops due to queue full" << std::endl;
-          exit (-1);
-        }
-    }
-  else if (aredTest == 10)
-    {
-      if (st.unforcedDrop < 82 || st.unforcedDrop > 185)
-        {
-          std::cout << "Number of drops due to prob mark is not in expected range, should be around 89" << std::endl;
-          exit (-1);
-        }
-      else if (st.forcedDrop < 129 || st.forcedDrop > 133)
-        {
-          std::cout << "Number of drops due to hard mark is not in expected range, should be around 129" << std::endl;
-          exit (-1);
-        }
-      else if (st.qLimDrop != 0)
-        {
-          std::cout << "There should be no drops due to queue full" << std::endl;
+          std::cout << "There should be zero drops due to queue full" << std::endl;
           exit (-1);
         }
     }
   else if (aredTest == 12)
     {
-      if (st.unforcedDrop < 162 || st.unforcedDrop > 204)
+      if (st.unforcedDrop < st.forcedDrop)
         {
-          std::cout << "Number of drops due to prob mark is not in expected range, should be around 181" << std::endl;
+          std::cout << "Drops due to prob mark should be more than the drops due to hard mark" << std::endl;
           exit (-1);
         }
-      else if (st.forcedDrop > 43)
+
+      if (st.qLimDrop != 0)
         {
-          std::cout << "Number of drops due to hard mark is not in expected range, should be around 12" << std::endl;
-          exit (-1);
-        }
-      else if (st.qLimDrop != 0)
-        {
-          std::cout << "There should be no drops due to queue full" << std::endl;
-          exit (-1);
-        }
-    }
-  else if (aredTest == 13)
-    {
-      if (st.unforcedDrop < 30 || st.unforcedDrop > 49)
-        {
-          std::cout << "Number of drops due to prob mark is not in expected range, should be around 36" << std::endl;
-          exit (-1);
-        }
-      else if (st.forcedDrop < 240 || st.forcedDrop > 259)
-        {
-          std::cout << "Number of drops due to hard mark is not in expected range, should be around 253" << std::endl;
-          exit (-1);
-        }
-      else if (st.qLimDrop < 12 || st.qLimDrop > 31)
-        {
-          std::cout << "Number of drops due to queue full is not in expected range, should be around 25" << std::endl;
-          exit (-1);
-        }
-    }
-  else if (aredTest == 14)
-    {
-      if (st.unforcedDrop < 83 || st.unforcedDrop > 90)
-        {
-          std::cout << "Number of drops due to prob mark is not in expected range, should be around 88" << std::endl;
-          exit (-1);
-        }
-      else if (st.forcedDrop < 127 || st.forcedDrop > 132)
-        {
-          std::cout << "Number of drops due to hard mark is not in expected range, should be around 129" << std::endl;
-          exit (-1);
-        }
-      else if (st.qLimDrop != 0)
-        {
-          std::cout << "There should be no drops due to queue full" << std::endl;
-          exit (-1);
-        }
-    }
-  else if (aredTest == 15)
-    {
-      if (st.unforcedDrop < 83 || st.unforcedDrop > 90)
-        {
-          std::cout << "Number of drops due to prob mark is not in expected range, should be around 88" << std::endl;
-          exit (-1);
-        }
-      else if (st.forcedDrop < 127 || st.forcedDrop > 132)
-        {
-          std::cout << "Number of drops due to hard mark is not in expected range, should be around 129" << std::endl;
-          exit (-1);
-        }
-      else if (st.qLimDrop != 0)
-        {
-          std::cout << "There should be no drops due to queue full" << std::endl;
+          std::cout << "There should be zero drops due to queue full" << std::endl;
           exit (-1);
         }
     }
