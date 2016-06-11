@@ -24,6 +24,10 @@ def configure(conf):
             for libpath in conf.env.LIBPATH_MPI:
                 if 'mpi' in libpath:
                     conf.env.append_value('LINKFLAGS_MPI', '-Wl,-rpath,'+libpath)
+                    # Bug #2437, using OpenMPI 1.6.5 (possibly later versions)
+                    # if upstream OpenMPI bug clears at some point, this
+                    # can be removed 
+                    conf.env.append_value('CXXFLAGS', '-Wno-literal-suffix')
             conf.report_optional_feature("mpi", "MPI Support", True, '')            
         else:
             conf.report_optional_feature("mpi", "MPI Support", False, 'mpic++ not found')
