@@ -61,6 +61,7 @@ Bugs fixed
 - Bug 2396 - move utility functions to WifiPhy
 - Bug 2397 - add backoff and cw tracing to EDCA
 - Bug 2398 - add SNR tag to beacons and probe responses
+- Bug 2402 - IPv4 Interface forwarding state is not honored
 - Bug 2406 - Poor 802.11g performance in ad-hoc mode
 - Bug 2414 - UdpSocket doesn't call NotifyConnectionFailed
 - Bug 2419 - BsmApplication should use RecvFrom and not SocketAddressTag

@@ -467,6 +467,15 @@ RoutingProtocol::RouteInput (Ptr<const Packet> p,
         }
       return true;
     }
+
+  // Check if input device supports IP forwarding
+  if (m_ipv4->IsForwarding (iif) == false)
+    {
+      NS_LOG_LOGIC ("Forwarding disabled for this interface");
+      ecb (p, header, Socket::ERROR_NOROUTETOHOST);
+      return true;
+    }
+
   RoutingTableEntry toDst;
   if (m_routingTable.LookupRoute (dst,toDst))
     {
