@@ -70,6 +70,7 @@ Bugs fixed
 - Bug 2427 - 802.11ac selects wrong slot duration
 - Bug 2433 - Bic does not copy private parameters
 - Bug 2436 - SendBlockAckAfterAmpdu is called even if the A-MPDU frame is not addressed to the station
+- Bug 2438 - Routing protocols should stop processing packets coming from a non-forwarding interface
 
 Known issues
 ------------

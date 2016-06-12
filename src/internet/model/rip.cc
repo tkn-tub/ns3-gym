@@ -268,7 +268,7 @@ bool Rip::RouteInput (Ptr<const Packet> p, const Ipv4Header &header, Ptr<const N
         {
           ecb (p, header, Socket::ERROR_NOROUTETOHOST);
         }
-      return false;
+      return true;
     }
   // Next, try to find a route
   NS_LOG_LOGIC ("Unicast destination");

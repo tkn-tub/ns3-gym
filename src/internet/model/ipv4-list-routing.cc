@@ -161,7 +161,7 @@ Ipv4ListRouting::RouteInput (Ptr<const Packet> p, const Ipv4Header &header, Ptr<
     {
       NS_LOG_LOGIC ("Forwarding disabled for this interface");
       ecb (p, header, Socket::ERROR_NOROUTETOHOST);
-      return false;
+      return true;
     }
   // Next, try to find a route
   // If we have already delivered a packet locally (e.g. multicast)

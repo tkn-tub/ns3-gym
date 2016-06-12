@@ -1396,6 +1396,8 @@ Ipv4L3Protocol::RouteInputError (Ptr<const Packet> p, const Ipv4Header & ipHeade
   NS_LOG_FUNCTION (this << p << ipHeader << sockErrno);
   NS_LOG_LOGIC ("Route input failure-- dropping packet to " << ipHeader << " with errno " << sockErrno); 
   m_dropTrace (ipHeader, p, DROP_ROUTE_ERROR, m_node->GetObject<Ipv4> (), 0);
+
+  // \todo Send an ICMP no route.
 }
 
 void

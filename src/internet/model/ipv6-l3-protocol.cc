@@ -1230,7 +1230,7 @@ void Ipv6L3Protocol::IpForward (Ptr<const NetDevice> idev, Ptr<Ipv6Route> rtentr
   NS_LOG_LOGIC ("Forwarding logic for node: " << m_node->GetId ());
 
   // Drop RFC 3849 packets: 2001:db8::/32
-  if (header.GetDestinationAddress().IsDocumentation())
+  if (header.GetDestinationAddress().IsDocumentation ())
     {
       NS_LOG_WARN ("Received a packet for 2001:db8::/32 (documentation class).  Drop.");
       m_dropTrace (header, p, DROP_ROUTE_ERROR, m_node->GetObject<Ipv6> (), 0);

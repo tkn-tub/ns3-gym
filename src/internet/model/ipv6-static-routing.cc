@@ -623,7 +623,7 @@ bool Ipv6StaticRouting::RouteInput (Ptr<const Packet> p, const Ipv6Header &heade
         {
           ecb (p, header, Socket::ERROR_NOROUTETOHOST);
         }
-      return false;
+      return true;
     }
   // Next, try to find a route
   NS_LOG_LOGIC ("Unicast destination");

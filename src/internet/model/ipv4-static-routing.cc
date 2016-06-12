@@ -543,7 +543,7 @@ Ipv4StaticRouting::RouteInput  (Ptr<const Packet> p, const Ipv4Header &ipHeader,
     {
       NS_LOG_LOGIC ("Forwarding disabled for this interface");
       ecb (p, ipHeader, Socket::ERROR_NOROUTETOHOST);
-      return false;
+      return true;
     }
   // Next, try to find a route
   Ptr<Ipv4Route> rtentry = LookupStatic (ipHeader.GetDestination ());

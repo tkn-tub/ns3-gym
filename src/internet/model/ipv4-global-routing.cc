@@ -513,7 +513,7 @@ Ipv4GlobalRouting::RouteInput  (Ptr<const Packet> p, const Ipv4Header &header, P
     {
       NS_LOG_LOGIC ("Forwarding disabled for this interface");
       ecb (p, header, Socket::ERROR_NOROUTETOHOST);
-      return false;
+      return true;
     }
   // Next, try to find a route
   NS_LOG_LOGIC ("Unicast destination- looking up global route");

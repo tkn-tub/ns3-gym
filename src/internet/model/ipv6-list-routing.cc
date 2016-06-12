@@ -115,7 +115,7 @@ Ipv6ListRouting::RouteInput (Ptr<const Packet> p, const Ipv6Header &header, Ptr<
     {
       NS_LOG_LOGIC ("Forwarding disabled for this interface");
       ecb (p, header, Socket::ERROR_NOROUTETOHOST);
-      return false;
+      return true;
     }
 
   // We disable error callback for the called protocols.
