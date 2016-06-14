@@ -71,6 +71,7 @@ Bugs fixed
 - Bug 2433 - Bic does not copy private parameters
 - Bug 2436 - SendBlockAckAfterAmpdu is called even if the A-MPDU frame is not addressed to the station
 - Bug 2438 - Routing protocols should stop processing packets coming from a non-forwarding interface
+- Bug 2439 - SixLowPan Compression kind need to be casted to int in the Print function
 
 Known issues
 ------------

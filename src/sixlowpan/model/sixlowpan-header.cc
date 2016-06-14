@@ -128,7 +128,7 @@ void SixLowPanHc1::Print (std::ostream & os) const
   encoding <<= 1;
   encoding |= m_hc2HeaderPresent;
 
-  os << "encoding " << int(encoding) << ", hopLimit " << int(m_hopLimit);
+  os << "encoding " << static_cast<int> (encoding) << ", hopLimit " << static_cast<int> (m_hopLimit);
 }
 
 uint32_t SixLowPanHc1::GetSerializedSize () const
@@ -655,7 +655,7 @@ TypeId SixLowPanFragN::GetInstanceTypeId (void) const
 
 void SixLowPanFragN::Print (std::ostream & os) const
 {
-  os << "datagram size " << m_datagramSize << " tag " << m_datagramTag << " offset " << int(m_datagramOffset);
+  os << "datagram size " << m_datagramSize << " tag " << m_datagramTag << " offset " << static_cast<int> (m_datagramOffset);
 }
 
 uint32_t SixLowPanFragN::GetSerializedSize () const
@@ -815,7 +815,7 @@ TypeId SixLowPanIphc::GetInstanceTypeId (void) const
 
 void SixLowPanIphc::Print (std::ostream & os) const
 {
-  os << "Compression kind: " << m_baseFormat;
+  os << "Compression kind: " << static_cast<int> (m_baseFormat);
 }
 
 uint32_t SixLowPanIphc::GetSerializedSize () const
@@ -1508,7 +1508,7 @@ TypeId SixLowPanNhcExtension::GetInstanceTypeId (void) const
 
 void SixLowPanNhcExtension::Print (std::ostream & os) const
 {
-  os << "Compression kind: " << int (m_nhcExtensionHeader) << " Size: " << int(GetSerializedSize ());
+  os << "Compression kind: " << static_cast<int> (m_nhcExtensionHeader) << " Size: " << GetSerializedSize ();
 }
 
 uint32_t SixLowPanNhcExtension::GetSerializedSize () const
@@ -1637,7 +1637,7 @@ TypeId SixLowPanUdpNhcExtension::GetInstanceTypeId (void) const
 
 void SixLowPanUdpNhcExtension::Print (std::ostream & os) const
 {
-  os << "Compression kind: " << uint8_t (m_baseFormat);
+  os << "Compression kind: " << static_cast<int> (m_baseFormat);
 }
 
 uint32_t SixLowPanUdpNhcExtension::GetSerializedSize () const
