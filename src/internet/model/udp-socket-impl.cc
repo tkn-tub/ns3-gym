@@ -489,7 +489,8 @@ UdpSocketImpl::DoSendTo (Ptr<Packet> p, Ipv4Address dest, uint16_t port)
     {
       SocketIpTosTag ipTosTag;
       ipTosTag.SetTos (GetIpTos ());
-      p->AddPacketTag (ipTosTag);
+      // This packet may already have a SocketIpTosTag (see BUG 2440)
+      p->ReplacePacketTag (ipTosTag);
     }
 
   Ptr<Ipv4> ipv4 = m_node->GetObject<Ipv4> ();
