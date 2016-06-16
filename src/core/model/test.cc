@@ -875,11 +875,12 @@ TestRunnerImpl::Run (int argc, char *argv[])
   enum TestCase::TestDuration maximumTestDuration = TestCase::QUICK;
   char *progname = argv[0];
 
-  argv++;
+  char ** argi = argv;
+  ++argi;
 
-  while (*argv != 0)
+  while (*argi != 0)
     {
-      char *arg = *argv;
+      char *arg = *argi;
 
       if (strcmp(arg, "--assert-on-failure") == 0)
         {
@@ -971,7 +972,7 @@ TestRunnerImpl::Run (int argc, char *argv[])
           PrintHelp (progname);
           return 0;
         }
-      argv++;
+      argi++;
     }
   enum TestSuite::Type testType;
   if (testTypeString == "")
