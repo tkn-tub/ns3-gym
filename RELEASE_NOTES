@@ -67,6 +67,7 @@ Bugs fixed
 - Bug 2414 - UdpSocket doesn't call NotifyConnectionFailed
 - Bug 2419 - BsmApplication should use RecvFrom and not SocketAddressTag
 - Bug 2420 - Remove code duplication between Wifi and Wave modules
+- Bug 2421 - Negative RemainingAmpduDuration for the last MPDU in A-MPDU tag
 - Bug 2425 - UdpSocketImpl simplification
 - Bug 2427 - 802.11ac selects wrong slot duration
 - Bug 2433 - Bic does not copy private parameters

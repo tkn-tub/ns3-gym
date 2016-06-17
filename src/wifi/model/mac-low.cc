@@ -1694,7 +1694,14 @@ MacLow::ForwardDown (Ptr<const Packet> packet, const WifiMacHeader* hdr,
           remainingAmpduDuration -= mpduDuration;
 
           ampdutag.SetRemainingNbOfMpdus (queueSize - 1);
-          ampdutag.SetRemainingAmpduDuration (remainingAmpduDuration);
+          if (queueSize > 1)
+            {
+              ampdutag.SetRemainingAmpduDuration (remainingAmpduDuration);
+            }
+          else
+            {
+              ampdutag.SetRemainingAmpduDuration (NanoSeconds (0));
+            }
           newPacket->AddPacketTag (ampdutag);
 
           if (delay == Seconds (0))
@@ -1707,6 +1714,7 @@ MacLow::ForwardDown (Ptr<const Packet> packet, const WifiMacHeader* hdr,
             }
           if (queueSize > 1)
             {
+              NS_ASSERT (remainingAmpduDuration > 0);
               delay = delay + mpduDuration;
             }
 
