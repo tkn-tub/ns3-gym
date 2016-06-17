@@ -934,7 +934,7 @@ MinstrelHtWifiManager::DoGetDataTxVector (WifiRemoteStation *st)
         }
 
       return WifiTxVector (GetMcsSupported (station, mcsIndex), GetDefaultTxPowerLevel (), GetLongRetryCount (station),
-                           group.sgi, group.streams, GetNess (station), group.chWidth, !station->m_isSampling, GetStbc (station));
+                           group.sgi, group.streams, GetNess (station), group.chWidth, GetAggregation (station) && !station->m_isSampling, GetStbc (station));
     }
 }
 

@@ -63,6 +63,7 @@ Bugs fixed
 - Bug 2398 - add SNR tag to beacons and probe responses
 - Bug 2402 - IPv4 Interface forwarding state is not honored
 - Bug 2406 - Poor 802.11g performance in ad-hoc mode
+- Bug 2408 - Simulation fails when 802.11n/ac is running with HT Minstrel and pcap enabled
 - Bug 2414 - UdpSocket doesn't call NotifyConnectionFailed
 - Bug 2419 - BsmApplication should use RecvFrom and not SocketAddressTag
 - Bug 2420 - Remove code duplication between Wifi and Wave modules
