@@ -480,11 +480,11 @@ WifiPhy::GetPayloadDuration (uint32_t size, WifiTxVector txVector, WifiPreamble 
         //Add signal extension for ERP PHY
         if (payloadMode.GetModulationClass () == WIFI_MOD_CLASS_ERP_OFDM)
           {
-            return NanoSeconds (numSymbols * symbolDuration.GetNanoSeconds ()) + MicroSeconds (6);
+            return FemtoSeconds (numSymbols * symbolDuration.GetFemtoSeconds ()) + MicroSeconds (6);
           }
         else
           {
-            return NanoSeconds (numSymbols * symbolDuration.GetNanoSeconds ());
+            return FemtoSeconds (numSymbols * symbolDuration.GetFemtoSeconds ());
           }
       }
     case WIFI_MOD_CLASS_HT:
@@ -672,11 +672,11 @@ WifiPhy::GetPayloadDuration (uint32_t size, WifiTxVector txVector, WifiPreamble 
 
         if (payloadMode.GetModulationClass () == WIFI_MOD_CLASS_HT && frequency >= 2400 && frequency <= 2500 && ((mpdutype == NORMAL_MPDU && preamble != WIFI_PREAMBLE_NONE) || (mpdutype == LAST_MPDU_IN_AGGREGATE && preamble == WIFI_PREAMBLE_NONE))) //at 2.4 GHz
           {
-            return NanoSeconds (numSymbols * symbolDuration.GetNanoSeconds ()) + MicroSeconds (6);
+            return FemtoSeconds (numSymbols * symbolDuration.GetFemtoSeconds ()) + MicroSeconds (6);
           }
         else //at 5 GHz
           {
-            return NanoSeconds (numSymbols * symbolDuration.GetNanoSeconds ());
+            return FemtoSeconds (numSymbols * symbolDuration.GetFemtoSeconds ());
           }
       }
     case WIFI_MOD_CLASS_DSSS:
