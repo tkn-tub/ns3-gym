@@ -2952,6 +2952,17 @@ MacLow::AggregateToAmpdu (Ptr<const Packet> packet, const WifiMacHeader hdr)
   newPacket = packet->Copy ();
   Ptr<Packet> currentAggregatedPacket;
   CtrlBAckRequestHeader blockAckReq;
+  
+  if (hdr.IsBlockAckReq ())
+    {
+      //Workaround to avoid BlockAckReq to be part of an A-MPDU. The standard says that
+      //BlockAckReq is not present in A-MPDU if any QoS data frames for that TID are present.
+      //Since an A-MPDU in non-PSMP frame exchanges aggregates MPDUs from one TID, this means
+      //we should stop aggregation here for single-TID A-MPDUs. Once PSMP and multi-TID A-MPDUs
+      //are supported, the condition of entering here should be changed.
+      return newPacket;
+    }
+  
   //missing hdr.IsAck() since we have no means of knowing the Tid of the Ack yet
   if (hdr.IsQosData () || hdr.IsBlockAck ()|| hdr.IsBlockAckReq ())
     {
@@ -3010,6 +3021,7 @@ MacLow::AggregateToAmpdu (Ptr<const Packet> packet, const WifiMacHeader hdr)
                   packet->PeekHeader (blockAckReq);
                   startingSequenceNumber = blockAckReq.GetStartingSequence ();
                 }
+              /// \todo We should also handle Ack and BlockAck
               aggregated = false;
               bool retry = false;
               //looks for other packets to the same destination with the same Tid need to extend that to include MSDUs
