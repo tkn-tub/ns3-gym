@@ -95,7 +95,7 @@ QosTag::GetTid () const
 void
 QosTag::Print (std::ostream &os) const
 {
-  os << "Tid=" << m_tid;
+  os << "Tid=" << static_cast<int> (m_tid);
 }
 
 } // namespace ns3
