@@ -823,17 +823,13 @@ RandomVariableStreamAttributeTestCase::DoRun (void)
   //
   // Try to set a UniformRandomVariable
   //
-  ok = p->SetAttributeFailSafe ("TestRandom", StringValue ("ns3::UniformRandomVariable[Min=0.,Max=1.]"));
+  ok = p->SetAttributeFailSafe ("TestRandom", StringValue ("ns3::UniformRandomVariable[Min=0.|Max=1.]"));
   NS_TEST_ASSERT_MSG_EQ (ok, true, "Could not SetAttributeFailSafe() a UniformRandomVariable");
 
   //
   // Try to set a <snicker> ConstantRandomVariable
   //
-  //  ok = p->SetAttributeFailSafe ("TestRandom", StringValue ("ns3::ConstantRandomVariable[Constant=10.0]"));
-  //ok = p->SetAttributeFailSafe ("TestRandom", StringValue ("ns3::UniformRandomVariable[Min=0.,Max=1.]"));
-
   ok = p->SetAttributeFailSafe ("TestRandom", StringValue ("ns3::ConstantRandomVariable[Constant=1.0]"));
-
   NS_TEST_ASSERT_MSG_EQ (ok, true, "Could not SetAttributeFailSafe() a ConstantRandomVariable");
 }
 

@@ -127,9 +127,9 @@ int main (int argc, char *argv[])
   // Install on/off app on all right side nodes
   OnOffHelper clientHelper ("ns3::UdpSocketFactory", Address ());
   clientHelper.SetAttribute 
-    ("OnTime", StringValue ("ns3::UniformRandomVariable[Min=0.,Max=1.]"));
+    ("OnTime", StringValue ("ns3::UniformRandomVariable[Min=0.|Max=1.]"));
   clientHelper.SetAttribute 
-    ("OffTime", StringValue ("ns3::UniformRandomVariable[Min=0.,Max=1.]"));
+    ("OffTime", StringValue ("ns3::UniformRandomVariable[Min=0.|Max=1.]"));
   ApplicationContainer clientApps;
 
   for (uint32_t i = 0; i < d.RightCount (); ++i)
