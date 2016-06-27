@@ -119,8 +119,8 @@ must be of type :cpp:class:`ns3::SocketFactory`, so configuring the underlying
 socket type must be done by twiddling the attribute associated with the
 underlying TcpL4Protocol object.  The easiest way to get at this would be 
 through the attribute configuration system.  In the below example,
-the Node container "n0n1" is accessed
-to get the zeroth element, and a socket is created on this node::
+the Node container "n0n1" is accessed to get the zeroth element, and a socket is
+created on this node::
 
   // Create and bind the socket...
   TypeId tid = TypeId::LookupByName ("ns3::TcpNewReno");
@@ -144,8 +144,197 @@ the specified node, one would have to do something like::
 
 Once a TCP socket is created, one will want to follow conventional socket logic
 and either connect() and send() (for a TCP client) or bind(), listen(), and
-accept() (for a TCP server). See :ref:`Sockets-APIs` for a review of
-how sockets are used in |ns3|.
+accept() (for a TCP server).
+Please note that applications usually create the sockets they use automatically,
+and so is not straightforward to connect direcly to them using pointers. Please
+refer to the source code of your preferred application to discover how and when
+it creates the socket.
+
+TCP Socket interaction and interface with Application layer
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+In the following there is an analysis on the public interface of the TCP socket,
+and how it can be used to interact with the socket itself. An analysis of the
+callback fired by the socket is also carried out. Please note that, for
+the sake of clarity, we will use the terminology "Sender" and "Receiver" to clearly
+divide the functionality of the socket. However, in TCP these two roles can be
+applied at the same time (i.e. a socket could be a sender and a receiver at the
+same time): our distinction does not lose generality, since the following
+definition can be applied to both sockets in case of full-duplex mode.
+
+----------
+
+**TCP state machine (for commodity use)**
+
+.. _fig-tcp-state-machine:
+
+.. figure:: tcp_state_machine.*
+   :align: center
+
+   TCP State machine
+
+In ns-3 we are fully compliant with the state machine depicted in 
+Figure :ref:`fig-tcp-state-machine`.
+
+----------
+
+**Public interface for receivers (e.g. servers receiving data)**
+
+*Bind()*
+  Bind the socket to an address, or to a general endpoint. A general endpoint
+  is an endpoint with an ephemeral port allocation (that is, a random port
+  allocation) on the 0.0.0.0 IP address. For instance, in current applications,
+  data senders usually binds automatically after a *Connect()* over a random
+  port. Consequently, the connection will start from this random port towards
+  the well-defined port of the receiver. The IP 0.0.0.0 is then translated by
+  lower layers into the real IP of the device.
+
+*Bind6()*
+  Same as *Bind()*, but for IPv6.
+
+*BindToNetDevice()*
+  Bind the socket to the specified NetDevice, creating a general endpoint.
+
+*Listen()*
+  Listen on the endpoint for an incoming connection. Please note that this
+  function can be called only in the TCP CLOSED state, and transit in the
+  LISTEN state. When an incoming request for connection is detected (i.e. the
+  other peer invoked *Connect()*) the application will be signaled with the
+  callback *NotifyConnectionRequest* (set in *SetAcceptCallback()* beforehand).
+  If the connection is accepted (the default behavior, when the associated
+  callback is a null one) the Socket will fork itself, i.e. a new socket is
+  created to handle the incoming data/connection, in the state SYN_RCVD. Please
+  note that this newly created socket is not connected anymore to the callbacks
+  on the "father" socket (e.g. DataSent, Recv); the pointer of the newly
+  created socket is provided in the Callback *NotifyNewConnectionCreated* (set
+  beforehand in *SetAcceptCallback*), and should be used to connect new
+  callbacks to interesting events (e.g. Recv callback). After receiving the ACK
+  of the SYN-ACK, the socket will set the congestion control, move into
+  ESTABLISHED state, and then notify the application with
+  *NotifyNewConnectionCreated*.
+
+*ShutdownSend()*
+  Signal a termination of send, or in other words revents data from being added
+  to the buffer. After this call, if buffer is already empty, the socket
+  will send a FIN, otherwise FIN will go when buffer empties. Please note
+  that this is useful only for modeling "Sink" applications. If you have
+  data to transmit, please refer to the *Send()* / *Close()* combination of
+  API.
+
+*GetRxAvailable()*
+  Get the amount of data that could be returned by the Socket in one or multiple
+  call to Recv or RecvFrom. Please use the Attribute system to configure the
+  maximum available space on the receiver buffer (property "RcvBufSize").
+
+*Recv()*
+  Grab data from the TCP socket. Please remember that TCP is a stream socket,
+  and it is allowed to concatenate multiple packets into bigger ones. If no data
+  is present (i.e. *GetRxAvailable* returns 0) an empty packet is returned.
+  Set the callback *RecvCallback* through *SetRecvCallback()* in order to have
+  the application automatically notified when some data is ready to be read.
+  It's important to connect that callback to the newly created socket in case
+  of forks.
+
+*RecvFrom()*
+  Same as Recv, but with the source address as parameter.
+
+-------------------
+
+**Public interface for senders (e.g. clients uploading data)**
+
+*Connect()*
+  Set the remote endpoint, and try to connect to it. The local endpoint should
+  be set before this call, or otherwise an ephemeral one will be created. The
+  TCP then will be in the SYN_SENT state. If a SYN-ACK is received, the TCP will
+  setup the congestion control, and then call the callback
+  *ConnectionSucceeded*.
+
+*GetTxAvailable()*
+  Return the amount of data that can be stored in the TCP Tx buffer. Set this
+  property through the Attribute system ("SndBufSize").
+
+*Send()*
+  Send the data into the TCP Tx buffer. From there, the TCP rules will decide
+  if, and when, this data will be transmitted. Please note that, if the tx
+  buffer has enough data to fill the congestion (or the receiver) window, dynamically
+  varying the rate at which data is injected in the TCP buffer does not have any
+  noticeable effect on the amount of data transmitted on the wire, that will
+  continue to be decided by the TCP rules.
+
+*SendTo()*
+  Same as *Send()*.
+
+*Close()*
+  Terminate the local side of the connection, by sending a FIN (after all data
+  in the tx buffer has been transmitted). This does not prevent the socket in
+  receiving data, and employing retransmit mechanism if losses are detected. If
+  the application calls *Close()* with unread data in its rx buffer, the socket
+  will send a reset. If the socket is in the state SYN_SENT, CLOSING, LISTEN or
+  LAST_ACK, after that call the application will be notified with
+  *NotifyNormalClose()*. In all the other cases, the notification is delayed
+  (see *NotifyNormalClose()*).
+
+-----------------------------------------
+
+**Public callbacks**
+
+These callbacks are called by the TCP socket to notify the application of
+interesting events. We will refer to these with the protected name used in
+socket.h, but we will provide the API function to set the pointers to these
+callback as well.
+
+*NotifyConnectionSucceeded*: *SetConnectCallback*, 1st argument
+  Called in the SYN_SENT state, before moving to ESTABLISHED. In other words, we
+  have sent the SYN, and we received the SYN-ACK: the socket prepare the
+  sequence numbers, send the ACK for the SYN-ACK, try to send out more data (in
+  another segment) and then invoke this callback. After this callback, it
+  invokes the NotifySend callback.
+
+*NotifyConnectionFailed*: *SetConnectCallback*, 2nd argument
+  Called after the SYN retransmission count goes to 0. SYN packet is lost
+  multiple time, and the socket give up.
+
+*NotifyNormalClose*: *SetCloseCallbacks*, 1st argument
+  A normal close is invoked. A rare case is when we receive an RST segment (or a
+  segment with bad flags) in normal states. All other cases are:
+  - The application tries to *Connect()* over an already connected socket
+  - Received an ACK for the FIN sent, with or without the FIN bit set (we are in LAST_ACK)
+  - The socket reaches the maximum amount of retries in retransmitting the SYN (*)
+  - We receive a timeout in the LAST_ACK state
+  - After 2*Maximum Segment Lifetime seconds passed since the socket entered the TIME_WAIT state.
+
+*NotifyErrorClose*: *SetCloseCallbacks*, 2nd argument
+  Invoked when we send an RST segment (for whatever reason) or we reached the
+  maximum amount of data retries.
+
+*NotifyConnectionRequest*: *SetAcceptCallback*, 1st argument
+  Invoked in the LISTEN state, when we receive a SYN. The return value indicates
+  if the socket should accept the connection (return true) or should ignore it
+  (return false).
+
+*NotifyNewConnectionCreated*: *SetAcceptCallback*, 2nd argument
+  Invoked when from SYN_RCVD the socket passes to ESTABLISHED, and after setting
+  up the congestion control, the sequence numbers, and processed the incoming
+  ACK. If there is some space in the buffer, *NotifySend* is called shortly
+  after this callback. The Socket pointer, passed with this callback, is the
+  newly created socket, after a Fork().
+
+*NotifyDataSent*: *SetDataSentCallback*
+  The Socket notifies the application that some bytes has been transmitted on
+  the IP level. These bytes could still be lost in the node (traffic control
+  layer) or in the network.
+
+*NotifySend*: *SetSendCallback*
+  Invoked if there is some space in the tx buffer when entering the ESTABLISHED
+  state (e.g. after the ACK for SYN-ACK is received), after the connection
+  succeeds (e.g. after the SYN-ACK is received) and after each new ack (i.e.
+  that advances SND.UNA).
+
+*NotifyDataRecv*: *SetRecvCallback*
+  Called when in the receiver buffere there are in-order bytes, and when in
+  FIN_WAIT_1 or FIN_WAIT_2 the socket receive a in-sequence FIN (that can carry
+  data).
+
 
 Congestion Control Algorithms
 +++++++++++++++++++++++++++++

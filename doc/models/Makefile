@@ -113,6 +113,7 @@ SOURCEFIGS = \
 	$(SRC)/internet/doc/internet-node-recv.dia \
 	$(SRC)/internet/doc/routing.dia \
 	$(SRC)/internet/doc/routing-specialization.dia \
+	$(SRC)/internet/doc/figures/tcp-state-machine.png \
 	$(SRC)/wifi/doc/source/figures/WifiArchitecture.dia \
 	$(SRC)/wifi/doc/source/figures/snir.dia \
 	$(SRC)/wifi/doc/source/figures/clear-channel.eps \
