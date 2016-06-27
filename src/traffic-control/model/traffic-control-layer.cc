@@ -76,11 +76,6 @@ TrafficControlLayer::DoInitialize (void)
     {
       if (ndi->second.rootQueueDisc)
         {
-          // NetDevices supporting flow control can set the number of device transmission
-          // queues through the NetDevice queue interface during initialization. Thus,
-          // ensure that the device has completed initialization
-          ndi->first->Initialize ();
-
           Ptr<NetDeviceQueueInterface> devQueueIface = ndi->second.ndqi;
           NS_ASSERT (devQueueIface);
 
@@ -119,7 +114,9 @@ TrafficControlLayer::SetupDevice (Ptr<NetDevice> device)
 
   // ensure this setup is done just once. SetupDevice is called by Ipv4L3Protocol
   // and Ipv6L3Protocol when they add an interface, thus it might be called twice
-  // in case of dual stack nodes
+  // in case of dual stack nodes. Also, SetupDevice might be called twice if the
+  // tc helper is invoked (to install a queue disc) before the creation of the
+  // Ipv{4,6}Interface, since SetRootQueueDiscOnDevice calls SetupDevice
   if (device->GetObject<NetDeviceQueueInterface> ())
     {
       NS_LOG_DEBUG ("The setup for this device has been already done.");
@@ -130,22 +127,12 @@ TrafficControlLayer::SetupDevice (Ptr<NetDevice> device)
   Ptr<NetDeviceQueueInterface> devQueueIface = CreateObject<NetDeviceQueueInterface> ();
   device->AggregateObject (devQueueIface);
 
-  // create an entry in the m_netDevices map for this device, if not existing yet.
-  // If the tc helper is invoked (to install a queue disc) before the creation of the
-  // Ipv{4,6}Interface, an entry for this device will be already present in the map
-  std::map<Ptr<NetDevice>, NetDeviceInfo>::iterator ndi = m_netDevices.find (device);
+  // create an entry in the m_netDevices map for this device
+  NS_ASSERT_MSG (m_netDevices.find (device) == m_netDevices.end (), "This is a bug,"
+                 << "  SetupDevice only can insert an entry in the m_netDevices map");
 
-  if (ndi == m_netDevices.end ())
-    {
-      NetDeviceInfo entry = {0, devQueueIface, QueueDiscVector ()};
-      m_netDevices[device] = entry;
-    }
-  else
-    {
-      NS_ASSERT_MSG (ndi->second.ndqi == 0, "This is a bug, there is no netdevice queue interface "
-                     << "aggregated to the device but the pointer is not null.");
-      ndi->second.ndqi = devQueueIface;
-    }
+  NetDeviceInfo entry = {0, devQueueIface, QueueDiscVector ()};
+  m_netDevices[device] = entry;
 }
 
 void
@@ -176,16 +163,17 @@ TrafficControlLayer::SetRootQueueDiscOnDevice (Ptr<NetDevice> device, Ptr<QueueD
   if (ndi == m_netDevices.end ())
     {
       // SetupDevice has not been called yet. This may happen when the tc helper is
-      // invoked (to install a queue disc) before the creation of the Ipv{4,6}Interface
-      NetDeviceInfo entry = {qDisc, 0, QueueDiscVector ()};
-      m_netDevices[device] = entry;
+      // invoked (to install a queue disc) before the creation of the Ipv{4,6}Interface.
+      // Since queue discs require that a netdevice queue interface is aggregated
+      // to the device, call SetupDevice
+      SetupDevice (device);
+      ndi = m_netDevices.find (device);
+      NS_ASSERT (ndi != m_netDevices.end ());
     }
-  else
-    {
-      NS_ASSERT_MSG (ndi->second.rootQueueDisc == 0, "Cannot install a root queue disc on a "
-                     << "device already having one. Delete the existing queue disc first.");
-      ndi->second.rootQueueDisc = qDisc;
-    }
+
+  NS_ASSERT_MSG (ndi->second.rootQueueDisc == 0, "Cannot install a root queue disc on a "
+                  << "device already having one. Delete the existing queue disc first.");
+  ndi->second.rootQueueDisc = qDisc;
 }
 
 Ptr<QueueDisc>
