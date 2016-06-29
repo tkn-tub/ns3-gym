@@ -185,8 +185,6 @@ TrafficControlLayer::GetRootQueueDiscOnDevice (Ptr<NetDevice> device) const
 
   if (ndi == m_netDevices.end ())
     {
-      NS_LOG_WARN ("GetRootQueueDiscOnDevice should not be called before the "
-                   << "device is setup or a queue disc is installed on the device.");
       return 0;
     }
   return ndi->second.rootQueueDisc;
@@ -241,7 +239,7 @@ TrafficControlLayer::NotifyNewAggregate ()
 uint32_t
 TrafficControlLayer::GetNDevices (void) const
 {
-  return m_netDevices.size();
+  return m_node->GetNDevices ();
 }
 
 
