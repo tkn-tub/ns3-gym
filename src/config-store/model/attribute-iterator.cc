@@ -235,11 +235,14 @@ AttributeIterator::DoIterate (Ptr<Object> object)
                   uint32_t j = (*it).first;
                   NS_LOG_DEBUG ("ObjectPtrContainer attribute item " << j);
                   Ptr<Object> tmp = (*it).second;
-                  StartVisitArrayItem (vector, j, tmp);
-                  m_examined.push_back (object);
-                  DoIterate (tmp);
-                  m_examined.pop_back ();
-                  EndVisitArrayItem ();
+                  if (tmp)
+                    {
+                      StartVisitArrayItem (vector, j, tmp);
+                      m_examined.push_back (object);
+                      DoIterate (tmp);
+                      m_examined.pop_back ();
+                      EndVisitArrayItem ();
+                    }
                 }
               EndVisitArrayAttribute ();
               continue;

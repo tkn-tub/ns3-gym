@@ -76,6 +76,7 @@ Bugs fixed
 - Bug 2438 - Routing protocols should stop processing packets coming from a non-forwarding interface
 - Bug 2439 - SixLowPan Compression kind need to be casted to int in the Print function
 - Bug 2440 - SocketIpTosTag might be added twice if a packet is sent multiple times
+- Bug 2442 - TrafficControl makes ConfigStore crash 
 - Bug 2446 - Comma instead of pipe in Attributes
 
 Known issues
