@@ -97,7 +97,7 @@ FakeNetDevice::Doit3 (void)
       //
       // Exercise the realtime relative now path
       //
-      Simulator::ScheduleWithContext(0xffffffff, Seconds(0.0), MakeEvent (&inserted_function));
+      Simulator::ScheduleWithContext(Simulator::NO_CONTEXT, Seconds(0.0), MakeEvent (&inserted_function));
       usleep (1000);
     }
 }

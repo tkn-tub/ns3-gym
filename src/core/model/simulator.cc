@@ -96,7 +96,7 @@ TimePrinter (std::ostream &os)
 static void
 NodePrinter (std::ostream &os)
 {
-  if (Simulator::GetContext () == 0xffffffff)
+  if (Simulator::GetContext () == Simulator::NO_CONTEXT)
     {
       os << "-1";
     }

@@ -64,8 +64,6 @@ class Scheduler;
  * A simple example of how to use the Simulator class to schedule events
  * is shown in sample-simulator.cc:
  * @include src/core/examples/sample-simulator.cc
- *
- * @todo Define what the simulation or event context means.
  */
 class Simulator 
 {
@@ -168,6 +166,32 @@ public:
    */
   static void Stop (const Time &delay);
 
+  /**
+   * Get the current simulation context.
+   *
+   * The simulation context is the ns-3 notion of a Logical Process.
+   * Events in a single context should only modify state associated with
+   * that context. Events for objects in other contexts should be
+   * scheduled with ScheduleWithContext() to track the context switches.
+   * In other words, events in different contexts should be mutually
+   * thread safe, by not modify overlapping model state.
+   *
+   * In circumstances where the context can't be determined, such as
+   * during object initialization, the \c enum value \c NO_CONTEXT
+   * should be used.
+   *
+   * @return The current simulation context
+   */
+  static uint32_t GetContext (void);
+
+  /** Context enum values. */
+  enum {
+    /**
+     * Flag for events not associated with any particular context.
+     */
+    NO_CONTEXT = 0xffffffff
+  };
+  
   /**
    * @name Schedule events (in the same context) to run at a future time.
    */
@@ -1112,13 +1136,6 @@ public:
    * The returned value will always be bigger than or equal to Simulator::Now.
    */
   static Time GetMaximumSimulationTime (void);
-
-  /**
-   * Get the current simulation context.
-   *
-   * @return The current simulation context
-   */
-  static uint32_t GetContext (void);
 
   /**
    * Schedule a future event execution (in the same context).

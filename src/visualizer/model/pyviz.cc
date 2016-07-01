@@ -323,7 +323,7 @@ PyViz::SimulatorRunUntil (Time time)
   NS_LOG_LOGIC ("Schedule dummy callback to be called in " << (time - Simulator::Now ()));
   m_runUntil = time;
   m_stop = false;
-  Simulator::ScheduleWithContext (0xffffffff, time - Simulator::Now (), &PyViz::CallbackStopSimulation, this);
+  Simulator::ScheduleWithContext (Simulator::NO_CONTEXT, time - Simulator::Now (), &PyViz::CallbackStopSimulation, this);
 
   Ptr<SimulatorImpl> impl = Simulator::GetImplementation ();
   Ptr<VisualSimulatorImpl> visualImpl = DynamicCast<VisualSimulatorImpl> (impl);

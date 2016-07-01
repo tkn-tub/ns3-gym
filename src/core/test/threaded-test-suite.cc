@@ -91,7 +91,7 @@ ThreadedSimulatorEventsTestCase::SchedulingThread (std::pair<ThreadedSimulatorEv
   while (!me->m_stop)
     {
       me->m_threadWaiting[threadno] = true;
-      Simulator::ScheduleWithContext (uint32_t (-1), 
+      Simulator::ScheduleWithContext (threadno,
                                       MicroSeconds (1),
                                       &ThreadedSimulatorEventsTestCase::DoNothing, me, threadno);
       while (!me->m_stop && me->m_threadWaiting[threadno])
