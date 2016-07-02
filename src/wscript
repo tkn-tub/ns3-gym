@@ -314,7 +314,7 @@ def build(bld):
     # Remove these modules from the list of all modules.
     for not_built in bld.env['MODULES_NOT_BUILT']:
 
-        # XXX Becaue these modules are located in subdirectories of
+        # XXX Because these modules are located in subdirectories of
         # test, their names in the all_modules list include the extra
         # relative path "test/".  If these modules are moved into the
         # src directory, then this if block should be removed.
