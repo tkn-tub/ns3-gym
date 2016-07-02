@@ -221,8 +221,7 @@ int main (int argc, char *argv[])
 
       Ssid ssid = Ssid ("AP");
       wifiMac.SetType ("ns3::StaWifiMac",
-                       "Ssid", SsidValue (ssid),
-                       "ActiveProbing", BooleanValue (false));
+                       "Ssid", SsidValue (ssid));
       wifiStaDevices.Add (wifi.Install (wifiPhy, wifiMac, wifiStaNodes.Get (0)));
 
       //Configure the AP node
@@ -252,7 +251,6 @@ int main (int argc, char *argv[])
       Ssid ssid = Ssid ("AP");
       wifiMac.SetType ("ns3::StaWifiMac",
                        "Ssid", SsidValue (ssid),
-                       "ActiveProbing", BooleanValue (false),
                        "BE_MaxAmpduSize", UintegerValue (BE_MaxAmpduSize));
       wifiStaDevices.Add (wifi.Install (wifiPhy, wifiMac, wifiStaNodes.Get (0)));
 
@@ -276,7 +274,6 @@ int main (int argc, char *argv[])
       Ssid ssid = Ssid ("AP");
       wifiMac.SetType ("ns3::StaWifiMac",
                        "Ssid", SsidValue (ssid),
-                       "ActiveProbing", BooleanValue (false),
                        "BE_MaxAmpduSize", UintegerValue (BE_MaxAmpduSize));
       wifiStaDevices.Add (wifi.Install (wifiPhy, wifiMac, wifiStaNodes.Get (0)));
 

@@ -100,13 +100,11 @@ int main (int argc, char *argv[])
   ssid = Ssid ("network-A");
   phy.Set ("ChannelNumber", UintegerValue(36));
   mac.SetType ("ns3::StaWifiMac",
-               "Ssid", SsidValue (ssid),
-               "ActiveProbing", BooleanValue (false));
+               "Ssid", SsidValue (ssid));
   staDeviceA = wifi.Install (phy, mac, wifiStaNode.Get(0));
 
   mac.SetType ("ns3::ApWifiMac",
                "Ssid", SsidValue (ssid),
-               "BeaconInterval", TimeValue (MicroSeconds (102400)),
                "BeaconGeneration", BooleanValue (true));
   apDeviceA = wifi.Install (phy, mac, wifiApNode.Get(0));
   
@@ -115,14 +113,12 @@ int main (int argc, char *argv[])
   phy.Set ("ChannelNumber", UintegerValue(40));
   mac.SetType ("ns3::StaWifiMac",
                "Ssid", SsidValue (ssid),
-               "ActiveProbing", BooleanValue (false),
                "BE_MaxAmpduSize", UintegerValue (0)); //Disable A-MPDU
 
   staDeviceB = wifi.Install (phy, mac, wifiStaNode.Get(1));
 
   mac.SetType ("ns3::ApWifiMac",
                "Ssid", SsidValue (ssid),
-               "BeaconInterval", TimeValue (MicroSeconds (102400)),
                "BeaconGeneration", BooleanValue (true));
   apDeviceB = wifi.Install (phy, mac, wifiApNode.Get(1));
   
@@ -131,7 +127,6 @@ int main (int argc, char *argv[])
   phy.Set ("ChannelNumber", UintegerValue(44));
   mac.SetType ("ns3::StaWifiMac",
                "Ssid", SsidValue (ssid),
-               "ActiveProbing", BooleanValue (false),
                "BE_MaxAmpduSize", UintegerValue (0), //Disable A-MPDU
                "BE_MaxAmsduSize", UintegerValue (7935)); //Enable A-MSDU with the highest maximum size allowed by the standard (7935 bytes)
 
@@ -139,7 +134,6 @@ int main (int argc, char *argv[])
 
   mac.SetType ("ns3::ApWifiMac",
                "Ssid", SsidValue (ssid),
-               "BeaconInterval", TimeValue (MicroSeconds (102400)),
                "BeaconGeneration", BooleanValue (true));
   apDeviceC = wifi.Install (phy, mac, wifiApNode.Get(2));
   
@@ -148,7 +142,6 @@ int main (int argc, char *argv[])
   phy.Set ("ChannelNumber", UintegerValue(48));
   mac.SetType ("ns3::StaWifiMac",
                "Ssid", SsidValue (ssid),
-               "ActiveProbing", BooleanValue (false),
                "BE_MaxAmpduSize", UintegerValue (32768), //Enable A-MPDU with a smaller size than the default one
                "BE_MaxAmsduSize", UintegerValue (3839)); //Enable A-MSDU with the smallest maximum size allowed by the standard (3839 bytes)
 
@@ -156,7 +149,6 @@ int main (int argc, char *argv[])
 
   mac.SetType ("ns3::ApWifiMac",
                "Ssid", SsidValue (ssid),
-               "BeaconInterval", TimeValue (MicroSeconds (102400)),
                "BeaconGeneration", BooleanValue (true));
   apDeviceD = wifi.Install (phy, mac, wifiApNode.Get(3));
 

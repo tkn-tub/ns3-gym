@@ -402,14 +402,12 @@ int main (int argc, char *argv[])
   Ssid ssid = Ssid ("AP0");
   wifiMac.SetType ("ns3::StaWifiMac",
                    "Ssid", SsidValue (ssid),
-                   "ActiveProbing", BooleanValue (false),
                    "MaxMissedBeacons", UintegerValue (1000));
   wifiStaDevices.Add (wifi.Install (wifiPhy, wifiMac, wifiStaNodes.Get (0)));
 
   ssid = Ssid ("AP1");
   wifiMac.SetType ("ns3::StaWifiMac",
-                   "Ssid", SsidValue (ssid),
-                   "ActiveProbing", BooleanValue (false));
+                   "Ssid", SsidValue (ssid));
   wifiStaDevices.Add (wifi.Install (wifiPhy, wifiMac, wifiStaNodes.Get (1)));
 
   //Configure the AP nodes

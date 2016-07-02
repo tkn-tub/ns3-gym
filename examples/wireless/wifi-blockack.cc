@@ -72,7 +72,6 @@ int main (int argc, char const* argv[])
   mac.SetType ("ns3::StaWifiMac",
                "QosSupported", BooleanValue (true),
                "Ssid", SsidValue (ssid),
-               "ActiveProbing", BooleanValue (false),
   /* setting blockack threshold for sta's BE queue */
                "BE_BlockAckThreshold", UintegerValue (2),
   /* setting block inactivity timeout to 3*1024 = 3072 microseconds */

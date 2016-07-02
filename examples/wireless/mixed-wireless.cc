@@ -295,8 +295,7 @@ main (int argc, char *argv[])
       wifiInfra.SetRemoteStationManager ("ns3::ArfWifiManager");
       // setup stas
       macInfra.SetType ("ns3::StaWifiMac",
-                        "Ssid", SsidValue (ssid),
-                        "ActiveProbing", BooleanValue (false));
+                        "Ssid", SsidValue (ssid));
       NetDeviceContainer staDevices = wifiInfra.Install (wifiPhy, macInfra, stas);
       // setup ap.
       macInfra.SetType ("ns3::ApWifiMac",

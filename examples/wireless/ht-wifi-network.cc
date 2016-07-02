@@ -117,8 +117,7 @@ int main (int argc, char *argv[])
               Ssid ssid = Ssid ("ns3-80211n");
 
               mac.SetType ("ns3::StaWifiMac",
-                           "Ssid", SsidValue (ssid),
-                           "ActiveProbing", BooleanValue (false));
+                           "Ssid", SsidValue (ssid));
 
               NetDeviceContainer staDevice;
               staDevice = wifi.Install (phy, mac, wifiStaNode);

@@ -102,7 +102,6 @@ Experiment::Run (bool enableProtection, bool enableShortSlotTime, bool enableSho
 
   mac.SetType ("ns3::StaWifiMac",
                "Ssid", SsidValue (ssid),
-               "ActiveProbing", BooleanValue (false),
                "ShortSlotTimeSupported", BooleanValue (enableShortSlotTime));
     
   // Configure the PLCP preamble type: long or short

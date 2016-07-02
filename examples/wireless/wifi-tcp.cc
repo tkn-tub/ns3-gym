@@ -124,8 +124,7 @@ main(int argc, char *argv[])
 
   /* Configure STA */
   wifiMac.SetType ("ns3::StaWifiMac",
-                    "Ssid", SsidValue (ssid),
-                    "ActiveProbing", BooleanValue (false));
+                    "Ssid", SsidValue (ssid));
 
   NetDeviceContainer staDevices;
   staDevices = wifiHelper.Install (wifiPhy, wifiMac, staWifiNode);
