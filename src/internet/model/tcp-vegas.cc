@@ -191,18 +191,25 @@ TcpVegas::IncreaseWindow (Ptr<TcpSocketState> tcb, uint32_t segmentsAcked)
            * rate and the predefined thresholds (alpha, beta, and gamma).
            */
           uint32_t diff;
-          uint64_t targetCwnd;
+          uint32_t targetCwnd;
           uint32_t segCwnd = tcb->GetCwndInSegments ();
 
           /*
-           * Calculate the cwnd we should have
+           * Calculate the cwnd we should have. baseRtt is the minimum RTT
+           * per-connection, minRtt is the minimum RTT in this window
+           *
+           * little trick:
+           * desidered throughput is currentCwnd * baseRtt
+           * target cwnd is throughput / minRtt
            */
-          targetCwnd = (uint64_t) segCwnd * (double) m_baseRtt.GetMilliSeconds () / (double) m_minRtt.GetMilliSeconds ();
+          double tmp = m_baseRtt.GetSeconds () / m_minRtt.GetSeconds ();
+          targetCwnd = segCwnd * tmp;
           NS_LOG_DEBUG ("Calculated targetCwnd = " << targetCwnd);
+          NS_ASSERT (segCwnd >= targetCwnd); // implies baseRtt <= minRtt
 
           /*
-           * Calculate the difference between the expected throughput and
-           * the actual throughput that we achieved
+           * Calculate the difference between the expected cWnd and
+           * the actual cWnd
            */
           diff = segCwnd - targetCwnd;
           NS_LOG_DEBUG ("Calculated diff = " << diff);
@@ -214,16 +221,18 @@ TcpVegas::IncreaseWindow (Ptr<TcpSocketState> tcb, uint32_t segmentsAcked)
                * slow-start to linear increase/decrease mode by setting cwnd
                * to target cwnd. We add 1 because of the integer truncation.
                */
-              NS_LOG_LOGIC ("We are going too fast. We need to slow down and change to linear increase/decrease mode.");
-              segCwnd = std::min (segCwnd, (uint32_t) targetCwnd + 1);
+              NS_LOG_LOGIC ("We are going too fast. We need to slow down and "
+                            "change to linear increase/decrease mode.");
+              segCwnd = std::min (segCwnd, targetCwnd + 1);
               tcb->m_cWnd = segCwnd * tcb->m_segmentSize;
-              NS_LOG_DEBUG ("Updated cwnd = " << tcb->m_cWnd);
-              tcb->m_ssThresh = GetSsThresh (tcb, (uint32_t) 0);
-              NS_LOG_DEBUG ("Updated ssthresh = " << tcb->m_ssThresh);
+              tcb->m_ssThresh = GetSsThresh (tcb, 0);
+              NS_LOG_DEBUG ("Updated cwnd = " << tcb->m_cWnd <<
+                            " ssthresh=" << tcb->m_ssThresh);
             }
           else if (tcb->m_cWnd < tcb->m_ssThresh)
             {     // Slow start mode
-              NS_LOG_LOGIC ("We are in slow start and diff < m_gamma, so we follow NewReno slow start");
+              NS_LOG_LOGIC ("We are in slow start and diff < m_gamma, so we "
+                            "follow NewReno slow start");
               segmentsAcked = TcpNewReno::SlowStart (tcb, segmentsAcked);
             }
           else
@@ -235,9 +244,9 @@ TcpVegas::IncreaseWindow (Ptr<TcpSocketState> tcb, uint32_t segmentsAcked)
                   NS_LOG_LOGIC ("We are going too fast, so we slow down by decrementing cwnd");
                   segCwnd--;
                   tcb->m_cWnd = segCwnd * tcb->m_segmentSize;
-                  tcb->m_ssThresh = GetSsThresh (tcb, (uint32_t) 0);
-                  NS_LOG_DEBUG ("Updated cWnd = " << tcb->m_cWnd);
-                  NS_LOG_DEBUG ("Updated ssThresh = " << tcb->m_ssThresh);
+                  tcb->m_ssThresh = GetSsThresh (tcb, 0);
+                  NS_LOG_DEBUG ("Updated cwnd = " << tcb->m_cWnd <<
+                                " ssthresh=" << tcb->m_ssThresh);
                 }
               else if (diff < m_alpha)
                 {
@@ -246,8 +255,8 @@ TcpVegas::IncreaseWindow (Ptr<TcpSocketState> tcb, uint32_t segmentsAcked)
                   NS_LOG_LOGIC ("We are going too slow, so we speed up by incrementing cwnd");
                   segCwnd++;
                   tcb->m_cWnd = segCwnd * tcb->m_segmentSize;
-                  NS_LOG_DEBUG ("Updated cWnd = " << tcb->m_cWnd);
-                  NS_LOG_DEBUG ("Updated ssThresh = " << tcb->m_ssThresh);
+                  NS_LOG_DEBUG ("Updated cwnd = " << tcb->m_cWnd <<
+                                " ssthresh=" << tcb->m_ssThresh);
                 }
               else
                 {
@@ -262,7 +271,6 @@ TcpVegas::IncreaseWindow (Ptr<TcpSocketState> tcb, uint32_t segmentsAcked)
       // Reset cntRtt & minRtt every RTT
       m_cntRtt = 0;
       m_minRtt = Time::Max ();
-
     }
   else if (tcb->m_cWnd < tcb->m_ssThresh)
     {
