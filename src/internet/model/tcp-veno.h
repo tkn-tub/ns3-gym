@@ -150,9 +150,8 @@ private:
    * 3. after fast recovery
    * 4. when an idle connection is restarted
    *
-   * \param tcb internal congestion state
    */
-  void EnableVeno (Ptr<TcpSocketState> tcb);
+  void EnableVeno ();
 
   /**
    * \brief Turn off Veno

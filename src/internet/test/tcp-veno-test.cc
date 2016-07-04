@@ -34,6 +34,43 @@ namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("TcpVenoTestSuite");
 
+static uint32_t
+NewReno_SlowStart (Ptr<TcpSocketState> tcb, uint32_t segmentsAcked)
+{
+  if (segmentsAcked >= 1)
+    {
+      tcb->m_cWnd += tcb->m_segmentSize;
+      return segmentsAcked - 1;
+    }
+
+  return 0;
+}
+
+static void
+NewReno_CongestionAvoidance (Ptr<TcpSocketState> tcb, uint32_t segmentsAcked)
+{
+  if (segmentsAcked > 0)
+    {
+      double adder = static_cast<double> (tcb->m_segmentSize * tcb->m_segmentSize) / tcb->m_cWnd.Get ();
+      adder = std::max (1.0, adder);
+      tcb->m_cWnd += static_cast<uint32_t> (adder);
+    }
+}
+
+static void
+NewReno_IncreaseWindow (Ptr<TcpSocketState> tcb, uint32_t segmentsAcked)
+{
+  if (tcb->m_cWnd < tcb->m_ssThresh)
+    {
+      segmentsAcked = NewReno_SlowStart (tcb, segmentsAcked);
+    }
+
+  if (tcb->m_cWnd >= tcb->m_ssThresh)
+    {
+      NewReno_CongestionAvoidance (tcb, segmentsAcked);
+    }
+}
+
 /**
  * \brief Testing the additive increase and multiplicative decrease of TcpVeno
  */
@@ -50,8 +87,8 @@ public:
 
 private:
   virtual void DoRun (void);
-  uint32_t AdditiveIncrease (Ptr<TcpVeno> cong, uint32_t diff, UintegerValue beta);
-  uint32_t MultiplicativeDecrease (uint32_t diff, UintegerValue beta);
+  void AdditiveIncrease (Ptr<TcpSocketState> state, uint32_t diff, UintegerValue beta);
+  uint32_t MultiplicativeDecrease (uint32_t diff, const UintegerValue &beta, uint32_t bytesInFlight);
 
   uint32_t m_cWnd;
   uint32_t m_segmentSize;
@@ -93,85 +130,89 @@ TcpVenoTest::DoRun ()
   Ptr<TcpVeno> cong = CreateObject <TcpVeno> ();
 
   // Set baseRtt to 100 ms
-  cong->PktsAcked (m_state, m_segmentsAcked, MilliSeconds (100));
+  Time baseRtt = MilliSeconds (100);
+  cong->PktsAcked (m_state, m_segmentsAcked, baseRtt);
 
   // Re-set Veno to assign a new value of minRtt
   cong->CongestionStateSet (m_state, TcpSocketState::CA_OPEN);
-  cong->PktsAcked (m_state, m_segmentsAcked, m_rtt);
 
-  // Another call to PktsAcked to increment cntRtt beyond 2
-  cong->PktsAcked (m_state, m_segmentsAcked, m_rtt);
-
-  Time baseRtt = MilliSeconds (100);
   uint32_t segCwnd = m_cWnd / m_segmentSize;
 
   // Calculate expected throughput
-  uint64_t expectedCwnd;
-  expectedCwnd = (uint64_t) segCwnd * (double) baseRtt.GetMilliSeconds () * 2 / (double) m_rtt.GetMilliSeconds ();
+  uint32_t expectedCwnd;
+  double tmp = baseRtt.GetSeconds () / m_rtt.GetSeconds ();
+  expectedCwnd = segCwnd * tmp;
 
   // Calculate the difference between actual and expected throughput
   uint32_t diff;
-  diff = (segCwnd * 2) - expectedCwnd;
+  diff = segCwnd - expectedCwnd;
 
   // Get the beta attribute
   UintegerValue beta;
   cong->GetAttribute ("Beta", beta);
 
+  uint32_t cntRtt = 0;
+
+  TcpSocketState state;
+  state.m_cWnd = m_cWnd;
+  state.m_ssThresh = m_ssThresh;
+  state.m_segmentSize = m_segmentSize;
+
   while (m_numRtt != 0)
     {
       // Update cwnd using Veno's additive increase algorithm
+      cong->PktsAcked (m_state, m_segmentsAcked, m_rtt);
       cong->IncreaseWindow (m_state, m_segmentsAcked);
 
-      // Our calculation of cwnd
-      uint32_t calculatedCwnd = AdditiveIncrease (cong, diff, beta);
+      // The first round the internal m_diff of cong will be 4, just like us
+      if (cntRtt == 0)
+        {
+          // Update ssthresh using Veno's multiplicative decrease algorithm
+          uint32_t ssThresh = cong->GetSsThresh (m_state, m_state->m_cWnd);
 
-      NS_TEST_ASSERT_MSG_EQ (m_state->m_cWnd.Get (), calculatedCwnd,
+          // Our calculation of ssthresh
+          uint32_t calculatedSsThresh = MultiplicativeDecrease (diff, beta, m_state->m_cWnd.Get ());
+
+          NS_TEST_ASSERT_MSG_EQ (ssThresh, calculatedSsThresh,
+                                 "Veno has not decremented cWnd correctly based on its"
+                                 "multiplicative decrease algo.");
+        }
+
+      // Our calculation of cwnd
+      if (cntRtt <= 2)
+        {
+          NewReno_IncreaseWindow (&state, 1);
+        }
+      else
+        {
+          AdditiveIncrease (&state, diff, beta);
+        }
+
+      NS_TEST_ASSERT_MSG_EQ (m_state->m_cWnd.Get (), state.m_cWnd.Get (),
                              "CWnd has not updated correctly based on Veno linear increase algorithm");
       m_numRtt--;
+      cntRtt++;
     }
-
-  // Update ssthresh using Veno's multiplicative decrease algorithm
-  uint32_t ssThresh = cong->GetSsThresh (m_state, m_state->m_cWnd);
-
-  // Our calculation of ssthresh
-  uint32_t calculatedSsThresh = MultiplicativeDecrease (diff, beta);
-
-  NS_TEST_ASSERT_MSG_EQ (ssThresh, calculatedSsThresh,
-                         "Veno has not decremented cWnd correctly based on its multiplicative decrease algo.");
 }
 
-uint32_t
-TcpVenoTest::AdditiveIncrease (Ptr<TcpVeno> cong, uint32_t diff, UintegerValue beta)
+void
+TcpVenoTest::AdditiveIncrease (Ptr<TcpSocketState> state, uint32_t diff, UintegerValue beta)
 {
   if (m_cWnd < m_ssThresh)
     { // Slow start
-      if (m_segmentsAcked >= 1)
-        {
-          m_cWnd += m_segmentSize;
-          m_segmentsAcked--;
-        }
+      NewReno_SlowStart (state, 1);
     }
   else
     { // Congestion avoidance
       if (diff < beta.Get ())
         { // Increase cwnd by 1 every RTT when bandwidth is not fully utilized
-          if (m_segmentsAcked > 0)
-            {
-              double adder = static_cast<double> (m_segmentSize * m_segmentSize) / m_cWnd;
-              adder = std::max (1.0, adder);
-              m_cWnd += static_cast<uint32_t> (adder);
-            }
+          NewReno_CongestionAvoidance (state, 1);
         }
       else
         { // Increase cwnd by 1 every other RTT when bandwidth is fully utilized
           if (m_inc)
             {
-              if (m_segmentsAcked > 0)
-                {
-                  double adder = static_cast<double> (m_segmentSize * m_segmentSize) / m_cWnd;
-                  adder = std::max (1.0, adder);
-                  m_cWnd += static_cast<uint32_t> (adder);
-                }
+              NewReno_CongestionAvoidance (state, 1);
               m_inc = false;
             }
           else
@@ -180,20 +221,21 @@ TcpVenoTest::AdditiveIncrease (Ptr<TcpVeno> cong, uint32_t diff, UintegerValue b
             }
         }
     }
-  return m_cWnd;
 }
 
 uint32_t
-TcpVenoTest::MultiplicativeDecrease (uint32_t diff, UintegerValue beta)
+TcpVenoTest::MultiplicativeDecrease (uint32_t diff, const UintegerValue &beta,
+                                     uint32_t bytesInFlight)
 {
   uint32_t calculatedSsThresh;
   if (diff < beta.Get ())
     {
-      calculatedSsThresh = std::max (2 * m_segmentSize, m_cWnd * 4 / 5);
+      static double tmp = 4.0 / 5.0;
+      calculatedSsThresh = std::max (2 * m_segmentSize, static_cast<uint32_t> (bytesInFlight * tmp));
     }
   else
     {
-      calculatedSsThresh = std::max (2 * m_segmentSize, m_cWnd / 2);
+      calculatedSsThresh = std::max (2 * m_segmentSize, bytesInFlight / 2);
     }
   return calculatedSsThresh;
 }

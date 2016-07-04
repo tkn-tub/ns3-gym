@@ -41,7 +41,7 @@ TcpVeno::GetTypeId (void)
     .AddConstructor<TcpVeno> ()
     .SetGroupName ("Internet")
     .AddAttribute ("Beta", "Threshold for congestion detection",
-                   UintegerValue (6),
+                   UintegerValue (3),
                    MakeUintegerAccessor (&TcpVeno::m_beta),
                    MakeUintegerChecker<uint32_t> ())
   ;
@@ -111,9 +111,9 @@ TcpVeno::PktsAcked (Ptr<TcpSocketState> tcb, uint32_t segmentsAcked,
 }
 
 void
-TcpVeno::EnableVeno (Ptr<TcpSocketState> tcb)
+TcpVeno::EnableVeno ()
 {
-  NS_LOG_FUNCTION (this << tcb);
+  NS_LOG_FUNCTION (this);
 
   m_doingVenoNow = true;
   m_minRtt = Time::Max ();
@@ -134,7 +134,7 @@ TcpVeno::CongestionStateSet (Ptr<TcpSocketState> tcb,
   NS_LOG_FUNCTION (this << tcb << newState);
   if (newState == TcpSocketState::CA_OPEN)
     {
-      EnableVeno (tcb);
+      EnableVeno ();
       NS_LOG_LOGIC ("Veno is now on.");
     }
   else
@@ -148,6 +148,27 @@ void
 TcpVeno::IncreaseWindow (Ptr<TcpSocketState> tcb, uint32_t segmentsAcked)
 {
   NS_LOG_FUNCTION (this << tcb << segmentsAcked);
+
+  // Always calculate m_diff, even if we are not doing Veno now
+  uint32_t targetCwnd;
+  uint32_t segCwnd = tcb->GetCwndInSegments ();
+
+  /*
+   * Calculate the cwnd we should have. baseRtt is the minimum RTT
+   * per-connection, minRtt is the minimum RTT in this window
+   *
+   * little trick:
+   * desidered throughput is currentCwnd * baseRtt
+   * target cwnd is throughput / minRtt
+   */
+  double tmp = m_baseRtt.GetSeconds () / m_minRtt.GetSeconds ();
+  targetCwnd = segCwnd * tmp;
+  NS_LOG_DEBUG ("Calculated targetCwnd = " << targetCwnd);
+  NS_ASSERT (segCwnd >= targetCwnd); // implies baseRtt <= minRtt
+
+  // Calculate the difference between actual and target cwnd
+  m_diff = segCwnd - targetCwnd;
+  NS_LOG_DEBUG ("Calculated m_diff = " << m_diff);
 
   if (!m_doingVenoNow)
     {
@@ -168,27 +189,16 @@ TcpVeno::IncreaseWindow (Ptr<TcpSocketState> tcb, uint32_t segmentsAcked)
     {
       NS_LOG_LOGIC ("We have enough RTT samples to perform Veno calculations.");
 
-      uint64_t targetCwnd;
-      uint32_t segCwnd = tcb->GetCwndInSegments ();
-
-      // Calculate the cwnd we should have
-      targetCwnd = (uint64_t) segCwnd * (double) m_baseRtt.GetMilliSeconds () * 2;
-      targetCwnd = targetCwnd / (double) m_minRtt.GetMilliSeconds ();
-      NS_LOG_DEBUG ("Calculated targetCwnd = " << targetCwnd);
-
-      // Calculate the difference between actual and target cwnd
-      m_diff = (segCwnd * 2) - targetCwnd;
-      NS_LOG_DEBUG ("Calculated m_diff = " << m_diff);
-
       if (tcb->m_cWnd < tcb->m_ssThresh)
         { // Slow start mode. Veno employs same slow start algorithm as NewReno's.
           NS_LOG_LOGIC ("We are in slow start, behave like NewReno.");
           segmentsAcked = TcpNewReno::SlowStart (tcb, segmentsAcked);
         }
       else
-        {         // Congestion avoidance mode
+        { // Congestion avoidance mode
           NS_LOG_LOGIC ("We are in congestion avoidance, execute Veno additive "
                         "increase algo.");
+
           if (m_diff < m_beta)
             {
               // Available bandwidth is not fully utilized,
@@ -216,7 +226,8 @@ TcpVeno::IncreaseWindow (Ptr<TcpSocketState> tcb, uint32_t segmentsAcked)
         }
     }
 
-  // Reset minRtt
+  // Reset cntRtt & minRtt every RTT
+  m_cntRtt = 0;
   m_minRtt = Time::Max ();
 }
 
@@ -238,7 +249,9 @@ TcpVeno::GetSsThresh (Ptr<const TcpSocketState> tcb,
       // we cut cwnd by 1/5
       NS_LOG_LOGIC ("Random loss is most likely to have occurred, "
                     "cwnd is reduced by 1/5");
-      return std::max (bytesInFlight * 4 / 5, 2 * tcb->m_segmentSize);
+      static double tmp = 4.0/5.0;
+      return std::max (static_cast<uint32_t> (bytesInFlight * tmp),
+                       2 * tcb->m_segmentSize);
     }
   else
     {
@@ -246,7 +259,7 @@ TcpVeno::GetSsThresh (Ptr<const TcpSocketState> tcb,
       // we reduce cwnd by 1/2 as in NewReno
       NS_LOG_LOGIC ("Congestive loss is most likely to have occurred, "
                     "cwnd is halved");
-      return std::max (bytesInFlight / 2, 2 * tcb->m_segmentSize);
+      return TcpNewReno::GetSsThresh (tcb, bytesInFlight);
     }
 }
 
