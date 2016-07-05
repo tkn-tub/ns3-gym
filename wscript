@@ -495,7 +495,7 @@ def configure(conf):
         else:
             why_not_tests = "defaults to disabled"
 
-    conf.report_optional_feature("ENABLE_TESTS", "Build tests", env['ENABLE_TESTS'], why_not_tests)
+    conf.report_optional_feature("ENABLE_TESTS", "Tests", env['ENABLE_TESTS'], why_not_tests)
 
     # Decide if examples will be built or not.
     if Options.options.enable_examples:
@@ -516,7 +516,7 @@ def configure(conf):
         else:
             why_not_examples = "defaults to disabled"
 
-    conf.report_optional_feature("ENABLE_EXAMPLES", "Build examples", env['ENABLE_EXAMPLES'], 
+    conf.report_optional_feature("ENABLE_EXAMPLES", "Examples", env['ENABLE_EXAMPLES'], 
                                  why_not_examples)
     try:
         for dir in os.listdir('examples'):
@@ -595,7 +595,7 @@ def configure(conf):
                              Options.options.out, Logs.colors('NORMAL')))
     
     
-    for (name, caption, was_enabled, reason_not_enabled) in conf.env['NS3_OPTIONAL_FEATURES']:
+    for (name, caption, was_enabled, reason_not_enabled) in sorted(conf.env['NS3_OPTIONAL_FEATURES'], key=lambda s : s[1]):
         if was_enabled:
             status = 'enabled'
             color = 'GREEN'
