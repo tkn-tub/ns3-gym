@@ -46,8 +46,78 @@
 
 using namespace ns3;
 
+class TracedCallbackTypedefTestCase : public TestCase
+{
+public:
+  TracedCallbackTypedefTestCase ();
+  virtual ~TracedCallbackTypedefTestCase () {}
+
+  /**
+   * Number of arguments passed to callback.
+   *
+   * Since the sink function is outside the invoking class we can't use
+   * the test macros directly.  Instead, we cache success
+   * in the \c m_nArgs public value, then inspect it
+   * in the CheckType() method.
+   */
+  static int m_nArgs;
+  
+private:
+  
+  /** Invoker boilerplate. */
+  template <typename T1, typename T2, typename T3, typename T4, typename T5>
+  class CheckerBase;
+  
+  /** Callback checkers. */
+  template <typename T1, typename T2, typename T3, typename T4, typename T5>
+  class Checker;
+    
+  template <typename T1, typename T2, typename T3, typename T4>
+  class Checker<T1, T2, T3, T4, empty>;
+
+  template <typename T1, typename T2, typename T3>
+  class Checker<T1, T2, T3, empty, empty>;
+
+    
+  template <typename T1, typename T2>
+  class Checker<T1, T2, empty, empty, empty>;
+
+  template <typename T1>
+  class Checker<T1, empty, empty, empty, empty>;
+
+  virtual void DoRun (void);
+
+};  // TracedCallbackTypedefTestCase
+
+/*
+  --------------------------------------------------------------------
+  Support functions and classes
+  --------------------------------------------------------------------
+*/
+
 namespace {
 
+/** Record typedefs which are identical to previously declared. */
+std::set<std::string>
+Duplicates (void)
+{
+  std::set<std::string> dupes;
+
+  dupes.insert ("LteRlc::NotifyTxTracedCallback");
+  dupes.insert ("LteRlc::ReceiveTracedCallback");
+  dupes.insert ("LteUeRrc::ImsiCidRntiTracedCallback");
+  dupes.insert ("LteUeRrc::MibSibHandoverTracedCallback");
+  dupes.insert ("WifiPhyStateHelper::RxEndErrorTracedCallback");
+
+  return dupes;
+}
+  
+/**
+ * Container for duplicate types.
+ */
+std::set<std::string> g_dupes = Duplicates ();
+
+  
 /**
  * Stringify the known TracedCallback type names.
  *
@@ -131,43 +201,6 @@ TYPENAME (WifiRemoteStationManager::RateChangeTracedCallback);
 #undef TYPENAME
 
 
-/** Record typedefs which are identical to previously declared. */
-std::set<std::string>
-Duplicates (void)
-{
-  std::set<std::string> dupes;
-
-#define dupename(T)    dupes.insert (# T)
-  
-  dupename (LteRlc::NotifyTxTracedCallback);
-  dupename (LteRlc::ReceiveTracedCallback);
-  dupename (LteUeRrc::ImsiCidRntiTracedCallback);
-  dupename (LteUeRrc::MibSibHandoverTracedCallback);
-  dupename (WifiPhyStateHelper::RxEndErrorTracedCallback);
-
-#undef dupename
-  
-  return dupes;
-}
-  
-/**
- * Container for duplicate types.
- */
-std::set<std::string> g_dupes = Duplicates ();
-
-  
-/**
- * Number of arguments passed to callback.
- *
- * Since the sink function is outside the invoking class,
- * which in this case is TracedCallbackTestCase, we can't use
- * the test macros directly.  Instead, we cache success
- * in the \c g_NArgs global value, then inspect it
- * in the TracedValueCallbackTestCase::CheckType method.
- */
-int g_NArgs = 0;
-
-
 /**
  * Log that a callback was invoked.
  *
@@ -179,7 +212,7 @@ int g_NArgs = 0;
 void SinkIt (unsigned int N)
 {
   std::cout << "with " << N << " args." << std::endl;
-  g_NArgs = N;
+  TracedCallbackTypedefTestCase::m_nArgs = N;
 }
 
 /**
@@ -222,152 +255,142 @@ public:
 };
 /** @} */
 
-/** Non-const non-reference type. */
-template <typename T>
-struct NonConstReferenced
-{
-  typedef typename TypeTraits< typename TypeTraits<T>::ReferencedType >::NonConstType Type;
-};
 
 }  // anonymous namespace
 
 
-class TracedCallbackTypedefTestCase : public TestCase
+/*
+  --------------------------------------------------------------------
+  Class TracedCallbackTypedefTestCase implementation
+
+  We put the template implementations here to break a dependency cycle
+  from the Checkers() to TracedCbSink<> to SinkIt()
+  --------------------------------------------------------------------
+*/
+
+int TracedCallbackTypedefTestCase::m_nArgs = 0;
+
+template <typename T1, typename T2, typename T3, typename T4, typename T5>
+class TracedCallbackTypedefTestCase::CheckerBase : public Object
 {
 public:
-  TracedCallbackTypedefTestCase ();
-  virtual ~TracedCallbackTypedefTestCase () {}
+  typename TypeTraits<T1>::BaseType m1;
+  typename TypeTraits<T2>::BaseType m2;
+  typename TypeTraits<T3>::BaseType m3;
+  typename TypeTraits<T4>::BaseType m4;
+  typename TypeTraits<T5>::BaseType m5;
   
-private:
+  void Cleanup (int N)
+  {
+    if (m_nArgs == 0) std::cout << std::endl;
+    NS_ASSERT_MSG (m_nArgs && m_nArgs == N, "failed.");
+    m_nArgs = 0;
+  }
+};  // TracedCallbackTypedefTestCase::CheckerBase
+
+template <typename T1, typename T2, typename T3, typename T4, typename T5>
+class TracedCallbackTypedefTestCase::Checker : public CheckerBase<T1, T2, T3, T4, T5>
+{
+  TracedCallback<T1, T2, T3, T4, T5> m_cb;
   
-  /** Invoker boilerplate. */
-  template <typename T1, typename T2, typename T3, typename T4, typename T5>
-  class CheckerBase : public Object
+public:
+  template <typename U>
+  void Invoke (void)
   {
-  public:
-    typename TypeTraits<T1>::BaseType m1;
-    typename TypeTraits<T2>::BaseType m2;
-    typename TypeTraits<T3>::BaseType m3;
-    typename TypeTraits<T4>::BaseType m4;
-    typename TypeTraits<T5>::BaseType m5;
+    const int N = 5;
+    U sink = TracedCbSink<T1, T2, T3, T4, T5>::Sink;
+    Callback<void, T1, T2, T3, T4, T5> cb = MakeCallback (sink);
     
-    void Cleanup (int N)
-    {
-      if (g_NArgs == 0) std::cout << std::endl;
-      NS_ASSERT_MSG (g_NArgs && g_NArgs == N, "failed.");
-      g_NArgs = 0;
-    }
-  };  // CheckerBase
+    std::cout << TypeName<U> (N) << " invoked ";
+    m_cb.ConnectWithoutContext (cb);
+    m_cb (this->m1, this->m2, this->m3, this->m4, this->m5);
+    this->Cleanup (N);
+  }
+};  // Checker<5>
+
+template <typename T1, typename T2, typename T3, typename T4>
+class TracedCallbackTypedefTestCase::Checker<T1, T2, T3, T4, empty>
+  : public CheckerBase<T1, T2, T3, T4, empty>
+{
+  TracedCallback<T1, T2, T3, T4> m_cb;
   
-  /** Callback checkers. */
-  template <typename T1, typename T2, typename T3, typename T4, typename T5>
-  class Checker : public CheckerBase<T1, T2, T3, T4, T5>
+public:
+  template <typename U>
+  void Invoke (void)
   {
-    TracedCallback<T1, T2, T3, T4, T5> m_cb;
+    const int N = 4;
+    U sink = TracedCbSink<T1, T2, T3, T4, empty>::Sink;
+    Callback<void, T1, T2, T3, T4> cb = MakeCallback (sink);
     
-  public:
-    template <typename U>
-    void Invoke (void)
-    {
-      const int N = 5;
-      U sink = TracedCbSink<T1, T2, T3, T4, T5>::Sink;
-      Callback<void, T1, T2, T3, T4, T5> cb = MakeCallback (sink);
-      
-      std::cout << TypeName<U> (N) << " invoked ";
-      m_cb.ConnectWithoutContext (cb);
-      m_cb (this->m1, this->m2, this->m3, this->m4, this->m5);
-      this->Cleanup (N);
-    }
-  };  // Checker<5>
-    
-  template <typename T1, typename T2, typename T3, typename T4>
-  class Checker<T1, T2, T3, T4, empty>
-    : public CheckerBase<T1, T2, T3, T4, empty>
+    std::cout << TypeName<U> (N) << " invoked ";
+    m_cb.ConnectWithoutContext (cb);
+    m_cb (this->m1, this->m2, this->m3, this->m4);
+    this->Cleanup (N);
+  }
+};  // Checker <4>
+  
+template <typename T1, typename T2, typename T3>
+class TracedCallbackTypedefTestCase::Checker<T1, T2, T3, empty, empty>
+  : public CheckerBase<T1, T2, T3, empty, empty>
+{
+  TracedCallback<T1, T2, T3> m_cb;
+  
+public:
+  template <typename U>
+  void Invoke (void)
   {
-    TracedCallback<T1, T2, T3, T4> m_cb;
+    const int N = 3;
+    U sink = TracedCbSink<T1, T2, T3, empty, empty>::Sink;
+    Callback<void, T1, T2, T3> cb = MakeCallback (sink);
     
-  public:
-    template <typename U>
-    void Invoke (void)
-    {
-      const int N = 4;
-      U sink = TracedCbSink<T1, T2, T3, T4, empty>::Sink;
-      Callback<void, T1, T2, T3, T4> cb = MakeCallback (sink);
-      
-      std::cout << TypeName<U> (N) << " invoked ";
-      m_cb.ConnectWithoutContext (cb);
-      m_cb (this->m1, this->m2, this->m3, this->m4);
-      this->Cleanup (N);
-    }
-  };  // Checker <4>
-    
+    std::cout << TypeName<U> (N) << " invoked ";
+    m_cb.ConnectWithoutContext (cb);
+    m_cb (this->m1, this->m2, this->m3);
+    this->Cleanup (N);
+  }
+};  // Checker<3>
 
-  template <typename T1, typename T2, typename T3>
-  class Checker<T1, T2, T3, empty, empty>
-    : public CheckerBase<T1, T2, T3, empty, empty>
+template <typename T1, typename T2>
+class TracedCallbackTypedefTestCase::Checker<T1, T2, empty, empty, empty>
+  : public CheckerBase<T1, T2, empty, empty, empty>
+{
+  TracedCallback<T1, T2> m_cb;
+  
+public:
+  template <typename U>
+  void Invoke (void)
   {
-    TracedCallback<T1, T2, T3> m_cb;
+    const int N = 2;
+    U sink = TracedCbSink<T1, T2, empty, empty, empty>::Sink;
+    Callback<void, T1, T2> cb = MakeCallback (sink);
     
-  public:
-    template <typename U>
-    void Invoke (void)
-    {
-      const int N = 3;
-      U sink = TracedCbSink<T1, T2, T3, empty, empty>::Sink;
-      Callback<void, T1, T2, T3> cb = MakeCallback (sink);
-      
-      std::cout << TypeName<U> (N) << " invoked ";
-      m_cb.ConnectWithoutContext (cb);
-      m_cb (this->m1, this->m2, this->m3);
-      this->Cleanup (N);
-    }
-  };  // Checker<3>
-    
-  template <typename T1, typename T2>
-  class Checker<T1, T2, empty, empty, empty>
-    : public CheckerBase<T1, T2, empty, empty, empty>
+    std::cout << TypeName<U> (N) << " invoked ";
+    m_cb.ConnectWithoutContext (cb);
+    m_cb (this->m1, this->m2);
+    this->Cleanup (N);
+  }
+};  // Checker<2>
+
+template <typename T1>
+class TracedCallbackTypedefTestCase::Checker<T1, empty, empty, empty, empty>
+  : public CheckerBase<T1, empty, empty, empty, empty>
+{
+  TracedCallback<T1> m_cb;
+  
+public:
+  template <typename U>
+  void Invoke (void)
   {
-    TracedCallback<T1, T2> m_cb;
+    const int N = 1;
+    U sink = TracedCbSink<T1, empty, empty, empty, empty>::Sink;
+    Callback<void, T1> cb = MakeCallback (sink);
     
-  public:
-    template <typename U>
-    void Invoke (void)
-    {
-      const int N = 2;
-      U sink = TracedCbSink<T1, T2, empty, empty, empty>::Sink;
-      Callback<void, T1, T2> cb = MakeCallback (sink);
-      
-      std::cout << TypeName<U> (N) << " invoked ";
-      m_cb.ConnectWithoutContext (cb);
-      m_cb (this->m1, this->m2);
-      this->Cleanup (N);
-    }
-  };  // Checker<2>
-
-  template <typename T1>
-  class Checker<T1, empty, empty, empty, empty>
-    : public CheckerBase<T1, empty, empty, empty, empty>
-  {
-    TracedCallback<T1> m_cb;
-    
-  public:
-    template <typename U>
-    void Invoke (void)
-    {
-      const int N = 1;
-      U sink = TracedCbSink<T1, empty, empty, empty, empty>::Sink;
-      Callback<void, T1> cb = MakeCallback (sink);
-      
-      std::cout << TypeName<U> (N) << " invoked ";
-      m_cb.ConnectWithoutContext (cb);
-      m_cb (this->m1);
-      this->Cleanup (N);
-    }
-  };  // Checker<1>
-
-  virtual void DoRun (void);
-
-};  // TracedCallbackTypedefTestCase
+    std::cout << TypeName<U> (N) << " invoked ";
+    m_cb.ConnectWithoutContext (cb);
+    m_cb (this->m1);
+    this->Cleanup (N);
+  }
+};  // Checker<1>
 
 TracedCallbackTypedefTestCase::TracedCallbackTypedefTestCase ()
   : TestCase ("Check basic TracedCallback operation")
