@@ -302,7 +302,7 @@ VhtCapabilities::IsSupportedTxMcs (uint8_t mcs) const
     {
       return true;
     }
-  if (mcs == 8 && m_txMcsMap[0] == 1)
+  if (mcs == 8 && (m_txMcsMap[0] == 1 || m_txMcsMap[0] == 2))
     {
       return true;
     }
@@ -321,7 +321,7 @@ VhtCapabilities::IsSupportedRxMcs (uint8_t mcs) const
     {
       return true;
     }
-  if (mcs == 8 && m_rxMcsMap[0] == 1)
+  if (mcs == 8 && (m_rxMcsMap[0] == 1 || m_rxMcsMap[0] == 2))
     {
       return true;
     }
