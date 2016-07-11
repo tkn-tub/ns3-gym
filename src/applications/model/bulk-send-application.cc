@@ -59,7 +59,7 @@ BulkSendApplication::GetTypeId (void)
                    "that there is no limit.",
                    UintegerValue (0),
                    MakeUintegerAccessor (&BulkSendApplication::m_maxBytes),
-                   MakeUintegerChecker<uint32_t> ())
+                   MakeUintegerChecker<uint64_t> ())
     .AddAttribute ("Protocol", "The type of protocol to use.",
                    TypeIdValue (TcpSocketFactory::GetTypeId ()),
                    MakeTypeIdAccessor (&BulkSendApplication::m_tid),
@@ -86,7 +86,7 @@ BulkSendApplication::~BulkSendApplication ()
 }
 
 void
-BulkSendApplication::SetMaxBytes (uint32_t maxBytes)
+BulkSendApplication::SetMaxBytes (uint64_t maxBytes)
 {
   NS_LOG_FUNCTION (this << maxBytes);
   m_maxBytes = maxBytes;
@@ -175,12 +175,17 @@ void BulkSendApplication::SendData (void)
 
   while (m_maxBytes == 0 || m_totBytes < m_maxBytes)
     { // Time to send more
-      uint32_t toSend = m_sendSize;
+
+      // uint64_t to allow the comparison later.
+      // the result is in a uint32_t range anyway, because
+      // m_sendSize is uint32_t.
+      uint64_t toSend = m_sendSize;
       // Make sure we don't send too many
       if (m_maxBytes > 0)
         {
-          toSend = std::min (m_sendSize, m_maxBytes - m_totBytes);
+          toSend = std::min (toSend, m_maxBytes - m_totBytes);
         }
+
       NS_LOG_LOGIC ("sending packet at " << Simulator::Now ());
       Ptr<Packet> packet = Create<Packet> (toSend);
       m_txTrace (packet);

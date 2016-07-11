@@ -96,7 +96,7 @@ UdpServer::GetLost (void) const
   return m_lossCounter.GetLost ();
 }
 
-uint32_t
+uint64_t
 UdpServer::GetReceived (void) const
 {
   NS_LOG_FUNCTION (this);

@@ -81,7 +81,7 @@ OnOffApplication::GetTypeId (void)
                    "that there is no limit.",
                    UintegerValue (0),
                    MakeUintegerAccessor (&OnOffApplication::m_maxBytes),
-                   MakeUintegerChecker<uint32_t> ())
+                   MakeUintegerChecker<uint64_t> ())
     .AddAttribute ("Protocol", "The type of protocol to use.",
                    TypeIdValue (UdpSocketFactory::GetTypeId ()),
                    MakeTypeIdAccessor (&OnOffApplication::m_tid),
@@ -110,7 +110,7 @@ OnOffApplication::~OnOffApplication()
 }
 
 void 
-OnOffApplication::SetMaxBytes (uint32_t maxBytes)
+OnOffApplication::SetMaxBytes (uint64_t maxBytes)
 {
   NS_LOG_FUNCTION (this << maxBytes);
   m_maxBytes = maxBytes;

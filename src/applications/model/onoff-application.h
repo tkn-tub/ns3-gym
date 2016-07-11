@@ -104,7 +104,7 @@ public:
    *
    * \param maxBytes the total number of bytes to send
    */
-  void SetMaxBytes (uint32_t maxBytes);
+  void SetMaxBytes (uint64_t maxBytes);
 
   /**
    * \brief Return a pointer to associated socket.
@@ -158,8 +158,8 @@ private:
   uint32_t        m_pktSize;      //!< Size of packets
   uint32_t        m_residualBits; //!< Number of generated, but not sent, bits
   Time            m_lastStartTime; //!< Time last packet sent
-  uint32_t        m_maxBytes;     //!< Limit total number of bytes sent
-  uint32_t        m_totBytes;     //!< Total bytes sent so far
+  uint64_t        m_maxBytes;     //!< Limit total number of bytes sent
+  uint64_t        m_totBytes;     //!< Total bytes sent so far
   EventId         m_startStopEvent;     //!< Event id for next start or stop event
   EventId         m_sendEvent;    //!< Event id of pending "send packet" event
   TypeId          m_tid;          //!< Type of the socket used

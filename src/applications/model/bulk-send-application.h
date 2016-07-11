@@ -91,7 +91,7 @@ public:
    *
    * \param maxBytes the upper bound of bytes to send
    */
-  void SetMaxBytes (uint32_t maxBytes);
+  void SetMaxBytes (uint64_t maxBytes);
 
   /**
    * \brief Get the socket this application is attached to.
@@ -115,8 +115,8 @@ private:
   Address         m_peer;         //!< Peer address
   bool            m_connected;    //!< True if connected
   uint32_t        m_sendSize;     //!< Size of data to send each time
-  uint32_t        m_maxBytes;     //!< Limit total number of bytes sent
-  uint32_t        m_totBytes;     //!< Total bytes sent so far
+  uint64_t        m_maxBytes;     //!< Limit total number of bytes sent
+  uint64_t        m_totBytes;     //!< Total bytes sent so far
   TypeId          m_tid;          //!< The type of protocol to use.
 
   /// Traced Callback: sent packets

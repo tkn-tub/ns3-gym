@@ -80,7 +80,7 @@ public:
   /**
    * \return the total bytes received in this sink app
    */
-  uint32_t GetTotalRx () const;
+  uint64_t GetTotalRx () const;
 
   /**
    * \return pointer to listening socket
@@ -127,7 +127,7 @@ private:
   std::list<Ptr<Socket> > m_socketList; //!< the accepted sockets
 
   Address         m_local;        //!< Local address to bind to
-  uint32_t        m_totalRx;      //!< Total bytes received
+  uint64_t        m_totalRx;      //!< Total bytes received
   TypeId          m_tid;          //!< Protocol TypeId
 
   /// Traced Callback: received packets, source address.
