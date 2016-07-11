@@ -38,13 +38,16 @@ namespace ns3 {
 class PcapHelper
 {
 public:
-  //
-  // These are the data link types that will be written to the pcap file.  We
-  // don't include pcap-bpf.h to avoid an explicit dependency on the real pcap
-  // and we don't make an enumeration of all of the values to make it easy to
-  // pass new values in.
-  //
-  enum {
+  /**
+   * This enumeration holds the data link types that will be written to the pcap file.
+   *
+   * We don't include pcap-bpf.h to avoid an explicit dependency on the real pcap
+   * and we don't make an enumeration of all of the values to make it easy to
+   * pass new values in.
+   *
+   * For a list of Data Link Types see http://www.tcpdump.org/linktypes.html
+   */
+  enum DataLinkType {
     DLT_NULL = 0,
     DLT_EN10MB = 1,
     DLT_PPP = 9,
@@ -101,8 +104,11 @@ public:
    * @param tzCorrection time zone correction to be applied to timestamps of packets
    * @returns a smart pointer to the Pcap file
    */
-  Ptr<PcapFileWrapper> CreateFile (std::string filename, std::ios::openmode filemode,
-                                   uint32_t dataLinkType,  uint32_t snapLen = std::numeric_limits<uint32_t>::max (), int32_t tzCorrection = 0);
+  Ptr<PcapFileWrapper> CreateFile (std::string filename,
+                                   std::ios::openmode filemode,
+                                   DataLinkType dataLinkType,
+                                   uint32_t snapLen = std::numeric_limits<uint32_t>::max (),
+                                   int32_t tzCorrection = 0);
   /**
    * @brief Hook a trace source to the default trace sink
    * 

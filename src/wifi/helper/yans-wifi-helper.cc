@@ -656,7 +656,7 @@ YansWifiPhyHelper::SetPcapDataLinkType (enum SupportedPcapDataLinkTypes dlt)
     }
 }
 
-uint32_t
+PcapHelper::DataLinkType
 YansWifiPhyHelper::GetPcapDataLinkType (void) const
 {
   return m_pcapDlt;

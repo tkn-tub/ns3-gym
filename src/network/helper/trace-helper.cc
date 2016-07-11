@@ -49,7 +49,7 @@ Ptr<PcapFileWrapper>
 PcapHelper::CreateFile (
   std::string filename, 
   std::ios::openmode filemode,
-  uint32_t    dataLinkType, 
+  DataLinkType dataLinkType,
   uint32_t    snapLen, 
   int32_t     tzCorrection)
 {

@@ -78,6 +78,7 @@ Bugs fixed
 - Bug 2440 - SocketIpTosTag might be added twice if a packet is sent multiple times
 - Bug 2442 - TrafficControl makes ConfigStore crash 
 - Bug 2443 - Increase applications counters to accomodate Gbps transfer rates.
+- Bug 2444 - PcapHelper DataLinkType enum should have a name
 - Bug 2446 - Comma instead of pipe in Attributes
 
 Known issues

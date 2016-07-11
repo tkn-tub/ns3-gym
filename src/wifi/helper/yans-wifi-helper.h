@@ -253,7 +253,7 @@ public:
    *
    * @returns The data link type of the pcap file (and packets) to be used
    */
-  uint32_t GetPcapDataLinkType (void) const;
+  PcapHelper::DataLinkType GetPcapDataLinkType (void) const;
 
 
 protected:
@@ -346,7 +346,7 @@ private:
   ObjectFactory m_phy;
   ObjectFactory m_errorRateModel;
   Ptr<YansWifiChannel> m_channel;
-  uint32_t m_pcapDlt;
+  PcapHelper::DataLinkType m_pcapDlt;
 };
 
 } //namespace ns3
