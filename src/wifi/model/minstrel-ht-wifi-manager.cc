@@ -1430,7 +1430,8 @@ MinstrelHtWifiManager::SetBestProbabilityRate (MinstrelHtWifiRemoteStation *stat
         {
           station->m_maxProbRate = index;
         }
-      if (rate.ewmaProb > group->m_ratesTable[group->m_maxProbRate].ewmaProb)
+      maxGPRateId = GetRateId (group->m_maxProbRate);
+      if (rate.ewmaProb > group->m_ratesTable[maxGPRateId].ewmaProb)
         {
           group->m_maxProbRate = index;
         }
