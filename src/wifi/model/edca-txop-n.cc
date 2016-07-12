@@ -552,7 +552,7 @@ EdcaTxopN::NotifyAccessGranted (void)
           params.EnableAck ();
         }
       if (((m_currentHdr.IsQosData () && !m_currentHdr.IsQosAmsdu ())
-           ||(m_currentHdr.IsData () && !m_currentHdr.IsQosData () && m_currentHdr.IsQosAmsdu ()))
+          || (m_currentHdr.IsData () && !m_currentHdr.IsQosData ()))
           && (m_blockAckThreshold == 0 || m_blockAckType == BASIC_BLOCK_ACK)
           && NeedFragmentation ())
         {
