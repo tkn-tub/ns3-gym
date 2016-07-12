@@ -178,8 +178,8 @@ def register_types(module):
     module.add_class('PcapFile', import_from_module='ns.network')
     ## trace-helper.h (module 'network'): ns3::PcapHelper [class]
     module.add_class('PcapHelper', import_from_module='ns.network')
-    ## trace-helper.h (module 'network'): ns3::PcapHelper [enumeration]
-    module.add_enum('', ['DLT_NULL', 'DLT_EN10MB', 'DLT_PPP', 'DLT_RAW', 'DLT_IEEE802_11', 'DLT_LINUX_SLL', 'DLT_PRISM_HEADER', 'DLT_IEEE802_11_RADIO', 'DLT_IEEE802_15_4', 'DLT_NETLINK'], outer_class=root_module['ns3::PcapHelper'], import_from_module='ns.network')
+    ## trace-helper.h (module 'network'): ns3::PcapHelper::DataLinkType [enumeration]
+    module.add_enum('DataLinkType', ['DLT_NULL', 'DLT_EN10MB', 'DLT_PPP', 'DLT_RAW', 'DLT_IEEE802_11', 'DLT_LINUX_SLL', 'DLT_PRISM_HEADER', 'DLT_IEEE802_11_RADIO', 'DLT_IEEE802_15_4', 'DLT_NETLINK'], outer_class=root_module['ns3::PcapHelper'], import_from_module='ns.network')
     ## trace-helper.h (module 'network'): ns3::PcapHelperForDevice [class]
     module.add_class('PcapHelperForDevice', allow_subclassing=True, import_from_module='ns.network')
     ## propagation-cache.h (module 'propagation'): ns3::PropagationCache<ns3::JakesProcess> [class]
@@ -190,6 +190,8 @@ def register_types(module):
     module.add_class('SimpleRefCount', automatic_type_narrowing=True, import_from_module='ns.core', template_parameters=['ns3::Object', 'ns3::ObjectBase', 'ns3::ObjectDeleter'], parent=root_module['ns3::ObjectBase'], memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'))
     ## simulator.h (module 'core'): ns3::Simulator [class]
     module.add_class('Simulator', destructor_visibility='private', import_from_module='ns.core')
+    ## simulator.h (module 'core'): ns3::Simulator [enumeration]
+    module.add_enum('', ['NO_CONTEXT'], outer_class=root_module['ns3::Simulator'], import_from_module='ns.core')
     ## status-code.h (module 'wifi'): ns3::StatusCode [class]
     module.add_class('StatusCode')
     ## tag.h (module 'network'): ns3::Tag [class]
@@ -386,6 +388,8 @@ def register_types(module):
     module.add_enum('AddressType', ['ADDR1', 'ADDR2', 'ADDR3', 'ADDR4'], outer_class=root_module['ns3::WifiMacHeader'])
     ## wifi-mac-queue.h (module 'wifi'): ns3::WifiMacQueue [class]
     module.add_class('WifiMacQueue', parent=root_module['ns3::Object'])
+    ## wifi-mac-queue.h (module 'wifi'): ns3::WifiMacQueue::DropPolicy [enumeration]
+    module.add_enum('DropPolicy', ['DROP_NEWEST', 'DROP_OLDEST'], outer_class=root_module['ns3::WifiMacQueue'])
     ## wifi-mac-trailer.h (module 'wifi'): ns3::WifiMacTrailer [class]
     module.add_class('WifiMacTrailer', parent=root_module['ns3::Trailer'])
     ## wifi-phy.h (module 'wifi'): ns3::WifiPhy [class]
@@ -4051,10 +4055,10 @@ def register_Ns3PcapHelper_methods(root_module, cls):
     cls.add_constructor([param('ns3::PcapHelper const &', 'arg0')])
     ## trace-helper.h (module 'network'): ns3::PcapHelper::PcapHelper() [constructor]
     cls.add_constructor([])
-    ## trace-helper.h (module 'network'): ns3::Ptr<ns3::PcapFileWrapper> ns3::PcapHelper::CreateFile(std::string filename, std::_Ios_Openmode filemode, uint32_t dataLinkType, uint32_t snapLen=std::numeric_limits<unsigned int>::max(), int32_t tzCorrection=0) [member function]
+    ## trace-helper.h (module 'network'): ns3::Ptr<ns3::PcapFileWrapper> ns3::PcapHelper::CreateFile(std::string filename, std::_Ios_Openmode filemode, ns3::PcapHelper::DataLinkType dataLinkType, uint32_t snapLen=std::numeric_limits<unsigned int>::max(), int32_t tzCorrection=0) [member function]
     cls.add_method('CreateFile', 
                    'ns3::Ptr< ns3::PcapFileWrapper >', 
-                   [param('std::string', 'filename'), param('std::_Ios_Openmode', 'filemode'), param('uint32_t', 'dataLinkType'), param('uint32_t', 'snapLen', default_value='std::numeric_limits<unsigned int>::max()'), param('int32_t', 'tzCorrection', default_value='0')])
+                   [param('std::string', 'filename'), param('std::_Ios_Openmode', 'filemode'), param('ns3::PcapHelper::DataLinkType', 'dataLinkType'), param('uint32_t', 'snapLen', default_value='std::numeric_limits<unsigned int>::max()'), param('int32_t', 'tzCorrection', default_value='0')])
     ## trace-helper.h (module 'network'): std::string ns3::PcapHelper::GetFilenameFromDevice(std::string prefix, ns3::Ptr<ns3::NetDevice> device, bool useObjectNames=true) [member function]
     cls.add_method('GetFilenameFromDevice', 
                    'std::string', 
@@ -5221,9 +5225,9 @@ def register_Ns3YansWifiPhyHelper_methods(root_module, cls):
                    'ns3::YansWifiPhyHelper', 
                    [], 
                    is_static=True)
-    ## yans-wifi-helper.h (module 'wifi'): uint32_t ns3::YansWifiPhyHelper::GetPcapDataLinkType() const [member function]
+    ## yans-wifi-helper.h (module 'wifi'): ns3::PcapHelper::DataLinkType ns3::YansWifiPhyHelper::GetPcapDataLinkType() const [member function]
     cls.add_method('GetPcapDataLinkType', 
-                   'uint32_t', 
+                   'ns3::PcapHelper::DataLinkType', 
                    [], 
                    is_const=True)
     ## yans-wifi-helper.h (module 'wifi'): void ns3::YansWifiPhyHelper::Set(std::string name, ns3::AttributeValue const & v) [member function]
@@ -5246,6 +5250,16 @@ def register_Ns3YansWifiPhyHelper_methods(root_module, cls):
     cls.add_method('SetPcapDataLinkType', 
                    'void', 
                    [param('ns3::YansWifiPhyHelper::SupportedPcapDataLinkTypes', 'dlt')])
+    ## yans-wifi-helper.h (module 'wifi'): static void ns3::YansWifiPhyHelper::PcapSniffRxEvent(ns3::Ptr<ns3::PcapFileWrapper> file, ns3::Ptr<ns3::Packet const> packet, uint16_t channelFreqMhz, uint16_t channelNumber, uint32_t rate, ns3::WifiPreamble preamble, ns3::WifiTxVector txVector, ns3::mpduInfo aMpdu, ns3::signalNoiseDbm signalNoise) [member function]
+    cls.add_method('PcapSniffRxEvent', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::PcapFileWrapper >', 'file'), param('ns3::Ptr< ns3::Packet const >', 'packet'), param('uint16_t', 'channelFreqMhz'), param('uint16_t', 'channelNumber'), param('uint32_t', 'rate'), param('ns3::WifiPreamble', 'preamble'), param('ns3::WifiTxVector', 'txVector'), param('ns3::mpduInfo', 'aMpdu'), param('ns3::signalNoiseDbm', 'signalNoise')], 
+                   is_static=True, visibility='protected')
+    ## yans-wifi-helper.h (module 'wifi'): static void ns3::YansWifiPhyHelper::PcapSniffTxEvent(ns3::Ptr<ns3::PcapFileWrapper> file, ns3::Ptr<ns3::Packet const> packet, uint16_t channelFreqMhz, uint16_t channelNumber, uint32_t rate, ns3::WifiPreamble preamble, ns3::WifiTxVector txVector, ns3::mpduInfo aMpdu) [member function]
+    cls.add_method('PcapSniffTxEvent', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::PcapFileWrapper >', 'file'), param('ns3::Ptr< ns3::Packet const >', 'packet'), param('uint16_t', 'channelFreqMhz'), param('uint16_t', 'channelNumber'), param('uint32_t', 'rate'), param('ns3::WifiPreamble', 'preamble'), param('ns3::WifiTxVector', 'txVector'), param('ns3::mpduInfo', 'aMpdu')], 
+                   is_static=True, visibility='protected')
     ## yans-wifi-helper.h (module 'wifi'): ns3::Ptr<ns3::WifiPhy> ns3::YansWifiPhyHelper::Create(ns3::Ptr<ns3::Node> node, ns3::Ptr<ns3::NetDevice> device) const [member function]
     cls.add_method('Create', 
                    'ns3::Ptr< ns3::WifiPhy >', 
@@ -9540,7 +9554,8 @@ def register_Ns3WifiRemoteStationManager_methods(root_module, cls):
     ## wifi-remote-station-manager.h (module 'wifi'): void ns3::WifiRemoteStationManager::SetHtSupported(bool enable) [member function]
     cls.add_method('SetHtSupported', 
                    'void', 
-                   [param('bool', 'enable')])
+                   [param('bool', 'enable')], 
+                   is_virtual=True)
     ## wifi-remote-station-manager.h (module 'wifi'): void ns3::WifiRemoteStationManager::SetMaxSlrc(uint32_t maxSlrc) [member function]
     cls.add_method('SetMaxSlrc', 
                    'void', 
@@ -9572,7 +9587,8 @@ def register_Ns3WifiRemoteStationManager_methods(root_module, cls):
     ## wifi-remote-station-manager.h (module 'wifi'): void ns3::WifiRemoteStationManager::SetVhtSupported(bool enable) [member function]
     cls.add_method('SetVhtSupported', 
                    'void', 
-                   [param('bool', 'enable')])
+                   [param('bool', 'enable')], 
+                   is_virtual=True)
     ## wifi-remote-station-manager.h (module 'wifi'): void ns3::WifiRemoteStationManager::SetupMac(ns3::Ptr<ns3::WifiMac> mac) [member function]
     cls.add_method('SetupMac', 
                    'void', 
@@ -10379,6 +10395,16 @@ def register_Ns3AarfWifiManager_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
+    ## aarf-wifi-manager.h (module 'wifi'): void ns3::AarfWifiManager::SetHtSupported(bool enable) [member function]
+    cls.add_method('SetHtSupported', 
+                   'void', 
+                   [param('bool', 'enable')], 
+                   is_virtual=True)
+    ## aarf-wifi-manager.h (module 'wifi'): void ns3::AarfWifiManager::SetVhtSupported(bool enable) [member function]
+    cls.add_method('SetVhtSupported', 
+                   'void', 
+                   [param('bool', 'enable')], 
+                   is_virtual=True)
     ## aarf-wifi-manager.h (module 'wifi'): ns3::WifiRemoteStation * ns3::AarfWifiManager::DoCreateStation() const [member function]
     cls.add_method('DoCreateStation', 
                    'ns3::WifiRemoteStation *', 
@@ -10446,6 +10472,16 @@ def register_Ns3AarfcdWifiManager_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
+    ## aarfcd-wifi-manager.h (module 'wifi'): void ns3::AarfcdWifiManager::SetHtSupported(bool enable) [member function]
+    cls.add_method('SetHtSupported', 
+                   'void', 
+                   [param('bool', 'enable')], 
+                   is_virtual=True)
+    ## aarfcd-wifi-manager.h (module 'wifi'): void ns3::AarfcdWifiManager::SetVhtSupported(bool enable) [member function]
+    cls.add_method('SetVhtSupported', 
+                   'void', 
+                   [param('bool', 'enable')], 
+                   is_virtual=True)
     ## aarfcd-wifi-manager.h (module 'wifi'): ns3::WifiRemoteStation * ns3::AarfcdWifiManager::DoCreateStation() const [member function]
     cls.add_method('DoCreateStation', 
                    'ns3::WifiRemoteStation *', 
@@ -10591,6 +10627,16 @@ def register_Ns3AmrrWifiManager_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
+    ## amrr-wifi-manager.h (module 'wifi'): void ns3::AmrrWifiManager::SetHtSupported(bool enable) [member function]
+    cls.add_method('SetHtSupported', 
+                   'void', 
+                   [param('bool', 'enable')], 
+                   is_virtual=True)
+    ## amrr-wifi-manager.h (module 'wifi'): void ns3::AmrrWifiManager::SetVhtSupported(bool enable) [member function]
+    cls.add_method('SetVhtSupported', 
+                   'void', 
+                   [param('bool', 'enable')], 
+                   is_virtual=True)
     ## amrr-wifi-manager.h (module 'wifi'): ns3::WifiRemoteStation * ns3::AmrrWifiManager::DoCreateStation() const [member function]
     cls.add_method('DoCreateStation', 
                    'ns3::WifiRemoteStation *', 
@@ -10722,6 +10768,16 @@ def register_Ns3AparfWifiManager_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
+    ## aparf-wifi-manager.h (module 'wifi'): void ns3::AparfWifiManager::SetHtSupported(bool enable) [member function]
+    cls.add_method('SetHtSupported', 
+                   'void', 
+                   [param('bool', 'enable')], 
+                   is_virtual=True)
+    ## aparf-wifi-manager.h (module 'wifi'): void ns3::AparfWifiManager::SetVhtSupported(bool enable) [member function]
+    cls.add_method('SetVhtSupported', 
+                   'void', 
+                   [param('bool', 'enable')], 
+                   is_virtual=True)
     ## aparf-wifi-manager.h (module 'wifi'): void ns3::AparfWifiManager::SetupPhy(ns3::Ptr<ns3::WifiPhy> phy) [member function]
     cls.add_method('SetupPhy', 
                    'void', 
@@ -10794,6 +10850,16 @@ def register_Ns3ArfWifiManager_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
+    ## arf-wifi-manager.h (module 'wifi'): void ns3::ArfWifiManager::SetHtSupported(bool enable) [member function]
+    cls.add_method('SetHtSupported', 
+                   'void', 
+                   [param('bool', 'enable')], 
+                   is_virtual=True)
+    ## arf-wifi-manager.h (module 'wifi'): void ns3::ArfWifiManager::SetVhtSupported(bool enable) [member function]
+    cls.add_method('SetVhtSupported', 
+                   'void', 
+                   [param('bool', 'enable')], 
+                   is_virtual=True)
     ## arf-wifi-manager.h (module 'wifi'): ns3::WifiRemoteStation * ns3::ArfWifiManager::DoCreateStation() const [member function]
     cls.add_method('DoCreateStation', 
                    'ns3::WifiRemoteStation *', 
@@ -11106,6 +11172,16 @@ def register_Ns3CaraWifiManager_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
+    ## cara-wifi-manager.h (module 'wifi'): void ns3::CaraWifiManager::SetHtSupported(bool enable) [member function]
+    cls.add_method('SetHtSupported', 
+                   'void', 
+                   [param('bool', 'enable')], 
+                   is_virtual=True)
+    ## cara-wifi-manager.h (module 'wifi'): void ns3::CaraWifiManager::SetVhtSupported(bool enable) [member function]
+    cls.add_method('SetVhtSupported', 
+                   'void', 
+                   [param('bool', 'enable')], 
+                   is_virtual=True)
     ## cara-wifi-manager.h (module 'wifi'): ns3::WifiRemoteStation * ns3::CaraWifiManager::DoCreateStation() const [member function]
     cls.add_method('DoCreateStation', 
                    'ns3::WifiRemoteStation *', 
@@ -14338,6 +14414,16 @@ def register_Ns3MinstrelWifiManager_methods(root_module, cls):
     cls.add_method('InitSampleTable', 
                    'void', 
                    [param('ns3::MinstrelWifiRemoteStation *', 'station')])
+    ## minstrel-wifi-manager.h (module 'wifi'): void ns3::MinstrelWifiManager::SetHtSupported(bool enable) [member function]
+    cls.add_method('SetHtSupported', 
+                   'void', 
+                   [param('bool', 'enable')], 
+                   is_virtual=True)
+    ## minstrel-wifi-manager.h (module 'wifi'): void ns3::MinstrelWifiManager::SetVhtSupported(bool enable) [member function]
+    cls.add_method('SetVhtSupported', 
+                   'void', 
+                   [param('bool', 'enable')], 
+                   is_virtual=True)
     ## minstrel-wifi-manager.h (module 'wifi'): void ns3::MinstrelWifiManager::SetupMac(ns3::Ptr<ns3::WifiMac> mac) [member function]
     cls.add_method('SetupMac', 
                    'void', 
@@ -15147,6 +15233,16 @@ def register_Ns3OnoeWifiManager_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
+    ## onoe-wifi-manager.h (module 'wifi'): void ns3::OnoeWifiManager::SetHtSupported(bool enable) [member function]
+    cls.add_method('SetHtSupported', 
+                   'void', 
+                   [param('bool', 'enable')], 
+                   is_virtual=True)
+    ## onoe-wifi-manager.h (module 'wifi'): void ns3::OnoeWifiManager::SetVhtSupported(bool enable) [member function]
+    cls.add_method('SetVhtSupported', 
+                   'void', 
+                   [param('bool', 'enable')], 
+                   is_virtual=True)
     ## onoe-wifi-manager.h (module 'wifi'): ns3::WifiRemoteStation * ns3::OnoeWifiManager::DoCreateStation() const [member function]
     cls.add_method('DoCreateStation', 
                    'ns3::WifiRemoteStation *', 
@@ -15455,6 +15551,16 @@ def register_Ns3ParfWifiManager_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
+    ## parf-wifi-manager.h (module 'wifi'): void ns3::ParfWifiManager::SetHtSupported(bool enable) [member function]
+    cls.add_method('SetHtSupported', 
+                   'void', 
+                   [param('bool', 'enable')], 
+                   is_virtual=True)
+    ## parf-wifi-manager.h (module 'wifi'): void ns3::ParfWifiManager::SetVhtSupported(bool enable) [member function]
+    cls.add_method('SetVhtSupported', 
+                   'void', 
+                   [param('bool', 'enable')], 
+                   is_virtual=True)
     ## parf-wifi-manager.h (module 'wifi'): void ns3::ParfWifiManager::SetupPhy(ns3::Ptr<ns3::WifiPhy> phy) [member function]
     cls.add_method('SetupPhy', 
                    'void', 
@@ -15887,6 +15993,16 @@ def register_Ns3RraaWifiManager_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
+    ## rraa-wifi-manager.h (module 'wifi'): void ns3::RraaWifiManager::SetHtSupported(bool enable) [member function]
+    cls.add_method('SetHtSupported', 
+                   'void', 
+                   [param('bool', 'enable')], 
+                   is_virtual=True)
+    ## rraa-wifi-manager.h (module 'wifi'): void ns3::RraaWifiManager::SetVhtSupported(bool enable) [member function]
+    cls.add_method('SetVhtSupported', 
+                   'void', 
+                   [param('bool', 'enable')], 
+                   is_virtual=True)
     ## rraa-wifi-manager.h (module 'wifi'): ns3::WifiRemoteStation * ns3::RraaWifiManager::DoCreateStation() const [member function]
     cls.add_method('DoCreateStation', 
                    'ns3::WifiRemoteStation *', 

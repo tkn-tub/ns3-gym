@@ -198,8 +198,8 @@ def register_types(module):
     module.add_class('PcapFile', import_from_module='ns.network')
     ## trace-helper.h (module 'network'): ns3::PcapHelper [class]
     module.add_class('PcapHelper', import_from_module='ns.network')
-    ## trace-helper.h (module 'network'): ns3::PcapHelper [enumeration]
-    module.add_enum('', ['DLT_NULL', 'DLT_EN10MB', 'DLT_PPP', 'DLT_RAW', 'DLT_IEEE802_11', 'DLT_LINUX_SLL', 'DLT_PRISM_HEADER', 'DLT_IEEE802_11_RADIO', 'DLT_IEEE802_15_4', 'DLT_NETLINK'], outer_class=root_module['ns3::PcapHelper'], import_from_module='ns.network')
+    ## trace-helper.h (module 'network'): ns3::PcapHelper::DataLinkType [enumeration]
+    module.add_enum('DataLinkType', ['DLT_NULL', 'DLT_EN10MB', 'DLT_PPP', 'DLT_RAW', 'DLT_IEEE802_11', 'DLT_LINUX_SLL', 'DLT_PRISM_HEADER', 'DLT_IEEE802_11_RADIO', 'DLT_IEEE802_15_4', 'DLT_NETLINK'], outer_class=root_module['ns3::PcapHelper'], import_from_module='ns.network')
     ## trace-helper.h (module 'network'): ns3::PcapHelperForDevice [class]
     module.add_class('PcapHelperForDevice', allow_subclassing=True, import_from_module='ns.network')
     ## internet-trace-helper.h (module 'internet'): ns3::PcapHelperForIpv4 [class]
@@ -230,6 +230,8 @@ def register_types(module):
     module.add_class('SimpleRefCount', automatic_type_narrowing=True, import_from_module='ns.core', template_parameters=['ns3::Object', 'ns3::ObjectBase', 'ns3::ObjectDeleter'], parent=root_module['ns3::ObjectBase'], memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'))
     ## simulator.h (module 'core'): ns3::Simulator [class]
     module.add_class('Simulator', destructor_visibility='private', import_from_module='ns.core')
+    ## simulator.h (module 'core'): ns3::Simulator [enumeration]
+    module.add_enum('', ['NO_CONTEXT'], outer_class=root_module['ns3::Simulator'], import_from_module='ns.core')
     ## tag.h (module 'network'): ns3::Tag [class]
     module.add_class('Tag', import_from_module='ns.network', parent=root_module['ns3::ObjectBase'])
     ## tag-buffer.h (module 'network'): ns3::TagBuffer [class]
@@ -500,6 +502,8 @@ def register_types(module):
     module.add_enum('ProtocolType', ['WESTWOOD', 'WESTWOODPLUS'], outer_class=root_module['ns3::TcpWestwood'])
     ## tcp-westwood.h (module 'internet'): ns3::TcpWestwood::FilterType [enumeration]
     module.add_enum('FilterType', ['NONE', 'TUSTIN'], outer_class=root_module['ns3::TcpWestwood'])
+    ## tcp-yeah.h (module 'internet'): ns3::TcpYeah [class]
+    module.add_class('TcpYeah', parent=root_module['ns3::TcpNewReno'])
     ## nstime.h (module 'core'): ns3::Time [class]
     module.add_class('Time', import_from_module='ns.core')
     ## nstime.h (module 'core'): ns3::Time::Unit [enumeration]
@@ -742,6 +746,8 @@ def register_types(module):
     module.add_class('TcpHighSpeed', parent=root_module['ns3::TcpNewReno'])
     ## tcp-hybla.h (module 'internet'): ns3::TcpHybla [class]
     module.add_class('TcpHybla', parent=root_module['ns3::TcpNewReno'])
+    ## tcp-illinois.h (module 'internet'): ns3::TcpIllinois [class]
+    module.add_class('TcpIllinois', parent=root_module['ns3::TcpNewReno'])
     ## tcp-l4-protocol.h (module 'internet'): ns3::TcpL4Protocol [class]
     module.add_class('TcpL4Protocol', parent=root_module['ns3::IpL4Protocol'])
     ## nstime.h (module 'core'): ns3::TimeValue [class]
@@ -1099,6 +1105,7 @@ def register_methods(root_module):
     register_Ns3TcpVegas_methods(root_module, root_module['ns3::TcpVegas'])
     register_Ns3TcpVeno_methods(root_module, root_module['ns3::TcpVeno'])
     register_Ns3TcpWestwood_methods(root_module, root_module['ns3::TcpWestwood'])
+    register_Ns3TcpYeah_methods(root_module, root_module['ns3::TcpYeah'])
     register_Ns3Time_methods(root_module, root_module['ns3::Time'])
     register_Ns3TraceSourceAccessor_methods(root_module, root_module['ns3::TraceSourceAccessor'])
     register_Ns3TracedValue__Ns3Time_methods(root_module, root_module['ns3::TracedValue< ns3::Time >'])
@@ -1209,6 +1216,7 @@ def register_methods(root_module):
     register_Ns3TcpBic_methods(root_module, root_module['ns3::TcpBic'])
     register_Ns3TcpHighSpeed_methods(root_module, root_module['ns3::TcpHighSpeed'])
     register_Ns3TcpHybla_methods(root_module, root_module['ns3::TcpHybla'])
+    register_Ns3TcpIllinois_methods(root_module, root_module['ns3::TcpIllinois'])
     register_Ns3TcpL4Protocol_methods(root_module, root_module['ns3::TcpL4Protocol'])
     register_Ns3TimeValue_methods(root_module, root_module['ns3::TimeValue'])
     register_Ns3TypeIdChecker_methods(root_module, root_module['ns3::TypeIdChecker'])
@@ -4367,10 +4375,10 @@ def register_Ns3PcapHelper_methods(root_module, cls):
     cls.add_constructor([param('ns3::PcapHelper const &', 'arg0')])
     ## trace-helper.h (module 'network'): ns3::PcapHelper::PcapHelper() [constructor]
     cls.add_constructor([])
-    ## trace-helper.h (module 'network'): ns3::Ptr<ns3::PcapFileWrapper> ns3::PcapHelper::CreateFile(std::string filename, std::_Ios_Openmode filemode, uint32_t dataLinkType, uint32_t snapLen=std::numeric_limits<unsigned int>::max(), int32_t tzCorrection=0) [member function]
+    ## trace-helper.h (module 'network'): ns3::Ptr<ns3::PcapFileWrapper> ns3::PcapHelper::CreateFile(std::string filename, std::_Ios_Openmode filemode, ns3::PcapHelper::DataLinkType dataLinkType, uint32_t snapLen=std::numeric_limits<unsigned int>::max(), int32_t tzCorrection=0) [member function]
     cls.add_method('CreateFile', 
                    'ns3::Ptr< ns3::PcapFileWrapper >', 
-                   [param('std::string', 'filename'), param('std::_Ios_Openmode', 'filemode'), param('uint32_t', 'dataLinkType'), param('uint32_t', 'snapLen', default_value='std::numeric_limits<unsigned int>::max()'), param('int32_t', 'tzCorrection', default_value='0')])
+                   [param('std::string', 'filename'), param('std::_Ios_Openmode', 'filemode'), param('ns3::PcapHelper::DataLinkType', 'dataLinkType'), param('uint32_t', 'snapLen', default_value='std::numeric_limits<unsigned int>::max()'), param('int32_t', 'tzCorrection', default_value='0')])
     ## trace-helper.h (module 'network'): std::string ns3::PcapHelper::GetFilenameFromDevice(std::string prefix, ns3::Ptr<ns3::NetDevice> device, bool useObjectNames=true) [member function]
     cls.add_method('GetFilenameFromDevice', 
                    'std::string', 
@@ -10867,6 +10875,48 @@ def register_Ns3TcpWestwood_methods(root_module, cls):
                    is_virtual=True)
     return
 
+def register_Ns3TcpYeah_methods(root_module, cls):
+    ## tcp-yeah.h (module 'internet'): ns3::TcpYeah::TcpYeah() [constructor]
+    cls.add_constructor([])
+    ## tcp-yeah.h (module 'internet'): ns3::TcpYeah::TcpYeah(ns3::TcpYeah const & sock) [copy constructor]
+    cls.add_constructor([param('ns3::TcpYeah const &', 'sock')])
+    ## tcp-yeah.h (module 'internet'): void ns3::TcpYeah::CongestionStateSet(ns3::Ptr<ns3::TcpSocketState> tcb, ns3::TcpSocketState::TcpCongState_t const newState) [member function]
+    cls.add_method('CongestionStateSet', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::TcpSocketState >', 'tcb'), param('ns3::TcpSocketState::TcpCongState_t const', 'newState')], 
+                   is_virtual=True)
+    ## tcp-yeah.h (module 'internet'): ns3::Ptr<ns3::TcpCongestionOps> ns3::TcpYeah::Fork() [member function]
+    cls.add_method('Fork', 
+                   'ns3::Ptr< ns3::TcpCongestionOps >', 
+                   [], 
+                   is_virtual=True)
+    ## tcp-yeah.h (module 'internet'): std::string ns3::TcpYeah::GetName() const [member function]
+    cls.add_method('GetName', 
+                   'std::string', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## tcp-yeah.h (module 'internet'): uint32_t ns3::TcpYeah::GetSsThresh(ns3::Ptr<const ns3::TcpSocketState> tcb, uint32_t bytesInFlight) [member function]
+    cls.add_method('GetSsThresh', 
+                   'uint32_t', 
+                   [param('ns3::Ptr< ns3::TcpSocketState const >', 'tcb'), param('uint32_t', 'bytesInFlight')], 
+                   is_virtual=True)
+    ## tcp-yeah.h (module 'internet'): static ns3::TypeId ns3::TcpYeah::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## tcp-yeah.h (module 'internet'): void ns3::TcpYeah::IncreaseWindow(ns3::Ptr<ns3::TcpSocketState> tcb, uint32_t segmentsAcked) [member function]
+    cls.add_method('IncreaseWindow', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::TcpSocketState >', 'tcb'), param('uint32_t', 'segmentsAcked')], 
+                   is_virtual=True)
+    ## tcp-yeah.h (module 'internet'): void ns3::TcpYeah::PktsAcked(ns3::Ptr<ns3::TcpSocketState> tcb, uint32_t segmentsAcked, ns3::Time const & rtt) [member function]
+    cls.add_method('PktsAcked', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::TcpSocketState >', 'tcb'), param('uint32_t', 'segmentsAcked'), param('ns3::Time const &', 'rtt')], 
+                   is_virtual=True)
+    return
+
 def register_Ns3Time_methods(root_module, cls):
     cls.add_binary_comparison_operator('<=')
     cls.add_binary_comparison_operator('!=')
@@ -16743,6 +16793,48 @@ def register_Ns3TcpHybla_methods(root_module, cls):
                    'uint32_t', 
                    [param('ns3::Ptr< ns3::TcpSocketState >', 'tcb'), param('uint32_t', 'segmentsAcked')], 
                    visibility='protected', is_virtual=True)
+    return
+
+def register_Ns3TcpIllinois_methods(root_module, cls):
+    ## tcp-illinois.h (module 'internet'): ns3::TcpIllinois::TcpIllinois() [constructor]
+    cls.add_constructor([])
+    ## tcp-illinois.h (module 'internet'): ns3::TcpIllinois::TcpIllinois(ns3::TcpIllinois const & sock) [copy constructor]
+    cls.add_constructor([param('ns3::TcpIllinois const &', 'sock')])
+    ## tcp-illinois.h (module 'internet'): void ns3::TcpIllinois::CongestionStateSet(ns3::Ptr<ns3::TcpSocketState> tcb, ns3::TcpSocketState::TcpCongState_t const newState) [member function]
+    cls.add_method('CongestionStateSet', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::TcpSocketState >', 'tcb'), param('ns3::TcpSocketState::TcpCongState_t const', 'newState')], 
+                   is_virtual=True)
+    ## tcp-illinois.h (module 'internet'): ns3::Ptr<ns3::TcpCongestionOps> ns3::TcpIllinois::Fork() [member function]
+    cls.add_method('Fork', 
+                   'ns3::Ptr< ns3::TcpCongestionOps >', 
+                   [], 
+                   is_virtual=True)
+    ## tcp-illinois.h (module 'internet'): std::string ns3::TcpIllinois::GetName() const [member function]
+    cls.add_method('GetName', 
+                   'std::string', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## tcp-illinois.h (module 'internet'): uint32_t ns3::TcpIllinois::GetSsThresh(ns3::Ptr<const ns3::TcpSocketState> tcb, uint32_t bytesInFlight) [member function]
+    cls.add_method('GetSsThresh', 
+                   'uint32_t', 
+                   [param('ns3::Ptr< ns3::TcpSocketState const >', 'tcb'), param('uint32_t', 'bytesInFlight')], 
+                   is_virtual=True)
+    ## tcp-illinois.h (module 'internet'): static ns3::TypeId ns3::TcpIllinois::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## tcp-illinois.h (module 'internet'): void ns3::TcpIllinois::IncreaseWindow(ns3::Ptr<ns3::TcpSocketState> tcb, uint32_t segmentsAcked) [member function]
+    cls.add_method('IncreaseWindow', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::TcpSocketState >', 'tcb'), param('uint32_t', 'segmentsAcked')], 
+                   is_virtual=True)
+    ## tcp-illinois.h (module 'internet'): void ns3::TcpIllinois::PktsAcked(ns3::Ptr<ns3::TcpSocketState> tcb, uint32_t segmentsAcked, ns3::Time const & rtt) [member function]
+    cls.add_method('PktsAcked', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::TcpSocketState >', 'tcb'), param('uint32_t', 'segmentsAcked'), param('ns3::Time const &', 'rtt')], 
+                   is_virtual=True)
     return
 
 def register_Ns3TcpL4Protocol_methods(root_module, cls):

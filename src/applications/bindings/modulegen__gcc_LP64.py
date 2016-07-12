@@ -154,8 +154,8 @@ def register_types(module):
     module.add_class('PcapFile', import_from_module='ns.network')
     ## trace-helper.h (module 'network'): ns3::PcapHelper [class]
     module.add_class('PcapHelper', import_from_module='ns.network')
-    ## trace-helper.h (module 'network'): ns3::PcapHelper [enumeration]
-    module.add_enum('', ['DLT_NULL', 'DLT_EN10MB', 'DLT_PPP', 'DLT_RAW', 'DLT_IEEE802_11', 'DLT_LINUX_SLL', 'DLT_PRISM_HEADER', 'DLT_IEEE802_11_RADIO', 'DLT_IEEE802_15_4', 'DLT_NETLINK'], outer_class=root_module['ns3::PcapHelper'], import_from_module='ns.network')
+    ## trace-helper.h (module 'network'): ns3::PcapHelper::DataLinkType [enumeration]
+    module.add_enum('DataLinkType', ['DLT_NULL', 'DLT_EN10MB', 'DLT_PPP', 'DLT_RAW', 'DLT_IEEE802_11', 'DLT_LINUX_SLL', 'DLT_PRISM_HEADER', 'DLT_IEEE802_11_RADIO', 'DLT_IEEE802_15_4', 'DLT_NETLINK'], outer_class=root_module['ns3::PcapHelper'], import_from_module='ns.network')
     ## trace-helper.h (module 'network'): ns3::PcapHelperForDevice [class]
     module.add_class('PcapHelperForDevice', allow_subclassing=True, import_from_module='ns.network')
     ## simple-net-device-helper.h (module 'network'): ns3::SimpleNetDeviceHelper [class]
@@ -164,6 +164,8 @@ def register_types(module):
     module.add_class('SimpleRefCount', automatic_type_narrowing=True, import_from_module='ns.core', template_parameters=['ns3::Object', 'ns3::ObjectBase', 'ns3::ObjectDeleter'], parent=root_module['ns3::ObjectBase'], memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'))
     ## simulator.h (module 'core'): ns3::Simulator [class]
     module.add_class('Simulator', destructor_visibility='private', import_from_module='ns.core')
+    ## simulator.h (module 'core'): ns3::Simulator [enumeration]
+    module.add_enum('', ['NO_CONTEXT'], outer_class=root_module['ns3::Simulator'], import_from_module='ns.core')
     ## data-calculator.h (module 'stats'): ns3::StatisticalSummary [class]
     module.add_class('StatisticalSummary', allow_subclassing=True, import_from_module='ns.stats')
     ## system-wall-clock-ms.h (module 'core'): ns3::SystemWallClockMs [class]
@@ -3369,10 +3371,10 @@ def register_Ns3PcapHelper_methods(root_module, cls):
     cls.add_constructor([param('ns3::PcapHelper const &', 'arg0')])
     ## trace-helper.h (module 'network'): ns3::PcapHelper::PcapHelper() [constructor]
     cls.add_constructor([])
-    ## trace-helper.h (module 'network'): ns3::Ptr<ns3::PcapFileWrapper> ns3::PcapHelper::CreateFile(std::string filename, std::_Ios_Openmode filemode, uint32_t dataLinkType, uint32_t snapLen=std::numeric_limits<unsigned int>::max(), int32_t tzCorrection=0) [member function]
+    ## trace-helper.h (module 'network'): ns3::Ptr<ns3::PcapFileWrapper> ns3::PcapHelper::CreateFile(std::string filename, std::_Ios_Openmode filemode, ns3::PcapHelper::DataLinkType dataLinkType, uint32_t snapLen=std::numeric_limits<unsigned int>::max(), int32_t tzCorrection=0) [member function]
     cls.add_method('CreateFile', 
                    'ns3::Ptr< ns3::PcapFileWrapper >', 
-                   [param('std::string', 'filename'), param('std::_Ios_Openmode', 'filemode'), param('uint32_t', 'dataLinkType'), param('uint32_t', 'snapLen', default_value='std::numeric_limits<unsigned int>::max()'), param('int32_t', 'tzCorrection', default_value='0')])
+                   [param('std::string', 'filename'), param('std::_Ios_Openmode', 'filemode'), param('ns3::PcapHelper::DataLinkType', 'dataLinkType'), param('uint32_t', 'snapLen', default_value='std::numeric_limits<unsigned int>::max()'), param('int32_t', 'tzCorrection', default_value='0')])
     ## trace-helper.h (module 'network'): std::string ns3::PcapHelper::GetFilenameFromDevice(std::string prefix, ns3::Ptr<ns3::NetDevice> device, bool useObjectNames=true) [member function]
     cls.add_method('GetFilenameFromDevice', 
                    'std::string', 
@@ -6582,10 +6584,10 @@ def register_Ns3BulkSendApplication_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
-    ## bulk-send-application.h (module 'applications'): void ns3::BulkSendApplication::SetMaxBytes(uint32_t maxBytes) [member function]
+    ## bulk-send-application.h (module 'applications'): void ns3::BulkSendApplication::SetMaxBytes(uint64_t maxBytes) [member function]
     cls.add_method('SetMaxBytes', 
                    'void', 
-                   [param('uint32_t', 'maxBytes')])
+                   [param('uint64_t', 'maxBytes')])
     ## bulk-send-application.h (module 'applications'): void ns3::BulkSendApplication::DoDispose() [member function]
     cls.add_method('DoDispose', 
                    'void', 
@@ -8337,10 +8339,10 @@ def register_Ns3OnOffApplication_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
-    ## onoff-application.h (module 'applications'): void ns3::OnOffApplication::SetMaxBytes(uint32_t maxBytes) [member function]
+    ## onoff-application.h (module 'applications'): void ns3::OnOffApplication::SetMaxBytes(uint64_t maxBytes) [member function]
     cls.add_method('SetMaxBytes', 
                    'void', 
-                   [param('uint32_t', 'maxBytes')])
+                   [param('uint64_t', 'maxBytes')])
     ## onoff-application.h (module 'applications'): void ns3::OnOffApplication::DoDispose() [member function]
     cls.add_method('DoDispose', 
                    'void', 
@@ -8571,9 +8573,9 @@ def register_Ns3PacketSink_methods(root_module, cls):
                    'ns3::Ptr< ns3::Socket >', 
                    [], 
                    is_const=True)
-    ## packet-sink.h (module 'applications'): uint32_t ns3::PacketSink::GetTotalRx() const [member function]
+    ## packet-sink.h (module 'applications'): uint64_t ns3::PacketSink::GetTotalRx() const [member function]
     cls.add_method('GetTotalRx', 
-                   'uint32_t', 
+                   'uint64_t', 
                    [], 
                    is_const=True)
     ## packet-sink.h (module 'applications'): static ns3::TypeId ns3::PacketSink::GetTypeId() [member function]
@@ -10412,9 +10414,9 @@ def register_Ns3UdpServer_methods(root_module, cls):
                    'uint16_t', 
                    [], 
                    is_const=True)
-    ## udp-server.h (module 'applications'): uint32_t ns3::UdpServer::GetReceived() const [member function]
+    ## udp-server.h (module 'applications'): uint64_t ns3::UdpServer::GetReceived() const [member function]
     cls.add_method('GetReceived', 
-                   'uint32_t', 
+                   'uint64_t', 
                    [], 
                    is_const=True)
     ## udp-server.h (module 'applications'): static ns3::TypeId ns3::UdpServer::GetTypeId() [member function]
