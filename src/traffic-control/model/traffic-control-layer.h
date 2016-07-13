@@ -33,14 +33,19 @@ class Packet;
 class QueueDiscItem;
 
 /**
+ * \defgroup traffic-control
+ *
+ * The Traffic Control layer aims at introducing an equivalent of the Linux Traffic
+ * Control infrastructure into ns-3. The Traffic Control layer sits in between
+ * the NetDevices (L2) and any network protocol (e.g., IP). It is in charge of
+ * processing packets and performing actions on them: scheduling, dropping,
+ * marking, policing, etc.
+ *
  * \ingroup traffic-control
  *
- * \brief Traffic control layer definition
+ * \brief Traffic control layer class
  *
- * This layer stays between NetDevices (L2) and any network protocol (e.g. IP).
- * When enabled, it is responsible to analyze packets and to perform actions on
- * them: the most common is scheduling.
- *
+ * This object represents the main interface of the Traffic Control Module.
  * Basically, we manage both IN and OUT directions (sometimes called RX and TX,
  * respectively). The OUT direction is easy to follow, since it involves
  * direct calls: upper layer (e.g. IP) calls the Send method on an instance of
