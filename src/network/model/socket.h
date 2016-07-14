@@ -1050,13 +1050,6 @@ protected:
   virtual void DoDispose (void);
 
   /**
-   * \brief Checks if the socket has a specific IPv4 ToS set
-   *
-   * \returns true if the socket has a IPv4 ToS set, false otherwise.
-   */
-  bool IsManualIpTos (void) const;
-
-  /**
    * \brief Checks if the socket has a specific IPv6 Tclass set
    *
    * \returns true if the socket has a IPv6 Tclass set, false otherwise.
@@ -1095,7 +1088,6 @@ private:
   uint8_t m_priority; //!< the socket priority
 
   //IPv4 options
-  bool m_manualIpTos; //!< socket has IPv4 TOS set
   bool m_manualIpTtl; //!< socket has IPv4 TTL set
   bool m_ipRecvTos;   //!< socket forwards IPv4 TOS tag to L4
   bool m_ipRecvTtl;   //!< socket forwards IPv4 TTL tag to L4

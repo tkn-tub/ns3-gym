@@ -43,8 +43,7 @@ Socket::GetTypeId (void)
 }
 
 Socket::Socket (void)
-  : m_manualIpTos (false),
-    m_manualIpTtl (false),
+  : m_manualIpTtl (false),
     m_ipRecvTos (false),
     m_ipRecvTtl (false),
     m_manualIpv6Tclass (false),
@@ -369,12 +368,6 @@ bool Socket::IsRecvPktInfo () const
 }
 
 bool
-Socket::IsManualIpTos (void) const
-{
-  return m_manualIpTos;
-}
-
-bool
 Socket::IsManualIpv6Tclass (void) const
 {
   return m_manualIpv6Tclass;
@@ -451,7 +444,6 @@ Socket::SetIpTos (uint8_t tos)
 {
   Address address;
   GetSockName (address);
-  m_manualIpTos = true;
   if (GetSocketType () == NS3_SOCK_STREAM)
     {
       // preserve the least two significant bits of the current TOS

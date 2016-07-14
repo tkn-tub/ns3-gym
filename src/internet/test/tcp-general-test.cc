@@ -1028,7 +1028,7 @@ TcpSocketSmallAcks::SendEmptyPacket (uint8_t flags)
    * if both options are set. Once the packet got to layer three, only
    * the corresponding tags will be read.
    */
-  if (IsManualIpTos ())
+  if (GetIpTos ())
     {
       SocketIpTosTag ipTosTag;
       ipTosTag.SetTos (GetIpTos ());
