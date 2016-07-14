@@ -736,7 +736,7 @@ public:
    *    14    |  mr+mt+md               | Int. Bulk (4)
    *    15    |  mmc+mr+mt+md           | Int. Bulk (4)
    *
-   * RFC 2474 (http://www.ietf.org/rfc/rfc1349.txt) redefines the TOS byte:
+   * RFC 2474 (http://www.ietf.org/rfc/rfc2474.txt) redefines the TOS byte:
    *
    *               0     1     2     3     4     5     6     7
    *           +-----+-----+-----+-----+-----+-----+-----+-----+

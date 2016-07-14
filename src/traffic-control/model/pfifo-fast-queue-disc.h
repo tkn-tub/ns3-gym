@@ -62,7 +62,7 @@ public:
 
   virtual ~PfifoFastQueueDisc();
 
-  /*
+  /**
    * Priority to band map
    */
   static constexpr int prio2band[] = {1, 2, 2, 2, 1, 2, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1};
