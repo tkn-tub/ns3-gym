@@ -57,6 +57,13 @@ class Ipv6Interface;
  * In both cases, a SocketIpTos tag is only added to the packet if the resulting
  * TOS is non-null. The Bind and Connect operations set the TOS for the
  * socket to the value specified in the provided address.
+ * If the TOS determined for a packet (as described above) is not null, the
+ * packet is assigned a priority based on that TOS value (according to the
+ * Socket::IpTos2Priority function). Otherwise, the priority set for the
+ * socket is assigned to the packet. Setting a TOS for a socket also sets a
+ * priority for the socket (according to the Socket::IpTos2Priority function).
+ * A SocketPriority tag is only added to the packet if the resulting priority
+ * is non-null.
  */
 
 class UdpSocketImpl : public UdpSocket

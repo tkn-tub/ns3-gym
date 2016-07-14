@@ -56,6 +56,7 @@ Socket::Socket (void)
   m_boundnetdevice = 0;
   m_recvPktInfo = false;
 
+  m_priority = 0;
   m_ipTos = 0;
   m_ipTtl = 0;
   m_ipv6Tclass = 0;
@@ -392,12 +393,74 @@ Socket::IsManualIpv6HopLimit (void) const
 }
 
 void
+Socket::SetPriority (uint8_t priority)
+{
+  if (priority <= 6)
+    {
+      m_priority = priority;
+    }
+  else
+    {
+      NS_LOG_ERROR ("Cannot set a priority higher than 6");
+    }
+}
+
+uint8_t
+Socket::GetPriority (void) const
+{
+  return m_priority;
+}
+
+uint8_t
+Socket::IpTos2Priority (uint8_t ipTos)
+{
+  uint8_t prio = NS3_PRIO_BESTEFFORT;
+  ipTos &= 0x1e;
+  switch (ipTos >> 1)
+    {
+    case 0:
+    case 1:
+    case 2:
+    case 3:
+      prio = NS3_PRIO_BESTEFFORT;
+      break;
+    case 4:
+    case 5:
+    case 6:
+    case 7:
+      prio = NS3_PRIO_BULK;
+      break;
+    case 8:
+    case 9:
+    case 10:
+    case 11:
+      prio = NS3_PRIO_INTERACTIVE;
+      break;
+    case 12:
+    case 13:
+    case 14:
+    case 15:
+      prio = NS3_PRIO_INTERACTIVE_BULK;
+      break;
+    }
+  return prio;
+}
+
+void
 Socket::SetIpTos (uint8_t tos)
 {
   Address address;
   GetSockName (address);
   m_manualIpTos = true;
+  if (GetSocketType () == NS3_SOCK_STREAM)
+    {
+      // preserve the least two significant bits of the current TOS
+      // value, which are used for ECN
+      tos &= 0xfc;
+      tos |= m_ipTos & 0x3;
+    }
   m_ipTos = tos;
+  m_priority = IpTos2Priority (tos);
 }
 
 uint8_t
@@ -782,6 +845,64 @@ void
 SocketIpTosTag::Print (std::ostream &os) const
 {
   os << "IP_TOS = " << m_ipTos;
+}
+
+
+SocketPriorityTag::SocketPriorityTag ()
+{
+}
+
+void
+SocketPriorityTag::SetPriority (uint8_t priority)
+{
+  m_priority = priority;
+}
+
+uint8_t
+SocketPriorityTag::GetPriority (void) const
+{
+  return m_priority;
+}
+
+TypeId
+SocketPriorityTag::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::SocketPriorityTag")
+    .SetParent<Tag> ()
+    .SetGroupName("Network")
+    .AddConstructor<SocketPriorityTag> ()
+    ;
+  return tid;
+}
+
+TypeId
+SocketPriorityTag::GetInstanceTypeId (void) const
+{
+  return GetTypeId ();
+}
+
+uint32_t
+SocketPriorityTag::GetSerializedSize (void) const
+{
+  return sizeof (uint8_t);
+}
+
+void
+SocketPriorityTag::Serialize (TagBuffer i) const
+{
+  i.WriteU8 (m_priority);
+}
+
+void
+SocketPriorityTag::Deserialize (TagBuffer i)
+{
+  m_priority = i.ReadU8();
+}
+
+void
+SocketPriorityTag::Print (std::ostream &os) const
+{
+  os << "SO_PRIORITY = " << m_priority;
 }
 
 

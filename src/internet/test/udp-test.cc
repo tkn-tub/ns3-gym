@@ -31,6 +31,7 @@
 #include "ns3/simple-net-device-helper.h"
 #include "ns3/drop-tail-queue.h"
 #include "ns3/socket.h"
+#include "ns3/traffic-control-helper.h"
 
 #include "ns3/boolean.h"
 #include "ns3/log.h"
@@ -41,6 +42,7 @@
 
 #include "ns3/arp-l3-protocol.h"
 #include "ns3/ipv4-l3-protocol.h"
+#include "ns3/ipv4-queue-disc-item.h"
 #include "ns3/ipv6-l3-protocol.h"
 #include "ns3/icmpv4-l4-protocol.h"
 #include "ns3/icmpv6-l4-protocol.h"
@@ -149,32 +151,26 @@ class UdpSocketImplTest : public TestCase
 {
   Ptr<Packet> m_receivedPacket;
   Ptr<Packet> m_receivedPacket2;
-  void DoSendData (Ptr<Socket> socket, std::string to);
-  void SendData (Ptr<Socket> socket, std::string to);
+  Ptr<Ipv4QueueDiscItem> m_sentPacket;
+  uint32_t GetTos (void);
+  uint32_t GetPriority (void);
+  void DoSendDataTo (Ptr<Socket> socket, std::string to);
+  void SendDataTo (Ptr<Socket> socket, std::string to);
+  void DoSendData (Ptr<Socket> socket);
+  void SendData (Ptr<Socket> socket);
 
 public:
   virtual void DoRun (void);
   UdpSocketImplTest ();
 
-  void ReceivePacket (Ptr<Socket> socket, Ptr<Packet> packet, const Address &from);
-  void ReceivePacket2 (Ptr<Socket> socket, Ptr<Packet> packet, const Address &from);
   void ReceivePkt (Ptr<Socket> socket);
   void ReceivePkt2 (Ptr<Socket> socket);
+  void SentPkt (Ptr<const QueueItem> item);
 };
 
 UdpSocketImplTest::UdpSocketImplTest ()
   : TestCase ("UDP socket implementation") 
 {
-}
-
-void UdpSocketImplTest::ReceivePacket (Ptr<Socket> socket, Ptr<Packet> packet, const Address &from)
-{
-  m_receivedPacket = packet;
-}
-
-void UdpSocketImplTest::ReceivePacket2 (Ptr<Socket> socket, Ptr<Packet> packet, const Address &from)
-{
-  m_receivedPacket2 = packet;
 }
 
 void UdpSocketImplTest::ReceivePkt (Ptr<Socket> socket)
@@ -193,8 +189,29 @@ void UdpSocketImplTest::ReceivePkt2 (Ptr<Socket> socket)
   NS_ASSERT (availableData == m_receivedPacket2->GetSize ());
 }
 
+void UdpSocketImplTest::SentPkt (Ptr<const QueueItem> item)
+{
+  Ptr<const Ipv4QueueDiscItem> ipv4Item = DynamicCast<const Ipv4QueueDiscItem> (item);
+  NS_TEST_EXPECT_MSG_NE (ipv4Item, 0, "no IPv4 packet");
+  Address addr;
+  m_sentPacket = Create<Ipv4QueueDiscItem> (ipv4Item->GetPacket ()->Copy (), addr, 0, ipv4Item->GetHeader ());
+}
+
+uint32_t UdpSocketImplTest::GetTos (void)
+{
+  return static_cast<uint32_t> (m_sentPacket->GetHeader ().GetTos ());
+}
+
+uint32_t UdpSocketImplTest::GetPriority (void)
+{
+  SocketPriorityTag priorityTag;
+  bool found = m_sentPacket->GetPacket ()->PeekPacketTag (priorityTag);
+  NS_TEST_EXPECT_MSG_EQ (found, true, "the packet should carry a SocketPriorityTag");
+  return static_cast<uint32_t> (priorityTag.GetPriority ());
+}
+
 void
-UdpSocketImplTest::DoSendData (Ptr<Socket> socket, std::string to)
+UdpSocketImplTest::DoSendDataTo (Ptr<Socket> socket, std::string to)
 {
   Address realTo = InetSocketAddress (Ipv4Address (to.c_str ()), 1234);
   NS_TEST_EXPECT_MSG_EQ (socket->SendTo (Create<Packet> (123), 0, realTo),
@@ -202,12 +219,26 @@ UdpSocketImplTest::DoSendData (Ptr<Socket> socket, std::string to)
 }
 
 void
-UdpSocketImplTest::SendData (Ptr<Socket> socket, std::string to)
+UdpSocketImplTest::SendDataTo (Ptr<Socket> socket, std::string to)
 {
   m_receivedPacket = Create<Packet> ();
   m_receivedPacket2 = Create<Packet> ();
   Simulator::ScheduleWithContext (socket->GetNode ()->GetId (), Seconds (0),
-                                  &UdpSocketImplTest::DoSendData, this, socket, to);
+                                  &UdpSocketImplTest::DoSendDataTo, this, socket, to);
+  Simulator::Run ();
+}
+
+void
+UdpSocketImplTest::DoSendData (Ptr<Socket> socket)
+{
+  NS_TEST_EXPECT_MSG_EQ (socket->Send (Create<Packet> (123), 0), 123, "100");
+}
+
+void
+UdpSocketImplTest::SendData (Ptr<Socket> socket)
+{
+  Simulator::ScheduleWithContext (socket->GetNode ()->GetId (), Seconds (0),
+                                  &UdpSocketImplTest::DoSendData, this, socket);
   Simulator::Run ();
 }
 
@@ -233,6 +264,9 @@ UdpSocketImplTest::DoRun (void)
 
   InternetStackHelper internet;
   internet.Install (nodes);
+
+  TrafficControlHelper tch = TrafficControlHelper::Default ();
+  QueueDiscContainer qdiscs = tch.Install (net1.Get (1));
 
   Ptr<Ipv4> ipv4;
   uint32_t netdev_idx;
@@ -279,7 +313,7 @@ UdpSocketImplTest::DoRun (void)
   // ------ Now the tests ------------
 
   // Unicast test
-  SendData (txSocket, "10.0.0.1");
+  SendDataTo (txSocket, "10.0.0.1");
   NS_TEST_EXPECT_MSG_EQ (m_receivedPacket->GetSize (), 123, "trivial");
   NS_TEST_EXPECT_MSG_EQ (m_receivedPacket2->GetSize (), 0, "second interface should receive it");
 
@@ -288,7 +322,7 @@ UdpSocketImplTest::DoRun (void)
 
   // Simple broadcast test
 
-  SendData (txSocket, "255.255.255.255");
+  SendDataTo (txSocket, "255.255.255.255");
   NS_TEST_EXPECT_MSG_EQ (m_receivedPacket->GetSize (), 123, "trivial");
   NS_TEST_EXPECT_MSG_EQ (m_receivedPacket2->GetSize (), 0, "second socket should not receive it (it is bound specifically to the second interface's address");
 
@@ -305,7 +339,7 @@ UdpSocketImplTest::DoRun (void)
   rxSocket2->SetRecvCallback (MakeCallback (&UdpSocketImplTest::ReceivePkt2, this));
   NS_TEST_EXPECT_MSG_EQ (rxSocket2->Bind (InetSocketAddress (Ipv4Address ("0.0.0.0"), 1234)), 0, "trivial");
 
-  SendData (txSocket, "255.255.255.255");
+  SendDataTo (txSocket, "255.255.255.255");
   NS_TEST_EXPECT_MSG_EQ (m_receivedPacket->GetSize (), 123, "trivial");
   NS_TEST_EXPECT_MSG_EQ (m_receivedPacket2->GetSize (), 123, "trivial");
 
@@ -315,7 +349,7 @@ UdpSocketImplTest::DoRun (void)
   // Simple Link-local multicast test
 
   txSocket->BindToNetDevice (net1.Get (1));
-  SendData (txSocket, "224.0.0.9");
+  SendDataTo (txSocket, "224.0.0.9");
   NS_TEST_EXPECT_MSG_EQ (m_receivedPacket->GetSize (), 0, "first socket should not receive it (it is bound specifically to the second interface's address");
   NS_TEST_EXPECT_MSG_EQ (m_receivedPacket2->GetSize (), 123, "recv2: 224.0.0.9");
 
@@ -336,6 +370,41 @@ UdpSocketImplTest::DoRun (void)
   err = txSocket->GetPeerName (peerAddress);
   NS_TEST_EXPECT_MSG_EQ (err, 0, "socket GetPeerName() should succeed when socket is connected");
   NS_TEST_EXPECT_MSG_EQ (peerAddress, peer, "address from socket GetPeerName() should equal the connected address");
+
+  m_receivedPacket->RemoveAllByteTags ();
+  m_receivedPacket2->RemoveAllByteTags ();
+
+  // TOS and priority tests
+
+  // Intercept the packets dequeued by the queue disc on the sender node
+  qdiscs.Get (0)->TraceConnectWithoutContext ("Dequeue", MakeCallback (&UdpSocketImplTest::SentPkt, this));
+
+  // The socket is not connected.
+  txSocket->SetIpTos (0x28);  // AF11
+  txSocket->SetPriority (6);  // Interactive
+  // Send a packet to a specified destination:
+  // - for not connected sockets, the tos specified in the destination address (0) is used
+  // - since the tos is zero, the priority set for the socket is used
+  SendDataTo (txSocket, "10.0.0.1");
+  NS_TEST_EXPECT_MSG_EQ (m_receivedPacket->GetSize (), 123, "trivial");
+
+  NS_TEST_EXPECT_MSG_EQ (GetTos (), 0, "the TOS should be set to 0");
+  NS_TEST_EXPECT_MSG_EQ (GetPriority (), 6, "Interactive (6)");
+
+  m_receivedPacket->RemoveAllByteTags ();
+
+  InetSocketAddress dest ("10.0.0.1", 1234);
+  dest.SetTos (0xb8);  // EF
+  // the connect operation sets the tos (and priority) for the socket
+  NS_TEST_EXPECT_MSG_EQ (txSocket->Connect (dest), 0, "the connect operation failed");
+
+  SendData (txSocket);
+  NS_TEST_EXPECT_MSG_EQ (m_receivedPacket->GetSize (), 123, "trivial");
+
+  NS_TEST_EXPECT_MSG_EQ (GetTos (), 0xb8, "the TOS should be set to 0xb8");
+  NS_TEST_EXPECT_MSG_EQ (GetPriority (), 4, "Interactive bulk (4)");
+
+  m_receivedPacket->RemoveAllByteTags ();
 
   Simulator::Destroy ();
 

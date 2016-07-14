@@ -192,7 +192,80 @@ a real (zeroed) buffer on the spot, and the efficiency will be lost there.
 Socket options
 **************
 
-*to be completed*
+ToS (Type of Service)
+======================
+
+The type of service associated with a socket can be set/read through public
+methods of the Socket base class::
+
+    void SetIpTos (uint8_t ipTos);
+    uint8_t GetIpTos (void) const;
+
+This option is equivalent to the IP_TOS option of BSD sockets. It only applies
+to sockets using the IPv4 protocol. The socket types that support setting
+the ToS field of the IPv4 header are :cpp:class:`ns3::UdpSocketImpl` and
+:cpp:class:`ns3::TcpSocketBase`.
+
+Setting the ToS with UDP sockets
+#################################
+
+For IPv4 packets, the ToS field is set according to the following rules:
+
+* If the socket is connected, the ToS field is set to the ToS value associated
+  with the socket.
+
+* If the socket is not connected, the ToS field is set to the value specified
+  in the destination address (of type :cpp:class:`ns3::InetSockAddress`) passed
+  to :cpp:func:`ns3::Socket::SendTo`, and the ToS value associated with the
+  socket is ignored.
+
+It has to be noted that the ToS value associated with the socket can also be set
+by the Bind and Connect operations, which use the ToS value specified in the
+provided address (of type :cpp:class:`ns3::InetSockAddress`).
+
+Setting the ToS with TCP sockets
+#################################
+
+For IPv4 packets, the ToS field is set to the ToS value associated with the
+socket. It has to be noted that the ToS value associated with the socket can
+also be set by the Bind and Connect operations, which use the ToS value specified
+in the provided address (of type :cpp:class:`ns3::InetSockAddress`).
+
+Priority
+=========
+
+The priority associated with a socket can be set/read through public methods of
+the Socket base class::
+
+    void SetPriority (uint8_t priority);
+    uint8_t GetPriority (void) const;
+
+This option is equivalent to the SO_PRIORITY option of BSD sockets. Only values
+in the range 0..6 can be set through the above method. Note that setting a ToS
+value for the socket also sets a priority for the socket (according to
+the :cpp:func:`ns3::Socket::IpTos2Priority` function). The socket types that
+support setting the priority for a packet are :cpp:class:`ns3::UdpSocketImpl`,
+:cpp:class:`ns3::TcpSocketBase` and :cpp:class:`ns3::PacketSocket`.
+
+Setting the priority with UDP sockets
+######################################
+
+If the packet is an IPv4 packet and the value to be inserted in the ToS field
+is not null, then the packet is assigned a priority based on such ToS value
+(according to the :cpp:func:`ns3::Socket::IpTos2Priority` function). Otherwise,
+the priority associated with the socket is assigned to the packet.
+
+Setting the priority with TCP sockets
+######################################
+
+Every packet is assigned a priority equal to the priority associated with the
+socket.
+
+Setting the priority with packet sockets
+#########################################
+
+Every packet is assigned a priority equal to the priority associated with the
+socket.
 
 Socket errno
 ************

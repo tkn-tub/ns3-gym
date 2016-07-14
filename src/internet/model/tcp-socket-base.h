@@ -202,6 +202,10 @@ public:
  * operations set the TOS for the socket to the value specified in the provided
  * address. A SocketIpTos tag is only added to the packet if the resulting
  * TOS is non-null.
+ * Each packet is assigned the priority set for the socket. Setting a TOS
+ * for a socket also sets a priority for the socket (according to the
+ * Socket::IpTos2Priority function). A SocketPriority tag is only added to the
+ * packet if the priority is non-null.
  *
  * Congestion state machine
  * ---------------------------

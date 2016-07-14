@@ -487,12 +487,21 @@ UdpSocketImpl::DoSendTo (Ptr<Packet> p, Ipv4Address dest, uint16_t port, uint8_t
       return -1;
     }
 
+  uint8_t priority = GetPriority ();
   if (tos)
     {
       SocketIpTosTag ipTosTag;
       ipTosTag.SetTos (tos);
       // This packet may already have a SocketIpTosTag (see BUG 2440)
       p->ReplacePacketTag (ipTosTag);
+      priority = IpTos2Priority (tos);
+    }
+
+  if (priority)
+    {
+      SocketPriorityTag priorityTag;
+      priorityTag.SetPriority (priority);
+      p->ReplacePacketTag (priorityTag);
     }
 
   Ptr<Ipv4> ipv4 = m_node->GetObject<Ipv4> ();
@@ -688,6 +697,14 @@ UdpSocketImpl::DoSendTo (Ptr<Packet> p, Ipv6Address dest, uint16_t port)
       SocketIpv6TclassTag ipTclassTag;
       ipTclassTag.SetTclass (GetIpv6Tclass ());
       p->AddPacketTag (ipTclassTag);
+    }
+
+  uint8_t priority = GetPriority ();
+  if (priority)
+    {
+      SocketPriorityTag priorityTag;
+      priorityTag.SetPriority (priority);
+      p->ReplacePacketTag (priorityTag);
     }
 
   Ptr<Ipv6> ipv6 = m_node->GetObject<Ipv6> ();
@@ -1000,6 +1017,10 @@ UdpSocketImpl::ForwardUp (Ptr<Packet> packet, Ipv4Header header, uint16_t port,
       packet->AddPacketTag (ipTtlTag);
     }
 
+  // in case the packet still has a priority tag attached, remove it
+  SocketPriorityTag priorityTag;
+  packet->RemovePacketTag (priorityTag);
+
   if ((m_rxAvailable + packet->GetSize ()) <= m_rcvBufSize)
     {
       Address address = InetSocketAddress (header.GetSource (), port);
@@ -1052,6 +1073,10 @@ UdpSocketImpl::ForwardUp6 (Ptr<Packet> packet, Ipv6Header header, uint16_t port,
       ipHopLimitTag.SetHopLimit (header.GetHopLimit ());
       packet->AddPacketTag (ipHopLimitTag);
     }
+
+  // in case the packet still has a priority tag attached, remove it
+  SocketPriorityTag priorityTag;
+  packet->RemovePacketTag (priorityTag);
 
   if ((m_rxAvailable + packet->GetSize ()) <= m_rcvBufSize)
     {

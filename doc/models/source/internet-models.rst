@@ -1,4 +1,4 @@
-Internet Models (IP, TCP, Routing, UDP, Internet Applications, Codel)
+Internet Models (IP, TCP, Routing, UDP, Internet Applications)
 ---------------------------------------------------------------------
 
 .. toctree::

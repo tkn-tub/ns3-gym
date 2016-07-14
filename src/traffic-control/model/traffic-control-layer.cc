@@ -21,6 +21,7 @@
 #include "ns3/log.h"
 #include "ns3/object-map.h"
 #include "ns3/packet.h"
+#include "ns3/socket.h"
 #include "ns3/queue-disc.h"
 
 namespace ns3 {
@@ -301,6 +302,12 @@ TrafficControlLayer::Send (Ptr<NetDevice> device, Ptr<QueueDiscItem> item)
       if (!devQueueIface->GetTxQueue (txq)->IsStopped ())
         {
           item->AddHeader ();
+          // a single queue device makes no use of the priority tag
+          if (devQueueIface->GetTxQueuesN () == 1)
+            {
+              SocketPriorityTag priorityTag;
+              item->GetPacket ()->RemovePacketTag (priorityTag);
+            }
           device->Send (item->GetPacket (), item->GetAddress (), item->GetProtocol ());
         }
     }

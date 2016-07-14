@@ -23,6 +23,7 @@
 #include "ns3/pointer.h"
 #include "ns3/object-vector.h"
 #include "ns3/packet.h"
+#include "ns3/socket.h"
 #include "ns3/unused.h"
 #include "queue-disc.h"
 
@@ -621,6 +622,12 @@ QueueDisc::Transmit (Ptr<QueueDiscItem> item)
       return false;
     }
 
+  // a single queue device makes no use of the priority tag
+  if (m_devQueueIface->GetTxQueuesN () == 1)
+    {
+      SocketPriorityTag priorityTag;
+      item->GetPacket ()->RemovePacketTag (priorityTag);
+    }
   m_device->Send (item->GetPacket (), item->GetAddress (), item->GetProtocol ());
 
   // the behavior here slightly diverges from Linux. In Linux, it is advised that

@@ -1048,6 +1048,17 @@ Ipv4L3Protocol::IpForward (Ptr<Ipv4Route> rtentry, Ptr<const Packet> p, const Ip
       m_dropTrace (header, packet, DROP_TTL_EXPIRED, m_node->GetObject<Ipv4> (), interface);
       return;
     }
+  // in case the packet still has a priority tag attached, remove it
+  SocketPriorityTag priorityTag;
+  packet->RemovePacketTag (priorityTag);
+  uint8_t priority = Socket::IpTos2Priority (ipHeader.GetTos ());
+  // add a priority tag if the priority is not null
+  if (priority)
+    {
+      priorityTag.SetPriority (priority);
+      packet->AddPacketTag (priorityTag);
+    }
+
   m_unicastForwardTrace (ipHeader, packet, interface);
   SendRealOut (rtentry, packet, ipHeader);
 }
