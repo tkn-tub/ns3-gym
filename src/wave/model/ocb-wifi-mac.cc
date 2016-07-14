@@ -22,7 +22,6 @@
 #include "ns3/pointer.h"
 #include "ns3/log.h"
 #include "ns3/string.h"
-#include "ns3/qos-tag.h"
 #include "ns3/mac-low.h"
 #include "ns3/dcf-manager.h"
 #include "ns3/mac-rx-middle.h"

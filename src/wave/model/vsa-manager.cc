@@ -18,7 +18,7 @@
 #include "ns3/log.h"
 #include "ns3/assert.h"
 #include "ns3/simulator.h"
-#include "ns3/qos-tag.h"
+#include "ns3/socket.h"
 #include "vsa-manager.h"
 #include "higher-tx-tag.h"
 #include "wave-net-device.h"
@@ -170,8 +170,9 @@ VsaManager::DoSendVsa (enum VsaTransmitInterval  interval, uint32_t channel,
 
   // refer to 1609.4-2010 chapter 5.4.1
   // Management frames are assigned the highest AC (AC_VO).
-  QosTag qosTag (7);
-  vsc->AddPacketTag (qosTag);
+  SocketPriorityTag priorityTag;
+  priorityTag.SetPriority (7);
+  vsc->AddPacketTag (priorityTag);
 
   WifiTxVector txVector;
   txVector.SetChannelWidth (10);

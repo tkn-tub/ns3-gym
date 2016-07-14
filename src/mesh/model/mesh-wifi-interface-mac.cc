@@ -34,7 +34,7 @@
 #include "ns3/pointer.h"
 #include "ns3/double.h"
 #include "ns3/trace-source-accessor.h"
-#include "ns3/qos-tag.h"
+#include "ns3/socket.h"
 
 namespace ns3 {
 
@@ -257,11 +257,11 @@ MeshWifiInterfaceMac::ForwardDown (Ptr<const Packet> const_packet, Mac48Address 
     }
   // Classify: application may have set a tag, which is removed here
   AcIndex ac;
-  QosTag tag;
+  SocketPriorityTag tag;
   if (packet->RemovePacketTag (tag))
     {
-      hdr.SetQosTid (tag.GetTid ());
-      ac = QosUtilsMapTidToAc (tag.GetTid ());
+      hdr.SetQosTid (tag.GetPriority ());
+      ac = QosUtilsMapTidToAc (tag.GetPriority ());
     }
   else
     {
@@ -470,7 +470,9 @@ MeshWifiInterfaceMac::Receive (Ptr<Packet> packet, WifiMacHeader const *hdr)
   // Check if QoS tag exists and add it:
   if (hdr->IsQosData ())
     {
-      packet->AddPacketTag (QosTag (hdr->GetQosTid ()));
+      SocketPriorityTag priorityTag;
+      priorityTag.SetPriority (hdr->GetQosTid ());
+      packet->ReplacePacketTag (priorityTag);
     }
   // Forward data up
   if (hdr->IsData ())

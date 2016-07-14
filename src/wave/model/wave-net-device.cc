@@ -24,7 +24,7 @@
 #include "ns3/node.h"
 #include "ns3/trace-source-accessor.h"
 #include "ns3/log.h"
-#include "ns3/qos-tag.h"
+#include "ns3/socket.h"
 #include "ns3/object-map.h"
 #include "ns3/object-vector.h"
 #include "wave-net-device.h"
@@ -421,8 +421,9 @@ WaveNetDevice::SendX (Ptr<Packet> packet, const Address & dest, uint32_t protoco
 
   // according to channel number and priority,
   // route the packet to a proper queue.
-  QosTag qos = QosTag (txInfo.priority);
-  packet->AddPacketTag (qos);
+  SocketPriorityTag prio;
+  prio.SetPriority (txInfo.priority);
+  packet->ReplacePacketTag (prio);
   Ptr<WifiMac> mac = GetMac (txInfo.channelNumber);
   Mac48Address realTo = Mac48Address::ConvertFrom (dest);
   mac->NotifyTx (packet);

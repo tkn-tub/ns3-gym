@@ -184,11 +184,25 @@ The following code shows how to create an AP with QoS enabled::
 With QoS-enabled MAC models it is possible to work with traffic belonging to
 four different Access Categories (ACs): **AC_VO** for voice traffic,
 **AC_VI** for video traffic, **AC_BE** for best-effort
-traffic and **AC_BK** for background traffic.  In order for the
-MAC to determine the appropriate AC for an MSDU, packets forwarded
-down to these MAC layers should be marked using **ns3::QosTag** in
-order to set a TID (traffic id) for that packet otherwise it will be
-considered belonging to **AC_BE**.
+traffic and **AC_BK** for background traffic.  The MAC determines
+the appropriate AC for an MSDU based on the DS field of the packet
+(ToS field in case of IPv4, Traffic Class field in case of IPv6).
+In particular, the user priority (UP) of an MSDU is set to the three most significant
+bits of the DS field. The Access Category is then determined according to the
+following table:
+
+===  ===============
+UP   Access Category
+===  ===============
+ 7     AC_VO
+ 6     AC_VO
+ 5     AC_VI
+ 4     AC_VI
+ 3     AC_BE
+ 0     AC_BE
+ 2     AC_BK
+ 1     AC_BK
+===  ===============
 
 To create ad-hoc MAC instances, simply use ``ns3::AdhocWifiMac`` instead of ``ns3::StaWifiMac`` or ``ns3::ApWifiMac``.
 
