@@ -68,6 +68,12 @@ public:
    */
   void SetRemote (PacketSocketAddress addr);
 
+  /**
+   * \brief Query the priority value of this socket
+   * \return The priority value
+   */
+  uint8_t GetPriority (void) const;
+
 protected:
   virtual void DoDispose (void);
 
@@ -77,6 +83,12 @@ private:
   virtual void StopApplication (void);
 
   /**
+   * \brief Manually set the socket priority
+   * \param priority The socket priority (in the range 0..6)
+   */
+  void SetPriority (uint8_t priority);
+
+  /**
    * \brief Send a packet
    */
   void Send (void);
@@ -84,6 +96,7 @@ private:
   uint32_t m_maxPackets; //!< Maximum number of packets the application will send
   Time m_interval;       //!< Packet inter-send time
   uint32_t m_size;       //!< Size of the sent packet
+  uint8_t m_priority;    //!< Priority of the sent packets
 
   uint32_t m_sent;       //!< Counter for sent packets
   Ptr<Socket> m_socket;  //!< Socket

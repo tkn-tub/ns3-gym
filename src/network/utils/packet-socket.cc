@@ -333,6 +333,14 @@ PacketSocket::SendTo (Ptr<Packet> p, uint32_t flags, const Address &address)
       return -1;
     }
 
+  uint8_t priority = GetPriority ();
+  if (priority)
+    {
+      SocketPriorityTag priorityTag;
+      priorityTag.SetPriority (priority);
+      p->ReplacePacketTag (priorityTag);
+    }
+
   bool error = false;
   Address dest = ad.GetPhysicalAddress ();
   if (ad.IsSingleDevice ())
@@ -399,6 +407,9 @@ PacketSocket::ForwardUp (Ptr<NetDevice> device, Ptr<const Packet> packet,
       pst.SetDestAddress (to);
       copy->AddPacketTag (pst); // Attach Packet Type and Dest Address
       copy->AddPacketTag (dnt); // Attach device source name
+      // in case the packet still has a priority tag, remove it
+      SocketPriorityTag priorityTag;
+      copy->RemovePacketTag (priorityTag);
       m_deliveryQueue.push (std::make_pair (copy, address));
       m_rxAvailable += packet->GetSize ();
       NS_LOG_LOGIC ("UID is " << packet->GetUid () << " PacketSocket " << this);

@@ -60,6 +60,12 @@ PacketSocketClient::GetTypeId (void)
                    UintegerValue (1024),
                    MakeUintegerAccessor (&PacketSocketClient::m_size),
                    MakeUintegerChecker<uint32_t> ())
+    .AddAttribute ("Priority",
+                   "Priority assigned to the packets generated.",
+                   UintegerValue (0),
+                   MakeUintegerAccessor (&PacketSocketClient::SetPriority,
+                                         &PacketSocketClient::GetPriority),
+                   MakeUintegerChecker<uint8_t> ())
     .AddTraceSource ("Tx", "A packet has been sent",
                      MakeTraceSourceAccessor (&PacketSocketClient::m_txTrace),
                      "ns3::Packet::AddressTracedCallback")
@@ -97,6 +103,22 @@ PacketSocketClient::DoDispose (void)
 }
 
 void
+PacketSocketClient::SetPriority (uint8_t priority)
+{
+  m_priority = priority;
+  if (m_socket)
+    {
+      m_socket->SetPriority (priority);
+    }
+}
+
+uint8_t
+PacketSocketClient::GetPriority (void) const
+{
+  return m_priority;
+}
+
+void
 PacketSocketClient::StartApplication (void)
 {
   NS_LOG_FUNCTION (this);
@@ -109,6 +131,11 @@ PacketSocketClient::StartApplication (void)
 
       m_socket->Bind (m_peerAddress);
       m_socket->Connect (m_peerAddress);
+
+      if (m_priority)
+        {
+          m_socket->SetPriority (m_priority);
+        }
     }
 
   m_socket->SetRecvCallback (MakeNullCallback<void, Ptr<Socket> > ());
