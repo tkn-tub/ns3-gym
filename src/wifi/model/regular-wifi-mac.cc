@@ -42,7 +42,8 @@ NS_OBJECT_ENSURE_REGISTERED (RegularWifiMac);
 RegularWifiMac::RegularWifiMac () :
   m_htSupported (0),
   m_vhtSupported (0),
-  m_erpSupported (0)
+  m_erpSupported (0),
+  m_isDsssOnly (0)
 {
   NS_LOG_FUNCTION (this);
   m_rxMiddle = new MacRxMiddle ();
@@ -1109,6 +1110,7 @@ RegularWifiMac::FinishConfigureStandard (enum WifiPhyStandard standard)
     case WIFI_PHY_STANDARD_80211b:
       cwmin = 31;
       cwmax = 1023;
+      m_isDsssOnly = true;
       break;
     default:
       NS_FATAL_ERROR ("Unsupported WifiPhyStandard in RegularWifiMac::FinishConfigureStandard ()");
@@ -1122,12 +1124,12 @@ RegularWifiMac::ConfigureContentionWindow (uint32_t cwMin, uint32_t cwMax)
 {
   //The special value of AC_BE_NQOS which exists in the Access
   //Category enumeration allows us to configure plain old DCF.
-  ConfigureDcf (m_dca, cwMin, cwMax, AC_BE_NQOS);
+  ConfigureDcf (m_dca, cwMin, cwMax, m_isDsssOnly, AC_BE_NQOS);
 
   //Now we configure the EDCA functions
   for (EdcaQueues::iterator i = m_edca.begin (); i != m_edca.end (); ++i)
   {
-    ConfigureDcf (i->second, cwMin, cwMax, i->first);
+    ConfigureDcf (i->second, cwMin, cwMax, m_isDsssOnly, i->first);
   }
 }
 

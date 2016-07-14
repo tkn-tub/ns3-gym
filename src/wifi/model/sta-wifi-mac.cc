@@ -538,6 +538,15 @@ StaWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
                   SetSlot (MicroSeconds (20));
                 }
             }
+            if (m_qosSupported)
+            {
+              EdcaParameterSet edcaParameters = beacon.GetEdcaParameterSet ();
+              //The value of the TXOP Limit field is specified as an unsigned integer, with the least significant octet transmitted first, in units of 32 μs.
+              SetEdcaParameters (AC_BE, edcaParameters.GetBeCWmin(), edcaParameters.GetBeCWmax(), edcaParameters.GetBeAifsn(), 32 * MicroSeconds (edcaParameters.GetBeTXOPLimit()));
+              SetEdcaParameters (AC_BK, edcaParameters.GetBkCWmin(), edcaParameters.GetBkCWmax(), edcaParameters.GetBkAifsn(), 32 * MicroSeconds (edcaParameters.GetBkTXOPLimit()));
+              SetEdcaParameters (AC_VI, edcaParameters.GetViCWmin(), edcaParameters.GetViCWmax(), edcaParameters.GetViAifsn(), 32 * MicroSeconds (edcaParameters.GetViTXOPLimit()));
+              SetEdcaParameters (AC_VO, edcaParameters.GetVoCWmin(), edcaParameters.GetVoCWmax(), edcaParameters.GetVoAifsn(), 32 * MicroSeconds (edcaParameters.GetVoTXOPLimit()));
+            }
           m_stationManager->SetShortPreambleEnabled (isShortPreambleEnabled);
           m_stationManager->SetShortSlotTimeEnabled (capabilities.IsShortSlotTime ());
         }
@@ -687,6 +696,15 @@ StaWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
                 }
               m_stationManager->SetShortPreambleEnabled (isShortPreambleEnabled);
               m_stationManager->SetShortSlotTimeEnabled (capabilities.IsShortSlotTime ());
+              if (m_qosSupported)
+                {
+                  EdcaParameterSet edcaParameters = assocResp.GetEdcaParameterSet ();
+                  //The value of the TXOP Limit field is specified as an unsigned integer, with the least significant octet transmitted first, in units of 32 μs.
+                  SetEdcaParameters (AC_BE, edcaParameters.GetBeCWmin(), edcaParameters.GetBeCWmax(), edcaParameters.GetBeAifsn(), 32 * MicroSeconds (edcaParameters.GetBeTXOPLimit()));
+                  SetEdcaParameters (AC_BK, edcaParameters.GetBkCWmin(), edcaParameters.GetBkCWmax(), edcaParameters.GetBkAifsn(), 32 * MicroSeconds (edcaParameters.GetBkTXOPLimit()));
+                  SetEdcaParameters (AC_VI, edcaParameters.GetViCWmin(), edcaParameters.GetViCWmax(), edcaParameters.GetViAifsn(), 32 * MicroSeconds (edcaParameters.GetViTXOPLimit()));
+                  SetEdcaParameters (AC_VO, edcaParameters.GetVoCWmin(), edcaParameters.GetVoCWmax(), edcaParameters.GetVoAifsn(), 32 * MicroSeconds (edcaParameters.GetVoTXOPLimit()));
+                }
               if (m_htSupported)
                 {
                   HtCapabilities htcapabilities = assocResp.GetHtCapabilities ();
@@ -803,6 +821,16 @@ StaWifiMac::SetState (MacState value)
       m_deAssocLogger (GetBssid ());
     }
   m_state = value;
+}
+
+void
+StaWifiMac::SetEdcaParameters (AcIndex ac, uint8_t cwMin, uint8_t cwMax, uint8_t aifsn, Time txopLimit)
+{
+  Ptr<EdcaTxopN> edca = m_edca.find (ac)->second;
+  edca->SetMinCw (cwMin);
+  edca->SetMaxCw (cwMax);
+  edca->SetAifsn (aifsn);
+  edca->SetTxopLimit (txopLimit);
 }
 
 } //namespace ns3

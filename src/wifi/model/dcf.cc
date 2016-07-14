@@ -48,6 +48,11 @@ Dcf::GetTypeId (void)
                    MakeUintegerAccessor (&Dcf::SetAifsn,
                                          &Dcf::GetAifsn),
                    MakeUintegerChecker<uint32_t> ())
+    .AddAttribute ("TxopLimit", "The TXOP limit: the default value conforms to simple DCA.",
+                   TimeValue (MilliSeconds (0)),
+                   MakeTimeAccessor (&Dcf::SetTxopLimit,
+                                     &Dcf::GetTxopLimit),
+                   MakeTimeChecker ())
   ;
   return tid;
 }

@@ -308,11 +308,12 @@ protected:
    * \param dcf the DCF to be configured
    * \param cwmin the minimum congestion window for the DCF
    * \param cwmax the maximum congestion window for the DCF
+   * \param isDsss flag to indicate whether PHY is DSSS or HR/DSSS
    * \param ac the access category for the DCF
    *
    * Configure the DCF with appropriate values depending on the given access category.
    */
-  void ConfigureDcf (Ptr<Dcf> dcf, uint32_t cwmin, uint32_t cwmax, enum AcIndex ac);
+  void ConfigureDcf (Ptr<Dcf> dcf, uint32_t cwmin, uint32_t cwmax, bool isDsss, enum AcIndex ac);
 
 
 private:

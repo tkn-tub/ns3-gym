@@ -979,10 +979,7 @@ MacLow::ReceiveOk (Ptr<Packet> packet, double rxSnr, WifiTxVector txVector, Wifi
       m_stationManager->ReportDataOk (m_currentHdr.GetAddr1 (), &m_currentHdr,
                                       rxSnr, txVector.GetMode (), tag.Get ());
 
-      FlushAggregateQueue ();
-      m_ampdu = false;
       bool gotAck = false;
-
       if (m_txParams.MustWaitNormalAck ()
           && m_normalAckTimeoutEvent.IsRunning ())
         {
@@ -1004,8 +1001,16 @@ MacLow::ReceiveOk (Ptr<Packet> packet, double rxSnr, WifiTxVector txVector, Wifi
       if (m_txParams.HasNextPacket ())
         {
           m_waitSifsEvent = Simulator::Schedule (GetSifs (),
+                                                 &MacLow::WaitSifsAfterEndTxFragment, this);
+        }
+      else if (m_currentHdr.IsQosData () && !m_ampdu)
+        {
+          m_waitSifsEvent = Simulator::Schedule (GetSifs (),
                                                  &MacLow::WaitSifsAfterEndTx, this);
         }
+
+      FlushAggregateQueue ();
+      m_ampdu = false;
     }
   else if (hdr.IsBlockAck () && hdr.GetAddr1 () == m_self
            && (m_txParams.MustWaitBasicBlockAck () || m_txParams.MustWaitCompressedBlockAck ())
@@ -1376,7 +1381,6 @@ WifiTxVector
 MacLow::GetDataTxVector (Ptr<const Packet> packet, const WifiMacHeader *hdr) const
 {
   Mac48Address to = hdr->GetAddr1 ();
-  WifiMacTrailer fcs;
   return m_stationManager->GetDataTxVector (to, hdr, packet);
 }
 
@@ -1977,13 +1981,13 @@ MacLow::StartDataTxTimers (WifiTxVector dataTxVector)
         {
           Time delay = txDuration + GetRifs ();
           NS_ASSERT (m_waitRifsEvent.IsExpired ());
-          m_waitRifsEvent = Simulator::Schedule (delay, &MacLow::WaitSifsAfterEndTx, this);
+          m_waitRifsEvent = Simulator::Schedule (delay, &MacLow::WaitSifsAfterEndTxFragment, this);
         }
       else
         {
           Time delay = txDuration + GetSifs ();
           NS_ASSERT (m_waitSifsEvent.IsExpired ());
-          m_waitSifsEvent = Simulator::Schedule (delay, &MacLow::WaitSifsAfterEndTx, this);
+          m_waitSifsEvent = Simulator::Schedule (delay, &MacLow::WaitSifsAfterEndTxFragment, this);
         }
     }
   else
@@ -2321,6 +2325,12 @@ MacLow::SendDataAfterCts (Mac48Address source, Time duration)
 
   ForwardDown (m_currentPacket, &m_currentHdr, m_currentTxVector, preamble);
   m_currentPacket = 0;
+}
+
+void
+MacLow::WaitSifsAfterEndTxFragment (void)
+{
+  m_listener->StartNextFragment ();
 }
 
 void

@@ -561,6 +561,7 @@ private:
   TracedCallback<const WifiMacHeader &> m_txErrCallback;
   
   bool m_shortSlotTimeSupported;
+  bool m_isDsssOnly;
 };
 
 } //namespace ns3

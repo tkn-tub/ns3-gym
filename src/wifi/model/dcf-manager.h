@@ -79,6 +79,12 @@ public:
    */
   void SetCwMax (uint32_t maxCw);
   /**
+   * Set the TXOP limit.
+   *
+   * \param txopLimit the TXOP limit
+   */
+  void SetTxopLimit (Time txopLimit);
+  /**
    * Return the number of slots that make up an AIFS.
    *
    * \return the number of slots that make up an AIFS
@@ -96,6 +102,13 @@ public:
    * \return the maximum congestion window size
    */
   uint32_t GetCwMax (void) const;
+  /**
+   * Return the TXOP limit.
+   *
+   * \return the TXOP limit
+   */
+  Time GetTxopLimit (void) const;
+
   /**
    * Update the value of the CW variable to take into account
    * a transmission success or a transmission abort (stop transmission
@@ -240,6 +253,7 @@ private:
   uint32_t m_cwMin;
   uint32_t m_cwMax;
   uint32_t m_cw;
+  Time m_txopLimit;
   bool m_accessRequested;
 };
 

@@ -59,6 +59,13 @@ DcfState::SetAifsn (uint32_t aifsn)
 }
 
 void
+DcfState::SetTxopLimit (Time txopLimit)
+{
+  NS_ASSERT_MSG ((txopLimit.GetMicroSeconds () % 32 == 0), "The TXOP limit must be expressed in multiple of 32 microseconds!");
+  m_txopLimit = txopLimit;
+}
+
+void
 DcfState::SetCwMin (uint32_t minCw)
 {
   bool changed = (m_cwMin != minCw);
@@ -84,6 +91,12 @@ uint32_t
 DcfState::GetAifsn (void) const
 {
   return m_aifsn;
+}
+
+Time
+DcfState::GetTxopLimit (void) const
+{
+  return m_txopLimit;
 }
 
 uint32_t

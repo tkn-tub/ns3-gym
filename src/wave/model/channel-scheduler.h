@@ -29,8 +29,8 @@ struct EdcaParameter
   uint32_t cwmax;
   uint32_t aifsn;
 };
-typedef std::map<AcIndex,EdcaParameter> EdcaParameterSet;
-typedef std::map<AcIndex,EdcaParameter>::const_iterator EdcaParameterSetI;
+typedef std::map<AcIndex,EdcaParameter> EdcaParameters;
+typedef std::map<AcIndex,EdcaParameter>::const_iterator EdcaParametersI;
 
 #define EXTENDED_ALTERNATING 0x00
 #define EXTENDED_CONTINUOUS 0xff
@@ -44,7 +44,7 @@ typedef std::map<AcIndex,EdcaParameter>::const_iterator EdcaParameterSetI;
  * \param extendedAccess Indicates that the MLME should provide continuous
  * access (during both SCH interval and CCH interval) to the SCH for ExtendedAccess
  * control channel intervals. A value of 255 indicates indefinite access.
- * \param edcaParameterSet If present, as specified in IEEE Std 802.11.
+ * \param edcaParameters If present, as specified in IEEE Std 802.11.
  */
 struct SchInfo
 {
@@ -52,7 +52,7 @@ struct SchInfo
   //OperationalRateSet  operationalRateSet;  // not supported
   bool immediateAccess;
   uint8_t extendedAccess;
-  EdcaParameterSet edcaParameterSet;
+  EdcaParameters edcaParameters;
   SchInfo ()
     : channelNumber (SCH1),
       immediateAccess (false),
@@ -67,11 +67,11 @@ struct SchInfo
   {
 
   }
-  SchInfo (uint32_t channel, bool immediate, uint32_t channelAccess, EdcaParameterSet edca)
+  SchInfo (uint32_t channel, bool immediate, uint32_t channelAccess, EdcaParameters edca)
     : channelNumber (channel),
       immediateAccess (immediate),
       extendedAccess (channelAccess),
-      edcaParameterSet (edca)
+      edcaParameters (edca)
   {
 
   }

@@ -129,9 +129,11 @@ public:
   virtual void SetMinCw (uint32_t minCw);
   virtual void SetMaxCw (uint32_t maxCw);
   virtual void SetAifsn (uint32_t aifsn);
+  virtual void SetTxopLimit (Time txopLimit);
   virtual uint32_t GetMinCw (void) const;
   virtual uint32_t GetMaxCw (void) const;
   virtual uint32_t GetAifsn (void) const;
+  virtual Time GetTxopLimit (void) const;
 
   /**
    * \param packet packet to send
@@ -235,7 +237,7 @@ private:
    * Start transmission for the next fragment.
    * This is called for fragment only.
    */
-  void StartNext (void);
+  void StartNextFragment (void);
   /**
    * Cancel the transmission.
    */

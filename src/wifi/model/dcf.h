@@ -22,6 +22,7 @@
 #define DCF_H
 
 #include "ns3/object.h"
+#include "ns3/nstime.h"
 
 namespace ns3 {
 
@@ -53,6 +54,13 @@ public:
    * Calling this method after DcfManager::Add has been called is not recommended.
    */
   virtual void SetAifsn (uint32_t aifsn) = 0;
+  /*
+   * Set the TXOP limit.
+   *
+   * \param txopLimit the TXOP limit.
+   * Value zero corresponds to default DCF.
+   */
+  virtual void SetTxopLimit (Time txopLimit) = 0;
   /**
    * Return the minimum contention window size.
    *
@@ -71,6 +79,12 @@ public:
    * \return the number of slots that make up an AIFS
    */
   virtual uint32_t GetAifsn (void) const = 0;
+  /**
+   * Return the TXOP limit.
+   *
+   * \return the TXOP limit
+   */
+  virtual Time GetTxopLimit (void) const = 0;
 };
 
 } //namespace ns3

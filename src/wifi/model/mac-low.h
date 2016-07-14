@@ -126,7 +126,13 @@ public:
    * Invoked when ns3::MacLow wants to start a new transmission
    * as configured by MacLowTransmissionParameters::EnableNextData.
    * The listener is expected to call again MacLow::StartTransmission
-   * with the "next" data to send.
+   * with the "next" fragment to send.
+   */
+  virtual void StartNextFragment (void) = 0;
+  /**
+   * Invoked when ns3::MacLow wants to continue the TXOP.
+   * The listener is expected to call again MacLow::StartTransmission
+   * with the "next" packet to send.
    */
   virtual void StartNext (void) = 0;
   /**
@@ -359,7 +365,7 @@ public:
    *
    * Add the transmission duration of the next data to the
    * durationId of the outgoing packet and call
-   * MacLowTransmissionListener::StartNext at the end of
+   * MacLowTransmissionListener::StartNextFragment at the end of
    * the current transmission + SIFS.
    */
   void EnableNextData (uint32_t size);
@@ -703,6 +709,10 @@ public:
                                   const WifiMacHeader* hdr,
                                   const MacLowTransmissionParameters& parameters) const;
 
+  Time CalculateOverallTxTime (Ptr<const Packet> packet,
+                               const WifiMacHeader* hdr,
+                               const MacLowTransmissionParameters &params) const;
+
   /**
    * \param packet packet to send
    * \param hdr 802.11 header for packet to send
@@ -1026,9 +1036,6 @@ private:
    */
   bool NeedCtsToSelf (void);
 
-  Time CalculateOverallTxTime (Ptr<const Packet> packet,
-                               const WifiMacHeader* hdr,
-                               const MacLowTransmissionParameters &params) const;
   void NotifyNav (Ptr<const Packet> packet,const WifiMacHeader &hdr, WifiPreamble preamble);
   /**
    * Reset NAV with the given duration.
@@ -1137,11 +1144,14 @@ private:
    * \param duration
    */
   void SendDataAfterCts (Mac48Address source, Time duration);
+
   /**
    * Event handler that is usually scheduled to fired at the appropriate time
    * after completing transmissions.
    */
+  void WaitSifsAfterEndTxFragment (void);
   void WaitSifsAfterEndTx (void);
+
   /**
    * A transmission that does not require an ACK has completed.
    */

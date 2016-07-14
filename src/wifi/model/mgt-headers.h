@@ -34,6 +34,7 @@
 #include "ht-operations.h"
 #include "vht-capabilities.h"
 #include "erp-information.h"
+#include "edca-parameter-set.h"
 
 namespace ns3 {
 
@@ -195,6 +196,12 @@ public:
    */
   ErpInformation GetErpInformation (void) const;
   /**
+   * Return the EDCA Parameter Set.
+   *
+   * \return the EDCA Parameter Set
+   */
+  EdcaParameterSet GetEdcaParameterSet (void) const;
+  /**
    * Set the VHT capabilities.
    *
    * \param vhtcapabilities VHT capabilities
@@ -236,6 +243,12 @@ public:
    * \param erpInformation the ERP information
    */
   void SetErpInformation (ErpInformation erpInformation);
+  /**
+   * Set the EDCA Parameter Set.
+   *
+   * \param edcaParameterSet the EDCA Parameter Set
+   */
+  void SetEdcaParameterSet (EdcaParameterSet edcaParameterSet);
 
   /**
    * Register this type.
@@ -257,7 +270,8 @@ private:
   HtCapabilities m_htCapability; //!< HT capabilities
   HtOperations m_htOperations; //!< HT operations
   VhtCapabilities m_vhtCapability; //!< VHT capabilities
-  ErpInformation m_erpInformation;    //!< ERP information
+  ErpInformation m_erpInformation; //!< ERP information
+  EdcaParameterSet m_edcaParameterSet; //!< EDCA Parameter Set
 };
 
 
@@ -398,6 +412,12 @@ public:
    */
   ErpInformation GetErpInformation (void) const;
   /**
+   * Return the EDCA Parameter Set.
+   *
+   * \return the EDCA Parameter Set
+   */
+  EdcaParameterSet GetEdcaParameterSet (void) const;
+  /**
    * Set the Capability information.
    *
    * \param capabilities Capability information
@@ -446,6 +466,12 @@ public:
    */
   void SetErpInformation (ErpInformation erpInformation);
   /**
+   * Set the EDCA Parameter Set.
+   *
+   * \param edcaParameterSet the EDCA Parameter Set
+   */
+  void SetEdcaParameterSet (EdcaParameterSet edcaParameterSet);
+  /**
    * Return the time stamp.
    *
    * \return time stamp
@@ -465,15 +491,16 @@ public:
 
 
 private:
-  uint64_t m_timestamp;               //!< Timestamp
-  Ssid m_ssid;                        //!< Service set ID (SSID)
-  uint64_t m_beaconInterval;          //!< Beacon interval
-  SupportedRates m_rates;             //!< List of supported rates
-  CapabilityInformation m_capability; //!< Capability information
-  HtCapabilities m_htCapability;      //!< HT capabilities
-  HtOperations m_htOperations;        //!< HT operations
-  VhtCapabilities m_vhtCapability;    //!< VHT capabilities
-  ErpInformation m_erpInformation;    //!< ERP information
+  uint64_t m_timestamp;                //!< Timestamp
+  Ssid m_ssid;                         //!< Service set ID (SSID)
+  uint64_t m_beaconInterval;           //!< Beacon interval
+  SupportedRates m_rates;              //!< List of supported rates
+  CapabilityInformation m_capability;  //!< Capability information
+  HtCapabilities m_htCapability;       //!< HT capabilities
+  HtOperations m_htOperations;         //!< HT operations
+  VhtCapabilities m_vhtCapability;     //!< VHT capabilities
+  ErpInformation m_erpInformation;     //!< ERP information
+  EdcaParameterSet m_edcaParameterSet; //!< EDCA Parameter Set
 };
 
 

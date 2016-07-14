@@ -158,9 +158,11 @@ public:
   virtual void SetMinCw (uint32_t minCw);
   virtual void SetMaxCw (uint32_t maxCw);
   virtual void SetAifsn (uint32_t aifsn);
+  virtual void SetTxopLimit (Time txopLimit);
   virtual uint32_t GetMinCw (void) const;
   virtual uint32_t GetMaxCw (void) const;
   virtual uint32_t GetAifsn (void) const;
+  virtual Time GetTxopLimit (void) const;
 
   /**
    * Return the MacLow associated with this EdcaTxopN.
@@ -281,6 +283,10 @@ public:
   /**
    * Start transmission for the next fragment.
    * This is called for fragment only.
+   */
+  void StartNextFragment (void);
+  /**
+   * Start transmission for the next packet if allowed by the TxopLimit.
    */
   void StartNext (void);
   /**
@@ -528,6 +534,19 @@ private:
    * Get Traffic ID of the current packet.
    */
   uint8_t GetCurrentTid ();
+  /*
+   * Return the remaining duration in the current TXOP.
+   *
+   * \return the remaining duration in the current TXOP
+   */
+  Time GetTxopRemaining (void);
+  /*
+   * Check if the station has TXOP granted for the next MPDU.
+   *
+   * \return true if the station has TXOP granted for the next MPDU,
+   *         false otherwise
+   */
+  bool HasTxop (void);
 
   AcIndex m_ac;
   class Dcf;
@@ -567,6 +586,7 @@ private:
   Time m_currentPacketTimestamp;
   uint16_t m_blockAckInactivityTimeout;
   struct Bar m_currentBar;
+  Time m_startTxop;
   TracedValue<uint32_t> m_backoffTrace;
   TracedValue<uint32_t> m_cwTrace;
 };
