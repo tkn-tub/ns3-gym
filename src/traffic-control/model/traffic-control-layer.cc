@@ -128,11 +128,14 @@ TrafficControlLayer::SetupDevice (Ptr<NetDevice> device)
   Ptr<NetDeviceQueueInterface> devQueueIface = CreateObject<NetDeviceQueueInterface> ();
   device->AggregateObject (devQueueIface);
 
+  // devices can set a select queue callback in their NotifyNewAggregate method
+  SelectQueueCallback cb = devQueueIface->GetSelectQueueCallback ();
+
   // create an entry in the m_netDevices map for this device
   NS_ASSERT_MSG (m_netDevices.find (device) == m_netDevices.end (), "This is a bug,"
                  << "  SetupDevice only can insert an entry in the m_netDevices map");
 
-  NetDeviceInfo entry = {0, devQueueIface, QueueDiscVector ()};
+  NetDeviceInfo entry = {0, devQueueIface, QueueDiscVector (), cb};
   m_netDevices[device] = entry;
 }
 
@@ -292,7 +295,21 @@ TrafficControlLayer::Send (Ptr<NetDevice> device, Ptr<QueueDiscItem> item)
   NS_ASSERT (devQueueIface);
 
   // determine the transmission queue of the device where the packet will be enqueued
-  uint8_t txq = devQueueIface->GetSelectedQueue (item);
+  uint8_t txq = 0;
+  if (devQueueIface->GetTxQueuesN () > 1)
+    {
+      if (!ndi->second.selectQueueCallback.IsNull ())
+        {
+          txq = ndi->second.selectQueueCallback (item);
+        }
+      // otherwise, Linux determines the queue index by using a hash function
+      // and associates such index to the socket which the packet belongs to,
+      // so that subsequent packets of the same socket will be mapped to the
+      // same tx queue (__netdev_pick_tx function in net/core/dev.c). It is
+      // pointless to implement this in ns-3 because currently the multi-queue
+      // devices provide a select queue callback
+    }
+
   NS_ASSERT (txq < devQueueIface->GetTxQueuesN ());
 
   if (ndi->second.rootQueueDisc == 0)

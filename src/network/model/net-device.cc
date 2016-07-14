@@ -196,14 +196,10 @@ NetDeviceQueueInterface::SetSelectQueueCallback (SelectQueueCallback cb)
   m_selectQueueCallback = cb;
 }
 
-uint8_t
-NetDeviceQueueInterface::GetSelectedQueue (Ptr<QueueItem> item) const
+NetDeviceQueueInterface::SelectQueueCallback
+NetDeviceQueueInterface::GetSelectQueueCallback (void) const
 {
-  if (!m_selectQueueCallback.IsNull ())
-  {
-    return m_selectQueueCallback (item);
-  }
-  return 0;
+  return m_selectQueueCallback;
 }
 
 NS_OBJECT_ENSURE_REGISTERED (NetDevice);

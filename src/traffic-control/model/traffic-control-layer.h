@@ -192,6 +192,9 @@ public:
    */
   virtual void Send (Ptr<NetDevice> device, Ptr<QueueDiscItem> item);
 
+  /// Callback invoked to determine the tx queue selected for a given packet
+  typedef Callback< uint8_t, Ptr<QueueItem> > SelectQueueCallback;
+
 protected:
 
   virtual void DoDispose (void);
@@ -227,6 +230,7 @@ private:
     Ptr<QueueDisc> rootQueueDisc;       //!< the root queue disc on the device
     Ptr<NetDeviceQueueInterface> ndqi;  //!< the netdevice queue interface
     QueueDiscVector queueDiscsToWake;   //!< the vector of queue discs to wake
+    SelectQueueCallback selectQueueCallback;  //!< the select queue callback
   };
 
   /// Typedef for protocol handlers container
