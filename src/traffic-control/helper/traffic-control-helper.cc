@@ -111,8 +111,6 @@ TrafficControlHelper::Default (void)
   TrafficControlHelper helper;
   uint16_t handle = helper.SetRootQueueDisc ("ns3::PfifoFastQueueDisc");
   helper.AddInternalQueues (handle, 3, "ns3::DropTailQueue", "MaxPackets", UintegerValue (1000));
-  helper.AddPacketFilter (handle, "ns3::PfifoFastIpv4PacketFilter");
-  helper.AddPacketFilter (handle, "ns3::PfifoFastIpv6PacketFilter");
   return helper;
 }
 

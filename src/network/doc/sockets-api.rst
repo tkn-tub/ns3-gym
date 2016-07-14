@@ -189,6 +189,8 @@ variants has the same effect.  Note that, if some subsequent code tries
 to read the Packet data buffer, the fake buffer will be converted to
 a real (zeroed) buffer on the spot, and the efficiency will be lost there.
 
+.. _Socket-options:
+
 Socket options
 **************
 

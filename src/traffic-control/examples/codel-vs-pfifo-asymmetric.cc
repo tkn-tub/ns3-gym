@@ -343,8 +343,7 @@ int main (int argc, char *argv[])
   stack.InstallAll ();
 
   TrafficControlHelper tchPfifo;
-  uint32_t handle = tchPfifo.SetRootQueueDisc ("ns3::PfifoFastQueueDisc");
-  tchPfifo.AddPacketFilter (handle, "ns3::PfifoFastIpv4PacketFilter");
+  tchPfifo.SetRootQueueDisc ("ns3::PfifoFastQueueDisc");
 
   TrafficControlHelper tchCoDel;
   tchCoDel.SetRootQueueDisc ("ns3::CoDelQueueDisc");

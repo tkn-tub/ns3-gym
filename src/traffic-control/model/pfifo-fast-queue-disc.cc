@@ -24,6 +24,7 @@
 #include "ns3/pointer.h"
 #include "ns3/object-factory.h"
 #include "ns3/drop-tail-queue.h"
+#include "ns3/socket.h"
 #include "pfifo-fast-queue-disc.h"
 
 namespace ns3 {
@@ -57,6 +58,8 @@ PfifoFastQueueDisc::~PfifoFastQueueDisc ()
   NS_LOG_FUNCTION (this);
 }
 
+constexpr int PfifoFastQueueDisc::prio2band[];
+
 bool
 PfifoFastQueueDisc::DoEnqueue (Ptr<QueueDiscItem> item)
 {
@@ -69,23 +72,14 @@ PfifoFastQueueDisc::DoEnqueue (Ptr<QueueDiscItem> item)
       return false;
     }
 
-  uint32_t band;
-  int32_t ret = Classify (item);
+  uint8_t priority = 0;
+  SocketPriorityTag priorityTag;
+  if (item->GetPacket ()->PeekPacketTag (priorityTag))
+    {
+      priority = priorityTag.GetPriority ();
+    }
 
-  if (ret == PacketFilter::PF_NO_MATCH)
-    {
-      band = 1;
-      NS_LOG_DEBUG ("The filter was unable to classify; using default band of " << band);
-    }
-  else if (ret < 0 || ret > 2)
-    {
-      band = 1;
-      NS_LOG_DEBUG ("The filter returned an invalid value; using default band of " << band);
-    }
-  else
-    {
-      band = ret;
-    }
+  uint32_t band = prio2band[priority & 0x0f];
 
   bool retval = GetInternalQueue(band)->Enqueue (item);
 
@@ -147,9 +141,9 @@ PfifoFastQueueDisc::CheckConfig (void)
       return false;
     }
 
-  if (GetNPacketFilters () == 0)
+  if (GetNPacketFilters () != 0)
     {
-      NS_LOG_ERROR ("PfifoFastQueueDisc needs at least a packet filter");
+      NS_LOG_ERROR ("PfifoFastQueueDisc needs no packet filter");
       return false;
     }
 
