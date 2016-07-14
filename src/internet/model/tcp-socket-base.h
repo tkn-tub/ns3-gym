@@ -198,6 +198,11 @@ public:
  * this class is modified from the original NS-3 TCP socket implementation
  * (TcpSocketImpl) by Raj Bhattacharjea <raj.b@gatech.edu> of Georgia Tech.
  *
+ * For IPv4 packets, the TOS set for the socket is used. The Bind and Connect
+ * operations set the TOS for the socket to the value specified in the provided
+ * address. A SocketIpTos tag is only added to the packet if the resulting
+ * TOS is non-null.
+ *
  * Congestion state machine
  * ---------------------------
  *

@@ -76,6 +76,10 @@ public:
    * \returns the ipv4 address
    */
   Ipv4Address GetIpv4 (void) const;
+  /**
+   * \returns the ToS
+   */
+  uint8_t GetTos (void) const;
 
   /**
    * \param port the new port number.
@@ -85,6 +89,10 @@ public:
    * \param address the new ipv4 address
    */
   void SetIpv4 (Ipv4Address address);
+  /**
+   * \param tos the new ToS.
+   */
+  void SetTos (uint8_t tos);
 
   /**
    * \param address address to test
@@ -120,6 +128,7 @@ private:
   static uint8_t GetType (void);
   Ipv4Address m_ipv4; //!< the IPv4 address
   uint16_t m_port;    //!< the port
+  uint8_t m_tos;      //!< the ToS
 };
 
 } // namespace ns3

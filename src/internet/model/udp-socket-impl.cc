@@ -256,6 +256,7 @@ UdpSocketImpl::Bind (const Address &address)
       InetSocketAddress transport = InetSocketAddress::ConvertFrom (address);
       Ipv4Address ipv4 = transport.GetIpv4 ();
       uint16_t port = transport.GetPort ();
+      SetIpTos (transport.GetTos ());
       if (ipv4 == Ipv4Address::GetAny () && port == 0)
         {
           m_endPoint = m_udp->Allocate ();
@@ -374,6 +375,7 @@ UdpSocketImpl::Connect (const Address & address)
       InetSocketAddress transport = InetSocketAddress::ConvertFrom (address);
       m_defaultAddress = Address(transport.GetIpv4 ());
       m_defaultPort = transport.GetPort ();
+      SetIpTos (transport.GetTos ());
       m_connected = true;
       NotifyConnectionSucceeded ();
     }
@@ -445,7 +447,7 @@ UdpSocketImpl::DoSend (Ptr<Packet> p)
 
   if (Ipv4Address::IsMatchingType (m_defaultAddress))
     {
-      return DoSendTo (p, Ipv4Address::ConvertFrom (m_defaultAddress), m_defaultPort);
+      return DoSendTo (p, Ipv4Address::ConvertFrom (m_defaultAddress), m_defaultPort, GetIpTos ());
     }
   else if (Ipv6Address::IsMatchingType (m_defaultAddress))
     {
@@ -457,9 +459,9 @@ UdpSocketImpl::DoSend (Ptr<Packet> p)
 }
 
 int
-UdpSocketImpl::DoSendTo (Ptr<Packet> p, Ipv4Address dest, uint16_t port)
+UdpSocketImpl::DoSendTo (Ptr<Packet> p, Ipv4Address dest, uint16_t port, uint8_t tos)
 {
-  NS_LOG_FUNCTION (this << p << dest << port);
+  NS_LOG_FUNCTION (this << p << dest << port << tos);
   if (m_boundnetdevice)
     {
       NS_LOG_LOGIC ("Bound interface number " << m_boundnetdevice->GetIfIndex ());
@@ -485,10 +487,10 @@ UdpSocketImpl::DoSendTo (Ptr<Packet> p, Ipv4Address dest, uint16_t port)
       return -1;
     }
 
-  if (IsManualIpTos ())
+  if (tos)
     {
       SocketIpTosTag ipTosTag;
-      ipTosTag.SetTos (GetIpTos ());
+      ipTosTag.SetTos (tos);
       // This packet may already have a SocketIpTosTag (see BUG 2440)
       p->ReplacePacketTag (ipTosTag);
     }
@@ -654,7 +656,7 @@ UdpSocketImpl::DoSendTo (Ptr<Packet> p, Ipv6Address dest, uint16_t port)
 
   if (dest.IsIpv4MappedAddress ())
     {
-        return (DoSendTo(p, dest.GetIpv4MappedAddress (), port));
+        return (DoSendTo(p, dest.GetIpv4MappedAddress (), port, 0));
     }
   if (m_boundnetdevice)
     {
@@ -783,7 +785,8 @@ UdpSocketImpl::SendTo (Ptr<Packet> p, uint32_t flags, const Address &address)
       InetSocketAddress transport = InetSocketAddress::ConvertFrom (address);
       Ipv4Address ipv4 = transport.GetIpv4 ();
       uint16_t port = transport.GetPort ();
-      return DoSendTo (p, ipv4, port);
+      uint8_t tos = transport.GetTos ();
+      return DoSendTo (p, ipv4, port, tos);
     }
   else if (Inet6SocketAddress::IsMatchingType (address))
     {
@@ -875,7 +878,9 @@ UdpSocketImpl::GetPeerName (Address &address) const
   if (Ipv4Address::IsMatchingType (m_defaultAddress))
     {
       Ipv4Address addr = Ipv4Address::ConvertFrom (m_defaultAddress);
-      address = InetSocketAddress (addr, m_defaultPort);
+      InetSocketAddress inet (addr, m_defaultPort);
+      inet.SetTos (GetIpTos ());
+      address = inet;
     }
   else if (Ipv6Address::IsMatchingType (m_defaultAddress))
     {
