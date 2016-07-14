@@ -87,3 +87,7 @@ def build(bld):
 
     obj = bld.create_ns3_program('wifi-tcp', ['internet', 'mobility', 'wifi', 'applications', 'point-to-point'])    
     obj.source = 'wifi-tcp.cc'
+
+    obj = bld.create_ns3_program('80211e-txop', ['internet', 'mobility', 'wifi', 'applications'])
+    obj.source = '80211e-txop.cc'
+
