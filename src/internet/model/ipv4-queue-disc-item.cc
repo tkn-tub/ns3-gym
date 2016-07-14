@@ -79,4 +79,20 @@ Ipv4QueueDiscItem::Print (std::ostream& os) const
   ;
 }
 
+bool
+Ipv4QueueDiscItem::GetUint8Value (QueueItem::Uint8Values field, uint8_t& value) const
+{
+  bool ret = false;
+
+  switch (field)
+    {
+    case IP_DSFIELD:
+      value = m_header.GetTos ();
+      ret = true;
+      break;
+    }
+
+  return ret;
+}
+
 } // namespace ns3

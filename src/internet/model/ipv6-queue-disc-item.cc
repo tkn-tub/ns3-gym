@@ -79,4 +79,20 @@ Ipv6QueueDiscItem::Print (std::ostream& os) const
   ;
 }
 
+bool
+Ipv6QueueDiscItem::GetUint8Value (QueueItem::Uint8Values field, uint8_t& value) const
+{
+  bool ret = false;
+
+  switch (field)
+    {
+    case IP_DSFIELD:
+      value = m_header.GetTrafficClass ();
+      ret = true;
+      break;
+    }
+
+  return ret;
+}
+
 } // namespace ns3

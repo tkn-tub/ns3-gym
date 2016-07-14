@@ -79,6 +79,24 @@ public:
   virtual uint32_t GetPacketSize (void) const;
 
   /**
+   * \enum Uint8Values
+   * \brief 1-byte fields of the packet whose value can be retrieved, if present
+   */
+  enum Uint8Values
+    {
+      IP_DSFIELD
+    };
+
+  /**
+   * \brief Retrieve the value of a given field from the packet, if present
+   * \param field the field whose value has to be retrieved
+   * \param value the output parameter to store the retrieved value
+   *
+   * \return true if the requested field is present in the packet, false otherwise.
+   */
+  virtual bool GetUint8Value (Uint8Values field, uint8_t &value) const;
+
+  /**
    * \brief Print the item contents.
    * \param os output stream in which the data should be printed.
    */

@@ -70,6 +70,15 @@ public:
    */
   virtual void Print (std::ostream &os) const;
 
+  /*
+   * The values for the fields of the Ipv4 header are taken from m_header and
+   * thus might differ from those present in the packet in case the header is
+   * modified after being added to the packet. However, this function is likely
+   * to be called before the header is added to the packet (i.e., before the
+   * packet is dequeued from the queue disc)
+   */
+  virtual bool GetUint8Value (Uint8Values field, uint8_t &value) const;
+
 private:
   /**
    * \brief Default constructor

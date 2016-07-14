@@ -53,6 +53,12 @@ QueueItem::GetPacketSize (void) const
   return m_packet->GetSize ();
 }
 
+bool
+QueueItem::GetUint8Value (QueueItem::Uint8Values field, uint8_t& value) const
+{
+  return false;
+}
+
 void
 QueueItem::Print (std::ostream& os) const
 {
