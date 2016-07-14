@@ -83,7 +83,7 @@ TrafficControlLayer::DoInitialize (void)
           // set the wake callbacks on netdevice queues
            if (ndi->second.rootQueueDisc->GetWakeMode () == QueueDisc::WAKE_ROOT)
             {
-              for (uint32_t i = 0; i < devQueueIface->GetTxQueuesN (); i++)
+              for (uint32_t i = 0; i < devQueueIface->GetNTxQueues (); i++)
                 {
                   devQueueIface->GetTxQueue (i)->SetWakeCallback (MakeCallback (&QueueDisc::Run, ndi->second.rootQueueDisc));
                   ndi->second.queueDiscsToWake.push_back (ndi->second.rootQueueDisc);
@@ -91,9 +91,9 @@ TrafficControlLayer::DoInitialize (void)
             }
           else if (ndi->second.rootQueueDisc->GetWakeMode () == QueueDisc::WAKE_CHILD)
             {
-              NS_ASSERT_MSG (ndi->second.rootQueueDisc->GetNQueueDiscClasses () == devQueueIface->GetTxQueuesN (),
+              NS_ASSERT_MSG (ndi->second.rootQueueDisc->GetNQueueDiscClasses () == devQueueIface->GetNTxQueues (),
                              "The number of child queue discs does not match the number of netdevice queues");
-              for (uint32_t i = 0; i < devQueueIface->GetTxQueuesN (); i++)
+              for (uint32_t i = 0; i < devQueueIface->GetNTxQueues (); i++)
                 {
                   devQueueIface->GetTxQueue (i)->SetWakeCallback (MakeCallback (&QueueDisc::Run,
                                                                   ndi->second.rootQueueDisc->GetQueueDiscClass (i)->GetQueueDisc ()));
@@ -296,7 +296,7 @@ TrafficControlLayer::Send (Ptr<NetDevice> device, Ptr<QueueDiscItem> item)
 
   // determine the transmission queue of the device where the packet will be enqueued
   uint8_t txq = 0;
-  if (devQueueIface->GetTxQueuesN () > 1)
+  if (devQueueIface->GetNTxQueues () > 1)
     {
       if (!ndi->second.selectQueueCallback.IsNull ())
         {
@@ -310,7 +310,7 @@ TrafficControlLayer::Send (Ptr<NetDevice> device, Ptr<QueueDiscItem> item)
       // devices provide a select queue callback
     }
 
-  NS_ASSERT (txq < devQueueIface->GetTxQueuesN ());
+  NS_ASSERT (txq < devQueueIface->GetNTxQueues ());
 
   if (ndi->second.rootQueueDisc == 0)
     {
@@ -320,7 +320,7 @@ TrafficControlLayer::Send (Ptr<NetDevice> device, Ptr<QueueDiscItem> item)
         {
           item->AddHeader ();
           // a single queue device makes no use of the priority tag
-          if (devQueueIface->GetTxQueuesN () == 1)
+          if (devQueueIface->GetNTxQueues () == 1)
             {
               SocketPriorityTag priorityTag;
               item->GetPacket ()->RemovePacketTag (priorityTag);

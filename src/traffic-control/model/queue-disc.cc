@@ -577,7 +577,7 @@ QueueDisc::DequeuePacket ()
       // queue disc should try not to dequeue a packet destined to a stopped queue).
       // Otherwise, ask the queue disc to dequeue a packet only if the (unique) queue
       // is not stopped.
-      if (m_devQueueIface->GetTxQueuesN ()>1 || !m_devQueueIface->GetTxQueue (0)->IsStopped ())
+      if (m_devQueueIface->GetNTxQueues ()>1 || !m_devQueueIface->GetTxQueue (0)->IsStopped ())
         {
           item = Dequeue ();
           // If the item is not null, add the header to the packet.
@@ -623,7 +623,7 @@ QueueDisc::Transmit (Ptr<QueueDiscItem> item)
     }
 
   // a single queue device makes no use of the priority tag
-  if (m_devQueueIface->GetTxQueuesN () == 1)
+  if (m_devQueueIface->GetNTxQueues () == 1)
     {
       SocketPriorityTag priorityTag;
       item->GetPacket ()->RemovePacketTag (priorityTag);

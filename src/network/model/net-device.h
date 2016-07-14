@@ -265,7 +265,7 @@ public:
    * \brief Get the number of device transmission queues.
    * \return the number of device transmission queues.
    */
-  uint8_t GetTxQueuesN (void) const;
+  uint8_t GetNTxQueues (void) const;
 
   /**
    * \brief Set the number of device transmission queues.

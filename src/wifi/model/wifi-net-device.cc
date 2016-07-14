@@ -445,7 +445,7 @@ WifiNetDevice::SelectQueue (Ptr<QueueItem> item) const
 
   NS_ASSERT (m_queueInterface != 0);
 
-  if (m_queueInterface->GetTxQueuesN () == 1)
+  if (m_queueInterface->GetNTxQueues () == 1)
     {
       return 0;
     }

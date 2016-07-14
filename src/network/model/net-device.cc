@@ -156,7 +156,7 @@ NetDeviceQueueInterface::GetTxQueue (uint8_t i) const
 }
 
 uint8_t
-NetDeviceQueueInterface::GetTxQueuesN (void) const
+NetDeviceQueueInterface::GetNTxQueues (void) const
 {
   return m_txQueuesVector.size ();
 }
