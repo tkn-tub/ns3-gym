@@ -26,6 +26,7 @@ namespace ns3 {
 
 /**
  * \ingroup address
+ * \ingroup ipv6
  *
  * \brief This generator assigns addresses sequentially from a provided
  * network address; used in topology code. It also keeps track of all

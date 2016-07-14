@@ -31,6 +31,8 @@ class Node;
 class Packet;
 
 /**
+ * \ingroup ipv6
+ *
  * \brief This class implements a tag that carries socket ancillary 
  * data to the socket interface. This is used like 
  * socket option of IP_PKTINFO/IPV6_PKTINFO in \RFC{3542}

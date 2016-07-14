@@ -30,7 +30,9 @@ namespace ns3 {
 class SPFVertex;
 
 /**
- * \brief A Candidate Queue used in static routing.
+ * \ingroup globalrouting
+ *
+ * \brief A Candidate Queue used in routing calculations.
  *
  * The CandidateQueue is used in the OSPF shortest path computations.  It
  * is a priority queue used to store candidates for the shortest path to a

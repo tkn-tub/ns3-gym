@@ -32,6 +32,8 @@ class Ipv4RoutingProtocol;
 class Node;
 
 /**
+ * \ingroup ipv4Helpers
+ *
  * \brief a factory to create ns3::Ipv4RoutingProtocol objects
  *
  * For each new routing protocol created as a subclass of 

@@ -35,7 +35,7 @@ class Packet;
 
 /**
  * \ingroup udpclientserver
- * \class UdpClient
+ *
  * \brief A Udp client. Sends UDP packet carrying sequence number and time stamp
  *  in their payloads
  *

@@ -36,7 +36,7 @@ class NetDevice;
 
 /**
  * \ingroup ipv6Routing
- * \class Ipv6Route
+ *
  * \brief IPv6 route cache entry.
  */
 class Ipv6Route : public SimpleRefCount<Ipv6Route>
@@ -133,7 +133,7 @@ std::ostream& operator<< (std::ostream& os, Ipv6Route const& route);
 
 /**
  * \ingroup ipv6Routing
- * \class Ipv6MulticastRoute
+ *
  * \brief IPv6 multicast route entry.
  */
 class Ipv6MulticastRoute : public SimpleRefCount<Ipv6MulticastRoute>

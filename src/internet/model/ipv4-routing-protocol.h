@@ -34,9 +34,14 @@ class Ipv4Route;
 class NetDevice;
 
 /**
- * \ingroup internet 
- * \defgroup ipv4Routing Ipv4RoutingProtocol 
+ * \ingroup internet
+ * \defgroup ipv4Routing IPv4 Routing Protocols.
+ *
+ * The classes in this group implement different routing protocols
+ * for IPv4. Other modules could implement further protocols
+ * (e.g., AODV, OLSR, etc.).
  */
+
 /**
  * \ingroup ipv4Routing
  * \brief Abstract base class for IPv4 routing protocols. 

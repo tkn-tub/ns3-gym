@@ -27,6 +27,8 @@
 namespace ns3 {
 
 /**
+ * \ingroup tcp
+ *
  * \brief Defines the TCP option of kind 3 (window scale option) as in \RFC{1323}
  *
  * For more efficient use of high bandwidth networks, a larger TCP window size

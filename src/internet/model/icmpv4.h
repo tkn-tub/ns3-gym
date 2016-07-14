@@ -30,6 +30,13 @@ namespace ns3 {
 
 class Packet;
 
+/**
+ * \ingroup icmp
+ *
+ * \brief Base class for all the ICMP packet headers.
+ *
+ * This header is the common part in all the ICMP packets.
+ */
 class Icmpv4Header : public Header
 {
 public:
@@ -88,6 +95,11 @@ private:
   bool m_calcChecksum;  //!< true if checksum is calculated
 };
 
+/**
+ * \ingroup icmp
+ *
+ * \brief ICMP Echo header
+ */
 class Icmpv4Echo : public Header
 {
 public:
@@ -148,6 +160,11 @@ private:
   uint32_t m_dataSize;   //!< data size
 };
 
+/**
+ * \ingroup icmp
+ *
+ * \brief ICMP Destination Unreachable header
+ */
 class Icmpv4DestinationUnreachable : public Header
 {
 public:
@@ -214,6 +231,11 @@ private:
 };
 
 
+/**
+ * \ingroup icmp
+ *
+ * \brief ICMP Time Exceeded header
+ */
 class Icmpv4TimeExceeded : public Header
 {
 public:

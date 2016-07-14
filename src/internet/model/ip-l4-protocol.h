@@ -26,20 +26,23 @@
 
 #include "ns3/object.h"
 #include "ns3/callback.h"
-#include "ns3/ipv4-header.h"
-#include "ns3/ipv6-header.h"
-#include "ns3/ipv6-interface.h"
+#include "ipv4-header.h"
+#include "ipv6-header.h"
 
 namespace ns3 {
 
 class Packet;
 class Ipv4Address;
 class Ipv4Interface;
+class Ipv6Address;
+class Ipv6Interface;
 class Ipv4Route;
 class Ipv6Route;
 
 /**
- * \brief L4 Protocol abstract base class 
+ * \ingroup internet
+ *
+ * \brief L4 Protocol abstract base class.
  *
  * This is an abstract base class for layer four protocols which use IP as
  * the network layer.
@@ -48,7 +51,7 @@ class IpL4Protocol : public Object
 {
 public:
   /**
-   * \brief Rx status codes
+   * \brief Rx status codes.
    */
   enum RxStatus {
     RX_OK,
@@ -66,7 +69,8 @@ public:
   virtual ~IpL4Protocol ();
 
   /**
-   * \returns the protocol number of this protocol.
+   * \brief Returns the protocol number of this protocol.
+   * \returns the protocol number.
    */
   virtual int GetProtocolNumber (void) const = 0;
 

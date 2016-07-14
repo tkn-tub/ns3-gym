@@ -41,7 +41,6 @@ namespace ns3
 
 /**
  * \ingroup radvd
- * \class Radvd
  * \brief Router advertisement daemon.
  */
 class Radvd : public Application

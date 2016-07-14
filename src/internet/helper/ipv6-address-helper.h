@@ -31,7 +31,8 @@
 namespace ns3 {
 
 /**
- * \class Ipv6AddressHelper
+ * \ingroup ipv6Helpers
+ *
  * \brief Helper class to auto-assign global IPv6 unicast addresses
  *
  * Assign global unicast IPv6 addresses based on \RFC{4291} definition.

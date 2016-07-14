@@ -31,6 +31,8 @@ class Node;
 class Packet;
 
 /**
+ * \ingroup ipv4
+ *
  * \brief This class implements Linux struct pktinfo 
  * in order to deliver ancillary information to the socket interface.
  * This is used with socket option such as IP_PKTINFO, IP_RECVTTL, 

@@ -25,6 +25,8 @@
 namespace ns3 {
 
 /**
+ * \ingroup tcp
+ *
  * Defines the TCP option of kind 0 (end of option list) as in \RFC{793}
  */
 class TcpOptionEnd : public TcpOption

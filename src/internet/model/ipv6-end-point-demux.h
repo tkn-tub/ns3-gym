@@ -31,8 +31,9 @@ namespace ns3 {
 class Ipv6EndPoint;
 
 /**
- * \class Ipv6EndPointDemux
- * \brief Demultiplexor for end points.
+ * \ingroup ipv6
+ *
+ * \brief Demultiplexer for end points.
  */
 class Ipv6EndPointDemux
 {

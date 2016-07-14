@@ -40,6 +40,8 @@ class CandidateQueue;
 class Ipv4GlobalRouting;
 
 /**
+ * \ingroup globalrouting
+ *
  * @brief Vertex used in shortest path first (SPF) computations. See \RFC{2328},
  * Section 16.
  *

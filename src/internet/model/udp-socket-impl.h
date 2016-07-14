@@ -42,7 +42,9 @@ class Ipv6Header;
 class Ipv6Interface;
 
 /**
+ * \ingroup socket
  * \ingroup udp
+ *
  * \brief A sockets interface to UDP
  * 
  * This class subclasses ns3::UdpSocket, and provides a socket interface

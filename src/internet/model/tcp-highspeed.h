@@ -25,7 +25,7 @@
 namespace ns3 {
 
 /**
- * \ingroup tcp
+ * \ingroup congestionOps
  *
  * \brief An implementation of TCP HighSpeed
  *

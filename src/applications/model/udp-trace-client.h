@@ -35,7 +35,7 @@ class Packet;
 
 /**
  * \ingroup udpclientserver
- * \class UdpTraceClient
+ *
  * \brief A trace based streamer
  *
  * Sends UDP packets based on a trace file of an MPEG4 stream

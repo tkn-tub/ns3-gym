@@ -37,14 +37,17 @@ class Packet;
 class Ipv4Interface;
 
 /**
- * \ingroup internet
- * \defgroup arp Arp
+ * \ingroup ipv4
+ * \defgroup arp ARP protocol.
  *
- * This is an overview of Arp capabilities (write me).
+ * The ARP protocol and its associated tables are responsible
+ * for the IPv4 - MAC address translation.
+ * Each NetDevice has its own ARP table.
  */
+
 /**
  * \ingroup arp
- * \brief An implementation of the ARP protocol
+ * \brief An implementation of the ARP protocol.
  */
 class ArpL3Protocol : public Object
 {

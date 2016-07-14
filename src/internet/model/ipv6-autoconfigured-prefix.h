@@ -34,7 +34,8 @@ namespace ns3
 {
 
 /**
- * \class Ipv6AutoconfiguredPrefix
+ * \ingroup ipv6
+ *
  * \brief Router prefix information.
  */
 class Ipv6AutoconfiguredPrefix : public Object

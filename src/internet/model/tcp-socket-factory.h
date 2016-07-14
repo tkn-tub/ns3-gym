@@ -28,6 +28,7 @@ class Socket;
 
 /**
  * \ingroup socket
+ * \ingroup tcp
  *
  * \brief API to create TCP socket instances 
  *

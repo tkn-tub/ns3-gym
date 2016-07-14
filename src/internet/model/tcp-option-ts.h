@@ -27,6 +27,8 @@
 namespace ns3 {
 
 /**
+ * \ingroup tcp
+ *
  * Defines the TCP option of kind 8 (timestamp option) as in \RFC{1323}
  */
 

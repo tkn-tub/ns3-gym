@@ -32,7 +32,8 @@ class Ipv6Option;
 class Node;
 
 /**
- * \class Ipv6OptionDemux
+ * \ingroup ipv6HeaderExt
+ *
  * \brief IPv6 Option Demux.
  */
 class Ipv6OptionDemux : public Object

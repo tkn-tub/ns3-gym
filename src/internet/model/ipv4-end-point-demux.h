@@ -31,6 +31,8 @@ namespace ns3 {
 class Ipv4EndPoint;
 
 /**
+ * \ingroup ipv4
+ *
  * \brief Demultiplexes packets to various transport layer endpoints
  *
  * This class serves as a lookup table to match partial or full information

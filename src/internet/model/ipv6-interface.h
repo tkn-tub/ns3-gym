@@ -39,8 +39,9 @@ class TrafficControlLayer;
 class NdiscCache;
 
 /**
- * \class Ipv6Interface
- * \brief The IPv6 representation of a network interface
+ * \ingoup ipv6
+ *
+ * \brief The IPv6 representation of a network interface.
  *
  * By default IPv6 interfaces are created in the "down" state
  * with IP "fe80::1" and a /64 prefix. Before becoming usable,

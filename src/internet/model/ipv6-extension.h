@@ -40,7 +40,13 @@
 namespace ns3 {
 
 /**
- * \class Ipv6Extension
+ * \ingroup ipv6
+ * \defgroup ipv6HeaderExt IPV6 Header extension system.
+ */
+
+/**
+ * \ingroup ipv6HeaderExt
+ *
  * \brief IPv6 Extension base
  * If you want to implement a new IPv6 extension, all you have to do is
  * implement a subclass of this class and add it to an Ipv6ExtensionDemux.
@@ -155,7 +161,8 @@ private:
 };
 
 /**
- * \class Ipv6ExtensionHopByHop
+ * \ingroup ipv6HeaderExt
+ *
  * \brief IPv6 Extension "Hop By Hop"
  */
 class Ipv6ExtensionHopByHop : public Ipv6Extension
@@ -199,7 +206,8 @@ public:
 };
 
 /**
- * \class Ipv6ExtensionDestination
+ * \ingroup ipv6HeaderExt
+ *
  * \brief IPv6 Extension Destination
  */
 class Ipv6ExtensionDestination : public Ipv6Extension
@@ -243,7 +251,8 @@ public:
 };
 
 /**
- * \class Ipv6ExtensionFragment
+ * \ingroup ipv6HeaderExt
+ *
  * \brief IPv6 Extension Fragment
  */
 class Ipv6ExtensionFragment : public Ipv6Extension
@@ -308,8 +317,9 @@ protected:
 
 private:
   /**
-   * \class Fragments
-   * \brief A Set of Fragment
+   * \ingroup ipv6HeaderExt
+   *
+   * \brief This class stores the fragments of a packet waiting to be rebuilt.
    */
   class Fragments : public SimpleRefCount<Fragments>
   {
@@ -423,8 +433,10 @@ private:
 };
 
 /**
- * \class Ipv6ExtensionRouting
- * \brief IPv6 Extension Routing
+ * \ingroup ipv6HeaderExt
+ *
+ * \brief IPv6 Extension Routing.
+ *
  * If you want to implement a new IPv6 routing extension, all you have to do is
  * implement a subclass of this class and add it to an Ipv6ExtensionRoutingDemux.
  */
@@ -475,7 +487,8 @@ public:
 };
 
 /**
- * \class Ipv6ExtensionRoutingDemux
+ * \ingroup ipv6HeaderExt
+ *
  * \brief IPv6 Extension Routing Demux.
  */
 class Ipv6ExtensionRoutingDemux : public Object
@@ -546,7 +559,8 @@ private:
 };
 
 /**
- * \class Ipv6ExtensionLooseRouting
+ * \ingroup ipv6HeaderExt
+ *
  * \brief IPv6 Extension Loose Routing
  */
 class Ipv6ExtensionLooseRouting : public Ipv6ExtensionRouting
@@ -590,7 +604,8 @@ public:
 };
 
 /**
- * \class Ipv6ExtensionESP
+ * \ingroup ipv6HeaderExt
+ *
  * \brief IPv6 Extension ESP (Encapsulating Security Payload)
  */
 class Ipv6ExtensionESP : public Ipv6Extension
@@ -634,7 +649,8 @@ public:
 };
 
 /**
- * \class Ipv6ExtensionAH
+ * \ingroup ipv6HeaderExt
+ *
  * \brief IPv6 Extension AH (Authentication Header)
  */
 class Ipv6ExtensionAH : public Ipv6Extension

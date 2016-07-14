@@ -26,6 +26,15 @@
 namespace ns3 {
 
 /**
+ * \ingroup tcp
+ * \defgroup congestionOps Congestion Control Algorithms.
+ *
+ * The various congestion control algorithms, also known as "TCP flavors".
+ */
+
+/**
+ * \ingroup congestionOps
+ *
  * \brief Congestion control abstract class
  *
  * The design is inspired on what Linux v4.0 does (but it has been

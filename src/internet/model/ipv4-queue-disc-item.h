@@ -29,7 +29,8 @@
 namespace ns3 {
 
 /**
- * \ingroup internet
+ * \ingroup ipv4
+ * \ingroup traffic-control
  *
  * Ipv4QueueDiscItem is a subclass of QueueDiscItem which stores IPv4 packets.
  * Header and payload are kept separate to allow the queue disc to manipulate

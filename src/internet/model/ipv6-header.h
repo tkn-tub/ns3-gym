@@ -27,7 +27,8 @@
 namespace ns3 {
 
 /**
- * \class Ipv6Header
+ * \ingroup ipv6
+ *
  * \brief Packet header for IPv6
  */
 class Ipv6Header : public Header

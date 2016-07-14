@@ -42,7 +42,9 @@ class Node;
 
 
 /**
- * \brief Global routing protocol for IP version 4 stacks.
+ * \ingroup ipv4
+ *
+ * \brief Global routing protocol for IPv4 stacks.
  *
  * In ns-3 we have the concept of a pluggable routing protocol.  Routing
  * protocols are added to a list maintained by the Ipv4L3Protocol.  Every 

@@ -32,7 +32,8 @@ class Ipv6Extension;
 class Node;
 
 /**
- * \class Ipv6ExtensionDemux
+ * \ingroup ipv6HeaderExt
+ *
  * \brief Demultiplexes IPv6 extensions.
  */
 class Ipv6ExtensionDemux : public Object

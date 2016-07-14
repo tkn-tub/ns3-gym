@@ -32,6 +32,8 @@ class Ipv6RoutingProtocol;
 class Node;
 
 /**
+ * \ingroup ipv6Helpers
+ *
  * \brief A factory to create ns3::Ipv6RoutingProtocol objects
  *
  * For each new routing protocol created as a subclass of 

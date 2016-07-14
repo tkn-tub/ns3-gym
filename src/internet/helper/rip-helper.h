@@ -29,6 +29,8 @@
 namespace ns3 {
 
 /**
+ * \ingroup ipv4Helpers
+ *
  * \brief Helper class that adds RIP routing to nodes.
  *
  * This class is expected to be used in conjunction with

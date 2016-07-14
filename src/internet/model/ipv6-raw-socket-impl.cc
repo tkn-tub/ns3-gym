@@ -300,7 +300,7 @@ Ptr<Packet> Ipv6RawSocketImpl::RecvFrom (uint32_t maxSize, uint32_t flags, Addre
     }
 
   /* get packet */
-  struct Data data = m_data.front ();
+  Data data = m_data.front ();
   m_data.pop_front ();
   fromAddress = Inet6SocketAddress (data.fromIp, data.fromProtocol);
   if (data.packet->GetSize () > maxSize)
@@ -428,7 +428,7 @@ bool Ipv6RawSocketImpl::ForwardUp (Ptr<const Packet> p, Ipv6Header hdr, Ptr<NetD
         }
 
       copy->AddHeader (hdr);
-      struct Data data;
+      Data data;
       data.packet = copy;
       data.fromIp = hdr.GetSourceAddress ();
       data.fromProtocol = hdr.GetNextHeader ();
@@ -458,13 +458,13 @@ Ipv6RawSocketImpl::GetAllowBroadcast () const
 void
 Ipv6RawSocketImpl::Icmpv6FilterSetPassAll()
 {
-  memset(&m_icmpFilter, 0xff, sizeof(icmpv6Filter));
+  memset(&m_icmpFilter, 0xff, sizeof(Icmpv6Filter));
 }
 
 void
 Ipv6RawSocketImpl::Icmpv6FilterSetBlockAll()
 {
-  memset(&m_icmpFilter, 0x00, sizeof(icmpv6Filter));
+  memset(&m_icmpFilter, 0x00, sizeof(Icmpv6Filter));
 }
 
 void

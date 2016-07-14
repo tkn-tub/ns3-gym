@@ -28,8 +28,8 @@ namespace ns3
 
 /**
  * \ingroup socket
+ * \ingroup ipv6
  *
- * \class Ipv6RawSocketFactoryImpl
  * \brief Implementation of IPv6 raw socket factory.
  */
 class Ipv6RawSocketFactoryImpl : public Ipv6RawSocketFactory

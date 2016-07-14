@@ -42,12 +42,7 @@ class Ipv6RoutingTableEntry;
 class Ipv6MulticastRoutingTableEntry;
 
 /**
- * \ingroup internet
- * \defgroup ipv6StaticRouting Ipv6StaticRouting
- */
-/**
- * \ingroup ipv6StaticRouting
- * \class Ipv6StaticRouting
+ * \ingroup ipv6Routing
  *
  * \brief Static routing protocol for IP version 6 stacks.
  *

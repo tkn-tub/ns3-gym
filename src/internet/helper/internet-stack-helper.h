@@ -37,6 +37,24 @@ class Ipv4RoutingHelper;
 class Ipv6RoutingHelper;
 
 /**
+ * \defgroup internet Internet
+ *
+ * This section documents the API of the ns-3 internet module. For a generic functional description, please refer to the ns-3 manual.
+ */
+
+/**
+ * \ingroup internet
+ * \defgroup ipv4Helpers IPv4 Helper classes
+ */
+
+/**
+ * \ingroup internet
+ * \defgroup ipv6Helpers IPv6 Helper classes
+ */
+
+/**
+ * \ingroup internet
+ *
  * \brief aggregate IP/TCP/UDP functionality to existing Nodes.
  *
  * This helper enables pcap and ascii tracing of events in the internet stack
@@ -56,10 +74,14 @@ class Ipv6RoutingHelper;
  *  - ns3::ArpL3Protocol
  *  - ns3::Ipv4L3Protocol
  *  - ns3::Icmpv4L4Protocol
+ *  - ns3::Ipv6L3Protocol
+ *  - ns3::Icmpv6L4Protocol
  *  - ns3::UdpL4Protocol
+ *  - ns3::TrafficControlLayer
  *  - a TCP based on the TCP factory provided
  *  - a PacketSocketFactory
- *  - Ipv4 routing (a list routing object and a static routing object)
+ *  - Ipv4 routing (a list routing object, a global routing object, and a static routing object)
+ *  - Ipv6 routing (a static routing object)
  */
 class InternetStackHelper : public PcapHelperForIpv4, public PcapHelperForIpv6, 
                             public AsciiTraceHelperForIpv4, public AsciiTraceHelperForIpv6

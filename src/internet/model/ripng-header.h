@@ -32,6 +32,7 @@ namespace ns3 {
 
 /**
  * \ingroup ripng
+ *
  * \brief RipNg Routing Table Entry (RTE) - see \RFC{2080}
  */
 class RipNgRte : public Header
@@ -139,6 +140,7 @@ std::ostream & operator << (std::ostream & os, const RipNgRte & h);
 
 /**
  * \ingroup ripng
+ *
  * \brief RipNgHeader - see \RFC{2080}
  */
 class RipNgHeader : public Header

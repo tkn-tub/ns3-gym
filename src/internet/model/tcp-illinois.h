@@ -33,7 +33,7 @@
 namespace ns3 {
 
 /**
- * \ingroup tcp
+ * \ingroup congestionOps
  *
  * \brief An implementation of TCP Illinois algorithm
  *
@@ -226,12 +226,12 @@ private:
 
 private:
   Time m_sumRtt;             //!< Sum of all RTT measurements during last RTT
-  uint32_t m_cntRtt;         //!< # of RTT measurements during last RTT
+  uint32_t m_cntRtt;         //!< Number of RTT measurements during last RTT
   Time m_baseRtt;            //!< Minimum of all RTT measurements
   Time m_maxRtt;             //!< Maximum of all RTT measurements
   SequenceNumber32 m_endSeq; //!< Right edge of current RTT
   bool m_rttAbove;           //!< True when da > d1
-  uint8_t m_rttLow;          //!< # of RTTs da has stayed below d1
+  uint8_t m_rttLow;          //!< Number of RTTs da has stayed below d1
   double m_alphaMin;         //!< Minimum alpha threshold
   double m_alphaMax;         //!< Maximum alpha threshold
   double m_alphaBase;        //!< Base value of alpha for standard AIMD
@@ -242,7 +242,7 @@ private:
   double m_beta;             //!< Multiplicative decrease factor
   uint32_t m_winThresh;      //!< Window threshold for adaptive sizing
   uint32_t m_theta;          //!< Number of RTTs required before setting alpha to its max
-  uint32_t m_ackCnt;         //!< # of received ACK
+  uint32_t m_ackCnt;         //!< Number of received ACK
 
 };
 

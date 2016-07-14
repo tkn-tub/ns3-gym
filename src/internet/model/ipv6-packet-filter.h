@@ -29,7 +29,8 @@
 namespace ns3 {
 
 /**
- * \ingroup internet
+ * \ingroup ipv6
+ * \ingroup traffic-control
  *
  * Ipv6PacketFilter is the abstract base class for filters defined for IPv6 packets.
  */
@@ -51,7 +52,8 @@ private:
 
 
 /**
- * \ingroup internet
+ * \ingroup ipv6
+ * \ingroup traffic-control
  *
  * PfifoFastIpv6PacketFilter is the filter to be added to the PfifoFast
  * queue disc to simulate the behavior of the pfifo_fast Linux queue disc.

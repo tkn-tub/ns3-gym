@@ -34,7 +34,8 @@ namespace ns3
 {
 
 /**
- * \class Ipv6InterfaceContainer
+ * \ingroup ipv6
+ *
  * \brief Keep track of a set of IPv6 interfaces.
  */
 class Ipv6InterfaceContainer

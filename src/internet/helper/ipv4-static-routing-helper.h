@@ -32,6 +32,8 @@
 namespace ns3 {
 
 /**
+ * \ingroup ipv4Helpers
+ *
  * \brief Helper class that adds ns3::Ipv4StaticRouting objects
  *
  * This class is expected to be used in conjunction with 

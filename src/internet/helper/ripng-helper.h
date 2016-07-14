@@ -29,6 +29,8 @@
 namespace ns3 {
 
 /**
+ * \ingroup ipv6Helpers
+ *
  * \brief Helper class that adds RIPng routing to nodes.
  *
  * This class is expected to be used in conjunction with

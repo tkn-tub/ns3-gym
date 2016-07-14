@@ -33,7 +33,7 @@ class NetDevice;
 /**
  * \ingroup ipv4Routing
  *
- *\brief Ipv4 route cache entry (similar to Linux struct rtable)
+ *\brief IPv4 route cache entry (similar to Linux struct rtable)
  *
  * This is a reference counted object.  In the future, we will add other 
  * entries from struct dst_entry, struct rtable, and struct dst_ops as needed.

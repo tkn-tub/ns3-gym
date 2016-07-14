@@ -34,6 +34,7 @@
 namespace ns3 {
 
 /**
+ * \ingroup ipv4Routing
  * \defgroup rip RIP
  *
  * The RIP protocol (\RFC{2453}) is a unicast-only IPv4 IGP (Interior Gateway Protocol).

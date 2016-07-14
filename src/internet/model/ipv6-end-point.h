@@ -36,9 +36,11 @@ class Header;
 class Packet;
 
 /**
- * \brief A representation of an internet IPv6 endpoint/connection
+ * \ingroup ipv6
  *
- * This class provides an internet four-tuple (source and destination ports
+ * \brief A representation of an IPv6 endpoint/connection
+ *
+ * This class provides an Internet four-tuple (source and destination ports
  * and addresses).  These are used in the ns3::Ipv6EndPointDemux as targets
  * of lookups.  The class also has a callback for notification to higher
  * layers that a packet from a lower layer was received.  In the ns3

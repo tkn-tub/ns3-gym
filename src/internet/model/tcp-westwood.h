@@ -45,12 +45,9 @@ class Time;
 class EventId;
 
 /**
- * \ingroup socket
- * \ingroup tcp
+ * \ingroup congestionOps
  *
- * \brief An implementation of a stream socket using TCP.
- *
- * This class contains the implementation of TCP Westwood and Westwood+.
+ * \brief An implementation of TCP Westwood and Westwood+.
  *
  * Westwood and Westwood+ employ the AIAD (Additive Increase/Adaptive Decrease) 
  * congestion control paradigm. When a congestion episode happens, 

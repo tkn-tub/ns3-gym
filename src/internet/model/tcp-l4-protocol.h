@@ -40,10 +40,24 @@ class Ipv4Interface;
 class TcpSocketBase;
 class Ipv4EndPoint;
 class Ipv6EndPoint;
+class NetDevice;
+
+
+/**
+ * \ingroup internet
+ * \defgroup tcp TCP
+ *
+ * This is an implementation of various Transmission Control Protocol flavors.
+ *
+ * Each TCP flavors is studied to match a specific environment, and they
+ * differ mainly in the congestion control algorithms used.
+ *
+ * See \RFC{793} and others.
+ */
 
 /**
  * \ingroup tcp
- * \brief Tcp socket creation and multiplexing/demultiplexing
+ * \brief TCP socket creation and multiplexing/demultiplexing
  * 
  * A single instance of this class is held by one instance of class Node.
  *

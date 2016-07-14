@@ -168,7 +168,7 @@ definition can be applied to both sockets in case of full-duplex mode.
 
 .. _fig-tcp-state-machine:
 
-.. figure:: tcp_state_machine.*
+.. figure:: figures/tcp-state-machine.*
    :align: center
 
    TCP State machine
@@ -474,8 +474,11 @@ congestive and non-congestive states.
 
 The backlog (the number of packets accumulated at the bottleneck queue) is
 calculated using Equation (1):
+
   N = Actual * (RTT - BaseRTT) = Diff * BaseRTT        (1)
-where
+  
+where:
+
   Diff = Expected - Actual = cwnd/BaseRTT - cwnd/RTT
 
 Veno makes decision on cwnd modification based on the calculated N and its

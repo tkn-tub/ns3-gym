@@ -27,7 +27,7 @@
 namespace ns3 {
 /**
  * \ingroup udpclientserver
- * \class SeqTsHeader
+ *
  * \brief Packet header for UDP client/server application.
  *
  * The header is made of a 32bits sequence number followed by

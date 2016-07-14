@@ -36,7 +36,7 @@ namespace ns3 {
 
 /**
  * \ingroup udpclientserver
- * \class UdpServer
+ *
  * \brief A UDP server, receives UDP packets from a remote host.
  *
  * UDP packets carry a 32bits sequence number followed by a 64bits time

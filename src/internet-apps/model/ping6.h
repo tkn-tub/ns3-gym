@@ -39,7 +39,6 @@ class Socket;
 
 /**
  * \ingroup ping6
- * \class Ping6
  * \brief A ping6 application.
  */
 class Ping6 : public Application

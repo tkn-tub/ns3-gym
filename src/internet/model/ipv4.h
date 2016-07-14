@@ -39,14 +39,14 @@ class Ipv4Header;
 
 /**
  * \ingroup internet
- * \defgroup ipv4 Ipv4
+ * \defgroup ipv4 IPv4 classes and sub-modules
  */
 /**
  * \ingroup ipv4
- * \brief Access to the Ipv4 forwarding table, interfaces, and configuration
+ * \brief Access to the IPv4 forwarding table, interfaces, and configuration
  *
  * This class defines the API to manipulate the following aspects of
- * the Ipv4 implementation:
+ * the IPv4 implementation:
  * -# set/get an Ipv4RoutingProtocol 
  * -# register a NetDevice for use by the Ipv4 layer (basically, to
  * create Ipv4-related state such as addressing and neighbor cache that 

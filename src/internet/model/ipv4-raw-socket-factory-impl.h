@@ -27,8 +27,8 @@ namespace ns3 {
 
 /**
  * \ingroup socket
+ * \ingroup ipv4
  *
- * \class Ipv4RawSocketFactoryImpl
  * \brief Implementation of IPv4 raw socket factory.
  */
 class Ipv4RawSocketFactoryImpl : public Ipv4RawSocketFactory

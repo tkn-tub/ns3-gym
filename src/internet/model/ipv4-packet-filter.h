@@ -29,7 +29,8 @@
 namespace ns3 {
 
 /**
- * \ingroup internet
+ * \ingroup ipv4
+ * \ingoup traffic-control
  *
  * Ipv4PacketFilter is the abstract base class for filters defined for IPv4 packets.
  */
@@ -51,7 +52,8 @@ private:
 
 
 /**
- * \ingroup internet
+ * \ingroup ipv4
+ * \ingroup traffic-control
  *
  * PfifoFastIpv4PacketFilter is the filter to be added to the PfifoFast
  * queue disc to simulate the behavior of the pfifo_fast Linux queue disc.

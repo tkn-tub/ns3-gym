@@ -39,7 +39,7 @@ namespace ns3 {
  * maximum value that can represented with the given number of bits
  * back to zero.  For this reason, comparison of two sequence numbers,
  * and subtraction, is non-trivial.  The SequenceNumber class behaves
- * like a number, with the usual arythmetic operators implemented, but
+ * like a number, with the usual arithmetic operators implemented, but
  * knows how to correctly compare and subtract sequence numbers.
  *
  * This is a templated class.  To use it you need to supply two

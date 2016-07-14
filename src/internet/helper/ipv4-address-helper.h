@@ -26,6 +26,8 @@
 namespace ns3 {
 
 /**
+ * \ingroup ipv4Helpers
+ *
  * @brief A helper class to make life easier while doing simple IPv4 address
  * assignment in scripts.
  *

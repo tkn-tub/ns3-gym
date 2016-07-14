@@ -31,7 +31,8 @@ namespace ns3
 {
 
 /**
- * \class Ipv6RoutingTableEntry
+ * \ingroup ipv6Routing
+ *
  * \brief A record of an IPv6 route.
  */
 class Ipv6RoutingTableEntry 
@@ -270,7 +271,8 @@ private:
 std::ostream& operator<< (std::ostream& os, Ipv6RoutingTableEntry const& route);
 
 /**
- * \class Ipv6MulticastRoutingTableEntry
+ * \ingroup ipv6Routing
+ *
  * \brief A record of an IPv6 multicast route.
  */
 class Ipv6MulticastRoutingTableEntry

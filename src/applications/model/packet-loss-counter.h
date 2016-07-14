@@ -35,7 +35,7 @@ class Packet;
 
 /**
  * \ingroup udpclientserver
- * \class PacketLossCounter
+ *
  * \brief A class to count the number of lost packets.
  *
  * This class records the packet lost in a client/server transmission

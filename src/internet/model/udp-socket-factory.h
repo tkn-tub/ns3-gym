@@ -28,6 +28,7 @@ class Socket;
 
 /**
  * \ingroup socket
+ * \ingroup udp
  *
  * \brief API to create UDP socket instances 
  *

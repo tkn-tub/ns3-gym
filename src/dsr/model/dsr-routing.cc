@@ -68,6 +68,7 @@
 #include "ns3/tcp-socket-factory.h"
 #include "ns3/llc-snap-header.h"
 #include "ns3/arp-header.h"
+#include "ns3/ipv6-interface.h"
 
 #include "dsr-rreq-table.h"
 #include "dsr-rcache.h"

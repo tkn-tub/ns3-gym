@@ -29,6 +29,8 @@
 namespace ns3 {
 
 /**
+ * \ingroup ipv4Helpers
+ *
  * @brief Base class providing common user-level pcap operations for helpers
  * representing IPv4 protocols .
  */
@@ -120,6 +122,8 @@ public:
 };
 
 /**
+ * \ingroup ipv4Helpers
+ *
  * @brief Base class providing common user-level ascii trace operations for 
  * helpers representing IPv4 protocols .
  */
@@ -385,6 +389,8 @@ private:
 };
 
 /**
+ * \ingroup ipv6Helpers
+ *
  * @brief Base class providing common user-level pcap operations for helpers
  * representing IPv6 protocols .
  */
@@ -475,6 +481,8 @@ public:
 };
 
 /**
+ * \ingroup ipv6Helpers
+ *
  * @brief Base class providing common user-level ascii trace operations for
  * helpers representing IPv6 protocols .
  */

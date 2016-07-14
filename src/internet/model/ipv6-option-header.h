@@ -29,7 +29,8 @@ namespace ns3
 {
 
 /**
- * \class Ipv6OptionHeader
+ * \ingroup ipv6HeaderExt
+ *
  * \brief Header for IPv6 Option.
  */
 class Ipv6OptionHeader : public Header 
@@ -148,7 +149,8 @@ private:
 };
 
 /**
- * \class Ipv6OptionPad1Header
+ * \ingroup ipv6HeaderExt
+ *
  * \brief Header of IPv6 Option Pad1
  */
 class Ipv6OptionPad1Header : public Ipv6OptionHeader
@@ -204,7 +206,8 @@ public:
 };
 
 /**
- * \class Ipv6OptionPadnHeader
+ * \ingroup ipv6HeaderExt
+ *
  * \brief Header of IPv6 Option Padn
  */
 class Ipv6OptionPadnHeader : public Ipv6OptionHeader
@@ -261,7 +264,8 @@ public:
 };
 
 /**
- * \class Ipv6OptionJumbogramHeader
+ * \ingroup ipv6HeaderExt
+ *
  * \brief Header of IPv6 Option Jumbogram
  */
 class Ipv6OptionJumbogramHeader : public Ipv6OptionHeader
@@ -341,7 +345,8 @@ private:
 };
 
 /**
- * \class Ipv6OptionRouterAlertHeader
+ * \ingroup ipv6HeaderExt
+ *
  * \brief Header of IPv6 Option Router Alert
  */
 class Ipv6OptionRouterAlertHeader : public Ipv6OptionHeader

@@ -18,13 +18,16 @@
  */
 
 /**
- * \ingroup internet
- * \defgroup globalrouting Global Routing
+ * \ingroup ipv4Routing
+ * \defgroup globalrouting Global Routing.
+ *
+ * Performs pre-simulation static route computation
+ * on a layer-3 IPv4 topology.
  *
  * \section model Model
  *
  * ns-3 global routing performs pre-simulation static route computation
- * on a layer-3 Ipv4 topology.  The user API from the script level is
+ * on a layer-3 IPv4 topology.  The user API from the script level is
  * fairly minimal; once a topology has been constructed and addresses
  * assigned, the user may call ns3::GlobalRouteManager::PopulateRoutingTables()
  * and the simulator will initialize the routing database and set up

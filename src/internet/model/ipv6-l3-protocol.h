@@ -45,7 +45,8 @@ class Icmpv6L4Protocol;
 class Ipv6AutoconfiguredPrefix;
 
 /**
- * \class Ipv6L3Protocol
+ * \ingoup ipv6
+ *
  * \brief IPv6 layer implementation.
  *
  * This class contains two distinct groups of trace sources.  The

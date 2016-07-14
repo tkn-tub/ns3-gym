@@ -26,6 +26,8 @@
 namespace ns3 {
 
 /**
+ * \ingroup ipv4Helpers
+ *
  * \brief Helper class that adds ns3::Ipv4GlobalRouting objects
  */
 class Ipv4GlobalRoutingHelper  : public Ipv4RoutingHelper

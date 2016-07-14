@@ -29,6 +29,8 @@
 namespace ns3 {
 
 /**
+ * \ingroup ipv6Helpers
+ *
  * \brief Helper class that adds ns3::Ipv6ListRouting objects
  *
  * This class is expected to be used in conjunction with 

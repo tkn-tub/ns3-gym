@@ -37,6 +37,8 @@
 namespace ns3 {
 
 /**
+ * \ingroup ipv4
+ *
  * This class is designed to probe an underlying ns3 TraceSource
  * exporting a packet, an IPv4 object, and an interface.  This probe
  * exports a trace source "Output" with arguments of type Ptr<const Packet>,

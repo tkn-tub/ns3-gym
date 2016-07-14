@@ -25,7 +25,10 @@
 
 namespace ns3 {
 
-/** \brief BIC congestion control algorithm
+/**
+ * \ingroup congestionOps
+ *
+ * \brief BIC congestion control algorithm
  *
  * In TCP Bic the congestion control problem is viewed as a search
  * problem. Taking as a starting point the current window value
@@ -71,6 +74,7 @@ namespace ns3 {
  *
  * More information on this implementation: http://dl.acm.org/citation.cfm?id=2756518
  */
+
 class TcpBic : public TcpCongestionOps
 {
 public:

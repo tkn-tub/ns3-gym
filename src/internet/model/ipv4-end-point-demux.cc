@@ -20,7 +20,9 @@
 
 #include "ipv4-end-point-demux.h"
 #include "ipv4-end-point.h"
+#include "ipv4-interface-address.h"
 #include "ns3/log.h"
+
 
 namespace ns3 {
 

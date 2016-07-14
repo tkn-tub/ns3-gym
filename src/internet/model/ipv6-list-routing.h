@@ -25,13 +25,8 @@
 namespace ns3 {
 
 /**
- * \ingroup internet
- * \defgroup ipv6ListRouting Ipv6 List Routing
- */
-
-/**
- * \ingroup ipv6ListRouting
- * \class Ipv6ListRouting
+ * \ingroup ipv6Routing
+ *
  * \brief Hold list of Ipv6RoutingProtocol objects.
  *
  * This class is a specialization of Ipv6RoutingProtocol that allows

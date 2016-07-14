@@ -34,9 +34,10 @@ class NetDevice;
 class Node;
 
 /**
- * \class Ipv6RawSocketImpl
- * \brief IPv6 raw socket.
  * \ingroup socket
+ * \ingroup ipv6
+ *
+ * \brief IPv6 raw socket.
  *
  * A RAW Socket typically is used to access specific IP layers not usually
  * available through L4 sockets, e.g., ICMP. The implementer should take
@@ -167,15 +168,14 @@ public:
 
 private:
   /**
-   * \struct Data
    * \brief IPv6 raw data and additional information.
    */
-  struct Data
+  typedef struct
   {
     Ptr<Packet> packet;   /**< Packet data */
     Ipv6Address fromIp;   /**< Source address */
     uint16_t fromProtocol;   /**< Protocol used */
-  };
+  } Data;
 
   /**
    * \brief Dispose object.
@@ -210,7 +210,7 @@ private:
   /**
    * \brief Packet waiting to be processed.
    */
-  std::list<struct Data> m_data;
+  std::list<Data> m_data;
 
   /**
    * \brief Flag to shutdown send capability.
@@ -228,12 +228,12 @@ private:
   typedef struct
   {
     uint32_t icmpv6Filt[8]; //!< ICMPv6 filter specification
-  } icmpv6Filter;
+  } Icmpv6Filter;
 
   /**
    * \brief ICMPv6 filter.
    */
-  icmpv6Filter m_icmpFilter;
+  Icmpv6Filter m_icmpFilter;
 };
 
 } /* namespace ns3 */

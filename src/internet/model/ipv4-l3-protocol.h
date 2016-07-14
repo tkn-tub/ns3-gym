@@ -54,7 +54,9 @@ class Icmpv4L4Protocol;
 
 
 /**
- * \brief Implement the Ipv4 layer.
+ * \ingroup ipv4
+ *
+ * \brief Implement the IPv4 layer.
  * 
  * This is the actual implementation of IP.  It contains APIs to send and
  * receive packets at the IP layer, as well as APIs for IP routing.
@@ -489,7 +491,6 @@ private:
   SocketList m_sockets; //!< List of IPv4 raw sockets.
 
   /**
-   * \class Fragments
    * \brief A Set of Fragment belonging to the same packet (src, dst, identification and proto)
    */
   class Fragments : public SimpleRefCount<Fragments>

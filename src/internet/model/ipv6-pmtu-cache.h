@@ -33,6 +33,7 @@ namespace ns3 {
 
 /**
  * \ingroup ipv6
+ *
  * \brief This class implements the Path MTU cache, as defined by \RFC{1981}.
  *
  * The Path MTU is stored according to the destination address, and it is

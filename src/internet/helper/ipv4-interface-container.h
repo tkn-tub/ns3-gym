@@ -29,6 +29,8 @@
 namespace ns3 {
 
 /**
+ * \ingroup ipv4
+ *
  * \brief holds a vector of std::pair of Ptr<Ipv4> and interface index.
  *
  * Typically ns-3 Ipv4Interfaces are installed on devices using an Ipv4 address

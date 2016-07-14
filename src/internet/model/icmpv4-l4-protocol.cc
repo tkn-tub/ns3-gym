@@ -28,6 +28,7 @@
 #include "ns3/packet.h"
 #include "ns3/boolean.h"
 #include "ns3/ipv4-route.h"
+#include "ns3/ipv6-interface.h"
 
 namespace ns3 {
 

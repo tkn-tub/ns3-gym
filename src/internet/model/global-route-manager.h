@@ -25,6 +25,8 @@
 namespace ns3 {
 
 /**
+ * \ingroup globalrouting
+ *
  * @brief A global global router
  *
  * This singleton object can query interface each node in the system

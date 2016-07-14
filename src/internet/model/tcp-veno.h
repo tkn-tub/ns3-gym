@@ -32,7 +32,7 @@
 namespace ns3 {
 
 /**
- * \ingroup tcp
+ * \ingroup congestionOps
  *
  * \brief An implementation of TCP Veno
  *
@@ -161,7 +161,7 @@ private:
 private:
   Time m_baseRtt;                    //!< Minimum of all RTT measurements seen during connection
   Time m_minRtt;                     //!< Minimum of RTTs measured within last RTT
-  uint32_t m_cntRtt;                 //!< # of RTT measurements during last RTT
+  uint32_t m_cntRtt;                 //!< Number of RTT measurements during last RTT
   bool m_doingVenoNow;               //!< If true, do Veno for this RTT
   uint32_t m_diff;                   //!< Difference between expected and actual throughput
   bool m_inc;                        //!< If true, cwnd needs to be incremented

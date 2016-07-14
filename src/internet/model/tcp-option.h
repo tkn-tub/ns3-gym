@@ -29,6 +29,8 @@
 namespace ns3 {
 
 /**
+ * \ingroup tcp
+ *
  * Base class for all kinds of TCP options
  */
 class TcpOption : public Object
@@ -108,6 +110,8 @@ public:
 };
 
 /**
+ * \ingroup tcp
+ *
  * \brief An unknown TCP option.
  *
  * An unknown option can be deserialized and (only if deserialized previously)

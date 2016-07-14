@@ -41,7 +41,8 @@ class Ipv6Interface;
 class Ipv6Header;
 
 /**
- * \class NdiscCache
+ * \ingroup ipv6
+ *
  * \brief IPv6 Neighbor Discovery cache.
  */
 class NdiscCache : public Object
@@ -145,8 +146,9 @@ public:
   typedef std::pair<Ptr<Packet>, Ipv6Header> Ipv6PayloadHeaderPair;
 
   /**
-   * \class Entry
-   * \brief A record that holds information about an NdiscCache entry.
+   * \ingroup ipv6
+   *
+   * \brief A record that holds information about a NdiscCache entry.
    */
   class Entry
   {

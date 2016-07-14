@@ -31,6 +31,17 @@ class Node;
 class Ipv4Interface;
 class Ipv4Route;
 
+/**
+ * \ingroup ipv4
+ * \defgroup icmp ICMP protocol and associated headers.
+ */
+
+/**
+ * \ingroup icmp
+ *
+ * \brief This is the implementation of the ICMP protocol as
+ * described in \RFC{792}.
+ */
 class Icmpv4L4Protocol : public IpL4Protocol
 {
 public:

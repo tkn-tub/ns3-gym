@@ -31,7 +31,6 @@ namespace ns3
 
 /**
  * \ingroup radvd
- * \class RadvdInterface
  * \brief Radvd interface configuration.
  */
 class RadvdInterface : public SimpleRefCount<RadvdInterface>

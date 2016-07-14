@@ -43,7 +43,7 @@ class Ipv6Route;
 
 /**
  * \ingroup internet
- * \defgroup ipv6 Ipv6
+ * \defgroup ipv6 IPv6 classes and sub-modules
  */
 
 /**

@@ -36,7 +36,6 @@ namespace ns3 {
 
 /**
  * \ingroup radvd
- * \class RadvdHelper
  * \brief Radvd application helper.
  */
 class RadvdHelper

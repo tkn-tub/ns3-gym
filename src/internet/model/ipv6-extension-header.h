@@ -33,7 +33,8 @@ namespace ns3
 {
 
 /**
- * \class Ipv6ExtensionHeader
+ * \ingroup ipv6HeaderExt
+ *
  * \brief Header for IPv6 Extension.
  */
 class Ipv6ExtensionHeader : public Header 
@@ -130,9 +131,11 @@ private:
 };
 
 /**
- * \class OptionField
- * \brief Option field for an IPv6ExtensionHeader
- * Enables adding options to an IPv6ExtensionHeader
+ * \ingroup ipv6HeaderExt
+ *
+ * \brief Option field for an IPv6ExtensionHeader.
+ *
+ * Enables adding options to an IPv6ExtensionHeader.
  *
  * Implementor's note: Make sure to add the result of
  * OptionField::GetSerializedSize () to your IPv6ExtensionHeader::GetSerializedSize ()
@@ -213,7 +216,8 @@ private:
 };
 
 /**
- * \class Ipv6ExtensionHopByHopHeader
+ * \ingroup ipv6HeaderExt
+ *
  * \brief Header of IPv6 Extension "Hop by Hop"
  */
 class Ipv6ExtensionHopByHopHeader : public Ipv6ExtensionHeader, public OptionField
@@ -269,7 +273,8 @@ public:
 };
 
 /**
- * \class Ipv6ExtensionDestinationHeader
+ * \ingroup ipv6HeaderExt
+ *
  * \brief Header of IPv6 Extension Destination
  */
 class Ipv6ExtensionDestinationHeader : public Ipv6ExtensionHeader, public OptionField
@@ -325,7 +330,8 @@ public:
 };
 
 /**
- * \class Ipv6ExtensionFragmentHeader
+ * \ingroup ipv6HeaderExt
+ *
  * \brief Header of IPv6 Extension Fragment
  */
 class Ipv6ExtensionFragmentHeader : public Ipv6ExtensionHeader
@@ -428,7 +434,8 @@ private:
 };
 
 /**
- * \class Ipv6ExtensionRoutingHeader
+ * \ingroup ipv6HeaderExt
+ *
  * \brief Header of IPv6 Extension Routing
  */
 class Ipv6ExtensionRoutingHeader : public Ipv6ExtensionHeader
@@ -519,7 +526,8 @@ private:
 };
 
 /**
- * \class Ipv6ExtensionLooseRoutingHeader
+ * \ingroup ipv6HeaderExt
+ *
  * \brief Header of IPv6 Extension Routing : Type 0 (Loose Routing)
  */
 class Ipv6ExtensionLooseRoutingHeader : public Ipv6ExtensionRoutingHeader
@@ -618,7 +626,8 @@ private:
 };
 
 /**
- * \class Ipv6ExtensionESPHeader
+ * \ingroup ipv6HeaderExt
+ *
  * \brief Header of IPv6 Extension ESP
  */
 class Ipv6ExtensionESPHeader : public Ipv6ExtensionHeader
@@ -674,7 +683,8 @@ public:
 };
 
 /**
- * \class Ipv6ExtensionAHHeader
+ * \ingroup ipv6HeaderExt
+ *
  * \brief Header of IPv6 Extension AH
  */
 class Ipv6ExtensionAHHeader : public Ipv6ExtensionHeader

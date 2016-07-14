@@ -34,6 +34,8 @@ class Header;
 class Packet;
 
 /**
+ * \ingroup ipv4
+ *
  * \brief A representation of an internet endpoint/connection
  *
  * This class provides an internet four-tuple (source and destination ports 

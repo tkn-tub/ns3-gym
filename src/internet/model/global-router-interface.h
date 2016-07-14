@@ -40,6 +40,8 @@ class GlobalRouter;
 class Ipv4GlobalRouting;
 
 /**
+ * \ingroup globalrouting
+ *
  * @brief A single link record for a link state advertisement.
  *
  * The GlobalRoutingLinkRecord is modeled after the OSPF link record field of

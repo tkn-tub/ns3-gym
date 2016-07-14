@@ -31,14 +31,14 @@ namespace ns3
 {
 
 /**
- * \class Icmpv6Header
+ * \ingroup icmpv6
+ *
  * \brief ICMPv6 header.
  */
 class Icmpv6Header : public Header
 {
 public:
   /**
-   * \enum Type_e
    * \brief ICMPv6 type code.
    */
   enum Type_e
@@ -72,7 +72,6 @@ public:
   };
 
   /**
-   * \enum OptionType_e
    * \brief ICMPv6 Option type code.
    */
   enum OptionType_e
@@ -85,7 +84,6 @@ public:
   };
 
   /**
-   * \enum ErrorDestinationUnreachable_e
    * \brief ICMPv6 error code : Destination Unreachable
    */
   enum ErrorDestinationUnreachable_e
@@ -98,7 +96,6 @@ public:
   };
 
   /**
-   * \enum ErrorTimeExceeded_e
    * \brief ICMPv6 error code : Time Exceeded
    */
   enum ErrorTimeExceeded_e
@@ -108,7 +105,6 @@ public:
   };
 
   /**
-   * \enum ErrorParameterError_e
    * \brief ICMPv6 error code : Parameter Error
    */
   enum ErrorParameterError_e
@@ -235,7 +231,8 @@ private:
 };
 
 /**
- * \class Icmpv6OptionHeader
+ * \ingroup icmpv6
+ *
  * \brief ICMPv6 option header.
  */
 class Icmpv6OptionHeader : public Header
@@ -325,7 +322,8 @@ private:
 };
 
 /**
- * \class Icmpv6NS
+ * \ingroup icmpv6
+ *
  * \brief ICMPv6 Neighbor Solicitation header.
  */
 class Icmpv6NS : public Icmpv6Header
@@ -422,7 +420,8 @@ private:
 };
 
 /**
- * \class Icmpv6NA
+ * \ingroup icmpv6
+ *
  * \brief ICMPv6 Neighbor Advertisement header.
  */
 class Icmpv6NA : public Icmpv6Header
@@ -563,7 +562,8 @@ private:
 };
 
 /**
- * \class Icmpv6RA
+ * \ingroup icmpv6
+ *
  * \brief ICMPv6 Router Advertisement header.
  */
 class Icmpv6RA : public Icmpv6Header
@@ -755,7 +755,8 @@ private:
 };
 
 /**
- * \class Icmpv6RS
+ * \ingroup icmpv6
+ *
  * \brief ICMPv6 Router Solicitation header.
  */
 class Icmpv6RS : public Icmpv6Header
@@ -828,7 +829,8 @@ private:
 };
 
 /**
- * \class Icmpv6Redirection
+ * \ingroup icmpv6
+ *
  * \brief ICMPv6 Redirection header.
  */
 class Icmpv6Redirection : public Icmpv6Header
@@ -935,7 +937,8 @@ private:
 };
 
 /**
- * \class Icmpv6Echo
+ * \ingroup icmpv6
+ *
  * \brief ICMPv6 Echo message.
  */
 class Icmpv6Echo : public Icmpv6Header
@@ -1031,7 +1034,8 @@ private:
 };
 
 /**
- * \class Icmpv6DestinationUnreachable
+ * \ingroup icmpv6
+ *
  * \brief ICMPv6 Error Destination Unreachable header.
  */
 class Icmpv6DestinationUnreachable : public Icmpv6Header
@@ -1104,7 +1108,8 @@ private:
 };
 
 /**
- * \class Icmpv6TooBig
+ * \ingroup icmpv6
+ *
  * \brief ICMPv6 Error Too Big header.
  */
 class Icmpv6TooBig : public Icmpv6Header
@@ -1195,7 +1200,8 @@ private:
 };
 
 /**
- * \class Icmpv6TimeExceeded
+ * \ingroup icmpv6
+ *
  * \brief ICMPv6 Error Time Exceeded header.
  */
 class Icmpv6TimeExceeded : public Icmpv6Header
@@ -1269,7 +1275,8 @@ private:
 };
 
 /**
- * \class Icmpv6ParameterError
+ * \ingroup icmpv6
+ *
  * \brief ICMPv6 Error Parameter Error header.
  */
 class Icmpv6ParameterError : public Icmpv6Header
@@ -1360,7 +1367,8 @@ private:
 };
 
 /**
- * \class Icmpv6OptionMtu
+ * \ingroup icmpv6
+ *
  * \brief ICMPv6 MTU option.
  */
 class Icmpv6OptionMtu : public Icmpv6OptionHeader
@@ -1456,7 +1464,8 @@ private:
 };
 
 /**
- * \class Icmpv6OptionPrefixInformation
+ * \ingroup icmpv6
+ *
  * \brief ICMPv6 Option Prefix Information.
  */
 class Icmpv6OptionPrefixInformation : public Icmpv6OptionHeader
@@ -1621,7 +1630,8 @@ private:
 };
 
 /**
- * \class Icmpv6OptionLinkLayerAddress
+ * \ingroup icmpv6
+ *
  * \brief ICMPv6 link-layer address option.
  */
 class Icmpv6OptionLinkLayerAddress : public Icmpv6OptionHeader
@@ -1707,7 +1717,8 @@ private:
 };
 
 /**
- * \class Icmpv6OptionRedirected
+ * \ingroup icmpv6
+ *
  * \brief ICMPv6 redirected option.
  */
 class Icmpv6OptionRedirected : public Icmpv6OptionHeader

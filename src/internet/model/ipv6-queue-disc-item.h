@@ -29,7 +29,8 @@
 namespace ns3 {
 
 /**
- * \ingroup internet
+ * \ingroup ipv6
+ * \ingroup traffic-control
  *
  * Ipv6QueueDiscItem is a subclass of QueueDiscItem which stores IPv6 packets.
  * Header and payload are kept separate to allow the queue disc to manipulate

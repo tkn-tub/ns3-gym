@@ -29,6 +29,7 @@
 #include "arp-cache.h"
 #include "arp-header.h"
 #include "ipv4-interface.h"
+#include "ipv4-header.h"
 
 namespace ns3 {
 

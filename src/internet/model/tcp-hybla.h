@@ -25,6 +25,8 @@
 namespace ns3 {
 
 /**
+ * \ingroup congestionOps
+ *
  * \brief Implementation of the TCP Hybla algorithm
  *
  * The key idea behind TCP Hybla is to obtain for long RTT connections the same

@@ -32,7 +32,7 @@
 namespace ns3 {
 
 /**
- * \ingroup tcp
+ * \ingroup congestionOps
  *
  * \brief An implementation of TCP Vegas
  *
@@ -159,7 +159,7 @@ private:
   uint32_t m_gamma;                  //!< Gamma threshold, limit on increase
   Time m_baseRtt;                    //!< Minimum of all Vegas RTT measurements seen during connection
   Time m_minRtt;                     //!< Minimum of all RTT measurements within last RTT
-  uint32_t m_cntRtt;                 //!< # of RTT measurements during last RTT
+  uint32_t m_cntRtt;                 //!< Number of RTT measurements during last RTT
   bool m_doingVegasNow;              //!< If true, do Vegas for this RTT
   SequenceNumber32 m_begSndNxt;      //!< Right edge during last RTT
 };

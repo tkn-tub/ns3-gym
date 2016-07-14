@@ -40,7 +40,13 @@ class Packet;
 class TraceContext;
 
 /**
- * \class Icmpv6L4Protocol
+ * \ingroup ipv6
+ * \defgroup icmpv6 ICMPv6 protocol and associated headers.
+ */
+
+/**
+ * \ingroup icmpv6
+ *
  * \brief An implementation of the ICMPv6 protocol.
  */
 class Icmpv6L4Protocol : public IpL4Protocol
