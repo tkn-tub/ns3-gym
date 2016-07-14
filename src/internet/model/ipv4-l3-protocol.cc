@@ -57,12 +57,6 @@ Ipv4L3Protocol::GetTypeId (void)
     .SetParent<Ipv4> ()
     .SetGroupName ("Internet")
     .AddConstructor<Ipv4L3Protocol> ()
-    .AddAttribute ("DefaultTos",
-                   "The TOS value set by default on "
-                   "all outgoing packets generated on this node.",
-                   UintegerValue (0),
-                   MakeUintegerAccessor (&Ipv4L3Protocol::m_defaultTos),
-                   MakeUintegerChecker<uint8_t> ())
     .AddAttribute ("DefaultTtl",
                    "The TTL value set by default on "
                    "all outgoing packets generated on this node.",
@@ -741,7 +735,7 @@ Ipv4L3Protocol::Send (Ptr<Packet> packet,
       ttl = tag.GetTtl ();
     }
 
-  uint8_t tos = m_defaultTos;
+  uint8_t tos = 0;
   SocketIpTosTag ipTosTag;
   found = packet->RemovePacketTag (ipTosTag);
   if (found)
