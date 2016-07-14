@@ -355,17 +355,16 @@ avoidance. Taken from RFC 5681:
   reaches it, as noted above) or when congestion is observed.  While
   traditionally TCP implementations have increased cwnd by precisely
   SMSS bytes upon receipt of an ACK covering new data, we RECOMMEND
-  that TCP implementations increase cwnd, per:
-
-  cwnd += min (N, SMSS)                      (2)
-
+  that TCP implementations increase cwnd, per Equation :eq:`newrenocongavoid`,
   where N is the number of previously unacknowledged bytes acknowledged
   in the incoming ACK.
 
-During congestion avoidance, cwnd is incremented by roughly 1 full-sized
-segment per round-trip time (RTT).
+.. math:: cwnd += min (N, SMSS)
+   :label: newrenocongavoid
 
-For each congestion event, the slow start threshold is halved.
+During congestion avoidance, cwnd is incremented by roughly 1 full-sized
+segment per round-trip time (RTT), and for each congestion event, the slow
+start threshold is halved.
 
 High Speed
 ^^^^^^^^^^
@@ -381,7 +380,7 @@ of congestion collapse.
 
 Mathematically:
 
-  cWnd = cWnd + a(cWnd)/cWnd
+.. math::  cWnd = cWnd + \frac{a(cWnd)}{cWnd}
 
 The function a() is calculated using a fixed RTT the value 100 ms (the
 lookup table for this function is taken from RFC 3649). For each congestion
@@ -389,7 +388,7 @@ event, the slow start threshold is decreased by a value that depends on the
 size of the slow start threshold itself. Then, the congestion window is set
 to such value.
 
-   cWnd <- (1-b(cWnd))cWnd
+.. math::   cWnd = (1-b(cWnd)) \cdot cWnd
 
 The lookup table for the function b() is taken from the same RFC.
 More informations at: http://dl.acm.org/citation.cfm?id=2756518
@@ -430,12 +429,14 @@ with the expected throughput calculated in Equation (2). The difference between
 these 2 sending rates in Equation (3) reflects the amount of extra packets being
 queued at the bottleneck.
 
-  actual = cwnd / RTT (1)
-  expected = cwnd / BaseRTT (2)
-  diff = expected - actual (3)
+.. math::
+
+   actual &= \frac{cWnd}{RTT}        \\
+   expected &= \frac{cWnd}{BaseRTT}  \\
+   diff &= expected - actual
 
 To avoid congestion, Vegas linearly increases/decreases its congestion window
-to ensure the diff value fall between the 2 predefined thresholds, alpha and
+to ensure the diff value fall between the two predefined thresholds, alpha and
 beta. diff and another threshold, gamma, are used to determine when Vegas
 should change from its slow-start mode to linear increase/decrease mode.
 Following the implementation of Vegas in Linux, we use 2, 4, and 1 as the
@@ -451,7 +452,7 @@ a highspeed wide area network by altering NewReno congestion window adjustment
 algorithm.  When congestion has not been detected, for each ACK received in an
 RTT, Scalable increases its cwnd per:
 
-  cwnd = cwnd + 0.01                  (1)
+.. math::  cwnd = cwnd + 0.01
 
 Following Linux implementation of Scalable, we use 50 instead of 100 to account
 for delayed ACK.
@@ -459,8 +460,7 @@ for delayed ACK.
 On the first detection of congestion in a given RTT, cwnd is reduced based on
 the following equation:
 
-  cwnd = cwnd - ceil(0.125 * cwnd)       (2)
-
+.. math::  cwnd = cwnd - ceil(0.125 \cdot cwnd)
 
 More informations at: http://dl.acm.org/citation.cfm?id=956989
 
@@ -475,11 +475,13 @@ congestive and non-congestive states.
 The backlog (the number of packets accumulated at the bottleneck queue) is
 calculated using Equation (1):
 
-  N = Actual * (RTT - BaseRTT) = Diff * BaseRTT        (1)
-  
+.. math::  N &= Actual \cdot (RTT - BaseRTT) \\
+             &= Diff \cdot BaseRTT
+
 where:
 
-  Diff = Expected - Actual = cwnd/BaseRTT - cwnd/RTT
+.. math::  Diff &= Expected - Actual \\
+                &= \frac{cWnd}{BaseRTT} - \frac{cWnd}{RTT}
 
 Veno makes decision on cwnd modification based on the calculated N and its
 predefined threshold beta.
@@ -526,30 +528,34 @@ YeAH
 
 YeAH-TCP (Yet Another HighSpeed TCP) is a heuristic designed to balance various
 requirements of a state-of-the-art congestion control algorithm:
-1) fully exploit the link capacity of high BDP networks while inducing a small
-number of congestion events
-2) compete friendly with Reno flows
-3) achieve intra and RTT fairness
-4) robust to random losses
-5) achieve high performance regardless of buffer size
+
+
+1. fully exploit the link capacity of high BDP networks while inducing a small number of congestion events
+2. compete friendly with Reno flows
+3. achieve intra and RTT fairness
+4. robust to random losses
+5. achieve high performance regardless of buffer size
 
 YeAH operates between 2 modes: Fast and Slow mode.  In the Fast mode when the queue
 occupancy is small and the network congestion level is low, YeAH increments
 its congestion window according to the aggressive STCP rule.  When the number of packets
 in the queue grows beyond a threshold and the network congestion level is high, YeAH enters
 its Slow mode, acting as Reno with a decongestion algorithm.  YeAH employs Vegas' mechanism
-for calculating the backlog as in Equation (1).  The estimation of the network congestion
-level is shown in Equation (2).
+for calculating the backlog as in Equation :eq:`q_yeah`.  The estimation of the network congestion
+level is shown in Equation :eq:`l_yeah`.
 
-                  Q = (RTT - BaseRTT) (cwnd / RTT)    (1)
-                  L = (RTT - BaseRTT) / BaseRTT       (2)
+.. math::  Q = (RTT - BaseRTT) \cdot \frac{cWnd}{RTT}
+   :label: q_yeah
+
+.. math::  L = \frac{RTT - BaseRTT}{BaseRTT}
+   :label: l_yeah
 
 To ensure TCP friendliness, YeAH also implements an algorithm to detect the presence of legacy
 Reno flows.  Upon the receipt of 3 duplicate ACKs, YeAH decreases its slow start threshold
 according to Equation (3) if it's not competing with Reno flows.  Otherwise,  the ssthresh is
-halved as in Reno.
+halved as in Reno:
 
-                  ssthresh = min{max{cwnd/8, Q}, cwnd/2}
+.. math::  ssthresh = min(max(\frac{cWnd}{8}, Q), \frac{cWnd}{2})
 
 More information: http://www.csc.lsu.edu/~sjpark/cs7601/4-YeAH_TCP.pdf
 
@@ -569,56 +575,58 @@ robustness against sudden fluctuations in its delay sampling,
 Illinois allows the increment of alpha to alphaMax
 only if da stays below d1 for a some (theta) amount of time.
 
-                              / alphaMax          if da <= d1
-                      alpha =                                         (1)
-                              \ k1 / (k2 + da)    otherwise
+::
+
+                             / alphaMax          if da <= d1
+                     alpha =                                         (1)
+                             \ k1 / (k2 + da)    otherwise
 
                              / betaMin            if da <= d2
-                      beta =   k3 + k4da          if d2 < da < d3      (2)
+                     beta =    k3 + k4da          if d2 < da < d3      (2)
                              \ betaMax            otherwise
 
-where the calculations of k1, k2, k3, and k4 are shown in Equations (3), (4),
-(5), and (6).
- 
-           k1 = (dm - d1)(alphaMin)alphaMax / (alphaMax - alphaMin)    (3)
+where the calculations of k1, k2, k3, and k4 are shown in the following:
 
-           k2 = ((dm - d1)alphaMin / (alphaMax - alphaMin)) - d1       (4)
+.. math::
 
-           k3 = ((alphaMin)d3 - (alphaMax)d2) / (d3 - d2)              (5)
+   k1 &= \frac{(dm - d1) \cdot alphaMin \cdot alphaMax}{alphaMax - alphaMin}
 
-           k4 = (alphaMax - alphaMin) / (d3 - d2)                      (6)
+   k2 &= \frac{(dm - d1) \cdot alphaMin}{alphaMax - alphaMin} - d1
 
-with da the current average queueing delay calculated in Equation  (7) where
-                  Ta is the average RTT (sumRtt / cntRtt in the implementation) and
-                  Tmin (baseRtt in the implementation) is the minimum RTT ever seen
-     dm the maximum (average) queueing delay calculated in Equation (8) where
-                  Tmax (maxRtt in the implementation) is the maximum RTT ever seen
+   k3 &= \frac{alphaMin \cdot d3 - alphaMax \cdot d2}{d3 - d2}
 
-           da = Ta - Tmin          (7)
+   k4 &= \frac{alphaMax - alphaMin}{d3 - d2}
 
-           dm = Tmax - Tmin         (8)
+Other parameters include da (the current average queueing delay), and
+Ta (the average RTT, calculated as sumRtt / cntRtt in the implementation) and
+Tmin (baseRtt in the implementation) which is the minimum RTT ever seen.
+dm is the maximum (average) queueing delay, and Tmax (maxRtt in the
+implementation) is the maximum RTT ever seen.
 
-     di (i = 1,2,3) are calculated in Equation (9) (0 <= eta_1 < 1, and
-                   0 <= eta_2 <= eta_3 <=1)
+.. math::
 
-           di = (eta_i)dm            (9)
+   da &= Ta - Tmin
+
+   dm &= Tmax - Tmin
+
+   d_i &= eta_i \cdot dm
 
 Illinois only executes its adaptation of alpha and beta when cwnd exceeds a threshold
-called winThresh.  Otherwise, it sets alpha and beta to the base values of 1 and 0.5,
+called winThresh. Otherwise, it sets alpha and beta to the base values of 1 and 0.5,
 respectively.
 
 Following the implementation of Illinois in the Linux kernel, we use the following
 default parameter settings:
 
-     alphaMin = 0.3      (0.1 in the Illinois paper)
-     alphaMax = 10.0
-     betaMin = 0.125
-     betaMax = 0.5
-     winThresh = 15      (10 in the Illinois paper)
-     theta = 5
-     eta1 = 0.01
-     eta2 = 0.1
-     eta3 = 0.8
+* alphaMin = 0.3      (0.1 in the Illinois paper)
+* alphaMax = 10.0
+* betaMin = 0.125
+* betaMax = 0.5
+* winThresh = 15      (10 in the Illinois paper)
+* theta = 5
+* eta1 = 0.01
+* eta2 = 0.1
+* eta3 = 0.8
 
 More information: http://www.doi.org/10.1145/1190095.1190166
 
