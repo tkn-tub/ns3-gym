@@ -27,7 +27,6 @@
 #include "ns3/pointer.h"
 #include "ns3/boolean.h"
 #include "ns3/trace-source-accessor.h"
-#include "qos-tag.h"
 #include "mac-low.h"
 #include "dcf-manager.h"
 #include "mac-rx-middle.h"

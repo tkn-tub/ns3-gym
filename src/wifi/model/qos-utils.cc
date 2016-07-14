@@ -20,7 +20,7 @@
  */
 
 #include "qos-utils.h"
-#include "qos-tag.h"
+#include "ns3/socket.h"
 
 namespace ns3 {
 
@@ -61,13 +61,13 @@ QosUtilsMapTidToAc (uint8_t tid)
 uint8_t
 QosUtilsGetTidForPacket (Ptr<const Packet> packet)
 {
-  QosTag qos;
+  SocketPriorityTag qos;
   uint8_t tid = 8;
   if (packet->PeekPacketTag (qos))
     {
-      if (qos.GetTid () < 8)
+      if (qos.GetPriority () < 8)
         {
-          tid = qos.GetTid ();
+          tid = qos.GetPriority ();
         }
     }
   return tid;

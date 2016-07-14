@@ -27,7 +27,6 @@
 #include "ns3/string.h"
 #include "ns3/pointer.h"
 #include "ns3/boolean.h"
-#include "qos-tag.h"
 #include "wifi-phy.h"
 #include "dcf-manager.h"
 #include "mac-rx-middle.h"
