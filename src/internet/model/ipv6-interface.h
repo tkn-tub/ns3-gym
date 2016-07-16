@@ -22,12 +22,10 @@
 #define IPV6_INTERFACE_H
 
 #include <list>
-
-#include "ns3/ipv6-header.h"
-#include "ns3/ipv6-interface-address.h"
 #include "ns3/ptr.h"
 #include "ns3/object.h"
-#include "ns3/timer.h"
+#include "ipv6-interface-address.h"
+#include "ns3/traffic-control-layer.h"
 
 namespace ns3
 {
@@ -35,8 +33,10 @@ namespace ns3
 class NetDevice;
 class Packet;
 class Node;
-class TrafficControlLayer;
 class NdiscCache;
+class Ipv6InterfaceAddress;
+class Ipv6Address;
+class Ipv6Header;
 
 /**
  * \ingoup ipv6

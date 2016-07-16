@@ -29,7 +29,6 @@
 #include "ns3/packet.h"
 #include "ns3/node.h"
 #include "ns3/pointer.h"
-#include "ns3/traffic-control-layer.h"
 
 
 namespace ns3 {

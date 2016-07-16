@@ -33,6 +33,7 @@
 #include "ns3/enum.h"
 #include "ns3/uinteger.h"
 #include "ns3/ipv6-packet-info-tag.h"
+#include "ns3/simulator.h"
 
 #define RIPNG_ALL_NODE "ff02::9"
 #define RIPNG_PORT 521
