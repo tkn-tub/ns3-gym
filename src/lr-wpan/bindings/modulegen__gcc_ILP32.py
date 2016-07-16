@@ -20,20 +20,20 @@ def module_init():
 def register_types(module):
     root_module = module.get_root()
     
-    ## lr-wpan-phy.h (module 'lr-wpan'): ns3::LrWpanPhyEnumeration [enumeration]
-    module.add_enum('LrWpanPhyEnumeration', ['IEEE_802_15_4_PHY_BUSY', 'IEEE_802_15_4_PHY_BUSY_RX', 'IEEE_802_15_4_PHY_BUSY_TX', 'IEEE_802_15_4_PHY_FORCE_TRX_OFF', 'IEEE_802_15_4_PHY_IDLE', 'IEEE_802_15_4_PHY_INVALID_PARAMETER', 'IEEE_802_15_4_PHY_RX_ON', 'IEEE_802_15_4_PHY_SUCCESS', 'IEEE_802_15_4_PHY_TRX_OFF', 'IEEE_802_15_4_PHY_TX_ON', 'IEEE_802_15_4_PHY_UNSUPPORTED_ATTRIBUTE', 'IEEE_802_15_4_PHY_READ_ONLY', 'IEEE_802_15_4_PHY_UNSPECIFIED'])
+    ## lr-wpan-phy.h (module 'lr-wpan'): ns3::LrWpanPhyOption [enumeration]
+    module.add_enum('LrWpanPhyOption', ['IEEE_802_15_4_868MHZ_BPSK', 'IEEE_802_15_4_915MHZ_BPSK', 'IEEE_802_15_4_868MHZ_ASK', 'IEEE_802_15_4_915MHZ_ASK', 'IEEE_802_15_4_868MHZ_OQPSK', 'IEEE_802_15_4_915MHZ_OQPSK', 'IEEE_802_15_4_2_4GHZ_OQPSK', 'IEEE_802_15_4_INVALID_PHY_OPTION'])
     ## lr-wpan-mac.h (module 'lr-wpan'): ns3::LrWpanTxOption [enumeration]
     module.add_enum('LrWpanTxOption', ['TX_OPTION_NONE', 'TX_OPTION_ACK', 'TX_OPTION_GTS', 'TX_OPTION_INDIRECT'])
     ## lr-wpan-mac.h (module 'lr-wpan'): ns3::LrWpanMcpsDataConfirmStatus [enumeration]
     module.add_enum('LrWpanMcpsDataConfirmStatus', ['IEEE_802_15_4_SUCCESS', 'IEEE_802_15_4_TRANSACTION_OVERFLOW', 'IEEE_802_15_4_TRANSACTION_EXPIRED', 'IEEE_802_15_4_CHANNEL_ACCESS_FAILURE', 'IEEE_802_15_4_INVALID_ADDRESS', 'IEEE_802_15_4_INVALID_GTS', 'IEEE_802_15_4_NO_ACK', 'IEEE_802_15_4_COUNTER_ERROR', 'IEEE_802_15_4_FRAME_TOO_LONG', 'IEEE_802_15_4_UNAVAILABLE_KEY', 'IEEE_802_15_4_UNSUPPORTED_SECURITY', 'IEEE_802_15_4_INVALID_PARAMETER'])
+    ## lr-wpan-phy.h (module 'lr-wpan'): ns3::LrWpanPhyEnumeration [enumeration]
+    module.add_enum('LrWpanPhyEnumeration', ['IEEE_802_15_4_PHY_BUSY', 'IEEE_802_15_4_PHY_BUSY_RX', 'IEEE_802_15_4_PHY_BUSY_TX', 'IEEE_802_15_4_PHY_FORCE_TRX_OFF', 'IEEE_802_15_4_PHY_IDLE', 'IEEE_802_15_4_PHY_INVALID_PARAMETER', 'IEEE_802_15_4_PHY_RX_ON', 'IEEE_802_15_4_PHY_SUCCESS', 'IEEE_802_15_4_PHY_TRX_OFF', 'IEEE_802_15_4_PHY_TX_ON', 'IEEE_802_15_4_PHY_UNSUPPORTED_ATTRIBUTE', 'IEEE_802_15_4_PHY_READ_ONLY', 'IEEE_802_15_4_PHY_UNSPECIFIED'])
     ## lr-wpan-phy.h (module 'lr-wpan'): ns3::LrWpanPibAttributeIdentifier [enumeration]
     module.add_enum('LrWpanPibAttributeIdentifier', ['phyCurrentChannel', 'phyChannelsSupported', 'phyTransmitPower', 'phyCCAMode', 'phyCurrentPage', 'phyMaxFrameDuration', 'phySHRDuration', 'phySymbolsPerOctet'])
-    ## lr-wpan-mac.h (module 'lr-wpan'): ns3::LrWpanMacState [enumeration]
-    module.add_enum('LrWpanMacState', ['MAC_IDLE', 'MAC_CSMA', 'MAC_SENDING', 'MAC_ACK_PENDING', 'CHANNEL_ACCESS_FAILURE', 'CHANNEL_IDLE', 'SET_PHY_TX_ON'])
-    ## lr-wpan-phy.h (module 'lr-wpan'): ns3::LrWpanPhyOption [enumeration]
-    module.add_enum('LrWpanPhyOption', ['IEEE_802_15_4_868MHZ_BPSK', 'IEEE_802_15_4_915MHZ_BPSK', 'IEEE_802_15_4_868MHZ_ASK', 'IEEE_802_15_4_915MHZ_ASK', 'IEEE_802_15_4_868MHZ_OQPSK', 'IEEE_802_15_4_915MHZ_OQPSK', 'IEEE_802_15_4_2_4GHZ_OQPSK', 'IEEE_802_15_4_INVALID_PHY_OPTION'])
     ## lr-wpan-mac.h (module 'lr-wpan'): ns3::LrWpanAssociationStatus [enumeration]
     module.add_enum('LrWpanAssociationStatus', ['ASSOCIATED', 'PAN_AT_CAPACITY', 'PAN_ACCESS_DENIED', 'ASSOCIATED_WITHOUT_ADDRESS', 'DISASSOCIATED'])
+    ## lr-wpan-mac.h (module 'lr-wpan'): ns3::LrWpanMacState [enumeration]
+    module.add_enum('LrWpanMacState', ['MAC_IDLE', 'MAC_CSMA', 'MAC_SENDING', 'MAC_ACK_PENDING', 'CHANNEL_ACCESS_FAILURE', 'CHANNEL_IDLE', 'SET_PHY_TX_ON'])
     ## lr-wpan-mac.h (module 'lr-wpan'): ns3::LrWpanAddressMode [enumeration]
     module.add_enum('LrWpanAddressMode', ['NO_PANID_ADDR', 'ADDR_MODE_RESERVED', 'SHORT_ADDR', 'EXT_ADDR'])
     ## address.h (module 'network'): ns3::Address [class]
@@ -332,6 +332,8 @@ def register_types(module):
     module.add_class('Packet', import_from_module='ns.network', parent=root_module['ns3::SimpleRefCount< ns3::Packet, ns3::empty, ns3::DefaultDeleter<ns3::Packet> >'])
     ## net-device.h (module 'network'): ns3::QueueItem [class]
     module.add_class('QueueItem', import_from_module='ns.network', parent=root_module['ns3::SimpleRefCount< ns3::QueueItem, ns3::empty, ns3::DefaultDeleter<ns3::QueueItem> >'])
+    ## net-device.h (module 'network'): ns3::QueueItem::Uint8Values [enumeration]
+    module.add_enum('Uint8Values', ['IP_DSFIELD'], outer_class=root_module['ns3::QueueItem'], import_from_module='ns.network')
     ## nstime.h (module 'core'): ns3::TimeValue [class]
     module.add_class('TimeValue', import_from_module='ns.core', parent=root_module['ns3::AttributeValue'])
     ## type-id.h (module 'core'): ns3::TypeIdChecker [class]
@@ -1735,10 +1737,10 @@ def register_Ns3Ipv6Prefix_methods(root_module, cls):
     return
 
 def register_Ns3LrWpanEdPower_methods(root_module, cls):
-    ## lr-wpan-phy.h (module 'lr-wpan'): ns3::LrWpanEdPower::LrWpanEdPower(ns3::LrWpanEdPower const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::LrWpanEdPower const &', 'arg0')])
     ## lr-wpan-phy.h (module 'lr-wpan'): ns3::LrWpanEdPower::LrWpanEdPower() [constructor]
     cls.add_constructor([])
+    ## lr-wpan-phy.h (module 'lr-wpan'): ns3::LrWpanEdPower::LrWpanEdPower(ns3::LrWpanEdPower const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::LrWpanEdPower const &', 'arg0')])
     ## lr-wpan-phy.h (module 'lr-wpan'): ns3::LrWpanEdPower::averagePower [variable]
     cls.add_instance_attribute('averagePower', 'double', is_const=False)
     ## lr-wpan-phy.h (module 'lr-wpan'): ns3::LrWpanEdPower::lastUpdate [variable]
@@ -5622,20 +5624,20 @@ def register_Ns3NetDeviceQueueInterface_methods(root_module, cls):
     cls.add_constructor([param('ns3::NetDeviceQueueInterface const &', 'arg0')])
     ## net-device.h (module 'network'): ns3::NetDeviceQueueInterface::NetDeviceQueueInterface() [constructor]
     cls.add_constructor([])
-    ## net-device.h (module 'network'): uint8_t ns3::NetDeviceQueueInterface::GetSelectedQueue(ns3::Ptr<ns3::QueueItem> item) const [member function]
-    cls.add_method('GetSelectedQueue', 
+    ## net-device.h (module 'network'): uint8_t ns3::NetDeviceQueueInterface::GetNTxQueues() const [member function]
+    cls.add_method('GetNTxQueues', 
                    'uint8_t', 
-                   [param('ns3::Ptr< ns3::QueueItem >', 'item')], 
+                   [], 
+                   is_const=True)
+    ## net-device.h (module 'network'): ns3::Callback<unsigned char, ns3::Ptr<ns3::QueueItem>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> ns3::NetDeviceQueueInterface::GetSelectQueueCallback() const [member function]
+    cls.add_method('GetSelectQueueCallback', 
+                   'ns3::Callback< unsigned char, ns3::Ptr< ns3::QueueItem >, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 
+                   [], 
                    is_const=True)
     ## net-device.h (module 'network'): ns3::Ptr<ns3::NetDeviceQueue> ns3::NetDeviceQueueInterface::GetTxQueue(uint8_t i) const [member function]
     cls.add_method('GetTxQueue', 
                    'ns3::Ptr< ns3::NetDeviceQueue >', 
                    [param('uint8_t', 'i')], 
-                   is_const=True)
-    ## net-device.h (module 'network'): uint8_t ns3::NetDeviceQueueInterface::GetTxQueuesN() const [member function]
-    cls.add_method('GetTxQueuesN', 
-                   'uint8_t', 
-                   [], 
                    is_const=True)
     ## net-device.h (module 'network'): static ns3::TypeId ns3::NetDeviceQueueInterface::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
@@ -6040,6 +6042,11 @@ def register_Ns3QueueItem_methods(root_module, cls):
     cls.add_method('GetPacketSize', 
                    'uint32_t', 
                    [], 
+                   is_const=True, is_virtual=True)
+    ## net-device.h (module 'network'): bool ns3::QueueItem::GetUint8Value(ns3::QueueItem::Uint8Values field, uint8_t & value) const [member function]
+    cls.add_method('GetUint8Value', 
+                   'bool', 
+                   [param('ns3::QueueItem::Uint8Values', 'field'), param('uint8_t &', 'value')], 
                    is_const=True, is_virtual=True)
     ## net-device.h (module 'network'): void ns3::QueueItem::Print(std::ostream & os) const [member function]
     cls.add_method('Print', 

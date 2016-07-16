@@ -32,18 +32,18 @@ def register_types(module):
     module.add_enum('WifiModulationClass', ['WIFI_MOD_CLASS_UNKNOWN', 'WIFI_MOD_CLASS_IR', 'WIFI_MOD_CLASS_FHSS', 'WIFI_MOD_CLASS_DSSS', 'WIFI_MOD_CLASS_HR_DSSS', 'WIFI_MOD_CLASS_ERP_PBCC', 'WIFI_MOD_CLASS_DSSS_OFDM', 'WIFI_MOD_CLASS_ERP_OFDM', 'WIFI_MOD_CLASS_OFDM', 'WIFI_MOD_CLASS_HT', 'WIFI_MOD_CLASS_VHT'], import_from_module='ns.wifi')
     ## wifi-phy-standard.h (module 'wifi'): ns3::WifiPhyStandard [enumeration]
     module.add_enum('WifiPhyStandard', ['WIFI_PHY_STANDARD_80211a', 'WIFI_PHY_STANDARD_80211b', 'WIFI_PHY_STANDARD_80211g', 'WIFI_PHY_STANDARD_80211_10MHZ', 'WIFI_PHY_STANDARD_80211_5MHZ', 'WIFI_PHY_STANDARD_holland', 'WIFI_PHY_STANDARD_80211n_2_4GHZ', 'WIFI_PHY_STANDARD_80211n_5GHZ', 'WIFI_PHY_STANDARD_80211ac'], import_from_module='ns.wifi')
-    ## wifi-mode.h (module 'wifi'): ns3::WifiCodeRate [enumeration]
-    module.add_enum('WifiCodeRate', ['WIFI_CODE_RATE_UNDEFINED', 'WIFI_CODE_RATE_3_4', 'WIFI_CODE_RATE_2_3', 'WIFI_CODE_RATE_1_2', 'WIFI_CODE_RATE_5_6'], import_from_module='ns.wifi')
-    ## channel-scheduler.h (module 'wave'): ns3::ChannelAccess [enumeration]
-    module.add_enum('ChannelAccess', ['ContinuousAccess', 'AlternatingAccess', 'ExtendedAccess', 'DefaultCchAccess', 'NoAccess'])
     ## qos-utils.h (module 'wifi'): ns3::AcIndex [enumeration]
     module.add_enum('AcIndex', ['AC_BE', 'AC_BK', 'AC_VI', 'AC_VO', 'AC_BE_NQOS', 'AC_UNDEF'], import_from_module='ns.wifi')
+    ## channel-scheduler.h (module 'wave'): ns3::ChannelAccess [enumeration]
+    module.add_enum('ChannelAccess', ['ContinuousAccess', 'AlternatingAccess', 'ExtendedAccess', 'DefaultCchAccess', 'NoAccess'])
     ## edca-txop-n.h (module 'wifi'): ns3::TypeOfStation [enumeration]
     module.add_enum('TypeOfStation', ['STA', 'AP', 'ADHOC_STA', 'MESH', 'HT_STA', 'HT_AP', 'HT_ADHOC_STA', 'OCB'], import_from_module='ns.wifi')
     ## ctrl-headers.h (module 'wifi'): ns3::BlockAckType [enumeration]
     module.add_enum('BlockAckType', ['BASIC_BLOCK_ACK', 'COMPRESSED_BLOCK_ACK', 'MULTI_TID_BLOCK_ACK'], import_from_module='ns.wifi')
     ## vsa-manager.h (module 'wave'): ns3::VsaTransmitInterval [enumeration]
     module.add_enum('VsaTransmitInterval', ['VSA_TRANSMIT_IN_CCHI', 'VSA_TRANSMIT_IN_SCHI', 'VSA_TRANSMIT_IN_BOTHI'])
+    ## wifi-mode.h (module 'wifi'): ns3::WifiCodeRate [enumeration]
+    module.add_enum('WifiCodeRate', ['WIFI_CODE_RATE_UNDEFINED', 'WIFI_CODE_RATE_3_4', 'WIFI_CODE_RATE_2_3', 'WIFI_CODE_RATE_1_2', 'WIFI_CODE_RATE_5_6'], import_from_module='ns.wifi')
     ## address.h (module 'network'): ns3::Address [class]
     module.add_class('Address', import_from_module='ns.network')
     ## address.h (module 'network'): ns3::Address::MaxSize_e [enumeration]
@@ -362,6 +362,8 @@ def register_types(module):
     module.add_enum('SocketErrno', ['ERROR_NOTERROR', 'ERROR_ISCONN', 'ERROR_NOTCONN', 'ERROR_MSGSIZE', 'ERROR_AGAIN', 'ERROR_SHUTDOWN', 'ERROR_OPNOTSUPP', 'ERROR_AFNOSUPPORT', 'ERROR_INVAL', 'ERROR_BADF', 'ERROR_NOROUTETOHOST', 'ERROR_NODEV', 'ERROR_ADDRNOTAVAIL', 'ERROR_ADDRINUSE', 'SOCKET_ERRNO_LAST'], outer_class=root_module['ns3::Socket'], import_from_module='ns.network')
     ## socket.h (module 'network'): ns3::Socket::SocketType [enumeration]
     module.add_enum('SocketType', ['NS3_SOCK_STREAM', 'NS3_SOCK_SEQPACKET', 'NS3_SOCK_DGRAM', 'NS3_SOCK_RAW'], outer_class=root_module['ns3::Socket'], import_from_module='ns.network')
+    ## socket.h (module 'network'): ns3::Socket::SocketPriority [enumeration]
+    module.add_enum('SocketPriority', ['NS3_PRIO_BESTEFFORT', 'NS3_PRIO_FILLER', 'NS3_PRIO_BULK', 'NS3_PRIO_INTERACTIVE_BULK', 'NS3_PRIO_INTERACTIVE', 'NS3_PRIO_CONTROL'], outer_class=root_module['ns3::Socket'], import_from_module='ns.network')
     ## socket.h (module 'network'): ns3::Socket::Ipv6MulticastFilterMode [enumeration]
     module.add_enum('Ipv6MulticastFilterMode', ['INCLUDE', 'EXCLUDE'], outer_class=root_module['ns3::Socket'], import_from_module='ns.network')
     ## socket.h (module 'network'): ns3::SocketIpTosTag [class]
@@ -372,6 +374,8 @@ def register_types(module):
     module.add_class('SocketIpv6HopLimitTag', import_from_module='ns.network', parent=root_module['ns3::Tag'])
     ## socket.h (module 'network'): ns3::SocketIpv6TclassTag [class]
     module.add_class('SocketIpv6TclassTag', import_from_module='ns.network', parent=root_module['ns3::Tag'])
+    ## socket.h (module 'network'): ns3::SocketPriorityTag [class]
+    module.add_class('SocketPriorityTag', import_from_module='ns.network', parent=root_module['ns3::Tag'])
     ## socket.h (module 'network'): ns3::SocketSetDontFragmentTag [class]
     module.add_class('SocketSetDontFragmentTag', import_from_module='ns.network', parent=root_module['ns3::Tag'])
     ## nstime.h (module 'core'): ns3::Time [class]
@@ -490,6 +494,12 @@ def register_types(module):
     module.add_class('DeterministicRandomVariable', import_from_module='ns.core', parent=root_module['ns3::RandomVariableStream'])
     ## double.h (module 'core'): ns3::DoubleValue [class]
     module.add_class('DoubleValue', import_from_module='ns.core', parent=root_module['ns3::AttributeValue'])
+    ## edca-parameter-set.h (module 'wifi'): ns3::EdcaParameterSet [class]
+    module.add_class('EdcaParameterSet', import_from_module='ns.wifi', parent=root_module['ns3::WifiInformationElement'])
+    ## edca-parameter-set.h (module 'wifi'): ns3::EdcaParameterSetChecker [class]
+    module.add_class('EdcaParameterSetChecker', import_from_module='ns.wifi', parent=root_module['ns3::AttributeChecker'])
+    ## edca-parameter-set.h (module 'wifi'): ns3::EdcaParameterSetValue [class]
+    module.add_class('EdcaParameterSetValue', import_from_module='ns.wifi', parent=root_module['ns3::AttributeValue'])
     ## edca-txop-n.h (module 'wifi'): ns3::EdcaTxopN [class]
     module.add_class('EdcaTxopN', import_from_module='ns.wifi', parent=root_module['ns3::Dcf'])
     ## random-variable-stream.h (module 'core'): ns3::EmpiricalRandomVariable [class]
@@ -616,6 +626,8 @@ def register_types(module):
     module.add_class('PointerValue', import_from_module='ns.core', parent=root_module['ns3::AttributeValue'])
     ## net-device.h (module 'network'): ns3::QueueItem [class]
     module.add_class('QueueItem', import_from_module='ns.network', parent=root_module['ns3::SimpleRefCount< ns3::QueueItem, ns3::empty, ns3::DefaultDeleter<ns3::QueueItem> >'])
+    ## net-device.h (module 'network'): ns3::QueueItem::Uint8Values [enumeration]
+    module.add_enum('Uint8Values', ['IP_DSFIELD'], outer_class=root_module['ns3::QueueItem'], import_from_module='ns.network')
     ## regular-wifi-mac.h (module 'wifi'): ns3::RegularWifiMac [class]
     module.add_class('RegularWifiMac', import_from_module='ns.wifi', parent=root_module['ns3::WifiMac'])
     ## ssid.h (module 'wifi'): ns3::Ssid [class]
@@ -668,7 +680,7 @@ def register_types(module):
     module.add_class('DcaTxop', import_from_module='ns.wifi', parent=root_module['ns3::Dcf'])
     ## ocb-wifi-mac.h (module 'wave'): ns3::OcbWifiMac [class]
     module.add_class('OcbWifiMac', parent=root_module['ns3::RegularWifiMac'])
-    module.add_container('ns3::EdcaParameterSet', ('ns3::AcIndex', 'ns3::EdcaParameter'), container_type=u'map')
+    module.add_container('ns3::EdcaParameters', ('ns3::AcIndex', 'ns3::EdcaParameter'), container_type=u'map')
     module.add_container('std::vector< double >', 'double', container_type=u'vector')
     module.add_container('std::vector< int >', 'int', container_type=u'vector')
     module.add_container('std::vector< unsigned int >', 'unsigned int', container_type=u'vector')
@@ -683,12 +695,15 @@ def register_types(module):
     typehandlers.add_type_alias(u'uint8_t', u'ns3::WifiInformationElementId')
     typehandlers.add_type_alias(u'uint8_t*', u'ns3::WifiInformationElementId*')
     typehandlers.add_type_alias(u'uint8_t&', u'ns3::WifiInformationElementId&')
-    typehandlers.add_type_alias(u'std::map< ns3::AcIndex, ns3::EdcaParameter, std::less< ns3::AcIndex >, std::allocator< std::pair< ns3::AcIndex const, ns3::EdcaParameter > > >', u'ns3::EdcaParameterSet')
-    typehandlers.add_type_alias(u'std::map< ns3::AcIndex, ns3::EdcaParameter, std::less< ns3::AcIndex >, std::allocator< std::pair< ns3::AcIndex const, ns3::EdcaParameter > > >*', u'ns3::EdcaParameterSet*')
-    typehandlers.add_type_alias(u'std::map< ns3::AcIndex, ns3::EdcaParameter, std::less< ns3::AcIndex >, std::allocator< std::pair< ns3::AcIndex const, ns3::EdcaParameter > > >&', u'ns3::EdcaParameterSet&')
     typehandlers.add_type_alias(u'ns3::Callback< bool, ns3::Ptr< ns3::WifiMac >, ns3::OrganizationIdentifier const &, ns3::Ptr< ns3::Packet const >, ns3::Address const &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', u'ns3::VscCallback')
     typehandlers.add_type_alias(u'ns3::Callback< bool, ns3::Ptr< ns3::WifiMac >, ns3::OrganizationIdentifier const &, ns3::Ptr< ns3::Packet const >, ns3::Address const &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >*', u'ns3::VscCallback*')
     typehandlers.add_type_alias(u'ns3::Callback< bool, ns3::Ptr< ns3::WifiMac >, ns3::OrganizationIdentifier const &, ns3::Ptr< ns3::Packet const >, ns3::Address const &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >&', u'ns3::VscCallback&')
+    typehandlers.add_type_alias(u'std::_Rb_tree_const_iterator< std::pair< ns3::AcIndex const, ns3::EdcaParameter > >', u'ns3::EdcaParametersI')
+    typehandlers.add_type_alias(u'std::_Rb_tree_const_iterator< std::pair< ns3::AcIndex const, ns3::EdcaParameter > >*', u'ns3::EdcaParametersI*')
+    typehandlers.add_type_alias(u'std::_Rb_tree_const_iterator< std::pair< ns3::AcIndex const, ns3::EdcaParameter > >&', u'ns3::EdcaParametersI&')
+    typehandlers.add_type_alias(u'std::map< ns3::AcIndex, ns3::EdcaParameter, std::less< ns3::AcIndex >, std::allocator< std::pair< ns3::AcIndex const, ns3::EdcaParameter > > >', u'ns3::EdcaParameters')
+    typehandlers.add_type_alias(u'std::map< ns3::AcIndex, ns3::EdcaParameter, std::less< ns3::AcIndex >, std::allocator< std::pair< ns3::AcIndex const, ns3::EdcaParameter > > >*', u'ns3::EdcaParameters*')
+    typehandlers.add_type_alias(u'std::map< ns3::AcIndex, ns3::EdcaParameter, std::less< ns3::AcIndex >, std::allocator< std::pair< ns3::AcIndex const, ns3::EdcaParameter > > >&', u'ns3::EdcaParameters&')
     typehandlers.add_type_alias(u'ns3::Vector3D', u'ns3::Vector')
     typehandlers.add_type_alias(u'ns3::Vector3D*', u'ns3::Vector*')
     typehandlers.add_type_alias(u'ns3::Vector3D&', u'ns3::Vector&')
@@ -707,9 +722,6 @@ def register_types(module):
     typehandlers.add_type_alias(u'__gnu_cxx::__normal_iterator< ns3::WifiMode const *, std::vector< ns3::WifiMode, std::allocator< ns3::WifiMode > > >', u'ns3::WifiModeListIterator')
     typehandlers.add_type_alias(u'__gnu_cxx::__normal_iterator< ns3::WifiMode const *, std::vector< ns3::WifiMode, std::allocator< ns3::WifiMode > > >*', u'ns3::WifiModeListIterator*')
     typehandlers.add_type_alias(u'__gnu_cxx::__normal_iterator< ns3::WifiMode const *, std::vector< ns3::WifiMode, std::allocator< ns3::WifiMode > > >&', u'ns3::WifiModeListIterator&')
-    typehandlers.add_type_alias(u'std::_Rb_tree_const_iterator< std::pair< ns3::AcIndex const, ns3::EdcaParameter > >', u'ns3::EdcaParameterSetI')
-    typehandlers.add_type_alias(u'std::_Rb_tree_const_iterator< std::pair< ns3::AcIndex const, ns3::EdcaParameter > >*', u'ns3::EdcaParameterSetI*')
-    typehandlers.add_type_alias(u'std::_Rb_tree_const_iterator< std::pair< ns3::AcIndex const, ns3::EdcaParameter > >&', u'ns3::EdcaParameterSetI&')
     
     ## Register a nested module for the namespace FatalImpl
     
@@ -943,6 +955,7 @@ def register_methods(root_module):
     register_Ns3SocketIpTtlTag_methods(root_module, root_module['ns3::SocketIpTtlTag'])
     register_Ns3SocketIpv6HopLimitTag_methods(root_module, root_module['ns3::SocketIpv6HopLimitTag'])
     register_Ns3SocketIpv6TclassTag_methods(root_module, root_module['ns3::SocketIpv6TclassTag'])
+    register_Ns3SocketPriorityTag_methods(root_module, root_module['ns3::SocketPriorityTag'])
     register_Ns3SocketSetDontFragmentTag_methods(root_module, root_module['ns3::SocketSetDontFragmentTag'])
     register_Ns3Time_methods(root_module, root_module['ns3::Time'])
     register_Ns3TraceSourceAccessor_methods(root_module, root_module['ns3::TraceSourceAccessor'])
@@ -990,6 +1003,9 @@ def register_methods(root_module):
     register_Ns3DefaultChannelScheduler_methods(root_module, root_module['ns3::DefaultChannelScheduler'])
     register_Ns3DeterministicRandomVariable_methods(root_module, root_module['ns3::DeterministicRandomVariable'])
     register_Ns3DoubleValue_methods(root_module, root_module['ns3::DoubleValue'])
+    register_Ns3EdcaParameterSet_methods(root_module, root_module['ns3::EdcaParameterSet'])
+    register_Ns3EdcaParameterSetChecker_methods(root_module, root_module['ns3::EdcaParameterSetChecker'])
+    register_Ns3EdcaParameterSetValue_methods(root_module, root_module['ns3::EdcaParameterSetValue'])
     register_Ns3EdcaTxopN_methods(root_module, root_module['ns3::EdcaTxopN'])
     register_Ns3EmpiricalRandomVariable_methods(root_module, root_module['ns3::EmpiricalRandomVariable'])
     register_Ns3EmptyAttributeValue_methods(root_module, root_module['ns3::EmptyAttributeValue'])
@@ -2354,6 +2370,11 @@ def register_Ns3InetSocketAddress_methods(root_module, cls):
                    'uint16_t', 
                    [], 
                    is_const=True)
+    ## inet-socket-address.h (module 'network'): uint8_t ns3::InetSocketAddress::GetTos() const [member function]
+    cls.add_method('GetTos', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True)
     ## inet-socket-address.h (module 'network'): static bool ns3::InetSocketAddress::IsMatchingType(ns3::Address const & address) [member function]
     cls.add_method('IsMatchingType', 
                    'bool', 
@@ -2367,6 +2388,10 @@ def register_Ns3InetSocketAddress_methods(root_module, cls):
     cls.add_method('SetPort', 
                    'void', 
                    [param('uint16_t', 'port')])
+    ## inet-socket-address.h (module 'network'): void ns3::InetSocketAddress::SetTos(uint8_t tos) [member function]
+    cls.add_method('SetTos', 
+                   'void', 
+                   [param('uint8_t', 'tos')])
     return
 
 def register_Ns3InterferenceHelper_methods(root_module, cls):
@@ -3362,6 +3387,11 @@ def register_Ns3MacLowTransmissionListener_methods(root_module, cls):
                    'void', 
                    [], 
                    is_pure_virtual=True, is_virtual=True)
+    ## mac-low.h (module 'wifi'): void ns3::MacLowTransmissionListener::StartNextFragment() [member function]
+    cls.add_method('StartNextFragment', 
+                   'void', 
+                   [], 
+                   is_pure_virtual=True, is_virtual=True)
     return
 
 def register_Ns3MacLowTransmissionParameters_methods(root_module, cls):
@@ -4228,12 +4258,12 @@ def register_Ns3SchInfo_methods(root_module, cls):
     cls.add_constructor([])
     ## channel-scheduler.h (module 'wave'): ns3::SchInfo::SchInfo(uint32_t channel, bool immediate, uint32_t channelAccess) [constructor]
     cls.add_constructor([param('uint32_t', 'channel'), param('bool', 'immediate'), param('uint32_t', 'channelAccess')])
-    ## channel-scheduler.h (module 'wave'): ns3::SchInfo::SchInfo(uint32_t channel, bool immediate, uint32_t channelAccess, ns3::EdcaParameterSet edca) [constructor]
-    cls.add_constructor([param('uint32_t', 'channel'), param('bool', 'immediate'), param('uint32_t', 'channelAccess'), param('ns3::EdcaParameterSet', 'edca')])
+    ## channel-scheduler.h (module 'wave'): ns3::SchInfo::SchInfo(uint32_t channel, bool immediate, uint32_t channelAccess, ns3::EdcaParameters edca) [constructor]
+    cls.add_constructor([param('uint32_t', 'channel'), param('bool', 'immediate'), param('uint32_t', 'channelAccess'), param('ns3::EdcaParameters', 'edca')])
     ## channel-scheduler.h (module 'wave'): ns3::SchInfo::channelNumber [variable]
     cls.add_instance_attribute('channelNumber', 'uint32_t', is_const=False)
-    ## channel-scheduler.h (module 'wave'): ns3::SchInfo::edcaParameterSet [variable]
-    cls.add_instance_attribute('edcaParameterSet', 'ns3::EdcaParameterSet', is_const=False)
+    ## channel-scheduler.h (module 'wave'): ns3::SchInfo::edcaParameters [variable]
+    cls.add_instance_attribute('edcaParameters', 'ns3::EdcaParameters', is_const=False)
     ## channel-scheduler.h (module 'wave'): ns3::SchInfo::extendedAccess [variable]
     cls.add_instance_attribute('extendedAccess', 'uint8_t', is_const=False)
     ## channel-scheduler.h (module 'wave'): ns3::SchInfo::immediateAccess [variable]
@@ -6247,6 +6277,11 @@ def register_Ns3MgtAssocResponseHeader_methods(root_module, cls):
                    'ns3::CapabilityInformation', 
                    [], 
                    is_const=True)
+    ## mgt-headers.h (module 'wifi'): ns3::EdcaParameterSet ns3::MgtAssocResponseHeader::GetEdcaParameterSet() const [member function]
+    cls.add_method('GetEdcaParameterSet', 
+                   'ns3::EdcaParameterSet', 
+                   [], 
+                   is_const=True)
     ## mgt-headers.h (module 'wifi'): ns3::ErpInformation ns3::MgtAssocResponseHeader::GetErpInformation() const [member function]
     cls.add_method('GetErpInformation', 
                    'ns3::ErpInformation', 
@@ -6304,6 +6339,10 @@ def register_Ns3MgtAssocResponseHeader_methods(root_module, cls):
     cls.add_method('SetCapabilities', 
                    'void', 
                    [param('ns3::CapabilityInformation', 'capabilities')])
+    ## mgt-headers.h (module 'wifi'): void ns3::MgtAssocResponseHeader::SetEdcaParameterSet(ns3::EdcaParameterSet edcaParameterSet) [member function]
+    cls.add_method('SetEdcaParameterSet', 
+                   'void', 
+                   [param('ns3::EdcaParameterSet', 'edcaParameterSet')])
     ## mgt-headers.h (module 'wifi'): void ns3::MgtAssocResponseHeader::SetErpInformation(ns3::ErpInformation erpInformation) [member function]
     cls.add_method('SetErpInformation', 
                    'void', 
@@ -6482,6 +6521,11 @@ def register_Ns3MgtProbeResponseHeader_methods(root_module, cls):
                    'ns3::CapabilityInformation', 
                    [], 
                    is_const=True)
+    ## mgt-headers.h (module 'wifi'): ns3::EdcaParameterSet ns3::MgtProbeResponseHeader::GetEdcaParameterSet() const [member function]
+    cls.add_method('GetEdcaParameterSet', 
+                   'ns3::EdcaParameterSet', 
+                   [], 
+                   is_const=True)
     ## mgt-headers.h (module 'wifi'): ns3::ErpInformation ns3::MgtProbeResponseHeader::GetErpInformation() const [member function]
     cls.add_method('GetErpInformation', 
                    'ns3::ErpInformation', 
@@ -6549,6 +6593,10 @@ def register_Ns3MgtProbeResponseHeader_methods(root_module, cls):
     cls.add_method('SetCapabilities', 
                    'void', 
                    [param('ns3::CapabilityInformation', 'capabilities')])
+    ## mgt-headers.h (module 'wifi'): void ns3::MgtProbeResponseHeader::SetEdcaParameterSet(ns3::EdcaParameterSet edcaParameterSet) [member function]
+    cls.add_method('SetEdcaParameterSet', 
+                   'void', 
+                   [param('ns3::EdcaParameterSet', 'edcaParameterSet')])
     ## mgt-headers.h (module 'wifi'): void ns3::MgtProbeResponseHeader::SetErpInformation(ns3::ErpInformation erpInformation) [member function]
     cls.add_method('SetErpInformation', 
                    'void', 
@@ -7126,6 +7174,11 @@ def register_Ns3Socket_methods(root_module, cls):
                    'int', 
                    [param('ns3::Address &', 'address')], 
                    is_pure_virtual=True, is_const=True, is_virtual=True)
+    ## socket.h (module 'network'): uint8_t ns3::Socket::GetPriority() const [member function]
+    cls.add_method('GetPriority', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True)
     ## socket.h (module 'network'): uint32_t ns3::Socket::GetRxAvailable() const [member function]
     cls.add_method('GetRxAvailable', 
                    'uint32_t', 
@@ -7150,6 +7203,11 @@ def register_Ns3Socket_methods(root_module, cls):
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
                    [], 
+                   is_static=True)
+    ## socket.h (module 'network'): static uint8_t ns3::Socket::IpTos2Priority(uint8_t ipTos) [member function]
+    cls.add_method('IpTos2Priority', 
+                   'uint8_t', 
+                   [param('uint8_t', 'ipTos')], 
                    is_static=True)
     ## socket.h (module 'network'): void ns3::Socket::Ipv6JoinGroup(ns3::Ipv6Address address, ns3::Socket::Ipv6MulticastFilterMode filterMode, std::vector<ns3::Ipv6Address,std::allocator<ns3::Ipv6Address> > sourceAddresses) [member function]
     cls.add_method('Ipv6JoinGroup', 
@@ -7299,6 +7357,10 @@ def register_Ns3Socket_methods(root_module, cls):
     cls.add_method('SetIpv6Tclass', 
                    'void', 
                    [param('int', 'ipTclass')])
+    ## socket.h (module 'network'): void ns3::Socket::SetPriority(uint8_t priority) [member function]
+    cls.add_method('SetPriority', 
+                   'void', 
+                   [param('uint8_t', 'priority')])
     ## socket.h (module 'network'): void ns3::Socket::SetRecvCallback(ns3::Callback<void, ns3::Ptr<ns3::Socket>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> arg0) [member function]
     cls.add_method('SetRecvCallback', 
                    'void', 
@@ -7326,11 +7388,6 @@ def register_Ns3Socket_methods(root_module, cls):
                    'void', 
                    [], 
                    visibility='protected', is_virtual=True)
-    ## socket.h (module 'network'): bool ns3::Socket::IsManualIpTos() const [member function]
-    cls.add_method('IsManualIpTos', 
-                   'bool', 
-                   [], 
-                   is_const=True, visibility='protected')
     ## socket.h (module 'network'): bool ns3::Socket::IsManualIpTtl() const [member function]
     cls.add_method('IsManualIpTtl', 
                    'bool', 
@@ -7575,6 +7632,52 @@ def register_Ns3SocketIpv6TclassTag_methods(root_module, cls):
     cls.add_method('SetTclass', 
                    'void', 
                    [param('uint8_t', 'tclass')])
+    return
+
+def register_Ns3SocketPriorityTag_methods(root_module, cls):
+    ## socket.h (module 'network'): ns3::SocketPriorityTag::SocketPriorityTag(ns3::SocketPriorityTag const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::SocketPriorityTag const &', 'arg0')])
+    ## socket.h (module 'network'): ns3::SocketPriorityTag::SocketPriorityTag() [constructor]
+    cls.add_constructor([])
+    ## socket.h (module 'network'): void ns3::SocketPriorityTag::Deserialize(ns3::TagBuffer i) [member function]
+    cls.add_method('Deserialize', 
+                   'void', 
+                   [param('ns3::TagBuffer', 'i')], 
+                   is_virtual=True)
+    ## socket.h (module 'network'): ns3::TypeId ns3::SocketPriorityTag::GetInstanceTypeId() const [member function]
+    cls.add_method('GetInstanceTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## socket.h (module 'network'): uint8_t ns3::SocketPriorityTag::GetPriority() const [member function]
+    cls.add_method('GetPriority', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True)
+    ## socket.h (module 'network'): uint32_t ns3::SocketPriorityTag::GetSerializedSize() const [member function]
+    cls.add_method('GetSerializedSize', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## socket.h (module 'network'): static ns3::TypeId ns3::SocketPriorityTag::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## socket.h (module 'network'): void ns3::SocketPriorityTag::Print(std::ostream & os) const [member function]
+    cls.add_method('Print', 
+                   'void', 
+                   [param('std::ostream &', 'os')], 
+                   is_const=True, is_virtual=True)
+    ## socket.h (module 'network'): void ns3::SocketPriorityTag::Serialize(ns3::TagBuffer i) const [member function]
+    cls.add_method('Serialize', 
+                   'void', 
+                   [param('ns3::TagBuffer', 'i')], 
+                   is_const=True, is_virtual=True)
+    ## socket.h (module 'network'): void ns3::SocketPriorityTag::SetPriority(uint8_t priority) [member function]
+    cls.add_method('SetPriority', 
+                   'void', 
+                   [param('uint8_t', 'priority')])
     return
 
 def register_Ns3SocketSetDontFragmentTag_methods(root_module, cls):
@@ -8570,10 +8673,10 @@ def register_Ns3WifiMac_methods(root_module, cls):
                    'bool', 
                    [], 
                    is_pure_virtual=True, is_const=True, is_virtual=True)
-    ## wifi-mac.h (module 'wifi'): void ns3::WifiMac::ConfigureDcf(ns3::Ptr<ns3::Dcf> dcf, uint32_t cwmin, uint32_t cwmax, ns3::AcIndex ac) [member function]
+    ## wifi-mac.h (module 'wifi'): void ns3::WifiMac::ConfigureDcf(ns3::Ptr<ns3::Dcf> dcf, uint32_t cwmin, uint32_t cwmax, bool isDsss, ns3::AcIndex ac) [member function]
     cls.add_method('ConfigureDcf', 
                    'void', 
-                   [param('ns3::Ptr< ns3::Dcf >', 'dcf'), param('uint32_t', 'cwmin'), param('uint32_t', 'cwmax'), param('ns3::AcIndex', 'ac')], 
+                   [param('ns3::Ptr< ns3::Dcf >', 'dcf'), param('uint32_t', 'cwmin'), param('uint32_t', 'cwmax'), param('bool', 'isDsss'), param('ns3::AcIndex', 'ac')], 
                    visibility='protected')
     ## wifi-mac.h (module 'wifi'): void ns3::WifiMac::FinishConfigureStandard(ns3::WifiPhyStandard standard) [member function]
     cls.add_method('FinishConfigureStandard', 
@@ -12093,6 +12196,11 @@ def register_Ns3Dcf_methods(root_module, cls):
                    'uint32_t', 
                    [], 
                    is_pure_virtual=True, is_const=True, is_virtual=True)
+    ## dcf.h (module 'wifi'): ns3::Time ns3::Dcf::GetTxopLimit() const [member function]
+    cls.add_method('GetTxopLimit', 
+                   'ns3::Time', 
+                   [], 
+                   is_pure_virtual=True, is_const=True, is_virtual=True)
     ## dcf.h (module 'wifi'): static ns3::TypeId ns3::Dcf::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
@@ -12112,6 +12220,11 @@ def register_Ns3Dcf_methods(root_module, cls):
     cls.add_method('SetMinCw', 
                    'void', 
                    [param('uint32_t', 'minCw')], 
+                   is_pure_virtual=True, is_virtual=True)
+    ## dcf.h (module 'wifi'): void ns3::Dcf::SetTxopLimit(ns3::Time txopLimit) [member function]
+    cls.add_method('SetTxopLimit', 
+                   'void', 
+                   [param('ns3::Time', 'txopLimit')], 
                    is_pure_virtual=True, is_virtual=True)
     return
 
@@ -12241,6 +12354,313 @@ def register_Ns3DoubleValue_methods(root_module, cls):
                    [param('double const &', 'value')])
     return
 
+def register_Ns3EdcaParameterSet_methods(root_module, cls):
+    cls.add_output_stream_operator()
+    ## edca-parameter-set.h (module 'wifi'): ns3::EdcaParameterSet::EdcaParameterSet(ns3::EdcaParameterSet const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::EdcaParameterSet const &', 'arg0')])
+    ## edca-parameter-set.h (module 'wifi'): ns3::EdcaParameterSet::EdcaParameterSet() [constructor]
+    cls.add_constructor([])
+    ## edca-parameter-set.h (module 'wifi'): uint8_t ns3::EdcaParameterSet::DeserializeInformationField(ns3::Buffer::Iterator start, uint8_t length) [member function]
+    cls.add_method('DeserializeInformationField', 
+                   'uint8_t', 
+                   [param('ns3::Buffer::Iterator', 'start'), param('uint8_t', 'length')], 
+                   is_virtual=True)
+    ## edca-parameter-set.h (module 'wifi'): ns3::WifiInformationElementId ns3::EdcaParameterSet::ElementId() const [member function]
+    cls.add_method('ElementId', 
+                   'ns3::WifiInformationElementId', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## edca-parameter-set.h (module 'wifi'): uint8_t ns3::EdcaParameterSet::GetBeAci() const [member function]
+    cls.add_method('GetBeAci', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True)
+    ## edca-parameter-set.h (module 'wifi'): uint8_t ns3::EdcaParameterSet::GetBeAcm() const [member function]
+    cls.add_method('GetBeAcm', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True)
+    ## edca-parameter-set.h (module 'wifi'): uint8_t ns3::EdcaParameterSet::GetBeAifsn() const [member function]
+    cls.add_method('GetBeAifsn', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True)
+    ## edca-parameter-set.h (module 'wifi'): uint8_t ns3::EdcaParameterSet::GetBeCWmax() const [member function]
+    cls.add_method('GetBeCWmax', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True)
+    ## edca-parameter-set.h (module 'wifi'): uint8_t ns3::EdcaParameterSet::GetBeCWmin() const [member function]
+    cls.add_method('GetBeCWmin', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True)
+    ## edca-parameter-set.h (module 'wifi'): uint16_t ns3::EdcaParameterSet::GetBeTXOPLimit() const [member function]
+    cls.add_method('GetBeTXOPLimit', 
+                   'uint16_t', 
+                   [], 
+                   is_const=True)
+    ## edca-parameter-set.h (module 'wifi'): uint8_t ns3::EdcaParameterSet::GetBkAci() const [member function]
+    cls.add_method('GetBkAci', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True)
+    ## edca-parameter-set.h (module 'wifi'): uint8_t ns3::EdcaParameterSet::GetBkAcm() const [member function]
+    cls.add_method('GetBkAcm', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True)
+    ## edca-parameter-set.h (module 'wifi'): uint8_t ns3::EdcaParameterSet::GetBkAifsn() const [member function]
+    cls.add_method('GetBkAifsn', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True)
+    ## edca-parameter-set.h (module 'wifi'): uint8_t ns3::EdcaParameterSet::GetBkCWmax() const [member function]
+    cls.add_method('GetBkCWmax', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True)
+    ## edca-parameter-set.h (module 'wifi'): uint8_t ns3::EdcaParameterSet::GetBkCWmin() const [member function]
+    cls.add_method('GetBkCWmin', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True)
+    ## edca-parameter-set.h (module 'wifi'): uint16_t ns3::EdcaParameterSet::GetBkTXOPLimit() const [member function]
+    cls.add_method('GetBkTXOPLimit', 
+                   'uint16_t', 
+                   [], 
+                   is_const=True)
+    ## edca-parameter-set.h (module 'wifi'): uint8_t ns3::EdcaParameterSet::GetInformationFieldSize() const [member function]
+    cls.add_method('GetInformationFieldSize', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## edca-parameter-set.h (module 'wifi'): uint8_t ns3::EdcaParameterSet::GetQosInfo() const [member function]
+    cls.add_method('GetQosInfo', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True)
+    ## edca-parameter-set.h (module 'wifi'): uint16_t ns3::EdcaParameterSet::GetSerializedSize() const [member function]
+    cls.add_method('GetSerializedSize', 
+                   'uint16_t', 
+                   [], 
+                   is_const=True)
+    ## edca-parameter-set.h (module 'wifi'): uint8_t ns3::EdcaParameterSet::GetViAci() const [member function]
+    cls.add_method('GetViAci', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True)
+    ## edca-parameter-set.h (module 'wifi'): uint8_t ns3::EdcaParameterSet::GetViAcm() const [member function]
+    cls.add_method('GetViAcm', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True)
+    ## edca-parameter-set.h (module 'wifi'): uint8_t ns3::EdcaParameterSet::GetViAifsn() const [member function]
+    cls.add_method('GetViAifsn', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True)
+    ## edca-parameter-set.h (module 'wifi'): uint8_t ns3::EdcaParameterSet::GetViCWmax() const [member function]
+    cls.add_method('GetViCWmax', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True)
+    ## edca-parameter-set.h (module 'wifi'): uint8_t ns3::EdcaParameterSet::GetViCWmin() const [member function]
+    cls.add_method('GetViCWmin', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True)
+    ## edca-parameter-set.h (module 'wifi'): uint16_t ns3::EdcaParameterSet::GetViTXOPLimit() const [member function]
+    cls.add_method('GetViTXOPLimit', 
+                   'uint16_t', 
+                   [], 
+                   is_const=True)
+    ## edca-parameter-set.h (module 'wifi'): uint8_t ns3::EdcaParameterSet::GetVoAci() const [member function]
+    cls.add_method('GetVoAci', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True)
+    ## edca-parameter-set.h (module 'wifi'): uint8_t ns3::EdcaParameterSet::GetVoAcm() const [member function]
+    cls.add_method('GetVoAcm', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True)
+    ## edca-parameter-set.h (module 'wifi'): uint8_t ns3::EdcaParameterSet::GetVoAifsn() const [member function]
+    cls.add_method('GetVoAifsn', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True)
+    ## edca-parameter-set.h (module 'wifi'): uint8_t ns3::EdcaParameterSet::GetVoCWmax() const [member function]
+    cls.add_method('GetVoCWmax', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True)
+    ## edca-parameter-set.h (module 'wifi'): uint8_t ns3::EdcaParameterSet::GetVoCWmin() const [member function]
+    cls.add_method('GetVoCWmin', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True)
+    ## edca-parameter-set.h (module 'wifi'): uint16_t ns3::EdcaParameterSet::GetVoTXOPLimit() const [member function]
+    cls.add_method('GetVoTXOPLimit', 
+                   'uint16_t', 
+                   [], 
+                   is_const=True)
+    ## edca-parameter-set.h (module 'wifi'): ns3::Buffer::Iterator ns3::EdcaParameterSet::Serialize(ns3::Buffer::Iterator start) const [member function]
+    cls.add_method('Serialize', 
+                   'ns3::Buffer::Iterator', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_const=True)
+    ## edca-parameter-set.h (module 'wifi'): void ns3::EdcaParameterSet::SerializeInformationField(ns3::Buffer::Iterator start) const [member function]
+    cls.add_method('SerializeInformationField', 
+                   'void', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_const=True, is_virtual=True)
+    ## edca-parameter-set.h (module 'wifi'): void ns3::EdcaParameterSet::SetBeAci(uint8_t aci) [member function]
+    cls.add_method('SetBeAci', 
+                   'void', 
+                   [param('uint8_t', 'aci')])
+    ## edca-parameter-set.h (module 'wifi'): void ns3::EdcaParameterSet::SetBeAcm(uint8_t acm) [member function]
+    cls.add_method('SetBeAcm', 
+                   'void', 
+                   [param('uint8_t', 'acm')])
+    ## edca-parameter-set.h (module 'wifi'): void ns3::EdcaParameterSet::SetBeAifsn(uint8_t aifsn) [member function]
+    cls.add_method('SetBeAifsn', 
+                   'void', 
+                   [param('uint8_t', 'aifsn')])
+    ## edca-parameter-set.h (module 'wifi'): void ns3::EdcaParameterSet::SetBeCWmax(uint8_t cwMax) [member function]
+    cls.add_method('SetBeCWmax', 
+                   'void', 
+                   [param('uint8_t', 'cwMax')])
+    ## edca-parameter-set.h (module 'wifi'): void ns3::EdcaParameterSet::SetBeCWmin(uint8_t cwMin) [member function]
+    cls.add_method('SetBeCWmin', 
+                   'void', 
+                   [param('uint8_t', 'cwMin')])
+    ## edca-parameter-set.h (module 'wifi'): void ns3::EdcaParameterSet::SetBeTXOPLimit(uint16_t txop) [member function]
+    cls.add_method('SetBeTXOPLimit', 
+                   'void', 
+                   [param('uint16_t', 'txop')])
+    ## edca-parameter-set.h (module 'wifi'): void ns3::EdcaParameterSet::SetBkAci(uint8_t aci) [member function]
+    cls.add_method('SetBkAci', 
+                   'void', 
+                   [param('uint8_t', 'aci')])
+    ## edca-parameter-set.h (module 'wifi'): void ns3::EdcaParameterSet::SetBkAcm(uint8_t acm) [member function]
+    cls.add_method('SetBkAcm', 
+                   'void', 
+                   [param('uint8_t', 'acm')])
+    ## edca-parameter-set.h (module 'wifi'): void ns3::EdcaParameterSet::SetBkAifsn(uint8_t aifsn) [member function]
+    cls.add_method('SetBkAifsn', 
+                   'void', 
+                   [param('uint8_t', 'aifsn')])
+    ## edca-parameter-set.h (module 'wifi'): void ns3::EdcaParameterSet::SetBkCWmax(uint8_t cwMax) [member function]
+    cls.add_method('SetBkCWmax', 
+                   'void', 
+                   [param('uint8_t', 'cwMax')])
+    ## edca-parameter-set.h (module 'wifi'): void ns3::EdcaParameterSet::SetBkCWmin(uint8_t cwMin) [member function]
+    cls.add_method('SetBkCWmin', 
+                   'void', 
+                   [param('uint8_t', 'cwMin')])
+    ## edca-parameter-set.h (module 'wifi'): void ns3::EdcaParameterSet::SetBkTXOPLimit(uint16_t txop) [member function]
+    cls.add_method('SetBkTXOPLimit', 
+                   'void', 
+                   [param('uint16_t', 'txop')])
+    ## edca-parameter-set.h (module 'wifi'): void ns3::EdcaParameterSet::SetQosInfo(uint8_t qosInfo) [member function]
+    cls.add_method('SetQosInfo', 
+                   'void', 
+                   [param('uint8_t', 'qosInfo')])
+    ## edca-parameter-set.h (module 'wifi'): void ns3::EdcaParameterSet::SetQosSupported(uint8_t qosSupported) [member function]
+    cls.add_method('SetQosSupported', 
+                   'void', 
+                   [param('uint8_t', 'qosSupported')])
+    ## edca-parameter-set.h (module 'wifi'): void ns3::EdcaParameterSet::SetViAci(uint8_t aci) [member function]
+    cls.add_method('SetViAci', 
+                   'void', 
+                   [param('uint8_t', 'aci')])
+    ## edca-parameter-set.h (module 'wifi'): void ns3::EdcaParameterSet::SetViAcm(uint8_t acm) [member function]
+    cls.add_method('SetViAcm', 
+                   'void', 
+                   [param('uint8_t', 'acm')])
+    ## edca-parameter-set.h (module 'wifi'): void ns3::EdcaParameterSet::SetViAifsn(uint8_t aifsn) [member function]
+    cls.add_method('SetViAifsn', 
+                   'void', 
+                   [param('uint8_t', 'aifsn')])
+    ## edca-parameter-set.h (module 'wifi'): void ns3::EdcaParameterSet::SetViCWmax(uint8_t cwMax) [member function]
+    cls.add_method('SetViCWmax', 
+                   'void', 
+                   [param('uint8_t', 'cwMax')])
+    ## edca-parameter-set.h (module 'wifi'): void ns3::EdcaParameterSet::SetViCWmin(uint8_t cwMin) [member function]
+    cls.add_method('SetViCWmin', 
+                   'void', 
+                   [param('uint8_t', 'cwMin')])
+    ## edca-parameter-set.h (module 'wifi'): void ns3::EdcaParameterSet::SetViTXOPLimit(uint16_t txop) [member function]
+    cls.add_method('SetViTXOPLimit', 
+                   'void', 
+                   [param('uint16_t', 'txop')])
+    ## edca-parameter-set.h (module 'wifi'): void ns3::EdcaParameterSet::SetVoAci(uint8_t aci) [member function]
+    cls.add_method('SetVoAci', 
+                   'void', 
+                   [param('uint8_t', 'aci')])
+    ## edca-parameter-set.h (module 'wifi'): void ns3::EdcaParameterSet::SetVoAcm(uint8_t acm) [member function]
+    cls.add_method('SetVoAcm', 
+                   'void', 
+                   [param('uint8_t', 'acm')])
+    ## edca-parameter-set.h (module 'wifi'): void ns3::EdcaParameterSet::SetVoAifsn(uint8_t aifsn) [member function]
+    cls.add_method('SetVoAifsn', 
+                   'void', 
+                   [param('uint8_t', 'aifsn')])
+    ## edca-parameter-set.h (module 'wifi'): void ns3::EdcaParameterSet::SetVoCWmax(uint8_t cwMax) [member function]
+    cls.add_method('SetVoCWmax', 
+                   'void', 
+                   [param('uint8_t', 'cwMax')])
+    ## edca-parameter-set.h (module 'wifi'): void ns3::EdcaParameterSet::SetVoCWmin(uint8_t cwMin) [member function]
+    cls.add_method('SetVoCWmin', 
+                   'void', 
+                   [param('uint8_t', 'cwMin')])
+    ## edca-parameter-set.h (module 'wifi'): void ns3::EdcaParameterSet::SetVoTXOPLimit(uint16_t txop) [member function]
+    cls.add_method('SetVoTXOPLimit', 
+                   'void', 
+                   [param('uint16_t', 'txop')])
+    return
+
+def register_Ns3EdcaParameterSetChecker_methods(root_module, cls):
+    ## edca-parameter-set.h (module 'wifi'): ns3::EdcaParameterSetChecker::EdcaParameterSetChecker() [constructor]
+    cls.add_constructor([])
+    ## edca-parameter-set.h (module 'wifi'): ns3::EdcaParameterSetChecker::EdcaParameterSetChecker(ns3::EdcaParameterSetChecker const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::EdcaParameterSetChecker const &', 'arg0')])
+    return
+
+def register_Ns3EdcaParameterSetValue_methods(root_module, cls):
+    ## edca-parameter-set.h (module 'wifi'): ns3::EdcaParameterSetValue::EdcaParameterSetValue() [constructor]
+    cls.add_constructor([])
+    ## edca-parameter-set.h (module 'wifi'): ns3::EdcaParameterSetValue::EdcaParameterSetValue(ns3::EdcaParameterSetValue const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::EdcaParameterSetValue const &', 'arg0')])
+    ## edca-parameter-set.h (module 'wifi'): ns3::EdcaParameterSetValue::EdcaParameterSetValue(ns3::EdcaParameterSet const & value) [constructor]
+    cls.add_constructor([param('ns3::EdcaParameterSet const &', 'value')])
+    ## edca-parameter-set.h (module 'wifi'): ns3::Ptr<ns3::AttributeValue> ns3::EdcaParameterSetValue::Copy() const [member function]
+    cls.add_method('Copy', 
+                   'ns3::Ptr< ns3::AttributeValue >', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## edca-parameter-set.h (module 'wifi'): bool ns3::EdcaParameterSetValue::DeserializeFromString(std::string value, ns3::Ptr<ns3::AttributeChecker const> checker) [member function]
+    cls.add_method('DeserializeFromString', 
+                   'bool', 
+                   [param('std::string', 'value'), param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
+                   is_virtual=True)
+    ## edca-parameter-set.h (module 'wifi'): ns3::EdcaParameterSet ns3::EdcaParameterSetValue::Get() const [member function]
+    cls.add_method('Get', 
+                   'ns3::EdcaParameterSet', 
+                   [], 
+                   is_const=True)
+    ## edca-parameter-set.h (module 'wifi'): std::string ns3::EdcaParameterSetValue::SerializeToString(ns3::Ptr<ns3::AttributeChecker const> checker) const [member function]
+    cls.add_method('SerializeToString', 
+                   'std::string', 
+                   [param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
+                   is_const=True, is_virtual=True)
+    ## edca-parameter-set.h (module 'wifi'): void ns3::EdcaParameterSetValue::Set(ns3::EdcaParameterSet const & value) [member function]
+    cls.add_method('Set', 
+                   'void', 
+                   [param('ns3::EdcaParameterSet const &', 'value')])
+    return
+
 def register_Ns3EdcaTxopN_methods(root_module, cls):
     ## edca-txop-n.h (module 'wifi'): ns3::EdcaTxopN::m_aMpduEnabled [variable]
     cls.add_instance_attribute('m_aMpduEnabled', 'std::map< ns3::Mac48Address, bool >', is_const=False)
@@ -12309,6 +12729,11 @@ def register_Ns3EdcaTxopN_methods(root_module, cls):
                    'void', 
                    [param('uint32_t', 'aifsn')], 
                    is_virtual=True)
+    ## edca-txop-n.h (module 'wifi'): void ns3::EdcaTxopN::SetTxopLimit(ns3::Time txopLimit) [member function]
+    cls.add_method('SetTxopLimit', 
+                   'void', 
+                   [param('ns3::Time', 'txopLimit')], 
+                   is_virtual=True)
     ## edca-txop-n.h (module 'wifi'): uint32_t ns3::EdcaTxopN::GetMinCw() const [member function]
     cls.add_method('GetMinCw', 
                    'uint32_t', 
@@ -12322,6 +12747,11 @@ def register_Ns3EdcaTxopN_methods(root_module, cls):
     ## edca-txop-n.h (module 'wifi'): uint32_t ns3::EdcaTxopN::GetAifsn() const [member function]
     cls.add_method('GetAifsn', 
                    'uint32_t', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## edca-txop-n.h (module 'wifi'): ns3::Time ns3::EdcaTxopN::GetTxopLimit() const [member function]
+    cls.add_method('GetTxopLimit', 
+                   'ns3::Time', 
                    [], 
                    is_const=True, is_virtual=True)
     ## edca-txop-n.h (module 'wifi'): ns3::Ptr<ns3::MacLow> ns3::EdcaTxopN::Low() [member function]
@@ -12414,6 +12844,10 @@ def register_Ns3EdcaTxopN_methods(root_module, cls):
                    [param('ns3::MgtDelBaHeader const *', 'delBaHdr'), param('ns3::Mac48Address', 'recipient')])
     ## edca-txop-n.h (module 'wifi'): void ns3::EdcaTxopN::MissedAck() [member function]
     cls.add_method('MissedAck', 
+                   'void', 
+                   [])
+    ## edca-txop-n.h (module 'wifi'): void ns3::EdcaTxopN::StartNextFragment() [member function]
+    cls.add_method('StartNextFragment', 
                    'void', 
                    [])
     ## edca-txop-n.h (module 'wifi'): void ns3::EdcaTxopN::StartNext() [member function]
@@ -14933,6 +15367,11 @@ def register_Ns3MacLow_methods(root_module, cls):
     cls.add_method('AggregateToAmpdu', 
                    'ns3::Ptr< ns3::Packet >', 
                    [param('ns3::Ptr< ns3::Packet const >', 'packet'), param('ns3::WifiMacHeader const', 'hdr')])
+    ## mac-low.h (module 'wifi'): ns3::Time ns3::MacLow::CalculateOverallTxTime(ns3::Ptr<ns3::Packet const> packet, ns3::WifiMacHeader const * hdr, ns3::MacLowTransmissionParameters const & params) const [member function]
+    cls.add_method('CalculateOverallTxTime', 
+                   'ns3::Time', 
+                   [param('ns3::Ptr< ns3::Packet const >', 'packet'), param('ns3::WifiMacHeader const *', 'hdr'), param('ns3::MacLowTransmissionParameters const &', 'params')], 
+                   is_const=True)
     ## mac-low.h (module 'wifi'): ns3::Time ns3::MacLow::CalculateTransmissionTime(ns3::Ptr<ns3::Packet const> packet, ns3::WifiMacHeader const * hdr, ns3::MacLowTransmissionParameters const & parameters) const [member function]
     cls.add_method('CalculateTransmissionTime', 
                    'ns3::Time', 
@@ -15469,20 +15908,20 @@ def register_Ns3NetDeviceQueueInterface_methods(root_module, cls):
     cls.add_constructor([param('ns3::NetDeviceQueueInterface const &', 'arg0')])
     ## net-device.h (module 'network'): ns3::NetDeviceQueueInterface::NetDeviceQueueInterface() [constructor]
     cls.add_constructor([])
-    ## net-device.h (module 'network'): uint8_t ns3::NetDeviceQueueInterface::GetSelectedQueue(ns3::Ptr<ns3::QueueItem> item) const [member function]
-    cls.add_method('GetSelectedQueue', 
+    ## net-device.h (module 'network'): uint8_t ns3::NetDeviceQueueInterface::GetNTxQueues() const [member function]
+    cls.add_method('GetNTxQueues', 
                    'uint8_t', 
-                   [param('ns3::Ptr< ns3::QueueItem >', 'item')], 
+                   [], 
+                   is_const=True)
+    ## net-device.h (module 'network'): ns3::Callback<unsigned char, ns3::Ptr<ns3::QueueItem>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> ns3::NetDeviceQueueInterface::GetSelectQueueCallback() const [member function]
+    cls.add_method('GetSelectQueueCallback', 
+                   'ns3::Callback< unsigned char, ns3::Ptr< ns3::QueueItem >, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 
+                   [], 
                    is_const=True)
     ## net-device.h (module 'network'): ns3::Ptr<ns3::NetDeviceQueue> ns3::NetDeviceQueueInterface::GetTxQueue(uint8_t i) const [member function]
     cls.add_method('GetTxQueue', 
                    'ns3::Ptr< ns3::NetDeviceQueue >', 
                    [param('uint8_t', 'i')], 
-                   is_const=True)
-    ## net-device.h (module 'network'): uint8_t ns3::NetDeviceQueueInterface::GetTxQueuesN() const [member function]
-    cls.add_method('GetTxQueuesN', 
-                   'uint8_t', 
-                   [], 
                    is_const=True)
     ## net-device.h (module 'network'): static ns3::TypeId ns3::NetDeviceQueueInterface::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
@@ -16060,6 +16499,11 @@ def register_Ns3QueueItem_methods(root_module, cls):
     cls.add_method('GetPacketSize', 
                    'uint32_t', 
                    [], 
+                   is_const=True, is_virtual=True)
+    ## net-device.h (module 'network'): bool ns3::QueueItem::GetUint8Value(ns3::QueueItem::Uint8Values field, uint8_t & value) const [member function]
+    cls.add_method('GetUint8Value', 
+                   'bool', 
+                   [param('ns3::QueueItem::Uint8Values', 'field'), param('uint8_t &', 'value')], 
                    is_const=True, is_virtual=True)
     ## net-device.h (module 'network'): void ns3::QueueItem::Print(std::ostream & os) const [member function]
     cls.add_method('Print', 
@@ -17430,6 +17874,11 @@ def register_Ns3DcaTxop_methods(root_module, cls):
                    'void', 
                    [param('uint32_t', 'aifsn')], 
                    is_virtual=True)
+    ## dca-txop.h (module 'wifi'): void ns3::DcaTxop::SetTxopLimit(ns3::Time txopLimit) [member function]
+    cls.add_method('SetTxopLimit', 
+                   'void', 
+                   [param('ns3::Time', 'txopLimit')], 
+                   is_virtual=True)
     ## dca-txop.h (module 'wifi'): uint32_t ns3::DcaTxop::GetMinCw() const [member function]
     cls.add_method('GetMinCw', 
                    'uint32_t', 
@@ -17443,6 +17892,11 @@ def register_Ns3DcaTxop_methods(root_module, cls):
     ## dca-txop.h (module 'wifi'): uint32_t ns3::DcaTxop::GetAifsn() const [member function]
     cls.add_method('GetAifsn', 
                    'uint32_t', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## dca-txop.h (module 'wifi'): ns3::Time ns3::DcaTxop::GetTxopLimit() const [member function]
+    cls.add_method('GetTxopLimit', 
+                   'ns3::Time', 
                    [], 
                    is_const=True, is_virtual=True)
     ## dca-txop.h (module 'wifi'): void ns3::DcaTxop::Queue(ns3::Ptr<ns3::Packet const> packet, ns3::WifiMacHeader const & hdr) [member function]
