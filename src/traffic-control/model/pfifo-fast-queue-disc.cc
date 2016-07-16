@@ -58,7 +58,7 @@ PfifoFastQueueDisc::~PfifoFastQueueDisc ()
   NS_LOG_FUNCTION (this);
 }
 
-constexpr int PfifoFastQueueDisc::prio2band[];
+const uint32_t PfifoFastQueueDisc::prio2band[16] = {1, 2, 2, 2, 1, 2, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1};
 
 bool
 PfifoFastQueueDisc::DoEnqueue (Ptr<QueueDiscItem> item)
@@ -81,12 +81,12 @@ PfifoFastQueueDisc::DoEnqueue (Ptr<QueueDiscItem> item)
 
   uint32_t band = prio2band[priority & 0x0f];
 
-  bool retval = GetInternalQueue(band)->Enqueue (item);
+  bool retval = GetInternalQueue (band)->Enqueue (item);
 
   // If Queue::Enqueue fails, QueueDisc::Drop is called by the internal queue
   // because QueueDisc::AddInternalQueue sets the drop callback
 
-  NS_LOG_LOGIC ("Number packets band " << band << ": " << GetInternalQueue(band)->GetNPackets ());
+  NS_LOG_LOGIC ("Number packets band " << band << ": " << GetInternalQueue (band)->GetNPackets ());
 
   return retval;
 }

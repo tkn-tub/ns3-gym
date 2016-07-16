@@ -62,12 +62,12 @@ public:
 
   virtual ~PfifoFastQueueDisc();
 
+private:
   /**
    * Priority to band map
    */
-  static constexpr int prio2band[] = {1, 2, 2, 2, 1, 2, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1};
+  static const uint32_t prio2band[16];
 
-private:
   virtual bool DoEnqueue (Ptr<QueueDiscItem> item);
   virtual Ptr<QueueDiscItem> DoDequeue (void);
   virtual Ptr<const QueueDiscItem> DoPeek (void) const;
