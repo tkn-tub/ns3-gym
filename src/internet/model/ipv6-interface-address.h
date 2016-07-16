@@ -30,7 +30,7 @@ namespace ns3
 
 /**
  * \ingroup address
- * \ingoup ipv6
+ * \ingroup ipv6
  *
  * \brief IPv6 address associated with an interface.
  */

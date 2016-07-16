@@ -39,7 +39,7 @@ class Ipv6Address;
 class Ipv6Header;
 
 /**
- * \ingoup ipv6
+ * \ingroup ipv6
  *
  * \brief The IPv6 representation of a network interface.
  *

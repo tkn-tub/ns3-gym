@@ -45,7 +45,7 @@ class Icmpv6L4Protocol;
 class Ipv6AutoconfiguredPrefix;
 
 /**
- * \ingoup ipv6
+ * \ingroup ipv6
  *
  * \brief IPv6 layer implementation.
  *

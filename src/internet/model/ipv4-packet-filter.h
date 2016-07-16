@@ -30,7 +30,7 @@ namespace ns3 {
 
 /**
  * \ingroup ipv4
- * \ingoup traffic-control
+ * \ingroup traffic-control
  *
  * Ipv4PacketFilter is the abstract base class for filters defined for IPv4 packets.
  */
