@@ -314,6 +314,7 @@ WifiNetDevice::IsBridge (void) const
 bool
 WifiNetDevice::Send (Ptr<Packet> packet, const Address& dest, uint16_t protocolNumber)
 {
+  NS_LOG_FUNCTION (this << packet << dest << protocolNumber);
   NS_ASSERT (Mac48Address::IsMatchingType (dest));
 
   Mac48Address realTo = Mac48Address::ConvertFrom (dest);
@@ -355,6 +356,7 @@ WifiNetDevice::SetReceiveCallback (NetDevice::ReceiveCallback cb)
 void
 WifiNetDevice::ForwardUp (Ptr<Packet> packet, Mac48Address from, Mac48Address to)
 {
+  NS_LOG_FUNCTION (this << packet << from << to);
   LlcSnapHeader llc;
   enum NetDevice::PacketType type;
   if (to.IsBroadcast ())
@@ -409,6 +411,7 @@ WifiNetDevice::LinkDown (void)
 bool
 WifiNetDevice::SendFrom (Ptr<Packet> packet, const Address& source, const Address& dest, uint16_t protocolNumber)
 {
+  NS_LOG_FUNCTION (this << packet << source << dest << protocolNumber);
   NS_ASSERT (Mac48Address::IsMatchingType (dest));
   NS_ASSERT (Mac48Address::IsMatchingType (source));
 
