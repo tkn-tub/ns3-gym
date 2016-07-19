@@ -741,7 +741,6 @@ YansWifiPhy::StartReceivePacket (Ptr<Packet> packet,
   NS_LOG_FUNCTION (this << packet << txVector.GetMode () << preamble << (uint32_t)mpdutype);
   NS_ASSERT (IsStateRx ());
   NS_ASSERT (m_endPlcpRxEvent.IsExpired ());
-  AmpduTag ampduTag;
   WifiMode txMode = txVector.GetMode ();
 
   struct InterferenceHelper::SnrPer snrPer;
