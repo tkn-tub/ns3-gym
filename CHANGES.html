@@ -54,6 +54,25 @@ us a note on ns-developers mailing list.</p>
 <h1>Changes from ns-3.25 to ns-3.26</h1>
 <h2>New API:</h2>
 <ul>
+<li>A SocketPriorityTag is introduced to carry the packet priority. Such a tag
+    is added to packets by sockets that support this mechanism (UdpSocketImpl,
+    TcpSocketBase and PacketSocket). The base class Socket has a new SetPriority
+    method to set the socket priority. When the IPv4 protocol is used, the
+    priority is set based on the ToS. See the Socket options section of the
+    Network model for more information.
+</li>
+<li>A WifiNetDevice::SelectQueue method has been added to determine the user
+    priority of an MSDU. This method is called by the traffic control layer before
+    enqueuing a packet in the queue disc, if a queue disc is installed on
+    the outgoing device, or passing a packet to the device, otherwise. The
+    user priority is set to the three most significant bits of the DS field
+    (TOS field in case of IPv4 and Traffic Class field in case of IPv6). The
+    packet priority carried by the SocketPriorityTag is set to the user priority.
+</li>
+<li>The PfifoFastQueueDisc classifies packets into bands based on their priority.
+    See the pfifo_fast queue disc section of the Traffic Control Layer model
+    for more information.
+</li>
 </ul>
 <h2>Changes to existing API:</h2>
 <ul>
@@ -66,6 +85,14 @@ us a note on ns-developers mailing list.</p>
     As a consequence, SocketAddressTag has been completely removed from ns-3.
     Users can use RecvFrom (for UDP), GetPeerName (for TCP), or similar. 
 </li>
+<li>InetSockAddress can now store a ToS value, which can be set through its
+    SetTos method. The Bind and Connect methods of UDP (UdpSocketImpl) and
+    TCP (TcpSocketBase) sockets set the socket ToS value to the value provided
+    through the address input parameter (of type InetSockAddress). See the
+    Socket options section of the Network model for more information.
+</li>
+<li>The QosTag is removed as it has been superseded by the SocketPriorityTag.</li>
+<li>The Ipv4L3Protocol::DefaultTos attribute is removed.</li>
 </ul>
 <h2>Changes to build system:</h2>
 <ul>

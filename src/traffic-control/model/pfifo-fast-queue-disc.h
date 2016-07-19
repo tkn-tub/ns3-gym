@@ -64,7 +64,8 @@ public:
 
 private:
   /**
-   * Priority to band map
+   * Priority to band map. Values are taken from the prio2band array used by
+   * the Linux pfifo_fast queue disc.
    */
   static const uint32_t prio2band[16];
 

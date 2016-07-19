@@ -187,6 +187,10 @@ private:
    * CS5  |   101000xx   |  5  |     AC_VI
    * CS6  |   110000xx   |  6  |     AC_VO
    * CS7  |   111000xx   |  7  |     AC_VO
+   *
+   * This method is called by the traffic control layer before enqueuing a
+   * packet in the queue disc, if a queue disc is installed on the outgoing
+   * device, or passing a packet to the device, otherwise.
    */
   uint8_t SelectQueue (Ptr<QueueItem> item) const;
 
