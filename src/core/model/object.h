@@ -219,6 +219,13 @@ private:
    */
   void Initialize (void);
 
+  /**
+   * Check if the object has been initialized.
+   *
+   * \brief returns true if the object has been initialized. 
+   */
+  bool IsInitialized (void) const;
+
 protected:
   /**
    * Notify all Objects aggregated to this one of a new Object being

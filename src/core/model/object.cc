@@ -204,6 +204,12 @@ restart:
         }
     }
 }
+bool
+Object::IsInitialized (void) const
+{
+  NS_LOG_FUNCTION (this);
+  return m_initialized;
+}
 void 
 Object::Dispose (void)
 {
