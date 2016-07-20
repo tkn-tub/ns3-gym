@@ -24,6 +24,8 @@ def register_types(module):
     module.add_class('CallbackBase', import_from_module='ns.core')
     ## file-config.h (module 'config-store'): ns3::FileConfig [class]
     module.add_class('FileConfig', allow_subclassing=True)
+    ## gtk-config-store.h (module 'config-store'): ns3::GtkConfigStore [class]
+    module.add_class('GtkConfigStore')
     ## hash.h (module 'core'): ns3::Hasher [class]
     module.add_class('Hasher', import_from_module='ns.core')
     ## file-config.h (module 'config-store'): ns3::NoneFileConfig [class]
@@ -128,6 +130,7 @@ def register_types_ns3_Hash_Function(module):
 def register_methods(root_module):
     register_Ns3CallbackBase_methods(root_module, root_module['ns3::CallbackBase'])
     register_Ns3FileConfig_methods(root_module, root_module['ns3::FileConfig'])
+    register_Ns3GtkConfigStore_methods(root_module, root_module['ns3::GtkConfigStore'])
     register_Ns3Hasher_methods(root_module, root_module['ns3::Hasher'])
     register_Ns3NoneFileConfig_methods(root_module, root_module['ns3::NoneFileConfig'])
     register_Ns3ObjectBase_methods(root_module, root_module['ns3::ObjectBase'])
@@ -199,6 +202,21 @@ def register_Ns3FileConfig_methods(root_module, cls):
                    'void', 
                    [param('std::string', 'filename')], 
                    is_pure_virtual=True, is_virtual=True)
+    return
+
+def register_Ns3GtkConfigStore_methods(root_module, cls):
+    ## gtk-config-store.h (module 'config-store'): ns3::GtkConfigStore::GtkConfigStore(ns3::GtkConfigStore const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::GtkConfigStore const &', 'arg0')])
+    ## gtk-config-store.h (module 'config-store'): ns3::GtkConfigStore::GtkConfigStore() [constructor]
+    cls.add_constructor([])
+    ## gtk-config-store.h (module 'config-store'): void ns3::GtkConfigStore::ConfigureAttributes() [member function]
+    cls.add_method('ConfigureAttributes', 
+                   'void', 
+                   [])
+    ## gtk-config-store.h (module 'config-store'): void ns3::GtkConfigStore::ConfigureDefaults() [member function]
+    cls.add_method('ConfigureDefaults', 
+                   'void', 
+                   [])
     return
 
 def register_Ns3Hasher_methods(root_module, cls):
