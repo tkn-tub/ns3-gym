@@ -31,7 +31,7 @@ def register_types(module):
     ## wifi-mode.h (module 'wifi'): ns3::WifiModulationClass [enumeration]
     module.add_enum('WifiModulationClass', ['WIFI_MOD_CLASS_UNKNOWN', 'WIFI_MOD_CLASS_IR', 'WIFI_MOD_CLASS_FHSS', 'WIFI_MOD_CLASS_DSSS', 'WIFI_MOD_CLASS_HR_DSSS', 'WIFI_MOD_CLASS_ERP_PBCC', 'WIFI_MOD_CLASS_DSSS_OFDM', 'WIFI_MOD_CLASS_ERP_OFDM', 'WIFI_MOD_CLASS_OFDM', 'WIFI_MOD_CLASS_HT', 'WIFI_MOD_CLASS_VHT'], import_from_module='ns.wifi')
     ## wifi-phy-standard.h (module 'wifi'): ns3::WifiPhyStandard [enumeration]
-    module.add_enum('WifiPhyStandard', ['WIFI_PHY_STANDARD_80211a', 'WIFI_PHY_STANDARD_80211b', 'WIFI_PHY_STANDARD_80211g', 'WIFI_PHY_STANDARD_80211_10MHZ', 'WIFI_PHY_STANDARD_80211_5MHZ', 'WIFI_PHY_STANDARD_holland', 'WIFI_PHY_STANDARD_80211n_2_4GHZ', 'WIFI_PHY_STANDARD_80211n_5GHZ', 'WIFI_PHY_STANDARD_80211ac'], import_from_module='ns.wifi')
+    module.add_enum('WifiPhyStandard', ['WIFI_PHY_STANDARD_80211a', 'WIFI_PHY_STANDARD_80211b', 'WIFI_PHY_STANDARD_80211g', 'WIFI_PHY_STANDARD_80211_10MHZ', 'WIFI_PHY_STANDARD_80211_5MHZ', 'WIFI_PHY_STANDARD_holland', 'WIFI_PHY_STANDARD_80211n_2_4GHZ', 'WIFI_PHY_STANDARD_80211n_5GHZ', 'WIFI_PHY_STANDARD_80211ac', 'WIFI_PHY_STANDARD_UNSPECIFIED'], import_from_module='ns.wifi')
     ## wifi-mode.h (module 'wifi'): ns3::WifiCodeRate [enumeration]
     module.add_enum('WifiCodeRate', ['WIFI_CODE_RATE_UNDEFINED', 'WIFI_CODE_RATE_3_4', 'WIFI_CODE_RATE_2_3', 'WIFI_CODE_RATE_1_2', 'WIFI_CODE_RATE_5_6'], import_from_module='ns.wifi')
     ## channel-scheduler.h (module 'wave'): ns3::ChannelAccess [enumeration]
@@ -9222,11 +9222,11 @@ def register_Ns3WifiPhy_methods(root_module, cls):
     cls.add_constructor([param('ns3::WifiPhy const &', 'arg0')])
     ## wifi-phy.h (module 'wifi'): ns3::WifiPhy::WifiPhy() [constructor]
     cls.add_constructor([])
-    ## wifi-phy.h (module 'wifi'): void ns3::WifiPhy::AddSupportedChannelWidth(uint32_t width) [member function]
+    ## wifi-phy.h (module 'wifi'): void ns3::WifiPhy::AddSupportedChannelWidth(uint32_t channelwidth) [member function]
     cls.add_method('AddSupportedChannelWidth', 
                    'void', 
-                   [param('uint32_t', 'width')], 
-                   is_pure_virtual=True, is_virtual=True)
+                   [param('uint32_t', 'channelwidth')], 
+                   is_virtual=True)
     ## wifi-phy.h (module 'wifi'): int64_t ns3::WifiPhy::AssignStreams(int64_t stream) [member function]
     cls.add_method('AssignStreams', 
                    'int64_t', 
@@ -9253,7 +9253,7 @@ def register_Ns3WifiPhy_methods(root_module, cls):
     cls.add_method('ConfigureStandard', 
                    'void', 
                    [param('ns3::WifiPhyStandard', 'standard')], 
-                   is_pure_virtual=True, is_virtual=True)
+                   is_virtual=True)
     ## wifi-phy.h (module 'wifi'): double ns3::WifiPhy::DbToRatio(double db) const [member function]
     cls.add_method('DbToRatio', 
                    'double', 
@@ -9264,6 +9264,10 @@ def register_Ns3WifiPhy_methods(root_module, cls):
                    'double', 
                    [param('double', 'dbm')], 
                    is_const=True)
+    ## wifi-phy.h (module 'wifi'): bool ns3::WifiPhy::DefineChannelNumber(uint16_t channelNumber, ns3::WifiPhyStandard standard, uint32_t frequency, uint32_t channelWidth) [member function]
+    cls.add_method('DefineChannelNumber', 
+                   'bool', 
+                   [param('uint16_t', 'channelNumber'), param('ns3::WifiPhyStandard', 'standard'), param('uint32_t', 'frequency'), param('uint32_t', 'channelWidth')])
     ## wifi-phy.h (module 'wifi'): uint32_t ns3::WifiPhy::GetBssMembershipSelector(uint32_t selector) const [member function]
     cls.add_method('GetBssMembershipSelector', 
                    'uint32_t', 
@@ -9278,7 +9282,7 @@ def register_Ns3WifiPhy_methods(root_module, cls):
     cls.add_method('GetChannelNumber', 
                    'uint16_t', 
                    [], 
-                   is_pure_virtual=True, is_const=True, is_virtual=True)
+                   is_const=True, is_virtual=True)
     ## wifi-phy.h (module 'wifi'): ns3::Time ns3::WifiPhy::GetChannelSwitchDelay() const [member function]
     cls.add_method('GetChannelSwitchDelay', 
                    'ns3::Time', 
@@ -9288,7 +9292,7 @@ def register_Ns3WifiPhy_methods(root_module, cls):
     cls.add_method('GetChannelWidth', 
                    'uint32_t', 
                    [], 
-                   is_pure_virtual=True, is_const=True, is_virtual=True)
+                   is_const=True, is_virtual=True)
     ## wifi-phy.h (module 'wifi'): ns3::Time ns3::WifiPhy::GetDelayUntilIdle() [member function]
     cls.add_method('GetDelayUntilIdle', 
                    'ns3::Time', 
@@ -9358,7 +9362,7 @@ def register_Ns3WifiPhy_methods(root_module, cls):
     cls.add_method('GetFrequency', 
                    'uint32_t', 
                    [], 
-                   is_pure_virtual=True, is_const=True, is_virtual=True)
+                   is_const=True, is_virtual=True)
     ## wifi-phy.h (module 'wifi'): bool ns3::WifiPhy::GetGreenfield() const [member function]
     cls.add_method('GetGreenfield', 
                    'bool', 
@@ -9762,6 +9766,11 @@ def register_Ns3WifiPhy_methods(root_module, cls):
                    'bool', 
                    [], 
                    is_pure_virtual=True, is_const=True, is_virtual=True)
+    ## wifi-phy.h (module 'wifi'): ns3::WifiPhyStandard ns3::WifiPhy::GetStandard() const [member function]
+    cls.add_method('GetStandard', 
+                   'ns3::WifiPhyStandard', 
+                   [], 
+                   is_const=True, is_virtual=True)
     ## wifi-phy.h (module 'wifi'): ns3::Time ns3::WifiPhy::GetStateDuration() [member function]
     cls.add_method('GetStateDuration', 
                    'ns3::Time', 
@@ -9776,7 +9785,7 @@ def register_Ns3WifiPhy_methods(root_module, cls):
     cls.add_method('GetSupportedChannelWidthSet', 
                    'std::vector< unsigned int >', 
                    [], 
-                   is_pure_virtual=True, is_const=True, is_virtual=True)
+                   is_const=True, is_virtual=True)
     ## wifi-phy.h (module 'wifi'): uint8_t ns3::WifiPhy::GetSupportedRxSpatialStreams() const [member function]
     cls.add_method('GetSupportedRxSpatialStreams', 
                    'uint8_t', 
@@ -9963,17 +9972,17 @@ def register_Ns3WifiPhy_methods(root_module, cls):
     cls.add_method('SetChannelNumber', 
                    'void', 
                    [param('uint16_t', 'id')], 
-                   is_pure_virtual=True, is_virtual=True)
+                   is_virtual=True)
     ## wifi-phy.h (module 'wifi'): void ns3::WifiPhy::SetChannelWidth(uint32_t channelwidth) [member function]
     cls.add_method('SetChannelWidth', 
                    'void', 
                    [param('uint32_t', 'channelwidth')], 
-                   is_pure_virtual=True, is_virtual=True)
+                   is_virtual=True)
     ## wifi-phy.h (module 'wifi'): void ns3::WifiPhy::SetFrequency(uint32_t freq) [member function]
     cls.add_method('SetFrequency', 
                    'void', 
                    [param('uint32_t', 'freq')], 
-                   is_pure_virtual=True, is_virtual=True)
+                   is_virtual=True)
     ## wifi-phy.h (module 'wifi'): void ns3::WifiPhy::SetGreenfield(bool greenfield) [member function]
     cls.add_method('SetGreenfield', 
                    'void', 
@@ -10034,6 +10043,31 @@ def register_Ns3WifiPhy_methods(root_module, cls):
                    'double', 
                    [param('double', 'w')], 
                    is_const=True)
+    ## wifi-phy.h (module 'wifi'): bool ns3::WifiPhy::DoChannelSwitch(uint16_t id) [member function]
+    cls.add_method('DoChannelSwitch', 
+                   'bool', 
+                   [param('uint16_t', 'id')], 
+                   visibility='protected', is_virtual=True)
+    ## wifi-phy.h (module 'wifi'): bool ns3::WifiPhy::DoFrequencySwitch(uint32_t frequency) [member function]
+    cls.add_method('DoFrequencySwitch', 
+                   'bool', 
+                   [param('uint32_t', 'frequency')], 
+                   visibility='protected', is_virtual=True)
+    ## wifi-phy.h (module 'wifi'): void ns3::WifiPhy::DoInitialize() [member function]
+    cls.add_method('DoInitialize', 
+                   'void', 
+                   [], 
+                   visibility='protected', is_virtual=True)
+    ## wifi-phy.h (module 'wifi'): void ns3::WifiPhy::ConfigureChannelForStandard(ns3::WifiPhyStandard standard) [member function]
+    cls.add_method('ConfigureChannelForStandard', 
+                   'void', 
+                   [param('ns3::WifiPhyStandard', 'standard')], 
+                   visibility='private', is_virtual=True)
+    ## wifi-phy.h (module 'wifi'): void ns3::WifiPhy::ConfigureDefaultsForStandard(ns3::WifiPhyStandard standard) [member function]
+    cls.add_method('ConfigureDefaultsForStandard', 
+                   'void', 
+                   [param('ns3::WifiPhyStandard', 'standard')], 
+                   visibility='private', is_virtual=True)
     return
 
 def register_Ns3WifiRemoteStationManager_methods(root_module, cls):
@@ -10703,11 +10737,6 @@ def register_Ns3YansWifiPhy_methods(root_module, cls):
     cls.add_constructor([param('ns3::YansWifiPhy const &', 'arg0')])
     ## yans-wifi-phy.h (module 'wifi'): ns3::YansWifiPhy::YansWifiPhy() [constructor]
     cls.add_constructor([])
-    ## yans-wifi-phy.h (module 'wifi'): void ns3::YansWifiPhy::AddSupportedChannelWidth(uint32_t width) [member function]
-    cls.add_method('AddSupportedChannelWidth', 
-                   'void', 
-                   [param('uint32_t', 'width')], 
-                   is_virtual=True)
     ## yans-wifi-phy.h (module 'wifi'): int64_t ns3::YansWifiPhy::AssignStreams(int64_t stream) [member function]
     cls.add_method('AssignStreams', 
                    'int64_t', 
@@ -10738,24 +10767,9 @@ def register_Ns3YansWifiPhy_methods(root_module, cls):
                    'ns3::Ptr< ns3::WifiChannel >', 
                    [], 
                    is_const=True, is_virtual=True)
-    ## yans-wifi-phy.h (module 'wifi'): double ns3::YansWifiPhy::GetChannelFrequencyMhz() const [member function]
-    cls.add_method('GetChannelFrequencyMhz', 
-                   'double', 
-                   [], 
-                   is_const=True)
-    ## yans-wifi-phy.h (module 'wifi'): uint16_t ns3::YansWifiPhy::GetChannelNumber() const [member function]
-    cls.add_method('GetChannelNumber', 
-                   'uint16_t', 
-                   [], 
-                   is_const=True, is_virtual=True)
     ## yans-wifi-phy.h (module 'wifi'): ns3::Time ns3::YansWifiPhy::GetChannelSwitchDelay() const [member function]
     cls.add_method('GetChannelSwitchDelay', 
                    'ns3::Time', 
-                   [], 
-                   is_const=True, is_virtual=True)
-    ## yans-wifi-phy.h (module 'wifi'): uint32_t ns3::YansWifiPhy::GetChannelWidth() const [member function]
-    cls.add_method('GetChannelWidth', 
-                   'uint32_t', 
                    [], 
                    is_const=True, is_virtual=True)
     ## yans-wifi-phy.h (module 'wifi'): ns3::Time ns3::YansWifiPhy::GetDelayUntilIdle() [member function]
@@ -10778,11 +10792,6 @@ def register_Ns3YansWifiPhy_methods(root_module, cls):
                    'ns3::Ptr< ns3::ErrorRateModel >', 
                    [], 
                    is_const=True)
-    ## yans-wifi-phy.h (module 'wifi'): uint32_t ns3::YansWifiPhy::GetFrequency() const [member function]
-    cls.add_method('GetFrequency', 
-                   'uint32_t', 
-                   [], 
-                   is_const=True, is_virtual=True)
     ## yans-wifi-phy.h (module 'wifi'): bool ns3::YansWifiPhy::GetGreenfield() const [member function]
     cls.add_method('GetGreenfield', 
                    'bool', 
@@ -10875,11 +10884,6 @@ def register_Ns3YansWifiPhy_methods(root_module, cls):
     ## yans-wifi-phy.h (module 'wifi'): bool ns3::YansWifiPhy::GetStbc() const [member function]
     cls.add_method('GetStbc', 
                    'bool', 
-                   [], 
-                   is_const=True, is_virtual=True)
-    ## yans-wifi-phy.h (module 'wifi'): std::vector<unsigned int, std::allocator<unsigned int> > ns3::YansWifiPhy::GetSupportedChannelWidthSet() const [member function]
-    cls.add_method('GetSupportedChannelWidthSet', 
-                   'std::vector< unsigned int >', 
                    [], 
                    is_const=True, is_virtual=True)
     ## yans-wifi-phy.h (module 'wifi'): uint8_t ns3::YansWifiPhy::GetSupportedRxSpatialStreams() const [member function]
@@ -10985,16 +10989,6 @@ def register_Ns3YansWifiPhy_methods(root_module, cls):
     cls.add_method('SetChannel', 
                    'void', 
                    [param('ns3::Ptr< ns3::YansWifiChannel >', 'channel')])
-    ## yans-wifi-phy.h (module 'wifi'): void ns3::YansWifiPhy::SetChannelNumber(uint16_t id) [member function]
-    cls.add_method('SetChannelNumber', 
-                   'void', 
-                   [param('uint16_t', 'id')], 
-                   is_virtual=True)
-    ## yans-wifi-phy.h (module 'wifi'): void ns3::YansWifiPhy::SetChannelWidth(uint32_t channelwidth) [member function]
-    cls.add_method('SetChannelWidth', 
-                   'void', 
-                   [param('uint32_t', 'channelwidth')], 
-                   is_virtual=True)
     ## yans-wifi-phy.h (module 'wifi'): void ns3::YansWifiPhy::SetDevice(ns3::Ptr<ns3::NetDevice> device) [member function]
     cls.add_method('SetDevice', 
                    'void', 
@@ -11007,11 +11001,6 @@ def register_Ns3YansWifiPhy_methods(root_module, cls):
     cls.add_method('SetErrorRateModel', 
                    'void', 
                    [param('ns3::Ptr< ns3::ErrorRateModel >', 'rate')])
-    ## yans-wifi-phy.h (module 'wifi'): void ns3::YansWifiPhy::SetFrequency(uint32_t freq) [member function]
-    cls.add_method('SetFrequency', 
-                   'void', 
-                   [param('uint32_t', 'freq')], 
-                   is_virtual=True)
     ## yans-wifi-phy.h (module 'wifi'): void ns3::YansWifiPhy::SetGreenfield(bool greenfield) [member function]
     cls.add_method('SetGreenfield', 
                    'void', 
@@ -11103,16 +11092,21 @@ def register_Ns3YansWifiPhy_methods(root_module, cls):
                    'void', 
                    [param('ns3::WifiPhyListener *', 'listener')], 
                    is_virtual=True)
+    ## yans-wifi-phy.h (module 'wifi'): bool ns3::YansWifiPhy::DoChannelSwitch(uint16_t id) [member function]
+    cls.add_method('DoChannelSwitch', 
+                   'bool', 
+                   [param('uint16_t', 'id')], 
+                   visibility='protected', is_virtual=True)
     ## yans-wifi-phy.h (module 'wifi'): void ns3::YansWifiPhy::DoDispose() [member function]
     cls.add_method('DoDispose', 
                    'void', 
                    [], 
-                   visibility='private', is_virtual=True)
-    ## yans-wifi-phy.h (module 'wifi'): void ns3::YansWifiPhy::DoInitialize() [member function]
-    cls.add_method('DoInitialize', 
-                   'void', 
-                   [], 
-                   visibility='private', is_virtual=True)
+                   visibility='protected', is_virtual=True)
+    ## yans-wifi-phy.h (module 'wifi'): bool ns3::YansWifiPhy::DoFrequencySwitch(uint32_t frequency) [member function]
+    cls.add_method('DoFrequencySwitch', 
+                   'bool', 
+                   [param('uint32_t', 'frequency')], 
+                   visibility='protected', is_virtual=True)
     return
 
 def register_Ns3ZetaRandomVariable_methods(root_module, cls):
