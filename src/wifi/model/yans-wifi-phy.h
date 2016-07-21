@@ -78,27 +78,9 @@ public:
    */
   void SetChannel (Ptr<YansWifiChannel> channel);
   /**
-   * Set the current channel number.
-   *
-   * \param id the channel number
-   */
-  void SetChannelNumber (uint16_t id);
-  /**
-   * Return the current channel number.
-   *
-   * \return the current channel number
-   */
-  uint16_t GetChannelNumber (void) const;
-  /**
    * \return the required time for channel switch operation of this WifiPhy
    */
   Time GetChannelSwitchDelay (void) const;
-  /**
-   * Return current center channel frequency in MHz.
-   *
-   * \return the current center channel frequency in MHz
-   */
-  double GetChannelFrequencyMhz () const;
 
   /**
    * Starting receiving the plcp of a packet (i.e. the first bit of the preamble has arrived).
@@ -315,14 +297,6 @@ public:
   int64_t AssignStreams (int64_t stream);
 
   /**
-   * \param freq the operating frequency on this node (2.4 GHz or 5GHz).
-   */
-  virtual void SetFrequency (uint32_t freq);
-  /**
-   * \return the operating frequency on this node
-   */
-  virtual uint32_t GetFrequency (void) const;
-  /**
    * \param tx the number of transmitters on this node.
    */
   virtual void SetNumberOfTransmitAntennas (uint32_t tx);
@@ -397,23 +371,9 @@ public:
    * \returns if short PLCP preamble is supported or not
    */
   virtual bool GetShortPlcpPreambleSupported (void) const;
-  /**
-   * Return channel width.
-   *
-   * \return channel width
-   */
-  virtual uint32_t GetChannelWidth (void) const;
-  /**
-   * Set channel width.
-   *
-   * \param channel width
-   */
-  virtual void SetChannelWidth (uint32_t channelwidth);
 
   virtual uint8_t GetSupportedRxSpatialStreams (void) const;
   virtual uint8_t GetSupportedTxSpatialStreams (void) const;
-  virtual void AddSupportedChannelWidth (uint32_t width);
-  virtual std::vector<uint32_t> GetSupportedChannelWidthSet (void) const;
   virtual uint32_t GetNBssMembershipSelectors (void) const;
   virtual uint32_t GetBssMembershipSelector (uint32_t selector) const;
   virtual WifiModeList GetMembershipSelectorModes (uint32_t selector);
@@ -424,10 +384,13 @@ public:
   virtual uint8_t GetNMcs (void) const;
   virtual WifiMode GetMcs (uint8_t mcs) const;
 
-private:
-  virtual void DoInitialize (void);
+protected:
+  // Inherited
   virtual void DoDispose (void);
+  virtual bool DoChannelSwitch (uint16_t id);
+  virtual bool DoFrequencySwitch (uint32_t frequency);
 
+private:
   /**
    * Configure YansWifiPhy with appropriate channel frequency and
    * supported rates for 802.11a standard.
@@ -494,7 +457,6 @@ private:
    */
   void EndReceive (Ptr<Packet> packet, enum WifiPreamble preamble, enum mpduType mpdutype, Ptr<InterferenceHelper::Event> event);
 
-  bool     m_initialized;         //!< Flag for runtime initialization
   double   m_edThresholdW;        //!< Energy detection threshold in watts
   double   m_ccaMode1ThresholdW;  //!< Clear channel assessment (CCA) threshold in watts
   double   m_txGainDb;            //!< Transmission gain (dB)
@@ -504,7 +466,6 @@ private:
   uint32_t m_nTxPower;            //!< Number of available transmission power levels
 
   Ptr<YansWifiChannel> m_channel;        //!< YansWifiChannel that this YansWifiPhy is connected to
-  uint16_t             m_channelNumber;  //!< Operating channel number
   Ptr<NetDevice>       m_device;         //!< Pointer to the device
   Ptr<MobilityModel>   m_mobility;       //!< Pointer to the mobility model
 
@@ -514,8 +475,6 @@ private:
   bool     m_stbc;                  //!< Flag if STBC is used
   bool     m_greenfield;            //!< Flag if GreenField format is supported
   bool     m_guardInterval;         //!< Flag if short guard interval is used
-  uint32_t m_channelWidth;          //!< Channel width
-  std::vector<uint32_t> m_supportedChannelWidthSet; //!< Supported channel width
   bool     m_shortPreamble;         //!< Flag if short PLCP preamble is supported
 
   /**
@@ -562,7 +521,6 @@ private:
   EventId m_endPlcpRxEvent;
 
   Ptr<UniformRandomVariable> m_random;  //!< Provides uniform random variables.
-  double m_channelStartingFrequency;    //!< Standard-dependent center frequency of 0-th channel in MHz
   Ptr<WifiPhyStateHelper> m_state;      //!< Pointer to WifiPhyStateHelper
   InterferenceHelper m_interference;    //!< Pointer to InterferenceHelper
   Time m_channelSwitchDelay;            //!< Time required to switch between channel

@@ -73,6 +73,7 @@ us a note on ns-developers mailing list.</p>
     See the pfifo_fast queue disc section of the Traffic Control Layer model
     for more information.
 </li>
+<li>The attributes YansWifiPhy::Frequency, YansWifiPhy::ChannelNumber, and YansWifiPhy::ChannelWidth, and the related accessor methods, were moved to base class WifiPhy.  YansWifiPhy::GetChannelFrequencyMhz() was deleted.  A new method WifiPhy::DefineChannelNumber () was added to allow users to define relationships between channel number, standard, frequency, and channel width.
 </ul>
 <h2>Changes to existing API:</h2>
 <ul>
@@ -100,6 +101,7 @@ us a note on ns-developers mailing list.</p>
 <h2>Changed behavior:</h2>
 This section is for behavioral changes to the models that were not due to a bug fix.
 <ul>
+  <li> (wifi) The relationship between channel number, frequency, channel width, and Wi-Fi standard has been revised (see bug 2412).  Previously, ChannelNumber and Frequency were attributes of class YansWifiPhy, and the frequency was defined as the start of the band.  Now, Frequency has been redefined to be the center frequency of the channel, and the underlying device relies on the pair of frequency and channel width to control behavior; the channel number and Wi-Fi standard are used as attributes to configure frequency and channel width.  The wifi module documentation discusses this change and the new behavior.
 </ul>
 
 <hr>

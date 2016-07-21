@@ -19,3 +19,7 @@ def build(bld):
     obj = bld.create_ns3_program('minstrel-ht-wifi-manager-example',
         ['core', 'network', 'wifi', 'stats', 'mobility', 'propagation'])
     obj.source = 'minstrel-ht-wifi-manager-example.cc'
+
+    obj = bld.create_ns3_program('wifi-phy-configuration',
+        ['core', 'network', 'config-store', 'wifi'])
+    obj.source = 'wifi-phy-configuration.cc'
