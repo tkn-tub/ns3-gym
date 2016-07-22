@@ -165,27 +165,27 @@ public:
   virtual ~NetDeviceQueue();
 
   /**
-   * Called by the device to start this (hardware) transmission queue.
+   * Called by the device to start this device transmission queue.
    * This is the analogous to the netif_tx_start_queue function of the Linux kernel.
    */
   virtual void Start (void);
 
   /**
-   * Called by the device to stop this (hardware) transmission queue.
+   * Called by the device to stop this device transmission queue.
    * This is the analogous to the netif_tx_stop_queue function of the Linux kernel.
    */
   virtual void Stop (void);
 
   /**
    * Called by the device to wake the queue disc associated with this
-   * (hardware) transmission queue. This is done by invoking the wake callback.
+   * device transmission queue. This is done by invoking the wake callback.
    * This is the analogous to the netif_tx_wake_queue function of the Linux kernel.
    */
   virtual void Wake (void);
 
   /**
    * \brief Get the status of the device transmission queue.
-   * \return true if the (hardware) transmission queue is stopped.
+   * \return true if the device transmission queue is stopped.
    *
    * Called by queue discs to enquire about the status of a given transmission queue.
    * This is the analogous to the netif_tx_queue_stopped function of the Linux kernel.
@@ -207,12 +207,6 @@ public:
    */
   virtual void SetWakeCallback (WakeCallback cb);
 
-  /**
-   * \brief Check whether a wake callback has been set on this device queue.
-   * \return true if the wake callback has been set.
-   */
-  virtual bool HasWakeCallbackSet (void) const;
-
 private:
   bool m_stopped;   //!< Status of the transmission queue
   WakeCallback m_wakeCallback;   //!< Wake callback
@@ -224,15 +218,15 @@ private:
  *
  * \brief Network device transmission queue interface
  *
- * This interface is required by the traffic control layer to access the information
- * about the status of the transmission queues of a device. Thus, every NetDevice
- * (but loopback) needs to create this interface. NetDevices supporting flow control
- * can start and stop their device transmission queues and wake the upper layers through
- * this interface. By default, a NetDeviceQueueInterface object is created with a single
- * device transmission queue. Therefore, multi-queue devices need to call SetTxQueuesN
- * to create additional queues (before a root queue disc is installed, i.e., typically
- * before an IPv4/IPv6 address is assigned to the device), implement a GetSelectedQueue
- * method and pass a callback to such a method through the SetSelectedQueueCallback method.
+ * This interface is used by the traffic control layer and by the aggregated
+ * device to access the transmission queues of the device. Additionally, through
+ * this interface, traffic control aware netdevices can:
+ * - set the number of transmission queues
+ * - set the method used (by upper layers) to determine the transmission queue
+ *   in which the netdevice would enqueue a given packet
+ * This interface is created and aggregated to a device by the traffic control
+ * layer when an Ipv{4,6}Interface is added to the device or a queue disc is
+ * installed on the device.
  */
 class NetDeviceQueueInterface : public Object
 {
@@ -268,15 +262,22 @@ public:
   uint8_t GetNTxQueues (void) const;
 
   /**
-   * \brief Set the number of device transmission queues.
-   * \param numTxQueues number of device transmission queues.
+   * \brief Set the number of device transmission queues to create.
+   * \param numTxQueues number of device transmission queues to create.
    *
-   * Called by a device to set the number of device transmission queues.
-   * This method can be called by a NetDevice at initialization time only, because
-   * it is not possible to change the number of device transmission queues after
-   * the wake callbacks have been set on the device queues.
+   * A multi-queue netdevice must call this method from within its
+   * NotifyNewAggregate method to set the number of device transmission queues
+   * to create.
    */
   void SetTxQueuesN (uint8_t numTxQueues);
+
+  /**
+   * \brief Create the device transmission queues.
+   *
+   * Called by the traffic control layer just after aggregating this netdevice
+   * queue interface to the netdevice.
+   */
+  void CreateTxQueues (void);
 
   /// Callback invoked to determine the tx queue selected for a given packet
   typedef Callback< uint8_t, Ptr<QueueItem> > SelectQueueCallback;
@@ -285,7 +286,8 @@ public:
    * \brief Set the select queue callback.
    * \param cb the callback to set.
    *
-   * Called by a multi-queue device to set the select queue callback, i.e., the
+   * A multi-queue netdevice must call this method from within its
+   * NotifyNewAggregate method to set the select queue callback, i.e., the
    * method used to select a device transmission queue for a given packet.
    */
   void SetSelectQueueCallback (SelectQueueCallback cb);
@@ -308,6 +310,7 @@ protected:
 private:
   std::vector< Ptr<NetDeviceQueue> > m_txQueuesVector;   //!< Device transmission queues
   SelectQueueCallback m_selectQueueCallback;   //!< Select queue callback
+  uint8_t m_numTxQueues;   //!< Number of transmission queues to create
 };
 
 

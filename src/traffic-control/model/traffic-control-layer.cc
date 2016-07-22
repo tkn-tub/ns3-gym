@@ -128,6 +128,11 @@ TrafficControlLayer::SetupDevice (Ptr<NetDevice> device)
   Ptr<NetDeviceQueueInterface> devQueueIface = CreateObject<NetDeviceQueueInterface> ();
   device->AggregateObject (devQueueIface);
 
+  // multi-queue devices must set the number of transmission queues in their
+  // NotifyNewAggregate method. Since we have just aggregated the netdevice
+  // queue interface to the device, we can create the transmission queues
+  devQueueIface->CreateTxQueues ();
+
   // devices can set a select queue callback in their NotifyNewAggregate method
   SelectQueueCallback cb = devQueueIface->GetSelectQueueCallback ();
 
