@@ -209,6 +209,7 @@ public:
 
 private:
   friend class WifiModeFactory;
+  friend class WifiPhyTag; // access the UID-based constructor
   /**
    * Create a WifiMode from a given unique ID.
    *

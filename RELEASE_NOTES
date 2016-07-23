@@ -36,6 +36,11 @@ New user-visible features
 - (internet) Added TCP YeAH congestion control algorithm
 - (network) SocketAddressTag has been removed from the codebase.
   Users can use RecvFrom (for UDP) or GetPeerName (for TCP) instead.
+- (wifi) A new SpectrumWifiPhy physical layer model, making use of the 
+  ns-3 spectrum framework, has been introduced.  The current version of
+  this model matches the API and behavior of YansWifiPhy closely, but
+  over time is expected to support a different PHY abstraction and error
+  models.
 
 Bugs fixed
 ----------

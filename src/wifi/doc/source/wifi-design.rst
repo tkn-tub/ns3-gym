@@ -36,9 +36,10 @@ packet-level abstraction of the PHY-level for different PHYs, corresponding to
 802.11a/b/e/g/n/ac specifications.
 
 In |ns3|, nodes can have multiple WifiNetDevices on separate channels, and the
-WifiNetDevice can coexist with other device types; this removes an architectural
-limitation found in |ns2|. Presently, however, there is no model for
-cross-channel interference or coupling between channels.
+WifiNetDevice can coexist with other device types.
+With the use of the **SpectrumWifiPhy** framework, one can also build scenarios
+involving cross-channel interference or multiple wireless technologies on
+a single channel.
 
 The source code for the WifiNetDevice and its models lives in the directory
 ``src/wifi``.
@@ -115,14 +116,9 @@ The **MAC low layer** is split into three main components:
 PHY layer models
 ================
 
-The PHY layer implements a single model in the ``ns3::WifiPhy`` class: the
-physical layer model implemented there is described in a paper entitled
-`Yet Another Network Simulator <http://cutebugs.net/files/wns2-yans.pdf>`_
-The acronym *Yans* derives from this paper title.
-
 In short, the physical layer models are mainly responsible for modeling 
 the reception of packets and for tracking energy consumption.  There
-are typically three main components to this:
+are typically three main components to packet reception:
 
 * each packet received is probabilistically evaluated for successful or
   failed reception.  The probability depends on the modulation, on
@@ -135,6 +131,17 @@ are typically three main components to this:
 * one or more error models corresponding to the modulation and standard
   are used to look up probability of successful reception.
 
+|ns3| offers users a choice between two physical layer models, with a
+base interface defined in the ``ns3::WifiPhy`` class.  The YansWifiPhy
+class has been the only physical layer model until recently; the model
+implemented there is described in a paper entitled
+`Yet Another Network Simulator <http://cutebugs.net/files/wns2-yans.pdf>`_
+The acronym *Yans* derives from this paper title.  The SpectrumWifiPhy
+class is an alternative implementation based on the Spectrum framework
+used for other |ns3| wireless models.  Spectrum allows a fine-grained
+frequency decomposition of the signal, and permits scenarios to
+include multiple technologies coexisting on the same channel.
+
 Scope and Limitations
 *********************
 
@@ -145,9 +152,8 @@ attempts to summarize compliance with the standard and with behavior
 found in practice.
 
 The physical layer and channel models operate on a per-packet basis, with
-no frequency-selective propagation or interference effects.  Detailed
-link simulations are not performed, nor are frequency-selective fading
-or interference models available.  Directional antennas are also not
+no frequency-selective propagation or interference effects when using
+the default YansWifiPhy model.  Directional antennas are also not
 supported at this time.  For additive white gaussian noise (AWGN)
 scenarios, or wideband interference scenarios, performance is governed
 by the application of analytical models (based on modulation and factors
@@ -186,14 +192,29 @@ We organize these more detailed sections from the bottom-up, in terms of
 layering, by describing the channel and PHY models first, followed by
 the MAC models.
 
+We focus first on the choice between physical layer frameworks.  |ns3| 
+contains support for a Wi-Fi-only physical layer model called YansWifiPhy
+that offers no frequency-level decomposition of the signal.  For simulations
+that involve only Wi-Fi signals on the Wi-Fi channel, and that do not
+involve frequency-dependent propagation loss or fading models, the default
+YansWifiPhy framework is a suitable choice.  For simulations involving
+mixed technologies on the same channel, or frequency dependent effects,
+the SpectrumWifiPhy is more appropriate.  The two frameworks are very
+similarly configured.
+
+The YansWifiPhy framework uses the ``WifiChannel`` and ``YansWifiChannel``
+frameworks.  The SpectrumWifiPhy framework uses the ``Spectrum`` channel
+framework, which is not documented herein but in the Spectrum module
+documentation.
+
 WifiChannel
 ===========
 
 ``ns3::WifiChannel`` is an abstract base class that allows different channel
 implementations to be connected.  At present, there is only one such channel
-(the ``ns3::YansWifiChannel``).  The class works in tandem with the 
-``ns3::WifiPhy`` class; if you want to provide a new physical layer model,
-you must subclass both ``ns3::WifiChannel`` and ``ns3::WifiPhy``.
+(the ``ns3::YansWifiChannel``) since the SpectrumWifiPhy uses the
+base class ``ns3::SpectrumChannel``.  The class works in tandem with the 
+``ns3::WifiPhy`` class.
 
 The WifiChannel model exists to interconnect WifiPhy objects so that packets
 sent by one Phy are received by some or all other Phys on the channel.
@@ -226,7 +247,7 @@ WifiPhy and related models
 
 The ``ns3::WifiPhy`` is an abstract base class representing the 802.11
 physical layer functions.  Packets passed to this object (via a
-``SendPacket()`` method are sent over the ``WifiChannel`` object, and
+``SendPacket()`` method are sent over a channel object, and
 upon reception, the receiving PHY object decides (based on signal power
 and interference) whether the packet was successful or not.  This class
 also provides a number of callbacks for notifications of physical layer
@@ -235,8 +256,9 @@ MAC-level processes such as carrier sense, and handles sleep/wake models
 and energy consumption.  The ``ns3::WifiPhy`` hooks to the ``ns3::MacLow``
 object in the WifiNetDevice.
 
-There is currently one implementation of the ``WifiPhy``, which is the
-``ns3::YansWifiPhy``.  It works in conjunction with three other objects:
+There are currently two implementations of the ``WifiPhy``: the
+``ns3::YansWifiPhy`` and the ``ns3::SpectrumWifiPhy``.  They each work in 
+conjunction with three other objects:
 
 * **WifiPhyStateHelper**:  Maintains the PHY state machine
 * **InterferenceHelper**:  Tracks all packets observed on the channel
@@ -395,6 +417,70 @@ As a result, there are three error models:
 
 Users should select either Nist or Yans models for OFDM (Nist is default), 
 and Dsss will be used in either case for 802.11b.
+
+SpectrumWifiPhy
+###############
+
+This section describes the implementation of the ``SpectrumWifiPhy``
+class that can be found in ``src/wifi/model/spectrum-wifi-phy.{cc,h}``.
+
+The implementation also makes use of additional classes found in the
+same directory:
+
+* ``wifi-spectrum-phy-interface.{cc,h}``
+* ``wifi-spectrum-signal-parameters.{cc,h}``
+
+and classes found in the spectrum module:
+
+* ``wifi-spectrum-value-helper.{cc,h}``
+
+The current ``SpectrumWifiPhy`` class 
+reuses the existing interference manager and error rate models originally
+built for YansWifiPhy, but allows, as a first step, foreign (non Wi-Fi)
+signals to be treated as additive noise.
+
+Two main changes were needed to adapt the Spectrum framework to Wi-Fi.
+First, the physical layer must send signals compatible with the
+Spectrum channel framework, and in particular, the
+``MultiModelSpectrumChannel`` that allows signals from different
+technologies to coexist.  Second, the InterferenceHelper must be
+extended to support the insertion of non-Wi-Fi signals and to
+add their received power to the noise, in the same way that
+unintended Wi-Fi signals (perhaps from a different SSID or arriving
+late from a hidden node) are added to the noise.
+
+Third, the default value for CcaMode1Threshold attribute is -62 dBm
+rather than the value of -99 dBm used for YansWifiPhy.  This is because,
+unlike YansWifiPhy, where there are no foreign signals, CCA BUSY state
+will be raised for foreign signals that are higher than this 'energy
+detection' threshold (see section 16.4.8.5 in the 802.11-2012 standard
+for definition of CCA Mode 1).  
+
+To support the Spectrum channel, the ``YansWifiPhy`` transmit and receive methods
+were adapted to use the Spectrum channel API.  This required developing
+a few ``SpectrumModel``-related classes.  The class
+``WifiSpectrumValueHelper`` is used to create Wi-Fi signals with the
+spectrum framework and spread their energy across the bands.  The 
+spectrum is sub-divided into 312.5 KHz sub-bands (the width of an OFDM
+subcarrier).  The power allocated to a particular channel
+is spread across the sub-bands roughly according to how power would 
+be allocated to sub-carriers using an even distribution of power and
+assuming perfect transmit filters.  This could be extended in the 
+future to place power outside of the
+channel according to the real spectral mask.  This should be
+done for future adjacent channel models but is not presently implemented.
+Similarly, on the receive side, a receiver filter mask can be defined; 
+for this initial implementation, we implemented a perfect brick wall 
+filter that is centered on the channel center frequency.
+
+To support an easier user configuration experience, the existing
+YansWifi helper classes (in ``src/wifi/helper``) were copied and
+adapted to provide equivalent SpectrumWifi helper classes.
+
+Finally, for reasons related to avoiding C++ multiple inheritance
+issues, a small forwarding class called ``WifiSpectrumPhyInterface``
+was inserted as a shim between the ``SpectrumWifiPhy`` and the
+Spectrum channel.
 
 The MAC model
 =============

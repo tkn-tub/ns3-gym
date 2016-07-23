@@ -1,7 +1,7 @@
 ## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
 
 def build(bld):
-    obj = bld.create_ns3_module('wifi', ['network', 'propagation', 'energy'])
+    obj = bld.create_ns3_module('wifi', ['network', 'propagation', 'energy', 'spectrum', 'antenna', 'mobility'])
     obj.source = [
         'model/wifi-information-element.cc',
         'model/wifi-information-element-vector.cc',
@@ -17,6 +17,10 @@ def build(bld):
         'model/interference-helper.cc',
         'model/yans-wifi-phy.cc',
         'model/yans-wifi-channel.cc',
+        'model/spectrum-wifi-phy.cc',
+        'model/wifi-phy-tag.cc',
+        'model/wifi-spectrum-phy-interface.cc',
+        'model/wifi-spectrum-signal-parameters.cc',
         'model/wifi-mac-header.cc',
         'model/wifi-mac-trailer.cc',
         'model/mac-low.cc',
@@ -81,6 +85,7 @@ def build(bld):
         'helper/athstats-helper.cc',
         'helper/wifi-helper.cc',
         'helper/yans-wifi-helper.cc',
+        'helper/spectrum-wifi-helper.cc',
         'helper/nqos-wifi-mac-helper.cc',
         'helper/qos-wifi-mac-helper.cc',
         'helper/wifi-mac-helper.cc',
@@ -93,6 +98,7 @@ def build(bld):
         'test/tx-duration-test.cc',
         'test/power-rate-adaptation-test.cc',
         'test/wifi-test.cc',
+        'test/spectrum-wifi-phy-test.cc',
         'test/wifi-aggregation-test.cc',
         'test/wifi-error-rate-models-test.cc',
         ]
@@ -109,8 +115,12 @@ def build(bld):
         'model/wifi-preamble.h',
         'model/wifi-phy-standard.h',
         'model/yans-wifi-phy.h',
+        'model/spectrum-wifi-phy.h',
+        'model/wifi-phy-tag.h',
         'model/yans-wifi-channel.h',
         'model/wifi-phy.h',
+        'model/wifi-spectrum-phy-interface.h',
+        'model/wifi-spectrum-signal-parameters.h',
         'model/interference-helper.h',
         'model/wifi-remote-station-manager.h',
         'model/ap-wifi-mac.h',
@@ -178,6 +188,7 @@ def build(bld):
         'helper/athstats-helper.h',
         'helper/wifi-helper.h',
         'helper/yans-wifi-helper.h',
+        'helper/spectrum-wifi-helper.h',
         'helper/nqos-wifi-mac-helper.h',
         'helper/qos-wifi-mac-helper.h',
         'helper/wifi-mac-helper.h',

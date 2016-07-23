@@ -91,3 +91,11 @@ def build(bld):
     obj = bld.create_ns3_program('80211e-txop', ['internet', 'mobility', 'wifi', 'applications'])
     obj.source = '80211e-txop.cc'
 
+    obj = bld.create_ns3_program('wifi-spectrum-per-example', ['internet', 'mobility', 'wifi', 'applications', 'spectrum'])
+    obj.source = 'wifi-spectrum-per-example.cc'
+
+    obj = bld.create_ns3_program('wifi-spectrum-per-interference', ['internet', 'mobility', 'wifi', 'applications', 'spectrum'])
+    obj.source = 'wifi-spectrum-per-interference.cc'
+
+    obj = bld.create_ns3_program('wifi-spectrum-saturation-example', ['internet', 'mobility', 'wifi', 'applications', 'spectrum'])
+    obj.source = 'wifi-spectrum-saturation-example.cc'

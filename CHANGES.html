@@ -54,14 +54,14 @@ us a note on ns-developers mailing list.</p>
 <h1>Changes from ns-3.25 to ns-3.26</h1>
 <h2>New API:</h2>
 <ul>
-<li>A SocketPriorityTag is introduced to carry the packet priority. Such a tag
+<li>A <b>SocketPriorityTag</b> is introduced to carry the packet priority. Such a tag
     is added to packets by sockets that support this mechanism (UdpSocketImpl,
     TcpSocketBase and PacketSocket). The base class Socket has a new SetPriority
     method to set the socket priority. When the IPv4 protocol is used, the
     priority is set based on the ToS. See the Socket options section of the
     Network model for more information.
 </li>
-<li>A WifiNetDevice::SelectQueue method has been added to determine the user
+<li>A <b>WifiNetDevice::SelectQueue</b> method has been added to determine the user
     priority of an MSDU. This method is called by the traffic control layer before
     enqueuing a packet in the queue disc, if a queue disc is installed on
     the outgoing device, or passing a packet to the device, otherwise. The
@@ -69,11 +69,12 @@ us a note on ns-developers mailing list.</p>
     (TOS field in case of IPv4 and Traffic Class field in case of IPv6). The
     packet priority carried by the SocketPriorityTag is set to the user priority.
 </li>
-<li>The PfifoFastQueueDisc classifies packets into bands based on their priority.
+<li>The <b>PfifoFastQueueDisc</b> classifies packets into bands based on their priority.
     See the pfifo_fast queue disc section of the Traffic Control Layer model
     for more information.
 </li>
-<li>The attributes YansWifiPhy::Frequency, YansWifiPhy::ChannelNumber, and YansWifiPhy::ChannelWidth, and the related accessor methods, were moved to base class WifiPhy.  YansWifiPhy::GetChannelFrequencyMhz() was deleted.  A new method WifiPhy::DefineChannelNumber () was added to allow users to define relationships between channel number, standard, frequency, and channel width.
+<li> A new class <b>SpectrumWifiPhy</b> has been introduced that makes use of the Spectrum module.  Its functionality and API is currently very similar to that of the YansWifiPhy, especially because it reuses the same InterferenceHelper and ErrorModel classes (for this release).  Some example programs in the 'examples/wireless/' directory, such as 'wifi-spectrum-per-example.cc', illustrate how the SpectrumWifiPhy class can be substituted for the default YansWifiPhy PHY model.
+</li>
 </ul>
 <h2>Changes to existing API:</h2>
 <ul>
@@ -94,6 +95,10 @@ us a note on ns-developers mailing list.</p>
 </li>
 <li>The QosTag is removed as it has been superseded by the SocketPriorityTag.</li>
 <li>The Ipv4L3Protocol::DefaultTos attribute is removed.</li>
+<li>The attributes YansWifiPhy::Frequency, YansWifiPhy::ChannelNumber, and YansWifiPhy::ChannelWidth, and the related accessor methods, were moved to base class WifiPhy.  YansWifiPhy::GetChannelFrequencyMhz() was deleted.  A new method WifiPhy::DefineChannelNumber () was added to allow users to define relationships between channel number, standard, frequency, and channel width.
+</li>
+<li> The class <b>WifiSpectrumValueHelper</b> has been refactored; previously it was an abstract base class supporting the WifiSpectrumValue5MhzFactory spectrum model.  It now contains various static member methods supporting the creation of power spectral densities with the granularity of a Wi-Fi OFDM subcarrier bandwidth.  The class WifiSpectrumValue5MhzFactory and its API remain but it is not subclassed.</li>
+<li> A new method InterferenceHelper::AddForeignSignal has been introduced to support use of the SpectrumWifiPhy (so that non-Wi-Fi signals may be handled as noise power).</li>
 </ul>
 <h2>Changes to build system:</h2>
 <ul>

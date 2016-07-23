@@ -31,8 +31,10 @@ Attributes section.  The scripts in ``examples/wireless`` can be browsed to
 see how this is done.  Next, we describe the common steps to create a WifiNetDevice
 from the bottom layer (WifiChannel) up to the device layer (WifiNetDevice).
 
-To create a WifiNetDevice, users need to configure mainly five steps:
+To create a WifiNetDevice, users need to follow these steps:
 
+* Decide on which physical layer framework, the ``SpectrumWifiPhy`` or 
+  ``YansWifiPhy``, to use.  This will affect which Channel and Phy type to use. 
 * Configure the WifiChannel: WifiChannel takes care of getting signal
   from one device to other devices on the same wifi channel.
   The main configurations of WifiChannel are propagation loss model and propagation delay model.
@@ -487,6 +489,13 @@ sets both Frequency and ChannelWidth if the channel number has been defined
 for the standard.  Setting ChannelWidth has no effect on Frequency or
 ChannelNumber.  Setting Frequency will set ChannelNumber to either the
 defined value for that Wi-Fi standard, or to the value 0 if undefined.
+
+SpectrumWifiPhyHelper
+=====================
+
+The API for this helper closely tracks the API of the YansWifiPhyHelper,
+with the exception that a channel of type ``ns3::SpectrumChannel`` instead
+of type ``ns3::WifiChannel`` must be used with it.
 
 WifiMacHelper
 =============

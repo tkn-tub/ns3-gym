@@ -474,7 +474,7 @@ WifiPhy::SetFrequency (uint32_t frequency)
           m_channelCenterFrequency = frequency;
           m_channelNumber = nch;
         }
-    else
+      else
         {
           NS_LOG_DEBUG ("Suppressing reassignment of frequency");
         }

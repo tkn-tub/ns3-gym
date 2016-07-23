@@ -184,6 +184,12 @@ private:
                                       Time duration, double rxPower);
 
   /**
+   * Add a non-Wifi signal to interference helper.
+   * \param duration the duration of the signal
+   * \param rxPower receive power (W)
+   */
+  void AddForeignSignal (Time duration, double rxPower);
+  /**
    * Calculate the SNIR at the start of the plcp payload and accumulate
    * all SNIR changes in the snir vector.
    *
