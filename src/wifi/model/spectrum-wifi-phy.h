@@ -28,6 +28,7 @@
 
 #include <stdint.h>
 #include "ns3/callback.h"
+#include "ns3/antenna-model.h"
 #include "ns3/event-id.h"
 #include "ns3/packet.h"
 #include "ns3/object.h"
@@ -52,7 +53,6 @@ namespace ns3 {
 #define HT_PHY 127
 
 class WifiPhyStateHelper;
-class AntennaModel;
 
 /**
  * \brief 802.11 PHY layer model
