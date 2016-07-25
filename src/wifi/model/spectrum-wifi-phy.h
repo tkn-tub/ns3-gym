@@ -647,7 +647,6 @@ private:
   EventId m_endPlcpRxEvent;
 
   Ptr<UniformRandomVariable> m_random;  //!< Provides uniform random variables.
-  double m_channelStartingFrequency;    //!< Standard-dependent center frequency of 0-th channel in MHz
   Ptr<WifiPhyStateHelper> m_state;      //!< Pointer to WifiPhyStateHelper
   InterferenceHelper m_interference;    //!< Pointer to InterferenceHelper
   Ptr<WifiSpectrumPhyInterface> m_wifiSpectrumPhyInterface;
