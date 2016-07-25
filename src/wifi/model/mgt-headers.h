@@ -30,6 +30,7 @@
 #include "capability-information.h"
 #include "supported-rates.h"
 #include "ssid.h"
+#include "dsss-parameter-set.h"
 #include "ht-capabilities.h"
 #include "ht-operations.h"
 #include "vht-capabilities.h"
@@ -388,6 +389,12 @@ public:
    */
   CapabilityInformation GetCapabilities (void) const;
   /**
+   * Return the DSSS Parameter Set.
+   *
+   * \return the DSSS Parameter Set
+   */
+  DsssParameterSet GetDsssParameterSet (void) const;
+  /**
    * Return the HT capabilities.
    *
    * \return HT capabilities
@@ -460,6 +467,12 @@ public:
    */
   void SetSupportedRates (SupportedRates rates);
   /**
+   * Set the DSSS Parameter Set.
+   *
+   * \param dsssParameterSet the DSSS Parameter Set
+   */
+  void SetDsssParameterSet (DsssParameterSet dsssParameterSet);
+  /**
    * Set the ERP information.
    *
    * \param erpInformation the ERP information
@@ -496,6 +509,7 @@ private:
   uint64_t m_beaconInterval;           //!< Beacon interval
   SupportedRates m_rates;              //!< List of supported rates
   CapabilityInformation m_capability;  //!< Capability information
+  DsssParameterSet m_dsssParameterSet; //!< DSSS Parameter Set
   HtCapabilities m_htCapability;       //!< HT capabilities
   HtOperations m_htOperations;         //!< HT operations
   VhtCapabilities m_vhtCapability;     //!< VHT capabilities

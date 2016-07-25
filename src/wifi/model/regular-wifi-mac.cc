@@ -43,7 +43,7 @@ RegularWifiMac::RegularWifiMac () :
   m_htSupported (0),
   m_vhtSupported (0),
   m_erpSupported (0),
-  m_isDsssOnly (0)
+  m_dsssSupported (0)
 {
   NS_LOG_FUNCTION (this);
   m_rxMiddle = new MacRxMiddle ();
@@ -523,7 +523,24 @@ void
 RegularWifiMac::SetErpSupported (bool enable)
 {
   NS_LOG_FUNCTION (this);
+  if (enable)
+    {
+      SetDsssSupported (true);
+    }
   m_erpSupported = enable;
+}
+
+void
+RegularWifiMac::SetDsssSupported (bool enable)
+{
+  NS_LOG_FUNCTION (this);
+  m_dsssSupported = enable;
+}
+
+bool
+RegularWifiMac::GetDsssSupported () const
+{
+  return m_dsssSupported;
 }
 
 void
@@ -1108,9 +1125,9 @@ RegularWifiMac::FinishConfigureStandard (enum WifiPhyStandard standard)
       cwmax = 1023;
       break;
     case WIFI_PHY_STANDARD_80211b:
+      SetDsssSupported (true);
       cwmin = 31;
       cwmax = 1023;
-      m_isDsssOnly = true;
       break;
     default:
       NS_FATAL_ERROR ("Unsupported WifiPhyStandard in RegularWifiMac::FinishConfigureStandard ()");
@@ -1122,14 +1139,15 @@ RegularWifiMac::FinishConfigureStandard (enum WifiPhyStandard standard)
 void
 RegularWifiMac::ConfigureContentionWindow (uint32_t cwMin, uint32_t cwMax)
 {
+  bool isDsssOnly = m_dsssSupported && !m_erpSupported;
   //The special value of AC_BE_NQOS which exists in the Access
   //Category enumeration allows us to configure plain old DCF.
-  ConfigureDcf (m_dca, cwMin, cwMax, m_isDsssOnly, AC_BE_NQOS);
+  ConfigureDcf (m_dca, cwMin, cwMax, isDsssOnly, AC_BE_NQOS);
 
   //Now we configure the EDCA functions
   for (EdcaQueues::iterator i = m_edca.begin (); i != m_edca.end (); ++i)
   {
-    ConfigureDcf (i->second, cwMin, cwMax, m_isDsssOnly, i->first);
+    ConfigureDcf (i->second, cwMin, cwMax, isDsssOnly, i->first);
   }
 }
 

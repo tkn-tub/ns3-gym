@@ -389,6 +389,18 @@ ApWifiMac::GetSupportedRates (void) const
   return rates;
 }
 
+DsssParameterSet
+ApWifiMac::GetDsssParameterSet (void) const
+{
+  DsssParameterSet dsssParameters;
+  if (m_dsssSupported)
+    {
+      dsssParameters.SetDsssSupported (1);
+      dsssParameters.SetCurrentChannel (m_phy->GetChannelNumber ());
+    }
+  return dsssParameters;
+}
+
 CapabilityInformation
 ApWifiMac::GetCapabilities (void) const
 {
@@ -502,6 +514,10 @@ ApWifiMac::SendProbeResp (Mac48Address to)
   probe.SetCapabilities (GetCapabilities ());
   m_stationManager->SetShortPreambleEnabled (GetShortPreambleEnabled ());
   m_stationManager->SetShortSlotTimeEnabled (GetShortSlotTimeEnabled ());
+  if (m_dsssSupported)
+    {
+      probe.SetDsssParameterSet (GetDsssParameterSet ());
+    }
   if (m_erpSupported)
     {
       probe.SetErpInformation (GetErpInformation ());
@@ -601,6 +617,10 @@ ApWifiMac::SendOneBeacon (void)
   beacon.SetCapabilities (GetCapabilities ());
   m_stationManager->SetShortPreambleEnabled (GetShortPreambleEnabled ());
   m_stationManager->SetShortSlotTimeEnabled (GetShortSlotTimeEnabled ());
+  if (m_dsssSupported)
+    {
+      beacon.SetDsssParameterSet (GetDsssParameterSet ());
+    }
   if (m_erpSupported)
     {
       beacon.SetErpInformation (GetErpInformation ());

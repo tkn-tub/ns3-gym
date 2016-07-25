@@ -509,6 +509,24 @@ protected:
    * \return true if ERP is supported, false otherwise
    */
   bool GetErpSupported () const;
+  
+  /**
+   * This Boolean is set \c true iff this WifiMac is to model
+   * 802.11b. It is exposed through the attribute system.
+   */
+  bool m_dsssSupported;
+  /**
+   * Enable or disable DSSS support for the device.
+   *
+   * \param enable whether DSSS is supported
+   */
+  void SetDsssSupported (bool enable);
+  /**
+   * Return whether the device supports DSSS.
+   *
+   * \return true if DSSS is supported, false otherwise
+   */
+  bool GetDsssSupported () const;
 
 
 private:
@@ -561,7 +579,6 @@ private:
   TracedCallback<const WifiMacHeader &> m_txErrCallback;
   
   bool m_shortSlotTimeSupported;
-  bool m_isDsssOnly;
 };
 
 } //namespace ns3
