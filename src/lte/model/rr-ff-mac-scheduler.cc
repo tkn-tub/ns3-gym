@@ -1059,10 +1059,18 @@ RrFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sched
   // served last scheduling trigger event
   if (m_nextRntiDl != 0)
     {
+      NS_LOG_DEBUG ("Start from the successive of " << (uint16_t) m_nextRntiDl);
       for (it = m_rlcBufferReq.begin (); it != m_rlcBufferReq.end (); it++)
         {
           if ((*it).m_rnti == m_nextRntiDl)
             {
+              // select the next RNTI to starting
+              it++;
+              if (it == m_rlcBufferReq.end ())
+              {
+                it = m_rlcBufferReq.begin ();
+              }
+              m_nextRntiDl = (*it).m_rnti;
               break;
             }
         }
