@@ -269,6 +269,127 @@ public:
 private:
 };
 
+
+
+template <class C>
+class MemberSchedSapProvider : public FfMacSchedSapProvider
+{
+public:
+  MemberSchedSapProvider (C* scheduler);
+
+  // inherited from FfMacSchedSapProvider
+  virtual void SchedDlRlcBufferReq (const struct SchedDlRlcBufferReqParameters& params);
+  virtual void SchedDlPagingBufferReq (const struct SchedDlPagingBufferReqParameters& params);
+  virtual void SchedDlMacBufferReq (const struct SchedDlMacBufferReqParameters& params);
+  virtual void SchedDlTriggerReq (const struct SchedDlTriggerReqParameters& params);
+  virtual void SchedDlRachInfoReq (const struct SchedDlRachInfoReqParameters& params);
+  virtual void SchedDlCqiInfoReq (const struct SchedDlCqiInfoReqParameters& params);
+  virtual void SchedUlTriggerReq (const struct SchedUlTriggerReqParameters& params);
+  virtual void SchedUlNoiseInterferenceReq (const struct SchedUlNoiseInterferenceReqParameters& params);
+  virtual void SchedUlSrInfoReq (const struct SchedUlSrInfoReqParameters& params);
+  virtual void SchedUlMacCtrlInfoReq (const struct SchedUlMacCtrlInfoReqParameters& params);
+  virtual void SchedUlCqiInfoReq (const struct SchedUlCqiInfoReqParameters& params);
+
+
+private:
+  MemberSchedSapProvider ();
+  C* m_scheduler;
+};
+
+
+template <class C>
+MemberSchedSapProvider<C>::MemberSchedSapProvider ()
+{
+}
+
+
+template <class C>
+MemberSchedSapProvider<C>::MemberSchedSapProvider (C* scheduler)
+  : m_scheduler (scheduler)
+{
+}
+
+template <class C>
+void
+MemberSchedSapProvider<C>::SchedDlRlcBufferReq (const struct SchedDlRlcBufferReqParameters& params)
+{
+  m_scheduler->DoSchedDlRlcBufferReq (params);
+}
+
+template <class C>
+void
+MemberSchedSapProvider<C>::SchedDlPagingBufferReq (const struct SchedDlPagingBufferReqParameters& params)
+{
+  m_scheduler->DoSchedDlPagingBufferReq (params);
+}
+
+template <class C>
+void
+MemberSchedSapProvider<C>::SchedDlMacBufferReq (const struct SchedDlMacBufferReqParameters& params)
+{
+  m_scheduler->DoSchedDlMacBufferReq (params);
+}
+
+template <class C>
+void
+MemberSchedSapProvider<C>::SchedDlTriggerReq (const struct SchedDlTriggerReqParameters& params)
+{
+  m_scheduler->DoSchedDlTriggerReq (params);
+}
+
+template <class C>
+void
+MemberSchedSapProvider<C>::SchedDlRachInfoReq (const struct SchedDlRachInfoReqParameters& params)
+{
+  m_scheduler->DoSchedDlRachInfoReq (params);
+}
+
+template <class C>
+void
+MemberSchedSapProvider<C>::SchedDlCqiInfoReq (const struct SchedDlCqiInfoReqParameters& params)
+{
+  m_scheduler->DoSchedDlCqiInfoReq (params);
+}
+
+template <class C>
+void
+MemberSchedSapProvider<C>::SchedUlTriggerReq (const struct SchedUlTriggerReqParameters& params)
+{
+  m_scheduler->DoSchedUlTriggerReq (params);
+}
+
+template <class C>
+void
+MemberSchedSapProvider<C>::SchedUlNoiseInterferenceReq (const struct SchedUlNoiseInterferenceReqParameters& params)
+{
+  m_scheduler->DoSchedUlNoiseInterferenceReq (params);
+}
+
+template <class C>
+void
+MemberSchedSapProvider<C>::SchedUlSrInfoReq (const struct SchedUlSrInfoReqParameters& params)
+{
+  m_scheduler->DoSchedUlSrInfoReq (params);
+}
+
+template <class C>
+void
+MemberSchedSapProvider<C>::SchedUlMacCtrlInfoReq (const struct SchedUlMacCtrlInfoReqParameters& params)
+{
+  m_scheduler->DoSchedUlMacCtrlInfoReq (params);
+}
+
+template <class C>
+void
+MemberSchedSapProvider<C>::SchedUlCqiInfoReq (const struct SchedUlCqiInfoReqParameters& params)
+{
+  m_scheduler->DoSchedUlCqiInfoReq (params);
+}
+
+
+
+
+
 } // namespace ns3
 
 #endif /* FF_MAC_SCHED_SAP_H */

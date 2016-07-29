@@ -90,8 +90,8 @@ public:
   virtual void SetLteFfrSapProvider (LteFfrSapProvider* s);
   virtual LteFfrSapUser* GetLteFfrSapUser ();
 
-  friend class FdMtSchedulerMemberCschedSapProvider;
-  friend class FdMtSchedulerMemberSchedSapProvider;
+  friend class MemberCschedSapProvider<FdMtFfMacScheduler>;
+  friend class MemberSchedSapProvider<FdMtFfMacScheduler>;
 
   void TransmissionModeConfigurationUpdate (uint16_t rnti, uint8_t txMode);
 

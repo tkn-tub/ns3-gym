@@ -370,6 +370,71 @@ public:
 private:
 };
 
+
+template <class C>
+class MemberCschedSapProvider : public FfMacCschedSapProvider
+{
+public:
+  MemberCschedSapProvider (C* scheduler);
+
+  // inherited from FfMacCschedSapProvider
+  virtual void CschedCellConfigReq (const struct CschedCellConfigReqParameters& params);
+  virtual void CschedUeConfigReq (const struct CschedUeConfigReqParameters& params);
+  virtual void CschedLcConfigReq (const struct CschedLcConfigReqParameters& params);
+  virtual void CschedLcReleaseReq (const struct CschedLcReleaseReqParameters& params);
+  virtual void CschedUeReleaseReq (const struct CschedUeReleaseReqParameters& params);
+
+private:
+  MemberCschedSapProvider ();
+  C* m_scheduler;
+};
+
+template <class C>
+MemberCschedSapProvider<C>::MemberCschedSapProvider ()
+{
+}
+
+template <class C>
+MemberCschedSapProvider<C>::MemberCschedSapProvider (C* scheduler) : m_scheduler (scheduler)
+{
+}
+
+template <class C>
+void
+MemberCschedSapProvider<C>::CschedCellConfigReq (const struct CschedCellConfigReqParameters& params)
+{
+  m_scheduler->DoCschedCellConfigReq (params);
+}
+
+template <class C>
+void
+MemberCschedSapProvider<C>::CschedUeConfigReq (const struct CschedUeConfigReqParameters& params)
+{
+  m_scheduler->DoCschedUeConfigReq (params);
+}
+
+template <class C>
+void
+MemberCschedSapProvider<C>::CschedLcConfigReq (const struct CschedLcConfigReqParameters& params)
+{
+  m_scheduler->DoCschedLcConfigReq (params);
+}
+
+template <class C>
+void
+MemberCschedSapProvider<C>::CschedLcReleaseReq (const struct CschedLcReleaseReqParameters& params)
+{
+  m_scheduler->DoCschedLcReleaseReq (params);
+}
+
+template <class C>
+void
+MemberCschedSapProvider<C>::CschedUeReleaseReq (const struct CschedUeReleaseReqParameters& params)
+{
+  m_scheduler->DoCschedUeReleaseReq (params);
+}
+
+
 } // end namespace ns3
 
 #endif /* FF_MAC_CSCHED_SAP_H */
