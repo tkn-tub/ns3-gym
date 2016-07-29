@@ -475,13 +475,15 @@ congestive and non-congestive states.
 The backlog (the number of packets accumulated at the bottleneck queue) is
 calculated using Equation (1):
 
-.. math::  N &= Actual \cdot (RTT - BaseRTT) \\
-             &= Diff \cdot BaseRTT
+.. math::
+   N &= Actual \cdot (RTT - BaseRTT) \\
+     &= Diff \cdot BaseRTT
 
 where:
 
-.. math::  Diff &= Expected - Actual \\
-                &= \frac{cWnd}{BaseRTT} - \frac{cWnd}{RTT}
+.. math::
+   Diff &= Expected - Actual \\
+        &= \frac{cWnd}{BaseRTT} - \frac{cWnd}{RTT}
 
 Veno makes decision on cwnd modification based on the calculated N and its
 predefined threshold beta.
@@ -575,26 +577,30 @@ robustness against sudden fluctuations in its delay sampling,
 Illinois allows the increment of alpha to alphaMax
 only if da stays below d1 for a some (theta) amount of time.
 
-::
-
-                             / alphaMax          if da <= d1
-                     alpha =                                         (1)
-                             \ k1 / (k2 + da)    otherwise
-
-                             / betaMin            if da <= d2
-                     beta =    k3 + k4da          if d2 < da < d3      (2)
-                             \ betaMax            otherwise
-
+.. math::
+   alpha &=
+   \begin{cases}
+      \quad alphaMax              & \quad \text{if } da <= d1 \\
+      \quad k1 / (k2 + da)        & \quad \text{otherwise} \\
+   \end{cases} \\
+   \\
+   beta &=
+   \begin{cases}
+      \quad betaMin               & \quad \text{if } da <= d2 \\
+      \quad k3 + k4 \, da         & \quad \text{if } d2 < da < d3 \\
+      \quad betaMax               & \quad \text{otherwise}
+   \end{cases}
+			     
 where the calculations of k1, k2, k3, and k4 are shown in the following:
 
 .. math::
 
-   k1 &= \frac{(dm - d1) \cdot alphaMin \cdot alphaMax}{alphaMax - alphaMin}
-
-   k2 &= \frac{(dm - d1) \cdot alphaMin}{alphaMax - alphaMin} - d1
-
-   k3 &= \frac{alphaMin \cdot d3 - alphaMax \cdot d2}{d3 - d2}
-
+   k1 &= \frac{(dm - d1) \cdot alphaMin \cdot alphaMax}{alphaMax - alphaMin} \\
+   \\
+   k2 &= \frac{(dm - d1) \cdot alphaMin}{alphaMax - alphaMin} - d1 \\
+   \\
+   k3 &= \frac{alphaMin \cdot d3 - alphaMax \cdot d2}{d3 - d2} \\
+   \\
    k4 &= \frac{alphaMax - alphaMin}{d3 - d2}
 
 Other parameters include da (the current average queueing delay), and
