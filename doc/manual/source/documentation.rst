@@ -39,7 +39,7 @@ We use Sphinx_ to generate expository chapters describing
 the design and usage of each module.  Right now you are reading the
 :doc:`Documentation <documentation>` Chapter.
 If you are reading the html version, the
-`Show Source <_sources/documentation.txt>`_ link in the sidebar
+`Show Source <_sources/documentation.rst>`_ link in the sidebar
 will show you the reStructuredText source for this chapter.
 
 Adding New Chapters
