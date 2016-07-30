@@ -87,6 +87,7 @@ Bugs fixed
 - Bug 2444 - PcapHelper DataLinkType enum should have a name
 - Bug 2445 - Out of bounds array access in MinstrelHtWifiManager::SetBestProbabilityRate
 - Bug 2446 - Comma instead of pipe in Attributes
+- Bug 2351 - Wrong symbol rate calculation for channels with 10 and 5 Mhz width
 
 Known issues
 ------------

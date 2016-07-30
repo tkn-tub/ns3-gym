@@ -112,34 +112,35 @@ WifiMode::GetDataRate (uint32_t channelWidth, bool isShortGuardInterval, uint8_t
   NS_ASSERT (nss <= 4);
   struct WifiModeFactory::WifiModeItem *item = WifiModeFactory::GetFactory ()->Get (m_uid);
   uint64_t dataRate = 0;
+  uint32_t usableSubCarriers = 0;
+  double symbolRate = 0;
+  double codingRate = 0;
+  uint32_t numberOfBitsPerSubcarrier = log2 (GetConstellationSize ());
   if (item->modClass == WIFI_MOD_CLASS_DSSS)
     {
-      dataRate = (11000000 / 11) * log2 (GetConstellationSize ());
+      dataRate = ((11000000 / 11) * numberOfBitsPerSubcarrier);
     }
   else if (item->modClass == WIFI_MOD_CLASS_HR_DSSS)
     {
-      dataRate = (11000000 / 8) * log2 (GetConstellationSize ());
+      dataRate = ((11000000 / 8) * numberOfBitsPerSubcarrier);
     }
   else if (item->modClass == WIFI_MOD_CLASS_OFDM || item->modClass == WIFI_MOD_CLASS_ERP_OFDM)
     {
-      double symbolRate = (1 / 4.0) * 1e6;
-
-      uint32_t usableSubCarriers;
+      usableSubCarriers = 48;
       switch (channelWidth)
         {
         case 20:
         default:
-          usableSubCarriers = 48;
+          symbolRate = (1 / 4.0) * 1e6;
           break;
         case 10:
-          usableSubCarriers = 24;
+          symbolRate = (1 / 8.0) * 1e6;
           break;
         case 5:
-          usableSubCarriers = 12;
+          symbolRate = (1 / 16.0) * 1e6;
           break;
         }
 
-      double codingRate;
       switch (GetCodeRate ())
         {
         case WIFI_CODE_RATE_3_4:
@@ -157,8 +158,6 @@ WifiMode::GetDataRate (uint32_t channelWidth, bool isShortGuardInterval, uint8_t
           break;
         }
 
-      uint32_t numberOfBitsPerSubcarrier = log2 (GetConstellationSize ());
-
       dataRate = lrint (ceil (symbolRate * usableSubCarriers * numberOfBitsPerSubcarrier * codingRate));
     }
   else if (item->modClass == WIFI_MOD_CLASS_HT || item->modClass == WIFI_MOD_CLASS_VHT)
@@ -171,7 +170,7 @@ WifiMode::GetDataRate (uint32_t channelWidth, bool isShortGuardInterval, uint8_t
         {
           NS_ASSERT_MSG (channelWidth != 80, "VHT MCS 6 forbidden at 80 MHz when NSS = 3");
         }
-      double symbolRate;
+
       if (!isShortGuardInterval)
         {
           symbolRate = (1 / 4.0) * 1e6;
@@ -181,7 +180,6 @@ WifiMode::GetDataRate (uint32_t channelWidth, bool isShortGuardInterval, uint8_t
           symbolRate = (1 / 3.6) * 1e6;
         }
 
-      uint32_t usableSubCarriers;
       switch (channelWidth)
         {
         case 20:
@@ -199,7 +197,6 @@ WifiMode::GetDataRate (uint32_t channelWidth, bool isShortGuardInterval, uint8_t
           break;
         }
 
-      double codingRate;
       switch (GetCodeRate ())
         {
         case WIFI_CODE_RATE_5_6:
@@ -219,8 +216,6 @@ WifiMode::GetDataRate (uint32_t channelWidth, bool isShortGuardInterval, uint8_t
           NS_FATAL_ERROR ("trying to get datarate for a mcs without any coding rate defined with nss: " << (uint16_t) nss);
           break;
         }
-
-      uint32_t numberOfBitsPerSubcarrier = log2 (GetConstellationSize ());
 
       dataRate = lrint (ceil (symbolRate * usableSubCarriers * numberOfBitsPerSubcarrier * codingRate));
     }
