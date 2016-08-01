@@ -8,3 +8,4 @@ Traffic Control Layer
    pfifo-fast
    red
    codel
+   fq-codel

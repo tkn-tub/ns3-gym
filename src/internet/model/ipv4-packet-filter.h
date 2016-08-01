@@ -18,6 +18,7 @@
  *
  * Authors:  Stefano Avallone <stavallo@unina.it>
  *           Tom Henderson <tomhend@u.washington.edu>
+ *           Pasquale Imputato <p.imputato@gmail.com>
  */
 
 #ifndef IPV4_PACKET_FILTER_H
@@ -48,6 +49,31 @@ public:
 private:
   virtual bool CheckProtocol (Ptr<QueueDiscItem> item) const;
   virtual int32_t DoClassify (Ptr<QueueDiscItem> item) const = 0;
+};
+
+
+/**
+ * \ingroup internet
+ *
+ * FqCoDelIpv4PacketFilter is the filter to be added to the FQCoDel
+ * queue disc to simulate the behavior of the fq-codel Linux queue disc.
+ *
+ */
+class FqCoDelIpv4PacketFilter : public Ipv4PacketFilter {
+public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
+  static TypeId GetTypeId (void);
+
+  FqCoDelIpv4PacketFilter ();
+  virtual ~FqCoDelIpv4PacketFilter ();
+
+private:
+  virtual int32_t DoClassify (Ptr<QueueDiscItem> item) const;
+
+  uint32_t m_perturbation; //!< hash perturbation value
 };
 
 } // namespace ns3
