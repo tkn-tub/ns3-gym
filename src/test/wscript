@@ -29,8 +29,9 @@ def build(bld):
 
     test_test = bld.create_ns3_module_test_library('test')
     test_test.source = [
-        'adaptive-red-queue-disc-test-suite.cc',
         'csma-system-test-suite.cc',
+        'ns3tc/adaptive-red-queue-disc-test-suite.cc',
+        'ns3tc/pfifo-fast-queue-disc-test-suite.cc',
         'ns3tcp/ns3tcp-cwnd-test-suite.cc',
         'ns3tcp/ns3tcp-interop-test-suite.cc',
         'ns3tcp/ns3tcp-loss-test-suite.cc',

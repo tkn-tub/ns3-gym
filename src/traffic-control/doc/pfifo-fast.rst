@@ -7,8 +7,9 @@ pfifo_fast queue disc
 Model Description
 *****************
 
-Linux pfifo_fast is the default priority queue enabled on Linux
-systems. Packets are enqueued in three priority bands (implemented
+PfifoFastQueueDisc behaves like pfifo_fast, which is the default queue disc
+enabled on Linux systems (init systems such as systemd may override such default
+setting). Packets are enqueued in three priority bands (implemented
 as FIFO droptail queues) based on their priority (users can read
 :ref:`Socket-options` for details on how to set packet priority).
 The four least significant bits of the priority are used to determine
@@ -58,14 +59,14 @@ The PfifoFastQueueDisc class holds a single attribute:
 Examples
 ========
 
-The traffic-control example located in ``examples/traffic-control`` shows how to configure
-and install a pfifo_fast queue on Ipv4 nodes.
+Various examples located in ``src/traffic-control/examples`` (e.g., codel-vs-pfifo-asymmetric.cc)
+shows how to configure and install a PfifoFastQueueDisc on internet nodes.
 
 Validation
 **********
 
 The pfifo_fast model is tested using :cpp:class:`PfifoFastQueueDiscTestSuite` class defined
-in ``src/traffic-control/test/pfifo-fast-queue-disc-test-suite.cc``. The suite includes 4 test cases:
+in ``src/test/ns3tc/pfifo-fast-queue-disc-test-suite.cc``. The suite includes 4 test cases:
 
 * Test 1: The first test checks whether IPv4 packets are enqueued in the correct band based on the TOS byte
 * Test 2: The second test checks whether IPv4 packets are enqueued in the correct band based on the TOS byte
