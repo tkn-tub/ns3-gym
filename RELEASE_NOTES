@@ -88,6 +88,7 @@ Bugs fixed
 - Bug 2445 - Out of bounds array access in MinstrelHtWifiManager::SetBestProbabilityRate
 - Bug 2446 - Comma instead of pipe in Attributes
 - Bug 2351 - Wrong symbol rate calculation for channels with 10 and 5 Mhz width
+- Bug 2454 - DsrRouting::NotifyDataReceipt is also triggered for wifi management packets
 
 Known issues
 ------------

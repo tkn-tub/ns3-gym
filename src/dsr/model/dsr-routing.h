@@ -166,11 +166,6 @@ public:
   //\}
 
   /**
-    * \brief Connect the callback for the tracing event.
-    * \return void
-    */
-  void ConnectCallbacks ();
-  /**
     * \brief Get the netdevice from the context.
     * \param context context
     * \return the netdevice we are looking for
@@ -582,11 +577,6 @@ protected:
 private:
 
   void Start ();
-  /**
-    * \brief Notify the data receipt.
-    * \return void
-    */
-  void NotifyDataReceipt (std::string context, Ptr<const Packet> p);
   /**
    * \brief Send the route error message when the link breaks to the next hop.
    */

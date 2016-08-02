@@ -515,98 +515,6 @@ void DsrRouting::Start ()
             }
         }
       NS_ASSERT (m_mainAddress != Ipv4Address () && m_broadcast != Ipv4Address ());
-      ConnectCallbacks ();
-    }
-}
-
-void DsrRouting::ConnectCallbacks ()
-{
-  // Connect the callbacks
-  Config::Connect ("NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Phy/PhyRxEnd",
-                   MakeCallback (&DsrRouting::NotifyDataReceipt, this));
-}
-
-void DsrRouting::NotifyDataReceipt (std::string context, Ptr<const Packet> p)
-{
-  Ptr<NetDevice> ndev = GetNetDeviceFromContext (context);
-  NS_ASSERT (ndev);
-  Ptr<Node> n = ndev->GetNode ();
-  Ptr<Ipv4> ipv4 = n->GetObject<Ipv4> ();
-  NS_ASSERT (n);
-
-  Ptr<WifiNetDevice> netDevice = DynamicCast<WifiNetDevice> (ndev);
-  Mac48Address nodeAddr = netDevice->GetMac()->GetAddress();
-  std::ostringstream oss;
-  oss << nodeAddr;
-
-  Ptr<Packet> newP = p->Copy();
-  WifiMacHeader hdr;
-  newP->RemoveHeader(hdr);
-  /// \todo this is a hard-coded check, need to find a better way to work on this
-  if (newP->GetSize () == 4)
-    {
-      // NS_LOG_WARN ("WifiMacTrailer left, skip this packet");
-      return;
-    }
-
-  LlcSnapHeader llc;
-  if(!newP->PeekHeader (llc))
-  {
-    // NS_LOG_WARN ("llc snap header not present");
-    NS_ASSERT (newP->GetSize() < 64);
-    return;
-  }
-  newP->RemoveHeader(llc);
-  /** \internal
-   * Tried to use peekheader here, but for ipv4 header here,
-   * dsr removes the Ipv4Header and then pass the packet and the header
-   * separately to Ipv4L3Protocol. Ipv4L3Protocol then re-adds them
-   * together, which causes the problem.  Check \bugid{1479}
-   */
-  ArpHeader arp;
-  if(newP->PeekHeader (arp))
-  {
-    // NS_LOG_WARN ("arp header present, skip this packet");
-    NS_ASSERT (newP->GetSize() < 64);
-    return;
-  }
-  /// Remove the ipv4 header here
-  Ipv4Header ip;
-  newP->RemoveHeader(ip);
-  /// Remove the dsr routing header here
-  DsrRoutingHeader dsrRouting;
-  newP->RemoveHeader(dsrRouting);
-  /*
-   * Message type 2 means the data packet, we will further process the data
-   * packet for delivery notification, safely ignore control packet
-   * Another check here is our own address, if this is the data destinated for us,
-   * process it further, otherwise, just ignore it
-   */
-  Ipv4Address ourAddress = ipv4->GetAddress (1, 0).GetLocal ();
-  // check if the message type is 2 and if the ipv4 address matches
-  if (dsrRouting.GetMessageType () == 2 && ourAddress == m_mainAddress)
-    {
-      NS_LOG_DEBUG ("data packet receives " << p->GetUid());
-      Ipv4Address sourceIp = GetIPfromID (dsrRouting.GetSourceId());
-      Ipv4Address destinationIp = GetIPfromID ( dsrRouting.GetDestId());
-      /// This is the ip address we just received data packet from
-      Ipv4Address previousHop = GetIPfromMAC (hdr.GetAddr2 ());
-
-      Ptr<Packet> p = Create<Packet> ();
-      // Here the segments left value need to plus one to check the earlier hop maintain buffer entry
-      DsrMaintainBuffEntry newEntry;
-      newEntry.SetPacket (p);
-      newEntry.SetSrc (sourceIp);
-      newEntry.SetDst (destinationIp);
-      /// Remember this is the entry for previous node
-      newEntry.SetOurAdd (previousHop);
-      newEntry.SetNextHop (ourAddress);
-      /// Get the previous node's maintenance buffer and passive ack
-      Ptr<Node> node = GetNodeWithAddress (previousHop);
-      NS_LOG_DEBUG ("The previous node " << previousHop);
-      
-      Ptr<dsr::DsrRouting> dsr = node->GetObject<dsr::DsrRouting> ();
-      dsr->CancelLinkPacketTimer (newEntry);
     }
 }
 
@@ -1136,58 +1044,99 @@ void DsrRouting::CheckSendBuffer ()
 bool DsrRouting::PromiscReceive (Ptr<NetDevice> device, Ptr<const Packet> packet, uint16_t protocol, const Address &from,
                                  const Address &to, NetDevice::PacketType packetType)
 {
-  // Receive only IP packets and packets destined for other hosts
-  if (protocol == Ipv4L3Protocol::PROT_NUMBER && packetType == NetDevice::PACKET_OTHERHOST)
+
+  if (protocol != Ipv4L3Protocol::PROT_NUMBER)
     {
-      Ptr<Packet> p = packet->Copy ();
-      //pull off IP header
-      Ipv4Header ipv4Header;
-      p->RemoveHeader (ipv4Header);
+      return false;
+    }
+  // Remove the ipv4 header here
+  Ptr<Packet> pktMinusIpHdr = packet->Copy ();
+  Ipv4Header ipv4Header;
+  pktMinusIpHdr->RemoveHeader(ipv4Header);
 
-      // Process only data packets with DSR header
-      if (ipv4Header.GetProtocol () == DsrRouting::PROT_NUMBER)
+  if (ipv4Header.GetProtocol () != DsrRouting::PROT_NUMBER)
+    {
+      return false;
+    }
+  // Remove the dsr routing header here
+  Ptr<Packet> pktMinusDsrHdr = pktMinusIpHdr->Copy ();
+  DsrRoutingHeader dsrRouting;
+  pktMinusDsrHdr->RemoveHeader (dsrRouting);
+
+  /*
+   * Message type 2 means the data packet, we will further process the data
+   * packet for delivery notification, safely ignore control packet
+   * Another check here is our own address, if this is the data destinated for us,
+   * process it further, otherwise, just ignore it
+   */
+  Ipv4Address ourAddress = m_ipv4->GetAddress (1, 0).GetLocal ();
+  // check if the message type is 2 and if the ipv4 address matches
+  if (dsrRouting.GetMessageType () == 2 && ourAddress == m_mainAddress)
+    {
+      NS_LOG_DEBUG ("data packet receives " << packet->GetUid ());
+      Ipv4Address sourceIp = GetIPfromID (dsrRouting.GetSourceId ());
+      Ipv4Address destinationIp = GetIPfromID ( dsrRouting.GetDestId ());
+      /// This is the ip address we just received data packet from
+      Ipv4Address previousHop = GetIPfromMAC (Mac48Address::ConvertFrom (from));
+
+      Ptr<Packet> p = Create<Packet> ();
+      // Here the segments left value need to plus one to check the earlier hop maintain buffer entry
+      DsrMaintainBuffEntry newEntry;
+      newEntry.SetPacket (p);
+      newEntry.SetSrc (sourceIp);
+      newEntry.SetDst (destinationIp);
+      /// Remember this is the entry for previous node
+      newEntry.SetOurAdd (previousHop);
+      newEntry.SetNextHop (ourAddress);
+      /// Get the previous node's maintenance buffer and passive ack
+      Ptr<Node> node = GetNodeWithAddress (previousHop);
+      NS_LOG_DEBUG ("The previous node " << previousHop);
+
+      Ptr<dsr::DsrRouting> dsr = node->GetObject<dsr::DsrRouting> ();
+      dsr->CancelLinkPacketTimer (newEntry);
+    }
+
+  // Receive only IP packets and packets destined for other hosts
+  if (packetType == NetDevice::PACKET_OTHERHOST)
+    {
+      //just to minimize debug output
+      NS_LOG_INFO (this << from << to << packetType << *pktMinusIpHdr);
+
+      uint8_t offset = dsrRouting.GetDsrOptionsOffset ();        // Get the offset for option header, 4 bytes in this case
+      uint8_t nextHeader = dsrRouting.GetNextHeader ();
+      uint32_t sourceId = dsrRouting.GetSourceId ();
+      Ipv4Address source = GetIPfromID (sourceId);
+
+      // This packet is used to peek option type
+      pktMinusIpHdr->RemoveAtStart (offset);
+      /*
+       * Peek data to get the option type as well as length and segmentsLeft field
+       */
+      uint32_t size = pktMinusIpHdr->GetSize ();
+      uint8_t *data = new uint8_t[size];
+      pktMinusIpHdr->CopyData (data, size);
+      uint8_t optionType = 0;
+      optionType = *(data);
+
+      Ptr<dsr::DsrOptions> dsrOption;
+
+      if (optionType == 96)        // This is the source route option
         {
-          //just to minimize debug output
-          NS_LOG_INFO (this << from << to << packetType << *p);
-          DsrRoutingHeader dsrRoutingHeader;
-          //pull of DSR header to check option type
-          Ptr<Packet> dsrPacket = p->Copy ();
-          dsrPacket->RemoveHeader (dsrRoutingHeader);
-          uint8_t offset = dsrRoutingHeader.GetDsrOptionsOffset ();        // Get the offset for option header, 4 bytes in this case
-          uint8_t nextHeader = dsrRoutingHeader.GetNextHeader ();
-          uint32_t sourceId = dsrRoutingHeader.GetSourceId ();
-          Ipv4Address source = GetIPfromID (sourceId);
+          Ipv4Address promiscSource = GetIPfromMAC (Mac48Address::ConvertFrom (from));
+          dsrOption = GetOption (optionType);       // Get the relative DSR option and demux to the process function
+          NS_LOG_DEBUG (Simulator::Now ().GetSeconds () <<
+                        " DSR node " << m_mainAddress <<
+                        " overhearing packet PID: " << pktMinusIpHdr->GetUid () <<
+                        " from " << promiscSource <<
+                        " to " << GetIPfromMAC (Mac48Address::ConvertFrom (to)) <<
+                        " with source IP " << ipv4Header.GetSource () <<
+                        " and destination IP " << ipv4Header.GetDestination () <<
+                        " and packet : " << *pktMinusDsrHdr);
 
-          // This packet is used to peek option type
-          p->RemoveAtStart (offset);
-          /*
-           * Peek data to get the option type as well as length and segmentsLeft field
-           */
-          uint32_t size = p->GetSize ();
-          uint8_t *data = new uint8_t[size];
-          p->CopyData (data, size);
-          uint8_t optionType = 0;
-          optionType = *(data);
+          bool isPromisc = true;                     // Set the boolean value isPromisc as true
+          dsrOption->Process (pktMinusIpHdr, pktMinusDsrHdr, m_mainAddress, source, ipv4Header, nextHeader, isPromisc, promiscSource);
+          return true;
 
-          Ptr<dsr::DsrOptions> dsrOption;
-
-          if (optionType == 96)        // This is the source route option
-            {
-              Ipv4Address promiscSource = GetIPfromMAC (Mac48Address::ConvertFrom (from));
-              dsrOption = GetOption (optionType);       // Get the relative DSR option and demux to the process function
-              NS_LOG_DEBUG (Simulator::Now ().GetSeconds () << 
-                            " DSR node " << m_mainAddress <<
-                            " overhearing packet PID: " << p->GetUid () <<
-                            " from " << promiscSource <<
-                            " to " << GetIPfromMAC (Mac48Address::ConvertFrom (to)) <<
-                            " with source IP " << ipv4Header.GetSource () <<
-                            " and destination IP " << ipv4Header.GetDestination () <<
-                            " and packet : " << *dsrPacket);
-
-              bool isPromisc = true;                     // Set the boolean value isPromisc as true
-              dsrOption->Process (p, dsrPacket, m_mainAddress, source, ipv4Header, nextHeader, isPromisc, promiscSource);
-              return true;
-            }
         }
     }
   return false;
