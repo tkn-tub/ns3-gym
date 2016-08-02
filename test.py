@@ -1262,6 +1262,10 @@ def run_tests():
     # We can also use the --constrain option to provide an ordering of test 
     # execution quite easily.
     #
+
+    # Flag indicating a specific suite was explicitly requested
+    single_suite = False
+    
     if len(options.suite):
         # See if this is a valid test suite.
         path_cmd = os.path.join("utils", test_runner_name + " --print-test-name-list")
@@ -1270,6 +1274,7 @@ def run_tests():
             suites = suites.decode()
         if options.suite in suites.split('\n'):
             suites = options.suite + "\n"
+            single_suite = True
         else:
             print('The test suite was not run because an unknown test suite name was requested.', file=sys.stderr)
             sys.exit(2)
@@ -1289,7 +1294,7 @@ def run_tests():
     # indicated she wants to run or a list of test suites provided by
     # the test-runner possibly according to user provided constraints.
     # We go through the trouble of setting up the parallel execution 
-    # even in the case of a single suite to avoid having two process the
+    # even in the case of a single suite to avoid having to process the
     # results in two different places.
     #
     if isinstance(suites, bytes):
@@ -1299,8 +1304,9 @@ def run_tests():
     #
     # Performance tests should only be run when they are requested,
     # i.e. they are not run by default in test.py.
-    #
-    if options.constrain != 'performance':
+    # If a specific suite was requested we run it, even if
+    # it is a performance test.
+    if not single_suite and options.constrain != 'performance':
 
         # Get a list of all of the performance tests.
         path_cmd = os.path.join("utils", test_runner_name + " --print-test-name-list --test-type=%s" % "performance")
