@@ -21,11 +21,13 @@
 #include "ns3/log.h"
 #include "ns3/config.h"
 #include "ns3/global-value.h"
+#include "ns3/system-path.h"
 #include "ns3/type-id.h"
 #include "ns3/test.h"
 #include "ns3/string.h"
 #include <cstdlib>
 #include <cstdarg>
+#include <sstream>
 
 using namespace ns3;
 
@@ -51,7 +53,12 @@ public:
    * \param n the number of arguments
    */
   void Parse (CommandLine &cmd, int n, ...);
+
+  /** Test iteration counter to give each test a unique name. */
+  static int m_count;
 };
+
+int CommandLineTestCaseBase::m_count = 0;
 
 CommandLineTestCaseBase::CommandLineTestCaseBase (std::string description)
   : TestCase (description)
@@ -61,21 +68,25 @@ CommandLineTestCaseBase::CommandLineTestCaseBase (std::string description)
 void
 CommandLineTestCaseBase::Parse (CommandLine &cmd, int n, ...)
 {
-  char **args = new char* [n+1];
-  args[0] = (char *) "Test";
+  std::stringstream ss;
+  ss << GetParent ()->GetName () << "-testcase-" << m_count << "-" << GetName ();
+  ++m_count;
+  
+  int argc = n + 1;
+  char ** argv = new char* [argc];
+
+  argv[0] = const_cast<char *>(ss.str ().c_str ());
   va_list ap;
   va_start (ap, n);
-  int i = 0;
-  while (i < n)
+  for (int i = 1; i < argc; ++i)
     {
       char *arg = va_arg (ap, char *);
-      args[i+1] = arg;
-      i++;
+      argv[i] = arg;
     }
   va_end (ap);
-  int argc = n + 1;
-  cmd.Parse (argc, args);
-  delete [] args;
+
+  cmd.Parse (argc, argv);
+  delete [] argv;
 }
 
 /*************************************************************************//**
@@ -93,7 +104,7 @@ private:
 };
 
 CommandLineBooleanTestCase::CommandLineBooleanTestCase ()
-  : CommandLineTestCaseBase ("Check boolean arguments")
+  : CommandLineTestCaseBase ("boolean")
 {
 }
 
@@ -141,7 +152,7 @@ private:
 };
 
 CommandLineIntTestCase::CommandLineIntTestCase ()
-  : CommandLineTestCaseBase ("Check int arguments")
+  : CommandLineTestCaseBase ("int")
 {
 }
 
@@ -179,7 +190,7 @@ private:
 };
 
 CommandLineUnsignedIntTestCase::CommandLineUnsignedIntTestCase ()
-  : CommandLineTestCaseBase ("Check unsigned int arguments")
+  : CommandLineTestCaseBase ("unsigned-int")
 {
 }
 
@@ -214,7 +225,7 @@ private:
 };
 
 CommandLineStringTestCase::CommandLineStringTestCase ()
-  : CommandLineTestCaseBase ("Check unsigned int arguments")
+  : CommandLineTestCaseBase ("string")
 {
 }
 
