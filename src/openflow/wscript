@@ -6,8 +6,8 @@ from waflib.Errors import WafError
 
 def options(opt):
     opt.add_option('--with-openflow',
-		   help=('Path to OFSID source for NS-3 OpenFlow Integration support'),
-		   default='', dest='with_openflow')
+                   help=('Path to OFSID source for NS-3 OpenFlow Integration support'),
+                   default='', dest='with_openflow')
 
 REQUIRED_BOOST_LIBS = ['system', 'signals', 'filesystem']
 
@@ -17,7 +17,7 @@ def required_boost_libs(conf):
 def configure(conf):
     if not conf.env['LIB_BOOST']:
         conf.report_optional_feature("openflow", "NS-3 OpenFlow Integration", False,
-				     "Required boost libraries not found")
+                                     "Required boost libraries not found")
 
         # Add this module to the list of modules that won't be built
         # if they are enabled.
@@ -35,7 +35,7 @@ def configure(conf):
     missing_boost_libs = [lib for lib in REQUIRED_BOOST_LIBS if lib not in present_boost_libs]
     if missing_boost_libs != []:
         conf.report_optional_feature("openflow", "NS-3 OpenFlow Integration", False,
-				     "Required boost libraries not found, missing: %s" % ', '.join(missing_boost_libs))
+                                     "Required boost libraries not found, missing: %s" % ', '.join(missing_boost_libs))
 
         # Add this module to the list of modules that won't be built
         # if they are enabled.
@@ -64,7 +64,7 @@ def configure(conf):
     if not conf.env['WITH_OPENFLOW']:
         conf.msg("Checking for OpenFlow location", False)
         conf.report_optional_feature("openflow", "NS-3 OpenFlow Integration", False,
-				     "OpenFlow not enabled (see option --with-openflow)")
+                                     "OpenFlow not enabled (see option --with-openflow)")
         # Add this module to the list of modules that won't be built
         # if they are enabled.
         conf.env['MODULES_NOT_BUILT'].append('openflow')

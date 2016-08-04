@@ -38,7 +38,7 @@ def build(bld):
             'model/bs-link-manager.cc',
             'model/bandwidth-manager.cc',
             'model/crc8.cc',
-            'model/ul-job.cc'	,	    
+            'model/ul-job.cc',
             'model/snr-to-block-error-rate-record.cc',
             'model/snr-to-block-error-rate-manager.cc',
             'model/simple-ofdm-send-param.cc',
@@ -50,7 +50,8 @@ def build(bld):
             'model/cs-parameters.cc',
             'model/wimax-mac-to-mac-header.cc',
             'helper/wimax-helper.cc',
-		            ]
+        ]
+
 
     obj_test = bld.create_ns3_module_test_library('wimax')
     obj_test.source = [
@@ -61,8 +62,8 @@ def build(bld):
             'test/phy-test.cc',
             'test/qos-test.cc',
             'test/wimax-fragmentation-test.cc',
-            ]
-		            
+        ]
+
     headers = bld(features='ns3header')
     headers.module = 'wimax'
     headers.source = [
@@ -110,7 +111,8 @@ def build(bld):
             'model/bvec.h',
             'model/wimax-mac-to-mac-header.h',
             'helper/wimax-helper.h',
-		            ]
+        ]
+
 
     if bld.env['ENABLE_EXAMPLES']:
         bld.recurse('examples')

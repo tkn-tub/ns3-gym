@@ -295,7 +295,7 @@ def build(bld):
         'model/lte-ffr-soft-algorithm.h',
         'model/lte-ffr-enhanced-algorithm.h',
         'model/lte-ffr-distributed-algorithm.h',     
-		'model/lte-ue-power-control.h',           
+        'model/lte-ue-power-control.h',           
         ]
 
     if (bld.env['ENABLE_EMU']):

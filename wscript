@@ -55,11 +55,11 @@ finally:
     sys.path.pop(0)
 
 cflags.profiles = {
-	# profile name: [optimization_level, warnings_level, debug_level]
-	'debug':     [0, 2, 3],
-	'optimized': [3, 2, 1],
-	'release':   [3, 2, 0],
-	}
+    # profile name: [optimization_level, warnings_level, debug_level]
+    'debug':     [0, 2, 3],
+    'optimized': [3, 2, 1],
+    'release':   [3, 2, 0],
+    }
 cflags.default_profile = 'debug'
 
 Configure.autoconfig = 0

@@ -5,14 +5,14 @@ def build(bld):
     module.includes = '.'
     module.source = [
         'model/ipv4-nix-vector-routing.cc',
-	'helper/ipv4-nix-vector-helper.cc',
+        'helper/ipv4-nix-vector-helper.cc',
         ]
 
     headers = bld(features='ns3header')
     headers.module = 'nix-vector-routing'
     headers.source = [
         'model/ipv4-nix-vector-routing.h',
-	'helper/ipv4-nix-vector-helper.h',
+        'helper/ipv4-nix-vector-helper.h',
         ]
 
     if bld.env['ENABLE_EXAMPLES']:
