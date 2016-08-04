@@ -157,9 +157,7 @@ private:
  * in this class correspond to PHY-level traces and come to us via WifiPhyHelper
  *
  */
-class YansWifiPhyHelper : public WifiPhyHelper,
-                          public PcapHelperForDevice,
-                          public AsciiTraceHelperForDevice
+class YansWifiPhyHelper : public WifiPhyHelper
 {
 public:
   /**
@@ -185,121 +183,6 @@ public:
    * Every PHY created by a call to Install is associated to this channel.
    */
   void SetChannel (std::string channelName);
-  /**
-   * \param name the name of the attribute to set
-   * \param v the value of the attribute
-   *
-   * Set an attribute of the underlying PHY object.
-   */
-  void Set (std::string name, const AttributeValue &v);
-  /**
-   * \param name the name of the error rate model to set.
-   * \param n0 the name of the attribute to set
-   * \param v0 the value of the attribute to set
-   * \param n1 the name of the attribute to set
-   * \param v1 the value of the attribute to set
-   * \param n2 the name of the attribute to set
-   * \param v2 the value of the attribute to set
-   * \param n3 the name of the attribute to set
-   * \param v3 the value of the attribute to set
-   * \param n4 the name of the attribute to set
-   * \param v4 the value of the attribute to set
-   * \param n5 the name of the attribute to set
-   * \param v5 the value of the attribute to set
-   * \param n6 the name of the attribute to set
-   * \param v6 the value of the attribute to set
-   * \param n7 the name of the attribute to set
-   * \param v7 the value of the attribute to set
-   *
-   * Set the error rate model and its attributes to use when Install is called.
-   */
-  void SetErrorRateModel (std::string name,
-                          std::string n0 = "", const AttributeValue &v0 = EmptyAttributeValue (),
-                          std::string n1 = "", const AttributeValue &v1 = EmptyAttributeValue (),
-                          std::string n2 = "", const AttributeValue &v2 = EmptyAttributeValue (),
-                          std::string n3 = "", const AttributeValue &v3 = EmptyAttributeValue (),
-                          std::string n4 = "", const AttributeValue &v4 = EmptyAttributeValue (),
-                          std::string n5 = "", const AttributeValue &v5 = EmptyAttributeValue (),
-                          std::string n6 = "", const AttributeValue &v6 = EmptyAttributeValue (),
-                          std::string n7 = "", const AttributeValue &v7 = EmptyAttributeValue ());
-
-  /**
-   * An enumeration of the pcap data link types (DLTs) which this helper
-   * supports.  See http://wiki.wireshark.org/Development/LibpcapFileFormat
-   * for more information on these formats.
-   */
-  enum SupportedPcapDataLinkTypes
-  {
-    DLT_IEEE802_11       = PcapHelper::DLT_IEEE802_11,       /**< IEEE 802.11 Wireless LAN headers on packets */
-    DLT_PRISM_HEADER     = PcapHelper::DLT_PRISM_HEADER,     /**< Include Prism monitor mode information */
-    DLT_IEEE802_11_RADIO = PcapHelper::DLT_IEEE802_11_RADIO  /**< Include Radiotap link layer information */
-  };
-
-  /**
-   * Set the data link type of PCAP traces to be used. This function has to be
-   * called before EnablePcap(), so that the header of the pcap file can be
-   * written correctly.
-   *
-   * @see SupportedPcapDataLinkTypes
-   *
-   * @param dlt The data link type of the pcap file (and packets) to be used
-   */
-  void SetPcapDataLinkType (enum SupportedPcapDataLinkTypes dlt);
-
-  /**
-   * Get the data link type of PCAP traces to be used.
-   *
-   * @see SupportedPcapDataLinkTypes
-   *
-   * @returns The data link type of the pcap file (and packets) to be used
-   */
-  PcapHelper::DataLinkType GetPcapDataLinkType (void) const;
-
-
-protected:
-  /**
-   * \param file the pcap file wrapper
-   * \param packet the packet
-   * \param channelFreqMhz the channel frequency
-   * \param channelNumber the channel number
-   * \param rate the PHY bitrate
-   * \param preamble the preamble type
-   * \param txVector the TXVECTOR
-   * \param aMpdu the A-MPDU information
-   *
-   * Handle tx pcap.
-   */
-static void PcapSniffTxEvent (Ptr<PcapFileWrapper> file,
-                              Ptr<const Packet> packet,
-                              uint16_t channelFreqMhz,
-                              uint16_t channelNumber,
-                              uint32_t rate,
-                              WifiPreamble preamble,
-                              WifiTxVector txVector,
-                              struct mpduInfo aMpdu);
-  /**
-   * \param file the pcap file wrapper
-   * \param packet the packet
-   * \param channelFreqMhz the channel frequency
-   * \param channelNumber the channel number
-   * \param rate the PHY bitrate
-   * \param preamble the preamble type
-   * \param txVector the TXVECTOR
-   * \param aMpdu the A-MPDU information
-   * \param signalNoise the rx signal and noise information
-   *
-   * Handle rx pcap.
-   */
-static void PcapSniffRxEvent (Ptr<PcapFileWrapper> file,
-                              Ptr<const Packet> packet,
-                              uint16_t channelFreqMhz,
-                              uint16_t channelNumber,
-                              uint32_t rate,
-                              WifiPreamble preamble,
-                              WifiTxVector txVector,
-                              struct mpduInfo aMpdu,
-                              struct signalNoiseDbm signalNoise);
-
 
 private:
   /**
@@ -311,42 +194,7 @@ private:
    */
   virtual Ptr<WifiPhy> Create (Ptr<Node> node, Ptr<NetDevice> device) const;
 
-  /**
-   * @brief Enable pcap output the indicated net device.
-   *
-   * NetDevice-specific implementation mechanism for hooking the trace and
-   * writing to the trace file.
-   *
-   * @param prefix Filename prefix to use for pcap files.
-   * @param nd Net device for which you want to enable tracing.
-   * @param promiscuous If true capture all possible packets available at the device.
-   * @param explicitFilename Treat the prefix as an explicit filename if true
-   */
-  virtual void EnablePcapInternal (std::string prefix,
-                                   Ptr<NetDevice> nd,
-                                   bool promiscuous,
-                                   bool explicitFilename);
-
-  /**
-   * \brief Enable ascii trace output on the indicated net device.
-   *
-   * NetDevice-specific implementation mechanism for hooking the trace and
-   * writing to the trace file.
-   *
-   * \param stream The output stream object to use when logging ascii traces.
-   * \param prefix Filename prefix to use for ascii trace files.
-   * \param nd Net device for which you want to enable tracing.
-   * \param explicitFilename Treat the prefix as an explicit filename if true
-   */
-  virtual void EnableAsciiInternal (Ptr<OutputStreamWrapper> stream,
-                                    std::string prefix,
-                                    Ptr<NetDevice> nd,
-                                    bool explicitFilename);
-
-  ObjectFactory m_phy;
-  ObjectFactory m_errorRateModel;
   Ptr<YansWifiChannel> m_channel;
-  PcapHelper::DataLinkType m_pcapDlt;
 };
 
 } //namespace ns3
