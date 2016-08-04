@@ -92,7 +92,7 @@ int main (int argc, char *argv[])
   double distance = 1;
   double simulationTime = 10; //seconds
   uint16_t index = 256;
-  uint32_t channelWidth;
+  uint32_t channelWidth = 0;
   std::string wifiType = "ns3::SpectrumWifiPhy";
   std::string errorModelType = "ns3::NistErrorRateModel";
   bool enablePcap = false;
