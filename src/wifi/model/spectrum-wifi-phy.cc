@@ -27,23 +27,12 @@
 #include "ns3/spectrum-channel.h"
 #include "ns3/spectrum-value.h"
 #include "ns3/wifi-spectrum-value-helper.h"
-#include "wifi-channel.h"
-#include "wifi-mode.h"
-#include "wifi-preamble.h"
 #include "wifi-phy-state-helper.h"
-#include "error-rate-model.h"
 #include "ns3/simulator.h"
-#include "ns3/packet.h"
 #include "ns3/assert.h"
 #include "ns3/log.h"
 #include "ns3/double.h"
-#include "ns3/uinteger.h"
-#include "ns3/enum.h"
-#include "ns3/pointer.h"
-#include "ns3/net-device.h"
-#include "ns3/trace-source-accessor.h"
 #include "ns3/boolean.h"
-#include "ns3/node.h"
 #include "ampdu-tag.h"
 #include "wifi-spectrum-signal-parameters.h"
 #include "wifi-phy-tag.h"
@@ -63,120 +52,9 @@ SpectrumWifiPhy::GetTypeId (void)
     .SetParent<WifiPhy> ()
     .SetGroupName ("Wifi")
     .AddConstructor<SpectrumWifiPhy> ()
-    .AddAttribute ("EnergyDetectionThreshold",
-                   "The energy of a received signal should be higher than "
-                   "this threshold (dbm) to allow the PHY layer to detect the signal.",
-                   DoubleValue (-96.0),
-                   MakeDoubleAccessor (&SpectrumWifiPhy::SetEdThreshold,
-                                       &SpectrumWifiPhy::GetEdThreshold),
-                   MakeDoubleChecker<double> ())
-    .AddAttribute ("CcaMode1Threshold",
-                   "The energy of a received signal should be higher than "
-                   "this threshold (dbm) to allow the PHY layer to declare CCA BUSY state.",
-                   DoubleValue (-62.0),
-                   MakeDoubleAccessor (&SpectrumWifiPhy::SetCcaMode1Threshold,
-                                       &SpectrumWifiPhy::GetCcaMode1Threshold),
-                   MakeDoubleChecker<double> ())
     .AddAttribute ("DisableWifiReception", "Prevent Wi-Fi frame sync from ever happening",
                    BooleanValue (false),
                    MakeBooleanAccessor (&SpectrumWifiPhy::m_disableWifiReception),
-                   MakeBooleanChecker ())
-    .AddAttribute ("TxGain",
-                   "Transmission gain (dB).",
-                   DoubleValue (1.0),
-                   MakeDoubleAccessor (&SpectrumWifiPhy::SetTxGain,
-                                       &SpectrumWifiPhy::GetTxGain),
-                   MakeDoubleChecker<double> ())
-    .AddAttribute ("RxGain",
-                   "Reception gain (dB).",
-                   DoubleValue (1.0),
-                   MakeDoubleAccessor (&SpectrumWifiPhy::SetRxGain,
-                                       &SpectrumWifiPhy::GetRxGain),
-                   MakeDoubleChecker<double> ())
-    .AddAttribute ("TxPowerLevels",
-                   "Number of transmission power levels available between "
-                   "TxPowerStart and TxPowerEnd included.",
-                   UintegerValue (1),
-                   MakeUintegerAccessor (&SpectrumWifiPhy::m_nTxPower),
-                   MakeUintegerChecker<uint32_t> ())
-    .AddAttribute ("TxPowerEnd",
-                   "Maximum available transmission level (dbm).",
-                   DoubleValue (16.0206),
-                   MakeDoubleAccessor (&SpectrumWifiPhy::SetTxPowerEnd,
-                                       &SpectrumWifiPhy::GetTxPowerEnd),
-                   MakeDoubleChecker<double> ())
-    .AddAttribute ("TxPowerStart",
-                   "Minimum available transmission level (dbm).",
-                   DoubleValue (16.0206),
-                   MakeDoubleAccessor (&SpectrumWifiPhy::SetTxPowerStart,
-                                       &SpectrumWifiPhy::GetTxPowerStart),
-                   MakeDoubleChecker<double> ())
-    .AddAttribute ("RxNoiseFigure",
-                   "Loss (dB) in the Signal-to-Noise-Ratio due to non-idealities in the receiver."
-                   " According to Wikipedia (http://en.wikipedia.org/wiki/Noise_figure), this is "
-                   "\"the difference in decibels (dB) between"
-                   " the noise output of the actual receiver to the noise output of an "
-                   " ideal receiver with the same overall gain and bandwidth when the receivers "
-                   " are connected to sources at the standard noise temperature T0 (usually 290 K)\".",
-                   DoubleValue (7),
-                   MakeDoubleAccessor (&SpectrumWifiPhy::SetRxNoiseFigure,
-                                       &SpectrumWifiPhy::GetRxNoiseFigure),
-                   MakeDoubleChecker<double> ())
-    .AddAttribute ("State",
-                   "The state of the PHY layer.",
-                   PointerValue (),
-                   MakePointerAccessor (&SpectrumWifiPhy::m_state),
-                   MakePointerChecker<WifiPhyStateHelper> ())
-    .AddAttribute ("ChannelSwitchDelay",
-                   "Delay between two short frames transmitted on different frequencies.",
-                   TimeValue (MicroSeconds (250)),
-                   MakeTimeAccessor (&SpectrumWifiPhy::m_channelSwitchDelay),
-                   MakeTimeChecker ())
-    .AddAttribute ("TxAntennas",
-                   "The number of supported Tx antennas.",
-                   UintegerValue (1),
-                   MakeUintegerAccessor (&SpectrumWifiPhy::GetNumberOfTransmitAntennas,
-                                         &SpectrumWifiPhy::SetNumberOfTransmitAntennas),
-                   MakeUintegerChecker<uint32_t> ())
-    .AddAttribute ("RxAntennas",
-                   "The number of supported Rx antennas.",
-                   UintegerValue (1),
-                   MakeUintegerAccessor (&SpectrumWifiPhy::GetNumberOfReceiveAntennas,
-                                         &SpectrumWifiPhy::SetNumberOfReceiveAntennas),
-                   MakeUintegerChecker<uint32_t> ())
-    .AddAttribute ("ShortGuardEnabled",
-                   "Whether or not short guard interval is enabled."
-                   "This parameter is only valuable for 802.11n/ac STAs and APs.",
-                   BooleanValue (false),
-                   MakeBooleanAccessor (&SpectrumWifiPhy::GetGuardInterval,
-                                        &SpectrumWifiPhy::SetGuardInterval),
-                   MakeBooleanChecker ())
-    .AddAttribute ("LdpcEnabled",
-                   "Whether or not LDPC is enabled.",
-                   BooleanValue (false),
-                   MakeBooleanAccessor (&SpectrumWifiPhy::GetLdpc,
-                                        &SpectrumWifiPhy::SetLdpc),
-                   MakeBooleanChecker ())
-    .AddAttribute ("STBCEnabled",
-                   "Whether or not STBC is enabled.",
-                   BooleanValue (false),
-                   MakeBooleanAccessor (&SpectrumWifiPhy::GetStbc,
-                                        &SpectrumWifiPhy::SetStbc),
-                   MakeBooleanChecker ())
-    .AddAttribute ("GreenfieldEnabled",
-                   "Whether or not Greenfield is enabled."
-                   "This parameter is only valuable for 802.11n STAs and APs.",
-                   BooleanValue (false),
-                   MakeBooleanAccessor (&SpectrumWifiPhy::GetGreenfield,
-                                        &SpectrumWifiPhy::SetGreenfield),
-                   MakeBooleanChecker ())
-    .AddAttribute ("ShortPlcpPreambleSupported",
-                   "Whether or not short PLCP preamble is supported."
-                   "This parameter is only valuable for 802.11b STAs and APs."
-                   "Note: 802.11g APs and STAs always support short PLCP preamble.",
-                   BooleanValue (false),
-                   MakeBooleanAccessor (&SpectrumWifiPhy::GetShortPlcpPreambleSupported,
-                                        &SpectrumWifiPhy::SetShortPlcpPreambleSupported),
                    MakeBooleanChecker ())
     .AddTraceSource ("SignalArrival",
                      "Signal arrival",
@@ -187,16 +65,8 @@ SpectrumWifiPhy::GetTypeId (void)
 }
 
 SpectrumWifiPhy::SpectrumWifiPhy ()
-  : m_endRxEvent (),
-    m_endPlcpRxEvent (),
-    m_mpdusNum (0),
-    m_plcpSuccess (false),
-    m_txMpduReferenceNumber (0xffffffff),
-    m_rxMpduReferenceNumber (0xffffffff)
 {
   NS_LOG_FUNCTION (this);
-  m_random = CreateObject<UniformRandomVariable> ();
-  m_state = CreateObject<WifiPhyStateHelper> ();
 }
 
 SpectrumWifiPhy::~SpectrumWifiPhy ()
@@ -209,11 +79,6 @@ SpectrumWifiPhy::DoDispose (void)
 {
   NS_LOG_FUNCTION (this);
   m_channel = 0;
-  m_deviceRateSet.clear ();
-  m_deviceMcsSet.clear ();
-  m_device = 0;
-  m_mobility = 0;
-  m_state = 0;
 }
 
 void
@@ -273,7 +138,7 @@ switchChannel:
 
   NS_LOG_DEBUG ("switching channel " << GetChannelNumber () << " -> " << nch);
   m_rxSpectrumModel = WifiSpectrumValueHelper::GetSpectrumModel (GetFrequency (), GetChannelWidth ());
-  m_state->SwitchToChannelSwitching (m_channelSwitchDelay);
+  m_state->SwitchToChannelSwitching (GetChannelSwitchDelay ());
   m_interference.EraseEvents ();
   /*
    * Needed here to be able to correctly sensed the medium for the first
@@ -326,7 +191,7 @@ switchFrequency:
 
   NS_LOG_DEBUG ("switching frequency " << GetFrequency () << " -> " << frequency);
   m_rxSpectrumModel = WifiSpectrumValueHelper::GetSpectrumModel (GetFrequency (), GetChannelWidth ());
-  m_state->SwitchToChannelSwitching (m_channelSwitchDelay);
+  m_state->SwitchToChannelSwitching (GetChannelSwitchDelay ());
   m_interference.EraseEvents ();
   /*
    * Needed here to be able to correctly sensed the medium for the first
@@ -336,187 +201,6 @@ switchFrequency:
    * out the state of the medium after the switching.
    */
   return true;
-}
-
-void
-SpectrumWifiPhy::ConfigureStandard (enum WifiPhyStandard standard)
-{
-  NS_LOG_FUNCTION (this << standard);
-  WifiPhy::ConfigureStandard (standard); // set up base class
-  switch (standard)
-    {
-    case WIFI_PHY_STANDARD_80211a:
-      Configure80211a ();
-      break;
-    case WIFI_PHY_STANDARD_80211b:
-      Configure80211b ();
-      break;
-    case WIFI_PHY_STANDARD_80211g:
-      Configure80211g ();
-      break;
-    case WIFI_PHY_STANDARD_80211_10MHZ:
-      Configure80211_10Mhz ();
-      break;
-    case WIFI_PHY_STANDARD_80211_5MHZ:
-      Configure80211_5Mhz ();
-      break;
-    case WIFI_PHY_STANDARD_holland:
-      ConfigureHolland ();
-      break;
-    case WIFI_PHY_STANDARD_80211n_2_4GHZ:
-      Configure80211n ();
-      break;
-    case WIFI_PHY_STANDARD_80211n_5GHZ:
-      Configure80211n ();
-      break;
-    case WIFI_PHY_STANDARD_80211ac:
-      Configure80211ac ();
-      break;
-    default:
-      NS_ASSERT (false);
-      break;
-    }
-}
-
-void
-SpectrumWifiPhy::SetRxNoiseFigure (double noiseFigureDb)
-{
-  NS_LOG_FUNCTION (this << noiseFigureDb);
-  m_interference.SetNoiseFigure (DbToRatio (noiseFigureDb));
-}
-
-void
-SpectrumWifiPhy::SetTxPowerStart (double start)
-{
-  NS_LOG_FUNCTION (this << start);
-  m_txPowerBaseDbm = start;
-}
-
-void
-SpectrumWifiPhy::SetTxPowerEnd (double end)
-{
-  NS_LOG_FUNCTION (this << end);
-  m_txPowerEndDbm = end;
-}
-
-void
-SpectrumWifiPhy::SetNTxPower (uint32_t n)
-{
-  NS_LOG_FUNCTION (this << n);
-  m_nTxPower = n;
-}
-
-void
-SpectrumWifiPhy::SetTxGain (double gain)
-{
-  NS_LOG_FUNCTION (this << gain);
-  m_txGainDb = gain;
-}
-
-void
-SpectrumWifiPhy::SetRxGain (double gain)
-{
-  NS_LOG_FUNCTION (this << gain);
-  m_rxGainDb = gain;
-}
-
-void
-SpectrumWifiPhy::SetEdThreshold (double threshold)
-{
-  NS_LOG_FUNCTION (this << threshold);
-  m_edThresholdW = DbmToW (threshold);
-}
-
-void
-SpectrumWifiPhy::SetCcaMode1Threshold (double threshold)
-{
-  NS_LOG_FUNCTION (this << threshold);
-  m_ccaMode1ThresholdW = DbmToW (threshold);
-}
-
-void
-SpectrumWifiPhy::SetErrorRateModel (Ptr<ErrorRateModel> rate)
-{
-  m_interference.SetErrorRateModel (rate);
-}
-
-void
-SpectrumWifiPhy::SetDevice (Ptr<NetDevice> device)
-{
-  m_device = device;
-}
-
-void
-SpectrumWifiPhy::SetMobility (Ptr<MobilityModel> mobility)
-{
-  m_mobility = mobility;
-}
-
-double
-SpectrumWifiPhy::GetRxNoiseFigure (void) const
-{
-  return RatioToDb (m_interference.GetNoiseFigure ());
-}
-
-double
-SpectrumWifiPhy::GetTxPowerStart (void) const
-{
-  return m_txPowerBaseDbm;
-}
-
-double
-SpectrumWifiPhy::GetTxPowerEnd (void) const
-{
-  return m_txPowerEndDbm;
-}
-
-double
-SpectrumWifiPhy::GetTxGain (void) const
-{
-  return m_txGainDb;
-}
-
-double
-SpectrumWifiPhy::GetRxGain (void) const
-{
-  return m_rxGainDb;
-}
-
-double
-SpectrumWifiPhy::GetEdThreshold (void) const
-{
-  return WToDbm (m_edThresholdW);
-}
-
-double
-SpectrumWifiPhy::GetCcaMode1Threshold (void) const
-{
-  return WToDbm (m_ccaMode1ThresholdW);
-}
-
-Ptr<ErrorRateModel>
-SpectrumWifiPhy::GetErrorRateModel (void) const
-{
-  return m_interference.GetErrorRateModel ();
-}
-
-Ptr<NetDevice>
-SpectrumWifiPhy::GetDevice (void) const
-{
-  return m_device;
-}
-
-Ptr<MobilityModel>
-SpectrumWifiPhy::GetMobility (void)
-{
-  if (m_mobility != 0)
-    {
-      return m_mobility;
-    }
-  else
-    {
-      return m_device->GetNode ()->GetObject<MobilityModel> ();
-    }
 }
 
 Ptr<const SpectrumModel>
@@ -543,12 +227,6 @@ SpectrumWifiPhy::GetRxSpectrumModel () const
   return m_rxSpectrumModel;
 }
 
-double
-SpectrumWifiPhy::CalculateSnr (WifiTxVector txVector, double ber) const
-{
-  return m_interference.GetErrorRateModel ()->CalculateSnr (txVector, ber);
-}
-
 Ptr<WifiChannel>
 SpectrumWifiPhy::GetChannel (void) const
 {
@@ -565,12 +243,6 @@ void
 SpectrumWifiPhy::SetPacketReceivedCallback (RxCallback callback)
 {
   m_rxCallback = callback;
-}
-
-Time
-SpectrumWifiPhy::GetChannelSwitchDelay (void) const
-{
-  return m_channelSwitchDelay;
 }
 
 void
@@ -650,7 +322,7 @@ SpectrumWifiPhy::ResumeFromSleep (void)
     case SpectrumWifiPhy::SLEEP:
       {
         NS_LOG_DEBUG ("resuming from sleep mode");
-        Time delayUntilCcaEnd = m_interference.GetEnergyDuration (m_ccaMode1ThresholdW);
+        Time delayUntilCcaEnd = m_interference.GetEnergyDuration (DbmToW (GetCcaMode1Threshold ()));
         m_state->SwitchFromSleep (delayUntilCcaEnd);
         break;
       }
@@ -683,7 +355,7 @@ SpectrumWifiPhy::SwitchMaybeToCcaBusy (void)
   //In this model, CCA becomes busy when the aggregation of all signals as
   //tracked by the InterferenceHelper class is higher than the CcaBusyThreshold
 
-  Time delayUntilCcaEnd = m_interference.GetEnergyDuration (m_ccaMode1ThresholdW);
+  Time delayUntilCcaEnd = m_interference.GetEnergyDuration (DbmToW (GetCcaMode1Threshold ()));
   if (!delayUntilCcaEnd.IsZero ())
     {
       NS_LOG_DEBUG ("Calling SwitchMaybeToCcaBusy for " << delayUntilCcaEnd.As (Time::S));
@@ -711,7 +383,7 @@ SpectrumWifiPhy::StartRx (Ptr<SpectrumSignalParameters> rxParams)
   SpectrumValue filteredSignal = (*filter) * (*receivedSignalPsd);
   // Add receiver antenna gain
   NS_LOG_DEBUG ("Signal power received (watts) before antenna gain: " << Integral (filteredSignal));
-  double rxPowerW = Integral (filteredSignal) * DbToRatio (m_rxGainDb);
+  double rxPowerW = Integral (filteredSignal) * DbToRatio (GetRxGain ());
   NS_LOG_DEBUG ("Signal power received after antenna gain: " << rxPowerW << " W (" << WToDbm (rxPowerW) << " dBm)");
 
   Ptr<WifiSpectrumSignalParameters> wifiRxParams = DynamicCast<WifiSpectrumSignalParameters> (rxParams);
@@ -818,7 +490,7 @@ SpectrumWifiPhy::StartRx (Ptr<SpectrumSignalParameters> rxParams)
       break;
     case SpectrumWifiPhy::CCA_BUSY:
     case SpectrumWifiPhy::IDLE:
-      if (rxPowerW > m_edThresholdW) //checked here, no need to check in the payload reception (current implementation assumes constant rx power over the packet duration)
+      if (rxPowerW > GetEdThresholdW ()) //checked here, no need to check in the payload reception (current implementation assumes constant rx power over the packet duration)
         {
           if (preamble == WIFI_PREAMBLE_NONE && m_mpdusNum == 0)
             {
@@ -880,7 +552,7 @@ SpectrumWifiPhy::StartRx (Ptr<SpectrumSignalParameters> rxParams)
       else
         {
           NS_LOG_DEBUG ("drop packet because signal power too Small (" <<
-                        rxPowerW << "<" << m_edThresholdW << ")");
+                        rxPowerW << "<" << GetEdThresholdW () << ")");
           NotifyRxDrop (packet);
           m_plcpSuccess = false;
           SwitchMaybeToCcaBusy ();
@@ -1060,7 +732,7 @@ SpectrumWifiPhy::SendPacket (Ptr<const Packet> packet, WifiTxVector txVector, Wi
   newPacket->AddPacketTag (tag);
 
   NS_LOG_DEBUG ("Transmission signal power before antenna gain: " << GetPowerDbm (txVector.GetTxPowerLevel ()) << " dBm");
-  double txPowerWatts = DbmToW (GetPowerDbm (txVector.GetTxPowerLevel ()) + m_txGainDb);
+  double txPowerWatts = DbmToW (GetPowerDbm (txVector.GetTxPowerLevel ()) + GetTxGain ());
 
   Ptr<SpectrumValue> txPowerSpectrum = GetTxPowerSpectralDensity (GetFrequency (), GetChannelWidth (), txPowerWatts);
   Ptr<WifiSpectrumSignalParameters> txParams = Create<WifiSpectrumSignalParameters> ();
@@ -1075,239 +747,6 @@ SpectrumWifiPhy::SendPacket (Ptr<const Packet> packet, WifiTxVector txVector, Wi
   m_channel->StartTx (txParams);
 }
 
-uint32_t
-SpectrumWifiPhy::GetNModes (void) const
-{
-  return m_deviceRateSet.size ();
-}
-
-WifiMode
-SpectrumWifiPhy::GetMode (uint32_t mode) const
-{
-  return m_deviceRateSet[mode];
-}
-
-bool
-SpectrumWifiPhy::IsModeSupported (WifiMode mode) const
-{
-  for (uint32_t i = 0; i < GetNModes (); i++)
-    {
-      if (mode == GetMode (i))
-        {
-          return true;
-        }
-    }
-  return false;
-}
-bool
-SpectrumWifiPhy::IsMcsSupported (WifiMode mcs)
-{
-  for (uint32_t i = 0; i < GetNMcs (); i++)
-    {
-      if (mcs == GetMcs (i))
-        {
-          return true;
-        }
-    }
-  return false;
-}
-
-uint32_t
-SpectrumWifiPhy::GetNTxPower (void) const
-{
-  return m_nTxPower;
-}
-
-void
-SpectrumWifiPhy::Configure80211a (void)
-{
-  NS_LOG_FUNCTION (this);
-
-  m_deviceRateSet.push_back (WifiPhy::GetOfdmRate6Mbps ());
-  m_deviceRateSet.push_back (WifiPhy::GetOfdmRate9Mbps ());
-  m_deviceRateSet.push_back (WifiPhy::GetOfdmRate12Mbps ());
-  m_deviceRateSet.push_back (WifiPhy::GetOfdmRate18Mbps ());
-  m_deviceRateSet.push_back (WifiPhy::GetOfdmRate24Mbps ());
-  m_deviceRateSet.push_back (WifiPhy::GetOfdmRate36Mbps ());
-  m_deviceRateSet.push_back (WifiPhy::GetOfdmRate48Mbps ());
-  m_deviceRateSet.push_back (WifiPhy::GetOfdmRate54Mbps ());
-}
-
-void
-SpectrumWifiPhy::Configure80211b (void)
-{
-  NS_LOG_FUNCTION (this);
-
-  m_deviceRateSet.push_back (WifiPhy::GetDsssRate1Mbps ());
-  m_deviceRateSet.push_back (WifiPhy::GetDsssRate2Mbps ());
-  m_deviceRateSet.push_back (WifiPhy::GetDsssRate5_5Mbps ());
-  m_deviceRateSet.push_back (WifiPhy::GetDsssRate11Mbps ());
-}
-
-void
-SpectrumWifiPhy::Configure80211g (void)
-{
-  NS_LOG_FUNCTION (this);
-  Configure80211b ();
-
-  m_deviceRateSet.push_back (WifiPhy::GetErpOfdmRate6Mbps ());
-  m_deviceRateSet.push_back (WifiPhy::GetErpOfdmRate9Mbps ());
-  m_deviceRateSet.push_back (WifiPhy::GetErpOfdmRate12Mbps ());
-  m_deviceRateSet.push_back (WifiPhy::GetErpOfdmRate18Mbps ());
-  m_deviceRateSet.push_back (WifiPhy::GetErpOfdmRate24Mbps ());
-  m_deviceRateSet.push_back (WifiPhy::GetErpOfdmRate36Mbps ());
-  m_deviceRateSet.push_back (WifiPhy::GetErpOfdmRate48Mbps ());
-  m_deviceRateSet.push_back (WifiPhy::GetErpOfdmRate54Mbps ());
-}
-
-void
-SpectrumWifiPhy::Configure80211_10Mhz (void)
-{
-  NS_LOG_FUNCTION (this);
-
-  m_deviceRateSet.push_back (WifiPhy::GetOfdmRate3MbpsBW10MHz ());
-  m_deviceRateSet.push_back (WifiPhy::GetOfdmRate4_5MbpsBW10MHz ());
-  m_deviceRateSet.push_back (WifiPhy::GetOfdmRate6MbpsBW10MHz ());
-  m_deviceRateSet.push_back (WifiPhy::GetOfdmRate9MbpsBW10MHz ());
-  m_deviceRateSet.push_back (WifiPhy::GetOfdmRate12MbpsBW10MHz ());
-  m_deviceRateSet.push_back (WifiPhy::GetOfdmRate18MbpsBW10MHz ());
-  m_deviceRateSet.push_back (WifiPhy::GetOfdmRate24MbpsBW10MHz ());
-  m_deviceRateSet.push_back (WifiPhy::GetOfdmRate27MbpsBW10MHz ());
-}
-
-void
-SpectrumWifiPhy::Configure80211_5Mhz (void)
-{
-  NS_LOG_FUNCTION (this);
-
-  m_deviceRateSet.push_back (WifiPhy::GetOfdmRate1_5MbpsBW5MHz ());
-  m_deviceRateSet.push_back (WifiPhy::GetOfdmRate2_25MbpsBW5MHz ());
-  m_deviceRateSet.push_back (WifiPhy::GetOfdmRate3MbpsBW5MHz ());
-  m_deviceRateSet.push_back (WifiPhy::GetOfdmRate4_5MbpsBW5MHz ());
-  m_deviceRateSet.push_back (WifiPhy::GetOfdmRate6MbpsBW5MHz ());
-  m_deviceRateSet.push_back (WifiPhy::GetOfdmRate9MbpsBW5MHz ());
-  m_deviceRateSet.push_back (WifiPhy::GetOfdmRate12MbpsBW5MHz ());
-  m_deviceRateSet.push_back (WifiPhy::GetOfdmRate13_5MbpsBW5MHz ());
-}
-
-void
-SpectrumWifiPhy::ConfigureHolland (void)
-{
-  NS_LOG_FUNCTION (this);
-
-  m_deviceRateSet.push_back (WifiPhy::GetOfdmRate6Mbps ());
-  m_deviceRateSet.push_back (WifiPhy::GetOfdmRate12Mbps ());
-  m_deviceRateSet.push_back (WifiPhy::GetOfdmRate18Mbps ());
-  m_deviceRateSet.push_back (WifiPhy::GetOfdmRate36Mbps ());
-  m_deviceRateSet.push_back (WifiPhy::GetOfdmRate54Mbps ());
-}
-
-void
-SpectrumWifiPhy::ConfigureHtDeviceMcsSet (void)
-{
-  NS_LOG_FUNCTION (this);
-
-  bool htFound = false;
-  for (std::vector<uint32_t>::size_type i = 0; i < m_bssMembershipSelectorSet.size (); i++)
-    {
-      if (m_bssMembershipSelectorSet[i] == HT_PHY)
-        {
-          htFound = true;
-          break;
-        }
-    }
-  if (htFound)
-    {
-      // erase all HtMcs modes from deviceMcsSet
-      size_t index = m_deviceMcsSet.size () - 1;
-      for (std::vector<WifiMode>::reverse_iterator rit = m_deviceMcsSet.rbegin (); rit != m_deviceMcsSet.rend (); ++rit, --index)
-        {
-          if (m_deviceMcsSet[index].GetModulationClass () == WIFI_MOD_CLASS_HT)
-            {
-              m_deviceMcsSet.erase (m_deviceMcsSet.begin () + index);
-            }
-        }
-      m_deviceMcsSet.push_back (WifiPhy::GetHtMcs0 ());
-      m_deviceMcsSet.push_back (WifiPhy::GetHtMcs1 ());
-      m_deviceMcsSet.push_back (WifiPhy::GetHtMcs2 ());
-      m_deviceMcsSet.push_back (WifiPhy::GetHtMcs3 ());
-      m_deviceMcsSet.push_back (WifiPhy::GetHtMcs4 ());
-      m_deviceMcsSet.push_back (WifiPhy::GetHtMcs5 ());
-      m_deviceMcsSet.push_back (WifiPhy::GetHtMcs6 ());
-      m_deviceMcsSet.push_back (WifiPhy::GetHtMcs7 ());
-      if (GetSupportedTxSpatialStreams () > 1)
-        {
-          m_deviceMcsSet.push_back (WifiPhy::GetHtMcs8 ());
-          m_deviceMcsSet.push_back (WifiPhy::GetHtMcs9 ());
-          m_deviceMcsSet.push_back (WifiPhy::GetHtMcs10 ());
-          m_deviceMcsSet.push_back (WifiPhy::GetHtMcs11 ());
-          m_deviceMcsSet.push_back (WifiPhy::GetHtMcs12 ());
-          m_deviceMcsSet.push_back (WifiPhy::GetHtMcs13 ());
-          m_deviceMcsSet.push_back (WifiPhy::GetHtMcs14 ());
-          m_deviceMcsSet.push_back (WifiPhy::GetHtMcs15 ());
-        }
-      if (GetSupportedTxSpatialStreams () > 2)
-        {
-          m_deviceMcsSet.push_back (WifiPhy::GetHtMcs16 ());
-          m_deviceMcsSet.push_back (WifiPhy::GetHtMcs17 ());
-          m_deviceMcsSet.push_back (WifiPhy::GetHtMcs18 ());
-          m_deviceMcsSet.push_back (WifiPhy::GetHtMcs19 ());
-          m_deviceMcsSet.push_back (WifiPhy::GetHtMcs20 ());
-          m_deviceMcsSet.push_back (WifiPhy::GetHtMcs21 ());
-          m_deviceMcsSet.push_back (WifiPhy::GetHtMcs22 ());
-          m_deviceMcsSet.push_back (WifiPhy::GetHtMcs23 ());
-        }
-      if (GetSupportedTxSpatialStreams () > 3)
-        {
-          m_deviceMcsSet.push_back (WifiPhy::GetHtMcs24 ());
-          m_deviceMcsSet.push_back (WifiPhy::GetHtMcs25 ());
-          m_deviceMcsSet.push_back (WifiPhy::GetHtMcs26 ());
-          m_deviceMcsSet.push_back (WifiPhy::GetHtMcs27 ());
-          m_deviceMcsSet.push_back (WifiPhy::GetHtMcs28 ());
-          m_deviceMcsSet.push_back (WifiPhy::GetHtMcs29 ());
-          m_deviceMcsSet.push_back (WifiPhy::GetHtMcs30 ());
-          m_deviceMcsSet.push_back (WifiPhy::GetHtMcs31 ());
-        }
-    }
-}
-
-void
-SpectrumWifiPhy::Configure80211n (void)
-{
-  NS_LOG_FUNCTION (this);
-  if (GetFrequency () >= 2400 && GetFrequency () <= 2500) //at 2.4 GHz
-    {
-      Configure80211b ();
-      Configure80211g ();
-    }
-  if (GetFrequency () >= 5000 && GetFrequency () <= 6000) //at 5 GHz
-    {
-      Configure80211a ();
-    }
-  m_bssMembershipSelectorSet.push_back (HT_PHY);
-  ConfigureHtDeviceMcsSet ();
-}
-
-void
-SpectrumWifiPhy::Configure80211ac (void)
-{
-  NS_LOG_FUNCTION (this);
-  Configure80211n ();
-
-  m_deviceMcsSet.push_back (WifiPhy::GetVhtMcs0 ());
-  m_deviceMcsSet.push_back (WifiPhy::GetVhtMcs1 ());
-  m_deviceMcsSet.push_back (WifiPhy::GetVhtMcs2 ());
-  m_deviceMcsSet.push_back (WifiPhy::GetVhtMcs3 ());
-  m_deviceMcsSet.push_back (WifiPhy::GetVhtMcs4 ());
-  m_deviceMcsSet.push_back (WifiPhy::GetVhtMcs5 ());
-  m_deviceMcsSet.push_back (WifiPhy::GetVhtMcs6 ());
-  m_deviceMcsSet.push_back (WifiPhy::GetVhtMcs7 ());
-  m_deviceMcsSet.push_back (WifiPhy::GetVhtMcs8 ());
-  m_deviceMcsSet.push_back (WifiPhy::GetVhtMcs9 ());
-
-  m_bssMembershipSelectorSet.push_back (VHT_PHY);
-}
-
 void
 SpectrumWifiPhy::RegisterListener (WifiPhyListener *listener)
 {
@@ -1318,116 +757,6 @@ void
 SpectrumWifiPhy::UnregisterListener (WifiPhyListener *listener)
 {
   m_state->UnregisterListener (listener);
-}
-
-bool
-SpectrumWifiPhy::IsStateCcaBusy (void)
-{
-  return m_state->IsStateCcaBusy ();
-}
-
-bool
-SpectrumWifiPhy::IsStateIdle (void)
-{
-  return m_state->IsStateIdle ();
-}
-
-bool
-SpectrumWifiPhy::IsStateBusy (void)
-{
-  return m_state->IsStateBusy ();
-}
-
-bool
-SpectrumWifiPhy::IsStateRx (void)
-{
-  return m_state->IsStateRx ();
-}
-
-bool
-SpectrumWifiPhy::IsStateTx (void)
-{
-  return m_state->IsStateTx ();
-}
-
-bool
-SpectrumWifiPhy::IsStateSwitching (void)
-{
-  return m_state->IsStateSwitching ();
-}
-
-bool
-SpectrumWifiPhy::IsStateSleep (void)
-{
-  return m_state->IsStateSleep ();
-}
-
-Time
-SpectrumWifiPhy::GetStateDuration (void)
-{
-  return m_state->GetStateDuration ();
-}
-
-Time
-SpectrumWifiPhy::GetDelayUntilIdle (void)
-{
-  return m_state->GetDelayUntilIdle ();
-}
-
-Time
-SpectrumWifiPhy::GetLastRxStartTime (void) const
-{
-  return m_state->GetLastRxStartTime ();
-}
-
-double
-SpectrumWifiPhy::DbToRatio (double dB) const
-{
-  double ratio = std::pow (10.0, dB / 10.0);
-  return ratio;
-}
-
-double
-SpectrumWifiPhy::DbmToW (double dBm) const
-{
-  double mW = std::pow (10.0, dBm / 10.0);
-  return mW / 1000.0;
-}
-
-double
-SpectrumWifiPhy::WToDbm (double w) const
-{
-  return 10.0 * std::log10 (w * 1000.0);
-}
-
-double
-SpectrumWifiPhy::RatioToDb (double ratio) const
-{
-  return 10.0 * std::log10 (ratio);
-}
-
-double
-SpectrumWifiPhy::GetEdThresholdW (void) const
-{
-  return m_edThresholdW;
-}
-
-double
-SpectrumWifiPhy::GetPowerDbm (uint8_t power) const
-{
-  NS_ASSERT (m_txPowerBaseDbm <= m_txPowerEndDbm);
-  NS_ASSERT (m_nTxPower > 0);
-  double dbm;
-  if (m_nTxPower > 1)
-    {
-      dbm = m_txPowerBaseDbm + power * (m_txPowerEndDbm - m_txPowerBaseDbm) / (m_nTxPower - 1);
-    }
-  else
-    {
-      NS_ASSERT_MSG (m_txPowerBaseDbm == m_txPowerEndDbm, "cannot have TxPowerEnd != TxPowerStart with TxPowerLevels == 1");
-      dbm = m_txPowerBaseDbm;
-    }
-  return dbm;
 }
 
 void
@@ -1495,169 +824,6 @@ SpectrumWifiPhy::EndReceive (Ptr<Packet> packet, enum WifiPreamble preamble, enu
       m_plcpSuccess = false;
     }
 
-}
-
-int64_t
-SpectrumWifiPhy::AssignStreams (int64_t stream)
-{
-  NS_LOG_FUNCTION (this << stream);
-  m_random->SetStream (stream);
-  return 1;
-}
-
-void
-SpectrumWifiPhy::SetNumberOfTransmitAntennas (uint32_t tx)
-{
-  m_numberOfTransmitters = tx;
-  ConfigureHtDeviceMcsSet ();
-}
-
-void
-SpectrumWifiPhy::SetNumberOfReceiveAntennas (uint32_t rx)
-{
-  m_numberOfReceivers = rx;
-}
-
-void
-SpectrumWifiPhy::SetLdpc (bool Ldpc)
-{
-  m_ldpc = Ldpc;
-}
-
-void
-SpectrumWifiPhy::SetStbc (bool stbc)
-{
-  m_stbc = stbc;
-}
-
-void
-SpectrumWifiPhy::SetGreenfield (bool greenfield)
-{
-  m_greenfield = greenfield;
-}
-
-bool
-SpectrumWifiPhy::GetGuardInterval (void) const
-{
-  return m_guardInterval;
-}
-
-void
-SpectrumWifiPhy::SetGuardInterval (bool guardInterval)
-{
-  m_guardInterval = guardInterval;
-}
-
-uint32_t
-SpectrumWifiPhy::GetNumberOfTransmitAntennas (void) const
-{
-  return m_numberOfTransmitters;
-}
-
-uint32_t
-SpectrumWifiPhy::GetNumberOfReceiveAntennas (void) const
-{
-  return m_numberOfReceivers;
-}
-
-bool
-SpectrumWifiPhy::GetLdpc (void) const
-{
-  return m_ldpc;
-}
-
-bool
-SpectrumWifiPhy::GetStbc (void) const
-{
-  return m_stbc;
-}
-
-bool
-SpectrumWifiPhy::GetGreenfield (void) const
-{
-  return m_greenfield;
-}
-
-bool
-SpectrumWifiPhy::GetShortPlcpPreambleSupported (void) const
-{
-  return m_shortPreamble;
-}
-
-void
-SpectrumWifiPhy::SetShortPlcpPreambleSupported (bool enable)
-{
-  m_shortPreamble = enable;
-}
-
-uint8_t
-SpectrumWifiPhy::GetSupportedRxSpatialStreams (void) const
-{
-  return (static_cast<uint8_t> (GetNumberOfReceiveAntennas ()));
-}
-
-uint8_t
-SpectrumWifiPhy::GetSupportedTxSpatialStreams (void) const
-{
-  return (static_cast<uint8_t> (GetNumberOfTransmitAntennas ()));
-}
-
-uint32_t
-SpectrumWifiPhy::GetNBssMembershipSelectors (void) const
-{
-  return m_bssMembershipSelectorSet.size ();
-}
-
-uint32_t
-SpectrumWifiPhy::GetBssMembershipSelector (uint32_t selector) const
-{
-  return m_bssMembershipSelectorSet[selector];
-}
-
-WifiModeList
-SpectrumWifiPhy::GetMembershipSelectorModes (uint32_t selector)
-{
-  uint32_t id = GetBssMembershipSelector (selector);
-  WifiModeList supportedmodes;
-  if (id == HT_PHY || id == VHT_PHY)
-    {
-      //mandatory MCS 0 to 7
-      supportedmodes.push_back (WifiPhy::GetHtMcs0 ());
-      supportedmodes.push_back (WifiPhy::GetHtMcs1 ());
-      supportedmodes.push_back (WifiPhy::GetHtMcs2 ());
-      supportedmodes.push_back (WifiPhy::GetHtMcs3 ());
-      supportedmodes.push_back (WifiPhy::GetHtMcs4 ());
-      supportedmodes.push_back (WifiPhy::GetHtMcs5 ());
-      supportedmodes.push_back (WifiPhy::GetHtMcs6 ());
-      supportedmodes.push_back (WifiPhy::GetHtMcs7 ());
-    }
-  if (id == VHT_PHY)
-    {
-      //mandatory MCS 0 to 9
-      supportedmodes.push_back (WifiPhy::GetVhtMcs0 ());
-      supportedmodes.push_back (WifiPhy::GetVhtMcs1 ());
-      supportedmodes.push_back (WifiPhy::GetVhtMcs2 ());
-      supportedmodes.push_back (WifiPhy::GetVhtMcs3 ());
-      supportedmodes.push_back (WifiPhy::GetVhtMcs4 ());
-      supportedmodes.push_back (WifiPhy::GetVhtMcs5 ());
-      supportedmodes.push_back (WifiPhy::GetVhtMcs6 ());
-      supportedmodes.push_back (WifiPhy::GetVhtMcs7 ());
-      supportedmodes.push_back (WifiPhy::GetVhtMcs8 ());
-      supportedmodes.push_back (WifiPhy::GetVhtMcs9 ());
-    }
-  return supportedmodes;
-}
-
-uint8_t
-SpectrumWifiPhy::GetNMcs (void) const
-{
-  return m_deviceMcsSet.size ();
-}
-
-WifiMode
-SpectrumWifiPhy::GetMcs (uint8_t mcs) const
-{
-  return m_deviceMcsSet[mcs];
 }
 
 } //namespace ns3

@@ -128,6 +128,8 @@ SpectrumWifiPhyBasicTest::DoSetup (void)
   m_phy->SetChannelNumber (CHANNEL_NUMBER);
   m_phy->SetFrequency (FREQUENCY);
   m_phy->SetPacketReceivedCallback (MakeCallback (&SpectrumWifiPhyBasicTest::SpectrumWifiPhyReceiver, this));
+  //Bug 2460: CcaMode1Threshold default should be set to -62 dBm when using Spectrum
+  m_phy->SetCcaMode1Threshold (-62.0);
 }
 
 // Test that the expected number of packet receptions occur.
