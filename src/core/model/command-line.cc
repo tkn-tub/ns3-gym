@@ -113,7 +113,8 @@ CommandLine::Parse (int argc, char *argv[])
 {
   NS_LOG_FUNCTION (this << argc << argv);
 
-  m_name = SystemPath::Split (argv[0]).back ();
+  std::string arg0 = argv[0];
+  m_name = SystemPath::Split (arg0).back ();
   
   int iargc = argc;
   for (iargc--; iargc > 0; iargc--)
