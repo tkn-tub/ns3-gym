@@ -833,7 +833,6 @@ public:
    */
   void FlushAggregateQueue (void);
 
-protected:
   /**
    * Return a TXVECTOR for the DATA frame given the destination.
    * The function consults WifiRemoteStationManager, which controls the rate
@@ -844,6 +843,7 @@ protected:
    * \return TXVECTOR for the given packet
    */
   virtual WifiTxVector GetDataTxVector (Ptr<const Packet> packet, const WifiMacHeader *hdr) const;
+
 private:
   /**
    * Cancel all scheduled events. Called before beginning a transmission

@@ -322,9 +322,68 @@ BlockAckManager::GetNextPacket (WifiMacHeader &hdr)
   return packet;
 }
 
+Ptr<const Packet>
+BlockAckManager::PeekNextPacket (WifiMacHeader &hdr)
+{
+  NS_LOG_FUNCTION (this << &hdr);
+  Ptr<const Packet> packet = 0;
+  uint8_t tid;
+  Mac48Address recipient;
+  CleanupBuffers ();
+  if (!m_retryPackets.empty ())
+    {
+      NS_LOG_DEBUG ("Retry buffer size is " << m_retryPackets.size ());
+      std::list<PacketQueueI>::iterator it = m_retryPackets.begin ();
+      while (it != m_retryPackets.end ())
+        {
+          if ((*it)->hdr.IsQosData ())
+            {
+              tid = (*it)->hdr.GetQosTid ();
+            }
+          else
+            {
+              NS_FATAL_ERROR ("Packet in blockAck manager retry queue is not Qos Data");
+            }
+          recipient = (*it)->hdr.GetAddr1 ();
+          AgreementsI agreement = m_agreements.find (std::make_pair (recipient, tid));
+          NS_ASSERT (agreement != m_agreements.end ());
+          packet = (*it)->packet->Copy ();
+          hdr = (*it)->hdr;
+          hdr.SetRetry ();
+          if (hdr.IsQosData ())
+            {
+              tid = hdr.GetQosTid ();
+            }
+          else
+            {
+              NS_FATAL_ERROR ("Packet in blockAck manager retry queue is not Qos Data");
+            }
+          recipient = hdr.GetAddr1 ();
+          if (!agreement->second.first.IsHtSupported ()
+              && (ExistsAgreementInState (recipient, tid, OriginatorBlockAckAgreement::ESTABLISHED)
+                  || SwitchToBlockAckIfNeeded (recipient, tid, hdr.GetSequenceNumber ())))
+            {
+              hdr.SetQosAckPolicy (WifiMacHeader::BLOCK_ACK);
+            }
+          else
+            {
+              /* From section 9.10.3 in IEEE802.11e standard:
+               * In order to improve efficiency, originators using the Block Ack facility
+               * may send MPDU frames with the Ack Policy subfield in QoS control frames
+               * set to Normal Ack if only a few MPDUs are available for transmission.[...]
+               * When there are sufficient number of MPDUs, the originator may switch back to
+               * the use of Block Ack.
+               */
+              hdr.SetQosAckPolicy (WifiMacHeader::NORMAL_ACK);
+            }
+          break;
+        }
+    }
+  return packet;
+}
 
 Ptr<const Packet>
-BlockAckManager::PeekNextPacket (WifiMacHeader &hdr, Mac48Address recipient, uint8_t tid, Time *tstamp)
+BlockAckManager::PeekNextPacketByTidAndAddress (WifiMacHeader &hdr, Mac48Address recipient, uint8_t tid, Time *tstamp)
 {
   NS_LOG_FUNCTION (this);
   Ptr<const Packet> packet = 0;

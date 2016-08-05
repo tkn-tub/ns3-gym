@@ -264,7 +264,8 @@ EdcaTxopN::EdcaTxopN ()
     m_mpduAggregator (0),
     m_typeOfStation (STA),
     m_blockAckType (COMPRESSED_BLOCK_ACK),
-    m_startTxop (Seconds (0))
+    m_startTxop (Seconds (0)),
+    m_isAccessRequestedForRts (false)
 {
   NS_LOG_FUNCTION (this);
   m_transmissionListener = new EdcaTxopN::TransmissionListener (this);
@@ -483,7 +484,7 @@ uint16_t EdcaTxopN::PeekNextSequenceNumberfor (WifiMacHeader *hdr)
 Ptr<const Packet>
 EdcaTxopN::PeekNextRetransmitPacket (WifiMacHeader &header,Mac48Address recipient, uint8_t tid, Time *timestamp)
 {
-  return m_baManager->PeekNextPacket (header,recipient,tid, timestamp);
+  return m_baManager->PeekNextPacketByTidAndAddress (header,recipient,tid, timestamp);
 }
 
 void
@@ -496,6 +497,7 @@ void
 EdcaTxopN::NotifyAccessGranted (void)
 {
   NS_LOG_FUNCTION (this);
+  m_isAccessRequestedForRts = false;
   if (m_currentPacket == 0)
     {
       if (m_queue->IsEmpty () && !m_baManager->HasPackets ())
@@ -653,7 +655,49 @@ EdcaTxopN::NotifyAccessGranted (void)
 void EdcaTxopN::NotifyInternalCollision (void)
 {
   NS_LOG_FUNCTION (this);
-  NotifyCollision ();
+  bool resetDcf = false;
+  if (m_isAccessRequestedForRts)
+    {
+      if (!NeedRtsRetransmission ())
+      {
+        resetDcf = true;
+        m_stationManager->ReportFinalRtsFailed (m_currentHdr.GetAddr1 (), &m_currentHdr);
+      }
+      else
+      {
+        m_stationManager->ReportRtsFailed (m_currentHdr.GetAddr1 (), &m_currentHdr);
+      }
+    }
+  else
+    {
+      if (!NeedDataRetransmission ())
+      {
+        resetDcf = true;
+        m_stationManager->ReportFinalDataFailed (m_currentHdr.GetAddr1 (), &m_currentHdr);
+      }
+      else
+      {
+        m_stationManager->ReportDataFailed (m_currentHdr.GetAddr1 (), &m_currentHdr);
+      }
+    }
+  if (resetDcf)
+    {
+      NS_LOG_DEBUG ("reset DCF");
+      if (!m_txFailedCallback.IsNull ())
+        {
+          m_txFailedCallback (m_currentHdr);
+        }
+      //to reset the dcf.
+      m_currentPacket = 0;
+      m_dcf->ResetCw ();
+    }
+  else
+    {
+      m_dcf->UpdateFailedCw ();
+    }
+  m_backoffTrace = m_rng->GetNext (0, m_dcf->GetCw ());
+  m_dcf->StartBackoffNow (m_backoffTrace);
+  RestartAccessIfNeeded ();
 }
 
 void
@@ -1046,6 +1090,29 @@ EdcaTxopN::RestartAccessIfNeeded (void)
        || !m_queue->IsEmpty () || m_baManager->HasPackets ())
       && !m_dcf->IsAccessRequested ())
     {
+      Ptr<const Packet> packet;
+      WifiMacHeader hdr;
+      if (m_currentPacket != 0)
+        {
+          packet = m_currentPacket;
+          hdr = m_currentHdr;
+        }
+      else if (m_baManager->HasPackets ())
+        {
+          packet = m_baManager->PeekNextPacket (hdr);
+        }
+      else if (m_queue->PeekFirstAvailable (&hdr, m_currentPacketTimestamp, m_qosBlockedDestinations) != 0)
+        {
+          packet = m_queue->PeekFirstAvailable (&hdr, m_currentPacketTimestamp, m_qosBlockedDestinations);
+        }
+      if (packet != 0)
+        {
+          m_isAccessRequestedForRts = m_stationManager->NeedRts (hdr.GetAddr1 (), &hdr, packet, m_low->GetDataTxVector (packet, &hdr));
+        }
+      else
+        {
+          m_isAccessRequestedForRts = false;
+        }
       m_manager->RequestAccess (m_dcf);
     }
 }
@@ -1058,6 +1125,29 @@ EdcaTxopN::StartAccessIfNeeded (void)
       && (!m_queue->IsEmpty () || m_baManager->HasPackets ())
       && !m_dcf->IsAccessRequested ())
     {
+      Ptr<const Packet> packet;
+      WifiMacHeader hdr;
+      if (m_currentPacket != 0)
+        {
+          packet = m_currentPacket;
+          hdr = m_currentHdr;
+        }
+      else if (m_baManager->HasPackets ())
+        {
+          packet = m_baManager->PeekNextPacket (hdr);
+        }
+      else if (m_queue->PeekFirstAvailable (&hdr, m_currentPacketTimestamp, m_qosBlockedDestinations) != 0)
+        {
+          packet = m_queue->PeekFirstAvailable (&hdr, m_currentPacketTimestamp, m_qosBlockedDestinations);
+        }
+      if (packet != 0)
+        {
+          m_isAccessRequestedForRts = m_stationManager->NeedRts (hdr.GetAddr1 (), &hdr, packet, m_low->GetDataTxVector (packet, &hdr));
+        }
+      else
+        {
+          m_isAccessRequestedForRts = false;
+        }
       m_manager->RequestAccess (m_dcf);
     }
 }

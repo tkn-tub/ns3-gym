@@ -587,6 +587,7 @@ private:
   uint16_t m_blockAckInactivityTimeout;
   struct Bar m_currentBar;
   Time m_startTxop;
+  bool m_isAccessRequestedForRts;
   TracedValue<uint32_t> m_backoffTrace;
   TracedValue<uint32_t> m_cwTrace;
 };
