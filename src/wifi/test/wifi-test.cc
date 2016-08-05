@@ -17,8 +17,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Authors: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
- *          Quincy Tse <quincy.tse@nicta.com.au> (Case for Bug 991)
- *          Sébastien Deronne <sebastien.deronne@gmail.com> (Case for bug 730)
+ *          Quincy Tse <quincy.tse@nicta.com.au>
+ *          Sébastien Deronne <sebastien.deronne@gmail.com>
  */
 
 #include "ns3/yans-wifi-helper.h"
@@ -950,6 +950,127 @@ Simulator::Destroy ();
 }
 
 //-----------------------------------------------------------------------------
+/**
+ * Make sure that when virtual collision occurs the wifi remote station manager 
+ * is triggered and the retry counter is increased.
+ *
+ * See \bugid{2222}
+ */
+
+class Bug2222TestCase : public TestCase
+{
+public:
+  Bug2222TestCase ();
+  virtual ~Bug2222TestCase ();
+
+  virtual void DoRun (void);
+
+
+private:
+  uint32_t m_countInternalCollisions;
+
+  void PopulateArpCache ();
+  void TxDataFailedTrace (std::string context, Mac48Address adr);
+};
+
+Bug2222TestCase::Bug2222TestCase ()
+  : TestCase ("Test case for Bug 2222"),
+    m_countInternalCollisions (0)
+{
+}
+
+Bug2222TestCase::~Bug2222TestCase ()
+{
+}
+
+void
+Bug2222TestCase::TxDataFailedTrace (std::string context, Mac48Address adr)
+{
+  //Indicate the long retry counter has been increased in the wifi remote station manager
+  m_countInternalCollisions++;
+}
+
+void
+Bug2222TestCase::DoRun (void)
+{
+  m_countInternalCollisions = 0;
+    
+  //Generate same backoff for AC_VI and AC_VO
+  RngSeedManager::SetSeed (1);
+  RngSeedManager::SetRun (31);
+
+  NodeContainer wifiNodes;
+  wifiNodes.Create (2);
+
+  YansWifiChannelHelper channel = YansWifiChannelHelper::Default ();
+  YansWifiPhyHelper phy = YansWifiPhyHelper::Default ();
+  phy.SetChannel (channel.Create ());
+
+  WifiHelper wifi;
+  WifiMacHelper mac;
+  Ssid ssid = Ssid ("ns-3-ssid");
+  mac.SetType ("ns3::AdhocWifiMac",
+               "QosSupported", BooleanValue (true));
+
+  NetDeviceContainer wifiDevices;
+  wifiDevices = wifi.Install (phy, mac, wifiNodes);
+
+  MobilityHelper mobility;
+  Ptr<ListPositionAllocator> positionAlloc = CreateObject<ListPositionAllocator> ();
+
+  positionAlloc->Add (Vector (0.0, 0.0, 0.0));
+  positionAlloc->Add (Vector (1.0, 0.0, 0.0));
+  mobility.SetPositionAllocator (positionAlloc);
+
+  mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
+  mobility.Install (wifiNodes);
+
+  Ptr<WifiNetDevice> device1 = DynamicCast<WifiNetDevice> (wifiDevices.Get (0));
+  Ptr<WifiNetDevice> device2 = DynamicCast<WifiNetDevice> (wifiDevices.Get (1));
+
+  PacketSocketAddress socket;
+  socket.SetSingleDevice (device1->GetIfIndex ());
+  socket.SetPhysicalAddress (device2->GetAddress ());
+  socket.SetProtocol (1);
+
+  PacketSocketHelper packetSocket;
+  packetSocket.Install (wifiNodes);
+
+  Ptr<PacketSocketClient> clientLowPriority = CreateObject<PacketSocketClient> ();
+  clientLowPriority->SetAttribute ("PacketSize", UintegerValue (1460));
+  clientLowPriority->SetAttribute ("MaxPackets", UintegerValue (1));
+  clientLowPriority->SetAttribute ("Priority", UintegerValue (4)); //AC_VI
+  clientLowPriority->SetRemote (socket);
+  wifiNodes.Get(0)->AddApplication (clientLowPriority);
+  clientLowPriority->SetStartTime (Seconds (0.0));
+  clientLowPriority->SetStopTime (Seconds (1.0));
+  
+  Ptr<PacketSocketClient> clientHighPriority = CreateObject<PacketSocketClient> ();
+  clientHighPriority->SetAttribute ("PacketSize", UintegerValue (1460));
+  clientHighPriority->SetAttribute ("MaxPackets", UintegerValue (1));
+  clientHighPriority->SetAttribute ("Priority", UintegerValue (6)); //AC_VO
+  clientHighPriority->SetRemote (socket);
+  wifiNodes.Get(0)->AddApplication (clientHighPriority);
+  clientHighPriority->SetStartTime (Seconds (0.0));
+  clientHighPriority->SetStopTime (Seconds (1.0));
+
+  Ptr<PacketSocketServer> server = CreateObject<PacketSocketServer> ();
+  server->SetLocal (socket);
+  wifiNodes.Get(1)->AddApplication (server);
+  server->SetStartTime (Seconds (0.0));
+  server->SetStopTime (Seconds (1.0));
+
+  Config::Connect ("/NodeList/*/DeviceList/*/RemoteStationManager/MacTxDataFailed", MakeCallback (&Bug2222TestCase::TxDataFailedTrace, this));
+
+  Simulator::Stop (Seconds (1.0));
+  Simulator::Run ();
+  Simulator::Destroy ();
+
+  NS_TEST_ASSERT_MSG_EQ (m_countInternalCollisions, 1, "unexpected number of internal collisions!");
+}
+
+//-----------------------------------------------------------------------------
+
 class WifiTestSuite : public TestSuite
 {
 public:
@@ -965,6 +1086,7 @@ WifiTestSuite::WifiTestSuite ()
   AddTestCase (new Bug555TestCase, TestCase::QUICK); //Bug 555
   AddTestCase (new Bug730TestCase, TestCase::QUICK); //Bug 730
   AddTestCase (new SetChannelFrequencyTest, TestCase::QUICK);
+  AddTestCase (new Bug2222TestCase, TestCase::QUICK); //Bug 2222
 }
 
 static WifiTestSuite g_wifiTestSuite;
