@@ -78,7 +78,10 @@ private:
    */
   double GetCoefficient (const BandInfo& from, const BandInfo& to) const;
 
-  std::vector<std::vector<double> > m_conversionMatrix; //!< matrix of conversion coefficients
+  std::vector<double> m_conversionMatrix; //!< matrix of conversion coefficients stored in Compressed Row Storage format
+  std::vector<size_t> m_conversionRowPtr; //!< offset of rows in m_conversionMatrix
+  std::vector<size_t> m_conversionColInd; //!< column of each non-zero element in m_conversionMatrix
+
   Ptr<const SpectrumModel> m_fromSpectrumModel;  //!<  the SpectrumModel this SpectrumConverter instance can convert from
   Ptr<const SpectrumModel> m_toSpectrumModel;    //!<  the SpectrumModel this SpectrumConverter instance can convert to
 

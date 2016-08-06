@@ -39,10 +39,10 @@ SpectrumConverter::SpectrumConverter (Ptr<const SpectrumModel> fromSpectrumModel
   m_fromSpectrumModel = fromSpectrumModel;
   m_toSpectrumModel = toSpectrumModel;
 
+  size_t rowPtr = 0;
   for (Bands::const_iterator toit = toSpectrumModel->Begin (); toit != toSpectrumModel->End (); ++toit)
     {
-      std::vector<double> coeffs;
-
+      size_t colInd = 0;
       for (Bands::const_iterator fromit = fromSpectrumModel->Begin (); fromit != fromSpectrumModel->End (); ++fromit)
         {
           double c = GetCoefficient (*fromit, *toit);
@@ -50,10 +50,15 @@ SpectrumConverter::SpectrumConverter (Ptr<const SpectrumModel> fromSpectrumModel
                             << " --> " <<
                         "(" << toit->fl << "," << toit->fh << ")"
                             << " = " << c);
-          coeffs.push_back (c);
+          if (c > 0)
+            {
+              m_conversionMatrix.push_back (c);
+              m_conversionColInd.push_back (colInd);
+              rowPtr++;
+            }
+          colInd++;
         }
-
-      m_conversionMatrix.push_back (coeffs);
+      m_conversionRowPtr.push_back (rowPtr);
     }
 
 }
@@ -78,23 +83,17 @@ SpectrumConverter::Convert (Ptr<const SpectrumValue> fvvf) const
   Ptr<SpectrumValue> tvvf = Create<SpectrumValue> (m_toSpectrumModel);
 
   Values::iterator tvit = tvvf->ValuesBegin ();
+  size_t i = 0; // Index of conversion coefficient
 
-
-  for (std::vector<std::vector<double> >::const_iterator toit = m_conversionMatrix.begin ();
-       toit != m_conversionMatrix.end ();
-       ++toit)
+  for (std::vector<size_t>::const_iterator convIt = m_conversionRowPtr.begin ();
+       convIt != m_conversionRowPtr.end ();
+       ++convIt)
     {
-      NS_ASSERT (tvit != tvvf->ValuesEnd ());
-      Values::const_iterator fvit = fvvf->ConstValuesBegin ();
-
       double sum = 0;
-      for (std::vector<double>::const_iterator fromit = toit->begin ();
-           fromit != toit->end ();
-           ++fromit)
+      while (i < *convIt)
         {
-          NS_ASSERT (fvit != fvvf->ConstValuesEnd ());
-          sum += (*fvit) * (*fromit);
-          ++fvit;
+          sum += (*fvvf)[m_conversionColInd.at (i)] * m_conversionMatrix.at (i);
+          i++;
         }
       *tvit = sum;
       ++tvit;
