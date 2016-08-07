@@ -417,6 +417,38 @@ public:
                                  std::string n15 = "", const AttributeValue &v15 = EmptyAttributeValue ());
 
   /**
+   * Helper function used to add a queue limits object to the transmission
+   * queues of the devices
+   *
+   * \param type the type of queue
+   * \param n01 the name of the attribute to set on the queue limits object
+   * \param v01 the value of the attribute to set on the queue limits object
+   * \param n02 the name of the attribute to set on the queue limits object
+   * \param v02 the value of the attribute to set on the queue limits object
+   * \param n03 the name of the attribute to set on the queue limits object
+   * \param v03 the value of the attribute to set on the queue limits object
+   * \param n04 the name of the attribute to set on the queue limits object
+   * \param v04 the value of the attribute to set on the queue limits object
+   * \param n05 the name of the attribute to set on the queue limits object
+   * \param v05 the value of the attribute to set on the queue limits object
+   * \param n06 the name of the attribute to set on the queue limits object
+   * \param v06 the value of the attribute to set on the queue limits object
+   * \param n07 the name of the attribute to set on the queue limits object
+   * \param v07 the value of the attribute to set on the queue limits object
+   * \param n08 the name of the attribute to set on the queue limits object
+   * \param v08 the value of the attribute to set on the queue limits object
+   */
+  void SetQueueLimits (std::string type,
+                       std::string n01 = "", const AttributeValue &v01 = EmptyAttributeValue (),
+                       std::string n02 = "", const AttributeValue &v02 = EmptyAttributeValue (),
+                       std::string n03 = "", const AttributeValue &v03 = EmptyAttributeValue (),
+                       std::string n04 = "", const AttributeValue &v04 = EmptyAttributeValue (),
+                       std::string n05 = "", const AttributeValue &v05 = EmptyAttributeValue (),
+                       std::string n06 = "", const AttributeValue &v06 = EmptyAttributeValue (),
+                       std::string n07 = "", const AttributeValue &v07 = EmptyAttributeValue (),
+                       std::string n08 = "", const AttributeValue &v08 = EmptyAttributeValue ());
+
+  /**
    * \param c set of devices
    * \returns a QueueDisc container with the queue discs installed on the devices
    *
@@ -425,18 +457,22 @@ public:
    * each device in the container. Then, stores the mapping between a
    * device and the associated queue disc into the traffic control layer
    * of the corresponding node.
+   * This method creates the queue discs (along with their packet filters,
+   * internal queues, classes) configured with the methods provided by this
+   * class and installs them on each device in the given container. Additionally,
+   * if configured, a queue limits object is installed on each transmission queue
+   * of the devices.
    */
   QueueDiscContainer Install (NetDeviceContainer c);
 
   /**
    * \param d device
-   * \returns a QueueDisc container with the queue disc installed on the device
+   * \returns a QueueDisc container with the queue discs installed on the device
    *
-   * This method creates a QueueDisc object of the type and with the
-   * attributes configured by TrafficControlHelper::SetQueueDisc for
-   * the given device. Then, stores the mapping between the device
-   * and the associated queue disc into the traffic control layer
-   * of the corresponding node.
+   * This method creates the queue discs (along with their packet filters,
+   * internal queues, classes) configured with the methods provided by this
+   * class and installs them on the given device. Additionally, if configured,
+   * a queue limits object is installed on each transmission queue of the device.
    */
   QueueDiscContainer Install (Ptr<NetDevice> d);
 
@@ -461,6 +497,8 @@ private:
   std::vector<QueueDiscFactory> m_queueDiscFactory;
   /// Vector of all the created queue discs
   std::vector<Ptr<QueueDisc> > m_queueDiscs;
+  /// Factory to create a queue limits object
+  ObjectFactory m_queueLimitsFactory;
 };
 
 } // namespace ns3

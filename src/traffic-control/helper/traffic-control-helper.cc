@@ -21,6 +21,7 @@
 #include "ns3/log.h"
 #include "ns3/abort.h"
 #include "ns3/queue-disc.h"
+#include "ns3/queue-limits.h"
 #include "ns3/uinteger.h"
 #include "ns3/pointer.h"
 #include "ns3/traffic-control-layer.h"
@@ -327,6 +328,28 @@ TrafficControlHelper::AddChildQueueDiscs (uint16_t handle, const TrafficControlH
   return list;
 }
 
+void
+TrafficControlHelper::SetQueueLimits (std::string type,
+                                      std::string n01, const AttributeValue& v01,
+                                      std::string n02, const AttributeValue& v02,
+                                      std::string n03, const AttributeValue& v03,
+                                      std::string n04, const AttributeValue& v04,
+                                      std::string n05, const AttributeValue& v05,
+                                      std::string n06, const AttributeValue& v06,
+                                      std::string n07, const AttributeValue& v07,
+                                      std::string n08, const AttributeValue& v08)
+{
+  m_queueLimitsFactory.SetTypeId (type);
+  m_queueLimitsFactory.Set (n01, v01);
+  m_queueLimitsFactory.Set (n02, v02);
+  m_queueLimitsFactory.Set (n03, v03);
+  m_queueLimitsFactory.Set (n04, v04);
+  m_queueLimitsFactory.Set (n05, v05);
+  m_queueLimitsFactory.Set (n06, v06);
+  m_queueLimitsFactory.Set (n07, v07);
+  m_queueLimitsFactory.Set (n08, v08);
+}
+
 QueueDiscContainer
 TrafficControlHelper::Install (Ptr<NetDevice> d)
 {
@@ -350,8 +373,26 @@ TrafficControlHelper::Install (Ptr<NetDevice> d)
       container.Add (q);
     }
 
-  // Set the root queue disc on the device
-  tc->SetRootQueueDiscOnDevice (d, m_queueDiscs[0]);
+  // Set the root queue disc (if any has been created) on the device
+  if (!m_queueDiscs.empty () && m_queueDiscs[0])
+    {
+      tc->SetRootQueueDiscOnDevice (d, m_queueDiscs[0]);
+    }
+
+  // SetRootQueueDiscOnDevice calls SetupDevice (if it has not been called yet),
+  // which aggregates a netdevice queue interface to the device and creates the
+  // device transmission queues. Hence, we can install a queue limits object (if
+  // required) on all the device transmission queues
+  if (m_queueLimitsFactory.GetTypeId ().GetUid ())
+    {
+      Ptr<NetDeviceQueueInterface> ndqi = d->GetObject<NetDeviceQueueInterface> ();
+      NS_ASSERT (ndqi);
+      for (uint8_t i = 0; i < ndqi->GetNTxQueues (); i++)
+        {
+          Ptr<QueueLimits> ql = m_queueLimitsFactory.Create<QueueLimits> ();
+          ndqi->GetTxQueue (i)->SetQueueLimits (ql);
+        }
+    }
 
   return container;
 }
@@ -376,6 +417,15 @@ TrafficControlHelper::Uninstall (Ptr<NetDevice> d)
   NS_ASSERT (tc != 0);
 
   tc->DeleteRootQueueDiscOnDevice (d);
+  // remove the queue limits objects installed on the device transmission queues
+  Ptr<NetDeviceQueueInterface> ndqi = d->GetObject<NetDeviceQueueInterface> ();
+  // if a queue disc has been installed on the device, a netdevice queue interface
+  // must have been aggregated to the device
+  NS_ASSERT (ndqi);
+  for (uint8_t i = 0; i < ndqi->GetNTxQueues (); i++)
+    {
+      ndqi->GetTxQueue (i)->SetQueueLimits (0);
+    }
 }
 
 void
