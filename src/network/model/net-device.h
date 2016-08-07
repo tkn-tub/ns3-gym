@@ -37,6 +37,7 @@ namespace ns3 {
 class Node;
 class Channel;
 class Packet;
+class QueueLimits;
 
 /**
  * \ingroup network
@@ -156,7 +157,6 @@ std::ostream& operator<< (std::ostream& os, const QueueItem &item);
  * stopped or not) and data used by techniques such as Byte Queue Limits.
  *
  * This class roughly models the struct netdev_queue of Linux.
- * \todo Implement BQL
  */
 class NetDeviceQueue : public SimpleRefCount<NetDeviceQueue>
 {
@@ -207,9 +207,40 @@ public:
    */
   virtual void SetWakeCallback (WakeCallback cb);
 
+  /**
+   * \brief Called by the netdevice to report the number of bytes queued to the device queue
+   * \param bytes number of bytes queued to the device queue
+   */
+  void NotifyQueuedBytes (uint32_t bytes);
+
+  /**
+   * \brief Called by the netdevice to report the number of bytes it is going to transmit
+   * \param bytes number of bytes the device is going to transmit
+   */
+  void NotifyTransmittedBytes (uint32_t bytes);
+
+  /**
+   * \brief Reset queue limits state
+   */
+  void ResetQueueLimits ();
+
+  /**
+   * \brief Set queue limits to this queue
+   * \param ql the queue limits associated to this queue
+   */
+  void SetQueueLimits (Ptr<QueueLimits> ql);
+
+  /**
+   * \brief Get queue limits to this queue
+   * \return the queue limits associated to this queue
+   */
+  Ptr<QueueLimits> GetQueueLimits ();
+
 private:
-  bool m_stopped;   //!< Status of the transmission queue
-  WakeCallback m_wakeCallback;   //!< Wake callback
+  bool m_stoppedByDevice;         //!< True if the queue has been stopped by the device
+  bool m_stoppedByQueueLimits;    //!< True if the queue has been stopped by a queue limits object
+  Ptr<QueueLimits> m_queueLimits; //!< Queue limits object
+  WakeCallback m_wakeCallback;    //!< Wake callback
 };
 
 
@@ -354,11 +385,22 @@ private:
  *   - set the select queue callback through the netdevice queue interface, if
  *     the device is multi-queue
  * In order to support flow control, a Traffic Control aware device must:
- *   - stop a device queue when there is no room for another packet. It must
- *     be avoided the situation in which a packet is received while the queue
- *     is not stopped and there is no room for the packet in the queue. Should
- *     such a situation occur, the device queue should be immediately stopped
- *   - wake up the queue disc when the device queue is empty.
+ *   - stop a device queue when there is no room for another packet. This check
+ *     is typically performed after successfully enqueuing a packet in the device
+ *     queue. Failing to enqueue a packet because there is no room for the packet
+ *     in the queue should be avoided. Should such a situation occur, the device
+ *     queue should be immediately stopped
+ *   - wake up the queue disc when the device queue is empty. This check is
+ *     typically performed after a dequeue operation fails because the device
+ *     queue is empty.
+ *   - start a device queue when the queue is stopped and there is room for
+ *     another packet. This check is typically performed after successfully
+ *     dequeuing a packet from the device queue
+ * In order to support BQL, a Traffic Control aware device must:
+ *   - call NotifyQueuedBytes after successfully enqueuing a packet in the
+ *     device queue
+ *   - call NotifyTransmittedBytes after successfully dequeuing a packet from
+ *     the device queue
  */
 class NetDevice : public Object
 {

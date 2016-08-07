@@ -22,6 +22,7 @@
 #include "ns3/log.h"
 #include "ns3/abort.h"
 #include "ns3/uinteger.h"
+#include "ns3/queue-limits.h"
 #include "net-device.h"
 #include "packet.h"
 
@@ -72,7 +73,8 @@ std::ostream & operator << (std::ostream &os, const QueueItem &item)
 }
 
 NetDeviceQueue::NetDeviceQueue()
-  : m_stopped (false)
+  : m_stoppedByDevice (false),
+    m_stoppedByQueueLimits (false)
 {
   NS_LOG_FUNCTION (this);
 }
@@ -85,19 +87,19 @@ NetDeviceQueue::~NetDeviceQueue ()
 bool
 NetDeviceQueue::IsStopped (void) const
 {
-  return m_stopped;
+  return m_stoppedByDevice || m_stoppedByQueueLimits;
 }
 
 void
 NetDeviceQueue::Start (void)
 {
-  m_stopped = false;
+  m_stoppedByDevice = false;
 }
 
 void
 NetDeviceQueue::Stop (void)
 {
-  m_stopped = true;
+  m_stoppedByDevice = true;
 }
 
 void
@@ -116,6 +118,68 @@ void
 NetDeviceQueue::SetWakeCallback (WakeCallback cb)
 {
   m_wakeCallback = cb;
+}
+
+void
+NetDeviceQueue::NotifyQueuedBytes (uint32_t bytes)
+{
+  NS_LOG_FUNCTION (this << bytes);
+  if (!m_queueLimits)
+    {
+      return;
+    }
+  m_queueLimits->Queued (bytes);
+  if (m_queueLimits->Available () >= 0)
+    {
+      return;
+    }
+  m_stoppedByQueueLimits = true;
+}
+
+void
+NetDeviceQueue::NotifyTransmittedBytes (uint32_t bytes)
+{
+  NS_LOG_FUNCTION (this << bytes);
+  if ((!m_queueLimits) || (!bytes))
+    {
+      return;
+    }
+  m_queueLimits->Completed (bytes);
+  if (m_queueLimits->Available () < 0)
+    {
+      return;
+    }
+  m_stoppedByQueueLimits = false;
+  // Request the queue disc to dequeue a packet
+  if (!m_wakeCallback.IsNull ())
+  {
+      m_wakeCallback ();
+  }
+}
+
+void
+NetDeviceQueue::ResetQueueLimits ()
+{
+  NS_LOG_FUNCTION (this);
+  if (!m_queueLimits)
+    {
+      return;
+    }
+  m_queueLimits->Reset ();
+}
+
+void
+NetDeviceQueue::SetQueueLimits (Ptr<QueueLimits> ql)
+{
+  NS_LOG_FUNCTION (this << ql);
+  m_queueLimits = ql;
+}
+
+Ptr<QueueLimits>
+NetDeviceQueue::GetQueueLimits ()
+{
+  NS_LOG_FUNCTION (this);
+  return m_queueLimits;
 }
 
 
