@@ -290,28 +290,28 @@ RegularWifiMac::SetBkMaxAmpduSize (uint32_t size)
 void
 RegularWifiMac::SetVoBlockAckThreshold (uint8_t threshold)
 {
-  NS_LOG_FUNCTION (this << threshold);
+  NS_LOG_FUNCTION (this << (uint16_t) threshold);
   GetVOQueue ()->SetBlockAckThreshold (threshold);
 }
 
 void
 RegularWifiMac::SetViBlockAckThreshold (uint8_t threshold)
 {
-  NS_LOG_FUNCTION (this << threshold);
+  NS_LOG_FUNCTION (this << (uint16_t) threshold);
   GetVIQueue ()->SetBlockAckThreshold (threshold);
 }
 
 void
 RegularWifiMac::SetBeBlockAckThreshold (uint8_t threshold)
 {
-  NS_LOG_FUNCTION (this << threshold);
+  NS_LOG_FUNCTION (this << (uint16_t) threshold);
   GetBEQueue ()->SetBlockAckThreshold (threshold);
 }
 
 void
 RegularWifiMac::SetBkBlockAckThreshold (uint8_t threshold)
 {
-  NS_LOG_FUNCTION (this << threshold);
+  NS_LOG_FUNCTION (this << (uint16_t) threshold);
   GetBKQueue ()->SetBlockAckThreshold (threshold);
 }
 
