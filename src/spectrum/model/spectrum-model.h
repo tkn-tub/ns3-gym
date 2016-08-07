@@ -120,6 +120,14 @@ public:
    */
   Bands::const_iterator End () const;
 
+  /**
+   * Check if another SpectrumModels has bands orthogonal to our bands.
+   *
+   * \param other another SpectrumModel
+   * \returns true if bands are orthogonal
+   */
+  bool IsOrthogonal (const SpectrumModel &other) const;
+
 private:
   Bands m_bands;         //!< Actual definition of frequency bands within this SpectrumModel
   SpectrumModelUid_t m_uid;        //!< unique id for a given set of frequencies
