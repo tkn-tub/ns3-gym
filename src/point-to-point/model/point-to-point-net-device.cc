@@ -341,6 +341,11 @@ PointToPointNetDevice::TransmitComplete (void)
   m_snifferTrace (p);
   m_promiscSnifferTrace (p);
   TransmitStart (p);
+  if (txq)
+    {
+      // Inform BQL
+      txq->NotifyTransmittedBytes (m_currentPkt->GetSize ());
+    }
 }
 
 bool
@@ -591,6 +596,11 @@ PointToPointNetDevice::Send (
   //
   if (m_queue->Enqueue (Create<QueueItem> (packet)))
     {
+      // Inform BQL
+      if (txq)
+        {
+          txq->NotifyQueuedBytes (packet->GetSize ());
+        }
       //
       // If the channel is ready for transition we send the packet right now
       // 
@@ -613,7 +623,13 @@ PointToPointNetDevice::Send (
             }
           m_snifferTrace (packet);
           m_promiscSnifferTrace (packet);
-          return TransmitStart (packet);
+          bool ret = TransmitStart (packet);
+          if (txq)
+            {
+              // Inform BQL
+              txq->NotifyTransmittedBytes (m_currentPkt->GetSize ());
+            }
+          return ret;
         }
       // We have enqueued a packet but we have not dequeued any packet. Thus, we
       // need to check whether the queue is able to store another packet. If not,
