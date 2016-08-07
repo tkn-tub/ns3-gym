@@ -4,3 +4,7 @@ def build(bld):
     obj = bld.create_ns3_program('traffic-control',
                                  ['internet', 'point-to-point', 'applications', 'traffic-control'])
     obj.source = 'traffic-control.cc'
+
+    obj = bld.create_ns3_program('queue-discs-benchmark',
+                                 ['internet', 'point-to-point', 'applications', 'internet-apps', 'traffic-control', 'flow-monitor'])
+    obj.source = 'queue-discs-benchmark.cc'
