@@ -16,6 +16,7 @@ def build(bld):
       'model/red-queue-disc.cc',
       'model/codel-queue-disc.cc',
       'model/fq-codel-queue-disc.cc',
+      'model/pie-queue-disc.cc',
       'helper/traffic-control-helper.cc',
       'helper/queue-disc-container.cc'
         ]
@@ -24,6 +25,7 @@ def build(bld):
     module_test.source = [
       'test/red-queue-disc-test-suite.cc',
       'test/codel-queue-disc-test-suite.cc',
+      'test/pie-queue-disc-test-suite.cc',
         ]
 
     headers = bld(features='ns3header')
@@ -36,6 +38,7 @@ def build(bld):
       'model/red-queue-disc.h',
       'model/codel-queue-disc.h',
       'model/fq-codel-queue-disc.h',
+      'model/pie-queue-disc.h',
       'helper/traffic-control-helper.h',
       'helper/queue-disc-container.h'
         ]
