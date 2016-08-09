@@ -27,11 +27,14 @@
 // n1 ------------------------------------ n2 ----------------------------------- n3
 //   point-to-point (access link)                point-to-point (bottleneck link)
 //   100 Mbps, 0.1 ms                            bandwidth [10 Mbps], delay [5 ms]
-//   qdiscs PfifoFast with capacity              qdiscs queueDiscType in {PfifoFast, ARED, CoDel} [PfifoFast]
+//   qdiscs PfifoFast with capacity              qdiscs queueDiscType in {PfifoFast, ARED, CoDel, FqCoDel, PIE} [PfifoFast]
 //   of 1000 packets                             with capacity of queueDiscSize packets [1000]
 //   netdevices queues with size of 100 packets  netdevices queues with size of netdevicesQueueSize packets [100]
 //   without BQL                                 bql BQL [false]
 //   *** fixed configuration ***
+//
+// Two TCP flows are generated: one from n1 to n3 and the other from n3 to n1.
+// Additionally, n1 pings n3, so that the RTT can be measured.
 //
 // The output will consist of a number of ping Rtt such as:
 //
@@ -109,7 +112,7 @@ int main (int argc, char *argv[])
   CommandLine cmd;
   cmd.AddValue ("bandwidth", "Bottleneck bandwidth", bandwidth);
   cmd.AddValue ("delay", "Bottleneck delay", delay);
-  cmd.AddValue ("queueDiscType", "Bottleneck queue disc type in {PfifoFast, ARED, CoDel}", queueDiscType);
+  cmd.AddValue ("queueDiscType", "Bottleneck queue disc type in {PfifoFast, ARED, CoDel, FqCoDel, PIE}", queueDiscType);
   cmd.AddValue ("queueDiscSize", "Bottleneck queue disc size in packets", queueDiscSize);
   cmd.AddValue ("netdevicesQueueSize", "Bottleneck netdevices queue size in packets", netdevicesQueueSize);
   cmd.AddValue ("bql", "Enable byte queue limits on bottleneck netdevices", bql);
@@ -155,13 +158,27 @@ int main (int argc, char *argv[])
     {
       handle = tchBottleneck.SetRootQueueDisc ("ns3::RedQueueDisc");
       Config::SetDefault ("ns3::RedQueueDisc::ARED", BooleanValue (true));
-      tchBottleneck.AddInternalQueues (handle, 1, "ns3::DropTailQueue", "MaxPackets", UintegerValue (queueDiscSize));
+      Config::SetDefault ("ns3::RedQueueDisc::Mode", EnumValue (Queue::QUEUE_MODE_PACKETS));
+      Config::SetDefault ("ns3::RedQueueDisc::QueueLimit", UintegerValue (queueDiscSize));
     }
   else if (queueDiscType.compare ("CoDel") == 0)
     {
       handle = tchBottleneck.SetRootQueueDisc ("ns3::CoDelQueueDisc");
       Config::SetDefault ("ns3::CoDelQueueDisc::Mode", EnumValue (Queue::QUEUE_MODE_PACKETS));
-      tchBottleneck.AddInternalQueues (handle, 1, "ns3::DropTailQueue", "MaxPackets", UintegerValue (queueDiscSize));
+      Config::SetDefault ("ns3::CoDelQueueDisc::MaxPackets", UintegerValue (queueDiscSize));
+    }
+  else if (queueDiscType.compare ("FqCoDel") == 0)
+    {
+      handle = tchBottleneck.SetRootQueueDisc ("ns3::FqCoDelQueueDisc");
+      Config::SetDefault ("ns3::FqCoDelQueueDisc::Packet limit", UintegerValue (queueDiscSize));
+      tchBottleneck.AddPacketFilter (handle, "ns3::FqCoDelIpv4PacketFilter");
+      tchBottleneck.AddPacketFilter (handle, "ns3::FqCoDelIpv6PacketFilter");
+    }
+  else if (queueDiscType.compare ("PIE") == 0)
+    {
+      handle = tchBottleneck.SetRootQueueDisc ("ns3::PieQueueDisc");
+      Config::SetDefault ("ns3::PieQueueDisc::Mode", EnumValue (Queue::QUEUE_MODE_PACKETS));
+      Config::SetDefault ("ns3::PieQueueDisc::QueueLimit", UintegerValue (queueDiscSize));
     }
   else
     {
