@@ -795,7 +795,7 @@ EdcaTxopN::MissedCts (void)
         {
           m_txFailedCallback (m_currentHdr);
         }
-      if (GetAmpduExist (m_currentHdr.GetAddr1 ()))
+      if (GetAmpduExist (m_currentHdr.GetAddr1 ()) || m_currentHdr.IsQosData ())
         {
           m_low->FlushAggregateQueue ();
           uint8_t tid = GetCurrentTid ();
@@ -944,7 +944,7 @@ EdcaTxopN::MissedAck (void)
         {
           m_txFailedCallback (m_currentHdr);
         }
-      if (GetAmpduExist (m_currentHdr.GetAddr1 ()))
+      if (GetAmpduExist (m_currentHdr.GetAddr1 ()) || m_currentHdr.IsQosData ())
         {
           uint8_t tid = GetCurrentTid ();
 
