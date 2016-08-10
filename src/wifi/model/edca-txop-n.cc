@@ -314,7 +314,7 @@ EdcaTxopN::DoDispose (void)
 }
 
 bool
-EdcaTxopN::GetBaAgreementExists (Mac48Address address, uint8_t tid)
+EdcaTxopN::GetBaAgreementExists (Mac48Address address, uint8_t tid) const
 {
   return m_baManager->ExistsAgreement (address, tid);
 }
@@ -717,7 +717,7 @@ EdcaTxopN::GotCts (double snr, WifiMode txMode)
 }
 
 uint8_t
-EdcaTxopN::GetCurrentTid ()
+EdcaTxopN::GetCurrentTid () const
 {
   NS_LOG_FUNCTION (this);
   if (m_currentHdr.IsQosData ())
@@ -1357,6 +1357,17 @@ bool
 EdcaTxopN::NeedFragmentation (void) const
 {
   NS_LOG_FUNCTION (this);
+  if (m_stationManager->HasVhtSupported ()
+      || GetAmpduExist (m_currentHdr.GetAddr1 ())
+      || (m_stationManager->HasHtSupported ()
+      && m_currentHdr.IsQosData ()
+      && GetBaAgreementExists (m_currentHdr.GetAddr1 (), GetCurrentTid ())
+      && GetMpduAggregator ()->GetMaxAmpduSize () >= m_currentPacket->GetSize ()))
+    {
+      //MSDU is not fragmented when it is transmitted using an HT-immediate or
+      //HT-delayed Block Ack agreement or when it is carried in an A-MPDU.
+      return false;
+    }
   return m_stationManager->NeedFragmentation (m_currentHdr.GetAddr1 (), &m_currentHdr,
                                               m_currentPacket);
 }
@@ -1543,7 +1554,7 @@ EdcaTxopN::VerifyBlockAck (void)
     }
 }
 
-bool EdcaTxopN::GetAmpduExist (Mac48Address dest)
+bool EdcaTxopN::GetAmpduExist (Mac48Address dest) const
 {
   NS_LOG_FUNCTION (this << dest);
   if (m_aMpduEnabled.find (dest) != m_aMpduEnabled.end ())

@@ -182,7 +182,7 @@ public:
    * Checks if a block ack agreement exists with station addressed by
    * <i>recipient</i> for tid <i>tid</i>.
    */
-  bool GetBaAgreementExists (Mac48Address address, uint8_t tid);
+  bool GetBaAgreementExists (Mac48Address address, uint8_t tid) const;
   /**
    * \param recipient address of peer station involved in block ack mechanism.
    * \param tid traffic ID.
@@ -424,7 +424,7 @@ public:
   void SetBlockAckInactivityTimeout (uint16_t timeout);
   void SendDelbaFrame (Mac48Address addr, uint8_t tid, bool byOriginator);
   void CompleteMpduTx (Ptr<const Packet> packet, WifiMacHeader hdr, Time tstamp);
-  bool GetAmpduExist (Mac48Address dest);
+  bool GetAmpduExist (Mac48Address dest) const;
   void SetAmpduExist (Mac48Address dest, bool enableAmpdu);
 
   /**
@@ -533,7 +533,7 @@ private:
   /**
    * Get Traffic ID of the current packet.
    */
-  uint8_t GetCurrentTid ();
+  uint8_t GetCurrentTid () const;
   /*
    * Return the remaining duration in the current TXOP.
    *

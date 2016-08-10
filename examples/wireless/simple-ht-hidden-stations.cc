@@ -71,8 +71,6 @@ int main (int argc, char *argv[])
       Config::SetDefault ("ns3::WifiRemoteStationManager::RtsCtsThreshold", StringValue ("0"));
     }
 
-  Config::SetDefault ("ns3::WifiRemoteStationManager::FragmentationThreshold", StringValue ("990000"));
-
   //Set the maximum size for A-MPDU with regards to the payload size
   maxAmpduSize = nMpdus * (payloadSize + 200);
 
