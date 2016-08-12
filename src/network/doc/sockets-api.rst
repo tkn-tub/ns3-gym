@@ -197,16 +197,38 @@ Socket options
 ToS (Type of Service)
 ======================
 
-The type of service associated with a socket can be set/read through public
-methods of the Socket base class::
+The native sockets API for ns-3 provides two public methods
+(of the Socket base class)::
 
     void SetIpTos (uint8_t ipTos);
     uint8_t GetIpTos (void) const;
 
-This option is equivalent to the IP_TOS option of BSD sockets. It only applies
-to sockets using the IPv4 protocol. The socket types that support setting
-the ToS field of the IPv4 header are :cpp:class:`ns3::UdpSocketImpl` and
-:cpp:class:`ns3::TcpSocketBase`.
+to set and get, respectively, the type of service associated with the socket.
+These methods are equivalent to using the IP_TOS option of BSD sockets.
+Clearly, setting the type of service only applies to sockets using the IPv4 protocol.
+However, users typically do not set the type of service associated with a socket
+through :cpp:func:`ns3::Socket::SetIpTos` because sockets are normally created
+by application helpers and users cannot get a pointer to the sockets.
+Instead, users can create an address of type :cpp:class:`ns3::InetSocketAddress`
+with the desired type of service value and pass it to the application helpers::
+
+    InetSocketAddress destAddress (ipv4Address, udpPort);
+    destAddress.SetTos (tos);
+    OnOffHelper onoff ("ns3::UdpSocketFactory", destAddress);
+
+For this to work, the application must eventually call the
+:cpp:func:`ns3::Socket::Connect()` method to connect to the provided
+destAddress and the Connect method of the particular socket type must
+support setting the type of service associated with a socket (by using
+the :cpp:func:`ns3::Socket::SetIpTos()` method). Currently, the socket
+types that support setting the type of service in such a way are
+:cpp:class:`ns3::UdpSocketImpl` and :cpp:class:`ns3::TcpSocketBase`.
+
+The type of service associated with a socket is then used to determine the value
+of the Type of Service field (renamed as Differentiated Services field by RFC
+2474) of the IPv4 header of the packets sent through that socket, as detailed
+in the next sections.
+
 
 Setting the ToS with UDP sockets
 #################################
@@ -217,37 +239,58 @@ For IPv4 packets, the ToS field is set according to the following rules:
   with the socket.
 
 * If the socket is not connected, the ToS field is set to the value specified
-  in the destination address (of type :cpp:class:`ns3::InetSockAddress`) passed
+  in the destination address (of type :cpp:class:`ns3::InetSocketAddress`) passed
   to :cpp:func:`ns3::Socket::SendTo`, and the ToS value associated with the
   socket is ignored.
-
-It has to be noted that the ToS value associated with the socket can also be set
-by the Bind and Connect operations, which use the ToS value specified in the
-provided address (of type :cpp:class:`ns3::InetSockAddress`).
 
 Setting the ToS with TCP sockets
 #################################
 
 For IPv4 packets, the ToS field is set to the ToS value associated with the
-socket. It has to be noted that the ToS value associated with the socket can
-also be set by the Bind and Connect operations, which use the ToS value specified
-in the provided address (of type :cpp:class:`ns3::InetSockAddress`).
+socket.
 
 Priority
 =========
 
-The priority associated with a socket can be set/read through public methods of
-the Socket base class::
+The native sockets API for ns-3 provides two public methods
+(of the Socket base class)::
 
     void SetPriority (uint8_t priority);
     uint8_t GetPriority (void) const;
 
-This option is equivalent to the SO_PRIORITY option of BSD sockets. Only values
-in the range 0..6 can be set through the above method. Note that setting a ToS
-value for the socket also sets a priority for the socket (according to
-the :cpp:func:`ns3::Socket::IpTos2Priority` function). The socket types that
-support setting the priority for a packet are :cpp:class:`ns3::UdpSocketImpl`,
-:cpp:class:`ns3::TcpSocketBase` and :cpp:class:`ns3::PacketSocket`.
+to set and get, respectively, the priority associated with the socket.
+These methods are equivalent to using the SO_PRIORITY option of BSD sockets.
+Only values in the range 0..6 can be set through the above method.
+
+Note that setting the type of service associated with a socket (by calling
+:cpp:func:`ns3::Socket::SetIpTos()`) also sets the priority for the socket
+to the value that the :cpp:func:`ns3::Socket::IpTos2Priority()` function
+returns when it is passed the type of service value. This function
+is implemented after the Linux rt_tos2priority function, which takes
+an 8-bit value as input and returns a value which is a function of bits 3-6
+(where bit 0 is the most significant bit) of the input value:
+
+=========  ====================
+Bits 3-6   Priority
+=========  ====================
+ 0 to 3    0 (Best Effort)
+ 4 to 7    2 (Bulk)
+ 8 to 11   6 (Interactive)
+ 12 to 15  4 (Interactive Bulk)
+=========  ====================
+
+The rationale is that bits 3-6 of the Type of Service field were interpreted
+as the TOS subfield by (the obsolete) RFC 1349. Readers can refer to the
+doxygen documentation of :cpp:func:`ns3::Socket::IpTos2Priority()`
+for more information, including how DSCP values map onto priority values.
+
+The priority set for a socket (as described above) is then used to determine
+the priority of the packets sent through that socket, as detailed in the next
+sections. Currently, the socket types that support setting the packet priority
+are :cpp:class:`ns3::UdpSocketImpl`, :cpp:class:`ns3::TcpSocketBase` and
+:cpp:class:`ns3::PacketSocket`. The packet priority is used, e.g., by queuing
+disciplines such as the default PfifoFastQueueDisc to classify packets into
+distinct queues.
 
 Setting the priority with UDP sockets
 ######################################

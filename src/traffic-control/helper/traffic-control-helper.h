@@ -131,7 +131,7 @@ public:
    * \returns a new TrafficControlHelper with a default configuration
    *
    * The default configuration is a PfifoFastQueueDisc with three internal queues
-   * of type DropTailQueue and size 1000 packets, and a PfifoFastIpv4PacketFilter.
+   * of type DropTailQueue and size 1000 packets.
    */
   static TrafficControlHelper Default (void);
 
