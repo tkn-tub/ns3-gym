@@ -874,7 +874,6 @@ void
 EdcaTxopN::Queue (Ptr<const Packet> packet, const WifiMacHeader &hdr)
 {
   NS_LOG_FUNCTION (this << packet << &hdr);
-  WifiMacTrailer fcs;
   m_stationManager->PrepareForQueue (hdr.GetAddr1 (), &hdr, packet);
   m_queue->Enqueue (packet, hdr);
   StartAccessIfNeeded ();
