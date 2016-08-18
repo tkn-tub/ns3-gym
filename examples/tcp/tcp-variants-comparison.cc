@@ -178,7 +178,7 @@ int main (int argc, char *argv[])
 
   CommandLine cmd;
   cmd.AddValue ("transport_prot", "Transport protocol to use: TcpNewReno, "
-                "TcpHybla, TcpHighSpeed, TcpVegas, TcpScalable, TcpVeno, "
+                "TcpHybla, TcpHighSpeed, TcpHtcp, TcpVegas, TcpScalable, TcpVeno, "
                 "TcpBic, TcpYeah, TcpIllinois, TcpWestwood, TcpWestwoodPlus ", transport_prot);
   cmd.AddValue ("error_p", "Packet error rate", error_p);
   cmd.AddValue ("bandwidth", "Bottleneck bandwidth", bandwidth);
@@ -245,6 +245,10 @@ int main (int argc, char *argv[])
   else if (transport_prot.compare ("TcpScalable") == 0)
     {
       Config::SetDefault ("ns3::TcpL4Protocol::SocketType", TypeIdValue (TcpScalable::GetTypeId ()));
+    }
+  else if (transport_prot.compare ("TcpHtcp") == 0)
+    {
+      Config::SetDefault ("ns3::TcpL4Protocol::SocketType", TypeIdValue (TcpHtcp::GetTypeId ()));
     }
   else if (transport_prot.compare ("TcpVeno") == 0)
     {
@@ -377,6 +381,7 @@ int main (int argc, char *argv[])
           || transport_prot.compare ("TcpWestwoodPlus") == 0
           || transport_prot.compare ("TcpHybla") == 0
           || transport_prot.compare ("TcpHighSpeed") == 0
+          || transport_prot.compare ("TcpHtcp") == 0
           || transport_prot.compare ("TcpVegas") == 0
           || transport_prot.compare ("TcpVeno") == 0
           || transport_prot.compare ("TcpBic") == 0

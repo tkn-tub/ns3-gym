@@ -636,6 +636,39 @@ default parameter settings:
 
 More information: http://www.doi.org/10.1145/1190095.1190166
 
+H-TCP
+^^^^^
+
+H-TCP has been designed for high BDP (Bandwidth-Delay Product) paths. It is 
+a dual mode protocol. In normal conditions, it works like traditional TCP 
+with the same rate of increment and decrement for the congestion window. 
+However, in high BDP networks, when it finds no congestion on the path 
+after ``deltal`` seconds, it increases the window size based on the alpha 
+function in the following:
+
+.. math::
+
+        alpha(delta)=1+10(delta-deltal)+0.5(delta-deltal)^2 
+
+where ``deltal`` is a threshold in seconds for switching between the modes and 
+``delta`` is the elapsed time from the last congestion. During congestion, 
+it reduces the window size by multiplying by beta function provided 
+in the reference paper.  The calculated throughput between the last two 
+consecutive congestion events is considered for beta calculation. 
+
+The transport ``TcpHtcp`` can be selected in the program 
+``examples/tcp/tcp-variants/comparison`` to perform an experiment with H-TCP,
+although it is useful to increase the bandwidth in this example (e.g.
+to 20 Mb/s) to create a higher BDP link, such as
+
+::
+
+  ./waf --run "tcp-variants-comparison --transport_prot=TcpHtcp --bandwidth=20Mbps --duration=10"
+
+More information (paper):  http://www.hamilton.ie/net/htcp3.pdf
+
+More information (Internet Draft):  https://tools.ietf.org/html/draft-leith-tcp-htcp-06
+
 Validation
 ++++++++++
 
@@ -653,6 +686,7 @@ section below on :ref:`Writing-tcp-tests`.
 * **tcp-fast-retr-test:** Fast Retransmit testing
 * **tcp-header:** Unit tests on the TCP header
 * **tcp-highspeed-test:** Unit tests on the Highspeed congestion control
+* **tcp-htcp-test:** Unit tests on the H-TCP congestion control
 * **tcp-hybla-test:** Unit tests on the Hybla congestion control
 * **tcp-vegas-test:** Unit tests on the Vegas congestion control
 * **tcp-veno-test:** Unit tests on the Veno congestion control
