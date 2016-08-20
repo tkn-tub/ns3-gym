@@ -89,8 +89,8 @@ private:
   void UpdateBeta (void);
 
   // h-tcp variables
-  double m_alpha;                    //!< AMID additive increase parameter
-  double m_beta;                     //!< AMID multiplicative decrease factor
+  double m_alpha;                    //!< AIMD additive increase parameter
+  double m_beta;                     //!< AIMD multiplicative decrease factor
   double m_defaultBackoff;           //!< default value when throughput ratio less than default
   double m_throughputRatio;          //!< ratio of two consequence throughput
   Time m_delta;                      //!< Time in second that has elapsed since the
