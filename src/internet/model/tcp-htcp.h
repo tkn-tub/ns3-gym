@@ -79,33 +79,23 @@ protected:
 
 private:
   /**
-   * \brief calculates alpha as an increment parameter for HTCP
-   *
-   * \param tcb as TcpSocketState
-   *
-   * \return updated value of alpha as the increment factor
+   * \brief Updates the additive increase parameter for H-TCP
    */
   void UpdateAlpha (void);
 
   /**
-   * \brief calculates beta as the decrement parameter for HTCP
-   *
-   * \param tcb as TcpSocketState
-   *
-   * \return updated value of beta as the decrement factor
+   * \brief Updates the multiplicative decrease factor beta for H-TCP
    */
   void UpdateBeta (void);
 
-  // h-tcp varaibles
-  double m_alpha;                    //!< Adjusting the AMID increase parameter by
-                                     //f_alpha(m_delta) function
-  double m_beta;                     //!< AMID decrease parameter
+  // h-tcp variables
+  double m_alpha;                    //!< AMID additive increase parameter
+  double m_beta;                     //!< AMID multiplicative decrease factor
   double m_defaultBackoff;           //!< default value when throughput ratio less than default
   double m_throughputRatio;          //!< ratio of two consequence throughput
   Time m_delta;                      //!< Time in second that has elapsed since the
                                      //last congestion event experienced by a flow
-  Time m_deltaL;                     //!< Threshold for switching between standard
-  //and new increase function
+  Time m_deltaL;                     //!< Threshold for switching between standard and new increase function
   Time m_lastCon;                    //!< Time of the last congestion for the flow
   Time m_minRtt;                     //!< Minimum RTT in each congestion period
   Time m_maxRtt;                     //!< Maximum RTT in each congestion period

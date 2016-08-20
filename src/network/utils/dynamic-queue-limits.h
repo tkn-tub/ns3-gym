@@ -77,6 +77,13 @@ public:
   virtual void Queued (uint32_t count);
 
 private:
+  /**
+   * Calculates the difference between the two operators and
+   * returns the number if positive, zero otherwise.
+   * \param a First operator.
+   * \param b Second operator.
+   * \returns the difference between a and b if positive, zero otherwise.
+   */
   int32_t Posdiff (int32_t a, int32_t b);
 
   // Fields accessed in enqueue path

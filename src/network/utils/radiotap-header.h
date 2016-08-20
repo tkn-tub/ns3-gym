@@ -40,8 +40,8 @@ class RadiotapHeader : public Header
 public:
   RadiotapHeader ();
   /**
-   * \brief Get the type ID.
-   * \return the object TypeId
+   * @brief Get the type ID.
+   * @returns the object TypeId
    */
   static TypeId GetTypeId (void);
   virtual TypeId GetInstanceTypeId (void) const;
@@ -111,7 +111,10 @@ public:
    */
   uint64_t GetTsft (void) const;
 
-  enum
+  /**
+   * @brief Frame flags.
+   */
+  enum FrameFlag
   {
     FRAME_FLAG_NONE           = 0x00, /**< No flags set */
     FRAME_FLAG_CFP            = 0x01, /**< Frame sent/received during CFP */
@@ -149,7 +152,10 @@ public:
    */
   uint8_t GetRate (void) const;
 
-  enum
+  /**
+   * @brief Channel flags.
+   */
+  enum ChannelFlags
   {
     CHANNEL_FLAG_NONE          = 0x0000, /**< No flags set */
     CHANNEL_FLAG_TURBO         = 0x0010, /**< Turbo Channel */
@@ -219,7 +225,10 @@ public:
    */
   uint8_t GetAntennaNoisePower (void) const;
 
-  enum
+  /**
+   * @brief MCS known bits.
+   */
+  enum McsKnown
   {
     MCS_KNOWN_NONE           = 0x00, /**< No flags set */
     MCS_KNOWN_BANDWIDTH      = 0x01, /**< Bandwidth */
@@ -232,7 +241,10 @@ public:
     MCS_KNOWN_NESS_BIT_1     = 0x80, /**< Ness data - bit 1 (MSB) of Number of extension spatial streams */
   };
 
-  enum
+  /**
+   * @brief MCS flags.
+   */
+  enum McsFlags
   {
     MCS_FLAGS_NONE           = 0x00, /**< Default: 20 MHz, long guard interval, mixed HT format and BCC FEC type */
     MCS_FLAGS_BANDWIDTH_40   = 0x01, /**< 40 MHz */
@@ -273,7 +285,10 @@ public:
    */
   uint8_t GetMcsRate (void) const;
 
-  enum
+  /**
+   * @brief A-MPDU status flags.
+   */
+  enum AmpduFlags
   {
     A_MPDU_STATUS_NONE                = 0x00, /**< No flags set */
     A_MPDU_STATUS_REPORT_ZERO_LENGTH  = 0x01, /**< Driver reports 0-length subframes */
@@ -306,7 +321,10 @@ public:
    */
   uint16_t GetAmpduStatusFlags (void) const;
 
-  enum
+  /**
+   * @brief VHT known bits.
+   */
+  enum VhtKnown
   {
     VHT_KNOWN_NONE                         = 0x0000, /**< No flags set */
     VHT_KNOWN_STBC                         = 0x0001, /**< Space-time block coding (1 if all spatial streams of all users have STBC, 0 otherwise). */
@@ -320,14 +338,17 @@ public:
     VHT_KNOWN_PARTIAL_AID                  = 0x0100, /**< Partial AID known/applicable */
   };
 
-  enum
+  /**
+   * @brief VHT flags.
+   */
+  enum VhtFlags
   {
     VHT_FLAGS_NONE                         = 0x00, /**< No flags set */
     VHT_FLAGS_STBC                         = 0x01, /**< Set if all spatial streams of all users have space-time block coding */
     VHT_FLAGS_TXOP_PS_NOT_ALLOWED          = 0x02, /**< Set if STAs may not doze during TXOP (valid only for AP transmitters). */
     VHT_FLAGS_GUARD_INTERVAL               = 0x04, /**< Short guard interval */
     VHT_FLAGS_SHORT_GI_NSYM_DISAMBIGUATION = 0x08, /**< Set if NSYM mod 10 = 9 (valid only if short GI is used).*/
-    VHT_FLAGS__LDPC_EXTRA_OFDM_SYMBOL      = 0x10, /**< Set if one or more users are using LDPC and the encoding process resulted in extra OFDM symbol(s) */
+    VHT_FLAGS_LDPC_EXTRA_OFDM_SYMBOL       = 0x10, /**< Set if one or more users are using LDPC and the encoding process resulted in extra OFDM symbol(s) */
     VHT_FLAGS_BEAMFORMED                   = 0x20, /**< Set if beamforming is used (valid for SU PPDUs only). */
   };
 
@@ -410,7 +431,10 @@ public:
 
 
 private:
-  enum
+  /**
+   * @brief Radiotap flags.
+   */
+  enum RadiotapFlags
   {
     RADIOTAP_TSFT              = 0x00000001,
     RADIOTAP_FLAGS             = 0x00000002,
