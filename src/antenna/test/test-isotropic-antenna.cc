@@ -60,7 +60,7 @@ IsotropicAntennaModelTestCase::IsotropicAntennaModelTestCase (Angles a, double e
 void
 IsotropicAntennaModelTestCase::DoRun ()
 {
-  Ptr<IsotropicAntennaModel> a = Create<IsotropicAntennaModel> ();
+  Ptr<IsotropicAntennaModel> a = CreateObject<IsotropicAntennaModel> ();
   double actualGain = a->GetGainDb (m_a);
   NS_TEST_EXPECT_MSG_EQ_TOL (actualGain, m_expectedGain, 0.01, "wrong value of the radiation pattern");
 }
