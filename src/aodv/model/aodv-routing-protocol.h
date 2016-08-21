@@ -74,18 +74,18 @@ public:
   virtual void PrintRoutingTable (Ptr<OutputStreamWrapper> stream) const;
 
   // Handle protocol parameters
-  Time GetMaxQueueTime () const { return MaxQueueTime; }
+  Time GetMaxQueueTime () const { return m_maxQueueTime; }
   void SetMaxQueueTime (Time t);
-  uint32_t GetMaxQueueLen () const { return MaxQueueLen; }
+  uint32_t GetMaxQueueLen () const { return m_maxQueueLen; }
   void SetMaxQueueLen (uint32_t len);
-  bool GetDesinationOnlyFlag () const { return DestinationOnly; }
-  void SetDesinationOnlyFlag (bool f) { DestinationOnly = f; }
-  bool GetGratuitousReplyFlag () const { return GratuitousReply; }
-  void SetGratuitousReplyFlag (bool f) { GratuitousReply = f; }
-  void SetHelloEnable (bool f) { EnableHello = f; }
-  bool GetHelloEnable () const { return EnableHello; }
-  void SetBroadcastEnable (bool f) { EnableBroadcast = f; }
-  bool GetBroadcastEnable () const { return EnableBroadcast; }
+  bool GetDesinationOnlyFlag () const { return m_destinationOnly; }
+  void SetDesinationOnlyFlag (bool f) { m_destinationOnly = f; }
+  bool GetGratuitousReplyFlag () const { return m_gratuitousReply; }
+  void SetGratuitousReplyFlag (bool f) { m_gratuitousReply = f; }
+  void SetHelloEnable (bool f) { m_enableHello = f; }
+  bool GetHelloEnable () const { return m_enableHello; }
+  void SetBroadcastEnable (bool f) { m_enableBroadcast = f; }
+  bool GetBroadcastEnable () const { return m_enableBroadcast; }
 
  /**
   * Assign a fixed random variable stream number to the random variables
@@ -102,42 +102,42 @@ protected:
 private:
   
   // Protocol parameters.
-  uint32_t RreqRetries;             ///< Maximum number of retransmissions of RREQ with TTL = NetDiameter to discover a route
-  uint16_t TtlStart;                ///< Initial TTL value for RREQ.
-  uint16_t TtlIncrement;            ///< TTL increment for each attempt using the expanding ring search for RREQ dissemination.
-  uint16_t TtlThreshold;            ///< Maximum TTL value for expanding ring search, TTL = NetDiameter is used beyond this value.
-  uint16_t TimeoutBuffer;           ///< Provide a buffer for the timeout.
-  uint16_t RreqRateLimit;           ///< Maximum number of RREQ per second.
-  uint16_t RerrRateLimit;           ///< Maximum number of REER per second.
-  Time ActiveRouteTimeout;          ///< Period of time during which the route is considered to be valid.
-  uint32_t NetDiameter;             ///< Net diameter measures the maximum possible number of hops between two nodes in the network
+  uint32_t m_rreqRetries;             ///< Maximum number of retransmissions of RREQ with TTL = NetDiameter to discover a route
+  uint16_t m_ttlStart;                ///< Initial TTL value for RREQ.
+  uint16_t m_ttlIncrement;            ///< TTL increment for each attempt using the expanding ring search for RREQ dissemination.
+  uint16_t m_ttlThreshold;            ///< Maximum TTL value for expanding ring search, TTL = NetDiameter is used beyond this value.
+  uint16_t m_timeoutBuffer;           ///< Provide a buffer for the timeout.
+  uint16_t m_rreqRateLimit;           ///< Maximum number of RREQ per second.
+  uint16_t m_rerrRateLimit;           ///< Maximum number of REER per second.
+  Time m_activeRouteTimeout;          ///< Period of time during which the route is considered to be valid.
+  uint32_t m_netDiameter;             ///< Net diameter measures the maximum possible number of hops between two nodes in the network
   /**
    *  NodeTraversalTime is a conservative estimate of the average one hop traversal time for packets
    *  and should include queuing delays, interrupt processing times and transfer times.
    */
-  Time NodeTraversalTime;
-  Time NetTraversalTime;             ///< Estimate of the average net traversal time.
-  Time PathDiscoveryTime;            ///< Estimate of maximum time needed to find route in network.
-  Time MyRouteTimeout;               ///< Value of lifetime field in RREP generating by this node.
+  Time m_nodeTraversalTime;
+  Time m_netTraversalTime;             ///< Estimate of the average net traversal time.
+  Time m_pathDiscoveryTime;            ///< Estimate of maximum time needed to find route in network.
+  Time m_myRouteTimeout;               ///< Value of lifetime field in RREP generating by this node.
   /**
    * Every HelloInterval the node checks whether it has sent a broadcast  within the last HelloInterval.
    * If it has not, it MAY broadcast a  Hello message
    */
-  Time HelloInterval;
-  uint32_t AllowedHelloLoss;         ///< Number of hello messages which may be loss for valid link
+  Time m_helloInterval;
+  uint32_t m_allowedHelloLoss;         ///< Number of hello messages which may be loss for valid link
   /**
    * DeletePeriod is intended to provide an upper bound on the time for which an upstream node A
    * can have a neighbor B as an active next hop for destination D, while B has invalidated the route to D.
    */
-  Time DeletePeriod;
-  Time NextHopWait;                  ///< Period of our waiting for the neighbour's RREP_ACK
-  Time BlackListTimeout;             ///< Time for which the node is put into the blacklist
-  uint32_t MaxQueueLen;              ///< The maximum number of packets that we allow a routing protocol to buffer.
-  Time MaxQueueTime;                 ///< The maximum period of time that a routing protocol is allowed to buffer a packet for.
-  bool DestinationOnly;              ///< Indicates only the destination may respond to this RREQ.
-  bool GratuitousReply;              ///< Indicates whether a gratuitous RREP should be unicast to the node originated route discovery.
-  bool EnableHello;                  ///< Indicates whether a hello messages enable
-  bool EnableBroadcast;              ///< Indicates whether a a broadcast data packets forwarding enable
+  Time m_deletePeriod;
+  Time m_nextHopWait;                  ///< Period of our waiting for the neighbour's RREP_ACK
+  Time m_blackListTimeout;             ///< Time for which the node is put into the blacklist
+  uint32_t m_maxQueueLen;              ///< The maximum number of packets that we allow a routing protocol to buffer.
+  Time m_maxQueueTime;                 ///< The maximum period of time that a routing protocol is allowed to buffer a packet for.
+  bool m_destinationOnly;              ///< Indicates only the destination may respond to this RREQ.
+  bool m_gratuitousReply;              ///< Indicates whether a gratuitous RREP should be unicast to the node originated route discovery.
+  bool m_enableHello;                  ///< Indicates whether a hello messages enable
+  bool m_enableBroadcast;              ///< Indicates whether a a broadcast data packets forwarding enable
   //\}
 
   /// IP protocol
