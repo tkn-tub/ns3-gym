@@ -70,6 +70,9 @@ public:
     /// PointToPoint devices, but not with WiFi or WiMax.
     DROP_QUEUE,
 
+    /// Packet dropped by the queue disc
+    DROP_QUEUE_DISC,
+
     DROP_INTERFACE_DOWN,   /**< Interface is down so can not send packet */
     DROP_ROUTE_ERROR,   /**< Route error */
     DROP_FRAGMENT_TIMEOUT, /**< Fragment timeout exceeded */
@@ -108,6 +111,9 @@ private:
   /// Log a packet being dropped by a queue
   /// \param ipPayload IP payload
   void QueueDropLogger (Ptr<const Packet> ipPayload);
+  /// Log a packet being dropped by a queue disc
+  /// \param item queue item
+  void QueueDiscDropLogger (Ptr<const QueueItem> item);
 
   Ptr<Ipv4FlowClassifier> m_classifier; //!< the Ipv4FlowClassifier this probe is associated with
   Ptr<Ipv4L3Protocol> m_ipv4; //!< the Ipv4L3Protocol this probe is bound to

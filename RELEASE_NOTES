@@ -93,6 +93,7 @@ Bugs fixed
 - Bug 2454 - DsrRouting::NotifyDataReceipt is also triggered for wifi management packets
 - Bug 2468 - Simulation with A-MPDU enabled hangs when fragmentation threshold is smaller than MSDU size
 - Bug 2469 - send Block Ack Request upon short/long retry failures
+- Bug 2479 - Flow monitor does not a have a "DROP_QUEUE_DISC" drop reason
 
 Known issues
 ------------
