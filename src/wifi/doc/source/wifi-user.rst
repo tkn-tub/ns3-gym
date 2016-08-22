@@ -575,13 +575,23 @@ in an infrastructure network where the AP has SSID ``ns-3-ssid``::
 Selection of the Access Category (AC)
 +++++++++++++++++++++++++++++++++++++
 
-The selection of the Access Category (AC) for an MSDU is based on the value of
-the DS field in the IP header of the packet (ToS field in case of IPv4, Traffic
-Class field in case of IPv6) and is performed similarly to what is done by the
+Since ns-3.26, the QosTag is no longer used to assign a user priority to an MSDU.
+Instead, the selection of the Access Category (AC) for an MSDU is based on the
+value of the DS field in the IP header of the packet (ToS field in case of IPv4,
+Traffic Class field in case of IPv6). Details on how to set the ToS field of IPv4
+packets are given in the :ref:`Type-of-service` section of the documentation. In
+summary, users can create an address of type :cpp:class:`ns3::InetSocketAddress`
+with the desired type of service value and pass it to the application helpers::
+
+    InetSocketAddress destAddress (ipv4Address, udpPort);
+    destAddress.SetTos (tos);
+    OnOffHelper onoff ("ns3::UdpSocketFactory", destAddress);
+
+Mapping the values of the DS field onto user priorities is performed similarly to the
 Linux mac80211 subsystem. Basically, the :cpp:func:`ns3::WifiNetDevice::SelectQueue()`
 method sets the user priority (UP) of an MSDU to the three most significant
-bits of the DS field. The Access Category is then determined according to the
-following table:
+bits of the DS field. The Access Category is then determined based on the user priority
+according to the following table:
 
 ===  ===============
 UP   Access Category
@@ -599,6 +609,9 @@ UP   Access Category
 Readers can refer to the doxygen documentation of the
 :cpp:func:`ns3::WifiNetDevice::SelectQueue()` method for more information,
 including how DSCP values map onto user priorities and access categories.
+Also, the ns3-wifi-ac-mapping test suite (defined in 
+src/test/ns3wifi/wifi-ac-mapping-test-suite.cc) can provide additional
+useful information.
 
 Note that :cpp:func:`ns3::WifiNetDevice::SelectQueue()` also sets the packet
 priority to the user priority, thus overwriting the value determined by the

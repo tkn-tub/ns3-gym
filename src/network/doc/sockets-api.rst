@@ -194,6 +194,8 @@ a real (zeroed) buffer on the spot, and the efficiency will be lost there.
 Socket options
 **************
 
+.. _Type-of-service:
+
 ToS (Type of Service)
 ======================
 
