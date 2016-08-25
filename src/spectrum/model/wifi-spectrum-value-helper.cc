@@ -213,7 +213,6 @@ WifiSpectrumValueHelper::CreateOfdmTxPowerSpectralDensity (uint32_t centerFreque
       // skip 38 subbands, then place power in 26 subbands, then
       // skip the center subband, then place power in 26 subbands, then skip
       // the final 38 subbands.  
-      std::cout << c->GetSpectrumModel ()->GetNumBands () << std::endl;
       NS_ASSERT_MSG (c->GetSpectrumModel ()->GetNumBands () == 129, "Unexpected number of bands");
       txPowerPerBand = txPowerW / 52;
       for (size_t i = 0; i < c->GetSpectrumModel ()->GetNumBands (); i++, vit++, bit++)
@@ -236,7 +235,6 @@ WifiSpectrumValueHelper::CreateOfdmTxPowerSpectralDensity (uint32_t centerFreque
       // skip 34 subbands, then place power in 14 subbands, then
       // skip the center subband, then place power in 14 subbands, then skip
       // the final 34 subbands.  
-      std::cout << c->GetSpectrumModel ()->GetNumBands () << std::endl;
       NS_ASSERT_MSG (c->GetSpectrumModel ()->GetNumBands () == 97, "Unexpected number of bands");
       txPowerPerBand = txPowerW / 28;
       for (size_t i = 0; i < c->GetSpectrumModel ()->GetNumBands (); i++, vit++, bit++)
@@ -259,7 +257,6 @@ WifiSpectrumValueHelper::CreateOfdmTxPowerSpectralDensity (uint32_t centerFreque
       // skip 34 subbands, then place power in 14 subbands, then
       // skip the center subband, then place power in 14 subbands, then skip
       // the final 34 subbands.  
-      std::cout << c->GetSpectrumModel ()->GetNumBands () << std::endl;
       NS_ASSERT_MSG (c->GetSpectrumModel ()->GetNumBands () == 81, "Unexpected number of bands");
       txPowerPerBand = txPowerW / 16;
       for (size_t i = 0; i < c->GetSpectrumModel ()->GetNumBands (); i++, vit++, bit++)
