@@ -20,6 +20,7 @@
 */
 
 #include "ns3/test.h"
+#include "ns3/simulator.h"
 #include "ns3/fq-codel-queue-disc.h"
 #include "ns3/ipv4-header.h"
 #include "ns3/ipv4-packet-filter.h"
@@ -81,6 +82,8 @@ FqCoDelQueueDiscNoSuitableFilter::DoRun (void)
   item = Create<Ipv6QueueDiscItem> (p, dest, 0, ipv6Header);
   queueDisc->Enqueue (item);
   NS_TEST_ASSERT_MSG_EQ (queueDisc->GetNQueueDiscClasses (), 0, "no flow queue should have been created");
+
+  Simulator::Destroy ();
 }
 
 /**
@@ -152,6 +155,8 @@ FqCoDelQueueDiscIPFlowsSeparationAndPacketLimit::DoRun (void)
   NS_TEST_ASSERT_MSG_EQ (queueDisc->QueueDisc::GetNPackets (), 3, "unexpected number of packets in the queue disc");
   NS_TEST_ASSERT_MSG_EQ (queueDisc->GetQueueDiscClass (0)->GetQueueDisc ()->GetNPackets (), 1, "unexpected number of packets in the flow queue");
   NS_TEST_ASSERT_MSG_EQ (queueDisc->GetQueueDiscClass (1)->GetQueueDisc ()->GetNPackets (), 2, "unexpected number of packets in the flow queue");
+
+  Simulator::Destroy ();
 }
 
 /**
@@ -296,6 +301,8 @@ FqCoDelQueueDiscDeficit::DoRun (void)
   NS_TEST_ASSERT_MSG_EQ (flow1->GetStatus (), FqCoDelFlow::INACTIVE, "the first flow must be inactive");
   NS_TEST_ASSERT_MSG_EQ (flow2->GetDeficit (), 30, "unexpected deficit for the second flow");
   NS_TEST_ASSERT_MSG_EQ (flow2->GetStatus (), FqCoDelFlow::INACTIVE, "the second flow must be inactive");
+
+  Simulator::Destroy ();
 }
 
 /**
@@ -384,6 +391,8 @@ FqCoDelQueueDiscTCPFlowsSeparation::DoRun (void)
   NS_TEST_ASSERT_MSG_EQ (queueDisc->GetQueueDiscClass (1)->GetQueueDisc ()->GetNPackets (), 1, "unexpected number of packets in the second flow queue");
   NS_TEST_ASSERT_MSG_EQ (queueDisc->GetQueueDiscClass (2)->GetQueueDisc ()->GetNPackets (), 1, "unexpected number of packets in the third flow queue");
   NS_TEST_ASSERT_MSG_EQ (queueDisc->GetQueueDiscClass (3)->GetQueueDisc ()->GetNPackets (), 2, "unexpected number of packets in the third flow queue");
+
+  Simulator::Destroy ();
 }
 
 /**
@@ -472,6 +481,8 @@ FqCoDelQueueDiscUDPFlowsSeparation::DoRun (void)
   NS_TEST_ASSERT_MSG_EQ (queueDisc->GetQueueDiscClass (1)->GetQueueDisc ()->GetNPackets (), 1, "unexpected number of packets in the second flow queue");
   NS_TEST_ASSERT_MSG_EQ (queueDisc->GetQueueDiscClass (2)->GetQueueDisc ()->GetNPackets (), 1, "unexpected number of packets in the third flow queue");
   NS_TEST_ASSERT_MSG_EQ (queueDisc->GetQueueDiscClass (3)->GetQueueDisc ()->GetNPackets (), 2, "unexpected number of packets in the third flow queue");
+
+  Simulator::Destroy ();
 }
 
 class FqCoDelQueueDiscTestSuite : public TestSuite
