@@ -527,7 +527,6 @@ int main (int argc, char *argv[])
 
       Simulator::Stop (Seconds (simulationTime + 1));
       Simulator::Run ();
-      Simulator::Destroy ();
 
       double throughput = 0;
       uint32_t totalPacketsThrough = 0;
@@ -563,6 +562,7 @@ int main (int argc, char *argv[])
             std::setw (12) << "N/A" <<
             std::endl;
         }
+      Simulator::Destroy ();
     }
   return 0;
 }
