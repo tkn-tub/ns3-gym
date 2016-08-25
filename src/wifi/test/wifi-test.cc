@@ -996,8 +996,10 @@ Bug2222TestCase::DoRun (void)
   m_countInternalCollisions = 0;
     
   //Generate same backoff for AC_VI and AC_VO
+  //The below combination will work
   RngSeedManager::SetSeed (1);
-  RngSeedManager::SetRun (31);
+  RngSeedManager::SetRun (2);
+  int64_t streamNumber = 100;
 
   NodeContainer wifiNodes;
   wifiNodes.Create (2);
@@ -1014,6 +1016,9 @@ Bug2222TestCase::DoRun (void)
 
   NetDeviceContainer wifiDevices;
   wifiDevices = wifi.Install (phy, mac, wifiNodes);
+
+  // Assign fixed streams to random variables in use
+  wifi.AssignStreams (wifiDevices, streamNumber);
 
   MobilityHelper mobility;
   Ptr<ListPositionAllocator> positionAlloc = CreateObject<ListPositionAllocator> ();
