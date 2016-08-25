@@ -130,8 +130,8 @@ WifiSpectrumValueHelper::CreateHtOfdmTxPowerSpectralDensity (uint32_t centerFreq
             }
         }
       NS_LOG_DEBUG ("Added signal power to subbands 36-63 and 65-92");
-      NS_LOG_DEBUG ("Integrated power " << Integral (*(GetPointer (c))));
-      NS_ASSERT_MSG (std::abs (txPowerW - Integral (*(GetPointer (c)))) < 1e-6, "Power allocation failed"); 
+      NS_LOG_DEBUG ("Integrated power " << Integral (*c));
+      NS_ASSERT_MSG (std::abs (txPowerW - Integral (*c)) < 1e-6, "Power allocation failed"); 
       break;
     case 40:
       // 112 subcarriers (104 data + 8 pilot) 
@@ -146,8 +146,8 @@ WifiSpectrumValueHelper::CreateHtOfdmTxPowerSpectralDensity (uint32_t centerFreq
             }
         }
       NS_LOG_DEBUG ("Added signal power to subbands 36-63, 65-92, 100-127, and 129-156");
-      NS_LOG_DEBUG ("Integrated power " << Integral (*(GetPointer (c))));
-      NS_ASSERT_MSG (std::abs (txPowerW - Integral (*(GetPointer (c)))) < 1e-6, "Power allocation failed"); 
+      NS_LOG_DEBUG ("Integrated power " << Integral (*c));
+      NS_ASSERT_MSG (std::abs (txPowerW - Integral (*c)) < 1e-6, "Power allocation failed"); 
       break;
     case 80:
       // 224 subcarriers (208 data + 16 pilot) 
@@ -165,8 +165,8 @@ WifiSpectrumValueHelper::CreateHtOfdmTxPowerSpectralDensity (uint32_t centerFreq
             }
         }
       NS_LOG_DEBUG ("Added signal power to subbands 36-63, 65-92, 100-127, 129-156, 164-191, 193-220, 228-255, 257-284");
-      NS_LOG_DEBUG ("Integrated power " << Integral (*(GetPointer (c))));
-      NS_ASSERT_MSG (std::abs (txPowerW - Integral (*(GetPointer (c)))) < 1e-6, "Power allocation failed"); 
+      NS_LOG_DEBUG ("Integrated power " << Integral (*c));
+      NS_ASSERT_MSG (std::abs (txPowerW - Integral (*c)) < 1e-6, "Power allocation failed"); 
       break;
     case 160:
       // 448 subcarriers (416 data + 32 pilot) VHT 
@@ -188,8 +188,8 @@ WifiSpectrumValueHelper::CreateHtOfdmTxPowerSpectralDensity (uint32_t centerFreq
             }
         }
       NS_LOG_DEBUG ("Added signal power to subbands 36-63, 65-92, 100-127, 129-156, 164-191, 193-220, 228-255, 257-284, 292-319, 321-348, 356-383, 385-412, 420-447, 449-476, 484-511, and 513-540");
-      NS_LOG_DEBUG ("Integrated power " << Integral (*(GetPointer (c))));
-      NS_ASSERT_MSG (std::abs (txPowerW - Integral (*(GetPointer (c)))) < 1e-6, "Power allocation failed"); 
+      NS_LOG_DEBUG ("Integrated power " << Integral (*c));
+      NS_ASSERT_MSG (std::abs (txPowerW - Integral (*c)) < 1e-6, "Power allocation failed"); 
       break;
     default:
       NS_FATAL_ERROR ("ChannelWidth " << channelWidth << " unsupported");
@@ -227,8 +227,8 @@ WifiSpectrumValueHelper::CreateOfdmTxPowerSpectralDensity (uint32_t centerFreque
             }
         }
       NS_LOG_DEBUG ("Added signal power to subbands 38-63 and 65-90");
-      NS_LOG_DEBUG ("Integrated power " << Integral (*(GetPointer (c))));
-      NS_ASSERT_MSG (std::abs (txPowerW - Integral (*(GetPointer (c)))) < 1e-6, "Power allocation failed"); 
+      NS_LOG_DEBUG ("Integrated power " << Integral (*c));
+      NS_ASSERT_MSG (std::abs (txPowerW - Integral (*c)) < 1e-6, "Power allocation failed"); 
       break;
     case 10:
       // 28 subcarriers (24 data + 4 pilot)
@@ -249,8 +249,8 @@ WifiSpectrumValueHelper::CreateOfdmTxPowerSpectralDensity (uint32_t centerFreque
             }
         }
       NS_LOG_DEBUG ("Added signal power to subbands 34-47 and 49-62");
-      NS_LOG_DEBUG ("Integrated power " << Integral (*(GetPointer (c))));
-      NS_ASSERT_MSG (std::abs (txPowerW - Integral (*(GetPointer (c)))) < 1e-6, "Power allocation failed"); 
+      NS_LOG_DEBUG ("Integrated power " << Integral (*c));
+      NS_ASSERT_MSG (std::abs (txPowerW - Integral (*c)) < 1e-6, "Power allocation failed"); 
       break;
     case 5:
       // 16 subcarriers (12 data + 4 pilot)
@@ -271,8 +271,8 @@ WifiSpectrumValueHelper::CreateOfdmTxPowerSpectralDensity (uint32_t centerFreque
             }
         }
       NS_LOG_DEBUG ("Added signal power to subbands 32-39 and 41-48");
-      NS_LOG_DEBUG ("Integrated power " << Integral (*(GetPointer (c))));
-      NS_ASSERT_MSG (std::abs (txPowerW - Integral (*(GetPointer (c)))) < 1e-6, "Power allocation failed"); 
+      NS_LOG_DEBUG ("Integrated power " << Integral (*c));
+      NS_ASSERT_MSG (std::abs (txPowerW - Integral (*c)) < 1e-6, "Power allocation failed"); 
       break;
     default:
       NS_FATAL_ERROR ("ChannelWidth " << channelWidth << " unsupported");
@@ -325,7 +325,7 @@ WifiSpectrumValueHelper::CreateNoisePowerSpectralDensity (double noiseFigureDb, 
 
   Ptr<SpectrumValue> noisePsd = Create <SpectrumValue> (spectrumModel);
   (*noisePsd) = noisePowerSpectralDensity;
-  NS_LOG_DEBUG ("NoisePowerSpectralDensity has integrated power of " << Integral (*(GetPointer (noisePsd))));
+  NS_LOG_DEBUG ("NoisePowerSpectralDensity has integrated power of " << Integral (*noisePsd));
   return noisePsd;
 }
 
