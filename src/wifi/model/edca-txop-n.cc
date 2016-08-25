@@ -656,28 +656,42 @@ void EdcaTxopN::NotifyInternalCollision (void)
 {
   NS_LOG_FUNCTION (this);
   bool resetDcf = false;
+  // If an internal collision is experienced, the frame involved may still
+  // be sitting in the queue, and m_currentPacket may still be null.
+  Ptr<const Packet> packet;
+  WifiMacHeader header;
+  if (m_currentPacket == 0)
+    {
+      packet = m_queue->Peek (&header);
+      NS_ASSERT_MSG (packet, "Internal collision but no packet in queue");
+    }
+  else
+    {
+      packet = m_currentPacket;
+      header = m_currentHdr;
+    }
   if (m_isAccessRequestedForRts)
     {
-      if (!NeedRtsRetransmission ())
+      if (!NeedRtsRetransmission (packet, header))
       {
         resetDcf = true;
-        m_stationManager->ReportFinalRtsFailed (m_currentHdr.GetAddr1 (), &m_currentHdr);
+        m_stationManager->ReportFinalRtsFailed (header.GetAddr1 (), &header);
       }
       else
       {
-        m_stationManager->ReportRtsFailed (m_currentHdr.GetAddr1 (), &m_currentHdr);
+        m_stationManager->ReportRtsFailed (header.GetAddr1 (), &header);
       }
     }
   else
     {
-      if (!NeedDataRetransmission ())
+      if (!NeedDataRetransmission (packet, header))
       {
         resetDcf = true;
-        m_stationManager->ReportFinalDataFailed (m_currentHdr.GetAddr1 (), &m_currentHdr);
+        m_stationManager->ReportFinalDataFailed (header.GetAddr1 (), &header);
       }
       else
       {
-        m_stationManager->ReportDataFailed (m_currentHdr.GetAddr1 (), &m_currentHdr);
+        m_stationManager->ReportDataFailed (header.GetAddr1 (), &header);
       }
     }
   if (resetDcf)
@@ -685,10 +699,19 @@ void EdcaTxopN::NotifyInternalCollision (void)
       NS_LOG_DEBUG ("reset DCF");
       if (!m_txFailedCallback.IsNull ())
         {
-          m_txFailedCallback (m_currentHdr);
+          m_txFailedCallback (header);
         }
       //to reset the dcf.
-      m_currentPacket = 0;
+      if (m_currentPacket)
+        {
+          NS_LOG_DEBUG ("Discarding m_currentPacket");
+          m_currentPacket = 0;
+        }
+      else
+        {
+          NS_LOG_DEBUG ("Dequeueing and discarding head of queue");
+          packet = m_queue->Peek (&header);
+        }
       m_dcf->ResetCw ();
     }
   else
@@ -786,7 +809,7 @@ EdcaTxopN::MissedCts (void)
 {
   NS_LOG_FUNCTION (this);
   NS_LOG_DEBUG ("missed cts");
-  if (!NeedRtsRetransmission ())
+  if (!NeedRtsRetransmission (m_currentPacket, m_currentHdr))
     {
       NS_LOG_DEBUG ("Cts Fail");
       bool resetCurrentPacket = true;
@@ -934,7 +957,7 @@ EdcaTxopN::MissedAck (void)
 {
   NS_LOG_FUNCTION (this);
   NS_LOG_DEBUG ("missed ack");
-  if (!NeedDataRetransmission ())
+  if (!NeedDataRetransmission (m_currentPacket, m_currentHdr))
     {
       NS_LOG_DEBUG ("Ack Fail");
       m_stationManager->ReportFinalDataFailed (m_currentHdr.GetAddr1 (), &m_currentHdr);
@@ -1152,19 +1175,17 @@ EdcaTxopN::StartAccessIfNeeded (void)
 }
 
 bool
-EdcaTxopN::NeedRtsRetransmission (void)
+EdcaTxopN::NeedRtsRetransmission (Ptr<const Packet> packet, const WifiMacHeader &hdr)
 {
   NS_LOG_FUNCTION (this);
-  return m_stationManager->NeedRtsRetransmission (m_currentHdr.GetAddr1 (), &m_currentHdr,
-                                                  m_currentPacket);
+  return m_stationManager->NeedRtsRetransmission (hdr.GetAddr1 (), &hdr, packet);
 }
 
 bool
-EdcaTxopN::NeedDataRetransmission (void)
+EdcaTxopN::NeedDataRetransmission (Ptr<const Packet> packet, const WifiMacHeader &hdr)
 {
   NS_LOG_FUNCTION (this);
-  return m_stationManager->NeedDataRetransmission (m_currentHdr.GetAddr1 (), &m_currentHdr,
-                                                   m_currentPacket);
+  return m_stationManager->NeedDataRetransmission (hdr.GetAddr1 (), &hdr, packet);
 }
 
 bool

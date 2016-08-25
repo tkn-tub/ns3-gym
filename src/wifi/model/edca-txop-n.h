@@ -309,17 +309,21 @@ public:
   /**
    * Check if RTS should be re-transmitted if CTS was missed.
    *
+   * \param packet current packet being transmitted
+   * \param hdr current header being transmitted
    * \return true if RTS should be re-transmitted,
    *         false otherwise
    */
-  bool NeedRtsRetransmission (void);
+  bool NeedRtsRetransmission (Ptr<const Packet> packet, const WifiMacHeader &hdr);
   /**
    * Check if DATA should be re-transmitted if ACK was missed.
    *
+   * \param packet current packet being transmitted
+   * \param hdr current header being transmitted
    * \return true if DATA should be re-transmitted,
    *         false otherwise
    */
-  bool NeedDataRetransmission (void);
+  bool NeedDataRetransmission (Ptr<const Packet> packet, const WifiMacHeader &hdr);
   /**
    * Check if Block ACK Request should be re-transmitted.
    *
