@@ -72,20 +72,30 @@ CommandLineTestCaseBase::Parse (CommandLine &cmd, int n, ...)
   ss << GetParent ()->GetName () << "-testcase-" << m_count << "-" << GetName ();
   ++m_count;
   
-  int argc = n + 1;
-  char ** argv = new char* [argc];
+  int argc = n + 1;  // test name will go in argv[0], other n to follow
+  char ** argv = new char* [argc + 1];  // extra entry for final null
+  argv[argc] = 0;
 
-  argv[0] = const_cast<char *>(ss.str ().c_str ());
+  argv[0] = new char [strlen (ss.str ().c_str ()) + 1];
+  strcpy (argv[0], ss.str ().c_str ());
+  
   va_list ap;
   va_start (ap, n);
   for (int i = 1; i < argc; ++i)
     {
       char *arg = va_arg (ap, char *);
-      argv[i] = arg;
+      argv[i] = new char [strlen (arg) + 1];
+      strcpy (argv[i], arg);
     }
   va_end (ap);
 
   cmd.Parse (argc, argv);
+
+  // Clean up all the new's
+  for (int i = 0; i < argc; ++i)
+    {
+      delete [] argv[i];
+    }
   delete [] argv;
 }
 
