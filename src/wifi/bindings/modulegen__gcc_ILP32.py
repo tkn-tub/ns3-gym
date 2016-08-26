@@ -12782,14 +12782,14 @@ def register_Ns3EdcaTxopN_methods(root_module, cls):
     cls.add_method('StartAccessIfNeeded', 
                    'void', 
                    [])
-    ## edca-txop-n.h (module 'wifi'): bool ns3::EdcaTxopN::NeedRtsRetransmission() [member function]
+    ## edca-txop-n.h (module 'wifi'): bool ns3::EdcaTxopN::NeedRtsRetransmission(ns3::Ptr<ns3::Packet const> packet, ns3::WifiMacHeader const & hdr) [member function]
     cls.add_method('NeedRtsRetransmission', 
                    'bool', 
-                   [])
-    ## edca-txop-n.h (module 'wifi'): bool ns3::EdcaTxopN::NeedDataRetransmission() [member function]
+                   [param('ns3::Ptr< ns3::Packet const >', 'packet'), param('ns3::WifiMacHeader const &', 'hdr')])
+    ## edca-txop-n.h (module 'wifi'): bool ns3::EdcaTxopN::NeedDataRetransmission(ns3::Ptr<ns3::Packet const> packet, ns3::WifiMacHeader const & hdr) [member function]
     cls.add_method('NeedDataRetransmission', 
                    'bool', 
-                   [])
+                   [param('ns3::Ptr< ns3::Packet const >', 'packet'), param('ns3::WifiMacHeader const &', 'hdr')])
     ## edca-txop-n.h (module 'wifi'): bool ns3::EdcaTxopN::NeedBarRetransmission() [member function]
     cls.add_method('NeedBarRetransmission', 
                    'bool', 

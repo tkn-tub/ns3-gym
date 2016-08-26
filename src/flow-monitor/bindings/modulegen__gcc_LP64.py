@@ -259,7 +259,7 @@ def register_types(module):
     ## ipv4-flow-probe.h (module 'flow-monitor'): ns3::Ipv4FlowProbe [class]
     module.add_class('Ipv4FlowProbe', parent=root_module['ns3::FlowProbe'])
     ## ipv4-flow-probe.h (module 'flow-monitor'): ns3::Ipv4FlowProbe::DropReason [enumeration]
-    module.add_enum('DropReason', ['DROP_NO_ROUTE', 'DROP_TTL_EXPIRE', 'DROP_BAD_CHECKSUM', 'DROP_QUEUE', 'DROP_INTERFACE_DOWN', 'DROP_ROUTE_ERROR', 'DROP_FRAGMENT_TIMEOUT', 'DROP_INVALID_REASON'], outer_class=root_module['ns3::Ipv4FlowProbe'])
+    module.add_enum('DropReason', ['DROP_NO_ROUTE', 'DROP_TTL_EXPIRE', 'DROP_BAD_CHECKSUM', 'DROP_QUEUE', 'DROP_QUEUE_DISC', 'DROP_INTERFACE_DOWN', 'DROP_ROUTE_ERROR', 'DROP_FRAGMENT_TIMEOUT', 'DROP_INVALID_REASON'], outer_class=root_module['ns3::Ipv4FlowProbe'])
     ## ipv4-l3-protocol.h (module 'internet'): ns3::Ipv4L3Protocol [class]
     module.add_class('Ipv4L3Protocol', import_from_module='ns.internet', parent=root_module['ns3::Ipv4'])
     ## ipv4-l3-protocol.h (module 'internet'): ns3::Ipv4L3Protocol::DropReason [enumeration]
@@ -287,7 +287,7 @@ def register_types(module):
     ## ipv6-flow-probe.h (module 'flow-monitor'): ns3::Ipv6FlowProbe [class]
     module.add_class('Ipv6FlowProbe', parent=root_module['ns3::FlowProbe'])
     ## ipv6-flow-probe.h (module 'flow-monitor'): ns3::Ipv6FlowProbe::DropReason [enumeration]
-    module.add_enum('DropReason', ['DROP_NO_ROUTE', 'DROP_TTL_EXPIRE', 'DROP_BAD_CHECKSUM', 'DROP_QUEUE', 'DROP_INTERFACE_DOWN', 'DROP_ROUTE_ERROR', 'DROP_UNKNOWN_PROTOCOL', 'DROP_UNKNOWN_OPTION', 'DROP_MALFORMED_HEADER', 'DROP_FRAGMENT_TIMEOUT', 'DROP_INVALID_REASON'], outer_class=root_module['ns3::Ipv6FlowProbe'])
+    module.add_enum('DropReason', ['DROP_NO_ROUTE', 'DROP_TTL_EXPIRE', 'DROP_BAD_CHECKSUM', 'DROP_QUEUE', 'DROP_QUEUE_DISC', 'DROP_INTERFACE_DOWN', 'DROP_ROUTE_ERROR', 'DROP_UNKNOWN_PROTOCOL', 'DROP_UNKNOWN_OPTION', 'DROP_MALFORMED_HEADER', 'DROP_FRAGMENT_TIMEOUT', 'DROP_INVALID_REASON'], outer_class=root_module['ns3::Ipv6FlowProbe'])
     ## ipv6-l3-protocol.h (module 'internet'): ns3::Ipv6L3Protocol [class]
     module.add_class('Ipv6L3Protocol', import_from_module='ns.internet', parent=root_module['ns3::Ipv6'])
     ## ipv6-l3-protocol.h (module 'internet'): ns3::Ipv6L3Protocol::DropReason [enumeration]
