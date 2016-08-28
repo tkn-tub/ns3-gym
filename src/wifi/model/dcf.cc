@@ -33,6 +33,7 @@ Dcf::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::Dcf")
     .SetParent<Object> ()
+    .SetGroupName ("Wifi")
     .AddAttribute ("MinCw", "The minimum value of the contention window.",
                    UintegerValue (15),
                    MakeUintegerAccessor (&Dcf::SetMinCw,

@@ -103,6 +103,7 @@ HalfDuplexIdealPhy::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::HalfDuplexIdealPhy")
     .SetParent<SpectrumPhy> ()
+    .SetGroupName ("Spectrum")
     .AddConstructor<HalfDuplexIdealPhy> ()
     .AddAttribute ("Rate",
                    "The PHY rate used by this device",

@@ -43,6 +43,7 @@ PropagationLossModel::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::PropagationLossModel")
     .SetParent<Object> ()
+    .SetGroupName ("Propagation")
   ;
   return tid;
 }
@@ -102,6 +103,7 @@ RandomPropagationLossModel::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::RandomPropagationLossModel")
     .SetParent<PropagationLossModel> ()
+    .SetGroupName ("Propagation")
     .AddConstructor<RandomPropagationLossModel> ()
     .AddAttribute ("Variable", "The random variable used to pick a loss everytime CalcRxPower is invoked.",
                    StringValue ("ns3::ConstantRandomVariable[Constant=1.0]"),
@@ -285,6 +287,7 @@ TwoRayGroundPropagationLossModel::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::TwoRayGroundPropagationLossModel")
     .SetParent<PropagationLossModel> ()
+    .SetGroupName ("Propagation")
     .AddConstructor<TwoRayGroundPropagationLossModel> ()
     .AddAttribute ("Frequency", 
                    "The carrier frequency (in Hz) at which propagation occurs  (default is 5.15 GHz).",
@@ -546,6 +549,7 @@ ThreeLogDistancePropagationLossModel::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::ThreeLogDistancePropagationLossModel")
     .SetParent<PropagationLossModel> ()
+    .SetGroupName ("Propagation")
     .AddConstructor<ThreeLogDistancePropagationLossModel> ()
     .AddAttribute ("Distance0",
                    "Beginning of the first (near) distance field",
@@ -889,6 +893,7 @@ RangePropagationLossModel::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::RangePropagationLossModel")
     .SetParent<PropagationLossModel> ()
+    .SetGroupName ("Propagation")
     .AddConstructor<RangePropagationLossModel> ()
     .AddAttribute ("MaxRange",
                    "Maximum Transmission Range (meters)",

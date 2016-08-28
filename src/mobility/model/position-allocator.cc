@@ -36,7 +36,8 @@ TypeId
 PositionAllocator::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::PositionAllocator")
-    .SetParent<Object> ();
+    .SetParent<Object> ()
+    .SetGroupName ("Mobility");
   return tid;
 }
 
@@ -55,6 +56,7 @@ ListPositionAllocator::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::ListPositionAllocator")
     .SetParent<PositionAllocator> ()
+    .SetGroupName ("Mobility")
     .AddConstructor<ListPositionAllocator> ()
   ;
   return tid;

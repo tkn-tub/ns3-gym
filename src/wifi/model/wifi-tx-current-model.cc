@@ -39,7 +39,7 @@ WifiTxCurrentModel::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::WifiTxCurrentModel")
     .SetParent<Object> ()
-    .SetGroupName ("Energy")
+    .SetGroupName ("Wifi")
   ;
   return tid;
 }
@@ -68,6 +68,7 @@ LinearWifiTxCurrentModel::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::LinearWifiTxCurrentModel")
     .SetParent<WifiTxCurrentModel> ()
+    .SetGroupName ("Wifi")
     .AddConstructor<LinearWifiTxCurrentModel> ()
     .AddAttribute ("Eta", "The efficiency of the power amplifier.",
                    DoubleValue (0.10),

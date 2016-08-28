@@ -32,6 +32,7 @@ PacketFilter::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::PacketFilter")
     .SetParent<Object> ()
+    .SetGroupName ("TrafficControl")
   ;
   return tid;
 }
