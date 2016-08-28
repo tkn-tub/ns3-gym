@@ -348,8 +348,12 @@ WifiPhy::WifiPhy ()
     m_endRxEvent (),
     m_endPlcpRxEvent (),
     m_standard (WIFI_PHY_STANDARD_UNSPECIFIED),
+    m_isConstructed (false),
     m_channelCenterFrequency (0),
-    m_channelNumber (1),
+    m_initialFrequency (0),
+    m_frequencyChannelNumberInitialized (false),
+    m_channelNumber (0),
+    m_initialChannelNumber (0),
     m_totalAmpduSize (0),
     m_totalAmpduNumSymbols (0)
 {
@@ -377,16 +381,42 @@ WifiPhy::DoDispose (void)
 void 
 WifiPhy::DoInitialize (void)
 {
+  NS_LOG_FUNCTION (this); 
+  m_isConstructed = true;
+  if (m_frequencyChannelNumberInitialized == true)
+    {
+      NS_LOG_DEBUG ("Frequency already initialized");
+      return;
+    }
+  InitializeFrequencyChannelNumber ();
+}
+
+void
+WifiPhy::InitializeFrequencyChannelNumber (void)
+{
   NS_LOG_FUNCTION (this);
-  // Perform some initialization checks
-  if (GetChannelNumber () != 0 && GetStandard () == WIFI_PHY_STANDARD_UNSPECIFIED)
+
+  NS_ASSERT_MSG (m_frequencyChannelNumberInitialized == false, "Initialization called twice");
+
+  // If frequency has been set to a non-zero value during attribute
+  // construction phase, the frequency and channel width will drive the
+  // initial configuration.  If frequency has not been set, but both
+  // standard and channel number have been set, that pair will instead
+  // drive the configuration, and frequency and channel number will be 
+  // aligned
+  if (m_initialFrequency != 0)
     {
-      NS_FATAL_ERROR ("Error, ChannelNumber " << GetChannelNumber () << " was set by user, but not a standard");
+      SetFrequency (m_initialFrequency);
     }
-  if (GetChannelNumber () != 0 && GetFrequency () == 0)
+  else if (m_initialChannelNumber != 0 && GetStandard () != WIFI_PHY_STANDARD_UNSPECIFIED)
     {
-      NS_FATAL_ERROR ("Error, ChannelNumber " << GetChannelNumber () << " set but no frequency is configured");
+      SetChannelNumber (m_initialChannelNumber);
     }
+  else if (m_initialChannelNumber != 0 && GetStandard () == WIFI_PHY_STANDARD_UNSPECIFIED)
+    {
+      NS_FATAL_ERROR ("Error, ChannelNumber " << GetChannelNumber () << " was set by user, but neither a standard nor a frequency");
+    }
+  m_frequencyChannelNumberInitialized = true;
 }
 
 void
@@ -997,6 +1027,11 @@ WifiPhy::ConfigureStandard (enum WifiPhyStandard standard)
 {
   NS_LOG_FUNCTION (this << standard);
   m_standard = standard;
+  m_isConstructed = true;
+  if (m_frequencyChannelNumberInitialized == false)
+    {
+      InitializeFrequencyChannelNumber ();
+    }
   if (GetFrequency () == 0 && GetChannelNumber () == 0)
     {
       ConfigureDefaultsForStandard (standard);
@@ -1051,8 +1086,12 @@ void
 WifiPhy::SetFrequency (uint32_t frequency)
 {
   NS_LOG_FUNCTION (this << frequency);
-  // If the user has configured both Frequency and ChannelNumber, Frequency
-  // takes precedence 
+  if (m_isConstructed == false)
+    {
+      NS_LOG_DEBUG ("Saving frequency configuration for initialization");
+      m_initialFrequency = frequency;
+      return;
+    }
   if (GetFrequency () == frequency)
     {
       NS_LOG_DEBUG ("No frequency change requested");
@@ -1066,7 +1105,9 @@ WifiPhy::SetFrequency (uint32_t frequency)
       m_channelNumber = 0;
       return;
     }
-  // See if there corresponds a channel number to the requested frequency.
+  // If the user has configured both Frequency and ChannelNumber, Frequency
+  // takes precedence.  Lookup the channel number corresponding to the
+  // requested frequency.
   uint16_t nch = FindChannelNumberForFrequencyWidth (frequency, GetChannelWidth ());
   if (nch != 0)
     {
@@ -1234,6 +1275,12 @@ void
 WifiPhy::SetChannelNumber (uint16_t nch)
 {
   NS_LOG_FUNCTION (this << nch);
+  if (m_isConstructed == false)
+    {
+      NS_LOG_DEBUG ("Saving channel number configuration for initialization");
+      m_initialChannelNumber = nch;
+      return;
+    }
   if (GetChannelNumber () == nch)
     {
       NS_LOG_DEBUG ("No channel change requested");
@@ -1247,18 +1294,6 @@ WifiPhy::SetChannelNumber (uint16_t nch)
       // called by the client
       NS_LOG_DEBUG ("Setting channel number to zero");
       m_channelNumber = 0;
-      return;
-    }
-
-  if (IsInitialized () == false && GetStandard () == WIFI_PHY_STANDARD_UNSPECIFIED)
-    {
-      // This is not a run-time channel switch, and user has not yet
-      // specified a standard to correspond to the channel number,
-      // so we just need to set the channel number now, and the 
-      // DoInitialize () method should perform checking at run-time that 
-      // the standard was eventually set
-      NS_LOG_DEBUG ("Setting channel number to " << nch);
-      m_channelNumber = nch;
       return;
     }
 

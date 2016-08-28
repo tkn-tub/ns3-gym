@@ -1594,6 +1594,17 @@ protected:
 
 private:
   /**
+   * \brief post-construction setting of frequency and/or channel number
+   *
+   * This method exists to handle the fact that two attribute values,
+   * Frequency and ChannelNumber, are coupled.  The initialization of
+   * these values needs to be deferred until after attribute construction 
+   * time, to avoid static initialization order issues.  This method is
+   * typically called either when ConfigureStandard () is called or when
+   * DoInitialize () is called.  
+   */
+  void InitializeFrequencyChannelNumber (void);
+  /**
    * Configure WifiPhy with appropriate channel frequency and
    * supported rates for 802.11a standard.
    */
@@ -1786,7 +1797,10 @@ private:
   std::vector<uint32_t> m_bssMembershipSelectorSet;
 
   enum WifiPhyStandard m_standard;     //!< WifiPhyStandard
+  bool m_isConstructed;                //!< true when ready to set frequency
   uint32_t m_channelCenterFrequency;   //!< Center frequency in MHz
+  uint32_t m_initialFrequency;         //!< Store frequency until initialization
+  bool m_frequencyChannelNumberInitialized; //!< Store initialization state
   uint32_t m_channelWidth;             //!< Channel width
 
   double m_edThresholdW;          //!< Energy detection threshold in watts
@@ -1811,6 +1825,7 @@ private:
 
   std::vector<uint32_t> m_supportedChannelWidthSet; //!< Supported channel width
   uint16_t             m_channelNumber;  //!< Operating channel number
+  uint16_t             m_initialChannelNumber;  //!< Initial channel number
 
   Time m_channelSwitchDelay;     //!< Time required to switch between channel
   uint32_t m_totalAmpduSize;     //!< Total size of the previously transmitted MPDUs in an A-MPDU, used for the computation of the number of symbols needed for the last MPDU in the A-MPDU

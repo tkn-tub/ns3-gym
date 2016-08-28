@@ -56,6 +56,8 @@ WifiSpectrumPhyInterface::DoDispose (void)
 {
   NS_LOG_FUNCTION (this);
   m_spectrumWifiPhy = 0;
+  m_netDevice = 0;
+  m_channel = 0;
 }
 
 void WifiSpectrumPhyInterface::SetSpectrumWifiPhy (Ptr<SpectrumWifiPhy> spectrumWifiPhy)

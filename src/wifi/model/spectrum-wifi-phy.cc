@@ -79,6 +79,7 @@ SpectrumWifiPhy::DoDispose (void)
 {
   NS_LOG_FUNCTION (this);
   m_channel = 0;
+  m_wifiSpectrumPhyInterface = 0;
 }
 
 void
