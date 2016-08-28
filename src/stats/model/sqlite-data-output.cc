@@ -126,26 +126,51 @@ SqliteDataOutput::Output (DataCollector &dc)
       return;
     }
 
-  std::string run = dc.GetRunLabel ();
-
   Exec ("create table if not exists Experiments (run, experiment, strategy, input, description text)");
-  Exec ("insert into Experiments (run,experiment,strategy,input,description) values ('" +
-        run + "', '" +
-        dc.GetExperimentLabel () + "', '" +
-        dc.GetStrategyLabel () + "', '" +
-        dc.GetInputLabel () + "', '" +
-        dc.GetDescription () + "')");
+
+  sqlite3_stmt *stmt;
+  sqlite3_prepare_v2 (m_db,
+    "insert into Experiments (run, experiment, strategy, input, description) values (?, ?, ?, ?, ?)",
+    -1,
+    &stmt,
+    NULL
+  );
+
+  std::string run = dc.GetRunLabel ();
+  sqlite3_bind_text (stmt, 1, run.c_str (), run.length (), SQLITE_TRANSIENT);
+  sqlite3_bind_text (stmt, 2, dc.GetExperimentLabel ().c_str (),
+                              dc.GetExperimentLabel ().length (), SQLITE_TRANSIENT);
+  sqlite3_bind_text (stmt, 3, dc.GetStrategyLabel ().c_str (),
+                              dc.GetStrategyLabel ().length (), SQLITE_TRANSIENT);
+  sqlite3_bind_text (stmt, 4, dc.GetInputLabel ().c_str (),
+                              dc.GetInputLabel ().length (), SQLITE_TRANSIENT);
+  sqlite3_bind_text (stmt, 5, dc.GetDescription ().c_str (),
+                              dc.GetDescription ().length (), SQLITE_TRANSIENT);
+  sqlite3_step (stmt);
+  sqlite3_finalize (stmt);
 
   Exec ("create table if not exists Metadata ( run text, key text, value)");
 
+  sqlite3_prepare_v2 (m_db,
+    "insert into Metadata (run, key, value) values (?, ?, ?)",
+    -1,
+    &stmt,
+    NULL
+  );
   for (MetadataList::iterator i = dc.MetadataBegin ();
        i != dc.MetadataEnd (); i++) {
       std::pair<std::string, std::string> blob = (*i);
-      Exec ("insert into Metadata (run,key,value) values ('" +
-            run + "', '" +
-            blob.first + "', '" +
-            blob.second + "')");
+
+      sqlite3_reset (stmt);
+      sqlite3_bind_text (stmt, 1, run.c_str (),
+                                  run.length (), SQLITE_TRANSIENT);
+      sqlite3_bind_text (stmt, 2, blob.first.c_str (),
+                                  blob.first.length (), SQLITE_TRANSIENT);
+      sqlite3_bind_text (stmt, 3, blob.second.c_str (),
+                                  blob.second.length (), SQLITE_TRANSIENT);
+      sqlite3_step (stmt);
     }
+  sqlite3_finalize (stmt);
 
   Exec ("BEGIN");
   SqliteOutputCallback callback (this, run);
@@ -169,7 +194,20 @@ SqliteDataOutput::SqliteOutputCallback::SqliteOutputCallback
 
   m_owner->Exec ("create table if not exists Singletons ( run text, name text, variable text, value )");
 
+  sqlite3_prepare_v2 (m_owner->m_db,
+    "insert into Singletons (run, name, variable, value) values (?, ?, ?, ?)",
+    -1,
+    &m_insertSingletonStatement,
+    NULL
+  );
+  sqlite3_bind_text (m_insertSingletonStatement, 1, m_runLabel.c_str (), m_runLabel.length (), SQLITE_TRANSIENT);
+
   // end SqliteDataOutput::SqliteOutputCallback::SqliteOutputCallback
+}
+
+SqliteDataOutput::SqliteOutputCallback::~SqliteOutputCallback ()
+{
+  sqlite3_finalize (m_insertSingletonStatement);
 }
 
 void
@@ -200,15 +238,11 @@ SqliteDataOutput::SqliteOutputCallback::OutputSingleton (std::string key,
 {
   NS_LOG_FUNCTION (this << key << variable << val);
 
-  std::stringstream sstr;
-  sstr << "insert into Singletons (run,name,variable,value) values ('" <<
-  m_runLabel << "', '" <<
-  key << "', '" <<
-  variable << "', " <<
-  val << ")";
-  m_owner->Exec (sstr.str ());
-
-  // end SqliteDataOutput::SqliteOutputCallback::OutputSingleton
+  sqlite3_reset (m_insertSingletonStatement);
+  sqlite3_bind_text (m_insertSingletonStatement, 2, key.c_str (), key.length (), SQLITE_TRANSIENT);
+  sqlite3_bind_text (m_insertSingletonStatement, 3, variable.c_str (), variable.length (), SQLITE_TRANSIENT);
+  sqlite3_bind_int (m_insertSingletonStatement, 4, val);
+  sqlite3_step (m_insertSingletonStatement);
 }
 void
 SqliteDataOutput::SqliteOutputCallback::OutputSingleton (std::string key,
@@ -217,15 +251,13 @@ SqliteDataOutput::SqliteOutputCallback::OutputSingleton (std::string key,
 {
   NS_LOG_FUNCTION (this << key << variable << val);
 
-  std::stringstream sstr;
-  sstr << "insert into Singletons (run,name,variable,value) values ('" <<
-  m_runLabel << "', '" <<
-  key << "', '" <<
-  variable << "', " <<
-  val << ")";
-  m_owner->Exec (sstr.str ());
-  // end SqliteDataOutput::SqliteOutputCallback::OutputSingleton
+  sqlite3_reset (m_insertSingletonStatement);
+  sqlite3_bind_text (m_insertSingletonStatement, 2, key.c_str (), key.length (), SQLITE_TRANSIENT);
+  sqlite3_bind_text (m_insertSingletonStatement, 3, variable.c_str (), variable.length (), SQLITE_TRANSIENT);
+  sqlite3_bind_int64 (m_insertSingletonStatement, 4, val);
+  sqlite3_step (m_insertSingletonStatement);
 }
+
 void
 SqliteDataOutput::SqliteOutputCallback::OutputSingleton (std::string key,
                                                          std::string variable,
@@ -233,15 +265,13 @@ SqliteDataOutput::SqliteOutputCallback::OutputSingleton (std::string key,
 {
   NS_LOG_FUNCTION (this << key << variable << val);
 
-  std::stringstream sstr;
-  sstr << "insert into Singletons (run,name,variable,value) values ('" <<
-  m_runLabel << "', '" <<
-  key << "', '" <<
-  variable << "', " <<
-  val << ")";
-  m_owner->Exec (sstr.str ());
-  // end SqliteDataOutput::SqliteOutputCallback::OutputSingleton
+  sqlite3_reset (m_insertSingletonStatement);
+  sqlite3_bind_text (m_insertSingletonStatement, 2, key.c_str (), key.length (), SQLITE_TRANSIENT);
+  sqlite3_bind_text (m_insertSingletonStatement, 3, variable.c_str (), variable.length (), SQLITE_TRANSIENT);
+  sqlite3_bind_double (m_insertSingletonStatement, 4, val);
+  sqlite3_step (m_insertSingletonStatement);
 }
+
 void
 SqliteDataOutput::SqliteOutputCallback::OutputSingleton (std::string key,
                                                          std::string variable,
@@ -249,15 +279,13 @@ SqliteDataOutput::SqliteOutputCallback::OutputSingleton (std::string key,
 {
   NS_LOG_FUNCTION (this << key << variable << val);
 
-  std::stringstream sstr;
-  sstr << "insert into Singletons (run,name,variable,value) values ('" <<
-  m_runLabel << "', '" <<
-  key << "', '" <<
-  variable << "', '" <<
-  val << "')";
-  m_owner->Exec (sstr.str ());
-  // end SqliteDataOutput::SqliteOutputCallback::OutputSingleton
+  sqlite3_reset (m_insertSingletonStatement);
+  sqlite3_bind_text (m_insertSingletonStatement, 2, key.c_str (), key.length (), SQLITE_TRANSIENT);
+  sqlite3_bind_text (m_insertSingletonStatement, 3, variable.c_str (), variable.length (), SQLITE_TRANSIENT);
+  sqlite3_bind_text (m_insertSingletonStatement, 4, val.c_str (), val.length (), SQLITE_TRANSIENT);
+  sqlite3_step (m_insertSingletonStatement);
 }
+
 void
 SqliteDataOutput::SqliteOutputCallback::OutputSingleton (std::string key,
                                                          std::string variable,
@@ -265,12 +293,9 @@ SqliteDataOutput::SqliteOutputCallback::OutputSingleton (std::string key,
 {
   NS_LOG_FUNCTION (this << key << variable << val);
 
-  std::stringstream sstr;
-  sstr << "insert into Singletons (run,name,variable,value) values ('" <<
-  m_runLabel << "', '" <<
-  key << "', '" <<
-  variable << "', " <<
-  val.GetTimeStep () << ")";
-  m_owner->Exec (sstr.str ());
-  // end SqliteDataOutput::SqliteOutputCallback::OutputSingleton
+  sqlite3_reset (m_insertSingletonStatement);
+  sqlite3_bind_text (m_insertSingletonStatement, 2, key.c_str (), key.length (), SQLITE_TRANSIENT);
+  sqlite3_bind_text (m_insertSingletonStatement, 3, variable.c_str (), variable.length (), SQLITE_TRANSIENT);
+  sqlite3_bind_int64 (m_insertSingletonStatement, 4, val.GetTimeStep ());
+  sqlite3_step (m_insertSingletonStatement);
 }
