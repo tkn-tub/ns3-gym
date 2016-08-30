@@ -95,6 +95,7 @@ Bugs fixed
 - Bug 2468 - Simulation with A-MPDU enabled hangs when fragmentation threshold is smaller than MSDU size
 - Bug 2469 - send Block Ack Request upon short/long retry failures
 - Bug 2479 - Flow monitor does not a have a "DROP_QUEUE_DISC" drop reason
+- Bug 2484 - Corrected the exit from CA_LOSS state in TCP
 - Bug 2486 - NextTxSequence was not traced back from TCB
 
 Known issues

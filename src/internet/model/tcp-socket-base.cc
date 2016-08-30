@@ -1683,9 +1683,12 @@ TcpSocketBase::ReceivedAck (Ptr<Packet> packet, const TcpHeader& tcpHeader)
           m_congestionControl->PktsAcked (m_tcb, segsAcked, m_lastRtt);
           m_dupAckCount = 0;
           m_retransOut = 0;
-          m_congestionControl->CongestionStateSet (m_tcb, TcpSocketState::CA_OPEN);
-          m_tcb->m_congState = TcpSocketState::CA_OPEN;
-          NS_LOG_DEBUG ("LOSS -> OPEN");
+          if(ackNumber >= m_recover + 1)
+            {
+              m_congestionControl->CongestionStateSet (m_tcb, TcpSocketState::CA_OPEN);
+              m_tcb->m_congState = TcpSocketState::CA_OPEN;
+              NS_LOG_DEBUG ("LOSS -> OPEN");
+            }
         }
 
       if (callCongestionControl)
