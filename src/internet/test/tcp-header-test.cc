@@ -85,47 +85,47 @@ void TcpHeaderGetSetTestCase::DoRun (void)
       header.SetUrgentPointer (urgentPointer);
 
       NS_TEST_ASSERT_MSG_EQ (header.GetLength (), 5, "TcpHeader without option is"
-                         " not 5 word");
+                             " not 5 word");
 
       buffer.AddAtStart (header.GetSerializedSize ());
       header.Serialize (buffer.Begin ());
 
       NS_TEST_ASSERT_MSG_EQ (sourcePort, header.GetSourcePort (),
-                         "Different source port found");
+                             "Different source port found");
       NS_TEST_ASSERT_MSG_EQ (destinationPort, header.GetDestinationPort (),
-                         "Different destination port found");
+                             "Different destination port found");
       NS_TEST_ASSERT_MSG_EQ (sequenceNumber, header.GetSequenceNumber (),
-                         "Different sequence number found");
+                             "Different sequence number found");
       NS_TEST_ASSERT_MSG_EQ (ackNumber, header.GetAckNumber (),
-                         "Different ack number found");
+                             "Different ack number found");
       NS_TEST_ASSERT_MSG_EQ (flags, header.GetFlags (),
-                         "Different flags found");
+                             "Different flags found");
       NS_TEST_ASSERT_MSG_EQ (windowSize, header.GetWindowSize (),
-                         "Different window size found");
+                             "Different window size found");
       NS_TEST_ASSERT_MSG_EQ (urgentPointer, header.GetUrgentPointer (),
-                         "Different urgent pointer found");
+                             "Different urgent pointer found");
 
       NS_TEST_ASSERT_MSG_EQ (header.GetLength (), 5, "TcpHeader without option is"
-                         " not 5 word");
+                             " not 5 word");
 
       TcpHeader copyHeader;
 
       copyHeader.Deserialize (buffer.Begin ());
 
       NS_TEST_ASSERT_MSG_EQ (sourcePort, copyHeader.GetSourcePort (),
-                         "Different source port found in deserialized header");
+                             "Different source port found in deserialized header");
       NS_TEST_ASSERT_MSG_EQ (destinationPort, copyHeader.GetDestinationPort (),
-                         "Different destination port found in deserialized header");
+                             "Different destination port found in deserialized header");
       NS_TEST_ASSERT_MSG_EQ (sequenceNumber, copyHeader.GetSequenceNumber (),
-                         "Different sequence number found in deserialized header");
+                             "Different sequence number found in deserialized header");
       NS_TEST_ASSERT_MSG_EQ (ackNumber, copyHeader.GetAckNumber (),
-                         "Different ack number found in deserialized header");
+                             "Different ack number found in deserialized header");
       NS_TEST_ASSERT_MSG_EQ (flags, copyHeader.GetFlags (),
-                         "Different flags found in deserialized header");
+                             "Different flags found in deserialized header");
       NS_TEST_ASSERT_MSG_EQ (windowSize, copyHeader.GetWindowSize (),
-                         "Different window size found in deserialized header");
+                             "Different window size found in deserialized header");
       NS_TEST_ASSERT_MSG_EQ (urgentPointer, copyHeader.GetUrgentPointer (),
-                         "Different urgent pointer found in deserialized header");
+                             "Different urgent pointer found in deserialized header");
     }
 }
 
@@ -309,6 +309,8 @@ TcpHeaderWithRFC793OptionTestCase::OneOptionAtTime ()
     dest.Deserialize (buffer.Begin ());
     NS_TEST_ASSERT_MSG_EQ (header.HasOption (TcpOption::MSS),
                            true, "MSS option not correctly serialized");
+    NS_TEST_ASSERT_MSG_EQ (header.GetOptionLength (), oMSS.GetSerializedSize (),
+                           "MSS Option not counted in the total");
   }
 }
 

@@ -359,6 +359,7 @@ TcpHeader::Serialize (Buffer::Iterator start)  const
 uint32_t
 TcpHeader::Deserialize (Buffer::Iterator start)
 {
+  m_optionsLen = 0;
   Buffer::Iterator i = start;
   m_sourcePort = i.ReadNtohU16 ();
   m_destinationPort = i.ReadNtohU16 ();
@@ -404,6 +405,7 @@ TcpHeader::Deserialize (Buffer::Iterator start)
           optionLen -= optionSize;
           i.Next (optionSize);
           m_options.push_back (op);
+          m_optionsLen += optionSize;
         }
       else
         {
@@ -417,6 +419,7 @@ TcpHeader::Deserialize (Buffer::Iterator start)
               // Discard padding bytes without adding to option list
               i.Next (1);
               --optionLen;
+              ++m_optionsLen;
             }
         }
     }
@@ -518,14 +521,14 @@ bool
 operator== (const TcpHeader &lhs, const TcpHeader &rhs)
 {
   return (
-           lhs.m_sourcePort      == rhs.m_sourcePort
-           && lhs.m_destinationPort == rhs.m_destinationPort
-           && lhs.m_sequenceNumber  == rhs.m_sequenceNumber
-           && lhs.m_ackNumber       == rhs.m_ackNumber
-           && lhs.m_flags           == rhs.m_flags
-           && lhs.m_windowSize      == rhs.m_windowSize
-           && lhs.m_urgentPointer   == rhs.m_urgentPointer
-           );
+    lhs.m_sourcePort      == rhs.m_sourcePort
+    && lhs.m_destinationPort == rhs.m_destinationPort
+    && lhs.m_sequenceNumber  == rhs.m_sequenceNumber
+    && lhs.m_ackNumber       == rhs.m_ackNumber
+    && lhs.m_flags           == rhs.m_flags
+    && lhs.m_windowSize      == rhs.m_windowSize
+    && lhs.m_urgentPointer   == rhs.m_urgentPointer
+    );
 }
 
 std::ostream&

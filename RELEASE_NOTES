@@ -90,6 +90,7 @@ Bugs fixed
 - Bug 2445 - Out of bounds array access in MinstrelHtWifiManager::SetBestProbabilityRate
 - Bug 2446 - Comma instead of pipe in Attributes
 - Bug 2351 - Wrong symbol rate calculation for channels with 10 and 5 Mhz width
+- Bug 2401 - Deserialize correctly the len of options in TcpHeader
 - Bug 2454 - DsrRouting::NotifyDataReceipt is also triggered for wifi management packets
 - Bug 2468 - Simulation with A-MPDU enabled hangs when fragmentation threshold is smaller than MSDU size
 - Bug 2469 - send Block Ack Request upon short/long retry failures
