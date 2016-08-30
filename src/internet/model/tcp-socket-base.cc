@@ -1526,19 +1526,6 @@ TcpSocketBase::ReceivedAck (Ptr<Packet> packet, const TcpHeader& tcpHeader)
   NS_ASSERT (m_tcb->m_segmentSize > 0);
 
   SequenceNumber32 ackNumber = tcpHeader.GetAckNumber ();
-  uint32_t bytesAcked = ackNumber - m_txBuffer->HeadSequence ();
-  uint32_t segsAcked  = bytesAcked / m_tcb->m_segmentSize;
-  m_bytesAckedNotProcessed += bytesAcked % m_tcb->m_segmentSize;
-
-  if (m_bytesAckedNotProcessed >= m_tcb->m_segmentSize)
-    {
-      segsAcked += 1;
-      m_bytesAckedNotProcessed -= m_tcb->m_segmentSize;
-    }
-
-  NS_LOG_LOGIC (" Bytes acked: " << bytesAcked <<
-                " Segments acked: " << segsAcked <<
-                " bytes left: " << m_bytesAckedNotProcessed);
 
   NS_LOG_DEBUG ("ACK of " << ackNumber <<
                 " SND.UNA=" << m_txBuffer->HeadSequence () <<
@@ -1562,6 +1549,19 @@ TcpSocketBase::ReceivedAck (Ptr<Packet> packet, const TcpHeader& tcpHeader)
     { // Case 3: New ACK, reset m_dupAckCount and update m_txBuffer
       bool callCongestionControl = true;
       bool resetRTO = true;
+      uint32_t bytesAcked = ackNumber - m_txBuffer->HeadSequence ();
+      uint32_t segsAcked  = bytesAcked / m_tcb->m_segmentSize;
+      m_bytesAckedNotProcessed += bytesAcked % m_tcb->m_segmentSize;
+
+      if (m_bytesAckedNotProcessed >= m_tcb->m_segmentSize)
+        {
+          segsAcked += 1;
+          m_bytesAckedNotProcessed -= m_tcb->m_segmentSize;
+        }
+
+      NS_LOG_LOGIC (" Bytes acked: " << bytesAcked <<
+                    " Segments acked: " << segsAcked <<
+                    " bytes left: " << m_bytesAckedNotProcessed);
 
       /* The following switch is made because m_dupAckCount can be
        * "inflated" through out-of-order segments (e.g. from retransmission,
