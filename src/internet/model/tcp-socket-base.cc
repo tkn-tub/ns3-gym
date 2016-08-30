@@ -1452,6 +1452,26 @@ TcpSocketBase::LimitedTransmit ()
 }
 
 void
+TcpSocketBase::FastRetransmit ()
+{
+  NS_LOG_FUNCTION (this);
+  NS_ASSERT (m_tcb->m_congState != TcpSocketState::CA_RECOVERY);
+
+  m_recover = m_tcb->m_highTxMark;
+  m_congestionControl->CongestionStateSet (m_tcb, TcpSocketState::CA_RECOVERY);
+  m_tcb->m_congState = TcpSocketState::CA_RECOVERY;
+
+  m_tcb->m_ssThresh = m_congestionControl->GetSsThresh (m_tcb,
+                                                        BytesInFlight ());
+  m_tcb->m_cWnd = m_tcb->m_ssThresh + m_dupAckCount * m_tcb->m_segmentSize;
+
+  NS_LOG_INFO (m_dupAckCount << " dupack. Enter fast recovery mode." <<
+               "Reset cwnd to " << m_tcb->m_cWnd << ", ssthresh to " <<
+               m_tcb->m_ssThresh << " at fast recovery seqnum " << m_recover);
+  DoRetransmit ();
+}
+
+void
 TcpSocketBase::DupAck ()
 {
   NS_LOG_FUNCTION (this);
@@ -1476,18 +1496,7 @@ TcpSocketBase::DupAck ()
           // triple duplicate ack triggers fast retransmit (RFC2582 sec.3 bullet #1)
           NS_LOG_DEBUG (TcpSocketState::TcpCongStateName[m_tcb->m_congState] <<
                         " -> RECOVERY");
-          m_recover = m_tcb->m_highTxMark;
-          m_congestionControl->CongestionStateSet (m_tcb, TcpSocketState::CA_RECOVERY);
-          m_tcb->m_congState = TcpSocketState::CA_RECOVERY;
-
-          m_tcb->m_ssThresh = m_congestionControl->GetSsThresh (m_tcb,
-                                                                BytesInFlight ());
-          m_tcb->m_cWnd = m_tcb->m_ssThresh + m_dupAckCount * m_tcb->m_segmentSize;
-
-          NS_LOG_INFO (m_dupAckCount << " dupack. Enter fast recovery mode." <<
-                       "Reset cwnd to " << m_tcb->m_cWnd << ", ssthresh to " <<
-                       m_tcb->m_ssThresh << " at fast recovery seqnum " << m_recover);
-          DoRetransmit ();
+          FastRetransmit ();
         }
       else if (m_limitedTx && m_txBuffer->SizeFromSequence (m_tcb->m_nextTxSequence) > 0)
         {
