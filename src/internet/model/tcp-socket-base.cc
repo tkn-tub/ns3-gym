@@ -1439,6 +1439,71 @@ TcpSocketBase::ProcessEstablished (Ptr<Packet> packet, const TcpHeader& tcpHeade
     }
 }
 
+void
+TcpSocketBase::DupAck ()
+{
+  NS_LOG_FUNCTION (this);
+  ++m_dupAckCount;
+
+  if (m_tcb->m_congState == TcpSocketState::CA_OPEN)
+    {
+      // From Open we go Disorder
+      NS_ASSERT_MSG (m_dupAckCount == 1, "From OPEN->DISORDER but with " <<
+                     m_dupAckCount << " dup ACKs");
+
+      m_congestionControl->CongestionStateSet (m_tcb, TcpSocketState::CA_DISORDER);
+      m_tcb->m_congState = TcpSocketState::CA_DISORDER;
+
+      if (m_limitedTx && m_txBuffer->SizeFromSequence (m_tcb->m_nextTxSequence) > 0)
+        {
+          // RFC3042 Limited transmit: Send a new packet for each duplicated ACK before fast retransmit
+          NS_LOG_INFO ("Limited transmit");
+          uint32_t sz = SendDataPacket (m_tcb->m_nextTxSequence, m_tcb->m_segmentSize, true);
+          m_tcb->m_nextTxSequence += sz;
+        }
+
+      NS_LOG_DEBUG ("OPEN -> DISORDER");
+    }
+  else if (m_tcb->m_congState == TcpSocketState::CA_DISORDER)
+    {
+      if ((m_dupAckCount == m_retxThresh) && (m_highRxAckMark >= m_recover))
+        {
+          // triple duplicate ack triggers fast retransmit (RFC2582 sec.3 bullet #1)
+          NS_LOG_DEBUG (TcpSocketState::TcpCongStateName[m_tcb->m_congState] <<
+                        " -> RECOVERY");
+          m_recover = m_tcb->m_highTxMark;
+          m_congestionControl->CongestionStateSet (m_tcb, TcpSocketState::CA_RECOVERY);
+          m_tcb->m_congState = TcpSocketState::CA_RECOVERY;
+
+          m_tcb->m_ssThresh = m_congestionControl->GetSsThresh (m_tcb,
+                                                                BytesInFlight ());
+          m_tcb->m_cWnd = m_tcb->m_ssThresh + m_dupAckCount * m_tcb->m_segmentSize;
+
+          NS_LOG_INFO (m_dupAckCount << " dupack. Enter fast recovery mode." <<
+                       "Reset cwnd to " << m_tcb->m_cWnd << ", ssthresh to " <<
+                       m_tcb->m_ssThresh << " at fast recovery seqnum " << m_recover);
+          DoRetransmit ();
+        }
+      else if (m_limitedTx && m_txBuffer->SizeFromSequence (m_tcb->m_nextTxSequence) > 0)
+        {
+          // RFC3042 Limited transmit: Send a new packet for each duplicated ACK before fast retransmit
+          NS_LOG_INFO ("Limited transmit");
+          uint32_t sz = SendDataPacket (m_tcb->m_nextTxSequence, m_tcb->m_segmentSize, true);
+          m_tcb->m_nextTxSequence += sz;
+        }
+    }
+  else if (m_tcb->m_congState == TcpSocketState::CA_RECOVERY)
+    { // Increase cwnd for every additional dupack (RFC2582, sec.3 bullet #3)
+      m_tcb->m_cWnd += m_tcb->m_segmentSize;
+      NS_LOG_INFO (m_dupAckCount << " Dupack received in fast recovery mode."
+                   "Increase cwnd to " << m_tcb->m_cWnd);
+      SendPendingData (m_connected);
+    }
+
+  // Artificially call PktsAcked. After all, one segment has been ACKed.
+  m_congestionControl->PktsAcked (m_tcb, 1, m_lastRtt);
+}
+
 /* Process the newly received ACK */
 void
 TcpSocketBase::ReceivedAck (Ptr<Packet> packet, const TcpHeader& tcpHeader)
@@ -1474,65 +1539,7 @@ TcpSocketBase::ReceivedAck (Ptr<Packet> packet, const TcpHeader& tcpHeader)
       && packet->GetSize () == 0)
     {
       // There is a DupAck
-      ++m_dupAckCount;
-
-      if (m_tcb->m_congState == TcpSocketState::CA_OPEN)
-        {
-          // From Open we go Disorder
-          NS_ASSERT_MSG (m_dupAckCount == 1, "From OPEN->DISORDER but with " <<
-                         m_dupAckCount << " dup ACKs");
-
-          m_congestionControl->CongestionStateSet (m_tcb, TcpSocketState::CA_DISORDER);
-          m_tcb->m_congState = TcpSocketState::CA_DISORDER;
-
-          if (m_limitedTx && m_txBuffer->SizeFromSequence (m_tcb->m_nextTxSequence) > 0)
-            {
-              // RFC3042 Limited transmit: Send a new packet for each duplicated ACK before fast retransmit
-              NS_LOG_INFO ("Limited transmit");
-              uint32_t sz = SendDataPacket (m_tcb->m_nextTxSequence, m_tcb->m_segmentSize, true);
-              m_tcb->m_nextTxSequence += sz;
-            }
-
-          NS_LOG_DEBUG ("OPEN -> DISORDER");
-        }
-      else if (m_tcb->m_congState == TcpSocketState::CA_DISORDER)
-        {
-          if ((m_dupAckCount == m_retxThresh) && (m_highRxAckMark >= m_recover))
-            {
-              // triple duplicate ack triggers fast retransmit (RFC2582 sec.3 bullet #1)
-              NS_LOG_DEBUG (TcpSocketState::TcpCongStateName[m_tcb->m_congState] <<
-                            " -> RECOVERY");
-              m_recover = m_tcb->m_highTxMark;
-              m_congestionControl->CongestionStateSet (m_tcb, TcpSocketState::CA_RECOVERY);
-              m_tcb->m_congState = TcpSocketState::CA_RECOVERY;
-
-              m_tcb->m_ssThresh = m_congestionControl->GetSsThresh (m_tcb,
-                                                                    BytesInFlight ());
-              m_tcb->m_cWnd = m_tcb->m_ssThresh + m_dupAckCount * m_tcb->m_segmentSize;
-
-              NS_LOG_INFO (m_dupAckCount << " dupack. Enter fast recovery mode." <<
-                           "Reset cwnd to " << m_tcb->m_cWnd << ", ssthresh to " <<
-                           m_tcb->m_ssThresh << " at fast recovery seqnum " << m_recover);
-              DoRetransmit ();
-            }
-          else if (m_limitedTx && m_txBuffer->SizeFromSequence (m_tcb->m_nextTxSequence) > 0)
-            {
-              // RFC3042 Limited transmit: Send a new packet for each duplicated ACK before fast retransmit
-              NS_LOG_INFO ("Limited transmit");
-              uint32_t sz = SendDataPacket (m_tcb->m_nextTxSequence, m_tcb->m_segmentSize, true);
-              m_tcb->m_nextTxSequence += sz;
-            }
-        }
-      else if (m_tcb->m_congState == TcpSocketState::CA_RECOVERY)
-        { // Increase cwnd for every additional dupack (RFC2582, sec.3 bullet #3)
-          m_tcb->m_cWnd += m_tcb->m_segmentSize;
-          NS_LOG_INFO (m_dupAckCount << " Dupack received in fast recovery mode."
-                       "Increase cwnd to " << m_tcb->m_cWnd);
-          SendPendingData (m_connected);
-        }
-
-      // Artificially call PktsAcked. After all, one segment has been ACKed.
-      m_congestionControl->PktsAcked (m_tcb, 1, m_lastRtt);
+      DupAck ();
     }
   else if (ackNumber == m_txBuffer->HeadSequence ()
            && ackNumber == m_tcb->m_nextTxSequence)

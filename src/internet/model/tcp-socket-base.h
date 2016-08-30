@@ -860,6 +860,11 @@ protected:
   virtual void NewAck (SequenceNumber32 const& seq, bool resetRTO);
 
   /**
+   * \brief Dupack management
+   */
+  void DupAck ();
+
+  /**
    * \brief Call Retransmit() upon RTO event
    */
   virtual void ReTxTimeout (void);
