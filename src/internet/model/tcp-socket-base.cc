@@ -339,6 +339,10 @@ TcpSocketBase::TcpSocketBase (void)
                                           MakeCallback (&TcpSocketBase::UpdateCongState, this));
   NS_ASSERT (ok == true);
 
+  ok = m_tcb->TraceConnectWithoutContext ("NextTxSequence",
+                                          MakeCallback (&TcpSocketBase::UpdateNextTxSequence, this));
+  NS_ASSERT (ok == true);
+
   ok = m_tcb->TraceConnectWithoutContext ("HighestSequence",
                                           MakeCallback (&TcpSocketBase::UpdateHighTxMark, this));
   NS_ASSERT (ok == true);
@@ -428,6 +432,10 @@ TcpSocketBase::TcpSocketBase (const TcpSocketBase& sock)
 
   ok = m_tcb->TraceConnectWithoutContext ("CongState",
                                           MakeCallback (&TcpSocketBase::UpdateCongState, this));
+  NS_ASSERT (ok == true);
+
+  ok = m_tcb->TraceConnectWithoutContext ("NextTxSequence",
+                                          MakeCallback (&TcpSocketBase::UpdateNextTxSequence, this));
   NS_ASSERT (ok == true);
 
   ok = m_tcb->TraceConnectWithoutContext ("HighestSequence",
