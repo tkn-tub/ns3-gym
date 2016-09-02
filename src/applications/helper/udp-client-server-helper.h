@@ -103,31 +103,25 @@ public:
 
   /**
    *  Create UdpClientHelper which will make life easier for people trying
-   * to set up simulations with udp-client-server.
-   *
-   * \param ip The IPv4 address of the remote UDP server
-   * \param port The port number of the remote UDP server
-   */
-
-  UdpClientHelper (Ipv4Address ip, uint16_t port);
-  /**
-   *  Create UdpClientHelper which will make life easier for people trying
-   * to set up simulations with udp-client-server.
-   *
-   * \param ip The IPv6 address of the remote UDP server
-   * \param port The port number of the remote UDP server
-   */
-
-  UdpClientHelper (Ipv6Address ip, uint16_t port);
-  /**
-   *  Create UdpClientHelper which will make life easier for people trying
-   * to set up simulations with udp-client-server.
+   * to set up simulations with udp-client-server. Use this variant with
+   * addresses that do not include a port value (e.g., Ipv4Address and
+   * Ipv6Address).
    *
    * \param ip The IP address of the remote UDP server
    * \param port The port number of the remote UDP server
    */
 
   UdpClientHelper (Address ip, uint16_t port);
+  /**
+   *  Create UdpClientHelper which will make life easier for people trying
+   * to set up simulations with udp-client-server. Use this variant with
+   * addresses that do include a port value (e.g., InetSocketAddress and
+   * Inet6SocketAddress).
+   *
+   * \param addr The address of the remote UDP server
+   */
+
+  UdpClientHelper (Address addr);
 
   /**
    * Record an attribute to be set in each Application after it is is created.
@@ -173,7 +167,9 @@ public:
 
   /**
    * Create UdpTraceClientHelper which will make life easier for people trying
-   * to set up simulations with udp-client-server.
+   * to set up simulations with udp-client-server. Use this variant with
+   * addresses that do not include a port value (e.g., Ipv4Address and
+   * Ipv6Address).
    *
    * \param ip The IP address of the remote UDP server
    * \param port The port number of the remote UDP server
@@ -182,22 +178,14 @@ public:
   UdpTraceClientHelper (Address ip, uint16_t port, std::string filename);
   /**
    * Create UdpTraceClientHelper which will make life easier for people trying
-   * to set up simulations with udp-client-server.
+   * to set up simulations with udp-client-server. Use this variant with
+   * addresses that do include a port value (e.g., InetSocketAddress and
+   * Inet6SocketAddress).
    *
-   * \param ip The IPv4 address of the remote UDP server
-   * \param port The port number of the remote UDP server
+   * \param addr The address of the remote UDP server
    * \param filename the file from which packet traces will be loaded
    */
-  UdpTraceClientHelper (Ipv4Address ip, uint16_t port, std::string filename);
-  /**
-   * Create UdpTraceClientHelper which will make life easier for people trying
-   * to set up simulations with udp-client-server.
-   *
-   * \param ip The IPv6 address of the remote UDP server
-   * \param port The port number of the remote UDP server
-   * \param filename the file from which packet traces will be loaded
-   */
-  UdpTraceClientHelper (Ipv6Address ip, uint16_t port, std::string filename);
+  UdpTraceClientHelper (Address addr, std::string filename);
 
   /**
     * Record an attribute to be set in each Application after it is is created.

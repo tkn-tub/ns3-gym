@@ -108,7 +108,8 @@ class UdpEchoClientHelper
 public:
   /**
    * Create UdpEchoClientHelper which will make life easier for people trying
-   * to set up simulations with echos.
+   * to set up simulations with echos. Use this variant with addresses that do
+   * not include a port value (e.g., Ipv4Address and Ipv6Address).
    *
    * \param ip The IP address of the remote udp echo server
    * \param port The port number of the remote udp echo server
@@ -116,20 +117,12 @@ public:
   UdpEchoClientHelper (Address ip, uint16_t port);
   /**
    * Create UdpEchoClientHelper which will make life easier for people trying
-   * to set up simulations with echos.
+   * to set up simulations with echos. Use this variant with addresses that do
+   * include a port value (e.g., InetSocketAddress and Inet6SocketAddress).
    *
-   * \param ip The IPv4 address of the remote udp echo server
-   * \param port The port number of the remote udp echo server
+   * \param addr The address of the remote udp echo server
    */
-  UdpEchoClientHelper (Ipv4Address ip, uint16_t port);
-  /**
-   * Create UdpEchoClientHelper which will make life easier for people trying
-   * to set up simulations with echos.
-   *
-   * \param ip The IPv6 address of the remote udp echo server
-   * \param port The port number of the remote udp echo server
-   */
-  UdpEchoClientHelper (Ipv6Address ip, uint16_t port);
+  UdpEchoClientHelper (Address addr);
 
   /**
    * Record an attribute to be set in each Application after it is is created.

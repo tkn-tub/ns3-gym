@@ -131,21 +131,11 @@ UdpTraceClient::SetRemote (Address ip, uint16_t port)
 }
 
 void
-UdpTraceClient::SetRemote (Ipv4Address ip, uint16_t port)
+UdpTraceClient::SetRemote (Address addr)
 {
-  NS_LOG_FUNCTION (this << ip << port);
+  NS_LOG_FUNCTION (this << addr);
   m_entries.clear ();
-  m_peerAddress = Address (ip);
-  m_peerPort = port;
-}
-
-void
-UdpTraceClient::SetRemote (Ipv6Address ip, uint16_t port)
-{
-  NS_LOG_FUNCTION (this << ip << port);
-  m_entries.clear ();
-  m_peerAddress = Address (ip);
-  m_peerPort = port;
+  m_peerAddress = addr;
 }
 
 void
@@ -259,6 +249,20 @@ UdpTraceClient::StartApplication (void)
         {
           m_socket->Bind6 ();
           m_socket->Connect (Inet6SocketAddress (Ipv6Address::ConvertFrom (m_peerAddress), m_peerPort));
+        }
+      else if (InetSocketAddress::IsMatchingType (m_peerAddress) == true)
+        {
+          m_socket->Bind ();
+          m_socket->Connect (m_peerAddress);
+        }
+      else if (Inet6SocketAddress::IsMatchingType (m_peerAddress) == true)
+        {
+          m_socket->Bind6 ();
+          m_socket->Connect (m_peerAddress);
+        }
+      else
+        {
+          NS_ASSERT_MSG (false, "Incompatible address type: " << m_peerAddress);
         }
     }
   m_socket->SetRecvCallback (MakeNullCallback<void, Ptr<Socket> > ());
