@@ -249,7 +249,7 @@ private:
   int32_t m_minStart; //!< minimal start offset
   int32_t m_maxEnd; //!< maximal end offset
   int32_t m_adjustment; //!< adjustment to byte tag offsets
-  uint16_t m_used; //!< the number of used bytes in the buffer
+  uint32_t m_used; //!< the number of used bytes in the buffer
   struct ByteTagListData *m_data; //!< the ByteTagListData structure
 };
 
