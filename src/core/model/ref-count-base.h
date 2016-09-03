@@ -28,7 +28,8 @@
 /**
  * \file
  * \ingroup ptr
- * (Deprecated) ns3::RefCountBase declaration.
+ * ns3::RefCountBase declaration.
+ * \deprecated See \ref ns3::SimpleRefCount
  */
 
 namespace ns3 {
