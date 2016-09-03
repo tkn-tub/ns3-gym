@@ -225,11 +225,11 @@ public:
   /**
    * \brief If the IPv6 address is "all hosts multicast" (ff02::3/8).
    *
-   * This function is deprecated because the address has been removed from RFCs.
+   * \deprecated This function is deprecated because the address has been removed from RFCs.
    *
    * \return true if "all hosts multicast", false otherwise
    */
-  bool IsAllHostsMulticast () const NS_DEPRECATED;
+  NS_DEPRECATED (bool IsAllHostsMulticast () const );
 
   /**
    * \brief If the IPv6 address is a link-local address (fe80::/64).

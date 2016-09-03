@@ -253,7 +253,7 @@ public:
    * \deprecated This method will go away in future versions of ns-3.
    * The constructor of the class is now performing the same job, which makes this function useless.
    */
-  static WifiHelper Default (void) NS_DEPRECATED;
+  NS_DEPRECATED (static WifiHelper Default (void) );
 
   /**
    * \param type the type of ns3::WifiRemoteStationManager to create.
