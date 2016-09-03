@@ -197,6 +197,10 @@ namespace ns3 {
  *       exit (-1);
  *     }
  * \endcode
+ *
+ * \bugid{2461} Treat non-option arguments like traditional \c getopt(), by
+ * permuting non-option arguments to the end and providing a query function
+ * for the equivalent of \c optind.
  */
 class CommandLine
 {
