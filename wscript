@@ -34,7 +34,7 @@ tests_enabled    = False
 
 # Bug 1868:  be conservative about -Wstrict-overflow for optimized builds
 # on older compilers; it can generate spurious warnings.  
-cc_version_warn_strict_overflow = ('4', '8', '2')
+gcc_version_warn_strict_overflow = ('4', '8', '2')
 
 # Bug 2181:  clang warnings about unused local typedefs and potentially
 # evaluated expressions affecting darwin clang/LLVM version 7.0.0 (Xcode 7)
@@ -367,7 +367,7 @@ def configure(conf):
             if conf.check_compilation_flag('-march=native'):
                 env.append_value('CXXFLAGS', '-march=native') 
             env.append_value('CXXFLAGS', '-fstrict-overflow')
-            if conf.env['CC_VERSION'] == cc_version_warn_strict_overflow:
+            if conf.env['CC_VERSION'] >= gcc_version_warn_strict_overflow:
                 env.append_value('CXXFLAGS', '-Wstrict-overflow=5')
 
         if sys.platform == 'win32':
