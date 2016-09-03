@@ -229,7 +229,8 @@ public:
    *
    * \return true if "all hosts multicast", false otherwise
    */
-  NS_DEPRECATED (bool IsAllHostsMulticast () const );
+  NS_DEPRECATED
+  bool IsAllHostsMulticast () const;
 
   /**
    * \brief If the IPv6 address is a link-local address (fe80::/64).

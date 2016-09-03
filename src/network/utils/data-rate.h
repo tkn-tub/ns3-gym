@@ -188,7 +188,8 @@ public:
    * \deprecated This method will go away in future versions of ns-3.
    * See instead CalculateBytesTxTime()
    */
-  NS_DEPRECATED (double CalculateTxTime (uint32_t bytes) const );
+  NS_DEPRECATED
+  double CalculateTxTime (uint32_t bytes) const;
 
   /**
    * Get the underlying bitrate

@@ -45,17 +45,19 @@
 /* Test for GCC >= 4.1 */
 #define GCC_VERSION (__GNUC__ * 10000 + __GNUC_MINOR__ * 100)
 #if (GCC_VERSION >= 40100)
-#define NS_DEPRECATED(x) x  __attribute__ ((deprecated))
+#define NS_DEPRECATED  __attribute__ ((deprecated))
 #endif
 #undef GCC_VERSION
 
 
 #elif defined(__clang__) || defined(__llvm__)
-#define NS_DEPRECATED(x) x  __attribute__ ((deprecated))
+#define NS_DEPRECATED  __attribute__ ((deprecated))
+
 #elif defined(_MSC_VER)
-#define NS_DEPRECATED __declspec(deprecated) x
+#define NS_DEPRECATED __declspec(deprecated)
+
 #else
-#define NS_DEPRECATED(x) x
+#define NS_DEPRECATED
 #endif
 
 #endif /* NS3_DEPRECATED_H */

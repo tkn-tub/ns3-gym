@@ -30,7 +30,8 @@
  * \deprecated This method will go away in future versions of ns-3.
  * See instead TheNewWay()
  */
-NS_DEPRECATED(void SomethingUseful (void) ); 
+NS_DEPRECATED
+void SomethingUseful (void);
 /*
  * Do something more useful.
  */

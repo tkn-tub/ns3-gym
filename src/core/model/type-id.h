@@ -399,10 +399,10 @@ public:
    * \returns this TypeId instance.
    * \deprecated
    */
-  NS_DEPRECATED (
+  NS_DEPRECATED
   TypeId AddTraceSource (std::string name,
                          std::string help,
-                         Ptr<const TraceSourceAccessor> accessor) );
+                         Ptr<const TraceSourceAccessor> accessor);
   
   /**
    * Record a new TraceSource.
