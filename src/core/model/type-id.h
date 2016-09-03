@@ -429,10 +429,10 @@ public:
   TypeId HideFromDocumentation (void);
 
   /**
-   * Find an Attribute by name.
+   * Find an Attribute by name, retrieving the associated AttributeInformation.
    *
    * \param [in]  name The name of the requested attribute
-   * \param [out] info A pointer to the TypeId::AttributeInformation
+   * \param [in,out] info A pointer to the TypeId::AttributeInformation
    *              data structure where the result value of this method
    *              will be stored.
    * \returns \c true if the requested attribute could be found.
@@ -444,11 +444,23 @@ public:
    * If no matching trace source is found, this method returns zero.
    *
    * \param [in] name The name of the requested trace source
-   * \returns The trace source accessor which can be used to connect
+   * \return The trace source accessor which can be used to connect
    *  and disconnect trace sinks with the requested trace source on
    *  an object instance.
    */
   Ptr<const TraceSourceAccessor> LookupTraceSourceByName (std::string name) const;
+  /**
+   * Find a TraceSource by name, retrieving the associated TraceSourceInformation.
+   *
+   * \param [in]  name The name of the requested trace source.
+   * \param [out] info A pointer to the TypeId::TraceSourceInformation
+   *              data structure where the result value of this method
+   *              will be stored.
+   * \return The trace source accessor which can be used to connect
+   *  and disconnect trace sinks with the requested trace source on
+   *  an object instance.
+   */
+  Ptr<const TraceSourceAccessor> LookupTraceSourceByName (std::string name, struct TraceSourceInformation *info) const;
 
   /**
    * Get the internal id of this TypeId.
@@ -462,7 +474,7 @@ public:
   /**
    * Set the internal id of this TypeId.
    *
-   * \param [in] tid The internal integer which uniquely identifies
+   * \param [in] uid The internal integer which uniquely identifies
    *            this TypeId.  This TypeId should already have been registered.
    *
    * Typically this is used in serialization/deserialization.
@@ -471,7 +483,7 @@ public:
    * at your own risk and don't be surprised that it eats raw 
    * babies on full-moon nights.
    */
-  void SetUid (uint16_t tid);
+  void SetUid (uint16_t uid);
 
   /** Default constructor.  This produces an invalid TypeId. */
   inline TypeId ();
