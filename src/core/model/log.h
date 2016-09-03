@@ -433,21 +433,44 @@ public:
    * \return This ParameterLogger, so it's chainable.
    */
   template<typename T>
-  ParameterLogger& operator<< (T param)
-  {
-    if (m_first)
-      {
-        m_os << param;
-        m_first = false;
-      }
-    else
-      {
-        m_os << ", " << param;
-      }
-    return *this;
-  }
+  ParameterLogger& operator<< (T param);
+
 };
 
+template<typename T>
+ParameterLogger&
+ParameterLogger::operator<< (T param)
+{
+  if (m_first)
+    {
+      m_os << param;
+      m_first = false;
+    }
+  else
+    {
+      m_os << ", " << param;
+    }
+  return *this;
+}
+
+/**
+ * Specialization for strings.
+ * \param [in] param The function parameter.
+ * \return This ParameterLogger, so it's chainable.
+ */
+template<>
+ParameterLogger&
+ParameterLogger::operator<< <std::string>(const std::string param);
+  
+/**
+ * Specialization for C-strings.
+ * \param [in] param The function parameter.
+ * \return This ParameterLogger, so it's chainable.
+ */
+template<>
+ParameterLogger&
+ParameterLogger::operator<< <const char *>(const char * param);
+  
 } // namespace ns3
 
 /**@}*/  // \ingroup logging

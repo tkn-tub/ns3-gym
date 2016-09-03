@@ -638,4 +638,28 @@ ParameterLogger::ParameterLogger (std::ostream &os)
 {
 }
 
+template<>
+ParameterLogger&
+ParameterLogger::operator<< <std::string>(const std::string param)
+{
+  if (m_first)
+    {
+      m_os << "\"" << param << "\"";
+      m_first = false;
+    }
+  else
+    {
+      m_os << ", \"" << param << "\"";
+    }
+  return *this;
+}
+
+template<>
+ParameterLogger&
+ParameterLogger::operator<< <const char *>(const char * param)
+{
+  (*this) << std::string (param);
+  return *this;
+}
+
 } // namespace ns3
