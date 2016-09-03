@@ -17,6 +17,7 @@
 ^\.waf
 ^doc/introspected-doxygen\.h$
 .*\.py[co]$
+\.json$
 \.pcap$
 \.mob$
 \.routes$

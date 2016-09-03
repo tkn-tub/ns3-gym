@@ -22,6 +22,7 @@
 #include "singleton.h"
 #include "system-path.h"
 #include "log.h"
+#include "des-metrics.h"
 #include <cmath>
 #include <cstring>
 #include <vector>
@@ -1065,6 +1066,31 @@ TestRunnerImpl::Run (int argc, char *argv[])
     {
       TestCase *test = *i;
 
+#ifdef ENABLE_DES_METRICS
+      {
+        /*
+          Reorganize argv
+          Since DES Metrics uses argv[0] for the trace file name,
+          grab the test name and put it in argv[0],
+          with test-runner as argv[1]
+          then the rest of the original arguments.
+        */
+        std::string testname = test->GetName ();
+        std::string runner = "[" + SystemPath::Split (argv[0]).back () + "]";
+
+        int  desargc = argc + 1;
+        char ** desargv = new char * [desargc];
+        desargv[0] = const_cast<char *>(testname.c_str ());
+        desargv[1] = const_cast<char *>(runner.c_str ());
+        for (int i = 2; i < desargc; ++i)
+          {
+            desargv[i] = argv[i - 1];
+          }
+        DesMetrics::Get ()->Initialize (desargc, desargv, m_tempDir);
+        delete [] desargv;
+      }
+#endif
+      
       test->Run (this);
       PrintReport (test, os, xml, 0);
       if (test->IsFailed ())

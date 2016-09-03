@@ -26,6 +26,7 @@
 #include <sstream>
 
 #include "command-line.h"
+#include "des-metrics.h"
 #include "log.h"
 #include "config.h"
 #include "global-value.h"
@@ -152,6 +153,11 @@ CommandLine::Parse (int argc, char *argv[])
         }
       HandleArgument (name, value);
     }
+
+#ifdef ENABLE_DES_METRICS
+  DesMetrics::Get ()->Initialize (argc, argv);
+#endif
+  
 }
 
 void

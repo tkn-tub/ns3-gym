@@ -232,6 +232,10 @@ def options(opt):
                          'but do not wait for ns-3 to finish the full build.'),
                    action="store_true", default=False,
                    dest='doxygen_no_build')
+    opt.add_option('--enable-des-metrics',
+                   help=('Log all events in a json file with the name of the executable (which must call CommandLine::Parse(argc, argv)'),
+                   action="store_true", default=False,
+                   dest='enable_desmetrics')
 
     # options provided in subdirectories
     opt.recurse('src')
@@ -555,6 +559,13 @@ def configure(conf):
                                      define_name="HAVE_CRYPTO", global_define=True, uselib_store='GCRYPT', mandatory=False)
     conf.report_optional_feature("libgcrypt", "Gcrypt library",
                                  conf.env.HAVE_GCRYPT, "libgcrypt not found: you can use libgcrypt-config to find its location.")
+
+    why_not_desmetrics = "defaults to disabled"
+    if Options.options.enable_desmetrics:
+        conf.env['ENABLE_DES_METRICS'] = True
+        env.append_value('DEFINES', 'ENABLE_DES_METRICS')
+        why_not_desmetrics = "option --enable-des-metrics selected"
+    conf.report_optional_feature("DES Metrics", "DES Metrics event collection", conf.env['ENABLE_DES_METRICS'], why_not_desmetrics)
 
 
     # for compiling C code, copy over the CXX* flags

@@ -75,6 +75,11 @@ us a note on ns-developers mailing list.</p>
 </li>
 <li> A new class <b>SpectrumWifiPhy</b> has been introduced that makes use of the Spectrum module.  Its functionality and API is currently very similar to that of the YansWifiPhy, especially because it reuses the same InterferenceHelper and ErrorModel classes (for this release).  Some example programs in the 'examples/wireless/' directory, such as 'wifi-spectrum-per-example.cc', illustrate how the SpectrumWifiPhy class can be substituted for the default YansWifiPhy PHY model.
 </li>
+<li> We have added support for generating traces for the
+<a href="https://wilseypa.github.io/desMetrics/>DES Metrics</a> project.
+These can be enabled by adding <tt>--enable-des-metrics</tt> at configuration;
+you must also use <tt>CommandLine</tt> in your script.  See the API docs
+for class <tt>DesMetrics</tt> for more details.
 </ul>
 <h2>Changes to existing API:</h2>
 <ul>

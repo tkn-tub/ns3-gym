@@ -42,6 +42,7 @@ New user-visible features
   this model matches the API and behavior of YansWifiPhy closely, but
   over time is expected to support a different PHY abstraction and error
   models.
+- (core) DES Metrics support, see the API docs for class DesMetrics.
 
 Bugs fixed
 ----------

@@ -23,6 +23,7 @@
 #include "scheduler.h"
 #include "map-scheduler.h"
 #include "event-impl.h"
+#include "des-metrics.h"
 
 #include "ptr.h"
 #include "string.h"
@@ -249,6 +250,9 @@ Simulator::ScheduleNow (const Ptr<EventImpl> &ev)
 void
 Simulator::ScheduleWithContext (uint32_t context, const Time &delay, EventImpl *impl)
 {
+#ifdef ENABLE_DES_METRICS
+  DesMetrics::Get ()->TraceWithContext (context, Now (), delay);
+#endif
   return GetImpl ()->ScheduleWithContext (context, delay, impl);
 }
 EventId
@@ -259,11 +263,17 @@ Simulator::ScheduleDestroy (const Ptr<EventImpl> &ev)
 EventId 
 Simulator::DoSchedule (Time const &time, EventImpl *impl)
 {
+#ifdef ENABLE_DES_METRICS
+  DesMetrics::Get ()->Trace (Now (), time);
+#endif
   return GetImpl ()->Schedule (time, impl);
 }
 EventId 
 Simulator::DoScheduleNow (EventImpl *impl)
 {
+#ifdef ENABLE_DES_METRICS
+  DesMetrics::Get ()->Trace (Now (), Time (0));
+#endif
   return GetImpl ()->ScheduleNow (impl);
 }
 EventId 
