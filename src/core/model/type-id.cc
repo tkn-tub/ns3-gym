@@ -1068,10 +1068,10 @@ TypeId::LookupTraceSourceByName (std::string name,
       tid = nextTid;
       for (uint32_t i = 0; i < tid.GetTraceSourceN (); i++)
         {
-          struct TypeId::TraceSourceInformation tmp = tid.GetTraceSource (i);
-          if (tmp.name == name)
+          *info = tid.GetTraceSource (i);
+          if (info->name == name)
             {
-              return info.accessor;
+              return info->accessor;
             }
         }
       nextTid = tid.GetParent ();
