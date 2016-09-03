@@ -38,18 +38,34 @@ namespace ns3 {
 /**
  * \ingroup Core
  *
- * \brief hold a so-called 'global value'.
+ * \brief Hold a so-called 'global value'.
+ *
+ * A GlobalValue will get its value from (in order):
+ *   - The initial value configured where it is defined,
+ *   - From the \c NS_GLOBAL_VALUE environment variable,
+ *   - From the command line,
+ *   - By explicit call to SetValue() or Bind().
  *
  * Instances of this class are expected to be allocated as static 
  * global variables and should be used to store configurable global state.
- * GlobalValues can be set directly by calling ns3::GlobalValue::SetValue
- * but they can also be set through the NS_GLOBAL_VALUE environment variable.
- * For example, NS_GLOBAL_VALUE='Name=Value;OtherName=OtherValue;' would set
- * global values Name and OtherName to Value and OtherValue respectively. 
+ * For example:
+ * \code
+ *   // source.cc:
+ *   static GlobalValue g_myGlobal =
+ *     GlobalValue ("myGlobal", "My global value for ...",
+ *                  IntegerValue (12),
+ *                  MakeIntegerChecker ());
+ * \endcode
  *
- * Users of the ns3::CommandLine class also get the ability to set global 
- * values through commandline arguments to their program: --Name=Value will
- * set global value Name to Value.
+ * GlobalValues can be set directly by calling GlobalValue::SetValue()
+ * but they can also be set through the \c NS_GLOBAL_VALUE environment variable.
+ * For example, \c NS_GLOBAL_VALUE='Name=Value;OtherName=OtherValue;' would set
+ * global values \c Name and \c OtherName to \c Value and \c OtherValue,
+ * respectively. 
+ *
+ * Users of the CommandLine class also get the ability to set global 
+ * values through command line arguments to their program:
+ * \c --Name=Value will set global value \c Name to \c Value.
  */
 class GlobalValue
 {
