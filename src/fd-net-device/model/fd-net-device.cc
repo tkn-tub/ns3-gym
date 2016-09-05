@@ -328,7 +328,7 @@ FdNetDevice::ReceiveCallback (uint8_t *buf, ssize_t len)
  * to use memmove and avoid the extra mallocs.
  */
 static void
-AddPIHeader (uint8_t *&buf, ssize_t &len)
+AddPIHeader (uint8_t *&buf, size_t &len)
 {
   // Synthesize PI header for our friend the kernel
   uint8_t *buf2 = (uint8_t*)malloc (len + 4);
@@ -577,7 +577,7 @@ FdNetDevice::SendFrom (Ptr<Packet> packet, const Address& src, const Address& de
   NS_LOG_LOGIC ("calling write");
 
 
-  ssize_t len =  (ssize_t) packet->GetSize ();
+  size_t len =  (size_t) packet->GetSize ();
   uint8_t *buffer = (uint8_t*)malloc (len);
   packet->CopyData (buffer, len);
 
@@ -590,7 +590,7 @@ FdNetDevice::SendFrom (Ptr<Packet> packet, const Address& src, const Address& de
   ssize_t written = write (m_fd, buffer, len);
   free (buffer);
 
-  if (written == -1 || written != len)
+  if (written == -1 || (size_t) written != len)
     {
       m_macTxDropTrace (packet);
       return false;

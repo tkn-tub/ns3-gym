@@ -771,7 +771,7 @@ LteFfrEnhancedAlgorithm::EstimateUlSinr (uint16_t rnti, uint16_t rb, std::map <u
     {
       // take the average SINR value among the available
       double sinrSum = 0;
-      int sinrNum = 0;
+      unsigned int sinrNum = 0;
       for (uint32_t i = 0; i < m_ulBandwidth; i++)
         {
           double sinr = (*itCqi).second.at (i);

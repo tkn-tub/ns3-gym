@@ -74,7 +74,7 @@ std::ostream &operator << (std::ostream &os, const int64x64_t &value)
   int64_t hi = absVal.GetHigh ();
 
   // Save stream format flags
-  const std::streamsize precision = os.precision ();
+  std::size_t precision = static_cast<std::size_t> (os.precision ());
   std::ios_base::fmtflags ff = os.flags ();
   const bool floatfield = os.flags () & std::ios_base::floatfield;
   os << std::setw (1) << std::noshowpos;
@@ -86,7 +86,7 @@ std::ostream &operator << (std::ostream &os, const int64x64_t &value)
 
 
   int64x64_t low(0, absVal.GetLow ());
-  int places = 0;    // Number of decimal places printed so far
+  std::size_t places = 0;    // Number of decimal places printed so far
   bool more = true;  // Should we print more digits?
   
   NS_LOG_LOGIC (std::endl
