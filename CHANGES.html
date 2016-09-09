@@ -73,13 +73,20 @@ us a note on ns-developers mailing list.</p>
     See the pfifo_fast queue disc section of the Traffic Control Layer model
     for more information.
 </li>
-<li> A new class <b>SpectrumWifiPhy</b> has been introduced that makes use of the Spectrum module.  Its functionality and API is currently very similar to that of the YansWifiPhy, especially because it reuses the same InterferenceHelper and ErrorModel classes (for this release).  Some example programs in the 'examples/wireless/' directory, such as 'wifi-spectrum-per-example.cc', illustrate how the SpectrumWifiPhy class can be substituted for the default YansWifiPhy PHY model.
+<li>A new class <b>SpectrumWifiPhy</b> has been introduced that makes use of the 
+    Spectrum module.  Its functionality and API is currently very similar to that 
+    of the YansWifiPhy, especially because it reuses the same InterferenceHelper 
+    and ErrorModel classes (for this release).  Some example programs in the 
+    'examples/wireless/' directory, such as 'wifi-spectrum-per-example.cc', 
+    illustrate how the SpectrumWifiPhy class can be substituted for the default 
+    YansWifiPhy PHY model.
 </li>
-<li> We have added support for generating traces for the
-<a href="https://wilseypa.github.io/desMetrics/>DES Metrics</a> project.
-These can be enabled by adding <tt>--enable-des-metrics</tt> at configuration;
-you must also use <tt>CommandLine</tt> in your script.  See the API docs
-for class <tt>DesMetrics</tt> for more details.
+<li>We have added support for generating traces for the
+    <a href="https://wilseypa.github.io/desMetrics">DES Metrics</a> project.
+    These can be enabled by adding <tt>--enable-des-metrics</tt> at configuration;
+    you must also use <tt>CommandLine</tt> in your script.  See the API docs
+    for class <tt>DesMetrics</tt> for more details.
+</li>
 </ul>
 <h2>Changes to existing API:</h2>
 <ul>
@@ -100,10 +107,32 @@ for class <tt>DesMetrics</tt> for more details.
 </li>
 <li>The QosTag is removed as it has been superseded by the SocketPriorityTag.</li>
 <li>The Ipv4L3Protocol::DefaultTos attribute is removed.</li>
-<li>The attributes YansWifiPhy::Frequency, YansWifiPhy::ChannelNumber, and YansWifiPhy::ChannelWidth, and the related accessor methods, were moved to base class WifiPhy.  YansWifiPhy::GetChannelFrequencyMhz() was deleted.  A new method WifiPhy::DefineChannelNumber () was added to allow users to define relationships between channel number, standard, frequency, and channel width.
+<li>The attributes YansWifiPhy::Frequency, YansWifiPhy::ChannelNumber, and 
+    YansWifiPhy::ChannelWidth, and the related accessor methods, were moved to 
+    base class WifiPhy.  YansWifiPhy::GetChannelFrequencyMhz() was deleted.  
+    A new method WifiPhy::DefineChannelNumber () was added to allow users to 
+    define relationships between channel number, standard, frequency, and channel width.
 </li>
-<li> The class <b>WifiSpectrumValueHelper</b> has been refactored; previously it was an abstract base class supporting the WifiSpectrumValue5MhzFactory spectrum model.  It now contains various static member methods supporting the creation of power spectral densities with the granularity of a Wi-Fi OFDM subcarrier bandwidth.  The class WifiSpectrumValue5MhzFactory and its API remain but it is not subclassed.</li>
-<li> A new method InterferenceHelper::AddForeignSignal has been introduced to support use of the SpectrumWifiPhy (so that non-Wi-Fi signals may be handled as noise power).</li>
+<li>The class <b>WifiSpectrumValueHelper</b> has been refactored; previously it 
+    was an abstract base class supporting the WifiSpectrumValue5MhzFactory spectrum 
+    model.  It now contains various static member methods supporting the creation 
+    of power spectral densities with the granularity of a Wi-Fi OFDM subcarrier 
+    bandwidth.  The class WifiSpectrumValue5MhzFactory and its API remain but 
+    it is not subclassed.
+ </li>
+<li>A new method InterferenceHelper::AddForeignSignal has been introduced to 
+    support use of the SpectrumWifiPhy (so that non-Wi-Fi signals may be handled 
+    as noise power).
+</li>
+<li>A new method InterferenceHelper::AddForeignSignal has been introduced to 
+    support use of the SpectrumWifiPhy (so that non-Wi-Fi signals may be handled 
+    as noise power).
+</li>
+<li>AODV now honors the TTL in RREQ/RREP and it uses a method compliant with 
+    <a href="http://www.ietf.org/rfc/rfc3561.txt">RFC 3561</a>. I.e., the
+    node search radius is increased progressively. This could increase slightly 
+    the node search time, but it also decreases the network congestion.
+</li>
 </ul>
 <h2>Changes to build system:</h2>
 <ul>
@@ -111,7 +140,16 @@ for class <tt>DesMetrics</tt> for more details.
 <h2>Changed behavior:</h2>
 This section is for behavioral changes to the models that were not due to a bug fix.
 <ul>
-  <li> (wifi) The relationship between channel number, frequency, channel width, and Wi-Fi standard has been revised (see bug 2412).  Previously, ChannelNumber and Frequency were attributes of class YansWifiPhy, and the frequency was defined as the start of the band.  Now, Frequency has been redefined to be the center frequency of the channel, and the underlying device relies on the pair of frequency and channel width to control behavior; the channel number and Wi-Fi standard are used as attributes to configure frequency and channel width.  The wifi module documentation discusses this change and the new behavior.
+  <li>(wifi) The relationship between channel number, frequency, channel width, 
+      and Wi-Fi standard has been revised (see bug 2412).  Previously, ChannelNumber 
+      and Frequency were attributes of class YansWifiPhy, and the frequency was 
+      defined as the start of the band.  Now, Frequency has been redefined to be 
+      the center frequency of the channel, and the underlying device relies on 
+      the pair of frequency and channel width to control behavior; the channel 
+      number and Wi-Fi standard are used as attributes to configure frequency 
+      and channel width.  The wifi module documentation discusses this change 
+      and the new behavior.
+  </li>
 </ul>
 
 <hr>

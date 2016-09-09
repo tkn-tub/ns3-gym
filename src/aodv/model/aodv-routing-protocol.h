@@ -103,6 +103,10 @@ private:
   
   // Protocol parameters.
   uint32_t RreqRetries;             ///< Maximum number of retransmissions of RREQ with TTL = NetDiameter to discover a route
+  uint16_t TtlStart;                ///< Initial TTL value for RREQ.
+  uint16_t TtlIncrement;            ///< TTL increment for each attempt using the expanding ring search for RREQ dissemination.
+  uint16_t TtlThreshold;            ///< Maximum TTL value for expanding ring search, TTL = NetDiameter is used beyond this value.
+  uint16_t TimeoutBuffer;           ///< Provide a buffer for the timeout.
   uint16_t RreqRateLimit;           ///< Maximum number of RREQ per second.
   uint16_t RerrRateLimit;           ///< Maximum number of REER per second.
   Time ActiveRouteTimeout;          ///< Period of time during which the route is considered to be valid.
@@ -172,9 +176,9 @@ private:
   /// If route exists and valid, forward packet.
   bool Forwarding (Ptr<const Packet> p, const Ipv4Header & header, UnicastForwardCallback ucb, ErrorCallback ecb);
   /**
-  * To reduce congestion in a network, repeated attempts by a source node at route discovery
-  * for a single destination MUST utilize a binary exponential backoff.
-  */
+   * Repeated attempts by a source node at route discovery for a single destination
+   * use the expanding ring search technique.
+   */
   void ScheduleRreqRetry (Ipv4Address dst);
   /**
    * Set lifetime field in routing table entry to the maximum of existing lifetime and lt, if the entry exists

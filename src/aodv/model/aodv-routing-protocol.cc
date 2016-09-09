@@ -35,6 +35,8 @@
 #include "ns3/inet-socket-address.h"
 #include "ns3/trace-source-accessor.h"
 #include "ns3/udp-socket-factory.h"
+#include "ns3/udp-l4-protocol.h"
+#include "ns3/udp-header.h"
 #include "ns3/wifi-net-device.h"
 #include "ns3/adhoc-wifi-mac.h"
 #include "ns3/string.h"
@@ -119,6 +121,10 @@ NS_OBJECT_ENSURE_REGISTERED (DeferredRouteOutputTag);
 //-----------------------------------------------------------------------------
 RoutingProtocol::RoutingProtocol () :
   RreqRetries (2),
+  TtlStart (1),
+  TtlIncrement (2),
+  TtlThreshold (7),
+  TimeoutBuffer (2),
   RreqRateLimit (10),
   RerrRateLimit (10),
   ActiveRouteTimeout (Seconds (3)),
@@ -165,6 +171,22 @@ RoutingProtocol::GetTypeId (void)
                    TimeValue (Seconds (1)),
                    MakeTimeAccessor (&RoutingProtocol::HelloInterval),
                    MakeTimeChecker ())
+    .AddAttribute ("TtlStart", "Initial TTL value for RREQ.",
+                   UintegerValue (1),
+                   MakeUintegerAccessor (&RoutingProtocol::TtlStart),
+                   MakeUintegerChecker<uint16_t> ())
+    .AddAttribute ("TtlIncrement", "TTL increment for each attempt using the expanding ring search for RREQ dissemination.",
+                   UintegerValue (2),
+                   MakeUintegerAccessor (&RoutingProtocol::TtlIncrement),
+                   MakeUintegerChecker<uint16_t> ())
+    .AddAttribute ("TtlThreshold", "Maximum TTL value for expanding ring search, TTL = NetDiameter is used beyond this value.",
+                   UintegerValue (7),
+                   MakeUintegerAccessor (&RoutingProtocol::TtlThreshold),
+                   MakeUintegerChecker<uint16_t> ())
+    .AddAttribute ("TimeoutBuffer", "Provide a buffer for the timeout.",
+                   UintegerValue (2),
+                   MakeUintegerAccessor (&RoutingProtocol::TimeoutBuffer),
+                   MakeUintegerChecker<uint16_t> ())
     .AddAttribute ("RreqRetries", "Maximum number of retransmissions of RREQ to discover a route",
                    UintegerValue (2),
                    MakeUintegerAccessor (&RoutingProtocol::RreqRetries),
@@ -476,6 +498,16 @@ RoutingProtocol::RouteInput (Ptr<const Packet> p, const Ipv4Header &header,
               {
                 return true;
               }
+            if (header.GetProtocol () == UdpL4Protocol::PROT_NUMBER)
+              {
+                UdpHeader udpHeader;
+                p->PeekHeader (udpHeader);
+                if (udpHeader.GetDestinationPort () == AODV_PORT)
+                  {
+                    // AODV packets sent in broadcast are already managed
+                    return true;
+                  }
+              }
             if (header.GetTtl () > 1)
               {
                 NS_LOG_LOGIC ("Forward broadcast. TTL " << (uint16_t) header.GetTtl ());
@@ -632,7 +664,7 @@ RoutingProtocol::NotifyInterfaceUp (uint32_t i)
   socket->Bind (InetSocketAddress (iface.GetLocal (), AODV_PORT));
   socket->BindToNetDevice (l3->GetNetDevice (i));
   socket->SetAllowBroadcast (true);
-  socket->SetAttribute ("IpTtl", UintegerValue (1));
+  socket->SetIpRecvTtl (true);
   m_socketAddresses.insert (std::make_pair (socket, iface));
 
   // create also a subnet broadcast socket
@@ -643,7 +675,7 @@ RoutingProtocol::NotifyInterfaceUp (uint32_t i)
   socket->Bind (InetSocketAddress (iface.GetBroadcast (), AODV_PORT));
   socket->BindToNetDevice (l3->GetNetDevice (i));
   socket->SetAllowBroadcast (true);
-  socket->SetAttribute ("IpTtl", UintegerValue (1));
+  socket->SetIpRecvTtl (true);
   m_socketSubnetBroadcastAddresses.insert (std::make_pair (socket, iface));
 
   // Add local broadcast record to the routing table
@@ -744,7 +776,7 @@ RoutingProtocol::NotifyAddAddress (uint32_t i, Ipv4InterfaceAddress address)
           socket->Bind (InetSocketAddress (iface.GetBroadcast (), AODV_PORT));
           socket->BindToNetDevice (l3->GetNetDevice (i));
           socket->SetAllowBroadcast (true);
-          socket->SetAttribute ("IpTtl", UintegerValue (1));
+          socket->SetIpRecvTtl (true);
           m_socketSubnetBroadcastAddresses.insert (std::make_pair (socket, iface));
 
           // Add local broadcast record to the routing table
@@ -793,7 +825,7 @@ RoutingProtocol::NotifyRemoveAddress (uint32_t i, Ipv4InterfaceAddress address)
           socket->Bind (InetSocketAddress (iface.GetLocal (), AODV_PORT));
           socket->BindToNetDevice (l3->GetNetDevice (i));
           socket->SetAllowBroadcast (true);
-          socket->SetAttribute ("IpTtl", UintegerValue (1));
+          socket->SetIpRecvTtl (true);
           m_socketAddresses.insert (std::make_pair (socket, iface));
 
           // create also a unicast socket
@@ -804,7 +836,7 @@ RoutingProtocol::NotifyRemoveAddress (uint32_t i, Ipv4InterfaceAddress address)
           socket->Bind (InetSocketAddress (iface.GetBroadcast (), AODV_PORT));
           socket->BindToNetDevice (l3->GetNetDevice (i));
           socket->SetAllowBroadcast (true);
-          socket->SetAttribute ("IpTtl", UintegerValue (1));
+          socket->SetIpRecvTtl (true);
           m_socketSubnetBroadcastAddresses.insert (std::make_pair (socket, iface));
 
           // Add local broadcast record to the routing table
@@ -910,14 +942,29 @@ RoutingProtocol::SendRequest (Ipv4Address dst)
   rreqHeader.SetDst (dst);
 
   RoutingTableEntry rt;
+  // Using the Hop field in Routing Table to manage the expanding ring search
+  uint16_t ttl = TtlStart;
   if (m_routingTable.LookupRoute (dst, rt))
     {
-      rreqHeader.SetHopCount (rt.GetHop ());
+      if (rt.GetFlag () != IN_SEARCH)
+        {
+          ttl = std::min<uint16_t> (rt.GetHop () + TtlIncrement, NetDiameter);
+        }
+      else
+        {
+          ttl = rt.GetHop () + TtlIncrement;
+          if (ttl > TtlThreshold)
+            ttl = NetDiameter;
+        }
+      if (ttl == NetDiameter)
+        rt.IncrementRreqCnt ();
       if (rt.GetValidSeqNo ())
         rreqHeader.SetDstSeqno (rt.GetSeqNo ());
       else
         rreqHeader.SetUnknownSeqno (true);
+      rt.SetHop (ttl);
       rt.SetFlag (IN_SEARCH);
+      rt.SetLifeTime (PathDiscoveryTime);
       m_routingTable.Update (rt);
     }
   else
@@ -925,8 +972,11 @@ RoutingProtocol::SendRequest (Ipv4Address dst)
       rreqHeader.SetUnknownSeqno (true);
       Ptr<NetDevice> dev = 0;
       RoutingTableEntry newEntry (/*device=*/ dev, /*dst=*/ dst, /*validSeqNo=*/ false, /*seqno=*/ 0,
-                                              /*iface=*/ Ipv4InterfaceAddress (),/*hop=*/ 0,
-                                              /*nextHop=*/ Ipv4Address (), /*lifeTime=*/ Seconds (0));
+                                              /*iface=*/ Ipv4InterfaceAddress (),/*hop=*/ ttl,
+                                              /*nextHop=*/ Ipv4Address (), /*lifeTime=*/ PathDiscoveryTime);
+      // Check if TtlStart == NetDiameter
+      if (ttl == NetDiameter)
+        newEntry.IncrementRreqCnt ();
       newEntry.SetFlag (IN_SEARCH);
       m_routingTable.AddRoute (newEntry);
     }
@@ -940,7 +990,6 @@ RoutingProtocol::SendRequest (Ipv4Address dst)
   rreqHeader.SetOriginSeqno (m_seqNo);
   m_requestId++;
   rreqHeader.SetId (m_requestId);
-  rreqHeader.SetHopCount (0);
 
   // Send RREQ as subnet directed broadcast from each interface used by aodv
   for (std::map<Ptr<Socket>, Ipv4InterfaceAddress>::const_iterator j =
@@ -953,6 +1002,9 @@ RoutingProtocol::SendRequest (Ipv4Address dst)
       m_rreqIdCache.IsDuplicate (iface.GetLocal (), m_requestId);
 
       Ptr<Packet> packet = Create<Packet> ();
+      SocketIpTtlTag tag;
+      tag.SetTtl (ttl);
+      packet->AddPacketTag (tag);
       packet->AddHeader (rreqHeader);
       TypeHeader tHeader (AODVTYPE_RREQ);
       packet->AddHeader (tHeader);
@@ -993,10 +1045,18 @@ RoutingProtocol::ScheduleRreqRetry (Ipv4Address dst)
   m_addressReqTimer[dst].SetArguments (dst);
   RoutingTableEntry rt;
   m_routingTable.LookupRoute (dst, rt);
-  rt.IncrementRreqCnt ();
-  m_routingTable.Update (rt);
-  m_addressReqTimer[dst].Schedule (Time (rt.GetRreqCnt () * NetTraversalTime));
-  NS_LOG_LOGIC ("Scheduled RREQ retry in " << Time (rt.GetRreqCnt () * NetTraversalTime).GetSeconds () << " seconds");
+  Time retry;
+  if (rt.GetHop () < NetDiameter)
+    {
+      retry = 2 * NodeTraversalTime * (rt.GetHop () + TimeoutBuffer);
+    }
+  else
+    {
+      // Binary exponential backoff
+      retry = std::pow<uint16_t> (2, rt.GetRreqCnt () - 1) * NetTraversalTime;
+    }
+  m_addressReqTimer[dst].Schedule (retry);
+  NS_LOG_LOGIC ("Scheduled RREQ retry in " << retry.GetSeconds () << " seconds");
 }
 
 void
@@ -1254,12 +1314,23 @@ RoutingProtocol::RecvRequest (Ptr<Packet> p, Ipv4Address receiver, Ipv4Address s
         }
     }
 
+  SocketIpTtlTag tag;
+  p->RemovePacketTag (tag);
+  if (tag.GetTtl () < 2)
+    {
+      NS_LOG_DEBUG ("TTL exceeded. Drop RREQ origin " << src << " destination " << dst );
+      return;
+    }
+
   for (std::map<Ptr<Socket>, Ipv4InterfaceAddress>::const_iterator j =
          m_socketAddresses.begin (); j != m_socketAddresses.end (); ++j)
     {
       Ptr<Socket> socket = j->first;
       Ipv4InterfaceAddress iface = j->second;
       Ptr<Packet> packet = Create<Packet> ();
+      SocketIpTtlTag ttl;
+      ttl.SetTtl (tag.GetTtl () - 1);
+      packet->AddPacketTag (ttl);
       packet->AddHeader (rreqHeader);
       TypeHeader tHeader (AODVTYPE_RREQ);
       packet->AddHeader (tHeader);
@@ -1292,6 +1363,9 @@ RoutingProtocol::SendReply (RreqHeader const & rreqHeader, RoutingTableEntry con
   RrepHeader rrepHeader ( /*prefixSize=*/ 0, /*hops=*/ 0, /*dst=*/ rreqHeader.GetDst (),
                                           /*dstSeqNo=*/ m_seqNo, /*origin=*/ toOrigin.GetDestination (), /*lifeTime=*/ MyRouteTimeout);
   Ptr<Packet> packet = Create<Packet> ();
+  SocketIpTtlTag tag;
+  tag.SetTtl (toOrigin.GetHop ());
+  packet->AddPacketTag (tag);
   packet->AddHeader (rrepHeader);
   TypeHeader tHeader (AODVTYPE_RREP);
   packet->AddHeader (tHeader);
@@ -1324,6 +1398,9 @@ RoutingProtocol::SendReplyByIntermediateNode (RoutingTableEntry & toDst, Routing
   m_routingTable.Update (toOrigin);
 
   Ptr<Packet> packet = Create<Packet> ();
+  SocketIpTtlTag tag;
+  tag.SetTtl (toOrigin.GetHop ());
+  packet->AddPacketTag (tag);
   packet->AddHeader (rrepHeader);
   TypeHeader tHeader (AODVTYPE_RREP);
   packet->AddHeader (tHeader);
@@ -1338,6 +1415,9 @@ RoutingProtocol::SendReplyByIntermediateNode (RoutingTableEntry & toDst, Routing
                                                  /*dst seqno=*/ toOrigin.GetSeqNo (), /*origin=*/ toDst.GetDestination (),
                                                  /*lifetime=*/ toOrigin.GetLifeTime ());
       Ptr<Packet> packetToDst = Create<Packet> ();
+      SocketIpTtlTag gratTag;
+      gratTag.SetTtl (toDst.GetHop ());
+      packetToDst->AddPacketTag (gratTag);
       packetToDst->AddHeader (gratRepHeader);
       TypeHeader type (AODVTYPE_RREP);
       packetToDst->AddHeader (type);
@@ -1355,6 +1435,9 @@ RoutingProtocol::SendReplyAck (Ipv4Address neighbor)
   RrepAckHeader h;
   TypeHeader typeHeader (AODVTYPE_RREP_ACK);
   Ptr<Packet> packet = Create<Packet> ();
+  SocketIpTtlTag tag;
+  tag.SetTtl (1);
+  packet->AddPacketTag (tag);
   packet->AddHeader (h);
   packet->AddHeader (typeHeader);
   RoutingTableEntry toNeighbor;
@@ -1480,8 +1563,18 @@ RoutingProtocol::RecvReply (Ptr<Packet> p, Ipv4Address receiver, Ipv4Address sen
       toNextHopToOrigin.InsertPrecursor (toDst.GetNextHop ());
       m_routingTable.Update (toNextHopToOrigin);
     }
+  SocketIpTtlTag tag;
+  p->RemovePacketTag(tag);
+  if (tag.GetTtl () < 2)
+    {
+      NS_LOG_DEBUG ("TTL exceeded. Drop RREP destination " << dst << " origin " << rrepHeader.GetOrigin ());
+      return;
+    }
 
   Ptr<Packet> packet = Create<Packet> ();
+  SocketIpTtlTag ttl;
+  ttl.SetTtl (tag.GetTtl() - 1);
+  packet->AddPacketTag (ttl);
   packet->AddHeader (rrepHeader);
   TypeHeader tHeader (AODVTYPE_RREP);
   packet->AddHeader (tHeader);
@@ -1569,6 +1662,9 @@ RoutingProtocol::RecvError (Ptr<Packet> p, Ipv4Address src )
         {
           TypeHeader typeHeader (AODVTYPE_RERR);
           Ptr<Packet> packet = Create<Packet> ();
+          SocketIpTtlTag tag;
+          tag.SetTtl (1);
+          packet->AddPacketTag (tag);
           packet->AddHeader (rerrHeader);
           packet->AddHeader (typeHeader);
           SendRerrMessage (packet, precursors);
@@ -1586,6 +1682,9 @@ RoutingProtocol::RecvError (Ptr<Packet> p, Ipv4Address src )
     {
       TypeHeader typeHeader (AODVTYPE_RERR);
       Ptr<Packet> packet = Create<Packet> ();
+      SocketIpTtlTag tag;
+      tag.SetTtl (1);
+      packet->AddPacketTag (tag);
       packet->AddHeader (rerrHeader);
       packet->AddHeader (typeHeader);
       SendRerrMessage (packet, precursors);
@@ -1611,7 +1710,7 @@ RoutingProtocol::RouteRequestTimerExpire (Ipv4Address dst)
    */
   if (toDst.GetRreqCnt () == RreqRetries)
     {
-      NS_LOG_LOGIC ("route discovery to " << dst << " has been attempted RreqRetries (" << RreqRetries << ") times");
+      NS_LOG_LOGIC ("route discovery to " << dst << " has been attempted RreqRetries (" << RreqRetries << ") times with ttl " << NetDiameter);
       m_addressReqTimer.erase (dst);
       m_routingTable.DeleteRoute (dst);
       NS_LOG_DEBUG ("Route not found. Drop all packets with dst " << dst);
@@ -1621,7 +1720,7 @@ RoutingProtocol::RouteRequestTimerExpire (Ipv4Address dst)
 
   if (toDst.GetFlag () == IN_SEARCH)
     {
-      NS_LOG_LOGIC ("Resend RREQ to " << dst << " ttl " << NetDiameter);
+      NS_LOG_LOGIC ("Resend RREQ to " << dst << " previous ttl " << toDst.GetHop ());
       SendRequest (dst);
     }
   else
@@ -1693,6 +1792,9 @@ RoutingProtocol::SendHello ()
       RrepHeader helloHeader (/*prefix size=*/ 0, /*hops=*/ 0, /*dst=*/ iface.GetLocal (), /*dst seqno=*/ m_seqNo,
                                                /*origin=*/ iface.GetLocal (),/*lifetime=*/ Time (AllowedHelloLoss * HelloInterval));
       Ptr<Packet> packet = Create<Packet> ();
+      SocketIpTtlTag tag;
+      tag.SetTtl (1);
+      packet->AddPacketTag (tag);
       packet->AddHeader (helloHeader);
       TypeHeader tHeader (AODVTYPE_RREP);
       packet->AddHeader (tHeader);
@@ -1757,6 +1859,9 @@ RoutingProtocol::SendRerrWhenBreaksLinkToNextHop (Ipv4Address nextHop)
           NS_LOG_LOGIC ("Send RERR message with maximum size.");
           TypeHeader typeHeader (AODVTYPE_RERR);
           Ptr<Packet> packet = Create<Packet> ();
+          SocketIpTtlTag tag;
+          tag.SetTtl (1);
+          packet->AddPacketTag (tag);
           packet->AddHeader (rerrHeader);
           packet->AddHeader (typeHeader);
           SendRerrMessage (packet, precursors);
@@ -1774,6 +1879,9 @@ RoutingProtocol::SendRerrWhenBreaksLinkToNextHop (Ipv4Address nextHop)
     {
       TypeHeader typeHeader (AODVTYPE_RERR);
       Ptr<Packet> packet = Create<Packet> ();
+      SocketIpTtlTag tag;
+      tag.SetTtl (1);
+      packet->AddPacketTag (tag);
       packet->AddHeader (rerrHeader);
       packet->AddHeader (typeHeader);
       SendRerrMessage (packet, precursors);
@@ -1802,6 +1910,9 @@ RoutingProtocol::SendRerrWhenNoRouteToForward (Ipv4Address dst,
   rerrHeader.AddUnDestination (dst, dstSeqNo);
   RoutingTableEntry toOrigin;
   Ptr<Packet> packet = Create<Packet> ();
+  SocketIpTtlTag tag;
+  tag.SetTtl (1);
+  packet->AddPacketTag (tag);
   packet->AddHeader (rerrHeader);
   packet->AddHeader (TypeHeader (AODVTYPE_RERR));
   if (m_routingTable.LookupValidRoute (origin, toOrigin))
