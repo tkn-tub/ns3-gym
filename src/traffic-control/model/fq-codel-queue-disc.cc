@@ -105,7 +105,7 @@ TypeId FqCoDelQueueDisc::GetTypeId (void)
                    StringValue ("5ms"),
                    MakeStringAccessor (&FqCoDelQueueDisc::m_target),
                    MakeStringChecker ())
-    .AddAttribute ("Packet limit",
+    .AddAttribute ("PacketLimit",
                    "The hard limit on the real queue size, measured in packets",
                    UintegerValue (10 * 1024),
                    MakeUintegerAccessor (&FqCoDelQueueDisc::m_limit),

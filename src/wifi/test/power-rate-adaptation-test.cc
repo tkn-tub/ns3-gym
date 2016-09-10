@@ -348,8 +348,8 @@ PowerRateAdaptationTest::TestAparf ()
   /*
    * Configure thresholds for rate and power control.
    */
-  manager->SetAttribute ("SuccessThreshold 1",UintegerValue (3));
-  manager->SetAttribute ("SuccessThreshold 2",UintegerValue (10));
+  manager->SetAttribute ("SuccessThreshold1",UintegerValue (3));
+  manager->SetAttribute ("SuccessThreshold2",UintegerValue (10));
   manager->SetAttribute ("FailThreshold",UintegerValue (1));
   manager->SetAttribute ("PowerThreshold",UintegerValue (10));
 

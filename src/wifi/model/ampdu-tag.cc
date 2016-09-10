@@ -34,7 +34,7 @@ AmpduTag::GetTypeId (void)
     .SetParent<Tag> ()
     .SetGroupName ("Wifi")
     .AddConstructor<AmpduTag> ()
-    .AddAttribute ("Ampdu Exists", "The value that indicates that the packet contains an AMPDU",
+    .AddAttribute ("AmpduExists", "The value that indicates that the packet contains an AMPDU",
                    UintegerValue (false),
                    MakeUintegerAccessor (&AmpduTag::GetAmpdu),
                    MakeUintegerChecker<uint8_t> ())

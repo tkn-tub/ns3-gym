@@ -62,7 +62,7 @@ void
 FqCoDelQueueDiscNoSuitableFilter::DoRun (void)
 {
   // Packets that cannot be classified by the available filters should be dropped
-  Ptr<FqCoDelQueueDisc> queueDisc = CreateObjectWithAttributes<FqCoDelQueueDisc> ("Packet limit", UintegerValue (4));
+  Ptr<FqCoDelQueueDisc> queueDisc = CreateObjectWithAttributes<FqCoDelQueueDisc> ("PacketLimit", UintegerValue (4));
   Ptr<FqCoDelIpv4PacketFilter> filter = CreateObject<FqCoDelIpv4PacketFilter> ();
   queueDisc->AddPacketFilter (filter);
 
@@ -121,7 +121,7 @@ FqCoDelQueueDiscIPFlowsSeparationAndPacketLimit::AddPacket (Ptr<FqCoDelQueueDisc
 void
 FqCoDelQueueDiscIPFlowsSeparationAndPacketLimit::DoRun (void)
 {
-  Ptr<FqCoDelQueueDisc> queueDisc = CreateObjectWithAttributes<FqCoDelQueueDisc> ("Packet limit", UintegerValue (4));
+  Ptr<FqCoDelQueueDisc> queueDisc = CreateObjectWithAttributes<FqCoDelQueueDisc> ("PacketLimit", UintegerValue (4));
   Ptr<FqCoDelIpv6PacketFilter> ipv6Filter = CreateObject<FqCoDelIpv6PacketFilter> ();
   Ptr<FqCoDelIpv4PacketFilter> ipv4Filter = CreateObject<FqCoDelIpv4PacketFilter> ();
   queueDisc->AddPacketFilter (ipv6Filter);
@@ -341,7 +341,7 @@ FqCoDelQueueDiscTCPFlowsSeparation::AddPacket (Ptr<FqCoDelQueueDisc> queue, Ipv4
 void
 FqCoDelQueueDiscTCPFlowsSeparation::DoRun (void)
 {
-  Ptr<FqCoDelQueueDisc> queueDisc = CreateObjectWithAttributes<FqCoDelQueueDisc> ("Packet limit", UintegerValue (10));
+  Ptr<FqCoDelQueueDisc> queueDisc = CreateObjectWithAttributes<FqCoDelQueueDisc> ("PacketLimit", UintegerValue (10));
   Ptr<FqCoDelIpv6PacketFilter> ipv6Filter = CreateObject<FqCoDelIpv6PacketFilter> ();
   Ptr<FqCoDelIpv4PacketFilter> ipv4Filter = CreateObject<FqCoDelIpv4PacketFilter> ();
   queueDisc->AddPacketFilter (ipv6Filter);
@@ -431,7 +431,7 @@ FqCoDelQueueDiscUDPFlowsSeparation::AddPacket (Ptr<FqCoDelQueueDisc> queue, Ipv4
 void
 FqCoDelQueueDiscUDPFlowsSeparation::DoRun (void)
 {
-  Ptr<FqCoDelQueueDisc> queueDisc = CreateObjectWithAttributes<FqCoDelQueueDisc> ("Packet limit", UintegerValue (10));
+  Ptr<FqCoDelQueueDisc> queueDisc = CreateObjectWithAttributes<FqCoDelQueueDisc> ("PacketLimit", UintegerValue (10));
   Ptr<FqCoDelIpv6PacketFilter> ipv6Filter = CreateObject<FqCoDelIpv6PacketFilter> ();
   Ptr<FqCoDelIpv4PacketFilter> ipv4Filter = CreateObject<FqCoDelIpv4PacketFilter> ();
   queueDisc->AddPacketFilter (ipv6Filter);

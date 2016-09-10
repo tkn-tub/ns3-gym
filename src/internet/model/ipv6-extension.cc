@@ -832,7 +832,7 @@ TypeId Ipv6ExtensionRoutingDemux::GetTypeId ()
   static TypeId tid = TypeId ("ns3::Ipv6ExtensionRoutingDemux")
     .SetParent<Object> ()
     .SetGroupName ("Internet")
-    .AddAttribute ("Routing Extensions", "The set of IPv6 Routing extensions registered with this demux.",
+    .AddAttribute ("RoutingExtensions", "The set of IPv6 Routing extensions registered with this demux.",
                    ObjectVectorValue (),
                    MakeObjectVectorAccessor (&Ipv6ExtensionRoutingDemux::m_extensionsRouting),
                    MakeObjectVectorChecker<Ipv6ExtensionRouting> ())
