@@ -222,8 +222,6 @@ public:
    * \return true if copy was successful
    */
   virtual bool Copy (const AttributeValue &source, AttributeValue &destination) const = 0;
-
-  
 };
 
 /**
@@ -258,6 +256,53 @@ private:
    */
   virtual bool DeserializeFromString (std::string value, Ptr<const AttributeChecker> checker);
 };
+
+/**
+ * \brief An accessor for EmptyAttributeValue
+ *
+ * Does nothing, since every EmptyAttributeValue is the same.
+ */
+class EmptyAttributeAccessor : public AttributeAccessor
+{
+public:
+  EmptyAttributeAccessor ();
+  ~EmptyAttributeAccessor ();
+  virtual bool Set (ObjectBase * object, const AttributeValue &value) const;
+  virtual bool Get (const ObjectBase * object, AttributeValue &attribute) const;
+  virtual bool HasGetter (void) const;
+  virtual bool HasSetter (void) const;
+};
+
+static inline Ptr<const AttributeAccessor>
+MakeEmptyAttributeAccessor ()
+{
+  return Ptr<const AttributeAccessor> (new EmptyAttributeAccessor (), false);
+}
+
+/**
+ * \brief A checker for EmptyAttributeValue
+ *
+ * Does nothing, since every EmptyAttributeValue does not contain anything and
+ * is, of course, valid.
+ */
+class EmptyAttributeChecker : public AttributeChecker
+{
+public:
+  EmptyAttributeChecker ();
+  ~EmptyAttributeChecker ();
+  virtual bool Check (const AttributeValue &value) const;
+  virtual std::string GetValueTypeName (void) const;
+  virtual bool HasUnderlyingTypeInformation (void) const;
+  virtual std::string GetUnderlyingTypeInformation (void) const;
+  virtual Ptr<AttributeValue> Create (void) const;
+  virtual bool Copy (const AttributeValue &source, AttributeValue &destination) const;
+};
+
+static inline Ptr<AttributeChecker>
+MakeEmptyAttributeChecker ()
+{
+  return Ptr<AttributeChecker> (new EmptyAttributeChecker (), false);
+}
 
 } // namespace ns3
 

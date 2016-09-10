@@ -107,13 +107,26 @@ public:
  * type implements a statically-polymorphic set of Connect and Disconnect
  * methods and creates a dynamic-polymorphic class to wrap the underlying
  * static-polymorphic class.  This functionality is typically provided
- * by wrapping an object data member in a TracedCallback.
+ * by wrapping an object data member in a TracedCallback or TracedValue.
  *
  * \param [in] a The trace source
  * \returns The TraceSourceAccessor
  */
 template <typename T>
 Ptr<const TraceSourceAccessor> MakeTraceSourceAccessor (T a);
+
+/**
+ * \ingroup tracing
+ *
+ * Create an empty TraceSourceAccessor.
+ *
+ * \returns The empty TraceSourceAccessor (runtime exception if used)
+ */
+static inline
+Ptr<const TraceSourceAccessor> MakeEmptyTraceSourceAccessor ()
+{
+  return Ptr<const TraceSourceAccessor> (0);
+}
 
 } // namespace ns3
 

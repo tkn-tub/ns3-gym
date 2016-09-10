@@ -65,6 +65,13 @@ public:
     ATTR_CONSTRUCT = 1<<2, /**< The attribute can be written at construction-time */
     ATTR_SGC = ATTR_GET | ATTR_SET | ATTR_CONSTRUCT, /**< The attribute can be read, and written at any time */
   };
+  /** The level of support or deprecation for attributes or trace sources. */
+  enum SupportLevel
+  {
+    SUPPORTED,   /**< Attribute or trace source is currently used. */
+    DEPRECATED,  /**< Attribute or trace source is deprecated; user is warned. */
+    OBSOLETE     /**< Attribute or trace source is not used anymore; simulation fails. */
+  };
   /** Attribute implementation. */
   struct AttributeInformation {
     /** Attribute name. */
@@ -81,6 +88,10 @@ public:
     Ptr<const AttributeAccessor> accessor;
     /** Checker object. */
     Ptr<const AttributeChecker> checker;
+    /** Support level/deprecation. */
+    TypeId::SupportLevel supportLevel;
+    /** Support message. */
+    std::string supportMsg;
   };
   /** TraceSource implementation. */
   struct TraceSourceInformation {
@@ -92,6 +103,10 @@ public:
     std::string callback;
     /** Trace accessor. */
     Ptr<const TraceSourceAccessor> accessor;
+    /** Support level/deprecation. */
+    TypeId::SupportLevel supportLevel;
+    /** Support message. */
+    std::string supportMsg;
   };
 
   /** Type of hash values. */
@@ -349,13 +364,24 @@ public:
    *             subclass.
    * \param [in] checker An instance of the associated AttributeChecker
    *             subclass.
+   * \param [in] supportLevel Support/deprecation status of the attribute.
+   * \param [in] supportMsg Upgrade hint if this attribute is no longer
+   *             supported.  If the attribute is \c DEPRECATED the attribute
+   *             behavior still exists, but user code should be updated
+   *             following guidance in the hint..
+   *             If the attribute is \c OBSOLETE, the hint should indicate
+   *             which class the attribute functional has been moved to,
+   *             or that the functionality is no longer supported.
+   *             See test file \file type-id-test-suite.cc for examples.
    * \returns This TypeId instance
    */
   TypeId AddAttribute (std::string name,
                        std::string help, 
                        const AttributeValue &initialValue,
                        Ptr<const AttributeAccessor> accessor,
-                       Ptr<const AttributeChecker> checker);
+                       Ptr<const AttributeChecker> checker,
+                       SupportLevel supportLevel = SUPPORTED,
+                       const std::string &supportMsg = "");
 
   /**
    * Set the initial value of an Attribute.
@@ -379,6 +405,14 @@ public:
    *             subclass.
    * \param [in] checker An instance of the associated AttributeChecker
    *             subclass.
+   * \param [in] supportLevel Support/deprecation status of the attribute.
+   * \param [in] supportMsg Upgrade hint if this attribute is no longer
+   *             supported.  If the attribute is \c DEPRECATED the attribute
+   *             behavior still exists, but user code should be updated
+   *             following guidance in the hint..
+   *             If the attribute is \c OBSOLETE, the hint should indicate
+   *             which class the attribute functional has been moved to,
+   *             or that the functionality is no longer supported.
    * \returns This TypeId instance
    */
   TypeId AddAttribute (std::string name,
@@ -386,7 +420,9 @@ public:
                        uint32_t flags,
                        const AttributeValue &initialValue,
                        Ptr<const AttributeAccessor> accessor,
-                       Ptr<const AttributeChecker> checker);
+                       Ptr<const AttributeChecker> checker,
+                       SupportLevel supportLevel = SUPPORTED,
+                       const std::string &supportMsg = "");
 
   /**
    * Record a new TraceSource.
@@ -415,12 +451,23 @@ public:
    * \param [in] callback Fully qualified typedef name for the callback
    *             signature.  Generally this should begin with the
    *             "ns3::" namespace qualifier.
+   * \param [in] supportLevel Support/deprecation status of the attribute.
+   * \param [in] supportMsg Upgrade hint if this attribute is no longer
+   *             supported.  If the attribute is \c DEPRECATED the attribute
+   *             behavior still exists, but user code should be updated
+   *             following guidance in the hint..
+   *             If the attribute is \c OBSOLETE, the hint should indicate
+   *             which class the attribute functional has been moved to,
+   *             or that the functionality is no longer supported.
+   *             See test file \file type-id-test-suite.cc for examples.
    * \returns This TypeId instance.
    */
   TypeId AddTraceSource (std::string name,
                          std::string help,
                          Ptr<const TraceSourceAccessor> accessor,
-                         std::string callback);
+                         std::string callback,
+                         SupportLevel supportLevel = SUPPORTED,
+                         const std::string &supportMsg = "");
 
   /**
    * Hide this TypeId from documentation.

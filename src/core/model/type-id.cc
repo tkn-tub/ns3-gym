@@ -195,6 +195,8 @@ public:
    *             subclass.
    * \param [in] checker An instance of the associated AttributeChecker
    *             subclass.
+   * \param [in] supportLevel The support/deprecation status for this attribute.
+   * \param [in] supportMsg Upgrade hint if this attribute is no longer supported.
    */
   void AddAttribute (uint16_t uid,
                      std::string name,
@@ -202,7 +204,9 @@ public:
                      uint32_t flags,
                      Ptr<const AttributeValue> initialValue,
                      Ptr<const AttributeAccessor> accessor,
-                     Ptr<const AttributeChecker> checker);
+                     Ptr<const AttributeChecker> checker,
+                     TypeId::SupportLevel supportLevel = TypeId::SUPPORTED,
+                     const std::string &supportMsg = "");
   /**
    * Set the initial value of an Attribute.
    * \param [in] uid The id.
@@ -236,13 +240,17 @@ public:
    * \param [in] callback Fully qualified typedef name for the callback
    *             signature.  Generally this should begin with the
    *             "ns3::" namespace qualifier.  
+   * \param [in] supportLevel The support/deprecation status for this attribute.
+   * \param [in] supportMsg Upgrade hint if this attribute is no longer supported.
    * \returns This TypeId instance.
    */
   void AddTraceSource (uint16_t uid,
                        std::string name, 
                        std::string help,
                        Ptr<const TraceSourceAccessor> accessor,
-                       std::string callback);
+                       std::string callback,
+                       TypeId::SupportLevel supportLevel = TypeId::SUPPORTED,
+                       const std::string &supportMsg = "");
   /**
    * Get the number of Trace sources.
    * \param [in] uid The id.
@@ -307,6 +315,10 @@ private:
     std::vector<struct TypeId::AttributeInformation> attributes;
     /** The container of TraceSources. */
     std::vector<struct TypeId::TraceSourceInformation> traceSources;
+    /** Support level/deprecation. */
+    TypeId::SupportLevel supportLevel;
+    /** Support message. */
+    std::string supportMsg;
   };
   /** Iterator type. */
   typedef std::vector<struct IidInformation>::const_iterator Iterator;
@@ -617,15 +629,19 @@ IidManager::HasAttribute (uint16_t uid,
 }
 
 void 
-IidManager::AddAttribute (uint16_t uid, 
+IidManager::AddAttribute (uint16_t uid,
                           std::string name,
-                          std::string help, 
+                          std::string help,
                           uint32_t flags,
                           Ptr<const AttributeValue> initialValue,
                           Ptr<const AttributeAccessor> accessor,
-                          Ptr<const AttributeChecker> checker)
+                          Ptr<const AttributeChecker> checker,
+                          TypeId::SupportLevel supportLevel,
+                          const std::string &supportMsg)
 {
-  NS_LOG_FUNCTION (this << uid << name << help << flags << initialValue << accessor << checker);
+  NS_LOG_FUNCTION (IID << uid << name << help << flags
+                   << initialValue << accessor << checker
+                   << supportLevel << supportMsg);
   struct IidInformation *information = LookupInformation (uid);
   if (HasAttribute (uid, name))
     {
@@ -640,6 +656,8 @@ IidManager::AddAttribute (uint16_t uid,
   info.originalInitialValue = initialValue;
   info.accessor = accessor;
   info.checker = checker;
+  info.supportLevel = supportLevel;
+  info.supportMsg = supportMsg;
   information->attributes.push_back (info);
   NS_LOG_LOGIC (IIDL << information->attributes.size () - 1);
 }
@@ -711,9 +729,13 @@ IidManager::AddTraceSource (uint16_t uid,
                             std::string name, 
                             std::string help,
                             Ptr<const TraceSourceAccessor> accessor,
-                            std::string callback)
+                            std::string callback,
+                            TypeId::SupportLevel supportLevel,
+                            const std::string &supportMsg)
 {
-  NS_LOG_FUNCTION (this << uid << name << help << accessor);
+  NS_LOG_FUNCTION (IID << uid << name << help
+                   << accessor << callback
+                   << supportLevel << supportMsg);
   struct IidInformation *information  = LookupInformation (uid);
   if (HasTraceSource (uid, name))
     {
@@ -725,6 +747,8 @@ IidManager::AddTraceSource (uint16_t uid,
   source.help = help;
   source.accessor = accessor;
   source.callback = callback;
+  source.supportLevel = supportLevel;
+  source.supportMsg = supportMsg;
   information->traceSources.push_back (source);
   NS_LOG_LOGIC (IIDL << information->traceSources.size () - 1);
 }
@@ -845,8 +869,24 @@ TypeId::LookupAttributeByName (std::string name, struct TypeId::AttributeInforma
           struct TypeId::AttributeInformation tmp = tid.GetAttribute(i);
           if (tmp.name == name)
             {
-              *info = tmp;
-              return true;
+              if (tmp.supportLevel == TypeId::SUPPORTED)
+                {
+                  *info = tmp;
+                  return true;
+                }
+              else if (tmp.supportLevel == TypeId::DEPRECATED)
+                {
+                  std::cerr << "Attribute '" << name << "' is deprecated: "
+                                 << tmp.supportMsg << std::endl;
+                  *info = tmp;
+                  return true;
+                }
+              else if (tmp.supportLevel == TypeId::OBSOLETE)
+                {
+                  NS_FATAL_ERROR ("Attribute '" << name
+                                  << "' is obsolete, with no fallback: "
+                                  << tmp.supportMsg);
+                }
             }
         }
       nextTid = tid.GetParent ();
@@ -950,10 +990,16 @@ TypeId::AddAttribute (std::string name,
                       std::string help, 
                       const AttributeValue &initialValue,
                       Ptr<const AttributeAccessor> accessor,
-                      Ptr<const AttributeChecker> checker)
+                      Ptr<const AttributeChecker> checker,
+                      SupportLevel supportLevel,
+                      const std::string &supportMsg)
 {
-  NS_LOG_FUNCTION (this << name << help << &initialValue << accessor << checker);
-  IidManager::Get ()->AddAttribute (m_tid, name, help, ATTR_SGC, initialValue.Copy (), accessor, checker);
+  NS_LOG_FUNCTION (this << name << help
+                   << &initialValue << accessor << checker
+                   << supportLevel << supportMsg);
+  IidManager::Get ()->AddAttribute (m_tid, name, help, ATTR_SGC,
+                                    initialValue.Copy (), accessor, checker,
+                                    supportLevel, supportMsg);
   return *this;
 }
 
@@ -963,10 +1009,16 @@ TypeId::AddAttribute (std::string name,
                       uint32_t flags,
                       const AttributeValue &initialValue,
                       Ptr<const AttributeAccessor> accessor,
-                      Ptr<const AttributeChecker> checker)
+                      Ptr<const AttributeChecker> checker,
+                      SupportLevel supportLevel,
+                      const std::string &supportMsg)
 {
-  NS_LOG_FUNCTION (this << name << help << flags << &initialValue << accessor << checker);
-  IidManager::Get ()->AddAttribute (m_tid, name, help, flags, initialValue.Copy (), accessor, checker);
+  NS_LOG_FUNCTION (this << name << help << flags
+                   << &initialValue << accessor << checker
+                   << supportLevel << supportMsg);
+  IidManager::Get ()->AddAttribute (m_tid, name, help, flags,
+                                    initialValue.Copy (), accessor, checker,
+                                    supportLevel, supportMsg);
   return *this;
 }
 
@@ -1042,10 +1094,16 @@ TypeId
 TypeId::AddTraceSource (std::string name,
                         std::string help,
                         Ptr<const TraceSourceAccessor> accessor,
-                        std::string callback)
+                        std::string callback,
+                        SupportLevel supportLevel,
+                        const std::string &supportMsg)
 {
-  NS_LOG_FUNCTION (this << name << help << accessor);
-  IidManager::Get ()->AddTraceSource (m_tid, name, help, accessor, callback);
+  NS_LOG_FUNCTION (this << name << help
+                   << accessor << callback
+                   << supportLevel << supportMsg);
+  IidManager::Get ()->AddTraceSource (m_tid, name, help,
+                                      accessor, callback,
+                                      supportLevel, supportMsg);
   return *this;
 }
 
@@ -1064,14 +1122,32 @@ TypeId::LookupTraceSourceByName (std::string name,
   NS_LOG_FUNCTION (this << name);
   TypeId tid;
   TypeId nextTid = *this;
+  struct TypeId::TraceSourceInformation tmp;
   do {
       tid = nextTid;
       for (uint32_t i = 0; i < tid.GetTraceSourceN (); i++)
         {
-          *info = tid.GetTraceSource (i);
-          if (info->name == name)
+          tmp = tid.GetTraceSource (i);
+          if (tmp.name == name)
             {
-              return info->accessor;
+              if (tmp.supportLevel == TypeId::SUPPORTED)
+                {
+                  *info = tmp;
+                   return tmp.accessor;
+                }
+              else if (tmp.supportLevel == TypeId::DEPRECATED)
+                {
+                  std::cerr << "TraceSource '" << name << "' is deprecated: "
+                                 << tmp.supportMsg << std::endl;
+                  *info = tmp;
+                  return tmp.accessor;
+                }
+              else  if (tmp.supportLevel == TypeId::OBSOLETE)
+                {
+                  NS_FATAL_ERROR ("TraceSource '" << name
+                                  << "' is obsolete, with no fallback: "
+                                  << tmp.supportMsg);
+                }
             }
         }
       nextTid = tid.GetParent ();

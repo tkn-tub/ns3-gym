@@ -87,6 +87,7 @@ namespace TracedValueCallback {
   typedef void (* Int32) (int32_t  oldValue, int32_t  newValue);
   typedef void (* Uint32)(uint32_t oldValue, uint32_t newValue);
   typedef void (* Double)(double   oldValue, double   newValue);
+  typedef void (* Void)  (void);
   /**@}*/
 }  // namespace TracedValueCallback
 
