@@ -643,6 +643,12 @@ IidManager::AddAttribute (uint16_t uid,
                    << initialValue << accessor << checker
                    << supportLevel << supportMsg);
   struct IidInformation *information = LookupInformation (uid);
+  if (name.find (' ') != std::string::npos)
+    {
+      NS_FATAL_ERROR ("Attribute name \"" << name << "\" may not contain spaces ' ', "
+                      << "encountered when registering TypeId \""
+                      << information->name << "\"");
+    }
   if (HasAttribute (uid, name))
     {
       NS_FATAL_ERROR ("Attribute \"" << name << "\" already registered on tid=\"" << 
