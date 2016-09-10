@@ -20,6 +20,7 @@
 
 #include "ampdu-subframe-header.h"
 #include "ns3/address-utils.h"
+#include <iomanip>
 
 namespace ns3 {
 
@@ -81,7 +82,10 @@ AmpduSubframeHeader::Deserialize (Buffer::Iterator start)
 void
 AmpduSubframeHeader::Print (std::ostream &os) const
 {
-  os << "EOF = " << m_eof << "length = " << m_length << ", CRC = " << m_crc << ", Signature = " << m_sig;
+  os << "EOF = " << m_eof << ", length = " << m_length;
+  char previousFillChar = os.fill ('0');
+  os << ", CRC = 0x" << std::hex << std::setw (2) << (uint16_t) m_crc << ", Signature = 0x" << (uint16_t) m_sig << std::dec;
+  os.fill (previousFillChar);
 }
 
 void
@@ -93,6 +97,7 @@ AmpduSubframeHeader::SetCrc (uint8_t crc)
 void
 AmpduSubframeHeader::SetSig ()
 {
+  // Per 802.11 standard, the unique pattern is set to the value 0x4E.
   m_sig = 0x4E;
 }
 
