@@ -23,7 +23,7 @@
 #include "attribute.h"
 #include "attribute-accessor-helper.h"
 #include <sstream>
-#include "fatal-error.h"
+#include "abort.h"
 
 /**
  * \file
@@ -296,6 +296,7 @@ MakeSimpleAttributeChecker (std::string name, std::string underlying)
       std::istringstream iss;                                           \
       iss.str (value);                                                  \
       iss >> m_value;                                                   \
+      NS_ABORT_MSG_UNLESS (iss.eof (), "Attribute value " << "\"" << value << "\"" << " is not properly formatted");                                        \
       return !iss.bad () && !iss.fail ();                               \
   }
 

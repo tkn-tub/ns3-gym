@@ -188,6 +188,7 @@ std::istream & operator >> (std::istream &is, ObjectFactory &factory)
             }
         }
     }
+  NS_ABORT_MSG_IF (is.bad (), "Failure to parse " << parameters);
   return is;
 }
 
