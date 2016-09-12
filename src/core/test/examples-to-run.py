@@ -14,6 +14,7 @@ cpp_examples = [
     ("main-ptr", "True", "True"),
     ("main-random-variable", "True", "False"),
     ("sample-random-variable", "True", "True"),
+    ("test-string-value-formatting", "True", "True"),
 ]
 
 # A list of Python examples to run in order to ensure that they remain
