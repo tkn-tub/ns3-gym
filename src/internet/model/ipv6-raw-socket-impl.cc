@@ -186,9 +186,9 @@ int Ipv6RawSocketImpl::Connect (const Address& address)
       m_err = Socket::ERROR_INVAL;
       return -1;
     }
-
   Inet6SocketAddress ad = Inet6SocketAddress::ConvertFrom (address);
   m_dst = ad.GetIpv6 ();
+
   return 0;
 }
 
@@ -224,6 +224,20 @@ int Ipv6RawSocketImpl::SendTo (Ptr<Packet> p, uint32_t flags, const Address& toA
   Inet6SocketAddress ad = Inet6SocketAddress::ConvertFrom (toAddress);
   Ptr<Ipv6L3Protocol> ipv6 = m_node->GetObject<Ipv6L3Protocol> ();
   Ipv6Address dst = ad.GetIpv6 ();
+
+  if (IsManualIpv6Tclass ())
+    {
+      SocketIpv6TclassTag ipTclassTag;
+      ipTclassTag.SetTclass (GetIpv6Tclass ());
+      p->AddPacketTag (ipTclassTag);
+    }
+
+  if (IsManualIpv6HopLimit () && GetIpv6HopLimit () != 0 && !dst.IsMulticast ())
+    {
+      SocketIpv6HopLimitTag tag;
+      tag.SetHopLimit (GetIpv6HopLimit ());
+      p->AddPacketTag (tag);
+    }
 
   if (ipv6->GetRoutingProtocol ())
     {
@@ -418,13 +432,28 @@ bool Ipv6RawSocketImpl::ForwardUp (Ptr<const Packet> p, Ipv6Header hdr, Ptr<NetD
             }
         }
 
-      // Should check via getsockopt ()..
+      // Should check via getsockopt ().
       if (IsRecvPktInfo ())
         {
           Ipv6PacketInfoTag tag;
           copy->RemovePacketTag (tag);
           tag.SetRecvIf (device->GetIfIndex ());
           copy->AddPacketTag (tag);
+        }
+
+      // Check only version 6 options
+      if (IsIpv6RecvTclass ())
+        {
+          SocketIpv6TclassTag ipTclassTag;
+          ipTclassTag.SetTclass (hdr.GetTrafficClass ());
+          copy->AddPacketTag (ipTclassTag);
+        }
+
+      if (IsIpv6RecvHopLimit ())
+        {
+          SocketIpv6HopLimitTag ipHopLimitTag;
+          ipHopLimitTag.SetHopLimit (hdr.GetHopLimit ());
+          copy->AddPacketTag (ipHopLimitTag);
         }
 
       copy->AddHeader (hdr);

@@ -421,7 +421,7 @@ int
 UdpSocketImpl::DoSend (Ptr<Packet> p)
 {
   NS_LOG_FUNCTION (this << p);
-  if ((m_endPoint == 0) && (InetSocketAddress::IsMatchingType(m_defaultAddress) == true))
+  if ((m_endPoint == 0) && (Ipv4Address::IsMatchingType(m_defaultAddress) == true))
     {
       if (Bind () == -1)
         {
@@ -430,7 +430,7 @@ UdpSocketImpl::DoSend (Ptr<Packet> p)
         }
       NS_ASSERT (m_endPoint != 0);
     }
-  else if ((m_endPoint6 == 0) && (Inet6SocketAddress::IsMatchingType(m_defaultAddress) == true))
+  else if ((m_endPoint6 == 0) && (Ipv6Address::IsMatchingType(m_defaultAddress) == true))
     {
       if (Bind6 () == -1)
         {
@@ -692,7 +692,7 @@ UdpSocketImpl::DoSendTo (Ptr<Packet> p, Ipv6Address dest, uint16_t port)
       return -1;
     }
 
-    if (IsManualIpv6Tclass ())
+  if (IsManualIpv6Tclass ())
     {
       SocketIpv6TclassTag ipTclassTag;
       ipTclassTag.SetTclass (GetIpv6Tclass ());
