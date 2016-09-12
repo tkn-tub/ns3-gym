@@ -68,6 +68,7 @@ Bugs fixed
 - Bug 2379 - BlockAckRequest should not be part of single-TID A-MPDUs
 - Bug 2380 - EdcaTxopN fails to retrieve TID for ADDBA requests, ADDBA responses and DELBA frames
 - Bug 2383 - IPv4 header for reassembled packets reports a wrong payload size
+- Bug 2390 - WaypointMobilityModel::AddWaypoint lazy notify schedules an event using absolute time (should be relative time)
 - Bug 2392 - SYN segment advertised window should not be scaled
 - Bug 2396 - move utility functions to WifiPhy
 - Bug 2397 - add backoff and cw tracing to EDCA

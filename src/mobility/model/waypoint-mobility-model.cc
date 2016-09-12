@@ -95,7 +95,7 @@ WaypointMobilityModel::AddWaypoint (const Waypoint &waypoint)
 
   if ( !m_lazyNotify )
     {
-      Simulator::Schedule (waypoint.time, &WaypointMobilityModel::Update, this);
+      Simulator::Schedule (waypoint.time - Simulator::Now (), &WaypointMobilityModel::Update, this);
     }
 }
 Waypoint
