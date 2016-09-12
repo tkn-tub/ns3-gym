@@ -29,6 +29,7 @@
 #include "ns3/type-id.h"
 #include "ns3/test.h"
 #include "ns3/log.h"
+#include "ns3/unused.h"
 
 using namespace std;
 
@@ -129,7 +130,7 @@ private:
 };
 
 CollisionTestCase::CollisionTestCase ()
-  : TestCase ("Check behavour when type names collide")
+  : TestCase ("Check behavior when type names collide")
 {
 }
 
@@ -208,7 +209,7 @@ private:
   TracedValue<double> m_trace;
 
 public:
-
+  DeprecatedAttribute () : m_attr (0) { NS_UNUSED (m_attr); };
   virtual ~DeprecatedAttribute () { };
 
   // Register a type with a deprecated Attribute and TraceSource
