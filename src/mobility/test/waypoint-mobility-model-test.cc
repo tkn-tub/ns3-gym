@@ -49,7 +49,7 @@ private:
   virtual void DoRun (void);
   virtual void DoTeardown (void);
   void ForceUpdates (void);
-  void CourseChangeCallback (std::string path, Ptr<const MobilityModel> model);
+  void CourseChangeCallback (Ptr<const MobilityModel> model);
 };
 
 void
@@ -94,6 +94,7 @@ WaypointMobilityModelNotifyTest::DoRun (void)
   for (i = mobilityStack.begin (); i != mobilityStack.end (); ++i)
     {
       Ptr<WaypointMobilityModel> mob = (*i)->GetObject<WaypointMobilityModel> ();
+      mob->TraceConnectWithoutContext ("CourseChange", MakeCallback (&WaypointMobilityModelNotifyTest::CourseChangeCallback, this));
 
       for ( std::deque<Waypoint>::iterator w = waypoints.begin (); w != waypoints.end (); ++w )
         {
@@ -106,9 +107,6 @@ WaypointMobilityModelNotifyTest::DoRun (void)
     {
       Simulator::Schedule (Seconds (updateTime), &WaypointMobilityModelNotifyTest::ForceUpdates, this);
     }
-
-  Config::Connect ("/NodeList/*/$ns3::WaypointMobilityModel/CourseChange",
-                   MakeCallback (&WaypointMobilityModelNotifyTest::CourseChangeCallback, this));
 
   Simulator::Stop (Seconds ((double)waypointCount + 2.0));
   Simulator::Run ();
@@ -125,7 +123,7 @@ WaypointMobilityModelNotifyTest::ForceUpdates (void)
     }
 }
 void
-WaypointMobilityModelNotifyTest::CourseChangeCallback (std::string path, Ptr<const MobilityModel> model)
+WaypointMobilityModelNotifyTest::CourseChangeCallback (Ptr<const MobilityModel> model)
 {
   const Time now = Simulator::Now ();
   const double sec = now.GetSeconds ();
@@ -137,7 +135,7 @@ WaypointMobilityModelNotifyTest::CourseChangeCallback (std::string path, Ptr<con
     {
       // All waypoints are on second boundaries only
       NS_TEST_EXPECT_MSG_EQ (sec - ((double)((int)sec)) + sec, sec,
-                             "Course didn't change on one second time boundary with NON-LAZY notifcations");
+                             "Course didn't change on one second time boundary with NON-LAZY notifications");
     }
   else
     {
@@ -147,11 +145,86 @@ WaypointMobilityModelNotifyTest::CourseChangeCallback (std::string path, Ptr<con
     }
 }
 
+class WaypointMobilityModelAddWaypointTest : public TestCase
+{
+public:
+  WaypointMobilityModelAddWaypointTest ()
+    : TestCase ("Check Waypoint Mobility Model waypoint add")
+  {
+  }
+  virtual ~WaypointMobilityModelAddWaypointTest ()
+  {
+  }
+
+private:
+  Ptr<MobilityModel> m_mobilityModel;
+  uint32_t m_waypointCount;
+  uint32_t m_waypointCounter;
+  Waypoint m_nextWaypoint;
+private:
+  virtual void DoRun (void);
+  virtual void DoTeardown (void);
+  void CourseChangeCallback (Ptr<const MobilityModel> model);
+};
+
+
+void
+WaypointMobilityModelAddWaypointTest::DoTeardown (void)
+{
+  m_mobilityModel = 0;
+}
+
+void
+WaypointMobilityModelAddWaypointTest::DoRun (void)
+{
+  m_waypointCount = 10;
+  m_waypointCounter = 1;
+
+  ObjectFactory mobilityFactory;
+  mobilityFactory.SetTypeId ("ns3::WaypointMobilityModel");
+  mobilityFactory.Set ("LazyNotify", BooleanValue (false));
+
+  // Create a new mobility model.
+  m_mobilityModel = mobilityFactory.Create ()->GetObject<MobilityModel> ();
+  m_mobilityModel->TraceConnectWithoutContext ("CourseChange", MakeCallback (&WaypointMobilityModelAddWaypointTest::CourseChangeCallback, this));
+
+  // Add this mobility model to the stack.
+  Simulator::Schedule (Seconds (0.0), &Object::Initialize, m_mobilityModel);
+
+  Ptr<WaypointMobilityModel> mob = DynamicCast<WaypointMobilityModel> (m_mobilityModel);
+  Waypoint m_nextWaypoint (Seconds (m_waypointCounter), Vector (0.0, 0.0, 0.0));
+  mob->AddWaypoint (m_nextWaypoint);
+
+  Simulator::Stop (Seconds ((double)m_waypointCount + 2.0));
+  Simulator::Run ();
+  Simulator::Destroy ();
+}
+
+void
+WaypointMobilityModelAddWaypointTest::CourseChangeCallback (Ptr<const MobilityModel> model)
+{
+  const Time now = Simulator::Now ();
+  Ptr<WaypointMobilityModel> mob = DynamicCast<WaypointMobilityModel> (m_mobilityModel);
+
+  std::cout << now << " CourseChangeCallback" << std::endl;
+
+  NS_TEST_EXPECT_MSG_EQ (now, Seconds (m_waypointCounter), "Waypoint time not properly set");
+
+  if (now < Seconds ((double)m_waypointCount) )
+    {
+      m_waypointCounter ++;
+      m_nextWaypoint = Waypoint (Seconds (m_waypointCounter), Vector (0.0, 0.0, 0.0));
+      mob->AddWaypoint (m_nextWaypoint);
+
+    }
+}
+
 static struct WaypointMobilityModelTestSuite : public TestSuite
 {
   WaypointMobilityModelTestSuite () : TestSuite ("waypoint-mobility-model", UNIT)
   {
     AddTestCase (new WaypointMobilityModelNotifyTest (true), TestCase::QUICK);
     AddTestCase (new WaypointMobilityModelNotifyTest (false), TestCase::QUICK);
+    AddTestCase (new WaypointMobilityModelAddWaypointTest (), TestCase::QUICK);
   }
 } g_waypointMobilityModelTestSuite;
