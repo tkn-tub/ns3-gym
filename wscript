@@ -368,7 +368,7 @@ def configure(conf):
                 env.append_value('CXXFLAGS', '-march=native') 
             env.append_value('CXXFLAGS', '-fstrict-overflow')
             if conf.env['CC_VERSION'] >= gcc_version_warn_strict_overflow:
-                env.append_value('CXXFLAGS', '-Wstrict-overflow=5')
+                env.append_value('CXXFLAGS', '-Wstrict-overflow=2')
 
         if sys.platform == 'win32':
             env.append_value("LINKFLAGS", "-Wl,--enable-runtime-pseudo-reloc")
