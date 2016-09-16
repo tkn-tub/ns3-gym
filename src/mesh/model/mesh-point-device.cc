@@ -38,7 +38,7 @@ MeshPointDevice::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::MeshPointDevice")
     .SetParent<NetDevice> ()
-    .SetGroupName ("Dsr")
+    .SetGroupName ("Mesh")
     .AddConstructor<MeshPointDevice> ()
     .AddAttribute ("Mtu", "The MAC-level Maximum Transmission Unit",
                    UintegerValue (0xffff),
