@@ -682,6 +682,10 @@ void EdcaTxopN::NotifyInternalCollision (void)
         m_stationManager->ReportRtsFailed (header.GetAddr1 (), &header);
       }
     }
+  else if (header.GetAddr1 () == Mac48Address::GetBroadcast ())
+    {
+      resetDcf = true;
+    }
   else
     {
       if (!NeedDataRetransmission (packet, header))
