@@ -164,7 +164,9 @@ Furthermore, 802.11n provides an optional mode (GreenField mode) to reduce pream
 
  wifiPhyHelper.Set ("GreenfieldEnabled",BooleanValue(true));
 
-802.11n PHY layer can support both 20 (default) or 40 MHz channel width, and 802.11ac PHY layer can use either 20, 40, 80 (default) or 160 MHz channel width. Since the channel width value is overwritten by ``WifiHelper::SetStandard``, this should be done post-install using ``Config::Set``::
+802.11n PHY layer can support both 20 (default) or 40 MHz channel width, and 802.11ac PHY layer can use either 20, 40, 80 (default) or 160 MHz channel width.  See below for further documentation on setting the frequency, channel width, and channel number.
+
+::
 
   WifiHelper wifi;
   wifi.SetStandard (WIFI_PHY_STANDARD_80211ac);
@@ -186,9 +188,6 @@ Furthermore, 802.11n provides an optional mode (GreenField mode) to reduce pream
 
   NetDeviceContainer apDevice;
   apDevice = wifi.Install (phy, mac, wifiApNode);
-
-  //Once install is done, we overwrite the channel width value
-  Config::Set ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Phy/ChannelWidth", UintegerValue (160));
 
 Channel, frequency, and channel width configuration
 ===================================================
