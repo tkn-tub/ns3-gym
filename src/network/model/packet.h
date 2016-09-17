@@ -543,7 +543,7 @@ public:
    */
   void AddByteTag (const Tag &tag) const;
   /**
-   * \brief Retiurns an iterator over the set of byte tags included in this packet
+   * \brief Returns an iterator over the set of byte tags included in this packet
    *
    * \returns an iterator over the set of byte tags included in this packet.
    */
