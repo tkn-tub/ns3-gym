@@ -583,7 +583,7 @@ BridgeTest::DoRun ()
   Ptr<Ipv4GlobalRouting> globalRouting4 = routing4->GetObject <Ipv4GlobalRouting> ();
   NS_TEST_ASSERT_MSG_NE (globalRouting4, 0, "Error-- no Ipv4GlobalRouting object");  
 
-  Ipv4RoutingTableEntry* route;
+  Ipv4RoutingTableEntry* route = 0;
   // n0
   // Test that the right number of routes found
   uint32_t nRoutes0 = globalRouting0->GetNRoutes ();
@@ -595,11 +595,15 @@ BridgeTest::DoRun ()
       NS_LOG_DEBUG ("entry dest " << route->GetDest () << " gw " << route->GetGateway ());
     }
   // Spot check the last route
-  NS_TEST_ASSERT_MSG_EQ (route->GetDest (), Ipv4Address ("10.1.3.0"), "Error-- wrong destination");
-  NS_TEST_ASSERT_MSG_EQ (route->GetGateway (), Ipv4Address ("10.1.1.2"), "Error-- wrong gateway");
+  if (route)
+    {
+      NS_TEST_ASSERT_MSG_EQ (route->GetDest (), Ipv4Address ("10.1.3.0"), "Error-- wrong destination");
+      NS_TEST_ASSERT_MSG_EQ (route->GetGateway (), Ipv4Address ("10.1.1.2"), "Error-- wrong gateway");
+    }
 
   // n1
   // Test that the right number of routes found
+  route = 0;
   uint32_t nRoutes1 = globalRouting1->GetNRoutes ();
   NS_LOG_DEBUG ("BridgeTest nRoutes1 " << nRoutes1);
   NS_TEST_ASSERT_MSG_EQ (nRoutes1, 3, "Error-- not three entries");
@@ -609,13 +613,17 @@ BridgeTest::DoRun ()
       NS_LOG_DEBUG ("entry dest " << route->GetDest () << " gw " << route->GetGateway ());
     }
   // Spot check the last route
-  NS_TEST_ASSERT_MSG_EQ (route->GetDest (), Ipv4Address ("10.1.3.0"), "Error-- wrong destination");
-  NS_TEST_ASSERT_MSG_EQ (route->GetGateway (), Ipv4Address ("10.1.2.2"), "Error-- wrong gateway");
+  if (route)
+    {
+      NS_TEST_ASSERT_MSG_EQ (route->GetDest (), Ipv4Address ("10.1.3.0"), "Error-- wrong destination");
+      NS_TEST_ASSERT_MSG_EQ (route->GetGateway (), Ipv4Address ("10.1.2.2"), "Error-- wrong gateway");
+    }
 
   // skip n2 and n3, just verify n4
   NS_LOG_DEBUG ("BridgeTest skip print out of n2 and n3, go next to node n4");
 
   // n4
+  route = 0;
   // Test that the right number of routes found
   uint32_t nRoutes4 = globalRouting4->GetNRoutes ();
   NS_LOG_DEBUG ("BridgeTest nRoutes4 " << nRoutes4);
@@ -626,8 +634,11 @@ BridgeTest::DoRun ()
       NS_LOG_DEBUG ("entry dest " << route->GetDest () << " gw " << route->GetGateway ());
     }
   // Spot check the last route
-  NS_TEST_ASSERT_MSG_EQ (route->GetDest (), Ipv4Address ("10.1.1.0"), "Error-- wrong destination");
-  NS_TEST_ASSERT_MSG_EQ (route->GetGateway (), Ipv4Address ("10.1.3.1"), "Error-- wrong gateway");
+  if (route)
+    {
+      NS_TEST_ASSERT_MSG_EQ (route->GetDest (), Ipv4Address ("10.1.1.0"), "Error-- wrong destination");
+      NS_TEST_ASSERT_MSG_EQ (route->GetGateway (), Ipv4Address ("10.1.3.1"), "Error-- wrong gateway");
+    }
 
   Simulator::Destroy ();
 }
@@ -735,7 +746,7 @@ TwoBridgeTest::DoRun ()
   Ptr<Ipv4GlobalRouting> globalRouting4 = routing4->GetObject <Ipv4GlobalRouting> ();
   NS_TEST_ASSERT_MSG_NE (globalRouting4, 0, "Error-- no Ipv4GlobalRouting object");  
 
-  Ipv4RoutingTableEntry* route;
+  Ipv4RoutingTableEntry* route = 0;
   // n0
   // Test that the right number of routes found
   uint32_t nRoutes0 = globalRouting0->GetNRoutes ();
@@ -747,14 +758,17 @@ TwoBridgeTest::DoRun ()
       NS_LOG_DEBUG ("entry dest " << route->GetDest () << " gw " << route->GetGateway ());
     }
   // Spot check the last route
-  NS_TEST_ASSERT_MSG_EQ (route->GetDest (), Ipv4Address ("10.1.2.0"), "Error-- wrong destination");
-  NS_TEST_ASSERT_MSG_EQ (route->GetGateway (), Ipv4Address ("10.1.1.2"), "Error-- wrong gateway");
-
+  if (route)
+    {
+      NS_TEST_ASSERT_MSG_EQ (route->GetDest (), Ipv4Address ("10.1.2.0"), "Error-- wrong destination");
+      NS_TEST_ASSERT_MSG_EQ (route->GetGateway (), Ipv4Address ("10.1.1.2"), "Error-- wrong gateway");
+    }
   // skip n2 and n3, just verify n4
   NS_LOG_DEBUG ("BridgeTest skip print out of n1-n3, go next to node n4");
 
   // n4
   // Test that the right number of routes found
+  route = 0;
   uint32_t nRoutes4 = globalRouting4->GetNRoutes ();
   NS_LOG_DEBUG ("BridgeTest nRoutes4 " << nRoutes4);
   NS_TEST_ASSERT_MSG_EQ (nRoutes4, 2, "Error-- not two entries");
@@ -764,8 +778,11 @@ TwoBridgeTest::DoRun ()
       NS_LOG_DEBUG ("entry dest " << route->GetDest () << " gw " << route->GetGateway ());
     }
   // Spot check the last route
-  NS_TEST_ASSERT_MSG_EQ (route->GetDest (), Ipv4Address ("10.1.1.0"), "Error-- wrong destination");
-  NS_TEST_ASSERT_MSG_EQ (route->GetGateway (), Ipv4Address ("10.1.2.1"), "Error-- wrong gateway");
+  if (route)
+    {
+      NS_TEST_ASSERT_MSG_EQ (route->GetDest (), Ipv4Address ("10.1.1.0"), "Error-- wrong destination");
+      NS_TEST_ASSERT_MSG_EQ (route->GetGateway (), Ipv4Address ("10.1.2.1"), "Error-- wrong gateway");
+    }
 
   Simulator::Destroy ();
 }
