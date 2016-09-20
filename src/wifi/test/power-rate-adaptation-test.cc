@@ -330,11 +330,6 @@ PowerRateAdaptationTest::TestParf ()
   NS_TEST_ASSERT_MSG_EQ (mode.GetDataRate (txVector.GetChannelWidth (), txVector.IsShortGuardInterval (), 1), 54000000, "PARF: Incorrect vale of data rate");
   NS_TEST_ASSERT_MSG_EQ (power, 17, "PARF: Incorrect value of power level");
 
-  Simulator::Stop (Seconds (10.0));
-
-  Simulator::Run ();
-  Simulator::Destroy ();
-
 }
 
 void
@@ -569,11 +564,6 @@ PowerRateAdaptationTest::TestAparf ()
 
   NS_TEST_ASSERT_MSG_EQ (mode.GetDataRate (txVector.GetChannelWidth (), txVector.IsShortGuardInterval (), 1), 54000000, "APARF: Incorrect vale of data rate");
   NS_TEST_ASSERT_MSG_EQ (power, 17, "APARF: Incorrect value of power level");
-
-  Simulator::Stop (Seconds (10.0));
-
-  Simulator::Run ();
-  Simulator::Destroy ();
 
 }
 
