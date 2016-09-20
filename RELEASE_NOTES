@@ -44,6 +44,7 @@ New user-visible features
   models.
 - (core) DES Metrics support, see the API docs for class DesMetrics.
 - (aodv) The node search radius is increased progressively (as per standard). 
++- (build system) New --check-config option to waf to reprint the summary of optional features which are configured.
 
 Bugs fixed
 ----------

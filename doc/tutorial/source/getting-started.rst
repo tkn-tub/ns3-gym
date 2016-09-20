@@ -392,7 +392,7 @@ builds that include the examples and tests, you will need to execute the
 following commands::
 
   $ ./waf clean
-  $ ./waf --build-profile=optimized --enable-examples --enable-tests configure
+  $ ./waf configure --build-profile=optimized --enable-examples --enable-tests
 
 This runs Waf out of the local directory (which is provided as a convenience
 for you).  The first command to clean out the previous build is not 
@@ -453,29 +453,29 @@ output that looks similar to the following::
   Checking for program doxygen                                     : /usr/local/bin/doxygen 
   ---- Summary of optional NS-3 features:
   Build profile                 : debug
-  Build directory               : build
-  Python Bindings               : enabled
   BRITE Integration             : not enabled (BRITE not enabled (see option --with-brite))
-  NS-3 Click Integration        : not enabled (nsclick not enabled (see option --with-nsclick))
-  GtkConfigStore                : enabled
-  XmlIo                         : enabled
-  Threading Primitives          : enabled
-  Real Time Simulator           : enabled (librt is not available)
+  Build directory               : build
+  Build examples                : enabled
+  Build tests                   : enabled
   Emulated Net Device           : enabled (<netpacket/packet.h> include not detected)
-  File descriptor NetDevice     : enabled
-  Tap FdNetDevice               : not enabled (needs linux/if_tun.h)
   Emulation FdNetDevice         : not enabled (needs netpacket/packet.h)
-  PlanetLab FdNetDevice         : not enabled (PlanetLab operating system not detected (see option --force-planetlab))
-  Network Simulation Cradle     : not enabled (NSC not found (see option --with-nsc))
+  File descriptor NetDevice     : enabled
+  GNU Scientific Library (GSL)  : enabled
+  GtkConfigStore                : enabled
   MPI Support                   : enabled
+  NS-3 Click Integration        : not enabled (nsclick not enabled (see option --with-nsclick))
   NS-3 OpenFlow Integration     : not enabled (Required boost libraries not found, missing: system, signals, filesystem)
+  Network Simulation Cradle     : not enabled (NSC not found (see option --with-nsc))
+  PlanetLab FdNetDevice         : not enabled (PlanetLab operating system not detected (see option --force-planetlab))
+  PyViz visualizer              : enabled
+  Python Bindings               : enabled
+  Real Time Simulator           : enabled (librt is not available)
   SQlite stats data output      : enabled
   Tap Bridge                    : not enabled (<linux/if_tun.h> include not detected)
-  PyViz visualizer              : enabled
+  Tap FdNetDevice               : not enabled (needs linux/if_tun.h)
+  Threading Primitives          : enabled
   Use sudo to set suid bit      : not enabled (option --enable-sudo not selected)
-  Build tests                   : enabled
-  Build examples                : enabled
-  GNU Scientific Library (GSL)  : enabled
+  XmlIo                         : enabled
   'configure' finished successfully (1.944s)
 
 Note the last part of the above output.  Some |ns3| options are not enabled by
@@ -485,13 +485,15 @@ system.  If this library were not found, the corresponding |ns3| feature
 would not be enabled and a message would be displayed.  Note further that there is 
 a feature to use the program ``sudo`` to set the suid bit of certain programs.
 This is not enabled by default and so this feature is reported as "not enabled."
+Finally, to reprint this summary of which optional features are enabled, use
+the ``--check-config`` option to waf.
 
 Now go ahead and switch back to the debug build that includes the examples and tests.
 
 ::
 
   $ ./waf clean
-  $ ./waf --build-profile=debug --enable-examples --enable-tests configure
+  $ ./waf configure --build-profile=debug --enable-examples --enable-tests
 
 The build system is now configured and you can build the debug versions of 
 the |ns3| programs by simply typing
