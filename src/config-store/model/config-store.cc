@@ -80,6 +80,7 @@ ConfigStore::GetInstanceTypeId (void) const
 
 ConfigStore::ConfigStore ()
 {
+  NS_LOG_FUNCTION (this);
   ObjectBase::ConstructSelf (AttributeConstructionList ());
 
 #ifdef HAVE_LIBXML2
@@ -128,10 +129,14 @@ ConfigStore::ConfigStore ()
         }
     }
   m_file->SetFilename (m_filename);
+  NS_LOG_FUNCTION (this << ": format: " << m_fileFormat
+                << ", mode: " << m_mode
+                << ", file name: " << m_filename);
 }
 
 ConfigStore::~ConfigStore ()
 {
+  NS_LOG_FUNCTION (this);
   delete m_file;
   m_file = 0;
 }
@@ -139,30 +144,59 @@ ConfigStore::~ConfigStore ()
 void 
 ConfigStore::SetMode (enum Mode mode)
 {
+  NS_LOG_FUNCTION (this << mode);
   m_mode = mode;
 }
 void 
 ConfigStore::SetFileFormat (enum FileFormat format)
 {
+  NS_LOG_FUNCTION (this << format);
   m_fileFormat = format;
 }
 void 
 ConfigStore::SetFilename (std::string filename)
 {
+  NS_LOG_FUNCTION (this << filename);
   m_filename = filename;
 }
 
 void 
 ConfigStore::ConfigureAttributes (void)
 {
+  NS_LOG_FUNCTION (this);
   m_file->Attributes ();
 }
 
 void 
 ConfigStore::ConfigureDefaults (void)
 {
+  NS_LOG_FUNCTION (this);
   m_file->Default ();
   m_file->Global ();
+}
+
+std::ostream &
+operator << (std::ostream & os, ConfigStore::Mode & mode)
+{
+  switch (mode)
+    {
+    case ConfigStore::LOAD:      os << "LOAD";      break;
+    case ConfigStore::SAVE:      os << "SAVE";      break;
+    case ConfigStore::NONE:      os << "NONE";      break;
+    default:                     os << "UNKNOWN";
+    }
+  return os;
+}
+
+std::ostream &
+operator << (std::ostream & os, ConfigStore::FileFormat & format)
+{
+  switch (format)
+    {
+    case ConfigStore::XML:       os << "XML";       break;
+    case ConfigStore::RAW_TEXT:  os << "RAW_TEXT";  break;
+    }
+  return os;
 }
 
 } // namespace ns3

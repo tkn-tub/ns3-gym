@@ -83,6 +83,14 @@ private:
   FileConfig *m_file;
 };
 
+/**
+ * @{
+ * \ingroup configstore
+ */
+std::ostream & operator << (std::ostream & os, ConfigStore::Mode & mode);
+std::ostream & operator << (std::ostream & os, ConfigStore::FileFormat & format);
+/**@}*/
+
 }  // namespace ns3
 
 #endif /* CONFIG_STORE_H */
