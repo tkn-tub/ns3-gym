@@ -493,6 +493,12 @@ DcfManager::IsBusy (void) const
     {
       return true;
     }
+  // CCA busy
+  Time lastCCABusyEnd = m_lastBusyStart + m_lastBusyDuration;
+  if (lastCCABusyEnd > Simulator::Now ())
+    {
+      return true;
+    }
   return false;
 }
 

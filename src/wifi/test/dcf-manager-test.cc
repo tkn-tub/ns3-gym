@@ -623,8 +623,8 @@ DcfManagerTest::DoRun (void)
   AddAccessRequest (21, 1, 24, 0);
   EndTest ();
 
-  //  20          40       50     53      54   55
-  //   | switching |  busy  | sifs | aifsn | tx |
+  //  20          40       50     53      54       55        56   57
+  //   | switching |  busy  | sifs | aifsn | bslot0 | bslot 1 | tx | 
   //         |          |
   //        30 busy.   45 access request.
   //
@@ -632,7 +632,8 @@ DcfManagerTest::DoRun (void)
   AddDcfState (1);
   AddSwitchingEvt (20,20);
   AddCcaBusyEvt (30,20);
-  AddAccessRequest (45, 1, 54, 0);
+  ExpectCollision (45, 2, 0); //backoff: 2 slots
+  AddAccessRequest (45, 1, 56, 0);
   EndTest ();
 
   //  20     30          50     53      54   55

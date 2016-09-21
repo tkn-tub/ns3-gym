@@ -529,7 +529,7 @@ private:
   void DoGrantAccess (void);
   /**
    * Check if the device is busy sending or receiving,
-   * or NAV busy.
+   * or NAV or CCA busy.
    *
    * \return true if the device is busy,
    *         false otherwise
