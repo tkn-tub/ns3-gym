@@ -494,19 +494,28 @@ StaWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
       if (GetSsid ().IsBroadcast ()
           || beacon.GetSsid ().IsEqual (GetSsid ()))
         {
+          NS_LOG_LOGIC ("Beacon is for our SSID");
           goodBeacon = true;
         }
       SupportedRates rates = beacon.GetSupportedRates ();
+      bool bssMembershipSelectorMatch = false;
       for (uint32_t i = 0; i < m_phy->GetNBssMembershipSelectors (); i++)
         {
           uint32_t selector = m_phy->GetBssMembershipSelector (i);
-          if (!rates.IsSupportedRate (selector))
+          if (rates.IsBssMembershipSelectorRate (selector))
             {
-              goodBeacon = false;
+              NS_LOG_LOGIC ("Beacon is matched to our BSS membership selector");
+              bssMembershipSelectorMatch = true;
             }
+        }
+      if (m_phy->GetNBssMembershipSelectors () > 0 && bssMembershipSelectorMatch == false)
+        {
+          NS_LOG_LOGIC ("No match for BSS membership selector");
+          goodBeacon = false;
         }
       if ((IsWaitAssocResp () || IsAssociated ()) && hdr->GetAddr3 () != GetBssid ())
         {
+          NS_LOG_LOGIC ("Beacon is not for us");
           goodBeacon = false;
         }
       if (goodBeacon)
@@ -785,7 +794,7 @@ StaWifiMac::GetSupportedRates (void) const
     {
       for (uint32_t i = 0; i < m_phy->GetNBssMembershipSelectors (); i++)
         {
-          rates.SetBasicRate (m_phy->GetBssMembershipSelector (i));
+          rates.AddBssMembershipSelectorRate (m_phy->GetBssMembershipSelector (i));
         }
     }
   for (uint32_t i = 0; i < m_phy->GetNModes (); i++)

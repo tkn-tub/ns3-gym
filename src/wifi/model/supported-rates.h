@@ -129,9 +129,17 @@ public:
    * \param bs the rate to be set
    */
   void SetBasicRate (uint32_t bs);
-
   /**
-   * Check if the given rate is supported.
+   * Add a special value to the supported rate set, corresponding to
+   * a BSS membership selector
+   *
+   * \param bs the special membership selector value (not a valid rate)
+   */
+  void AddBssMembershipSelectorRate (uint32_t bs);
+  /**
+   * Check if the given rate is supported.  The rate is encoded as it is
+   * serialized to the Supported Rates Information Element (i.e. as a
+   * multiple of 500 Kbits/sec, possibly with MSB set to 1).
    *
    * \param bs the rate to be checked
    *
@@ -139,14 +147,25 @@ public:
    */
   bool IsSupportedRate (uint32_t bs) const;
   /**
-   * Check if the given rate is a basic rate.
+   * Check if the given rate is a basic rate.  The rate is encoded as it is
+   * serialized to the Supported Rates Information Element (i.e. as a
+   * multiple of 500 Kbits/sec, with MSB set to 1).
    *
    * \param bs the rate to be checked
    *
    * \return true if the rate is a basic rate, false otherwise
    */
   bool IsBasicRate (uint32_t bs) const;
-
+  /**
+   * Check if the given rate is a BSS membership selector value.  The rate
+   * is encoded as it is serialized to the Supporting Rates Information
+   * Element (i.e. with the MSB set to 1).
+   *
+   * \param bs the rate to be checked
+   *
+   * \return true if the rate is a BSS membership selector, false otherwise
+   */
+  bool IsBssMembershipSelectorRate (uint32_t bs) const;
   /**
    * Return the number of supported rates.
    *
@@ -155,6 +174,7 @@ public:
   uint8_t GetNRates (void) const;
   /**
    * Return the rate at the given index.
+   * Return the rate (converted back to raw value) at the given index.
    *
    * \param i the given index
    * \return the rate

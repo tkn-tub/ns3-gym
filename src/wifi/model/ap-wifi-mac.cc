@@ -355,7 +355,7 @@ ApWifiMac::GetSupportedRates (void) const
     {
       for (uint32_t i = 0; i < m_phy->GetNBssMembershipSelectors (); i++)
         {
-          rates.SetBasicRate (m_phy->GetBssMembershipSelector (i));
+          rates.AddBssMembershipSelectorRate (m_phy->GetBssMembershipSelector (i));
         }
     }
   // 
