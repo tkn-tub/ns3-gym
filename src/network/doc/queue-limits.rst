@@ -64,11 +64,11 @@ Three attributes are defined in the DynamicQueueLimits class:
 * ``MaxLimit``: Maximum limit
 * ``MinLimit``: Minimum limit
 
-The HoldTime attribute is set to 1/HZ by the Linux DQL library. The default value
-is 4 ms. Typical values for HoldTime ranges from 10 to 1 ms (corresponding to the typical
-values of HZ which varies from 100 to 1000). Reducing the HoldTime increases the responsiveness of
-DQL with consequent greater number of limit variation events. The limit calculated from DQL is in the
-range from MinLimit to MaxLimit. The default values are respectively 0 and DQL_MAX_LIMIT.
+The DQL algorithm hold time is 1 s. Reducing the HoldTime increases the responsiveness of
+DQL with consequent greater number of limit variation events. Conversely, increasing the HoldTime
+decreases the responsiveness of DQL with a minor number of limit variation events.
+The limit calculated by DQL is in the range from MinLimit to MaxLimit.
+The default values are respectively 0 and DQL_MAX_LIMIT.
 Increasing the MinLimit is recommended in case of higher NetDevice transmission rate (e.g. 1 Gbps)
 while reducing the MaxLimit is recommended in case of lower NetDevice transmission rate (e.g. 500 Kbps).
 

@@ -50,7 +50,7 @@ DynamicQueueLimits::GetTypeId (void)
     .AddConstructor<DynamicQueueLimits> ()
     .AddAttribute ("HoldTime",
                    "The DQL algorithm hold time",
-                   StringValue ("4ms"), // 1/HZ
+                   StringValue ("1s"),
                    MakeTimeAccessor (&DynamicQueueLimits::m_slackHoldTime),
                    MakeTimeChecker ())
     .AddAttribute ("MaxLimit",
