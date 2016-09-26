@@ -182,6 +182,8 @@ def register_types(module):
     module.add_class('TypeId', import_from_module='ns.core')
     ## type-id.h (module 'core'): ns3::TypeId::AttributeFlag [enumeration]
     module.add_enum('AttributeFlag', ['ATTR_GET', 'ATTR_SET', 'ATTR_CONSTRUCT', 'ATTR_SGC'], outer_class=root_module['ns3::TypeId'], import_from_module='ns.core')
+    ## type-id.h (module 'core'): ns3::TypeId::SupportLevel [enumeration]
+    module.add_enum('SupportLevel', ['SUPPORTED', 'DEPRECATED', 'OBSOLETE'], outer_class=root_module['ns3::TypeId'], import_from_module='ns.core')
     ## type-id.h (module 'core'): ns3::TypeId::AttributeInformation [struct]
     module.add_class('AttributeInformation', import_from_module='ns.core', outer_class=root_module['ns3::TypeId'])
     ## type-id.h (module 'core'): ns3::TypeId::TraceSourceInformation [struct]
@@ -374,6 +376,10 @@ def register_types(module):
     module.add_class('DynamicQueueLimits', import_from_module='ns.network', parent=root_module['ns3::QueueLimits'])
     ## random-variable-stream.h (module 'core'): ns3::EmpiricalRandomVariable [class]
     module.add_class('EmpiricalRandomVariable', import_from_module='ns.core', parent=root_module['ns3::RandomVariableStream'])
+    ## attribute.h (module 'core'): ns3::EmptyAttributeAccessor [class]
+    module.add_class('EmptyAttributeAccessor', import_from_module='ns.core', parent=root_module['ns3::AttributeAccessor'])
+    ## attribute.h (module 'core'): ns3::EmptyAttributeChecker [class]
+    module.add_class('EmptyAttributeChecker', import_from_module='ns.core', parent=root_module['ns3::AttributeChecker'])
     ## attribute.h (module 'core'): ns3::EmptyAttributeValue [class]
     module.add_class('EmptyAttributeValue', import_from_module='ns.core', parent=root_module['ns3::AttributeValue'])
     ## enum.h (module 'core'): ns3::EnumChecker [class]
@@ -660,6 +666,9 @@ def register_types_ns3_TracedValueCallback(module):
     typehandlers.add_type_alias(u'void ( * ) ( ns3::Time, ns3::Time ) *', u'ns3::TracedValueCallback::Time')
     typehandlers.add_type_alias(u'void ( * ) ( ns3::Time, ns3::Time ) **', u'ns3::TracedValueCallback::Time*')
     typehandlers.add_type_alias(u'void ( * ) ( ns3::Time, ns3::Time ) *&', u'ns3::TracedValueCallback::Time&')
+    typehandlers.add_type_alias(u'void ( * ) (  ) *', u'ns3::TracedValueCallback::Void')
+    typehandlers.add_type_alias(u'void ( * ) (  ) **', u'ns3::TracedValueCallback::Void*')
+    typehandlers.add_type_alias(u'void ( * ) (  ) *&', u'ns3::TracedValueCallback::Void&')
 
 def register_types_ns3_addressUtils(module):
     root_module = module.get_root()
@@ -815,6 +824,8 @@ def register_methods(root_module):
     register_Ns3DropTailQueue_methods(root_module, root_module['ns3::DropTailQueue'])
     register_Ns3DynamicQueueLimits_methods(root_module, root_module['ns3::DynamicQueueLimits'])
     register_Ns3EmpiricalRandomVariable_methods(root_module, root_module['ns3::EmpiricalRandomVariable'])
+    register_Ns3EmptyAttributeAccessor_methods(root_module, root_module['ns3::EmptyAttributeAccessor'])
+    register_Ns3EmptyAttributeChecker_methods(root_module, root_module['ns3::EmptyAttributeChecker'])
     register_Ns3EmptyAttributeValue_methods(root_module, root_module['ns3::EmptyAttributeValue'])
     register_Ns3EnumChecker_methods(root_module, root_module['ns3::EnumChecker'])
     register_Ns3EnumValue_methods(root_module, root_module['ns3::EnumValue'])
@@ -3807,23 +3818,23 @@ def register_Ns3TypeId_methods(root_module, cls):
     cls.add_constructor([])
     ## type-id.h (module 'core'): ns3::TypeId::TypeId(ns3::TypeId const & o) [copy constructor]
     cls.add_constructor([param('ns3::TypeId const &', 'o')])
-    ## type-id.h (module 'core'): ns3::TypeId ns3::TypeId::AddAttribute(std::string name, std::string help, ns3::AttributeValue const & initialValue, ns3::Ptr<ns3::AttributeAccessor const> accessor, ns3::Ptr<ns3::AttributeChecker const> checker) [member function]
+    ## type-id.h (module 'core'): ns3::TypeId ns3::TypeId::AddAttribute(std::string name, std::string help, ns3::AttributeValue const & initialValue, ns3::Ptr<ns3::AttributeAccessor const> accessor, ns3::Ptr<ns3::AttributeChecker const> checker, ns3::TypeId::SupportLevel supportLevel=::ns3::TypeId::SUPPORTED, std::string const & supportMsg="") [member function]
     cls.add_method('AddAttribute', 
                    'ns3::TypeId', 
-                   [param('std::string', 'name'), param('std::string', 'help'), param('ns3::AttributeValue const &', 'initialValue'), param('ns3::Ptr< ns3::AttributeAccessor const >', 'accessor'), param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')])
-    ## type-id.h (module 'core'): ns3::TypeId ns3::TypeId::AddAttribute(std::string name, std::string help, uint32_t flags, ns3::AttributeValue const & initialValue, ns3::Ptr<ns3::AttributeAccessor const> accessor, ns3::Ptr<ns3::AttributeChecker const> checker) [member function]
+                   [param('std::string', 'name'), param('std::string', 'help'), param('ns3::AttributeValue const &', 'initialValue'), param('ns3::Ptr< ns3::AttributeAccessor const >', 'accessor'), param('ns3::Ptr< ns3::AttributeChecker const >', 'checker'), param('ns3::TypeId::SupportLevel', 'supportLevel', default_value='::ns3::TypeId::SUPPORTED'), param('std::string const &', 'supportMsg', default_value='""')])
+    ## type-id.h (module 'core'): ns3::TypeId ns3::TypeId::AddAttribute(std::string name, std::string help, uint32_t flags, ns3::AttributeValue const & initialValue, ns3::Ptr<ns3::AttributeAccessor const> accessor, ns3::Ptr<ns3::AttributeChecker const> checker, ns3::TypeId::SupportLevel supportLevel=::ns3::TypeId::SUPPORTED, std::string const & supportMsg="") [member function]
     cls.add_method('AddAttribute', 
                    'ns3::TypeId', 
-                   [param('std::string', 'name'), param('std::string', 'help'), param('uint32_t', 'flags'), param('ns3::AttributeValue const &', 'initialValue'), param('ns3::Ptr< ns3::AttributeAccessor const >', 'accessor'), param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')])
+                   [param('std::string', 'name'), param('std::string', 'help'), param('uint32_t', 'flags'), param('ns3::AttributeValue const &', 'initialValue'), param('ns3::Ptr< ns3::AttributeAccessor const >', 'accessor'), param('ns3::Ptr< ns3::AttributeChecker const >', 'checker'), param('ns3::TypeId::SupportLevel', 'supportLevel', default_value='::ns3::TypeId::SUPPORTED'), param('std::string const &', 'supportMsg', default_value='""')])
     ## type-id.h (module 'core'): ns3::TypeId ns3::TypeId::AddTraceSource(std::string name, std::string help, ns3::Ptr<ns3::TraceSourceAccessor const> accessor) [member function]
     cls.add_method('AddTraceSource', 
                    'ns3::TypeId', 
                    [param('std::string', 'name'), param('std::string', 'help'), param('ns3::Ptr< ns3::TraceSourceAccessor const >', 'accessor')], 
                    deprecated=True)
-    ## type-id.h (module 'core'): ns3::TypeId ns3::TypeId::AddTraceSource(std::string name, std::string help, ns3::Ptr<ns3::TraceSourceAccessor const> accessor, std::string callback) [member function]
+    ## type-id.h (module 'core'): ns3::TypeId ns3::TypeId::AddTraceSource(std::string name, std::string help, ns3::Ptr<ns3::TraceSourceAccessor const> accessor, std::string callback, ns3::TypeId::SupportLevel supportLevel=::ns3::TypeId::SUPPORTED, std::string const & supportMsg="") [member function]
     cls.add_method('AddTraceSource', 
                    'ns3::TypeId', 
-                   [param('std::string', 'name'), param('std::string', 'help'), param('ns3::Ptr< ns3::TraceSourceAccessor const >', 'accessor'), param('std::string', 'callback')])
+                   [param('std::string', 'name'), param('std::string', 'help'), param('ns3::Ptr< ns3::TraceSourceAccessor const >', 'accessor'), param('std::string', 'callback'), param('ns3::TypeId::SupportLevel', 'supportLevel', default_value='::ns3::TypeId::SUPPORTED'), param('std::string const &', 'supportMsg', default_value='""')])
     ## type-id.h (module 'core'): ns3::TypeId::AttributeInformation ns3::TypeId::GetAttribute(uint32_t i) const [member function]
     cls.add_method('GetAttribute', 
                    'ns3::TypeId::AttributeInformation', 
@@ -3938,6 +3949,11 @@ def register_Ns3TypeId_methods(root_module, cls):
                    'ns3::Ptr< ns3::TraceSourceAccessor const >', 
                    [param('std::string', 'name')], 
                    is_const=True)
+    ## type-id.h (module 'core'): ns3::Ptr<ns3::TraceSourceAccessor const> ns3::TypeId::LookupTraceSourceByName(std::string name, ns3::TypeId::TraceSourceInformation * info) const [member function]
+    cls.add_method('LookupTraceSourceByName', 
+                   'ns3::Ptr< ns3::TraceSourceAccessor const >', 
+                   [param('std::string', 'name'), param('ns3::TypeId::TraceSourceInformation *', 'info')], 
+                   is_const=True)
     ## type-id.h (module 'core'): bool ns3::TypeId::MustHideFromDocumentation() const [member function]
     cls.add_method('MustHideFromDocumentation', 
                    'bool', 
@@ -3964,10 +3980,10 @@ def register_Ns3TypeId_methods(root_module, cls):
     cls.add_method('SetSize', 
                    'ns3::TypeId', 
                    [param('std::size_t', 'size')])
-    ## type-id.h (module 'core'): void ns3::TypeId::SetUid(uint16_t tid) [member function]
+    ## type-id.h (module 'core'): void ns3::TypeId::SetUid(uint16_t uid) [member function]
     cls.add_method('SetUid', 
                    'void', 
-                   [param('uint16_t', 'tid')])
+                   [param('uint16_t', 'uid')])
     return
 
 def register_Ns3TypeIdAttributeInformation_methods(root_module, cls):
@@ -3989,6 +4005,10 @@ def register_Ns3TypeIdAttributeInformation_methods(root_module, cls):
     cls.add_instance_attribute('name', 'std::string', is_const=False)
     ## type-id.h (module 'core'): ns3::TypeId::AttributeInformation::originalInitialValue [variable]
     cls.add_instance_attribute('originalInitialValue', 'ns3::Ptr< ns3::AttributeValue const >', is_const=False)
+    ## type-id.h (module 'core'): ns3::TypeId::AttributeInformation::supportLevel [variable]
+    cls.add_instance_attribute('supportLevel', 'ns3::TypeId::SupportLevel', is_const=False)
+    ## type-id.h (module 'core'): ns3::TypeId::AttributeInformation::supportMsg [variable]
+    cls.add_instance_attribute('supportMsg', 'std::string', is_const=False)
     return
 
 def register_Ns3TypeIdTraceSourceInformation_methods(root_module, cls):
@@ -4004,6 +4024,10 @@ def register_Ns3TypeIdTraceSourceInformation_methods(root_module, cls):
     cls.add_instance_attribute('help', 'std::string', is_const=False)
     ## type-id.h (module 'core'): ns3::TypeId::TraceSourceInformation::name [variable]
     cls.add_instance_attribute('name', 'std::string', is_const=False)
+    ## type-id.h (module 'core'): ns3::TypeId::TraceSourceInformation::supportLevel [variable]
+    cls.add_instance_attribute('supportLevel', 'ns3::TypeId::SupportLevel', is_const=False)
+    ## type-id.h (module 'core'): ns3::TypeId::TraceSourceInformation::supportMsg [variable]
+    cls.add_instance_attribute('supportMsg', 'std::string', is_const=False)
     return
 
 def register_Ns3UdpClientHelper_methods(root_module, cls):
@@ -4011,12 +4035,10 @@ def register_Ns3UdpClientHelper_methods(root_module, cls):
     cls.add_constructor([param('ns3::UdpClientHelper const &', 'arg0')])
     ## udp-client-server-helper.h (module 'applications'): ns3::UdpClientHelper::UdpClientHelper() [constructor]
     cls.add_constructor([])
-    ## udp-client-server-helper.h (module 'applications'): ns3::UdpClientHelper::UdpClientHelper(ns3::Ipv4Address ip, uint16_t port) [constructor]
-    cls.add_constructor([param('ns3::Ipv4Address', 'ip'), param('uint16_t', 'port')])
-    ## udp-client-server-helper.h (module 'applications'): ns3::UdpClientHelper::UdpClientHelper(ns3::Ipv6Address ip, uint16_t port) [constructor]
-    cls.add_constructor([param('ns3::Ipv6Address', 'ip'), param('uint16_t', 'port')])
     ## udp-client-server-helper.h (module 'applications'): ns3::UdpClientHelper::UdpClientHelper(ns3::Address ip, uint16_t port) [constructor]
     cls.add_constructor([param('ns3::Address', 'ip'), param('uint16_t', 'port')])
+    ## udp-client-server-helper.h (module 'applications'): ns3::UdpClientHelper::UdpClientHelper(ns3::Address addr) [constructor]
+    cls.add_constructor([param('ns3::Address', 'addr')])
     ## udp-client-server-helper.h (module 'applications'): ns3::ApplicationContainer ns3::UdpClientHelper::Install(ns3::NodeContainer c) [member function]
     cls.add_method('Install', 
                    'ns3::ApplicationContainer', 
@@ -4032,10 +4054,8 @@ def register_Ns3UdpEchoClientHelper_methods(root_module, cls):
     cls.add_constructor([param('ns3::UdpEchoClientHelper const &', 'arg0')])
     ## udp-echo-helper.h (module 'applications'): ns3::UdpEchoClientHelper::UdpEchoClientHelper(ns3::Address ip, uint16_t port) [constructor]
     cls.add_constructor([param('ns3::Address', 'ip'), param('uint16_t', 'port')])
-    ## udp-echo-helper.h (module 'applications'): ns3::UdpEchoClientHelper::UdpEchoClientHelper(ns3::Ipv4Address ip, uint16_t port) [constructor]
-    cls.add_constructor([param('ns3::Ipv4Address', 'ip'), param('uint16_t', 'port')])
-    ## udp-echo-helper.h (module 'applications'): ns3::UdpEchoClientHelper::UdpEchoClientHelper(ns3::Ipv6Address ip, uint16_t port) [constructor]
-    cls.add_constructor([param('ns3::Ipv6Address', 'ip'), param('uint16_t', 'port')])
+    ## udp-echo-helper.h (module 'applications'): ns3::UdpEchoClientHelper::UdpEchoClientHelper(ns3::Address addr) [constructor]
+    cls.add_constructor([param('ns3::Address', 'addr')])
     ## udp-echo-helper.h (module 'applications'): ns3::ApplicationContainer ns3::UdpEchoClientHelper::Install(ns3::Ptr<ns3::Node> node) const [member function]
     cls.add_method('Install', 
                    'ns3::ApplicationContainer', 
@@ -4123,10 +4143,8 @@ def register_Ns3UdpTraceClientHelper_methods(root_module, cls):
     cls.add_constructor([])
     ## udp-client-server-helper.h (module 'applications'): ns3::UdpTraceClientHelper::UdpTraceClientHelper(ns3::Address ip, uint16_t port, std::string filename) [constructor]
     cls.add_constructor([param('ns3::Address', 'ip'), param('uint16_t', 'port'), param('std::string', 'filename')])
-    ## udp-client-server-helper.h (module 'applications'): ns3::UdpTraceClientHelper::UdpTraceClientHelper(ns3::Ipv4Address ip, uint16_t port, std::string filename) [constructor]
-    cls.add_constructor([param('ns3::Ipv4Address', 'ip'), param('uint16_t', 'port'), param('std::string', 'filename')])
-    ## udp-client-server-helper.h (module 'applications'): ns3::UdpTraceClientHelper::UdpTraceClientHelper(ns3::Ipv6Address ip, uint16_t port, std::string filename) [constructor]
-    cls.add_constructor([param('ns3::Ipv6Address', 'ip'), param('uint16_t', 'port'), param('std::string', 'filename')])
+    ## udp-client-server-helper.h (module 'applications'): ns3::UdpTraceClientHelper::UdpTraceClientHelper(ns3::Address addr, std::string filename) [constructor]
+    cls.add_constructor([param('ns3::Address', 'addr'), param('std::string', 'filename')])
     ## udp-client-server-helper.h (module 'applications'): ns3::ApplicationContainer ns3::UdpTraceClientHelper::Install(ns3::NodeContainer c) [member function]
     cls.add_method('Install', 
                    'ns3::ApplicationContainer', 
@@ -7157,6 +7175,70 @@ def register_Ns3EmpiricalRandomVariable_methods(root_module, cls):
                    'void', 
                    [], 
                    visibility='private', is_virtual=True)
+    return
+
+def register_Ns3EmptyAttributeAccessor_methods(root_module, cls):
+    ## attribute.h (module 'core'): ns3::EmptyAttributeAccessor::EmptyAttributeAccessor(ns3::EmptyAttributeAccessor const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::EmptyAttributeAccessor const &', 'arg0')])
+    ## attribute.h (module 'core'): ns3::EmptyAttributeAccessor::EmptyAttributeAccessor() [constructor]
+    cls.add_constructor([])
+    ## attribute.h (module 'core'): bool ns3::EmptyAttributeAccessor::Get(ns3::ObjectBase const * object, ns3::AttributeValue & attribute) const [member function]
+    cls.add_method('Get', 
+                   'bool', 
+                   [param('ns3::ObjectBase const *', 'object'), param('ns3::AttributeValue &', 'attribute')], 
+                   is_const=True, is_virtual=True)
+    ## attribute.h (module 'core'): bool ns3::EmptyAttributeAccessor::HasGetter() const [member function]
+    cls.add_method('HasGetter', 
+                   'bool', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## attribute.h (module 'core'): bool ns3::EmptyAttributeAccessor::HasSetter() const [member function]
+    cls.add_method('HasSetter', 
+                   'bool', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## attribute.h (module 'core'): bool ns3::EmptyAttributeAccessor::Set(ns3::ObjectBase * object, ns3::AttributeValue const & value) const [member function]
+    cls.add_method('Set', 
+                   'bool', 
+                   [param('ns3::ObjectBase *', 'object'), param('ns3::AttributeValue const &', 'value')], 
+                   is_const=True, is_virtual=True)
+    return
+
+def register_Ns3EmptyAttributeChecker_methods(root_module, cls):
+    ## attribute.h (module 'core'): ns3::EmptyAttributeChecker::EmptyAttributeChecker(ns3::EmptyAttributeChecker const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::EmptyAttributeChecker const &', 'arg0')])
+    ## attribute.h (module 'core'): ns3::EmptyAttributeChecker::EmptyAttributeChecker() [constructor]
+    cls.add_constructor([])
+    ## attribute.h (module 'core'): bool ns3::EmptyAttributeChecker::Check(ns3::AttributeValue const & value) const [member function]
+    cls.add_method('Check', 
+                   'bool', 
+                   [param('ns3::AttributeValue const &', 'value')], 
+                   is_const=True, is_virtual=True)
+    ## attribute.h (module 'core'): bool ns3::EmptyAttributeChecker::Copy(ns3::AttributeValue const & source, ns3::AttributeValue & destination) const [member function]
+    cls.add_method('Copy', 
+                   'bool', 
+                   [param('ns3::AttributeValue const &', 'source'), param('ns3::AttributeValue &', 'destination')], 
+                   is_const=True, is_virtual=True)
+    ## attribute.h (module 'core'): ns3::Ptr<ns3::AttributeValue> ns3::EmptyAttributeChecker::Create() const [member function]
+    cls.add_method('Create', 
+                   'ns3::Ptr< ns3::AttributeValue >', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## attribute.h (module 'core'): std::string ns3::EmptyAttributeChecker::GetUnderlyingTypeInformation() const [member function]
+    cls.add_method('GetUnderlyingTypeInformation', 
+                   'std::string', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## attribute.h (module 'core'): std::string ns3::EmptyAttributeChecker::GetValueTypeName() const [member function]
+    cls.add_method('GetValueTypeName', 
+                   'std::string', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## attribute.h (module 'core'): bool ns3::EmptyAttributeChecker::HasUnderlyingTypeInformation() const [member function]
+    cls.add_method('HasUnderlyingTypeInformation', 
+                   'bool', 
+                   [], 
+                   is_const=True, is_virtual=True)
     return
 
 def register_Ns3EmptyAttributeValue_methods(root_module, cls):
@@ -10458,18 +10540,14 @@ def register_Ns3UdpClient_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
-    ## udp-client.h (module 'applications'): void ns3::UdpClient::SetRemote(ns3::Ipv4Address ip, uint16_t port) [member function]
-    cls.add_method('SetRemote', 
-                   'void', 
-                   [param('ns3::Ipv4Address', 'ip'), param('uint16_t', 'port')])
-    ## udp-client.h (module 'applications'): void ns3::UdpClient::SetRemote(ns3::Ipv6Address ip, uint16_t port) [member function]
-    cls.add_method('SetRemote', 
-                   'void', 
-                   [param('ns3::Ipv6Address', 'ip'), param('uint16_t', 'port')])
     ## udp-client.h (module 'applications'): void ns3::UdpClient::SetRemote(ns3::Address ip, uint16_t port) [member function]
     cls.add_method('SetRemote', 
                    'void', 
                    [param('ns3::Address', 'ip'), param('uint16_t', 'port')])
+    ## udp-client.h (module 'applications'): void ns3::UdpClient::SetRemote(ns3::Address addr) [member function]
+    cls.add_method('SetRemote', 
+                   'void', 
+                   [param('ns3::Address', 'addr')])
     ## udp-client.h (module 'applications'): void ns3::UdpClient::DoDispose() [member function]
     cls.add_method('DoDispose', 
                    'void', 
@@ -10518,18 +10596,14 @@ def register_Ns3UdpEchoClient_methods(root_module, cls):
     cls.add_method('SetFill', 
                    'void', 
                    [param('uint8_t *', 'fill'), param('uint32_t', 'fillSize'), param('uint32_t', 'dataSize')])
-    ## udp-echo-client.h (module 'applications'): void ns3::UdpEchoClient::SetRemote(ns3::Ipv4Address ip, uint16_t port) [member function]
-    cls.add_method('SetRemote', 
-                   'void', 
-                   [param('ns3::Ipv4Address', 'ip'), param('uint16_t', 'port')])
-    ## udp-echo-client.h (module 'applications'): void ns3::UdpEchoClient::SetRemote(ns3::Ipv6Address ip, uint16_t port) [member function]
-    cls.add_method('SetRemote', 
-                   'void', 
-                   [param('ns3::Ipv6Address', 'ip'), param('uint16_t', 'port')])
     ## udp-echo-client.h (module 'applications'): void ns3::UdpEchoClient::SetRemote(ns3::Address ip, uint16_t port) [member function]
     cls.add_method('SetRemote', 
                    'void', 
                    [param('ns3::Address', 'ip'), param('uint16_t', 'port')])
+    ## udp-echo-client.h (module 'applications'): void ns3::UdpEchoClient::SetRemote(ns3::Address addr) [member function]
+    cls.add_method('SetRemote', 
+                   'void', 
+                   [param('ns3::Address', 'addr')])
     ## udp-echo-client.h (module 'applications'): void ns3::UdpEchoClient::DoDispose() [member function]
     cls.add_method('DoDispose', 
                    'void', 
@@ -10640,18 +10714,14 @@ def register_Ns3UdpTraceClient_methods(root_module, cls):
     cls.add_method('SetMaxPacketSize', 
                    'void', 
                    [param('uint16_t', 'maxPacketSize')])
-    ## udp-trace-client.h (module 'applications'): void ns3::UdpTraceClient::SetRemote(ns3::Ipv4Address ip, uint16_t port) [member function]
-    cls.add_method('SetRemote', 
-                   'void', 
-                   [param('ns3::Ipv4Address', 'ip'), param('uint16_t', 'port')])
-    ## udp-trace-client.h (module 'applications'): void ns3::UdpTraceClient::SetRemote(ns3::Ipv6Address ip, uint16_t port) [member function]
-    cls.add_method('SetRemote', 
-                   'void', 
-                   [param('ns3::Ipv6Address', 'ip'), param('uint16_t', 'port')])
     ## udp-trace-client.h (module 'applications'): void ns3::UdpTraceClient::SetRemote(ns3::Address ip, uint16_t port) [member function]
     cls.add_method('SetRemote', 
                    'void', 
                    [param('ns3::Address', 'ip'), param('uint16_t', 'port')])
+    ## udp-trace-client.h (module 'applications'): void ns3::UdpTraceClient::SetRemote(ns3::Address addr) [member function]
+    cls.add_method('SetRemote', 
+                   'void', 
+                   [param('ns3::Address', 'addr')])
     ## udp-trace-client.h (module 'applications'): void ns3::UdpTraceClient::SetTraceFile(std::string filename) [member function]
     cls.add_method('SetTraceFile', 
                    'void', 
