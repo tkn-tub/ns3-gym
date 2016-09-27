@@ -684,7 +684,7 @@ void EdcaTxopN::NotifyInternalCollision (void)
     }
   else if (header.GetAddr1 () == Mac48Address::GetBroadcast ())
     {
-      resetDcf = true;
+      resetDcf = false;
     }
   else
     {

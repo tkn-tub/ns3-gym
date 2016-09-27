@@ -518,7 +518,6 @@ void
 DcaTxop::NotifyCollision (void)
 {
   NS_LOG_FUNCTION (this);
-  NS_LOG_DEBUG ("collision");
   m_dcf->StartBackoffNow (m_rng->GetNext (0, m_dcf->GetCw ()));
   RestartAccessIfNeeded ();
 }

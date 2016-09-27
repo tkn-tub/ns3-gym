@@ -215,6 +215,9 @@ private:
    * that a normal collision occured, that is, that
    * the medium was busy when access was requested.
    *
+   * This may also be called if the request for access occurred within
+   * the DIFS or AIFS between two frames.
+   *
    * The subclass is expected to start a new backoff by
    * calling DcfState::StartBackoffNow and DcfManager::RequestAccess
    * is access is still needed.
@@ -535,6 +538,14 @@ private:
    *         false otherwise
    */
   bool IsBusy (void) const;
+  /**
+   * Check if the device is between frames (in DIFS or AIFS interval)
+   *
+   * \param state the state to check
+   * \return true if the device is within AIFS,
+   *         false otherwise
+   */
+  bool IsWithinAifs (DcfState* state) const;
 
   /**
    * typedef for a vector of DcfStates
