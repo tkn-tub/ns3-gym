@@ -186,6 +186,7 @@ void
 RawTextConfigLoad::Attributes (void)
 {
   NS_LOG_FUNCTION (this);
+  m_is->clear ();
   m_is->seekg (0);
   std::string type, path, value;
   *m_is >> type >> path >> value;
