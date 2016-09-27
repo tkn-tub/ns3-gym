@@ -808,13 +808,27 @@ DcfManager::NotifyTxStartNow (Time duration)
   NS_LOG_FUNCTION (this << duration);
   if (m_rxing)
     {
-      //this may be caused only if PHY has started to receive a packet
-      //inside SIFS, so, we check that lastRxStart was maximum a SIFS ago
-      NS_ASSERT (Simulator::Now () - m_lastRxStart <= m_sifs);
-      m_lastRxEnd = Simulator::Now ();
-      m_lastRxDuration = m_lastRxEnd - m_lastRxStart;
-      m_lastRxReceivedOk = true;
-      m_rxing = false;
+      if (Simulator::Now () - m_lastRxStart <= m_sifs)
+        {
+          //this may be caused if PHY has started to receive a packet
+          //inside SIFS, so, we check that lastRxStart was within a SIFS ago
+          m_lastRxEnd = Simulator::Now ();
+          m_lastRxDuration = m_lastRxEnd - m_lastRxStart;
+          m_lastRxReceivedOk = true;
+          m_rxing = false;
+        }
+      else
+        {
+          // Bug 2477:  It is possible for the DCF to fall out of 
+          //            sync with the PHY state if there are problems
+          //            receiving A-MPDUs.  PHY will cancel the reception
+          //            and start to transmit
+          NS_LOG_DEBUG ("Phy is transmitting despite DCF being in receive state");
+          m_lastRxEnd = Simulator::Now ();
+          m_lastRxDuration = m_lastRxEnd - m_lastRxStart;
+          m_lastRxReceivedOk = false;
+          m_rxing = false;
+        }
     }
   MY_DEBUG ("tx start for " << duration);
   UpdateBackoff ();
