@@ -104,6 +104,8 @@ Bugs fixed
 - Bug 2484 - Corrected the exit from CA_LOSS state in TCP
 - Bug 2486 - NextTxSequence was not traced back from TCB
 - Bug 2500 - Ipv[4,6]RawSocket ignores IpTtl tag
+- Bug 2507 - ConfigStore RawTextConfigLoad doesn't reset stream error state
+- Bug 2508 - Duplicate of bug 2507
 
 Known issues
 ------------
