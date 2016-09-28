@@ -1620,6 +1620,11 @@ def register_Ns3BufferIterator_methods(root_module, cls):
                    'uint32_t', 
                    [param('ns3::Buffer::Iterator const &', 'o')], 
                    is_const=True)
+    ## buffer.h (module 'network'): uint32_t ns3::Buffer::Iterator::GetRemainingSize() const [member function]
+    cls.add_method('GetRemainingSize', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
     ## buffer.h (module 'network'): uint32_t ns3::Buffer::Iterator::GetSize() const [member function]
     cls.add_method('GetSize', 
                    'uint32_t', 
@@ -12361,6 +12366,10 @@ def register_Ns3SupportedRates_methods(root_module, cls):
     cls.add_constructor([])
     ## supported-rates.h (module 'wifi'): ns3::SupportedRates::SupportedRates(ns3::SupportedRates const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::SupportedRates const &', 'arg0')])
+    ## supported-rates.h (module 'wifi'): void ns3::SupportedRates::AddBssMembershipSelectorRate(uint32_t bs) [member function]
+    cls.add_method('AddBssMembershipSelectorRate', 
+                   'void', 
+                   [param('uint32_t', 'bs')])
     ## supported-rates.h (module 'wifi'): void ns3::SupportedRates::AddSupportedRate(uint32_t bs) [member function]
     cls.add_method('AddSupportedRate', 
                    'void', 
@@ -12392,6 +12401,11 @@ def register_Ns3SupportedRates_methods(root_module, cls):
                    is_const=True)
     ## supported-rates.h (module 'wifi'): bool ns3::SupportedRates::IsBasicRate(uint32_t bs) const [member function]
     cls.add_method('IsBasicRate', 
+                   'bool', 
+                   [param('uint32_t', 'bs')], 
+                   is_const=True)
+    ## supported-rates.h (module 'wifi'): bool ns3::SupportedRates::IsBssMembershipSelectorRate(uint32_t bs) const [member function]
+    cls.add_method('IsBssMembershipSelectorRate', 
                    'bool', 
                    [param('uint32_t', 'bs')], 
                    is_const=True)

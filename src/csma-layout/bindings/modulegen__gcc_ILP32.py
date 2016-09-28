@@ -1022,6 +1022,11 @@ def register_Ns3BufferIterator_methods(root_module, cls):
                    'uint32_t', 
                    [param('ns3::Buffer::Iterator const &', 'o')], 
                    is_const=True)
+    ## buffer.h (module 'network'): uint32_t ns3::Buffer::Iterator::GetRemainingSize() const [member function]
+    cls.add_method('GetRemainingSize', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
     ## buffer.h (module 'network'): uint32_t ns3::Buffer::Iterator::GetSize() const [member function]
     cls.add_method('GetSize', 
                    'uint32_t', 
