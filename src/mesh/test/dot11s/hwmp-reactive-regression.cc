@@ -53,7 +53,11 @@ void
 HwmpReactiveRegressionTest::DoRun ()
 {
   RngSeedManager::SetSeed (12345);
-  RngSeedManager::SetRun (7);
+  // This test is somewhat sensitive to seed selection, since the nodes
+  // are on the fringe of reception range from one another (to create 
+  // a multi-hop topology).  Some seeds may yield no data transfer because
+  // ARP resolution across the mesh may fail too many times
+  RngSeedManager::SetRun (1);
   CreateNodes ();
   CreateDevices ();
   InstallApplications ();
