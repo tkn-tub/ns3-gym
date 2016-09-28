@@ -421,7 +421,7 @@ WaveHelper::AssignStreams (NetDeviceContainer c, int64_t stream)
         {
           // Handle any random numbers in the PHY objects.
           std::vector<Ptr<WifiPhy> > phys = wave->GetPhys ();
-          for (std::vector<Ptr<WifiPhy> >::iterator j = phys.begin (); j != phys.end (); ++i)
+          for (std::vector<Ptr<WifiPhy> >::iterator j = phys.begin (); j != phys.end (); ++j)
             {
               currentStream += (*j)->AssignStreams (currentStream);
             }
