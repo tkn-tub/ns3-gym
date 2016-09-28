@@ -29,39 +29,49 @@ This release has been tested on the following platforms:
 
 New user-visible features
 -------------------------
-- (internet) Added TCP Vegas congestion control algorithm
-- (internet) Added TCP Scalable congestion control algorithm
-- (internet) Added TCP Veno congestion control algorithm
-- (internet) Added TCP Bic congestion control algorithm
-- (internet) Added TCP YeAH congestion control algorithm
-- (internet) Added H-TCP congestion control algorithm
+- (aodv) The node search radius is increased progressively (as per standard). 
+- (build system) New --check-config option to waf to reprint the summary 
+  of optional features which are configured.
+- (build system) C++11 features are now supported in the codebase
+- (core) DES Metrics support; see the API docs for class DesMetrics.
+- (internet) Added TCP Vegas, Scalable, Veno, Illinois, Bic, YeAH, and
+  H-TCP  congestion control algorithms
+- (internet) Add a TOS field to the InetSocketAddress class
 - (network) SocketAddressTag has been removed from the codebase.
   Users can use RecvFrom (for UDP) or GetPeerName (for TCP) instead.
+- (traffic control) Added the FQ-CoDel and PIE queue disc models
+- (traffic control) Introduce Byte Queue Limits (BQL)
 - (wifi) A new SpectrumWifiPhy physical layer model, making use of the 
   ns-3 spectrum framework, has been introduced.  The current version of
   this model matches the API and behavior of YansWifiPhy closely, but
   over time is expected to support a different PHY abstraction and error
   models.
-- (core) DES Metrics support, see the API docs for class DesMetrics.
-- (aodv) The node search radius is increased progressively (as per standard). 
-+- (build system) New --check-config option to waf to reprint the summary of optional features which are configured.
+- (wifi) Support 802.11e TXOP
 
 Bugs fixed
 ----------
 - Bug 231 - Avoid adding SocketAddressTag (at all)
+- Bug 1579 - Final fix for segfault caused by EDCA fragmentation
 - Bug 1797 - Rate adaptation algorithms don't work with new 802.11n/ac standards
+- Bug 1911 - AODV doesn't work with more than one NetDevice
 - Bug 1939 - Aggregating the same object to two nodes produce unexpected results
 - Bug 1977 - v4Ping verbose output when not explicitly stopped
 - Bug 2057 - ARP and Ndisc caches should be updated by receiving valid L3 packets
+- Bug 2069 - Avoid integer overflow in ByteTagList
+- Bug 2102 - Ipv4GlobalRouting confused by bridged interfaces
 - Bug 2123 - AODV doesn't use / honor IP TTL in the RREQ / RREP
+- Bug 2149 - support deprecating attributes and trace sources
 - Bug 2222 - incorrect EDCA behavior in case of internal collision
+- Bug 2270 - Support -std=c++11 by default
+- Bug 2306 - Raise DCF IsBusy() condition for CCA busy
+- Bug 2307 - Get rid of m_receivedAtLeastOneMpdu flag
 - Bug 2308 - PacketTag instead of ByteTag in LTE PDCP/RLC
-- Bug 2346 - SixLowPan ConpressionThreshold can be violated.
-- Bug 2329 - TCP Veno implementation
-- Bug 2333 - TCP Scalable implementation
+- Bug 2344 - Attribute names can't have spaces
+- Bug 2346 - sixlowpan CompressionThreshold limit can be violated
 - Bug 2347 - LrWpan Ascii traces are hooked to the wrong traces.
+- Bug 2351 - Fix symbol rate calculation for channels with 10 and 5 MHz width
 - Bug 2352 - Add 'drop oldest' drop policy to WifiMacQueue
-- Bug 2353 - TCP Vegas implementation
+- Bug 2369 - Generate backoff if DCF requests access during AIFS
 - Bug 2375 - Flowmonitor parse crashes when no pkt is received
 - Bug 2376 - New A-MPDU might not be received if MPDUs of a previous A-MPDU are lost
 - Bug 2377 - SocketIpTosTag and SocketIpv6TclassTag may be added twice in UDP
@@ -69,11 +79,15 @@ Bugs fixed
 - Bug 2379 - BlockAckRequest should not be part of single-TID A-MPDUs
 - Bug 2380 - EdcaTxopN fails to retrieve TID for ADDBA requests, ADDBA responses and DELBA frames
 - Bug 2383 - IPv4 header for reassembled packets reports a wrong payload size
+- Bug 2386 - Move UanPhyGen out of Tx mode when energy depleted
+- Bug 2387 - Fix waf --check-profile command
 - Bug 2390 - WaypointMobilityModel::AddWaypoint lazy notify schedules an event using absolute time (should be relative time)
 - Bug 2392 - SYN segment advertised window should not be scaled
+- Bug 2395 - Upgrade pybindgen for Python >= 3.5
 - Bug 2396 - move utility functions to WifiPhy
 - Bug 2397 - add backoff and cw tracing to EDCA
 - Bug 2398 - add SNR tag to beacons and probe responses
+- Bug 2401 - Deserialize correctly the len of options in TcpHeader
 - Bug 2402 - IPv4 Interface forwarding state is not honored
 - Bug 2406 - Poor 802.11g performance in ad-hoc mode
 - Bug 2408 - Simulation fails when 802.11n/ac is running with HT Minstrel and pcap enabled
@@ -81,28 +95,34 @@ Bugs fixed
 - Bug 2414 - UdpSocket doesn't call NotifyConnectionFailed
 - Bug 2419 - BsmApplication should use RecvFrom and not SocketAddressTag
 - Bug 2420 - Remove code duplication between Wifi and Wave modules
-- Bug 2421 - Negative RemainingAmpduDuration for the last MPDU in A-MPDU tag
+- Bug 2421 - Forbid negative RemainingAmpduDuration for the last A-MPDU
 - Bug 2425 - UdpSocketImpl simplification
 - Bug 2427 - 802.11ac selects wrong slot duration
 - Bug 2433 - Bic does not copy private parameters
-- Bug 2436 - SendBlockAckAfterAmpdu is called even if the A-MPDU frame is not addressed to the station
+- Bug 2436 - Do not send block ack if received A-MPDU not addressed to station
 - Bug 2438 - Routing protocols should stop processing packets coming from a non-forwarding interface
 - Bug 2439 - SixLowPan Compression kind need to be casted to int in the Print function
 - Bug 2440 - SocketIpTosTag might be added twice if a packet is sent multiple times
-- Bug 2442 - TrafficControl makes ConfigStore crash 
-- Bug 2443 - Increase applications counters to accomodate Gbps transfer rates.
+- Bug 2442 - ConfigStore crash if object container has null item
+- Bug 2443 - Increase application counters to accommodate Gbps transfer rates
 - Bug 2444 - PcapHelper DataLinkType enum should have a name
-- Bug 2445 - Out of bounds array access in MinstrelHtWifiManager::SetBestProbabilityRate
-- Bug 2446 - Comma instead of pipe in Attributes
-- Bug 2351 - Wrong symbol rate calculation for channels with 10 and 5 Mhz width
-- Bug 2401 - Deserialize correctly the len of options in TcpHeader
+- Bug 2445 - Out of bounds array access in Minstrel HT rate control
+- Bug 2446 - Fix comma delimiter instead of pipe delimiter in Attributes
+- Bug 2448 - Run examples in traffic control test suite
+- Bug 2452 - Add Object::IsInitialized method
 - Bug 2454 - DsrRouting::NotifyDataReceipt is also triggered for wifi management packets
+- Bug 2461 - TCP BIC should copy private members
 - Bug 2468 - Simulation with A-MPDU enabled hangs when fragmentation threshold is smaller than MSDU size
 - Bug 2469 - send Block Ack Request upon short/long retry failures
 - Bug 2474 - UdpEchoClient does not call Connect with addresses of type Inet[6]SocketAddress
+- Bug 2477 - Partial fix for wifi asserts when transmit cancels a reception
 - Bug 2479 - Flow monitor does not a have a "DROP_QUEUE_DISC" drop reason
+- Bug 2480 - Use SQLite prepared statements
+- Bug 2481 - Missing or incorrect group names
 - Bug 2484 - Corrected the exit from CA_LOSS state in TCP
 - Bug 2486 - NextTxSequence was not traced back from TCB
+- Bug 2488 - Error in UanPdp::SumTapsFromMaxNc
+- Bug 2496 - BSS membership selector in SupportedRates
 - Bug 2500 - Ipv[4,6]RawSocket ignores IpTtl tag
 - Bug 2507 - ConfigStore RawTextConfigLoad doesn't reset stream error state
 - Bug 2508 - Duplicate of bug 2507
