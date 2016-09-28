@@ -1123,7 +1123,7 @@ void Icmpv6DestinationUnreachable::Serialize (Buffer::Iterator start) const
 uint32_t Icmpv6DestinationUnreachable::Deserialize (Buffer::Iterator start)
 {
   NS_LOG_FUNCTION (this << &start);
-  uint16_t length = start.GetSize () - 8;
+  uint16_t length = start.GetRemainingSize () - 8;
   uint8_t* data = new uint8_t[length];
   Buffer::Iterator i = start;
 
@@ -1234,7 +1234,7 @@ void Icmpv6TooBig::Serialize (Buffer::Iterator start) const
 uint32_t Icmpv6TooBig::Deserialize (Buffer::Iterator start) 
 {
   NS_LOG_FUNCTION (this << &start);
-  uint16_t length = start.GetSize () - 8;
+  uint16_t length = start.GetRemainingSize () - 8;
   uint8_t* data = new uint8_t[length];
   Buffer::Iterator i = start;
 
@@ -1334,7 +1334,7 @@ uint32_t Icmpv6TimeExceeded::Deserialize (Buffer::Iterator start)
 {
   NS_LOG_FUNCTION (this << &start);
   
-  uint16_t length = start.GetSize () - 8;
+  uint16_t length = start.GetRemainingSize () - 8;
   uint8_t* data = new uint8_t[length];
   Buffer::Iterator i = start;
 
@@ -1445,7 +1445,7 @@ void Icmpv6ParameterError::Serialize (Buffer::Iterator start) const
 uint32_t Icmpv6ParameterError::Deserialize (Buffer::Iterator start) 
 {
   NS_LOG_FUNCTION (this << &start);
-  uint16_t length = start.GetSize () - 8;
+  uint16_t length = start.GetRemainingSize () - 8;
   uint8_t* data = new uint8_t[length];
   Buffer::Iterator i = start;
 

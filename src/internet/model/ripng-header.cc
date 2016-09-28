@@ -208,7 +208,7 @@ uint32_t RipNgHeader::Deserialize (Buffer::Iterator start)
   uint16_t temp16 = i.ReadU16 ();
   NS_ASSERT_MSG (temp16 == 0, "RipNG received a message with invalid filled flags, aborting.");
 
-  uint8_t rteNumber = (i.GetSize () - 4)/20;
+  uint8_t rteNumber = i.GetRemainingSize ()/20;
   for (uint8_t n=0; n<rteNumber; n++)
     {
       RipNgRte rte;

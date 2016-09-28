@@ -376,6 +376,11 @@ public:
      */
     uint32_t GetSize (void) const;
 
+    /**
+     * \returns the size left to read of the underlying buffer we are iterating
+     */
+    uint32_t GetRemainingSize (void) const;
+
 private:
     friend class Buffer;
     /**

@@ -247,24 +247,26 @@ uint32_t
 Icmpv4Echo::Deserialize (Buffer::Iterator start)
 {
   NS_LOG_FUNCTION (this << &start);
+
+  uint32_t optionalPayloadSize = start.GetRemainingSize () -4;
+  NS_ASSERT (start.GetRemainingSize () >= 4);
+
   m_identifier = start.ReadNtohU16 ();
   m_sequence = start.ReadNtohU16 ();
-  NS_ASSERT (start.GetSize () >= 4);
-  uint32_t size = start.GetSize () - 4;
-  if (size != m_dataSize)
+  if (optionalPayloadSize != m_dataSize)
     {
       delete [] m_data;
-      m_data = new uint8_t[size];
-      m_dataSize = size;
+      m_dataSize = optionalPayloadSize;
+      m_data = new uint8_t[m_dataSize];
     }
   start.Read (m_data, m_dataSize);
-  return m_dataSize;
+  return m_dataSize+4;
 }
 void 
 Icmpv4Echo::Print (std::ostream &os) const
 {
   NS_LOG_FUNCTION (this << &os);
-  os << "identifier=" << m_identifier << ", sequence="  << m_sequence;
+  os << "identifier=" << m_identifier << ", sequence="  << m_sequence << ", data size=" << m_dataSize;
 }
 
 

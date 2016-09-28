@@ -1161,6 +1161,13 @@ Buffer::Iterator::GetSize (void) const
   return m_dataEnd - m_dataStart;
 }
 
+uint32_t
+Buffer::Iterator::GetRemainingSize (void) const
+{
+  NS_LOG_FUNCTION (this);
+  return m_dataEnd - m_current;
+}
+
 
 std::string 
 Buffer::Iterator::GetReadErrorMessage (void) const
