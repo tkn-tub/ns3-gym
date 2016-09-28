@@ -186,10 +186,13 @@ ArpL3Protocol::Receive (Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t pro
       NS_LOG_LOGIC ("ARP: Cannot remove ARP header");
       return;
     }
-  NS_LOG_LOGIC ("ARP: received "<< (arp.IsRequest () ? "request" : "reply") <<
-                " node="<<m_node->GetId ()<<", got request from " <<
-                arp.GetSourceIpv4Address () << " for address " <<
-                arp.GetDestinationIpv4Address () << "; we have addresses: ");
+  NS_LOG_LOGIC ("ARP: received " << (arp.IsRequest () ? "request" : "reply") <<
+                " node=" << m_node->GetId () <<
+                ", got " <<
+                (arp.IsRequest () ? "request" : "reply") <<
+                " from " << arp.GetSourceIpv4Address () <<
+                " for address " << arp.GetDestinationIpv4Address () <<
+                "; we have addresses: ");
   for (uint32_t i = 0; i < cache->GetInterface ()->GetNAddresses (); i++)
     {
       NS_LOG_LOGIC (cache->GetInterface ()->GetAddress (i).GetLocal () << ", ");
