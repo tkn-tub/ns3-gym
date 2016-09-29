@@ -1,5 +1,5 @@
 Queue limits
-------
+------------
 
 .. heading hierarchy:
    ------------- Chapter

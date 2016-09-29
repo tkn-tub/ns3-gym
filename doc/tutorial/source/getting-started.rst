@@ -326,10 +326,8 @@ following::
    uan                       virtual-net-device        visualizer               
    wave                      wifi                      wimax                    
    
-Modules not built (see ns-3 tutorial for explanation):
-brite                     click   
-
-   Leaving directory `./ns-3.25'
+   Modules not built (see ns-3 tutorial for explanation):
+   brite                     click   
 
 Regarding the portion about modules not built::
 
@@ -360,7 +358,7 @@ and you should see something like::
   >> Building pybindgen-0.17.0.post49+ng0e4e3bc - OK
   >> Building ns-3.25 - OK
 
-*Hint:  you can also perform both steps, download and build, by calling 'bake.py deploy'.*
+*Hint:  you can also perform both steps, download and build, by calling ``bake.py deploy``.*
 
 If there happens to be a failure, please have a look at what the following
 command tells you; it may give a hint as to a missing dependency::
@@ -506,10 +504,10 @@ Okay, sorry, I made you build the |ns3| part of the system twice,
 but now you know how to change the configuration and build optimized code.
 
 A command exists for checking which profile is currently active
-for an already configured project:
+for an already configured project::
 
   $ ./waf --check-profile
-  Waf: Entering directory `/path/to/ns-3-allinone/ns-3.25/build'
+  Waf: Entering directory \`/path/to/ns-3-allinone/ns-3.25/build'
   Build profile: debug
 
 The build.py script discussed above supports also the ``--enable-examples``

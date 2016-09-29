@@ -75,7 +75,7 @@ class Tag;
  *          T2:n -> T1:l ;
  *          T1:n -> NULL ;
  *        };
- *      };
+ *      }
  * \enddot
  *
  *   - Tags are stored in serialized form in a tree of TagData

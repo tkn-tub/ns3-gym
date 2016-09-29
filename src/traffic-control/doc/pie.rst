@@ -38,7 +38,9 @@ References
 
 .. [Pan16] R. Pan, P. Natarajan, F. Baker, G. White, B. VerSteeg, M.S. Prabhu, C. Piglione, V. Subramanian, Internet-Draft: PIE: A lightweight control scheme to address the bufferbloat problem, April 2016.  Available online at `<https://tools.ietf.org/html/draft-ietf-aqm-pie-07>`_.
 
-.. [Buf14] Bufferbloat.net.  Available online at `<http://www.bufferbloat.net/>`_.
+.. comment
+   This ref defined in codel.rst:
+   [Buf14] Bufferbloat.net.  Available online at `<http://www.bufferbloat.net/>`_.
 
 Attributes
 ==========
