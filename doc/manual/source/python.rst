@@ -11,13 +11,14 @@ This chapter shows you how to create a Python script that can run |ns3| and also
 Introduction
 ************
 
-The goal of Python bindings for |ns3| are two fold:
+Python bindings provide support for importing |ns3| model libraries as Python
+modules.  Coverage of most of the |ns3| C++ API is provided.  The intent
+has been to allow the programmer to write complete simulation scripts in
+Python, to allow integration of |ns3| with other Python tools and workflows.
+The intent is not to provide a different language choice to author new
+|ns3| models implemented in Python.
 
-#. Allow the programmer to write complete simulation scripts in Python (http://www.python.org);
-#. Prototype new models (e.g. routing protocols).
-
-For the time being, the primary focus of the bindings is the first goal, but the second goal will eventually be supported as well.
-Python bindings for |ns3| are being developed using a new tool called PyBindGen (http://code.google.com/p/pybindgen).
+Python bindings for |ns3| use a tool called PyBindGen (https://github.com/gjcarneiro/pybindgen).
 
 An Example Python Script that Runs |ns3|
 ****************************************
@@ -131,8 +132,8 @@ In Python, for the time being you have to do:
 
 ::
 
- ipAddrs = ns3.Ipv4AddressHelper()
- ipAddrs.SetBase(ns3.Ipv4Address("192.168.0.0"), ns3.Ipv4Mask("255.255.255.0"))
+ ipAddrs = ns.internet.Ipv4AddressHelper()
+ ipAddrs.SetBase(ns.network.Ipv4Address("192.168.0.0"), ns.network.Ipv4Mask("255.255.255.0"))
  ipAddrs.Assign(backboneDevices)
 
 CommandLine
@@ -183,7 +184,7 @@ Cygwin limitation
 Python bindings do not work on Cygwin.  This is due to a gccxml bug.
 
 You might get away with it by re-scanning API definitions from within the
-cygwin environment (./waf --python-scan).  However the most likely solution
+cygwin environment (./waf --apiscan=all).  However the most likely solution
 will probably have to be that we disable python bindings in CygWin.
 
 If you really care about Python bindings on Windows, try building with mingw and native
@@ -196,10 +197,7 @@ python instead.  Or else, to build without python bindings, disable python bindi
 Working with Python Bindings
 ****************************
 
-There are currently two kinds of Python bindings in |ns3|:
-
-#. Monolithic bindings contain API definitions for all of the modules and can be found in a single directory, ``bindings/python``.
-#. Modular bindings contain API definitions for a single module and can be found in each module's  ``bindings`` directory. 
+Python bindings are built on a module-by-module basis, and can be found in each module's  ``bindings`` directory. 
 
 Python Bindings Workflow
 ++++++++++++++++++++++++
@@ -221,54 +219,77 @@ Instructions for Handling New Files or Changed API's
 
 So you have been changing existing |ns3| APIs and Python bindings no longer compile?  Do not despair, you can rescan the bindings to create new bindings that reflect the changes to the |ns3| API.
 
-Depending on if you are using monolithic or modular bindings, see the discussions below to learn how to rescan your Python bindings. 
-
-Monolithic Python Bindings
-**************************
-
-Scanning the Monolithic Python Bindings
-+++++++++++++++++++++++++++++++++++++++
-
-To scan the monolithic Python bindings do the following:
-
-.. sourcecode:: bash
-
-  $ ./waf --python-scan  
-
-Organization of the Monolithic Python Bindings
-++++++++++++++++++++++++++++++++++++++++++++++
-
-The monolithic Python API definitions are organized as follows. For each |ns3| module <name>, the file ``bindings/python/ns3_module_<name>.py`` describes its API.  Each of those files have 3 toplevel functions:
-
-#. :py:func:`def register_types(module)`: this function takes care of registering new types (e.g. C++ classes, enums) that are defined in tha module;
-#. :py:func:`def register_methods(module)`: this function calls, for each class <name>, another function register_methods_Ns3<name>(module).  These latter functions add method definitions for each class;
-#. :py:func:`def register_functions(module)`: this function registers |ns3| functions that belong to that module.
-
-Modular Python Bindings
-***********************
-
 Overview
 ++++++++
 
-Since ns 3.11, the modular bindings are being added, in parallel to the old monolithic bindings.  
-
-The new python bindings are generated into an 'ns' namespace, instead of 'ns3' for the old bindings.  Example:
+The python bindings are generated into an 'ns' namespace.  Examples:
 
 ::
 
   from ns.network import Node
   n1 = Node()
 
-With modular Python bindings:
+or
 
-#. There is one separate Python extension module for each |ns3| module;
-#. Scanning API definitions (apidefs) is done on a per ns- module basis;
-#. Each module's apidefs files are stored in a 'bindings' subdirectory of the module directory;
+::
+
+  import ns.network
+  n1 = ns.network.Node()
+
+The best way to explore the bindings is to look at the various example
+programs provided in |ns3|; some C++ examples have a corresponding Python
+example.  There is no structured documentation for the Python bindings
+like there is Doxygen for the C++ API, but the Doxygen can be consulted
+to understand how the C++ API works.
 
 Scanning the Modular Python Bindings
-+++++++++++++++++++++++++++++++++++++++
+++++++++++++++++++++++++++++++++++++
 
-To scan the modular Python bindings for the core module, for example, do the following:
+Scanning of the C++ API is only necessary if a user is using Python and
+is changing the C++ API to introduce new methods (that he or she wishes
+to be accessible from Python) or is changing the C++ API in a way that
+breaks the compilation of the existing Python bindings.
+
+There are two steps.  First, the bindings toolchain must be enabled in
+the |ns3| build.  This requires that the gccxml and pygccxml tools be
+installed on the system or using the bake build tool.  Second, Waf
+can be used to update the bindings.
+
+The output of './waf configure' can be inspected to see if Python API scanning
+support is enabled:
+
+::
+
+  Python API Scanning Support   : enabled
+
+It may say something like this, if the support is not active:
+
+::
+
+  Python API Scanning Support   : not enabled (Missing 'pygccxml' Python module)
+
+In this case, the user must take steps to install gccxml and pygccxml;
+gccxml binary must be in the shell's path, and pygccxml must be in the
+Python path.
+
+An automated setup for this is provided by the `bake` build system, if the
+user selects the 'ns-allinone-3.nn' configuration target (where 'nn' is the
+release number.  For example:
+
+::
+
+  ./bake.py configure -e ns-allinone-3.26
+  ./bake.py download
+  ./bake.py build
+
+At present, this toolchain is only supported for gcc version 4; gcc-5
+and gcc-6 are not supported due to the gccxml project stopping maintenance
+a few years ago.  clang compiler is also not supported.  The |ns3| project
+plans to convert to the CastXML project to replace gccxml in the future,
+in which case newer versions of gcc as well as clang will be supported.
+
+Once API scanning support is enabled, to scan the modular Python bindings 
+for the core module, for example, do the following:
 
 .. sourcecode:: bash
 
@@ -280,17 +301,10 @@ To scan the modular Python bindings for all of the modules, do the following:
 
   $ ./waf --apiscan=all
 
-Creating a New Module
-+++++++++++++++++++++
+Adding Modular Bindings To A Existing or New Module
++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-If you are adding a new module, Python bindings will continue to compile but will not cover the new module.  
-
-To cover a new module, you have to create a ``bindings/python/ns3_module_<name>.py`` file, similar to the what is described in the previous sections, and register it in the variable :cpp:func:`LOCAL_MODULES` in ``bindings/python/ns3modulegen.py``
-
-Adding Modular Bindings To A Existing Module
-++++++++++++++++++++++++++++++++++++++++++++
-
-To add support for modular bindings to an existing |ns3| module, simply add the following line to its wscript build() function:
+To add support for modular bindings to an existing or new |ns3| module, simply add the following line to its wscript build() function:
 
 ::
 
