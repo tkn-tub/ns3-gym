@@ -85,30 +85,37 @@ us a note on ns-developers mailing list.</p>
     <a href="https://wilseypa.github.io/desMetrics">DES Metrics</a> project.
     These can be enabled by adding <tt>--enable-des-metrics</tt> at configuration;
     you must also use <tt>CommandLine</tt> in your script.  See the API docs
-    for class <tt>DesMetrics</tt> for more details.
+    for class <b>DesMetrics</b> for more details.
+</li>
+<li> The traffic control module now includes the <b>FQ-CoDel</b> and <b>PIE</b> queue disc 
+    models, and behavior corresponding to Linux <b>Byte Queue Limits (BQL)</b>.
+</li>
+<li> Several new TCP congestion control variants were introduced, including
+    <b>TCP Vegas, Scalable, Veno, Illinois, Bic, YeAH, and H-TCP</b> 
+    congestion control algorithms.
 </li>
 </ul>
 <h2>Changes to existing API:</h2>
 <ul>
-<li>SocketAddressTag was a long-standing API glitch. It was used to replicate 
-    the RecvFrom effect (i.e., to know the source address of packet) without 
-    calling RecvFrom.
-    This option is more harmful than useful, because in case of tunnels the 
-    new tag needs to replace the old one. Moreover, there is no real need 
-    to create a new API when there is a perfectly working one (i.e., RecvFrom).
+<li><b>SocketAddressTag</b> was a long-standing approach to approximate the POSIX
+    socket recvfrom behavior (i.e., to know the source address of a packet) 
+    without actually calling RecvFrom.  Experience with this revealed that
+    this option was difficult to use with tunnels (the new tag has to 
+    replace the old one).  Moreover, there is no real need 
+    to create a new API when there is a an existing one (i.e., RecvFrom).
     As a consequence, SocketAddressTag has been completely removed from ns-3.
     Users can use RecvFrom (for UDP), GetPeerName (for TCP), or similar. 
 </li>
-<li>InetSockAddress can now store a ToS value, which can be set through its
+<li><b>InetSockAddress</b> can now store a ToS value, which can be set through its
     SetTos method. The Bind and Connect methods of UDP (UdpSocketImpl) and
     TCP (TcpSocketBase) sockets set the socket ToS value to the value provided
     through the address input parameter (of type InetSockAddress). See the
     Socket options section of the Network model for more information.
 </li>
-<li>The QosTag is removed as it has been superseded by the SocketPriorityTag.</li>
-<li>The Ipv4L3Protocol::DefaultTos attribute is removed.</li>
-<li>The attributes YansWifiPhy::Frequency, YansWifiPhy::ChannelNumber, and 
-    YansWifiPhy::ChannelWidth, and the related accessor methods, were moved to 
+<li>The <b>QosTag</b> is removed as it has been superseded by the SocketPriorityTag.</li>
+<li>The <b>Ipv4L3Protocol::DefaultTos</b> attribute is removed.</li>
+<li>The attributes <b>YansWifiPhy::Frequency, YansWifiPhy::ChannelNumber, and 
+    YansWifiPhy::ChannelWidth</b>, and the related accessor methods, were moved to 
     base class WifiPhy.  YansWifiPhy::GetChannelFrequencyMhz() was deleted.  
     A new method WifiPhy::DefineChannelNumber () was added to allow users to 
     define relationships between channel number, standard, frequency, and channel width.
@@ -117,34 +124,25 @@ us a note on ns-developers mailing list.</p>
     was an abstract base class supporting the WifiSpectrumValue5MhzFactory spectrum 
     model.  It now contains various static member methods supporting the creation 
     of power spectral densities with the granularity of a Wi-Fi OFDM subcarrier 
-    bandwidth.  The class WifiSpectrumValue5MhzFactory and its API remain but 
+    bandwidth.  The class <b>WifiSpectrumValue5MhzFactory</b> and its API remain but 
     it is not subclassed.
  </li>
-<li>A new method InterferenceHelper::AddForeignSignal has been introduced to 
+<li>A new Wifi method <b>InterferenceHelper::AddForeignSignal</b> has been introduced to 
     support use of the SpectrumWifiPhy (so that non-Wi-Fi signals may be handled 
     as noise power).
 </li>
-<li>A new method InterferenceHelper::AddForeignSignal has been introduced to 
-    support use of the SpectrumWifiPhy (so that non-Wi-Fi signals may be handled 
-    as noise power).
-</li>
-<li>AODV now honors the TTL in RREQ/RREP and it uses a method compliant with 
-    <a href="http://www.ietf.org/rfc/rfc3561.txt">RFC 3561</a>. I.e., the
-    node search radius is increased progressively. This could increase slightly 
-    the node search time, but it also decreases the network congestion.
-</li>
-<li>A new attribute Dcf::TxopLimit has been introduced to add support for 802.11e TXOP.
+<li>A new Wifi attribute <b>Dcf::TxopLimit</b> has been introduced to add support for 802.11e TXOP.
 </li>
 </ul>
 <h2>Changes to build system:</h2>
 <ul>
-  <li> A new waf build option, --check-config, was added to allow users to print the current configuration summary, as appears at the end of ./waf configure.  See bug 2459 for discussion.</li>
-  <li> The configure summary is now sorted, to make it easier to check the status of optional features.</li>
+  <li> A new waf build option, <tt>--check-config</tt>, was added to allow users to print the current configuration summary, as appears at the end of ./waf configure.  See bug 2459 for discussion.</li>
+  <li> The <tt>configure</tt> summary is now sorted, to make it easier to check the status of optional features.</li>
 </ul>
 <h2>Changed behavior:</h2>
 This section is for behavioral changes to the models that were not due to a bug fix.
 <ul>
-  <li>(wifi) The relationship between channel number, frequency, channel width, 
+  <li>The relationship between Wi-Fi channel number, frequency, channel width, 
       and Wi-Fi standard has been revised (see bug 2412).  Previously, ChannelNumber 
       and Frequency were attributes of class YansWifiPhy, and the frequency was 
       defined as the start of the band.  Now, Frequency has been redefined to be 
@@ -153,6 +151,11 @@ This section is for behavioral changes to the models that were not due to a bug 
       number and Wi-Fi standard are used as attributes to configure frequency 
       and channel width.  The wifi module documentation discusses this change 
       and the new behavior.
+  </li>
+  <li>AODV now honors the TTL in RREQ/RREP and it uses a method 
+      compliant with <a href="http://www.ietf.org/rfc/rfc3561.txt">RFC 3561</a>.      The node search radius is increased progressively. This could increase 
+      slightly the node search time, but it also decreases the network 
+      congestion.
   </li>
 </ul>
 

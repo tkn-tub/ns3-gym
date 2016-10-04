@@ -26,6 +26,14 @@ requirements:
 - Python 3.4 or later (Python 3 series)
 
 This release has been tested on the following platforms:
+- Ubuntu 16.04 (64 bit) with g++-5.4.0
+- Ubuntu 14.04 (64 bit) with g++-4.8.2
+- Fedora Core 24 (64 bit) with g++-6.1.1
+- Fedora Core 22 (32 bit) with g++-5.3.1
+- Fedora Core 21 (64 bit) with g++-4.9.2
+- CentOS/RHEL 6.7 (64-bit) with g++-4.9.2
+- OS X El Capitan 10.11.4 with Xcode 7.3.1 and Apple LLVM version 7.3.0
+- OS X El Capitan 10.11.3 with Xcode 7.2.1 and Apple LLVM version 7.0.2
 
 New user-visible features
 -------------------------
@@ -35,7 +43,7 @@ New user-visible features
 - (build system) C++11 features are now supported in the codebase
 - (core) DES Metrics support; see the API docs for class DesMetrics.
 - (internet) Added TCP Vegas, Scalable, Veno, Illinois, Bic, YeAH, and
-  H-TCP  congestion control algorithms
+  H-TCP congestion control algorithms
 - (internet) Add a TOS field to the InetSocketAddress class
 - (network) SocketAddressTag has been removed from the codebase.
   Users can use RecvFrom (for UDP) or GetPeerName (for TCP) instead.
@@ -46,7 +54,8 @@ New user-visible features
   this model matches the API and behavior of YansWifiPhy closely, but
   over time is expected to support a different PHY abstraction and error
   models.
-- (wifi) Support 802.11e TXOP
+- (wifi) IEEE 802.11e TXOP limits are now enforced for different access
+  categories when a QoS MAC is configured.
 
 Bugs fixed
 ----------
