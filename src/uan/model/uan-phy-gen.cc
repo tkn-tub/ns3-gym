@@ -611,6 +611,9 @@ UanPhyGen::RegisterListener (UanPhyListener *listener)
 void
 UanPhyGen::StartRxPacket (Ptr<Packet> pkt, double rxPowerDb, UanTxMode txMode, UanPdp pdp)
 {
+  rxPowerDb += GetRxGainDb ();
+  NS_LOG_DEBUG ("PHY " << m_mac->GetAddress () << ": rx power after RX gain = " << rxPowerDb << " dB re uPa");
+
   switch (m_state)
     {
     case DISABLED:
