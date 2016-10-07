@@ -24,6 +24,8 @@ New user-visible features
 
 Bugs fixed
 ----------
+- Bug 2007 - uan: Remove deprecation on SetRxThresholdDb
+- Bug 2492 - uan: Make use of RxGain attribute in UanPhyGen class
 
 Known issues
 ------------
