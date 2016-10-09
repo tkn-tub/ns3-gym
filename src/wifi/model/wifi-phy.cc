@@ -265,13 +265,13 @@ WifiPhy::GetTypeId (void)
                                         &WifiPhy::SetGuardInterval),
                    MakeBooleanChecker ())
     .AddAttribute ("LdpcEnabled",
-                   "Whether or not LDPC is enabled.",
+                   "Whether or not LDPC is enabled (not supported yet!).",
                    BooleanValue (false),
                    MakeBooleanAccessor (&WifiPhy::GetLdpc,
                                         &WifiPhy::SetLdpc),
                    MakeBooleanChecker ())
     .AddAttribute ("STBCEnabled",
-                   "Whether or not STBC is enabled.",
+                   "Whether or not STBC is enabled (not supported yet!).",
                    BooleanValue (false),
                    MakeBooleanAccessor (&WifiPhy::GetStbc,
                                         &WifiPhy::SetStbc),

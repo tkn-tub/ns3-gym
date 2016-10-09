@@ -191,7 +191,7 @@ WifiMac::GetTypeId (void)
                    MakeTimeAccessor (&WifiMac::SetPifs,
                                      &WifiMac::GetPifs),
                    MakeTimeChecker ())
-    .AddAttribute ("Rifs", "The value of the RIFS constant.",
+    .AddAttribute ("Rifs", "The value of the RIFS constant (not supported yet!).",
                    TimeValue (GetDefaultRifs ()),
                    MakeTimeAccessor (&WifiMac::SetRifs,
                                      &WifiMac::GetRifs),
