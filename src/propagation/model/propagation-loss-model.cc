@@ -511,7 +511,7 @@ LogDistancePropagationLossModel::DoCalcRxPower (double txPowerDbm,
   double distance = a->GetDistanceFrom (b);
   if (distance <= m_referenceDistance)
     {
-      return txPowerDbm;
+      return txPowerDbm - m_referenceLoss;
     }
   /**
    * The formula is:
