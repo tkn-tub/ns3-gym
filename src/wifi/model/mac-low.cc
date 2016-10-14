@@ -1424,13 +1424,7 @@ MacLow::CalculateOverallTxTime (Ptr<const Packet> packet,
   if (params.MustSendRts ())
     {
       WifiTxVector rtsTxVector = GetRtsTxVector (packet, hdr);
-      //standard says RTS packets can have GF format sec 9.6.0e.1 page 110 bullet b 2
-      if (m_phy->GetGreenfield () && m_stationManager->GetGreenfieldSupported (m_currentHdr.GetAddr1 ()))
-        {
-          preamble = WIFI_PREAMBLE_HT_GF;
-        }
-      //Otherwise, RTS should always use non-HT PPDU (HT PPDU cases not supported yet)
-      else if (m_stationManager->GetShortPreambleEnabled ())
+      if (m_stationManager->GetShortPreambleEnabled ())
         {
           preamble = WIFI_PREAMBLE_SHORT;
         }
@@ -1447,7 +1441,7 @@ MacLow::CalculateOverallTxTime (Ptr<const Packet> packet,
     {
       preamble = WIFI_PREAMBLE_VHT;
     }
-  else if (m_phy->GetGreenfield () && m_stationManager->GetGreenfieldSupported (m_currentHdr.GetAddr1 ()))
+  else if (dataTxVector.GetMode ().GetModulationClass () == WIFI_MOD_CLASS_HT && m_phy->GetGreenfield () && m_stationManager->GetGreenfieldSupported (m_currentHdr.GetAddr1 ()))
     {
       preamble = WIFI_PREAMBLE_HT_GF;
     }
@@ -1487,7 +1481,7 @@ MacLow::CalculateTransmissionTime (Ptr<const Packet> packet,
         {
           preamble = WIFI_PREAMBLE_VHT;
         }
-      if (m_phy->GetGreenfield () && m_stationManager->GetGreenfieldSupported (m_currentHdr.GetAddr1 ()))
+      if (dataTxVector.GetMode ().GetModulationClass () == WIFI_MOD_CLASS_HT && m_phy->GetGreenfield () && m_stationManager->GetGreenfieldSupported (m_currentHdr.GetAddr1 ()))
         {
           preamble = WIFI_PREAMBLE_HT_GF;
         }
@@ -1842,13 +1836,7 @@ MacLow::SendRtsForPacket (void)
   Time duration = Seconds (0);
 
   WifiPreamble preamble;
-  //standard says RTS packets can have GF format sec 9.6.0e.1 page 110 bullet b 2
-  if (m_phy->GetGreenfield () && m_stationManager->GetGreenfieldSupported (m_currentHdr.GetAddr1 ()))
-    {
-      preamble = WIFI_PREAMBLE_HT_GF;
-    }
-  //Otherwise, RTS should always use non-HT PPDU (HT PPDU cases not supported yet)
-  else if (m_stationManager->GetShortPreambleEnabled ())
+  if (m_stationManager->GetShortPreambleEnabled ())
     {
       preamble = WIFI_PREAMBLE_SHORT;
     }
@@ -1921,7 +1909,7 @@ MacLow::StartDataTxTimers (WifiTxVector dataTxVector)
       preamble = WIFI_PREAMBLE_VHT;
     }
   //Since it is data then it can have format = GF
-  else if (m_phy->GetGreenfield () && m_stationManager->GetGreenfieldSupported (m_currentHdr.GetAddr1 ()))
+  else if (dataTxVector.GetMode ().GetModulationClass () == WIFI_MOD_CLASS_HT && m_phy->GetGreenfield () && m_stationManager->GetGreenfieldSupported (m_currentHdr.GetAddr1 ()))
     {
       preamble = WIFI_PREAMBLE_HT_GF;
     }
@@ -2007,7 +1995,7 @@ MacLow::SendDataPacket (void)
     {
       preamble = WIFI_PREAMBLE_VHT;
     }
-  else if (m_phy->GetGreenfield () && m_stationManager->GetGreenfieldSupported (m_currentHdr.GetAddr1 ()))
+  else if (m_currentTxVector.GetMode ().GetModulationClass () == WIFI_MOD_CLASS_HT && m_phy->GetGreenfield () && m_stationManager->GetGreenfieldSupported (m_currentHdr.GetAddr1 ()))
     {
       //In the future has to make sure that receiver has greenfield enabled
       preamble = WIFI_PREAMBLE_HT_GF;
@@ -2254,7 +2242,7 @@ MacLow::SendDataAfterCts (Mac48Address source, Time duration)
     {
       preamble = WIFI_PREAMBLE_VHT;
     }
-  else if (m_phy->GetGreenfield () && m_stationManager->GetGreenfieldSupported (m_currentHdr.GetAddr1 ()))
+  else if (m_currentTxVector.GetMode ().GetModulationClass () == WIFI_MOD_CLASS_HT && m_phy->GetGreenfield () && m_stationManager->GetGreenfieldSupported (m_currentHdr.GetAddr1 ()))
     {
       //In the future has to make sure that receiver has greenfield enabled
       preamble = WIFI_PREAMBLE_HT_GF;
@@ -2925,7 +2913,7 @@ MacLow::StopMpduAggregation (Ptr<const Packet> peekedPacket, WifiMacHeader peeke
       preamble = WIFI_PREAMBLE_VHT;
       aPPDUMaxTime = MicroSeconds (5484);
     }
-  else if (m_phy->GetGreenfield () && m_stationManager->GetGreenfieldSupported (m_currentHdr.GetAddr1 ()))
+  else if (m_currentTxVector.GetMode ().GetModulationClass () == WIFI_MOD_CLASS_HT && m_phy->GetGreenfield () && m_stationManager->GetGreenfieldSupported (m_currentHdr.GetAddr1 ()))
     {
       preamble = WIFI_PREAMBLE_HT_GF;
     }

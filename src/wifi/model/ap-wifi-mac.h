@@ -116,6 +116,11 @@ public:
    * stations support short PLCP preamble.
    */
   bool GetShortPreambleEnabled (void) const;
+  /**
+   * Determine whether non-Greenfield HT stations are present or not.
+   */
+  bool IsNonGfHtStasPresent (void) const;
+
 
   /**
    * Assign a fixed random variable stream number to the random variables

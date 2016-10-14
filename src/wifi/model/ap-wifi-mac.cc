@@ -239,6 +239,19 @@ ApWifiMac::GetShortPreambleEnabled (void) const
   return false;
 }
 
+bool
+ApWifiMac::IsNonGfHtStasPresent (void) const
+{
+  for (std::list<Mac48Address>::const_iterator i = m_staList.begin (); i != m_staList.end (); i++)
+  {
+    if (m_stationManager->GetGreenfieldSupported (*i) == false)
+      {
+        return true;
+      }
+  }
+  return false;
+}
+
 void
 ApWifiMac::ForwardDown (Ptr<const Packet> packet, Mac48Address from,
                         Mac48Address to)
@@ -486,6 +499,7 @@ ApWifiMac::GetHtOperations (void) const
       if (!m_nonHtStations.empty ())
         {
           operations.SetHtProtection (MIXED_MODE_PROTECTION);
+          operations.SetNonGfHtStasPresent (IsNonGfHtStasPresent ());
         }
       else
         {
