@@ -43,8 +43,8 @@ typedef std::vector<double> Values;
  * R\hspace*{-0.9ex}\rule{0.15ex}{1.5ex}\hspace*{0.9ex}}^N \rightarrow {\sf R\hspace*{-0.9ex}\rule{0.15ex}{1.5ex}\hspace*{0.9ex}}  \f$
  *
  * Every instance of this class represent a particular function \f$ g(F) \f$.
- * The domain of the function space, i.e., \f$ F \f$, is implemented by SetOfFreq.
- * The codomain of the function space is implemented by SetOfValues
+ * The domain of the function space, i.e., \f$ F \f$, is implemented by Bands.
+ * The codomain of the function space is implemented by Values.
  *
  * To every possible value of \f$ F\f$ corresponds a different Function
  * Space.
@@ -117,14 +117,14 @@ public:
   /**
    *
    *
-   * @return a const iterator pointing to the beginning of the embedded SpectrumModel
+   * @return a const iterator pointing to the beginning of the embedded Bands
    */
   Bands::const_iterator ConstBandsBegin () const;
 
   /**
    *
    *
-   * @return a const iterator pointing to the end of the embedded SpectrumModel
+   * @return a const iterator pointing to the end of the embedded Bands
    */
   Bands::const_iterator ConstBandsEnd () const;
 
@@ -132,28 +132,28 @@ public:
   /**
    *
    *
-   * @return a const iterator pointing to the beginning of the embedded SpectrumModel
+   * @return a const iterator pointing to the beginning of the embedded Values
    */
   Values::const_iterator ConstValuesBegin () const;
 
   /**
    *
    *
-   * @return a const iterator pointing to the end of the embedded SpectrumModel
+   * @return a const iterator pointing to the end of the embedded Values
    */
   Values::const_iterator ConstValuesEnd () const;
 
   /**
    *
    *
-   * @return an iterator pointing to the beginning of the embedded SpectrumModel
+   * @return an iterator pointing to the beginning of the embedded Values
    */
   Values::iterator ValuesBegin ();
 
   /**
    *
    *
-   * @return an iterator pointing to the end of the embedded SpectrumModel
+   * @return an iterator pointing to the end of the embedded Values
    */
   Values::iterator ValuesEnd ();
 
