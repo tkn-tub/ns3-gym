@@ -62,8 +62,14 @@ us a note on ns-developers mailing list.</p>
 <ul>
 </ul>
 <h2>Changed behavior:</h2>
-This section is for behavioral changes to the models that were not due to a bug fix.
 <ul>
+<li><b>MultiModelSpectrumChannel</b> does not call StartRx for receivers that
+    operate on subbands orthogonal to transmitter subbands. Models that depend
+    on receiving signals with zero power spectral density from orthogonal bands
+    may change their behavior.
+    See <a href=https://www.nsnam.org/bugzilla/show_bug.cgi?id=2467>bug 2467</a>
+    for discussion.
+</li>
 </ul>
 
 <hr>
