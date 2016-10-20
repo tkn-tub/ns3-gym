@@ -345,7 +345,7 @@ private:
   Ptr<LteUePowerControl> m_powerControl;
 
   /// Wideband Periodic CQI. 2, 5, 10, 16, 20, 32, 40, 64, 80 or 160 ms.
-  Time m_p10CqiPeriocity;
+  Time m_p10CqiPeriodicity;
   Time m_p10CqiLast;
 
   /**
@@ -353,7 +353,7 @@ private:
    * Grant.
    * \note Defines a periodicity for academic studies.
    */
-  Time m_a30CqiPeriocity;
+  Time m_a30CqiPeriodicity;
   Time m_a30CqiLast;
 
   LteUePhySapProvider* m_uePhySapProvider;
