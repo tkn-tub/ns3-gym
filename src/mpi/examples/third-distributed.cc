@@ -28,8 +28,7 @@
 // Default Network Topology
 //
 // (same as third.cc from tutorial)
-// Distributed simulation, split along the p2p link
-// Number of wifi or csma nodes can be increased up to 250
+// Distributed simulation, split across the p2p link
 //                          |
 //                 Rank 0   |   Rank 1
 // -------------------------|----------------------------
@@ -64,12 +63,12 @@ main (int argc, char *argv[])
 
   cmd.Parse (argc,argv);
 
-  // Check for valid number of csma or wifi nodes
-  // 250 should be enough, otherwise IP addresses 
-  // soon become an issue
-  if (nWifi > 250 || nCsma > 250)
+  // The underlying restriction of 18 is due to the grid position
+  // allocator's configuration; the grid layout will exceed the
+  // bounding box if more than 18 nodes are provided.
+  if (nWifi > 18)
     {
-      std::cout << "Too many wifi or csma nodes, no more than 250 each." << std::endl;
+      std::cout << "nWifi should be 18 or less; otherwise grid layout exceeds the bounding box" << std::endl;
       return 1;
     }
 
@@ -119,8 +118,9 @@ main (int argc, char *argv[])
   uint32_t systemCsma = systemCount - 1;
   
   NodeContainer p2pNodes;
-  Ptr<Node> p2pNode1 = CreateObject<Node> (systemWifi); // Create node with rank 0
-  Ptr<Node> p2pNode2 = CreateObject<Node> (systemCsma); // Create node with rank 1
+  // Create each end of the P2P link on a separate system (rank)
+  Ptr<Node> p2pNode1 = CreateObject<Node> (systemWifi);
+  Ptr<Node> p2pNode2 = CreateObject<Node> (systemCsma);
   p2pNodes.Add (p2pNode1);
   p2pNodes.Add (p2pNode2);
 
@@ -133,7 +133,8 @@ main (int argc, char *argv[])
 
   NodeContainer csmaNodes;
   csmaNodes.Add (p2pNodes.Get (1));
-  csmaNodes.Create (nCsma, systemCsma);  // Create csma nodes with rank 1
+  // Create the csma nodes on one system (rank)
+  csmaNodes.Create (nCsma, systemCsma);
 
   CsmaHelper csma;
   csma.SetChannelAttribute ("DataRate", StringValue ("100Mbps"));
@@ -143,7 +144,8 @@ main (int argc, char *argv[])
   csmaDevices = csma.Install (csmaNodes);
 
   NodeContainer wifiStaNodes;
-  wifiStaNodes.Create (nWifi, systemWifi); // Create wifi nodes with rank 0
+  // Create the wifi nodes on the other system (rank)
+  wifiStaNodes.Create (nWifi, systemWifi);
   NodeContainer wifiApNode = p2pNodes.Get (0);
 
   YansWifiChannelHelper channel = YansWifiChannelHelper::Default ();
@@ -243,17 +245,17 @@ main (int argc, char *argv[])
       // will be empty for rank0, since these nodes are placed on 
       // on rank 1.  All ethernet traffic will take place on rank 1.
       // Similar differences are seen in the p2p and wireless pcaps.
-      if (systemId == systemWifi)
-        {
-          pointToPoint.EnablePcapAll ("third-distributed-wifi");
-          phy.EnablePcap ("third-distributed-wifi", apDevices.Get (0));
-          csma.EnablePcap ("third-distributed-wifi", csmaDevices.Get (0), true);
-        }
-      else // systemCsma
+      if (systemId == systemCsma)
         {
           pointToPoint.EnablePcapAll ("third-distributed-csma");
           phy.EnablePcap ("third-distributed-csma", apDevices.Get (0));
           csma.EnablePcap ("third-distributed-csma", csmaDevices.Get (0), true);
+        }
+      else // systemWifi
+        {
+          pointToPoint.EnablePcapAll ("third-distributed-wifi");
+          phy.EnablePcap ("third-distributed-wifi", apDevices.Get (0));
+          csma.EnablePcap ("third-distributed-wifi", csmaDevices.Get (0), true);
         }
     }
 
