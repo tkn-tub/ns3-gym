@@ -348,23 +348,6 @@ SpectrumWifiPhy::SetReceiveErrorCallback (RxErrorCallback callback)
 }
 
 void
-SpectrumWifiPhy::SwitchMaybeToCcaBusy (void)
-{
-  NS_LOG_FUNCTION (this);
-  //We are here because we have received the first bit of a packet and we are
-  //not going to be able to synchronize on it
-  //In this model, CCA becomes busy when the aggregation of all signals as
-  //tracked by the InterferenceHelper class is higher than the CcaBusyThreshold
-
-  Time delayUntilCcaEnd = m_interference.GetEnergyDuration (DbmToW (GetCcaMode1Threshold ()));
-  if (!delayUntilCcaEnd.IsZero ())
-    {
-      NS_LOG_DEBUG ("Calling SwitchMaybeToCcaBusy for " << delayUntilCcaEnd.As (Time::S));
-      m_state->SwitchMaybeToCcaBusy (delayUntilCcaEnd);
-    }
-}
-
-void
 SpectrumWifiPhy::StartRx (Ptr<SpectrumSignalParameters> rxParams)
 {
   NS_LOG_FUNCTION (this << rxParams);

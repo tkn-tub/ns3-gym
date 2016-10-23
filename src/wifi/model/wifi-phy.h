@@ -1580,6 +1580,14 @@ protected:
    */
   double GetPowerDbm (uint8_t power) const;
   
+  /**
+   * Check if Phy state should move to CCA busy state based on current
+   * state of interference tracker.  In this model, CCA becomes busy when
+   * the aggregation of all signals as tracked by the InterferenceHelper
+   * class is higher than the CcaMode1Threshold
+   */
+  void SwitchMaybeToCcaBusy (void);
+  
   InterferenceHelper m_interference;   //!< Pointer to InterferenceHelper
   Ptr<UniformRandomVariable> m_random; //!< Provides uniform random variables.
   Ptr<WifiPhyStateHelper> m_state;     //!< Pointer to WifiPhyStateHelper

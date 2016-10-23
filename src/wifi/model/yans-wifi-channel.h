@@ -37,15 +37,6 @@ class NetDevice;
 class PropagationLossModel;
 class PropagationDelayModel;
 
-struct Parameters
-{
-  double rxPowerDbm;
-  enum mpduType type;
-  Time duration;
-  WifiTxVector txVector;
-  WifiPreamble preamble;
-};
-
 /**
  * \brief A Yans wifi channel
  * \ingroup wifi
@@ -90,9 +81,6 @@ public:
    * \param sender the device from which the packet is originating.
    * \param packet the packet to send
    * \param txPowerDbm the tx power associated to the packet
-   * \param txVector the TXVECTOR associated to the packet
-   * \param preamble the preamble associated to the packet
-   * \param mpdutype the type of the MPDU as defined in WifiPhy::mpduType.
    * \param duration the transmission duration associated to the packet
    *
    * This method should not be invoked by normal users. It is
@@ -100,8 +88,7 @@ public:
    * delivers packets only between PHYs with the same m_channelNumber,
    * e.g. PHYs that are operating on the same channel.
    */
-  void Send (Ptr<YansWifiPhy> sender, Ptr<const Packet> packet, double txPowerDbm,
-             WifiTxVector txVector, WifiPreamble preamble, enum mpduType mpdutype, Time duration) const;
+  void Send (Ptr<YansWifiPhy> sender, Ptr<const Packet> packet, double txPowerDbm, Time duration) const;
 
   /**
    * Assign a fixed random variable stream number to the random variables
@@ -128,11 +115,10 @@ private:
    *
    * \param i index of the corresponding YansWifiPhy in the PHY list
    * \param packet the packet being sent
-   * \param atts a vector containing the received power in dBm and the packet type
-   * \param txVector the TXVECTOR of the packet
-   * \param preamble the type of preamble being used to send the packet
+   * \param txPowerDbm the tx power associated to the packet being sent
+   * \param duration the transmission duration associated to the packet being sent
    */
-  void Receive (uint32_t i, Ptr<Packet> packet, struct Parameters parameters) const;
+  void Receive (uint32_t i, Ptr<Packet> packet, double txPowerDbm, Time duration) const;
 
   PhyList m_phyList;                   //!< List of YansWifiPhys connected to this YansWifiChannel
   Ptr<PropagationLossModel> m_loss;    //!< Propagation loss model

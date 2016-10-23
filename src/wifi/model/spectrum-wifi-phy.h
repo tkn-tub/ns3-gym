@@ -191,14 +191,6 @@ private:
   void EndReceive (Ptr<Packet> packet, enum WifiPreamble preamble, enum mpduType mpdutype, Ptr<InterferenceHelper::Event> event);
 
   /**
-   * Check if Phy state should move to CCA busy state based on current
-   * state of interference tracker.  In this model, CCA becomes busy when
-   * the aggregation of all signals as tracked by the InterferenceHelper
-   * class is higher than the CcaMode1Threshold
-   */
-  void SwitchMaybeToCcaBusy (void);
-
-  /**
    * \param centerFrequency center frequency (MHz)
    * \param channelWidth channel width (MHz) of the channel
    * \param txPowerW power in W to spread across the bands

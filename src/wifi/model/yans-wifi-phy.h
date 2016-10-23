@@ -64,16 +64,10 @@ public:
    *
    * \param packet the arriving packet
    * \param rxPowerDbm the receive power in dBm
-   * \param txVector the TXVECTOR of the arriving packet
-   * \param preamble the preamble of the arriving packet
-   * \param mpdutype the type of the MPDU as defined in WifiPhy::mpduType.
    * \param rxDuration the duration needed for the reception of the packet
    */
   void StartReceivePreambleAndHeader (Ptr<Packet> packet,
                                       double rxPowerDbm,
-                                      WifiTxVector txVector,
-                                      WifiPreamble preamble,
-                                      enum mpduType mpdutype,
                                       Time rxDuration);
   /**
    * Starting receiving the payload of a packet (i.e. the first bit of the packet has arrived).

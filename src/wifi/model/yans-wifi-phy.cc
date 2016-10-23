@@ -29,6 +29,7 @@
 #include "ns3/log.h"
 #include "ns3/double.h"
 #include "ampdu-tag.h"
+#include "wifi-phy-tag.h"
 #include <cmath>
 
 namespace ns3 {
@@ -257,20 +258,30 @@ YansWifiPhy::SetReceiveErrorCallback (RxErrorCallback callback)
 }
 
 void
-YansWifiPhy::StartReceivePreambleAndHeader (Ptr<Packet> packet,
-                                            double rxPowerDbm,
-                                            WifiTxVector txVector,
-                                            enum WifiPreamble preamble,
-                                            enum mpduType mpdutype,
-                                            Time rxDuration)
+YansWifiPhy::StartReceivePreambleAndHeader (Ptr<Packet> packet, double rxPowerDbm, Time rxDuration)
 {
   //This function should be later split to check separately whether plcp preamble and plcp header can be successfully received.
   //Note: plcp preamble reception is not yet modeled.
-  NS_LOG_FUNCTION (this << packet << rxPowerDbm << txVector.GetMode () << preamble << (uint32_t)mpdutype);
+  NS_LOG_FUNCTION (this << packet << rxPowerDbm << rxDuration);
   AmpduTag ampduTag;
   rxPowerDbm += GetRxGain ();
   double rxPowerW = DbmToW (rxPowerDbm);
   Time endRx = Simulator::Now () + rxDuration;
+  
+  WifiPhyTag tag;
+  packet->RemovePacketTag (tag);
+  WifiTxVector txVector = tag.GetWifiTxVector ();
+  if (txVector.GetNss () > GetNumberOfReceiveAntennas ())
+    {
+      /* failure. */
+      NotifyRxDrop (packet);
+      NS_LOG_INFO ("Reception ends in failure because less RX antennas than number of spatial streams");
+      SwitchMaybeToCcaBusy ();
+      return;
+    }
+
+  enum WifiPreamble preamble = tag.GetWifiPreamble ();
+  enum mpduType mpdutype = tag.GetMpduType ();
   Time preambleAndHeaderDuration = CalculatePlcpPreambleAndHeaderDuration (txVector, preamble);
 
   Ptr<InterferenceHelper::Event> event;
@@ -509,7 +520,13 @@ YansWifiPhy::SendPacket (Ptr<const Packet> packet, WifiTxVector txVector, WifiPr
   aMpdu.mpduRefNumber = m_txMpduReferenceNumber;
   NotifyMonitorSniffTx (packet, (uint16_t)GetFrequency (), GetChannelNumber (), dataRate500KbpsUnits, preamble, txVector, aMpdu);
   m_state->SwitchToTx (txDuration, packet, GetPowerDbm (txVector.GetTxPowerLevel ()), txVector, preamble);
-  m_channel->Send (this, packet, GetPowerDbm (txVector.GetTxPowerLevel ()) + GetTxGain (), txVector, preamble, mpdutype, txDuration);
+  
+  Ptr<Packet> newPacket = packet->Copy (); // obtain non-const Packet
+  WifiPhyTag oldtag;
+  newPacket->RemovePacketTag (oldtag);
+  WifiPhyTag tag (txVector, preamble, mpdutype);
+  newPacket->AddPacketTag (tag);
+  m_channel->Send (this, newPacket, GetPowerDbm (txVector.GetTxPowerLevel ()) + GetTxGain (), txDuration);
 }
 
 void
