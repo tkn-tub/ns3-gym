@@ -29,6 +29,7 @@ Bugs fixed
 - Bug 2492 - uan: Make use of RxGain attribute in UanPhyGen class
 - Bug 2511 - HT Greenfield is not working
 - Bug 2521 - Include ipv6-option.h in wscript
+- Bug 2529 - Missing trace when Block ACK timeout is triggered or when missing MPDUs are announced by a Block ACK response
 
 Known issues
 ------------
