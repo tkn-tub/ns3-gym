@@ -26,6 +26,7 @@ Bugs fixed
 ----------
 - Bug 2007 - uan: Remove deprecation on SetRxThresholdDb
 - Bug 2450 - LogDistancePropagationLossModel is not continuous
+- Bug 2477 - DCF manager assert
 - Bug 2492 - uan: Make use of RxGain attribute in UanPhyGen class
 - Bug 2511 - HT Greenfield is not working
 - Bug 2521 - Include ipv6-option.h in wscript

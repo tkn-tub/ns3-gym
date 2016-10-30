@@ -845,7 +845,7 @@ void
 MacLow::ReceiveError (Ptr<Packet> packet, double rxSnr)
 {
   NS_LOG_FUNCTION (this << packet << rxSnr);
-  NS_LOG_DEBUG ("rx failed ");
+  NS_LOG_DEBUG ("rx failed");
   if (m_txParams.MustWaitFastAck ())
     {
       NS_ASSERT (m_fastAckFailedTimeoutEvent.IsExpired ());
@@ -1681,9 +1681,9 @@ MacLow::ForwardDown (Ptr<const Packet> packet, const WifiMacHeader* hdr,
           
           if (delay == Seconds (0))
             {
+              NS_LOG_DEBUG ("Sending MPDU as part of A-MPDU");
               if (!vhtSingleMpdu)
                 {
-                  NS_LOG_DEBUG ("Sending MPDU as part of A-MPDU");
                   mpdutype = MPDU_IN_AGGREGATE;
                 }
               else
@@ -2698,23 +2698,30 @@ MacLow::SendBlockAckResponse (const CtrlBAckResponseHeader* blockAck, Mac48Addre
 void
 MacLow::SendBlockAckAfterAmpdu (uint8_t tid, Mac48Address originator, Time duration, WifiTxVector blockAckReqTxVector, double rxSnr)
 {
-  NS_LOG_FUNCTION (this << (uint16_t) tid << originator << duration.As (Time::S) << blockAckReqTxVector << rxSnr);
-  CtrlBAckResponseHeader blockAck;
-  uint16_t seqNumber = 0;
-  BlockAckCachesI i = m_bAckCaches.find (std::make_pair (originator, tid));
-  NS_ASSERT (i != m_bAckCaches.end ());
-  seqNumber = (*i).second.GetWinStart ();
+  if (!m_phy->IsStateTx () && !m_phy->IsStateRx ())
+    {
+      NS_LOG_FUNCTION (this << (uint16_t) tid << originator << duration.As (Time::S) << blockAckReqTxVector << rxSnr);
+      CtrlBAckResponseHeader blockAck;
+      uint16_t seqNumber = 0;
+      BlockAckCachesI i = m_bAckCaches.find (std::make_pair (originator, tid));
+      NS_ASSERT (i != m_bAckCaches.end ());
+      seqNumber = (*i).second.GetWinStart ();
 
-  bool immediate = true;
-  AgreementsI it = m_bAckAgreements.find (std::make_pair (originator, tid));
-  blockAck.SetStartingSequence (seqNumber);
-  blockAck.SetTidInfo (tid);
-  immediate = (*it).second.first.IsImmediateBlockAck ();
-  blockAck.SetType (COMPRESSED_BLOCK_ACK);
-  NS_LOG_DEBUG ("Got Implicit block Ack Req with seq " << seqNumber);
-  (*i).second.FillBlockAckBitmap (&blockAck);
+      bool immediate = true;
+      AgreementsI it = m_bAckAgreements.find (std::make_pair (originator, tid));
+      blockAck.SetStartingSequence (seqNumber);
+      blockAck.SetTidInfo (tid);
+      immediate = (*it).second.first.IsImmediateBlockAck ();
+      blockAck.SetType (COMPRESSED_BLOCK_ACK);
+      NS_LOG_DEBUG ("Got Implicit block Ack Req with seq " << seqNumber);
+      (*i).second.FillBlockAckBitmap (&blockAck);
 
-  SendBlockAckResponse (&blockAck, originator, immediate, duration, blockAckReqTxVector.GetMode (), rxSnr);
+      SendBlockAckResponse (&blockAck, originator, immediate, duration, blockAckReqTxVector.GetMode (), rxSnr);
+    }
+  else
+    {
+      NS_LOG_DEBUG ("Skip block ack response!");
+    }
 }
 
 void
