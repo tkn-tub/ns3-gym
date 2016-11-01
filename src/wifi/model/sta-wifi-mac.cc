@@ -547,7 +547,7 @@ StaWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
                   SetSlot (MicroSeconds (20));
                 }
             }
-            if (m_qosSupported)
+          if (m_qosSupported)
             {
               EdcaParameterSet edcaParameters = beacon.GetEdcaParameterSet ();
               //The value of the TXOP Limit field is specified as an unsigned integer, with the least significant octet transmitted first, in units of 32 μs.
@@ -555,6 +555,16 @@ StaWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
               SetEdcaParameters (AC_BK, edcaParameters.GetBkCWmin(), edcaParameters.GetBkCWmax(), edcaParameters.GetBkAifsn(), 32 * MicroSeconds (edcaParameters.GetBkTXOPLimit()));
               SetEdcaParameters (AC_VI, edcaParameters.GetViCWmin(), edcaParameters.GetViCWmax(), edcaParameters.GetViAifsn(), 32 * MicroSeconds (edcaParameters.GetViTXOPLimit()));
               SetEdcaParameters (AC_VO, edcaParameters.GetVoCWmin(), edcaParameters.GetVoCWmax(), edcaParameters.GetVoAifsn(), 32 * MicroSeconds (edcaParameters.GetVoTXOPLimit()));
+            }
+          if (m_htSupported)
+            {
+              HtCapabilities htcapabilities = beacon.GetHtCapabilities ();
+              m_stationManager->AddStationHtCapabilities (hdr->GetAddr2 (), htcapabilities);
+            }
+          if (m_vhtSupported)
+            {
+              VhtCapabilities vhtcapabilities = beacon.GetVhtCapabilities ();
+              m_stationManager->AddStationVhtCapabilities (hdr->GetAddr2 (), vhtcapabilities);
             }
           m_stationManager->SetShortPreambleEnabled (isShortPreambleEnabled);
           m_stationManager->SetShortSlotTimeEnabled (capabilities.IsShortSlotTime ());

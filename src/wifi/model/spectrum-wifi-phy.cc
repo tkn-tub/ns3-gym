@@ -398,8 +398,15 @@ SpectrumWifiPhy::StartRx (Ptr<SpectrumSignalParameters> rxParams)
       NS_FATAL_ERROR ("Received Wi-Fi Spectrum Signal with no WifiPhyTag");
       return;
     }
-
+    
   WifiTxVector txVector = tag.GetWifiTxVector ();
+
+  if (txVector.GetMode ().GetModulationClass () == WIFI_MOD_CLASS_HT
+      && (txVector.GetNss () != (1 + (txVector.GetMode ().GetMcsValue () / 8))))
+    {
+      NS_FATAL_ERROR ("MCS value does not match NSS value: MCS = " << (uint16_t)txVector.GetMode ().GetMcsValue () << ", NSS = " << (uint16_t)txVector.GetNss ());
+    }
+
   if (txVector.GetNss () > GetNumberOfReceiveAntennas ())
     {
       /* failure. */

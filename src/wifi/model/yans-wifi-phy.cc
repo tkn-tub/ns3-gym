@@ -271,6 +271,13 @@ YansWifiPhy::StartReceivePreambleAndHeader (Ptr<Packet> packet, double rxPowerDb
   WifiPhyTag tag;
   packet->RemovePacketTag (tag);
   WifiTxVector txVector = tag.GetWifiTxVector ();
+  
+  if (txVector.GetMode ().GetModulationClass () == WIFI_MOD_CLASS_HT
+      && (txVector.GetNss () != (1 + (txVector.GetMode ().GetMcsValue () / 8))))
+    {
+      NS_FATAL_ERROR ("MCS value does not match NSS value: MCS = " << (uint16_t)txVector.GetMode ().GetMcsValue () << ", NSS = " << (uint16_t)txVector.GetNss ());
+    }
+  
   if (txVector.GetNss () > GetNumberOfReceiveAntennas ())
     {
       /* failure. */
@@ -483,6 +490,11 @@ YansWifiPhy::SendPacket (Ptr<const Packet> packet, WifiTxVector txVector, WifiPr
    *  - we are idle
    */
   NS_ASSERT (!m_state->IsStateTx () && !m_state->IsStateSwitching ());
+  
+  if (txVector.GetNss () > GetNumberOfTransmitAntennas ())
+    {
+      NS_FATAL_ERROR ("Less TX antennas than number of spatial streams!");
+    }
 
   if (m_state->IsStateSleep ())
     {
