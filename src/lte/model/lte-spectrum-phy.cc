@@ -1062,7 +1062,7 @@ LteSpectrumPhy::EndRxData ()
                         if (itHarq==harqDlInfoMap.end ())
                           {
                             DlInfoListElement_s harqDlInfo;
-                            harqDlInfo.m_harqStatus.resize (m_layersNum, DlInfoListElement_s::NACK);
+                            harqDlInfo.m_harqStatus.resize (m_layersNum, DlInfoListElement_s::ACK);
                             harqDlInfo.m_rnti = tbId.m_rnti;
                             harqDlInfo.m_harqProcessId = (*itTb).second.harqProcessId;
                             if ((*itTb).second.corrupt)
