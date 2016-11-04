@@ -127,7 +127,7 @@ public:
   void IncrementRreqCnt () { m_reqCount++; }
   void SetUnidirectional (bool u) { m_blackListState = u; }
   bool IsUnidirectional () const { return m_blackListState; }
-  void SetBalcklistTimeout (Time t) { m_blackListTimeout = t; }
+  void SetBlacklistTimeout (Time t) { m_blackListTimeout = t; }
   Time GetBlacklistTimeout () const { return m_blackListTimeout; }
   /// RREP_ACK timer
   Timer m_ackTimer;

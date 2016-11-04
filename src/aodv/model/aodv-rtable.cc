@@ -429,7 +429,7 @@ RoutingTable::MarkLinkAsUnidirectional (Ipv4Address neighbor, Time blacklistTime
       return false;
     }
   i->second.SetUnidirectional (true);
-  i->second.SetBalcklistTimeout (blacklistTimeout);
+  i->second.SetBlacklistTimeout (blacklistTimeout);
   i->second.SetRreqCnt (0);
   NS_LOG_LOGIC ("Set link to " << neighbor << " to unidirectional");
   return true;

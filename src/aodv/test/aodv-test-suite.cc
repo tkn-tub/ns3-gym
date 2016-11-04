@@ -430,7 +430,7 @@ struct AodvRtableEntryTest : public TestCase
     NS_TEST_EXPECT_MSG_EQ (rt.GetNextHop (), Ipv4Address ("1.1.1.1"), "trivial");
     rt.SetUnidirectional (true);
     NS_TEST_EXPECT_MSG_EQ (rt.IsUnidirectional (), true, "trivial");
-    rt.SetBalcklistTimeout (Seconds (7));
+    rt.SetBlacklistTimeout (Seconds (7));
     NS_TEST_EXPECT_MSG_EQ (rt.GetBlacklistTimeout (), Seconds (7), "trivial");
     rt.SetRreqCnt (2);
     NS_TEST_EXPECT_MSG_EQ (rt.GetRreqCnt (), 2, "trivial");
