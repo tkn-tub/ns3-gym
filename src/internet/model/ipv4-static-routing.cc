@@ -690,14 +690,14 @@ Ipv4StaticRouting::SetIpv4 (Ptr<Ipv4> ipv4)
 }
 // Formatted like output of "route -n" command
 void
-Ipv4StaticRouting::PrintRoutingTable (Ptr<OutputStreamWrapper> stream) const
+Ipv4StaticRouting::PrintRoutingTable (Ptr<OutputStreamWrapper> stream, Time::Unit unit) const
 {
   NS_LOG_FUNCTION (this << stream);
   std::ostream* os = stream->GetStream ();
 
   *os << "Node: " << m_ipv4->GetObject<Node> ()->GetId ()
-      << ", Time: " << Now().As (Time::S)
-      << ", Local time: " << GetObject<Node> ()->GetLocalTime ().As (Time::S)
+      << ", Time: " << Now().As (unit)
+      << ", Local time: " << GetObject<Node> ()->GetLocalTime ().As (unit)
       << ", Ipv4StaticRouting table" << std::endl;
 
   if (GetNRoutes () > 0)

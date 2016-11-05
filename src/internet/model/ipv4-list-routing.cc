@@ -70,18 +70,18 @@ Ipv4ListRouting::DoDispose (void)
 }
 
 void
-Ipv4ListRouting::PrintRoutingTable (Ptr<OutputStreamWrapper> stream) const
+Ipv4ListRouting::PrintRoutingTable (Ptr<OutputStreamWrapper> stream, Time::Unit unit) const
 {
   NS_LOG_FUNCTION (this << stream);
   *stream->GetStream () << "Node: " << m_ipv4->GetObject<Node> ()->GetId () 
-                        << ", Time: " << Now().As (Time::S)
-                        << ", Local time: " << GetObject<Node> ()->GetLocalTime ().As (Time::S)
+                        << ", Time: " << Now().As (unit)
+                        << ", Local time: " << GetObject<Node> ()->GetLocalTime ().As (unit)
                         << ", Ipv4ListRouting table" << std::endl;
   for (Ipv4RoutingProtocolList::const_iterator i = m_routingProtocols.begin ();
        i != m_routingProtocols.end (); i++)
     {
       *stream->GetStream () << "  Priority: " << (*i).first << " Protocol: " << (*i).second->GetInstanceTypeId () << std::endl;
-      (*i).second->PrintRoutingTable (stream);
+      (*i).second->PrintRoutingTable (stream, unit);
     }
 }
 

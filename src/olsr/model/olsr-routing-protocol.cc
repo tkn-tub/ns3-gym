@@ -251,13 +251,13 @@ void RoutingProtocol::DoDispose ()
 }
 
 void
-RoutingProtocol::PrintRoutingTable (Ptr<OutputStreamWrapper> stream) const
+RoutingProtocol::PrintRoutingTable (Ptr<OutputStreamWrapper> stream, Time::Unit unit) const
 {
   std::ostream* os = stream->GetStream ();
 
   *os << "Node: " << m_ipv4->GetObject<Node> ()->GetId ()
-      << ", Time: " << Now ().As (Time::S)
-      << ", Local time: " << GetObject<Node> ()->GetLocalTime ().As (Time::S)
+      << ", Time: " << Now ().As (unit)
+      << ", Local time: " << GetObject<Node> ()->GetLocalTime ().As (unit)
       << ", OLSR Routing table" << std::endl;
 
   *os << "Destination\t\tNextHop\t\tInterface\tDistance\n";
@@ -283,7 +283,7 @@ RoutingProtocol::PrintRoutingTable (Ptr<OutputStreamWrapper> stream) const
   if (m_hnaRoutingTable->GetNRoutes () > 0)
     {
       *os << " HNA Routing Table: ";
-      m_hnaRoutingTable->PrintRoutingTable (stream);
+      m_hnaRoutingTable->PrintRoutingTable (stream, unit);
     }
   else
     {

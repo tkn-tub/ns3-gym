@@ -210,19 +210,19 @@ void Ipv6ListRouting::NotifyRemoveRoute (Ipv6Address dst, Ipv6Prefix mask, Ipv6A
 }
 
 void
-Ipv6ListRouting::PrintRoutingTable (Ptr<OutputStreamWrapper> stream) const
+Ipv6ListRouting::PrintRoutingTable (Ptr<OutputStreamWrapper> stream, Time::Unit unit) const
 {
   NS_LOG_FUNCTION (this);
 
   *stream->GetStream () << "Node: " << m_ipv6->GetObject<Node> ()->GetId ()
-                        << ", Time: " << Now().As (Time::S)
-                        << ", Local time: " << GetObject<Node> ()->GetLocalTime ().As (Time::S)
+                        << ", Time: " << Now().As (unit)
+                        << ", Local time: " << GetObject<Node> ()->GetLocalTime ().As (unit)
                         << ", Ipv6ListRouting table" << std::endl;
   for (Ipv6RoutingProtocolList::const_iterator i = m_routingProtocols.begin ();
        i != m_routingProtocols.end (); i++)
     {
       *stream->GetStream () << "  Priority: " << (*i).first << " Protocol: " << (*i).second->GetInstanceTypeId () << std::endl;
-      (*i).second->PrintRoutingTable (stream);
+      (*i).second->PrintRoutingTable (stream, unit);
     }
 }
 

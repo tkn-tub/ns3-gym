@@ -38,7 +38,7 @@ public:
                          GetZero ()) {}
   void NotifyRemoveRoute (Ipv6Address dst, Ipv6Prefix mask, Ipv6Address nextHop, uint32_t interface, Ipv6Address prefixToUse) {}
   void SetIpv6 (Ptr<Ipv6> ipv6) {}
-  virtual void PrintRoutingTable (Ptr<OutputStreamWrapper> stream) const {};
+  virtual void PrintRoutingTable (Ptr<OutputStreamWrapper> stream, Time::Unit unit) const {};
 };
 
 class Ipv6BRouting : public Ipv6RoutingProtocol {
@@ -55,7 +55,7 @@ public:
                          GetZero ()) {}
   void NotifyRemoveRoute (Ipv6Address dst, Ipv6Prefix mask, Ipv6Address nextHop, uint32_t interface, Ipv6Address prefixToUse) {}
   void SetIpv6 (Ptr<Ipv6> ipv6) {}
-  virtual void PrintRoutingTable (Ptr<OutputStreamWrapper> stream) const {};
+  virtual void PrintRoutingTable (Ptr<OutputStreamWrapper> stream, Time::Unit unit) const {};
 };
 
 class Ipv6ListRoutingNegativeTestCase : public TestCase

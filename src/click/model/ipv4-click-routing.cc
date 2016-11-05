@@ -557,7 +557,7 @@ Ipv4ClickRouting::RouteInput  (Ptr<const Packet> p, const Ipv4Header &header,
 }
 
 void
-Ipv4ClickRouting::PrintRoutingTable (Ptr<OutputStreamWrapper> stream) const
+Ipv4ClickRouting::PrintRoutingTable (Ptr<OutputStreamWrapper> stream, Time::Unit unit) const
 {
 }
 

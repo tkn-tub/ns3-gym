@@ -199,7 +199,7 @@ public:
   virtual void NotifyRemoveRoute (Ipv6Address dst, Ipv6Prefix mask, Ipv6Address nextHop,
                                   uint32_t interface, Ipv6Address prefixToUse = Ipv6Address::GetZero ());
   virtual void SetIpv6 (Ptr<Ipv6> ipv6);
-  virtual void PrintRoutingTable (Ptr<OutputStreamWrapper> stream) const;
+  virtual void PrintRoutingTable (Ptr<OutputStreamWrapper> stream, Time::Unit unit = Time::S) const;
 
   /**
    * Split Horizon strategy type. See \RFC{2080}.

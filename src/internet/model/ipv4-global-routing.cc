@@ -398,14 +398,14 @@ Ipv4GlobalRouting::DoDispose (void)
 
 // Formatted like output of "route -n" command
 void
-Ipv4GlobalRouting::PrintRoutingTable (Ptr<OutputStreamWrapper> stream) const
+Ipv4GlobalRouting::PrintRoutingTable (Ptr<OutputStreamWrapper> stream, Time::Unit unit) const
 {
   NS_LOG_FUNCTION (this << stream);
   std::ostream* os = stream->GetStream ();
 
   *os << "Node: " << m_ipv4->GetObject<Node> ()->GetId ()
-      << ", Time: " << Now().As (Time::S)
-      << ", Local time: " << GetObject<Node> ()->GetLocalTime ().As (Time::S)
+      << ", Time: " << Now().As (unit)
+      << ", Local time: " << GetObject<Node> ()->GetLocalTime ().As (unit)
       << ", Ipv4GlobalRouting table" << std::endl;
 
   if (GetNRoutes () > 0)
