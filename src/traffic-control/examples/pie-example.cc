@@ -309,7 +309,7 @@ main (int argc, char *argv[])
   if (st.forcedDrop != 0)
     {
       std::cout << "There should be no drops due to queue full." << std::endl;
-      exit (-1);
+      exit (1);
     }
 
   if (flowMonitor)
