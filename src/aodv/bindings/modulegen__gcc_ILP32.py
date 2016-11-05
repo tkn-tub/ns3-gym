@@ -947,6 +947,11 @@ def register_Ns3BufferIterator_methods(root_module, cls):
                    'uint32_t', 
                    [], 
                    is_const=True)
+    ## buffer.h (module 'network'): uint32_t ns3::Buffer::Iterator::GetRemainingSize() const [member function]
+    cls.add_method('GetRemainingSize', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
     ## buffer.h (module 'network'): uint32_t ns3::Buffer::Iterator::GetSize() const [member function]
     cls.add_method('GetSize', 
                    'uint32_t', 
@@ -8966,8 +8971,8 @@ def register_Ns3AodvRoutingTableEntry_methods(root_module, cls):
                    'void', 
                    [param('ns3::Ptr< ns3::OutputStreamWrapper >', 'stream')], 
                    is_const=True)
-    ## aodv-rtable.h (module 'aodv'): void ns3::aodv::RoutingTableEntry::SetBalcklistTimeout(ns3::Time t) [member function]
-    cls.add_method('SetBalcklistTimeout', 
+    ## aodv-rtable.h (module 'aodv'): void ns3::aodv::RoutingTableEntry::SetBlacklistTimeout(ns3::Time t) [member function]
+    cls.add_method('SetBlacklistTimeout', 
                    'void', 
                    [param('ns3::Time', 't')])
     ## aodv-rtable.h (module 'aodv'): void ns3::aodv::RoutingTableEntry::SetFlag(ns3::aodv::RouteFlags flag) [member function]
