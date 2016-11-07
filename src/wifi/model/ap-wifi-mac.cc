@@ -496,14 +496,14 @@ ApWifiMac::GetHtOperations (void) const
   operations.SetHtSupported (1);
   if (m_htSupported)
     {
-      if (!m_nonHtStations.empty ())
+      operations.SetNonGfHtStasPresent (IsNonGfHtStasPresent ());
+      if (m_nonHtStations.empty ())
         {
-          operations.SetHtProtection (MIXED_MODE_PROTECTION);
-          operations.SetNonGfHtStasPresent (IsNonGfHtStasPresent ());
+          operations.SetHtProtection (NO_PROTECTION);
         }
       else
         {
-          operations.SetHtProtection (NO_PROTECTION);
+          operations.SetHtProtection (MIXED_MODE_PROTECTION);
         }
     }
   return operations;
