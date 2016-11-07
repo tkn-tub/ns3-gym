@@ -1481,7 +1481,7 @@ MacLow::CalculateTransmissionTime (Ptr<const Packet> packet,
         {
           preamble = WIFI_PREAMBLE_VHT;
         }
-      if (dataTxVector.GetMode ().GetModulationClass () == WIFI_MOD_CLASS_HT && m_phy->GetGreenfield () && m_stationManager->GetGreenfieldSupported (m_currentHdr.GetAddr1 ()))
+      else if (dataTxVector.GetMode ().GetModulationClass () == WIFI_MOD_CLASS_HT && m_phy->GetGreenfield () && m_stationManager->GetGreenfieldSupported (m_currentHdr.GetAddr1 ()))
         {
           preamble = WIFI_PREAMBLE_HT_GF;
         }
