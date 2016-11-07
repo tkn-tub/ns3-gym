@@ -3019,7 +3019,7 @@ MacLow::AggregateToAmpdu (Ptr<const Packet> packet, const WifiMacHeader hdr)
 
                   if (aggregated)
                     {
-                      NS_LOG_DEBUG ("Adding packet with Sequence number " << peekedHdr.GetSequenceNumber () << " to A-MPDU, packet size = " << newPacket->GetSize () << ", A-MPDU size = " << currentAggregatedPacket->GetSize ());
+                      NS_LOG_DEBUG ("Adding packet with Sequence number " << currentSequenceNumber << " to A-MPDU, packet size = " << newPacket->GetSize () << ", A-MPDU size = " << currentAggregatedPacket->GetSize ());
                       i++;
                       m_sentMpdus++;
                       m_aggregateQueue->Enqueue (aggPacket, peekedHdr);

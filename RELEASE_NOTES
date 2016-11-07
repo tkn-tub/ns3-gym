@@ -32,6 +32,7 @@ Bugs fixed
 - Bug 2527 - PrintRoutingTable extended to add an optional Time::Units parameter
 - Bug 2530 - Rename aodv::SetBalckListTimeout to aodv::SetBlackListTimeout
 - Bug 2541 - preamble not assigned correctly
+- Bug 2542 - dead assignment on wifi mac-low
 
 Known issues
 ------------
