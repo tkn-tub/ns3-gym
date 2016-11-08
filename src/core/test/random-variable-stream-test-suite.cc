@@ -1036,11 +1036,8 @@ RandomVariableStreamParetoTestCase::ChiSquaredTest (Ptr<ParetoRandomVariable> p)
 
   double expected[N_BINS];
 
-  // Note that this assumes that p has mean equal to 1 and shape equal
-  // to 2, which are their default values for this distribution.
-  double mean = 1.0;
   double shape = 2.0;
-  double scale = mean * (shape - 1.0) / shape;
+  double scale = 1.0;
 
   for (uint32_t i = 0; i < N_BINS; ++i)
     {
@@ -1094,15 +1091,14 @@ RandomVariableStreamParetoTestCase::DoRun (void)
 
   NS_TEST_ASSERT_MSG_LT (sum, maxStatistic, "Chi-squared statistic out of range");
 
-  double mean = 5.0;
   double shape = 2.0;
-  double scale = mean * (shape - 1.0) / shape;
+  double scale = 1.0;
   double value;
 
   // Create the RNG with the specified range.
   Ptr<ParetoRandomVariable> x = CreateObject<ParetoRandomVariable> ();
-  x->SetAttribute ("Mean", DoubleValue (mean));
   x->SetAttribute ("Shape", DoubleValue (shape));
+  x->SetAttribute ("Scale", DoubleValue (scale));
 
   // Calculate the mean of these values.
   sum = 0.0;
@@ -1170,11 +1166,8 @@ RandomVariableStreamParetoAntitheticTestCase::ChiSquaredTest (Ptr<ParetoRandomVa
 
   double expected[N_BINS];
 
-  // Note that this assumes that p has mean equal to 1 and shape equal
-  // to 2, which are their default values for this distribution.
-  double mean = 1.0;
   double shape = 2.0;
-  double scale = mean * (shape - 1.0) / shape;
+  double scale = 1.0;
 
   for (uint32_t i = 0; i < N_BINS; ++i)
     {
@@ -1232,15 +1225,14 @@ RandomVariableStreamParetoAntitheticTestCase::DoRun (void)
 
   NS_TEST_ASSERT_MSG_LT (sum, maxStatistic, "Chi-squared statistic out of range");
 
-  double mean = 5.0;
   double shape = 2.0;
-  double scale = mean * (shape - 1.0) / shape;
+  double scale = 1.0;
   double value;
 
   // Create the RNG with the specified range.
   Ptr<ParetoRandomVariable> x = CreateObject<ParetoRandomVariable> ();
-  x->SetAttribute ("Mean", DoubleValue (mean));
   x->SetAttribute ("Shape", DoubleValue (shape));
+  x->SetAttribute ("Scale", DoubleValue (scale));
 
   // Make this generate antithetic values.
   x->SetAttribute ("Antithetic", BooleanValue (true));

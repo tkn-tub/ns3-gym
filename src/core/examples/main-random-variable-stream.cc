@@ -138,25 +138,25 @@ int main (int argc, char *argv[])
     plot.AppendExtra ("set xrange [0:2]");
 
     Ptr<ParetoRandomVariable> x1 = CreateObject<ParetoRandomVariable> ();
-    x1->SetAttribute ("Mean", DoubleValue (1.0));
+    x1->SetAttribute ("Scale", DoubleValue (1.0));
     x1->SetAttribute ("Shape", DoubleValue (1.5));
 
     plot.AddDataset ( Histogramm (x1, probes, precision,
-                                  "ParetoRandomVariable m=1.0 s=1.5") );
+                                  "ParetoRandomVariable scale=1.0 shape=1.5") );
 
     Ptr<ParetoRandomVariable> x2 = CreateObject<ParetoRandomVariable> ();
-    x2->SetAttribute ("Mean", DoubleValue (1.0));
+    x2->SetAttribute ("Scale", DoubleValue (1.0));
     x2->SetAttribute ("Shape", DoubleValue (2.0));
 
     plot.AddDataset ( Histogramm (x2, probes, precision,
-                                  "ParetoRandomVariable m=1.0 s=2.0") );
+                                  "ParetoRandomVariable scale=1.0 shape=2.0") );
 
     Ptr<ParetoRandomVariable> x3 = CreateObject<ParetoRandomVariable> ();
-    x3->SetAttribute ("Mean", DoubleValue (1.0));
+    x3->SetAttribute ("Scale", DoubleValue (1.0));
     x3->SetAttribute ("Shape", DoubleValue (2.5));
 
     plot.AddDataset ( Histogramm (x3, probes, precision,
-                                  "ParetoRandomVariable m=1.0 s=2.5") );
+                                  "ParetoRandomVariable scale=1.0 shape=2.5") );
 
     gnuplots.AddPlot (plot);
   }
@@ -171,21 +171,21 @@ int main (int argc, char *argv[])
     x1->SetAttribute ("Shape", DoubleValue (1.0));
 
     plot.AddDataset ( Histogramm (x1, probes, precision,
-                                  "WeibullRandomVariable m=1.0 s=1.0") );
+                                  "WeibullRandomVariable scale=1.0 shape=1.0") );
 
     Ptr<WeibullRandomVariable> x2 = CreateObject<WeibullRandomVariable> ();
     x2->SetAttribute ("Scale", DoubleValue (1.0));
     x2->SetAttribute ("Shape", DoubleValue (2.0));
 
     plot.AddDataset ( Histogramm (x2, probes, precision,
-                                  "WeibullRandomVariable m=1.0 s=2.0") );
+                                  "WeibullRandomVariable scale=1.0 shape=2.0") );
 
     Ptr<WeibullRandomVariable> x3 = CreateObject<WeibullRandomVariable> ();
     x3->SetAttribute ("Scale", DoubleValue (1.0));
     x3->SetAttribute ("Shape", DoubleValue (3.0));
 
     plot.AddDataset ( Histogramm (x3, probes, precision,
-                                  "WeibullRandomVariable m=1.0 s=3.0") );
+                                  "WeibullRandomVariable scale=1.0 shape=3.0") );
 
     gnuplots.AddPlot (plot);
   }

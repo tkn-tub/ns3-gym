@@ -576,7 +576,7 @@ public:
   /**
    * \brief Get the next random value, as an unsigned integer from
    * the exponential distribution with the specified mean and upper bound.
-   * \param [in] mean Mean value of the unbounded exponential distributuion.
+   * \param [in] mean Mean value of the unbounded exponential distribution.
    * \param [in] bound Upper bound on values returned.
    * \return A random unsigned integer value.
    */
@@ -607,9 +607,9 @@ private:
  * The probability density function of a Pareto variable is defined
  * over the range [\f$x_m\f$,\f$+\infty\f$) as: \f$ k \frac{x_m^k}{x^{k+1}}\f$
  * where \f$x_m > 0\f$ is called the scale parameter and \f$ k > 0\f$
- * is called the pareto index or shape.
+ * is called the Pareto index or shape.
  *
- * The parameter \f$ x_m \f$ can be infered from the mean and the parameter \f$ k \f$
+ * The parameter \f$ x_m \f$ can be inferred from the mean and the parameter \f$ k \f$
  * with the equation \f$ x_m = mean \frac{k-1}{k},  k > 1\f$.
  *
  * Since Pareto distributions can theoretically return unbounded values,
@@ -619,11 +619,11 @@ private:
  *
  * Here is an example of how to use this class:
  * \code
- *   double mean = 5.0;
+ *   double scale = 5.0;
  *   double shape = 2.0;
  * 
  *   Ptr<ParetoRandomVariable> x = CreateObject<ParetoRandomVariable> ();
- *   x->SetAttribute ("Mean", DoubleValue (mean));
+ *   x->SetAttribute ("Scale", DoubleValue (scale));
  *   x->SetAttribute ("Shape", DoubleValue (shape));
  * 
  *   // The expected value for the mean of the values returned by a
@@ -632,11 +632,7 @@ private:
  *   //                   shape * scale
  *   //     E[value]  =  ---------------  ,
  *   //                     shape - 1
- *   // 
- *   // where
- *   // 
- *   //     scale  =  mean * (shape - 1.0) / shape .
- *   //
+ *
  *   double value = x->GetValue ();
  * \endcode
  */
@@ -659,7 +655,14 @@ public:
    * \brief Returns the mean parameter for the Pareto distribution returned by this RNG stream.
    * \return The mean parameter for the Pareto distribution returned by this RNG stream.
    */
+  NS_DEPRECATED
   double GetMean (void) const;
+
+  /**
+   * \brief Returns the scale parameter for the Pareto distribution returned by this RNG stream.
+   * \return The scale parameter for the Pareto distribution returned by this RNG stream.
+   */
+  double GetScale (void) const;
 
   /**
    * \brief Returns the shape parameter for the Pareto distribution returned by this RNG stream.
@@ -674,8 +677,8 @@ public:
   double GetBound (void) const;
 
   /**
-   * \brief Returns a random double from a Pareto distribution with the specified mean, shape, and upper bound.
-   * \param [in] mean Mean parameter for the Pareto distribution.
+   * \brief Returns a random double from a Pareto distribution with the specified scale, shape, and upper bound.
+   * \param [in] scale Mean parameter for the Pareto distribution.
    * \param [in] shape Shape parameter for the Pareto distribution.
    * \param [in] bound Upper bound on values returned.
    * \return A floating point random value.
@@ -688,27 +691,22 @@ public:
    *         x = \frac{scale}{u^{\frac{1}{shape}}}
    *    \f]
    *
-   * is a value that would be returned normally, where
-   *     
-   *    \f[
-   *         scale  =  mean * (shape - 1.0) / shape  .
-   *    \f]
+   * is a value that would be returned normally.
    *    
-   * Then \f$(1 - u\f$) is the distance that \f$u\f$ would be from
-   * \f$1\f$.  The value returned in the antithetic case, \f$x'\f$, is
+   * The value returned in the antithetic case, \f$x'\f$, is
    * calculated as
    *
    *    \f[
    *         x' = \frac{scale}{{(1 - u)}^{\frac{1}{shape}}} ,
    *    \f]
    *
-   * which now involves the distance \f$u\f$ is from 1 in the denonator.
+   * which now involves the distance \f$u\f$ is from 1 in the denominator.
    */
-  double GetValue (double mean, double shape, double bound);
+  double GetValue (double scale, double shape, double bound);
 
   /**
    * \brief Returns a random unsigned integer from a Pareto distribution with the specified mean, shape, and upper bound.
-   * \param [in] mean Mean parameter for the Pareto distribution.
+   * \param [in] scale Scale parameter for the Pareto distribution.
    * \param [in] shape Shape parameter for the Pareto distribution.
    * \param [in] bound Upper bound on values returned.
    * \return A random unsigned integer value.
@@ -721,23 +719,18 @@ public:
    *         x = \frac{scale}{u^{\frac{1}{shape}}}
    *    \f]
    *
-   * is a value that would be returned normally, where
-   *     
-   *    \f[
-   *         scale  =  mean * (shape - 1.0) / shape  .
-   *    \f]
-   *    
-   * Then \f$(1 - u\f$) is the distance that \f$u\f$ would be from
-   * \f$1\f$.  The value returned in the antithetic case, \f$x'\f$, is
+   * is a value that would be returned normally.
+   *
+   * The value returned in the antithetic case, \f$x'\f$, is
    * calculated as
    *
    *    \f[
    *         x' = \frac{scale}{{(1 - u)}^{\frac{1}{shape}}} ,
    *    \f]
    *
-   * which now involves the distance \f$u\f$ is from 1 in the denonator.
+   * which now involves the distance \f$u\f$ is from 1 in the denominator.
    */
-  uint32_t GetInteger (uint32_t mean, uint32_t shape, uint32_t bound);
+  uint32_t GetInteger (uint32_t scale, uint32_t shape, uint32_t bound);
 
   /**
    * \brief Returns a random double from a Pareto distribution with the current mean, shape, and upper bound.
@@ -757,15 +750,14 @@ public:
    *         scale  =  mean * (shape - 1.0) / shape  .
    *    \f]
    *    
-   * Then \f$(1 - u\f$) is the distance that \f$u\f$ would be from
-   * \f$1\f$.  The value returned in the antithetic case, \f$x'\f$, is
+   * The value returned in the antithetic case, \f$x'\f$, is
    * calculated as
    *
    *    \f[
    *         x' = \frac{scale}{{(1 - u)}^{\frac{1}{shape}}} ,
    *    \f]
    *
-   * which now involves the distance \f$u\f$ is from 1 in the denonator.
+   * which now involves the distance \f$u\f$ is from 1 in the denominator.
    *
    * Note that we have to re-implement this method here because the method is
    * overloaded above for the three-argument variant and the c++ name resolution
@@ -786,27 +778,25 @@ public:
    *         x = \frac{scale}{u^{\frac{1}{shape}}}
    *    \f]
    *
-   * is a value that would be returned normally, where
-   *     
-   *    \f[
-   *         scale  =  mean * (shape - 1.0) / shape  .
-   *    \f]
-   *    
-   * Then \f$(1 - u\f$) is the distance that \f$u\f$ would be from
-   * \f$1\f$.  The value returned in the antithetic case, \f$x'\f$, is
+   * is a value that would be returned normally.
+   *
+   * The value returned in the antithetic case, \f$x'\f$, is
    * calculated as
    *
    *    \f[
    *         x' = \frac{scale}{{(1 - u)}^{\frac{1}{shape}}} ,
    *    \f]
    *
-   * which now involves the distance \f$u\f$ is from 1 in the denonator.
+   * which now involves the distance \f$u\f$ is from 1 in the denominator.
    */
   virtual uint32_t GetInteger (void);
 
 private:
   /** The mean parameter for the Pareto distribution returned by this RNG stream. */
   double m_mean;
+
+  /** The scale parameter for the Pareto distribution returned by this RNG stream. */
+  double m_scale;
 
   /** The shape parameter for the Pareto distribution returned by this RNG stream. */
   double m_shape;

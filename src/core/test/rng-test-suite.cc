@@ -408,6 +408,7 @@ RngParetoTestCase::DoRun (void)
     {
       Ptr<ParetoRandomVariable> e = CreateObject<ParetoRandomVariable> ();
       e->SetAttribute ("Shape", DoubleValue (1.5));
+      e->SetAttribute ("Scale", DoubleValue (0.33333333));
       double result = ChiSquaredTest (e);
       sum += result;
     }
