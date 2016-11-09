@@ -500,6 +500,13 @@ ParetoRandomVariable::GetMean (void) const
 }
 
 double 
+ParetoRandomVariable::GetScale (void) const
+{
+  NS_LOG_FUNCTION (this);
+  return m_scale;
+}
+
+double
 ParetoRandomVariable::GetShape (void) const
 {
   NS_LOG_FUNCTION (this);
