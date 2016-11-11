@@ -508,7 +508,8 @@ TapBridge::CreateTap (void)
       // If the execlp successfully completes, it never returns.  If it returns it failed or the OS is
       // broken.  In either case, we bail.
       //
-      NS_FATAL_ERROR ("TapBridge::CreateTap(): Back from execlp(), errno = " << ::strerror (errno));
+      NS_FATAL_ERROR ("TapBridge::CreateTap(): Back from execlp(), status = " << status <<
+                      " errno = " << ::strerror (errno));
     }
   else
     {

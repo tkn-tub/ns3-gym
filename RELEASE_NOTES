@@ -39,6 +39,7 @@ Bugs fixed
 - Bug 2542 - dead assignment on wifi mac-low
 - Bug 2535 - memory leak in bench-simulator.cc
 - Bug 2536 - fixed dead assignment and potential memory leak in wimax
+- Bug 2538 - fixed dead assignment on tap-bridge
 
 Known issues
 ------------
