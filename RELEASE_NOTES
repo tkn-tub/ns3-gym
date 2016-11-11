@@ -38,6 +38,7 @@ Bugs fixed
 - Bug 2541 - preamble not assigned correctly
 - Bug 2542 - dead assignment on wifi mac-low
 - Bug 2535 - memory leak in bench-simulator.cc
+- Bug 2536 - fixed dead assignment and potential memory leak in wimax
 
 Known issues
 ------------

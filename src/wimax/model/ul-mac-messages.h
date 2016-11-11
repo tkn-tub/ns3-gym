@@ -264,7 +264,7 @@ public:
   OfdmUlMapIe (void);
   ~OfdmUlMapIe (void);
 
-  void SetCid (Cid cid);
+  void SetCid (const Cid &cid);
   void SetStartTime (uint16_t startTime);
   void SetSubchannelIndex (uint8_t subchannelIndex);
   void SetUiuc (uint8_t uiuc);
