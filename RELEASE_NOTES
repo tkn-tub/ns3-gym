@@ -37,6 +37,7 @@ Bugs fixed
 - Bug 2532 - Inconsistencies between 802.11n MCS and NSS value reported in TXVECTOR
 - Bug 2541 - preamble not assigned correctly
 - Bug 2542 - dead assignment on wifi mac-low
+- Bug 2535 - memory leak in bench-simulator.cc
 
 Known issues
 ------------

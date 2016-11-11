@@ -270,8 +270,7 @@ int main (int argc, char *argv[])
     }
 
   LOG ("");
-  return 0;
-
   Simulator::Destroy ();
-
+  delete bench;
+  return 0;
 }
