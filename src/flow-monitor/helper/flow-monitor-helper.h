@@ -93,7 +93,7 @@ public:
    * \param enableHistograms if true, include also the histograms in the output
    * \param enableProbes if true, include also the per-probe/flow pair statistics in the output
    */
-  void SerializeToXmlStream (std::ostream &os, int indent, bool enableHistograms, bool enableProbes);
+  void SerializeToXmlStream (std::ostream &os, uint16_t indent, bool enableHistograms, bool enableProbes);
 
   /**
    * Same as SerializeToXmlStream, but returns the output as a std::string
@@ -102,7 +102,7 @@ public:
    * \param enableProbes if true, include also the per-probe/flow pair statistics in the output
    * \return the XML output as string
    */
-  std::string SerializeToXmlString (int indent, bool enableHistograms, bool enableProbes);
+  std::string SerializeToXmlString (uint16_t indent, bool enableHistograms, bool enableProbes);
 
   /**
    * Same as SerializeToXmlStream, but writes to a file instead

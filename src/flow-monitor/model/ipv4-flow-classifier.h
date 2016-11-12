@@ -69,7 +69,7 @@ public:
   /// \returns the FiveTuple corresponding to flowId
   FiveTuple FindFlow (FlowId flowId) const;
 
-  virtual void SerializeToXmlStream (std::ostream &os, int indent) const;
+  virtual void SerializeToXmlStream (std::ostream &os, uint16_t indent) const;
 
 private:
 

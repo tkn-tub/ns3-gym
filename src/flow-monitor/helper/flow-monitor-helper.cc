@@ -146,7 +146,7 @@ FlowMonitorHelper::InstallAll ()
 }
 
 void
-FlowMonitorHelper::SerializeToXmlStream (std::ostream &os, int indent, bool enableHistograms, bool enableProbes)
+FlowMonitorHelper::SerializeToXmlStream (std::ostream &os, uint16_t indent, bool enableHistograms, bool enableProbes)
 {
   if (m_flowMonitor)
     {
@@ -155,7 +155,7 @@ FlowMonitorHelper::SerializeToXmlStream (std::ostream &os, int indent, bool enab
 }
 
 std::string
-FlowMonitorHelper::SerializeToXmlString (int indent, bool enableHistograms, bool enableProbes)
+FlowMonitorHelper::SerializeToXmlString (uint16_t indent, bool enableHistograms, bool enableProbes)
 {
   std::ostringstream os;
   if (m_flowMonitor)

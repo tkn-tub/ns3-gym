@@ -35,11 +35,12 @@ Bugs fixed
 - Bug 2529 - Missing trace when Block ACK timeout is triggered or when missing MPDUs are announced by a Block ACK response
 - Bug 2530 - Rename aodv::SetBalckListTimeout to aodv::SetBlackListTimeout
 - Bug 2532 - Inconsistencies between 802.11n MCS and NSS value reported in TXVECTOR
-- Bug 2541 - preamble not assigned correctly
-- Bug 2542 - dead assignment on wifi mac-low
 - Bug 2535 - memory leak in bench-simulator.cc
 - Bug 2536 - fixed dead assignment and potential memory leak in wimax
 - Bug 2538 - fixed dead assignment on tap-bridge
+- Bug 2541 - preamble not assigned correctly
+- Bug 2542 - dead assignment on wifi mac-low
+- Bug 2545 - Optimized build fails for flow-monitor
 
 Known issues
 ------------

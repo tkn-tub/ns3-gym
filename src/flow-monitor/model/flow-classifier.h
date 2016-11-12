@@ -69,14 +69,26 @@ public:
   /// Serializes the results to an std::ostream in XML format
   /// \param os the output stream
   /// \param indent number of spaces to use as base indentation level
-  virtual void SerializeToXmlStream (std::ostream &os, int indent) const = 0;
+  virtual void SerializeToXmlStream (std::ostream &os, uint16_t indent) const = 0;
 
 protected:
   /// Returns a new, unique Flow Identifier
   /// \returns a new FlowId
   FlowId GetNewFlowId ();
 
+  ///
+  /// \brief Add a number of spaces for indentation purposes.
+  /// \param os The stream to write to.
+  /// \param level The number of spaces to add.
+  void Indent (std::ostream &os, uint16_t level) const;
+
 };
+
+inline void
+FlowClassifier::Indent (std::ostream &os, uint16_t level) const
+{
+  for (uint16_t __xpto = 0; __xpto < level; __xpto++) os << ' ';
+}
 
 
 } // namespace ns3
