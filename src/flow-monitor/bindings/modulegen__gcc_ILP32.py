@@ -1104,14 +1104,14 @@ def register_Ns3FlowMonitorHelper_methods(root_module, cls):
     cls.add_method('GetClassifier6', 
                    'ns3::Ptr< ns3::FlowClassifier >', 
                    [])
-    ## flow-monitor-helper.h (module 'flow-monitor'): void ns3::FlowMonitorHelper::SerializeToXmlStream(std::ostream & os, int indent, bool enableHistograms, bool enableProbes) [member function]
+    ## flow-monitor-helper.h (module 'flow-monitor'): void ns3::FlowMonitorHelper::SerializeToXmlStream(std::ostream & os, uint16_t indent, bool enableHistograms, bool enableProbes) [member function]
     cls.add_method('SerializeToXmlStream', 
                    'void', 
-                   [param('std::ostream &', 'os'), param('int', 'indent'), param('bool', 'enableHistograms'), param('bool', 'enableProbes')])
-    ## flow-monitor-helper.h (module 'flow-monitor'): std::string ns3::FlowMonitorHelper::SerializeToXmlString(int indent, bool enableHistograms, bool enableProbes) [member function]
+                   [param('std::ostream &', 'os'), param('uint16_t', 'indent'), param('bool', 'enableHistograms'), param('bool', 'enableProbes')])
+    ## flow-monitor-helper.h (module 'flow-monitor'): std::string ns3::FlowMonitorHelper::SerializeToXmlString(uint16_t indent, bool enableHistograms, bool enableProbes) [member function]
     cls.add_method('SerializeToXmlString', 
                    'std::string', 
-                   [param('int', 'indent'), param('bool', 'enableHistograms'), param('bool', 'enableProbes')])
+                   [param('uint16_t', 'indent'), param('bool', 'enableHistograms'), param('bool', 'enableProbes')])
     ## flow-monitor-helper.h (module 'flow-monitor'): void ns3::FlowMonitorHelper::SerializeToXmlFile(std::string fileName, bool enableHistograms, bool enableProbes) [member function]
     cls.add_method('SerializeToXmlFile', 
                    'void', 
@@ -4519,16 +4519,21 @@ def register_Ns3EventImpl_methods(root_module, cls):
 def register_Ns3FlowClassifier_methods(root_module, cls):
     ## flow-classifier.h (module 'flow-monitor'): ns3::FlowClassifier::FlowClassifier() [constructor]
     cls.add_constructor([])
-    ## flow-classifier.h (module 'flow-monitor'): void ns3::FlowClassifier::SerializeToXmlStream(std::ostream & os, int indent) const [member function]
+    ## flow-classifier.h (module 'flow-monitor'): void ns3::FlowClassifier::SerializeToXmlStream(std::ostream & os, uint16_t indent) const [member function]
     cls.add_method('SerializeToXmlStream', 
                    'void', 
-                   [param('std::ostream &', 'os'), param('int', 'indent')], 
+                   [param('std::ostream &', 'os'), param('uint16_t', 'indent')], 
                    is_pure_virtual=True, is_const=True, is_virtual=True)
     ## flow-classifier.h (module 'flow-monitor'): ns3::FlowId ns3::FlowClassifier::GetNewFlowId() [member function]
     cls.add_method('GetNewFlowId', 
                    'ns3::FlowId', 
                    [], 
                    visibility='protected')
+    ## flow-classifier.h (module 'flow-monitor'): void ns3::FlowClassifier::Indent(std::ostream & os, uint16_t level) const [member function]
+    cls.add_method('Indent', 
+                   'void', 
+                   [param('std::ostream &', 'os'), param('uint16_t', 'level')], 
+                   is_const=True, visibility='protected')
     return
 
 def register_Ns3FlowMonitor_methods(root_module, cls):
@@ -4592,14 +4597,14 @@ def register_Ns3FlowMonitor_methods(root_module, cls):
     cls.add_method('SerializeToXmlFile', 
                    'void', 
                    [param('std::string', 'fileName'), param('bool', 'enableHistograms'), param('bool', 'enableProbes')])
-    ## flow-monitor.h (module 'flow-monitor'): void ns3::FlowMonitor::SerializeToXmlStream(std::ostream & os, int indent, bool enableHistograms, bool enableProbes) [member function]
+    ## flow-monitor.h (module 'flow-monitor'): void ns3::FlowMonitor::SerializeToXmlStream(std::ostream & os, uint16_t indent, bool enableHistograms, bool enableProbes) [member function]
     cls.add_method('SerializeToXmlStream', 
                    'void', 
-                   [param('std::ostream &', 'os'), param('int', 'indent'), param('bool', 'enableHistograms'), param('bool', 'enableProbes')])
-    ## flow-monitor.h (module 'flow-monitor'): std::string ns3::FlowMonitor::SerializeToXmlString(int indent, bool enableHistograms, bool enableProbes) [member function]
+                   [param('std::ostream &', 'os'), param('uint16_t', 'indent'), param('bool', 'enableHistograms'), param('bool', 'enableProbes')])
+    ## flow-monitor.h (module 'flow-monitor'): std::string ns3::FlowMonitor::SerializeToXmlString(uint16_t indent, bool enableHistograms, bool enableProbes) [member function]
     cls.add_method('SerializeToXmlString', 
                    'std::string', 
-                   [param('int', 'indent'), param('bool', 'enableHistograms'), param('bool', 'enableProbes')])
+                   [param('uint16_t', 'indent'), param('bool', 'enableHistograms'), param('bool', 'enableProbes')])
     ## flow-monitor.h (module 'flow-monitor'): void ns3::FlowMonitor::Start(ns3::Time const & time) [member function]
     cls.add_method('Start', 
                    'void', 
@@ -4980,10 +4985,10 @@ def register_Ns3Ipv4FlowClassifier_methods(root_module, cls):
                    'ns3::Ipv4FlowClassifier::FiveTuple', 
                    [param('ns3::FlowId', 'flowId')], 
                    is_const=True)
-    ## ipv4-flow-classifier.h (module 'flow-monitor'): void ns3::Ipv4FlowClassifier::SerializeToXmlStream(std::ostream & os, int indent) const [member function]
+    ## ipv4-flow-classifier.h (module 'flow-monitor'): void ns3::Ipv4FlowClassifier::SerializeToXmlStream(std::ostream & os, uint16_t indent) const [member function]
     cls.add_method('SerializeToXmlStream', 
                    'void', 
-                   [param('std::ostream &', 'os'), param('int', 'indent')], 
+                   [param('std::ostream &', 'os'), param('uint16_t', 'indent')], 
                    is_const=True, is_virtual=True)
     return
 
@@ -5416,10 +5421,10 @@ def register_Ns3Ipv4RoutingProtocol_methods(root_module, cls):
                    'void', 
                    [param('uint32_t', 'interface'), param('ns3::Ipv4InterfaceAddress', 'address')], 
                    is_pure_virtual=True, is_virtual=True)
-    ## ipv4-routing-protocol.h (module 'internet'): void ns3::Ipv4RoutingProtocol::PrintRoutingTable(ns3::Ptr<ns3::OutputStreamWrapper> stream) const [member function]
+    ## ipv4-routing-protocol.h (module 'internet'): void ns3::Ipv4RoutingProtocol::PrintRoutingTable(ns3::Ptr<ns3::OutputStreamWrapper> stream, ns3::Time::Unit unit=::ns3::Time::S) const [member function]
     cls.add_method('PrintRoutingTable', 
                    'void', 
-                   [param('ns3::Ptr< ns3::OutputStreamWrapper >', 'stream')], 
+                   [param('ns3::Ptr< ns3::OutputStreamWrapper >', 'stream'), param('ns3::Time::Unit', 'unit', default_value='::ns3::Time::S')], 
                    is_pure_virtual=True, is_const=True, is_virtual=True)
     ## ipv4-routing-protocol.h (module 'internet'): bool ns3::Ipv4RoutingProtocol::RouteInput(ns3::Ptr<const ns3::Packet> p, ns3::Ipv4Header const & header, ns3::Ptr<const ns3::NetDevice> idev, ns3::Callback<void,ns3::Ptr<ns3::Ipv4Route>,ns3::Ptr<const ns3::Packet>,const ns3::Ipv4Header&,ns3::empty,ns3::empty,ns3::empty,ns3::empty,ns3::empty,ns3::empty> ucb, ns3::Callback<void,ns3::Ptr<ns3::Ipv4MulticastRoute>,ns3::Ptr<const ns3::Packet>,const ns3::Ipv4Header&,ns3::empty,ns3::empty,ns3::empty,ns3::empty,ns3::empty,ns3::empty> mcb, ns3::Callback<void,ns3::Ptr<const ns3::Packet>,const ns3::Ipv4Header&,unsigned int,ns3::empty,ns3::empty,ns3::empty,ns3::empty,ns3::empty,ns3::empty> lcb, ns3::Callback<void,ns3::Ptr<const ns3::Packet>,const ns3::Ipv4Header&,ns3::Socket::SocketErrno,ns3::empty,ns3::empty,ns3::empty,ns3::empty,ns3::empty,ns3::empty> ecb) [member function]
     cls.add_method('RouteInput', 
@@ -5684,10 +5689,10 @@ def register_Ns3Ipv6FlowClassifier_methods(root_module, cls):
                    'ns3::Ipv6FlowClassifier::FiveTuple', 
                    [param('ns3::FlowId', 'flowId')], 
                    is_const=True)
-    ## ipv6-flow-classifier.h (module 'flow-monitor'): void ns3::Ipv6FlowClassifier::SerializeToXmlStream(std::ostream & os, int indent) const [member function]
+    ## ipv6-flow-classifier.h (module 'flow-monitor'): void ns3::Ipv6FlowClassifier::SerializeToXmlStream(std::ostream & os, uint16_t indent) const [member function]
     cls.add_method('SerializeToXmlStream', 
                    'void', 
-                   [param('std::ostream &', 'os'), param('int', 'indent')], 
+                   [param('std::ostream &', 'os'), param('uint16_t', 'indent')], 
                    is_const=True, is_virtual=True)
     return
 
