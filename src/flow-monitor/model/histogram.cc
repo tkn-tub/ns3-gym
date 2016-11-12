@@ -102,12 +102,16 @@ Histogram::Histogram ()
 }
 
 
-void
-Histogram::SerializeToXmlStream (std::ostream &os, int indent, std::string elementName) const
+inline static void
+Indent (std::ostream &os, uint16_t level)
 {
-#define INDENT(level) for (int __xpto = 0; __xpto < level; __xpto++) os << ' ';
+  for (uint16_t __xpto = 0; __xpto < level; __xpto++) os << ' ';
+}
 
-  INDENT (indent); os << "<" << elementName // << " binWidth=\"" << m_binWidth << "\""
+void
+Histogram::SerializeToXmlStream (std::ostream &os, uint16_t indent, std::string elementName) const
+{
+  Indent (os, indent); os << "<" << elementName // << " binWidth=\"" << m_binWidth << "\""
                       << " nBins=\"" << m_histogram.size () << "\""
                       << " >\n";
   indent += 2;
@@ -117,7 +121,7 @@ Histogram::SerializeToXmlStream (std::ostream &os, int indent, std::string eleme
     {
       if (m_histogram[index])
         {
-          INDENT (indent);
+          Indent (os, indent);
           os << "<bin"
              << " index=\"" << (index) << "\""
              << " start=\"" << (index*m_binWidth) << "\""
@@ -127,7 +131,7 @@ Histogram::SerializeToXmlStream (std::ostream &os, int indent, std::string eleme
         }
     }
 #else
-  INDENT (indent + 2);
+  Indent (os, indent + 2);
   for (uint32_t index = 0; index < m_histogram.size (); index++)
     {
       if (index > 0)
@@ -139,8 +143,7 @@ Histogram::SerializeToXmlStream (std::ostream &os, int indent, std::string eleme
   os << "\n";
 #endif
   indent -= 2;
-  INDENT (indent); os << "</" << elementName << ">\n";
-#undef INDENT
+  Indent (os, indent); os << "</" << elementName << ">\n";
 }
 
 

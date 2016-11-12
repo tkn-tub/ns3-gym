@@ -25,8 +25,6 @@
 #include <fstream>
 #include <sstream>
 
-#define INDENT(level) for (int __xpto = 0; __xpto < level; __xpto++) os << ' ';
-
 #define PERIODIC_CHECK_INTERVAL (Seconds (1))
 
 namespace ns3 {
@@ -34,14 +32,6 @@ namespace ns3 {
 NS_LOG_COMPONENT_DEFINE ("FlowMonitor");
 
 NS_OBJECT_ENSURE_REGISTERED (FlowMonitor);
-
-
-inline static void
-Indent (std::ostream &os, uint16_t level)
-{
-  for (uint16_t __xpto = 0; __xpto < level; __xpto++) os << ' ';
-}
-
 
 TypeId 
 FlowMonitor::GetTypeId (void)
@@ -405,6 +395,12 @@ void
 FlowMonitor::AddFlowClassifier (Ptr<FlowClassifier> classifier)
 {
   m_classifiers.push_back (classifier);
+}
+
+inline static void
+Indent (std::ostream &os, uint16_t level)
+{
+  for (uint16_t __xpto = 0; __xpto < level; __xpto++) os << ' ';
 }
 
 void
