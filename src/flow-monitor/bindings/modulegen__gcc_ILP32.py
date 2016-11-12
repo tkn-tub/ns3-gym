@@ -1180,10 +1180,10 @@ def register_Ns3Histogram_methods(root_module, cls):
                    'uint32_t', 
                    [], 
                    is_const=True)
-    ## histogram.h (module 'flow-monitor'): void ns3::Histogram::SerializeToXmlStream(std::ostream & os, int indent, std::string elementName) const [member function]
+    ## histogram.h (module 'flow-monitor'): void ns3::Histogram::SerializeToXmlStream(std::ostream & os, uint16_t indent, std::string elementName) const [member function]
     cls.add_method('SerializeToXmlStream', 
                    'void', 
-                   [param('std::ostream &', 'os'), param('int', 'indent'), param('std::string', 'elementName')], 
+                   [param('std::ostream &', 'os'), param('uint16_t', 'indent'), param('std::string', 'elementName')], 
                    is_const=True)
     ## histogram.h (module 'flow-monitor'): void ns3::Histogram::SetDefaultBinWidth(double binWidth) [member function]
     cls.add_method('SetDefaultBinWidth', 
@@ -4697,10 +4697,10 @@ def register_Ns3FlowProbe_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
-    ## flow-probe.h (module 'flow-monitor'): void ns3::FlowProbe::SerializeToXmlStream(std::ostream & os, int indent, uint32_t index) const [member function]
+    ## flow-probe.h (module 'flow-monitor'): void ns3::FlowProbe::SerializeToXmlStream(std::ostream & os, uint16_t indent, uint32_t index) const [member function]
     cls.add_method('SerializeToXmlStream', 
                    'void', 
-                   [param('std::ostream &', 'os'), param('int', 'indent'), param('uint32_t', 'index')], 
+                   [param('std::ostream &', 'os'), param('uint16_t', 'indent'), param('uint32_t', 'index')], 
                    is_const=True)
     ## flow-probe.h (module 'flow-monitor'): ns3::FlowProbe::FlowProbe(ns3::Ptr<ns3::FlowMonitor> flowMonitor) [constructor]
     cls.add_constructor([param('ns3::Ptr< ns3::FlowMonitor >', 'flowMonitor')], 
