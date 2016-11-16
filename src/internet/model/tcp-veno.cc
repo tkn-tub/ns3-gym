@@ -192,7 +192,7 @@ TcpVeno::IncreaseWindow (Ptr<TcpSocketState> tcb, uint32_t segmentsAcked)
       if (tcb->m_cWnd < tcb->m_ssThresh)
         { // Slow start mode. Veno employs same slow start algorithm as NewReno's.
           NS_LOG_LOGIC ("We are in slow start, behave like NewReno.");
-          segmentsAcked = TcpNewReno::SlowStart (tcb, segmentsAcked);
+          TcpNewReno::SlowStart (tcb, segmentsAcked);
         }
       else
         { // Congestion avoidance mode

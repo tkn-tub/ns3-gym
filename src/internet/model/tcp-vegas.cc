@@ -233,7 +233,7 @@ TcpVegas::IncreaseWindow (Ptr<TcpSocketState> tcb, uint32_t segmentsAcked)
             {     // Slow start mode
               NS_LOG_LOGIC ("We are in slow start and diff < m_gamma, so we "
                             "follow NewReno slow start");
-              segmentsAcked = TcpNewReno::SlowStart (tcb, segmentsAcked);
+              TcpNewReno::SlowStart (tcb, segmentsAcked);
             }
           else
             {     // Linear increase/decrease mode
@@ -274,7 +274,7 @@ TcpVegas::IncreaseWindow (Ptr<TcpSocketState> tcb, uint32_t segmentsAcked)
     }
   else if (tcb->m_cWnd < tcb->m_ssThresh)
     {
-      segmentsAcked = TcpNewReno::SlowStart (tcb, segmentsAcked);
+      TcpNewReno::SlowStart (tcb, segmentsAcked);
     }
 }
 

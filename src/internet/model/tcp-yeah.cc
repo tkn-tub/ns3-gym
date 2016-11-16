@@ -203,7 +203,7 @@ TcpYeah::IncreaseWindow (Ptr<TcpSocketState> tcb, uint32_t segmentsAcked)
   if (tcb->m_cWnd < tcb->m_ssThresh)
     {
       NS_LOG_LOGIC ("In slow start, invoke NewReno slow start.");
-      segmentsAcked = TcpNewReno::SlowStart (tcb, segmentsAcked);
+      TcpNewReno::SlowStart (tcb, segmentsAcked);
     }
   else if (!m_doingRenoNow)
     { // Fast mode

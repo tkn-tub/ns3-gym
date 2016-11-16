@@ -184,7 +184,7 @@ TcpIllinois::IncreaseWindow (Ptr<TcpSocketState> tcb, uint32_t segmentsAcked)
 
   if (tcb->m_cWnd < tcb->m_ssThresh)
     {
-      segmentsAcked = TcpNewReno::SlowStart (tcb, segmentsAcked);
+      TcpNewReno::SlowStart (tcb, segmentsAcked);
       NS_LOG_INFO ("In SlowStart, updated to cwnd " << tcb->m_cWnd <<
                    " ssthresh " << tcb->m_ssThresh);
     }

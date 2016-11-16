@@ -41,6 +41,7 @@ Bugs fixed
 - Bug 2541 - preamble not assigned correctly
 - Bug 2542 - dead assignment on wifi mac-low
 - Bug 2545 - Optimized build fails for flow-monitor
+- Bug 2547 - dead assignments on various tcp congestion controls
 
 Known issues
 ------------
