@@ -2750,6 +2750,10 @@ def register_Ns3InterferenceHelper_methods(root_module, cls):
     cls.add_method('SetNoiseFigure', 
                    'void', 
                    [param('double', 'value')])
+    ## interference-helper.h (module 'wifi'): void ns3::InterferenceHelper::SetNumberOfReceiveAntennas(uint8_t rx) [member function]
+    cls.add_method('SetNumberOfReceiveAntennas', 
+                   'void', 
+                   [param('uint8_t', 'rx')])
     return
 
 def register_Ns3InterferenceHelperSnrPer_methods(root_module, cls):
@@ -5312,8 +5316,6 @@ def register_Ns3WifiRemoteStationState_methods(root_module, cls):
     cls.add_instance_attribute('m_operationalMcsSet', 'ns3::WifiModeList', is_const=False)
     ## wifi-remote-station-manager.h (module 'wifi'): ns3::WifiRemoteStationState::m_operationalRateSet [variable]
     cls.add_instance_attribute('m_operationalRateSet', 'ns3::WifiModeList', is_const=False)
-    ## wifi-remote-station-manager.h (module 'wifi'): ns3::WifiRemoteStationState::m_rx [variable]
-    cls.add_instance_attribute('m_rx', 'uint8_t', is_const=False)
     ## wifi-remote-station-manager.h (module 'wifi'): ns3::WifiRemoteStationState::m_shortGuardInterval [variable]
     cls.add_instance_attribute('m_shortGuardInterval', 'bool', is_const=False)
     ## wifi-remote-station-manager.h (module 'wifi'): ns3::WifiRemoteStationState::m_shortPreamble [variable]
@@ -5322,6 +5324,8 @@ def register_Ns3WifiRemoteStationState_methods(root_module, cls):
     cls.add_instance_attribute('m_shortSlotTime', 'bool', is_const=False)
     ## wifi-remote-station-manager.h (module 'wifi'): ns3::WifiRemoteStationState::m_stbc [variable]
     cls.add_instance_attribute('m_stbc', 'bool', is_const=False)
+    ## wifi-remote-station-manager.h (module 'wifi'): ns3::WifiRemoteStationState::m_streams [variable]
+    cls.add_instance_attribute('m_streams', 'uint8_t', is_const=False)
     ## wifi-remote-station-manager.h (module 'wifi'): ns3::WifiRemoteStationState::m_vhtSupported [variable]
     cls.add_instance_attribute('m_vhtSupported', 'bool', is_const=False)
     return
@@ -5332,8 +5336,8 @@ def register_Ns3WifiTxVector_methods(root_module, cls):
     cls.add_constructor([param('ns3::WifiTxVector const &', 'arg0')])
     ## wifi-tx-vector.h (module 'wifi'): ns3::WifiTxVector::WifiTxVector() [constructor]
     cls.add_constructor([])
-    ## wifi-tx-vector.h (module 'wifi'): ns3::WifiTxVector::WifiTxVector(ns3::WifiMode mode, uint8_t powerLevel, uint8_t retries, bool shortGuardInterval, uint8_t nss, uint8_t ness, uint32_t channelWidth, bool aggregation, bool stbc) [constructor]
-    cls.add_constructor([param('ns3::WifiMode', 'mode'), param('uint8_t', 'powerLevel'), param('uint8_t', 'retries'), param('bool', 'shortGuardInterval'), param('uint8_t', 'nss'), param('uint8_t', 'ness'), param('uint32_t', 'channelWidth'), param('bool', 'aggregation'), param('bool', 'stbc')])
+    ## wifi-tx-vector.h (module 'wifi'): ns3::WifiTxVector::WifiTxVector(ns3::WifiMode mode, uint8_t powerLevel, uint8_t retries, bool shortGuardInterval, uint8_t nTx, uint8_t nss, uint8_t ness, uint32_t channelWidth, bool aggregation, bool stbc) [constructor]
+    cls.add_constructor([param('ns3::WifiMode', 'mode'), param('uint8_t', 'powerLevel'), param('uint8_t', 'retries'), param('bool', 'shortGuardInterval'), param('uint8_t', 'nTx'), param('uint8_t', 'nss'), param('uint8_t', 'ness'), param('uint32_t', 'channelWidth'), param('bool', 'aggregation'), param('bool', 'stbc')])
     ## wifi-tx-vector.h (module 'wifi'): uint32_t ns3::WifiTxVector::GetChannelWidth() const [member function]
     cls.add_method('GetChannelWidth', 
                    'uint32_t', 
@@ -5342,6 +5346,11 @@ def register_Ns3WifiTxVector_methods(root_module, cls):
     ## wifi-tx-vector.h (module 'wifi'): ns3::WifiMode ns3::WifiTxVector::GetMode() const [member function]
     cls.add_method('GetMode', 
                    'ns3::WifiMode', 
+                   [], 
+                   is_const=True)
+    ## wifi-tx-vector.h (module 'wifi'): uint8_t ns3::WifiTxVector::GetNTx() const [member function]
+    cls.add_method('GetNTx', 
+                   'uint8_t', 
                    [], 
                    is_const=True)
     ## wifi-tx-vector.h (module 'wifi'): uint8_t ns3::WifiTxVector::GetNess() const [member function]
@@ -5391,6 +5400,10 @@ def register_Ns3WifiTxVector_methods(root_module, cls):
     cls.add_method('SetMode', 
                    'void', 
                    [param('ns3::WifiMode', 'mode')])
+    ## wifi-tx-vector.h (module 'wifi'): void ns3::WifiTxVector::SetNTx(uint8_t nTx) [member function]
+    cls.add_method('SetNTx', 
+                   'void', 
+                   [param('uint8_t', 'nTx')])
     ## wifi-tx-vector.h (module 'wifi'): void ns3::WifiTxVector::SetNess(uint8_t ness) [member function]
     cls.add_method('SetNess', 
                    'void', 
@@ -9116,6 +9129,16 @@ def register_Ns3WifiPhy_methods(root_module, cls):
                    'bool', 
                    [], 
                    is_const=True, is_virtual=True)
+    ## wifi-phy.h (module 'wifi'): uint8_t ns3::WifiPhy::GetMaxSupportedRxSpatialStreams() const [member function]
+    cls.add_method('GetMaxSupportedRxSpatialStreams', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## wifi-phy.h (module 'wifi'): uint8_t ns3::WifiPhy::GetMaxSupportedTxSpatialStreams() const [member function]
+    cls.add_method('GetMaxSupportedTxSpatialStreams', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True, is_virtual=True)
     ## wifi-phy.h (module 'wifi'): ns3::WifiMode ns3::WifiPhy::GetMcs(uint8_t mcs) const [member function]
     cls.add_method('GetMcs', 
                    'ns3::WifiMode', 
@@ -9155,14 +9178,9 @@ def register_Ns3WifiPhy_methods(root_module, cls):
                    'uint32_t', 
                    [], 
                    is_const=True, is_virtual=True)
-    ## wifi-phy.h (module 'wifi'): uint32_t ns3::WifiPhy::GetNumberOfReceiveAntennas() const [member function]
-    cls.add_method('GetNumberOfReceiveAntennas', 
-                   'uint32_t', 
-                   [], 
-                   is_const=True, is_virtual=True)
-    ## wifi-phy.h (module 'wifi'): uint32_t ns3::WifiPhy::GetNumberOfTransmitAntennas() const [member function]
-    cls.add_method('GetNumberOfTransmitAntennas', 
-                   'uint32_t', 
+    ## wifi-phy.h (module 'wifi'): uint8_t ns3::WifiPhy::GetNumberOfAntennas() const [member function]
+    cls.add_method('GetNumberOfAntennas', 
+                   'uint8_t', 
                    [], 
                    is_const=True, is_virtual=True)
     ## wifi-phy.h (module 'wifi'): static ns3::WifiMode ns3::WifiPhy::GetOfdmRate12Mbps() [member function]
@@ -9366,16 +9384,6 @@ def register_Ns3WifiPhy_methods(root_module, cls):
     ## wifi-phy.h (module 'wifi'): std::vector<unsigned int, std::allocator<unsigned int> > ns3::WifiPhy::GetSupportedChannelWidthSet() const [member function]
     cls.add_method('GetSupportedChannelWidthSet', 
                    'std::vector< unsigned int >', 
-                   [], 
-                   is_const=True, is_virtual=True)
-    ## wifi-phy.h (module 'wifi'): uint8_t ns3::WifiPhy::GetSupportedRxSpatialStreams() const [member function]
-    cls.add_method('GetSupportedRxSpatialStreams', 
-                   'uint8_t', 
-                   [], 
-                   is_const=True, is_virtual=True)
-    ## wifi-phy.h (module 'wifi'): uint8_t ns3::WifiPhy::GetSupportedTxSpatialStreams() const [member function]
-    cls.add_method('GetSupportedTxSpatialStreams', 
-                   'uint8_t', 
                    [], 
                    is_const=True, is_virtual=True)
     ## wifi-phy.h (module 'wifi'): double ns3::WifiPhy::GetTxGain() const [member function]
@@ -9606,6 +9614,16 @@ def register_Ns3WifiPhy_methods(root_module, cls):
                    'void', 
                    [param('bool', 'ldpc')], 
                    is_virtual=True)
+    ## wifi-phy.h (module 'wifi'): void ns3::WifiPhy::SetMaxSupportedRxSpatialStreams(uint8_t streams) [member function]
+    cls.add_method('SetMaxSupportedRxSpatialStreams', 
+                   'void', 
+                   [param('uint8_t', 'streams')], 
+                   is_virtual=True)
+    ## wifi-phy.h (module 'wifi'): void ns3::WifiPhy::SetMaxSupportedTxSpatialStreams(uint8_t streams) [member function]
+    cls.add_method('SetMaxSupportedTxSpatialStreams', 
+                   'void', 
+                   [param('uint8_t', 'streams')], 
+                   is_virtual=True)
     ## wifi-phy.h (module 'wifi'): void ns3::WifiPhy::SetMobility(ns3::Ptr<ns3::MobilityModel> mobility) [member function]
     cls.add_method('SetMobility', 
                    'void', 
@@ -9614,15 +9632,10 @@ def register_Ns3WifiPhy_methods(root_module, cls):
     cls.add_method('SetNTxPower', 
                    'void', 
                    [param('uint32_t', 'n')])
-    ## wifi-phy.h (module 'wifi'): void ns3::WifiPhy::SetNumberOfReceiveAntennas(uint32_t rx) [member function]
-    cls.add_method('SetNumberOfReceiveAntennas', 
+    ## wifi-phy.h (module 'wifi'): void ns3::WifiPhy::SetNumberOfAntennas(uint8_t antennas) [member function]
+    cls.add_method('SetNumberOfAntennas', 
                    'void', 
-                   [param('uint32_t', 'rx')], 
-                   is_virtual=True)
-    ## wifi-phy.h (module 'wifi'): void ns3::WifiPhy::SetNumberOfTransmitAntennas(uint32_t tx) [member function]
-    cls.add_method('SetNumberOfTransmitAntennas', 
-                   'void', 
-                   [param('uint32_t', 'tx')], 
+                   [param('uint8_t', 'antennas')], 
                    is_virtual=True)
     ## wifi-phy.h (module 'wifi'): void ns3::WifiPhy::SetReceiveErrorCallback(ns3::Callback<void, ns3::Ptr<ns3::Packet>, double, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> callback) [member function]
     cls.add_method('SetReceiveErrorCallback', 
@@ -9944,6 +9957,10 @@ def register_Ns3WifiRemoteStationManager_methods(root_module, cls):
     cls.add_method('GetInfo', 
                    'ns3::WifiRemoteStationInfo', 
                    [param('ns3::Mac48Address', 'address')])
+    ## wifi-remote-station-manager.h (module 'wifi'): uint8_t ns3::WifiRemoteStationManager::GetMaxNumberOfTransmitStreams() [member function]
+    cls.add_method('GetMaxNumberOfTransmitStreams', 
+                   'uint8_t', 
+                   [])
     ## wifi-remote-station-manager.h (module 'wifi'): uint32_t ns3::WifiRemoteStationManager::GetMaxSlrc() const [member function]
     cls.add_method('GetMaxSlrc', 
                    'uint32_t', 
@@ -9979,9 +9996,9 @@ def register_Ns3WifiRemoteStationManager_methods(root_module, cls):
                    'ns3::WifiMode', 
                    [], 
                    is_const=True)
-    ## wifi-remote-station-manager.h (module 'wifi'): uint32_t ns3::WifiRemoteStationManager::GetNumberOfTransmitAntennas() [member function]
-    cls.add_method('GetNumberOfTransmitAntennas', 
-                   'uint32_t', 
+    ## wifi-remote-station-manager.h (module 'wifi'): uint8_t ns3::WifiRemoteStationManager::GetNumberOfAntennas() [member function]
+    cls.add_method('GetNumberOfAntennas', 
+                   'uint8_t', 
                    [])
     ## wifi-remote-station-manager.h (module 'wifi'): ns3::WifiRemoteStationManager::ProtectionMode ns3::WifiRemoteStationManager::GetProtectionMode() const [member function]
     cls.add_method('GetProtectionMode', 
@@ -10261,8 +10278,8 @@ def register_Ns3WifiRemoteStationManager_methods(root_module, cls):
                    'ns3::WifiMode', 
                    [param('ns3::WifiRemoteStation const *', 'station'), param('uint32_t', 'i')], 
                    is_const=True, visibility='protected')
-    ## wifi-remote-station-manager.h (module 'wifi'): uint8_t ns3::WifiRemoteStationManager::GetNumberOfSupportedRxAntennas(ns3::WifiRemoteStation const * station) const [member function]
-    cls.add_method('GetNumberOfSupportedRxAntennas', 
+    ## wifi-remote-station-manager.h (module 'wifi'): uint8_t ns3::WifiRemoteStationManager::GetNumberOfSupportedStreams(ns3::WifiRemoteStation const * station) const [member function]
+    cls.add_method('GetNumberOfSupportedStreams', 
                    'uint8_t', 
                    [param('ns3::WifiRemoteStation const *', 'station')], 
                    is_const=True, visibility='protected')
@@ -16372,6 +16389,11 @@ def register_Ns3ParetoRandomVariable_methods(root_module, cls):
     cls.add_method('GetMean', 
                    'double', 
                    [], 
+                   deprecated=True, is_const=True)
+    ## random-variable-stream.h (module 'core'): double ns3::ParetoRandomVariable::GetScale() const [member function]
+    cls.add_method('GetScale', 
+                   'double', 
+                   [], 
                    is_const=True)
     ## random-variable-stream.h (module 'core'): double ns3::ParetoRandomVariable::GetShape() const [member function]
     cls.add_method('GetShape', 
@@ -16383,14 +16405,14 @@ def register_Ns3ParetoRandomVariable_methods(root_module, cls):
                    'double', 
                    [], 
                    is_const=True)
-    ## random-variable-stream.h (module 'core'): double ns3::ParetoRandomVariable::GetValue(double mean, double shape, double bound) [member function]
+    ## random-variable-stream.h (module 'core'): double ns3::ParetoRandomVariable::GetValue(double scale, double shape, double bound) [member function]
     cls.add_method('GetValue', 
                    'double', 
-                   [param('double', 'mean'), param('double', 'shape'), param('double', 'bound')])
-    ## random-variable-stream.h (module 'core'): uint32_t ns3::ParetoRandomVariable::GetInteger(uint32_t mean, uint32_t shape, uint32_t bound) [member function]
+                   [param('double', 'scale'), param('double', 'shape'), param('double', 'bound')])
+    ## random-variable-stream.h (module 'core'): uint32_t ns3::ParetoRandomVariable::GetInteger(uint32_t scale, uint32_t shape, uint32_t bound) [member function]
     cls.add_method('GetInteger', 
                    'uint32_t', 
-                   [param('uint32_t', 'mean'), param('uint32_t', 'shape'), param('uint32_t', 'bound')])
+                   [param('uint32_t', 'scale'), param('uint32_t', 'shape'), param('uint32_t', 'bound')])
     ## random-variable-stream.h (module 'core'): double ns3::ParetoRandomVariable::GetValue() [member function]
     cls.add_method('GetValue', 
                    'double', 
