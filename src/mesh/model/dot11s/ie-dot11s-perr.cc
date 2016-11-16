@@ -70,8 +70,8 @@ IePerr::DeserializeInformationField (Buffer::Iterator start, uint8_t length)
   Buffer::Iterator i = start;
   i.Next (1); //TTL //Mode flags is not used now
   uint8_t numOfDest = i.ReadU8 ();
-  NS_ASSERT ((2 + 13 * numOfDest ) == length);
-  length = 0; //to avoid compiler warning in optimized builds
+  NS_ABORT_UNLESS ((2 + 13 * numOfDest ) == length);
+
   for (unsigned int j = 0; j < numOfDest; j++)
     {
       i.Next (1); // flags is not used now
