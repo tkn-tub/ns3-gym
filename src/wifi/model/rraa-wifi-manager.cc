@@ -295,7 +295,7 @@ RraaWifiManager::DoGetDataTxVector (WifiRemoteStation *st)
     {
       ResetCountersBasic (station);
     }
-  return WifiTxVector (GetSupported (station, station->m_rate), GetDefaultTxPowerLevel (), GetLongRetryCount (station), false, 1, 0, channelWidth, GetAggregation (station), false);
+  return WifiTxVector (GetSupported (station, station->m_rate), GetDefaultTxPowerLevel (), GetLongRetryCount (station), false, 1, 1, 0, channelWidth, GetAggregation (station), false);
 }
 
 WifiTxVector
@@ -311,11 +311,11 @@ RraaWifiManager::DoGetRtsTxVector (WifiRemoteStation *st)
   WifiTxVector rtsTxVector;
   if (GetUseNonErpProtection () == false)
     {
-      rtsTxVector = WifiTxVector (GetSupported (st, 0), GetDefaultTxPowerLevel (), GetShortRetryCount (st), false, 1, 0, channelWidth, GetAggregation (station), false);
+      rtsTxVector = WifiTxVector (GetSupported (st, 0), GetDefaultTxPowerLevel (), GetShortRetryCount (st), false, 1, 1, 0, channelWidth, GetAggregation (station), false);
     }
   else
     {
-      rtsTxVector = WifiTxVector (GetNonErpSupported (st, 0), GetDefaultTxPowerLevel (), GetShortRetryCount (st), false, 1, 0, channelWidth, GetAggregation (station), false);
+      rtsTxVector = WifiTxVector (GetNonErpSupported (st, 0), GetDefaultTxPowerLevel (), GetShortRetryCount (st), false, 1, 1, 0, channelWidth, GetAggregation (station), false);
     }
   return rtsTxVector;
 }

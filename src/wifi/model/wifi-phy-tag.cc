@@ -39,7 +39,7 @@ WifiPhyTag::GetInstanceTypeId (void) const
 uint32_t
 WifiPhyTag::GetSerializedSize (void) const
 {
-  return (4 + (6 * 1) + 4 + 2);
+  return (4 + (7 * 1) + 4 + 2);
 }
 
 void
@@ -49,6 +49,7 @@ WifiPhyTag::Serialize (TagBuffer i) const
   i.WriteU8 (m_wifiTxVector.GetTxPowerLevel ());
   i.WriteU8 (m_wifiTxVector.GetRetries ());
   i.WriteU8 (m_wifiTxVector.IsShortGuardInterval ());
+  i.WriteU8 (m_wifiTxVector.GetNTx ());
   i.WriteU8 (m_wifiTxVector.GetNss ());
   i.WriteU8 (m_wifiTxVector.GetNess ());
   i.WriteU8 (m_wifiTxVector.IsStbc ());
@@ -63,6 +64,7 @@ WifiPhyTag::Deserialize (TagBuffer i)
   m_wifiTxVector.SetTxPowerLevel (i.ReadU8 ());
   m_wifiTxVector.SetRetries (i.ReadU8 ());
   m_wifiTxVector.SetShortGuardInterval (i.ReadU8 ());
+  m_wifiTxVector.SetNTx (i.ReadU8 ());
   m_wifiTxVector.SetNss (i.ReadU8 ());
   m_wifiTxVector.SetNess (i.ReadU8 ());
   m_wifiTxVector.SetStbc (i.ReadU8 ());

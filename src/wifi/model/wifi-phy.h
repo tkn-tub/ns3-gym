@@ -1398,21 +1398,29 @@ public:
    */
   virtual uint32_t GetFrequency (void) const;
   /**
-   * \param tx the number of transmitters on this node.
+   * \param antennas the number of antennas on this node.
    */
-  virtual void SetNumberOfTransmitAntennas (uint32_t tx);
+  virtual void SetNumberOfAntennas (uint8_t antennas);
   /**
-   * \return the number of transmit antenna on this device
+   * \return the number of antennas on this device
    */
-  virtual uint32_t GetNumberOfTransmitAntennas (void) const;
+  virtual uint8_t GetNumberOfAntennas (void) const;
   /**
-  * \param rx the number of receivers on this node.
-  */
-  virtual void SetNumberOfReceiveAntennas (uint32_t rx);
-  /**
-   * \return the number of receivers on this node.
+   * \param streams the maximum number of supported TX spatial streams.
    */
-  virtual uint32_t GetNumberOfReceiveAntennas (void) const;
+  virtual void SetMaxSupportedTxSpatialStreams (uint8_t streams);
+  /**
+   * \return the maximum number of supported TX spatial streams
+   */
+  virtual uint8_t GetMaxSupportedTxSpatialStreams (void) const;
+  /**
+   * \param streams the maximum number of supported RX spatial streams.
+   */
+  virtual void SetMaxSupportedRxSpatialStreams (uint8_t streams);
+  /**
+   * \return the maximum number of supported RX spatial streams
+   */
+  virtual uint8_t GetMaxSupportedRxSpatialStreams (void) const;
 
   /**
    * Enable or disable short/long guard interval.
@@ -1503,14 +1511,6 @@ public:
    * \return a vector containing the supported channel widths, values in MHz
    */
   virtual std::vector<uint32_t> GetSupportedChannelWidthSet (void) const;
-  /**
-   * \return the maximum number of supported Rx spatial streams
-   */
-  virtual uint8_t GetSupportedRxSpatialStreams (void) const;
-  /**
-   * \return the maximum number of supported Tx spatial streams
-   */
-  virtual uint8_t GetSupportedTxSpatialStreams (void) const;
   /**
    * Convert from dBm to Watts.
    *
@@ -1825,15 +1825,19 @@ private:
   bool     m_guardInterval;         //!< Flag if short guard interval is used
   bool     m_shortPreamble;         //!< Flag if short PLCP preamble is supported
 
-  uint32_t m_numberOfTransmitters;     //!< Number of transmitters
-  uint32_t m_numberOfReceivers;        //!< Number of receivers
+  uint32_t m_numberOfTransmitters; //!< Number of transmitters (DEPRECATED)
+  uint32_t m_numberOfReceivers;    //!< Number of receivers (DEPRECATED)
+
+  uint32_t m_numberOfAntennas;  //!< Number of transmitters
+  uint32_t m_txSpatialStreams;  //!< Number of supported TX spatial streams
+  uint32_t m_rxSpatialStreams;  //!< Number of supported RX spatial streams
 
   typedef std::map<ChannelNumberStandardPair,FrequencyWidthPair> ChannelToFrequencyWidthMap;
   static ChannelToFrequencyWidthMap m_channelToFrequencyWidth;
 
   std::vector<uint32_t> m_supportedChannelWidthSet; //!< Supported channel width
-  uint16_t             m_channelNumber;  //!< Operating channel number
-  uint16_t             m_initialChannelNumber;  //!< Initial channel number
+  uint16_t              m_channelNumber;            //!< Operating channel number
+  uint16_t              m_initialChannelNumber;     //!< Initial channel number
 
   Time m_channelSwitchDelay;     //!< Time required to switch between channel
   uint32_t m_totalAmpduSize;     //!< Total size of the previously transmitted MPDUs in an A-MPDU, used for the computation of the number of symbols needed for the last MPDU in the A-MPDU

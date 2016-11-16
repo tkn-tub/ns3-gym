@@ -132,8 +132,9 @@ int main (int argc, char *argv[])
           // Set guard interval
           phy.Set ("ShortGuardEnabled", BooleanValue (shortGuardInterval));
           // Set MIMO capabilities
-          phy.Set ("TxAntennas", UintegerValue (nStreams));
-          phy.Set ("RxAntennas", UintegerValue (nStreams));
+          phy.Set ("Antennas", UintegerValue (nStreams));
+          phy.Set ("MaxSupportedTxSpatialStreams", UintegerValue (nStreams));
+          phy.Set ("MaxSupportedRxSpatialStreams", UintegerValue (nStreams));
 
           WifiMacHelper mac;
           WifiHelper wifi;

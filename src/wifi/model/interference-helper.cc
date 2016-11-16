@@ -135,6 +135,7 @@ InterferenceHelper::NiChange::operator < (const InterferenceHelper::NiChange& o)
 
 InterferenceHelper::InterferenceHelper ()
   : m_errorRateModel (0),
+    m_numRxAntennas (1),
     m_firstPower (0.0),
     m_rxing (false)
 {
@@ -193,6 +194,12 @@ Ptr<ErrorRateModel>
 InterferenceHelper::GetErrorRateModel (void) const
 {
   return m_errorRateModel;
+}
+
+void
+InterferenceHelper::SetNumberOfReceiveAntennas (uint8_t rx)
+{
+  m_numRxAntennas = rx;
 }
 
 Time
@@ -283,6 +290,13 @@ InterferenceHelper::CalculateChunkSuccessRate (double snir, Time duration, WifiM
     }
   uint32_t rate = mode.GetPhyRate (txVector);
   uint64_t nbits = (uint64_t)(rate * duration.GetSeconds ());
+  if (txVector.GetMode ().GetModulationClass () == WIFI_MOD_CLASS_HT || txVector.GetMode ().GetModulationClass () == WIFI_MOD_CLASS_VHT)
+    {
+      nbits /= txVector.GetNss (); //divide effective number of bits by NSS to achieve same chunk error rate as SISO for AWGN
+      double gain = (txVector.GetNTx () * m_numRxAntennas); //compute gain offered by MIMO, SIMO or MISO compared to SISO for AWGN
+      NS_LOG_DEBUG ("TX=" << (uint32_t)txVector.GetNTx () << ", RX=" << (uint32_t)m_numRxAntennas << ", SNIR improvement=+" << 10.0 * std::log10 (gain) << "dB");
+      snir *= gain;
+    }
   double csr = m_errorRateModel->GetChunkSuccessRate (mode, txVector, snir, (uint32_t)nbits);
   return csr;
 }

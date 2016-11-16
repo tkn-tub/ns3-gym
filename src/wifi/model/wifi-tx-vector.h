@@ -69,6 +69,7 @@ public:
    * \param powerLevel transmission power level
    * \param retries retries
    * \param shortGuardInterval enable or disable short guard interval
+   * \param nTx the number of TX antennas
    * \param nss the number of spatial STBC streams (NSS)
    * \param ness the number of extension spatial streams (NESS)
    * \param channelWidth the channel width in MHz
@@ -79,6 +80,7 @@ public:
                 uint8_t powerLevel,
                 uint8_t retries,
                 bool shortGuardInterval,
+                uint8_t nTx,
                 uint8_t nss,
                 uint8_t ness,
                 uint32_t channelWidth,
@@ -134,6 +136,16 @@ public:
   * \param guardinterval enable or disable short guard interval
   */
   void SetShortGuardInterval (bool guardinterval);
+  /**
+   * \returns the number of TX antennas
+   */
+  uint8_t GetNTx (void) const;
+  /**
+   * Sets the number of TX antennas
+   *
+   * \param nTx
+   */
+  void SetNTx (uint8_t nTx);
   /**
    * \returns the number of Nss
    */
@@ -192,8 +204,9 @@ private:
                                  for Click radiotap information */
   uint32_t m_channelWidth;       /**< channel width in MHz */
   bool     m_shortGuardInterval; /**< true if short GI is going to be used */
-  uint8_t  m_nss;                /**< number of streams */
-  uint8_t  m_ness;               /**< number of streams in beamforming */
+  uint8_t  m_nTx;                /**< number of TX antennas */
+  uint8_t  m_nss;                /**< number of spatial streams */
+  uint8_t  m_ness;               /**< number of spatial streams in beamforming */
   bool     m_aggregation;        /** Flag whether the PSDU contains A-MPDU. */
   bool     m_stbc;               /**< STBC used or not */
 

@@ -407,13 +407,9 @@ SpectrumWifiPhy::StartRx (Ptr<SpectrumSignalParameters> rxParams)
       NS_FATAL_ERROR ("MCS value does not match NSS value: MCS = " << (uint16_t)txVector.GetMode ().GetMcsValue () << ", NSS = " << (uint16_t)txVector.GetNss ());
     }
 
-  if (txVector.GetNss () > GetNumberOfReceiveAntennas ())
+  if (txVector.GetNss () > GetMaxSupportedRxSpatialStreams ())
     {
-      /* failure. */
-      NotifyRxDrop (packet);
-      NS_LOG_INFO ("Reception ends in failure because less RX antennas than number of spatial streams");
-      SwitchMaybeToCcaBusy ();
-      return;
+      NS_FATAL_ERROR ("Reception ends in failure because of an unsupported number of spatial streams");
     }
 
   enum WifiPreamble preamble = tag.GetWifiPreamble ();
@@ -676,6 +672,11 @@ SpectrumWifiPhy::SendPacket (Ptr<const Packet> packet, WifiTxVector txVector, Wi
    *  - we are idle
    */
   NS_ASSERT (!m_state->IsStateTx () && !m_state->IsStateSwitching ());
+  
+  if (txVector.GetNss () > GetMaxSupportedTxSpatialStreams ())
+    {
+      NS_FATAL_ERROR ("Unsupported number of spatial streams!");
+    }
 
   if (m_state->IsStateSleep ())
     {

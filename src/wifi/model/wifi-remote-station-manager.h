@@ -730,9 +730,13 @@ public:
    */
   void SetDefaultTxPowerLevel (uint8_t txPower);
   /**
-   * \return the number of transmit antennas supported by the phy layer
+   * \return the number of antennas supported by the phy layer
    */
-  uint32_t GetNumberOfTransmitAntennas (void);
+  uint8_t GetNumberOfAntennas (void);
+  /**
+   * \return the maximum number of spatial streams supported by the phy layer
+   */
+  uint8_t GetMaxNumberOfTransmitStreams (void);
 
   /**
    * TracedCallback signature for power change events.
@@ -870,13 +874,13 @@ protected:
   bool GetGreenfield (const WifiRemoteStation *station) const;
 
   /**
-   * Return the number of receive antennas the station has.
+   * Return the number of supported streams the station has.
    *
    * \param station the station being queried
    *
-   * \return the number of receive antennas the station has
+   * \return the number of supported streams the station has
    */
-  uint8_t GetNumberOfSupportedRxAntennas (const WifiRemoteStation *station) const;
+  uint8_t GetNumberOfSupportedStreams (const WifiRemoteStation *station) const;
   /**
    * \returns the number of Ness the station has.
    *
@@ -1287,7 +1291,7 @@ struct WifiRemoteStationState
 
   uint32_t m_channelWidth;    //!< Channel width (in MHz) supported by the remote station
   bool m_shortGuardInterval;  //!< Flag if short guard interval is supported by the remote station
-  uint8_t m_rx;               //!< Number of supported RX streams by the remote station
+  uint8_t m_streams;          //!< Number of supported streams by the remote station
   uint32_t m_ness;            //!< Number of streams in beamforming of the remote station
   bool m_stbc;                //!< Flag if STBC is supported by the remote station
   bool m_aggregation;         //!< Flag if MPDU aggregation is used by the remote station

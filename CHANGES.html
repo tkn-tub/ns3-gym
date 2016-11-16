@@ -69,6 +69,11 @@ us a note on ns-developers mailing list.</p>
 </ul>
 <h2>Changes to build system:</h2>
 <ul>
+<li>The attributes <b>WifiPhy::TxAntennas</b> and <b>WifiPhy::RxAntennas</b>,
+    and the related accessor methods, were replaced by <b>WifiPhy::MaxSupportedTxSpatialStreams</b>
+    and <b>WifiPhy::MaxSupportedRxSpatialStreams</b>. A new attribute <b>WifiPhy::Antennas</b>
+    was added to allow users to define the number of physical antennas on the device.
+</li>
 </ul>
 <h2>Changed behavior:</h2>
 <ul>

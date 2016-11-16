@@ -28,6 +28,7 @@ WifiTxVector::WifiTxVector ()
   : m_retries (0),
     m_channelWidth (20),
     m_shortGuardInterval (false),
+    m_nTx (1),
     m_nss (1),
     m_ness (0),
     m_aggregation (false),
@@ -37,14 +38,17 @@ WifiTxVector::WifiTxVector ()
 {
 }
 
-WifiTxVector::WifiTxVector (WifiMode mode, uint8_t powerLevel, uint8_t retries,
-                            bool shortGuardInterval, uint8_t nss, uint8_t ness,
-                            uint32_t channelWidth, bool aggregation, bool stbc)
+WifiTxVector::WifiTxVector (WifiMode mode, uint8_t powerLevel,
+                            uint8_t retries, bool shortGuardInterval,
+                            uint8_t nTx, uint8_t nss,
+                            uint8_t ness, uint32_t channelWidth,
+                            bool aggregation, bool stbc)
   : m_mode (mode),
     m_txPowerLevel (powerLevel),
     m_retries (retries),
     m_channelWidth (channelWidth),
     m_shortGuardInterval (shortGuardInterval),
+    m_nTx (nTx),
     m_nss (nss),
     m_ness (ness),
     m_aggregation (aggregation),
@@ -90,6 +94,12 @@ bool
 WifiTxVector::IsShortGuardInterval (void) const
 {
   return m_shortGuardInterval;
+}
+
+uint8_t
+WifiTxVector::GetNTx (void) const
+{
+  return m_nTx;
 }
 
 uint8_t
@@ -149,6 +159,12 @@ WifiTxVector::SetShortGuardInterval (bool guardinterval)
 }
 
 void
+WifiTxVector::SetNTx (uint8_t nTx)
+{
+  m_nTx = nTx;
+}
+
+void
 WifiTxVector::SetNss (uint8_t nss)
 {
   m_nss = nss;
@@ -179,6 +195,7 @@ std::ostream & operator << ( std::ostream &os, const WifiTxVector &v)
     " retries: " << (uint32_t)v.GetRetries () <<
     " channel width: " << v.GetChannelWidth () <<
     " Short GI: " << v.IsShortGuardInterval () <<
+    " NTx: " << (uint32_t)v.GetNTx () <<
     " Nss: " << (uint32_t)v.GetNss () <<
     " Ness: " << (uint32_t)v.GetNess () <<
     " MPDU aggregation: " << v.IsAggregation () <<

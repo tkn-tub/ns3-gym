@@ -766,10 +766,11 @@ WifiRemoteStationManager::DoGetCtsToSelfTxVector (void)
   return WifiTxVector (GetDefaultMode (),
                        GetDefaultTxPowerLevel (),
                        0,
-                       m_wifiPhy->GetChannelWidth (),
                        m_wifiPhy->GetGuardInterval (),
-                       GetNumberOfTransmitAntennas (),
-                       GetNumberOfTransmitAntennas (),
+                       GetNumberOfAntennas (),
+                       GetMaxNumberOfTransmitStreams (),
+                       0,
+                       m_wifiPhy->GetChannelWidth (),
                        false,
                        false);
 }
@@ -1467,7 +1468,7 @@ WifiRemoteStationManager::LookupState (Mac48Address address) const
   state->m_channelWidth = m_wifiPhy->GetChannelWidth ();
   state->m_shortGuardInterval = m_wifiPhy->GetGuardInterval ();
   state->m_greenfield = m_wifiPhy->GetGreenfield ();
-  state->m_rx = 1;
+  state->m_streams = 1;
   state->m_ness = 0;
   state->m_aggregation = false;
   state->m_stbc = false;
@@ -1534,7 +1535,7 @@ WifiRemoteStationManager::AddStationHtCapabilities (Mac48Address from, HtCapabil
     }
   state->m_htSupported = true;
   state->m_greenfield = htCapabilities.GetGreenfield ();
-  state->m_rx = htCapabilities.GetRxHighestSupportedAntennas ();
+  state->m_streams = htCapabilities.GetRxHighestSupportedAntennas ();
 }
 
 void
@@ -1813,9 +1814,9 @@ WifiRemoteStationManager::GetStbc (const WifiRemoteStation *station) const
 }
 
 uint8_t
-WifiRemoteStationManager::GetNumberOfSupportedRxAntennas (const WifiRemoteStation *station) const
+WifiRemoteStationManager::GetNumberOfSupportedStreams (const WifiRemoteStation *station) const
 {
-  return station->m_state->m_rx;
+  return station->m_state->m_streams;
 }
 
 uint32_t
@@ -1893,10 +1894,16 @@ WifiRemoteStationManager::SetDefaultTxPowerLevel (uint8_t txPower)
   m_defaultTxPowerLevel = txPower;
 }
 
-uint32_t
-WifiRemoteStationManager::GetNumberOfTransmitAntennas (void)
+uint8_t
+WifiRemoteStationManager::GetNumberOfAntennas (void)
 {
-  return m_wifiPhy->GetNumberOfTransmitAntennas ();
+  return m_wifiPhy->GetNumberOfAntennas ();
+}
+
+uint8_t
+WifiRemoteStationManager::GetMaxNumberOfTransmitStreams (void)
+{
+  return m_wifiPhy->GetMaxSupportedTxSpatialStreams ();
 }
 
 WifiRemoteStationInfo::WifiRemoteStationInfo ()

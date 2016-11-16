@@ -157,6 +157,13 @@ private:
    * \return Error rate model
    */
   Ptr<ErrorRateModel> GetErrorRateModel (void) const;
+  /**
+   * Set the number of RX antennas in the receiver corresponding to this
+   * interference helper.
+   *
+   * \param the number of RX antennas
+   */
+  void SetNumberOfReceiveAntennas (uint8_t rx);
 
   /**
    * \param energyW the minimum energy (W) requested
@@ -330,6 +337,7 @@ private:
 
   double m_noiseFigure; /**< noise figure (linear) */
   Ptr<ErrorRateModel> m_errorRateModel;
+  uint8_t m_numRxAntennas; /**< the number of RX antennas in the corresponding receiver */
   /// Experimental: needed for energy duration calculation
   NiChanges m_niChanges;
   double m_firstPower;

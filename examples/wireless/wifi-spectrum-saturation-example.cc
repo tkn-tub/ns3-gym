@@ -166,29 +166,33 @@ int main (int argc, char *argv[])
           else if (i > 31 && i <= 39)
             {
               phy.Set ("ShortGuardEnabled", BooleanValue (false));
-              phy.Set ("RxAntennas", UintegerValue (2));
-              phy.Set ("TxAntennas", UintegerValue (2));
+              phy.Set ("Antennas", UintegerValue (2));
+              phy.Set ("MaxSupportedTxSpatialStreams", UintegerValue (2));
+              phy.Set ("MaxSupportedRxSpatialStreams", UintegerValue (2));
               channelWidth = 20;
             }
           else if (i > 39 && i <= 47)
             {
               phy.Set ("ShortGuardEnabled", BooleanValue (true));
-              phy.Set ("RxAntennas", UintegerValue (2));
-              phy.Set ("TxAntennas", UintegerValue (2));
+              phy.Set ("Antennas", UintegerValue (2));
+              phy.Set ("MaxSupportedTxSpatialStreams", UintegerValue (2));
+              phy.Set ("MaxSupportedRxSpatialStreams", UintegerValue (2));
               channelWidth = 20;
             }
           else if (i > 47 && i <= 55)
             {
               phy.Set ("ShortGuardEnabled", BooleanValue (false));
-              phy.Set ("RxAntennas", UintegerValue (2));
-              phy.Set ("TxAntennas", UintegerValue (2));
+              phy.Set ("Antennas", UintegerValue (2));
+              phy.Set ("MaxSupportedTxSpatialStreams", UintegerValue (2));
+              phy.Set ("MaxSupportedRxSpatialStreams", UintegerValue (2));
               channelWidth = 40;
             }
           else if (i > 55 && i <= 63)
             {
               phy.Set ("ShortGuardEnabled", BooleanValue (true));
-              phy.Set ("RxAntennas", UintegerValue (2));
-              phy.Set ("TxAntennas", UintegerValue (2));
+              phy.Set ("Antennas", UintegerValue (2));
+              phy.Set ("MaxSupportedTxSpatialStreams", UintegerValue (2));
+              phy.Set ("MaxSupportedRxSpatialStreams", UintegerValue (2));
               channelWidth = 40;
             }
         }
@@ -236,29 +240,33 @@ int main (int argc, char *argv[])
           else if (i > 31 && i <= 39)
             {
               spectrumPhy.Set ("ShortGuardEnabled", BooleanValue (false));
-              spectrumPhy.Set ("RxAntennas", UintegerValue (2));
-              spectrumPhy.Set ("TxAntennas", UintegerValue (2));
+              spectrumPhy.Set ("Antennas", UintegerValue (2));
+              spectrumPhy.Set ("MaxSupportedTxSpatialStreams", UintegerValue (2));
+              spectrumPhy.Set ("MaxSupportedRxSpatialStreams", UintegerValue (2));
               channelWidth = 20;
             }
           else if (i > 39 && i <= 47)
             {
               spectrumPhy.Set ("ShortGuardEnabled", BooleanValue (true));
-              spectrumPhy.Set ("RxAntennas", UintegerValue (2));
-              spectrumPhy.Set ("TxAntennas", UintegerValue (2));
+              spectrumPhy.Set ("Antennas", UintegerValue (2));
+              spectrumPhy.Set ("MaxSupportedTxSpatialStreams", UintegerValue (2));
+              spectrumPhy.Set ("MaxSupportedRxSpatialStreams", UintegerValue (2));
               channelWidth = 20;
             }
           else if (i > 47 && i <= 55)
             {
               spectrumPhy.Set ("ShortGuardEnabled", BooleanValue (false));
-              spectrumPhy.Set ("RxAntennas", UintegerValue (2));
-              spectrumPhy.Set ("TxAntennas", UintegerValue (2));
+              spectrumPhy.Set ("Antennas", UintegerValue (2));
+              spectrumPhy.Set ("MaxSupportedTxSpatialStreams", UintegerValue (2));
+              spectrumPhy.Set ("MaxSupportedRxSpatialStreams", UintegerValue (2));
               channelWidth = 40;
             }
           else if (i > 55 && i <= 63)
             {
               spectrumPhy.Set ("ShortGuardEnabled", BooleanValue (true));
-              spectrumPhy.Set ("RxAntennas", UintegerValue (2));
-              spectrumPhy.Set ("TxAntennas", UintegerValue (2));
+              spectrumPhy.Set ("Antennas", UintegerValue (2));
+              spectrumPhy.Set ("MaxSupportedTxSpatialStreams", UintegerValue (2));
+              spectrumPhy.Set ("MaxSupportedRxSpatialStreams", UintegerValue (2));
               channelWidth = 40;
             }
         }

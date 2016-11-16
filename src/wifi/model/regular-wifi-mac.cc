@@ -175,7 +175,7 @@ RegularWifiMac::GetHtCapabilities (void) const
         }
       capabilities.SetRxHighestSupportedDataRate (maxSupportedRate / 1e6); //in Mbit/s
       capabilities.SetTxMcsSetDefined (m_phy->GetNMcs () > 0);
-      capabilities.SetTxMaxNSpatialStreams (m_phy->GetSupportedTxSpatialStreams ());
+      capabilities.SetTxMaxNSpatialStreams (m_phy->GetMaxSupportedTxSpatialStreams ());
     }
   return capabilities;
 }
@@ -211,11 +211,11 @@ RegularWifiMac::GetVhtCapabilities (void) const
             }
         }
       // Support same MaxMCS for each spatial stream
-      for (uint8_t nss = 1; nss <= m_phy->GetSupportedRxSpatialStreams (); nss++)
+      for (uint8_t nss = 1; nss <= m_phy->GetMaxSupportedRxSpatialStreams (); nss++)
         {
           capabilities.SetRxMcsMap (maxMcs, nss);
         }
-      for (uint8_t nss = 1; nss <= m_phy->GetSupportedTxSpatialStreams (); nss++)
+      for (uint8_t nss = 1; nss <= m_phy->GetMaxSupportedTxSpatialStreams (); nss++)
         {
           capabilities.SetTxMcsMap (maxMcs, nss);
         }

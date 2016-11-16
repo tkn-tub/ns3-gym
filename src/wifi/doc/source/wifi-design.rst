@@ -162,9 +162,7 @@ combines the effect of thermal noise and of interference from other Wi-Fi
 packets.  Moreover, interference from other technologies is not modeled.
 The following details pertain to the physical layer and channel models:
 
-* 802.11n/ac MIMO currently uses the same 802.11n/ac SISO Yans and Nist error rate models
-* 802.11ac MU-MIMO is not supported
-* Antenna diversity is not supported
+* 802.11ac MU-MIMO is not supported, and no more than 4 antennas can be configured
 * 802.11n/ac beamforming is not supported
 * PLCP preamble reception is not modeled
 * PHY_RXSTART is not supported

@@ -154,11 +154,19 @@ The Phy objects are created in the next step.
 
  wifiPhyHelper.Set ("ShortGuardEnabled", BooleanValue(true));
 
-In order to enable 802.11n/ac MIMO, the number of Rx antennas as well as the number of Tx antennas need to be configured.
-For example, this code enables 2x2 MIMO::
+In order to enable 802.11n/ac MIMO, the number of antennas as well as the number of supported spatial streams need to be configured.
+For example, this code enables MIMO with 2 antennas and 2 spatial streams::
 
- wifiPhyHelper.Set ("TxAntennas", UintegerValue (2));
- wifiPhyHelper.Set ("RxAntennas", UintegerValue (2));
+ wifiPhyHelper.Set ("Antennas", UintegerValue (2));
+ wifiPhyHelper.Set ("MaxSupportedTxSpatialStreams", UintegerValue (2));
+ wifiPhyHelper.Set ("MaxSupportedRxSpatialStreams", UintegerValue (2));
+
+It is also possible to configure less streams than the number of antennas in order to benefit from diversity gain, and to define different MIMO capabilities for downlink and uplink.
+For example, this code configures a node with 3 antennas that supports 2 spatial streams in downstream and 1 spatial stream in upstream::
+
+ wifiPhyHelper.Set ("Antennas", UintegerValue (3));
+ wifiPhyHelper.Set ("MaxSupportedTxSpatialStreams", UintegerValue (2));
+ wifiPhyHelper.Set ("MaxSupportedRxSpatialStreams", UintegerValue (1));
 
 Furthermore, 802.11n provides an optional mode (GreenField mode) to reduce preamble durations and which is only compatible with 802.11n devices. This mode is enabled as follows::
 

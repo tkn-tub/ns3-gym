@@ -272,8 +272,9 @@ int main (int argc, char *argv[])
   Ptr<WifiNetDevice> wndClient = ndClient->GetObject<WifiNetDevice> ();
   Ptr<WifiPhy> wifiPhyPtrClient = wndClient->GetPhy ();
   wifiPhyPtrClient->SetChannelWidth (selectedStandard.m_width);
-  wifiPhyPtrClient->SetNumberOfTransmitAntennas (nss);
-  wifiPhyPtrClient->SetNumberOfReceiveAntennas (nss);
+  wifiPhyPtrClient->SetNumberOfAntennas (nss);
+  wifiPhyPtrClient->SetMaxSupportedTxSpatialStreams (nss);
+  wifiPhyPtrClient->SetMaxSupportedRxSpatialStreams (nss);
   noiseDbm += 10 * log10 (selectedStandard.m_width * 1000000);
   NS_LOG_DEBUG ("Channel width " << wifiPhyPtrClient->GetChannelWidth () << " noiseDbm " << noiseDbm);
 
@@ -284,8 +285,9 @@ int main (int argc, char *argv[])
   Ptr<WifiNetDevice> wndServer = ndServer->GetObject<WifiNetDevice> ();
   Ptr<WifiPhy> wifiPhyPtrServer = wndServer->GetPhy ();
   wifiPhyPtrServer->SetChannelWidth (selectedStandard.m_width);
-  wifiPhyPtrServer->SetNumberOfTransmitAntennas (nss);
-  wifiPhyPtrServer->SetNumberOfReceiveAntennas (nss);
+  wifiPhyPtrServer->SetNumberOfAntennas (nss);
+  wifiPhyPtrServer->SetMaxSupportedTxSpatialStreams (nss);
+  wifiPhyPtrServer->SetMaxSupportedRxSpatialStreams (nss);
 
   double rssCurrent = (selectedStandard.m_snrHigh + noiseDbm);
   rssLossModel->SetRss (rssCurrent);

@@ -133,7 +133,7 @@ IdealWifiManager::DoInitialize ()
             }
           else
             {
-              nss = GetPhy ()->GetSupportedTxSpatialStreams ();
+              nss = GetPhy ()->GetMaxSupportedTxSpatialStreams ();
             }
           NS_LOG_DEBUG ("Initialize, adding mode = " << mode.GetUniqueName () <<
                         " channel width " << GetPhy ()->GetChannelWidth () <<
@@ -295,7 +295,7 @@ IdealWifiManager::DoGetDataTxVector (WifiRemoteStation *st)
                 }
               else
                 {
-                  nss = GetPhy ()->GetSupportedTxSpatialStreams ();
+                  nss = GetPhy ()->GetMaxSupportedTxSpatialStreams ();
                 }
               txVector.SetNss (nss);
               if (WifiPhy::IsValidTxVector (txVector) == false)
@@ -370,7 +370,7 @@ IdealWifiManager::DoGetDataTxVector (WifiRemoteStation *st)
       NS_LOG_DEBUG ("New datarate: " << maxMode.GetDataRate (channelWidth, GetPhy ()->GetGuardInterval (), nss));
       m_currentRate = maxMode.GetDataRate (channelWidth, GetPhy ()->GetGuardInterval (), nss);
     }
-  return WifiTxVector (maxMode, GetDefaultTxPowerLevel (), GetLongRetryCount (station), false, nss, 0, channelWidth, GetAggregation (station), false);
+  return WifiTxVector (maxMode, GetDefaultTxPowerLevel (), GetLongRetryCount (station), false, GetNumberOfAntennas (), nss, 0, channelWidth, GetAggregation (station), false);
 }
 
 WifiTxVector
@@ -402,7 +402,7 @@ IdealWifiManager::DoGetRtsTxVector (WifiRemoteStation *st)
           maxMode = mode;
         }
     }
-  return WifiTxVector (maxMode, GetDefaultTxPowerLevel (), GetShortRetryCount (station), false, nss, 0, GetChannelWidthForMode (maxMode), GetAggregation (station), false);
+  return WifiTxVector (maxMode, GetDefaultTxPowerLevel (), GetShortRetryCount (station), false, GetNumberOfAntennas (), nss, 0, GetChannelWidthForMode (maxMode), GetAggregation (station), false);
 }
 
 bool

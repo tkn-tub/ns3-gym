@@ -73,7 +73,7 @@ SpectrumWifiPhyBasicTest::MakeSignal (double txPowerWatts)
   WifiPreamble preamble;
   preamble = WIFI_PREAMBLE_LONG;
   WifiMode mode = WifiPhy::GetOfdmRate6Mbps ();
-  WifiTxVector txVector = WifiTxVector (mode, 0, 0, false, 1, 0, 20000000, false, false);
+  WifiTxVector txVector = WifiTxVector (mode, 0, 0, false, 1, 1, 0, 20000000, false, false);
   enum mpduType mpdutype = NORMAL_MPDU;
 
   Ptr<Packet> pkt = Create<Packet> (1000);

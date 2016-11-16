@@ -276,10 +276,12 @@ int main (int argc, char *argv[])
   Ptr<WifiNetDevice> wndServer = ndServer->GetObject<WifiNetDevice> ();
   Ptr<WifiPhy> wifiPhyPtrClient = wndClient->GetPhy ();
   Ptr<WifiPhy> wifiPhyPtrServer = wndServer->GetPhy ();
-  wifiPhyPtrClient->SetNumberOfTransmitAntennas (nss);
-  wifiPhyPtrClient->SetNumberOfReceiveAntennas (nss);
-  wifiPhyPtrServer->SetNumberOfTransmitAntennas (nss);
-  wifiPhyPtrServer->SetNumberOfReceiveAntennas (nss);
+  wifiPhyPtrClient->SetNumberOfAntennas (nss);
+  wifiPhyPtrClient->SetMaxSupportedTxSpatialStreams (nss);
+  wifiPhyPtrClient->SetMaxSupportedRxSpatialStreams (nss);
+  wifiPhyPtrServer->SetNumberOfAntennas (nss);
+  wifiPhyPtrServer->SetMaxSupportedTxSpatialStreams (nss);
+  wifiPhyPtrServer->SetMaxSupportedRxSpatialStreams (nss);
   // Only set the channel width and guard interval for HT and VHT modes
   if (selectedStandard.m_name == "802.11n-5GHz" || 
       selectedStandard.m_name == "802.11n-2.4GHz" ||
@@ -291,7 +293,7 @@ int main (int argc, char *argv[])
       wifiPhyPtrServer->SetGuardInterval (shortGuardInterval);
     }
   NS_LOG_DEBUG ("Channel width " << wifiPhyPtrClient->GetChannelWidth () << " noiseDbm " << noiseDbm);
-  NS_LOG_DEBUG ("NSS " << wifiPhyPtrClient->GetSupportedTxSpatialStreams ());
+  NS_LOG_DEBUG ("NSS " << wifiPhyPtrClient->GetMaxSupportedTxSpatialStreams ());
 
   // Configure signal and noise, and schedule first iteration
   noiseDbm += 10 * log10 (selectedStandard.m_width * 1000000);

@@ -248,15 +248,37 @@ WifiPhy::GetTypeId (void)
     .AddAttribute ("TxAntennas",
                    "The number of supported Tx antennas.",
                    UintegerValue (1),
-                   MakeUintegerAccessor (&WifiPhy::GetNumberOfTransmitAntennas,
-                                         &WifiPhy::SetNumberOfTransmitAntennas),
-                   MakeUintegerChecker<uint32_t> ())
+                   MakeUintegerAccessor (&WifiPhy::m_numberOfTransmitters),
+                   MakeUintegerChecker<uint32_t> (),
+                   TypeId::DEPRECATED,
+                   "Not used anymore.")
     .AddAttribute ("RxAntennas",
                    "The number of supported Rx antennas.",
                    UintegerValue (1),
-                   MakeUintegerAccessor (&WifiPhy::GetNumberOfReceiveAntennas,
-                                         &WifiPhy::SetNumberOfReceiveAntennas),
+                   MakeUintegerAccessor (&WifiPhy::m_numberOfReceivers),
+                   MakeUintegerChecker<uint32_t> (),
+                   TypeId::DEPRECATED,
+                   "Not used anymore.")
+    .AddAttribute ("Antennas",
+                   "The number of antennas on the device.",
+                   UintegerValue (1),
+                   MakeUintegerAccessor (&WifiPhy::GetNumberOfAntennas,
+                                         &WifiPhy::SetNumberOfAntennas),
                    MakeUintegerChecker<uint32_t> ())
+    .AddAttribute ("MaxSupportedTxSpatialStreams",
+                   "The maximum number of supported TX spatial streams."
+                   "This parameter is only valuable for 802.11n/ac STAs and APs.",
+                   UintegerValue (1),
+                   MakeUintegerAccessor (&WifiPhy::GetMaxSupportedTxSpatialStreams,
+                                         &WifiPhy::SetMaxSupportedTxSpatialStreams),
+                   MakeUintegerChecker<uint8_t> ())
+    .AddAttribute ("MaxSupportedRxSpatialStreams",
+                   "The maximum number of supported RX spatial streams."
+                   "This parameter is only valuable for 802.11n/ac STAs and APs.",
+                   UintegerValue (1),
+                   MakeUintegerAccessor (&WifiPhy::GetMaxSupportedRxSpatialStreams,
+                                         &WifiPhy::SetMaxSupportedRxSpatialStreams),
+                   MakeUintegerChecker<uint8_t> ())
     .AddAttribute ("ShortGuardEnabled",
                    "Whether or not short guard interval is enabled."
                    "This parameter is only valuable for 802.11n/ac STAs and APs.",
@@ -358,6 +380,8 @@ WifiPhy::WifiPhy ()
     m_totalAmpduNumSymbols (0)
 {
   NS_LOG_FUNCTION (this);
+  NS_UNUSED (m_numberOfTransmitters);
+  NS_UNUSED (m_numberOfReceivers);
   m_random = CreateObject<UniformRandomVariable> ();
   m_state = CreateObject<WifiPhyStateHelper> ();
 }
@@ -456,6 +480,7 @@ WifiPhy::SetRxNoiseFigure (double noiseFigureDb)
 {
   NS_LOG_FUNCTION (this << noiseFigureDb);
   m_interference.SetNoiseFigure (DbToRatio (noiseFigureDb));
+  m_interference.SetNumberOfReceiveAntennas (GetNumberOfAntennas ());
 }
 
 double
@@ -629,6 +654,7 @@ void
 WifiPhy::SetErrorRateModel (Ptr<ErrorRateModel> rate)
 {
   m_interference.SetErrorRateModel (rate);
+  m_interference.SetNumberOfReceiveAntennas (GetNumberOfAntennas ());
 }
 
 Ptr<ErrorRateModel>
@@ -853,7 +879,7 @@ WifiPhy::ConfigureHtDeviceMcsSet (void)
       m_deviceMcsSet.push_back (WifiPhy::GetHtMcs5 ());
       m_deviceMcsSet.push_back (WifiPhy::GetHtMcs6 ());
       m_deviceMcsSet.push_back (WifiPhy::GetHtMcs7 ());
-      if (GetSupportedTxSpatialStreams () > 1)
+      if (GetMaxSupportedTxSpatialStreams () > 1)
         {
           m_deviceMcsSet.push_back (WifiPhy::GetHtMcs8 ());
           m_deviceMcsSet.push_back (WifiPhy::GetHtMcs9 ());
@@ -864,7 +890,7 @@ WifiPhy::ConfigureHtDeviceMcsSet (void)
           m_deviceMcsSet.push_back (WifiPhy::GetHtMcs14 ());
           m_deviceMcsSet.push_back (WifiPhy::GetHtMcs15 ());
         }
-      if (GetSupportedTxSpatialStreams () > 2)
+      if (GetMaxSupportedTxSpatialStreams () > 2)
         {
           m_deviceMcsSet.push_back (WifiPhy::GetHtMcs16 ());
           m_deviceMcsSet.push_back (WifiPhy::GetHtMcs17 ());
@@ -875,7 +901,7 @@ WifiPhy::ConfigureHtDeviceMcsSet (void)
           m_deviceMcsSet.push_back (WifiPhy::GetHtMcs22 ());
           m_deviceMcsSet.push_back (WifiPhy::GetHtMcs23 ());
         }
-      if (GetSupportedTxSpatialStreams () > 3)
+      if (GetMaxSupportedTxSpatialStreams () > 3)
         {
           m_deviceMcsSet.push_back (WifiPhy::GetHtMcs24 ());
           m_deviceMcsSet.push_back (WifiPhy::GetHtMcs25 ());
@@ -1160,40 +1186,44 @@ WifiPhy::GetChannelWidth (void) const
 }
 
 void
-WifiPhy::SetNumberOfTransmitAntennas (uint32_t tx)
+WifiPhy::SetNumberOfAntennas (uint8_t antennas)
 {
-  m_numberOfTransmitters = tx;
-  ConfigureHtDeviceMcsSet ();
+  NS_ASSERT_MSG (antennas > 0 && antennas <= 4, "unsupported number of antennas");
+  m_numberOfAntennas = antennas;
+  m_interference.SetNumberOfReceiveAntennas (antennas);
+}
+
+uint8_t
+WifiPhy::GetNumberOfAntennas (void) const
+{
+  return m_numberOfAntennas;
 }
 
 void
-WifiPhy::SetNumberOfReceiveAntennas (uint32_t rx)
+WifiPhy::SetMaxSupportedTxSpatialStreams (uint8_t streams)
 {
-  m_numberOfReceivers = rx;
-}
-
-uint32_t
-WifiPhy::GetNumberOfTransmitAntennas (void) const
-{
-  return m_numberOfTransmitters;
-}
-
-uint32_t
-WifiPhy::GetNumberOfReceiveAntennas (void) const
-{
-  return m_numberOfReceivers;
+  NS_ASSERT (streams <= GetNumberOfAntennas ());
+  m_txSpatialStreams = streams;
+  ConfigureHtDeviceMcsSet ();
 }
 
 uint8_t 
-WifiPhy::GetSupportedRxSpatialStreams (void) const
+WifiPhy::GetMaxSupportedTxSpatialStreams (void) const
 {
-  return (static_cast<uint8_t> (GetNumberOfReceiveAntennas ()));
+  return m_txSpatialStreams;
+}
+
+void
+WifiPhy::SetMaxSupportedRxSpatialStreams (uint8_t streams)
+{
+  NS_ASSERT (streams <= GetNumberOfAntennas ());
+  m_rxSpatialStreams = streams;
 }
 
 uint8_t 
-WifiPhy::GetSupportedTxSpatialStreams (void) const
+WifiPhy::GetMaxSupportedRxSpatialStreams (void) const
 {
-  return (static_cast<uint8_t> (GetNumberOfTransmitAntennas ()));
+  return m_rxSpatialStreams;
 }
 
 uint32_t
