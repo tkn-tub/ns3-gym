@@ -1633,9 +1633,9 @@ PfFfMacScheduler::DoSchedUlTriggerReq (const struct FfMacSchedSapProvider::Sched
                 {
                   sinr = EstimateUlSinr ((*it).first, i);
                 }
-              if ((*itCqi).second.at (i) < minSinr)
+              if (sinr < minSinr)
                 {
-                  minSinr = (*itCqi).second.at (i);
+                  minSinr = sinr;
                 }
             }
 

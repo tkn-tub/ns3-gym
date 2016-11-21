@@ -1448,9 +1448,9 @@ TdBetFfMacScheduler::DoSchedUlTriggerReq (const struct FfMacSchedSapProvider::Sc
                 {
                   sinr = EstimateUlSinr ((*it).first, i);
                 }
-              if ((*itCqi).second.at (i) < minSinr)
+              if (sinr < minSinr)
                 {
-                  minSinr = (*itCqi).second.at (i);
+                  minSinr = sinr;
                 }
             }
 
