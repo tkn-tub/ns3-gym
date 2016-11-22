@@ -1125,7 +1125,7 @@ FdTbfqFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::S
                   sbCqi = (*itCqi).second.m_higherLayerSelected.at (k).m_sbCqi;
                 }
               uint8_t cqi1 = sbCqi.at (0);
-              uint8_t cqi2 = 1;
+              uint8_t cqi2 = 0;
               if (sbCqi.size () > 1)
                 {
                   cqi2 = sbCqi.at (1);

@@ -1110,7 +1110,7 @@ PssFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sche
                         }
         
                       uint8_t cqi1 = sbCqis.at (0);
-                      uint8_t cqi2 = 1;
+                      uint8_t cqi2 = 0;
                       if (sbCqis.size () > 1)
                         {
                           cqi2 = sbCqis.at (1);
@@ -1181,7 +1181,7 @@ PssFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sche
                         }
         
                       uint8_t cqi1 = sbCqis.at( 0);
-                      uint8_t cqi2 = 1;
+                      uint8_t cqi2 = 0;
                       if (sbCqis.size () > 1)
                         {
                           cqi2 = sbCqis.at(1);
@@ -1275,7 +1275,7 @@ PssFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sche
                         }
         
                       uint8_t cqi1 = sbCqis.at(0);
-                      uint8_t cqi2 = 1;
+                      uint8_t cqi2 = 0;
                       if (sbCqis.size () > 1)
                         {
                           cqi2 = sbCqis.at(1);
