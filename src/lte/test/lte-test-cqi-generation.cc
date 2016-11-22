@@ -300,17 +300,18 @@ LteCqiGenerationDlPowerControlTestCase::DoRun (void)
   NodeContainer ueNodes2;
   enbNodes.Create (2);
   ueNodes1.Create (1);
-  ueNodes2.Create (1);
+  ueNodes2.Create (2);
   NodeContainer allNodes = NodeContainer ( enbNodes, ueNodes1, ueNodes2);
 
   /*
    * The topology is the following:
    *
-   *  eNB1                        UE1 UE2                        eNB2
-   *    |                            |                            |
-   *    x -------------------------- x -------------------------- x
-   *                  500 m                       500 m
+   *  eNB1                        UE1 UE2                        eNB2 UE3
+   *    |                            |                            |    |
+   *    x -------------------------- x -------------------------- x----x
+   *                  500 m                       500 m             50m
    *
+   * see https://www.nsnam.org/bugzilla/show_bug.cgi?id=2048#c4 for why we need UE3
    */
 
   Ptr<ListPositionAllocator> positionAlloc = CreateObject<ListPositionAllocator> ();
@@ -318,6 +319,7 @@ LteCqiGenerationDlPowerControlTestCase::DoRun (void)
   positionAlloc->Add (Vector (1000, 0.0, 0.0)); // eNB2
   positionAlloc->Add (Vector (500.0, 0.0, 0.0));  // UE1
   positionAlloc->Add (Vector (500, 0.0, 0.0));  // UE2
+  positionAlloc->Add (Vector (1050, 0.0, 0.0));  // UE3
   MobilityHelper mobility;
   mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
   mobility.SetPositionAllocator (positionAlloc);
