@@ -288,8 +288,8 @@ Experiment::SendMultiDestinations (Ptr<Node> sender, NodeContainer c)
   ev->SetAttribute ("Mean", DoubleValue (expMean));
   ev->SetAttribute ("Bound", DoubleValue (totalTime));
 
-  double start=0.0, stop=totalTime;
-  uint32_t destIndex; 
+  double start=0.0, stop;
+  uint32_t destIndex;
 
   for (uint32_t i=0; i < c.GetN (); i++)
     {
