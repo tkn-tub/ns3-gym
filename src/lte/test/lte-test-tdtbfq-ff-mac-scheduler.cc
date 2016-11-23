@@ -157,13 +157,17 @@ LenaTestTdTbfqFfMacSchedulerSuite::LenaTestTdTbfqFfMacSchedulerSuite ()
   AddTestCase (new LenaTdTbfqFfMacSchedulerTestCase1 (6,10000,129166,67000,200,1,errorModel), TestCase::EXTENSIVE);
   //AddTestCase (new LenaTdTbfqFfMacSchedulerTestCase1 (12,10000,64583,32667,200,1,errorModel));// simulation time = 1.5, otherwise, ul test will fail
 
+  // DOWNLINK - DISTANCE 100000 -> CQI == 0 -> out of range -> 0 bytes/sec
+  // UPLINK - DISTANCE 100000 -> CQI == 0 -> out of range -> 0 bytes/sec
+  AddTestCase (new LenaTdTbfqFfMacSchedulerTestCase1 (1,100000,0,0,200,1,errorModel), TestCase::QUICK);
+
   // Test Case 2: homogeneous flow test in TDTBFQ (different distance)
   // Traffic1 info
   //   UDP traffic: payload size = 100 bytes, interval = 1 ms
   //   UDP rate in scheduler: (payload + RLC header + PDCP header + IP header + UDP header) * 1000 byte/sec -> 132000 byte/rate 
   // Maximum throughput = 4 / ( 1/2196000 + 1/1383000 + 1/1191000 + 1/775000 ) = 1209000 byte/s
   // 132000 * 4 = 528000 < 1209000 -> estimated throughput in downlink = 132000 byte/sec
-  std::vector<uint16_t> dist1;
+  std::vector<double> dist1;
   dist1.push_back (0);       // User 0 distance --> MCS 28
   dist1.push_back (4800);    // User 1 distance --> MCS 22
   dist1.push_back (6000);    // User 2 distance --> MCS 20
@@ -185,7 +189,7 @@ LenaTestTdTbfqFfMacSchedulerSuite::LenaTestTdTbfqFfMacSchedulerSuite ()
   //   UDP rate in scheduler: (payload + RLC header + PDCP header + IP header + UDP header) * 1000 byte/sec -> 332000 byte/rate
   // Maximum throughput = 4 / ( 1/2196000 + 1/1383000 + 1/1191000 + 1/775000 ) = 1209000 byte/s
   // 332000 * 4 = 1328000 > 1209000 -> estimated throughput in downlink = 1209000 / 4 = 302500 byte/sec
-  std::vector<uint16_t> dist2;
+  std::vector<double> dist2;
   dist2.push_back (0);       // User 0 distance --> MCS 28
   dist2.push_back (4800);    // User 1 distance --> MCS 22
   dist2.push_back (6000);    // User 2 distance --> MCS 20
@@ -207,7 +211,7 @@ LenaTestTdTbfqFfMacSchedulerSuite::LenaTestTdTbfqFfMacSchedulerSuite ()
   //   UDP rate in scheduler: (payload + RLC header + PDCP header + IP header + UDP header) * 1000 byte/sec -> [132000, 232000, 332000] byte/rate 
   // Maximum throughput = 3 / ( 1/2196000 + 1/1383000 + 1/1191000 ) = 1486666  byte/s
   // 132000 + 232000 + 332000 = 696000 < 1486666 -> estimated throughput in downlink = [132000, 232000, 332000] byte/sec
-  std::vector<uint16_t> dist3;
+  std::vector<double> dist3;
   dist3.push_back (0);    // User 0 distance --> MCS 28
   dist3.push_back (4800);    // User 1 distance --> MCS 22
   dist3.push_back (6000);    // User 2 distance --> MCS 20
@@ -229,7 +233,7 @@ static LenaTestTdTbfqFfMacSchedulerSuite lenaTestTdTbfqFfMacSchedulerSuite;
 
 
 std::string 
-LenaTdTbfqFfMacSchedulerTestCase1::BuildNameString (uint16_t nUser, uint16_t dist)
+LenaTdTbfqFfMacSchedulerTestCase1::BuildNameString (uint16_t nUser, double dist)
 {
   std::ostringstream oss;
   oss << nUser << " UEs, distance " << dist << " m";
@@ -237,7 +241,7 @@ LenaTdTbfqFfMacSchedulerTestCase1::BuildNameString (uint16_t nUser, uint16_t dis
 }
 
 
-LenaTdTbfqFfMacSchedulerTestCase1::LenaTdTbfqFfMacSchedulerTestCase1 (uint16_t nUser, uint16_t dist, double thrRefDl, double thrRefUl, uint16_t packetSize, uint16_t interval,bool errorModelEnabled)
+LenaTdTbfqFfMacSchedulerTestCase1::LenaTdTbfqFfMacSchedulerTestCase1 (uint16_t nUser, double dist, double thrRefDl, double thrRefUl, uint16_t packetSize, uint16_t interval,bool errorModelEnabled)
   : TestCase (BuildNameString (nUser, dist)),
     m_nUser (nUser),
     m_dist (dist),
@@ -408,7 +412,7 @@ LenaTdTbfqFfMacSchedulerTestCase1::DoRun (void)
   serverApps.Start (Seconds (0.001));
   clientApps.Start (Seconds (0.001));
 
-  double statsStartTime = 0.001; // need to allow for RRC connection establishment + SRS
+  double statsStartTime = 0.040; // need to allow for RRC connection establishment + SRS
   double statsDuration = 1;
   double tolerance = 0.1;
   Simulator::Stop (Seconds (statsStartTime + statsDuration - 0.0001));
@@ -473,11 +477,11 @@ LenaTdTbfqFfMacSchedulerTestCase1::DoRun (void)
 
 
 std::string 
-LenaTdTbfqFfMacSchedulerTestCase2::BuildNameString (uint16_t nUser, std::vector<uint16_t> dist)
+LenaTdTbfqFfMacSchedulerTestCase2::BuildNameString (uint16_t nUser, std::vector<double> dist)
 {
   std::ostringstream oss;
   oss << "distances (m) = [ " ;
-  for (std::vector<uint16_t>::iterator it = dist.begin (); it != dist.end (); ++it)
+  for (std::vector<double>::iterator it = dist.begin (); it != dist.end (); ++it)
     {
       oss << *it << " ";
     }
@@ -486,7 +490,7 @@ LenaTdTbfqFfMacSchedulerTestCase2::BuildNameString (uint16_t nUser, std::vector<
 }
 
 
-LenaTdTbfqFfMacSchedulerTestCase2::LenaTdTbfqFfMacSchedulerTestCase2 (std::vector<uint16_t> dist, std::vector<uint32_t> estThrTdTbfqDl, std::vector<uint16_t> packetSize, uint16_t interval,bool errorModelEnabled)
+LenaTdTbfqFfMacSchedulerTestCase2::LenaTdTbfqFfMacSchedulerTestCase2 (std::vector<double> dist, std::vector<uint32_t> estThrTdTbfqDl, std::vector<uint16_t> packetSize, uint16_t interval,bool errorModelEnabled)
   : TestCase (BuildNameString (dist.size (), dist)),
     m_nUser (dist.size ()),
     m_dist (dist),

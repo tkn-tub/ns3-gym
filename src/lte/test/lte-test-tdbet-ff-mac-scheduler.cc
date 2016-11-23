@@ -145,9 +145,13 @@ LenaTestTdBetFfMacSchedulerSuite::LenaTestTdBetFfMacSchedulerSuite ()
   AddTestCase (new LenaTdBetFfMacSchedulerTestCase1 (6,20000,70166,22000,errorModel), TestCase::EXTENSIVE);
   AddTestCase (new LenaTdBetFfMacSchedulerTestCase1 (12,20000,35083,12000,errorModel), TestCase::EXTENSIVE);
 
+  // DOWNLINK - DISTANCE 100000 -> CQI == 0 -> out of range -> 0 bytes/sec
+  // UPLINK - DISTANCE 100000 -> CQI == 0 -> out of range -> 0 bytes/sec
+  AddTestCase (new LenaTdBetFfMacSchedulerTestCase1 (1,100000,0,0,errorModel), TestCase::QUICK);
+
   // Test Case 2: fairness check
 
-  std::vector<uint16_t> dist;
+  std::vector<double> dist;
   dist.push_back (0);       // User 0 distance --> MCS 28
   dist.push_back (4800);    // User 1 distance --> MCS 22
   dist.push_back (6000);    // User 2 distance --> MCS 14
@@ -175,14 +179,14 @@ static LenaTestTdBetFfMacSchedulerSuite lenaTestTdBetFfMacSchedulerSuite;
 
 
 std::string 
-LenaTdBetFfMacSchedulerTestCase1::BuildNameString (uint16_t nUser, uint16_t dist)
+LenaTdBetFfMacSchedulerTestCase1::BuildNameString (uint16_t nUser, double dist)
 {
   std::ostringstream oss;
   oss << nUser << " UEs, distance " << dist << " m";
   return oss.str ();
 }
 
-LenaTdBetFfMacSchedulerTestCase1::LenaTdBetFfMacSchedulerTestCase1 (uint16_t nUser, uint16_t dist, double thrRefDl, double thrRefUl, bool errorModelEnabled)
+LenaTdBetFfMacSchedulerTestCase1::LenaTdBetFfMacSchedulerTestCase1 (uint16_t nUser, double dist, double thrRefDl, double thrRefUl, bool errorModelEnabled)
   : TestCase (BuildNameString (nUser, dist)),
     m_nUser (nUser),
     m_dist (dist),
@@ -336,11 +340,11 @@ LenaTdBetFfMacSchedulerTestCase1::DoRun (void)
 
 
 std::string 
-LenaTdBetFfMacSchedulerTestCase2::BuildNameString (uint16_t nUser, std::vector<uint16_t> dist)
+LenaTdBetFfMacSchedulerTestCase2::BuildNameString (uint16_t nUser, std::vector<double> dist)
 {
   std::ostringstream oss;
   oss << "distances (m) = [ " ;
-  for (std::vector<uint16_t>::iterator it = dist.begin (); it != dist.end (); ++it)
+  for (std::vector<double>::iterator it = dist.begin (); it != dist.end (); ++it)
     {
       oss << *it << " ";
     }
@@ -349,7 +353,7 @@ LenaTdBetFfMacSchedulerTestCase2::BuildNameString (uint16_t nUser, std::vector<u
 }
 
 
-LenaTdBetFfMacSchedulerTestCase2::LenaTdBetFfMacSchedulerTestCase2 (std::vector<uint16_t> dist, std::vector<uint32_t> estAchievableRateDl, std::vector<uint32_t> estThrTdBetUl, bool errorModelEnabled)
+LenaTdBetFfMacSchedulerTestCase2::LenaTdBetFfMacSchedulerTestCase2 (std::vector<double> dist, std::vector<uint32_t> estAchievableRateDl, std::vector<uint32_t> estThrTdBetUl, bool errorModelEnabled)
   : TestCase (BuildNameString (dist.size (), dist)),
     m_nUser (dist.size ()),
     m_dist (dist),

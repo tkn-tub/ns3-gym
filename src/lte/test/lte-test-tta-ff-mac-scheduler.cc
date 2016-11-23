@@ -151,6 +151,9 @@ LenaTestTtaFfMacSchedulerSuite::LenaTestTtaFfMacSchedulerSuite ()
   AddTestCase (new LenaTtaFfMacSchedulerTestCase (6,20000,421000,22000,errorModel), TestCase::EXTENSIVE);
   AddTestCase (new LenaTtaFfMacSchedulerTestCase (12,20000,421000,12000,errorModel), TestCase::EXTENSIVE);
 
+  // DOWNLINK - DISTANCE 100000 -> CQI == 0 -> out of range -> 0 bytes/sec
+  // UPLINK - DISTANCE 100000 -> CQI == 0 -> out of range -> 0 bytes/sec
+  AddTestCase (new LenaTtaFfMacSchedulerTestCase (1,100000,0,0,errorModel), TestCase::QUICK);
 }
 
 static LenaTestTtaFfMacSchedulerSuite lenaTestTtaFfMacSchedulerSuite;
@@ -159,14 +162,14 @@ static LenaTestTtaFfMacSchedulerSuite lenaTestTtaFfMacSchedulerSuite;
 // --------------- T E S T - C A S E ------------------------------
 
 std::string 
-LenaTtaFfMacSchedulerTestCase::BuildNameString (uint16_t nUser, uint16_t dist)
+LenaTtaFfMacSchedulerTestCase::BuildNameString (uint16_t nUser, double dist)
 {
   std::ostringstream oss;
   oss << nUser << " UEs, distance " << dist << " m";
   return oss.str ();
 }
 
-LenaTtaFfMacSchedulerTestCase::LenaTtaFfMacSchedulerTestCase (uint16_t nUser, uint16_t dist, double thrRefDl, double thrRefUl, bool errorModelEnabled)
+LenaTtaFfMacSchedulerTestCase::LenaTtaFfMacSchedulerTestCase (uint16_t nUser, double dist, double thrRefDl, double thrRefUl, bool errorModelEnabled)
   : TestCase (BuildNameString (nUser, dist)),
     m_nUser (nUser),
     m_dist (dist),
