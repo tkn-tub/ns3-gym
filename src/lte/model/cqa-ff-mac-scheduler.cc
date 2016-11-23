@@ -1044,8 +1044,17 @@ CqaFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sche
     }
   m_dlInfoListBuffered.clear ();
   m_dlInfoListBuffered = dlInfoListUntxed;
-	
-	
+
+  if (rbgAllocatedNum == numberOfRBGs)
+    {
+      // all the RBGs are already allocated -> exit
+      if ((ret.m_buildDataList.size () > 0) || (ret.m_buildRarList.size () > 0))
+        {
+          m_schedSapUser->SchedDlConfigInd (ret);
+        }
+      return;
+    }
+
   std::map <LteFlowId_t,struct LogicalChannelConfigListElement_s>::iterator itLogicalChannels;
 	
   for (itLogicalChannels = m_ueLogicalChannelsConfigList.begin (); itLogicalChannels != m_ueLogicalChannelsConfigList.end (); itLogicalChannels++)
@@ -1131,6 +1140,39 @@ CqaFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sche
     {
 
       LteFlowId_t flowId = itrbr->first;                // Prepare data for the scheduling mechanism
+      // check first the channel conditions for this UE, if CQI!=0
+      std::map <uint16_t,SbMeasResult_s>::iterator itCqi;
+      itCqi = m_a30CqiRxed.find ((*itrbr).first.m_rnti);
+      std::map <uint16_t,uint8_t>::iterator itTxMode;
+      itTxMode = m_uesTxMode.find ((*itrbr).first.m_rnti);
+      if (itTxMode == m_uesTxMode.end ())
+        {
+          NS_FATAL_ERROR ("No Transmission Mode info on user " << (*itrbr).first.m_rnti);
+        }
+      int nLayer = TransmissionModesLayers::TxMode2LayerNum ((*itTxMode).second);
+
+      uint8_t cqiSum = 0;
+      for (int k = 0; k < numberOfRBGs; k++)
+        {
+          for (uint8_t j = 0; j < nLayer; j++)
+            {
+              if (itCqi == m_a30CqiRxed.end ())
+                {
+                  cqiSum += 1;  // no info on this user -> lowest MCS
+                }
+              else
+                {
+                  cqiSum += (*itCqi).second.m_higherLayerSelected.at (k).m_sbCqi.at(j);
+                }
+            }
+        }
+
+      if (cqiSum == 0)
+        {
+          NS_LOG_INFO ("Skip this flow, CQI==0, rnti:"<<(*itrbr).first.m_rnti);
+          continue;
+        }
+      
       // map: UE, to the amount of traffic they have to transfer
       int amountOfDataToTransfer =  8*((int)m_rlcBufferReq.find (flowId)->second.m_rlcRetransmissionQueueSize +
                                        (int)m_rlcBufferReq.find (flowId)->second.m_rlcTransmissionQueueSize);
@@ -1170,7 +1212,7 @@ CqaFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sche
               cqi2 = sbCqis.at (1);
             }
 
-          uint8_t sbCqi;
+          uint8_t sbCqi = 0;
           if ((cqi1 > 0)||(cqi2 > 0))               // CQI == 0 means "out of range" (see table 7.2.3-1 of 36.213)
             {
               for (uint8_t k = 0; k < nLayer; k++)
@@ -1210,6 +1252,11 @@ CqaFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sche
   // while there are more resources available, loop through the users that are grouped by HOL value
   while (availableRBGs.size ()>0)
     {
+      if (UeToAmountOfDataToTransfer.size() == 0)
+        {
+          NS_LOG_INFO ("No UEs to be scheduled (no data or CQI==0),");
+          break;
+        }
       std::set<LteFlowId_t> vUEs;
       t_it_HOLgroupToUEs itCurrentGroup;
 

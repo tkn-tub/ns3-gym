@@ -1000,6 +1000,41 @@ TdTbfqFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::S
           continue;
        }
 
+
+      // check first the channel conditions for this UE, if CQI!=0
+      std::map <uint16_t,SbMeasResult_s>::iterator itCqi;
+      itCqi = m_a30CqiRxed.find ((*it).first);
+      std::map <uint16_t,uint8_t>::iterator itTxMode;
+      itTxMode = m_uesTxMode.find ((*it).first);
+      if (itTxMode == m_uesTxMode.end ())
+        {
+          NS_FATAL_ERROR ("No Transmission Mode info on user " << (*it).first);
+        }
+      int nLayer = TransmissionModesLayers::TxMode2LayerNum ((*itTxMode).second);
+
+      uint8_t cqiSum = 0;
+      for (int k = 0; k < rbgNum; k++)
+        {
+          for (uint8_t j = 0; j < nLayer; j++)
+            {
+              if (itCqi == m_a30CqiRxed.end ())
+                {
+                  cqiSum += 1;  // no info on this user -> lowest MCS
+                }
+              else
+                {
+                  cqiSum += (*itCqi).second.m_higherLayerSelected.at (k).m_sbCqi.at(j);
+                }
+            }
+        }
+
+      if (cqiSum == 0)
+        {
+          NS_LOG_INFO ("Skip this flow, CQI==0, rnti:"<<(*it).first);
+          continue;
+        }
+
+
       /*
       if (LcActivePerFlow ((*it).first) == 0)
         {

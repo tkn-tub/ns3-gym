@@ -869,6 +869,36 @@ TdBetFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sc
   double metricMax = 0.0;
   for (it = m_flowStatsDl.begin (); it != m_flowStatsDl.end (); it++)
     {
+
+      // check first what are channel conditions for this UE, if CQI!=0
+      std::map <uint16_t,uint8_t>::iterator itCqi;
+      itCqi = m_p10CqiRxed.find ((*it).first);
+      std::map <uint16_t,uint8_t>::iterator itTxMode;
+      itTxMode = m_uesTxMode.find ((*it).first);
+      if (itTxMode == m_uesTxMode.end ())
+        {
+          NS_FATAL_ERROR ("No Transmission Mode info on user " << (*it).first);
+        }
+      int nLayer = TransmissionModesLayers::TxMode2LayerNum ((*itTxMode).second);
+
+      uint8_t cqiSum = 0;
+      for (uint8_t j = 0; j < nLayer; j++)
+        {
+          if (itCqi == m_p10CqiRxed.end ())
+            {
+              cqiSum += 1;  // no info on this user -> lowest MCS
+            }
+          else
+            {
+              cqiSum = (*itCqi).second;
+            }
+        }
+      if (cqiSum == 0)
+        {
+          NS_LOG_INFO ("Skip this flow, CQI==0, rnti:"<<(*it).first);
+          continue;
+        }
+
       std::set <uint16_t>::iterator itRnti = rntiAllocated.find ((*it).first);
       if ((itRnti != rntiAllocated.end ())||(!HarqProcessAvailability ((*it).first)))
         {

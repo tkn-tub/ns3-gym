@@ -986,7 +986,34 @@ PssFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sche
             {
         	    // calculate TD BET metric
               metric = 1 / (*it).second.lastAveragedThroughput;
-              ueSet1.push_back(std::pair<double, uint16_t> (metric, (*it).first));
+
+              // check first what are channel conditions for this UE, if CQI!=0
+              std::map <uint16_t,uint8_t>::iterator itCqi;
+              itCqi = m_p10CqiRxed.find ((*it).first);
+              std::map <uint16_t,uint8_t>::iterator itTxMode;
+              itTxMode = m_uesTxMode.find ((*it).first);
+              if (itTxMode == m_uesTxMode.end ())
+                {
+                  NS_FATAL_ERROR ("No Transmission Mode info on user " << (*it).first);
+                }
+              int nLayer = TransmissionModesLayers::TxMode2LayerNum ((*itTxMode).second);
+
+              uint8_t cqiSum = 0;
+              for (uint8_t j = 0; j < nLayer; j++)
+                {
+                  if (itCqi == m_p10CqiRxed.end ())
+                    {
+                      cqiSum += 1;  // no info on this user -> lowest MCS
+                    }
+                  else
+                    {
+                      cqiSum = (*itCqi).second;
+                    }
+                }
+              if (cqiSum != 0)
+                {
+                  ueSet1.push_back(std::pair<double, uint16_t> (metric, (*it).first));
+                }
             }
           else
             {
@@ -1025,9 +1052,8 @@ PssFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sche
     
                       metric = achievableRate / (*it).second.lastAveragedThroughput;
                    }
+                  ueSet2.push_back(std::pair<double, uint16_t> (metric, (*it).first));
                 } // end of wbCqi
-    
-              ueSet2.push_back(std::pair<double, uint16_t> (metric, (*it).first));
             }
         }// end of ueSet
     
@@ -1116,7 +1142,7 @@ PssFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sche
                           cqi2 = sbCqis.at (1);
                         }
             
-                      uint8_t sbCqi;
+                      uint8_t sbCqi = 0;
                       if ((cqi1 > 0)||(cqi2 > 0)) // CQI == 0 means "out of range" (see table 7.2.3-1 of 36.213)
                         {
                           for (uint8_t k = 0; k < nLayer; k++) 
@@ -1187,7 +1213,7 @@ PssFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sche
                           cqi2 = sbCqis.at(1);
                         }
             
-                      uint8_t sbCqi;
+                      uint8_t sbCqi = 0;
                       double colMetric = 0.0;
                       if ((cqi1 > 0)||(cqi2 > 0)) // CQI == 0 means "out of range" (see table 7.2.3-1 of 36.213)
                         {

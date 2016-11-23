@@ -887,7 +887,37 @@ FdBetFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sc
           continue;
         }
 
-      estAveThr.insert (std::pair <uint16_t, double> ((*itFlow).first, (*itFlow).second.lastAveragedThroughput));
+      // check first what are channel conditions for this UE, if CQI!=0
+      std::map <uint16_t,uint8_t>::iterator itCqi;
+      itCqi = m_p10CqiRxed.find ((*itFlow).first);
+      std::map <uint16_t,uint8_t>::iterator itTxMode;
+      itTxMode = m_uesTxMode.find ((*itFlow).first);
+      if (itTxMode == m_uesTxMode.end ())
+        {
+          NS_FATAL_ERROR ("No Transmission Mode info on user " << (*itFlow).first);
+        }
+      int nLayer = TransmissionModesLayers::TxMode2LayerNum ((*itTxMode).second);
+
+      uint8_t cqiSum = 0;
+      for (uint8_t j = 0; j < nLayer; j++)
+        {
+          if (itCqi == m_p10CqiRxed.end ())
+            {
+              cqiSum += 1;  // no info on this user -> lowest MCS
+            }
+          else
+            {
+              cqiSum = (*itCqi).second;
+            }
+        }
+      if (cqiSum != 0)
+        {
+          estAveThr.insert (std::pair <uint16_t, double> ((*itFlow).first, (*itFlow).second.lastAveragedThroughput));
+        }
+      else
+        {
+          NS_LOG_INFO ("Skip this flow, CQI==0, rnti:"<<(*itFlow).first);
+        }
     }
  
   if (estAveThr.size () != 0)

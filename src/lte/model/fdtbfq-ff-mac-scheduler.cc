@@ -1003,7 +1003,39 @@ FdTbfqFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::S
                 }
               continue;
            }
-          
+          // check first the channel conditions for this UE, if CQI!=0
+          std::map <uint16_t,SbMeasResult_s>::iterator itCqi;
+          itCqi = m_a30CqiRxed.find ((*it).first);
+          std::map <uint16_t,uint8_t>::iterator itTxMode;
+          itTxMode = m_uesTxMode.find ((*it).first);
+          if (itTxMode == m_uesTxMode.end ())
+            {
+              NS_FATAL_ERROR ("No Transmission Mode info on user " << (*it).first);
+            }
+          int nLayer = TransmissionModesLayers::TxMode2LayerNum ((*itTxMode).second);
+
+          uint8_t cqiSum = 0;
+          for (int k = 0; k < rbgNum; k++)
+            {
+              for (uint8_t j = 0; j < nLayer; j++)
+                {
+                  if (itCqi == m_a30CqiRxed.end ())
+                    {
+                      cqiSum += 1;  // no info on this user -> lowest MCS
+                    }
+                  else
+                    {
+                      cqiSum += (*itCqi).second.m_higherLayerSelected.at (k).m_sbCqi.at(j);
+                    }
+                }
+            }
+
+          if (cqiSum == 0)
+            {
+              NS_LOG_INFO ("Skip this flow, CQI==0, rnti:"<<(*it).first);
+              continue;
+            }
+
           if (LcActivePerFlow ((*it).first) == 0)
             {
               continue;
@@ -1040,42 +1072,42 @@ FdTbfqFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::S
 
       // mark this UE as "allocated"
       allocatedRnti.insert((*itMax).first);
-     
+
       // calculate the maximum number of byte that the scheduler can assigned to this UE
       uint32_t budget = 0;
       if ( bankSize > 0 )
         {
-	        budget = (*itMax).second.counter - (*itMax).second.debtLimit;
-	        if ( budget > (*itMax).second.burstCredit )
-	          budget = (*itMax).second.burstCredit;
-	        if ( budget > bankSize )
-	          budget = bankSize;
-	      }
+          budget = (*itMax).second.counter - (*itMax).second.debtLimit;
+          if ( budget > (*itMax).second.burstCredit )
+            budget = (*itMax).second.burstCredit;
+          if ( budget > bankSize )
+            budget = bankSize;
+        }
       budget = budget + (*itMax).second.tokenPoolSize;
 
       // calcualte how much bytes this UE actally need
       if (budget == 0)
         {
           // there are no tokens for this UE
- 	        continue;
+          continue;
         }
       else 
         {	
-	        // calculate rlc buffer size
-	        uint32_t rlcBufSize = 0;
+          // calculate rlc buffer size
+          uint32_t rlcBufSize = 0;
           uint8_t lcid = 0;
           std::map<LteFlowId_t, FfMacSchedSapProvider::SchedDlRlcBufferReqParameters>::iterator itRlcBuf;
           for (itRlcBuf = m_rlcBufferReq.begin (); itRlcBuf != m_rlcBufferReq.end (); itRlcBuf++)
-	          {
+            {
               if ( (*itRlcBuf).first.m_rnti == (*itMax).first )
                 lcid = (*itRlcBuf).first.m_lcId;
-	          }
+            }
           LteFlowId_t flow ((*itMax).first, lcid);
           itRlcBuf = m_rlcBufferReq.find (flow);
           if (itRlcBuf!=m_rlcBufferReq.end ())
-	          rlcBufSize = (*itRlcBuf).second.m_rlcTransmissionQueueSize + (*itRlcBuf).second.m_rlcRetransmissionQueueSize + (*itRlcBuf).second.m_rlcStatusPduSize;
-	        if ( budget > rlcBufSize )
-	          budget = rlcBufSize;
+            rlcBufSize = (*itRlcBuf).second.m_rlcTransmissionQueueSize + (*itRlcBuf).second.m_rlcRetransmissionQueueSize + (*itRlcBuf).second.m_rlcStatusPduSize;
+          if ( budget > rlcBufSize )
+            budget = rlcBufSize;
         }
 
       // assign RBGs to this UE 
@@ -1096,15 +1128,15 @@ FdTbfqFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::S
             }
           int nLayer = TransmissionModesLayers::TxMode2LayerNum ((*itTxMode).second);
 
-	         // find RBG with largest achievableRate
+          // find RBG with largest achievableRate
           double achievableRateMax = 0.0;
           rbgIndex = rbgNum;
- 	        for (int k = 0; k < rbgNum; k++)
-	          {
-       	      std::set <uint8_t>::iterator rbg;
+          for (int k = 0; k < rbgNum; k++)
+            {
+              std::set <uint8_t>::iterator rbg;
               rbg = allocatedRbg.find (k);
-	            if (rbg != allocatedRbg.end ())  // RBGs are already allocated to this UE
-	              continue;
+              if (rbg != allocatedRbg.end ())  // RBGs are already allocated to this UE
+                continue;
 
               if ( rbgMap.at (k) == true) // this RBG is allocated in RACH procedure
                 continue;
@@ -1130,7 +1162,7 @@ FdTbfqFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::S
                 {
                   cqi2 = sbCqi.at (1);
                 }
-          
+
               if ((cqi1 > 0)||(cqi2 > 0)) // CQI == 0 means "out of range" (see table 7.2.3-1 of 36.213)
                 {
                   if (LcActivePerFlow ((*itMax).first) > 0)
@@ -1152,13 +1184,13 @@ FdTbfqFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::S
                           achievableRate += ((m_amc->GetTbSizeFromMcs (mcs, rbgSize) / 8) / 0.001); // = TB size / TTI
                         }
 
-	              if ( achievableRate > achievableRateMax )
-	      	        {
-	                  achievableRateMax = achievableRate;
-	                  rbgIndex = k;
-	                }
-	              }  // end of LcActivePerFlow
-	            }  // end of cqi
+                      if ( achievableRate > achievableRateMax )
+                        {
+                          achievableRateMax = achievableRate;
+                          rbgIndex = k;
+                        }
+                    }  // end of LcActivePerFlow
+                }  // end of cqi
             }  // end of for rbgNum
 
           if ( rbgIndex == rbgNum)  // impossible
