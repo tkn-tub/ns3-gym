@@ -27,18 +27,14 @@
 #include <ostream>
 #include <map>
 
-#include "wifi-mac-header.h"
 #include "wifi-mode.h"
 #include "wifi-phy.h"
 #include "wifi-preamble.h"
 #include "wifi-remote-station-manager.h"
-#include "ctrl-headers.h"
-#include "mgt-headers.h"
 #include "block-ack-agreement.h"
 #include "ns3/mac48-address.h"
 #include "ns3/callback.h"
 #include "ns3/event-id.h"
-#include "ns3/packet.h"
 #include "ns3/nstime.h"
 #include "qos-utils.h"
 #include "block-ack-cache.h"
@@ -1175,13 +1171,6 @@ private:
 
   virtual void DoDispose (void);
 
-  /**
-   * \param packet packet to check
-   * \param hdr 802.11 header for packet to check
-   *
-   * Returns Tid of different packet types
-   */
-  uint8_t GetTid (Ptr<const Packet> packet, const WifiMacHeader hdr) const;
   /**
    * \param originator Address of peer participating in Block Ack mechanism.
    * \param tid TID for which Block Ack was created.

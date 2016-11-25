@@ -1210,29 +1210,6 @@ rxPacket:
   return;
 }
 
-uint8_t
-MacLow::GetTid (Ptr<const Packet> packet, const WifiMacHeader hdr) const
-{
-  uint8_t tid = 0;
-  if (hdr.IsQosData ())
-    {
-      tid = hdr.GetQosTid ();
-    }
-  else if (hdr.IsBlockAckReq ())
-    {
-      CtrlBAckRequestHeader baReqHdr;
-      packet->PeekHeader (baReqHdr);
-      tid = baReqHdr.GetTidInfo ();
-    }
-  else if (hdr.IsBlockAck ())
-    {
-      CtrlBAckResponseHeader baRespHdr;
-      packet->PeekHeader (baRespHdr);
-      tid = baRespHdr.GetTidInfo ();
-    }
-  return tid;
-}
-
 uint32_t
 MacLow::GetAckSize (void) const
 {

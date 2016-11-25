@@ -93,4 +93,69 @@ QosUtilsIsOldPacket (uint16_t startingSeq, uint16_t seqNumber)
   return (distance >= 2048);
 }
 
+uint8_t
+GetTid (Ptr<const Packet> packet, const WifiMacHeader hdr)
+{
+  if (hdr.IsQosData ())
+    {
+      return hdr.GetQosTid ();
+    }
+  else if (hdr.IsBlockAckReq ())
+    {
+      CtrlBAckRequestHeader baReqHdr;
+      packet->PeekHeader (baReqHdr);
+      return baReqHdr.GetTidInfo ();
+    }
+  else if (hdr.IsBlockAck ())
+    {
+      CtrlBAckResponseHeader baRespHdr;
+      packet->PeekHeader (baRespHdr);
+      return baRespHdr.GetTidInfo ();
+    }
+  else if (hdr.IsMgt () && hdr.IsAction ())
+    {
+      Ptr<Packet> pkt = packet->Copy ();
+      WifiActionHeader actionHdr;
+      pkt->RemoveHeader (actionHdr);
+
+      if (actionHdr.GetCategory () == WifiActionHeader::BLOCK_ACK)
+        {
+          switch (actionHdr.GetAction ().blockAck)
+            {
+            case WifiActionHeader::BLOCK_ACK_ADDBA_REQUEST:
+              {
+                MgtAddBaResponseHeader reqHdr;
+                pkt->RemoveHeader (reqHdr);
+                return reqHdr.GetTid ();
+              }
+            case WifiActionHeader::BLOCK_ACK_ADDBA_RESPONSE:
+              {
+                MgtAddBaResponseHeader respHdr;
+                pkt->RemoveHeader (respHdr);
+                return respHdr.GetTid ();
+              }
+            case WifiActionHeader::BLOCK_ACK_DELBA:
+              {
+                MgtDelBaHeader delHdr;
+                pkt->RemoveHeader (delHdr);
+                return delHdr.GetTid ();
+              }
+            default:
+              {
+                NS_FATAL_ERROR ("Cannot extract Traffic ID from this BA action frame");
+              }
+            }
+        }
+      else
+        {
+          NS_FATAL_ERROR ("Cannot extract Traffic ID from this action frame");
+        }
+    }
+  else
+    {
+      NS_FATAL_ERROR ("Packet has no Traffic ID");
+    }
+}
+
+
 } //namespace ns3

@@ -24,6 +24,9 @@
 #include "ns3/uinteger.h"
 #include "ns3/ptr.h"
 #include "ns3/packet.h"
+#include "wifi-mac-header.h"
+#include "ctrl-headers.h"
+#include "mgt-headers.h"
 
 namespace ns3 {
 
@@ -121,6 +124,17 @@ uint32_t QosUtilsMapSeqControlToUniqueInteger (uint16_t seqControl, uint16_t end
  * \return true if the packet is old, false otherwise
  */
 bool QosUtilsIsOldPacket (uint16_t startingSeq, uint16_t seqNumber);
+
+/**
+ * \ingroup wifi
+ * Next function is useful to get traffic id of different packet types.
+ *
+ * \param packet packet to check
+ * \param hdr 802.11 header for packet to check
+ *
+ * Returns Tid of different packet types
+ */
+uint8_t GetTid (Ptr<const Packet> packet, const WifiMacHeader hdr);
 
 } //namespace ns3
 

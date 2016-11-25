@@ -534,10 +534,6 @@ private:
    * if an established block ack agreement exists with the receiver.
    */
   void VerifyBlockAck (void);
-  /**
-   * Get Traffic ID of the current packet.
-   */
-  uint8_t GetCurrentTid () const;
   /*
    * Return the remaining duration in the current TXOP.
    *
