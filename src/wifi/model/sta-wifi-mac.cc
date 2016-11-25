@@ -105,7 +105,7 @@ StaWifiMac::StaWifiMac ()
   : m_state (BEACON_MISSED),
     m_probeRequestEvent (),
     m_assocRequestEvent (),
-    m_beaconWatchdogEnd (Seconds (0.0))
+    m_beaconWatchdogEnd (Seconds (0))
 {
   NS_LOG_FUNCTION (this);
 

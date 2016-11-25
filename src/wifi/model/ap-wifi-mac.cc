@@ -82,6 +82,7 @@ ApWifiMac::GetTypeId (void)
 }
 
 ApWifiMac::ApWifiMac ()
+  : m_enableBeaconGeneration (false)
 {
   NS_LOG_FUNCTION (this);
   m_beaconDca = CreateObject<DcaTxop> ();
@@ -94,8 +95,6 @@ ApWifiMac::ApWifiMac ()
 
   //Let the lower layers know that we are acting as an AP.
   SetTypeOfStation (AP);
-
-  m_enableBeaconGeneration = false;
 }
 
 ApWifiMac::~ApWifiMac ()

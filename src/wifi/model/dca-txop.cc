@@ -663,31 +663,6 @@ DcaTxop::Cancel (void)
 {
   NS_LOG_FUNCTION (this);
   NS_LOG_DEBUG ("transmission cancelled");
-  /**
-   * This happens in only one case: in an AP, you have two DcaTxop:
-   *   - one is used exclusively for beacons and has a high priority.
-   *   - the other is used for everything else and has a normal
-   *     priority.
-   *
-   * If the normal queue tries to send a unicast data frame, but
-   * if the tx fails (ack timeout), it starts a backoff. If the beacon
-   * queue gets a tx oportunity during this backoff, it will trigger
-   * a call to this Cancel function.
-   *
-   * Since we are already doing a backoff, we will get access to
-   * the medium when we can, we have nothing to do here. We just
-   * ignore the cancel event and wait until we are given again a
-   * tx oportunity.
-   *
-   * Note that this is really non-trivial because each of these
-   * frames is assigned a sequence number from the same sequence
-   * counter (because this is a non-802.11e device) so, the scheme
-   * described here fails to ensure in-order delivery of frames
-   * at the receiving side. This, however, does not matter in
-   * this case because we assume that the receiving side does not
-   * update its <seq,ad> tupple for packets whose destination
-   * address is a broadcast address.
-   */
 }
 
 void

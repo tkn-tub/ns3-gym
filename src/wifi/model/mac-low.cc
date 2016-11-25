@@ -367,16 +367,16 @@ MacLow::MacLow ()
     m_endTxNoAckEvent (),
     m_currentPacket (0),
     m_listener (0),
+    m_lastNavStart (Seconds (0)),
+    m_lastNavDuration (Seconds (0)),
+    m_promisc (false),
+    m_ampdu (false),
     m_phyMacLowListener (0),
     m_ctsToSelfSupported (false),
+    m_sentMpdus (0),
     m_nTxMpdus (0)
 {
   NS_LOG_FUNCTION (this);
-  m_lastNavDuration = Seconds (0);
-  m_lastNavStart = Seconds (0);
-  m_promisc = false;
-  m_ampdu = false;
-  m_sentMpdus = 0;
   m_aggregateQueue = CreateObject<WifiMacQueue> ();
 }
 
