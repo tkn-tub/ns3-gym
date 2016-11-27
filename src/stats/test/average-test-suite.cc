@@ -25,7 +25,9 @@
 
 using namespace ns3;
 
-const double TOLERANCE = 1e-14;
+// Note, the rationale for this particular value of TOLERANCE is not
+// documented.  Current value is sufficient for all test platforms.
+const double TOLERANCE = 2e-14;
 
 // ===========================================================================
 // Test case for a single integer.
@@ -87,12 +89,12 @@ OneIntegerAverageTestCase::DoRun (void)
   stddev = std::sqrt (variance);
 
   // Test the calculator.
-  NS_TEST_ASSERT_MSG_EQ_TOL (calculator.Count (),    count,    TOLERANCE, "Count value wrong");
-  NS_TEST_ASSERT_MSG_EQ_TOL (calculator.Min (),      min,      TOLERANCE, "Min value wrong");
-  NS_TEST_ASSERT_MSG_EQ_TOL (calculator.Max (),      max,      TOLERANCE, "Max value wrong");
-  NS_TEST_ASSERT_MSG_EQ_TOL (calculator.Mean (),     mean,     TOLERANCE, "Mean value wrong");
-  NS_TEST_ASSERT_MSG_EQ_TOL (calculator.Stddev (),   stddev,   TOLERANCE, "Stddev value wrong");
-  NS_TEST_ASSERT_MSG_EQ_TOL (calculator.Var (), variance, TOLERANCE, "Variance value wrong");
+  NS_TEST_ASSERT_MSG_EQ_TOL (calculator.Count (), count, TOLERANCE, "Count value outside of tolerance " << TOLERANCE << "; difference: " << calculator.Count () - count);
+  NS_TEST_ASSERT_MSG_EQ_TOL (calculator.Min (), min, TOLERANCE, "Min value outside of tolerance " << TOLERANCE << "; difference: " << calculator.Min () - min);
+  NS_TEST_ASSERT_MSG_EQ_TOL (calculator.Max (), max, TOLERANCE, "Max value outside of tolerance " << TOLERANCE << "; difference: " << calculator.Max () - max);
+  NS_TEST_ASSERT_MSG_EQ_TOL (calculator.Mean (), mean, TOLERANCE, "Mean value outside of tolerance " << TOLERANCE << "; difference: " << calculator.Mean () - mean);
+  NS_TEST_ASSERT_MSG_EQ_TOL (calculator.Stddev (), stddev, TOLERANCE, "Stddev value outside of tolerance " << TOLERANCE << "; difference: " << calculator.Stddev () - stddev);
+  NS_TEST_ASSERT_MSG_EQ_TOL (calculator.Var (), variance, TOLERANCE, "Variance value outside of tolerance " << TOLERANCE << "; difference: " << calculator.Var () - variance);
 }
 
 
@@ -156,12 +158,12 @@ FiveIntegersAverageTestCase::DoRun (void)
   stddev = std::sqrt (variance);
 
   // Test the calculator.
-  NS_TEST_ASSERT_MSG_EQ_TOL (calculator.Count (),    count,    TOLERANCE, "Count value wrong");
-  NS_TEST_ASSERT_MSG_EQ_TOL (calculator.Min (),      min,      TOLERANCE, "Min value wrong");
-  NS_TEST_ASSERT_MSG_EQ_TOL (calculator.Max (),      max,      TOLERANCE, "Max value wrong");
-  NS_TEST_ASSERT_MSG_EQ_TOL (calculator.Mean (),     mean,     TOLERANCE, "Mean value wrong");
-  NS_TEST_ASSERT_MSG_EQ_TOL (calculator.Stddev (),   stddev,   TOLERANCE, "Stddev value wrong");
-  NS_TEST_ASSERT_MSG_EQ_TOL (calculator.Var (), variance, TOLERANCE, "Variance value wrong");
+  NS_TEST_ASSERT_MSG_EQ_TOL (calculator.Count (), count, TOLERANCE, "Count value outside of tolerance " << TOLERANCE << "; difference: " << calculator.Count () - count);
+  NS_TEST_ASSERT_MSG_EQ_TOL (calculator.Min (), min, TOLERANCE, "Min value outside of tolerance " << TOLERANCE << "; difference: " << calculator.Min () - min);
+  NS_TEST_ASSERT_MSG_EQ_TOL (calculator.Max (), max, TOLERANCE, "Max value outside of tolerance " << TOLERANCE << "; difference: " << calculator.Max () - max);
+  NS_TEST_ASSERT_MSG_EQ_TOL (calculator.Mean (), mean, TOLERANCE, "Mean value outside of tolerance " << TOLERANCE << "; difference: " << calculator.Mean () - mean);
+  NS_TEST_ASSERT_MSG_EQ_TOL (calculator.Stddev (), stddev, TOLERANCE, "Stddev value outside of tolerance " << TOLERANCE << "; difference: " << calculator.Stddev () - stddev);
+  NS_TEST_ASSERT_MSG_EQ_TOL (calculator.Var (), variance, TOLERANCE, "Variance value outside of tolerance " << TOLERANCE << "; difference: " << calculator.Var () - variance);
 }
 
 
@@ -225,12 +227,12 @@ FiveDoublesAverageTestCase::DoRun (void)
   stddev = std::sqrt (variance);
 
   // Test the calculator.
-  NS_TEST_ASSERT_MSG_EQ_TOL (calculator.Count (),    count,    TOLERANCE, "Count value wrong");
-  NS_TEST_ASSERT_MSG_EQ_TOL (calculator.Min (),      min,      TOLERANCE, "Min value wrong");
-  NS_TEST_ASSERT_MSG_EQ_TOL (calculator.Max (),      max,      TOLERANCE, "Max value wrong");
-  NS_TEST_ASSERT_MSG_EQ_TOL (calculator.Mean (),     mean,     TOLERANCE, "Mean value wrong");
-  NS_TEST_ASSERT_MSG_EQ_TOL (calculator.Stddev (),   stddev,   TOLERANCE, "Stddev value wrong");
-  NS_TEST_ASSERT_MSG_EQ_TOL (calculator.Var (), variance, TOLERANCE, "Variance value wrong");
+  NS_TEST_ASSERT_MSG_EQ_TOL (calculator.Count (), count, TOLERANCE, "Count value outside of tolerance " << TOLERANCE << "; difference: " << calculator.Count () - count);
+  NS_TEST_ASSERT_MSG_EQ_TOL (calculator.Min (), min, TOLERANCE, "Min value outside of tolerance " << TOLERANCE << "; difference: " << calculator.Min () - min);
+  NS_TEST_ASSERT_MSG_EQ_TOL (calculator.Max (), max, TOLERANCE, "Max value outside of tolerance " << TOLERANCE << "; difference: " << calculator.Max () - max);
+  NS_TEST_ASSERT_MSG_EQ_TOL (calculator.Mean (), mean, TOLERANCE, "Mean value outside of tolerance " << TOLERANCE << "; difference: " << calculator.Mean () - mean);
+  NS_TEST_ASSERT_MSG_EQ_TOL (calculator.Stddev (), stddev, TOLERANCE, "Stddev value outside of tolerance " << TOLERANCE << "; difference: " << calculator.Stddev () - stddev);
+  NS_TEST_ASSERT_MSG_EQ_TOL (calculator.Var (), variance, TOLERANCE, "Variance value outside of tolerance " << TOLERANCE << "; difference: " << calculator.Var () - variance);
 }
 
 
