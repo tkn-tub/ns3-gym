@@ -22,9 +22,7 @@
 #define WIFI_PHY_STATE_HELPER_H
 
 #include "wifi-phy.h"
-#include "ns3/traced-callback.h"
 #include "ns3/object.h"
-#include <vector>
 
 namespace ns3 {
 

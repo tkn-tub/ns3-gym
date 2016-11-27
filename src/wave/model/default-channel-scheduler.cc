@@ -18,6 +18,7 @@
 #include "default-channel-scheduler.h"
 #include "ns3/log.h"
 #include "ns3/simulator.h"
+#include "ns3/wifi-phy.h"
 
 namespace ns3 {
 

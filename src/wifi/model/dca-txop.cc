@@ -18,12 +18,7 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 
-#include "ns3/assert.h"
-#include "ns3/packet.h"
 #include "ns3/log.h"
-#include "ns3/simulator.h"
-#include "ns3/node.h"
-#include "ns3/uinteger.h"
 #include "ns3/pointer.h"
 #include "dca-txop.h"
 #include "dcf-manager.h"
@@ -31,7 +26,6 @@
 #include "wifi-mac-queue.h"
 #include "mac-tx-middle.h"
 #include "wifi-mac-trailer.h"
-#include "wifi-mac.h"
 #include "random-stream.h"
 
 #undef NS_LOG_APPEND_CONTEXT

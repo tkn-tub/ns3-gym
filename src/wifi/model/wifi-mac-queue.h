@@ -23,11 +23,7 @@
 #ifndef WIFI_MAC_QUEUE_H
 #define WIFI_MAC_QUEUE_H
 
-#include <list>
-#include <utility>
 #include "ns3/packet.h"
-#include "ns3/nstime.h"
-#include "ns3/object.h"
 #include "wifi-mac-header.h"
 
 namespace ns3 {

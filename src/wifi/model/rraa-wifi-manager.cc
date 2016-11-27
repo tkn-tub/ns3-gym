@@ -19,7 +19,6 @@
  */
 
 #include "rraa-wifi-manager.h"
-#include "ns3/assert.h"
 #include "ns3/log.h"
 #include "ns3/boolean.h"
 #include "ns3/double.h"

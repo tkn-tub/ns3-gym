@@ -51,10 +51,6 @@
 #include "ns3/csma-module.h"
 #include "ns3/internet-module.h"
 #include "ns3/bridge-helper.h"
-#include <vector>
-#include <stdint.h>
-#include <sstream>
-#include <fstream>
 
 using namespace ns3;
 

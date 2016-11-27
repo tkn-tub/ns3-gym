@@ -50,18 +50,12 @@
  * export NS_LOG=RateAdaptationDistance=level_info
  */
 
-#include <sstream>
-#include <fstream>
-#include <math.h>
-
 #include "ns3/core-module.h"
-#include "ns3/network-module.h"
 #include "ns3/internet-module.h"
 #include "ns3/mobility-module.h"
 #include "ns3/wifi-module.h"
 #include "ns3/applications-module.h"
 #include "ns3/stats-module.h"
-#include "ns3/flow-monitor-module.h"
 
 using namespace ns3;
 using namespace std;

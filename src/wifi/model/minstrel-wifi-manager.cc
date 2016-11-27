@@ -15,8 +15,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * Author: Duy Nguyen <duy@soe.ucsc.edu>
- *         Matías Richart <mrichart@fing.edu.uy>
+ * Authors: Duy Nguyen <duy@soe.ucsc.edu>
+ *          Matías Richart <mrichart@fing.edu.uy>
  *
  * Some Comments:
  *
@@ -30,15 +30,12 @@
  */
 
 #include "minstrel-wifi-manager.h"
-#include "wifi-phy.h"
 #include "ns3/simulator.h"
 #include "ns3/log.h"
-#include "ns3/uinteger.h"
 #include "ns3/double.h"
 #include "ns3/boolean.h"
-#include "ns3/wifi-mac.h"
-#include "ns3/assert.h"
-#include <vector>
+#include "wifi-mac.h"
+#include "wifi-phy.h"
 #include <iomanip>
 
 #define Min(a,b) ((a < b) ? a : b)

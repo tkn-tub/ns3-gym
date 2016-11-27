@@ -20,12 +20,8 @@
 
 #include "mac-rx-middle.h"
 #include "wifi-mac-header.h"
-#include "ns3/assert.h"
 #include "ns3/log.h"
-#include "ns3/packet.h"
-#include "ns3/simulator.h"
 #include "ns3/sequence-number.h"
-#include <list>
 
 namespace ns3 {
 

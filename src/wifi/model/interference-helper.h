@@ -21,13 +21,7 @@
 #ifndef INTERFERENCE_HELPER_H
 #define INTERFERENCE_HELPER_H
 
-#include <stdint.h>
-#include <vector>
-#include <list>
-#include "wifi-mode.h"
-#include "wifi-phy-standard.h"
 #include "ns3/nstime.h"
-#include "ns3/simple-ref-count.h"
 #include "ns3/wifi-tx-vector.h"
 #include "error-rate-model.h"
 

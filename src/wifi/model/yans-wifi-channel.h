@@ -21,15 +21,8 @@
 #ifndef YANS_WIFI_CHANNEL_H
 #define YANS_WIFI_CHANNEL_H
 
-#include <vector>
-#include <stdint.h>
-#include "ns3/packet.h"
 #include "wifi-channel.h"
-#include "wifi-mode.h"
-#include "wifi-preamble.h"
-#include "wifi-tx-vector.h"
 #include "yans-wifi-phy.h"
-#include "ns3/nstime.h"
 
 namespace ns3 {
 

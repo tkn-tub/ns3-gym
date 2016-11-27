@@ -22,12 +22,10 @@
 #ifndef AMPDU_TAG_H
 #define AMPDU_TAG_H
 
-#include "ns3/packet.h"
 #include "ns3/nstime.h"
+#include "ns3/tag.h"
 
 namespace ns3 {
-
-class Tag;
 
 /**
  * \ingroup wifi

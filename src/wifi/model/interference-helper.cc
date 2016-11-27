@@ -21,7 +21,6 @@
 
 #include "interference-helper.h"
 #include "wifi-phy.h"
-#include "error-rate-model.h"
 #include "ns3/simulator.h"
 #include "ns3/log.h"
 #include <algorithm>

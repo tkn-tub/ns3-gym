@@ -18,19 +18,8 @@
  * Author: Mathieu Lacage, <mathieu.lacage@sophia.inria.fr>
  */
 
-#include "ns3/packet.h"
-#include "ns3/simulator.h"
-#include "ns3/mobility-model.h"
-#include "ns3/net-device.h"
-#include "ns3/node.h"
 #include "ns3/log.h"
-#include "ns3/pointer.h"
-#include "ns3/object-factory.h"
 #include "wifi-channel.h"
-#include "wifi-net-device.h"
-#include "yans-wifi-phy.h"
-#include "ns3/propagation-loss-model.h"
-#include "ns3/propagation-delay-model.h"
 
 namespace ns3 {
 

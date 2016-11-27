@@ -24,7 +24,6 @@
 
 #include <ns3/wifi-mode.h>
 #include <ns3/wifi-preamble.h>
-#include <ostream>
 
 namespace ns3 {
 

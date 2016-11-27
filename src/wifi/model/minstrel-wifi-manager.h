@@ -15,16 +15,14 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * Author: Duy Nguyen <duy@soe.ucsc.edu>
- *         Matías Richart <mrichart@fing.edu.uy>
+ * Authors: Duy Nguyen <duy@soe.ucsc.edu>
+ *          Matías Richart <mrichart@fing.edu.uy>
  */
 
 #ifndef MINSTREL_WIFI_MANAGER_H
 #define MINSTREL_WIFI_MANAGER_H
 
 #include "wifi-remote-station-manager.h"
-#include "wifi-mode.h"
-#include "ns3/nstime.h"
 #include "ns3/random-variable-stream.h"
 #include <fstream>
 

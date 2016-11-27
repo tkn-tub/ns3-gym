@@ -20,21 +20,12 @@
  *          Mirko Banchi <mk.banchi@gmail.com>
  */
 
-#include "ns3/assert.h"
-#include "ns3/packet.h"
 #include "ns3/simulator.h"
-#include "ns3/tag.h"
 #include "ns3/log.h"
-#include "ns3/node.h"
 #include "ns3/socket.h"
-#include "ns3/double.h"
 #include "mac-low.h"
-#include "wifi-phy.h"
 #include "wifi-mac-trailer.h"
-#include "qos-utils.h"
-#include "edca-txop-n.h"
 #include "snr-tag.h"
-#include "yans-wifi-phy.h"
 #include "ampdu-tag.h"
 #include "wifi-mac-queue.h"
 

@@ -19,8 +19,6 @@
  */
 
 #include "status-code.h"
-#include <string>
-#include <ostream>
 
 namespace ns3 {
 

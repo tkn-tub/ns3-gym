@@ -25,8 +25,6 @@
 #include "ns3/stats-module.h"
 #include "ns3/wifi-module.h"
 
-#include <iostream>
-
 using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("Main");

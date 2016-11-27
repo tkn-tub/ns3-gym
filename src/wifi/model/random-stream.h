@@ -21,8 +21,6 @@
 #ifndef RANDOM_STREAM_H
 #define RANDOM_STREAM_H
 
-#include <stdint.h>
-#include <list>
 #include "ns3/random-variable-stream.h"
 
 namespace ns3 {

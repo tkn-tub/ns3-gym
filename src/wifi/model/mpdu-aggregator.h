@@ -21,11 +21,9 @@
 #ifndef MPDU_AGGREGATOR_H
 #define MPDU_AGGREGATOR_H
 
-#include "ns3/ptr.h"
 #include "ns3/packet.h"
 #include "ns3/object.h"
 #include "ampdu-subframe-header.h"
-#include <list>
 
 namespace ns3 {
 

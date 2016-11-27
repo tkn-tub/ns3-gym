@@ -19,12 +19,8 @@
  *          Sébastien Deronne <sebastien.deronne@gmail.com>
  */
 
-#include "ns3/trace-helper.h"
 #include "spectrum-wifi-helper.h"
-#include "ns3/error-rate-model.h"
-#include "ns3/spectrum-channel.h"
 #include "ns3/spectrum-wifi-phy.h"
-#include "ns3/wifi-net-device.h"
 #include "ns3/names.h"
 #include "ns3/log.h"
 

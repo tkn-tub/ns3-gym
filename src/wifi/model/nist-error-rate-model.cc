@@ -19,7 +19,6 @@
  *          Sébastien Deronne <sebastien.deronne@gmail.com>
  */
 
-#include <cmath>
 #include "nist-error-rate-model.h"
 #include "wifi-phy.h"
 #include "ns3/log.h"

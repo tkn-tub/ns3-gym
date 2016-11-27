@@ -20,7 +20,6 @@
  */
 
 #include "ns3/wifi-tx-vector.h"
-#include "ns3/fatal-error.h"
 
 namespace ns3 {
 

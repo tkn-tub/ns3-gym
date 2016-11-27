@@ -18,13 +18,9 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 
-#include "ns3/assert.h"
 #include "ns3/log.h"
 #include "ns3/simulator.h"
-#include <cmath>
 #include "dcf-manager.h"
-#include "wifi-phy.h"
-#include "wifi-mac.h"
 #include "mac-low.h"
 
 #define MY_DEBUG(x) \

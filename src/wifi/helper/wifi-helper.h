@@ -23,12 +23,6 @@
 #ifndef WIFI_HELPER_H
 #define WIFI_HELPER_H
 
-#include <string>
-#include "ns3/attribute.h"
-#include "ns3/object-factory.h"
-#include "ns3/node-container.h"
-#include "ns3/net-device-container.h"
-#include "ns3/wifi-phy-standard.h"
 #include "ns3/trace-helper.h"
 #include "ns3/wifi-mac-helper.h"
 #include "ns3/wifi-phy.h"

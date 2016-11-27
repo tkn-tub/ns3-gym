@@ -44,14 +44,6 @@ public:
    * \returns the transmit current (in Ampere)
    */
   virtual double CalcTxCurrent (double txPowerDbm) const = 0;
-
-  /**
-   * Convert from dBm to Watts.
-   *
-   * \param dbm the power in dBm
-   * \return the equivalent Watts for the given dBm
-   */
-  static double DbmToW (double dbm);
 };
 
 /**

@@ -21,13 +21,7 @@
 #ifndef DCA_TXOP_H
 #define DCA_TXOP_H
 
-#include <stdint.h>
-#include "ns3/callback.h"
-#include "ns3/packet.h"
-#include "ns3/nstime.h"
-#include "ns3/object.h"
 #include "ns3/wifi-mac-header.h"
-#include "ns3/wifi-mode.h"
 #include "ns3/wifi-remote-station-manager.h"
 #include "ns3/dcf.h"
 

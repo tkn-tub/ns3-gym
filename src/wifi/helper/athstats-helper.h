@@ -21,16 +21,9 @@
 #ifndef ATHSTATS_HELPER_H
 #define ATHSTATS_HELPER_H
 
-#include <string>
-#include "ns3/object.h"
-#include "ns3/attribute.h"
-#include "ns3/object-factory.h"
 #include "ns3/node-container.h"
 #include "ns3/net-device-container.h"
-#include "ns3/nstime.h"
 #include "ns3/wifi-phy.h"
-#include "ns3/double.h"
-#include "ns3/mac48-address.h"
 
 namespace ns3 {
 

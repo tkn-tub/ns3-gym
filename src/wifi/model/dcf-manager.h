@@ -21,9 +21,7 @@
 #ifndef DCF_MANAGER_H
 #define DCF_MANAGER_H
 
-#include "ns3/nstime.h"
 #include "ns3/event-id.h"
-#include <vector>
 
 namespace ns3 {
 

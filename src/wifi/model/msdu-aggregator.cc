@@ -19,9 +19,7 @@
  */
 
 #include "ns3/log.h"
-
 #include "msdu-aggregator.h"
-#include "wifi-mac-header.h"
 
 namespace ns3 {
 

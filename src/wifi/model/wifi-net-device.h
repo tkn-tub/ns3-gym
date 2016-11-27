@@ -22,10 +22,7 @@
 #define WIFI_NET_DEVICE_H
 
 #include "ns3/net-device.h"
-#include "ns3/packet.h"
 #include "ns3/traced-callback.h"
-#include "ns3/mac48-address.h"
-#include <string>
 
 namespace ns3 {
 

@@ -19,18 +19,11 @@
  */
 
 #include "ns3/log.h"
-#include "ns3/assert.h"
 #include "ns3/simulator.h"
-#include "ns3/fatal-error.h"
 #include "block-ack-manager.h"
 #include "mgt-headers.h"
-#include "ctrl-headers.h"
-#include "wifi-mac-header.h"
-#include "edca-txop-n.h"
-#include "mac-low.h"
 #include "wifi-mac-queue.h"
 #include "mac-tx-middle.h"
-#include "qos-utils.h"
 
 namespace ns3 {
 

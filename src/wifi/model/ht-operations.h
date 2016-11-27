@@ -21,9 +21,6 @@
 #ifndef HT_OPERATIONS_H
 #define HT_OPERATIONS_H
 
-#include <stdint.h>
-#include "ns3/buffer.h"
-#include "ns3/attribute-helper.h"
 #include "ns3/wifi-information-element.h"
 
 /**

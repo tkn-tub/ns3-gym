@@ -15,15 +15,14 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * Authors: Sidharth Nabar <snabar@uw.edu>, He Wu <mdzz@u.washington.edu>
+ * Authors: Sidharth Nabar <snabar@uw.edu>
+ *          He Wu <mdzz@u.washington.edu>
  */
 
 #ifndef WIFI_RADIO_ENERGY_MODEL_H
 #define WIFI_RADIO_ENERGY_MODEL_H
 
 #include "ns3/device-energy-model.h"
-#include "ns3/nstime.h"
-#include "ns3/event-id.h"
 #include "ns3/traced-value.h"
 #include "ns3/wifi-phy.h"
 

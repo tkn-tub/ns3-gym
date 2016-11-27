@@ -19,9 +19,7 @@
  */
 
 #include "airtime-metric.h"
-#include "ns3/wifi-remote-station-manager.h"
-#include "ns3/wifi-mode.h"
-#include "ns3/wifi-tx-vector.h"
+#include "ns3/wifi-phy.h"
 
 namespace ns3 {
 namespace dot11s {

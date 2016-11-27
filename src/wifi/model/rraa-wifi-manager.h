@@ -21,7 +21,6 @@
 #ifndef RRAA_WIFI_MANAGER_H
 #define RRAA_WIFI_MANAGER_H
 
-#include "ns3/nstime.h"
 #include "wifi-remote-station-manager.h"
 
 namespace ns3 {

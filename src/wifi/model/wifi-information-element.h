@@ -22,7 +22,6 @@
 #define WIFI_INFORMATION_ELEMENT_H
 
 #include "ns3/header.h"
-#include "ns3/simple-ref-count.h"
 
 namespace ns3 {
 

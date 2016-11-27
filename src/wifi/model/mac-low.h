@@ -16,28 +16,18 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
- * Author: Mirko Banchi <mk.banchi@gmail.com>
+ * Authors: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
+ *          Mirko Banchi <mk.banchi@gmail.com>
  */
+
 #ifndef MAC_LOW_H
 #define MAC_LOW_H
 
-#include <vector>
-#include <stdint.h>
-#include <ostream>
-#include <map>
-
-#include "wifi-mode.h"
 #include "wifi-phy.h"
 #include "wifi-remote-station-manager.h"
 #include "block-ack-agreement.h"
-#include "ns3/mac48-address.h"
-#include "ns3/callback.h"
-#include "ns3/event-id.h"
-#include "ns3/nstime.h"
 #include "qos-utils.h"
 #include "block-ack-cache.h"
-#include "wifi-tx-vector.h"
 #include "mpdu-aggregator.h"
 #include "msdu-aggregator.h"
 

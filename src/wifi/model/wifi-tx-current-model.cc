@@ -20,11 +20,8 @@
 
 #include "wifi-tx-current-model.h"
 #include "ns3/log.h"
-#include "ns3/boolean.h"
 #include "ns3/double.h"
-#include "ns3/string.h"
-#include "ns3/pointer.h"
-#include <cmath>
+#include "wifi-utils.h"
 
 namespace ns3 {
 
@@ -50,13 +47,6 @@ WifiTxCurrentModel::WifiTxCurrentModel()
 
 WifiTxCurrentModel::~WifiTxCurrentModel()
 {
-}
-
-double
-WifiTxCurrentModel::DbmToW (double dbm)
-{
-  double mW = std::pow (10.0, dbm / 10.0);
-  return mW / 1000.0;
 }
 
 // ------------------------------------------------------------------------- //

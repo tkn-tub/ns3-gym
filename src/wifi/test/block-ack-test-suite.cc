@@ -22,7 +22,6 @@
 #include "ns3/log.h"
 #include "ns3/qos-utils.h"
 #include "ns3/ctrl-headers.h"
-#include <list>
 
 using namespace ns3;
 

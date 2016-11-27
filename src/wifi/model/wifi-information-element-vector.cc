@@ -19,8 +19,6 @@
  */
 
 #include "wifi-information-element-vector.h"
-#include "ns3/packet.h"
-#include <algorithm>
 
 namespace ns3 {
 

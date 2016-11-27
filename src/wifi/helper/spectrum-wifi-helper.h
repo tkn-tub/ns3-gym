@@ -22,7 +22,6 @@
 #define SPECTRUM_WIFI_HELPER_H
 
 #include "wifi-helper.h"
-#include "ns3/trace-helper.h"
 
 namespace ns3 {
 

@@ -20,9 +20,6 @@
 
 #include "wifi-mac.h"
 #include "dcf.h"
-#include "ns3/uinteger.h"
-#include "ns3/boolean.h"
-#include "ns3/trace-source-accessor.h"
 
 namespace ns3 {
 

@@ -21,7 +21,6 @@
 #ifndef CONSTANT_RATE_WIFI_MANAGER_H
 #define CONSTANT_RATE_WIFI_MANAGER_H
 
-#include <stdint.h>
 #include "wifi-remote-station-manager.h"
 
 namespace ns3 {

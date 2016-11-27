@@ -21,13 +21,9 @@
 #ifndef REGULAR_WIFI_MAC_H
 #define REGULAR_WIFI_MAC_H
 
-#include "ns3/wifi-mac.h"
+#include "wifi-mac.h"
 #include "dca-txop.h"
 #include "edca-txop-n.h"
-#include "wifi-remote-station-manager.h"
-#include "ssid.h"
-#include "qos-utils.h"
-#include <map>
 
 namespace ns3 {
 

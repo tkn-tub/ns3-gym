@@ -20,10 +20,7 @@
 
 #include "ideal-wifi-manager.h"
 #include "wifi-phy.h"
-#include "ns3/assert.h"
-#include "ns3/double.h"
 #include "ns3/log.h"
-#include <cmath>
 
 namespace ns3 {
 

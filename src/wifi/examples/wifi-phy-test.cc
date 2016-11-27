@@ -18,23 +18,14 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 
-#include "ns3/wifi-net-device.h"
 #include "ns3/yans-wifi-channel.h"
-#include "ns3/yans-wifi-phy.h"
 #include "ns3/propagation-loss-model.h"
 #include "ns3/propagation-delay-model.h"
-#include "ns3/error-rate-model.h"
 #include "ns3/yans-error-rate-model.h"
-#include "ns3/ptr.h"
-#include "ns3/mobility-model.h"
 #include "ns3/constant-position-mobility-model.h"
-#include "ns3/vector.h"
-#include "ns3/packet.h"
 #include "ns3/simulator.h"
-#include "ns3/nstime.h"
 #include "ns3/command-line.h"
 #include "ns3/flow-id-tag.h"
-#include "ns3/wifi-tx-vector.h"
 
 using namespace ns3;
 

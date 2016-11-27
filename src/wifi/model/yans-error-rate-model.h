@@ -21,8 +21,6 @@
 #ifndef YANS_ERROR_RATE_MODEL_H
 #define YANS_ERROR_RATE_MODEL_H
 
-#include <stdint.h>
-#include "wifi-mode.h"
 #include "error-rate-model.h"
 #include "dsss-error-rate-model.h"
 

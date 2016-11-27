@@ -81,16 +81,9 @@
 // ./waf --run "wifi-simple-interference --delta=30000"
 
 #include "ns3/core-module.h"
-#include "ns3/network-module.h"
 #include "ns3/mobility-module.h"
-#include "ns3/config-store-module.h"
 #include "ns3/wifi-module.h"
 #include "ns3/internet-module.h"
-
-#include <iostream>
-#include <fstream>
-#include <vector>
-#include <string>
 
 using namespace ns3;
 

@@ -21,14 +21,10 @@
 #ifndef WIFI_REMOTE_STATION_MANAGER_H
 #define WIFI_REMOTE_STATION_MANAGER_H
 
-#include <vector>
-#include <utility>
-#include "ns3/mac48-address.h"
 #include "ns3/traced-callback.h"
 #include "ns3/packet.h"
 #include "ns3/object.h"
 #include "ns3/nstime.h"
-#include "wifi-mode.h"
 #include "wifi-tx-vector.h"
 #include "ht-capabilities.h"
 #include "vht-capabilities.h"

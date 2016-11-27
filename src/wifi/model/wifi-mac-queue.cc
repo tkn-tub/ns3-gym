@@ -21,7 +21,6 @@
  */
 
 #include "ns3/simulator.h"
-#include "ns3/packet.h"
 #include "ns3/uinteger.h"
 #include "ns3/enum.h"
 #include "wifi-mac-queue.h"

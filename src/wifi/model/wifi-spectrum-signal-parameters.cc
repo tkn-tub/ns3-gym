@@ -21,7 +21,6 @@
 
 #include <ns3/log.h>
 #include <ns3/packet.h>
-#include <ns3/ptr.h>
 #include "wifi-spectrum-signal-parameters.h"
 
 namespace ns3 {

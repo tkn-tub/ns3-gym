@@ -25,10 +25,7 @@
 
 #include "regular-wifi-mac.h"
 #include "capability-information.h"
-#include "ht-capabilities.h"
 #include "ht-operations.h"
-#include "vht-capabilities.h"
-#include "amsdu-subframe-header.h"
 #include "supported-rates.h"
 #include "dsss-parameter-set.h"
 #include "erp-information.h"

@@ -22,24 +22,14 @@
 #ifndef WIFI_PHY_H
 #define WIFI_PHY_H
 
-#include <stdint.h>
 #include <map>
 #include "ns3/callback.h"
 #include "ns3/event-id.h"
 #include "ns3/packet.h"
-#include "ns3/object.h"
-#include "ns3/nstime.h"
-#include "ns3/ptr.h"
 #include "ns3/mobility-model.h"
 #include "ns3/random-variable-stream.h"
-#include "wifi-mode.h"
-#include "wifi-preamble.h"
-#include "wifi-phy-standard.h"
-#include "ns3/traced-callback.h"
-#include "wifi-tx-vector.h"
 #include "wifi-phy-standard.h"
 #include "interference-helper.h"
-#include "ns3/net-device.h"
 #include "ns3/node.h"
 #include "wifi-channel.h"
 

@@ -21,19 +21,14 @@
  */
 
 #include "ns3/log.h"
-#include "ns3/assert.h"
 #include "ns3/pointer.h"
 #include "edca-txop-n.h"
 #include "mac-low.h"
 #include "dcf-manager.h"
 #include "mac-tx-middle.h"
 #include "wifi-mac-trailer.h"
-#include "wifi-mac.h"
 #include "random-stream.h"
 #include "wifi-mac-queue.h"
-#include "msdu-aggregator.h"
-#include "mpdu-aggregator.h"
-#include "mgt-headers.h"
 #include "qos-blocked-destinations.h"
 #include "ns3/simulator.h"
 

@@ -18,11 +18,8 @@
  *         Junling Bu <linlinjavaer@gmail.com>
  */
 #include <algorithm>
-#include "ns3/wifi-channel.h"
+#include "ns3/wifi-phy.h"
 #include "ns3/llc-snap-header.h"
-#include "ns3/uinteger.h"
-#include "ns3/node.h"
-#include "ns3/trace-source-accessor.h"
 #include "ns3/log.h"
 #include "ns3/socket.h"
 #include "ns3/object-map.h"

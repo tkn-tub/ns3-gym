@@ -17,12 +17,12 @@
  *
  * Author: Nicola Baldo <nbaldo@cttc.es>
  */
+
 #ifndef WIFI_PHY_TAG_H
 #define WIFI_PHY_TAG_H
 
 #include <ns3/tag.h>
-#include <ns3/wifi-tx-vector.h>
-#include <ns3/wifi-phy.h>
+#include "wifi-phy.h"
 
 namespace ns3 {
 

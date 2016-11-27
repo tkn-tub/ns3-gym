@@ -23,9 +23,6 @@
 #ifndef MGT_HEADERS_H
 #define MGT_HEADERS_H
 
-#include <stdint.h>
-
-#include "ns3/header.h"
 #include "status-code.h"
 #include "capability-information.h"
 #include "supported-rates.h"

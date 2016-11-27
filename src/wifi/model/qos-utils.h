@@ -22,7 +22,6 @@
 #define QOS_UTILS_H
 
 #include "ns3/uinteger.h"
-#include "ns3/ptr.h"
 #include "ns3/packet.h"
 #include "wifi-mac-header.h"
 #include "ctrl-headers.h"

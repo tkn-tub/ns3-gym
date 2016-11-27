@@ -21,7 +21,6 @@
  *          Ghada Badawy <gbadawy@gmail.com>
  */
 
-#include "ns3/assert.h"
 #include "mac-tx-middle.h"
 #include "wifi-mac-header.h"
 

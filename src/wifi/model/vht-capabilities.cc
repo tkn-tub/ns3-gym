@@ -20,7 +20,6 @@
  */
 
 #include "vht-capabilities.h"
-#include "ns3/assert.h"
 #include "ns3/log.h"
 
 NS_LOG_COMPONENT_DEFINE ("VhtCapabilities");

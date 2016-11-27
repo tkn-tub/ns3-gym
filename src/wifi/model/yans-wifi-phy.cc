@@ -22,12 +22,7 @@
 
 #include "yans-wifi-phy.h"
 #include "yans-wifi-channel.h"
-#include "wifi-phy-state-helper.h"
-#include "ns3/simulator.h"
-#include "ns3/packet.h"
-#include "ns3/assert.h"
 #include "ns3/log.h"
-#include "ns3/double.h"
 #include "wifi-utils.h"
 
 namespace ns3 {

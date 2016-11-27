@@ -21,16 +21,12 @@
 #ifndef BLOCK_ACK_MANAGER_H
 #define BLOCK_ACK_MANAGER_H
 
-#include <map>
-#include <list>
-#include <deque>
-#include "ns3/packet.h"
 #include "wifi-mac-header.h"
 #include "originator-block-ack-agreement.h"
 #include "ctrl-headers.h"
 #include "qos-utils.h"
-#include "wifi-mode.h"
 #include "wifi-remote-station-manager.h"
+#include <map>
 
 namespace ns3 {
 

@@ -25,7 +25,7 @@
 #ifndef SNR_TAG_H
 #define SNR_TAG_H
 
-#include "ns3/packet.h"
+#include "ns3/tag.h"
 
 namespace ns3 {
 

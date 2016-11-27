@@ -19,11 +19,11 @@
  * Authors: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  *          Mirko Banchi <mk.banchi@gmail.com>
  */
+
 #ifndef ADHOC_WIFI_MAC_H
 #define ADHOC_WIFI_MAC_H
 
 #include "regular-wifi-mac.h"
-#include "amsdu-subframe-header.h"
 
 namespace ns3 {
 

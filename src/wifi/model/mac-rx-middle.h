@@ -22,9 +22,6 @@
 #define MAC_RX_MIDDLE_H
 
 #include <map>
-#include <utility>
-#include "ns3/callback.h"
-#include "ns3/mac48-address.h"
 #include "ns3/packet.h"
 
 namespace ns3 {

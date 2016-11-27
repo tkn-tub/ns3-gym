@@ -19,11 +19,7 @@
  */
 
 #include "wifi-radio-energy-model-helper.h"
-#include "ns3/basic-energy-source-helper.h"
-#include "ns3/wifi-phy.h"
 #include "ns3/wifi-net-device.h"
-#include "ns3/config.h"
-#include "ns3/names.h"
 #include "ns3/wifi-tx-current-model.h"
 
 namespace ns3 {

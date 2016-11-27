@@ -19,13 +19,10 @@
  */
 
 #include "aarfcd-wifi-manager.h"
-#include "ns3/assert.h"
 #include "ns3/log.h"
-#include "ns3/simulator.h"
 #include "ns3/boolean.h"
 #include "ns3/double.h"
 #include "ns3/uinteger.h"
-#include <algorithm>
 
 #define Min(a,b) ((a < b) ? a : b)
 #define Max(a,b) ((a > b) ? a : b)

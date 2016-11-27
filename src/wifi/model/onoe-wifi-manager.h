@@ -22,7 +22,6 @@
 #define ONOE_WIFI_MANAGER_H
 
 #include "wifi-remote-station-manager.h"
-#include "ns3/nstime.h"
 
 namespace ns3 {
 

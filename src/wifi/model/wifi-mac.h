@@ -21,9 +21,7 @@
 #ifndef WIFI_MAC_H
 #define WIFI_MAC_H
 
-#include "ns3/packet.h"
-#include "ns3/mac48-address.h"
-#include "wifi-phy.h"
+#include "wifi-phy-standard.h"
 #include "wifi-remote-station-manager.h"
 #include "ssid.h"
 #include "qos-utils.h"

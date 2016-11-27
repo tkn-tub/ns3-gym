@@ -20,16 +20,11 @@
 
 #include "regular-wifi-mac.h"
 #include "ns3/log.h"
-#include "ns3/boolean.h"
 #include "ns3/pointer.h"
-#include "ns3/uinteger.h"
-#include "ns3/trace-source-accessor.h"
 #include "mac-rx-middle.h"
 #include "mac-tx-middle.h"
 #include "mac-low.h"
-#include "dcf.h"
 #include "dcf-manager.h"
-#include "wifi-phy.h"
 #include "msdu-standard-aggregator.h"
 #include "mpdu-standard-aggregator.h"
 

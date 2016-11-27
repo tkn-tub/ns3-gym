@@ -22,12 +22,8 @@
 #ifndef WIFI_MODE_H
 #define WIFI_MODE_H
 
-#include <stdint.h>
-#include <string>
 #include <vector>
-#include <ostream>
 #include "ns3/attribute-helper.h"
-#include "ns3/wifi-phy-standard.h"
 
 namespace ns3 {
 

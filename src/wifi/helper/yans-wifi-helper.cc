@@ -19,14 +19,10 @@
  *          Sébastien Deronne <sebastien.deronne@gmail.com>
  */
 
-#include "ns3/trace-helper.h"
 #include "yans-wifi-helper.h"
-#include "ns3/error-rate-model.h"
 #include "ns3/propagation-loss-model.h"
 #include "ns3/propagation-delay-model.h"
-#include "ns3/yans-wifi-channel.h"
 #include "ns3/yans-wifi-phy.h"
-#include "ns3/wifi-net-device.h"
 #include "ns3/names.h"
 #include "ns3/log.h"
 

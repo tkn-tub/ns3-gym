@@ -48,19 +48,11 @@
 //
 
 #include "ns3/core-module.h"
-#include "ns3/network-module.h"
 #include "ns3/mobility-module.h"
-#include "ns3/config-store-module.h"
 #include "ns3/wifi-module.h"
 #include "ns3/internet-module.h"
 #include "ns3/applications-module.h"
 #include "ns3/energy-module.h"
-
-#include <iostream>
-#include <fstream>
-#include <vector>
-#include <string>
-#include <sstream>
 
 using namespace ns3;
 
@@ -202,7 +194,7 @@ int main (int argc, char *argv[])
 
   // compute the efficiency of the power amplifier (eta) assuming that the provided value for tx current
   // corresponds to the minimum tx power level
-  double eta = WifiTxCurrentModel::DbmToW (txPowerStart) / ((txCurrent - idleCurrent) * voltage);
+  double eta = DbmToW (txPowerStart) / ((txCurrent - idleCurrent) * voltage);
 
   radioEnergyHelper.SetTxCurrentModel ("ns3::LinearWifiTxCurrentModel",
                                        "Voltage", DoubleValue (voltage),

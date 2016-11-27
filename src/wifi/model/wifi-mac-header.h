@@ -26,7 +26,6 @@
 #include "ns3/header.h"
 #include "ns3/mac48-address.h"
 #include "ns3/nstime.h"
-#include <stdint.h>
 
 namespace ns3 {
 

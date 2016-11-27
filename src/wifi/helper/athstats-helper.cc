@@ -19,14 +19,10 @@
  */
 
 #include "ns3/log.h"
-#include "ns3/assert.h"
-#include "ns3/abort.h"
 #include "ns3/simulator.h"
-#include "ns3/nstime.h"
 #include "ns3/config.h"
 #include "athstats-helper.h"
 #include <iomanip>
-#include <iostream>
 #include <fstream>
 
 namespace ns3 {

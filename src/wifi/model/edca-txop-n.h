@@ -22,19 +22,9 @@
 #ifndef EDCA_TXOP_N_H
 #define EDCA_TXOP_N_H
 
-#include "ns3/object.h"
-#include "ns3/mac48-address.h"
-#include "ns3/packet.h"
 #include "ns3/traced-value.h"
-#include "wifi-mode.h"
-#include "wifi-mac-header.h"
-#include "wifi-remote-station-manager.h"
-#include "qos-utils.h"
 #include "dcf.h"
-#include "ctrl-headers.h"
 #include "block-ack-manager.h"
-#include <map>
-#include <list>
 
 class AmpduAggregationTest;
 
@@ -52,7 +42,6 @@ class QosBlockedDestinations;
 class MsduAggregator;
 class MpduAggregator;
 class MgtAddBaResponseHeader;
-class BlockAckManager;
 class MgtDelBaHeader;
 
 /**

@@ -20,7 +20,6 @@
 
 #include "ns3/string.h"
 #include "ns3/test.h"
-#include "ns3/object-factory.h"
 #include "ns3/simulator.h"
 #include "ns3/wifi-mac-queue.h"
 #include "ns3/mac-low.h"
@@ -28,11 +27,8 @@
 #include "ns3/yans-wifi-phy.h"
 #include "ns3/mac-tx-middle.h"
 #include "ns3/dcf-manager.h"
-#include "ns3/ampdu-tag.h"
-#include "ns3/wifi-mac-trailer.h"
 #include "ns3/msdu-standard-aggregator.h"
 #include "ns3/mpdu-standard-aggregator.h"
-#include "ns3/log.h"
 
 using namespace ns3;
 

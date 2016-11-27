@@ -21,20 +21,11 @@
  */
 
 #include "ap-wifi-mac.h"
-#include "ns3/assert.h"
 #include "ns3/log.h"
 #include "ns3/simulator.h"
 #include "ns3/string.h"
 #include "ns3/pointer.h"
-#include "ns3/boolean.h"
-#include "wifi-phy.h"
-#include "dcf-manager.h"
-#include "mac-rx-middle.h"
-#include "mac-tx-middle.h"
-#include "mgt-headers.h"
 #include "mac-low.h"
-#include "amsdu-subframe-header.h"
-#include "msdu-aggregator.h"
 
 namespace ns3 {
 

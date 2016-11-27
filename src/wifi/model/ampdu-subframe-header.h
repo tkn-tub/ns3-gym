@@ -22,7 +22,6 @@
 #define AMPDU_SUBFRAME_HEADER_H
 
 #include "ns3/header.h"
-#include "ns3/mac48-address.h"
 
 namespace ns3 {
 

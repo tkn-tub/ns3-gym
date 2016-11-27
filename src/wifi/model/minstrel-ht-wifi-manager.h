@@ -16,9 +16,9 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- *Author: Duy Nguyen <duy@soe.ucsc.edu>
- *        Ghada Badawy <gbadawy@gmail.com>
- *        Matias Richart <mrichart@fing.edu.uy>
+ *Authors: Duy Nguyen <duy@soe.ucsc.edu>
+ *         Ghada Badawy <gbadawy@gmail.com>
+ *         Matias Richart <mrichart@fing.edu.uy>
  *
  * MinstrelHt is a rate adaptation algorithm for high-throughput (HT) 802.11
  */
@@ -28,12 +28,6 @@
 
 #include "wifi-remote-station-manager.h"
 #include "minstrel-wifi-manager.h"
-#include "wifi-mode.h"
-#include "ns3/nstime.h"
-#include "ns3/random-variable-stream.h"
-#include <vector>
-#include <map>
-#include <deque>
 
 namespace ns3 {
 

@@ -18,10 +18,8 @@
  * Author: Tom Henderson <tomh@tomh.org>
  */
 
-#include <string>
 #include "ns3/core-module.h"
 #include "ns3/config-store-module.h"
-#include "ns3/network-module.h"
 #include "ns3/wifi-module.h"
 
 // This example shows (and tests) some possible configurations for

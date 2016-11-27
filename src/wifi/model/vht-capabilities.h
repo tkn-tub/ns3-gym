@@ -22,9 +22,7 @@
 #ifndef VHT_CAPABILITIES_H
 #define VHT_CAPABILITIES_H
 
-#include <stdint.h>
 #include "ns3/buffer.h"
-#include "ns3/attribute-helper.h"
 #include "ns3/wifi-information-element.h"
 
 namespace ns3 {

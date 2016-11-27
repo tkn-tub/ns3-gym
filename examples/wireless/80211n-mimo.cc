@@ -32,16 +32,11 @@
 // some 802.11n parameters (frequency, channel width and guard interval).
 
 #include "ns3/core-module.h"
-#include "ns3/network-module.h"
 #include "ns3/applications-module.h"
 #include "ns3/wifi-module.h"
 #include "ns3/mobility-module.h"
-#include "ns3/ipv4-global-routing-helper.h"
 #include "ns3/internet-module.h"
 #include "ns3/gnuplot.h"
-#include <fstream>
-#include <vector>
-#include <cmath>
 
 using namespace ns3;
 

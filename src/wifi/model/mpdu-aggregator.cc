@@ -20,7 +20,6 @@
 
 #include "ns3/log.h"
 #include "mpdu-aggregator.h"
-#include "wifi-mac-header.h"
 
 NS_LOG_COMPONENT_DEFINE ("MpduAggregator");
 

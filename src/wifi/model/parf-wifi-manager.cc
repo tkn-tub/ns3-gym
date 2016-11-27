@@ -20,10 +20,8 @@
 
 #include "parf-wifi-manager.h"
 #include "wifi-phy.h"
-#include "ns3/assert.h"
 #include "ns3/log.h"
 #include "ns3/uinteger.h"
-#include "ns3/trace-source-accessor.h"
 
 #define Min(a,b) ((a < b) ? a : b)
 

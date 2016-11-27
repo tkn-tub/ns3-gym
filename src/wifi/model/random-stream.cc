@@ -19,15 +19,12 @@
  */
 
 #include "random-stream.h"
-#include "ns3/assert.h"
-#include <cmath>
 
 namespace ns3 {
 
 RandomStream::~RandomStream ()
 {
 }
-
 
 RealRandomStream::RealRandomStream ()
 {

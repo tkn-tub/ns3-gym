@@ -21,7 +21,6 @@
 #include "wifi-phy-state-helper.h"
 #include "ns3/log.h"
 #include "ns3/simulator.h"
-#include "ns3/trace-source-accessor.h"
 #include <algorithm>
 
 namespace ns3 {

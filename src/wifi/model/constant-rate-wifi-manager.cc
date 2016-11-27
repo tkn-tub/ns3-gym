@@ -20,7 +20,6 @@
 
 #include "constant-rate-wifi-manager.h"
 #include "ns3/string.h"
-#include "ns3/assert.h"
 #include "ns3/log.h"
 
 #define Min(a,b) ((a < b) ? a : b)

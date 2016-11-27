@@ -18,7 +18,6 @@
  * Author: Mirko Banchi <mk.banchi@gmail.com>
  */
 
-#include "ns3/fatal-error.h"
 #include "ns3/log.h"
 #include "ctrl-headers.h"
 

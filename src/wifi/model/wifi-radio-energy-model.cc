@@ -19,9 +19,7 @@
  */
 
 #include "ns3/log.h"
-#include "ns3/double.h"
 #include "ns3/simulator.h"
-#include "ns3/trace-source-accessor.h"
 #include "ns3/pointer.h"
 #include "ns3/energy-source.h"
 #include "wifi-radio-energy-model.h"

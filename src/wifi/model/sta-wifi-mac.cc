@@ -23,21 +23,7 @@
 #include "sta-wifi-mac.h"
 #include "ns3/log.h"
 #include "ns3/simulator.h"
-#include "ns3/string.h"
-#include "ns3/pointer.h"
-#include "ns3/boolean.h"
-#include "ns3/trace-source-accessor.h"
 #include "mac-low.h"
-#include "dcf-manager.h"
-#include "mac-rx-middle.h"
-#include "mac-tx-middle.h"
-#include "wifi-mac-header.h"
-#include "msdu-aggregator.h"
-#include "amsdu-subframe-header.h"
-#include "mgt-headers.h"
-#include "ht-capabilities.h"
-#include "ht-operations.h"
-#include "vht-capabilities.h"
 
 /*
  * The state machine for this STA is:

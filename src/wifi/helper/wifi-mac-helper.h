@@ -21,8 +21,6 @@
 #ifndef WIFI_MAC_HELPER_H
 #define WIFI_MAC_HELPER_H
 
-#include <string>
-#include "ns3/attribute.h"
 #include "ns3/object-factory.h"
 
 namespace ns3 {

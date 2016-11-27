@@ -17,18 +17,13 @@
  */
 
 #include "ns3/test.h"
-#include "ns3/packet.h"
-#include "ns3/tag.h"
-#include "ns3/packet-burst.h"
 #include "ns3/spectrum-wifi-helper.h"
 #include "ns3/wifi-spectrum-value-helper.h"
 #include "ns3/spectrum-wifi-phy.h"
-#include "ns3/interference-helper.h"
 #include "ns3/nist-error-rate-model.h"
 #include "ns3/wifi-mac-header.h"
 #include "ns3/wifi-mac-trailer.h"
 #include "ns3/wifi-phy-tag.h"
-#include "ns3/wifi-phy-standard.h"
 #include "ns3/wifi-spectrum-signal-parameters.h"
 
 using namespace ns3;
