@@ -25,6 +25,7 @@ New user-visible features
 Bugs fixed
 ----------
 - Bug 2007 - uan: Remove deprecation on SetRxThresholdDb
+- Bug 2221 - network: Remove constraint on size of ns3::Packet Tag objects
 - Bug 2450 - LogDistancePropagationLossModel is not continuous
 - Bug 2477 - DCF manager assert
 - Bug 2492 - uan: Make use of RxGain attribute in UanPhyGen class

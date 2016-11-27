@@ -113,8 +113,7 @@ PacketTagIterator::Item::GetTag (Tag &tag) const
 {
   NS_ASSERT (tag.GetInstanceTypeId () == m_data->tid);
   tag.Deserialize (TagBuffer ((uint8_t*)m_data->data,
-                              (uint8_t*)m_data->data
-                              + PacketTagList::TagData::MAX_SIZE));
+                              (uint8_t*)m_data->data + m_data->size));
 }
 
 

@@ -119,12 +119,6 @@ class Tag;
  *       The portion of the list between the first branch and the target is
  *       shared. This portion is copied before the #Remove or #Replace is
  *       performed.
- *
- * \par <b> Memory Management: </b>
- * \n
- * Packet tags must serialize to a finite maximum size, see TagData
- *
- * This documentation entitles the original author to a free beer.
  */
 class PacketTagList 
 {
@@ -134,37 +128,23 @@ public:
    *
    * See PacketTagList for a discussion of the data structure.
    *
-   * See TagData::TagData_e for a discussion of the size limit on
-   * tag serialization.
+   * \internal
+   * Unfortunately this has to be public, because
+   * PacketTagIterator::Item::GetTag() needs the data and size values.
+   * The Item nested class can't be forward declared, so friending isn't
+   * possible.
+   *
+   * We use placement new so we can allocate enough room for the Tag
+   * type which will be serialized into data.  See Object::Aggregates
+   * for a similar construction.
    */
   struct TagData
   {
-    /**
-     * \brief Packet Tag maximum size
-     *
-     * The maximum size (in bytes) of a Tag is stored
-     * in this constant.
-     *
-     * \internal
-     * Ideally, TagData would be 32 bytes in size, so they require
-     * no padding on 64-bit architectures.  (The architecture
-     * affects the size because of the \c #next pointer.)
-     * This would leave 18 bytes for \c #data.  However,
-     * ns3:Ipv6PacketInfoTag needs 19 bytes!  The current
-     * implementation allows 20 bytes, which gives TagData
-     * a size of 30 bytes on 32-byte machines (which gets
-     * padded with 2 bytes), and 34 bytes on 64-bit machines, which
-     * gets padded to 40 bytes.
-     */
-    enum TagData_e
-    {
-      MAX_SIZE = 21           /**< Size of serialization buffer #data */
-  };
-
-    uint8_t data[MAX_SIZE];   /**< Serialization buffer */
-    struct TagData * next;   /**< Pointer to next in list */
-    TypeId tid;               /**< Type of the tag serialized into #data */
-    uint32_t count;           /**< Number of incoming links */
+    struct TagData * next;      /**< Pointer to next in list */
+    uint32_t count;             /**< Number of incoming links */
+    TypeId tid;                 /**< Type of the tag serialized into #data */
+    uint32_t size;              /**< Size of the \c data buffer */
+    uint8_t data[1];            /**< Serialization buffer */
   };  /* struct TagData */
 
   /**
@@ -240,6 +220,16 @@ public:
 
 private:
   /**
+   * Allocate and construct a TagData struct, sizing the data area
+   * large enough to serialize dataSize bytes from a Tag.
+   *
+   * \param [in] dataSize The serialized size of the Tag.
+   * \returns The newly constructed TagData object.
+   */
+  static
+  TagData * CreateTagData (size_t dataSize);
+  
+  /**
    * Typedef of method function pointer for copy-on-write operations
    *
    * \param [in] tag The tag type to operate on.
@@ -272,7 +262,7 @@ private:
    *          pointing to \pname{cur}.
    * \returns True, since tag will definitely be removed.
    */
-  bool RemoveWriter  (Tag       & tag, bool         preMerge,
+  bool RemoveWriter  (Tag & tag, bool preMerge,
                       struct TagData * cur, struct TagData ** prevNext);
   /**
    * Copy-on-write implementing Replace
@@ -285,7 +275,8 @@ private:
    *          pointing to \pname{cur}.
    * \returns True, since tag value will definitely be replaced.
    */
-  bool ReplaceWriter (Tag & tag, bool preMerge, struct TagData * cur, struct TagData ** prevNext);
+  bool ReplaceWriter (Tag & tag, bool preMerge,
+                      struct TagData * cur, struct TagData ** prevNext);
 
   /**
    * Pointer to first \ref TagData on the list
@@ -350,13 +341,15 @@ PacketTagList::RemoveAll (void)
         }
       if (prev != 0) 
         {
-	  delete prev;
+          prev->~TagData ();
+          std::free (prev);
         }
       prev = cur;
     }
   if (prev != 0) 
     {
-      delete prev;
+      prev->~TagData ();
+      std::free (prev);
     }
   m_next = 0;
 }
