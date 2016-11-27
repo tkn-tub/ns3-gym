@@ -18,7 +18,7 @@
  * Author: Dean Armstrong <deanarm@gmail.com>
  */
 
-#include "ns3/wifi-information-element.h"
+#include "wifi-information-element.h"
 
 namespace ns3 {
 

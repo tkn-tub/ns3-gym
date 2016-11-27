@@ -19,7 +19,7 @@
  *          Ghada Badawy <gbadawy@gmail.com>
  */
 
-#include "ns3/wifi-tx-vector.h"
+#include "wifi-tx-vector.h"
 
 namespace ns3 {
 

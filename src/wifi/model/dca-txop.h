@@ -21,9 +21,9 @@
 #ifndef DCA_TXOP_H
 #define DCA_TXOP_H
 
-#include "ns3/wifi-mac-header.h"
-#include "ns3/wifi-remote-station-manager.h"
-#include "ns3/dcf.h"
+#include "wifi-mac-header.h"
+#include "wifi-remote-station-manager.h"
+#include "dcf.h"
 
 namespace ns3 {
 

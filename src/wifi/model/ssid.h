@@ -21,7 +21,7 @@
 #ifndef SSID_H
 #define SSID_H
 
-#include "ns3/wifi-information-element.h"
+#include "wifi-information-element.h"
 
 namespace ns3 {
 

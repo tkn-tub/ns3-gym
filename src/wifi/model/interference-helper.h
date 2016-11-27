@@ -22,7 +22,7 @@
 #define INTERFERENCE_HELPER_H
 
 #include "ns3/nstime.h"
-#include "ns3/wifi-tx-vector.h"
+#include "wifi-tx-vector.h"
 #include "error-rate-model.h"
 
 namespace ns3 {

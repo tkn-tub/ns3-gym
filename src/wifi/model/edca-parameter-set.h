@@ -21,7 +21,7 @@
 #ifndef EDCA_PARAMETER_SET_H
 #define EDCA_PARAMETER_SET_H
 
-#include "ns3/wifi-information-element.h"
+#include "wifi-information-element.h"
 
 namespace ns3 {
 

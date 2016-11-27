@@ -24,7 +24,7 @@
 
 #include "ns3/device-energy-model.h"
 #include "ns3/traced-value.h"
-#include "ns3/wifi-phy.h"
+#include "wifi-phy.h"
 
 namespace ns3 {
 

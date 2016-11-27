@@ -21,7 +21,7 @@
 #ifndef ERP_INFORMATION_H
 #define ERP_INFORMATION_H
 
-#include "ns3/wifi-information-element.h"
+#include "wifi-information-element.h"
 
 namespace ns3 {
 

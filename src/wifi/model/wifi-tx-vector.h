@@ -22,8 +22,8 @@
 #ifndef WIFI_TX_VECTOR_H
 #define WIFI_TX_VECTOR_H
 
-#include <ns3/wifi-mode.h>
-#include <ns3/wifi-preamble.h>
+#include "wifi-mode.h"
+#include "wifi-preamble.h"
 
 namespace ns3 {
 
