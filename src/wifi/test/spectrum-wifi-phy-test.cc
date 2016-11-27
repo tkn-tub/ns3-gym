@@ -48,7 +48,8 @@ protected:
   Ptr<SpectrumWifiPhy> m_phy;
   Ptr<SpectrumSignalParameters> MakeSignal (double txPowerWatts);
   void SendSignal (double txPowerWatts);
-  void SpectrumWifiPhyReceiver (bool rxSucceeded);
+  void SpectrumWifiPhyRxSuccess (Ptr<Packet> p, double snr, WifiTxVector txVector);
+  void SpectrumWifiPhyRxFailure (Ptr<Packet> p, double snr);
   uint32_t m_count;
 private:
   virtual void DoRun (void);
@@ -104,7 +105,13 @@ SpectrumWifiPhyBasicTest::SendSignal (double txPowerWatts)
 }
 
 void
-SpectrumWifiPhyBasicTest::SpectrumWifiPhyReceiver (bool rxSucceeded)
+SpectrumWifiPhyBasicTest::SpectrumWifiPhyRxSuccess (Ptr<Packet> p, double snr, WifiTxVector txVector)
+{
+  m_count++;
+}
+
+void
+SpectrumWifiPhyBasicTest::SpectrumWifiPhyRxFailure (Ptr<Packet> p, double snr)
 {
   m_count++;
 }
@@ -124,7 +131,8 @@ SpectrumWifiPhyBasicTest::DoSetup (void)
   m_phy->SetErrorRateModel (error);
   m_phy->SetChannelNumber (CHANNEL_NUMBER);
   m_phy->SetFrequency (FREQUENCY);
-  m_phy->SetPacketReceivedCallback (MakeCallback (&SpectrumWifiPhyBasicTest::SpectrumWifiPhyReceiver, this));
+  m_phy->SetReceiveOkCallback (MakeCallback (&SpectrumWifiPhyBasicTest::SpectrumWifiPhyRxSuccess, this));
+  m_phy->SetReceiveErrorCallback (MakeCallback (&SpectrumWifiPhyBasicTest::SpectrumWifiPhyRxFailure, this));
   //Bug 2460: CcaMode1Threshold default should be set to -62 dBm when using Spectrum
   m_phy->SetCcaMode1Threshold (-62.0);
 }

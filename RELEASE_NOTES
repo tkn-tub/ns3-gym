@@ -46,6 +46,7 @@ Bugs fixed
 - Bug 2545 - Optimized build fails for flow-monitor
 - Bug 2547 - dead assignments on various tcp congestion controls
 - Bug 2551 - wifi preamble should be part of TXVECTOR
+- Bug 2552 - Remove code duplication between Yans and Spectrum
 
 Known issues
 ------------

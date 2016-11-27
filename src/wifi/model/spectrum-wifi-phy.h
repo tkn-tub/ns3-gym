@@ -81,25 +81,22 @@ public:
   void ClearOperationalChannelList (void);
 
   /**
-   * Starting receiving the payload of a packet (i.e. the first bit of the packet has arrived).
-   *
-   * \param packet the arriving packet
-   * \param txVector the TXVECTOR of the arriving packet
-   * \param mpdutype the type of the MPDU as defined in WifiPhy::MpduType.
-   * \param event the corresponding event of the first time the packet arrives
-   */
-  void StartReceivePacket (Ptr<Packet> packet,
-                           WifiTxVector txVector,
-                           MpduType mpdutype,
-                           Ptr<InterferenceHelper::Event> event);
-
-  /**
    * Input method for delivering a signal from the spectrum channel
    * and low-level Phy interface to this SpectrumWifiPhy instance.
    *
    * \param rxParams Input signal parameters
    */
   void StartRx (Ptr<SpectrumSignalParameters> rxParams);
+  
+  /**
+   * \param packet the packet to send
+   * \param txVector the TXVECTOR that has tx parameters such as mode, the transmission mode to use to send
+   *        this packet, and txPowerLevel, a power level to use to send this packet. The real transmission
+   *        power is calculated as txPowerMin + txPowerLevel * (txPowerMax - txPowerMin) / nTxLevels
+   * \param txDuration duration of the transmission.
+   */
+  void StartTx (Ptr<Packet> packet, WifiTxVector txVector, Time txDuration);
+  
   /**
    * Method to encapsulate the creation of the WifiSpectrumPhyInterface
    * object (used to bind the WifiSpectrumPhy to a SpectrumChannel) and
@@ -136,19 +133,6 @@ public:
    * returned, it means that any model will be accepted.
    */
   Ptr<const SpectrumModel> GetRxSpectrumModel () const;
-  /**
-   * Callback invoked at the end of a frame reception, to notify whether
-   * the frame was received successfully (true) or not (false)
-   */
-  typedef Callback<void,bool> RxCallback;
-  /**
-   * Set the packet received callback (invoked at the end of a frame
-   * reception), to notify whether the frame was received successfully
-   * or not.
-   *
-   * \param callback the function to hook to the callback
-   */
-  void SetPacketReceivedCallback (RxCallback callback);
 
   /**
    * Callback invoked when the Phy model starts to process a signal
@@ -160,33 +144,16 @@ public:
    */
   typedef void (* SignalArrivalCallback) (bool signalType, uint32_t senderNodeId, double rxPower, Time duration);
 
-  virtual void SetReceiveOkCallback (WifiPhy::RxOkCallback callback);
-  virtual void SetReceiveErrorCallback (WifiPhy::RxErrorCallback callback);
-  virtual void SendPacket (Ptr<const Packet> packet, WifiTxVector txVector, MpduType mpdutype = NORMAL_MPDU);
-  virtual void RegisterListener (WifiPhyListener *listener);
-  virtual void UnregisterListener (WifiPhyListener *listener);
-  virtual void SetSleepMode (void);
-  virtual void ResumeFromSleep (void);
   virtual Ptr<WifiChannel> GetChannel (void) const;
+
 
 protected:
   // Inherited
   virtual void DoDispose (void);
   virtual void DoInitialize (void);
-  virtual bool DoChannelSwitch (uint16_t id);
-  virtual bool DoFrequencySwitch (uint32_t frequency);
+
 
 private:
-  /**
-   * The last bit of the packet has arrived.
-   *
-   * \param packet the packet that the last bit has arrived
-   * \param preamble the preamble of the arriving packet
-   * \param mpdutype the type of the MPDU as defined in WifiPhy::MpduType.
-   * \param event the corresponding event of the first time the packet arrives
-   */
-  void EndReceive (Ptr<Packet> packet, WifiPreamble preamble, MpduType mpdutype, Ptr<InterferenceHelper::Event> event);
-
   /**
    * \param centerFrequency center frequency (MHz)
    * \param channelWidth channel width (MHz) of the channel
@@ -204,7 +171,6 @@ private:
   Ptr<WifiSpectrumPhyInterface> m_wifiSpectrumPhyInterface;
   Ptr<AntennaModel> m_antenna;
   mutable Ptr<const SpectrumModel> m_rxSpectrumModel;
-  RxCallback m_rxCallback;
   bool m_disableWifiReception;          //!< forces this Phy to fail to sync on any signal
   TracedCallback<bool, uint32_t, double, Time> m_signalCb;
 

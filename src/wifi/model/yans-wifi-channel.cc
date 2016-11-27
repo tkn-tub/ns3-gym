@@ -29,6 +29,7 @@
 #include "yans-wifi-channel.h"
 #include "ns3/propagation-loss-model.h"
 #include "ns3/propagation-delay-model.h"
+#include "wifi-utils.h"
 
 namespace ns3 {
 
@@ -120,7 +121,7 @@ YansWifiChannel::Send (Ptr<YansWifiPhy> sender, Ptr<const Packet> packet, double
 void
 YansWifiChannel::Receive (uint32_t i, Ptr<Packet> packet, double rxPowerDbm, Time duration) const
 {
-  m_phyList[i]->StartReceivePreambleAndHeader (packet, rxPowerDbm, duration);
+  m_phyList[i]->StartReceivePreambleAndHeader (packet, DbmToW (rxPowerDbm + m_phyList[i]->GetRxGain ()), duration);
 }
 
 uint32_t

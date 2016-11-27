@@ -215,13 +215,62 @@ public:
    * \param callback the callback to invoke
    *        upon successful packet reception.
    */
-  virtual void SetReceiveOkCallback (RxOkCallback callback) = 0;
+  void SetReceiveOkCallback (RxOkCallback callback);
   /**
    * \param callback the callback to invoke
    *        upon erroneous packet reception.
    */
-  virtual void SetReceiveErrorCallback (RxErrorCallback callback) = 0;
-
+  void SetReceiveErrorCallback (RxErrorCallback callback);
+  
+  /**
+   * \param listener the new listener
+   *
+   * Add the input listener to the list of objects to be notified of
+   * PHY-level events.
+   */
+  void RegisterListener (WifiPhyListener *listener);
+  /**
+   * \param listener the listener to be unregistered
+   *
+   * Remove the input listener from the list of objects to be notified of
+   * PHY-level events.
+   */
+  void UnregisterListener (WifiPhyListener *listener);
+  
+  /**
+   * Starting receiving the plcp of a packet (i.e. the first bit of the preamble has arrived).
+   *
+   * \param packet the arriving packet
+   * \param rxPowerW the receive power in W
+   * \param rxDuration the duration needed for the reception of the packet
+   */
+  void StartReceivePreambleAndHeader (Ptr<Packet> packet,
+                                      double rxPowerW,
+                                      Time rxDuration);
+  
+  /**
+   * Starting receiving the payload of a packet (i.e. the first bit of the packet has arrived).
+   *
+   * \param packet the arriving packet
+   * \param txVector the TXVECTOR of the arriving packet
+   * \param mpdutype the type of the MPDU as defined in WifiPhy::MpduType.
+   * \param event the corresponding event of the first time the packet arrives
+   */
+  void StartReceivePacket (Ptr<Packet> packet,
+                           WifiTxVector txVector,
+                           MpduType mpdutype,
+                           Ptr<InterferenceHelper::Event> event);
+    
+  /**
+   * The last bit of the packet has arrived.
+   *
+   * \param packet the packet that the last bit has arrived
+   * \param preamble the preamble of the arriving packet
+   * \param mpdutype the type of the MPDU as defined in WifiPhy::MpduType.
+   * \param event the corresponding event of the first time the packet arrives
+   */
+  void EndReceive (Ptr<Packet> packet, WifiPreamble preamble, MpduType mpdutype, Ptr<InterferenceHelper::Event> event);
+    
   /**
    * \param packet the packet to send
    * \param txVector the TXVECTOR that has tx parameters such as mode, the transmission mode to use to send
@@ -229,31 +278,25 @@ public:
    *        power is calculated as txPowerMin + txPowerLevel * (txPowerMax - txPowerMin) / nTxLevels
    * \param mpdutype the type of the MPDU as defined in WifiPhy::MpduType.
    */
-  virtual void SendPacket (Ptr<const Packet> packet, WifiTxVector txVector, MpduType mpdutype = NORMAL_MPDU) = 0;
-
+  void SendPacket (Ptr<const Packet> packet, WifiTxVector txVector, MpduType mpdutype = NORMAL_MPDU);
+  
   /**
-   * \param listener the new listener
-   *
-   * Add the input listener to the list of objects to be notified of
-   * PHY-level events.
+   * \param packet the packet to send
+   * \param txVector the TXVECTOR that has tx parameters such as mode, the transmission mode to use to send
+   *        this packet, and txPowerLevel, a power level to use to send this packet. The real transmission
+   *        power is calculated as txPowerMin + txPowerLevel * (txPowerMax - txPowerMin) / nTxLevels
+   * \param txDuration duration of the transmission.
    */
-  virtual void RegisterListener (WifiPhyListener *listener) = 0;
-  /**
-   * \param listener the listener to be unregistered
-   *
-   * Remove the input listener from the list of objects to be notified of
-   * PHY-level events.
-   */
-  virtual void UnregisterListener (WifiPhyListener *listener) = 0;
+  virtual void StartTx (Ptr<Packet> packet, WifiTxVector txVector, Time txDuration) = 0;
 
   /**
    * Put in sleep mode.
    */
-  virtual void SetSleepMode (void) = 0;
+  virtual void SetSleepMode (void);
   /**
    * Resume from sleep mode.
    */
-  virtual void ResumeFromSleep (void) = 0;
+  virtual void ResumeFromSleep (void);
 
   /**
    * \return true of the current state of the PHY layer is WifiPhy::IDLE, false otherwise.
@@ -1490,38 +1533,7 @@ public:
    * \return a vector containing the supported channel widths, values in MHz
    */
   virtual std::vector<uint32_t> GetSupportedChannelWidthSet (void) const;
-  /**
-   * Convert from dBm to Watts.
-   *
-   * \param dbm the power in dBm
-   *
-   * \return the equivalent Watts for the given dBm
-   */
-  double DbmToW (double dbm) const;
-  /**
-   * Convert from dB to ratio.
-   *
-   * \param db
-   *
-   * \return ratio
-   */
-  double DbToRatio (double db) const;
-  /**
-   * Convert from Watts to dBm.
-   *
-   * \param w the power in Watts
-   *
-   * \return the equivalent dBm for the given Watts
-   */
-  double WToDbm (double w) const;
-  /**
-   * Convert from ratio to dB.
-   *
-   * \param ratio
-   *
-   * \return dB
-   */
-  double RatioToDb (double ratio) const;
+
 
 protected:
   // Inherited

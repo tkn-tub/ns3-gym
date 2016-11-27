@@ -33,11 +33,9 @@
 #include "ns3/log.h"
 #include "ns3/double.h"
 #include "ns3/boolean.h"
-#include "ampdu-tag.h"
 #include "wifi-spectrum-signal-parameters.h"
-#include "wifi-phy-tag.h"
 #include "ns3/antenna-model.h"
-#include <cmath>
+#include "wifi-utils.h"
 
 namespace ns3 {
 
@@ -98,112 +96,6 @@ SpectrumWifiPhy::DoInitialize (void)
     }
 }
 
-bool
-SpectrumWifiPhy::DoChannelSwitch (uint16_t nch)
-{
-  if (IsInitialized () == false)
-    {
-      //this is not channel switch, this is initialization
-      NS_LOG_DEBUG ("start at channel " << nch);
-      return true;
-    }
-
-  NS_ASSERT (!IsStateSwitching ());
-  switch (m_state->GetState ())
-    {
-    case SpectrumWifiPhy::RX:
-      NS_LOG_DEBUG ("drop packet because of channel switching while reception");
-      m_endPlcpRxEvent.Cancel ();
-      m_endRxEvent.Cancel ();
-      goto switchChannel;
-      break;
-    case SpectrumWifiPhy::TX:
-      NS_LOG_DEBUG ("channel switching postponed until end of current transmission");
-      Simulator::Schedule (GetDelayUntilIdle (), &WifiPhy::SetChannelNumber, this, nch);
-      break;
-    case SpectrumWifiPhy::CCA_BUSY:
-    case SpectrumWifiPhy::IDLE:
-      goto switchChannel;
-      break;
-    case SpectrumWifiPhy::SLEEP:
-      NS_LOG_DEBUG ("channel switching ignored in sleep mode");
-      break;
-    default:
-      NS_ASSERT (false);
-      break;
-    }
-
-  return false;
-
-switchChannel:
-
-  NS_LOG_DEBUG ("switching channel " << GetChannelNumber () << " -> " << nch);
-  m_rxSpectrumModel = WifiSpectrumValueHelper::GetSpectrumModel (GetFrequency (), GetChannelWidth ());
-  m_state->SwitchToChannelSwitching (GetChannelSwitchDelay ());
-  m_interference.EraseEvents ();
-  /*
-   * Needed here to be able to correctly sensed the medium for the first
-   * time after the switching. The actual switching is not performed until
-   * after m_channelSwitchDelay. Packets received during the switching
-   * state are added to the event list and are employed later to figure
-   * out the state of the medium after the switching.
-   */
-  return true;
-}
-
-bool
-SpectrumWifiPhy::DoFrequencySwitch (uint32_t frequency)
-{
-  if (IsInitialized () == false)
-    {
-      //this is not channel switch, this is initialization
-      NS_LOG_DEBUG ("start at frequency " << frequency);
-      return true;
-    }
-
-  NS_ASSERT (!IsStateSwitching ());
-  switch (m_state->GetState ())
-    {
-    case SpectrumWifiPhy::RX:
-      NS_LOG_DEBUG ("drop packet because of channel/frequency switching while reception");
-      m_endPlcpRxEvent.Cancel ();
-      m_endRxEvent.Cancel ();
-      goto switchFrequency;
-      break;
-    case SpectrumWifiPhy::TX:
-      NS_LOG_DEBUG ("channel/frequency switching postponed until end of current transmission");
-      Simulator::Schedule (GetDelayUntilIdle (), &WifiPhy::SetFrequency, this, frequency);
-      break;
-    case SpectrumWifiPhy::CCA_BUSY:
-    case SpectrumWifiPhy::IDLE:
-      goto switchFrequency;
-      break;
-    case SpectrumWifiPhy::SLEEP:
-      NS_LOG_DEBUG ("frequency switching ignored in sleep mode");
-      break;
-    default:
-      NS_ASSERT (false);
-      break;
-    }
-
-  return false;
-
-switchFrequency:
-
-  NS_LOG_DEBUG ("switching frequency " << GetFrequency () << " -> " << frequency);
-  m_rxSpectrumModel = WifiSpectrumValueHelper::GetSpectrumModel (GetFrequency (), GetChannelWidth ());
-  m_state->SwitchToChannelSwitching (GetChannelSwitchDelay ());
-  m_interference.EraseEvents ();
-  /*
-   * Needed here to be able to correctly sensed the medium for the first
-   * time after the switching. The actual switching is not performed until
-   * after m_channelSwitchDelay. Packets received during the switching
-   * state are added to the event list and are employed later to figure
-   * out the state of the medium after the switching.
-   */
-  return true;
-}
-
 Ptr<const SpectrumModel>
 SpectrumWifiPhy::GetRxSpectrumModel () const
 {
@@ -241,12 +133,6 @@ SpectrumWifiPhy::SetChannel (Ptr<SpectrumChannel> channel)
 }
 
 void
-SpectrumWifiPhy::SetPacketReceivedCallback (RxCallback callback)
-{
-  m_rxCallback = callback;
-}
-
-void
 SpectrumWifiPhy::AddOperationalChannel (uint16_t channelNumber)
 {
   m_operationalChannelList.push_back (channelNumber);
@@ -271,80 +157,6 @@ void
 SpectrumWifiPhy::ClearOperationalChannelList ()
 {
   m_operationalChannelList.clear ();
-}
-
-void
-SpectrumWifiPhy::SetSleepMode (void)
-{
-  NS_LOG_FUNCTION (this);
-  switch (m_state->GetState ())
-    {
-    case SpectrumWifiPhy::TX:
-      NS_LOG_DEBUG ("setting sleep mode postponed until end of current transmission");
-      Simulator::Schedule (GetDelayUntilIdle (), &SpectrumWifiPhy::SetSleepMode, this);
-      break;
-    case SpectrumWifiPhy::RX:
-      NS_LOG_DEBUG ("setting sleep mode postponed until end of current reception");
-      Simulator::Schedule (GetDelayUntilIdle (), &SpectrumWifiPhy::SetSleepMode, this);
-      break;
-    case SpectrumWifiPhy::SWITCHING:
-      NS_LOG_DEBUG ("setting sleep mode postponed until end of channel switching");
-      Simulator::Schedule (GetDelayUntilIdle (), &SpectrumWifiPhy::SetSleepMode, this);
-      break;
-    case SpectrumWifiPhy::CCA_BUSY:
-    case SpectrumWifiPhy::IDLE:
-      NS_LOG_DEBUG ("setting sleep mode");
-      m_state->SwitchToSleep ();
-      break;
-    case SpectrumWifiPhy::SLEEP:
-      NS_LOG_DEBUG ("already in sleep mode");
-      break;
-    default:
-      NS_ASSERT (false);
-      break;
-    }
-}
-
-void
-SpectrumWifiPhy::ResumeFromSleep (void)
-{
-  NS_LOG_FUNCTION (this);
-  switch (m_state->GetState ())
-    {
-    case SpectrumWifiPhy::TX:
-    case SpectrumWifiPhy::RX:
-    case SpectrumWifiPhy::IDLE:
-    case SpectrumWifiPhy::CCA_BUSY:
-    case SpectrumWifiPhy::SWITCHING:
-      {
-        NS_LOG_DEBUG ("not in sleep mode, there is nothing to resume");
-        break;
-      }
-    case SpectrumWifiPhy::SLEEP:
-      {
-        NS_LOG_DEBUG ("resuming from sleep mode");
-        Time delayUntilCcaEnd = m_interference.GetEnergyDuration (DbmToW (GetCcaMode1Threshold ()));
-        m_state->SwitchFromSleep (delayUntilCcaEnd);
-        break;
-      }
-    default:
-      {
-        NS_ASSERT (false);
-        break;
-      }
-    }
-}
-
-void
-SpectrumWifiPhy::SetReceiveOkCallback (RxOkCallback callback)
-{
-  m_state->SetReceiveOkCallback (callback);
-}
-
-void
-SpectrumWifiPhy::SetReceiveErrorCallback (RxErrorCallback callback)
-{
-  m_state->SetReceiveErrorCallback (callback);
 }
 
 void
@@ -391,207 +203,7 @@ SpectrumWifiPhy::StartRx (Ptr<SpectrumSignalParameters> rxParams)
 
   NS_LOG_INFO ("Received Wi-Fi signal");
   Ptr<Packet> packet = wifiRxParams->packet->Copy ();
-  WifiPhyTag tag;
-  bool found = packet->PeekPacketTag (tag);
-  if (!found)
-    {
-      NS_FATAL_ERROR ("Received Wi-Fi Spectrum Signal with no WifiPhyTag");
-      return;
-    }
-    
-  WifiTxVector txVector = tag.GetWifiTxVector ();
-
-  if (txVector.GetMode ().GetModulationClass () == WIFI_MOD_CLASS_HT
-      && (txVector.GetNss () != (1 + (txVector.GetMode ().GetMcsValue () / 8))))
-    {
-      NS_FATAL_ERROR ("MCS value does not match NSS value: MCS = " << (uint16_t)txVector.GetMode ().GetMcsValue () << ", NSS = " << (uint16_t)txVector.GetNss ());
-    }
-
-  if (txVector.GetNss () > GetMaxSupportedRxSpatialStreams ())
-    {
-      NS_FATAL_ERROR ("Reception ends in failure because of an unsupported number of spatial streams");
-    }
-
-  WifiPreamble preamble = txVector.GetPreambleType ();
-  MpduType mpdutype = tag.GetMpduType ();
-
-  // At this point forward, processing parallels that of
-  // YansWifiPhy::StartReceivePreambleAndHeader ()
-
-  AmpduTag ampduTag;
-  Time endRx = Simulator::Now () + rxDuration;
-  Time preambleAndHeaderDuration = CalculatePlcpPreambleAndHeaderDuration (txVector);
-
-  Ptr<InterferenceHelper::Event> event;
-  event = m_interference.Add (packet->GetSize (),
-                              txVector,
-                              rxDuration,
-                              rxPowerW);
-
-  switch (m_state->GetState ())
-    {
-    case SpectrumWifiPhy::SWITCHING:
-      NS_LOG_DEBUG ("drop packet because of channel switching");
-      NotifyRxDrop (packet);
-      m_plcpSuccess = false;
-      /*
-       * Packets received on the upcoming channel are added to the event list
-       * during the switching state. This way the medium can be correctly sensed
-       * when the device listens to the channel for the first time after the
-       * switching e.g. after channel switching, the channel may be sensed as
-       * busy due to other devices' tramissions started before the end of
-       * the switching.
-       */
-      if (endRx > Simulator::Now () + m_state->GetDelayUntilIdle ())
-        {
-          //that packet will be noise _after_ the completion of the
-          //channel switching.
-          SwitchMaybeToCcaBusy ();
-          return;
-        }
-      break;
-    case SpectrumWifiPhy::RX:
-      NS_LOG_DEBUG ("drop packet because already in Rx (power=" <<
-                    rxPowerW << "W)");
-      NotifyRxDrop (packet);
-      if (endRx > Simulator::Now () + m_state->GetDelayUntilIdle ())
-        {
-          //that packet will be noise _after_ the reception of the
-          //currently-received packet.
-          SwitchMaybeToCcaBusy ();
-          return;
-        }
-      break;
-    case SpectrumWifiPhy::TX:
-      NS_LOG_DEBUG ("drop packet because already in Tx (power=" <<
-                    rxPowerW << "W)");
-      NotifyRxDrop (packet);
-      if (endRx > Simulator::Now () + m_state->GetDelayUntilIdle ())
-        {
-          //that packet will be noise _after_ the transmission of the
-          //currently-transmitted packet.
-          SwitchMaybeToCcaBusy ();
-          return;
-        }
-      break;
-    case SpectrumWifiPhy::CCA_BUSY:
-    case SpectrumWifiPhy::IDLE:
-      if (rxPowerW > GetEdThresholdW ()) //checked here, no need to check in the payload reception (current implementation assumes constant rx power over the packet duration)
-        {
-          if (preamble == WIFI_PREAMBLE_NONE && m_mpdusNum == 0)
-            {
-              NS_LOG_DEBUG ("drop packet because no preamble has been received");
-              NotifyRxDrop (packet);
-              SwitchMaybeToCcaBusy ();
-              return;
-            }
-          else if (preamble == WIFI_PREAMBLE_NONE && m_plcpSuccess == false) //A-MPDU reception fails
-            {
-              NS_LOG_DEBUG ("Drop MPDU because no plcp has been received");
-              NotifyRxDrop (packet);
-              SwitchMaybeToCcaBusy ();
-              return;
-            }
-          else if (preamble != WIFI_PREAMBLE_NONE && packet->PeekPacketTag (ampduTag) && m_mpdusNum == 0)
-            {
-              //received the first MPDU in an MPDU
-              m_mpdusNum = ampduTag.GetRemainingNbOfMpdus () - 1;
-              m_rxMpduReferenceNumber++;
-            }
-          else if (preamble == WIFI_PREAMBLE_NONE && packet->PeekPacketTag (ampduTag) && m_mpdusNum > 0)
-            {
-              //received the other MPDUs that are part of the A-MPDU
-              if (ampduTag.GetRemainingNbOfMpdus () < m_mpdusNum)
-                {
-                  NS_LOG_DEBUG ("Missing MPDU from the A-MPDU " << m_mpdusNum - ampduTag.GetRemainingNbOfMpdus ());
-                  m_mpdusNum = ampduTag.GetRemainingNbOfMpdus ();
-                }
-              else
-                {
-                  m_mpdusNum--;
-                }
-            }
-          else if (preamble != WIFI_PREAMBLE_NONE && m_mpdusNum > 0 )
-            {
-              NS_LOG_DEBUG ("Didn't receive the last MPDUs from an A-MPDU " << m_mpdusNum);
-              m_mpdusNum = 0;
-            }
-
-          NS_LOG_DEBUG ("sync to signal (power=" << rxPowerW << "W)");
-          //sync to signal
-          m_state->SwitchToRx (rxDuration);
-          NS_ASSERT (m_endPlcpRxEvent.IsExpired ());
-          NotifyRxBegin (packet);
-          m_interference.NotifyRxStart ();
-
-          if (preamble != WIFI_PREAMBLE_NONE)
-            {
-              NS_ASSERT (m_endPlcpRxEvent.IsExpired ());
-              m_endPlcpRxEvent = Simulator::Schedule (preambleAndHeaderDuration, &SpectrumWifiPhy::StartReceivePacket, this,
-                                                      packet, txVector, mpdutype, event);
-            }
-
-          NS_ASSERT (m_endRxEvent.IsExpired ());
-          m_endRxEvent = Simulator::Schedule (rxDuration, &SpectrumWifiPhy::EndReceive, this,
-                                              packet, preamble, mpdutype, event);
-        }
-      else
-        {
-          NS_LOG_DEBUG ("drop packet because signal power too Small (" <<
-                        rxPowerW << "<" << GetEdThresholdW () << ")");
-          NotifyRxDrop (packet);
-          m_plcpSuccess = false;
-          SwitchMaybeToCcaBusy ();
-          return;
-        }
-      break;
-    case SpectrumWifiPhy::SLEEP:
-      NS_LOG_DEBUG ("drop packet because in sleep mode");
-      NotifyRxDrop (packet);
-      m_plcpSuccess = false;
-      break;
-    }
-
-  return;
-}
-
-void
-SpectrumWifiPhy::StartReceivePacket (Ptr<Packet> packet,
-                                     WifiTxVector txVector,
-                                     MpduType mpdutype,
-                                     Ptr<InterferenceHelper::Event> event)
-{
-  NS_LOG_FUNCTION (this << packet << txVector.GetMode () << txVector.GetPreambleType () << (uint32_t)mpdutype);
-  NS_ASSERT (IsStateRx ());
-  NS_ASSERT (m_endPlcpRxEvent.IsExpired ());
-  AmpduTag ampduTag;
-  WifiMode txMode = txVector.GetMode ();
-
-  InterferenceHelper::SnrPer snrPer;
-  snrPer = m_interference.CalculatePlcpHeaderSnrPer (event);
-
-  NS_LOG_DEBUG ("snr(dB)=" << RatioToDb (snrPer.snr) << ", per=" << snrPer.per);
-
-  if (m_random->GetValue () > snrPer.per) //plcp reception succeeded
-    {
-      if (IsModeSupported (txMode) || IsMcsSupported (txMode))
-        {
-          NS_LOG_DEBUG ("receiving plcp payload"); //endReceive is already scheduled
-          m_plcpSuccess = true;
-        }
-      else //mode is not allowed
-        {
-          NS_LOG_DEBUG ("drop packet because it was sent using an unsupported mode (" << txMode << ")");
-          NotifyRxDrop (packet);
-          m_plcpSuccess = false;
-        }
-    }
-  else //plcp reception failed
-    {
-      NS_LOG_DEBUG ("drop packet because plcp preamble/header reception failed");
-      NotifyRxDrop (packet);
-      m_plcpSuccess = false;
-    }
+  StartReceivePreambleAndHeader (packet, rxPowerW, rxDuration);
 }
 
 Ptr<WifiSpectrumPhyInterface>
@@ -652,65 +264,10 @@ SpectrumWifiPhy::GetTxPowerSpectralDensity (uint32_t centerFrequency, uint32_t c
 }
 
 void
-SpectrumWifiPhy::SendPacket (Ptr<const Packet> packet, WifiTxVector txVector, MpduType mpdutype)
+SpectrumWifiPhy::StartTx (Ptr<Packet> packet, WifiTxVector txVector, Time txDuration)
 {
-  NS_LOG_FUNCTION (this << packet << txVector.GetMode ()
-                        << txVector.GetMode ().GetDataRate (txVector)
-                        << txVector.GetPreambleType ()
-                        << (uint32_t)txVector.GetTxPowerLevel ()
-                        << (uint32_t)mpdutype);
-  /* Transmission can happen if:
-   *  - we are syncing on a packet. It is the responsability of the
-   *    MAC layer to avoid doing this but the PHY does nothing to
-   *    prevent it.
-   *  - we are idle
-   */
-  NS_ASSERT (!m_state->IsStateTx () && !m_state->IsStateSwitching ());
-  
-  if (txVector.GetNss () > GetMaxSupportedTxSpatialStreams ())
-    {
-      NS_FATAL_ERROR ("Unsupported number of spatial streams!");
-    }
-
-  if (m_state->IsStateSleep ())
-    {
-      NS_LOG_DEBUG ("Dropping packet because in sleep mode");
-      NotifyTxDrop (packet);
-      return;
-    }
-
-  Time txDuration = CalculateTxDuration (packet->GetSize (), txVector, GetFrequency (), mpdutype, 1);
-  NS_ASSERT (txDuration > NanoSeconds (0));
-
-  if (m_state->IsStateRx ())
-    {
-      m_endPlcpRxEvent.Cancel ();
-      m_endRxEvent.Cancel ();
-      m_interference.NotifyRxEnd ();
-    }
-  NotifyTxBegin (packet);
-  if ((mpdutype == MPDU_IN_AGGREGATE) && (txVector.GetPreambleType () != WIFI_PREAMBLE_NONE))
-    {
-      //send the first MPDU in an MPDU
-      m_txMpduReferenceNumber++;
-    }
-  MpduInfo aMpdu;
-  aMpdu.type = mpdutype;
-  aMpdu.mpduRefNumber = m_txMpduReferenceNumber;
-  NotifyMonitorSniffTx (packet, (uint16_t) GetFrequency (), GetChannelNumber (), txVector, aMpdu);
-  m_state->SwitchToTx (txDuration, packet, GetPowerDbm (txVector.GetTxPowerLevel ()), txVector);
-  //
-  // Spectrum elements added here
-  //
-  Ptr<Packet> newPacket = packet->Copy (); // obtain non-const Packet
-  WifiPhyTag oldtag;
-  newPacket->RemovePacketTag (oldtag);
-  WifiPhyTag tag (txVector, mpdutype);
-  newPacket->AddPacketTag (tag);
-
-  NS_LOG_DEBUG ("Transmission signal power before antenna gain: " << GetPowerDbm (txVector.GetTxPowerLevel ()) << " dBm");
+  NS_LOG_DEBUG ("Start transmission: signal power before antenna gain=" << GetPowerDbm (txVector.GetTxPowerLevel ()) << "dBm");
   double txPowerWatts = DbmToW (GetPowerDbm (txVector.GetTxPowerLevel ()) + GetTxGain ());
-
   Ptr<SpectrumValue> txPowerSpectrum = GetTxPowerSpectralDensity (GetFrequency (), GetChannelWidth (), txPowerWatts);
   Ptr<WifiSpectrumSignalParameters> txParams = Create<WifiSpectrumSignalParameters> ();
   txParams->duration = txDuration;
@@ -718,80 +275,10 @@ SpectrumWifiPhy::SendPacket (Ptr<const Packet> packet, WifiTxVector txVector, Mp
   NS_ASSERT_MSG (m_wifiSpectrumPhyInterface, "SpectrumPhy() is not set; maybe forgot to call CreateWifiSpectrumPhyInterface?");
   txParams->txPhy = m_wifiSpectrumPhyInterface->GetObject<SpectrumPhy> ();
   txParams->txAntenna = m_antenna;
-  txParams->packet = newPacket;
+  txParams->packet = packet;
   NS_LOG_DEBUG ("Starting transmission with power " << WToDbm (txPowerWatts) << " dBm on channel " << GetChannelNumber ());
   NS_LOG_DEBUG ("Starting transmission with integrated spectrum power " << WToDbm (Integral (*txPowerSpectrum)) << " dBm; spectrum model Uid: " << txPowerSpectrum->GetSpectrumModel ()->GetUid ());
   m_channel->StartTx (txParams);
-}
-
-void
-SpectrumWifiPhy::RegisterListener (WifiPhyListener *listener)
-{
-  m_state->RegisterListener (listener);
-}
-
-void
-SpectrumWifiPhy::UnregisterListener (WifiPhyListener *listener)
-{
-  m_state->UnregisterListener (listener);
-}
-
-void
-SpectrumWifiPhy::EndReceive (Ptr<Packet> packet, WifiPreamble preamble, MpduType mpdutype, Ptr<InterferenceHelper::Event> event)
-{
-  NS_LOG_FUNCTION (this << packet << event);
-  NS_ASSERT (IsStateRx ());
-  NS_ASSERT (event->GetEndTime () == Simulator::Now ());
-
-  InterferenceHelper::SnrPer snrPer;
-  snrPer = m_interference.CalculatePlcpPayloadSnrPer (event);
-  m_interference.NotifyRxEnd ();
-  bool rxSucceeded;
-
-  if (m_plcpSuccess == true)
-    {
-      NS_LOG_DEBUG ("mode=" << (event->GetPayloadMode ().GetDataRate (event->GetTxVector ())) <<
-                    ", snr(dB)=" << RatioToDb (snrPer.snr) << ", per=" << snrPer.per << ", size=" << packet->GetSize ());
-
-      if (m_random->GetValue () > snrPer.per)
-        {
-          NotifyRxEnd (packet);
-          SignalNoiseDbm signalNoise;
-          signalNoise.signal = RatioToDb (event->GetRxPowerW ()) + 30;
-          signalNoise.noise = RatioToDb (event->GetRxPowerW () / snrPer.snr) - GetRxNoiseFigure () + 30;
-          MpduInfo aMpdu;
-          aMpdu.type = mpdutype;
-          aMpdu.mpduRefNumber = m_rxMpduReferenceNumber;
-          NotifyMonitorSniffRx (packet, (uint16_t) GetFrequency (), GetChannelNumber (), event->GetTxVector (), aMpdu, signalNoise);
-          m_state->SwitchFromRxEndOk (packet, snrPer.snr, event->GetTxVector ());
-          rxSucceeded = true;
-        }
-      else
-        {
-          /* failure. */
-          NotifyRxDrop (packet);
-          m_state->SwitchFromRxEndError (packet, snrPer.snr);
-          rxSucceeded = false;
-        }
-      if (!m_rxCallback.IsNull ())
-        {
-          m_rxCallback (rxSucceeded);
-        }
-    }
-  else
-    {
-      m_state->SwitchFromRxEndError (packet, snrPer.snr);
-      if (!m_rxCallback.IsNull ())
-        {
-          m_rxCallback (false);
-        }
-    }
-
-  if (preamble == WIFI_PREAMBLE_NONE && mpdutype == LAST_MPDU_IN_AGGREGATE)
-    {
-      m_plcpSuccess = false;
-    }
-
 }
 
 } //namespace ns3
