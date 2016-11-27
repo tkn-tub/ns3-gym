@@ -84,8 +84,8 @@ public:
     uint32_t txPowerLevelB;
     uint32_t packetSizeA;
     uint32_t packetSizeB;
-    enum WifiPhyStandard standard;
-    enum WifiPreamble preamble;
+    WifiPhyStandard standard;
+    WifiPreamble preamble;
   };
 
   InterferenceExperiment ();
@@ -106,7 +106,8 @@ InterferenceExperiment::SendA (void) const
   WifiTxVector txVector;
   txVector.SetTxPowerLevel (m_input.txPowerLevelA);
   txVector.SetMode (WifiMode (m_input.txModeA));
-  m_txA->SendPacket (p, txVector, m_input.preamble);
+  txVector.SetPreambleType (m_input.preamble);
+  m_txA->SendPacket (p, txVector);
 }
 
 void
@@ -116,7 +117,8 @@ InterferenceExperiment::SendB (void) const
   WifiTxVector txVector;
   txVector.SetTxPowerLevel (m_input.txPowerLevelB);
   txVector.SetMode (WifiMode (m_input.txModeB));
-  m_txB->SendPacket (p, txVector, m_input.preamble);
+  txVector.SetPreambleType (m_input.preamble);
+  m_txB->SendPacket (p, txVector);
 }
 
 InterferenceExperiment::InterferenceExperiment ()

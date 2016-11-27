@@ -23,6 +23,7 @@
 #define WIFI_TX_VECTOR_H
 
 #include <ns3/wifi-mode.h>
+#include <ns3/wifi-preamble.h>
 #include <ostream>
 
 namespace ns3 {
@@ -68,6 +69,7 @@ public:
    * \param mode WifiMode
    * \param powerLevel transmission power level
    * \param retries retries
+   * \param preamble preamble type   
    * \param shortGuardInterval enable or disable short guard interval
    * \param nTx the number of TX antennas
    * \param nss the number of spatial STBC streams (NSS)
@@ -79,6 +81,7 @@ public:
   WifiTxVector (WifiMode mode,
                 uint8_t powerLevel,
                 uint8_t retries,
+                WifiPreamble preamble,
                 bool shortGuardInterval,
                 uint8_t nTx,
                 uint8_t nss,
@@ -116,6 +119,16 @@ public:
    * \param retries
    */
   void SetRetries (uint8_t retries);
+  /**
+   * \returns the preamble type
+   */
+  WifiPreamble GetPreambleType (void) const;
+  /**
+   * Sets the preamble type
+   *
+   * \param preamble
+   */
+  void SetPreambleType (WifiPreamble preamble);
   /**
    * \returns the channel width (in MHz)
    */
@@ -202,6 +215,7 @@ private:
                                  to PMD_TXPWRLVL.request */
   uint8_t  m_retries;            /**< The DATA_RETRIES/RTS_RETRIES parameter
                                  for Click radiotap information */
+  WifiPreamble m_preamble;       /** preamble */
   uint32_t m_channelWidth;       /**< channel width in MHz */
   bool     m_shortGuardInterval; /**< true if short GI is going to be used */
   uint8_t  m_nTx;                /**< number of TX antennas */

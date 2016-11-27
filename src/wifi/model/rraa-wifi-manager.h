@@ -131,7 +131,7 @@ private:
    *
    * \return threshold
    */
-  struct ThresholdsItem GetThresholds (WifiMode mode, RraaWifiRemoteStation *station) const;
+  ThresholdsItem GetThresholds (WifiMode mode, RraaWifiRemoteStation *station) const;
   /**
    * Get a threshold for the given station and mode index.
    *
@@ -140,7 +140,7 @@ private:
    *
    * \return threshold
    */
-  struct ThresholdsItem GetThresholds (RraaWifiRemoteStation *station, uint32_t rate) const;
+  ThresholdsItem GetThresholds (RraaWifiRemoteStation *station, uint32_t rate) const;
 
   bool m_basic;
   Time m_timeout;

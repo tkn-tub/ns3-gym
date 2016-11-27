@@ -177,7 +177,7 @@ WifiMacHeader::SetMultihopAction (void)
 }
 
 void
-WifiMacHeader::SetType (enum WifiMacType type)
+WifiMacHeader::SetType (WifiMacType type)
 {
   switch (type)
     {
@@ -396,7 +396,7 @@ void WifiMacHeader::SetQosNoEosp ()
   m_qosEosp = 0;
 }
 
-void WifiMacHeader::SetQosAckPolicy (enum QosAckPolicy policy)
+void WifiMacHeader::SetQosAckPolicy (QosAckPolicy policy)
 {
   switch (policy)
     {
@@ -487,7 +487,7 @@ WifiMacHeader::GetAddr4 (void) const
   return m_addr4;
 }
 
-enum WifiMacType
+WifiMacType
 WifiMacHeader::GetType (void) const
 {
   switch (m_ctrlType)
@@ -609,7 +609,7 @@ WifiMacHeader::GetType (void) const
     }
   // NOTREACHED
   NS_ASSERT (false);
-  return (enum WifiMacType) -1;
+  return (WifiMacType) - 1;
 }
 
 bool
@@ -856,7 +856,7 @@ WifiMacHeader::GetQosTid (void) const
   return m_qosTid;
 }
 
-enum WifiMacHeader::QosAckPolicy
+WifiMacHeader::QosAckPolicy
 WifiMacHeader::GetQosAckPolicy (void) const
 {
   switch (m_qosAckPolicy)
@@ -876,7 +876,7 @@ WifiMacHeader::GetQosAckPolicy (void) const
     }
   // NOTREACHED
   NS_ASSERT (false);
-  return (enum QosAckPolicy) -1;
+  return (QosAckPolicy) - 1;
 }
 
 uint8_t

@@ -110,7 +110,7 @@ WifiMode::GetDataRate (uint32_t channelWidth, bool isShortGuardInterval, uint8_t
 {
   //TODO: nss > 4 not supported yet
   NS_ASSERT (nss <= 4);
-  struct WifiModeFactory::WifiModeItem *item = WifiModeFactory::GetFactory ()->Get (m_uid);
+  WifiModeFactory::WifiModeItem *item = WifiModeFactory::GetFactory ()->Get (m_uid);
   uint64_t dataRate = 0;
   uint32_t usableSubCarriers = 0;
   double symbolRate = 0;
@@ -233,10 +233,10 @@ WifiMode::GetDataRate (WifiTxVector txVector) const
   return GetDataRate (txVector.GetChannelWidth (), txVector.IsShortGuardInterval (), txVector.GetNss ());
 }
 
-enum WifiCodeRate
+WifiCodeRate
 WifiMode::GetCodeRate (void) const
 {
-  struct WifiModeFactory::WifiModeItem *item = WifiModeFactory::GetFactory ()->Get (m_uid);
+  WifiModeFactory::WifiModeItem *item = WifiModeFactory::GetFactory ()->Get (m_uid);
   if (item->modClass == WIFI_MOD_CLASS_HT)
     {
       switch (item->mcsValue % 8)
@@ -288,7 +288,7 @@ WifiMode::GetCodeRate (void) const
 uint16_t
 WifiMode::GetConstellationSize (void) const
 {
-  struct WifiModeFactory::WifiModeItem *item = WifiModeFactory::GetFactory ()->Get (m_uid);
+  WifiModeFactory::WifiModeItem *item = WifiModeFactory::GetFactory ()->Get (m_uid);
   if (item->modClass == WIFI_MOD_CLASS_HT)
     {
       switch (item->mcsValue % 8)
@@ -342,21 +342,21 @@ std::string
 WifiMode::GetUniqueName (void) const
 {
   //needed for ostream printing of the invalid mode
-  struct WifiModeFactory::WifiModeItem *item = WifiModeFactory::GetFactory ()->Get (m_uid);
+  WifiModeFactory::WifiModeItem *item = WifiModeFactory::GetFactory ()->Get (m_uid);
   return item->uniqueUid;
 }
 
 bool
 WifiMode::IsMandatory (void) const
 {
-  struct WifiModeFactory::WifiModeItem *item = WifiModeFactory::GetFactory ()->Get (m_uid);
+  WifiModeFactory::WifiModeItem *item = WifiModeFactory::GetFactory ()->Get (m_uid);
   return item->isMandatory;
 }
 
 uint8_t
 WifiMode::GetMcsValue (void) const
 {
-  struct WifiModeFactory::WifiModeItem *item = WifiModeFactory::GetFactory ()->Get (m_uid);
+  WifiModeFactory::WifiModeItem *item = WifiModeFactory::GetFactory ()->Get (m_uid);
   if (item->modClass == WIFI_MOD_CLASS_HT || item->modClass == WIFI_MOD_CLASS_VHT)
     {
       return item->mcsValue;
@@ -375,10 +375,10 @@ WifiMode::GetUid (void) const
   return m_uid;
 }
 
-enum WifiModulationClass
+WifiModulationClass
 WifiMode::GetModulationClass () const
 {
-  struct WifiModeFactory::WifiModeItem *item = WifiModeFactory::GetFactory ()->Get (m_uid);
+  WifiModeFactory::WifiModeItem *item = WifiModeFactory::GetFactory ()->Get (m_uid);
   return item->modClass;
 }
 
@@ -386,7 +386,7 @@ uint64_t
 WifiMode::GetNonHtReferenceRate (void) const
 {
   uint64_t dataRate;
-  struct WifiModeFactory::WifiModeItem *item = WifiModeFactory::GetFactory ()->Get (m_uid);
+  WifiModeFactory::WifiModeItem *item = WifiModeFactory::GetFactory ()->Get (m_uid);
   if (item->modClass == WIFI_MOD_CLASS_HT || item->modClass == WIFI_MOD_CLASS_VHT)
     {
       WifiCodeRate codeRate = GetCodeRate();
@@ -464,7 +464,7 @@ WifiMode::IsHigherCodeRate (WifiMode mode) const
 bool
 WifiMode::IsHigherDataRate (WifiMode mode) const
 {
-  struct WifiModeFactory::WifiModeItem *item = WifiModeFactory::GetFactory ()->Get (m_uid);
+  WifiModeFactory::WifiModeItem *item = WifiModeFactory::GetFactory ()->Get (m_uid);
   switch(item->modClass)
     {
     case WIFI_MOD_CLASS_DSSS:
@@ -541,9 +541,9 @@ WifiModeFactory::WifiModeFactory ()
 
 WifiMode
 WifiModeFactory::CreateWifiMode (std::string uniqueName,
-                                 enum WifiModulationClass modClass,
+                                 WifiModulationClass modClass,
                                  bool isMandatory,
-                                 enum WifiCodeRate codingRate,
+                                 WifiCodeRate codingRate,
                                  uint16_t constellationSize)
 {
   WifiModeFactory *factory = GetFactory ();
@@ -580,7 +580,7 @@ WifiModeFactory::CreateWifiMode (std::string uniqueName,
 WifiMode
 WifiModeFactory::CreateWifiMcs (std::string uniqueName,
                                 uint8_t mcsValue,
-                                enum WifiModulationClass modClass)
+                                WifiModulationClass modClass)
 {
   WifiModeFactory *factory = GetFactory ();
   uint32_t uid = factory->AllocateUid (uniqueName);
@@ -653,7 +653,7 @@ WifiModeFactory::AllocateUid (std::string uniqueUid)
   return uid;
 }
 
-struct WifiModeFactory::WifiModeItem *
+WifiModeFactory::WifiModeItem *
 WifiModeFactory::Get (uint32_t uid)
 {
   NS_ASSERT (uid < m_itemList.size ());

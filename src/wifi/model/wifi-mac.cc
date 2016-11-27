@@ -287,7 +287,7 @@ WifiMac::NotifyRxDrop (Ptr<const Packet> packet)
 }
 
 void
-WifiMac::ConfigureStandard (enum WifiPhyStandard standard)
+WifiMac::ConfigureStandard (WifiPhyStandard standard)
 {
   switch (standard)
     {
@@ -408,7 +408,7 @@ WifiMac::Configure80211ac (void)
 }
 
 void
-WifiMac::ConfigureDcf (Ptr<Dcf> dcf, uint32_t cwmin, uint32_t cwmax, bool isDsss, enum AcIndex ac)
+WifiMac::ConfigureDcf (Ptr<Dcf> dcf, uint32_t cwmin, uint32_t cwmax, bool isDsss, AcIndex ac)
 {
   /* see IEE802.11 section 7.3.2.29 */
   switch (ac)

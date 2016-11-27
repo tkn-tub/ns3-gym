@@ -347,11 +347,11 @@ ChannelRoutingTestCase::DoRun ()
     // invalid user priority
     Simulator::Schedule (Seconds (0.4), &ChannelRoutingTestCase::SendWsmp, this, false, TxInfo (CCH, 8));
     // invalid tx parameters
-    Simulator::Schedule (Seconds (0.4), &ChannelRoutingTestCase::SendWsmp, this, false, TxInfo (CCH, 7, WifiMode ("OfdmRate6Mbps"),  7));
-    Simulator::Schedule (Seconds (0.4), &ChannelRoutingTestCase::SendWsmp, this, false, TxInfo (CCH, 7, WifiMode ("OfdmRate3MbpsBW10MHz"), 10));
+    Simulator::Schedule (Seconds (0.4), &ChannelRoutingTestCase::SendWsmp, this, false, TxInfo (CCH, 7, WifiMode ("OfdmRate6Mbps"), WIFI_PREAMBLE_LONG, 7));
+    Simulator::Schedule (Seconds (0.4), &ChannelRoutingTestCase::SendWsmp, this, false, TxInfo (CCH, 7, WifiMode ("OfdmRate3MbpsBW10MHz"), WIFI_PREAMBLE_LONG, 10));
     // valid tx parameters
-    Simulator::Schedule (Seconds (0.4), &ChannelRoutingTestCase::SendWsmp, this, true, TxInfo (CCH, 7, WifiMode ("OfdmRate3MbpsBW10MHz"),  7));
-    Simulator::Schedule (Seconds (0.4), &ChannelRoutingTestCase::SendWsmp, this, true, TxInfo (CCH, 7, WifiMode (),  8));
+    Simulator::Schedule (Seconds (0.4), &ChannelRoutingTestCase::SendWsmp, this, true, TxInfo (CCH, 7, WifiMode ("OfdmRate3MbpsBW10MHz"), WIFI_PREAMBLE_LONG, 7));
+    Simulator::Schedule (Seconds (0.4), &ChannelRoutingTestCase::SendWsmp, this, true, TxInfo (CCH, 7, WifiMode (), WIFI_PREAMBLE_LONG, 8));
 
     // release channel access at 0.6s
     Simulator::Schedule (Seconds (0.5), &WaveNetDevice::StopSch, m_sender, SCH1);
@@ -1019,7 +1019,7 @@ AnnexC_TestCase::DoRun (void)
   SchInfo infoSender = SchInfo (SCH1, false, EXTENDED_ALTERNATING);
   Simulator::Schedule (MilliSeconds (0), &WaveNetDevice::StartSch, m_sender, infoSender);
 
-  TxInfo txInfo = TxInfo (CCH, 0, WifiMode ("OfdmRate3MbpsBW10MHz"), 0);
+  TxInfo txInfo = TxInfo (CCH, 0, WifiMode ("OfdmRate3MbpsBW10MHz"), WIFI_PREAMBLE_LONG, 0);
   // the packet size with 2312 bytes costs 6.42s, which will cancel this transmission in the CCH Interval
   // so the receiver will receive this packet in next CCH Interval
   Simulator::Schedule (MilliSeconds (45), &AnnexC_TestCase::SendPacket, this, 2304, txInfo, 1);
@@ -1028,7 +1028,7 @@ AnnexC_TestCase::DoRun (void)
   // so the receiver can this packet is this CCH Interval
   Simulator::Schedule (MilliSeconds (145), &AnnexC_TestCase::SendPacket, this, 312, txInfo, 2);
 
-  txInfo = TxInfo (SCH1, 0, WifiMode ("OfdmRate3MbpsBW10MHz"), 0);
+  txInfo = TxInfo (SCH1, 0, WifiMode ("OfdmRate3MbpsBW10MHz"), WIFI_PREAMBLE_LONG, 0);
   // the packet size with 2312 bytes costs 6.42ms, which will cancel this transmission in the SCH Interval
   // so the receiver will receive this packet in next SCH Interval
   Simulator::Schedule (MilliSeconds (295), &AnnexC_TestCase::SendPacket, this, 2304, txInfo, 3);

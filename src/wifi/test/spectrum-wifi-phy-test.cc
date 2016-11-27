@@ -70,11 +70,8 @@ SpectrumWifiPhyBasicTest::SpectrumWifiPhyBasicTest (std::string name)
 Ptr<SpectrumSignalParameters> 
 SpectrumWifiPhyBasicTest::MakeSignal (double txPowerWatts)
 {
-  WifiPreamble preamble;
-  preamble = WIFI_PREAMBLE_LONG;
-  WifiMode mode = WifiPhy::GetOfdmRate6Mbps ();
-  WifiTxVector txVector = WifiTxVector (mode, 0, 0, false, 1, 1, 0, 20000000, false, false);
-  enum mpduType mpdutype = NORMAL_MPDU;
+  WifiTxVector txVector = WifiTxVector (WifiPhy::GetOfdmRate6Mbps (), 0, 0, WIFI_PREAMBLE_LONG, false, 1, 1, 0, 20000000, false, false);
+  MpduType mpdutype = NORMAL_MPDU;
 
   Ptr<Packet> pkt = Create<Packet> (1000);
   WifiMacHeader hdr;
@@ -83,12 +80,12 @@ SpectrumWifiPhyBasicTest::MakeSignal (double txPowerWatts)
   hdr.SetType (WIFI_MAC_QOSDATA);
   hdr.SetQosTid (0);
   uint32_t size = pkt->GetSize () + hdr.GetSize () + trailer.GetSerializedSize ();
-  Time txDuration = m_phy->CalculateTxDuration (size, txVector, preamble, m_phy->GetFrequency(), mpdutype, 0);
+  Time txDuration = m_phy->CalculateTxDuration (size, txVector, m_phy->GetFrequency(), mpdutype, 0);
   hdr.SetDuration (txDuration);
 
   pkt->AddHeader (hdr);
   pkt->AddTrailer (trailer);
-  WifiPhyTag tag (txVector, preamble, mpdutype);
+  WifiPhyTag tag (txVector, mpdutype);
   pkt->AddPacketTag (tag);
   Ptr<SpectrumValue> txPowerSpectrum = WifiSpectrumValueHelper::CreateOfdmTxPowerSpectralDensity (FREQUENCY, CHANNEL_WIDTH, txPowerWatts);
   Ptr<WifiSpectrumSignalParameters> txParams = Create<WifiSpectrumSignalParameters> ();

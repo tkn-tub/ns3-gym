@@ -39,51 +39,34 @@ WifiPhyTag::GetInstanceTypeId (void) const
 uint32_t
 WifiPhyTag::GetSerializedSize (void) const
 {
-  return (4 + (7 * 1) + 4 + 2);
+  return (sizeof (WifiTxVector) + 2);
 }
 
 void
 WifiPhyTag::Serialize (TagBuffer i) const
 {
-  i.WriteU32 (m_wifiTxVector.GetMode ().GetUid ());
-  i.WriteU8 (m_wifiTxVector.GetTxPowerLevel ());
-  i.WriteU8 (m_wifiTxVector.GetRetries ());
-  i.WriteU8 (m_wifiTxVector.IsShortGuardInterval ());
-  i.WriteU8 (m_wifiTxVector.GetNTx ());
-  i.WriteU8 (m_wifiTxVector.GetNss ());
-  i.WriteU8 (m_wifiTxVector.GetNess ());
-  i.WriteU8 (m_wifiTxVector.IsStbc ());
-  i.WriteU32 (m_wifiPreamble);
+  i.Write ((uint8_t *)&m_wifiTxVector, sizeof (WifiTxVector));
   i.WriteU16 (m_mpduType);
 }
 
 void
 WifiPhyTag::Deserialize (TagBuffer i)
 {
-  m_wifiTxVector.SetMode (WifiMode (i.ReadU32 ()));
-  m_wifiTxVector.SetTxPowerLevel (i.ReadU8 ());
-  m_wifiTxVector.SetRetries (i.ReadU8 ());
-  m_wifiTxVector.SetShortGuardInterval (i.ReadU8 ());
-  m_wifiTxVector.SetNTx (i.ReadU8 ());
-  m_wifiTxVector.SetNss (i.ReadU8 ());
-  m_wifiTxVector.SetNess (i.ReadU8 ());
-  m_wifiTxVector.SetStbc (i.ReadU8 ());
-  m_wifiPreamble = i.ReadU32 ();
-  m_mpduType = static_cast<enum mpduType> (i.ReadU16 ());
+  i.Read ((uint8_t *)&m_wifiTxVector, sizeof (WifiTxVector));
+  m_mpduType = static_cast<MpduType> (i.ReadU16 ());
 }
 void
 WifiPhyTag::Print (std::ostream &os) const
 {
-  os << m_wifiTxVector << " " << (m_wifiPreamble ? "SP " : "LP ") << m_mpduType;
+  os << m_wifiTxVector << " " << m_mpduType;
 }
 
 WifiPhyTag::WifiPhyTag ()
 {
 }
 
-WifiPhyTag::WifiPhyTag (WifiTxVector txVector, WifiPreamble preamble, enum mpduType mpdutype)
+WifiPhyTag::WifiPhyTag (WifiTxVector txVector, MpduType mpdutype)
   : m_wifiTxVector (txVector),
-    m_wifiPreamble (preamble),
     m_mpduType (mpdutype)
 {
 }
@@ -94,13 +77,7 @@ WifiPhyTag::GetWifiTxVector (void) const
   return m_wifiTxVector;
 }
 
-WifiPreamble
-WifiPhyTag::GetWifiPreamble (void) const
-{
-  return ((enum WifiPreamble) m_wifiPreamble);
-}
-
-enum mpduType
+MpduType
 WifiPhyTag::GetMpduType (void) const
 {
   return m_mpduType;

@@ -370,7 +370,7 @@ IdealWifiManager::DoGetDataTxVector (WifiRemoteStation *st)
       NS_LOG_DEBUG ("New datarate: " << maxMode.GetDataRate (channelWidth, GetPhy ()->GetGuardInterval (), nss));
       m_currentRate = maxMode.GetDataRate (channelWidth, GetPhy ()->GetGuardInterval (), nss);
     }
-  return WifiTxVector (maxMode, GetDefaultTxPowerLevel (), GetLongRetryCount (station), false, GetNumberOfAntennas (), nss, 0, channelWidth, GetAggregation (station), false);
+  return WifiTxVector (maxMode, GetDefaultTxPowerLevel (), GetLongRetryCount (station), GetPreambleForTransmission (maxMode, GetAddress (station)), false, GetNumberOfAntennas (), nss, 0, channelWidth, GetAggregation (station), false);
 }
 
 WifiTxVector
@@ -402,7 +402,7 @@ IdealWifiManager::DoGetRtsTxVector (WifiRemoteStation *st)
           maxMode = mode;
         }
     }
-  return WifiTxVector (maxMode, GetDefaultTxPowerLevel (), GetShortRetryCount (station), false, GetNumberOfAntennas (), nss, 0, GetChannelWidthForMode (maxMode), GetAggregation (station), false);
+  return WifiTxVector (maxMode, GetDefaultTxPowerLevel (), GetShortRetryCount (station), GetPreambleForTransmission (maxMode, GetAddress (station)), false, GetNumberOfAntennas (), nss, 0, GetChannelWidthForMode (maxMode), GetAggregation (station), false);
 }
 
 bool

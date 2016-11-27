@@ -341,7 +341,8 @@ AmrrWifiManager::DoGetDataTxVector (WifiRemoteStation *st)
       //avoid to use legacy rate adaptation algorithms for IEEE 802.11n/ac
       channelWidth = 20;
     }
-  return WifiTxVector (GetSupported (station, rateIndex), GetDefaultTxPowerLevel (), GetLongRetryCount (station), false, 1, 1, 0, channelWidth, GetAggregation (station), false);
+  WifiMode mode = GetSupported (station, rateIndex);
+  return WifiTxVector (mode, GetDefaultTxPowerLevel (), GetLongRetryCount (station), GetPreambleForTransmission (mode, GetAddress (station)), false, 1, 1, 0, channelWidth, GetAggregation (station), false);
 }
 
 WifiTxVector
@@ -357,14 +358,16 @@ AmrrWifiManager::DoGetRtsTxVector (WifiRemoteStation *st)
     }
   UpdateMode (station);
   WifiTxVector rtsTxVector;
+  WifiMode mode;
   if (GetUseNonErpProtection () == false)
     {
-      rtsTxVector = WifiTxVector (GetSupported (station, 0), GetDefaultTxPowerLevel (), GetLongRetryCount (station), false, 1, 1, 0, channelWidth, GetAggregation (station), false);
+      mode = GetSupported (station, 0);
     }
   else
     {
-      rtsTxVector = WifiTxVector (GetNonErpSupported (station, 0), GetDefaultTxPowerLevel (), GetLongRetryCount (station), false, 1, 1, 0, channelWidth, GetAggregation (station), false);
+      mode = GetNonErpSupported (station, 0);
     }
+  rtsTxVector = WifiTxVector (mode, GetDefaultTxPowerLevel (), GetLongRetryCount (station), GetPreambleForTransmission (mode, GetAddress (station)), false, 1, 1, 0, channelWidth, GetAggregation (station), false);
   return rtsTxVector;
 }
 

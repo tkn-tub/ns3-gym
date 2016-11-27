@@ -161,6 +161,13 @@ ChannelManager::GetManagementDataRate (uint32_t channelNumber)
   return m_channels[channelNumber]->dataRate;
 }
 
+WifiPreamble
+ChannelManager::GetManagementPreamble (uint32_t channelNumber)
+{
+  NS_LOG_FUNCTION (this << channelNumber);
+  return m_channels[channelNumber]->preamble;
+}
+
 uint32_t
 ChannelManager::GetManagementPowerLevel (uint32_t channelNumber)
 {

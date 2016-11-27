@@ -89,18 +89,15 @@ double g_signalDbmAvg;
 double g_noiseDbmAvg;
 uint32_t g_samples;
 uint16_t g_channelNumber;
-uint32_t g_rate;
 
 void MonitorSniffRx (Ptr<const Packet> packet, uint16_t channelFreqMhz,
-                     uint16_t channelNumber, uint32_t rate,
-                     WifiPreamble preamble, WifiTxVector txVector,
-                     struct mpduInfo aMpdu, struct signalNoiseDbm signalNoise)
+                     uint16_t channelNumber, WifiTxVector txVector,
+                     MpduInfo aMpdu, SignalNoiseDbm signalNoise)
 
 {
   g_samples++;
   g_signalDbmAvg += ((signalNoise.signal - g_signalDbmAvg) / g_samples);
   g_noiseDbmAvg += ((signalNoise.noise - g_noiseDbmAvg) / g_samples);
-  g_rate = rate;
   g_channelNumber = channelNumber;
 }
 
@@ -523,7 +520,6 @@ int main (int argc, char *argv[])
       g_noiseDbmAvg = 0;
       g_samples = 0;
       g_channelNumber = 0;
-      g_rate = 0;
 
       Simulator::Stop (Seconds (simulationTime + 1));
       Simulator::Run ();

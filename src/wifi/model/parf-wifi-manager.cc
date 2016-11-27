@@ -301,7 +301,8 @@ ParfWifiManager::DoGetDataTxVector (WifiRemoteStation *st)
       channelWidth = 20;
     }
   CheckInit (station);
-  return WifiTxVector (GetSupported (station, station->m_currentRate), station->m_currentPower, GetLongRetryCount (station), false, 1, 1, 0, channelWidth, GetAggregation (station), false);
+  WifiMode mode = GetSupported (station, station->m_currentRate);
+  return WifiTxVector (mode, station->m_currentPower, GetLongRetryCount (station), GetPreambleForTransmission (mode, GetAddress (station)), false, 1, 1, 0, channelWidth, GetAggregation (station), false);
 }
 
 WifiTxVector
@@ -318,14 +319,16 @@ ParfWifiManager::DoGetRtsTxVector (WifiRemoteStation *st)
       channelWidth = 20;
     }
   WifiTxVector rtsTxVector;
+  WifiMode mode;
   if (GetUseNonErpProtection () == false)
     {
-      rtsTxVector = WifiTxVector (GetSupported (station, 0), GetDefaultTxPowerLevel (), GetShortRetryCount (station), false, 1, 1, 0, channelWidth, GetAggregation (station), false);
+      mode = GetSupported (station, 0);
     }
   else
     {
-      rtsTxVector = WifiTxVector (GetNonErpSupported (station, 0), GetDefaultTxPowerLevel (), GetShortRetryCount (station), false, 1, 1, 0, channelWidth, GetAggregation (station), false);
+      mode = GetNonErpSupported (station, 0);
     }
+  rtsTxVector = WifiTxVector (mode, GetDefaultTxPowerLevel (), GetShortRetryCount (station), GetPreambleForTransmission (mode, GetAddress (station)), false, 1, 1, 0, channelWidth, GetAggregation (station), false);
   return rtsTxVector;
 }
 

@@ -694,7 +694,7 @@ WifiPhy::CalculateSnr (WifiTxVector txVector, double ber) const
 }
 
 void
-WifiPhy::ConfigureDefaultsForStandard (enum WifiPhyStandard standard)
+WifiPhy::ConfigureDefaultsForStandard (WifiPhyStandard standard)
 {
   NS_LOG_FUNCTION (this << standard);
   switch (standard)
@@ -953,7 +953,7 @@ WifiPhy::Configure80211ac (void)
 }
 
 bool 
-WifiPhy::DefineChannelNumber (uint16_t channelNumber, enum WifiPhyStandard standard, uint32_t frequency, uint32_t channelWidth)
+WifiPhy::DefineChannelNumber (uint16_t channelNumber, WifiPhyStandard standard, uint32_t frequency, uint32_t channelWidth)
 {
   NS_LOG_FUNCTION (this << channelNumber << standard << frequency << channelWidth);
   ChannelNumberStandardPair p = std::make_pair (channelNumber, standard);
@@ -998,7 +998,7 @@ WifiPhy::FindChannelNumberForFrequencyWidth (uint32_t frequency, uint32_t width)
 }
 
 void
-WifiPhy::ConfigureChannelForStandard (enum WifiPhyStandard standard)
+WifiPhy::ConfigureChannelForStandard (WifiPhyStandard standard)
 {
   NS_LOG_FUNCTION (this << standard);
   // If the user has configured both Frequency and ChannelNumber, Frequency
@@ -1049,7 +1049,7 @@ WifiPhy::ConfigureChannelForStandard (enum WifiPhyStandard standard)
 }
 
 void
-WifiPhy::ConfigureStandard (enum WifiPhyStandard standard)
+WifiPhy::ConfigureStandard (WifiPhyStandard standard)
 {
   NS_LOG_FUNCTION (this << standard);
   m_standard = standard;
@@ -1102,7 +1102,7 @@ WifiPhy::ConfigureStandard (enum WifiPhyStandard standard)
     }
 }
 
-enum WifiPhyStandard
+WifiPhyStandard
 WifiPhy::GetStandard (void) const
 {
   return m_standard;
@@ -1294,7 +1294,7 @@ WifiPhy::GetSupportedChannelWidthSet (void) const
 }
 
 WifiPhy::FrequencyWidthPair
-WifiPhy::GetFrequencyWidthForChannelNumberStandard (uint16_t channelNumber, enum WifiPhyStandard standard) const
+WifiPhy::GetFrequencyWidthForChannelNumberStandard (uint16_t channelNumber, WifiPhyStandard standard) const
 {
   ChannelNumberStandardPair p = std::make_pair (channelNumber, standard);
   FrequencyWidthPair f = m_channelToFrequencyWidth[p];
@@ -1386,7 +1386,7 @@ WifiPhy::GetVhtPlcpHeaderMode (WifiMode payloadMode)
 }
 
 Time
-WifiPhy::GetPlcpHtTrainingSymbolDuration (WifiPreamble preamble, WifiTxVector txVector)
+WifiPhy::GetPlcpHtTrainingSymbolDuration (WifiTxVector txVector)
 {
   uint8_t Ndltf, Neltf;
   //We suppose here that STBC = 0.
@@ -1417,7 +1417,7 @@ WifiPhy::GetPlcpHtTrainingSymbolDuration (WifiPreamble preamble, WifiTxVector tx
       Neltf = 4;
     }
 
-  switch (preamble)
+  switch (txVector.GetPreambleType ())
     {
     case WIFI_PREAMBLE_HT_MF:
       return MicroSeconds (4 + (4 * Ndltf) + (4 * Neltf));
@@ -1489,9 +1489,9 @@ WifiPhy::GetPlcpVhtSigBDuration (WifiPreamble preamble)
 }
 
 WifiMode
-WifiPhy::GetPlcpHeaderMode (WifiMode payloadMode, WifiPreamble preamble, WifiTxVector txVector)
+WifiPhy::GetPlcpHeaderMode (WifiTxVector txVector)
 {
-  switch (payloadMode.GetModulationClass ())
+  switch (txVector.GetMode ().GetModulationClass ())
     {
     case WIFI_MOD_CLASS_OFDM:
     case WIFI_MOD_CLASS_HT:
@@ -1517,7 +1517,7 @@ WifiPhy::GetPlcpHeaderMode (WifiMode payloadMode, WifiPreamble preamble, WifiTxV
       return WifiPhy::GetErpOfdmRate6Mbps ();
     case WIFI_MOD_CLASS_DSSS:
     case WIFI_MOD_CLASS_HR_DSSS:
-      if (preamble == WIFI_PREAMBLE_LONG || payloadMode == WifiPhy::GetDsssRate1Mbps ())
+      if (txVector.GetPreambleType () == WIFI_PREAMBLE_LONG || txVector.GetMode () == WifiPhy::GetDsssRate1Mbps ())
         {
           //(Section 16.2.3 "PLCP field definitions" and Section 17.2.2.2 "Long PPDU format"; IEEE Std 802.11-2012)
           return WifiPhy::GetDsssRate1Mbps ();
@@ -1534,8 +1534,9 @@ WifiPhy::GetPlcpHeaderMode (WifiMode payloadMode, WifiPreamble preamble, WifiTxV
 }
 
 Time
-WifiPhy::GetPlcpHeaderDuration (WifiTxVector txVector, WifiPreamble preamble)
+WifiPhy::GetPlcpHeaderDuration (WifiTxVector txVector)
 {
+  WifiPreamble preamble = txVector.GetPreambleType ();
   if (preamble == WIFI_PREAMBLE_NONE)
     {
       return MicroSeconds (0);
@@ -1598,8 +1599,9 @@ WifiPhy::GetPlcpHeaderDuration (WifiTxVector txVector, WifiPreamble preamble)
 }
 
 Time
-WifiPhy::GetPlcpPreambleDuration (WifiTxVector txVector, WifiPreamble preamble)
+WifiPhy::GetPlcpPreambleDuration (WifiTxVector txVector)
 {
+  WifiPreamble preamble = txVector.GetPreambleType ();
   if (preamble == WIFI_PREAMBLE_NONE)
     {
       return MicroSeconds (0);
@@ -1650,15 +1652,16 @@ WifiPhy::GetPlcpPreambleDuration (WifiTxVector txVector, WifiPreamble preamble)
 }
 
 Time
-WifiPhy::GetPayloadDuration (uint32_t size, WifiTxVector txVector, WifiPreamble preamble, double frequency)
+WifiPhy::GetPayloadDuration (uint32_t size, WifiTxVector txVector, double frequency)
 {
-  return GetPayloadDuration (size, txVector, preamble, frequency, NORMAL_MPDU, 0);
+  return GetPayloadDuration (size, txVector, frequency, NORMAL_MPDU, 0);
 }
 
 Time
-WifiPhy::GetPayloadDuration (uint32_t size, WifiTxVector txVector, WifiPreamble preamble, double frequency, enum mpduType mpdutype, uint8_t incFlag)
+WifiPhy::GetPayloadDuration (uint32_t size, WifiTxVector txVector, double frequency, MpduType mpdutype, uint8_t incFlag)
 {
   WifiMode payloadMode = txVector.GetMode ();
+  WifiPreamble preamble = txVector.GetPreambleType ();
   NS_LOG_FUNCTION (size << payloadMode);
 
   switch (payloadMode.GetModulationClass ())
@@ -1729,7 +1732,7 @@ WifiPhy::GetPayloadDuration (uint32_t size, WifiTxVector txVector, WifiPreamble 
           }
         else
           {
-            NS_FATAL_ERROR ("Wrong combination of preamble and packet type");
+            NS_FATAL_ERROR ("Wrong combination of preamble and packet type: preamble=" << preamble << ", packet type=" << mpdutype);
           }
 
         //Add signal extension for ERP PHY
@@ -1948,30 +1951,31 @@ WifiPhy::GetPayloadDuration (uint32_t size, WifiTxVector txVector, WifiPreamble 
 }
 
 Time
-WifiPhy::CalculatePlcpPreambleAndHeaderDuration (WifiTxVector txVector, WifiPreamble preamble)
+WifiPhy::CalculatePlcpPreambleAndHeaderDuration (WifiTxVector txVector)
 {
-  Time duration = GetPlcpPreambleDuration (txVector, preamble)
-    + GetPlcpHeaderDuration (txVector, preamble)
+  WifiPreamble preamble = txVector.GetPreambleType();
+  Time duration = GetPlcpPreambleDuration (txVector)
+    + GetPlcpHeaderDuration (txVector)
     + GetPlcpHtSigHeaderDuration (preamble)
     + GetPlcpVhtSigA1Duration (preamble)
     + GetPlcpVhtSigA2Duration (preamble)
-    + GetPlcpHtTrainingSymbolDuration (preamble, txVector)
+    + GetPlcpHtTrainingSymbolDuration (txVector)
     + GetPlcpVhtSigBDuration (preamble);
   return duration;
 }
 
 Time
-WifiPhy::CalculateTxDuration (uint32_t size, WifiTxVector txVector, WifiPreamble preamble, double frequency, enum mpduType mpdutype, uint8_t incFlag)
+WifiPhy::CalculateTxDuration (uint32_t size, WifiTxVector txVector, double frequency, MpduType mpdutype, uint8_t incFlag)
 {
-  Time duration = CalculatePlcpPreambleAndHeaderDuration (txVector, preamble)
-    + GetPayloadDuration (size, txVector, preamble, frequency, mpdutype, incFlag);
+  Time duration = CalculatePlcpPreambleAndHeaderDuration (txVector)
+    + GetPayloadDuration (size, txVector, frequency, mpdutype, incFlag);
   return duration;
 }
 
 Time
-WifiPhy::CalculateTxDuration (uint32_t size, WifiTxVector txVector, WifiPreamble preamble, double frequency)
+WifiPhy::CalculateTxDuration (uint32_t size, WifiTxVector txVector, double frequency)
 {
-  return CalculateTxDuration (size, txVector, preamble, frequency, NORMAL_MPDU, 0);
+  return CalculateTxDuration (size, txVector, frequency, NORMAL_MPDU, 0);
 }
 
 void
@@ -2011,15 +2015,15 @@ WifiPhy::NotifyRxDrop (Ptr<const Packet> packet)
 }
 
 void
-WifiPhy::NotifyMonitorSniffRx (Ptr<const Packet> packet, uint16_t channelFreqMhz, uint16_t channelNumber, uint32_t rate, WifiPreamble preamble, WifiTxVector txVector, struct mpduInfo aMpdu, struct signalNoiseDbm signalNoise)
+WifiPhy::NotifyMonitorSniffRx (Ptr<const Packet> packet, uint16_t channelFreqMhz, uint16_t channelNumber, WifiTxVector txVector, MpduInfo aMpdu, SignalNoiseDbm signalNoise)
 {
-  m_phyMonitorSniffRxTrace (packet, channelFreqMhz, channelNumber, rate, preamble, txVector, aMpdu, signalNoise);
+  m_phyMonitorSniffRxTrace (packet, channelFreqMhz, channelNumber, txVector, aMpdu, signalNoise);
 }
 
 void
-WifiPhy::NotifyMonitorSniffTx (Ptr<const Packet> packet, uint16_t channelFreqMhz, uint16_t channelNumber, uint32_t rate, WifiPreamble preamble, WifiTxVector txVector, struct mpduInfo aMpdu)
+WifiPhy::NotifyMonitorSniffTx (Ptr<const Packet> packet, uint16_t channelFreqMhz, uint16_t channelNumber, WifiTxVector txVector, MpduInfo aMpdu)
 {
-  m_phyMonitorSniffTxTrace (packet, channelFreqMhz, channelNumber, rate, preamble, txVector, aMpdu);
+  m_phyMonitorSniffTxTrace (packet, channelFreqMhz, channelNumber, txVector, aMpdu);
 }
 
 
@@ -3011,7 +3015,7 @@ WifiPhy::AssignStreams (int64_t stream)
   return 1;
 }
 
-std::ostream& operator<< (std::ostream& os, enum WifiPhy::State state)
+std::ostream& operator<< (std::ostream& os, WifiPhy::State state)
 {
   switch (state)
     {

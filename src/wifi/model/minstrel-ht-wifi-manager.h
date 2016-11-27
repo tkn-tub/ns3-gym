@@ -67,7 +67,7 @@ struct McsGroup
  * Data structure for a table of group definitions.
  * A vector of McsGroups.
  */
-typedef std::vector<struct McsGroup> MinstrelMcsGroups;
+typedef std::vector<McsGroup> MinstrelMcsGroups;
 
 struct MinstrelHtWifiRemoteStation;
 /**
@@ -114,7 +114,7 @@ struct HtRateInfo
  * Data structure for a Minstrel Rate table.
  * A vector of a struct HtRateInfo.
  */
-typedef std::vector<struct HtRateInfo> HtMinstrelRate;
+typedef std::vector<HtRateInfo> HtMinstrelRate;
 
 /**
  * A struct to contain information of a group.

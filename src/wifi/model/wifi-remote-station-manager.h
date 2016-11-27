@@ -755,7 +755,6 @@ public:
   typedef void (*RateChangeTracedCallback)(uint32_t rate, Mac48Address remoteAddress);
 
 
-
 protected:
   virtual void DoDispose (void);
   /**
@@ -828,6 +827,14 @@ protected:
    * \return the number of non-ERP modes supported by the given station
    */
   uint32_t GetNNonErpSupported (const WifiRemoteStation *station) const;
+  /**
+   * Return the address of the station.
+   *
+   * \param station the station being queried
+   *
+   * \return the address of the station
+   */
+  Mac48Address GetAddress (const WifiRemoteStation *station) const;
   /**
    * Return the channel width supported by the station.
    *
@@ -905,6 +912,15 @@ protected:
    * \return the short retry limit of the the station
    */
   uint32_t GetShortRetryCount (const WifiRemoteStation *station) const;
+  /**
+   * Return the preamble to be used for the transmission.
+   *
+   * \param mode the mode selected for the transmission
+   * \param dest address of the recipient
+   *
+   * \return the preamble to be used for the transmission
+   */
+  WifiPreamble GetPreambleForTransmission (WifiMode mode, Mac48Address dest);
 
   /**
    * Return the WifiPhy.
@@ -1154,7 +1170,7 @@ private:
    * \return true if the modulation class of the selected mode for the 
    * control answer frame is allowed, false otherwise
    */
-  bool IsAllowedControlAnswerModulationClass (enum WifiModulationClass modClassReq, enum WifiModulationClass modClassAnswer) const;
+  bool IsAllowedControlAnswerModulationClass (WifiModulationClass modClassReq, WifiModulationClass modClassAnswer) const;
 
   WifiMode GetControlAnswerMode (Mac48Address address, WifiMode reqMode);
 

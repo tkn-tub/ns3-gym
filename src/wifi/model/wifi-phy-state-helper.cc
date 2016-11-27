@@ -190,7 +190,7 @@ WifiPhyStateHelper::GetLastRxStartTime (void) const
   return m_startRx;
 }
 
-enum WifiPhy::State
+WifiPhy::State
 WifiPhyStateHelper::GetState (void)
 {
   if (m_sleeping)
@@ -313,9 +313,9 @@ WifiPhyStateHelper::LogPreviousIdleAndCcaBusyStates (void)
 
 void
 WifiPhyStateHelper::SwitchToTx (Time txDuration, Ptr<const Packet> packet, double txPowerDbm,
-                                WifiTxVector txVector, WifiPreamble preamble)
+                                WifiTxVector txVector)
 {
-  m_txTrace (packet, txVector.GetMode (), preamble, txVector.GetTxPowerLevel ());
+  m_txTrace (packet, txVector.GetMode (), txVector.GetPreambleType (), txVector.GetTxPowerLevel ());
   Time now = Simulator::Now ();
   switch (GetState ())
     {
@@ -429,14 +429,14 @@ WifiPhyStateHelper::SwitchToChannelSwitching (Time switchingDuration)
 }
 
 void
-WifiPhyStateHelper::SwitchFromRxEndOk (Ptr<Packet> packet, double snr, WifiTxVector txVector, enum WifiPreamble preamble)
+WifiPhyStateHelper::SwitchFromRxEndOk (Ptr<Packet> packet, double snr, WifiTxVector txVector)
 {
-  m_rxOkTrace (packet, snr, txVector.GetMode (), preamble);
+  m_rxOkTrace (packet, snr, txVector.GetMode (), txVector.GetPreambleType ());
   NotifyRxEndOk ();
   DoSwitchFromRx ();
   if (!m_rxOkCallback.IsNull ())
     {
-      m_rxOkCallback (packet, snr, txVector, preamble);
+      m_rxOkCallback (packet, snr, txVector);
     }
 
 }

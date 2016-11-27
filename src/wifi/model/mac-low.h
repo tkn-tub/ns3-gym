@@ -29,7 +29,6 @@
 
 #include "wifi-mode.h"
 #include "wifi-phy.h"
-#include "wifi-preamble.h"
 #include "wifi-remote-station-manager.h"
 #include "block-ack-agreement.h"
 #include "ns3/mac48-address.h"
@@ -727,13 +726,12 @@ public:
    * \param packet packet received
    * \param rxSnr snr of packet received
    * \param txVector TXVECTOR of packet received
-   * \param preamble type of preamble used for the packet received
    * \param ampduSubframe true if this MPDU is part of an A-MPDU
    *
    * This method is typically invoked by the lower PHY layer to notify
    * the MAC layer that a packet was successfully received.
    */
-  void ReceiveOk (Ptr<Packet> packet, double rxSnr, WifiTxVector txVector, WifiPreamble preamble, bool ampduSubframe);
+  void ReceiveOk (Ptr<Packet> packet, double rxSnr, WifiTxVector txVector, bool ampduSubframe);
   /**
    * \param packet packet received.
    * \param rxSnr snr of packet received.
@@ -791,7 +789,7 @@ public:
    * The lifetime of the registered listener is typically equal to the lifetime of the queue
    * associated to this AC.
    */
-  void RegisterBlockAckListenerForAc (enum AcIndex ac, MacLowAggregationCapableTransmissionListener *listener);
+  void RegisterBlockAckListenerForAc (AcIndex ac, MacLowAggregationCapableTransmissionListener *listener);
   /**
    * \param packet the packet to be aggregated. If the aggregation is succesfull, it corresponds either to the first data packet that will be aggregated or to the BAR that will be piggybacked at the end of the A-MPDU.
    * \param hdr the WifiMacHeader for the packet.
@@ -805,12 +803,11 @@ public:
    * \param aggregatedPacket which is the current A-MPDU
    * \param rxSnr snr of packet received
    * \param txVector TXVECTOR of packet received
-   * \param preamble type of preamble used for the packet received
    *
    * This function de-aggregates an A-MPDU and decide if each MPDU is received correctly or not
    *
    */
-  void DeaggregateAmpduAndReceive (Ptr<Packet> aggregatedPacket, double rxSnr, WifiTxVector txVector, WifiPreamble preamble);
+  void DeaggregateAmpduAndReceive (Ptr<Packet> aggregatedPacket, double rxSnr, WifiTxVector txVector);
   /**
    * \param peekedPacket the packet to be aggregated
    * \param peekedHdr the WifiMacHeader for the packet.
@@ -858,7 +855,7 @@ private:
    * \param type the Block ACK type
    * \return the total Block ACK size
    */
-  uint32_t GetBlockAckSize (enum BlockAckType type) const;
+  uint32_t GetBlockAckSize (BlockAckType type) const;
   /**
    * Return the total RTS size (including FCS trailer).
    *
@@ -886,20 +883,17 @@ private:
    * \param packet
    * \param hdr
    * \param txVector
-   * \param preamble
    */
-  void ForwardDown (Ptr<const Packet> packet, const WifiMacHeader *hdr,
-                    WifiTxVector txVector, WifiPreamble preamble);
+  void ForwardDown (Ptr<const Packet> packet, const WifiMacHeader *hdr, WifiTxVector txVector);
   /**
    * Forward the MPDU down to WifiPhy for transmission. This is called for each MPDU when MPDU aggregation is used.
    *
    * \param packet
    * \param hdr
    * \param txVector
-   * \param preamble
    * \param mpdutype
    */
-  void SendMpdu (Ptr<const Packet> packet, WifiTxVector txVector, WifiPreamble preamble, enum mpduType mpdutype);
+  void SendMpdu (Ptr<const Packet> packet, WifiTxVector txVector, MpduType mpdutype);
   /**
    * Return a TXVECTOR for the RTS frame given the destination.
    * The function consults WifiRemoteStationManager, which controls the rate
@@ -1016,7 +1010,7 @@ private:
    * \param type the Block ACK type
    * \return the time required to transmit the Block ACK (including preamble and FCS)
    */
-  Time GetBlockAckDuration (Mac48Address to, WifiTxVector blockAckReqTxVector, enum BlockAckType type) const;
+  Time GetBlockAckDuration (Mac48Address to, WifiTxVector blockAckReqTxVector, BlockAckType type) const;
   /**
    * Check if the current packet should be sent with a RTS protection.
    *

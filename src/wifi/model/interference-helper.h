@@ -25,7 +25,6 @@
 #include <vector>
 #include <list>
 #include "wifi-mode.h"
-#include "wifi-preamble.h"
 #include "wifi-phy-standard.h"
 #include "ns3/nstime.h"
 #include "ns3/simple-ref-count.h"
@@ -52,13 +51,10 @@ public:
      *
      * \param size packet size
      * \param txVector TXVECTOR of the packet
-     * \param preamble preamble type
      * \param duration duration of the signal
      * \param rxPower the receive power (w)
      */
-    Event (uint32_t size, WifiTxVector txVector,
-           enum WifiPreamble preamble,
-           Time duration, double rxPower);
+    Event (uint32_t size, WifiTxVector txVector, Time duration, double rxPower);
     ~Event ();
 
     /**
@@ -103,18 +99,11 @@ public:
      * \return the Wi-Fi mode used for the payload
      */
     WifiMode GetPayloadMode (void) const;
-    /**
-     * Return the preamble type of the packet.
-     *
-     * \return the preamble type of the packet
-     */
-    enum WifiPreamble GetPreambleType (void) const;
 
 
 private:
     uint32_t m_size;
     WifiTxVector m_txVector;
-    enum WifiPreamble m_preamble;
     Time m_startTime;
     Time m_endTime;
     double m_rxPowerW;
@@ -179,15 +168,12 @@ private:
    *
    * \param size packet size
    * \param txVector TXVECTOR of the packet
-   * \param preamble Wi-Fi preamble for the packet
    * \param duration the duration of the signal
    * \param rxPower receive power (W)
    *
    * \return InterferenceHelper::Event
    */
-  Ptr<InterferenceHelper::Event> Add (uint32_t size, WifiTxVector txVector,
-                                      enum WifiPreamble preamble,
-                                      Time duration, double rxPower);
+  Ptr<InterferenceHelper::Event> Add (uint32_t size, WifiTxVector txVector, Time duration, double rxPower);
 
   /**
    * Add a non-Wifi signal to interference helper.

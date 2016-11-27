@@ -411,6 +411,7 @@ WaveNetDevice::SendX (Ptr<Packet> packet, const Address & dest, uint32_t protoco
       txVector.SetChannelWidth (10);
       txVector.SetTxPowerLevel (txInfo.txPowerLevel);
       txVector.SetMode (txInfo.dataRate);
+      txVector.SetPreambleType (txInfo.preamble);
       HigherLayerTxVectorTag tag = HigherLayerTxVectorTag (txVector, false);
       packet->AddPacketTag (tag);
     }
@@ -618,6 +619,7 @@ WaveNetDevice::Send (Ptr<Packet> packet, const Address& dest, uint16_t protocol)
       WifiTxVector txVector;
       txVector.SetTxPowerLevel (m_txProfile->txPowerLevel);
       txVector.SetMode (m_txProfile->dataRate);
+      txVector.SetPreambleType (m_txProfile->preamble);
       HigherLayerTxVectorTag tag = HigherLayerTxVectorTag (txVector, m_txProfile->adaptable);
       packet->AddPacketTag (tag);
     }

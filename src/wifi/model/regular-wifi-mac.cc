@@ -344,7 +344,7 @@ RegularWifiMac::SetBkBlockAckInactivityTimeout (uint16_t timeout)
 }
 
 void
-RegularWifiMac::SetupEdcaQueue (enum AcIndex ac)
+RegularWifiMac::SetupEdcaQueue (AcIndex ac)
 {
   NS_LOG_FUNCTION (this << ac);
 
@@ -1099,7 +1099,7 @@ RegularWifiMac::GetTypeId (void)
 }
 
 void
-RegularWifiMac::FinishConfigureStandard (enum WifiPhyStandard standard)
+RegularWifiMac::FinishConfigureStandard (WifiPhyStandard standard)
 {
   NS_LOG_FUNCTION (this << standard);
   uint32_t cwmin = 0;

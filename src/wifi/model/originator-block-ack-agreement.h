@@ -95,7 +95,7 @@ public:
     INACTIVE,
     UNSUCCESSFUL
   };
-  void SetState (enum State state);
+  void SetState (State state);
   /**
    * Check if the current state of this agreement is PENDING.
    *
@@ -142,7 +142,7 @@ public:
 
 
 private:
-  enum State m_state;
+  State m_state;
   uint16_t m_sentMpdus;
   bool m_needBlockAckReq;
 };

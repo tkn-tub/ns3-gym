@@ -178,6 +178,7 @@ VsaManager::DoSendVsa (enum VsaTransmitInterval  interval, uint32_t channel,
   txVector.SetChannelWidth (10);
   txVector.SetTxPowerLevel (manager->GetManagementPowerLevel (channel));
   txVector.SetMode (manager->GetManagementDataRate (channel));
+  txVector.SetPreambleType (manager->GetManagementPreamble (channel));
   HigherLayerTxVectorTag tag = HigherLayerTxVectorTag (txVector, manager->GetManagementAdaptable (channel));
   vsc->AddPacketTag (tag);
 

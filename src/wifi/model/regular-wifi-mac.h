@@ -339,7 +339,7 @@ protected:
    * deal with certain values in the WifiPhyStandard enumeration, and
    * chain up to this implementation to deal with the remainder.
    */
-  virtual void FinishConfigureStandard (enum WifiPhyStandard standard);
+  virtual void FinishConfigureStandard (WifiPhyStandard standard);
   
   /**
    * \param cwMin the minimum congestion window size
@@ -539,7 +539,7 @@ private:
    *
    * \param ac the Access Category index of the queue to initialise.
    */
-  void SetupEdcaQueue (enum AcIndex ac);
+  void SetupEdcaQueue (AcIndex ac);
 
   void SetVoMaxAmsduSize (uint32_t size);
   void SetViMaxAmsduSize (uint32_t size);

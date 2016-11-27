@@ -247,7 +247,7 @@ WifiMacQueue::Flush (void)
 }
 
 Mac48Address
-WifiMacQueue::GetAddressForPacket (enum WifiMacHeader::AddressType type, PacketQueueI it)
+WifiMacQueue::GetAddressForPacket (WifiMacHeader::AddressType type, PacketQueueI it)
 {
   if (type == WifiMacHeader::ADDR1)
     {

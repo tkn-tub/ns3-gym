@@ -111,7 +111,8 @@ MinstrelWifiManager::SetupPhy (Ptr<WifiPhy> phy)
       WifiMode mode = phy->GetMode (i);
       WifiTxVector txVector;
       txVector.SetMode (mode);
-      AddCalcTxTime (mode, phy->CalculateTxDuration (m_pktLen, txVector, WIFI_PREAMBLE_LONG, phy->GetFrequency ()));
+      txVector.SetPreambleType (WIFI_PREAMBLE_LONG);
+      AddCalcTxTime (mode, phy->CalculateTxDuration (m_pktLen, txVector, phy->GetFrequency ()));
     }
   WifiRemoteStationManager::SetupPhy (phy);
 }
@@ -361,7 +362,8 @@ MinstrelWifiManager::GetDataTxVector (MinstrelWifiRemoteStation *station)
       //start the rate at half way
       station->m_txrate = station->m_nModes / 2;
     }
-  return WifiTxVector (GetSupported (station, station->m_txrate), GetDefaultTxPowerLevel (), GetLongRetryCount (station), false, 1, 1, 0, channelWidth, GetAggregation (station), false);
+  WifiMode mode = GetSupported (station, station->m_txrate);
+  return WifiTxVector (mode, GetDefaultTxPowerLevel (), GetLongRetryCount (station), GetPreambleForTransmission (mode, GetAddress (station)), false, 1, 1, 0, channelWidth, GetAggregation (station), false);
 }
 
 WifiTxVector
@@ -376,14 +378,16 @@ MinstrelWifiManager::GetRtsTxVector (MinstrelWifiRemoteStation *station)
       channelWidth = 20;
     }
   WifiTxVector rtsTxVector;
+  WifiMode mode;
   if (GetUseNonErpProtection () == false)
     {
-      rtsTxVector = WifiTxVector (GetSupported (station, 0), GetDefaultTxPowerLevel (), GetShortRetryCount (station), false, 1, 1, 0, channelWidth, GetAggregation (station), false);
+      mode = GetSupported (station, 0);
     }
   else
     {
-      rtsTxVector = WifiTxVector (GetNonErpSupported (station, 0), GetDefaultTxPowerLevel (), GetShortRetryCount (station), false, 1, 1, 0, channelWidth, GetAggregation (station), false);
+      mode = GetNonErpSupported (station, 0);
     }
+  rtsTxVector = WifiTxVector (mode, GetDefaultTxPowerLevel (), GetShortRetryCount (station), GetPreambleForTransmission (mode, GetAddress (station)), false, 1, 1, 0, channelWidth, GetAggregation (station), false);
   return rtsTxVector;
 }
 

@@ -85,7 +85,7 @@ BlockAckManager::ExistsAgreement (Mac48Address recipient, uint8_t tid) const
 
 bool
 BlockAckManager::ExistsAgreementInState (Mac48Address recipient, uint8_t tid,
-                                         enum OriginatorBlockAckAgreement::State state) const
+                                         OriginatorBlockAckAgreement::State state) const
 {
   NS_LOG_FUNCTION (this << recipient << static_cast<uint32_t> (tid) << state);
   AgreementsCI it;
@@ -471,7 +471,7 @@ BlockAckManager::RemovePacket (uint8_t tid, Mac48Address recipient, uint16_t seq
 }
 
 bool
-BlockAckManager::HasBar (struct Bar &bar)
+BlockAckManager::HasBar (Bar &bar)
 {
   NS_LOG_FUNCTION (this << &bar);
   if (m_bars.size () > 0)
@@ -695,7 +695,7 @@ BlockAckManager::NotifyGotBlockAck (const CtrlBAckResponseHeader *blockAck, Mac4
 }
 
 void
-BlockAckManager::SetBlockAckType (enum BlockAckType bAckType)
+BlockAckManager::SetBlockAckType (BlockAckType bAckType)
 {
   NS_LOG_FUNCTION (this << bAckType);
   m_blockAckType = bAckType;
@@ -773,7 +773,7 @@ BlockAckManager::NotifyAgreementUnsuccessful (Mac48Address recipient, uint8_t ti
 }
 
 void
-BlockAckManager::NotifyMpduTransmission (Mac48Address recipient, uint8_t tid, uint16_t nextSeqNumber, enum WifiMacHeader::QosAckPolicy policy)
+BlockAckManager::NotifyMpduTransmission (Mac48Address recipient, uint8_t tid, uint16_t nextSeqNumber, WifiMacHeader::QosAckPolicy policy)
 {
   NS_LOG_FUNCTION (this << recipient << static_cast<uint32_t> (tid) << nextSeqNumber);
   Ptr<Packet> bar = 0;

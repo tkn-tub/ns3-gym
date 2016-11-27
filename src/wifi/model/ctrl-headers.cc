@@ -195,7 +195,7 @@ CtrlBAckRequestHeader::SetHtImmediateAck (bool immediateAck)
 }
 
 void
-CtrlBAckRequestHeader::SetType (enum BlockAckType type)
+CtrlBAckRequestHeader::SetType (BlockAckType type)
 {
   NS_LOG_FUNCTION (this << type);
   switch (type)
@@ -408,7 +408,7 @@ CtrlBAckResponseHeader::SetHtImmediateAck (bool immediateAck)
 }
 
 void
-CtrlBAckResponseHeader::SetType (enum BlockAckType type)
+CtrlBAckResponseHeader::SetType (BlockAckType type)
 {
   NS_LOG_FUNCTION (this << type);
   switch (type)

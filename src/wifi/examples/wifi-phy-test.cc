@@ -60,7 +60,7 @@ public:
 
 private:
   void Send (void);
-  void Receive (Ptr<Packet> p, double snr, WifiTxVector txVector, enum WifiPreamble preamble);
+  void Receive (Ptr<Packet> p, double snr, WifiTxVector txVector);
   Ptr<WifiPhy> m_tx;
   struct Input m_input;
   struct Output m_output;
@@ -74,11 +74,12 @@ PsrExperiment::Send (void)
   WifiTxVector txVector;
   txVector.SetTxPowerLevel (m_input.txPowerLevel);
   txVector.SetMode (mode);
-  m_tx->SendPacket (p, txVector, WIFI_PREAMBLE_LONG);
+  txVector.SetPreambleType (WIFI_PREAMBLE_LONG);
+  m_tx->SendPacket (p, txVector);
 }
 
 void
-PsrExperiment::Receive (Ptr<Packet> p, double snr, WifiTxVector txVector, enum WifiPreamble preamble)
+PsrExperiment::Receive (Ptr<Packet> p, double snr, WifiTxVector txVector)
 {
   m_output.received++;
 }
@@ -165,7 +166,7 @@ public:
 private:
   void SendA (void) const;
   void SendB (void) const;
-  void Receive (Ptr<Packet> p, double snr, WifiTxVector txVector, enum WifiPreamble preamble);
+  void Receive (Ptr<Packet> p, double snr, WifiTxVector txVector);
   Ptr<WifiPhy> m_txA;
   Ptr<WifiPhy> m_txB;
   uint32_t m_flowIdA;
@@ -182,7 +183,8 @@ CollisionExperiment::SendA (void) const
   WifiTxVector txVector;
   txVector.SetTxPowerLevel (m_input.txPowerLevelA);
   txVector.SetMode (WifiMode (m_input.txModeA));
-  m_txA->SendPacket (p, txVector, WIFI_PREAMBLE_LONG);
+  txVector.SetPreambleType (WIFI_PREAMBLE_LONG);
+  m_txA->SendPacket (p, txVector);
 }
 
 void
@@ -193,11 +195,12 @@ CollisionExperiment::SendB (void) const
   WifiTxVector txVector;
   txVector.SetTxPowerLevel (m_input.txPowerLevelB);
   txVector.SetMode (WifiMode (m_input.txModeB));
-  m_txB->SendPacket (p, txVector, WIFI_PREAMBLE_LONG);
+  txVector.SetPreambleType (WIFI_PREAMBLE_LONG);
+  m_txB->SendPacket (p, txVector);
 }
 
 void
-CollisionExperiment::Receive (Ptr<Packet> p, double snr, WifiTxVector txVector, enum WifiPreamble preamble)
+CollisionExperiment::Receive (Ptr<Packet> p, double snr, WifiTxVector txVector)
 {
   FlowIdTag tag;
   if (p->FindFirstMatchingByteTag (tag))

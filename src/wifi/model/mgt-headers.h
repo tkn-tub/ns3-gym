@@ -614,10 +614,10 @@ public:
    */
   typedef union
   {
-    enum MeshActionValue meshAction;
-    enum MultihopActionValue multihopAction;
-    enum SelfProtectedActionValue selfProtectedAction;
-    enum BlockAckActionValue blockAck;
+    MeshActionValue meshAction;
+    MultihopActionValue multihopAction;
+    SelfProtectedActionValue selfProtectedAction;
+    BlockAckActionValue blockAck;
   } ActionValue;
   /**
    * Set action for this Action header.
@@ -625,7 +625,7 @@ public:
    * \param type category
    * \param action action
    */
-  void   SetAction (enum CategoryValue type,ActionValue action);
+  void   SetAction (CategoryValue type, ActionValue action);
 
   /**
    * Return the category value.

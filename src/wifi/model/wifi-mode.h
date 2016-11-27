@@ -138,7 +138,7 @@ public:
   /**
    * \returns the coding rate of this transmission mode
    */
-  enum WifiCodeRate GetCodeRate (void) const;
+  WifiCodeRate GetCodeRate (void) const;
   /**
    * \returns the size of the modulation constellation.
    */
@@ -170,7 +170,7 @@ public:
    * \returns the Modulation Class (Section 9.7.8 "Modulation classes"; IEEE 802.11-2012)
    * to which this WifiMode belongs.
    */
-  enum WifiModulationClass GetModulationClass () const;  
+  WifiModulationClass GetModulationClass () const;
   /**
    * \returns the rate (in bps) of the non-HT Reference Rate
    * which corresponds to the HT MCS of this WifiMode.
@@ -263,9 +263,9 @@ public:
    * Create a WifiMode (not used for HT or VHT).
    */
   static WifiMode CreateWifiMode (std::string uniqueName,
-                                  enum WifiModulationClass modClass,
+                                  WifiModulationClass modClass,
                                   bool isMandatory,
-                                  enum WifiCodeRate codingRate,
+                                  WifiCodeRate codingRate,
                                   uint16_t constellationSize);
 
   /**
@@ -280,7 +280,7 @@ public:
    */
   static WifiMode CreateWifiMcs (std::string uniqueName,
                                  uint8_t mcsValue,
-                                 enum WifiModulationClass modClass);
+                                 WifiModulationClass modClass);
 
 
 private:
@@ -303,9 +303,9 @@ private:
   struct WifiModeItem
   {
     std::string uniqueUid;
-    enum WifiModulationClass modClass;
+    WifiModulationClass modClass;
     uint16_t constellationSize;
-    enum WifiCodeRate codingRate;
+    WifiCodeRate codingRate;
     bool isMandatory;
     uint8_t mcsValue;
   };
@@ -338,7 +338,7 @@ private:
   /**
    * typedef for a vector of WifiModeItem.
    */
-  typedef std::vector<struct WifiModeItem> WifiModeItemList;
+  typedef std::vector<WifiModeItem> WifiModeItemList;
   WifiModeItemList m_itemList;
 };
 

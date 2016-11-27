@@ -141,19 +141,19 @@ public:
    *
    * \param type
    */
-  void SetTypeOfStation (enum TypeOfStation type);
+  void SetTypeOfStation (TypeOfStation type);
   /**
    * Return type of station.
    *
    * \return type of station
    */
-  enum TypeOfStation GetTypeOfStation (void) const;
+  TypeOfStation GetTypeOfStation (void) const;
   /**
    * Return the packet queue associated with this EdcaTxopN.
    *
    * \return WifiMacQueue
    */
-  Ptr<WifiMacQueue > GetEdcaQueue () const;
+  Ptr<WifiMacQueue> GetEdcaQueue () const;
 
   virtual void SetMinCw (uint32_t minCw);
   virtual void SetMaxCw (uint32_t maxCw);
@@ -383,7 +383,7 @@ public:
    *
    * \param ac
    */
-  void SetAccessCategory (enum AcIndex ac);
+  void SetAccessCategory (AcIndex ac);
 
   /**
    * \param packet packet to send
@@ -523,7 +523,7 @@ private:
    *
    * \param bar
    */
-  void SendBlockAckRequest (const struct Bar &bar);
+  void SendBlockAckRequest (const Bar &bar);
   /**
    * For now is typically invoked to complete transmission of a packets sent with ack policy
    * Block Ack: the packet is buffered and dcf is reset.
@@ -582,10 +582,10 @@ private:
    * Represents the minimum number of packets for use of block ack.
    */
   uint8_t m_blockAckThreshold;
-  enum BlockAckType m_blockAckType;
+  BlockAckType m_blockAckType;
   Time m_currentPacketTimestamp;
   uint16_t m_blockAckInactivityTimeout;
-  struct Bar m_currentBar;
+  Bar m_currentBar;
   Time m_startTxop;
   bool m_isAccessRequestedForRts;
   TracedValue<uint32_t> m_backoffTrace;

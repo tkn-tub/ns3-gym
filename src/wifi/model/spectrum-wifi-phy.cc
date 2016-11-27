@@ -412,20 +412,19 @@ SpectrumWifiPhy::StartRx (Ptr<SpectrumSignalParameters> rxParams)
       NS_FATAL_ERROR ("Reception ends in failure because of an unsupported number of spatial streams");
     }
 
-  enum WifiPreamble preamble = tag.GetWifiPreamble ();
-  enum mpduType mpdutype = tag.GetMpduType ();
+  WifiPreamble preamble = txVector.GetPreambleType ();
+  MpduType mpdutype = tag.GetMpduType ();
 
   // At this point forward, processing parallels that of
   // YansWifiPhy::StartReceivePreambleAndHeader ()
 
   AmpduTag ampduTag;
   Time endRx = Simulator::Now () + rxDuration;
-  Time preambleAndHeaderDuration = CalculatePlcpPreambleAndHeaderDuration (txVector, preamble);
+  Time preambleAndHeaderDuration = CalculatePlcpPreambleAndHeaderDuration (txVector);
 
   Ptr<InterferenceHelper::Event> event;
   event = m_interference.Add (packet->GetSize (),
                               txVector,
-                              preamble,
                               rxDuration,
                               rxPowerW);
 
@@ -529,7 +528,7 @@ SpectrumWifiPhy::StartRx (Ptr<SpectrumSignalParameters> rxParams)
             {
               NS_ASSERT (m_endPlcpRxEvent.IsExpired ());
               m_endPlcpRxEvent = Simulator::Schedule (preambleAndHeaderDuration, &SpectrumWifiPhy::StartReceivePacket, this,
-                                                      packet, txVector, preamble, mpdutype, event);
+                                                      packet, txVector, mpdutype, event);
             }
 
           NS_ASSERT (m_endRxEvent.IsExpired ());
@@ -559,17 +558,16 @@ SpectrumWifiPhy::StartRx (Ptr<SpectrumSignalParameters> rxParams)
 void
 SpectrumWifiPhy::StartReceivePacket (Ptr<Packet> packet,
                                      WifiTxVector txVector,
-                                     enum WifiPreamble preamble,
-                                     enum mpduType mpdutype,
+                                     MpduType mpdutype,
                                      Ptr<InterferenceHelper::Event> event)
 {
-  NS_LOG_FUNCTION (this << packet << txVector.GetMode () << preamble << (uint32_t)mpdutype);
+  NS_LOG_FUNCTION (this << packet << txVector.GetMode () << txVector.GetPreambleType () << (uint32_t)mpdutype);
   NS_ASSERT (IsStateRx ());
   NS_ASSERT (m_endPlcpRxEvent.IsExpired ());
   AmpduTag ampduTag;
   WifiMode txMode = txVector.GetMode ();
 
-  struct InterferenceHelper::SnrPer snrPer;
+  InterferenceHelper::SnrPer snrPer;
   snrPer = m_interference.CalculatePlcpHeaderSnrPer (event);
 
   NS_LOG_DEBUG ("snr(dB)=" << RatioToDb (snrPer.snr) << ", per=" << snrPer.per);
@@ -624,12 +622,6 @@ SpectrumWifiPhy::CreateWifiSpectrumPhyInterface (Ptr<NetDevice> device)
   m_wifiSpectrumPhyInterface->SetDevice (device);
 }
 
-void
-SpectrumWifiPhy::SendPacket (Ptr<const Packet> packet, WifiTxVector txVector, WifiPreamble preamble)
-{
-  SendPacket (packet, txVector, preamble, NORMAL_MPDU);
-}
-
 Ptr<SpectrumValue>
 SpectrumWifiPhy::GetTxPowerSpectralDensity (uint32_t centerFrequency, uint32_t channelWidth, double txPowerW) const
 {
@@ -660,11 +652,13 @@ SpectrumWifiPhy::GetTxPowerSpectralDensity (uint32_t centerFrequency, uint32_t c
 }
 
 void
-SpectrumWifiPhy::SendPacket (Ptr<const Packet> packet, WifiTxVector txVector, WifiPreamble preamble, enum mpduType mpdutype)
+SpectrumWifiPhy::SendPacket (Ptr<const Packet> packet, WifiTxVector txVector, MpduType mpdutype)
 {
   NS_LOG_FUNCTION (this << packet << txVector.GetMode ()
                         << txVector.GetMode ().GetDataRate (txVector)
-                        << preamble << (uint32_t)txVector.GetTxPowerLevel () << (uint32_t)mpdutype);
+                        << txVector.GetPreambleType ()
+                        << (uint32_t)txVector.GetTxPowerLevel ()
+                        << (uint32_t)mpdutype);
   /* Transmission can happen if:
    *  - we are syncing on a packet. It is the responsability of the
    *    MAC layer to avoid doing this but the PHY does nothing to
@@ -685,7 +679,7 @@ SpectrumWifiPhy::SendPacket (Ptr<const Packet> packet, WifiTxVector txVector, Wi
       return;
     }
 
-  Time txDuration = CalculateTxDuration (packet->GetSize (), txVector, preamble, GetFrequency (), mpdutype, 1);
+  Time txDuration = CalculateTxDuration (packet->GetSize (), txVector, GetFrequency (), mpdutype, 1);
   NS_ASSERT (txDuration > NanoSeconds (0));
 
   if (m_state->IsStateRx ())
@@ -695,32 +689,23 @@ SpectrumWifiPhy::SendPacket (Ptr<const Packet> packet, WifiTxVector txVector, Wi
       m_interference.NotifyRxEnd ();
     }
   NotifyTxBegin (packet);
-  uint32_t dataRate500KbpsUnits;
-  if (txVector.GetMode ().GetModulationClass () == WIFI_MOD_CLASS_HT || txVector.GetMode ().GetModulationClass () == WIFI_MOD_CLASS_VHT)
-    {
-      dataRate500KbpsUnits = 128 + txVector.GetMode ().GetMcsValue ();
-    }
-  else
-    {
-      dataRate500KbpsUnits = txVector.GetMode ().GetDataRate (txVector.GetChannelWidth (), txVector.IsShortGuardInterval (), 1) * txVector.GetNss () / 500000;
-    }
-  if (mpdutype == MPDU_IN_AGGREGATE && preamble != WIFI_PREAMBLE_NONE)
+  if ((mpdutype == MPDU_IN_AGGREGATE) && (txVector.GetPreambleType () != WIFI_PREAMBLE_NONE))
     {
       //send the first MPDU in an MPDU
       m_txMpduReferenceNumber++;
     }
-  struct mpduInfo aMpdu;
+  MpduInfo aMpdu;
   aMpdu.type = mpdutype;
   aMpdu.mpduRefNumber = m_txMpduReferenceNumber;
-  NotifyMonitorSniffTx (packet, (uint16_t) GetFrequency (), GetChannelNumber (), dataRate500KbpsUnits, preamble, txVector, aMpdu);
-  m_state->SwitchToTx (txDuration, packet, GetPowerDbm (txVector.GetTxPowerLevel ()), txVector, preamble);
+  NotifyMonitorSniffTx (packet, (uint16_t) GetFrequency (), GetChannelNumber (), txVector, aMpdu);
+  m_state->SwitchToTx (txDuration, packet, GetPowerDbm (txVector.GetTxPowerLevel ()), txVector);
   //
   // Spectrum elements added here
   //
   Ptr<Packet> newPacket = packet->Copy (); // obtain non-const Packet
   WifiPhyTag oldtag;
   newPacket->RemovePacketTag (oldtag);
-  WifiPhyTag tag (txVector, preamble, mpdutype);
+  WifiPhyTag tag (txVector, mpdutype);
   newPacket->AddPacketTag (tag);
 
   NS_LOG_DEBUG ("Transmission signal power before antenna gain: " << GetPowerDbm (txVector.GetTxPowerLevel ()) << " dBm");
@@ -752,13 +737,13 @@ SpectrumWifiPhy::UnregisterListener (WifiPhyListener *listener)
 }
 
 void
-SpectrumWifiPhy::EndReceive (Ptr<Packet> packet, enum WifiPreamble preamble, enum mpduType mpdutype, Ptr<InterferenceHelper::Event> event)
+SpectrumWifiPhy::EndReceive (Ptr<Packet> packet, WifiPreamble preamble, MpduType mpdutype, Ptr<InterferenceHelper::Event> event)
 {
   NS_LOG_FUNCTION (this << packet << event);
   NS_ASSERT (IsStateRx ());
   NS_ASSERT (event->GetEndTime () == Simulator::Now ());
 
-  struct InterferenceHelper::SnrPer snrPer;
+  InterferenceHelper::SnrPer snrPer;
   snrPer = m_interference.CalculatePlcpPayloadSnrPer (event);
   m_interference.NotifyRxEnd ();
   bool rxSucceeded;
@@ -771,23 +756,14 @@ SpectrumWifiPhy::EndReceive (Ptr<Packet> packet, enum WifiPreamble preamble, enu
       if (m_random->GetValue () > snrPer.per)
         {
           NotifyRxEnd (packet);
-          uint32_t dataRate500KbpsUnits;
-          if ((event->GetPayloadMode ().GetModulationClass () == WIFI_MOD_CLASS_HT) || (event->GetPayloadMode ().GetModulationClass () == WIFI_MOD_CLASS_VHT))
-            {
-              dataRate500KbpsUnits = 128 + event->GetPayloadMode ().GetMcsValue ();
-            }
-          else
-            {
-              dataRate500KbpsUnits = event->GetPayloadMode ().GetDataRate (event->GetTxVector ().GetChannelWidth (), event->GetTxVector ().IsShortGuardInterval (), 1) * event->GetTxVector ().GetNss () / 500000;
-            }
-          struct signalNoiseDbm signalNoise;
+          SignalNoiseDbm signalNoise;
           signalNoise.signal = RatioToDb (event->GetRxPowerW ()) + 30;
           signalNoise.noise = RatioToDb (event->GetRxPowerW () / snrPer.snr) - GetRxNoiseFigure () + 30;
-          struct mpduInfo aMpdu;
+          MpduInfo aMpdu;
           aMpdu.type = mpdutype;
           aMpdu.mpduRefNumber = m_rxMpduReferenceNumber;
-          NotifyMonitorSniffRx (packet, (uint16_t) GetFrequency (), GetChannelNumber (), dataRate500KbpsUnits, event->GetPreambleType (), event->GetTxVector (), aMpdu, signalNoise);
-          m_state->SwitchFromRxEndOk (packet, snrPer.snr, event->GetTxVector (), event->GetPreambleType ());
+          NotifyMonitorSniffRx (packet, (uint16_t) GetFrequency (), GetChannelNumber (), event->GetTxVector (), aMpdu, signalNoise);
+          m_state->SwitchFromRxEndOk (packet, snrPer.snr, event->GetTxVector ());
           rxSucceeded = true;
         }
       else

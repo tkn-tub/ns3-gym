@@ -85,14 +85,12 @@ public:
    *
    * \param packet the arriving packet
    * \param txVector the TXVECTOR of the arriving packet
-   * \param preamble the preamble of the arriving packet
-   * \param mpdutype the type of the MPDU as defined in WifiPhy::mpduType.
+   * \param mpdutype the type of the MPDU as defined in WifiPhy::MpduType.
    * \param event the corresponding event of the first time the packet arrives
    */
   void StartReceivePacket (Ptr<Packet> packet,
                            WifiTxVector txVector,
-                           WifiPreamble preamble,
-                           enum mpduType mpdutype,
+                           MpduType mpdutype,
                            Ptr<InterferenceHelper::Event> event);
 
   /**
@@ -164,8 +162,7 @@ public:
 
   virtual void SetReceiveOkCallback (WifiPhy::RxOkCallback callback);
   virtual void SetReceiveErrorCallback (WifiPhy::RxErrorCallback callback);
-  virtual void SendPacket (Ptr<const Packet> packet, WifiTxVector txVector, enum WifiPreamble preamble);
-  virtual void SendPacket (Ptr<const Packet> packet, WifiTxVector txVector, enum WifiPreamble preamble, enum mpduType mpdutype);
+  virtual void SendPacket (Ptr<const Packet> packet, WifiTxVector txVector, MpduType mpdutype = NORMAL_MPDU);
   virtual void RegisterListener (WifiPhyListener *listener);
   virtual void UnregisterListener (WifiPhyListener *listener);
   virtual void SetSleepMode (void);
@@ -185,10 +182,10 @@ private:
    *
    * \param packet the packet that the last bit has arrived
    * \param preamble the preamble of the arriving packet
-   * \param mpdutype the type of the MPDU as defined in WifiPhy::mpduType.
+   * \param mpdutype the type of the MPDU as defined in WifiPhy::MpduType.
    * \param event the corresponding event of the first time the packet arrives
    */
-  void EndReceive (Ptr<Packet> packet, enum WifiPreamble preamble, enum mpduType mpdutype, Ptr<InterferenceHelper::Event> event);
+  void EndReceive (Ptr<Packet> packet, WifiPreamble preamble, MpduType mpdutype, Ptr<InterferenceHelper::Event> event);
 
   /**
    * \param centerFrequency center frequency (MHz)

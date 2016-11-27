@@ -143,12 +143,11 @@ WifiPhyHelper::PcapSniffTxEvent (
   Ptr<const Packet>    packet,
   uint16_t             channelFreqMhz,
   uint16_t             channelNumber,
-  uint32_t             rate,
-  WifiPreamble         preamble,
   WifiTxVector         txVector,
-  struct mpduInfo      aMpdu)
+  MpduInfo             aMpdu)
 {
   uint32_t dlt = file->GetDataLinkType ();
+  WifiPreamble preamble = txVector.GetPreambleType ();
 
   switch (dlt)
     {
@@ -181,6 +180,16 @@ WifiPhyHelper::PcapSniffTxEvent (
           }
 
         header.SetFrameFlags (frameFlags);
+        
+        uint32_t rate;
+        if (txVector.GetMode ().GetModulationClass () == WIFI_MOD_CLASS_HT || txVector.GetMode ().GetModulationClass () == WIFI_MOD_CLASS_VHT)
+          {
+            rate = 128 + txVector.GetMode ().GetMcsValue ();
+          }
+        else
+          {
+            rate = txVector.GetMode ().GetDataRate (txVector.GetChannelWidth (), txVector.IsShortGuardInterval (), 1) * txVector.GetNss () / 500000;
+          }
         header.SetRate (rate);
 
         uint16_t channelFlags = 0;
@@ -335,13 +344,12 @@ WifiPhyHelper::PcapSniffRxEvent (
   Ptr<const Packet>     packet,
   uint16_t              channelFreqMhz,
   uint16_t              channelNumber,
-  uint32_t              rate,
-  WifiPreamble          preamble,
   WifiTxVector          txVector,
-  struct mpduInfo       aMpdu,
-  struct signalNoiseDbm signalNoise)
+  MpduInfo              aMpdu,
+  SignalNoiseDbm        signalNoise)
 {
   uint32_t dlt = file->GetDataLinkType ();
+  WifiPreamble preamble = txVector.GetPreambleType ();
 
   switch (dlt)
     {
@@ -374,6 +382,16 @@ WifiPhyHelper::PcapSniffRxEvent (
           }
 
         header.SetFrameFlags (frameFlags);
+        
+        uint32_t rate;
+        if (txVector.GetMode ().GetModulationClass () == WIFI_MOD_CLASS_HT || txVector.GetMode ().GetModulationClass () == WIFI_MOD_CLASS_VHT)
+          {
+            rate = 128 + txVector.GetMode ().GetMcsValue ();
+          }
+        else
+          {
+            rate = txVector.GetMode ().GetDataRate (txVector.GetChannelWidth (), txVector.IsShortGuardInterval (), 1) * txVector.GetNss () / 500000;
+          }
         header.SetRate (rate);
 
         uint16_t channelFlags = 0;

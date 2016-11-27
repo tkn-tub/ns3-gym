@@ -719,6 +719,7 @@ WifiRemoteStationManager::GetDataTxVector (Mac48Address address, const WifiMacHe
     {
       WifiTxVector v;
       v.SetMode (GetNonUnicastMode ());
+      v.SetPreambleType (GetPreambleForTransmission (GetNonUnicastMode (), address));
       v.SetTxPowerLevel (m_defaultTxPowerLevel);
       v.SetChannelWidth (m_wifiPhy->GetChannelWidth ());
       v.SetShortGuardInterval (m_wifiPhy->GetGuardInterval ());
@@ -763,9 +764,25 @@ WifiRemoteStationManager::GetCtsToSelfTxVector (const WifiMacHeader *header,
 WifiTxVector
 WifiRemoteStationManager::DoGetCtsToSelfTxVector (void)
 {
-  return WifiTxVector (GetDefaultMode (),
+  WifiMode defaultMode = GetDefaultMode ();
+  WifiPreamble defaultPreamble;
+  if (defaultMode.GetModulationClass () == WIFI_MOD_CLASS_VHT)
+    {
+      defaultPreamble = WIFI_PREAMBLE_VHT;
+    }
+  else if (defaultMode.GetModulationClass () == WIFI_MOD_CLASS_HT)
+    {
+      defaultPreamble = WIFI_PREAMBLE_HT_MF;
+    }
+  else
+    {
+      defaultPreamble = WIFI_PREAMBLE_LONG;
+    }
+
+  return WifiTxVector (defaultMode,
                        GetDefaultTxPowerLevel (),
                        0,
+                       defaultPreamble,
                        m_wifiPhy->GetGuardInterval (),
                        GetNumberOfAntennas (),
                        GetMaxNumberOfTransmitStreams (),
@@ -1119,7 +1136,7 @@ WifiRemoteStationManager::IsLastFragment (Mac48Address address, const WifiMacHea
 }
 
 bool
-WifiRemoteStationManager::IsAllowedControlAnswerModulationClass (enum WifiModulationClass modClassReq, enum WifiModulationClass modClassAnswer) const
+WifiRemoteStationManager::IsAllowedControlAnswerModulationClass (WifiModulationClass modClassReq, WifiModulationClass modClassAnswer) const
 {
   switch (modClassReq)
     {
@@ -1286,14 +1303,16 @@ WifiTxVector
 WifiRemoteStationManager::GetCtsTxVector (Mac48Address address, WifiMode rtsMode)
 {
   NS_ASSERT (!address.IsGroup ());
+  WifiMode ctsMode = GetControlAnswerMode (address, rtsMode);
   WifiTxVector v;
-  v.SetMode (GetControlAnswerMode (address, rtsMode));
-  v.SetTxPowerLevel (DoGetCtsTxPowerLevel (address, v.GetMode ()));
-  v.SetChannelWidth (DoGetCtsTxChannelWidth (address, v.GetMode ()));
-  v.SetShortGuardInterval (DoGetCtsTxGuardInterval (address, v.GetMode ()));
-  v.SetNss (DoGetCtsTxNss (address, v.GetMode ()));
-  v.SetNess (DoGetCtsTxNess (address, v.GetMode ()));
-  v.SetStbc (DoGetCtsTxStbc (address, v.GetMode ()));
+  v.SetMode (ctsMode);
+  v.SetPreambleType (GetPreambleForTransmission (ctsMode, address));
+  v.SetTxPowerLevel (DoGetCtsTxPowerLevel (address, ctsMode));
+  v.SetChannelWidth (DoGetCtsTxChannelWidth (address, ctsMode));
+  v.SetShortGuardInterval (DoGetCtsTxGuardInterval (address, ctsMode));
+  v.SetNss (DoGetCtsTxNss (address, ctsMode));
+  v.SetNess (DoGetCtsTxNess (address, ctsMode));
+  v.SetStbc (DoGetCtsTxStbc (address, ctsMode));
   return v;
 }
 
@@ -1301,14 +1320,16 @@ WifiTxVector
 WifiRemoteStationManager::GetAckTxVector (Mac48Address address, WifiMode dataMode)
 {
   NS_ASSERT (!address.IsGroup ());
+  WifiMode ackMode = GetControlAnswerMode (address, dataMode);
   WifiTxVector v;
-  v.SetMode (GetControlAnswerMode (address, dataMode));
-  v.SetTxPowerLevel (DoGetAckTxPowerLevel (address, v.GetMode ()));
-  v.SetChannelWidth (DoGetAckTxChannelWidth (address, v.GetMode ()));
-  v.SetShortGuardInterval (DoGetAckTxGuardInterval (address, v.GetMode ()));
-  v.SetNss (DoGetAckTxNss (address, v.GetMode ()));
-  v.SetNess (DoGetAckTxNess (address, v.GetMode ()));
-  v.SetStbc (DoGetAckTxStbc (address, v.GetMode ()));
+  v.SetMode (ackMode);
+  v.SetPreambleType (GetPreambleForTransmission (ackMode, address));
+  v.SetTxPowerLevel (DoGetAckTxPowerLevel (address, ackMode));
+  v.SetChannelWidth (DoGetAckTxChannelWidth (address, ackMode));
+  v.SetShortGuardInterval (DoGetAckTxGuardInterval (address, ackMode));
+  v.SetNss (DoGetAckTxNss (address, ackMode));
+  v.SetNess (DoGetAckTxNess (address, ackMode));
+  v.SetStbc (DoGetAckTxStbc (address, ackMode));
   return v;
 }
 
@@ -1316,14 +1337,16 @@ WifiTxVector
 WifiRemoteStationManager::GetBlockAckTxVector (Mac48Address address, WifiMode blockAckReqMode)
 {
   NS_ASSERT (!address.IsGroup ());
+  WifiMode blockAckMode = GetControlAnswerMode (address, blockAckReqMode);
   WifiTxVector v;
-  v.SetMode (GetControlAnswerMode (address, blockAckReqMode));
-  v.SetTxPowerLevel (DoGetBlockAckTxPowerLevel (address, v.GetMode ()));
-  v.SetChannelWidth (DoGetBlockAckTxChannelWidth (address, v.GetMode ()));
-  v.SetShortGuardInterval (DoGetBlockAckTxGuardInterval (address, v.GetMode ()));
-  v.SetNss (DoGetBlockAckTxNss (address, v.GetMode ()));
-  v.SetNess (DoGetBlockAckTxNess (address, v.GetMode ()));
-  v.SetStbc (DoGetBlockAckTxStbc (address, v.GetMode ()));
+  v.SetMode (blockAckMode);
+  v.SetPreambleType (GetPreambleForTransmission (blockAckMode, address));
+  v.SetTxPowerLevel (DoGetBlockAckTxPowerLevel (address, blockAckMode));
+  v.SetChannelWidth (DoGetBlockAckTxChannelWidth (address, blockAckMode));
+  v.SetShortGuardInterval (DoGetBlockAckTxGuardInterval (address, blockAckMode));
+  v.SetNss (DoGetBlockAckTxNss (address, blockAckMode));
+  v.SetNess (DoGetBlockAckTxNess (address, blockAckMode));
+  v.SetStbc (DoGetBlockAckTxStbc (address, blockAckMode));
   return v;
 }
 
@@ -1783,6 +1806,12 @@ WifiRemoteStationManager::GetNonErpSupported (const WifiRemoteStation *station, 
   return station->m_state->m_operationalRateSet[index];
 }
 
+Mac48Address
+WifiRemoteStationManager::GetAddress (const WifiRemoteStation *station) const
+{
+  return station->m_state->m_address;
+}
+
 uint32_t
 WifiRemoteStationManager::GetChannelWidth (const WifiRemoteStation *station) const
 {
@@ -1906,6 +1935,40 @@ WifiRemoteStationManager::GetMaxNumberOfTransmitStreams (void)
   return m_wifiPhy->GetMaxSupportedTxSpatialStreams ();
 }
 
+WifiPreamble
+WifiRemoteStationManager::GetPreambleForTransmission (WifiMode mode, Mac48Address dest)
+{
+  NS_LOG_FUNCTION (this << mode << dest);
+  WifiPreamble preamble;
+  if (mode.GetModulationClass () == WIFI_MOD_CLASS_VHT)
+    {
+      preamble = WIFI_PREAMBLE_VHT;
+    }
+  else if (mode.GetModulationClass () == WIFI_MOD_CLASS_HT && m_wifiPhy->GetGreenfield () && GetGreenfieldSupported (dest))
+    {
+      preamble = WIFI_PREAMBLE_HT_GF;
+    }
+  else if (mode.GetModulationClass () == WIFI_MOD_CLASS_HT)
+    {
+      preamble = WIFI_PREAMBLE_HT_MF;
+    }
+  else if (GetShortPreambleEnabled ())
+    {
+      preamble = WIFI_PREAMBLE_SHORT;
+    }
+  else
+    {
+      preamble = WIFI_PREAMBLE_LONG;
+    }
+  NS_LOG_FUNCTION ("selected preamble=" << preamble);
+  return preamble;
+}
+
+WifiRemoteStation::~WifiRemoteStation ()
+{
+  NS_LOG_FUNCTION (this);
+}
+
 WifiRemoteStationInfo::WifiRemoteStationInfo ()
   : m_memoryTime (Seconds (1.0)),
     m_lastUpdate (Seconds (0.0)),
@@ -1940,11 +2003,6 @@ double
 WifiRemoteStationInfo::GetFrameErrorRate () const
 {
   return m_failAvg;
-}
-
-WifiRemoteStation::~WifiRemoteStation ()
-{
-  NS_LOG_FUNCTION (this);
 }
 
 } //namespace ns3

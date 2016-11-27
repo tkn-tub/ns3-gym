@@ -172,7 +172,8 @@ NodeStatistics::SetupPhy (Ptr<WifiPhy> phy)
       WifiMode mode = phy->GetMode (i);
       WifiTxVector txVector;
       txVector.SetMode (mode);
-      timeTable.push_back (std::make_pair (phy->CalculateTxDuration (packetSize, txVector, WIFI_PREAMBLE_LONG, phy->GetFrequency ()), mode));
+      txVector.SetPreambleType (WIFI_PREAMBLE_LONG);
+      timeTable.push_back (std::make_pair (phy->CalculateTxDuration (packetSize, txVector, phy->GetFrequency ()), mode));
     }
 }
 

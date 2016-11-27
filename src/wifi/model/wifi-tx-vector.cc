@@ -26,6 +26,7 @@ namespace ns3 {
 
 WifiTxVector::WifiTxVector ()
   : m_retries (0),
+    m_preamble (WIFI_PREAMBLE_NONE),
     m_channelWidth (20),
     m_shortGuardInterval (false),
     m_nTx (1),
@@ -38,14 +39,21 @@ WifiTxVector::WifiTxVector ()
 {
 }
 
-WifiTxVector::WifiTxVector (WifiMode mode, uint8_t powerLevel,
-                            uint8_t retries, bool shortGuardInterval,
-                            uint8_t nTx, uint8_t nss,
-                            uint8_t ness, uint32_t channelWidth,
-                            bool aggregation, bool stbc)
+WifiTxVector::WifiTxVector (WifiMode mode,
+                            uint8_t powerLevel,
+                            uint8_t retries,
+                            WifiPreamble preamble,
+                            bool shortGuardInterval,
+                            uint8_t nTx,
+                            uint8_t nss,
+                            uint8_t ness,
+                            uint32_t channelWidth,
+                            bool aggregation,
+                            bool stbc)
   : m_mode (mode),
     m_txPowerLevel (powerLevel),
     m_retries (retries),
+    m_preamble (preamble),
     m_channelWidth (channelWidth),
     m_shortGuardInterval (shortGuardInterval),
     m_nTx (nTx),
@@ -82,6 +90,12 @@ uint8_t
 WifiTxVector::GetRetries (void) const
 {
   return m_retries;
+}
+
+WifiPreamble
+WifiTxVector::GetPreambleType (void) const
+{
+  return m_preamble;
 }
 
 uint32_t
@@ -147,6 +161,12 @@ WifiTxVector::SetRetries (uint8_t retries)
 }
 
 void
+WifiTxVector::SetPreambleType (WifiPreamble preamble)
+{
+  m_preamble = preamble;
+}
+
+void
 WifiTxVector::SetChannelWidth (uint32_t channelWidth)
 {
   m_channelWidth = channelWidth;
@@ -193,6 +213,7 @@ std::ostream & operator << ( std::ostream &os, const WifiTxVector &v)
   os << "mode: " << v.GetMode () <<
     " txpwrlvl: " << (uint32_t)v.GetTxPowerLevel () <<
     " retries: " << (uint32_t)v.GetRetries () <<
+    " preamble: " << v.GetPreambleType () <<
     " channel width: " << v.GetChannelWidth () <<
     " Short GI: " << v.IsShortGuardInterval () <<
     " NTx: " << (uint32_t)v.GetNTx () <<

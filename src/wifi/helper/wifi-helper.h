@@ -143,8 +143,6 @@ protected:
    * \param packet the packet
    * \param channelFreqMhz the channel frequency
    * \param channelNumber the channel number
-   * \param rate the PHY bitrate
-   * \param preamble the preamble type
    * \param txVector the TXVECTOR
    * \param aMpdu the A-MPDU information
    *
@@ -154,17 +152,13 @@ protected:
                                 Ptr<const Packet> packet,
                                 uint16_t channelFreqMhz,
                                 uint16_t channelNumber,
-                                uint32_t rate,
-                                WifiPreamble preamble,
                                 WifiTxVector txVector,
-                                struct mpduInfo aMpdu);
+                                MpduInfo aMpdu);
   /**
    * \param file the pcap file wrapper
    * \param packet the packet
    * \param channelFreqMhz the channel frequency
    * \param channelNumber the channel number
-   * \param rate the PHY bitrate
-   * \param preamble the preamble type
    * \param txVector the TXVECTOR
    * \param aMpdu the A-MPDU information
    * \param signalNoise the rx signal and noise information
@@ -175,11 +169,9 @@ protected:
                                 Ptr<const Packet> packet,
                                 uint16_t channelFreqMhz,
                                 uint16_t channelNumber,
-                                uint32_t rate,
-                                WifiPreamble preamble,
                                 WifiTxVector txVector,
-                                struct mpduInfo aMpdu,
-                                struct signalNoiseDbm signalNoise);
+                                MpduInfo aMpdu,
+                                SignalNoiseDbm signalNoise);
     
   ObjectFactory m_phy;
   ObjectFactory m_errorRateModel;

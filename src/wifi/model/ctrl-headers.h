@@ -70,7 +70,7 @@ public:
    *
    * \param type
    */
-  void SetType (enum BlockAckType type);
+  void SetType (BlockAckType type);
   /**
    * Set Traffic ID (TID).
    *
@@ -206,7 +206,7 @@ public:
    *
    * \param type
    */
-  void SetType (enum BlockAckType type);
+  void SetType (BlockAckType type);
   /**
    * Set Traffic ID (TID).
    *

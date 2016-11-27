@@ -34,12 +34,9 @@ NS_LOG_COMPONENT_DEFINE ("InterferenceHelper");
  *       Phy event class
  ****************************************************************/
 
-InterferenceHelper::Event::Event (uint32_t size, WifiTxVector txVector,
-                                  enum WifiPreamble preamble,
-                                  Time duration, double rxPower)
+InterferenceHelper::Event::Event (uint32_t size, WifiTxVector txVector, Time duration, double rxPower)
   : m_size (size),
     m_txVector (txVector),
-    m_preamble (preamble),
     m_startTime (Simulator::Now ()),
     m_endTime (m_startTime + duration),
     m_rxPowerW (rxPower)
@@ -92,12 +89,6 @@ InterferenceHelper::Event::GetPayloadMode (void) const
   return m_txVector.GetMode ();
 }
 
-enum WifiPreamble
-InterferenceHelper::Event::GetPreambleType (void) const
-{
-  return m_preamble;
-}
-
 
 /****************************************************************
  *       Class which records SNIR change events for a
@@ -148,17 +139,11 @@ InterferenceHelper::~InterferenceHelper ()
 }
 
 Ptr<InterferenceHelper::Event>
-InterferenceHelper::Add (uint32_t size, WifiTxVector txVector,
-                         enum WifiPreamble preamble,
-                         Time duration, double rxPowerW)
+InterferenceHelper::Add (uint32_t size, WifiTxVector txVector, Time duration, double rxPowerW)
 {
   Ptr<InterferenceHelper::Event> event;
 
-  event = Create<InterferenceHelper::Event> (size,
-                                             txVector,
-                                             preamble,
-                                             duration,
-                                             rxPowerW);
+  event = Create<InterferenceHelper::Event> (size, txVector, duration, rxPowerW);
   AppendEvent (event);
   return event;
 }
@@ -169,7 +154,7 @@ InterferenceHelper::AddForeignSignal (Time duration, double rxPowerW)
   // Parameters other than duration and rxPowerW are unused for this type
   // of signal, so we provide dummy versions
   WifiTxVector fakeTxVector;
-  Add (0, fakeTxVector, WIFI_PREAMBLE_NONE, duration, rxPowerW);
+  Add (0, fakeTxVector, duration, rxPowerW);
 }
 
 void
@@ -309,11 +294,11 @@ InterferenceHelper::CalculatePlcpPayloadPer (Ptr<const InterferenceHelper::Event
   NiChanges::iterator j = ni->begin ();
   Time previous = (*j).GetTime ();
   WifiMode payloadMode = event->GetPayloadMode ();
-  WifiPreamble preamble = event->GetPreambleType ();
-  Time plcpHeaderStart = (*j).GetTime () + WifiPhy::GetPlcpPreambleDuration (event->GetTxVector (), preamble); //packet start time + preamble
-  Time plcpHsigHeaderStart = plcpHeaderStart + WifiPhy::GetPlcpHeaderDuration (event->GetTxVector (), preamble); //packet start time + preamble + L-SIG
+  WifiPreamble preamble = event->GetTxVector ().GetPreambleType ();
+  Time plcpHeaderStart = (*j).GetTime () + WifiPhy::GetPlcpPreambleDuration (event->GetTxVector ()); //packet start time + preamble
+  Time plcpHsigHeaderStart = plcpHeaderStart + WifiPhy::GetPlcpHeaderDuration (event->GetTxVector ()); //packet start time + preamble + L-SIG
   Time plcpHtTrainingSymbolsStart = plcpHsigHeaderStart + WifiPhy::GetPlcpHtSigHeaderDuration (preamble) + WifiPhy::GetPlcpVhtSigA1Duration (preamble) + WifiPhy::GetPlcpVhtSigA2Duration (preamble); //packet start time + preamble + L-SIG + HT-SIG or VHT-SIG-A (A1 + A2)
-  Time plcpPayloadStart = plcpHtTrainingSymbolsStart + WifiPhy::GetPlcpHtTrainingSymbolDuration (preamble, event->GetTxVector ()) + WifiPhy::GetPlcpVhtSigBDuration (preamble); //packet start time + preamble + L-SIG + HT-SIG or VHT-SIG-A (A1 + A2) + (V)HT Training + VHT-SIG-B
+  Time plcpPayloadStart = plcpHtTrainingSymbolsStart + WifiPhy::GetPlcpHtTrainingSymbolDuration (event->GetTxVector ()) + WifiPhy::GetPlcpVhtSigBDuration (preamble); //packet start time + preamble + L-SIG + HT-SIG or VHT-SIG-A (A1 + A2) + (V)HT Training + VHT-SIG-B
   double noiseInterferenceW = (*j).GetDelta ();
   double powerW = event->GetRxPowerW ();
   j++;
@@ -361,7 +346,7 @@ InterferenceHelper::CalculatePlcpHeaderPer (Ptr<const InterferenceHelper::Event>
   NiChanges::iterator j = ni->begin ();
   Time previous = (*j).GetTime ();
   WifiMode payloadMode = event->GetPayloadMode ();
-  WifiPreamble preamble = event->GetPreambleType ();
+  WifiPreamble preamble = event->GetTxVector ().GetPreambleType ();
   WifiMode htHeaderMode;
   if (preamble == WIFI_PREAMBLE_HT_MF || preamble == WIFI_PREAMBLE_HT_GF)
     {
@@ -373,11 +358,11 @@ InterferenceHelper::CalculatePlcpHeaderPer (Ptr<const InterferenceHelper::Event>
       //mode for PLCP header fields sent with VHT modulation
       htHeaderMode = WifiPhy::GetVhtPlcpHeaderMode (payloadMode);
     }
-  WifiMode headerMode = WifiPhy::GetPlcpHeaderMode (payloadMode, preamble, event->GetTxVector ());
-  Time plcpHeaderStart = (*j).GetTime () + WifiPhy::GetPlcpPreambleDuration (event->GetTxVector (), preamble); //packet start time + preamble
-  Time plcpHsigHeaderStart = plcpHeaderStart + WifiPhy::GetPlcpHeaderDuration (event->GetTxVector (), preamble); //packet start time + preamble + L-SIG
+  WifiMode headerMode = WifiPhy::GetPlcpHeaderMode (event->GetTxVector ());
+  Time plcpHeaderStart = (*j).GetTime () + WifiPhy::GetPlcpPreambleDuration (event->GetTxVector ()); //packet start time + preamble
+  Time plcpHsigHeaderStart = plcpHeaderStart + WifiPhy::GetPlcpHeaderDuration (event->GetTxVector ()); //packet start time + preamble + L-SIG
   Time plcpHtTrainingSymbolsStart = plcpHsigHeaderStart + WifiPhy::GetPlcpHtSigHeaderDuration (preamble) + WifiPhy::GetPlcpVhtSigA1Duration (preamble) + WifiPhy::GetPlcpVhtSigA2Duration (preamble); //packet start time + preamble + L-SIG + HT-SIG or VHT-SIG-A (A1 + A2)
-  Time plcpPayloadStart = plcpHtTrainingSymbolsStart + WifiPhy::GetPlcpHtTrainingSymbolDuration (preamble, event->GetTxVector ()) + WifiPhy::GetPlcpVhtSigBDuration (preamble); //packet start time + preamble + L-SIG + HT-SIG or VHT-SIG-A (A1 + A2) + (V)HT Training + VHT-SIG-B
+  Time plcpPayloadStart = plcpHtTrainingSymbolsStart + WifiPhy::GetPlcpHtTrainingSymbolDuration (event->GetTxVector ()) + WifiPhy::GetPlcpVhtSigBDuration (preamble); //packet start time + preamble + L-SIG + HT-SIG or VHT-SIG-A (A1 + A2) + (V)HT Training + VHT-SIG-B
   double noiseInterferenceW = (*j).GetDelta ();
   double powerW = event->GetRxPowerW ();
   j++;

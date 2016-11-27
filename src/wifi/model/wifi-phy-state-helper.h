@@ -69,7 +69,7 @@ public:
    *
    * \return the current state of WifiPhy
    */
-  enum WifiPhy::State GetState (void);
+  WifiPhy::State GetState (void);
   /**
    * Check whether the current state is CCA busy.
    *
@@ -138,9 +138,8 @@ public:
    * \param packet the packet
    * \param txPowerDbm the nominal tx power in dBm
    * \param txVector the tx vector of the packet
-   * \param preamble the preamble of the packet
    */
-  void SwitchToTx (Time txDuration, Ptr<const Packet> packet, double txPowerDbm, WifiTxVector txVector, WifiPreamble preamble);
+  void SwitchToTx (Time txDuration, Ptr<const Packet> packet, double txPowerDbm, WifiTxVector txVector);
   /**
    * Switch state to RX for the given duration.
    *
@@ -159,9 +158,8 @@ public:
    * \param packet the successfully received packet
    * \param snr the SNR of the received packet
    * \param txVector TXVECTOR of the packet
-   * \param preamble the preamble of the received packet
    */
-  void SwitchFromRxEndOk (Ptr<Packet> packet, double snr, WifiTxVector txVector, enum WifiPreamble preamble);
+  void SwitchFromRxEndOk (Ptr<Packet> packet, double snr, WifiTxVector txVector);
   /**
    * Switch from RX after the reception failed.
    *
@@ -187,7 +185,7 @@ public:
   void SwitchFromSleep (Time duration);
 
   /** \todo Why is this public? */
-  TracedCallback<Time, Time, enum WifiPhy::State> m_stateLogger;
+  TracedCallback<Time, Time, WifiPhy::State> m_stateLogger;
 
   /**
    * TracedCallback signature for state changes.
@@ -306,9 +304,9 @@ private:
   Time m_previousStateChangeTime;
 
   Listeners m_listeners;
-  TracedCallback<Ptr<const Packet>, double, WifiMode, enum WifiPreamble> m_rxOkTrace;
+  TracedCallback<Ptr<const Packet>, double, WifiMode, WifiPreamble> m_rxOkTrace;
   TracedCallback<Ptr<const Packet>, double> m_rxErrorTrace;
-  TracedCallback<Ptr<const Packet>,WifiMode,WifiPreamble,uint8_t> m_txTrace;
+  TracedCallback<Ptr<const Packet>, WifiMode, WifiPreamble, uint8_t> m_txTrace;
   WifiPhy::RxOkCallback m_rxOkCallback;
   WifiPhy::RxErrorCallback m_rxErrorCallback;
 };

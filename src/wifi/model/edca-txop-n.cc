@@ -368,13 +368,13 @@ EdcaTxopN::SetWifiRemoteStationManager (Ptr<WifiRemoteStationManager> remoteMana
 }
 
 void
-EdcaTxopN::SetTypeOfStation (enum TypeOfStation type)
+EdcaTxopN::SetTypeOfStation (TypeOfStation type)
 {
   NS_LOG_FUNCTION (this << static_cast<uint32_t> (type));
   m_typeOfStation = type;
 }
 
-enum TypeOfStation
+TypeOfStation
 EdcaTxopN::GetTypeOfStation (void) const
 {
   NS_LOG_FUNCTION (this);
@@ -1386,7 +1386,7 @@ EdcaTxopN::GetFragmentPacket (WifiMacHeader *hdr)
 }
 
 void
-EdcaTxopN::SetAccessCategory (enum AcIndex ac)
+EdcaTxopN::SetAccessCategory (AcIndex ac)
 {
   NS_LOG_FUNCTION (this << static_cast<uint32_t> (ac));
   m_ac = ac;
@@ -1582,7 +1582,7 @@ EdcaTxopN::SetupBlockAckIfNeeded ()
 }
 
 void
-EdcaTxopN::SendBlockAckRequest (const struct Bar &bar)
+EdcaTxopN::SendBlockAckRequest (const Bar &bar)
 {
   NS_LOG_FUNCTION (this << &bar);
   WifiMacHeader hdr;

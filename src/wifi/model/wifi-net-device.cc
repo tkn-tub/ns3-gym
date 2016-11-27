@@ -358,7 +358,7 @@ WifiNetDevice::ForwardUp (Ptr<Packet> packet, Mac48Address from, Mac48Address to
 {
   NS_LOG_FUNCTION (this << packet << from << to);
   LlcSnapHeader llc;
-  enum NetDevice::PacketType type;
+  NetDevice::PacketType type;
   if (to.IsBroadcast ())
     {
       type = NetDevice::PACKET_BROADCAST;

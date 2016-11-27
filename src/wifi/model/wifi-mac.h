@@ -300,7 +300,7 @@ public:
    * \sa WifiMac::Configure80211n_5Ghz
    * \sa WifiMac::Configure80211ac
    */
-  void ConfigureStandard (enum WifiPhyStandard standard);
+  void ConfigureStandard (WifiPhyStandard standard);
 
 
 protected:
@@ -313,7 +313,7 @@ protected:
    *
    * Configure the DCF with appropriate values depending on the given access category.
    */
-  void ConfigureDcf (Ptr<Dcf> dcf, uint32_t cwmin, uint32_t cwmax, bool isDsss, enum AcIndex ac);
+  void ConfigureDcf (Ptr<Dcf> dcf, uint32_t cwmin, uint32_t cwmax, bool isDsss, AcIndex ac);
 
 
 private:
@@ -399,7 +399,7 @@ private:
    * implement this method to configure their dcf queues according to the
    * requested standard.
    */
-  virtual void FinishConfigureStandard (enum WifiPhyStandard standard) = 0;
+  virtual void FinishConfigureStandard (WifiPhyStandard standard) = 0;
 
   Time m_maxPropagationDelay;
 

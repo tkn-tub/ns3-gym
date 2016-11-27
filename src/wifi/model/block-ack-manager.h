@@ -110,7 +110,7 @@ public:
    * station addressed by <i>recipient</i> for tid <i>tid</i>.
    */
   bool ExistsAgreementInState (Mac48Address recipient, uint8_t tid,
-                               enum OriginatorBlockAckAgreement::State state) const;
+                               OriginatorBlockAckAgreement::State state) const;
   /**
    * \param reqHdr Relative Add block ack request (action frame).
    * \param recipient Address of peer station involved in block ack mechanism.
@@ -161,7 +161,7 @@ public:
    * corresponding block ack bitmap. This method doesn't remove the packet from this queue.
    */
   Ptr<const Packet> PeekNextPacket (WifiMacHeader &hdr);
-  bool HasBar (struct Bar &bar);
+  bool HasBar (Bar &bar);
   /**
    * Returns true if there are packets that need of retransmission or at least a
    * BAR is scheduled. Returns false otherwise.
@@ -258,7 +258,7 @@ public:
    *
    * See ctrl-headers.h for more details.
    */
-  void SetBlockAckType (enum BlockAckType bAckType);
+  void SetBlockAckType (BlockAckType bAckType);
   /**
    * \param recipient Address of station involved in block ack mechanism.
    * \param tid Traffic ID.
@@ -450,7 +450,7 @@ private:
   std::list<Bar> m_bars;
 
   uint8_t m_blockAckThreshold;
-  enum BlockAckType m_blockAckType;
+  BlockAckType m_blockAckType;
   Time m_maxDelay;
   MacTxMiddle* m_txMiddle;
   Mac48Address m_address;

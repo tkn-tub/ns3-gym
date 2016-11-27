@@ -66,7 +66,7 @@ struct RateInfo
  * Data structure for a Minstrel Rate table
  * A vector of a struct RateInfo
  */
-typedef std::vector<struct RateInfo> MinstrelRate;
+typedef std::vector<RateInfo> MinstrelRate;
 /**
  * Data structure for a Sample Rate table
  * A vector of a vector uint32_t

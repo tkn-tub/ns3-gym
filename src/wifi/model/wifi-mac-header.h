@@ -200,7 +200,7 @@ public:
    *
    * \param type the WifiMacType for the header
    */
-  void SetType (enum WifiMacType type);
+  void SetType (WifiMacType type);
   /**
    * Set the Duration/ID field with the given raw uint16_t value.
    *
@@ -267,7 +267,7 @@ public:
    *
    * \param policy
    */
-  void SetQosAckPolicy (enum QosAckPolicy policy);
+  void SetQosAckPolicy (QosAckPolicy policy);
   /**
    * Set the QoS ACK policy in the QoS control field to normal ACK.
    */
@@ -340,7 +340,7 @@ public:
    *
    * \return the type (enum WifiMacType)
    */
-  enum WifiMacType GetType (void) const;
+  WifiMacType GetType (void) const;
   /**
    * \return true if From DS bit is set, false otherwise
    */
@@ -569,7 +569,7 @@ public:
    *
    * \return the QoS ACK Policy of a QoS header
    */
-  enum QosAckPolicy GetQosAckPolicy (void) const;
+  QosAckPolicy GetQosAckPolicy (void) const;
   /**
    * Return the TXOP limit.
    *

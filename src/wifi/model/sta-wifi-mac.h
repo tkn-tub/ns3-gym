@@ -170,7 +170,7 @@ private:
    *
    * \param value the new state
    */
-  void SetState (enum MacState value);
+  void SetState (MacState value);
   /**
    * Set the EDCA parameters.
    *
@@ -188,7 +188,7 @@ private:
    */
   CapabilityInformation GetCapabilities (void) const;
 
-  enum MacState m_state;
+  MacState m_state;
   Time m_probeRequestTimeout;
   Time m_assocRequestTimeout;
   EventId m_probeRequestEvent;
