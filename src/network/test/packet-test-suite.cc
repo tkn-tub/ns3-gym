@@ -114,6 +114,63 @@ public:
     : ATestTagBase (data) {}
 };
 
+// Previous versions of ns-3 limited the tag size to 20 bytes or less
+static const uint8_t LARGE_TAG_BUFFER_SIZE = 64;
+
+// Bug 2221:  Expanding packet tag maximum size
+class ALargeTestTag : public Tag
+{
+public:
+  ALargeTestTag () {
+    for (uint8_t i = 0; i < (LARGE_TAG_BUFFER_SIZE - 1); i++)
+      {
+        m_data.push_back (i);
+      }
+    m_size = LARGE_TAG_BUFFER_SIZE;
+  }
+  /**
+   * Register this type.
+   * \return The TypeId.
+   */
+  static TypeId GetTypeId (void)
+  {
+    static TypeId tid = TypeId ("ALargeTestTag")
+      .SetParent<Tag> ()
+      .SetGroupName ("Network")
+      .HideFromDocumentation ()
+      .AddConstructor<ALargeTestTag> ()
+      ;
+    return tid;
+  }
+  virtual TypeId GetInstanceTypeId (void) const {
+    return GetTypeId ();
+  }
+  virtual uint32_t GetSerializedSize (void) const {
+    return (uint32_t) m_size;
+  }
+  virtual void Serialize (TagBuffer buf) const {
+    buf.WriteU8 (m_size);
+    for (uint8_t i = 0; i < (m_size - 1); ++i)
+      {
+        buf.WriteU8 (m_data[i]);
+      }
+  }
+  virtual void Deserialize (TagBuffer buf) {
+    m_size = buf.ReadU8 ();
+    for (uint8_t i = 0; i < (m_size - 1); ++i)
+      {
+        uint8_t v = buf.ReadU8 ();
+        m_data.push_back (v);
+      }
+  }
+  virtual void Print (std::ostream &os) const {
+    os << "(" << (uint16_t) m_size << ")";
+  }
+private:
+  uint8_t m_size;
+  std::vector<uint8_t> m_data;
+};
+
 class ATestHeaderBase : public Header
 {
 public:
@@ -581,6 +638,13 @@ PacketTest::DoRun (void)
     CHECK (tmp, 1, E (25, 0, 50));
     tmp->AddPaddingAtEnd (50);
     CHECK (tmp, 1, E (25, 0, 50));
+  }
+
+  /* Test ALargeTestTag */
+  {
+    Ptr<Packet> tmp = Create<Packet> (0);
+    ALargeTestTag a;
+    tmp->AddPacketTag (a); 
   }
 }
 //--------------------------------------
