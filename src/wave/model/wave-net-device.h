@@ -72,6 +72,7 @@ struct TxInfo
     : channelNumber (channel),
       priority (prio),
       dataRate (rate),
+      preamble (preamble),
       txPowerLevel (powerLevel)
   {
 
