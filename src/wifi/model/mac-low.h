@@ -1007,14 +1007,14 @@ private:
    * \return true if RTS protection should be used,
    *         false otherwise
    */
-  bool NeedRts (void);
+  bool NeedRts (void) const;
   /**
    * Check if CTS-to-self mechanism should be used for the current packet.
    *
    * \return true if CTS-to-self mechanism should be used for the current packet,
    *         false otherwise
    */
-  bool NeedCtsToSelf (void);
+  bool NeedCtsToSelf (void) const;
 
   void NotifyNav (Ptr<const Packet> packet,const WifiMacHeader &hdr, WifiPreamble preamble);
   /**
@@ -1183,7 +1183,7 @@ private:
    * \param winsize the size of the sequence number window (currently default is 64)
    * This method checks if the MPDU's sequence number is inside the scoreboard boundaries or not
    */
-  bool IsInWindow (uint16_t seq, uint16_t winstart, uint16_t winsize);
+  bool IsInWindow (uint16_t seq, uint16_t winstart, uint16_t winsize) const;
   /**
    * This method updates the reorder buffer and the scoreboard when an MPDU is received in an HT station
    * and sotres the MPDU if needed when an MPDU is received in an non-HT Station (implements HT

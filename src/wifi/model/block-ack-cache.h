@@ -45,14 +45,14 @@ public:
    * depending on the sequence number of the received MPDU (standard11n page 134).
    * This function is used to retrieve this value in order to add it to the BlockAck.
    */
-  uint16_t GetWinStart (void);
+  uint16_t GetWinStart (void) const;
 
   void FillBlockAckBitmap (CtrlBAckResponseHeader *blockAckHeader);
 
 
 private:
   void ResetPortionOfBitmap (uint16_t start, uint16_t end);
-  bool IsInWindow (uint16_t seq);
+  bool IsInWindow (uint16_t seq) const;
 
   uint16_t m_winStart;
   uint8_t m_winSize;

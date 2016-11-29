@@ -313,7 +313,7 @@ private:
    *
    * \return WifiMode
    */
-  WifiMode Search (std::string name);
+  WifiMode Search (std::string name) const;
   /**
    * Allocate a WifiModeItem from a given uniqueUid.
    *

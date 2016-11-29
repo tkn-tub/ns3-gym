@@ -818,7 +818,7 @@ MacLow::StartTransmission (Ptr<const Packet> packet,
 }
 
 bool
-MacLow::NeedRts (void)
+MacLow::NeedRts (void) const
 {
   WifiTxVector dataTxVector = GetDataTxVector (m_currentPacket, &m_currentHdr);
   return m_stationManager->NeedRts (m_currentHdr.GetAddr1 (), &m_currentHdr,
@@ -826,7 +826,7 @@ MacLow::NeedRts (void)
 }
 
 bool
-MacLow::NeedCtsToSelf (void)
+MacLow::NeedCtsToSelf (void) const
 {
   WifiTxVector dataTxVector = GetDataTxVector (m_currentPacket, &m_currentHdr);
   return m_stationManager->NeedCtsToSelf (dataTxVector);
@@ -2161,7 +2161,7 @@ MacLow::SendAckAfterData (Mac48Address source, Time duration, WifiMode dataTxMod
 }
 
 bool
-MacLow::IsInWindow (uint16_t seq, uint16_t winstart, uint16_t winsize)
+MacLow::IsInWindow (uint16_t seq, uint16_t winstart, uint16_t winsize) const
 {
   return ((seq - winstart + 4096) % 4096) < winsize;
 }

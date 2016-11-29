@@ -319,7 +319,7 @@ public:
   /**
    * Checks if the packet already exists in the retransmit queue or not if it does then it doesn't add it again
    */
-  bool AlreadyExists (uint16_t currentSeq, Mac48Address recipient, uint8_t tid);
+  bool AlreadyExists (uint16_t currentSeq, Mac48Address recipient, uint8_t tid) const;
   /**
    * Remove a packet after you peek in the queue and get it
    */

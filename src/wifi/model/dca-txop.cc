@@ -329,7 +329,7 @@ DcaTxop::StartAccessIfNeeded (void)
 }
 
 Ptr<MacLow>
-DcaTxop::Low (void)
+DcaTxop::GetLow (void) const
 {
   NS_LOG_FUNCTION (this);
   return m_low;
@@ -345,7 +345,7 @@ DcaTxop::DoInitialize ()
 }
 
 bool
-DcaTxop::NeedRtsRetransmission (void)
+DcaTxop::NeedRtsRetransmission (void) const
 {
   NS_LOG_FUNCTION (this);
   return m_stationManager->NeedRtsRetransmission (m_currentHdr.GetAddr1 (), &m_currentHdr,
@@ -353,7 +353,7 @@ DcaTxop::NeedRtsRetransmission (void)
 }
 
 bool
-DcaTxop::NeedDataRetransmission (void)
+DcaTxop::NeedDataRetransmission (void) const
 {
   NS_LOG_FUNCTION (this);
   return m_stationManager->NeedDataRetransmission (m_currentHdr.GetAddr1 (), &m_currentHdr,
@@ -361,7 +361,7 @@ DcaTxop::NeedDataRetransmission (void)
 }
 
 bool
-DcaTxop::NeedFragmentation (void)
+DcaTxop::NeedFragmentation (void) const
 {
   NS_LOG_FUNCTION (this);
   return m_stationManager->NeedFragmentation (m_currentHdr.GetAddr1 (), &m_currentHdr,
@@ -376,7 +376,7 @@ DcaTxop::NextFragment (void)
 }
 
 uint32_t
-DcaTxop::GetFragmentSize (void)
+DcaTxop::GetFragmentSize (void) const
 {
   NS_LOG_FUNCTION (this);
   return m_stationManager->GetFragmentSize (m_currentHdr.GetAddr1 (), &m_currentHdr,
@@ -384,7 +384,7 @@ DcaTxop::GetFragmentSize (void)
 }
 
 bool
-DcaTxop::IsLastFragment (void)
+DcaTxop::IsLastFragment (void) const
 {
   NS_LOG_FUNCTION (this);
   return m_stationManager->IsLastFragment (m_currentHdr.GetAddr1 (), &m_currentHdr,
@@ -392,7 +392,7 @@ DcaTxop::IsLastFragment (void)
 }
 
 uint32_t
-DcaTxop::GetNextFragmentSize (void)
+DcaTxop::GetNextFragmentSize (void) const
 {
   NS_LOG_FUNCTION (this);
   return m_stationManager->GetFragmentSize (m_currentHdr.GetAddr1 (), &m_currentHdr,
@@ -400,7 +400,7 @@ DcaTxop::GetNextFragmentSize (void)
 }
 
 uint32_t
-DcaTxop::GetFragmentOffset (void)
+DcaTxop::GetFragmentOffset (void) const
 {
   NS_LOG_FUNCTION (this);
   return m_stationManager->GetFragmentOffset (m_currentHdr.GetAddr1 (), &m_currentHdr,
@@ -465,7 +465,7 @@ DcaTxop::NotifyAccessGranted (void)
       params.DisableRts ();
       params.DisableAck ();
       params.DisableNextData ();
-      Low ()->StartTransmission (m_currentPacket,
+      GetLow ()->StartTransmission (m_currentPacket,
                                  &m_currentHdr,
                                  params,
                                  m_transmissionListener);
@@ -489,13 +489,13 @@ DcaTxop::NotifyAccessGranted (void)
               NS_LOG_DEBUG ("fragmenting size=" << fragment->GetSize ());
               params.EnableNextData (GetNextFragmentSize ());
             }
-          Low ()->StartTransmission (fragment, &hdr, params,
+          GetLow ()->StartTransmission (fragment, &hdr, params,
                                      m_transmissionListener);
         }
       else
         {
           params.DisableNextData ();
-          Low ()->StartTransmission (m_currentPacket, &m_currentHdr,
+          GetLow ()->StartTransmission (m_currentPacket, &m_currentHdr,
                                      params, m_transmissionListener);
         }
     }
@@ -649,7 +649,7 @@ DcaTxop::StartNextFragment (void)
     {
       params.EnableNextData (GetNextFragmentSize ());
     }
-  Low ()->StartTransmission (fragment, &hdr, params, m_transmissionListener);
+  GetLow ()->StartTransmission (fragment, &hdr, params, m_transmissionListener);
 }
 
 void

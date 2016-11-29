@@ -558,7 +558,7 @@ BlockAckManager::SetWifiRemoteStationManager (Ptr<WifiRemoteStationManager> mana
 }
 
 bool
-BlockAckManager::AlreadyExists (uint16_t currentSeq, Mac48Address recipient, uint8_t tid)
+BlockAckManager::AlreadyExists (uint16_t currentSeq, Mac48Address recipient, uint8_t tid) const
 {
   std::list<PacketQueueI>::const_iterator it = m_retryPackets.begin ();
   while (it != m_retryPackets.end ())

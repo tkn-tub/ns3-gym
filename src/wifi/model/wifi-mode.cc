@@ -599,7 +599,7 @@ WifiModeFactory::CreateWifiMcs (std::string uniqueName,
 }
 
 WifiMode
-WifiModeFactory::Search (std::string name)
+WifiModeFactory::Search (std::string name) const
 {
   WifiModeItemList::const_iterator i;
   uint32_t j = 0;

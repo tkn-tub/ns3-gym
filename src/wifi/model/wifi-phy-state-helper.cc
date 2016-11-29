@@ -101,55 +101,55 @@ WifiPhyStateHelper::UnregisterListener (WifiPhyListener *listener)
 }
 
 bool
-WifiPhyStateHelper::IsStateIdle (void)
+WifiPhyStateHelper::IsStateIdle (void) const
 {
   return (GetState () == WifiPhy::IDLE);
 }
 
 bool
-WifiPhyStateHelper::IsStateBusy (void)
+WifiPhyStateHelper::IsStateBusy (void) const
 {
   return (GetState () != WifiPhy::IDLE);
 }
 
 bool
-WifiPhyStateHelper::IsStateCcaBusy (void)
+WifiPhyStateHelper::IsStateCcaBusy (void) const
 {
   return (GetState () == WifiPhy::CCA_BUSY);
 }
 
 bool
-WifiPhyStateHelper::IsStateRx (void)
+WifiPhyStateHelper::IsStateRx (void) const
 {
   return (GetState () == WifiPhy::RX);
 }
 
 bool
-WifiPhyStateHelper::IsStateTx (void)
+WifiPhyStateHelper::IsStateTx (void) const
 {
   return (GetState () == WifiPhy::TX);
 }
 
 bool
-WifiPhyStateHelper::IsStateSwitching (void)
+WifiPhyStateHelper::IsStateSwitching (void) const
 {
   return (GetState () == WifiPhy::SWITCHING);
 }
 
 bool
-WifiPhyStateHelper::IsStateSleep (void)
+WifiPhyStateHelper::IsStateSleep (void) const
 {
   return (GetState () == WifiPhy::SLEEP);
 }
 
 Time
-WifiPhyStateHelper::GetStateDuration (void)
+WifiPhyStateHelper::GetStateDuration (void) const
 {
   return Simulator::Now () - m_previousStateChangeTime;
 }
 
 Time
-WifiPhyStateHelper::GetDelayUntilIdle (void)
+WifiPhyStateHelper::GetDelayUntilIdle (void) const
 {
   Time retval;
 
@@ -190,7 +190,7 @@ WifiPhyStateHelper::GetLastRxStartTime (void) const
 }
 
 WifiPhy::State
-WifiPhyStateHelper::GetState (void)
+WifiPhyStateHelper::GetState (void) const
 {
   if (m_sleeping)
     {

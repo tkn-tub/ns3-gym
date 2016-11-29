@@ -158,7 +158,7 @@ public:
    *
    * \return MacLow
    */
-  Ptr<MacLow> Low (void);
+  Ptr<MacLow> GetLow (void) const;
 
   Ptr<MsduAggregator> GetMsduAggregator (void) const;
   Ptr<MpduAggregator> GetMpduAggregator (void) const;
@@ -179,7 +179,7 @@ public:
    *
    * Returns number of packets buffered for a specified agreement.
    */
-  uint32_t GetNOutstandingPacketsInBa (Mac48Address address, uint8_t tid);
+  uint32_t GetNOutstandingPacketsInBa (Mac48Address address, uint8_t tid) const;
   /**
    * \param recipient address of peer station involved in block ack mechanism.
    * \param tid traffic ID.
@@ -332,19 +332,19 @@ public:
    *
    * \return the size of the next fragment
    */
-  uint32_t GetNextFragmentSize (void);
+  uint32_t GetNextFragmentSize (void) const;
   /**
    * Calculate the size of the current fragment.
    *
    * \return the size of the current fragment
    */
-  uint32_t GetFragmentSize (void);
+  uint32_t GetFragmentSize (void) const;
   /**
    * Calculate the offset for the current fragment.
    *
    * \return the offset for the current fragment
    */
-  uint32_t GetFragmentOffset (void);
+  uint32_t GetFragmentOffset (void) const;
   /**
    * Check if the current fragment is the last fragment.
    *
@@ -528,14 +528,14 @@ private:
    *
    * \return the remaining duration in the current TXOP
    */
-  Time GetTxopRemaining (void);
+  Time GetTxopRemaining (void) const;
   /*
    * Check if the station has TXOP granted for the next MPDU.
    *
    * \return true if the station has TXOP granted for the next MPDU,
    *         false otherwise
    */
-  bool HasTxop (void);
+  bool HasTxop (void) const;
 
   AcIndex m_ac;
   class Dcf;

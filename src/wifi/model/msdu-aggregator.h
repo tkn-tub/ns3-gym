@@ -49,7 +49,7 @@ public:
    * can be added returns true, false otherwise.
    */
   virtual bool Aggregate (Ptr<const Packet> packet, Ptr<Packet> aggregatedPacket,
-                          Mac48Address src, Mac48Address dest) = 0;
+                          Mac48Address src, Mac48Address dest) const = 0;
 
   static DeaggregatedMsdus Deaggregate (Ptr<Packet> aggregatedPacket);
 };

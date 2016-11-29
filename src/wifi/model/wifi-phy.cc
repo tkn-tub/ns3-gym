@@ -657,7 +657,7 @@ WifiPhy::SetMobility (Ptr<MobilityModel> mobility)
 }
 
 Ptr<MobilityModel>
-WifiPhy::GetMobility (void)
+WifiPhy::GetMobility (void) const
 {
   if (m_mobility != 0)
     {

@@ -41,7 +41,7 @@ BlockAckCache::Init (uint16_t winStart, uint16_t winSize)
 }
 
 uint16_t
-BlockAckCache::GetWinStart ()
+BlockAckCache::GetWinStart () const
 {
   return m_winStart;
 }
@@ -111,7 +111,7 @@ BlockAckCache::ResetPortionOfBitmap (uint16_t start, uint16_t end)
 }
 
 bool
-BlockAckCache::IsInWindow (uint16_t seq)
+BlockAckCache::IsInWindow (uint16_t seq) const
 {
   NS_LOG_FUNCTION (this << seq);
   return ((seq - m_winStart + 4096) % 4096) < m_winSize;

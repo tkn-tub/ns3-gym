@@ -1399,7 +1399,7 @@ public:
    *
    * \return the mobility model this PHY is associated with
    */
-  Ptr<MobilityModel> GetMobility (void);
+  Ptr<MobilityModel> GetMobility (void) const;
 
   /**
    * \param freq the operating center frequency (MHz) on this node.

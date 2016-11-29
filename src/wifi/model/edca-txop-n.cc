@@ -315,7 +315,7 @@ EdcaTxopN::GetBaAgreementExists (Mac48Address address, uint8_t tid) const
 }
 
 uint32_t
-EdcaTxopN::GetNOutstandingPacketsInBa (Mac48Address address, uint8_t tid)
+EdcaTxopN::GetNOutstandingPacketsInBa (Mac48Address address, uint8_t tid) const
 {
   return m_baManager->GetNBufferedPackets (address, tid);
 }
@@ -447,7 +447,7 @@ EdcaTxopN::SetTxMiddle (MacTxMiddle *txMiddle)
 }
 
 Ptr<MacLow>
-EdcaTxopN::Low (void)
+EdcaTxopN::GetLow (void) const
 {
   return m_low;
 }
@@ -1177,7 +1177,7 @@ EdcaTxopN::StartNextFragment (void)
     {
       params.EnableNextData (GetNextFragmentSize ());
     }
-  Low ()->StartTransmission (fragment, &hdr, params, m_transmissionListener);
+  GetLow ()->StartTransmission (fragment, &hdr, params, m_transmissionListener);
 }
 
 void
@@ -1218,19 +1218,19 @@ EdcaTxopN::StartNext (void)
       params.DisableRts ();
     }
 
-  if (GetTxopRemaining () >= Low ()->CalculateOverallTxTime (peekedPacket, &hdr, params))
+  if (GetTxopRemaining () >= GetLow ()->CalculateOverallTxTime (peekedPacket, &hdr, params))
     {
       NS_LOG_DEBUG ("start next packet");
       m_currentPacket = m_queue->DequeueByTidAndAddress (&hdr,
                                                          m_currentHdr.GetQosTid (),
                                                          WifiMacHeader::ADDR1,
                                                          m_currentHdr.GetAddr1 ());
-      Low ()->StartTransmission (m_currentPacket, &m_currentHdr, params, m_transmissionListener);
+      GetLow ()->StartTransmission (m_currentPacket, &m_currentHdr, params, m_transmissionListener);
     }
 }
 
 Time
-EdcaTxopN::GetTxopRemaining (void)
+EdcaTxopN::GetTxopRemaining (void) const
 {
   Time remainingTxop = GetTxopLimit ();
   remainingTxop -= (Simulator::Now () - m_startTxop);
@@ -1243,7 +1243,7 @@ EdcaTxopN::GetTxopRemaining (void)
 }
 
 bool
-EdcaTxopN::HasTxop (void)
+EdcaTxopN::HasTxop (void) const
 {
   NS_LOG_FUNCTION (this);
   WifiMacHeader hdr;
@@ -1284,7 +1284,7 @@ EdcaTxopN::HasTxop (void)
       params.DisableRts ();
     }
 
-  return (GetTxopRemaining () >= Low ()->CalculateOverallTxTime (peekedPacket, &hdr, params));
+  return (GetTxopRemaining () >= GetLow ()->CalculateOverallTxTime (peekedPacket, &hdr, params));
 }
 
 void
@@ -1327,7 +1327,7 @@ EdcaTxopN::NeedFragmentation (void) const
 }
 
 uint32_t
-EdcaTxopN::GetFragmentSize (void)
+EdcaTxopN::GetFragmentSize (void) const
 {
   NS_LOG_FUNCTION (this);
   return m_stationManager->GetFragmentSize (m_currentHdr.GetAddr1 (), &m_currentHdr,
@@ -1335,7 +1335,7 @@ EdcaTxopN::GetFragmentSize (void)
 }
 
 uint32_t
-EdcaTxopN::GetNextFragmentSize (void)
+EdcaTxopN::GetNextFragmentSize (void) const
 {
   NS_LOG_FUNCTION (this);
   return m_stationManager->GetFragmentSize (m_currentHdr.GetAddr1 (), &m_currentHdr,
@@ -1343,7 +1343,7 @@ EdcaTxopN::GetNextFragmentSize (void)
 }
 
 uint32_t
-EdcaTxopN::GetFragmentOffset (void)
+EdcaTxopN::GetFragmentOffset (void) const
 {
   NS_LOG_FUNCTION (this);
   return m_stationManager->GetFragmentOffset (m_currentHdr.GetAddr1 (), &m_currentHdr,

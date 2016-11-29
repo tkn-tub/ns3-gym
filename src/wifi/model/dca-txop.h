@@ -114,6 +114,13 @@ public:
   void SetTxFailedCallback (TxFailed callback);
 
   /**
+   * Return the MacLow associated with this DcaTxop.
+   *
+   * \return MacLow
+   */
+  Ptr<MacLow> GetLow (void) const;
+
+  /**
    * Return the packet queue associated with this DcaTxop.
    *
    * \return WifiMacQueue
@@ -162,12 +169,6 @@ private:
   DcaTxop (const DcaTxop &o);
 
   //Inherited from ns3::Object
-  /**
-   * Return the MacLow associated with this DcaTxop.
-   *
-   * \return MacLow
-   */
-  Ptr<MacLow> Low (void);
   void DoInitialize ();
   /* dcf notifications forwarded here */
   /**
@@ -257,46 +258,46 @@ private:
    * \return true if RTS should be re-transmitted,
    *         false otherwise
    */
-  bool NeedRtsRetransmission (void);
+  bool NeedRtsRetransmission (void) const;
   /**
    * Check if DATA should be re-transmitted if ACK was missed.
    *
    * \return true if DATA should be re-transmitted,
    *         false otherwise
    */
-  bool NeedDataRetransmission (void);
+  bool NeedDataRetransmission (void) const;
   /**
    * Check if the current packet should be fragmented.
    *
    * \return true if the current packet should be fragmented,
    *         false otherwise
    */
-  bool NeedFragmentation (void);
+  bool NeedFragmentation (void) const;
   /**
    * Calculate the size of the next fragment.
    *
    * \return the size of the next fragment
    */
-  uint32_t GetNextFragmentSize (void);
+  uint32_t GetNextFragmentSize (void) const;
   /**
    * Calculate the size of the current fragment.
    *
    * \return the size of the current fragment
    */
-  uint32_t GetFragmentSize (void);
+  uint32_t GetFragmentSize (void) const;
   /**
    * Calculate the offset for the current fragment.
    *
    * \return the offset for the current fragment
    */
-  uint32_t GetFragmentOffset (void);
+  uint32_t GetFragmentOffset (void) const;
   /**
    * Check if the curren fragment is the last fragment.
    *
    * \return true if the curren fragment is the last fragment,
    *         false otherwise
    */
-  bool IsLastFragment (void);
+  bool IsLastFragment (void) const;
   /**
    * Continue to the next fragment. This method simply
    * increments the internal variable that keep track
