@@ -67,6 +67,11 @@ def options(opt):
                    dest='no32bit_scan')
 
 
+def split_version(version):
+    ver = re.split('[.+]', version)[:4]
+    return (int(ver[0]), int(ver[1]), int(ver[2]), int(ver[3].split('post')[1]))
+
+
 def configure(conf):
     conf.env['ENABLE_PYTHON_BINDINGS'] = False
     if Options.options.python_disable:
@@ -183,7 +188,7 @@ def configure(conf):
                                 stdout=subprocess.PIPE).communicate()[0]
         pybindgen_version = maybe_decode(out.strip())
         conf.msg('Checking for pybindgen version', pybindgen_version)
-        if not (pybindgen_version == REQUIRED_PYBINDGEN_VERSION):
+        if not (split_version(pybindgen_version) >= split_version(REQUIRED_PYBINDGEN_VERSION)):
             Logs.warn("pybindgen (found %r), (need %r)" %
                       (pybindgen_version, REQUIRED_PYBINDGEN_VERSION))
             conf.report_optional_feature("python", "Python Bindings", False,
