@@ -732,22 +732,26 @@ MacLow::StartTransmission (Ptr<const Packet> packet,
    * QapScheduler has taken access to the channel from
    * one of the Edca of the QAP.
    */
-  m_currentPacket = packet->Copy ();
+  Ptr<Packet> newPacket = packet->Copy ();
   // remove the priority tag attached, if any
   SocketPriorityTag priorityTag;
-  m_currentPacket->RemovePacketTag (priorityTag);
-  m_currentHdr = *hdr;
+  newPacket->RemovePacketTag (priorityTag);
+  WifiMacHeader newHdr = *hdr;
   CancelAllEvents ();
   m_listener = listener;
   m_txParams = params;
-  m_currentTxVector = GetDataTxVector (m_currentPacket, &m_currentHdr);
 
-  if (!m_currentHdr.IsQosData () && !m_currentHdr.IsBlockAck () && !m_currentHdr.IsBlockAckReq ())
+  if (newHdr.IsMgt ()
+     || (!newHdr.IsQosData ()
+     && !newHdr.IsBlockAck ()
+     && !newHdr.IsBlockAckReq ()))
     {
-      //This is mainly encountered when a higher priority control frame (such as beacons)
-      //is sent between A-MPDU transmissions. It avoids to unexpectedly flush the aggregate
+      //This is mainly encountered when a higher priority control or management frame is
+      //sent between A-MPDU transmissions. It avoids to unexpectedly flush the aggregate
       //queue when previous RTS request has failed.
       m_ampdu = false;
+      m_currentPacket = newPacket;
+      m_currentHdr = newHdr;
     }
   else if (m_aggregateQueue->GetSize () > 0)
     {
@@ -768,6 +772,8 @@ MacLow::StartTransmission (Ptr<const Packet> packet,
   else
     {
       //Perform MPDU aggregation if possible
+      m_currentPacket = newPacket;
+      m_currentHdr = newHdr;
       m_ampdu = IsAmpdu (m_currentPacket, m_currentHdr);
       if (m_ampdu)
         {
@@ -784,6 +790,7 @@ MacLow::StartTransmission (Ptr<const Packet> packet,
             }
         }
     }
+  m_currentTxVector = GetDataTxVector (m_currentPacket, &m_currentHdr);
     
   if (NeedRts ())
     {
@@ -1517,7 +1524,7 @@ MacLow::ForwardDown (Ptr<const Packet> packet, const WifiMacHeader* hdr, WifiTxV
                 ", preamble=" << txVector.GetPreambleType () <<
                 ", duration=" << hdr->GetDuration () <<
                 ", seq=0x" << std::hex << m_currentHdr.GetSequenceControl () << std::dec);
-  if (!m_ampdu || hdr->IsRts () || hdr->IsBlockAck ())
+  if (!m_ampdu || hdr->IsRts () || hdr->IsBlockAck () || hdr->IsMgt ())
     {
       m_phy->SendPacket (packet, txVector);
     }
@@ -1628,10 +1635,6 @@ MacLow::CtsTimeout (void)
   /// we should restart a new cts timeout now until the expected
   /// end of rx if there was a rx start before now.
   m_stationManager->ReportRtsFailed (m_currentHdr.GetAddr1 (), &m_currentHdr);
-  if (m_sentMpdus == 0)
-    {
-      m_currentPacket = 0;
-    }
   MacLowTransmissionListener *listener = m_listener;
   m_listener = 0;
   m_sentMpdus = 0;
@@ -1891,7 +1894,6 @@ MacLow::SendDataPacket (void)
     }
 
   ForwardDown (m_currentPacket, &m_currentHdr, m_currentTxVector);
-  m_currentPacket = 0;
 }
 
 bool
@@ -2094,7 +2096,6 @@ MacLow::SendDataAfterCts (Mac48Address source, Time duration)
     }
 
   ForwardDown (m_currentPacket, &m_currentHdr, m_currentTxVector);
-  m_currentPacket = 0;
 }
 
 void
@@ -2451,7 +2452,6 @@ MacLow::SendBlockAckResponse (const CtrlBAckResponseHeader* blockAck, Mac48Addre
   tag.Set (rxSnr);
   packet->AddPacketTag (tag);
   ForwardDown (packet, &hdr, blockAckReqTxVector);
-  m_currentPacket = 0;
 }
 
 void
