@@ -1361,7 +1361,6 @@ private:
   Ptr<WifiMacQueue> m_aggregateQueue; //!< Queue used for MPDU aggregation
   WifiTxVector m_currentTxVector;     //!< TXVECTOR used for the current packet transmission
   std::vector<Item> m_txPackets;      //!< Contain temporary items to be sent with the next A-MPDU transmission, once RTS/CTS exchange has succeeded. It is not used in other cases.
-  uint32_t m_nTxMpdus;                //!<Holds the number of transmitted MPDUs in the last A-MPDU transmission
 };
 
 } //namespace ns3

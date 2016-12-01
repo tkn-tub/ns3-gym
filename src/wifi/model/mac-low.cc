@@ -363,8 +363,7 @@ MacLow::MacLow ()
     m_promisc (false),
     m_ampdu (false),
     m_phyMacLowListener (0),
-    m_ctsToSelfSupported (false),
-    m_nTxMpdus (0)
+    m_ctsToSelfSupported (false)
 {
   NS_LOG_FUNCTION (this);
   m_aggregateQueue = CreateObject<WifiMacQueue> ();
@@ -1531,7 +1530,6 @@ MacLow::ForwardDown (Ptr<const Packet> packet, const WifiMacHeader* hdr, WifiTxV
       Ptr <const Packet> dequeuedPacket;
       WifiMacHeader newHdr;
       WifiMacTrailer fcs;
-      m_nTxMpdus = m_aggregateQueue->GetSize ();
       uint32_t queueSize = m_aggregateQueue->GetSize ();
       bool vhtSingleMpdu = false;
       bool last = false;
@@ -1680,8 +1678,9 @@ MacLow::BlockAckTimeout (void)
   MacLowTransmissionListener *listener = m_listener;
   m_listener = 0;
   m_ampdu = false;
+  uint32_t nTxMpdus = m_aggregateQueue->GetSize ();
   FlushAggregateQueue ();
-  listener->MissedBlockAck (m_nTxMpdus);
+  listener->MissedBlockAck (nTxMpdus);
 }
 
 void
