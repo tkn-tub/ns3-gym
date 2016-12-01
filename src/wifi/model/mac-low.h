@@ -1358,7 +1358,6 @@ private:
   typedef std::map<AcIndex, MacLowAggregationCapableTransmissionListener*> QueueListeners;
   QueueListeners m_edcaListeners;
   bool m_ctsToSelfSupported;          //!< Flag whether CTS-to-self is supported
-  uint8_t m_sentMpdus;                //!< Number of transmitted MPDUs in an A-MPDU that have not been acknowledged yet
   Ptr<WifiMacQueue> m_aggregateQueue; //!< Queue used for MPDU aggregation
   WifiTxVector m_currentTxVector;     //!< TXVECTOR used for the current packet transmission
   std::vector<Item> m_txPackets;      //!< Contain temporary items to be sent with the next A-MPDU transmission, once RTS/CTS exchange has succeeded. It is not used in other cases.

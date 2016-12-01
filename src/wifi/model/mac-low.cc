@@ -364,7 +364,6 @@ MacLow::MacLow ()
     m_ampdu (false),
     m_phyMacLowListener (0),
     m_ctsToSelfSupported (false),
-    m_sentMpdus (0),
     m_nTxMpdus (0)
 {
   NS_LOG_FUNCTION (this);
@@ -429,7 +428,6 @@ MacLow::DoDispose (void)
       delete m_phyMacLowListener;
       m_phyMacLowListener = 0;
     }
-  m_sentMpdus = 0;
   m_aggregateQueue = 0;
   m_ampdu = false;
 }
@@ -757,9 +755,9 @@ MacLow::StartTransmission (Ptr<const Packet> packet,
     {
       //m_aggregateQueue > 0 occurs when a RTS/CTS exchange failed before an A-MPDU transmission.
       //In that case, we transmit the same A-MPDU as previously.
-      m_sentMpdus = m_aggregateQueue->GetSize ();
+      uint32_t sentMpdus = m_aggregateQueue->GetSize ();
       m_ampdu = true;
-      if (m_sentMpdus > 1)
+      if (sentMpdus > 1)
         {
           m_txParams.EnableCompressedBlockAck ();
         }
@@ -1022,7 +1020,6 @@ MacLow::ReceiveOk (Ptr<Packet> packet, double rxSnr, WifiTxVector txVector, bool
       m_blockAckTimeoutEvent.Cancel ();
       NotifyAckTimeoutResetNow ();
       m_listener->GotBlockAck (&blockAck, hdr.GetAddr2 (), rxSnr, txVector.GetMode (), tag.Get ());
-      m_sentMpdus = 0;
       m_ampdu = false;
       FlushAggregateQueue ();
     }
@@ -1637,7 +1634,6 @@ MacLow::CtsTimeout (void)
   m_stationManager->ReportRtsFailed (m_currentHdr.GetAddr1 (), &m_currentHdr);
   MacLowTransmissionListener *listener = m_listener;
   m_listener = 0;
-  m_sentMpdus = 0;
   m_ampdu = false;
   listener->MissedCts ();
 }
@@ -1653,7 +1649,6 @@ MacLow::NormalAckTimeout (void)
   m_stationManager->ReportDataFailed (m_currentHdr.GetAddr1 (), &m_currentHdr);
   MacLowTransmissionListener *listener = m_listener;
   m_listener = 0;
-  m_sentMpdus = 0;
   m_ampdu = false;
   FlushAggregateQueue ();
   listener->MissedAck ();
@@ -1684,7 +1679,6 @@ MacLow::BlockAckTimeout (void)
   NS_LOG_DEBUG ("block ack timeout");
   MacLowTransmissionListener *listener = m_listener;
   m_listener = 0;
-  m_sentMpdus = 0;
   m_ampdu = false;
   FlushAggregateQueue ();
   listener->MissedBlockAck (m_nTxMpdus);
@@ -2762,7 +2756,6 @@ MacLow::AggregateToAmpdu (Ptr<const Packet> packet, const WifiMacHeader hdr)
                     {
                       NS_LOG_DEBUG ("Adding packet with Sequence number " << currentSequenceNumber << " to A-MPDU, packet size = " << newPacket->GetSize () << ", A-MPDU size = " << currentAggregatedPacket->GetSize ());
                       i++;
-                      m_sentMpdus++;
                       m_aggregateQueue->Enqueue (aggPacket, peekedHdr);
                     }
                 }
@@ -2845,7 +2838,6 @@ MacLow::AggregateToAmpdu (Ptr<const Packet> packet, const WifiMacHeader hdr)
                       NS_LOG_DEBUG ("Adding packet with Sequence number " << peekedHdr.GetSequenceNumber () << " to A-MPDU, packet size = " << newPacket->GetSize () << ", A-MPDU size = " << currentAggregatedPacket->GetSize ());
                       i++;
                       isAmpdu = true;
-                      m_sentMpdus++;
                       if (!m_txParams.MustSendRts ())
                         {
                           listenerIt->second->CompleteMpduTx (peekedPacket, peekedHdr, tstamp);
@@ -2969,7 +2961,6 @@ MacLow::AggregateToAmpdu (Ptr<const Packet> packet, const WifiMacHeader hdr)
               currentAggregatedPacket = Create<Packet> ();
               listenerIt->second->GetMpduAggregator ()->AggregateVhtSingleMpdu (packet, currentAggregatedPacket);
               m_aggregateQueue->Enqueue (packet, peekedHdr);
-              m_sentMpdus = 1;
 
               if (listenerIt->second->GetBlockAckAgreementExists (hdr.GetAddr1 (), tid))
                 {
