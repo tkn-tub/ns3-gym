@@ -658,7 +658,7 @@ TcpSocketBase::Connect (const Address & address)
   NS_LOG_FUNCTION (this << address);
 
   // If haven't do so, Bind() this socket first
-  if (InetSocketAddress::IsMatchingType (address) && m_endPoint6 == 0)
+  if (InetSocketAddress::IsMatchingType (address))
     {
       if (m_endPoint == 0)
         {
@@ -681,7 +681,7 @@ TcpSocketBase::Connect (const Address & address)
           return -1;
         }
     }
-  else if (Inet6SocketAddress::IsMatchingType (address)  && m_endPoint == 0)
+  else if (Inet6SocketAddress::IsMatchingType (address))
     {
       // If we are operating on a v4-mapped address, translate the address to
       // a v4 address and re-call this function
@@ -707,7 +707,8 @@ TcpSocketBase::Connect (const Address & address)
 
       // Get the appropriate local address and port number from the routing protocol and set up endpoint
       if (SetupEndpoint6 () != 0)
-        { // Route to destination does not exist
+        {
+          NS_LOG_ERROR ("Route to destination does not exist ?!");
           return -1;
         }
     }
