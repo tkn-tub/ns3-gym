@@ -32,7 +32,6 @@ namespace ns3 {
 
 class MgtAddBaResponseHeader;
 class MgtAddBaRequestHeader;
-class MgtDelBaHeader;
 class MacTxMiddle;
 class WifiMacQueue;
 

@@ -25,9 +25,6 @@
 
 namespace ns3 {
 
-class WifiNetDevice;
-class WifiPhy;
-
 /**
  * \brief Wifi Channel interface specification
  * \ingroup wifi

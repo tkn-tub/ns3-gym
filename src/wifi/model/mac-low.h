@@ -36,9 +36,6 @@ class AmpduAggregationTest;
 
 namespace ns3 {
 
-class WifiPhy;
-class WifiMac;
-class EdcaTxopN;
 class WifiMacQueue;
 
 /**

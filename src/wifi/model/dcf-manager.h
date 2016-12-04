@@ -26,7 +26,6 @@
 namespace ns3 {
 
 class WifiPhy;
-class WifiMac;
 class MacLow;
 class PhyListener;
 class LowDcfListener;

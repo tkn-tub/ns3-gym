@@ -27,7 +27,6 @@
 
 namespace ns3 {
 
-class Dcf;
 class MacLow;
 class MacRxMiddle;
 class MacTxMiddle;

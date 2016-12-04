@@ -31,11 +31,8 @@ class DcfState;
 class DcfManager;
 class WifiMacQueue;
 class MacLow;
-class WifiMacParameters;
 class MacTxMiddle;
 class RandomStream;
-class MacStation;
-class MacStations;
 
 /**
  * \brief handle packet fragmentation and retransmissions.
@@ -159,8 +156,6 @@ public:
 
 private:
   class TransmissionListener;
-  class NavListener;
-  class PhyListener;
   class Dcf;
   friend class Dcf;
   friend class TransmissionListener;
