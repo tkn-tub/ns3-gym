@@ -25,7 +25,6 @@
 #include "mac-low.h"
 #include "wifi-mac-queue.h"
 #include "mac-tx-middle.h"
-#include "wifi-mac-trailer.h"
 #include "random-stream.h"
 
 #undef NS_LOG_APPEND_CONTEXT
@@ -290,7 +289,6 @@ void
 DcaTxop::Queue (Ptr<const Packet> packet, const WifiMacHeader &hdr)
 {
   NS_LOG_FUNCTION (this << packet << &hdr);
-  WifiMacTrailer fcs;
   m_stationManager->PrepareForQueue (hdr.GetAddr1 (), &hdr, packet);
   m_queue->Enqueue (packet, hdr);
   StartAccessIfNeeded ();
