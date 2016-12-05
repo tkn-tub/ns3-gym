@@ -6151,7 +6151,7 @@ MeasurementReportHeader::Print (std::ostream &os) const
               os << "      havePlmnIdentityList = " << !it->cgiInfo.plmnIdentityList.empty () << std::endl;
               if (!it->cgiInfo.plmnIdentityList.empty ())
                 {
-                  for (std::list<uint32_t>::iterator it2 = it->cgiInfo.plmnIdentityList.begin (); it2 != it->cgiInfo.plmnIdentityList.begin (); it2++)
+                  for (std::list<uint32_t>::iterator it2 = it->cgiInfo.plmnIdentityList.begin (); it2 != it->cgiInfo.plmnIdentityList.end (); it2++)
                     {
                       os << "         plmnId : " << *it2 << std::endl;
                     }
