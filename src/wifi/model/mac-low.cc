@@ -1878,15 +1878,15 @@ MacLow::SendDataPacket (void)
         }
     }
   m_currentHdr.SetDuration (duration);
-
+  Ptr <Packet> packet = m_currentPacket->Copy ();
   if (!m_ampdu)
     {
-      m_currentPacket->AddHeader (m_currentHdr);
+      packet->AddHeader (m_currentHdr);
       WifiMacTrailer fcs;
-      m_currentPacket->AddTrailer (fcs);
+      packet->AddTrailer (fcs);
     }
 
-  ForwardDown (m_currentPacket, &m_currentHdr, m_currentTxVector);
+  ForwardDown (packet, &m_currentHdr, m_currentTxVector);
 }
 
 bool
@@ -2080,15 +2080,15 @@ MacLow::SendDataAfterCts (Mac48Address source, Time duration)
   duration = std::max (duration, newDuration);
   NS_ASSERT (duration >= MicroSeconds (0));
   m_currentHdr.SetDuration (duration);
-
+  Ptr <Packet> packet = m_currentPacket->Copy ();
   if (!m_ampdu)
     {
-      m_currentPacket->AddHeader (m_currentHdr);
+      packet->AddHeader (m_currentHdr);
       WifiMacTrailer fcs;
-      m_currentPacket->AddTrailer (fcs);
+      packet->AddTrailer (fcs);
     }
 
-  ForwardDown (m_currentPacket, &m_currentHdr, m_currentTxVector);
+  ForwardDown (packet, &m_currentHdr, m_currentTxVector);
 }
 
 void
