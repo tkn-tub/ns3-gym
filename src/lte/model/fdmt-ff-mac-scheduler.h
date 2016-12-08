@@ -141,7 +141,7 @@ private:
 
   int GetRbgSize (int dlbandwidth);
 
-  int LcActivePerFlow (uint16_t rnti);
+  unsigned int LcActivePerFlow (uint16_t rnti);
 
   double EstimateUlSinr (uint16_t rnti, uint16_t rb);
 
