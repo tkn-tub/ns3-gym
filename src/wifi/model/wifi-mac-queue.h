@@ -85,14 +85,14 @@ public:
   /**
    * Enqueue the given packet and its corresponding WifiMacHeader at the <i>end</i> of the queue.
    *
-   * \param packet the packet to be euqueued at the end
+   * \param packet the packet to be enqueued at the end
    * \param hdr the header of the given packet
    */
   void Enqueue (Ptr<const Packet> packet, const WifiMacHeader &hdr);
   /**
    * Enqueue the given packet and its corresponding WifiMacHeader at the <i>front</i> of the queue.
    *
-   * \param packet the packet to be euqueued at the end
+   * \param packet the packet to be enqueued at the front
    * \param hdr the header of the given packet
    */
   void PushFront (Ptr<const Packet> packet, const WifiMacHeader &hdr);
