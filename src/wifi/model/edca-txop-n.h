@@ -579,6 +579,7 @@ private:
   bool m_isAccessRequestedForRts;
   TracedValue<uint32_t> m_backoffTrace;
   TracedValue<uint32_t> m_cwTrace;
+  TracedCallback<Time, Time> m_txopTrace;
 };
 
 } //namespace ns3

@@ -248,6 +248,10 @@ EdcaTxopN::GetTypeId (void)
                      "Trace source for contention window values",
                      MakeTraceSourceAccessor (&EdcaTxopN::m_cwTrace),
                      "ns3::TracedValue::Uint32Callback")
+    .AddTraceSource ("TxopTrace",
+                     "Trace source for txop start and duration times",
+                     MakeTraceSourceAccessor (&EdcaTxopN::m_txopTrace),
+                     "ns3::TracedValueCallback::Time")
   ;
   return tid;
 }
@@ -1184,9 +1188,10 @@ void
 EdcaTxopN::StartNext (void)
 {
   NS_LOG_FUNCTION (this);
+  NS_ASSERT (GetTxopLimit () == NanoSeconds (0) || Simulator::Now () - m_startTxop <= GetTxopLimit ());
+
   WifiMacHeader hdr;
   Time tstamp;
-
   Ptr<const Packet> peekedPacket = m_queue->PeekByTidAndAddress (&hdr,
                                                                  m_currentHdr.GetQosTid (),
                                                                  WifiMacHeader::ADDR1,
@@ -1194,6 +1199,11 @@ EdcaTxopN::StartNext (void)
                                                                  &tstamp);
   if (peekedPacket == 0)
     {
+      if (GetTxopLimit () > NanoSeconds (0))
+        {
+          NS_ASSERT (Simulator::Now () - m_startTxop <= GetTxopLimit ());
+          m_txopTrace (m_startTxop, Simulator::Now () - m_startTxop);
+        }
       return;
     }
     
@@ -1226,6 +1236,11 @@ EdcaTxopN::StartNext (void)
                                                          WifiMacHeader::ADDR1,
                                                          m_currentHdr.GetAddr1 ());
       GetLow ()->StartTransmission (m_currentPacket, &m_currentHdr, params, m_transmissionListener);
+    }
+  else if (GetTxopLimit () > NanoSeconds (0))
+    {
+      NS_ASSERT (Simulator::Now () - m_startTxop <= GetTxopLimit ());
+      m_txopTrace (m_startTxop, Simulator::Now () - m_startTxop);
     }
 }
 

@@ -27,6 +27,7 @@ Bugs fixed
 - Bug 2007 - uan: Remove deprecation on SetRxThresholdDb
 - Bug 2221 - network: Remove constraint on size of ns3::Packet Tag objects
 - Bug 2450 - LogDistancePropagationLossModel is not continuous
+- Bug 2463 - create trace source to trace the TXOP time that is actually used
 - Bug 2477 - DCF manager assert
 - Bug 2492 - uan: Make use of RxGain attribute in UanPhyGen class
 - Bug 2511 - HT Greenfield is not working

@@ -1023,6 +1023,9 @@ Bug2222TestCase::DoRun (void)
   phy.SetChannel (channel.Create ());
 
   WifiHelper wifi;
+  wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager",
+                                "DataMode", StringValue ("OfdmRate54Mbps"),
+                                "ControlMode", StringValue ("OfdmRate24Mbps"));
   WifiMacHelper mac;
   Ssid ssid = Ssid ("ns-3-ssid");
   mac.SetType ("ns3::AdhocWifiMac",
