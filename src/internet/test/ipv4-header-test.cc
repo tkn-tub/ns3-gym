@@ -25,7 +25,6 @@
 #include "ns3/simulator.h"
 #include "ns3/simple-channel.h"
 #include "ns3/simple-net-device.h"
-#include "ns3/drop-tail-queue.h"
 #include "ns3/socket.h"
 
 #include "ns3/log.h"

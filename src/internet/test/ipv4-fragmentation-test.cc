@@ -31,7 +31,6 @@
 #include "error-channel.h"
 #include "ns3/simple-net-device.h"
 #include "ns3/simple-net-device-helper.h"
-#include "ns3/drop-tail-queue.h"
 #include "ns3/socket.h"
 #include "ns3/udp-socket.h"
 

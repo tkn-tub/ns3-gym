@@ -26,7 +26,6 @@
 #include "ns3/simulator.h"
 #include "error-channel-sixlow.h"
 #include "ns3/simple-net-device.h"
-#include "ns3/drop-tail-queue.h"
 #include "ns3/socket.h"
 #include "ns3/udp-socket.h"
 

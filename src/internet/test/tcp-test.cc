@@ -26,7 +26,6 @@
 #include "ns3/simulator.h"
 #include "ns3/simple-channel.h"
 #include "ns3/simple-net-device.h"
-#include "ns3/drop-tail-queue.h"
 #include "ns3/config.h"
 #include "ns3/ipv4-static-routing.h"
 #include "ns3/ipv4-list-routing.h"

@@ -23,7 +23,6 @@
 #include <cmath>
 
 #include "ns3/simulator.h"
-#include "ns3/drop-tail-queue.h"
 #include "ns3/node.h"
 #include "bs-uplink-scheduler.h"
 #include "bs-net-device.h"
