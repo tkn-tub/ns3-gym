@@ -2766,7 +2766,6 @@ MacLow::AggregateToAmpdu (Ptr<const Packet> packet, const WifiMacHeader hdr)
                   startingSequenceNumber = blockAckReq.GetStartingSequence ();
                 }
               /// \todo We should also handle Ack and BlockAck
-              aggregated = false;
               bool retry = false;
               //looks for other packets to the same destination with the same Tid need to extend that to include MSDUs
               Ptr<const Packet> peekedPacket = listenerIt->second->PeekNextPacketInBaQueue (peekedHdr, peekedHdr.GetAddr1 (), tid, &tstamp);
