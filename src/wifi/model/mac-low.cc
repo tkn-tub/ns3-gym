@@ -1879,7 +1879,11 @@ MacLow::SendDataPacket (void)
     }
   m_currentHdr.SetDuration (duration);
   Ptr <Packet> packet = m_currentPacket->Copy ();
-  if (!m_ampdu)
+  if (m_ampdu)
+    {
+      NS_ASSERT (m_currentHdr.IsQosData ());
+    }
+  else
     {
       packet->AddHeader (m_currentHdr);
       WifiMacTrailer fcs;
@@ -2081,7 +2085,11 @@ MacLow::SendDataAfterCts (Mac48Address source, Time duration)
   NS_ASSERT (duration >= MicroSeconds (0));
   m_currentHdr.SetDuration (duration);
   Ptr <Packet> packet = m_currentPacket->Copy ();
-  if (!m_ampdu)
+  if (m_ampdu)
+    {
+      NS_ASSERT (m_currentHdr.IsQosData ());
+    }
+  else
     {
       packet->AddHeader (m_currentHdr);
       WifiMacTrailer fcs;
