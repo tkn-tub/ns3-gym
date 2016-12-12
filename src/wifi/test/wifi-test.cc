@@ -68,7 +68,7 @@ AssignWifiRandomStreams (Ptr<WifiMac> mac, int64_t stream)
 
       rmac->GetAttribute ("BK_EdcaTxopN", ptr);
       Ptr<EdcaTxopN> bk_edcaTxopN = ptr.Get<EdcaTxopN> ();
-      currentStream += bk_edcaTxopN->AssignStreams (currentStream);
+      bk_edcaTxopN->AssignStreams (currentStream);
     }
 }
 
