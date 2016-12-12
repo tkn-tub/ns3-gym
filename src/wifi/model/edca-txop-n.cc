@@ -878,6 +878,10 @@ EdcaTxopN::GotAck (double snr, WifiMode txMode)
       m_dcf->ResetCw ();
       if (!HasTxop ())
         {
+          if (m_currentHdr.IsQosData () && GetTxopLimit () > NanoSeconds (0))
+            {
+              m_txopTrace (m_startTxop, Simulator::Now () - m_startTxop);
+            }
           m_cwTrace = m_dcf->GetCw ();
           m_backoffTrace = m_rng->GetNext (0, m_dcf->GetCw ());
           m_dcf->StartBackoffNow (m_backoffTrace);
@@ -1188,8 +1192,8 @@ void
 EdcaTxopN::StartNext (void)
 {
   NS_LOG_FUNCTION (this);
-  NS_ASSERT (GetTxopLimit () == NanoSeconds (0) || Simulator::Now () - m_startTxop <= GetTxopLimit ());
-
+  Time txopLimit = GetTxopLimit ();
+  NS_ASSERT (txopLimit == NanoSeconds (0) || Simulator::Now () - m_startTxop <= txopLimit);
   WifiMacHeader hdr;
   Time tstamp;
   Ptr<const Packet> peekedPacket = m_queue->PeekByTidAndAddress (&hdr,
@@ -1199,9 +1203,9 @@ EdcaTxopN::StartNext (void)
                                                                  &tstamp);
   if (peekedPacket == 0)
     {
-      if (GetTxopLimit () > NanoSeconds (0))
+      if (txopLimit > NanoSeconds (0))
         {
-          NS_ASSERT (Simulator::Now () - m_startTxop <= GetTxopLimit ());
+          NS_ASSERT (Simulator::Now () - m_startTxop <= txopLimit);
           m_txopTrace (m_startTxop, Simulator::Now () - m_startTxop);
         }
       return;
@@ -1228,7 +1232,7 @@ EdcaTxopN::StartNext (void)
       params.DisableRts ();
     }
 
-  if (GetTxopRemaining () >= GetLow ()->CalculateOverallTxTime (peekedPacket, &hdr, params))
+  if (txopLimit >= GetLow ()->CalculateOverallTxTime (peekedPacket, &hdr, params))
     {
       NS_LOG_DEBUG ("start next packet");
       m_currentPacket = m_queue->DequeueByTidAndAddress (&hdr,
@@ -1237,9 +1241,8 @@ EdcaTxopN::StartNext (void)
                                                          m_currentHdr.GetAddr1 ());
       GetLow ()->StartTransmission (m_currentPacket, &m_currentHdr, params, m_transmissionListener);
     }
-  else if (GetTxopLimit () > NanoSeconds (0))
+  else if (txopLimit > NanoSeconds (0))
     {
-      NS_ASSERT (Simulator::Now () - m_startTxop <= GetTxopLimit ());
       m_txopTrace (m_startTxop, Simulator::Now () - m_startTxop);
     }
 }
