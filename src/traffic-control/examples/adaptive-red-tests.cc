@@ -481,42 +481,22 @@ main (int argc, char *argv[])
 
   RedQueueDisc::Stats st = StaticCast<RedQueueDisc> (queueDiscs.Get (0))->GetStats ();
 
+  if (st.unforcedDrop == 0)
+    {
+      std::cout << "There should be some unforced drops" << std::endl;
+      exit (1);
+    }
+
   if (aredTest == 1 || aredTest == 2 || aredTest == 13)
     {
-      if (st.unforcedDrop > st.forcedDrop)
-        {
-          std::cout << "Drops due to prob mark should be less than the drops due to hard mark" << std::endl;
-          exit (1);
-        }
-
       if (st.qLimDrop == 0)
         {
           std::cout << "There should be some drops due to queue full" << std::endl;
           exit (1);
         }
     }
-  else if (aredTest == 6 || aredTest == 7 || aredTest == 8 || aredTest == 9 || aredTest == 10 || aredTest == 14 || aredTest ==15)
+  else
     {
-      if (st.unforcedDrop > st.forcedDrop)
-        {
-          std::cout << "Drops due to prob mark should be less than the drops due to hard mark" << std::endl;
-          exit (1);
-        }
-
-      if (st.qLimDrop != 0)
-        {
-          std::cout << "There should be zero drops due to queue full" << std::endl;
-          exit (1);
-        }
-    }
-  else if (aredTest == 12)
-    {
-      if (st.unforcedDrop < st.forcedDrop)
-        {
-          std::cout << "Drops due to prob mark should be more than the drops due to hard mark" << std::endl;
-          exit (1);
-        }
-
       if (st.qLimDrop != 0)
         {
           std::cout << "There should be zero drops due to queue full" << std::endl;
