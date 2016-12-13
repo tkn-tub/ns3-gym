@@ -33,7 +33,7 @@ using namespace ns3;
 
 class RedQueueDiscTestItem : public QueueDiscItem {
 public:
-  RedQueueDiscTestItem (Ptr<Packet> p, const Address & addr, uint16_t protocol);
+  RedQueueDiscTestItem (Ptr<Packet> p, const Address & addr, uint16_t protocol, bool ecnCapable);
   virtual ~RedQueueDiscTestItem ();
   virtual void AddHeader (void);
   virtual bool Mark(void);
@@ -42,10 +42,12 @@ private:
   RedQueueDiscTestItem ();
   RedQueueDiscTestItem (const RedQueueDiscTestItem &);
   RedQueueDiscTestItem &operator = (const RedQueueDiscTestItem &);
+  bool m_ecnCapablePacket;
 };
 
-RedQueueDiscTestItem::RedQueueDiscTestItem (Ptr<Packet> p, const Address & addr, uint16_t protocol)
-  : QueueDiscItem (p, addr, protocol)
+RedQueueDiscTestItem::RedQueueDiscTestItem (Ptr<Packet> p, const Address & addr, uint16_t protocol, bool ecnCapable)
+  : QueueDiscItem (p, addr, protocol),
+    m_ecnCapablePacket (ecnCapable)
 {
 }
 
@@ -61,6 +63,10 @@ RedQueueDiscTestItem::AddHeader (void)
 bool
 RedQueueDiscTestItem::Mark (void)
 {
+  if (m_ecnCapablePacket)
+    {
+      return true;
+    }
   return false;
 }
 
@@ -70,7 +76,7 @@ public:
   RedQueueDiscTestCase ();
   virtual void DoRun (void);
 private:
-  void Enqueue (Ptr<RedQueueDisc> queue, uint32_t size, uint32_t nPkt);
+  void Enqueue (Ptr<RedQueueDisc> queue, uint32_t size, uint32_t nPkt, bool ecnCapable);
   void RunRedTest (StringValue mode);
 };
 
@@ -124,16 +130,16 @@ RedQueueDiscTestCase::RunRedTest (StringValue mode)
 
   queue->Initialize ();
   NS_TEST_EXPECT_MSG_EQ (queue->GetQueueSize (), 0 * modeSize, "There should be no packets in there");
-  queue->Enqueue (Create<RedQueueDiscTestItem> (p1, dest, 0));
+  queue->Enqueue (Create<RedQueueDiscTestItem> (p1, dest, 0, false));
   NS_TEST_EXPECT_MSG_EQ (queue->GetQueueSize (), 1 * modeSize, "There should be one packet in there");
-  queue->Enqueue (Create<RedQueueDiscTestItem> (p2, dest, 0));
+  queue->Enqueue (Create<RedQueueDiscTestItem> (p2, dest, 0, false));
   NS_TEST_EXPECT_MSG_EQ (queue->GetQueueSize (), 2 * modeSize, "There should be two packets in there");
-  queue->Enqueue (Create<RedQueueDiscTestItem> (p3, dest, 0));
-  queue->Enqueue (Create<RedQueueDiscTestItem> (p4, dest, 0));
-  queue->Enqueue (Create<RedQueueDiscTestItem> (p5, dest, 0));
-  queue->Enqueue (Create<RedQueueDiscTestItem> (p6, dest, 0));
-  queue->Enqueue (Create<RedQueueDiscTestItem> (p7, dest, 0));
-  queue->Enqueue (Create<RedQueueDiscTestItem> (p8, dest, 0));
+  queue->Enqueue (Create<RedQueueDiscTestItem> (p3, dest, 0, false));
+  queue->Enqueue (Create<RedQueueDiscTestItem> (p4, dest, 0, false));
+  queue->Enqueue (Create<RedQueueDiscTestItem> (p5, dest, 0, false));
+  queue->Enqueue (Create<RedQueueDiscTestItem> (p6, dest, 0, false));
+  queue->Enqueue (Create<RedQueueDiscTestItem> (p7, dest, 0, false));
+  queue->Enqueue (Create<RedQueueDiscTestItem> (p8, dest, 0, false));
   NS_TEST_EXPECT_MSG_EQ (queue->GetQueueSize (), 8 * modeSize, "There should be eight packets in there");
 
   Ptr<QueueDiscItem> item;
@@ -177,7 +183,7 @@ RedQueueDiscTestCase::RunRedTest (StringValue mode)
   NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("QueueLimit", UintegerValue (qSize)), true,
                          "Verify that we can actually set the attribute QueueLimit");
   queue->Initialize ();
-  Enqueue (queue, pktSize, 300);
+  Enqueue (queue, pktSize, 300, false);
   RedQueueDisc::Stats st = StaticCast<RedQueueDisc> (queue)->GetStats ();
   NS_TEST_EXPECT_MSG_EQ (st.unforcedDrop, 0, "There should zero dropped packets due probability mark");
   NS_TEST_EXPECT_MSG_EQ (st.forcedDrop, 0, "There should zero dropped packets due hardmark mark");
@@ -206,7 +212,7 @@ RedQueueDiscTestCase::RunRedTest (StringValue mode)
   NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("QW", DoubleValue (0.020)), true,
                          "Verify that we can actually set the attribute QW");
   queue->Initialize ();
-  Enqueue (queue, pktSize, 300);
+  Enqueue (queue, pktSize, 300, false);
   st = StaticCast<RedQueueDisc> (queue)->GetStats ();
   drop.test3 = st.unforcedDrop + st.forcedDrop + st.qLimDrop;
   NS_TEST_EXPECT_MSG_NE (drop.test3, 0, "There should be some dropped packets");
@@ -226,7 +232,7 @@ RedQueueDiscTestCase::RunRedTest (StringValue mode)
   NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("QW", DoubleValue (0.020)), true,
                          "Verify that we can actually set the attribute QW");
   queue->Initialize ();
-  Enqueue (queue, pktSize, 300);
+  Enqueue (queue, pktSize, 300, false);
   st = StaticCast<RedQueueDisc> (queue)->GetStats ();
   drop.test4 = st.unforcedDrop + st.forcedDrop + st.qLimDrop;
   NS_TEST_EXPECT_MSG_GT (drop.test4, drop.test3, "Test 4 should have more drops than test 3");
@@ -248,7 +254,7 @@ RedQueueDiscTestCase::RunRedTest (StringValue mode)
   NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("LInterm", DoubleValue (5)), true,
                          "Verify that we can actually set the attribute LInterm");
   queue->Initialize ();
-  Enqueue (queue, pktSize, 300);
+  Enqueue (queue, pktSize, 300, false);
   st = StaticCast<RedQueueDisc> (queue)->GetStats ();
   drop.test5 = st.unforcedDrop + st.forcedDrop + st.qLimDrop;
   NS_TEST_EXPECT_MSG_GT (drop.test5, drop.test3, "Test 5 should have more drops than test 3");
@@ -269,7 +275,7 @@ RedQueueDiscTestCase::RunRedTest (StringValue mode)
   NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("Gentle", BooleanValue (false)), true,
                          "Verify that we can actually set the attribute Gentle");
   queue->Initialize ();
-  Enqueue (queue, pktSize, 300);
+  Enqueue (queue, pktSize, 300, false);
   st = StaticCast<RedQueueDisc> (queue)->GetStats ();
   drop.test6 = st.unforcedDrop + st.forcedDrop + st.qLimDrop;
   NS_TEST_EXPECT_MSG_GT (drop.test6, drop.test3, "Test 6 should have more drops than test 3");
@@ -290,19 +296,99 @@ RedQueueDiscTestCase::RunRedTest (StringValue mode)
   NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("Wait", BooleanValue (false)), true,
                          "Verify that we can actually set the attribute Wait");
   queue->Initialize ();
-  Enqueue (queue, pktSize, 300);
+  Enqueue (queue, pktSize, 300, false);
   st = StaticCast<RedQueueDisc> (queue)->GetStats ();
   drop.test7 = st.unforcedDrop + st.forcedDrop + st.qLimDrop;
   NS_TEST_EXPECT_MSG_GT (drop.test7, drop.test3, "Test 7 should have more drops than test 3");
+
+
+  // test 8: RED queue disc is ECN enabled, but packets are not ECN capable
+  queue = CreateObject<RedQueueDisc> ();
+  minTh = 30 * modeSize;
+  maxTh = 90 * modeSize;
+  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("Mode", mode), true,
+                         "Verify that we can actually set the attribute Mode");
+  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("MinTh", DoubleValue (minTh)), true,
+                         "Verify that we can actually set the attribute MinTh");
+  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("MaxTh", DoubleValue (maxTh)), true,
+                         "Verify that we can actually set the attribute MaxTh");
+  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("QueueLimit", UintegerValue (qSize)), true,
+                         "Verify that we can actually set the attribute QueueLimit");
+  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("QW", DoubleValue (0.002)), true,
+                         "Verify that we can actually set the attribute QW");
+  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("LInterm", DoubleValue (2)), true,
+                         "Verify that we can actually set the attribute LInterm");
+  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("Gentle", BooleanValue (true)), true,
+                         "Verify that we can actually set the attribute Gentle");
+  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("UseEcn", BooleanValue (true)), true,
+                         "Verify that we can actually set the attribute UseECN");
+  queue->Initialize ();
+  Enqueue (queue, pktSize, 300, false);
+  st = StaticCast<RedQueueDisc> (queue)->GetStats ();
+  // Packets are not ECN capable, so there should be only unforced drops, no unforced marks
+  NS_TEST_EXPECT_MSG_NE (st.unforcedDrop, 0, "There should be some unforced drops");
+  NS_TEST_EXPECT_MSG_EQ (st.unforcedMark, 0, "There should be no unforced marks");
+
+
+  // test 9: Packets are ECN capable, but RED queue disc is not ECN enabled
+  queue = CreateObject<RedQueueDisc> ();
+  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("Mode", mode), true,
+                         "Verify that we can actually set the attribute Mode");
+  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("MinTh", DoubleValue (minTh)), true,
+                         "Verify that we can actually set the attribute MinTh");
+  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("MaxTh", DoubleValue (maxTh)), true,
+                         "Verify that we can actually set the attribute MaxTh");
+  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("QueueLimit", UintegerValue (qSize)), true,
+                         "Verify that we can actually set the attribute QueueLimit");
+  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("QW", DoubleValue (0.002)), true,
+                         "Verify that we can actually set the attribute QW");
+  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("LInterm", DoubleValue (2)), true,
+                         "Verify that we can actually set the attribute LInterm");
+  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("Gentle", BooleanValue (true)), true,
+                         "Verify that we can actually set the attribute Gentle");
+  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("UseEcn", BooleanValue (false)), true,
+                         "Verify that we can actually set the attribute UseECN");
+  queue->Initialize ();
+  Enqueue (queue, pktSize, 300, true);
+  st = StaticCast<RedQueueDisc> (queue)->GetStats ();
+  // RED queue disc is not ECN enabled, so there should be only unforced drops, no unforced marks
+  NS_TEST_EXPECT_MSG_NE (st.unforcedDrop, 0, "There should be some unforced drops");
+  NS_TEST_EXPECT_MSG_EQ (st.unforcedMark, 0, "There should be no unforced marks");
+
+
+  // test 10: Packets are ECN capable and RED queue disc is ECN enabled
+  queue = CreateObject<RedQueueDisc> ();
+  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("Mode", mode), true,
+                         "Verify that we can actually set the attribute Mode");
+  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("MinTh", DoubleValue (minTh)), true,
+                         "Verify that we can actually set the attribute MinTh");
+  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("MaxTh", DoubleValue (maxTh)), true,
+                         "Verify that we can actually set the attribute MaxTh");
+  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("QueueLimit", UintegerValue (qSize)), true,
+                         "Verify that we can actually set the attribute QueueLimit");
+  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("QW", DoubleValue (0.002)), true,
+                         "Verify that we can actually set the attribute QW");
+  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("LInterm", DoubleValue (2)), true,
+                         "Verify that we can actually set the attribute LInterm");
+  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("Gentle", BooleanValue (true)), true,
+                         "Verify that we can actually set the attribute Gentle");
+  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("UseEcn", BooleanValue (true)), true,
+                         "Verify that we can actually set the attribute UseECN");
+  queue->Initialize ();
+  Enqueue (queue, pktSize, 300, true);
+  st = StaticCast<RedQueueDisc> (queue)->GetStats ();
+  // Packets are ECN capable, RED queue disc is ECN enabled; there should be only unforced marks, no unforced drops
+  NS_TEST_EXPECT_MSG_EQ (st.unforcedDrop, 0, "There should be no unforced drops");
+  NS_TEST_EXPECT_MSG_NE (st.unforcedMark, 0, "There should be some unforced marks");
 }
 
 void 
-RedQueueDiscTestCase::Enqueue (Ptr<RedQueueDisc> queue, uint32_t size, uint32_t nPkt)
+RedQueueDiscTestCase::Enqueue (Ptr<RedQueueDisc> queue, uint32_t size, uint32_t nPkt, bool ecnCapable)
 {
   Address dest;
   for (uint32_t i = 0; i < nPkt; i++)
     {
-      queue->Enqueue (Create<RedQueueDiscTestItem> (Create<Packet> (size), dest, 0));
+      queue->Enqueue (Create<RedQueueDiscTestItem> (Create<Packet> (size), dest, 0, ecnCapable));
     }
 }
 
