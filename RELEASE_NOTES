@@ -29,6 +29,7 @@ Bugs fixed
 - Bug 2450 - LogDistancePropagationLossModel is not continuous
 - Bug 2463 - create trace source to trace the TXOP time that is actually used
 - Bug 2477 - DCF manager assert
+- Bug 2485 - Check for queue full should happen before checking RED thresholds
 - Bug 2492 - uan: Make use of RxGain attribute in UanPhyGen class
 - Bug 2511 - HT Greenfield is not working
 - Bug 2513 - ParetoRandomVariable needs a "scale", not a "mean" attribute.

@@ -193,6 +193,16 @@ TypeId RedQueueDisc::GetTypeId (void)
                    TimeValue (MilliSeconds (20)),
                    MakeTimeAccessor (&RedQueueDisc::m_linkDelay),
                    MakeTimeChecker ())
+    .AddAttribute ("UseEcn",
+                   "True to use ECN (packets are marked instead of being dropped)",
+                   BooleanValue (false),
+                   MakeBooleanAccessor (&RedQueueDisc::m_useEcn),
+                   MakeBooleanChecker ())
+    .AddAttribute ("UseHardDrop",
+                   "True to always drop packets above max threshold",
+                   BooleanValue (true),
+                   MakeBooleanAccessor (&RedQueueDisc::m_useHardDrop),
+                   MakeBooleanChecker ())
   ;
 
   return tid;
@@ -382,35 +392,42 @@ RedQueueDisc::DoEnqueue (Ptr<QueueDiscItem> item)
       m_old = 0;
     }
 
-  if ((GetMode () == Queue::QUEUE_MODE_PACKETS && nQueued >= m_queueLimit) ||
-      (GetMode () == Queue::QUEUE_MODE_BYTES && nQueued + item->GetPacketSize() > m_queueLimit))
-    {
-      NS_LOG_DEBUG ("\t Dropping due to Queue Full " << nQueued);
-      dropType = DTYPE_FORCED;
-      m_stats.qLimDrop++;
-    }
-
   if (dropType == DTYPE_UNFORCED)
     {
-      NS_LOG_DEBUG ("\t Dropping due to Prob Mark " << m_qAvg);
-      m_stats.unforcedDrop++;
-      Drop (item);
-      return false;
+      if (!m_useEcn || !item->Mark ())
+        {
+          NS_LOG_DEBUG ("\t Dropping due to Prob Mark " << m_qAvg);
+          m_stats.unforcedDrop++;
+          Drop (item);
+          return false;
+        }
+      NS_LOG_DEBUG ("\t Marking due to Prob Mark " << m_qAvg);
+      m_stats.unforcedMark++;
     }
   else if (dropType == DTYPE_FORCED)
     {
-      NS_LOG_DEBUG ("\t Dropping due to Hard Mark " << m_qAvg);
-      m_stats.forcedDrop++;
-      Drop (item);
-      if (m_isNs1Compat)
+      if (m_useHardDrop || !m_useEcn || !item->Mark ())
         {
-          m_count = 0;
-          m_countBytes = 0;
+          NS_LOG_DEBUG ("\t Dropping due to Hard Mark " << m_qAvg);
+          m_stats.forcedDrop++;
+          Drop (item);
+          if (m_isNs1Compat)
+            {
+              m_count = 0;
+              m_countBytes = 0;
+            }
+          return false;
         }
-      return false;
+      NS_LOG_DEBUG ("\t Marking due to Hard Mark " << m_qAvg);
+      m_stats.forcedMark++;
     }
 
   bool retval = GetInternalQueue (0)->Enqueue (item);
+
+  if (!retval)
+    {
+      m_stats.qLimDrop++;
+    }
 
   // If Queue::Enqueue fails, QueueDisc::Drop is called by the internal queue
   // because QueueDisc::AddInternalQueue sets the drop callback
@@ -471,6 +488,8 @@ RedQueueDisc::InitializeParams (void)
   m_stats.forcedDrop = 0;
   m_stats.unforcedDrop = 0;
   m_stats.qLimDrop = 0;
+  m_stats.forcedMark = 0;
+  m_stats.unforcedMark = 0;
 
   m_qAvg = 0.0;
   m_count = 0;

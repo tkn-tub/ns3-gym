@@ -34,7 +34,25 @@ weight, MinTh and MaxTh and (ii) adapts maximum drop probability. The model
 in ns-3 contains implementation of both the features, and is a port of Sally
 Floyd's ns-2 ARED model. Note that the user is allowed to choose and explicitly
 configure the simulation by selecting feature (i) or feature (ii), or both.
- 
+
+Explicit Congestion Notification (ECN)
+======================================
+This RED model supports an ECN mode of operation to notify endpoints of
+congestion that may be developing in a bottleneck queue, without resorting
+to packet drops. Such a mode is enabled by setting the UseEcn attribute to
+true (it is false by default) and only affects incoming packets with the
+ECT bit set in their header. When the average queue length is between the
+minimum and maximum thresholds, an incoming packet is marked instead of being
+dropped. When the average queue length is above the maximum threshold, an
+incoming packet is marked (instead of being dropped) only if the UseHardDrop
+attribute is set to false (it is true by default).
+
+The implementation of support for ECN marking is done in such a way as
+to not impose an internet module dependency on the traffic control module.
+The RED model does not directly set ECN bits on the header, but delegates
+that job to the QueueDiscItem class.  As a result, it is possible to
+use RED queues for other non-IP QueueDiscItems that may or may not support
+the ``Mark ()`` method.
 
 References
 ==========
@@ -44,6 +62,9 @@ S.Floyd, K.Fall http://icir.org/floyd/papers/redsims.ps
 
 ARED queue implementation is based on the algorithm provided in:
 S. Floyd et al, http://www.icir.org/floyd/papers/adaptiveRed.pdf
+
+The addition of explicit congestion notification (ECN) to IP:
+K. K. Ramakrishnan et al, https://tools.ietf.org/html/rfc3168
 
 Attributes
 ==========
@@ -62,6 +83,8 @@ policies:
 * LInterm
 * LinkBandwidth
 * LinkDelay
+* UseEcn
+* UseHardDrop
 
 In addition to RED attributes, ARED queue requires following attributes:
 

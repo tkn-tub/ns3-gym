@@ -108,6 +108,8 @@ public:
     uint32_t unforcedDrop;  //!< Early probability drops
     uint32_t forcedDrop;    //!< Forced drops, qavg > max threshold
     uint32_t qLimDrop;      //!< Drops due to queue limits
+    uint32_t unforcedMark;  //!< Early probability marks
+    uint32_t forcedMark;    //!< Forced marks, qavg > max threshold
   } Stats;
 
   /** 
@@ -298,6 +300,8 @@ private:
   bool m_isNs1Compat;       //!< Ns-1 compatibility
   DataRate m_linkBandwidth; //!< Link bandwidth
   Time m_linkDelay;         //!< Link delay
+  bool m_useEcn;            //!< True if ECN is used (packets are marked instead of being dropped)
+  bool m_useHardDrop;       //!< True if packets are always dropped above max threshold
 
   // ** Variables maintained by RED
   double m_vProb1;          //!< Prob. of packet drop before "count"
