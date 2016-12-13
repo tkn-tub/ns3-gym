@@ -89,10 +89,11 @@ additional information for each packet. Thus, internal queues are implemented as
 Queue objects storing QueueDiscItem objects. Also, there could be the need to store
 further information depending on the network layer protocol of the packet. For
 instance, for IPv4 and IPv6 packets it is needed to separately store the header
-and the payload, so that header fields can be manipulated, e.g., to support ECN.
-To this end, Ipv4QueueDiscItem and Ipv6QueueDiscItem are derived from QueueDiscItem
-to additionally store the packet header and provide protocol specific operations
-such as ECN marking.
+and the payload, so that header fields can be manipulated, e.g., to support
+Explicit Congestion Notification as defined in RFC 3168.  To this end,
+subclasses ``Ipv4QueueDiscItem`` and ``Ipv6QueueDiscItem`` are derived from
+``QueueDiscItem`` to additionally store the IP header and provide protocol
+specific operations such as ECN marking.
 
 Classes are implemented via the QueueDiscClass class, which just consists of a pointer
 to the attached queue disc. Such a pointer is accessible through the QueueDisc attribute.

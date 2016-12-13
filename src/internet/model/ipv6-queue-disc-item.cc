@@ -80,6 +80,18 @@ Ipv6QueueDiscItem::Print (std::ostream& os) const
 }
 
 bool
+Ipv6QueueDiscItem::Mark (void)
+{
+  NS_LOG_FUNCTION (this);
+  if (!m_headerAdded && (m_header.GetEcn () == Ipv6Header::ECN_ECT1 || m_header.GetEcn () == Ipv6Header::ECN_ECT0))
+    {
+      m_header.SetEcn (Ipv6Header::ECN_CE);
+      return true;
+    }
+  return false;
+}
+
+bool
 Ipv6QueueDiscItem::GetUint8Value (QueueItem::Uint8Values field, uint8_t& value) const
 {
   bool ret = false;

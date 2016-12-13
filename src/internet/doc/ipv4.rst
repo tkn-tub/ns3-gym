@@ -115,3 +115,26 @@ the transmit and receive paths).
 - If a packet is being forwarded, and the TTL is exceeded (see
   ns3::Ipv4L3Protocol::DoForward), the packet is dropped and the "Drop" trace
   event is fired.
+
+Explicit Congestion Notification (ECN) bits
+*******************************************
+
+- In IPv4, ECN bits are the last 2 bits in TOS field and occupy 14th and 15th
+  bits in the header.
+
+- The IPv4 header class defines an EcnType enum with all four ECN codepoints
+  (ECN_NotECT, ECN_ECT1, ECN_ECT0, ECN_CE) mentioned
+  in RFC 3168, and also a setter and getter method to handle ECN values in
+  the TOS field.
+
+Ipv4QueueDiscItem
+*****************
+
+The traffic control sublayer in |ns3| handles objects of class
+``QueueDiscItem`` which are used to hold an ns3::Packet and an ns3::Header.
+This is done to facilitate the marking of packets for Explicit
+Congestion Notification.  The ``Mark ()`` method is implemented in
+Ipv4QueueDiscItem. It returns true if marking the packet is successful, i.e.,
+it successfully sets the CE bit in the IPv4 header. The ``Mark ()`` method
+will return false, however, if the IPv4 header indicates the ``ECN_NotECT``
+codepoint.

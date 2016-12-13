@@ -192,6 +192,13 @@ void Ipv6Header::SetDscp (DscpType dscp)
   m_trafficClass |= (dscp << 2);
 }
 
+void Ipv6Header::SetEcn (EcnType ecn)
+{
+  NS_LOG_FUNCTION (this << ecn);
+  m_trafficClass &= 0xFC; // Clear out the ECN part, retain 6 bits of DSCP
+  m_trafficClass |= ecn;
+}
+
 Ipv6Header::DscpType Ipv6Header::GetDscp (void) const
 {
   NS_LOG_FUNCTION (this);
@@ -251,6 +258,31 @@ std::string Ipv6Header::DscpTypeToString (DscpType dscp) const
     };
 }
 
+Ipv6Header::EcnType
+Ipv6Header::GetEcn (void) const
+{
+  NS_LOG_FUNCTION (this);
+  // Extract only last 2 bits of Traffic Class byte, i.e 0x3
+  return EcnType (m_trafficClass & 0x3);
+}
+
+std::string Ipv6Header::EcnTypeToString (EcnType ecn) const
+{
+  NS_LOG_FUNCTION (this << ecn);
+  switch (ecn)
+    {
+      case ECN_NotECT:
+        return "Not-ECT";
+      case ECN_ECT1:
+        return "ECT (1)";
+      case ECN_ECT0:
+        return "ECT (0)";
+      case ECN_CE:
+        return "CE";
+      default:
+        return "Unknown ECN codepoint";
+    };
+}
 
 } /* namespace ns3 */
 

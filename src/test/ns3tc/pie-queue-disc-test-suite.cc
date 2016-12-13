@@ -36,6 +36,7 @@ public:
   PieQueueDiscTestItem (Ptr<Packet> p, const Address & addr, uint16_t protocol);
   virtual ~PieQueueDiscTestItem ();
   virtual void AddHeader (void);
+  virtual bool Mark(void);
 
 private:
   PieQueueDiscTestItem ();
@@ -55,6 +56,12 @@ PieQueueDiscTestItem::~PieQueueDiscTestItem ()
 void
 PieQueueDiscTestItem::AddHeader (void)
 {
+}
+
+bool
+PieQueueDiscTestItem::Mark (void)
+{
+  return false;
 }
 
 class PieQueueDiscTestCase : public TestCase
