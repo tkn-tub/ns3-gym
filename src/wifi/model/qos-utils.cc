@@ -96,6 +96,7 @@ QosUtilsIsOldPacket (uint16_t startingSeq, uint16_t seqNumber)
 uint8_t
 GetTid (Ptr<const Packet> packet, const WifiMacHeader hdr)
 {
+  NS_ASSERT (hdr.IsQosData () || packet != 0);
   if (hdr.IsQosData ())
     {
       return hdr.GetQosTid ();
