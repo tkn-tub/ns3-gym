@@ -47,12 +47,12 @@ NS_LOG_COMPONENT_DEFINE ("int64x64");
  * \param [in] lo The low (fractional) work.
  */
 #define HEXHILOW(hi, lo) \
-  std::hex << std::setfill ('0') << std::right << " (0x"		\
-	   << std::setw (16) << hi << " "				\
-	   << std::setw (16) << lo					\
-	   << std::dec << std::setfill (' ') << std::left << ")"
+  std::hex << std::setfill ('0') << std::right << " (0x"                \
+           << std::setw (16) << hi << " "                               \
+           << std::setw (16) << lo                                      \
+           << std::dec << std::setfill (' ') << std::left << ")"
 
-  
+
 /**
  * \internal
  * This algorithm is exact to the precision requested, up to the full
@@ -70,7 +70,7 @@ std::ostream &operator << (std::ostream &os, const int64x64_t &value)
 {
   const bool negative = (value < 0);
   const int64x64_t absVal = (negative ? -value : value);
-  
+
   int64_t hi = absVal.GetHigh ();
 
   // Save stream format flags
@@ -78,7 +78,7 @@ std::ostream &operator << (std::ostream &os, const int64x64_t &value)
   std::ios_base::fmtflags ff = os.flags ();
   const bool floatfield = os.flags () & std::ios_base::floatfield;
   os << std::setw (1) << std::noshowpos;
-  
+
   os << std::right << (negative ? "-" : "+");
 
   std::ostringstream oss;
@@ -88,42 +88,42 @@ std::ostream &operator << (std::ostream &os, const int64x64_t &value)
   int64x64_t low(0, absVal.GetLow ());
   std::size_t places = 0;    // Number of decimal places printed so far
   bool more = true;  // Should we print more digits?
-  
+
   NS_LOG_LOGIC (std::endl
-		<< (floatfield ? " f" : "  ")
-		<< "[" << precision << "] " << hi << ". "
-		<< HEXHILOW (hi, low.GetLow ())
-		);
+                << (floatfield ? " f" : "  ")
+                << "[" << precision << "] " << hi << ". "
+                << HEXHILOW (hi, low.GetLow ())
+                );
 
   int64_t digit;
-  do 
+  do
     {
       low *= 10;
       digit = low.GetHigh ();
       NS_ASSERT_MSG ( (0 <= digit) && (digit <= 9),
-		      "digit " << digit << " out of range [0,9] "
-		      << " streaming out "
-		      << HEXHILOW (value.GetHigh (), value.GetLow ()) );
+                      "digit " << digit << " out of range [0,9] "
+                      << " streaming out "
+                      << HEXHILOW (value.GetHigh (), value.GetLow ()) );
       low -= digit;
 
       oss << std::setw (1) << digit;
 
       ++places;
       if (floatfield)
-	{
-	  more = places < precision;
-	}
+        {
+          more = places < precision;
+        }
       else  // default
-	{
-	  // Full resolution is 20 decimal digits
-	  more = low.GetLow () && (places < 20);
-	}
+        {
+          // Full resolution is 20 decimal digits
+          more = low.GetLow () && (places < 20);
+        }
 
       NS_LOG_LOGIC ((more ? "+" : " ")
-		    << (floatfield ? "f" : " ")
-		    << "[" << places << "] " << digit
-		    << HEXHILOW (low.GetHigh (), low.GetLow ())
-		    << std::dec << std::setfill (' ' ) << std::left);
+                    << (floatfield ? "f" : " ")
+                    << "[" << places << "] " << digit
+                    << HEXHILOW (low.GetHigh (), low.GetLow ())
+                    << std::dec << std::setfill (' ' ) << std::left);
 
     } while (more);
 
@@ -137,32 +137,32 @@ std::ostream &operator << (std::ostream &os, const int64x64_t &value)
       // Walk backwards with the carry
       bool carry = true;
       for (std::string::reverse_iterator rit = digits.rbegin ();
-	   rit != digits.rend ();
-	   ++rit)
-	{
-	  if (*rit == '.')  // Skip over the decimal point
-	    {
-	      continue ;
-	    }
-	  
-	  ++(*rit);         // Add the carry
-	  if (*rit <= '9')  // Relies on character order...
-	    {
-	      carry = false;
-	      break ;       // Carry complete
-	    }
-	  else
-	    {
-	      *rit = '0';     // Continue carry to next higher digit
-	    }
-	}
+           rit != digits.rend ();
+           ++rit)
+        {
+          if (*rit == '.')  // Skip over the decimal point
+            {
+              continue ;
+            }
+
+          ++(*rit);         // Add the carry
+          if (*rit <= '9')  // Relies on character order...
+            {
+              carry = false;
+              break ;       // Carry complete
+            }
+          else
+            {
+              *rit = '0';     // Continue carry to next higher digit
+            }
+        }
       if (carry)            // If we still have a carry...
-	{
-	  digits.insert (digits.begin (), '1');
-	}
+        {
+          digits.insert (digits.begin (), '1');
+        }
     }
   os << digits;
-  
+
   os.flags (ff);  // Restore stream flags
   return os;
 }
@@ -210,14 +210,14 @@ static uint64_t ReadLoDigits (std::string str)
     {
       int digit = *rit - '0';
       NS_ASSERT_MSG ( (0 <= digit) && (digit <= 9),
-		      "digit " << digit << " out of range [0,9]"
-		      << " streaming in low digits \"" << str << "\"");
-      low = (low + digit + round) / 10; 
+                      "digit " << digit << " out of range [0,9]"
+                      << " streaming in low digits \"" << str << "\"");
+      low = (low + digit + round) / 10;
     }
-  
+
   return low.GetLow ();
 }
-    
+
 std::istream &operator >> (std::istream &is, int64x64_t &value)
 {
   std::string str;
@@ -267,7 +267,7 @@ std::istream &operator >> (std::istream &is, int64x64_t &value)
       hi = 0;
       lo = 0;
     }
-  
+
   value = int64x64_t (hi, lo);
   value = negative ? -value : value;
 
