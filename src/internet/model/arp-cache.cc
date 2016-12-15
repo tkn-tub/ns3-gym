@@ -318,10 +318,10 @@ ArpCache::Entry *
 ArpCache::Lookup (Ipv4Address to)
 {
   NS_LOG_FUNCTION (this << to);
-  if (m_arpCache.find (to) != m_arpCache.end ()) 
+  CacheI it = m_arpCache.find (to);
+  if (it != m_arpCache.end ())
     {
-      ArpCache::Entry *entry = m_arpCache[to];
-      return entry;
+      return it->second;
     }
   return 0;
 }
