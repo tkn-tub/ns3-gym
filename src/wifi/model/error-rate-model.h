@@ -33,6 +33,10 @@ namespace ns3 {
 class ErrorRateModel : public Object
 {
 public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
 
   /**
@@ -60,7 +64,7 @@ public:
    * other information as needed.
    *
    * \param mode the Wi-Fi mode applicable to this chunk
-   * \param txvector TXVECTOR of the overall transmission
+   * \param txVector TXVECTOR of the overall transmission
    * \param snr the SNR of the chunk
    * \param nbits the number of bits in this chunk
    *

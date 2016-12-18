@@ -47,6 +47,10 @@ class YansWifiChannel;
 class YansWifiPhy : public WifiPhy
 {
 public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
 
   YansWifiPhy ();

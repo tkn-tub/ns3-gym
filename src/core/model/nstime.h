@@ -723,44 +723,107 @@ namespace TracedValueCallback {
 /// Force static initialization of Time
 static bool NS_UNUSED_GLOBAL (g_TimeStaticInit) = Time::StaticInit ();
 
+/**
+ * \ingroup time
+ * \brief Equality operator for Time.
+ * \param [in] lhs The first value
+ * \param [in] rhs The second value
+ * \returns true if the two input values are equal.
+ */
 inline bool
 operator == (const Time & lhs, const Time & rhs)
 {
   return lhs.m_data == rhs.m_data;
 }
+/**
+ * \ingroup time
+ * \brief Inequality operator for Time.
+ * \param [in] lhs The first value
+ * \param [in] rhs The second value
+ * \returns true if the two input values not are equal.
+ */
 inline bool
 operator != (const Time & lhs, const Time & rhs)
 {
   return lhs.m_data != rhs.m_data;
 }
+/**
+ * \ingroup time
+ * \brief Less than or equal operator for Time.
+ * \param [in] lhs The first value
+ * \param [in] rhs The second value
+ * \returns true if the first input value is less than or equal to the second input value.
+ */
 inline bool
 operator <= (const Time & lhs, const Time & rhs)
 {
   return lhs.m_data <= rhs.m_data;
 }
+/**
+ * \ingroup time
+ * \brief Greater than or equal operator for Time.
+ * \param [in] lhs The first value
+ * \param [in] rhs The second value
+ * \returns true if the first input value is greater than or equal to the second input value.
+ */
 inline bool
 operator >= (const Time & lhs, const Time & rhs)
 {
   return lhs.m_data >= rhs.m_data;
 }
+/**
+ * \ingroup time
+ * \brief Less than operator for Time.
+ * \param [in] lhs The first value
+ * \param [in] rhs The second value
+ * \returns true if the first input value is less than the second input value.
+ */
 inline bool
 operator < (const Time & lhs, const Time & rhs)
 {
   return lhs.m_data < rhs.m_data;
 }
+/**
+ * \ingroup time
+ * \brief Greater than operator for Time.
+ * \param [in] lhs The first value
+ * \param [in] rhs The second value
+ * \returns true if the first input value is greater than the second input value.
+ */
 inline bool
 operator > (const Time & lhs, const Time & rhs)
 {
   return lhs.m_data > rhs.m_data;
 }
+/**
+ * \ingroup time
+ * \brief Addition operator for Time.
+ * \param [in] lhs The first value
+ * \param [in] rhs The second value
+ * \returns the sum of the two input values.
+ */
 inline Time operator + (const Time & lhs, const Time & rhs)
 {
   return Time (lhs.m_data + rhs.m_data);
 }
+/**
+ * \ingroup time
+ * \brief Difference operator for Time.
+ * \param [in] lhs The first value
+ * \param [in] rhs The seconds value
+ * \returns the difference of the two input values.
+ */
 inline Time operator - (const Time & lhs, const Time & rhs)
 {
   return Time (lhs.m_data - rhs.m_data);
 }
+/**
+ * \ingroup time
+ * \brief Multiplication operator for Time.
+ * \param [in] lhs The first value
+ * \param [in] rhs The second value
+ * \returns the product of the two input values.
+ */
 inline Time
 operator * (const Time & lhs, const int64_t & rhs)
 {
@@ -768,6 +831,13 @@ operator * (const Time & lhs, const int64_t & rhs)
   res.m_data *= rhs;
   return res;
 }
+/**
+ * \ingroup time
+ * \brief Multiplication operator for Time.
+ * \param [in] lhs The first value
+ * \param [in] rhs The second value
+ * \returns the product of the two input values.
+ */
 inline Time
 operator * (const int64_t & lhs, const Time & rhs)
 {
@@ -775,12 +845,26 @@ operator * (const int64_t & lhs, const Time & rhs)
   res.m_data *= lhs;
   return res;
 }
+/**
+ * \ingroup time
+ * \brief Division operator for Time.
+ * \param [in] lhs The first value
+ * \param [in] rhs The second value
+ * \returns the resultof the first input value divided by the second input value.
+ */
 inline int64_t
 operator / (const Time & lhs, const Time & rhs)
 {
   int64_t res = lhs.m_data / rhs.m_data;
   return res;
 }
+/**
+ * \ingroup time
+ * \brief Division operator for Time.
+ * \param [in] lhs The first value
+ * \param [in] rhs The second value
+ * \returns the resultof the first input value divided by the second input value.
+ */
 inline Time
 operator / (const Time & lhs, const int64_t & rhs)
 {
@@ -788,11 +872,25 @@ operator / (const Time & lhs, const int64_t & rhs)
   res.m_data /= rhs;
   return res;
 }
+/**
+ * \ingroup time
+ * \brief Addition operator for Time.
+ * \param [in] lhs The first value
+ * \param [in] rhs The second value
+ * \returns the result of the first input value plus the second input value.
+ */
 inline Time & operator += (Time & lhs, const Time & rhs)
 {
   lhs.m_data += rhs.m_data;
   return lhs;
 }
+/**
+ * \ingroup time
+ * \brief Subtraction operator for Time.
+ * \param [in] lhs The first value
+ * \param [in] rhs The second value
+ * \returns the result of the first input value minus the second input value.
+ */
 inline Time & operator -= (Time & lhs, const Time & rhs)
 {
   lhs.m_data -= rhs.m_data;

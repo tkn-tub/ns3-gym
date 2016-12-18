@@ -93,6 +93,12 @@ QosUtilsIsOldPacket (uint16_t startingSeq, uint16_t seqNumber)
   return (distance >= 2048);
 }
 
+/**
+ *  \brief Extraction operator for TypeId
+ *  \param [in] packet is the packet
+ *  \param [in] hdr is Wifi MAC header
+ *  \returns the TypeId of the MAC header
+ */
 uint8_t
 GetTid (Ptr<const Packet> packet, const WifiMacHeader hdr)
 {

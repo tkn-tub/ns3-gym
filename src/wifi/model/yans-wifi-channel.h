@@ -45,6 +45,10 @@ class PropagationDelayModel;
 class YansWifiChannel : public WifiChannel
 {
 public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
 
   YansWifiChannel ();

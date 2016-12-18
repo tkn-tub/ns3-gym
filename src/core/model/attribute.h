@@ -273,6 +273,13 @@ public:
   virtual bool HasSetter (void) const;
 };
 
+/**
+ * \ingroup attribute
+ *
+ * \brief Create an empty AttributeAccessor.
+ *
+ * \returns The empty AttributeAccessor (runtime exception if used)
+ */
 static inline Ptr<const AttributeAccessor>
 MakeEmptyAttributeAccessor ()
 {
@@ -298,6 +305,13 @@ public:
   virtual bool Copy (const AttributeValue &source, AttributeValue &destination) const;
 };
 
+/**
+ * \ingroup attribute
+ *
+ * \brief Create an empty AttributeChecker.
+ *
+ * \returns The empty AttributeChecker (runtime exception if used)
+ */
 static inline Ptr<AttributeChecker>
 MakeEmptyAttributeChecker ()
 {

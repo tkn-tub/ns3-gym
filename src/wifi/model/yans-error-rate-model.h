@@ -54,6 +54,10 @@ namespace ns3 {
 class YansErrorRateModel : public ErrorRateModel
 {
 public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
 
   YansErrorRateModel ();

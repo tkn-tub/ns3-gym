@@ -1181,11 +1181,23 @@ TypeId::SetUid (uint16_t uid)
   m_tid = uid;
 }
 
+/**
+ *  \brief Insertion operator for TypeId
+ *  \param [in] os the output stream
+ *  \param [in] tid the TypeId
+ *  \returns the updated output stream.
+ */
 std::ostream & operator << (std::ostream &os, TypeId tid)
 {
   os << tid.GetName ();
   return os;
 }
+/**
+ *  \brief Extraction operator for TypeId
+ *  \param [in] is the input stream
+ *  \param [out] tid the TypeId value
+ *  \returns the updated input stream.
+ */
 std::istream & operator >> (std::istream &is, TypeId &tid)
 {
   std::string tidString;
