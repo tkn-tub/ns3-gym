@@ -829,6 +829,8 @@ int simclick_sim_command (simclick_node_t *simnode, int cmd, ...)
         *size = required;
       }
     }
+
+  va_end (val);
   return retval;
 }
 
