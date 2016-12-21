@@ -534,7 +534,7 @@ BlockAckManager::GetNRetryNeededPackets (Mac48Address recipient, uint8_t tid) co
                 }
             }
           //go to next packet
-          if (it != m_retryPackets.end ())
+          else
             {
               it++;
             }
