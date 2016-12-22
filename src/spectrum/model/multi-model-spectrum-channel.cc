@@ -151,8 +151,6 @@ MultiModelSpectrumChannel::AddRx (Ptr<SpectrumPhy> phy)
 
   SpectrumModelUid_t rxSpectrumModelUid = rxSpectrumModel->GetUid ();
 
-  std::vector<Ptr<SpectrumPhy> >::const_iterator it;
-
   // remove a previous entry of this phy if it exists
   // we need to scan for all rxSpectrumModel values since we don't
   // know which spectrum model the phy had when it was previously added
