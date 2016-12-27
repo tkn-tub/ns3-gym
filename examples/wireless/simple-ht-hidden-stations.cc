@@ -166,6 +166,10 @@ int main (int argc, char *argv[])
   uint32_t totalPacketsThrough = DynamicCast<UdpServer> (serverApp.Get (0))->GetReceived ();
   double throughput = totalPacketsThrough * payloadSize * 8 / (simulationTime * 1000000.0);
   std::cout << "Throughput: " << throughput << " Mbit/s" << '\n';
-
+  if (throughput < 16.75 || throughput > 17)
+    {
+      NS_LOG_ERROR ("Obtained throughput " << throughput << " is not in the expected boundaries!");
+      exit (1);
+    }
   return 0;
 }
