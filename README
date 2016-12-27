@@ -80,7 +80,7 @@ The program source can be found in the examples/routing directory.
 -------------------------------------------
 
 Once you have verified that your build of ns-3 works by running
-the simple-point-to-point example as outlined in 4) above, it is
+the simple-point-to-point example as outlined in 3) above, it is
 quite likely that you will want to get started on reading
 some ns-3 documentation. 
 
