@@ -16,7 +16,6 @@ cpp_examples = [
     ("multirate --totalTime=0.3s --rateManager=ns3::MinstrelWifiManager", "True", "True"), 
     ("multirate --totalTime=0.3s --rateManager=ns3::OnoeWifiManager", "True", "True"), 
     ("multirate --totalTime=0.3s --rateManager=ns3::RraaWifiManager", "True", "True"), 
-    ("simple-wifi-frame-aggregation", "True", "True"),
     ("wifi-adhoc", "False", "True"), # Takes too long to run
     ("wifi-ap --verbose=0", "True", "True"), # Don't let it spew to stdout
     ("wifi-clear-channel-cmu", "False", "True"), # Requires specific hardware
@@ -34,6 +33,7 @@ cpp_examples = [
     ("vht-wifi-network --simulationTime=0.1", "True", "True"),
     ("simple-ht-hidden-stations --simulationTime=1", "True", "True"),
     ("mixed-bg-network --simulationTime=1", "True", "True"),
+    ("wifi-aggregation --simulationTime=1", "True", "True"),
     ("wifi-tcp", "True", "True"),
     ("wifi-spectrum-per-example --distance=52 --index=3 --wifiType=ns3::SpectrumWifiPhy --simulationTime=1", "True", "True"),
     ("wifi-spectrum-per-example --distance=24 --index=31 --wifiType=ns3::YansWifiPhy --simulationTime=1", "True", "True"),
