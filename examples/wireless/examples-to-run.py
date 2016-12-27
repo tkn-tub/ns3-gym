@@ -30,6 +30,7 @@ cpp_examples = [
     ("ofdm-ht-validation", "True", "True"),
     ("ofdm-validation", "True", "True"),
     ("ofdm-vht-validation", "True", "True"),
+    ("vht-wifi-network --simulationTime=0.1", "True", "True"),
     ("mixed-bg-network", "True", "True"),
     ("wifi-tcp", "True", "True"),
     ("wifi-spectrum-per-example --distance=52 --index=3 --wifiType=ns3::SpectrumWifiPhy --simulationTime=1", "True", "True"),
