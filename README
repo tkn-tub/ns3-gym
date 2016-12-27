@@ -44,7 +44,7 @@ use of these ns-3 libraries.
 
 To build the set of default libraries and the example
 programs included in this package, you need to use the
-tool 'waf'. Detailed information on how use waf is 
+tool 'waf'. Detailed information on how to use waf is
 included in the file doc/build.txt
 
 However, the real quick and dirty way to get started is to
