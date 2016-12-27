@@ -195,19 +195,16 @@ int main (int argc, char *argv[])
               Simulator::Run ();
               Simulator::Destroy ();
 
-              double throughput = 0;
+              uint64_t rxBytes = 0;
               if (udp)
                 {
-                  //UDP
-                  uint32_t totalPacketsThrough = DynamicCast<UdpServer> (serverApp.Get (0))->GetReceived ();
-                  throughput = totalPacketsThrough * payloadSize * 8 / (simulationTime * 1000000.0); //Mbit/s
+                  rxBytes = payloadSize * DynamicCast<UdpServer> (serverApp.Get (0))->GetReceived ();
                 }
               else
                 {
-                  //TCP
-                  uint32_t totalPacketsThrough = DynamicCast<PacketSink> (sinkApp.Get (0))->GetTotalRx ();
-                  throughput = totalPacketsThrough * 8 / (simulationTime * 1000000.0); //Mbit/s
+                  rxBytes = payloadSize * DynamicCast<PacketSink> (sinkApp.Get (0))->GetTotalRx ();
                 }
+              double throughput = (rxBytes * 8) / (simulationTime * 1000000.0); //Mbit/s
               std::cout << i << "\t\t\t" << j << " MHz\t\t\t" << k << "\t\t\t" << throughput << " Mbit/s" << std::endl;
             }
           j *= 2;

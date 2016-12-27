@@ -53,6 +53,7 @@ Bugs fixed
 - Bug 2563 - Modify pybindgen version check to >= minimum version required
 - Bug 2564 - Simulation crashes when CtsTimeout is triggered for A-MPDU transmissions
 - Bug 2566 - BlockAckManager::GetNRetryNeededPackets missing some packets in the queue
+- Bug 2594 - vht-wifi-network provides very low throughtput at MCS 6, 160 MHz, SGI
 
 Known issues
 ------------
