@@ -30,6 +30,7 @@ cpp_examples = [
     ("ofdm-ht-validation", "True", "True"),
     ("ofdm-validation", "True", "True"),
     ("ofdm-vht-validation", "True", "True"),
+    ("ht-wifi-network --simulationTime=0.1", "True", "True"),
     ("vht-wifi-network --simulationTime=0.1", "True", "True"),
     ("mixed-bg-network", "True", "True"),
     ("wifi-tcp", "True", "True"),

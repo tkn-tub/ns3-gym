@@ -60,12 +60,19 @@ int main (int argc, char *argv[])
   cmd.AddValue ("udp", "UDP if set to 1, TCP otherwise", udp);
   cmd.Parse (argc,argv);
 
-  std::cout << "MCS value" << "\t\t" << "Channel width" << "\t\t" << "short GI" << "\t\t" << "Throughput" << '\n';
-  for (int i = 0; i <= 7; i++) //MCS
+  double prevThroughput [8];
+  for (uint32_t l = 0; l < 8; l++)
     {
-      for (int j = 20; j <= 40; ) //channel width
+      prevThroughput[l] = 0;
+    }
+  std::cout << "MCS value" << "\t\t" << "Channel width" << "\t\t" << "short GI" << "\t\t" << "Throughput" << '\n';
+  for (int mcs = 0; mcs <= 7; mcs++)
+    {
+      uint8_t index = 0;
+      double previous = 0;
+      for (int channelWidth = 20; channelWidth <= 40;)
         {
-          for (int k = 0; k < 2; k++) //GI: 0 and 1
+          for (int sgi = 0; sgi < 2; sgi++)
             {
               uint32_t payloadSize; //1500 byte IP packet
               if (udp)
@@ -88,7 +95,7 @@ int main (int argc, char *argv[])
               phy.SetChannel (channel.Create ());
 
               // Set guard interval
-              phy.Set ("ShortGuardEnabled", BooleanValue (k));
+              phy.Set ("ShortGuardEnabled", BooleanValue (sgi));
 
               WifiMacHelper mac;
               WifiHelper wifi;
@@ -108,7 +115,7 @@ int main (int argc, char *argv[])
                 }
 
               std::ostringstream oss;
-              oss << "HtMcs" << i;
+              oss << "HtMcs" << mcs;
               wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager","DataMode", StringValue (oss.str ()),
                                             "ControlMode", StringValue (oss.str ()));
                 
@@ -127,7 +134,7 @@ int main (int argc, char *argv[])
               apDevice = wifi.Install (phy, mac, wifiApNode);
 
               // Set channel width
-              Config::Set ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Phy/ChannelWidth", UintegerValue (j));
+              Config::Set ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Phy/ChannelWidth", UintegerValue (channelWidth));
 
               // mobility.
               MobilityHelper mobility;
@@ -206,22 +213,59 @@ int main (int argc, char *argv[])
               Simulator::Run ();
               Simulator::Destroy ();
 
-              double throughput = 0;
+              uint64_t rxBytes = 0;
               if (udp)
                 {
-                  //UDP
-                  uint32_t totalPacketsThrough = DynamicCast<UdpServer> (serverApp.Get (0))->GetReceived ();
-                  throughput = totalPacketsThrough * payloadSize * 8 / (simulationTime * 1000000.0); //Mbit/s
+                  rxBytes = payloadSize * DynamicCast<UdpServer> (serverApp.Get (0))->GetReceived ();
                 }
               else
                 {
-                  //TCP
-                  uint32_t totalPacketsThrough = DynamicCast<PacketSink> (sinkApp.Get (0))->GetTotalRx ();
-                  throughput = totalPacketsThrough * 8 / (simulationTime * 1000000.0); //Mbit/s
+                  rxBytes = payloadSize * DynamicCast<PacketSink> (sinkApp.Get (0))->GetTotalRx ();
                 }
-              std::cout << i << "\t\t\t" << j << " MHz\t\t\t" << k << "\t\t\t" << throughput << " Mbit/s" << std::endl;
+              double throughput = (rxBytes * 8) / (simulationTime * 1000000.0); //Mbit/s
+              std::cout << mcs << "\t\t\t" << channelWidth << " MHz\t\t\t" << sgi << "\t\t\t" << throughput << " Mbit/s" << std::endl;
+              //test first element
+              if (udp && mcs == 0 && channelWidth == 20 && sgi == 0)
+                {
+                  if (throughput < 5.25 || throughput > 6.25)
+                    {
+                      NS_LOG_ERROR ("Obtained throughput " << throughput << " is not expected!");
+                      exit (1);
+                    }
+                }
+              //test last element
+              if (udp && mcs == 7 && channelWidth == 40 && sgi == 1)
+                {
+                  if (throughput < 133 || throughput > 135)
+                    {
+                      NS_LOG_ERROR ("Obtained throughput " << throughput << " is not expected!");
+                      exit (1);
+                    }
+                }
+              //test previous throughput is smaller (for the same mcs)
+              if (throughput > previous)
+                {
+                  previous = throughput;
+                }
+              else
+                {
+                  NS_LOG_ERROR ("Obtained throughput " << throughput << " is not expected!");
+                  exit (1);
+                }
+              //test previous throughput is smaller (for the same channel width and GI)
+              if (throughput > prevThroughput [index])
+                {
+                  prevThroughput [index] = throughput;
+                }
+              else
+                {
+                  NS_LOG_ERROR ("Obtained throughput " << throughput << " is not expected!");
+                  exit (1);
+                }
+              index++;
+
             }
-          j *= 2;
+          channelWidth *= 2;
         }
     }
   return 0;
