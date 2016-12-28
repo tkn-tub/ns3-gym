@@ -78,8 +78,7 @@ YansWifiChannel::Send (Ptr<YansWifiPhy> sender, Ptr<const Packet> packet, double
 {
   Ptr<MobilityModel> senderMobility = sender->GetMobility ();
   NS_ASSERT (senderMobility != 0);
-  uint32_t j = 0;
-  for (PhyList::const_iterator i = m_phyList.begin (); i != m_phyList.end (); i++, j++)
+  for (PhyList::const_iterator i = m_phyList.begin (); i != m_phyList.end (); i++)
     {
       if (sender != (*i))
         {
@@ -95,7 +94,7 @@ YansWifiChannel::Send (Ptr<YansWifiPhy> sender, Ptr<const Packet> packet, double
           NS_LOG_DEBUG ("propagation: txPower=" << txPowerDbm << "dbm, rxPower=" << rxPowerDbm << "dbm, " <<
                         "distance=" << senderMobility->GetDistanceFrom (receiverMobility) << "m, delay=" << delay);
           Ptr<Packet> copy = packet->Copy ();
-          Ptr<Object> dstNetDevice = m_phyList[j]->GetDevice ();
+          Ptr<NetDevice> dstNetDevice = (*i)->GetDevice ();
           uint32_t dstNode;
           if (dstNetDevice == 0)
             {
@@ -103,20 +102,20 @@ YansWifiChannel::Send (Ptr<YansWifiPhy> sender, Ptr<const Packet> packet, double
             }
           else
             {
-              dstNode = dstNetDevice->GetObject<NetDevice> ()->GetNode ()->GetId ();
+              dstNode = dstNetDevice->GetNode ()->GetId ();
             }
 
           Simulator::ScheduleWithContext (dstNode,
                                           delay, &YansWifiChannel::Receive, this,
-                                          j, copy, rxPowerDbm, duration);
+                                          (*i), copy, rxPowerDbm, duration);
         }
     }
 }
 
 void
-YansWifiChannel::Receive (uint32_t i, Ptr<Packet> packet, double rxPowerDbm, Time duration) const
+YansWifiChannel::Receive (Ptr<YansWifiPhy> phy, Ptr<Packet> packet, double rxPowerDbm, Time duration) const
 {
-  m_phyList[i]->StartReceivePreambleAndHeader (packet, DbmToW (rxPowerDbm + m_phyList[i]->GetRxGain ()), duration);
+  phy->StartReceivePreambleAndHeader (packet, DbmToW (rxPowerDbm + phy->GetRxGain ()), duration);
 }
 
 uint32_t

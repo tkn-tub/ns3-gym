@@ -110,12 +110,12 @@ private:
    * The method then calls the corresponding YansWifiPhy that the first
    * bit of the packet has arrived.
    *
-   * \param i index of the corresponding YansWifiPhy in the PHY list
+   * \param receiver the device to which the packet is destined
    * \param packet the packet being sent
    * \param txPowerDbm the tx power associated to the packet being sent
    * \param duration the transmission duration associated to the packet being sent
    */
-  void Receive (uint32_t i, Ptr<Packet> packet, double txPowerDbm, Time duration) const;
+  void Receive (Ptr<YansWifiPhy> receiver, Ptr<Packet> packet, double txPowerDbm, Time duration) const;
 
   PhyList m_phyList;                   //!< List of YansWifiPhys connected to this YansWifiChannel
   Ptr<PropagationLossModel> m_loss;    //!< Propagation loss model
