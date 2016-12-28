@@ -96,7 +96,7 @@ Dot11sMeshCapability::Is (uint8_t cap, uint8_t n) const
 WifiInformationElementId
 IeConfiguration::ElementId () const
 {
-  return IE11S_MESH_CONFIGURATION;
+  return IE_MESH_CONFIGURATION;
 }
 
 IeConfiguration::IeConfiguration () :

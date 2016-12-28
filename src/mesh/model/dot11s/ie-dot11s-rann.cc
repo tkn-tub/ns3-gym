@@ -37,7 +37,7 @@ IeRann::IeRann () :
 WifiInformationElementId
 IeRann::ElementId () const
 {
-  return IE11S_RANN;
+  return IE_RANN;
 }
 
 void

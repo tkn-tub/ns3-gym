@@ -33,7 +33,7 @@ IePeerManagement::IePeerManagement () :
 WifiInformationElementId
 IePeerManagement::ElementId () const
 {
-  return IE11S_PEERING_MANAGEMENT;
+  return IE_MESH_PEERING_MANAGEMENT;
 }
 void
 IePeerManagement::SetPeerOpen (uint16_t localLinkId)

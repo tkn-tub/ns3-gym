@@ -108,11 +108,11 @@ HwmpProtocolMac::ReceiveAction (Ptr<Packet> packet, const WifiMacHeader & header
   std::vector<HwmpProtocol::FailedDestination> failedDestinations;
   for (MeshInformationElementVector::Iterator i = elements.Begin (); i != elements.End (); i++)
     {
-      if ((*i)->ElementId () == IE11S_RANN)
+      if ((*i)->ElementId () == IE_RANN)
         {
           NS_LOG_WARN ("RANN is not supported!");
         }
-      if ((*i)->ElementId () == IE11S_PREQ)
+      if ((*i)->ElementId () == IE_PREQ)
         {
           Ptr<IePreq> preq = DynamicCast<IePreq> (*i);
           NS_ASSERT (preq != 0);
@@ -129,7 +129,7 @@ HwmpProtocolMac::ReceiveAction (Ptr<Packet> packet, const WifiMacHeader & header
           m_protocol->ReceivePreq (*preq, header.GetAddr2 (), m_ifIndex, header.GetAddr3 (),
                                    m_parent->GetLinkMetric (header.GetAddr2 ()));
         }
-      if ((*i)->ElementId () == IE11S_PREP)
+      if ((*i)->ElementId () == IE_PREP)
         {
           Ptr<IePrep> prep = DynamicCast<IePrep> (*i);
           NS_ASSERT (prep != 0);
@@ -142,7 +142,7 @@ HwmpProtocolMac::ReceiveAction (Ptr<Packet> packet, const WifiMacHeader & header
           m_protocol->ReceivePrep (*prep, header.GetAddr2 (), m_ifIndex, header.GetAddr3 (),
                                    m_parent->GetLinkMetric (header.GetAddr2 ()));
         }
-      if ((*i)->ElementId () == IE11S_PERR)
+      if ((*i)->ElementId () == IE_PERR)
         {
           Ptr<IePerr> perr = DynamicCast<IePerr> (*i);
           NS_ASSERT (perr != 0);

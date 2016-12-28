@@ -95,7 +95,7 @@ IePreq::IePreq () :
 WifiInformationElementId
 IePreq::ElementId () const
 {
-  return IE11S_PREQ;
+  return IE_PREQ;
 }
 void
 IePreq::SetUnicastPreq ()

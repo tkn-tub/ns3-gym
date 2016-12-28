@@ -34,7 +34,7 @@ DsssParameterSet::DsssParameterSet ()
 WifiInformationElementId
 DsssParameterSet::ElementId () const
 {
-  return IE_DS_PARAMETER_SET;
+  return IE_DSSS_PARAMETER_SET;
 }
 
 void

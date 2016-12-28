@@ -34,7 +34,7 @@ IeLinkMetricReport::IeLinkMetricReport (uint32_t metric)
 WifiInformationElementId
 IeLinkMetricReport::ElementId () const
 {
-  return IE11S_LINK_METRIC_REPORT;
+  return IE_MESH_LINK_METRIC_REPORT;
 }
 uint8_t
 IeLinkMetricReport::GetInformationFieldSize (void) const

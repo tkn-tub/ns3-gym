@@ -32,7 +32,7 @@ IePerr::~IePerr ()
 WifiInformationElementId
 IePerr::ElementId () const
 {
-  return IE11S_PERR;
+  return IE_PERR;
 }
 void
 IePerr::Print (std::ostream &os) const
