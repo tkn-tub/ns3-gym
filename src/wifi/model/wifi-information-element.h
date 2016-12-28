@@ -92,7 +92,7 @@ typedef uint8_t WifiInformationElementId;
 #define IE_DSE_REGISTERED_LOCATION              ((WifiInformationElementId)58)
 #define IE_SUPPORTED_OPERATING_CLASSES          ((WifiInformationElementId)59)
 #define IE_EXTENDED_CHANNEL_SWITCH_ANNOUNCEMENT ((WifiInformationElementId)60)
-#define IE_HT_OPERATIONS                        ((WifiInformationElementId)61)
+#define IE_HT_OPERATION                         ((WifiInformationElementId)61)
 #define IE_SECONDARY_CHANNEL_OFFSET             ((WifiInformationElementId)62)
 #define IE_BSS_AVERAGE_ACCESS_DELAY             ((WifiInformationElementId)63)
 #define IE_ANTENNA                              ((WifiInformationElementId)64)

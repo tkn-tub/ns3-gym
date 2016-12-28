@@ -18,14 +18,14 @@
  * Author: Sébastien Deronne <sebastien.deronne@gmail.com>
  */
 
-#include "ht-operations.h"
+#include "ht-operation.h"
 #include "ns3/log.h"
 
 namespace ns3 {
 
-NS_LOG_COMPONENT_DEFINE ("HtOperations");
+NS_LOG_COMPONENT_DEFINE ("HtOperation");
 
-HtOperations::HtOperations ()
+HtOperation::HtOperation ()
   : m_primaryChannel (0),
     m_secondaryChannelOffset (0),
     m_staChannelWidth (0),
@@ -61,19 +61,19 @@ HtOperations::HtOperations ()
 }
 
 WifiInformationElementId
-HtOperations::ElementId () const
+HtOperation::ElementId () const
 {
-  return IE_HT_OPERATIONS;
+  return IE_HT_OPERATION;
 }
 
 void
-HtOperations::SetHtSupported (uint8_t htsupported)
+HtOperation::SetHtSupported (uint8_t htsupported)
 {
   m_htSupported = htsupported;
 }
 
 uint8_t
-HtOperations::GetInformationFieldSize () const
+HtOperation::GetInformationFieldSize () const
 {
   //we should not be here if ht is not supported
   NS_ASSERT (m_htSupported > 0);
@@ -81,199 +81,199 @@ HtOperations::GetInformationFieldSize () const
 }
 
 void
-HtOperations::SetPrimaryChannel (uint8_t ctrl)
+HtOperation::SetPrimaryChannel (uint8_t ctrl)
 {
   m_primaryChannel = ctrl;
 }
 
 void
-HtOperations::SetSecondaryChannelOffset (uint8_t secondarychanneloffset)
+HtOperation::SetSecondaryChannelOffset (uint8_t secondarychanneloffset)
 {
   m_secondaryChannelOffset = secondarychanneloffset;
 }
 
 void
-HtOperations::SetStaChannelWidth (uint8_t stachannelwidth)
+HtOperation::SetStaChannelWidth (uint8_t stachannelwidth)
 {
   m_staChannelWidth = stachannelwidth;
 }
 
 void
-HtOperations::SetRifsMode (uint8_t rifsmode)
+HtOperation::SetRifsMode (uint8_t rifsmode)
 {
   m_rifsMode = rifsmode;
 }
 
 void
-HtOperations::SetHtProtection (uint8_t htprotection)
+HtOperation::SetHtProtection (uint8_t htprotection)
 {
   m_htProtection = htprotection;
 }
 
 void
-HtOperations::SetNonGfHtStasPresent (uint8_t nongfhtstaspresent)
+HtOperation::SetNonGfHtStasPresent (uint8_t nongfhtstaspresent)
 {
   m_nonGfHtStasPresent = nongfhtstaspresent;
 }
 
 void
-HtOperations::SetObssNonHtStasPresent (uint8_t obssnonhtstaspresent)
+HtOperation::SetObssNonHtStasPresent (uint8_t obssnonhtstaspresent)
 {
   m_obssNonHtStasPresent = obssnonhtstaspresent;
 }
 
 void
-HtOperations::SetDualBeacon (uint8_t dualbeacon)
+HtOperation::SetDualBeacon (uint8_t dualbeacon)
 {
   m_dualBeacon = dualbeacon;
 }
 
 void
-HtOperations::SetDualCtsProtection (uint8_t dualctsprotection)
+HtOperation::SetDualCtsProtection (uint8_t dualctsprotection)
 {
   m_dualCtsProtection = dualctsprotection;
 }
 
 void
-HtOperations::SetStbcBeacon (uint8_t stbcbeacon)
+HtOperation::SetStbcBeacon (uint8_t stbcbeacon)
 {
   m_stbcBeacon = stbcbeacon;
 }
 
 void
-HtOperations::SetLSigTxopProtectionFullSupport (uint8_t lsigtxopprotectionfullsupport)
+HtOperation::SetLSigTxopProtectionFullSupport (uint8_t lsigtxopprotectionfullsupport)
 {
   m_lSigTxopProtectionFullSupport = lsigtxopprotectionfullsupport;
 }
 
 void
-HtOperations::SetPcoActive (uint8_t pcoactive)
+HtOperation::SetPcoActive (uint8_t pcoactive)
 {
   m_pcoActive = pcoactive;
 }
 
 void
-HtOperations::SetPhase (uint8_t pcophase)
+HtOperation::SetPhase (uint8_t pcophase)
 {
   m_pcoPhase = pcophase;
 }
 
 void
-HtOperations::SetRxMcsBitmask (uint8_t index)
+HtOperation::SetRxMcsBitmask (uint8_t index)
 {
   m_rxMcsBitmask[index] = 1;
 }
 
 void
-HtOperations::SetRxHighestSupportedDataRate (uint16_t maxsupportedrate)
+HtOperation::SetRxHighestSupportedDataRate (uint16_t maxsupportedrate)
 {
   m_rxHighestSupportedDataRate = maxsupportedrate;
 }
 
 void
-HtOperations::SetTxMcsSetDefined (uint8_t txmcssetdefined)
+HtOperation::SetTxMcsSetDefined (uint8_t txmcssetdefined)
 {
   m_txMcsSetDefined = txmcssetdefined;
 }
 
 void
-HtOperations::SetTxRxMcsSetUnequal (uint8_t txrxmcssetunequal)
+HtOperation::SetTxRxMcsSetUnequal (uint8_t txrxmcssetunequal)
 {
   m_txRxMcsSetUnequal = txrxmcssetunequal;
 }
 
 void
-HtOperations::SetTxMaxNSpatialStreams (uint8_t maxtxspatialstreams)
+HtOperation::SetTxMaxNSpatialStreams (uint8_t maxtxspatialstreams)
 {
   m_txMaxNSpatialStreams = maxtxspatialstreams;
 }
 
 void
-HtOperations::SetTxUnequalModulation (uint8_t txunequalmodulation)
+HtOperation::SetTxUnequalModulation (uint8_t txunequalmodulation)
 {
   m_txUnequalModulation = txunequalmodulation;
 }
 
 uint8_t
-HtOperations::GetPrimaryChannel (void) const
+HtOperation::GetPrimaryChannel (void) const
 {
   return m_primaryChannel;
 }
 
 uint8_t
-HtOperations::GetSecondaryChannelOffset (void) const
+HtOperation::GetSecondaryChannelOffset (void) const
 {
   return m_secondaryChannelOffset;
 }
 
 uint8_t
-HtOperations::GetStaChannelWidth (void) const
+HtOperation::GetStaChannelWidth (void) const
 {
   return m_staChannelWidth;
 }
 
 uint8_t
-HtOperations::GetRifsMode (void) const
+HtOperation::GetRifsMode (void) const
 {
   return m_rifsMode;
 }
 
 uint8_t
-HtOperations::GetHtProtection (void) const
+HtOperation::GetHtProtection (void) const
 {
   return m_htProtection;
 }
 
 uint8_t
-HtOperations::GetNonGfHtStasPresent (void) const
+HtOperation::GetNonGfHtStasPresent (void) const
 {
   return m_nonGfHtStasPresent;
 }
 
 uint8_t
-HtOperations::GetObssNonHtStasPresent (void) const
+HtOperation::GetObssNonHtStasPresent (void) const
 {
   return m_obssNonHtStasPresent;
 }
 
 uint8_t
-HtOperations::GetDualBeacon (void) const
+HtOperation::GetDualBeacon (void) const
 {
   return m_dualBeacon;
 }
 
 uint8_t
-HtOperations::GetDualCtsProtection (void) const
+HtOperation::GetDualCtsProtection (void) const
 {
   return m_dualCtsProtection;
 }
 
 uint8_t
-HtOperations::GetStbcBeacon (void) const
+HtOperation::GetStbcBeacon (void) const
 {
   return m_stbcBeacon;
 }
 
 uint8_t
-HtOperations::GetLSigTxopProtectionFullSupport (void) const
+HtOperation::GetLSigTxopProtectionFullSupport (void) const
 {
   return m_lSigTxopProtectionFullSupport;
 }
 
 uint8_t
-HtOperations::GetPcoActive (void) const
+HtOperation::GetPcoActive (void) const
 {
   return m_pcoActive;
 }
 
 uint8_t
-HtOperations::GetPhase (void) const
+HtOperation::GetPhase (void) const
 {
   return m_pcoPhase;
 }
 
 bool
-HtOperations::IsSupportedMcs (uint8_t mcs)
+HtOperation::IsSupportedMcs (uint8_t mcs)
 {
   if (m_rxMcsBitmask[mcs] == 1)
     {
@@ -283,37 +283,37 @@ HtOperations::IsSupportedMcs (uint8_t mcs)
 }
 
 uint16_t
-HtOperations::GetRxHighestSupportedDataRate (void) const
+HtOperation::GetRxHighestSupportedDataRate (void) const
 {
   return m_rxHighestSupportedDataRate;
 }
 
 uint8_t
-HtOperations::GetTxMcsSetDefined (void) const
+HtOperation::GetTxMcsSetDefined (void) const
 {
   return m_txMcsSetDefined;
 }
 
 uint8_t
-HtOperations::GetTxRxMcsSetUnequal (void) const
+HtOperation::GetTxRxMcsSetUnequal (void) const
 {
   return m_txRxMcsSetUnequal;
 }
 
 uint8_t
-HtOperations::GetTxMaxNSpatialStreams (void) const
+HtOperation::GetTxMaxNSpatialStreams (void) const
 {
   return m_txMaxNSpatialStreams;
 }
 
 uint8_t
-HtOperations::GetTxUnequalModulation (void) const
+HtOperation::GetTxUnequalModulation (void) const
 {
   return m_txUnequalModulation;
 }
 
 Buffer::Iterator
-HtOperations::Serialize (Buffer::Iterator i) const
+HtOperation::Serialize (Buffer::Iterator i) const
 {
   if (m_htSupported < 1)
     {
@@ -323,7 +323,7 @@ HtOperations::Serialize (Buffer::Iterator i) const
 }
 
 uint16_t
-HtOperations::GetSerializedSize () const
+HtOperation::GetSerializedSize () const
 {
   if (m_htSupported < 1)
     {
@@ -333,7 +333,7 @@ HtOperations::GetSerializedSize () const
 }
 
 uint8_t
-HtOperations::GetInformationSubset1 (void) const
+HtOperation::GetInformationSubset1 (void) const
 {
   uint16_t val = 0;
   val |= m_secondaryChannelOffset & 0x03;
@@ -344,7 +344,7 @@ HtOperations::GetInformationSubset1 (void) const
 }
 
 void
-HtOperations::SetInformationSubset1 (uint8_t ctrl)
+HtOperation::SetInformationSubset1 (uint8_t ctrl)
 {
   m_secondaryChannelOffset = ctrl & 0x03;
   m_staChannelWidth = (ctrl >> 2) & 0x01;
@@ -353,7 +353,7 @@ HtOperations::SetInformationSubset1 (uint8_t ctrl)
 }
 
 uint16_t
-HtOperations::GetInformationSubset2 (void) const
+HtOperation::GetInformationSubset2 (void) const
 {
   uint16_t val = 0;
   val |= m_htProtection & 0x03;
@@ -365,7 +365,7 @@ HtOperations::GetInformationSubset2 (void) const
 }
 
 void
-HtOperations::SetInformationSubset2 (uint16_t ctrl)
+HtOperation::SetInformationSubset2 (uint16_t ctrl)
 {
   m_htProtection = ctrl & 0x03;
   m_nonGfHtStasPresent = (ctrl >> 2) & 0x01;
@@ -375,7 +375,7 @@ HtOperations::SetInformationSubset2 (uint16_t ctrl)
 }
 
 uint16_t
-HtOperations::GetInformationSubset3 (void) const
+HtOperation::GetInformationSubset3 (void) const
 {
   uint16_t val = 0;
   val |= m_reservedInformationSubset3_1 & 0x3f;
@@ -390,7 +390,7 @@ HtOperations::GetInformationSubset3 (void) const
 }
 
 void
-HtOperations::SetInformationSubset3 (uint16_t ctrl)
+HtOperation::SetInformationSubset3 (uint16_t ctrl)
 {
   m_reservedInformationSubset3_1 = ctrl & 0x3f;
   m_dualBeacon = (ctrl >> 6) & 0x01;
@@ -403,7 +403,7 @@ HtOperations::SetInformationSubset3 (uint16_t ctrl)
 }
 
 void
-HtOperations::SetBasicMcsSet (uint64_t ctrl1, uint64_t ctrl2)
+HtOperation::SetBasicMcsSet (uint64_t ctrl1, uint64_t ctrl2)
 {
   for (uint64_t i = 0; i < 77; i++)
     {
@@ -427,7 +427,7 @@ HtOperations::SetBasicMcsSet (uint64_t ctrl1, uint64_t ctrl2)
 }
 
 uint64_t
-HtOperations::GetBasicMcsSet1 (void) const
+HtOperation::GetBasicMcsSet1 (void) const
 {
   uint64_t val = 0;
   for (uint64_t i = 63; i > 0; i--)
@@ -439,7 +439,7 @@ HtOperations::GetBasicMcsSet1 (void) const
 }
 
 uint64_t
-HtOperations::GetBasicMcsSet2 (void) const
+HtOperation::GetBasicMcsSet2 (void) const
 {
   uint64_t val = 0;
   val = val | (m_reservedMcsSet3 & 0x07ffffff);
@@ -459,7 +459,7 @@ HtOperations::GetBasicMcsSet2 (void) const
 }
 
 void
-HtOperations::SerializeInformationField (Buffer::Iterator start) const
+HtOperation::SerializeInformationField (Buffer::Iterator start) const
 {
   if (m_htSupported == 1)
     {
@@ -474,7 +474,7 @@ HtOperations::SerializeInformationField (Buffer::Iterator start) const
 }
 
 uint8_t
-HtOperations::DeserializeInformationField (Buffer::Iterator start,
+HtOperation::DeserializeInformationField (Buffer::Iterator start,
                                              uint8_t length)
 {
   Buffer::Iterator i = start;
@@ -492,25 +492,25 @@ HtOperations::DeserializeInformationField (Buffer::Iterator start,
   return length;
 }
 
-ATTRIBUTE_HELPER_CPP (HtOperations);
+ATTRIBUTE_HELPER_CPP (HtOperation);
 
 std::ostream &
-operator << (std::ostream &os, const HtOperations &htoperations)
+operator << (std::ostream &os, const HtOperation &htOperation)
 {
-  os <<  bool (htoperations.GetStaChannelWidth ())
-     << "|" << bool (htoperations.GetRifsMode ())
-     << "|" << bool (htoperations.GetDualCtsProtection());
+  os <<  bool (htOperation.GetStaChannelWidth ())
+     << "|" << bool (htOperation.GetRifsMode ())
+     << "|" << bool (htOperation.GetDualCtsProtection());
     
   return os;
 }
 
-std::istream &operator >> (std::istream &is, HtOperations &htoperations)
+std::istream &operator >> (std::istream &is, HtOperation &htOperation)
 {
   bool c1, c2, c3;
   is >> c1 >> c2 >> c3;
-  htoperations.SetStaChannelWidth (c1);
-  htoperations.SetRifsMode (c2);
-  htoperations.SetDualCtsProtection (c3);
+  htOperation.SetStaChannelWidth (c1);
+  htOperation.SetRifsMode (c2);
+  htOperation.SetDualCtsProtection (c3);
   
   return is;
 }

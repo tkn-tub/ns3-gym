@@ -18,8 +18,8 @@
  * Author: Sébastien Deronne <sebastien.deronne@gmail.com>
  */
 
-#ifndef HT_OPERATIONS_H
-#define HT_OPERATIONS_H
+#ifndef HT_OPERATION_H
+#define HT_OPERATION_H
 
 #include "wifi-information-element.h"
 
@@ -40,49 +40,49 @@ enum HtProtectionType
 };
 
 /**
- * \brief The HT Operations Information Element
+ * \brief The HT Operation Information Element
  * \ingroup wifi
  *
  * This class knows how to serialise and deserialise 
- * the HT Operations Information Element
+ * the HT Operation Information Element
  *
- * \see attribute_HtOperations
+ * \see attribute_HtOperation
  */
-class HtOperations: public WifiInformationElement
+class HtOperation: public WifiInformationElement
 {
 public:
-  HtOperations ();
+  HtOperation ();
   void SetHtSupported (uint8_t htsupported);
   
   /**
-   * Set the Primary Channel field in the HT Operations information element.
+   * Set the Primary Channel field in the HT Operation information element.
    *
-   * \param ctrl the Primary Channel field in the HT Operations information element
+   * \param ctrl the Primary Channel field in the HT Operation information element
    */
   void SetPrimaryChannel (uint8_t ctrl);
   /**
-   * Set the Information Subset 1 field in the HT Operations information element.
+   * Set the Information Subset 1 field in the HT Operation information element.
    *
-   * \param ctrl the Information Subset 1 field in the HT Operations information element
+   * \param ctrl the Information Subset 1 field in the HT Operation information element
    */
   void SetInformationSubset1 (uint8_t ctrl);
   /**
-   * Set the Information Subset 2 field in the HT Operations information element.
+   * Set the Information Subset 2 field in the HT Operation information element.
    *
-   * \param ctrl the Information Subset 2 field in the HT Operations information element
+   * \param ctrl the Information Subset 2 field in the HT Operation information element
    */
   void SetInformationSubset2 (uint16_t ctrl);
   /**
-   * Set the Information Subset 3 field in the HT Operations information element.
+   * Set the Information Subset 3 field in the HT Operation information element.
    *
-   * \param ctrl the Information Subset 3 field in the HT Operations information element
+   * \param ctrl the Information Subset 3 field in the HT Operation information element
    */
   void SetInformationSubset3 (uint16_t ctrl);
   /**
-   * Set the Basic MCS Set field in the HT Operations information element.
+   * Set the Basic MCS Set field in the HT Operation information element.
    *
-   * \param ctrl1 the first 64 bytes of the Basic MCS Set field in the HT Operations information element
-   * \param ctrl2 the last 64 bytes of the Basic MCS Set field in the HT Operations information element
+   * \param ctrl1 the first 64 bytes of the Basic MCS Set field in the HT Operation information element
+   * \param ctrl2 the last 64 bytes of the Basic MCS Set field in the HT Operation information element
    */
   void SetBasicMcsSet (uint64_t ctrl1, uint64_t ctrl2);
 
@@ -109,39 +109,39 @@ public:
   void SetTxUnequalModulation (uint8_t txunequalmodulation);
   
   /*
-   * Return the Primary Channel field in the HT Operations information element.
+   * Return the Primary Channel field in the HT Operation information element.
    *
-   * \return the Primary Channel field in the HT Operations information element
+   * \return the Primary Channel field in the HT Operation information element
    */
   uint8_t GetPrimaryChannel (void) const;
   /*
-   * Return the Information Subset 1 field in the HT Operations information element.
+   * Return the Information Subset 1 field in the HT Operation information element.
    *
-   * \return the Information Subset 1 field in the HT Operations information element
+   * \return the Information Subset 1 field in the HT Operation information element
    */
   uint8_t GetInformationSubset1 (void) const;
   /*
-   * Return the Information Subset 2 field in the HT Operations information element.
+   * Return the Information Subset 2 field in the HT Operation information element.
    *
-   * \return the Information Subset 2 field in the HT Operations information element
+   * \return the Information Subset 2 field in the HT Operation information element
    */
   uint16_t GetInformationSubset2 (void) const;
   /*
-   * Return the Information Subset 3 field in the HT Operations information element.
+   * Return the Information Subset 3 field in the HT Operation information element.
    *
-   * \return the Information Subset 3 field in the HT Operations information element
+   * \return the Information Subset 3 field in the HT Operation information element
    */
   uint16_t GetInformationSubset3 (void) const;
   /*
-   * Return the first 64 bytes of the Basic MCS Set field in the HT Operations information element.
+   * Return the first 64 bytes of the Basic MCS Set field in the HT Operation information element.
    *
-   * \return the first 64 bytes of the Basic MCS Set field in the HT Operations information element
+   * \return the first 64 bytes of the Basic MCS Set field in the HT Operation information element
    */
   uint64_t GetBasicMcsSet1 (void) const;
   /*
-   * Return the last 64 bytes of the Basic MCS Set field in the HT Operations information element.
+   * Return the last 64 bytes of the Basic MCS Set field in the HT Operation information element.
    *
-   * \return the last 64 bytes of the Basic MCS Set field in the HT Operations information element
+   * \return the last 64 bytes of the Basic MCS Set field in the HT Operation information element
    */
   uint64_t GetBasicMcsSet2 (void) const;
   
@@ -184,9 +184,9 @@ public:
    */
   Buffer::Iterator Serialize (Buffer::Iterator start) const;
   /**
-   * Return the serialized size of this HT Operations IE.
+   * Return the serialized size of this HT Operation IE.
    *
-   * \return the serialized size of this HT Operations IE
+   * \return the serialized size of this HT Operation IE
    */
   uint16_t GetSerializedSize () const;
 
@@ -232,11 +232,11 @@ private:
   uint8_t m_htSupported;
 };
 
-std::ostream &operator << (std::ostream &os, const HtOperations &htoperations);
-std::istream &operator >> (std::istream &is, HtOperations &htoperations);
+std::ostream &operator << (std::ostream &os, const HtOperation &htOperation);
+std::istream &operator >> (std::istream &is, HtOperation &htOperation);
 
-ATTRIBUTE_HELPER_HEADER (HtOperations);
+ATTRIBUTE_HELPER_HEADER (HtOperation);
 
 } //namespace ns3
 
-#endif /* HT_OPERATIONS_H */
+#endif /* HT_OPERATION_H */

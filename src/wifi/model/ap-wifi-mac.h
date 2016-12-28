@@ -25,7 +25,7 @@
 
 #include "regular-wifi-mac.h"
 #include "capability-information.h"
-#include "ht-operations.h"
+#include "ht-operation.h"
 #include "supported-rates.h"
 #include "dsss-parameter-set.h"
 #include "erp-information.h"
@@ -219,11 +219,11 @@ private:
    */
   EdcaParameterSet GetEdcaParameterSet (void) const;
   /**
-   * Return the HT operations of the current AP.
+   * Return the HT operation of the current AP.
    *
-   * \return the HT operations that we support
+   * \return the HT operation that we support
    */
-  HtOperations GetHtOperations (void) const;
+  HtOperation GetHtOperation (void) const;
   /**
    * Return an instance of SupportedRates that contains all rates that we support
    * including HT rates.

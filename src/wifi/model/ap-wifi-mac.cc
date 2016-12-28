@@ -479,24 +479,24 @@ ApWifiMac::GetEdcaParameterSet (void) const
   return edcaParameters;
 }
 
-HtOperations
-ApWifiMac::GetHtOperations (void) const
+HtOperation
+ApWifiMac::GetHtOperation (void) const
 {
-  HtOperations operations;
-  operations.SetHtSupported (1);
+  HtOperation operation;
+  operation.SetHtSupported (1);
   if (m_htSupported)
     {
-      operations.SetNonGfHtStasPresent (IsNonGfHtStasPresent ());
+      operation.SetNonGfHtStasPresent (IsNonGfHtStasPresent ());
       if (m_nonHtStations.empty ())
         {
-          operations.SetHtProtection (NO_PROTECTION);
+          operation.SetHtProtection (NO_PROTECTION);
         }
       else
         {
-          operations.SetHtProtection (MIXED_MODE_PROTECTION);
+          operation.SetHtProtection (MIXED_MODE_PROTECTION);
         }
     }
-  return operations;
+  return operation;
 }
 
 void
@@ -533,7 +533,7 @@ ApWifiMac::SendProbeResp (Mac48Address to)
   if (m_htSupported || m_vhtSupported)
     {
       probe.SetHtCapabilities (GetHtCapabilities ());
-      probe.SetHtOperations (GetHtOperations ());
+      probe.SetHtOperation (GetHtOperation ());
       hdr.SetNoOrder ();
     }
   if (m_vhtSupported)
@@ -586,7 +586,7 @@ ApWifiMac::SendAssocResp (Mac48Address to, bool success)
   if (m_htSupported || m_vhtSupported)
     {
       assoc.SetHtCapabilities (GetHtCapabilities ());
-      assoc.SetHtOperations (GetHtOperations ());
+      assoc.SetHtOperation (GetHtOperation ());
       hdr.SetNoOrder ();
     }
   if (m_vhtSupported)
@@ -636,7 +636,7 @@ ApWifiMac::SendOneBeacon (void)
   if (m_htSupported || m_vhtSupported)
     {
       beacon.SetHtCapabilities (GetHtCapabilities ());
-      beacon.SetHtOperations (GetHtOperations ());
+      beacon.SetHtOperation (GetHtOperation ());
       hdr.SetNoOrder ();
     }
   if (m_vhtSupported)

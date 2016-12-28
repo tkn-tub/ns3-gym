@@ -29,7 +29,7 @@
 #include "ssid.h"
 #include "dsss-parameter-set.h"
 #include "ht-capabilities.h"
-#include "ht-operations.h"
+#include "ht-operation.h"
 #include "vht-capabilities.h"
 #include "erp-information.h"
 #include "edca-parameter-set.h"
@@ -182,11 +182,11 @@ public:
    */
   HtCapabilities GetHtCapabilities (void) const;
   /**
-   * Return the HT operations.
+   * Return the HT operation.
    *
-   * \return HT operations
+   * \return HT operation
    */
-  HtOperations GetHtOperations (void) const;
+  HtOperation GetHtOperation (void) const;
   /**
    * Return the ERP information.
    *
@@ -218,11 +218,11 @@ public:
    */
   void SetHtCapabilities (HtCapabilities htcapabilities);
   /**
-   * Set the HT operations.
+   * Set the HT operation.
    *
-   * \param htoperations HT operations
+   * \param htoperation HT operation
    */
-  void SetHtOperations (HtOperations htoperations);
+  void SetHtOperation (HtOperation htoperation);
   /**
    * Set the supported rates.
    *
@@ -266,7 +266,7 @@ private:
   StatusCode m_code; //!< Status code
   uint16_t m_aid;
   HtCapabilities m_htCapability; //!< HT capabilities
-  HtOperations m_htOperations; //!< HT operations
+  HtOperation m_htOperation; //!< HT operation
   VhtCapabilities m_vhtCapability; //!< VHT capabilities
   ErpInformation m_erpInformation; //!< ERP information
   EdcaParameterSet m_edcaParameterSet; //!< EDCA Parameter Set
@@ -398,11 +398,11 @@ public:
    */
   HtCapabilities GetHtCapabilities (void) const;
   /**
-   * Return the HT operations.
+   * Return the HT operation.
    *
-   * \return HT operations
+   * \return HT operation
    */
-  HtOperations GetHtOperations (void) const;
+  HtOperation GetHtOperation (void) const;
   /**
    * Return the VHT capabilities.
    *
@@ -434,11 +434,11 @@ public:
    */
   void SetHtCapabilities (HtCapabilities htcapabilities);
   /**
-   * Set the HT operations.
+   * Set the HT operation.
    *
-   * \param htoperations HT operations
+   * \param htoperation HT operation
    */
-  void SetHtOperations (HtOperations htoperations);
+  void SetHtOperation (HtOperation htoperation);
   /**
    * Set the VHT capabilities.
    *
@@ -508,7 +508,7 @@ private:
   CapabilityInformation m_capability;  //!< Capability information
   DsssParameterSet m_dsssParameterSet; //!< DSSS Parameter Set
   HtCapabilities m_htCapability;       //!< HT capabilities
-  HtOperations m_htOperations;         //!< HT operations
+  HtOperation m_htOperation;           //!< HT operation
   VhtCapabilities m_vhtCapability;     //!< VHT capabilities
   ErpInformation m_erpInformation;     //!< ERP information
   EdcaParameterSet m_edcaParameterSet; //!< EDCA Parameter Set
