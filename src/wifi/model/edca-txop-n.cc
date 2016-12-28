@@ -1520,7 +1520,8 @@ EdcaTxopN::VerifyBlockAck (void)
     {
       m_baManager->SwitchToBlockAckIfNeeded (recipient, tid, sequence);
     }
-  if ((m_baManager->ExistsAgreementInState (recipient, tid, OriginatorBlockAckAgreement::ESTABLISHED)) && (GetMpduAggregator () == 0))
+  if ((m_baManager->ExistsAgreementInState (recipient, tid, OriginatorBlockAckAgreement::ESTABLISHED))
+      && (GetMpduAggregator () == 0 || GetMpduAggregator ()->GetMaxAmpduSize () == 0))
     {
       m_currentHdr.SetQosAckPolicy (WifiMacHeader::BLOCK_ACK);
     }
