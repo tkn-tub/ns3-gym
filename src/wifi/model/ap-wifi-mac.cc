@@ -245,23 +245,17 @@ ApWifiMac::IsNonGfHtStasPresent (void) const
 uint32_t
 ApWifiMac::GetVhtOperationalChannelWidth (void) const
 {
-  uint32_t channelWidth = 160;
-  bool hasVht = false;
+  uint32_t channelWidth = m_phy->GetChannelWidth ();
   for (std::list<Mac48Address>::const_iterator i = m_staList.begin (); i != m_staList.end (); i++)
   {
     if (m_stationManager->GetVhtSupported (*i))
       {
-        hasVht = true;
         if (m_stationManager->GetChannelWidthSupported (*i) < channelWidth)
           {
             channelWidth = m_stationManager->GetChannelWidthSupported (*i);
           }
       }
   }
-  if (!hasVht)
-    {
-      channelWidth = m_phy->GetChannelWidth ();
-    }
   return channelWidth;
 }
 
