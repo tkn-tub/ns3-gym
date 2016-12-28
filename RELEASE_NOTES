@@ -28,6 +28,7 @@ Bugs fixed
 - Bug 2221 - network: Remove constraint on size of ns3::Packet Tag objects
 - Bug 2450 - LogDistancePropagationLossModel is not continuous
 - Bug 2463 - create trace source to trace the TXOP time that is actually used
+- Bug 2471 - unable to disable Block Ack agreement for 802.11n 
 - Bug 2477 - DCF manager assert
 - Bug 2485 - Check for queue full should happen before checking RED thresholds
 - Bug 2492 - uan: Make use of RxGain attribute in UanPhyGen class

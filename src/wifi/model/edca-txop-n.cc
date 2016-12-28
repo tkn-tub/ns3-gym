@@ -1582,10 +1582,10 @@ EdcaTxopN::SetupBlockAckIfNeeded ()
   NS_LOG_FUNCTION (this);
   uint8_t tid = m_currentHdr.GetQosTid ();
   Mac48Address recipient = m_currentHdr.GetAddr1 ();
-
   uint32_t packets = m_queue->GetNPacketsByTidAndAddress (tid, WifiMacHeader::ADDR1, recipient);
-
-  if ((m_blockAckThreshold > 0 && packets >= m_blockAckThreshold) || (packets > 1 && m_mpduAggregator != 0) || m_stationManager->HasVhtSupported ())
+  if ((m_blockAckThreshold > 0 && packets >= m_blockAckThreshold)
+      || (m_mpduAggregator != 0 && m_mpduAggregator->GetMaxAmpduSize() > 0 && packets > 1)
+      || m_stationManager->HasVhtSupported ())
     {
       /* Block ack setup */
       uint16_t startingSequence = m_txMiddle->GetNextSeqNumberByTidAndAddress (tid, recipient);

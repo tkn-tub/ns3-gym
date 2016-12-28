@@ -1004,25 +1004,29 @@ RegularWifiMac::GetTypeId (void)
                    MakeUintegerChecker<uint32_t> (0, 65535))
     .AddAttribute ("VO_BlockAckThreshold",
                    "If number of packets in VO queue reaches this value, "
-                   "block ack mechanism is used. If this value is 0, block ack is never used.",
+                   "block ack mechanism is used. If this value is 0, block ack is never used."
+                   "When A-MPDU is enabled, block ack mechanism is used regardless of this value.",
                    UintegerValue (0),
                    MakeUintegerAccessor (&RegularWifiMac::SetVoBlockAckThreshold),
                    MakeUintegerChecker<uint8_t> (0, 64))
     .AddAttribute ("VI_BlockAckThreshold",
                    "If number of packets in VI queue reaches this value, "
-                   "block ack mechanism is used. If this value is 0, block ack is never used.",
+                   "block ack mechanism is used. If this value is 0, block ack is never used."
+                   "When A-MPDU is enabled, block ack mechanism is used regardless of this value.",
                    UintegerValue (0),
                    MakeUintegerAccessor (&RegularWifiMac::SetViBlockAckThreshold),
                    MakeUintegerChecker<uint8_t> (0, 64))
     .AddAttribute ("BE_BlockAckThreshold",
                    "If number of packets in BE queue reaches this value, "
-                   "block ack mechanism is used. If this value is 0, block ack is never used.",
+                   "block ack mechanism is used. If this value is 0, block ack is never used."
+                   "When A-MPDU is enabled, block ack mechanism is used regardless of this value.",
                    UintegerValue (0),
                    MakeUintegerAccessor (&RegularWifiMac::SetBeBlockAckThreshold),
                    MakeUintegerChecker<uint8_t> (0, 64))
     .AddAttribute ("BK_BlockAckThreshold",
                    "If number of packets in BK queue reaches this value, "
-                   "block ack mechanism is used. If this value is 0, block ack is never used.",
+                   "block ack mechanism is used. If this value is 0, block ack is never used."
+                   "When A-MPDU is enabled, block ack mechanism is used regardless of this value.",
                    UintegerValue (0),
                    MakeUintegerAccessor (&RegularWifiMac::SetBkBlockAckThreshold),
                    MakeUintegerChecker<uint8_t> (0, 64))
