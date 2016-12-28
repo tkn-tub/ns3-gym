@@ -1911,6 +1911,18 @@ WifiRemoteStationManager::GetNNonErpSupported (const WifiRemoteStation *station)
   return size;
 }
 
+uint32_t
+WifiRemoteStationManager::GetChannelWidthSupported (Mac48Address address) const
+{
+  return LookupState (address)->m_channelWidth;
+}
+
+bool
+WifiRemoteStationManager::GetVhtSupported (Mac48Address address) const
+{
+  return LookupState (address)->m_vhtSupported;
+}
+
 void
 WifiRemoteStationManager::SetDefaultTxPowerLevel (uint8_t txPower)
 {

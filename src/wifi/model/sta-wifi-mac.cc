@@ -719,6 +719,7 @@ StaWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
               if (m_vhtSupported)
                 {
                   VhtCapabilities vhtcapabilities = assocResp.GetVhtCapabilities ();
+                  VhtOperation vhtOperation = assocResp.GetVhtOperation ();
                   m_stationManager->AddStationVhtCapabilities (hdr->GetAddr2 (), vhtcapabilities);
                 }
 

@@ -118,7 +118,7 @@ MgtProbeRequestHeader::Print (std::ostream &os) const
   os << "ssid=" << m_ssid << ", "
      << "rates=" << m_rates << ", "
      << "HT Capabilities=" << m_htCapability << " , "
-     << "VHT Capabilities= " << m_vhtCapability;
+     << "VHT Capabilities=" << m_vhtCapability;
 }
 
 void
@@ -232,6 +232,18 @@ MgtProbeResponseHeader::GetVhtCapabilities (void) const
 }
 
 void
+MgtProbeResponseHeader::SetVhtOperation (VhtOperation vhtoperation)
+{
+  m_vhtOperation = vhtoperation;
+}
+
+VhtOperation
+MgtProbeResponseHeader::GetVhtOperation (void) const
+{
+  return m_vhtOperation;
+}
+
+void
 MgtProbeResponseHeader::SetSsid (Ssid ssid)
 {
   m_ssid = ssid;
@@ -318,6 +330,7 @@ MgtProbeResponseHeader::GetSerializedSize (void) const
   size += m_htCapability.GetSerializedSize ();
   size += m_htOperation.GetSerializedSize ();
   size += m_vhtCapability.GetSerializedSize ();
+  size += m_vhtOperation.GetSerializedSize ();
   return size;
 }
 
@@ -330,7 +343,8 @@ MgtProbeResponseHeader::Print (std::ostream &os) const
      << "ERP information=" << m_erpInformation << ", "
      << "HT Capabilities=" << m_htCapability << " , "
      << "HT Operation=" << m_htOperation << " , "
-     << "VHT Capabilities= " << m_vhtCapability;
+     << "VHT Capabilities=" << m_vhtCapability << " , "
+     << "VHT Operation=" << m_vhtOperation;
 }
 
 void
@@ -358,6 +372,7 @@ MgtProbeResponseHeader::Serialize (Buffer::Iterator start) const
   i = m_htCapability.Serialize (i);
   i = m_htOperation.Serialize (i);
   i = m_vhtCapability.Serialize (i);
+  i = m_vhtOperation.Serialize (i);
 }
 
 uint32_t
@@ -377,6 +392,7 @@ MgtProbeResponseHeader::Deserialize (Buffer::Iterator start)
   i = m_htCapability.DeserializeIfPresent (i);
   i = m_htOperation.DeserializeIfPresent (i);
   i = m_vhtCapability.DeserializeIfPresent (i);
+  i = m_vhtOperation.DeserializeIfPresent (i);
   return i.GetDistanceFrom (start);
 }
 
@@ -524,7 +540,7 @@ MgtAssocRequestHeader::Print (std::ostream &os) const
   os << "ssid=" << m_ssid << ", "
      << "rates=" << m_rates << ", "
      << "HT Capabilities=" << m_htCapability << " , "
-     << "VHT Capabilities= " << m_vhtCapability;
+     << "VHT Capabilities=" << m_vhtCapability;
 }
 
 void
@@ -643,6 +659,18 @@ MgtAssocResponseHeader::GetVhtCapabilities (void) const
 }
 
 void
+MgtAssocResponseHeader::SetVhtOperation (VhtOperation vhtoperation)
+{
+  m_vhtOperation = vhtoperation;
+}
+
+VhtOperation
+MgtAssocResponseHeader::GetVhtOperation (void) const
+{
+  return m_vhtOperation;
+}
+
+void
 MgtAssocResponseHeader::SetErpInformation (ErpInformation erpInformation)
 {
   m_erpInformation = erpInformation;
@@ -697,6 +725,7 @@ MgtAssocResponseHeader::GetSerializedSize (void) const
   size += m_htCapability.GetSerializedSize ();
   size += m_htOperation.GetSerializedSize ();
   size += m_vhtCapability.GetSerializedSize ();
+  size += m_vhtOperation.GetSerializedSize ();
   return size;
 }
 
@@ -708,7 +737,8 @@ MgtAssocResponseHeader::Print (std::ostream &os) const
      << "ERP information=" << m_erpInformation << ", "
      << "HT Capabilities=" << m_htCapability << " , "
      << "HT Operation=" << m_htOperation << " , "
-     << "VHT Capabilities= " << m_vhtCapability;
+     << "VHT Capabilities=" << m_vhtCapability << " , "
+     << "VHT Operation=" << m_vhtOperation;
 }
 
 void
@@ -725,6 +755,7 @@ MgtAssocResponseHeader::Serialize (Buffer::Iterator start) const
   i = m_htCapability.Serialize (i);
   i = m_htOperation.Serialize (i);
   i = m_vhtCapability.Serialize (i);
+  i = m_vhtOperation.Serialize (i);
 }
 
 uint32_t
@@ -741,6 +772,7 @@ MgtAssocResponseHeader::Deserialize (Buffer::Iterator start)
   i = m_htCapability.DeserializeIfPresent (i);
   i = m_htOperation.DeserializeIfPresent (i);
   i = m_vhtCapability.DeserializeIfPresent (i);
+  i = m_vhtOperation.DeserializeIfPresent (i);
   return i.GetDistanceFrom (start);
 }
 

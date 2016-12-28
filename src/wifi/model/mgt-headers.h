@@ -31,6 +31,7 @@
 #include "ht-capabilities.h"
 #include "ht-operation.h"
 #include "vht-capabilities.h"
+#include "vht-operation.h"
 #include "erp-information.h"
 #include "edca-parameter-set.h"
 
@@ -188,6 +189,18 @@ public:
    */
   HtOperation GetHtOperation (void) const;
   /**
+   * Return the VHT capabilities.
+   *
+   * \return VHT capabilities
+   */
+  VhtCapabilities GetVhtCapabilities (void) const;
+  /**
+   * Return the VHT operation.
+   *
+   * \return VHT operation
+   */
+  VhtOperation GetVhtOperation (void) const;
+  /**
    * Return the ERP information.
    *
    * \return the ERP information
@@ -200,17 +213,17 @@ public:
    */
   EdcaParameterSet GetEdcaParameterSet (void) const;
   /**
+   * Set the VHT operation.
+   *
+   * \param vhtoperation VHT operation
+   */
+  void SetVhtOperation (VhtOperation vhtoperation);
+  /**
    * Set the VHT capabilities.
    *
    * \param vhtcapabilities VHT capabilities
    */
   void SetVhtCapabilities (VhtCapabilities vhtcapabilities);
-  /**
-   * Return the VHT capabilities.
-   *
-   * \return VHT capabilities
-   */
-  VhtCapabilities GetVhtCapabilities (void) const;
   /**
    * Set the HT capabilities.
    *
@@ -268,6 +281,7 @@ private:
   HtCapabilities m_htCapability; //!< HT capabilities
   HtOperation m_htOperation; //!< HT operation
   VhtCapabilities m_vhtCapability; //!< VHT capabilities
+  VhtOperation m_vhtOperation; //!< VHT operation
   ErpInformation m_erpInformation; //!< ERP information
   EdcaParameterSet m_edcaParameterSet; //!< EDCA Parameter Set
 };
@@ -410,6 +424,12 @@ public:
    */
   VhtCapabilities GetVhtCapabilities (void) const;
   /**
+   * Return the VHT operation.
+   *
+   * \return VHT operation
+   */
+  VhtOperation GetVhtOperation (void) const;
+  /**
    * Return the ERP information.
    *
    * \return the ERP information
@@ -445,6 +465,12 @@ public:
    * \param vhtcapabilities VHT capabilities
    */
   void SetVhtCapabilities (VhtCapabilities vhtcapabilities);
+  /**
+   * Set the VHT operation.
+   *
+   * \param vhtoperation VHT operation
+   */
+  void SetVhtOperation (VhtOperation vhtoperation);
   /**
    * Set the Service Set Identifier (SSID).
    *
@@ -510,6 +536,7 @@ private:
   HtCapabilities m_htCapability;       //!< HT capabilities
   HtOperation m_htOperation;           //!< HT operation
   VhtCapabilities m_vhtCapability;     //!< VHT capabilities
+  VhtOperation m_vhtOperation;         //!< VHT operation
   ErpInformation m_erpInformation;     //!< ERP information
   EdcaParameterSet m_edcaParameterSet; //!< EDCA Parameter Set
 };

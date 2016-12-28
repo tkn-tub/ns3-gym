@@ -117,7 +117,10 @@ public:
    * Determine whether non-Greenfield HT stations are present or not.
    */
   bool IsNonGfHtStasPresent (void) const;
-
+  /**
+   * Determine the VHT operational channel width.
+   */
+  uint32_t GetVhtOperationalChannelWidth (void) const;
 
   /**
    * Assign a fixed random variable stream number to the random variables
@@ -224,6 +227,12 @@ private:
    * \return the HT operation that we support
    */
   HtOperation GetHtOperation (void) const;
+  /**
+   * Return the VHT operation of the current AP.
+   *
+   * \return the VHT operation that we support
+   */
+  VhtOperation GetVhtOperation (void) const;
   /**
    * Return an instance of SupportedRates that contains all rates that we support
    * including HT rates.

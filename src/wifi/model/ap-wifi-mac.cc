@@ -242,6 +242,29 @@ ApWifiMac::IsNonGfHtStasPresent (void) const
   return false;
 }
 
+uint32_t
+ApWifiMac::GetVhtOperationalChannelWidth (void) const
+{
+  uint32_t channelWidth = 160;
+  bool hasVht = false;
+  for (std::list<Mac48Address>::const_iterator i = m_staList.begin (); i != m_staList.end (); i++)
+  {
+    if (m_stationManager->GetVhtSupported (*i))
+      {
+        hasVht = true;
+        if (m_stationManager->GetChannelWidthSupported (*i) < channelWidth)
+          {
+            channelWidth = m_stationManager->GetChannelWidthSupported (*i);
+          }
+      }
+  }
+  if (!hasVht)
+    {
+      channelWidth = m_phy->GetChannelWidth ();
+    }
+  return channelWidth;
+}
+
 void
 ApWifiMac::ForwardDown (Ptr<const Packet> packet, Mac48Address from,
                         Mac48Address to)
@@ -499,6 +522,44 @@ ApWifiMac::GetHtOperation (void) const
   return operation;
 }
 
+VhtOperation
+ApWifiMac::GetVhtOperation (void) const
+{
+  VhtOperation operation;
+  operation.SetVhtSupported (1);
+  if (m_vhtSupported)
+    {
+      uint32_t channelWidth = GetVhtOperationalChannelWidth ();
+      if (channelWidth == 160)
+        {
+          operation.SetChannelWidth (2);
+        }
+      else if (channelWidth == 80)
+        {
+          operation.SetChannelWidth (1);
+        }
+      else
+        {
+          operation.SetChannelWidth (0);
+        }
+      for (uint8_t nss = 1; nss <= 8; nss++)
+        {
+          uint8_t maxMcs;
+          if (nss <= m_phy->GetMaxSupportedRxSpatialStreams ())
+            {
+              maxMcs = 9; //TBD: hardcode to 9 for now since we assume all MCS values are supported
+            }
+          else
+            {
+              maxMcs = 0;
+            }
+          operation.SetMaxVhtMcsPerNss (nss, maxMcs);
+        }
+    
+    }
+  return operation;
+}
+
 void
 ApWifiMac::SendProbeResp (Mac48Address to)
 {
@@ -539,6 +600,7 @@ ApWifiMac::SendProbeResp (Mac48Address to)
   if (m_vhtSupported)
     {
       probe.SetVhtCapabilities (GetVhtCapabilities ());
+      probe.SetVhtOperation (GetVhtOperation ());
     }
   packet->AddHeader (probe);
 
@@ -592,6 +654,7 @@ ApWifiMac::SendAssocResp (Mac48Address to, bool success)
   if (m_vhtSupported)
     {
       assoc.SetVhtCapabilities (GetVhtCapabilities ());
+      assoc.SetVhtOperation (GetVhtOperation ());
     }
   packet->AddHeader (assoc);
 
@@ -642,6 +705,7 @@ ApWifiMac::SendOneBeacon (void)
   if (m_vhtSupported)
     {
       beacon.SetVhtCapabilities (GetVhtCapabilities ());
+      beacon.SetVhtOperation (GetVhtOperation ());
     }
   packet->AddHeader (beacon);
 

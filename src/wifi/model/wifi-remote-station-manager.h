@@ -362,6 +362,23 @@ public:
    * \param mcs the WifiMode supported by the station
    */
   void AddSupportedMcs (Mac48Address address, WifiMode mcs);
+  /**
+   * Return the channel width supported by the station.
+   *
+   * \param address the address of the station
+   *
+   * \return he channel width supported by the station
+   */
+  uint32_t GetChannelWidthSupported (Mac48Address address) const;
+  /**
+   * Return whether the station supports VHT or not.
+   *
+   * \param address the address of the station
+   *
+   * \return true if VHT is supported by the station,
+   *         false otherwise
+   */
+  bool GetVhtSupported (Mac48Address address) const;
 
   /**
    * Return a mode for non-unicast packets.
