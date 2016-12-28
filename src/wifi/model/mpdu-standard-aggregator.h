@@ -37,7 +37,19 @@ public:
   MpduStandardAggregator ();
   ~MpduStandardAggregator ();
 
+  /**
+   * Sets the maximum A-MPDU size in bytes.
+   * Value 0 means that MPDU aggregation is disabled.
+   *
+   * \param maxSize the maximum A-MPDU size in bytes.
+   */
   virtual void SetMaxAmpduSize (uint32_t maxSize);
+  /**
+   * Returns the maximum A-MPDU size in bytes.
+   * Value 0 means that MPDU aggregation is disabled.
+   *
+   * \return the maximum A-MPDU size in bytes.
+   */
   virtual uint32_t GetMaxAmpduSize (void) const;
   /**
    * \param packet packet we have to insert into <i>aggregatedPacket</i>.

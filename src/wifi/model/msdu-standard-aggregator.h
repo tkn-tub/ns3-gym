@@ -37,7 +37,19 @@ public:
   MsduStandardAggregator ();
   ~MsduStandardAggregator ();
 
+  /**
+   * Sets the maximum A-MSDU size in bytes.
+   * Value 0 means that MSDU aggregation is disabled.
+   *
+   * \param maxSize the maximum A-MSDU size in bytes.
+   */
   virtual void SetMaxAmsduSize (uint32_t maxSize);
+  /**
+   * Returns the maximum A-MSDU size in bytes.
+   * Value 0 means that MSDU aggregation is disabled.
+   *
+   * \return the maximum A-MSDU size in bytes.
+   */
   virtual uint32_t GetMaxAmsduSize (void) const;
   /**
    * \param packet Packet we have to insert into <i>aggregatedPacket</i>.

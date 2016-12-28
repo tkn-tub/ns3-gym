@@ -47,7 +47,19 @@ public:
 
   static TypeId GetTypeId (void);
 
+  /**
+   * Sets the maximum A-MPDU size in bytes.
+   * Value 0 means that MPDU aggregation is disabled.
+   *
+   * \param maxSize the maximum A-MPDU size in bytes.
+   */
   virtual void SetMaxAmpduSize (uint32_t maxSize) = 0;
+  /**
+   * Returns the maximum A-MPDU size in bytes.
+   * Value 0 means that MPDU aggregation is disabled.
+   *
+   * \return the maximum A-MPDU size in bytes.
+   */
   virtual uint32_t GetMaxAmpduSize (void) const = 0;
   /**
    * \param packet Packet we have to insert into <i>aggregatedPacket</i>.

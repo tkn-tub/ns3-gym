@@ -41,7 +41,19 @@ public:
 
   static TypeId GetTypeId (void);
 
+  /**
+   * Sets the maximum A-MSDU size in bytes.
+   * Value 0 means that MSDU aggregation is disabled.
+   *
+   * \param maxSize the maximum A-MSDU size in bytes.
+   */
   virtual void SetMaxAmsduSize (uint32_t maxSize) = 0;
+  /**
+   * Returns the maximum A-MSDU size in bytes.
+   * Value 0 means that MSDU aggregation is disabled.
+   *
+   * \return the maximum A-MSDU size in bytes.
+   */
   virtual uint32_t GetMaxAmsduSize (void) const = 0;
 
   /* Adds <i>packet</i> to <i>aggregatedPacket</i>. In concrete aggregator's implementation is
