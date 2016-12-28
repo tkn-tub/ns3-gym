@@ -982,8 +982,7 @@ RegularWifiMac::GetTypeId (void)
                    "Maximum length in bytes of an A-MPDU for AC_VO access class."
                    "Value 0 means A-MPDU is disabled for that AC.",
                    UintegerValue (0),
-                   MakeUintegerAccessor (&RegularWifiMac::SetVoMaxAmpduSize)
-                   "Value 0 means A-MPDU is disabled for that AC.",
+                   MakeUintegerAccessor (&RegularWifiMac::SetVoMaxAmpduSize),
                    MakeUintegerChecker<uint32_t> (0, 65535))
     .AddAttribute ("VI_MaxAmpduSize",
                    "Maximum length in bytes of an A-MPDU for AC_VI access class."
