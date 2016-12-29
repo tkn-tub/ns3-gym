@@ -21,40 +21,57 @@
 #ifndef WIFI_UTILS_H
 #define WIFI_UTILS_H
 
+#include <cmath>
+
 namespace ns3 {
 
-  /**
-   * Convert from dBm to Watts.
-   *
-   * \param dbm the power in dBm
-   *
-   * \return the equivalent Watts for the given dBm
-   */
-  double DbmToW (double dbm);
-  /**
-   * Convert from dB to ratio.
-   *
-   * \param db
-   *
-   * \return ratio
-   */
-  double DbToRatio (double db);
-  /**
-   * Convert from Watts to dBm.
-   *
-   * \param w the power in Watts
-   *
-   * \return the equivalent dBm for the given Watts
-   */
-  double WToDbm (double w);
-  /**
-   * Convert from ratio to dB.
-   *
-   * \param ratio
-   *
-   * \return dB
-   */
-  double RatioToDb (double ratio);
+/**
+ * Convert from dBm to Watts.
+ *
+ * \param dbm the power in dBm
+ *
+ * \return the equivalent Watts for the given dBm
+ */
+constexpr double DbmToW (double dbm)
+{
+  return std::pow (10.0, dbm / 10.0) / 1000.0;
+}
+
+/**
+ * Convert from dB to ratio.
+ *
+ * \param db
+ *
+ * \return ratio
+ */
+constexpr double DbToRatio (double db)
+{
+  return std::pow (10.0, db / 10.0);
+}
+
+/**
+ * Convert from Watts to dBm.
+ *
+ * \param w the power in Watts
+ *
+ * \return the equivalent dBm for the given Watts
+ */
+constexpr double WToDbm (double w)
+{
+  return 10.0 * std::log10 (w * 1000.0);
+}
+
+/**
+ * Convert from ratio to dB.
+ *
+ * \param ratio
+ *
+ * \return dB
+ */
+constexpr double RatioToDb (double ratio)
+{
+  return 10.0 * std::log10 (ratio);
+}
 
 } // namespace ns3
 
