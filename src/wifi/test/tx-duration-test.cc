@@ -119,7 +119,7 @@ TxDurationTest::CheckPayloadDuration (uint32_t size, WifiMode payloadMode, uint3
           std::cerr << " size=" << size
                     << " mode=" << payloadMode
                     << " datarate=" << payloadMode.GetDataRate (channelWidth, isShortGuardInterval, 1)
-                    << " known=" << knownDurationMicroSeconds
+                    << " known=" << knownDurationMicroSeconds + 6
                     << " calculated=" << calculatedDurationMicroSeconds
                     << std::endl;
           return false;
@@ -170,7 +170,7 @@ TxDurationTest::CheckTxDuration (uint32_t size, WifiMode payloadMode, uint32_t c
                     << " mode=" << payloadMode
                     << " datarate=" << payloadMode.GetDataRate (channelWidth, isShortGuardInterval, 1)
                     << " preamble=" << preamble
-                    << " known=" << knownDurationMicroSeconds
+                    << " known=" << knownDurationMicroSeconds + 6
                     << " calculated=" << calculatedDurationMicroSeconds
                     << std::endl;
           return false;
