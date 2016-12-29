@@ -139,7 +139,7 @@ PowerRateAdaptationTest::TestParf ()
   WifiMode mode = txVector.GetMode ();
   int power = (int) txVector.GetTxPowerLevel ();
 
-  NS_TEST_ASSERT_MSG_EQ (mode.GetDataRate (txVector.GetChannelWidth (), txVector.IsShortGuardInterval (), 1), 54000000, "PARF: Initial data rate wrong");
+  NS_TEST_ASSERT_MSG_EQ (mode.GetDataRate (txVector.GetChannelWidth ()), 54000000, "PARF: Initial data rate wrong");
   NS_TEST_ASSERT_MSG_EQ (power, 17, "PARF: Initial power level wrong");
 
   //-----------------------------------------------------------------------------------------------------
@@ -157,7 +157,7 @@ PowerRateAdaptationTest::TestParf ()
   mode = txVector.GetMode ();
   power = (int) txVector.GetTxPowerLevel ();
 
-  NS_TEST_ASSERT_MSG_EQ (mode.GetDataRate (txVector.GetChannelWidth (), txVector.IsShortGuardInterval (), 1), 54000000, "PARF: Incorrect vale of data rate");
+  NS_TEST_ASSERT_MSG_EQ (mode.GetDataRate (txVector.GetChannelWidth ()), 54000000, "PARF: Incorrect vale of data rate");
   NS_TEST_ASSERT_MSG_EQ (power, 16, "PARF: Incorrect value of power level");
 
   //-----------------------------------------------------------------------------------------------------
@@ -172,7 +172,7 @@ PowerRateAdaptationTest::TestParf ()
   mode = txVector.GetMode ();
   power = (int) txVector.GetTxPowerLevel ();
 
-  NS_TEST_ASSERT_MSG_EQ (mode.GetDataRate (txVector.GetChannelWidth (), txVector.IsShortGuardInterval (), 1), 54000000, "PARF: Incorrect vale of data rate");
+  NS_TEST_ASSERT_MSG_EQ (mode.GetDataRate (txVector.GetChannelWidth ()), 54000000, "PARF: Incorrect vale of data rate");
   NS_TEST_ASSERT_MSG_EQ (power, 17, "PARF: Incorrect value of power level");
 
   //-----------------------------------------------------------------------------------------------------
@@ -192,7 +192,7 @@ PowerRateAdaptationTest::TestParf ()
   mode = txVector.GetMode ();
   power = (int) txVector.GetTxPowerLevel ();
 
-  NS_TEST_ASSERT_MSG_EQ (mode.GetDataRate (txVector.GetChannelWidth (), txVector.IsShortGuardInterval (), 1), 54000000, "PARF: Incorrect vale of data rate");
+  NS_TEST_ASSERT_MSG_EQ (mode.GetDataRate (txVector.GetChannelWidth ()), 54000000, "PARF: Incorrect vale of data rate");
   NS_TEST_ASSERT_MSG_EQ (power, 16, "PARF: Incorrect value of power level");
 
   //-----------------------------------------------------------------------------------------------------
@@ -207,7 +207,7 @@ PowerRateAdaptationTest::TestParf ()
   mode = txVector.GetMode ();
   power = (int) txVector.GetTxPowerLevel ();
 
-  NS_TEST_ASSERT_MSG_EQ (mode.GetDataRate (txVector.GetChannelWidth (), txVector.IsShortGuardInterval (), 1), 54000000, "PARF: Incorrect vale of data rate");
+  NS_TEST_ASSERT_MSG_EQ (mode.GetDataRate (txVector.GetChannelWidth ()), 54000000, "PARF: Incorrect vale of data rate");
   NS_TEST_ASSERT_MSG_EQ (power, 17, "PARF: Incorrect value of power level");
 
   //-----------------------------------------------------------------------------------------------------
@@ -223,7 +223,7 @@ PowerRateAdaptationTest::TestParf ()
   mode = txVector.GetMode ();
   power = (int) txVector.GetTxPowerLevel ();
 
-  NS_TEST_ASSERT_MSG_EQ (mode.GetDataRate (txVector.GetChannelWidth (), txVector.IsShortGuardInterval (), 1), 48000000, "PARF: Incorrect vale of data rate");
+  NS_TEST_ASSERT_MSG_EQ (mode.GetDataRate (txVector.GetChannelWidth ()), 48000000, "PARF: Incorrect vale of data rate");
   NS_TEST_ASSERT_MSG_EQ (power, 17, "PARF: Incorrect value of power level");
 
   //-----------------------------------------------------------------------------------------------------
@@ -241,7 +241,7 @@ PowerRateAdaptationTest::TestParf ()
   mode = txVector.GetMode ();
   power = (int) txVector.GetTxPowerLevel ();
 
-  NS_TEST_ASSERT_MSG_EQ (mode.GetDataRate (txVector.GetChannelWidth (), txVector.IsShortGuardInterval (), 1), 54000000, "PARF: Incorrect vale of data rate");
+  NS_TEST_ASSERT_MSG_EQ (mode.GetDataRate (txVector.GetChannelWidth ()), 54000000, "PARF: Incorrect vale of data rate");
   NS_TEST_ASSERT_MSG_EQ (power, 17, "PARF: Incorrect value of power level");
 
   //-----------------------------------------------------------------------------------------------------
@@ -256,7 +256,7 @@ PowerRateAdaptationTest::TestParf ()
   mode = txVector.GetMode ();
   power = (int) txVector.GetTxPowerLevel ();
 
-  NS_TEST_ASSERT_MSG_EQ (mode.GetDataRate (txVector.GetChannelWidth (), txVector.IsShortGuardInterval (), 1), 48000000, "PARF: Incorrect vale of data rate");
+  NS_TEST_ASSERT_MSG_EQ (mode.GetDataRate (txVector.GetChannelWidth ()), 48000000, "PARF: Incorrect vale of data rate");
   NS_TEST_ASSERT_MSG_EQ (power, 17, "PARF: Incorrect value of power level");
 
   //-----------------------------------------------------------------------------------------------------
@@ -274,7 +274,7 @@ PowerRateAdaptationTest::TestParf ()
   mode = txVector.GetMode ();
   power = (int) txVector.GetTxPowerLevel ();
 
-  NS_TEST_ASSERT_MSG_EQ (mode.GetDataRate (txVector.GetChannelWidth (), txVector.IsShortGuardInterval (), 1), 54000000, "PARF: Incorrect vale of data rate");
+  NS_TEST_ASSERT_MSG_EQ (mode.GetDataRate (txVector.GetChannelWidth ()), 54000000, "PARF: Incorrect vale of data rate");
   NS_TEST_ASSERT_MSG_EQ (power, 17, "PARF: Incorrect value of power level");
 
   //-----------------------------------------------------------------------------------------------------
@@ -292,7 +292,7 @@ PowerRateAdaptationTest::TestParf ()
   mode = txVector.GetMode ();
   power = (int) txVector.GetTxPowerLevel ();
 
-  NS_TEST_ASSERT_MSG_EQ (mode.GetDataRate (txVector.GetChannelWidth (), txVector.IsShortGuardInterval (), 1), 54000000, "PARF: Incorrect vale of data rate");
+  NS_TEST_ASSERT_MSG_EQ (mode.GetDataRate (txVector.GetChannelWidth ()), 54000000, "PARF: Incorrect vale of data rate");
   NS_TEST_ASSERT_MSG_EQ (power, 16, "PARF: Incorrect value of power level");
 
   //-----------------------------------------------------------------------------------------------------
@@ -312,7 +312,7 @@ PowerRateAdaptationTest::TestParf ()
   mode = txVector.GetMode ();
   power = (int) txVector.GetTxPowerLevel ();
 
-  NS_TEST_ASSERT_MSG_EQ (mode.GetDataRate (txVector.GetChannelWidth (), txVector.IsShortGuardInterval (), 1), 54000000, "PARF: Incorrect vale of data rate");
+  NS_TEST_ASSERT_MSG_EQ (mode.GetDataRate (txVector.GetChannelWidth ()), 54000000, "PARF: Incorrect vale of data rate");
   NS_TEST_ASSERT_MSG_EQ (power, 17, "PARF: Incorrect value of power level");
 
   Simulator::Destroy ();
@@ -359,7 +359,7 @@ PowerRateAdaptationTest::TestAparf ()
   WifiMode mode = txVector.GetMode ();
   int power = (int) txVector.GetTxPowerLevel ();
 
-  NS_TEST_ASSERT_MSG_EQ (mode.GetDataRate (txVector.GetChannelWidth (), txVector.IsShortGuardInterval (), 1), 54000000, "APARF: Initial data rate wrong");
+  NS_TEST_ASSERT_MSG_EQ (mode.GetDataRate (txVector.GetChannelWidth ()), 54000000, "APARF: Initial data rate wrong");
   NS_TEST_ASSERT_MSG_EQ (power, 17, "APARF: Initial power level wrong");
 
   //-----------------------------------------------------------------------------------------------------
@@ -378,7 +378,7 @@ PowerRateAdaptationTest::TestAparf ()
   mode = txVector.GetMode ();
   power = (int) txVector.GetTxPowerLevel ();
 
-  NS_TEST_ASSERT_MSG_EQ (mode.GetDataRate (txVector.GetChannelWidth (), txVector.IsShortGuardInterval (), 1), 54000000, "APARF: Incorrect vale of data rate");
+  NS_TEST_ASSERT_MSG_EQ (mode.GetDataRate (txVector.GetChannelWidth ()), 54000000, "APARF: Incorrect vale of data rate");
   NS_TEST_ASSERT_MSG_EQ (power, 16, "APARF: Incorrect value of power level");
 
   //-----------------------------------------------------------------------------------------------------
@@ -393,7 +393,7 @@ PowerRateAdaptationTest::TestAparf ()
   mode = txVector.GetMode ();
   power = (int) txVector.GetTxPowerLevel ();
 
-  NS_TEST_ASSERT_MSG_EQ (mode.GetDataRate (txVector.GetChannelWidth (), txVector.IsShortGuardInterval (), 1), 54000000, "APARF: Incorrect vale of data rate");
+  NS_TEST_ASSERT_MSG_EQ (mode.GetDataRate (txVector.GetChannelWidth ()), 54000000, "APARF: Incorrect vale of data rate");
   NS_TEST_ASSERT_MSG_EQ (power, 17, "APARF: Incorrect value of power level");
 
   //-----------------------------------------------------------------------------------------------------
@@ -412,7 +412,7 @@ PowerRateAdaptationTest::TestAparf ()
   mode = txVector.GetMode ();
   power = (int) txVector.GetTxPowerLevel ();
 
-  NS_TEST_ASSERT_MSG_EQ (mode.GetDataRate (txVector.GetChannelWidth (), txVector.IsShortGuardInterval (), 1), 54000000, "APARF: Incorrect vale of data rate");
+  NS_TEST_ASSERT_MSG_EQ (mode.GetDataRate (txVector.GetChannelWidth ()), 54000000, "APARF: Incorrect vale of data rate");
   NS_TEST_ASSERT_MSG_EQ (power, 16, "APARF: Incorrect value of power level");
 
   //-----------------------------------------------------------------------------------------------------
@@ -431,7 +431,7 @@ PowerRateAdaptationTest::TestAparf ()
   mode = txVector.GetMode ();
   power = (int) txVector.GetTxPowerLevel ();
 
-  NS_TEST_ASSERT_MSG_EQ (mode.GetDataRate (txVector.GetChannelWidth (), txVector.IsShortGuardInterval (), 1), 54000000, "APARF: Incorrect vale of data rate");
+  NS_TEST_ASSERT_MSG_EQ (mode.GetDataRate (txVector.GetChannelWidth ()), 54000000, "APARF: Incorrect vale of data rate");
   NS_TEST_ASSERT_MSG_EQ (power, 15, "APARF: Incorrect value of power level");
 
   //-----------------------------------------------------------------------------------------------------
@@ -449,7 +449,7 @@ PowerRateAdaptationTest::TestAparf ()
   mode = txVector.GetMode ();
   power = (int) txVector.GetTxPowerLevel ();
 
-  NS_TEST_ASSERT_MSG_EQ (mode.GetDataRate (txVector.GetChannelWidth (), txVector.IsShortGuardInterval (), 1), 54000000, "APARF: Incorrect vale of data rate");
+  NS_TEST_ASSERT_MSG_EQ (mode.GetDataRate (txVector.GetChannelWidth ()), 54000000, "APARF: Incorrect vale of data rate");
   NS_TEST_ASSERT_MSG_EQ (power, 0, "APARF: Incorrect value of power level");
 
   //-----------------------------------------------------------------------------------------------------
@@ -464,7 +464,7 @@ PowerRateAdaptationTest::TestAparf ()
   mode = txVector.GetMode ();
   power = (int) txVector.GetTxPowerLevel ();
 
-  NS_TEST_ASSERT_MSG_EQ (mode.GetDataRate (txVector.GetChannelWidth (), txVector.IsShortGuardInterval (), 1), 54000000, "Incorrect vale of data rate");
+  NS_TEST_ASSERT_MSG_EQ (mode.GetDataRate (txVector.GetChannelWidth ()), 54000000, "Incorrect vale of data rate");
   NS_TEST_ASSERT_MSG_EQ (power, 1, "Incorrect value of power level");
 
   //-----------------------------------------------------------------------------------------------------
@@ -482,7 +482,7 @@ PowerRateAdaptationTest::TestAparf ()
   mode = txVector.GetMode ();
   power = (int) txVector.GetTxPowerLevel ();
 
-  NS_TEST_ASSERT_MSG_EQ (mode.GetDataRate (txVector.GetChannelWidth (), txVector.IsShortGuardInterval (), 1), 54000000, "APARF: Incorrect vale of data rate");
+  NS_TEST_ASSERT_MSG_EQ (mode.GetDataRate (txVector.GetChannelWidth ()), 54000000, "APARF: Incorrect vale of data rate");
   NS_TEST_ASSERT_MSG_EQ (power, 17, "APARF: Incorrect value of power level");
 
   //-----------------------------------------------------------------------------------------------------
@@ -498,7 +498,7 @@ PowerRateAdaptationTest::TestAparf ()
   mode = txVector.GetMode ();
   power = (int) txVector.GetTxPowerLevel ();
 
-  NS_TEST_ASSERT_MSG_EQ (mode.GetDataRate (txVector.GetChannelWidth (), txVector.IsShortGuardInterval (), 1), 48000000, "Incorrect vale of data rate");
+  NS_TEST_ASSERT_MSG_EQ (mode.GetDataRate (txVector.GetChannelWidth ()), 48000000, "Incorrect vale of data rate");
   NS_TEST_ASSERT_MSG_EQ (power, 17, "Incorrect value of power level");
 
   //-----------------------------------------------------------------------------------------------------
@@ -516,7 +516,7 @@ PowerRateAdaptationTest::TestAparf ()
   mode = txVector.GetMode ();
   power = (int) txVector.GetTxPowerLevel ();
 
-  NS_TEST_ASSERT_MSG_EQ (mode.GetDataRate (txVector.GetChannelWidth (), txVector.IsShortGuardInterval (), 1), 48000000, "APARF: Incorrect vale of data rate");
+  NS_TEST_ASSERT_MSG_EQ (mode.GetDataRate (txVector.GetChannelWidth ()), 48000000, "APARF: Incorrect vale of data rate");
   NS_TEST_ASSERT_MSG_EQ (power, 16, "APARF: Incorrect value of power level");
 
   //-----------------------------------------------------------------------------------------------------
@@ -536,7 +536,7 @@ PowerRateAdaptationTest::TestAparf ()
   mode = txVector.GetMode ();
   power = (int) txVector.GetTxPowerLevel ();
 
-  NS_TEST_ASSERT_MSG_EQ (mode.GetDataRate (txVector.GetChannelWidth (), txVector.IsShortGuardInterval (), 1), 48000000, "APARF: Incorrect vale of data rate");
+  NS_TEST_ASSERT_MSG_EQ (mode.GetDataRate (txVector.GetChannelWidth ()), 48000000, "APARF: Incorrect vale of data rate");
   NS_TEST_ASSERT_MSG_EQ (power, 7, "APARF: Incorrect value of power level");
 
   for (int i = 0; i < 3; i++)
@@ -548,7 +548,7 @@ PowerRateAdaptationTest::TestAparf ()
   mode = txVector.GetMode ();
   power = (int) txVector.GetTxPowerLevel ();
 
-  NS_TEST_ASSERT_MSG_EQ (mode.GetDataRate (txVector.GetChannelWidth (), txVector.IsShortGuardInterval (), 1), 54000000, "APARF: Incorrect vale of data rate");
+  NS_TEST_ASSERT_MSG_EQ (mode.GetDataRate (txVector.GetChannelWidth ()), 54000000, "APARF: Incorrect vale of data rate");
   NS_TEST_ASSERT_MSG_EQ (power, 17, "APARF: Incorrect value of power level");
 
   Simulator::Destroy ();

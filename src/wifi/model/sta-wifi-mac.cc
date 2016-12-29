@@ -586,11 +586,10 @@ StaWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
           for (uint32_t i = 0; i < m_phy->GetNModes (); i++)
             {
               WifiMode mode = m_phy->GetMode (i);
-              uint8_t nss = 1; // Assume 1 spatial stream
-              if (rates.IsSupportedRate (mode.GetDataRate (m_phy->GetChannelWidth (), false, nss)))
+              if (rates.IsSupportedRate (mode.GetDataRate (m_phy->GetChannelWidth ())))
                 {
                   m_stationManager->AddSupportedMode (hdr->GetAddr2 (), mode);
-                  if (rates.IsBasicRate (mode.GetDataRate (m_phy->GetChannelWidth (), false, nss)))
+                  if (rates.IsBasicRate (mode.GetDataRate (m_phy->GetChannelWidth ())))
                     {
                       m_stationManager->AddBasicMode (mode);
                     }
@@ -604,7 +603,7 @@ StaWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
               for (uint32_t i = 0; i < m_phy->GetNModes (); i++)
               {
                 WifiMode mode = m_phy->GetMode (i);
-                if (mode.GetModulationClass () == WIFI_MOD_CLASS_ERP_OFDM && rates.IsSupportedRate (mode.GetDataRate (m_phy->GetChannelWidth (), false, 1)))
+                if (mode.GetModulationClass () == WIFI_MOD_CLASS_ERP_OFDM && rates.IsSupportedRate (mode.GetDataRate (m_phy->GetChannelWidth ())))
                   {
                     isErpAllowed = true;
                     break;
@@ -670,7 +669,7 @@ StaWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
                   for (uint32_t i = 0; i < m_phy->GetNModes (); i++)
                   {
                     WifiMode mode = m_phy->GetMode (i);
-                    if (mode.GetModulationClass () == WIFI_MOD_CLASS_ERP_OFDM && rates.IsSupportedRate (mode.GetDataRate (m_phy->GetChannelWidth (), false, 1)))
+                    if (mode.GetModulationClass () == WIFI_MOD_CLASS_ERP_OFDM && rates.IsSupportedRate (mode.GetDataRate (m_phy->GetChannelWidth ())))
                       {
                         isErpAllowed = true;
                         break;
@@ -726,11 +725,10 @@ StaWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
               for (uint32_t i = 0; i < m_phy->GetNModes (); i++)
                 {
                   WifiMode mode = m_phy->GetMode (i);
-                  uint8_t nss = 1; // Assume 1 spatial stream
-                  if (rates.IsSupportedRate (mode.GetDataRate (m_phy->GetChannelWidth (), false, nss)))
+                  if (rates.IsSupportedRate (mode.GetDataRate (m_phy->GetChannelWidth ())))
                     {
                       m_stationManager->AddSupportedMode (hdr->GetAddr2 (), mode);
-                      if (rates.IsBasicRate (mode.GetDataRate (m_phy->GetChannelWidth (), false, nss)))
+                      if (rates.IsBasicRate (mode.GetDataRate (m_phy->GetChannelWidth ())))
                         {
                           m_stationManager->AddBasicMode (mode);
                         }
@@ -786,7 +784,6 @@ SupportedRates
 StaWifiMac::GetSupportedRates (void) const
 {
   SupportedRates rates;
-  uint8_t nss = 1;  // Number of spatial streams is 1 for non-MIMO modes
   if (m_htSupported || m_vhtSupported)
     {
       for (uint32_t i = 0; i < m_phy->GetNBssMembershipSelectors (); i++)
@@ -797,7 +794,7 @@ StaWifiMac::GetSupportedRates (void) const
   for (uint32_t i = 0; i < m_phy->GetNModes (); i++)
     {
       WifiMode mode = m_phy->GetMode (i);
-      uint64_t modeDataRate = mode.GetDataRate (m_phy->GetChannelWidth (), false, nss);
+      uint64_t modeDataRate = mode.GetDataRate (m_phy->GetChannelWidth ());
       NS_LOG_DEBUG ("Adding supported rate of " << modeDataRate);
       rates.AddSupportedRate (modeDataRate);
     }

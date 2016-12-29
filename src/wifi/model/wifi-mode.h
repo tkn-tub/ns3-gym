@@ -131,6 +131,13 @@ public:
    * \returns the data bit rate of this signal.
    */
   uint64_t GetDataRate (WifiTxVector txVector) const;
+  /*
+   * \param channelWidth the considered channel width in MHz
+   *
+   * \returns the data bit rate of this non-HT or non-VHT signal.
+  */
+  uint64_t GetDataRate (uint32_t channelWidth) const;
+
   /**
    * \returns the coding rate of this transmission mode
    */

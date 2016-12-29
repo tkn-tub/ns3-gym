@@ -379,13 +379,12 @@ ApWifiMac::GetSupportedRates (void) const
         }
     }
   // 
-  uint8_t nss = 1;  // Number of spatial streams is 1 for non-MIMO modes
   //Send the set of supported rates and make sure that we indicate
   //the Basic Rate set in this set of supported rates.
   for (uint32_t i = 0; i < m_phy->GetNModes (); i++)
     {
       WifiMode mode = m_phy->GetMode (i);
-      uint64_t modeDataRate = mode.GetDataRate (m_phy->GetChannelWidth (), false, nss);
+      uint64_t modeDataRate = mode.GetDataRate (m_phy->GetChannelWidth ());
       NS_LOG_DEBUG ("Adding supported rate of " << modeDataRate);
       rates.AddSupportedRate (modeDataRate);
       //Add rates that are part of the BSSBasicRateSet (manufacturer dependent!)
@@ -401,7 +400,7 @@ ApWifiMac::GetSupportedRates (void) const
   for (uint32_t j = 0; j < m_stationManager->GetNBasicModes (); j++)
     {
       WifiMode mode = m_stationManager->GetBasicMode (j);
-      uint64_t modeDataRate = mode.GetDataRate (m_phy->GetChannelWidth (), false, nss);
+      uint64_t modeDataRate = mode.GetDataRate (m_phy->GetChannelWidth ());
       NS_LOG_DEBUG ("Setting basic rate " << mode.GetUniqueName ());
       rates.SetBasicRate (modeDataRate);
     }
@@ -856,8 +855,7 @@ ApWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
               for (uint32_t i = 0; i < m_stationManager->GetNBasicModes (); i++)
                 {
                   WifiMode mode = m_stationManager->GetBasicMode (i);
-                  uint8_t nss = 1; // Assume 1 spatial stream in basic mode
-                  if (!rates.IsSupportedRate (mode.GetDataRate (m_phy->GetChannelWidth (), false, nss)))
+                  if (!rates.IsSupportedRate (mode.GetDataRate (m_phy->GetChannelWidth ())))
                     {
                       if ((mode.GetModulationClass () == WIFI_MOD_CLASS_DSSS) || (mode.GetModulationClass () == WIFI_MOD_CLASS_HR_DSSS))
                         {
@@ -943,8 +941,7 @@ ApWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
                   for (uint32_t j = 0; j < m_phy->GetNModes (); j++)
                     {
                       WifiMode mode = m_phy->GetMode (j);
-                      uint8_t nss = 1; // Assume 1 spatial stream in basic mode
-                      if (rates.IsSupportedRate (mode.GetDataRate (m_phy->GetChannelWidth (), false, nss)))
+                      if (rates.IsSupportedRate (mode.GetDataRate (m_phy->GetChannelWidth ())))
                         {
                           m_stationManager->AddSupportedMode (from, mode);
                         }

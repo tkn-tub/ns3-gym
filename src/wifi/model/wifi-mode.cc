@@ -104,6 +104,18 @@ WifiMode::GetPhyRate (WifiTxVector txVector) const
 }
 
 uint64_t
+WifiMode::GetDataRate (uint32_t channelWidth) const
+{
+  return GetDataRate (channelWidth, false, 1);
+}
+
+uint64_t
+WifiMode::GetDataRate (WifiTxVector txVector) const
+{
+  return GetDataRate (txVector.GetChannelWidth (), txVector.IsShortGuardInterval (), txVector.GetNss ());
+}
+
+uint64_t
 WifiMode::GetDataRate (uint32_t channelWidth, bool isShortGuardInterval, uint8_t nss) const
 {
   //TODO: nss > 4 not supported yet
@@ -223,12 +235,6 @@ WifiMode::GetDataRate (uint32_t channelWidth, bool isShortGuardInterval, uint8_t
     }
   dataRate *= nss; // number of spatial streams
   return dataRate;
-}
-
-uint64_t
-WifiMode::GetDataRate (WifiTxVector txVector) const
-{
-  return GetDataRate (txVector.GetChannelWidth (), txVector.IsShortGuardInterval (), txVector.GetNss ());
 }
 
 WifiCodeRate

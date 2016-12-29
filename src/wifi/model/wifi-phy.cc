@@ -1755,7 +1755,7 @@ WifiPhy::GetPlcpHeaderDuration (WifiTxVector txVector)
       return MicroSeconds (4);
     case WIFI_MOD_CLASS_DSSS:
     case WIFI_MOD_CLASS_HR_DSSS:
-      if ((preamble == WIFI_PREAMBLE_SHORT) && (txVector.GetMode ().GetDataRate (22, 0, 1) > 1000000))
+      if ((preamble == WIFI_PREAMBLE_SHORT) && (txVector.GetMode ().GetDataRate (22) > 1000000))
         {
           //(Section 17.2.2.3 "Short PPDU format" and Figure 17-2 "Short PPDU format"; IEEE Std 802.11-2012)
           return MicroSeconds (24);
@@ -1808,7 +1808,7 @@ WifiPhy::GetPlcpPreambleDuration (WifiTxVector txVector)
       return MicroSeconds (16);
     case WIFI_MOD_CLASS_DSSS:
     case WIFI_MOD_CLASS_HR_DSSS:
-      if ((preamble == WIFI_PREAMBLE_SHORT) && (txVector.GetMode ().GetDataRate (22, 0, 1) > 1000000))
+      if ((preamble == WIFI_PREAMBLE_SHORT) && (txVector.GetMode ().GetDataRate (22) > 1000000))
         {
           //(Section 17.2.2.3 "Short PPDU format)" Figure 17-2 "Short PPDU format"; IEEE Std 802.11-2012)
           return MicroSeconds (72);
@@ -1862,7 +1862,7 @@ WifiPhy::GetPayloadDuration (uint32_t size, WifiTxVector txVector, double freque
 
         //(Section 18.3.2.3 "Modulation-dependent parameters" Table 18-4 "Modulation-dependent parameters"; IEEE Std 802.11-2012)
         //corresponds to N_{DBPS} in the table
-        double numDataBitsPerSymbol = payloadMode.GetDataRate (txVector.GetChannelWidth (), 0, 1) * symbolDuration.GetNanoSeconds () / 1e9;
+        double numDataBitsPerSymbol = payloadMode.GetDataRate (txVector.GetChannelWidth ()) * symbolDuration.GetNanoSeconds () / 1e9;
         double numSymbols;
 
         if (mpdutype == MPDU_IN_AGGREGATE && preamble != WIFI_PREAMBLE_NONE)
@@ -2115,8 +2115,8 @@ WifiPhy::GetPayloadDuration (uint32_t size, WifiTxVector txVector, double freque
       //(Section 17.2.3.6 "Long PLCP LENGTH field"; IEEE Std 802.11-2012)
       NS_LOG_LOGIC (" size=" << size
                              << " mode=" << payloadMode
-                             << " rate=" << payloadMode.GetDataRate (22, 0, 1));
-      return MicroSeconds (lrint (ceil ((size * 8.0) / (payloadMode.GetDataRate (22, 0, 1) / 1.0e6))));
+                             << " rate=" << payloadMode.GetDataRate (22));
+      return MicroSeconds (lrint (ceil ((size * 8.0) / (payloadMode.GetDataRate (22) / 1.0e6))));
     default:
       NS_FATAL_ERROR ("unsupported modulation class");
       return MicroSeconds (0);

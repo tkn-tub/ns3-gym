@@ -340,7 +340,7 @@ NistErrorRateModel::GetChunkSuccessRate (WifiMode mode, WifiTxVector txVector, d
     }
   else if (mode.GetModulationClass () == WIFI_MOD_CLASS_DSSS || mode.GetModulationClass () == WIFI_MOD_CLASS_HR_DSSS)
     {
-      switch (mode.GetDataRate (20, 0, 1))
+      switch (mode.GetDataRate (20))
         {
         case 1000000:
           return DsssErrorRateModel::GetDsssDbpskSuccessRate (snr, nbits);
