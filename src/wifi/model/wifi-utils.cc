@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2016
  *
@@ -18,44 +18,35 @@
  * Author: Sébastien Deronne <sebastien.deronne@gmail.com>
  */
 
-#ifndef WIFI_UTILS_H
-#define WIFI_UTILS_H
+#include "wifi-utils.h"
+#include <cmath>
 
 namespace ns3 {
 
-  /**
-   * Convert from dBm to Watts.
-   *
-   * \param dbm the power in dBm
-   *
-   * \return the equivalent Watts for the given dBm
-   */
-  double DbmToW (double dbm);
-  /**
-   * Convert from dB to ratio.
-   *
-   * \param db
-   *
-   * \return ratio
-   */
-  double DbToRatio (double db);
-  /**
-   * Convert from Watts to dBm.
-   *
-   * \param w the power in Watts
-   *
-   * \return the equivalent dBm for the given Watts
-   */
-  double WToDbm (double w);
-  /**
-   * Convert from ratio to dB.
-   *
-   * \param ratio
-   *
-   * \return dB
-   */
-  double RatioToDb (double ratio);
+double
+DbToRatio (double dB)
+{
+  double ratio = std::pow (10.0, dB / 10.0);
+  return ratio;
+}
 
-} // namespace ns3
+double
+DbmToW (double dBm)
+{
+  double mW = std::pow (10.0, dBm / 10.0);
+  return mW / 1000.0;
+}
 
-#endif /* WIFI_UTILS_H */
+double
+WToDbm (double w)
+{
+  return 10.0 * std::log10 (w * 1000.0);
+}
+
+double
+RatioToDb (double ratio)
+{
+  return 10.0 * std::log10 (ratio);
+}
+
+} //namespace ns3
