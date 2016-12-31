@@ -228,7 +228,7 @@ SpectrumWifiPhy::CreateWifiSpectrumPhyInterface (Ptr<NetDevice> device)
 }
 
 Ptr<SpectrumValue>
-SpectrumWifiPhy::GetTxPowerSpectralDensity (uint32_t centerFrequency, uint8_t channelWidth, double txPowerW) const
+SpectrumWifiPhy::GetTxPowerSpectralDensity (uint16_t centerFrequency, uint8_t channelWidth, double txPowerW) const
 {
   NS_LOG_FUNCTION (centerFrequency << (uint16_t)channelWidth << txPowerW);
   Ptr<SpectrumValue> v;

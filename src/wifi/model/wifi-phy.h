@@ -342,7 +342,7 @@ public:
    *
    * \return the total amount of time this PHY will stay busy for the transmission of these bytes.
    */
-  Time CalculateTxDuration (uint32_t size, WifiTxVector txVector, double frequency);
+  Time CalculateTxDuration (uint32_t size, WifiTxVector txVector, uint16_t frequency);
   /**
    * \param size the number of bytes in the packet to send
    * \param txVector the TXVECTOR used for the transmission of this packet
@@ -352,7 +352,7 @@ public:
    *
    * \return the total amount of time this PHY will stay busy for the transmission of these bytes.
    */
-  Time CalculateTxDuration (uint32_t size, WifiTxVector txVector, double frequency, MpduType mpdutype, uint8_t incFlag);
+  Time CalculateTxDuration (uint32_t size, WifiTxVector txVector, uint16_t frequency, MpduType mpdutype, uint8_t incFlag);
 
   /**
    * \param txVector the transmission parameters used for this packet
@@ -429,7 +429,7 @@ public:
    *
    * \return the duration of the payload
    */
-  Time GetPayloadDuration (uint32_t size, WifiTxVector txVector, double frequency);
+  Time GetPayloadDuration (uint32_t size, WifiTxVector txVector, uint16_t frequency);
   /**
    * \param size the number of bytes in the packet to send
    * \param txVector the TXVECTOR used for the transmission of this packet
@@ -439,7 +439,7 @@ public:
    *
    * \return the duration of the payload
    */
-  Time GetPayloadDuration (uint32_t size, WifiTxVector txVector, double frequency, MpduType mpdutype, uint8_t incFlag);
+  Time GetPayloadDuration (uint32_t size, WifiTxVector txVector, uint16_t frequency, MpduType mpdutype, uint8_t incFlag);
 
   /**
    * The WifiPhy::GetNModes() and WifiPhy::GetMode() methods are used
@@ -619,7 +619,7 @@ public:
    *
    * \return true if the channel definition succeeded
    */
-  bool DefineChannelNumber (uint16_t channelNumber, WifiPhyStandard standard, uint32_t frequency, uint8_t channelWidth);
+  bool DefineChannelNumber (uint16_t channelNumber, WifiPhyStandard standard, uint16_t frequency, uint8_t channelWidth);
 
   /**
    * A pair of a ChannelNumber and WifiPhyStandard
@@ -628,7 +628,7 @@ public:
   /**
    * A pair of a center Frequency and a ChannelWidth
    */
-  typedef std::pair<uint32_t, uint8_t> FrequencyWidthPair;
+  typedef std::pair<uint16_t, uint8_t> FrequencyWidthPair;
 
   /**
    * Return the WifiChannel this WifiPhy is connected to.
@@ -1404,11 +1404,11 @@ public:
   /**
    * \param freq the operating center frequency (MHz) on this node.
    */
-  virtual void SetFrequency (uint32_t freq);
+  virtual void SetFrequency (uint16_t freq);
   /**
    * \return the operating center frequency (MHz) 
    */
-  virtual uint32_t GetFrequency (void) const;
+  virtual uint16_t GetFrequency (void) const;
   /**
    * \param antennas the number of antennas on this node.
    */
@@ -1549,7 +1549,7 @@ protected:
    * \return true if WifiPhy can actually change the frequency; false if not
    * \see SetFrequency
    */
-  virtual bool DoFrequencySwitch (uint32_t frequency);
+  virtual bool DoFrequencySwitch (uint16_t frequency);
 
   /**
    * Get the power of the given power level in dBm.
@@ -1658,7 +1658,7 @@ private:
    * \param width The channel width to use
    * \return the channel number if found, zero if not
    */
-  uint16_t FindChannelNumberForFrequencyWidth (uint32_t frequency, uint8_t width) const;
+  uint16_t FindChannelNumberForFrequencyWidth (uint16_t frequency, uint8_t width) const;
   /**
    * Lookup frequency/width pair for channelNumber/standard pair
    * \param channelNumber The channel number to check
@@ -1785,8 +1785,8 @@ private:
 
   WifiPhyStandard m_standard;     //!< WifiPhyStandard
   bool m_isConstructed;                //!< true when ready to set frequency
-  uint32_t m_channelCenterFrequency;   //!< Center frequency in MHz
-  uint32_t m_initialFrequency;         //!< Store frequency until initialization
+  uint16_t m_channelCenterFrequency;   //!< Center frequency in MHz
+  uint16_t m_initialFrequency;         //!< Store frequency until initialization
   bool m_frequencyChannelNumberInitialized; //!< Store initialization state
   uint8_t m_channelWidth;             //!< Channel width
 
