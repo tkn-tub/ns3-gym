@@ -47,7 +47,7 @@ struct McsGroup
 {
   uint8_t streams;
   uint8_t sgi;
-  uint32_t chWidth;
+  uint8_t chWidth;
   bool isVht;
   bool isSupported;
 
@@ -250,13 +250,13 @@ private:
   virtual void DoDisposeStation (WifiRemoteStation *station);
 
   /// Check the validity of a combination of number of streams, chWidth and mode.
-  bool IsValidMcs (Ptr<WifiPhy> phy, uint8_t streams, uint32_t chWidth, WifiMode mode);
+  bool IsValidMcs (Ptr<WifiPhy> phy, uint8_t streams, uint8_t chWidth, WifiMode mode);
 
   /// Estimates the TxTime of a frame with a given mode and group (stream, guard interval and channel width).
-  Time CalculateMpduTxDuration (Ptr<WifiPhy> phy, uint8_t streams, uint8_t sgi, uint32_t chWidth, WifiMode mode);
+  Time CalculateMpduTxDuration (Ptr<WifiPhy> phy, uint8_t streams, uint8_t sgi, uint8_t chWidth, WifiMode mode);
 
   /// Estimates the TxTime of a frame with a given mode and group (stream, guard interval and channel width).
-  Time CalculateFirstMpduTxDuration (Ptr<WifiPhy> phy, uint8_t streams, uint8_t sgi, uint32_t chWidth, WifiMode mode);
+  Time CalculateFirstMpduTxDuration (Ptr<WifiPhy> phy, uint8_t streams, uint8_t sgi, uint8_t chWidth, WifiMode mode);
 
   /// Obtain the TXtime saved in the group information.
   Time GetMpduTxTime (uint32_t groupId, WifiMode mode) const;
@@ -364,10 +364,10 @@ private:
   uint32_t GetIndex (uint32_t groupId, uint32_t rateId);
 
   /// Returns the groupId of a HT MCS with the given number of streams, if using sgi and the channel width used.
-  uint32_t GetHtGroupId (uint8_t txstreams, uint8_t sgi, uint32_t chWidth);
+  uint32_t GetHtGroupId (uint8_t txstreams, uint8_t sgi, uint8_t chWidth);
 
   /// Returns the groupId of a VHT MCS with the given number of streams, if using sgi and the channel width used.
-  uint32_t GetVhtGroupId (uint8_t txstreams, uint8_t sgi, uint32_t chWidth);
+  uint32_t GetVhtGroupId (uint8_t txstreams, uint8_t sgi, uint8_t chWidth);
 
   /// Returns the lowest global index of the rates supported by the station.
   uint32_t GetLowestIndex (MinstrelHtWifiRemoteStation *station);

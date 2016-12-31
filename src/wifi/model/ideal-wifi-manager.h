@@ -93,7 +93,7 @@ private:
    * \param non-(V)HT WifiMode
    * \return the channel width (MHz) for the selected mode
    */
-  uint32_t GetChannelWidthForMode (WifiMode mode) const;
+  uint8_t GetChannelWidthForMode (WifiMode mode) const;
 
   /**
    * A vector of <snr, WifiTxVector> pair holding the minimum SNR for the 

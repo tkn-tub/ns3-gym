@@ -1350,7 +1350,7 @@ WifiRemoteStationManager::DoGetCtsTxPowerLevel (Mac48Address address, WifiMode c
   return m_defaultTxPowerLevel;
 }
 
-uint32_t
+uint8_t
 WifiRemoteStationManager::DoGetCtsTxChannelWidth (Mac48Address address, WifiMode ctsMode)
 {
   return m_wifiPhy->GetChannelWidth ();
@@ -1386,7 +1386,7 @@ WifiRemoteStationManager::DoGetAckTxPowerLevel (Mac48Address address, WifiMode a
   return m_defaultTxPowerLevel;
 }
 
-uint32_t
+uint8_t
 WifiRemoteStationManager::DoGetAckTxChannelWidth (Mac48Address address, WifiMode ctsMode)
 {
   return m_wifiPhy->GetChannelWidth ();
@@ -1422,7 +1422,7 @@ WifiRemoteStationManager::DoGetBlockAckTxPowerLevel (Mac48Address address, WifiM
   return m_defaultTxPowerLevel;
 }
 
-uint32_t
+uint8_t
 WifiRemoteStationManager::DoGetBlockAckTxChannelWidth (Mac48Address address, WifiMode ctsMode)
 {
   return m_wifiPhy->GetChannelWidth ();
@@ -1806,7 +1806,7 @@ WifiRemoteStationManager::GetAddress (const WifiRemoteStation *station) const
   return station->m_state->m_address;
 }
 
-uint32_t
+uint8_t
 WifiRemoteStationManager::GetChannelWidth (const WifiRemoteStation *station) const
 {
   return station->m_state->m_channelWidth;
@@ -1911,7 +1911,7 @@ WifiRemoteStationManager::GetNNonErpSupported (const WifiRemoteStation *station)
   return size;
 }
 
-uint32_t
+uint8_t
 WifiRemoteStationManager::GetChannelWidthSupported (Mac48Address address) const
 {
   return LookupState (address)->m_channelWidth;

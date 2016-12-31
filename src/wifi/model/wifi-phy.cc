@@ -168,7 +168,7 @@ WifiPhy::GetTypeId (void)
                    UintegerValue (20),
                    MakeUintegerAccessor (&WifiPhy::GetChannelWidth,
                                          &WifiPhy::SetChannelWidth),
-                   MakeUintegerChecker<uint32_t> ())
+                   MakeUintegerChecker<uint8_t> ())
     .AddAttribute ("ChannelNumber",
                    "If set to non-zero defined value, will control Frequency and ChannelWidth assignment",
                    UintegerValue (0),
@@ -972,9 +972,9 @@ WifiPhy::Configure80211ac (void)
 }
 
 bool 
-WifiPhy::DefineChannelNumber (uint16_t channelNumber, WifiPhyStandard standard, uint32_t frequency, uint32_t channelWidth)
+WifiPhy::DefineChannelNumber (uint16_t channelNumber, WifiPhyStandard standard, uint32_t frequency, uint8_t channelWidth)
 {
-  NS_LOG_FUNCTION (this << channelNumber << standard << frequency << channelWidth);
+  NS_LOG_FUNCTION (this << channelNumber << standard << frequency << (uint16_t)channelWidth);
   ChannelNumberStandardPair p = std::make_pair (channelNumber, standard);
   ChannelToFrequencyWidthMap::const_iterator it;
   it = m_channelToFrequencyWidth.find (p);
@@ -989,9 +989,9 @@ WifiPhy::DefineChannelNumber (uint16_t channelNumber, WifiPhyStandard standard, 
 }
 
 uint16_t 
-WifiPhy::FindChannelNumberForFrequencyWidth (uint32_t frequency, uint32_t width) const
+WifiPhy::FindChannelNumberForFrequencyWidth (uint32_t frequency, uint8_t width) const
 {
-  NS_LOG_FUNCTION (this << frequency << width);
+  NS_LOG_FUNCTION (this << frequency << (uint16_t)width);
   bool found = false;
   FrequencyWidthPair f = std::make_pair (frequency, width);
   ChannelToFrequencyWidthMap::const_iterator it = m_channelToFrequencyWidth.begin ();
@@ -1025,9 +1025,8 @@ WifiPhy::ConfigureChannelForStandard (WifiPhyStandard standard)
   if (GetFrequency () != 0)
     {
       // If Frequency is already set, then see whether a ChannelNumber can
-      // be found that matches Frequency and ChannelWidth.  If so, configure 
-      // the ChannelNumber to that channel number.  If not, set 
-      // ChannelNumber to zero.
+      // be found that matches Frequency and ChannelWidth. If so, configure
+      // the ChannelNumber to that channel number. If not, set ChannelNumber to zero.
       NS_LOG_DEBUG ("Frequency set; checking whether a channel number corresponds");
       uint32_t channelNumberSearched = FindChannelNumberForFrequencyWidth (GetFrequency (), GetChannelWidth ());
       if (channelNumberSearched)
@@ -1060,7 +1059,7 @@ WifiPhy::ConfigureChannelForStandard (WifiPhyStandard standard)
         }
       else
         {
-          NS_LOG_DEBUG ("Setting frequency to " << f.first << "; width to " << f.second);
+          NS_LOG_DEBUG ("Setting frequency to " << f.first << "; width to " << (uint16_t)f.second);
           SetFrequency (f.first);
           SetChannelWidth (f.second);
         }
@@ -1191,14 +1190,14 @@ WifiPhy::GetFrequency (void) const
 }
 
 void
-WifiPhy::SetChannelWidth (uint32_t channelwidth)
+WifiPhy::SetChannelWidth (uint8_t channelwidth)
 {
   NS_ASSERT_MSG (channelwidth == 5 || channelwidth == 10 || channelwidth == 20 || channelwidth == 22 || channelwidth == 40 || channelwidth == 80 || channelwidth == 160, "wrong channel width value");
   m_channelWidth = channelwidth;
   AddSupportedChannelWidth (channelwidth);
 }
 
-uint32_t
+uint8_t
 WifiPhy::GetChannelWidth (void) const
 {
   return m_channelWidth;
@@ -1292,9 +1291,9 @@ WifiPhy::GetMembershipSelectorModes (uint32_t selector)
 }
 
 void
-WifiPhy::AddSupportedChannelWidth (uint32_t width)
+WifiPhy::AddSupportedChannelWidth (uint8_t width)
 {
-  NS_LOG_FUNCTION (this << width);
+  NS_LOG_FUNCTION (this << (uint16_t)width);
   for (std::vector<uint32_t>::size_type i = 0; i != m_supportedChannelWidthSet.size (); i++)
     {
       if (m_supportedChannelWidthSet[i] == width)
@@ -1302,11 +1301,11 @@ WifiPhy::AddSupportedChannelWidth (uint32_t width)
           return;
         }
     }
-  NS_LOG_FUNCTION ("Adding " << width << " to supported channel width set");
+  NS_LOG_FUNCTION ("Adding " << (uint16_t)width << " to supported channel width set");
   m_supportedChannelWidthSet.push_back (width);
 }
 
-std::vector<uint32_t> 
+std::vector<uint8_t>
 WifiPhy::GetSupportedChannelWidthSet (void) const
 {
   return m_supportedChannelWidthSet;
@@ -1357,7 +1356,7 @@ WifiPhy::SetChannelNumber (uint16_t nch)
     {
       if (DoChannelSwitch (nch))
         {
-          NS_LOG_DEBUG ("Setting frequency to " << f.first << "; width to " << f.second);
+          NS_LOG_DEBUG ("Setting frequency to " << f.first << "; width to " << (uint16_t)f.second);
           m_channelCenterFrequency = f.first;
           SetChannelWidth (f.second);
           m_channelNumber = nch;
@@ -2055,7 +2054,7 @@ WifiPhy::GetPayloadDuration (uint32_t size, WifiTxVector txVector, double freque
           }
 
         //IEEE Std 802.11n, section 20.3.11, equation (20-32)
-        double numDataBitsPerSymbol = payloadMode.GetDataRate (txVector.GetChannelWidth (), txVector.IsShortGuardInterval (), txVector.GetNss ()) * symbolDuration.GetNanoSeconds () / 1e9;
+        double numDataBitsPerSymbol = payloadMode.GetDataRate (txVector) * symbolDuration.GetNanoSeconds () / 1e9;
         double numSymbols;
 
         if (mpdutype == MPDU_IN_AGGREGATE && preamble != WIFI_PREAMBLE_NONE)
@@ -3311,9 +3310,9 @@ WifiPhy::GetVhtMcs9 ()
 bool
 WifiPhy::IsValidTxVector (WifiTxVector txVector)
 {
-  uint32_t chWidth = txVector.GetChannelWidth();
+  uint8_t chWidth = txVector.GetChannelWidth ();
   uint8_t nss = txVector.GetNss();
-  std::string modeName = txVector.GetMode().GetUniqueName();
+  std::string modeName = txVector.GetMode ().GetUniqueName ();
 
   if (chWidth == 20)
     {

@@ -163,7 +163,7 @@ private:
    * This is a helper function to create the right Tx PSD corresponding
    * to the standard in use.
    */
-  Ptr<SpectrumValue> GetTxPowerSpectralDensity (uint32_t centerFrequency, uint32_t channelWidth, double txPowerW) const;
+  Ptr<SpectrumValue> GetTxPowerSpectralDensity (uint32_t centerFrequency, uint8_t channelWidth, double txPowerW) const;
 
   Ptr<SpectrumChannel> m_channel;        //!< SpectrumChannel that this SpectrumWifiPhy is connected to
   std::vector<uint16_t> m_operationalChannelList; //!< List of possible channels

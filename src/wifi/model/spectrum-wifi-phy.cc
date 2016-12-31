@@ -106,7 +106,7 @@ SpectrumWifiPhy::GetRxSpectrumModel () const
         }
       else
         {
-          NS_LOG_DEBUG ("Creating spectrum model from frequency/width pair of (" << GetFrequency () << ", " << GetChannelWidth () << ")");
+          NS_LOG_DEBUG ("Creating spectrum model from frequency/width pair of (" << GetFrequency () << ", " << (uint16_t)GetChannelWidth () << ")");
           m_rxSpectrumModel = WifiSpectrumValueHelper::GetSpectrumModel (GetFrequency (), GetChannelWidth ());
         }
     }
@@ -228,9 +228,9 @@ SpectrumWifiPhy::CreateWifiSpectrumPhyInterface (Ptr<NetDevice> device)
 }
 
 Ptr<SpectrumValue>
-SpectrumWifiPhy::GetTxPowerSpectralDensity (uint32_t centerFrequency, uint32_t channelWidth, double txPowerW) const
+SpectrumWifiPhy::GetTxPowerSpectralDensity (uint32_t centerFrequency, uint8_t channelWidth, double txPowerW) const
 {
-  NS_LOG_FUNCTION (centerFrequency << channelWidth << txPowerW);
+  NS_LOG_FUNCTION (centerFrequency << (uint16_t)channelWidth << txPowerW);
   Ptr<SpectrumValue> v;
   switch (GetStandard ())
     {

@@ -120,7 +120,7 @@ public:
   /**
    * Determine the VHT operational channel width.
    */
-  uint32_t GetVhtOperationalChannelWidth (void) const;
+  uint8_t GetVhtOperationalChannelWidth (void) const;
 
   /**
    * Assign a fixed random variable stream number to the random variables

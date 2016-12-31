@@ -66,7 +66,7 @@ SpectrumWifiPhyBasicTest::SpectrumWifiPhyBasicTest (std::string name)
 Ptr<SpectrumSignalParameters> 
 SpectrumWifiPhyBasicTest::MakeSignal (double txPowerWatts)
 {
-  WifiTxVector txVector = WifiTxVector (WifiPhy::GetOfdmRate6Mbps (), 0, 0, WIFI_PREAMBLE_LONG, false, 1, 1, 0, 20000000, false, false);
+  WifiTxVector txVector = WifiTxVector (WifiPhy::GetOfdmRate6Mbps (), 0, 0, WIFI_PREAMBLE_LONG, false, 1, 1, 0, 20, false, false);
   MpduType mpdutype = NORMAL_MPDU;
 
   Ptr<Packet> pkt = Create<Packet> (1000);

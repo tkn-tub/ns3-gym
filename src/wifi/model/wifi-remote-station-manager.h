@@ -369,7 +369,7 @@ public:
    *
    * \return he channel width supported by the station
    */
-  uint32_t GetChannelWidthSupported (Mac48Address address) const;
+  uint8_t GetChannelWidthSupported (Mac48Address address) const;
   /**
    * Return whether the station supports VHT or not.
    *
@@ -855,7 +855,7 @@ protected:
    *
    * \return the channel width (in MHz) supported by the station
    */
-  uint32_t GetChannelWidth (const WifiRemoteStation *station) const;
+  uint8_t GetChannelWidth (const WifiRemoteStation *station) const;
   /**
    * Return whether the given station supports short guard interval.
    *
@@ -1054,17 +1054,17 @@ private:
    */
   virtual uint8_t DoGetBlockAckTxPowerLevel (Mac48Address address, WifiMode blockAckMode);
 
-  virtual uint32_t DoGetCtsTxChannelWidth (Mac48Address address, WifiMode ctsMode);
+  virtual uint8_t DoGetCtsTxChannelWidth (Mac48Address address, WifiMode ctsMode);
   virtual bool DoGetCtsTxGuardInterval (Mac48Address address, WifiMode ctsMode);
   virtual uint8_t DoGetCtsTxNss (Mac48Address address, WifiMode ctsMode);
   virtual uint8_t DoGetCtsTxNess (Mac48Address address, WifiMode ctsMode);
   virtual bool  DoGetCtsTxStbc (Mac48Address address, WifiMode ctsMode);
-  virtual uint32_t DoGetAckTxChannelWidth (Mac48Address address, WifiMode ctsMode);
+  virtual uint8_t DoGetAckTxChannelWidth (Mac48Address address, WifiMode ctsMode);
   virtual bool DoGetAckTxGuardInterval (Mac48Address address, WifiMode ackMode);
   virtual uint8_t DoGetAckTxNss (Mac48Address address, WifiMode ackMode);
   virtual uint8_t DoGetAckTxNess (Mac48Address address, WifiMode ackMode);
   virtual bool DoGetAckTxStbc (Mac48Address address, WifiMode ackMode);
-  virtual uint32_t DoGetBlockAckTxChannelWidth (Mac48Address address, WifiMode ctsMode);
+  virtual uint8_t DoGetBlockAckTxChannelWidth (Mac48Address address, WifiMode ctsMode);
   virtual bool DoGetBlockAckTxGuardInterval (Mac48Address address, WifiMode blockAckMode);
   virtual uint8_t DoGetBlockAckTxNss (Mac48Address address, WifiMode blockAckMode);
   virtual uint8_t DoGetBlockAckTxNess (Mac48Address address, WifiMode blockAckMode);
@@ -1318,7 +1318,7 @@ struct WifiRemoteStationState
   Mac48Address m_address;  //!< Mac48Address of the remote station
   WifiRemoteStationInfo m_info;
 
-  uint32_t m_channelWidth;    //!< Channel width (in MHz) supported by the remote station
+  uint8_t m_channelWidth;    //!< Channel width (in MHz) supported by the remote station
   bool m_shortGuardInterval;  //!< Flag if short guard interval is supported by the remote station
   uint8_t m_streams;          //!< Number of supported streams by the remote station
   uint32_t m_ness;            //!< Number of streams in beamforming of the remote station

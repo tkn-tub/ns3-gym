@@ -46,7 +46,7 @@ WifiTxVector::WifiTxVector (WifiMode mode,
                             uint8_t nTx,
                             uint8_t nss,
                             uint8_t ness,
-                            uint32_t channelWidth,
+                            uint8_t channelWidth,
                             bool aggregation,
                             bool stbc)
   : m_mode (mode),
@@ -97,7 +97,7 @@ WifiTxVector::GetPreambleType (void) const
   return m_preamble;
 }
 
-uint32_t
+uint8_t
 WifiTxVector::GetChannelWidth (void) const
 {
   return m_channelWidth;
@@ -166,7 +166,7 @@ WifiTxVector::SetPreambleType (WifiPreamble preamble)
 }
 
 void
-WifiTxVector::SetChannelWidth (uint32_t channelWidth)
+WifiTxVector::SetChannelWidth (uint8_t channelWidth)
 {
   m_channelWidth = channelWidth;
 }
@@ -210,14 +210,14 @@ WifiTxVector::SetStbc (bool stbc)
 std::ostream & operator << ( std::ostream &os, const WifiTxVector &v)
 {
   os << "mode: " << v.GetMode () <<
-    " txpwrlvl: " << (uint32_t)v.GetTxPowerLevel () <<
-    " retries: " << (uint32_t)v.GetRetries () <<
+    " txpwrlvl: " << (uint16_t)v.GetTxPowerLevel () <<
+    " retries: " << (uint16_t)v.GetRetries () <<
     " preamble: " << v.GetPreambleType () <<
-    " channel width: " << v.GetChannelWidth () <<
+    " channel width: " << (uint16_t)v.GetChannelWidth () <<
     " Short GI: " << v.IsShortGuardInterval () <<
-    " NTx: " << (uint32_t)v.GetNTx () <<
-    " Nss: " << (uint32_t)v.GetNss () <<
-    " Ness: " << (uint32_t)v.GetNess () <<
+    " NTx: " << (uint16_t)v.GetNTx () <<
+    " Nss: " << (uint16_t)v.GetNss () <<
+    " Ness: " << (uint16_t)v.GetNess () <<
     " MPDU aggregation: " << v.IsAggregation () <<
     " STBC: " << v.IsStbc ();
   return os;

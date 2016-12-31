@@ -69,7 +69,7 @@ std::istream & operator >> (std::istream &is, WifiMode &mode)
 }
 
 uint64_t
-WifiMode::GetPhyRate (uint32_t channelWidth, bool isShortGuardInterval, uint8_t nss) const
+WifiMode::GetPhyRate (uint8_t channelWidth, bool isShortGuardInterval, uint8_t nss) const
 {
   //TODO: nss > 4 not supported yet
   NS_ASSERT (nss <= 4);
@@ -104,7 +104,7 @@ WifiMode::GetPhyRate (WifiTxVector txVector) const
 }
 
 uint64_t
-WifiMode::GetDataRate (uint32_t channelWidth) const
+WifiMode::GetDataRate (uint8_t channelWidth) const
 {
   return GetDataRate (channelWidth, false, 1);
 }
@@ -116,7 +116,7 @@ WifiMode::GetDataRate (WifiTxVector txVector) const
 }
 
 uint64_t
-WifiMode::GetDataRate (uint32_t channelWidth, bool isShortGuardInterval, uint8_t nss) const
+WifiMode::GetDataRate (uint8_t channelWidth, bool isShortGuardInterval, uint8_t nss) const
 {
   //TODO: nss > 4 not supported yet
   NS_ASSERT (nss <= 4);

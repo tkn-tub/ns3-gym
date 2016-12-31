@@ -221,7 +221,7 @@ MinstrelHtWifiManager::DoInitialize ()
       m_minstrelGroups = MinstrelMcsGroups (m_numGroups);
 
       // Initialize all HT groups
-      for (uint32_t chWidth = 20; chWidth <= MAX_HT_WIDTH; chWidth *= 2)
+      for (uint8_t chWidth = 20; chWidth <= MAX_HT_WIDTH; chWidth *= 2)
         {
           for (uint8_t sgi = 0; sgi <= 1; sgi++)
             {
@@ -251,7 +251,7 @@ MinstrelHtWifiManager::DoInitialize ()
                           AddFirstMpduTxTime (groupId, mode, CalculateFirstMpduTxDuration (GetPhy (), streams, sgi, chWidth, mode));
                           AddMpduTxTime (groupId, mode, CalculateMpduTxDuration (GetPhy (), streams, sgi, chWidth, mode));
                         }
-                      NS_LOG_DEBUG ("Initialized group " << groupId << ": (" << (uint32_t)streams << "," << (uint32_t)sgi << "," << chWidth << ")");
+                      NS_LOG_DEBUG ("Initialized group " << groupId << ": (" << (uint16_t)streams << "," << (uint16_t)sgi << "," << (uint16_t)chWidth << ")");
                     }
                 }
             }
@@ -260,7 +260,7 @@ MinstrelHtWifiManager::DoInitialize ()
       if (HasVhtSupported ())
         {
           // Initialize all VHT groups
-          for (uint32_t chWidth = 20; chWidth <= MAX_VHT_WIDTH; chWidth *= 2)
+          for (uint8_t chWidth = 20; chWidth <= MAX_VHT_WIDTH; chWidth *= 2)
             {
               for (uint8_t sgi = 0; sgi <= 1; sgi++)
                 {
@@ -293,7 +293,7 @@ MinstrelHtWifiManager::DoInitialize ()
                                   AddMpduTxTime (groupId, mode, CalculateMpduTxDuration (GetPhy (), streams, sgi, chWidth, mode));
                                 }
                             }
-                          NS_LOG_DEBUG ("Initialized group " << groupId << ": (" << (uint32_t)streams << "," << (uint32_t)sgi << "," << chWidth << ")");
+                          NS_LOG_DEBUG ("Initialized group " << groupId << ": (" << (uint16_t)streams << "," << (uint16_t)sgi << "," << (uint16_t)chWidth << ")");
                         }
                     }
                 }
@@ -311,9 +311,9 @@ MinstrelHtWifiManager::SetupMac (Ptr<WifiMac> mac)
 }
 
 bool
-MinstrelHtWifiManager::IsValidMcs (Ptr<WifiPhy> phy, uint8_t streams, uint32_t chWidth, WifiMode mode)
+MinstrelHtWifiManager::IsValidMcs (Ptr<WifiPhy> phy, uint8_t streams, uint8_t chWidth, WifiMode mode)
 {
-  NS_LOG_FUNCTION (this << phy << (int)streams << chWidth << mode);
+  NS_LOG_FUNCTION (this << phy << (uint16_t)streams << (uint16_t)chWidth << mode);
 
   WifiTxVector txvector;
   txvector.SetNss (streams);
@@ -323,9 +323,9 @@ MinstrelHtWifiManager::IsValidMcs (Ptr<WifiPhy> phy, uint8_t streams, uint32_t c
 }
 
 Time
-MinstrelHtWifiManager::CalculateFirstMpduTxDuration (Ptr<WifiPhy> phy, uint8_t streams, uint8_t sgi, uint32_t chWidth, WifiMode mode)
+MinstrelHtWifiManager::CalculateFirstMpduTxDuration (Ptr<WifiPhy> phy, uint8_t streams, uint8_t sgi, uint8_t chWidth, WifiMode mode)
 {
-  NS_LOG_FUNCTION (this << phy << (int)streams << (int)sgi << chWidth << mode);
+  NS_LOG_FUNCTION (this << phy << (uint16_t)streams << (uint16_t)sgi << (uint16_t)chWidth << mode);
 
   WifiTxVector txvector;
   txvector.SetNss (streams);
@@ -339,9 +339,9 @@ MinstrelHtWifiManager::CalculateFirstMpduTxDuration (Ptr<WifiPhy> phy, uint8_t s
 }
 
 Time
-MinstrelHtWifiManager::CalculateMpduTxDuration (Ptr<WifiPhy> phy, uint8_t streams, uint8_t sgi, uint32_t chWidth, WifiMode mode)
+MinstrelHtWifiManager::CalculateMpduTxDuration (Ptr<WifiPhy> phy, uint8_t streams, uint8_t sgi, uint8_t chWidth, WifiMode mode)
 {
-  NS_LOG_FUNCTION (this << phy << (int)streams << (int)sgi << chWidth << mode);
+  NS_LOG_FUNCTION (this << phy << (uint16_t)streams << (uint16_t)sgi << (uint16_t)chWidth << mode);
 
   WifiTxVector txvector;
   txvector.SetNss (streams);
@@ -1824,17 +1824,17 @@ MinstrelHtWifiManager::GetGroupId (uint32_t index)
 }
 
 uint32_t
-MinstrelHtWifiManager::GetHtGroupId (uint8_t txstreams, uint8_t sgi, uint32_t chWidth)
+MinstrelHtWifiManager::GetHtGroupId (uint8_t txstreams, uint8_t sgi, uint8_t chWidth)
 {
-  NS_LOG_FUNCTION (this << (int)txstreams << (int)sgi << chWidth);
+  NS_LOG_FUNCTION (this << (uint16_t)txstreams << (uint16_t)sgi << (uint16_t)chWidth);
 
   return MAX_SUPPORTED_STREAMS * 2 * (chWidth == 40 ? 1 : 0) + MAX_SUPPORTED_STREAMS * sgi + txstreams - 1;
 }
 
 uint32_t
-MinstrelHtWifiManager::GetVhtGroupId (uint8_t txstreams, uint8_t sgi, uint32_t chWidth)
+MinstrelHtWifiManager::GetVhtGroupId (uint8_t txstreams, uint8_t sgi, uint8_t chWidth)
 {
-  NS_LOG_FUNCTION (this << (int)txstreams << (int)sgi << chWidth);
+  NS_LOG_FUNCTION (this << (uint16_t)txstreams << (uint16_t)sgi << (uint16_t)chWidth);
 
   return MAX_HT_STREAM_GROUPS * MAX_SUPPORTED_STREAMS + MAX_SUPPORTED_STREAMS * 2 * (chWidth == 160 ? 3 : chWidth == 80 ? 2 : chWidth == 40 ? 1 : 0) + MAX_SUPPORTED_STREAMS * sgi + txstreams - 1;
 }
