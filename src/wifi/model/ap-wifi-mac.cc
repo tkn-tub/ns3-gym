@@ -411,6 +411,7 @@ ApWifiMac::GetSupportedRates (void) const
 DsssParameterSet
 ApWifiMac::GetDsssParameterSet (void) const
 {
+  NS_LOG_FUNCTION (this);
   DsssParameterSet dsssParameters;
   if (m_dsssSupported)
     {
@@ -423,6 +424,7 @@ ApWifiMac::GetDsssParameterSet (void) const
 CapabilityInformation
 ApWifiMac::GetCapabilities (void) const
 {
+  NS_LOG_FUNCTION (this);
   CapabilityInformation capabilities;
   capabilities.SetShortPreamble (GetShortPreambleEnabled ());
   capabilities.SetShortSlotTime (GetShortSlotTimeEnabled ());
@@ -432,6 +434,7 @@ ApWifiMac::GetCapabilities (void) const
 ErpInformation
 ApWifiMac::GetErpInformation (void) const
 {
+  NS_LOG_FUNCTION (this);
   ErpInformation information;
   information.SetErpSupported (1);
   if (m_erpSupported)
@@ -453,6 +456,7 @@ ApWifiMac::GetErpInformation (void) const
 EdcaParameterSet
 ApWifiMac::GetEdcaParameterSet (void) const
 {
+  NS_LOG_FUNCTION (this);
   EdcaParameterSet edcaParameters;
   edcaParameters.SetQosSupported (1);
   if (m_qosSupported)
@@ -498,6 +502,7 @@ ApWifiMac::GetEdcaParameterSet (void) const
 HtOperation
 ApWifiMac::GetHtOperation (void) const
 {
+  NS_LOG_FUNCTION (this);
   HtOperation operation;
   operation.SetHtSupported (1);
   if (m_htSupported)
@@ -518,6 +523,7 @@ ApWifiMac::GetHtOperation (void) const
 VhtOperation
 ApWifiMac::GetVhtOperation (void) const
 {
+  NS_LOG_FUNCTION (this);
   VhtOperation operation;
   operation.SetVhtSupported (1);
   if (m_vhtSupported)

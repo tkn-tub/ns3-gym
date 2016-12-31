@@ -29,7 +29,7 @@
 
 namespace ns3 {
 
-NS_LOG_COMPONENT_DEFINE ("Aarfcd");
+NS_LOG_COMPONENT_DEFINE ("AarfcdWifiManager");
 
 /**
  * \brief hold per-remote-station state for AARF-CD Wifi manager.

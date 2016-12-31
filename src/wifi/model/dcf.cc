@@ -20,11 +20,8 @@
 
 #include "dcf.h"
 #include "ns3/uinteger.h"
-#include "ns3/log.h"
 
 namespace ns3 {
-
-NS_LOG_COMPONENT_DEFINE ("Dcf");
 
 NS_OBJECT_ENSURE_REGISTERED (Dcf);
 

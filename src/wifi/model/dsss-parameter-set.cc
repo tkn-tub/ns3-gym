@@ -19,11 +19,8 @@
  */
 
 #include "dsss-parameter-set.h"
-#include "ns3/log.h"
 
 namespace ns3 {
-
-NS_LOG_COMPONENT_DEFINE ("DsssParameterSet");
 
 DsssParameterSet::DsssParameterSet ()
   : m_currentChannel (0),

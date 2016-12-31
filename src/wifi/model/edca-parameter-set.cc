@@ -19,12 +19,9 @@
  */
 
 #include "edca-parameter-set.h"
-#include "ns3/log.h"
 #include <cmath>
 
 namespace ns3 {
-
-NS_LOG_COMPONENT_DEFINE ("EdcaParameterSet");
 
 EdcaParameterSet::EdcaParameterSet ()
   : m_qosInfo (0),

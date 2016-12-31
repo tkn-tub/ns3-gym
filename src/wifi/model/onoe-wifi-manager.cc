@@ -27,7 +27,7 @@
 
 namespace ns3 {
 
-NS_LOG_COMPONENT_DEFINE ("OnoeWifiRemoteStation");
+NS_LOG_COMPONENT_DEFINE ("OnoeWifiManager");
 
 /**
  * \brief hold per-remote-station state for ONOE Wifi manager.

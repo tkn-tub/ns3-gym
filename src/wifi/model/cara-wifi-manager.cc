@@ -26,7 +26,7 @@
 
 namespace ns3 {
 
-NS_LOG_COMPONENT_DEFINE ("Cara");
+NS_LOG_COMPONENT_DEFINE ("CaraWifiManager");
 
 /**
  * \brief hold per-remote-station state for CARA Wifi manager.

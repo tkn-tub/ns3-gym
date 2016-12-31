@@ -139,6 +139,7 @@ RegularWifiMac::GetWifiRemoteStationManager () const
 HtCapabilities
 RegularWifiMac::GetHtCapabilities (void) const
 {
+  NS_LOG_FUNCTION (this);
   HtCapabilities capabilities;
   capabilities.SetHtSupported (1);
   if (m_htSupported)
@@ -178,6 +179,7 @@ RegularWifiMac::GetHtCapabilities (void) const
 VhtCapabilities
 RegularWifiMac::GetVhtCapabilities (void) const
 {
+  NS_LOG_FUNCTION (this);
   VhtCapabilities capabilities;
   capabilities.SetVhtSupported (1);
   if (m_vhtSupported)

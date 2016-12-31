@@ -18,12 +18,9 @@
  * Author: Mathieu Lacage, <mathieu.lacage@sophia.inria.fr>
  */
 
-#include "ns3/log.h"
 #include "wifi-channel.h"
 
 namespace ns3 {
-
-NS_LOG_COMPONENT_DEFINE ("WifiChannel");
 
 NS_OBJECT_ENSURE_REGISTERED (WifiChannel);
 

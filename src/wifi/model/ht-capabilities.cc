@@ -20,11 +20,8 @@
  */
 
 #include "ht-capabilities.h"
-#include "ns3/log.h"
 
 namespace ns3 {
-
-NS_LOG_COMPONENT_DEFINE ("HtCapabilities");
 
 HtCapabilities::HtCapabilities ()
   : m_ldpc (0),

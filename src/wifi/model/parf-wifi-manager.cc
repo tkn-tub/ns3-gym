@@ -25,9 +25,9 @@
 
 #define Min(a,b) ((a < b) ? a : b)
 
-NS_LOG_COMPONENT_DEFINE ("ns3::ParfWifiManager");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("ParfWifiManager");
 
 /**
  * Hold per-remote-station state for PARF Wifi manager.

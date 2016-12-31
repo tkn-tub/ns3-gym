@@ -25,9 +25,9 @@
 
 #define Min(a,b) ((a < b) ? a : b)
 
-NS_LOG_COMPONENT_DEFINE ("ns3::AparfWifiManager");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("AparfWifiManager");
 
 /**
  * Hold per-remote-station state for APARF Wifi manager.

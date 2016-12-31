@@ -20,11 +20,8 @@
 
 #include "amsdu-subframe-header.h"
 #include "ns3/address-utils.h"
-#include "ns3/log.h"
 
 namespace ns3 {
-
-NS_LOG_COMPONENT_DEFINE ("AmsduSubframeHeader");
 
 NS_OBJECT_ENSURE_REGISTERED (AmsduSubframeHeader);
 
@@ -48,25 +45,21 @@ AmsduSubframeHeader::GetInstanceTypeId (void) const
 AmsduSubframeHeader::AmsduSubframeHeader ()
   : m_length (0)
 {
-  NS_LOG_FUNCTION (this);
 }
 
 AmsduSubframeHeader::~AmsduSubframeHeader ()
 {
-  NS_LOG_FUNCTION (this);
 }
 
 uint32_t
 AmsduSubframeHeader::GetSerializedSize () const
 {
-  NS_LOG_FUNCTION (this);
   return (6 + 6 + 2);
 }
 
 void
 AmsduSubframeHeader::Serialize (Buffer::Iterator i) const
 {
-  NS_LOG_FUNCTION (this << &i);
   WriteTo (i, m_da);
   WriteTo (i, m_sa);
   i.WriteHtonU16 (m_length);
@@ -75,7 +68,6 @@ AmsduSubframeHeader::Serialize (Buffer::Iterator i) const
 uint32_t
 AmsduSubframeHeader::Deserialize (Buffer::Iterator start)
 {
-  NS_LOG_FUNCTION (this << &start);
   Buffer::Iterator i = start;
   ReadFrom (i, m_da);
   ReadFrom (i, m_sa);
@@ -86,49 +78,42 @@ AmsduSubframeHeader::Deserialize (Buffer::Iterator start)
 void
 AmsduSubframeHeader::Print (std::ostream &os) const
 {
-  NS_LOG_FUNCTION (this << &os);
   os << "DA = " << m_da << ", SA = " << m_sa << ", length = " << m_length;
 }
 
 void
 AmsduSubframeHeader::SetDestinationAddr (Mac48Address to)
 {
-  NS_LOG_FUNCTION (this << to);
   m_da = to;
 }
 
 void
 AmsduSubframeHeader::SetSourceAddr (Mac48Address from)
 {
-  NS_LOG_FUNCTION (this << from);
   m_sa = from;
 }
 
 void
 AmsduSubframeHeader::SetLength (uint16_t length)
 {
-  NS_LOG_FUNCTION (this << length);
   m_length = length;
 }
 
 Mac48Address
 AmsduSubframeHeader::GetDestinationAddr (void) const
 {
-  NS_LOG_FUNCTION (this);
   return m_da;
 }
 
 Mac48Address
 AmsduSubframeHeader::GetSourceAddr (void) const
 {
-  NS_LOG_FUNCTION (this);
   return m_sa;
 }
 
 uint16_t
 AmsduSubframeHeader::GetLength (void) const
 {
-  NS_LOG_FUNCTION (this);
   return m_length;
 }
 

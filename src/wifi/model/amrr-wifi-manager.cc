@@ -28,7 +28,7 @@
 
 namespace ns3 {
 
-NS_LOG_COMPONENT_DEFINE ("AmrrWifiRemoteStation");
+NS_LOG_COMPONENT_DEFINE ("AmrrWifiManager");
 
 /**
  * \brief hold per-remote-station state for AMRR Wifi manager.
