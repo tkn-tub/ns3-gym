@@ -244,14 +244,14 @@ WifiPhy::GetTypeId (void)
                    "The number of supported Tx antennas.",
                    UintegerValue (1),
                    MakeUintegerAccessor (&WifiPhy::m_numberOfTransmitters),
-                   MakeUintegerChecker<uint32_t> (),
+                   MakeUintegerChecker<uint8_t> (1, 8),
                    TypeId::DEPRECATED,
                    "Not used anymore.")
     .AddAttribute ("RxAntennas",
                    "The number of supported Rx antennas.",
                    UintegerValue (1),
                    MakeUintegerAccessor (&WifiPhy::m_numberOfReceivers),
-                   MakeUintegerChecker<uint32_t> (),
+                   MakeUintegerChecker<uint8_t> (1, 8),
                    TypeId::DEPRECATED,
                    "Not used anymore.")
     .AddAttribute ("Antennas",
@@ -259,21 +259,21 @@ WifiPhy::GetTypeId (void)
                    UintegerValue (1),
                    MakeUintegerAccessor (&WifiPhy::GetNumberOfAntennas,
                                          &WifiPhy::SetNumberOfAntennas),
-                   MakeUintegerChecker<uint32_t> ())
+                   MakeUintegerChecker<uint8_t> (1, 8))
     .AddAttribute ("MaxSupportedTxSpatialStreams",
                    "The maximum number of supported TX spatial streams."
                    "This parameter is only valuable for 802.11n/ac STAs and APs.",
                    UintegerValue (1),
                    MakeUintegerAccessor (&WifiPhy::GetMaxSupportedTxSpatialStreams,
                                          &WifiPhy::SetMaxSupportedTxSpatialStreams),
-                   MakeUintegerChecker<uint8_t> ())
+                   MakeUintegerChecker<uint8_t> (1, 8))
     .AddAttribute ("MaxSupportedRxSpatialStreams",
                    "The maximum number of supported RX spatial streams."
                    "This parameter is only valuable for 802.11n/ac STAs and APs.",
                    UintegerValue (1),
                    MakeUintegerAccessor (&WifiPhy::GetMaxSupportedRxSpatialStreams,
                                          &WifiPhy::SetMaxSupportedRxSpatialStreams),
-                   MakeUintegerChecker<uint8_t> ())
+                   MakeUintegerChecker<uint8_t> (1, 8))
     .AddAttribute ("ShortGuardEnabled",
                    "Whether or not short guard interval is enabled."
                    "This parameter is only valuable for 802.11n/ac STAs and APs.",
@@ -360,8 +360,8 @@ WifiPhy::GetTypeId (void)
 WifiPhy::WifiPhy ()
   : m_mpdusNum (0),
     m_plcpSuccess (false),
-    m_txMpduReferenceNumber (0xffffffff),
-    m_rxMpduReferenceNumber (0xffffffff),
+    m_txMpduReferenceNumber (0xffffffffffffffff),
+    m_rxMpduReferenceNumber (0xffffffffffffffff),
     m_endRxEvent (),
     m_endPlcpRxEvent (),
     m_standard (WIFI_PHY_STANDARD_UNSPECIFIED),
@@ -2436,7 +2436,7 @@ WifiPhy::StartReceivePacket (Ptr<Packet> packet,
                              MpduType mpdutype,
                              Ptr<InterferenceHelper::Event> event)
 {
-  NS_LOG_FUNCTION (this << packet << txVector.GetMode () << txVector.GetPreambleType () << (uint32_t)mpdutype);
+  NS_LOG_FUNCTION (this << packet << txVector.GetMode () << txVector.GetPreambleType () << (uint16_t)mpdutype);
   NS_ASSERT (IsStateRx ());
   NS_ASSERT (m_endPlcpRxEvent.IsExpired ());
   WifiMode txMode = txVector.GetMode ();

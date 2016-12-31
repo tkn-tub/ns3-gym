@@ -73,7 +73,7 @@ WifiMode::GetPhyRate (uint8_t channelWidth, bool isShortGuardInterval, uint8_t n
 {
   //TODO: nss > 4 not supported yet
   NS_ASSERT (nss <= 4);
-  uint32_t dataRate, phyRate;
+  uint64_t dataRate, phyRate;
   dataRate = GetDataRate (channelWidth, isShortGuardInterval, nss);
   switch (GetCodeRate ())
     {
@@ -122,7 +122,7 @@ WifiMode::GetDataRate (uint8_t channelWidth, bool isShortGuardInterval, uint8_t 
   NS_ASSERT (nss <= 4);
   WifiModeFactory::WifiModeItem *item = WifiModeFactory::GetFactory ()->Get (m_uid);
   uint64_t dataRate = 0;
-  uint32_t usableSubCarriers = 0;
+  uint16_t usableSubCarriers = 0;
   double symbolRate = 0;
   double codingRate = 0;
   uint32_t numberOfBitsPerSubcarrier = log2 (GetConstellationSize ());

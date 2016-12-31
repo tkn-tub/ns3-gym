@@ -47,7 +47,7 @@ MacLowTransmissionListener::GotBlockAck (const CtrlBAckResponseHeader *blockAck,
 {
 }
 void
-MacLowTransmissionListener::MissedBlockAck (uint32_t nMpdus)
+MacLowTransmissionListener::MissedBlockAck (uint8_t nMpdus)
 {
 }
 
@@ -754,7 +754,7 @@ MacLow::StartTransmission (Ptr<const Packet> packet,
     {
       //m_aggregateQueue > 0 occurs when a RTS/CTS exchange failed before an A-MPDU transmission.
       //In that case, we transmit the same A-MPDU as previously.
-      uint32_t sentMpdus = m_aggregateQueue->GetSize ();
+      uint8_t sentMpdus = m_aggregateQueue->GetSize ();
       m_ampdu = true;
       if (sentMpdus > 1)
         {
@@ -1524,7 +1524,7 @@ MacLow::ForwardDown (Ptr<const Packet> packet, const WifiMacHeader* hdr, WifiTxV
       Ptr <const Packet> dequeuedPacket;
       WifiMacHeader newHdr;
       WifiMacTrailer fcs;
-      uint32_t queueSize = m_aggregateQueue->GetSize ();
+      uint8_t queueSize = m_aggregateQueue->GetSize ();
       bool vhtSingleMpdu = false;
       bool last = false;
       MpduType mpdutype = NORMAL_MPDU;
@@ -1672,7 +1672,7 @@ MacLow::BlockAckTimeout (void)
   MacLowTransmissionListener *listener = m_listener;
   m_listener = 0;
   m_ampdu = false;
-  uint32_t nTxMpdus = m_aggregateQueue->GetSize ();
+  uint8_t nTxMpdus = m_aggregateQueue->GetSize ();
   FlushAggregateQueue ();
   listener->MissedBlockAck (nTxMpdus);
 }
@@ -2936,7 +2936,7 @@ MacLow::AggregateToAmpdu (Ptr<const Packet> packet, const WifiMacHeader hdr)
                 }
               else
                 {
-                  uint32_t queueSize = m_aggregateQueue->GetSize ();
+                  uint8_t queueSize = m_aggregateQueue->GetSize ();
                   NS_ASSERT (queueSize <= 2); //since it is not an A-MPDU then only 2 packets should have been added to the queue no more
                   if (queueSize >= 1)
                     {

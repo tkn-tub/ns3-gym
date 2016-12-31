@@ -102,7 +102,7 @@ void
 BlockAckCache::ResetPortionOfBitmap (uint16_t start, uint16_t end)
 {
   NS_LOG_FUNCTION (this << start << end);
-  uint32_t i = start;
+  uint16_t i = start;
   for (; i != end; i = (i + 1) % 4096)
     {
       m_bitmap[i] = 0;
@@ -127,8 +127,8 @@ BlockAckCache::FillBlockAckBitmap (CtrlBAckResponseHeader *blockAckHeader)
     }
   else if (blockAckHeader->IsCompressed ())
     {
-      uint32_t i = blockAckHeader->GetStartingSequence ();
-      uint32_t end = (i + m_winSize - 1) % 4096;
+      uint16_t i = blockAckHeader->GetStartingSequence ();
+      uint16_t end = (i + m_winSize - 1) % 4096;
       for (; i != end; i = (i + 1) % 4096)
         {
           if (m_bitmap[i] == 1)

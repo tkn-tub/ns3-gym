@@ -103,7 +103,7 @@ public:
    * will send the block ack back to the tx station which will reply with a
    * normal ack to the rx station.
    */
-  virtual void MissedBlockAck (uint32_t nMpdus);
+  virtual void MissedBlockAck (uint8_t nMpdus);
   /**
    * Invoked when ns3::MacLow wants to start a new transmission
    * as configured by MacLowTransmissionParameters::EnableNextData.

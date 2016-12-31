@@ -62,7 +62,7 @@ struct SignalNoiseDbm
 struct MpduInfo
 {
   MpduType type;
-  uint32_t mpduRefNumber;
+  uint64_t mpduRefNumber;
 };
 
 /**
@@ -1567,8 +1567,8 @@ protected:
 
   uint16_t m_mpdusNum;                 //!< carries the number of expected mpdus that are part of an A-MPDU
   bool m_plcpSuccess;                  //!< Flag if the PLCP of the packet or the first MPDU in an A-MPDU has been received
-  uint32_t m_txMpduReferenceNumber;    //!< A-MPDU reference number to identify all transmitted subframes belonging to the same received A-MPDU
-  uint32_t m_rxMpduReferenceNumber;    //!< A-MPDU reference number to identify all received subframes belonging to the same received A-MPDU
+  uint64_t m_txMpduReferenceNumber;    //!< A-MPDU reference number to identify all transmitted subframes belonging to the same received A-MPDU
+  uint64_t m_rxMpduReferenceNumber;    //!< A-MPDU reference number to identify all received subframes belonging to the same received A-MPDU
   
   EventId m_endRxEvent;
   EventId m_endPlcpRxEvent;
@@ -1796,12 +1796,12 @@ private:
   bool     m_guardInterval;         //!< Flag if short guard interval is used
   bool     m_shortPreamble;         //!< Flag if short PLCP preamble is supported
 
-  uint32_t m_numberOfTransmitters; //!< Number of transmitters (DEPRECATED)
-  uint32_t m_numberOfReceivers;    //!< Number of receivers (DEPRECATED)
+  uint8_t m_numberOfTransmitters; //!< Number of transmitters (DEPRECATED)
+  uint8_t m_numberOfReceivers;    //!< Number of receivers (DEPRECATED)
 
-  uint32_t m_numberOfAntennas;  //!< Number of transmitters
-  uint32_t m_txSpatialStreams;  //!< Number of supported TX spatial streams
-  uint32_t m_rxSpatialStreams;  //!< Number of supported RX spatial streams
+  uint8_t m_numberOfAntennas;  //!< Number of transmitters
+  uint8_t m_txSpatialStreams;  //!< Number of supported TX spatial streams
+  uint8_t m_rxSpatialStreams;  //!< Number of supported RX spatial streams
 
   typedef std::map<ChannelNumberStandardPair,FrequencyWidthPair> ChannelToFrequencyWidthMap;
   static ChannelToFrequencyWidthMap m_channelToFrequencyWidth;

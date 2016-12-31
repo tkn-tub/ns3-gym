@@ -51,7 +51,7 @@ YansErrorRateModel::Log2 (double val) const
 }
 
 double
-YansErrorRateModel::GetBpskBer (double snr, uint32_t signalSpread, uint32_t phyRate) const
+YansErrorRateModel::GetBpskBer (double snr, uint32_t signalSpread, uint64_t phyRate) const
 {
   NS_LOG_FUNCTION (this << snr << signalSpread << phyRate);
   double EbNo = snr * signalSpread / phyRate;
@@ -62,7 +62,7 @@ YansErrorRateModel::GetBpskBer (double snr, uint32_t signalSpread, uint32_t phyR
 }
 
 double
-YansErrorRateModel::GetQamBer (double snr, unsigned int m, uint32_t signalSpread, uint32_t phyRate) const
+YansErrorRateModel::GetQamBer (double snr, unsigned int m, uint32_t signalSpread, uint64_t phyRate) const
 {
   NS_LOG_FUNCTION (this << snr << m << signalSpread << phyRate);
   double EbNo = snr * signalSpread / phyRate;
@@ -143,7 +143,7 @@ YansErrorRateModel::CalculatePd (double ber, unsigned int d) const
 
 double
 YansErrorRateModel::GetFecBpskBer (double snr, double nbits,
-                                   uint32_t signalSpread, uint32_t phyRate,
+                                   uint32_t signalSpread, uint64_t phyRate,
                                    uint32_t dFree, uint32_t adFree) const
 {
   NS_LOG_FUNCTION (this << snr << nbits << signalSpread << phyRate << dFree << adFree);
@@ -162,7 +162,7 @@ YansErrorRateModel::GetFecBpskBer (double snr, double nbits,
 double
 YansErrorRateModel::GetFecQamBer (double snr, uint32_t nbits,
                                   uint32_t signalSpread,
-                                  uint32_t phyRate,
+                                  uint64_t phyRate,
                                   uint32_t m, uint32_t dFree,
                                   uint32_t adFree, uint32_t adFreePlusOne) const
 {

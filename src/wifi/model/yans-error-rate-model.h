@@ -83,7 +83,7 @@ private:
    *
    * \return BER of BPSK at the given SNR
    */
-  double GetBpskBer (double snr, uint32_t signalSpread, uint32_t phyRate) const;
+  double GetBpskBer (double snr, uint32_t signalSpread, uint64_t phyRate) const;
   /**
    * Return BER of QAM-m with the given parameters.
    *
@@ -94,7 +94,7 @@ private:
    *
    * \return BER of BPSK at the given SNR
    */
-  double GetQamBer (double snr, unsigned int m, uint32_t signalSpread, uint32_t phyRate) const;
+  double GetQamBer (double snr, unsigned int m, uint32_t signalSpread, uint64_t phyRate) const;
   /**
    * Return k!
    *
@@ -145,7 +145,7 @@ private:
    * \return double
    */
   double GetFecBpskBer (double snr, double nbits,
-                        uint32_t signalSpread, uint32_t phyRate,
+                        uint32_t signalSpread, uint64_t phyRate,
                         uint32_t dFree, uint32_t adFree) const;
   /**
    * \param snr SNR ratio (not dB)
@@ -161,7 +161,7 @@ private:
    */
   double GetFecQamBer (double snr, uint32_t nbits,
                        uint32_t signalSpread,
-                       uint32_t phyRate,
+                       uint64_t phyRate,
                        uint32_t m, uint32_t dfree,
                        uint32_t adFree, uint32_t adFreePlusOne) const;
 };
