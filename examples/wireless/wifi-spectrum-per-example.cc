@@ -86,17 +86,17 @@ using namespace ns3;
 double g_signalDbmAvg;
 double g_noiseDbmAvg;
 uint32_t g_samples;
-uint16_t g_channelNumber;
 
-void MonitorSniffRx (Ptr<const Packet> packet, uint16_t channelFreqMhz,
-                     uint16_t channelNumber, WifiTxVector txVector,
-                     MpduInfo aMpdu, SignalNoiseDbm signalNoise)
+void MonitorSniffRx (Ptr<const Packet> packet,
+                     uint16_t channelFreqMhz,
+                     WifiTxVector txVector,
+                     MpduInfo aMpdu,
+                     SignalNoiseDbm signalNoise)
 
 {
   g_samples++;
   g_signalDbmAvg += ((signalNoise.signal - g_signalDbmAvg) / g_samples);
   g_noiseDbmAvg += ((signalNoise.noise - g_noiseDbmAvg) / g_samples);
-  g_channelNumber = channelNumber;
 }
 
 NS_LOG_COMPONENT_DEFINE ("WifiSpectrumPerExample");
@@ -517,7 +517,6 @@ int main (int argc, char *argv[])
       g_signalDbmAvg = 0;
       g_noiseDbmAvg = 0;
       g_samples = 0;
-      g_channelNumber = 0;
 
       Simulator::Stop (Seconds (simulationTime + 1));
       Simulator::Run ();

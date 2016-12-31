@@ -578,13 +578,13 @@ public:
    *
    * \param id the channel number
    */
-  virtual void SetChannelNumber (uint16_t id);
+  virtual void SetChannelNumber (uint8_t id);
   /**
    * Return current channel number.
    *
    * \return the current channel number
    */
-  virtual uint16_t GetChannelNumber (void) const;
+  virtual uint8_t GetChannelNumber (void) const;
   /**
    * \return the required time for channel switch operation of this WifiPhy
    */
@@ -619,12 +619,12 @@ public:
    *
    * \return true if the channel definition succeeded
    */
-  bool DefineChannelNumber (uint16_t channelNumber, WifiPhyStandard standard, uint16_t frequency, uint8_t channelWidth);
+  bool DefineChannelNumber (uint8_t channelNumber, WifiPhyStandard standard, uint16_t frequency, uint8_t channelWidth);
 
   /**
    * A pair of a ChannelNumber and WifiPhyStandard
    */
-  typedef std::pair<uint16_t, WifiPhyStandard> ChannelNumberStandardPair;
+  typedef std::pair<uint8_t, WifiPhyStandard> ChannelNumberStandardPair;
   /**
    * A pair of a center Frequency and a ChannelWidth
    */
@@ -1172,7 +1172,6 @@ public:
    *        transmitted. This is because it is possible to have the receiver
    *        tuned on a given channel and still to be able to receive packets
    *        on a nearby channel.
-   * \param channelNumber the channel on which the packet is received
    * \param txVector the TXVECTOR that holds rx parameters
    * \param aMpdu the type of the packet (0 is not A-MPDU, 1 is a MPDU that is part of an A-MPDU and 2 is the last MPDU in an A-MPDU)
    *        and the A-MPDU reference number (must be a different value for each A-MPDU but the same for each subframe within one A-MPDU)
@@ -1180,7 +1179,6 @@ public:
    */
   void NotifyMonitorSniffRx (Ptr<const Packet> packet,
                              uint16_t channelFreqMhz,
-                             uint16_t channelNumber,
                              WifiTxVector txVector,
                              MpduInfo aMpdu,
                              SignalNoiseDbm signalNoise);
@@ -1197,7 +1195,6 @@ public:
    *        transmitted. This is because it is possible to have the receiver
    *        tuned on a given channel and still to be able to receive packets
    *        on a nearby channel.
-   * \param channelNumber the channel on which the packet is received
    * \param txVector the TXVECTOR that holds rx parameters
    * \param aMpdu the type of the packet (0 is not A-MPDU, 1 is a MPDU that is part of an A-MPDU and 2 is the last MPDU in an A-MPDU)
    *        and the A-MPDU reference number (must be a different value for each A-MPDU but the same for each subframe within one A-MPDU)
@@ -1207,7 +1204,6 @@ public:
    */
   typedef void (* MonitorSnifferRxCallback)(Ptr<const Packet> packet,
                                             uint16_t channelFreqMhz,
-                                            uint16_t channelNumber,
                                             WifiTxVector txVector,
                                             MpduInfo aMpdu,
                                             SignalNoiseDbm signalNoise);
@@ -1219,14 +1215,12 @@ public:
    * \param packet the packet being transmitted
    * \param channelFreqMhz the frequency in MHz at which the packet is
    *        transmitted.
-   * \param channelNumber the channel on which the packet is transmitted
    * \param txVector the TXVECTOR that holds tx parameters
    * \param aMpdu the type of the packet (0 is not A-MPDU, 1 is a MPDU that is part of an A-MPDU and 2 is the last MPDU in an A-MPDU)
    *        and the A-MPDU reference number (must be a different value for each A-MPDU but the same for each subframe within one A-MPDU)
    */
   void NotifyMonitorSniffTx (Ptr<const Packet> packet,
                              uint16_t channelFreqMhz,
-                             uint16_t channelNumber,
                              WifiTxVector txVector,
                              MpduInfo aMpdu);
 
@@ -1236,7 +1230,6 @@ public:
    * \param packet the packet being transmitted
    * \param channelFreqMhz the frequency in MHz at which the packet is
    *        transmitted.
-   * \param channelNumber the channel on which the packet is transmitted
    * \param txVector the TXVECTOR that holds tx parameters
    * \param aMpdu the type of the packet (0 is not A-MPDU, 1 is a MPDU that is part of an A-MPDU and 2 is the last MPDU in an A-MPDU)
    *        and the A-MPDU reference number (must be a different value for each A-MPDU but the same for each subframe within one A-MPDU)
@@ -1245,7 +1238,6 @@ public:
    */
   typedef void (* MonitorSnifferTxCallback)(const Ptr<const Packet> packet,
                                             uint16_t channelFreqMhz,
-                                            uint16_t channelNumber,
                                             WifiTxVector txVector,
                                             MpduInfo aMpdu);
 
@@ -1539,7 +1531,7 @@ protected:
    * \return true if WifiPhy can actually change the number; false if not
    * \see SetChannelNumber
    */
-  virtual bool DoChannelSwitch (uint16_t id);
+  virtual bool DoChannelSwitch (uint8_t id);
   /**
    * The default implementation does nothing and returns true.  This method
    * is typically called internally by SetFrequency ().
@@ -1658,14 +1650,14 @@ private:
    * \param width The channel width to use
    * \return the channel number if found, zero if not
    */
-  uint16_t FindChannelNumberForFrequencyWidth (uint16_t frequency, uint8_t width) const;
+  uint8_t FindChannelNumberForFrequencyWidth (uint16_t frequency, uint8_t width) const;
   /**
    * Lookup frequency/width pair for channelNumber/standard pair
    * \param channelNumber The channel number to check
    * \param standard The WifiPhyStandard to check
    * \return the FrequencyWidthPair found
    */
-  FrequencyWidthPair GetFrequencyWidthForChannelNumberStandard (uint16_t channelNumber, WifiPhyStandard standard) const;
+  FrequencyWidthPair GetFrequencyWidthForChannelNumberStandard (uint8_t channelNumber, WifiPhyStandard standard) const;
 
   /**
    * The trace source fired when a packet begins the transmission process on
@@ -1726,7 +1718,7 @@ private:
    * \todo WifiTxVector and signalNoiseDbm should be be passed as
    * const  references because of their sizes.
    */
-  TracedCallback<Ptr<const Packet>, uint16_t, uint16_t, WifiTxVector, MpduInfo, SignalNoiseDbm> m_phyMonitorSniffRxTrace;
+  TracedCallback<Ptr<const Packet>, uint16_t, WifiTxVector, MpduInfo, SignalNoiseDbm> m_phyMonitorSniffRxTrace;
 
   /**
    * A trace source that emulates a wifi device in monitor mode
@@ -1740,7 +1732,7 @@ private:
    * \todo WifiTxVector should be passed by const reference because
    * of its size.
    */
-  TracedCallback<Ptr<const Packet>, uint16_t, uint16_t, WifiTxVector, MpduInfo> m_phyMonitorSniffTxTrace;
+  TracedCallback<Ptr<const Packet>, uint16_t, WifiTxVector, MpduInfo> m_phyMonitorSniffTxTrace;
     
   /**
    * This vector holds the set of transmission modes that this
@@ -1815,8 +1807,8 @@ private:
   static ChannelToFrequencyWidthMap m_channelToFrequencyWidth;
 
   std::vector<uint8_t> m_supportedChannelWidthSet; //!< Supported channel width
-  uint16_t              m_channelNumber;            //!< Operating channel number
-  uint16_t              m_initialChannelNumber;     //!< Initial channel number
+  uint8_t              m_channelNumber;            //!< Operating channel number
+  uint8_t              m_initialChannelNumber;     //!< Initial channel number
 
   Time m_channelSwitchDelay;     //!< Time required to switch between channel
   uint32_t m_totalAmpduSize;     //!< Total size of the previously transmitted MPDUs in an A-MPDU, used for the computation of the number of symbols needed for the last MPDU in the A-MPDU

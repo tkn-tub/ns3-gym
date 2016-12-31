@@ -128,7 +128,6 @@ WifiPhyHelper::PcapSniffTxEvent (
   Ptr<PcapFileWrapper> file,
   Ptr<const Packet>    packet,
   uint16_t             channelFreqMhz,
-  uint16_t             channelNumber,
   WifiTxVector         txVector,
   MpduInfo             aMpdu)
 {
@@ -329,7 +328,6 @@ WifiPhyHelper::PcapSniffRxEvent (
   Ptr<PcapFileWrapper>  file,
   Ptr<const Packet>     packet,
   uint16_t              channelFreqMhz,
-  uint16_t              channelNumber,
   WifiTxVector          txVector,
   MpduInfo              aMpdu,
   SignalNoiseDbm        signalNoise)

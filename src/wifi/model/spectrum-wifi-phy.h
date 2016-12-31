@@ -66,7 +66,7 @@ public:
    *
    * \param channelNumber the channel number to add
    */
-  void AddOperationalChannel (uint16_t channelNumber);
+  void AddOperationalChannel (uint8_t channelNumber);
   /**
    * Return a list of channels to which it may be possible to roam
    * By default, this method will return the current channel number followed
@@ -74,7 +74,7 @@ public:
    *
    * \return vector of channel numbers to which it may be possible to roam
    */
-  std::vector<uint16_t> GetOperationalChannelList (void) const;
+  std::vector<uint8_t> GetOperationalChannelList (void) const;
   /**
    * Clear the list of operational channels.
    */
@@ -166,7 +166,7 @@ private:
   Ptr<SpectrumValue> GetTxPowerSpectralDensity (uint16_t centerFrequency, uint8_t channelWidth, double txPowerW) const;
 
   Ptr<SpectrumChannel> m_channel;        //!< SpectrumChannel that this SpectrumWifiPhy is connected to
-  std::vector<uint16_t> m_operationalChannelList; //!< List of possible channels
+  std::vector<uint8_t> m_operationalChannelList; //!< List of possible channels
 
   Ptr<WifiSpectrumPhyInterface> m_wifiSpectrumPhyInterface;
   Ptr<AntennaModel> m_antenna;

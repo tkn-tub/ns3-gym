@@ -136,7 +136,6 @@ protected:
    * \param file the pcap file wrapper
    * \param packet the packet
    * \param channelFreqMhz the channel frequency
-   * \param channelNumber the channel number
    * \param txVector the TXVECTOR
    * \param aMpdu the A-MPDU information
    *
@@ -145,14 +144,12 @@ protected:
   static void PcapSniffTxEvent (Ptr<PcapFileWrapper> file,
                                 Ptr<const Packet> packet,
                                 uint16_t channelFreqMhz,
-                                uint16_t channelNumber,
                                 WifiTxVector txVector,
                                 MpduInfo aMpdu);
   /**
    * \param file the pcap file wrapper
    * \param packet the packet
    * \param channelFreqMhz the channel frequency
-   * \param channelNumber the channel number
    * \param txVector the TXVECTOR
    * \param aMpdu the A-MPDU information
    * \param signalNoise the rx signal and noise information
@@ -162,7 +159,6 @@ protected:
   static void PcapSniffRxEvent (Ptr<PcapFileWrapper> file,
                                 Ptr<const Packet> packet,
                                 uint16_t channelFreqMhz,
-                                uint16_t channelNumber,
                                 WifiTxVector txVector,
                                 MpduInfo aMpdu,
                                 SignalNoiseDbm signalNoise);

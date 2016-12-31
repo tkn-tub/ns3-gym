@@ -126,17 +126,17 @@ SpectrumWifiPhy::SetChannel (Ptr<SpectrumChannel> channel)
 }
 
 void
-SpectrumWifiPhy::AddOperationalChannel (uint16_t channelNumber)
+SpectrumWifiPhy::AddOperationalChannel (uint8_t channelNumber)
 {
   m_operationalChannelList.push_back (channelNumber);
 }
 
-std::vector<uint16_t>
+std::vector<uint8_t>
 SpectrumWifiPhy::GetOperationalChannelList () const
 {
-  std::vector<uint16_t> channelList;
+  std::vector<uint8_t> channelList;
   channelList.push_back (GetChannelNumber ());  // first channel of list
-  for (std::vector<uint16_t>::size_type i = 0; i != m_operationalChannelList.size (); i++)
+  for (std::vector<uint8_t>::size_type i = 0; i != m_operationalChannelList.size (); i++)
     {
       if (m_operationalChannelList[i] != GetChannelNumber ())
         {
@@ -269,7 +269,7 @@ SpectrumWifiPhy::StartTx (Ptr<Packet> packet, WifiTxVector txVector, Time txDura
   txParams->txPhy = m_wifiSpectrumPhyInterface->GetObject<SpectrumPhy> ();
   txParams->txAntenna = m_antenna;
   txParams->packet = packet;
-  NS_LOG_DEBUG ("Starting transmission with power " << WToDbm (txPowerWatts) << " dBm on channel " << GetChannelNumber ());
+  NS_LOG_DEBUG ("Starting transmission with power " << WToDbm (txPowerWatts) << " dBm on channel " << (uint16_t) GetChannelNumber ());
   NS_LOG_DEBUG ("Starting transmission with integrated spectrum power " << WToDbm (Integral (*txPowerSpectrum)) << " dBm; spectrum model Uid: " << txPowerSpectrum->GetSpectrumModel ()->GetUid ());
   m_channel->StartTx (txParams);
 }
