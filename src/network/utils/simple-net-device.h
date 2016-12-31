@@ -27,7 +27,6 @@
 #include "ns3/net-device.h"
 #include "ns3/queue.h"
 #include "ns3/data-rate.h"
-#include "ns3/data-rate.h"
 #include "ns3/event-id.h"
 
 #include "mac48-address.h"
