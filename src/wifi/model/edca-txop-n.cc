@@ -369,7 +369,7 @@ EdcaTxopN::SetWifiRemoteStationManager (Ptr<WifiRemoteStationManager> remoteMana
 void
 EdcaTxopN::SetTypeOfStation (TypeOfStation type)
 {
-  NS_LOG_FUNCTION (this << (uint32_t)type);
+  NS_LOG_FUNCTION (this << (uint16_t)type);
   m_typeOfStation = type;
 }
 

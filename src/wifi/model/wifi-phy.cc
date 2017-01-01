@@ -2204,8 +2204,8 @@ WifiPhy::SendPacket (Ptr<const Packet> packet, WifiTxVector txVector, MpduType m
   NS_LOG_FUNCTION (this << packet << txVector.GetMode ()
                         << txVector.GetMode ().GetDataRate (txVector)
                         << txVector.GetPreambleType ()
-                        << (uint32_t)txVector.GetTxPowerLevel ()
-                        << (uint32_t)mpdutype);
+                        << (uint16_t)txVector.GetTxPowerLevel ()
+                        << (uint16_t)mpdutype);
   /* Transmission can happen if:
    *  - we are syncing on a packet. It is the responsability of the
    *    MAC layer to avoid doing this but the PHY does nothing to

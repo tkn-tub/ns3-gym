@@ -1688,7 +1688,7 @@ WifiRemoteStationManager::GetNonErpBasicMode (uint32_t i) const
 void
 WifiRemoteStationManager::AddBasicMcs (WifiMode mcs)
 {
-  NS_LOG_FUNCTION (this << (uint32_t)mcs.GetMcsValue ());
+  NS_LOG_FUNCTION (this << (uint16_t)mcs.GetMcsValue ());
   for (uint32_t i = 0; i < GetNBasicMcs (); i++)
     {
       if (GetBasicMcs (i) == mcs)
