@@ -34,6 +34,7 @@ cpp_examples = [
     ("simple-ht-hidden-stations --simulationTime=1", "True", "True"),
     ("mixed-bg-network --simulationTime=1", "True", "True"),
     ("wifi-aggregation --simulationTime=1", "True", "True"),
+    ("80211e-txop --simulationTime=1", "True", "True"),
     ("wifi-tcp", "True", "True"),
     ("wifi-spectrum-per-example --distance=52 --index=3 --wifiType=ns3::SpectrumWifiPhy --simulationTime=1", "True", "True"),
     ("wifi-spectrum-per-example --distance=24 --index=31 --wifiType=ns3::YansWifiPhy --simulationTime=1", "True", "True"),
