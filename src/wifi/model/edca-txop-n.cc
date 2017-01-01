@@ -135,6 +135,10 @@ public:
   {
     m_txop->EndTxNoAck ();
   }
+  virtual bool HasTxop (void)
+  {
+    return m_txop->HasTxop ();
+  }
   virtual Ptr<WifiMacQueue> GetQueue (void)
   {
     return m_txop->GetEdcaQueue ();

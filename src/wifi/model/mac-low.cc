@@ -997,7 +997,7 @@ MacLow::ReceiveOk (Ptr<Packet> packet, double rxSnr, WifiTxVector txVector, bool
           m_waitSifsEvent = Simulator::Schedule (GetSifs (),
                                                  &MacLow::WaitSifsAfterEndTxFragment, this);
         }
-      else if (m_currentHdr.IsQosData () && !m_ampdu)
+      else if (m_currentHdr.IsQosData () && !m_ampdu && m_listener->HasTxop ())
         {
           m_waitSifsEvent = Simulator::Schedule (GetSifs (),
                                                  &MacLow::WaitSifsAfterEndTx, this);

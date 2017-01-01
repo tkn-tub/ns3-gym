@@ -127,6 +127,10 @@ public:
   {
     m_txop->EndTxNoAck ();
   }
+  virtual bool HasTxop (void)
+  {
+    return false;
+  }
 
 private:
   DcaTxop *m_txop;

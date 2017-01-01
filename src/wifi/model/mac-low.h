@@ -130,6 +130,10 @@ public:
    *
    */
   virtual void EndTxNoAck (void) = 0;
+  /**
+   * Returns whether it has TXOP granted for the next MPDU
+   */
+  virtual bool HasTxop (void) = 0;
 };
 
 
