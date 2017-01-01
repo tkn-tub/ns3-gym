@@ -729,8 +729,8 @@ failure.  </li>
       tutorial has been extended to illustrate basic functionality. </li>
   <li>In 'src/wifi', several changes were made to enable partial 802.11n support:
     <ul>
-      <li>A new helper (HtWifiMacHelper) was added to set up a high throughput (HT) MAC entity</li>
-      <li>New attributes were added to help the user setup a high throughpt (HT) PHY entity. These attributes can be set using the YansWifiPhyHelper</li>
+      <li>A new helper (HtWifiMacHelper) was added to set up a High Throughput (HT) MAC entity</li>
+      <li>New attributes were added to help the user setup a High Throughput (HT) PHY entity. These attributes can be set using the YansWifiPhyHelper</li>
       <li>A new standard value has been added that enables the new 11n data rates.</li>
       <li>New 11n preambles has been added (Mixed format and greenfield). To be able to change Tx duration according to the preamble used, a new class TxVector has been added to carry the transmission parameters (mode, preamble, stbc,..).  Several functions have been updated to allow the passage of TxVector instead of WifiMode in MacLow, WifiRemoteStationManager, WifiPhy, YansWifiPhy,.. </li>
       <li>A new information element has been added:  HTCapabilities. This information element is added to the MAC frame header if the node is an HT node. This HTCapabilites information element is used to advertise the HT capabilites of the node to other nodes in the network</li>
