@@ -3439,6 +3439,11 @@ def register_Ns3MacLowTransmissionListener_methods(root_module, cls):
                    'void', 
                    [param('double', 'snr'), param('ns3::WifiMode', 'txMode')], 
                    is_pure_virtual=True, is_virtual=True)
+    ## mac-low.h (module 'wifi'): bool ns3::MacLowTransmissionListener::HasTxop() [member function]
+    cls.add_method('HasTxop', 
+                   'bool', 
+                   [], 
+                   is_pure_virtual=True, is_virtual=True)
     ## mac-low.h (module 'wifi'): void ns3::MacLowTransmissionListener::MissedAck() [member function]
     cls.add_method('MissedAck', 
                    'void', 
