@@ -509,9 +509,9 @@ WifiMacHelper
 
 The next step is to configure the MAC model. We use WifiMacHelper to accomplish this.
 WifiMacHelper takes care of both the MAC low model and MAC high model, and configures an object factory to create instances of a ``ns3::WifiMac``.
-It is used to configure MAC parameters like type of MAC, and to select whether 802.11/WMM-style QoS and/or 802.11n-style High throughput (HT) and/or 802.11ac-style Very High throughput (VHT) support are/is required.
+It is used to configure MAC parameters like type of MAC, and to select whether 802.11/WMM-style QoS and/or 802.11n-style High Throughput (HT) and/or 802.11ac-style Very High Throughput (VHT) support are/is required.
 
-By default, it creates an ad-hoc MAC instance that does not have 802.11e/WMM-style QoS nor 802.11n-style High throughput (HT) nor 802.11ac-style Very High throughput (VHT) support enabled.
+By default, it creates an ad-hoc MAC instance that does not have 802.11e/WMM-style QoS nor 802.11n-style High Throughput (HT) nor 802.11ac-style Very High Throughput (VHT) support enabled.
 
 For example the following user code configures a non-QoS and non-(V)HT MAC that
 will be a non-AP STA in an infrastructure network where the AP has
@@ -539,8 +539,8 @@ four different Access Categories (ACs): **AC_VO** for voice traffic,
 **AC_VI** for video traffic, **AC_BE** for best-effort
 traffic and **AC_BK** for background traffic.
 
-When selecting **802.11n** as the desired wifi standard, both 802.11e/WMM-style QoS and 802.11n-style High throughput (HT) support gets enabled.
-Similarly, When selecting **802.11ac** as the desired wifi standard, 802.11e/WMM-style QoS, 802.11n-style High throughput (HT) and 802.11ac-style Very High throughput (VHT) support gets enabled.
+When selecting **802.11n** as the desired wifi standard, both 802.11e/WMM-style QoS and 802.11n-style High Throughput (HT) support gets enabled.
+Similarly, When selecting **802.11ac** as the desired wifi standard, 802.11e/WMM-style QoS, 802.11n-style High Throughput (HT) and 802.11ac-style Very High Throughput (VHT) support gets enabled.
 
 For MAC instances that have QoS support enabled, the ``ns3::WifiMacHelper`` can be also used to set:
 
@@ -558,7 +558,7 @@ in an infrastructure network where the AP has SSID ``ns-3-ssid``::
                           "BE_BlockAckThreshold", UintegerValue (2),
                           "ActiveProbing", BooleanValue (false));
 
-For MAC instances that have 802.11n-style High throughput (HT) and/or 802.11ac-style Very High throughput (VHT) support enabled, the ``ns3::WifiMacHelper`` can be also used to set:
+For MAC instances that have 802.11n-style High Throughput (HT) and/or 802.11ac-style Very High Throughput (VHT) support enabled, the ``ns3::WifiMacHelper`` can be also used to set:
 
 * MSDU aggregation parameters for a particular Access Category (AC) in order to use 802.11n/ac A-MSDU feature;
 * MPDU aggregation parameters for a particular Access Category (AC) in order to use 802.11n/ac A-MPDU feature.

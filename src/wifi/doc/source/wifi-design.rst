@@ -90,7 +90,7 @@ These three MAC high models share a common parent in
 configuration, an attribute ``QosSupported`` that allows
 configuration of 802.11e/WMM-style QoS support, an attribute
 ``HtSupported`` that allows configuration of 802.11n High Throughput
-style support an attribute ``VhtSupported`` that allows configuration
+style support and an attribute ``VhtSupported`` that allows configuration
 of 802.11ac Very High Throughput style support.
 
 There are also several **rate control algorithms** that can be used by the
@@ -168,17 +168,13 @@ The following details pertain to the physical layer and channel models:
 * PHY_RXSTART is not supported
 
 At the MAC layer, most of the main functions found in deployed Wi-Fi
-equipment for 802.11a/b/e/g are implemented, but there are scattered instances
-where some limitations in the models exist.  Most notably, 802.11n/ac 
-configurations are not supported by adaptive rate controls; only the
-so-called ``ConstantRateWifiManager`` can be used by those standards at
-this time.  Support for 802.11n and ac is evolving.  Some additional details
-are as follows:
+equipment for 802.11a/b/e/g/n/ac are implemented, but there are scattered instances
+where some limitations in the models exist.Support for 802.11n and ac is evolving.
+Some additional details are as follows:
 
-* 802.11e TXOP is not supported
 * BSSBasicRateSet for 802.11b has been assumed to be 1-2 Mbit/s
 * BSSBasicRateSet for 802.11a/g has been assumed to be 6-12-24 Mbit/s
-* cases where RTS/CTS and ACK are transmitted using HT formats are not supported
+* cases where RTS/CTS and ACK are transmitted using HT/VHT formats are not supported
 
 Design Details
 **************
