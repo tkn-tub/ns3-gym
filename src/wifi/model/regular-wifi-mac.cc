@@ -141,9 +141,9 @@ RegularWifiMac::GetHtCapabilities (void) const
 {
   NS_LOG_FUNCTION (this);
   HtCapabilities capabilities;
-  capabilities.SetHtSupported (1);
   if (m_htSupported)
     {
+      capabilities.SetHtSupported (1);
       capabilities.SetLdpc (m_phy->GetLdpc ());
       capabilities.SetSupportedChannelWidth (m_phy->GetChannelWidth () == 40);
       capabilities.SetShortGuardInterval20 (m_phy->GetGuardInterval ());
@@ -181,9 +181,9 @@ RegularWifiMac::GetVhtCapabilities (void) const
 {
   NS_LOG_FUNCTION (this);
   VhtCapabilities capabilities;
-  capabilities.SetVhtSupported (1);
   if (m_vhtSupported)
     {
+      capabilities.SetVhtSupported (1);
       if (m_phy->GetChannelWidth () == 160)
         {
           capabilities.SetSupportedChannelWidthSet (1);

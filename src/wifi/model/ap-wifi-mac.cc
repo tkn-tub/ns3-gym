@@ -504,9 +504,9 @@ ApWifiMac::GetHtOperation (void) const
 {
   NS_LOG_FUNCTION (this);
   HtOperation operation;
-  operation.SetHtSupported (1);
   if (m_htSupported)
     {
+      operation.SetHtSupported (1);
       operation.SetNonGfHtStasPresent (IsNonGfHtStasPresent ());
       if (m_nonHtStations.empty ())
         {
@@ -525,9 +525,9 @@ ApWifiMac::GetVhtOperation (void) const
 {
   NS_LOG_FUNCTION (this);
   VhtOperation operation;
-  operation.SetVhtSupported (1);
   if (m_vhtSupported)
     {
+      operation.SetVhtSupported (1);
       uint8_t channelWidth = GetVhtOperationalChannelWidth ();
       if (channelWidth == 160)
         {
