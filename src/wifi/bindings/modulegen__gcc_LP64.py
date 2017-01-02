@@ -14920,10 +14920,10 @@ def register_Ns3MacLow_methods(root_module, cls):
     cls.add_method('DestroyBlockAckAgreement', 
                    'void', 
                    [param('ns3::Mac48Address', 'originator'), param('uint8_t', 'tid')])
-    ## mac-low.h (module 'wifi'): void ns3::MacLow::FlushAggregateQueue() [member function]
+    ## mac-low.h (module 'wifi'): void ns3::MacLow::FlushAggregateQueue(uint8_t tid) [member function]
     cls.add_method('FlushAggregateQueue', 
                    'void', 
-                   [])
+                   [param('uint8_t', 'tid')])
     ## mac-low.h (module 'wifi'): ns3::Time ns3::MacLow::GetAckTimeout() const [member function]
     cls.add_method('GetAckTimeout', 
                    'ns3::Time', 
