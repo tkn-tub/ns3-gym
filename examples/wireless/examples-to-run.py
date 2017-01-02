@@ -35,6 +35,7 @@ cpp_examples = [
     ("mixed-bg-network --simulationTime=1", "True", "True"),
     ("wifi-aggregation --simulationTime=1", "True", "True"),
     ("80211e-txop --simulationTime=1", "True", "True"),
+    ("wifi-multi-tos --simulationTime=1 --nWifi=16 --useRts=1 --useShortGuardInterval=1", "True", "True"),
     ("wifi-tcp", "True", "True"),
     ("wifi-spectrum-per-example --distance=52 --index=3 --wifiType=ns3::SpectrumWifiPhy --simulationTime=1", "True", "True"),
     ("wifi-spectrum-per-example --distance=24 --index=31 --wifiType=ns3::YansWifiPhy --simulationTime=1", "True", "True"),

@@ -99,3 +99,6 @@ def build(bld):
 
     obj = bld.create_ns3_program('wifi-spectrum-saturation-example', ['internet', 'mobility', 'wifi', 'applications', 'spectrum'])
     obj.source = 'wifi-spectrum-saturation-example.cc'
+
+    obj = bld.create_ns3_program('wifi-multi-tos', ['core','internet', 'mobility', 'wifi', 'applications', 'propagation'])
+    obj.source = 'wifi-multi-tos.cc'
