@@ -815,7 +815,7 @@ public:
    * This function is called to flush the aggregate queue, which is used for A-MPDU
    *
    */
-  void FlushAggregateQueue (void);
+  void FlushAggregateQueue (uint8_t tid);
 
   /**
    * Return a TXVECTOR for the DATA frame given the destination.
@@ -1268,7 +1268,7 @@ private:
    * Insert in a temporary queue.
    * It is only used with a RTS/CTS exchange for an A-MPDU transmission.
    */
-  void InsertInTxQueue (Ptr<const Packet> packet, const WifiMacHeader &hdr, Time tStamp);
+  void InsertInTxQueue (Ptr<const Packet> packet, const WifiMacHeader &hdr, Time tStamp, uint8_t tid);
   /**
    * Perform MSDU aggregation for a given MPDU in an A-MPDU
    *
@@ -1364,10 +1364,11 @@ private:
 
   typedef std::map<AcIndex, MacLowAggregationCapableTransmissionListener*> QueueListeners;
   QueueListeners m_edcaListeners;
-  bool m_ctsToSelfSupported;          //!< Flag whether CTS-to-self is supported
-  Ptr<WifiMacQueue> m_aggregateQueue; //!< Queue used for MPDU aggregation
-  WifiTxVector m_currentTxVector;     //!< TXVECTOR used for the current packet transmission
-  std::vector<Item> m_txPackets;      //!< Contain temporary items to be sent with the next A-MPDU transmission, once RTS/CTS exchange has succeeded. It is not used in other cases.
+
+  bool m_ctsToSelfSupported;             //!< Flag whether CTS-to-self is supported
+  Ptr<WifiMacQueue> m_aggregateQueue[8]; //!< Queues per TID used for MPDU aggregation
+  std::vector<Item> m_txPackets[8];      //!< Contain temporary items to be sent with the next A-MPDU transmission for a given TID, once RTS/CTS exchange has succeeded.
+  WifiTxVector m_currentTxVector;        //!< TXVECTOR used for the current packet transmission
 };
 
 } //namespace ns3

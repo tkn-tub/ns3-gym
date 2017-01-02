@@ -762,8 +762,8 @@ EdcaTxopN::MissedCts (void)
         }
       if (GetAmpduExist (m_currentHdr.GetAddr1 ()) || m_currentHdr.IsQosData ())
         {
-          m_low->FlushAggregateQueue ();
           uint8_t tid = GetTid (m_currentPacket, m_currentHdr);
+          m_low->FlushAggregateQueue (tid);
 
           if (GetBaAgreementExists (m_currentHdr.GetAddr1 (), tid))
             {
