@@ -82,7 +82,7 @@ YansWifiChannel::Send (Ptr<YansWifiPhy> sender, Ptr<const Packet> packet, double
     {
       if (sender != (*i))
         {
-          //For now don't account for inter channel interference
+          //For now don't account for inter channel interference nor channel bonding
           if ((*i)->GetChannelNumber () != sender->GetChannelNumber ())
             {
               continue;
