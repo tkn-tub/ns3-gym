@@ -58,6 +58,7 @@ Bugs fixed
 - Bug 2584 - MacLow triggers StartNext even if there is no TXOP
 - Bug 2591 - 802.11e Block Ack mechanism cannot be enabled on HT/VHT stations
 - Bug 2594 - vht-wifi-network provides very low throughtput at MCS 6, 160 MHz, SGI
+- Bug 2614 - RIP header version should be set to 2
 
 Known issues
 ------------

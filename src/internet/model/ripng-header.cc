@@ -19,14 +19,14 @@
  */
 
 #include "ripng-header.h"
+#include "ns3/log.h"
 
 namespace ns3 {
 
 /*
  * RipNgRte
  */
-NS_OBJECT_ENSURE_REGISTERED (RipNgRte)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (RipNgRte);
 
 RipNgRte::RipNgRte ()
   : m_prefix ("::"), m_tag (0), m_prefixLen (0), m_metric (16)
@@ -132,8 +132,8 @@ std::ostream & operator << (std::ostream & os, const RipNgRte & h)
 /*
  * RipNgHeader
  */
-NS_OBJECT_ENSURE_REGISTERED (RipNgHeader)
-  ;
+NS_LOG_COMPONENT_DEFINE ("RipNgHeader");
+NS_OBJECT_ENSURE_REGISTERED (RipNgHeader);
 
 RipNgHeader::RipNgHeader ()
   : m_command (0)
@@ -202,11 +202,17 @@ uint32_t RipNgHeader::Deserialize (Buffer::Iterator start)
       return 0;
     }
 
-  temp = i.ReadU8 ();
-  NS_ASSERT_MSG (temp == 1, "RipNG received a message with mismatch version, aborting.");
+  if (i.ReadU8 () != 1)
+    {
+      NS_LOG_LOGIC ("RIP received a message with mismatch version, ignoring.");
+      return 0;
+    }
 
-  uint16_t temp16 = i.ReadU16 ();
-  NS_ASSERT_MSG (temp16 == 0, "RipNG received a message with invalid filled flags, aborting.");
+  if (i.ReadU16 () != 0)
+    {
+      NS_LOG_LOGIC ("RIP received a message with invalid filled flags, ignoring.");
+      return 0;
+    }
 
   uint8_t rteNumber = i.GetRemainingSize ()/20;
   for (uint8_t n=0; n<rteNumber; n++)
