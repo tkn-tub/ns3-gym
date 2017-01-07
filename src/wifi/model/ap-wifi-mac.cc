@@ -902,7 +902,7 @@ ApWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
                 {
                   //check whether the HT STA supports all MCSs in Basic MCS Set
                   HtCapabilities htcapabilities = assocReq.GetHtCapabilities ();
-                  if (htcapabilities.GetHtCapabilitiesInfo () != 0)
+                  if (htcapabilities.IsSupportedMcs (0))
                     {
                       isHtStation = true;
                       for (uint32_t i = 0; i < m_stationManager->GetNBasicMcs (); i++)
