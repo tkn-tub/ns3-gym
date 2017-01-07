@@ -319,8 +319,9 @@ WifiMac::ConfigureStandard (WifiPhyStandard standard)
     case WIFI_PHY_STANDARD_80211ac:
       Configure80211ac ();
       break;
+    case WIFI_PHY_STANDARD_UNSPECIFIED:
     default:
-      NS_ASSERT (false);
+      NS_FATAL_ERROR ("Wifi standard not found");
       break;
     }
   FinishConfigureStandard (standard);
