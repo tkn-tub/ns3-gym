@@ -458,9 +458,9 @@ ApWifiMac::GetEdcaParameterSet (void) const
 {
   NS_LOG_FUNCTION (this);
   EdcaParameterSet edcaParameters;
-  edcaParameters.SetQosSupported (1);
   if (m_qosSupported)
     {
+      edcaParameters.SetQosSupported (1);
       Ptr<EdcaTxopN> edca;
       Time txopLimit;
 
