@@ -33,6 +33,7 @@ Bugs fixed
 - Bug 2485 - Check for queue full should happen before checking RED thresholds
 - Bug 2492 - uan: Make use of RxGain attribute in UanPhyGen class
 - Bug 2511 - HT Greenfield is not working
+- Bug 2512 - Byte mode not configured correctly in red-queue-disc-test-suite.cc
 - Bug 2513 - ParetoRandomVariable needs a "scale", not a "mean" attribute.
 - Bug 2521 - Include ipv6-option.h in wscript
 - Bug 2527 - PrintRoutingTable extended to add an optional Time::Units parameter
@@ -56,6 +57,7 @@ Bugs fixed
 - Bug 2566 - BlockAckManager::GetNRetryNeededPackets missing some packets in the queue
 - Bug 2577 - simulation crashes when A-MPDU and multiple TOS are used with RTS-CTS enabled
 - Bug 2584 - MacLow triggers StartNext even if there is no TXOP
+- Bug 2590 - Minor enhancements in red-queue-disc{.h, .cc}
 - Bug 2591 - 802.11e Block Ack mechanism cannot be enabled on HT/VHT stations
 - Bug 2594 - vht-wifi-network provides very low throughtput at MCS 6, 160 MHz, SGI
 - Bug 2614 - RIP header version should be set to 2

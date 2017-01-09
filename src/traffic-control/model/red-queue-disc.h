@@ -66,7 +66,6 @@
 #include "ns3/nstime.h"
 #include "ns3/boolean.h"
 #include "ns3/data-rate.h"
-#include "ns3/nstime.h"
 #include "ns3/random-variable-stream.h"
 
 namespace ns3 {
@@ -238,9 +237,8 @@ private:
    /**
     * \brief Update m_curMaxP
     * \param newAve new average queue length
-    * \param now Current Time
     */
-  void UpdateMaxP (double newAve, Time now);
+  void UpdateMaxP (double newAve);
   /**
    * \brief Check if a packet needs to be dropped due to probability mark
    * \param item queue item
@@ -320,8 +318,8 @@ private:
   uint32_t m_count;         //!< Number of packets since last random number generation
   /**
    * 0 for default RED
-   * 1 experimental (see red-queue.cc)
-   * 2 experimental (see red-queue.cc)
+   * 1 experimental (see red-queue-disc.cc)
+   * 2 experimental (see red-queue-disc.cc)
    * 3 use Idle packet size in the ptc
    */
   uint32_t m_cautious;

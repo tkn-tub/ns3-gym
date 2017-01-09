@@ -112,7 +112,8 @@ RedQueueDiscTestCase::RunRedTest (StringValue mode)
   
   if (queue->GetMode () == Queue::QUEUE_MODE_BYTES)
     {
-      pktSize = 1000;
+      // pktSize should be same as MeanPktSize to avoid performance gap between byte and packet mode
+      pktSize = 500;
       modeSize = pktSize;
       queue->SetTh (minTh * modeSize, maxTh * modeSize);
       queue->SetQueueLimit (qSize * modeSize);

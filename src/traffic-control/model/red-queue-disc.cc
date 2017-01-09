@@ -569,8 +569,11 @@ RedQueueDisc::InitializeParams (void)
 
 // Update m_curMaxP to keep the average queue length within the target range.
 void
-RedQueueDisc::UpdateMaxP (double newAve, Time now)
+RedQueueDisc::UpdateMaxP (double newAve)
 {
+  NS_LOG_FUNCTION (this << newAve);
+
+  Time now = Simulator::Now ();
   double m_part = 0.4 * (m_maxTh - m_minTh);
   // AIMD rule to keep target Q~1/2(m_minTh + m_maxTh)
   if (newAve < m_minTh + m_part && m_curMaxP > m_bottom)
@@ -601,10 +604,10 @@ RedQueueDisc::Estimator (uint32_t nQueued, uint32_t m, double qAvg, double qW)
   double newAve = qAvg * pow(1.0-qW, m);
   newAve += qW * nQueued;
 
-  Time now = Simulator::Now();
+  Time now = Simulator::Now ();
   if (m_isAdaptMaxP && now > m_lastSet + m_interval)
     {
-      UpdateMaxP(newAve, now);
+      UpdateMaxP(newAve);
     }
 
   return newAve;
