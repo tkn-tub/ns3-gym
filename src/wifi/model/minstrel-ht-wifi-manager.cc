@@ -260,7 +260,7 @@ MinstrelHtWifiManager::DoInitialize ()
       if (HasVhtSupported ())
         {
           // Initialize all VHT groups
-          for (uint8_t chWidth = 20; chWidth <= MAX_VHT_WIDTH; chWidth *= 2)
+          for (uint16_t chWidth = 20; chWidth <= MAX_VHT_WIDTH; chWidth *= 2)
             {
               for (uint8_t sgi = 0; sgi <= 1; sgi++)
                 {
