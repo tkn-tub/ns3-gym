@@ -613,9 +613,40 @@ UP   Access Category
  1     AC_BK
 ===  ===============
 
-Readers can refer to the doxygen documentation of the
-:cpp:func:`ns3::WifiNetDevice::SelectQueue()` method for more information,
-including how DSCP values map onto user priorities and access categories.
+TOS and DSCP values map onto user priorities and access categories according
+to the following table.  
+
+============  ============  ==  ===============
+DiffServ PHB  TOS (binary)  UP  Access Category
+============  ============  ==  ===============
+EF            101110xx      5   AC_VI
+AF11          001010xx      1   AC_BK
+AF21          010010xx      2   AC_BK
+AF31          011010xx      3   AC_BE
+AF41          100010xx      4   AC_VI
+AF12          001100xx      1   AC_BK
+AF22          010100xx      2   AC_BK
+AF32          011100xx      3   AC_BE
+AF42          100100xx      4   AC_VI
+AF13          001110xx      1   AC_BK
+AF23          010110xx      2   AC_BK
+AF33          011110xx      3   AC_BE
+AF43          100110xx      4   AC_VI
+CS0           000000xx      0   AC_BE
+CS1           001000xx      1   AC_BK
+CS2           010000xx      2   AC_BK
+CS3           011000xx      3   AC_BE
+CS4           100000xx      4   AC_VI
+CS5           101000xx      5   AC_VI
+CS6           110000xx      6   AC_VO
+CS7           111000xx      7   AC_VO
+============  ============  ==  ===============
+
+So, for example,::
+
+    destAddress.SetTos (0xc0);
+
+will map to CS6, User Priority 6, and Access Category AC_VO.
 Also, the ns3-wifi-ac-mapping test suite (defined in 
 src/test/ns3wifi/wifi-ac-mapping-test-suite.cc) can provide additional
 useful information.
