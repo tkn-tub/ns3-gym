@@ -27,7 +27,7 @@
 
 // This is a simple example in order to show how to configure an IEEE 802.11n Wi-Fi network.
 //
-// It ouputs the UDP or TCP goodput for every VHT bitrate value, which depends on the MCS value (0 to 7), the
+// It ouputs the UDP or TCP goodput for every HT MCS value, which depends on the MCS value (0 to 7), the
 // channel width (20 or 40 MHz) and the guard interval (long or short). The PHY bitrate is constant over all
 // the simulation run. The user can also specify the distance between the access point and the station: the
 // larger the distance the smaller the goodput.
@@ -52,12 +52,14 @@ int main (int argc, char *argv[])
   double simulationTime = 10; //seconds
   double distance = 1.0; //meters
   double frequency = 5.0; //whether 2.4 or 5.0 GHz
-  
+  int mcs = -1; // -1 indicates an unset value
+
   CommandLine cmd;
   cmd.AddValue ("frequency", "Whether working in the 2.4 or 5.0 GHz band (other values gets rejected)", frequency);
   cmd.AddValue ("distance", "Distance in meters between the station and the access point", distance);
   cmd.AddValue ("simulationTime", "Simulation time in seconds", simulationTime);
   cmd.AddValue ("udp", "UDP if set to 1, TCP otherwise", udp);
+  cmd.AddValue ("mcs", "if set, limit testing to a specific MCS (0-7)", mcs);
   cmd.Parse (argc,argv);
 
   double prevThroughput [8];
@@ -66,7 +68,14 @@ int main (int argc, char *argv[])
       prevThroughput[l] = 0;
     }
   std::cout << "MCS value" << "\t\t" << "Channel width" << "\t\t" << "short GI" << "\t\t" << "Throughput" << '\n';
-  for (int mcs = 0; mcs <= 7; mcs++)
+  int minMcs = 0;
+  int maxMcs = 7;
+  if (mcs >= 0 && mcs <= 7)
+    {
+      minMcs = mcs;
+      maxMcs = mcs;
+    }
+  for (int mcs = minMcs; mcs <= maxMcs; mcs++)
     {
       uint8_t index = 0;
       double previous = 0;
