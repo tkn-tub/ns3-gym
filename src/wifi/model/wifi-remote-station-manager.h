@@ -165,6 +165,13 @@ public:
    */
   void UpdateFragmentationThreshold (void);
   /**
+   * Records QoS support of the remote station.
+   *
+   * \param from the address of the station being recorded
+   * \param qosSupported whether the station supports QoS
+   */
+  void SetQosSupport (Mac48Address from, bool qosSupported);
+  /**
    * Records HT capabilities of the remote station.
    *
    * \param from the address of the station being recorded
@@ -178,6 +185,18 @@ public:
    * \param vhtcapabilities the VHT capabilities of the station
    */
   void AddStationVhtCapabilities (Mac48Address from,VhtCapabilities vhtcapabilities);
+  /**
+   * Enable or disable QoS support.
+   *
+   * \param enable enable or disable QoS support
+   */
+  virtual void SetQosSupported (bool enable);
+  /**
+   * Return whether the device has QoS support enabled.
+   *
+   * \return true if QoS support is enabled, false otherwise
+   */
+  bool HasQosSupported (void) const;
   /**
    * Enable or disable HT capability support.
    *
@@ -329,6 +348,15 @@ public:
    */
   bool GetShortSlotTimeSupported (Mac48Address address) const;
   /**
+   * Return whether the given station is QoS capable.
+   *
+   * \param address the address of the station
+   *
+   * \return true if the station has QoS capabilities,
+   *         false otherwise
+   */
+  bool GetQosSupported (Mac48Address address) const;
+  /**
    * Add a given Modulation and Coding Scheme (MCS) index to
    * the set of basic MCS.
    *
@@ -421,6 +449,12 @@ public:
    * \param address the address of the station being recorded
    */
   void AddAllSupportedMcs (Mac48Address address);
+  /**
+   * Invoked in a STA or AP to delete all of the suppported MCS by a destination.
+   *
+   * \param address the address of the station being recorded
+   */
+  void RemoveAllSupportedMcs (Mac48Address address);
   /**
    * Record whether the short PLCP preamble is supported by the station.
    *
@@ -787,6 +821,15 @@ protected:
    * \return the number of modes supported by the given station
    */
   uint32_t GetNSupported (const WifiRemoteStation *station) const;
+  /**
+   * Return whether the given station is QoS capable.
+   *
+   * \param station the station being queried
+   *
+   * \return true if the station has QoS capabilities,
+   *         false otherwise
+   */
+  bool GetQosSupported (const WifiRemoteStation *station) const;
   /**
    * Return whether the given station is HT capable.
    *
@@ -1254,6 +1297,7 @@ private:
   WifiMode m_defaultTxMode; //!< The default transmission mode
   WifiMode m_defaultTxMcs;   //!< The default transmission modulation-coding scheme (MCS)
 
+  bool m_qosSupported;  //!< Flag if HT capability is supported
   bool m_htSupported;  //!< Flag if HT capability is supported
   bool m_vhtSupported; //!< Flag if VHT capability is supported
   uint32_t m_maxSsrc;  //!< Maximum STA short retry count (SSRC)
@@ -1327,6 +1371,7 @@ struct WifiRemoteStationState
   bool m_greenfield;          //!< Flag if greenfield is supported by the remote station
   bool m_shortPreamble;       //!< Flag if short PLCP preamble is supported by the remote station
   bool m_shortSlotTime;       //!< Flag if short ERP slot time is supported by the remote station
+  bool m_qosSupported;         //!< Flag if HT is supported by the station
   bool m_htSupported;         //!< Flag if HT is supported by the station
   bool m_vhtSupported;        //!< Flag if VHT is supported by the station
 };

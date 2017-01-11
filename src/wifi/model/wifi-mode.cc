@@ -68,6 +68,30 @@ std::istream & operator >> (std::istream &is, WifiMode &mode)
   return is;
 }
 
+bool
+WifiMode::IsAllowed (uint8_t channelWidth, uint8_t nss) const
+{
+  WifiModeFactory::WifiModeItem *item = WifiModeFactory::GetFactory ()->Get (m_uid);
+  if (item->modClass == WIFI_MOD_CLASS_VHT)
+    {
+      if (item->mcsValue == 9 && channelWidth == 20 && nss != 3)
+        {
+          return false;
+        }
+      if (item->mcsValue == 6 && channelWidth == 80 && nss == 3)
+        {
+          return false;
+        }
+    }
+  else
+    {
+      //We should not go here!
+      NS_ASSERT (false);
+      return false;
+    }
+  return true;
+}
+
 uint64_t
 WifiMode::GetPhyRate (uint8_t channelWidth, bool isShortGuardInterval, uint8_t nss) const
 {
@@ -172,13 +196,9 @@ WifiMode::GetDataRate (uint8_t channelWidth, bool isShortGuardInterval, uint8_t 
     }
   else if (item->modClass == WIFI_MOD_CLASS_HT || item->modClass == WIFI_MOD_CLASS_VHT)
     {
-      if (item->modClass == WIFI_MOD_CLASS_VHT && item->mcsValue == 9 && nss != 3)
+      if (item->modClass == WIFI_MOD_CLASS_VHT)
         {
-          NS_ASSERT_MSG (channelWidth != 20, "VHT MCS 9 forbidden at 20 MHz (only allowed when NSS = 3)");
-        }
-      if (item->modClass == WIFI_MOD_CLASS_VHT && item->mcsValue == 6 && nss == 3)
-        {
-          NS_ASSERT_MSG (channelWidth != 80, "VHT MCS 6 forbidden at 80 MHz when NSS = 3");
+          NS_ASSERT_MSG (IsAllowed (channelWidth, nss), "VHT MCS "<< (uint16_t)item->mcsValue << " forbidden at "<< (uint16_t)channelWidth << " MHz when NSS is " << (uint16_t)nss);
         }
 
       if (!isShortGuardInterval)

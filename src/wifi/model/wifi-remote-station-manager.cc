@@ -352,7 +352,8 @@ WifiRemoteStationManager::GetTypeId (void)
 }
 
 WifiRemoteStationManager::WifiRemoteStationManager ()
-  : m_htSupported (false),
+  : m_qosSupported (false),
+    m_htSupported (false),
     m_vhtSupported (false),
     m_useNonErpProtection (false),
     m_shortPreambleEnabled (false),
@@ -403,6 +404,12 @@ WifiRemoteStationManager::SetupMac (Ptr<WifiMac> mac)
   //full set of interframe spaces.
   m_wifiMac = mac;
   Reset ();
+}
+
+void
+WifiRemoteStationManager::SetQosSupported (bool enable)
+{
+  m_qosSupported = enable;
 }
 
 void
@@ -469,6 +476,12 @@ WifiRemoteStationManager::ProtectionMode
 WifiRemoteStationManager::GetProtectionMode (void) const
 {
   return m_protectionMode;
+}
+
+bool
+WifiRemoteStationManager::HasQosSupported (void) const
+{
+  return m_qosSupported;
 }
 
 bool
@@ -591,6 +604,15 @@ WifiRemoteStationManager::AddAllSupportedMcs (Mac48Address address)
 }
 
 void
+WifiRemoteStationManager::RemoveAllSupportedMcs (Mac48Address address)
+{
+  NS_LOG_FUNCTION (this << address);
+  NS_ASSERT (!address.IsGroup ());
+  WifiRemoteStationState *state = LookupState (address);
+  state->m_operationalMcsSet.clear ();
+}
+
+void
 WifiRemoteStationManager::AddSupportedMcs (Mac48Address address, WifiMode mcs)
 {
   NS_LOG_FUNCTION (this << address << mcs);
@@ -617,6 +639,12 @@ bool
 WifiRemoteStationManager::GetShortSlotTimeSupported (Mac48Address address) const
 {
   return LookupState (address)->m_shortSlotTime;
+}
+
+bool
+WifiRemoteStationManager::GetQosSupported (Mac48Address address) const
+{
+  return LookupState (address)->m_qosSupported;
 }
 
 bool
@@ -1490,6 +1518,7 @@ WifiRemoteStationManager::LookupState (Mac48Address address) const
   state->m_ness = 0;
   state->m_aggregation = false;
   state->m_stbc = false;
+  state->m_qosSupported = false;
   state->m_htSupported = false;
   state->m_vhtSupported = false;
   const_cast<WifiRemoteStationManager *> (this)->m_states.push_back (state);
@@ -1536,6 +1565,15 @@ WifiRemoteStationManager::Lookup (Mac48Address address, uint8_t tid) const
 }
 
 void
+WifiRemoteStationManager::SetQosSupport (Mac48Address from, bool qosSupported)
+{
+  NS_LOG_FUNCTION (this << from << qosSupported);
+  WifiRemoteStationState *state;
+  state = LookupState (from);
+  state->m_qosSupported = qosSupported;
+}
+
+void
 WifiRemoteStationManager::AddStationHtCapabilities (Mac48Address from, HtCapabilities htCapabilities)
 {
   //Used by all stations to record HT capabilities of remote stations
@@ -1552,6 +1590,7 @@ WifiRemoteStationManager::AddStationHtCapabilities (Mac48Address from, HtCapabil
       state->m_channelWidth = 20;
     }
   state->m_htSupported = true;
+  SetQosSupport (from, true);
   state->m_greenfield = htCapabilities.GetGreenfield ();
   state->m_streams = htCapabilities.GetRxHighestSupportedAntennas ();
 }
@@ -1877,6 +1916,12 @@ uint32_t
 WifiRemoteStationManager::GetNSupported (const WifiRemoteStation *station) const
 {
   return station->m_state->m_operationalRateSet.size ();
+}
+
+bool
+WifiRemoteStationManager::GetQosSupported (const WifiRemoteStation *station) const
+{
+  return station->m_state->m_qosSupported;
 }
 
 bool

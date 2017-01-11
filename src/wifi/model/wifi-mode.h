@@ -96,6 +96,13 @@ class WifiMode
 {
 public:
   /**
+   * \returns true if this <MCS, channel width, NSS> combination is allowed, false otherwise.
+   *
+   * \param channelWidth the considered channel width in MHz
+   * \param nss the considered number of streams
+   */
+  bool IsAllowed (uint8_t channelWidth, uint8_t nss) const;
+  /**
    *
    * \param channelWidth the considered channel width in MHz
    * \param isShortGuardInterval whether short guard interval is considered or not

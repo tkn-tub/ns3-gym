@@ -523,6 +523,7 @@ EdcaTxopN::NotifyAccessGranted (void)
               return;
             }
           if (m_currentHdr.IsQosData () && !m_currentHdr.GetAddr1 ().IsBroadcast ()
+              && m_stationManager->GetQosSupported (m_currentHdr.GetAddr1 ())
               && !m_baManager->ExistsAgreement (m_currentHdr.GetAddr1 (), m_currentHdr.GetQosTid ())
               && SetupBlockAckIfNeeded ())
             {

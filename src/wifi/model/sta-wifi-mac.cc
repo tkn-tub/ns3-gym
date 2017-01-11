@@ -535,22 +535,39 @@ StaWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
             }
           if (m_qosSupported)
             {
+              bool qosSupported = false;
               EdcaParameterSet edcaParameters = beacon.GetEdcaParameterSet ();
-              //The value of the TXOP Limit field is specified as an unsigned integer, with the least significant octet transmitted first, in units of 32 μs.
-              SetEdcaParameters (AC_BE, edcaParameters.GetBeCWmin(), edcaParameters.GetBeCWmax(), edcaParameters.GetBeAifsn(), 32 * MicroSeconds (edcaParameters.GetBeTXOPLimit()));
-              SetEdcaParameters (AC_BK, edcaParameters.GetBkCWmin(), edcaParameters.GetBkCWmax(), edcaParameters.GetBkAifsn(), 32 * MicroSeconds (edcaParameters.GetBkTXOPLimit()));
-              SetEdcaParameters (AC_VI, edcaParameters.GetViCWmin(), edcaParameters.GetViCWmax(), edcaParameters.GetViAifsn(), 32 * MicroSeconds (edcaParameters.GetViTXOPLimit()));
-              SetEdcaParameters (AC_VO, edcaParameters.GetVoCWmin(), edcaParameters.GetVoCWmax(), edcaParameters.GetVoAifsn(), 32 * MicroSeconds (edcaParameters.GetVoTXOPLimit()));
+              if (edcaParameters.IsQosSupported ())
+                {
+                  qosSupported = true;
+                  //The value of the TXOP Limit field is specified as an unsigned integer, with the least significant octet transmitted first, in units of 32 μs.
+                  SetEdcaParameters (AC_BE, edcaParameters.GetBeCWmin(), edcaParameters.GetBeCWmax(), edcaParameters.GetBeAifsn(), 32 * MicroSeconds (edcaParameters.GetBeTXOPLimit()));
+                  SetEdcaParameters (AC_BK, edcaParameters.GetBkCWmin(), edcaParameters.GetBkCWmax(), edcaParameters.GetBkAifsn(), 32 * MicroSeconds (edcaParameters.GetBkTXOPLimit()));
+                  SetEdcaParameters (AC_VI, edcaParameters.GetViCWmin(), edcaParameters.GetViCWmax(), edcaParameters.GetViAifsn(), 32 * MicroSeconds (edcaParameters.GetViTXOPLimit()));
+                  SetEdcaParameters (AC_VO, edcaParameters.GetVoCWmin(), edcaParameters.GetVoCWmax(), edcaParameters.GetVoAifsn(), 32 * MicroSeconds (edcaParameters.GetVoTXOPLimit()));
+                }
+              m_stationManager->SetQosSupport (hdr->GetAddr2 (), qosSupported);
             }
           if (m_htSupported)
             {
-              HtCapabilities htcapabilities = beacon.GetHtCapabilities ();
-              m_stationManager->AddStationHtCapabilities (hdr->GetAddr2 (), htcapabilities);
+              HtCapabilities htCapabilities = beacon.GetHtCapabilities ();
+              if (!htCapabilities.IsSupportedMcs (0))
+                {
+                  m_stationManager->RemoveAllSupportedMcs (hdr->GetAddr2 ());
+                }
+              else
+                {
+                  m_stationManager->AddStationHtCapabilities (hdr->GetAddr2 (), htCapabilities);
+                }
             }
           if (m_vhtSupported)
             {
-              VhtCapabilities vhtcapabilities = beacon.GetVhtCapabilities ();
-              m_stationManager->AddStationVhtCapabilities (hdr->GetAddr2 (), vhtcapabilities);
+              VhtCapabilities vhtCapabilities = beacon.GetVhtCapabilities ();
+              //we will always fill in RxHighestSupportedLgiDataRate field at TX, so this can be used to check whether it supports VHT
+              if (vhtCapabilities.GetRxHighestSupportedLgiDataRate () > 0)
+                {
+                  m_stationManager->AddStationVhtCapabilities (hdr->GetAddr2 (), vhtCapabilities);
+                }
             }
           m_stationManager->SetShortPreambleEnabled (isShortPreambleEnabled);
           m_stationManager->SetShortSlotTimeEnabled (capabilities.IsShortSlotTime ());
@@ -702,24 +719,41 @@ StaWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
               m_stationManager->SetShortSlotTimeEnabled (capabilities.IsShortSlotTime ());
               if (m_qosSupported)
                 {
+                  bool qosSupported = false;
                   EdcaParameterSet edcaParameters = assocResp.GetEdcaParameterSet ();
-                  //The value of the TXOP Limit field is specified as an unsigned integer, with the least significant octet transmitted first, in units of 32 μs.
-                  SetEdcaParameters (AC_BE, edcaParameters.GetBeCWmin(), edcaParameters.GetBeCWmax(), edcaParameters.GetBeAifsn(), 32 * MicroSeconds (edcaParameters.GetBeTXOPLimit()));
-                  SetEdcaParameters (AC_BK, edcaParameters.GetBkCWmin(), edcaParameters.GetBkCWmax(), edcaParameters.GetBkAifsn(), 32 * MicroSeconds (edcaParameters.GetBkTXOPLimit()));
-                  SetEdcaParameters (AC_VI, edcaParameters.GetViCWmin(), edcaParameters.GetViCWmax(), edcaParameters.GetViAifsn(), 32 * MicroSeconds (edcaParameters.GetViTXOPLimit()));
-                  SetEdcaParameters (AC_VO, edcaParameters.GetVoCWmin(), edcaParameters.GetVoCWmax(), edcaParameters.GetVoAifsn(), 32 * MicroSeconds (edcaParameters.GetVoTXOPLimit()));
+                  if (edcaParameters.IsQosSupported ())
+                    {
+                      qosSupported = true;
+                      //The value of the TXOP Limit field is specified as an unsigned integer, with the least significant octet transmitted first, in units of 32 μs.
+                      SetEdcaParameters (AC_BE, edcaParameters.GetBeCWmin(), edcaParameters.GetBeCWmax(), edcaParameters.GetBeAifsn(), 32 * MicroSeconds (edcaParameters.GetBeTXOPLimit()));
+                      SetEdcaParameters (AC_BK, edcaParameters.GetBkCWmin(), edcaParameters.GetBkCWmax(), edcaParameters.GetBkAifsn(), 32 * MicroSeconds (edcaParameters.GetBkTXOPLimit()));
+                      SetEdcaParameters (AC_VI, edcaParameters.GetViCWmin(), edcaParameters.GetViCWmax(), edcaParameters.GetViAifsn(), 32 * MicroSeconds (edcaParameters.GetViTXOPLimit()));
+                      SetEdcaParameters (AC_VO, edcaParameters.GetVoCWmin(), edcaParameters.GetVoCWmax(), edcaParameters.GetVoAifsn(), 32 * MicroSeconds (edcaParameters.GetVoTXOPLimit()));
+                    }
+                  m_stationManager->SetQosSupport (hdr->GetAddr2 (), qosSupported);
                 }
               if (m_htSupported)
                 {
-                  HtCapabilities htcapabilities = assocResp.GetHtCapabilities ();
-                  HtOperation htOperation = assocResp.GetHtOperation ();
-                  m_stationManager->AddStationHtCapabilities (hdr->GetAddr2 (), htcapabilities);
+                  HtCapabilities htCapabilities = assocResp.GetHtCapabilities ();
+                  if (!htCapabilities.IsSupportedMcs (0))
+                    {
+                      m_stationManager->RemoveAllSupportedMcs (hdr->GetAddr2 ());
+                    }
+                  else
+                    {
+                      m_stationManager->AddStationHtCapabilities (hdr->GetAddr2 (), htCapabilities);
+                      HtOperation htOperation = assocResp.GetHtOperation ();
+                    }
                 }
               if (m_vhtSupported)
                 {
-                  VhtCapabilities vhtcapabilities = assocResp.GetVhtCapabilities ();
-                  VhtOperation vhtOperation = assocResp.GetVhtOperation ();
-                  m_stationManager->AddStationVhtCapabilities (hdr->GetAddr2 (), vhtcapabilities);
+                  VhtCapabilities vhtCapabilities = assocResp.GetVhtCapabilities ();
+                  //we will always fill in RxHighestSupportedLgiDataRate field at TX, so this can be used to check whether it supports VHT
+                  if (vhtCapabilities.GetRxHighestSupportedLgiDataRate () > 0)
+                    {
+                      m_stationManager->AddStationVhtCapabilities (hdr->GetAddr2 (), vhtCapabilities);
+                      VhtOperation vhtOperation = assocResp.GetVhtOperation ();
+                    }
                 }
 
               for (uint32_t i = 0; i < m_phy->GetNModes (); i++)

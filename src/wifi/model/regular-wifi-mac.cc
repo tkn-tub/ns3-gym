@@ -144,6 +144,7 @@ RegularWifiMac::GetHtCapabilities (void) const
   if (m_htSupported)
     {
       capabilities.SetHtSupported (1);
+      capabilities.SetHtSupported (1);
       capabilities.SetLdpc (m_phy->GetLdpc ());
       capabilities.SetSupportedChannelWidth (m_phy->GetChannelWidth () == 40);
       capabilities.SetShortGuardInterval20 (m_phy->GetGuardInterval ());
@@ -216,6 +217,21 @@ RegularWifiMac::GetVhtCapabilities (void) const
         {
           capabilities.SetTxMcsMap (maxMcs, nss);
         }
+      uint64_t maxSupportedRateLGI = 0; //in bit/s
+      for (uint8_t i = 0; i < m_phy->GetNMcs (); i++)
+        {
+          WifiMode mcs = m_phy->GetMcs (i);
+          if (mcs.GetModulationClass () != WIFI_MOD_CLASS_VHT || !mcs.IsAllowed (m_phy->GetChannelWidth (), 1))
+            {
+              continue;
+            }
+          if (mcs.GetDataRate (m_phy->GetChannelWidth ()) > maxSupportedRateLGI)
+            {
+              maxSupportedRateLGI = mcs.GetDataRate (m_phy->GetChannelWidth ());
+              NS_LOG_DEBUG ("Updating maxSupportedRateLGI to " << maxSupportedRateLGI);
+            }
+        }
+      capabilities.SetRxHighestSupportedLgiDataRate (maxSupportedRateLGI / 1e6); //in Mbit/s
     }
   return capabilities;
 }

@@ -954,28 +954,35 @@ ApWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
                     }
                   if (m_htSupported)
                     {
-                      HtCapabilities htcapabilities = assocReq.GetHtCapabilities ();
-                      m_stationManager->AddStationHtCapabilities (from, htcapabilities);
-                      for (uint32_t j = 0; j < m_phy->GetNMcs (); j++)
+                      HtCapabilities htCapabilities = assocReq.GetHtCapabilities ();
+                      if (htCapabilities.IsSupportedMcs (0))
                         {
-                          WifiMode mcs = m_phy->GetMcs (j);
-                          if (mcs.GetModulationClass () == WIFI_MOD_CLASS_HT && htcapabilities.IsSupportedMcs (mcs.GetMcsValue ()))
+                          m_stationManager->AddStationHtCapabilities (from, htCapabilities);
+                          for (uint32_t j = 0; j < m_phy->GetNMcs (); j++)
                             {
-                              m_stationManager->AddSupportedMcs (from, mcs);
+                              WifiMode mcs = m_phy->GetMcs (j);
+                              if (mcs.GetModulationClass () == WIFI_MOD_CLASS_HT && htCapabilities.IsSupportedMcs (mcs.GetMcsValue ()))
+                                {
+                                  m_stationManager->AddSupportedMcs (from, mcs);
+                                }
                             }
                         }
                     }
                   if (m_vhtSupported)
                     {
                       VhtCapabilities vhtCapabilities = assocReq.GetVhtCapabilities ();
-                      m_stationManager->AddStationVhtCapabilities (from, vhtCapabilities);
-                      for (uint32_t i = 0; i < m_phy->GetNMcs (); i++)
+                      //we will always fill in RxHighestSupportedLgiDataRate field at TX, so this can be used to check whether it supports VHT
+                      if (vhtCapabilities.GetRxHighestSupportedLgiDataRate () > 0)
                         {
-                          WifiMode mcs = m_phy->GetMcs (i);
-                          if (mcs.GetModulationClass () == WIFI_MOD_CLASS_VHT && vhtCapabilities.IsSupportedTxMcs (mcs.GetMcsValue ()))
+                          m_stationManager->AddStationVhtCapabilities (from, vhtCapabilities);
+                          for (uint32_t i = 0; i < m_phy->GetNMcs (); i++)
                             {
-                              m_stationManager->AddSupportedMcs (hdr->GetAddr2 (), mcs);
-                              //here should add a control to add basic MCS when it is implemented
+                              WifiMode mcs = m_phy->GetMcs (i);
+                              if (mcs.GetModulationClass () == WIFI_MOD_CLASS_VHT && vhtCapabilities.IsSupportedTxMcs (mcs.GetMcsValue ()))
+                                {
+                                  m_stationManager->AddSupportedMcs (hdr->GetAddr2 (), mcs);
+                                  //here should add a control to add basic MCS when it is implemented
+                                }
                             }
                         }
                     }
