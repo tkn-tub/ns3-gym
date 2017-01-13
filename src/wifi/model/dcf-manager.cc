@@ -166,6 +166,7 @@ DcfState::IsAccessRequested (void) const
 {
   return m_accessRequested;
 }
+
 void
 DcfState::NotifyAccessRequested (void)
 {

@@ -666,65 +666,74 @@ void EdcaTxopN::NotifyInternalCollision (void)
   WifiMacHeader header;
   if (m_currentPacket == 0)
     {
-      packet = m_queue->Peek (&header);
-      NS_ASSERT_MSG (packet, "Internal collision but no packet in queue");
+      if (m_baManager->HasPackets ())
+        {
+          packet = m_baManager->PeekNextPacket (header);
+        }
+      else
+        {
+          packet = m_queue->Peek (&header);
+        }
     }
   else
     {
       packet = m_currentPacket;
       header = m_currentHdr;
     }
-  if (m_isAccessRequestedForRts)
+  if (packet != 0)
     {
-      if (!NeedRtsRetransmission (packet, header))
-      {
-        resetDcf = true;
-        m_stationManager->ReportFinalRtsFailed (header.GetAddr1 (), &header);
-      }
-      else
-      {
-        m_stationManager->ReportRtsFailed (header.GetAddr1 (), &header);
-      }
-    }
-  else if (header.GetAddr1 () == Mac48Address::GetBroadcast ())
-    {
-      resetDcf = false;
-    }
-  else
-    {
-      if (!NeedDataRetransmission (packet, header))
-      {
-        resetDcf = true;
-        m_stationManager->ReportFinalDataFailed (header.GetAddr1 (), &header);
-      }
-      else
-      {
-        m_stationManager->ReportDataFailed (header.GetAddr1 (), &header);
-      }
-    }
-  if (resetDcf)
-    {
-      NS_LOG_DEBUG ("reset DCF");
-      if (!m_txFailedCallback.IsNull ())
+      if (m_isAccessRequestedForRts)
         {
-          m_txFailedCallback (header);
+          if (!NeedRtsRetransmission (packet, header))
+          {
+            resetDcf = true;
+            m_stationManager->ReportFinalRtsFailed (header.GetAddr1 (), &header);
+          }
+          else
+          {
+            m_stationManager->ReportRtsFailed (header.GetAddr1 (), &header);
+          }
         }
-      //to reset the dcf.
-      if (m_currentPacket)
+      else if (header.GetAddr1 () == Mac48Address::GetBroadcast ())
         {
-          NS_LOG_DEBUG ("Discarding m_currentPacket");
-          m_currentPacket = 0;
+          resetDcf = false;
         }
       else
         {
-          NS_LOG_DEBUG ("Dequeueing and discarding head of queue");
-          packet = m_queue->Peek (&header);
+          if (!NeedDataRetransmission (packet, header))
+          {
+            resetDcf = true;
+            m_stationManager->ReportFinalDataFailed (header.GetAddr1 (), &header);
+          }
+          else
+          {
+            m_stationManager->ReportDataFailed (header.GetAddr1 (), &header);
+          }
         }
-      m_dcf->ResetCw ();
-    }
-  else
-    {
-      m_dcf->UpdateFailedCw ();
+     if (resetDcf)
+        {
+          NS_LOG_DEBUG ("reset DCF");
+          if (!m_txFailedCallback.IsNull ())
+            {
+              m_txFailedCallback (header);
+            }
+          //to reset the dcf.
+          if (m_currentPacket)
+            {
+              NS_LOG_DEBUG ("Discarding m_currentPacket");
+              m_currentPacket = 0;
+            }
+          else
+            {
+              NS_LOG_DEBUG ("Dequeueing and discarding head of queue");
+              packet = m_queue->Peek (&header);
+            }
+          m_dcf->ResetCw ();
+        }
+      else
+        {
+          m_dcf->UpdateFailedCw ();
+        }
     }
   m_backoffTrace = m_rng->GetNext (0, m_dcf->GetCw ());
   m_dcf->StartBackoffNow (m_backoffTrace);
