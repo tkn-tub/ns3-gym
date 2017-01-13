@@ -210,21 +210,39 @@ WifiMode::GetDataRate (uint8_t channelWidth, bool isShortGuardInterval, uint8_t 
           symbolRate = (1 / 3.6) * 1e6;
         }
 
-      switch (channelWidth)
+      if (item->modClass == WIFI_MOD_CLASS_HT)
         {
-        case 20:
-        default:
-          usableSubCarriers = 52;
-          break;
-        case 40:
-          usableSubCarriers = 108;
-          break;
-        case 80:
-          usableSubCarriers = 234;
-          break;
-        case 160:
-          usableSubCarriers = 468;
-          break;
+          switch (channelWidth)
+            {
+            case 20:
+            default:
+              usableSubCarriers = 52;
+              break;
+            case 40:
+            case 80:
+            case 160:
+              usableSubCarriers = 108;
+              break;
+            }
+        }
+      else //WIFI_MOD_CLASS_VHT
+        {
+          switch (channelWidth)
+            {
+            case 20:
+            default:
+              usableSubCarriers = 52;
+              break;
+            case 40:
+              usableSubCarriers = 108;
+              break;
+            case 80:
+              usableSubCarriers = 234;
+              break;
+            case 160:
+              usableSubCarriers = 468;
+              break;
+            }
         }
 
       switch (GetCodeRate ())

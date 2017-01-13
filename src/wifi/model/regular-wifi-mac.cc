@@ -146,9 +146,9 @@ RegularWifiMac::GetHtCapabilities (void) const
       capabilities.SetHtSupported (1);
       capabilities.SetHtSupported (1);
       capabilities.SetLdpc (m_phy->GetLdpc ());
-      capabilities.SetSupportedChannelWidth (m_phy->GetChannelWidth () == 40);
+      capabilities.SetSupportedChannelWidth (m_phy->GetChannelWidth () >= 40);
       capabilities.SetShortGuardInterval20 (m_phy->GetGuardInterval ());
-      capabilities.SetShortGuardInterval40 (m_phy->GetChannelWidth () == 40 && m_phy->GetGuardInterval ());
+      capabilities.SetShortGuardInterval40 (m_phy->GetChannelWidth () >= 40 && m_phy->GetGuardInterval ());
       capabilities.SetGreenfield (m_phy->GetGreenfield ());
       capabilities.SetMaxAmsduLength (1); //hardcoded for now (TBD)
       capabilities.SetLSigProtectionSupport (!m_phy->GetGreenfield ());

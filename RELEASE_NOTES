@@ -61,6 +61,7 @@ Bugs fixed
 - Bug 2590 - Minor enhancements in red-queue-disc{.h, .cc}
 - Bug 2591 - 802.11e Block Ack mechanism cannot be enabled on HT/VHT stations
 - Bug 2594 - vht-wifi-network provides very low throughtput at MCS 6, 160 MHz, SGI
+- Bug 2601 - HT stations should use 40 MHz channel width if the configured channel width is set to 80 or 160 MHz
 - Bug 2605 - A HT/VHT station transmitting to a legacy access point results in a null throughput
 - Bug 2607 - Minstrel HT manager results in an endless loop when a 802.11ac station is transmitting to a 802.11a access point
 - Bug 2614 - RIP header version should be set to 2
