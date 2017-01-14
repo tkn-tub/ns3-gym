@@ -139,33 +139,16 @@ Models yet to be created
 Open issues
 ###########
 
-Data packets are not shown correctly in Wireshark
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+A bug exists in the Wi-Fi module that manifests itself as performance
+degradation in large mesh networks, due to incorrect duplicate frame
+detection for QoS data frames (bug 2326).
 
-802.11 packets (e.g. using UDP, ARP) which are generated in the simulator ns-3 are not recognized correctly in Wireshark. They are erroneously detected as LLC packets by using the mesh module.
-The reason is that the IEEE 802.11 frame is of type Data frame/Subtype 0 (not QoS). However at the end of the header are some additional bytes (referring to QoS) which should not be there and therefore the frame can't be detected with Wireshark.
+Mesh does not work for 802.11n/ac stations (bug 2276).
 
-Lack of modelled processing delays can cause repeated packet losses
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Energy module can not be used on mesh devices (bug 2265).
 
-Bug 1605 describes scenarios for which no data packets can be delivered through
-the network due to synchronized losses.  The model is highly sensitive to
-the fact that node packet processing time is not modelled.  The following
-is adapted from the bug report.
+IE11S_MESH_PEERING_PROTOCOL_VERSION should be removed as per standard. 
+Protocol ID should actually be part of the Mesh Peering Management IE (bug 2600).
 
-The symptoms are the following:
-
-1. Successful transmission is possible only between two nodes, or
-2. successful transmission is possible only in a chain topology
-
-The explanation is the following:
-
-1. Some node sends a packet (this may be broadcast ARP request, or broadcast HWMP PREQ or something else)
-2. Several nodes receive this packet
-3. The received packet goes immediately through the node and comes to outgoing wifi-queue (EDCA-TXOP)
-4. all received packets are forwarded immediately (due to wifi-backoff procedure, and backoff is not calculated in this case, because there was no previous concurrency in the network)
-5. Packets collide
-6. NO management data can pass through the network
-
-Adding random jitter to all packets that go from the mesh interface mac to 
-EdcaTxopN can remedy this problem.
+Node packet processing times are not modeled; some evaluation of the impact
+of packet processing delays is discussed in [Hep16]_.
