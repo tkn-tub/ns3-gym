@@ -208,7 +208,7 @@ int main (int argc, char *argv[])
         {
           wifi.SetStandard (WIFI_PHY_STANDARD_80211g);
         }
-      NqosWifiMacHelper wifiMac = NqosWifiMacHelper::Default ();
+      WifiMacHelper wifiMac;
 
       //Configure the STA node
       wifi.SetRemoteStationManager (staManager, "RtsCtsThreshold", UintegerValue (rtsThreshold));
@@ -237,7 +237,7 @@ int main (int argc, char *argv[])
           wifi.SetStandard (WIFI_PHY_STANDARD_80211n_5GHZ);
         }
 
-      HtWifiMacHelper wifiMac = HtWifiMacHelper::Default ();
+      WifiMacHelper wifiMac;
 
       //Configure the STA node
       wifi.SetRemoteStationManager (staManager, "RtsCtsThreshold", UintegerValue (rtsThreshold));
@@ -260,7 +260,7 @@ int main (int argc, char *argv[])
   else if (standard == "802.11ac")
     {
       wifi.SetStandard (WIFI_PHY_STANDARD_80211ac);
-      VhtWifiMacHelper wifiMac = VhtWifiMacHelper::Default ();
+      WifiMacHelper wifiMac;
 
       //Configure the STA node
       wifi.SetRemoteStationManager (staManager, "RtsCtsThreshold", UintegerValue (rtsThreshold));
