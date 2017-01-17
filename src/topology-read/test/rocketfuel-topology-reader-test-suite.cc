@@ -32,7 +32,17 @@
 #include "ns3/simulator.h"
 
 using namespace ns3;
+/**
+ * \ingroup topology
+ * \defgroup topology-test Topology module tests
+ */
 
+/**
+ * \ingroup topology-test
+ * \ingroup tests
+
+ * \brief Rocketfuel Topology Reader Test
+ */
 class RocketfuelTopologyReaderTest : public TestCase
 {
 public:
@@ -72,6 +82,12 @@ RocketfuelTopologyReaderTest::DoRun (void)
   Simulator::Destroy ();
 }
 
+/**
+ * \ingroup topology-test
+ * \ingroup tests
+ *
+ * \brief Rocketfuel Topology Reader TestSuite
+ */
 class RocketfuelTopologyReaderTestSuite : public TestSuite
 {
 public:
