@@ -56,6 +56,8 @@ public:
   LteMacSapProvider*  GetLteMacSapProvider (void);
   void  SetLteUeCmacSapUser (LteUeCmacSapUser* s);
   LteUeCmacSapProvider*  GetLteUeCmacSapProvider (void);
+  
+  void SetComponentCarrierId (uint16_t index);
 
   /**
   * \brief Get the PHY SAP user
@@ -112,6 +114,9 @@ private:
   void RaResponseTimeout (bool contention);
   void SendReportBufferStatus (void);
   void RefreshHarqProcessesPacketBuffer (void);
+
+  /// component carrier Id --> used to address sap
+  uint8_t m_componentCarrierId;
 
 private:
 

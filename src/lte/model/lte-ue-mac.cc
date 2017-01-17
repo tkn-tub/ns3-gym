@@ -224,6 +224,7 @@ LteUeMac::LteUeMac ()
   m_cmacSapProvider = new UeMemberLteUeCmacSapProvider (this);
   m_uePhySapUser = new UeMemberLteUePhySapUser (this);
   m_raPreambleUniformVariable = CreateObject<UniformRandomVariable> ();
+  m_componentCarrierId = 0;
 }
 
 
@@ -275,6 +276,11 @@ LteUeMac::GetLteUeCmacSapProvider (void)
   return m_cmacSapProvider;
 }
 
+void
+LteUeMac::SetComponentCarrierId (uint16_t index)
+{
+  m_componentCarrierId = index;
+}
 
 void
 LteUeMac::DoTransmitPdu (LteMacSapProvider::TransmitPduParameters params)

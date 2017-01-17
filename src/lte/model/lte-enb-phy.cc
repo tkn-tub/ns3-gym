@@ -704,6 +704,7 @@ LteEnbPhy::StartSubFrame (void)
                   params.m_size = dci->GetDci ().m_tbsSize.at (i);
                   params.m_rv = dci->GetDci ().m_rv.at (i);
                   params.m_ndi = dci->GetDci ().m_ndi.at (i);
+                  params.m_ccId = m_componentCarrierId;
                   m_dlPhyTransmission (params);
                 }
 

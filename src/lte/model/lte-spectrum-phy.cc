@@ -984,6 +984,7 @@ LteSpectrumPhy::EndRxData ()
           params.m_rv = (*itTb).second.rv;
           params.m_ndi = (*itTb).second.ndi;
           params.m_correctness = (uint8_t)!(*itTb).second.corrupt;
+          params.m_ccId = m_componentCarrierId;
           if ((*itTb).second.downlink)
             {
               // DL
@@ -1189,6 +1190,11 @@ LteSpectrumPhy::SetCellId (uint16_t cellId)
   m_cellId = cellId;
 }
 
+void
+LteSpectrumPhy::SetComponentCarrierId (uint8_t componentCarrierId)
+{
+  m_componentCarrierId = componentCarrierId;
+}
 
 void
 LteSpectrumPhy::AddRsPowerChunkProcessor (Ptr<LteChunkProcessor> p)

@@ -62,7 +62,7 @@ public:
   virtual ~LteEnbMac (void);
   virtual void DoDispose (void);
 
-
+  void SetComponentCarrierId (uint16_t index);
   /**
    * \brief Set the scheduler SAP provider
    * \param s a pointer SAP provider of the FF packet scheduler
@@ -290,6 +290,10 @@ private:
   std::map<uint8_t, uint32_t> m_receivedRachPreambleCount;
 
   std::map<uint8_t, uint32_t> m_rapIdRntiMap;
+
+  // component carrier Id used to address sap
+  uint8_t m_componentCarrierId;
+ 
 };
 
 } // end namespace ns3

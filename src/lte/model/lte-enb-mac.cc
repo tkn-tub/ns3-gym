@@ -339,6 +339,11 @@ LteEnbMac::GetTypeId (void)
                      "Information regarding UL scheduling.",
                      MakeTraceSourceAccessor (&LteEnbMac::m_ulScheduling),
                      "ns3::LteEnbMac::UlSchedulingTracedCallback")
+    .AddAttribute ("ComponentCarrierId",
+                   "ComponentCarrier Id, needed to reply on the appropriate sap.",
+                   UintegerValue (0),
+                   MakeUintegerAccessor (&LteEnbMac::m_componentCarrierId),
+                   MakeUintegerChecker<uint8_t> (0,4))
   ;
 
   return tid;
@@ -378,6 +383,11 @@ LteEnbMac::DoDispose ()
   delete m_enbPhySapUser;
 }
 
+void
+LteEnbMac::SetComponentCarrierId (uint16_t index)
+{
+  m_componentCarrierId = index;
+}
 
 void
 LteEnbMac::SetFfMacSchedSapProvider (FfMacSchedSapProvider* s)

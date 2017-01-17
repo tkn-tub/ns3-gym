@@ -209,7 +209,9 @@ public:
   */
   virtual void ReportRsReceivedPower (const SpectrumValue& power) = 0;
 
+  void SetComponentCarrierId (uint16_t index);
 
+  uint8_t GetComponentCarrierId ();
 
 protected:
   /// Pointer to the NetDevice where this PHY layer is attached.
@@ -290,6 +292,9 @@ protected:
    * eNodeB which this PHY layer is synchronized with.
    */
   uint16_t m_cellId;
+
+  /// component carrier Id used to address sap
+  uint8_t m_componentCarrierId;
 
 }; // end of `class LtePhy`
 
