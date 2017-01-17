@@ -1093,9 +1093,9 @@ private:
   /// Cell identifier. Must be unique across the simulation.
   uint16_t m_cellId;
   /// Downlink E-UTRA Absolute Radio Frequency Channel Number.
-  uint16_t m_dlEarfcn;
+  uint32_t m_dlEarfcn;
   /// Uplink E-UTRA Absolute Radio Frequency Channel Number.
-  uint16_t m_ulEarfcn;
+  uint32_t m_ulEarfcn;
   /// Downlink transmission bandwidth configuration in number of Resource Blocks.
   uint16_t m_dlBandwidth;
   /// Uplink transmission bandwidth configuration in number of Resource Blocks.

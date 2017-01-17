@@ -226,12 +226,12 @@ public:
   /**
    * \return the downlink carrier frequency (EARFCN)
    */
-  uint16_t GetDlEarfcn () const;
+  uint32_t GetDlEarfcn () const;
 
   /** 
    * \return the uplink carrier frequency (EARFCN)
    */
-  uint16_t GetUlEarfcn () const;
+  uint32_t GetUlEarfcn () const;
 
   /**
    *
@@ -305,8 +305,8 @@ private:
  
   // LTE AS SAP methods
   void DoSetCsgWhiteList (uint32_t csgId);
-  void DoForceCampedOnEnb (uint16_t cellId, uint16_t dlEarfcn);
-  void DoStartCellSelection (uint16_t dlEarfcn);
+  void DoForceCampedOnEnb (uint16_t cellId, uint32_t dlEarfcn);
+  void DoStartCellSelection (uint32_t dlEarfcn);
   void DoConnect ();
   void DoSendData (Ptr<Packet> packet, uint8_t bid);
   void DoDisconnect ();
@@ -581,8 +581,8 @@ private:
   uint8_t m_dlBandwidth; /**< Downlink bandwidth in RBs. */
   uint8_t m_ulBandwidth; /**< Uplink bandwidth in RBs. */
 
-  uint16_t m_dlEarfcn;  /**< Downlink carrier frequency. */
-  uint16_t m_ulEarfcn;  /**< Uplink carrier frequency. */
+  uint32_t m_dlEarfcn;  /**< Downlink carrier frequency. */
+  uint32_t m_ulEarfcn;  /**< Uplink carrier frequency. */
 
   /**
    * The `MibReceived` trace source. Fired upon reception of Master Information

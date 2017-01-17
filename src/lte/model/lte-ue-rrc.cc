@@ -363,13 +363,13 @@ LteUeRrc::GetDlBandwidth () const
   return m_dlBandwidth;
 }
 
-uint16_t
+uint32_t
 LteUeRrc::GetDlEarfcn () const
 {
   return m_dlEarfcn;
 }
 
-uint16_t 
+uint32_t 
 LteUeRrc::GetUlEarfcn () const
 {
   NS_LOG_FUNCTION (this);
@@ -590,7 +590,7 @@ LteUeRrc::DoSetCsgWhiteList (uint32_t csgId)
 }
 
 void 
-LteUeRrc::DoStartCellSelection (uint16_t dlEarfcn)
+LteUeRrc::DoStartCellSelection (uint32_t dlEarfcn)
 {
   NS_LOG_FUNCTION (this << m_imsi << dlEarfcn);
   NS_ASSERT_MSG (m_state == IDLE_START,
@@ -601,7 +601,7 @@ LteUeRrc::DoStartCellSelection (uint16_t dlEarfcn)
 }
 
 void 
-LteUeRrc::DoForceCampedOnEnb (uint16_t cellId, uint16_t dlEarfcn)
+LteUeRrc::DoForceCampedOnEnb (uint16_t cellId, uint32_t dlEarfcn)
 {
   NS_LOG_FUNCTION (this << m_imsi << cellId << dlEarfcn);
 

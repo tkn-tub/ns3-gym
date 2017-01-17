@@ -115,13 +115,13 @@ TypeId LteEnbNetDevice::GetTypeId (void)
                    "as per 3GPP 36.101 Section 5.7.3. ",
                    UintegerValue (100),
                    MakeUintegerAccessor (&LteEnbNetDevice::m_dlEarfcn),
-                   MakeUintegerChecker<uint16_t> (0, 6599))
+                   MakeUintegerChecker<uint32_t> (0, 262143))
     .AddAttribute ("UlEarfcn",
                    "Uplink E-UTRA Absolute Radio Frequency Channel Number (EARFCN) "
                    "as per 3GPP 36.101 Section 5.7.3. ",
                    UintegerValue (18100),
                    MakeUintegerAccessor (&LteEnbNetDevice::m_ulEarfcn),
-                   MakeUintegerChecker<uint16_t> (18000, 24599))
+                   MakeUintegerChecker<uint32_t> (0, 262143))
     .AddAttribute ("CsgId",
                    "The Closed Subscriber Group (CSG) identity that this eNodeB belongs to",
                    UintegerValue (0),
@@ -265,27 +265,27 @@ LteEnbNetDevice::SetDlBandwidth (uint8_t bw)
     }
 }
 
-uint16_t 
+uint32_t 
 LteEnbNetDevice::GetDlEarfcn () const
 {
   return m_dlEarfcn;
 }
 
 void 
-LteEnbNetDevice::SetDlEarfcn (uint16_t earfcn)
+LteEnbNetDevice::SetDlEarfcn (uint32_t earfcn)
 { 
   NS_LOG_FUNCTION (this << earfcn);
   m_dlEarfcn = earfcn;
 }
 
-uint16_t 
+uint32_t 
 LteEnbNetDevice::GetUlEarfcn () const
 {
   return m_ulEarfcn;
 }
 
 void 
-LteEnbNetDevice::SetUlEarfcn (uint16_t earfcn)
+LteEnbNetDevice::SetUlEarfcn (uint32_t earfcn)
 { 
   NS_LOG_FUNCTION (this << earfcn);
   m_ulEarfcn = earfcn;

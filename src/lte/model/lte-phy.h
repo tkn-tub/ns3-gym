@@ -262,12 +262,12 @@ protected:
    * The downlink carrier frequency.
    * Specified by the upper layer through CPHY SAP.
    */
-  uint16_t m_dlEarfcn;
+  uint32_t m_dlEarfcn;
   /**
    * The uplink carrier frequency.
    * Specified by the upper layer through CPHY SAP.
    */
-  uint16_t m_ulEarfcn;
+  uint32_t m_ulEarfcn;
 
   /// A queue of packet bursts to be sent.
   std::vector< Ptr<PacketBurst> > m_packetBurstQueue;

@@ -146,7 +146,7 @@ EpcUeNas::SetForwardUpCallback (Callback <void, Ptr<Packet> > cb)
 }
 
 void
-EpcUeNas::StartCellSelection (uint16_t dlEarfcn)
+EpcUeNas::StartCellSelection (uint32_t dlEarfcn)
 {
   NS_LOG_FUNCTION (this << dlEarfcn);
   m_asSapProvider->StartCellSelection (dlEarfcn);
@@ -162,7 +162,7 @@ EpcUeNas::Connect ()
 }
 
 void
-EpcUeNas::Connect (uint16_t cellId, uint16_t dlEarfcn)
+EpcUeNas::Connect (uint16_t cellId, uint32_t dlEarfcn)
 {
   NS_LOG_FUNCTION (this << cellId << dlEarfcn);
 

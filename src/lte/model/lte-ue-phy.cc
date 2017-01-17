@@ -1222,7 +1222,7 @@ LteUePhy::DoReset ()
 } // end of void LteUePhy::DoReset ()
 
 void
-LteUePhy::DoStartCellSearch (uint16_t dlEarfcn)
+LteUePhy::DoStartCellSearch (uint32_t dlEarfcn)
 {
   NS_LOG_FUNCTION (this << dlEarfcn);
   m_dlEarfcn = dlEarfcn;
@@ -1231,7 +1231,7 @@ LteUePhy::DoStartCellSearch (uint16_t dlEarfcn)
 }
 
 void
-LteUePhy::DoSynchronizeWithEnb (uint16_t cellId, uint16_t dlEarfcn)
+LteUePhy::DoSynchronizeWithEnb (uint16_t cellId, uint32_t dlEarfcn)
 {
   NS_LOG_FUNCTION (this << cellId << dlEarfcn);
   m_dlEarfcn = dlEarfcn;
@@ -1293,7 +1293,7 @@ LteUePhy::DoSetDlBandwidth (uint8_t dlBandwidth)
 
 
 void 
-LteUePhy::DoConfigureUplink (uint16_t ulEarfcn, uint8_t ulBandwidth)
+LteUePhy::DoConfigureUplink (uint32_t ulEarfcn, uint8_t ulBandwidth)
 {
   m_ulEarfcn = ulEarfcn;
   m_ulBandwidth = ulBandwidth;

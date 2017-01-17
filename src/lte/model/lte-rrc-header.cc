@@ -25,7 +25,7 @@
 #include <sstream>
 
 #define MAX_DRB 11 // According to section 6.4 3GPP TS 36.331
-#define MAX_EARFCN 65535
+#define MAX_EARFCN 262143
 #define MAX_RAT_CAPABILITIES 8
 #define MAX_SI_MESSAGE 32
 #define MAX_SIB 32

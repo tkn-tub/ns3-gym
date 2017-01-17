@@ -89,7 +89,7 @@ TypeId LteUeNetDevice::GetTypeId (void)
                    UintegerValue (100),
                    MakeUintegerAccessor (&LteUeNetDevice::SetDlEarfcn,
                                          &LteUeNetDevice::GetDlEarfcn),
-                   MakeUintegerChecker<uint16_t> (0, 6149))
+                   MakeUintegerChecker<uint32_t> (0, 262143))
     .AddAttribute ("CsgId",
                    "The Closed Subscriber Group (CSG) identity that this UE is associated with, "
                    "i.e., giving the UE access to cells which belong to this particular CSG. "
@@ -193,7 +193,7 @@ LteUeNetDevice::GetImsi () const
   return m_imsi;
 }
 
-uint16_t
+uint32_t
 LteUeNetDevice::GetDlEarfcn () const
 {
   NS_LOG_FUNCTION (this);
@@ -201,7 +201,7 @@ LteUeNetDevice::GetDlEarfcn () const
 }
 
 void
-LteUeNetDevice::SetDlEarfcn (uint16_t earfcn)
+LteUeNetDevice::SetDlEarfcn (uint32_t earfcn)
 {
   NS_LOG_FUNCTION (this << earfcn);
   m_dlEarfcn = earfcn;

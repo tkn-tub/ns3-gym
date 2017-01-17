@@ -102,7 +102,7 @@ public:
    *
    * \param dlEarfcn the DL frequency of the eNB
    */
-  void StartCellSelection (uint16_t dlEarfcn);
+  void StartCellSelection (uint32_t dlEarfcn);
 
   /**
    * \brief Causes NAS to tell AS to go to ACTIVE state.
@@ -121,7 +121,7 @@ public:
    * Since RRC Idle Mode cell selection is not supported yet, we force the UE
    * RRC to be camped on a specific eNB.
    */
-  void Connect (uint16_t cellId, uint16_t dlEarfcn);
+  void Connect (uint16_t cellId, uint32_t dlEarfcn);
  
   /** 
    * instruct the NAS to disconnect

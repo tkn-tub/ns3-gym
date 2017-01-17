@@ -308,7 +308,7 @@ private:
 
   // LteEnbCphySapProvider forwarded methods
   void DoSetBandwidth (uint8_t ulBandwidth, uint8_t dlBandwidth);
-  void DoSetEarfcn (uint16_t dlEarfcn, uint16_t ulEarfcn);
+  void DoSetEarfcn (uint32_t dlEarfcn, uint32_t ulEarfcn);
   void DoAddUe (uint16_t rnti);
   void DoRemoveUe (uint16_t rnti);
   void DoSetPa (uint16_t rnti, double pa);

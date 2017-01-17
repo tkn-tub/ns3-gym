@@ -79,7 +79,7 @@ public:
    * Note that real-life handset typically supports more than one EARFCN, but
    * the sake of simplicity we assume only one EARFCN is supported.
    */
-  uint16_t GetDlEarfcn () const;
+  uint32_t GetDlEarfcn () const;
 
   /**
    * \param earfcn the downlink carrier frequency (EARFCN)
@@ -87,7 +87,7 @@ public:
    * Note that real-life handset typically supports more than one EARFCN, but
    * the sake of simplicity we assume only one EARFCN is supported.
    */
-  void SetDlEarfcn (uint16_t earfcn);
+  void SetDlEarfcn (uint32_t earfcn);
 
   /**
    * \brief Returns the CSG ID the UE is currently a member of.
@@ -149,7 +149,7 @@ private:
 
   uint64_t m_imsi;
 
-  uint16_t m_dlEarfcn; /**< downlink carrier frequency */
+  uint32_t m_dlEarfcn; /**< downlink carrier frequency */
 
   uint32_t m_csgId;
 

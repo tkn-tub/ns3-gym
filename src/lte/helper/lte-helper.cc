@@ -741,7 +741,7 @@ LteHelper::Attach (Ptr<NetDevice> ueDevice)
   // initiate cell selection
   Ptr<EpcUeNas> ueNas = ueLteDevice->GetNas ();
   NS_ASSERT (ueNas != 0);
-  uint16_t dlEarfcn = ueLteDevice->GetDlEarfcn ();
+  uint32_t dlEarfcn = ueLteDevice->GetDlEarfcn ();
   ueNas->StartCellSelection (dlEarfcn);
 
   // instruct UE to immediately enter CONNECTED mode after camping

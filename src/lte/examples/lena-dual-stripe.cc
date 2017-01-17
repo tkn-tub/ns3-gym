@@ -401,9 +401,9 @@ main (int argc, char *argv[])
   GlobalValue::GetValueByName ("homeEnbTxPowerDbm", doubleValue);
   double homeEnbTxPowerDbm = doubleValue.Get ();
   GlobalValue::GetValueByName ("macroEnbDlEarfcn", uintegerValue);
-  uint16_t macroEnbDlEarfcn = uintegerValue.Get ();
+  uint32_t macroEnbDlEarfcn = uintegerValue.Get ();
   GlobalValue::GetValueByName ("homeEnbDlEarfcn", uintegerValue);
-  uint16_t homeEnbDlEarfcn = uintegerValue.Get ();
+  uint32_t homeEnbDlEarfcn = uintegerValue.Get ();
   GlobalValue::GetValueByName ("macroEnbBandwidth", uintegerValue);
   uint16_t macroEnbBandwidth = uintegerValue.Get ();
   GlobalValue::GetValueByName ("homeEnbBandwidth", uintegerValue);

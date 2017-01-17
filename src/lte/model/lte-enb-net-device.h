@@ -105,22 +105,22 @@ public:
   /** 
    * \return the downlink carrier frequency (EARFCN)
    */
-  uint16_t GetDlEarfcn () const;
+  uint32_t GetDlEarfcn () const;
 
   /** 
    * \param earfcn the downlink carrier frequency (EARFCN)
    */
-  void SetDlEarfcn (uint16_t earfcn);
+  void SetDlEarfcn (uint32_t earfcn);
 
   /** 
    * \return the uplink carrier frequency (EARFCN)
    */
-  uint16_t GetUlEarfcn () const;
+  uint32_t GetUlEarfcn () const;
 
   /** 
    * \param earfcn the uplink carrier frequency (EARFCN)
    */
-  void SetUlEarfcn (uint16_t earfcn);
+  void SetUlEarfcn (uint32_t earfcn);
 
   /**
    * \brief Returns the CSG ID of the eNodeB.
@@ -207,8 +207,8 @@ private:
   uint8_t m_dlBandwidth; /**< downlink bandwidth in RBs */
   uint8_t m_ulBandwidth; /**< uplink bandwidth in RBs */
 
-  uint16_t m_dlEarfcn;  /**< downlink carrier frequency */
-  uint16_t m_ulEarfcn;  /**< uplink carrier frequency */
+  uint32_t m_dlEarfcn;  /**< downlink carrier frequency */
+  uint32_t m_ulEarfcn;  /**< uplink carrier frequency */
 
   uint16_t m_csgId;
   bool m_csgIndication;
