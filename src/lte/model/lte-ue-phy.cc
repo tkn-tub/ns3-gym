@@ -948,6 +948,7 @@ LteUePhy::ReceiveLteControlMessageList (std::list<Ptr<LteControlMessage> > msgLi
           params.m_size = dci.m_tbSize;
           params.m_rv = harqInfoList.size ();
           params.m_ndi = dci.m_ndi;
+          params.m_ccId = 0;
           m_ulPhyTransmission (params);
           // pass the info to the MAC
           m_uePhySapUser->ReceiveLteControlMessage (msg);

@@ -150,6 +150,7 @@ LteRlcTm::DoNotifyTxOpportunity (uint32_t bytes, uint8_t layer, uint8_t harqId)
   params.lcid = m_lcid;
   params.layer = layer;
   params.harqProcessId = harqId;
+  params.componentCarrierId = 0;
 
   m_macSapProvider->TransmitPdu (params);
 
