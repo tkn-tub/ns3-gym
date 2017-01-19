@@ -993,6 +993,8 @@ public:
    */
   void SetCsgId (uint32_t csgId, bool csgIndication);
 
+  void SetNumberOfComponentCarriers (uint16_t numberOfComponentCarriers);
+
 private:
 
   /** 
@@ -1249,6 +1251,8 @@ private:
    * received. Exporting IMSI, cell ID, and RNTI.
    */
   TracedCallback<uint64_t, uint16_t, uint16_t, LteRrcSap::MeasurementReport> m_recvMeasurementReportTrace;
+
+  uint16_t m_numberOfComponentCarriers;
 
 }; // end of `class LteEnbRrc`
 

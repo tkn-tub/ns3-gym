@@ -166,6 +166,18 @@ struct PhyReceptionStatParameters
 };
 
 
+struct DlSchedulingCallbackInfo
+{
+	  uint32_t frameNo;
+	  uint32_t subframeNo;
+	  uint16_t rnti;
+	  uint8_t  mcsTb1;
+	  uint16_t sizeTb1;
+	  uint8_t  mcsTb2;
+	  uint16_t sizeTb2;
+	  uint8_t  componentCarrierId;
+}; 
+
 /**
  * Implements the E-UTRA measurement mappings defined in  3GPP TS
  * 36.133 section 9.1 E-UTRAN measurements 

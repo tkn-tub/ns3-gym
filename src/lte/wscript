@@ -121,6 +121,9 @@ def build(bld):
         'model/lte-ffr-enhanced-algorithm.cc',
         'model/lte-ffr-distributed-algorithm.cc',
         'model/lte-ue-power-control.cc',
+        'model/component-carrier.cc',
+        'model/component-carrier-ue.cc',
+        'model/component-carrier-enb.cc'
         ]
 
     module_test = bld.create_ns3_module_test_library('lte')
@@ -294,8 +297,11 @@ def build(bld):
         'model/lte-fr-soft-algorithm.h',
         'model/lte-ffr-soft-algorithm.h',
         'model/lte-ffr-enhanced-algorithm.h',
-        'model/lte-ffr-distributed-algorithm.h',     
-        'model/lte-ue-power-control.h',           
+        'model/lte-ffr-distributed-algorithm.h',
+        'model/lte-ue-power-control.h',
+        'model/component-carrier.h',
+        'model/component-carrier-ue.h',
+        'model/component-carrier-enb.h'
         ]
 
     if (bld.env['ENABLE_EMU']):

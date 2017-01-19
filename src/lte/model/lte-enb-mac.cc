@@ -942,6 +942,7 @@ LteEnbMac::DoTransmitPdu (LteMacSapProvider::TransmitPduParameters params)
   NS_LOG_FUNCTION (this);
   LteRadioBearerTag tag (params.rnti, params.lcid, params.layer);
   params.pdu->AddPacketTag (tag);
+  params.componentCarrierId = m_componentCarrierId;
   // Store pkt in HARQ buffer
   std::map <uint16_t, DlHarqProcessesBuffer_t>::iterator it =  m_miDlHarqProcessesPackets.find (params.rnti);
   NS_ASSERT (it != m_miDlHarqProcessesPackets.end ());

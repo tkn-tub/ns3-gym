@@ -18,6 +18,9 @@
  * Author: Giuseppe Piro  <g.piro@poliba.it>
  *         Nicola Baldo <nbaldo@cttc.es>
  *         Marco Miozzo <mmiozzo@cttc.es>
+ * Modified by:
+ *          Danilo Abrignani <danilo.abrignani@unibo.it> (Carrier Aggregation - GSoC 2015)
+ *          Biljana Bojovic <biljana.bojovic@cttc.es> (Carrier Aggregation)
  */
 
 #include "ns3/llc-snap-header.h"
@@ -43,6 +46,8 @@
 #include <ns3/ipv4-l3-protocol.h>
 #include <ns3/log.h>
 #include "epc-tft.h"
+#include <ns3/object-map.h>
+#include <ns3/object-factory.h>
 
 namespace ns3 {
 
@@ -78,6 +83,10 @@ TypeId LteUeNetDevice::GetTypeId (void)
                    PointerValue (),
                    MakePointerAccessor (&LteUeNetDevice::m_phy),
                    MakePointerChecker <LteUePhy> ())
+    .AddAttribute ("ComponentCarrierMapUe", "List of all component Carrier.",
+                   ObjectMapValue (),
+                   MakeObjectMapAccessor (&LteUeNetDevice::m_ccMap),
+                   MakeObjectMapChecker<ComponentCarrierUe> ())
     .AddAttribute ("Imsi",
                    "International Mobile Subscriber Identity assigned to this UE",
                    UintegerValue (0),
@@ -235,6 +244,18 @@ LteUeNetDevice::GetTargetEnb (void)
 {
   NS_LOG_FUNCTION (this);
   return m_targetEnb;
+}
+
+std::map < uint8_t, Ptr<ComponentCarrierUe> >
+LteUeNetDevice::GetCcMap ()
+{
+  return m_ccMap;
+}
+
+void
+LteUeNetDevice::SetCcMap (std::map< uint8_t, Ptr<ComponentCarrierUe> > ccm)
+{
+  m_ccMap = ccm;
 }
 
 void 

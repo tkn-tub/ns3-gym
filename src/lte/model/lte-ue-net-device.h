@@ -17,6 +17,9 @@
  *
  * Author: Giuseppe Piro  <g.piro@poliba.it>
  *         Nicola Baldo <nbaldo@cttc.es>
+ * Modified by:
+ *          Danilo Abrignani <danilo.abrignani@unibo.it> (Carrier Aggregation - GSoC 2015)
+ *          Biljana Bojovic <biljana.bojovic@cttc.es> (Carrier Aggregation)
  */
 
 #ifndef LTE_UE_NET_DEVICE_H
@@ -29,7 +32,9 @@
 #include "ns3/nstime.h"
 #include "ns3/lte-phy.h"
 #include "ns3/eps-bearer.h"
-
+#include "ns3/component-carrier-ue.h"
+#include <vector>
+#include <map>
 
 namespace ns3 {
 
@@ -120,6 +125,15 @@ public:
    */
   Ptr<LteEnbNetDevice> GetTargetEnb (void);
 
+  /**
+   * \brief Set the ComponentCarrier Map for the UE
+   * \param ccm the map of ComponentCarrierUe
+   */
+  void SetCcMap (std::map< uint8_t, Ptr<ComponentCarrierUe> > ccm);
+
+  std::map< uint8_t, Ptr<ComponentCarrierUe> >  GetCcMap (void);
+
+
 
 protected:
   // inherited from Object
@@ -152,6 +166,8 @@ private:
   uint32_t m_dlEarfcn; /**< downlink carrier frequency */
 
   uint32_t m_csgId;
+
+  std::map < uint8_t, Ptr<ComponentCarrierUe> > m_ccMap;
 
 }; // end of class LteUeNetDevice
 

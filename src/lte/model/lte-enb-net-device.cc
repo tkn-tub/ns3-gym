@@ -18,6 +18,7 @@
  * Author: Giuseppe Piro  <g.piro@poliba.it>
  * Author: Marco Miozzo <mmiozzo@cttc.es> : Update to FF API Architecture
  * Author: Nicola Baldo <nbaldo@cttc.es>  : Integrated with new RRC and MAC architecture
+ * Author: Danilo Abrignani <danilo.abrignani@unibo.it> : Integrated with new architecture - GSoC 2015 - Carrier Aggregation
  */
 
 #include <ns3/llc-snap-header.h>
@@ -44,6 +45,8 @@
 #include <ns3/ipv4-l3-protocol.h>
 #include <ns3/abort.h>
 #include <ns3/log.h>
+#include <ns3/object-map.h>
+#include <ns3/object-factory.h>
 
 namespace ns3 {
 
@@ -93,6 +96,10 @@ TypeId LteEnbNetDevice::GetTypeId (void)
                    PointerValue (),
                    MakePointerAccessor (&LteEnbNetDevice::m_phy),
                    MakePointerChecker <LteEnbPhy> ())
+    .AddAttribute ("ComponentCarrierMap", "List of component carriers.",
+                   ObjectMapValue (),
+                   MakeObjectMapAccessor (&LteEnbNetDevice::m_ccMap),
+                   MakeObjectMapChecker<ComponentCarrierEnb> ())
     .AddAttribute ("UlBandwidth",
                    "Uplink Transmission Bandwidth Configuration in number of Resource Blocks",
                    UintegerValue (25),
@@ -197,6 +204,18 @@ Ptr<LteEnbPhy>
 LteEnbNetDevice::GetPhy () const
 {
   return m_phy;
+}
+
+Ptr<LteEnbMac>
+LteEnbNetDevice::GetMac (uint8_t index) 
+{
+  return m_ccMap.at (index)->GetMac ();
+}
+
+Ptr<LteEnbPhy>
+LteEnbNetDevice::GetPhy(uint8_t index)  
+{
+  return m_ccMap.at (index)->GetPhy ();
 }
 
 Ptr<LteEnbRrc>
@@ -319,6 +338,17 @@ LteEnbNetDevice::SetCsgIndication (bool csgIndication)
   UpdateConfig (); // propagate the change to RRC level
 }
 
+std::map < uint8_t, Ptr<ComponentCarrierEnb> >
+LteEnbNetDevice::GetCcMap ()
+{
+  return m_ccMap;
+}
+
+void
+LteEnbNetDevice::SetCcMap (std::map< uint8_t, Ptr<ComponentCarrierEnb> > ccm)
+{
+  m_ccMap = ccm;
+}
 
 void 
 LteEnbNetDevice::DoInitialize (void)

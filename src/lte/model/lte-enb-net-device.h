@@ -17,6 +17,7 @@
  *
  * Author: Giuseppe Piro  <g.piro@poliba.it>
  * Author: Marco Miozzo <marco.miozzo@cttc.es> : Update to FF API Architecture
+ * Author: Danilo Abrignani <danilo.abrignani@unibo.it> : Integrated with new architecture - GSoC 2015 - Carrier Aggregation
  */
 
 #ifndef LTE_ENB_NET_DEVICE_H
@@ -28,7 +29,9 @@
 #include "ns3/traced-callback.h"
 #include "ns3/nstime.h"
 #include "ns3/lte-phy.h"
+#include "ns3/component-carrier-enb.h"
 #include <vector>
+#include <map>
 
 namespace ns3 {
 
@@ -63,14 +66,24 @@ public:
   virtual bool Send (Ptr<Packet> packet, const Address& dest, uint16_t protocolNumber);
 
   /**
-   * \return a pointer to the MAC 
+   * \return a pointer to the MAC of the PCC.
    */
   Ptr<LteEnbMac> GetMac (void) const;
 
   /**
-   * \return a pointer to the physical layer.
+   * \return a pointer to the MAC of the CC addressed by index.
+   */
+  Ptr<LteEnbMac> GetMac (uint8_t index);
+
+  /**
+   * \return a pointer to the physical layer of the PCC.
    */
   Ptr<LteEnbPhy> GetPhy (void) const;
+  
+  /**
+   * \return a pointer to the physical layer of the SCC addressed by index.
+   */
+  Ptr<LteEnbPhy> GetPhy (uint8_t index);
 
   /** 
    * \return a pointer to the Radio Resource Control instance of the eNB
@@ -167,6 +180,21 @@ public:
    */
   void SetCsgIndication (bool csgIndication);
 
+  /**
+   * \brief Set the ComponentCarrier Map of the Enb
+   * \param ccm the map of ComponentCarrierEnb
+   *
+   */
+
+  void SetCcMap (std::map< uint8_t, Ptr<ComponentCarrierEnb> > ccm);
+
+  /**
+   * \returns  The Component Carrier Map of the Enb.
+   *
+   */
+
+  std::map< uint8_t, Ptr<ComponentCarrierEnb> >  GetCcMap (void);
+
 protected:
   // inherited from Object
   virtual void DoInitialize (void);
@@ -188,31 +216,32 @@ private:
    */
   void UpdateConfig ();
 
-  Ptr<LteEnbMac> m_mac;
+  Ptr<LteEnbMac> m_mac; /**< DEPRECATED - It is maintained for backward compatibility after adding CA feature*/
 
-  Ptr<LteEnbPhy> m_phy;
+  Ptr<LteEnbPhy> m_phy; /**< DEPRECATED - It is maintained for backward compatibility after adding CA feature*/
 
   Ptr<LteEnbRrc> m_rrc;
 
-  Ptr<FfMacScheduler> m_scheduler;
+  Ptr<FfMacScheduler> m_scheduler; /**< DEPRECATED - It is maintained for backward compatibility after adding CA feature*/
 
   Ptr<LteHandoverAlgorithm> m_handoverAlgorithm;
 
   Ptr<LteAnr> m_anr;
 
-  Ptr<LteFfrAlgorithm> m_ffrAlgorithm;
+  Ptr<LteFfrAlgorithm> m_ffrAlgorithm; /**< DEPRECATED - It is maintained for backward compatibility after adding CA feature*/
 
   uint16_t m_cellId; /**< Cell Identifer. Part of the CGI, see TS 29.274, section 8.21.1  */
 
-  uint8_t m_dlBandwidth; /**< downlink bandwidth in RBs */
-  uint8_t m_ulBandwidth; /**< uplink bandwidth in RBs */
+  uint8_t m_dlBandwidth; /**<DEPRECATE - It is maintained for backward compatibility after adding CA feature- downlink bandwidth in RBs */
+  uint8_t m_ulBandwidth; /**<DEPRECATE - It is maintained for backward compatibility after adding CA feature- uplink bandwidth in RBs */
 
-  uint32_t m_dlEarfcn;  /**< downlink carrier frequency */
-  uint32_t m_ulEarfcn;  /**< uplink carrier frequency */
+  uint32_t m_dlEarfcn;  /**<DEPRECATE - It is maintained for backward compatibility after adding CA feature- downlink carrier frequency */
+  uint32_t m_ulEarfcn;  /**<DEPRECATE - It is maintained for backward compatibility after adding CA feature- uplink carrier frequency */
 
   uint16_t m_csgId;
   bool m_csgIndication;
 
+  std::map < uint8_t, Ptr<ComponentCarrierEnb> > m_ccMap; /**< ComponentCarrier map */
 }; // end of class LteEnbNetDevice
 
 } // namespace ns3

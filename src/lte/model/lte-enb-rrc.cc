@@ -2347,6 +2347,11 @@ LteEnbRrc::SetCsgId (uint32_t csgId, bool csgIndication)
   m_cphySapProvider->SetSystemInformationBlockType1 (m_sib1);
 }
 
+void
+LteEnbRrc::SetNumberOfComponentCarriers(uint16_t numberOfComponentCarriers)
+{
+  m_numberOfComponentCarriers = numberOfComponentCarriers;
+}
 
 /// Number of distinct SRS periodicity plus one.
 static const uint8_t SRS_ENTRIES = 9;
