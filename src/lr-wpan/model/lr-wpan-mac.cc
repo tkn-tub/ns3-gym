@@ -469,7 +469,7 @@ LrWpanMac::PdDataIndication (uint32_t psduLength, Ptr<Packet> p, uint8_t lqi)
 {
   NS_ASSERT (m_lrWpanMacState == MAC_IDLE || m_lrWpanMacState == MAC_ACK_PENDING || m_lrWpanMacState == MAC_CSMA);
 
-  NS_LOG_FUNCTION (this << psduLength << p << lqi);
+  NS_LOG_FUNCTION (this << psduLength << p << (uint16_t)lqi);
 
   bool acceptFrame;
 
