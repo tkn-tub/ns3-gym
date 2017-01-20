@@ -249,7 +249,13 @@ private:
   LteEnbPhySapProvider* m_enbPhySapProvider;
   LteEnbPhySapUser* m_enbPhySapUser;
 
+  /**
+   * frame number of current subframe indication
+   */
   uint32_t m_frameNo;
+  /**
+   * subframe number of current subframe indication
+   */
   uint32_t m_subframeNo;
   /**
    * Trace information regarding DL scheduling

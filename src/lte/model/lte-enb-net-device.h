@@ -46,6 +46,7 @@ class FfMacScheduler;
 class LteHandoverAlgorithm;
 class LteAnr;
 class LteFfrAlgorithm;
+class LteEnbComponentCarrierManager;
 
 /**
  * \ingroup lte
@@ -89,6 +90,11 @@ public:
    * \return a pointer to the Radio Resource Control instance of the eNB
    */
   Ptr<LteEnbRrc> GetRrc () const;
+  
+  /** 
+   * \return a pointer to the ComponentCarrierManager instance of the eNB
+   */
+  Ptr<LteEnbComponentCarrierManager> GetComponentCarrierManager () const;
 
   /** 
    * \return the Cell Identifier of this eNB
@@ -242,6 +248,9 @@ private:
   bool m_csgIndication;
 
   std::map < uint8_t, Ptr<ComponentCarrierEnb> > m_ccMap; /**< ComponentCarrier map */
+  
+  Ptr<LteEnbComponentCarrierManager> m_componentCarrierManager; // the component carrier manager of this eNb
+
 }; // end of class LteEnbNetDevice
 
 } // namespace ns3

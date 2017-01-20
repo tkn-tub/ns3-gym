@@ -45,6 +45,7 @@
 #include <ns3/ipv4-l3-protocol.h>
 #include <ns3/abort.h>
 #include <ns3/log.h>
+#include <ns3/lte-enb-component-carrier-manager.h>
 #include <ns3/object-map.h>
 #include <ns3/object-factory.h>
 
@@ -96,6 +97,11 @@ TypeId LteEnbNetDevice::GetTypeId (void)
                    PointerValue (),
                    MakePointerAccessor (&LteEnbNetDevice::m_phy),
                    MakePointerChecker <LteEnbPhy> ())
+    .AddAttribute ("LteEnbComponentCarrierManager",
+                   "The RRC associated to this EnbNetDevice",
+                   PointerValue (),
+                   MakePointerAccessor (&LteEnbNetDevice::m_componentCarrierManager),
+                   MakePointerChecker <LteEnbComponentCarrierManager> ())
     .AddAttribute ("ComponentCarrierMap", "List of component carriers.",
                    ObjectMapValue (),
                    MakeObjectMapAccessor (&LteEnbNetDevice::m_ccMap),
@@ -222,6 +228,12 @@ Ptr<LteEnbRrc>
 LteEnbNetDevice::GetRrc () const
 {
   return m_rrc;
+}
+
+Ptr<LteEnbComponentCarrierManager>
+LteEnbNetDevice::GetComponentCarrierManager () const
+{
+  return  m_componentCarrierManager;
 }
 
 uint16_t
