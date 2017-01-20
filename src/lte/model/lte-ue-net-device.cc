@@ -46,6 +46,7 @@
 #include <ns3/ipv4-l3-protocol.h>
 #include <ns3/log.h>
 #include "epc-tft.h"
+#include <ns3/lte-ue-component-carrier-manager.h>
 #include <ns3/object-map.h>
 #include <ns3/object-factory.h>
 
@@ -83,6 +84,11 @@ TypeId LteUeNetDevice::GetTypeId (void)
                    PointerValue (),
                    MakePointerAccessor (&LteUeNetDevice::m_phy),
                    MakePointerChecker <LteUePhy> ())
+    .AddAttribute ("LteUeComponentCarrierManager",
+                   "The ComponentCarrierManager associated to this UeNetDevice",
+                   PointerValue (),
+                   MakePointerAccessor (&LteUeNetDevice::m_componentCarrierManager),
+                   MakePointerChecker <LteUeComponentCarrierManager> ())
     .AddAttribute ("ComponentCarrierMapUe", "List of all component Carrier.",
                    ObjectMapValue (),
                    MakeObjectMapAccessor (&LteUeNetDevice::m_ccMap),

@@ -48,6 +48,7 @@ class LteUeMac;
 class LteUeRrc;
 class EpcUeNas;
 class EpcTft;
+class LteUeComponentCarrierManager;
 
 /**
  * \ingroup lte
@@ -75,6 +76,8 @@ public:
   Ptr<LteUePhy> GetPhy (void) const;
 
   Ptr<EpcUeNas> GetNas (void) const;
+  
+  Ptr<LteUeComponentCarrierManager> GetComponentCarrierManager (void) const;
 
   uint64_t GetImsi () const;
 
@@ -160,6 +163,7 @@ private:
   Ptr<LteUePhy> m_phy;
   Ptr<LteUeRrc> m_rrc;
   Ptr<EpcUeNas> m_nas;
+  Ptr<LteUeComponentCarrierManager> m_componentCarrierManager;
 
   uint64_t m_imsi;
 

@@ -576,6 +576,12 @@ def register_types(module):
     module.add_class('LteSpectrumValueCatcher')
     ## lte-spectrum-value-helper.h (module 'lte'): ns3::LteSpectrumValueHelper [class]
     module.add_class('LteSpectrumValueHelper')
+    ## lte-ue-ccm-rrc-sap.h (module 'lte'): ns3::LteUeCcmRrcSapProvider [class]
+    module.add_class('LteUeCcmRrcSapProvider', allow_subclassing=True)
+    ## lte-ue-ccm-rrc-sap.h (module 'lte'): ns3::LteUeCcmRrcSapProvider::LcsConfig [struct]
+    module.add_class('LcsConfig', outer_class=root_module['ns3::LteUeCcmRrcSapProvider'])
+    ## lte-ue-ccm-rrc-sap.h (module 'lte'): ns3::LteUeCcmRrcSapUser [class]
+    module.add_class('LteUeCcmRrcSapUser', allow_subclassing=True)
     ## lte-ue-cmac-sap.h (module 'lte'): ns3::LteUeCmacSapProvider [class]
     module.add_class('LteUeCmacSapProvider', allow_subclassing=True)
     ## lte-ue-cmac-sap.h (module 'lte'): ns3::LteUeCmacSapProvider::LogicalChannelConfig [struct]
@@ -1166,6 +1172,8 @@ def register_types(module):
     module.add_class('LteSpectrumSignalParametersUlSrsFrame', parent=root_module['ns3::SpectrumSignalParameters'])
     ## lte-stats-calculator.h (module 'lte'): ns3::LteStatsCalculator [class]
     module.add_class('LteStatsCalculator', parent=root_module['ns3::Object'])
+    ## lte-ue-component-carrier-manager.h (module 'lte'): ns3::LteUeComponentCarrierManager [class]
+    module.add_class('LteUeComponentCarrierManager', parent=root_module['ns3::Object'])
     ## lte-ue-mac.h (module 'lte'): ns3::LteUeMac [class]
     module.add_class('LteUeMac', parent=root_module['ns3::Object'])
     ## lte-ue-phy.h (module 'lte'): ns3::LteUePhy [class]
@@ -1260,6 +1268,8 @@ def register_types(module):
     module.add_class('RrcUlDcchMessage', parent=root_module['ns3::RrcAsn1Header'])
     ## lte-control-messages.h (module 'lte'): ns3::Sib1LteControlMessage [class]
     module.add_class('Sib1LteControlMessage', parent=root_module['ns3::LteControlMessage'])
+    ## simple-ue-component-carrier-manager.h (module 'lte'): ns3::SimpleUeComponentCarrierManager [class]
+    module.add_class('SimpleUeComponentCarrierManager', parent=root_module['ns3::LteUeComponentCarrierManager'])
     ## spectrum-channel.h (module 'spectrum'): ns3::SpectrumChannel [class]
     module.add_class('SpectrumChannel', import_from_module='ns.spectrum', parent=root_module['ns3::Channel'])
     ## lte-vendor-specific-parameters.h (module 'lte'): ns3::SrsCqiRntiVsp [class]
@@ -1414,6 +1424,7 @@ def register_types(module):
     module.add_container('std::list< unsigned int >', 'unsigned int', container_type=u'list')
     module.add_container('std::list< ns3::LteRrcSap::MeasResultEutra >', 'ns3::LteRrcSap::MeasResultEutra', container_type=u'list')
     module.add_container('std::map< int, double >', ('int', 'double'), container_type=u'map')
+    module.add_container('std::vector< ns3::LteUeCcmRrcSapProvider::LcsConfig >', 'ns3::LteUeCcmRrcSapProvider::LcsConfig', container_type=u'vector')
     module.add_container('std::vector< ns3::LteUeCphySapUser::UeMeasurementsElement >', 'ns3::LteUeCphySapUser::UeMeasurementsElement', container_type=u'vector')
     module.add_container('std::vector< ns3::HigherLayerSelected_s >', 'ns3::HigherLayerSelected_s', container_type=u'vector')
     module.add_container('std::vector< ns3::SiMessageListElement_s >', 'ns3::SiMessageListElement_s', container_type=u'vector')
@@ -1886,6 +1897,9 @@ def register_methods(root_module):
     register_Ns3LteRrcSapThresholdEutra_methods(root_module, root_module['ns3::LteRrcSap::ThresholdEutra'])
     register_Ns3LteSpectrumValueCatcher_methods(root_module, root_module['ns3::LteSpectrumValueCatcher'])
     register_Ns3LteSpectrumValueHelper_methods(root_module, root_module['ns3::LteSpectrumValueHelper'])
+    register_Ns3LteUeCcmRrcSapProvider_methods(root_module, root_module['ns3::LteUeCcmRrcSapProvider'])
+    register_Ns3LteUeCcmRrcSapProviderLcsConfig_methods(root_module, root_module['ns3::LteUeCcmRrcSapProvider::LcsConfig'])
+    register_Ns3LteUeCcmRrcSapUser_methods(root_module, root_module['ns3::LteUeCcmRrcSapUser'])
     register_Ns3LteUeCmacSapProvider_methods(root_module, root_module['ns3::LteUeCmacSapProvider'])
     register_Ns3LteUeCmacSapProviderLogicalChannelConfig_methods(root_module, root_module['ns3::LteUeCmacSapProvider::LogicalChannelConfig'])
     register_Ns3LteUeCmacSapProviderRachConfig_methods(root_module, root_module['ns3::LteUeCmacSapProvider::RachConfig'])
@@ -2140,6 +2154,7 @@ def register_methods(root_module):
     register_Ns3LteSpectrumSignalParametersDlCtrlFrame_methods(root_module, root_module['ns3::LteSpectrumSignalParametersDlCtrlFrame'])
     register_Ns3LteSpectrumSignalParametersUlSrsFrame_methods(root_module, root_module['ns3::LteSpectrumSignalParametersUlSrsFrame'])
     register_Ns3LteStatsCalculator_methods(root_module, root_module['ns3::LteStatsCalculator'])
+    register_Ns3LteUeComponentCarrierManager_methods(root_module, root_module['ns3::LteUeComponentCarrierManager'])
     register_Ns3LteUeMac_methods(root_module, root_module['ns3::LteUeMac'])
     register_Ns3LteUePhy_methods(root_module, root_module['ns3::LteUePhy'])
     register_Ns3LteUePowerControl_methods(root_module, root_module['ns3::LteUePowerControl'])
@@ -2183,6 +2198,7 @@ def register_methods(root_module):
     register_Ns3RrcUlCcchMessage_methods(root_module, root_module['ns3::RrcUlCcchMessage'])
     register_Ns3RrcUlDcchMessage_methods(root_module, root_module['ns3::RrcUlDcchMessage'])
     register_Ns3Sib1LteControlMessage_methods(root_module, root_module['ns3::Sib1LteControlMessage'])
+    register_Ns3SimpleUeComponentCarrierManager_methods(root_module, root_module['ns3::SimpleUeComponentCarrierManager'])
     register_Ns3SpectrumChannel_methods(root_module, root_module['ns3::SpectrumChannel'])
     register_Ns3SrsCqiRntiVsp_methods(root_module, root_module['ns3::SrsCqiRntiVsp'])
     register_Ns3StringChecker_methods(root_module, root_module['ns3::StringChecker'])
@@ -7187,6 +7203,58 @@ def register_Ns3LteSpectrumValueHelper_methods(root_module, cls):
                    is_static=True)
     return
 
+def register_Ns3LteUeCcmRrcSapProvider_methods(root_module, cls):
+    ## lte-ue-ccm-rrc-sap.h (module 'lte'): ns3::LteUeCcmRrcSapProvider::LteUeCcmRrcSapProvider() [constructor]
+    cls.add_constructor([])
+    ## lte-ue-ccm-rrc-sap.h (module 'lte'): ns3::LteUeCcmRrcSapProvider::LteUeCcmRrcSapProvider(ns3::LteUeCcmRrcSapProvider const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::LteUeCcmRrcSapProvider const &', 'arg0')])
+    ## lte-ue-ccm-rrc-sap.h (module 'lte'): std::vector<ns3::LteUeCcmRrcSapProvider::LcsConfig, std::allocator<ns3::LteUeCcmRrcSapProvider::LcsConfig> > ns3::LteUeCcmRrcSapProvider::AddLc(uint8_t lcId, ns3::LteUeCmacSapProvider::LogicalChannelConfig lcConfig, ns3::LteMacSapUser * msu) [member function]
+    cls.add_method('AddLc', 
+                   'std::vector< ns3::LteUeCcmRrcSapProvider::LcsConfig >', 
+                   [param('uint8_t', 'lcId'), param('ns3::LteUeCmacSapProvider::LogicalChannelConfig', 'lcConfig'), param('ns3::LteMacSapUser *', 'msu')], 
+                   is_pure_virtual=True, is_virtual=True)
+    ## lte-ue-ccm-rrc-sap.h (module 'lte'): ns3::LteMacSapUser * ns3::LteUeCcmRrcSapProvider::ConfigureSignalBearer(uint8_t lcid, ns3::LteUeCmacSapProvider::LogicalChannelConfig lcConfig, ns3::LteMacSapUser * msu) [member function]
+    cls.add_method('ConfigureSignalBearer', 
+                   'ns3::LteMacSapUser *', 
+                   [param('uint8_t', 'lcid'), param('ns3::LteUeCmacSapProvider::LogicalChannelConfig', 'lcConfig'), param('ns3::LteMacSapUser *', 'msu')], 
+                   is_pure_virtual=True, is_virtual=True)
+    ## lte-ue-ccm-rrc-sap.h (module 'lte'): void ns3::LteUeCcmRrcSapProvider::NotifyConnectionReconfigurationMsg() [member function]
+    cls.add_method('NotifyConnectionReconfigurationMsg', 
+                   'void', 
+                   [], 
+                   is_pure_virtual=True, is_virtual=True)
+    ## lte-ue-ccm-rrc-sap.h (module 'lte'): std::vector<unsigned short, std::allocator<unsigned short> > ns3::LteUeCcmRrcSapProvider::RemoveLc(uint8_t lcid) [member function]
+    cls.add_method('RemoveLc', 
+                   'std::vector< unsigned short >', 
+                   [param('uint8_t', 'lcid')], 
+                   is_pure_virtual=True, is_virtual=True)
+    return
+
+def register_Ns3LteUeCcmRrcSapProviderLcsConfig_methods(root_module, cls):
+    ## lte-ue-ccm-rrc-sap.h (module 'lte'): ns3::LteUeCcmRrcSapProvider::LcsConfig::LcsConfig() [constructor]
+    cls.add_constructor([])
+    ## lte-ue-ccm-rrc-sap.h (module 'lte'): ns3::LteUeCcmRrcSapProvider::LcsConfig::LcsConfig(ns3::LteUeCcmRrcSapProvider::LcsConfig const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::LteUeCcmRrcSapProvider::LcsConfig const &', 'arg0')])
+    ## lte-ue-ccm-rrc-sap.h (module 'lte'): ns3::LteUeCcmRrcSapProvider::LcsConfig::componentCarrierId [variable]
+    cls.add_instance_attribute('componentCarrierId', 'uint8_t', is_const=False)
+    ## lte-ue-ccm-rrc-sap.h (module 'lte'): ns3::LteUeCcmRrcSapProvider::LcsConfig::lcConfig [variable]
+    cls.add_instance_attribute('lcConfig', 'ns3::LteUeCmacSapProvider::LogicalChannelConfig *', is_const=False)
+    ## lte-ue-ccm-rrc-sap.h (module 'lte'): ns3::LteUeCcmRrcSapProvider::LcsConfig::msu [variable]
+    cls.add_instance_attribute('msu', 'ns3::LteMacSapUser *', is_const=False)
+    return
+
+def register_Ns3LteUeCcmRrcSapUser_methods(root_module, cls):
+    ## lte-ue-ccm-rrc-sap.h (module 'lte'): ns3::LteUeCcmRrcSapUser::LteUeCcmRrcSapUser() [constructor]
+    cls.add_constructor([])
+    ## lte-ue-ccm-rrc-sap.h (module 'lte'): ns3::LteUeCcmRrcSapUser::LteUeCcmRrcSapUser(ns3::LteUeCcmRrcSapUser const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::LteUeCcmRrcSapUser const &', 'arg0')])
+    ## lte-ue-ccm-rrc-sap.h (module 'lte'): void ns3::LteUeCcmRrcSapUser::ComponentCarrierEnabling(std::vector<unsigned char, std::allocator<unsigned char> > componentCarrierList) [member function]
+    cls.add_method('ComponentCarrierEnabling', 
+                   'void', 
+                   [param('std::vector< unsigned char >', 'componentCarrierList')], 
+                   is_pure_virtual=True, is_virtual=True)
+    return
+
 def register_Ns3LteUeCmacSapProvider_methods(root_module, cls):
     ## lte-ue-cmac-sap.h (module 'lte'): ns3::LteUeCmacSapProvider::LteUeCmacSapProvider() [constructor]
     cls.add_constructor([])
@@ -7211,6 +7279,11 @@ def register_Ns3LteUeCmacSapProvider_methods(root_module, cls):
     cls.add_method('Reset', 
                    'void', 
                    [], 
+                   is_pure_virtual=True, is_virtual=True)
+    ## lte-ue-cmac-sap.h (module 'lte'): void ns3::LteUeCmacSapProvider::SetRnti(uint16_t rnti) [member function]
+    cls.add_method('SetRnti', 
+                   'void', 
+                   [param('uint16_t', 'rnti')], 
                    is_pure_virtual=True, is_virtual=True)
     ## lte-ue-cmac-sap.h (module 'lte'): void ns3::LteUeCmacSapProvider::StartContentionBasedRandomAccessProcedure() [member function]
     cls.add_method('StartContentionBasedRandomAccessProcedure', 
@@ -17924,6 +17997,46 @@ def register_Ns3LteStatsCalculator_methods(root_module, cls):
                    is_static=True, visibility='protected')
     return
 
+def register_Ns3LteUeComponentCarrierManager_methods(root_module, cls):
+    ## lte-ue-component-carrier-manager.h (module 'lte'): ns3::LteUeComponentCarrierManager::LteUeComponentCarrierManager(ns3::LteUeComponentCarrierManager const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::LteUeComponentCarrierManager const &', 'arg0')])
+    ## lte-ue-component-carrier-manager.h (module 'lte'): ns3::LteUeComponentCarrierManager::LteUeComponentCarrierManager() [constructor]
+    cls.add_constructor([])
+    ## lte-ue-component-carrier-manager.h (module 'lte'): ns3::LteUeCcmRrcSapProvider * ns3::LteUeComponentCarrierManager::GetLteCcmRrcSapProvider() [member function]
+    cls.add_method('GetLteCcmRrcSapProvider', 
+                   'ns3::LteUeCcmRrcSapProvider *', 
+                   [], 
+                   is_pure_virtual=True, is_virtual=True)
+    ## lte-ue-component-carrier-manager.h (module 'lte'): ns3::LteMacSapProvider * ns3::LteUeComponentCarrierManager::GetLteMacSapProvider() [member function]
+    cls.add_method('GetLteMacSapProvider', 
+                   'ns3::LteMacSapProvider *', 
+                   [], 
+                   is_pure_virtual=True, is_virtual=True)
+    ## lte-ue-component-carrier-manager.h (module 'lte'): static ns3::TypeId ns3::LteUeComponentCarrierManager::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## lte-ue-component-carrier-manager.h (module 'lte'): bool ns3::LteUeComponentCarrierManager::SetComponentCarrierMacSapProviders(uint8_t componentCarrierId, ns3::LteMacSapProvider * sap) [member function]
+    cls.add_method('SetComponentCarrierMacSapProviders', 
+                   'bool', 
+                   [param('uint8_t', 'componentCarrierId'), param('ns3::LteMacSapProvider *', 'sap')])
+    ## lte-ue-component-carrier-manager.h (module 'lte'): void ns3::LteUeComponentCarrierManager::SetLteCcmRrcSapUser(ns3::LteUeCcmRrcSapUser * s) [member function]
+    cls.add_method('SetLteCcmRrcSapUser', 
+                   'void', 
+                   [param('ns3::LteUeCcmRrcSapUser *', 's')], 
+                   is_pure_virtual=True, is_virtual=True)
+    ## lte-ue-component-carrier-manager.h (module 'lte'): void ns3::LteUeComponentCarrierManager::SetNumberOfComponentCarriers(uint8_t noOfComponentCarriers) [member function]
+    cls.add_method('SetNumberOfComponentCarriers', 
+                   'void', 
+                   [param('uint8_t', 'noOfComponentCarriers')])
+    ## lte-ue-component-carrier-manager.h (module 'lte'): void ns3::LteUeComponentCarrierManager::DoDispose() [member function]
+    cls.add_method('DoDispose', 
+                   'void', 
+                   [], 
+                   visibility='protected', is_virtual=True)
+    return
+
 def register_Ns3LteUeMac_methods(root_module, cls):
     ## lte-ue-mac.h (module 'lte'): ns3::LteUeMac::LteUeMac(ns3::LteUeMac const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::LteUeMac const &', 'arg0')])
@@ -20340,6 +20453,93 @@ def register_Ns3Sib1LteControlMessage_methods(root_module, cls):
                    [param('ns3::LteRrcSap::SystemInformationBlockType1', 'sib1')])
     return
 
+def register_Ns3SimpleUeComponentCarrierManager_methods(root_module, cls):
+    ## simple-ue-component-carrier-manager.h (module 'lte'): ns3::SimpleUeComponentCarrierManager::SimpleUeComponentCarrierManager(ns3::SimpleUeComponentCarrierManager const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::SimpleUeComponentCarrierManager const &', 'arg0')])
+    ## simple-ue-component-carrier-manager.h (module 'lte'): ns3::SimpleUeComponentCarrierManager::SimpleUeComponentCarrierManager() [constructor]
+    cls.add_constructor([])
+    ## simple-ue-component-carrier-manager.h (module 'lte'): ns3::LteUeCcmRrcSapProvider * ns3::SimpleUeComponentCarrierManager::GetLteCcmRrcSapProvider() [member function]
+    cls.add_method('GetLteCcmRrcSapProvider', 
+                   'ns3::LteUeCcmRrcSapProvider *', 
+                   [], 
+                   is_virtual=True)
+    ## simple-ue-component-carrier-manager.h (module 'lte'): ns3::LteMacSapProvider * ns3::SimpleUeComponentCarrierManager::GetLteMacSapProvider() [member function]
+    cls.add_method('GetLteMacSapProvider', 
+                   'ns3::LteMacSapProvider *', 
+                   [], 
+                   is_virtual=True)
+    ## simple-ue-component-carrier-manager.h (module 'lte'): static ns3::TypeId ns3::SimpleUeComponentCarrierManager::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## simple-ue-component-carrier-manager.h (module 'lte'): void ns3::SimpleUeComponentCarrierManager::SetLteCcmRrcSapUser(ns3::LteUeCcmRrcSapUser * s) [member function]
+    cls.add_method('SetLteCcmRrcSapUser', 
+                   'void', 
+                   [param('ns3::LteUeCcmRrcSapUser *', 's')], 
+                   is_virtual=True)
+    ## simple-ue-component-carrier-manager.h (module 'lte'): std::vector<ns3::LteUeCcmRrcSapProvider::LcsConfig, std::allocator<ns3::LteUeCcmRrcSapProvider::LcsConfig> > ns3::SimpleUeComponentCarrierManager::DoAddLc(uint8_t lcId, ns3::LteUeCmacSapProvider::LogicalChannelConfig lcConfig, ns3::LteMacSapUser * msu) [member function]
+    cls.add_method('DoAddLc', 
+                   'std::vector< ns3::LteUeCcmRrcSapProvider::LcsConfig >', 
+                   [param('uint8_t', 'lcId'), param('ns3::LteUeCmacSapProvider::LogicalChannelConfig', 'lcConfig'), param('ns3::LteMacSapUser *', 'msu')], 
+                   visibility='protected')
+    ## simple-ue-component-carrier-manager.h (module 'lte'): ns3::LteMacSapUser * ns3::SimpleUeComponentCarrierManager::DoConfigureSignalBearer(uint8_t lcId, ns3::LteUeCmacSapProvider::LogicalChannelConfig lcConfig, ns3::LteMacSapUser * msu) [member function]
+    cls.add_method('DoConfigureSignalBearer', 
+                   'ns3::LteMacSapUser *', 
+                   [param('uint8_t', 'lcId'), param('ns3::LteUeCmacSapProvider::LogicalChannelConfig', 'lcConfig'), param('ns3::LteMacSapUser *', 'msu')], 
+                   visibility='protected')
+    ## simple-ue-component-carrier-manager.h (module 'lte'): void ns3::SimpleUeComponentCarrierManager::DoDispose() [member function]
+    cls.add_method('DoDispose', 
+                   'void', 
+                   [], 
+                   visibility='protected', is_virtual=True)
+    ## simple-ue-component-carrier-manager.h (module 'lte'): void ns3::SimpleUeComponentCarrierManager::DoInitialize() [member function]
+    cls.add_method('DoInitialize', 
+                   'void', 
+                   [], 
+                   visibility='protected', is_virtual=True)
+    ## simple-ue-component-carrier-manager.h (module 'lte'): void ns3::SimpleUeComponentCarrierManager::DoNotifyConnectionReconfigurationMsg() [member function]
+    cls.add_method('DoNotifyConnectionReconfigurationMsg', 
+                   'void', 
+                   [], 
+                   visibility='protected')
+    ## simple-ue-component-carrier-manager.h (module 'lte'): void ns3::SimpleUeComponentCarrierManager::DoNotifyHarqDeliveryFailure() [member function]
+    cls.add_method('DoNotifyHarqDeliveryFailure', 
+                   'void', 
+                   [], 
+                   visibility='protected')
+    ## simple-ue-component-carrier-manager.h (module 'lte'): void ns3::SimpleUeComponentCarrierManager::DoNotifyTxOpportunity(uint32_t bytes, uint8_t layer, uint8_t harqId, uint8_t componentCarrierId, uint16_t rnti, uint8_t lcid) [member function]
+    cls.add_method('DoNotifyTxOpportunity', 
+                   'void', 
+                   [param('uint32_t', 'bytes'), param('uint8_t', 'layer'), param('uint8_t', 'harqId'), param('uint8_t', 'componentCarrierId'), param('uint16_t', 'rnti'), param('uint8_t', 'lcid')], 
+                   visibility='protected')
+    ## simple-ue-component-carrier-manager.h (module 'lte'): void ns3::SimpleUeComponentCarrierManager::DoReceivePdu(ns3::Ptr<ns3::Packet> p, uint16_t rnti, uint8_t lcid) [member function]
+    cls.add_method('DoReceivePdu', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Packet >', 'p'), param('uint16_t', 'rnti'), param('uint8_t', 'lcid')], 
+                   visibility='protected')
+    ## simple-ue-component-carrier-manager.h (module 'lte'): std::vector<unsigned short, std::allocator<unsigned short> > ns3::SimpleUeComponentCarrierManager::DoRemoveLc(uint8_t lcid) [member function]
+    cls.add_method('DoRemoveLc', 
+                   'std::vector< unsigned short >', 
+                   [param('uint8_t', 'lcid')], 
+                   visibility='protected')
+    ## simple-ue-component-carrier-manager.h (module 'lte'): void ns3::SimpleUeComponentCarrierManager::DoReportBufferStatus(ns3::LteMacSapProvider::ReportBufferStatusParameters params) [member function]
+    cls.add_method('DoReportBufferStatus', 
+                   'void', 
+                   [param('ns3::LteMacSapProvider::ReportBufferStatusParameters', 'params')], 
+                   visibility='protected')
+    ## simple-ue-component-carrier-manager.h (module 'lte'): void ns3::SimpleUeComponentCarrierManager::DoReportUeMeas(uint16_t rnti, ns3::LteRrcSap::MeasResults measResults) [member function]
+    cls.add_method('DoReportUeMeas', 
+                   'void', 
+                   [param('uint16_t', 'rnti'), param('ns3::LteRrcSap::MeasResults', 'measResults')], 
+                   visibility='protected')
+    ## simple-ue-component-carrier-manager.h (module 'lte'): void ns3::SimpleUeComponentCarrierManager::DoTransmitPdu(ns3::LteMacSapProvider::TransmitPduParameters params) [member function]
+    cls.add_method('DoTransmitPdu', 
+                   'void', 
+                   [param('ns3::LteMacSapProvider::TransmitPduParameters', 'params')], 
+                   visibility='protected')
+    return
+
 def register_Ns3SpectrumChannel_methods(root_module, cls):
     ## spectrum-channel.h (module 'spectrum'): ns3::SpectrumChannel::SpectrumChannel() [constructor]
     cls.add_constructor([])
@@ -21859,6 +22059,11 @@ def register_Ns3LteUeNetDevice_methods(root_module, cls):
     ## lte-ue-net-device.h (module 'lte'): ns3::Ptr<ns3::EpcUeNas> ns3::LteUeNetDevice::GetNas() const [member function]
     cls.add_method('GetNas', 
                    'ns3::Ptr< ns3::EpcUeNas >', 
+                   [], 
+                   is_const=True)
+    ## lte-ue-net-device.h (module 'lte'): ns3::Ptr<ns3::LteUeComponentCarrierManager> ns3::LteUeNetDevice::GetComponentCarrierManager() const [member function]
+    cls.add_method('GetComponentCarrierManager', 
+                   'ns3::Ptr< ns3::LteUeComponentCarrierManager >', 
                    [], 
                    is_const=True)
     ## lte-ue-net-device.h (module 'lte'): uint64_t ns3::LteUeNetDevice::GetImsi() const [member function]

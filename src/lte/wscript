@@ -122,8 +122,11 @@ def build(bld):
         'model/lte-ffr-distributed-algorithm.cc',
         'model/lte-ue-power-control.cc',
         'model/lte-ccm-rrc-sap.cc',
+        'model/lte-ue-ccm-rrc-sap.cc', 
         'model/lte-ccm-mac-sap.cc', 
         'model/lte-enb-component-carrier-manager.cc',
+        'model/lte-ue-component-carrier-manager.cc',
+        'model/simple-ue-component-carrier-manager.cc',
         'model/component-carrier.cc',
         'model/component-carrier-ue.cc',
         'model/component-carrier-enb.cc'
@@ -303,8 +306,11 @@ def build(bld):
         'model/lte-ffr-distributed-algorithm.h',
         'model/lte-ue-power-control.h',
         'model/lte-ccm-rrc-sap.h',
+        'model/lte-ue-ccm-rrc-sap.h', 
         'model/lte-ccm-mac-sap.h', 
         'model/lte-enb-component-carrier-manager.h',
+        'model/lte-ue-component-carrier-manager.h',
+        'model/simple-ue-component-carrier-manager.h',
         'model/component-carrier.h',
         'model/component-carrier-ue.h',
         'model/component-carrier-enb.h'
