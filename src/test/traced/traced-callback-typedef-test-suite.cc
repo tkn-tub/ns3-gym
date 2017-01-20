@@ -164,7 +164,6 @@ TYPENAME (LtePdcp::PduRxTracedCallback);
 TYPENAME (LtePdcp::PduTxTracedCallback);
 TYPENAME (LteUePhy::StateTracedCallback);
 TYPENAME (LteUePhy::RsrpSinrTracedCallback);  
-TYPENAME (LteUePhy::RsrpRsrqTracedCallback);
 TYPENAME (LteUeRrc::CellSelectionTracedCallback);
 TYPENAME (LteUeRrc::StateTracedCallback);  
 TYPENAME (Mac48Address::TracedCallback);
@@ -511,18 +510,9 @@ TracedCallbackTypedefTestCase::DoRun (void)
   CHECK (LteUePhy::RsrpSinrTracedCallback,
          uint16_t, uint16_t, double, double, uint8_t);
 
-/*  Too many args :(
-  CHECK (LteUePhy::RsrpRsrqTracedCallback,
-         uint16_t, uint16_t, double, double, bool, uint8_t);
-*/
   CHECK (LteUePhy::StateTracedCallback,
          uint16_t, uint16_t, LteUePhy::State, LteUePhy::State,
          empty);
-
-/*
-  TxPowerTracedCallback used to match the typedef LteEnbPhy::ReportUeSinrTracedCallback but no longer does.
-  DUPE   (LteUePowerControl::TxPowerTracedCallback, LteEnbPhy::ReportUeSinrTracedCallback);
-*/
 
   CHECK (LteUeRrc::CellSelectionTracedCallback,
          uint64_t, uint16_t,
