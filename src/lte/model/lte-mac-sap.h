@@ -103,7 +103,7 @@ public:
    * \param bytes the number of bytes to transmit
    * \param layer the layer of transmission (MIMO)
    */
-  virtual void NotifyTxOpportunity (uint32_t bytes, uint8_t layer, uint8_t harqId) = 0;
+  virtual void NotifyTxOpportunity (uint32_t bytes, uint8_t layer, uint8_t harqId, uint8_t componentCarrierId, uint16_t rnti, uint8_t lcid) = 0;
 
   /**
    * Called by the MAC to notify the RLC that an HARQ process related
@@ -119,7 +119,7 @@ public:
    *
    * \param p
    */
-  virtual void ReceivePdu (Ptr<Packet> p) = 0;
+  virtual void ReceivePdu (Ptr<Packet> p, uint16_t rnti, uint8_t lcid) = 0;
 
 };
 

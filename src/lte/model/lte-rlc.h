@@ -134,9 +134,9 @@ protected:
   LteRlcSapProvider* m_rlcSapProvider;
 
   // Interface forwarded by LteMacSapUser
-  virtual void DoNotifyTxOpportunity (uint32_t bytes, uint8_t layer, uint8_t harqId) = 0;
+  virtual void DoNotifyTxOpportunity (uint32_t bytes, uint8_t layer, uint8_t harqId, uint8_t componentCarrierId, uint16_t rnti, uint8_t lcid) = 0;
   virtual void DoNotifyHarqDeliveryFailure () = 0;
-  virtual void DoReceivePdu (Ptr<Packet> p) = 0;
+  virtual void DoReceivePdu (Ptr<Packet> p, uint16_t rnti, uint8_t lcid) = 0;
 
   LteMacSapUser* m_macSapUser;
   LteMacSapProvider* m_macSapProvider;
@@ -175,9 +175,9 @@ public:
   virtual void DoDispose ();
 
   virtual void DoTransmitPdcpPdu (Ptr<Packet> p);
-  virtual void DoNotifyTxOpportunity (uint32_t bytes, uint8_t layer, uint8_t harqId);
+  virtual void DoNotifyTxOpportunity (uint32_t bytes, uint8_t layer, uint8_t harqId, uint8_t componentCarrierId, uint16_t rnti, uint8_t lcid);
   virtual void DoNotifyHarqDeliveryFailure ();
-  virtual void DoReceivePdu (Ptr<Packet> p);
+  virtual void DoReceivePdu (Ptr<Packet> p, uint16_t rnti, uint8_t lcid);
 
 
 
