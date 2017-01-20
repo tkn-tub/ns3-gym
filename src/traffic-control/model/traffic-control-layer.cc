@@ -75,11 +75,18 @@ TrafficControlLayer::DoInitialize (void)
   std::map<Ptr<NetDevice>, NetDeviceInfo>::iterator ndi;
   for (ndi = m_netDevices.begin (); ndi != m_netDevices.end (); ndi++)
     {
+      Ptr<NetDeviceQueueInterface> devQueueIface = ndi->second.ndqi;
+      NS_ASSERT (devQueueIface);
+
+      // devices can create the tx queues (NetDeviceQueue objects) before
+      // initialization time. Create the queues if they have not done so.
+      if (devQueueIface->GetNTxQueues () == 0)
+        {
+          devQueueIface->CreateTxQueues ();
+        }
+
       if (ndi->second.rootQueueDisc)
         {
-          Ptr<NetDeviceQueueInterface> devQueueIface = ndi->second.ndqi;
-          NS_ASSERT (devQueueIface);
-
           // set the wake callbacks on netdevice queues
            if (ndi->second.rootQueueDisc->GetWakeMode () == QueueDisc::WAKE_ROOT)
             {
@@ -127,11 +134,6 @@ TrafficControlLayer::SetupDevice (Ptr<NetDevice> device)
   // create a NetDeviceQueueInterface object and aggregate it to the device
   Ptr<NetDeviceQueueInterface> devQueueIface = CreateObject<NetDeviceQueueInterface> ();
   device->AggregateObject (devQueueIface);
-
-  // multi-queue devices must set the number of transmission queues in their
-  // NotifyNewAggregate method. Since we have just aggregated the netdevice
-  // queue interface to the device, we can create the transmission queues
-  devQueueIface->CreateTxQueues ();
 
   // devices can set a select queue callback in their NotifyNewAggregate method
   SelectQueueCallback cb = devQueueIface->GetSelectQueueCallback ();
