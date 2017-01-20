@@ -245,7 +245,7 @@ int Ipv6RawSocketImpl::SendTo (Ptr<Packet> p, uint32_t flags, const Address& toA
       hdr.SetDestinationAddress (dst);
       SocketErrno err = ERROR_NOTERROR;
       Ptr<Ipv6Route> route = 0;
-      Ptr<NetDevice> oif (0); /*specify non-zero if bound to a source address */
+      Ptr<NetDevice> oif = m_boundnetdevice; //specify non-zero if bound to a specific device
 
       if (!m_src.IsAny ())
         {

@@ -65,6 +65,7 @@ Bugs fixed
 - Bug 2605 - A HT/VHT station transmitting to a legacy access point results in a null throughput
 - Bug 2607 - Minstrel HT manager results in an endless loop when a 802.11ac station is transmitting to a 802.11a access point
 - Bug 2614 - RIP header version should be set to 2
+- Bug 2627 - Ipv6RawSocket does not honor the bound interface when sending packets
 
 Known issues
 ------------
