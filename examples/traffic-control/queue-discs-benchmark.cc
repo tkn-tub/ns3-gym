@@ -145,7 +145,7 @@ int main (int argc, char *argv[])
 
   // Access link traffic control configuration
   TrafficControlHelper tchPfifoFastAccess;
-  uint32_t handle = tchPfifoFastAccess.SetRootQueueDisc ("ns3::PfifoFastQueueDisc", "Limit", UintegerValue (1000));
+  tchPfifoFastAccess.SetRootQueueDisc ("ns3::PfifoFastQueueDisc", "Limit", UintegerValue (1000));
 
   // Bottleneck link traffic control configuration
   TrafficControlHelper tchBottleneck;
@@ -156,27 +156,27 @@ int main (int argc, char *argv[])
     }
   else if (queueDiscType.compare ("ARED") == 0)
     {
-      handle = tchBottleneck.SetRootQueueDisc ("ns3::RedQueueDisc");
+      tchBottleneck.SetRootQueueDisc ("ns3::RedQueueDisc");
       Config::SetDefault ("ns3::RedQueueDisc::ARED", BooleanValue (true));
       Config::SetDefault ("ns3::RedQueueDisc::Mode", EnumValue (Queue::QUEUE_MODE_PACKETS));
       Config::SetDefault ("ns3::RedQueueDisc::QueueLimit", UintegerValue (queueDiscSize));
     }
   else if (queueDiscType.compare ("CoDel") == 0)
     {
-      handle = tchBottleneck.SetRootQueueDisc ("ns3::CoDelQueueDisc");
+      tchBottleneck.SetRootQueueDisc ("ns3::CoDelQueueDisc");
       Config::SetDefault ("ns3::CoDelQueueDisc::Mode", EnumValue (Queue::QUEUE_MODE_PACKETS));
       Config::SetDefault ("ns3::CoDelQueueDisc::MaxPackets", UintegerValue (queueDiscSize));
     }
   else if (queueDiscType.compare ("FqCoDel") == 0)
     {
-      handle = tchBottleneck.SetRootQueueDisc ("ns3::FqCoDelQueueDisc");
-      Config::SetDefault ("ns3::FqCoDelQueueDisc::Packet limit", UintegerValue (queueDiscSize));
+      uint32_t handle = tchBottleneck.SetRootQueueDisc ("ns3::FqCoDelQueueDisc");
+      Config::SetDefault ("ns3::FqCoDelQueueDisc::PacketLimit", UintegerValue (queueDiscSize));
       tchBottleneck.AddPacketFilter (handle, "ns3::FqCoDelIpv4PacketFilter");
       tchBottleneck.AddPacketFilter (handle, "ns3::FqCoDelIpv6PacketFilter");
     }
   else if (queueDiscType.compare ("PIE") == 0)
     {
-      handle = tchBottleneck.SetRootQueueDisc ("ns3::PieQueueDisc");
+      tchBottleneck.SetRootQueueDisc ("ns3::PieQueueDisc");
       Config::SetDefault ("ns3::PieQueueDisc::Mode", EnumValue (Queue::QUEUE_MODE_PACKETS));
       Config::SetDefault ("ns3::PieQueueDisc::QueueLimit", UintegerValue (queueDiscSize));
     }
