@@ -42,33 +42,30 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE ("LteCqiGenerationTest");
 
 void
-LteTestDlSchedulingCallback (LteCqiGenerationTestCase *testcase, std::string path,
-                             uint32_t frameNo, uint32_t subframeNo, uint16_t rnti,
-                             uint8_t mcsTb1, uint16_t sizeTb1, uint8_t mcsTb2, uint16_t sizeTb2)
+LteTestDlSchedulingCallback (LteCqiGenerationTestCase *testcase, std::string path, DlSchedulingCallbackInfo dlInfo)
 {
-  testcase->DlScheduling (frameNo, subframeNo, rnti, mcsTb1, sizeTb1, mcsTb2, sizeTb2);
+  testcase->DlScheduling (dlInfo);
 }
 
 void
 LteTestUlSchedulingCallback (LteCqiGenerationTestCase *testcase, std::string path,
                              uint32_t frameNo, uint32_t subframeNo, uint16_t rnti,
-                             uint8_t mcs, uint16_t sizeTb)
+                             uint8_t mcs, uint16_t sizeTb, uint8_t ccId)
 {
   testcase->UlScheduling (frameNo, subframeNo, rnti, mcs, sizeTb);
 }
 
 void
 LteTestDlSchedulingCallback2 (LteCqiGenerationDlPowerControlTestCase *testcase, std::string path,
-                              uint32_t frameNo, uint32_t subframeNo, uint16_t rnti,
-                              uint8_t mcsTb1, uint16_t sizeTb1, uint8_t mcsTb2, uint16_t sizeTb2)
+		                      DlSchedulingCallbackInfo dlInfo)
 {
-  testcase->DlScheduling (frameNo, subframeNo, rnti, mcsTb1, sizeTb1, mcsTb2, sizeTb2);
+  testcase->DlScheduling (dlInfo);
 }
 
 void
 LteTestUlSchedulingCallback2 (LteCqiGenerationDlPowerControlTestCase *testcase, std::string path,
                               uint32_t frameNo, uint32_t subframeNo, uint16_t rnti,
-                              uint8_t mcs, uint16_t sizeTb)
+                              uint8_t mcs, uint16_t sizeTb, uint8_t componentCarrierId)
 {
   testcase->UlScheduling (frameNo, subframeNo, rnti, mcs, sizeTb);
 }
@@ -122,14 +119,13 @@ LteCqiGenerationTestCase::~LteCqiGenerationTestCase ()
 }
 
 void
-LteCqiGenerationTestCase::DlScheduling (uint32_t frameNo, uint32_t subframeNo, uint16_t rnti,
-                                        uint8_t mcsTb1, uint16_t sizeTb1, uint8_t mcsTb2, uint16_t sizeTb2)
+LteCqiGenerationTestCase::DlScheduling (DlSchedulingCallbackInfo dlInfo)
 {
   // need to allow for RRC connection establishment + CQI feedback reception
   if (Simulator::Now () > MilliSeconds (35))
     {
 //	  NS_LOG_UNCOND("DL MSC: " << (uint32_t)mcsTb1 << " expected DL MCS: " << (uint32_t)m_dlMcs);
-      NS_TEST_ASSERT_MSG_EQ ((uint32_t)mcsTb1, (uint32_t)m_dlMcs, "Wrong DL MCS ");
+      NS_TEST_ASSERT_MSG_EQ ((uint32_t)dlInfo.mcsTb1, (uint32_t)m_dlMcs, "Wrong DL MCS ");
     }
 }
 
@@ -256,14 +252,13 @@ LteCqiGenerationDlPowerControlTestCase::~LteCqiGenerationDlPowerControlTestCase 
 }
 
 void
-LteCqiGenerationDlPowerControlTestCase::DlScheduling (uint32_t frameNo, uint32_t subframeNo, uint16_t rnti,
-                                                      uint8_t mcsTb1, uint16_t sizeTb1, uint8_t mcsTb2, uint16_t sizeTb2)
+LteCqiGenerationDlPowerControlTestCase::DlScheduling (DlSchedulingCallbackInfo dlInfo)
 {
   // need to allow for RRC connection establishment + CQI feedback reception
   if (Simulator::Now () > MilliSeconds (500))
     {
 //	  NS_LOG_UNCOND("DL MSC: " << (uint32_t)mcsTb1 << " expected DL MCS: " << (uint32_t)m_dlMcs);
-      NS_TEST_ASSERT_MSG_EQ ((uint32_t)mcsTb1, (uint32_t)m_dlMcs, "Wrong DL MCS ");
+      NS_TEST_ASSERT_MSG_EQ ((uint32_t)dlInfo.mcsTb1, (uint32_t)m_dlMcs, "Wrong DL MCS ");
     }
 }
 

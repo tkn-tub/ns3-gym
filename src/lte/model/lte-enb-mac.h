@@ -17,6 +17,9 @@
  *
  * Author: Marco Miozzo  <marco.miozzo@cttc.es>
  *         Nicola Baldo  <nbaldo@cttc.es>
+ * Modified by:
+ *          Danilo Abrignani <danilo.abrignani@unibo.it> (Carrier Aggregation - GSoC 2015)
+ *          Biljana Bojovic <biljana.bojovic@cttc.es> (Carrier Aggregation)
  */
 
 #ifndef LTE_ENB_MAC_H
@@ -62,7 +65,7 @@ public:
   virtual ~LteEnbMac (void);
   virtual void DoDispose (void);
 
-  void SetComponentCarrierId (uint16_t index);
+  void SetComponentCarrierId (uint8_t index);
   /**
    * \brief Set the scheduler SAP provider
    * \param s a pointer SAP provider of the FF packet scheduler
@@ -130,11 +133,12 @@ public:
    * \param [in] tbs0Size
    * \param [in] mcs1 The MCS for transport block.
    * \param [in] tbs1Size
+   * \param [in] component carrier id
    */
   typedef void (* DlSchedulingTracedCallback)
-    (uint32_t frame, uint32_t subframe,  uint16_t rnti,
-     uint8_t mcs0, uint16_t tbs0Size,
-     uint8_t mcs1, uint16_t tbs1Size);
+    (const uint32_t frame, const uint32_t subframe, const uint16_t rnti,
+     const uint8_t mcs0, const uint16_t tbs0Size,
+     const uint8_t mcs1, const uint16_t tbs1Size, const uint8_t ccId);
 
   /**
    *  TracedCallback signature for UL scheduling events.
@@ -146,8 +150,8 @@ public:
    * \param [in] tbsSize
    */
   typedef void (* UlSchedulingTracedCallback)
-    (uint32_t frame, uint32_t subframe, uint16_t rnti,
-     uint8_t mcs, uint16_t tbsSize);
+    (const uint32_t frame, const uint32_t subframe, const uint16_t rnti,
+     const uint8_t mcs, const uint16_t tbsSize);
   
 private:
 
@@ -252,14 +256,14 @@ private:
    * Frame number, Subframe number, RNTI, MCS of TB1, size of TB1,
    * MCS of TB2 (0 if not present), size of TB2 (0 if not present)
    */
-  TracedCallback<uint32_t, uint32_t, uint16_t,
-                 uint8_t, uint16_t, uint8_t, uint16_t> m_dlScheduling;
+  TracedCallback<DlSchedulingCallbackInfo> m_dlScheduling;
+
   /**
    * Trace information regarding UL scheduling
-   * Frame number, Subframe number, RNTI, MCS of TB, size of TB
+   * Frame number, Subframe number, RNTI, MCS of TB, size of TB, component carrier id
    */
   TracedCallback<uint32_t, uint32_t, uint16_t,
-                 uint8_t, uint16_t> m_ulScheduling;
+                 uint8_t, uint16_t, uint8_t> m_ulScheduling;
   
   uint8_t m_macChTtiDelay; // delay of MAC, PHY and channel in terms of TTIs
 

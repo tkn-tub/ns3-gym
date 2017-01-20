@@ -538,9 +538,9 @@ LteUePhy::GenerateCqiRsrpRsrq (const SpectrumValue& sinr)
           rbNum++;
         }
       double avSinr = (rbNum > 0) ? (sum / rbNum) : DBL_MAX;
-      NS_LOG_INFO (this << " cellId " << m_cellId << " rnti " << m_rnti << " RSRP " << rsrp << " SINR " << avSinr);
+      NS_LOG_INFO (this << " cellId " << m_cellId << " rnti " << m_rnti << " RSRP " << rsrp << " SINR " << avSinr << " ComponentCarrierId " << (uint16_t) m_componentCarrierId);
 
-      m_reportCurrentCellRsrpSinrTrace (m_cellId, m_rnti, rsrp, avSinr);
+      m_reportCurrentCellRsrpSinrTrace (m_cellId, m_rnti, rsrp, avSinr, (uint16_t) m_componentCarrierId);
       m_rsrpSinrSampleCounter = 0;
     }
 
@@ -817,16 +817,18 @@ LteUePhy::ReportUeMeasurements ()
                          << " RSRP " << avg_rsrp
                          << " (nSamples " << (uint16_t)(*it).second.rsrpNum << ")"
                          << " RSRQ " << avg_rsrq
-                         << " (nSamples " << (uint16_t)(*it).second.rsrqNum << ")");
+                         << " (nSamples " << (uint16_t)(*it).second.rsrqNum << ")"
+                         << " ComponentCarrierID " << (uint16_t)m_componentCarrierId);
 
       LteUeCphySapUser::UeMeasurementsElement newEl;
       newEl.m_cellId = (*it).first;
       newEl.m_rsrp = avg_rsrp;
       newEl.m_rsrq = avg_rsrq;
       ret.m_ueMeasurementsList.push_back (newEl);
+      ret.m_componentCarrierId = m_componentCarrierId;
 
       // report to UE measurements trace
-      m_reportUeMeasurements (m_rnti, (*it).first, avg_rsrp, avg_rsrq, ((*it).first == m_cellId ? 1 : 0));
+      m_reportUeMeasurements (m_rnti, (*it).first, avg_rsrp, avg_rsrq, ((*it).first == m_cellId ? 1 : 0), m_componentCarrierId);
     }
 
   // report to RRC
@@ -864,6 +866,7 @@ LteUePhy::ReceiveLteControlMessageList (std::list<Ptr<LteControlMessage> > msgLi
   NS_LOG_FUNCTION (this);
 
   std::list<Ptr<LteControlMessage> >::iterator it;
+  NS_LOG_DEBUG (this << " I am rnti = " << m_rnti << " and I received msgs " << (uint16_t) msgList.size ());
   for (it = msgList.begin (); it != msgList.end (); it++)
     {
       Ptr<LteControlMessage> msg = (*it);
@@ -948,7 +951,7 @@ LteUePhy::ReceiveLteControlMessageList (std::list<Ptr<LteControlMessage> > msgLi
           params.m_size = dci.m_tbSize;
           params.m_rv = harqInfoList.size ();
           params.m_ndi = dci.m_ndi;
-          params.m_ccId = 0;
+          params.m_ccId = m_componentCarrierId;
           m_ulPhyTransmission (params);
           // pass the info to the MAC
           m_uePhySapUser->ReceiveLteControlMessage (msg);

@@ -177,7 +177,7 @@ public:
   struct UeMeasurementsParameters
   {
     std::vector <struct UeMeasurementsElement> m_ueMeasurementsList;
-    uint16_t m_componentCarrierId;
+    uint8_t m_componentCarrierId;
   };
 
 

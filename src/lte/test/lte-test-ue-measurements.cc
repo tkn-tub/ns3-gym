@@ -62,7 +62,7 @@ NS_LOG_COMPONENT_DEFINE ("LteUeMeasurementsTest");
 void
 ReportUeMeasurementsCallback (LteUeMeasurementsTestCase *testcase,
                               std::string path, uint16_t rnti, uint16_t cellId,
-                              double rsrp, double rsrq, bool servingCell)
+                              double rsrp, double rsrq, bool servingCell, uint8_t componentCarrierId)
 {
   testcase->ReportUeMeasurements (rnti, cellId, rsrp, rsrq, servingCell);
 }

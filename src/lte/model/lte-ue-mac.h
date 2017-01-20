@@ -57,7 +57,7 @@ public:
   void  SetLteUeCmacSapUser (LteUeCmacSapUser* s);
   LteUeCmacSapProvider*  GetLteUeCmacSapProvider (void);
   
-  void SetComponentCarrierId (uint16_t index);
+  void SetComponentCarrierId (uint8_t index);
 
   /**
   * \brief Get the PHY SAP user

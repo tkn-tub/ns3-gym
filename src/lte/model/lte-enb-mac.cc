@@ -17,6 +17,9 @@
  *
  * Author: Marco Miozzo <marco.miozzo@cttc.es>
  *         Nicola Baldo  <nbaldo@cttc.es>
+ * Modified by:
+ *          Danilo Abrignani <danilo.abrignani@unibo.it> (Carrier Aggregation - GSoC 2015)
+ *          Biljana Bojovic <biljana.bojovic@cttc.es> (Carrier Aggregation)
  */
 
 
@@ -384,7 +387,7 @@ LteEnbMac::DoDispose ()
 }
 
 void
-LteEnbMac::SetComponentCarrierId (uint16_t index)
+LteEnbMac::SetComponentCarrierId (uint8_t index)
 {
   m_componentCarrierId = index;
 }
@@ -803,7 +806,7 @@ LteEnbMac::DoRemoveUe (uint16_t rnti)
 void
 LteEnbMac::DoAddLc (LteEnbCmacSapProvider::LcInfo lcinfo, LteMacSapUser* msu)
 {
-  NS_LOG_FUNCTION (this);
+  NS_LOG_FUNCTION (this << lcinfo.rnti << (uint16_t) lcinfo.lcId);
 
   std::map <LteFlowId_t, LteMacSapUser* >::iterator it;
   
@@ -1012,7 +1015,7 @@ LteEnbMac::DoSchedDlConfigInd (FfMacSchedSapUser::SchedDlConfigIndParameters ind
                   std::map <uint16_t, std::map<uint8_t, LteMacSapUser*> >::iterator rntiIt = m_rlcAttached.find (rnti);
                   NS_ASSERT_MSG (rntiIt != m_rlcAttached.end (), "could not find RNTI" << rnti);
                   std::map<uint8_t, LteMacSapUser*>::iterator lcidIt = rntiIt->second.find (lcid);
-                  NS_ASSERT_MSG (lcidIt != rntiIt->second.end (), "could not find LCID" << lcid);
+                  NS_ASSERT_MSG (lcidIt != rntiIt->second.end (), "could not find LCID" << (uint32_t)lcid<<" carrier id:"<<(uint16_t)m_componentCarrierId);
                   NS_LOG_DEBUG (this << " rnti= " << rnti << " lcid= " << (uint32_t) lcid << " layer= " << k);
                   (*lcidIt).second->NotifyTxOpportunity (ind.m_buildDataList.at (i).m_rlcPduList.at (j).at (k).m_size, k, ind.m_buildDataList.at (i).m_dci.m_harqProcess);
                 }
@@ -1045,22 +1048,30 @@ LteEnbMac::DoSchedDlConfigInd (FfMacSchedSapUser::SchedDlConfigIndParameters ind
       // Only one TB used
       if (ind.m_buildDataList.at (i).m_dci.m_tbsSize.size () == 1)
         {
-          m_dlScheduling (m_frameNo, m_subframeNo, ind.m_buildDataList.at (i).m_dci.m_rnti,
-                          ind.m_buildDataList.at (i).m_dci.m_mcs.at (0),
-                          ind.m_buildDataList.at (i).m_dci.m_tbsSize.at (0),
-                          0, 0
-                          );
-
+          DlSchedulingCallbackInfo dlSchedulingCallbackInfo;
+          dlSchedulingCallbackInfo.frameNo = m_frameNo;
+          dlSchedulingCallbackInfo.subframeNo = m_subframeNo;
+          dlSchedulingCallbackInfo.rnti = ind.m_buildDataList.at (i).m_dci.m_rnti;
+          dlSchedulingCallbackInfo.mcsTb1=ind.m_buildDataList.at (i).m_dci.m_mcs.at (0);
+          dlSchedulingCallbackInfo.sizeTb1 = ind.m_buildDataList.at (i).m_dci.m_tbsSize.at (0);
+          dlSchedulingCallbackInfo.mcsTb2 = 0;
+          dlSchedulingCallbackInfo.sizeTb2 = 0;
+          dlSchedulingCallbackInfo.componentCarrierId = m_componentCarrierId;
+          m_dlScheduling(dlSchedulingCallbackInfo);
         }
       // Two TBs used
       else if (ind.m_buildDataList.at (i).m_dci.m_tbsSize.size () == 2)
         {
-          m_dlScheduling (m_frameNo, m_subframeNo, ind.m_buildDataList.at (i).m_dci.m_rnti,
-                          ind.m_buildDataList.at (i).m_dci.m_mcs.at (0),
-                          ind.m_buildDataList.at (i).m_dci.m_tbsSize.at (0),
-                          ind.m_buildDataList.at (i).m_dci.m_mcs.at (1),
-                          ind.m_buildDataList.at (i).m_dci.m_tbsSize.at (1)
-                          );
+          DlSchedulingCallbackInfo dlSchedulingCallbackInfo;
+          dlSchedulingCallbackInfo.frameNo = m_frameNo;
+          dlSchedulingCallbackInfo.subframeNo = m_subframeNo;
+          dlSchedulingCallbackInfo.rnti = ind.m_buildDataList.at (i).m_dci.m_rnti;
+          dlSchedulingCallbackInfo.mcsTb1=ind.m_buildDataList.at (i).m_dci.m_mcs.at (0);
+          dlSchedulingCallbackInfo.sizeTb1 = ind.m_buildDataList.at (i).m_dci.m_tbsSize.at (0);
+          dlSchedulingCallbackInfo.mcsTb2 = ind.m_buildDataList.at (i).m_dci.m_mcs.at (1);
+          dlSchedulingCallbackInfo.sizeTb2 = ind.m_buildDataList.at (i).m_dci.m_tbsSize.at (1);
+          dlSchedulingCallbackInfo.componentCarrierId = m_componentCarrierId;
+          m_dlScheduling(dlSchedulingCallbackInfo);
         }
       else
         {
@@ -1120,7 +1131,7 @@ LteEnbMac::DoSchedUlConfigInd (FfMacSchedSapUser::SchedUlConfigIndParameters ind
   for (  uint32_t i  = 0; i < ind.m_dciList.size (); i++ )
     {
       m_ulScheduling (m_frameNo, m_subframeNo, ind.m_dciList.at (i).m_rnti,
-                      ind.m_dciList.at (i).m_mcs, ind.m_dciList.at (i).m_tbSize);
+                      ind.m_dciList.at (i).m_mcs, ind.m_dciList.at (i).m_tbSize, m_componentCarrierId);
     }
 
 

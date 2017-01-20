@@ -291,7 +291,7 @@ public:
    * \param [in] sinrLinear
    */
   typedef void (* ReportUeSinrTracedCallback)
-    (uint16_t cellId, uint16_t rnti, double sinrLinear);
+    (uint16_t cellId, uint16_t rnti, double sinrLinear, uint8_t componentCarrierId);
 
   /**
    * TracedCallback signature for the linear average of SRS SINRs.
@@ -403,9 +403,9 @@ private:
 
   /**
    * The `ReportUeSinr` trace source. Reporting the linear average of SRS SINR.
-   * Exporting cell ID, RNTI, and SINR in linear unit.
+   * Exporting cell ID, RNTI, SINR in linear unit and ComponentCarrierId
    */
-  TracedCallback<uint16_t, uint16_t, double> m_reportUeSinr;
+  TracedCallback<uint16_t, uint16_t, double, uint8_t> m_reportUeSinr;
   /**
    * The `UeSinrSamplePeriod` trace source. The sampling period for reporting
    * UEs' SINR stats.

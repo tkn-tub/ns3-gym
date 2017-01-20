@@ -7280,7 +7280,7 @@ def register_Ns3LteUeCphySapUserUeMeasurementsParameters_methods(root_module, cl
     ## lte-ue-cphy-sap.h (module 'lte'): ns3::LteUeCphySapUser::UeMeasurementsParameters::UeMeasurementsParameters(ns3::LteUeCphySapUser::UeMeasurementsParameters const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::LteUeCphySapUser::UeMeasurementsParameters const &', 'arg0')])
     ## lte-ue-cphy-sap.h (module 'lte'): ns3::LteUeCphySapUser::UeMeasurementsParameters::m_componentCarrierId [variable]
-    cls.add_instance_attribute('m_componentCarrierId', 'uint16_t', is_const=False)
+    cls.add_instance_attribute('m_componentCarrierId', 'uint8_t', is_const=False)
     ## lte-ue-cphy-sap.h (module 'lte'): ns3::LteUeCphySapUser::UeMeasurementsParameters::m_ueMeasurementsList [variable]
     cls.add_instance_attribute('m_ueMeasurementsList', 'std::vector< ns3::LteUeCphySapUser::UeMeasurementsElement >', is_const=False)
     return
@@ -15438,10 +15438,10 @@ def register_Ns3LteEnbMac_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
-    ## lte-enb-mac.h (module 'lte'): void ns3::LteEnbMac::SetComponentCarrierId(uint16_t index) [member function]
+    ## lte-enb-mac.h (module 'lte'): void ns3::LteEnbMac::SetComponentCarrierId(uint8_t index) [member function]
     cls.add_method('SetComponentCarrierId', 
                    'void', 
-                   [param('uint16_t', 'index')])
+                   [param('uint8_t', 'index')])
     ## lte-enb-mac.h (module 'lte'): void ns3::LteEnbMac::SetFfMacCschedSapProvider(ns3::FfMacCschedSapProvider * s) [member function]
     cls.add_method('SetFfMacCschedSapProvider', 
                    'void', 
@@ -17112,10 +17112,10 @@ def register_Ns3LtePhy_methods(root_module, cls):
                    'void', 
                    [param('ns3::SpectrumValue const &', 'power')], 
                    is_pure_virtual=True, is_virtual=True)
-    ## lte-phy.h (module 'lte'): void ns3::LtePhy::SetComponentCarrierId(uint16_t index) [member function]
+    ## lte-phy.h (module 'lte'): void ns3::LtePhy::SetComponentCarrierId(uint8_t index) [member function]
     cls.add_method('SetComponentCarrierId', 
                    'void', 
-                   [param('uint16_t', 'index')])
+                   [param('uint8_t', 'index')])
     ## lte-phy.h (module 'lte'): void ns3::LtePhy::SetControlMessages(ns3::Ptr<ns3::LteControlMessage> m) [member function]
     cls.add_method('SetControlMessages', 
                    'void', 
@@ -17766,10 +17766,10 @@ def register_Ns3LteUeMac_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
-    ## lte-ue-mac.h (module 'lte'): void ns3::LteUeMac::SetComponentCarrierId(uint16_t index) [member function]
+    ## lte-ue-mac.h (module 'lte'): void ns3::LteUeMac::SetComponentCarrierId(uint8_t index) [member function]
     cls.add_method('SetComponentCarrierId', 
                    'void', 
-                   [param('uint16_t', 'index')])
+                   [param('uint8_t', 'index')])
     ## lte-ue-mac.h (module 'lte'): void ns3::LteUeMac::SetLteUeCmacSapUser(ns3::LteUeCmacSapUser * s) [member function]
     cls.add_method('SetLteUeCmacSapUser', 
                    'void', 
@@ -18263,14 +18263,14 @@ def register_Ns3MacStatsCalculator_methods(root_module, cls):
     cls.add_constructor([param('ns3::MacStatsCalculator const &', 'arg0')])
     ## mac-stats-calculator.h (module 'lte'): ns3::MacStatsCalculator::MacStatsCalculator() [constructor]
     cls.add_constructor([])
-    ## mac-stats-calculator.h (module 'lte'): void ns3::MacStatsCalculator::DlScheduling(uint16_t cellId, uint64_t imsi, uint32_t frameNo, uint32_t subframeNo, uint16_t rnti, uint8_t mcsTb1, uint16_t sizeTb1, uint8_t mcsTb2, uint16_t sizeTb2) [member function]
+    ## mac-stats-calculator.h (module 'lte'): void ns3::MacStatsCalculator::DlScheduling(uint16_t cellId, uint64_t imsi, ns3::DlSchedulingCallbackInfo dlSchedulingCallbackInfo) [member function]
     cls.add_method('DlScheduling', 
                    'void', 
-                   [param('uint16_t', 'cellId'), param('uint64_t', 'imsi'), param('uint32_t', 'frameNo'), param('uint32_t', 'subframeNo'), param('uint16_t', 'rnti'), param('uint8_t', 'mcsTb1'), param('uint16_t', 'sizeTb1'), param('uint8_t', 'mcsTb2'), param('uint16_t', 'sizeTb2')])
-    ## mac-stats-calculator.h (module 'lte'): static void ns3::MacStatsCalculator::DlSchedulingCallback(ns3::Ptr<ns3::MacStatsCalculator> macStats, std::string path, uint32_t frameNo, uint32_t subframeNo, uint16_t rnti, uint8_t mcsTb1, uint16_t sizeTb1, uint8_t mcsTb2, uint16_t sizeTb2) [member function]
+                   [param('uint16_t', 'cellId'), param('uint64_t', 'imsi'), param('ns3::DlSchedulingCallbackInfo', 'dlSchedulingCallbackInfo')])
+    ## mac-stats-calculator.h (module 'lte'): static void ns3::MacStatsCalculator::DlSchedulingCallback(ns3::Ptr<ns3::MacStatsCalculator> macStats, std::string path, ns3::DlSchedulingCallbackInfo dlSchedulingCallbackInfo) [member function]
     cls.add_method('DlSchedulingCallback', 
                    'void', 
-                   [param('ns3::Ptr< ns3::MacStatsCalculator >', 'macStats'), param('std::string', 'path'), param('uint32_t', 'frameNo'), param('uint32_t', 'subframeNo'), param('uint16_t', 'rnti'), param('uint8_t', 'mcsTb1'), param('uint16_t', 'sizeTb1'), param('uint8_t', 'mcsTb2'), param('uint16_t', 'sizeTb2')], 
+                   [param('ns3::Ptr< ns3::MacStatsCalculator >', 'macStats'), param('std::string', 'path'), param('ns3::DlSchedulingCallbackInfo', 'dlSchedulingCallbackInfo')], 
                    is_static=True)
     ## mac-stats-calculator.h (module 'lte'): std::string ns3::MacStatsCalculator::GetDlOutputFilename() [member function]
     cls.add_method('GetDlOutputFilename', 
@@ -18293,14 +18293,14 @@ def register_Ns3MacStatsCalculator_methods(root_module, cls):
     cls.add_method('SetUlOutputFilename', 
                    'void', 
                    [param('std::string', 'outputFilename')])
-    ## mac-stats-calculator.h (module 'lte'): void ns3::MacStatsCalculator::UlScheduling(uint16_t cellId, uint64_t imsi, uint32_t frameNo, uint32_t subframeNo, uint16_t rnti, uint8_t mcsTb, uint16_t sizeTb) [member function]
+    ## mac-stats-calculator.h (module 'lte'): void ns3::MacStatsCalculator::UlScheduling(uint16_t cellId, uint64_t imsi, uint32_t frameNo, uint32_t subframeNo, uint16_t rnti, uint8_t mcsTb, uint16_t sizeTb, uint8_t componentCarrierId) [member function]
     cls.add_method('UlScheduling', 
                    'void', 
-                   [param('uint16_t', 'cellId'), param('uint64_t', 'imsi'), param('uint32_t', 'frameNo'), param('uint32_t', 'subframeNo'), param('uint16_t', 'rnti'), param('uint8_t', 'mcsTb'), param('uint16_t', 'sizeTb')])
-    ## mac-stats-calculator.h (module 'lte'): static void ns3::MacStatsCalculator::UlSchedulingCallback(ns3::Ptr<ns3::MacStatsCalculator> macStats, std::string path, uint32_t frameNo, uint32_t subframeNo, uint16_t rnti, uint8_t mcs, uint16_t size) [member function]
+                   [param('uint16_t', 'cellId'), param('uint64_t', 'imsi'), param('uint32_t', 'frameNo'), param('uint32_t', 'subframeNo'), param('uint16_t', 'rnti'), param('uint8_t', 'mcsTb'), param('uint16_t', 'sizeTb'), param('uint8_t', 'componentCarrierId')])
+    ## mac-stats-calculator.h (module 'lte'): static void ns3::MacStatsCalculator::UlSchedulingCallback(ns3::Ptr<ns3::MacStatsCalculator> macStats, std::string path, uint32_t frameNo, uint32_t subframeNo, uint16_t rnti, uint8_t mcs, uint16_t size, uint8_t componentCarrierId) [member function]
     cls.add_method('UlSchedulingCallback', 
                    'void', 
-                   [param('ns3::Ptr< ns3::MacStatsCalculator >', 'macStats'), param('std::string', 'path'), param('uint32_t', 'frameNo'), param('uint32_t', 'subframeNo'), param('uint16_t', 'rnti'), param('uint8_t', 'mcs'), param('uint16_t', 'size')], 
+                   [param('ns3::Ptr< ns3::MacStatsCalculator >', 'macStats'), param('std::string', 'path'), param('uint32_t', 'frameNo'), param('uint32_t', 'subframeNo'), param('uint16_t', 'rnti'), param('uint8_t', 'mcs'), param('uint16_t', 'size'), param('uint8_t', 'componentCarrierId')], 
                    is_static=True)
     return
 
@@ -19219,14 +19219,14 @@ def register_Ns3PhyStatsCalculator_methods(root_module, cls):
     cls.add_method('GetUeSinrFilename', 
                    'std::string', 
                    [])
-    ## phy-stats-calculator.h (module 'lte'): void ns3::PhyStatsCalculator::ReportCurrentCellRsrpSinr(uint16_t cellId, uint64_t imsi, uint16_t rnti, double rsrp, double sinr) [member function]
+    ## phy-stats-calculator.h (module 'lte'): void ns3::PhyStatsCalculator::ReportCurrentCellRsrpSinr(uint16_t cellId, uint64_t imsi, uint16_t rnti, double rsrp, double sinr, uint8_t componentCarrierId) [member function]
     cls.add_method('ReportCurrentCellRsrpSinr', 
                    'void', 
-                   [param('uint16_t', 'cellId'), param('uint64_t', 'imsi'), param('uint16_t', 'rnti'), param('double', 'rsrp'), param('double', 'sinr')])
-    ## phy-stats-calculator.h (module 'lte'): static void ns3::PhyStatsCalculator::ReportCurrentCellRsrpSinrCallback(ns3::Ptr<ns3::PhyStatsCalculator> phyStats, std::string path, uint16_t cellId, uint16_t rnti, double rsrp, double sinr) [member function]
+                   [param('uint16_t', 'cellId'), param('uint64_t', 'imsi'), param('uint16_t', 'rnti'), param('double', 'rsrp'), param('double', 'sinr'), param('uint8_t', 'componentCarrierId')])
+    ## phy-stats-calculator.h (module 'lte'): static void ns3::PhyStatsCalculator::ReportCurrentCellRsrpSinrCallback(ns3::Ptr<ns3::PhyStatsCalculator> phyStats, std::string path, uint16_t cellId, uint16_t rnti, double rsrp, double sinr, uint8_t componentCarrierId) [member function]
     cls.add_method('ReportCurrentCellRsrpSinrCallback', 
                    'void', 
-                   [param('ns3::Ptr< ns3::PhyStatsCalculator >', 'phyStats'), param('std::string', 'path'), param('uint16_t', 'cellId'), param('uint16_t', 'rnti'), param('double', 'rsrp'), param('double', 'sinr')], 
+                   [param('ns3::Ptr< ns3::PhyStatsCalculator >', 'phyStats'), param('std::string', 'path'), param('uint16_t', 'cellId'), param('uint16_t', 'rnti'), param('double', 'rsrp'), param('double', 'sinr'), param('uint8_t', 'componentCarrierId')], 
                    is_static=True)
     ## phy-stats-calculator.h (module 'lte'): void ns3::PhyStatsCalculator::ReportInterference(uint16_t cellId, ns3::Ptr<ns3::SpectrumValue> interference) [member function]
     cls.add_method('ReportInterference', 
@@ -19237,14 +19237,14 @@ def register_Ns3PhyStatsCalculator_methods(root_module, cls):
                    'void', 
                    [param('ns3::Ptr< ns3::PhyStatsCalculator >', 'phyStats'), param('std::string', 'path'), param('uint16_t', 'cellId'), param('ns3::Ptr< ns3::SpectrumValue >', 'interference')], 
                    is_static=True)
-    ## phy-stats-calculator.h (module 'lte'): void ns3::PhyStatsCalculator::ReportUeSinr(uint16_t cellId, uint64_t imsi, uint16_t rnti, double sinrLinear) [member function]
+    ## phy-stats-calculator.h (module 'lte'): void ns3::PhyStatsCalculator::ReportUeSinr(uint16_t cellId, uint64_t imsi, uint16_t rnti, double sinrLinear, uint8_t componentCarrierId) [member function]
     cls.add_method('ReportUeSinr', 
                    'void', 
-                   [param('uint16_t', 'cellId'), param('uint64_t', 'imsi'), param('uint16_t', 'rnti'), param('double', 'sinrLinear')])
-    ## phy-stats-calculator.h (module 'lte'): static void ns3::PhyStatsCalculator::ReportUeSinr(ns3::Ptr<ns3::PhyStatsCalculator> phyStats, std::string path, uint16_t cellId, uint16_t rnti, double sinrLinear) [member function]
+                   [param('uint16_t', 'cellId'), param('uint64_t', 'imsi'), param('uint16_t', 'rnti'), param('double', 'sinrLinear'), param('uint8_t', 'componentCarrierId')])
+    ## phy-stats-calculator.h (module 'lte'): static void ns3::PhyStatsCalculator::ReportUeSinr(ns3::Ptr<ns3::PhyStatsCalculator> phyStats, std::string path, uint16_t cellId, uint16_t rnti, double sinrLinear, uint8_t componentCarrierId) [member function]
     cls.add_method('ReportUeSinr', 
                    'void', 
-                   [param('ns3::Ptr< ns3::PhyStatsCalculator >', 'phyStats'), param('std::string', 'path'), param('uint16_t', 'cellId'), param('uint16_t', 'rnti'), param('double', 'sinrLinear')], 
+                   [param('ns3::Ptr< ns3::PhyStatsCalculator >', 'phyStats'), param('std::string', 'path'), param('uint16_t', 'cellId'), param('uint16_t', 'rnti'), param('double', 'sinrLinear'), param('uint8_t', 'componentCarrierId')], 
                    is_static=True)
     ## phy-stats-calculator.h (module 'lte'): void ns3::PhyStatsCalculator::SetCurrentCellRsrpSinrFilename(std::string filename) [member function]
     cls.add_method('SetCurrentCellRsrpSinrFilename', 

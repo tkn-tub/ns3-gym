@@ -251,7 +251,7 @@ LtePhy::DoSetCellId (uint16_t cellId)
 }
 
 void
-LtePhy::SetComponentCarrierId (uint16_t index)
+LtePhy::SetComponentCarrierId (uint8_t index)
 {
   m_componentCarrierId = index;
   m_downlinkSpectrumPhy->SetComponentCarrierId (index);

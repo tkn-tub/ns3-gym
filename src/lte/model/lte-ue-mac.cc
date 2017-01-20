@@ -277,7 +277,7 @@ LteUeMac::GetLteUeCmacSapProvider (void)
 }
 
 void
-LteUeMac::SetComponentCarrierId (uint16_t index)
+LteUeMac::SetComponentCarrierId (uint8_t index)
 {
   m_componentCarrierId = index;
 }

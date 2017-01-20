@@ -44,8 +44,7 @@ public:
   LteInterferenceTestCase (std::string name, double d1, double d2, double dlSinr, double ulSinr, double dlSe, double ulSe, uint16_t dlMcs, uint16_t ulMcs);
   virtual ~LteInterferenceTestCase ();
 
-  void DlScheduling (uint32_t frameNo, uint32_t subframeNo, uint16_t rnti,
-                     uint8_t mcsTb1, uint16_t sizeTb1, uint8_t mcsTb2, uint16_t sizeTb2);
+  void DlScheduling (DlSchedulingCallbackInfo dlInfo);
 
   void UlScheduling (uint32_t frameNo, uint32_t subframeNo, uint16_t rnti,
                      uint8_t mcs, uint16_t sizeTb);

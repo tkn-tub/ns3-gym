@@ -209,7 +209,7 @@ public:
   */
   virtual void ReportRsReceivedPower (const SpectrumValue& power) = 0;
 
-  void SetComponentCarrierId (uint16_t index);
+  void SetComponentCarrierId (uint8_t index);
 
   uint8_t GetComponentCarrierId ();
 

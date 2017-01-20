@@ -105,7 +105,7 @@ PhyRxStatsCalculator::DlPhyReception (PhyReceptionStatParameters params)
           return;
         }
       m_dlRxFirstWrite = false;
-      outFile << "% time\tcellId\tIMSI\tRNTI\ttxMode\tlayer\tmcs\tsize\trv\tndi\tcorrect";
+      outFile << "% time\tcellId\tIMSI\tRNTI\ttxMode\tlayer\tmcs\tsize\trv\tndi\tcorrect\tccId";
       outFile << std::endl;
     }
   else
@@ -129,7 +129,8 @@ PhyRxStatsCalculator::DlPhyReception (PhyReceptionStatParameters params)
   outFile << params.m_size << "\t";
   outFile << (uint32_t) params.m_rv << "\t";
   outFile << (uint32_t) params.m_ndi << "\t";
-  outFile << (uint32_t) params.m_correctness << std::endl;
+  outFile << (uint32_t) params.m_correctness << "\t";
+  outFile << (uint32_t) params.m_ccId << std::endl;
   outFile.close ();
 }
 
@@ -149,7 +150,7 @@ PhyRxStatsCalculator::UlPhyReception (PhyReceptionStatParameters params)
           return;
         }
       m_ulRxFirstWrite = false;
-      outFile << "% time\tcellId\tIMSI\tRNTI\tlayer\tmcs\tsize\trv\tndi\tcorrect";
+      outFile << "% time\tcellId\tIMSI\tRNTI\tlayer\tmcs\tsize\trv\tndi\tcorrect\tccId";
       outFile << std::endl;
     }
   else
@@ -172,7 +173,8 @@ PhyRxStatsCalculator::UlPhyReception (PhyReceptionStatParameters params)
   outFile << params.m_size << "\t";
   outFile << (uint32_t) params.m_rv << "\t";
   outFile << (uint32_t) params.m_ndi << "\t";
-  outFile << (uint32_t) params.m_correctness << std::endl;
+  outFile << (uint32_t) params.m_correctness << "\t";
+  outFile << (uint32_t) params.m_ccId <<std::endl;
   outFile.close ();
 }
 

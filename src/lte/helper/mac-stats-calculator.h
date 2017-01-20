@@ -16,6 +16,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Jaume Nin <jnin@cttc.es>
+ * Modified by: Danilo Abrignani <danilo.abrignani@unibo.it> (Carrier Aggregation - GSoC 2015)
+ *              Biljana Bojovic <biljana.bojovic@cttc.es> (Carrier Aggregation) 
  */
 
 #ifndef MAC_STATS_CALCULATOR_H_
@@ -26,6 +28,7 @@
 #include "ns3/uinteger.h"
 #include <string>
 #include <fstream>
+#include "ns3/lte-enb-mac.h"
 
 namespace ns3 {
 
@@ -92,16 +95,18 @@ public:
    * Notifies the stats calculator that an downlink scheduling has occurred.
    * @param cellId Cell ID of the attached Enb
    * @param imsi IMSI of the scheduled UE
-   * @param frameNo Frame number
-   * @param subframeNo Subframe number
-   * @param rnti C-RNTI scheduled
-   * @param mcsTb1 MCS for transport block 1
-   * @param sizeTb1 Size of transport block 1
-   * @param mcsTb2 MCS for transport block 2 (0 if not used)
-   * @param sizeTb2 Size of transport block 2 (0 if not used)
+   * @param dlSchedulingCallbackInfo the structure that contains downlink scheduling fields:
+   * frameNo Frame number
+   * subframeNo Subframe number
+   * rnti C-RNTI scheduled
+   * mcsTb1 MCS for transport block 1
+   * sizeTb1 Size of transport block 1
+   * mcsTb2 MCS for transport block 2 (0 if not used)
+   * sizeTb2 Size of transport block 2 (0 if not used)
+   * componentCarrierId component carrier ID
    */
-  void DlScheduling (uint16_t cellId, uint64_t imsi, uint32_t frameNo, uint32_t subframeNo,
-                     uint16_t rnti, uint8_t mcsTb1, uint16_t sizeTb1, uint8_t mcsTb2, uint16_t sizeTb2);
+
+  void DlScheduling (uint16_t cellId, uint64_t imsi, DlSchedulingCallbackInfo dlSchedulingCallbackInfo);
 
   /**
    * Notifies the stats calculator that an uplink scheduling has occurred.
@@ -112,9 +117,10 @@ public:
    * @param rnti C-RNTI scheduled
    * @param mcsTb MCS for transport block
    * @param sizeTb Size of transport block
+   * @param componentCarrierId component carrier ID
    */
   void UlScheduling (uint16_t cellId, uint64_t imsi,uint32_t frameNo, uint32_t subframeNo,
-                     uint16_t rnti, uint8_t mcsTb, uint16_t sizeTb);
+                     uint16_t rnti, uint8_t mcsTb, uint16_t sizeTb, uint8_t componentCarrierId);
 
   
   /** 
@@ -129,11 +135,11 @@ public:
    * \param sizeTb1 
    * \param mcsTb2 
    * \param sizeTb2 
+   * \param componentCarrierId
    */
-  static void DlSchedulingCallback (Ptr<MacStatsCalculator> macStats,
-                             std::string path, uint32_t frameNo, uint32_t subframeNo,
-                             uint16_t rnti, uint8_t mcsTb1, uint16_t sizeTb1,
-                             uint8_t mcsTb2, uint16_t sizeTb2);
+
+
+  static void DlSchedulingCallback (Ptr<MacStatsCalculator> macStats, std::string path, DlSchedulingCallbackInfo dlSchedulingCallbackInfo);
 
   /** 
    * Trace sink for the ns3::LteEnbMac::UlScheduling trace source
@@ -145,10 +151,11 @@ public:
    * \param rnti 
    * \param mcs 
    * \param size 
+   * \param componentCarrierId
    */
   static void UlSchedulingCallback (Ptr<MacStatsCalculator> macStats, std::string path,
                              uint32_t frameNo, uint32_t subframeNo, uint16_t rnti,
-                             uint8_t mcs, uint16_t size);
+                             uint8_t mcs, uint16_t size, uint8_t componentCarrierId);
 
 
 private:

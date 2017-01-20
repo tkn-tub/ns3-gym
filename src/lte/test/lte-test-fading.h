@@ -72,8 +72,7 @@ class LteFadingSystemTestCase : public TestCase
     LteFadingSystemTestCase ();
     virtual ~LteFadingSystemTestCase ();
     
-    void DlScheduling (uint32_t frameNo, uint32_t subframeNo, uint16_t rnti,
-                       uint8_t mcsTb1, uint16_t sizeTb1, uint8_t mcsTb2, uint16_t sizeTb2);
+    void DlScheduling (DlSchedulingCallbackInfo dlInfo);
                        
   private:
     virtual void DoRun (void);
