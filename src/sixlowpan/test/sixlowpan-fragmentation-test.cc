@@ -470,8 +470,14 @@ SixlowpanFragmentationTest::DoRun (void)
 class SixlowpanFragmentationTestSuite : public TestSuite
 {
 public:
-  SixlowpanFragmentationTestSuite () : TestSuite ("sixlowpan-fragmentation", UNIT)
-  {
-    AddTestCase (new SixlowpanFragmentationTest, TestCase::QUICK);
-  }
-} g_sixlowpanFragmentationTestSuite;
+  SixlowpanFragmentationTestSuite ();
+private:
+};
+
+SixlowpanFragmentationTestSuite::SixlowpanFragmentationTestSuite ()
+  : TestSuite ("sixlowpan-fragmentation", UNIT)
+{
+  AddTestCase (new SixlowpanFragmentationTestSuite (), TestCase::QUICK);
+}
+
+static SixlowpanFragmentationTestSuite g_sixlowpanFragmentationTestSuite;

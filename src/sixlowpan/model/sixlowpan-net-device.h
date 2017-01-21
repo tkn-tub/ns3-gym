@@ -420,6 +420,7 @@ public:
 
     /**
      * \brief Get a list of the current stored fragments.
+     * \returns The current stored fragments.
      */
     std::list< Ptr<Packet> > GetFraments () const;
 

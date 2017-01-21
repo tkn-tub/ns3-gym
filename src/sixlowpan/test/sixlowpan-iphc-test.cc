@@ -223,8 +223,14 @@ SixlowpanIphcImplTest::DoRun (void)
 class SixlowpanIphcTestSuite : public TestSuite
 {
 public:
-  SixlowpanIphcTestSuite () : TestSuite ("sixlowpan-iphc", UNIT)
-  {
-    AddTestCase (new SixlowpanIphcImplTest, TestCase::QUICK);
-  }
-} g_sixlowpanIphcTestSuite;
+  SixlowpanIphcTestSuite ();
+private:
+};
+
+SixlowpanIphcTestSuite::SixlowpanIphcTestSuite ()
+  : TestSuite ("sixlowpan-hc1", UNIT)
+{
+  AddTestCase (new SixlowpanIphcTestSuite (), TestCase::QUICK);
+}
+
+static SixlowpanIphcTestSuite g_sixlowpanIphcTestSuite;

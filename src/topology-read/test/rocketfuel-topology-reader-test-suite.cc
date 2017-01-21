@@ -101,4 +101,4 @@ RocketfuelTopologyReaderTestSuite::RocketfuelTopologyReaderTestSuite ()
   AddTestCase (new RocketfuelTopologyReaderTest (), TestCase::QUICK);
 }
 
-static RocketfuelTopologyReaderTestSuite rocketfuelTopologyReaderTestSuite;
+static RocketfuelTopologyReaderTestSuite g_rocketfuelTopologyReaderTestSuite;
