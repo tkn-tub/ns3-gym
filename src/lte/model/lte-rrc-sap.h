@@ -85,7 +85,7 @@ public:
 
   struct FreqInfo
   {
-    uint16_t ulCarrierFreq;
+    uint32_t ulCarrierFreq;
     uint8_t ulBandwidth;
   };
 
@@ -285,7 +285,7 @@ public:
 
   struct MeasObjectEutra
   {
-    uint16_t carrierFreq;
+    uint32_t carrierFreq;
     uint8_t allowedMeasBandwidth;
     bool presenceAntennaPort1;
     uint8_t neighCellConfig;
@@ -477,8 +477,8 @@ public:
 
   struct CarrierFreqEutra
   {
-    uint16_t dlCarrierFreq;
-    uint16_t ulCarrierFreq;
+    uint32_t dlCarrierFreq;
+    uint32_t ulCarrierFreq;
   };
 
   struct CarrierBandwidthEutra
@@ -551,7 +551,7 @@ public:
     MasterInformationBlock sourceMasterInformationBlock;
     SystemInformationBlockType1 sourceSystemInformationBlockType1;
     SystemInformationBlockType2 sourceSystemInformationBlockType2;
-    uint16_t sourceDlCarrierFreq;
+    uint32_t sourceDlCarrierFreq;
   };
 
   struct CgiInfo
@@ -571,6 +571,33 @@ public:
     uint8_t rsrpResult;
     bool haveRsrqResult;
     uint8_t rsrqResult;
+  };
+  
+  struct MeasResultScell
+  {
+    uint16_t servFreqId;
+    bool haveRsrpResult;
+    uint8_t rsrpResult;
+    bool haveRsrqResult;
+    uint8_t rsrqResult;
+  };
+
+  struct MeasResultBestNeighCell
+  {
+    uint16_t servFreqId;
+    uint16_t physCellId;
+    bool haveRsrpResult;
+    uint8_t rsrpResult;
+    bool haveRsrqResult;
+    uint8_t rsrqResult;
+  };
+
+  struct MeasResultServFreqList
+  {
+    bool haveMeasurementResultsServingSCells;
+    std::list<MeasResultScell> measResultScell;
+    bool haveMeasurementResultsNeighCell; // always false since not implemented
+    std::list<MeasResultBestNeighCell> measResultBestNeighCell;
   };
 
   struct MeasResults
@@ -600,6 +627,116 @@ public:
     uint8_t rrcTransactionIdentifier;
   };
 
+  struct CellIdentification
+  {
+    uint32_t physCellId;
+    uint32_t dlCarrierFreq; //  ARFCN - valueEUTRA
+  };
+
+  struct AntennaInfoCommon
+  {
+    uint16_t antennaPortsCount;
+  };
+
+  struct UlPowerControlCommonSCell
+  {
+    uint16_t alpha;
+  };
+  
+  struct PrachConfigSCell
+  {
+    uint16_t index;
+  };
+
+  struct NonUlConfiguration
+  {
+    // 3GPP TS 36.311 v.11.10 R11 pag.220
+    // 1: Cell characteristics
+    uint16_t dlBandwidth;
+    // 2: Physical configuration, general antennaInfoCommon-r10
+    AntennaInfoCommon antennaInfoCommon;
+    // 3: Physical configuration, control phich-Config-r10
+    // Not Implemented
+    // 4: Physical configuration, physical channels pdsch-ConfigCommon-r10
+    PdschConfigCommon pdschConfigCommon;
+    // 5: tdd-Config-r10
+    //Not Implemented
+  };
+
+  struct UlConfiguration 
+  { 
+    FreqInfo ulFreqInfo; 
+    UlPowerControlCommonSCell ulPowerControlCommonSCell; // 3GPP TS 36.331 v.11.10 R11 pag.223 
+    SoundingRsUlConfigCommon soundingRsUlConfigCommon; 
+    PrachConfigSCell prachConfigSCell; 
+    //PushConfigCommon pushConfigCommon; //NOT IMPLEMENTED!
+  };
+
+  struct AntennaInfoUl
+  {
+    uint8_t transmissionMode;
+  };
+
+  struct PuschConfigDedicatedSCell
+  {
+    //3GPP TS 36.331 v.11.10 R11 page 216
+    uint16_t nPuschIdentity;
+  };
+
+  struct UlPowerControlDedicatedSCell
+  {
+    //3GPP TS 36.331 v.11.10 R11 page 234
+    uint16_t pSrsOffset;
+  };
+
+  struct PhysicalConfigDedicatedSCell
+  {
+    //Non-Ul Configuration
+    bool haveNonUlConfiguration;
+    bool haveAntennaInfoDedicated;
+    AntennaInfoDedicated antennaInfo; 
+    bool crossCarrierSchedulingConfig; // currently implemented as boolean variable --> implementing crossCarrierScheduling is out of the scope of this GSoC proposal
+    bool havePdschConfigDedicated;
+    PdschConfigDedicated pdschConfigDedicated;
+
+    //Ul Configuration
+    bool haveUlConfiguration;
+    bool haveAntennaInfoUlDedicated;
+    AntennaInfoDedicated antennaInfoUl;
+    PuschConfigDedicatedSCell pushConfigDedicatedSCell;
+    UlPowerControlDedicatedSCell  ulPowerControlDedicatedSCell;
+    bool haveSoundingRsUlConfigDedicated;
+    SoundingRsUlConfigDedicated soundingRsUlConfigDedicated;   
+  };
+
+  struct RadioResourceConfigCommonSCell
+  {
+    bool haveNonUlConfiguration;
+    NonUlConfiguration nonUlConfiguration;
+    bool haveUlConfiguration;
+    UlConfiguration ulConfiguration;
+  };
+
+ struct RadioResourceConfigDedicatedSCell
+  {
+    PhysicalConfigDedicatedSCell physicalConfigDedicatedSCell;
+  };
+
+  struct SCellToAddMod
+  {
+    uint32_t sCellIndex;
+    CellIdentification cellIdentification;
+    RadioResourceConfigCommonSCell radioResourceConfigCommonSCell;
+    bool haveRadioResourceConfigDedicatedSCell;
+    RadioResourceConfigDedicatedSCell radioResourceConfigDedicateSCell;
+  };
+
+  struct NonCriticalExtensionConfiguration
+  {
+    std::list<SCellToAddMod> sCellsToAddModList; 
+    std::list<uint32_t> sCellToReleaseList;
+  };
+
   struct RrcConnectionReconfiguration
   {
     uint8_t rrcTransactionIdentifier;
@@ -609,6 +746,9 @@ public:
     MobilityControlInfo mobilityControlInfo;
     bool haveRadioResourceConfigDedicated;
     RadioResourceConfigDedicated radioResourceConfigDedicated;
+    bool haveNonCriticalExtension;
+    // 3GPP TS 36.331 v.11.10 R11 Sec. 6.2.2 pag. 147 (also known as ETSI TS 136 331 v.11.10 Feb-2015)
+    NonCriticalExtensionConfiguration nonCriticalExtension;
   };
 
   struct RrcConnectionReconfigurationCompleted

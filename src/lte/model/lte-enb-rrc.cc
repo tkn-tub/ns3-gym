@@ -145,6 +145,7 @@ UeManager::UeManager (Ptr<LteEnbRrc> rrc, uint16_t rnti, State s)
     m_needPhyMacConfiguration (false)
 { 
   NS_LOG_FUNCTION (this);
+  m_pendingStartDataRadioBearers = false;
 }
 
 void
@@ -260,7 +261,7 @@ UeManager::DoInitialize ()
       NS_FATAL_ERROR ("unexpected state " << ToString (m_state));
       break;
     }
-
+  m_caSupportConfigured =  false;
 }
 
 
@@ -475,6 +476,9 @@ UeManager::ReleaseDataRadioBearer (uint8_t drbid)
   msg.haveMobilityControlInfo = false;
   msg.radioResourceConfigDedicated = rrcd;
   msg.haveRadioResourceConfigDedicated = true;
+  // ToDo: Resend in eny case this configuration
+  // needs to be initialized
+  msg.haveNonCriticalExtension = false;
   //RRC Connection Reconfiguration towards UE
   m_rrc->m_rrcSapUser->SendRrcConnectionReconfiguration (m_rnti, msg);
 }
@@ -672,8 +676,8 @@ UeManager::SendData (uint8_t bid, Ptr<Packet> p)
             if (bearerInfo != NULL)
               {
                 LtePdcpSapProvider* pdcpSapProvider = bearerInfo->m_pdcp->GetLtePdcpSapProvider ();
-        pdcpSapProvider->TransmitPdcpSdu (params);
-      }
+                pdcpSapProvider->TransmitPdcpSdu (params);
+              }
           }
       }
       break;
@@ -1432,6 +1436,11 @@ LteEnbRrc::GetTypeId (void)
                    IntegerValue (-70),
                    MakeIntegerAccessor (&LteEnbRrc::m_qRxLevMin),
                    MakeIntegerChecker<int8_t> (-70, -22))
+    .AddAttribute ("NumberOfComponentCarriers",
+                   "Number of Component Carriers ",
+                   UintegerValue (1),
+                   MakeIntegerAccessor (&LteEnbRrc::m_numberOfComponentCarriers),
+                   MakeIntegerChecker<int16_t> (MIN_NO_CC, 2)) // to change, currently the CC number is liited to 2
 
     // Handover related attributes
     .AddAttribute ("AdmitHandoverRequest",

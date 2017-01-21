@@ -422,8 +422,12 @@ def register_types(module):
     module.add_class('LteRrcSap')
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::ReestablishmentCause [enumeration]
     module.add_enum('ReestablishmentCause', ['RECONFIGURATION_FAILURE', 'HANDOVER_FAILURE', 'OTHER_FAILURE'], outer_class=root_module['ns3::LteRrcSap'])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::AntennaInfoCommon [struct]
+    module.add_class('AntennaInfoCommon', outer_class=root_module['ns3::LteRrcSap'])
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::AntennaInfoDedicated [struct]
     module.add_class('AntennaInfoDedicated', outer_class=root_module['ns3::LteRrcSap'])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::AntennaInfoUl [struct]
+    module.add_class('AntennaInfoUl', outer_class=root_module['ns3::LteRrcSap'])
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::AsConfig [struct]
     module.add_class('AsConfig', outer_class=root_module['ns3::LteRrcSap'])
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::BlackCellsToAddMod [struct]
@@ -434,6 +438,8 @@ def register_types(module):
     module.add_class('CarrierFreqEutra', outer_class=root_module['ns3::LteRrcSap'])
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::CellAccessRelatedInfo [struct]
     module.add_class('CellAccessRelatedInfo', outer_class=root_module['ns3::LteRrcSap'])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::CellIdentification [struct]
+    module.add_class('CellIdentification', outer_class=root_module['ns3::LteRrcSap'])
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::CellSelectionInfo [struct]
     module.add_class('CellSelectionInfo', outer_class=root_module['ns3::LteRrcSap'])
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::CellsToAddMod [struct]
@@ -464,8 +470,14 @@ def register_types(module):
     module.add_class('MeasObjectEutra', outer_class=root_module['ns3::LteRrcSap'])
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::MeasObjectToAddMod [struct]
     module.add_class('MeasObjectToAddMod', outer_class=root_module['ns3::LteRrcSap'])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::MeasResultBestNeighCell [struct]
+    module.add_class('MeasResultBestNeighCell', outer_class=root_module['ns3::LteRrcSap'])
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::MeasResultEutra [struct]
     module.add_class('MeasResultEutra', outer_class=root_module['ns3::LteRrcSap'])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::MeasResultScell [struct]
+    module.add_class('MeasResultScell', outer_class=root_module['ns3::LteRrcSap'])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::MeasResultServFreqList [struct]
+    module.add_class('MeasResultServFreqList', outer_class=root_module['ns3::LteRrcSap'])
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::MeasResults [struct]
     module.add_class('MeasResults', outer_class=root_module['ns3::LteRrcSap'])
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::MeasurementReport [struct]
@@ -474,6 +486,10 @@ def register_types(module):
     module.add_class('MobilityControlInfo', outer_class=root_module['ns3::LteRrcSap'])
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::MobilityStateParameters [struct]
     module.add_class('MobilityStateParameters', outer_class=root_module['ns3::LteRrcSap'])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::NonCriticalExtensionConfiguration [struct]
+    module.add_class('NonCriticalExtensionConfiguration', outer_class=root_module['ns3::LteRrcSap'])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::NonUlConfiguration [struct]
+    module.add_class('NonUlConfiguration', outer_class=root_module['ns3::LteRrcSap'])
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::PdschConfigCommon [struct]
     module.add_class('PdschConfigCommon', outer_class=root_module['ns3::LteRrcSap'])
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::PdschConfigDedicated [struct]
@@ -484,10 +500,16 @@ def register_types(module):
     module.add_class('PhysCellIdRange', outer_class=root_module['ns3::LteRrcSap'])
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::PhysicalConfigDedicated [struct]
     module.add_class('PhysicalConfigDedicated', outer_class=root_module['ns3::LteRrcSap'])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::PhysicalConfigDedicatedSCell [struct]
+    module.add_class('PhysicalConfigDedicatedSCell', outer_class=root_module['ns3::LteRrcSap'])
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::PlmnIdentityInfo [struct]
     module.add_class('PlmnIdentityInfo', outer_class=root_module['ns3::LteRrcSap'])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::PrachConfigSCell [struct]
+    module.add_class('PrachConfigSCell', outer_class=root_module['ns3::LteRrcSap'])
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::PreambleInfo [struct]
     module.add_class('PreambleInfo', outer_class=root_module['ns3::LteRrcSap'])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::PuschConfigDedicatedSCell [struct]
+    module.add_class('PuschConfigDedicatedSCell', outer_class=root_module['ns3::LteRrcSap'])
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::QuantityConfig [struct]
     module.add_class('QuantityConfig', outer_class=root_module['ns3::LteRrcSap'])
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::RaSupervisionInfo [struct]
@@ -498,10 +520,14 @@ def register_types(module):
     module.add_class('RachConfigDedicated', outer_class=root_module['ns3::LteRrcSap'])
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::RadioResourceConfigCommon [struct]
     module.add_class('RadioResourceConfigCommon', outer_class=root_module['ns3::LteRrcSap'])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::RadioResourceConfigCommonSCell [struct]
+    module.add_class('RadioResourceConfigCommonSCell', outer_class=root_module['ns3::LteRrcSap'])
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::RadioResourceConfigCommonSib [struct]
     module.add_class('RadioResourceConfigCommonSib', outer_class=root_module['ns3::LteRrcSap'])
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::RadioResourceConfigDedicated [struct]
     module.add_class('RadioResourceConfigDedicated', outer_class=root_module['ns3::LteRrcSap'])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::RadioResourceConfigDedicatedSCell [struct]
+    module.add_class('RadioResourceConfigDedicatedSCell', outer_class=root_module['ns3::LteRrcSap'])
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::ReestabUeIdentity [struct]
     module.add_class('ReestabUeIdentity', outer_class=root_module['ns3::LteRrcSap'])
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::ReportConfigEutra [struct]
@@ -546,6 +572,8 @@ def register_types(module):
     module.add_class('RrcConnectionSetup', outer_class=root_module['ns3::LteRrcSap'])
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::RrcConnectionSetupCompleted [struct]
     module.add_class('RrcConnectionSetupCompleted', outer_class=root_module['ns3::LteRrcSap'])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SCellToAddMod [struct]
+    module.add_class('SCellToAddMod', outer_class=root_module['ns3::LteRrcSap'])
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SoundingRsUlConfigCommon [struct]
     module.add_class('SoundingRsUlConfigCommon', outer_class=root_module['ns3::LteRrcSap'])
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SoundingRsUlConfigCommon [enumeration]
@@ -572,6 +600,12 @@ def register_types(module):
     module.add_class('ThresholdEutra', outer_class=root_module['ns3::LteRrcSap'])
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::ThresholdEutra [enumeration]
     module.add_enum('', ['THRESHOLD_RSRP', 'THRESHOLD_RSRQ'], outer_class=root_module['ns3::LteRrcSap::ThresholdEutra'])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::UlConfiguration [struct]
+    module.add_class('UlConfiguration', outer_class=root_module['ns3::LteRrcSap'])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::UlPowerControlCommonSCell [struct]
+    module.add_class('UlPowerControlCommonSCell', outer_class=root_module['ns3::LteRrcSap'])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::UlPowerControlDedicatedSCell [struct]
+    module.add_class('UlPowerControlDedicatedSCell', outer_class=root_module['ns3::LteRrcSap'])
     ## lte-chunk-processor.h (module 'lte'): ns3::LteSpectrumValueCatcher [class]
     module.add_class('LteSpectrumValueCatcher')
     ## lte-spectrum-value-helper.h (module 'lte'): ns3::LteSpectrumValueHelper [class]
@@ -1422,7 +1456,10 @@ def register_types(module):
     module.add_container('std::list< ns3::LteRrcSap::ReportConfigToAddMod >', 'ns3::LteRrcSap::ReportConfigToAddMod', container_type=u'list')
     module.add_container('std::list< ns3::LteRrcSap::MeasIdToAddMod >', 'ns3::LteRrcSap::MeasIdToAddMod', container_type=u'list')
     module.add_container('std::list< unsigned int >', 'unsigned int', container_type=u'list')
+    module.add_container('std::list< ns3::LteRrcSap::MeasResultScell >', 'ns3::LteRrcSap::MeasResultScell', container_type=u'list')
+    module.add_container('std::list< ns3::LteRrcSap::MeasResultBestNeighCell >', 'ns3::LteRrcSap::MeasResultBestNeighCell', container_type=u'list')
     module.add_container('std::list< ns3::LteRrcSap::MeasResultEutra >', 'ns3::LteRrcSap::MeasResultEutra', container_type=u'list')
+    module.add_container('std::list< ns3::LteRrcSap::SCellToAddMod >', 'ns3::LteRrcSap::SCellToAddMod', container_type=u'list')
     module.add_container('std::map< int, double >', ('int', 'double'), container_type=u'map')
     module.add_container('std::vector< ns3::LteUeCcmRrcSapProvider::LcsConfig >', 'ns3::LteUeCcmRrcSapProvider::LcsConfig', container_type=u'vector')
     module.add_container('std::vector< ns3::LteUeCphySapUser::UeMeasurementsElement >', 'ns3::LteUeCphySapUser::UeMeasurementsElement', container_type=u'vector')
@@ -1433,10 +1470,10 @@ def register_types(module):
     module.add_container('std::vector< double >', 'double', container_type=u'vector')
     module.add_container('ns3::Bands', 'ns3::BandInfo', container_type=u'vector')
     module.add_container('std::map< unsigned int, unsigned int >', ('unsigned int', 'unsigned int'), container_type=u'map')
+    module.add_container('std::map< unsigned char, ns3::Ptr< ns3::ComponentCarrierEnb > >', ('unsigned char', 'ns3::Ptr< ns3::ComponentCarrierEnb >'), container_type=u'map')
     module.add_container('std::list< ns3::Ptr< ns3::LteControlMessage > >', 'ns3::Ptr< ns3::LteControlMessage >', container_type=u'list')
     module.add_container('std::list< ns3::UlDciLteControlMessage >', 'ns3::UlDciLteControlMessage', container_type=u'list')
     module.add_container('std::map< unsigned char, ns3::Ptr< ns3::ComponentCarrierUe > >', ('unsigned char', 'ns3::Ptr< ns3::ComponentCarrierUe >'), container_type=u'map')
-    module.add_container('std::map< unsigned char, ns3::Ptr< ns3::ComponentCarrierEnb > >', ('unsigned char', 'ns3::Ptr< ns3::ComponentCarrierEnb >'), container_type=u'map')
     typehandlers.add_type_alias(u'std::map< ns3::ImsiLcidPair_t, unsigned int, std::less< ns3::ImsiLcidPair_t >, std::allocator< std::pair< ns3::ImsiLcidPair_t const, unsigned int > > >', u'ns3::Uint32Map')
     typehandlers.add_type_alias(u'std::map< ns3::ImsiLcidPair_t, unsigned int, std::less< ns3::ImsiLcidPair_t >, std::allocator< std::pair< ns3::ImsiLcidPair_t const, unsigned int > > >*', u'ns3::Uint32Map*')
     typehandlers.add_type_alias(u'std::map< ns3::ImsiLcidPair_t, unsigned int, std::less< ns3::ImsiLcidPair_t >, std::allocator< std::pair< ns3::ImsiLcidPair_t const, unsigned int > > >&', u'ns3::Uint32Map&')
@@ -1834,12 +1871,15 @@ def register_methods(root_module):
     register_Ns3LteRlcSapProviderTransmitPdcpPduParameters_methods(root_module, root_module['ns3::LteRlcSapProvider::TransmitPdcpPduParameters'])
     register_Ns3LteRlcSapUser_methods(root_module, root_module['ns3::LteRlcSapUser'])
     register_Ns3LteRrcSap_methods(root_module, root_module['ns3::LteRrcSap'])
+    register_Ns3LteRrcSapAntennaInfoCommon_methods(root_module, root_module['ns3::LteRrcSap::AntennaInfoCommon'])
     register_Ns3LteRrcSapAntennaInfoDedicated_methods(root_module, root_module['ns3::LteRrcSap::AntennaInfoDedicated'])
+    register_Ns3LteRrcSapAntennaInfoUl_methods(root_module, root_module['ns3::LteRrcSap::AntennaInfoUl'])
     register_Ns3LteRrcSapAsConfig_methods(root_module, root_module['ns3::LteRrcSap::AsConfig'])
     register_Ns3LteRrcSapBlackCellsToAddMod_methods(root_module, root_module['ns3::LteRrcSap::BlackCellsToAddMod'])
     register_Ns3LteRrcSapCarrierBandwidthEutra_methods(root_module, root_module['ns3::LteRrcSap::CarrierBandwidthEutra'])
     register_Ns3LteRrcSapCarrierFreqEutra_methods(root_module, root_module['ns3::LteRrcSap::CarrierFreqEutra'])
     register_Ns3LteRrcSapCellAccessRelatedInfo_methods(root_module, root_module['ns3::LteRrcSap::CellAccessRelatedInfo'])
+    register_Ns3LteRrcSapCellIdentification_methods(root_module, root_module['ns3::LteRrcSap::CellIdentification'])
     register_Ns3LteRrcSapCellSelectionInfo_methods(root_module, root_module['ns3::LteRrcSap::CellSelectionInfo'])
     register_Ns3LteRrcSapCellsToAddMod_methods(root_module, root_module['ns3::LteRrcSap::CellsToAddMod'])
     register_Ns3LteRrcSapCgiInfo_methods(root_module, root_module['ns3::LteRrcSap::CgiInfo'])
@@ -1853,24 +1893,34 @@ def register_methods(root_module):
     register_Ns3LteRrcSapMeasIdToAddMod_methods(root_module, root_module['ns3::LteRrcSap::MeasIdToAddMod'])
     register_Ns3LteRrcSapMeasObjectEutra_methods(root_module, root_module['ns3::LteRrcSap::MeasObjectEutra'])
     register_Ns3LteRrcSapMeasObjectToAddMod_methods(root_module, root_module['ns3::LteRrcSap::MeasObjectToAddMod'])
+    register_Ns3LteRrcSapMeasResultBestNeighCell_methods(root_module, root_module['ns3::LteRrcSap::MeasResultBestNeighCell'])
     register_Ns3LteRrcSapMeasResultEutra_methods(root_module, root_module['ns3::LteRrcSap::MeasResultEutra'])
+    register_Ns3LteRrcSapMeasResultScell_methods(root_module, root_module['ns3::LteRrcSap::MeasResultScell'])
+    register_Ns3LteRrcSapMeasResultServFreqList_methods(root_module, root_module['ns3::LteRrcSap::MeasResultServFreqList'])
     register_Ns3LteRrcSapMeasResults_methods(root_module, root_module['ns3::LteRrcSap::MeasResults'])
     register_Ns3LteRrcSapMeasurementReport_methods(root_module, root_module['ns3::LteRrcSap::MeasurementReport'])
     register_Ns3LteRrcSapMobilityControlInfo_methods(root_module, root_module['ns3::LteRrcSap::MobilityControlInfo'])
     register_Ns3LteRrcSapMobilityStateParameters_methods(root_module, root_module['ns3::LteRrcSap::MobilityStateParameters'])
+    register_Ns3LteRrcSapNonCriticalExtensionConfiguration_methods(root_module, root_module['ns3::LteRrcSap::NonCriticalExtensionConfiguration'])
+    register_Ns3LteRrcSapNonUlConfiguration_methods(root_module, root_module['ns3::LteRrcSap::NonUlConfiguration'])
     register_Ns3LteRrcSapPdschConfigCommon_methods(root_module, root_module['ns3::LteRrcSap::PdschConfigCommon'])
     register_Ns3LteRrcSapPdschConfigDedicated_methods(root_module, root_module['ns3::LteRrcSap::PdschConfigDedicated'])
     register_Ns3LteRrcSapPhysCellIdRange_methods(root_module, root_module['ns3::LteRrcSap::PhysCellIdRange'])
     register_Ns3LteRrcSapPhysicalConfigDedicated_methods(root_module, root_module['ns3::LteRrcSap::PhysicalConfigDedicated'])
+    register_Ns3LteRrcSapPhysicalConfigDedicatedSCell_methods(root_module, root_module['ns3::LteRrcSap::PhysicalConfigDedicatedSCell'])
     register_Ns3LteRrcSapPlmnIdentityInfo_methods(root_module, root_module['ns3::LteRrcSap::PlmnIdentityInfo'])
+    register_Ns3LteRrcSapPrachConfigSCell_methods(root_module, root_module['ns3::LteRrcSap::PrachConfigSCell'])
     register_Ns3LteRrcSapPreambleInfo_methods(root_module, root_module['ns3::LteRrcSap::PreambleInfo'])
+    register_Ns3LteRrcSapPuschConfigDedicatedSCell_methods(root_module, root_module['ns3::LteRrcSap::PuschConfigDedicatedSCell'])
     register_Ns3LteRrcSapQuantityConfig_methods(root_module, root_module['ns3::LteRrcSap::QuantityConfig'])
     register_Ns3LteRrcSapRaSupervisionInfo_methods(root_module, root_module['ns3::LteRrcSap::RaSupervisionInfo'])
     register_Ns3LteRrcSapRachConfigCommon_methods(root_module, root_module['ns3::LteRrcSap::RachConfigCommon'])
     register_Ns3LteRrcSapRachConfigDedicated_methods(root_module, root_module['ns3::LteRrcSap::RachConfigDedicated'])
     register_Ns3LteRrcSapRadioResourceConfigCommon_methods(root_module, root_module['ns3::LteRrcSap::RadioResourceConfigCommon'])
+    register_Ns3LteRrcSapRadioResourceConfigCommonSCell_methods(root_module, root_module['ns3::LteRrcSap::RadioResourceConfigCommonSCell'])
     register_Ns3LteRrcSapRadioResourceConfigCommonSib_methods(root_module, root_module['ns3::LteRrcSap::RadioResourceConfigCommonSib'])
     register_Ns3LteRrcSapRadioResourceConfigDedicated_methods(root_module, root_module['ns3::LteRrcSap::RadioResourceConfigDedicated'])
+    register_Ns3LteRrcSapRadioResourceConfigDedicatedSCell_methods(root_module, root_module['ns3::LteRrcSap::RadioResourceConfigDedicatedSCell'])
     register_Ns3LteRrcSapReestabUeIdentity_methods(root_module, root_module['ns3::LteRrcSap::ReestabUeIdentity'])
     register_Ns3LteRrcSapReportConfigEutra_methods(root_module, root_module['ns3::LteRrcSap::ReportConfigEutra'])
     register_Ns3LteRrcSapReportConfigToAddMod_methods(root_module, root_module['ns3::LteRrcSap::ReportConfigToAddMod'])
@@ -1886,6 +1936,7 @@ def register_methods(root_module):
     register_Ns3LteRrcSapRrcConnectionRequest_methods(root_module, root_module['ns3::LteRrcSap::RrcConnectionRequest'])
     register_Ns3LteRrcSapRrcConnectionSetup_methods(root_module, root_module['ns3::LteRrcSap::RrcConnectionSetup'])
     register_Ns3LteRrcSapRrcConnectionSetupCompleted_methods(root_module, root_module['ns3::LteRrcSap::RrcConnectionSetupCompleted'])
+    register_Ns3LteRrcSapSCellToAddMod_methods(root_module, root_module['ns3::LteRrcSap::SCellToAddMod'])
     register_Ns3LteRrcSapSoundingRsUlConfigCommon_methods(root_module, root_module['ns3::LteRrcSap::SoundingRsUlConfigCommon'])
     register_Ns3LteRrcSapSoundingRsUlConfigDedicated_methods(root_module, root_module['ns3::LteRrcSap::SoundingRsUlConfigDedicated'])
     register_Ns3LteRrcSapSpeedStatePars_methods(root_module, root_module['ns3::LteRrcSap::SpeedStatePars'])
@@ -1895,6 +1946,9 @@ def register_methods(root_module):
     register_Ns3LteRrcSapSystemInformationBlockType1_methods(root_module, root_module['ns3::LteRrcSap::SystemInformationBlockType1'])
     register_Ns3LteRrcSapSystemInformationBlockType2_methods(root_module, root_module['ns3::LteRrcSap::SystemInformationBlockType2'])
     register_Ns3LteRrcSapThresholdEutra_methods(root_module, root_module['ns3::LteRrcSap::ThresholdEutra'])
+    register_Ns3LteRrcSapUlConfiguration_methods(root_module, root_module['ns3::LteRrcSap::UlConfiguration'])
+    register_Ns3LteRrcSapUlPowerControlCommonSCell_methods(root_module, root_module['ns3::LteRrcSap::UlPowerControlCommonSCell'])
+    register_Ns3LteRrcSapUlPowerControlDedicatedSCell_methods(root_module, root_module['ns3::LteRrcSap::UlPowerControlDedicatedSCell'])
     register_Ns3LteSpectrumValueCatcher_methods(root_module, root_module['ns3::LteSpectrumValueCatcher'])
     register_Ns3LteSpectrumValueHelper_methods(root_module, root_module['ns3::LteSpectrumValueHelper'])
     register_Ns3LteUeCcmRrcSapProvider_methods(root_module, root_module['ns3::LteUeCcmRrcSapProvider'])
@@ -6357,6 +6411,15 @@ def register_Ns3LteRrcSap_methods(root_module, cls):
     cls.add_static_attribute('MaxReportCells', 'uint8_t const', is_const=True)
     return
 
+def register_Ns3LteRrcSapAntennaInfoCommon_methods(root_module, cls):
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::AntennaInfoCommon::AntennaInfoCommon() [constructor]
+    cls.add_constructor([])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::AntennaInfoCommon::AntennaInfoCommon(ns3::LteRrcSap::AntennaInfoCommon const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::LteRrcSap::AntennaInfoCommon const &', 'arg0')])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::AntennaInfoCommon::antennaPortsCount [variable]
+    cls.add_instance_attribute('antennaPortsCount', 'uint16_t', is_const=False)
+    return
+
 def register_Ns3LteRrcSapAntennaInfoDedicated_methods(root_module, cls):
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::AntennaInfoDedicated::AntennaInfoDedicated() [constructor]
     cls.add_constructor([])
@@ -6366,13 +6429,22 @@ def register_Ns3LteRrcSapAntennaInfoDedicated_methods(root_module, cls):
     cls.add_instance_attribute('transmissionMode', 'uint8_t', is_const=False)
     return
 
+def register_Ns3LteRrcSapAntennaInfoUl_methods(root_module, cls):
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::AntennaInfoUl::AntennaInfoUl() [constructor]
+    cls.add_constructor([])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::AntennaInfoUl::AntennaInfoUl(ns3::LteRrcSap::AntennaInfoUl const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::LteRrcSap::AntennaInfoUl const &', 'arg0')])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::AntennaInfoUl::transmissionMode [variable]
+    cls.add_instance_attribute('transmissionMode', 'uint8_t', is_const=False)
+    return
+
 def register_Ns3LteRrcSapAsConfig_methods(root_module, cls):
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::AsConfig::AsConfig() [constructor]
     cls.add_constructor([])
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::AsConfig::AsConfig(ns3::LteRrcSap::AsConfig const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::LteRrcSap::AsConfig const &', 'arg0')])
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::AsConfig::sourceDlCarrierFreq [variable]
-    cls.add_instance_attribute('sourceDlCarrierFreq', 'uint16_t', is_const=False)
+    cls.add_instance_attribute('sourceDlCarrierFreq', 'uint32_t', is_const=False)
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::AsConfig::sourceMasterInformationBlock [variable]
     cls.add_instance_attribute('sourceMasterInformationBlock', 'ns3::LteRrcSap::MasterInformationBlock', is_const=False)
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::AsConfig::sourceMeasConfig [variable]
@@ -6415,9 +6487,9 @@ def register_Ns3LteRrcSapCarrierFreqEutra_methods(root_module, cls):
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::CarrierFreqEutra::CarrierFreqEutra(ns3::LteRrcSap::CarrierFreqEutra const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::LteRrcSap::CarrierFreqEutra const &', 'arg0')])
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::CarrierFreqEutra::dlCarrierFreq [variable]
-    cls.add_instance_attribute('dlCarrierFreq', 'uint16_t', is_const=False)
+    cls.add_instance_attribute('dlCarrierFreq', 'uint32_t', is_const=False)
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::CarrierFreqEutra::ulCarrierFreq [variable]
-    cls.add_instance_attribute('ulCarrierFreq', 'uint16_t', is_const=False)
+    cls.add_instance_attribute('ulCarrierFreq', 'uint32_t', is_const=False)
     return
 
 def register_Ns3LteRrcSapCellAccessRelatedInfo_methods(root_module, cls):
@@ -6433,6 +6505,17 @@ def register_Ns3LteRrcSapCellAccessRelatedInfo_methods(root_module, cls):
     cls.add_instance_attribute('csgIndication', 'bool', is_const=False)
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::CellAccessRelatedInfo::plmnIdentityInfo [variable]
     cls.add_instance_attribute('plmnIdentityInfo', 'ns3::LteRrcSap::PlmnIdentityInfo', is_const=False)
+    return
+
+def register_Ns3LteRrcSapCellIdentification_methods(root_module, cls):
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::CellIdentification::CellIdentification() [constructor]
+    cls.add_constructor([])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::CellIdentification::CellIdentification(ns3::LteRrcSap::CellIdentification const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::LteRrcSap::CellIdentification const &', 'arg0')])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::CellIdentification::dlCarrierFreq [variable]
+    cls.add_instance_attribute('dlCarrierFreq', 'uint32_t', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::CellIdentification::physCellId [variable]
+    cls.add_instance_attribute('physCellId', 'uint32_t', is_const=False)
     return
 
 def register_Ns3LteRrcSapCellSelectionInfo_methods(root_module, cls):
@@ -6499,7 +6582,7 @@ def register_Ns3LteRrcSapFreqInfo_methods(root_module, cls):
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::FreqInfo::ulBandwidth [variable]
     cls.add_instance_attribute('ulBandwidth', 'uint8_t', is_const=False)
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::FreqInfo::ulCarrierFreq [variable]
-    cls.add_instance_attribute('ulCarrierFreq', 'uint16_t', is_const=False)
+    cls.add_instance_attribute('ulCarrierFreq', 'uint32_t', is_const=False)
     return
 
 def register_Ns3LteRrcSapHandoverPreparationInfo_methods(root_module, cls):
@@ -6606,7 +6689,7 @@ def register_Ns3LteRrcSapMeasObjectEutra_methods(root_module, cls):
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::MeasObjectEutra::blackCellsToRemoveList [variable]
     cls.add_instance_attribute('blackCellsToRemoveList', 'std::list< unsigned char >', is_const=False)
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::MeasObjectEutra::carrierFreq [variable]
-    cls.add_instance_attribute('carrierFreq', 'uint16_t', is_const=False)
+    cls.add_instance_attribute('carrierFreq', 'uint32_t', is_const=False)
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::MeasObjectEutra::cellForWhichToReportCGI [variable]
     cls.add_instance_attribute('cellForWhichToReportCGI', 'uint8_t', is_const=False)
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::MeasObjectEutra::cellsToAddModList [variable]
@@ -6634,6 +6717,25 @@ def register_Ns3LteRrcSapMeasObjectToAddMod_methods(root_module, cls):
     cls.add_instance_attribute('measObjectId', 'uint8_t', is_const=False)
     return
 
+def register_Ns3LteRrcSapMeasResultBestNeighCell_methods(root_module, cls):
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::MeasResultBestNeighCell::MeasResultBestNeighCell() [constructor]
+    cls.add_constructor([])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::MeasResultBestNeighCell::MeasResultBestNeighCell(ns3::LteRrcSap::MeasResultBestNeighCell const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::LteRrcSap::MeasResultBestNeighCell const &', 'arg0')])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::MeasResultBestNeighCell::haveRsrpResult [variable]
+    cls.add_instance_attribute('haveRsrpResult', 'bool', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::MeasResultBestNeighCell::haveRsrqResult [variable]
+    cls.add_instance_attribute('haveRsrqResult', 'bool', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::MeasResultBestNeighCell::physCellId [variable]
+    cls.add_instance_attribute('physCellId', 'uint16_t', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::MeasResultBestNeighCell::rsrpResult [variable]
+    cls.add_instance_attribute('rsrpResult', 'uint8_t', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::MeasResultBestNeighCell::rsrqResult [variable]
+    cls.add_instance_attribute('rsrqResult', 'uint8_t', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::MeasResultBestNeighCell::servFreqId [variable]
+    cls.add_instance_attribute('servFreqId', 'uint16_t', is_const=False)
+    return
+
 def register_Ns3LteRrcSapMeasResultEutra_methods(root_module, cls):
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::MeasResultEutra::MeasResultEutra() [constructor]
     cls.add_constructor([])
@@ -6653,6 +6755,38 @@ def register_Ns3LteRrcSapMeasResultEutra_methods(root_module, cls):
     cls.add_instance_attribute('rsrpResult', 'uint8_t', is_const=False)
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::MeasResultEutra::rsrqResult [variable]
     cls.add_instance_attribute('rsrqResult', 'uint8_t', is_const=False)
+    return
+
+def register_Ns3LteRrcSapMeasResultScell_methods(root_module, cls):
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::MeasResultScell::MeasResultScell() [constructor]
+    cls.add_constructor([])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::MeasResultScell::MeasResultScell(ns3::LteRrcSap::MeasResultScell const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::LteRrcSap::MeasResultScell const &', 'arg0')])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::MeasResultScell::haveRsrpResult [variable]
+    cls.add_instance_attribute('haveRsrpResult', 'bool', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::MeasResultScell::haveRsrqResult [variable]
+    cls.add_instance_attribute('haveRsrqResult', 'bool', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::MeasResultScell::rsrpResult [variable]
+    cls.add_instance_attribute('rsrpResult', 'uint8_t', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::MeasResultScell::rsrqResult [variable]
+    cls.add_instance_attribute('rsrqResult', 'uint8_t', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::MeasResultScell::servFreqId [variable]
+    cls.add_instance_attribute('servFreqId', 'uint16_t', is_const=False)
+    return
+
+def register_Ns3LteRrcSapMeasResultServFreqList_methods(root_module, cls):
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::MeasResultServFreqList::MeasResultServFreqList() [constructor]
+    cls.add_constructor([])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::MeasResultServFreqList::MeasResultServFreqList(ns3::LteRrcSap::MeasResultServFreqList const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::LteRrcSap::MeasResultServFreqList const &', 'arg0')])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::MeasResultServFreqList::haveMeasurementResultsNeighCell [variable]
+    cls.add_instance_attribute('haveMeasurementResultsNeighCell', 'bool', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::MeasResultServFreqList::haveMeasurementResultsServingSCells [variable]
+    cls.add_instance_attribute('haveMeasurementResultsServingSCells', 'bool', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::MeasResultServFreqList::measResultBestNeighCell [variable]
+    cls.add_instance_attribute('measResultBestNeighCell', 'std::list< ns3::LteRrcSap::MeasResultBestNeighCell >', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::MeasResultServFreqList::measResultScell [variable]
+    cls.add_instance_attribute('measResultScell', 'std::list< ns3::LteRrcSap::MeasResultScell >', is_const=False)
     return
 
 def register_Ns3LteRrcSapMeasResults_methods(root_module, cls):
@@ -6721,6 +6855,30 @@ def register_Ns3LteRrcSapMobilityStateParameters_methods(root_module, cls):
     cls.add_instance_attribute('tHystNormal', 'uint8_t', is_const=False)
     return
 
+def register_Ns3LteRrcSapNonCriticalExtensionConfiguration_methods(root_module, cls):
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::NonCriticalExtensionConfiguration::NonCriticalExtensionConfiguration() [constructor]
+    cls.add_constructor([])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::NonCriticalExtensionConfiguration::NonCriticalExtensionConfiguration(ns3::LteRrcSap::NonCriticalExtensionConfiguration const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::LteRrcSap::NonCriticalExtensionConfiguration const &', 'arg0')])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::NonCriticalExtensionConfiguration::sCellToReleaseList [variable]
+    cls.add_instance_attribute('sCellToReleaseList', 'std::list< unsigned int >', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::NonCriticalExtensionConfiguration::sCellsToAddModList [variable]
+    cls.add_instance_attribute('sCellsToAddModList', 'std::list< ns3::LteRrcSap::SCellToAddMod >', is_const=False)
+    return
+
+def register_Ns3LteRrcSapNonUlConfiguration_methods(root_module, cls):
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::NonUlConfiguration::NonUlConfiguration() [constructor]
+    cls.add_constructor([])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::NonUlConfiguration::NonUlConfiguration(ns3::LteRrcSap::NonUlConfiguration const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::LteRrcSap::NonUlConfiguration const &', 'arg0')])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::NonUlConfiguration::antennaInfoCommon [variable]
+    cls.add_instance_attribute('antennaInfoCommon', 'ns3::LteRrcSap::AntennaInfoCommon', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::NonUlConfiguration::dlBandwidth [variable]
+    cls.add_instance_attribute('dlBandwidth', 'uint16_t', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::NonUlConfiguration::pdschConfigCommon [variable]
+    cls.add_instance_attribute('pdschConfigCommon', 'ns3::LteRrcSap::PdschConfigCommon', is_const=False)
+    return
+
 def register_Ns3LteRrcSapPdschConfigCommon_methods(root_module, cls):
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::PdschConfigCommon::PdschConfigCommon() [constructor]
     cls.add_constructor([])
@@ -6773,6 +6931,39 @@ def register_Ns3LteRrcSapPhysicalConfigDedicated_methods(root_module, cls):
     cls.add_instance_attribute('soundingRsUlConfigDedicated', 'ns3::LteRrcSap::SoundingRsUlConfigDedicated', is_const=False)
     return
 
+def register_Ns3LteRrcSapPhysicalConfigDedicatedSCell_methods(root_module, cls):
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::PhysicalConfigDedicatedSCell::PhysicalConfigDedicatedSCell() [constructor]
+    cls.add_constructor([])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::PhysicalConfigDedicatedSCell::PhysicalConfigDedicatedSCell(ns3::LteRrcSap::PhysicalConfigDedicatedSCell const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::LteRrcSap::PhysicalConfigDedicatedSCell const &', 'arg0')])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::PhysicalConfigDedicatedSCell::antennaInfo [variable]
+    cls.add_instance_attribute('antennaInfo', 'ns3::LteRrcSap::AntennaInfoDedicated', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::PhysicalConfigDedicatedSCell::antennaInfoUl [variable]
+    cls.add_instance_attribute('antennaInfoUl', 'ns3::LteRrcSap::AntennaInfoDedicated', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::PhysicalConfigDedicatedSCell::crossCarrierSchedulingConfig [variable]
+    cls.add_instance_attribute('crossCarrierSchedulingConfig', 'bool', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::PhysicalConfigDedicatedSCell::haveAntennaInfoDedicated [variable]
+    cls.add_instance_attribute('haveAntennaInfoDedicated', 'bool', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::PhysicalConfigDedicatedSCell::haveAntennaInfoUlDedicated [variable]
+    cls.add_instance_attribute('haveAntennaInfoUlDedicated', 'bool', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::PhysicalConfigDedicatedSCell::haveNonUlConfiguration [variable]
+    cls.add_instance_attribute('haveNonUlConfiguration', 'bool', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::PhysicalConfigDedicatedSCell::havePdschConfigDedicated [variable]
+    cls.add_instance_attribute('havePdschConfigDedicated', 'bool', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::PhysicalConfigDedicatedSCell::haveSoundingRsUlConfigDedicated [variable]
+    cls.add_instance_attribute('haveSoundingRsUlConfigDedicated', 'bool', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::PhysicalConfigDedicatedSCell::haveUlConfiguration [variable]
+    cls.add_instance_attribute('haveUlConfiguration', 'bool', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::PhysicalConfigDedicatedSCell::pdschConfigDedicated [variable]
+    cls.add_instance_attribute('pdschConfigDedicated', 'ns3::LteRrcSap::PdschConfigDedicated', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::PhysicalConfigDedicatedSCell::pushConfigDedicatedSCell [variable]
+    cls.add_instance_attribute('pushConfigDedicatedSCell', 'ns3::LteRrcSap::PuschConfigDedicatedSCell', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::PhysicalConfigDedicatedSCell::soundingRsUlConfigDedicated [variable]
+    cls.add_instance_attribute('soundingRsUlConfigDedicated', 'ns3::LteRrcSap::SoundingRsUlConfigDedicated', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::PhysicalConfigDedicatedSCell::ulPowerControlDedicatedSCell [variable]
+    cls.add_instance_attribute('ulPowerControlDedicatedSCell', 'ns3::LteRrcSap::UlPowerControlDedicatedSCell', is_const=False)
+    return
+
 def register_Ns3LteRrcSapPlmnIdentityInfo_methods(root_module, cls):
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::PlmnIdentityInfo::PlmnIdentityInfo() [constructor]
     cls.add_constructor([])
@@ -6782,6 +6973,15 @@ def register_Ns3LteRrcSapPlmnIdentityInfo_methods(root_module, cls):
     cls.add_instance_attribute('plmnIdentity', 'uint32_t', is_const=False)
     return
 
+def register_Ns3LteRrcSapPrachConfigSCell_methods(root_module, cls):
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::PrachConfigSCell::PrachConfigSCell() [constructor]
+    cls.add_constructor([])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::PrachConfigSCell::PrachConfigSCell(ns3::LteRrcSap::PrachConfigSCell const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::LteRrcSap::PrachConfigSCell const &', 'arg0')])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::PrachConfigSCell::index [variable]
+    cls.add_instance_attribute('index', 'uint16_t', is_const=False)
+    return
+
 def register_Ns3LteRrcSapPreambleInfo_methods(root_module, cls):
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::PreambleInfo::PreambleInfo() [constructor]
     cls.add_constructor([])
@@ -6789,6 +6989,15 @@ def register_Ns3LteRrcSapPreambleInfo_methods(root_module, cls):
     cls.add_constructor([param('ns3::LteRrcSap::PreambleInfo const &', 'arg0')])
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::PreambleInfo::numberOfRaPreambles [variable]
     cls.add_instance_attribute('numberOfRaPreambles', 'uint8_t', is_const=False)
+    return
+
+def register_Ns3LteRrcSapPuschConfigDedicatedSCell_methods(root_module, cls):
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::PuschConfigDedicatedSCell::PuschConfigDedicatedSCell() [constructor]
+    cls.add_constructor([])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::PuschConfigDedicatedSCell::PuschConfigDedicatedSCell(ns3::LteRrcSap::PuschConfigDedicatedSCell const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::LteRrcSap::PuschConfigDedicatedSCell const &', 'arg0')])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::PuschConfigDedicatedSCell::nPuschIdentity [variable]
+    cls.add_instance_attribute('nPuschIdentity', 'uint16_t', is_const=False)
     return
 
 def register_Ns3LteRrcSapQuantityConfig_methods(root_module, cls):
@@ -6844,6 +7053,21 @@ def register_Ns3LteRrcSapRadioResourceConfigCommon_methods(root_module, cls):
     cls.add_instance_attribute('rachConfigCommon', 'ns3::LteRrcSap::RachConfigCommon', is_const=False)
     return
 
+def register_Ns3LteRrcSapRadioResourceConfigCommonSCell_methods(root_module, cls):
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::RadioResourceConfigCommonSCell::RadioResourceConfigCommonSCell() [constructor]
+    cls.add_constructor([])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::RadioResourceConfigCommonSCell::RadioResourceConfigCommonSCell(ns3::LteRrcSap::RadioResourceConfigCommonSCell const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::LteRrcSap::RadioResourceConfigCommonSCell const &', 'arg0')])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::RadioResourceConfigCommonSCell::haveNonUlConfiguration [variable]
+    cls.add_instance_attribute('haveNonUlConfiguration', 'bool', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::RadioResourceConfigCommonSCell::haveUlConfiguration [variable]
+    cls.add_instance_attribute('haveUlConfiguration', 'bool', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::RadioResourceConfigCommonSCell::nonUlConfiguration [variable]
+    cls.add_instance_attribute('nonUlConfiguration', 'ns3::LteRrcSap::NonUlConfiguration', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::RadioResourceConfigCommonSCell::ulConfiguration [variable]
+    cls.add_instance_attribute('ulConfiguration', 'ns3::LteRrcSap::UlConfiguration', is_const=False)
+    return
+
 def register_Ns3LteRrcSapRadioResourceConfigCommonSib_methods(root_module, cls):
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::RadioResourceConfigCommonSib::RadioResourceConfigCommonSib() [constructor]
     cls.add_constructor([])
@@ -6870,6 +7094,15 @@ def register_Ns3LteRrcSapRadioResourceConfigDedicated_methods(root_module, cls):
     cls.add_instance_attribute('physicalConfigDedicated', 'ns3::LteRrcSap::PhysicalConfigDedicated', is_const=False)
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::RadioResourceConfigDedicated::srbToAddModList [variable]
     cls.add_instance_attribute('srbToAddModList', 'std::list< ns3::LteRrcSap::SrbToAddMod >', is_const=False)
+    return
+
+def register_Ns3LteRrcSapRadioResourceConfigDedicatedSCell_methods(root_module, cls):
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::RadioResourceConfigDedicatedSCell::RadioResourceConfigDedicatedSCell() [constructor]
+    cls.add_constructor([])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::RadioResourceConfigDedicatedSCell::RadioResourceConfigDedicatedSCell(ns3::LteRrcSap::RadioResourceConfigDedicatedSCell const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::LteRrcSap::RadioResourceConfigDedicatedSCell const &', 'arg0')])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::RadioResourceConfigDedicatedSCell::physicalConfigDedicatedSCell [variable]
+    cls.add_instance_attribute('physicalConfigDedicatedSCell', 'ns3::LteRrcSap::PhysicalConfigDedicatedSCell', is_const=False)
     return
 
 def register_Ns3LteRrcSapReestabUeIdentity_methods(root_module, cls):
@@ -6933,12 +7166,16 @@ def register_Ns3LteRrcSapRrcConnectionReconfiguration_methods(root_module, cls):
     cls.add_instance_attribute('haveMeasConfig', 'bool', is_const=False)
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::RrcConnectionReconfiguration::haveMobilityControlInfo [variable]
     cls.add_instance_attribute('haveMobilityControlInfo', 'bool', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::RrcConnectionReconfiguration::haveNonCriticalExtension [variable]
+    cls.add_instance_attribute('haveNonCriticalExtension', 'bool', is_const=False)
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::RrcConnectionReconfiguration::haveRadioResourceConfigDedicated [variable]
     cls.add_instance_attribute('haveRadioResourceConfigDedicated', 'bool', is_const=False)
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::RrcConnectionReconfiguration::measConfig [variable]
     cls.add_instance_attribute('measConfig', 'ns3::LteRrcSap::MeasConfig', is_const=False)
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::RrcConnectionReconfiguration::mobilityControlInfo [variable]
     cls.add_instance_attribute('mobilityControlInfo', 'ns3::LteRrcSap::MobilityControlInfo', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::RrcConnectionReconfiguration::nonCriticalExtension [variable]
+    cls.add_instance_attribute('nonCriticalExtension', 'ns3::LteRrcSap::NonCriticalExtensionConfiguration', is_const=False)
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::RrcConnectionReconfiguration::radioResourceConfigDedicated [variable]
     cls.add_instance_attribute('radioResourceConfigDedicated', 'ns3::LteRrcSap::RadioResourceConfigDedicated', is_const=False)
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::RrcConnectionReconfiguration::rrcTransactionIdentifier [variable]
@@ -7039,6 +7276,23 @@ def register_Ns3LteRrcSapRrcConnectionSetupCompleted_methods(root_module, cls):
     cls.add_instance_attribute('rrcTransactionIdentifier', 'uint8_t', is_const=False)
     return
 
+def register_Ns3LteRrcSapSCellToAddMod_methods(root_module, cls):
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SCellToAddMod::SCellToAddMod() [constructor]
+    cls.add_constructor([])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SCellToAddMod::SCellToAddMod(ns3::LteRrcSap::SCellToAddMod const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::LteRrcSap::SCellToAddMod const &', 'arg0')])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SCellToAddMod::cellIdentification [variable]
+    cls.add_instance_attribute('cellIdentification', 'ns3::LteRrcSap::CellIdentification', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SCellToAddMod::haveRadioResourceConfigDedicatedSCell [variable]
+    cls.add_instance_attribute('haveRadioResourceConfigDedicatedSCell', 'bool', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SCellToAddMod::radioResourceConfigCommonSCell [variable]
+    cls.add_instance_attribute('radioResourceConfigCommonSCell', 'ns3::LteRrcSap::RadioResourceConfigCommonSCell', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SCellToAddMod::radioResourceConfigDedicateSCell [variable]
+    cls.add_instance_attribute('radioResourceConfigDedicateSCell', 'ns3::LteRrcSap::RadioResourceConfigDedicatedSCell', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SCellToAddMod::sCellIndex [variable]
+    cls.add_instance_attribute('sCellIndex', 'uint32_t', is_const=False)
+    return
+
 def register_Ns3LteRrcSapSoundingRsUlConfigCommon_methods(root_module, cls):
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SoundingRsUlConfigCommon::SoundingRsUlConfigCommon() [constructor]
     cls.add_constructor([])
@@ -7134,6 +7388,39 @@ def register_Ns3LteRrcSapThresholdEutra_methods(root_module, cls):
     cls.add_constructor([param('ns3::LteRrcSap::ThresholdEutra const &', 'arg0')])
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::ThresholdEutra::range [variable]
     cls.add_instance_attribute('range', 'uint8_t', is_const=False)
+    return
+
+def register_Ns3LteRrcSapUlConfiguration_methods(root_module, cls):
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::UlConfiguration::UlConfiguration() [constructor]
+    cls.add_constructor([])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::UlConfiguration::UlConfiguration(ns3::LteRrcSap::UlConfiguration const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::LteRrcSap::UlConfiguration const &', 'arg0')])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::UlConfiguration::prachConfigSCell [variable]
+    cls.add_instance_attribute('prachConfigSCell', 'ns3::LteRrcSap::PrachConfigSCell', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::UlConfiguration::soundingRsUlConfigCommon [variable]
+    cls.add_instance_attribute('soundingRsUlConfigCommon', 'ns3::LteRrcSap::SoundingRsUlConfigCommon', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::UlConfiguration::ulFreqInfo [variable]
+    cls.add_instance_attribute('ulFreqInfo', 'ns3::LteRrcSap::FreqInfo', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::UlConfiguration::ulPowerControlCommonSCell [variable]
+    cls.add_instance_attribute('ulPowerControlCommonSCell', 'ns3::LteRrcSap::UlPowerControlCommonSCell', is_const=False)
+    return
+
+def register_Ns3LteRrcSapUlPowerControlCommonSCell_methods(root_module, cls):
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::UlPowerControlCommonSCell::UlPowerControlCommonSCell() [constructor]
+    cls.add_constructor([])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::UlPowerControlCommonSCell::UlPowerControlCommonSCell(ns3::LteRrcSap::UlPowerControlCommonSCell const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::LteRrcSap::UlPowerControlCommonSCell const &', 'arg0')])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::UlPowerControlCommonSCell::alpha [variable]
+    cls.add_instance_attribute('alpha', 'uint16_t', is_const=False)
+    return
+
+def register_Ns3LteRrcSapUlPowerControlDedicatedSCell_methods(root_module, cls):
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::UlPowerControlDedicatedSCell::UlPowerControlDedicatedSCell() [constructor]
+    cls.add_constructor([])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::UlPowerControlDedicatedSCell::UlPowerControlDedicatedSCell(ns3::LteRrcSap::UlPowerControlDedicatedSCell const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::LteRrcSap::UlPowerControlDedicatedSCell const &', 'arg0')])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::UlPowerControlDedicatedSCell::pSrsOffset [variable]
+    cls.add_instance_attribute('pSrsOffset', 'uint16_t', is_const=False)
     return
 
 def register_Ns3LteSpectrumValueCatcher_methods(root_module, cls):
@@ -15834,6 +16121,10 @@ def register_Ns3LteEnbRrc_methods(root_module, cls):
     cls.add_method('SetCellId', 
                    'void', 
                    [param('uint16_t', 'm_cellId')])
+    ## lte-enb-rrc.h (module 'lte'): void ns3::LteEnbRrc::SetCellId(uint16_t m_cellId, uint8_t ccIndex) [member function]
+    cls.add_method('SetCellId', 
+                   'void', 
+                   [param('uint16_t', 'm_cellId'), param('uint8_t', 'ccIndex')])
     ## lte-enb-rrc.h (module 'lte'): void ns3::LteEnbRrc::SetCsgId(uint32_t csgId, bool csgIndication) [member function]
     cls.add_method('SetCsgId', 
                    'void', 
@@ -15886,6 +16177,8 @@ def register_Ns3LteEnbRrc_methods(root_module, cls):
     cls.add_method('SetSrsPeriodicity', 
                    'void', 
                    [param('uint32_t', 'p')])
+    ## lte-enb-rrc.h (module 'lte'): ns3::LteEnbRrc::m_componentCarrierEnbMap [variable]
+    cls.add_instance_attribute('m_componentCarrierEnbMap', 'std::map< unsigned char, ns3::Ptr< ns3::ComponentCarrierEnb > >', is_const=False)
     ## lte-enb-rrc.h (module 'lte'): void ns3::LteEnbRrc::DoDispose() [member function]
     cls.add_method('DoDispose', 
                    'void', 

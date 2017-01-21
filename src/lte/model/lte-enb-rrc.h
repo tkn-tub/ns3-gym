@@ -43,6 +43,11 @@
 
 #include <map>
 #include <set>
+#include <ns3/component-carrier-enb.h>
+#include <vector>
+
+#define MIN_NO_CC 1
+#define MAX_NO_CC 5 // this is the maximum number of carrier components allowed by 3GPP up to R13
 
 namespace ns3 {
 
@@ -313,9 +318,9 @@ public:
    * \param [in] oldState
    * \param [in] newState
    */
-  typedef void (* StateTracedCallback)
-    (uint64_t imsi, uint16_t cellId, uint16_t rnti,
-     State oldState, State newState);
+  typedef void (*StateTracedCallback)
+    (const uint64_t imsi, const uint16_t cellId, const uint16_t rnti,
+    const State oldState, const State newState);
 
 private:
 
@@ -496,6 +501,11 @@ private:
    * UE CONTEXT RELEASE is received.
    */
   EventId m_handoverLeavingTimeout;
+
+  /// Define if the Carrier Aggregation was already configure for the current UE on not
+  bool m_caSupportConfigured;
+
+  bool m_pendingStartDataRadioBearers;
 
 }; // end of `class UeManager`
 
@@ -732,6 +742,8 @@ public:
    */
   void SetCellId (uint16_t m_cellId);
 
+  void SetCellId (uint16_t m_cellId, uint8_t ccIndex);
+
   /** 
    * Enqueue an IP data packet on the proper bearer for downlink
    * transmission. Normally expected to be called by the NetDevice
@@ -826,8 +838,8 @@ public:
    * \param [in] cellId
    * \param [in] rnti
    */
-  typedef void (* NewUeContextTracedCallback)
-    (uint16_t cellId, uint16_t rnti);
+  typedef void (*NewUeContextTracedCallback)
+    (const uint16_t cellId, const uint16_t rnti);
 
   /**
    * TracedCallback signature for connection and handover end events.
@@ -836,9 +848,9 @@ public:
    * \param [in] cellId
    * \param [in] rnti
    */
-  typedef void (* ConnectionHandoverTracedCallback)
-    (uint64_t imsi, uint16_t cellId, uint16_t rnti);
-  
+  typedef void (*ConnectionHandoverTracedCallback)
+    (const uint64_t imsi, const uint16_t cellId, const uint16_t rnti);
+
   /**
    * TracedCallback signature for handover start events.
    *
@@ -847,8 +859,9 @@ public:
    * \param [in] rnti
    * \param [in] targetCid
    */
-  typedef void (* HandoverStartTracedCallback)
-    (uint64_t imsi, uint16_t cellId, uint16_t rnti, uint16_t targetCid);
+  typedef void (*HandoverStartTracedCallback)
+    (const uint64_t imsi, const uint16_t cellId, const uint16_t rnti,
+     const uint16_t targetCid);
 
   /**
    * TracedCallback signature for receive measurement report events.
@@ -860,10 +873,10 @@ public:
    * \todo The \c LteRrcSap::MeasurementReport argument should be
    * changed to a const reference since the argument is large.
    */
-  typedef void (* ReceiveReportTracedCallback)
-    (uint64_t imsi, uint16_t cellId, uint16_t rnti,
-     LteRrcSap::MeasurementReport report);
-  
+  typedef void (*ReceiveReportTracedCallback)
+    (const uint64_t imsi, const uint16_t cellId, const uint16_t rnti,
+     const LteRrcSap::MeasurementReport report);
+
 private:
 
 
@@ -971,6 +984,8 @@ public:
    * \return the current SRS periodicity
    */
   uint32_t GetSrsPeriodicity () const;
+
+  std::map<uint8_t, Ptr<ComponentCarrierEnb> > m_componentCarrierEnbMap;
 
   /**
    * \brief Associate this RRC entity with a particular CSG information.

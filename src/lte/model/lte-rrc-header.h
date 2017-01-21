@@ -484,6 +484,8 @@ private:
   LteRrcSap::MobilityControlInfo m_mobilityControlInfo;
   bool m_haveRadioResourceConfigDedicated;
   LteRrcSap::RadioResourceConfigDedicated m_radioResourceConfigDedicated;
+  bool m_haveNonCriticalExtension;
+  LteRrcSap::NonCriticalExtensionConfiguration m_nonCriticalExtension;
 };
 
 /**
