@@ -316,7 +316,7 @@ private:
   void DoStartCellSearch (uint32_t dlEarfcn);
   void DoSynchronizeWithEnb (uint16_t cellId);
   void DoSynchronizeWithEnb (uint16_t cellId, uint32_t dlEarfcn);
-  void DoSetDlBandwidth (uint8_t ulBandwidth);
+  void DoSetDlBandwidth (uint8_t dlBandwidth);
   void DoConfigureUplink (uint32_t ulEarfcn, uint8_t ulBandwidth);
   void DoConfigureReferenceSignalPower (int8_t referenceSignalPower);
   void DoSetRnti (uint16_t rnti);

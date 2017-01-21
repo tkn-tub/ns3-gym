@@ -175,12 +175,12 @@ LteSpectrumValueHelper::GetChannelBandwidth (uint8_t transmissionBandwidth)
 
 struct LteSpectrumModelId
 {
-  LteSpectrumModelId (uint16_t f, uint8_t b);
+  LteSpectrumModelId (uint32_t f, uint8_t b);
   uint32_t earfcn;
   uint8_t  bandwidth;
 };
 
-LteSpectrumModelId::LteSpectrumModelId (uint16_t f, uint8_t b)
+LteSpectrumModelId::LteSpectrumModelId (uint32_t f, uint8_t b)
   : earfcn (f), 
     bandwidth (b)
 {
