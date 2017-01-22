@@ -18,7 +18,7 @@
 
 // This example is used to validate NIST and YANS error rate models for HT rates.
 //
-// It ouputs plots of the Frame Success Rate versus the Signal-to-noise ratio for
+// It outputs plots of the Frame Success Rate versus the Signal-to-noise ratio for
 // both NIST and YANS error rate models and for every HT MCS value.
 
 #include "ns3/core-module.h"

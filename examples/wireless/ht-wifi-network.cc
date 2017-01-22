@@ -27,7 +27,7 @@
 
 // This is a simple example in order to show how to configure an IEEE 802.11n Wi-Fi network.
 //
-// It ouputs the UDP or TCP goodput for every HT MCS value, which depends on the MCS value (0 to 7), the
+// It outputs the UDP or TCP goodput for every HT MCS value, which depends on the MCS value (0 to 7), the
 // channel width (20 or 40 MHz) and the guard interval (long or short). The PHY bitrate is constant over all
 // the simulation run. The user can also specify the distance between the access point and the station: the
 // larger the distance the smaller the goodput.

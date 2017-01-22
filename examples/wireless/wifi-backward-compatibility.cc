@@ -27,7 +27,7 @@
 // This is an example to show how to configure an IEEE 802.11 Wi-Fi
 // network where the AP and the station use different 802.11 standards.
 //
-// It ouputs the throughput for a given configuration: user can specify
+// It outputs the throughput for a given configuration: user can specify
 // the 802.11 versions for the AT and the station as well as their rate
 // adaptation algorithms. It also allows to decide whether the station,
 // the AP or both has/have traffic to send.
