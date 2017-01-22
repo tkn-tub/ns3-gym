@@ -143,7 +143,7 @@ public:
    * \return the object TypeId
    */
   static TypeId GetTypeId ();
-  TypeId GetInstanceTypeId () const;
+  virtual TypeId GetInstanceTypeId () const;
   FlowMonitor ();
 
   /// Add a FlowClassifier to be used by the flow monitor.

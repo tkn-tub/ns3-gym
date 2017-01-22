@@ -141,9 +141,6 @@ private:
   /** Destructor. */
   virtual ~Object ();
 
-  /**
-   * Implement the GetInstanceTypeId method defined in ObjectBase.
-   */
   virtual TypeId GetInstanceTypeId (void) const;
 
   /**

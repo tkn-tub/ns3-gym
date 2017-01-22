@@ -13,29 +13,91 @@ def parse_time_ns(tm):
 
 
 
+## FiveTuple
 class FiveTuple(object):
+    ## class variables
+    ## @var sourceAddress 
+    #  source address
+    ## @var destinationAddress 
+    #  destination address
+    ## @var protocol 
+    #  network protocol
+    ## @var sourcePort 
+    #  source port
+    ## @var destinationPort 
+    #  destination port
+    ## @var __slots__ 
+    #  class variable list
     __slots__ = ['sourceAddress', 'destinationAddress', 'protocol', 'sourcePort', 'destinationPort']
     def __init__(self, el):
+        '''The initializer.
+        @param self The object pointer.
+        @param el The element.
+        '''
         self.sourceAddress = el.get('sourceAddress')
         self.destinationAddress = el.get('destinationAddress')
         self.sourcePort = int(el.get('sourcePort'))
         self.destinationPort = int(el.get('destinationPort'))
         self.protocol = int(el.get('protocol'))
         
+## Histogram
 class Histogram(object):
+    ## class variables
+    ## @var bins
+    #  histogram bins
+    ## @var nbins
+    #  number of bins
+    ## @var number_of_flows
+    #  number of flows
+    ## @var __slots__
+    #  class variable list
     __slots__ = 'bins', 'nbins', 'number_of_flows'
     def __init__(self, el=None):
+        ''' The initializer.
+        @param self The object pointer.
+        @param el The element.
+        '''
         self.bins = []
         if el is not None:
             #self.nbins = int(el.get('nBins'))
             for bin in el.findall('bin'):
                 self.bins.append( (float(bin.get("start")), float(bin.get("width")), int(bin.get("count"))) )
 
+## Flow
 class Flow(object):
+    ## class variables
+    ## @var flowId
+    #  delay ID
+    ## @var delayMean
+    #  mean delay
+    ## @var packetLossRatio
+    #  packet loss ratio
+    ## @var rxBitrate
+    #  receive bit rate
+    ## @var txBitrate
+    #  transmit bit rate
+    ## @var fiveTuple
+    #  five tuple
+    ## @var packetSizeMean
+    #  packet size mean
+    ## @var probe_stats_unsorted
+    #  unsirted probe stats
+    ## @var hopCount
+    #  hop count
+    ## @var flowInterruptionsHistogram
+    #  flow histogram
+    ## @var rx_duration
+    #  receive duration
+    ## @var __slots__
+    #  class variable list
     __slots__ = ['flowId', 'delayMean', 'packetLossRatio', 'rxBitrate', 'txBitrate',
                  'fiveTuple', 'packetSizeMean', 'probe_stats_unsorted',
                  'hopCount', 'flowInterruptionsHistogram', 'rx_duration']
     def __init__(self, flow_el):
+        ''' The initializer.
+        @param self The object pointer.
+        @param flow_el The element.
+        '''
         self.flowId = int(flow_el.get('flowId'))
         rxPackets = long(flow_el.get('rxPackets'))
         txPackets = long(flow_el.get('txPackets'))
@@ -74,12 +136,31 @@ class Flow(object):
         else:
             self.flowInterruptionsHistogram = Histogram(interrupt_hist_elem)
 
-
+## ProbeFlowStats
 class ProbeFlowStats(object):
+    ## class variables
+    ## @var probeId
+    #  probe ID
+    ## @var packets
+    #  network packets
+    ## @var bytes
+    #  bytes
+    ## @var delayFromFirstProbe
+    #  delay from first probe
+    ## @var __slots__
+    #  class variable list
     __slots__ = ['probeId', 'packets', 'bytes', 'delayFromFirstProbe']
 
+## Simulation
 class Simulation(object):
+    ## class variables
+    ## @var flows
+    #  list of flows
     def __init__(self, simulation_el):
+        ''' The initializer.
+        @param self The object pointer.
+        @param simulation_el The element.
+        '''
         self.flows = []
         FlowClassifier_el, = simulation_el.findall("Ipv4FlowClassifier")
         flow_map = {}

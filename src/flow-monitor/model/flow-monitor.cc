@@ -397,26 +397,19 @@ FlowMonitor::AddFlowClassifier (Ptr<FlowClassifier> classifier)
   m_classifiers.push_back (classifier);
 }
 
-inline static void
-Indent (std::ostream &os, uint16_t level)
-{
-  for (uint16_t __xpto = 0; __xpto < level; __xpto++) os << ' ';
-}
-
 void
 FlowMonitor::SerializeToXmlStream (std::ostream &os, uint16_t indent, bool enableHistograms, bool enableProbes)
 {
   CheckForLostPackets ();
 
-  Indent (os, indent); os << "<FlowMonitor>\n";
+  os << std::string ( indent, ' ' ) << "<FlowMonitor>\n";
   indent += 2;
-  Indent (os, indent); os << "<FlowStats>\n";
+  os << std::string ( indent, ' ' ) << "<FlowStats>\n";
   indent += 2;
   for (FlowStatsContainerCI flowI = m_flowStats.begin ();
        flowI != m_flowStats.end (); flowI++)
     {
-
-      Indent (os, indent);
+      os << std::string ( indent, ' ' );
 #define ATTRIB(name) << " " # name "=\"" << flowI->second.name << "\""
       os << "<Flow flowId=\"" << flowI->first << "\""
       ATTRIB (timeFirstTxPacket)
@@ -435,18 +428,17 @@ FlowMonitor::SerializeToXmlStream (std::ostream &os, uint16_t indent, bool enabl
       << ">\n";
 #undef ATTRIB
 
-
       indent += 2;
       for (uint32_t reasonCode = 0; reasonCode < flowI->second.packetsDropped.size (); reasonCode++)
         {
-          Indent (os, indent);
+          os << std::string ( indent, ' ' );
           os << "<packetsDropped reasonCode=\"" << reasonCode << "\""
           << " number=\"" << flowI->second.packetsDropped[reasonCode]
           << "\" />\n";
         }
       for (uint32_t reasonCode = 0; reasonCode < flowI->second.bytesDropped.size (); reasonCode++)
         {
-          Indent (os, indent);
+          os << std::string ( indent, ' ' );
           os << "<bytesDropped reasonCode=\"" << reasonCode << "\""
           << " bytes=\"" << flowI->second.bytesDropped[reasonCode]
           << "\" />\n";
@@ -460,10 +452,10 @@ FlowMonitor::SerializeToXmlStream (std::ostream &os, uint16_t indent, bool enabl
         }
       indent -= 2;
 
-      Indent (os, indent); os << "</Flow>\n";
+      os << std::string ( indent, ' ' ) << "</Flow>\n";
     }
   indent -= 2;
-  Indent (os, indent); os << "</FlowStats>\n";
+  os << std::string ( indent, ' ' ) << "</FlowStats>\n";
 
   for (std::list<Ptr<FlowClassifier> >::iterator iter = m_classifiers.begin ();
       iter != m_classifiers.end ();
@@ -474,18 +466,18 @@ FlowMonitor::SerializeToXmlStream (std::ostream &os, uint16_t indent, bool enabl
 
   if (enableProbes)
     {
-      Indent (os, indent); os << "<FlowProbes>\n";
+      os << std::string ( indent, ' ' ) << "<FlowProbes>\n";
       indent += 2;
       for (uint32_t i = 0; i < m_flowProbes.size (); i++)
         {
           m_flowProbes[i]->SerializeToXmlStream (os, indent, i);
         }
       indent -= 2;
-      Indent (os, indent); os << "</FlowProbes>\n";
+      os << std::string ( indent, ' ' ) << "</FlowProbes>\n";
     }
 
   indent -= 2;
-  Indent (os, indent); os << "</FlowMonitor>\n";
+  os << std::string ( indent, ' ' ) << "</FlowMonitor>\n";
 }
 
 
