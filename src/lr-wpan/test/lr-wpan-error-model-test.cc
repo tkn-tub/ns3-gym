@@ -37,11 +37,22 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("lr-wpan-error-model-test");
 
+/**
+ * \ingroup lr-wpan-test
+ * \ingroup tests
+ *
+ * \brief LrWpan Error Vs Distance Test
+ */
 class LrWpanErrorDistanceTestCase : public TestCase
 {
 public:
   LrWpanErrorDistanceTestCase ();
   virtual ~LrWpanErrorDistanceTestCase ();
+
+  /**
+   * \brief Get the number of received packets.
+   * \returns The number of received packets.
+   */
   uint32_t GetReceived (void) const
   {
     return m_received;
@@ -49,10 +60,22 @@ public:
 
 private:
   virtual void DoRun (void);
+
+  /**
+   * \brief Function to be called when a packet is received.
+   * \param params MCPS params.
+   * \param p The packet.
+   */
   void Callback (McpsDataIndicationParams params, Ptr<Packet> p);
-  uint32_t m_received;
+  uint32_t m_received; //!< The number of received packets.
 };
 
+/**
+ * \ingroup lr-wpan-test
+ * \ingroup tests
+ *
+ * \brief LrWpan Error model Test
+ */
 class LrWpanErrorModelTestCase : public TestCase
 {
 public:
@@ -175,7 +198,12 @@ LrWpanErrorModelTestCase::DoRun (void)
   NS_TEST_ASSERT_MSG_EQ_TOL (ber, 0.175, 0.001, "Model fails for SNR = " << snr);
 }
 
-// ==============================================================================
+/**
+ * \ingroup lr-wpan-test
+ * \ingroup tests
+ *
+ * \brief LrWpan Error model TestSuite
+ */
 class LrWpanErrorModelTestSuite : public TestSuite
 {
 public:
@@ -189,4 +217,4 @@ LrWpanErrorModelTestSuite::LrWpanErrorModelTestSuite ()
   AddTestCase (new LrWpanErrorDistanceTestCase, TestCase::QUICK);
 }
 
-static LrWpanErrorModelTestSuite lrWpanErrorModelTestSuite;
+static LrWpanErrorModelTestSuite g_lrWpanErrorModelTestSuite;

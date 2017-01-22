@@ -595,6 +595,7 @@ private:
   /**
    * Calculate the time required for sending the PPDU header, that is the
    * preamble, SFD and PHR.
+   * \returns The time required for sending the PPDU header.
    */
   Time GetPpduHeaderTxTime (void);
 

@@ -39,22 +39,66 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("lr-wpan-clear-channel-assessment-test");
 
+/**
+ * \ingroup lr-wpan-test
+ * \ingroup tests
+ *
+ * \brief LrWpan CCA Test
+ */
 class LrWpanCcaTestCase : public TestCase
 {
 public:
   LrWpanCcaTestCase ();
 
 private:
+
+  /**
+   * \brief Function called when PlmeCcaConfirm is hit.
+   * \param testcase The TestCase.
+   * \param device The LrWpanNetDevice.
+   * \param status The device status.
+   */
   static void PlmeCcaConfirm (LrWpanCcaTestCase *testcase, Ptr<LrWpanNetDevice> device, LrWpanPhyEnumeration status);
+  /**
+   * \brief Function called when PhyTxBegin is hit.
+   * \param testcase The TestCase.
+   * \param device The LrWpanNetDevice.
+   * \param packet The packet.
+   */
   static void PhyTxBegin (LrWpanCcaTestCase *testcase, Ptr<LrWpanNetDevice> device, Ptr<const Packet> packet);
+  /**
+   * \brief Function called when PhyTxEnd is hit.
+   * \param testcase The TestCase.
+   * \param device The LrWpanNetDevice.
+   * \param packet The packet.
+   */
   static void PhyTxEnd (LrWpanCcaTestCase *testcase, Ptr<LrWpanNetDevice> device, Ptr<const Packet> packet);
+  /**
+   * \brief Function called when PhyRxBegin is hit.
+   * \param testcase The TestCase.
+   * \param device The LrWpanNetDevice.
+   * \param packet The packet.
+   */
   static void PhyRxBegin (LrWpanCcaTestCase *testcase, Ptr<LrWpanNetDevice> device, Ptr<const Packet> packet);
+  /**
+   * \brief Function called when PhyRxEnd is hit.
+   * \param testcase The TestCase.
+   * \param device The LrWpanNetDevice.
+   * \param packet The packet.
+   * \param sinr The received SINR.
+   */
   static void PhyRxEnd (LrWpanCcaTestCase *testcase, Ptr<LrWpanNetDevice> device, Ptr<const Packet> packet, double sinr);
+  /**
+   * \brief Function called when PhyRxDrop is hit.
+   * \param testcase The TestCase.
+   * \param device The LrWpanNetDevice.
+   * \param packet The packet.
+   */
   static void PhyRxDrop (LrWpanCcaTestCase *testcase, Ptr<LrWpanNetDevice> device, Ptr<const Packet> packet);
 
   virtual void DoRun (void);
 
-  LrWpanPhyEnumeration m_status;
+  LrWpanPhyEnumeration m_status; //!< PHY status.
 
 };
 
@@ -250,6 +294,12 @@ LrWpanCcaTestCase::DoRun (void)
   Simulator::Destroy ();
 }
 
+/**
+ * \ingroup lr-wpan-test
+ * \ingroup tests
+ *
+ * \brief LrWpan ACK TestSuite
+ */
 class LrWpanCcaTestSuite : public TestSuite
 {
 public:

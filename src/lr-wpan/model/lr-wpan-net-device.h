@@ -115,10 +115,12 @@ public:
   virtual Ptr<Channel> GetChannel (void) const;
   /**
    * This method indirects to LrWpanMac::SetShortAddress ()
+   * \param address The short address.
    */
   virtual void SetAddress (Address address);
   /**
    * This method indirects to LrWpanMac::SetShortAddress ()
+   * \returns The short address.
    */
   virtual Address GetAddress (void) const;
   virtual bool SetMtu (const uint16_t mtu);

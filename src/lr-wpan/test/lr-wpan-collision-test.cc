@@ -33,18 +33,28 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("lr-wpan-collision-test");
 
-// This is an example TestCase.
+/**
+ * \ingroup lr-wpan-test
+ * \ingroup tests
+ *
+ * \brief LrWpan Collision Test
+ */
 class LrWpanCollisionTestCase : public TestCase
 {
 public:
   LrWpanCollisionTestCase ();
   virtual ~LrWpanCollisionTestCase ();
 
-  void DataIndication (McpsDataIndicationParams params, Ptr<Packet> p);
+  /**
+   * \brief Function called when DataIndication is hit.
+   * \param params The MCPS params.
+   * \param p The packet.
+   */
+   void DataIndication (McpsDataIndicationParams params, Ptr<Packet> p);
 private:
   virtual void DoRun (void);
 
-  uint8_t m_rxPackets;
+  uint8_t m_rxPackets; //!< Rx packets counter.
 };
 
 LrWpanCollisionTestCase::LrWpanCollisionTestCase ()
@@ -214,7 +224,12 @@ LrWpanCollisionTestCase::DoRun (void)
   Simulator::Destroy ();
 }
 
-// ==============================================================================
+/**
+ * \ingroup lr-wpan-test
+ * \ingroup tests
+ *
+ * \brief LrWpan Collision TestSuite
+ */
 class LrWpanCollisionTestSuite : public TestSuite
 {
 public:

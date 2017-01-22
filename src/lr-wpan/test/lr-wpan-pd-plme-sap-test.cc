@@ -27,7 +27,12 @@
 
 using namespace ns3;
 
-// This is an example TestCase.
+/**
+ * \ingroup lr-wpan-test
+ * \ingroup tests
+ *
+ * \brief LrWpan PLME and PD Interfaces Test
+ */
 class LrWpanPlmeAndPdInterfaceTestCase : public TestCase
 {
 public:
@@ -36,7 +41,14 @@ public:
 
 private:
   virtual void DoRun (void);
-  void ReceivePdDataInndication (uint32_t psduLength, Ptr<Packet> p, uint8_t lqi);
+
+  /**
+   * \brief Receives a PdData indication
+   * \param psduLength The PSDU length.
+   * \param p The packet.
+   * \param lqi The LQI.
+   */
+  void ReceivePdDataIndication (uint32_t psduLength, Ptr<Packet> p, uint8_t lqi);
 };
 
 LrWpanPlmeAndPdInterfaceTestCase::LrWpanPlmeAndPdInterfaceTestCase ()
@@ -49,7 +61,7 @@ LrWpanPlmeAndPdInterfaceTestCase::~LrWpanPlmeAndPdInterfaceTestCase ()
 }
 
 void
-LrWpanPlmeAndPdInterfaceTestCase::ReceivePdDataInndication (uint32_t psduLength,
+LrWpanPlmeAndPdInterfaceTestCase::ReceivePdDataIndication (uint32_t psduLength,
                                                             Ptr<Packet> p,
                                                             uint8_t lqi)
 {
@@ -72,7 +84,7 @@ LrWpanPlmeAndPdInterfaceTestCase::DoRun (void)
   receiver->SetChannel (channel);
 
   receiver->SetPdDataIndicationCallback (MakeCallback (
-                                           &LrWpanPlmeAndPdInterfaceTestCase::ReceivePdDataInndication,
+                                           &LrWpanPlmeAndPdInterfaceTestCase::ReceivePdDataIndication,
                                            this));
 
   uint32_t n = 10;
@@ -82,7 +94,12 @@ LrWpanPlmeAndPdInterfaceTestCase::DoRun (void)
   Simulator::Destroy ();
 }
 
-// ==============================================================================
+/**
+ * \ingroup lr-wpan-test
+ * \ingroup tests
+ *
+ * \brief LrWpan PLME and PD Interfaces TestSuite
+ */
 class LrWpanPlmeAndPdInterfaceTestSuite : public TestSuite
 {
 public:
@@ -96,4 +113,4 @@ LrWpanPlmeAndPdInterfaceTestSuite::LrWpanPlmeAndPdInterfaceTestSuite ()
 }
 
 // Do not forget to allocate an instance of this TestSuite
-static LrWpanPlmeAndPdInterfaceTestSuite lrWpanPlmeAndPdInterfaceTestSuite;
+static LrWpanPlmeAndPdInterfaceTestSuite g_lrWpanPlmeAndPdInterfaceTestSuite;

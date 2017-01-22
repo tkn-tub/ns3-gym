@@ -32,6 +32,8 @@ namespace ns3 {
 class UniformRandomVariable;
 
 /**
+ * \ingroup lr-wpan
+ *
  * This method informs the MAC  whether the channel is idle or busy.
  */
 typedef Callback<void, LrWpanMacState> LrWpanMacStateCallback;

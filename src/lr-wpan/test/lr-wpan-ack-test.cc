@@ -34,26 +34,48 @@
 
 using namespace ns3;
 
-using namespace ns3;
-
 NS_LOG_COMPONENT_DEFINE ("lr-wpan-ack-test");
 
+/**
+ * \ingroup lr-wpan
+ * \defgroup lr-wpan-test LrWpan module tests
+ */
+
+/**
+ * \ingroup lr-wpan-test
+ * \ingroup tests
+ *
+ * \brief LrWpan ACK Test
+ */
 class LrWpanAckTestCase : public TestCase
 {
 public:
   LrWpanAckTestCase ();
 
+  /**
+   * \brief Function called when DataIndication is hit.
+   * \param testCase The TestCase.
+   * \param dev The LrWpanNetDevice.
+   * \param params The MCPS params.
+   * \param p the packet.
+   */
   static void DataIndication (LrWpanAckTestCase *testCase, Ptr<LrWpanNetDevice> dev, McpsDataIndicationParams params, Ptr<Packet> p);
+  /**
+   * \brief Function called when DataConfirm is hit.
+   * \param testCase The TestCase.
+   * \param dev The LrWpanNetDevice.
+   * \param params The MCPS params.
+   */
   static void DataConfirm (LrWpanAckTestCase *testCase, Ptr<LrWpanNetDevice> dev, McpsDataConfirmParams params);
 
 private:
   virtual void DoRun (void);
 
-  Time m_requestTime;
-  Time m_requestAckTime;
-  Time m_replyTime;
-  Time m_replyAckTime;
-  Time m_replyArrivalTime;
+  Time m_requestTime; //!< Request time.
+  Time m_requestAckTime; //!< Request ack time.
+  Time m_replyTime; //!< Reply time.
+  Time m_replyAckTime; //!< Reply ack time.
+  Time m_replyArrivalTime; //!< Reply arrival time.
 };
 
 LrWpanAckTestCase::LrWpanAckTestCase ()
@@ -108,7 +130,7 @@ LrWpanAckTestCase::DoRun (void)
   // Test setup:
   // Two nodes well in communication range.
   // Node 1 sends a request packet to node 2 with ACK request bit set. Node 2
-  // immediately answers with a reply packet on receiption of the request.
+  // immediately answers with a reply packet on reception of the request.
   // We expect the ACK of the request packet to always arrive at node 1 before
   // the reply packet sent by node 2.
 
@@ -192,6 +214,12 @@ LrWpanAckTestCase::DoRun (void)
   Simulator::Destroy ();
 }
 
+/**
+ * \ingroup lr-wpan-test
+ * \ingroup tests
+ *
+ * \brief LrWpan ACK TestSuite
+ */
 class LrWpanAckTestSuite : public TestSuite
 {
 public:

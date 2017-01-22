@@ -470,7 +470,7 @@ private:
   {
     uint32_t m_auxKeyIdKeySrc32;        //!< Auxiliary security header - Key Source (4 Octets)
     uint64_t m_auxKeyIdKeySrc64;        //!< Auxiliary security header - Key Source (8 Octets)
-  };
+  }; //!< Auxiliary security header
 
   uint8_t m_auxKeyIdKeyIndex;           //!< Auxiliary security header - Key Index (1 Octet)
 

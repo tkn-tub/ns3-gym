@@ -46,6 +46,7 @@ struct LrWpanSpectrumSignalParameters : public SpectrumSignalParameters
 
   /**
    * copy constructor
+   * \param p the object to copy from.
    */
   LrWpanSpectrumSignalParameters (const LrWpanSpectrumSignalParameters& p);
 
