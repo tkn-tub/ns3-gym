@@ -31,6 +31,7 @@ Bugs fixed
 - Bug 2471 - unable to disable Block Ack agreement for 802.11n 
 - Bug 2477 - DCF manager assert
 - Bug 2485 - Check for queue full should happen before checking RED thresholds
+- Bug 2491 - replace DcfManager::MY_DEBUG
 - Bug 2492 - uan: Make use of RxGain attribute in UanPhyGen class
 - Bug 2511 - HT Greenfield is not working
 - Bug 2512 - Byte mode not configured correctly in red-queue-disc-test-suite.cc
