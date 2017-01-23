@@ -226,7 +226,7 @@ private:
 SixlowpanHc1TestSuite::SixlowpanHc1TestSuite ()
   : TestSuite ("sixlowpan-hc1", UNIT)
 {
-  AddTestCase (new SixlowpanHc1TestSuite (), TestCase::QUICK);
+  AddTestCase (new SixlowpanHc1ImplTest (), TestCase::QUICK);
 }
 
 static SixlowpanHc1TestSuite g_sixlowpanHc1TestSuite;

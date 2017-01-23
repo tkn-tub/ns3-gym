@@ -477,7 +477,7 @@ private:
 SixlowpanFragmentationTestSuite::SixlowpanFragmentationTestSuite ()
   : TestSuite ("sixlowpan-fragmentation", UNIT)
 {
-  AddTestCase (new SixlowpanFragmentationTestSuite (), TestCase::QUICK);
+  AddTestCase (new SixlowpanFragmentationTest (), TestCase::QUICK);
 }
 
 static SixlowpanFragmentationTestSuite g_sixlowpanFragmentationTestSuite;

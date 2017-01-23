@@ -230,7 +230,7 @@ private:
 SixlowpanIphcTestSuite::SixlowpanIphcTestSuite ()
   : TestSuite ("sixlowpan-iphc", UNIT)
 {
-  AddTestCase (new SixlowpanIphcTestSuite (), TestCase::QUICK);
+  AddTestCase (new SixlowpanIphcImplTest (), TestCase::QUICK);
 }
 
 static SixlowpanIphcTestSuite g_sixlowpanIphcTestSuite;
