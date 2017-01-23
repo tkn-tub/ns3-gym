@@ -228,7 +228,7 @@ private:
 };
 
 SixlowpanIphcTestSuite::SixlowpanIphcTestSuite ()
-  : TestSuite ("sixlowpan-hc1", UNIT)
+  : TestSuite ("sixlowpan-iphc", UNIT)
 {
   AddTestCase (new SixlowpanIphcTestSuite (), TestCase::QUICK);
 }
