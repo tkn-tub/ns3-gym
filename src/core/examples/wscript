@@ -37,6 +37,9 @@ def build(bld):
                                  ['core'])
     obj.source = 'hash-example.cc'
 
+    obj = bld.create_ns3_program('sample-log-time-format', ['core'])
+    obj.source = 'sample-log-time-format.cc'
+
     obj = bld.create_ns3_program('test-string-value-formatting', ['core'])
     obj.source = 'test-string-value-formatting.cc'
 

@@ -67,6 +67,11 @@ us a note on ns-developers mailing list.</p>
     Changing the Mean attribute has no more an effect on the distribution.
     See the documentation for the relationship between Mean, Scale and Shape. 
 </li>
+<li>The default logging timestamp precision has been changed from 6 digits
+    to 9 digits, with a fixed format to ensure that 9 digits to the right of
+    the decimal point are always printed.  Previously, default C++ iostream
+    precision and formatting was used.
+</li>
 </ul>
 <h2>Changes to build system:</h2>
 <ul>
