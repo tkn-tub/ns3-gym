@@ -2425,8 +2425,6 @@ MacLow::SendBlockAckResponse (const CtrlBAckResponseHeader* blockAck, Mac48Addre
 
   WifiTxVector blockAckReqTxVector = GetBlockAckTxVector (originator, blockAckReqTxMode);
 
-  m_currentPacket = packet;
-  m_currentHdr = hdr;
   if (immediate)
     {
       m_txParams.DisableAck ();
