@@ -270,6 +270,11 @@ void Asn1Header::SerializeSequence (std::bitset<6> optionalOrDefaultMask, bool i
   SerializeSequence<6> (optionalOrDefaultMask,isExtensionMarkerPresent);
 }
 
+void Asn1Header::SerializeSequence (std::bitset<7> optionalOrDefaultMask, bool isExtensionMarkerPresent) const
+{
+  SerializeSequence<7> (optionalOrDefaultMask,isExtensionMarkerPresent);
+}
+
 void Asn1Header::SerializeSequence (std::bitset<9> optionalOrDefaultMask, bool isExtensionMarkerPresent) const
 {
   SerializeSequence<9> (optionalOrDefaultMask,isExtensionMarkerPresent);
@@ -725,6 +730,11 @@ Buffer::Iterator Asn1Header::DeserializeSequence (std::bitset<5> *optionalOrDefa
 Buffer::Iterator Asn1Header::DeserializeSequence (std::bitset<6> *optionalOrDefaultMask, bool isExtensionMarkerPresent, Buffer::Iterator bIterator)
 {
   return DeserializeSequence<6> (optionalOrDefaultMask,isExtensionMarkerPresent,bIterator);
+}
+
+Buffer::Iterator Asn1Header::DeserializeSequence (std::bitset<7> *optionalOrDefaultMask, bool isExtensionMarkerPresent, Buffer::Iterator bIterator)
+{
+  return DeserializeSequence<7> (optionalOrDefaultMask,isExtensionMarkerPresent,bIterator);
 }
 
 Buffer::Iterator Asn1Header::DeserializeSequence (std::bitset<9> *optionalOrDefaultMask, bool isExtensionMarkerPresent, Buffer::Iterator bIterator)

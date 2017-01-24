@@ -17,6 +17,9 @@
  *
  * Author: Nicola Baldo <nbaldo@cttc.es>
  *         Budiarto Herman <budiarto.herman@magister.fi>
+ * Modified by:
+ *          Danilo Abrignani <danilo.abrignani@unibo.it> (Carrier Aggregation - GSoC 2015)
+ *          Biljana Bojovic <biljana.bojovic@cttc.es> (Carrier Aggregation)
  */
 
 #ifndef LTE_UE_RRC_H
@@ -30,9 +33,15 @@
 #include <ns3/lte-ue-cphy-sap.h>
 #include <ns3/lte-rrc-sap.h>
 #include <ns3/traced-callback.h>
+#include "ns3/component-carrier-ue.h"
+#include <ns3/lte-ue-ccm-rrc-sap.h>
+#include <vector>
 
 #include <map>
 #include <set>
+
+#define MIN_NO_CC 1
+#define MAX_NO_CC 5 // this is the maximum number of carrier components allowed by 3GPP up to R13
 
 namespace ns3 {
 
@@ -76,6 +85,7 @@ class LteUeRrc : public Object
   friend class MemberLteAsSapProvider<LteUeRrc>;
   friend class MemberLteUeCphySapUser<LteUeRrc>;
   friend class MemberLteUeRrcSapProvider<LteUeRrc>;
+  friend class MemberLteUeCcmRrcSapUser<LteUeRrc>;
 
 public:
 
@@ -121,7 +131,6 @@ private:
   virtual void DoDispose (void);
 public:
   static TypeId GetTypeId (void);
-
 
   /**
    * set the CPHY SAP this RRC should use to interact with the PHY
@@ -189,6 +198,20 @@ public:
    */
   LteAsSapProvider* GetAsSapProvider ();
 
+  /**
+   * set the Component Carrier Management SAP this RRC should interact with
+   *
+   * \param s the Component Carrier Management SAP Provider to be used by this RRC
+   */
+  void SetLteCcmRrcSapProvider (LteUeCcmRrcSapProvider * s);
+
+  /**
+   * Get the Component Carrier Management SAP offered by this RRC
+   * \return s the Component Carrier Management SAP User interface offered to the
+   *           carrier component selection algorithm by this RRC
+   */
+  LteUeCcmRrcSapUser* GetLteCcmRrcSapUser ();
+
   /** 
    * 
    * \param imsi the unique UE identifier
@@ -246,6 +269,17 @@ public:
    */
   void SetUseRlcSm (bool val);
 
+    /** 
+   * 
+   * \param support CA
+   */
+  void SetCaSupport (bool supportCa);
+
+  /**
+   *
+   * \return support CA
+   */
+  bool GetCaSupport (void) const;
 
   /**
    * TracedCallback signature for imsi, cellId and rnti events.
@@ -336,6 +370,9 @@ private:
   void DoRecvRrcConnectionRelease (LteRrcSap::RrcConnectionRelease msg);
   /// Part of the RRC protocol. Implement the LteUeRrcSapProvider::RecvRrcConnectionReject interface.
   void DoRecvRrcConnectionReject (LteRrcSap::RrcConnectionReject msg);
+
+  // RRC CCM SAP USER Method
+  void DoComponentCarrierEnabling (std::vector<uint8_t> res);
 
  
   // INTERNAL METHODS
@@ -449,6 +486,24 @@ private:
                            bool useLayer3Filtering);
 
   /**
+   * \brief keep the given measurement result as the latest measurement figures,
+   *        to be utilised by UE RRC functions.
+   * \param cellId the cell ID of the measured cell
+   * \param rsrp measured RSRP value to be saved (in dBm)
+   * \param rsrq measured RSRQ value to be saved (in dB)
+   * \param useLayer3Filtering
+   * \param componentCarrierId
+   * \todo Remove the useLayer3Filtering argument
+   *
+   * As for SaveUeMeasurements, this function aims to store the latest measurements
+   * related to the secondary component carriers.
+   * in the current implementation it saves only measurements related on the serving 
+   * secondary carriers while, measurements related to the Neighbor Cell are filtered
+   */
+
+  void SaveScellUeMeasurements (uint16_t cellId, double rsrp, double rsrq,
+                                bool useLayer3Filtering, uint16_t componentCarrierId);
+  /**
    * \brief Evaluate the reporting criteria of a measurement identity and
    *        invoke some reporting actions based on the result.
    * \param measId the measurement identity to be evaluated
@@ -508,6 +563,7 @@ private:
   void SendMeasurementReport (uint8_t measId);
 
   void ApplyRadioResourceConfigDedicated (LteRrcSap::RadioResourceConfigDedicated rrcd);
+  void ApplyRadioResourceConfigDedicatedSecondaryCarrier (LteRrcSap::NonCriticalExtensionConfiguration nonCec);
   void StartConnection ();
   void LeaveConnectedMode ();
   void DisposeOldSrb1 ();
@@ -534,6 +590,13 @@ private:
 
   LteAsSapProvider* m_asSapProvider;
   LteAsSapUser* m_asSapUser;
+
+  // Receive API calls from the LteUeComponetCarrierManager  instance.
+  // LteCcmRrcSapUser* m_ccmRrcSapUser;
+  /// Interface to the LteUeComponetCarrierManage instance.
+  LteUeCcmRrcSapProvider* m_ccmRrcSapProvider;
+  LteUeCcmRrcSapUser* m_ccmRrcSapUser;
+
 
   /// The current UE RRC state.
   State m_state;
@@ -809,6 +872,26 @@ private:
    */
   std::map<uint16_t, MeasValues> m_storedMeasValues;
 
+  std::map<uint16_t, std::map <uint8_t, MeasValues> > m_storedMeasValuesPerCarrier;
+
+  /**
+   * \brief Internal storage of the latest measurement results from all detected
+   *        detected Secondary carrier component, indexed by the carrier component ID 
+   *        where the measurement was taken from.
+   *
+   * Each *measurement result* comprises of RSRP (in dBm) and RSRQ (in dB).
+   *
+   * In IDLE mode, the measurement results are used by the *initial cell
+   * selection* procedure. While in CONNECTED mode, *layer-3 filtering* is
+   * applied to the measurement results and they are used by *UE measurements*
+   * function:
+   * - LteUeRrc::MeasurementReportTriggering: in this case it is not set any
+   *   measurment related to seconday carrier components since the 
+   *   A6 event is not implemented
+   * - LteUeRrc::SendMeasurementReport: in this case the report are sent.
+   */
+  std::map<uint16_t, MeasValues> m_storedScellMeasValues;
+
   /**
    * \brief Represents a single triggered event from a measurement identity
    *        which reporting criteria have been fulfilled, but delayed by
@@ -942,6 +1025,12 @@ private:
    *        connection establishment procedure has failed.
    */
   void ConnectionTimeout ();
+
+public:
+  /** 
+   * The number of component carriers.
+   */
+  uint16_t m_numberOfComponentCarriers;
 
 }; // end of class LteUeRrc
 

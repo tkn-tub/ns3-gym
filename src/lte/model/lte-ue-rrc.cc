@@ -17,6 +17,9 @@
  *
  * Author: Nicola Baldo <nbaldo@cttc.es>
  *         Budiarto Herman <budiarto.herman@magister.fi>
+ * Modified by:
+ *          Danilo Abrignani <danilo.abrignani@unibo.it> (Carrier Aggregation - GSoC 2015)
+ *          Biljana Bojovic <biljana.bojovic@cttc.es> (Carrier Aggregation)
  */
 
 #include "lte-ue-rrc.h"
@@ -127,6 +130,7 @@ LteUeRrc::LteUeRrc ()
     m_rrcSapUser (0),
     m_macSapProvider (0),
     m_asSapUser (0),
+    m_ccmRrcSapProvider (0),
     m_state (IDLE_START),
     m_imsi (0),
     m_rnti (0),
@@ -136,7 +140,8 @@ LteUeRrc::LteUeRrc ()
     m_hasReceivedMib (false),
     m_hasReceivedSib1 (false),
     m_hasReceivedSib2 (false),
-    m_csgWhiteList (0)
+    m_csgWhiteList (0),
+    m_numberOfComponentCarriers (0)
 {
   NS_LOG_FUNCTION (this);
   m_cphySapUser = new MemberLteUeCphySapUser<LteUeRrc> (this);
@@ -144,6 +149,7 @@ LteUeRrc::LteUeRrc ()
   m_rrcSapProvider = new MemberLteUeRrcSapProvider<LteUeRrc> (this);
   m_drbPdcpSapUser = new LtePdcpSpecificLtePdcpSapUser<LteUeRrc> (this);
   m_asSapProvider = new MemberLteAsSapProvider<LteUeRrc> (this);
+  m_ccmRrcSapUser = new MemberLteUeCcmRrcSapUser<LteUeRrc> (this);
 }
 
 
@@ -161,6 +167,7 @@ LteUeRrc::DoDispose ()
   delete m_rrcSapProvider;
   delete m_drbPdcpSapUser;
   delete m_asSapProvider;
+  delete m_ccmRrcSapUser;
   m_drbMap.clear ();
 }
 
@@ -169,7 +176,7 @@ LteUeRrc::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::LteUeRrc")
     .SetParent<Object> ()
-    .SetGroupName("Lte")
+    .SetGroupName ("Lte")
     .AddConstructor<LteUeRrc> ()
     .AddAttribute ("DataRadioBearerMap", "List of UE RadioBearerInfo for Data Radio Bearers by LCID.",
                    ObjectMapValue (),
@@ -307,6 +314,20 @@ LteUeRrc::SetLteMacSapProvider (LteMacSapProvider * s)
 {
   NS_LOG_FUNCTION (this << s);
   m_macSapProvider = s;
+}
+
+void
+LteUeRrc::SetLteCcmRrcSapProvider (LteUeCcmRrcSapProvider * s)
+{
+  NS_LOG_FUNCTION (this << s);
+  m_ccmRrcSapProvider = s;
+}
+
+LteUeCcmRrcSapUser*
+LteUeRrc::GetLteCcmRrcSapUser ()
+{
+  NS_LOG_FUNCTION (this);
+  return m_ccmRrcSapUser;
 }
 
 void
@@ -718,6 +739,7 @@ void
 LteUeRrc::DoRecvSystemInformationBlockType1 (uint16_t cellId,
                                              LteRrcSap::SystemInformationBlockType1 msg)
 {
+  NS_LOG_FUNCTION (this);
   switch (m_state)
     {
     case IDLE_WAIT_SIB1:
@@ -760,13 +782,25 @@ LteUeRrc::DoReportUeMeasurements (LteUeCphySapUser::UeMeasurementsParameters par
 
   // layer 3 filtering does not apply in IDLE mode
   bool useLayer3Filtering = (m_state == CONNECTED_NORMALLY);
-
+  bool triggering = true;
   std::vector <LteUeCphySapUser::UeMeasurementsElement>::iterator newMeasIt;
   for (newMeasIt = params.m_ueMeasurementsList.begin ();
        newMeasIt != params.m_ueMeasurementsList.end (); ++newMeasIt)
     {
-      SaveUeMeasurements (newMeasIt->m_cellId, newMeasIt->m_rsrp,
-                          newMeasIt->m_rsrq, useLayer3Filtering);
+      if (params.m_componentCarrierId != 0)
+        {
+          triggering = false; // report is triggered only when an event is on the primary carrier
+          // in this case the measurement received is related to secondary carriers
+          // measurements related to secondary carriers are saved on a different portion of memory
+          SaveScellUeMeasurements (newMeasIt->m_cellId, newMeasIt->m_rsrp,
+                                   newMeasIt->m_rsrq, useLayer3Filtering, 
+                                   params.m_componentCarrierId );
+        }
+      else
+        {
+          SaveUeMeasurements (newMeasIt->m_cellId, newMeasIt->m_rsrp,
+                              newMeasIt->m_rsrq, useLayer3Filtering);
+        }
     }
 
   if (m_state == IDLE_CELL_SEARCH)
@@ -776,11 +810,14 @@ LteUeRrc::DoReportUeMeasurements (LteUeCphySapUser::UeMeasurementsParameters par
     }
   else
     {
-      std::map<uint8_t, LteRrcSap::MeasIdToAddMod>::iterator measIdIt;
-      for (measIdIt = m_varMeasConfig.measIdList.begin ();
-           measIdIt != m_varMeasConfig.measIdList.end (); ++measIdIt)
+      if (triggering)
         {
-          MeasurementReportTriggering (measIdIt->first);
+          std::map<uint8_t, LteRrcSap::MeasIdToAddMod>::iterator measIdIt;
+          for (measIdIt = m_varMeasConfig.measIdList.begin ();
+               measIdIt != m_varMeasConfig.measIdList.end (); ++measIdIt)
+            {
+              MeasurementReportTriggering (measIdIt->first);
+             }
         }
     }
 
@@ -790,7 +827,7 @@ LteUeRrc::DoReportUeMeasurements (LteUeCphySapUser::UeMeasurementsParameters par
 
 // RRC SAP methods
 
-void 
+void
 LteUeRrc::DoCompleteSetup (LteUeRrcSapProvider::CompleteSetupParameters params)
 {
   NS_LOG_FUNCTION (this << " RNTI " << m_rnti);
@@ -875,6 +912,7 @@ void
 LteUeRrc::DoRecvRrcConnectionReconfiguration (LteRrcSap::RrcConnectionReconfiguration msg)
 {
   NS_LOG_FUNCTION (this << " RNTI " << m_rnti);
+  NS_LOG_INFO ("DoRecvRrcConnectionReconfiguration haveNonCriticalExtension:" << msg.haveNonCriticalExtension );
   switch (m_state)
     {
     case CONNECTED_NORMALLY:
@@ -921,6 +959,11 @@ LteUeRrc::DoRecvRrcConnectionReconfiguration (LteRrcSap::RrcConnectionReconfigur
       else
         {
           NS_LOG_INFO ("haveMobilityControlInfo == false");
+          if (msg.haveNonCriticalExtension)
+            {
+              ApplyRadioResourceConfigDedicatedSecondaryCarrier (msg.nonCriticalExtension);
+              NS_LOG_FUNCTION ( this << "RNTI " << m_rnti << " Configured for CA" );
+            }
           if (msg.haveRadioResourceConfigDedicated)
             {
               ApplyRadioResourceConfigDedicated (msg.radioResourceConfigDedicated);
@@ -1119,6 +1162,41 @@ LteUeRrc::EvaluateCellForSelection ()
 } // end of void LteUeRrc::EvaluateCellForSelection ()
 
 
+void
+LteUeRrc::ApplyRadioResourceConfigDedicatedSecondaryCarrier (LteRrcSap::NonCriticalExtensionConfiguration nonCec)
+{
+  NS_LOG_FUNCTION (this);
+
+  for(std::list<LteRrcSap::SCellToAddMod>::iterator it = nonCec.sCellsToAddModList.begin(); it!=nonCec.sCellsToAddModList.end(); it++)
+    {
+      LteRrcSap::SCellToAddMod scell = *it;
+      uint8_t ccId = scell.sCellIndex;
+
+      if (ccId>=m_numberOfComponentCarriers)
+        break;
+
+      uint8_t ulBand = scell.radioResourceConfigCommonSCell.ulConfiguration.ulFreqInfo.ulBandwidth;
+      uint32_t ulEarfcn = scell.radioResourceConfigCommonSCell.ulConfiguration.ulFreqInfo.ulCarrierFreq;
+      uint8_t dlBand = scell.radioResourceConfigCommonSCell.nonUlConfiguration.dlBandwidth;
+      uint32_t dlEarfcn = scell.cellIdentification.dlCarrierFreq;
+      uint8_t txMode = scell.radioResourceConfigDedicateSCell.physicalConfigDedicatedSCell.antennaInfo.transmissionMode;
+      uint8_t srsIndex = scell.radioResourceConfigDedicateSCell.physicalConfigDedicatedSCell.soundingRsUlConfigDedicated.srsConfigIndex;
+
+      m_cphySapProvider->SynchronizeWithEnb (m_cellId, dlEarfcn);
+      m_cphySapProvider->SetDlBandwidth (dlBand);
+      m_cphySapProvider->ConfigureUplink (ulEarfcn, ulBand);
+      m_cphySapProvider->ConfigureReferenceSignalPower (scell.radioResourceConfigCommonSCell.nonUlConfiguration.pdschConfigCommon.referenceSignalPower);
+      m_cphySapProvider->SetTransmissionMode (txMode);
+      m_cphySapProvider->SetRnti(m_rnti);
+      m_cmacSapProvider->SetRnti(m_rnti);
+      // update PdschConfigDedicated (i.e. P_A value)
+      LteRrcSap::PdschConfigDedicated pdschConfigDedicated = scell.radioResourceConfigDedicateSCell.physicalConfigDedicatedSCell.pdschConfigDedicated;
+      double paDouble = LteRrcSap::ConvertPdschConfigDedicated2Double (pdschConfigDedicated);
+      m_cphySapProvider->SetPa (paDouble);
+      m_cphySapProvider->SetSrsConfigurationIndex (srsIndex);
+    }
+}
+
 void 
 LteUeRrc::ApplyRadioResourceConfigDedicated (LteRrcSap::RadioResourceConfigDedicated rrcd)
 {
@@ -1185,7 +1263,7 @@ LteUeRrc::ApplyRadioResourceConfigDedicated (LteRrcSap::RadioResourceConfigDedic
           m_cmacSapProvider->AddLc (lcid, lcConfig, rlc->GetLteMacSapUser ());
       
           ++stamIt;
-          NS_ASSERT_MSG (stamIt == rrcd.srbToAddModList.end (), "at most one SrbToAdd supported");     
+          NS_ASSERT_MSG (stamIt == rrcd.srbToAddModList.end (), "at most one SrbToAdd supported");
           
           LteUeRrcSapUser::SetupParameters ueParams;
           ueParams.srb0SapProvider = m_srb0->m_rlc->GetLteRlcSapProvider ();
@@ -2682,6 +2760,28 @@ LteUeRrc::SendMeasurementReport (uint8_t measId)
           NS_LOG_WARN (this << " cellsTriggeredList is empty");
         }
 
+      measResults.haveScellsMeas = false;
+      std::map<uint16_t, MeasValues>::iterator sCellsMeasIt =  m_storedScellMeasValues.begin ();
+      if (sCellsMeasIt != m_storedScellMeasValues.end ())
+        {
+          measResults.haveScellsMeas = true;
+          measResults.measScellResultList.haveMeasurementResultsServingSCells = true;
+          measResults.measScellResultList.haveMeasurementResultsNeighCell = false;
+
+
+          for ( sCellsMeasIt = m_storedScellMeasValues.begin (); 
+                sCellsMeasIt != m_storedScellMeasValues.end (); ++sCellsMeasIt)
+            {
+              LteRrcSap::MeasResultScell measResultScell;
+              measResultScell.servFreqId = sCellsMeasIt->first;
+              measResultScell.haveRsrpResult =  true;
+              measResultScell.haveRsrqResult =  true;
+              measResultScell.rsrpResult = EutranMeasurementMapping::Dbm2RsrpRange (sCellsMeasIt->second.rsrp);
+              measResultScell.rsrqResult = EutranMeasurementMapping::Db2RsrqRange (sCellsMeasIt->second.rsrq); 
+              measResults.measScellResultList.measResultScell.push_back (measResultScell);
+            }
+        }
+
       /*
        * The current LteRrcSap implementation is broken in that it does not
        * allow for infinite values of reportAmount, which is probably the most
@@ -2859,7 +2959,73 @@ LteUeRrc::SwitchToState (State newState)
     }
 }
 
+void
+LteUeRrc::DoComponentCarrierEnabling (std::vector<uint8_t> res)
+  {
+    NS_LOG_INFO (this);
+  }
 
+void
+LteUeRrc::SaveScellUeMeasurements (uint16_t sCellId, double rsrp, double rsrq,
+                                   bool useLayer3Filtering, uint16_t componentCarrierId)
+{
+  NS_LOG_FUNCTION (this << sCellId << componentCarrierId << rsrp << rsrq << useLayer3Filtering);
+  if (sCellId == m_cellId)
+    {
+
+      std::map<uint16_t, MeasValues>::iterator storedMeasIt = m_storedScellMeasValues.find (componentCarrierId);
+
+      if (storedMeasIt != m_storedScellMeasValues.end ())
+        {
+          if (useLayer3Filtering)
+            {
+              // F_n = (1-a) F_{n-1} + a M_n
+              storedMeasIt->second.rsrp = (1 - m_varMeasConfig.aRsrp) * storedMeasIt->second.rsrp
+                + m_varMeasConfig.aRsrp * rsrp;
+
+              if (std::isnan (storedMeasIt->second.rsrq))
+                {
+                  // the previous RSRQ measurements provided UE PHY are invalid
+                  storedMeasIt->second.rsrq = rsrq;   // replace it with unfiltered value
+                }
+              else
+                {
+                  storedMeasIt->second.rsrq = (1 - m_varMeasConfig.aRsrq) * storedMeasIt->second.rsrq
+                    + m_varMeasConfig.aRsrq * rsrq;
+                }
+            }
+          else
+            {
+              storedMeasIt->second.rsrp = rsrp;
+              storedMeasIt->second.rsrq = rsrq;
+            }
+        }
+      else
+        {
+          // first value is always unfiltered
+          MeasValues v;
+          v.rsrp = rsrp;
+          v.rsrq = rsrq;
+          std::pair<uint16_t, MeasValues> val (componentCarrierId, v);
+          std::pair<std::map<uint16_t, MeasValues>::iterator, bool>
+            ret = m_storedScellMeasValues.insert (val);
+          NS_ASSERT_MSG (ret.second == true, "element already existed");
+          storedMeasIt = ret.first;
+        }
+
+      NS_LOG_DEBUG (this << " IMSI " << m_imsi << " state " << ToString (m_state)
+                    << ", measured cell " << sCellId
+                    << ", carrier component Id " << componentCarrierId
+                    << ", new RSRP " << rsrp << " stored " << storedMeasIt->second.rsrp
+                    << ", new RSRQ " << rsrq << " stored " << storedMeasIt->second.rsrq);
+      storedMeasIt->second.timestamp = Simulator::Now ();
+    }
+  else 
+    {
+      NS_LOG_DEBUG (this << " IMSI " << m_imsi << "measurement on SCC from not serving cell ");
+    }
+
+}   // end of void SaveUeMeasurements
 
 
 } // namespace ns3

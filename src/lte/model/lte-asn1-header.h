@@ -190,6 +190,13 @@ protected:
    * \param optionalOrDefaultMask Mask to serialize
    * \param isExtensionMarkerPresent true if Extension Marker is present
    */
+  void SerializeSequence (std::bitset<7> optionalOrDefaultMask,
+                          bool isExtensionMarkerPresent) const;
+  /**
+   * Serialize a sequence
+   * \param optionalOrDefaultMask Mask to serialize
+   * \param isExtensionMarkerPresent true if Extension Marker is present
+   */
   void SerializeSequence (std::bitset<9> optionalOrDefaultMask,
                           bool isExtensionMarkerPresent) const;
   /**
@@ -400,6 +407,17 @@ protected:
    * \returns the modified buffer iterator
    */
   Buffer::Iterator DeserializeSequence (std::bitset<6> *optionalOrDefaultMask,
+                                        bool isExtensionMarkerPresent,
+                                        Buffer::Iterator bIterator);
+
+  /**
+   * Deserialize a sequence
+   * \param optionalOrDefaultMask buffer to store the result
+   * \param isExtensionMarkerPresent true if Extension Marker is present
+   * \param bIterator buffer iterator
+   * \returns the modified buffer iterator
+   */
+  Buffer::Iterator DeserializeSequence (std::bitset<7> *optionalOrDefaultMask,
                                         bool isExtensionMarkerPresent,
                                         Buffer::Iterator bIterator);
   /**

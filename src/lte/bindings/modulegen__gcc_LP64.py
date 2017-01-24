@@ -6796,10 +6796,14 @@ def register_Ns3LteRrcSapMeasResults_methods(root_module, cls):
     cls.add_constructor([param('ns3::LteRrcSap::MeasResults const &', 'arg0')])
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::MeasResults::haveMeasResultNeighCells [variable]
     cls.add_instance_attribute('haveMeasResultNeighCells', 'bool', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::MeasResults::haveScellsMeas [variable]
+    cls.add_instance_attribute('haveScellsMeas', 'bool', is_const=False)
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::MeasResults::measId [variable]
     cls.add_instance_attribute('measId', 'uint8_t', is_const=False)
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::MeasResults::measResultListEutra [variable]
     cls.add_instance_attribute('measResultListEutra', 'std::list< ns3::LteRrcSap::MeasResultEutra >', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::MeasResults::measScellResultList [variable]
+    cls.add_instance_attribute('measScellResultList', 'ns3::LteRrcSap::MeasResultServFreqList', is_const=False)
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::MeasResults::rsrpResult [variable]
     cls.add_instance_attribute('rsrpResult', 'uint8_t', is_const=False)
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::MeasResults::rsrqResult [variable]
@@ -12924,6 +12928,11 @@ def register_Ns3Asn1Header_methods(root_module, cls):
                    'ns3::Buffer::Iterator', 
                    [param('std::bitset< 6ul > *', 'optionalOrDefaultMask'), param('bool', 'isExtensionMarkerPresent'), param('ns3::Buffer::Iterator', 'bIterator')], 
                    visibility='protected')
+    ## lte-asn1-header.h (module 'lte'): ns3::Buffer::Iterator ns3::Asn1Header::DeserializeSequence(std::bitset<7ul> * optionalOrDefaultMask, bool isExtensionMarkerPresent, ns3::Buffer::Iterator bIterator) [member function]
+    cls.add_method('DeserializeSequence', 
+                   'ns3::Buffer::Iterator', 
+                   [param('std::bitset< 7ul > *', 'optionalOrDefaultMask'), param('bool', 'isExtensionMarkerPresent'), param('ns3::Buffer::Iterator', 'bIterator')], 
+                   visibility='protected')
     ## lte-asn1-header.h (module 'lte'): ns3::Buffer::Iterator ns3::Asn1Header::DeserializeSequence(std::bitset<9ul> * optionalOrDefaultMask, bool isExtensionMarkerPresent, ns3::Buffer::Iterator bIterator) [member function]
     cls.add_method('DeserializeSequence', 
                    'ns3::Buffer::Iterator', 
@@ -13048,6 +13057,11 @@ def register_Ns3Asn1Header_methods(root_module, cls):
     cls.add_method('SerializeSequence', 
                    'void', 
                    [param('std::bitset< 6ul >', 'optionalOrDefaultMask'), param('bool', 'isExtensionMarkerPresent')], 
+                   is_const=True, visibility='protected')
+    ## lte-asn1-header.h (module 'lte'): void ns3::Asn1Header::SerializeSequence(std::bitset<7ul> optionalOrDefaultMask, bool isExtensionMarkerPresent) const [member function]
+    cls.add_method('SerializeSequence', 
+                   'void', 
+                   [param('std::bitset< 7ul >', 'optionalOrDefaultMask'), param('bool', 'isExtensionMarkerPresent')], 
                    is_const=True, visibility='protected')
     ## lte-asn1-header.h (module 'lte'): void ns3::Asn1Header::SerializeSequence(std::bitset<9ul> optionalOrDefaultMask, bool isExtensionMarkerPresent) const [member function]
     cls.add_method('SerializeSequence', 
@@ -16058,14 +16072,26 @@ def register_Ns3LteEnbRrc_methods(root_module, cls):
     cls.add_method('GetLteAnrSapUser', 
                    'ns3::LteAnrSapUser *', 
                    [])
+    ## lte-enb-rrc.h (module 'lte'): ns3::LteCcmRrcSapUser * ns3::LteEnbRrc::GetLteCcmRrcSapUser() [member function]
+    cls.add_method('GetLteCcmRrcSapUser', 
+                   'ns3::LteCcmRrcSapUser *', 
+                   [])
     ## lte-enb-rrc.h (module 'lte'): ns3::LteEnbCmacSapUser * ns3::LteEnbRrc::GetLteEnbCmacSapUser() [member function]
     cls.add_method('GetLteEnbCmacSapUser', 
                    'ns3::LteEnbCmacSapUser *', 
                    [])
+    ## lte-enb-rrc.h (module 'lte'): ns3::LteEnbCmacSapUser * ns3::LteEnbRrc::GetLteEnbCmacSapUser(uint8_t pos) [member function]
+    cls.add_method('GetLteEnbCmacSapUser', 
+                   'ns3::LteEnbCmacSapUser *', 
+                   [param('uint8_t', 'pos')])
     ## lte-enb-rrc.h (module 'lte'): ns3::LteEnbCphySapUser * ns3::LteEnbRrc::GetLteEnbCphySapUser() [member function]
     cls.add_method('GetLteEnbCphySapUser', 
                    'ns3::LteEnbCphySapUser *', 
                    [])
+    ## lte-enb-rrc.h (module 'lte'): ns3::LteEnbCphySapUser * ns3::LteEnbRrc::GetLteEnbCphySapUser(uint8_t pos) [member function]
+    cls.add_method('GetLteEnbCphySapUser', 
+                   'ns3::LteEnbCphySapUser *', 
+                   [param('uint8_t', 'pos')])
     ## lte-enb-rrc.h (module 'lte'): ns3::LteEnbRrcSapProvider * ns3::LteEnbRrc::GetLteEnbRrcSapProvider() [member function]
     cls.add_method('GetLteEnbRrcSapProvider', 
                    'ns3::LteEnbRrcSapProvider *', 
@@ -16074,6 +16100,10 @@ def register_Ns3LteEnbRrc_methods(root_module, cls):
     cls.add_method('GetLteFfrRrcSapUser', 
                    'ns3::LteFfrRrcSapUser *', 
                    [])
+    ## lte-enb-rrc.h (module 'lte'): ns3::LteFfrRrcSapUser * ns3::LteEnbRrc::GetLteFfrRrcSapUser(uint8_t index) [member function]
+    cls.add_method('GetLteFfrRrcSapUser', 
+                   'ns3::LteFfrRrcSapUser *', 
+                   [param('uint8_t', 'index')])
     ## lte-enb-rrc.h (module 'lte'): ns3::LteHandoverManagementSapUser * ns3::LteEnbRrc::GetLteHandoverManagementSapUser() [member function]
     cls.add_method('GetLteHandoverManagementSapUser', 
                    'ns3::LteHandoverManagementSapUser *', 
@@ -16141,14 +16171,26 @@ def register_Ns3LteEnbRrc_methods(root_module, cls):
     cls.add_method('SetLteAnrSapProvider', 
                    'void', 
                    [param('ns3::LteAnrSapProvider *', 's')])
+    ## lte-enb-rrc.h (module 'lte'): void ns3::LteEnbRrc::SetLteCcmRrcSapProvider(ns3::LteCcmRrcSapProvider * s) [member function]
+    cls.add_method('SetLteCcmRrcSapProvider', 
+                   'void', 
+                   [param('ns3::LteCcmRrcSapProvider *', 's')])
     ## lte-enb-rrc.h (module 'lte'): void ns3::LteEnbRrc::SetLteEnbCmacSapProvider(ns3::LteEnbCmacSapProvider * s) [member function]
     cls.add_method('SetLteEnbCmacSapProvider', 
                    'void', 
                    [param('ns3::LteEnbCmacSapProvider *', 's')])
+    ## lte-enb-rrc.h (module 'lte'): void ns3::LteEnbRrc::SetLteEnbCmacSapProvider(ns3::LteEnbCmacSapProvider * s, uint16_t pos) [member function]
+    cls.add_method('SetLteEnbCmacSapProvider', 
+                   'void', 
+                   [param('ns3::LteEnbCmacSapProvider *', 's'), param('uint16_t', 'pos')])
     ## lte-enb-rrc.h (module 'lte'): void ns3::LteEnbRrc::SetLteEnbCphySapProvider(ns3::LteEnbCphySapProvider * s) [member function]
     cls.add_method('SetLteEnbCphySapProvider', 
                    'void', 
                    [param('ns3::LteEnbCphySapProvider *', 's')])
+    ## lte-enb-rrc.h (module 'lte'): void ns3::LteEnbRrc::SetLteEnbCphySapProvider(ns3::LteEnbCphySapProvider * s, uint8_t pos) [member function]
+    cls.add_method('SetLteEnbCphySapProvider', 
+                   'void', 
+                   [param('ns3::LteEnbCphySapProvider *', 's'), param('uint8_t', 'pos')])
     ## lte-enb-rrc.h (module 'lte'): void ns3::LteEnbRrc::SetLteEnbRrcSapUser(ns3::LteEnbRrcSapUser * s) [member function]
     cls.add_method('SetLteEnbRrcSapUser', 
                    'void', 
@@ -16157,6 +16199,10 @@ def register_Ns3LteEnbRrc_methods(root_module, cls):
     cls.add_method('SetLteFfrRrcSapProvider', 
                    'void', 
                    [param('ns3::LteFfrRrcSapProvider *', 's')])
+    ## lte-enb-rrc.h (module 'lte'): void ns3::LteEnbRrc::SetLteFfrRrcSapProvider(ns3::LteFfrRrcSapProvider * s, uint8_t index) [member function]
+    cls.add_method('SetLteFfrRrcSapProvider', 
+                   'void', 
+                   [param('ns3::LteFfrRrcSapProvider *', 's'), param('uint8_t', 'index')])
     ## lte-enb-rrc.h (module 'lte'): void ns3::LteEnbRrc::SetLteHandoverManagementSapProvider(ns3::LteHandoverManagementSapProvider * s) [member function]
     cls.add_method('SetLteHandoverManagementSapProvider', 
                    'void', 
@@ -16181,6 +16227,11 @@ def register_Ns3LteEnbRrc_methods(root_module, cls):
     cls.add_instance_attribute('m_componentCarrierEnbMap', 'std::map< unsigned char, ns3::Ptr< ns3::ComponentCarrierEnb > >', is_const=False)
     ## lte-enb-rrc.h (module 'lte'): void ns3::LteEnbRrc::DoDispose() [member function]
     cls.add_method('DoDispose', 
+                   'void', 
+                   [], 
+                   visibility='protected', is_virtual=True)
+    ## lte-enb-rrc.h (module 'lte'): void ns3::LteEnbRrc::DoInitialize() [member function]
+    cls.add_method('DoInitialize', 
                    'void', 
                    [], 
                    visibility='protected', is_virtual=True)
@@ -18662,6 +18713,11 @@ def register_Ns3LteUeRrc_methods(root_module, cls):
     cls.add_method('GetAsSapProvider', 
                    'ns3::LteAsSapProvider *', 
                    [])
+    ## lte-ue-rrc.h (module 'lte'): bool ns3::LteUeRrc::GetCaSupport() const [member function]
+    cls.add_method('GetCaSupport', 
+                   'bool', 
+                   [], 
+                   is_const=True)
     ## lte-ue-rrc.h (module 'lte'): uint16_t ns3::LteUeRrc::GetCellId() const [member function]
     cls.add_method('GetCellId', 
                    'uint16_t', 
@@ -18682,6 +18738,10 @@ def register_Ns3LteUeRrc_methods(root_module, cls):
                    'uint64_t', 
                    [], 
                    is_const=True)
+    ## lte-ue-rrc.h (module 'lte'): ns3::LteUeCcmRrcSapUser * ns3::LteUeRrc::GetLteCcmRrcSapUser() [member function]
+    cls.add_method('GetLteCcmRrcSapUser', 
+                   'ns3::LteUeCcmRrcSapUser *', 
+                   [])
     ## lte-ue-rrc.h (module 'lte'): ns3::LteUeCmacSapUser * ns3::LteUeRrc::GetLteUeCmacSapUser() [member function]
     cls.add_method('GetLteUeCmacSapUser', 
                    'ns3::LteUeCmacSapUser *', 
@@ -18723,10 +18783,18 @@ def register_Ns3LteUeRrc_methods(root_module, cls):
     cls.add_method('SetAsSapUser', 
                    'void', 
                    [param('ns3::LteAsSapUser *', 's')])
+    ## lte-ue-rrc.h (module 'lte'): void ns3::LteUeRrc::SetCaSupport(bool supportCa) [member function]
+    cls.add_method('SetCaSupport', 
+                   'void', 
+                   [param('bool', 'supportCa')])
     ## lte-ue-rrc.h (module 'lte'): void ns3::LteUeRrc::SetImsi(uint64_t imsi) [member function]
     cls.add_method('SetImsi', 
                    'void', 
                    [param('uint64_t', 'imsi')])
+    ## lte-ue-rrc.h (module 'lte'): void ns3::LteUeRrc::SetLteCcmRrcSapProvider(ns3::LteUeCcmRrcSapProvider * s) [member function]
+    cls.add_method('SetLteCcmRrcSapProvider', 
+                   'void', 
+                   [param('ns3::LteUeCcmRrcSapProvider *', 's')])
     ## lte-ue-rrc.h (module 'lte'): void ns3::LteUeRrc::SetLteMacSapProvider(ns3::LteMacSapProvider * s) [member function]
     cls.add_method('SetLteMacSapProvider', 
                    'void', 
@@ -18747,6 +18815,8 @@ def register_Ns3LteUeRrc_methods(root_module, cls):
     cls.add_method('SetUseRlcSm', 
                    'void', 
                    [param('bool', 'val')])
+    ## lte-ue-rrc.h (module 'lte'): ns3::LteUeRrc::m_numberOfComponentCarriers [variable]
+    cls.add_instance_attribute('m_numberOfComponentCarriers', 'uint16_t', is_const=False)
     ## lte-ue-rrc.h (module 'lte'): void ns3::LteUeRrc::DoDispose() [member function]
     cls.add_method('DoDispose', 
                    'void', 
@@ -20425,6 +20495,11 @@ def register_Ns3RrcAsn1Header_methods(root_module, cls):
                    'uint32_t', 
                    [param('ns3::Buffer::Iterator', 'bIterator')], 
                    is_pure_virtual=True, visibility='protected', is_virtual=True)
+    ## lte-rrc-header.h (module 'lte'): ns3::Buffer::Iterator ns3::RrcAsn1Header::DeserializeCellIdentification(ns3::LteRrcSap::CellIdentification * ci, ns3::Buffer::Iterator bIterator) [member function]
+    cls.add_method('DeserializeCellIdentification', 
+                   'ns3::Buffer::Iterator', 
+                   [param('ns3::LteRrcSap::CellIdentification *', 'ci'), param('ns3::Buffer::Iterator', 'bIterator')], 
+                   visibility='protected')
     ## lte-rrc-header.h (module 'lte'): ns3::Buffer::Iterator ns3::RrcAsn1Header::DeserializeDrbToAddModList(std::list<ns3::LteRrcSap::DrbToAddMod, std::allocator<ns3::LteRrcSap::DrbToAddMod> > * drbToAddModLis, ns3::Buffer::Iterator bIterator) [member function]
     cls.add_method('DeserializeDrbToAddModList', 
                    'ns3::Buffer::Iterator', 
@@ -20445,10 +20520,20 @@ def register_Ns3RrcAsn1Header_methods(root_module, cls):
                    'ns3::Buffer::Iterator', 
                    [param('ns3::LteRrcSap::MeasResults *', 'measResults'), param('ns3::Buffer::Iterator', 'bIterator')], 
                    visibility='protected')
+    ## lte-rrc-header.h (module 'lte'): ns3::Buffer::Iterator ns3::RrcAsn1Header::DeserializeNonCriticalExtensionConfig(ns3::LteRrcSap::NonCriticalExtensionConfiguration * nonCriticalExtension, ns3::Buffer::Iterator bIterator) [member function]
+    cls.add_method('DeserializeNonCriticalExtensionConfig', 
+                   'ns3::Buffer::Iterator', 
+                   [param('ns3::LteRrcSap::NonCriticalExtensionConfiguration *', 'nonCriticalExtension'), param('ns3::Buffer::Iterator', 'bIterator')], 
+                   visibility='protected')
     ## lte-rrc-header.h (module 'lte'): ns3::Buffer::Iterator ns3::RrcAsn1Header::DeserializePhysicalConfigDedicated(ns3::LteRrcSap::PhysicalConfigDedicated * physicalConfigDedicated, ns3::Buffer::Iterator bIterator) [member function]
     cls.add_method('DeserializePhysicalConfigDedicated', 
                    'ns3::Buffer::Iterator', 
                    [param('ns3::LteRrcSap::PhysicalConfigDedicated *', 'physicalConfigDedicated'), param('ns3::Buffer::Iterator', 'bIterator')], 
+                   visibility='protected')
+    ## lte-rrc-header.h (module 'lte'): ns3::Buffer::Iterator ns3::RrcAsn1Header::DeserializePhysicalConfigDedicatedSCell(ns3::LteRrcSap::PhysicalConfigDedicatedSCell * pcdsc, ns3::Buffer::Iterator bIterator) [member function]
+    cls.add_method('DeserializePhysicalConfigDedicatedSCell', 
+                   'ns3::Buffer::Iterator', 
+                   [param('ns3::LteRrcSap::PhysicalConfigDedicatedSCell *', 'pcdsc'), param('ns3::Buffer::Iterator', 'bIterator')], 
                    visibility='protected')
     ## lte-rrc-header.h (module 'lte'): ns3::Buffer::Iterator ns3::RrcAsn1Header::DeserializePlmnIdentity(uint32_t * plmnId, ns3::Buffer::Iterator bIterator) [member function]
     cls.add_method('DeserializePlmnIdentity', 
@@ -20470,6 +20555,11 @@ def register_Ns3RrcAsn1Header_methods(root_module, cls):
                    'ns3::Buffer::Iterator', 
                    [param('ns3::LteRrcSap::RadioResourceConfigCommon *', 'radioResourceConfigCommon'), param('ns3::Buffer::Iterator', 'bIterator')], 
                    visibility='protected')
+    ## lte-rrc-header.h (module 'lte'): ns3::Buffer::Iterator ns3::RrcAsn1Header::DeserializeRadioResourceConfigCommonSCell(ns3::LteRrcSap::RadioResourceConfigCommonSCell * rrccsc, ns3::Buffer::Iterator bIterator) [member function]
+    cls.add_method('DeserializeRadioResourceConfigCommonSCell', 
+                   'ns3::Buffer::Iterator', 
+                   [param('ns3::LteRrcSap::RadioResourceConfigCommonSCell *', 'rrccsc'), param('ns3::Buffer::Iterator', 'bIterator')], 
+                   visibility='protected')
     ## lte-rrc-header.h (module 'lte'): ns3::Buffer::Iterator ns3::RrcAsn1Header::DeserializeRadioResourceConfigCommonSib(ns3::LteRrcSap::RadioResourceConfigCommonSib * radioResourceConfigCommonSib, ns3::Buffer::Iterator bIterator) [member function]
     cls.add_method('DeserializeRadioResourceConfigCommonSib', 
                    'ns3::Buffer::Iterator', 
@@ -20479,6 +20569,11 @@ def register_Ns3RrcAsn1Header_methods(root_module, cls):
     cls.add_method('DeserializeRadioResourceConfigDedicated', 
                    'ns3::Buffer::Iterator', 
                    [param('ns3::LteRrcSap::RadioResourceConfigDedicated *', 'radioResourceConfigDedicated'), param('ns3::Buffer::Iterator', 'bIterator')], 
+                   visibility='protected')
+    ## lte-rrc-header.h (module 'lte'): ns3::Buffer::Iterator ns3::RrcAsn1Header::DeserializeRadioResourceConfigDedicatedSCell(ns3::LteRrcSap::RadioResourceConfigDedicatedSCell * rrcdsc, ns3::Buffer::Iterator bIterator) [member function]
+    cls.add_method('DeserializeRadioResourceConfigDedicatedSCell', 
+                   'ns3::Buffer::Iterator', 
+                   [param('ns3::LteRrcSap::RadioResourceConfigDedicatedSCell *', 'rrcdsc'), param('ns3::Buffer::Iterator', 'bIterator')], 
                    visibility='protected')
     ## lte-rrc-header.h (module 'lte'): ns3::Buffer::Iterator ns3::RrcAsn1Header::DeserializeSrbToAddModList(std::list<ns3::LteRrcSap::SrbToAddMod, std::allocator<ns3::LteRrcSap::SrbToAddMod> > * srbToAddModList, ns3::Buffer::Iterator bIterator) [member function]
     cls.add_method('DeserializeSrbToAddModList', 
@@ -20545,10 +20640,20 @@ def register_Ns3RrcAsn1Header_methods(root_module, cls):
                    'void', 
                    [param('ns3::LteRrcSap::MeasResults', 'measResults')], 
                    is_const=True, visibility='protected')
+    ## lte-rrc-header.h (module 'lte'): void ns3::RrcAsn1Header::SerializeNonCriticalExtensionConfiguration(ns3::LteRrcSap::NonCriticalExtensionConfiguration nonCriticalExtensionConfiguration) const [member function]
+    cls.add_method('SerializeNonCriticalExtensionConfiguration', 
+                   'void', 
+                   [param('ns3::LteRrcSap::NonCriticalExtensionConfiguration', 'nonCriticalExtensionConfiguration')], 
+                   is_const=True, visibility='protected')
     ## lte-rrc-header.h (module 'lte'): void ns3::RrcAsn1Header::SerializePhysicalConfigDedicated(ns3::LteRrcSap::PhysicalConfigDedicated physicalConfigDedicated) const [member function]
     cls.add_method('SerializePhysicalConfigDedicated', 
                    'void', 
                    [param('ns3::LteRrcSap::PhysicalConfigDedicated', 'physicalConfigDedicated')], 
+                   is_const=True, visibility='protected')
+    ## lte-rrc-header.h (module 'lte'): void ns3::RrcAsn1Header::SerializePhysicalConfigDedicatedSCell(ns3::LteRrcSap::PhysicalConfigDedicatedSCell pcdsc) const [member function]
+    cls.add_method('SerializePhysicalConfigDedicatedSCell', 
+                   'void', 
+                   [param('ns3::LteRrcSap::PhysicalConfigDedicatedSCell', 'pcdsc')], 
                    is_const=True, visibility='protected')
     ## lte-rrc-header.h (module 'lte'): void ns3::RrcAsn1Header::SerializePlmnIdentity(uint32_t plmnId) const [member function]
     cls.add_method('SerializePlmnIdentity', 
@@ -20570,6 +20675,11 @@ def register_Ns3RrcAsn1Header_methods(root_module, cls):
                    'void', 
                    [param('ns3::LteRrcSap::RadioResourceConfigCommon', 'radioResourceConfigCommon')], 
                    is_const=True, visibility='protected')
+    ## lte-rrc-header.h (module 'lte'): void ns3::RrcAsn1Header::SerializeRadioResourceConfigCommonSCell(ns3::LteRrcSap::RadioResourceConfigCommonSCell rrccsc) const [member function]
+    cls.add_method('SerializeRadioResourceConfigCommonSCell', 
+                   'void', 
+                   [param('ns3::LteRrcSap::RadioResourceConfigCommonSCell', 'rrccsc')], 
+                   is_const=True, visibility='protected')
     ## lte-rrc-header.h (module 'lte'): void ns3::RrcAsn1Header::SerializeRadioResourceConfigCommonSib(ns3::LteRrcSap::RadioResourceConfigCommonSib radioResourceConfigCommonSib) const [member function]
     cls.add_method('SerializeRadioResourceConfigCommonSib', 
                    'void', 
@@ -20579,6 +20689,11 @@ def register_Ns3RrcAsn1Header_methods(root_module, cls):
     cls.add_method('SerializeRadioResourceConfigDedicated', 
                    'void', 
                    [param('ns3::LteRrcSap::RadioResourceConfigDedicated', 'radioResourceConfigDedicated')], 
+                   is_const=True, visibility='protected')
+    ## lte-rrc-header.h (module 'lte'): void ns3::RrcAsn1Header::SerializeRadioResourceDedicatedSCell(ns3::LteRrcSap::RadioResourceConfigDedicatedSCell rrcdsc) const [member function]
+    cls.add_method('SerializeRadioResourceDedicatedSCell', 
+                   'void', 
+                   [param('ns3::LteRrcSap::RadioResourceConfigDedicatedSCell', 'rrcdsc')], 
                    is_const=True, visibility='protected')
     ## lte-rrc-header.h (module 'lte'): void ns3::RrcAsn1Header::SerializeSrbToAddModList(std::list<ns3::LteRrcSap::SrbToAddMod, std::allocator<ns3::LteRrcSap::SrbToAddMod> > srbToAddModList) const [member function]
     cls.add_method('SerializeSrbToAddModList', 
@@ -22500,6 +22615,10 @@ def register_Ns3RrcConnectionReconfigurationHeader_methods(root_module, cls):
     cls.add_method('GetHaveMobilityControlInfo', 
                    'bool', 
                    [])
+    ## lte-rrc-header.h (module 'lte'): bool ns3::RrcConnectionReconfigurationHeader::GetHaveNonCriticalExtensionConfig() [member function]
+    cls.add_method('GetHaveNonCriticalExtensionConfig', 
+                   'bool', 
+                   [])
     ## lte-rrc-header.h (module 'lte'): bool ns3::RrcConnectionReconfigurationHeader::GetHaveRadioResourceConfigDedicated() [member function]
     cls.add_method('GetHaveRadioResourceConfigDedicated', 
                    'bool', 
@@ -22516,6 +22635,10 @@ def register_Ns3RrcConnectionReconfigurationHeader_methods(root_module, cls):
     ## lte-rrc-header.h (module 'lte'): ns3::LteRrcSap::MobilityControlInfo ns3::RrcConnectionReconfigurationHeader::GetMobilityControlInfo() [member function]
     cls.add_method('GetMobilityControlInfo', 
                    'ns3::LteRrcSap::MobilityControlInfo', 
+                   [])
+    ## lte-rrc-header.h (module 'lte'): ns3::LteRrcSap::NonCriticalExtensionConfiguration ns3::RrcConnectionReconfigurationHeader::GetNonCriticalExtensionConfig() [member function]
+    cls.add_method('GetNonCriticalExtensionConfig', 
+                   'ns3::LteRrcSap::NonCriticalExtensionConfiguration', 
                    [])
     ## lte-rrc-header.h (module 'lte'): ns3::LteRrcSap::PhysicalConfigDedicated ns3::RrcConnectionReconfigurationHeader::GetPhysicalConfigDedicated() const [member function]
     cls.add_method('GetPhysicalConfigDedicated', 

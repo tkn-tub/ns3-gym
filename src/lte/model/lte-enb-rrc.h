@@ -18,6 +18,9 @@
  * Authors: Nicola Baldo <nbaldo@cttc.es>
  *          Marco Miozzo <mmiozzo@cttc.es>
  *          Manuel Requena <manuel.requena@cttc.es> 
+ * Modified by:
+ *          Danilo Abrignani <danilo.abrignani@unibo.it> (Carrier Aggregation - GSoC 2015)
+ *          Biljana Bojovic <biljana.bojovic@cttc.es> (Carrier Aggregation)
  */
 
 #ifndef LTE_ENB_RRC_H
@@ -36,10 +39,12 @@
 #include <ns3/epc-x2-sap.h>
 #include <ns3/epc-enb-s1-sap.h>
 #include <ns3/lte-handover-management-sap.h>
+#include <ns3/lte-ccm-rrc-sap.h>
 #include <ns3/lte-enb-cphy-sap.h>
 #include <ns3/lte-rrc-sap.h>
 #include <ns3/lte-anr-sap.h>
 #include <ns3/lte-ffr-rrc-sap.h>
+#include <ns3/lte-rlc.h>
 
 #include <map>
 #include <set>
@@ -356,6 +361,13 @@ private:
 
   /** 
    * 
+   * \return an NonCriticalExtensionConfiguration struct built based on the
+   * current configuration
+   */
+  LteRrcSap::NonCriticalExtensionConfiguration BuildNonCriticalExtentionConfigurationCa ();
+
+  /** 
+   * 
    * \return a RadioResourceConfigDedicated struct built based on the
    * current configuration
    */
@@ -527,6 +539,7 @@ class LteEnbRrc : public Object
   friend class MemberEpcEnbS1SapUser<LteEnbRrc>;
   friend class EpcX2SpecificEpcX2SapUser<LteEnbRrc>;
   friend class UeManager;
+  friend class MemberLteCcmRrcSapUser<LteEnbRrc>;
 
 public:
   /**
@@ -543,6 +556,7 @@ public:
 
   // inherited from Object
 protected:
+  virtual void DoInitialize ();
   virtual void DoDispose (void);
 public:
   static TypeId GetTypeId (void);
@@ -568,12 +582,15 @@ public:
    */
   void SetLteEnbCmacSapProvider (LteEnbCmacSapProvider * s);
 
+  void SetLteEnbCmacSapProvider (LteEnbCmacSapProvider * s, uint16_t pos);
+
   /** 
    * Get the CMAC SAP offered by this RRC
    * \return s the CMAC SAP User interface offered to the MAC by this RRC
    */
   LteEnbCmacSapUser* GetLteEnbCmacSapUser ();
 
+  LteEnbCmacSapUser* GetLteEnbCmacSapUser (uint8_t pos);
 
   /**
    * set the Handover Management SAP this RRC should interact with
@@ -588,6 +605,21 @@ public:
    *           handover algorithm by this RRC
    */
   LteHandoverManagementSapUser* GetLteHandoverManagementSapUser ();
+
+
+  /**
+   * set the Component Carrier Management SAP this RRC should interact with
+   *
+   * \param s the Component Carrier Management SAP Provider to be used by this RRC
+   */
+  void SetLteCcmRrcSapProvider (LteCcmRrcSapProvider * s);
+
+  /**
+   * Get the Component Carrier Management SAP offered by this RRC
+   * \return s the Component Carrier Management SAP User interface offered to the
+   *           carrier component selection algorithm by this RRC
+   */
+  LteCcmRrcSapUser* GetLteCcmRrcSapUser ();
 
 
   /**
@@ -612,6 +644,7 @@ public:
    * \param s the FFR SAP Provider to be used by this RRC
    */
   void SetLteFfrRrcSapProvider (LteFfrRrcSapProvider * s);
+  void SetLteFfrRrcSapProvider (LteFfrRrcSapProvider * s, uint8_t index);
 
   /**
    * Get the FFR SAP offered by this RRC
@@ -619,6 +652,7 @@ public:
    *           RRC
    */
   LteFfrRrcSapUser* GetLteFfrRrcSapUser ();
+  LteFfrRrcSapUser* GetLteFfrRrcSapUser (uint8_t index);
 
   /**
    * set the RRC SAP this RRC should interact with
@@ -665,12 +699,16 @@ public:
    */
   void SetLteEnbCphySapProvider (LteEnbCphySapProvider * s);
 
+  void SetLteEnbCphySapProvider (LteEnbCphySapProvider * s, uint8_t pos);
+
   /**
    *
    *
    * \return s the CPHY SAP User interface offered to the PHY by this RRC
    */
   LteEnbCphySapUser* GetLteEnbCphySapUser ();
+
+  LteEnbCphySapUser* GetLteEnbCphySapUser (uint8_t pos);
 
   /** 
    * 
@@ -922,6 +960,8 @@ private:
   // Handover Management SAP methods
 
   uint8_t DoAddUeMeasReportConfigForHandover (LteRrcSap::ReportConfigEutra reportConfig);
+  uint8_t DoAddUeMeasReportConfigForComponentCarrier (LteRrcSap::ReportConfigEutra reportConfig);
+
   void DoTriggerHandover (uint16_t rnti, uint16_t targetCellId);
 
   // ANR SAP methods
@@ -1077,6 +1117,11 @@ private:
   /// Interface to the handover algorithm instance.
   LteHandoverManagementSapProvider* m_handoverManagementSapProvider;
 
+  /// Receive API calls from the LteEnbComponetCarrierManager instance.
+  LteCcmRrcSapUser* m_ccmRrcSapUser;
+  /// Interface to the LteEnbComponetCarrierManager instance.
+  LteCcmRrcSapProvider* m_ccmRrcSapProvider;
+
   /// Receive API calls from the ANR instance.
   LteAnrSapUser* m_anrSapUser;
   /// Interface to the ANR instance.
@@ -1140,6 +1185,8 @@ private:
   std::set<uint8_t> m_anrMeasIds;
   /// List of measurement identities which are intended for FFR purpose.
   std::set<uint8_t> m_ffrMeasIds;
+  // List of measurement identities which are intended for component carrier management purposes.
+  std::set<uint8_t> m_componentCarrierMeasIds;
 
   struct X2uTeidInfo
   {

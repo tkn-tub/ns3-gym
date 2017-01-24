@@ -607,6 +607,8 @@ public:
     uint8_t rsrqResult;
     bool haveMeasResultNeighCells;
     std::list<MeasResultEutra> measResultListEutra;
+    bool haveScellsMeas;
+    MeasResultServFreqList measScellResultList;
   };
 
   // Messages

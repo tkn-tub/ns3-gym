@@ -16,6 +16,9 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Lluis Parcerisa <lparcerisa@cttc.cat>
+ * Modified by:
+ *          Danilo Abrignani <danilo.abrignani@unibo.it> (Carrier Aggregation - GSoC 2015)
+ *          Biljana Bojovic <biljana.bojovic@cttc.es> (Carrier Aggregation)
  */
 
 #ifndef RRC_HEADER_H
@@ -54,6 +57,7 @@ protected:
   void SerializeLogicalChannelConfig (LteRrcSap::LogicalChannelConfig logicalChannelConfig) const;
   void SerializeRadioResourceConfigDedicated (LteRrcSap::RadioResourceConfigDedicated radioResourceConfigDedicated) const;
   void SerializePhysicalConfigDedicated (LteRrcSap::PhysicalConfigDedicated physicalConfigDedicated) const;
+  void SerializePhysicalConfigDedicatedSCell (LteRrcSap::PhysicalConfigDedicatedSCell pcdsc) const;
   void SerializeSystemInformationBlockType1 (LteRrcSap::SystemInformationBlockType1 systemInformationBlockType1) const;
   void SerializeSystemInformationBlockType2 (LteRrcSap::SystemInformationBlockType2 systemInformationBlockType2) const;
   void SerializeRadioResourceConfigCommon (LteRrcSap::RadioResourceConfigCommon radioResourceConfigCommon) const;
@@ -62,6 +66,9 @@ protected:
   void SerializePlmnIdentity (uint32_t plmnId) const;
   void SerializeRachConfigCommon (LteRrcSap::RachConfigCommon rachConfigCommon) const;
   void SerializeMeasConfig (LteRrcSap::MeasConfig measConfig) const;
+  void SerializeNonCriticalExtensionConfiguration (LteRrcSap::NonCriticalExtensionConfiguration nonCriticalExtensionConfiguration) const;
+  void SerializeRadioResourceConfigCommonSCell (LteRrcSap::RadioResourceConfigCommonSCell rrccsc) const;
+  void SerializeRadioResourceDedicatedSCell (LteRrcSap::RadioResourceConfigDedicatedSCell rrcdsc) const;
   void SerializeQoffsetRange (int8_t qOffsetRange) const;
   void SerializeThresholdEutra (LteRrcSap::ThresholdEutra thresholdEutra) const;
   
@@ -81,6 +88,11 @@ protected:
   Buffer::Iterator DeserializeMeasConfig (LteRrcSap::MeasConfig * measConfig, Buffer::Iterator bIterator);
   Buffer::Iterator DeserializeQoffsetRange (int8_t * qOffsetRange, Buffer::Iterator bIterator);
   Buffer::Iterator DeserializeThresholdEutra (LteRrcSap::ThresholdEutra * thresholdEutra, Buffer::Iterator bIterator);
+  Buffer::Iterator DeserializeNonCriticalExtensionConfig (LteRrcSap::NonCriticalExtensionConfiguration * nonCriticalExtension, Buffer::Iterator bIterator);
+  Buffer::Iterator DeserializeCellIdentification (LteRrcSap::CellIdentification * ci, Buffer::Iterator bIterator);
+  Buffer::Iterator DeserializeRadioResourceConfigCommonSCell (LteRrcSap::RadioResourceConfigCommonSCell * rrccsc, Buffer::Iterator bIterator);
+  Buffer::Iterator DeserializeRadioResourceConfigDedicatedSCell (LteRrcSap::RadioResourceConfigDedicatedSCell * rrcdsc, Buffer::Iterator bIterator);
+  Buffer::Iterator DeserializePhysicalConfigDedicatedSCell (LteRrcSap::PhysicalConfigDedicatedSCell *pcdsc, Buffer::Iterator bIterator);
 
   void Print (std::ostream &os) const;
   /**
@@ -445,6 +457,18 @@ public:
   * @return m_radioResourceConfigDedicated
   */
   LteRrcSap::RadioResourceConfigDedicated GetRadioResourceConfigDedicated () const; 
+
+  /**
+  * Getter for m_haveNonCriticalExtension
+  * @return m_haveNonCriticalExtension
+  */
+  bool GetHaveNonCriticalExtensionConfig ();
+
+  /**
+  * Getter for m_nonCriticalExtension
+  * @return m_nonCriticalExtension
+  */
+  LteRrcSap::NonCriticalExtensionConfiguration GetNonCriticalExtensionConfig ();  
 
   /**
   * Gets m_radioResourceConfigDedicated.havePhysicalConfigDedicated
