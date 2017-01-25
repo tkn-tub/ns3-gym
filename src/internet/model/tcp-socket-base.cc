@@ -1442,6 +1442,20 @@ TcpSocketBase::ProcessEstablished (Ptr<Packet> packet, const TcpHeader& tcpHeade
 }
 
 void
+TcpSocketBase::ReadOptions (const TcpHeader &tcpHeader)
+{
+  NS_LOG_FUNCTION (this << tcpHeader);
+  TcpHeader::TcpOptionList::const_iterator it;
+  const TcpHeader::TcpOptionList options = tcpHeader.GetOptionList ();
+
+  for (it = options.begin (); it != options.end (); ++it)
+    {
+      const Ptr<TcpOption> option = (*it);
+      // Placeholder for a switch statement
+    }
+}
+
+void
 TcpSocketBase::LimitedTransmit ()
 {
   NS_LOG_FUNCTION (this);
@@ -1526,6 +1540,8 @@ TcpSocketBase::ReceivedAck (Ptr<Packet> packet, const TcpHeader& tcpHeader)
 
   NS_ASSERT (0 != (tcpHeader.GetFlags () & TcpHeader::ACK));
   NS_ASSERT (m_tcb->m_segmentSize > 0);
+
+  ReadOptions (tcpHeader);
 
   SequenceNumber32 ackNumber = tcpHeader.GetAckNumber ();
 

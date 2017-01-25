@@ -911,7 +911,16 @@ protected:
    *
    * \param tcpHeader TcpHeader to add options to
    */
-  virtual void AddOptions (TcpHeader& tcpHeader);
+  void AddOptions (TcpHeader& tcpHeader);
+
+  /**
+   * \brief Read TCP options begore Ack processing
+   *
+   * Timestamp and Window scale are managed in other pieces of code.
+   *
+   * \param tcpHeader Header of the segment
+   */
+  void ReadOptions (const TcpHeader &tcpHeader);
 
   /**
    * \brief Read and parse the Window scale option

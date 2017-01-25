@@ -485,6 +485,12 @@ TcpHeader::AppendOption (Ptr<TcpOption> option)
   return false;
 }
 
+const TcpHeader::TcpOptionList&
+TcpHeader::GetOptionList () const
+{
+  return m_options;
+}
+
 Ptr<TcpOption>
 TcpHeader::GetOption (uint8_t kind) const
 {
