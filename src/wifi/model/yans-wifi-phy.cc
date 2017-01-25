@@ -59,7 +59,7 @@ YansWifiPhy::DoDispose (void)
   m_channel = 0;
 }
 
-Ptr<WifiChannel>
+Ptr<Channel>
 YansWifiPhy::GetChannel (void) const
 {
   return m_channel;

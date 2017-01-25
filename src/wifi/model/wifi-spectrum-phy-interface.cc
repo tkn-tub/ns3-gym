@@ -107,5 +107,4 @@ WifiSpectrumPhyInterface::StartRx (Ptr<SpectrumSignalParameters> params)
   m_spectrumWifiPhy->StartRx (params);
 }
 
-
 } //namespace ns3

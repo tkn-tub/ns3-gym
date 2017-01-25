@@ -196,22 +196,9 @@ mixed technologies on the same channel, or frequency dependent effects,
 the SpectrumWifiPhy is more appropriate.  The two frameworks are very
 similarly configured.
 
-The YansWifiPhy framework uses the ``WifiChannel`` and ``YansWifiChannel``
-frameworks.  The SpectrumWifiPhy framework uses the ``Spectrum`` channel
+The SpectrumWifiPhy framework uses the ``Spectrum`` channel
 framework, which is not documented herein but in the Spectrum module
 documentation.
-
-WifiChannel
-===========
-
-``ns3::WifiChannel`` is an abstract base class that allows different channel
-implementations to be connected.  At present, there is only one such channel
-(the ``ns3::YansWifiChannel``) since the SpectrumWifiPhy uses the
-base class ``ns3::SpectrumChannel``.  The class works in tandem with the 
-``ns3::WifiPhy`` class.
-
-The WifiChannel model exists to interconnect WifiPhy objects so that packets
-sent by one Phy are received by some or all other Phys on the channel.
 
 YansWifiChannel
 ###############

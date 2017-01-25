@@ -325,7 +325,7 @@ void
 OcbWifiMac::ConfigureEdca (uint32_t cwmin, uint32_t cwmax, uint32_t aifsn, enum AcIndex ac)
 {
   NS_LOG_FUNCTION (this << cwmin << cwmax << aifsn << ac);
-  Ptr<Dcf> dcf;
+  Ptr<DcaTxop> dcf;
   switch (ac)
     {
     case AC_VO:
@@ -438,7 +438,7 @@ OcbWifiMac::EnableForWave (Ptr<WaveNetDevice> device)
   m_low = CreateObject<WaveMacLow> ();
   (DynamicCast<WaveMacLow> (m_low))->SetWaveNetDevice (device);
   m_low->SetRxCallback (MakeCallback (&MacRxMiddle::Receive, m_rxMiddle));
-  m_dcfManager->SetupLowListener (m_low);
+  m_dcfManager->SetupLow (m_low);
   m_dca->SetLow (m_low);
   for (EdcaQueues::iterator i = m_edca.begin (); i != m_edca.end (); ++i)
     {

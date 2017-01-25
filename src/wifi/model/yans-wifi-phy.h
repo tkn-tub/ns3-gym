@@ -72,7 +72,7 @@ public:
    */
   void StartTx (Ptr<Packet> packet, WifiTxVector txVector, Time txDuration);
 
-  virtual Ptr<WifiChannel> GetChannel (void) const;
+  virtual Ptr<Channel> GetChannel (void) const;
 
 
 protected:

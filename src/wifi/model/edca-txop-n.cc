@@ -25,6 +25,7 @@
 #include "edca-txop-n.h"
 #include "mac-low.h"
 #include "dcf-manager.h"
+#include "dcf-state.h"
 #include "mac-tx-middle.h"
 #include "wifi-mac-trailer.h"
 #include "random-stream.h"
@@ -39,211 +40,15 @@ namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("EdcaTxopN");
 
-class EdcaTxopN::Dcf : public DcfState
-{
-public:
-  Dcf (EdcaTxopN * txop)
-    : m_txop (txop)
-  {
-  }
-
-  virtual bool IsEdca (void) const
-  {
-    return true;
-  }
-
-private:
-  virtual void DoNotifyAccessGranted (void)
-  {
-    m_txop->NotifyAccessGranted ();
-  }
-  virtual void DoNotifyInternalCollision (void)
-  {
-    m_txop->NotifyInternalCollision ();
-  }
-  virtual void DoNotifyCollision (void)
-  {
-    m_txop->NotifyCollision ();
-  }
-  virtual void DoNotifyChannelSwitching (void)
-  {
-    m_txop->NotifyChannelSwitching ();
-  }
-  virtual void DoNotifySleep (void)
-  {
-    m_txop->NotifySleep ();
-  }
-  virtual void DoNotifyWakeUp (void)
-  {
-    m_txop->NotifyWakeUp ();
-  }
-
-  EdcaTxopN *m_txop;
-};
-
-
-class EdcaTxopN::TransmissionListener : public MacLowTransmissionListener
-{
-public:
-  TransmissionListener (EdcaTxopN * txop)
-    : MacLowTransmissionListener (),
-      m_txop (txop)
-  {
-  }
-
-  virtual ~TransmissionListener ()
-  {
-  }
-
-  virtual void GotCts (double snr, WifiMode txMode)
-  {
-    m_txop->GotCts (snr, txMode);
-  }
-  virtual void MissedCts (void)
-  {
-    m_txop->MissedCts ();
-  }
-  virtual void GotAck (double snr, WifiMode txMode)
-  {
-    m_txop->GotAck (snr, txMode);
-  }
-  virtual void MissedAck (void)
-  {
-    m_txop->MissedAck ();
-  }
-  virtual void GotBlockAck (const CtrlBAckResponseHeader *blockAck, Mac48Address source, double rxSnr, WifiMode txMode, double dataSnr)
-  {
-    m_txop->GotBlockAck (blockAck, source, rxSnr, txMode, dataSnr);
-  }
-  virtual void MissedBlockAck (uint8_t nMpdus)
-  {
-    m_txop->MissedBlockAck (nMpdus);
-  }
-  virtual void StartNextFragment (void)
-  {
-    m_txop->StartNextFragment ();
-  }
-  virtual void StartNext (void)
-  {
-    m_txop->StartNext ();
-  }
-  virtual void Cancel (void)
-  {
-    m_txop->Cancel ();
-  }
-  virtual void EndTxNoAck (void)
-  {
-    m_txop->EndTxNoAck ();
-  }
-  virtual bool HasTxop (void)
-  {
-    return m_txop->HasTxop ();
-  }
-  virtual Ptr<WifiMacQueue> GetQueue (void)
-  {
-    return m_txop->GetEdcaQueue ();
-  }
-
-private:
-  EdcaTxopN *m_txop;
-};
-
-
-class EdcaTxopN::AggregationCapableTransmissionListener : public MacLowAggregationCapableTransmissionListener
-{
-public:
-  AggregationCapableTransmissionListener (EdcaTxopN * txop)
-    : MacLowAggregationCapableTransmissionListener (),
-      m_txop (txop)
-  {
-  }
-  virtual ~AggregationCapableTransmissionListener ()
-  {
-  }
-
-  virtual void BlockAckInactivityTimeout (Mac48Address address, uint8_t tid)
-  {
-    m_txop->SendDelbaFrame (address, tid, false);
-  }
-  virtual Ptr<WifiMacQueue> GetQueue (void)
-  {
-    return m_txop->GetEdcaQueue ();
-  }
-  virtual  void CompleteTransfer (Mac48Address recipient, uint8_t tid)
-  {
-    m_txop->CompleteAmpduTransfer (recipient, tid);
-  }
-  virtual void SetAmpdu (Mac48Address dest, bool enableAmpdu)
-  {
-    return m_txop->SetAmpduExist (dest, enableAmpdu);
-  }
-  virtual void CompleteMpduTx (Ptr<const Packet> packet, WifiMacHeader hdr, Time tstamp)
-  {
-    m_txop->CompleteMpduTx (packet, hdr, tstamp);
-  }
-  virtual uint16_t GetNextSequenceNumberfor (WifiMacHeader *hdr)
-  {
-    return m_txop->GetNextSequenceNumberfor (hdr);
-  }
-  virtual uint16_t PeekNextSequenceNumberfor (WifiMacHeader *hdr)
-  {
-    return m_txop->PeekNextSequenceNumberfor (hdr);
-  }
-  virtual Ptr<const Packet> PeekNextPacketInBaQueue (WifiMacHeader &header, Mac48Address recipient, uint8_t tid, Time *timestamp)
-  {
-    return m_txop->PeekNextRetransmitPacket (header, recipient, tid, timestamp);
-  }
-  virtual void RemoveFromBaQueue (uint8_t tid, Mac48Address recipient, uint16_t seqnumber)
-  {
-    m_txop->RemoveRetransmitPacket (tid, recipient, seqnumber);
-  }
-  virtual bool GetBlockAckAgreementExists (Mac48Address address, uint8_t tid)
-  {
-    return m_txop->GetBaAgreementExists (address,tid);
-  }
-  virtual uint32_t GetNOutstandingPackets (Mac48Address address, uint8_t tid)
-  {
-    return m_txop->GetNOutstandingPacketsInBa (address, tid);
-  }
-  virtual uint32_t GetNRetryNeededPackets (Mac48Address recipient, uint8_t tid) const
-  {
-    return m_txop->GetNRetryNeededPackets (recipient, tid);
-  }
-  virtual Ptr<MsduAggregator> GetMsduAggregator (void) const
-  {
-    return m_txop->GetMsduAggregator ();
-  }
-  virtual Ptr<MpduAggregator> GetMpduAggregator (void) const
-  {
-    return m_txop->GetMpduAggregator ();
-  }
-  virtual Mac48Address GetSrcAddressForAggregation (const WifiMacHeader &hdr)
-  {
-    return m_txop->MapSrcAddressForAggregation (hdr);
-  }
-  virtual Mac48Address GetDestAddressForAggregation (const WifiMacHeader &hdr)
-  {
-    return m_txop->MapDestAddressForAggregation (hdr);
-  }
-
-private:
-  EdcaTxopN *m_txop;
-};
-
 NS_OBJECT_ENSURE_REGISTERED (EdcaTxopN);
 
 TypeId
 EdcaTxopN::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::EdcaTxopN")
-    .SetParent<ns3::Dcf> ()
+    .SetParent<ns3::DcaTxop> ()
     .SetGroupName ("Wifi")
     .AddConstructor<EdcaTxopN> ()
-    .AddAttribute ("Queue",
-                   "The WifiMacQueue object",
-                   PointerValue (),
-                   MakePointerAccessor (&EdcaTxopN::GetEdcaQueue),
-                   MakePointerChecker<WifiMacQueue> ())
     .AddTraceSource ("BackoffTrace",
                      "Trace source for backoff values",
                      MakeTraceSourceAccessor (&EdcaTxopN::m_backoffTrace),
@@ -261,9 +66,7 @@ EdcaTxopN::GetTypeId (void)
 }
 
 EdcaTxopN::EdcaTxopN ()
-  : m_manager (0),
-    m_currentPacket (0),
-    m_msduAggregator (0),
+  : m_msduAggregator (0),
     m_mpduAggregator (0),
     m_typeOfStation (STA),
     m_blockAckType (COMPRESSED_BLOCK_ACK),
@@ -271,11 +74,6 @@ EdcaTxopN::EdcaTxopN ()
     m_isAccessRequestedForRts (false)
 {
   NS_LOG_FUNCTION (this);
-  m_transmissionListener = new EdcaTxopN::TransmissionListener (this);
-  m_blockAckListener = new EdcaTxopN::AggregationCapableTransmissionListener (this);
-  m_dcf = new EdcaTxopN::Dcf (this);
-  m_queue = CreateObject<WifiMacQueue> ();
-  m_rng = new RealRandomStream ();
   m_qosBlockedDestinations = new QosBlockedDestinations ();
   m_baManager = new BlockAckManager ();
   m_baManager->SetQueue (m_queue);
@@ -295,23 +93,12 @@ EdcaTxopN::~EdcaTxopN ()
 void
 EdcaTxopN::DoDispose (void)
 {
+  DcaTxop::DoDispose ();
   NS_LOG_FUNCTION (this);
-  m_queue = 0;
-  m_low = 0;
-  m_stationManager = 0;
-  delete m_transmissionListener;
-  delete m_dcf;
-  delete m_rng;
   delete m_qosBlockedDestinations;
   delete m_baManager;
-  delete m_blockAckListener;
-  m_transmissionListener = 0;
-  m_dcf = 0;
-  m_rng = 0;
   m_qosBlockedDestinations = 0;
   m_baManager = 0;
-  m_blockAckListener = 0;
-  m_txMiddle = 0;
   m_msduAggregator = 0;
   m_mpduAggregator = 0;
 }
@@ -341,32 +128,10 @@ EdcaTxopN::CompleteAmpduTransfer (Mac48Address recipient, uint8_t tid)
 }
 
 void
-EdcaTxopN::SetManager (DcfManager *manager)
-{
-  NS_LOG_FUNCTION (this << manager);
-  m_manager = manager;
-  m_manager->Add (m_dcf);
-}
-
-void
-EdcaTxopN::SetTxOkCallback (TxOk callback)
-{
-  NS_LOG_FUNCTION (this << &callback);
-  m_txOkCallback = callback;
-}
-
-void
-EdcaTxopN::SetTxFailedCallback (TxFailed callback)
-{
-  NS_LOG_FUNCTION (this << &callback);
-  m_txFailedCallback = callback;
-}
-
-void
 EdcaTxopN::SetWifiRemoteStationManager (Ptr<WifiRemoteStationManager> remoteManager)
 {
+  DcaTxop::SetWifiRemoteStationManager (remoteManager);
   NS_LOG_FUNCTION (this << remoteManager);
-  m_stationManager = remoteManager;
   m_baManager->SetWifiRemoteStationManager (m_stationManager);
 }
 
@@ -384,89 +149,6 @@ EdcaTxopN::GetTypeOfStation (void) const
   return m_typeOfStation;
 }
 
-Ptr<WifiMacQueue >
-EdcaTxopN::GetEdcaQueue () const
-{
-  NS_LOG_FUNCTION (this);
-  return m_queue;
-}
-
-void
-EdcaTxopN::SetMinCw (uint32_t minCw)
-{
-  NS_LOG_FUNCTION (this << minCw);
-  m_dcf->SetCwMin (minCw);
-}
-
-void
-EdcaTxopN::SetMaxCw (uint32_t maxCw)
-{
-  NS_LOG_FUNCTION (this << maxCw);
-  m_dcf->SetCwMax (maxCw);
-}
-
-void
-EdcaTxopN::SetAifsn (uint32_t aifsn)
-{
-  NS_LOG_FUNCTION (this << aifsn);
-  m_dcf->SetAifsn (aifsn);
-}
-
-void
-EdcaTxopN::SetTxopLimit (Time txopLimit)
-{
-  NS_LOG_FUNCTION (this << txopLimit);
-  m_dcf->SetTxopLimit (txopLimit);
-}
-
-uint32_t
-EdcaTxopN::GetMinCw (void) const
-{
-  NS_LOG_FUNCTION (this);
-  return m_dcf->GetCwMin ();
-}
-
-uint32_t
-EdcaTxopN::GetMaxCw (void) const
-{
-  NS_LOG_FUNCTION (this);
-  return m_dcf->GetCwMax ();
-}
-
-uint32_t
-EdcaTxopN::GetAifsn (void) const
-{
-  NS_LOG_FUNCTION (this);
-  return m_dcf->GetAifsn ();
-}
-
-Time
-EdcaTxopN::GetTxopLimit (void) const
-{
-  NS_LOG_FUNCTION (this);
-  return m_dcf->GetTxopLimit ();
-}
-
-void
-EdcaTxopN::SetTxMiddle (MacTxMiddle *txMiddle)
-{
-  NS_LOG_FUNCTION (this << txMiddle);
-  m_txMiddle = txMiddle;
-}
-
-Ptr<MacLow>
-EdcaTxopN::GetLow (void) const
-{
-  return m_low;
-}
-
-void
-EdcaTxopN::SetLow (Ptr<MacLow> low)
-{
-  NS_LOG_FUNCTION (this << low);
-  m_low = low;
-}
-
 bool
 EdcaTxopN::NeedsAccess (void) const
 {
@@ -474,14 +156,14 @@ EdcaTxopN::NeedsAccess (void) const
   return !m_queue->IsEmpty () || m_currentPacket != 0 || m_baManager->HasPackets ();
 }
 
-uint16_t EdcaTxopN::GetNextSequenceNumberfor (WifiMacHeader *hdr)
+uint16_t EdcaTxopN::GetNextSequenceNumberFor (WifiMacHeader *hdr)
 {
-  return m_txMiddle->GetNextSequenceNumberfor (hdr);
+  return m_txMiddle->GetNextSequenceNumberFor (hdr);
 }
 
-uint16_t EdcaTxopN::PeekNextSequenceNumberfor (WifiMacHeader *hdr)
+uint16_t EdcaTxopN::PeekNextSequenceNumberFor (WifiMacHeader *hdr)
 {
-  return m_txMiddle->PeekNextSequenceNumberfor (hdr);
+  return m_txMiddle->PeekNextSequenceNumberFor (hdr);
 }
 
 Ptr<const Packet>
@@ -532,7 +214,7 @@ EdcaTxopN::NotifyAccessGranted (void)
           m_currentPacket = m_queue->DequeueFirstAvailable (&m_currentHdr, m_currentPacketTimestamp, m_qosBlockedDestinations);
           NS_ASSERT (m_currentPacket != 0);
 
-          uint16_t sequence = m_txMiddle->GetNextSequenceNumberfor (&m_currentHdr);
+          uint16_t sequence = m_txMiddle->GetNextSequenceNumberFor (&m_currentHdr);
           m_currentHdr.SetSequenceNumber (sequence);
           m_stationManager->UpdateFragmentationThreshold ();
           m_currentHdr.SetFragmentNumber (0);
@@ -555,11 +237,7 @@ EdcaTxopN::NotifyAccessGranted (void)
       params.DisableRts ();
       params.DisableAck ();
       params.DisableNextData ();
-      m_low->StartTransmission (m_currentPacket,
-                                &m_currentHdr,
-                                params,
-                                m_transmissionListener);
-
+      m_low->StartTransmission (m_currentPacket, &m_currentHdr, params, this);
       NS_LOG_DEBUG ("tx broadcast");
     }
   else if (m_currentHdr.GetType () == WIFI_MAC_CTL_BACKREQ)
@@ -595,8 +273,7 @@ EdcaTxopN::NotifyAccessGranted (void)
               NS_LOG_DEBUG ("fragmenting size=" << fragment->GetSize ());
               params.EnableNextData (GetNextFragmentSize ());
             }
-          m_low->StartTransmission (fragment, &hdr, params,
-                                    m_transmissionListener);
+          m_low->StartTransmission (fragment, &hdr, params, this);
         }
       else
         {
@@ -646,8 +323,7 @@ EdcaTxopN::NotifyAccessGranted (void)
             }
           params.DisableNextData ();
           m_startTxop = Simulator::Now ();
-          m_low->StartTransmission (m_currentPacket, &m_currentHdr,
-                                    params, m_transmissionListener);
+          m_low->StartTransmission (m_currentPacket, &m_currentHdr, params, this);
           if (!GetAmpduExist (m_currentHdr.GetAddr1 ()))
             {
               CompleteTx ();
@@ -750,13 +426,6 @@ EdcaTxopN::NotifyCollision (void)
 }
 
 void
-EdcaTxopN::GotCts (double snr, WifiMode txMode)
-{
-  NS_LOG_FUNCTION (this << snr << txMode);
-  NS_LOG_DEBUG ("got cts");
-}
-
-void
 EdcaTxopN::MissedCts (void)
 {
   NS_LOG_FUNCTION (this);
@@ -780,7 +449,7 @@ EdcaTxopN::MissedCts (void)
               NS_LOG_DEBUG ("Transmit Block Ack Request");
               CtrlBAckRequestHeader reqHdr;
               reqHdr.SetType (COMPRESSED_BLOCK_ACK);
-              reqHdr.SetStartingSequence (m_txMiddle->PeekNextSequenceNumberfor (&m_currentHdr));
+              reqHdr.SetStartingSequence (m_txMiddle->PeekNextSequenceNumberFor (&m_currentHdr));
               reqHdr.SetTidInfo (tid);
               reqHdr.SetHtImmediateAck (true);
               Ptr<Packet> bar = Create<Packet> ();
@@ -820,44 +489,9 @@ EdcaTxopN::MissedCts (void)
 }
 
 void
-EdcaTxopN::NotifyChannelSwitching (void)
+EdcaTxopN::GotAck (void)
 {
   NS_LOG_FUNCTION (this);
-  m_queue->Flush ();
-  m_currentPacket = 0;
-}
-
-void
-EdcaTxopN::NotifySleep (void)
-{
-  NS_LOG_FUNCTION (this);
-  if (m_currentPacket != 0)
-    {
-      m_queue->PushFront (m_currentPacket, m_currentHdr);
-      m_currentPacket = 0;
-    }
-}
-
-void
-EdcaTxopN::NotifyWakeUp (void)
-{
-  NS_LOG_FUNCTION (this);
-  RestartAccessIfNeeded ();
-}
-
-void
-EdcaTxopN::Queue (Ptr<const Packet> packet, const WifiMacHeader &hdr)
-{
-  NS_LOG_FUNCTION (this << packet << &hdr);
-  m_stationManager->PrepareForQueue (hdr.GetAddr1 (), &hdr, packet);
-  m_queue->Enqueue (packet, hdr);
-  StartAccessIfNeeded ();
-}
-
-void
-EdcaTxopN::GotAck (double snr, WifiMode txMode)
-{
-  NS_LOG_FUNCTION (this << snr << txMode);
   if (!NeedFragmentation ()
       || IsLastFragment ()
       || m_currentHdr.IsQosAmsdu ())
@@ -932,7 +566,7 @@ EdcaTxopN::MissedAck (void)
               NS_LOG_DEBUG ("Transmit Block Ack Request");
               CtrlBAckRequestHeader reqHdr;
               reqHdr.SetType (COMPRESSED_BLOCK_ACK);
-              reqHdr.SetStartingSequence (m_txMiddle->PeekNextSequenceNumberfor (&m_currentHdr));
+              reqHdr.SetStartingSequence (m_txMiddle->PeekNextSequenceNumberFor (&m_currentHdr));
               reqHdr.SetTidInfo (tid);
               reqHdr.SetHtImmediateAck (true);
               Ptr<Packet> bar = Create<Packet> ();
@@ -1130,20 +764,6 @@ EdcaTxopN::StartAccessIfNeeded (void)
 }
 
 bool
-EdcaTxopN::NeedRtsRetransmission (Ptr<const Packet> packet, const WifiMacHeader &hdr)
-{
-  NS_LOG_FUNCTION (this);
-  return m_stationManager->NeedRtsRetransmission (hdr.GetAddr1 (), &hdr, packet);
-}
-
-bool
-EdcaTxopN::NeedDataRetransmission (Ptr<const Packet> packet, const WifiMacHeader &hdr)
-{
-  NS_LOG_FUNCTION (this);
-  return m_stationManager->NeedDataRetransmission (hdr.GetAddr1 (), &hdr, packet);
-}
-
-bool
 EdcaTxopN::NeedBarRetransmission (void)
 {
   uint8_t tid = 0;
@@ -1168,37 +788,6 @@ EdcaTxopN::NeedBarRetransmission (void)
       seqNumber = m_currentHdr.GetSequenceNumber ();
     }
   return m_baManager->NeedBarRetransmission (tid, seqNumber, m_currentHdr.GetAddr1 ());
-}
-
-void
-EdcaTxopN::NextFragment (void)
-{
-  NS_LOG_FUNCTION (this);
-  m_fragmentNumber++;
-}
-
-void
-EdcaTxopN::StartNextFragment (void)
-{
-  NS_LOG_FUNCTION (this);
-  NS_LOG_DEBUG ("start next packet fragment");
-  /* this callback is used only for fragments. */
-  NextFragment ();
-  WifiMacHeader hdr;
-  Ptr<Packet> fragment = GetFragmentPacket (&hdr);
-  MacLowTransmissionParameters params;
-  params.EnableAck ();
-  params.DisableRts ();
-  params.DisableOverrideDurationId ();
-  if (IsLastFragment ())
-    {
-      params.DisableNextData ();
-    }
-  else
-    {
-      params.EnableNextData (GetNextFragmentSize ());
-    }
-  GetLow ()->StartTransmission (fragment, &hdr, params, m_transmissionListener);
 }
 
 void
@@ -1252,7 +841,7 @@ EdcaTxopN::StartNext (void)
                                                          m_currentHdr.GetQosTid (),
                                                          WifiMacHeader::ADDR1,
                                                          m_currentHdr.GetAddr1 ());
-      GetLow ()->StartTransmission (m_currentPacket, &m_currentHdr, params, m_transmissionListener);
+      GetLow ()->StartTransmission (m_currentPacket, &m_currentHdr, params, this);
     }
   else if (txopLimit > NanoSeconds (0))
     {
@@ -1315,14 +904,7 @@ EdcaTxopN::HasTxop (void) const
       params.DisableRts ();
     }
 
-  return (GetTxopRemaining () >= GetLow ()->CalculateOverallTxTime (peekedPacket, &hdr, params));
-}
-
-void
-EdcaTxopN::Cancel (void)
-{
-  NS_LOG_FUNCTION (this);
-  NS_LOG_DEBUG ("transmission cancelled");
+  return (GetTxopRemaining () >= m_low->CalculateOverallTxTime (peekedPacket, &hdr, params));
 }
 
 void
@@ -1355,39 +937,6 @@ EdcaTxopN::NeedFragmentation (void) const
     }
   return m_stationManager->NeedFragmentation (m_currentHdr.GetAddr1 (), &m_currentHdr,
                                               m_currentPacket);
-}
-
-uint32_t
-EdcaTxopN::GetFragmentSize (void) const
-{
-  NS_LOG_FUNCTION (this);
-  return m_stationManager->GetFragmentSize (m_currentHdr.GetAddr1 (), &m_currentHdr,
-                                            m_currentPacket, m_fragmentNumber);
-}
-
-uint32_t
-EdcaTxopN::GetNextFragmentSize (void) const
-{
-  NS_LOG_FUNCTION (this);
-  return m_stationManager->GetFragmentSize (m_currentHdr.GetAddr1 (), &m_currentHdr,
-                                            m_currentPacket, m_fragmentNumber + 1);
-}
-
-uint32_t
-EdcaTxopN::GetFragmentOffset (void) const
-{
-  NS_LOG_FUNCTION (this);
-  return m_stationManager->GetFragmentOffset (m_currentHdr.GetAddr1 (), &m_currentHdr,
-                                              m_currentPacket, m_fragmentNumber);
-}
-
-
-bool
-EdcaTxopN::IsLastFragment (void) const
-{
-  NS_LOG_FUNCTION (this);
-  return m_stationManager->IsLastFragment (m_currentHdr.GetAddr1 (), &m_currentHdr,
-                                           m_currentPacket, m_fragmentNumber);
 }
 
 Ptr<Packet>
@@ -1649,7 +1198,7 @@ EdcaTxopN::SendBlockAckRequest (const Bar &bar)
       //Delayed block ack
       params.EnableAck ();
     }
-  m_low->StartTransmission (m_currentPacket, &m_currentHdr, params, m_transmissionListener);
+  m_low->StartTransmission (m_currentPacket, &m_currentHdr, params, this);
 }
 
 void
@@ -1657,7 +1206,7 @@ EdcaTxopN::CompleteConfig (void)
 {
   NS_LOG_FUNCTION (this);
   m_baManager->SetTxMiddle (m_txMiddle);
-  m_low->RegisterBlockAckListenerForAc (m_ac, m_blockAckListener);
+  m_low->RegisterEdcaForAc (m_ac, this);
   m_baManager->SetBlockAckInactivityCallback (MakeCallback (&EdcaTxopN::SendDelbaFrame, this));
 }
 
@@ -1730,7 +1279,7 @@ EdcaTxopN::SendAddBaRequest (Mac48Address dest, uint8_t tid, uint16_t startSeq,
   m_currentPacket = packet;
   m_currentHdr = hdr;
 
-  uint16_t sequence = m_txMiddle->GetNextSequenceNumberfor (&m_currentHdr);
+  uint16_t sequence = m_txMiddle->GetNextSequenceNumberFor (&m_currentHdr);
   m_currentHdr.SetSequenceNumber (sequence);
   m_stationManager->UpdateFragmentationThreshold ();
   m_currentHdr.SetFragmentNumber (0);
@@ -1743,8 +1292,7 @@ EdcaTxopN::SendAddBaRequest (Mac48Address dest, uint8_t tid, uint16_t startSeq,
   params.DisableNextData ();
   params.DisableOverrideDurationId ();
 
-  m_low->StartTransmission (m_currentPacket, &m_currentHdr, params,
-                            m_transmissionListener);
+  m_low->StartTransmission (m_currentPacket, &m_currentHdr, params, this);
 }
 
 void
@@ -1782,14 +1330,6 @@ EdcaTxopN::SendDelbaFrame (Mac48Address addr, uint8_t tid, bool byOriginator)
   PushFront (packet, hdr);
 }
 
-int64_t
-EdcaTxopN::AssignStreams (int64_t stream)
-{
-  NS_LOG_FUNCTION (this << stream);
-  m_rng->AssignStreams (stream);
-  return 1;
-}
-
 void
 EdcaTxopN::DoInitialize ()
 {
@@ -1798,7 +1338,7 @@ EdcaTxopN::DoInitialize ()
   m_cwTrace = m_dcf->GetCw ();
   m_backoffTrace = m_rng->GetNext (0, m_dcf->GetCw ());
   m_dcf->StartBackoffNow (m_backoffTrace);
-  ns3::Dcf::DoInitialize ();
+  ns3::DcaTxop::DoInitialize ();
 }
 
 void
@@ -1819,6 +1359,12 @@ EdcaTxopN::BaTxFailed (const WifiMacHeader &hdr)
     {
       m_txFailedCallback (m_currentHdr);
     }
+}
+
+bool
+EdcaTxopN::IsEdca ()
+{
+  return true;
 }
 
 } //namespace ns3

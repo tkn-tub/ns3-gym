@@ -45,7 +45,7 @@ MacTxMiddle::~MacTxMiddle ()
 }
 
 uint16_t
-MacTxMiddle::GetNextSequenceNumberfor (const WifiMacHeader *hdr)
+MacTxMiddle::GetNextSequenceNumberFor (const WifiMacHeader *hdr)
 {
   NS_LOG_FUNCTION (this);
   uint16_t retval;
@@ -84,7 +84,7 @@ MacTxMiddle::GetNextSequenceNumberfor (const WifiMacHeader *hdr)
 }
 
 uint16_t
-MacTxMiddle::PeekNextSequenceNumberfor (const WifiMacHeader *hdr)
+MacTxMiddle::PeekNextSequenceNumberFor (const WifiMacHeader *hdr)
 {
   NS_LOG_FUNCTION (this);
   uint16_t retval;

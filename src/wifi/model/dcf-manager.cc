@@ -19,256 +19,12 @@
  */
 
 #include "ns3/log.h"
-#include "ns3/simulator.h"
 #include "dcf-manager.h"
-#include "mac-low.h"
+#include "dcf-state.h"
 
 namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("DcfManager");
-
-/****************************************************************
- *      Implement the DCF state holder
- ****************************************************************/
-
-DcfState::DcfState ()
-  : m_backoffSlots (0),
-    m_backoffStart (Seconds (0.0)),
-    m_cwMin (0),
-    m_cwMax (0),
-    m_cw (0),
-    m_accessRequested (false)
-{
-}
-
-DcfState::~DcfState ()
-{
-}
-
-void
-DcfState::SetAifsn (uint32_t aifsn)
-{
-  NS_LOG_FUNCTION (this << aifsn);
-  m_aifsn = aifsn;
-}
-
-void
-DcfState::SetTxopLimit (Time txopLimit)
-{
-  NS_LOG_FUNCTION (this << txopLimit);
-  NS_ASSERT_MSG ((txopLimit.GetMicroSeconds () % 32 == 0), "The TXOP limit must be expressed in multiple of 32 microseconds!");
-  m_txopLimit = txopLimit;
-}
-
-void
-DcfState::SetCwMin (uint32_t minCw)
-{
-  NS_LOG_FUNCTION (this << minCw);
-  bool changed = (m_cwMin != minCw);
-  m_cwMin = minCw;
-  if (changed == true)
-    {
-      ResetCw ();
-    }
-}
-
-void
-DcfState::SetCwMax (uint32_t maxCw)
-{
-  NS_LOG_FUNCTION (this << maxCw);
-  bool changed = (m_cwMax != maxCw);
-  m_cwMax = maxCw;
-  if (changed == true)
-    {
-      ResetCw ();
-    }
-}
-
-uint32_t
-DcfState::GetAifsn (void) const
-{
-  return m_aifsn;
-}
-
-Time
-DcfState::GetTxopLimit (void) const
-{
-  return m_txopLimit;
-}
-
-uint32_t
-DcfState::GetCwMin (void) const
-{
-  return m_cwMin;
-}
-
-uint32_t
-DcfState::GetCwMax (void) const
-{
-  return m_cwMax;
-}
-
-void
-DcfState::ResetCw (void)
-{
-  NS_LOG_FUNCTION (this << m_cwMin);
-  m_cw = m_cwMin;
-}
-
-void
-DcfState::UpdateFailedCw (void)
-{
-  //see 802.11-2012, section 9.19.2.5
-  m_cw = std::min ( 2 * (m_cw + 1) - 1, m_cwMax);
-  NS_LOG_DEBUG ("updated failed CW=" << m_cw);
-}
-
-void
-DcfState::UpdateBackoffSlotsNow (uint32_t nSlots, Time backoffUpdateBound)
-{
-  m_backoffSlots -= nSlots;
-  m_backoffStart = backoffUpdateBound;
-  NS_LOG_DEBUG ("update slots=" << nSlots << " slots, backoff=" << m_backoffSlots);
-}
-
-void
-DcfState::StartBackoffNow (uint32_t nSlots)
-{
-  if (m_backoffSlots != 0)
-    {
-      NS_LOG_DEBUG ("reset backoff from " << m_backoffSlots << " to " << nSlots << " slots");
-    }
-  else
-    {
-      NS_LOG_DEBUG ("start backoff=" << nSlots << " slots");
-    }
-  m_backoffSlots = nSlots;
-  m_backoffStart = Simulator::Now ();
-}
-
-uint32_t
-DcfState::GetCw (void) const
-{
-  return m_cw;
-}
-
-uint32_t
-DcfState::GetBackoffSlots (void) const
-{
-  return m_backoffSlots;
-}
-
-Time
-DcfState::GetBackoffStart (void) const
-{
-  return m_backoffStart;
-}
-
-bool
-DcfState::IsAccessRequested (void) const
-{
-  return m_accessRequested;
-}
-
-void
-DcfState::NotifyAccessRequested (void)
-{
-  NS_LOG_FUNCTION (this);
-  m_accessRequested = true;
-}
-
-void
-DcfState::NotifyAccessGranted (void)
-{
-  NS_LOG_FUNCTION (this);
-  NS_ASSERT (m_accessRequested);
-  m_accessRequested = false;
-  DoNotifyAccessGranted ();
-}
-
-void
-DcfState::NotifyCollision (void)
-{
-  NS_LOG_FUNCTION (this);
-  DoNotifyCollision ();
-}
-
-void
-DcfState::NotifyInternalCollision (void)
-{
-  NS_LOG_FUNCTION (this);
-  DoNotifyInternalCollision ();
-}
-
-void
-DcfState::NotifyChannelSwitching (void)
-{
-  NS_LOG_FUNCTION (this);
-  DoNotifyChannelSwitching ();
-}
-
-void
-DcfState::NotifySleep (void)
-{
-  NS_LOG_FUNCTION (this);
-  DoNotifySleep ();
-}
-
-void
-DcfState::NotifyWakeUp (void)
-{
-  NS_LOG_FUNCTION (this);
-  DoNotifyWakeUp ();
-}
-
-
-/**
- * Listener for NAV events. Forwards to DcfManager
- */
-class LowDcfListener : public ns3::MacLowDcfListener
-{
-public:
-  /**
-   * Create a LowDcfListener for the given DcfManager.
-   *
-   * \param dcf
-   */
-  LowDcfListener (ns3::DcfManager *dcf)
-    : m_dcf (dcf)
-  {
-  }
-  virtual ~LowDcfListener ()
-  {
-  }
-  virtual void NavStart (Time duration)
-  {
-    m_dcf->NotifyNavStartNow (duration);
-  }
-  virtual void NavReset (Time duration)
-  {
-    m_dcf->NotifyNavResetNow (duration);
-  }
-  virtual void AckTimeoutStart (Time duration)
-  {
-    m_dcf->NotifyAckTimeoutStartNow (duration);
-  }
-  virtual void AckTimeoutReset ()
-  {
-    m_dcf->NotifyAckTimeoutResetNow ();
-  }
-  virtual void CtsTimeoutStart (Time duration)
-  {
-    m_dcf->NotifyCtsTimeoutStartNow (duration);
-  }
-  virtual void CtsTimeoutReset ()
-  {
-    m_dcf->NotifyCtsTimeoutResetNow ();
-  }
-
-private:
-  ns3::DcfManager *m_dcf;  //!< DcfManager to forward events to
-};
-
 
 /**
  * Listener for PHY events. Forwards to DcfManager
@@ -349,8 +105,7 @@ DcfManager::DcfManager ()
     m_sleeping (false),
     m_slotTimeUs (0),
     m_sifs (Seconds (0.0)),
-    m_phyListener (0),
-    m_lowListener (0)
+    m_phyListener (0)
 {
   NS_LOG_FUNCTION (this);
 }
@@ -358,9 +113,7 @@ DcfManager::DcfManager ()
 DcfManager::~DcfManager ()
 {
   delete m_phyListener;
-  delete m_lowListener;
   m_phyListener = 0;
-  m_lowListener = 0;
 }
 
 void
@@ -388,15 +141,10 @@ DcfManager::RemovePhyListener (Ptr<WifiPhy> phy)
 }
 
 void
-DcfManager::SetupLowListener (Ptr<MacLow> low)
+DcfManager::SetupLow (Ptr<MacLow> low)
 {
   NS_LOG_FUNCTION (this << low);
-  if (m_lowListener != 0)
-    {
-      delete m_lowListener;
-    }
-  m_lowListener = new LowDcfListener (this);
-  low->RegisterDcfListener (m_lowListener);
+  low->RegisterDcf (this);
 }
 
 void
@@ -1001,4 +749,5 @@ DcfManager::NotifyCtsTimeoutResetNow ()
   m_lastCtsTimeoutEnd = Simulator::Now ();
   DoRestartAccessTimeoutIfNeeded ();
 }
+
 } //namespace ns3

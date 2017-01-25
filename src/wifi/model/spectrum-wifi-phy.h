@@ -144,7 +144,7 @@ public:
    */
   typedef void (* SignalArrivalCallback) (bool signalType, uint32_t senderNodeId, double rxPower, Time duration);
 
-  virtual Ptr<WifiChannel> GetChannel (void) const;
+  virtual Ptr<Channel> GetChannel (void) const;
 
 
 protected:

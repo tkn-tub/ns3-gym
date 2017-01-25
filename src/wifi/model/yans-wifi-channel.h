@@ -21,7 +21,7 @@
 #ifndef YANS_WIFI_CHANNEL_H
 #define YANS_WIFI_CHANNEL_H
 
-#include "wifi-channel.h"
+#include "ns3/channel.h"
 #include "yans-wifi-phy.h"
 
 namespace ns3 {
@@ -42,7 +42,7 @@ class PropagationDelayModel;
  * By default, no propagation models are set so, it is the caller's responsability
  * to set them before using the channel.
  */
-class YansWifiChannel : public WifiChannel
+class YansWifiChannel : public Channel
 {
 public:
   /**

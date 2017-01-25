@@ -47,7 +47,7 @@ WifiNetDevice::GetTypeId (void)
     .AddAttribute ("Channel", "The channel attached to this device",
                    PointerValue (),
                    MakePointerAccessor (&WifiNetDevice::DoGetChannel),
-                   MakePointerChecker<WifiChannel> ())
+                   MakePointerChecker<Channel> ())
     .AddAttribute ("Phy", "The PHY layer attached to this device.",
                    PointerValue (),
                    MakePointerAccessor (&WifiNetDevice::GetPhy,
@@ -216,7 +216,7 @@ WifiNetDevice::GetChannel (void) const
   return m_phy->GetChannel ();
 }
 
-Ptr<WifiChannel>
+Ptr<Channel>
 WifiNetDevice::DoGetChannel (void) const
 {
   return m_phy->GetChannel ();

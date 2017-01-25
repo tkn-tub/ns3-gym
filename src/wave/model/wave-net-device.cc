@@ -48,7 +48,7 @@ WaveNetDevice::GetTypeId (void)
     .AddAttribute ("Channel", "The channel attached to this device",
                    PointerValue (),
                    MakePointerAccessor (&WaveNetDevice::GetChannel),
-                   MakePointerChecker<WifiChannel> ())
+                   MakePointerChecker<Channel> ())
     .AddAttribute ("PhyEntities", "The PHY entities attached to this device.",
                    ObjectVectorValue (),
                    MakeObjectVectorAccessor (&WaveNetDevice::m_phyEntities),

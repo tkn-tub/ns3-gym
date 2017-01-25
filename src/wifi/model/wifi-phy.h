@@ -28,10 +28,10 @@
 #include "ns3/packet.h"
 #include "ns3/mobility-model.h"
 #include "ns3/random-variable-stream.h"
+#include "ns3/channel.h"
 #include "wifi-phy-standard.h"
 #include "interference-helper.h"
 #include "ns3/node.h"
-#include "wifi-channel.h"
 
 namespace ns3 {
 
@@ -631,11 +631,11 @@ public:
   typedef std::pair<uint16_t, uint8_t> FrequencyWidthPair;
 
   /**
-   * Return the WifiChannel this WifiPhy is connected to.
+   * Return the Channel this WifiPhy is connected to.
    *
-   * \return the WifiChannel this WifiPhy is connected to
+   * \return the Channel this WifiPhy is connected to
    */
-  virtual Ptr<WifiChannel> GetChannel (void) const = 0;
+  virtual Ptr<Channel> GetChannel (void) const = 0;
 
   /**
    * Return a WifiMode for DSSS at 1Mbps.

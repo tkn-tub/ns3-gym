@@ -21,242 +21,16 @@
 #ifndef DCF_MANAGER_H
 #define DCF_MANAGER_H
 
+#include "mac-low.h"
 #include "ns3/event-id.h"
+#include "ns3/nstime.h"
+#include <vector>
 
 namespace ns3 {
 
 class WifiPhy;
-class MacLow;
 class PhyListener;
-class LowDcfListener;
-
-/**
- * \brief keep track of the state needed for a single DCF
- * function.
- * \ingroup wifi
- *
- * Multiple instances of a DcfState can be registered in a single
- * DcfManager to implement 802.11e-style relative QoS.
- * DcfState::SetAifsn and DcfState::SetCwBounds allow the user to
- * control the relative QoS differentiation.
- */
-class DcfState
-{
-public:
-  DcfState ();
-  virtual ~DcfState ();
-
-  /**
-   * \return whether this DCF state is an EDCA state
-   *
-   * This method, which must be overridden in derived classes,
-   * indicates whether DCF or EDCAF rules should be used for this
-   * channel access function. This affects the behavior of DcfManager
-   * when dealing with this instance. 
-   */
-  virtual bool IsEdca (void) const = 0;
-
-  /**
-   * \param aifsn the number of slots which make up an AIFS for a specific DCF.
-   *        a DIFS corresponds to an AIFSN = 2.
-   *
-   * Calling this method after DcfManager::Add has been called is not recommended.
-   */
-  void SetAifsn (uint32_t aifsn);
-  /**
-   * Set the minimum congestion window size.
-   *
-   * \param minCw the minimum congestion window size
-   */
-  void SetCwMin (uint32_t minCw);
-  /**
-   * Set the maximum congestion window size.
-   *
-   * \param maxCw the maximum congestion window size
-   */
-  void SetCwMax (uint32_t maxCw);
-  /**
-   * Set the TXOP limit.
-   *
-   * \param txopLimit the TXOP limit
-   */
-  void SetTxopLimit (Time txopLimit);
-  /**
-   * Return the number of slots that make up an AIFS.
-   *
-   * \return the number of slots that make up an AIFS
-   */
-  uint32_t GetAifsn (void) const;
-  /**
-   * Return the minimum congestion window size.
-   *
-   * \return the minimum congestion window size
-   */
-  uint32_t GetCwMin (void) const;
-  /**
-   * Return the maximum congestion window size.
-   *
-   * \return the maximum congestion window size
-   */
-  uint32_t GetCwMax (void) const;
-  /**
-   * Return the TXOP limit.
-   *
-   * \return the TXOP limit
-   */
-  Time GetTxopLimit (void) const;
-
-  /**
-   * Update the value of the CW variable to take into account
-   * a transmission success or a transmission abort (stop transmission
-   * of a packet after the maximum number of retransmissions has been
-   * reached). By default, this resets the CW variable to minCW.
-   */
-  void ResetCw (void);
-  /**
-   * Update the value of the CW variable to take into account
-   * a transmission failure. By default, this triggers a doubling
-   * of CW (capped by maxCW).
-   */
-  void UpdateFailedCw (void);
-  /**
-   * \param nSlots the number of slots of the backoff.
-   *
-   * Start a backoff by initializing the backoff counter to the number of
-   * slots specified.
-   */
-  void StartBackoffNow (uint32_t nSlots);
-  /**
-   * \returns the current value of the CW variable. The initial value is
-   * minCW.
-   */
-  uint32_t GetCw (void) const;
-  /**
-   * \returns true if access has been requested for this DcfState and
-   *          has not been granted already, false otherwise.
-   */
-  bool IsAccessRequested (void) const;
-
-
-private:
-  friend class DcfManager;
-
-  /**
-   * Return the current number of backoff slots.
-   *
-   * \return the current number of backoff slots
-   */
-  uint32_t GetBackoffSlots (void) const;
-  /**
-   * Return the time when the backoff procedure started.
-   *
-   * \return the time when the backoff procedure started
-   */
-  Time GetBackoffStart (void) const;
-  /**
-   * Update backoff slots that nSlots has passed.
-   *
-   * \param nSlots
-   * \param backoffUpdateBound
-   */
-  void UpdateBackoffSlotsNow (uint32_t nSlots, Time backoffUpdateBound);
-  /**
-   * Notify that access request has been received.
-   */
-  void NotifyAccessRequested (void);
-  /**
-   * Notify that access has been granted.
-   */
-  void NotifyAccessGranted (void);
-  /**
-   * Notify that collision has occurred.
-   */
-  void NotifyCollision (void);
-  /**
-   * Notify that internal collision has occurred.
-   */
-  void NotifyInternalCollision (void);
-  /**
-   * Notify that the device is switching channel.
-   */
-  void NotifyChannelSwitching (void);
-  /**
-   * Notify that the device has started to sleep.
-   */
-  void NotifySleep (void);
-  /**
-   * Notify that the device has started to wake up
-   */
-  void NotifyWakeUp (void);
-
-  /**
-   * Called by DcfManager to notify a DcfState subclass
-   * that access to the medium is granted and can
-   * start immediately.
-   */
-  virtual void DoNotifyAccessGranted (void) = 0;
-  /**
-   * Called by DcfManager to notify a DcfState subclass
-   * that an 'internal' collision occured, that is, that
-   * the backoff timer of a higher priority DcfState expired
-   * at the same time and that access was granted to this
-   * higher priority DcfState.
-   *
-   * The subclass is expected to start a new backoff by
-   * calling DcfState::StartBackoffNow and DcfManager::RequestAccess
-   * is access is still needed.
-   */
-  virtual void DoNotifyInternalCollision (void) = 0;
-  /**
-   * Called by DcfManager to notify a DcfState subclass
-   * that a normal collision occured, that is, that
-   * the medium was busy when access was requested.
-   *
-   * This may also be called if the request for access occurred within
-   * the DIFS or AIFS between two frames.
-   *
-   * The subclass is expected to start a new backoff by
-   * calling DcfState::StartBackoffNow and DcfManager::RequestAccess
-   * is access is still needed.
-   */
-  virtual void DoNotifyCollision (void) = 0;
-  /**
-  * Called by DcfManager to notify a DcfState subclass
-  * that a channel switching occured.
-  *
-  * The subclass is expected to flush the queue of packets.
-  */
-  virtual void DoNotifyChannelSwitching (void) = 0;
-  /**
-  * Called by DcfManager to notify a DcfState subclass that the device has
-  * begun to sleep.
-  *
-  * The subclass is expected to re-insert the pending packet into the queue
-  */
-  virtual void DoNotifySleep (void) = 0;
-  /**
-  * Called by DcfManager to notify a DcfState subclass that the device
-  * has begun to wake up.
-  *
-  * The subclass is expected to restart a new backoff by
-  * calling DcfState::StartBackoffNow and DcfManager::RequestAccess
-  * is access is still needed.
-  */
-  virtual void DoNotifyWakeUp (void) = 0;
-
-  uint32_t m_aifsn;
-  uint32_t m_backoffSlots;
-  //the backoffStart variable is used to keep track of the
-  //time at which a backoff was started or the time at which
-  //the backoff counter was last updated.
-  Time m_backoffStart;
-  uint32_t m_cwMin;
-  uint32_t m_cwMax;
-  uint32_t m_cw;
-  Time m_txopLimit;
-  bool m_accessRequested;
-};
-
+class DcfState;
 
 /**
  * \brief Manage a set of ns3::DcfState
@@ -273,7 +47,7 @@ private:
  * access to the medium and the other DcfState suffers a "internal"
  * collision.
  */
-class DcfManager
+class DcfManager : public Object
 {
 public:
   DcfManager ();
@@ -296,7 +70,7 @@ public:
    *
    * \param low
    */
-  void SetupLowListener (Ptr<MacLow> low);
+  void SetupLow (Ptr<MacLow> low);
 
   /**
    * \param slotTime the duration of a slot.
@@ -571,7 +345,6 @@ private:
   uint32_t m_slotTimeUs;
   Time m_sifs;
   PhyListener* m_phyListener;
-  LowDcfListener* m_lowListener;
 };
 
 } //namespace ns3

@@ -113,10 +113,10 @@ SpectrumWifiPhy::GetRxSpectrumModel () const
   return m_rxSpectrumModel;
 }
 
-Ptr<WifiChannel>
+Ptr<Channel>
 SpectrumWifiPhy::GetChannel (void) const
 {
-  return Ptr<WifiChannel> (0);
+  return m_channel;
 }
 
 void

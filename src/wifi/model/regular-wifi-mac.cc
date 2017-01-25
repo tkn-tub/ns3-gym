@@ -50,7 +50,7 @@ RegularWifiMac::RegularWifiMac () :
   m_low->SetRxCallback (MakeCallback (&MacRxMiddle::Receive, m_rxMiddle));
 
   m_dcfManager = new DcfManager ();
-  m_dcfManager->SetupLowListener (m_low);
+  m_dcfManager->SetupLow (m_low);
 
   m_dca = CreateObject<DcaTxop> ();
   m_dca->SetLow (m_low);

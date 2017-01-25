@@ -23,7 +23,6 @@
 
 #include "wifi-mac-header.h"
 #include "wifi-remote-station-manager.h"
-#include "dcf.h"
 
 namespace ns3 {
 
@@ -33,6 +32,7 @@ class WifiMacQueue;
 class MacLow;
 class MacTxMiddle;
 class RandomStream;
+class CtrlBAckResponseHeader;
 
 /**
  * \brief handle packet fragmentation and retransmissions.
@@ -55,9 +55,16 @@ class RandomStream;
  * The rts/cts policy is similar to the fragmentation policy: when
  * a packet is bigger than a threshold, the rts/cts protocol is used.
  */
-class DcaTxop : public Dcf
+ 
+class DcaTxop : public Object
 {
 public:
+  friend class DcfListener;
+  friend class MacLowTransmissionListener;
+  
+  DcaTxop ();
+  virtual ~DcaTxop ();
+
   static TypeId GetTypeId (void);
 
   /**
@@ -70,101 +77,208 @@ public:
    * packet transmission was failed.
    */
   typedef Callback <void, const WifiMacHeader&> TxFailed;
-
-  DcaTxop ();
-  ~DcaTxop ();
+  
+  virtual bool IsEdca ();
 
   /**
    * Set MacLow associated with this DcaTxop.
    *
-   * \param low MacLow
+   * \param low MacLow.
    */
-  void SetLow (Ptr<MacLow> low);
+  virtual void SetLow (Ptr<MacLow> low);
   /**
    * Set DcfManager this DcaTxop is associated to.
    *
-   * \param manager DcfManager
+   * \param manager DcfManager.
    */
-  void SetManager (DcfManager *manager);
+  virtual void SetManager (DcfManager *manager);
   /**
    * Set WifiRemoteStationsManager this DcaTxop is associated to.
    *
-   * \param remoteManager WifiRemoteStationManager
+   * \param remoteManager WifiRemoteStationManager.
    */
-  void SetWifiRemoteStationManager (Ptr<WifiRemoteStationManager> remoteManager);
+  virtual void SetWifiRemoteStationManager (Ptr<WifiRemoteStationManager> remoteManager);
   /**
    * Set MacTxMiddle this DcaTxop is associated to.
    *
-   * \param txMiddle MacTxMiddle
+   * \param txMiddle MacTxMiddle.
    */
-  void SetTxMiddle (MacTxMiddle *txMiddle);
+  virtual void SetTxMiddle (MacTxMiddle *txMiddle);
 
   /**
    * \param callback the callback to invoke when a
    * packet transmission was completed successfully.
    */
-  void SetTxOkCallback (TxOk callback);
+  virtual void SetTxOkCallback (TxOk callback);
   /**
    * \param callback the callback to invoke when a
    * packet transmission was completed unsuccessfully.
    */
-  void SetTxFailedCallback (TxFailed callback);
+  virtual void SetTxFailedCallback (TxFailed callback);
 
   /**
    * Return the MacLow associated with this DcaTxop.
    *
-   * \return MacLow
+   * \return MacLow.
    */
   Ptr<MacLow> GetLow (void) const;
 
   /**
    * Return the packet queue associated with this DcaTxop.
    *
-   * \return WifiMacQueue
+   * \return WifiMacQueue.
    */
   Ptr<WifiMacQueue > GetQueue () const;
 
-  virtual void SetMinCw (uint32_t minCw);
-  virtual void SetMaxCw (uint32_t maxCw);
-  virtual void SetAifsn (uint32_t aifsn);
-  virtual void SetTxopLimit (Time txopLimit);
-  virtual uint32_t GetMinCw (void) const;
-  virtual uint32_t GetMaxCw (void) const;
-  virtual uint32_t GetAifsn (void) const;
-  virtual Time GetTxopLimit (void) const;
+  /**
+   * Set the minimum contention window size.
+   *
+   * \param minCw the minimum contention window size.
+   */
+  void SetMinCw (uint32_t minCw);
+  /**
+   * Set the maximum contention window size.
+   *
+   * \param maxCw the maximum contention window size.
+   */
+  void SetMaxCw (uint32_t maxCw);
+  /**
+   * Set the number of slots that make up an AIFS.
+   *
+   * \param aifsn the number of slots that make up an AIFS.
+   */
+  void SetAifsn (uint32_t aifsn);
+  /*
+   * Set the TXOP limit.
+   *
+   * \param txopLimit the TXOP limit.
+   * Value zero corresponds to default DCF.
+   */
+  void SetTxopLimit (Time txopLimit);
+  /**
+   * Return the minimum contention window size.
+   *
+   * \return the minimum contention window size.
+   */
+  uint32_t GetMinCw (void) const;
+  /**
+   * Return the maximum contention window size.
+   *
+   * \return the maximum contention window size.
+   */
+  uint32_t GetMaxCw (void) const;
+  /**
+   * Return the number of slots that make up an AIFS.
+   *
+   * \return the number of slots that make up an AIFS.
+   */
+  uint32_t GetAifsn (void) const;
+  /**
+   * Return the TXOP limit.
+   *
+   * \return the TXOP limit.
+   */
+  Time GetTxopLimit (void) const;
+  
+  /**
+   * When a channel switching occurs, enqueued packets are removed.
+   */
+  virtual void NotifyChannelSwitching (void);
+  /**
+   * When sleep operation occurs, if there is a pending packet transmission,
+   * it will be reinserted to the front of the queue.
+   */
+  virtual void NotifySleep (void);
+  /**
+   * When wake up operation occurs, channel access will be restarted.
+   */
+  virtual void NotifyWakeUp (void);
 
   /**
-   * \param packet packet to send
+   * \param packet packet to send.
    * \param hdr header of packet to send.
    *
    * Store the packet in the internal queue until it
    * can be sent safely.
    */
-  void Queue (Ptr<const Packet> packet, const WifiMacHeader &hdr);
+  virtual void Queue (Ptr<const Packet> packet, const WifiMacHeader &hdr);
+  
+  /* Event handlers */
+  /**
+   * Event handler when a CTS timeout has occurred.
+   */
+  virtual void MissedCts (void);
+  /**
+   * Event handler when an ACK is received.
+   */
+  virtual void GotAck (void);
+  /**
+   * Event handler when an ACK is missed.
+   */
+  virtual void MissedAck (void);
+  /**
+   * Event handler when a Block ACK is received.
+   *
+   * \param blockAck block ack.
+   * \param recipient address of the recipient.
+   * \param rxSnr SNR of the block ack itself.
+   * \param txMode wifi mode.
+   * \param dataSnr reported data SNR from the peer.
+   */
+  virtual void GotBlockAck (const CtrlBAckResponseHeader *blockAck, Mac48Address recipient, double rxSnr, WifiMode txMode, double dataSnr);
+  /**
+   * Event handler when a Block ACK timeout has occurred.
+   */
+  virtual void MissedBlockAck (uint8_t nMpdus);
+
+  /**
+   * Start transmission for the next fragment.
+   * This is called for fragment only.
+   */
+  virtual void StartNextFragment (void);
+  /**
+   * Cancel the transmission.
+   */
+  virtual void Cancel (void);
+  /**
+   * Start transmission for the next packet if allowed by the TxopLimit.
+   */
+  virtual void StartNext (void);
+  /**
+   * Event handler when a transmission that
+   * does not require an ACK has completed.
+   */
+  virtual void EndTxNoAck (void);
+  
+  /*
+   * Check if the station has TXOP granted for the next MPDU.
+   *
+   * \return true if the station has TXOP granted for the next MPDU,
+   *         false otherwise
+   */
+  virtual bool HasTxop (void) const;
 
   /**
    * Assign a fixed random variable stream number to the random variables
-   * used by this model.  Return the number of streams (possibly zero) that
+   * used by this model. Return the number of streams (possibly zero) that
    * have been assigned.
    *
-   * \param stream first stream index to use
+   * \param stream first stream index to use.
    *
-   * \return the number of stream indices assigned by this model
+   * \return the number of stream indices assigned by this model.
    */
   int64_t AssignStreams (int64_t stream);
 
 
-private:
-  class TransmissionListener;
-  class Dcf;
-  friend class Dcf;
-  friend class TransmissionListener;
+protected:
+  friend class DcfState;
+  virtual void DoDispose (void);
 
   DcaTxop &operator = (const DcaTxop &);
   DcaTxop (const DcaTxop &o);
 
   //Inherited from ns3::Object
-  void DoInitialize ();
+  virtual void DoInitialize ();
   /* dcf notifications forwarded here */
   /**
    * Check if the DCF requires access.
@@ -172,146 +286,99 @@ private:
    * \return true if the DCF requires access,
    *         false otherwise
    */
-  bool NeedsAccess (void) const;
+  virtual bool NeedsAccess (void) const;
 
   /**
    * Notify the DCF that access has been granted.
    */
-  void NotifyAccessGranted (void);
+  virtual void NotifyAccessGranted (void);
   /**
    * Notify the DCF that internal collision has occurred.
    */
-  void NotifyInternalCollision (void);
+  virtual void NotifyInternalCollision (void);
   /**
    * Notify the DCF that collision has occurred.
    */
-  void NotifyCollision (void);
-  /**
-   * When a channel switching occurs, enqueued packets are removed.
-   */
-  void NotifyChannelSwitching (void);
-  /**
-   * When sleep operation occurs, if there is a pending packet transmission,
-   * it will be reinserted to the front of the queue.
-   */
-  void NotifySleep (void);
-  /**
-   * When wake up operation occurs, channel access will be restarted
-   */
-  void NotifyWakeUp (void);
-
-  /* Event handlers */
-  /**
-   * Event handler when a CTS is received.
-   *
-   * \param snr
-   * \param txMode
-   */
-  void GotCts (double snr, WifiMode txMode);
-  /**
-   * Event handler when a CTS timeout has occurred.
-   */
-  void MissedCts (void);
-  /**
-   * Event handler when an ACK is received.
-   *
-   * \param snr
-   * \param txMode
-   */
-  void GotAck (double snr, WifiMode txMode);
-  /**
-   * Event handler when an ACK is missed.
-   */
-  void MissedAck (void);
-  /**
-   * Start transmission for the next fragment.
-   * This is called for fragment only.
-   */
-  void StartNextFragment (void);
-  /**
-   * Cancel the transmission.
-   */
-  void Cancel (void);
-  /**
-   * Event handler when a transmission that
-   * does not require an ACK has completed.
-   */
-  void EndTxNoAck (void);
+  virtual void NotifyCollision (void);
 
   /**
    * Restart access request if needed.
    */
-  void RestartAccessIfNeeded (void);
+  virtual void RestartAccessIfNeeded (void);
   /**
    * Request access from DCF manager if needed.
    */
-  void StartAccessIfNeeded (void);
-
-  /**
-   * Check if RTS should be re-transmitted if CTS was missed.
-   *
-   * \return true if RTS should be re-transmitted,
-   *         false otherwise
-   */
-  bool NeedRtsRetransmission (void) const;
-  /**
-   * Check if DATA should be re-transmitted if ACK was missed.
-   *
-   * \return true if DATA should be re-transmitted,
-   *         false otherwise
-   */
-  bool NeedDataRetransmission (void) const;
+  virtual void StartAccessIfNeeded (void);
+  
   /**
    * Check if the current packet should be fragmented.
    *
    * \return true if the current packet should be fragmented,
    *         false otherwise
    */
-  bool NeedFragmentation (void) const;
-  /**
-   * Calculate the size of the next fragment.
-   *
-   * \return the size of the next fragment
-   */
-  uint32_t GetNextFragmentSize (void) const;
-  /**
-   * Calculate the size of the current fragment.
-   *
-   * \return the size of the current fragment
-   */
-  uint32_t GetFragmentSize (void) const;
-  /**
-   * Calculate the offset for the current fragment.
-   *
-   * \return the offset for the current fragment
-   */
-  uint32_t GetFragmentOffset (void) const;
-  /**
-   * Check if the curren fragment is the last fragment.
-   *
-   * \return true if the curren fragment is the last fragment,
-   *         false otherwise
-   */
-  bool IsLastFragment (void) const;
+  virtual bool NeedFragmentation (void) const;
+
   /**
    * Continue to the next fragment. This method simply
    * increments the internal variable that keep track
    * of the current fragment number.
    */
-  void NextFragment (void);
+  virtual void NextFragment (void);
   /**
    * Get the next fragment from the packet with
    * appropriate Wifi header for the fragment.
    *
-   * \param hdr
+   * \param hdr Wi-Fi header.
    *
-   * \return the fragment with the current fragment number
+   * \return the fragment with the current fragment number.
    */
-  Ptr<Packet> GetFragmentPacket (WifiMacHeader *hdr);
+  virtual Ptr<Packet> GetFragmentPacket (WifiMacHeader *hdr);
 
-  virtual void DoDispose (void);
+  /**
+   * Check if RTS should be re-transmitted if CTS was missed.
+   *
+   * \param packet current packet being transmitted.
+   * \param hdr current header being transmitted.
+   * \return true if RTS should be re-transmitted,
+   *         false otherwise.
+   */
+  virtual bool NeedRtsRetransmission (Ptr<const Packet> packet, const WifiMacHeader &hdr);
+  /**
+   * Check if DATA should be re-transmitted if ACK was missed.
+   *
+   * \param packet current packet being transmitted.
+   * \param hdr current header being transmitted.
+   * \return true if DATA should be re-transmitted,
+   *         false otherwise.
+   */
+  virtual bool NeedDataRetransmission (Ptr<const Packet> packet, const WifiMacHeader &hdr);
+  /**
+   * Calculate the size of the next fragment.
+   *
+   * \return the size of the next fragment.
+   */
+  virtual uint32_t GetNextFragmentSize (void) const;
+  /**
+   * Calculate the size of the current fragment.
+   *
+   * \return the size of the current fragment.
+   */
+  virtual uint32_t GetFragmentSize (void) const;
+  /**
+   * Calculate the offset for the current fragment.
+   *
+   * \return the offset for the current fragment.
+   */
+  virtual uint32_t GetFragmentOffset (void) const;
+  /**
+   * Check if the current fragment is the last fragment.
+   *
+   * \return true if the current fragment is the last fragment,
+   *         false otherwise.
+   */
+  virtual bool IsLastFragment (void) const;
 
-  Dcf *m_dcf;
+  DcfState *m_dcf;
   DcfManager *m_manager;
   TxOk m_txOkCallback;
   TxFailed m_txFailedCallback;
@@ -319,7 +386,6 @@ private:
   MacTxMiddle *m_txMiddle;
   Ptr <MacLow> m_low;
   Ptr<WifiRemoteStationManager> m_stationManager;
-  TransmissionListener *m_transmissionListener;
   RandomStream *m_rng;
 
   Ptr<const Packet> m_currentPacket;

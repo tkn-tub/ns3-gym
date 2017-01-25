@@ -27,7 +27,6 @@
 namespace ns3 {
 
 class WifiRemoteStationManager;
-class WifiChannel;
 class WifiPhy;
 class WifiMac;
 
@@ -42,7 +41,7 @@ class WifiMac;
  * \brief Hold together all Wifi-related objects.
  * \ingroup wifi
  *
- * This class holds together ns3::WifiChannel, ns3::WifiPhy,
+ * This class holds together ns3::Channel, ns3::WifiPhy,
  * ns3::WifiMac, and, ns3::WifiRemoteStationManager.
  */
 class WifiNetDevice : public NetDevice
@@ -141,7 +140,7 @@ private:
    *
    * \return WifiChannel
    */
-  Ptr<WifiChannel> DoGetChannel (void) const;
+  Ptr<Channel> DoGetChannel (void) const;
   /**
    * Complete the configuration of this Wi-Fi device by
    * connecting all lower components (e.g. MAC, WifiRemoteStation) together.

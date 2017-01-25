@@ -82,7 +82,7 @@ AmpduAggregationTest::DoRun (void)
   m_low->SetAddress (Mac48Address ("00:00:00:00:00:01"));
 
   m_dcfManager = new DcfManager ();
-  m_dcfManager->SetupLowListener (m_low);
+  m_dcfManager->SetupLow (m_low);
   m_dcfManager->SetupPhyListener (m_phy);
   m_dcfManager->SetSlot (MicroSeconds (9));
 
@@ -115,7 +115,7 @@ AmpduAggregationTest::DoRun (void)
   hdr.SetAddr2 (Mac48Address ("00:00:00:00:00:01"));
   hdr.SetType (WIFI_MAC_QOSDATA);
   hdr.SetQosTid (0);
-  uint16_t sequence = m_txMiddle->GetNextSequenceNumberfor (&hdr);
+  uint16_t sequence = m_txMiddle->GetNextSequenceNumberFor (&hdr);
   hdr.SetSequenceNumber (sequence);
   hdr.SetFragmentNumber (0);
   hdr.SetNoMoreFragments ();
@@ -164,15 +164,15 @@ AmpduAggregationTest::DoRun (void)
   hdr2.SetType (WIFI_MAC_QOSDATA);
   hdr2.SetQosTid (0);
 
-  m_edca->GetEdcaQueue ()->Enqueue (pkt1, hdr1);
-  m_edca->GetEdcaQueue ()->Enqueue (pkt2, hdr2);
+  m_edca->GetQueue ()->Enqueue (pkt1, hdr1);
+  m_edca->GetQueue ()->Enqueue (pkt2, hdr2);
 
   isAmpdu = m_low->IsAmpdu (pkt, hdr);
   uint32_t aggregationQueueSize = m_low->m_aggregateQueue[0]->GetSize ();
   NS_TEST_EXPECT_MSG_EQ (isAmpdu, true, "MPDU aggregation failed");
   NS_TEST_EXPECT_MSG_EQ (m_low->m_currentPacket->GetSize (), 4606, "A-MPDU size is not correct");
   NS_TEST_EXPECT_MSG_EQ (aggregationQueueSize, 3, "aggregation queue should not be empty");
-  NS_TEST_EXPECT_MSG_EQ (m_edca->GetEdcaQueue ()->GetSize (), 0, "queue should be empty");
+  NS_TEST_EXPECT_MSG_EQ (m_edca->GetQueue ()->GetSize (), 0, "queue should be empty");
 
   Ptr <const Packet> dequeuedPacket;
   WifiMacHeader dequeuedHdr;
@@ -211,7 +211,7 @@ AmpduAggregationTest::DoRun (void)
   hdr3.SetType (WIFI_MAC_DATA);
   hdr3.SetQosTid (0);
 
-  m_edca->GetEdcaQueue ()->Enqueue (pkt3, hdr3);
+  m_edca->GetQueue ()->Enqueue (pkt3, hdr3);
   
   isAmpdu = m_low->IsAmpdu (pkt1, hdr1);
   NS_TEST_EXPECT_MSG_EQ (isAmpdu, false, "a single packet for this destination should not result in an A-MPDU");
@@ -227,7 +227,7 @@ AmpduAggregationTest::DoRun (void)
   m_edca->MissedAck();
   
   NS_TEST_EXPECT_MSG_EQ (m_edca->m_currentPacket, 0, "packet should be discarded");
-  m_edca->GetEdcaQueue ()->Remove (pkt3);
+  m_edca->GetQueue ()->Remove (pkt3);
 
   Simulator::Destroy ();
   delete m_txMiddle;
@@ -320,10 +320,10 @@ TwoLevelAggregationTest::DoRun (void)
    *      - A-MSDU frame size should be 3030 bytes (= 2 packets + headers + padding);
    *      - one packet should be removed from the queue (the other packet is removed later in MacLow::AggregateToAmpdu) .
    */
-  m_edca->GetEdcaQueue ()->Enqueue (pkt, hdr);
-  m_edca->GetEdcaQueue ()->Enqueue (pkt, hdr);
+  m_edca->GetQueue ()->Enqueue (pkt, hdr);
+  m_edca->GetQueue ()->Enqueue (pkt, hdr);
 
-  Ptr<const Packet> peekedPacket = m_edca->GetEdcaQueue ()->PeekByTidAndAddress (&peekedHdr, 0,
+  Ptr<const Packet> peekedPacket = m_edca->GetQueue ()->PeekByTidAndAddress (&peekedHdr, 0,
                                                                                  WifiMacHeader::ADDR1,
                                                                                  hdr.GetAddr1 (),
                                                                                  &tstamp);
@@ -336,7 +336,7 @@ TwoLevelAggregationTest::DoRun (void)
   bool result = (packet != 0);
   NS_TEST_EXPECT_MSG_EQ (result, true, "aggregation failed");
   NS_TEST_EXPECT_MSG_EQ (packet->GetSize (), 3030, "wrong packet size");
-  NS_TEST_EXPECT_MSG_EQ (m_edca->GetEdcaQueue ()->GetSize (), 0, "aggregated packets not removed from the queue");
+  NS_TEST_EXPECT_MSG_EQ (m_edca->GetQueue ()->GetSize (), 0, "aggregated packets not removed from the queue");
 
   //-----------------------------------------------------------------------------------------------------
 
@@ -351,7 +351,7 @@ TwoLevelAggregationTest::DoRun (void)
   m_mpduAggregator = m_factory.Create<MpduAggregator> ();
   m_edca->SetMpduAggregator (m_mpduAggregator);
 
-  m_edca->GetEdcaQueue ()->Enqueue (pkt, hdr);
+  m_edca->GetQueue ()->Enqueue (pkt, hdr);
   packet = m_low->PerformMsduAggregation (peekedPacket, &peekedHdr, &tstamp, currentAggregatedPacket, 0);
 
   result = (packet != 0);
@@ -366,8 +366,8 @@ TwoLevelAggregationTest::DoRun (void)
    */
   m_mpduAggregator->SetMaxAmpduSize (4095);
 
-  m_edca->GetEdcaQueue ()->Remove (pkt);
-  m_edca->GetEdcaQueue ()->Remove (pkt);
+  m_edca->GetQueue ()->Remove (pkt);
+  m_edca->GetQueue ()->Remove (pkt);
   packet = m_low->PerformMsduAggregation (peekedPacket, &peekedHdr, &tstamp, currentAggregatedPacket, 0);
 
   result = (packet != 0);

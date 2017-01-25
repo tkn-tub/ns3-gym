@@ -20,7 +20,9 @@
 
 #include "ns3/test.h"
 #include "ns3/simulator.h"
+#include "ns3/dcf-state.h"
 #include "ns3/dcf-manager.h"
+#include "ns3/dca-txop.h"
 
 using namespace ns3;
 
@@ -29,19 +31,12 @@ class DcfManagerTest;
 class DcfStateTest : public DcfState
 {
 public:
-  DcfStateTest (DcfManagerTest *test, uint32_t i);
+  DcfStateTest (Ptr<DcaTxop> dca);
   void QueueTx (uint64_t txTime, uint64_t expectedGrantTime);
-  bool IsEdca (void) const;
 
 
 private:
   friend class DcfManagerTest;
-  virtual void DoNotifyAccessGranted (void);
-  virtual void DoNotifyInternalCollision (void);
-  virtual void DoNotifyCollision (void);
-  virtual void DoNotifyChannelSwitching (void);
-  virtual void DoNotifySleep (void);
-  virtual void DoNotifyWakeUp (void);
 
   typedef std::pair<uint64_t,uint64_t> ExpectedGrant;
   typedef std::list<ExpectedGrant> ExpectedGrants;
@@ -55,6 +50,23 @@ private:
   ExpectedCollisions m_expectedInternalCollision;
   ExpectedCollisions m_expectedCollision;
   ExpectedGrants m_expectedGrants;
+};
+
+
+class DcaTxopTest : public DcaTxop
+{
+public:
+  DcaTxopTest (DcfManagerTest *test, uint32_t i);
+
+
+private:
+  void NotifyAccessGranted (void);
+  void NotifyInternalCollision (void);
+  void NotifyCollision (void);
+  void NotifyChannelSwitching (void);
+  void NotifySleep (void);
+  void NotifyWakeUp (void);
+
   DcfManagerTest *m_test;
   uint32_t m_i;
 };
@@ -103,21 +115,14 @@ private:
 
   typedef std::vector<DcfStateTest *> DcfStates;
 
-  DcfManager *m_dcfManager;
+  Ptr<DcfManager> m_dcfManager;
   DcfStates m_dcfStates;
   uint32_t m_ackTimeoutValue;
 };
 
-DcfStateTest::DcfStateTest (DcfManagerTest *test, uint32_t i)
-  : m_test (test),
-    m_i (i)
+DcfStateTest::DcfStateTest (Ptr<DcaTxop> dca)
+  : DcfState (dca)
 {
-}
-
-bool
-DcfStateTest::IsEdca (void) const
-{
-  return false;
 }
 
 void
@@ -126,37 +131,43 @@ DcfStateTest::QueueTx (uint64_t txTime, uint64_t expectedGrantTime)
   m_expectedGrants.push_back (std::make_pair (txTime, expectedGrantTime));
 }
 
+DcaTxopTest::DcaTxopTest (DcfManagerTest *test, uint32_t i)
+  : m_test (test),
+    m_i (i)
+{
+}
+
 void
-DcfStateTest::DoNotifyAccessGranted (void)
+DcaTxopTest::NotifyAccessGranted (void)
 {
   m_test->NotifyAccessGranted (m_i);
 }
 
 void
-DcfStateTest::DoNotifyInternalCollision (void)
+DcaTxopTest::NotifyInternalCollision (void)
 {
   m_test->NotifyInternalCollision (m_i);
 }
 
 void
-DcfStateTest::DoNotifyCollision (void)
+DcaTxopTest::NotifyCollision (void)
 {
   m_test->NotifyCollision (m_i);
 }
 
 void
-DcfStateTest::DoNotifyChannelSwitching (void)
+DcaTxopTest::NotifyChannelSwitching (void)
 {
   m_test->NotifyChannelSwitching (m_i);
 }
 
 void
-DcfStateTest::DoNotifySleep (void)
+DcaTxopTest::NotifySleep (void)
 {
 }
 
 void
-DcfStateTest::DoNotifyWakeUp (void)
+DcaTxopTest::NotifyWakeUp (void)
 {
 }
 
@@ -261,7 +272,8 @@ DcfManagerTest::StartTest (uint64_t slotTime, uint64_t sifs, uint64_t eifsNoDifs
 void
 DcfManagerTest::AddDcfState (uint32_t aifsn)
 {
-  DcfStateTest *state = new DcfStateTest (this, m_dcfStates.size ());
+  Ptr<DcaTxopTest> dca = new DcaTxopTest (this, m_dcfStates.size ());
+  DcfStateTest *state = new DcfStateTest (dca);
   state->SetAifsn (aifsn);
   m_dcfStates.push_back (state);
   m_dcfManager->Add (state);
@@ -281,7 +293,6 @@ DcfManagerTest::EndTest (void)
       delete state;
     }
   m_dcfStates.clear ();
-  delete m_dcfManager;
 }
 
 void

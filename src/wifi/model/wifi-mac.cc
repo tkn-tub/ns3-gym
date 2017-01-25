@@ -19,7 +19,6 @@
  */
 
 #include "wifi-mac.h"
-#include "dcf.h"
 #include "ns3/log.h"
 
 namespace ns3 {
@@ -418,7 +417,7 @@ WifiMac::Configure80211ac (void)
 }
 
 void
-WifiMac::ConfigureDcf (Ptr<Dcf> dcf, uint32_t cwmin, uint32_t cwmax, bool isDsss, AcIndex ac)
+WifiMac::ConfigureDcf (Ptr<DcaTxop> dcf, uint32_t cwmin, uint32_t cwmax, bool isDsss, AcIndex ac)
 {
   NS_LOG_FUNCTION (this << dcf << cwmin << cwmax << isDsss << ac);
   /* see IEE802.11 section 7.3.2.29 */

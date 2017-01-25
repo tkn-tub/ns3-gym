@@ -20,7 +20,7 @@ constituent objects, and bind them together appropriately (the WifiNetDevice is
 very modular in this regard, for future extensibility). At the low-level API,
 this can be done with about 20 lines of code (see ``ns3::WifiHelper::Install``,
 and ``ns3::YansWifiPhyHelper::Create``). They also must create, at some point, a
-WifiChannel, which also contains a number of constituent objects (see
+Channel, which also contains a number of constituent objects (see
 ``ns3::YansWifiChannelHelper::Create``).
 
 However, a few helpers are available for users to add these devices and channels
@@ -29,17 +29,17 @@ helpers provide additional API to allow the passing of attribute values to
 change default values.  Commonly used attribute values are listed in the
 Attributes section.  The scripts in ``examples/wireless`` can be browsed to
 see how this is done.  Next, we describe the common steps to create a WifiNetDevice
-from the bottom layer (WifiChannel) up to the device layer (WifiNetDevice).
+from the bottom layer (Channel) up to the device layer (WifiNetDevice).
 
 To create a WifiNetDevice, users need to follow these steps:
 
 * Decide on which physical layer framework, the ``SpectrumWifiPhy`` or 
   ``YansWifiPhy``, to use.  This will affect which Channel and Phy type to use. 
-* Configure the WifiChannel: WifiChannel takes care of getting signal
+* Configure the Channel: Channel takes care of getting signal
   from one device to other devices on the same wifi channel.
   The main configurations of WifiChannel are propagation loss model and propagation delay model.
 * Configure the WifiPhy: WifiPhy takes care of actually sending and receiving wireless
-  signal from WifiChannel.  Here, WifiPhy decides whether each frame will be successfully
+  signal from Channel.  Here, WifiPhy decides whether each frame will be successfully
   decoded or not depending on the received signal strength and noise.  Thus, the main
   configuration of WifiPhy is the error rate model, which is the one that actually 
   calculates the probability of successfully decoding the frame based on the signal.
@@ -91,13 +91,13 @@ YansWifiChannelHelper
 The YansWifiChannelHelper has an unusual name. Readers may wonder why it is
 named this way. The reference is to the `yans simulator
 <http://cutebugs.net/files/wns2-yans.pdf>`_ from which this model is taken. The
-helper can be used to create a WifiChannel with a default PropagationLoss and
+helper can be used to create a YansWifiChannel with a default PropagationLoss and
 PropagationDelay model.
 
 Users will typically type code such as::
 
   YansWifiChannelHelper wifiChannelHelper = YansWifiChannelHelper::Default ();
-  Ptr<WifiChannel> wifiChannel = wifiChannelHelper.Create ();
+  Ptr<Channel> wifiChannel = wifiChannelHelper.Create ();
 
 to get the defaults.  Specifically, the default is a channel model with a
 propagation delay equal to a constant, the speed of light (``ns3::ConstantSpeedPropagationDelayModel``),
@@ -123,7 +123,7 @@ The following two methods are useful when configuring YansWifiChannelHelper:
 YansWifiPhyHelper
 =================
 
-Physical devices (base class ``ns3::WifiPhy``) connect to ``ns3::WifiChannel`` models in
+Physical devices (base class ``ns3::WifiPhy``) connect to ``ns3::YansWifiChannel`` models in
 |ns3|.  We need to create WifiPhy objects appropriate for the YansWifiChannel; here
 the ``YansWifiPhyHelper`` will do the work.
 
@@ -502,7 +502,7 @@ SpectrumWifiPhyHelper
 
 The API for this helper closely tracks the API of the YansWifiPhyHelper,
 with the exception that a channel of type ``ns3::SpectrumChannel`` instead
-of type ``ns3::WifiChannel`` must be used with it.
+of type ``ns3::YansWifiChannel`` must be used with it.
 
 WifiMacHelper
 =============
@@ -679,7 +679,7 @@ on a set of nodes in a NodeContainer "c"::
   NetDeviceContainer wifiContainer = WifiHelper::Install (wifiPhyHelper, wifiMacHelper, c);
 
 This creates the WifiNetDevice which includes also a WifiRemoteStationManager, a
-WifiMac, and a WifiPhy (connected to the matching WifiChannel).
+WifiMac, and a WifiPhy (connected to the matching Channel).
 
 The ``WifiHelper::SetStandard`` method set various default timing parameters as defined in the selected standard version, overwriting values that may exist or have been previously configured.
 In order to change parameters that are overwritten by ``WifiHelper::SetStandard``, this should be done post-install using ``Config::Set``::

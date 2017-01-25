@@ -106,15 +106,15 @@ void
 WaveMacLow::StartTransmission (Ptr<const Packet> packet,
                                const WifiMacHeader* hdr,
                                MacLowTransmissionParameters params,
-                               MacLowTransmissionListener *listener)
+                               Ptr<DcaTxop> dca)
 {
-  NS_LOG_FUNCTION (this << packet << hdr << params << listener);
+  NS_LOG_FUNCTION (this << packet << hdr << params << dca);
   Ptr<WifiPhy> phy = MacLow::GetPhy ();
   uint32_t curChannel = phy->GetChannelNumber ();
   // if current channel access is not AlternatingAccess, just do as MacLow.
   if (!m_scheduler->IsAlternatingAccessAssigned (curChannel))
     {
-      MacLow::StartTransmission (packet, hdr, params, listener);
+      MacLow::StartTransmission (packet, hdr, params, dca);
       return;
     }
 
@@ -131,7 +131,7 @@ WaveMacLow::StartTransmission (Ptr<const Packet> packet,
     }
   else
     {
-      MacLow::StartTransmission (packet, hdr, params, listener);
+      MacLow::StartTransmission (packet, hdr, params, dca);
     }
 }
 
