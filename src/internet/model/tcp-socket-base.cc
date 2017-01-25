@@ -1441,6 +1441,23 @@ TcpSocketBase::ProcessEstablished (Ptr<Packet> packet, const TcpHeader& tcpHeade
     }
 }
 
+bool
+TcpSocketBase::IsTcpOptionEnabled (uint8_t kind) const
+{
+  NS_LOG_FUNCTION (this << (int)kind);
+
+  switch (kind)
+    {
+    case TcpOption::TS:
+      return m_timestampEnabled;
+    case TcpOption::WINSCALE:
+      return m_winScalingEnabled;
+    default:
+      break;
+    }
+  return false;
+}
+
 void
 TcpSocketBase::ReadOptions (const TcpHeader &tcpHeader)
 {

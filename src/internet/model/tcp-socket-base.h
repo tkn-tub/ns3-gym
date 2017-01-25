@@ -923,6 +923,14 @@ protected:
   void ReadOptions (const TcpHeader &tcpHeader);
 
   /**
+   * \brief Return true if the specified option is enabled
+   *
+   * \param kind kind of TCP option
+   * \return true if the option is enabled
+   */
+  bool IsTcpOptionEnabled (uint8_t kind) const;
+
+  /**
    * \brief Read and parse the Window scale option
    *
    * Read the window scale option (encoded logarithmically) and save it.
