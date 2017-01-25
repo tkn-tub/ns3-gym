@@ -1450,7 +1450,7 @@ TcpSocketBase::ReadOptions (const TcpHeader &tcpHeader)
 
   for (it = options.begin (); it != options.end (); ++it)
     {
-      const Ptr<TcpOption> option = (*it);
+      const Ptr<const TcpOption> option = (*it);
       // Placeholder for a switch statement
     }
 }
@@ -2860,8 +2860,8 @@ TcpSocketBase::EstimateRtt (const TcpHeader& tcpHeader)
         { // Ok to use this sample
           if (m_timestampEnabled && tcpHeader.HasOption (TcpOption::TS))
             {
-              Ptr<TcpOptionTS> ts;
-              ts = DynamicCast<TcpOptionTS> (tcpHeader.GetOption (TcpOption::TS));
+              Ptr<const TcpOptionTS> ts;
+              ts = DynamicCast<const TcpOptionTS> (tcpHeader.GetOption (TcpOption::TS));
               m = TcpOptionTS::ElapsedTimeFromTsValue (ts->GetEcho ());
             }
           else

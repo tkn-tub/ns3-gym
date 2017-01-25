@@ -47,7 +47,7 @@ public:
   TcpHeader ();
   virtual ~TcpHeader ();
 
-  typedef std::list< Ptr<TcpOption> > TcpOptionList; //!< List of TcpOption
+  typedef std::list< Ptr<const TcpOption> > TcpOptionList; //!< List of TcpOption
 
   /**
    * \brief Print a TCP header into an output stream
@@ -185,7 +185,7 @@ public:
    * \param kind the option to retrieve
    * \return Whether the header contains a specific kind of option, or 0
    */
-  Ptr<TcpOption> GetOption (uint8_t kind) const;
+  Ptr<const TcpOption> GetOption (uint8_t kind) const;
 
   /**
    * \brief Get the list of option in this header
@@ -217,7 +217,7 @@ public:
    * \param option The option to append
    * \return true if option has been appended, false otherwise
    */
-  bool AppendOption (Ptr<TcpOption> option);
+  bool AppendOption (Ptr<const TcpOption> option);
 
   /**
    * \brief Initialize the TCP checksum.

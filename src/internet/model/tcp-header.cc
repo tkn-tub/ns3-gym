@@ -460,7 +460,7 @@ TcpHeader::CalculateHeaderLength () const
 }
 
 bool
-TcpHeader::AppendOption (Ptr<TcpOption> option)
+TcpHeader::AppendOption (Ptr<const TcpOption> option)
 {
   if (m_optionsLen + option->GetSerializedSize () <= m_maxOptionsLen)
     {
@@ -491,8 +491,8 @@ TcpHeader::GetOptionList () const
   return m_options;
 }
 
-Ptr<TcpOption>
-TcpHeader::GetOption (uint8_t kind) const
+Ptr<const TcpOption>
+TcpHeader::GetOption(uint8_t kind) const
 {
   TcpOptionList::const_iterator i;
 
