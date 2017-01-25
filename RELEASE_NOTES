@@ -36,6 +36,7 @@ Bugs fixed
 - Bug 2511 - HT Greenfield is not working
 - Bug 2512 - Byte mode not configured correctly in red-queue-disc-test-suite.cc
 - Bug 2513 - ParetoRandomVariable needs a "scale", not a "mean" attribute.
+- Bug 2518 - Suppress printing of list of modules for Python programs
 - Bug 2521 - Include ipv6-option.h in wscript
 - Bug 2527 - PrintRoutingTable extended to add an optional Time::Units parameter
 - Bug 2529 - Missing trace when Block ACK timeout is triggered or when missing MPDUs are announced by a Block ACK response
