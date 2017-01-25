@@ -70,14 +70,14 @@ class EdcaTxopN : public DcaTxop
 public:
   // Allow test cases to access private members
   friend class ::AmpduAggregationTest;
-  
+
   std::map<Mac48Address, bool> m_aMpduEnabled;
 
   static TypeId GetTypeId (void);
   EdcaTxopN ();
   virtual ~EdcaTxopN ();
   void DoDispose ();
-  
+
   virtual bool IsEdca ();
 
   /**
@@ -236,7 +236,7 @@ public:
    *         false otherwise.
    */
   bool NeedBarRetransmission (void);
-  
+
   /**
    * Check if the current packet should be fragmented.
    *
@@ -387,7 +387,7 @@ public:
    * \param hdr the header of the packet that we failed to sent.
    */
   void BaTxFailed (const WifiMacHeader &hdr);
-  
+
   /**
    * This functions are used only to correctly set source address in A-MSDU subframes.
    * If aggregating sta is a STA (in an infrastructured network):

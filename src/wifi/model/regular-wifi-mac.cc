@@ -34,11 +34,11 @@ NS_LOG_COMPONENT_DEFINE ("RegularWifiMac");
 
 NS_OBJECT_ENSURE_REGISTERED (RegularWifiMac);
 
-RegularWifiMac::RegularWifiMac () :
-  m_htSupported (0),
-  m_vhtSupported (0),
-  m_erpSupported (0),
-  m_dsssSupported (0)
+RegularWifiMac::RegularWifiMac ()
+  : m_htSupported (0),
+    m_vhtSupported (0),
+    m_erpSupported (0),
+    m_dsssSupported (0)
 {
   NS_LOG_FUNCTION (this);
   m_rxMiddle = new MacRxMiddle ();
@@ -1171,9 +1171,9 @@ RegularWifiMac::ConfigureContentionWindow (uint32_t cwMin, uint32_t cwMax)
 
   //Now we configure the EDCA functions
   for (EdcaQueues::iterator i = m_edca.begin (); i != m_edca.end (); ++i)
-  {
-    ConfigureDcf (i->second, cwMin, cwMax, isDsssOnly, i->first);
-  }
+    {
+      ConfigureDcf (i->second, cwMin, cwMax, isDsssOnly, i->first);
+    }
 }
 
 void
@@ -1233,18 +1233,18 @@ RegularWifiMac::EnableAggregation (void)
 {
   NS_LOG_FUNCTION (this);
   for (EdcaQueues::iterator i = m_edca.begin (); i != m_edca.end (); ++i)
-  {
-    if (i->second->GetMsduAggregator () == 0)
-      {
-        Ptr<MsduStandardAggregator> msduAggregator = CreateObject<MsduStandardAggregator> ();
-        i->second->SetMsduAggregator (msduAggregator);
-      }
-    if (i->second->GetMpduAggregator () == 0)
-      {
-        Ptr<MpduStandardAggregator> mpduAggregator = CreateObject<MpduStandardAggregator> ();
-        i->second->SetMpduAggregator (mpduAggregator);
-      }
-  }
+    {
+      if (i->second->GetMsduAggregator () == 0)
+        {
+          Ptr<MsduStandardAggregator> msduAggregator = CreateObject<MsduStandardAggregator> ();
+          i->second->SetMsduAggregator (msduAggregator);
+        }
+      if (i->second->GetMpduAggregator () == 0)
+        {
+          Ptr<MpduStandardAggregator> mpduAggregator = CreateObject<MpduStandardAggregator> ();
+          i->second->SetMpduAggregator (mpduAggregator);
+        }
+    }
   ConfigureAggregation ();
 }
 
@@ -1253,10 +1253,10 @@ RegularWifiMac::DisableAggregation (void)
 {
   NS_LOG_FUNCTION (this);
   for (EdcaQueues::iterator i = m_edca.begin (); i != m_edca.end (); ++i)
-  {
-    i->second->SetMsduAggregator (0);
-    i->second->SetMpduAggregator (0);
-  }
+    {
+      i->second->SetMsduAggregator (0);
+      i->second->SetMpduAggregator (0);
+    }
 }
 
 } //namespace ns3

@@ -379,7 +379,7 @@ WifiNetDevice::ForwardUp (Ptr<Packet> packet, Mac48Address from, Mac48Address to
     {
       packet->RemoveHeader (llc);
     }
-    
+
   if (!m_promiscRx.IsNull ())
     {
       m_mac->NotifyPromiscRx (packet);

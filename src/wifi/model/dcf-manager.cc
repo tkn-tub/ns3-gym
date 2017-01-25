@@ -351,7 +351,7 @@ DcfManager::DoGrantAccess (void)
                   && GetBackoffEndFor (otherState) <= Simulator::Now ())
                 {
                   NS_LOG_DEBUG ("dcf " << k << " needs access. backoff expired. internal collision. slots=" <<
-                            otherState->GetBackoffSlots ());
+                                otherState->GetBackoffSlots ());
                   /**
                    * all other dcfs with a lower priority whose backoff
                    * has expired and which needed access to the medium
@@ -443,8 +443,8 @@ DcfManager::GetBackoffEndFor (DcfState *state)
 {
   NS_LOG_FUNCTION (this << state);
   NS_LOG_DEBUG ("Backoff start: " << GetBackoffStartFor (state).As (Time::US) <<
-    " end: " << (GetBackoffStartFor (state) + 
-    MicroSeconds (state->GetBackoffSlots () * m_slotTimeUs)).As (Time::US)); 
+                " end: " << (GetBackoffStartFor (state) +
+                             MicroSeconds (state->GetBackoffSlots () * m_slotTimeUs)).As (Time::US));
   return GetBackoffStartFor (state) + MicroSeconds (state->GetBackoffSlots () * m_slotTimeUs);
 }
 

@@ -255,7 +255,7 @@ EdcaTxopN::NotifyAccessGranted (void)
           params.EnableAck ();
         }
       if (((m_currentHdr.IsQosData () && !m_currentHdr.IsQosAmsdu ())
-          || (m_currentHdr.IsData () && !m_currentHdr.IsQosData ()))
+           || (m_currentHdr.IsData () && !m_currentHdr.IsQosData ()))
           && (m_blockAckThreshold == 0 || m_blockAckType == BASIC_BLOCK_ACK)
           && NeedFragmentation ())
         {
@@ -288,8 +288,8 @@ EdcaTxopN::NotifyAccessGranted (void)
               /* here is performed aggregation */
               Ptr<Packet> currentAggregatedPacket = Create<Packet> ();
               m_msduAggregator->Aggregate (m_currentPacket, currentAggregatedPacket,
-                                       MapSrcAddressForAggregation (peekedHdr),
-                                       MapDestAddressForAggregation (peekedHdr));
+                                           MapSrcAddressForAggregation (peekedHdr),
+                                           MapDestAddressForAggregation (peekedHdr));
               bool aggregated = false;
               bool isAmsdu = false;
               Ptr<const Packet> peekedPacket = m_queue->PeekByTidAndAddress (&peekedHdr, m_currentHdr.GetQosTid (),
@@ -298,8 +298,8 @@ EdcaTxopN::NotifyAccessGranted (void)
               while (peekedPacket != 0)
                 {
                   aggregated = m_msduAggregator->Aggregate (peekedPacket, currentAggregatedPacket,
-                                                        MapSrcAddressForAggregation (peekedHdr),
-                                                        MapDestAddressForAggregation (peekedHdr));
+                                                            MapSrcAddressForAggregation (peekedHdr),
+                                                            MapDestAddressForAggregation (peekedHdr));
                   if (aggregated)
                     {
                       isAmsdu = true;
@@ -361,14 +361,14 @@ void EdcaTxopN::NotifyInternalCollision (void)
       if (m_isAccessRequestedForRts)
         {
           if (!NeedRtsRetransmission (packet, header))
-          {
-            resetDcf = true;
-            m_stationManager->ReportFinalRtsFailed (header.GetAddr1 (), &header);
-          }
+            {
+              resetDcf = true;
+              m_stationManager->ReportFinalRtsFailed (header.GetAddr1 (), &header);
+            }
           else
-          {
-            m_stationManager->ReportRtsFailed (header.GetAddr1 (), &header);
-          }
+            {
+              m_stationManager->ReportRtsFailed (header.GetAddr1 (), &header);
+            }
         }
       else if (header.GetAddr1 () == Mac48Address::GetBroadcast ())
         {
@@ -377,16 +377,16 @@ void EdcaTxopN::NotifyInternalCollision (void)
       else
         {
           if (!NeedDataRetransmission (packet, header))
-          {
-            resetDcf = true;
-            m_stationManager->ReportFinalDataFailed (header.GetAddr1 (), &header);
-          }
+            {
+              resetDcf = true;
+              m_stationManager->ReportFinalDataFailed (header.GetAddr1 (), &header);
+            }
           else
-          {
-            m_stationManager->ReportDataFailed (header.GetAddr1 (), &header);
-          }
+            {
+              m_stationManager->ReportDataFailed (header.GetAddr1 (), &header);
+            }
         }
-     if (resetDcf)
+      if (resetDcf)
         {
           NS_LOG_DEBUG ("reset DCF");
           if (!m_txFailedCallback.IsNull ())
@@ -812,7 +812,7 @@ EdcaTxopN::StartNext (void)
         }
       return;
     }
-    
+
   MacLowTransmissionParameters params;
   params.DisableOverrideDurationId ();
   if (m_currentHdr.IsQosData () && m_currentHdr.IsQosBlockAck ())
@@ -823,7 +823,7 @@ EdcaTxopN::StartNext (void)
     {
       params.EnableAck ();
     }
-    
+
   WifiTxVector dataTxVector = m_stationManager->GetDataTxVector (m_currentHdr.GetAddr1 (), &m_currentHdr, peekedPacket);
   if (m_stationManager->NeedRts (m_currentHdr.GetAddr1 (), &m_currentHdr, peekedPacket, dataTxVector))
     {
@@ -927,9 +927,9 @@ EdcaTxopN::NeedFragmentation (void) const
   if (m_stationManager->HasVhtSupported ()
       || GetAmpduExist (m_currentHdr.GetAddr1 ())
       || (m_stationManager->HasHtSupported ()
-      && m_currentHdr.IsQosData ()
-      && GetBaAgreementExists (m_currentHdr.GetAddr1 (), GetTid (m_currentPacket, m_currentHdr))
-      && GetMpduAggregator ()->GetMaxAmpduSize () >= m_currentPacket->GetSize ()))
+          && m_currentHdr.IsQosData ()
+          && GetBaAgreementExists (m_currentHdr.GetAddr1 (), GetTid (m_currentPacket, m_currentHdr))
+          && GetMpduAggregator ()->GetMaxAmpduSize () >= m_currentPacket->GetSize ()))
     {
       //MSDU is not fragmented when it is transmitted using an HT-immediate or
       //HT-delayed Block Ack agreement or when it is carried in an A-MPDU.
@@ -1146,7 +1146,7 @@ EdcaTxopN::SetupBlockAckIfNeeded ()
   Mac48Address recipient = m_currentHdr.GetAddr1 ();
   uint32_t packets = m_queue->GetNPacketsByTidAndAddress (tid, WifiMacHeader::ADDR1, recipient);
   if ((m_blockAckThreshold > 0 && packets >= m_blockAckThreshold)
-      || (m_mpduAggregator != 0 && m_mpduAggregator->GetMaxAmpduSize() > 0 && packets > 1)
+      || (m_mpduAggregator != 0 && m_mpduAggregator->GetMaxAmpduSize () > 0 && packets > 1)
       || m_stationManager->HasVhtSupported ())
     {
       /* Block ack setup */

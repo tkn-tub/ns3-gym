@@ -211,7 +211,7 @@ public:
    *        upon erroneous packet reception.
    */
   void SetReceiveErrorCallback (RxErrorCallback callback);
-  
+
   /**
    * \param listener the new listener
    *
@@ -226,7 +226,7 @@ public:
    * PHY-level events.
    */
   void UnregisterListener (WifiPhyListener *listener);
-  
+
   /**
    * Starting receiving the plcp of a packet (i.e. the first bit of the preamble has arrived).
    *
@@ -237,7 +237,7 @@ public:
   void StartReceivePreambleAndHeader (Ptr<Packet> packet,
                                       double rxPowerW,
                                       Time rxDuration);
-  
+
   /**
    * Starting receiving the payload of a packet (i.e. the first bit of the packet has arrived).
    *
@@ -250,7 +250,7 @@ public:
                            WifiTxVector txVector,
                            MpduType mpdutype,
                            Ptr<InterferenceHelper::Event> event);
-    
+
   /**
    * The last bit of the packet has arrived.
    *
@@ -260,7 +260,7 @@ public:
    * \param event the corresponding event of the first time the packet arrives
    */
   void EndReceive (Ptr<Packet> packet, WifiPreamble preamble, MpduType mpdutype, Ptr<InterferenceHelper::Event> event);
-    
+
   /**
    * \param packet the packet to send
    * \param txVector the TXVECTOR that has tx parameters such as mode, the transmission mode to use to send
@@ -269,7 +269,7 @@ public:
    * \param mpdutype the type of the MPDU as defined in WifiPhy::MpduType.
    */
   void SendPacket (Ptr<const Packet> packet, WifiTxVector txVector, MpduType mpdutype = NORMAL_MPDU);
-  
+
   /**
    * \param packet the packet to send
    * \param txVector the TXVECTOR that has tx parameters such as mode, the transmission mode to use to send
@@ -606,7 +606,7 @@ public:
 
   /**
    * Add a channel definition to the WifiPhy.  The pair (channelNumber,
-   * WifiPhyStandard) may then be used to lookup a pair (frequency, 
+   * WifiPhyStandard) may then be used to lookup a pair (frequency,
    * channelWidth).
    *
    * If the channel is not already defined for the standard, the method
@@ -1398,7 +1398,7 @@ public:
    */
   virtual void SetFrequency (uint16_t freq);
   /**
-   * \return the operating center frequency (MHz) 
+   * \return the operating center frequency (MHz)
    */
   virtual uint16_t GetFrequency (void) const;
   /**
@@ -1523,7 +1523,7 @@ protected:
   virtual void DoDispose (void);
 
   /**
-   * The default implementation does nothing and returns true.  This method 
+   * The default implementation does nothing and returns true.  This method
    * is typically called internally by SetChannelNumber ().
    *
    * \brief Perform any actions necessary when user changes channel number
@@ -1552,7 +1552,7 @@ protected:
    * \return the transmission power in dBm at the given power level
    */
   double GetPowerDbm (uint8_t power) const;
-  
+
   /**
    * Check if Phy state should move to CCA busy state based on current
    * state of interference tracker.  In this model, CCA becomes busy when
@@ -1560,7 +1560,7 @@ protected:
    * class is higher than the CcaMode1Threshold
    */
   void SwitchMaybeToCcaBusy (void);
-  
+
   InterferenceHelper m_interference;   //!< Pointer to InterferenceHelper
   Ptr<UniformRandomVariable> m_random; //!< Provides uniform random variables.
   Ptr<WifiPhyStateHelper> m_state;     //!< Pointer to WifiPhyStateHelper
@@ -1569,7 +1569,7 @@ protected:
   bool m_plcpSuccess;                  //!< Flag if the PLCP of the packet or the first MPDU in an A-MPDU has been received
   uint64_t m_txMpduReferenceNumber;    //!< A-MPDU reference number to identify all transmitted subframes belonging to the same received A-MPDU
   uint64_t m_rxMpduReferenceNumber;    //!< A-MPDU reference number to identify all received subframes belonging to the same received A-MPDU
-  
+
   EventId m_endRxEvent;
   EventId m_endPlcpRxEvent;
 
@@ -1579,10 +1579,10 @@ private:
    *
    * This method exists to handle the fact that two attribute values,
    * Frequency and ChannelNumber, are coupled.  The initialization of
-   * these values needs to be deferred until after attribute construction 
+   * these values needs to be deferred until after attribute construction
    * time, to avoid static initialization order issues.  This method is
    * typically called either when ConfigureStandard () is called or when
-   * DoInitialize () is called.  
+   * DoInitialize () is called.
    */
   void InitializeFrequencyChannelNumber (void);
   /**
@@ -1628,7 +1628,7 @@ private:
   void ConfigureHtDeviceMcsSet (void);
   /**
    * Configure the PHY-level parameters for different Wi-Fi standard.
-   * This method is called when defaults for each standard must be 
+   * This method is called when defaults for each standard must be
    * selected.
    *
    * \param standard the Wi-Fi standard
@@ -1733,7 +1733,7 @@ private:
    * of its size.
    */
   TracedCallback<Ptr<const Packet>, uint16_t, WifiTxVector, MpduInfo> m_phyMonitorSniffTxTrace;
-    
+
   /**
    * This vector holds the set of transmission modes that this
    * WifiPhy(-derived class) can support. In conversation we call this
@@ -1789,7 +1789,7 @@ private:
   double   m_txPowerBaseDbm;      //!< Minimum transmission power (dBm)
   double   m_txPowerEndDbm;       //!< Maximum transmission power (dBm)
   uint32_t m_nTxPower;            //!< Number of available transmission power levels
-  
+
   bool     m_ldpc;                  //!< Flag if LDPC is used
   bool     m_stbc;                  //!< Flag if STBC is used
   bool     m_greenfield;            //!< Flag if GreenField format is supported
@@ -1813,7 +1813,7 @@ private:
   Time m_channelSwitchDelay;     //!< Time required to switch between channel
   uint32_t m_totalAmpduSize;     //!< Total size of the previously transmitted MPDUs in an A-MPDU, used for the computation of the number of symbols needed for the last MPDU in the A-MPDU
   double m_totalAmpduNumSymbols; //!< Number of symbols previously transmitted for the MPDUs in an A-MPDU, used for the computation of the number of symbols needed for the last MPDU in the A-MPDU
-  
+
   Ptr<NetDevice>     m_device;   //!< Pointer to the device
   Ptr<MobilityModel> m_mobility; //!< Pointer to the mobility model
 };

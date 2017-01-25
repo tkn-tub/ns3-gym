@@ -335,7 +335,7 @@ protected:
    * chain up to this implementation to deal with the remainder.
    */
   virtual void FinishConfigureStandard (WifiPhyStandard standard);
-  
+
   /**
    * \param cwMin the minimum congestion window size
    * \param cwMax the maximum congestion window size
@@ -486,7 +486,7 @@ protected:
    * \return true if VHT is supported, false otherwise
    */
   bool GetVhtSupported () const;
-  
+
   /**
    * This Boolean is set \c true iff this WifiMac is to model
    * 802.11g. It is exposed through the attribute system.
@@ -504,7 +504,7 @@ protected:
    * \return true if ERP is supported, false otherwise
    */
   bool GetErpSupported () const;
-  
+
   /**
    * This Boolean is set \c true iff this WifiMac is to model
    * 802.11b. It is exposed through the attribute system.
@@ -545,17 +545,17 @@ private:
   void SetViMaxAmpduSize (uint32_t size);
   void SetBeMaxAmpduSize (uint32_t size);
   void SetBkMaxAmpduSize (uint32_t size);
-  
+
   void SetVoBlockAckThreshold (uint8_t threshold);
   void SetViBlockAckThreshold (uint8_t threshold);
   void SetBeBlockAckThreshold (uint8_t threshold);
   void SetBkBlockAckThreshold (uint8_t threshold);
-  
+
   void SetVoBlockAckInactivityTimeout (uint16_t timeout);
   void SetViBlockAckInactivityTimeout (uint16_t timeout);
   void SetBeBlockAckInactivityTimeout (uint16_t timeout);
   void SetBkBlockAckInactivityTimeout (uint16_t timeout);
-  
+
   void ConfigureAggregation (void);
   void EnableAggregation (void);
   void DisableAggregation (void);
@@ -572,7 +572,7 @@ private:
 
   TracedCallback<const WifiMacHeader &> m_txOkCallback;
   TracedCallback<const WifiMacHeader &> m_txErrCallback;
-  
+
   bool m_shortSlotTimeSupported;
 };
 

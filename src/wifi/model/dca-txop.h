@@ -55,13 +55,13 @@ class CtrlBAckResponseHeader;
  * The rts/cts policy is similar to the fragmentation policy: when
  * a packet is bigger than a threshold, the rts/cts protocol is used.
  */
- 
+
 class DcaTxop : public Object
 {
 public:
   friend class DcfListener;
   friend class MacLowTransmissionListener;
-  
+
   DcaTxop ();
   virtual ~DcaTxop ();
 
@@ -77,7 +77,7 @@ public:
    * packet transmission was failed.
    */
   typedef Callback <void, const WifiMacHeader&> TxFailed;
-  
+
   virtual bool IsEdca ();
 
   /**
@@ -179,7 +179,7 @@ public:
    * \return the TXOP limit.
    */
   Time GetTxopLimit (void) const;
-  
+
   /**
    * When a channel switching occurs, enqueued packets are removed.
    */
@@ -202,7 +202,7 @@ public:
    * can be sent safely.
    */
   virtual void Queue (Ptr<const Packet> packet, const WifiMacHeader &hdr);
-  
+
   /* Event handlers */
   /**
    * Event handler when a CTS timeout has occurred.
@@ -249,7 +249,7 @@ public:
    * does not require an ACK has completed.
    */
   virtual void EndTxNoAck (void);
-  
+
   /*
    * Check if the station has TXOP granted for the next MPDU.
    *
@@ -309,7 +309,7 @@ protected:
    * Request access from DCF manager if needed.
    */
   virtual void StartAccessIfNeeded (void);
-  
+
   /**
    * Check if the current packet should be fragmented.
    *

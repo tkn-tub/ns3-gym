@@ -183,7 +183,7 @@ WifiAcMappingTest::DoRun (void)
     }
 
   uint32_t totalOctetsThrough =
-    DynamicCast<PacketSink>(sinkApp.Get (0))->GetTotalRx ();
+    DynamicCast<PacketSink> (sinkApp.Get (0))->GetTotalRx ();
 
   // Check that the first packet has been received
   NS_TEST_ASSERT_MSG_EQ (totalOctetsThrough, 500, "A single packet should have been received");

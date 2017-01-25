@@ -656,7 +656,7 @@ MacLow::StartTransmission (Ptr<const Packet> packet,
   CancelAllEvents ();
   m_txParams = params;
   m_currentTxVector = GetDataTxVector (m_currentPacket, &m_currentHdr);
-  
+
   if (NeedRts ())
     {
       m_txParams.EnableRts ();
@@ -667,9 +667,9 @@ MacLow::StartTransmission (Ptr<const Packet> packet,
     }
 
   if (m_currentHdr.IsMgt ()
-     || (!m_currentHdr.IsQosData ()
-     && !m_currentHdr.IsBlockAck ()
-     && !m_currentHdr.IsBlockAckReq ()))
+      || (!m_currentHdr.IsQosData ()
+          && !m_currentHdr.IsBlockAck ()
+          && !m_currentHdr.IsBlockAckReq ()))
     {
       //This is mainly encountered when a higher priority control or management frame is
       //sent between A-MPDU transmissions. It avoids to unexpectedly flush the aggregate
@@ -691,7 +691,7 @@ MacLow::StartTransmission (Ptr<const Packet> packet,
           //VHT single MPDUs are followed by normal ACKs
           m_txParams.EnableAck ();
         }
-      AcIndex ac = QosUtilsMapTidToAc (GetTid(packet, *hdr));
+      AcIndex ac = QosUtilsMapTidToAc (GetTid (packet, *hdr));
       std::map<AcIndex, Ptr<EdcaTxopN> >::const_iterator edcaIt = m_edca.find (ac);
       Ptr<Packet> aggregatedPacket = Create<Packet> ();
       for (uint32_t i = 0; i < sentMpdus; i++)
@@ -942,7 +942,7 @@ MacLow::ReceiveOk (Ptr<Packet> packet, double rxSnr, WifiTxVector txVector, bool
       NS_LOG_DEBUG ("got block ack from " << hdr.GetAddr2 ());
       SnrTag tag;
       packet->RemovePacketTag (tag);
-      FlushAggregateQueue (GetTid(packet, hdr));
+      FlushAggregateQueue (GetTid (packet, hdr));
       CtrlBAckResponseHeader blockAck;
       packet->RemoveHeader (blockAck);
       m_blockAckTimeoutEvent.Cancel ();
@@ -1458,7 +1458,7 @@ MacLow::ForwardDown (Ptr<const Packet> packet, const WifiMacHeader* hdr, WifiTxV
       bool vhtSingleMpdu = false;
       bool last = false;
       MpduType mpdutype = NORMAL_MPDU;
-      
+
       uint8_t tid = GetTid (packet, *hdr);
       AcIndex ac = QosUtilsMapTidToAc (tid);
       std::map<AcIndex, Ptr<EdcaTxopN> >::const_iterator edcaIt = m_edca.find (ac);
@@ -1491,7 +1491,7 @@ MacLow::ForwardDown (Ptr<const Packet> packet, const WifiMacHeader* hdr, WifiTxV
             }
 
           edcaIt->second->GetMpduAggregator ()->AddHeaderAndPad (newPacket, last, vhtSingleMpdu);
-          
+
           if (delay == Seconds (0))
             {
               NS_LOG_DEBUG ("Sending MPDU as part of A-MPDU");
@@ -1504,7 +1504,7 @@ MacLow::ForwardDown (Ptr<const Packet> packet, const WifiMacHeader* hdr, WifiTxV
                   mpdutype = NORMAL_MPDU;
                 }
             }
-          
+
           Time mpduDuration = m_phy->CalculateTxDuration (newPacket->GetSize (), txVector, m_phy->GetFrequency (), mpdutype, 0);
           remainingAmpduDuration -= mpduDuration;
 
@@ -1574,7 +1574,7 @@ MacLow::NormalAckTimeout (void)
   m_ampdu = false;
   if (m_currentHdr.IsQosData ())
     {
-      FlushAggregateQueue (GetTid(m_currentPacket, m_currentHdr));
+      FlushAggregateQueue (GetTid (m_currentPacket, m_currentHdr));
     }
   dca->MissedAck ();
 }
@@ -1952,10 +1952,10 @@ MacLow::SendDataAfterCts (Mac48Address source, Time duration)
    */
   NS_ASSERT (m_currentPacket != 0);
 
-  if (m_currentHdr.IsQosData())
+  if (m_currentHdr.IsQosData ())
     {
-      uint8_t tid = GetTid(m_currentPacket, m_currentHdr);
-      if (m_aggregateQueue[GetTid(m_currentPacket, m_currentHdr)]->GetSize () != 0)
+      uint8_t tid = GetTid (m_currentPacket, m_currentHdr);
+      if (m_aggregateQueue[GetTid (m_currentPacket, m_currentHdr)]->GetSize () != 0)
         {
           for (std::vector<Item>::size_type i = 0; i != m_txPackets[tid].size (); i++)
             {
@@ -2057,7 +2057,7 @@ void
 MacLow::SendAckAfterData (Mac48Address source, Time duration, WifiMode dataTxMode, double dataSnr)
 {
   NS_LOG_FUNCTION (this);
-  // send an ACK, after SIFS, when you receive a packet 
+  // send an ACK, after SIFS, when you receive a packet
   WifiTxVector ackTxVector = GetAckTxVector (source, dataTxMode);
   WifiMacHeader ack;
   ack.SetType (WIFI_MAC_CTL_ACK);
@@ -2626,7 +2626,7 @@ MacLow::AggregateToAmpdu (Ptr<const Packet> packet, const WifiMacHeader hdr)
   newPacket = packet->Copy ();
   Ptr<Packet> currentAggregatedPacket;
   CtrlBAckRequestHeader blockAckReq;
-  
+
   if (hdr.IsBlockAckReq ())
     {
       //Workaround to avoid BlockAckReq to be part of an A-MPDU. The standard says that
@@ -2636,7 +2636,7 @@ MacLow::AggregateToAmpdu (Ptr<const Packet> packet, const WifiMacHeader hdr)
       //are supported, the condition of entering here should be changed.
       return newPacket;
     }
-  
+
   //missing hdr.IsAck() since we have no means of knowing the Tid of the Ack yet
   if (hdr.IsQosData () || hdr.IsBlockAck ()|| hdr.IsBlockAckReq ())
     {

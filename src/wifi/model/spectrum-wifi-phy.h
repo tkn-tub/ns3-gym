@@ -87,7 +87,7 @@ public:
    * \param rxParams Input signal parameters
    */
   void StartRx (Ptr<SpectrumSignalParameters> rxParams);
-  
+
   /**
    * \param packet the packet to send
    * \param txVector the TXVECTOR that has tx parameters such as mode, the transmission mode to use to send
@@ -96,7 +96,7 @@ public:
    * \param txDuration duration of the transmission.
    */
   void StartTx (Ptr<Packet> packet, WifiTxVector txVector, Time txDuration);
-  
+
   /**
    * Method to encapsulate the creation of the WifiSpectrumPhyInterface
    * object (used to bind the WifiSpectrumPhy to a SpectrumChannel) and

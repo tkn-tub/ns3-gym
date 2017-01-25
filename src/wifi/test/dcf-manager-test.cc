@@ -188,7 +188,7 @@ DcfManagerTest::NotifyAccessGranted (uint32_t i)
       NS_TEST_EXPECT_MSG_EQ (Simulator::Now (), MicroSeconds (expected.second), "Expected access grant is now");
       m_dcfManager->NotifyTxStartNow (MicroSeconds (expected.first));
       m_dcfManager->NotifyAckTimeoutStartNow (MicroSeconds (m_ackTimeoutValue + expected.first));
-    } 
+    }
 }
 
 void
@@ -437,7 +437,7 @@ DcfManagerTest::DoRun (void)
   StartTest (1, 3, 10);
   AddDcfState (1);
   AddAccessRequest (1, 1, 4, 0);
-  ExpectCollision (1, 0, 0); 
+  ExpectCollision (1, 0, 0);
   AddRxInsideSifsEvt (6, 10);
   AddTxEvt (8, 1);
   AddAccessRequest (14, 2, 14, 0);
@@ -659,7 +659,7 @@ DcfManagerTest::DoRun (void)
   EndTest ();
 
   //  20          40       50     53      54       55        56   57
-  //   | switching |  busy  | sifs | aifsn | bslot0 | bslot 1 | tx | 
+  //   | switching |  busy  | sifs | aifsn | bslot0 | bslot 1 | tx |
   //         |          |
   //        30 busy.   45 access request.
   //

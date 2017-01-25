@@ -53,9 +53,9 @@ NS_OBJECT_ENSURE_REGISTERED (WifiPhy);
  * This table maintains the mapping of valid ChannelNumber to
  * Frequency/ChannelWidth pairs.  If you want to make a channel applicable
  * to all standards, then you may use the WIFI_PHY_STANDARD_UNSPECIFIED
- * standard to represent this, as a wildcard.  If you want to limit the 
- * configuration of a particular channel/frequency/width to a particular 
- * standard(s), then you can specify one or more such bindings. 
+ * standard to represent this, as a wildcard.  If you want to limit the
+ * configuration of a particular channel/frequency/width to a particular
+ * standard(s), then you can specify one or more such bindings.
  */
 WifiPhy::ChannelToFrequencyWidthMap WifiPhy::m_channelToFrequencyWidth =
 {
@@ -141,7 +141,7 @@ WifiPhy::ChannelToFrequencyWidthMap WifiPhy::m_channelToFrequencyWidth =
   { std::make_pair (50, WIFI_PHY_STANDARD_80211ac), std::make_pair (5250, 160) },
   { std::make_pair (114, WIFI_PHY_STANDARD_80211ac), std::make_pair (5570, 160) },
 
-  // 802.11p (10 MHz channels at the 5.855-5.925 band 
+  // 802.11p (10 MHz channels at the 5.855-5.925 band
   { std::make_pair (172, WIFI_PHY_STANDARD_80211_10MHZ), std::make_pair (5860, 10) },
   { std::make_pair (174, WIFI_PHY_STANDARD_80211_10MHZ), std::make_pair (5870, 10) },
   { std::make_pair (176, WIFI_PHY_STANDARD_80211_10MHZ), std::make_pair (5880, 10) },
@@ -397,10 +397,10 @@ WifiPhy::DoDispose (void)
   m_deviceMcsSet.clear ();
 }
 
-void 
+void
 WifiPhy::DoInitialize (void)
 {
-  NS_LOG_FUNCTION (this); 
+  NS_LOG_FUNCTION (this);
   m_isConstructed = true;
   if (m_frequencyChannelNumberInitialized == true)
     {
@@ -445,7 +445,7 @@ WifiPhy::InitializeFrequencyChannelNumber (void)
   // construction phase, the frequency and channel width will drive the
   // initial configuration.  If frequency has not been set, but both
   // standard and channel number have been set, that pair will instead
-  // drive the configuration, and frequency and channel number will be 
+  // drive the configuration, and frequency and channel number will be
   // aligned
   if (m_initialFrequency != 0)
     {
@@ -745,7 +745,7 @@ WifiPhy::ConfigureDefaultsForStandard (WifiPhyStandard standard)
     case WIFI_PHY_STANDARD_80211_5MHZ:
       SetChannelWidth (5);
       SetFrequency (5860);
-      // Channel number should be aligned by SetFrequency () to 0 
+      // Channel number should be aligned by SetFrequency () to 0
       NS_ASSERT (GetChannelNumber () == 0);
       break;
     case WIFI_PHY_STANDARD_holland:
@@ -883,9 +883,9 @@ WifiPhy::ConfigureHtDeviceMcsSet (void)
     {
       // erase all HtMcs modes from deviceMcsSet
       size_t index = m_deviceMcsSet.size () - 1;
-      for (std::vector<WifiMode>::reverse_iterator rit = m_deviceMcsSet.rbegin (); rit != m_deviceMcsSet.rend(); ++rit, --index)
+      for (std::vector<WifiMode>::reverse_iterator rit = m_deviceMcsSet.rbegin (); rit != m_deviceMcsSet.rend (); ++rit, --index)
         {
-          if (m_deviceMcsSet[index].GetModulationClass ()== WIFI_MOD_CLASS_HT)
+          if (m_deviceMcsSet[index].GetModulationClass () == WIFI_MOD_CLASS_HT)
             {
               m_deviceMcsSet.erase (m_deviceMcsSet.begin () + index);
             }
@@ -971,7 +971,7 @@ WifiPhy::Configure80211ac (void)
   m_bssMembershipSelectorSet.push_back (VHT_PHY);
 }
 
-bool 
+bool
 WifiPhy::DefineChannelNumber (uint8_t channelNumber, WifiPhyStandard standard, uint16_t frequency, uint8_t channelWidth)
 {
   NS_LOG_FUNCTION (this << (uint16_t)channelNumber << standard << frequency << (uint16_t)channelWidth);
@@ -999,8 +999,8 @@ WifiPhy::FindChannelNumberForFrequencyWidth (uint16_t frequency, uint8_t width) 
     {
       if (it->second == f)
         {
-           found = true;
-           break;
+          found = true;
+          break;
         }
       ++it;
     }
@@ -1021,7 +1021,7 @@ WifiPhy::ConfigureChannelForStandard (WifiPhyStandard standard)
 {
   NS_LOG_FUNCTION (this << standard);
   // If the user has configured both Frequency and ChannelNumber, Frequency
-  // takes precedence 
+  // takes precedence
   if (GetFrequency () != 0)
     {
       // If Frequency is already set, then see whether a ChannelNumber can
@@ -1042,7 +1042,7 @@ WifiPhy::ConfigureChannelForStandard (WifiPhyStandard standard)
     }
   else if (GetChannelNumber () != 0)
     {
-      // If the channel number is known for this particular standard or for 
+      // If the channel number is known for this particular standard or for
       // the unspecified standard, configure using the known values;
       // otherwise, this is a configuration error
       NS_LOG_DEBUG ("Configuring for channel number " << (uint16_t)GetChannelNumber ());
@@ -1225,7 +1225,7 @@ WifiPhy::SetMaxSupportedTxSpatialStreams (uint8_t streams)
   ConfigureHtDeviceMcsSet ();
 }
 
-uint8_t 
+uint8_t
 WifiPhy::GetMaxSupportedTxSpatialStreams (void) const
 {
   return m_txSpatialStreams;
@@ -1238,7 +1238,7 @@ WifiPhy::SetMaxSupportedRxSpatialStreams (uint8_t streams)
   m_rxSpatialStreams = streams;
 }
 
-uint8_t 
+uint8_t
 WifiPhy::GetMaxSupportedRxSpatialStreams (void) const
 {
   return m_rxSpatialStreams;
@@ -1945,12 +1945,12 @@ WifiPhy::GetPayloadDuration (uint32_t size, WifiTxVector txVector, uint16_t freq
         //check tables 20-35 and 20-36 in the .11n standard to get cases when nes = 2
         double Nes = 1;
         if (payloadMode.GetUniqueName () == "HtMcs21"
-           || payloadMode.GetUniqueName () == "HtMcs22"
-           || payloadMode.GetUniqueName () == "HtMcs23"
-           || payloadMode.GetUniqueName () == "HtMcs28"
-           || payloadMode.GetUniqueName () == "HtMcs29"
-           || payloadMode.GetUniqueName () == "HtMcs30"
-           || payloadMode.GetUniqueName () == "HtMcs31")
+            || payloadMode.GetUniqueName () == "HtMcs22"
+            || payloadMode.GetUniqueName () == "HtMcs23"
+            || payloadMode.GetUniqueName () == "HtMcs28"
+            || payloadMode.GetUniqueName () == "HtMcs29"
+            || payloadMode.GetUniqueName () == "HtMcs30"
+            || payloadMode.GetUniqueName () == "HtMcs31")
           {
             Nes = 2;
           }
@@ -2125,7 +2125,7 @@ WifiPhy::GetPayloadDuration (uint32_t size, WifiTxVector txVector, uint16_t freq
 Time
 WifiPhy::CalculatePlcpPreambleAndHeaderDuration (WifiTxVector txVector)
 {
-  WifiPreamble preamble = txVector.GetPreambleType();
+  WifiPreamble preamble = txVector.GetPreambleType ();
   Time duration = GetPlcpPreambleDuration (txVector)
     + GetPlcpHeaderDuration (txVector)
     + GetPlcpHtSigHeaderDuration (preamble)
@@ -2213,7 +2213,7 @@ WifiPhy::SendPacket (Ptr<const Packet> packet, WifiTxVector txVector, MpduType m
    *  - we are idle
    */
   NS_ASSERT (!m_state->IsStateTx () && !m_state->IsStateSwitching ());
-  
+
   if (txVector.GetNss () > GetMaxSupportedTxSpatialStreams ())
     {
       NS_FATAL_ERROR ("Unsupported number of spatial streams!");
@@ -2252,7 +2252,7 @@ WifiPhy::SendPacket (Ptr<const Packet> packet, WifiTxVector txVector, MpduType m
   newPacket->RemovePacketTag (oldtag);
   WifiPhyTag tag (txVector, mpdutype);
   newPacket->AddPacketTag (tag);
-  
+
   StartTx (newPacket, txVector, txDuration);
 }
 
@@ -2264,7 +2264,7 @@ WifiPhy::StartReceivePreambleAndHeader (Ptr<Packet> packet, double rxPowerW, Tim
   NS_LOG_FUNCTION (this << packet << WToDbm (rxPowerW) << rxDuration);
   AmpduTag ampduTag;
   Time endRx = Simulator::Now () + rxDuration;
-  
+
   WifiPhyTag tag;
   bool found = packet->RemovePacketTag (tag);
   if (!found)
@@ -2274,17 +2274,17 @@ WifiPhy::StartReceivePreambleAndHeader (Ptr<Packet> packet, double rxPowerW, Tim
     }
 
   WifiTxVector txVector = tag.GetWifiTxVector ();
-  
+
   if (txVector.GetMode ().GetModulationClass () == WIFI_MOD_CLASS_HT
       && (txVector.GetNss () != (1 + (txVector.GetMode ().GetMcsValue () / 8))))
     {
       NS_FATAL_ERROR ("MCS value does not match NSS value: MCS = " << (uint16_t)txVector.GetMode ().GetMcsValue () << ", NSS = " << (uint16_t)txVector.GetNss ());
     }
-  
+
   if (txVector.GetNss () > GetMaxSupportedRxSpatialStreams ())
-     {
+    {
       NS_FATAL_ERROR ("Reception ends in failure because of an unsupported number of spatial streams");
-     }
+    }
 
   WifiPreamble preamble = txVector.GetPreambleType ();
   MpduType mpdutype = tag.GetMpduType ();
@@ -3311,7 +3311,7 @@ bool
 WifiPhy::IsValidTxVector (WifiTxVector txVector)
 {
   uint8_t chWidth = txVector.GetChannelWidth ();
-  uint8_t nss = txVector.GetNss();
+  uint8_t nss = txVector.GetNss ();
   std::string modeName = txVector.GetMode ().GetUniqueName ();
 
   if (chWidth == 20)
