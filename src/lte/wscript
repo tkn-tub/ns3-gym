@@ -126,8 +126,10 @@ def build(bld):
         'model/lte-ccm-mac-sap.cc', 
         'model/lte-enb-component-carrier-manager.cc',
         'model/lte-ue-component-carrier-manager.cc',
+        'model/no-op-component-carrier-manager.cc',
         'model/simple-ue-component-carrier-manager.cc',
         'model/component-carrier.cc',
+        'helper/cc-helper.cc',
         'model/component-carrier-ue.cc',
         'model/component-carrier-enb.cc'
         ]
@@ -310,7 +312,9 @@ def build(bld):
         'model/lte-ccm-mac-sap.h', 
         'model/lte-enb-component-carrier-manager.h',
         'model/lte-ue-component-carrier-manager.h',
+        'model/no-op-component-carrier-manager.h',
         'model/simple-ue-component-carrier-manager.h',
+        'helper/cc-helper.h',
         'model/component-carrier.h',
         'model/component-carrier-ue.h',
         'model/component-carrier-enb.h'
