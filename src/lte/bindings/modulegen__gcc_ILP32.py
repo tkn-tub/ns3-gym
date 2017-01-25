@@ -1004,6 +1004,8 @@ def register_types(module):
     module.add_class('CallbackImplBase', import_from_module='ns.core', parent=root_module['ns3::SimpleRefCount< ns3::CallbackImplBase, ns3::empty, ns3::DefaultDeleter<ns3::CallbackImplBase> >'])
     ## callback.h (module 'core'): ns3::CallbackValue [class]
     module.add_class('CallbackValue', import_from_module='ns.core', parent=root_module['ns3::AttributeValue'])
+    ## cc-helper.h (module 'lte'): ns3::CcHelper [class]
+    module.add_class('CcHelper', parent=root_module['ns3::Object'])
     ## channel.h (module 'network'): ns3::Channel [class]
     module.add_class('Channel', import_from_module='ns.network', parent=root_module['ns3::Object'])
     ## component-carrier.h (module 'lte'): ns3::ComponentCarrier [class]
@@ -1244,6 +1246,8 @@ def register_types(module):
     module.add_class('NetDeviceQueueInterface', import_from_module='ns.network', parent=root_module['ns3::Object'])
     ## nix-vector.h (module 'network'): ns3::NixVector [class]
     module.add_class('NixVector', import_from_module='ns.network', parent=root_module['ns3::SimpleRefCount< ns3::NixVector, ns3::empty, ns3::DefaultDeleter<ns3::NixVector> >'])
+    ## no-op-component-carrier-manager.h (module 'lte'): ns3::NoOpComponentCarrierManager [class]
+    module.add_class('NoOpComponentCarrierManager', parent=root_module['ns3::LteEnbComponentCarrierManager'])
     ## no-op-handover-algorithm.h (module 'lte'): ns3::NoOpHandoverAlgorithm [class]
     module.add_class('NoOpHandoverAlgorithm', parent=root_module['ns3::LteHandoverAlgorithm'])
     ## node.h (module 'network'): ns3::Node [class]
@@ -1288,6 +1292,8 @@ def register_types(module):
     module.add_class('Rar', outer_class=root_module['ns3::RarLteControlMessage'])
     ## rem-spectrum-phy.h (module 'lte'): ns3::RemSpectrumPhy [class]
     module.add_class('RemSpectrumPhy', parent=root_module['ns3::SpectrumPhy'])
+    ## no-op-component-carrier-manager.h (module 'lte'): ns3::RrComponentCarrierManager [class]
+    module.add_class('RrComponentCarrierManager', parent=root_module['ns3::NoOpComponentCarrierManager'])
     ## rr-ff-mac-scheduler.h (module 'lte'): ns3::RrFfMacScheduler [class]
     module.add_class('RrFfMacScheduler', parent=root_module['ns3::FfMacScheduler'])
     ## lte-rrc-header.h (module 'lte'): ns3::RrcAsn1Header [class]
@@ -1469,6 +1475,7 @@ def register_types(module):
     module.add_container('std::vector< ns3::Ipv6Address >', 'ns3::Ipv6Address', container_type=u'vector')
     module.add_container('std::vector< double >', 'double', container_type=u'vector')
     module.add_container('ns3::Bands', 'ns3::BandInfo', container_type=u'vector')
+    module.add_container('std::map< unsigned char, ns3::Ptr< ns3::ComponentCarrier > >', ('unsigned char', 'ns3::Ptr< ns3::ComponentCarrier >'), container_type=u'map')
     module.add_container('std::map< unsigned int, unsigned int >', ('unsigned int', 'unsigned int'), container_type=u'map')
     module.add_container('std::map< unsigned char, ns3::Ptr< ns3::ComponentCarrierEnb > >', ('unsigned char', 'ns3::Ptr< ns3::ComponentCarrierEnb >'), container_type=u'map')
     module.add_container('std::list< ns3::Ptr< ns3::LteControlMessage > >', 'ns3::Ptr< ns3::LteControlMessage >', container_type=u'list')
@@ -2116,6 +2123,7 @@ def register_methods(root_module):
     register_Ns3CallbackChecker_methods(root_module, root_module['ns3::CallbackChecker'])
     register_Ns3CallbackImplBase_methods(root_module, root_module['ns3::CallbackImplBase'])
     register_Ns3CallbackValue_methods(root_module, root_module['ns3::CallbackValue'])
+    register_Ns3CcHelper_methods(root_module, root_module['ns3::CcHelper'])
     register_Ns3Channel_methods(root_module, root_module['ns3::Channel'])
     register_Ns3ComponentCarrier_methods(root_module, root_module['ns3::ComponentCarrier'])
     register_Ns3ComponentCarrierEnb_methods(root_module, root_module['ns3::ComponentCarrierEnb'])
@@ -2224,6 +2232,7 @@ def register_methods(root_module):
     register_Ns3NetDeviceQueue_methods(root_module, root_module['ns3::NetDeviceQueue'])
     register_Ns3NetDeviceQueueInterface_methods(root_module, root_module['ns3::NetDeviceQueueInterface'])
     register_Ns3NixVector_methods(root_module, root_module['ns3::NixVector'])
+    register_Ns3NoOpComponentCarrierManager_methods(root_module, root_module['ns3::NoOpComponentCarrierManager'])
     register_Ns3NoOpHandoverAlgorithm_methods(root_module, root_module['ns3::NoOpHandoverAlgorithm'])
     register_Ns3Node_methods(root_module, root_module['ns3::Node'])
     register_Ns3NormalRandomVariable_methods(root_module, root_module['ns3::NormalRandomVariable'])
@@ -2245,6 +2254,7 @@ def register_methods(root_module):
     register_Ns3RarLteControlMessage_methods(root_module, root_module['ns3::RarLteControlMessage'])
     register_Ns3RarLteControlMessageRar_methods(root_module, root_module['ns3::RarLteControlMessage::Rar'])
     register_Ns3RemSpectrumPhy_methods(root_module, root_module['ns3::RemSpectrumPhy'])
+    register_Ns3RrComponentCarrierManager_methods(root_module, root_module['ns3::RrComponentCarrierManager'])
     register_Ns3RrFfMacScheduler_methods(root_module, root_module['ns3::RrFfMacScheduler'])
     register_Ns3RrcAsn1Header_methods(root_module, root_module['ns3::RrcAsn1Header'])
     register_Ns3RrcDlCcchMessage_methods(root_module, root_module['ns3::RrcDlCcchMessage'])
@@ -13279,6 +13289,80 @@ def register_Ns3CallbackValue_methods(root_module, cls):
                    [param('ns3::CallbackBase', 'base')])
     return
 
+def register_Ns3CcHelper_methods(root_module, cls):
+    ## cc-helper.h (module 'lte'): ns3::CcHelper::CcHelper(ns3::CcHelper const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::CcHelper const &', 'arg0')])
+    ## cc-helper.h (module 'lte'): ns3::CcHelper::CcHelper() [constructor]
+    cls.add_constructor([])
+    ## cc-helper.h (module 'lte'): ns3::Ptr<ns3::ComponentCarrier> ns3::CcHelper::DoCreateSingleCc(uint16_t ulBandwidth, uint16_t dlBandwidth, uint32_t ulEarfcn, uint32_t dlEarfcn, bool isPrimary) [member function]
+    cls.add_method('DoCreateSingleCc', 
+                   'ns3::Ptr< ns3::ComponentCarrier >', 
+                   [param('uint16_t', 'ulBandwidth'), param('uint16_t', 'dlBandwidth'), param('uint32_t', 'ulEarfcn'), param('uint32_t', 'dlEarfcn'), param('bool', 'isPrimary')])
+    ## cc-helper.h (module 'lte'): void ns3::CcHelper::DoDispose() [member function]
+    cls.add_method('DoDispose', 
+                   'void', 
+                   [], 
+                   is_virtual=True)
+    ## cc-helper.h (module 'lte'): std::map<unsigned char,ns3::Ptr<ns3::ComponentCarrier>,std::less<unsigned char>,std::allocator<std::pair<const unsigned char, ns3::Ptr<ns3::ComponentCarrier> > > > ns3::CcHelper::EquallySpacedCcs() [member function]
+    cls.add_method('EquallySpacedCcs', 
+                   'std::map< unsigned char, ns3::Ptr< ns3::ComponentCarrier > >', 
+                   [])
+    ## cc-helper.h (module 'lte'): uint16_t ns3::CcHelper::GetDlBandwidth() [member function]
+    cls.add_method('GetDlBandwidth', 
+                   'uint16_t', 
+                   [])
+    ## cc-helper.h (module 'lte'): uint32_t ns3::CcHelper::GetDlEarfcn() [member function]
+    cls.add_method('GetDlEarfcn', 
+                   'uint32_t', 
+                   [])
+    ## cc-helper.h (module 'lte'): uint16_t ns3::CcHelper::GetNumberOfComponentCarriers() [member function]
+    cls.add_method('GetNumberOfComponentCarriers', 
+                   'uint16_t', 
+                   [])
+    ## cc-helper.h (module 'lte'): static ns3::TypeId ns3::CcHelper::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## cc-helper.h (module 'lte'): uint16_t ns3::CcHelper::GetUlBandwidth() [member function]
+    cls.add_method('GetUlBandwidth', 
+                   'uint16_t', 
+                   [])
+    ## cc-helper.h (module 'lte'): uint32_t ns3::CcHelper::GetUlEarfcn() [member function]
+    cls.add_method('GetUlEarfcn', 
+                   'uint32_t', 
+                   [])
+    ## cc-helper.h (module 'lte'): void ns3::CcHelper::SetCcAttribute(std::string n, ns3::AttributeValue const & v) [member function]
+    cls.add_method('SetCcAttribute', 
+                   'void', 
+                   [param('std::string', 'n'), param('ns3::AttributeValue const &', 'v')])
+    ## cc-helper.h (module 'lte'): void ns3::CcHelper::SetDlBandwidth(uint16_t dlBandwidth) [member function]
+    cls.add_method('SetDlBandwidth', 
+                   'void', 
+                   [param('uint16_t', 'dlBandwidth')])
+    ## cc-helper.h (module 'lte'): void ns3::CcHelper::SetDlEarfcn(uint32_t dlEarfcn) [member function]
+    cls.add_method('SetDlEarfcn', 
+                   'void', 
+                   [param('uint32_t', 'dlEarfcn')])
+    ## cc-helper.h (module 'lte'): void ns3::CcHelper::SetNumberOfComponentCarriers(uint16_t nCc) [member function]
+    cls.add_method('SetNumberOfComponentCarriers', 
+                   'void', 
+                   [param('uint16_t', 'nCc')])
+    ## cc-helper.h (module 'lte'): void ns3::CcHelper::SetUlBandwidth(uint16_t ulBandwidth) [member function]
+    cls.add_method('SetUlBandwidth', 
+                   'void', 
+                   [param('uint16_t', 'ulBandwidth')])
+    ## cc-helper.h (module 'lte'): void ns3::CcHelper::SetUlEarfcn(uint32_t ulEarfcn) [member function]
+    cls.add_method('SetUlEarfcn', 
+                   'void', 
+                   [param('uint32_t', 'ulEarfcn')])
+    ## cc-helper.h (module 'lte'): void ns3::CcHelper::DoInitialize() [member function]
+    cls.add_method('DoInitialize', 
+                   'void', 
+                   [], 
+                   visibility='protected', is_virtual=True)
+    return
+
 def register_Ns3Channel_methods(root_module, cls):
     ## channel.h (module 'network'): ns3::Channel::Channel(ns3::Channel const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::Channel const &', 'arg0')])
@@ -19326,6 +19410,98 @@ def register_Ns3NixVector_methods(root_module, cls):
                    is_const=True)
     return
 
+def register_Ns3NoOpComponentCarrierManager_methods(root_module, cls):
+    ## no-op-component-carrier-manager.h (module 'lte'): ns3::NoOpComponentCarrierManager::NoOpComponentCarrierManager(ns3::NoOpComponentCarrierManager const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::NoOpComponentCarrierManager const &', 'arg0')])
+    ## no-op-component-carrier-manager.h (module 'lte'): ns3::NoOpComponentCarrierManager::NoOpComponentCarrierManager() [constructor]
+    cls.add_constructor([])
+    ## no-op-component-carrier-manager.h (module 'lte'): static ns3::TypeId ns3::NoOpComponentCarrierManager::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## no-op-component-carrier-manager.h (module 'lte'): void ns3::NoOpComponentCarrierManager::DoAddLc(ns3::LteEnbCmacSapProvider::LcInfo lcInfo, ns3::LteMacSapUser * msu) [member function]
+    cls.add_method('DoAddLc', 
+                   'void', 
+                   [param('ns3::LteEnbCmacSapProvider::LcInfo', 'lcInfo'), param('ns3::LteMacSapUser *', 'msu')], 
+                   visibility='protected', is_virtual=True)
+    ## no-op-component-carrier-manager.h (module 'lte'): void ns3::NoOpComponentCarrierManager::DoAddUe(uint16_t rnti, uint8_t state) [member function]
+    cls.add_method('DoAddUe', 
+                   'void', 
+                   [param('uint16_t', 'rnti'), param('uint8_t', 'state')], 
+                   visibility='protected', is_virtual=True)
+    ## no-op-component-carrier-manager.h (module 'lte'): ns3::LteMacSapUser * ns3::NoOpComponentCarrierManager::DoConfigureSignalBearer(ns3::LteEnbCmacSapProvider::LcInfo lcinfo, ns3::LteMacSapUser * msu) [member function]
+    cls.add_method('DoConfigureSignalBearer', 
+                   'ns3::LteMacSapUser *', 
+                   [param('ns3::LteEnbCmacSapProvider::LcInfo', 'lcinfo'), param('ns3::LteMacSapUser *', 'msu')], 
+                   visibility='protected', is_virtual=True)
+    ## no-op-component-carrier-manager.h (module 'lte'): void ns3::NoOpComponentCarrierManager::DoDispose() [member function]
+    cls.add_method('DoDispose', 
+                   'void', 
+                   [], 
+                   visibility='protected', is_virtual=True)
+    ## no-op-component-carrier-manager.h (module 'lte'): void ns3::NoOpComponentCarrierManager::DoInitialize() [member function]
+    cls.add_method('DoInitialize', 
+                   'void', 
+                   [], 
+                   visibility='protected', is_virtual=True)
+    ## no-op-component-carrier-manager.h (module 'lte'): void ns3::NoOpComponentCarrierManager::DoNotifyHarqDeliveryFailure() [member function]
+    cls.add_method('DoNotifyHarqDeliveryFailure', 
+                   'void', 
+                   [], 
+                   visibility='protected', is_virtual=True)
+    ## no-op-component-carrier-manager.h (module 'lte'): void ns3::NoOpComponentCarrierManager::DoNotifyPrbOccupancy(double prbOccupancy, uint8_t componentCarrierId) [member function]
+    cls.add_method('DoNotifyPrbOccupancy', 
+                   'void', 
+                   [param('double', 'prbOccupancy'), param('uint8_t', 'componentCarrierId')], 
+                   visibility='protected', is_virtual=True)
+    ## no-op-component-carrier-manager.h (module 'lte'): void ns3::NoOpComponentCarrierManager::DoNotifyTxOpportunity(uint32_t bytes, uint8_t layer, uint8_t harqId, uint8_t componentCarrierId, uint16_t rnti, uint8_t lcid) [member function]
+    cls.add_method('DoNotifyTxOpportunity', 
+                   'void', 
+                   [param('uint32_t', 'bytes'), param('uint8_t', 'layer'), param('uint8_t', 'harqId'), param('uint8_t', 'componentCarrierId'), param('uint16_t', 'rnti'), param('uint8_t', 'lcid')], 
+                   visibility='protected', is_virtual=True)
+    ## no-op-component-carrier-manager.h (module 'lte'): void ns3::NoOpComponentCarrierManager::DoReceivePdu(ns3::Ptr<ns3::Packet> p, uint16_t rnti, uint8_t lcid) [member function]
+    cls.add_method('DoReceivePdu', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Packet >', 'p'), param('uint16_t', 'rnti'), param('uint8_t', 'lcid')], 
+                   visibility='protected', is_virtual=True)
+    ## no-op-component-carrier-manager.h (module 'lte'): std::vector<unsigned short, std::allocator<unsigned short> > ns3::NoOpComponentCarrierManager::DoReleaseDataRadioBearer(uint16_t rnti, uint8_t lcid) [member function]
+    cls.add_method('DoReleaseDataRadioBearer', 
+                   'std::vector< unsigned short >', 
+                   [param('uint16_t', 'rnti'), param('uint8_t', 'lcid')], 
+                   visibility='protected', is_virtual=True)
+    ## no-op-component-carrier-manager.h (module 'lte'): void ns3::NoOpComponentCarrierManager::DoRemoveUe(uint16_t rnti) [member function]
+    cls.add_method('DoRemoveUe', 
+                   'void', 
+                   [param('uint16_t', 'rnti')], 
+                   visibility='protected', is_virtual=True)
+    ## no-op-component-carrier-manager.h (module 'lte'): void ns3::NoOpComponentCarrierManager::DoReportBufferStatus(ns3::LteMacSapProvider::ReportBufferStatusParameters params) [member function]
+    cls.add_method('DoReportBufferStatus', 
+                   'void', 
+                   [param('ns3::LteMacSapProvider::ReportBufferStatusParameters', 'params')], 
+                   visibility='protected', is_virtual=True)
+    ## no-op-component-carrier-manager.h (module 'lte'): void ns3::NoOpComponentCarrierManager::DoReportUeMeas(uint16_t rnti, ns3::LteRrcSap::MeasResults measResults) [member function]
+    cls.add_method('DoReportUeMeas', 
+                   'void', 
+                   [param('uint16_t', 'rnti'), param('ns3::LteRrcSap::MeasResults', 'measResults')], 
+                   visibility='protected', is_virtual=True)
+    ## no-op-component-carrier-manager.h (module 'lte'): std::vector<ns3::LteCcmRrcSapProvider::LcsConfig, std::allocator<ns3::LteCcmRrcSapProvider::LcsConfig> > ns3::NoOpComponentCarrierManager::DoSetupDataRadioBearer(ns3::EpsBearer bearer, uint8_t bearerId, uint16_t rnti, uint8_t lcid, uint8_t lcGroup, ns3::LteMacSapUser * msu) [member function]
+    cls.add_method('DoSetupDataRadioBearer', 
+                   'std::vector< ns3::LteCcmRrcSapProvider::LcsConfig >', 
+                   [param('ns3::EpsBearer', 'bearer'), param('uint8_t', 'bearerId'), param('uint16_t', 'rnti'), param('uint8_t', 'lcid'), param('uint8_t', 'lcGroup'), param('ns3::LteMacSapUser *', 'msu')], 
+                   visibility='protected', is_virtual=True)
+    ## no-op-component-carrier-manager.h (module 'lte'): void ns3::NoOpComponentCarrierManager::DoTransmitPdu(ns3::LteMacSapProvider::TransmitPduParameters params) [member function]
+    cls.add_method('DoTransmitPdu', 
+                   'void', 
+                   [param('ns3::LteMacSapProvider::TransmitPduParameters', 'params')], 
+                   visibility='protected', is_virtual=True)
+    ## no-op-component-carrier-manager.h (module 'lte'): void ns3::NoOpComponentCarrierManager::DoUlReceiveMacCe(ns3::MacCeListElement_s bsr, uint8_t componentCarrierId) [member function]
+    cls.add_method('DoUlReceiveMacCe', 
+                   'void', 
+                   [param('ns3::MacCeListElement_s', 'bsr'), param('uint8_t', 'componentCarrierId')], 
+                   visibility='protected', is_virtual=True)
+    return
+
 def register_Ns3NoOpHandoverAlgorithm_methods(root_module, cls):
     ## no-op-handover-algorithm.h (module 'lte'): ns3::NoOpHandoverAlgorithm::NoOpHandoverAlgorithm(ns3::NoOpHandoverAlgorithm const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::NoOpHandoverAlgorithm const &', 'arg0')])
@@ -20428,6 +20604,28 @@ def register_Ns3RemSpectrumPhy_methods(root_module, cls):
     cls.add_method('SetRbId', 
                    'void', 
                    [param('int32_t', 'rbId')])
+    return
+
+def register_Ns3RrComponentCarrierManager_methods(root_module, cls):
+    ## no-op-component-carrier-manager.h (module 'lte'): ns3::RrComponentCarrierManager::RrComponentCarrierManager(ns3::RrComponentCarrierManager const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::RrComponentCarrierManager const &', 'arg0')])
+    ## no-op-component-carrier-manager.h (module 'lte'): ns3::RrComponentCarrierManager::RrComponentCarrierManager() [constructor]
+    cls.add_constructor([])
+    ## no-op-component-carrier-manager.h (module 'lte'): static ns3::TypeId ns3::RrComponentCarrierManager::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## no-op-component-carrier-manager.h (module 'lte'): void ns3::RrComponentCarrierManager::DoReportBufferStatus(ns3::LteMacSapProvider::ReportBufferStatusParameters params) [member function]
+    cls.add_method('DoReportBufferStatus', 
+                   'void', 
+                   [param('ns3::LteMacSapProvider::ReportBufferStatusParameters', 'params')], 
+                   visibility='protected', is_virtual=True)
+    ## no-op-component-carrier-manager.h (module 'lte'): void ns3::RrComponentCarrierManager::DoUlReceiveMacCe(ns3::MacCeListElement_s bsr, uint8_t componentCarrierId) [member function]
+    cls.add_method('DoUlReceiveMacCe', 
+                   'void', 
+                   [param('ns3::MacCeListElement_s', 'bsr'), param('uint8_t', 'componentCarrierId')], 
+                   visibility='protected', is_virtual=True)
     return
 
 def register_Ns3RrFfMacScheduler_methods(root_module, cls):
