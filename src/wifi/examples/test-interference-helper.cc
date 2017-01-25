@@ -53,7 +53,7 @@
 #include "ns3/yans-wifi-channel.h"
 #include "ns3/propagation-loss-model.h"
 #include "ns3/propagation-delay-model.h"
-#include "ns3/yans-error-rate-model.h"
+#include "ns3/nist-error-rate-model.h"
 #include "ns3/constant-position-mobility-model.h"
 
 using namespace ns3;
@@ -152,7 +152,7 @@ InterferenceExperiment::Run (struct InterferenceExperiment::Input input)
   m_txB = CreateObject<YansWifiPhy> ();
   Ptr<YansWifiPhy> rx = CreateObject<YansWifiPhy> ();
 
-  Ptr<ErrorRateModel> error = CreateObject<YansErrorRateModel> ();
+  Ptr<ErrorRateModel> error = CreateObject<NistErrorRateModel> ();
   m_txA->SetErrorRateModel (error);
   m_txB->SetErrorRateModel (error);
   rx->SetErrorRateModel (error);
