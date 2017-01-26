@@ -194,6 +194,13 @@ LteUeNetDevice::GetPhy (void) const
   return m_phy;
 }
 
+Ptr<LteUeComponentCarrierManager>
+LteUeNetDevice::GetComponentCarrierManager (void) const
+{
+  NS_LOG_FUNCTION (this);
+  return m_componentCarrierManager;
+}
+
 Ptr<EpcUeNas>
 LteUeNetDevice::GetNas (void) const
 {
@@ -281,7 +288,7 @@ LteUeNetDevice::Send (Ptr<Packet> packet, const Address& dest, uint16_t protocol
   NS_LOG_FUNCTION (this << dest << protocolNumber);
   if (protocolNumber != Ipv4L3Protocol::PROT_NUMBER)
     {
-      NS_LOG_INFO("unsupported protocol " << protocolNumber << ", only IPv4 is supported");
+      NS_LOG_INFO ("unsupported protocol " << protocolNumber << ", only IPv4 is supported");
       return true;
     }  
   return m_nas->Send (packet);

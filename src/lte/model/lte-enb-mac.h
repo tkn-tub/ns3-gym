@@ -38,6 +38,7 @@
 #include "ns3/trace-source-accessor.h"
 #include <ns3/packet.h>
 #include <ns3/packet-burst.h>
+#include <ns3/lte-ccm-mac-sap.h>
 
 namespace ns3 {
 
@@ -57,6 +58,7 @@ class LteEnbMac :   public Object
   friend class EnbMacMemberFfMacSchedSapUser;
   friend class EnbMacMemberFfMacCschedSapUser;
   friend class EnbMacMemberLteEnbPhySapUser;
+  friend class MemberLteCcmMacSapProvider<LteEnbMac>;
 
 public:
   static TypeId GetTypeId (void);
@@ -122,6 +124,19 @@ public:
   * \param s a pointer to the PHY SAP provider
   */
   void SetLteEnbPhySapProvider (LteEnbPhySapProvider* s);
+
+  /**
+  * \brief Get the eNB-ComponetCarrierManager SAP User
+  * \return a pointer to the SAP User of the ComponetCarrierManager
+  */
+  LteCcmMacSapProvider* GetLteCcmMacSapProvider ();
+
+  /**
+  * \brief Set the ComponentCarrierManager SAP user
+  * \param s a pointer to the ComponentCarrierManager provider
+  */
+  void SetLteCcmMacSapUser (LteCcmMacSapUser* s);
+  
 
   /**
    * TracedCallback signature for DL scheduling events.
@@ -207,6 +222,9 @@ private:
   void DoSubframeIndication (uint32_t frameNo, uint32_t subframeNo);
   void DoReceiveRachPreamble (uint8_t prachId);
 
+  // forwarded by LteCcmMacSapProvider
+  void DoReportMacCeToScheduler (MacCeListElement_s bsr);
+  
 public:
   // legacy public for use the Phy callback
   void DoReceivePhyPdu (Ptr<Packet> p);
@@ -249,6 +267,9 @@ private:
   LteEnbPhySapProvider* m_enbPhySapProvider;
   LteEnbPhySapUser* m_enbPhySapUser;
 
+  // Sap For ComponentCarrierManager 'Uplink case'
+  LteCcmMacSapProvider* m_ccmMacSapProvider;
+  LteCcmMacSapUser* m_ccmMacSapUser;
   /**
    * frame number of current subframe indication
    */

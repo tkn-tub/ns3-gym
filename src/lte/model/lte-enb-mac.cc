@@ -38,6 +38,7 @@
 #include <ns3/lte-ue-phy.h>
 
 #include "ns3/lte-mac-sap.h"
+#include "ns3/lte-enb-cmac-sap.h"
 #include <ns3/lte-common.h>
 
 
@@ -353,7 +354,8 @@ LteEnbMac::GetTypeId (void)
 }
 
 
-LteEnbMac::LteEnbMac ()
+LteEnbMac::LteEnbMac ():
+m_ccmMacSapUser (0)
 {
   NS_LOG_FUNCTION (this);
   m_macSapProvider = new EnbMacMemberLteMacSapProvider<LteEnbMac> (this);
@@ -361,6 +363,7 @@ LteEnbMac::LteEnbMac ()
   m_schedSapUser = new EnbMacMemberFfMacSchedSapUser (this);
   m_cschedSapUser = new EnbMacMemberFfMacCschedSapUser (this);
   m_enbPhySapUser = new EnbMacMemberLteEnbPhySapUser (this);
+  m_ccmMacSapProvider = new MemberLteCcmMacSapProvider<LteEnbMac> (this);
 }
 
 
@@ -384,6 +387,7 @@ LteEnbMac::DoDispose ()
   delete m_schedSapUser;
   delete m_cschedSapUser;
   delete m_enbPhySapUser;
+  delete m_ccmMacSapProvider;
 }
 
 void
@@ -455,7 +459,18 @@ LteEnbMac::GetLteEnbPhySapUser ()
   return m_enbPhySapUser;
 }
 
+void
+LteEnbMac::SetLteCcmMacSapUser (LteCcmMacSapUser* s)
+{
+  m_ccmMacSapUser = s;
+}
 
+
+LteCcmMacSapProvider*
+LteEnbMac::GetLteCcmMacSapProvider ()
+{
+  return m_ccmMacSapProvider;
+}
 
 void
 LteEnbMac::DoSubframeIndication (uint32_t frameNo, uint32_t subframeNo)
@@ -678,6 +693,16 @@ LteEnbMac::ReceiveBsrMessage  (MacCeListElement_s bsr)
   NS_LOG_FUNCTION (this);
 
   m_ulCeReceived.push_back (bsr);
+}
+
+void
+LteEnbMac::DoReportMacCeToScheduler (MacCeListElement_s bsr)
+{
+  NS_LOG_FUNCTION (this);
+  NS_LOG_DEBUG (this << " bsr Size " << (uint16_t) m_ulCeReceived.size ());
+  //send to LteCcmMacSapUser
+  m_ulCeReceived.push_back (bsr); // this to called when LteUlCcmSapProvider::ReportMacCeToScheduler is called
+  NS_LOG_DEBUG (this << " bsr Size after push_back " << (uint16_t) m_ulCeReceived.size ());
 }
 
 

@@ -45,6 +45,8 @@
 #include <ns3/ff-mac-scheduler.h>
 #include <ns3/lte-ffr-algorithm.h>
 #include <ns3/lte-handover-algorithm.h>
+#include <ns3/lte-enb-component-carrier-manager.h>
+#include <ns3/lte-ue-component-carrier-manager.h>
 #include <ns3/lte-anr.h>
 #include <ns3/lte-rlc.h>
 #include <ns3/lte-rlc-um.h>
@@ -61,6 +63,9 @@
 #include <ns3/buildings-propagation-loss-model.h>
 #include <ns3/lte-spectrum-value-helper.h>
 #include <ns3/epc-x2.h>
+#include <ns3/pointer.h>
+#include <ns3/object-map.h>
+#include <ns3/object-factory.h>
 
 namespace ns3 {
 
@@ -200,6 +205,34 @@ TypeId LteHelper::GetTypeId (void)
                    BooleanValue (true),
                    MakeBooleanAccessor (&LteHelper::m_usePdschForCqiGeneration),
                    MakeBooleanChecker ())
+    .AddAttribute ("EnbComponentCarrierManager",
+                   "The type of Component Carrier Manager to be used for eNBs. "
+                   "The allowed values for this attributes are the type names "
+                   "of any class inheriting ns3::LteEnbComponentCarrierManager.",
+                   StringValue ("ns3::NoOpComponentCarrierManager"),
+                   MakeStringAccessor (&LteHelper::SetEnbComponentCarrierManagerType,
+                                       &LteHelper::GetEnbComponentCarrierManagerType),
+                   MakeStringChecker ())
+    .AddAttribute ("UeComponentCarrierManager",
+                   "The type of Component Carrier Manager to be used for UEs. "
+                   "The allowed values for this attributes are the type names "
+                   "of any class inheriting ns3::LteUeComponentCarrierManager.",
+                   StringValue ("ns3::SimpleUeComponentCarrierManager"),
+                   MakeStringAccessor (&LteHelper::SetUeComponentCarrierManagerType,
+                                       &LteHelper::GetUeComponentCarrierManagerType),
+                   MakeStringChecker ())
+    .AddAttribute ("UseCa",
+                   "If true, Carrier Aggregation feature is enabled and a valid Component Carrier Map is expected."
+                   "If false, single carrier simulation.",
+                   BooleanValue (false),
+                   MakeBooleanAccessor (&LteHelper::m_useCa),
+                   MakeBooleanChecker ())
+    .AddAttribute ("NumberOfComponentCarriers",
+                   "Set the number of Component carrier to use "
+                   "If it is more than one and m_useCa is false, it will raise an error ",
+                   UintegerValue (1),
+                   MakeUintegerAccessor (&LteHelper::m_noOfCcs),
+                   MakeUintegerChecker<uint16_t> (1, 3))
   ;
   return tid;
 }
@@ -211,6 +244,18 @@ LteHelper::DoDispose ()
   m_downlinkChannel = 0;
   m_uplinkChannel = 0;
   Object::DoDispose ();
+}
+
+Ptr<SpectrumChannel>
+LteHelper::GetUplinkSpectrumChannel (void) const
+{
+  return m_uplinkChannel;
+}
+
+Ptr<SpectrumChannel>
+LteHelper::GetDownlinkSpectrumChannel (void) const
+{
+  return m_downlinkChannel;
 }
 
 
@@ -285,8 +330,50 @@ LteHelper::SetHandoverAlgorithmAttribute (std::string n, const AttributeValue &v
 }
 
 
-void 
-LteHelper::SetPathlossModelType (std::string type) 
+std::string
+LteHelper::GetEnbComponentCarrierManagerType () const
+{
+  return m_enbComponentCarrierManagerFactory.GetTypeId ().GetName ();
+}
+
+void
+LteHelper::SetEnbComponentCarrierManagerType (std::string type)
+{
+  NS_LOG_FUNCTION (this << type);
+  m_enbComponentCarrierManagerFactory = ObjectFactory ();
+  m_enbComponentCarrierManagerFactory.SetTypeId (type);
+}
+
+void
+LteHelper::SetEnbComponentCarrierManagerAttribute (std::string n, const AttributeValue &v)
+{
+  NS_LOG_FUNCTION (this << n);
+  m_enbComponentCarrierManagerFactory.Set (n, v);
+}
+
+std::string
+LteHelper::GetUeComponentCarrierManagerType () const
+{
+  return m_ueComponentCarrierManagerFactory.GetTypeId ().GetName ();
+}
+
+void
+LteHelper::SetUeComponentCarrierManagerType (std::string type)
+{
+  NS_LOG_FUNCTION (this << type);
+  m_ueComponentCarrierManagerFactory = ObjectFactory ();
+  m_ueComponentCarrierManagerFactory.SetTypeId (type);
+}
+
+void
+LteHelper::SetUeComponentCarrierManagerAttribute (std::string n, const AttributeValue &v)
+{
+  NS_LOG_FUNCTION (this << n);
+  m_ueComponentCarrierManagerFactory.Set (n, v);
+}
+
+void
+LteHelper::SetPathlossModelType (std::string type)
 {
   NS_LOG_FUNCTION (this << type);
   m_dlPathlossModelFactory = ObjectFactory ();
@@ -377,6 +464,12 @@ LteHelper::SetSpectrumChannelAttribute (std::string n, const AttributeValue &v)
   m_channelFactory.Set (n, v);
 }
 
+void
+LteHelper::SetCcPhyParams ( std::map< uint8_t, Ptr<ComponentCarrier> > ccMapParams)
+{
+  NS_LOG_FUNCTION (this);
+  m_componentCarrierPhyParams = ccMapParams;
+}
 
 NetDeviceContainer
 LteHelper::InstallEnbDevice (NodeContainer c)

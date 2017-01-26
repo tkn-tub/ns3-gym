@@ -13303,7 +13303,7 @@ def register_Ns3CcHelper_methods(root_module, cls):
                    'void', 
                    [], 
                    is_virtual=True)
-    ## cc-helper.h (module 'lte'): std::map<unsigned char,ns3::Ptr<ns3::ComponentCarrier>,std::less<unsigned char>,std::allocator<std::pair<const unsigned char, ns3::Ptr<ns3::ComponentCarrier> > > > ns3::CcHelper::EquallySpacedCcs() [member function]
+    ## cc-helper.h (module 'lte'): std::map<unsigned char, ns3::Ptr<ns3::ComponentCarrier>, std::less<unsigned char>, std::allocator<std::pair<unsigned char const, ns3::Ptr<ns3::ComponentCarrier> > > > ns3::CcHelper::EquallySpacedCcs() [member function]
     cls.add_method('EquallySpacedCcs', 
                    'std::map< unsigned char, ns3::Ptr< ns3::ComponentCarrier > >', 
                    [])
@@ -16072,6 +16072,10 @@ def register_Ns3LteEnbMac_methods(root_module, cls):
     cls.add_method('GetFfMacSchedSapUser', 
                    'ns3::FfMacSchedSapUser *', 
                    [])
+    ## lte-enb-mac.h (module 'lte'): ns3::LteCcmMacSapProvider * ns3::LteEnbMac::GetLteCcmMacSapProvider() [member function]
+    cls.add_method('GetLteCcmMacSapProvider', 
+                   'ns3::LteCcmMacSapProvider *', 
+                   [])
     ## lte-enb-mac.h (module 'lte'): ns3::LteEnbCmacSapProvider * ns3::LteEnbMac::GetLteEnbCmacSapProvider() [member function]
     cls.add_method('GetLteEnbCmacSapProvider', 
                    'ns3::LteEnbCmacSapProvider *', 
@@ -16101,6 +16105,10 @@ def register_Ns3LteEnbMac_methods(root_module, cls):
     cls.add_method('SetFfMacSchedSapProvider', 
                    'void', 
                    [param('ns3::FfMacSchedSapProvider *', 's')])
+    ## lte-enb-mac.h (module 'lte'): void ns3::LteEnbMac::SetLteCcmMacSapUser(ns3::LteCcmMacSapUser * s) [member function]
+    cls.add_method('SetLteCcmMacSapUser', 
+                   'void', 
+                   [param('ns3::LteCcmMacSapUser *', 's')])
     ## lte-enb-mac.h (module 'lte'): void ns3::LteEnbMac::SetLteEnbCmacSapUser(ns3::LteEnbCmacSapUser * s) [member function]
     cls.add_method('SetLteEnbCmacSapUser', 
                    'void', 
@@ -17445,6 +17453,16 @@ def register_Ns3LteHelper_methods(root_module, cls):
     cls.add_method('EnableUlTxPhyTraces', 
                    'void', 
                    [])
+    ## lte-helper.h (module 'lte'): ns3::Ptr<ns3::SpectrumChannel> ns3::LteHelper::GetDownlinkSpectrumChannel() const [member function]
+    cls.add_method('GetDownlinkSpectrumChannel', 
+                   'ns3::Ptr< ns3::SpectrumChannel >', 
+                   [], 
+                   is_const=True)
+    ## lte-helper.h (module 'lte'): std::string ns3::LteHelper::GetEnbComponentCarrierManagerType() const [member function]
+    cls.add_method('GetEnbComponentCarrierManagerType', 
+                   'std::string', 
+                   [], 
+                   is_const=True)
     ## lte-helper.h (module 'lte'): std::string ns3::LteHelper::GetFfrAlgorithmType() const [member function]
     cls.add_method('GetFfrAlgorithmType', 
                    'std::string', 
@@ -17473,6 +17491,16 @@ def register_Ns3LteHelper_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
+    ## lte-helper.h (module 'lte'): std::string ns3::LteHelper::GetUeComponentCarrierManagerType() const [member function]
+    cls.add_method('GetUeComponentCarrierManagerType', 
+                   'std::string', 
+                   [], 
+                   is_const=True)
+    ## lte-helper.h (module 'lte'): ns3::Ptr<ns3::SpectrumChannel> ns3::LteHelper::GetUplinkSpectrumChannel() const [member function]
+    cls.add_method('GetUplinkSpectrumChannel', 
+                   'ns3::Ptr< ns3::SpectrumChannel >', 
+                   [], 
+                   is_const=True)
     ## lte-helper.h (module 'lte'): void ns3::LteHelper::HandoverRequest(ns3::Time hoTime, ns3::Ptr<ns3::NetDevice> ueDev, ns3::Ptr<ns3::NetDevice> sourceEnbDev, ns3::Ptr<ns3::NetDevice> targetEnbDev) [member function]
     cls.add_method('HandoverRequest', 
                    'void', 
@@ -17485,12 +17513,24 @@ def register_Ns3LteHelper_methods(root_module, cls):
     cls.add_method('InstallUeDevice', 
                    'ns3::NetDeviceContainer', 
                    [param('ns3::NodeContainer', 'c')])
+    ## lte-helper.h (module 'lte'): void ns3::LteHelper::SetCcPhyParams(std::map<unsigned char, ns3::Ptr<ns3::ComponentCarrier>, std::less<unsigned char>, std::allocator<std::pair<unsigned char const, ns3::Ptr<ns3::ComponentCarrier> > > > ccmap) [member function]
+    cls.add_method('SetCcPhyParams', 
+                   'void', 
+                   [param('std::map< unsigned char, ns3::Ptr< ns3::ComponentCarrier > >', 'ccmap')])
     ## lte-helper.h (module 'lte'): void ns3::LteHelper::SetEnbAntennaModelAttribute(std::string n, ns3::AttributeValue const & v) [member function]
     cls.add_method('SetEnbAntennaModelAttribute', 
                    'void', 
                    [param('std::string', 'n'), param('ns3::AttributeValue const &', 'v')])
     ## lte-helper.h (module 'lte'): void ns3::LteHelper::SetEnbAntennaModelType(std::string type) [member function]
     cls.add_method('SetEnbAntennaModelType', 
+                   'void', 
+                   [param('std::string', 'type')])
+    ## lte-helper.h (module 'lte'): void ns3::LteHelper::SetEnbComponentCarrierManagerAttribute(std::string n, ns3::AttributeValue const & v) [member function]
+    cls.add_method('SetEnbComponentCarrierManagerAttribute', 
+                   'void', 
+                   [param('std::string', 'n'), param('ns3::AttributeValue const &', 'v')])
+    ## lte-helper.h (module 'lte'): void ns3::LteHelper::SetEnbComponentCarrierManagerType(std::string type) [member function]
+    cls.add_method('SetEnbComponentCarrierManagerType', 
                    'void', 
                    [param('std::string', 'type')])
     ## lte-helper.h (module 'lte'): void ns3::LteHelper::SetEnbDeviceAttribute(std::string n, ns3::AttributeValue const & v) [member function]
@@ -17555,6 +17595,14 @@ def register_Ns3LteHelper_methods(root_module, cls):
                    [param('std::string', 'n'), param('ns3::AttributeValue const &', 'v')])
     ## lte-helper.h (module 'lte'): void ns3::LteHelper::SetUeAntennaModelType(std::string type) [member function]
     cls.add_method('SetUeAntennaModelType', 
+                   'void', 
+                   [param('std::string', 'type')])
+    ## lte-helper.h (module 'lte'): void ns3::LteHelper::SetUeComponentCarrierManagerAttribute(std::string n, ns3::AttributeValue const & v) [member function]
+    cls.add_method('SetUeComponentCarrierManagerAttribute', 
+                   'void', 
+                   [param('std::string', 'n'), param('ns3::AttributeValue const &', 'v')])
+    ## lte-helper.h (module 'lte'): void ns3::LteHelper::SetUeComponentCarrierManagerType(std::string type) [member function]
+    cls.add_method('SetUeComponentCarrierManagerType', 
                    'void', 
                    [param('std::string', 'type')])
     ## lte-helper.h (module 'lte'): void ns3::LteHelper::SetUeDeviceAttribute(std::string n, ns3::AttributeValue const & v) [member function]

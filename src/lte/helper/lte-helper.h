@@ -37,6 +37,9 @@
 #include <ns3/radio-bearer-stats-connector.h>
 #include <ns3/epc-tft.h>
 #include <ns3/mobility-model.h>
+#include <ns3/component-carrier-enb.h>
+#include <ns3/cc-helper.h>
+#include <map>
 
 namespace ns3 {
 
@@ -76,6 +79,7 @@ class SpectrumPropagationLossModel;
  *     * Handover algorithm
  *     * FFR (frequency reuse) algorithm
  *     * ANR (automatic neighbour relation)
+ *     * CCM (Carrier Component Manager) 
  *   + EPC related models (EPC application, Internet stack, X2 interface)
  * - UE node(s)
  *   + Mobility model
@@ -263,7 +267,15 @@ public:
    */
   void SetUeAntennaModelAttribute (std::string n, const AttributeValue &v);
 
-  /** 
+  /**
+   * This method is used to send the ComponentCarrier map created with CcHelper
+   * to the helper, the structure will be used within InstallSingleEnbDevice
+   *
+   * \param ccmap, the component carrier map
+   */
+   void SetCcPhyParams (std::map< uint8_t, Ptr<ComponentCarrier> > ccmap);
+
+  /**
    * Set the type of spectrum channel to be used in both DL and UL.
    *
    * \param type type of spectrum channel model, must be a type name of any
@@ -279,6 +291,51 @@ public:
    * \param v the value of the attribute
    */
   void SetSpectrumChannelAttribute (std::string n, const AttributeValue &v);
+
+  /**
+   * Set the type of carrier component algorithm to be used by eNodeB devices.
+   *
+   * \param type type of carrier component manager
+   *
+   */
+  void SetEnbComponentCarrierManagerType (std::string type);
+
+  /**
+   *
+   * \return the carrier enb component carrier manager type
+   */
+  std::string GetEnbComponentCarrierManagerType () const;
+
+  /**
+   * Set an attribute for the enb component carrier manager to be created.
+   *
+   * \param n the name of the attribute
+   * \param v the value of the attribute
+   */
+  void SetEnbComponentCarrierManagerAttribute (std::string n, const AttributeValue &v);
+
+  /**
+   * Set the type of Component Carrier Manager to be used by Ue devices.
+   *
+   * \param type type of UE Component Carrier Manager
+   *
+   */
+  void SetUeComponentCarrierManagerType (std::string type);
+
+
+  /**
+   *
+   * \return the carrier ue component carrier manager type
+   */
+  std::string GetUeComponentCarrierManagerType () const;
+
+  /**
+   * Set an attribute for the ue component carrier manager to be created.
+   *
+   * \param n the name of the attribute
+   * \param v the value of the attribute
+   */
+  void SetUeComponentCarrierManagerAttribute (std::string n, const AttributeValue &v);
 
   /**
    * Create a set of eNodeB devices.
@@ -590,6 +647,18 @@ public:
   */
   int64_t AssignStreams (NetDeviceContainer c, int64_t stream);
 
+  /** 
+   * \return a pointer to the SpectrumChannel instance used for the uplink
+   */
+  Ptr<SpectrumChannel> GetUplinkSpectrumChannel (void) const;
+
+
+  /** 
+   * \return a pointer to the SpectrumChannel instance used for the downlink
+   */
+  Ptr<SpectrumChannel> GetDownlinkSpectrumChannel (void) const;
+
+
 protected:
   // inherited from Object
   virtual void DoInitialize (void);
@@ -653,6 +722,10 @@ private:
   ObjectFactory m_ffrAlgorithmFactory;
   /// Factory of handover algorithm object.
   ObjectFactory m_handoverAlgorithmFactory;
+  /// Factory of enb component carrier manager object.
+  ObjectFactory m_enbComponentCarrierManagerFactory;
+  /// Factory of ue component carrier manager object.
+  ObjectFactory m_ueComponentCarrierManagerFactory;
   /// Factory of LteEnbNetDevice objects.
   ObjectFactory m_enbNetDeviceFactory;
   /// Factory of antenna object for eNodeB.
@@ -732,7 +805,22 @@ private:
    */
   bool m_usePdschForCqiGeneration;
 
-}; // end of `class LteHelper`
+  /**
+   * The `UseCa` attribute. If true, Carrier Aggregation is enabled.
+   * Hence, the helper will expec a valid component carrier map
+   * If it is false, the component carrier will be created within the LteHelper
+   * this is to mantain the backwards compatibility with user script
+   */
+  bool m_useCa;
+
+  /**
+   * This contains all the information about each component carrier
+   */
+  std::map< uint8_t, Ptr<ComponentCarrier> > m_componentCarrierPhyParams;
+
+  uint16_t m_noOfCcs;
+
+};   // end of `class LteHelper`
 
 
 } // namespace ns3
