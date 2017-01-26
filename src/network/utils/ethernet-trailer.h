@@ -67,7 +67,7 @@ public:
   /**
    * \return the FCS contained in this trailer
    */
-  uint32_t GetFcs ();
+  uint32_t GetFcs () const;
 
   /**
    * Calculate an FCS on the provided packet and check this value against
