@@ -811,14 +811,14 @@ private:
    * If it is false, the component carrier will be created within the LteHelper
    * this is to mantain the backwards compatibility with user script
    */
-  bool m_useCa;
+  //bool m_useCa;
 
   /**
    * This contains all the information about each component carrier
    */
   std::map< uint8_t, Ptr<ComponentCarrier> > m_componentCarrierPhyParams;
 
-  uint16_t m_noOfCcs;
+  //uint16_t m_noOfCcs;
 
 };   // end of `class LteHelper`
 

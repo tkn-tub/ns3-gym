@@ -221,7 +221,7 @@ TypeId LteHelper::GetTypeId (void)
                    MakeStringAccessor (&LteHelper::SetUeComponentCarrierManagerType,
                                        &LteHelper::GetUeComponentCarrierManagerType),
                    MakeStringChecker ())
-    .AddAttribute ("UseCa",
+    /*.AddAttribute ("UseCa",
                    "If true, Carrier Aggregation feature is enabled and a valid Component Carrier Map is expected."
                    "If false, single carrier simulation.",
                    BooleanValue (false),
@@ -232,7 +232,7 @@ TypeId LteHelper::GetTypeId (void)
                    "If it is more than one and m_useCa is false, it will raise an error ",
                    UintegerValue (1),
                    MakeUintegerAccessor (&LteHelper::m_noOfCcs),
-                   MakeUintegerChecker<uint16_t> (1, 3))
+                   MakeUintegerChecker<uint16_t> (1, 3))*/
   ;
   return tid;
 }

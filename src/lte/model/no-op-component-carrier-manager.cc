@@ -371,9 +371,9 @@ NoOpComponentCarrierManager::DoUlReceiveMacCe (MacCeListElement_s bsr, uint8_t c
   NS_LOG_FUNCTION (this);
   NS_ASSERT_MSG (componentCarrierId == 0, "Received BSR from a ComponentCarrier not allowed, ComponentCarrierId = " << componentCarrierId);
   NS_ASSERT_MSG (bsr.m_macCeType == MacCeListElement_s::BSR, "Received a Control Message not allowed " << bsr.m_macCeType);
-  MacCeListElement_s newBsr;
   if ( bsr.m_macCeType == MacCeListElement_s::BSR)
     {
+      MacCeListElement_s newBsr;
       newBsr.m_rnti = bsr.m_rnti;
       newBsr.m_macCeType = bsr.m_macCeType;
       newBsr.m_macCeValue.m_phr = bsr.m_macCeValue.m_phr;
@@ -393,18 +393,21 @@ NoOpComponentCarrierManager::DoUlReceiveMacCe (MacCeListElement_s bsr, uint8_t c
           // to the primary carrier component
           newBsr.m_macCeValue.m_bufferStatus.at (i) = BufferSizeLevelBsr::BufferSize2BsrId (buffer);
         }
-    }
-
-  std::map< uint8_t,LteCcmMacSapProvider*>::iterator sapIt = m_ccmMacSapProviderMap.find (0);
-  if (sapIt == m_ccmMacSapProviderMap.end ())
-    {
-      NS_FATAL_ERROR ("Sap not found in the CcmMacSapProviderMap");
+      std::map< uint8_t,LteCcmMacSapProvider*>::iterator sapIt = m_ccmMacSapProviderMap.find (0);
+      if (sapIt == m_ccmMacSapProviderMap.end ())
+        {
+          NS_FATAL_ERROR ("Sap not found in the CcmMacSapProviderMap");
+        }
+      else
+        {
+          // in the current implementation bsr in uplink is forwarded only to the primary carrier.
+          // above code demonstrates how to resize buffer status if more carriers are being used in future
+          sapIt->second->ReportMacCeToScheduler (newBsr);
+        }
     }
   else
     {
-      // in the current implementation bsr in uplink is forwarded only to the primary carrier.
-      // above code demonstrates how to resize buffer status if more carriers are being used in future
-      sapIt->second->ReportMacCeToScheduler (newBsr);
+      NS_FATAL_ERROR ("Expected BSR type of message.");
     }
 }
 
