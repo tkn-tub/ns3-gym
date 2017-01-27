@@ -274,9 +274,6 @@ protected:
   friend class DcfState;
   virtual void DoDispose (void);
 
-  DcaTxop &operator = (const DcaTxop &);
-  DcaTxop (const DcaTxop &o);
-
   //Inherited from ns3::Object
   virtual void DoInitialize ();
   /* dcf notifications forwarded here */
