@@ -182,11 +182,11 @@ private:
    * \brief Determine whether a packet is OK to be dropped. The packet
    * may not be actually dropped (depending on the drop state)
    *
-   * \param p The packet that is considered
+   * \param item The packet that is considered
    * \param now The current time represented as 32-bit unsigned integer (us)
    * \returns True if it is OK to drop the packet (sojourn time above target for at least interval)
    */
-  bool OkToDrop (Ptr<Packet> p, uint32_t now);
+  bool OkToDrop (Ptr<QueueDiscItem> item, uint32_t now);
 
   /**
    * Check if CoDel time a is successive to b

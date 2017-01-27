@@ -46,6 +46,7 @@ Bugs fixed
 - Bug 2533 - Provide a better 802.11n/ac PHY abstraction model for SIMO, MISO and MIMO
 - Bug 2535 - memory leak in bench-simulator.cc
 - Bug 2536 - fixed dead assignment and potential memory leak in wimax
+- Bug 2537 - Dead assigment on CoDel::DoDequeue
 - Bug 2538 - fixed dead assignment on tap-bridge
 - Bug 2540 - fixed dead assignment on mesh/ie-dot11s-perr
 - Bug 2541 - preamble not assigned correctly
