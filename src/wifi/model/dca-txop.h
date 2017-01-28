@@ -272,10 +272,10 @@ public:
 
 protected:
   friend class DcfState;
+  
   virtual void DoDispose (void);
+  virtual void DoInitialize (void);
 
-  //Inherited from ns3::Object
-  virtual void DoInitialize ();
   /* dcf notifications forwarded here */
   /**
    * Check if the DCF requires access.

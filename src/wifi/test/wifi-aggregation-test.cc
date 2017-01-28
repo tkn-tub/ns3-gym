@@ -230,7 +230,15 @@ AmpduAggregationTest::DoRun (void)
   m_edca->GetQueue ()->Remove (pkt3);
 
   Simulator::Destroy ();
+  
   delete m_txMiddle;
+  
+  m_low->Dispose ();
+  m_low = 0;
+  
+  m_edca->Dispose ();
+  m_edca = 0;
+
   delete m_dcfManager;
 }
 
@@ -372,7 +380,14 @@ TwoLevelAggregationTest::DoRun (void)
 
   result = (packet != 0);
   NS_TEST_EXPECT_MSG_EQ (result, false, "aggregation failed to stop as queue is empty");
+  
   Simulator::Destroy ();
+  
+  m_low->Dispose ();
+  m_low = 0;
+  
+  m_edca->Dispose ();
+  m_edca = 0;
 }
 
 

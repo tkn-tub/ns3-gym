@@ -95,9 +95,6 @@ RegularWifiMac::DoDispose ()
   delete m_txMiddle;
   m_txMiddle = 0;
 
-  delete m_dcfManager;
-  m_dcfManager = 0;
-
   m_low->Dispose ();
   m_low = 0;
 
@@ -109,8 +106,12 @@ RegularWifiMac::DoDispose ()
 
   for (EdcaQueues::iterator i = m_edca.begin (); i != m_edca.end (); ++i)
     {
+      i->second->Dispose ();
       i->second = 0;
     }
+    
+  delete m_dcfManager;
+  m_dcfManager = 0;
 }
 
 void

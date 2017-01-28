@@ -100,6 +100,7 @@ void
 ApWifiMac::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
+  m_beaconDca->Dispose ();
   m_beaconDca = 0;
   m_enableBeaconGeneration = false;
   m_beaconEvent.Cancel ();

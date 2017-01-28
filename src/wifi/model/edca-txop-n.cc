@@ -93,7 +93,6 @@ EdcaTxopN::~EdcaTxopN ()
 void
 EdcaTxopN::DoDispose (void)
 {
-  DcaTxop::DoDispose ();
   NS_LOG_FUNCTION (this);
   delete m_qosBlockedDestinations;
   delete m_baManager;
@@ -101,6 +100,7 @@ EdcaTxopN::DoDispose (void)
   m_baManager = 0;
   m_msduAggregator = 0;
   m_mpduAggregator = 0;
+  DcaTxop::DoDispose ();
 }
 
 bool
@@ -1338,7 +1338,6 @@ EdcaTxopN::DoInitialize ()
   m_cwTrace = m_dcf->GetCw ();
   m_backoffTrace = m_rng->GetNext (0, m_dcf->GetCw ());
   m_dcf->StartBackoffNow (m_backoffTrace);
-  ns3::DcaTxop::DoInitialize ();
 }
 
 void

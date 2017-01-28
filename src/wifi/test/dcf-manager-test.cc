@@ -66,6 +66,7 @@ private:
   void NotifyChannelSwitching (void);
   void NotifySleep (void);
   void NotifyWakeUp (void);
+  void DoDispose (void);
 
   DcfManagerTest *m_test;
   uint32_t m_i;
@@ -114,9 +115,11 @@ private:
   void AddRxStartEvt (uint64_t at, uint64_t duration);
 
   typedef std::vector<DcfStateTest *> DcfStates;
+  typedef std::vector<Ptr<DcaTxopTest> > Dca;
 
   Ptr<DcfManager> m_dcfManager;
   DcfStates m_dcfStates;
+  Dca m_dca;
   uint32_t m_ackTimeoutValue;
 };
 
@@ -135,6 +138,13 @@ DcaTxopTest::DcaTxopTest (DcfManagerTest *test, uint32_t i)
   : m_test (test),
     m_i (i)
 {
+}
+
+void
+DcaTxopTest::DoDispose (void)
+{
+  m_test = 0;
+  DcaTxop::DoDispose ();
 }
 
 void
@@ -262,7 +272,7 @@ DcfManagerTest::ExpectCollision (uint64_t time, uint32_t nSlots, uint32_t from)
 void
 DcfManagerTest::StartTest (uint64_t slotTime, uint64_t sifs, uint64_t eifsNoDifsNoSifs, uint32_t ackTimeoutValue)
 {
-  m_dcfManager = new DcfManager ();
+  m_dcfManager = CreateObject<DcfManager> ();
   m_dcfManager->SetSlot (MicroSeconds (slotTime));
   m_dcfManager->SetSifs (MicroSeconds (sifs));
   m_dcfManager->SetEifsNoDifs (MicroSeconds (eifsNoDifsNoSifs + sifs));
@@ -272,7 +282,8 @@ DcfManagerTest::StartTest (uint64_t slotTime, uint64_t sifs, uint64_t eifsNoDifs
 void
 DcfManagerTest::AddDcfState (uint32_t aifsn)
 {
-  Ptr<DcaTxopTest> dca = new DcaTxopTest (this, m_dcfStates.size ());
+  Ptr<DcaTxopTest> dca = CreateObject<DcaTxopTest> (this, m_dcfStates.size ());
+  m_dca.push_back (dca);
   DcfStateTest *state = new DcfStateTest (dca);
   state->SetAifsn (aifsn);
   m_dcfStates.push_back (state);
@@ -284,6 +295,7 @@ DcfManagerTest::EndTest (void)
 {
   Simulator::Run ();
   Simulator::Destroy ();
+
   for (DcfStates::const_iterator i = m_dcfStates.begin (); i != m_dcfStates.end (); i++)
     {
       DcfStateTest *state = *i;
@@ -293,6 +305,16 @@ DcfManagerTest::EndTest (void)
       delete state;
     }
   m_dcfStates.clear ();
+  
+   for (Dca::const_iterator i = m_dca.begin (); i != m_dca.end (); i++)
+    {
+      Ptr<DcaTxopTest> dca = *i;
+      dca->Dispose ();
+      dca = 0;
+    }
+  m_dca.clear ();
+
+  m_dcfManager = 0;
 }
 
 void

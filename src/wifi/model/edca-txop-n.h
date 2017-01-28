@@ -76,7 +76,6 @@ public:
   static TypeId GetTypeId (void);
   EdcaTxopN ();
   virtual ~EdcaTxopN ();
-  void DoDispose ();
 
   virtual bool IsEdca ();
 
@@ -414,9 +413,6 @@ public:
 
 private:
   friend class AggregationCapableTransmissionListener;
-  void DoInitialize ();
-  EdcaTxopN &operator = (const EdcaTxopN &);
-  EdcaTxopN (const EdcaTxopN &);
 
   /**
    * If number of packets in the queue reaches m_blockAckThreshold value, an ADDBA Request frame
@@ -468,8 +464,10 @@ private:
    */
   bool HasTxop (void) const;
 
+  void DoDispose (void);
+  void DoInitialize (void);
+
   AcIndex m_ac;
-  AggregationCapableTransmissionListener *m_blockAckListener;
   Ptr<MsduAggregator> m_msduAggregator;
   Ptr<MpduAggregator> m_mpduAggregator;
   TypeOfStation m_typeOfStation;
