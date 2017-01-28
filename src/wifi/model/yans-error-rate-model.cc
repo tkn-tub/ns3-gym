@@ -190,7 +190,8 @@ YansErrorRateModel::GetChunkSuccessRate (WifiMode mode, WifiTxVector txVector, d
   if (mode.GetModulationClass () == WIFI_MOD_CLASS_ERP_OFDM
       || mode.GetModulationClass () == WIFI_MOD_CLASS_OFDM
       || mode.GetModulationClass () == WIFI_MOD_CLASS_HT
-      || mode.GetModulationClass () == WIFI_MOD_CLASS_VHT)
+      || mode.GetModulationClass () == WIFI_MOD_CLASS_VHT
+      || mode.GetModulationClass () == WIFI_MOD_CLASS_HE)
     {
       if (mode.GetConstellationSize () == 2)
         {
@@ -321,6 +322,33 @@ YansErrorRateModel::GetChunkSuccessRate (WifiMode mode, WifiTxVector txVector, d
                                    txVector.GetChannelWidth () * 1000000, // signal spread
                                    mode.GetPhyRate (txVector), //phy rate
                                    256, // m
+                                   5,  // dFree
+                                   8,  // adFree
+                                   31  // adFreePlusOne
+                                   );
+            }
+        }
+      else if (mode.GetConstellationSize () == 1024)
+        {
+          if (mode.GetCodeRate () == WIFI_CODE_RATE_5_6)
+            {
+              return GetFecQamBer (snr,
+                                   nbits,
+                                   txVector.GetChannelWidth () * 1000000, // signal spread
+                                   mode.GetPhyRate (txVector), //phy rate
+                                   1024, // m
+                                   4,  // dFree
+                                   14,  // adFree
+                                   69  // adFreePlusOne
+                                   );
+            }
+          else
+            {
+              return GetFecQamBer (snr,
+                                   nbits,
+                                   txVector.GetChannelWidth () * 1000000, // signal spread
+                                   mode.GetPhyRate (txVector), //phy rate
+                                   1024, // m
                                    5,  // dFree
                                    8,  // adFree
                                    31  // adFreePlusOne

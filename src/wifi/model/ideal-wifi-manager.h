@@ -50,6 +50,7 @@ public:
 
   virtual void SetupPhy (Ptr<WifiPhy> phy);
 
+  virtual void SetHeSupported (bool enable); //HE rates not yet supported
 
 private:
   //overriden from base class
@@ -96,7 +97,7 @@ private:
   uint8_t GetChannelWidthForMode (WifiMode mode) const;
 
   /**
-   * A vector of <snr, WifiTxVector> pair holding the minimum SNR for the 
+   * A vector of <snr, WifiTxVector> pair holding the minimum SNR for the
    * WifiTxVector
    */
   typedef std::vector<std::pair<double, WifiTxVector> > Thresholds;

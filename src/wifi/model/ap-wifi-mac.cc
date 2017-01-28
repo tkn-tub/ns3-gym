@@ -91,7 +91,7 @@ ApWifiMac::ApWifiMac ()
 ApWifiMac::~ApWifiMac ()
 {
   NS_LOG_FUNCTION (this);
-  m_staList.clear();
+  m_staList.clear ();
   m_nonErpStations.clear ();
   m_nonHtStations.clear ();
 }
@@ -202,12 +202,12 @@ ApWifiMac::GetShortSlotTimeEnabled (void) const
   if (m_erpSupported == true && GetShortSlotTimeSupported () == true)
     {
       for (std::list<Mac48Address>::const_iterator i = m_staList.begin (); i != m_staList.end (); i++)
-      {
-        if (m_stationManager->GetShortSlotTimeSupported (*i) == false)
-          {
-            return false;
-          }
-      }
+        {
+          if (m_stationManager->GetShortSlotTimeSupported (*i) == false)
+            {
+              return false;
+            }
+        }
       return true;
     }
   return false;
@@ -219,12 +219,12 @@ ApWifiMac::GetShortPreambleEnabled (void) const
   if (m_erpSupported || m_phy->GetShortPlcpPreambleSupported ())
     {
       for (std::list<Mac48Address>::const_iterator i = m_nonErpStations.begin (); i != m_nonErpStations.end (); i++)
-      {
-        if (m_stationManager->GetShortPreambleSupported (*i) == false)
-          {
-            return false;
-          }
-      }
+        {
+          if (m_stationManager->GetShortPreambleSupported (*i) == false)
+            {
+              return false;
+            }
+        }
       return true;
     }
   return false;
@@ -234,12 +234,12 @@ bool
 ApWifiMac::IsNonGfHtStasPresent (void) const
 {
   for (std::list<Mac48Address>::const_iterator i = m_staList.begin (); i != m_staList.end (); i++)
-  {
-    if (m_stationManager->GetGreenfieldSupported (*i) == false)
-      {
-        return true;
-      }
-  }
+    {
+      if (m_stationManager->GetGreenfieldSupported (*i) == false)
+        {
+          return true;
+        }
+    }
   return false;
 }
 
@@ -248,15 +248,15 @@ ApWifiMac::GetVhtOperationalChannelWidth (void) const
 {
   uint8_t channelWidth = m_phy->GetChannelWidth ();
   for (std::list<Mac48Address>::const_iterator i = m_staList.begin (); i != m_staList.end (); i++)
-  {
-    if (m_stationManager->GetVhtSupported (*i))
-      {
-        if (m_stationManager->GetChannelWidthSupported (*i) < channelWidth)
-          {
-            channelWidth = m_stationManager->GetChannelWidthSupported (*i);
-          }
-      }
-  }
+    {
+      if (m_stationManager->GetVhtSupported (*i))
+        {
+          if (m_stationManager->GetChannelWidthSupported (*i) < channelWidth)
+            {
+              channelWidth = m_stationManager->GetChannelWidthSupported (*i);
+            }
+        }
+    }
   return channelWidth;
 }
 
@@ -314,7 +314,7 @@ ApWifiMac::ForwardDown (Ptr<const Packet> packet, Mac48Address from,
       hdr.SetTypeData ();
     }
 
-  if (m_htSupported || m_vhtSupported)
+  if (m_htSupported || m_vhtSupported || m_heSupported)
     {
       hdr.SetNoOrder ();
     }
@@ -368,18 +368,18 @@ ApWifiMac::GetSupportedRates (void) const
 {
   NS_LOG_FUNCTION (this);
   SupportedRates rates;
-  //If it is an HT-AP or VHT-AP, then add the BSSMembershipSelectorSet
+  //If it is an HT-AP or VHT-AP or HE-AP, then add the BSSMembershipSelectorSet
   //The standard says that the BSSMembershipSelectorSet
   //must have its MSB set to 1 (must be treated as a Basic Rate)
   //Also the standard mentioned that at least 1 element should be included in the SupportedRates the rest can be in the ExtendedSupportedRates
-  if (m_htSupported || m_vhtSupported)
+  if (m_htSupported || m_vhtSupported || m_heSupported)
     {
       for (uint32_t i = 0; i < m_phy->GetNBssMembershipSelectors (); i++)
         {
           rates.AddBssMembershipSelectorRate (m_phy->GetBssMembershipSelector (i));
         }
     }
-  // 
+  //
   //Send the set of supported rates and make sure that we indicate
   //the Basic Rate set in this set of supported rates.
   for (uint32_t i = 0; i < m_phy->GetNModes (); i++)
@@ -467,35 +467,35 @@ ApWifiMac::GetEdcaParameterSet (void) const
 
       edca = m_edca.find (AC_BE)->second;
       txopLimit = edca->GetTxopLimit ();
-      edcaParameters.SetBeAci(0);
-      edcaParameters.SetBeCWmin(edca->GetMinCw ());
-      edcaParameters.SetBeCWmax(edca->GetMaxCw ());
-      edcaParameters.SetBeAifsn(edca->GetAifsn ());
-      edcaParameters.SetBeTXOPLimit(txopLimit.GetMicroSeconds () / 32);
-      
+      edcaParameters.SetBeAci (0);
+      edcaParameters.SetBeCWmin (edca->GetMinCw ());
+      edcaParameters.SetBeCWmax (edca->GetMaxCw ());
+      edcaParameters.SetBeAifsn (edca->GetAifsn ());
+      edcaParameters.SetBeTXOPLimit (txopLimit.GetMicroSeconds () / 32);
+
       edca = m_edca.find (AC_BK)->second;
       txopLimit = edca->GetTxopLimit ();
-      edcaParameters.SetBkAci(1);
-      edcaParameters.SetBkCWmin(edca->GetMinCw ());
-      edcaParameters.SetBkCWmax(edca->GetMaxCw ());
-      edcaParameters.SetBkAifsn(edca->GetAifsn ());
-      edcaParameters.SetBkTXOPLimit(txopLimit.GetMicroSeconds () / 32);
-      
+      edcaParameters.SetBkAci (1);
+      edcaParameters.SetBkCWmin (edca->GetMinCw ());
+      edcaParameters.SetBkCWmax (edca->GetMaxCw ());
+      edcaParameters.SetBkAifsn (edca->GetAifsn ());
+      edcaParameters.SetBkTXOPLimit (txopLimit.GetMicroSeconds () / 32);
+
       edca = m_edca.find (AC_VI)->second;
       txopLimit = edca->GetTxopLimit ();
-      edcaParameters.SetViAci(2);
-      edcaParameters.SetViCWmin(edca->GetMinCw ());
-      edcaParameters.SetViCWmax(edca->GetMaxCw ());
-      edcaParameters.SetViAifsn(edca->GetAifsn ());
-      edcaParameters.SetViTXOPLimit(txopLimit.GetMicroSeconds () / 32);
-      
+      edcaParameters.SetViAci (2);
+      edcaParameters.SetViCWmin (edca->GetMinCw ());
+      edcaParameters.SetViCWmax (edca->GetMaxCw ());
+      edcaParameters.SetViAifsn (edca->GetAifsn ());
+      edcaParameters.SetViTXOPLimit (txopLimit.GetMicroSeconds () / 32);
+
       edca = m_edca.find (AC_VO)->second;
       txopLimit = edca->GetTxopLimit ();
-      edcaParameters.SetVoAci(3);
-      edcaParameters.SetVoCWmin(edca->GetMinCw ());
-      edcaParameters.SetVoCWmax(edca->GetMaxCw ());
-      edcaParameters.SetVoAifsn(edca->GetAifsn ());
-      edcaParameters.SetVoTXOPLimit(txopLimit.GetMicroSeconds () / 32);
+      edcaParameters.SetVoAci (3);
+      edcaParameters.SetVoCWmin (edca->GetMinCw ());
+      edcaParameters.SetVoCWmax (edca->GetMaxCw ());
+      edcaParameters.SetVoAifsn (edca->GetAifsn ());
+      edcaParameters.SetVoTXOPLimit (txopLimit.GetMicroSeconds () / 32);
     }
   return edcaParameters;
 }
@@ -555,7 +555,7 @@ ApWifiMac::GetVhtOperation (void) const
             }
           operation.SetMaxVhtMcsPerNss (nss, maxMcs);
         }
-    
+
     }
   return operation;
 }
@@ -591,16 +591,20 @@ ApWifiMac::SendProbeResp (Mac48Address to)
     {
       probe.SetEdcaParameterSet (GetEdcaParameterSet ());
     }
-  if (m_htSupported || m_vhtSupported)
+  if (m_htSupported || m_vhtSupported || m_heSupported)
     {
       probe.SetHtCapabilities (GetHtCapabilities ());
       probe.SetHtOperation (GetHtOperation ());
       hdr.SetNoOrder ();
     }
-  if (m_vhtSupported)
+  if (m_vhtSupported || m_heSupported)
     {
       probe.SetVhtCapabilities (GetVhtCapabilities ());
       probe.SetVhtOperation (GetVhtOperation ());
+    }
+  if (m_heSupported)
+    {
+      probe.SetHeCapabilities (GetHeCapabilities ());
     }
   packet->AddHeader (probe);
 
@@ -645,16 +649,20 @@ ApWifiMac::SendAssocResp (Mac48Address to, bool success)
     {
       assoc.SetEdcaParameterSet (GetEdcaParameterSet ());
     }
-  if (m_htSupported || m_vhtSupported)
+  if (m_htSupported || m_vhtSupported || m_heSupported)
     {
       assoc.SetHtCapabilities (GetHtCapabilities ());
       assoc.SetHtOperation (GetHtOperation ());
       hdr.SetNoOrder ();
     }
-  if (m_vhtSupported)
+  if (m_vhtSupported || m_heSupported)
     {
       assoc.SetVhtCapabilities (GetVhtCapabilities ());
       assoc.SetVhtOperation (GetVhtOperation ());
+    }
+  if (m_heSupported)
+    {
+      assoc.SetHeCapabilities (GetHeCapabilities ());
     }
   packet->AddHeader (assoc);
 
@@ -702,32 +710,36 @@ ApWifiMac::SendOneBeacon (void)
       beacon.SetHtOperation (GetHtOperation ());
       hdr.SetNoOrder ();
     }
-  if (m_vhtSupported)
+  if (m_vhtSupported || m_heSupported)
     {
       beacon.SetVhtCapabilities (GetVhtCapabilities ());
       beacon.SetVhtOperation (GetVhtOperation ());
+    }
+  if (m_heSupported)
+    {
+      beacon.SetHeCapabilities (GetHeCapabilities ());
     }
   packet->AddHeader (beacon);
 
   //The beacon has it's own special queue, so we load it in there
   m_beaconDca->Queue (packet, hdr);
   m_beaconEvent = Simulator::Schedule (m_beaconInterval, &ApWifiMac::SendOneBeacon, this);
-  
+
   //If a STA that does not support Short Slot Time associates,
   //the AP shall use long slot time beginning at the first Beacon
   //subsequent to the association of the long slot time STA.
   if (m_erpSupported)
     {
-    if (GetShortSlotTimeEnabled () == true)
-      {
-        //Enable short slot time
-        SetSlot (MicroSeconds (9));
-      }
-    else
-      {
-        //Disable short slot time
-        SetSlot (MicroSeconds (20));
-      }
+      if (GetShortSlotTimeEnabled () == true)
+        {
+          //Enable short slot time
+          SetSlot (MicroSeconds (9));
+        }
+      else
+        {
+          //Disable short slot time
+          SetSlot (MicroSeconds (20));
+        }
     }
 }
 
@@ -934,6 +946,23 @@ ApWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
                         }
                     }
                 }
+              if (m_heSupported)
+                {
+                  //check whether the HE STA supports all MCSs in Basic MCS Set
+                  HeCapabilities hecapabilities = assocReq.GetHeCapabilities ();
+                  if (hecapabilities.GetSupportedMcsAndNss () != 0)
+                    {
+                      for (uint32_t i = 0; i < m_stationManager->GetNBasicMcs (); i++)
+                        {
+                          WifiMode mcs = m_stationManager->GetBasicMcs (i);
+                          if (!hecapabilities.IsSupportedTxMcs (mcs.GetMcsValue ()))
+                            {
+                              problem = true;
+                              break;
+                            }
+                        }
+                    }
+                }
               if (problem)
                 {
                   //One of the Basic Rate set mode is not
@@ -987,6 +1016,21 @@ ApWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
                             }
                         }
                     }
+                  if (m_heSupported)
+                    {
+                      HeCapabilities heCapabilities = assocReq.GetHeCapabilities ();
+                      //todo: once we support non constant rate managers, we should add checks here whether HE is supported by the peer
+                      m_stationManager->AddStationHeCapabilities (from, heCapabilities);
+                      for (uint32_t i = 0; i < m_phy->GetNMcs (); i++)
+                        {
+                          WifiMode mcs = m_phy->GetMcs (i);
+                          if (mcs.GetModulationClass () == WIFI_MOD_CLASS_HE && heCapabilities.IsSupportedTxMcs (mcs.GetMcsValue ()))
+                            {
+                              m_stationManager->AddSupportedMcs (hdr->GetAddr2 (), mcs);
+                              //here should add a control to add basic MCS when it is implemented
+                            }
+                        }
+                    }
                   m_stationManager->RecordWaitAssocTxOk (from);
                   if (!isHtStation)
                     {
@@ -1005,29 +1049,29 @@ ApWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
             {
               m_stationManager->RecordDisassociated (from);
               for (std::list<Mac48Address>::iterator i = m_staList.begin (); i != m_staList.end (); i++)
-              {
-                if ((*i) == from)
-                  {
-                    m_staList.erase (i);
-                    break;
-                  }
-              }
+                {
+                  if ((*i) == from)
+                    {
+                      m_staList.erase (i);
+                      break;
+                    }
+                }
               for (std::list<Mac48Address>::iterator j = m_nonErpStations.begin (); j != m_nonErpStations.end (); j++)
-              {
-                if ((*j) == from)
-                  {
-                    m_nonErpStations.erase (j);
-                    break;
-                  }
-              }
+                {
+                  if ((*j) == from)
+                    {
+                      m_nonErpStations.erase (j);
+                      break;
+                    }
+                }
               for (std::list<Mac48Address>::iterator j = m_nonHtStations.begin (); j != m_nonHtStations.end (); j++)
-              {
-                if ((*j) == from)
-                  {
-                    m_nonHtStations.erase (j);
-                    break;
-                  }
-              }
+                {
+                  if ((*j) == from)
+                    {
+                      m_nonHtStations.erase (j);
+                      break;
+                    }
+                }
               return;
             }
         }

@@ -328,7 +328,7 @@ AparfWifiManager::DoGetDataTxVector (WifiRemoteStation *st)
     }
   CheckInit (station);
   WifiMode mode = GetSupported (station, station->m_rate);
-  return WifiTxVector (mode, station->m_power, GetLongRetryCount (station), GetPreambleForTransmission (mode, GetAddress (st)), false, 1, 1, 0, channelWidth, GetAggregation (station), false);
+  return WifiTxVector (mode, station->m_power, GetLongRetryCount (station), GetPreambleForTransmission (mode, GetAddress (st)), 800, 1, 1, 0, channelWidth, GetAggregation (station), false);
 }
 
 WifiTxVector
@@ -354,7 +354,7 @@ AparfWifiManager::DoGetRtsTxVector (WifiRemoteStation *st)
     {
       mode = GetNonErpSupported (station, 0);
     }
-  rtsTxVector = WifiTxVector (mode, GetDefaultTxPowerLevel (), GetShortRetryCount (station), GetPreambleForTransmission (mode, GetAddress (st)), false, 1, 1, 0, channelWidth, GetAggregation (station), false);
+  rtsTxVector = WifiTxVector (mode, GetDefaultTxPowerLevel (), GetShortRetryCount (station), GetPreambleForTransmission (mode, GetAddress (st)), 800, 1, 1, 0, channelWidth, GetAggregation (station), false);
   return rtsTxVector;
 }
 
@@ -382,6 +382,16 @@ AparfWifiManager::SetVhtSupported (bool enable)
   if (enable)
     {
       NS_FATAL_ERROR ("WifiRemoteStationManager selected does not support VHT rates");
+    }
+}
+
+void
+AparfWifiManager::SetHeSupported (bool enable)
+{
+  //HE is not supported by this algorithm.
+  if (enable)
+    {
+      NS_FATAL_ERROR ("WifiRemoteStationManager selected does not support HE rates");
     }
 }
 

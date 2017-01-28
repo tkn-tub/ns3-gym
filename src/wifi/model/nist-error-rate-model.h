@@ -94,6 +94,13 @@ private:
    */
   double Get256QamBer (double snr) const;
   /**
+   * Return BER of QAM1024 at the given SNR.
+   *
+   * \param snr snr ratio (not dB)
+   * \return BER of QAM1024 at the given SNR
+   */
+  double Get1024QamBer (double snr) const;
+  /**
    * Return BER of BPSK at the given SNR after applying FEC.
    *
    * \param snr snr ratio (not dB)
@@ -147,6 +154,16 @@ private:
    */
   double GetFec256QamBer (double snr, uint32_t nbits,
                           uint32_t bValue) const;
+  /**
+   * Return BER of QAM1024 at the given SNR after applying FEC.
+   *
+   * \param snr snr ratio (not dB)
+   * \param nbits the number of bits in the chunk
+   * \param bValue
+   * \return BER of QAM1024 at the given SNR after applying FEC
+   */
+  double GetFec1024QamBer (double snr, uint32_t nbits,
+                           uint32_t bValue) const;
 };
 
 } //namespace ns3

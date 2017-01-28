@@ -49,4 +49,23 @@ RatioToDb (double ratio)
   return 10.0 * std::log10 (ratio);
 }
 
+uint16_t
+ConvertGuardIntervalToNanoSeconds (WifiMode mode, bool htShortGuardInterval, Time heGuardInterval)
+{
+  uint16_t gi;
+  if (mode.GetModulationClass () == WIFI_MOD_CLASS_HE)
+    {
+      gi = heGuardInterval.GetNanoSeconds ();
+    }
+  else if (mode.GetModulationClass () == WIFI_MOD_CLASS_HT || mode.GetModulationClass () == WIFI_MOD_CLASS_VHT)
+    {
+      gi = htShortGuardInterval ? 400 : 800;
+    }
+  else
+    {
+      gi = 800;
+    }
+  return gi;
+}
+
 } //namespace ns3

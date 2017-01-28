@@ -296,6 +296,8 @@ public:
    * \sa WifiMac::Configure80211n_2_4Ghz
    * \sa WifiMac::Configure80211n_5Ghz
    * \sa WifiMac::Configure80211ac
+   * \sa WifiMac::Configure80211ax_2_4Ghz
+   * \sa WifiMac::Configure80211ax_5Ghz
    */
   void ConfigureStandard (WifiPhyStandard standard);
 
@@ -442,6 +444,17 @@ private:
   * Sifs, Slot, EifsNoDifs, Pifs, CtsTimeout, and AckTimeout.
   */
   void Configure80211ac (void);
+  /**
+   * This method sets 802.11ax 2.4 GHz standards-compliant defaults for following attributes:
+   * Sifs, Slot, EifsNoDifs, Pifs, CtsTimeout, and AckTimeout.
+   * There is no support for short slot time.
+   */
+  void Configure80211ax_2_4Ghz (void);
+  /**
+   * This method sets 802.11ax 5 GHz standards-compliant defaults for following attributes:
+   * Sifs, Slot, EifsNoDifs, Pifs, CtsTimeout, and AckTimeout.
+   */
+  void Configure80211ax_5Ghz (void);
 
   /**
    * The trace source fired when packets come into the "top" of the device

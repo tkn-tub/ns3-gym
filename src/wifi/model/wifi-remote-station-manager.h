@@ -28,6 +28,7 @@
 #include "wifi-tx-vector.h"
 #include "ht-capabilities.h"
 #include "vht-capabilities.h"
+#include "he-capabilities.h"
 
 namespace ns3 {
 
@@ -88,7 +89,7 @@ public:
 
   WifiRemoteStationManager ();
   virtual ~WifiRemoteStationManager ();
-  
+
   enum ProtectionMode
   {
     RTS_CTS,
@@ -184,7 +185,14 @@ public:
    * \param from the address of the station being recorded
    * \param vhtcapabilities the VHT capabilities of the station
    */
-  void AddStationVhtCapabilities (Mac48Address from,VhtCapabilities vhtcapabilities);
+  void AddStationVhtCapabilities (Mac48Address from, VhtCapabilities vhtcapabilities);
+  /**
+   * Records HE capabilities of the remote station.
+   *
+   * \param from the address of the station being recorded
+   * \param hecapabilities the HE capabilities of the station
+   */
+  void AddStationHeCapabilities (Mac48Address from, HeCapabilities vhtcapabilities);
   /**
    * Enable or disable QoS support.
    *
@@ -222,6 +230,18 @@ public:
    */
   bool HasVhtSupported (void) const;
   /**
+   * Enable or disable HE capability support.
+   *
+   * \param enable enable or disable HE capability support
+   */
+  virtual void SetHeSupported (bool enable);
+  /**
+   * Return whether the device has HE capability support enabled.
+   *
+   * \return true if HE capability support is enabled, false otherwise
+   */
+  bool HasHeSupported (void) const;
+  /**
    * Sets the protection mode.
    *
    * \param mode the protection mode
@@ -242,7 +262,7 @@ public:
   /**
    * Return whether the device supports protection of non-ERP stations.
    *
-   * \return true if protection for non-ERP stations is enabled, 
+   * \return true if protection for non-ERP stations is enabled,
    *         false otherwise
    */
   bool GetUseNonErpProtection (void) const;
@@ -633,7 +653,7 @@ public:
    */
   void ReportFinalDataFailed (Mac48Address address, const WifiMacHeader *header);
   /**
-   * Typically called per A-MPDU, either when a Block ACK was successfully 
+   * Typically called per A-MPDU, either when a Block ACK was successfully
    * received or when a BlockAckTimeout has elapsed.
    *
    * \param address the address of the receiver
@@ -849,6 +869,15 @@ protected:
    */
   bool GetVhtSupported (const WifiRemoteStation *station) const;
   /**
+   * Return whether the given station is HE capable.
+   *
+   * \param station the station being queried
+   *
+   * \return true if the station has HE capabilities,
+   *         false otherwise
+   */
+  bool GetHeSupported (const WifiRemoteStation *station) const;
+  /**
    * Return the WifiMode supported by the specified station at the specified index.
    *
    * \param station the station being queried
@@ -900,14 +929,22 @@ protected:
    */
   uint8_t GetChannelWidth (const WifiRemoteStation *station) const;
   /**
-   * Return whether the given station supports short guard interval.
+   * Return whether the given station supports HT/VHT short guard interval.
    *
    * \param station the station being queried
    *
-   * \return true if the station supports short guard interval,
+   * \return true if the station supports HT/VHT short guard interval,
    *         false otherwise
    */
   bool GetShortGuardInterval (const WifiRemoteStation *station) const;
+  /**
+   * Return the HE guard interval duration supported by the station.
+   *
+   * \param station the station being queried
+   *
+   * \return the HE guard interval duration (in nanoseconds) supported by the station
+   */
+  uint16_t GetGuardInterval (const WifiRemoteStation *station) const;
   /**
    * Return whether the given station supports A-MPDU.
    *
@@ -1098,17 +1135,17 @@ private:
   virtual uint8_t DoGetBlockAckTxPowerLevel (Mac48Address address, WifiMode blockAckMode);
 
   virtual uint8_t DoGetCtsTxChannelWidth (Mac48Address address, WifiMode ctsMode);
-  virtual bool DoGetCtsTxGuardInterval (Mac48Address address, WifiMode ctsMode);
+  virtual uint16_t DoGetCtsTxGuardInterval (Mac48Address address, WifiMode ctsMode);
   virtual uint8_t DoGetCtsTxNss (Mac48Address address, WifiMode ctsMode);
   virtual uint8_t DoGetCtsTxNess (Mac48Address address, WifiMode ctsMode);
   virtual bool  DoGetCtsTxStbc (Mac48Address address, WifiMode ctsMode);
   virtual uint8_t DoGetAckTxChannelWidth (Mac48Address address, WifiMode ctsMode);
-  virtual bool DoGetAckTxGuardInterval (Mac48Address address, WifiMode ackMode);
+  virtual uint16_t DoGetAckTxGuardInterval (Mac48Address address, WifiMode ackMode);
   virtual uint8_t DoGetAckTxNss (Mac48Address address, WifiMode ackMode);
   virtual uint8_t DoGetAckTxNess (Mac48Address address, WifiMode ackMode);
   virtual bool DoGetAckTxStbc (Mac48Address address, WifiMode ackMode);
   virtual uint8_t DoGetBlockAckTxChannelWidth (Mac48Address address, WifiMode ctsMode);
-  virtual bool DoGetBlockAckTxGuardInterval (Mac48Address address, WifiMode blockAckMode);
+  virtual uint16_t DoGetBlockAckTxGuardInterval (Mac48Address address, WifiMode blockAckMode);
   virtual uint8_t DoGetBlockAckTxNss (Mac48Address address, WifiMode blockAckMode);
   virtual uint8_t DoGetBlockAckTxNess (Mac48Address address, WifiMode blockAckMode);
   virtual bool DoGetBlockAckTxStbc (Mac48Address address, WifiMode blockAckMode);
@@ -1217,13 +1254,13 @@ private:
   WifiRemoteStation* Lookup (Mac48Address address, const WifiMacHeader *header) const;
 
   /**
-   * Return whether the modulation class of the selected mode for the 
+   * Return whether the modulation class of the selected mode for the
    * control answer frame is allowed.
    *
    * \param modClassReq modulation class of the request frame
    * \param modClassAnswer modulation class of the answer frame
    *
-   * \return true if the modulation class of the selected mode for the 
+   * \return true if the modulation class of the selected mode for the
    * control answer frame is allowed, false otherwise
    */
   bool IsAllowedControlAnswerModulationClass (WifiModulationClass modClassReq, WifiModulationClass modClassAnswer) const;
@@ -1300,6 +1337,7 @@ private:
   bool m_qosSupported;  //!< Flag if HT capability is supported
   bool m_htSupported;  //!< Flag if HT capability is supported
   bool m_vhtSupported; //!< Flag if VHT capability is supported
+  bool m_heSupported;  //!< Flag if HE capability is supported
   uint32_t m_maxSsrc;  //!< Maximum STA short retry count (SSRC)
   uint32_t m_maxSlrc;  //!< Maximum STA long retry count (SLRC)
   uint32_t m_rtsCtsThreshold;  //!< Threshold for RTS/CTS
@@ -1363,7 +1401,8 @@ struct WifiRemoteStationState
   WifiRemoteStationInfo m_info;
 
   uint8_t m_channelWidth;    //!< Channel width (in MHz) supported by the remote station
-  bool m_shortGuardInterval;  //!< Flag if short guard interval is supported by the remote station
+  bool m_shortGuardInterval;  //!< Flag if HT/VHT short guard interval is supported by the remote station
+  uint16_t m_guardInterval;   //!< HE Guard interval duration (in nanoseconds) supported by the remote station
   uint8_t m_streams;          //!< Number of supported streams by the remote station
   uint32_t m_ness;            //!< Number of streams in beamforming of the remote station
   bool m_stbc;                //!< Flag if STBC is supported by the remote station
@@ -1374,6 +1413,7 @@ struct WifiRemoteStationState
   bool m_qosSupported;         //!< Flag if HT is supported by the station
   bool m_htSupported;         //!< Flag if HT is supported by the station
   bool m_vhtSupported;        //!< Flag if VHT is supported by the station
+  bool m_heSupported;         //!< Flag if HE is supported by the station
 };
 
 /**

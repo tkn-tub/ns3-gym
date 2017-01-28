@@ -27,6 +27,7 @@ NS_LOG_COMPONENT_DEFINE ("SupportedRates");
 
 #define BSS_MEMBERSHIP_SELECTOR_HT_PHY 127
 #define BSS_MEMBERSHIP_SELECTOR_VHT_PHY 126
+#define BSS_MEMBERSHIP_SELECTOR_HE_PHY 125
 
 SupportedRates::SupportedRates ()
   : extended (this),
@@ -74,7 +75,14 @@ SupportedRates::AddSupportedRate (uint32_t bs)
       m_nRates++;
       NS_LOG_DEBUG ("add VHT_PHY membership selector");
     }
-  else 
+  else if (bs == BSS_MEMBERSHIP_SELECTOR_HE_PHY)
+    {
+      // Encoding defined in Sec. 8.4.2.3, IEEE 802.11-2012
+      m_rates[m_nRates] = (BSS_MEMBERSHIP_SELECTOR_HE_PHY | 0x80);
+      m_nRates++;
+      NS_LOG_DEBUG ("add HE_PHY membership selector");
+    }
+  else
     {
       if (IsSupportedRate (bs))
         {
@@ -113,11 +121,11 @@ void
 SupportedRates::AddBssMembershipSelectorRate (uint32_t bs)
 {
   NS_LOG_FUNCTION (this << bs);
-  if ((bs != BSS_MEMBERSHIP_SELECTOR_HT_PHY) && (bs != BSS_MEMBERSHIP_SELECTOR_VHT_PHY))
+  if ((bs != BSS_MEMBERSHIP_SELECTOR_HT_PHY) && (bs != BSS_MEMBERSHIP_SELECTOR_VHT_PHY) && (bs != BSS_MEMBERSHIP_SELECTOR_HE_PHY))
     {
       NS_ASSERT_MSG (false, "Value " << bs << " not a BSS Membership Selector");
     }
-  uint32_t rate = (bs | 0x80); 
+  uint32_t rate = (bs | 0x80);
   for (uint8_t i = 0; i < m_nRates; i++)
     {
       if (rate == m_rates[i])
@@ -165,7 +173,9 @@ bool
 SupportedRates::IsBssMembershipSelectorRate (uint32_t bs) const
 {
   NS_LOG_FUNCTION (this << bs);
-  if ( (bs & 0x7f) == BSS_MEMBERSHIP_SELECTOR_HT_PHY || (bs & 0x7f) == BSS_MEMBERSHIP_SELECTOR_VHT_PHY)
+  if ((bs & 0x7f) == BSS_MEMBERSHIP_SELECTOR_HT_PHY
+      || (bs & 0x7f) == BSS_MEMBERSHIP_SELECTOR_VHT_PHY
+      || (bs & 0x7f) == BSS_MEMBERSHIP_SELECTOR_HE_PHY)
     {
       return true;
     }

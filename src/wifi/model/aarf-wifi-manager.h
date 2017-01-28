@@ -34,9 +34,9 @@ namespace ns3 {
  * A Practical Approach</i>, by M. Lacage, M.H. Manshaei, and
  * T. Turletti.
  *
- * This RAA does not support HT or VHT modes and will error exit
- * if the user tries to configure this RAA with a Wi-Fi MAC that
- * has VhtSupported or HtSupported set.
+ * This RAA does not support HT, VHT nor HE modes and will error
+ * exit if the user tries to configure this RAA with a Wi-Fi MAC
+ * that has VhtSupported, HtSupported or HeSupported set.
  */
 class AarfWifiManager : public WifiRemoteStationManager
 {
@@ -48,6 +48,8 @@ public:
   // Inherited from WifiRemoteStationManager
   virtual void SetHtSupported (bool enable);
   virtual void SetVhtSupported (bool enable);
+  virtual void SetHeSupported (bool enable);
+
 private:
   //overriden from base class
   virtual WifiRemoteStation * DoCreateStation (void) const;

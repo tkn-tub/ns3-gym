@@ -54,6 +54,14 @@ us a note on ns-developers mailing list.</p>
 <h1>Changes from ns-3.26 to ns-3.27</h1>
 <h2>New API:</h2>
 <ul>
+<li>In 'src/wifi', several changes were made to enable partial <b>802.11ax</b> High Effiency (HE) support:
+    <ul>
+      <li>A new standard value has been added that enables the new 11ax data rates.</li>
+      <li>A new 11ax preamble has been added.</li>
+      <li>A new attribute was added to configure the guard interval duration for High Efficiency (HE) PHY entities. This attribute can be set using the YansWifiPhyHelper.</li>
+      <li>A new information element has been added:  HeCapabilities. This information element is added to the MAC frame header if the node is a HE node. This HeCapabilites information element is used to advertise the HE capabilites of the node to other nodes in the network.</li>
+    </ul>
+</li>
 <li>Function <b>PrintRoutingTable</b> has been extended to add an optional Time::Units
     parameter to specify the time units used on the report.  The new parameter is
     optional and if not specified defaults to the previous behavior (Time::S).

@@ -318,6 +318,12 @@ WifiMac::ConfigureStandard (WifiPhyStandard standard)
     case WIFI_PHY_STANDARD_80211ac:
       Configure80211ac ();
       break;
+    case WIFI_PHY_STANDARD_80211ax_2_4GHZ:
+      Configure80211ax_2_4Ghz ();
+      break;
+    case WIFI_PHY_STANDARD_80211ax_5GHZ:
+      Configure80211ax_5Ghz ();
+      break;
     case WIFI_PHY_STANDARD_UNSPECIFIED:
     default:
       NS_FATAL_ERROR ("Wifi standard not found");
@@ -414,6 +420,20 @@ WifiMac::Configure80211ac (void)
 {
   NS_LOG_FUNCTION (this);
   Configure80211n_5Ghz ();
+}
+
+void
+WifiMac::Configure80211ax_2_4Ghz (void)
+{
+  NS_LOG_FUNCTION (this);
+  Configure80211n_2_4Ghz ();
+}
+
+void
+WifiMac::Configure80211ax_5Ghz (void)
+{
+  NS_LOG_FUNCTION (this);
+  Configure80211ac ();
 }
 
 void

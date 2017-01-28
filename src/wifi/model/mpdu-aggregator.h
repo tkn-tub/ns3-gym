@@ -72,13 +72,13 @@ public:
    */
   virtual bool Aggregate (Ptr<const Packet> packet, Ptr<Packet> aggregatedPacket) const = 0;
   /**
-  * This method performs a VHT single MPDU aggregation.
+  * This method performs a VHT/HE single MPDU aggregation.
   */
-  virtual void AggregateVhtSingleMpdu (Ptr<const Packet> packet, Ptr<Packet> aggregatedPacket) const = 0;
+  virtual void AggregateSingleMpdu (Ptr<const Packet> packet, Ptr<Packet> aggregatedPacket) const = 0;
   /**
    * Adds A-MPDU subframe header and padding to each MPDU that is part of an A-MPDU before it is sent.
    */
-  virtual void AddHeaderAndPad (Ptr<Packet> packet, bool last, bool vhtSingleMpdu) const = 0;
+  virtual void AddHeaderAndPad (Ptr<Packet> packet, bool last, bool isSingleMpdu) const = 0;
   /**
    * \param packetSize size of the packet we want to insert into <i>aggregatedPacket</i>.
    * \param aggregatedPacket packet that will contain the packet of size <i>packetSize</i>, if aggregation is possible.

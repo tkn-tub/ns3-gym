@@ -102,14 +102,14 @@ WifiPhyHelper::Set (std::string name, const AttributeValue &v)
 
 void
 WifiPhyHelper::SetErrorRateModel (std::string name,
-                                      std::string n0, const AttributeValue &v0,
-                                      std::string n1, const AttributeValue &v1,
-                                      std::string n2, const AttributeValue &v2,
-                                      std::string n3, const AttributeValue &v3,
-                                      std::string n4, const AttributeValue &v4,
-                                      std::string n5, const AttributeValue &v5,
-                                      std::string n6, const AttributeValue &v6,
-                                      std::string n7, const AttributeValue &v7)
+                                  std::string n0, const AttributeValue &v0,
+                                  std::string n1, const AttributeValue &v1,
+                                  std::string n2, const AttributeValue &v2,
+                                  std::string n3, const AttributeValue &v3,
+                                  std::string n4, const AttributeValue &v4,
+                                  std::string n5, const AttributeValue &v5,
+                                  std::string n6, const AttributeValue &v6,
+                                  std::string n7, const AttributeValue &v7)
 {
   m_errorRateModel = ObjectFactory ();
   m_errorRateModel.SetTypeId (name);
@@ -159,13 +159,13 @@ WifiPhyHelper::PcapSniffTxEvent (
             frameFlags |= RadiotapHeader::FRAME_FLAG_SHORT_PREAMBLE;
           }
 
-        if (txVector.IsShortGuardInterval ())
+        if (txVector.GetGuardInterval () == 400)
           {
             frameFlags |= RadiotapHeader::FRAME_FLAG_SHORT_GUARD;
           }
 
         header.SetFrameFlags (frameFlags);
-        
+
         uint32_t rate;
         if (txVector.GetMode ().GetModulationClass () == WIFI_MOD_CLASS_HT || txVector.GetMode ().GetModulationClass () == WIFI_MOD_CLASS_VHT)
           {
@@ -173,7 +173,7 @@ WifiPhyHelper::PcapSniffTxEvent (
           }
         else
           {
-            rate = txVector.GetMode ().GetDataRate (txVector.GetChannelWidth (), txVector.IsShortGuardInterval (), 1) * txVector.GetNss () / 500000;
+            rate = txVector.GetMode ().GetDataRate (txVector.GetChannelWidth (), txVector.GetGuardInterval (), 1) * txVector.GetNss () / 500000;
           }
         header.SetRate (rate);
 
@@ -219,7 +219,7 @@ WifiPhyHelper::PcapSniffTxEvent (
               }
 
             mcsKnown |= RadiotapHeader::MCS_KNOWN_GUARD_INTERVAL;
-            if (txVector.IsShortGuardInterval ())
+            if (txVector.GetGuardInterval () == 400)
               {
                 mcsFlags |= RadiotapHeader::MCS_FLAGS_GUARD_INTERVAL;
               }
@@ -285,7 +285,7 @@ WifiPhyHelper::PcapSniffTxEvent (
               }
 
             vhtKnown |= RadiotapHeader::VHT_KNOWN_GUARD_INTERVAL;
-            if (txVector.IsShortGuardInterval ())
+            if (txVector.GetGuardInterval () == 400)
               {
                 vhtFlags |= RadiotapHeader::VHT_FLAGS_GUARD_INTERVAL;
               }
@@ -360,13 +360,13 @@ WifiPhyHelper::PcapSniffRxEvent (
             frameFlags |= RadiotapHeader::FRAME_FLAG_SHORT_PREAMBLE;
           }
 
-        if (txVector.IsShortGuardInterval ())
+        if (txVector.GetGuardInterval () == 400)
           {
             frameFlags |= RadiotapHeader::FRAME_FLAG_SHORT_GUARD;
           }
 
         header.SetFrameFlags (frameFlags);
-        
+
         uint32_t rate;
         if (txVector.GetMode ().GetModulationClass () == WIFI_MOD_CLASS_HT || txVector.GetMode ().GetModulationClass () == WIFI_MOD_CLASS_VHT)
           {
@@ -374,7 +374,7 @@ WifiPhyHelper::PcapSniffRxEvent (
           }
         else
           {
-            rate = txVector.GetMode ().GetDataRate (txVector.GetChannelWidth (), txVector.IsShortGuardInterval (), 1) * txVector.GetNss () / 500000;
+            rate = txVector.GetMode ().GetDataRate (txVector.GetChannelWidth (), txVector.GetGuardInterval (), 1) * txVector.GetNss () / 500000;
           }
         header.SetRate (rate);
 
@@ -423,7 +423,7 @@ WifiPhyHelper::PcapSniffRxEvent (
               }
 
             mcsKnown |= RadiotapHeader::MCS_KNOWN_GUARD_INTERVAL;
-            if (txVector.IsShortGuardInterval ())
+            if (txVector.GetGuardInterval () == 400)
               {
                 mcsFlags |= RadiotapHeader::MCS_FLAGS_GUARD_INTERVAL;
               }
@@ -490,7 +490,7 @@ WifiPhyHelper::PcapSniffRxEvent (
               }
 
             vhtKnown |= RadiotapHeader::VHT_KNOWN_GUARD_INTERVAL;
-            if (txVector.IsShortGuardInterval ())
+            if (txVector.GetGuardInterval () == 400)
               {
                 vhtFlags |= RadiotapHeader::VHT_FLAGS_GUARD_INTERVAL;
               }

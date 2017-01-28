@@ -57,7 +57,9 @@ enum WifiModulationClass
   /** HT PHY (Clause 20) */
   WIFI_MOD_CLASS_HT,
   /** VHT PHY (Clause 22) */
-  WIFI_MOD_CLASS_VHT
+  WIFI_MOD_CLASS_VHT,
+  /** HE PHY (Clause 26) */
+  WIFI_MOD_CLASS_HE
 };
 
 /**
@@ -105,7 +107,7 @@ public:
   /**
    *
    * \param channelWidth the considered channel width in MHz
-   * \param isShortGuardInterval whether short guard interval is considered or not
+   * \param guardInterval the considered guard interval duration in nanoseconds
    * \param nss the considered number of streams
    *
    * \returns the physical bit rate of this signal.
@@ -113,7 +115,7 @@ public:
    * If a transmission mode uses 1/2 FEC, and if its
    * data rate is 3.25Mbps, the phy rate is 6.5Mbps
    */
-  uint64_t GetPhyRate (uint8_t channelWidth, bool isShortGuardInterval, uint8_t nss) const;
+  uint64_t GetPhyRate (uint8_t channelWidth, uint16_t guardInterval, uint8_t nss) const;
   /**
    * \param txVector the WifiTxVector of the signal
    *
@@ -126,12 +128,12 @@ public:
   /**
    *
    * \param channelWidth the considered channel width in MHz
-   * \param isShortGuardInterval whether short guard interval is considered or not
+   * \param guardInterval the considered guard interval duration in nanoseconds
    * \param nss the considered number of streams
    *
    * \returns the data bit rate of this signal.
    */
-  uint64_t GetDataRate (uint8_t channelWidth, bool isShortGuardInterval, uint8_t nss) const;
+  uint64_t GetDataRate (uint8_t channelWidth, uint16_t guardInterval, uint8_t nss) const;
   /**
    * \param txVector the WifiTxVector of the signal
    *

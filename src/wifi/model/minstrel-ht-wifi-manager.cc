@@ -236,7 +236,7 @@ MinstrelHtWifiManager::DoInitialize ()
                   m_minstrelGroups[groupId].isSupported = false;
 
                   // Check capabilities of the device
-                  if (!(!GetPhy ()->GetGuardInterval () && m_minstrelGroups[groupId].sgi)                   ///Is SGI supported by the transmitter?
+                  if (!(!GetPhy ()->GetShortGuardInterval () && m_minstrelGroups[groupId].sgi)                   ///Is SGI supported by the transmitter?
                       && (GetPhy ()->GetChannelWidth () >= m_minstrelGroups[groupId].chWidth)               ///Is channel width supported by the transmitter?
                       && (GetPhy ()->GetMaxSupportedTxSpatialStreams () >= m_minstrelGroups[groupId].streams))  ///Are streams supported by the transmitter?
                     {
@@ -275,7 +275,7 @@ MinstrelHtWifiManager::DoInitialize ()
                       m_minstrelGroups[groupId].isSupported = false;
 
                       // Check capabilities of the device
-                      if (!(!GetPhy ()->GetGuardInterval () && m_minstrelGroups[groupId].sgi)                   ///Is SGI supported by the transmitter?
+                      if (!(!GetPhy ()->GetShortGuardInterval () && m_minstrelGroups[groupId].sgi)                   ///Is SGI supported by the transmitter?
                           && (GetPhy ()->GetChannelWidth () >= m_minstrelGroups[groupId].chWidth)               ///Is channel width supported by the transmitter?
                           && (GetPhy ()->GetMaxSupportedTxSpatialStreams () >= m_minstrelGroups[groupId].streams))  ///Are streams supported by the transmitter?
                         {
@@ -329,7 +329,7 @@ MinstrelHtWifiManager::CalculateFirstMpduTxDuration (Ptr<WifiPhy> phy, uint8_t s
 
   WifiTxVector txvector;
   txvector.SetNss (streams);
-  txvector.SetShortGuardInterval (sgi);
+  txvector.SetGuardInterval (sgi ? 400 : 800);
   txvector.SetChannelWidth (chWidth);
   txvector.SetNess (0);
   txvector.SetStbc (phy->GetStbc ());
@@ -345,7 +345,7 @@ MinstrelHtWifiManager::CalculateMpduTxDuration (Ptr<WifiPhy> phy, uint8_t stream
 
   WifiTxVector txvector;
   txvector.SetNss (streams);
-  txvector.SetShortGuardInterval (sgi);
+  txvector.SetGuardInterval (sgi ? 400 : 800);
   txvector.SetChannelWidth (chWidth);
   txvector.SetNess (0);
   txvector.SetStbc (phy->GetStbc ());
@@ -896,7 +896,7 @@ MinstrelHtWifiManager::DoGetDataTxVector (WifiRemoteStation *st)
     {
       WifiTxVector vector = m_legacyManager->GetDataTxVector (station);
 
-      uint64_t dataRate = vector.GetMode ().GetDataRate (vector.GetChannelWidth (), vector.IsShortGuardInterval (), vector.GetNss ());
+      uint64_t dataRate = vector.GetMode ().GetDataRate (vector);
       if (!station->m_isSampling)
         {
           m_rateChange (dataRate, station->m_state->m_address);
@@ -1903,6 +1903,16 @@ MinstrelHtWifiManager::GetHtDeviceMcsList (void) const
         }
     }
   return htMcsList;
+}
+
+void
+MinstrelHtWifiManager::SetHeSupported (bool enable)
+{
+  //HE is not supported yet by this algorithm.
+  if (enable)
+    {
+      NS_FATAL_ERROR ("WifiRemoteStationManager selected does not support HE rates");
+    }
 }
 
 } // namespace ns3

@@ -21,40 +21,54 @@
 #ifndef WIFI_UTILS_H
 #define WIFI_UTILS_H
 
+#include "wifi-mode.h"
+#include "ns3/nstime.h"
+#include "ns3/uinteger.h"
+
 namespace ns3 {
 
-  /**
-   * Convert from dBm to Watts.
-   *
-   * \param dbm the power in dBm
-   *
-   * \return the equivalent Watts for the given dBm
-   */
-  double DbmToW (double dbm);
-  /**
-   * Convert from dB to ratio.
-   *
-   * \param db
-   *
-   * \return ratio
-   */
-  double DbToRatio (double db);
-  /**
-   * Convert from Watts to dBm.
-   *
-   * \param w the power in Watts
-   *
-   * \return the equivalent dBm for the given Watts
-   */
-  double WToDbm (double w);
-  /**
-   * Convert from ratio to dB.
-   *
-   * \param ratio
-   *
-   * \return dB
-   */
-  double RatioToDb (double ratio);
+/**
+ * Convert from dBm to Watts.
+ *
+ * \param dbm the power in dBm
+ *
+ * \return the equivalent Watts for the given dBm
+ */
+double DbmToW (double dbm);
+/**
+ * Convert from dB to ratio.
+ *
+ * \param db
+ *
+ * \return ratio
+ */
+double DbToRatio (double db);
+/**
+ * Convert from Watts to dBm.
+ *
+ * \param w the power in Watts
+ *
+ * \return the equivalent dBm for the given Watts
+ */
+double WToDbm (double w);
+/**
+ * Convert from ratio to dB.
+ *
+ * \param ratio
+ *
+ * \return dB
+ */
+double RatioToDb (double ratio);
+/**
+ * Convert the guard interval to nanoseconds based on the wifimode.
+ *
+ * \param mode the wifimode
+ * \param htShortGuardInterval whether HT/VHT short guard interval is enabled
+ * \param heGuardInterval the HE guard interval duration
+ *
+ * \return the guard interval duration in nanoseconds
+ */
+uint16_t ConvertGuardIntervalToNanoSeconds (WifiMode mode, bool htShortGuardInterval, Time heGuardInterval);
 
 } // namespace ns3
 

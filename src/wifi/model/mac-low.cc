@@ -688,7 +688,7 @@ MacLow::StartTransmission (Ptr<const Packet> packet,
         }
       else if (m_currentHdr.IsQosData ())
         {
-          //VHT single MPDUs are followed by normal ACKs
+          //VHT/HE single MPDUs are followed by normal ACKs
           m_txParams.EnableAck ();
         }
       AcIndex ac = QosUtilsMapTidToAc (GetTid (packet, *hdr));
@@ -720,7 +720,7 @@ MacLow::StartTransmission (Ptr<const Packet> packet,
             }
           else if (m_currentHdr.IsQosData ())
             {
-              //VHT single MPDUs are followed by normal ACKs
+              //VHT/HE single MPDUs are followed by normal ACKs
               m_txParams.EnableAck ();
             }
         }
@@ -1455,7 +1455,7 @@ MacLow::ForwardDown (Ptr<const Packet> packet, const WifiMacHeader* hdr, WifiTxV
       WifiMacHeader newHdr;
       WifiMacTrailer fcs;
       uint8_t queueSize = m_aggregateQueue[GetTid (packet, *hdr)]->GetSize ();
-      bool vhtSingleMpdu = false;
+      bool singleMpdu = false;
       bool last = false;
       MpduType mpdutype = NORMAL_MPDU;
 
@@ -1465,7 +1465,7 @@ MacLow::ForwardDown (Ptr<const Packet> packet, const WifiMacHeader* hdr, WifiTxV
 
       if (queueSize == 1)
         {
-          vhtSingleMpdu = true;
+          singleMpdu = true;
         }
 
       //Add packet tag
@@ -1473,7 +1473,7 @@ MacLow::ForwardDown (Ptr<const Packet> packet, const WifiMacHeader* hdr, WifiTxV
       ampdutag.SetAmpdu (true);
       Time delay = Seconds (0);
       Time remainingAmpduDuration = m_phy->CalculateTxDuration (packet->GetSize (), txVector, m_phy->GetFrequency ());
-      if (queueSize > 1 || vhtSingleMpdu)
+      if (queueSize > 1 || singleMpdu)
         {
           txVector.SetAggregation (true);
         }
@@ -1490,12 +1490,12 @@ MacLow::ForwardDown (Ptr<const Packet> packet, const WifiMacHeader* hdr, WifiTxV
               mpdutype = LAST_MPDU_IN_AGGREGATE;
             }
 
-          edcaIt->second->GetMpduAggregator ()->AddHeaderAndPad (newPacket, last, vhtSingleMpdu);
+          edcaIt->second->GetMpduAggregator ()->AddHeaderAndPad (newPacket, last, singleMpdu);
 
           if (delay == Seconds (0))
             {
               NS_LOG_DEBUG ("Sending MPDU as part of A-MPDU");
-              if (!vhtSingleMpdu)
+              if (!singleMpdu)
                 {
                   mpdutype = MPDU_IN_AGGREGATE;
                 }
@@ -2498,7 +2498,7 @@ MacLow::DeaggregateAmpduAndReceive (Ptr<Packet> aggregatedPacket, double rxSnr, 
   NS_LOG_FUNCTION (this);
   AmpduTag ampdu;
   bool normalAck = false;
-  bool ampduSubframe = false; //flag indicating the packet belongs to an A-MPDU and is not a VHT single MPDU
+  bool ampduSubframe = false; //flag indicating the packet belongs to an A-MPDU and is not a VHT/HE single MPDU
   if (aggregatedPacket->RemovePacketTag (ampdu))
     {
       ampduSubframe = true;
@@ -2513,11 +2513,11 @@ MacLow::DeaggregateAmpduAndReceive (Ptr<Packet> aggregatedPacket, double rxSnr, 
 
       if (firsthdr.GetAddr1 () == m_self)
         {
-          bool vhtSingleMpdu = (*n).second.GetEof ();
-          if (vhtSingleMpdu)
+          bool singleMpdu = (*n).second.GetEof ();
+          if (singleMpdu)
             {
-              //If the MPDU is sent as a VHT single MPDU (EOF=1 in A-MPDU subframe header), then the responder sends an ACK.
-              NS_LOG_DEBUG ("Receive VHT single MPDU");
+              //If the MPDU is sent as a VHT/HE single MPDU (EOF=1 in A-MPDU subframe header), then the responder sends an ACK.
+              NS_LOG_DEBUG ("Receive S-MPDU");
               ampduSubframe = false;
             }
           else if (preamble != WIFI_PREAMBLE_NONE || !m_sendAckEvent.IsRunning ())
@@ -2550,7 +2550,7 @@ MacLow::DeaggregateAmpduAndReceive (Ptr<Packet> aggregatedPacket, double rxSnr, 
               NS_FATAL_ERROR ("Received A-MPDU with invalid first MPDU type");
             }
 
-          if (ampdu.GetRemainingNbOfMpdus () == 0 && !vhtSingleMpdu)
+          if (ampdu.GetRemainingNbOfMpdus () == 0 && !singleMpdu)
             {
               if (normalAck)
                 {
@@ -2873,15 +2873,18 @@ MacLow::AggregateToAmpdu (Ptr<const Packet> packet, const WifiMacHeader hdr)
                     }
                 }
             }
-          //VHT single MPDU operation
+          // VHT/HE single MPDU operation
           WifiTxVector dataTxVector = GetDataTxVector (m_currentPacket, &m_currentHdr);
-          if (!isAmpdu && dataTxVector.GetMode ().GetModulationClass () == WIFI_MOD_CLASS_VHT && hdr.IsQosData ())
+          if (!isAmpdu
+              && hdr.IsQosData ()
+              && (dataTxVector.GetMode ().GetModulationClass () == WIFI_MOD_CLASS_VHT
+                  || dataTxVector.GetMode ().GetModulationClass () == WIFI_MOD_CLASS_HE))
             {
               peekedHdr = hdr;
               peekedHdr.SetQosAckPolicy (WifiMacHeader::NORMAL_ACK);
 
               currentAggregatedPacket = Create<Packet> ();
-              edcaIt->second->GetMpduAggregator ()->AggregateVhtSingleMpdu (packet, currentAggregatedPacket);
+              edcaIt->second->GetMpduAggregator ()->AggregateSingleMpdu (packet, currentAggregatedPacket);
               m_aggregateQueue[tid]->Enqueue (packet, peekedHdr);
 
               if (edcaIt->second->GetBaAgreementExists (hdr.GetAddr1 (), tid))
@@ -2897,7 +2900,7 @@ MacLow::AggregateToAmpdu (Ptr<const Packet> packet, const WifiMacHeader hdr)
               AddWifiMacTrailer (newPacket);
               newPacket->AddPacketTag (ampdutag);
 
-              NS_LOG_DEBUG ("tx unicast VHT single MPDU with sequence number " << hdr.GetSequenceNumber ());
+              NS_LOG_DEBUG ("tx unicast S-MPDU with sequence number " << hdr.GetSequenceNumber ());
               edcaIt->second->SetAmpduExist (hdr.GetAddr1 (), true);
             }
         }

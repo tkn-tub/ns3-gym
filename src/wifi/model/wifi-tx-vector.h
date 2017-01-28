@@ -68,8 +68,8 @@ public:
    * \param mode WifiMode
    * \param powerLevel transmission power level
    * \param retries retries
-   * \param preamble preamble type   
-   * \param shortGuardInterval enable or disable short guard interval
+   * \param preamble preamble type
+   * \param guardInterval the guard interval duration in nanoseconds
    * \param nTx the number of TX antennas
    * \param nss the number of spatial STBC streams (NSS)
    * \param ness the number of extension spatial streams (NESS)
@@ -81,7 +81,7 @@ public:
                 uint8_t powerLevel,
                 uint8_t retries,
                 WifiPreamble preamble,
-                bool shortGuardInterval,
+                uint16_t guardInterval,
                 uint8_t nTx,
                 uint8_t nss,
                 uint8_t ness,
@@ -139,15 +139,15 @@ public:
    */
   void SetChannelWidth (uint8_t channelWidth);
   /**
-   * \returns if ShortGuardInterval is used or not
+   * \returns the guard interval duration (in nanoseconds)
    */
-  bool IsShortGuardInterval (void) const;
+  uint16_t GetGuardInterval (void) const;
   /**
-  * Sets if short gurad interval is being used
+  * Sets the guard interval duration (in nanoseconds)
   *
-  * \param guardinterval enable or disable short guard interval
+  * \param guardInterval the guard interval duration (in nanoseconds)
   */
-  void SetShortGuardInterval (bool guardinterval);
+  void SetGuardInterval (uint16_t guardInterval);
   /**
    * \returns the number of TX antennas
    */
@@ -215,8 +215,8 @@ private:
   uint8_t  m_retries;            /**< The DATA_RETRIES/RTS_RETRIES parameter
                                  for Click radiotap information */
   WifiPreamble m_preamble;       /** preamble */
-  uint8_t m_channelWidth;       /**< channel width in MHz */
-  bool     m_shortGuardInterval; /**< true if short GI is going to be used */
+  uint8_t m_channelWidth;        /**< channel width in MHz */
+  uint16_t m_guardInterval;      /**< guard interval duration in nanoseconds */
   uint8_t  m_nTx;                /**< number of TX antennas */
   uint8_t  m_nss;                /**< number of spatial streams */
   uint8_t  m_ness;               /**< number of spatial streams in beamforming */

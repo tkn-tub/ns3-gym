@@ -925,6 +925,7 @@ EdcaTxopN::NeedFragmentation (void) const
 {
   NS_LOG_FUNCTION (this);
   if (m_stationManager->HasVhtSupported ()
+      || m_stationManager->HasHeSupported ()
       || GetAmpduExist (m_currentHdr.GetAddr1 ())
       || (m_stationManager->HasHtSupported ()
           && m_currentHdr.IsQosData ()
@@ -1147,7 +1148,8 @@ EdcaTxopN::SetupBlockAckIfNeeded ()
   uint32_t packets = m_queue->GetNPacketsByTidAndAddress (tid, WifiMacHeader::ADDR1, recipient);
   if ((m_blockAckThreshold > 0 && packets >= m_blockAckThreshold)
       || (m_mpduAggregator != 0 && m_mpduAggregator->GetMaxAmpduSize () > 0 && packets > 1)
-      || m_stationManager->HasVhtSupported ())
+      || m_stationManager->HasVhtSupported ()
+      || m_stationManager->HasHeSupported ())
     {
       /* Block ack setup */
       uint16_t startingSequence = m_txMiddle->GetNextSeqNumberByTidAndAddress (tid, recipient);

@@ -31,6 +31,7 @@
 #include "ns3/random-variable-stream.h"
 #include "ns3/simulator.h"
 #include "ns3/yans-wifi-phy.h"
+#include "ns3/wifi-utils.h"
 #include "ns3/pointer.h"
 #include "ns3/double.h"
 #include "ns3/trace-source-accessor.h"
@@ -319,13 +320,15 @@ MeshWifiInterfaceMac::GetSupportedRates () const
   for (uint32_t i = 0; i < m_phy->GetNModes (); i++)
     {
       WifiMode mode = m_phy->GetMode (i);
-      rates.AddSupportedRate (mode.GetDataRate (m_phy->GetChannelWidth (), m_phy->GetGuardInterval (), 1));
+      uint16_t gi = ConvertGuardIntervalToNanoSeconds (mode, m_phy->GetShortGuardInterval (), m_phy->GetGuardInterval ());
+      rates.AddSupportedRate (mode.GetDataRate (m_phy->GetChannelWidth (), gi, 1));
     }
   // set the basic rates
   for (uint32_t j = 0; j < m_stationManager->GetNBasicModes (); j++)
     {
       WifiMode mode = m_stationManager->GetBasicMode (j);
-      rates.SetBasicRate (mode.GetDataRate (m_phy->GetChannelWidth (), m_phy->GetGuardInterval (), 1));
+      uint16_t gi = ConvertGuardIntervalToNanoSeconds (mode, m_phy->GetShortGuardInterval (), m_phy->GetGuardInterval ());
+      rates.SetBasicRate (mode.GetDataRate (m_phy->GetChannelWidth (), gi, 1));
     }
   return rates;
 }
@@ -335,7 +338,8 @@ MeshWifiInterfaceMac::CheckSupportedRates (SupportedRates rates) const
   for (uint32_t i = 0; i < m_stationManager->GetNBasicModes (); i++)
     {
       WifiMode mode = m_stationManager->GetBasicMode (i);
-      if (!rates.IsSupportedRate (mode.GetDataRate (m_phy->GetChannelWidth (), m_phy->GetGuardInterval (), 1)))
+      uint16_t gi = ConvertGuardIntervalToNanoSeconds (mode, m_phy->GetShortGuardInterval (), m_phy->GetGuardInterval ());
+      if (!rates.IsSupportedRate (mode.GetDataRate (m_phy->GetChannelWidth (), gi, 1)))
         {
           return false;
         }
@@ -442,10 +446,12 @@ MeshWifiInterfaceMac::Receive (Ptr<Packet> packet, WifiMacHeader const *hdr)
           for (uint32_t i = 0; i < m_phy->GetNModes (); i++)
             {
               WifiMode mode = m_phy->GetMode (i);
-              if (rates.IsSupportedRate (mode.GetDataRate (m_phy->GetChannelWidth (), m_phy->GetGuardInterval (), 1)))
+              uint16_t gi = ConvertGuardIntervalToNanoSeconds (mode, m_phy->GetShortGuardInterval (), m_phy->GetGuardInterval ());
+              uint64_t rate = mode.GetDataRate (m_phy->GetChannelWidth (), gi, 1);
+              if (rates.IsSupportedRate (rate))
                 {
                   m_stationManager->AddSupportedMode (hdr->GetAddr2 (), mode);
-                  if (rates.IsBasicRate (mode.GetDataRate (m_phy->GetChannelWidth (), m_phy->GetGuardInterval (), 1)))
+                  if (rates.IsBasicRate (rate))
                     {
                       m_stationManager->AddBasicMode (mode);
                     }

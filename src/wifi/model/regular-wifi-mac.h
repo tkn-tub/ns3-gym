@@ -227,6 +227,12 @@ public:
    * \return the VHT capability that we support
    */
   VhtCapabilities GetVhtCapabilities (void) const;
+  /**
+   * Return the HE capability of the device.
+   *
+   * \return the HE capability that we support
+   */
+  HeCapabilities GetHeCapabilities (void) const;
 
   /**
    * This type defines the callback of a higher layer that a
@@ -522,6 +528,24 @@ protected:
    * \return true if DSSS is supported, false otherwise
    */
   bool GetDsssSupported () const;
+
+  /**
+   * This Boolean is set \c true iff this WifiMac is to model
+   * 802.11ax. It is exposed through the attribute system.
+   */
+  bool m_heSupported;
+  /**
+   * Enable or disable HE support for the device.
+   *
+   * \param enable whether HE is supported
+   */
+  void SetHeSupported (bool enable);
+  /**
+   * Return whether the device supports HE.
+   *
+   * \return true if HE is supported, false otherwise
+   */
+  bool GetHeSupported () const;
 
 
 private:

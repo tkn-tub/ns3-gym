@@ -27,7 +27,7 @@ WifiTxVector::WifiTxVector ()
   : m_retries (0),
     m_preamble (WIFI_PREAMBLE_NONE),
     m_channelWidth (20),
-    m_shortGuardInterval (false),
+    m_guardInterval (800),
     m_nTx (1),
     m_nss (1),
     m_ness (0),
@@ -42,7 +42,7 @@ WifiTxVector::WifiTxVector (WifiMode mode,
                             uint8_t powerLevel,
                             uint8_t retries,
                             WifiPreamble preamble,
-                            bool shortGuardInterval,
+                            uint16_t guardInterval,
                             uint8_t nTx,
                             uint8_t nss,
                             uint8_t ness,
@@ -54,7 +54,7 @@ WifiTxVector::WifiTxVector (WifiMode mode,
     m_retries (retries),
     m_preamble (preamble),
     m_channelWidth (channelWidth),
-    m_shortGuardInterval (shortGuardInterval),
+    m_guardInterval (guardInterval),
     m_nTx (nTx),
     m_nss (nss),
     m_ness (ness),
@@ -103,10 +103,10 @@ WifiTxVector::GetChannelWidth (void) const
   return m_channelWidth;
 }
 
-bool
-WifiTxVector::IsShortGuardInterval (void) const
+uint16_t
+WifiTxVector::GetGuardInterval (void) const
 {
-  return m_shortGuardInterval;
+  return m_guardInterval;
 }
 
 uint8_t
@@ -172,9 +172,9 @@ WifiTxVector::SetChannelWidth (uint8_t channelWidth)
 }
 
 void
-WifiTxVector::SetShortGuardInterval (bool guardinterval)
+WifiTxVector::SetGuardInterval (uint16_t guardInterval)
 {
-  m_shortGuardInterval = guardinterval;
+  m_guardInterval = guardInterval;
 }
 
 void
@@ -214,7 +214,7 @@ std::ostream & operator << ( std::ostream &os, const WifiTxVector &v)
     " retries: " << (uint16_t)v.GetRetries () <<
     " preamble: " << v.GetPreambleType () <<
     " channel width: " << (uint16_t)v.GetChannelWidth () <<
-    " Short GI: " << v.IsShortGuardInterval () <<
+    " GI: " << v.GetGuardInterval () <<
     " NTx: " << (uint16_t)v.GetNTx () <<
     " Nss: " << (uint16_t)v.GetNss () <<
     " Ness: " << (uint16_t)v.GetNess () <<

@@ -20,7 +20,7 @@ on the IEEE 802.11 standard [ieee80211]_. We will go into more detail below but 
 |ns3| provides models for these aspects of 802.11:
 
 * basic 802.11 DCF with **infrastructure** and **adhoc** modes
-* **802.11a**, **802.11b**, **802.11g**, **802.11n** (both 2.4 and 5 GHz bands) and **802.11ac** physical layers
+* **802.11a**, **802.11b**, **802.11g**, **802.11n** (both 2.4 and 5 GHz bands), **802.11ac** and **802.11ax** Draft 1.0 (both 2.4 and 5 GHz bands) physical layers
 * **MSDU aggregation** and **MPDU aggregation** extensions of 802.11n, and both can be combined together (two-level aggregation)
 * QoS-based EDCA and queueing extensions of **802.11e**
 * the ability to use different propagation loss models and propagation delay models,
@@ -33,7 +33,7 @@ on the IEEE 802.11 standard [ieee80211]_. We will go into more detail below but 
 The set of 802.11 models provided in |ns3| attempts to provide an accurate
 MAC-level implementation of the 802.11 specification and to provide a
 packet-level abstraction of the PHY-level for different PHYs, corresponding to 
-802.11a/b/e/g/n/ac specifications.
+802.11a/b/e/g/n/ac/ax specifications.
 
 In |ns3|, nodes can have multiple WifiNetDevices on separate channels, and the
 WifiNetDevice can coexist with other device types.
@@ -90,8 +90,9 @@ These three MAC high models share a common parent in
 configuration, an attribute ``QosSupported`` that allows
 configuration of 802.11e/WMM-style QoS support, an attribute
 ``HtSupported`` that allows configuration of 802.11n High Throughput
-style support and an attribute ``VhtSupported`` that allows configuration
-of 802.11ac Very High Throughput style support.
+style support, an attribute ``VhtSupported`` that allows configuration
+of 802.11ac Very High Throughput style support and an attribute ``HeSupported``
+that allows configuration of 802.11ax High Efficiency style support.
 
 There are also several **rate control algorithms** that can be used by the
 MAC low layer.  A complete list of available rate control algorithms is 
@@ -162,19 +163,24 @@ combines the effect of thermal noise and of interference from other Wi-Fi
 packets.  Moreover, interference from other technologies is not modeled.
 The following details pertain to the physical layer and channel models:
 
-* 802.11ac MU-MIMO is not supported, and no more than 4 antennas can be configured
-* 802.11n/ac beamforming is not supported
+* 802.11ax is still in draft phase, not all functionalities are implemented yet
+* 802.11ax does not contain any of the high-density improvement
+* 802.11ax MU-OFDMA is not supported
+* 802.11ax can only be used with Constant rate control algorithm
+* 802.11ax only supports SU PPDU format
+* 802.11ac/ax MU-MIMO is not supported, and no more than 4 antennas can be configured
+* 802.11n/ac/ax beamforming is not supported
 * PLCP preamble reception is not modeled
 * PHY_RXSTART is not supported
 
 At the MAC layer, most of the main functions found in deployed Wi-Fi
-equipment for 802.11a/b/e/g/n/ac are implemented, but there are scattered instances
+equipment for 802.11a/b/e/g/n/ac/ax are implemented, but there are scattered instances
 where some limitations in the models exist.Support for 802.11n and ac is evolving.
 Some additional details are as follows:
 
 * BSSBasicRateSet for 802.11b has been assumed to be 1-2 Mbit/s
 * BSSBasicRateSet for 802.11a/g has been assumed to be 6-12-24 Mbit/s
-* cases where RTS/CTS and ACK are transmitted using HT/VHT formats are not supported
+* cases where RTS/CTS and ACK are transmitted using HT/VHT/HE formats are not supported
 
 Design Details
 **************

@@ -36,9 +36,9 @@ struct ParfWifiRemoteStation;
  * Wireless Networks, Kluwer Academic Publishers, 2007, 13, 737-755
  * http://www.cs.odu.edu/~nadeem/classes/cs795-WNS-S13/papers/enter-006.pdf
  *
- * This RAA does not support HT or VHT modes and will error exit
- * if the user tries to configure this RAA with a Wi-Fi MAC that
- * has VhtSupported or HtSupported set.
+ * This RAA does not support HT, VHT nor HE modes and will error
+ * exit if the user tries to configure this RAA with a Wi-Fi MAC
+ * that has VhtSupported, HtSupported or HeSupported set.
  */
 class ParfWifiManager : public WifiRemoteStationManager
 {
@@ -55,7 +55,7 @@ public:
   virtual void SetupPhy (Ptr<WifiPhy> phy);
   virtual void SetHtSupported (bool enable);
   virtual void SetVhtSupported (bool enable);
-
+  virtual void SetHeSupported (bool enable);
 
 private:
   //overriden from base class
@@ -82,7 +82,7 @@ private:
 
   uint32_t m_attemptThreshold; //!< The minimum number of transmission attempts to try a new power or rate. The 'timer' threshold in the ARF algorithm.
   uint32_t m_successThreshold; //!< The minimum number of successful transmissions to try a new power or rate.
-  
+
   /**
    * Minimal power level.
    * In contrast to rate, power levels do not depend on the remote station.

@@ -38,9 +38,9 @@ struct AparfWifiRemoteStation;
  * Networks, Springer, 2005, 12, 123-145.
  * http://www.cs.mun.ca/~yzchen/papers/papers/rate_adaptation/80211_dynamic_rate_power_adjustment_chevillat_j2005.pdf
  *
- * This RAA does not support HT or VHT modes and will error exit
- * if the user tries to configure this RAA with a Wi-Fi MAC that
- * has VhtSupported or HtSupported set.
+ * This RAA does not support HT, VHT nor HE modes and will error
+ * exit if the user tries to configure this RAA with a Wi-Fi MAC
+ * that has VhtSupported, HtSupported or HeSupported set.
  */
 class AparfWifiManager : public WifiRemoteStationManager
 {
@@ -57,6 +57,7 @@ public:
   virtual void SetupPhy (Ptr<WifiPhy> phy);
   virtual void SetHtSupported (bool enable);
   virtual void SetVhtSupported (bool enable);
+  virtual void SetHeSupported (bool enable);
 
   /**
    * Enumeration of the possible states of the channel.
@@ -105,7 +106,7 @@ private:
    * Differently form rate, power levels do not depend on the remote station.
    * The levels depend only on the physical layer of the device.
    */
-  uint32_t m_minPower;  
+  uint32_t m_minPower;
 
   /**
    * Maximal power level.

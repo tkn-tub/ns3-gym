@@ -38,7 +38,8 @@ RegularWifiMac::RegularWifiMac ()
   : m_htSupported (0),
     m_vhtSupported (0),
     m_erpSupported (0),
-    m_dsssSupported (0)
+    m_dsssSupported (0),
+    m_heSupported (0)
 {
   NS_LOG_FUNCTION (this);
   m_rxMiddle = new MacRxMiddle ();
@@ -121,6 +122,7 @@ RegularWifiMac::SetWifiRemoteStationManager (Ptr<WifiRemoteStationManager> stati
   m_stationManager = stationManager;
   m_stationManager->SetHtSupported (GetHtSupported ());
   m_stationManager->SetVhtSupported (GetVhtSupported ());
+  m_stationManager->SetHeSupported (GetHeSupported ());
   m_low->SetWifiRemoteStationManager (stationManager);
 
   m_dca->SetWifiRemoteStationManager (stationManager);
@@ -148,8 +150,8 @@ RegularWifiMac::GetHtCapabilities (void) const
       capabilities.SetHtSupported (1);
       capabilities.SetLdpc (m_phy->GetLdpc ());
       capabilities.SetSupportedChannelWidth (m_phy->GetChannelWidth () >= 40);
-      capabilities.SetShortGuardInterval20 (m_phy->GetGuardInterval ());
-      capabilities.SetShortGuardInterval40 (m_phy->GetChannelWidth () >= 40 && m_phy->GetGuardInterval ());
+      capabilities.SetShortGuardInterval20 (m_phy->GetShortGuardInterval ());
+      capabilities.SetShortGuardInterval40 (m_phy->GetChannelWidth () >= 40 && m_phy->GetShortGuardInterval ());
       capabilities.SetGreenfield (m_phy->GetGreenfield ());
       capabilities.SetMaxAmsduLength (1); //hardcoded for now (TBD)
       capabilities.SetLSigProtectionSupport (!m_phy->GetGreenfield ());
@@ -165,9 +167,10 @@ RegularWifiMac::GetHtCapabilities (void) const
           capabilities.SetRxMcsBitmask (mcs.GetMcsValue ());
           uint8_t nss = (mcs.GetMcsValue () / 8) + 1;
           NS_ASSERT (nss > 0 && nss < 5);
-          if (mcs.GetDataRate (m_phy->GetChannelWidth (), m_phy->GetGuardInterval (), nss) > maxSupportedRate)
+          uint64_t dataRate = mcs.GetDataRate (m_phy->GetChannelWidth (), m_phy->GetShortGuardInterval () ? 400 : 800, nss);
+          if (dataRate > maxSupportedRate)
             {
-              maxSupportedRate = mcs.GetDataRate (m_phy->GetChannelWidth (), m_phy->GetGuardInterval (), nss);
+              maxSupportedRate = dataRate;
               NS_LOG_DEBUG ("Updating maxSupportedRate to " << maxSupportedRate);
             }
         }
@@ -196,8 +199,8 @@ RegularWifiMac::GetVhtCapabilities (void) const
         }
       capabilities.SetMaxMpduLength (2); //hardcoded for now (TBD)
       capabilities.SetRxLdpc (m_phy->GetLdpc ());
-      capabilities.SetShortGuardIntervalFor80Mhz ((m_phy->GetChannelWidth () == 80) && m_phy->GetGuardInterval ());
-      capabilities.SetShortGuardIntervalFor160Mhz ((m_phy->GetChannelWidth () == 160) && m_phy->GetGuardInterval ());
+      capabilities.SetShortGuardIntervalFor80Mhz ((m_phy->GetChannelWidth () == 80) && m_phy->GetShortGuardInterval ());
+      capabilities.SetShortGuardIntervalFor160Mhz ((m_phy->GetChannelWidth () == 160) && m_phy->GetShortGuardInterval ());
       capabilities.SetMaxAmpduLengthExponent (7); //hardcoded for now (TBD)
       uint8_t maxMcs = 0;
       for (uint8_t i = 0; i < m_phy->GetNMcs (); i++)
@@ -233,6 +236,56 @@ RegularWifiMac::GetVhtCapabilities (void) const
             }
         }
       capabilities.SetRxHighestSupportedLgiDataRate (maxSupportedRateLGI / 1e6); //in Mbit/s
+    }
+  return capabilities;
+}
+
+HeCapabilities
+RegularWifiMac::GetHeCapabilities (void) const
+{
+  NS_LOG_FUNCTION (this);
+  HeCapabilities capabilities;
+  if (m_heSupported)
+    {
+      capabilities.SetHeSupported (1);
+      uint8_t channelWidthSet = 0;
+      if (m_phy->GetChannelWidth () >= 40 && m_phy->Is2_4Ghz (m_phy->GetFrequency ()))
+        {
+          channelWidthSet |= 0x01;
+        }
+      if (m_phy->GetChannelWidth () >= 80 && m_phy->Is5Ghz (m_phy->GetFrequency ()))
+        {
+          channelWidthSet |= 0x02;
+        }
+      if (m_phy->GetChannelWidth () >= 160 && m_phy->Is5Ghz (m_phy->GetFrequency ()))
+        {
+          channelWidthSet |= 0x04;
+        }
+      capabilities.SetChannelWidthSet (channelWidthSet);
+      uint8_t gi = 0;
+      if (m_phy->GetGuardInterval () <= NanoSeconds (1600))
+        {
+          //todo: We assume for now that if we support 800ns GI then 1600ns GI is supported as well
+          gi |= 0x01;
+        }
+      if (m_phy->GetGuardInterval () == NanoSeconds (800))
+        {
+          gi |= 0x02;
+        }
+      capabilities.SetHeLtfAndGiForHePpdus (gi);
+      capabilities.SetMaxAmpduLengthExponent (7); //hardcoded for now (TBD)
+      uint8_t maxMcs = 0;
+      for (uint8_t i = 0; i < m_phy->GetNMcs (); i++)
+        {
+          WifiMode mcs = m_phy->GetMcs (i);
+          if ((mcs.GetModulationClass () == WIFI_MOD_CLASS_HE)
+              && (mcs.GetMcsValue () > maxMcs))
+            {
+              maxMcs = mcs.GetMcsValue ();
+            }
+        }
+      capabilities.SetHighestMcsSupported (maxMcs);
+      capabilities.SetHighestNssSupported (m_phy->GetMaxSupportedTxSpatialStreams ());
     }
   return capabilities;
 }
@@ -478,31 +531,6 @@ RegularWifiMac::GetQosSupported () const
 }
 
 void
-RegularWifiMac::SetHtSupported (bool enable)
-{
-  NS_LOG_FUNCTION (this << enable);
-  m_htSupported = enable;
-  if (enable)
-    {
-      SetQosSupported (true);
-    }
-  if (!enable && !m_vhtSupported)
-    {
-      DisableAggregation ();
-    }
-  else
-    {
-      EnableAggregation ();
-    }
-}
-
-bool
-RegularWifiMac::GetVhtSupported () const
-{
-  return m_vhtSupported;
-}
-
-void
 RegularWifiMac::SetVhtSupported (bool enable)
 {
   NS_LOG_FUNCTION (this << enable);
@@ -521,10 +549,60 @@ RegularWifiMac::SetVhtSupported (bool enable)
     }
 }
 
+void
+RegularWifiMac::SetHtSupported (bool enable)
+{
+  NS_LOG_FUNCTION (this << enable);
+  m_htSupported = enable;
+  if (enable)
+    {
+      SetQosSupported (true);
+    }
+  if (!enable && !m_vhtSupported)
+    {
+      DisableAggregation ();
+    }
+  else
+    {
+      EnableAggregation ();
+    }
+}
+
+void
+RegularWifiMac::SetHeSupported (bool enable)
+{
+  NS_LOG_FUNCTION (this << enable);
+  m_heSupported = enable;
+  if (enable)
+    {
+      SetQosSupported (true);
+    }
+  if (!enable && !m_htSupported && !m_vhtSupported)
+    {
+      DisableAggregation ();
+    }
+  else
+    {
+      EnableAggregation ();
+    }
+}
+
+bool
+RegularWifiMac::GetVhtSupported () const
+{
+  return m_vhtSupported;
+}
+
 bool
 RegularWifiMac::GetHtSupported () const
 {
   return m_htSupported;
+}
+
+bool
+RegularWifiMac::GetHeSupported () const
+{
+  return m_heSupported;
 }
 
 bool
@@ -967,6 +1045,12 @@ RegularWifiMac::GetTypeId (void)
                    MakeBooleanAccessor (&RegularWifiMac::SetVhtSupported,
                                         &RegularWifiMac::GetVhtSupported),
                    MakeBooleanChecker ())
+    .AddAttribute ("HeSupported",
+                   "This Boolean attribute is set to enable 802.11ax support at this STA.",
+                   BooleanValue (false),
+                   MakeBooleanAccessor (&RegularWifiMac::SetHeSupported,
+                                        &RegularWifiMac::GetHeSupported),
+                   MakeBooleanChecker ())
     .AddAttribute ("CtsToSelfSupported",
                    "Use CTS to Self when using a rate that is not in the basic rate set.",
                    BooleanValue (false),
@@ -1132,6 +1216,8 @@ RegularWifiMac::FinishConfigureStandard (WifiPhyStandard standard)
   uint32_t cwmax = 0;
   switch (standard)
     {
+    case WIFI_PHY_STANDARD_80211ax_5GHZ:
+      SetHeSupported (true);
     case WIFI_PHY_STANDARD_80211ac:
       SetVhtSupported (true);
     case WIFI_PHY_STANDARD_80211n_5GHZ:
@@ -1139,6 +1225,8 @@ RegularWifiMac::FinishConfigureStandard (WifiPhyStandard standard)
       cwmin = 15;
       cwmax = 1023;
       break;
+    case WIFI_PHY_STANDARD_80211ax_2_4GHZ:
+      SetHeSupported (true);
     case WIFI_PHY_STANDARD_80211n_2_4GHZ:
       SetHtSupported (true);
     case WIFI_PHY_STANDARD_80211g:

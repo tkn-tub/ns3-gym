@@ -36,9 +36,9 @@ struct AarfcdWifiRemoteStation;
  * version of ns-3. Federico died before merging this work in ns-3 itself so his code was ported
  * to ns-3 later without his supervision.
  *
- * This RAA does not support HT or VHT modes and will error exit
- * if the user tries to configure this RAA with a Wi-Fi MAC that
- * has VhtSupported or HtSupported set.
+ * This RAA does not support HT, VHT nor HE modes and will error
+ * exit if the user tries to configure this RAA with a Wi-Fi MAC
+ * that has VhtSupported, HtSupported or HeSupported set.
  */
 class AarfcdWifiManager : public WifiRemoteStationManager
 {
@@ -50,6 +50,7 @@ public:
   // Inherited from WifiRemoteStationManager
   virtual void SetHtSupported (bool enable);
   virtual void SetVhtSupported (bool enable);
+  virtual void SetHeSupported (bool enable);
 
 private:
   // overriden from base class

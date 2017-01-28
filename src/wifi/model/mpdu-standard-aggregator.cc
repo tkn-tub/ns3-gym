@@ -93,7 +93,7 @@ MpduStandardAggregator::Aggregate (Ptr<const Packet> packet, Ptr<Packet> aggrega
 }
 
 void
-MpduStandardAggregator::AggregateVhtSingleMpdu (Ptr<const Packet> packet, Ptr<Packet> aggregatedPacket) const
+MpduStandardAggregator::AggregateSingleMpdu (Ptr<const Packet> packet, Ptr<Packet> aggregatedPacket) const
 {
   NS_LOG_FUNCTION (this);
   Ptr<Packet> currentPacket;
@@ -117,7 +117,7 @@ MpduStandardAggregator::AggregateVhtSingleMpdu (Ptr<const Packet> packet, Ptr<Pa
 }
 
 void
-MpduStandardAggregator::AddHeaderAndPad (Ptr<Packet> packet, bool last, bool vhtSingleMpdu) const
+MpduStandardAggregator::AddHeaderAndPad (Ptr<Packet> packet, bool last, bool isSingleMpdu) const
 {
   NS_LOG_FUNCTION (this);
   AmpduSubframeHeader currentHdr;
@@ -127,7 +127,7 @@ MpduStandardAggregator::AddHeaderAndPad (Ptr<Packet> packet, bool last, bool vht
   currentHdr.SetCrc (1);
   currentHdr.SetSig ();
   currentHdr.SetLength (packet->GetSize ());
-  if (vhtSingleMpdu)
+  if (isSingleMpdu)
     {
       currentHdr.SetEof (1);
     }

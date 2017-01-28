@@ -21,6 +21,7 @@ Supported platforms
 
 New user-visible features
 -------------------------
+- (wifi) 802.11ax High Efficiency (HE) physical layer modes are now supported.
 
 Bugs fixed
 ----------

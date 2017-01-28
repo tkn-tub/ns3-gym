@@ -35,6 +35,7 @@
 
 namespace ns3 {
 
+#define HE_PHY 125
 #define VHT_PHY 126
 #define HT_PHY 127
 
@@ -366,7 +367,7 @@ public:
    *
    * \return the training symbol duration
    */
-  static Time GetPlcpHtTrainingSymbolDuration (WifiTxVector txVector);
+  static Time GetPlcpTrainingSymbolDuration (WifiTxVector txVector);
   /**
    * \param payloadMode the WifiMode use for the transmission of the payload
    *
@@ -381,6 +382,12 @@ public:
    */
   static WifiMode GetVhtPlcpHeaderMode (WifiMode payloadMode);
   /**
+   * \param payloadMode the WifiMode use for the transmission of the payload
+   *
+   * \return the WifiMode used for the transmission of the HE-STF, HE-LTF and HE-SIG-B fields
+   */
+  static WifiMode GetHePlcpHeaderMode (WifiMode payloadMode);
+  /**
    * \param preamble the type of preamble
    *
    * \return the duration of the HT-SIG in Mixed Format and greenfield format PLCP header
@@ -389,21 +396,21 @@ public:
   /**
    * \param preamble the type of preamble
    *
-   * \return the duration of the VHT-SIG-A1 in PLCP header
+   * \return the duration of the SIG-A1 in PLCP header
    */
-  static Time GetPlcpVhtSigA1Duration (WifiPreamble preamble);
+  static Time GetPlcpSigA1Duration (WifiPreamble preamble);
   /**
    * \param preamble the type of preamble
    *
-   * \return the duration of the VHT-SIG-A2 in PLCP header
+   * \return the duration of the SIG-A2 in PLCP header
    */
-  static Time GetPlcpVhtSigA2Duration (WifiPreamble preamble);
+  static Time GetPlcpSigA2Duration (WifiPreamble preamble);
   /**
    * \param preamble the type of preamble
    *
-   * \return the duration of the VHT-SIG-B in PLCP header
+   * \return the duration of the SIG-B in PLCP header
    */
-  static Time GetPlcpVhtSigBDuration (WifiPreamble preamble);
+  static Time GetPlcpSigBDuration (WifiPreamble preamble);
   /**
    * \param txVector the transmission parameters used for this packet
    *
@@ -1107,6 +1114,80 @@ public:
    * \return MCS 9 from VHT MCS values
    */
   static WifiMode GetVhtMcs9 ();
+
+  /**
+   * Return MCS 0 from HE MCS values.
+   *
+   * \return MCS 0 from HE MCS values
+   */
+  static WifiMode GetHeMcs0 ();
+  /**
+   * Return MCS 1 from HE MCS values.
+   *
+   * \return MCS 1 from HE MCS values
+   */
+  static WifiMode GetHeMcs1 ();
+  /**
+   * Return MCS 2 from HE MCS values.
+   *
+   * \return MCS 2 from HE MCS values
+   */
+  static WifiMode GetHeMcs2 ();
+  /**
+   * Return MCS 3 from HE MCS values.
+   *
+   * \return MCS 3 from HE MCS values
+   */
+  static WifiMode GetHeMcs3 ();
+  /**
+   * Return MCS 4 from HE MCS values.
+   *
+   * \return MCS 4 from HE MCS values
+   */
+  static WifiMode GetHeMcs4 ();
+  /**
+   * Return MCS 5 from HE MCS values.
+   *
+   * \return MCS 5 from HE MCS values
+   */
+  static WifiMode GetHeMcs5 ();
+  /**
+   * Return MCS 6 from HE MCS values.
+   *
+   * \return MCS 6 from HE MCS values
+   */
+  static WifiMode GetHeMcs6 ();
+  /**
+   * Return MCS 7 from HE MCS values.
+   *
+   * \return MCS 7 from HE MCS values
+   */
+  static WifiMode GetHeMcs7 ();
+  /**
+   * Return MCS 8 from HE MCS values.
+   *
+   * \return MCS 8 from HE MCS values
+   */
+  static WifiMode GetHeMcs8 ();
+  /**
+   * Return MCS 9 from HE MCS values.
+   *
+   * \return MCS 9 from HE MCS values
+   */
+  static WifiMode GetHeMcs9 ();
+  /**
+   * Return MCS 10 from HE MCS values.
+   *
+   * \return MCS 10 from HE MCS values
+   */
+  static WifiMode GetHeMcs10 ();
+  /**
+   * Return MCS 11 from HE MCS values.
+   *
+   * \return MCS 11 from HE MCS values
+   */
+  static WifiMode GetHeMcs11 ();
+
   /**
    * The standard disallows certain combinations of WifiMode, number of
    * spatial streams, and channel widths.  This method can be used to
@@ -1425,19 +1506,35 @@ public:
    * \return the maximum number of supported RX spatial streams
    */
   virtual uint8_t GetMaxSupportedRxSpatialStreams (void) const;
+  /**
+   * \return whether frequency is in the 5 GHz band
+   */
+  bool Is2_4Ghz (double frequency) const;
+  /**
+   * \return whether frequency is in the 2.4 GHz band
+   */
+  bool Is5Ghz (double frequency) const;
 
   /**
-   * Enable or disable short/long guard interval.
+   * Enable or disable support for HT/VHT short guard interval.
    *
-   * \param guardInterval Enable or disable guard interval
+   * \param shortGuardInterval Enable or disable support for short guard interval
    */
-  virtual void SetGuardInterval (bool guardInterval);
+  virtual void SetShortGuardInterval (bool shortGuardInterval);
   /**
-   * Return whether guard interval is being used.
+   * Return whether short guard interval is supported.
    *
-   * \return true if guard interval is being used, false otherwise
+   * \return true if short guard interval is supported, false otherwise
    */
-  virtual bool GetGuardInterval (void) const;
+  virtual bool GetShortGuardInterval (void) const;
+  /**
+   * \param guard interval the supported HE guard interval
+   */
+  virtual void SetGuardInterval (Time guardInterval);
+  /**
+   * \return the supported HE guard interval
+   */
+  virtual Time GetGuardInterval (void) const;
   /**
    * Enable or disable LDPC.
    * \param ldpc Enable or disable LDPC
@@ -1622,6 +1719,11 @@ private:
    */
   void Configure80211ac (void);
   /**
+   * Configure WifiPhy with appropriate channel frequency and
+   * supported rates for 802.11ax standard.
+   */
+  void Configure80211ax (void);
+  /**
    * Configure the device Mcs set with the appropriate HtMcs modes for
    * the number of available transmit spatial streams
    */
@@ -1793,8 +1895,10 @@ private:
   bool     m_ldpc;                  //!< Flag if LDPC is used
   bool     m_stbc;                  //!< Flag if STBC is used
   bool     m_greenfield;            //!< Flag if GreenField format is supported
-  bool     m_guardInterval;         //!< Flag if short guard interval is used
+  bool     m_shortGuardInterval;    //!< Flag if HT/VHT short guard interval is supported
   bool     m_shortPreamble;         //!< Flag if short PLCP preamble is supported
+
+  Time m_guardInterval; //!< Supported HE guard interval
 
   uint8_t m_numberOfTransmitters; //!< Number of transmitters (DEPRECATED)
   uint8_t m_numberOfReceivers;    //!< Number of receivers (DEPRECATED)
