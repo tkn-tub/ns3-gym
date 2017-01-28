@@ -11813,77 +11813,32 @@ def register_Ns3CtrlBAckResponseHeader_methods(root_module, cls):
     return
 
 def register_Ns3DcaTxop_methods(root_module, cls):
+    ## dca-txop.h (module 'wifi'): ns3::DcaTxop::DcaTxop(ns3::DcaTxop const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::DcaTxop const &', 'arg0')])
     ## dca-txop.h (module 'wifi'): ns3::DcaTxop::DcaTxop() [constructor]
     cls.add_constructor([])
-    ## dca-txop.h (module 'wifi'): static ns3::TypeId ns3::DcaTxop::GetTypeId() [member function]
-    cls.add_method('GetTypeId', 
-                   'ns3::TypeId', 
+    ## dca-txop.h (module 'wifi'): int64_t ns3::DcaTxop::AssignStreams(int64_t stream) [member function]
+    cls.add_method('AssignStreams', 
+                   'int64_t', 
+                   [param('int64_t', 'stream')])
+    ## dca-txop.h (module 'wifi'): void ns3::DcaTxop::Cancel() [member function]
+    cls.add_method('Cancel', 
+                   'void', 
                    [], 
-                   is_static=True)
-    ## dca-txop.h (module 'wifi'): bool ns3::DcaTxop::IsEdca() [member function]
-    cls.add_method('IsEdca', 
-                   'bool', 
+                   is_virtual=True)
+    ## dca-txop.h (module 'wifi'): void ns3::DcaTxop::EndTxNoAck() [member function]
+    cls.add_method('EndTxNoAck', 
+                   'void', 
                    [], 
                    is_virtual=True)
-    ## dca-txop.h (module 'wifi'): void ns3::DcaTxop::SetLow(ns3::Ptr<ns3::MacLow> low) [member function]
-    cls.add_method('SetLow', 
-                   'void', 
-                   [param('ns3::Ptr< ns3::MacLow >', 'low')], 
-                   is_virtual=True)
-    ## dca-txop.h (module 'wifi'): void ns3::DcaTxop::SetManager(ns3::DcfManager * manager) [member function]
-    cls.add_method('SetManager', 
-                   'void', 
-                   [param('ns3::DcfManager *', 'manager')], 
-                   is_virtual=True)
-    ## dca-txop.h (module 'wifi'): void ns3::DcaTxop::SetWifiRemoteStationManager(ns3::Ptr<ns3::WifiRemoteStationManager> remoteManager) [member function]
-    cls.add_method('SetWifiRemoteStationManager', 
-                   'void', 
-                   [param('ns3::Ptr< ns3::WifiRemoteStationManager >', 'remoteManager')], 
-                   is_virtual=True)
-    ## dca-txop.h (module 'wifi'): void ns3::DcaTxop::SetTxMiddle(ns3::MacTxMiddle * txMiddle) [member function]
-    cls.add_method('SetTxMiddle', 
-                   'void', 
-                   [param('ns3::MacTxMiddle *', 'txMiddle')], 
-                   is_virtual=True)
-    ## dca-txop.h (module 'wifi'): void ns3::DcaTxop::SetTxOkCallback(ns3::Callback<void, ns3::WifiMacHeader const&, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> callback) [member function]
-    cls.add_method('SetTxOkCallback', 
-                   'void', 
-                   [param('ns3::Callback< void, ns3::WifiMacHeader const &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'callback')], 
-                   is_virtual=True)
-    ## dca-txop.h (module 'wifi'): void ns3::DcaTxop::SetTxFailedCallback(ns3::Callback<void, ns3::WifiMacHeader const&, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> callback) [member function]
-    cls.add_method('SetTxFailedCallback', 
-                   'void', 
-                   [param('ns3::Callback< void, ns3::WifiMacHeader const &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'callback')], 
-                   is_virtual=True)
+    ## dca-txop.h (module 'wifi'): uint32_t ns3::DcaTxop::GetAifsn() const [member function]
+    cls.add_method('GetAifsn', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
     ## dca-txop.h (module 'wifi'): ns3::Ptr<ns3::MacLow> ns3::DcaTxop::GetLow() const [member function]
     cls.add_method('GetLow', 
                    'ns3::Ptr< ns3::MacLow >', 
-                   [], 
-                   is_const=True)
-    ## dca-txop.h (module 'wifi'): ns3::Ptr<ns3::WifiMacQueue> ns3::DcaTxop::GetQueue() const [member function]
-    cls.add_method('GetQueue', 
-                   'ns3::Ptr< ns3::WifiMacQueue >', 
-                   [], 
-                   is_const=True)
-    ## dca-txop.h (module 'wifi'): void ns3::DcaTxop::SetMinCw(uint32_t minCw) [member function]
-    cls.add_method('SetMinCw', 
-                   'void', 
-                   [param('uint32_t', 'minCw')])
-    ## dca-txop.h (module 'wifi'): void ns3::DcaTxop::SetMaxCw(uint32_t maxCw) [member function]
-    cls.add_method('SetMaxCw', 
-                   'void', 
-                   [param('uint32_t', 'maxCw')])
-    ## dca-txop.h (module 'wifi'): void ns3::DcaTxop::SetAifsn(uint32_t aifsn) [member function]
-    cls.add_method('SetAifsn', 
-                   'void', 
-                   [param('uint32_t', 'aifsn')])
-    ## dca-txop.h (module 'wifi'): void ns3::DcaTxop::SetTxopLimit(ns3::Time txopLimit) [member function]
-    cls.add_method('SetTxopLimit', 
-                   'void', 
-                   [param('ns3::Time', 'txopLimit')])
-    ## dca-txop.h (module 'wifi'): uint32_t ns3::DcaTxop::GetMinCw() const [member function]
-    cls.add_method('GetMinCw', 
-                   'uint32_t', 
                    [], 
                    is_const=True)
     ## dca-txop.h (module 'wifi'): uint32_t ns3::DcaTxop::GetMaxCw() const [member function]
@@ -11891,9 +11846,14 @@ def register_Ns3DcaTxop_methods(root_module, cls):
                    'uint32_t', 
                    [], 
                    is_const=True)
-    ## dca-txop.h (module 'wifi'): uint32_t ns3::DcaTxop::GetAifsn() const [member function]
-    cls.add_method('GetAifsn', 
+    ## dca-txop.h (module 'wifi'): uint32_t ns3::DcaTxop::GetMinCw() const [member function]
+    cls.add_method('GetMinCw', 
                    'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## dca-txop.h (module 'wifi'): ns3::Ptr<ns3::WifiMacQueue> ns3::DcaTxop::GetQueue() const [member function]
+    cls.add_method('GetQueue', 
+                   'ns3::Ptr< ns3::WifiMacQueue >', 
                    [], 
                    is_const=True)
     ## dca-txop.h (module 'wifi'): ns3::Time ns3::DcaTxop::GetTxopLimit() const [member function]
@@ -11901,6 +11861,46 @@ def register_Ns3DcaTxop_methods(root_module, cls):
                    'ns3::Time', 
                    [], 
                    is_const=True)
+    ## dca-txop.h (module 'wifi'): static ns3::TypeId ns3::DcaTxop::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## dca-txop.h (module 'wifi'): void ns3::DcaTxop::GotAck() [member function]
+    cls.add_method('GotAck', 
+                   'void', 
+                   [], 
+                   is_virtual=True)
+    ## dca-txop.h (module 'wifi'): void ns3::DcaTxop::GotBlockAck(ns3::CtrlBAckResponseHeader const * blockAck, ns3::Mac48Address recipient, double rxSnr, ns3::WifiMode txMode, double dataSnr) [member function]
+    cls.add_method('GotBlockAck', 
+                   'void', 
+                   [param('ns3::CtrlBAckResponseHeader const *', 'blockAck'), param('ns3::Mac48Address', 'recipient'), param('double', 'rxSnr'), param('ns3::WifiMode', 'txMode'), param('double', 'dataSnr')], 
+                   is_virtual=True)
+    ## dca-txop.h (module 'wifi'): bool ns3::DcaTxop::HasTxop() const [member function]
+    cls.add_method('HasTxop', 
+                   'bool', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## dca-txop.h (module 'wifi'): bool ns3::DcaTxop::IsEdca() [member function]
+    cls.add_method('IsEdca', 
+                   'bool', 
+                   [], 
+                   is_virtual=True)
+    ## dca-txop.h (module 'wifi'): void ns3::DcaTxop::MissedAck() [member function]
+    cls.add_method('MissedAck', 
+                   'void', 
+                   [], 
+                   is_virtual=True)
+    ## dca-txop.h (module 'wifi'): void ns3::DcaTxop::MissedBlockAck(uint8_t nMpdus) [member function]
+    cls.add_method('MissedBlockAck', 
+                   'void', 
+                   [param('uint8_t', 'nMpdus')], 
+                   is_virtual=True)
+    ## dca-txop.h (module 'wifi'): void ns3::DcaTxop::MissedCts() [member function]
+    cls.add_method('MissedCts', 
+                   'void', 
+                   [], 
+                   is_virtual=True)
     ## dca-txop.h (module 'wifi'): void ns3::DcaTxop::NotifyChannelSwitching() [member function]
     cls.add_method('NotifyChannelSwitching', 
                    'void', 
@@ -11921,90 +11921,134 @@ def register_Ns3DcaTxop_methods(root_module, cls):
                    'void', 
                    [param('ns3::Ptr< ns3::Packet const >', 'packet'), param('ns3::WifiMacHeader const &', 'hdr')], 
                    is_virtual=True)
-    ## dca-txop.h (module 'wifi'): void ns3::DcaTxop::MissedCts() [member function]
-    cls.add_method('MissedCts', 
+    ## dca-txop.h (module 'wifi'): void ns3::DcaTxop::SetAifsn(uint32_t aifsn) [member function]
+    cls.add_method('SetAifsn', 
                    'void', 
-                   [], 
+                   [param('uint32_t', 'aifsn')])
+    ## dca-txop.h (module 'wifi'): void ns3::DcaTxop::SetLow(ns3::Ptr<ns3::MacLow> low) [member function]
+    cls.add_method('SetLow', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::MacLow >', 'low')], 
                    is_virtual=True)
-    ## dca-txop.h (module 'wifi'): void ns3::DcaTxop::GotAck() [member function]
-    cls.add_method('GotAck', 
+    ## dca-txop.h (module 'wifi'): void ns3::DcaTxop::SetManager(ns3::DcfManager * manager) [member function]
+    cls.add_method('SetManager', 
                    'void', 
-                   [], 
+                   [param('ns3::DcfManager *', 'manager')], 
                    is_virtual=True)
-    ## dca-txop.h (module 'wifi'): void ns3::DcaTxop::MissedAck() [member function]
-    cls.add_method('MissedAck', 
+    ## dca-txop.h (module 'wifi'): void ns3::DcaTxop::SetMaxCw(uint32_t maxCw) [member function]
+    cls.add_method('SetMaxCw', 
                    'void', 
-                   [], 
+                   [param('uint32_t', 'maxCw')])
+    ## dca-txop.h (module 'wifi'): void ns3::DcaTxop::SetMinCw(uint32_t minCw) [member function]
+    cls.add_method('SetMinCw', 
+                   'void', 
+                   [param('uint32_t', 'minCw')])
+    ## dca-txop.h (module 'wifi'): void ns3::DcaTxop::SetTxFailedCallback(ns3::Callback<void, ns3::WifiMacHeader const&, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> callback) [member function]
+    cls.add_method('SetTxFailedCallback', 
+                   'void', 
+                   [param('ns3::Callback< void, ns3::WifiMacHeader const &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'callback')], 
                    is_virtual=True)
-    ## dca-txop.h (module 'wifi'): void ns3::DcaTxop::GotBlockAck(ns3::CtrlBAckResponseHeader const * blockAck, ns3::Mac48Address recipient, double rxSnr, ns3::WifiMode txMode, double dataSnr) [member function]
-    cls.add_method('GotBlockAck', 
+    ## dca-txop.h (module 'wifi'): void ns3::DcaTxop::SetTxMiddle(ns3::MacTxMiddle * txMiddle) [member function]
+    cls.add_method('SetTxMiddle', 
                    'void', 
-                   [param('ns3::CtrlBAckResponseHeader const *', 'blockAck'), param('ns3::Mac48Address', 'recipient'), param('double', 'rxSnr'), param('ns3::WifiMode', 'txMode'), param('double', 'dataSnr')], 
+                   [param('ns3::MacTxMiddle *', 'txMiddle')], 
                    is_virtual=True)
-    ## dca-txop.h (module 'wifi'): void ns3::DcaTxop::MissedBlockAck(uint8_t nMpdus) [member function]
-    cls.add_method('MissedBlockAck', 
+    ## dca-txop.h (module 'wifi'): void ns3::DcaTxop::SetTxOkCallback(ns3::Callback<void, ns3::WifiMacHeader const&, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> callback) [member function]
+    cls.add_method('SetTxOkCallback', 
                    'void', 
-                   [param('uint8_t', 'nMpdus')], 
+                   [param('ns3::Callback< void, ns3::WifiMacHeader const &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'callback')], 
                    is_virtual=True)
-    ## dca-txop.h (module 'wifi'): void ns3::DcaTxop::StartNextFragment() [member function]
-    cls.add_method('StartNextFragment', 
+    ## dca-txop.h (module 'wifi'): void ns3::DcaTxop::SetTxopLimit(ns3::Time txopLimit) [member function]
+    cls.add_method('SetTxopLimit', 
                    'void', 
-                   [], 
-                   is_virtual=True)
-    ## dca-txop.h (module 'wifi'): void ns3::DcaTxop::Cancel() [member function]
-    cls.add_method('Cancel', 
+                   [param('ns3::Time', 'txopLimit')])
+    ## dca-txop.h (module 'wifi'): void ns3::DcaTxop::SetWifiRemoteStationManager(ns3::Ptr<ns3::WifiRemoteStationManager> remoteManager) [member function]
+    cls.add_method('SetWifiRemoteStationManager', 
                    'void', 
-                   [], 
+                   [param('ns3::Ptr< ns3::WifiRemoteStationManager >', 'remoteManager')], 
                    is_virtual=True)
     ## dca-txop.h (module 'wifi'): void ns3::DcaTxop::StartNext() [member function]
     cls.add_method('StartNext', 
                    'void', 
                    [], 
                    is_virtual=True)
-    ## dca-txop.h (module 'wifi'): void ns3::DcaTxop::EndTxNoAck() [member function]
-    cls.add_method('EndTxNoAck', 
+    ## dca-txop.h (module 'wifi'): void ns3::DcaTxop::StartNextFragment() [member function]
+    cls.add_method('StartNextFragment', 
                    'void', 
                    [], 
                    is_virtual=True)
-    ## dca-txop.h (module 'wifi'): bool ns3::DcaTxop::HasTxop() const [member function]
-    cls.add_method('HasTxop', 
-                   'bool', 
-                   [], 
-                   is_const=True, is_virtual=True)
-    ## dca-txop.h (module 'wifi'): int64_t ns3::DcaTxop::AssignStreams(int64_t stream) [member function]
-    cls.add_method('AssignStreams', 
-                   'int64_t', 
-                   [param('int64_t', 'stream')])
     ## dca-txop.h (module 'wifi'): void ns3::DcaTxop::DoDispose() [member function]
     cls.add_method('DoDispose', 
                    'void', 
                    [], 
                    visibility='protected', is_virtual=True)
-    ## dca-txop.h (module 'wifi'): ns3::DcaTxop::DcaTxop(ns3::DcaTxop const & o) [copy constructor]
-    cls.add_constructor([param('ns3::DcaTxop const &', 'o')], 
-                        visibility='protected')
     ## dca-txop.h (module 'wifi'): void ns3::DcaTxop::DoInitialize() [member function]
     cls.add_method('DoInitialize', 
                    'void', 
                    [], 
+                   visibility='protected', is_virtual=True)
+    ## dca-txop.h (module 'wifi'): uint32_t ns3::DcaTxop::GetFragmentOffset() const [member function]
+    cls.add_method('GetFragmentOffset', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True, visibility='protected', is_virtual=True)
+    ## dca-txop.h (module 'wifi'): ns3::Ptr<ns3::Packet> ns3::DcaTxop::GetFragmentPacket(ns3::WifiMacHeader * hdr) [member function]
+    cls.add_method('GetFragmentPacket', 
+                   'ns3::Ptr< ns3::Packet >', 
+                   [param('ns3::WifiMacHeader *', 'hdr')], 
+                   visibility='protected', is_virtual=True)
+    ## dca-txop.h (module 'wifi'): uint32_t ns3::DcaTxop::GetFragmentSize() const [member function]
+    cls.add_method('GetFragmentSize', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True, visibility='protected', is_virtual=True)
+    ## dca-txop.h (module 'wifi'): uint32_t ns3::DcaTxop::GetNextFragmentSize() const [member function]
+    cls.add_method('GetNextFragmentSize', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True, visibility='protected', is_virtual=True)
+    ## dca-txop.h (module 'wifi'): bool ns3::DcaTxop::IsLastFragment() const [member function]
+    cls.add_method('IsLastFragment', 
+                   'bool', 
+                   [], 
+                   is_const=True, visibility='protected', is_virtual=True)
+    ## dca-txop.h (module 'wifi'): bool ns3::DcaTxop::NeedDataRetransmission(ns3::Ptr<ns3::Packet const> packet, ns3::WifiMacHeader const & hdr) [member function]
+    cls.add_method('NeedDataRetransmission', 
+                   'bool', 
+                   [param('ns3::Ptr< ns3::Packet const >', 'packet'), param('ns3::WifiMacHeader const &', 'hdr')], 
+                   visibility='protected', is_virtual=True)
+    ## dca-txop.h (module 'wifi'): bool ns3::DcaTxop::NeedFragmentation() const [member function]
+    cls.add_method('NeedFragmentation', 
+                   'bool', 
+                   [], 
+                   is_const=True, visibility='protected', is_virtual=True)
+    ## dca-txop.h (module 'wifi'): bool ns3::DcaTxop::NeedRtsRetransmission(ns3::Ptr<ns3::Packet const> packet, ns3::WifiMacHeader const & hdr) [member function]
+    cls.add_method('NeedRtsRetransmission', 
+                   'bool', 
+                   [param('ns3::Ptr< ns3::Packet const >', 'packet'), param('ns3::WifiMacHeader const &', 'hdr')], 
                    visibility='protected', is_virtual=True)
     ## dca-txop.h (module 'wifi'): bool ns3::DcaTxop::NeedsAccess() const [member function]
     cls.add_method('NeedsAccess', 
                    'bool', 
                    [], 
                    is_const=True, visibility='protected', is_virtual=True)
+    ## dca-txop.h (module 'wifi'): void ns3::DcaTxop::NextFragment() [member function]
+    cls.add_method('NextFragment', 
+                   'void', 
+                   [], 
+                   visibility='protected', is_virtual=True)
     ## dca-txop.h (module 'wifi'): void ns3::DcaTxop::NotifyAccessGranted() [member function]
     cls.add_method('NotifyAccessGranted', 
                    'void', 
                    [], 
                    visibility='protected', is_virtual=True)
-    ## dca-txop.h (module 'wifi'): void ns3::DcaTxop::NotifyInternalCollision() [member function]
-    cls.add_method('NotifyInternalCollision', 
+    ## dca-txop.h (module 'wifi'): void ns3::DcaTxop::NotifyCollision() [member function]
+    cls.add_method('NotifyCollision', 
                    'void', 
                    [], 
                    visibility='protected', is_virtual=True)
-    ## dca-txop.h (module 'wifi'): void ns3::DcaTxop::NotifyCollision() [member function]
-    cls.add_method('NotifyCollision', 
+    ## dca-txop.h (module 'wifi'): void ns3::DcaTxop::NotifyInternalCollision() [member function]
+    cls.add_method('NotifyInternalCollision', 
                    'void', 
                    [], 
                    visibility='protected', is_virtual=True)
@@ -12018,51 +12062,6 @@ def register_Ns3DcaTxop_methods(root_module, cls):
                    'void', 
                    [], 
                    visibility='protected', is_virtual=True)
-    ## dca-txop.h (module 'wifi'): bool ns3::DcaTxop::NeedFragmentation() const [member function]
-    cls.add_method('NeedFragmentation', 
-                   'bool', 
-                   [], 
-                   is_const=True, visibility='protected', is_virtual=True)
-    ## dca-txop.h (module 'wifi'): void ns3::DcaTxop::NextFragment() [member function]
-    cls.add_method('NextFragment', 
-                   'void', 
-                   [], 
-                   visibility='protected', is_virtual=True)
-    ## dca-txop.h (module 'wifi'): ns3::Ptr<ns3::Packet> ns3::DcaTxop::GetFragmentPacket(ns3::WifiMacHeader * hdr) [member function]
-    cls.add_method('GetFragmentPacket', 
-                   'ns3::Ptr< ns3::Packet >', 
-                   [param('ns3::WifiMacHeader *', 'hdr')], 
-                   visibility='protected', is_virtual=True)
-    ## dca-txop.h (module 'wifi'): bool ns3::DcaTxop::NeedRtsRetransmission(ns3::Ptr<ns3::Packet const> packet, ns3::WifiMacHeader const & hdr) [member function]
-    cls.add_method('NeedRtsRetransmission', 
-                   'bool', 
-                   [param('ns3::Ptr< ns3::Packet const >', 'packet'), param('ns3::WifiMacHeader const &', 'hdr')], 
-                   visibility='protected', is_virtual=True)
-    ## dca-txop.h (module 'wifi'): bool ns3::DcaTxop::NeedDataRetransmission(ns3::Ptr<ns3::Packet const> packet, ns3::WifiMacHeader const & hdr) [member function]
-    cls.add_method('NeedDataRetransmission', 
-                   'bool', 
-                   [param('ns3::Ptr< ns3::Packet const >', 'packet'), param('ns3::WifiMacHeader const &', 'hdr')], 
-                   visibility='protected', is_virtual=True)
-    ## dca-txop.h (module 'wifi'): uint32_t ns3::DcaTxop::GetNextFragmentSize() const [member function]
-    cls.add_method('GetNextFragmentSize', 
-                   'uint32_t', 
-                   [], 
-                   is_const=True, visibility='protected', is_virtual=True)
-    ## dca-txop.h (module 'wifi'): uint32_t ns3::DcaTxop::GetFragmentSize() const [member function]
-    cls.add_method('GetFragmentSize', 
-                   'uint32_t', 
-                   [], 
-                   is_const=True, visibility='protected', is_virtual=True)
-    ## dca-txop.h (module 'wifi'): uint32_t ns3::DcaTxop::GetFragmentOffset() const [member function]
-    cls.add_method('GetFragmentOffset', 
-                   'uint32_t', 
-                   [], 
-                   is_const=True, visibility='protected', is_virtual=True)
-    ## dca-txop.h (module 'wifi'): bool ns3::DcaTxop::IsLastFragment() const [member function]
-    cls.add_method('IsLastFragment', 
-                   'bool', 
-                   [], 
-                   is_const=True, visibility='protected', is_virtual=True)
     return
 
 def register_Ns3DcfManager_methods(root_module, cls):
@@ -12673,53 +12672,64 @@ def register_Ns3EdcaParameterSetValue_methods(root_module, cls):
     return
 
 def register_Ns3EdcaTxopN_methods(root_module, cls):
-    ## edca-txop-n.h (module 'wifi'): ns3::EdcaTxopN::m_aMpduEnabled [variable]
-    cls.add_instance_attribute('m_aMpduEnabled', 'std::map< ns3::Mac48Address, bool >', is_const=False)
-    ## edca-txop-n.h (module 'wifi'): static ns3::TypeId ns3::EdcaTxopN::GetTypeId() [member function]
-    cls.add_method('GetTypeId', 
-                   'ns3::TypeId', 
-                   [], 
-                   is_static=True)
+    ## edca-txop-n.h (module 'wifi'): ns3::EdcaTxopN::EdcaTxopN(ns3::EdcaTxopN const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::EdcaTxopN const &', 'arg0')])
     ## edca-txop-n.h (module 'wifi'): ns3::EdcaTxopN::EdcaTxopN() [constructor]
     cls.add_constructor([])
-    ## edca-txop-n.h (module 'wifi'): void ns3::EdcaTxopN::DoDispose() [member function]
-    cls.add_method('DoDispose', 
+    ## edca-txop-n.h (module 'wifi'): void ns3::EdcaTxopN::BaTxFailed(ns3::WifiMacHeader const & hdr) [member function]
+    cls.add_method('BaTxFailed', 
+                   'void', 
+                   [param('ns3::WifiMacHeader const &', 'hdr')])
+    ## edca-txop-n.h (module 'wifi'): void ns3::EdcaTxopN::BaTxOk(ns3::WifiMacHeader const & hdr) [member function]
+    cls.add_method('BaTxOk', 
+                   'void', 
+                   [param('ns3::WifiMacHeader const &', 'hdr')])
+    ## edca-txop-n.h (module 'wifi'): void ns3::EdcaTxopN::CompleteAmpduTransfer(ns3::Mac48Address recipient, uint8_t tid) [member function]
+    cls.add_method('CompleteAmpduTransfer', 
+                   'void', 
+                   [param('ns3::Mac48Address', 'recipient'), param('uint8_t', 'tid')])
+    ## edca-txop-n.h (module 'wifi'): void ns3::EdcaTxopN::CompleteConfig() [member function]
+    cls.add_method('CompleteConfig', 
+                   'void', 
+                   [])
+    ## edca-txop-n.h (module 'wifi'): void ns3::EdcaTxopN::CompleteMpduTx(ns3::Ptr<ns3::Packet const> packet, ns3::WifiMacHeader hdr, ns3::Time tstamp) [member function]
+    cls.add_method('CompleteMpduTx', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Packet const >', 'packet'), param('ns3::WifiMacHeader', 'hdr'), param('ns3::Time', 'tstamp')])
+    ## edca-txop-n.h (module 'wifi'): void ns3::EdcaTxopN::EndTxNoAck() [member function]
+    cls.add_method('EndTxNoAck', 
                    'void', 
                    [], 
                    is_virtual=True)
-    ## edca-txop-n.h (module 'wifi'): bool ns3::EdcaTxopN::IsEdca() [member function]
-    cls.add_method('IsEdca', 
+    ## edca-txop-n.h (module 'wifi'): bool ns3::EdcaTxopN::GetAmpduExist(ns3::Mac48Address dest) const [member function]
+    cls.add_method('GetAmpduExist', 
                    'bool', 
+                   [param('ns3::Mac48Address', 'dest')], 
+                   is_const=True)
+    ## edca-txop-n.h (module 'wifi'): bool ns3::EdcaTxopN::GetBaAgreementExists(ns3::Mac48Address address, uint8_t tid) const [member function]
+    cls.add_method('GetBaAgreementExists', 
+                   'bool', 
+                   [param('ns3::Mac48Address', 'address'), param('uint8_t', 'tid')], 
+                   is_const=True)
+    ## edca-txop-n.h (module 'wifi'): uint8_t ns3::EdcaTxopN::GetBlockAckThreshold() const [member function]
+    cls.add_method('GetBlockAckThreshold', 
+                   'uint8_t', 
                    [], 
+                   is_const=True)
+    ## edca-txop-n.h (module 'wifi'): ns3::Ptr<ns3::Packet> ns3::EdcaTxopN::GetFragmentPacket(ns3::WifiMacHeader * hdr) [member function]
+    cls.add_method('GetFragmentPacket', 
+                   'ns3::Ptr< ns3::Packet >', 
+                   [param('ns3::WifiMacHeader *', 'hdr')], 
                    is_virtual=True)
-    ## edca-txop-n.h (module 'wifi'): void ns3::EdcaTxopN::SetWifiRemoteStationManager(ns3::Ptr<ns3::WifiRemoteStationManager> remoteManager) [member function]
-    cls.add_method('SetWifiRemoteStationManager', 
-                   'void', 
-                   [param('ns3::Ptr< ns3::WifiRemoteStationManager >', 'remoteManager')], 
-                   is_virtual=True)
-    ## edca-txop-n.h (module 'wifi'): void ns3::EdcaTxopN::SetTypeOfStation(ns3::TypeOfStation type) [member function]
-    cls.add_method('SetTypeOfStation', 
-                   'void', 
-                   [param('ns3::TypeOfStation', 'type')])
-    ## edca-txop-n.h (module 'wifi'): ns3::TypeOfStation ns3::EdcaTxopN::GetTypeOfStation() const [member function]
-    cls.add_method('GetTypeOfStation', 
-                   'ns3::TypeOfStation', 
+    ## edca-txop-n.h (module 'wifi'): ns3::Ptr<ns3::MpduAggregator> ns3::EdcaTxopN::GetMpduAggregator() const [member function]
+    cls.add_method('GetMpduAggregator', 
+                   'ns3::Ptr< ns3::MpduAggregator >', 
                    [], 
                    is_const=True)
     ## edca-txop-n.h (module 'wifi'): ns3::Ptr<ns3::MsduAggregator> ns3::EdcaTxopN::GetMsduAggregator() const [member function]
     cls.add_method('GetMsduAggregator', 
                    'ns3::Ptr< ns3::MsduAggregator >', 
                    [], 
-                   is_const=True)
-    ## edca-txop-n.h (module 'wifi'): ns3::Ptr<ns3::MpduAggregator> ns3::EdcaTxopN::GetMpduAggregator() const [member function]
-    cls.add_method('GetMpduAggregator', 
-                   'ns3::Ptr< ns3::MpduAggregator >', 
-                   [], 
-                   is_const=True)
-    ## edca-txop-n.h (module 'wifi'): bool ns3::EdcaTxopN::GetBaAgreementExists(ns3::Mac48Address address, uint8_t tid) const [member function]
-    cls.add_method('GetBaAgreementExists', 
-                   'bool', 
-                   [param('ns3::Mac48Address', 'address'), param('uint8_t', 'tid')], 
                    is_const=True)
     ## edca-txop-n.h (module 'wifi'): uint32_t ns3::EdcaTxopN::GetNOutstandingPacketsInBa(ns3::Mac48Address address, uint8_t tid) const [member function]
     cls.add_method('GetNOutstandingPacketsInBa', 
@@ -12731,80 +12741,63 @@ def register_Ns3EdcaTxopN_methods(root_module, cls):
                    'uint32_t', 
                    [param('ns3::Mac48Address', 'recipient'), param('uint8_t', 'tid')], 
                    is_const=True)
-    ## edca-txop-n.h (module 'wifi'): void ns3::EdcaTxopN::CompleteAmpduTransfer(ns3::Mac48Address recipient, uint8_t tid) [member function]
-    cls.add_method('CompleteAmpduTransfer', 
-                   'void', 
-                   [param('ns3::Mac48Address', 'recipient'), param('uint8_t', 'tid')])
-    ## edca-txop-n.h (module 'wifi'): bool ns3::EdcaTxopN::NeedsAccess() const [member function]
-    cls.add_method('NeedsAccess', 
-                   'bool', 
+    ## edca-txop-n.h (module 'wifi'): uint16_t ns3::EdcaTxopN::GetNextSequenceNumberFor(ns3::WifiMacHeader * hdr) [member function]
+    cls.add_method('GetNextSequenceNumberFor', 
+                   'uint16_t', 
+                   [param('ns3::WifiMacHeader *', 'hdr')])
+    ## edca-txop-n.h (module 'wifi'): static ns3::TypeId ns3::EdcaTxopN::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
                    [], 
-                   is_const=True, is_virtual=True)
-    ## edca-txop-n.h (module 'wifi'): void ns3::EdcaTxopN::NotifyAccessGranted() [member function]
-    cls.add_method('NotifyAccessGranted', 
-                   'void', 
+                   is_static=True)
+    ## edca-txop-n.h (module 'wifi'): ns3::TypeOfStation ns3::EdcaTxopN::GetTypeOfStation() const [member function]
+    cls.add_method('GetTypeOfStation', 
+                   'ns3::TypeOfStation', 
                    [], 
-                   is_virtual=True)
-    ## edca-txop-n.h (module 'wifi'): void ns3::EdcaTxopN::NotifyInternalCollision() [member function]
-    cls.add_method('NotifyInternalCollision', 
-                   'void', 
-                   [], 
-                   is_virtual=True)
-    ## edca-txop-n.h (module 'wifi'): void ns3::EdcaTxopN::NotifyCollision() [member function]
-    cls.add_method('NotifyCollision', 
-                   'void', 
-                   [], 
-                   is_virtual=True)
-    ## edca-txop-n.h (module 'wifi'): void ns3::EdcaTxopN::MissedCts() [member function]
-    cls.add_method('MissedCts', 
-                   'void', 
-                   [], 
-                   is_virtual=True)
+                   is_const=True)
     ## edca-txop-n.h (module 'wifi'): void ns3::EdcaTxopN::GotAck() [member function]
     cls.add_method('GotAck', 
                    'void', 
                    [], 
                    is_virtual=True)
+    ## edca-txop-n.h (module 'wifi'): void ns3::EdcaTxopN::GotAddBaResponse(ns3::MgtAddBaResponseHeader const * respHdr, ns3::Mac48Address recipient) [member function]
+    cls.add_method('GotAddBaResponse', 
+                   'void', 
+                   [param('ns3::MgtAddBaResponseHeader const *', 'respHdr'), param('ns3::Mac48Address', 'recipient')])
     ## edca-txop-n.h (module 'wifi'): void ns3::EdcaTxopN::GotBlockAck(ns3::CtrlBAckResponseHeader const * blockAck, ns3::Mac48Address recipient, double rxSnr, ns3::WifiMode txMode, double dataSnr) [member function]
     cls.add_method('GotBlockAck', 
                    'void', 
                    [param('ns3::CtrlBAckResponseHeader const *', 'blockAck'), param('ns3::Mac48Address', 'recipient'), param('double', 'rxSnr'), param('ns3::WifiMode', 'txMode'), param('double', 'dataSnr')], 
+                   is_virtual=True)
+    ## edca-txop-n.h (module 'wifi'): void ns3::EdcaTxopN::GotDelBaFrame(ns3::MgtDelBaHeader const * delBaHdr, ns3::Mac48Address recipient) [member function]
+    cls.add_method('GotDelBaFrame', 
+                   'void', 
+                   [param('ns3::MgtDelBaHeader const *', 'delBaHdr'), param('ns3::Mac48Address', 'recipient')])
+    ## edca-txop-n.h (module 'wifi'): bool ns3::EdcaTxopN::IsEdca() [member function]
+    cls.add_method('IsEdca', 
+                   'bool', 
+                   [], 
+                   is_virtual=True)
+    ## edca-txop-n.h (module 'wifi'): ns3::Mac48Address ns3::EdcaTxopN::MapDestAddressForAggregation(ns3::WifiMacHeader const & hdr) [member function]
+    cls.add_method('MapDestAddressForAggregation', 
+                   'ns3::Mac48Address', 
+                   [param('ns3::WifiMacHeader const &', 'hdr')])
+    ## edca-txop-n.h (module 'wifi'): ns3::Mac48Address ns3::EdcaTxopN::MapSrcAddressForAggregation(ns3::WifiMacHeader const & hdr) [member function]
+    cls.add_method('MapSrcAddressForAggregation', 
+                   'ns3::Mac48Address', 
+                   [param('ns3::WifiMacHeader const &', 'hdr')])
+    ## edca-txop-n.h (module 'wifi'): void ns3::EdcaTxopN::MissedAck() [member function]
+    cls.add_method('MissedAck', 
+                   'void', 
+                   [], 
                    is_virtual=True)
     ## edca-txop-n.h (module 'wifi'): void ns3::EdcaTxopN::MissedBlockAck(uint8_t nMpdus) [member function]
     cls.add_method('MissedBlockAck', 
                    'void', 
                    [param('uint8_t', 'nMpdus')], 
                    is_virtual=True)
-    ## edca-txop-n.h (module 'wifi'): void ns3::EdcaTxopN::GotAddBaResponse(ns3::MgtAddBaResponseHeader const * respHdr, ns3::Mac48Address recipient) [member function]
-    cls.add_method('GotAddBaResponse', 
-                   'void', 
-                   [param('ns3::MgtAddBaResponseHeader const *', 'respHdr'), param('ns3::Mac48Address', 'recipient')])
-    ## edca-txop-n.h (module 'wifi'): void ns3::EdcaTxopN::GotDelBaFrame(ns3::MgtDelBaHeader const * delBaHdr, ns3::Mac48Address recipient) [member function]
-    cls.add_method('GotDelBaFrame', 
-                   'void', 
-                   [param('ns3::MgtDelBaHeader const *', 'delBaHdr'), param('ns3::Mac48Address', 'recipient')])
-    ## edca-txop-n.h (module 'wifi'): void ns3::EdcaTxopN::MissedAck() [member function]
-    cls.add_method('MissedAck', 
-                   'void', 
-                   [], 
-                   is_virtual=True)
-    ## edca-txop-n.h (module 'wifi'): void ns3::EdcaTxopN::StartNext() [member function]
-    cls.add_method('StartNext', 
-                   'void', 
-                   [], 
-                   is_virtual=True)
-    ## edca-txop-n.h (module 'wifi'): void ns3::EdcaTxopN::EndTxNoAck() [member function]
-    cls.add_method('EndTxNoAck', 
-                   'void', 
-                   [], 
-                   is_virtual=True)
-    ## edca-txop-n.h (module 'wifi'): void ns3::EdcaTxopN::RestartAccessIfNeeded() [member function]
-    cls.add_method('RestartAccessIfNeeded', 
-                   'void', 
-                   [], 
-                   is_virtual=True)
-    ## edca-txop-n.h (module 'wifi'): void ns3::EdcaTxopN::StartAccessIfNeeded() [member function]
-    cls.add_method('StartAccessIfNeeded', 
+    ## edca-txop-n.h (module 'wifi'): void ns3::EdcaTxopN::MissedCts() [member function]
+    cls.add_method('MissedCts', 
                    'void', 
                    [], 
                    is_virtual=True)
@@ -12817,93 +12810,101 @@ def register_Ns3EdcaTxopN_methods(root_module, cls):
                    'bool', 
                    [], 
                    is_const=True, is_virtual=True)
-    ## edca-txop-n.h (module 'wifi'): ns3::Ptr<ns3::Packet> ns3::EdcaTxopN::GetFragmentPacket(ns3::WifiMacHeader * hdr) [member function]
-    cls.add_method('GetFragmentPacket', 
-                   'ns3::Ptr< ns3::Packet >', 
-                   [param('ns3::WifiMacHeader *', 'hdr')], 
-                   is_virtual=True)
-    ## edca-txop-n.h (module 'wifi'): void ns3::EdcaTxopN::SetAccessCategory(ns3::AcIndex ac) [member function]
-    cls.add_method('SetAccessCategory', 
-                   'void', 
-                   [param('ns3::AcIndex', 'ac')])
-    ## edca-txop-n.h (module 'wifi'): void ns3::EdcaTxopN::SetMsduAggregator(ns3::Ptr<ns3::MsduAggregator> aggr) [member function]
-    cls.add_method('SetMsduAggregator', 
-                   'void', 
-                   [param('ns3::Ptr< ns3::MsduAggregator >', 'aggr')])
-    ## edca-txop-n.h (module 'wifi'): void ns3::EdcaTxopN::SetMpduAggregator(ns3::Ptr<ns3::MpduAggregator> aggr) [member function]
-    cls.add_method('SetMpduAggregator', 
-                   'void', 
-                   [param('ns3::Ptr< ns3::MpduAggregator >', 'aggr')])
-    ## edca-txop-n.h (module 'wifi'): void ns3::EdcaTxopN::PushFront(ns3::Ptr<ns3::Packet const> packet, ns3::WifiMacHeader const & hdr) [member function]
-    cls.add_method('PushFront', 
-                   'void', 
-                   [param('ns3::Ptr< ns3::Packet const >', 'packet'), param('ns3::WifiMacHeader const &', 'hdr')])
-    ## edca-txop-n.h (module 'wifi'): void ns3::EdcaTxopN::CompleteConfig() [member function]
-    cls.add_method('CompleteConfig', 
-                   'void', 
-                   [])
-    ## edca-txop-n.h (module 'wifi'): void ns3::EdcaTxopN::SetBlockAckThreshold(uint8_t threshold) [member function]
-    cls.add_method('SetBlockAckThreshold', 
-                   'void', 
-                   [param('uint8_t', 'threshold')])
-    ## edca-txop-n.h (module 'wifi'): uint8_t ns3::EdcaTxopN::GetBlockAckThreshold() const [member function]
-    cls.add_method('GetBlockAckThreshold', 
-                   'uint8_t', 
-                   [], 
-                   is_const=True)
-    ## edca-txop-n.h (module 'wifi'): void ns3::EdcaTxopN::SetBlockAckInactivityTimeout(uint16_t timeout) [member function]
-    cls.add_method('SetBlockAckInactivityTimeout', 
-                   'void', 
-                   [param('uint16_t', 'timeout')])
-    ## edca-txop-n.h (module 'wifi'): void ns3::EdcaTxopN::SendDelbaFrame(ns3::Mac48Address addr, uint8_t tid, bool byOriginator) [member function]
-    cls.add_method('SendDelbaFrame', 
-                   'void', 
-                   [param('ns3::Mac48Address', 'addr'), param('uint8_t', 'tid'), param('bool', 'byOriginator')])
-    ## edca-txop-n.h (module 'wifi'): void ns3::EdcaTxopN::CompleteMpduTx(ns3::Ptr<ns3::Packet const> packet, ns3::WifiMacHeader hdr, ns3::Time tstamp) [member function]
-    cls.add_method('CompleteMpduTx', 
-                   'void', 
-                   [param('ns3::Ptr< ns3::Packet const >', 'packet'), param('ns3::WifiMacHeader', 'hdr'), param('ns3::Time', 'tstamp')])
-    ## edca-txop-n.h (module 'wifi'): bool ns3::EdcaTxopN::GetAmpduExist(ns3::Mac48Address dest) const [member function]
-    cls.add_method('GetAmpduExist', 
+    ## edca-txop-n.h (module 'wifi'): bool ns3::EdcaTxopN::NeedsAccess() const [member function]
+    cls.add_method('NeedsAccess', 
                    'bool', 
-                   [param('ns3::Mac48Address', 'dest')], 
-                   is_const=True)
-    ## edca-txop-n.h (module 'wifi'): void ns3::EdcaTxopN::SetAmpduExist(ns3::Mac48Address dest, bool enableAmpdu) [member function]
-    cls.add_method('SetAmpduExist', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## edca-txop-n.h (module 'wifi'): void ns3::EdcaTxopN::NotifyAccessGranted() [member function]
+    cls.add_method('NotifyAccessGranted', 
                    'void', 
-                   [param('ns3::Mac48Address', 'dest'), param('bool', 'enableAmpdu')])
-    ## edca-txop-n.h (module 'wifi'): uint16_t ns3::EdcaTxopN::GetNextSequenceNumberFor(ns3::WifiMacHeader * hdr) [member function]
-    cls.add_method('GetNextSequenceNumberFor', 
-                   'uint16_t', 
-                   [param('ns3::WifiMacHeader *', 'hdr')])
-    ## edca-txop-n.h (module 'wifi'): uint16_t ns3::EdcaTxopN::PeekNextSequenceNumberFor(ns3::WifiMacHeader * hdr) [member function]
-    cls.add_method('PeekNextSequenceNumberFor', 
-                   'uint16_t', 
-                   [param('ns3::WifiMacHeader *', 'hdr')])
-    ## edca-txop-n.h (module 'wifi'): void ns3::EdcaTxopN::RemoveRetransmitPacket(uint8_t tid, ns3::Mac48Address recipient, uint16_t seqnumber) [member function]
-    cls.add_method('RemoveRetransmitPacket', 
+                   [], 
+                   is_virtual=True)
+    ## edca-txop-n.h (module 'wifi'): void ns3::EdcaTxopN::NotifyCollision() [member function]
+    cls.add_method('NotifyCollision', 
                    'void', 
-                   [param('uint8_t', 'tid'), param('ns3::Mac48Address', 'recipient'), param('uint16_t', 'seqnumber')])
+                   [], 
+                   is_virtual=True)
+    ## edca-txop-n.h (module 'wifi'): void ns3::EdcaTxopN::NotifyInternalCollision() [member function]
+    cls.add_method('NotifyInternalCollision', 
+                   'void', 
+                   [], 
+                   is_virtual=True)
     ## edca-txop-n.h (module 'wifi'): ns3::Ptr<ns3::Packet const> ns3::EdcaTxopN::PeekNextRetransmitPacket(ns3::WifiMacHeader & header, ns3::Mac48Address recipient, uint8_t tid, ns3::Time * timestamp) [member function]
     cls.add_method('PeekNextRetransmitPacket', 
                    'ns3::Ptr< ns3::Packet const >', 
                    [param('ns3::WifiMacHeader &', 'header'), param('ns3::Mac48Address', 'recipient'), param('uint8_t', 'tid'), param('ns3::Time *', 'timestamp')])
-    ## edca-txop-n.h (module 'wifi'): void ns3::EdcaTxopN::BaTxOk(ns3::WifiMacHeader const & hdr) [member function]
-    cls.add_method('BaTxOk', 
+    ## edca-txop-n.h (module 'wifi'): uint16_t ns3::EdcaTxopN::PeekNextSequenceNumberFor(ns3::WifiMacHeader * hdr) [member function]
+    cls.add_method('PeekNextSequenceNumberFor', 
+                   'uint16_t', 
+                   [param('ns3::WifiMacHeader *', 'hdr')])
+    ## edca-txop-n.h (module 'wifi'): void ns3::EdcaTxopN::PushFront(ns3::Ptr<ns3::Packet const> packet, ns3::WifiMacHeader const & hdr) [member function]
+    cls.add_method('PushFront', 
                    'void', 
-                   [param('ns3::WifiMacHeader const &', 'hdr')])
-    ## edca-txop-n.h (module 'wifi'): void ns3::EdcaTxopN::BaTxFailed(ns3::WifiMacHeader const & hdr) [member function]
-    cls.add_method('BaTxFailed', 
+                   [param('ns3::Ptr< ns3::Packet const >', 'packet'), param('ns3::WifiMacHeader const &', 'hdr')])
+    ## edca-txop-n.h (module 'wifi'): void ns3::EdcaTxopN::RemoveRetransmitPacket(uint8_t tid, ns3::Mac48Address recipient, uint16_t seqnumber) [member function]
+    cls.add_method('RemoveRetransmitPacket', 
                    'void', 
-                   [param('ns3::WifiMacHeader const &', 'hdr')])
-    ## edca-txop-n.h (module 'wifi'): ns3::Mac48Address ns3::EdcaTxopN::MapSrcAddressForAggregation(ns3::WifiMacHeader const & hdr) [member function]
-    cls.add_method('MapSrcAddressForAggregation', 
-                   'ns3::Mac48Address', 
-                   [param('ns3::WifiMacHeader const &', 'hdr')])
-    ## edca-txop-n.h (module 'wifi'): ns3::Mac48Address ns3::EdcaTxopN::MapDestAddressForAggregation(ns3::WifiMacHeader const & hdr) [member function]
-    cls.add_method('MapDestAddressForAggregation', 
-                   'ns3::Mac48Address', 
-                   [param('ns3::WifiMacHeader const &', 'hdr')])
+                   [param('uint8_t', 'tid'), param('ns3::Mac48Address', 'recipient'), param('uint16_t', 'seqnumber')])
+    ## edca-txop-n.h (module 'wifi'): void ns3::EdcaTxopN::RestartAccessIfNeeded() [member function]
+    cls.add_method('RestartAccessIfNeeded', 
+                   'void', 
+                   [], 
+                   is_virtual=True)
+    ## edca-txop-n.h (module 'wifi'): void ns3::EdcaTxopN::SendDelbaFrame(ns3::Mac48Address addr, uint8_t tid, bool byOriginator) [member function]
+    cls.add_method('SendDelbaFrame', 
+                   'void', 
+                   [param('ns3::Mac48Address', 'addr'), param('uint8_t', 'tid'), param('bool', 'byOriginator')])
+    ## edca-txop-n.h (module 'wifi'): void ns3::EdcaTxopN::SetAccessCategory(ns3::AcIndex ac) [member function]
+    cls.add_method('SetAccessCategory', 
+                   'void', 
+                   [param('ns3::AcIndex', 'ac')])
+    ## edca-txop-n.h (module 'wifi'): void ns3::EdcaTxopN::SetAmpduExist(ns3::Mac48Address dest, bool enableAmpdu) [member function]
+    cls.add_method('SetAmpduExist', 
+                   'void', 
+                   [param('ns3::Mac48Address', 'dest'), param('bool', 'enableAmpdu')])
+    ## edca-txop-n.h (module 'wifi'): void ns3::EdcaTxopN::SetBlockAckInactivityTimeout(uint16_t timeout) [member function]
+    cls.add_method('SetBlockAckInactivityTimeout', 
+                   'void', 
+                   [param('uint16_t', 'timeout')])
+    ## edca-txop-n.h (module 'wifi'): void ns3::EdcaTxopN::SetBlockAckThreshold(uint8_t threshold) [member function]
+    cls.add_method('SetBlockAckThreshold', 
+                   'void', 
+                   [param('uint8_t', 'threshold')])
+    ## edca-txop-n.h (module 'wifi'): void ns3::EdcaTxopN::SetMpduAggregator(ns3::Ptr<ns3::MpduAggregator> aggr) [member function]
+    cls.add_method('SetMpduAggregator', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::MpduAggregator >', 'aggr')])
+    ## edca-txop-n.h (module 'wifi'): void ns3::EdcaTxopN::SetMsduAggregator(ns3::Ptr<ns3::MsduAggregator> aggr) [member function]
+    cls.add_method('SetMsduAggregator', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::MsduAggregator >', 'aggr')])
+    ## edca-txop-n.h (module 'wifi'): void ns3::EdcaTxopN::SetTypeOfStation(ns3::TypeOfStation type) [member function]
+    cls.add_method('SetTypeOfStation', 
+                   'void', 
+                   [param('ns3::TypeOfStation', 'type')])
+    ## edca-txop-n.h (module 'wifi'): void ns3::EdcaTxopN::SetWifiRemoteStationManager(ns3::Ptr<ns3::WifiRemoteStationManager> remoteManager) [member function]
+    cls.add_method('SetWifiRemoteStationManager', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::WifiRemoteStationManager >', 'remoteManager')], 
+                   is_virtual=True)
+    ## edca-txop-n.h (module 'wifi'): void ns3::EdcaTxopN::StartAccessIfNeeded() [member function]
+    cls.add_method('StartAccessIfNeeded', 
+                   'void', 
+                   [], 
+                   is_virtual=True)
+    ## edca-txop-n.h (module 'wifi'): void ns3::EdcaTxopN::StartNext() [member function]
+    cls.add_method('StartNext', 
+                   'void', 
+                   [], 
+                   is_virtual=True)
+    ## edca-txop-n.h (module 'wifi'): ns3::EdcaTxopN::m_aMpduEnabled [variable]
+    cls.add_instance_attribute('m_aMpduEnabled', 'std::map< ns3::Mac48Address, bool >', is_const=False)
+    ## edca-txop-n.h (module 'wifi'): void ns3::EdcaTxopN::DoDispose() [member function]
+    cls.add_method('DoDispose', 
+                   'void', 
+                   [], 
+                   visibility='private', is_virtual=True)
     ## edca-txop-n.h (module 'wifi'): void ns3::EdcaTxopN::DoInitialize() [member function]
     cls.add_method('DoInitialize', 
                    'void', 
