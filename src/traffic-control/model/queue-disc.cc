@@ -396,7 +396,7 @@ QueueDisc::Classify (Ptr<QueueDiscItem> item)
 }
 
 QueueDisc::WakeMode
-QueueDisc::GetWakeMode (void)
+QueueDisc::GetWakeMode (void) const
 {
   return WAKE_ROOT;
 }
