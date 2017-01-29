@@ -190,13 +190,13 @@ WifiPhy::GetTypeId (void)
                    MakeDoubleChecker<double> ())
     .AddAttribute ("TxGain",
                    "Transmission gain (dB).",
-                   DoubleValue (1.0),
+                   DoubleValue (0.0),
                    MakeDoubleAccessor (&WifiPhy::SetTxGain,
                                        &WifiPhy::GetTxGain),
                    MakeDoubleChecker<double> ())
     .AddAttribute ("RxGain",
                    "Reception gain (dB).",
-                   DoubleValue (1.0),
+                   DoubleValue (0.0),
                    MakeDoubleAccessor (&WifiPhy::SetRxGain,
                                        &WifiPhy::GetRxGain),
                    MakeDoubleChecker<double> ())
