@@ -272,4 +272,4 @@ LrWpanEdTestSuite::LrWpanEdTestSuite ()
   AddTestCase (new LrWpanEdTestCase, TestCase::QUICK);
 }
 
-static LrWpanEdTestSuite g_lrWpanEdTestSuite;
+static LrWpanEdTestSuite g_lrWpanEdTestSuite; //!< Static variable for test initialization

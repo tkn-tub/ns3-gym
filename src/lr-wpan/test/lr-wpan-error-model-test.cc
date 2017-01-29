@@ -217,4 +217,4 @@ LrWpanErrorModelTestSuite::LrWpanErrorModelTestSuite ()
   AddTestCase (new LrWpanErrorDistanceTestCase, TestCase::QUICK);
 }
 
-static LrWpanErrorModelTestSuite g_lrWpanErrorModelTestSuite;
+static LrWpanErrorModelTestSuite g_lrWpanErrorModelTestSuite; //!< Static variable for test initialization

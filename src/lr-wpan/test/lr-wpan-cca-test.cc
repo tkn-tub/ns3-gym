@@ -312,4 +312,4 @@ LrWpanCcaTestSuite::LrWpanCcaTestSuite ()
   AddTestCase (new LrWpanCcaTestCase, TestCase::QUICK);
 }
 
-static LrWpanCcaTestSuite g_lrWpanCcaTestSuite;
+static LrWpanCcaTestSuite g_lrWpanCcaTestSuite; //!< Static variable for test initialization

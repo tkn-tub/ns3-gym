@@ -229,4 +229,4 @@ SixlowpanHc1TestSuite::SixlowpanHc1TestSuite ()
   AddTestCase (new SixlowpanHc1ImplTest (), TestCase::QUICK);
 }
 
-static SixlowpanHc1TestSuite g_sixlowpanHc1TestSuite;
+static SixlowpanHc1TestSuite g_sixlowpanHc1TestSuite; //!< Static variable for test initialization

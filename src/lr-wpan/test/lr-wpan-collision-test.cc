@@ -242,4 +242,4 @@ LrWpanCollisionTestSuite::LrWpanCollisionTestSuite ()
   AddTestCase (new LrWpanCollisionTestCase, TestCase::QUICK);
 }
 
-static LrWpanCollisionTestSuite g_lrWpanCollisionTestSuite;
+static LrWpanCollisionTestSuite g_lrWpanCollisionTestSuite; //!< Static variable for test initialization

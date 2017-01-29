@@ -113,4 +113,4 @@ LrWpanPlmeAndPdInterfaceTestSuite::LrWpanPlmeAndPdInterfaceTestSuite ()
 }
 
 // Do not forget to allocate an instance of this TestSuite
-static LrWpanPlmeAndPdInterfaceTestSuite g_lrWpanPlmeAndPdInterfaceTestSuite;
+static LrWpanPlmeAndPdInterfaceTestSuite g_lrWpanPlmeAndPdInterfaceTestSuite; //!< Static variable for test initialization

@@ -98,4 +98,4 @@ HistogramTestSuite::HistogramTestSuite ()
   AddTestCase (new HistogramTestCase, TestCase::QUICK);
 }
 
-static HistogramTestSuite g_HistogramTestSuite;
+static HistogramTestSuite g_HistogramTestSuite; //!< Static variable for test initialization

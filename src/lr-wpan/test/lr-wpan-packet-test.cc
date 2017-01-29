@@ -127,4 +127,4 @@ LrWpanPacketTestSuite::LrWpanPacketTestSuite ()
   AddTestCase (new LrWpanPacketTestCase, TestCase::QUICK);
 }
 
-static LrWpanPacketTestSuite g_lrWpanPacketTestSuite;
+static LrWpanPacketTestSuite g_lrWpanPacketTestSuite; //!< Static variable for test initialization

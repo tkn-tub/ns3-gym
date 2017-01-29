@@ -88,4 +88,4 @@ LrWpanSpectrumValueHelperTestSuite::LrWpanSpectrumValueHelperTestSuite ()
   AddTestCase (new LrWpanSpectrumValueHelperTestCase, TestCase::QUICK);
 }
 
-static LrWpanSpectrumValueHelperTestSuite g_lrWpanSpectrumValueHelperTestSuite;
+static LrWpanSpectrumValueHelperTestSuite g_lrWpanSpectrumValueHelperTestSuite; //!< Static variable for test initialization

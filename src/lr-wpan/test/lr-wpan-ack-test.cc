@@ -232,4 +232,4 @@ LrWpanAckTestSuite::LrWpanAckTestSuite ()
   AddTestCase (new LrWpanAckTestCase, TestCase::QUICK);
 }
 
-static LrWpanAckTestSuite g_lrWpanAckTestSuite;
+static LrWpanAckTestSuite g_lrWpanAckTestSuite; //!< Static variable for test initialization

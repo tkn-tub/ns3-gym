@@ -480,4 +480,4 @@ SixlowpanFragmentationTestSuite::SixlowpanFragmentationTestSuite ()
   AddTestCase (new SixlowpanFragmentationTest (), TestCase::QUICK);
 }
 
-static SixlowpanFragmentationTestSuite g_sixlowpanFragmentationTestSuite;
+static SixlowpanFragmentationTestSuite g_sixlowpanFragmentationTestSuite; //!< Static variable for test initialization
