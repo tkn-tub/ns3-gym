@@ -551,5 +551,50 @@ ReceiveListErrorModel::DoReset (void)
 }
 
 
+NS_OBJECT_ENSURE_REGISTERED (BinaryErrorModel);
+
+TypeId BinaryErrorModel::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::BinaryErrorModel")
+    .SetParent<ErrorModel> ()
+    .AddConstructor<BinaryErrorModel> ()
+    ;
+  return tid;
+}
+
+BinaryErrorModel::BinaryErrorModel ()
+{
+  NS_LOG_FUNCTION (this);
+  m_counter = 0;
+}
+
+BinaryErrorModel::~BinaryErrorModel ()
+{
+  NS_LOG_FUNCTION (this);
+}
+
+bool
+BinaryErrorModel::DoCorrupt (Ptr<Packet> p)
+{
+  NS_LOG_FUNCTION (this);
+  if (!IsEnabled ())
+    {
+      return false;
+    }
+  bool ret = m_counter%2;
+  m_counter++;
+  return ret;
+}
+
+void
+BinaryErrorModel::DoReset (void)
+{
+  NS_LOG_FUNCTION (this);
+  m_counter = 0;
+}
+
+
+
+
 } // namespace ns3
 

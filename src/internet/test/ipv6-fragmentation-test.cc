@@ -31,7 +31,6 @@
 #include "ns3/ipv6-raw-socket-factory.h"
 #include "ns3/udp-socket-factory.h"
 #include "ns3/simulator.h"
-#include "error-channel.h"
 #include "ns3/simple-net-device.h"
 #include "ns3/socket.h"
 #include "ns3/udp-socket.h"
@@ -56,6 +55,7 @@
 #include "ns3/icmpv6-l4-protocol.h"
 #include "ns3/traffic-control-layer.h"
 #include "ns3/internet-stack-helper.h"
+#include "ns3/error-channel.h"
 
 #include <string>
 #include <limits>

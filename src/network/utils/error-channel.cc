@@ -17,68 +17,69 @@
  *
  * Author: Tommaso Pecorella <tommaso.pecorella@unifi.it>
  */
-#include "error-channel-sixlow.h"
+
 #include "ns3/simple-net-device.h"
 #include "ns3/simulator.h"
 #include "ns3/packet.h"
 #include "ns3/node.h"
 #include "ns3/log.h"
+#include "error-channel.h"
 
 namespace ns3 {
 
-NS_LOG_COMPONENT_DEFINE ("ErrorChannelSixlow");
+NS_LOG_COMPONENT_DEFINE ("ErrorChannel");
 
-NS_OBJECT_ENSURE_REGISTERED (ErrorChannelSixlow);
+NS_OBJECT_ENSURE_REGISTERED (ErrorChannel);
 
 TypeId
-ErrorChannelSixlow::GetTypeId (void)
+ErrorChannel::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::ErrorChannelSixlow")
+  static TypeId tid = TypeId ("ns3::ErrorChannel")
     .SetParent<SimpleChannel> ()
-    .SetGroupName ("SixLowPan")
-    .AddConstructor<ErrorChannelSixlow> ()
+    .SetGroupName ("Network")
+    .AddConstructor<ErrorChannel> ()
   ;
   return tid;
 }
 
-ErrorChannelSixlow::ErrorChannelSixlow ()
+ErrorChannel::ErrorChannel ()
 {
   m_jumpingTime = Seconds (0.5);
   m_jumping = false;
   m_jumpingState = 0;
   m_duplicateTime = Seconds (0.1);
   m_duplicate = false;
+  m_duplicateState = 0;
 }
 
 void
-ErrorChannelSixlow::SetJumpingTime (Time delay)
+ErrorChannel::SetJumpingTime (Time delay)
 {
   m_jumpingTime = delay;
 }
 
 void
-ErrorChannelSixlow::SetJumpingMode (bool mode)
+ErrorChannel::SetJumpingMode (bool mode)
 {
   m_jumping = mode;
   m_jumpingState = 0;
 }
 
 void
-ErrorChannelSixlow::SetDuplicateTime (Time delay)
+ErrorChannel::SetDuplicateTime (Time delay)
 {
   m_duplicateTime = delay;
 }
 
 void
-ErrorChannelSixlow::SetDuplicateMode (bool mode)
+ErrorChannel::SetDuplicateMode (bool mode)
 {
   m_duplicate = mode;
   m_duplicateState = 0;
 }
 
-
 void
-ErrorChannelSixlow::Send (Ptr<Packet> p, uint16_t protocol,
+ErrorChannel::Send (Ptr<Packet> p, uint16_t protocol,
                           Mac48Address to, Mac48Address from,
                           Ptr<SimpleNetDevice> sender)
 {
@@ -129,66 +130,21 @@ ErrorChannelSixlow::Send (Ptr<Packet> p, uint16_t protocol,
 }
 
 void
-ErrorChannelSixlow::Add (Ptr<SimpleNetDevice> device)
+ErrorChannel::Add (Ptr<SimpleNetDevice> device)
 {
   m_devices.push_back (device);
 }
 
 uint32_t
-ErrorChannelSixlow::GetNDevices (void) const
+ErrorChannel::GetNDevices (void) const
 {
   return m_devices.size ();
 }
+
 Ptr<NetDevice>
-ErrorChannelSixlow::GetDevice (uint32_t i) const
+ErrorChannel::GetDevice (uint32_t i) const
 {
   return m_devices[i];
-}
-
-NS_OBJECT_ENSURE_REGISTERED (BinaryErrorSixlowModel);
-
-TypeId BinaryErrorSixlowModel::GetTypeId (void)
-{
-  static TypeId tid = TypeId ("ns3::BinaryErrorSixlowModel")
-    .SetParent<ErrorModel> ()
-    .SetGroupName ("SixLowPan")
-    .AddConstructor<BinaryErrorSixlowModel> ()
-  ;
-  return tid;
-}
-
-BinaryErrorSixlowModel::BinaryErrorSixlowModel ()
-{
-  m_counter = 0;
-}
-
-BinaryErrorSixlowModel::~BinaryErrorSixlowModel ()
-{
-}
-
-
-bool
-BinaryErrorSixlowModel::DoCorrupt (Ptr<Packet> p)
-{
-  if (!IsEnabled ())
-    {
-      return false;
-    }
-  bool ret = m_counter % 2;
-  m_counter++;
-  return ret;
-}
-
-void
-BinaryErrorSixlowModel::Reset (void)
-{
-  DoReset ();
-}
-
-void
-BinaryErrorSixlowModel::DoReset (void)
-{
-  m_counter = 0;
 }
 
 

@@ -232,7 +232,6 @@ def build(bld):
         'test/ipv4-header-test.cc',
         'test/ipv4-fragmentation-test.cc',
         'test/ipv4-forwarding-test.cc',
-        'test/error-channel.cc',
         'test/ipv4-test.cc',
         'test/ipv4-static-routing-test-suite.cc',
         'test/ipv4-global-routing-test-suite.cc',

@@ -28,7 +28,6 @@
 #include "ns3/ipv4-raw-socket-factory.h"
 #include "ns3/udp-socket-factory.h"
 #include "ns3/simulator.h"
-#include "error-channel.h"
 #include "ns3/simple-net-device.h"
 #include "ns3/simple-net-device-helper.h"
 #include "ns3/socket.h"
@@ -46,6 +45,7 @@
 #include "ns3/ipv4-static-routing.h"
 #include "ns3/udp-l4-protocol.h"
 #include "ns3/internet-stack-helper.h"
+#include "ns3/error-channel.h"
 
 #include <string>
 #include <limits>

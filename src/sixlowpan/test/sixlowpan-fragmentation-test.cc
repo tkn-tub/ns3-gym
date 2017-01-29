@@ -24,7 +24,6 @@
 #include "ns3/ipv6-raw-socket-factory.h"
 #include "ns3/udp-socket-factory.h"
 #include "ns3/simulator.h"
-#include "error-channel-sixlow.h"
 #include "ns3/simple-net-device.h"
 #include "ns3/socket.h"
 #include "ns3/udp-socket.h"
@@ -37,6 +36,7 @@
 #include "ns3/sixlowpan-net-device.h"
 #include "ns3/internet-stack-helper.h"
 #include "ns3/icmpv6-l4-protocol.h"
+#include "ns3/error-channel.h"
 
 #include <string>
 #include <limits>
@@ -271,7 +271,7 @@ SixlowpanFragmentationTest::DoRun (void)
   Ptr<Node> serverNode = CreateObject<Node> ();
   internet.Install (serverNode);
   Ptr<SimpleNetDevice> serverDev;
-  Ptr<BinaryErrorSixlowModel> serverDevErrorModel = CreateObject<BinaryErrorSixlowModel> ();
+  Ptr<BinaryErrorModel> serverDevErrorModel = CreateObject<BinaryErrorModel> ();
   {
     Ptr<Icmpv6L4Protocol> icmpv6l4 = serverNode->GetObject<Icmpv6L4Protocol> ();
     icmpv6l4->SetAttribute ("DAD", BooleanValue (false));
@@ -302,7 +302,7 @@ SixlowpanFragmentationTest::DoRun (void)
   Ptr<Node> clientNode = CreateObject<Node> ();
   internet.Install (clientNode);
   Ptr<SimpleNetDevice> clientDev;
-  Ptr<BinaryErrorSixlowModel> clientDevErrorModel = CreateObject<BinaryErrorSixlowModel> ();
+  Ptr<BinaryErrorModel> clientDevErrorModel = CreateObject<BinaryErrorModel> ();
   {
     Ptr<Icmpv6L4Protocol> icmpv6l4 = clientNode->GetObject<Icmpv6L4Protocol> ();
     icmpv6l4->SetAttribute ("DAD", BooleanValue (false));
@@ -329,7 +329,7 @@ SixlowpanFragmentationTest::DoRun (void)
   StartClient (clientNode);
 
   // link the two nodes
-  Ptr<ErrorChannelSixlow> channel = CreateObject<ErrorChannelSixlow> ();
+  Ptr<ErrorChannel> channel = CreateObject<ErrorChannel> ();
   serverDev->SetChannel (channel);
   clientDev->SetChannel (channel);
 

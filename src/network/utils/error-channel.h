@@ -17,8 +17,8 @@
  *
  * Author: Tommaso Pecorella <tommaso.pecorella@unifi.it>
  */
-#ifndef ERROR_CHANNEL_SIXLOW_H
-#define ERROR_CHANNEL_SIXLOW_H
+#ifndef ERROR_CHANNEL_H
+#define ERROR_CHANNEL_H
 
 #include "ns3/channel.h"
 #include "ns3/simple-channel.h"
@@ -36,12 +36,17 @@ class Packet;
  * \ingroup channel
  * \brief A Error channel, introducing deterministic delays on even/odd packets. Used for testing
  */
-class ErrorChannelSixlow : public SimpleChannel
+class ErrorChannel : public SimpleChannel
 {
 public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
-  ErrorChannelSixlow ();
+  ErrorChannel ();
 
+  // inherited from ns3::SimpleChannel
   virtual void Send (Ptr<Packet> p, uint16_t protocol, Mac48Address to, Mac48Address from,
                      Ptr<SimpleNetDevice> sender);
 
@@ -76,32 +81,15 @@ public:
   void SetDuplicateMode (bool mode);
 
 private:
-  std::vector<Ptr<SimpleNetDevice> > m_devices;
-  Time m_jumpingTime;
-  uint8_t m_jumpingState;
-  bool m_jumping;
-  Time m_duplicateTime;
-  bool m_duplicate;
-  uint8_t m_duplicateState;
-};
-
-class BinaryErrorSixlowModel : public ErrorModel
-{
-public:
-  static TypeId GetTypeId (void);
-
-  BinaryErrorSixlowModel ();
-  virtual ~BinaryErrorSixlowModel ();
-  void Reset (void);
-
-private:
-  virtual bool DoCorrupt (Ptr<Packet> p);
-  virtual void DoReset (void);
-
-  uint8_t m_counter;
-
+  std::vector<Ptr<SimpleNetDevice> > m_devices; //!< devices connected by the channel
+  Time m_jumpingTime;       //!< Delay time in Jumping mode.
+  uint8_t m_jumpingState;   //!< Counter for even/odd packets in Jumping mode.
+  bool m_jumping;           //!< Flag for Jumping mode.
+  Time m_duplicateTime;     //!< Duplicate time in Duplicate mode.
+  bool m_duplicate;         //!< Flag for Duplicate mode.
+  uint8_t m_duplicateState; //!< Counter for even/odd packets in Duplicate mode.
 };
 
 } // namespace ns3
 
-#endif /* ERROR_CHANNEL_SIXLOW_H */
+#endif /* ERROR_CHANNEL_H */
