@@ -884,7 +884,7 @@ private:
    * after completing transmissions.
    */
   void WaitSifsAfterEndTxFragment (void);
-  void WaitSifsAfterEndTx (void);
+  void WaitSifsAfterEndTxPacket (void);
 
   /**
    * A transmission that does not require an ACK has completed.

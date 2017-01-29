@@ -243,7 +243,7 @@ public:
   /**
    * Start transmission for the next packet if allowed by the TxopLimit.
    */
-  virtual void StartNext (void);
+  virtual void StartNextPacket (void);
   /**
    * Event handler when a transmission that
    * does not require an ACK has completed.
@@ -272,7 +272,7 @@ public:
 
 protected:
   friend class DcfState;
-  
+
   virtual void DoDispose (void);
   virtual void DoInitialize (void);
 

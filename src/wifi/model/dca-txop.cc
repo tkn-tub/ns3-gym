@@ -582,7 +582,7 @@ DcaTxop::IsEdca ()
 }
 
 void
-DcaTxop::StartNext (void)
+DcaTxop::StartNextPacket (void)
 {
   NS_LOG_WARN ("StartNext should not be called for non QoS!");
 }

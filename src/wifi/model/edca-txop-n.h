@@ -214,7 +214,7 @@ public:
   /**
    * Start transmission for the next packet if allowed by the TxopLimit.
    */
-  void StartNext (void);
+  void StartNextPacket (void);
   /**
    * Event handler when a transmission that does not require an ACK has completed.
    */

@@ -924,10 +924,10 @@ MacLow::ReceiveOk (Ptr<Packet> packet, double rxSnr, WifiTxVector txVector, bool
           m_waitSifsEvent = Simulator::Schedule (GetSifs (),
                                                  &MacLow::WaitSifsAfterEndTxFragment, this);
         }
-      else if (m_currentHdr.IsQosData () && !m_ampdu && m_currentDca->HasTxop ())
+      else if (m_currentHdr.IsQosData () && m_currentDca->HasTxop ())
         {
           m_waitSifsEvent = Simulator::Schedule (GetSifs (),
-                                                 &MacLow::WaitSifsAfterEndTx, this);
+                                                 &MacLow::WaitSifsAfterEndTxPacket, this);
         }
       m_ampdu = false;
       if (m_currentHdr.IsQosData ())
@@ -949,6 +949,12 @@ MacLow::ReceiveOk (Ptr<Packet> packet, double rxSnr, WifiTxVector txVector, bool
       NotifyAckTimeoutResetNow ();
       m_currentDca->GotBlockAck (&blockAck, hdr.GetAddr2 (), rxSnr, txVector.GetMode (), tag.Get ());
       m_ampdu = false;
+      if (m_currentHdr.IsQosData () && m_currentDca->HasTxop ())
+        {
+          m_waitSifsEvent = Simulator::Schedule (GetSifs (),
+                                                 &MacLow::WaitSifsAfterEndTxPacket,
+                                                 this);
+        }
     }
   else if (hdr.IsBlockAckReq () && hdr.GetAddr1 () == m_self)
     {
@@ -1294,9 +1300,9 @@ MacLow::CalculateOverallTxTime (Ptr<const Packet> packet,
   WifiTxVector dataTxVector = GetDataTxVector (packet, hdr);
   uint32_t dataSize = GetSize (packet, hdr);
   txTime += m_phy->CalculateTxDuration (dataSize, dataTxVector, m_phy->GetFrequency ());
+  txTime += GetSifs ();
   if (params.MustWaitAck ())
     {
-      txTime += GetSifs ();
       txTime += GetAckDuration (hdr->GetAddr1 (), dataTxVector);
     }
   return txTime;
@@ -1754,6 +1760,11 @@ MacLow::StartDataTxTimers (WifiTxVector dataTxVector)
           m_waitSifsEvent = Simulator::Schedule (delay, &MacLow::WaitSifsAfterEndTxFragment, this);
         }
     }
+  else if (m_currentHdr.IsQosData () && m_currentHdr.IsQosBlockAck () && m_currentDca->HasTxop ())
+    {
+      Time delay = txDuration + GetSifs ();
+      m_waitSifsEvent = Simulator::Schedule (delay, &MacLow::WaitSifsAfterEndTxPacket, this);
+    }
   else
     {
       // since we do not expect any timer to be triggered.
@@ -2030,9 +2041,9 @@ MacLow::WaitSifsAfterEndTxFragment (void)
 }
 
 void
-MacLow::WaitSifsAfterEndTx (void)
+MacLow::WaitSifsAfterEndTxPacket (void)
 {
-  m_currentDca->StartNext ();
+  m_currentDca->StartNextPacket ();
 }
 
 void
