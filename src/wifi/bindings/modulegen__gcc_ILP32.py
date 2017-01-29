@@ -12155,13 +12155,13 @@ def register_Ns3DcaTxop_methods(root_module, cls):
                    'void', 
                    [param('ns3::Ptr< ns3::WifiRemoteStationManager >', 'remoteManager')], 
                    is_virtual=True)
-    ## dca-txop.h (module 'wifi'): void ns3::DcaTxop::StartNext() [member function]
-    cls.add_method('StartNext', 
+    ## dca-txop.h (module 'wifi'): void ns3::DcaTxop::StartNextFragment() [member function]
+    cls.add_method('StartNextFragment', 
                    'void', 
                    [], 
                    is_virtual=True)
-    ## dca-txop.h (module 'wifi'): void ns3::DcaTxop::StartNextFragment() [member function]
-    cls.add_method('StartNextFragment', 
+    ## dca-txop.h (module 'wifi'): void ns3::DcaTxop::StartNextPacket() [member function]
+    cls.add_method('StartNextPacket', 
                    'void', 
                    [], 
                    is_virtual=True)
@@ -13081,8 +13081,8 @@ def register_Ns3EdcaTxopN_methods(root_module, cls):
                    'void', 
                    [], 
                    is_virtual=True)
-    ## edca-txop-n.h (module 'wifi'): void ns3::EdcaTxopN::StartNext() [member function]
-    cls.add_method('StartNext', 
+    ## edca-txop-n.h (module 'wifi'): void ns3::EdcaTxopN::StartNextPacket() [member function]
+    cls.add_method('StartNextPacket', 
                    'void', 
                    [], 
                    is_virtual=True)
