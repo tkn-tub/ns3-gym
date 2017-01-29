@@ -79,6 +79,7 @@ public:
 
   /**
    * \brief Get the Ipv6Interface associated with this cache.
+   * \returns The Ipv6Interface.
    */
   Ptr<Ipv6Interface> GetInterface () const;
 

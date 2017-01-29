@@ -27,6 +27,12 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("RttEstimatorTestSuite");
 
+/**
+ * \ingroup internet-test
+ * \ingroup tests
+ *
+ * \brief RTT estimator Test
+ */
 class RttEstimatorTestCase : public TestCase
 {
 public:
@@ -36,7 +42,21 @@ private:
   virtual void DoRun (void);
   virtual void DoTeardown (void);
 
+  /**
+   * \brief Check RTT values.
+   * \param rtt The RTT estimator.
+   * \param m The measurement.
+   * \param e The expected value.
+   * \param v The expected variance.
+   */
   void CheckValues (Ptr<RttEstimator> rtt, Time m, Time e, Time v);
+  /**
+   * \brief Check RTT values with a 1 nanosecond of tolerance.
+   * \param rtt The RTT estimator.
+   * \param m The measurement.
+   * \param e The expected value.
+   * \param v The expected variance.
+   */
   void CheckValuesWithTolerance (Ptr<RttEstimator> rtt, Time m, Time e, Time v);
 };
 
@@ -152,6 +172,12 @@ RttEstimatorTestCase::DoTeardown (void)
 {
 }
 
+/**
+ * \ingroup internet-test
+ * \ingroup tests
+ *
+ * \brief RTT estimator TestSuite
+ */
 class RttEstimatorTestSuite : public TestSuite
 {
 public:
@@ -163,6 +189,5 @@ public:
 
 };
 
-static RttEstimatorTestSuite  g_rttEstimatorTestSuite;
-
+static RttEstimatorTestSuite  g_rttEstimatorTestSuite; //!< Static variable for test initialization
 

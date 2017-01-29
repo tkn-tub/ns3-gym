@@ -32,24 +32,18 @@
 
 using namespace ns3;
 
+/**
+ * \ingroup internet-test
+ * \ingroup tests
+ *
+ * \brief IPv4 Test
+ */
 class Ipv4L3ProtocolTestCase : public TestCase
 {
 public:
-  /**
-   * \brief Constructor.
-   */
   Ipv4L3ProtocolTestCase ();
-  /**
-   * \brief Destructor.
-   */
-  virtual
-  ~Ipv4L3ProtocolTestCase ();
-  /**
-   * \brief Run unit tests for this class.
-   * \return false if all tests have passed, false otherwise
-   */
-  virtual void
-  DoRun (void);
+  virtual ~Ipv4L3ProtocolTestCase ();
+  virtual void  DoRun (void);
 
 };
 
@@ -141,7 +135,13 @@ Ipv4L3ProtocolTestCase::DoRun (void)
 }
 
   
-static class IPv4L3ProtocolTestSuite : public TestSuite
+/**
+ * \ingroup internet-test
+ * \ingroup tests
+ *
+ * \brief IPv4 TestSuite
+ */
+class IPv4L3ProtocolTestSuite : public TestSuite
 {
 public:
   IPv4L3ProtocolTestSuite () :
@@ -149,4 +149,6 @@ public:
   {
     AddTestCase (new Ipv4L3ProtocolTestCase (), TestCase::QUICK);
   }
-} g_ipv4protocolTestSuite;
+};
+
+static IPv4L3ProtocolTestSuite g_ipv4protocolTestSuite; //!< Static variable for test initialization

@@ -200,7 +200,15 @@ private:
    * \brief Provide a "soft" interrupt to NSC
    */
   void SoftInterrupt (void);
+  /**
+   * \brief NscInterfaceImpl friend class.
+   * \relates NscInterfaceImpl
+   */
   friend class NscInterfaceImpl;
+  /**
+   * \brief NscTcpSocketImpl friend class.
+   * \relates NscTcpSocketImpl
+   */
   friend class NscTcpSocketImpl;
 
   Ptr<Node> m_node; //!< the node this stack is associated with

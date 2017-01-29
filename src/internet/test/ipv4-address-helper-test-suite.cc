@@ -23,6 +23,12 @@
 
 using namespace ns3;
 
+/**
+ * \ingroup internet-test
+ * \ingroup tests
+ *
+ * \brief IPv4 network allocator helper Test
+ */
 class NetworkAllocatorHelperTestCase : public TestCase
 {
 public:
@@ -69,6 +75,12 @@ NetworkAllocatorHelperTestCase::DoRun (void)
   NS_TEST_EXPECT_MSG_EQ (address, Ipv4Address ("0.0.2.1"), "105");
 }
 
+/**
+ * \ingroup internet-test
+ * \ingroup tests
+ *
+ * \brief IPv4 address allocator helper Test
+ */
 class AddressAllocatorHelperTestCase : public TestCase
 {
 public:
@@ -116,6 +128,12 @@ AddressAllocatorHelperTestCase::DoRun (void)
   NS_TEST_EXPECT_MSG_EQ (address, Ipv4Address ("0.0.1.4"), "205");
 }
 
+/**
+ * \ingroup internet-test
+ * \ingroup tests
+ *
+ * \brief IPv4 reset allocator helper Test
+ */
 class ResetAllocatorHelperTestCase : public TestCase
 {
 public:
@@ -179,6 +197,12 @@ ResetAllocatorHelperTestCase::DoTeardown (void)
   Simulator::Destroy ();
 }
 
+/**
+ * \ingroup internet-test
+ * \ingroup tests
+ *
+ * \brief IPv4 address helper Test
+ */
 class IpAddressHelperTestCasev4 : public TestCase
 {
 public:
@@ -255,15 +279,28 @@ IpAddressHelperTestCasev4::DoTeardown (void)
 }
 
 
-static class Ipv4AddressHelperTestSuite : public TestSuite
+/**
+ * \ingroup internet-test
+ * \ingroup tests
+ *
+ * \brief IPv4 Address Helper TestSuite
+ */
+class Ipv4AddressHelperTestSuite : public TestSuite
 {
 public:
-  Ipv4AddressHelperTestSuite ()
-    : TestSuite ("ipv4-address-helper", UNIT) 
-  {
-    AddTestCase (new NetworkAllocatorHelperTestCase (), TestCase::QUICK);
-    AddTestCase (new AddressAllocatorHelperTestCase (), TestCase::QUICK);
-    AddTestCase (new ResetAllocatorHelperTestCase (), TestCase::QUICK);
-    AddTestCase (new IpAddressHelperTestCasev4 (), TestCase::QUICK);
-  }
-} g_ipv4AddressHelperTestSuite;
+  Ipv4AddressHelperTestSuite ();
+private:
+};
+
+Ipv4AddressHelperTestSuite::Ipv4AddressHelperTestSuite ()
+  : TestSuite ("ipv4-address-helper", UNIT)
+{
+  AddTestCase (new NetworkAllocatorHelperTestCase (), TestCase::QUICK);
+  AddTestCase (new AddressAllocatorHelperTestCase (), TestCase::QUICK);
+  AddTestCase (new ResetAllocatorHelperTestCase (), TestCase::QUICK);
+  AddTestCase (new IpAddressHelperTestCasev4 (), TestCase::QUICK);
+}
+
+static Ipv4AddressHelperTestSuite g_ipv4AddressHelperTestSuite; //!< Static variable for test initialization
+
+

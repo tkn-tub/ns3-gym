@@ -49,8 +49,9 @@ public:
   /**
    * \brief Construct an RipHelper from another previously
    * initialized instance (Copy Constructor).
+   * \param o The object to copy from.
    */
-  RipHelper (const RipHelper &);
+  RipHelper (const RipHelper &o);
 
   virtual ~RipHelper ();
 
@@ -134,6 +135,9 @@ private:
   /**
    * \brief Assignment operator declared private and not implemented to disallow
    * assignment and prevent the compiler from happily inserting its own.
+   *
+   * \param o The object to copy from.
+   * \returns pointer to clone of this RipNgHelper
    */
   RipHelper &operator = (const RipHelper &o);
 

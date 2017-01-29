@@ -22,6 +22,12 @@
 
 using namespace ns3;
 
+/**
+ * \ingroup internet-test
+ * \ingroup tests
+ *
+ * \brief IPv4 network number Test
+ */
 class NetworkNumberAllocatorTestCase : public TestCase
 {
 public:
@@ -72,6 +78,12 @@ NetworkNumberAllocatorTestCase::DoRun (void)
   NS_TEST_EXPECT_MSG_EQ (network, Ipv4Address ("0.0.3.0"), "009");
 }
 
+/**
+ * \ingroup internet-test
+ * \ingroup tests
+ *
+ * \brief IPv4 address allocator Test
+ */
 class AddressAllocatorTestCase : public TestCase
 {
 public:
@@ -121,6 +133,12 @@ AddressAllocatorTestCase::DoTeardown (void)
 }
 
 
+/**
+ * \ingroup internet-test
+ * \ingroup tests
+ *
+ * \brief IPv4 network and address allocator Test
+ */
 class NetworkAndAddressTestCase : public TestCase
 {
 public:
@@ -184,6 +202,12 @@ NetworkAndAddressTestCase::DoRun (void)
   NS_TEST_EXPECT_MSG_EQ (address, Ipv4Address ("0.0.4.5"), "211");
 }
 
+/**
+ * \ingroup internet-test
+ * \ingroup tests
+ *
+ * \brief IPv4 AddressGenerator example (sort of) Test
+ */
 class ExampleAddressGeneratorTestCase : public TestCase
 {
 public:
@@ -236,6 +260,12 @@ ExampleAddressGeneratorTestCase::DoRun (void)
   NS_TEST_EXPECT_MSG_EQ (address, Ipv4Address ("192.168.1.3"), "304");
 }
 
+/**
+ * \ingroup internet-test
+ * \ingroup tests
+ *
+ * \brief IPv4 address collision Test
+ */
 class AddressCollisionTestCase : public TestCase
 {
 public:
@@ -302,16 +332,28 @@ AddressCollisionTestCase::DoRun (void)
 }
 
 
-static class Ipv4AddressGeneratorTestSuite : public TestSuite
+/**
+ * \ingroup internet-test
+ * \ingroup tests
+ *
+ * \brief IPv4 Address Generator TestSuite
+ */
+class Ipv4AddressGeneratorTestSuite : public TestSuite
 {
 public:
-  Ipv4AddressGeneratorTestSuite ()
-    : TestSuite ("ipv4-address-generator")
-  {
-    AddTestCase (new NetworkNumberAllocatorTestCase (), TestCase::QUICK);
-    AddTestCase (new AddressAllocatorTestCase (), TestCase::QUICK);
-    AddTestCase (new NetworkAndAddressTestCase (), TestCase::QUICK);
-    AddTestCase (new ExampleAddressGeneratorTestCase (), TestCase::QUICK);
-    AddTestCase (new AddressCollisionTestCase (), TestCase::QUICK);
-  }
-} g_ipv4AddressGeneratorTestSuite;
+  Ipv4AddressGeneratorTestSuite ();
+private:
+};
+
+Ipv4AddressGeneratorTestSuite::Ipv4AddressGeneratorTestSuite ()
+  : TestSuite ("ipv4-address-generator", UNIT)
+{
+  AddTestCase (new NetworkNumberAllocatorTestCase (), TestCase::QUICK);
+  AddTestCase (new AddressAllocatorTestCase (), TestCase::QUICK);
+  AddTestCase (new NetworkAndAddressTestCase (), TestCase::QUICK);
+  AddTestCase (new ExampleAddressGeneratorTestCase (), TestCase::QUICK);
+  AddTestCase (new AddressCollisionTestCase (), TestCase::QUICK);
+}
+
+static Ipv4AddressGeneratorTestSuite g_ipv4AddressGeneratorTestSuite; //!< Static variable for test initialization
+

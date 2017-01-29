@@ -376,6 +376,7 @@ public:
 
   /**
    * \brief Set the field "value".
+   * \param value the value to be set.
    */
   void SetValue (uint16_t value);
 

@@ -48,6 +48,10 @@ public:
   void SetStack (INetStack *stack) { m_stack = stack; }
 
 private:
+  /**
+   * \brief NscStackStringAccessor friend class.
+   * \relates NscStackStringAccessor
+   */
   friend class NscStackStringAccessor;
   /**
    * \brief Set an attribute

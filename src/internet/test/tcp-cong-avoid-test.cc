@@ -18,13 +18,79 @@
  */
 #include "ns3/log.h"
 #include "ns3/simple-channel.h"
-#include "ns3/internet-module.h"
+#include "ns3/tcp-westwood.h"
 #include "ns3/config.h"
-#include "tcp-cong-avoid-test.h"
+#include "ns3/test.h"
+#include "tcp-general-test.h"
 
-namespace ns3 {
+using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("TcpNewRenoCongAvoidTest");
+
+/**
+ * \ingroup internet-test
+ * \ingroup tests
+ *
+ * \brief Test the behavior of RFC congestion avoidance
+ *
+ * From RFC 5681:\n
+ *
+ *     cwnd += min (N, SMSS)                      (2)
+ *
+ *  During congestion avoidance, cwnd is incremented by roughly 1 full-
+ *  sized segment per round-trip time (RTT).  Congestion avoidance
+ *  continues until congestion is detected.  The basic guidelines for
+ *  incrementing cwnd during congestion avoidance are:
+ *
+ *     * MAY increment cwnd by SMSS bytes
+ *
+ *     * SHOULD increment cwnd per equation (2) once per RTT
+ *
+ *     * MUST NOT increment cwnd by more than SMSS bytes
+ *
+ * To test this behavior and these points, a tracing callback is attached
+ * to the cWnd. Each time it increases, the increment is saved. Meanwhile, a
+ * timer checks if an amount of time equals to the RTT has passed, and if yes,
+ * it checks that the increment has not passed the 1 MSS limit.
+ */
+class
+TcpNewRenoCongAvoidNormalTest : public TcpGeneralTest
+{
+public:
+  /**
+   * \brief Constructor.
+   * \param segmentSize Segment size.
+   * \param packetSize Size of the packets.
+   * \param packets Number of packets.
+   * \param congControl Type of congestion control.
+   * \param desc The test description.
+   */
+  TcpNewRenoCongAvoidNormalTest (uint32_t segmentSize, uint32_t packetSize,
+                                 uint32_t packets, TypeId& congControl,
+                                 const std::string &desc);
+protected:
+  virtual void CWndTrace (uint32_t oldValue, uint32_t newValue);
+  virtual void QueueDrop (SocketWho who);
+  virtual void PhyDrop (SocketWho who);
+  virtual void NormalClose (SocketWho who);
+  /**
+   * \brief Called each RTT (1.0 sec in the testing environment) and check
+   * that the overall increment in this RTT is less or equal than 1 MSS
+   */
+  void Check ();
+
+  virtual void ConfigureEnvironment ();
+  virtual void ConfigureProperties ();
+
+private:
+  uint32_t m_segmentSize; //!< Segment size.
+  uint32_t m_packetSize;  //!< Size of the packets.
+  uint32_t m_packets;     //!< Number of packets.
+  uint32_t m_increment;   //!< Congestion window increment.
+  EventId m_event;        //!< Check event.
+  bool   m_initial;       //!< True on first run.
+};
+
 
 TcpNewRenoCongAvoidNormalTest::TcpNewRenoCongAvoidNormalTest (uint32_t segmentSize,
                                                               uint32_t packetSize,
@@ -57,13 +123,6 @@ void TcpNewRenoCongAvoidNormalTest::ConfigureProperties ()
   SetInitialSsThresh (SENDER, 0);
 }
 
-/**
- * \brief Check the increment of the congestion window in the congestion avoidance
- *
- * The method trace the size change of the cWnd, saving each increment.
- *
- * \see Check
- */
 void
 TcpNewRenoCongAvoidNormalTest::CWndTrace (uint32_t oldValue, uint32_t newValue)
 {
@@ -94,10 +153,6 @@ TcpNewRenoCongAvoidNormalTest::PhyDrop (SocketWho who)
   NS_FATAL_ERROR ("Drop on the phy: cannot validate congestion avoidance");
 }
 
-/**
- * \brief Called each RTT (1.0 sec in the testing environment) and check
- * that the overall increment in this RTT is less or equal than 1 MSS
- */
 void
 TcpNewRenoCongAvoidNormalTest::Check ()
 {
@@ -125,9 +180,15 @@ TcpNewRenoCongAvoidNormalTest::NormalClose (SocketWho who)
     }
 }
 
-//-----------------------------------------------------------------------------
 
-static class TcpRenoCongAvoidTestSuite : public TestSuite
+
+/**
+ * \ingroup internet-test
+ * \ingroup tests
+ *
+ * \brief TestSuite for the behavior of RFC congestion avoidance
+ */
+class TcpRenoCongAvoidTestSuite : public TestSuite
 {
 public:
   TcpRenoCongAvoidTestSuite () : TestSuite ("tcp-cong-avoid-test", UNIT)
@@ -149,6 +210,6 @@ public:
           }
       }
   }
-} g_tcpCongAvoidNormalTest;
+};
 
-} // namespace ns3
+static TcpRenoCongAvoidTestSuite g_tcpCongAvoidNormalTest; //!< Static variable for test initialization

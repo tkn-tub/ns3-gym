@@ -113,19 +113,23 @@ struct INetStack
 
   /**
    * \brief Set the buffer size
+   * \param size the buffer size.
    */
   virtual void buffer_size (int size) = 0;
 
   /**
    * \brief Create a new UDP socket
+   * \returns A new UDP socket.
    */
   virtual struct INetDatagramSocket *new_udp_socket () { return NULL; }
   /**
    * \brief Create a new TCP socket
+   * \returns A new TCP socket.
    */
   virtual struct INetStreamSocket *new_tcp_socket () { return NULL; }
   /**
    * \brief Create a new SCTP socket
+   * \returns A new SCTP socket.
    */
   virtual struct INetStreamSocket *new_sctp_socket () { return NULL; }
 
@@ -138,7 +142,7 @@ struct INetStack
    * \param oldlenp old value length
    * \param newval new value
    * \param newlen new value length
-   * \returns
+   * \returns The status code.
    */
   virtual int sysctl (const char *sysctl_name, void *oldval, size_t *oldlenp,
                       void *newval, size_t newlen)
@@ -270,8 +274,10 @@ struct INetStreamSocket
   virtual void listen (int) = 0;
   /**
    * \brief Accept an incoming connection
+   * \param handler a handler to the INetStreamSocket.
+   * \returns The status code.
    */
-  virtual int accept (INetStreamSocket **) = 0;
+  virtual int accept (INetStreamSocket **handler) = 0;
   /**
    * \brief Send some data
    * \param data the data
@@ -396,6 +402,8 @@ struct ISendCallback
 
   /**
    * \brief Invoked by NSCs 'ethernet driver' to re-inject a packet into ns-3.
+   * \param data the data.
+   * \param datalen the data length.
    */
   virtual void send_callback (const void *data, int datalen) = 0;
 };

@@ -29,7 +29,7 @@
 #include "../model/ipv6-end-point.h"
 #include "tcp-general-test.h"
 
-namespace ns3 {
+using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("TcpGeneralTest");
 
@@ -1008,8 +1008,8 @@ TcpSocketSmallAcks::GetTypeId (void)
   return tid;
 }
 
-/**
- * \brief Send empty packet, copied/pasted from TcpSocketBase
+/*
+ * Send empty packet, copied/pasted from TcpSocketBase
  *
  * The rationale for copying/pasting is that we need to edit a little the
  * code inside. Since there isn't a well-defined division of duties,
@@ -1176,4 +1176,3 @@ TcpSocketSmallAcks::Fork (void)
   return CopyObject<TcpSocketSmallAcks> (this);
 }
 
-} // namespace ns3

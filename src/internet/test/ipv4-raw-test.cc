@@ -51,22 +51,69 @@
 using namespace ns3;
 
 
+/**
+ * \ingroup internet-test
+ * \ingroup tests
+ *
+ * \brief IPv4 RAW Socket Test
+ */
 class Ipv4RawSocketImplTest : public TestCase
 {
-  Ptr<Packet> m_receivedPacket;
-  Ptr<Packet> m_receivedPacket2;
+  Ptr<Packet> m_receivedPacket;   //!< Received packet (1).
+  Ptr<Packet> m_receivedPacket2;  //!< Received packet (2).
+
+  /**
+   * \brief Send data.
+   * \param socket The sending socket.
+   * \param to Destination address.
+   */
   void DoSendData (Ptr<Socket> socket, std::string to);
+  /**
+   * \brief Send data.
+   * \param socket The sending socket.
+   * \param to Destination address.
+   */
   void SendData (Ptr<Socket> socket, std::string to);
+  /**
+   * \brief Send data.
+   * \param socket The sending socket.
+   * \param to Destination address.
+   */
   void DoSendData_IpHdr (Ptr<Socket> socket, std::string to);
+  /**
+   * \brief Send data.
+   * \param socket The sending socket.
+   * \param to Destination address.
+   */
   void SendData_IpHdr (Ptr<Socket> socket, std::string to);
 
 public:
   virtual void DoRun (void);
   Ipv4RawSocketImplTest ();
 
+  /**
+   * \brief Receive data.
+   * \param socket The receiving socket.
+   * \param packet The received packet.
+   * \param from The sender.
+   */
   void ReceivePacket (Ptr<Socket> socket, Ptr<Packet> packet, const Address &from);
+  /**
+   * \brief Receive data.
+   * \param socket The receiving socket.
+   * \param packet The received packet.
+   * \param from The sender.
+   */
   void ReceivePacket2 (Ptr<Socket> socket, Ptr<Packet> packet, const Address &from);
+  /**
+   * \brief Receive data.
+   * \param socket The receiving socket.
+   */
   void ReceivePkt (Ptr<Socket> socket);
+  /**
+   * \brief Receive data.
+   * \param socket The receiving socket.
+   */
   void ReceivePkt2 (Ptr<Socket> socket);
 };
 
@@ -293,7 +340,14 @@ Ipv4RawSocketImplTest::DoRun (void)
 
   Simulator::Destroy ();
 }
-//-----------------------------------------------------------------------------
+
+
+/**
+ * \ingroup internet-test
+ * \ingroup tests
+ *
+ * \brief IPv4 RAW Socket TestSuite
+ */
 class Ipv4RawTestSuite : public TestSuite
 {
 public:
@@ -301,4 +355,6 @@ public:
   {
     AddTestCase (new Ipv4RawSocketImplTest, TestCase::QUICK);
   }
-} g_ipv4rawTestSuite;
+};
+
+static Ipv4RawTestSuite g_ipv4rawTestSuite; //!< Static variable for test initialization

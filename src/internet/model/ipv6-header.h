@@ -144,6 +144,10 @@ public:
    */
   std::string DscpTypeToString (DscpType dscp) const;
 
+  /**
+   * \enum EcnType
+   * \brief ECN field bits
+   */
   enum EcnType
    {
      // Prefixed with "ECN" to avoid name clash
@@ -154,13 +158,13 @@ public:
    };
 
   /**
-   * \brief Set ECN Field
-   * \param ecn ECN Type
+   * \brief Set ECN field bits
+   * \param ecn ECN field bits
    */
   void SetEcn (EcnType ecn);
 
   /**
-   * \return the ECN field of this packet.
+   * \return the ECN field bits of this packet.
    */
   EcnType GetEcn (void) const;
 

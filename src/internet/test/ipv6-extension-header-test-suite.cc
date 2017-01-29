@@ -33,6 +33,13 @@ using namespace ns3;
 // |                                                               |
 // +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 // ===========================================================================
+
+/**
+ * \ingroup internet-test
+ * \ingroup tests
+ *
+ * \brief IPv6 extensions Test: Empty option field.
+ */
 class TestEmptyOptionField : public TestCase
 {
 public:
@@ -62,10 +69,18 @@ public:
 // |..OptionWithoutAlignmentHeader |          PadN Header          |
 // +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 // ===========================================================================
+
+/**
+ * \ingroup internet-test
+ * \ingroup tests
+ *
+ * \brief IPv6 extensions Test: Option without alignment.
+ */
 class OptionWithoutAlignmentHeader : public Ipv6OptionHeader
 {
 public:
-  static const uint8_t TYPE = 42;
+  static const uint8_t TYPE = 42; //!< Option type.
+
   virtual uint32_t GetSerializedSize () const
   {
     return 4;
@@ -80,6 +95,12 @@ public:
 };
 
 
+/**
+ * \ingroup internet-test
+ * \ingroup tests
+ *
+ * \brief IPv6 extensions Test: Test the option without alignment.
+ */
 class TestOptionWithoutAlignment : public TestCase
 {
 public:
@@ -118,10 +139,18 @@ public:
 // |                   Ipv6OptionJumbogramHeader                   |
 // +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 // ===========================================================================
+
+/**
+ * \ingroup internet-test
+ * \ingroup tests
+ *
+ * \brief IPv6 extensions Test: Option with alignement.
+ */
 class OptionWithAlignmentHeader : public Ipv6OptionHeader
 {
 public:
-  static const uint8_t TYPE = 73;
+  static const uint8_t TYPE = 73; //!< Option Type.
+
   virtual uint32_t GetSerializedSize () const
   {
     return 4;
@@ -141,6 +170,12 @@ public:
 };
 
 
+/**
+ * \ingroup internet-test
+ * \ingroup tests
+ *
+ * \brief IPv6 extensions Test: Test the option with alignement.
+ */
 class TestOptionWithAlignment : public TestCase
 {
 public:
@@ -184,6 +219,12 @@ public:
 // +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 // ===========================================================================
 
+/**
+ * \ingroup internet-test
+ * \ingroup tests
+ *
+ * \brief IPv6 extensions Test: Test an option already aligned.
+ */
 class TestFulfilledAlignment : public TestCase
 {
 public:
@@ -209,6 +250,12 @@ public:
   }
 };
 
+/**
+ * \ingroup internet-test
+ * \ingroup tests
+ *
+ * \brief IPv6 extensions TestSuite.
+ */
 class Ipv6ExtensionHeaderTestSuite : public TestSuite
 {
 public:
@@ -223,4 +270,4 @@ public:
   }
 };
 
-static Ipv6ExtensionHeaderTestSuite ipv6ExtensionHeaderTestSuite;
+static Ipv6ExtensionHeaderTestSuite ipv6ExtensionHeaderTestSuite; //!< Static variable for test initialization

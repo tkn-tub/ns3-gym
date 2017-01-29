@@ -25,22 +25,39 @@
 
 #include <string.h>
 
-namespace ns3 {
+using namespace ns3;
 
+/**
+ * \ingroup internet-test
+ * \ingroup tests
+ *
+ * \brief TCP Window Scaling option Test
+ */
 class TcpOptionWSTestCase : public TestCase
 {
 public:
+  /**
+   * \brief Constructor.
+   * \param name Test description.
+   * \param scale Window scaling.
+   */
   TcpOptionWSTestCase (std::string name, uint8_t scale);
 
+  /**
+   * \brief Serialization test.
+   */
   void TestSerialize ();
+  /**
+   * \brief Deserialization test.
+   */
   void TestDeserialize ();
 
 private:
   virtual void DoRun (void);
   virtual void DoTeardown (void);
 
-  uint8_t m_scale;
-  Buffer m_buffer;
+  uint8_t m_scale;  //!< Window scaling.
+  Buffer m_buffer;  //!< Buffer.
 };
 
 
@@ -90,27 +107,47 @@ TcpOptionWSTestCase::DoTeardown ()
 {
 }
 
+
+/**
+ * \ingroup internet-test
+ * \ingroup tests
+ *
+ * \brief TCP TimeStamp option Test
+ */
 class TcpOptionTSTestCase : public TestCase
 {
 public:
+
+  /**
+   * \brief Constructor.
+   * \param name Test description.
+   */
   TcpOptionTSTestCase (std::string name);
 
+  /**
+   * \brief Serialization test.
+   */
   void TestSerialize ();
+  /**
+   * \brief Deserialization test.
+   */
   void TestDeserialize ();
 
 private:
   virtual void DoRun (void);
   virtual void DoTeardown (void);
 
-  uint32_t m_timestamp;
-  uint32_t m_echo;
-  Buffer m_buffer;
+  uint32_t m_timestamp; //!< TimeStamp.
+  uint32_t m_echo;      //!< Echoed TimeStamp.
+  Buffer m_buffer;      //!< Buffer.
 };
 
 
 TcpOptionTSTestCase::TcpOptionTSTestCase (std::string name)
   : TestCase (name)
 {
+  m_timestamp = 0;
+  m_echo = 0;
 }
 
 void
@@ -164,7 +201,13 @@ TcpOptionTSTestCase::DoTeardown ()
 {
 }
 
-static class TcpOptionTestSuite : public TestSuite
+/**
+ * \ingroup internet-test
+ * \ingroup tests
+ *
+ * \brief TCP options TestSuite
+ */
+class TcpOptionTestSuite : public TestSuite
 {
 public:
   TcpOptionTestSuite ()
@@ -172,12 +215,11 @@ public:
   {
     for (uint8_t i = 0; i < 15; ++i)
       {
-        AddTestCase (new TcpOptionWSTestCase ("Testing window "
-                                              "scale value", i), TestCase::QUICK);
+        AddTestCase (new TcpOptionWSTestCase ("Testing window scale value", i), TestCase::QUICK);
       }
     AddTestCase (new TcpOptionTSTestCase ("Testing serialization of random values for timestamp"), TestCase::QUICK);
   }
 
-} g_TcpOptionTestSuite;
+};
 
-} // namespace ns3
+static TcpOptionTestSuite g_TcpOptionTestSuite; //!< Static variable for test initialization

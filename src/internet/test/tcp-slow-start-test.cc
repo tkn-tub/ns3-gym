@@ -16,17 +16,71 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-#include "tcp-slow-start-test.h"
 #include "ns3/log.h"
+#include "ns3/test.h"
 #include "ns3/simple-channel.h"
-#include "ns3/internet-module.h"
 #include "ns3/config.h"
+#include "ns3/tcp-westwood.h"
+#include "tcp-general-test.h"
 
-namespace ns3 {
+using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("TcpSlowStartTest");
 
-// TcpSlowStartNormalTest
+/**
+ * \ingroup internet-test
+ * \ingroup tests
+ *
+ * \brief Test the normal behavior for slow start
+ *
+ * As method for checking the slow start, a callback is attached to the
+ * congestion window. With the knowledge of the number of segments, we can calculate
+ * if the value of the cWnd is right. Also, with a fixed delay for each packet,
+ * we can know if the timing is correct.
+ *
+ * Check what is done inside CWndTrace.
+ *
+ * \see CWndTrace
+ */
+class
+TcpSlowStartNormalTest : public TcpGeneralTest
+{
+public:
+  /**
+   * \brief Constructor.
+   * \param segmentSize Segment size.
+   * \param packetSize Packet size.
+   * \param initSsTh Initial SlowStart threshold.
+   * \param packets Packet counter.
+   * \param congControl Congestion control.
+   * \param desc Test description.
+   */
+  TcpSlowStartNormalTest (uint32_t segmentSize, uint32_t packetSize,
+                          uint32_t initSsTh, uint32_t packets, TypeId& congControl,
+                          const std::string &desc);
+
+protected:
+  virtual void CWndTrace (uint32_t oldValue, uint32_t newValue);
+  virtual void Tx (const Ptr<const Packet> p, const TcpHeader &h, SocketWho who);
+  virtual void Rx (const Ptr<const Packet> p, const TcpHeader &h, SocketWho who);
+  void QueueDrop (SocketWho who);
+  void PhyDrop (SocketWho who);
+
+  virtual void ConfigureEnvironment ();
+  virtual void ConfigureProperties ();
+
+  uint32_t m_ackedBytes;        //!< ACKed bytes.
+  uint32_t m_sentBytes;         //!< Sent bytes.
+  uint32_t m_totalAckedBytes;   //!< Total ACKed bytes.
+  uint32_t m_allowedIncrease;   //!< Allowed increase.
+
+  bool   m_initial; //!< First cycle flag.
+
+private:
+  uint32_t m_segmentSize;   //!< Segment size.
+  uint32_t m_packetSize;    //!< Packet size.
+  uint32_t m_packets;       //!< Packet counter.
+};
 
 TcpSlowStartNormalTest::TcpSlowStartNormalTest (uint32_t segmentSize,
                                                 uint32_t packetSize,
@@ -150,7 +204,38 @@ TcpSlowStartNormalTest::Rx (const Ptr<const Packet> p, const TcpHeader &h, Socke
     }
 }
 
-// TcpSlowStartAttackerTest
+/**
+ * \ingroup internet-test
+ * \ingroup tests
+ *
+ * \brief A slow start test using a socket which sends smaller ACKs
+ *
+ * The same test are performed over a connection where, on one side, there is
+ * a malicious socket which sends smaller ACKs than the segment received.
+ *
+ * Slow start behavior should not change.
+ */
+class
+TcpSlowStartAttackerTest : public TcpSlowStartNormalTest
+{
+public:
+  /**
+   * \brief Constructor.
+   * \param segmentSize Segment size.
+   * \param packetSize Packet size.
+   * \param initSsTh Initial SlowStart threshold.
+   * \param packets Packet counter.
+   * \param congControl Congestion control.
+   * \param desc Test description.
+   */
+  TcpSlowStartAttackerTest (uint32_t segmentSize, uint32_t packetSize,
+                            uint32_t initSsTh, uint32_t packets, TypeId& congControl,
+                            const std::string &desc);
+
+protected:
+  virtual Ptr<TcpSocketMsgBase> CreateReceiverSocket (Ptr<Node> node);
+};
+
 TcpSlowStartAttackerTest::TcpSlowStartAttackerTest (uint32_t segmentSize,
                                                     uint32_t packetSize,
                                                     uint32_t initSsTh,
@@ -174,9 +259,13 @@ TcpSlowStartAttackerTest::CreateReceiverSocket (Ptr<Node> node)
 }
 
 
-//-----------------------------------------------------------------------------
-
-static class TcpSlowStartTestSuite : public TestSuite
+/**
+ * \ingroup internet-test
+ * \ingroup tests
+ *
+ * \brief TCP Slow Start TestSuite.
+ */
+class TcpSlowStartTestSuite : public TestSuite
 {
 public:
   TcpSlowStartTestSuite () : TestSuite ("tcp-slow-start-test", UNIT)
@@ -205,6 +294,7 @@ public:
                      TestCase::QUICK);
       }
   }
-} g_tcpSlowStartTestSuite;
+};
 
-} // namespace ns3
+static TcpSlowStartTestSuite g_tcpSlowStartTestSuite; //!< Static variable for test initialization
+

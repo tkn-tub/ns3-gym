@@ -282,6 +282,10 @@ public:
    */
   virtual TypeId GetInstanceTypeId () const;
 
+  /**
+   * \brief TcpGeneralTest friend class (for tests).
+   * \relates TcpGeneralTest
+   */
   friend class TcpGeneralTest;
 
   /**
@@ -619,7 +623,7 @@ protected:
   uint32_t SendDataPacket (SequenceNumber32 seq, uint32_t maxSize, bool withAck);
 
   /**
-   * \brief Send a empty packet that carries a flag, e.g. ACK
+   * \brief Send a empty packet that carries a flag, e.g., ACK
    *
    * \param flags the packet's flags
    */

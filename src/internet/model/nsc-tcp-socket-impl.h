@@ -113,6 +113,10 @@ private:
    * Actually performs the ForwardUp operations
    */
   void NSCWakeup (void);
+  /**
+   * \brief Tcp friend class.
+   * \relates Tcp
+   */
   friend class Tcp;
   // invoked by Tcp class
   /**

@@ -105,11 +105,14 @@ public:
 
   /**
    * \brief Copy constructor
+   * \param o Object to copy from.
    */
-  InternetStackHelper (const InternetStackHelper &);
+  InternetStackHelper (const InternetStackHelper &o);
 
   /**
    * \brief Copy constructor
+   * \param o Object to copy from.
+   * \returns A copy of the InternetStackHelper.
    */
   InternetStackHelper &operator = (const InternetStackHelper &o);
 

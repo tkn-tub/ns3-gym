@@ -83,6 +83,12 @@ public:
   /**
    * \brief Add a multicast route to a node and net device using explicit 
    * Ptr<Node> and Ptr<NetDevice>
+   *
+   * \param n The node.
+   * \param source Source address.
+   * \param group Multicast group.
+   * \param input Input NetDevice.
+   * \param output Output NetDevices.
    */
   void AddMulticastRoute (Ptr<Node> n, Ipv4Address source, Ipv4Address group,
                           Ptr<NetDevice> input, NetDeviceContainer output);
@@ -91,6 +97,12 @@ public:
    * \brief Add a multicast route to a node and device using a name string 
    * previously associated to the node using the Object Name Service and a
    * Ptr<NetDevice>
+   *
+   * \param n The node.
+   * \param source Source address.
+   * \param group Multicast group.
+   * \param input Input NetDevice.
+   * \param output Output NetDevices.
    */
   void AddMulticastRoute (std::string n, Ipv4Address source, Ipv4Address group,
                           Ptr<NetDevice> input, NetDeviceContainer output);
@@ -98,6 +110,12 @@ public:
   /**
    * \brief Add a multicast route to a node and device using a Ptr<Node> and a 
    * name string previously associated to the device using the Object Name Service.
+   *
+   * \param n The node.
+   * \param source Source address.
+   * \param group Multicast group.
+   * \param inputName Input NetDevice.
+   * \param output Output NetDevices.
    */
   void AddMulticastRoute (Ptr<Node> n, Ipv4Address source, Ipv4Address group,
                           std::string inputName, NetDeviceContainer output);
@@ -106,6 +124,12 @@ public:
    * \brief Add a multicast route to a node and device using name strings
    * previously associated to both the node and device using the Object Name 
    * Service.
+   *
+   * \param nName The node.
+   * \param source Source address.
+   * \param group Multicast group.
+   * \param inputName Input NetDevice.
+   * \param output Output NetDevices.
    */
   void AddMulticastRoute (std::string nName, Ipv4Address source, Ipv4Address group,
                           std::string inputName, NetDeviceContainer output);

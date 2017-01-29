@@ -48,45 +48,34 @@
 #include "ns3/traffic-control-layer.h"
 #include "ns3/simulator.h"
 #include "ns3/node.h"
+#include "ns3/internet-stack-helper.h"
+#include "ns3/simple-net-device-helper.h"
 
 using namespace ns3;
 
-namespace {
-
-static void
-AddInternetStack (Ptr<Node> node)
-{
-  //ARP
-  Ptr<ArpL3Protocol> arp = CreateObject<ArpL3Protocol> ();
-  node->AggregateObject (arp);
-  //IPV4
-  Ptr<Ipv4L3Protocol> ipv4 = CreateObject<Ipv4L3Protocol> ();
-  //Routing for Ipv4
-  Ptr<Ipv4ListRouting> ipv4Routing = CreateObject<Ipv4ListRouting> ();
-  ipv4->SetRoutingProtocol (ipv4Routing);
-  Ptr<Ipv4StaticRouting> ipv4staticRouting = CreateObject<Ipv4StaticRouting> ();
-  ipv4Routing->AddRoutingProtocol (ipv4staticRouting, 0);
-  node->AggregateObject (ipv4);
-  //ICMP
-  Ptr<Icmpv4L4Protocol> icmp = CreateObject<Icmpv4L4Protocol> ();
-  node->AggregateObject (icmp);
-  //UDP
-  Ptr<UdpL4Protocol> udp = CreateObject<UdpL4Protocol> ();
-  node->AggregateObject (udp);
-  // Traffic Control
-  Ptr<TrafficControlLayer> tc = CreateObject<TrafficControlLayer> ();
-  node->AggregateObject (tc);
-}
-
-}
-
+/**
+ * \ingroup internet-test
+ * \ingroup tests
+ *
+ * \brief IPv4 PacketInfoTag Test
+ */
 class Ipv4PacketInfoTagTest : public TestCase
 {
 public:
   Ipv4PacketInfoTagTest ();
 private:
   virtual void DoRun (void);
+
+  /**
+   * \brief Receive callback.
+   * \param socket Receiving socket.
+   */
   void RxCb (Ptr<Socket> socket);
+  /**
+   * \brief Send data.
+   * \param socket Sending socket.
+   * \param to Destination address.
+   */
   void DoSendData (Ptr<Socket> socket, std::string to);
 };
 
@@ -133,12 +122,17 @@ Ipv4PacketInfoTagTest::DoRun (void)
   Ptr<Node> node0 = CreateObject<Node> ();
   Ptr<Node> node1 = CreateObject<Node> ();
 
-  Ptr<SimpleNetDevice> device = CreateObject<SimpleNetDevice> ();
-  Ptr<SimpleNetDevice> device2 = CreateObject<SimpleNetDevice> ();
+  SimpleNetDeviceHelper simpleNetDevHelper;
+  NetDeviceContainer devs = simpleNetDevHelper.Install (NodeContainer (node0, node1));
+  Ptr<SimpleNetDevice> device = DynamicCast<SimpleNetDevice> (devs.Get (0));
+  Ptr<SimpleNetDevice> device2 = DynamicCast<SimpleNetDevice> (devs.Get (1));
+
+  InternetStackHelper internet;
+  internet.SetIpv6StackInstall (false);
 
   // For Node 0
   node0->AddDevice (device);
-  AddInternetStack (node0);
+  internet.Install (node0);
   Ptr<Ipv4> ipv4 = node0->GetObject<Ipv4> ();
 
   uint32_t index = ipv4->AddInterface (device);
@@ -150,7 +144,7 @@ Ipv4PacketInfoTagTest::DoRun (void)
 
   // For Node 1
   node1->AddDevice (device2);
-  AddInternetStack (node1);
+  internet.Install (node1);
   ipv4 = node1->GetObject<Ipv4> ();
 
   index = ipv4->AddInterface (device2);
@@ -200,15 +194,23 @@ Ipv4PacketInfoTagTest::DoRun (void)
   Simulator::Destroy ();
 }
 
-static class Ipv4PacketInfoTagTestSuite : public TestSuite
+/**
+ * \ingroup internet-test
+ * \ingroup tests
+ *
+ * \brief IPv4 PacketInfoTag TestSuite
+ */
+class Ipv4PacketInfoTagTestSuite : public TestSuite
 {
 public:
   Ipv4PacketInfoTagTestSuite ();
 private:
-} g_packetinfotagTests;
+};
 
 Ipv4PacketInfoTagTestSuite::Ipv4PacketInfoTagTestSuite ()
   : TestSuite ("ipv4-packet-info-tag", UNIT)
 {
   AddTestCase (new Ipv4PacketInfoTagTest (), TestCase::QUICK);
 }
+
+static Ipv4PacketInfoTagTestSuite g_packetinfotagTests; //!< Static variable for test initialization

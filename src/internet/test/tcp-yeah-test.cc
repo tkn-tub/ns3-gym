@@ -30,16 +30,30 @@
 #include "ns3/tcp-socket-base.h"
 #include "ns3/tcp-yeah.h"
 
-namespace ns3 {
+using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("TcpYeahTestSuite");
 
 /**
- * \brief Testing TcpYeah additive increase algorithm
+ * \ingroup internet-test
+ * \ingroup tests
+ *
+ * \brief Testing TcpYeah additive increase algorithm.
  */
 class TcpYeahIncrementTest : public TestCase
 {
 public:
+  /**
+   * \brief Constructor.
+   * \param cWnd Congestion window.
+   * \param ssThresh Slow Start Threshold.
+   * \param segmentSize Segment size.
+   * \param nextTxSeq Next Tx sequence number.
+   * \param lastAckedSeq Last ACKed sequence number.
+   * \param segmentsAcked Number of segments ACKed.
+   * \param minRtt Minimum RTT.
+   * \param name Test description.
+   */
   TcpYeahIncrementTest (uint32_t cWnd,
                         uint32_t ssThresh,
                         uint32_t segmentSize,
@@ -51,19 +65,23 @@ public:
 
 private:
   virtual void DoRun ();
+  /**
+   * \brief Increases the TCP window.
+   * \param cong The congestion control.
+   */
   void IncreaseWindow (Ptr<TcpYeah> cong);
 
-  uint32_t m_cWnd;
-  uint32_t m_ssThresh;
-  uint32_t m_segmentSize;
-  SequenceNumber32 m_nextTxSeq;
-  SequenceNumber32 m_lastAckedSeq;
-  uint32_t m_segmentsAcked;
-  Time m_baseRtt;
-  Time m_minRtt;
-  uint32_t m_doingRenoNow;
-  uint32_t m_cntRtt;
-  uint32_t m_renoCount;
+  uint32_t m_cWnd;        //!< Congestion window.
+  uint32_t m_ssThresh;    //!< Slow Start Threshold.
+  uint32_t m_segmentSize; //!< Segment size.
+  SequenceNumber32 m_nextTxSeq; //!< Next Tx sequence number.
+  SequenceNumber32 m_lastAckedSeq;  //!< Last ACKed sequence number.
+  uint32_t m_segmentsAcked; //!< Number of segments ACKed.
+  Time m_baseRtt;         //!< Base RTT.
+  Time m_minRtt;          //!< Min RTT.
+  uint32_t m_doingRenoNow;  //!< TCP Reno fallback.
+  uint32_t m_cntRtt;      //!< RTT counter.
+  uint32_t m_renoCount;   //!< Reno counter.
 };
 
 TcpYeahIncrementTest::TcpYeahIncrementTest (uint32_t cWnd,
@@ -202,11 +220,25 @@ TcpYeahIncrementTest::IncreaseWindow (Ptr<TcpYeah> cong)
 }
 
 /**
+ * \ingroup internet-test
+ * \ingroup tests
+ *
  * \brief Testing TcpYeah multiplicative decrease algorithm
  */
 class TcpYeahDecrementTest : public TestCase
 {
 public:
+  /**
+   * \brief Constructor.
+   * \param cWnd Congestion window.
+   * \param ssThresh Slow Start Threshold.
+   * \param segmentSize Segment size.
+   * \param nextTxSeq Next Tx sequence number.
+   * \param lastAckedSeq Last ACKed sequence number.
+   * \param minRtt Minimum RTT.
+   * \param rho TCP Yeah rho param.
+   * \param name Test description.
+   */
   TcpYeahDecrementTest (uint32_t cWnd,
                         uint32_t ssThresh,
                         uint32_t segmentSize,
@@ -218,18 +250,23 @@ public:
 
 private:
   virtual void DoRun (void);
+  /**
+   * \brief Calculate the Slow Start threshold.
+   * \param cong The TCP state.
+   * \returns The SshThreshold.
+   */
   uint32_t CalculateSsThresh (Ptr<TcpYeah> cong);
 
-  uint32_t m_cWnd;
-  uint32_t m_ssThresh;
-  uint32_t m_segmentSize;
-  uint32_t m_doingRenoNow;
-  SequenceNumber32 m_nextTxSeq;
-  SequenceNumber32 m_lastAckedSeq;
-  Time m_minRtt;
-  Time m_baseRtt;
-  uint32_t m_segmentsAcked;
-  UintegerValue m_rho;
+  uint32_t m_cWnd;        //!< Congestion window.
+  uint32_t m_ssThresh;    //!< Slow Start Threshold.
+  uint32_t m_segmentSize; //!< Segment size.
+  uint32_t m_doingRenoNow;  //!< TCP Reno fallback.
+  SequenceNumber32 m_nextTxSeq; //!< Next Tx sequence number.
+  SequenceNumber32 m_lastAckedSeq;  //!< Last ACKed sequence number.
+  Time m_minRtt;          //!< Min RTT.
+  Time m_baseRtt;         //!< Base RTT.
+  uint32_t m_segmentsAcked; //!< Number of segments ACKed.
+  UintegerValue m_rho;      //!< TCP Yeah rho param.
 };
 
 TcpYeahDecrementTest::TcpYeahDecrementTest (uint32_t cWnd,
@@ -329,8 +366,13 @@ TcpYeahDecrementTest::CalculateSsThresh (Ptr<TcpYeah> cong)
 }
 
 
-// -------------------------------------------------------------------
-static class TcpYeahTestSuite : public TestSuite
+/**
+ * \ingroup internet-test
+ * \ingroup tests
+ *
+ * \brief TCP Yeah TestSuite
+ */
+class TcpYeahTestSuite : public TestSuite
 {
 public:
   TcpYeahTestSuite () : TestSuite ("tcp-yeah-test", UNIT)
@@ -360,6 +402,7 @@ public:
                                            "YeAH test on ssThresh upon loss while not competing with Reno flows"),
                  TestCase::QUICK);
   }
-} g_tcpYeahTest;
+};
 
-} // namespace ns3
+static TcpYeahTestSuite g_tcpYeahTest; //!< Static variable for test initialization
+

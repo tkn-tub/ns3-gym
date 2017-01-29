@@ -132,6 +132,10 @@ private:
   virtual bool GetMtuDiscover (void) const;
 
 
+  /**
+   * \brief UdpSocketFactory friend class.
+   * \relates UdpSocketFactory
+   */
   friend class UdpSocketFactory;
   // invoked by Udp class
 

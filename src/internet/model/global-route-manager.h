@@ -42,6 +42,7 @@ class GlobalRouteManager
 public:
 /**
  * @brief Allocate a 32-bit router ID from monotonically increasing counter.
+ * @returns A new new RouterId.
  */
   static uint32_t AllocateRouterId ();
 

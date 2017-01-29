@@ -32,34 +32,30 @@
 
 using namespace ns3;
 
+/**
+ * \ingroup internet-test
+ * \ingroup tests
+ *
+ * \brief IPv6 Test
+ */
 class Ipv6L3ProtocolTestCase : public TestCase
 {
 public:
-  /**
-   * \brief Constructor.
-   */
   Ipv6L3ProtocolTestCase ();
 
-  /**
-   * \brief Destructor.
-   */
-  virtual
-  ~Ipv6L3ProtocolTestCase ();
-
-  /**
-   * \brief Run unit tests for this class.
-   * \return false if all tests have passed, false otherwise
-   */
-  virtual void
-  DoRun ();
+  virtual ~Ipv6L3ProtocolTestCase ();
+  virtual void DoRun ();
 };
+
 Ipv6L3ProtocolTestCase::Ipv6L3ProtocolTestCase () :
   TestCase ("Verify the IPv6 layer 3 protocol")
 {
 }
+
 Ipv6L3ProtocolTestCase::~Ipv6L3ProtocolTestCase ()
 {
 }
+
 void
 Ipv6L3ProtocolTestCase::DoRun ()
 {
@@ -180,7 +176,15 @@ Ipv6L3ProtocolTestCase::DoRun ()
 
   Simulator::Destroy ();
 } //end DoRun
-static class IPv6L3ProtocolTestSuite : public TestSuite
+
+
+/**
+ * \ingroup internet-test
+ * \ingroup tests
+ *
+ * \brief IPv6 TestSuite
+ */
+class IPv6L3ProtocolTestSuite : public TestSuite
 {
 public:
   IPv6L3ProtocolTestSuite () :
@@ -188,4 +192,6 @@ public:
   {
     AddTestCase (new Ipv6L3ProtocolTestCase (), TestCase::QUICK);
   }
-} g_ipv6protocolTestSuite;
+};
+
+static IPv6L3ProtocolTestSuite g_ipv6protocolTestSuite; //!< Static variable for test initialization

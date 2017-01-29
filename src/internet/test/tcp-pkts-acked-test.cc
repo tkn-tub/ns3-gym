@@ -21,11 +21,16 @@
 #include "ns3/node.h"
 #include "ns3/log.h"
 
-namespace ns3 {
+using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("TcpPktsAckedTestSuite");
 
+class DummyCongControl;
+
 /**
+ * \ingroup internet-test
+ * \ingroup tests
+ *
  * \brief Check the number of times that PktsAcked is called
  *
  * Set a custom congestion control class, which calls PktsAckedCalled
@@ -38,13 +43,19 @@ NS_LOG_COMPONENT_DEFINE ("TcpPktsAckedTestSuite");
  * \see DummyCongControl
  * \see FinalChecks
  */
-class DummyCongControl;
-
 class TcpPktsAckedOpenTest : public TcpGeneralTest
 {
 public:
+  /**
+   * \brief Constructor.
+   * \param desc Test description.
+   */
   TcpPktsAckedOpenTest (const std::string &desc);
 
+  /**
+   * \brief Called when an ACK is received.
+   * \param segmentsAcked The segment ACKed.
+   */
   void PktsAckedCalled (uint32_t segmentsAcked);
 
 protected:
@@ -56,23 +67,36 @@ protected:
   void FinalChecks ();
 
 private:
-  uint32_t m_segmentsAcked;    //! Contains the number of times PktsAcked is called
-  uint32_t m_segmentsReceived; //! Contains the ack number received
+  uint32_t m_segmentsAcked;    //!< Contains the number of times PktsAcked is called
+  uint32_t m_segmentsReceived; //!< Contains the ack number received
 
-  Ptr<DummyCongControl> m_congCtl;
+  Ptr<DummyCongControl> m_congCtl; //!< Dummy congestion control.
 };
 
 /**
+ * \ingroup internet-test
+ * \ingroup tests
+ *
  * \brief Behaves as NewReno, except that each time PktsAcked is called,
- * a notification is sent to TcpPktsAckedOpenTest
+ * a notification is sent to TcpPktsAckedOpenTest.
  */
 class DummyCongControl : public TcpNewReno
 {
 public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
+
   DummyCongControl ()
   {
   }
+
+  /**
+   * \brief Set the callback to be used when an ACK is received.
+   * \param test The callback.
+   */
   void SetCallback (Callback<void, uint32_t> test)
   {
     m_test = test;
@@ -85,7 +109,7 @@ public:
   }
 
 private:
-  Callback<void, uint32_t> m_test;
+  Callback<void, uint32_t> m_test; //!< Callback to be used when an ACK is received.
 };
 
 TypeId
@@ -119,7 +143,7 @@ TcpPktsAckedOpenTest::CreateSenderSocket (Ptr<Node> node)
 {
   Ptr<TcpSocketMsgBase> s = TcpGeneralTest::CreateSenderSocket (node);
   m_congCtl = CreateObject<DummyCongControl> ();
-  m_congCtl->SetCallback (MakeCallback (&ns3::TcpPktsAckedOpenTest::PktsAckedCalled, this));
+  m_congCtl->SetCallback (MakeCallback (&TcpPktsAckedOpenTest::PktsAckedCalled, this));
   s->SetCongestionControlAlgorithm (m_congCtl);
 
   return s;
@@ -147,9 +171,15 @@ TcpPktsAckedOpenTest::FinalChecks ()
                          "Not all acked segments have been passed to PktsAcked method");
 }
 
-//-----------------------------------------------------------------------------
 
-static class TcpPktsAckedTestSuite : public TestSuite
+
+/**
+ * \ingroup internet-test
+ * \ingroup tests
+ *
+ * \brief PktsAcked is calls TestSuite.
+ */
+class TcpPktsAckedTestSuite : public TestSuite
 {
 public:
   TcpPktsAckedTestSuite () : TestSuite ("tcp-pkts-acked-test", UNIT)
@@ -158,6 +188,7 @@ public:
                  TestCase::QUICK);
     // Add DISORDER, RECOVERY and LOSS state check
   }
-} g_TcpPktsAckedTestSuite;
+};
 
-} // namespace ns3
+static TcpPktsAckedTestSuite g_TcpPktsAckedTestSuite; //!< Static variable for test initialization
+

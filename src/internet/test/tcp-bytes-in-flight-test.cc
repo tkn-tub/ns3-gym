@@ -22,11 +22,14 @@
 #include "ns3/log.h"
 #include "tcp-error-model.h"
 
-namespace ns3 {
+using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("TcpBytesInFlightTestSuite");
 
 /**
+ * \ingroup internet-test
+ * \ingroup tests
+ *
  * \brief Check the value of BytesInFlight against a home-made guess
  *
  * The guess is made wrt to segments that travel the network; we have,
@@ -39,26 +42,65 @@ NS_LOG_COMPONENT_DEFINE ("TcpBytesInFlightTestSuite");
 class TcpBytesInFlightTest : public TcpGeneralTest
 {
 public:
+  /**
+   * \brief Constructor.
+   * \param desc Description.
+   * \param toDrop Packets to drop.
+   */
   TcpBytesInFlightTest (const std::string &desc, std::vector<uint32_t> &toDrop);
 
 protected:
+  /**
+   * \brief Create a receiver error model.
+   * \returns The receiver error model.
+   */
   virtual Ptr<ErrorModel> CreateReceiverErrorModel ();
+  /**
+   * \brief Receive a packet.
+   * \param p The packet.
+   * \param h The TCP header.
+   * \param who Who the socket belongs to (sender or receiver).
+   */
   virtual void Rx (const Ptr<const Packet> p, const TcpHeader&h, SocketWho who);
+  /**
+   * \brief Transmit a packet.
+   * \param p The packet.
+   * \param h The TCP header.
+   * \param who Who the socket belongs to (sender or receiver).
+   */
   virtual void Tx (const Ptr<const Packet> p, const TcpHeader&h, SocketWho who);
+  /**
+   * \brief Track the bytes in flight.
+   * \param oldValue previous value.
+   * \param newValue actual value.
+   */
   virtual void BytesInFlightTrace (uint32_t oldValue, uint32_t newValue);
 
+  /**
+   * \brief Called when a packet is dropped.
+   * \param ipH The IP header.
+   * \param tcpH The TCP header.
+   * \param p The packet.
+   */
   void PktDropped (const Ipv4Header &ipH, const TcpHeader& tcpH, Ptr<const Packet> p);
+
+  /**
+   * \brief Configure the test.
+   */
   void ConfigureEnvironment ();
 
+  /**
+   * \brief Do the final checks.
+   */
   void FinalChecks ();
 
 private:
-  uint32_t m_realBytesInFlight;
-  uint32_t m_guessedBytesInFlight;
-  uint32_t m_dupAckRecv;
-  SequenceNumber32 m_lastAckRecv;
-  SequenceNumber32 m_greatestSeqSent;
-  std::vector<uint32_t> m_toDrop;     // List of SequenceNumber to drop
+  uint32_t m_realBytesInFlight;     //!< Real bytes in flight.
+  uint32_t m_guessedBytesInFlight;  //!< Guessed bytes in flight.
+  uint32_t m_dupAckRecv;            //!< Number of DupACKs received.
+  SequenceNumber32 m_lastAckRecv;   //!< Last ACK received.
+  SequenceNumber32 m_greatestSeqSent; //!< greatest sequence number sent.
+  std::vector<uint32_t> m_toDrop;     //!< List of SequenceNumber to drop
 };
 
 TcpBytesInFlightTest::TcpBytesInFlightTest (const std::string &desc,
@@ -205,9 +247,14 @@ TcpBytesInFlightTest::FinalChecks ()
                          "Still present bytes in flight at the end of the transmission");
 }
 
-//-----------------------------------------------------------------------------
 
-static class TcpBytesInFlightTestSuite : public TestSuite
+/**
+ * \ingroup internet-test
+ * \ingroup tests
+ *
+ * \brief TestSuite: Check the value of BytesInFlight against a home-made guess
+ */
+class TcpBytesInFlightTestSuite : public TestSuite
 {
 public:
   TcpBytesInFlightTestSuite () : TestSuite ("tcp-bytes-in-flight-test", UNIT)
@@ -226,6 +273,7 @@ public:
     AddTestCase (new TcpBytesInFlightTest ("BytesInFlight value, two drop of consecutive segments", toDrop),
                  TestCase::QUICK);
   }
-} g_tcpBytesInFlightTestSuite;
+};
 
-} // namespace ns3
+static TcpBytesInFlightTestSuite g_tcpBytesInFlightTestSuite; //!< Static variable for test initialization
+

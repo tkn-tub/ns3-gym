@@ -23,25 +23,34 @@
 #include "ns3/tcp-socket-base.h"
 #include "ns3/tcp-highspeed.h"
 
-namespace ns3 {
+using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("TcpHighSpeedTestSuite");
 
 /**
+ * \ingroup internet-test
+ * \ingroup tests
+ *
  * \brief Testing the congestion avoidance increment on TcpHighSpeed
  */
 class TcpHighSpeedIncrementTest : public TestCase
 {
 public:
+  /**
+   * \brief Constructor.
+   * \param cWnd Congestion window.
+   * \param segmentSize Segment size.
+   * \param name Test description.
+   */
   TcpHighSpeedIncrementTest (uint32_t cWnd, uint32_t segmentSize,
                              const std::string &name);
 
 private:
   virtual void DoRun (void);
 
-  uint32_t m_cWnd;
-  uint32_t m_segmentSize;
-  Ptr<TcpSocketState> m_state;
+  uint32_t m_cWnd;        //!< Congestion window.
+  uint32_t m_segmentSize; //!< Segment size.
+  Ptr<TcpSocketState> m_state;  //!< TCP socket state.
 };
 
 TcpHighSpeedIncrementTest::TcpHighSpeedIncrementTest (uint32_t cWnd,
@@ -76,20 +85,29 @@ TcpHighSpeedIncrementTest::DoRun ()
 }
 
 /**
- * \brief Testing the congestion avoidance increment on TcpHighSpeed
+ * \ingroup internet-test
+ * \ingroup tests
+ *
+ * \brief Testing the congestion avoidance decrement on TcpHighSpeed
  */
 class TcpHighSpeedDecrementTest : public TestCase
 {
 public:
-  TcpHighSpeedDecrementTest (uint32_t ssThresh, uint32_t segmentSize,
+  /**
+   * \brief Constructor.
+   * \param cWnd Congestion window.
+   * \param segmentSize Segment size.
+   * \param name Test description.
+   */
+  TcpHighSpeedDecrementTest (uint32_t cWnd, uint32_t segmentSize,
                              const std::string &name);
 
 private:
   virtual void DoRun (void);
 
-  uint32_t m_cWnd;
-  uint32_t m_segmentSize;
-  Ptr<TcpSocketState> m_state;
+  uint32_t m_cWnd;        //!< Congestion window.
+  uint32_t m_segmentSize; //!< Segment size.
+  Ptr<TcpSocketState> m_state;  //!< TCP socket state.
 };
 
 TcpHighSpeedDecrementTest::TcpHighSpeedDecrementTest (uint32_t cWnd,
@@ -123,12 +141,16 @@ TcpHighSpeedDecrementTest::DoRun ()
 }
 
 
-// -------------------------------------------------------------------
-
+/**
+ * \ingroup internet-test
+ * \ingroup tests
+ *
+ * \brief TcpHighSpeed Congestion window values to test.
+ */
 static const struct HighSpeedImportantValues
 {
-  unsigned int cwnd;
-  unsigned int md;
+  unsigned int cwnd; //!< Congestion window.
+  unsigned int md;   //!< Currently unused.
 } highSpeedImportantValues[] = {
   {     38,  128, /*  0.50 */ },
   {    118,  112, /*  0.44 */ },
@@ -202,11 +224,17 @@ static const struct HighSpeedImportantValues
   {  79517,   26, /*  0.10 */ },
   {  84035,   25, /*  0.10 */ },
   {  89053,   24, /*  0.10 */ },
-};
+}; //!< List of data to be tested.
 
 #define HIGHSPEED_VALUES_N 71
 
-static class TcpHighSpeedTestSuite : public TestSuite
+/**
+ * \ingroup internet-test
+ * \ingroup tests
+ *
+ * \brief TCP HighSpeed TestSuite
+ */
+class TcpHighSpeedTestSuite : public TestSuite
 {
 public:
   TcpHighSpeedTestSuite () : TestSuite ("tcp-highspeed-test", UNIT)
@@ -237,6 +265,7 @@ public:
         ss.flush ();
       }
   }
-} g_tcpHighSpeedTest;
+};
 
-} // namespace ns3
+static TcpHighSpeedTestSuite g_tcpHighSpeedTest; //!< Static variable for test initialization
+

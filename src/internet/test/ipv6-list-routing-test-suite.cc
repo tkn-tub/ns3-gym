@@ -24,6 +24,12 @@
 
 using namespace ns3;
 
+/**
+ * \ingroup internet-test
+ * \ingroup tests
+ *
+ * \brief IPv6 dummy routing class (A)
+ */
 class Ipv6ARouting : public Ipv6RoutingProtocol {
 public:
   Ptr<Ipv6Route> RouteOutput (Ptr<Packet> p, const Ipv6Header &header, Ptr<NetDevice> oif, Socket::SocketErrno &sockerr)  { return 0; }
@@ -41,6 +47,12 @@ public:
   virtual void PrintRoutingTable (Ptr<OutputStreamWrapper> stream, Time::Unit unit) const {};
 };
 
+/**
+ * \ingroup internet-test
+ * \ingroup tests
+ *
+ * \brief IPv6 dummy routing class (B)
+ */
 class Ipv6BRouting : public Ipv6RoutingProtocol {
 public:
   Ptr<Ipv6Route> RouteOutput (Ptr<Packet> p, const Ipv6Header &header, Ptr<NetDevice> oif, Socket::SocketErrno &sockerr)  { return 0; }
@@ -58,6 +70,12 @@ public:
   virtual void PrintRoutingTable (Ptr<OutputStreamWrapper> stream, Time::Unit unit) const {};
 };
 
+/**
+ * \ingroup internet-test
+ * \ingroup tests
+ *
+ * \brief IPv6 ListRouting negative test.
+ */
 class Ipv6ListRoutingNegativeTestCase : public TestCase
 {
 public:
@@ -86,6 +104,12 @@ Ipv6ListRoutingNegativeTestCase::DoRun (void)
   NS_TEST_ASSERT_MSG_EQ (firstRp, bRouting, "102");
 }
 
+/**
+ * \ingroup internet-test
+ * \ingroup tests
+ *
+ * \brief IPv6 ListRouting positive test.
+ */
 class Ipv6ListRoutingPositiveTestCase : public TestCase
 {
 public:
@@ -119,7 +143,13 @@ Ipv6ListRoutingPositiveTestCase::DoRun (void)
   NS_TEST_ASSERT_MSG_EQ (secondRp, bRouting, "204");
 }
 
-static class Ipv6ListRoutingTestSuite : public TestSuite
+/**
+ * \ingroup internet-test
+ * \ingroup tests
+ *
+ * \brief IPv6 ListRouting TestSuite
+ */
+class Ipv6ListRoutingTestSuite : public TestSuite
 {
 public:
   Ipv6ListRoutingTestSuite()
@@ -129,4 +159,6 @@ public:
     AddTestCase (new Ipv6ListRoutingNegativeTestCase (), TestCase::QUICK);
   }
 
-} g_ipv6ListRoutingTestSuite;
+};
+
+static Ipv6ListRoutingTestSuite g_ipv6ListRoutingTestSuite; //!< Static variable for test initialization

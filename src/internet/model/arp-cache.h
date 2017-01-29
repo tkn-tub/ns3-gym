@@ -156,6 +156,8 @@ public:
   std::list<ArpCache::Entry *> LookupInverse (Address destination);
   /**
    * \brief Add an Ipv4Address to this ARP cache
+   * \param to the destination address of the ARP entry.
+   * \returns A pointer to a new ARP Entry.
    */
   ArpCache::Entry *Add (Ipv4Address to);
   /**

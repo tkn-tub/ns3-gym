@@ -38,16 +38,38 @@
 
 using namespace ns3;
 
+/**
+ * \ingroup internet-test
+ * \ingroup tests
+ *
+ * \brief IPv4 StaticRouting /32 Test
+ */
 class Ipv4StaticRoutingSlash32TestCase : public TestCase
 {
 public:
   Ipv4StaticRoutingSlash32TestCase ();
   virtual ~Ipv4StaticRoutingSlash32TestCase ();
 
-  Ptr<Packet> m_receivedPacket;
-  void ReceivePkt (Ptr<Socket> socket);
+  Ptr<Packet> m_receivedPacket; //!< Received packet
+
+  /**
+   * \brief Send data.
+   * \param socket The sending socket.
+   * \param to Destination address.
+   */
   void DoSendData (Ptr<Socket> socket, std::string to);
+  /**
+   * \brief Send data.
+   * \param socket The sending socket.
+   * \param to Destination address.
+   */
   void SendData (Ptr<Socket> socket, std::string to);
+
+  /**
+   * \brief Receive data.
+   * \param socket The receiving socket.
+   */
+  void ReceivePkt (Ptr<Socket> socket);
 
 private:
   virtual void DoRun (void);
@@ -179,6 +201,12 @@ Ipv4StaticRoutingSlash32TestCase::DoRun (void)
   Simulator::Destroy ();
 }
 
+/**
+ * \ingroup internet-test
+ * \ingroup tests
+ *
+ * \brief IPv4 StaticRouting /32 TestSuite
+ */
 class Ipv4StaticRoutingTestSuite : public TestSuite
 {
 public:
@@ -191,5 +219,4 @@ Ipv4StaticRoutingTestSuite::Ipv4StaticRoutingTestSuite ()
   AddTestCase (new Ipv4StaticRoutingSlash32TestCase, TestCase::QUICK);
 }
 
-// Do not forget to allocate an instance of this TestSuite
-static Ipv4StaticRoutingTestSuite ipv4StaticRoutingTestSuite;
+static Ipv4StaticRoutingTestSuite ipv4StaticRoutingTestSuite; //!< Static variable for test initialization

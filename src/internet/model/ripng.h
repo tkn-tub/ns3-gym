@@ -346,6 +346,7 @@ private:
 
   /**
    * \brief Send Routing Updates on all interfaces.
+   * \param periodic true for periodic update, else triggered.
    */
   void DoSendRouteUpdate (bool periodic);
 

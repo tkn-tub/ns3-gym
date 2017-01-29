@@ -52,9 +52,25 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("TcpTestSuite");
 
+/**
+ * \ingroup internet-test
+ * \ingroup tests
+ *
+ * \brief TCP Test - send string data from client to server and back.
+ */
 class TcpTestCase : public TestCase
 {
 public:
+
+  /**
+   * \brief Constructor.
+   * \param totalStreamSize Total stream size (in bytes).
+   * \param sourceWriteSize Client data size when sending.
+   * \param sourceReadSize Client data size when receiving.
+   * \param serverWriteSize Server data size when sending.
+   * \param serverReadSize Server data size when receiving.
+   * \param useIpv6 Use IPv6 instead of IPv4.
+   */
   TcpTestCase (uint32_t totalStreamSize,
                uint32_t sourceWriteSize,
                uint32_t sourceReadSize,
@@ -64,33 +80,87 @@ public:
 private:
   virtual void DoRun (void);
   virtual void DoTeardown (void);
+
+  /**
+   * \brief Setup the test (IPv4 version).
+   */
   void SetupDefaultSim (void);
+  /**
+   * \brief Setup the test (IPv6 version).
+   */
   void SetupDefaultSim6 (void);
 
+  /**
+   * \brief Create a node with the Internet stack (IPv4 version).
+   * \returns The new node.
+   */
   Ptr<Node> CreateInternetNode (void);
+  /**
+   * \brief Create a node with the Internet stack (IPv6 version).
+   * \returns The new node.
+   */
   Ptr<Node> CreateInternetNode6 (void);
+
+  /**
+   * \brief Add a SimpleNetDevice to a node (IPv4 version).
+   * \param node The target node.
+   * \param ipaddr the SimpleNetDevice IPv4 address.
+   * \param netmask the SimpleNetDevice IPv4 address netmask.
+   * \returns The new SimpleNetDevice.
+   */
   Ptr<SimpleNetDevice> AddSimpleNetDevice (Ptr<Node> node, const char* ipaddr, const char* netmask);
+  /**
+   * \brief Add a SimpleNetDevice to a node (IPv6 version).
+   * \param node The target node.
+   * \param ipaddr the SimpleNetDevice IPv6 address.
+   * \param prefix the SimpleNetDevice IP6 address prefix.
+   * \returns The new SimpleNetDevice.
+   */
   Ptr<SimpleNetDevice> AddSimpleNetDevice6 (Ptr<Node> node, Ipv6Address ipaddr, Ipv6Prefix prefix);
+
+  /**
+   * \brief Server: Handle connection created.
+   * \param s The socket.
+   * \param addr The other party address.
+   */
   void ServerHandleConnectionCreated (Ptr<Socket> s, const Address & addr);
+  /**
+   * \brief Server: Receive data.
+   * \param sock The socket.
+   */
   void ServerHandleRecv (Ptr<Socket> sock);
+  /**
+   * \brief Server: Send data.
+   * \param sock The socket.
+   * \param available Unused in the test.
+   */
   void ServerHandleSend (Ptr<Socket> sock, uint32_t available);
+  /**
+   * \brief Client: Send data.
+   * \param sock The socket.
+   * \param available Unused in the test.
+   */
   void SourceHandleSend (Ptr<Socket> sock, uint32_t available);
+  /**
+   * \brief Client: Receive data.
+   * \param sock The socket.
+   */
   void SourceHandleRecv (Ptr<Socket> sock);
 
-  uint32_t m_totalBytes;
-  uint32_t m_sourceWriteSize;
-  uint32_t m_sourceReadSize;
-  uint32_t m_serverWriteSize;
-  uint32_t m_serverReadSize;
-  uint32_t m_currentSourceTxBytes;
-  uint32_t m_currentSourceRxBytes;
-  uint32_t m_currentServerRxBytes;
-  uint32_t m_currentServerTxBytes;
-  uint8_t *m_sourceTxPayload;
-  uint8_t *m_sourceRxPayload;
-  uint8_t* m_serverRxPayload;
+  uint32_t m_totalBytes;        //!< Total stream size (in bytes).
+  uint32_t m_sourceWriteSize;   //!< Client data size when sending.
+  uint32_t m_sourceReadSize;    //!< Client data size when receiving.
+  uint32_t m_serverWriteSize;   //!< Server data size when sending.
+  uint32_t m_serverReadSize;    //!< Server data size when receiving.
+  uint32_t m_currentSourceTxBytes;  //!< Client Tx bytes.
+  uint32_t m_currentSourceRxBytes;  //!< Client Rx bytes.
+  uint32_t m_currentServerRxBytes;  //!< Server Tx bytes.
+  uint32_t m_currentServerTxBytes;  //!< Server Rx bytes.
+  uint8_t *m_sourceTxPayload; //!< Client Tx payload.
+  uint8_t *m_sourceRxPayload; //!< Client Rx payload.
+  uint8_t* m_serverRxPayload; //!< Server Rx payload.
 
-  bool m_useIpv6;
+  bool m_useIpv6; //!< Use IPv6 instead of IPv4.
 };
 
 static std::string Name (std::string str, uint32_t totalStreamSize,
@@ -448,7 +518,13 @@ TcpTestCase::AddSimpleNetDevice6 (Ptr<Node> node, Ipv6Address ipaddr, Ipv6Prefix
   return dev;
 }
 
-static class TcpTestSuite : public TestSuite
+/**
+ * \ingroup internet-test
+ * \ingroup tests
+ *
+ * \brief TCP TestSuite - send string data from client to server and back.
+ */
+class TcpTestSuite : public TestSuite
 {
 public:
   TcpTestSuite ()
@@ -467,4 +543,6 @@ public:
     AddTestCase (new TcpTestCase (100000, 100, 50, 100, 20, true), TestCase::QUICK);
   }
 
-} g_tcpTestSuite;
+};
+
+static TcpTestSuite g_tcpTestSuite; //!< Static variable for test initialization

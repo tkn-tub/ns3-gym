@@ -73,20 +73,20 @@ public:
   virtual Ptr<TcpCongestionOps> Fork ();
 
   /**
-   * \brief Lookup table for the coefficent a (from RFC 3649)
+   * \brief Lookup table for the coefficient a (from RFC 3649)
    *
    * \param w Window value (in packets)
    *
-   * \return the coefficent a
+   * \return the coefficient a
    */
   static uint32_t  TableLookupA (uint32_t w);
 
   /**
-   * \brief Lookup table for the coefficent b (from RFC 3649)
+   * \brief Lookup table for the coefficient b (from RFC 3649)
    *
    * \param w Window value (in packets)
    *
-   * \return the coefficent b
+   * \return the coefficient b
    */
   static double    TableLookupB (uint32_t w);
 
@@ -94,7 +94,7 @@ protected:
   virtual void CongestionAvoidance (Ptr<TcpSocketState> tcb, uint32_t segmentsAcked);
 
 private:
-  uint32_t m_ackCnt; //!< Number of received ACK, corrected with the coefficent a
+  uint32_t m_ackCnt; //!< Number of received ACK, corrected with the coefficient a
 };
 
 } // namespace ns3

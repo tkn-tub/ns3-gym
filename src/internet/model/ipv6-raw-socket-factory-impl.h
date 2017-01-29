@@ -37,6 +37,7 @@ class Ipv6RawSocketFactoryImpl : public Ipv6RawSocketFactory
 public:
   /**
    * \brief Create a raw IPv6 socket.
+   * \returns A new RAW IPv6 socket.
    */
   virtual Ptr<Socket> CreateSocket ();
 };

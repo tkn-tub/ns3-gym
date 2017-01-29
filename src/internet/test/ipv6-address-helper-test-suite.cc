@@ -28,6 +28,12 @@
 
 using namespace ns3;
 
+/**
+ * \ingroup internet-test
+ * \ingroup tests
+ *
+ * \brief IPv6 AddressHelper Test
+ */
 class IpAddressHelperTestCasev6 : public TestCase
 {
 public:
@@ -139,6 +145,12 @@ IpAddressHelperTestCasev6::DoTeardown (void)
 }
 
 
+/**
+ * \ingroup internet-test
+ * \ingroup tests
+ *
+ * \brief IPv6 AddressHelper TestSuite
+ */
 class Ipv6AddressHelperTestSuite : public TestSuite
 {
 public:
@@ -151,5 +163,4 @@ Ipv6AddressHelperTestSuite::Ipv6AddressHelperTestSuite ()
   AddTestCase (new IpAddressHelperTestCasev6, TestCase::QUICK);
 }
 
-// Do not forget to allocate an instance of this TestSuite
-static Ipv6AddressHelperTestSuite ipv6AddressHelperTestSuite;
+static Ipv6AddressHelperTestSuite ipv6AddressHelperTestSuite; //!< Static variable for test initialization

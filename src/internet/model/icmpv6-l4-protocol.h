@@ -53,7 +53,8 @@ class Icmpv6L4Protocol : public IpL4Protocol
 {
 public:
   /**
-   * \brief Interface ID
+   * \brief Get the type ID.
+   * \return the object TypeId
    */
   static TypeId GetTypeId ();
 

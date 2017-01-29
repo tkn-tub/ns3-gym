@@ -17,13 +17,84 @@
  *
  */
 #include "ns3/log.h"
-#include "tcp-fast-retr-test.h"
 #include "ns3/tcp-westwood.h"
+#include "tcp-general-test.h"
+#include "ns3/simple-channel.h"
 #include "ns3/node.h"
+#include "tcp-error-model.h"
 
-namespace ns3 {
+using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("TcpFastRetrTest");
+
+/**
+ * \ingroup internet-test
+ * \ingroup tests
+ *
+ * \brief Test the fast retransmission
+ *
+ * Checking what is happening is not so easy, so there are a lot of variables
+ * which helps to keep track on what is happening.
+ * The idea is following sequence and ack numbers which are exchanged,
+ * testing if they are the same as the implementation transmits.
+ */
+class TcpFastRetrTest : public TcpGeneralTest
+{
+public:
+  /**
+   * \brief Constructor
+   * \param congControl Type of congestion control.
+   * \param seqToKill Sequence number of the packet to drop.
+   * \param msg Test message.
+   */
+  TcpFastRetrTest (TypeId congControl, uint32_t seqToKill, const std::string &msg);
+
+  virtual Ptr<ErrorModel> CreateSenderErrorModel ();
+  virtual Ptr<ErrorModel> CreateReceiverErrorModel ();
+
+  virtual Ptr<TcpSocketMsgBase> CreateSenderSocket (Ptr<Node> node);
+
+protected:
+  virtual void RcvAck      (const Ptr<const TcpSocketState> tcb,
+                            const TcpHeader& h, SocketWho who);
+  virtual void ProcessedAck (const Ptr<const TcpSocketState> tcb,
+                             const TcpHeader& h, SocketWho who);
+
+  virtual void CongStateTrace (const TcpSocketState::TcpCongState_t oldValue,
+                               const TcpSocketState::TcpCongState_t newValue);
+
+  virtual void Tx (const Ptr<const Packet> p, const TcpHeader&h, SocketWho who);
+  virtual void Rx (const Ptr<const Packet> p, const TcpHeader&h, SocketWho who);
+
+  virtual void RTOExpired (const Ptr<const TcpSocketState> tcb, SocketWho who);
+
+  /**
+   * \brief Check if the packet being dropped is the right one.
+   * \param ipH IPv4 header.
+   * \param tcpH TCP header.
+   * \param p The packet.
+   */
+  void PktDropped (const Ipv4Header &ipH, const TcpHeader& tcpH, Ptr<const Packet> p);
+  virtual void FinalChecks ();
+
+  virtual void ConfigureProperties ();
+  virtual void ConfigureEnvironment ();
+
+  bool m_pktDropped;      //!< The packet has been dropped.
+  bool m_pktWasDropped;   //!< The packet was dropped (according to the receiver).
+  uint32_t m_seqToKill;   //!< Sequence number to drop.
+  uint32_t m_dupAckReceived;  //!< DipACk received.
+
+  SequenceNumber32 m_previousAck;     //!< Previous ACK received.
+  SequenceNumber32 m_sndNextExpSeq;   //!< Sender next expected sequence number.
+  SequenceNumber32 m_rcvNextExpAck;   //!< Receiver next expected sequence number.
+
+  uint32_t m_countRetr; //!< Retry counter.
+
+  uint32_t m_bytesRcvButNotAcked; //!< Number of bytes received but not acked.
+
+  Ptr<TcpSeqErrorModel> m_errorModel; //!< Error model.
+};
 
 TcpFastRetrTest::TcpFastRetrTest (TypeId typeId, uint32_t seqToKill,
                                   const std::string &msg)
@@ -356,9 +427,14 @@ TcpFastRetrTest::FinalChecks ()
                          "Not all data have been transmitted");
 }
 
-//-----------------------------------------------------------------------------
 
-static class TcpFastRetrTestSuite : public TestSuite
+/**
+ * \ingroup internet-test
+ * \ingroup tests
+ *
+ * \brief Testsuite for the fast retransmission
+ */
+class TcpFastRetrTestSuite : public TestSuite
 {
 public:
   TcpFastRetrTestSuite () : TestSuite ("tcp-fast-retr-test", UNIT)
@@ -372,6 +448,7 @@ public:
         AddTestCase (new TcpFastRetrTest ((*it), 5001, "Fast Retransmit testing"), TestCase::QUICK);
       }
   }
-} g_TcpFastRetrTestSuite;
+};
 
-} // namespace ns3
+static TcpFastRetrTestSuite g_TcpFastRetrTestSuite; //!< Static variable for test initialization
+

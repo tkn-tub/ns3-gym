@@ -23,6 +23,9 @@
 #include "ns3/tcp-congestion-ops.h"
 #include "ns3/traced-value.h"
 
+class TcpBicIncrementTest;
+class TcpBicDecrementTest;
+
 namespace ns3 {
 
 /**
@@ -106,12 +109,22 @@ public:
 protected:
   /**
    * \brief Bic window update after a new ack received
+   * \param tcb the socket state.
+   * \returns The number of segments acked since the last cwnd increment.
    */
   virtual uint32_t Update (Ptr<TcpSocketState> tcb);
 
 private:
-  friend class TcpBicIncrementTest;
-  friend class TcpBicDecrementTest;
+  /**
+   * \brief TcpBicIncrementTest friend class (for tests).
+   * \relates TcpBicIncrementTest
+   */
+  friend class ::TcpBicIncrementTest;
+  /**
+   * \brief TcpBicDecrementTest friend class (for tests).
+   * \relates TcpBicDecrementTest
+   */
+  friend class ::TcpBicDecrementTest;
 
   // User parameters
   bool     m_fastConvergence;  //!< Enable or disable fast convergence algorithm
