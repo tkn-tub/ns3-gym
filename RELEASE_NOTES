@@ -73,6 +73,7 @@ Bugs fixed
 - Bug 2614 - RIP header version should be set to 2
 - Bug 2627 - Ipv6RawSocket does not honor the bound interface when sending packets
 - Bug 2628 - Simulation crashes because of an out of range TID
+- Bug 2629 - Assert failure in MinstrelHtWifiManager::GetLowestIndex
 
 Known issues
 ------------
