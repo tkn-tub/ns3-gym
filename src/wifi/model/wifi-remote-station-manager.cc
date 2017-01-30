@@ -358,6 +358,7 @@ WifiRemoteStationManager::WifiRemoteStationManager ()
     m_vhtSupported (false),
     m_heSupported (false),
     m_useNonErpProtection (false),
+    m_useGreenfieldProtection (false),
     m_shortPreambleEnabled (false),
     m_shortSlotTimeEnabled (false)
 {
@@ -1029,6 +1030,18 @@ bool
 WifiRemoteStationManager::GetUseNonErpProtection (void) const
 {
   return m_useNonErpProtection;
+}
+
+void
+WifiRemoteStationManager::SetUseGreenfieldProtection (bool enable)
+{
+  m_useGreenfieldProtection = enable;
+}
+
+bool
+WifiRemoteStationManager::GetUseGreenfieldProtection (void) const
+{
+  return m_useGreenfieldProtection;
 }
 
 bool
@@ -2059,8 +2072,9 @@ WifiRemoteStationManager::GetPreambleForTransmission (WifiMode mode, Mac48Addres
     {
       preamble = WIFI_PREAMBLE_VHT;
     }
-  else if (mode.GetModulationClass () == WIFI_MOD_CLASS_HT && m_wifiPhy->GetGreenfield () && GetGreenfieldSupported (dest))
+  else if (mode.GetModulationClass () == WIFI_MOD_CLASS_HT && m_wifiPhy->GetGreenfield () && GetGreenfieldSupported (dest) && !GetUseGreenfieldProtection ())
     {
+      //If protection for greenfield is used we go for HT_MF preamble which is the default protection for GF format defined in the standard.
       preamble = WIFI_PREAMBLE_HT_GF;
     }
   else if (mode.GetModulationClass () == WIFI_MOD_CLASS_HT)

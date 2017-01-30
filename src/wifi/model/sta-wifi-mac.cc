@@ -566,6 +566,15 @@ StaWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
               else
                 {
                   m_stationManager->AddStationHtCapabilities (hdr->GetAddr2 (), htCapabilities);
+                  HtOperation htOperation = beacon.GetHtOperation ();
+                  if (htOperation.GetNonGfHtStasPresent ())
+                    {
+                      m_stationManager->SetUseGreenfieldProtection (true);
+                    }
+                  else
+                    {
+                      m_stationManager->SetUseGreenfieldProtection (false);
+                    }
                 }
             }
           if (m_vhtSupported)
@@ -575,6 +584,7 @@ StaWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
               if (vhtCapabilities.GetRxHighestSupportedLgiDataRate () > 0)
                 {
                   m_stationManager->AddStationVhtCapabilities (hdr->GetAddr2 (), vhtCapabilities);
+                  VhtOperation vhtOperation = beacon.GetVhtOperation ();
                 }
             }
           if (m_heSupported)
@@ -757,6 +767,14 @@ StaWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
                     {
                       m_stationManager->AddStationHtCapabilities (hdr->GetAddr2 (), htCapabilities);
                       HtOperation htOperation = assocResp.GetHtOperation ();
+                      if (htOperation.GetNonGfHtStasPresent ())
+                        {
+                          m_stationManager->SetUseGreenfieldProtection (true);
+                        }
+                      else
+                        {
+                          m_stationManager->SetUseGreenfieldProtection (false);
+                        }
                     }
                 }
               if (m_vhtSupported)

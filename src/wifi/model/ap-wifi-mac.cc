@@ -233,14 +233,17 @@ ApWifiMac::GetShortPreambleEnabled (void) const
 bool
 ApWifiMac::IsNonGfHtStasPresent (void) const
 {
+  bool isNonGfHtStasPresent = false;
   for (std::list<Mac48Address>::const_iterator i = m_staList.begin (); i != m_staList.end (); i++)
     {
       if (m_stationManager->GetGreenfieldSupported (*i) == false)
         {
-          return true;
+          isNonGfHtStasPresent = true;
+          break;
         }
     }
-  return false;
+  m_stationManager->SetUseGreenfieldProtection (isNonGfHtStasPresent);
+  return isNonGfHtStasPresent;
 }
 
 uint8_t

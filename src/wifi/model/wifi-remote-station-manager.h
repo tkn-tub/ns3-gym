@@ -267,6 +267,19 @@ public:
    */
   bool GetUseNonErpProtection (void) const;
   /**
+   * Enable or disable protection for stations that do not support HT greenfield format.
+   *
+   * \param enable enable or disable protection for stations that do not support HT greenfield format
+   */
+  void SetUseGreenfieldProtection (bool enable);
+  /**
+   * Return whether protection for stations that do not support HT greenfield format is enabled.
+   *
+   * \return true if protection for stations that do not support HT greenfield is enabled,
+   *         false otherwise
+   */
+  bool GetUseGreenfieldProtection (void) const;
+  /**
    * Enable or disable short PLCP preambles.
    *
    * \param enable enable or disable short PLCP preambles
@@ -1346,6 +1359,7 @@ private:
   uint8_t m_defaultTxPowerLevel;  //!< Default tranmission power level
   WifiMode m_nonUnicastMode;  //!< Transmission mode for non-unicast DATA frames
   bool m_useNonErpProtection; //!< flag if protection for non-ERP stations against ERP transmissions is enabled
+  bool m_useGreenfieldProtection; //!< flag if protection for stations that do not support HT greenfield format is enabled
   bool m_shortPreambleEnabled; //!< flag if short PLCP preamble is enabled
   bool m_shortSlotTimeEnabled; //!< flag if short slot time is enabled
   ProtectionMode m_protectionMode; //!< Protection mode for ERP stations when non-ERP stations are detected
