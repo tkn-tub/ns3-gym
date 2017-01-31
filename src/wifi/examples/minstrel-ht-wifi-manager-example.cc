@@ -144,9 +144,9 @@ int main (int argc, char *argv[])
   cmd.AddValue ("channelWidth", "Set channel width (valid only for 802.11n or ac)", channelWidth);
   cmd.AddValue ("shortGuard", "Set short guard interval (802.11n/ac)", shortGuardInterval);
   cmd.AddValue ("nss", "Set nss (valid only for 802.11n or ac)", nss);
-  cmd.AddValue ("standard", "Set standard (02.11a, 802.11b, 802.11g, 802.11n-5GHz, 802.11n-2.4GHz, 802.11ac, 802.11-holland, 802.11-10MHz, 802.11-5MHz)", standard);
+  cmd.AddValue ("standard", "Set standard (802.11a, 802.11b, 802.11g, 802.11n-5GHz, 802.11n-2.4GHz, 802.11ac, 802.11-holland, 802.11-10MHz, 802.11-5MHz)", standard);
   cmd.Parse (argc, argv);
-  
+
   if (standard == "802.11b")
     {
       NS_ABORT_MSG_IF (channelWidth != 20 && channelWidth != 22, "Invalid channel width for standard " << standard);
@@ -181,7 +181,7 @@ int main (int argc, char *argv[])
         {
           gi = "LGI";
         }
-      oss << "-" << channelWidth << "MHz-" << gi << "-" <<nss << "SS";
+      oss << "-" << channelWidth << "MHz-" << gi << "-" << nss << "SS";
       outfileName += oss.str ();
     }
   std::string tmp = outfileName + ".plt";
@@ -346,7 +346,7 @@ int main (int argc, char *argv[])
   yMaxStr << selectedStandard.m_yMax;
   yRangeStr.append (yMaxStr.str ());
   yRangeStr.append ("]");
-  
+
   std::ostringstream widthStrStr;
   std::ostringstream nssStrStr;
   std::string title ("Wi-Fi Minstrel ht rate control: ");
