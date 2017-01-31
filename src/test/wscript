@@ -32,7 +32,6 @@ def build(bld):
         'csma-system-test-suite.cc',
         'ns3tc/fq-codel-queue-disc-test-suite.cc',
         'ns3tc/pfifo-fast-queue-disc-test-suite.cc',
-        'ns3tc/pie-queue-disc-test-suite.cc',
         'ns3tcp/ns3tcp-cwnd-test-suite.cc',
         'ns3tcp/ns3tcp-interop-test-suite.cc',
         'ns3tcp/ns3tcp-loss-test-suite.cc',
