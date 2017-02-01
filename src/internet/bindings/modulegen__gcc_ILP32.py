@@ -278,18 +278,18 @@ def register_types(module):
     module.add_class('Header', import_from_module='ns.network', parent=root_module['ns3::Chunk'])
     ## icmpv4.h (module 'internet'): ns3::Icmpv4DestinationUnreachable [class]
     module.add_class('Icmpv4DestinationUnreachable', parent=root_module['ns3::Header'])
-    ## icmpv4.h (module 'internet'): ns3::Icmpv4DestinationUnreachable [enumeration]
-    module.add_enum('', ['NET_UNREACHABLE', 'HOST_UNREACHABLE', 'PROTOCOL_UNREACHABLE', 'PORT_UNREACHABLE', 'FRAG_NEEDED', 'SOURCE_ROUTE_FAILED'], outer_class=root_module['ns3::Icmpv4DestinationUnreachable'])
+    ## icmpv4.h (module 'internet'): ns3::Icmpv4DestinationUnreachable::ErrorDestinationUnreachable_e [enumeration]
+    module.add_enum('ErrorDestinationUnreachable_e', ['NET_UNREACHABLE', 'HOST_UNREACHABLE', 'PROTOCOL_UNREACHABLE', 'PORT_UNREACHABLE', 'FRAG_NEEDED', 'SOURCE_ROUTE_FAILED'], outer_class=root_module['ns3::Icmpv4DestinationUnreachable'])
     ## icmpv4.h (module 'internet'): ns3::Icmpv4Echo [class]
     module.add_class('Icmpv4Echo', parent=root_module['ns3::Header'])
     ## icmpv4.h (module 'internet'): ns3::Icmpv4Header [class]
     module.add_class('Icmpv4Header', parent=root_module['ns3::Header'])
-    ## icmpv4.h (module 'internet'): ns3::Icmpv4Header [enumeration]
-    module.add_enum('', ['ECHO_REPLY', 'DEST_UNREACH', 'ECHO', 'TIME_EXCEEDED'], outer_class=root_module['ns3::Icmpv4Header'])
+    ## icmpv4.h (module 'internet'): ns3::Icmpv4Header::Type_e [enumeration]
+    module.add_enum('Type_e', ['ECHO_REPLY', 'DEST_UNREACH', 'ECHO', 'TIME_EXCEEDED'], outer_class=root_module['ns3::Icmpv4Header'])
     ## icmpv4.h (module 'internet'): ns3::Icmpv4TimeExceeded [class]
     module.add_class('Icmpv4TimeExceeded', parent=root_module['ns3::Header'])
-    ## icmpv4.h (module 'internet'): ns3::Icmpv4TimeExceeded [enumeration]
-    module.add_enum('', ['TIME_TO_LIVE', 'FRAGMENT_REASSEMBLY'], outer_class=root_module['ns3::Icmpv4TimeExceeded'])
+    ## icmpv4.h (module 'internet'): ns3::Icmpv4TimeExceeded::ErrorTimeExceeded_e [enumeration]
+    module.add_enum('ErrorTimeExceeded_e', ['TIME_TO_LIVE', 'FRAGMENT_REASSEMBLY'], outer_class=root_module['ns3::Icmpv4TimeExceeded'])
     ## icmpv6-header.h (module 'internet'): ns3::Icmpv6Header [class]
     module.add_class('Icmpv6Header', parent=root_module['ns3::Header'])
     ## icmpv6-header.h (module 'internet'): ns3::Icmpv6Header::Type_e [enumeration]
@@ -4551,8 +4551,8 @@ def register_Ns3PcapHelperForIpv6_methods(root_module, cls):
 def register_Ns3RipHelper_methods(root_module, cls):
     ## rip-helper.h (module 'internet'): ns3::RipHelper::RipHelper() [constructor]
     cls.add_constructor([])
-    ## rip-helper.h (module 'internet'): ns3::RipHelper::RipHelper(ns3::RipHelper const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::RipHelper const &', 'arg0')])
+    ## rip-helper.h (module 'internet'): ns3::RipHelper::RipHelper(ns3::RipHelper const & o) [copy constructor]
+    cls.add_constructor([param('ns3::RipHelper const &', 'o')])
     ## rip-helper.h (module 'internet'): ns3::RipHelper * ns3::RipHelper::Copy() const [member function]
     cls.add_method('Copy', 
                    'ns3::RipHelper *', 
@@ -4588,8 +4588,8 @@ def register_Ns3RipHelper_methods(root_module, cls):
 def register_Ns3RipNgHelper_methods(root_module, cls):
     ## ripng-helper.h (module 'internet'): ns3::RipNgHelper::RipNgHelper() [constructor]
     cls.add_constructor([])
-    ## ripng-helper.h (module 'internet'): ns3::RipNgHelper::RipNgHelper(ns3::RipNgHelper const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::RipNgHelper const &', 'arg0')])
+    ## ripng-helper.h (module 'internet'): ns3::RipNgHelper::RipNgHelper(ns3::RipNgHelper const & o) [copy constructor]
+    cls.add_constructor([param('ns3::RipNgHelper const &', 'o')])
     ## ripng-helper.h (module 'internet'): ns3::RipNgHelper * ns3::RipNgHelper::Copy() const [member function]
     cls.add_method('Copy', 
                    'ns3::RipNgHelper *', 
@@ -6802,8 +6802,8 @@ def register_Ns3Icmpv6TooBig_methods(root_module, cls):
 def register_Ns3InternetStackHelper_methods(root_module, cls):
     ## internet-stack-helper.h (module 'internet'): ns3::InternetStackHelper::InternetStackHelper() [constructor]
     cls.add_constructor([])
-    ## internet-stack-helper.h (module 'internet'): ns3::InternetStackHelper::InternetStackHelper(ns3::InternetStackHelper const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::InternetStackHelper const &', 'arg0')])
+    ## internet-stack-helper.h (module 'internet'): ns3::InternetStackHelper::InternetStackHelper(ns3::InternetStackHelper const & o) [copy constructor]
+    cls.add_constructor([param('ns3::InternetStackHelper const &', 'o')])
     ## internet-stack-helper.h (module 'internet'): int64_t ns3::InternetStackHelper::AssignStreams(ns3::NodeContainer c, int64_t stream) [member function]
     cls.add_method('AssignStreams', 
                    'int64_t', 
@@ -8218,10 +8218,11 @@ def register_Ns3QueueDisc_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
-    ## queue-disc.h (module 'traffic-control'): ns3::QueueDisc::WakeMode ns3::QueueDisc::GetWakeMode() [member function]
+    ## queue-disc.h (module 'traffic-control'): ns3::QueueDisc::WakeMode ns3::QueueDisc::GetWakeMode() const [member function]
     cls.add_method('GetWakeMode', 
                    'ns3::QueueDisc::WakeMode', 
-                   [])
+                   [], 
+                   is_const=True, is_virtual=True)
     ## queue-disc.h (module 'traffic-control'): ns3::Ptr<const ns3::QueueDiscItem> ns3::QueueDisc::Peek() const [member function]
     cls.add_method('Peek', 
                    'ns3::Ptr< ns3::QueueDiscItem const >', 
