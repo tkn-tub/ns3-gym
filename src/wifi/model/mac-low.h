@@ -883,8 +883,8 @@ private:
    * Event handler that is usually scheduled to fired at the appropriate time
    * after completing transmissions.
    */
-  void WaitSifsAfterEndTxFragment (void);
-  void WaitSifsAfterEndTxPacket (void);
+  void WaitIfsAfterEndTxFragment (void);
+  void WaitIfsAfterEndTxPacket (void);
 
   /**
    * A transmission that does not require an ACK has completed.
@@ -1062,10 +1062,9 @@ private:
   EventId m_sendCtsEvent;               //!< Event to send CTS
   EventId m_sendAckEvent;               //!< Event to send ACK
   EventId m_sendDataEvent;              //!< Event to send DATA
-  EventId m_waitSifsEvent;              //!< Wait for SIFS event
+  EventId m_waitIfsEvent;               //!< Wait for IFS event
   EventId m_endTxNoAckEvent;            //!< Event for finishing transmission that does not require ACK
   EventId m_navCounterResetCtsMissed;   //!< Event to reset NAV when CTS is not received
-  EventId m_waitRifsEvent;              //!< Wait for RIFS event
 
   Ptr<Packet> m_currentPacket;              //!< Current packet transmitted/to be transmitted
   WifiMacHeader m_currentHdr;               //!< Header of the current transmitted packet

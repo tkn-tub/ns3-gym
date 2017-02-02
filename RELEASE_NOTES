@@ -41,6 +41,7 @@ Bugs fixed
 - Bug 2518 - Suppress printing of list of modules for Python programs
 - Bug 2521 - Include ipv6-option.h in wscript
 - Bug 2527 - PrintRoutingTable extended to add an optional Time::Units parameter
+- Bug 2528 - 802.11n RIFS cannot be enabled
 - Bug 2529 - Missing trace when Block ACK timeout is triggered or when missing MPDUs are announced by a Block ACK response
 - Bug 2530 - Rename aodv::SetBalckListTimeout to aodv::SetBlackListTimeout
 - Bug 2532 - Inconsistencies between 802.11n MCS and NSS value reported in TXVECTOR

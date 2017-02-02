@@ -265,6 +265,13 @@ private:
    *         false otherwise
    */
   bool GetUseNonErpProtection (void) const;
+  /**
+   * Return whether RIFS is allowed in the BSS.
+   *
+   * \return true if RIFS is allowed in the BSS,
+   *         false otherwise
+   */
+  bool GetRifsMode (void) const;
 
   virtual void DoDispose (void);
   virtual void DoInitialize (void);
@@ -279,6 +286,7 @@ private:
   std::list<Mac48Address> m_nonErpStations;  //!< List of all non-ERP stations currently associated to the AP
   std::list<Mac48Address> m_nonHtStations;   //!< List of all non-HT stations currently associated to the AP
   bool m_enableNonErpProtection;             //!< Flag whether protection mechanism is used or not when non-ERP STAs are present within the BSS
+  bool m_disableRifs;                        //!< Flag whether to force RIFS to be disabled within the BSS If non-HT STAs are detected
 };
 
 } //namespace ns3

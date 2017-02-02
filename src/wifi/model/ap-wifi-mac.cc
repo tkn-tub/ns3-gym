@@ -68,6 +68,11 @@ ApWifiMac::GetTypeId (void)
                    BooleanValue (true),
                    MakeBooleanAccessor (&ApWifiMac::m_enableNonErpProtection),
                    MakeBooleanChecker ())
+    .AddAttribute ("RifsMode", "If non-HT STAs are detected, whether to force RIFS to be disabled within the BSS."
+                   "This parameter is only used when HT is supported by the AP.",
+                   BooleanValue (true),
+                   MakeBooleanAccessor (&ApWifiMac::m_disableRifs),
+                   MakeBooleanChecker ())
   ;
   return tid;
 }
@@ -511,6 +516,7 @@ ApWifiMac::GetHtOperation (void) const
   if (m_htSupported)
     {
       operation.SetHtSupported (1);
+      operation.SetRifsMode (GetRifsMode ());
       operation.SetNonGfHtStasPresent (IsNonGfHtStasPresent ());
       if (m_nonHtStations.empty ())
         {
@@ -1141,6 +1147,28 @@ ApWifiMac::GetUseNonErpProtection (void) const
   bool useProtection = !m_nonErpStations.empty () && m_enableNonErpProtection;
   m_stationManager->SetUseNonErpProtection (useProtection);
   return useProtection;
+}
+
+bool
+ApWifiMac::GetRifsMode (void) const
+{
+  bool rifsMode = false;
+  if (m_htSupported && !m_vhtSupported) //RIFS mode is forbidden for VHT
+    {
+      if (m_nonHtStations.empty () || !m_disableRifs)
+        {
+          rifsMode = true;
+        }
+    }
+  if (GetRifsSupported () && rifsMode)
+    {
+      m_stationManager->SetRifsPermitted (true);
+    }
+  else
+    {
+      m_stationManager->SetRifsPermitted (false);
+    }
+  return rifsMode;
 }
 
 } //namespace ns3

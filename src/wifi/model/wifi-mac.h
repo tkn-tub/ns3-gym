@@ -158,6 +158,10 @@ public:
    * \return whether the device supports short slot time capability.
    */
   virtual bool GetShortSlotTimeSupported (void) const = 0;
+  /**
+   * \return whether the device supports RIFS capability.
+   */
+  virtual bool GetRifsSupported (void) const = 0;
 
   /**
    * \param packet the packet to send.

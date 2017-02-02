@@ -266,7 +266,7 @@ MacLow::MacLow ()
     m_sendCtsEvent (),
     m_sendAckEvent (),
     m_sendDataEvent (),
-    m_waitSifsEvent (),
+    m_waitIfsEvent (),
     m_endTxNoAckEvent (),
     m_currentPacket (0),
     m_currentDca (0),
@@ -332,9 +332,8 @@ MacLow::DoDispose (void)
   m_sendCtsEvent.Cancel ();
   m_sendAckEvent.Cancel ();
   m_sendDataEvent.Cancel ();
-  m_waitSifsEvent.Cancel ();
+  m_waitIfsEvent.Cancel ();
   m_endTxNoAckEvent.Cancel ();
-  m_waitRifsEvent.Cancel ();
   m_phy = 0;
   m_stationManager = 0;
   if (m_phyMacLowListener != 0)
@@ -399,14 +398,9 @@ MacLow::CancelAllEvents (void)
       m_sendDataEvent.Cancel ();
       oneRunning = true;
     }
-  if (m_waitSifsEvent.IsRunning ())
+  if (m_waitIfsEvent.IsRunning ())
     {
-      m_waitSifsEvent.Cancel ();
-      oneRunning = true;
-    }
-  if (m_waitRifsEvent.IsRunning ())
-    {
-      m_waitRifsEvent.Cancel ();
+      m_waitIfsEvent.Cancel ();
       oneRunning = true;
     }
   if (m_endTxNoAckEvent.IsRunning ())
@@ -921,13 +915,25 @@ MacLow::ReceiveOk (Ptr<Packet> packet, double rxSnr, WifiTxVector txVector, bool
         }
       if (m_txParams.HasNextPacket ())
         {
-          m_waitSifsEvent = Simulator::Schedule (GetSifs (),
-                                                 &MacLow::WaitSifsAfterEndTxFragment, this);
+          if (m_stationManager->GetRifsPermitted ())
+            {
+              m_waitIfsEvent = Simulator::Schedule (GetRifs (), &MacLow::WaitIfsAfterEndTxFragment, this);
+            }
+          else
+            {
+              m_waitIfsEvent = Simulator::Schedule (GetSifs (), &MacLow::WaitIfsAfterEndTxFragment, this);
+            }
         }
       else if (m_currentHdr.IsQosData () && m_currentDca->HasTxop ())
         {
-          m_waitSifsEvent = Simulator::Schedule (GetSifs (),
-                                                 &MacLow::WaitSifsAfterEndTxPacket, this);
+          if (m_stationManager->GetRifsPermitted ())
+            {
+              m_waitIfsEvent = Simulator::Schedule (GetRifs (), &MacLow::WaitIfsAfterEndTxPacket, this);
+            }
+          else
+            {
+              m_waitIfsEvent = Simulator::Schedule (GetSifs (), &MacLow::WaitIfsAfterEndTxPacket, this);
+            }
         }
       m_ampdu = false;
       if (m_currentHdr.IsQosData ())
@@ -951,9 +957,14 @@ MacLow::ReceiveOk (Ptr<Packet> packet, double rxSnr, WifiTxVector txVector, bool
       m_ampdu = false;
       if (m_currentHdr.IsQosData () && m_currentDca->HasTxop ())
         {
-          m_waitSifsEvent = Simulator::Schedule (GetSifs (),
-                                                 &MacLow::WaitSifsAfterEndTxPacket,
-                                                 this);
+          if (m_stationManager->GetRifsPermitted ())
+            {
+              m_waitIfsEvent = Simulator::Schedule (GetRifs (), &MacLow::WaitIfsAfterEndTxPacket, this);
+            }
+          else
+            {
+              m_waitIfsEvent = Simulator::Schedule (GetSifs (), &MacLow::WaitIfsAfterEndTxPacket, this);
+            }
         }
     }
   else if (hdr.IsBlockAckReq () && hdr.GetAddr1 () == m_self)
@@ -1747,23 +1758,30 @@ MacLow::StartDataTxTimers (WifiTxVector dataTxVector)
     }
   else if (m_txParams.HasNextPacket ())
     {
-      if (m_stationManager->HasHtSupported ())
+      NS_ASSERT (m_waitIfsEvent.IsExpired ());
+      Time delay = txDuration;
+      if (m_stationManager->GetRifsPermitted ())
         {
-          Time delay = txDuration + GetRifs ();
-          NS_ASSERT (m_waitRifsEvent.IsExpired ());
-          m_waitRifsEvent = Simulator::Schedule (delay, &MacLow::WaitSifsAfterEndTxFragment, this);
+          delay += GetRifs ();
         }
       else
         {
-          Time delay = txDuration + GetSifs ();
-          NS_ASSERT (m_waitSifsEvent.IsExpired ());
-          m_waitSifsEvent = Simulator::Schedule (delay, &MacLow::WaitSifsAfterEndTxFragment, this);
+          delay += GetSifs ();
         }
+      m_waitIfsEvent = Simulator::Schedule (delay, &MacLow::WaitIfsAfterEndTxFragment, this);
     }
   else if (m_currentHdr.IsQosData () && m_currentHdr.IsQosBlockAck () && m_currentDca->HasTxop ())
     {
-      Time delay = txDuration + GetSifs ();
-      m_waitSifsEvent = Simulator::Schedule (delay, &MacLow::WaitSifsAfterEndTxPacket, this);
+      Time delay = txDuration;
+      if (m_stationManager->GetRifsPermitted ())
+        {
+          delay += GetRifs ();
+        }
+      else
+        {
+          delay += GetSifs ();
+        }
+      m_waitIfsEvent = Simulator::Schedule (delay, &MacLow::WaitIfsAfterEndTxPacket, this);
     }
   else
     {
@@ -1805,7 +1823,14 @@ MacLow::SendDataPacket (void)
         }
       if (m_txParams.HasNextPacket ())
         {
-          duration += GetSifs ();
+          if (m_stationManager->GetRifsPermitted ())
+            {
+              duration += GetRifs ();
+            }
+          else
+            {
+              duration += GetSifs ();
+            }
           duration += m_phy->CalculateTxDuration (m_txParams.GetNextPacketSize (),
                                                   m_currentTxVector, m_phy->GetFrequency ());
           if (m_txParams.MustWaitAck ())
@@ -1998,8 +2023,14 @@ MacLow::SendDataAfterCts (Mac48Address source, Time duration)
     }
   if (m_txParams.HasNextPacket ())
     {
-      newDuration += GetSifs ();
-      newDuration += m_phy->CalculateTxDuration (m_txParams.GetNextPacketSize (), m_currentTxVector, m_phy->GetFrequency ());
+      if (m_stationManager->GetRifsPermitted ())
+        {
+          newDuration += GetRifs ();
+        }
+      else
+        {
+          newDuration += GetSifs ();
+        }      newDuration += m_phy->CalculateTxDuration (m_txParams.GetNextPacketSize (), m_currentTxVector, m_phy->GetFrequency ());
       if (m_txParams.MustWaitCompressedBlockAck ())
         {
           newDuration += GetSifs ();
@@ -2035,13 +2066,13 @@ MacLow::SendDataAfterCts (Mac48Address source, Time duration)
 }
 
 void
-MacLow::WaitSifsAfterEndTxFragment (void)
+MacLow::WaitIfsAfterEndTxFragment (void)
 {
   m_currentDca->StartNextFragment ();
 }
 
 void
-MacLow::WaitSifsAfterEndTxPacket (void)
+MacLow::WaitIfsAfterEndTxPacket (void)
 {
   m_currentDca->StartNextPacket ();
 }

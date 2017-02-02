@@ -584,6 +584,14 @@ StaWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
                     {
                       m_stationManager->SetUseGreenfieldProtection (false);
                     }
+                  if (!m_vhtSupported && GetRifsSupported () && htOperation.GetRifsMode ())
+                    {
+                      m_stationManager->SetRifsPermitted (true);
+                    }
+                  else
+                    {
+                      m_stationManager->SetRifsPermitted (false);
+                    }
                   for (uint32_t i = 0; i < m_phy->GetNMcs (); i++)
                     {
                       WifiMode mcs = m_phy->GetMcs (i);
@@ -807,6 +815,14 @@ StaWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
                       else
                         {
                           m_stationManager->SetUseGreenfieldProtection (false);
+                        }
+                      if (!m_vhtSupported && GetRifsSupported () && htOperation.GetRifsMode ())
+                        {
+                          m_stationManager->SetRifsPermitted (true);
+                        }
+                      else
+                        {
+                          m_stationManager->SetRifsPermitted (false);
                         }
                     }
                 }

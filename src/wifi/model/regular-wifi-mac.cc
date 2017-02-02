@@ -826,6 +826,19 @@ RegularWifiMac::GetShortSlotTimeSupported (void) const
 }
 
 void
+RegularWifiMac::SetRifsSupported (bool enable)
+{
+  NS_LOG_FUNCTION (this << enable);
+  m_rifsSupported = enable;
+}
+
+bool
+RegularWifiMac::GetRifsSupported (void) const
+{
+  return m_rifsSupported;
+}
+
+void
 RegularWifiMac::Enqueue (Ptr<const Packet> packet,
                          Mac48Address to, Mac48Address from)
 {
@@ -1168,8 +1181,14 @@ RegularWifiMac::GetTypeId (void)
     .AddAttribute ("ShortSlotTimeSupported",
                    "Whether or not short slot time is supported (only used by ERP APs or STAs).",
                    BooleanValue (true),
-                   MakeBooleanAccessor (&WifiMac::GetShortSlotTimeSupported,
-                                        &WifiMac::SetShortSlotTimeSupported),
+                   MakeBooleanAccessor (&RegularWifiMac::GetShortSlotTimeSupported,
+                                        &RegularWifiMac::SetShortSlotTimeSupported),
+                   MakeBooleanChecker ())
+    .AddAttribute ("RifsSupported",
+                   "Whether or not RIFS is supported (only used by HT APs or STAs).",
+                   BooleanValue (false),
+                   MakeBooleanAccessor (&RegularWifiMac::GetRifsSupported,
+                                        &RegularWifiMac::SetRifsSupported),
                    MakeBooleanChecker ())
     .AddAttribute ("DcaTxop",
                    "The DcaTxop object.",

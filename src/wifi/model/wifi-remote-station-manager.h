@@ -305,6 +305,19 @@ public:
    *         false otherwise
    */
   bool GetShortSlotTimeEnabled (void) const;
+  /**
+   * Permit or prohibit RIFS.
+   *
+   * \param allow permit or prohibit RIFS
+   */
+  void SetRifsPermitted (bool allow);
+  /**
+   * Return whether the device can use RIFS.
+   *
+   * \return true if RIFS is permitted,
+   *         false otherwise
+   */
+  bool GetRifsPermitted (void) const;
 
   /**
    * Reset the station, invoked in a STA upon dis-association or in an AP upon reboot.
@@ -1362,6 +1375,7 @@ private:
   bool m_useGreenfieldProtection; //!< flag if protection for stations that do not support HT greenfield format is enabled
   bool m_shortPreambleEnabled; //!< flag if short PLCP preamble is enabled
   bool m_shortSlotTimeEnabled; //!< flag if short slot time is enabled
+  bool m_rifsPermitted;        //!< flag if RIFS is enabled
   ProtectionMode m_protectionMode; //!< Protection mode for ERP stations when non-ERP stations are detected
 
   /**

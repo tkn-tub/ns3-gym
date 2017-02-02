@@ -137,6 +137,20 @@ public:
    *         false otherwise.
    */
   virtual bool GetShortSlotTimeSupported (void) const;
+  /**
+   * Enable or disable RIFS feature.
+   *
+   * \param enable true if RIFS is to be supported,
+   *               false otherwise
+   */
+  virtual void SetRifsSupported (bool enable);
+  /**
+   * \return whether the device supports RIFS capability.
+   *
+   * \return true if short RIFS is supported,
+   *         false otherwise.
+   */
+  virtual bool GetRifsSupported (void) const;
 
   /**
    * \return the MAC address associated to this MAC layer.
@@ -598,6 +612,7 @@ private:
   TracedCallback<const WifiMacHeader &> m_txErrCallback;
 
   bool m_shortSlotTimeSupported;
+  bool m_rifsSupported;
 };
 
 } //namespace ns3
