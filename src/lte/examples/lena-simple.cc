@@ -31,7 +31,11 @@ using namespace ns3;
 
 int main (int argc, char *argv[])
 {	
+  //whether to use carrier aggregation
+  bool useCa = false;
+
   CommandLine cmd;
+  cmd.AddValue("useCa", "Whether to use carrier aggregation.", useCa);
   cmd.Parse (argc, argv);
 	
   // to save a template default attribute file run it like this:
@@ -44,7 +48,15 @@ int main (int argc, char *argv[])
   inputConfig.ConfigureDefaults ();
 
   // Parse again so you can override default values from the command line
+  cmd.AddValue("useCa", "Whether to use carrier aggregation.", useCa);
   cmd.Parse (argc, argv);
+
+  if (useCa)
+   {
+     Config::SetDefault ("ns3::LteHelper::UseCa", BooleanValue (useCa));
+     Config::SetDefault ("ns3::LteHelper::NumberOfComponentCarriers", UintegerValue (2));
+     Config::SetDefault ("ns3::LteHelper::EnbComponentCarrierManager", StringValue ("ns3::RrComponentCarrierManager"));
+   }
 
   Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();
 

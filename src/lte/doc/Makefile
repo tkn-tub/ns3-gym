@@ -55,7 +55,17 @@ IMAGES_DIA = \
 	$(FIGURES)/lte-rlc-data-retx-dl.dia \
 	$(FIGURES)/lte-rlc-data-txon-ul.dia \
 	$(FIGURES)/lte-rlc-data-retx-ul.dia \
-	$(FIGURES)/lte-epc-x2-entity-saps.dia
+	$(FIGURES)/lte-epc-x2-entity-saps.dia \
+	$(FIGURES)/lte-class-net-phy-relation.dia \
+	$(FIGURES)/lte-arch-enb-ctrl-rrc-phy.dia \
+	$(FIGURES)/lte-ccs-arch.dia \
+	$(FIGURES)/ca-enb-data-plane.dia \
+	$(FIGURES)/ca-enb-ctrl-plane.dia \
+	$(FIGURES)/ca-ue-data-plane.dia \
+	$(FIGURES)/ca-ue-ctrl-plane.dia \
+	$(FIGURES)/ca-rrc-reconf.dia \
+	$(FIGURES)/ca-lte-enb-net-device-changes.dia \
+	$(FIGURES)/ca-lte-ue-net-device-changes.dia
 
 # specify eps figures from which .png and .pdf figures need to be built
 
@@ -104,7 +114,10 @@ IMAGES_SEQDIAG = \
 	$(FIGURES)/rrc-connection-establishment.seqdiag \
 	$(FIGURES)/rrc-connection-reconfiguration.seqdiag \
 	$(FIGURES)/rrc-connection-reconfiguration-handover.seqdiag \
-	$(FIGURES)/nas-attach.seqdiag 
+	$(FIGURES)/nas-attach.seqdiag \
+	$(FIGURES)/ca-downlink-bsr.seqdiag \
+	$(FIGURES)/ca-setup-radio-bearer.seqdiag \
+	$(FIGURES)/ca-uplink-bsr.seqdiag \
 
 IMAGES_DOT = \
 	$(FIGURES)/lte-enb-rrc-states.dot \
@@ -157,6 +170,10 @@ IMAGES_NOBUILD = $(FIGURES)/fading_pedestrian.png \
 	$(FIGURES)/miesm_scheme.png \
 	$(FIGURES)/lte-handover-campaign-rem.pdf \
 	$(FIGURES)/lte-handover-campaign-rem.png \
+	$(FIGURES)/carrier-aggregation-impact.png \
+	$(FIGURES)/carrier-aggregation-mac-impact.png \
+	$(FIGURES)/ca-test-example-ul.png \
+	$(FIGURES)/ca-test-example-dl.png \
 	${IMAGES_SEQDIAG:.seqdiag=.png} \
 	${IMAGES_SEQDIAG:.seqdiag=.pdf} \
 	${IMAGES_DOT:.dot=.png} \

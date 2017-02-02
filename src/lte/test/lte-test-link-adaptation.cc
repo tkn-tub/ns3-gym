@@ -46,7 +46,7 @@ NS_LOG_COMPONENT_DEFINE ("LteLinkAdaptationTest");
 
 void
 LteTestDlSchedulingCallback (LteLinkAdaptationTestCase *testcase, std::string path,
-		                     DlSchedulingCallbackInfo dlInfo)
+                             DlSchedulingCallbackInfo dlInfo)
 {
   testcase->DlScheduling (dlInfo);
 }
