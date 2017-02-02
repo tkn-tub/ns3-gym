@@ -43,9 +43,6 @@ def build(bld):
     obj = bld.create_ns3_program('lena-x2-handover-measures',
                                  ['lte'])
     obj.source = 'lena-x2-handover-measures.cc'
-    obj = bld.create_ns3_program('lena-simple-epc-emu',
-                                 ['lte', 'emu’, ‘fd-net-device'])
-    obj.source = 'lena-simple-epc-emu.cc'
     obj = bld.create_ns3_program('lena-frequency-reuse',
                                  ['lte'])
     obj.source = 'lena-frequency-reuse.cc'
@@ -55,3 +52,9 @@ def build(bld):
     obj = bld.create_ns3_program('lena-uplink-power-control',
                                  ['lte'])
     obj.source = 'lena-uplink-power-control.cc'
+    
+    if bld.env['ENABLE_EMU']:
+        obj = bld.create_ns3_program('lena-simple-epc-emu',
+                                     ['lte', 'fd-net-device'])
+        obj.source = 'lena-simple-epc-emu.cc'
+    
