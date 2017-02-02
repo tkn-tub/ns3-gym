@@ -526,7 +526,7 @@ The scheduler interface include an attribute system calld ``UlCqiFilter`` for ma
   - ``PUSCH_UL_CQI`` for storing only PUSCH based CQIs.
   - ``ALL_UL_CQI`` for storing all the CQIs received.
 
-It has to be noted that, the ``FfMacScheduler`` provides only the interface and it is matter of the actual scheduler implementation to include the code for managing these attibutes (see scheduler related section for more information on this matter).
+It has to be noted that, the ``FfMacScheduler`` provides only the interface and it is matter of the actual scheduler implementation to include the code for managing these attributes (see scheduler related section for more information on this matter).
 
 
 Interference Model
@@ -1287,7 +1287,7 @@ The scheduler implements the filtering of the uplink CQIs according to their nat
 
   - ``SRS_UL_CQI``: only SRS based CQI are stored in the internal attributes.
   - ``PUSCH_UL_CQI``: only PUSCH based CQI are stored in the internal attributes.
-  - ``ALL_UL_CQI``: all CQIs are stored in the same internal attibute (i.e., the last CQI received is stored independently from its nature).
+  - ``ALL_UL_CQI``: all CQIs are stored in the same internal attribute (i.e., the last CQI received is stored independently from its nature).
 
 
 Channel and QoS Aware Scheduler
@@ -1467,8 +1467,8 @@ Overview
 
 The RLC entity is specified in the 3GPP technical specification
 [TS36322]_, and comprises three different types of RLC: Transparent
-Mode (TM), Unacknowledge Mode (UM) and Acknowledged Mode (AM). The
-simulator includes one model for each of these entitities
+Mode (TM), Unacknowledged Mode (UM) and Acknowledged Mode (AM). The
+simulator includes one model for each of these entities
 
 The RLC entities provide the RLC service interface to the upper PDCP layer and the MAC service interface
 to the lower MAC layer. The RLC entities use the PDCP service interface from the upper PDCP layer and
@@ -1541,7 +1541,7 @@ The following list specifies which service primitives are provided by the MAC se
 
     * ``MacSapUser::NotifyTxOpportunity``
 
-        * The MAC entity uses this primitive to nofify the RLC entity a transmission opportunity
+        * The MAC entity uses this primitive to notify the RLC entity a transmission opportunity
 
     * ``MacSapUser::ReceivePdu``
 
@@ -1764,7 +1764,7 @@ We do not support any of the additional primitives of RLC SAP for AM RLC entity.
 UM RLC
 ++++++
 
-In this section we describe the implemnetation of the Unacknowledge Mode (UM) RLC entity.
+In this section we describe the implementation of the Unacknowledged Mode (UM) RLC entity.
 
 Transmit operations in downlink
 -------------------------------
@@ -2256,7 +2256,7 @@ failure. In order to model RLF properly, RRC IDLE mode should be
 supported, including in particular idle mode cell (re-)selection.
 
 With the current model, an UE that experiences bad link quality and
-that does not perform handover (because of, e.g., no neighbour cells,
+that does not perform handover (because of, e.g., no neighbor cells,
 handover disabled, handover thresholds misconfigured) will 
 just stay associated with the same eNB, and the scheduler will stop
 allocating resources to it for communications. 
@@ -2422,7 +2422,7 @@ time-to-trigger. *Hysteresis* (:math:`Hys`) defines the distance between the
 entering and leaving conditions in dB. Similarly, *time-to-trigger* introduces
 delay to both entering and leaving conditions, but as a unit of time.
 
-The *periodical* type of reporting trigger is not supported, but its behaviour
+The *periodical* type of reporting trigger is not supported, but its behavior
 can be easily obtained by using an event-based trigger. This can be done by
 configuring the measurement in such a way that the entering condition is always
 fulfilled, for example, by setting the threshold of Event A1 to zero (the
@@ -2838,7 +2838,7 @@ the UE may use. Upon successful completion of the handover, the UE
 sends a message used to confirm the handover.* Note that the random
 access procedure in this case is non-contention based, hence in a real
 LTE system it differs slightly from the one used in RRC connection
-established. Also note that the RA Preamble ID is signalled via the
+established. Also note that the RA Preamble ID is signaled via the
 Handover Command included in the X2 Handover Request ACK message sent
 from the target eNB to the source eNB; in particular, the preamble is
 included in the RACH-ConfigDedicated IE which is part of
@@ -2908,7 +2908,7 @@ We now describe the Signaling Radio Bearer model that is used for the
      SDU sent over resources specified in the UL Grant in the RAR (not
      in UL DCIs); the reason is that C-RNTI is not known yet at this
      stage. In the simulator, this is modeled as a real RLC TM RLC PDU
-     whose UL resources are allocated by the sched upon call to
+     whose UL resources are allocated by the scheduler upon call to
      SCHED_DL_RACH_INFO_REQ. 
 
    - **RrcConnectionSetup**: in the simulator this is implemented as in
@@ -3047,7 +3047,7 @@ NAS
 
 The focus of the LTE-EPC model is on the NAS Active state, which corresponds to EMM Registered, ECM connected, and RRC connected. Because of this, the following simplifications are made:
 
- - EMM and ECM are not modeled explicitly; instead, the NAS entity at the UE will interact directy with the MME to perfom actions that are equivalent (with gross simplifications) to taking the UE to the states EMM Connected and ECM Connected; 
+ - EMM and ECM are not modeled explicitly; instead, the NAS entity at the UE will interact directly with the MME to perform actions that are equivalent (with gross simplifications) to taking the UE to the states EMM Connected and ECM Connected; 
 
  - the NAS also takes care of multiplexing uplink data packets coming from the upper layers into the appropriate EPS bearer by using the Traffic Flow Template classifier (TftClassifier). 
 
@@ -3227,7 +3227,7 @@ received by the corresponding S1-U point-to-point NetDevice of the
 SGW/PGW node, it is delivered locally (as the destination address of
 the outmost IP header matches the address of the point-to-point net
 device). The local delivery process will forward the packet to the
-EpcSgwPgwApplication via the correponding UDP socket. The
+EpcSgwPgwApplication via the corresponding UDP socket. The
 EpcSgwPgwApplication then removes the GTP header and forwards the
 packet to the VirtualNetDevice. At this point, the outmost header
 of the packet is the end-to-end IP header. Hence, if the destination
@@ -3836,7 +3836,7 @@ FR-Scheduler and FR-RRC were added.
 
 Figure :ref:`fig-lte-ffr-scheduling` shows the sequence diagram of 
 scheduling process with FR algorithm. In the beginning of scheduling 
-process, scheduler asks FR entity for avaiable RBGs. According to 
+process, scheduler asks FR entity for available RBGs. According to 
 implementation FR returns all RBGs available in cell or filter them based 
 on its policy. Then when trying to assign some RBG to UE, scheduler asks FR 
 entity if this RBG is allowed for this UE. When FR returns true, scheduler 
@@ -3883,7 +3883,7 @@ The Hard Frequency Reuse algorithm provides the simplest scheme which allows to
 reduce inter-cell interference level. In this scheme whole frequency bandwidth is 
 divided into few (typically 3, 4, or 7) disjoint sub-bands. Adjacent eNBs are 
 allocated with different sub-band. Frequency reuse factor equals the number 
-of sub-bands. This scheme allows to significanlty reduce ICI at the cell edge, 
+of sub-bands. This scheme allows to significantly reduce ICI at the cell edge, 
 so the performance of cell-users is improved. But due to the fact, that each 
 eNB uses only one part of whole bandwidth, peak data rate level is also reduced 
 by the factor equal to the reuse factor.
@@ -3901,7 +3901,7 @@ power plan for Hard Frequency Reuse scheme.
 
 In our implementation, the Hard FR algorithm has only vector of RBGs available 
 for eNB and pass it to MAC Scheduler during scheduling functions. When scheduler 
-ask, if RBG is allowed for specific UE it allways return true.
+ask, if RBG is allowed for specific UE it always return true.
 
 Strict Frequency Reuse
 ----------------------
@@ -3912,7 +3912,7 @@ used in each cell interior (frequency reuse-1), while the other part of the
 bandwidth is divided among the neighboring eNBs as in hard frequency reuse 
 (frequency reuse-N, N>1), in order to create one sub-band with a low inter-cell 
 interference level in each sector. Center UEs will be granted with the fully-reused 
-frequency chunks, while cell-edge UEs with ortogonal chunks. It means that interior 
+frequency chunks, while cell-edge UEs with orthogonal chunks. It means that interior 
 UEs from one cell do not share any spectrum with edge UEs from second cell, which 
 reduces interference for both. As can be noticed, Strict FR requires a total of 
 N + 1 sub-bands, and allows to achieve RFR in the middle between 1 and 3.
@@ -4339,7 +4339,7 @@ the eNB.
 The main impact is the insertion of the ``LteEnbComponentCarrierManager`` class 
 in the middle of the LTE protocol stack. During the design phase it was 
 decided to keep the same SAP interfaces design that existed between MAC and RLC 
-in order to avoid unecessary changes in these parts of protocol stack.
+in order to avoid unnecessary changes in these parts of protocol stack.
 To achieve this the ``LteEnbComponentCarrierManager`` implements all functions 
 that were previously exposed by RLC to MAC through ``LteMacSapUser`` interface. 
 It also implements functions that were previously exposed by MAC to RLC through 
@@ -4350,9 +4350,9 @@ one ``LteMacSapUser`` per RLC instance.
 
 The ``LteEnbComponentCarrierManager`` is responsible for the forwarding messages 
 in both directions. In the current implementation, a PDCP and a RLC instances are 
-activated each time a new data radio bearer is configured. The correspondance 
+activated each time a new data radio bearer is configured. The correspondence 
 between a new  data radio bearer and a RLC instance is one to one. In order to 
-mantain the same behaviour, when a new logical channel is activated, the logical 
+maintain the same behavior, when a new logical channel is activated, the logical 
 channel configurations is propagated to each MAC layer object in "as is" fashion. 
  
 .. _fig-ca-enb-data-plane:
@@ -4366,7 +4366,7 @@ reporting with a carrier aggregation implementation of only one secondary carrie
 Each time that an RLC instance sends a buffer status report (BSR), the 
 ``LteEnbComponentCarrierManager`` propagates the BSR to the MAC instances. 
 The ``LteEnbComponentCarrierManager`` may modify a BSR before sending it to the 
-MAC instances. This modification depends on the traffic split algoritm implemented 
+MAC instances. This modification depends on the traffic split algorithm implemented 
 in CCM class that inherits ``LteEnbComponentCarrierManager``.
  
 .. _fig-ca-downlink-bsr:

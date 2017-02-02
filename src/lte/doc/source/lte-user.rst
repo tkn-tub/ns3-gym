@@ -2433,7 +2433,7 @@ output is as expected. In detail:
    establishment procedure, by enabling the log components LteUeRrc and LteEnbRrc 
 
  * then check packet transmissions on the data plane, starting by
-   enabling the log componbents LteUeNetDevice and the
+   enabling the log components LteUeNetDevice and the
    EpcSgwPgwApplication, then EpcEnbApplication, then moving down the
    LTE radio stack (PDCP, RLC, MAC, and finally PHY). All this until
    you find where packets stop being processed / forwarded. 

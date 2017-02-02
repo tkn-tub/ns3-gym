@@ -706,7 +706,7 @@ test cases for testing three key features of TBFQ scheduler: traffic policing, f
 balance. Constant Bit Rate UDP traffic is used in both downlink and uplink in all test cases. 
 The packet interval is set to 1ms to keep the RLC buffer non-empty. Different traffic rate is 
 achieved by setting different packet size. Specifically, two classes of flows are created in the 
-testsuites:
+test suites:
 
  * Homogeneous flow: flows with the same token generation rate and packet arrival rate
  * Heterogeneous flow: flows with different packet arrival rate, but with the same token generation rate
@@ -750,7 +750,7 @@ can use the same method in TD BET to calculate the maximum throughput:
 Here, :math:`T` is the maximum throughput. :math:`R^{fb}_i` be the full bandwidth achievable rate 
 for user i. :math:`N` is the number of UE.
 
-When the totol traffic rate is bigger than :math:`T`, the UE throughput equals to :math:`\frac{T}{N}` . Otherwise, UE throughput
+When the total traffic rate is bigger than :math:`T`, the UE throughput equals to :math:`\frac{T}{N}` . Otherwise, UE throughput
 equals to its traffic generation rate.
 
 In test case 3, three flows with different traffic rate are created. Token generation rate for each 
@@ -1555,7 +1555,7 @@ to check which RBs were used for transmission and their power level.
 The same approach is applied in Uplink direction and second ``LteSimpleSpectrumPhy``
 is attached to Uplink Channel. Test passes if UE served by eNB with FR algorithm 
 is served in DL and UL with expected RBs and with expected power level. 
-Test vector comprise a configuration for Strict FR, Soft FR, Soft FFR, Enchanced FFR.
+Test vector comprise a configuration for Strict FR, Soft FR, Soft FFR, Enhanced FFR.
 Each FR algorithm is tested with all schedulers, which support FR (i.e. PF, PSS, CQA, 
 TD-TBFQ, FD-TBFQ). (Hard FR do not use UE measurements, so there is no point to perform 
 this type of test for Hard FR).
@@ -1567,12 +1567,12 @@ and 1 in second cell. Position of each UE is changed (rather slow because time i
 needed to report new UE Measurements), to obtain different result from calculation in 
 Distributed FFR algorithm entities. To check which RBGs are used for UE transmission
 ``LteSimpleSpectrumPhy`` is attached to Downlink Channel. It notifies when data 
-downlink channel transmission has occured and pass signal TxPsd spectrum value 
+downlink channel transmission has occurred and pass signal TxPsd spectrum value 
 to check which RBs were used for transmission and their power level. 
 The same approach is applied in Uplink direction and second ``LteSimpleSpectrumPhy``
 is attached to Uplink Channel. 
 Test passes if UE served by eNB in cell 2, is served in DL and UL with expected RBs 
-and with expected power level. Test vector compirse a configuration for Distributed FFR.
+and with expected power level. Test vector comprise a configuration for Distributed FFR.
 Test is performed with all schedulers, which support FR (i.e. PF, PSS, CQA, 
 TD-TBFQ, FD-TBFQ).
 

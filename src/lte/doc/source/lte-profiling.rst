@@ -74,7 +74,7 @@ The following Perl modules are required to use the provided script, all of them 
  * IO::CaptureOutput 
  * Statistics::Descriptive
 
-For installing the modules, simply use the follwing command:
+For installing the modules, simply use the following command:
 
 ``perl -MCPAN -e 'install moduleName'``
 
