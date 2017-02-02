@@ -44,7 +44,7 @@ def build(bld):
                                  ['lte'])
     obj.source = 'lena-x2-handover-measures.cc'
     obj = bld.create_ns3_program('lena-simple-epc-emu',
-                                 ['lte', 'emu'])
+                                 ['lte', 'fd-net-device'])
     obj.source = 'lena-simple-epc-emu.cc'
     obj = bld.create_ns3_program('lena-frequency-reuse',
                                  ['lte'])
