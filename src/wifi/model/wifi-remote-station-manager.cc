@@ -325,11 +325,18 @@ WifiRemoteStationManager::GetTypeId (void)
                    UintegerValue (0),
                    MakeUintegerAccessor (&WifiRemoteStationManager::m_defaultTxPowerLevel),
                    MakeUintegerChecker<uint8_t> ())
-    .AddAttribute ("ProtectionMode",
+    .AddAttribute ("ErpProtectionMode",
                    "Protection mode used when non-ERP STAs are connected to an ERP AP: Rts-Cts or Cts-To-Self",
                    EnumValue (WifiRemoteStationManager::CTS_TO_SELF),
-                   MakeEnumAccessor (&WifiRemoteStationManager::SetProtectionMode,
-                                     &WifiRemoteStationManager::GetProtectionMode),
+                   MakeEnumAccessor (&WifiRemoteStationManager::SetErpProtectionMode,
+                                     &WifiRemoteStationManager::GetErpProtectionMode),
+                   MakeEnumChecker (WifiRemoteStationManager::RTS_CTS, "Rts-Cts",
+                                    WifiRemoteStationManager::CTS_TO_SELF, "Cts-To-Self"))
+    .AddAttribute ("HtProtectionMode",
+                   "Protection mode used when non-HT STAs are connected to a HT AP: Rts-Cts or Cts-To-Self",
+                   EnumValue (WifiRemoteStationManager::CTS_TO_SELF),
+                   MakeEnumAccessor (&WifiRemoteStationManager::SetHtProtectionMode,
+                                     &WifiRemoteStationManager::GetHtProtectionMode),
                    MakeEnumChecker (WifiRemoteStationManager::RTS_CTS, "Rts-Cts",
                                     WifiRemoteStationManager::CTS_TO_SELF, "Cts-To-Self"))
     .AddTraceSource ("MacTxRtsFailed",
@@ -358,6 +365,7 @@ WifiRemoteStationManager::WifiRemoteStationManager ()
     m_vhtSupported (false),
     m_heSupported (false),
     m_useNonErpProtection (false),
+    m_useNonHtProtection (false),
     m_useGreenfieldProtection (false),
     m_shortPreambleEnabled (false),
     m_shortSlotTimeEnabled (false),
@@ -447,9 +455,15 @@ WifiRemoteStationManager::SetFragmentationThreshold (uint32_t threshold)
 }
 
 void
-WifiRemoteStationManager::SetProtectionMode (WifiRemoteStationManager::ProtectionMode mode)
+WifiRemoteStationManager::SetErpProtectionMode (WifiRemoteStationManager::ProtectionMode mode)
 {
-  m_protectionMode = mode;
+  m_erpProtectionMode = mode;
+}
+
+void
+WifiRemoteStationManager::SetHtProtectionMode (WifiRemoteStationManager::ProtectionMode mode)
+{
+  m_htProtectionMode = mode;
 }
 
 void
@@ -489,9 +503,15 @@ WifiRemoteStationManager::GetRifsPermitted (void) const
 }
 
 WifiRemoteStationManager::ProtectionMode
-WifiRemoteStationManager::GetProtectionMode (void) const
+WifiRemoteStationManager::GetErpProtectionMode (void) const
 {
-  return m_protectionMode;
+  return m_erpProtectionMode;
+}
+
+WifiRemoteStationManager::ProtectionMode
+WifiRemoteStationManager::GetHtProtectionMode (void) const
+{
+  return m_htProtectionMode;
 }
 
 bool
@@ -975,7 +995,7 @@ WifiRemoteStationManager::NeedRts (Mac48Address address, const WifiMacHeader *he
     {
       return false;
     }
-  if (m_protectionMode == RTS_CTS
+  if (m_erpProtectionMode == RTS_CTS
       && ((mode.GetModulationClass () == WIFI_MOD_CLASS_ERP_OFDM)
           || (mode.GetModulationClass () == WIFI_MOD_CLASS_HT)
           || (mode.GetModulationClass () == WIFI_MOD_CLASS_VHT)
@@ -983,6 +1003,15 @@ WifiRemoteStationManager::NeedRts (Mac48Address address, const WifiMacHeader *he
       && m_useNonErpProtection)
     {
       NS_LOG_DEBUG ("WifiRemoteStationManager::NeedRTS returning true to protect non-ERP stations");
+      return true;
+    }
+  else if (m_htProtectionMode == RTS_CTS
+           && ((mode.GetModulationClass () == WIFI_MOD_CLASS_HT)
+               || (mode.GetModulationClass () == WIFI_MOD_CLASS_VHT))
+           && m_useNonHtProtection
+           && !(m_erpProtectionMode != RTS_CTS && m_useNonErpProtection))
+    {
+      NS_LOG_DEBUG ("WifiRemoteStationManager::NeedRTS returning true to protect non-HT stations");
       return true;
     }
   bool normally = (packet->GetSize () + header->GetSize () + WIFI_MAC_FCS_LENGTH) > GetRtsCtsThreshold ();
@@ -994,7 +1023,7 @@ WifiRemoteStationManager::NeedCtsToSelf (WifiTxVector txVector)
 {
   WifiMode mode = txVector.GetMode ();
   NS_LOG_FUNCTION (this << mode);
-  if (m_protectionMode == CTS_TO_SELF
+  if (m_erpProtectionMode == CTS_TO_SELF
       && ((mode.GetModulationClass () == WIFI_MOD_CLASS_ERP_OFDM)
           || (mode.GetModulationClass () == WIFI_MOD_CLASS_HT)
           || (mode.GetModulationClass () == WIFI_MOD_CLASS_VHT)
@@ -1002,6 +1031,15 @@ WifiRemoteStationManager::NeedCtsToSelf (WifiTxVector txVector)
       && m_useNonErpProtection)
     {
       NS_LOG_DEBUG ("WifiRemoteStationManager::NeedCtsToSelf returning true to protect non-ERP stations");
+      return true;
+    }
+  else if (m_htProtectionMode == CTS_TO_SELF
+           && ((mode.GetModulationClass () == WIFI_MOD_CLASS_HT)
+               || (mode.GetModulationClass () == WIFI_MOD_CLASS_VHT))
+           && m_useNonHtProtection
+           && !(m_erpProtectionMode != CTS_TO_SELF && m_useNonErpProtection))
+    {
+      NS_LOG_DEBUG ("WifiRemoteStationManager::NeedCtsToSelf returning true to protect non-HT stations");
       return true;
     }
   else if (!m_useNonErpProtection)
@@ -1043,6 +1081,18 @@ bool
 WifiRemoteStationManager::GetUseNonErpProtection (void) const
 {
   return m_useNonErpProtection;
+}
+
+void
+WifiRemoteStationManager::SetUseNonHtProtection (bool enable)
+{
+  m_useNonHtProtection = enable;
+}
+
+bool
+WifiRemoteStationManager::GetUseNonHtProtection (void) const
+{
+  return m_useNonHtProtection;
 }
 
 void

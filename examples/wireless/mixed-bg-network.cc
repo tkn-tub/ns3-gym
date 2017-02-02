@@ -101,39 +101,39 @@ Experiment::Run (bool enableProtection, bool enableShortSlotTime, bool enableSho
   mac.SetType ("ns3::StaWifiMac",
                "Ssid", SsidValue (ssid),
                "ShortSlotTimeSupported", BooleanValue (enableShortSlotTime));
-    
+
   // Configure the PLCP preamble type: long or short
   phy.Set ("ShortPlcpPreambleSupported", BooleanValue (enableShortPlcpPreamble));
 
   NetDeviceContainer bStaDevice;
   bStaDevice = wifi.Install (phy, mac, wifiBStaNodes);
-  
+
   // 802.11b/g STA
   wifi.SetStandard (WIFI_PHY_STANDARD_80211g);
   NetDeviceContainer gStaDevice;
   gStaDevice = wifi.Install (phy, mac, wifiGStaNodes);
-  
+
   // 802.11b/g AP
   mac.SetType ("ns3::ApWifiMac",
                "Ssid", SsidValue (ssid),
                "BeaconGeneration", BooleanValue (true),
                "EnableNonErpProtection", BooleanValue (enableProtection),
                "ShortSlotTimeSupported", BooleanValue (enableShortSlotTime));
-    
+
   NetDeviceContainer apDevice;
   apDevice = wifi.Install (phy, mac, wifiApNode);
 
   // Setting mobility model
   MobilityHelper mobility;
   Ptr<ListPositionAllocator> positionAlloc = CreateObject<ListPositionAllocator> ();
-  
+
   positionAlloc->Add (Vector (0.0, 0.0, 0.0));
   if (isMixed)
-  {
-    positionAlloc->Add (Vector (5.0, 0.0, 0.0));
-  }
+    {
+      positionAlloc->Add (Vector (5.0, 0.0, 0.0));
+    }
   positionAlloc->Add (Vector (0.0, 5.0, 0.0));
-  
+
   mobility.SetPositionAllocator (positionAlloc);
   mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
   mobility.Install (wifiApNode);
@@ -172,11 +172,11 @@ Experiment::Run (bool enableProtection, bool enableShortSlotTime, bool enableSho
       ApplicationContainer clientApp = myClient.Install (wifiGStaNodes);
       clientApp.Start (Seconds (1.0));
       clientApp.Stop (Seconds (simulationTime + 1));
-  
+
       Simulator::Stop (Seconds (simulationTime + 1));
       Simulator::Run ();
       Simulator::Destroy ();
-  
+
       totalPacketsThrough = DynamicCast<UdpServer> (serverApp.Get (0))->GetReceived ();
       throughput = totalPacketsThrough * payloadSize * 8 / (simulationTime * 1000000.0);
     }
@@ -185,7 +185,7 @@ Experiment::Run (bool enableProtection, bool enableShortSlotTime, bool enableSho
       uint16_t port = 50000;
       Address apLocalAddress (InetSocketAddress (Ipv4Address::GetAny (), port));
       PacketSinkHelper packetSinkHelper ("ns3::TcpSocketFactory", apLocalAddress);
-      
+
       ApplicationContainer sinkApp = packetSinkHelper.Install (wifiApNode.Get (0));
       sinkApp.Start (Seconds (0.0));
       sinkApp.Stop (Seconds (simulationTime + 1));
@@ -195,10 +195,10 @@ Experiment::Run (bool enableProtection, bool enableShortSlotTime, bool enableSho
       onoff.SetAttribute ("OffTime", StringValue ("ns3::ConstantRandomVariable[Constant=0]"));
       onoff.SetAttribute ("PacketSize", UintegerValue (payloadSize));
       onoff.SetAttribute ("DataRate", DataRateValue (54000000)); //bit/s
-      
+
       AddressValue remoteAddress (InetSocketAddress (ApInterface.GetAddress (0), port));
       onoff.SetAttribute ("Remote", remoteAddress);
-      
+
       ApplicationContainer apps;
       apps.Add (onoff.Install (wifiGStaNodes));
       apps.Start (Seconds (1.0));
@@ -207,11 +207,11 @@ Experiment::Run (bool enableProtection, bool enableShortSlotTime, bool enableSho
       Simulator::Stop (Seconds (simulationTime + 1));
       Simulator::Run ();
       Simulator::Destroy ();
-      
+
       totalPacketsThrough = DynamicCast<PacketSink> (sinkApp.Get (0))->GetTotalRx ();
       throughput += totalPacketsThrough * 8 / (simulationTime * 1000000.0);
     }
-  
+
   return throughput;
 }
 
@@ -220,7 +220,7 @@ int main (int argc, char *argv[])
   uint32_t payloadSize = 1472; //bytes
   uint32_t simulationTime = 10; //seconds
   bool isUdp = true;
-  
+
   CommandLine cmd;
   cmd.AddValue ("payloadSize", "Payload size in bytes", payloadSize);
   cmd.AddValue ("simulationTime", "Simulation time in seconds", simulationTime);
@@ -237,67 +237,67 @@ int main (int argc, char *argv[])
       NS_LOG_ERROR ("Obtained throughput " << throughput << " is not in the expected boundaries!");
       exit (1);
     }
-  std::cout << "Disabled" << "\t\t" << "Long" << "\t\t\t\t" << "Long" << "\t\t\t\t" << "G-only" << "\t\t" << throughput <<" Mbit/s" << std::endl;
-  
+  std::cout << "Disabled" << "\t\t" << "Long" << "\t\t\t\t" << "Long" << "\t\t\t\t" << "G-only" << "\t\t" << throughput << " Mbit/s" << std::endl;
+
   throughput = experiment.Run (false, true, false, false, isUdp, payloadSize, simulationTime);
   if (throughput < 29 || throughput > 30)
     {
       NS_LOG_ERROR ("Obtained throughput " << throughput << " is not in the expected boundaries!");
       exit (1);
     }
-  std::cout << "Disabled" << "\t\t" << "Short" << "\t\t\t\t" << "Long" << "\t\t\t\t" << "G-only" << "\t\t" << throughput <<" Mbit/s" << std::endl;
-  
+  std::cout << "Disabled" << "\t\t" << "Short" << "\t\t\t\t" << "Long" << "\t\t\t\t" << "G-only" << "\t\t" << throughput << " Mbit/s" << std::endl;
+
   throughput = experiment.Run (false, false, false, true, isUdp, payloadSize, simulationTime);
   if (throughput < 22.5 || throughput > 23.5)
     {
       NS_LOG_ERROR ("Obtained throughput " << throughput << " is not in the expected boundaries!");
       exit (1);
     }
-  std::cout << "Disabled" << "\t\t" << "Long" << "\t\t\t\t" << "Long" << "\t\t\t\t" << "Mixed" << "\t\t" << throughput <<" Mbit/s" << std::endl;
-  
+  std::cout << "Disabled" << "\t\t" << "Long" << "\t\t\t\t" << "Long" << "\t\t\t\t" << "Mixed" << "\t\t" << throughput << " Mbit/s" << std::endl;
+
   throughput = experiment.Run (false, false, true, true, isUdp, payloadSize, simulationTime);
   if (throughput < 22.5 || throughput > 23.5)
     {
       NS_LOG_ERROR ("Obtained throughput " << throughput << " is not in the expected boundaries!");
       exit (1);
     }
-  std::cout << "Disabled" << "\t\t" << "Long" << "\t\t\t\t" << "Short" << "\t\t\t\t" << "Mixed" << "\t\t" << throughput <<" Mbit/s" << std::endl;
-  
-  Config::SetDefault ("ns3::WifiRemoteStationManager::ProtectionMode", StringValue ("Rts-Cts"));
-  
+  std::cout << "Disabled" << "\t\t" << "Long" << "\t\t\t\t" << "Short" << "\t\t\t\t" << "Mixed" << "\t\t" << throughput << " Mbit/s" << std::endl;
+
+  Config::SetDefault ("ns3::WifiRemoteStationManager::ErpProtectionMode", StringValue ("Rts-Cts"));
+
   throughput = experiment.Run (true, false, false, true, isUdp, payloadSize, simulationTime);
   if (throughput < 19 || throughput > 20)
     {
       NS_LOG_ERROR ("Obtained throughput " << throughput << " is not in the expected boundaries!");
       exit (1);
     }
-  std::cout << "RTS/CTS" << "\t\t\t" << "Long" << "\t\t\t\t" << "Long" << "\t\t\t\t" << "Mixed" << "\t\t" << throughput <<" Mbit/s" << std::endl;
-  
+  std::cout << "RTS/CTS" << "\t\t\t" << "Long" << "\t\t\t\t" << "Long" << "\t\t\t\t" << "Mixed" << "\t\t" << throughput << " Mbit/s" << std::endl;
+
   throughput = experiment.Run (true, false, true, true, isUdp, payloadSize, simulationTime);
   if (throughput < 19 || throughput > 20)
     {
       NS_LOG_ERROR ("Obtained throughput " << throughput << " is not in the expected boundaries!");
       exit (1);
     }
-  std::cout << "RTS/CTS" << "\t\t\t" << "Long" << "\t\t\t\t" << "Short" << "\t\t\t\t" << "Mixed" << "\t\t" << throughput <<" Mbit/s" << std::endl;
-  
-  Config::SetDefault ("ns3::WifiRemoteStationManager::ProtectionMode", StringValue ("Cts-To-Self"));
-  
+  std::cout << "RTS/CTS" << "\t\t\t" << "Long" << "\t\t\t\t" << "Short" << "\t\t\t\t" << "Mixed" << "\t\t" << throughput << " Mbit/s" << std::endl;
+
+  Config::SetDefault ("ns3::WifiRemoteStationManager::ErpProtectionMode", StringValue ("Cts-To-Self"));
+
   throughput = experiment.Run (true, false, false, true, isUdp, payloadSize, simulationTime);
   if (throughput < 20.5 || throughput > 21.5)
     {
       NS_LOG_ERROR ("Obtained throughput " << throughput << " is not in the expected boundaries!");
       exit (1);
     }
-  std::cout << "CTS-TO-SELF" << "\t\t" << "Long" << "\t\t\t\t" << "Long" << "\t\t\t\t" << "Mixed" << "\t\t" << throughput <<" Mbit/s" << std::endl;
-  
+  std::cout << "CTS-TO-SELF" << "\t\t" << "Long" << "\t\t\t\t" << "Long" << "\t\t\t\t" << "Mixed" << "\t\t" << throughput << " Mbit/s" << std::endl;
+
   throughput = experiment.Run (true, false, true, true, isUdp, payloadSize, simulationTime);
   if (throughput < 20.5 || throughput > 21.5)
     {
       NS_LOG_ERROR ("Obtained throughput " << throughput << " is not in the expected boundaries!");
       exit (1);
     }
-  std::cout << "CTS-TO-SELF" << "\t\t" << "Long" << "\t\t\t\t" << "Short" << "\t\t\t\t" << "Mixed" << "\t\t" << throughput <<" Mbit/s" << std::endl;
-  
+  std::cout << "CTS-TO-SELF" << "\t\t" << "Long" << "\t\t\t\t" << "Short" << "\t\t\t\t" << "Mixed" << "\t\t" << throughput << " Mbit/s" << std::endl;
+
   return 0;
 }

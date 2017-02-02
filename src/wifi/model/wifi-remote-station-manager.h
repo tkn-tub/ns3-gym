@@ -242,17 +242,29 @@ public:
    */
   bool HasHeSupported (void) const;
   /**
-   * Sets the protection mode.
+   * Sets the ERP protection mode.
    *
-   * \param mode the protection mode
+   * \param mode the ERP protection mode
    */
-  void SetProtectionMode (ProtectionMode mode);
+  void SetErpProtectionMode (ProtectionMode mode);
   /**
-   * Return the protection mode.
+   * Return the ERP protection mode.
    *
-   * \return the protection mode
+   * \return the ERP protection mode
    */
-  ProtectionMode GetProtectionMode (void) const;
+  ProtectionMode GetErpProtectionMode (void) const;
+  /**
+   * Sets the HT protection mode.
+   *
+   * \param mode the HT protection mode
+   */
+  void SetHtProtectionMode (ProtectionMode mode);
+  /**
+   * Return the HT protection mode.
+   *
+   * \return the HT protection mode
+   */
+  ProtectionMode GetHtProtectionMode (void) const;
   /**
    * Enable or disable protection for non-ERP stations.
    *
@@ -266,6 +278,19 @@ public:
    *         false otherwise
    */
   bool GetUseNonErpProtection (void) const;
+  /**
+   * Enable or disable protection for non-HT stations.
+   *
+   * \param enable enable or disable protection for non-HT stations
+   */
+  void SetUseNonHtProtection (bool enable);
+  /**
+   * Return whether the device supports protection of non-HT stations.
+   *
+   * \return true if protection for non-HT stations is enabled,
+   *         false otherwise
+   */
+  bool GetUseNonHtProtection (void) const;
   /**
    * Enable or disable protection for stations that do not support HT greenfield format.
    *
@@ -1372,11 +1397,13 @@ private:
   uint8_t m_defaultTxPowerLevel;  //!< Default tranmission power level
   WifiMode m_nonUnicastMode;  //!< Transmission mode for non-unicast DATA frames
   bool m_useNonErpProtection; //!< flag if protection for non-ERP stations against ERP transmissions is enabled
+  bool m_useNonHtProtection;  //!< flag if protection for non-HT stations against HT transmissions is enabled
   bool m_useGreenfieldProtection; //!< flag if protection for stations that do not support HT greenfield format is enabled
   bool m_shortPreambleEnabled; //!< flag if short PLCP preamble is enabled
   bool m_shortSlotTimeEnabled; //!< flag if short slot time is enabled
   bool m_rifsPermitted;        //!< flag if RIFS is enabled
-  ProtectionMode m_protectionMode; //!< Protection mode for ERP stations when non-ERP stations are detected
+  ProtectionMode m_erpProtectionMode; //!< Protection mode for ERP stations when non-ERP stations are detected
+  ProtectionMode m_htProtectionMode;  //!< Protection mode for HT stations when non-HT stations are detected
 
   /**
    * The trace source fired when the transmission of a single RTS has failed
