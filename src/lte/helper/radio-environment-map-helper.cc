@@ -282,8 +282,8 @@ RadioEnvironmentMapHelper::RunOneIteration (double xMin, double xMax, double yMi
 {
   NS_LOG_FUNCTION (this << xMin << xMax << yMin << yMax);
   std::list<RemPoint>::iterator remIt = m_rem.begin ();
-  double x;
-  double y;
+  double x = 0.0;
+  double y = 0.0;
   for (x = xMin; x < xMax + 0.5*m_xStep; x += m_xStep)
     {
       for (y = (x == xMin) ? yMin : m_yMin;
