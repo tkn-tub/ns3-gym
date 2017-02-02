@@ -186,14 +186,15 @@ PhyTxStatsCalculator::DlPhyTransmissionCallback (Ptr<PhyTxStatsCalculator> phyTx
   NS_LOG_FUNCTION (phyTxStats << path);
   uint64_t imsi = 0;
   std::ostringstream pathAndRnti;
-  pathAndRnti << path << "/" << params.m_rnti;
+  std::string pathEnb  = path.substr (0, path.find ("/ComponentCarrierMap"));
+  pathAndRnti << pathEnb << "/LteEnbRrc/UeMap/" << params.m_rnti;
   if (phyTxStats->ExistsImsiPath (pathAndRnti.str ()) == true)
     {
       imsi = phyTxStats->GetImsiPath (pathAndRnti.str ());
     }
   else
     {
-      imsi = FindImsiForEnb (path, params.m_rnti);
+      imsi = FindImsiFromEnbRlcPath (pathAndRnti.str ());
       phyTxStats->SetImsiPath (pathAndRnti.str (), imsi);
     }
 
@@ -209,13 +210,14 @@ PhyTxStatsCalculator::UlPhyTransmissionCallback (Ptr<PhyTxStatsCalculator> phyTx
   uint64_t imsi = 0;
   std::ostringstream pathAndRnti;
   pathAndRnti << path << "/" << params.m_rnti;
+  std::string pathUePhy  = path.substr (0, path.find ("/ComponentCarrierMapUe"));
   if (phyTxStats->ExistsImsiPath (pathAndRnti.str ()) == true)
     {
       imsi = phyTxStats->GetImsiPath (pathAndRnti.str ());
     }
   else
     {
-      imsi = FindImsiForUe (path, params.m_rnti);
+      imsi = FindImsiFromLteNetDevice (pathUePhy);
       phyTxStats->SetImsiPath (pathAndRnti.str (), imsi);
     }
 

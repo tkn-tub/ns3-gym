@@ -68,7 +68,7 @@ protected:
   virtual void DoReceivePdu (Ptr<Packet> p, uint16_t rnti, uint8_t lcid);
   virtual void DoNotifyHarqDeliveryFailure ();
   virtual void DoRemoveUe (uint16_t rnti);
-  virtual std::vector<uint16_t> DoReleaseDataRadioBearer (uint16_t rnti, uint8_t lcid);
+  virtual std::vector<uint8_t> DoReleaseDataRadioBearer (uint16_t rnti, uint8_t lcid);
   virtual LteMacSapUser* DoConfigureSignalBearer(LteEnbCmacSapProvider::LcInfo lcinfo,  LteMacSapUser* msu);
   /*
    * \brief Forwards uplink BSR to CCM, called by MAC through CCM SAP interface..

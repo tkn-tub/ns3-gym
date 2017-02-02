@@ -556,11 +556,9 @@ public:
 
   // inherited from Object
 protected:
-  virtual void DoInitialize ();
   virtual void DoDispose (void);
 public:
   static TypeId GetTypeId (void);
-
 
   /**
    * Set the X2 SAP this RRC should interact with
@@ -582,7 +580,7 @@ public:
    */
   void SetLteEnbCmacSapProvider (LteEnbCmacSapProvider * s);
 
-  void SetLteEnbCmacSapProvider (LteEnbCmacSapProvider * s, uint16_t pos);
+  void SetLteEnbCmacSapProvider (LteEnbCmacSapProvider * s, uint8_t pos);
 
   /** 
    * Get the CMAC SAP offered by this RRC
@@ -767,11 +765,9 @@ public:
    *
    * \warning Raises an error when executed more than once.
    */
-  void ConfigureCell (uint8_t ulBandwidth,
-                      uint8_t dlBandwidth,
-                      uint16_t ulEarfcn, 
-                      uint16_t dlEarfcn,
-                      uint16_t cellId);
+  void ConfigureCell (uint16_t cellId);
+
+  void ConfigureCarriers (std::map<uint8_t, ComponentCarrier > ccPhyConf, uint16_t numberOfCarriers);
 
   /** 
    * set the cell id of this eNB
@@ -1025,8 +1021,6 @@ public:
    */
   uint32_t GetSrsPeriodicity () const;
 
-  std::map<uint8_t, Ptr<ComponentCarrierEnb> > m_componentCarrierEnbMap;
-
   /**
    * \brief Associate this RRC entity with a particular CSG information.
    * \param csgId the intended Closed Subscriber Group identity
@@ -1108,9 +1102,9 @@ private:
   EpcX2SapProvider* m_x2SapProvider;
 
   /// Receive API calls from the eNodeB MAC instance.
-  LteEnbCmacSapUser* m_cmacSapUser;
+  std::vector<LteEnbCmacSapUser*> m_cmacSapUser;
   /// Interface to the eNodeB MAC instance.
-  LteEnbCmacSapProvider* m_cmacSapProvider;
+  std::vector<LteEnbCmacSapProvider*> m_cmacSapProvider;
 
   /// Receive API calls from the handover algorithm instance.
   LteHandoverManagementSapUser* m_handoverManagementSapUser;
@@ -1128,9 +1122,9 @@ private:
   LteAnrSapProvider* m_anrSapProvider;
 
   /// Receive API calls from the FFR algorithm instance.
-  LteFfrRrcSapUser* m_ffrRrcSapUser;
+  std::vector<LteFfrRrcSapUser*> m_ffrRrcSapUser;
   /// Interface to the FFR algorithm instance.
-  LteFfrRrcSapProvider* m_ffrRrcSapProvider;
+  std::vector<LteFfrRrcSapProvider*> m_ffrRrcSapProvider;
 
   /// Interface to send messages to UE over the RRC protocol.
   LteEnbRrcSapUser* m_rrcSapUser;
@@ -1145,10 +1139,10 @@ private:
   /// Interface to receive messages from core network over the S1 protocol.
   EpcEnbS1SapUser* m_s1SapUser;
 
-  /// Receive API calls from the eNodeB PHY instance.
-  LteEnbCphySapUser* m_cphySapUser;
-  /// Interface to the eNodeB PHY instance.
-  LteEnbCphySapProvider* m_cphySapProvider;
+  /// Receive API calls from the eNodeB PHY instances.
+  std::vector<LteEnbCphySapUser*> m_cphySapUser;
+  /// Interface to the eNodeB PHY instances.
+  std::vector<LteEnbCphySapProvider*> m_cphySapProvider;
 
   /// True if ConfigureCell() has been completed.
   bool m_configured;
@@ -1315,6 +1309,10 @@ private:
   TracedCallback<uint64_t, uint16_t, uint16_t, LteRrcSap::MeasurementReport> m_recvMeasurementReportTrace;
 
   uint16_t m_numberOfComponentCarriers;
+
+  bool m_carriersConfigured;
+
+  std::map<uint8_t, ComponentCarrier> m_componentCarrierPhyConf;
 
 }; // end of `class LteEnbRrc`
 

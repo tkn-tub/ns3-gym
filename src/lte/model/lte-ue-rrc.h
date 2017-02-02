@@ -132,12 +132,15 @@ private:
 public:
   static TypeId GetTypeId (void);
 
+  void InitializeSap (void);
+
   /**
    * set the CPHY SAP this RRC should use to interact with the PHY
    *
    * \param s the CPHY SAP Provider
    */
   void SetLteUeCphySapProvider (LteUeCphySapProvider * s);
+  void SetLteUeCphySapProvider (LteUeCphySapProvider * s, uint8_t index);
 
   /**
    *
@@ -145,20 +148,22 @@ public:
    * \return s the CPHY SAP User interface offered to the PHY by this RRC
    */
   LteUeCphySapUser* GetLteUeCphySapUser ();
+  LteUeCphySapUser* GetLteUeCphySapUser (uint8_t index);
 
   /**
    * set the CMAC SAP this RRC should interact with
-   *
+   * \brief This function is overloaded to maintain backward compatibility 
    * \param s the CMAC SAP Provider to be used by this RRC
    */
   void SetLteUeCmacSapProvider (LteUeCmacSapProvider * s);
+  void SetLteUeCmacSapProvider (LteUeCmacSapProvider * s, uint8_t index);
 
   /**
-   *
-   *
+   * \brief This function is overloaded to maintain backward compatibility 
    * \return s the CMAC SAP User interface offered to the MAC by this RRC
    */
   LteUeCmacSapUser* GetLteUeCmacSapUser ();
+  LteUeCmacSapUser* GetLteUeCmacSapUser (uint8_t index);
 
 
   /**
@@ -576,11 +581,11 @@ private:
 
   std::map<uint8_t, uint8_t> m_bid2DrbidMap;
 
-  LteUeCphySapUser* m_cphySapUser;
-  LteUeCphySapProvider* m_cphySapProvider;
+  std::vector<LteUeCphySapUser*> m_cphySapUser;
+  std::vector<LteUeCphySapProvider*> m_cphySapProvider;
 
-  LteUeCmacSapUser* m_cmacSapUser;
-  LteUeCmacSapProvider* m_cmacSapProvider;
+  std::vector<LteUeCmacSapUser*> m_cmacSapUser;
+  std::vector<LteUeCmacSapProvider*> m_cmacSapProvider;
 
   LteUeRrcSapUser* m_rrcSapUser;
   LteUeRrcSapProvider* m_rrcSapProvider;

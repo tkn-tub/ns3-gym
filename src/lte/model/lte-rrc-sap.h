@@ -135,7 +135,7 @@ public:
 
   struct PdschConfigCommon
   {
-	int8_t referenceSignalPower;  // INTEGER (-60..50),
+    int8_t referenceSignalPower;  // INTEGER (-60..50),
     int8_t pb;                    // INTEGER (0..3),
   };
 

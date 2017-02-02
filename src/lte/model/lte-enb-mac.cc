@@ -691,8 +691,7 @@ void
 LteEnbMac::ReceiveBsrMessage  (MacCeListElement_s bsr)
 {
   NS_LOG_FUNCTION (this);
-
-  m_ulCeReceived.push_back (bsr);
+  m_ccmMacSapUser->UlReceiveMacCe (bsr, m_componentCarrierId);
 }
 
 void

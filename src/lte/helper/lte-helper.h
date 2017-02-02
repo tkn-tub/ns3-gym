@@ -16,6 +16,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Nicola Baldo <nbaldo@cttc.es>
+ * Modified by: Danilo Abrignani <danilo.abrignani@unibo.it> (Carrier Aggregation - GSoC 2015)
+ *              Biljana Bojovic <biljana.bojovic@cttc.es> (Carrier Aggregation) 
  */
 
 #ifndef LTE_HELPER_H
@@ -273,7 +275,7 @@ public:
    *
    * \param ccmap, the component carrier map
    */
-   void SetCcPhyParams (std::map< uint8_t, Ptr<ComponentCarrier> > ccmap);
+   void SetCcPhyParams (std::map< uint8_t, ComponentCarrier> ccmap);
 
   /**
    * Set the type of spectrum channel to be used in both DL and UL.
@@ -658,12 +660,20 @@ public:
    */
   Ptr<SpectrumChannel> GetDownlinkSpectrumChannel (void) const;
 
+  /**
+   *
+   * \return a pointer to the SpectrumChannel instance used for the downlink on a given carrier
+   */
+  Ptr<SpectrumChannel> GetDownlinkSpectrumChannel (uint8_t carrierId) const;
+
 
 protected:
   // inherited from Object
   virtual void DoInitialize (void);
 
 private:
+
+  void DoComponentCarrierConfigure (uint32_t ulEarfcn, uint32_t dlEarfcn, uint8_t ulbw, uint8_t dlbw);
   /**
    * Create an eNodeB device (LteEnbNetDevice) on the given node.
    * \param n the node where the device is to be installed
@@ -706,15 +716,20 @@ private:
    */
   void DoDeActivateDedicatedEpsBearer (Ptr<NetDevice> ueDevice, Ptr<NetDevice> enbDevice, uint8_t bearerId);
 
+  void ChannelModelInitialization (void);
+
+  /**
+   * \brief This function create the component carrier based on provided configuration parameters
+   */
 
   /// The downlink LTE channel used in the simulation.
-  Ptr<SpectrumChannel> m_downlinkChannel;
+  std::vector <Ptr<SpectrumChannel> > m_downlinkChannel;
   /// The uplink LTE channel used in the simulation.
-  Ptr<SpectrumChannel> m_uplinkChannel;
+  std::vector< Ptr<SpectrumChannel> > m_uplinkChannel;
   /// The path loss model used in the downlink channel.
-  Ptr<Object> m_downlinkPathlossModel;
+  std::vector< Ptr<Object> >  m_downlinkPathlossModel;
   /// The path loss model used in the uplink channel.
-  Ptr<Object> m_uplinkPathlossModel;
+  std::vector< Ptr<Object> > m_uplinkPathlossModel;
 
   /// Factory of MAC scheduler object.
   ObjectFactory m_schedulerFactory;
@@ -811,14 +826,14 @@ private:
    * If it is false, the component carrier will be created within the LteHelper
    * this is to mantain the backwards compatibility with user script
    */
-  //bool m_useCa;
+  bool m_useCa;
 
   /**
    * This contains all the information about each component carrier
    */
-  std::map< uint8_t, Ptr<ComponentCarrier> > m_componentCarrierPhyParams;
+  std::map< uint8_t, ComponentCarrier > m_componentCarrierPhyParams;
 
-  //uint16_t m_noOfCcs;
+  uint16_t m_noOfCcs;
 
 };   // end of `class LteHelper`
 

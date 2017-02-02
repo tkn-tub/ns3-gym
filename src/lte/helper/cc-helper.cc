@@ -161,18 +161,18 @@ uint16_t CcHelper::GetUlBandwidth ()
   return m_ulBandwidth;
 }
 
-Ptr<ComponentCarrier>
+ComponentCarrier
 CcHelper::DoCreateSingleCc (uint16_t ulBandwidth, uint16_t dlBandwidth, uint32_t ulEarfcn, uint32_t dlEarfcn, bool isPrimary)
 {
   return CreateSingleCc (ulBandwidth, dlBandwidth, ulEarfcn, dlEarfcn, isPrimary);
 }
 
-std::map< uint8_t, Ptr<ComponentCarrier> >
+std::map< uint8_t, ComponentCarrier >
 CcHelper::EquallySpacedCcs ()
 {
-  std::map< uint8_t, Ptr<ComponentCarrier> > ccmap;
+  std::map< uint8_t, ComponentCarrier > ccmap;
 
-  for (uint32_t i = 0; i < m_numberOfComponentCarriers; i++)
+  for (uint8_t i = 0; i < m_numberOfComponentCarriers; i++)
     {
       bool pc =false;
       uint32_t ul = m_ulEarfcn + i * m_ulBandwidth;
@@ -181,40 +181,40 @@ CcHelper::EquallySpacedCcs ()
         {
           pc = true;
         }
-      Ptr<ComponentCarrier> cc = CreateSingleCc (m_ulBandwidth, m_dlBandwidth, ul, dl, pc);
-      ccmap.insert (std::pair<uint8_t,Ptr<ComponentCarrier> >(i, cc));
+      ComponentCarrier cc = CreateSingleCc (m_ulBandwidth, m_dlBandwidth, ul, dl, pc);
+      ccmap.insert (std::pair<uint8_t, ComponentCarrier >(i, cc));
 
       NS_LOG_INFO(" ulBandwidth:"<<m_ulBandwidth<<" , dlBandwidth: "<<m_dlBandwidth<<" , ul:"<<ul<<" , dl:"<<dl);
     }
 
   return ccmap;
 }
-Ptr<ComponentCarrier>
+ComponentCarrier
 CcHelper::CreateSingleCc (uint16_t ulBandwidth, uint16_t dlBandwidth, uint32_t ulEarfcn, uint32_t dlEarfcn, bool isPrimary)
 {
-  Ptr <ComponentCarrier> cc =  CreateObject<ComponentCarrier> ();
+  ComponentCarrier cc;
   if ( m_ulEarfcn != 0)
     {
-      cc->SetUlEarfcn (ulEarfcn);
+      cc.SetUlEarfcn (ulEarfcn);
     }
   else 
     {
-      uint16_t ul = cc->GetUlEarfcn () + ulEarfcn;
-      cc->SetUlEarfcn (ul);
+      uint16_t ul = cc.GetUlEarfcn () + ulEarfcn;
+      cc.SetUlEarfcn (ul);
     }
   if ( m_dlEarfcn != 0)
     {
-      cc->SetDlEarfcn (dlEarfcn);
+      cc.SetDlEarfcn (dlEarfcn);
     }
   else 
     {
-      uint16_t dl = cc->GetDlEarfcn () + dlEarfcn;
-      cc->SetDlEarfcn (dl);
+      uint16_t dl = cc.GetDlEarfcn () + dlEarfcn;
+      cc.SetDlEarfcn (dl);
     }
-  cc->SetDlBandwidth (dlBandwidth);
-  cc->SetUlBandwidth (ulBandwidth);
+  cc.SetDlBandwidth (dlBandwidth);
+  cc.SetUlBandwidth (ulBandwidth);
 
-  cc->SetAsPrimary (isPrimary);
+  cc.SetAsPrimary (isPrimary);
 
   return cc;
 

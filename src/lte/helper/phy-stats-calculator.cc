@@ -229,14 +229,14 @@ PhyStatsCalculator::ReportCurrentCellRsrpSinrCallback (Ptr<PhyStatsCalculator> p
 {
   NS_LOG_FUNCTION (phyStats << path);
   uint64_t imsi = 0;
-  std::string pathUePhy  = path.substr (0, path.find ("/ReportCurrentCellRsrpSinr"));
+  std::string pathUePhy  = path.substr (0, path.find ("/ComponentCarrierMapUe"));
   if (phyStats->ExistsImsiPath (pathUePhy) == true)
     {
       imsi = phyStats->GetImsiPath (pathUePhy);
     }
   else
     {
-      imsi = FindImsiFromUePhy (pathUePhy);
+      imsi = FindImsiFromLteNetDevice (pathUePhy);
       phyStats->SetImsiPath (pathUePhy, imsi);
     }
 
@@ -252,8 +252,8 @@ PhyStatsCalculator::ReportUeSinr (Ptr<PhyStatsCalculator> phyStats, std::string 
   uint64_t imsi = 0;
   std::ostringstream pathAndRnti;
   pathAndRnti << path << "/" << rnti;
-  std::string pathEnbMac  = path.substr (0, path.find ("LteEnbPhy/ReportUeSinr"));
-  pathEnbMac += "LteEnbMac/DlScheduling";
+  std::string pathEnbMac  = path.substr (0, path.find ("/ComponentCarrierMap"));
+  pathEnbMac += "/LteEnbMac/DlScheduling";
   if (phyStats->ExistsImsiPath (pathAndRnti.str ()) == true)
     {
       imsi = phyStats->GetImsiPath (pathAndRnti.str ());

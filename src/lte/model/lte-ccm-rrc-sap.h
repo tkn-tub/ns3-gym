@@ -124,7 +124,7 @@ public:
    *                where the bearer is enabled
    */
 
-  virtual std::vector<uint16_t> ReleaseDataRadioBearer (uint16_t rnti, uint8_t lcid) = 0;
+  virtual std::vector<uint8_t> ReleaseDataRadioBearer (uint16_t rnti, uint8_t lcid) = 0;
 
   /**
    * \brief Add the Signal Bearer for a specif Ue in LteEnbComponenCarrierManager
@@ -213,7 +213,7 @@ public:
   virtual void AddLc (LteEnbCmacSapProvider::LcInfo lcInfo, LteMacSapUser* msu);
   virtual void RemoveUe (uint16_t rnti);
   virtual std::vector<LteCcmRrcSapProvider::LcsConfig> SetupDataRadioBearer (EpsBearer bearer, uint8_t bearerId, uint16_t rnti, uint8_t lcid, uint8_t lcGroup, LteMacSapUser *msu);
-  virtual std::vector<uint16_t> ReleaseDataRadioBearer (uint16_t rnti, uint8_t lcid);
+  virtual std::vector<uint8_t> ReleaseDataRadioBearer (uint16_t rnti, uint8_t lcid);
   virtual LteMacSapUser* ConfigureSignalBearer(LteEnbCmacSapProvider::LcInfo lcInfo,  LteMacSapUser* rlcMacSapUser);
 
 private:
@@ -257,7 +257,7 @@ std::vector<LteCcmRrcSapProvider::LcsConfig> MemberLteCcmRrcSapProvider<C>::Setu
 }
 
 template <class C>
-std::vector<uint16_t> MemberLteCcmRrcSapProvider<C>::ReleaseDataRadioBearer (uint16_t rnti, uint8_t lcid)
+std::vector<uint8_t> MemberLteCcmRrcSapProvider<C>::ReleaseDataRadioBearer (uint16_t rnti, uint8_t lcid)
 {
   return m_owner->DoReleaseDataRadioBearer (rnti, lcid);
 }

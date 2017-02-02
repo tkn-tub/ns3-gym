@@ -1475,12 +1475,12 @@ def register_types(module):
     module.add_container('std::vector< ns3::Ipv6Address >', 'ns3::Ipv6Address', container_type=u'vector')
     module.add_container('std::vector< double >', 'double', container_type=u'vector')
     module.add_container('ns3::Bands', 'ns3::BandInfo', container_type=u'vector')
-    module.add_container('std::map< unsigned char, ns3::Ptr< ns3::ComponentCarrier > >', ('unsigned char', 'ns3::Ptr< ns3::ComponentCarrier >'), container_type=u'map')
+    module.add_container('std::map< unsigned char, ns3::ComponentCarrier >', ('unsigned char', 'ns3::ComponentCarrier'), container_type=u'map')
     module.add_container('std::map< unsigned int, unsigned int >', ('unsigned int', 'unsigned int'), container_type=u'map')
-    module.add_container('std::map< unsigned char, ns3::Ptr< ns3::ComponentCarrierEnb > >', ('unsigned char', 'ns3::Ptr< ns3::ComponentCarrierEnb >'), container_type=u'map')
     module.add_container('std::list< ns3::Ptr< ns3::LteControlMessage > >', 'ns3::Ptr< ns3::LteControlMessage >', container_type=u'list')
     module.add_container('std::list< ns3::UlDciLteControlMessage >', 'ns3::UlDciLteControlMessage', container_type=u'list')
     module.add_container('std::map< unsigned char, ns3::Ptr< ns3::ComponentCarrierUe > >', ('unsigned char', 'ns3::Ptr< ns3::ComponentCarrierUe >'), container_type=u'map')
+    module.add_container('std::map< unsigned char, ns3::Ptr< ns3::ComponentCarrierEnb > >', ('unsigned char', 'ns3::Ptr< ns3::ComponentCarrierEnb >'), container_type=u'map')
     typehandlers.add_type_alias(u'std::map< ns3::ImsiLcidPair_t, unsigned int, std::less< ns3::ImsiLcidPair_t >, std::allocator< std::pair< ns3::ImsiLcidPair_t const, unsigned int > > >', u'ns3::Uint32Map')
     typehandlers.add_type_alias(u'std::map< ns3::ImsiLcidPair_t, unsigned int, std::less< ns3::ImsiLcidPair_t >, std::allocator< std::pair< ns3::ImsiLcidPair_t const, unsigned int > > >*', u'ns3::Uint32Map*')
     typehandlers.add_type_alias(u'std::map< ns3::ImsiLcidPair_t, unsigned int, std::less< ns3::ImsiLcidPair_t >, std::allocator< std::pair< ns3::ImsiLcidPair_t const, unsigned int > > >&', u'ns3::Uint32Map&')
@@ -5678,9 +5678,9 @@ def register_Ns3LteCcmRrcSapProvider_methods(root_module, cls):
                    'ns3::LteMacSapUser *', 
                    [param('ns3::LteEnbCmacSapProvider::LcInfo', 'lcInfo'), param('ns3::LteMacSapUser *', 'rlcMacSapUser')], 
                    is_pure_virtual=True, is_virtual=True)
-    ## lte-ccm-rrc-sap.h (module 'lte'): std::vector<unsigned short, std::allocator<unsigned short> > ns3::LteCcmRrcSapProvider::ReleaseDataRadioBearer(uint16_t rnti, uint8_t lcid) [member function]
+    ## lte-ccm-rrc-sap.h (module 'lte'): std::vector<unsigned char, std::allocator<unsigned char> > ns3::LteCcmRrcSapProvider::ReleaseDataRadioBearer(uint16_t rnti, uint8_t lcid) [member function]
     cls.add_method('ReleaseDataRadioBearer', 
-                   'std::vector< unsigned short >', 
+                   'std::vector< unsigned char >', 
                    [param('uint16_t', 'rnti'), param('uint8_t', 'lcid')], 
                    is_pure_virtual=True, is_virtual=True)
     ## lte-ccm-rrc-sap.h (module 'lte'): void ns3::LteCcmRrcSapProvider::RemoveUe(uint16_t rnti) [member function]
@@ -13294,18 +13294,18 @@ def register_Ns3CcHelper_methods(root_module, cls):
     cls.add_constructor([param('ns3::CcHelper const &', 'arg0')])
     ## cc-helper.h (module 'lte'): ns3::CcHelper::CcHelper() [constructor]
     cls.add_constructor([])
-    ## cc-helper.h (module 'lte'): ns3::Ptr<ns3::ComponentCarrier> ns3::CcHelper::DoCreateSingleCc(uint16_t ulBandwidth, uint16_t dlBandwidth, uint32_t ulEarfcn, uint32_t dlEarfcn, bool isPrimary) [member function]
+    ## cc-helper.h (module 'lte'): ns3::ComponentCarrier ns3::CcHelper::DoCreateSingleCc(uint16_t ulBandwidth, uint16_t dlBandwidth, uint32_t ulEarfcn, uint32_t dlEarfcn, bool isPrimary) [member function]
     cls.add_method('DoCreateSingleCc', 
-                   'ns3::Ptr< ns3::ComponentCarrier >', 
+                   'ns3::ComponentCarrier', 
                    [param('uint16_t', 'ulBandwidth'), param('uint16_t', 'dlBandwidth'), param('uint32_t', 'ulEarfcn'), param('uint32_t', 'dlEarfcn'), param('bool', 'isPrimary')])
     ## cc-helper.h (module 'lte'): void ns3::CcHelper::DoDispose() [member function]
     cls.add_method('DoDispose', 
                    'void', 
                    [], 
                    is_virtual=True)
-    ## cc-helper.h (module 'lte'): std::map<unsigned char, ns3::Ptr<ns3::ComponentCarrier>, std::less<unsigned char>, std::allocator<std::pair<unsigned char const, ns3::Ptr<ns3::ComponentCarrier> > > > ns3::CcHelper::EquallySpacedCcs() [member function]
+    ## cc-helper.h (module 'lte'): std::map<unsigned char, ns3::ComponentCarrier, std::less<unsigned char>, std::allocator<std::pair<unsigned char const, ns3::ComponentCarrier> > > ns3::CcHelper::EquallySpacedCcs() [member function]
     cls.add_method('EquallySpacedCcs', 
-                   'std::map< unsigned char, ns3::Ptr< ns3::ComponentCarrier > >', 
+                   'std::map< unsigned char, ns3::ComponentCarrier >', 
                    [])
     ## cc-helper.h (module 'lte'): uint16_t ns3::CcHelper::GetDlBandwidth() [member function]
     cls.add_method('GetDlBandwidth', 
@@ -16136,10 +16136,14 @@ def register_Ns3LteEnbRrc_methods(root_module, cls):
     cls.add_method('AddX2Neighbour', 
                    'void', 
                    [param('uint16_t', 'cellId')])
-    ## lte-enb-rrc.h (module 'lte'): void ns3::LteEnbRrc::ConfigureCell(uint8_t ulBandwidth, uint8_t dlBandwidth, uint16_t ulEarfcn, uint16_t dlEarfcn, uint16_t cellId) [member function]
+    ## lte-enb-rrc.h (module 'lte'): void ns3::LteEnbRrc::ConfigureCarriers(std::map<unsigned char, ns3::ComponentCarrier, std::less<unsigned char>, std::allocator<std::pair<unsigned char const, ns3::ComponentCarrier> > > ccPhyConf, uint16_t numberOfCarriers) [member function]
+    cls.add_method('ConfigureCarriers', 
+                   'void', 
+                   [param('std::map< unsigned char, ns3::ComponentCarrier >', 'ccPhyConf'), param('uint16_t', 'numberOfCarriers')])
+    ## lte-enb-rrc.h (module 'lte'): void ns3::LteEnbRrc::ConfigureCell(uint16_t cellId) [member function]
     cls.add_method('ConfigureCell', 
                    'void', 
-                   [param('uint8_t', 'ulBandwidth'), param('uint8_t', 'dlBandwidth'), param('uint16_t', 'ulEarfcn'), param('uint16_t', 'dlEarfcn'), param('uint16_t', 'cellId')])
+                   [param('uint16_t', 'cellId')])
     ## lte-enb-rrc.h (module 'lte'): void ns3::LteEnbRrc::ConnectionRejectedTimeout(uint16_t rnti) [member function]
     cls.add_method('ConnectionRejectedTimeout', 
                    'void', 
@@ -16271,10 +16275,10 @@ def register_Ns3LteEnbRrc_methods(root_module, cls):
     cls.add_method('SetLteEnbCmacSapProvider', 
                    'void', 
                    [param('ns3::LteEnbCmacSapProvider *', 's')])
-    ## lte-enb-rrc.h (module 'lte'): void ns3::LteEnbRrc::SetLteEnbCmacSapProvider(ns3::LteEnbCmacSapProvider * s, uint16_t pos) [member function]
+    ## lte-enb-rrc.h (module 'lte'): void ns3::LteEnbRrc::SetLteEnbCmacSapProvider(ns3::LteEnbCmacSapProvider * s, uint8_t pos) [member function]
     cls.add_method('SetLteEnbCmacSapProvider', 
                    'void', 
-                   [param('ns3::LteEnbCmacSapProvider *', 's'), param('uint16_t', 'pos')])
+                   [param('ns3::LteEnbCmacSapProvider *', 's'), param('uint8_t', 'pos')])
     ## lte-enb-rrc.h (module 'lte'): void ns3::LteEnbRrc::SetLteEnbCphySapProvider(ns3::LteEnbCphySapProvider * s) [member function]
     cls.add_method('SetLteEnbCphySapProvider', 
                    'void', 
@@ -16315,15 +16319,8 @@ def register_Ns3LteEnbRrc_methods(root_module, cls):
     cls.add_method('SetSrsPeriodicity', 
                    'void', 
                    [param('uint32_t', 'p')])
-    ## lte-enb-rrc.h (module 'lte'): ns3::LteEnbRrc::m_componentCarrierEnbMap [variable]
-    cls.add_instance_attribute('m_componentCarrierEnbMap', 'std::map< unsigned char, ns3::Ptr< ns3::ComponentCarrierEnb > >', is_const=False)
     ## lte-enb-rrc.h (module 'lte'): void ns3::LteEnbRrc::DoDispose() [member function]
     cls.add_method('DoDispose', 
-                   'void', 
-                   [], 
-                   visibility='protected', is_virtual=True)
-    ## lte-enb-rrc.h (module 'lte'): void ns3::LteEnbRrc::DoInitialize() [member function]
-    cls.add_method('DoInitialize', 
                    'void', 
                    [], 
                    visibility='protected', is_virtual=True)
@@ -17458,6 +17455,11 @@ def register_Ns3LteHelper_methods(root_module, cls):
                    'ns3::Ptr< ns3::SpectrumChannel >', 
                    [], 
                    is_const=True)
+    ## lte-helper.h (module 'lte'): ns3::Ptr<ns3::SpectrumChannel> ns3::LteHelper::GetDownlinkSpectrumChannel(uint8_t carrierId) const [member function]
+    cls.add_method('GetDownlinkSpectrumChannel', 
+                   'ns3::Ptr< ns3::SpectrumChannel >', 
+                   [param('uint8_t', 'carrierId')], 
+                   is_const=True)
     ## lte-helper.h (module 'lte'): std::string ns3::LteHelper::GetEnbComponentCarrierManagerType() const [member function]
     cls.add_method('GetEnbComponentCarrierManagerType', 
                    'std::string', 
@@ -17513,10 +17515,10 @@ def register_Ns3LteHelper_methods(root_module, cls):
     cls.add_method('InstallUeDevice', 
                    'ns3::NetDeviceContainer', 
                    [param('ns3::NodeContainer', 'c')])
-    ## lte-helper.h (module 'lte'): void ns3::LteHelper::SetCcPhyParams(std::map<unsigned char, ns3::Ptr<ns3::ComponentCarrier>, std::less<unsigned char>, std::allocator<std::pair<unsigned char const, ns3::Ptr<ns3::ComponentCarrier> > > > ccmap) [member function]
+    ## lte-helper.h (module 'lte'): void ns3::LteHelper::SetCcPhyParams(std::map<unsigned char, ns3::ComponentCarrier, std::less<unsigned char>, std::allocator<std::pair<unsigned char const, ns3::ComponentCarrier> > > ccmap) [member function]
     cls.add_method('SetCcPhyParams', 
                    'void', 
-                   [param('std::map< unsigned char, ns3::Ptr< ns3::ComponentCarrier > >', 'ccmap')])
+                   [param('std::map< unsigned char, ns3::ComponentCarrier >', 'ccmap')])
     ## lte-helper.h (module 'lte'): void ns3::LteHelper::SetEnbAntennaModelAttribute(std::string n, ns3::AttributeValue const & v) [member function]
     cls.add_method('SetEnbAntennaModelAttribute', 
                    'void', 
@@ -18878,10 +18880,18 @@ def register_Ns3LteUeRrc_methods(root_module, cls):
     cls.add_method('GetLteUeCmacSapUser', 
                    'ns3::LteUeCmacSapUser *', 
                    [])
+    ## lte-ue-rrc.h (module 'lte'): ns3::LteUeCmacSapUser * ns3::LteUeRrc::GetLteUeCmacSapUser(uint8_t index) [member function]
+    cls.add_method('GetLteUeCmacSapUser', 
+                   'ns3::LteUeCmacSapUser *', 
+                   [param('uint8_t', 'index')])
     ## lte-ue-rrc.h (module 'lte'): ns3::LteUeCphySapUser * ns3::LteUeRrc::GetLteUeCphySapUser() [member function]
     cls.add_method('GetLteUeCphySapUser', 
                    'ns3::LteUeCphySapUser *', 
                    [])
+    ## lte-ue-rrc.h (module 'lte'): ns3::LteUeCphySapUser * ns3::LteUeRrc::GetLteUeCphySapUser(uint8_t index) [member function]
+    cls.add_method('GetLteUeCphySapUser', 
+                   'ns3::LteUeCphySapUser *', 
+                   [param('uint8_t', 'index')])
     ## lte-ue-rrc.h (module 'lte'): ns3::LteUeRrcSapProvider * ns3::LteUeRrc::GetLteUeRrcSapProvider() [member function]
     cls.add_method('GetLteUeRrcSapProvider', 
                    'ns3::LteUeRrcSapProvider *', 
@@ -18911,6 +18921,10 @@ def register_Ns3LteUeRrc_methods(root_module, cls):
                    'uint32_t', 
                    [], 
                    is_const=True)
+    ## lte-ue-rrc.h (module 'lte'): void ns3::LteUeRrc::InitializeSap() [member function]
+    cls.add_method('InitializeSap', 
+                   'void', 
+                   [])
     ## lte-ue-rrc.h (module 'lte'): void ns3::LteUeRrc::SetAsSapUser(ns3::LteAsSapUser * s) [member function]
     cls.add_method('SetAsSapUser', 
                    'void', 
@@ -18935,10 +18949,18 @@ def register_Ns3LteUeRrc_methods(root_module, cls):
     cls.add_method('SetLteUeCmacSapProvider', 
                    'void', 
                    [param('ns3::LteUeCmacSapProvider *', 's')])
+    ## lte-ue-rrc.h (module 'lte'): void ns3::LteUeRrc::SetLteUeCmacSapProvider(ns3::LteUeCmacSapProvider * s, uint8_t index) [member function]
+    cls.add_method('SetLteUeCmacSapProvider', 
+                   'void', 
+                   [param('ns3::LteUeCmacSapProvider *', 's'), param('uint8_t', 'index')])
     ## lte-ue-rrc.h (module 'lte'): void ns3::LteUeRrc::SetLteUeCphySapProvider(ns3::LteUeCphySapProvider * s) [member function]
     cls.add_method('SetLteUeCphySapProvider', 
                    'void', 
                    [param('ns3::LteUeCphySapProvider *', 's')])
+    ## lte-ue-rrc.h (module 'lte'): void ns3::LteUeRrc::SetLteUeCphySapProvider(ns3::LteUeCphySapProvider * s, uint8_t index) [member function]
+    cls.add_method('SetLteUeCphySapProvider', 
+                   'void', 
+                   [param('ns3::LteUeCphySapProvider *', 's'), param('uint8_t', 'index')])
     ## lte-ue-rrc.h (module 'lte'): void ns3::LteUeRrc::SetLteUeRrcSapUser(ns3::LteUeRrcSapUser * s) [member function]
     cls.add_method('SetLteUeRrcSapUser', 
                    'void', 
@@ -19513,9 +19535,9 @@ def register_Ns3NoOpComponentCarrierManager_methods(root_module, cls):
                    'void', 
                    [param('ns3::Ptr< ns3::Packet >', 'p'), param('uint16_t', 'rnti'), param('uint8_t', 'lcid')], 
                    visibility='protected', is_virtual=True)
-    ## no-op-component-carrier-manager.h (module 'lte'): std::vector<unsigned short, std::allocator<unsigned short> > ns3::NoOpComponentCarrierManager::DoReleaseDataRadioBearer(uint16_t rnti, uint8_t lcid) [member function]
+    ## no-op-component-carrier-manager.h (module 'lte'): std::vector<unsigned char, std::allocator<unsigned char> > ns3::NoOpComponentCarrierManager::DoReleaseDataRadioBearer(uint16_t rnti, uint8_t lcid) [member function]
     cls.add_method('DoReleaseDataRadioBearer', 
-                   'std::vector< unsigned short >', 
+                   'std::vector< unsigned char >', 
                    [param('uint16_t', 'rnti'), param('uint8_t', 'lcid')], 
                    visibility='protected', is_virtual=True)
     ## no-op-component-carrier-manager.h (module 'lte'): void ns3::NoOpComponentCarrierManager::DoRemoveUe(uint16_t rnti) [member function]

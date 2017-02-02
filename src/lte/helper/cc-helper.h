@@ -67,7 +67,7 @@ public:
   static TypeId GetTypeId (void);
   virtual void DoDispose (void);
 
-  Ptr<ComponentCarrier> DoCreateSingleCc (uint16_t ulBandwidth, uint16_t dlBandwidth, uint32_t ulEarfcn, uint32_t dlEarfcn, bool isPrimary);
+  ComponentCarrier DoCreateSingleCc (uint16_t ulBandwidth, uint16_t dlBandwidth, uint32_t ulEarfcn, uint32_t dlEarfcn, bool isPrimary);
 
   /**
   * Set an attribute for the Component Carrier to be created.
@@ -89,7 +89,7 @@ public:
   * you will create a intra-channel Carrier Aggregation scheme.
   */
 
-  std::map< uint8_t, Ptr<ComponentCarrier> > EquallySpacedCcs ();
+  std::map< uint8_t, ComponentCarrier > EquallySpacedCcs ();
 
   void SetNumberOfComponentCarriers (uint16_t nCc);
   void SetUlEarfcn (uint32_t ulEarfcn);
@@ -116,7 +116,7 @@ private:
    * \param pc - this identify if this is the Primary Component Carrier (PCC) - only one PCC is allowed 
    * \return pointer to the created object
    */
-  Ptr<ComponentCarrier> CreateSingleCc (uint16_t ulBandwidth, uint16_t dlBandwidth, uint32_t ulEarfcn, uint32_t dlEarfcn, bool isPrimary);
+  ComponentCarrier CreateSingleCc (uint16_t ulBandwidth, uint16_t dlBandwidth, uint32_t ulEarfcn, uint32_t dlEarfcn, bool isPrimary);
 
   /// Factory for each Carrier Component.
   ObjectFactory m_ccFactory;

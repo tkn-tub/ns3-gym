@@ -181,17 +181,17 @@ MacStatsCalculator::DlSchedulingCallback (Ptr<MacStatsCalculator> macStats, std:
   NS_LOG_FUNCTION (macStats << path);
   uint64_t imsi = 0;
   std::ostringstream pathAndRnti;
-  pathAndRnti << path << "/" << dlSchedulingCallbackInfo.rnti;
+  std::string pathEnb  = path.substr (0, path.find ("/ComponentCarrierMap"));
+  pathAndRnti << pathEnb << "/LteEnbRrc/UeMap/" << dlSchedulingCallbackInfo.rnti;
   if (macStats->ExistsImsiPath (pathAndRnti.str ()) == true)
     {
       imsi = macStats->GetImsiPath (pathAndRnti.str ());
     }
   else
     {
-      imsi = FindImsiFromEnbMac (path, dlSchedulingCallbackInfo.rnti);
+      imsi = FindImsiFromEnbRlcPath (pathAndRnti.str ());
       macStats->SetImsiPath (pathAndRnti.str (), imsi);
     }
-
   uint16_t cellId = 0;
   if (macStats->ExistsCellIdPath (pathAndRnti.str ()) == true)
     {
@@ -199,7 +199,7 @@ MacStatsCalculator::DlSchedulingCallback (Ptr<MacStatsCalculator> macStats, std:
     }
   else
     {
-      cellId = FindCellIdFromEnbMac (path, dlSchedulingCallbackInfo.rnti);
+      cellId = FindCellIdFromEnbRlcPath (pathAndRnti.str ());
       macStats->SetCellIdPath (pathAndRnti.str (), cellId);
     }
 
@@ -215,14 +215,15 @@ MacStatsCalculator::UlSchedulingCallback (Ptr<MacStatsCalculator> macStats, std:
 
   uint64_t imsi = 0;
   std::ostringstream pathAndRnti;
-  pathAndRnti << path << "/" << rnti;
+  std::string pathEnb  = path.substr (0, path.find ("/ComponentCarrierMap"));
+  pathAndRnti << pathEnb << "/LteEnbRrc/UeMap/" << rnti;
   if (macStats->ExistsImsiPath (pathAndRnti.str ()) == true)
     {
       imsi = macStats->GetImsiPath (pathAndRnti.str ());
     }
   else
     {
-      imsi = FindImsiFromEnbMac (path, rnti);
+      imsi = FindImsiFromEnbRlcPath (pathAndRnti.str ());
       macStats->SetImsiPath (pathAndRnti.str (), imsi);
     }
   uint16_t cellId = 0;
@@ -232,7 +233,7 @@ MacStatsCalculator::UlSchedulingCallback (Ptr<MacStatsCalculator> macStats, std:
     }
   else
     {
-      cellId = FindCellIdFromEnbMac (path, rnti);
+      cellId = FindCellIdFromEnbRlcPath (pathAndRnti.str ());
       macStats->SetCellIdPath (pathAndRnti.str (), cellId);
     }
 

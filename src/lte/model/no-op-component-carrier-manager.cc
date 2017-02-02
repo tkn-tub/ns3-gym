@@ -303,7 +303,7 @@ NoOpComponentCarrierManager::DoSetupDataRadioBearer (EpsBearer bearer, uint8_t b
 
 }
 
-std::vector<uint16_t>
+std::vector<uint8_t>
 NoOpComponentCarrierManager::DoReleaseDataRadioBearer (uint16_t rnti, uint8_t lcid)
 {
   NS_LOG_FUNCTION (this);
@@ -319,7 +319,7 @@ NoOpComponentCarrierManager::DoReleaseDataRadioBearer (uint16_t rnti, uint8_t lc
   NS_LOG_DEBUG (this << " remove lcid " << (uint16_t) lcid << " for rnti " << rnti);
   lcIt = lcsIt->second.find (lcid);
   NS_ASSERT_MSG (lcIt != lcsIt->second.end (), " Logical Channel not found");
-  std::vector<uint16_t> res;
+  std::vector<uint8_t> res;
   for (uint16_t i = 0; i < eccIt->second; i++)
     {
       res.insert (res.end (), i);

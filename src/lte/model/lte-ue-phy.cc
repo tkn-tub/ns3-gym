@@ -612,7 +612,7 @@ LteUePhy::GenerateMixedCqiReport (const SpectrumValue& sinr)
 
   NS_ASSERT (m_state != CELL_SEARCH);
   NS_ASSERT (m_cellId > 0);
-  
+
   SpectrumValue mixedSinr = (m_rsReceivedPower * m_paLinear);
   if (m_dataInterferencePowerUpdated)
     {

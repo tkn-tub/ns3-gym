@@ -156,7 +156,8 @@ TypeId LteEnbNetDevice::GetTypeId (void)
 LteEnbNetDevice::LteEnbNetDevice ()
   : m_isConstructed (false),
     m_isConfigured (false),
-    m_anr (0)
+    m_anr (0),
+    m_componentCarrierManager(0)
 {
   NS_LOG_FUNCTION (this);
 }
@@ -171,12 +172,6 @@ LteEnbNetDevice::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
 
-  m_mac->Dispose ();
-  m_mac = 0;
-
-  m_scheduler->Dispose ();
-  m_scheduler = 0;
-
   m_rrc->Dispose ();
   m_rrc = 0;
 
@@ -188,13 +183,16 @@ LteEnbNetDevice::DoDispose ()
       m_anr->Dispose ();
       m_anr = 0;
     }
-
-  m_ffrAlgorithm->Dispose ();
-  m_ffrAlgorithm = 0;
-
-  m_phy->Dispose ();
-  m_phy = 0;
-
+  m_componentCarrierManager->Dispose();
+  m_componentCarrierManager = 0;
+  // ComponentCarrierEnb::DoDispose() will call DoDispose
+  // of its PHY, MAC, FFR and scheduler instance
+  for (uint32_t i = 0; i < m_ccMap.size (); i++)
+    {
+      m_ccMap.at (i)->Dispose ();
+      m_ccMap.at (i) = 0;
+    }
+   
   LteNetDevice::DoDispose ();
 }
 
@@ -203,13 +201,13 @@ LteEnbNetDevice::DoDispose ()
 Ptr<LteEnbMac>
 LteEnbNetDevice::GetMac () const
 {
-  return m_mac;
+  return m_ccMap.at (0)->GetMac ();
 }
 
 Ptr<LteEnbPhy>
 LteEnbNetDevice::GetPhy () const
 {
-  return m_phy;
+  return m_ccMap.at (0)->GetPhy ();
 }
 
 Ptr<LteEnbMac>
@@ -368,9 +366,13 @@ LteEnbNetDevice::DoInitialize (void)
   NS_LOG_FUNCTION (this);
   m_isConstructed = true;
   UpdateConfig ();
-  m_phy->Initialize ();
-  m_mac->Initialize ();
+  std::map< uint8_t, Ptr<ComponentCarrierEnb> >::iterator it;
+  for (it = m_ccMap.begin (); it != m_ccMap.end (); ++it)
+    {
+       it->second->Initialize ();
+    }
   m_rrc->Initialize ();
+  m_componentCarrierManager->Initialize();
   m_handoverAlgorithm->Initialize ();
 
   if (m_anr != 0)
@@ -402,7 +404,7 @@ LteEnbNetDevice::UpdateConfig (void)
         {
           NS_LOG_LOGIC (this << " Configure cell " << m_cellId);
           // we have to make sure that this function is called only once
-          m_rrc->ConfigureCell (m_ulBandwidth, m_dlBandwidth, m_ulEarfcn, m_dlEarfcn, m_cellId);
+          m_rrc->ConfigureCell (m_cellId);
           m_isConfigured = true;
         }
 
