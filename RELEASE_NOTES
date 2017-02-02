@@ -70,6 +70,7 @@ Bugs fixed
 - Bug 2601 - HT stations should use 40 MHz channel width if the configured channel width is set to 80 or 160 MHz
 - Bug 2604 - QosData frames with Block Ack policy should be separated by SIFS as long as they belong to the same TXOP
 - Bug 2605 - A HT/VHT station transmitting to a legacy access point results in a null throughput
+- Bug 2606 - Ideal rate manager does not work correctly when a HT/VHT station is transmitting to a legacy access point
 - Bug 2607 - Minstrel HT manager results in an endless loop when a 802.11ac station is transmitting to a 802.11a access point
 - Bug 2614 - RIP header version should be set to 2
 - Bug 2627 - Ipv6RawSocket does not honor the bound interface when sending packets

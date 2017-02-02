@@ -279,7 +279,8 @@ IdealWifiManager::DoGetDataTxVector (WifiRemoteStation *st)
     }
   else
     {
-      if (HasVhtSupported () == true || HasHtSupported () == true)
+      if ((HasVhtSupported () == true || HasHtSupported () == true)
+          && (GetHtSupported (st) == true || GetVhtSupported (st) == true))
         {
           for (uint32_t i = 0; i < GetNMcsSupported (station); i++)
             {
