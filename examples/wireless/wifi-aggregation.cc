@@ -67,14 +67,18 @@ int main (int argc, char *argv[])
   uint32_t payloadSize = 1472; //bytes
   uint64_t simulationTime = 10; //seconds
   double distance = 5; //meters
+  bool enableRts = 0;
   bool enablePcap = 0;
 
   CommandLine cmd;
   cmd.AddValue ("payloadSize", "Payload size in bytes", payloadSize);
+  cmd.AddValue ("enableRts", "Enable or disable RTS/CTS", enableRts);
   cmd.AddValue ("simulationTime", "Simulation time in seconds", simulationTime);
   cmd.AddValue ("distance", "Distance in meters between the station and the access point", distance);
   cmd.AddValue ("enablePcap", "Enable/disable pcap file generation", enablePcap);
   cmd.Parse (argc, argv);
+  
+  Config::SetDefault ("ns3::WifiRemoteStationManager::RtsCtsThreshold", enableRts ? StringValue ("0") : StringValue ("999999"));
 
   NodeContainer wifiStaNode;
   wifiStaNode.Create (4);
@@ -165,8 +169,6 @@ int main (int argc, char *argv[])
   positionAlloc->Add (Vector (10 + distance, 0.0, 0.0));
   positionAlloc->Add (Vector (20 + distance, 0.0, 0.0));
   positionAlloc->Add (Vector (30 + distance, 0.0, 0.0));
-  //Remark: while we set these positions 10 meters apart, the networks do not interact
-  //and the only variable that affects transmission performance is the distance.
   
   mobility.SetPositionAllocator (positionAlloc);
   mobility.Install (wifiApNode);
