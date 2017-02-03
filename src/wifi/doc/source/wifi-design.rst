@@ -206,10 +206,8 @@ The SpectrumWifiPhy framework uses the ``Spectrum`` channel
 framework, which is not documented herein but in the Spectrum module
 documentation.
 
-YansWifiChannel
-###############
-
-This is the only channel model presently in the |ns3| wifi module.  The 
+The YansWifiChannel is the only concrete channel model class in 
+the |ns3| wifi module.  The 
 ``ns3::YansWifiChannel`` implementation uses the propagation loss and 
 delay models provided within the |ns3| :ref:`Propagation` module.
 In particular, a number of propagation models can be added (chained together,
