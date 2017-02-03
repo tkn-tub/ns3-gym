@@ -250,10 +250,11 @@ public:
  * RFC 3042.
  *
  * In ns-3, these algorithms are included in this class, and it is implemented inside
- * the ReceivedAck method. The attribute which manages the number of dup ACKs
+ * the ProcessAck method. The attribute which manages the number of dup ACKs
  * necessary to start the fast retransmit algorithm is named "ReTxThreshold",
  * and its default value is 3, while the Limited Transmit one can be enabled
- * by setting the attribute "LimitedTransmit" to true.
+ * by setting the attribute "LimitedTransmit" to true. Before entering the
+ * recovery phase, the method EnterRecovery is called.
  *
  * Fast recovery
  * --------------------------
@@ -263,7 +264,7 @@ public:
  * the slow start threshold is halved, and the cWnd is set equal to such value,
  * plus segments for the cWnd inflation.
  *
- * The algorithm is implemented in the ReceivedAck method.
+ * The algorithm is implemented in the ProcessAck method.
  *
  */
 class TcpSocketBase : public TcpSocket
@@ -839,6 +840,14 @@ protected:
   virtual void ReceivedAck (Ptr<Packet> packet, const TcpHeader& tcpHeader);
 
   /**
+   * \brief Process a received ack
+   * \param ackNumber ack number
+   * \param scoreboardUpdated if true indicates that the scoreboard has been
+   * updated with SACK information
+   */
+  virtual void ProcessAck (const SequenceNumber32 &ackNumber, bool scoreboardUpdated);
+
+  /**
    * \brief Recv of a data, put into buffer, call L7 to get it if necessary
    * \param packet the packet
    * \param tcpHeader the packet's TCP header
@@ -880,9 +889,9 @@ protected:
   void LimitedTransmit ();
 
   /**
-   * \brief Enter the FastRetransmit, and retransmit the head
+   * \brief Enter the CA_RECOVERY, and retransmit the head
    */
-  void FastRetransmit ();
+  void EnterRecovery ();
 
   /**
    * \brief Call Retransmit() upon RTO event

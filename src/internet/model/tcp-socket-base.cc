@@ -1524,37 +1524,59 @@ TcpSocketBase::LimitedTransmit ()
 {
   NS_LOG_FUNCTION (this);
   NS_ASSERT (m_limitedTx);
-  NS_ASSERT (m_txBuffer->SizeFromSequence (m_tcb->m_nextTxSequence) > 0);
 
   NS_LOG_INFO ("Limited transmit");
-  uint32_t sz = SendDataPacket (m_tcb->m_nextTxSequence, m_tcb->m_segmentSize, true);
-  m_tcb->m_nextTxSequence += sz;
+  // RFC 6675, Section 5, point 3, continuing :
+  // (3.2) Run SetPipe ().
+  // (3.3) If (cwnd - pipe) >= 1 SMSS, there exists previously unsent
+  //      data, and the receiver's advertised window allows, transmit
+  //      up to 1 SMSS of data starting with the octet HighData+1 and
+  //      update HighData to reflect this transmission, then return
+  //      to (3.2).
+  // (3.2) and (3.1) done in SendPendingData
+  SendPendingData (m_connected);
 }
 
 void
-TcpSocketBase::FastRetransmit ()
+TcpSocketBase::EnterRecovery ()
 {
   NS_LOG_FUNCTION (this);
   NS_ASSERT (m_tcb->m_congState != TcpSocketState::CA_RECOVERY);
 
+  NS_LOG_DEBUG (TcpSocketState::TcpCongStateName[m_tcb->m_congState] <<
+                " -> CA_RECOVERY");
+
+  // RFC 6675, point (4):
+  // (4) Invoke fast retransmit and enter loss recovery as follows:
+  // (4.1) RecoveryPoint = HighData
   m_recover = m_tcb->m_highTxMark;
+
   m_congestionControl->CongestionStateSet (m_tcb, TcpSocketState::CA_RECOVERY);
   m_tcb->m_congState = TcpSocketState::CA_RECOVERY;
 
+  // (4.2) ssthresh = cwnd = (FlightSize / 2)
   m_tcb->m_ssThresh = m_congestionControl->GetSsThresh (m_tcb,
                                                         BytesInFlight ());
-  m_tcb->m_cWnd = m_tcb->m_ssThresh + m_dupAckCount * m_tcb->m_segmentSize;
+  m_tcb->m_cWnd = m_tcb->m_ssThresh;
 
   NS_LOG_INFO (m_dupAckCount << " dupack. Enter fast recovery mode." <<
                "Reset cwnd to " << m_tcb->m_cWnd << ", ssthresh to " <<
                m_tcb->m_ssThresh << " at fast recovery seqnum " << m_recover);
+
+  // (4.3) Retransmit the first data segment presumed dropped
   DoRetransmit ();
+  // (4.4) Run SetPipe ()
+  // (4.5) Proceed to step (C)
+  // the step C is done after the ProcessAck function (SendPendingData)
 }
 
 void
 TcpSocketBase::DupAck ()
 {
   NS_LOG_FUNCTION (this);
+  // RFC 6675, Section 5:
+  // the TCP MUST increase DupAcks by one ...
+  // NOTE: We count also the dupAcks received in CA_RECOVERY
   ++m_dupAckCount;
 
   if (m_tcb->m_congState == TcpSocketState::CA_OPEN)
@@ -1571,29 +1593,47 @@ TcpSocketBase::DupAck ()
 
   if (m_tcb->m_congState == TcpSocketState::CA_DISORDER)
     {
+      // RFC 6675, Section 5, continuing:
+      // ... and take the following steps:
+      // (1) If DupAcks >= DupThresh, go to step (4).
       if ((m_dupAckCount == m_retxThresh) && (m_highRxAckMark >= m_recover))
         {
-          // triple duplicate ack triggers fast retransmit (RFC2582 sec.3 bullet #1)
-          NS_LOG_DEBUG (TcpSocketState::TcpCongStateName[m_tcb->m_congState] <<
-                        " -> RECOVERY");
-          FastRetransmit ();
+          EnterRecovery ();
+          NS_ASSERT (m_tcb->m_congState == TcpSocketState::CA_RECOVERY);
         }
-      else if (m_limitedTx && m_txBuffer->SizeFromSequence (m_tcb->m_nextTxSequence) > 0)
+      // (2) If DupAcks < DupThresh but IsLost (HighACK + 1) returns true
+      // (indicating at least three segments have arrived above the current
+      // cumulative acknowledgment point, which is taken to indicate loss)
+      // go to step (4).
+      else if (m_txBuffer->IsLost (m_highRxAckMark + 1, m_retxThresh, m_tcb->m_segmentSize))
         {
-          // RFC3042 Limited transmit: Send a new packet for each duplicated ACK before fast retransmit
-          LimitedTransmit ();
+          EnterRecovery ();
+          NS_ASSERT (m_tcb->m_congState == TcpSocketState::CA_RECOVERY);
         }
-    }
-  else if (m_tcb->m_congState == TcpSocketState::CA_RECOVERY)
-    { // Increase cwnd for every additional dupack (RFC2582, sec.3 bullet #3)
-      m_tcb->m_cWnd += m_tcb->m_segmentSize;
-      NS_LOG_INFO (m_dupAckCount << " Dupack received in fast recovery mode."
-                   "Increase cwnd to " << m_tcb->m_cWnd);
-      SendPendingData (m_connected);
+      else
+        {
+          // (3) The TCP MAY transmit previously unsent data segments as per
+          // Limited Transmit [RFC5681] ...except that the number of octets
+          // which may be sent is governed by pipe and cwnd as follows:
+          //
+          // (3.1) Set HighRxt to HighACK.
+          // Not clear in RFC. We don't do this here, since we still have
+          // to retransmit the segment.
+
+          NS_ASSERT (m_dupAckCount < m_retxThresh);
+          if (m_limitedTx)
+            {
+              // (3.2) and (3.3) are performed in the following:
+              LimitedTransmit ();
+            }
+          // (3.4) Terminate processing of this ACK.
+        }
     }
 
-  // Artificially call PktsAcked. After all, one segment has been ACKed.
-  m_congestionControl->PktsAcked (m_tcb, 1, m_lastRtt);
+  if (m_dupAckCount > 0)
+    {
+      NS_ASSERT (m_tcb->m_congState > TcpSocketState::CA_OPEN);
+    }
 }
 
 /* Process the newly received ACK */
@@ -1605,33 +1645,104 @@ TcpSocketBase::ReceivedAck (Ptr<Packet> packet, const TcpHeader& tcpHeader)
   NS_ASSERT (0 != (tcpHeader.GetFlags () & TcpHeader::ACK));
   NS_ASSERT (m_tcb->m_segmentSize > 0);
 
+  // RFC 6675, Section 5, 1st paragraph:
+  // Upon the receipt of any ACK containing SACK information, the
+  // scoreboard MUST be updated via the Update () routine (done in ReadOptions)
   bool scoreboardUpdated = false;
   ReadOptions (tcpHeader, scoreboardUpdated);
 
   SequenceNumber32 ackNumber = tcpHeader.GetAckNumber ();
 
-  NS_LOG_DEBUG ("ACK of " << ackNumber <<
-                " SND.UNA=" << m_txBuffer->HeadSequence () <<
-                " SND.NXT=" << m_tcb->m_nextTxSequence);
+  // RFC 6675 Section 5: 2nd, 3rd paragraph and point (A), (B) implementation
+  // are inside the function ProcessAck
+  ProcessAck (ackNumber, scoreboardUpdated);
 
-  m_tcb->m_lastAckedSeq = ackNumber;
-
-  if (ackNumber == m_txBuffer->HeadSequence ()
-      && ackNumber < m_tcb->m_nextTxSequence
-      && packet->GetSize () == 0)
+  // RFC 6675, Section 5, point (C), try to send more data. NB: (C) is implemented
+  // inside SendPendingData
+  if (!m_sendPendingDataEvent.IsRunning ())
     {
-      // There is a DupAck
+      m_sendPendingDataEvent = Simulator::Schedule (TimeStep (1),
+                                                    &TcpSocketBase::SendPendingData,
+                                                    this, m_connected);
+    }
+
+  // If there is any data piggybacked, store it into m_rxBuffer
+  if (packet->GetSize () > 0)
+    {
+      ReceivedData (packet, tcpHeader);
+    }
+}
+
+void
+TcpSocketBase::ProcessAck (const SequenceNumber32 &ackNumber, bool scoreboardUpdated)
+{
+  NS_LOG_FUNCTION (this << ackNumber << scoreboardUpdated);
+  // RFC 6675, Section 5, 2nd paragraph:
+  // If the incoming ACK is a cumulative acknowledgment, the TCP MUST
+  // reset DupAcks to zero.
+  uint32_t oldDupAckCount = m_dupAckCount; // remember the old value
+  if (ackNumber > m_txBuffer->HeadSequence ())
+    {
+      m_dupAckCount = 0;
+    }
+
+  m_tcb->m_lastAckedSeq = ackNumber; // Update lastAckedSeq
+
+  /* In RFC 5681 the definition of duplicate acknowledgment was strict:
+   *
+   * (a) the receiver of the ACK has outstanding data,
+   * (b) the incoming acknowledgment carries no data,
+   * (c) the SYN and FIN bits are both off,
+   * (d) the acknowledgment number is equal to the greatest acknowledgment
+   *     received on the given connection (TCP.UNA from [RFC793]),
+   * (e) the advertised window in the incoming acknowledgment equals the
+   *     advertised window in the last incoming acknowledgment.
+   *
+   * With RFC 6675, this definition has been reduced:
+   *
+   * (a) the ACK is carrying a SACK block that identifies previously
+   *     unacknowledged and un-SACKed octets between HighACK (TCP.UNA) and
+   *     HighData (m_highTxMark)
+   */
+  // RFC 6675, Section 5, 3rd paragraph:
+  // If the incoming ACK is a duplicate acknowledgment per the definition
+  // in Section 2 (regardless of its status as a cumulative
+  // acknowledgment), and the TCP is not currently in loss recovery
+  if (scoreboardUpdated)
+    {
+      NS_LOG_DEBUG ("ACK of " << ackNumber <<
+                    " SND.UNA=" << m_txBuffer->HeadSequence () <<
+                    " SND.NXT=" << m_tcb->m_nextTxSequence <<
+                    " we are ready to process the dupAck");
+      // loss recovery check is done inside this function thanks to
+      // the congestion state machine
       DupAck ();
     }
-  else if (ackNumber == m_txBuffer->HeadSequence ()
-           && ackNumber == m_tcb->m_nextTxSequence)
+
+  if (ackNumber == m_txBuffer->HeadSequence ()
+      && ackNumber == m_tcb->m_nextTxSequence)
     {
+      NS_LOG_INFO ("ACK of " << ackNumber <<
+                   ", there is no need to process (we haven't data to transmit)");
       // Dupack, but the ACK is precisely equal to the nextTxSequence
+      return;
+    }
+  else if (ackNumber == m_txBuffer->HeadSequence ()
+           && ackNumber > m_tcb->m_nextTxSequence)
+    {
+      // ACK of the FIN bit ... nextTxSequence is not updated since we
+      // don't have anything to transmit
+      NS_LOG_DEBUG ("Update nextTxSequence manually to " << ackNumber);
+      m_tcb->m_nextTxSequence = ackNumber;
+    }
+  else if (ackNumber == m_txBuffer->HeadSequence ())
+    {
+      // DupAck. Artificially call PktsAcked: after all, one segment has been ACKed.
+      NS_LOG_INFO ("ACK of " << ackNumber << ", PktsAcked called (ACK already managed in DupAck)");
+      m_congestionControl->PktsAcked (m_tcb, 1, m_lastRtt);
     }
   else if (ackNumber > m_txBuffer->HeadSequence ())
-    { // Case 3: New ACK, reset m_dupAckCount and update m_txBuffer
-      bool callCongestionControl = true;
-      bool resetRTO = true;
+    {
       uint32_t bytesAcked = ackNumber - m_txBuffer->HeadSequence ();
       uint32_t segsAcked  = bytesAcked / m_tcb->m_segmentSize;
       m_bytesAckedNotProcessed += bytesAcked % m_tcb->m_segmentSize;
@@ -1642,168 +1753,133 @@ TcpSocketBase::ReceivedAck (Ptr<Packet> packet, const TcpHeader& tcpHeader)
           m_bytesAckedNotProcessed -= m_tcb->m_segmentSize;
         }
 
-      NS_LOG_LOGIC (" Bytes acked: " << bytesAcked <<
-                    " Segments acked: " << segsAcked <<
-                    " bytes left: " << m_bytesAckedNotProcessed);
-
-      /* The following switch is made because m_dupAckCount can be
-       * "inflated" through out-of-order segments (e.g. from retransmission,
-       * while segments have not been lost but are network-reordered). At
-       * least one segment has been acked; in the luckiest case, an amount
-       * equals to segsAcked-m_dupAckCount has not been processed.
-       *
-       * To be clear: segsAcked will be passed to PktsAcked, and it should take
-       * in considerations the times that it has been already called, while newSegsAcked
-       * will be passed to IncreaseCwnd, and it represents the amount of
-       * segments that are allowed to increase the cWnd value.
-       */
-      uint32_t newSegsAcked = segsAcked;
-      if (segsAcked > m_dupAckCount)
+      // RFC 6675, Section 5, part (B)
+      // (B) Upon receipt of an ACK that does not cover RecoveryPoint, the
+      // following actions MUST be taken:
+      //
+      // (B.1) Use Update () to record the new SACK information conveyed
+      //       by the incoming ACK.
+      // (B.2) Use SetPipe () to re-calculate the number of octets still
+      //       in the network.
+      //
+      // (B.1) is done at the beginning, while (B.2) is delayed to part (C) while
+      // trying to transmit with SendPendingData. We are not allowed to exit
+      // the CA_RECOVERY phase. Just process this partial ack (RFC 5681)
+      if (ackNumber < m_recover && m_tcb->m_congState == TcpSocketState::CA_RECOVERY)
         {
-          segsAcked -= m_dupAckCount;
+          m_txBuffer->DiscardUpTo (ackNumber);
+          DoRetransmit (); // Assume the next seq is lost. Retransmit lost packet
+
+          // This partial ACK acknowledge the fact that one segment has been
+          // previously lost and now successfully received. All others have
+          // been processed when they come under the form of dupACKs
+          m_congestionControl->PktsAcked (m_tcb, 1, m_lastRtt);
+          NewAck (ackNumber, m_isFirstPartialAck);
+
+          if (m_isFirstPartialAck)
+            {
+              NS_LOG_DEBUG ("Partial ACK of " << ackNumber <<
+                            " and this is the first (RTO will be reset)");
+              m_isFirstPartialAck = false;
+            }
+          else
+            {
+              NS_LOG_DEBUG ("Partial ACK of " << ackNumber <<
+                            " and this is NOT the first (RTO will not be reset)");
+            }
+        }
+      // From RFC 6675 section 5.1
+      // In addition, a new recovery phase (as described in Section 5) MUST NOT
+      // be initiated until HighACK is greater than or equal to the new value
+      // of RecoveryPoint.
+      else if (ackNumber < m_recover && m_tcb->m_congState == TcpSocketState::CA_LOSS)
+        {
+          m_congestionControl->PktsAcked (m_tcb, segsAcked, m_lastRtt);
+
+          m_congestionControl->IncreaseWindow (m_tcb, segsAcked);
+
+          NS_LOG_DEBUG ("Ack of " << ackNumber << ", equivalent of " << segsAcked <<
+                        " segments in CA_LOSS. Cong Control Called, cWnd=" << m_tcb->m_cWnd <<
+                        " ssTh=" << m_tcb->m_ssThresh);
+
+          NewAck (ackNumber, true);
         }
       else
         {
-          segsAcked = 1;
-        }
-
-      if (m_tcb->m_congState == TcpSocketState::CA_OPEN)
-        {
-          m_congestionControl->PktsAcked (m_tcb, segsAcked, m_lastRtt);
-        }
-      else if (m_tcb->m_congState == TcpSocketState::CA_DISORDER)
-        {
-          // The network reorder packets. Linux changes the counting lost
-          // packet algorithm from FACK to NewReno. We simply go back in Open.
-          m_congestionControl->CongestionStateSet (m_tcb, TcpSocketState::CA_OPEN);
-          m_tcb->m_congState = TcpSocketState::CA_OPEN;
-          m_congestionControl->PktsAcked (m_tcb, segsAcked, m_lastRtt);
-          m_dupAckCount = 0;
-
-          NS_LOG_DEBUG ("DISORDER -> OPEN");
-        }
-      else if (m_tcb->m_congState == TcpSocketState::CA_RECOVERY)
-        {
-          if (ackNumber < m_recover)
+          if (m_tcb->m_congState == TcpSocketState::CA_OPEN)
             {
-              /* Partial ACK.
-               * In case of partial ACK, retransmit the first unacknowledged
-               * segment. Deflate the congestion window by the amount of new
-               * data acknowledged by the Cumulative Acknowledgment field.
-               * If the partial ACK acknowledges at least one SMSS of new data,
-               * then add back SMSS bytes to the congestion window.
-               * This artificially inflates the congestion window in order to
-               * reflect the additional segment that has left the network.
-               * Send a new segment if permitted by the new value of cwnd.
-               * This "partial window deflation" attempts to ensure that, when
-               * fast recovery eventually ends, approximately ssthresh amount
-               * of data will be outstanding in the network.  Do not exit the
-               * fast recovery procedure (i.e., if any duplicate ACKs subsequently
-               * arrive, execute step 4 of Section 3.2 of [RFC5681]).
-                */
-              m_tcb->m_cWnd = SafeSubtraction (m_tcb->m_cWnd, bytesAcked);
-
-              if (segsAcked >= 1)
+              NS_LOG_DEBUG (segsAcked << " segments acked in CA_OPEN, ack of " <<
+                            ackNumber);
+              m_congestionControl->PktsAcked (m_tcb, segsAcked, m_lastRtt);
+            }
+          else if (m_tcb->m_congState == TcpSocketState::CA_DISORDER)
+            {
+              // The network reorder packets. Linux changes the counting lost
+              // packet algorithm from FACK to NewReno. We simply go back in Open.
+              m_congestionControl->CongestionStateSet (m_tcb, TcpSocketState::CA_OPEN);
+              m_tcb->m_congState = TcpSocketState::CA_OPEN;
+              if (segsAcked >= oldDupAckCount)
                 {
-                  m_tcb->m_cWnd += m_tcb->m_segmentSize;
-                }
-
-              callCongestionControl = false; // No congestion control on cWnd show be invoked
-              m_dupAckCount = SafeSubtraction (m_dupAckCount, segsAcked); // Update the dupAckCount
-              m_txBuffer->DiscardUpTo (ackNumber);  //Bug 1850:  retransmit before newack
-              DoRetransmit (); // Assume the next seq is lost. Retransmit lost packet
-
-              if (m_isFirstPartialAck)
-                {
-                  m_isFirstPartialAck = false;
+                  m_congestionControl->PktsAcked (m_tcb, segsAcked - oldDupAckCount, m_lastRtt);
                 }
               else
                 {
-                  resetRTO = false;
+                  NS_ASSERT (oldDupAckCount - segsAcked == 1);
                 }
-
-              /* This partial ACK acknowledge the fact that one segment has been
-               * previously lost and now successfully received. All others have
-               * been processed when they come under the form of dupACKs
-               */
-              m_congestionControl->PktsAcked (m_tcb, 1, m_lastRtt);
-
-              NS_LOG_INFO ("Partial ACK for seq " << ackNumber <<
-                           " in fast recovery: cwnd set to " << m_tcb->m_cWnd <<
-                           " recover seq: " << m_recover <<
-                           " dupAck count: " << m_dupAckCount);
+              NS_LOG_DEBUG (segsAcked << " segments acked in CA_DISORDER, ack of " <<
+                            ackNumber << " exiting CA_DISORDER -> CA_OPEN");
             }
-          else if (ackNumber >= m_recover)
-            { // Full ACK (RFC2582 sec.3 bullet #5 paragraph 2, option 1)
-              m_tcb->m_cWnd = std::min (m_tcb->m_ssThresh.Get (),
-                                        BytesInFlight () + m_tcb->m_segmentSize);
-              m_isFirstPartialAck = true;
-              m_dupAckCount = 0;
-
-              /* This FULL ACK acknowledge the fact that one segment has been
-               * previously lost and now successfully received. All others have
-               * been processed when they come under the form of dupACKs,
-               * except the (maybe) new ACKs which come from a new window
-               */
-              m_congestionControl->PktsAcked (m_tcb, segsAcked, m_lastRtt);
-              newSegsAcked = (ackNumber - m_recover) / m_tcb->m_segmentSize;
-              m_congestionControl->CongestionStateSet (m_tcb, TcpSocketState::CA_OPEN);
-              m_tcb->m_congState = TcpSocketState::CA_OPEN;
-
-              NS_LOG_INFO ("Received full ACK for seq " << ackNumber <<
-                           ". Leaving fast recovery with cwnd set to " << m_tcb->m_cWnd);
-              NS_LOG_DEBUG ("RECOVERY -> OPEN");
-            }
-        }
-      else if (m_tcb->m_congState == TcpSocketState::CA_LOSS)
-        {
-          // Go back in OPEN state
-          m_isFirstPartialAck = true;
-          m_congestionControl->PktsAcked (m_tcb, segsAcked, m_lastRtt);
-          m_dupAckCount = 0;
-          if(ackNumber >= m_recover + 1)
+          // RFC 6675, Section 5:
+          // Once a TCP is in the loss recovery phase, the following procedure
+          // MUST be used for each arriving ACK:
+          // (A) An incoming cumulative ACK for a sequence number greater than
+          // RecoveryPoint signals the end of loss recovery, and the loss
+          // recovery phase MUST be terminated.  Any information contained in
+          // the scoreboard for sequence numbers greater than the new value of
+          // HighACK SHOULD NOT be cleared when leaving the loss recovery
+          // phase.
+          else if (m_tcb->m_congState == TcpSocketState::CA_RECOVERY)
             {
+              m_isFirstPartialAck = true;
+
+              // Recalculate the segs acked, that are from m_recover to ackNumber
+              // (which are the ones we have not passed to PktsAcked and that
+              // can increase cWnd)
+              segsAcked = (ackNumber - m_recover) / m_tcb->m_segmentSize;
+              m_congestionControl->PktsAcked (m_tcb, segsAcked, m_lastRtt);
+
               m_congestionControl->CongestionStateSet (m_tcb, TcpSocketState::CA_OPEN);
               m_tcb->m_congState = TcpSocketState::CA_OPEN;
-              NS_LOG_DEBUG ("LOSS -> OPEN");
-            }
-          m_congestionControl->CongestionStateSet (m_tcb, TcpSocketState::CA_OPEN);
-          m_tcb->m_congState = TcpSocketState::CA_OPEN;
-          NS_LOG_DEBUG ("LOSS -> OPEN");
-        }
 
-      if (callCongestionControl)
-        {
-          m_congestionControl->IncreaseWindow (m_tcb, newSegsAcked);
+              NS_LOG_DEBUG (segsAcked << " segments acked in CA_RECOVER, ack of " <<
+                            ackNumber << ", exiting CA_RECOVERY -> CA_OPEN");
+            }
+          else if (m_tcb->m_congState == TcpSocketState::CA_LOSS)
+            {
+              m_isFirstPartialAck = true;
+
+              // Recalculate the segs acked, that are from m_recover to ackNumber
+              // (which are the ones we have not passed to PktsAcked and that
+              // can increase cWnd)
+              segsAcked = (ackNumber - m_recover) / m_tcb->m_segmentSize;
+
+              m_congestionControl->PktsAcked (m_tcb, segsAcked, m_lastRtt);
+
+              m_congestionControl->CongestionStateSet (m_tcb, TcpSocketState::CA_OPEN);
+              m_tcb->m_congState = TcpSocketState::CA_OPEN;
+              NS_LOG_DEBUG (segsAcked << " segments acked in CA_LOSS, ack of" <<
+                            ackNumber << ", exiting CA_LOSS -> CA_OPEN");
+            }
+
+          m_congestionControl->IncreaseWindow (m_tcb, segsAcked);
+          m_dupAckCount = 0;
 
           NS_LOG_LOGIC ("Congestion control called: " <<
                         " cWnd: " << m_tcb->m_cWnd <<
                         " ssTh: " << m_tcb->m_ssThresh);
+
+          NewAck (ackNumber, true);
         }
-
-      // Reset the data retransmission count. We got a new ACK!
-      m_dataRetrCount = m_dataRetries;
-
-      if (m_isFirstPartialAck == false)
-        {
-          NS_ASSERT (m_tcb->m_congState == TcpSocketState::CA_RECOVERY);
-        }
-
-      NewAck (ackNumber, resetRTO);
-
-      // Try to send more data
-      if (!m_sendPendingDataEvent.IsRunning ())
-        {
-          m_sendPendingDataEvent = Simulator::Schedule (TimeStep (1),
-                                                        &TcpSocketBase::SendPendingData,
-                                                        this, m_connected);
-        }
-    }
-
-  // If there is any data piggybacked, store it into m_rxBuffer
-  if (packet->GetSize () > 0)
-    {
-      ReceivedData (packet, tcpHeader);
     }
 }
 
@@ -3018,6 +3094,9 @@ void
 TcpSocketBase::NewAck (SequenceNumber32 const& ack, bool resetRTO)
 {
   NS_LOG_FUNCTION (this << ack);
+
+  // Reset the data retransmission count. We got a new ACK!
+  m_dataRetrCount = m_dataRetries;
 
   if (m_state != SYN_RCVD && resetRTO)
     { // Set RTO unless the ACK is received in SYN_RCVD state
