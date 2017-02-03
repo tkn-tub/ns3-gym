@@ -26,6 +26,7 @@
 #include "ns3/traced-value.h"
 #include "ns3/sequence-number.h"
 #include "ns3/nstime.h"
+#include "ns3/tcp-option-sack.h"
 
 namespace ns3 {
 class Packet;
@@ -206,6 +207,12 @@ public:
    * previous sequences.
    */
   void DiscardUpTo (const SequenceNumber32& seq);
+
+  /**
+   * \brief Update the scoreboard
+   * \param list list of SACKed blocks
+   */
+  bool Update (const TcpOptionSack::SackList &list);
 
 private:
   friend std::ostream & operator<< (std::ostream & os, TcpTxBuffer const & tcpTxBuf);

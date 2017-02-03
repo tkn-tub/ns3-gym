@@ -607,6 +607,69 @@ TcpTxBuffer::DiscardUpTo (const SequenceNumber32& seq)
   NS_ASSERT (m_firstByteSeq >= seq);
 }
 
+bool
+TcpTxBuffer::Update (const TcpOptionSack::SackList &list)
+{
+  NS_LOG_FUNCTION (this);
+
+  bool modified = false;
+  TcpOptionSack::SackList::const_iterator option_it;
+  NS_LOG_INFO ("Updating scoreboard, got " << list.size () << " blocks to analyze");
+  for (option_it = list.begin (); option_it != list.end (); ++option_it)
+    {
+      Ptr<Packet> current;
+      TcpTxItem *item;
+      const TcpOptionSack::SackBlock b = (*option_it);
+
+      PacketList::iterator item_it = m_sentList.begin ();
+      SequenceNumber32 beginOfCurrentPacket = m_firstByteSeq;
+
+      while (item_it != m_sentList.end ())
+        {
+          item = *item_it;
+          current = item->m_packet;
+
+          // Check the boundary of this packet ... only mark as sacked if
+          // it is precisely mapped over the option
+          if (beginOfCurrentPacket >= b.first
+              && beginOfCurrentPacket + current->GetSize () <= b.second)
+            {
+              if (item->m_sacked)
+                {
+                  NS_LOG_INFO ("Received block [" << b.first << ";" << b.second <<
+                               ", checking sentList for block " << beginOfCurrentPacket <<
+                               ";" << beginOfCurrentPacket + current->GetSize () <<
+                               "], found in the sackboard already sacked");
+                }
+              else
+                {
+                  item->m_sacked = true;
+                  NS_LOG_INFO ("Received block [" << b.first << ";" << b.second <<
+                               ", checking sentList for block " << beginOfCurrentPacket <<
+                               ";" << beginOfCurrentPacket + current->GetSize () <<
+                               "], found in the sackboard, sacking");
+                }
+              modified = true;
+            }
+          else if (beginOfCurrentPacket + current->GetSize () > b.second)
+            {
+              // we missed the block. It's useless to iterate again; Say "ciao"
+              // to the loop for optimization purposes
+              NS_LOG_INFO ("Received block [" << b.first << ";" << b.second <<
+                           ", checking sentList for block " << beginOfCurrentPacket <<
+                           ";" << beginOfCurrentPacket + current->GetSize () <<
+                           "], not found, breaking loop");
+              break;
+            }
+
+          beginOfCurrentPacket += current->GetSize ();
+          ++item_it;
+        }
+    }
+
+  return modified;
+}
+
 std::ostream &
 operator<< (std::ostream & os, TcpTxBuffer const & tcpTxBuf)
 {
