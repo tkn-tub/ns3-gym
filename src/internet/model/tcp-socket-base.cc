@@ -1305,6 +1305,26 @@ TcpSocketBase::DoForwardUp (Ptr<Packet> packet, const Address &fromAddress,
 
       EstimateRtt (tcpHeader);
       UpdateWindowSize (tcpHeader);
+
+      if (!m_sackEnabled
+          && m_tcb->m_congState != TcpSocketState::CA_LOSS
+          && !m_persistEvent.IsRunning ())
+        {
+          // Emulate SACK for (old) dupack definition.
+          // Don't generate block for the persistent window probe
+          // Don't include the ACK number in any SACK block
+          if (tcpHeader.GetAckNumber () == m_txBuffer->HeadSequence ()
+              && tcpHeader.GetAckNumber () < m_tcb->m_nextTxSequence)
+            {
+              // Dupack following old ns-3 behavior. Craft a special SACK option.
+              uint8_t available = tcpHeader.GetMaxOptionLength () - tcpHeader.GetOptionLength ();
+              Ptr<const TcpOptionSack> sackBlock = m_txBuffer->CraftSackOption (tcpHeader.GetAckNumber (), available);
+              if (sackBlock != 0)
+                {
+                  tcpHeader.AppendOption (sackBlock);
+                }
+            }
+        }
     }
 
 
