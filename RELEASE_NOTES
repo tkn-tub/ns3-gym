@@ -27,8 +27,10 @@ New user-visible features
 Bugs fixed
 ----------
 - Bug 2007 - uan: Remove deprecation on SetRxThresholdDb
+- Bug 2214 - tcp: Use of ScheduleNow only in selected part of the code
 - Bug 2221 - network: Remove constraint on size of ns3::Packet Tag objects
-- Bug 2248 - TCP SACK
+- Bug 2248 - tcp: TCP SACK added after reviews
+- Bug 2256 - tcp: bytes in flight now updated in TcpTxBuffer
 - Bug 2263 - Support processing of multiple TCP options
 - Bug 2450 - LogDistancePropagationLossModel is not continuous
 - Bug 2463 - create trace source to trace the TXOP time that is actually used
