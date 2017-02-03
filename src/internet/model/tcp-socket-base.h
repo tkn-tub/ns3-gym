@@ -607,9 +607,9 @@ protected:
    * Note that this function did not implement the PSH flag.
    *
    * \param withAck forces an ACK to be sent
-   * \returns true if some data have been sent
+   * \returns the number of packets sent
    */
-  bool SendPendingData (bool withAck = false);
+  uint32_t SendPendingData (bool withAck = false);
 
   /**
    * \brief Extract at most maxSize bytes from the TxBuffer at sequence seq, add the
@@ -772,12 +772,18 @@ protected:
 
   /**
    * \brief Return count of number of unacked bytes
+   *
+   * The difference between SND.UNA and HighTx
+   *
    * \returns count of number of unacked bytes
    */
   virtual uint32_t UnAckDataCount (void) const;
 
   /**
    * \brief Return total bytes in flight
+   *
+   * Does not count segments lost and SACKed (or dupACKed)
+   *
    * \returns total bytes in flight
    */
   virtual uint32_t BytesInFlight (void) const;
