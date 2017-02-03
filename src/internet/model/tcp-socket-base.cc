@@ -97,7 +97,7 @@ TcpSocketBase::GetTypeId (void)
                    MakeBooleanAccessor (&TcpSocketBase::m_winScalingEnabled),
                    MakeBooleanChecker ())
     .AddAttribute ("Sack", "Enable or disable Sack option",
-                   BooleanValue (false),
+                   BooleanValue (true),
                    MakeBooleanAccessor (&TcpSocketBase::m_sackEnabled),
                    MakeBooleanChecker ())
     .AddAttribute ("Timestamp", "Enable or disable Timestamp option",
@@ -3324,10 +3324,19 @@ TcpSocketBase::DoRetransmit ()
     }
 
   // Retransmit a data packet: Call SendDataPacket
+  SequenceNumber32 oldSequence = m_tcb->m_nextTxSequence;
+  m_tcb->m_nextTxSequence = m_txBuffer->HeadSequence ();
   uint32_t sz = SendDataPacket (m_txBuffer->HeadSequence (), m_tcb->m_segmentSize, true);
 
   // In case of RTO, advance m_tcb->m_nextTxSequence
-  m_tcb->m_nextTxSequence = std::max (m_tcb->m_nextTxSequence.Get (), m_txBuffer->HeadSequence () + sz);
+  if (oldSequence == m_tcb->m_nextTxSequence.Get ())
+    {
+      m_tcb->m_nextTxSequence = std::max (m_tcb->m_nextTxSequence.Get (), m_txBuffer->HeadSequence () + sz);
+    }
+  else
+    {
+      m_tcb->m_nextTxSequence = oldSequence;
+    }
 
   NS_LOG_DEBUG ("retxing seq " << m_txBuffer->HeadSequence ());
 }
