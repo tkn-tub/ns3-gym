@@ -280,6 +280,17 @@ public:
    */
   void ResetLastSegmentSent ();
 
+  /**
+   * \brief Craft a SACK block. Used in case the other end does not support
+   * SACK
+   *
+   * \param seq Look to usable block starting from this sequence number (seq will
+   * not be included in the block)
+   * \param available Space left in the header for that SACK option
+   * \return a SACK option that SACK the first un-SACKed segment in our sentList.
+   */
+  Ptr<const TcpOptionSack> CraftSackOption (const SequenceNumber32 &seq, uint8_t available) const;
+
 private:
   friend std::ostream & operator<< (std::ostream & os, TcpTxBuffer const & tcpTxBuf);
 

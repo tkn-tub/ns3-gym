@@ -948,6 +948,88 @@ TcpTxBuffer::IsHeadRetransmitted () const
   return false;
 }
 
+Ptr<const TcpOptionSack>
+TcpTxBuffer::CraftSackOption (const SequenceNumber32 &seq, uint8_t available) const
+{
+  NS_LOG_FUNCTION (this);
+  PacketList::const_iterator it = m_sentList.begin ();
+  Ptr<TcpOptionSack> sackBlock = 0;
+  SequenceNumber32 beginOfCurrentPacket = m_firstByteSeq;
+  Ptr<Packet> current;
+  TcpTxItem *item;
+
+  NS_LOG_INFO ("Crafting a SACK block, available bytes: " << (uint32_t) available <<
+               " from seq: " << seq);
+
+  while (it != m_sentList.end ())
+    {
+      item = *it;
+      current = item->m_packet;
+
+      SequenceNumber32 endOfCurrentPacket = beginOfCurrentPacket + current->GetSize ();
+
+      // The first segment could not be sacked.. otherwise would be a
+      // cumulative ACK :)
+      if (item->m_sacked || it == m_sentList.begin ())
+        {
+          NS_LOG_DEBUG ("Analyzing segment: [" << beginOfCurrentPacket <<
+                        ";" << endOfCurrentPacket << "], not usable, sacked=" <<
+                        item->m_sacked);
+          beginOfCurrentPacket += current->GetSize ();
+        }
+      else if (seq > beginOfCurrentPacket)
+        {
+          NS_LOG_DEBUG ("Analyzing segment: [" << beginOfCurrentPacket <<
+                        ";" << endOfCurrentPacket << "], not usable, sacked=" <<
+                        item->m_sacked);
+          beginOfCurrentPacket += current->GetSize ();
+        }
+      else
+        {
+          // RFC 2018: The first SACK block MUST specify the contiguous
+          // block of data containing the segment which triggered this ACK.
+          // Since we are hand-crafting this, select the first non-sacked block.
+          sackBlock = CreateObject <TcpOptionSack> ();
+          sackBlock->AddSackBlock (TcpOptionSack::SackBlock (beginOfCurrentPacket,
+                                                             endOfCurrentPacket));
+          NS_LOG_DEBUG ("Analyzing segment: [" << beginOfCurrentPacket <<
+                        ";" << endOfCurrentPacket << "] and found to be usable");
+
+          // RFC 2018: The data receiver SHOULD include as many distinct SACK
+          // blocks as possible in the SACK option
+          // The SACK option SHOULD be filled out by repeating the most
+          // recently reported SACK blocks  that are not subsets of a SACK block
+          // already included
+          // This means go backward until we finish space and include already SACKed block
+          while (sackBlock->GetSerializedSize () + 8 < available)
+            {
+              --it;
+
+              if (it == m_sentList.begin ())
+                {
+                  return sackBlock;
+                }
+
+              item = *it;
+              current = item->m_packet;
+              endOfCurrentPacket = beginOfCurrentPacket;
+              beginOfCurrentPacket -= current->GetSize ();
+              sackBlock->AddSackBlock (TcpOptionSack::SackBlock (beginOfCurrentPacket,
+                                                                 endOfCurrentPacket));
+              NS_LOG_DEBUG ("Filling the option: Adding [" << beginOfCurrentPacket <<
+                            ";" << endOfCurrentPacket << "], available space now : " <<
+                            (uint32_t) (available - sackBlock->GetSerializedSize ()));
+            }
+
+          return sackBlock;
+        }
+
+      ++it;
+    }
+
+  return sackBlock;
+}
+
 std::ostream &
 operator<< (std::ostream & os, TcpTxBuffer const & tcpTxBuf)
 {

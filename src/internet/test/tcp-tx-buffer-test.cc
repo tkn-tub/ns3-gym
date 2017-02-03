@@ -37,6 +37,7 @@ private:
   void TestNewBlock ();
   void TestTransmittedBlock ();
   void TestNextSeg ();
+  void TestUpdateScoreboardWithCraftedSACK ();
 };
 
 TcpTxBufferTestCase::TcpTxBufferTestCase ()
@@ -68,6 +69,8 @@ TcpTxBufferTestCase::DoRun ()
                        &TcpTxBufferTestCase::TestTransmittedBlock, this);
   Simulator::Schedule (Seconds (0.0),
                        &TcpTxBufferTestCase::TestNextSeg, this);
+  Simulator::Schedule (Seconds (0.0),
+                       &TcpTxBufferTestCase::TestUpdateScoreboardWithCraftedSACK, this);
 
   Simulator::Run ();
   Simulator::Destroy ();
@@ -271,6 +274,109 @@ TcpTxBufferTestCase::TestNewBlock ()
   txBuf.DiscardUpTo (SequenceNumber32 (381));
   NS_TEST_ASSERT_MSG_EQ (txBuf.Size (), 0,
                          "Size is different than expected");
+}
+
+void
+TcpTxBufferTestCase::TestUpdateScoreboardWithCraftedSACK ()
+{
+  TcpTxBuffer txBuf;
+  SequenceNumber32 head (1);
+  txBuf.SetHeadSequence (head);
+
+  // Add a single, 3000-bytes long, packet
+  txBuf.Add (Create<Packet> (30000));
+
+  // Simulate sending 100 packets, 150 bytes long each, from seq 1
+  for (uint32_t i=0; i<100; ++i)
+    {
+      txBuf.CopyFromSequence (150, head + (150 * i));
+    }
+
+  // Now we have 100 packets sent, 100 waiting (well, that 100 are condensed in one)
+
+  // Suppose now we receive 99 dupacks, because the first was lost.
+  for (uint32_t i=0; i<99; ++i)
+    {
+      Ptr<const TcpOptionSack> sack = txBuf.CraftSackOption (head, 32); // 3 maximum sack block
+
+      // For iteration 0 and 1 we have 1 and 2 sack blocks, respectively.
+      // For all others, maximum 3
+      if (i == 0)
+        {
+          NS_TEST_ASSERT_MSG_EQ (sack->GetNumSackBlocks (), 1,
+                                 "Different block number than expected");
+        }
+      else if (i == 1)
+        {
+          NS_TEST_ASSERT_MSG_EQ (sack->GetNumSackBlocks (), 2,
+                                 "Different block number than expected");
+        }
+      else if (i >= 2)
+        {
+          NS_TEST_ASSERT_MSG_EQ (sack->GetNumSackBlocks (), 3,
+                                 "More blocks than expected");
+        }
+
+      TcpOptionSack::SackList sackList = sack->GetSackList ();
+      TcpOptionSack::SackBlock block = sackList.front ();
+      sackList.pop_front ();
+
+      // The first block, assuming all the other are SACKed in order (from 2nd
+      // onward) has seq = 1 + (150 * (i+1)) --> i+1 because the first sent
+      // block cannot be SACKed
+      NS_TEST_ASSERT_MSG_EQ (block.first, SequenceNumber32 (1 + (150*(i+1))),
+                             "First sack block is wrong (on the left)");
+      NS_TEST_ASSERT_MSG_EQ (block.second, block.first + 150,
+                             "First sack block is wrong (on the right)");
+
+      SequenceNumber32 left = block.first;
+      for (TcpOptionSack::SackList::iterator it = sackList.begin (); it != sackList.end (); ++it)
+        {
+          block = (*it);
+
+          // the blocks go backwards here. To understand better, an example
+          // of SACK option list: [1351;1501], [1201;1351], [1051;1201]
+          NS_TEST_ASSERT_MSG_EQ (block.first, left - 150,
+                                 "First sack block is wrong (on the left)");
+          NS_TEST_ASSERT_MSG_EQ (block.second, left,
+                                 "First sack block is wrong (on the right)");
+          left -= 150;
+        }
+
+      txBuf.Update (sack->GetSackList ());
+
+      if (i == 0)
+        {
+          NS_TEST_ASSERT_MSG_EQ (false, txBuf.IsLost (SequenceNumber32 (1), 3, 150),
+                                 "SequenceNumber 1 isLost, but for RFC 6675 is not");
+        }
+      else if (i == 1)
+        {
+          NS_TEST_ASSERT_MSG_EQ (false, txBuf.IsLost (SequenceNumber32 (1), 3, 150),
+                                 "SequenceNumber 1 isLost, but for RFC 6675 is not");
+          SequenceNumber32 lost (1 + (150 * i));
+          NS_TEST_ASSERT_MSG_EQ (false, txBuf.IsLost (lost, 3, 150),
+                                 "SequenceNumber " << lost <<
+                                 "isLost, but for RFC 6675 is because is SACKed");
+        }
+      else if (i >= 2)
+        {
+          NS_TEST_ASSERT_MSG_EQ (true, txBuf.IsLost (SequenceNumber32 (1), 3, 150),
+                                 "SequenceNumber 1 ! isLost, but for RFC 6675 is");
+          SequenceNumber32 lost (1 + (150 * i));
+          NS_TEST_ASSERT_MSG_EQ (false, txBuf.IsLost (lost, 3, 150),
+                                 "SequenceNumber " << lost <<
+                                 "isLost, but for RFC 6675 is because is SACKed");
+        }
+    }
+
+  for (uint32_t i=0; i<100; ++i)
+    {
+      txBuf.DiscardUpTo (SequenceNumber32 (30001));
+    }
+
+  NS_TEST_ASSERT_MSG_EQ (txBuf.Size (), 0,
+                         "Data inside the buffer");
 }
 
 void
