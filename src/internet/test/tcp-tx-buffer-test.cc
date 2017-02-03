@@ -36,6 +36,7 @@ private:
 
   void TestNewBlock ();
   void TestTransmittedBlock ();
+  void TestNextSeg ();
 };
 
 TcpTxBufferTestCase::TcpTxBufferTestCase ()
@@ -65,8 +66,142 @@ TcpTxBufferTestCase::DoRun ()
    */
   Simulator::Schedule (Seconds (0.0),
                        &TcpTxBufferTestCase::TestTransmittedBlock, this);
+  Simulator::Schedule (Seconds (0.0),
+                       &TcpTxBufferTestCase::TestNextSeg, this);
+
   Simulator::Run ();
   Simulator::Destroy ();
+}
+
+void
+TcpTxBufferTestCase::TestNextSeg ()
+{
+  TcpTxBuffer txBuf;
+  SequenceNumber32 head (1);
+  SequenceNumber32 ret;
+  uint32_t dupThresh = 3;
+  uint32_t segmentSize = 150;
+  Ptr<TcpOptionSack> sack = CreateObject<TcpOptionSack> ();
+
+  // At the beginning the values of dupThresh and segmentSize don't matter
+  NS_TEST_ASSERT_MSG_EQ (txBuf.NextSeg (&ret, 0, 0, false), false,
+                         "NextSeq should not be returned at the beginning");
+
+  txBuf.SetHeadSequence (head);
+  NS_TEST_ASSERT_MSG_EQ (txBuf.NextSeg (&ret, 0, 0, false), false,
+                         "NextSeq should not be returned with no data");
+
+  // Add a single, 3000-bytes long, packet
+  txBuf.Add (Create<Packet> (30000));
+  NS_TEST_ASSERT_MSG_EQ (txBuf.NextSeg (&ret, 0, 0, false), true,
+                         "No NextSeq with data at beginning");
+  NS_TEST_ASSERT_MSG_EQ (ret.GetValue (), head.GetValue (),
+                         "Different NextSeq than expected at the beginning");
+
+  // Simulate sending 100 packets, 150 bytes long each, from seq 1
+  for (uint32_t i=0; i<100; ++i)
+    {
+      NS_TEST_ASSERT_MSG_EQ (txBuf.NextSeg (&ret, dupThresh, segmentSize, false), true,
+                             "No NextSeq with data while \"transmitting\"");
+      NS_TEST_ASSERT_MSG_EQ (ret, head + (segmentSize * i),
+                             "Different NextSeq than expected while \"transmitting\"");
+      txBuf.CopyFromSequence (segmentSize, ret);
+    }
+
+  // Ok, now simulate we lost the first segment [1;151], and that we have
+  // limited transmit. NextSeg should return (up to dupThresh-1) new pieces of data
+  SequenceNumber32 lastRet = ret; // This is like m_highTx
+  for (uint32_t i=1; i<dupThresh; ++i) // iterate dupThresh-1 times (limited transmit)
+    {
+      SequenceNumber32 begin = head + (segmentSize * i);
+      SequenceNumber32 end = begin + segmentSize;
+      sack->AddSackBlock (TcpOptionSack::SackBlock (begin, end));
+      txBuf.Update (sack->GetSackList ());
+
+      // new data expected and sent
+      NS_TEST_ASSERT_MSG_EQ (txBuf.NextSeg (&ret, dupThresh, segmentSize, false), true,
+                             "No NextSeq with SACK block while \"transmitting\"");
+      NS_TEST_ASSERT_MSG_EQ (ret, lastRet + segmentSize,
+                             "Different NextSeq than expected in limited transmit");
+      txBuf.CopyFromSequence (segmentSize, ret);
+      sack->ClearSackList ();
+      lastRet = ret;
+    }
+
+  // Limited transmit was ok; now there is the dupThresh-th dupack.
+  // Now we need to retransmit the first block..
+  sack->AddSackBlock (TcpOptionSack::SackBlock (head + (segmentSize * (dupThresh)),
+                                                head + (segmentSize * (dupThresh)) + segmentSize));
+  txBuf.Update (sack->GetSackList ());
+  NS_TEST_ASSERT_MSG_EQ (txBuf.NextSeg (&ret, dupThresh, segmentSize, false), true,
+                         "No NextSeq with SACK block for Fast Recovery");
+  NS_TEST_ASSERT_MSG_EQ (ret, head,
+                         "Different NextSeq than expected for Fast Recovery");
+  txBuf.CopyFromSequence (segmentSize, ret);
+  sack->ClearSackList ();
+
+  // Fast Retransmission was ok; now check some additional dupacks.
+  for (uint32_t i=1; i<=4; ++i)
+    {
+      sack->AddSackBlock (TcpOptionSack::SackBlock (head + (segmentSize * (dupThresh+i)),
+                                                    head + (segmentSize * (dupThresh+i)) + segmentSize));
+      txBuf.Update (sack->GetSackList ());
+      NS_TEST_ASSERT_MSG_EQ (txBuf.NextSeg (&ret, dupThresh, segmentSize, false), true,
+                             "No NextSeq with SACK block after recv dupacks in FR");
+      NS_TEST_ASSERT_MSG_EQ (ret, lastRet + segmentSize,
+                             "Different NextSeq than expected after recv dupacks in FR");
+      txBuf.CopyFromSequence (segmentSize, ret);
+      sack->ClearSackList ();
+      lastRet = ret;
+    }
+
+  // Well now we receive a partial ACK, corresponding to the segment we retransmitted.
+  // Unfortunately, the next one is lost as well; but NextSeg should be smart enough
+  // to give us the next segment (head + segmentSize) to retransmit.
+  /* In this particular case, we are checking the fact that we have badly crafted
+   * the SACK blocks. Talking in segment, we transmitted 1,2,3,4,5 ... and then
+   * received dupack for 1. While receiving these, we crafted SACK block in the
+   * way that 2,3,4,... were correctly received. Now, if we receive an ACK for 2,
+   * we clearly crafted the corresponding ACK wrongly. TcpTxBuffer should be able
+   * to "backoff" that flag on its HEAD (segment 2). We still don't know for segment
+   * 3,4 .. so keep them.
+   */
+  head = head + segmentSize;
+  txBuf.DiscardUpTo (head);
+  NS_TEST_ASSERT_MSG_EQ (txBuf.NextSeg (&ret, dupThresh, segmentSize, false), true,
+                         "No NextSeq with SACK block after receiving partial ACK");
+  NS_TEST_ASSERT_MSG_EQ (ret, head,
+                         "Different NextSeq than expected after receiving partial ACK");
+  txBuf.CopyFromSequence (segmentSize, ret);
+
+  // Now, check for one more dupack...
+  sack->AddSackBlock (TcpOptionSack::SackBlock (head + (segmentSize * (dupThresh+6)),
+                                                head + (segmentSize * (dupThresh+6)) + segmentSize));
+  txBuf.Update (sack->GetSackList ());
+  NS_TEST_ASSERT_MSG_EQ (txBuf.NextSeg (&ret, dupThresh, segmentSize, false), true,
+                         "No NextSeq with SACK block after recv dupacks after partial ack");
+  NS_TEST_ASSERT_MSG_EQ (ret, lastRet + segmentSize,
+                         "Different NextSeq than expected after recv dupacks after partial ack");
+  txBuf.CopyFromSequence (segmentSize, ret);
+  sack->ClearSackList ();
+  head = lastRet = ret + segmentSize;
+
+  // And now ack everything we sent to date!
+  txBuf.DiscardUpTo (head);
+
+  // And continue normally until the end
+  for (uint32_t i=0; i<93; ++i)
+    {
+      NS_TEST_ASSERT_MSG_EQ (txBuf.NextSeg (&ret, dupThresh, segmentSize, false), true,
+                             "No NextSeq with data while \"transmitting\"");
+      NS_TEST_ASSERT_MSG_EQ (ret, head + (segmentSize * i),
+                             "Different NextSeq than expected while \"transmitting\"");
+      txBuf.CopyFromSequence (segmentSize, ret);
+    }
+
+  txBuf.DiscardUpTo (ret+segmentSize);
+  NS_TEST_ASSERT_MSG_EQ (txBuf.Size (), 0,
+                         "Data inside the buffer");
 }
 
 void

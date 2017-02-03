@@ -740,6 +740,94 @@ TcpTxBuffer::IsLost (const SequenceNumber32 &seq, uint32_t dupThresh,
   return false;
 }
 
+bool
+TcpTxBuffer::NextSeg (SequenceNumber32 *seq, uint32_t dupThresh,
+                      uint32_t segmentSize, bool isRecovery) const
+{
+  NS_LOG_FUNCTION (this);
+
+  /* RFC 6675, NextSeg definition.
+   *
+   * (1) If there exists a smallest unSACKed sequence number 'S2' that
+   *     meets the following three criteria for determining loss, the
+   *     sequence range of one segment of up to SMSS octets starting
+   *     with S2 MUST be returned.
+   *
+   *     (1.a) S2 is greater than HighRxt.
+   *
+   *     (1.b) S2 is less than the highest octet covered by any
+   *           received SACK.
+   *
+   *     (1.c) IsLost (S2) returns true.
+   */
+  PacketList::const_iterator it;
+  TcpTxItem *item;
+  SequenceNumber32 seqPerRule3;
+  bool isSeqPerRule3Valid = false;
+  SequenceNumber32 beginOfCurrentPkt = m_firstByteSeq;
+
+  for (it = m_sentList.begin (); it != m_sentList.end (); ++it)
+    {
+      item = *it;
+
+      // Condition 1.a , 1.b , and 1.c
+      if (item->m_retrans == false && item->m_sacked == false)
+        {
+          if (IsLost (beginOfCurrentPkt, it, dupThresh, segmentSize))
+            {
+              *seq = beginOfCurrentPkt;
+              return true;
+            }
+          else if (seqPerRule3.GetValue () == 0 && isRecovery)
+            {
+              isSeqPerRule3Valid = true;
+              seqPerRule3 = beginOfCurrentPkt;
+            }
+        }
+
+      // Nothing found, iterate
+      beginOfCurrentPkt += item->m_packet->GetSize ();
+    }
+
+  /* (2) If no sequence number 'S2' per rule (1) exists but there
+   *     exists available unsent data and the receiver's advertised
+   *     window allows, the sequence range of one segment of up to SMSS
+   *     octets of previously unsent data starting with sequence number
+   *     HighData+1 MUST be returned.
+   */
+  if (SizeFromSequence (m_firstByteSeq + m_sentSize) > 0)
+    {
+      *seq = m_firstByteSeq + m_sentSize;
+      return true;
+    }
+
+  /* (3) If the conditions for rules (1) and (2) fail, but there exists
+   *     an unSACKed sequence number 'S3' that meets the criteria for
+   *     detecting loss given in steps (1.a) and (1.b) above
+   *     (specifically excluding step (1.c)), then one segment of up to
+   *     SMSS octets starting with S3 SHOULD be returned.
+   */
+  if (isSeqPerRule3Valid)
+    {
+      *seq = seqPerRule3;
+      return true;
+    }
+
+  /* (4) If the conditions for (1), (2), and (3) fail, but there exists
+   *     outstanding unSACKed data, we provide the opportunity for a
+   *     single "rescue" retransmission per entry into loss recovery.
+   *     If HighACK is greater than RescueRxt (or RescueRxt is
+   *     undefined), then one segment of up to SMSS octets that MUST
+   *     include the highest outstanding unSACKed sequence number
+   *     SHOULD be returned, and RescueRxt set to RecoveryPoint.
+   *     HighRxt MUST NOT be updated.
+   *
+   * This point require too much interaction between us and TcpSocketBase.
+   * We choose to not respect the SHOULD (allowed from RFC MUST/SHOULD definition)
+   */
+  return false;
+}
+
 std::ostream &
 operator<< (std::ostream & os, TcpTxBuffer const & tcpTxBuf)
 {
