@@ -998,6 +998,13 @@ protected:
    */
   void AddOptionSackPermitted (TcpHeader &header);
 
+  /**
+   * \brief Add the SACK option to the header
+   *
+   * \param header TcpHeader where the method should add the option
+   */
+  void AddOptionSack (TcpHeader& header);
+
   /** \brief Process the timestamp option from other side
    *
    * Get the timestamp and the echo, then save timestamp (which will

@@ -2439,6 +2439,20 @@ TcpSocketBase::SendEmptyPacket (uint8_t flags)
     }
   header.SetWindowSize (windowSize);
 
+  if (flags & TcpHeader::ACK)
+    { // If sending an ACK, cancel the delay ACK as well
+      m_delAckEvent.Cancel ();
+      m_delAckCount = 0;
+      if (m_highTxAck < header.GetAckNumber ())
+        {
+          m_highTxAck = header.GetAckNumber ();
+        }
+      if (m_sackEnabled && m_rxBuffer->GetSackListSize () > 0)
+        {
+          AddOptionSack (header);
+        }
+    }
+
   m_txTrace (p, header, this);
 
   if (m_endPoint != 0)
@@ -2452,15 +2466,7 @@ TcpSocketBase::SendEmptyPacket (uint8_t flags)
                          m_endPoint6->GetPeerAddress (), m_boundnetdevice);
     }
 
-  if (flags & TcpHeader::ACK)
-    { // If sending an ACK, cancel the delay ACK as well
-      m_delAckEvent.Cancel ();
-      m_delAckCount = 0;
-      if (m_highTxAck < header.GetAckNumber ())
-        {
-          m_highTxAck = header.GetAckNumber ();
-        }
-    }
+
   if (m_retxEvent.IsExpired () && (hasSyn || hasFin) && !isAck )
     { // Retransmit SYN / SYN+ACK / FIN / FIN+ACK to guard against lost
       NS_LOG_LOGIC ("Schedule retransmission timeout at time "
@@ -3624,6 +3630,36 @@ TcpSocketBase::AddOptionSackPermitted (TcpHeader &header)
   Ptr<TcpOptionSackPermitted> option = CreateObject<TcpOptionSackPermitted> ();
   header.AppendOption (option);
   NS_LOG_INFO (m_node->GetId () << " Add option SACK-PERMITTED");
+}
+
+void
+TcpSocketBase::AddOptionSack (TcpHeader& header)
+{
+  NS_LOG_FUNCTION (this << header);
+
+  // Calculate the number of SACK blocks allowed in this packet
+  uint8_t optionLenAvail = header.GetMaxOptionLength () - header.GetOptionLength ();
+  uint8_t allowedSackBlocks = (optionLenAvail - 2) / 8;
+
+  TcpOptionSack::SackList sackList = m_rxBuffer->GetSackList ();
+  if (allowedSackBlocks == 0 || sackList.empty ())
+    {
+      NS_LOG_LOGIC ("No space available or sack list empty, not adding sack blocks");
+      return;
+    }
+
+  // Append the allowed number of SACK blocks
+  Ptr<TcpOptionSack> option = CreateObject<TcpOptionSack> ();
+  TcpOptionSack::SackList::iterator i;
+  for (i = sackList.begin (); allowedSackBlocks > 0 && i != sackList.end (); ++i)
+    {
+      NS_LOG_LOGIC ("Left edge of the block: " << (*i).first << " Right edge of the block: " << (*i).second);
+      option->AddSackBlock (*i);
+      allowedSackBlocks--;
+    }
+
+  header.AppendOption (option);
+  NS_LOG_INFO (m_node->GetId () << " Add option SACK");
 }
 
 void
