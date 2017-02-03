@@ -20,7 +20,7 @@
 #include "tcp-general-test.h"
 #include "ns3/node.h"
 #include "ns3/log.h"
-#include "ns3/private/tcp-option-ts.h"
+#include "ns3/tcp-option-ts.h"
 
 using namespace ns3;
 
