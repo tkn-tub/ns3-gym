@@ -22,11 +22,13 @@ Supported platforms
 New user-visible features
 -------------------------
 - (wifi) 802.11ax High Efficiency (HE) physical layer modes are now supported.
+- (tcp) The SACK option and the RFC 6675 loss recovery algorithm are now supported.
 
 Bugs fixed
 ----------
 - Bug 2007 - uan: Remove deprecation on SetRxThresholdDb
 - Bug 2221 - network: Remove constraint on size of ns3::Packet Tag objects
+- Bug 2248 - TCP SACK
 - Bug 2263 - Support processing of multiple TCP options
 - Bug 2450 - LogDistancePropagationLossModel is not continuous
 - Bug 2463 - create trace source to trace the TXOP time that is actually used

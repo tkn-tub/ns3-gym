@@ -54,6 +54,9 @@ us a note on ns-developers mailing list.</p>
 <h1>Changes from ns-3.26 to ns-3.27</h1>
 <h2>New API:</h2>
 <ul>
+<li>Included the TCP SACK-based loss recovery algorithm outlined in RFC 6675</li>
+<li>Added <b>TCP SACK</b> and the <b>SACK emulation</b>. Added an Attribute to TcpSocketBase class,
+    called "Sack", to enable or disable the SACK option usage.</li>
 <li>In 'src/wifi', several changes were made to enable partial <b>802.11ax</b> High Effiency (HE) support:
     <ul>
       <li>A new standard value has been added that enables the new 11ax data rates.</li>
