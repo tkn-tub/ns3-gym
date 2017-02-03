@@ -66,7 +66,7 @@ protected:
   virtual void Tx (const Ptr<const Packet> p, const TcpHeader&h, SocketWho who);
   virtual void Rx (const Ptr<const Packet> p, const TcpHeader&h, SocketWho who);
 
-  virtual void RTOExpired (const Ptr<const TcpSocketState> tcb, SocketWho who);
+  virtual void AfterRTOExpired (const Ptr<const TcpSocketState> tcb, SocketWho who);
 
   /**
    * \brief Check if the packet being dropped is the right one.
@@ -373,7 +373,7 @@ TcpFastRetrTest::ProcessedAck (const Ptr<const TcpSocketState> tcb, const TcpHea
 }
 
 void
-TcpFastRetrTest::RTOExpired (const Ptr<const TcpSocketState> tcb, SocketWho who)
+TcpFastRetrTest::AfterRTOExpired (const Ptr<const TcpSocketState> tcb, SocketWho who)
 {
   NS_ASSERT_MSG (true == false, "RTO isn't expected here");
 }

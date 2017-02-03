@@ -55,7 +55,7 @@ public:
 protected:
 
   virtual Ptr<TcpSocketMsgBase> CreateSenderSocket (Ptr<Node> node);
-  virtual void RTOExpired (const Ptr<const TcpSocketState> tcb, SocketWho who);
+  virtual void AfterRTOExpired (const Ptr<const TcpSocketState> tcb, SocketWho who);
   virtual void RcvAck      (const Ptr<const TcpSocketState> tcb,
                             const TcpHeader& h, SocketWho who);
   virtual void ProcessedAck (const Ptr<const TcpSocketState> tcb,
@@ -65,13 +65,13 @@ protected:
   virtual void ConfigureEnvironment ();
 
 private:
-  bool m_rtoExpired;      //!< True if RTO is expired.
+  bool m_afterRTOExpired;      //!< True if RTO is expired.
   bool m_segmentReceived; //!< True if segments have been received.
 };
 
 TcpRtoTest::TcpRtoTest (TypeId &congControl, const std::string &desc)
   : TcpGeneralTest (desc),
-    m_rtoExpired (false),
+    m_afterRTOExpired (false),
     m_segmentReceived (false)
 {
   m_congControlTypeId = congControl;
@@ -103,17 +103,17 @@ TcpRtoTest::CreateSenderSocket (Ptr<Node> node)
 }
 
 void
-TcpRtoTest::RTOExpired (const Ptr<const TcpSocketState> tcb, SocketWho who)
+TcpRtoTest::AfterRTOExpired (const Ptr<const TcpSocketState> tcb, SocketWho who)
 {
   // In this test, the RTO fires for the first segment (and no more).
   // This function is called after the management of the RTO expiration,
   // and because of this we must check all the involved variables.
-  NS_TEST_ASSERT_MSG_EQ (m_rtoExpired, false,
+  NS_TEST_ASSERT_MSG_EQ (m_afterRTOExpired, false,
                          "Second RTO expired");
   NS_TEST_ASSERT_MSG_EQ (GetCongStateFrom (tcb), TcpSocketState::CA_LOSS,
                          "Ack state machine not in LOSS state after a loss");
 
-  m_rtoExpired = true;
+  m_afterRTOExpired = true;
 }
 
 void
@@ -122,11 +122,11 @@ TcpRtoTest::RcvAck (const Ptr<const TcpSocketState> tcb, const TcpHeader& h,
 {
   // Called after the first ack is received (the lost segment has been
   // successfully retransmitted. We must check on the sender that variables
-  // are in the same state as they where after RTOExpired if it is the first
+  // are in the same state as they where after AfterRTOExpired if it is the first
   // ACK after the loss; in every other case, all must be OPEN and the counter
   // set to 0.
 
-  if (m_rtoExpired && who == SENDER)
+  if (m_afterRTOExpired && who == SENDER)
     {
       NS_TEST_ASSERT_MSG_EQ (GetCongStateFrom (tcb), TcpSocketState::CA_LOSS,
                              "Ack state machine not in LOSS state after a loss");
@@ -152,7 +152,7 @@ TcpRtoTest::ProcessedAck (const Ptr<const TcpSocketState> tcb, const TcpHeader &
 
   if (who == SENDER)
     {
-      m_rtoExpired = false;
+      m_afterRTOExpired = false;
       m_segmentReceived = true;
     }
 }
@@ -190,7 +190,7 @@ protected:
   virtual Ptr<TcpSocketMsgBase> CreateSenderSocket (Ptr<Node> node);
   virtual Ptr<ErrorModel> CreateReceiverErrorModel ();
   virtual void ErrorClose  (SocketWho who);
-  virtual void RTOExpired (const Ptr<const TcpSocketState> tcb, SocketWho who);
+  virtual void AfterRTOExpired (const Ptr<const TcpSocketState> tcb, SocketWho who);
   virtual void Tx (const Ptr<const Packet> p, const TcpHeader&h, SocketWho who);
   virtual void FinalChecks ();
 
@@ -328,7 +328,7 @@ TcpTimeRtoTest::ErrorClose  (SocketWho who)
 }
 
 void
-TcpTimeRtoTest::RTOExpired (const Ptr<const TcpSocketState> tcb, SocketWho who)
+TcpTimeRtoTest::AfterRTOExpired (const Ptr<const TcpSocketState> tcb, SocketWho who)
 {
   NS_TEST_ASSERT_MSG_EQ (who, SENDER, "RTO in Receiver. That's unexpected");
 

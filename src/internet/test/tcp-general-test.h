@@ -44,7 +44,8 @@ namespace ns3 {
  *
  * \see SetRcvAckCb
  * \see SetProcessedAckCb
- * \see SetRetransmitCb
+ * \see SetAfterRetransmitCb
+ * \see SetBeforeRetransmitCb
  */
 class TcpSocketMsgBase : public ns3::TcpSocketBase
 {
@@ -67,8 +68,10 @@ public:
   {
     m_rcvAckCb = other.m_rcvAckCb;
     m_processedAckCb = other.m_processedAckCb;
-    m_retrCallback = other.m_retrCallback;
+    m_beforeRetrCallback = other.m_beforeRetrCallback;
+    m_afterRetrCallback = other.m_afterRetrCallback;
     m_forkCb = other.m_forkCb;
+    m_updateRttCb = other.m_updateRttCb;
   }
 
   /// Callback for the ACK management.
@@ -102,7 +105,14 @@ public:
    *
    * \param cb callback
    */
-  void SetRetransmitCb (RetrCb cb);
+  void SetAfterRetransmitCb (RetrCb cb);
+
+  /**
+   * \brief Set the callback invoked before the processing of a retransmit timeout
+   *
+   * \param cb callback
+   */
+  void SetBeforeRetransmitCb (RetrCb cb);
 
   /**
    * \brief Set the callback invoked after the forking
@@ -129,7 +139,8 @@ protected:
 private:
   AckManagementCb m_rcvAckCb;       //!< Receive ACK callback.
   AckManagementCb m_processedAckCb; //!< Processed ACK callback.
-  RetrCb m_retrCallback;            //!< Retransmission callback.
+  RetrCb m_beforeRetrCallback;      //!< Before retransmission callback.
+  RetrCb m_afterRetrCallback;       //!< After retransmission callback.
   Callback<void, Ptr<TcpSocketMsgBase> > m_forkCb;  //!< Fork callback.
   UpdateRttCallback m_updateRttCb;  //!< Update RTT callback.
 };
@@ -761,7 +772,17 @@ protected:
    * \param tcb Transmission control block
    * \param who where the RTO has expired (SENDER or RECEIVER)
    */
-  virtual void RTOExpired (const Ptr<const TcpSocketState> tcb, SocketWho who)
+  virtual void AfterRTOExpired (const Ptr<const TcpSocketState> tcb, SocketWho who)
+  {
+  }
+
+  /**
+   * \brief Rto has expired
+   *
+   * \param tcb Transmission control block
+   * \param who where the RTO has expired (SENDER or RECEIVER)
+   */
+  virtual void BeforeRTOExpired (const Ptr<const TcpSocketState> tcb, SocketWho who)
   {
   }
 
@@ -939,6 +960,23 @@ private:
    */
   void UpdateRttHistoryCb (Ptr<const TcpSocketBase> tcp, const SequenceNumber32&seq,
                            uint32_t sz, bool isRetransmission);
+
+  /**
+   * \brief Invoked after a retransmit event.
+   * \param tcb Transmission control block.
+   * \param tcp The TCP socket.
+   */
+  void AfterRetransmitCb   (const Ptr<const TcpSocketState> tcb,
+                            const Ptr<const TcpSocketBase> tcp);
+
+  /**
+   * \brief Invoked before a retransmit event.
+   * \param tcb Transmission control block.
+   * \param tcp The TCP socket.
+   */
+  void BeforeRetransmitCb   (const Ptr<const TcpSocketState> tcb,
+                             const Ptr<const TcpSocketBase> tcp);
+
   /**
    * \brief Data sent Callback.
    * \param socket The socket.
