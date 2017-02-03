@@ -828,6 +828,41 @@ TcpTxBuffer::NextSeg (SequenceNumber32 *seq, uint32_t dupThresh,
   return false;
 }
 
+uint32_t
+TcpTxBuffer::BytesInFlight (uint32_t dupThresh, uint32_t segmentSize) const
+{
+  PacketList::const_iterator it;
+  TcpTxItem *item;
+  uint32_t size = 0; // "pipe" in RFC
+  SequenceNumber32 beginOfCurrentPkt = m_firstByteSeq;
+
+  // After initializing pipe to zero, the following steps are taken for each
+  // octet 'S1' in the sequence space between HighACK and HighData that has not
+  // been SACKed:
+  for (it = m_sentList.begin (); it != m_sentList.end (); ++it)
+    {
+      item = *it;
+      if (!item->m_sacked)
+        {
+          // (a) If IsLost (S1) returns false: Pipe is incremented by 1 octet.
+          if (!IsLost (beginOfCurrentPkt, it, dupThresh, segmentSize))
+            {
+              size += item->m_packet->GetSize ();
+            }
+          // (b) If S1 <= HighRxt: Pipe is incremented by 1 octet.
+          // (NOTE: we use the m_retrans flag instead of keeping and updating
+          // another variable). Only if the item is not marked as lost
+          else if (item->m_retrans && ! item->m_lost)
+            {
+              size += item->m_packet->GetSize ();
+            }
+        }
+      beginOfCurrentPkt += item->m_packet->GetSize ();
+    }
+
+  return size;
+}
+
 std::ostream &
 operator<< (std::ostream & os, TcpTxBuffer const & tcpTxBuf)
 {

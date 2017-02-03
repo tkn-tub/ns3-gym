@@ -235,6 +235,15 @@ public:
   bool NextSeg (SequenceNumber32 *seq, uint32_t dupThresh, uint32_t segmentSize,
                 bool isRecovery) const;
 
+  /**
+   * \brief Return total bytes in flight
+   *
+   * The routine follows the "SetPipe" function in RFC 6675
+   *
+   * \returns total bytes in flight
+   */
+  uint32_t BytesInFlight (uint32_t dupThresh, uint32_t segmentSize) const;
+
 private:
   friend std::ostream & operator<< (std::ostream & os, TcpTxBuffer const & tcpTxBuf);
 
