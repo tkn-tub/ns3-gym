@@ -192,11 +192,11 @@ public:
  * \brief A base class for implementation of a stream socket using TCP.
  *
  * This class contains the essential components of TCP, as well as a sockets
- * interface for upper layers to call. This serves as a base for other TCP
- * functions where the sliding window mechanism is handled here. This class
- * provides connection orientation and sliding window flow control. Part of
- * this class is modified from the original NS-3 TCP socket implementation
- * (TcpSocketImpl) by Raj Bhattacharjea <raj.b@gatech.edu> of Georgia Tech.
+ * interface for upper layers to call. This class provides connection orientation
+ * and sliding window flow control; congestion control is delegated to subclasses
+ * of TcpCongestionOps. Part of TcpSocketBase is modified from the original
+ * NS-3 TCP socket implementation (TcpSocketImpl) by
+ * Raj Bhattacharjea <raj.b@gatech.edu> of Georgia Tech.
  *
  * For IPv4 packets, the TOS set for the socket is used. The Bind and Connect
  * operations set the TOS for the socket to the value specified in the provided
@@ -225,10 +225,15 @@ public:
  * Congestion control interface
  * ---------------------------
  *
- * Congestion control, unlike older releases of ns-3, has been splitted from
+ * Congestion control, unlike older releases of ns-3, has been split from
  * TcpSocketBase. In particular, each congestion control is now a subclass of
  * the main TcpCongestionOps class. Switching between congestion algorithm is
- * now a matter of setting a pointer into the TcpSocketBase class.
+ * now a matter of setting a pointer into the TcpSocketBase class. The idea
+ * and the interfaces are inspired by the Linux operating system, and in
+ * particular from the structure tcp_congestion_ops.
+ *
+ * Transmission Control Block (TCB)
+ * --------------------------------
  *
  * The variables needed to congestion control classes to operate correctly have
  * been moved inside the TcpSocketState class. It contains information on the
@@ -240,13 +245,13 @@ public:
  * (see for example cWnd trace source).
  *
  * Fast retransmit
- * ---------------------------
+ * ----------------
  *
  * The fast retransmit enhancement is introduced in RFC 2581 and updated in
- * RFC 5681. It basically reduces the time a sender waits before retransmitting
+ * RFC 5681. It reduces the time a sender waits before retransmitting
  * a lost segment, through the assumption that if it receives a certain number
  * of duplicate ACKs, a segment has been lost and it can be retransmitted.
- * Usually it is coupled with the Limited Transmit algorithm, defined in
+ * Usually, it is coupled with the Limited Transmit algorithm, defined in
  * RFC 3042.
  *
  * In ns-3, these algorithms are included in this class, and it is implemented inside
@@ -257,14 +262,38 @@ public:
  * recovery phase, the method EnterRecovery is called.
  *
  * Fast recovery
- * --------------------------
+ * -------------
  *
- * The fast recovery algorithm is introduced RFC 2001, and it basically
+ * The fast recovery algorithm is introduced RFC 2001, and it
  * avoids to reset cWnd to 1 segment after sensing a loss on the channel. Instead,
  * the slow start threshold is halved, and the cWnd is set equal to such value,
  * plus segments for the cWnd inflation.
  *
  * The algorithm is implemented in the ProcessAck method.
+ *
+ * RTO expiration
+ * --------------
+ *
+ * When the Retransmission Time Out expires, the TCP faces a big performance
+ * drop. The expiration event is managed in ReTxTimeout method, that basically
+ * set the cWnd to 1 segment and start "from scratch" again.
+ *
+ * Options management
+ * ------------------
+ *
+ * SYN and SYN-ACK options, which are allowed only at the beginning of the
+ * connection, are managed in the DoForwardUp and SendEmptyPacket methods.
+ * To read all others, we have set up a cycle inside ReadOptions. For adding
+ * them, there is no a unique place, since the options (and the information
+ * available to build them) are scattered around the code. For instance,
+ * the SACK option is built in SendEmptyPacket only under certain conditions.
+ *
+ * SACK
+ * ----
+ *
+ * The SACK generation/management is delegated to the buffer classes, namely
+ * TcpTxBuffer and TcpRxBuffer. Please take a look on their documentation if
+ * you need more informations.
  *
  */
 class TcpSocketBase : public TcpSocket

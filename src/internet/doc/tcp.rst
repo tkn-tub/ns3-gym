@@ -752,10 +752,46 @@ are then asked to lower such value, and to return it.
 PktsAcked is used in case the algorithm needs timing information (such as
 RTT), and it is called each time an ACK is received.
 
+TCP SACK and non-SACK
++++++++++++++++++++++
+To avoid code duplication and the effort of maintaining two different versions
+of the TCP core, namely RFC 6675 (TCP-SACK) and RFC 5681 (TCP congestion
+control), we have merged RFC 6675 in the current code base. If the receiver
+supports the option, the sender bases its retransmissions over the received
+SACK information. However, in the absence of that option, the best it can do is
+to follow the RFC 5681 specification (on Fast Retransmit/Recovery) and
+employing NewReno modifications in case of partial ACKs.
+
+The merge work consisted in implementing an emulation of fake SACK options in
+the sender (when the receiver does not support SACK) following RFC 5681 rules.
+The generation is straightforward: each duplicate ACK (following the definition
+of RFC 5681) carries a new SACK option, that indicates (in increasing order)
+the blocks transmitted after the SND.UNA, not including the block starting from
+SND.UNA itself.
+
+With this emulated SACK information, the sender behaviour is unified in these
+two cases. By carefully generating these SACK block, we are able to employ all
+the algorithms outlined in RFC 6675 (e.g. Update(), NextSeg(), IsLost()) during
+non-SACK transfers. Of course, in the case of RTO expiration, no guess about
+SACK block could be made, and so they are not generated (consequently, the
+implementation will re-send all segments starting from SND.UNA, even the ones
+correctly received). Please note that the generated SACK option (in the case of
+a non-SACK receiver) by the sender never leave the sender node itself; they are
+created locally by the TCP implementation and then consumed.
+
+A similar concept is used in Linux with the function tcp_add_reno_sack. Our
+implementation resides in the TcpTxBuffer class that implements a scoreboard
+through two different lists of segments. TcpSocketBase actively uses the API
+provided by TcpTxBuffer to query the scoreboard; please refer to the Doxygen
+documentation (and to in-code comments) if you want to learn more about this
+implementation.
+
+When SACK attribute is enabled for the receiver socket, the sender will not
+craft any SACK option, relying only on what it receives from the network.
+
 Current limitations
 +++++++++++++++++++
 
-* SACK is not supported
 * TcpCongestionOps interface does not contain every possible Linux operation
 * Fast retransmit / fast recovery are bound with TcpSocketBase, thereby preventing easy simulation of TCP Tahoe
 

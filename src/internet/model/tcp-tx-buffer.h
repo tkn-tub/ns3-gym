@@ -69,33 +69,55 @@ public:
  *
  * \brief Tcp sender buffer
  *
- * The class keeps track of all data that the application wishes to transmit
- * to the other end. When the data is acknowledged, it is removed from the buffer.
+ * The class keeps track of all data that the application wishes to transmit to
+ * the other end. When the data is acknowledged, it is removed from the buffer.
  * The buffer has a maximum size, and data is not saved if the amount exceeds
- * the limit. Packets can be added to the class through the method Add().
- * An important thing to remember is that all the data managed is strictly
- * sequential. It can be divided in blocks, but all the data follow a strict
- * ordering. That ordering is managed through SequenceNumber.
+ * the limit. Packets can be added to the class through the method Add(). An
+ * important thing to remember is that all the data managed is strictly
+ * sequential. It can be divided into blocks, but all the data follow a strict
+ * ordering. That order is managed through SequenceNumber.
  *
- * In other words, this buffer contains numbered bytes (e.g 1,2,3), and the class
- * is allowed to return only ordered (using "<" as operator) subsets (e.g. 1,2
- * or 2,3 or 1,2,3).
+ * In other words, this buffer contains numbered bytes (e.g., 1,2,3), and the
+ * class is allowed to return only ordered (using "<" as operator) subsets
+ * (e.g. 1,2 or 2,3 or 1,2,3).
  *
  * The data structure underlying this is composed by two distinct packet lists.
- *
- * The first (SentList) is initially empty, and it contains the packets returned
- * by the method CopyFromSequence.
- *
- * The second (AppList) is initially empty, and it contains the packets coming
- * from the applications, but that are not transmitted yet as segments.
- *
- * To discover how the chunk are managed and retrieved from these lists, check
- * CopyFromSequence documentation.
+ * The first (SentList) is initially empty, and it contains the packets
+ * returned by the method CopyFromSequence. The second (AppList) is initially
+ * empty, and it contains the packets coming from the applications, but that
+ * are not transmitted yet as segments. To discover how the chunks are managed
+ * and retrieved from these lists, check CopyFromSequence documentation.
  *
  * The head of the data is represented by m_firstByteSeq, and it is returned by
- * HeadSequence(). The last byte is returned by TailSequence().
- * In this class we store also the size (in bytes) of the packets inside the
- * SentList in the variable m_sentSize.
+ * HeadSequence(). The last byte is returned by TailSequence(). In this class,
+ * we also store the size (in bytes) of the packets inside the SentList in the
+ * variable m_sentSize.
+ *
+ * SACK management
+ * ---------------
+ *
+ * The SACK information is usually saved in a data structure referred as
+ * scoreboard. In this implementation, the scoreboard is developed on top of
+ * the existing classes. In particular, instead of keeping raw pointers to
+ * packets in TcpTxBuffer we added the capability to store some flags
+ * associated with every segment sent. This is done through the use of the
+ * class TcpTxItem: instead of storing a list of packets, we store a list of
+ * TcpTxItem. Each item has different flags (check the corresponding
+ * documentation) and maintaining the scoreboard is a matter of travelling the
+ * list and set the SACK flag on the corresponding segment sent.
+ *
+ * Inefficiencies
+ * --------------
+ *
+ * The algorithms outlined in RFC 6675 are full of inefficiencies. In
+ * particular, traveling all the sent list each time it is needed to compute
+ * the bytes in flight is expensive. We try to overcome the issue by
+ * maintaining a pointer to the highest sequence SACKed; in this way, we can
+ * avoid traveling all the list in some cases. Another option could be keeping
+ * a count of each critical value (e.g., the number of packets sacked).
+ * However, this would be different from the algorithms in RFC. There are some
+ * other possible improvements; if you wish, take a look and try  to add some
+ * earlier exit conditions in the loops.
  *
  * \see Size
  * \see SizeFromSequence
