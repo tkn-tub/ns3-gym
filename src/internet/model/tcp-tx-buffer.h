@@ -245,6 +245,15 @@ public:
   uint32_t BytesInFlight (uint32_t dupThresh, uint32_t segmentSize) const;
 
   /**
+   * \brief Set the entire sent list as lost (typically after an RTO)
+   *
+   * Used to set all the sent list as lost, so the bytes in flight is not counting
+   * them as in flight, but we will continue to use SACK informations for
+   * recovering the timeout.
+   */
+  void SetSentListLost ();
+
+  /**
    * \brief Reset the Scoreboard from all SACK informations
    */
   void ResetScoreboard ();

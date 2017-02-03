@@ -921,6 +921,19 @@ TcpTxBuffer::ResetLastSegmentSent ()
     }
 }
 
+void
+TcpTxBuffer::SetSentListLost ()
+{
+  NS_LOG_FUNCTION (this);
+
+  PacketList::iterator it;
+
+  for (it = m_sentList.begin (); it != m_sentList.end (); ++it)
+    {
+      (*it)->m_lost = true;
+    }
+}
+
 bool
 TcpTxBuffer::IsHeadRetransmitted () const
 {
