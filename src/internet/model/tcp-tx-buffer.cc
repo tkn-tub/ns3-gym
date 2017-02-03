@@ -863,6 +863,78 @@ TcpTxBuffer::BytesInFlight (uint32_t dupThresh, uint32_t segmentSize) const
   return size;
 }
 
+void
+TcpTxBuffer::ResetScoreboard ()
+{
+  NS_LOG_FUNCTION (this);
+
+  PacketList::iterator it;
+  SequenceNumber32 beginOfCurrentPkt = m_firstByteSeq;
+
+  for (it = m_sentList.begin (); it != m_sentList.end (); ++it)
+    {
+      (*it)->m_sacked = false;
+      beginOfCurrentPkt += (*it)->m_packet->GetSize ();
+    }
+}
+
+void
+TcpTxBuffer::ResetSentList ()
+{
+  NS_LOG_FUNCTION (this);
+  TcpTxItem *item;
+
+  // Keep the head; it will then marked as retransmitted.
+  while (m_sentList.size () > 1)
+    {
+      item = m_sentList.back ();
+      item->m_retrans = item->m_sacked = false;
+      m_appList.push_front (item);
+      m_sentList.pop_back ();
+    }
+
+  if (m_sentList.size () > 0)
+    {
+      item = m_sentList.back ();
+      item->m_lost = true;
+      item->m_sacked = false;
+      item->m_retrans = false;
+      m_sentSize = item->m_packet->GetSize ();
+    }
+  else
+    {
+      m_sentSize = 0;
+    }
+}
+
+void
+TcpTxBuffer::ResetLastSegmentSent ()
+{
+  NS_LOG_FUNCTION (this);
+  if (!m_sentList.empty ())
+    {
+      TcpTxItem *item = m_sentList.back ();
+
+      m_sentList.pop_back ();
+      m_sentSize -= item->m_packet->GetSize ();
+      m_appList.insert (m_appList.begin (), item);
+    }
+}
+
+bool
+TcpTxBuffer::IsHeadRetransmitted () const
+{
+  NS_LOG_FUNCTION (this);
+
+  TcpTxItem *item = m_sentList.front ();
+  if (item != 0)
+    {
+      return item->m_retrans;
+    }
+
+  return false;
+}
+
 std::ostream &
 operator<< (std::ostream & os, TcpTxBuffer const & tcpTxBuf)
 {

@@ -244,6 +244,33 @@ public:
    */
   uint32_t BytesInFlight (uint32_t dupThresh, uint32_t segmentSize) const;
 
+  /**
+   * \brief Reset the Scoreboard from all SACK informations
+   */
+  void ResetScoreboard ();
+
+  /**
+   * \brief Check if the head is retransmitted
+   *
+   * \return true if the head is retransmitted, false in all other cases
+   * (including no segment sent)
+   */
+  bool IsHeadRetransmitted () const;
+
+  /**
+   * \brief Reset the sent list
+   *
+   * Move all the packets (except the HEAD) from the sent list to the appList.
+   * The head is then marked as un-sacked, un-retransmitted, and lost.
+   */
+  void ResetSentList ();
+
+  /**
+   * \brief Take the last segment sent and put it back into the un-sent list
+   * (at the beginning)
+   */
+  void ResetLastSegmentSent ();
+
 private:
   friend std::ostream & operator<< (std::ostream & os, TcpTxBuffer const & tcpTxBuf);
 
