@@ -323,7 +323,6 @@ TcpSocketBase::TcpSocketBase (void)
     m_recover (0),
     m_retxThresh (3),
     m_limitedTx (false),
-    m_retransOut (0),
     m_congestionControl (0),
     m_isFirstPartialAck (true)
 {
@@ -400,7 +399,6 @@ TcpSocketBase::TcpSocketBase (const TcpSocketBase& sock)
     m_recover (sock.m_recover),
     m_retxThresh (sock.m_retxThresh),
     m_limitedTx (sock.m_limitedTx),
-    m_retransOut (sock.m_retransOut),
     m_isFirstPartialAck (sock.m_isFirstPartialAck),
     m_txTrace (sock.m_txTrace),
     m_rxTrace (sock.m_rxTrace)
@@ -1681,7 +1679,6 @@ TcpSocketBase::ReceivedAck (Ptr<Packet> packet, const TcpHeader& tcpHeader)
           m_tcb->m_congState = TcpSocketState::CA_OPEN;
           m_congestionControl->PktsAcked (m_tcb, segsAcked, m_lastRtt);
           m_dupAckCount = 0;
-          m_retransOut = 0;
 
           NS_LOG_DEBUG ("DISORDER -> OPEN");
         }
@@ -1713,8 +1710,6 @@ TcpSocketBase::ReceivedAck (Ptr<Packet> packet, const TcpHeader& tcpHeader)
 
               callCongestionControl = false; // No congestion control on cWnd show be invoked
               m_dupAckCount = SafeSubtraction (m_dupAckCount, segsAcked); // Update the dupAckCount
-              m_retransOut  = SafeSubtraction (m_retransOut, 1);  // at least one retransmission
-                                                                  // has reached the other side
               m_txBuffer->DiscardUpTo (ackNumber);  //Bug 1850:  retransmit before newack
               DoRetransmit (); // Assume the next seq is lost. Retransmit lost packet
 
@@ -1744,7 +1739,6 @@ TcpSocketBase::ReceivedAck (Ptr<Packet> packet, const TcpHeader& tcpHeader)
                                         BytesInFlight () + m_tcb->m_segmentSize);
               m_isFirstPartialAck = true;
               m_dupAckCount = 0;
-              m_retransOut = 0;
 
               /* This FULL ACK acknowledge the fact that one segment has been
                * previously lost and now successfully received. All others have
@@ -1767,13 +1761,15 @@ TcpSocketBase::ReceivedAck (Ptr<Packet> packet, const TcpHeader& tcpHeader)
           m_isFirstPartialAck = true;
           m_congestionControl->PktsAcked (m_tcb, segsAcked, m_lastRtt);
           m_dupAckCount = 0;
-          m_retransOut = 0;
           if(ackNumber >= m_recover + 1)
             {
               m_congestionControl->CongestionStateSet (m_tcb, TcpSocketState::CA_OPEN);
               m_tcb->m_congState = TcpSocketState::CA_OPEN;
               NS_LOG_DEBUG ("LOSS -> OPEN");
             }
+          m_congestionControl->CongestionStateSet (m_tcb, TcpSocketState::CA_OPEN);
+          m_tcb->m_congState = TcpSocketState::CA_OPEN;
+          NS_LOG_DEBUG ("LOSS -> OPEN");
         }
 
       if (callCongestionControl)
@@ -2781,7 +2777,7 @@ TcpSocketBase::UnAckDataCount () const
 }
 
 uint32_t
-TcpSocketBase::BytesInFlight ()
+TcpSocketBase::BytesInFlight () const
 {
   NS_LOG_FUNCTION (this);
   // Previous (see bug 1783):
@@ -2790,26 +2786,15 @@ TcpSocketBase::BytesInFlight ()
   // PipeSize=SND.NXT-SND.UNA+(retransmits-dupacks)*CurMSS
 
   // flightSize == UnAckDataCount (), but we avoid the call to save log lines
-  uint32_t flightSize = m_tcb->m_nextTxSequence.Get () - m_txBuffer->HeadSequence ();
-  uint32_t duplicatedSize;
-  uint32_t bytesInFlight;
-
-  if (m_retransOut > m_dupAckCount)
-    {
-      duplicatedSize = (m_retransOut - m_dupAckCount)*m_tcb->m_segmentSize;
-      bytesInFlight = flightSize + duplicatedSize;
-    }
-  else
-    {
-      duplicatedSize = (m_dupAckCount - m_retransOut)*m_tcb->m_segmentSize;
-      bytesInFlight = duplicatedSize > flightSize ? 0 : flightSize - duplicatedSize;
-    }
+  uint32_t bytesInFlight = m_txBuffer->BytesInFlight (m_retxThresh, m_tcb->m_segmentSize);
 
   // m_bytesInFlight is traced; avoid useless assignments which would fire
   // fruitlessly the callback
   if (m_bytesInFlight != bytesInFlight)
     {
-      m_bytesInFlight = bytesInFlight;
+      // Ugly, but we are not modifying the state; m_bytesInFlight is used
+      // only for tracing purpose.
+      const_cast<TcpSocketBase*> (this)->m_bytesInFlight = bytesInFlight;
     }
 
   return bytesInFlight;
@@ -2826,11 +2811,17 @@ uint32_t
 TcpSocketBase::AvailableWindow () const
 {
   NS_LOG_FUNCTION_NOARGS ();
-  uint32_t unack = UnAckDataCount (); // Number of outstanding bytes
-  uint32_t win = Window ();           // Number of bytes allowed to be outstanding
+  uint32_t inflight = BytesInFlight (); // Number of outstanding bytes
+  uint32_t win = Window ();             // Number of bytes allowed to be outstanding
 
-  NS_LOG_DEBUG ("UnAckCount=" << unack << ", Win=" << win);
-  return (win < unack) ? 0 : (win - unack);
+  if (inflight > win)
+    {
+      NS_LOG_DEBUG ("InFlight=" << inflight << ", Win=" << win << " availWin=0");
+      return 0;
+    }
+
+  NS_LOG_DEBUG ("InFlight=" << inflight << ", Win=" << win << " availWin=" << win-inflight);
+  return win - inflight;
 }
 
 uint16_t
@@ -2848,7 +2839,7 @@ TcpSocketBase::AdvertisedWindowSize (bool scale) const
       w = m_maxWinSize;
       NS_LOG_WARN ("Adv window size truncated to " << m_maxWinSize << "; possibly to avoid overflow of the 16-bit integer");
     }
-  NS_LOG_DEBUG ("Returning AdvertisedWindowSize of " << static_cast<uint16_t> (w));
+  NS_LOG_INFO ("Returning AdvertisedWindowSize of " << static_cast<uint16_t> (w));
   return static_cast<uint16_t> (w);
 }
 
@@ -3199,7 +3190,6 @@ TcpSocketBase::DoRetransmit ()
 
   // Retransmit a data packet: Call SendDataPacket
   uint32_t sz = SendDataPacket (m_txBuffer->HeadSequence (), m_tcb->m_segmentSize, true);
-  ++m_retransOut;
 
   // In case of RTO, advance m_tcb->m_nextTxSequence
   m_tcb->m_nextTxSequence = std::max (m_tcb->m_nextTxSequence.Get (), m_txBuffer->HeadSequence () + sz);

@@ -780,7 +780,7 @@ protected:
    * \brief Return total bytes in flight
    * \returns total bytes in flight
    */
-  virtual uint32_t BytesInFlight (void);
+  virtual uint32_t BytesInFlight (void) const;
 
   /**
    * \brief Return the max possible number of unacked bytes
@@ -1093,7 +1093,6 @@ protected:
   SequenceNumber32       m_recover;      //!< Previous highest Tx seqnum for fast recovery
   uint32_t               m_retxThresh;   //!< Fast Retransmit threshold
   bool                   m_limitedTx;    //!< perform limited transmit
-  uint32_t               m_retransOut;   //!< Number of retransmission in this window
 
   // Transmission Control Block
   Ptr<TcpSocketState>    m_tcb;               //!< Congestion control informations
