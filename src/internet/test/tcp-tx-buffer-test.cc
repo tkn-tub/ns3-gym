@@ -25,18 +25,29 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("TcpTxBufferTestSuite");
 
+/**
+ * \ingroup internet-tests
+ * \ingroup tests
+ *
+ * \brief The TcpTxBuffer Test
+ */
 class TcpTxBufferTestCase : public TestCase
 {
 public:
+  /** \brief Constructor */
   TcpTxBufferTestCase ();
 
 private:
   virtual void DoRun (void);
   virtual void DoTeardown (void);
 
+  /** \brief Test the generation of an unsent block */
   void TestNewBlock ();
+  /** \brief Test the generation of a previously sent block */
   void TestTransmittedBlock ();
+  /** \brief Test the generation of the "next" block */
   void TestNextSeg ();
+  /** \brief Test the scoreboard with emulated SACK */
   void TestUpdateScoreboardWithCraftedSACK ();
 };
 
@@ -389,6 +400,12 @@ TcpTxBufferTestCase::DoTeardown ()
 {
 }
 
+/**
+ * \ingroup internet-test
+ * \ingroup tests
+ *
+ * \brief the TestSuite for the TcpTxBuffer test case
+ */
 class TcpTxBufferTestSuite : public TestSuite
 {
 public:
@@ -398,4 +415,5 @@ public:
     AddTestCase (new TcpTxBufferTestCase, TestCase::QUICK);
   }
 };
-static TcpTxBufferTestSuite  g_tcpTxBufferTestSuite;
+
+static TcpTxBufferTestSuite  g_tcpTxBufferTestSuite; //!< Static variable for test initialization

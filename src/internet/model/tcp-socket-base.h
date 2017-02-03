@@ -1009,14 +1009,14 @@ protected:
    * Currently this is a placeholder, since no operations should be done
    * on such option.
    *
-   * \param SACK PERMITTED option from the header
+   * \param option SACK PERMITTED option from the header
    */
   void ProcessOptionSackPermitted (const Ptr<const TcpOption> option);
 
   /**
    * \brief Read the SACK option
    *
-   * \param SACK option from the header
+   * \param option SACK option from the header
    */
   bool ProcessOptionSack (const Ptr<const TcpOption> option);
 

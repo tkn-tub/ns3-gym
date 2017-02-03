@@ -233,6 +233,7 @@ public:
   /**
    * \brief Update the scoreboard
    * \param list list of SACKed blocks
+   * \returns true in case of an update
    */
   bool Update (const TcpOptionSack::SackList &list);
 
@@ -262,6 +263,8 @@ public:
    *
    * The routine follows the "SetPipe" function in RFC 6675
    *
+   * \param dupThresh duplicate ACK threshold
+   * \param segmentSize segment size
    * \returns total bytes in flight
    */
   uint32_t BytesInFlight (uint32_t dupThresh, uint32_t segmentSize) const;
@@ -314,6 +317,7 @@ public:
   Ptr<const TcpOptionSack> CraftSackOption (const SequenceNumber32 &seq, uint8_t available) const;
 
 private:
+  /** \brief operator<< used for messages */
   friend std::ostream & operator<< (std::ostream & os, TcpTxBuffer const & tcpTxBuf);
 
   typedef std::list<TcpTxItem*> PacketList; //!< container for data stored in the buffer
@@ -357,7 +361,7 @@ private:
    *
    * \param numBytes number of bytes to copy
    * \param seq sequence requested
-   * \return the item that contains the right packet
+   * \returns the item that contains the right packet
    */
   TcpTxItem* GetTransmittedSegment (uint32_t numBytes, const SequenceNumber32 &seq);
 
@@ -428,6 +432,7 @@ private:
    * \param startingSeq Starting sequence of the list
    * \param numBytes Bytes to extract, starting from requestedSeq
    * \param requestedSeq Requested sequence
+   * \param listEdited output parameter which indicates if the list has been edited
    * \return the item that contains the right packet
    */
   TcpTxItem* GetPacketFromList (PacketList &list, const SequenceNumber32 &startingSeq,

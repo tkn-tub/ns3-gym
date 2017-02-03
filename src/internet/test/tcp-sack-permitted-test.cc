@@ -22,13 +22,21 @@
 #include "ns3/log.h"
 #include "ns3/tcp-option-sack-permitted.h"
 
-namespace ns3 {
+using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("SackPermittedTestSuite");
 
+/**
+ * \ingroup internet-test
+ * \ingroup tests
+ *
+ * \brief Test case for checking the SACK-PERMITTED option.
+ *
+ */
 class SackPermittedTestCase : public TcpGeneralTest
 {
 public:
+  /** \brief Configuration of the test */
   enum Configuration
   {
     DISABLED,
@@ -37,6 +45,7 @@ public:
     ENABLED
   };
 
+  /** \brief Constructor */
   SackPermittedTestCase (SackPermittedTestCase::Configuration conf);
 protected:
   virtual Ptr<TcpSocketMsgBase> CreateReceiverSocket (Ptr<Node> node);
@@ -44,7 +53,7 @@ protected:
 
   virtual void Tx (const Ptr<const Packet> p, const TcpHeader&h, SocketWho who);
 
-  Configuration m_configuration;
+  Configuration m_configuration; //!< The configuration
 };
 
 SackPermittedTestCase::SackPermittedTestCase (SackPermittedTestCase::Configuration conf)
@@ -181,9 +190,16 @@ SackPermittedTestCase::Tx (const Ptr<const Packet> p, const TcpHeader &h, Socket
     }
 }
 
-static class TcpSackPermittedTestSuite : public TestSuite
+/**
+ * \ingroup internet-test
+ *  \ingroup tests
+ *
+ * The test case for testing the TCP SACK PERMITTED option.
+ */
+class TcpSackPermittedTestSuite : public TestSuite
 {
 public:
+  /** \brief Constructor */
   TcpSackPermittedTestSuite ()
     : TestSuite ("tcp-sack-permitted", UNIT)
   {
@@ -193,6 +209,6 @@ public:
     AddTestCase (new SackPermittedTestCase (SackPermittedTestCase::ENABLED), TestCase::QUICK);
   }
 
-} g_tcpSackPermittedTestSuite;
+};
 
-} // namespace ns3
+static TcpSackPermittedTestSuite g_tcpSackPermittedTestSuite; //!< Static variable for test initialization
