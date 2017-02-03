@@ -951,9 +951,9 @@ TcpSocketMsgBase::ReceivedAck (Ptr<Packet> packet, const TcpHeader& tcpHeader)
 }
 
 void
-TcpSocketMsgBase::Retransmit ()
+TcpSocketMsgBase::ReTxTimeout ()
 {
-  TcpSocketBase::Retransmit ();
+  TcpSocketBase::ReTxTimeout ();
 
   m_retrCallback (m_tcb, this);
 }

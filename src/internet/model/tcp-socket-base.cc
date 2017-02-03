@@ -2714,14 +2714,7 @@ TcpSocketBase::SendDataPacket (SequenceNumber32 seq, uint32_t maxSize, bool with
 
   if (m_retxEvent.IsExpired ())
     {
-      // Schedules retransmit timeout. If this is a retransmission, double the timer
-
-      if (isRetransmission)
-        { // This is a retransmit
-          // RFC 6298, clause 2.5
-          Time doubledRto = m_rto + m_rto;
-          m_rto = Min (doubledRto, Time::FromDouble (60,  Time::S));
-        }
+      // Schedules retransmit timeout. m_rto should be already doubled.
 
       NS_LOG_LOGIC (this << " SendDataPacket Schedule ReTxTimeout at time " <<
                     Simulator::Now ().GetSeconds () << " to expire at time " <<
@@ -3150,8 +3143,80 @@ TcpSocketBase::ReTxTimeout ()
       return;
     }
 
+  // From RFC 6675, Section 5.1
+  // [RFC2018] suggests that a TCP sender SHOULD expunge the SACK
+  // information gathered from a receiver upon a retransmission timeout
+  // (RTO) "since the timeout might indicate that the data receiver has
+  // reneged."  Additionally, a TCP sender MUST "ignore prior SACK
+  // information in determining which data to retransmit."
+  if (!m_sackEnabled)
+    {
+      // If SACK is not enabled, give up with all sack blocks we crafted
+      // m_txBuffer->ResetScoreboard ();
+      // And move all the sent packet into the unsent, again. (ResetScoreboard
+      // is done inside that function)
+      m_txBuffer->ResetSentList ();
+    }
+  else
+    {
+      // Continuing from RFC 6675, Section 5.1
+      // It has been suggested that, as long as robust tests for
+      // reneging are present, an implementation can retain and use SACK
+      // information across a timeout event [Errata1610]
+
+      // Please note that BytesInFlight should reflect the fact that all our
+      // sent list is considered lost. The following line could be a start,
+      // but we miss tests for reneging right now. So, be safe.
+      // m_txBuffer->SetSentListLost ();
+      m_txBuffer->ResetSentList ();
+    }
+
+  // From RFC 6675, Section 5.1
+  // If an RTO occurs during loss recovery as specified in this document,
+  // RecoveryPoint MUST be set to HighData.  Further, the new value of
+  // RecoveryPoint MUST be preserved and the loss recovery algorithm
+  // outlined in this document MUST be terminated.
   m_recover = m_tcb->m_highTxMark;
-  Retransmit ();
+
+  // RFC 6298, clause 2.5, double the timer
+  Time doubledRto = m_rto + m_rto;
+  m_rto = Min (doubledRto, Time::FromDouble (60,  Time::S));
+
+  // Empty RTT history
+  m_history.clear ();
+
+  // Reset dupAckCount
+  m_dupAckCount = 0;
+
+  // Please don't reset highTxMark, it is used for retransmission detection
+
+  // When a TCP sender detects segment loss using the retransmission timer
+  // and the given segment has not yet been resent by way of the
+  // retransmission timer, decrease ssThresh
+  if (m_tcb->m_congState != TcpSocketState::CA_LOSS || !m_txBuffer->IsHeadRetransmitted ())
+    {
+      m_tcb->m_ssThresh = m_congestionControl->GetSsThresh (m_tcb, BytesInFlight ());
+    }
+
+  // Cwnd set to 1 MSS
+  m_tcb->m_cWnd = m_tcb->m_segmentSize;
+
+  m_congestionControl->CongestionStateSet (m_tcb, TcpSocketState::CA_LOSS);
+  m_tcb->m_congState = TcpSocketState::CA_LOSS;
+
+  NS_LOG_DEBUG ("RTO. Reset cwnd to " <<  m_tcb->m_cWnd << ", ssthresh to " <<
+                m_tcb->m_ssThresh << ", restart from seqnum " <<
+                m_txBuffer->HeadSequence () << " doubled rto to " <<
+                m_rto.Get ().GetSeconds () << " s");
+
+  NS_ASSERT_MSG (BytesInFlight () == 0, "There are some bytes in flight after an RTO: " <<
+                 BytesInFlight ());
+
+  // Retransmit the packet
+  DoRetransmit ();
+
+  NS_ASSERT_MSG (BytesInFlight () <= m_tcb->m_segmentSize,
+                 "In flight there is more than one segment");
 }
 
 void
@@ -3220,67 +3285,6 @@ TcpSocketBase::PersistTimeout ()
                 << Simulator::Now ().GetSeconds () << " to expire at time "
                 << (Simulator::Now () + m_persistTimeout).GetSeconds ());
   m_persistEvent = Simulator::Schedule (m_persistTimeout, &TcpSocketBase::PersistTimeout, this);
-}
-
-void
-TcpSocketBase::Retransmit ()
-{
-  // If erroneous timeout in closed/timed-wait state, just return
-  if (m_state == CLOSED || m_state == TIME_WAIT)
-    {
-      return;
-    }
-  // If all data are received (non-closing socket and nothing to send), just return
-  if (m_state <= ESTABLISHED && m_txBuffer->HeadSequence () >= m_tcb->m_highTxMark)
-    {
-      return;
-    }
-
-  /*
-   * When a TCP sender detects segment loss using the retransmission timer
-   * and the given segment has not yet been resent by way of the
-   * retransmission timer, the value of ssthresh MUST be set to no more
-   * than the value given in equation (4):
-   *
-   *   ssthresh = max (FlightSize / 2, 2*SMSS)            (4)
-   *
-   * where, as discussed above, FlightSize is the amount of outstanding
-   * data in the network.
-   *
-   * On the other hand, when a TCP sender detects segment loss using the
-   * retransmission timer and the given segment has already been
-   * retransmitted by way of the retransmission timer at least once, the
-   * value of ssthresh is held constant.
-   *
-   * Conditions to decrement slow - start threshold are as follows:
-   *
-   * *) The TCP state should be less than disorder, which is nothing but open.
-   * If we are entering into the loss state from the open state, we have not yet
-   * reduced the slow - start threshold for the window of data. (Nat: Recovery?)
-   * *) If we have entered the loss state with all the data pointed to by high_seq
-   * acknowledged. Once again it means that in whatever state we are (other than
-   * open state), all the data from the window that got us into the state, prior to
-   * retransmission timer expiry, has been acknowledged. (Nat: How this can happen?)
-   * *) If the above two conditions fail, we still have one more condition that can
-   * demand reducing the slow - start threshold: If we are already in the loss state
-   * and have not yet retransmitted anything. The condition may arise in case we
-   * are not able to retransmit anything because of local congestion.
-   */
-
-  if (m_tcb->m_congState != TcpSocketState::CA_LOSS)
-    {
-      m_congestionControl->CongestionStateSet (m_tcb, TcpSocketState::CA_LOSS);
-      m_tcb->m_congState = TcpSocketState::CA_LOSS;
-      m_tcb->m_ssThresh = m_congestionControl->GetSsThresh (m_tcb, BytesInFlight ());
-      m_tcb->m_cWnd = m_tcb->m_segmentSize;
-    }
-
-  m_tcb->m_nextTxSequence = m_txBuffer->HeadSequence (); // Restart from highest Ack
-  m_dupAckCount = 0;
-
-  NS_LOG_DEBUG ("RTO. Reset cwnd to " <<  m_tcb->m_cWnd << ", ssthresh to " <<
-                m_tcb->m_ssThresh << ", restart from seqnum " << m_tcb->m_nextTxSequence);
-  DoRetransmit ();                          // Retransmit the packet
 }
 
 void

@@ -894,14 +894,9 @@ protected:
   void EnterRecovery ();
 
   /**
-   * \brief Call Retransmit() upon RTO event
+   * \brief An RTO event happened
    */
   virtual void ReTxTimeout (void);
-
-  /**
-   * \brief Halving cwnd and call DoRetransmit()
-   */
-  virtual void Retransmit (void);
 
   /**
    * \brief Action upon delay ACK timeout, i.e. send an ACK

@@ -119,7 +119,7 @@ public:
 
 protected:
   virtual void ReceivedAck (Ptr<Packet> packet, const TcpHeader& tcpHeader);
-  virtual void Retransmit (void);
+  virtual void ReTxTimeout (void);
   virtual Ptr<TcpSocketBase> Fork (void);
   virtual void CompleteFork (Ptr<Packet> p, const TcpHeader& tcpHeader,
                              const Address& fromAddress, const Address& toAddress);
