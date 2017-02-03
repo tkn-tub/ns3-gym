@@ -136,9 +136,9 @@ private:
    */
   void LinkDown (void);
   /**
-   * Return the WifiChannel this device is connected to.
+   * Return the Channel this device is connected to.
    *
-   * \return WifiChannel
+   * \return Ptr to Channel object
    */
   Ptr<Channel> DoGetChannel (void) const;
   /**

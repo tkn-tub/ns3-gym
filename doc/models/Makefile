@@ -121,6 +121,9 @@ SOURCEFIGS = \
 	$(SRC)/wifi/doc/source/figures/snir.dia \
 	$(SRC)/wifi/doc/source/figures/clear-channel.eps \
 	$(SRC)/wifi/doc/source/figures/nist-frame-success-rate.eps \
+	$(SRC)/wifi/doc/source/figures/nist-frame-success-rate-n.eps \
+	$(SRC)/wifi/doc/source/figures/nist-frame-success-rate-ac.eps \
+	$(SRC)/wifi/doc/source/figures/nist-frame-success-rate-ax.eps \
 	$(SRC)/wimax/doc/WimaxArchitecture.dia \
 	$(SRC)/lte/doc/source/figures/epc-ctrl-arch.dia \
 	$(SRC)/lte/doc/source/figures/epc-data-flow-dl.dia \
@@ -370,7 +373,10 @@ IMAGES_EPS = \
 	$(FIGURES)/802-15-4-per-sens.eps \
 	$(FIGURES)/802-15-4-psr-distance.eps \
 	$(FIGURES)/clear-channel.eps \
-	$(FIGURES)/nist-frame-success-rate.eps
+	$(FIGURES)/nist-frame-success-rate.eps \
+	$(FIGURES)/nist-frame-success-rate-n.eps \
+	$(FIGURES)/nist-frame-success-rate-ac.eps \
+	$(FIGURES)/nist-frame-success-rate-ax.eps \
 
 # rescale pdf figures as necessary
 $(FIGURES)/testbed.pdf_width = 5in
@@ -425,6 +431,9 @@ $(FIGURES)/lr-wpan-primitives.pdf_width = 3in
 $(FIGURES)/lr-wpan-arch.pdf_width = 2in
 $(FIGURES)/clear-channel.pdf_width = 12cm
 $(FIGURES)/nist-frame-success-rate.pdf_width = 12cm
+$(FIGURES)/nist-frame-success-rate-n.pdf_width = 12cm
+$(FIGURES)/nist-frame-success-rate-ac.pdf_width = 12cm
+$(FIGURES)/nist-frame-success-rate-ax.pdf_width = 12cm
 
 IMAGES_PNG = ${IMAGES_EPS:.eps=.png}
 IMAGES_PDF = ${IMAGES_EPS:.eps=.pdf}
