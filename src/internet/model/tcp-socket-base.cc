@@ -1218,11 +1218,11 @@ TcpSocketBase::DoForwardUp (Ptr<Packet> packet, const Address &fromAddress,
   else if (packet->GetSize () > 0 && OutOfRange (seq, seq + packet->GetSize ()))
     {
       // Discard fully out of range data packets
-      NS_LOG_LOGIC ("At state " << TcpStateName[m_state] <<
-                    " received packet of seq [" << seq <<
-                    ":" << seq + packet->GetSize () <<
-                    ") out of range [" << m_rxBuffer->NextRxSequence () << ":" <<
-                    m_rxBuffer->MaxRxSequence () << ")");
+      NS_LOG_WARN ("At state " << TcpStateName[m_state] <<
+                   " received packet of seq [" << seq <<
+                   ":" << seq + packet->GetSize () <<
+                   ") out of range [" << m_rxBuffer->NextRxSequence () << ":" <<
+                   m_rxBuffer->MaxRxSequence () << ")");
       // Acknowledgement should be sent for all unacceptable packets (RFC793, p.69)
       if (m_state == ESTABLISHED && !(tcpHeader.GetFlags () & TcpHeader::RST))
         {
@@ -1423,8 +1423,8 @@ TcpSocketBase::ProcessEstablished (Ptr<Packet> packet, const TcpHeader& tcpHeade
         {
           // Case 1:  If the ACK is a duplicate (SEG.ACK < SND.UNA), it can be ignored.
           // Pag. 72 RFC 793
-          NS_LOG_LOGIC ("Ignored ack of " << tcpHeader.GetAckNumber () <<
-                        " SND.UNA = " << m_txBuffer->HeadSequence ());
+          NS_LOG_WARN ("Ignored ack of " << tcpHeader.GetAckNumber () <<
+                       " SND.UNA = " << m_txBuffer->HeadSequence ());
 
           // TODO: RFC 5961 5.2 [Blind Data Injection Attack].[Mitigation]
         }
@@ -1433,8 +1433,8 @@ TcpSocketBase::ProcessEstablished (Ptr<Packet> packet, const TcpHeader& tcpHeade
           // If the ACK acks something not yet sent (SEG.ACK > HighTxMark) then
           // send an ACK, drop the segment, and return.
           // Pag. 72 RFC 793
-          NS_LOG_LOGIC ("Ignored ack of " << tcpHeader.GetAckNumber () <<
-                        " HighTxMark = " << m_tcb->m_highTxMark);
+          NS_LOG_WARN ("Ignored ack of " << tcpHeader.GetAckNumber () <<
+                       " HighTxMark = " << m_tcb->m_highTxMark);
 
           SendEmptyPacket (TcpHeader::ACK);
         }
