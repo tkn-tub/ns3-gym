@@ -556,12 +556,14 @@ MacLow::GetCtsTimeout (void) const
 Time
 MacLow::GetSifs (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_sifs;
 }
 
 Time
 MacLow::GetRifs (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_rifs;
 }
 

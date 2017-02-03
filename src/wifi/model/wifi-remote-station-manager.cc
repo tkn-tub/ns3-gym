@@ -457,30 +457,35 @@ WifiRemoteStationManager::SetFragmentationThreshold (uint32_t threshold)
 void
 WifiRemoteStationManager::SetErpProtectionMode (WifiRemoteStationManager::ProtectionMode mode)
 {
+  NS_LOG_FUNCTION (this << mode);
   m_erpProtectionMode = mode;
 }
 
 void
 WifiRemoteStationManager::SetHtProtectionMode (WifiRemoteStationManager::ProtectionMode mode)
 {
+  NS_LOG_FUNCTION (this << mode);
   m_htProtectionMode = mode;
 }
 
 void
 WifiRemoteStationManager::SetShortPreambleEnabled (bool enable)
 {
+  NS_LOG_FUNCTION (this << enable);
   m_shortPreambleEnabled = enable;
 }
 
 void
 WifiRemoteStationManager::SetShortSlotTimeEnabled (bool enable)
 {
+  NS_LOG_FUNCTION (this << enable);
   m_shortSlotTimeEnabled = enable;
 }
 
 void
 WifiRemoteStationManager::SetRifsPermitted (bool allow)
 {
+  NS_LOG_FUNCTION (this << allow);
   m_rifsPermitted = allow;
 }
 
@@ -1074,6 +1079,7 @@ WifiRemoteStationManager::NeedCtsToSelf (WifiTxVector txVector)
 void
 WifiRemoteStationManager::SetUseNonErpProtection (bool enable)
 {
+  NS_LOG_FUNCTION (this << enable);
   m_useNonErpProtection = enable;
 }
 
@@ -1086,6 +1092,7 @@ WifiRemoteStationManager::GetUseNonErpProtection (void) const
 void
 WifiRemoteStationManager::SetUseNonHtProtection (bool enable)
 {
+  NS_LOG_FUNCTION (this << enable);
   m_useNonHtProtection = enable;
 }
 
@@ -1098,6 +1105,7 @@ WifiRemoteStationManager::GetUseNonHtProtection (void) const
 void
 WifiRemoteStationManager::SetUseGreenfieldProtection (bool enable)
 {
+  NS_LOG_FUNCTION (this << enable);
   m_useGreenfieldProtection = enable;
 }
 
@@ -2152,7 +2160,7 @@ WifiRemoteStationManager::GetPreambleForTransmission (WifiMode mode, Mac48Addres
     {
       preamble = WIFI_PREAMBLE_LONG;
     }
-  NS_LOG_FUNCTION ("selected preamble=" << preamble);
+  NS_LOG_DEBUG ("selected preamble=" << preamble);
   return preamble;
 }
 

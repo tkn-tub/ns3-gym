@@ -8,7 +8,7 @@
 #
 # See test.py for more information.
 cpp_examples = [
-    ("mixed-wireless", "True", "True"),
+    ("mixed-wired-wireless", "True", "True"),
     ("multirate --totalTime=0.3s --rateManager=ns3::AarfcdWifiManager", "True", "True"), 
     ("multirate --totalTime=0.3s --rateManager=ns3::AmrrWifiManager", "True", "True"), 
     ("multirate --totalTime=0.3s --rateManager=ns3::CaraWifiManager", "True", "True"), 
@@ -34,7 +34,7 @@ cpp_examples = [
     ("vht-wifi-network --simulationTime=0.1", "True", "True"),
     ("he-wifi-network --simulationTime=0.25", "True", "True"),
     ("simple-ht-hidden-stations --simulationTime=1", "True", "True"),
-    ("mixed-bg-network --simulationTime=1", "True", "True"),
+    ("mixed-network --simulationTime=1", "True", "True"),
     ("wifi-aggregation --simulationTime=1", "True", "True"),
     ("80211e-txop --simulationTime=1", "True", "True"),
     ("wifi-multi-tos --simulationTime=1 --nWifi=16 --useRts=1 --useShortGuardInterval=1", "True", "True"),
@@ -55,5 +55,5 @@ cpp_examples = [
 # See test.py for more information.
 python_examples = [
     ("wifi-ap.py", "True"),
-    ("mixed-wireless.py", "True"),
+    ("mixed-wired-wireless.py", "True"),
 ]

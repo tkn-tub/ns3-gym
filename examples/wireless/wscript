@@ -1,11 +1,11 @@
 ## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
 
 def build(bld):
-    obj = bld.create_ns3_program('mixed-wireless', ['core', 'mobility', 'wifi', 'applications', 'point-to-point', 
+    obj = bld.create_ns3_program('mixed-wired-wireless', ['core', 'mobility', 'wifi', 'applications', 'point-to-point', 
                                                     'internet', 'csma', 'olsr', 'netanim'])
-    obj.source = 'mixed-wireless.cc'
+    obj.source = 'mixed-wired-wireless.cc'
 
-    bld.register_ns3_script('mixed-wireless.py', ['core', 'mobility', 'wifi', 'applications', 'point-to-point', 
+    bld.register_ns3_script('mixed-wired-wireless.py', ['core', 'mobility', 'wifi', 'applications', 'point-to-point', 
                                                     'internet', 'csma', 'olsr'])
 
     obj = bld.create_ns3_program('wifi-adhoc', ['core', 'mobility', 'wifi', 'applications', 'stats'])
@@ -82,8 +82,8 @@ def build(bld):
     obj = bld.create_ns3_program('80211n-mimo', ['core','internet', 'mobility', 'wifi', 'applications', 'propagation'])
     obj.source = '80211n-mimo.cc'
 
-    obj = bld.create_ns3_program('mixed-bg-network', ['internet', 'mobility', 'wifi', 'applications'])    
-    obj.source = 'mixed-bg-network.cc'
+    obj = bld.create_ns3_program('mixed-network', ['internet', 'mobility', 'wifi', 'applications'])    
+    obj.source = 'mixed-network.cc'
 
     obj = bld.create_ns3_program('wifi-tcp', ['internet', 'mobility', 'wifi', 'applications', 'point-to-point'])    
     obj.source = 'wifi-tcp.cc'
