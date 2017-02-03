@@ -244,6 +244,7 @@ def build(bld):
         'test/ipv6-raw-test.cc',
         'test/tcp-test.cc',
         'test/tcp-timestamp-test.cc',
+        'test/tcp-sack-permitted-test.cc',
         'test/tcp-wscaling-test.cc',
         'test/tcp-option-test.cc',
         'test/tcp-header-test.cc',

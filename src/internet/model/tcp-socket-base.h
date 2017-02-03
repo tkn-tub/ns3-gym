@@ -962,6 +962,23 @@ protected:
    */
   uint8_t CalculateWScale () const;
 
+  /**
+   * \brief Read the SACK PERMITTED option
+   *
+   * Currently this is a placeholder, since no operations should be done
+   * on such option.
+   *
+   * \param SACK PERMITTED option from the header
+   */
+  void ProcessOptionSackPermitted (const Ptr<const TcpOption> option);
+
+  /**
+   * \brief Add the SACK PERMITTED option to the header
+   *
+   * \param header TcpHeader where the method should add the option
+   */
+  void AddOptionSackPermitted (TcpHeader &header);
+
   /** \brief Process the timestamp option from other side
    *
    * Get the timestamp and the echo, then save timestamp (which will
@@ -1053,6 +1070,7 @@ protected:
   TracedValue<uint32_t>         m_bytesInFlight; //!< Bytes in flight
 
   // Options
+  bool    m_sackEnabled;       //!< RFC SACK option enabled
   bool    m_winScalingEnabled; //!< Window Scale option enabled (RFC 7323)
   uint8_t m_rcvWindShift;      //!< Window shift to apply to outgoing segments
   uint8_t m_sndWindShift;      //!< Window shift to apply to incoming segments
