@@ -218,6 +218,7 @@ int main (int argc, char *argv[])
   uint32_t run = 0;
   bool flow_monitor = false;
   bool pcap = false;
+  bool sack = true;
   std::string queue_disc_type = "ns3::PfifoFastQueueDisc";
 
 
@@ -240,6 +241,7 @@ int main (int argc, char *argv[])
   cmd.AddValue ("flow_monitor", "Enable flow monitor", flow_monitor);
   cmd.AddValue ("pcap_tracing", "Enable or disable PCAP tracing", pcap);
   cmd.AddValue ("queue_disc_type", "Queue disc type for gateway (e.g. ns3::CoDelQueueDisc)", queue_disc_type);
+  cmd.AddValue ("sack", "Enable or disable SACK option", sack);
   cmd.Parse (argc, argv);
 
   SeedManager::SetSeed (1);
@@ -269,6 +271,7 @@ int main (int argc, char *argv[])
   // 4 MB of TCP buffer
   Config::SetDefault ("ns3::TcpSocket::RcvBufSize", UintegerValue (1 << 21));
   Config::SetDefault ("ns3::TcpSocket::SndBufSize", UintegerValue (1 << 21));
+  Config::SetDefault ("ns3::TcpSocketBase::Sack", BooleanValue (sack));
 
   // Select TCP variant
   if (transport_prot.compare ("TcpNewReno") == 0)
