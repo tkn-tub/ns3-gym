@@ -923,8 +923,10 @@ protected:
    * Timestamp and Window scale are managed in other pieces of code.
    *
    * \param tcpHeader Header of the segment
+   * \param scoreboardUpdated indicates if the scoreboard was updated due to a
+   * SACK option
    */
-  void ReadOptions (const TcpHeader &tcpHeader);
+  void ReadOptions (const TcpHeader &tcpHeader, bool &scoreboardUpdated);
 
   /**
    * \brief Return true if the specified option is enabled
@@ -971,6 +973,13 @@ protected:
    * \param SACK PERMITTED option from the header
    */
   void ProcessOptionSackPermitted (const Ptr<const TcpOption> option);
+
+  /**
+   * \brief Read the SACK option
+   *
+   * \param SACK option from the header
+   */
+  bool ProcessOptionSack (const Ptr<const TcpOption> option);
 
   /**
    * \brief Add the SACK PERMITTED option to the header
