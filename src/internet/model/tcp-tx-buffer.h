@@ -214,10 +214,30 @@ public:
    */
   bool Update (const TcpOptionSack::SackList &list);
 
+  /**
+   * \brief Check if a segment is lost per RFC 6675
+   * \param seq sequence to check
+   * \param dupThresh dupAck threshold
+   * \param segmentSize segment size
+   * \return true if the sequence is supposed to be lost, false otherwise
+   */
+  bool IsLost (const SequenceNumber32 &seq, uint32_t dupThresh, uint32_t segmentSize) const;
+
 private:
   friend std::ostream & operator<< (std::ostream & os, TcpTxBuffer const & tcpTxBuf);
 
   typedef std::list<TcpTxItem*> PacketList; //!< container for data stored in the buffer
+
+  /**
+   * \brief Check if a segment is lost per RFC 6675
+   * \param seq sequence to check
+   * \param segment Iterator pointing at seq
+   * \param dupThresh dupAck threshold
+   * \param segmentSize segment size
+   * \return true if the sequence is supposed to be lost, false otherwise
+   */
+  bool IsLost (const SequenceNumber32 &seq, const PacketList::const_iterator &segment, uint32_t dupThresh,
+               uint32_t segmentSize) const;
 
   /**
    * \brief Get a block of data not transmitted yet and move it into SentList

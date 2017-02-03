@@ -670,6 +670,76 @@ TcpTxBuffer::Update (const TcpOptionSack::SackList &list)
   return modified;
 }
 
+bool
+TcpTxBuffer::IsLost (const SequenceNumber32 &seq, const PacketList::const_iterator &segment,
+                     uint32_t dupThresh, uint32_t segmentSize) const
+{
+  NS_LOG_FUNCTION (this << seq << dupThresh << segmentSize);
+  uint32_t count = 0;
+  uint32_t bytes = 0;
+  PacketList::const_iterator it;
+  TcpTxItem *item;
+  Ptr<const Packet> current;
+  SequenceNumber32 beginOfCurrentPacket = seq;
+
+  // From RFC 6675:
+  // > The routine returns true when either dupThresh discontiguous SACKed
+  // > sequences have arrived above 'seq' or more than (dupThresh - 1) * SMSS bytes
+  // > with sequence numbers greater than 'SeqNum' have been SACKed.  Otherwise, the
+  // > routine returns false.
+  for (it = segment; it != m_sentList.end (); ++it)
+    {
+      item = *it;
+      current = item->m_packet;
+
+      if (item->m_lost)
+        {
+          return true;
+        }
+
+      if (item->m_sacked)
+        {
+          NS_LOG_DEBUG ("Segment found to be SACKed, increasing counter and bytes by " <<
+                        current->GetSize ());
+          ++count;
+          bytes += current->GetSize ();
+          if ((count >= dupThresh) || (bytes > (dupThresh-1) * segmentSize))
+            {
+              return true;
+            }
+        }
+
+      beginOfCurrentPacket += current->GetSize ();
+    }
+
+  return false;
+}
+
+bool
+TcpTxBuffer::IsLost (const SequenceNumber32 &seq, uint32_t dupThresh,
+                     uint32_t segmentSize) const
+{
+  NS_LOG_FUNCTION (this << seq << dupThresh);
+
+  SequenceNumber32 beginOfCurrentPacket = m_firstByteSeq;
+  PacketList::const_iterator it;
+
+  // This O(n) method is called only once, and outside this class.
+  // It should not harm the performance
+  for (it = m_sentList.begin (); it != m_sentList.end (); ++it)
+    {
+      // Search for the right iterator before calling IsLost()
+      if (beginOfCurrentPacket > seq)
+        {
+          return IsLost (beginOfCurrentPacket, it, dupThresh, segmentSize);
+        }
+
+      beginOfCurrentPacket += (*it)->m_packet->GetSize ();
+    }
+
+  return false;
+}
+
 std::ostream &
 operator<< (std::ostream & os, TcpTxBuffer const & tcpTxBuf)
 {
