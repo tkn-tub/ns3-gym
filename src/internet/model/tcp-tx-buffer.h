@@ -409,7 +409,8 @@ private:
    * \return the item that contains the right packet
    */
   TcpTxItem* GetPacketFromList (PacketList &list, const SequenceNumber32 &startingSeq,
-                                uint32_t numBytes, const SequenceNumber32 &requestedSeq) const;
+                                uint32_t numBytes, const SequenceNumber32 &requestedSeq,
+                                bool *listEdited) const;
 
   /**
    * \brief Merge two TcpTxItem
@@ -434,6 +435,13 @@ private:
    */
   void SplitItems (TcpTxItem &t1, TcpTxItem &t2, uint32_t size) const;
 
+  /**
+   * \brief Find the highest SACK byte
+   * \return a pair with the highest byte and an iterator inside m_sentList
+   */
+  std::pair <TcpTxBuffer::PacketList::const_iterator, SequenceNumber32>
+  GetHighestSacked () const;
+
   PacketList m_appList;  //!< Buffer for application data
   PacketList m_sentList; //!< Buffer for sent (but not acked) data
   uint32_t m_maxBuffer;  //!< Max number of data bytes in buffer (SND.WND)
@@ -441,6 +449,8 @@ private:
   uint32_t m_sentSize;   //!< Size of sent (and not discarded) segments
 
   TracedValue<SequenceNumber32> m_firstByteSeq; //!< Sequence number of the first byte in data (SND.UNA)
+
+  std::pair <PacketList::const_iterator, SequenceNumber32> m_highestSack; //!< Highest SACK byte
 
 };
 
