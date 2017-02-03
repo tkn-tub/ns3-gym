@@ -65,6 +65,20 @@ us a note on ns-developers mailing list.</p>
       <li>A new information element has been added:  HeCapabilities. This information element is added to the MAC frame header if the node is a HE node. This HeCapabilites information element is used to advertise the HE capabilites of the node to other nodes in the network.</li>
     </ul>
 </li>
+<li>Included carrier aggregation feature in LTE module</li>
+    <ul>
+      <li>LTE model is extended to support carrier aggregation feature according to 3GPP Release 10, for up to 5 component 
+      carriers. </li>
+      <li>InstallSingleEnbDevice and InstalSingeUeDevice functions of LteHelper are now constructing LteEnbDevice and LteUeDevice 
+      according to CA architecture. Each device, UE and eNodeB contains an instance of component carrier manager, and may 
+      have several component carrier instances.</li>
+      <li>SAP interfaces are extended to include CA message exchange funtionality.</li>
+      <li>RRC connection procedure is extended to allow RRC connection reconfiguration for the configuration of the secondary carriers.</li>
+      <li>RRC measurement reporting is extended to allow measurement reporting from the secondary carriers.</li>
+      <li>LTE traces are extended to include component carrier id.</li>      
+      <li>A</li>
+    </ul>
+</li>
 <li>Function <b>PrintRoutingTable</b> has been extended to add an optional Time::Units
     parameter to specify the time units used on the report.  The new parameter is
     optional and if not specified defaults to the previous behavior (Time::S).
