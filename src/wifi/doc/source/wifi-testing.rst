@@ -39,7 +39,7 @@ Figure :ref:`fig-clear-channel-80211b`.
 
    Clear channel (AWGN) error model for 802.11b
 
-Validation results for the 802.11 OFDM error model are available in this
+Validation results for the 802.11a/g OFDM error model are available in this
 `technical report <https://www.nsnam.org/~pei/80211ofdm.pdf>`__.  The curves
 can be reproduced by running the ``ofdm-validation.cc`` example program
 in the ``examples/wireless`` directory, and the figure is reproduced below
@@ -50,7 +50,35 @@ in Figure :ref:`fig-nist-frame-success-rate`.
 .. figure:: figures/nist-frame-success-rate.*
    :align: center
 
-   Frame error rate (NIST model) for OFDM Wi-Fi
+   Frame error rate (NIST model) for 802.11a/g (OFDM) Wi-Fi
+
+Similar curves for 802.11n/ac/ax can be obtained by running the ``ofdm-ht-validation.cc``,
+``ofdm-vht-validation.cc`` and ``ofdm-he-validation.cc`` example programs
+in the ``examples/wireless`` directory, and the figures are reproduced below
+in Figure :ref:`fig-nist-frame-success-rate-n`, Figure :ref:`fig-nist-frame-success-rate-ac`
+and Figure :ref:`fig-nist-frame-success-rate-ax`, respectively.
+There is no validation for those curves yet.
+
+.. _fig-nist-frame-success-rate-n:
+
+.. figure:: figures/nist-frame-success-rate-n.*
+   :align: center
+
+   Frame error rate (NIST model) for 802.11n (HT OFDM) Wi-Fi
+
+.. _fig-nist-frame-success-rate-ac:
+
+.. figure:: figures/nist-frame-success-rate-ac.*
+   :align: center
+
+   Frame error rate (NIST model) for 802.11ac (VHT OFDM) Wi-Fi
+
+.. _fig-nist-frame-success-rate-ax:
+
+.. figure:: figures/nist-frame-success-rate-ax.*
+   :align: center
+
+   Frame error rate (NIST model) for 802.11ax (HE OFDM) Wi-Fi
 
 MAC validation
 **************
