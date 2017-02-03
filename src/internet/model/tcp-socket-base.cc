@@ -844,8 +844,9 @@ TcpSocketBase::Send (Ptr<Packet> p, uint32_t flags)
         }
       // Submit the data to lower layers
       NS_LOG_LOGIC ("txBufSize=" << m_txBuffer->Size () << " state " << TcpStateName[m_state]);
-      if (m_state == ESTABLISHED || m_state == CLOSE_WAIT)
-        { // Try to send the data out
+      if ((m_state == ESTABLISHED || m_state == CLOSE_WAIT) && AvailableWindow () > 0)
+        { // Try to send the data out: Add a little step to allow the application
+          // to fill the buffer
           if (!m_sendPendingDataEvent.IsRunning ())
             {
               m_sendPendingDataEvent = Simulator::Schedule (TimeStep (1),
@@ -1396,13 +1397,7 @@ TcpSocketBase::DoForwardUp (Ptr<Packet> packet, const Address &fromAddress,
       NS_LOG_LOGIC (this << " Leaving zerowindow persist state");
       m_persistEvent.Cancel ();
 
-      // Try to send more data, since window has been updated
-      if (!m_sendPendingDataEvent.IsRunning ())
-        {
-          m_sendPendingDataEvent = Simulator::Schedule (TimeStep (1),
-                                                        &TcpSocketBase::SendPendingData,
-                                                        this, m_connected);
-        }
+      SendPendingData (m_connected);
     }
 }
 
@@ -1659,12 +1654,7 @@ TcpSocketBase::ReceivedAck (Ptr<Packet> packet, const TcpHeader& tcpHeader)
 
   // RFC 6675, Section 5, point (C), try to send more data. NB: (C) is implemented
   // inside SendPendingData
-  if (!m_sendPendingDataEvent.IsRunning ())
-    {
-      m_sendPendingDataEvent = Simulator::Schedule (TimeStep (1),
-                                                    &TcpSocketBase::SendPendingData,
-                                                    this, m_connected);
-    }
+  SendPendingData (m_connected);
 
   // If there is any data piggybacked, store it into m_rxBuffer
   if (packet->GetSize () > 0)
