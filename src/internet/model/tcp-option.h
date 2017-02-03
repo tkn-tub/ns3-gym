@@ -54,12 +54,14 @@ public:
   {
     // Remember to extend IsKindKnown() with new value, when adding values here
     //
-    END = 0,      //!< END
-    NOP = 1,      //!< NOP
-    MSS = 2,      //!< MSS
-    WINSCALE = 3, //!< WINSCALE
-    TS = 8,       //!< TS
-    UNKNOWN = 255 //!< not a standardized value; for unknown recv'd options
+    END = 0,                    //!< END
+    NOP = 1,                    //!< NOP
+    MSS = 2,                    //!< MSS
+    WINSCALE = 3,               //!< WINSCALE
+    SACKPERMITTED = 4,          //!< SACKPERMITTED
+    SACK = 5,                   //!< SACK
+    TS = 8,                     //!< TS
+    UNKNOWN = 255               //!< not a standardized value; for unknown recv'd options
   };
 
   /**

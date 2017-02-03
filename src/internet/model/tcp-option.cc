@@ -22,6 +22,8 @@
 #include "tcp-option-rfc793.h"
 #include "tcp-option-winscale.h"
 #include "tcp-option-ts.h"
+#include "tcp-option-sack-permitted.h"
+#include "tcp-option-sack.h"
 
 #include "ns3/type-id.h"
 #include "ns3/log.h"
@@ -71,11 +73,13 @@ TcpOption::CreateOption (uint8_t kind)
   static ObjectFactory objectFactory;
   static kindToTid toTid[] =
   {
-    { TcpOption::END,       TcpOptionEnd::GetTypeId () },
-    { TcpOption::MSS,       TcpOptionMSS::GetTypeId () },
-    { TcpOption::NOP,       TcpOptionNOP::GetTypeId () },
-    { TcpOption::TS,        TcpOptionTS::GetTypeId () },
-    { TcpOption::WINSCALE,  TcpOptionWinScale::GetTypeId () },
+    { TcpOption::END,           TcpOptionEnd::GetTypeId () },
+    { TcpOption::MSS,           TcpOptionMSS::GetTypeId () },
+    { TcpOption::NOP,           TcpOptionNOP::GetTypeId () },
+    { TcpOption::TS,            TcpOptionTS::GetTypeId () },
+    { TcpOption::WINSCALE,      TcpOptionWinScale::GetTypeId () },
+    { TcpOption::SACKPERMITTED, TcpOptionSackPermitted::GetTypeId () },
+    { TcpOption::SACK,          TcpOptionSack::GetTypeId () },
     { TcpOption::UNKNOWN,  TcpOptionUnknown::GetTypeId () }
   };
 
@@ -100,8 +104,10 @@ TcpOption::IsKindKnown (uint8_t kind)
     case NOP:
     case MSS:
     case WINSCALE:
+    case SACKPERMITTED:
+    case SACK:
     case TS:
-    // Do not add UNKNOWN here
+      // Do not add UNKNOWN here
       return true;
     }
 
@@ -161,7 +167,7 @@ TcpOptionUnknown::Serialize (Buffer::Iterator i) const
 
   i.WriteU8 (GetKind ());
   i.WriteU8 (GetSerializedSize ());
-  i.Write (m_content, m_size-2);
+  i.Write (m_content, m_size - 2);
 }
 
 uint32_t
@@ -179,7 +185,7 @@ TcpOptionUnknown::Deserialize (Buffer::Iterator start)
       return 0;
     }
 
-  i.Read (m_content, m_size-2);
+  i.Read (m_content, m_size - 2);
 
   return m_size;
 }
