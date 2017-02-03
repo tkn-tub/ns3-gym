@@ -196,6 +196,13 @@ TcpRxBuffer::Add (Ptr<Packet> p, TcpHeader const& tcph)
   // Insert packet into buffer
   NS_ASSERT (m_data.find (headSeq) == m_data.end ()); // Shouldn't be there yet
   m_data [ headSeq ] = p;
+
+  if (headSeq > m_nextRxSeq)
+    {
+      // Generate a new SACK block
+      UpdateSackList (headSeq, tailSeq);
+    }
+
   NS_LOG_LOGIC ("Buffered packet of seqno=" << headSeq << " len=" << p->GetSize ());
   // Update variables
   m_size += p->GetSize ();      // Occupancy
@@ -211,6 +218,7 @@ TcpRxBuffer::Add (Ptr<Packet> p, TcpHeader const& tcph)
         };
       m_nextRxSeq = i->first + SequenceNumber32 (i->second->GetSize ());
       m_availBytes += i->second->GetSize ();
+      ClearSackList (m_nextRxSeq);
     }
   NS_LOG_LOGIC ("Updated buffer occupancy=" << m_size << " nextRxSeq=" << m_nextRxSeq);
   if (m_gotFin && m_nextRxSeq == m_finSeq)
@@ -218,6 +226,135 @@ TcpRxBuffer::Add (Ptr<Packet> p, TcpHeader const& tcph)
       ++m_nextRxSeq;
     };
   return true;
+}
+
+uint32_t
+TcpRxBuffer::GetSackListSize () const
+{
+  NS_LOG_FUNCTION (this);
+
+  return m_sackList.size ();
+}
+
+void
+TcpRxBuffer::UpdateSackList (const SequenceNumber32 &head, const SequenceNumber32 &tail)
+{
+  NS_LOG_FUNCTION (this << head << tail);
+  NS_ASSERT (head > m_nextRxSeq);
+
+  TcpOptionSack::SackBlock current;
+  current.first = head;
+  current.second = tail;
+
+  // The block "current" has been safely stored. Now we need to build the SACK
+  // list, to be advertised. From RFC 2018:
+  // (a) The first SACK block (i.e., the one immediately following the
+  //     kind and length fields in the option) MUST specify the contiguous
+  //     block of data containing the segment which triggered this ACK,
+  //     unless that segment advanced the Acknowledgment Number field in
+  //     the header.  This assures that the ACK with the SACK option
+  //     reflects the most recent change in the data receiver's buffer
+  //     queue.
+  //
+  // (b) The data receiver SHOULD include as many distinct SACK blocks as
+  //     possible in the SACK option.  Note that the maximum available
+  //     option space may not be sufficient to report all blocks present in
+  //     the receiver's queue.
+  //
+  // (c) The SACK option SHOULD be filled out by repeating the most
+  //     recently reported SACK blocks (based on first SACK blocks in
+  //     previous SACK options) that are not subsets of a SACK block
+  //     already included in the SACK option being constructed.  This
+  //     assures that in normal operation, any segment remaining part of a
+  //     non-contiguous block of data held by the data receiver is reported
+  //     in at least three successive SACK options, even for large-window
+  //     TCP implementations [RFC1323]).  After the first SACK block, the
+  //     following SACK blocks in the SACK option may be listed in
+  //     arbitrary order.
+
+  m_sackList.push_front (current);
+
+  // We have inserted the block at the beginning of the list. Now, we should
+  // check if any existing blocks overlap with that.
+  bool updated = false;
+  TcpOptionSack::SackList::iterator it = m_sackList.begin ();
+  TcpOptionSack::SackBlock begin = *it;
+  TcpOptionSack::SackBlock merged;
+  ++it;
+
+  // Iterates until we examined all blocks in the list (maximum 4)
+  while (it != m_sackList.end ())
+    {
+      TcpOptionSack::SackBlock current = *it;
+
+      // This is a left merge:
+      // [current_first; current_second] [beg_first; beg_second]
+      if (begin.first == current.second)
+        {
+          NS_ASSERT (current.first < begin.second);
+          merged = TcpOptionSack::SackBlock (current.first, begin.second);
+          updated = true;
+        }
+      // while this is a right merge
+      // [begin_first; begin_second] [current_first; current_second]
+      else if (begin.second == current.first)
+        {
+          NS_ASSERT (begin.first < current.second);
+          merged = TcpOptionSack::SackBlock (begin.first, current.second);
+          updated = true;
+        }
+
+      // If we have merged the blocks (and the result is in merged) we should
+      // delete the current block (it), the first block, and insert the merged
+      // one at the beginning.
+      if (updated)
+        {
+          m_sackList.erase (it);
+          m_sackList.pop_front ();
+          m_sackList.push_front (merged);
+          it = m_sackList.begin ();
+          begin = *it;
+          updated = false;
+        }
+
+      ++it;
+    }
+
+  // Since the maximum blocks that fits into a TCP header are 4, there's no
+  // point on maintaining the others.
+  if (m_sackList.size () > 4)
+    {
+      m_sackList.pop_back ();
+    }
+
+  // Please note that, if a block b is discarded and then a block contiguos
+  // to b is received, only that new block (without the b part) is reported.
+  // This is perfectly fine for the RFC point (a), given that we do not report any
+  // overlapping blocks shortly after.
+}
+
+void
+TcpRxBuffer::ClearSackList (const SequenceNumber32 &seq)
+{
+  NS_LOG_FUNCTION (this << seq);
+
+  TcpOptionSack::SackList::iterator it;
+  for (it = m_sackList.begin (); it != m_sackList.end (); ++it)
+    {
+      TcpOptionSack::SackBlock block = *it;
+      NS_ASSERT (block.first < block.second);
+
+      if (block.second <= seq)
+        {
+          it = m_sackList.erase (it);
+        }
+    }
+}
+
+TcpOptionSack::SackList
+TcpRxBuffer::GetSackList () const
+{
+  return m_sackList;
 }
 
 Ptr<Packet>
