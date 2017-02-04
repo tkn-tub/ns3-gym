@@ -45,7 +45,10 @@ public:
     ENABLED
   };
 
-  /** \brief Constructor */
+  /**
+   * \brief Constructor
+   * \param conf Test configuration.
+   * */
   SackPermittedTestCase (SackPermittedTestCase::Configuration conf);
 protected:
   virtual Ptr<TcpSocketMsgBase> CreateReceiverSocket (Ptr<Node> node);

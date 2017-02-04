@@ -1017,6 +1017,7 @@ protected:
    * \brief Read the SACK option
    *
    * \param option SACK option from the header
+   * \returns true in case of an update to the SACKed blocks
    */
   bool ProcessOptionSack (const Ptr<const TcpOption> option);
 

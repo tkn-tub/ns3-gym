@@ -317,7 +317,6 @@ public:
   Ptr<const TcpOptionSack> CraftSackOption (const SequenceNumber32 &seq, uint8_t available) const;
 
 private:
-  /** \brief operator<< used for messages */
   friend std::ostream & operator<< (std::ostream & os, TcpTxBuffer const & tcpTxBuf);
 
   typedef std::list<TcpTxItem*> PacketList; //!< container for data stored in the buffer
@@ -481,6 +480,12 @@ private:
 
 };
 
+/**
+ * \brief Output operator.
+ * \param os The output stream.
+ * \param tcpTxBuf the TcpTxBuffer to print.
+ * \returns The output stream.
+ */
 std::ostream & operator<< (std::ostream & os, TcpTxBuffer const & tcpTxBuf);
 
 } // namepsace ns3

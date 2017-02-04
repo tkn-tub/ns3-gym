@@ -92,6 +92,8 @@ protected:
 
   /**
    * \brief Do the checks before the RTO expires.
+   * \param tcb The TcpSocketState.
+   * \param who The socket.
    */
   void BeforeRTOExpired (const Ptr<const TcpSocketState> tcb, SocketWho who);
 
