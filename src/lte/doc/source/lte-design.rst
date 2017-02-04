@@ -4415,7 +4415,7 @@ A particular case is represented by the UE buffer status report (BSR) to eNB.
 Since, i) the standard does not specify how the BSR has to be reported on each component 
 carrier and ii) it is decided to map one-to-one the logical channel to each MAC layer,
 the only way to send BSRs to the eNB is through the primary carrier. 
-Figure :ref:`fig-CarrierAggregationUlTxOpportunity` shows the sequence diagram. 
+Figure :ref:`fig-ca-uplink-bsr` shows the sequence diagram. 
 Each time a BSR is generated, the ``LteUeComponentCarrierManager`` sends it through 
 the primary carrier component. When the primary component carrier at the eNB receives 
 the BSR, it sends it to ``LteEnbComponentCarrierManager``. The latter, according to 
