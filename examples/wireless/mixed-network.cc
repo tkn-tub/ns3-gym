@@ -415,11 +415,14 @@ int main (int argc, char *argv[])
   params.isUdp = true;
   params.payloadSize = 1472; //bytes
   params.simulationTime = 10; //seconds
+
+  bool verifyResults = 0; //used for regression
   
   CommandLine cmd;
   cmd.AddValue ("payloadSize", "Payload size in bytes", params.payloadSize);
   cmd.AddValue ("simulationTime", "Simulation time in seconds", params.simulationTime);
   cmd.AddValue ("isUdp", "UDP if set to 1, TCP otherwise", params.isUdp);
+  cmd.AddValue ("verifyResults", "Enable/disable results verification at the end of the simulation", verifyResults);
   cmd.Parse (argc, argv);
 
   Experiment experiment;
@@ -427,7 +430,7 @@ int main (int argc, char *argv[])
 
   params.testName = "g only with all g features disabled";
   throughput = experiment.Run (params);
-  if (throughput < 22.5 || throughput > 23.5)
+  if (verifyResults && (throughput < 22.5 || throughput > 23.5))
     {
       NS_LOG_ERROR ("Obtained throughput " << throughput << " is not in the expected boundaries!");
       exit (1);
@@ -440,7 +443,7 @@ int main (int argc, char *argv[])
   params.enableShortPlcpPreamble = false;
   params.nWifiB = 0;
   throughput = experiment.Run (params);
-  if (throughput < 29 || throughput > 30)
+  if (verifyResults && (throughput < 29 || throughput > 30))
     {
       NS_LOG_ERROR ("Obtained throughput " << throughput << " is not in the expected boundaries!");
       exit (1);
@@ -453,7 +456,7 @@ int main (int argc, char *argv[])
   params.enableShortPlcpPreamble = false;
   params.nWifiB = 1;
   throughput = experiment.Run (params);
-  if (throughput < 22.5 || throughput > 23.5)
+  if (verifyResults && (throughput < 22.5 || throughput > 23.5))
     {
       NS_LOG_ERROR ("Obtained throughput " << throughput << " is not in the expected boundaries!");
       exit (1);
@@ -466,7 +469,7 @@ int main (int argc, char *argv[])
   params.enableShortPlcpPreamble = true;
   params.nWifiB = 1;
   throughput = experiment.Run (params);
-  if (throughput < 22.5 || throughput > 23.5)
+  if (verifyResults && (throughput < 22.5 || throughput > 23.5))
     {
       NS_LOG_ERROR ("Obtained throughput " << throughput << " is not in the expected boundaries!");
       exit (1);
@@ -480,7 +483,7 @@ int main (int argc, char *argv[])
   params.enableShortPlcpPreamble = false;
   params.nWifiB = 1;
   throughput = experiment.Run (params);
-  if (throughput < 19 || throughput > 20)
+  if (verifyResults && (throughput < 19 || throughput > 20))
     {
       NS_LOG_ERROR ("Obtained throughput " << throughput << " is not in the expected boundaries!");
       exit (1);
@@ -493,7 +496,7 @@ int main (int argc, char *argv[])
   params.enableShortPlcpPreamble = true;
   params.nWifiB = 1;
   throughput = experiment.Run (params);
-  if (throughput < 19 || throughput > 20)
+  if (verifyResults && (throughput < 19 || throughput > 20))
     {
       NS_LOG_ERROR ("Obtained throughput " << throughput << " is not in the expected boundaries!");
       exit (1);
@@ -507,7 +510,7 @@ int main (int argc, char *argv[])
   params.enableShortPlcpPreamble = false;
   params.nWifiB = 1;
   throughput = experiment.Run (params);
-  if (throughput < 20.5 || throughput > 21.5)
+  if (verifyResults && (throughput < 20.5 || throughput > 21.5))
     {
       NS_LOG_ERROR ("Obtained throughput " << throughput << " is not in the expected boundaries!");
       exit (1);
@@ -520,7 +523,7 @@ int main (int argc, char *argv[])
   params.enableShortPlcpPreamble = true;
   params.nWifiB = 1;
   throughput = experiment.Run (params);
-  if (throughput < 20.5 || throughput > 21.5)
+  if (verifyResults && (throughput < 20.5 || throughput > 21.5))
     {
       NS_LOG_ERROR ("Obtained throughput " << throughput << " is not in the expected boundaries!");
       exit (1);
@@ -542,7 +545,7 @@ int main (int argc, char *argv[])
   params.nWifiNGreenfield = 0;
   params.nGreenfieldHasTraffic = false;
   throughput = experiment.Run (params);
-  if (throughput < 43 || throughput > 44)
+  if (verifyResults && (throughput < 43 || throughput > 44))
     {
       NS_LOG_ERROR ("Obtained throughput " << throughput << " is not in the expected boundaries!");
       exit (1);
@@ -564,7 +567,7 @@ int main (int argc, char *argv[])
   params.nWifiNGreenfield = 1;
   params.nGreenfieldHasTraffic = true;
   throughput = experiment.Run (params);
-  if (throughput < 44 || throughput > 45)
+  if (verifyResults && (throughput < 44 || throughput > 45))
     {
       NS_LOG_ERROR ("Obtained throughput " << throughput << " is not in the expected boundaries!");
       exit (1);
@@ -586,7 +589,7 @@ int main (int argc, char *argv[])
   params.nWifiNGreenfield = 1;
   params.nGreenfieldHasTraffic = true;
   throughput = experiment.Run (params);
-  if (throughput < 43 || throughput > 44)
+  if (verifyResults && (throughput < 43 || throughput > 44))
     {
       NS_LOG_ERROR ("Obtained throughput " << throughput << " is not in the expected boundaries!");
       exit (1);
@@ -608,7 +611,7 @@ int main (int argc, char *argv[])
   params.nWifiNGreenfield = 1;
   params.nGreenfieldHasTraffic = true;
   throughput = experiment.Run (params);
-  if (throughput < 43 || throughput > 44)
+  if (verifyResults && (throughput < 43 || throughput > 44))
     {
       NS_LOG_ERROR ("Obtained throughput " << throughput << " is not in the expected boundaries!");
       exit (1);
@@ -630,7 +633,7 @@ int main (int argc, char *argv[])
   params.nWifiNGreenfield = 1;
   params.nGreenfieldHasTraffic = true;
   throughput = experiment.Run (params);
-  if (throughput < 44 || throughput > 45)
+  if (verifyResults && (throughput < 44 || throughput > 45))
     {
       NS_LOG_ERROR ("Obtained throughput " << throughput << " is not in the expected boundaries!");
       exit (1);
@@ -654,7 +657,7 @@ int main (int argc, char *argv[])
   params.nWifiNGreenfield = 0;
   params.nGreenfieldHasTraffic = false;
   throughput = experiment.Run (params);
-  if (throughput < 44 || throughput > 45)
+  if (verifyResults && (throughput < 44 || throughput > 45))
     {
       NS_LOG_ERROR ("Obtained throughput " << throughput << " is not in the expected boundaries!");
       exit (1);
@@ -678,7 +681,7 @@ int main (int argc, char *argv[])
   params.nWifiNGreenfield = 0;
   params.nGreenfieldHasTraffic = false;
   throughput = experiment.Run (params);
-  if (throughput < 44 || throughput > 45)
+  if (verifyResults && (throughput < 44 || throughput > 45))
     {
       NS_LOG_ERROR ("Obtained throughput " << throughput << " is not in the expected boundaries!");
       exit (1);
@@ -702,7 +705,7 @@ int main (int argc, char *argv[])
   params.nWifiNGreenfield = 0;
   params.nGreenfieldHasTraffic = false;
   throughput = experiment.Run (params);
-  if (throughput < 43 || throughput > 44)
+  if (verifyResults && (throughput < 43 || throughput > 44))
     {
       NS_LOG_ERROR ("Obtained throughput " << throughput << " is not in the expected boundaries!");
       exit (1);

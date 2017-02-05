@@ -62,12 +62,14 @@ int main (int argc, char *argv[])
   uint64_t simulationTime = 10; //seconds
   double distance = 5; //meters
   bool enablePcap = 0;
+  bool verifyResults = 0; //used for regression
 
   CommandLine cmd;
   cmd.AddValue ("payloadSize", "Payload size in bytes", payloadSize);
   cmd.AddValue ("simulationTime", "Simulation time in seconds", simulationTime);
   cmd.AddValue ("distance", "Distance in meters between the station and the access point", distance);
   cmd.AddValue ("enablePcap", "Enable/disable pcap file generation", enablePcap);
+  cmd.AddValue ("verifyResults", "Enable/disable results verification at the end of the simulation", verifyResults);
   cmd.Parse (argc, argv);
 
   NodeContainer wifiStaNode;
@@ -310,7 +312,7 @@ int main (int argc, char *argv[])
   uint32_t totalPacketsThrough = DynamicCast<UdpServer> (serverAppA.Get (0))->GetReceived ();
   double throughput = totalPacketsThrough * payloadSize * 8 / (simulationTime * 1000000.0);
   std::cout << "Throughput for AC_BE with default TXOP limit (0ms): " << throughput << " Mbit/s" << '\n';
-  if (throughput < 28 || throughput > 29)
+  if (verifyResults && (throughput < 28 || throughput > 29))
     {
       NS_LOG_ERROR ("Obtained throughput " << throughput << " is not in the expected boundaries!");
       exit (1);
@@ -319,7 +321,7 @@ int main (int argc, char *argv[])
   totalPacketsThrough = DynamicCast<UdpServer> (serverAppB.Get (0))->GetReceived ();
   throughput = totalPacketsThrough * payloadSize * 8 / (simulationTime * 1000000.0);
   std::cout << "Throughput for AC_BE with non-default TXOP limit (3.008ms): " << throughput << " Mbit/s" << '\n';
-  if (throughput < 35.5 || throughput > 36.5)
+  if (verifyResults && (throughput < 35.5 || throughput > 36.5))
     {
       NS_LOG_ERROR ("Obtained throughput " << throughput << " is not in the expected boundaries!");
       exit (1);
@@ -328,7 +330,7 @@ int main (int argc, char *argv[])
   totalPacketsThrough = DynamicCast<UdpServer> (serverAppC.Get (0))->GetReceived ();
   throughput = totalPacketsThrough * payloadSize * 8 / (simulationTime * 1000000.0);
   std::cout << "Throughput for AC_VI with default TXOP limit (3.008ms): " << throughput << " Mbit/s" << '\n';
-  if (throughput < 36 || throughput > 37)
+  if (verifyResults && (throughput < 36 || throughput > 37))
     {
       NS_LOG_ERROR ("Obtained throughput " << throughput << " is not in the expected boundaries!");
       exit (1);
@@ -337,7 +339,7 @@ int main (int argc, char *argv[])
   totalPacketsThrough = DynamicCast<UdpServer> (serverAppD.Get (0))->GetReceived ();
   throughput = totalPacketsThrough * payloadSize * 8 / (simulationTime * 1000000.0);
   std::cout << "Throughput for AC_VI with non-default TXOP limit (0ms): " << throughput << " Mbit/s" << '\n';
-  if (throughput < 31.5 || throughput > 32.5)
+  if (verifyResults && (throughput < 31.5 || throughput > 32.5))
     {
       NS_LOG_ERROR ("Obtained throughput " << throughput << " is not in the expected boundaries!");
       exit (1);

@@ -69,6 +69,7 @@ int main (int argc, char *argv[])
   double distance = 5; //meters
   bool enableRts = 0;
   bool enablePcap = 0;
+  bool verifyResults = 0; //used for regression
 
   CommandLine cmd;
   cmd.AddValue ("payloadSize", "Payload size in bytes", payloadSize);
@@ -76,6 +77,7 @@ int main (int argc, char *argv[])
   cmd.AddValue ("simulationTime", "Simulation time in seconds", simulationTime);
   cmd.AddValue ("distance", "Distance in meters between the station and the access point", distance);
   cmd.AddValue ("enablePcap", "Enable/disable pcap file generation", enablePcap);
+  cmd.AddValue ("verifyResults", "Enable/disable results verification at the end of the simulation", verifyResults);
   cmd.Parse (argc, argv);
   
   Config::SetDefault ("ns3::WifiRemoteStationManager::RtsCtsThreshold", enableRts ? StringValue ("0") : StringValue ("999999"));
@@ -282,7 +284,7 @@ int main (int argc, char *argv[])
   uint32_t totalPacketsThrough = DynamicCast<UdpServer> (serverAppA.Get (0))->GetReceived ();
   double throughput = totalPacketsThrough * payloadSize * 8 / (simulationTime * 1000000.0);
   std::cout << "Throughput with default configuration (A-MPDU aggregation enabled, 65kB): " << throughput << " Mbit/s" << '\n';
-  if (throughput < 59.5 || throughput > 60.5)
+  if (verifyResults && (throughput < 59.5 || throughput > 60.5))
     {
       NS_LOG_ERROR ("Obtained throughput " << throughput << " is not in the expected boundaries!");
       exit (1);
@@ -291,7 +293,7 @@ int main (int argc, char *argv[])
   totalPacketsThrough = DynamicCast<UdpServer> (serverAppB.Get (0))->GetReceived ();
   throughput = totalPacketsThrough * payloadSize * 8 / (simulationTime * 1000000.0);
   std::cout << "Throughput with aggregation disabled: " << throughput << " Mbit/s" << '\n';
-  if (throughput < 30 || throughput > 30.5)
+  if (verifyResults && (throughput < 30 || throughput > 30.5))
     {
       NS_LOG_ERROR ("Obtained throughput " << throughput << " is not in the expected boundaries!");
       exit (1);
@@ -300,7 +302,7 @@ int main (int argc, char *argv[])
   totalPacketsThrough = DynamicCast<UdpServer> (serverAppC.Get (0))->GetReceived ();
   throughput = totalPacketsThrough * payloadSize * 8 / (simulationTime * 1000000.0);
   std::cout << "Throughput with A-MPDU disabled and A-MSDU enabled (8kB): " << throughput << " Mbit/s" << '\n';
-  if (throughput < 51 || throughput > 52)
+  if (verifyResults && (throughput < 51 || throughput > 52))
     {
       NS_LOG_ERROR ("Obtained throughput " << throughput << " is not in the expected boundaries!");
       exit (1);
@@ -309,7 +311,7 @@ int main (int argc, char *argv[])
   totalPacketsThrough = DynamicCast<UdpServer> (serverAppD.Get (0))->GetReceived ();
   throughput = totalPacketsThrough * payloadSize * 8 / (simulationTime * 1000000.0);
   std::cout << "Throughput with A-MPDU enabled (32kB) and A-MSDU enabled (4kB): " << throughput << " Mbit/s" << '\n';
-  if (throughput < 58 || throughput > 59)
+  if (verifyResults && (throughput < 58 || throughput > 59))
     {
       NS_LOG_ERROR ("Obtained throughput " << throughput << " is not in the expected boundaries!");
       exit (1);

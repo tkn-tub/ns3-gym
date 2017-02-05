@@ -51,12 +51,16 @@ int main (int argc, char *argv[])
   double simulationTime = 10; //seconds
   double distance = 1.0; //meters
   int mcs = -1; // -1 indicates an unset value
+  double minExpectedThroughput = 0;
+  double maxExpectedThroughput = 0;
 
   CommandLine cmd;
   cmd.AddValue ("distance", "Distance in meters between the station and the access point", distance);
   cmd.AddValue ("simulationTime", "Simulation time in seconds", simulationTime);
   cmd.AddValue ("udp", "UDP if set to 1, TCP otherwise", udp);
   cmd.AddValue ("mcs", "if set, limit testing to a specific MCS (0-7)", mcs);
+  cmd.AddValue ("minExpectedThroughput", "if set, simulation fails if the lowest throughput is below this value", minExpectedThroughput);
+  cmd.AddValue ("maxExpectedThroughput", "if set, simulation fails if the highest throughput is above this value", maxExpectedThroughput);
   cmd.Parse (argc,argv);
 
   double prevThroughput [8];
@@ -221,18 +225,18 @@ int main (int argc, char *argv[])
               double throughput = (rxBytes * 8) / (simulationTime * 1000000.0); //Mbit/s
               std::cout << mcs << "\t\t\t" << channelWidth << " MHz\t\t\t" << sgi << "\t\t\t" << throughput << " Mbit/s" << std::endl;
               //test first element
-              if (udp && mcs == 0 && channelWidth == 20 && sgi == 0)
+              if (mcs == 0 && channelWidth == 20 && sgi == 0)
                 {
-                  if (throughput < 5.1 || throughput > 6.1)
+                  if (throughput < minExpectedThroughput)
                     {
                       NS_LOG_ERROR ("Obtained throughput " << throughput << " is not expected!");
                       exit (1);
                     }
                 }
               //test last element
-              if (udp && mcs == 9 && channelWidth == 160 && sgi == 1)
+              if (mcs == 9 && channelWidth == 160 && sgi == 1)
                 {
-                  if (throughput < 550 || throughput > 650)
+                  if (maxExpectedThroughput > 0 && throughput > maxExpectedThroughput)
                     {
                       NS_LOG_ERROR ("Obtained throughput " << throughput << " is not expected!");
                       exit (1);
