@@ -216,7 +216,7 @@ int main (int argc, char *argv[])
                 }
               else
                 {
-                  rxBytes = payloadSize * DynamicCast<PacketSink> (sinkApp.Get (0))->GetTotalRx ();
+                  rxBytes = DynamicCast<PacketSink> (sinkApp.Get (0))->GetTotalRx ();
                 }
               double throughput = (rxBytes * 8) / (simulationTime * 1000000.0); //Mbit/s
               std::cout << mcs << "\t\t\t" << channelWidth << " MHz\t\t\t" << sgi << "\t\t\t" << throughput << " Mbit/s" << std::endl;
