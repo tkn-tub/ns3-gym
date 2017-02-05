@@ -44,7 +44,9 @@ cpp_examples = [
     ("wifi-spectrum-per-interference --distance=24 --index=31 --simulationTime=1 --waveformPower=0.1", "True", "True"),
     ("wifi-spectrum-saturation-example --simulationTime=1 --index=63", "True", "True"),
     ("wifi-backward-compatibility --apVersion=80211a --staVersion=80211n_5GHZ --simulationTime=1", "True", "True"),
+    ("wifi-backward-compatibility --apVersion=80211a --staVersion=80211n_5GHZ --apRaa=Ideal --staRaa=Ideal --simulationTime=1", "True", "True"),
     ("wifi-backward-compatibility --apVersion=80211a --staVersion=80211ac --simulationTime=1", "True", "True"),
+    ("wifi-backward-compatibility --apVersion=80211a --staVersion=80211ac --apRaa=Ideal --staRaa=Ideal --simulationTime=1", "True", "True"),
 ]
 
 # A list of Python examples to run in order to ensure that they remain
