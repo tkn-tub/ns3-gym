@@ -167,13 +167,13 @@ WifiPhy::GetTypeId (void)
                    UintegerValue (20),
                    MakeUintegerAccessor (&WifiPhy::GetChannelWidth,
                                          &WifiPhy::SetChannelWidth),
-                   MakeUintegerChecker<uint8_t> ())
+                   MakeUintegerChecker<uint8_t> (5, 160))
     .AddAttribute ("ChannelNumber",
                    "If set to non-zero defined value, will control Frequency and ChannelWidth assignment",
                    UintegerValue (0),
                    MakeUintegerAccessor (&WifiPhy::SetChannelNumber,
                                          &WifiPhy::GetChannelNumber),
-                   MakeUintegerChecker<uint8_t> ())
+                   MakeUintegerChecker<uint8_t> (0, 196))
     .AddAttribute ("EnergyDetectionThreshold",
                    "The energy of a received signal should be higher than "
                    "this threshold (dbm) to allow the PHY layer to detect the signal.",
@@ -286,7 +286,7 @@ WifiPhy::GetTypeId (void)
                    TimeValue (NanoSeconds (3200)),
                    MakeTimeAccessor (&WifiPhy::GetGuardInterval,
                                      &WifiPhy::SetGuardInterval),
-                   MakeTimeChecker ())
+                   MakeTimeChecker (NanoSeconds (400), NanoSeconds (3200)))
     .AddAttribute ("LdpcEnabled",
                    "Whether or not LDPC is enabled (not supported yet!).",
                    BooleanValue (false),
