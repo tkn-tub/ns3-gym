@@ -83,7 +83,7 @@ int main (int argc, char *argv[])
     {
       uint8_t index = 0;
       double previous = 0;
-      for (int channelWidth = 20; channelWidth <= 40;)
+      for (int channelWidth = 20; channelWidth <= 40; )
         {
           for (int sgi = 0; sgi < 2; sgi++)
             {
@@ -123,7 +123,7 @@ int main (int argc, char *argv[])
                 }
               else
                 {
-                  std::cout<<"Wrong frequency value!"<<std::endl;
+                  std::cout << "Wrong frequency value!" << std::endl;
                   return 0;
                 }
 
@@ -131,7 +131,7 @@ int main (int argc, char *argv[])
               oss << "HtMcs" << mcs;
               wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager","DataMode", StringValue (oss.str ()),
                                             "ControlMode", StringValue (oss.str ()));
-                
+
               Ssid ssid = Ssid ("ns3-80211n");
 
               mac.SetType ("ns3::StaWifiMac",

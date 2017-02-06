@@ -40,7 +40,7 @@ private:
   void SetPosition (Ptr<Node> node, Vector position);
   Vector GetPosition (Ptr<Node> node);
   Ptr<Socket> SetupPacketReceive (Ptr<Node> node);
-  void GenerateTraffic (Ptr<Socket> socket, uint32_t pktSize, 
+  void GenerateTraffic (Ptr<Socket> socket, uint32_t pktSize,
                         uint32_t pktCount, Time pktInterval );
 
   uint32_t m_pktsTotal;
@@ -93,14 +93,14 @@ Experiment::SetupPacketReceive (Ptr<Node> node)
 }
 
 void
-Experiment::GenerateTraffic (Ptr<Socket> socket, uint32_t pktSize, 
+Experiment::GenerateTraffic (Ptr<Socket> socket, uint32_t pktSize,
                              uint32_t pktCount, Time pktInterval )
 {
   if (pktCount > 0)
     {
       socket->Send (Create<Packet> (pktSize));
-      Simulator::Schedule (pktInterval, &Experiment::GenerateTraffic, this, 
-                           socket, pktSize,pktCount-1, pktInterval);
+      Simulator::Schedule (pktInterval, &Experiment::GenerateTraffic, this,
+                           socket, pktSize,pktCount - 1, pktInterval);
     }
   else
     {
@@ -149,7 +149,7 @@ Experiment::Run (const WifiHelper &wifi, const YansWifiPhyHelper &wifiPhy,
   uint32_t packetSize = 1014;
   uint32_t maxPacketCount = 200;
   Time interPacketInterval = Seconds (1.);
-  Simulator::Schedule (Seconds (1.0), &Experiment::GenerateTraffic, 
+  Simulator::Schedule (Seconds (1.0), &Experiment::GenerateTraffic,
                        this, source, packetSize, maxPacketCount,interPacketInterval);
   Simulator::Run ();
 
@@ -185,7 +185,7 @@ int main (int argc, char *argv[])
         {
           Experiment experiment;
           dataset.SetStyle (Gnuplot2dDataset::LINES);
- 
+
           WifiHelper wifi;
           wifi.SetStandard (WIFI_PHY_STANDARD_80211b);
           WifiMacHelper wifiMac;
@@ -195,13 +195,13 @@ int main (int argc, char *argv[])
                                         "DataMode",StringValue (modes[i]),
                                         "ControlMode",StringValue (modes[i]));
           wifiMac.SetType ("ns3::AdhocWifiMac");
- 
+
           YansWifiPhyHelper wifiPhy = YansWifiPhyHelper::Default ();
           YansWifiChannelHelper wifiChannel;
           wifiChannel.SetPropagationDelay ("ns3::ConstantSpeedPropagationDelayModel");
           wifiChannel.AddPropagationLoss ("ns3::FixedRssLossModel","Rss",DoubleValue (rss));
- 
- 
+
+
           NS_LOG_DEBUG (modes[i]);
           experiment = Experiment (modes[i]);
           wifiPhy.Set ("EnergyDetectionThreshold", DoubleValue (-110.0) );

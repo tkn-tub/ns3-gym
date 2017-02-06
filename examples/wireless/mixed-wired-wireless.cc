@@ -16,9 +16,9 @@
  */
 
 //
-// This ns-3 example demonstrates the use of helper functions to ease 
+// This ns-3 example demonstrates the use of helper functions to ease
 // the construction of simulation scenarios.
-// 
+//
 // The simulation topology consists of a mixed wired and wireless
 // scenario in which a hierarchical mobility model is used.
 //
@@ -36,7 +36,7 @@
 //
 //          +--------------------------------------------------------+
 //          |                                                        |
-//          |              802.11 ad hoc, ns-2 mobility              | 
+//          |              802.11 ad hoc, ns-2 mobility              |
 //          |                                                        |
 //          +--------------------------------------------------------+
 //                   |       o o o (N backbone routers)       |
@@ -54,9 +54,9 @@
 // We'll send data from the first wired LAN node on the first wired LAN
 // to the last wireless STA on the last infrastructure net, thereby
 // causing packets to traverse CSMA to adhoc to infrastructure links
-// 
+//
 // Note that certain mobility patterns may cause packet forwarding
-// to fail (if nodes become disconnected) 
+// to fail (if nodes become disconnected)
 
 #include "ns3/core-module.h"
 #include "ns3/applications-module.h"
@@ -77,7 +77,7 @@ NS_LOG_COMPONENT_DEFINE ("MixedWireless");
 //
 // This function will be used below as a trace sink, if the command-line
 // argument or default value "useCourseChangeCallback" is set to true
-// 
+//
 static void
 CourseChangeCallback (std::string path, Ptr<const MobilityModel> model)
 {
@@ -85,11 +85,11 @@ CourseChangeCallback (std::string path, Ptr<const MobilityModel> model)
   std::cout << "CourseChange " << path << " x=" << position.x << ", y=" << position.y << ", z=" << position.z << std::endl;
 }
 
-int 
+int
 main (int argc, char *argv[])
 {
   //
-  // First, we declare and initialize a few local variables that control some 
+  // First, we declare and initialize a few local variables that control some
   // simulation parameters.
   //
   uint32_t backboneNodes = 10;
@@ -107,7 +107,7 @@ main (int argc, char *argv[])
 
   //
   // For convenience, we add the local variables to the command line argument
-  // system so that they can be overridden with flags such as 
+  // system so that they can be overridden with flags such as
   // "--backboneNodes=20"
   //
   CommandLine cmd;
@@ -128,11 +128,11 @@ main (int argc, char *argv[])
       std::cout << "Use a simulation stop time >= 10 seconds" << std::endl;
       exit (1);
     }
-  /////////////////////////////////////////////////////////////////////////// 
+  ///////////////////////////////////////////////////////////////////////////
   //                                                                       //
   // Construct the backbone                                                //
   //                                                                       //
-  /////////////////////////////////////////////////////////////////////////// 
+  ///////////////////////////////////////////////////////////////////////////
 
   //
   // Create a container to manage the nodes of the adhoc (backbone) network.
@@ -141,7 +141,7 @@ main (int argc, char *argv[])
   NodeContainer backbone;
   backbone.Create (backboneNodes);
   //
-  // Create the backbone wifi net devices and install them into the nodes in 
+  // Create the backbone wifi net devices and install them into the nodes in
   // our container
   //
   WifiHelper wifi;
@@ -174,7 +174,7 @@ main (int argc, char *argv[])
   ipAddrs.Assign (backboneDevices);
 
   //
-  // The ad-hoc network nodes need a mobility model so we aggregate one to 
+  // The ad-hoc network nodes need a mobility model so we aggregate one to
   // each of the nodes we just finished building.
   //
   MobilityHelper mobility;
@@ -191,11 +191,11 @@ main (int argc, char *argv[])
                              "Pause", StringValue ("ns3::ConstantRandomVariable[Constant=0.2]"));
   mobility.Install (backbone);
 
-  /////////////////////////////////////////////////////////////////////////// 
+  ///////////////////////////////////////////////////////////////////////////
   //                                                                       //
   // Construct the LANs                                                    //
   //                                                                       //
-  /////////////////////////////////////////////////////////////////////////// 
+  ///////////////////////////////////////////////////////////////////////////
 
   // Reset the address base-- all of the CSMA networks will be in
   // the "172.16 address space
@@ -215,11 +215,11 @@ main (int argc, char *argv[])
       // Now, create the container with all nodes on this link
       NodeContainer lan (backbone.Get (i), newLanNodes);
       //
-      // Create the CSMA net devices and install them into the nodes in our 
+      // Create the CSMA net devices and install them into the nodes in our
       // collection.
       //
       CsmaHelper csma;
-      csma.SetChannelAttribute ("DataRate", 
+      csma.SetChannelAttribute ("DataRate",
                                 DataRateValue (DataRate (5000000)));
       csma.SetChannelAttribute ("Delay", TimeValue (MilliSeconds (2)));
       NetDeviceContainer lanDevices = csma.Install (lan);
@@ -228,7 +228,7 @@ main (int argc, char *argv[])
       //
       internet.Install (newLanNodes);
       //
-      // Assign IPv4 addresses to the device drivers (actually to the 
+      // Assign IPv4 addresses to the device drivers (actually to the
       // associated IPv4 interfaces) we just created.
       //
       ipAddrs.Assign (lanDevices);
@@ -242,11 +242,11 @@ main (int argc, char *argv[])
       // to each of the nodes we just finished building.
       //
       MobilityHelper mobilityLan;
-      Ptr<ListPositionAllocator> subnetAlloc = 
+      Ptr<ListPositionAllocator> subnetAlloc =
         CreateObject<ListPositionAllocator> ();
       for (uint32_t j = 0; j < newLanNodes.GetN (); ++j)
         {
-          subnetAlloc->Add (Vector (0.0, j*10 + 10, 0.0));
+          subnetAlloc->Add (Vector (0.0, j * 10 + 10, 0.0));
         }
       mobilityLan.PushReferenceMobilityModel (backbone.Get (i));
       mobilityLan.SetPositionAllocator (subnetAlloc);
@@ -254,11 +254,11 @@ main (int argc, char *argv[])
       mobilityLan.Install (newLanNodes);
     }
 
-  /////////////////////////////////////////////////////////////////////////// 
+  ///////////////////////////////////////////////////////////////////////////
   //                                                                       //
   // Construct the mobile networks                                         //
   //                                                                       //
-  /////////////////////////////////////////////////////////////////////////// 
+  ///////////////////////////////////////////////////////////////////////////
 
   // Reset the address base-- all of the 802.11 networks will be in
   // the "10.0" address space
@@ -297,7 +297,7 @@ main (int argc, char *argv[])
       macInfra.SetType ("ns3::ApWifiMac",
                         "Ssid", SsidValue (ssid),
                         "BeaconGeneration", BooleanValue (true),
-                        "BeaconInterval", TimeValue(Seconds(2.5)));
+                        "BeaconInterval", TimeValue (Seconds (2.5)));
       NetDeviceContainer apDevices = wifiInfra.Install (wifiPhy, macInfra, backbone.Get (i));
       // Collect all of these new devices
       NetDeviceContainer infraDevices (apDevices, staDevices);
@@ -311,15 +311,15 @@ main (int argc, char *argv[])
       //
       ipAddrs.Assign (infraDevices);
       //
-      // Assign a new network prefix for each mobile network, according to 
+      // Assign a new network prefix for each mobile network, according to
       // the network mask initialized above
       //
       ipAddrs.NewNetwork ();
       //
-      // The new wireless nodes need a mobility model so we aggregate one 
+      // The new wireless nodes need a mobility model so we aggregate one
       // to each of the nodes we just finished building.
       //
-      Ptr<ListPositionAllocator> subnetAlloc = 
+      Ptr<ListPositionAllocator> subnetAlloc =
         CreateObject<ListPositionAllocator> ();
       for (uint32_t j = 0; j < infra.GetN (); ++j)
         {
@@ -334,11 +334,11 @@ main (int argc, char *argv[])
       mobility.Install (stas);
     }
 
-  /////////////////////////////////////////////////////////////////////////// 
+  ///////////////////////////////////////////////////////////////////////////
   //                                                                       //
   // Application configuration                                             //
   //                                                                       //
-  /////////////////////////////////////////////////////////////////////////// 
+  ///////////////////////////////////////////////////////////////////////////
 
   // Create the OnOff application to send UDP datagrams of size
   // 210 bytes at a rate of 10 Kb/s, between two nodes
@@ -356,12 +356,12 @@ main (int argc, char *argv[])
   // Conveniently, the variable "backboneNodes" holds this node index value
   Ptr<Node> appSource = NodeList::GetNode (backboneNodes);
   // We want the sink to be the last node created in the topology.
-  uint32_t lastNodeIndex = backboneNodes + backboneNodes*(lanNodes - 1) + backboneNodes*(infraNodes - 1) - 1;
+  uint32_t lastNodeIndex = backboneNodes + backboneNodes * (lanNodes - 1) + backboneNodes * (infraNodes - 1) - 1;
   Ptr<Node> appSink = NodeList::GetNode (lastNodeIndex);
   // Let's fetch the IP address of the last node, which is on Ipv4Interface 1
   Ipv4Address remoteAddr = appSink->GetObject<Ipv4> ()->GetAddress (1, 0).GetLocal ();
 
-  OnOffHelper onoff ("ns3::UdpSocketFactory", 
+  OnOffHelper onoff ("ns3::UdpSocketFactory",
                      Address (InetSocketAddress (remoteAddr, port)));
 
   ApplicationContainer apps = onoff.Install (appSource);
@@ -369,16 +369,16 @@ main (int argc, char *argv[])
   apps.Stop (Seconds (stopTime - 1));
 
   // Create a packet sink to receive these packets
-  PacketSinkHelper sink ("ns3::UdpSocketFactory", 
+  PacketSinkHelper sink ("ns3::UdpSocketFactory",
                          InetSocketAddress (Ipv4Address::GetAny (), port));
   apps = sink.Install (appSink);
   apps.Start (Seconds (3));
 
-  /////////////////////////////////////////////////////////////////////////// 
+  ///////////////////////////////////////////////////////////////////////////
   //                                                                       //
   // Tracing configuration                                                 //
   //                                                                       //
-  /////////////////////////////////////////////////////////////////////////// 
+  ///////////////////////////////////////////////////////////////////////////
 
   NS_LOG_INFO ("Configure Tracing.");
   CsmaHelper csma;
@@ -406,11 +406,11 @@ main (int argc, char *argv[])
 
   AnimationInterface anim ("mixed-wireless.xml");
 
-  /////////////////////////////////////////////////////////////////////////// 
+  ///////////////////////////////////////////////////////////////////////////
   //                                                                       //
   // Run simulation                                                        //
   //                                                                       //
-  /////////////////////////////////////////////////////////////////////////// 
+  ///////////////////////////////////////////////////////////////////////////
 
   NS_LOG_INFO ("Run Simulation.");
   Simulator::Stop (Seconds (stopTime));

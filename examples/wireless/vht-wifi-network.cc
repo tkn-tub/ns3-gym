@@ -80,7 +80,7 @@ int main (int argc, char *argv[])
     {
       uint8_t index = 0;
       double previous = 0;
-      for (int channelWidth = 20; channelWidth <= 160;)
+      for (int channelWidth = 20; channelWidth <= 160; )
         {
           if (mcs == 9 && channelWidth == 20)
             {
@@ -115,12 +115,12 @@ int main (int argc, char *argv[])
               WifiHelper wifi;
               wifi.SetStandard (WIFI_PHY_STANDARD_80211ac);
               WifiMacHelper mac;
-                
+
               std::ostringstream oss;
               oss << "VhtMcs" << mcs;
               wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager","DataMode", StringValue (oss.str ()),
                                             "ControlMode", StringValue (oss.str ()));
-                
+
               Ssid ssid = Ssid ("ns3-80211ac");
 
               mac.SetType ("ns3::StaWifiMac",

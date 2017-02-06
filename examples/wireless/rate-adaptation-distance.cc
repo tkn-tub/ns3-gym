@@ -187,7 +187,7 @@ int main (int argc, char *argv[])
   YansWifiChannelHelper wifiChannel = YansWifiChannelHelper::Default ();
   wifiPhy.SetChannel (wifiChannel.Create ());
 
-  wifiPhy.Set("ShortGuardEnabled", BooleanValue(shortGuardInterval));
+  wifiPhy.Set ("ShortGuardEnabled", BooleanValue (shortGuardInterval));
 
   NetDeviceContainer wifiApDevices;
   NetDeviceContainer wifiStaDevices;

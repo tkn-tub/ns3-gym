@@ -25,11 +25,11 @@
  *
  * This simulation consist of 4 nodes, two APs and two STAs.
  * The APs generates UDP traffic with a CBR of 54 Mbps to the STAs.
- * The APa use any power and rate control mechanism, and the STAs use only 
+ * The APa use any power and rate control mechanism, and the STAs use only
  * Minstrel rate control.
  * The STAs can be configured to be at any distance from the APs.
  *
- * The objective is to test power and rate control in the links with 
+ * The objective is to test power and rate control in the links with
  * interference from the other link.
  *
  * The output consists of:
@@ -190,7 +190,7 @@ NodeStatistics::PhyCallback (std::string path, Ptr<const Packet> packet)
   packet->PeekHeader (head);
   Mac48Address dest = head.GetAddr1 ();
 
-  if (head.GetType() == WIFI_MAC_DATA)
+  if (head.GetType () == WIFI_MAC_DATA)
     {
       totalEnergy += pow (10.0, actualPower[dest] / 10.0) * GetCalcTxTime (actualMode[dest]).GetSeconds ();
       totalTime += GetCalcTxTime (actualMode[dest]).GetSeconds ();
@@ -565,8 +565,8 @@ int main (int argc, char *argv[])
   gnuplot.AddDataset (statisticsAp0.GetDatafile ());
   gnuplot.GenerateOutput (outfileTh0);
 
-  if (manager.compare ("ns3::ParfWifiManager") == 0 ||
-      manager.compare ("ns3::AparfWifiManager") == 0)
+  if (manager.compare ("ns3::ParfWifiManager") == 0
+      || manager.compare ("ns3::AparfWifiManager") == 0)
     {
       std::ofstream outfilePower0 (("power-" + outputFileName + "-0.plt").c_str ());
       gnuplot = Gnuplot (("power-" + outputFileName + "-0.eps").c_str (), "Average Transmit Power");
@@ -575,7 +575,7 @@ int main (int argc, char *argv[])
       gnuplot.SetTitle ("Average transmit power (AP0 to STA) vs time");
       gnuplot.AddDataset (statisticsAp0.GetPowerDatafile ());
       gnuplot.GenerateOutput (outfilePower0);
-    } 
+    }
 
   std::ofstream outfileTx0 (("tx-" + outputFileName + "-0.plt").c_str ());
   gnuplot = Gnuplot (("tx-" + outputFileName + "-0.eps").c_str (), "Time in TX State");
@@ -618,8 +618,8 @@ int main (int argc, char *argv[])
   gnuplot.AddDataset (statisticsAp1.GetDatafile ());
   gnuplot.GenerateOutput (outfileTh1);
 
-  if (manager.compare ("ns3::ParfWifiManager") == 0 ||
-      manager.compare ("ns3::AparfWifiManager") == 0)
+  if (manager.compare ("ns3::ParfWifiManager") == 0
+      || manager.compare ("ns3::AparfWifiManager") == 0)
     {
       std::ofstream outfilePower1 (("power-" + outputFileName + "-1.plt").c_str ());
       gnuplot = Gnuplot (("power-" + outputFileName + "-1.eps").c_str (), "Average Transmit Power");
@@ -628,7 +628,7 @@ int main (int argc, char *argv[])
       gnuplot.SetTitle ("Average transmit power (AP1 to STA) vs time");
       gnuplot.AddDataset (statisticsAp1.GetPowerDatafile ());
       gnuplot.GenerateOutput (outfilePower1);
-    } 
+    }
 
   std::ofstream outfileTx1 (("tx-" + outputFileName + "-1.plt").c_str ());
   gnuplot = Gnuplot (("tx-" + outputFileName + "-1.eps").c_str (), "Time in TX State");

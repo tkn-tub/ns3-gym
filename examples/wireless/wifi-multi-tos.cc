@@ -43,7 +43,7 @@ int main (int argc, char *argv[])
   uint8_t channelWidth = 20; //MHz
   bool useShortGuardInterval = false;
   bool useRts = false;
-  
+
   CommandLine cmd;
   cmd.AddValue ("nWifi", "Number of stations", nWifi);
   cmd.AddValue ("distance", "Distance in meters between the stations and the access point", distance);
@@ -76,7 +76,7 @@ int main (int argc, char *argv[])
                                 "DataMode", StringValue (oss.str ()),
                                 "ControlMode", StringValue (oss.str ()),
                                 "RtsCtsThreshold", UintegerValue (useRts ? 0 : 999999));
-                
+
   Ssid ssid = Ssid ("ns3-80211n");
 
   mac.SetType ("ns3::StaWifiMac",
@@ -98,10 +98,10 @@ int main (int argc, char *argv[])
   MobilityHelper mobility;
   Ptr<ListPositionAllocator> positionAlloc = CreateObject<ListPositionAllocator> ();
   positionAlloc->Add (Vector (0.0, 0.0, 0.0));
-  for (uint32_t i = 0; i< nWifi; i++)
-  {
-    positionAlloc->Add (Vector (distance, 0.0, 0.0));
-  }
+  for (uint32_t i = 0; i < nWifi; i++)
+    {
+      positionAlloc->Add (Vector (distance, 0.0, 0.0));
+    }
   mobility.SetPositionAllocator (positionAlloc);
   mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
   mobility.Install (wifiApNode);
@@ -124,29 +124,29 @@ int main (int argc, char *argv[])
   std::vector<uint8_t> tosValues = {0x70, 0x28, 0xb8, 0xc0}; //AC_BE, AC_BK, AC_VI, AC_VO
   uint32_t portNumber = 9;
   for (uint8_t index = 0; index < nWifi; ++index)
-  {
-    for (uint8_t tosValue : tosValues)
     {
-      auto ipv4 = wifiApNode.Get (0)->GetObject<Ipv4> ();
-      const auto address = ipv4->GetAddress (1, 0).GetLocal ();
-      InetSocketAddress sinkSocket(address, portNumber++);
-      sinkSocket.SetTos(tosValue);
-      OnOffHelper onOffHelper ("ns3::UdpSocketFactory", sinkSocket);
-      onOffHelper.SetAttribute ("OnTime", StringValue ("ns3::ConstantRandomVariable[Constant=1]"));
-      onOffHelper.SetAttribute ("OffTime", StringValue ("ns3::ConstantRandomVariable[Constant=0]"));
-      onOffHelper.SetAttribute ("DataRate", DataRateValue (50000000/nWifi));
-      onOffHelper.SetAttribute ("PacketSize", UintegerValue (1472)); //bytes
-      sourceApplications.Add (onOffHelper.Install (wifiStaNodes.Get (index)));
-      PacketSinkHelper packetSinkHelper ("ns3::UdpSocketFactory", sinkSocket);
-      sinkApplications.Add (packetSinkHelper.Install (wifiApNode.Get (0)));
+      for (uint8_t tosValue : tosValues)
+        {
+          auto ipv4 = wifiApNode.Get (0)->GetObject<Ipv4> ();
+          const auto address = ipv4->GetAddress (1, 0).GetLocal ();
+          InetSocketAddress sinkSocket (address, portNumber++);
+          sinkSocket.SetTos (tosValue);
+          OnOffHelper onOffHelper ("ns3::UdpSocketFactory", sinkSocket);
+          onOffHelper.SetAttribute ("OnTime", StringValue ("ns3::ConstantRandomVariable[Constant=1]"));
+          onOffHelper.SetAttribute ("OffTime", StringValue ("ns3::ConstantRandomVariable[Constant=0]"));
+          onOffHelper.SetAttribute ("DataRate", DataRateValue (50000000 / nWifi));
+          onOffHelper.SetAttribute ("PacketSize", UintegerValue (1472)); //bytes
+          sourceApplications.Add (onOffHelper.Install (wifiStaNodes.Get (index)));
+          PacketSinkHelper packetSinkHelper ("ns3::UdpSocketFactory", sinkSocket);
+          sinkApplications.Add (packetSinkHelper.Install (wifiApNode.Get (0)));
+        }
     }
-  }
 
   sinkApplications.Start (Seconds (0.0));
   sinkApplications.Stop (Seconds (simulationTime + 1));
   sourceApplications.Start (Seconds (1.0));
   sourceApplications.Stop (Seconds (simulationTime + 1));
- 
+
   Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
 
   Simulator::Stop (Seconds (simulationTime + 1));
@@ -155,10 +155,10 @@ int main (int argc, char *argv[])
 
   double throughput = 0;
   for (unsigned index = 0; index < sinkApplications.GetN (); ++index)
-  {
-    uint32_t totalPacketsThrough = DynamicCast<PacketSink> (sinkApplications.Get (index))->GetTotalRx ();
-    throughput += ((totalPacketsThrough * 8) / (simulationTime * 1000000.0)); //Mbit/s
-  }
+    {
+      uint32_t totalPacketsThrough = DynamicCast<PacketSink> (sinkApplications.Get (index))->GetTotalRx ();
+      throughput += ((totalPacketsThrough * 8) / (simulationTime * 1000000.0)); //Mbit/s
+    }
   if (throughput > 0)
     {
       std::cout << "Aggregated throughput: " << throughput << " Mbit/s" << std::endl;

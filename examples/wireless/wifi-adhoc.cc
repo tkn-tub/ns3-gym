@@ -71,15 +71,15 @@ Experiment::GetPosition (Ptr<Node> node)
   return mobility->GetPosition ();
 }
 
-void 
-Experiment::AdvancePosition (Ptr<Node> node) 
+void
+Experiment::AdvancePosition (Ptr<Node> node)
 {
   Vector pos = GetPosition (node);
   double mbs = ((m_bytesTotal * 8.0) / 1000000);
   m_bytesTotal = 0;
   m_output.Add (pos.x, mbs);
   pos.x += 1.0;
-  if (pos.x >= 210.0) 
+  if (pos.x >= 210.0)
     {
       return;
     }

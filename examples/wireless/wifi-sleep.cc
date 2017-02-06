@@ -18,12 +18,12 @@
  *
  */
 
-// 
+//
 // This script configures two nodes on an 802.11b physical layer, with
 // 802.11b NICs in adhoc mode. One of the nodes generates on-off traffic
 // destined to the other node.
 //
-// The purpose is to test the energy depletion on the nodes and the 
+// The purpose is to test the energy depletion on the nodes and the
 // activation of the callback that puts a node in the sleep state when
 // its energy is depleted. Furthermore, this script can be used to test
 // the available policies for updating the transmit current based on
@@ -39,7 +39,7 @@
 //
 // This script can also be helpful to put the Wifi layer into verbose
 // logging mode; this command will turn on all wifi logging:
-// 
+//
 // ./waf --run "wifi-sleep --verbose=1"
 //
 // When you are done, you will notice four trace files in your directory:
@@ -64,9 +64,9 @@ void RemainingEnergyTrace (double oldValue, double newValue)
   std::stringstream ss;
   ss << "energy_" << node << ".log";
 
-  static std::fstream f (ss.str().c_str(), std::ios::out);
+  static std::fstream f (ss.str ().c_str (), std::ios::out);
 
-  f << Simulator::Now().GetSeconds() << "    remaining energy=" << newValue << std::endl;
+  f << Simulator::Now ().GetSeconds () << "    remaining energy=" << newValue << std::endl;
 }
 
 template <int node>
@@ -75,9 +75,9 @@ void PhyStateTrace (std::string context, Time start, Time duration, enum WifiPhy
   std::stringstream ss;
   ss << "state_" << node << ".log";
 
-  static std::fstream f (ss.str().c_str(), std::ios::out);
+  static std::fstream f (ss.str ().c_str (), std::ios::out);
 
-  f << Simulator::Now().GetSeconds() << "    state=" << state << " start=" << start << " duration=" << duration << std::endl;
+  f << Simulator::Now ().GetSeconds () << "    state=" << state << " start=" << start << " duration=" << duration << std::endl;
 }
 
 
@@ -129,7 +129,7 @@ int main (int argc, char *argv[])
 
   YansWifiPhyHelper wifiPhy =  YansWifiPhyHelper::Default ();
   // ns-3 supports RadioTap and Prism tracing extensions for 802.11b
-  wifiPhy.SetPcapDataLinkType (YansWifiPhyHelper::DLT_IEEE802_11_RADIO); 
+  wifiPhy.SetPcapDataLinkType (YansWifiPhyHelper::DLT_IEEE802_11_RADIO);
 
   wifiPhy.Set ("TxPowerStart", DoubleValue (txPowerStart));
   wifiPhy.Set ("TxPowerEnd", DoubleValue (txPowerEnd));
@@ -163,8 +163,8 @@ int main (int argc, char *argv[])
 
   ApplicationContainer apps;
 
-  std::string transportProto = std::string("ns3::UdpSocketFactory");
-  OnOffHelper onOff(transportProto, InetSocketAddress (Ipv4Address ("10.1.1.2"), 9000));
+  std::string transportProto = std::string ("ns3::UdpSocketFactory");
+  OnOffHelper onOff (transportProto, InetSocketAddress (Ipv4Address ("10.1.1.2"), 9000));
 
   onOff.SetAttribute ("DataRate", DataRateValue (DataRate (dataRate)));
   onOff.SetAttribute ("PacketSize", UintegerValue (packetSize));
@@ -202,34 +202,34 @@ int main (int argc, char *argv[])
                                        "Eta", DoubleValue (eta));
 
   // install an energy source on each node
-  for (NodeContainer::Iterator n = c.Begin(); n != c.End(); n++)
-  {
-    eSources.Add (basicSourceHelper.Install (*n));
-
-    Ptr<WifiNetDevice> wnd;
-
-    for (uint32_t i = 0; i < (*n)->GetNDevices (); ++i)
+  for (NodeContainer::Iterator n = c.Begin (); n != c.End (); n++)
     {
-      wnd = (*n)->GetDevice (i)->GetObject<WifiNetDevice> ();
-      // if it is a WifiNetDevice
-      if (wnd != 0)
-      {
-        // this device draws power from the last created energy source
-        radioEnergyHelper.Install (wnd, eSources.Get (eSources.GetN()-1));
-      }
+      eSources.Add (basicSourceHelper.Install (*n));
+
+      Ptr<WifiNetDevice> wnd;
+
+      for (uint32_t i = 0; i < (*n)->GetNDevices (); ++i)
+        {
+          wnd = (*n)->GetDevice (i)->GetObject<WifiNetDevice> ();
+          // if it is a WifiNetDevice
+          if (wnd != 0)
+            {
+              // this device draws power from the last created energy source
+              radioEnergyHelper.Install (wnd, eSources.Get (eSources.GetN () - 1));
+            }
+        }
     }
-  }
 
   // Tracing
-  eSources.Get (0)->TraceConnectWithoutContext ("RemainingEnergy", MakeCallback(&RemainingEnergyTrace<0>));
-  eSources.Get (1)->TraceConnectWithoutContext ("RemainingEnergy", MakeCallback(&RemainingEnergyTrace<1>));
+  eSources.Get (0)->TraceConnectWithoutContext ("RemainingEnergy", MakeCallback (&RemainingEnergyTrace<0>));
+  eSources.Get (1)->TraceConnectWithoutContext ("RemainingEnergy", MakeCallback (&RemainingEnergyTrace<1>));
 
   Config::Connect ("/NodeList/0/DeviceList/*/Phy/State/State", MakeCallback (&PhyStateTrace<0>));
   Config::Connect ("/NodeList/1/DeviceList/*/Phy/State/State", MakeCallback (&PhyStateTrace<1>));
 
 // wifiPhy.EnablePcap ("wifi-sleep", devices);
 
-  Simulator::Stop (Seconds(duration+1));
+  Simulator::Stop (Seconds (duration + 1));
 
   Simulator::Run ();
   Simulator::Destroy ();

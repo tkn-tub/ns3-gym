@@ -26,8 +26,8 @@
  *   |      |
  *   n1     n2
  *
- * In this example, an HT station sends TCP packets to the access point. 
- * We report the total throughput received during a window of 100ms. 
+ * In this example, an HT station sends TCP packets to the access point.
+ * We report the total throughput received during a window of 100ms.
  * The user can specify the application data rate and choose the variant
  * of TCP i.e. congestion control algorithm to use.
  */
@@ -49,14 +49,14 @@ void
 CalculateThroughput ()
 {
   Time now = Simulator::Now ();                                         /* Return the simulator's virtual time. */
-  double cur = (sink->GetTotalRx() - lastTotalRx) * (double) 8/1e5;     /* Convert Application RX Packets to MBits. */
+  double cur = (sink->GetTotalRx () - lastTotalRx) * (double) 8 / 1e5;     /* Convert Application RX Packets to MBits. */
   std::cout << now.GetSeconds () << "s: \t" << cur << " Mbit/s" << std::endl;
   lastTotalRx = sink->GetTotalRx ();
   Simulator::Schedule (MilliSeconds (100), &CalculateThroughput);
 }
 
 int
-main(int argc, char *argv[])
+main (int argc, char *argv[])
 {
   uint32_t payloadSize = 1472;                       /* Transport layer payload size in bytes. */
   std::string dataRate = "100Mbps";                  /* Application layer datarate. */
@@ -87,7 +87,7 @@ main(int argc, char *argv[])
   wifiHelper.SetStandard (WIFI_PHY_STANDARD_80211n_5GHZ);
 
   /* Set up Legacy Channel */
-  YansWifiChannelHelper wifiChannel ;
+  YansWifiChannelHelper wifiChannel;
   wifiChannel.SetPropagationDelay ("ns3::ConstantSpeedPropagationDelayModel");
   wifiChannel.AddPropagationLoss ("ns3::FriisPropagationLossModel", "Frequency", DoubleValue (5e9));
 
@@ -115,14 +115,14 @@ main(int argc, char *argv[])
   /* Configure AP */
   Ssid ssid = Ssid ("network");
   wifiMac.SetType ("ns3::ApWifiMac",
-                    "Ssid", SsidValue (ssid));
+                   "Ssid", SsidValue (ssid));
 
   NetDeviceContainer apDevice;
   apDevice = wifiHelper.Install (wifiPhy, wifiMac, apWifiNode);
 
   /* Configure STA */
   wifiMac.SetType ("ns3::StaWifiMac",
-                    "Ssid", SsidValue (ssid));
+                   "Ssid", SsidValue (ssid));
 
   NetDeviceContainer staDevices;
   staDevices = wifiHelper.Install (wifiPhy, wifiMac, staWifiNode);
@@ -183,7 +183,7 @@ main(int argc, char *argv[])
   Simulator::Run ();
   Simulator::Destroy ();
 
-  double averageThroughput = ((sink->GetTotalRx() * 8) / (1e6  * simulationTime));
+  double averageThroughput = ((sink->GetTotalRx () * 8) / (1e6  * simulationTime));
   if (averageThroughput < 50)
     {
       NS_LOG_ERROR ("Obtained throughput is not in the expected boundaries!");

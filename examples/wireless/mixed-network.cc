@@ -95,14 +95,14 @@ Experiment::Run (Parameters params)
 {
   std::string apTypeString;
   if (params.apType == WIFI_PHY_STANDARD_80211g)
-  {
-    apTypeString = "WIFI_PHY_STANDARD_80211g";
-  }
+    {
+      apTypeString = "WIFI_PHY_STANDARD_80211g";
+    }
   else if (params.apType == WIFI_PHY_STANDARD_80211n_2_4GHZ)
-  {
-    apTypeString = "WIFI_PHY_STANDARD_80211n_2_4GHZ";
-  }
-  
+    {
+      apTypeString = "WIFI_PHY_STANDARD_80211n_2_4GHZ";
+    }
+
   std::cout << "Run: " << params.testName
             << "\n\t enableErpProtection=" << params.enableErpProtection
             << "\n\t erpProtectionMode=" << params.erpProtectionMode
@@ -121,7 +121,7 @@ Experiment::Run (Parameters params)
             << "\n\t nWifiNGreenfield=" << params.nWifiNGreenfield
             << "\n\t nGreenfieldHasTraffic=" << params.nGreenfieldHasTraffic
             << std::endl;
-    
+
   Config::SetDefault ("ns3::WifiRemoteStationManager::ErpProtectionMode", StringValue (params.erpProtectionMode));
 
   double throughput = 0;
@@ -163,18 +163,18 @@ Experiment::Run (Parameters params)
   mac.SetType ("ns3::StaWifiMac",
                "Ssid", SsidValue (ssid),
                "ShortSlotTimeSupported", BooleanValue (params.enableShortSlotTime));
-    
+
   // Configure the PLCP preamble type: long or short
   phy.Set ("ShortPlcpPreambleSupported", BooleanValue (params.enableShortPlcpPreamble));
 
   NetDeviceContainer bStaDevice;
   bStaDevice = wifi.Install (phy, mac, wifiBStaNodes);
-  
+
   // 802.11b/g STA
   wifi.SetStandard (WIFI_PHY_STANDARD_80211g);
   NetDeviceContainer gStaDevice;
   gStaDevice = wifi.Install (phy, mac, wifiGStaNodes);
-  
+
   // 802.11b/g/n STA
   wifi.SetStandard (WIFI_PHY_STANDARD_80211n_2_4GHZ);
   NetDeviceContainer nNGFStaDevice, nGFStaDevice;
@@ -188,7 +188,7 @@ Experiment::Run (Parameters params)
   nNGFStaDevice = wifi.Install (phy, mac, wifiNNGFStaNodes);
   phy.Set ("GreenfieldEnabled", BooleanValue (true));
   nGFStaDevice = wifi.Install (phy, mac, wifiNGFStaNodes);
-  
+
   // AP
   NetDeviceContainer apDevice;
   wifi.SetStandard (params.apType);
@@ -206,57 +206,57 @@ Experiment::Run (Parameters params)
 
   // Set TXOP limit
   if (params.apType == WIFI_PHY_STANDARD_80211n_2_4GHZ)
-  {
-    Ptr<NetDevice> dev = wifiApNode.Get(0)->GetDevice(0);
-    Ptr<WifiNetDevice> wifi_dev = DynamicCast<WifiNetDevice>(dev);
-    Ptr<WifiMac> wifi_mac = wifi_dev->GetMac();
-    PointerValue ptr;
-    wifi_mac->GetAttribute("BE_EdcaTxopN", ptr);
-    Ptr<EdcaTxopN> edca = ptr.Get<EdcaTxopN>();
-    edca->SetTxopLimit (MicroSeconds (3008));
-  }
+    {
+      Ptr<NetDevice> dev = wifiApNode.Get (0)->GetDevice (0);
+      Ptr<WifiNetDevice> wifi_dev = DynamicCast<WifiNetDevice> (dev);
+      Ptr<WifiMac> wifi_mac = wifi_dev->GetMac ();
+      PointerValue ptr;
+      wifi_mac->GetAttribute ("BE_EdcaTxopN", ptr);
+      Ptr<EdcaTxopN> edca = ptr.Get<EdcaTxopN> ();
+      edca->SetTxopLimit (MicroSeconds (3008));
+    }
   if (nWifiNNGF > 0)
-  {
-    Ptr<NetDevice> dev = wifiNNGFStaNodes.Get(0)->GetDevice(0);
-    Ptr<WifiNetDevice> wifi_dev = DynamicCast<WifiNetDevice>(dev);
-    Ptr<WifiMac> wifi_mac = wifi_dev->GetMac();
-    PointerValue ptr;
-    wifi_mac->GetAttribute("BE_EdcaTxopN", ptr);
-    Ptr<EdcaTxopN> edca = ptr.Get<EdcaTxopN>();
-    edca->SetTxopLimit (MicroSeconds (3008));
-  }
+    {
+      Ptr<NetDevice> dev = wifiNNGFStaNodes.Get (0)->GetDevice (0);
+      Ptr<WifiNetDevice> wifi_dev = DynamicCast<WifiNetDevice> (dev);
+      Ptr<WifiMac> wifi_mac = wifi_dev->GetMac ();
+      PointerValue ptr;
+      wifi_mac->GetAttribute ("BE_EdcaTxopN", ptr);
+      Ptr<EdcaTxopN> edca = ptr.Get<EdcaTxopN> ();
+      edca->SetTxopLimit (MicroSeconds (3008));
+    }
   if (nWifiNGF > 0)
-  {
-    Ptr<NetDevice> dev = wifiNGFStaNodes.Get(0)->GetDevice(0);
-    Ptr<WifiNetDevice> wifi_dev = DynamicCast<WifiNetDevice>(dev);
-    Ptr<WifiMac> wifi_mac = wifi_dev->GetMac();
-    PointerValue ptr;
-    wifi_mac->GetAttribute("BE_EdcaTxopN", ptr);
-    Ptr<EdcaTxopN> edca = ptr.Get<EdcaTxopN>();
-    edca->SetTxopLimit (MicroSeconds (3008));
-  }
+    {
+      Ptr<NetDevice> dev = wifiNGFStaNodes.Get (0)->GetDevice (0);
+      Ptr<WifiNetDevice> wifi_dev = DynamicCast<WifiNetDevice> (dev);
+      Ptr<WifiMac> wifi_mac = wifi_dev->GetMac ();
+      PointerValue ptr;
+      wifi_mac->GetAttribute ("BE_EdcaTxopN", ptr);
+      Ptr<EdcaTxopN> edca = ptr.Get<EdcaTxopN> ();
+      edca->SetTxopLimit (MicroSeconds (3008));
+    }
 
   // Define mobility model
   MobilityHelper mobility;
   Ptr<ListPositionAllocator> positionAlloc = CreateObject<ListPositionAllocator> ();
-  
+
   positionAlloc->Add (Vector (0.0, 0.0, 0.0));
   for (uint32_t i = 0; i < nWifiB; i++)
-  {
-    positionAlloc->Add (Vector (5.0, 0.0, 0.0));
-  }
+    {
+      positionAlloc->Add (Vector (5.0, 0.0, 0.0));
+    }
   for (uint32_t i = 0; i < nWifiG; i++)
-  {
-    positionAlloc->Add (Vector (0.0, 5.0, 0.0));
-  }
+    {
+      positionAlloc->Add (Vector (0.0, 5.0, 0.0));
+    }
   for (uint32_t i = 0; i < nWifiNNGF; i++)
-  {
-    positionAlloc->Add (Vector (0.0, 0.0, 5.0));
-  }
+    {
+      positionAlloc->Add (Vector (0.0, 0.0, 5.0));
+    }
   for (uint32_t i = 0; i < nWifiNGF; i++)
-  {
-    positionAlloc->Add (Vector (0.0, 0.0, 5.0));
-  }
+    {
+      positionAlloc->Add (Vector (0.0, 0.0, 5.0));
+    }
 
   mobility.SetPositionAllocator (positionAlloc);
   mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
@@ -314,25 +314,25 @@ Experiment::Run (Parameters params)
           clientAppG.Start (Seconds (1.0));
           clientAppG.Stop (Seconds (simulationTime + 1));
         }
-        
+
       if (params.nNonGreenfieldHasTraffic)
         {
           ApplicationContainer clientAppNNGF = myClient.Install (wifiNNGFStaNodes);
           clientAppNNGF.Start (Seconds (1.0));
           clientAppNNGF.Stop (Seconds (simulationTime + 1));
         }
-        
+
       if (params.nGreenfieldHasTraffic)
         {
           ApplicationContainer clientAppNGF = myClient.Install (wifiNGFStaNodes);
           clientAppNGF.Start (Seconds (1.0));
           clientAppNGF.Stop (Seconds (simulationTime + 1));
         }
-  
+
       Simulator::Stop (Seconds (simulationTime + 1));
       Simulator::Run ();
       Simulator::Destroy ();
-  
+
       totalPacketsThrough = DynamicCast<UdpServer> (serverApp.Get (0))->GetReceived ();
       throughput = totalPacketsThrough * payloadSize * 8 / (simulationTime * 1000000.0);
     }
@@ -341,7 +341,7 @@ Experiment::Run (Parameters params)
       uint16_t port = 50000;
       Address apLocalAddress (InetSocketAddress (Ipv4Address::GetAny (), port));
       PacketSinkHelper packetSinkHelper ("ns3::TcpSocketFactory", apLocalAddress);
-      
+
       ApplicationContainer sinkApp = packetSinkHelper.Install (wifiApNode.Get (0));
       sinkApp.Start (Seconds (0.0));
       sinkApp.Stop (Seconds (simulationTime + 1));
@@ -351,10 +351,10 @@ Experiment::Run (Parameters params)
       onoff.SetAttribute ("OffTime", StringValue ("ns3::ConstantRandomVariable[Constant=0]"));
       onoff.SetAttribute ("PacketSize", UintegerValue (payloadSize));
       onoff.SetAttribute ("DataRate", DataRateValue (150000000)); //bit/s
-      
+
       AddressValue remoteAddress (InetSocketAddress (ApInterface.GetAddress (0), port));
       onoff.SetAttribute ("Remote", remoteAddress);
-      
+
       ApplicationContainer apps;
       if (params.bHasTraffic)
         {
@@ -384,11 +384,11 @@ Experiment::Run (Parameters params)
       Simulator::Stop (Seconds (simulationTime + 1));
       Simulator::Run ();
       Simulator::Destroy ();
-      
+
       totalPacketsThrough = DynamicCast<PacketSink> (sinkApp.Get (0))->GetTotalRx ();
       throughput += totalPacketsThrough * 8 / (simulationTime * 1000000.0);
     }
-  
+
   return throughput;
 }
 
@@ -417,7 +417,7 @@ int main (int argc, char *argv[])
   params.simulationTime = 10; //seconds
 
   bool verifyResults = 0; //used for regression
-  
+
   CommandLine cmd;
   cmd.AddValue ("payloadSize", "Payload size in bytes", params.payloadSize);
   cmd.AddValue ("simulationTime", "Simulation time in seconds", params.simulationTime);
@@ -516,7 +516,7 @@ int main (int argc, char *argv[])
       exit (1);
     }
   std::cout << "Throughput: " << throughput << " Mbit/s \n" << std::endl;
-  
+
   params.testName = "Mixed b/g with short plcp preamble enabled using CTS-TO-SELF protection";
   params.enableErpProtection = true;
   params.enableShortSlotTime = false;
@@ -663,7 +663,7 @@ int main (int argc, char *argv[])
       exit (1);
     }
   std::cout << "Throughput: " << throughput << " Mbit/s \n" << std::endl;
-  
+
   params.testName = "Mixed HT/non-HT with RIFS enabled but not forbidden";
   params.enableErpProtection = false;
   params.enableShortSlotTime = false;
@@ -687,7 +687,7 @@ int main (int argc, char *argv[])
       exit (1);
     }
   std::cout << "Throughput: " << throughput << " Mbit/s \n" << std::endl;
-  
+
   params.testName = "Mixed HT/non-HT with RIFS enabled but forbidden";
   params.enableErpProtection = false;
   params.enableShortSlotTime = false;
@@ -711,6 +711,6 @@ int main (int argc, char *argv[])
       exit (1);
     }
   std::cout << "Throughput: " << throughput << " Mbit/s \n" << std::endl;
-  
+
   return 0;
 }

@@ -92,12 +92,12 @@ GetPosition (Ptr<Node> node)
   return mobility->GetPosition ();
 }
 
-static void 
-AdvancePosition (Ptr<Node> node) 
+static void
+AdvancePosition (Ptr<Node> node)
 {
   Vector pos = GetPosition (node);
   pos.x += 5.0;
-  if (pos.x >= 210.0) 
+  if (pos.x >= 210.0)
     {
       return;
     }

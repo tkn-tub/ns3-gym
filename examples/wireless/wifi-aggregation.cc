@@ -79,7 +79,7 @@ int main (int argc, char *argv[])
   cmd.AddValue ("enablePcap", "Enable/disable pcap file generation", enablePcap);
   cmd.AddValue ("verifyResults", "Enable/disable results verification at the end of the simulation", verifyResults);
   cmd.Parse (argc, argv);
-  
+
   Config::SetDefault ("ns3::WifiRemoteStationManager::RtsCtsThreshold", enableRts ? StringValue ("0") : StringValue ("999999"));
 
   NodeContainer wifiStaNode;
@@ -96,65 +96,65 @@ int main (int argc, char *argv[])
   wifi.SetStandard (WIFI_PHY_STANDARD_80211n_5GHZ);
   wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager", "DataMode", StringValue ("HtMcs7"), "ControlMode", StringValue ("HtMcs0"));
   WifiMacHelper mac;
-  
+
   NetDeviceContainer staDeviceA, staDeviceB, staDeviceC, staDeviceD, apDeviceA, apDeviceB, apDeviceC, apDeviceD;
   Ssid ssid;
 
   //Network A
   ssid = Ssid ("network-A");
-  phy.Set ("ChannelNumber", UintegerValue(36));
+  phy.Set ("ChannelNumber", UintegerValue (36));
   mac.SetType ("ns3::StaWifiMac",
                "Ssid", SsidValue (ssid));
-  staDeviceA = wifi.Install (phy, mac, wifiStaNode.Get(0));
+  staDeviceA = wifi.Install (phy, mac, wifiStaNode.Get (0));
 
   mac.SetType ("ns3::ApWifiMac",
                "Ssid", SsidValue (ssid),
                "BeaconGeneration", BooleanValue (true));
-  apDeviceA = wifi.Install (phy, mac, wifiApNode.Get(0));
-  
+  apDeviceA = wifi.Install (phy, mac, wifiApNode.Get (0));
+
   //Network B
   ssid = Ssid ("network-B");
-  phy.Set ("ChannelNumber", UintegerValue(40));
+  phy.Set ("ChannelNumber", UintegerValue (40));
   mac.SetType ("ns3::StaWifiMac",
                "Ssid", SsidValue (ssid),
                "BE_MaxAmpduSize", UintegerValue (0)); //Disable A-MPDU
 
-  staDeviceB = wifi.Install (phy, mac, wifiStaNode.Get(1));
+  staDeviceB = wifi.Install (phy, mac, wifiStaNode.Get (1));
 
   mac.SetType ("ns3::ApWifiMac",
                "Ssid", SsidValue (ssid),
                "BeaconGeneration", BooleanValue (true));
-  apDeviceB = wifi.Install (phy, mac, wifiApNode.Get(1));
-  
+  apDeviceB = wifi.Install (phy, mac, wifiApNode.Get (1));
+
   //Network C
   ssid = Ssid ("network-C");
-  phy.Set ("ChannelNumber", UintegerValue(44));
+  phy.Set ("ChannelNumber", UintegerValue (44));
   mac.SetType ("ns3::StaWifiMac",
                "Ssid", SsidValue (ssid),
                "BE_MaxAmpduSize", UintegerValue (0), //Disable A-MPDU
                "BE_MaxAmsduSize", UintegerValue (7935)); //Enable A-MSDU with the highest maximum size allowed by the standard (7935 bytes)
 
-  staDeviceC = wifi.Install (phy, mac, wifiStaNode.Get(2));
+  staDeviceC = wifi.Install (phy, mac, wifiStaNode.Get (2));
 
   mac.SetType ("ns3::ApWifiMac",
                "Ssid", SsidValue (ssid),
                "BeaconGeneration", BooleanValue (true));
-  apDeviceC = wifi.Install (phy, mac, wifiApNode.Get(2));
-  
+  apDeviceC = wifi.Install (phy, mac, wifiApNode.Get (2));
+
   //Network D
   ssid = Ssid ("network-D");
-  phy.Set ("ChannelNumber", UintegerValue(48));
+  phy.Set ("ChannelNumber", UintegerValue (48));
   mac.SetType ("ns3::StaWifiMac",
                "Ssid", SsidValue (ssid),
                "BE_MaxAmpduSize", UintegerValue (32768), //Enable A-MPDU with a smaller size than the default one
                "BE_MaxAmsduSize", UintegerValue (3839)); //Enable A-MSDU with the smallest maximum size allowed by the standard (3839 bytes)
 
-  staDeviceD = wifi.Install (phy, mac, wifiStaNode.Get(3));
+  staDeviceD = wifi.Install (phy, mac, wifiStaNode.Get (3));
 
   mac.SetType ("ns3::ApWifiMac",
                "Ssid", SsidValue (ssid),
                "BeaconGeneration", BooleanValue (true));
-  apDeviceD = wifi.Install (phy, mac, wifiApNode.Get(3));
+  apDeviceD = wifi.Install (phy, mac, wifiApNode.Get (3));
 
   /* Setting mobility model */
   MobilityHelper mobility;
@@ -171,7 +171,7 @@ int main (int argc, char *argv[])
   positionAlloc->Add (Vector (10 + distance, 0.0, 0.0));
   positionAlloc->Add (Vector (20 + distance, 0.0, 0.0));
   positionAlloc->Add (Vector (30 + distance, 0.0, 0.0));
-  
+
   mobility.SetPositionAllocator (positionAlloc);
   mobility.Install (wifiApNode);
   mobility.Install (wifiStaNode);
@@ -188,19 +188,19 @@ int main (int argc, char *argv[])
   StaInterfaceA = address.Assign (staDeviceA);
   Ipv4InterfaceContainer ApInterfaceA;
   ApInterfaceA = address.Assign (apDeviceA);
-  
+
   address.SetBase ("192.168.2.0", "255.255.255.0");
   Ipv4InterfaceContainer StaInterfaceB;
   StaInterfaceB = address.Assign (staDeviceB);
   Ipv4InterfaceContainer ApInterfaceB;
   ApInterfaceB = address.Assign (apDeviceB);
-  
+
   address.SetBase ("192.168.3.0", "255.255.255.0");
   Ipv4InterfaceContainer StaInterfaceC;
   StaInterfaceC = address.Assign (staDeviceC);
   Ipv4InterfaceContainer ApInterfaceC;
   ApInterfaceC = address.Assign (apDeviceC);
-  
+
   address.SetBase ("192.168.4.0", "255.255.255.0");
   Ipv4InterfaceContainer StaInterfaceD;
   StaInterfaceD = address.Assign (staDeviceD);
@@ -221,7 +221,7 @@ int main (int argc, char *argv[])
   ApplicationContainer clientAppA = myClientA.Install (wifiApNode.Get (0));
   clientAppA.Start (Seconds (1.0));
   clientAppA.Stop (Seconds (simulationTime + 1));
-  
+
   UdpServerHelper myServerB (9);
   ApplicationContainer serverAppB = myServerB.Install (wifiStaNode.Get (1));
   serverAppB.Start (Seconds (0.0));
@@ -235,7 +235,7 @@ int main (int argc, char *argv[])
   ApplicationContainer clientAppB = myClientB.Install (wifiApNode.Get (1));
   clientAppB.Start (Seconds (1.0));
   clientAppB.Stop (Seconds (simulationTime + 1));
-  
+
   UdpServerHelper myServerC (9);
   ApplicationContainer serverAppC = myServerC.Install (wifiStaNode.Get (2));
   serverAppC.Start (Seconds (0.0));
@@ -249,7 +249,7 @@ int main (int argc, char *argv[])
   ApplicationContainer clientAppC = myClientC.Install (wifiApNode.Get (2));
   clientAppC.Start (Seconds (1.0));
   clientAppC.Stop (Seconds (simulationTime + 1));
-  
+
   UdpServerHelper myServerD (9);
   ApplicationContainer serverAppD = myServerD.Install (wifiStaNode.Get (3));
   serverAppD.Start (Seconds (0.0));
@@ -263,7 +263,7 @@ int main (int argc, char *argv[])
   ApplicationContainer clientAppD = myClientD.Install (wifiApNode.Get (3));
   clientAppD.Start (Seconds (1.0));
   clientAppD.Stop (Seconds (simulationTime + 1));
-  
+
   if (enablePcap)
     {
       phy.EnablePcap ("AP_A", apDeviceA.Get (0));
@@ -289,7 +289,7 @@ int main (int argc, char *argv[])
       NS_LOG_ERROR ("Obtained throughput " << throughput << " is not in the expected boundaries!");
       exit (1);
     }
-  
+
   totalPacketsThrough = DynamicCast<UdpServer> (serverAppB.Get (0))->GetReceived ();
   throughput = totalPacketsThrough * payloadSize * 8 / (simulationTime * 1000000.0);
   std::cout << "Throughput with aggregation disabled: " << throughput << " Mbit/s" << '\n';

@@ -43,7 +43,7 @@ using namespace ns3;
 int main (int argc, char *argv[])
 {
   std::ofstream file ("80211n-mimo-throughput.plt");
-  
+
   std::vector <std::string> modes;
   modes.push_back ("HtMcs0");
   modes.push_back ("HtMcs1");
@@ -77,7 +77,7 @@ int main (int argc, char *argv[])
   modes.push_back ("HtMcs29");
   modes.push_back ("HtMcs30");
   modes.push_back ("HtMcs31");
-  
+
   bool udp = true;
   double simulationTime = 5; //seconds
   double frequency = 5.0; //whether 2.4 or 5.0 GHz
@@ -101,7 +101,7 @@ int main (int argc, char *argv[])
       Gnuplot2dDataset dataset (modes[i]);
       for (int d = 0; d <= 100; ) //distance
         {
-          std::cout << "Distance = " << d << "m: "<< std::endl;
+          std::cout << "Distance = " << d << "m: " << std::endl;
           uint32_t payloadSize; //1500 byte IP packet
           if (udp)
             {
@@ -112,7 +112,7 @@ int main (int argc, char *argv[])
               payloadSize = 1448; //bytes
               Config::SetDefault ("ns3::TcpSocket::SegmentSize", UintegerValue (payloadSize));
             }
-              
+
           uint8_t nStreams = 1 + (i / 8); //number of MIMO streams
 
           NodeContainer wifiStaNode;
@@ -144,13 +144,13 @@ int main (int argc, char *argv[])
             }
           else
             {
-              std::cout<<"Wrong frequency value!"<<std::endl;
+              std::cout << "Wrong frequency value!" << std::endl;
               return 0;
             }
 
           wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager","DataMode", StringValue (modes[i]),
                                         "ControlMode", StringValue (modes[i]));
-                
+
           Ssid ssid = Ssid ("ns3-80211n");
 
           mac.SetType ("ns3::StaWifiMac",
@@ -194,7 +194,7 @@ int main (int argc, char *argv[])
           address.SetBase ("192.168.1.0", "255.255.255.0");
           Ipv4InterfaceContainer staNodeInterface;
           Ipv4InterfaceContainer apNodeInterface;
-          
+
           staNodeInterface = address.Assign (staDevice);
           apNodeInterface = address.Assign (apDevice);
 
@@ -243,7 +243,7 @@ int main (int argc, char *argv[])
             }
 
           Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
-          
+
           Simulator::Stop (Seconds (simulationTime + 1));
           Simulator::Run ();
           Simulator::Destroy ();
@@ -262,7 +262,7 @@ int main (int argc, char *argv[])
               throughput = totalPacketsThrough * 8 / (simulationTime * 1000000.0); //Mbit/s
             }
           dataset.Add (d, throughput);
-          std::cout << throughput << " Mbit/s" <<std::endl;
+          std::cout << throughput << " Mbit/s" << std::endl;
           d += step;
         }
       plot.AddDataset (dataset);

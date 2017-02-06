@@ -17,12 +17,12 @@
  *
  */
 
-// 
+//
 // This script configures two nodes on an 802.11b physical layer, with
-// 802.11b NICs in adhoc mode, and by default, sends one packet of 1000 
+// 802.11b NICs in adhoc mode, and by default, sends one packet of 1000
 // (application) bytes to the other node.  The physical layer is configured
 // to receive at a fixed RSS (regardless of the distance and transmit
-// power); therefore, changing position of the nodes has no effect. 
+// power); therefore, changing position of the nodes has no effect.
 //
 // There are a number of command-line options available to control
 // the default behavior.  The list of available command-line options
@@ -42,7 +42,7 @@
 //
 // This script can also be helpful to put the Wifi layer into verbose
 // logging mode; this command will turn on all wifi logging:
-// 
+//
 // ./waf --run "wifi-simple-adhoc --verbose=1"
 //
 // When you are done, you will notice two pcap trace files in your directory.
@@ -68,14 +68,14 @@ void ReceivePacket (Ptr<Socket> socket)
     }
 }
 
-static void GenerateTraffic (Ptr<Socket> socket, uint32_t pktSize, 
+static void GenerateTraffic (Ptr<Socket> socket, uint32_t pktSize,
                              uint32_t pktCount, Time pktInterval )
 {
   if (pktCount > 0)
     {
       socket->Send (Create<Packet> (pktSize));
-      Simulator::Schedule (pktInterval, &GenerateTraffic, 
-                           socket, pktSize,pktCount-1, pktInterval);
+      Simulator::Schedule (pktInterval, &GenerateTraffic,
+                           socket, pktSize,pktCount - 1, pktInterval);
     }
   else
     {
@@ -111,7 +111,7 @@ int main (int argc, char *argv[])
   // turn off RTS/CTS for frames below 2200 bytes
   Config::SetDefault ("ns3::WifiRemoteStationManager::RtsCtsThreshold", StringValue ("2200"));
   // Fix non-unicast data rate to be the same as that of unicast
-  Config::SetDefault ("ns3::WifiRemoteStationManager::NonUnicastMode", 
+  Config::SetDefault ("ns3::WifiRemoteStationManager::NonUnicastMode",
                       StringValue (phyMode));
 
   NodeContainer c;
@@ -128,9 +128,9 @@ int main (int argc, char *argv[])
   YansWifiPhyHelper wifiPhy =  YansWifiPhyHelper::Default ();
   // This is one parameter that matters when using FixedRssLossModel
   // set it to zero; otherwise, gain will be added
-  wifiPhy.Set ("RxGain", DoubleValue (0) ); 
+  wifiPhy.Set ("RxGain", DoubleValue (0) );
   // ns-3 supports RadioTap and Prism tracing extensions for 802.11b
-  wifiPhy.SetPcapDataLinkType (YansWifiPhyHelper::DLT_IEEE802_11_RADIO); 
+  wifiPhy.SetPcapDataLinkType (YansWifiPhyHelper::DLT_IEEE802_11_RADIO);
 
   YansWifiChannelHelper wifiChannel;
   wifiChannel.SetPropagationDelay ("ns3::ConstantSpeedPropagationDelayModel");
@@ -148,8 +148,8 @@ int main (int argc, char *argv[])
   wifiMac.SetType ("ns3::AdhocWifiMac");
   NetDeviceContainer devices = wifi.Install (wifiPhy, wifiMac, c);
 
-  // Note that with FixedRssLossModel, the positions below are not 
-  // used for received signal strength. 
+  // Note that with FixedRssLossModel, the positions below are not
+  // used for received signal strength.
   MobilityHelper mobility;
   Ptr<ListPositionAllocator> positionAlloc = CreateObject<ListPositionAllocator> ();
   positionAlloc->Add (Vector (0.0, 0.0, 0.0));
@@ -184,7 +184,7 @@ int main (int argc, char *argv[])
   NS_LOG_UNCOND ("Testing " << numPackets  << " packets sent with receiver rss " << rss );
 
   Simulator::ScheduleWithContext (source->GetNode ()->GetId (),
-                                  Seconds (1.0), &GenerateTraffic, 
+                                  Seconds (1.0), &GenerateTraffic,
                                   source, packetSize, numPackets, interPacketInterval);
 
   Simulator::Run ();

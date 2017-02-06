@@ -3,7 +3,7 @@
  * Copyright (c) 2009 MIRKO BANCHI
  *
  * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as 
+ * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
  *
  * This program is distributed in the hope that it will be useful,
@@ -22,13 +22,13 @@
  * This is a simple example in order to show how 802.11e compressed block ack mechanism could be used.
  *
  * Network topology:
- * 
+ *
  *  Wifi 192.168.1.0
- * 
+ *
  *        AP
  *   *    *
  *   |    |
- *   n1   n2 
+ *   n1   n2
  *
  * In this example a QoS sta sends UDP datagram packets to access point. On the access point
  * there is no application installed so it replies to every packet with an ICMP frame. However
@@ -37,7 +37,7 @@
  * negotiated. We also set a timeout for block ack inactivity to 3 blocks of 1024 microseconds. This timer is
  * reset when:
  *    - the originator receives a block ack frame.
- *    - the recipient receives a block ack request or a MPDU with ack policy Block Ack. 
+ *    - the recipient receives a block ack request or a MPDU with ack policy Block Ack.
  */
 
 #include "ns3/core-module.h"
@@ -55,10 +55,10 @@ int main (int argc, char * argv[])
 {
   CommandLine cmd;
   cmd.Parse (argc, argv);
-  
+
   LogComponentEnable ("EdcaTxopN", LOG_LEVEL_DEBUG);
   LogComponentEnable ("BlockAckManager", LOG_LEVEL_INFO);
- 
+
   Ptr<Node> sta = CreateObject<Node> ();
   Ptr<Node> ap = CreateObject<Node> ();
 
@@ -76,9 +76,9 @@ int main (int argc, char * argv[])
   mac.SetType ("ns3::StaWifiMac",
                "QosSupported", BooleanValue (true),
                "Ssid", SsidValue (ssid),
-  /* setting blockack threshold for sta's BE queue */
+               /* setting blockack threshold for sta's BE queue */
                "BE_BlockAckThreshold", UintegerValue (2),
-  /* setting block inactivity timeout to 3*1024 = 3072 microseconds */
+               /* setting block inactivity timeout to 3*1024 = 3072 microseconds */
                "BE_BlockAckInactivityTimeout", UintegerValue (3));
   NetDeviceContainer staDevice = wifi.Install (phy, mac, sta);
 

@@ -18,9 +18,9 @@
  */
 
 //
-// This program configures a grid (default 5x5) of nodes on an 
+// This program configures a grid (default 5x5) of nodes on an
 // 802.11b physical layer, with
-// 802.11b NICs in adhoc mode, and by default, sends one packet of 1000 
+// 802.11b NICs in adhoc mode, and by default, sends one packet of 1000
 // (application) bytes to node 1.
 //
 // The default layout is like this, on a 2-D grid.
@@ -50,20 +50,20 @@
 // ./waf --run "wifi-simple-adhoc --distance=500"
 // ./waf --run "wifi-simple-adhoc --distance=1000"
 // ./waf --run "wifi-simple-adhoc --distance=1500"
-// 
+//
 // The source node and sink node can be changed like this:
-// 
+//
 // ./waf --run "wifi-simple-adhoc --sourceNode=20 --sinkNode=10"
 //
 // This script can also be helpful to put the Wifi layer into verbose
 // logging mode; this command will turn on all wifi logging:
-// 
+//
 // ./waf --run "wifi-simple-adhoc-grid --verbose=1"
 //
 // By default, trace file writing is off-- to enable it, try:
 // ./waf --run "wifi-simple-adhoc-grid --tracing=1"
 //
-// When you are done tracing, you will notice many pcap trace files 
+// When you are done tracing, you will notice many pcap trace files
 // in your directory.  If you have tcpdump installed, you can try this:
 //
 // tcpdump -r wifi-simple-adhoc-grid-0-0.pcap -nn -tt
@@ -87,14 +87,14 @@ void ReceivePacket (Ptr<Socket> socket)
     }
 }
 
-static void GenerateTraffic (Ptr<Socket> socket, uint32_t pktSize, 
+static void GenerateTraffic (Ptr<Socket> socket, uint32_t pktSize,
                              uint32_t pktCount, Time pktInterval )
 {
   if (pktCount > 0)
     {
       socket->Send (Create<Packet> (pktSize));
-      Simulator::Schedule (pktInterval, &GenerateTraffic, 
-                           socket, pktSize,pktCount-1, pktInterval);
+      Simulator::Schedule (pktInterval, &GenerateTraffic,
+                           socket, pktSize,pktCount - 1, pktInterval);
     }
   else
     {
@@ -138,7 +138,7 @@ int main (int argc, char *argv[])
   // turn off RTS/CTS for frames below 2200 bytes
   Config::SetDefault ("ns3::WifiRemoteStationManager::RtsCtsThreshold", StringValue ("2200"));
   // Fix non-unicast data rate to be the same as that of unicast
-  Config::SetDefault ("ns3::WifiRemoteStationManager::NonUnicastMode", 
+  Config::SetDefault ("ns3::WifiRemoteStationManager::NonUnicastMode",
                       StringValue (phyMode));
 
   NodeContainer c;
@@ -153,9 +153,9 @@ int main (int argc, char *argv[])
 
   YansWifiPhyHelper wifiPhy =  YansWifiPhyHelper::Default ();
   // set it to zero; otherwise, gain will be added
-  wifiPhy.Set ("RxGain", DoubleValue (-10) ); 
+  wifiPhy.Set ("RxGain", DoubleValue (-10) );
   // ns-3 supports RadioTap and Prism tracing extensions for 802.11b
-  wifiPhy.SetPcapDataLinkType (YansWifiPhyHelper::DLT_IEEE802_11_RADIO); 
+  wifiPhy.SetPcapDataLinkType (YansWifiPhyHelper::DLT_IEEE802_11_RADIO);
 
   YansWifiChannelHelper wifiChannel;
   wifiChannel.SetPropagationDelay ("ns3::ConstantSpeedPropagationDelayModel");
@@ -225,7 +225,7 @@ int main (int argc, char *argv[])
     }
 
   // Give OLSR time to converge-- 30 seconds perhaps
-  Simulator::Schedule (Seconds (30.0), &GenerateTraffic, 
+  Simulator::Schedule (Seconds (30.0), &GenerateTraffic,
                        source, packetSize, numPackets, interPacketInterval);
 
   // Output what we are doing

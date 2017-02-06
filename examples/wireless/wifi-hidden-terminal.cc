@@ -22,11 +22,11 @@
  * Classical hidden terminal problem and its RTS/CTS solution.
  *
  * Topology: [node 0] <-- -50 dB --> [node 1] <-- -50 dB --> [node 2]
- * 
- * This example illustrates the use of 
+ *
+ * This example illustrates the use of
  *  - Wifi in ad-hoc mode
  *  - Matrix propagation loss model
- *  - Use of OnOffApplication to generate CBR stream 
+ *  - Use of OnOffApplication to generate CBR stream
  *  - IP flow monitor
  */
 
@@ -47,7 +47,7 @@ void experiment (bool enableCtsRts)
   UintegerValue ctsThr = (enableCtsRts ? UintegerValue (100) : UintegerValue (2200));
   Config::SetDefault ("ns3::WifiRemoteStationManager::RtsCtsThreshold", ctsThr);
 
-  // 1. Create 3 nodes 
+  // 1. Create 3 nodes
   NodeContainer nodes;
   nodes.Create (3);
 
@@ -60,8 +60,8 @@ void experiment (bool enableCtsRts)
   // 3. Create propagation loss matrix
   Ptr<MatrixPropagationLossModel> lossModel = CreateObject<MatrixPropagationLossModel> ();
   lossModel->SetDefaultLoss (200); // set default loss to 200 dB (no link)
-  lossModel->SetLoss (nodes.Get (0)->GetObject<MobilityModel>(), nodes.Get (1)->GetObject<MobilityModel>(), 50); // set symmetric loss 0 <-> 1 to 50 dB
-  lossModel->SetLoss (nodes.Get (2)->GetObject<MobilityModel>(), nodes.Get (1)->GetObject<MobilityModel>(), 50); // set symmetric loss 2 <-> 1 to 50 dB
+  lossModel->SetLoss (nodes.Get (0)->GetObject<MobilityModel> (), nodes.Get (1)->GetObject<MobilityModel> (), 50); // set symmetric loss 0 <-> 1 to 50 dB
+  lossModel->SetLoss (nodes.Get (2)->GetObject<MobilityModel> (), nodes.Get (1)->GetObject<MobilityModel> (), 50); // set symmetric loss 2 <-> 1 to 50 dB
 
   // 4. Create & setup wifi channel
   Ptr<YansWifiChannel> wifiChannel = CreateObject <YansWifiChannel> ();
@@ -71,8 +71,8 @@ void experiment (bool enableCtsRts)
   // 5. Install wireless devices
   WifiHelper wifi;
   wifi.SetStandard (WIFI_PHY_STANDARD_80211b);
-  wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager", 
-                                "DataMode",StringValue ("DsssRate2Mbps"), 
+  wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager",
+                                "DataMode",StringValue ("DsssRate2Mbps"),
                                 "ControlMode",StringValue ("DsssRate1Mbps"));
   YansWifiPhyHelper wifiPhy =  YansWifiPhyHelper::Default ();
   wifiPhy.SetChannel (wifiChannel);
@@ -95,7 +95,7 @@ void experiment (bool enableCtsRts)
   ipv4.SetBase ("10.0.0.0", "255.0.0.0");
   ipv4.Assign (devices);
 
-  // 7. Install applications: two CBR streams each saturating the channel 
+  // 7. Install applications: two CBR streams each saturating the channel
   ApplicationContainer cbrApps;
   uint16_t cbrPort = 12345;
   OnOffHelper onOffHelper ("ns3::UdpSocketFactory", InetSocketAddress (Ipv4Address ("10.0.0.2"), cbrPort));
@@ -106,7 +106,7 @@ void experiment (bool enableCtsRts)
   // flow 1:  node 0 -> node 1
   onOffHelper.SetAttribute ("DataRate", StringValue ("3000000bps"));
   onOffHelper.SetAttribute ("StartTime", TimeValue (Seconds (1.000000)));
-  cbrApps.Add (onOffHelper.Install (nodes.Get (0))); 
+  cbrApps.Add (onOffHelper.Install (nodes.Get (0)));
 
   // flow 2:  node 2 -> node 1
   /** \internal
@@ -115,11 +115,11 @@ void experiment (bool enableCtsRts)
    */
   onOffHelper.SetAttribute ("DataRate", StringValue ("3001100bps"));
   onOffHelper.SetAttribute ("StartTime", TimeValue (Seconds (1.001)));
-  cbrApps.Add (onOffHelper.Install (nodes.Get (2))); 
+  cbrApps.Add (onOffHelper.Install (nodes.Get (2)));
 
   /** \internal
    * We also use separate UDP applications that will send a single
-   * packet before the CBR flows start. 
+   * packet before the CBR flows start.
    * This is a workaround for the lack of perfect ARP, see \bugid{187}
    */
   uint16_t  echoPort = 9;
@@ -131,7 +131,7 @@ void experiment (bool enableCtsRts)
 
   // again using different start times to workaround Bug 388 and Bug 912
   echoClientHelper.SetAttribute ("StartTime", TimeValue (Seconds (0.001)));
-  pingApps.Add (echoClientHelper.Install (nodes.Get (0))); 
+  pingApps.Add (echoClientHelper.Install (nodes.Get (0)));
   echoClientHelper.SetAttribute ("StartTime", TimeValue (Seconds (0.006)));
   pingApps.Add (echoClientHelper.Install (nodes.Get (2)));
 
@@ -154,9 +154,9 @@ void experiment (bool enableCtsRts)
     {
       // first 2 FlowIds are for ECHO apps, we don't want to display them
       //
-      // Duration for throughput measurement is 9.0 seconds, since 
+      // Duration for throughput measurement is 9.0 seconds, since
       //   StartTime of the OnOffApplication is at about "second 1"
-      // and 
+      // and
       //   Simulator::Stops at "second 10".
       if (i->first > 2)
         {
@@ -179,7 +179,7 @@ int main (int argc, char **argv)
 {
   CommandLine cmd;
   cmd.Parse (argc, argv);
-  
+
   std::cout << "Hidden station experiment with RTS/CTS disabled:\n" << std::flush;
   experiment (false);
   std::cout << "------------------------------------------------\n";

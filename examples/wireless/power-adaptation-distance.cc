@@ -24,7 +24,7 @@
  * and ns3::AparfWifiManager.
  *
  * The output of this is typically two plot files, named throughput-parf.plt
- * (or throughput-aparf.plt, if Aparf is used) and power-parf.plt If 
+ * (or throughput-aparf.plt, if Aparf is used) and power-parf.plt If
  * Gnuplot program is available, one can use it to convert the plt file
  * into an eps file, by running:
  * \code{.sh}
@@ -38,10 +38,10 @@
  *
  * This simulation consist of 2 nodes, one AP and one STA.
  * The AP generates UDP traffic with a CBR of 54 Mbps to the STA.
- * The AP can use any power and rate control mechanism and the STA uses 
+ * The AP can use any power and rate control mechanism and the STA uses
  * only Minstrel rate control.
  * The STA can be configured to move away from (or towards to) the AP.
- * By default, the AP is at coordinate (0,0,0) and the STA starts at 
+ * By default, the AP is at coordinate (0,0,0) and the STA starts at
  * coordinate (5,0,0) (meters) and moves away on the x axis by 1 meter every
  * second.
  *
@@ -52,11 +52,11 @@
  *
  * The Average Transmit Power is defined as an average of the power
  * consumed per measurement interval, expressed in milliwatts.  The
- * power level for each frame transmission is reported by the simulator, 
+ * power level for each frame transmission is reported by the simulator,
  * and the energy consumed is obtained by multiplying the power by the
  * frame duration.  At every 'stepTime' (defaulting to 1 second), the
- * total energy for the collection period is divided by the step time 
- * and converted from dbm to milliwatt units, and this average is 
+ * total energy for the collection period is divided by the step time
+ * and converted from dbm to milliwatt units, and this average is
  * plotted against time.
  *
  * When neither Parf nor Aparf is selected as the rate control, the
@@ -68,7 +68,7 @@
  * \code{.sh}
  *   ./waf --run "power-adaptation-distance --help"
  * \endcode
- * 
+ *
  * Example usage (selecting Aparf rather than Parf):
  * \code{.sh}
  *   ./waf --run "power-adaptation-distance --manager=ns3::AparfWifiManager --outputFileName=aparf"
@@ -192,7 +192,7 @@ NodeStatistics::PhyCallback (std::string path, Ptr<const Packet> packet)
   packet->PeekHeader (head);
   Mac48Address dest = head.GetAddr1 ();
 
-  if (head.GetType() == WIFI_MAC_DATA)
+  if (head.GetType () == WIFI_MAC_DATA)
     {
       totalEnergy += pow (10.0, actualPower[dest] / 10.0) * GetCalcTxTime (actualMode[dest]).GetSeconds ();
       totalTime += GetCalcTxTime (actualMode[dest]).GetSeconds ();
@@ -386,7 +386,7 @@ int main (int argc, char *argv[])
   mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
   mobility.Install (wifiApNodes.Get (0));
   mobility.Install (wifiStaNodes.Get (0));
- 
+
   //Statistics counter
   NodeStatistics statistics = NodeStatistics (wifiApDevices, wifiStaDevices);
 
@@ -450,8 +450,8 @@ int main (int argc, char *argv[])
   gnuplot.AddDataset (statistics.GetDatafile ());
   gnuplot.GenerateOutput (outfile);
 
-  if (manager.compare ("ns3::ParfWifiManager") == 0 ||
-      manager.compare ("ns3::AparfWifiManager") == 0)
+  if (manager.compare ("ns3::ParfWifiManager") == 0
+      || manager.compare ("ns3::AparfWifiManager") == 0)
     {
       std::ofstream outfile2 (("power-" + outputFileName + ".plt").c_str ());
       gnuplot = Gnuplot (("power-" + outputFileName + ".eps").c_str (), "Average Transmit Power");

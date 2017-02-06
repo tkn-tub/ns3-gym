@@ -120,17 +120,17 @@ int main (int argc, char *argv[])
   Ssid ssid = Ssid ("ns3");
 
   wifi.SetStandard (ConvertStringToStandard (staVersion));
-  wifi.SetRemoteStationManager ("ns3::"+staRaa+"WifiManager");
-    
+  wifi.SetRemoteStationManager ("ns3::" + staRaa + "WifiManager");
+
   mac.SetType ("ns3::StaWifiMac",
                "Ssid", SsidValue (ssid),
                "ActiveProbing", BooleanValue (false));
 
   NetDeviceContainer staDevice;
   staDevice = wifi.Install (phy, mac, wifiStaNode);
-  
+
   wifi.SetStandard (ConvertStringToStandard (apVersion));
-  wifi.SetRemoteStationManager ("ns3::"+apRaa+"WifiManager");
+  wifi.SetRemoteStationManager ("ns3::" + apRaa + "WifiManager");
 
   mac.SetType ("ns3::ApWifiMac",
                "Ssid", SsidValue (ssid),
@@ -176,7 +176,7 @@ int main (int argc, char *argv[])
   ApplicationContainer apServerApp = apServer.Install (wifiApNode.Get (0));
   apServerApp.Start (Seconds (0.0));
   apServerApp.Stop (Seconds (simulationTime + 1));
-  
+
   UdpServerHelper staServer (5001);
   ApplicationContainer staServerApp = staServer.Install (wifiStaNode.Get (0));
   staServerApp.Start (Seconds (0.0));
@@ -192,7 +192,7 @@ int main (int argc, char *argv[])
       apClientApp.Start (Seconds (1.0));
       apClientApp.Stop (Seconds (simulationTime + 1));
     }
-  
+
   if (staHasTraffic)
     {
       UdpClientHelper staClient (apNodeInterface.GetAddress (0), 9);
@@ -218,10 +218,10 @@ int main (int argc, char *argv[])
       throughput = (rxBytes * 8) / (simulationTime * 1000000.0); //Mbit/s
       std::cout << "AP Throughput: " << throughput << " Mbit/s" << std::endl;
       if (throughput == 0)
-      {
-        NS_LOG_ERROR ("No traffic received!");
-        exit (1);
-      }
+        {
+          NS_LOG_ERROR ("No traffic received!");
+          exit (1);
+        }
     }
   if (staHasTraffic)
     {
@@ -229,10 +229,10 @@ int main (int argc, char *argv[])
       throughput = (rxBytes * 8) / (simulationTime * 1000000.0); //Mbit/s
       std::cout << "STA Throughput: " << throughput << " Mbit/s" << std::endl;
       if (throughput == 0)
-      {
-        NS_LOG_ERROR ("No traffic received!");
-        exit (1);
-      }
+        {
+          NS_LOG_ERROR ("No traffic received!");
+          exit (1);
+        }
     }
   return 0;
 }

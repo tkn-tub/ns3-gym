@@ -85,85 +85,85 @@ int main (int argc, char *argv[])
   WifiHelper wifi; //the default standard of 802.11a will be selected by this helper since the program doesn't specify another one
   wifi.SetRemoteStationManager ("ns3::IdealWifiManager");
   WifiMacHelper mac;
-  
+
   NetDeviceContainer staDeviceA, staDeviceB, staDeviceC, staDeviceD, apDeviceA, apDeviceB, apDeviceC, apDeviceD;
   Ssid ssid;
 
   //Network A
   ssid = Ssid ("network-A");
-  phy.Set ("ChannelNumber", UintegerValue(36));
+  phy.Set ("ChannelNumber", UintegerValue (36));
   mac.SetType ("ns3::StaWifiMac",
                "QosSupported", BooleanValue (true),
                "Ssid", SsidValue (ssid));
-  staDeviceA = wifi.Install (phy, mac, wifiStaNode.Get(0));
+  staDeviceA = wifi.Install (phy, mac, wifiStaNode.Get (0));
 
   mac.SetType ("ns3::ApWifiMac",
                "QosSupported", BooleanValue (true),
                "Ssid", SsidValue (ssid),
                "BeaconGeneration", BooleanValue (true));
-  apDeviceA = wifi.Install (phy, mac, wifiApNode.Get(0));
-  
+  apDeviceA = wifi.Install (phy, mac, wifiApNode.Get (0));
+
   //Network B
   ssid = Ssid ("network-B");
-  phy.Set ("ChannelNumber", UintegerValue(40));
+  phy.Set ("ChannelNumber", UintegerValue (40));
   mac.SetType ("ns3::StaWifiMac",
                "QosSupported", BooleanValue (true),
                "Ssid", SsidValue (ssid));
 
-  staDeviceB = wifi.Install (phy, mac, wifiStaNode.Get(1));
+  staDeviceB = wifi.Install (phy, mac, wifiStaNode.Get (1));
 
   mac.SetType ("ns3::ApWifiMac",
                "QosSupported", BooleanValue (true),
                "Ssid", SsidValue (ssid),
                "BeaconGeneration", BooleanValue (true));
-  apDeviceB = wifi.Install (phy, mac, wifiApNode.Get(1));
-  
+  apDeviceB = wifi.Install (phy, mac, wifiApNode.Get (1));
+
   //Modify EDCA configuration (TXOP limit) for AC_BE
-  Ptr<NetDevice> dev = wifiApNode.Get(1)->GetDevice(0);
-  Ptr<WifiNetDevice> wifi_dev = DynamicCast<WifiNetDevice>(dev);
-  Ptr<WifiMac> wifi_mac = wifi_dev->GetMac();
+  Ptr<NetDevice> dev = wifiApNode.Get (1)->GetDevice (0);
+  Ptr<WifiNetDevice> wifi_dev = DynamicCast<WifiNetDevice> (dev);
+  Ptr<WifiMac> wifi_mac = wifi_dev->GetMac ();
   PointerValue ptr;
   Ptr<EdcaTxopN> edca;
-  wifi_mac->GetAttribute("BE_EdcaTxopN", ptr);
-  edca = ptr.Get<EdcaTxopN>();
+  wifi_mac->GetAttribute ("BE_EdcaTxopN", ptr);
+  edca = ptr.Get<EdcaTxopN> ();
   edca->SetTxopLimit (MicroSeconds (3008));
-  
+
   //Network C
   ssid = Ssid ("network-C");
-  phy.Set ("ChannelNumber", UintegerValue(44));
+  phy.Set ("ChannelNumber", UintegerValue (44));
   mac.SetType ("ns3::StaWifiMac",
                "QosSupported", BooleanValue (true),
                "Ssid", SsidValue (ssid));
 
-  staDeviceC = wifi.Install (phy, mac, wifiStaNode.Get(2));
+  staDeviceC = wifi.Install (phy, mac, wifiStaNode.Get (2));
 
   mac.SetType ("ns3::ApWifiMac",
                "QosSupported", BooleanValue (true),
                "Ssid", SsidValue (ssid),
                "BeaconGeneration", BooleanValue (true));
-  apDeviceC = wifi.Install (phy, mac, wifiApNode.Get(2));
-  
+  apDeviceC = wifi.Install (phy, mac, wifiApNode.Get (2));
+
   //Network D
   ssid = Ssid ("network-D");
-  phy.Set ("ChannelNumber", UintegerValue(48));
+  phy.Set ("ChannelNumber", UintegerValue (48));
   mac.SetType ("ns3::StaWifiMac",
                "QosSupported", BooleanValue (true),
                "Ssid", SsidValue (ssid));
 
-  staDeviceD = wifi.Install (phy, mac, wifiStaNode.Get(3));
+  staDeviceD = wifi.Install (phy, mac, wifiStaNode.Get (3));
 
   mac.SetType ("ns3::ApWifiMac",
                "QosSupported", BooleanValue (true),
                "Ssid", SsidValue (ssid),
                "BeaconGeneration", BooleanValue (true));
-  apDeviceD = wifi.Install (phy, mac, wifiApNode.Get(3));
-  
+  apDeviceD = wifi.Install (phy, mac, wifiApNode.Get (3));
+
   //Modify EDCA configuration (TXOP limit) for AC_VO
-  dev = wifiApNode.Get(3)->GetDevice(0);
-  wifi_dev = DynamicCast<WifiNetDevice>(dev);
-  wifi_mac = wifi_dev->GetMac();
-  wifi_mac->GetAttribute("VI_EdcaTxopN", ptr);
-  edca = ptr.Get<EdcaTxopN>();
+  dev = wifiApNode.Get (3)->GetDevice (0);
+  wifi_dev = DynamicCast<WifiNetDevice> (dev);
+  wifi_mac = wifi_dev->GetMac ();
+  wifi_mac->GetAttribute ("VI_EdcaTxopN", ptr);
+  edca = ptr.Get<EdcaTxopN> ();
   edca->SetTxopLimit (MicroSeconds (0));
 
   /* Setting mobility model */
@@ -183,7 +183,7 @@ int main (int argc, char *argv[])
   positionAlloc->Add (Vector (30 + distance, 0.0, 0.0));
   //Remark: while we set these positions 10 meters apart, the networks do not interact
   //and the only variable that affects transmission performance is the distance.
-  
+
   mobility.SetPositionAllocator (positionAlloc);
   mobility.Install (wifiApNode);
   mobility.Install (wifiStaNode);
@@ -200,19 +200,19 @@ int main (int argc, char *argv[])
   StaInterfaceA = address.Assign (staDeviceA);
   Ipv4InterfaceContainer ApInterfaceA;
   ApInterfaceA = address.Assign (apDeviceA);
-  
+
   address.SetBase ("192.168.2.0", "255.255.255.0");
   Ipv4InterfaceContainer StaInterfaceB;
   StaInterfaceB = address.Assign (staDeviceB);
   Ipv4InterfaceContainer ApInterfaceB;
   ApInterfaceB = address.Assign (apDeviceB);
-  
+
   address.SetBase ("192.168.3.0", "255.255.255.0");
   Ipv4InterfaceContainer StaInterfaceC;
   StaInterfaceC = address.Assign (staDeviceC);
   Ipv4InterfaceContainer ApInterfaceC;
   ApInterfaceC = address.Assign (apDeviceC);
-  
+
   address.SetBase ("192.168.4.0", "255.255.255.0");
   Ipv4InterfaceContainer StaInterfaceD;
   StaInterfaceD = address.Assign (staDeviceD);
@@ -224,20 +224,20 @@ int main (int argc, char *argv[])
   ApplicationContainer serverAppA = myServerA.Install (wifiApNode.Get (0));
   serverAppA.Start (Seconds (0.0));
   serverAppA.Stop (Seconds (simulationTime + 1));
-  
+
   InetSocketAddress destA (ApInterfaceA.GetAddress (0), 5001);
   destA.SetTos (0x70); //AC_BE
-  
+
   OnOffHelper myClientA ("ns3::UdpSocketFactory", destA);
   myClientA.SetAttribute ("OnTime", StringValue ("ns3::ConstantRandomVariable[Constant=1]"));
   myClientA.SetAttribute ("OffTime", StringValue ("ns3::ConstantRandomVariable[Constant=0]"));
-  myClientA.SetAttribute ("DataRate", StringValue("100000kb/s"));
-  myClientA.SetAttribute ("PacketSize", UintegerValue(payloadSize));
+  myClientA.SetAttribute ("DataRate", StringValue ("100000kb/s"));
+  myClientA.SetAttribute ("PacketSize", UintegerValue (payloadSize));
 
   ApplicationContainer clientAppA = myClientA.Install (wifiStaNode.Get (0));
   clientAppA.Start (Seconds (1.0));
   clientAppA.Stop (Seconds (simulationTime + 1));
-  
+
   UdpServerHelper myServerB (5001);
   ApplicationContainer serverAppB = myServerB.Install (wifiApNode.Get (1));
   serverAppB.Start (Seconds (0.0));
@@ -249,13 +249,13 @@ int main (int argc, char *argv[])
   OnOffHelper myClientB ("ns3::UdpSocketFactory", destB);
   myClientB.SetAttribute ("OnTime", StringValue ("ns3::ConstantRandomVariable[Constant=1]"));
   myClientB.SetAttribute ("OffTime", StringValue ("ns3::ConstantRandomVariable[Constant=0]"));
-  myClientB.SetAttribute ("DataRate", StringValue("100000kb/s"));
-  myClientB.SetAttribute ("PacketSize", UintegerValue(payloadSize));
+  myClientB.SetAttribute ("DataRate", StringValue ("100000kb/s"));
+  myClientB.SetAttribute ("PacketSize", UintegerValue (payloadSize));
 
   ApplicationContainer clientAppB = myClientB.Install (wifiStaNode.Get (1));
   clientAppB.Start (Seconds (1.0));
   clientAppB.Stop (Seconds (simulationTime + 1));
-  
+
   UdpServerHelper myServerC (5001);
   ApplicationContainer serverAppC = myServerC.Install (wifiApNode.Get (2));
   serverAppC.Start (Seconds (0.0));
@@ -267,13 +267,13 @@ int main (int argc, char *argv[])
   OnOffHelper myClientC ("ns3::UdpSocketFactory", destC);
   myClientC.SetAttribute ("OnTime", StringValue ("ns3::ConstantRandomVariable[Constant=1]"));
   myClientC.SetAttribute ("OffTime", StringValue ("ns3::ConstantRandomVariable[Constant=0]"));
-  myClientC.SetAttribute ("DataRate", StringValue("100000kb/s"));
-  myClientC.SetAttribute ("PacketSize", UintegerValue(payloadSize));
+  myClientC.SetAttribute ("DataRate", StringValue ("100000kb/s"));
+  myClientC.SetAttribute ("PacketSize", UintegerValue (payloadSize));
 
   ApplicationContainer clientAppC = myClientC.Install (wifiStaNode.Get (2));
   clientAppC.Start (Seconds (1.0));
   clientAppC.Stop (Seconds (simulationTime + 1));
-  
+
   UdpServerHelper myServerD (5001);
   ApplicationContainer serverAppD = myServerD.Install (wifiApNode.Get (3));
   serverAppD.Start (Seconds (0.0));
@@ -285,13 +285,13 @@ int main (int argc, char *argv[])
   OnOffHelper myClientD ("ns3::UdpSocketFactory", destD);
   myClientD.SetAttribute ("OnTime", StringValue ("ns3::ConstantRandomVariable[Constant=1]"));
   myClientD.SetAttribute ("OffTime", StringValue ("ns3::ConstantRandomVariable[Constant=0]"));
-  myClientD.SetAttribute ("DataRate", StringValue("100000kb/s"));
-  myClientD.SetAttribute ("PacketSize", UintegerValue(payloadSize));
+  myClientD.SetAttribute ("DataRate", StringValue ("100000kb/s"));
+  myClientD.SetAttribute ("PacketSize", UintegerValue (payloadSize));
 
   ApplicationContainer clientAppD = myClientD.Install (wifiStaNode.Get (3));
   clientAppD.Start (Seconds (1.0));
   clientAppD.Stop (Seconds (simulationTime + 1));
-  
+
   if (enablePcap)
     {
       phy.EnablePcap ("AP_A", apDeviceA.Get (0));
