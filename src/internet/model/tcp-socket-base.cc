@@ -244,7 +244,9 @@ TcpSocketState::TcpSocketState (void)
     m_congState (CA_OPEN),
     m_highTxMark (0),
     // Change m_nextTxSequence for non-zero initial sequence number
-    m_nextTxSequence (0)
+    m_nextTxSequence (0),
+    m_rcvTimestampValue (0),
+    m_rcvTimestampEchoReply (0)
 {
 }
 
@@ -258,7 +260,9 @@ TcpSocketState::TcpSocketState (const TcpSocketState &other)
     m_lastAckedSeq (other.m_lastAckedSeq),
     m_congState (other.m_congState),
     m_highTxMark (other.m_highTxMark),
-    m_nextTxSequence (other.m_nextTxSequence)
+    m_nextTxSequence (other.m_nextTxSequence),
+    m_rcvTimestampValue (other.m_rcvTimestampValue),
+    m_rcvTimestampEchoReply (other.m_rcvTimestampEchoReply)
 {
 }
 
@@ -3668,6 +3672,9 @@ TcpSocketBase::ProcessOptionTimestamp (const Ptr<const TcpOption> option,
   NS_LOG_FUNCTION (this << option);
 
   Ptr<const TcpOptionTS> ts = DynamicCast<const TcpOptionTS> (option);
+
+  m_tcb->m_rcvTimestampValue = ts->GetTimestamp ();
+  m_tcb->m_rcvTimestampEchoReply = ts->GetEcho();
 
   if (seq == m_rxBuffer->NextRxSequence () && seq <= m_highTxAck)
     {

@@ -164,6 +164,9 @@ public:
   TracedValue<SequenceNumber32> m_highTxMark; //!< Highest seqno ever sent, regardless of ReTx
   TracedValue<SequenceNumber32> m_nextTxSequence; //!< Next seqnum to be sent (SND.NXT), ReTx pushes it back
 
+  uint32_t               m_rcvTimestampValue;     //!< Receiver Timestamp value 
+  uint32_t               m_rcvTimestampEchoReply; //!< Sender Timestamp echoed by the receiver
+
   /**
    * \brief Get cwnd in segments rather than bytes
    *

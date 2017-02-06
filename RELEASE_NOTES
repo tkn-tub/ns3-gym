@@ -66,6 +66,7 @@ Bugs fixed
 - Bug 2563 - Modify pybindgen version check to >= minimum version required
 - Bug 2564 - Simulation crashes when CtsTimeout is triggered for A-MPDU transmissions
 - Bug 2566 - BlockAckManager::GetNRetryNeededPackets missing some packets in the queue
+- Bug 2573 - Added TCP Ledbat
 - Bug 2577 - simulation crashes when A-MPDU and multiple TOS are used with RTS-CTS enabled
 - Bug 2578 - Assert "Internal collision but no packet in queue" unexpectedly triggered
 - Bug 2584 - MacLow triggers StartNext even if there is no TXOP

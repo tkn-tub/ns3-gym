@@ -669,6 +669,69 @@ More information (paper):  http://www.hamilton.ie/net/htcp3.pdf
 
 More information (Internet Draft):  https://tools.ietf.org/html/draft-leith-tcp-htcp-06
 
+LEDBAT
+^^^^^^
+
+Low Extra Delay Background Transport (LEDBAT) is an experimental delay-based 
+congestion control algorithm that seeks to utilize the available bandwidth on
+an end-to-end path while limiting the consequent increase in queueing delay 
+on that path. LEDBAT uses changes in one-way delay measurements to limit 
+congestion that the flow itself induces in the network.
+
+As a first approximation, the LEDBAT sender operates as shown below:
+
+on receipt of an ACK:
+
+.. math::
+       currentdelay = acknowledgement.delay
+       basedelay = min (basedelay, currentdelay)
+       queuingdelay = currentdelay - basedelay
+       offtarget = (TARGET - queuingdelay) / TARGET
+       cWnd += GAIN * offtarget * bytesnewlyacked * MSS / cWnd
+
+``TARGET`` is the maximum queueing delay that LEDBAT itself may introduce in the
+network, and ``GAIN`` determines the rate at which the cwnd responds to changes in 
+queueing delay;  ``offtarget`` is a normalized value representing the difference between
+the measured current queueing delay and the predetermined TARGET delay. offtarget can 
+be positive or negative; consequently, cwnd increases or decreases in proportion to 
+offtarget.
+
+Following the recommendation of RFC 6817, the default values of the parameters are:
+
+* TargetDelay = 100
+* baseHistoryLen = 10
+* noiseFilterLen = 4
+* Gain = 1
+
+To enable LEDBAT on all TCP sockets, the following configuration can be used:
+
+::
+
+  Config::SetDefault ("ns3::TcpL4Protocol::SocketType", TypeIdValue (TcpLedbat::GetTypeId ()));
+
+To enable LEDBAT on a chosen TCP socket, the following configuration can be used:
+
+::
+
+  Config::Set ("$ns3::NodeListPriv/NodeList/1/$ns3::TcpL4Protocol/SocketType", TypeIdValue (TcpLedbat::GetTypeId ()));
+
+The following unit tests have been written to validate the implementation of LEDBAT:
+
+* LEDBAT should operate same as NewReno during slow start
+* LEDBAT should operate same as NewReno if timestamps are disabled
+* Test to validate cwnd increment in LEDBAT
+* Test to validate cwnd decrement in LEDBAT
+
+In comparison to RFC 6817, the scope and limitations of the current LEDBAT
+implementation are:
+
+* It assumes that the clocks on the sender side and receiver side are synchronised
+* In line with Linux implementation, the one-way delay is calculated at the sender
+side by using the timestamps option in TCP header
+* Only the MIN function is used for noise filtering 
+
+More information about LEDBAT is available in RFC 6817: https://tools.ietf.org/html/rfc6817
+
 Validation
 ++++++++++
 
@@ -694,6 +757,7 @@ section below on :ref:`Writing-tcp-tests`.
 * **tcp-bic-test:** Unit tests on the BIC congestion control
 * **tcp-yeah-test:** Unit tests on the YeAH congestion control
 * **tcp-illinois-test:** Unit tests on the Illinois congestion control
+* **tcp-ledbat-test:** Unit tests on the LEDBAT congestion control
 * **tcp-option:** Unit tests on TCP options
 * **tcp-pkts-acked-test:** Unit test the number of time that PktsAcked is called
 * **tcp-rto-test:** Unit test behavior after a RTO timeout occurs
