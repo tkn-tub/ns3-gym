@@ -82,6 +82,7 @@ Bugs fixed
 - Bug 2613 - MaxRxSequence () is sometimes too large
 - Bug 2607 - Minstrel HT manager results in an endless loop when a 802.11ac station is transmitting to a 802.11a access point
 - Bug 2614 - RIP header version should be set to 2
+- Bug 2615 - When the TXOP limit is nonzero, packets should be fragmented so that the TXOP limit is not exceeded
 - Bug 2627 - Ipv6RawSocket does not honor the bound interface when sending packets
 - Bug 2628 - Simulation crashes because of an out of range TID
 - Bug 2629 - Assert failure in MinstrelHtWifiManager::GetLowestIndex

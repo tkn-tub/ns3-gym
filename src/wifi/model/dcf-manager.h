@@ -31,6 +31,7 @@ namespace ns3 {
 class WifiPhy;
 class PhyListener;
 class DcfState;
+class MacLow;
 
 /**
  * \brief Manage a set of ns3::DcfState

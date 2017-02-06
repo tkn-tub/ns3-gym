@@ -24,6 +24,7 @@
 #include "ns3/log.h"
 #include "ns3/socket.h"
 #include "mac-low.h"
+#include "edca-txop-n.h"
 #include "wifi-mac-trailer.h"
 #include "snr-tag.h"
 #include "ampdu-tag.h"
@@ -892,10 +893,14 @@ MacLow::ReceiveOk (Ptr<Packet> packet, double rxSnr, WifiTxVector txVector, bool
       NS_LOG_DEBUG ("receive ack from=" << m_currentHdr.GetAddr1 ());
       SnrTag tag;
       packet->RemovePacketTag (tag);
-      m_stationManager->ReportRxOk (m_currentHdr.GetAddr1 (), &m_currentHdr,
-                                    rxSnr, txVector.GetMode ());
-      m_stationManager->ReportDataOk (m_currentHdr.GetAddr1 (), &m_currentHdr,
-                                      rxSnr, txVector.GetMode (), tag.Get ());
+      //When fragmentation is used, only update manager when the last fragment is acknowledged
+      if (!m_txParams.HasNextPacket ())
+        {
+          m_stationManager->ReportRxOk (m_currentHdr.GetAddr1 (), &m_currentHdr,
+                                        rxSnr, txVector.GetMode ());
+          m_stationManager->ReportDataOk (m_currentHdr.GetAddr1 (), &m_currentHdr,
+                                          rxSnr, txVector.GetMode (), tag.Get ());
+        }
       bool gotAck = false;
       if (m_txParams.MustWaitNormalAck ()
           && m_normalAckTimeoutEvent.IsRunning ())
@@ -915,7 +920,7 @@ MacLow::ReceiveOk (Ptr<Packet> packet, double rxSnr, WifiTxVector txVector, bool
         {
           m_currentDca->GotAck ();
         }
-      if (m_txParams.HasNextPacket ())
+      if (m_txParams.HasNextPacket () && (!m_currentHdr.IsQosData () || m_currentDca->GetTxopLimit () == NanoSeconds (0) || m_currentDca->HasTxop ()))
         {
           if (m_stationManager->GetRifsPermitted ())
             {
@@ -1312,6 +1317,32 @@ MacLow::CalculateOverallTxTime (Ptr<const Packet> packet,
     }
   WifiTxVector dataTxVector = GetDataTxVector (packet, hdr);
   uint32_t dataSize = GetSize (packet, hdr);
+  txTime += m_phy->CalculateTxDuration (dataSize, dataTxVector, m_phy->GetFrequency ());
+  txTime += GetSifs ();
+  if (params.MustWaitAck ())
+    {
+      txTime += GetAckDuration (hdr->GetAddr1 (), dataTxVector);
+    }
+  return txTime;
+}
+
+Time
+MacLow::CalculateOverallTxFragmentTime (Ptr<const Packet> packet,
+                                        const WifiMacHeader* hdr,
+                                        const MacLowTransmissionParameters& params,
+                                        uint32_t fragmentSize) const
+{
+  Time txTime = Seconds (0);
+  if (params.MustSendRts ())
+    {
+      WifiTxVector rtsTxVector = GetRtsTxVector (packet, hdr);
+      txTime += m_phy->CalculateTxDuration (GetRtsSize (), rtsTxVector, m_phy->GetFrequency ());
+      txTime += GetCtsDuration (hdr->GetAddr1 (), rtsTxVector);
+      txTime += Time (GetSifs () * 2);
+    }
+  WifiTxVector dataTxVector = GetDataTxVector (packet, hdr);
+  Ptr<const Packet> fragment = Create<Packet> (fragmentSize);
+  uint32_t dataSize = GetSize (fragment, hdr);
   txTime += m_phy->CalculateTxDuration (dataSize, dataTxVector, m_phy->GetFrequency ());
   txTime += GetSifs ();
   if (params.MustWaitAck ())

@@ -463,6 +463,64 @@ private:
    *         false otherwise.
    */
   bool HasTxop (void) const;
+  
+  /**
+   * Calculate the size of the next fragment.
+   *
+   * \return the size of the next fragment.
+   */
+  uint32_t GetNextFragmentSize (void) const;
+  /**
+   * Calculate the size of the current fragment.
+   *
+   * \return the size of the current fragment.
+   */
+  uint32_t GetFragmentSize (void) const;
+  /**
+   * Calculate the offset for the current fragment.
+   *
+   * \return the offset for the current fragment.
+   */
+  uint32_t GetFragmentOffset (void) const;
+  /**
+   * Check if the current fragment is the last fragment.
+   *
+   * \return true if the current fragment is the last fragment,
+   *         false otherwise.
+   */
+  bool IsLastFragment (void) const;
+  
+  /**
+   * Check if the current packet is fragmented because of an exceeded TXOP duration.
+   *
+   * \return true if the current packet is fragmented because of an exceeded TXOP duration,
+   *         false otherwise
+   */
+  bool IsTxopFragmentation () const;
+  /**
+   * Calculate the size of the current TXOP fragment.
+   *
+   * \return the size of the current TXOP fragment
+   */
+  uint32_t GetTxopFragmentSize () const;
+  /**
+   * Calculate the number of TXOP fragments needed for the transmission of the current packet.
+   *
+   * \return the number of TXOP fragments needed for the transmission of the current packet
+   */
+  uint32_t GetNTxopFragment () const;
+  /**
+   * Calculate the size of the next TXOP fragment.
+   *
+   * \param fragmentNumber number of the next fragment
+   */
+  uint32_t GetNextTxopFragmentSize (uint32_t fragmentNumber) const;
+  /**
+   * Calculate the offset for the fragment.
+   *
+   * \param fragmentNumber number of the fragment
+   */
+  uint32_t GetTxopFragmentOffset (uint32_t fragmentNumber) const;
 
   void DoDispose (void);
   void DoInitialize (void);
@@ -480,6 +538,7 @@ private:
   Bar m_currentBar;
   Time m_startTxop;
   bool m_isAccessRequestedForRts;
+  bool m_currentIsFragmented;
   TracedValue<uint32_t> m_backoffTrace;
   TracedValue<uint32_t> m_cwTrace;
   TracedCallback<Time, Time> m_txopTrace;

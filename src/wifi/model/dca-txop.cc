@@ -23,7 +23,6 @@
 #include "dca-txop.h"
 #include "dcf-manager.h"
 #include "dcf-state.h"
-#include "mac-low.h"
 #include "wifi-mac-queue.h"
 #include "mac-tx-middle.h"
 #include "random-stream.h"
@@ -181,28 +180,24 @@ DcaTxop::SetTxopLimit (Time txopLimit)
 uint32_t
 DcaTxop::GetMinCw (void) const
 {
-  NS_LOG_FUNCTION (this);
   return m_dcf->GetCwMin ();
 }
 
 uint32_t
 DcaTxop::GetMaxCw (void) const
 {
-  NS_LOG_FUNCTION (this);
   return m_dcf->GetCwMax ();
 }
 
 uint32_t
 DcaTxop::GetAifsn (void) const
 {
-  NS_LOG_FUNCTION (this);
   return m_dcf->GetAifsn ();
 }
 
 Time
 DcaTxop::GetTxopLimit (void) const
 {
-  NS_LOG_FUNCTION (this);
   return m_dcf->GetTxopLimit ();
 }
 
@@ -375,19 +370,18 @@ DcaTxop::NotifyAccessGranted (void)
                     ", to=" << m_currentHdr.GetAddr1 () <<
                     ", seq=" << m_currentHdr.GetSequenceControl ());
     }
-  MacLowTransmissionParameters params;
-  params.DisableOverrideDurationId ();
+  m_currentParams.DisableOverrideDurationId ();
   if (m_currentHdr.GetAddr1 ().IsGroup ())
     {
-      params.DisableRts ();
-      params.DisableAck ();
-      params.DisableNextData ();
-      GetLow ()->StartTransmission (m_currentPacket, &m_currentHdr, params, this);
+      m_currentParams.DisableRts ();
+      m_currentParams.DisableAck ();
+      m_currentParams.DisableNextData ();
+      GetLow ()->StartTransmission (m_currentPacket, &m_currentHdr, m_currentParams, this);
       NS_LOG_DEBUG ("tx broadcast");
     }
   else
     {
-      params.EnableAck ();
+      m_currentParams.EnableAck ();
 
       if (NeedFragmentation ())
         {
@@ -396,19 +390,19 @@ DcaTxop::NotifyAccessGranted (void)
           if (IsLastFragment ())
             {
               NS_LOG_DEBUG ("fragmenting last fragment size=" << fragment->GetSize ());
-              params.DisableNextData ();
+              m_currentParams.DisableNextData ();
             }
           else
             {
               NS_LOG_DEBUG ("fragmenting size=" << fragment->GetSize ());
-              params.EnableNextData (GetNextFragmentSize ());
+              m_currentParams.EnableNextData (GetNextFragmentSize ());
             }
-          GetLow ()->StartTransmission (fragment, &hdr, params, this);
+          GetLow ()->StartTransmission (fragment, &hdr, m_currentParams, this);
         }
       else
         {
-          params.DisableNextData ();
-          GetLow ()->StartTransmission (m_currentPacket, &m_currentHdr, params, this);
+          m_currentParams.DisableNextData ();
+          GetLow ()->StartTransmission (m_currentPacket, &m_currentHdr, m_currentParams, this);
         }
     }
 }
@@ -542,19 +536,18 @@ DcaTxop::StartNextFragment (void)
   NextFragment ();
   WifiMacHeader hdr;
   Ptr<Packet> fragment = GetFragmentPacket (&hdr);
-  MacLowTransmissionParameters params;
-  params.EnableAck ();
-  params.DisableRts ();
-  params.DisableOverrideDurationId ();
+  m_currentParams.EnableAck ();
+  m_currentParams.DisableRts ();
+  m_currentParams.DisableOverrideDurationId ();
   if (IsLastFragment ())
     {
-      params.DisableNextData ();
+      m_currentParams.DisableNextData ();
     }
   else
     {
-      params.EnableNextData (GetNextFragmentSize ());
+      m_currentParams.EnableNextData (GetNextFragmentSize ());
     }
-  GetLow ()->StartTransmission (fragment, &hdr, params, this);
+  GetLow ()->StartTransmission (fragment, &hdr, m_currentParams, this);
 }
 
 void

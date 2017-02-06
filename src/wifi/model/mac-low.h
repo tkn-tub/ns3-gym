@@ -24,7 +24,6 @@
 #define MAC_LOW_H
 
 #include "wifi-phy.h"
-#include "edca-txop-n.h"
 #include "dcf-manager.h"
 #include "wifi-remote-station-manager.h"
 #include "block-ack-agreement.h"
@@ -39,6 +38,9 @@ class AmpduAggregationTest;
 namespace ns3 {
 
 class WifiMacQueue;
+class DcaTxop;
+class EdcaTxopN;
+class DcfManager;
 
 /**
  * \brief control how a packet is transmitted.
@@ -451,6 +453,11 @@ public:
   Time CalculateOverallTxTime (Ptr<const Packet> packet,
                                const WifiMacHeader* hdr,
                                const MacLowTransmissionParameters &params) const;
+    
+  Time CalculateOverallTxFragmentTime (Ptr<const Packet> packet,
+                                       const WifiMacHeader* hdr,
+                                       const MacLowTransmissionParameters& params,
+                                       uint32_t fragmentSize) const;
 
   /**
    * \param packet packet to send

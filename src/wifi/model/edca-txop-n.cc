@@ -23,7 +23,6 @@
 #include "ns3/log.h"
 #include "ns3/pointer.h"
 #include "edca-txop-n.h"
-#include "mac-low.h"
 #include "dcf-manager.h"
 #include "dcf-state.h"
 #include "mac-tx-middle.h"
@@ -71,7 +70,8 @@ EdcaTxopN::EdcaTxopN ()
     m_typeOfStation (STA),
     m_blockAckType (COMPRESSED_BLOCK_ACK),
     m_startTxop (Seconds (0)),
-    m_isAccessRequestedForRts (false)
+    m_isAccessRequestedForRts (false),
+    m_currentIsFragmented (false)
 {
   NS_LOG_FUNCTION (this);
   m_qosBlockedDestinations = new QosBlockedDestinations ();
@@ -183,6 +183,7 @@ EdcaTxopN::NotifyAccessGranted (void)
 {
   NS_LOG_FUNCTION (this);
   m_isAccessRequestedForRts = false;
+  m_startTxop = Simulator::Now ();
   if (m_currentPacket == 0)
     {
       if (m_queue->IsEmpty () && !m_baManager->HasPackets ())
@@ -230,14 +231,13 @@ EdcaTxopN::NotifyAccessGranted (void)
             }
         }
     }
-  MacLowTransmissionParameters params;
-  params.DisableOverrideDurationId ();
+  m_currentParams.DisableOverrideDurationId ();
   if (m_currentHdr.GetAddr1 ().IsGroup ())
     {
-      params.DisableRts ();
-      params.DisableAck ();
-      params.DisableNextData ();
-      m_low->StartTransmission (m_currentPacket, &m_currentHdr, params, this);
+      m_currentParams.DisableRts ();
+      m_currentParams.DisableAck ();
+      m_currentParams.DisableNextData ();
+      m_low->StartTransmission (m_currentPacket, &m_currentHdr, m_currentParams, this);
       NS_LOG_DEBUG ("tx broadcast");
     }
   else if (m_currentHdr.GetType () == WIFI_MAC_CTL_BACKREQ)
@@ -248,35 +248,37 @@ EdcaTxopN::NotifyAccessGranted (void)
     {
       if (m_currentHdr.IsQosData () && m_currentHdr.IsQosBlockAck ())
         {
-          params.DisableAck ();
+          m_currentParams.DisableAck ();
         }
       else
         {
-          params.EnableAck ();
+          m_currentParams.EnableAck ();
         }
+      //With COMPRESSED_BLOCK_ACK fragmentation must be avoided.
       if (((m_currentHdr.IsQosData () && !m_currentHdr.IsQosAmsdu ())
            || (m_currentHdr.IsData () && !m_currentHdr.IsQosData ()))
           && (m_blockAckThreshold == 0 || m_blockAckType == BASIC_BLOCK_ACK)
           && NeedFragmentation ())
         {
-          //With COMPRESSED_BLOCK_ACK fragmentation must be avoided.
-          params.DisableRts ();
+          m_currentIsFragmented = true;
+          m_currentParams.DisableRts ();
           WifiMacHeader hdr;
           Ptr<Packet> fragment = GetFragmentPacket (&hdr);
           if (IsLastFragment ())
             {
               NS_LOG_DEBUG ("fragmenting last fragment size=" << fragment->GetSize ());
-              params.DisableNextData ();
+              m_currentParams.DisableNextData ();
             }
           else
             {
               NS_LOG_DEBUG ("fragmenting size=" << fragment->GetSize ());
-              params.EnableNextData (GetNextFragmentSize ());
+              m_currentParams.EnableNextData (GetNextFragmentSize ());
             }
-          m_low->StartTransmission (fragment, &hdr, params, this);
+          m_low->StartTransmission (fragment, &hdr, m_currentParams, this);
         }
       else
         {
+          m_currentIsFragmented = false;
           WifiMacHeader peekedHdr;
           Time tstamp;
           if (m_currentHdr.IsQosData ()
@@ -321,9 +323,8 @@ EdcaTxopN::NotifyAccessGranted (void)
                   NS_LOG_DEBUG ("tx unicast A-MSDU");
                 }
             }
-          params.DisableNextData ();
-          m_startTxop = Simulator::Now ();
-          m_low->StartTransmission (m_currentPacket, &m_currentHdr, params, this);
+          m_currentParams.DisableNextData ();
+          m_low->StartTransmission (m_currentPacket, &m_currentHdr, m_currentParams, this);
           if (!GetAmpduExist (m_currentHdr.GetAddr1 ()))
             {
               CompleteTx ();
@@ -492,8 +493,8 @@ void
 EdcaTxopN::GotAck (void)
 {
   NS_LOG_FUNCTION (this);
-  if (!NeedFragmentation ()
-      || IsLastFragment ()
+  if (!m_currentIsFragmented
+      || !m_currentParams.HasNextPacket ()
       || m_currentHdr.IsQosAmsdu ())
     {
       NS_LOG_DEBUG ("got ack. tx done.");
@@ -539,6 +540,18 @@ EdcaTxopN::GotAck (void)
   else
     {
       NS_LOG_DEBUG ("got ack. tx not done, size=" << m_currentPacket->GetSize ());
+      if (!HasTxop ())
+        {
+          if (m_currentHdr.IsQosData () && GetTxopLimit () > NanoSeconds (0))
+            {
+              m_txopTrace (m_startTxop, Simulator::Now () - m_startTxop);
+              m_cwTrace = m_dcf->GetCw ();
+              m_backoffTrace = m_rng->GetNext (0, m_dcf->GetCw ());
+              m_dcf->StartBackoffNow (m_backoffTrace);
+              m_fragmentNumber++;
+              RestartAccessIfNeeded ();
+            }
+        }
     }
 }
 
@@ -731,7 +744,7 @@ EdcaTxopN::RestartAccessIfNeeded (void)
 void
 EdcaTxopN::StartAccessIfNeeded (void)
 {
-  NS_LOG_FUNCTION (this);
+  //NS_LOG_FUNCTION (this);
   if (m_currentPacket == 0
       && (!m_queue->IsEmpty () || m_baManager->HasPackets ())
       && !m_dcf->IsAccessRequested ())
@@ -821,18 +834,17 @@ EdcaTxopN::StartNextPacket (void)
         }
       return;
     }
-  MacLowTransmissionParameters params;
-  params.DisableOverrideDurationId ();
-  params.DisableNextData ();
+  m_currentParams.DisableOverrideDurationId ();
+  m_currentParams.DisableNextData ();
   if (m_currentHdr.IsQosData () && m_currentHdr.IsQosBlockAck ())
     {
-      params.DisableAck ();
+      m_currentParams.DisableAck ();
     }
   else
     {
-      params.EnableAck ();
+      m_currentParams.EnableAck ();
     }
-  if (txopLimit >= GetLow ()->CalculateOverallTxTime (peekedPacket, &hdr, params))
+  if (txopLimit >= GetLow ()->CalculateOverallTxTime (peekedPacket, &hdr, m_currentParams))
     {
       NS_LOG_DEBUG ("start next packet");
       m_currentPacket = m_queue->DequeueByTidAndAddress (&hdr,
@@ -849,7 +861,7 @@ EdcaTxopN::StartNextPacket (void)
       m_currentHdr.SetNoRetry ();
       m_fragmentNumber = 0;
       VerifyBlockAck ();
-      GetLow ()->StartTransmission (m_currentPacket, &m_currentHdr, params, this);
+      GetLow ()->StartTransmission (m_currentPacket, &m_currentHdr, m_currentParams, this);
       if (!GetAmpduExist (m_currentHdr.GetAddr1 ()))
         {
           CompleteTx ();
@@ -880,7 +892,7 @@ EdcaTxopN::HasTxop (void) const
   NS_LOG_FUNCTION (this);
   WifiMacHeader hdr;
   Time tstamp;
-  if (!m_currentHdr.IsQosData ())
+  if (!m_currentHdr.IsQosData () || GetTxopLimit () == NanoSeconds (0))
     {
       return false;
     }
@@ -895,8 +907,7 @@ EdcaTxopN::HasTxop (void) const
       return false;
     }
 
-  MacLowTransmissionParameters params;
-  params.DisableOverrideDurationId ();
+  MacLowTransmissionParameters params = m_currentParams;
   if (m_currentHdr.IsQosData () && m_currentHdr.IsQosBlockAck ())
     {
       params.DisableAck ();
@@ -948,8 +959,180 @@ EdcaTxopN::NeedFragmentation (void) const
       //HT-delayed Block Ack agreement or when it is carried in an A-MPDU.
       return false;
     }
-  return m_stationManager->NeedFragmentation (m_currentHdr.GetAddr1 (), &m_currentHdr,
-                                              m_currentPacket);
+  bool needTxopFragmentation = false;
+  if (GetTxopLimit () > NanoSeconds (0) && m_currentHdr.IsData ())
+    {
+      needTxopFragmentation = (GetLow ()->CalculateOverallTxTime (m_currentPacket, &m_currentHdr, m_currentParams) > GetTxopLimit ());
+    }
+  return (needTxopFragmentation || m_stationManager->NeedFragmentation (m_currentHdr.GetAddr1 (), &m_currentHdr, m_currentPacket));
+}
+
+bool
+EdcaTxopN::IsTxopFragmentation () const
+{
+  if (GetTxopLimit () == NanoSeconds (0))
+    {
+      return false;
+    }
+  if (!m_stationManager->NeedFragmentation (m_currentHdr.GetAddr1 (), &m_currentHdr, m_currentPacket)
+      || (GetTxopFragmentSize () < m_stationManager->GetFragmentSize (m_currentHdr.GetAddr1 (), &m_currentHdr,m_currentPacket, 0)))
+    {
+      return true;
+    }
+  return false;
+}
+
+uint32_t
+EdcaTxopN::GetTxopFragmentSize () const
+{
+  Time txopDuration = GetTxopLimit ();
+  if (txopDuration == NanoSeconds (0))
+    {
+      return 0;
+    }
+  uint32_t maxSize = m_currentPacket->GetSize ();
+  uint32_t minSize = 0;
+  uint32_t size;
+  bool found = false;
+  while (!found)
+    {
+      size = (minSize + ((maxSize - minSize) / 2));
+      if (GetLow ()->CalculateOverallTxFragmentTime (m_currentPacket, &m_currentHdr, m_currentParams, size) > txopDuration)
+        {
+          maxSize = size;
+        }
+      else
+        {
+          minSize = size;
+        }
+      if (GetLow ()->CalculateOverallTxFragmentTime (m_currentPacket, &m_currentHdr, m_currentParams, size) <= txopDuration
+          && GetLow ()->CalculateOverallTxFragmentTime (m_currentPacket, &m_currentHdr, m_currentParams, size + 1) > txopDuration)
+        {
+          found = true;
+        }
+    }
+  NS_ASSERT (size != 0);
+  return size;
+}
+
+uint32_t
+EdcaTxopN::GetNTxopFragment () const
+{
+  uint32_t fragmentSize = GetTxopFragmentSize ();
+  uint32_t nFragments = (m_currentPacket->GetSize () / fragmentSize);
+  if ((m_currentPacket->GetSize () % fragmentSize) > 0)
+    {
+      nFragments++;
+    }
+  NS_LOG_DEBUG ("GetNTxopFragment returning " << nFragments);
+  return nFragments;
+}
+
+uint32_t
+EdcaTxopN::GetTxopFragmentOffset (uint32_t fragmentNumber) const
+{
+  if (fragmentNumber == 0)
+    {
+      return 0;
+    }
+  uint32_t offset;
+  uint32_t fragmentSize = GetTxopFragmentSize ();
+  uint32_t nFragments = (m_currentPacket->GetSize () / fragmentSize);
+ if ((m_currentPacket->GetSize () % fragmentSize) > 0)
+    {
+      nFragments++;
+    }
+  if (fragmentNumber < nFragments)
+    {
+      offset = (fragmentNumber * fragmentSize);
+    }
+  else
+    {
+      NS_ASSERT (false);
+    }
+  NS_LOG_DEBUG ("GetTxopFragmentOffset returning " << offset);
+  return offset;
+}
+
+uint32_t
+EdcaTxopN::GetNextTxopFragmentSize (uint32_t fragmentNumber) const
+{
+  NS_LOG_FUNCTION (this << fragmentNumber);
+  uint32_t fragmentSize = GetTxopFragmentSize ();
+  uint32_t nFragments = GetNTxopFragment ();
+  if (fragmentNumber >= nFragments)
+    {
+      NS_LOG_DEBUG ("GetNextTxopFragmentSize returning 0");
+      return 0;
+    }
+  if (fragmentNumber == nFragments - 1)
+    {
+      fragmentSize = (m_currentPacket->GetSize () - ((nFragments - 1) * fragmentSize));
+    }
+  NS_LOG_DEBUG ("GetNextTxopFragmentSize returning " << fragmentSize);
+  return fragmentSize;
+}
+
+uint32_t
+EdcaTxopN::GetFragmentSize (void) const
+{
+  uint32_t size;
+  if (IsTxopFragmentation ())
+    {
+      size = GetNextTxopFragmentSize (m_fragmentNumber);
+    }
+  else
+    {
+      size = m_stationManager->GetFragmentSize (m_currentHdr.GetAddr1 (), &m_currentHdr,m_currentPacket, m_fragmentNumber);
+    }
+  return size;
+}
+
+uint32_t
+EdcaTxopN::GetNextFragmentSize (void) const
+ {
+  uint32_t size;
+  if (IsTxopFragmentation ())
+    {
+      size = GetNextTxopFragmentSize (m_fragmentNumber + 1);
+    }
+  else
+    {
+      size = m_stationManager->GetFragmentSize (m_currentHdr.GetAddr1 (), &m_currentHdr,m_currentPacket, m_fragmentNumber + 1);
+    }
+  return size;
+}
+
+uint32_t
+EdcaTxopN::GetFragmentOffset (void) const
+{
+  uint32_t offset;
+  if (IsTxopFragmentation ())
+    {
+      offset = GetTxopFragmentOffset (m_fragmentNumber);
+    }
+  else
+    {
+      offset = m_stationManager->GetFragmentOffset (m_currentHdr.GetAddr1 (), &m_currentHdr,
+                                                    m_currentPacket, m_fragmentNumber);
+    }
+  return offset;
+}
+
+bool
+EdcaTxopN::IsLastFragment (void) const
+{
+  bool isLastFragment;
+  if (IsTxopFragmentation ())
+    {
+      isLastFragment = (m_fragmentNumber == GetNTxopFragment () - 1);
+    }
+  else
+    {
+      isLastFragment = m_stationManager->IsLastFragment (m_currentHdr.GetAddr1 (), &m_currentHdr,
+                                                         m_currentPacket, m_fragmentNumber);
+    }
+  return isLastFragment;
 }
 
 Ptr<Packet>
@@ -1195,19 +1378,18 @@ EdcaTxopN::SendBlockAckRequest (const Bar &bar)
   m_currentPacket = bar.bar;
   m_currentHdr = hdr;
 
-  MacLowTransmissionParameters params;
-  params.DisableRts ();
-  params.DisableNextData ();
-  params.DisableOverrideDurationId ();
+  m_currentParams.DisableRts ();
+  m_currentParams.DisableNextData ();
+  m_currentParams.DisableOverrideDurationId ();
   if (bar.immediate)
     {
       if (m_blockAckType == BASIC_BLOCK_ACK)
         {
-          params.EnableBasicBlockAck ();
+          m_currentParams.EnableBasicBlockAck ();
         }
       else if (m_blockAckType == COMPRESSED_BLOCK_ACK)
         {
-          params.EnableCompressedBlockAck ();
+          m_currentParams.EnableCompressedBlockAck ();
         }
       else if (m_blockAckType == MULTI_TID_BLOCK_ACK)
         {
@@ -1217,9 +1399,9 @@ EdcaTxopN::SendBlockAckRequest (const Bar &bar)
   else
     {
       //Delayed block ack
-      params.EnableAck ();
+      m_currentParams.EnableAck ();
     }
-  m_low->StartTransmission (m_currentPacket, &m_currentHdr, params, this);
+  m_low->StartTransmission (m_currentPacket, &m_currentHdr, m_currentParams, this);
 }
 
 void
@@ -1307,13 +1489,12 @@ EdcaTxopN::SendAddBaRequest (Mac48Address dest, uint8_t tid, uint16_t startSeq,
   m_currentHdr.SetNoMoreFragments ();
   m_currentHdr.SetNoRetry ();
 
-  MacLowTransmissionParameters params;
-  params.EnableAck ();
-  params.DisableRts ();
-  params.DisableNextData ();
-  params.DisableOverrideDurationId ();
+  m_currentParams.EnableAck ();
+  m_currentParams.DisableRts ();
+  m_currentParams.DisableNextData ();
+  m_currentParams.DisableOverrideDurationId ();
 
-  m_low->StartTransmission (m_currentPacket, &m_currentHdr, params, this);
+  m_low->StartTransmission (m_currentPacket, &m_currentHdr, m_currentParams, this);
 }
 
 void

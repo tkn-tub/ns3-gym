@@ -21,6 +21,7 @@
 #ifndef DCA_TXOP_H
 #define DCA_TXOP_H
 
+#include "mac-low.h"
 #include "wifi-mac-header.h"
 #include "wifi-remote-station-manager.h"
 
@@ -29,7 +30,6 @@ namespace ns3 {
 class DcfState;
 class DcfManager;
 class WifiMacQueue;
-class MacLow;
 class MacTxMiddle;
 class RandomStream;
 class CtrlBAckResponseHeader;
@@ -387,6 +387,7 @@ protected:
 
   Ptr<const Packet> m_currentPacket;
   WifiMacHeader m_currentHdr;
+  MacLowTransmissionParameters m_currentParams;
   uint8_t m_fragmentNumber;
 };
 
