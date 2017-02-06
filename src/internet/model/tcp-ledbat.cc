@@ -40,12 +40,12 @@ TcpLedbat::GetTypeId (void)
                    TimeValue (MilliSeconds (100)),
                    MakeTimeAccessor (&TcpLedbat::m_target),
                    MakeTimeChecker ())
-    .AddAttribute ("baseHistoryLen",
+    .AddAttribute ("BaseHistoryLen",
                    "Number of Base delay samples",
                    UintegerValue (10),
                    MakeUintegerAccessor (&TcpLedbat::m_baseHistoLen),
                    MakeUintegerChecker<uint32_t> ())
-    .AddAttribute ("noiseFilterLen",
+    .AddAttribute ("NoiseFilterLen",
                    "Number of Current delay samples",
                    UintegerValue (4),
                    MakeUintegerAccessor (&TcpLedbat::m_noiseFilterLen),
