@@ -453,7 +453,7 @@ public:
   Time CalculateOverallTxTime (Ptr<const Packet> packet,
                                const WifiMacHeader* hdr,
                                const MacLowTransmissionParameters &params) const;
-    
+
   Time CalculateOverallTxFragmentTime (Ptr<const Packet> packet,
                                        const WifiMacHeader* hdr,
                                        const MacLowTransmissionParameters& params,

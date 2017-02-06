@@ -463,7 +463,7 @@ private:
    *         false otherwise.
    */
   bool HasTxop (void) const;
-  
+
   /**
    * Calculate the size of the next fragment.
    *
@@ -489,7 +489,7 @@ private:
    *         false otherwise.
    */
   bool IsLastFragment (void) const;
-  
+
   /**
    * Check if the current packet is fragmented because of an exceeded TXOP duration.
    *
