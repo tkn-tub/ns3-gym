@@ -159,6 +159,10 @@ TcpSocketBase::GetTypeId (void)
                      "TCP Congestion machine state",
                      MakeTraceSourceAccessor (&TcpSocketBase::m_congStateTrace),
                      "ns3::TcpSocketState::TcpCongStatesTracedValueCallback")
+    .AddTraceSource ("AdvWND",
+                     "Advertised Window Size",
+                     MakeTraceSourceAccessor (&TcpSocketBase::m_advWnd),
+                     "ns3::TracedValueCallback::Uint32")
     .AddTraceSource ("RWND",
                      "Remote side's flow control window",
                      MakeTraceSourceAccessor (&TcpSocketBase::m_rWnd),
@@ -2953,8 +2957,22 @@ uint16_t
 TcpSocketBase::AdvertisedWindowSize (bool scale) const
 {
   NS_LOG_FUNCTION (this << scale);
-  uint32_t w = m_rxBuffer->MaxBufferSize ();
+  uint32_t w = (m_rxBuffer->MaxRxSequence () > m_rxBuffer->NextRxSequence ()) ?
+    m_rxBuffer->MaxRxSequence () - m_rxBuffer->NextRxSequence () : 0;
 
+  // We don't want to advertise 0 after a FIN is received. So, we just use
+  // the previous value of the advWnd.
+  if (m_rxBuffer->Finished ())
+    {
+      w = m_advWnd;
+    }
+
+  // Ugly, but we are not modifying the state, that variable
+  // is used only for tracing purpose.
+  if (w != m_advWnd)
+    {
+      const_cast<TcpSocketBase*> (this)->m_advWnd = w;
+    }
   if (scale)
     {
       w >>= m_rcvWindShift;
@@ -2983,6 +3001,26 @@ TcpSocketBase::ReceivedData (Ptr<Packet> p, const TcpHeader& tcpHeader)
       SendEmptyPacket (TcpHeader::ACK);
       return;
     }
+  // Notify app to receive if necessary
+  if (expectedSeq < m_rxBuffer->NextRxSequence ())
+    { // NextRxSeq advanced, we have something to send to the app
+      if (!m_shutdownRecv)
+        {
+          NotifyDataRecv ();
+        }
+      // Handle exceptions
+      if (m_closeNotified)
+        {
+          NS_LOG_WARN ("Why TCP " << this << " got data after close notification?");
+        }
+      // If we received FIN before and now completed all "holes" in rx buffer,
+      // invoke peer close procedure
+      if (m_rxBuffer->Finished () && (tcpHeader.GetFlags () & TcpHeader::FIN) == 0)
+        {
+          DoPeerClose ();
+          return;
+        }
+    }
   // Now send a new ACK packet acknowledging all received and delivered data
   if (m_rxBuffer->Size () > m_rxBuffer->Available () || m_rxBuffer->NextRxSequence () > expectedSeq + p->GetSize ())
     { // A gap exists in the buffer, or we filled a gap: Always ACK
@@ -3002,25 +3040,6 @@ TcpSocketBase::ReceivedData (Ptr<Packet> p, const TcpHeader& tcpHeader)
                                                &TcpSocketBase::DelAckTimeout, this);
           NS_LOG_LOGIC (this << " scheduled delayed ACK at " <<
                         (Simulator::Now () + Simulator::GetDelayLeft (m_delAckEvent)).GetSeconds ());
-        }
-    }
-  // Notify app to receive if necessary
-  if (expectedSeq < m_rxBuffer->NextRxSequence ())
-    { // NextRxSeq advanced, we have something to send to the app
-      if (!m_shutdownRecv)
-        {
-          NotifyDataRecv ();
-        }
-      // Handle exceptions
-      if (m_closeNotified)
-        {
-          NS_LOG_WARN ("Why TCP " << this << " got data after close notification?");
-        }
-      // If we received FIN before and now completed all "holes" in rx buffer,
-      // invoke peer close procedure
-      if (m_rxBuffer->Finished () && (tcpHeader.GetFlags () & TcpHeader::FIN) == 0)
-        {
-          DoPeerClose ();
         }
     }
 }

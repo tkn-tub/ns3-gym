@@ -62,6 +62,7 @@ Bugs fixed
 - Bug 2547 - dead assignments on various tcp congestion controls
 - Bug 2551 - wifi preamble should be part of TXVECTOR
 - Bug 2552 - Remove code duplication between Yans and Spectrum
+- Bug 2559 - TCP advertised window still incorrect
 - Bug 2561 - TCP can not use Connect after a BindToNetDevice
 - Bug 2563 - Modify pybindgen version check to >= minimum version required
 - Bug 2564 - Simulation crashes when CtsTimeout is triggered for A-MPDU transmissions

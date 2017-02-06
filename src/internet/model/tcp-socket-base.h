@@ -1122,6 +1122,7 @@ protected:
   // Window management
   uint16_t              m_maxWinSize;  //!< Maximum window size to advertise
   TracedValue<uint32_t> m_rWnd;        //!< Receiver window (RCV.WND in RFC793)
+  TracedValue<uint32_t> m_advWnd;      //!< Advertised Window size
   TracedValue<SequenceNumber32> m_highRxMark;     //!< Highest seqno received
   SequenceNumber32 m_highTxAck;                   //!< Highest ack sent
   TracedValue<SequenceNumber32> m_highRxAckMark;  //!< Highest ack received
