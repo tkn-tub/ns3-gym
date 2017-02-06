@@ -141,7 +141,7 @@ TcpLedbatIncrementTest::DoRun ()
 
   Ptr<TcpLedbat> cong = CreateObject <TcpLedbat> ();
   cong->SetAttribute ("SSParam", StringValue ("no"));
-  cong->SetAttribute ("noiseFilterLen", UintegerValue (1));
+  cong->SetAttribute ("NoiseFilterLen", UintegerValue (1));
 
   m_state->m_rcvTimestampValue = 2;
   m_state->m_rcvTimestampEchoReply = 1;
@@ -208,7 +208,7 @@ TcpLedbatDecrementTest::DoRun ()
 
   Ptr<TcpLedbat> cong = CreateObject <TcpLedbat> ();
   cong->SetAttribute ("SSParam", StringValue ("no"));
-  cong->SetAttribute ("noiseFilterLen", UintegerValue (1));
+  cong->SetAttribute ("NoiseFilterLen", UintegerValue (1));
 
   m_state->m_rcvTimestampValue = 2;
   m_state->m_rcvTimestampEchoReply = 1;
