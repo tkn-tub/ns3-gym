@@ -114,7 +114,7 @@ TcpRxBuffer::MaxRxSequence (void) const
     { // No data allowed beyond FIN
       return m_finSeq;
     }
-  else if (m_data.size ())
+  else if (m_data.size () && m_nextRxSeq > m_data.begin ()->first)
     { // No data allowed beyond Rx window allowed
       return m_data.begin ()->first + SequenceNumber32 (m_maxBuffer);
     }
