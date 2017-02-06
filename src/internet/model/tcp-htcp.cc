@@ -118,7 +118,7 @@ Ptr<TcpCongestionOps> TcpHtcp::Fork (void)
 }
 
 void TcpHtcp::CongestionAvoidance (Ptr<TcpSocketState> tcb,
-                                uint32_t segmentsAcked)
+                                   uint32_t segmentsAcked)
 {
   NS_LOG_FUNCTION (this << tcb << segmentsAcked);
   if (segmentsAcked > 0)
@@ -128,7 +128,7 @@ void TcpHtcp::CongestionAvoidance (Ptr<TcpSocketState> tcb,
       adder = std::max (1.0, adder);
       tcb->m_cWnd += static_cast<uint32_t> (adder);
       NS_LOG_INFO ("In CongAvoid, updated to cwnd " << tcb->m_cWnd
-                                         << " ssthresh " << tcb->m_ssThresh);
+                                                    << " ssthresh " << tcb->m_ssThresh);
     }
 }
 
@@ -147,7 +147,7 @@ void TcpHtcp::UpdateAlpha (void)
       double diffSec = diff.GetSeconds ();
       // alpha=1+10(Delta-Delta_L)+[0.5(Delta-Delta_L)]^2  (seconds)
       // from Leith and Shorten H-TCP paper
-      m_alpha = (1 + 10 * diffSec + 0.25 * (diffSec * diffSec));   
+      m_alpha = (1 + 10 * diffSec + 0.25 * (diffSec * diffSec));
     }
   m_alpha = 2 * (1 - m_beta) * m_alpha;
   if (m_alpha < 1)
@@ -160,26 +160,23 @@ void TcpHtcp::UpdateAlpha (void)
 void TcpHtcp::UpdateBeta (void)
 {
   NS_LOG_FUNCTION (this);
-  if (m_lastThroughput > 0)
+
+  // Default value for m_beta
+  m_beta = m_defaultBackoff;
+
+  if (m_throughput > m_lastThroughput && m_lastThroughput > 0)
     {
-      if (((m_throughput - m_lastThroughput) / m_lastThroughput) > m_throughputRatio)
-        {
-          m_beta = m_defaultBackoff;
-        }
-      else
+      uint32_t diff = m_throughput - m_lastThroughput;
+      if (diff / m_lastThroughput <= m_throughputRatio)
         {
           m_beta = m_minRtt.GetDouble () / m_maxRtt.GetDouble ();
         }
-    }
-  else
-    {
-      m_beta = m_defaultBackoff;
     }
   NS_LOG_DEBUG ("Updated m_beta: " << m_beta);
 }
 
 uint32_t TcpHtcp::GetSsThresh (Ptr<const TcpSocketState> tcb,
-                            uint32_t bytesInFlight)
+                               uint32_t bytesInFlight)
 {
   NS_LOG_FUNCTION (this << tcb << bytesInFlight);
 
@@ -201,7 +198,7 @@ uint32_t TcpHtcp::GetSsThresh (Ptr<const TcpSocketState> tcb,
 }
 
 void TcpHtcp::PktsAcked (Ptr<TcpSocketState> tcb, uint32_t segmentsAcked,
-                      const Time &rtt)
+                         const Time &rtt)
 {
 
   NS_LOG_FUNCTION (this << tcb << segmentsAcked << rtt);
