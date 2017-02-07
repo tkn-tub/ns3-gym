@@ -992,7 +992,7 @@ EdcaTxopN::GetTxopFragmentSize () const
     }
   uint32_t maxSize = m_currentPacket->GetSize ();
   uint32_t minSize = 0;
-  uint32_t size;
+  uint32_t size = 0;
   bool found = false;
   while (!found)
     {
@@ -1035,7 +1035,7 @@ EdcaTxopN::GetTxopFragmentOffset (uint32_t fragmentNumber) const
     {
       return 0;
     }
-  uint32_t offset;
+  uint32_t offset = 0;
   uint32_t fragmentSize = GetTxopFragmentSize ();
   uint32_t nFragments = (m_currentPacket->GetSize () / fragmentSize);
   if ((m_currentPacket->GetSize () % fragmentSize) > 0)
