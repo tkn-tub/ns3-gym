@@ -86,6 +86,7 @@ Bugs fixed
 - Bug 2627 - Ipv6RawSocket does not honor the bound interface when sending packets
 - Bug 2628 - Simulation crashes because of an out of range TID
 - Bug 2629 - Assert failure in MinstrelHtWifiManager::GetLowestIndex
+- Bug 2655 - A-MPDU simulation using TCP sometimes fails with message "Packet has no Traffic ID"
 
 Known issues
 ------------
