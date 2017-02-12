@@ -38,7 +38,6 @@
 //  *    *
 //  |    |
 //  n1   n2
-//
 
 using namespace ns3;
 
@@ -139,12 +138,13 @@ int main (int argc, char *argv[])
   apNodeInterface = address.Assign (apDevice);
 
   //Setting applications
-  UdpServerHelper myServer (9);
-  ApplicationContainer serverApp = myServer.Install (wifiStaNode.Get (0));
+  uint16_t port = 9;
+  UdpServerHelper server (port);
+  ApplicationContainer serverApp = server.Install (wifiStaNode.Get (0));
   serverApp.Start (Seconds (0.0));
   serverApp.Stop (Seconds (simulationTime));
 
-  UdpClientHelper client (staNodeInterface.GetAddress (0), 9);
+  UdpClientHelper client (staNodeInterface.GetAddress (0), port);
   client.SetAttribute ("MaxPackets", UintegerValue (4294967295u));
   client.SetAttribute ("Interval", TimeValue (Time ("0.00002"))); //packets/s
   client.SetAttribute ("PacketSize", UintegerValue (1472)); //bytes

@@ -18,7 +18,6 @@
  *
  */
 
-//
 // This script configures two nodes on an 802.11b physical layer, with
 // 802.11b NICs in adhoc mode. One of the nodes generates on-off traffic
 // destined to the other node.
@@ -45,7 +44,6 @@
 // When you are done, you will notice four trace files in your directory:
 // two for the remaining energy on each node and two for the state transitions
 // of each node.
-//
 
 #include "ns3/core-module.h"
 #include "ns3/mobility-module.h"
@@ -80,8 +78,6 @@ void PhyStateTrace (std::string context, Time start, Time duration, enum WifiPhy
   f << Simulator::Now ().GetSeconds () << "    state=" << state << " start=" << start << " duration=" << duration << std::endl;
 }
 
-
-
 int main (int argc, char *argv[])
 {
   std::string dataRate = "1Mbps";
@@ -97,9 +93,7 @@ int main (int argc, char *argv[])
   double txCurrent = 0.380; // Ampere
   bool verbose = false;
 
-
   CommandLine cmd;
-
   cmd.AddValue ("dataRate", "Data rate", dataRate);
   cmd.AddValue ("packetSize", "size of application packet sent", packetSize);
   cmd.AddValue ("duration", "duration (seconds) of the experiment", duration);
@@ -112,9 +106,7 @@ int main (int argc, char *argv[])
   cmd.AddValue ("idleCurrent", "The radio Idle current in Ampere", idleCurrent);
   cmd.AddValue ("txCurrent", "The radio Tx current in Ampere", txCurrent);
   cmd.AddValue ("verbose", "turn on all WifiNetDevice log components", verbose);
-
   cmd.Parse (argc, argv);
-
 
   NodeContainer c;
   c.Create (2);
@@ -236,4 +228,3 @@ int main (int argc, char *argv[])
 
   return 0;
 }
-

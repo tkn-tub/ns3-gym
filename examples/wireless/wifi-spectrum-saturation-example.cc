@@ -272,7 +272,6 @@ int main (int argc, char *argv[])
           NS_FATAL_ERROR ("Unsupported WiFi type " << wifiType);
         }
 
-
       WifiHelper wifi;
       wifi.SetStandard (WIFI_PHY_STANDARD_80211n_5GHZ);
       WifiMacHelper mac;
@@ -657,7 +656,6 @@ int main (int argc, char *argv[])
       stack.Install (wifiStaNode);
 
       Ipv4AddressHelper address;
-
       address.SetBase ("192.168.1.0", "255.255.255.0");
       Ipv4InterfaceContainer staNodeInterface;
       Ipv4InterfaceContainer apNodeInterface;
@@ -666,19 +664,17 @@ int main (int argc, char *argv[])
       apNodeInterface = address.Assign (apDevice);
 
       /* Setting applications */
-      ApplicationContainer serverApp, sinkApp;
-      //UDP flow
-      UdpServerHelper myServer (9);
-      serverApp = myServer.Install (wifiStaNode.Get (0));
+      uint16_t port = 9;
+      UdpServerHelper server (port);
+      ApplicationContainer serverApp = server.Install (wifiStaNode.Get (0));
       serverApp.Start (Seconds (0.0));
       serverApp.Stop (Seconds (simulationTime + 1));
 
-      UdpClientHelper myClient (staNodeInterface.GetAddress (0), 9);
-      myClient.SetAttribute ("MaxPackets", UintegerValue (4294967295u));
-      myClient.SetAttribute ("Interval", TimeValue (Time ("0.00002"))); //packets/s
-      myClient.SetAttribute ("PacketSize", UintegerValue (payloadSize));
-
-      ApplicationContainer clientApp = myClient.Install (wifiApNode.Get (0));
+      UdpClientHelper client (staNodeInterface.GetAddress (0), port);
+      client.SetAttribute ("MaxPackets", UintegerValue (4294967295u));
+      client.SetAttribute ("Interval", TimeValue (Time ("0.00002"))); //packets/s
+      client.SetAttribute ("PacketSize", UintegerValue (payloadSize));
+      ApplicationContainer clientApp = client.Install (wifiApNode.Get (0));
       clientApp.Start (Seconds (1.0));
       clientApp.Stop (Seconds (simulationTime + 1));
 

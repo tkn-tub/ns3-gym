@@ -135,7 +135,6 @@ int main (int argc, char *argv[])
   stack.Install (wifiStaNodes);
 
   Ipv4AddressHelper address;
-
   address.SetBase ("192.168.1.0", "255.255.255.0");
   Ipv4InterfaceContainer StaInterface;
   StaInterface = address.Assign (staDevices);
@@ -143,18 +142,19 @@ int main (int argc, char *argv[])
   ApInterface = address.Assign (apDevice);
 
   // Setting applications
-  UdpServerHelper myServer (9);
-  ApplicationContainer serverApp = myServer.Install (wifiApNode);
+  uint16_t port = 9;
+  UdpServerHelper server (port);
+  ApplicationContainer serverApp = server.Install (wifiApNode);
   serverApp.Start (Seconds (0.0));
   serverApp.Stop (Seconds (simulationTime + 1));
 
-  UdpClientHelper myClient (ApInterface.GetAddress (0), 9);
-  myClient.SetAttribute ("MaxPackets", UintegerValue (4294967295u));
-  myClient.SetAttribute ("Interval", TimeValue (Time ("0.00002"))); //packets/s
-  myClient.SetAttribute ("PacketSize", UintegerValue (payloadSize));
+  UdpClientHelper client (ApInterface.GetAddress (0), port);
+  client.SetAttribute ("MaxPackets", UintegerValue (4294967295u));
+  client.SetAttribute ("Interval", TimeValue (Time ("0.00002"))); //packets/s
+  client.SetAttribute ("PacketSize", UintegerValue (payloadSize));
 
   // Saturated UDP traffic from stations to AP
-  ApplicationContainer clientApp1 = myClient.Install (wifiStaNodes);
+  ApplicationContainer clientApp1 = client.Install (wifiStaNodes);
   clientApp1.Start (Seconds (1.0));
   clientApp1.Stop (Seconds (simulationTime + 1));
 

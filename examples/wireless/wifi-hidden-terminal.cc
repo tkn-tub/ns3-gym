@@ -135,9 +135,6 @@ void experiment (bool enableCtsRts)
   echoClientHelper.SetAttribute ("StartTime", TimeValue (Seconds (0.006)));
   pingApps.Add (echoClientHelper.Install (nodes.Get (2)));
 
-
-
-
   // 8. Install FlowMonitor on all nodes
   FlowMonitorHelper flowmon;
   Ptr<FlowMonitor> monitor = flowmon.InstallAll ();

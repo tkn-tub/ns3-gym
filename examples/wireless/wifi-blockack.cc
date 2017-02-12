@@ -122,7 +122,6 @@ int main (int argc, char * argv[])
   /* Setting applications */
 
   uint16_t port = 9;
-
   DataRate dataRate ("1Mb/s");
   OnOffHelper onOff ("ns3::UdpSocketFactory", Address (InetSocketAddress (apIf.GetAddress (0), port)));
   onOff.SetAttribute ("DataRate", DataRateValue (dataRate));

@@ -17,7 +17,6 @@
  *
  */
 
-//
 // This script configures two nodes on an 802.11b physical layer, with
 // 802.11b NICs in infrastructure mode, and by default, the station sends
 // one packet of 1000 (application) bytes to the access point.  The
@@ -83,7 +82,6 @@ static void GenerateTraffic (Ptr<Socket> socket, uint32_t pktSize,
       socket->Close ();
     }
 }
-
 
 int main (int argc, char *argv[])
 {
@@ -204,4 +202,3 @@ int main (int argc, char *argv[])
 
   return 0;
 }
-

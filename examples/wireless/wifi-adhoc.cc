@@ -237,10 +237,8 @@ int main (int argc, char *argv[])
 
   gnuplot.GenerateOutput (std::cout);
 
-
   gnuplot = Gnuplot ("rate-control.png");
   wifi.SetStandard (WIFI_PHY_STANDARD_holland);
-
 
   NS_LOG_DEBUG ("arf");
   experiment = Experiment ("arf");

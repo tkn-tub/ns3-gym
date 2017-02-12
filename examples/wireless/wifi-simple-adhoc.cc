@@ -17,7 +17,6 @@
  *
  */
 
-//
 // This script configures two nodes on an 802.11b physical layer, with
 // 802.11b NICs in adhoc mode, and by default, sends one packet of 1000
 // (application) bytes to the other node.  The physical layer is configured
@@ -82,7 +81,6 @@ static void GenerateTraffic (Ptr<Socket> socket, uint32_t pktSize,
       socket->Close ();
     }
 }
-
 
 int main (int argc, char *argv[])
 {
@@ -192,4 +190,3 @@ int main (int argc, char *argv[])
 
   return 0;
 }
-

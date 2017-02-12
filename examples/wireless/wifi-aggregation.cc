@@ -82,10 +82,10 @@ int main (int argc, char *argv[])
 
   Config::SetDefault ("ns3::WifiRemoteStationManager::RtsCtsThreshold", enableRts ? StringValue ("0") : StringValue ("999999"));
 
-  NodeContainer wifiStaNode;
-  wifiStaNode.Create (4);
-  NodeContainer wifiApNode;
-  wifiApNode.Create (4);
+  NodeContainer wifiStaNodes;
+  wifiStaNodes.Create (4);
+  NodeContainer wifiApNodes;
+  wifiApNodes.Create (4);
 
   YansWifiChannelHelper channel = YansWifiChannelHelper::Default ();
   YansWifiPhyHelper phy = YansWifiPhyHelper::Default ();
@@ -105,12 +105,12 @@ int main (int argc, char *argv[])
   phy.Set ("ChannelNumber", UintegerValue (36));
   mac.SetType ("ns3::StaWifiMac",
                "Ssid", SsidValue (ssid));
-  staDeviceA = wifi.Install (phy, mac, wifiStaNode.Get (0));
+  staDeviceA = wifi.Install (phy, mac, wifiStaNodes.Get (0));
 
   mac.SetType ("ns3::ApWifiMac",
                "Ssid", SsidValue (ssid),
                "BeaconGeneration", BooleanValue (true));
-  apDeviceA = wifi.Install (phy, mac, wifiApNode.Get (0));
+  apDeviceA = wifi.Install (phy, mac, wifiApNodes.Get (0));
 
   //Network B
   ssid = Ssid ("network-B");
@@ -119,12 +119,12 @@ int main (int argc, char *argv[])
                "Ssid", SsidValue (ssid),
                "BE_MaxAmpduSize", UintegerValue (0)); //Disable A-MPDU
 
-  staDeviceB = wifi.Install (phy, mac, wifiStaNode.Get (1));
+  staDeviceB = wifi.Install (phy, mac, wifiStaNodes.Get (1));
 
   mac.SetType ("ns3::ApWifiMac",
                "Ssid", SsidValue (ssid),
                "BeaconGeneration", BooleanValue (true));
-  apDeviceB = wifi.Install (phy, mac, wifiApNode.Get (1));
+  apDeviceB = wifi.Install (phy, mac, wifiApNodes.Get (1));
 
   //Network C
   ssid = Ssid ("network-C");
@@ -134,12 +134,12 @@ int main (int argc, char *argv[])
                "BE_MaxAmpduSize", UintegerValue (0), //Disable A-MPDU
                "BE_MaxAmsduSize", UintegerValue (7935)); //Enable A-MSDU with the highest maximum size allowed by the standard (7935 bytes)
 
-  staDeviceC = wifi.Install (phy, mac, wifiStaNode.Get (2));
+  staDeviceC = wifi.Install (phy, mac, wifiStaNodes.Get (2));
 
   mac.SetType ("ns3::ApWifiMac",
                "Ssid", SsidValue (ssid),
                "BeaconGeneration", BooleanValue (true));
-  apDeviceC = wifi.Install (phy, mac, wifiApNode.Get (2));
+  apDeviceC = wifi.Install (phy, mac, wifiApNodes.Get (2));
 
   //Network D
   ssid = Ssid ("network-D");
@@ -149,12 +149,12 @@ int main (int argc, char *argv[])
                "BE_MaxAmpduSize", UintegerValue (32768), //Enable A-MPDU with a smaller size than the default one
                "BE_MaxAmsduSize", UintegerValue (3839)); //Enable A-MSDU with the smallest maximum size allowed by the standard (3839 bytes)
 
-  staDeviceD = wifi.Install (phy, mac, wifiStaNode.Get (3));
+  staDeviceD = wifi.Install (phy, mac, wifiStaNodes.Get (3));
 
   mac.SetType ("ns3::ApWifiMac",
                "Ssid", SsidValue (ssid),
                "BeaconGeneration", BooleanValue (true));
-  apDeviceD = wifi.Install (phy, mac, wifiApNode.Get (3));
+  apDeviceD = wifi.Install (phy, mac, wifiApNodes.Get (3));
 
   /* Setting mobility model */
   MobilityHelper mobility;
@@ -173,16 +173,15 @@ int main (int argc, char *argv[])
   positionAlloc->Add (Vector (30 + distance, 0.0, 0.0));
 
   mobility.SetPositionAllocator (positionAlloc);
-  mobility.Install (wifiApNode);
-  mobility.Install (wifiStaNode);
+  mobility.Install (wifiApNodes);
+  mobility.Install (wifiStaNodes);
 
   /* Internet stack */
   InternetStackHelper stack;
-  stack.Install (wifiApNode);
-  stack.Install (wifiStaNode);
+  stack.Install (wifiApNodes);
+  stack.Install (wifiStaNodes);
 
   Ipv4AddressHelper address;
-
   address.SetBase ("192.168.1.0", "255.255.255.0");
   Ipv4InterfaceContainer StaInterfaceA;
   StaInterfaceA = address.Assign (staDeviceA);
@@ -208,59 +207,60 @@ int main (int argc, char *argv[])
   ApInterfaceD = address.Assign (apDeviceD);
 
   /* Setting applications */
-  UdpServerHelper myServerA (9);
-  ApplicationContainer serverAppA = myServerA.Install (wifiStaNode.Get (0));
+  uint16_t port = 9;
+  UdpServerHelper serverA (port);
+  ApplicationContainer serverAppA = serverA.Install (wifiStaNodes.Get (0));
   serverAppA.Start (Seconds (0.0));
   serverAppA.Stop (Seconds (simulationTime + 1));
 
-  UdpClientHelper myClientA (StaInterfaceA.GetAddress (0), 9);
-  myClientA.SetAttribute ("MaxPackets", UintegerValue (4294967295u));
-  myClientA.SetAttribute ("Interval", TimeValue (Time ("0.00002"))); //packets/s
-  myClientA.SetAttribute ("PacketSize", UintegerValue (payloadSize));
+  UdpClientHelper clientA (StaInterfaceA.GetAddress (0), port);
+  clientA.SetAttribute ("MaxPackets", UintegerValue (4294967295u));
+  clientA.SetAttribute ("Interval", TimeValue (Time ("0.00002"))); //packets/s
+  clientA.SetAttribute ("PacketSize", UintegerValue (payloadSize));
 
-  ApplicationContainer clientAppA = myClientA.Install (wifiApNode.Get (0));
+  ApplicationContainer clientAppA = clientA.Install (wifiApNodes.Get (0));
   clientAppA.Start (Seconds (1.0));
   clientAppA.Stop (Seconds (simulationTime + 1));
 
-  UdpServerHelper myServerB (9);
-  ApplicationContainer serverAppB = myServerB.Install (wifiStaNode.Get (1));
+  UdpServerHelper serverB (port);
+  ApplicationContainer serverAppB = serverB.Install (wifiStaNodes.Get (1));
   serverAppB.Start (Seconds (0.0));
   serverAppB.Stop (Seconds (simulationTime + 1));
 
-  UdpClientHelper myClientB (StaInterfaceB.GetAddress (0), 9);
-  myClientB.SetAttribute ("MaxPackets", UintegerValue (4294967295u));
-  myClientB.SetAttribute ("Interval", TimeValue (Time ("0.00002"))); //packets/s
-  myClientB.SetAttribute ("PacketSize", UintegerValue (payloadSize));
+  UdpClientHelper clientB (StaInterfaceB.GetAddress (0), port);
+  clientB.SetAttribute ("MaxPackets", UintegerValue (4294967295u));
+  clientB.SetAttribute ("Interval", TimeValue (Time ("0.00002"))); //packets/s
+  clientB.SetAttribute ("PacketSize", UintegerValue (payloadSize));
 
-  ApplicationContainer clientAppB = myClientB.Install (wifiApNode.Get (1));
+  ApplicationContainer clientAppB = clientB.Install (wifiApNodes.Get (1));
   clientAppB.Start (Seconds (1.0));
   clientAppB.Stop (Seconds (simulationTime + 1));
 
-  UdpServerHelper myServerC (9);
-  ApplicationContainer serverAppC = myServerC.Install (wifiStaNode.Get (2));
+  UdpServerHelper serverC (port);
+  ApplicationContainer serverAppC = serverC.Install (wifiStaNodes.Get (2));
   serverAppC.Start (Seconds (0.0));
   serverAppC.Stop (Seconds (simulationTime + 1));
 
-  UdpClientHelper myClientC (StaInterfaceC.GetAddress (0), 9);
-  myClientC.SetAttribute ("MaxPackets", UintegerValue (4294967295u));
-  myClientC.SetAttribute ("Interval", TimeValue (Time ("0.00002"))); //packets/s
-  myClientC.SetAttribute ("PacketSize", UintegerValue (payloadSize));
+  UdpClientHelper clientC (StaInterfaceC.GetAddress (0), port);
+  clientC.SetAttribute ("MaxPackets", UintegerValue (4294967295u));
+  clientC.SetAttribute ("Interval", TimeValue (Time ("0.00002"))); //packets/s
+  clientC.SetAttribute ("PacketSize", UintegerValue (payloadSize));
 
-  ApplicationContainer clientAppC = myClientC.Install (wifiApNode.Get (2));
+  ApplicationContainer clientAppC = clientC.Install (wifiApNodes.Get (2));
   clientAppC.Start (Seconds (1.0));
   clientAppC.Stop (Seconds (simulationTime + 1));
 
-  UdpServerHelper myServerD (9);
-  ApplicationContainer serverAppD = myServerD.Install (wifiStaNode.Get (3));
+  UdpServerHelper serverD (port);
+  ApplicationContainer serverAppD = serverD.Install (wifiStaNodes.Get (3));
   serverAppD.Start (Seconds (0.0));
   serverAppD.Stop (Seconds (simulationTime + 1));
 
-  UdpClientHelper myClientD (StaInterfaceD.GetAddress (0), 9);
-  myClientD.SetAttribute ("MaxPackets", UintegerValue (4294967295u));
-  myClientD.SetAttribute ("Interval", TimeValue (Time ("0.00002"))); //packets/s
-  myClientD.SetAttribute ("PacketSize", UintegerValue (payloadSize));
+  UdpClientHelper clientD (StaInterfaceD.GetAddress (0), port);
+  clientD.SetAttribute ("MaxPackets", UintegerValue (4294967295u));
+  clientD.SetAttribute ("Interval", TimeValue (Time ("0.00002"))); //packets/s
+  clientD.SetAttribute ("PacketSize", UintegerValue (payloadSize));
 
-  ApplicationContainer clientAppD = myClientD.Install (wifiApNode.Get (3));
+  ApplicationContainer clientAppD = clientD.Install (wifiApNodes.Get (3));
   clientAppD.Start (Seconds (1.0));
   clientAppD.Stop (Seconds (simulationTime + 1));
 
@@ -281,7 +281,7 @@ int main (int argc, char *argv[])
   Simulator::Destroy ();
 
   /* Show results */
-  uint32_t totalPacketsThrough = DynamicCast<UdpServer> (serverAppA.Get (0))->GetReceived ();
+  uint64_t totalPacketsThrough = DynamicCast<UdpServer> (serverAppA.Get (0))->GetReceived ();
   double throughput = totalPacketsThrough * payloadSize * 8 / (simulationTime * 1000000.0);
   std::cout << "Throughput with default configuration (A-MPDU aggregation enabled, 65kB): " << throughput << " Mbit/s" << '\n';
   if (verifyResults && (throughput < 59.5 || throughput > 60.5))

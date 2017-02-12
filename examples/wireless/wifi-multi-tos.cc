@@ -156,7 +156,7 @@ int main (int argc, char *argv[])
   double throughput = 0;
   for (unsigned index = 0; index < sinkApplications.GetN (); ++index)
     {
-      uint32_t totalPacketsThrough = DynamicCast<PacketSink> (sinkApplications.Get (index))->GetTotalRx ();
+      uint64_t totalPacketsThrough = DynamicCast<PacketSink> (sinkApplications.Get (index))->GetTotalRx ();
       throughput += ((totalPacketsThrough * 8) / (simulationTime * 1000000.0)); //Mbit/s
     }
   if (throughput > 0)

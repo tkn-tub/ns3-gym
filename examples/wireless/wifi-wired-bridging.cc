@@ -14,7 +14,6 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-//
 // Default network topology includes some number of AP nodes specified by
 // the variable nWifis (defaults to two).  Off of each AP node, there are some
 // number of STA nodes specified by the variable nStas (defaults to two).
@@ -41,7 +40,6 @@
 //               +---------+              +---------+
 //               | AP Node |              | AP Node |
 //               +---------+              +---------+
-//
 
 #include "ns3/core-module.h"
 #include "ns3/mobility-module.h"
@@ -119,7 +117,6 @@ int main (int argc, char *argv[])
                                      "DeltaY", DoubleValue (5.0),
                                      "GridWidth", UintegerValue (1),
                                      "LayoutType", StringValue ("RowFirst"));
-
 
       // setup the AP.
       mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");

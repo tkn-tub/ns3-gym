@@ -125,7 +125,6 @@ Experiment::Run (Parameters params)
   Config::SetDefault ("ns3::WifiRemoteStationManager::ErpProtectionMode", StringValue (params.erpProtectionMode));
 
   double throughput = 0;
-  uint32_t totalPacketsThrough = 0;
   uint32_t nWifiB = params.nWifiB;
   uint32_t nWifiG = params.nWifiG;
   uint32_t nWifiNNGF = params.nWifiNNonGreenfield;
@@ -275,7 +274,6 @@ Experiment::Run (Parameters params)
   stack.Install (wifiNGFStaNodes);
 
   Ipv4AddressHelper address;
-
   address.SetBase ("192.168.1.0", "255.255.255.0");
   Ipv4InterfaceContainer bStaInterface;
   bStaInterface = address.Assign (bStaDevice);
@@ -291,62 +289,55 @@ Experiment::Run (Parameters params)
   // Setting applications
   if (params.isUdp)
     {
-      UdpServerHelper myServer (9);
-      ApplicationContainer serverApp = myServer.Install (wifiApNode);
+      uint16_t port = 9;
+      UdpServerHelper server (port);
+      ApplicationContainer serverApp = server.Install (wifiApNode);
       serverApp.Start (Seconds (0.0));
       serverApp.Stop (Seconds (simulationTime + 1));
 
-      UdpClientHelper myClient (ApInterface.GetAddress (0), 9);
-      myClient.SetAttribute ("MaxPackets", UintegerValue (4294967295u));
-      myClient.SetAttribute ("Interval", TimeValue (Time ("0.0002"))); //packets/s
-      myClient.SetAttribute ("PacketSize", UintegerValue (payloadSize));
+      UdpClientHelper client (ApInterface.GetAddress (0), port);
+      client.SetAttribute ("MaxPackets", UintegerValue (4294967295u));
+      client.SetAttribute ("Interval", TimeValue (Time ("0.0002"))); //packets/s
+      client.SetAttribute ("PacketSize", UintegerValue (payloadSize));
 
+      ApplicationContainer clientApps;
       if (params.bHasTraffic)
         {
-          ApplicationContainer clientAppB = myClient.Install (wifiBStaNodes);
-          clientAppB.Start (Seconds (1.0));
-          clientAppB.Stop (Seconds (simulationTime + 1));
+          clientApps.Add (client.Install (wifiBStaNodes));
         }
-
       if (params.gHasTraffic)
         {
-          ApplicationContainer clientAppG = myClient.Install (wifiGStaNodes);
-          clientAppG.Start (Seconds (1.0));
-          clientAppG.Stop (Seconds (simulationTime + 1));
+          clientApps.Add (client.Install (wifiGStaNodes));
         }
-
       if (params.nNonGreenfieldHasTraffic)
         {
-          ApplicationContainer clientAppNNGF = myClient.Install (wifiNNGFStaNodes);
-          clientAppNNGF.Start (Seconds (1.0));
-          clientAppNNGF.Stop (Seconds (simulationTime + 1));
+          clientApps.Add (client.Install (wifiNNGFStaNodes));
         }
-
       if (params.nGreenfieldHasTraffic)
         {
-          ApplicationContainer clientAppNGF = myClient.Install (wifiNGFStaNodes);
-          clientAppNGF.Start (Seconds (1.0));
-          clientAppNGF.Stop (Seconds (simulationTime + 1));
+          clientApps.Add (client.Install (wifiNGFStaNodes));
         }
+      clientApps.Start (Seconds (1.0));
+      clientApps.Stop (Seconds (simulationTime + 1));
 
       Simulator::Stop (Seconds (simulationTime + 1));
       Simulator::Run ();
       Simulator::Destroy ();
 
-      totalPacketsThrough = DynamicCast<UdpServer> (serverApp.Get (0))->GetReceived ();
+      uint64_t totalPacketsThrough = DynamicCast<UdpServer> (serverApp.Get (0))->GetReceived ();
       throughput = totalPacketsThrough * payloadSize * 8 / (simulationTime * 1000000.0);
     }
   else
     {
       uint16_t port = 50000;
-      Address apLocalAddress (InetSocketAddress (Ipv4Address::GetAny (), port));
-      PacketSinkHelper packetSinkHelper ("ns3::TcpSocketFactory", apLocalAddress);
+      Address localAddress (InetSocketAddress (Ipv4Address::GetAny (), port));
+      PacketSinkHelper packetSinkHelper ("ns3::TcpSocketFactory", localAddress);
 
-      ApplicationContainer sinkApp = packetSinkHelper.Install (wifiApNode.Get (0));
-      sinkApp.Start (Seconds (0.0));
-      sinkApp.Stop (Seconds (simulationTime + 1));
+      ApplicationContainer serverApp = packetSinkHelper.Install (wifiApNode.Get (0));
+      serverApp.Start (Seconds (0.0));
+      serverApp.Stop (Seconds (simulationTime + 1));
 
-      OnOffHelper onoff ("ns3::TcpSocketFactory",Ipv4Address::GetAny ());
+      OnOffHelper onoff ("ns3::TcpSocketFactory", Ipv4Address::GetAny ());
       onoff.SetAttribute ("OnTime",  StringValue ("ns3::ConstantRandomVariable[Constant=1]"));
       onoff.SetAttribute ("OffTime", StringValue ("ns3::ConstantRandomVariable[Constant=0]"));
       onoff.SetAttribute ("PacketSize", UintegerValue (payloadSize));
@@ -355,40 +346,33 @@ Experiment::Run (Parameters params)
       AddressValue remoteAddress (InetSocketAddress (ApInterface.GetAddress (0), port));
       onoff.SetAttribute ("Remote", remoteAddress);
 
-      ApplicationContainer apps;
+      ApplicationContainer clientApps;
       if (params.bHasTraffic)
         {
-          apps.Add (onoff.Install (wifiBStaNodes));
-          apps.Start (Seconds (1.0));
-          apps.Stop (Seconds (simulationTime + 1));
+          clientApps.Add (onoff.Install (wifiBStaNodes));
         }
       if (params.gHasTraffic)
         {
-          apps.Add (onoff.Install (wifiGStaNodes));
-          apps.Start (Seconds (1.0));
-          apps.Stop (Seconds (simulationTime + 1));
+          clientApps.Add (onoff.Install (wifiGStaNodes));
         }
       if (params.nNonGreenfieldHasTraffic)
         {
-          apps.Add (onoff.Install (wifiNNGFStaNodes));
-          apps.Start (Seconds (1.0));
-          apps.Stop (Seconds (simulationTime + 1));
+          clientApps.Add (onoff.Install (wifiNNGFStaNodes));
         }
       if (params.nGreenfieldHasTraffic)
         {
-          apps.Add (onoff.Install (wifiNGFStaNodes));
-          apps.Start (Seconds (1.0));
-          apps.Stop (Seconds (simulationTime + 1));
+          clientApps.Add (onoff.Install (wifiNGFStaNodes));
         }
+      clientApps.Start (Seconds (1.0));
+      clientApps.Stop (Seconds (simulationTime + 1));
 
       Simulator::Stop (Seconds (simulationTime + 1));
       Simulator::Run ();
       Simulator::Destroy ();
 
-      totalPacketsThrough = DynamicCast<PacketSink> (sinkApp.Get (0))->GetTotalRx ();
+      uint64_t totalPacketsThrough = DynamicCast<PacketSink> (serverApp.Get (0))->GetTotalRx ();
       throughput += totalPacketsThrough * 8 / (simulationTime * 1000000.0);
     }
-
   return throughput;
 }
 

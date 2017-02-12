@@ -105,8 +105,6 @@ class NodeStatistics
 public:
   NodeStatistics (NetDeviceContainer aps, NetDeviceContainer stas);
 
-  void CheckStatistics (double time);
-
   void PhyCallback (std::string path, Ptr<const Packet> packet);
   void RxCallback (std::string path, Ptr<const Packet> packet, const Address &from);
   void PowerCallback (std::string path, uint8_t power, Mac48Address dest);
@@ -228,12 +226,6 @@ void
 NodeStatistics::RxCallback (std::string path, Ptr<const Packet> packet, const Address &from)
 {
   m_bytesTotal += packet->GetSize ();
-}
-
-void
-NodeStatistics::CheckStatistics (double time)
-{
-
 }
 
 void
