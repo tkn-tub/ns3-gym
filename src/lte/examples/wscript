@@ -57,4 +57,3 @@ def build(bld):
         obj = bld.create_ns3_program('lena-simple-epc-emu',
                                      ['lte', 'fd-net-device'])
         obj.source = 'lena-simple-epc-emu.cc'
-    
