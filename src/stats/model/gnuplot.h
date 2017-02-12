@@ -60,6 +60,10 @@ public:
   /**
    * \brief Change line title.
    * \param title the new title string to use for this dataset.
+   *
+   * \note If you want your title to contain a newline character,
+   *       escape it like this:  "First line\\nSecond line" so that
+   *       it is converted to "First line\nSecond line" in the plot file.
    */
   void SetTitle (const std::string& title);
 
