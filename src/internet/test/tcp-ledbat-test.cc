@@ -26,7 +26,7 @@
 #include "ns3/tcp-ledbat.h"
 #include "ns3/string.h"
 
-namespace ns3 {
+using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("TcpLedbatTestSuite");
 
@@ -36,20 +36,36 @@ NS_LOG_COMPONENT_DEFINE ("TcpLedbatTestSuite");
 class TcpLedbatToNewReno : public TestCase
 {
 public:
+  /**
+   * \brief Constructor
+   *
+   * \param cWnd congestion window
+   * \param segmentSize segment size
+   * \param ssThresh slow start threshold
+   * \param segmentsAcked segments acked
+   * \param highTxMark high tx mark
+   * \param lastAckedSeq last acked seq
+   * \param rtt RTT
+   * \param name Name of the test
+   */
   TcpLedbatToNewReno (uint32_t cWnd, uint32_t segmentSize, uint32_t ssThresh,
                       uint32_t segmentsAcked, SequenceNumber32 highTxMark,
                       SequenceNumber32 lastAckedSeq, Time rtt, const std::string &name);
 
 private:
   virtual void DoRun (void);
-  uint32_t m_cWnd;
-  uint32_t m_segmentSize;
-  uint32_t m_segmentsAcked;
-  uint32_t m_ssThresh;
-  Time m_rtt;
-  SequenceNumber32 m_highTxMark;
-  SequenceNumber32 m_lastAckedSeq;
-  Ptr<TcpSocketState> m_state;
+  /** \brief Execute the test
+   */
+  void ExecuteTest (void);
+
+  uint32_t m_cWnd; //!< cWnd
+  uint32_t m_segmentSize; //!< segment size
+  uint32_t m_segmentsAcked; //!< segments acked
+  uint32_t m_ssThresh; //!< ss thresh
+  Time m_rtt; //!< rtt
+  SequenceNumber32 m_highTxMark; //!< high tx mark
+  SequenceNumber32 m_lastAckedSeq; //!< last acked seq
+  Ptr<TcpSocketState> m_state; //!< state
 };
 
 TcpLedbatToNewReno::TcpLedbatToNewReno (uint32_t cWnd, uint32_t segmentSize, uint32_t ssThresh,
@@ -68,6 +84,14 @@ TcpLedbatToNewReno::TcpLedbatToNewReno (uint32_t cWnd, uint32_t segmentSize, uin
 
 void
 TcpLedbatToNewReno::DoRun ()
+{
+  Simulator::Schedule (Seconds (0.0), &TcpLedbatToNewReno::ExecuteTest, this);
+  Simulator::Run ();
+  Simulator::Destroy ();
+}
+
+void
+TcpLedbatToNewReno::ExecuteTest ()
 {
   m_state = CreateObject <TcpSocketState> ();
   m_state->m_cWnd = m_cWnd;
@@ -98,21 +122,36 @@ TcpLedbatToNewReno::DoRun ()
 class TcpLedbatIncrementTest : public TestCase
 {
 public:
+  /**
+   * \brief Constructor
+   *
+   * \param cWnd congestion window
+   * \param segmentSize segment size
+   * \param ssThresh slow start threshold
+   * \param segmentsAcked segments acked
+   * \param highTxMark high tx mark
+   * \param lastAckedSeq last acked seq
+   * \param rtt RTT
+   * \param name Name of the test
+   */
   TcpLedbatIncrementTest (uint32_t cWnd, uint32_t segmentSize, uint32_t ssThresh,
                           uint32_t segmentsAcked, SequenceNumber32 highTxMark,
                           SequenceNumber32 lastAckedSeq, Time rtt, const std::string &name);
 
 private:
   virtual void DoRun (void);
+  /** \brief Execute the test
+   */
+  void ExecuteTest (void);
 
-  uint32_t m_cWnd;
-  uint32_t m_segmentSize;
-  uint32_t m_segmentsAcked;
-  uint32_t m_ssThresh;
-  Time m_rtt;
-  SequenceNumber32 m_highTxMark;
-  SequenceNumber32 m_lastAckedSeq;
-  Ptr<TcpSocketState> m_state;
+  uint32_t m_cWnd; //!< cWnd
+  uint32_t m_segmentSize; //!< segment size
+  uint32_t m_segmentsAcked; //!< segments acked
+  uint32_t m_ssThresh; //!< ss thresh
+  Time m_rtt; //!< rtt
+  SequenceNumber32 m_highTxMark; //!< high tx mark
+  SequenceNumber32 m_lastAckedSeq; //!< last acked seq
+  Ptr<TcpSocketState> m_state; //!< state
 };
 
 TcpLedbatIncrementTest::TcpLedbatIncrementTest (uint32_t cWnd, uint32_t segmentSize, uint32_t ssThresh,
@@ -131,6 +170,14 @@ TcpLedbatIncrementTest::TcpLedbatIncrementTest (uint32_t cWnd, uint32_t segmentS
 
 void
 TcpLedbatIncrementTest::DoRun ()
+{
+  Simulator::Schedule (Seconds (0.0), &TcpLedbatIncrementTest::ExecuteTest, this);
+  Simulator::Run ();
+  Simulator::Destroy ();
+}
+
+void
+TcpLedbatIncrementTest::ExecuteTest (void)
 {
   m_state = CreateObject <TcpSocketState> ();
   m_state->m_cWnd = m_cWnd;
@@ -165,21 +212,36 @@ TcpLedbatIncrementTest::DoRun ()
 class TcpLedbatDecrementTest : public TestCase
 {
 public:
+  /**
+   * \brief Constructor
+   *
+   * \param cWnd congestion window
+   * \param segmentSize segment size
+   * \param ssThresh slow start threshold
+   * \param segmentsAcked segments acked
+   * \param highTxMark high tx mark
+   * \param lastAckedSeq last acked seq
+   * \param rtt RTT
+   * \param name Name of the test
+   */
   TcpLedbatDecrementTest (uint32_t cWnd, uint32_t segmentSize, uint32_t ssThresh,
                           uint32_t segmentsAcked, SequenceNumber32 highTxMark,
                           SequenceNumber32 lastAckedSeq, Time rtt, const std::string &name);
 
 private:
   virtual void DoRun (void);
+  /** \brief Execute the test
+   */
+  void ExecuteTest (void);
 
-  uint32_t m_cWnd;
-  uint32_t m_segmentSize;
-  uint32_t m_segmentsAcked;
-  uint32_t m_ssThresh;
-  Time m_rtt;
-  SequenceNumber32 m_highTxMark;
-  SequenceNumber32 m_lastAckedSeq;
-  Ptr<TcpSocketState> m_state;
+  uint32_t m_cWnd; //!< cWnd
+  uint32_t m_segmentSize; //!< segment size
+  uint32_t m_segmentsAcked; //!< segments acked
+  uint32_t m_ssThresh; //!< ss thresh
+  Time m_rtt; //!< rtt
+  SequenceNumber32 m_highTxMark; //!< high tx mark
+  SequenceNumber32 m_lastAckedSeq; //!< last acked seq
+  Ptr<TcpSocketState> m_state; //!< state
 };
 
 TcpLedbatDecrementTest::TcpLedbatDecrementTest (uint32_t cWnd, uint32_t segmentSize, uint32_t ssThresh,
@@ -198,6 +260,14 @@ TcpLedbatDecrementTest::TcpLedbatDecrementTest (uint32_t cWnd, uint32_t segmentS
 
 void
 TcpLedbatDecrementTest::DoRun ()
+{
+  Simulator::Schedule (Seconds (0.0), &TcpLedbatDecrementTest::ExecuteTest, this);
+  Simulator::Run ();
+  Simulator::Destroy ();
+}
+
+void
+TcpLedbatDecrementTest::ExecuteTest ()
 {
   m_state = CreateObject <TcpSocketState> ();
   m_state->m_cWnd = m_cWnd;
@@ -226,9 +296,15 @@ TcpLedbatDecrementTest::DoRun ()
                          "cWnd has not updated correctly");
 }
 
-static class TcpLedbatTestSuite : public TestSuite
+/**
+ * \brief Main test suite class
+ */
+class TcpLedbatTestSuite : public TestSuite
 {
 public:
+  /**
+   * \brief Main test suite for Ledbat
+   */
   TcpLedbatTestSuite () : TestSuite ("tcp-ledbat-test", UNIT)
   {
     AddTestCase (new TcpLedbatToNewReno (2 * 1446, 1446, 4 * 1446, 2, SequenceNumber32 (4753), SequenceNumber32 (3216), MilliSeconds (100), "LEDBAT falls to New Reno for slowstart"), TestCase::QUICK);
@@ -239,6 +315,6 @@ public:
 
     AddTestCase (new TcpLedbatDecrementTest (2 * 1446, 1446, 4 * 1446, 2, SequenceNumber32 (4753), SequenceNumber32 (3216), MilliSeconds (100), "LEDBAT decrement test"), TestCase::QUICK);
   }
-} g_tcpledbatTest;
+};
 
-}
+static TcpLedbatTestSuite g_tcpledbatTest; //!< static var for test initialization
