@@ -76,18 +76,32 @@ RateChangeMinstrelHt (uint64_t newVal, Mac48Address dest)
   g_intervalRate = newVal;
 }
 
+/// Step structure
 struct Step
 {
-  double stepSize;
-  double stepTime;
+  double stepSize; ///< step size in dBm
+  double stepTime; ///< step size in seconds
 };
 
+/// StandardInfo structure
 struct StandardInfo
 {
   StandardInfo ()
   {
     m_name = "none";
   }
+  /**
+   * Constructor
+   *
+   * \param name reference name
+   * \param standard wifi phy standard
+   * \param width channel width
+   * \param snrLow SNR low
+   * \param snrHigh SNR high
+   * \param xMin x minimum
+   * \param xMax x maximum
+   * \param yMax y maximum
+   */
   StandardInfo (std::string name, enum WifiPhyStandard standard, uint16_t width, double snrLow, double snrHigh, double xMin, double xMax, double yMax)
     : m_name (name),
       m_standard (standard),
@@ -99,14 +113,14 @@ struct StandardInfo
       m_yMax (yMax)
   {
   }
-  std::string m_name;
-  enum WifiPhyStandard m_standard;
-  uint16_t m_width;
-  double m_snrLow;
-  double m_snrHigh;
-  double m_xMin;
-  double m_xMax;
-  double m_yMax;
+  std::string m_name; ///< name
+  enum WifiPhyStandard m_standard; ///< standard
+  uint16_t m_width; ///< channel width
+  double m_snrLow; ///< lowest SNR
+  double m_snrHigh; ///< highest SNR
+  double m_xMin;  ///< X minimum
+  double m_xMax;  ///< X maximum
+  double m_yMax;  ///< Y maximum
 };
 
 void

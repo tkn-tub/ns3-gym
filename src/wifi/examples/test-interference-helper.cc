@@ -58,34 +58,42 @@
 
 using namespace ns3;
 
+/// InterferenceExperiment
 class InterferenceExperiment
 {
 public:
+  /// Input atructure
   struct Input
   {
     Input ();
-    Time interval;
-    double xA;
-    double xB;
-    std::string txModeA;
-    std::string txModeB;
-    uint32_t txPowerLevelA;
-    uint32_t txPowerLevelB;
-    uint32_t packetSizeA;
-    uint32_t packetSizeB;
-    WifiPhyStandard standard;
-    WifiPreamble preamble;
+    Time interval; ///< interval
+    double xA; ///< x A
+    double xB; ///< x B
+    std::string txModeA; ///< transmit mode A
+    std::string txModeB; ///< transmit mode B
+    uint32_t txPowerLevelA; ///< transmit power level A
+    uint32_t txPowerLevelB; ///< transmit power level B
+    uint32_t packetSizeA; ///< packet size A
+    uint32_t packetSizeB; ///< packet size B
+    WifiPhyStandard standard; ///< standard
+    WifiPreamble preamble; ///< preamble
   };
 
   InterferenceExperiment ();
+  /**
+   * Run function
+   * \param input the interference experiment data
+   */
   void Run (struct InterferenceExperiment::Input input);
 
 private:
+  /// Send A function
   void SendA (void) const;
+  /// Send B function
   void SendB (void) const;
-  Ptr<YansWifiPhy> m_txA;
-  Ptr<YansWifiPhy> m_txB;
-  struct Input m_input;
+  Ptr<YansWifiPhy> m_txA; ///< transmit A function
+  Ptr<YansWifiPhy> m_txB; ///< transmit B function
+  struct Input m_input; ///< input
 };
 
 void
