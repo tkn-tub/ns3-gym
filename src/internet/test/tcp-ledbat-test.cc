@@ -31,6 +31,9 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE ("TcpLedbatTestSuite");
 
 /**
+ * \ingroup internet-test
+ * \ingroup tests
+ *
  * \brief LEDBAT should be same as NewReno during slow start, and when timestamps are disabled
  */
 class TcpLedbatToNewReno : public TestCase
@@ -117,6 +120,9 @@ TcpLedbatToNewReno::ExecuteTest ()
                          "cWnd has not updated correctly");
 }
 /**
+ * \ingroup internet-test
+ * \ingroup tests
+ *
  * \brief Test to validate cWnd increment in LEDBAT
  */
 class TcpLedbatIncrementTest : public TestCase
@@ -207,6 +213,9 @@ TcpLedbatIncrementTest::ExecuteTest (void)
 }
 
 /**
+ * \ingroup internet-test
+ * \ingroup tests
+ *
  * \brief Test to validate cWnd decrement in LEDBAT
  */
 class TcpLedbatDecrementTest : public TestCase
@@ -297,22 +306,19 @@ TcpLedbatDecrementTest::ExecuteTest ()
 }
 
 /**
- * \brief Main test suite class
+ * \ingroup internet-test
+ * \ingroup tests
+ *
+ * \brief TCP Ledbat TestSuite
  */
 class TcpLedbatTestSuite : public TestSuite
 {
 public:
-  /**
-   * \brief Main test suite for Ledbat
-   */
   TcpLedbatTestSuite () : TestSuite ("tcp-ledbat-test", UNIT)
   {
     AddTestCase (new TcpLedbatToNewReno (2 * 1446, 1446, 4 * 1446, 2, SequenceNumber32 (4753), SequenceNumber32 (3216), MilliSeconds (100), "LEDBAT falls to New Reno for slowstart"), TestCase::QUICK);
-
     AddTestCase (new TcpLedbatToNewReno (4 * 1446, 1446, 2 * 1446, 2, SequenceNumber32 (4753), SequenceNumber32 (3216), MilliSeconds (100), "LEDBAT falls to New Reno if timestamps are not found"), TestCase::QUICK);
-
     AddTestCase (new TcpLedbatIncrementTest (2 * 1446, 1446, 4 * 1446, 2, SequenceNumber32 (4753), SequenceNumber32 (3216), MilliSeconds (100), "LEDBAT increment test"), TestCase::QUICK);
-
     AddTestCase (new TcpLedbatDecrementTest (2 * 1446, 1446, 4 * 1446, 2, SequenceNumber32 (4753), SequenceNumber32 (3216), MilliSeconds (100), "LEDBAT decrement test"), TestCase::QUICK);
   }
 };
