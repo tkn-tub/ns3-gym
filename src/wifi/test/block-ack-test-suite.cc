@@ -28,6 +28,11 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE ("BlockAckTest");
 
 /**
+ * \ingroup wifi-test
+ * \ingroup tests
+ *
+ * \brief Packet Buffering Case A
+ *
  * This simple test verifies the correctness of buffering for packets received
  * under block ack. In order to completely understand this example is important to cite
  * section 9.10.3 in IEEE802.11 standard:
@@ -66,7 +71,7 @@ public:
   virtual ~PacketBufferingCaseA ();
 private:
   virtual void DoRun (void);
-  std::list<uint16_t> m_expectedBuffer;
+  std::list<uint16_t> m_expectedBuffer; ///< expected test buffer
 };
 
 PacketBufferingCaseA::PacketBufferingCaseA ()
@@ -127,7 +132,13 @@ PacketBufferingCaseA::DoRun (void)
 }
 
 
-/* ----- = old packets
+/**
+ * \ingroup wifi-test
+ * \ingroup tests
+ *
+ * \brief Packet Buffering Case B
+ *
+ * ----- = old packets
  * +++++ = new packets
  *
  *  CASE B: startSeq > endSeq
@@ -157,7 +168,7 @@ public:
   virtual ~PacketBufferingCaseB ();
 private:
   virtual void DoRun (void);
-  std::list<uint16_t> m_expectedBuffer;
+  std::list<uint16_t> m_expectedBuffer; ///< expected test buffer
 };
 
 PacketBufferingCaseB::PacketBufferingCaseB ()
@@ -232,14 +243,19 @@ PacketBufferingCaseB::DoRun (void)
 }
 
 
-//Test for block ack header
+/**
+ * \ingroup wifi-test
+ * \ingroup tests
+ *
+ * \brief Test for block ack header
+ */
 class CtrlBAckResponseHeaderTest : public TestCase
 {
 public:
   CtrlBAckResponseHeaderTest ();
 private:
   virtual void DoRun ();
-  CtrlBAckResponseHeader m_blockAckHdr;
+  CtrlBAckResponseHeader m_blockAckHdr; ///< block ack header
 };
 
 CtrlBAckResponseHeaderTest::CtrlBAckResponseHeaderTest ()
@@ -293,7 +309,12 @@ CtrlBAckResponseHeaderTest::DoRun (void)
   NS_TEST_EXPECT_MSG_EQ (m_blockAckHdr.IsPacketReceived (80), false, "error in compressed bitmap");
 }
 
-
+/**
+ * \ingroup wifi-test
+ * \ingroup tests
+ *
+ * \brief Block Ack Test Suite
+ */
 class BlockAckTestSuite : public TestSuite
 {
 public:
@@ -308,4 +329,4 @@ BlockAckTestSuite::BlockAckTestSuite ()
   AddTestCase (new CtrlBAckResponseHeaderTest, TestCase::QUICK);
 }
 
-static BlockAckTestSuite g_blockAckTestSuite;
+static BlockAckTestSuite g_blockAckTestSuite; ///< the test suite

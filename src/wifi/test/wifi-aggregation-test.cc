@@ -32,6 +32,12 @@
 
 using namespace ns3;
 
+/**
+ * \ingroup wifi-test
+ * \ingroup tests
+ *
+ * \brief Ampdu Aggregation Test
+ */
 class AmpduAggregationTest : public TestCase
 {
 public:
@@ -39,14 +45,14 @@ public:
 
 private:
   virtual void DoRun (void);
-  Ptr<MacLow> m_low;
-  Ptr<YansWifiPhy> m_phy;
-  Ptr<EdcaTxopN> m_edca;
-  MacTxMiddle *m_txMiddle;
-  Ptr<WifiRemoteStationManager> m_manager;
-  ObjectFactory m_factory;
-  Ptr<MpduAggregator> m_mpduAggregator;
-  DcfManager *m_dcfManager;
+  Ptr<MacLow> m_low; ///< MacLow
+  Ptr<YansWifiPhy> m_phy; ///< Phy
+  Ptr<EdcaTxopN> m_edca; ///< EDCA
+  MacTxMiddle *m_txMiddle; ///< MacTxMiddle
+  Ptr<WifiRemoteStationManager> m_manager; ///< remote station manager
+  ObjectFactory m_factory; ///< factory
+  Ptr<MpduAggregator> m_mpduAggregator; ///< A-MPDU aggregrator
+  DcfManager *m_dcfManager; ///< DCF manager
 };
 
 AmpduAggregationTest::AmpduAggregationTest ()
@@ -230,19 +236,24 @@ AmpduAggregationTest::DoRun (void)
   m_edca->GetQueue ()->Remove (pkt3);
 
   Simulator::Destroy ();
-  
+
   delete m_txMiddle;
-  
+
   m_low->Dispose ();
   m_low = 0;
-  
+
   m_edca->Dispose ();
   m_edca = 0;
 
   delete m_dcfManager;
 }
 
-
+/**
+ * \ingroup wifi-test
+ * \ingroup tests
+ *
+ * \brief Two Level Aggregation Test
+ */
 class TwoLevelAggregationTest : public TestCase
 {
 public:
@@ -250,13 +261,13 @@ public:
 
 private:
   virtual void DoRun (void);
-  Ptr<MacLow> m_low;
-  Ptr<YansWifiPhy> m_phy;
-  Ptr<EdcaTxopN> m_edca;
-  Ptr<WifiRemoteStationManager> m_manager;
-  ObjectFactory m_factory;
-  Ptr<MsduAggregator> m_msduAggregator;
-  Ptr<MpduAggregator> m_mpduAggregator;
+  Ptr<MacLow> m_low; ///< MacLow
+  Ptr<YansWifiPhy> m_phy; ///< Phy
+  Ptr<EdcaTxopN> m_edca; ///< EDCA
+  Ptr<WifiRemoteStationManager> m_manager; ///< remote station manager
+  ObjectFactory m_factory; ///< factory
+  Ptr<MsduAggregator> m_msduAggregator; ///< A-MSDU aggregator
+  Ptr<MpduAggregator> m_mpduAggregator; ///< A-MPDU aggregator
 };
 
 TwoLevelAggregationTest::TwoLevelAggregationTest ()
@@ -380,18 +391,23 @@ TwoLevelAggregationTest::DoRun (void)
 
   result = (packet != 0);
   NS_TEST_EXPECT_MSG_EQ (result, false, "aggregation failed to stop as queue is empty");
-  
+
   Simulator::Destroy ();
-  
+
   m_low->Dispose ();
   m_low = 0;
-  
+
   m_edca->Dispose ();
   m_edca = 0;
 }
 
 
-//-----------------------------------------------------------------------------
+/**
+ * \ingroup wifi-test
+ * \ingroup tests
+ *
+ * \brief Wifi Aggregation Test Suite
+ */
 class WifiAggregationTestSuite : public TestSuite
 {
 public:
@@ -405,4 +421,4 @@ WifiAggregationTestSuite::WifiAggregationTestSuite ()
   AddTestCase (new TwoLevelAggregationTest, TestCase::QUICK);
 }
 
-static WifiAggregationTestSuite g_wifiAggregationTestSuite;
+static WifiAggregationTestSuite g_wifiAggregationTestSuite; ///< the test suite

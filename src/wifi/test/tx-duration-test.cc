@@ -30,6 +30,12 @@ NS_LOG_COMPONENT_DEFINE ("InterferenceHelperTxDurationTest");
 static const double CHANNEL_1_MHZ  = 2412.0; // a 2.4 GHz center frequency (MHz)
 static const double CHANNEL_36_MHZ = 5180.0; // a 5 GHz center frequency (MHz)
 
+/**
+ * \ingroup wifi-test
+ * \ingroup tests
+ *
+ * \brief Tx Duration Test
+ */
 class TxDurationTest : public TestCase
 {
 public:
@@ -418,7 +424,12 @@ TxDurationTest::DoRun (void)
   NS_TEST_EXPECT_MSG_EQ (retval, true, "an 802.11ax duration failed");
 }
 
-
+/**
+ * \ingroup wifi-test
+ * \ingroup tests
+ *
+ * \brief Tx Duration Test Suite
+ */
 class TxDurationTestSuite : public TestSuite
 {
 public:
@@ -431,4 +442,4 @@ TxDurationTestSuite::TxDurationTestSuite ()
   AddTestCase (new TxDurationTest, TestCase::QUICK);
 }
 
-static TxDurationTestSuite g_txDurationTestSuite;
+static TxDurationTestSuite g_txDurationTestSuite; ///< the test suite
