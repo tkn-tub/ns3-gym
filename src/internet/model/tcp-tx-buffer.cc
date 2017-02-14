@@ -1022,13 +1022,13 @@ TcpTxBuffer::IsHeadRetransmitted () const
 {
   NS_LOG_FUNCTION (this);
 
-  TcpTxItem *item = m_sentList.front ();
-  if (item != 0)
+  if (m_sentSize == 0)
     {
-      return item->m_retrans;
+      return false;
     }
 
-  return false;
+  NS_ASSERT (m_sentList.size () > 0);
+  return m_sentList.front ()->m_retrans;
 }
 
 Ptr<const TcpOptionSack>
