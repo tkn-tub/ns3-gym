@@ -56,10 +56,10 @@ struct Bar
        Mac48Address recipient,
        uint8_t tid,
        bool immediate);
-  Ptr<const Packet> bar;
-  Mac48Address recipient;
-  uint8_t tid;
-  bool immediate;
+  Ptr<const Packet> bar; ///< block ack request
+  Mac48Address recipient; ///< recipient
+  uint8_t tid; ///< TID
+  bool immediate; ///< immediate
 };
 
 
@@ -70,7 +70,9 @@ struct Bar
 class BlockAckManager
 {
 private:
+  /// type conversion operator
   BlockAckManager (const BlockAckManager&);
+  /// assignment operator
   BlockAckManager& operator= (const BlockAckManager&);
 
 
@@ -156,6 +158,13 @@ public:
    * corresponding block ack bitmap. This method doesn't remove the packet from this queue.
    */
   Ptr<const Packet> PeekNextPacket (WifiMacHeader &hdr);
+  /**
+   * Returns true if the BAR is scheduled. Returns false otherwise.
+   *
+   * \param bar
+   *
+   * \return true if a BAR is scheduled, false otherwise
+   */
   bool HasBar (Bar &bar);
   /**
    * Returns true if there are packets that need of retransmission or at least a
@@ -246,6 +255,10 @@ public:
    * \param queue The WifiMacQueue object.
    */
   void SetQueue (Ptr<WifiMacQueue> queue);
+  /**
+   * Set the MacTxMiddle
+   * \param txMiddle the MacTxMiddle
+   */
   void SetTxMiddle (MacTxMiddle* txMiddle);
 
   /**
@@ -286,8 +299,20 @@ public:
    */
   void SetMaxPacketDelay (Time maxDelay);
 
+  /**
+   * Set block ack inactivity callback
+   * \param callback the block ack inactivity callback function
+   */
   void SetBlockAckInactivityCallback (Callback<void, Mac48Address, uint8_t, bool> callback);
+  /**
+   * Set block destination callback
+   * \param callback the block destination callback
+   */
   void SetBlockDestinationCallback (Callback<void, Mac48Address, uint8_t> callback);
+  /**
+   * Set unblock destination callback
+   * \param callback the unblock destination callback
+   */
   void SetUnblockDestinationCallback (Callback<void, Mac48Address, uint8_t> callback);
 
   /**
@@ -323,15 +348,28 @@ public:
    * Remove a packet after you peek in the queue and get it
    */
   bool RemovePacket (uint8_t tid, Mac48Address recipient, uint16_t seqnumber);
-  /*
+  /**
    * Peek in retransmit queue and get the next packet having address indicated
    * by <i>type</i> equals to <i>addr</i>, and tid equals to <i>tid</i>.
    * This method doesn't remove the packet from this queue.
+   *
+   * \param hdr wifi mac header
+   * \param recipient mac address
+   * \param tid Traffic ID
+   * \param timestamp timestamp
+   *
+   * \returns Ptr<const Packet>
    */
   Ptr<const Packet> PeekNextPacketByTidAndAddress (WifiMacHeader &hdr, Mac48Address recipient, uint8_t tid, Time *timestamp);
   /**
    * This function returns true if the lifetime of the packets a BAR refers to didn't expire yet else it returns false.
    * If it return false then the BAR will be discarded (i.e. will not be re-transmitted)
+   *
+   * \param tid Traffic ID
+   * \param seqNumber sequence number
+   * \param recipient mac address
+   *
+   * \returns true if BAR retransmission needed
    */
   bool NeedBarRetransmission (uint8_t tid, uint16_t seqNumber, Mac48Address recipient);
 
@@ -375,7 +413,12 @@ private:
    * This method removes packets whose lifetime was exceeded.
    */
   void CleanupBuffers (void);
-  void InactivityTimeout (Mac48Address, uint8_t);
+  /**
+   * Inactivity timeout function
+   * \param recipient the recipient MAC address
+   * \param tid Traffic ID
+   */
+  void InactivityTimeout (Mac48Address recipient, uint8_t tid);
 
   struct Item;
   /**
@@ -413,12 +456,19 @@ private:
   struct Item
   {
     Item ();
+    /**
+     * Constructor
+     *
+     * \param packet packet
+     * \param hdr packet header
+     * \param tStamp timestamp
+     */
     Item (Ptr<const Packet> packet,
           const WifiMacHeader &hdr,
           Time tStamp);
-    Ptr<const Packet> packet;
-    WifiMacHeader hdr;
-    Time timestamp;
+    Ptr<const Packet> packet; ///< packet
+    WifiMacHeader hdr; ///< header
+    Time timestamp; ///< timestamp
   };
   /**
    * \param item
@@ -442,20 +492,20 @@ private:
    * frame.
    */
   std::list<PacketQueueI> m_retryPackets;
-  std::list<Bar> m_bars;
+  std::list<Bar> m_bars; ///< list of BARs
 
-  uint8_t m_blockAckThreshold;
-  BlockAckType m_blockAckType;
-  Time m_maxDelay;
-  MacTxMiddle* m_txMiddle;
-  Mac48Address m_address;
-  Ptr<WifiMacQueue> m_queue;
-  Callback<void, Mac48Address, uint8_t, bool> m_blockAckInactivityTimeout;
-  Callback<void, Mac48Address, uint8_t> m_blockPackets;
-  Callback<void, Mac48Address, uint8_t> m_unblockPackets;
-  TxOk m_txOkCallback;
-  TxFailed m_txFailedCallback;
-  Ptr<WifiRemoteStationManager> m_stationManager;
+  uint8_t m_blockAckThreshold; ///< bock ack threshold
+  BlockAckType m_blockAckType; ///< bock ack type
+  Time m_maxDelay; ///< maximum delay
+  MacTxMiddle* m_txMiddle; ///< the MacTxMiddle
+  Mac48Address m_address; ///< address
+  Ptr<WifiMacQueue> m_queue; ///< queue
+  Callback<void, Mac48Address, uint8_t, bool> m_blockAckInactivityTimeout; ///< block ack inactivity timeout callback
+  Callback<void, Mac48Address, uint8_t> m_blockPackets; ///< block packets callback
+  Callback<void, Mac48Address, uint8_t> m_unblockPackets; ///< unblock packets callback
+  TxOk m_txOkCallback; ///< transmit ok callback
+  TxFailed m_txFailedCallback; ///< transmit failed callback
+  Ptr<WifiRemoteStationManager> m_stationManager; ///< the station manager
 };
 
 } //namespace ns3

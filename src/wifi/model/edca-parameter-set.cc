@@ -49,7 +49,7 @@ EdcaParameterSet::SetQosSupported (uint8_t qosSupported)
 uint8_t
 EdcaParameterSet::IsQosSupported (void) const
 {
-  return ((m_acBE != 0) || (m_acBK != 0) || (m_acVI != 0) || (m_acVO!= 0));
+  return ((m_acBE != 0) || (m_acBK != 0) || (m_acVI != 0) || (m_acVO != 0));
 }
 
 void
@@ -422,13 +422,30 @@ EdcaParameterSet::DeserializeInformationField (Buffer::Iterator start, uint8_t l
   return length;
 }
 
+/// EdcaParameterSet
 ATTRIBUTE_HELPER_CPP (EdcaParameterSet);
 
+/**
+ * output operator
+ *
+ * \param os output stream
+ * \param edcaParameterSet
+ *
+ * \return output stream
+ */
 std::ostream & operator << (std::ostream &os, const EdcaParameterSet &edcaParameterSet)
 {
   return os;
 }
 
+/**
+ * input operator
+ *
+ * \param is input stream
+ * \param edcaParameterSet
+ *
+ * \return output stream
+ */
 std::istream &operator >> (std::istream &is, EdcaParameterSet &edcaParameterSet)
 {
   return is;

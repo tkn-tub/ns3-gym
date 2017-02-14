@@ -28,8 +28,6 @@ namespace ns3 {
 
 /**
  * \ingroup wifi
- *
- *
  */
 class AmsduSubframeHeader : public Header
 {
@@ -37,24 +35,52 @@ public:
   AmsduSubframeHeader ();
   virtual ~AmsduSubframeHeader ();
 
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
-  virtual TypeId GetInstanceTypeId (void) const;
-  virtual void Print (std::ostream &os) const;
-  virtual uint32_t GetSerializedSize (void) const;
-  virtual void Serialize (Buffer::Iterator start) const;
-  virtual uint32_t Deserialize (Buffer::Iterator start);
+  TypeId GetInstanceTypeId (void) const;
+  void Print (std::ostream &os) const;
+  uint32_t GetSerializedSize (void) const;
+  void Serialize (Buffer::Iterator start) const;
+  uint32_t Deserialize (Buffer::Iterator start);
 
+  /**
+   * Set destination address function
+   * \param to the destination MAC address
+   */
   void SetDestinationAddr (Mac48Address to);
+  /**
+   * Set source address function
+   * \param to the source MAC address
+   */
   void SetSourceAddr (Mac48Address to);
-  void SetLength (uint16_t);
+  /**
+   * Set length function
+   * \param length the length
+   */
+  void SetLength (uint16_t length);
+  /**
+   * Get destination address function
+   * \returns the desitnation MAC address
+   */
   Mac48Address GetDestinationAddr (void) const;
+  /**
+   * Get source address function
+   * \returns the source MAC address
+   */
   Mac48Address GetSourceAddr (void) const;
+  /**
+   * Get length function
+   * \returns the length
+   */
   uint16_t GetLength (void) const;
 
 private:
-  Mac48Address m_da;
-  Mac48Address m_sa;
-  uint16_t m_length;
+  Mac48Address m_da; ///< destination address
+  Mac48Address m_sa; ///< source addresss
+  uint16_t m_length; ///< length
 };
 
 } //namespace ns3

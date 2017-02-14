@@ -42,6 +42,10 @@ public:
   WifiInformationElementVector ();
   virtual ~WifiInformationElementVector ();
 
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId ();
   TypeId GetInstanceTypeId () const;
   virtual uint32_t GetSerializedSize () const;
@@ -50,7 +54,8 @@ public:
    * \attention When you use RemoveHeader, WifiInformationElementVector supposes, that
    * all buffer consists of information elements
    *
-   * \param start
+   * \param start the iterator
+   * \returns distance
    */
   virtual uint32_t Deserialize (Buffer::Iterator start);
   virtual void Print (std::ostream &os) const;

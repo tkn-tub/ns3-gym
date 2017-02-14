@@ -472,7 +472,7 @@ HtOperation::SerializeInformationField (Buffer::Iterator start) const
 
 uint8_t
 HtOperation::DeserializeInformationField (Buffer::Iterator start,
-                                             uint8_t length)
+                                          uint8_t length)
 {
   Buffer::Iterator i = start;
   uint8_t primarychannel = i.ReadU8 ();
@@ -491,16 +491,32 @@ HtOperation::DeserializeInformationField (Buffer::Iterator start,
 
 ATTRIBUTE_HELPER_CPP (HtOperation);
 
+/**
+ * output stream output operator
+ *
+ * \param os output stream
+ * \param htOperation
+ *
+ * \returns output stream
+ */
 std::ostream &
 operator << (std::ostream &os, const HtOperation &htOperation)
 {
   os <<  bool (htOperation.GetStaChannelWidth ())
      << "|" << bool (htOperation.GetRifsMode ())
-     << "|" << bool (htOperation.GetDualCtsProtection());
-    
+     << "|" << bool (htOperation.GetDualCtsProtection ());
+
   return os;
 }
 
+/**
+ * input stream input operator
+ *
+ * \param is input stream
+ * \param htOperation
+ *
+ * \returns input stream
+ */
 std::istream &operator >> (std::istream &is, HtOperation &htOperation)
 {
   bool c1, c2, c3;
@@ -508,7 +524,7 @@ std::istream &operator >> (std::istream &is, HtOperation &htOperation)
   htOperation.SetStaChannelWidth (c1);
   htOperation.SetRifsMode (c2);
   htOperation.SetDualCtsProtection (c3);
-  
+
   return is;
 }
 

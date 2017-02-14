@@ -35,8 +35,13 @@ class ErpInformation : public WifiInformationElement
 {
 public:
   ErpInformation ();
+  /**
+   * Set the ERP supported field.
+   *
+   * \param erpSupported the ERP supported field in the ErpInformation information element
+   */
   void SetErpSupported (uint8_t erpSupported);
-  
+
   /**
    * Set the Barker_Preamble_Mode field in the ErpInformation information element.
    *
@@ -56,31 +61,54 @@ public:
    */
   void SetNonErpPresent (uint8_t nonErpPresent);
 
-  /*
+  /**
    * Return the Barker_Preamble_Mode field in the ErpInformation information element.
    *
    * \return the Barker_Preamble_Mode field in the ErpInformation information element
    */
   uint8_t GetBarkerPreambleMode (void) const;
-  /*
+  /**
    * Return the Use_Protection field in the ErpInformation information element.
    *
    * \return the Use_Protection field in the ErpInformation information element
    */
   uint8_t GetUseProtection (void) const;
-  /*
+  /**
    * Return the Non_Erp_Present field in the ErpInformation information element.
    *
    * \return the Non_Erp_Present field in the ErpInformation information element
    */
   uint8_t GetNonErpPresent (void) const;
 
+  /**
+   * Get the element ID field.
+   *
+   * \returns WifiInformationElementId
+   */
   WifiInformationElementId ElementId () const;
+  /**
+   * Get the information field size.
+   *
+   * \returns the element field size
+   */
   uint8_t GetInformationFieldSize () const;
+  /**
+   * Serialize the information field.
+   *
+   * \param start the information element iterator
+   */
   void SerializeInformationField (Buffer::Iterator start) const;
+  /**
+   * Get the information field size.
+   *
+   * \param start the information element iterator
+   * \param length the information field length
+   *
+   * \returns the information field
+   */
   uint8_t DeserializeInformationField (Buffer::Iterator start,
                                        uint8_t length);
-    
+
   /**
    * This information element is a bit special in that it is only
    * included if the STA is an ERP STA. To support this we
@@ -100,13 +128,29 @@ public:
   uint16_t GetSerializedSize () const;
 
 private:
-  uint8_t m_erpInformation;
+  uint8_t m_erpInformation; ///< ERP information
 
-  //This is used to decide whether this element should be added to the frame or not
+  /// This is used to decide whether this element should be added to the frame or not
   bool m_erpSupported;
 };
 
+/**
+ * output stream output operator
+ *
+ * \param os output stream
+ * \param erpinformation
+ *
+ * \returns output stream
+ */
 std::ostream &operator << (std::ostream &os, const ErpInformation &erpinformation);
+/**
+ * input stream input operator
+ *
+ * \param is input stream
+ * \param erpinformation
+ *
+ * \returns input stream
+ */
 std::istream &operator >> (std::istream &is, ErpInformation &erpinformation);
 
 ATTRIBUTE_HELPER_HEADER (ErpInformation);

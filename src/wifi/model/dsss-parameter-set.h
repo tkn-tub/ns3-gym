@@ -35,27 +35,50 @@ class DsssParameterSet : public WifiInformationElement
 {
 public:
   DsssParameterSet ();
+  /**
+   * Set DSSS supported
+   * \param DsssSupported the DSSS supported indicator
+   */
   void SetDsssSupported (uint8_t DsssSupported);
-  
+
   /**
    * Set the Current Channel field in the DsssParameterSet information element.
    *
-   * \param qosInfo the CurrentChannel field in the DsssParameterSet information element
+   * \param currentChannel the CurrentChannel field in the DsssParameterSet information element
    */
   void SetCurrentChannel (uint8_t currentChannel);
-  
-  /*
+
+  /**
    * Return the Current Channel field in the DsssParameterSet information element.
    *
    * \return the Current Channel field in the DsssParameterSet information element
    */
   uint8_t GetCurrentChannel (void) const;
-  
+
+  /**
+   * Element ID function
+   * \returns the wifi information element ID
+   */
   WifiInformationElementId ElementId () const;
+  /**
+   * Get information field size function
+   * \returns the information field size
+   */
   uint8_t GetInformationFieldSize () const;
+  /**
+   * Serialize information field function
+   * \param start the iterator
+   * \returns the updated iterator
+   */
   void SerializeInformationField (Buffer::Iterator start) const;
+  /**
+   * Deserialize infornamtion field function
+   * \param start the iterator
+   * \param length the length
+   * \returns the updated iterator
+   */
   uint8_t DeserializeInformationField (Buffer::Iterator start, uint8_t length);
-    
+
   /**
    * This information element is a bit special in that it is only
    * included if the STA does support DSSS. To support this we
@@ -74,10 +97,11 @@ public:
    */
   uint16_t GetSerializedSize () const;
 
-private:
-  uint8_t m_currentChannel;
 
-  //This is used to decide whether this element should be added to the frame or not
+private:
+  uint8_t m_currentChannel; ///< current channel number
+
+  /// This is used to decide whether this element should be added to the frame or not
   bool m_dsssSupported;
 };
 

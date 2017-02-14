@@ -71,13 +71,23 @@ public:
   // Allow test cases to access private members
   friend class ::AmpduAggregationTest;
 
-  std::map<Mac48Address, bool> m_aMpduEnabled;
+  std::map<Mac48Address, bool> m_aMpduEnabled; //!< list containing flags whether A-MPDU is enabled for a given destination address
 
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
+
   EdcaTxopN ();
   virtual ~EdcaTxopN ();
 
-  virtual bool IsEdca ();
+  /**
+   * Check for EDCA.
+   *
+   * \returns true if EDCA.
+   */
+  bool IsEdca ();
 
   /**
    * Set WifiRemoteStationsManager this EdcaTxopN is associated to.
@@ -101,18 +111,18 @@ public:
   /**
    * Returns the aggregator used to construct A-MSDU subframes.
    *
-   * /return the aggregator used to construct A-MSDU subframes.
+   * \return the aggregator used to construct A-MSDU subframes.
    */
   Ptr<MsduAggregator> GetMsduAggregator (void) const;
   /**
    * Returns the aggregator used to construct A-MPDU subframes.
    *
-   * /return the aggregator used to construct A-MPDU subframes.
+   * \return the aggregator used to construct A-MPDU subframes.
    */
   Ptr<MpduAggregator> GetMpduAggregator (void) const;
 
   /**
-   * \param recipient address of the peer station
+   * \param address recipient address of the peer station
    * \param tid traffic ID.
    *
    * \return true if a block ack agreement exists, false otherwise.
@@ -122,7 +132,7 @@ public:
    */
   bool GetBaAgreementExists (Mac48Address address, uint8_t tid) const;
   /**
-   * \param recipient address of peer station involved in block ack mechanism.
+   * \param address recipient address of peer station involved in block ack mechanism.
    * \param tid traffic ID.
    *
    * \return the number of packets buffered for a specified agreement.
@@ -330,13 +340,14 @@ public:
   /**
    * Return whether A-MPDU is used to transmit data to a peer station.
    *
-   * \param dest address of peer station.
+   * \param dest address of peer station
+   * \returns true if A-MPDU is used by the peer station
    */
   bool GetAmpduExist (Mac48Address dest) const;
   /**
    * Set indication whether A-MPDU is used to transmit data to a peer station.
    *
-   * \param address address of peer station.
+   * \param dest address of peer station.
    * \param enableAmpdu flag whether A-MPDU is used or not.
    */
   void SetAmpduExist (Mac48Address dest, bool enableAmpdu);
@@ -360,18 +371,19 @@ public:
   /**
    * Remove a packet after you peek in the retransmit queue and get it.
    *
-   * /param tid traffic ID of the packet to be removed.
-   * /param recipient address of the recipient the packet was intended for.
-   * /param seqnumber sequence number of the packet to be removed.
+   * \param tid traffic ID of the packet to be removed.
+   * \param recipient address of the recipient the packet was intended for.
+   * \param seqnumber sequence number of the packet to be removed.
    */
   void RemoveRetransmitPacket (uint8_t tid, Mac48Address recipient, uint16_t seqnumber);
-  /*
+  /**
    * Peek in retransmit queue and get the next packet without removing it from the queue.
    *
-   * /param header Wi-Fi header.
-   * /param recipient address of the recipient.
-   * /param tid traffic ID.
-   * /param timestamp timestamp.
+   * \param header Wi-Fi header.
+   * \param recipient address of the recipient.
+   * \param tid traffic ID.
+   * \param timestamp the timestamp.
+   * \returns the packet.
    */
   Ptr<const Packet> PeekNextRetransmitPacket (WifiMacHeader &header, Mac48Address recipient, uint8_t tid, Time *timestamp);
   /**
@@ -450,13 +462,13 @@ private:
    * if an established block ack agreement exists with the receiver.
    */
   void VerifyBlockAck (void);
-  /*
+  /**
    * Return the remaining duration in the current TXOP.
    *
    * \return the remaining duration in the current TXOP.
    */
   Time GetTxopRemaining (void) const;
-  /*
+  /**
    * Check if the station has TXOP granted for the next MPDU.
    *
    * \return true if the station has TXOP granted for the next MPDU,
@@ -513,35 +525,38 @@ private:
    * Calculate the size of the next TXOP fragment.
    *
    * \param fragmentNumber number of the next fragment
+   * \returns the next TXOP fragment size
    */
   uint32_t GetNextTxopFragmentSize (uint32_t fragmentNumber) const;
   /**
    * Calculate the offset for the fragment.
    *
    * \param fragmentNumber number of the fragment
+   * \returns the TXOP fragment offset
    */
   uint32_t GetTxopFragmentOffset (uint32_t fragmentNumber) const;
 
   void DoDispose (void);
   void DoInitialize (void);
 
-  AcIndex m_ac;
-  Ptr<MsduAggregator> m_msduAggregator;
-  Ptr<MpduAggregator> m_mpduAggregator;
-  TypeOfStation m_typeOfStation;
-  QosBlockedDestinations *m_qosBlockedDestinations;
-  BlockAckManager *m_baManager;
-  uint8_t m_blockAckThreshold;
-  BlockAckType m_blockAckType;
-  Time m_currentPacketTimestamp;
-  uint16_t m_blockAckInactivityTimeout;
-  Bar m_currentBar;
-  Time m_startTxop;
-  bool m_isAccessRequestedForRts;
-  bool m_currentIsFragmented;
-  TracedValue<uint32_t> m_backoffTrace;
-  TracedValue<uint32_t> m_cwTrace;
-  TracedCallback<Time, Time> m_txopTrace;
+  AcIndex m_ac;                                     //!< the access category
+  Ptr<MsduAggregator> m_msduAggregator;             //!< A-MSDU aggregator
+  Ptr<MpduAggregator> m_mpduAggregator;             //!< A-MPDU aggregator
+  TypeOfStation m_typeOfStation;                    //!< the type of station
+  QosBlockedDestinations *m_qosBlockedDestinations; //!< QOS blocked destinations
+  BlockAckManager *m_baManager;                     //!< the Block ACK manager
+  uint8_t m_blockAckThreshold;                      //!< the Block ACK threshold
+  BlockAckType m_blockAckType;                      //!< the Block ACK type
+  Time m_currentPacketTimestamp;                    //!< the current packet timestamp
+  uint16_t m_blockAckInactivityTimeout;             //!< the Block ACK inactivity timeout
+  Bar m_currentBar;                                 //!< the current BAR
+  Time m_startTxop;                                 //!< the start TXOP time
+  bool m_isAccessRequestedForRts;                   //!< flag whether access is requested to transmit a RTS frame
+  bool m_currentIsFragmented;                       //!< flag whether current packet is fragmented
+
+  TracedValue<uint32_t> m_backoffTrace;   //!< backoff trace value
+  TracedValue<uint32_t> m_cwTrace;        //!< CW trace value
+  TracedCallback<Time, Time> m_txopTrace; //!< TXOP trace callback
 };
 
 } //namespace ns3

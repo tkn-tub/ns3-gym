@@ -36,9 +36,15 @@ class WifiMacHeader;
 class MsduAggregator : public Object
 {
 public:
+  /// DeaggregatedMsdus typedef
   typedef std::list<std::pair<Ptr<Packet>, AmsduSubframeHeader> > DeaggregatedMsdus;
+  /// DeaggregatedMsdusCI typedef
   typedef std::list<std::pair<Ptr<Packet>, AmsduSubframeHeader> >::const_iterator DeaggregatedMsdusCI;
 
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
 
   /**
@@ -56,13 +62,25 @@ public:
    */
   virtual uint32_t GetMaxAmsduSize (void) const = 0;
 
-  /* Adds <i>packet</i> to <i>aggregatedPacket</i>. In concrete aggregator's implementation is
+  /**
+   * Adds <i>packet</i> to <i>aggregatedPacket</i>. In concrete aggregator's implementation is
    * specified how and if <i>packet</i> can be added to <i>aggregatedPacket</i>. If <i>packet</i>
    * can be added returns true, false otherwise.
+   *
+   * \param packet the packet.
+   * \param aggregatedPacket the aggregated packet.
+   * \param src the source address.
+   * \param dest the destination address
+   * \return true if successful.
    */
   virtual bool Aggregate (Ptr<const Packet> packet, Ptr<Packet> aggregatedPacket,
                           Mac48Address src, Mac48Address dest) const = 0;
 
+  /**
+   *
+   * \param aggregatedPacket the aggregated packet.
+   * \returns DeaggregatedMsdus.
+   */
   static DeaggregatedMsdus Deaggregate (Ptr<Packet> aggregatedPacket);
 };
 

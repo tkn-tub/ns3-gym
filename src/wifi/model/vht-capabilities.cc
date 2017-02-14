@@ -447,6 +447,14 @@ VhtCapabilities::GetTxHighestSupportedLgiDataRate () const
 
 ATTRIBUTE_HELPER_CPP (VhtCapabilities);
 
+/**
+ * output stream output operator
+ *
+ * \param os output stream
+ * \param VhtCapabilities
+ *
+ * \returns output stream
+ */
 std::ostream &
 operator << (std::ostream &os, const VhtCapabilities &VhtCapabilities)
 {
@@ -455,6 +463,14 @@ operator << (std::ostream &os, const VhtCapabilities &VhtCapabilities)
   return os;
 }
 
+/**
+ * input stream input operator
+ *
+ * \param is input stream
+ * \param VhtCapabilities
+ *
+ * \returns input stream
+ */
 std::istream &operator >> (std::istream &is,VhtCapabilities &VhtCapabilities)
 {
   uint32_t c1;

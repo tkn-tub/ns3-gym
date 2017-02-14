@@ -49,6 +49,10 @@ namespace ns3 {
 class SpectrumWifiPhy : public WifiPhy
 {
 public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
 
   SpectrumWifiPhy ();
@@ -144,13 +148,13 @@ public:
    */
   typedef void (* SignalArrivalCallback) (bool signalType, uint32_t senderNodeId, double rxPower, Time duration);
 
-  virtual Ptr<Channel> GetChannel (void) const;
+  Ptr<Channel> GetChannel (void) const;
 
 
 protected:
   // Inherited
-  virtual void DoDispose (void);
-  virtual void DoInitialize (void);
+  void DoDispose (void);
+  void DoInitialize (void);
 
 
 private:
@@ -168,11 +172,11 @@ private:
   Ptr<SpectrumChannel> m_channel;        //!< SpectrumChannel that this SpectrumWifiPhy is connected to
   std::vector<uint8_t> m_operationalChannelList; //!< List of possible channels
 
-  Ptr<WifiSpectrumPhyInterface> m_wifiSpectrumPhyInterface;
-  Ptr<AntennaModel> m_antenna;
-  mutable Ptr<const SpectrumModel> m_rxSpectrumModel;
+  Ptr<WifiSpectrumPhyInterface> m_wifiSpectrumPhyInterface; //!< Spectrum phy interface
+  Ptr<AntennaModel> m_antenna; //!< antenna model
+  mutable Ptr<const SpectrumModel> m_rxSpectrumModel; //!< receive spectrum model
   bool m_disableWifiReception;          //!< forces this Phy to fail to sync on any signal
-  TracedCallback<bool, uint32_t, double, Time> m_signalCb;
+  TracedCallback<bool, uint32_t, double, Time> m_signalCb; //!< Signal callback
 
 };
 

@@ -140,7 +140,7 @@ public:
    * \returns the data bit rate of this signal.
    */
   uint64_t GetDataRate (WifiTxVector txVector) const;
-  /*
+  /**
    * \param channelWidth the considered channel width in MHz
    *
    * \returns the data bit rate of this non-HT or non-VHT signal.
@@ -193,11 +193,13 @@ public:
    */
   uint64_t GetNonHtReferenceRate (void) const;
   /**
+   * \param mode wifi mode
    * \returns true if this WifiMode has a
    * a code rate strictly higher than mode.
    */
   bool IsHigherCodeRate (WifiMode mode) const;
   /**
+   * \param mode wifi mode
    * \returns true if this WifiMode has a
    * a rate strictly higher than mode.
    */
@@ -228,9 +230,10 @@ private:
    * \param uid unique ID
    */
   WifiMode (uint32_t uid);
-  uint32_t m_uid;
+  uint32_t m_uid; ///< UID
 };
 
+/// equality operator
 bool operator == (const WifiMode &a, const WifiMode &b);
 std::ostream & operator << (std::ostream & os, const WifiMode &mode);
 std::istream & operator >> (std::istream &is, WifiMode &mode);
@@ -314,12 +317,12 @@ private:
    */
   struct WifiModeItem
   {
-    std::string uniqueUid;
-    WifiModulationClass modClass;
-    uint16_t constellationSize;
-    WifiCodeRate codingRate;
-    bool isMandatory;
-    uint8_t mcsValue;
+    std::string uniqueUid; ///< unique UID
+    WifiModulationClass modClass; ///< modulation class
+    uint16_t constellationSize; ///< constellation size
+    WifiCodeRate codingRate; ///< coding rate
+    bool isMandatory; ///< flag to indicate whether this mode is mandatory
+    uint8_t mcsValue; ///< MCS value
   };
 
   /**
@@ -351,7 +354,7 @@ private:
    * typedef for a vector of WifiModeItem.
    */
   typedef std::vector<WifiModeItem> WifiModeItemList;
-  WifiModeItemList m_itemList;
+  WifiModeItemList m_itemList; ///< item list
 };
 
 } //namespace ns3

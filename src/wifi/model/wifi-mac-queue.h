@@ -48,10 +48,15 @@ class QosBlockedDestinations;
 class WifiMacQueue : public Object
 {
 public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
   WifiMacQueue ();
   ~WifiMacQueue ();
 
+  /// drop policy
   enum DropPolicy
   {
     DROP_NEWEST,
@@ -225,7 +230,7 @@ protected:
   /**
    * Clean up the queue by removing packets that exceeded the maximum delay.
    */
-  virtual void Cleanup (void);
+  void Cleanup (void);
 
   /**
    * A struct that holds information about a packet for putting

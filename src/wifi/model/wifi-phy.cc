@@ -3792,6 +3792,9 @@ std::ostream& operator<< (std::ostream& os, WifiPhy::State state)
 
 namespace {
 
+/**
+ * Constructor class
+ */
 static class Constructor
 {
 public:
@@ -3875,7 +3878,6 @@ public:
     ns3::WifiPhy::GetVhtMcs7 ();
     ns3::WifiPhy::GetVhtMcs8 ();
     ns3::WifiPhy::GetVhtMcs9 ();
-
     ns3::WifiPhy::GetHeMcs0 ();
     ns3::WifiPhy::GetHeMcs1 ();
     ns3::WifiPhy::GetHeMcs2 ();
@@ -3889,6 +3891,6 @@ public:
     ns3::WifiPhy::GetHeMcs10 ();
     ns3::WifiPhy::GetHeMcs11 ();
   }
-} g_constructor;
+} g_constructor; ///< the constructor
 
 }

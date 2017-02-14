@@ -85,11 +85,16 @@ private:
 class WifiRemoteStationManager : public Object
 {
 public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
 
   WifiRemoteStationManager ();
   virtual ~WifiRemoteStationManager ();
 
+  /// ProtectionMode enumeration
   enum ProtectionMode
   {
     RTS_CTS,
@@ -107,7 +112,7 @@ public:
    * Set up MAC associated with this device since it is the object that
    * knows the full set of timing parameters (e.g. IFS).
    *
-   * \param phy the PHY of this device
+   * \param mac the MAC of this device
    */
   virtual void SetupMac (Ptr<WifiMac> mac);
 
@@ -192,7 +197,7 @@ public:
    * \param from the address of the station being recorded
    * \param hecapabilities the HE capabilities of the station
    */
-  void AddStationHeCapabilities (Mac48Address from, HeCapabilities vhtcapabilities);
+  void AddStationHeCapabilities (Mac48Address from, HeCapabilities hecapabilities);
   /**
    * Enable or disable QoS support.
    *
@@ -1185,20 +1190,110 @@ private:
    */
   virtual uint8_t DoGetBlockAckTxPowerLevel (Mac48Address address, WifiMode blockAckMode);
 
+  /**
+   * \param address the address of the recipient
+   * \param ctsMode the mode to be used
+   *
+   * \return the CTS transmit channel width
+   */
   virtual uint8_t DoGetCtsTxChannelWidth (Mac48Address address, WifiMode ctsMode);
+  /**
+   * \param address the address of the recipient
+   * \param ctsMode the mode to be used
+   *
+   * \return the CTS transmit guard interval
+   */
   virtual uint16_t DoGetCtsTxGuardInterval (Mac48Address address, WifiMode ctsMode);
+  /**
+   * \param address the address of the recipient
+   * \param ctsMode the mode to be used
+   *
+   * \return the CTS transmit NSS
+   */
   virtual uint8_t DoGetCtsTxNss (Mac48Address address, WifiMode ctsMode);
+  /**
+   * \param address the address of the recipient
+   * \param ctsMode the mode to be used
+   *
+   * \return the CTS transmit NESS
+   */
   virtual uint8_t DoGetCtsTxNess (Mac48Address address, WifiMode ctsMode);
+  /**
+   * \param address the address of the recipient
+   * \param ctsMode the mode to be used
+   *
+   * \return the CTS transmit STBC
+   */
   virtual bool  DoGetCtsTxStbc (Mac48Address address, WifiMode ctsMode);
+  /**
+   * \param address the address of the recipient
+   * \param ctsMode the mode to be used
+   *
+   * \return the ack transmit channel width
+   */
   virtual uint8_t DoGetAckTxChannelWidth (Mac48Address address, WifiMode ctsMode);
+  /**
+   * \param address the address of the recipient
+   * \param ackMode the mode to be used
+   *
+   * \return the ack transmit guard interval
+   */
   virtual uint16_t DoGetAckTxGuardInterval (Mac48Address address, WifiMode ackMode);
+  /**
+   * \param address the address of the recipient
+   * \param ackMode the mode to be used
+   *
+   * \return the ack transmit NSS
+   */
   virtual uint8_t DoGetAckTxNss (Mac48Address address, WifiMode ackMode);
+  /**
+   * \param address the address of the recipient
+   * \param ackMode the mode to be used
+   *
+   * \return the ack transmit NESS
+   */
   virtual uint8_t DoGetAckTxNess (Mac48Address address, WifiMode ackMode);
+  /**
+   * \param address the address of the recipient
+   * \param ackMode the mode to be used
+   *
+   * \return the ack transmit STBC
+   */
   virtual bool DoGetAckTxStbc (Mac48Address address, WifiMode ackMode);
+  /**
+   * \param address the address of the recipient
+   * \param ctsMode the mode to be used
+   *
+   * \return the block ack transmit channel width
+   */
   virtual uint8_t DoGetBlockAckTxChannelWidth (Mac48Address address, WifiMode ctsMode);
+  /**
+   * \param address the address of the recipient
+   * \param blockAckMode the mode to be used
+   *
+   * \return the block ack transmit guard interval
+   */
   virtual uint16_t DoGetBlockAckTxGuardInterval (Mac48Address address, WifiMode blockAckMode);
+  /**
+   * \param address the address of the recipient
+   * \param blockAckMode the mode to be used
+   *
+   * \return the block ack transmit NSS
+   */
   virtual uint8_t DoGetBlockAckTxNss (Mac48Address address, WifiMode blockAckMode);
+  /**
+   * \param address the address of the recipient
+   * \param blockAckMode the mode to be used
+   *
+   * \return the block ack transmit NESS
+   */
   virtual uint8_t DoGetBlockAckTxNess (Mac48Address address, WifiMode blockAckMode);
+  /**
+   * \param address the address of the recipient
+   * \param blockAckMode the mode to be used
+   *
+   * \return the block ack transmit STBC
+   */
   virtual bool DoGetBlockAckTxStbc (Mac48Address address, WifiMode blockAckMode);
 
   /**
@@ -1316,6 +1411,14 @@ private:
    */
   bool IsAllowedControlAnswerModulationClass (WifiModulationClass modClassReq, WifiModulationClass modClassAnswer) const;
 
+  /**
+   * Get control answer mode function.
+   *
+   * \param address the address of the station
+   * \param reqMode request mode
+   *
+   * \return control answer mode
+   */
   WifiMode GetControlAnswerMode (Mac48Address address, WifiMode reqMode);
 
   /**
@@ -1376,8 +1479,8 @@ private:
    * WifiRemoteStationManager::GetNBasicModes() and
    * WifiRemoteStationManager::GetBasicMode().
    */
-  WifiModeList m_bssBasicRateSet;
-  WifiModeList m_bssBasicMcsSet;
+  WifiModeList m_bssBasicRateSet; //!< basic rate set
+  WifiModeList m_bssBasicMcsSet; //!< basic MCS set
 
   StationStates m_states;  //!< States of known stations
   Stations m_stations;     //!< Information for each known stations
@@ -1450,12 +1553,12 @@ struct WifiRemoteStationState
    * WifiRemoteStationManager::GetNSupported() and
    * WifiRemoteStationManager::GetSupported().
    */
-  WifiModeList m_operationalRateSet;
-  WifiModeList m_operationalMcsSet;
+  WifiModeList m_operationalRateSet; //!< opertional rate set
+  WifiModeList m_operationalMcsSet; //!< operational MCS set
   Mac48Address m_address;  //!< Mac48Address of the remote station
-  WifiRemoteStationInfo m_info;
+  WifiRemoteStationInfo m_info; //!< remote station info
 
-  uint8_t m_channelWidth;    //!< Channel width (in MHz) supported by the remote station
+  uint8_t m_channelWidth;     //!< Channel width (in MHz) supported by the remote station
   bool m_shortGuardInterval;  //!< Flag if HT/VHT short guard interval is supported by the remote station
   uint16_t m_guardInterval;   //!< HE Guard interval duration (in nanoseconds) supported by the remote station
   uint8_t m_streams;          //!< Number of supported streams by the remote station

@@ -67,7 +67,7 @@ public:
 
 
 private:
-  std::set<std::pair<Mac48Address, uint8_t>> m_blockedQosPackets;
+  std::set < std::pair < Mac48Address, uint8_t >> m_blockedQosPackets; ///< blocked QOS packets
 };
 
 } //namespace ns3

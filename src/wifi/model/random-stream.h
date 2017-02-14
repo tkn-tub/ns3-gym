@@ -56,6 +56,9 @@ public:
 };
 
 
+/**
+ * RealRandomStream class
+ */
 class RealRandomStream : public RandomStream
 {
 public:
@@ -80,6 +83,9 @@ private:
 };
 
 
+/**
+ * TestRandomStream class
+ */
 class TestRandomStream : public RandomStream
 {
 public:
@@ -104,7 +110,7 @@ public:
 
 
 private:
-  std::list<uint32_t> m_nexts;
+  std::list<uint32_t> m_nexts; ///< nexts
 };
 
 } //namespace ns3

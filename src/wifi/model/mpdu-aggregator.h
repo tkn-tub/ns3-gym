@@ -45,6 +45,10 @@ public:
    */
   typedef std::list<std::pair<Ptr<Packet>, AmpduSubframeHeader> >::const_iterator DeaggregatedMpdusCI;
 
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
 
   /**
@@ -90,6 +94,7 @@ public:
    */
   virtual bool CanBeAggregated (uint32_t packetSize, Ptr<Packet> aggregatedPacket, uint8_t blockAckSize) const = 0;
   /**
+   * \param packet the Packet
    * \return padding that must be added to the end of an aggregated packet
    *
    * Calculates how much padding must be added to the end of an aggregated packet, after that a new packet is added.
@@ -99,6 +104,7 @@ public:
   /**
    * Deaggregates an A-MPDU by removing the A-MPDU subframe header and padding.
    *
+   * \param aggregatedPacket the aggregated packet
    * \return list of deaggragted packets and their A-MPDU subframe headers
    */
   static DeaggregatedMpdus Deaggregate (Ptr<Packet> aggregatedPacket);

@@ -50,8 +50,10 @@ NS_LOG_COMPONENT_DEFINE ("MinstrelHtWifiManager");
 
 namespace ns3 {
 
+///MinstrelHtWifiRemoteStation structure
 struct MinstrelHtWifiRemoteStation : MinstrelWifiRemoteStation
 {
+  /// Dispose station function
   void DisposeStation ();
 
   uint32_t m_sampleGroup;     //!< The group that the sample rate belongs to.

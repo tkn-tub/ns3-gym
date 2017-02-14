@@ -52,6 +52,12 @@ public:
    */
   void SetForwardCallback (ForwardUpCallback callback);
 
+  /**
+   * Receive a packet.
+   *
+   * \param packet the packet
+   * \param hdr MAC header
+   */
   void Receive (Ptr<Packet> packet, const WifiMacHeader *hdr);
 
 
@@ -113,9 +119,9 @@ private:
    */
   typedef std::map <std::pair<Mac48Address, uint8_t>, OriginatorRxStatus *, std::less<std::pair<Mac48Address,uint8_t> > >::iterator QosOriginatorsI;
 
-  Originators m_originatorStatus;
-  QosOriginators m_qosOriginatorStatus;
-  ForwardUpCallback m_callback;
+  Originators m_originatorStatus; ///< originator status
+  QosOriginators m_qosOriginatorStatus; ///< QOS originator status
+  ForwardUpCallback m_callback; ///< forward up callback
 };
 
 } //namespace ns3

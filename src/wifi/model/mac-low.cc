@@ -226,34 +226,35 @@ public:
   virtual ~PhyMacLowListener ()
   {
   }
-  virtual void NotifyRxStart (Time duration)
+  void NotifyRxStart (Time duration)
   {
   }
-  virtual void NotifyRxEndOk (void)
+  void NotifyRxEndOk (void)
   {
   }
-  virtual void NotifyRxEndError (void)
+  void NotifyRxEndError (void)
   {
   }
-  virtual void NotifyTxStart (Time duration, double txPowerDbm)
+  void NotifyTxStart (Time duration, double txPowerDbm)
   {
   }
-  virtual void NotifyMaybeCcaBusyStart (Time duration)
+  void NotifyMaybeCcaBusyStart (Time duration)
   {
   }
-  virtual void NotifySwitchingStart (Time duration)
+  void NotifySwitchingStart (Time duration)
   {
     m_macLow->NotifySwitchingStartNow (duration);
   }
-  virtual void NotifySleep (void)
+  void NotifySleep (void)
   {
     m_macLow->NotifySleepNow ();
   }
-  virtual void NotifyWakeup (void)
+  void NotifyWakeup (void)
   {
   }
+
 private:
-  ns3::MacLow *m_macLow;
+  ns3::MacLow *m_macLow; ///< the MAC
 };
 
 

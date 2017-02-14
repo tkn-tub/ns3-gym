@@ -41,6 +41,10 @@ class SpectrumWifiPhy;
 class WifiSpectrumPhyInterface : public SpectrumPhy
 {
 public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
   WifiSpectrumPhyInterface ();
   /**
@@ -50,20 +54,21 @@ public:
   void SetSpectrumWifiPhy (Ptr<SpectrumWifiPhy> phy);
 
   // Inherited from SpectrumPhy
-  virtual Ptr<NetDevice> GetDevice () const;
-  virtual void SetDevice (Ptr<NetDevice> d);
-  virtual void SetMobility (Ptr<MobilityModel> m);
-  virtual Ptr<MobilityModel> GetMobility ();
-  virtual void SetChannel (Ptr<SpectrumChannel> c);
-  virtual Ptr<const SpectrumModel> GetRxSpectrumModel () const;
-  virtual Ptr<AntennaModel> GetRxAntenna ();
-  virtual void StartRx (Ptr<SpectrumSignalParameters> params);
+  Ptr<NetDevice> GetDevice () const;
+  void SetDevice (Ptr<NetDevice> d);
+  void SetMobility (Ptr<MobilityModel> m);
+  Ptr<MobilityModel> GetMobility ();
+  void SetChannel (Ptr<SpectrumChannel> c);
+  Ptr<const SpectrumModel> GetRxSpectrumModel () const;
+  Ptr<AntennaModel> GetRxAntenna ();
+  void StartRx (Ptr<SpectrumSignalParameters> params);
+
 
 private:
   virtual void DoDispose (void);
-  Ptr<SpectrumWifiPhy> m_spectrumWifiPhy;
-  Ptr<NetDevice> m_netDevice;
-  Ptr<SpectrumChannel> m_channel;
+  Ptr<SpectrumWifiPhy> m_spectrumWifiPhy; ///< spectrum phy
+  Ptr<NetDevice> m_netDevice; ///< the device
+  Ptr<SpectrumChannel> m_channel; ///< spectrum channel
 };
 
 } // namespace ns3

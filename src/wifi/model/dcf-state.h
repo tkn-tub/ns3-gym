@@ -41,6 +41,11 @@ class DcaTxop;
 class DcfState
 {
 public:
+  /**
+   * Constructor
+   *
+   * \param txop the DCA txop
+   */
   DcfState (Ptr<DcaTxop> txop);
   virtual ~DcfState ();
 
@@ -182,18 +187,20 @@ protected:
    */
   void NotifyWakeUp (void);
 
-  uint32_t m_aifsn;
-  uint32_t m_backoffSlots;
-  //the backoffStart variable is used to keep track of the
-  //time at which a backoff was started or the time at which
-  //the backoff counter was last updated.
+  uint32_t m_aifsn;        //!< the AIFSN
+  uint32_t m_backoffSlots; //!< the backoff slots
+  /**
+   * the backoffStart variable is used to keep track of the
+   * time at which a backoff was started or the time at which
+   * the backoff counter was last updated.
+   */
   Time m_backoffStart;
-  uint32_t m_cwMin;
-  uint32_t m_cwMax;
-  uint32_t m_cw;
-  Time m_txopLimit;
-  bool m_accessRequested;
-  Ptr<DcaTxop> m_txop;
+  uint32_t m_cwMin;       //!< the CW minimum
+  uint32_t m_cwMax;       //!< the CW maximum
+  uint32_t m_cw;          //!< the current CW
+  Time m_txopLimit;       //!< the txop limit time
+  bool m_accessRequested; //!< flag whether channel access is already requested
+  Ptr<DcaTxop> m_txop;    //!< the DCA TXOP
 };
 
 } //namespace ns3

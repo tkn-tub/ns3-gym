@@ -35,8 +35,12 @@ namespace ns3 {
 class WifiPhyTag : public Tag
 {
 public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
-  virtual TypeId GetInstanceTypeId (void) const;
+  TypeId GetInstanceTypeId (void) const;
 
   /**
    * Constructor
@@ -45,7 +49,7 @@ public:
   /**
    * Constructor
    * \param txVector the WifiTxVector
-   * \param mpduType the mpduType
+   * \param mpdutype the mpduType
    */
   WifiPhyTag (WifiTxVector txVector, MpduType mpdutype);
   /**
@@ -60,14 +64,15 @@ public:
   MpduType GetMpduType (void) const;
 
   // From class Tag
-  virtual uint32_t GetSerializedSize (void) const;
-  virtual void Serialize (TagBuffer i) const;
-  virtual void Deserialize (TagBuffer i);
-  virtual void Print (std::ostream &os) const;
+  uint32_t GetSerializedSize (void) const;
+  void Serialize (TagBuffer i) const;
+  void Deserialize (TagBuffer i);
+  void Print (std::ostream &os) const;
+
 
 private:
-  WifiTxVector m_wifiTxVector;
-  MpduType m_mpduType;
+  WifiTxVector m_wifiTxVector; ///< wifi transmit vector
+  MpduType m_mpduType; ///< MPDU type
 };
 
 } // namespace ns3

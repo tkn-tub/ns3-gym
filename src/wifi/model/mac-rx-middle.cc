@@ -43,9 +43,9 @@ private:
    */
   typedef std::list<Ptr<const Packet> >::const_iterator FragmentsCI;
 
-  bool m_defragmenting;
-  uint16_t m_lastSequenceControl;
-  Fragments m_fragments;
+  bool m_defragmenting; ///< flag to indicate whether we are defragmenting
+  uint16_t m_lastSequenceControl; ///< last sequence control
+  Fragments m_fragments; ///< fragments
 
 
 public:

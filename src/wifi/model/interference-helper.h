@@ -96,11 +96,11 @@ public:
 
 
 private:
-    uint32_t m_size;
-    WifiTxVector m_txVector;
-    Time m_startTime;
-    Time m_endTime;
-    double m_rxPowerW;
+    uint32_t m_size; ///< size
+    WifiTxVector m_txVector; ///< TXVECTOR
+    Time m_startTime; ///< start time
+    Time m_endTime; ///< end time
+    double m_rxPowerW; ///< receive power in watts
   };
 
   /**
@@ -108,8 +108,8 @@ private:
    */
   struct SnrPer
   {
-    double snr;
-    double per;
+    double snr; ///< SNR
+    double per; ///< PER
   };
 
   InterferenceHelper ();
@@ -144,7 +144,7 @@ private:
    * Set the number of RX antennas in the receiver corresponding to this
    * interference helper.
    *
-   * \param the number of RX antennas
+   * \param rx the number of RX antennas
    */
   void SetNumberOfReceiveAntennas (uint8_t rx);
 
@@ -244,8 +244,8 @@ public:
 
 
 private:
-    Time m_time;
-    double m_delta;
+    Time m_time; ///< time
+    double m_delta; ///< delta
   };
   /**
    * typedef for a vector of NiChanges
@@ -316,12 +316,12 @@ private:
   double CalculatePlcpHeaderPer (Ptr<const Event> event, NiChanges *ni) const;
 
   double m_noiseFigure; /**< noise figure (linear) */
-  Ptr<ErrorRateModel> m_errorRateModel;
+  Ptr<ErrorRateModel> m_errorRateModel; ///< error rate model
   uint8_t m_numRxAntennas; /**< the number of RX antennas in the corresponding receiver */
   /// Experimental: needed for energy duration calculation
   NiChanges m_niChanges;
-  double m_firstPower;
-  bool m_rxing;
+  double m_firstPower; ///< first power
+  bool m_rxing; ///< flag whether it is in receiving state
   /// Returns an iterator to the first nichange, which is later than moment
   NiChanges::iterator GetPosition (Time moment);
   /**

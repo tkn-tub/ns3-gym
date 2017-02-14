@@ -30,35 +30,63 @@ class CtrlBAckResponseHeader;
 
 /**
  * \ingroup wifi
- *
+ * \brief BlockAckCache cache
  *
  */
 class BlockAckCache
 {
 public:
+  /**
+   * Init function
+   * \param winStart the window start
+   * \param winSize the window size
+   */
   void Init (uint16_t winStart, uint16_t winSize);
 
+  /**
+   * Update with MPDU function
+   * \param hdr the wifi MAC header
+   */
   void UpdateWithMpdu (const WifiMacHeader *hdr);
+  /**
+   * Update with block ack request function
+   * \param startingSeq the starting sequence
+   */
   void UpdateWithBlockAckReq (uint16_t startingSeq);
   /**
    * When an A-MPDU is received, the window start may change to a new value
    * depending on the sequence number of the received MPDU (standard11n page 134).
    * This function is used to retrieve this value in order to add it to the BlockAck.
+   * \returns window start
    */
   uint16_t GetWinStart (void) const;
 
+  /**
+   * Fill block ack bitmap function
+   * \param blockAckHeader the block ack bitmap
+   */
   void FillBlockAckBitmap (CtrlBAckResponseHeader *blockAckHeader);
 
 
 private:
+  /**
+   * Reset portion of bitmap functiion
+   * \param start the starting position
+   * \param end the ending position
+   */
   void ResetPortionOfBitmap (uint16_t start, uint16_t end);
+  /**
+   * Is in window function
+   * \param seq the sequence
+   * \returns true if is in the window
+   */
   bool IsInWindow (uint16_t seq) const;
 
-  uint16_t m_winStart;
-  uint8_t m_winSize;
-  uint16_t m_winEnd;
+  uint16_t m_winStart; ///< window start
+  uint8_t m_winSize; ///< window size
+  uint16_t m_winEnd; ///< window end
 
-  uint16_t m_bitmap[4096];
+  uint16_t m_bitmap[4096]; ///< bitmap
 };
 
 } //namespace ns3

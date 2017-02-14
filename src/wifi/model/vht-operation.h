@@ -29,17 +29,22 @@ namespace ns3 {
  * \brief The VHT Operation Information Element
  * \ingroup wifi
  *
- * This class knows how to serialise and deserialise 
+ * This class knows how to serialise and deserialise
  * the VHT Operation Information Element
  *
  * \see attribute_VhtOperation
  */
-class VhtOperation: public WifiInformationElement
+class VhtOperation : public WifiInformationElement
 {
 public:
   VhtOperation ();
+  /**
+   * Set the VHT supported information element.
+   *
+   * \param vhtsupported the VHT supported information element
+   */
   void SetVhtSupported (uint8_t vhtsupported);
-  
+
   /**
    * Set the Channel Width field in the VHT Operation information element.
    *
@@ -65,42 +70,64 @@ public:
    */
   void SetBasicVhtMcsAndNssSet (uint16_t basicVhtMcsAndNssSet);
   /**
-   * Set the Basic VHT-MCS and NSS field in the VHT Operation information element 
+   * Set the Basic VHT-MCS and NSS field in the VHT Operation information element
    * by specifying the tuple (nss, maxMcs).
    *
    * \param nss the NSS
-   * \param maxMcs the maximum supported MCS value corresponding to that NSS
+   * \param maxVhtMcs the maximum supported VHT-MCS value corresponding to that NSS
    */
   void SetMaxVhtMcsPerNss (uint8_t nss, uint8_t maxVhtMcs);
-  
-  /*
+
+  /**
    * Return the Channel Width field in the VHT Operation information element.
    *
    * \return the Channel Width field in the VHT Operation information element
    */
   uint8_t GetChannelWidth (void) const;
-  /*
+  /**
    * Return the Channel Center Frequency Segment 0 field in the VHT Operation information element.
    *
    * \return the Channel Center Frequency Segment 0 field in the VHT Operation information element
    */
   uint8_t GetChannelCenterFrequencySegment0 (void) const;
-  /*
+  /**
    * Return the Channel Center Frequency Segment 1 field in the VHT Operation information element.
    *
    * \return the Channel Center Frequency Segment 1 field in the VHT Operation information element
    */
   uint8_t GetChannelCenterFrequencySegment1 (void) const;
-  /*
+  /**
    * Return the Basic VHT-MCS And Nss field in the VHT Operation information element.
    *
    * \return the Basic VHT-MCS And Nss field in the VHT Operation information element
    */
   uint16_t GetBasicVhtMcsAndNssSet (void) const;
 
+  /**
+   * Return the element ID.
+   *
+   * \returns the element ID
+   */
   WifiInformationElementId ElementId () const;
+  /**
+   * Return the information field size.
+   *
+   * \returns the information field size
+   */
   uint8_t GetInformationFieldSize () const;
+  /**
+   * Serialize the information field.
+   *
+   * \param start the information field iterator
+   */
   void SerializeInformationField (Buffer::Iterator start) const;
+  /**
+   * Deserialize the information field.
+   *
+   * \param start the iterator
+   * \param length the length
+   * \returns the information field size
+   */
   uint8_t DeserializeInformationField (Buffer::Iterator start, uint8_t length);
   /**
    * This information element is a bit special in that it is only
@@ -123,18 +150,34 @@ public:
 
 private:
   //VHT Operation Information
-  uint8_t m_channelWidth;
-  uint8_t m_channelCenterFrequencySegment0;
-  uint8_t m_channelCenterFrequencySegment1;
+  uint8_t m_channelWidth; ///< channel width
+  uint8_t m_channelCenterFrequencySegment0; ///< channel center frequency segment 0
+  uint8_t m_channelCenterFrequencySegment1; ///< channel center frequency segment 0
 
   //Basic VHT-MCSS and NSS Set
-  uint16_t m_basicVhtMcsAndNssSet;
+  uint16_t m_basicVhtMcsAndNssSet; ///< basic VHT MCS NSS set
 
-  //This is used to decide whether this element should be added to the frame or not
+  /// This is used to decide whether this element should be added to the frame or not
   uint8_t m_vhtSupported;
 };
 
+/**
+ * output stream output operator
+ *
+ * \param os output stream
+ * \param VhtOperation
+ *
+ * \returns output stream
+ */
 std::ostream &operator << (std::ostream &os, const VhtOperation &VhtOperation);
+/**
+ * input stream input operator
+ *
+ * \param is input stream
+ * \param VhtOperation
+ *
+ * \returns input stream
+ */
 std::istream &operator >> (std::istream &is, VhtOperation &VhtOperation);
 
 ATTRIBUTE_HELPER_HEADER (VhtOperation);

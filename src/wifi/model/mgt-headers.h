@@ -138,11 +138,11 @@ public:
    * \return The TypeId.
    */
   static TypeId GetTypeId (void);
-  virtual TypeId GetInstanceTypeId (void) const;
-  virtual void Print (std::ostream &os) const;
-  virtual uint32_t GetSerializedSize (void) const;
-  virtual void Serialize (Buffer::Iterator start) const;
-  virtual uint32_t Deserialize (Buffer::Iterator start);
+  TypeId GetInstanceTypeId (void) const;
+  void Print (std::ostream &os) const;
+  uint32_t GetSerializedSize (void) const;
+  void Serialize (Buffer::Iterator start) const;
+  uint32_t Deserialize (Buffer::Iterator start);
 
 
 private:
@@ -152,7 +152,7 @@ private:
   HtCapabilities m_htCapability;      //!< HT capabilities
   VhtCapabilities m_vhtCapability;    //!< VHT capabilities
   HeCapabilities m_heCapability;      //!< HE capabilities
-  uint16_t m_listenInterval;
+  uint16_t m_listenInterval;          //!< listen interval
 };
 
 
@@ -292,18 +292,18 @@ public:
    * \return The TypeId.
    */
   static TypeId GetTypeId (void);
-  virtual TypeId GetInstanceTypeId (void) const;
-  virtual void Print (std::ostream &os) const;
-  virtual uint32_t GetSerializedSize (void) const;
-  virtual void Serialize (Buffer::Iterator start) const;
-  virtual uint32_t Deserialize (Buffer::Iterator start);
+  TypeId GetInstanceTypeId (void) const;
+  void Print (std::ostream &os) const;
+  uint32_t GetSerializedSize (void) const;
+  void Serialize (Buffer::Iterator start) const;
+  uint32_t Deserialize (Buffer::Iterator start);
 
 
 private:
   SupportedRates m_rates; //!< List of supported rates
   CapabilityInformation m_capability; //!< Capability information
   StatusCode m_code; //!< Status code
-  uint16_t m_aid;
+  uint16_t m_aid; //!< aid
   HtCapabilities m_htCapability; //!< HT capabilities
   HtOperation m_htOperation; //!< HT operation
   VhtCapabilities m_vhtCapability; //!< VHT capabilities
@@ -389,11 +389,11 @@ public:
    * \return The TypeId.
    */
   static TypeId GetTypeId (void);
-  virtual TypeId GetInstanceTypeId (void) const;
-  virtual void Print (std::ostream &os) const;
-  virtual uint32_t GetSerializedSize (void) const;
-  virtual void Serialize (Buffer::Iterator start) const;
-  virtual uint32_t Deserialize (Buffer::Iterator start);
+  TypeId GetInstanceTypeId (void) const;
+  void Print (std::ostream &os) const;
+  uint32_t GetSerializedSize (void) const;
+  void Serialize (Buffer::Iterator start) const;
+  uint32_t Deserialize (Buffer::Iterator start);
 
 
 private:
@@ -571,11 +571,11 @@ public:
    * \return The TypeId.
    */
   static TypeId GetTypeId (void);
-  virtual TypeId GetInstanceTypeId (void) const;
-  virtual void Print (std::ostream &os) const;
-  virtual uint32_t GetSerializedSize (void) const;
-  virtual void Serialize (Buffer::Iterator start) const;
-  virtual uint32_t Deserialize (Buffer::Iterator start);
+  TypeId GetInstanceTypeId (void) const;
+  void Print (std::ostream &os) const;
+  uint32_t GetSerializedSize (void) const;
+  void Serialize (Buffer::Iterator start) const;
+  uint32_t Deserialize (Buffer::Iterator start);
 
 
 private:
@@ -633,6 +633,7 @@ public:
    * Category values - see 802.11-2012 Table 8-38
    */
 
+  ///CategoryValue enumeration
   enum CategoryValue //table 8-38 staring from IEEE 802.11, Part11, (Year 2012)
   {
     BLOCK_ACK = 3,
@@ -644,6 +645,7 @@ public:
     VENDOR_SPECIFIC_ACTION = 127,
   };
 
+  ///SelfProtectedActionValue enumeration
   enum SelfProtectedActionValue //Category: 15 (Self Protected)
   {
     PEER_LINK_OPEN = 1,         //Mesh Peering Open
@@ -653,12 +655,14 @@ public:
     GROUP_KEY_ACK = 5,          //Mesh Group Key Acknowledge
   };
 
+  ///MultihopActionValue enumeration
   enum MultihopActionValue
   {
     PROXY_UPDATE = 0,                   //not used so far
     PROXY_UPDATE_CONFIRMATION = 1,      //not used so far
   };
 
+  ///MeshActionValue enumeration
   enum MeshActionValue
   {
     LINK_METRIC_REPORT = 0,               //Action Value:0 in Category 13: Mesh
@@ -691,18 +695,18 @@ public:
    */
   typedef union
   {
-    MeshActionValue meshAction;
-    MultihopActionValue multihopAction;
-    SelfProtectedActionValue selfProtectedAction;
-    BlockAckActionValue blockAck;
-  } ActionValue;
+    MeshActionValue meshAction; ///< mesh action
+    MultihopActionValue multihopAction; ///< multi hop action
+    SelfProtectedActionValue selfProtectedAction; ///< self protected action
+    BlockAckActionValue blockAck; ///< block ack
+  } ActionValue; ///< the action value
   /**
    * Set action for this Action header.
    *
    * \param type category
    * \param action action
    */
-  void   SetAction (CategoryValue type, ActionValue action);
+  void SetAction (CategoryValue type, ActionValue action);
 
   /**
    * Return the category value.
@@ -722,15 +726,25 @@ public:
    * \return The TypeId.
    */
   static TypeId GetTypeId (void);
-  virtual TypeId GetInstanceTypeId () const;
-  virtual void Print (std::ostream &os) const;
-  virtual uint32_t GetSerializedSize () const;
-  virtual void Serialize (Buffer::Iterator start) const;
-  virtual uint32_t Deserialize (Buffer::Iterator start);
+  TypeId GetInstanceTypeId () const;
+  void Print (std::ostream &os) const;
+  uint32_t GetSerializedSize () const;
+  void Serialize (Buffer::Iterator start) const;
+  uint32_t Deserialize (Buffer::Iterator start);
 
 
 private:
+  /**
+   * Category value to string function
+   * \param value the category value
+   * \returns the categoty value string
+   */
   std::string CategoryValueToString (CategoryValue value) const;
+  /**
+   * Self protected action value to string function
+   * \param value the protected action value
+   * \returns the self protected action value string
+   */
   std::string SelfProtectedActionValueToString (SelfProtectedActionValue value) const;
   uint8_t m_category; //!< Category of the action
   uint8_t m_actionValue; //!< Action value
@@ -751,11 +765,11 @@ public:
    * \return The TypeId.
    */
   static TypeId GetTypeId (void);
-  virtual TypeId GetInstanceTypeId (void) const;
-  virtual void Print (std::ostream &os) const;
-  virtual uint32_t GetSerializedSize (void) const;
-  virtual void Serialize (Buffer::Iterator start) const;
-  virtual uint32_t Deserialize (Buffer::Iterator start);
+  TypeId GetInstanceTypeId (void) const;
+  void Print (std::ostream &os) const;
+  uint32_t GetSerializedSize (void) const;
+  void Serialize (Buffer::Iterator start) const;
+  uint32_t Deserialize (Buffer::Iterator start);
 
   /**
    * Enable delayed Block ACK.
@@ -859,7 +873,7 @@ private:
    */
   void SetStartingSequenceControl (uint16_t seqControl);
 
-  uint8_t m_dialogToken;   /* Not used for now */
+  uint8_t m_dialogToken;   //!< Not used for now
   uint8_t m_amsduSupport;  //!< Flag if A-MSDU is supported
   uint8_t m_policy;        //!< Block ACK policy
   uint8_t m_tid;           //!< Traffic ID
@@ -883,11 +897,11 @@ public:
    * \return The TypeId.
    */
   static TypeId GetTypeId (void);
-  virtual TypeId GetInstanceTypeId (void) const;
-  virtual void Print (std::ostream &os) const;
-  virtual uint32_t GetSerializedSize (void) const;
-  virtual void Serialize (Buffer::Iterator start) const;
-  virtual uint32_t Deserialize (Buffer::Iterator start);
+  TypeId GetInstanceTypeId (void) const;
+  void Print (std::ostream &os) const;
+  uint32_t GetSerializedSize (void) const;
+  void Serialize (Buffer::Iterator start) const;
+  uint32_t Deserialize (Buffer::Iterator start);
 
   /**
    * Enable delayed Block ACK.
@@ -980,7 +994,7 @@ private:
    */
   void SetParameterSet (uint16_t params);
 
-  uint8_t m_dialogToken;   /* Not used for now */
+  uint8_t m_dialogToken;   //!< Not used for now
   StatusCode m_code;       //!< Status code
   uint8_t m_amsduSupport;  //!< Flag if A-MSDU is supported
   uint8_t m_policy;        //!< Block ACK policy
@@ -1005,11 +1019,11 @@ public:
    */
   static TypeId GetTypeId (void);
   // Inherited
-  virtual TypeId GetInstanceTypeId (void) const;
-  virtual void Print (std::ostream &os) const;
-  virtual uint32_t GetSerializedSize (void) const;
-  virtual void Serialize (Buffer::Iterator start) const;
-  virtual uint32_t Deserialize (Buffer::Iterator start);
+  TypeId GetInstanceTypeId (void) const;
+  void Print (std::ostream &os) const;
+  uint32_t GetSerializedSize (void) const;
+  void Serialize (Buffer::Iterator start) const;
+  uint32_t Deserialize (Buffer::Iterator start);
 
   /**
    * Check if the initiator bit in the DELBA is setted.
@@ -1039,6 +1053,7 @@ public:
    */
   void SetByRecipient (void);
 
+
 private:
   /**
    * Return the raw parameter set.
@@ -1053,9 +1068,9 @@ private:
    */
   void SetParameterSet (uint16_t params);
 
-  uint16_t m_initiator;
+  uint16_t m_initiator; //!< initiator
   uint16_t m_tid; //!< Traffic ID
-  uint16_t m_reasonCode; /* Not used for now. Always set to 1: "Unspecified reason" */
+  uint16_t m_reasonCode; //!< Not used for now. Always set to 1: "Unspecified reason"
 };
 
 } //namespace ns3

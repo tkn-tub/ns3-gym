@@ -36,14 +36,14 @@ NS_LOG_COMPONENT_DEFINE ("ArfWifiManager");
  */
 struct ArfWifiRemoteStation : public WifiRemoteStation
 {
-  uint32_t m_timer;
-  uint32_t m_success;
-  uint32_t m_failed;
-  bool m_recovery;
-  uint32_t m_retry;
-  uint32_t m_timerTimeout;
-  uint32_t m_successThreshold;
-  uint32_t m_rate;
+  uint32_t m_timer; ///< timer value
+  uint32_t m_success; ///< success count
+  uint32_t m_failed; ///< failed count
+  bool m_recovery; ///< recovery
+  uint32_t m_retry; ///< retry count
+  uint32_t m_timerTimeout; ///< timer timeout
+  uint32_t m_successThreshold; ///< success threshold
+  uint32_t m_rate; ///< rate
 };
 
 NS_OBJECT_ENSURE_REGISTERED (ArfWifiManager);

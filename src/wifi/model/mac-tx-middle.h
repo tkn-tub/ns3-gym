@@ -67,8 +67,8 @@ public:
 
 
 private:
-  std::map <Mac48Address,uint16_t*> m_qosSequences;
-  uint16_t m_sequence;
+  std::map <Mac48Address,uint16_t*> m_qosSequences; ///< QOS sequences
+  uint16_t m_sequence; ///< current sequence number
 };
 
 } //namespace ns3

@@ -44,6 +44,10 @@ class DcfManager;
 class RegularWifiMac : public WifiMac
 {
 public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
 
   RegularWifiMac ();
@@ -129,53 +133,53 @@ public:
    * \param enable true if short slot time is to be supported,
    *               false otherwise
    */
-  virtual void SetShortSlotTimeSupported (bool enable);
+  void SetShortSlotTimeSupported (bool enable);
   /**
    * \return whether the device supports short slot time capability.
    *
    * \return true if short slot time is supported,
    *         false otherwise.
    */
-  virtual bool GetShortSlotTimeSupported (void) const;
+  bool GetShortSlotTimeSupported (void) const;
   /**
    * Enable or disable RIFS feature.
    *
    * \param enable true if RIFS is to be supported,
    *               false otherwise
    */
-  virtual void SetRifsSupported (bool enable);
+  void SetRifsSupported (bool enable);
   /**
    * \return whether the device supports RIFS capability.
    *
    * \return true if short RIFS is supported,
    *         false otherwise.
    */
-  virtual bool GetRifsSupported (void) const;
+  bool GetRifsSupported (void) const;
 
   /**
    * \return the MAC address associated to this MAC layer.
    */
-  virtual Mac48Address GetAddress (void) const;
+  Mac48Address GetAddress (void) const;
   /**
    * \return the ssid which this MAC layer is going to try to stay in.
    */
-  virtual Ssid GetSsid (void) const;
+  Ssid GetSsid (void) const;
   /**
    * \param address the current address of this MAC layer.
    */
-  virtual void SetAddress (Mac48Address address);
+  void SetAddress (Mac48Address address);
   /**
    * \param ssid the current ssid of this MAC layer.
    */
-  virtual void SetSsid (Ssid ssid);
+  void SetSsid (Ssid ssid);
   /**
    * \param bssid the BSSID of the network that this device belongs to.
    */
-  virtual void SetBssid (Mac48Address bssid);
+  void SetBssid (Mac48Address bssid);
   /**
    * \return the bssid of the network this device belongs to.
    */
-  virtual Mac48Address GetBssid (void) const;
+  Mac48Address GetBssid (void) const;
   /**
    * \brief Sets the interface in promiscuous mode.
    *
@@ -183,7 +187,7 @@ public:
    * filtering on the incoming frame path may affect the overall
    * behavior.
    */
-  virtual void SetPromisc (void);
+  void SetPromisc (void);
 
   /**
    * \param packet the packet to send.
@@ -208,19 +212,19 @@ public:
    * dequeued as soon as the channel access function determines that
    * access is granted to this MAC.
    */
-  virtual void Enqueue (Ptr<const Packet> packet, Mac48Address to) = 0;
+  void Enqueue (Ptr<const Packet> packet, Mac48Address to) = 0;
   /**
    * \param phy the physical layer attached to this MAC.
    */
-  virtual void SetWifiPhy (Ptr<WifiPhy> phy);
+  void SetWifiPhy (Ptr<WifiPhy> phy);
   /**
    * \return the physical layer attached to this MAC.
    */
-  virtual Ptr<WifiPhy> GetWifiPhy (void) const;
+  Ptr<WifiPhy> GetWifiPhy (void) const;
   /**
    * removes attached WifiPhy device from this MAC.
    */
-  virtual void ResetWifiPhy (void);
+  void ResetWifiPhy (void);
   /**
    * \param stationManager the station manager attached to this MAC.
    */
@@ -228,7 +232,7 @@ public:
   /**
    * \return the station manager attached to this MAC.
    */
-  virtual Ptr<WifiRemoteStationManager> GetWifiRemoteStationManager (void) const;
+  Ptr<WifiRemoteStationManager> GetWifiRemoteStationManager (void) const;
   /**
    * Return the HT capability of the device.
    *
@@ -261,23 +265,23 @@ public:
    * \param upCallback the callback to invoke when a packet must be
    * forwarded up the stack.
    */
-  virtual void SetForwardUpCallback (ForwardUpCallback upCallback);
+  void SetForwardUpCallback (ForwardUpCallback upCallback);
   /**
    * \param linkUp the callback to invoke when the link becomes up.
    */
-  virtual void SetLinkUpCallback (Callback<void> linkUp);
+  void SetLinkUpCallback (Callback<void> linkUp);
   /**
    * \param linkDown the callback to invoke when the link becomes down.
    */
-  virtual void SetLinkDownCallback (Callback<void> linkDown);
+  void SetLinkDownCallback (Callback<void> linkDown);
 
   /* Next functions are not pure virtual so non Qos WifiMacs are not
    * forced to implement them.
    */
-  virtual void SetBasicBlockAckTimeout (Time blockAckTimeout);
-  virtual Time GetBasicBlockAckTimeout (void) const;
-  virtual void SetCompressedBlockAckTimeout (Time blockAckTimeout);
-  virtual Time GetCompressedBlockAckTimeout (void) const;
+  void SetBasicBlockAckTimeout (Time blockAckTimeout);
+  Time GetBasicBlockAckTimeout (void) const;
+  void SetCompressedBlockAckTimeout (Time blockAckTimeout);
+  Time GetCompressedBlockAckTimeout (void) const;
 
 
 protected:
@@ -354,7 +358,7 @@ protected:
    * deal with certain values in the WifiPhyStandard enumeration, and
    * chain up to this implementation to deal with the remainder.
    */
-  virtual void FinishConfigureStandard (WifiPhyStandard standard);
+  void FinishConfigureStandard (WifiPhyStandard standard);
 
   /**
    * \param cwMin the minimum congestion window size
@@ -431,8 +435,8 @@ protected:
    * \param reqHdr a pointer to the received ADDBA Request header.
    * \param originator the MAC address of the originator.
    */
-  virtual void SendAddBaResponse (const MgtAddBaRequestHeader *reqHdr,
-                                  Mac48Address originator);
+  void SendAddBaResponse (const MgtAddBaRequestHeader *reqHdr,
+                          Mac48Address originator);
 
   /**
    * This Boolean is set \c true iff this WifiMac is to model
@@ -563,56 +567,141 @@ protected:
 
 
 private:
+  /// type conversion operator
   RegularWifiMac (const RegularWifiMac &);
+  /// assignment operator
   RegularWifiMac & operator= (const RegularWifiMac &);
 
   /**
    * This method is a private utility invoked to configure the channel
    * access function for the specified Access Category.
    *
-   * \param ac the Access Category index of the queue to initialise.
+   * \param ac the Access Category of the queue to initialise.
    */
   void SetupEdcaQueue (AcIndex ac);
 
+  /**
+   * Set the maximum A-MSDU size for AC_VO.
+   *
+   * \param size the maximum A-MSDU size for AC_VO.
+   */
   void SetVoMaxAmsduSize (uint32_t size);
+  /**
+   * Set the maximum A-MSDU size for AC_VI.
+   *
+   * \param size the maximum A-MSDU size for AC_VI.
+   */
   void SetViMaxAmsduSize (uint32_t size);
+  /**
+   * Set the maximum A-MSDU size for AC_BE.
+   *
+   * \param size the maximum A-MSDU size for AC_BE.
+   */
   void SetBeMaxAmsduSize (uint32_t size);
+  /**
+   * Set the maximum A-MSDU size for AC_BK.
+   *
+   * \param size the maximum A-MSDU size for AC_BK.
+   */
   void SetBkMaxAmsduSize (uint32_t size);
 
+  /**
+   * Set the maximum A-MPDU size for AC_VO.
+   *
+   * \param size the maximum A-MPDU size for AC_VO.
+   */
   void SetVoMaxAmpduSize (uint32_t size);
+  /**
+   * Set the maximum A-MPDU size for AC_VI.
+   *
+   * \param size the maximum A-MPDU size for AC_VI.
+   */
   void SetViMaxAmpduSize (uint32_t size);
+  /**
+   * Set the maximum A-MPDU size for AC_BE.
+   *
+   * \param size the maximum A-MPDU size for AC_BE.
+   */
   void SetBeMaxAmpduSize (uint32_t size);
+  /**
+   * Set the maximum A-MPDU size for AC_BK.
+   *
+   * \param size the maximum A-MPDU size for AC_BK.
+   */
   void SetBkMaxAmpduSize (uint32_t size);
 
+  /**
+   * Set the Block ACK threshold for AC_VO.
+   *
+   * \param threshold the Block ACK threshold for AC_VO.
+   */
   void SetVoBlockAckThreshold (uint8_t threshold);
+  /**
+   * Set the Block ACK threshold for AC_VI.
+   *
+   * \param threshold the Block ACK threshold for AC_VI.
+   */
   void SetViBlockAckThreshold (uint8_t threshold);
+  /**
+   * Set the Block ACK threshold for AC_BE.
+   *
+   * \param threshold the Block ACK threshold for AC_BE.
+   */
   void SetBeBlockAckThreshold (uint8_t threshold);
+  /**
+   * Set the Block ACK threshold for AC_BK.
+   *
+   * \param threshold the Block ACK threshold for AC_BK.
+   */
   void SetBkBlockAckThreshold (uint8_t threshold);
 
+  /**
+   * Set VO block ack inactivity timeout.
+   *
+   * \param timeout the VO block ack inactivity timeout.
+   */
   void SetVoBlockAckInactivityTimeout (uint16_t timeout);
+  /**
+   * Set VI block ack inactivity timeout.
+   *
+   * \param timeout the VI block ack inactivity timeout.
+   */
   void SetViBlockAckInactivityTimeout (uint16_t timeout);
+  /**
+   * Set BE block ack inactivity timeout.
+   *
+   * \param timeout the BE block ack inactivity timeout.
+   */
   void SetBeBlockAckInactivityTimeout (uint16_t timeout);
+  /**
+   * Set BK block ack inactivity timeout.
+   *
+   * \param timeout the BK block ack inactivity timeout.
+   */
   void SetBkBlockAckInactivityTimeout (uint16_t timeout);
 
+  /// Configure aggregation function
   void ConfigureAggregation (void);
+  /// Enable aggregation function
   void EnableAggregation (void);
+  /// Disable aggregation function
   void DisableAggregation (void);
 
-  uint32_t m_voMaxAmsduSize;
-  uint32_t m_viMaxAmsduSize;
-  uint32_t m_beMaxAmsduSize;
-  uint32_t m_bkMaxAmsduSize;
+  uint32_t m_voMaxAmsduSize; ///< maximum A-MSDU size for AC_VO
+  uint32_t m_viMaxAmsduSize; ///< maximum A-MSDU size for AC_VI
+  uint32_t m_beMaxAmsduSize; ///< maximum A-MSDU size for AC_BE
+  uint32_t m_bkMaxAmsduSize; ///< maximum A-MSDU size for AC_BK
 
-  uint32_t m_voMaxAmpduSize;
-  uint32_t m_viMaxAmpduSize;
-  uint32_t m_beMaxAmpduSize;
-  uint32_t m_bkMaxAmpduSize;
+  uint32_t m_voMaxAmpduSize; ///< maximum A-MPDU size for AC_VO
+  uint32_t m_viMaxAmpduSize; ///< maximum A-MPDU size for AC_VI
+  uint32_t m_beMaxAmpduSize; ///< maximum A-MPDU size for AC_BE
+  uint32_t m_bkMaxAmpduSize; ///< maximum A-MPDU size for AC_BK
 
-  TracedCallback<const WifiMacHeader &> m_txOkCallback;
-  TracedCallback<const WifiMacHeader &> m_txErrCallback;
+  TracedCallback<const WifiMacHeader &> m_txOkCallback; ///< transmit OK callback
+  TracedCallback<const WifiMacHeader &> m_txErrCallback; ///< transmit error callback
 
-  bool m_shortSlotTimeSupported;
-  bool m_rifsSupported;
+  bool m_shortSlotTimeSupported; ///< flag whether short slot time is supported
+  bool m_rifsSupported; ///< flag whether RIFS is supported
 };
 
 } //namespace ns3

@@ -44,38 +44,43 @@ namespace ns3 {
 class CaraWifiManager : public WifiRemoteStationManager
 {
 public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
   CaraWifiManager ();
   virtual ~CaraWifiManager ();
 
   // Inherited from WifiRemoteStationManager
-  virtual void SetHtSupported (bool enable);
-  virtual void SetVhtSupported (bool enable);
-  virtual void SetHeSupported (bool enable);
+  void SetHtSupported (bool enable);
+  void SetVhtSupported (bool enable);
+  void SetHeSupported (bool enable);
+
 
 private:
   //overriden from base class
-  virtual WifiRemoteStation * DoCreateStation (void) const;
-  virtual void DoReportRxOk (WifiRemoteStation *station,
-                             double rxSnr, WifiMode txMode);
-  virtual void DoReportRtsFailed (WifiRemoteStation *station);
-  virtual void DoReportDataFailed (WifiRemoteStation *station);
-  virtual void DoReportRtsOk (WifiRemoteStation *station,
-                              double ctsSnr, WifiMode ctsMode, double rtsSnr);
-  virtual void DoReportDataOk (WifiRemoteStation *station,
-                               double ackSnr, WifiMode ackMode, double dataSnr);
-  virtual void DoReportFinalRtsFailed (WifiRemoteStation *station);
-  virtual void DoReportFinalDataFailed (WifiRemoteStation *station);
-  virtual WifiTxVector DoGetDataTxVector (WifiRemoteStation *station);
-  virtual WifiTxVector DoGetRtsTxVector (WifiRemoteStation *station);
-  virtual bool DoNeedRts (WifiRemoteStation *station,
-                          Ptr<const Packet> packet, bool normally);
-  virtual bool IsLowLatency (void) const;
+  WifiRemoteStation * DoCreateStation (void) const;
+  void DoReportRxOk (WifiRemoteStation *station,
+                     double rxSnr, WifiMode txMode);
+  void DoReportRtsFailed (WifiRemoteStation *station);
+  void DoReportDataFailed (WifiRemoteStation *station);
+  void DoReportRtsOk (WifiRemoteStation *station,
+                      double ctsSnr, WifiMode ctsMode, double rtsSnr);
+  void DoReportDataOk (WifiRemoteStation *station,
+                       double ackSnr, WifiMode ackMode, double dataSnr);
+  void DoReportFinalRtsFailed (WifiRemoteStation *station);
+  void DoReportFinalDataFailed (WifiRemoteStation *station);
+  WifiTxVector DoGetDataTxVector (WifiRemoteStation *station);
+  WifiTxVector DoGetRtsTxVector (WifiRemoteStation *station);
+  bool DoNeedRts (WifiRemoteStation *station,
+                  Ptr<const Packet> packet, bool normally);
+  bool IsLowLatency (void) const;
 
-  uint32_t m_timerTimeout;
-  uint32_t m_successThreshold;
-  uint32_t m_failureThreshold;
-  uint32_t m_probeThreshold;
+  uint32_t m_timerTimeout; ///< timer threshold
+  uint32_t m_successThreshold; ///< success threshold
+  uint32_t m_failureThreshold; ///< failure threshold
+  uint32_t m_probeThreshold; ///< probe threshold
 
   TracedValue<uint64_t> m_currentRate; //!< Trace rate changes
 };

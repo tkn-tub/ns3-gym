@@ -38,15 +38,15 @@ NS_LOG_COMPONENT_DEFINE ("AmrrWifiManager");
  */
 struct AmrrWifiRemoteStation : public WifiRemoteStation
 {
-  Time m_nextModeUpdate;
-  uint32_t m_tx_ok;
-  uint32_t m_tx_err;
-  uint32_t m_tx_retr;
-  uint32_t m_retry;
-  uint32_t m_txrate;
-  uint32_t m_successThreshold;
-  uint32_t m_success;
-  bool m_recovery;
+  Time m_nextModeUpdate; ///< next mode update time
+  uint32_t m_tx_ok; ///< transmit ok
+  uint32_t m_tx_err; ///< transmit error
+  uint32_t m_tx_retr; ///< transmit retry
+  uint32_t m_retry; ///< retry
+  uint32_t m_txrate; ///< transmit rate
+  uint32_t m_successThreshold; ///< success threshold
+  uint32_t m_success; ///< success
+  bool m_recovery; ///< recovery
 };
 
 
@@ -95,6 +95,11 @@ AmrrWifiManager::GetTypeId (void)
 AmrrWifiManager::AmrrWifiManager ()
   : WifiRemoteStationManager (),
     m_currentRate (0)
+{
+  NS_LOG_FUNCTION (this);
+}
+
+AmrrWifiManager::~AmrrWifiManager ()
 {
   NS_LOG_FUNCTION (this);
 }

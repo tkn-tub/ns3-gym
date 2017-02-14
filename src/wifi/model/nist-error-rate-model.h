@@ -37,11 +37,15 @@ namespace ns3 {
 class NistErrorRateModel : public ErrorRateModel
 {
 public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
 
   NistErrorRateModel ();
 
-  virtual double GetChunkSuccessRate (WifiMode mode, WifiTxVector txVector, double snr, uint32_t nbits) const;
+  double GetChunkSuccessRate (WifiMode mode, WifiTxVector txVector, double snr, uint32_t nbits) const;
 
 
 private:

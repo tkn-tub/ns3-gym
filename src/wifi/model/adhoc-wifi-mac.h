@@ -35,6 +35,10 @@ namespace ns3 {
 class AdhocWifiMac : public RegularWifiMac
 {
 public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
 
   AdhocWifiMac ();
@@ -43,12 +47,12 @@ public:
   /**
    * \param address the current address of this MAC layer.
    */
-  virtual void SetAddress (Mac48Address address);
+  void SetAddress (Mac48Address address);
 
   /**
    * \param linkUp the callback to invoke when the link becomes up.
    */
-  virtual void SetLinkUpCallback (Callback<void> linkUp);
+  void SetLinkUpCallback (Callback<void> linkUp);
 
   /**
    * \param packet the packet to send.
@@ -58,11 +62,11 @@ public:
    * dequeued as soon as the channel access function determines that
    * access is granted to this MAC.
    */
-  virtual void Enqueue (Ptr<const Packet> packet, Mac48Address to);
+  void Enqueue (Ptr<const Packet> packet, Mac48Address to);
 
 
 private:
-  virtual void Receive (Ptr<Packet> packet, const WifiMacHeader *hdr);
+  void Receive (Ptr<Packet> packet, const WifiMacHeader *hdr);
 };
 
 } //namespace ns3

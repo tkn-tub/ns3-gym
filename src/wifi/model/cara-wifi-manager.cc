@@ -36,10 +36,10 @@ NS_LOG_COMPONENT_DEFINE ("CaraWifiManager");
  */
 struct CaraWifiRemoteStation : public WifiRemoteStation
 {
-  uint32_t m_timer;
-  uint32_t m_success;
-  uint32_t m_failed;
-  uint32_t m_rate;
+  uint32_t m_timer; ///< timer count
+  uint32_t m_success; ///< success count
+  uint32_t m_failed; ///< failed count
+  uint32_t m_rate; ///< rate
 };
 
 NS_OBJECT_ENSURE_REGISTERED (CaraWifiManager);

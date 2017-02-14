@@ -37,14 +37,14 @@ NS_LOG_COMPONENT_DEFINE ("OnoeWifiManager");
  */
 struct OnoeWifiRemoteStation : public WifiRemoteStation
 {
-  Time m_nextModeUpdate;
-  uint32_t m_shortRetry;
-  uint32_t m_longRetry;
-  uint32_t m_tx_ok;
-  uint32_t m_tx_err;
-  uint32_t m_tx_retr;
-  uint32_t m_tx_upper;
-  uint32_t m_txrate;
+  Time m_nextModeUpdate; ///< next mode update
+  uint32_t m_shortRetry; ///< short retry
+  uint32_t m_longRetry; ///< long retry
+  uint32_t m_tx_ok; ///< transmit ok
+  uint32_t m_tx_err; ///< transmit error
+  uint32_t m_tx_retr; ///< transmit retr
+  uint32_t m_tx_upper; ///< transmit upper
+  uint32_t m_txrate; ///< transmit rate
 };
 
 NS_OBJECT_ENSURE_REGISTERED (OnoeWifiManager);
@@ -80,6 +80,10 @@ OnoeWifiManager::GetTypeId (void)
 OnoeWifiManager::OnoeWifiManager ()
   : WifiRemoteStationManager (),
     m_currentRate (0)
+{
+}
+
+OnoeWifiManager::~OnoeWifiManager ()
 {
 }
 

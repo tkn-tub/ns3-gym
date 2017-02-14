@@ -37,24 +37,37 @@ namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("WifiRemoteStationManager");
 
+/**
+ * HighLatencyDataTxVectorTag class
+ */
 class HighLatencyDataTxVectorTag : public Tag
 {
 public:
   HighLatencyDataTxVectorTag ();
+  /**
+   * Constructor
+   *
+   * \param dataTxVector TXVECTOR for data frames
+   */
   HighLatencyDataTxVectorTag (WifiTxVector dataTxVector);
   /**
    * \returns the transmission mode to use to send this packet
    */
   WifiTxVector GetDataTxVector (void) const;
 
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
   virtual TypeId GetInstanceTypeId (void) const;
   virtual uint32_t GetSerializedSize (void) const;
   virtual void Serialize (TagBuffer i) const;
   virtual void Deserialize (TagBuffer i);
   virtual void Print (std::ostream &os) const;
+
 private:
-  WifiTxVector m_dataTxVector;
+  WifiTxVector m_dataTxVector; ///< TXVECTOR for data frames
 };
 
 HighLatencyDataTxVectorTag::HighLatencyDataTxVectorTag ()
@@ -113,10 +126,18 @@ HighLatencyDataTxVectorTag::Print (std::ostream &os) const
   os << "Data=" << m_dataTxVector;
 }
 
+/**
+ * HighLatencyRtsTxVectorTag class
+ */
 class HighLatencyRtsTxVectorTag : public Tag
 {
 public:
   HighLatencyRtsTxVectorTag ();
+  /**
+   * Constructor
+   *
+   * \param rtsTxVector TXVECTOR for RTS frames
+   */
   HighLatencyRtsTxVectorTag (WifiTxVector rtsTxVector);
   /**
    * \returns the transmission mode to use to send the RTS prior to the
@@ -124,14 +145,19 @@ public:
    */
   WifiTxVector GetRtsTxVector (void) const;
 
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
   virtual TypeId GetInstanceTypeId (void) const;
   virtual uint32_t GetSerializedSize (void) const;
   virtual void Serialize (TagBuffer i) const;
   virtual void Deserialize (TagBuffer i);
   virtual void Print (std::ostream &os) const;
+
 private:
-  WifiTxVector m_rtsTxVector;
+  WifiTxVector m_rtsTxVector; ///< TXVECTOR for data frames
 };
 
 HighLatencyRtsTxVectorTag::HighLatencyRtsTxVectorTag ()
@@ -190,24 +216,37 @@ HighLatencyRtsTxVectorTag::Print (std::ostream &os) const
   os << "Rts=" << m_rtsTxVector;
 }
 
+/**
+ * HighLatencyCtsToSelfTxVectorTag class
+ */
 class HighLatencyCtsToSelfTxVectorTag : public Tag
 {
 public:
   HighLatencyCtsToSelfTxVectorTag ();
+  /**
+   * Constructor
+   *
+   * \param ctsToSelfTxVector TXVECTOR for CTS-to-self frames
+   */
   HighLatencyCtsToSelfTxVectorTag (WifiTxVector ctsToSelfTxVector);
   /**
    * \returns the transmission mode to use for the CTS-to-self.
    */
   WifiTxVector GetCtsToSelfTxVector (void) const;
 
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
   virtual TypeId GetInstanceTypeId (void) const;
   virtual uint32_t GetSerializedSize (void) const;
   virtual void Serialize (TagBuffer i) const;
   virtual void Deserialize (TagBuffer i);
   virtual void Print (std::ostream &os) const;
+
 private:
-  WifiTxVector m_ctsToSelfTxVector;
+  WifiTxVector m_ctsToSelfTxVector; ///< TXVECTOR for CTS-to-self frames
 };
 
 HighLatencyCtsToSelfTxVectorTag::HighLatencyCtsToSelfTxVectorTag ()

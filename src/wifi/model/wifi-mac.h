@@ -41,6 +41,10 @@ namespace ns3 {
 class WifiMac : public Object
 {
 public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
 
   /**
@@ -404,7 +408,7 @@ private:
    */
   virtual void FinishConfigureStandard (WifiPhyStandard standard) = 0;
 
-  Time m_maxPropagationDelay;
+  Time m_maxPropagationDelay; ///< maximum propagation delay
 
   /**
    * This method sets 802.11a standards-compliant defaults for following attributes:

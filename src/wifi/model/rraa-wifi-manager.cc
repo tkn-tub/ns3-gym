@@ -39,16 +39,15 @@ NS_LOG_COMPONENT_DEFINE ("RraaWifiManager");
  */
 struct RraaWifiRemoteStation : public WifiRemoteStation
 {
-  uint32_t m_counter;
-  uint32_t m_failed;
-  uint32_t m_rtsWnd;
-  uint32_t m_rtsCounter;
-  Time m_lastReset;
-  bool m_rtsOn;
-  bool m_lastFrameFail;
-  bool m_initialized;
-
-  uint32_t m_rate;
+  uint32_t m_counter; ///< counter
+  uint32_t m_failed; ///< failed
+  uint32_t m_rtsWnd; ///< RTS windows
+  uint32_t m_rtsCounter; ///< RTS counter
+  Time m_lastReset; ///< last reset
+  bool m_rtsOn; ///< RTS on
+  bool m_lastFrameFail; ///< last frame fail
+  bool m_initialized; ///< initialized
+  uint32_t m_rate; ///< rate
 };
 
 NS_OBJECT_ENSURE_REGISTERED (RraaWifiManager);

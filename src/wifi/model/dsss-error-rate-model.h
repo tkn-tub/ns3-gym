@@ -119,7 +119,9 @@ public:
 
 
 protected:
+  /// WLAN perfect
   static const double WLAN_SIR_PERFECT;
+  /// WLAN impossible
   static const double WLAN_SIR_IMPOSSIBLE;
 #endif
 };
@@ -127,4 +129,3 @@ protected:
 } //namespace ns3
 
 #endif /* DSSS_ERROR_RATE_MODEL_H */
-

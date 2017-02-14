@@ -49,7 +49,7 @@ public:
    * Set the short preamble bit
    * in the capability information field.
    *
-   * /param shortPreamble the short preamble bit
+   * \param shortPreamble the short preamble bit
    *
    */
   void SetShortPreamble (bool shortPreamble);
@@ -57,7 +57,7 @@ public:
    * Set the short slot time bit
    * in the capability information field.
    *
-   * /param shortslotTime the short preamble bit
+   * \param shortSlotTime the short preamble bit
    *
    */
   void SetShortSlotTime (bool shortSlotTime);
@@ -142,7 +142,8 @@ private:
    * \param n the bit position
    */
   void Clear (uint8_t n);
-  uint16_t m_capability;
+
+  uint16_t m_capability; ///< capability
 };
 
 } //namespace ns3

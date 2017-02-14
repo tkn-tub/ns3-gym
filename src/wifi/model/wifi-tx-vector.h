@@ -187,7 +187,7 @@ public:
   /**
    * Sets if PSDU contains A-MPDU.
    *
-   * \param aggregated whether the PSDU contains A-MPDU or not.
+   * \param aggregation whether the PSDU contains A-MPDU or not.
    */
   void SetAggregation (bool aggregation);
   /**
@@ -214,17 +214,17 @@ private:
                                  to PMD_TXPWRLVL.request */
   uint8_t  m_retries;            /**< The DATA_RETRIES/RTS_RETRIES parameter
                                  for Click radiotap information */
-  WifiPreamble m_preamble;       /** preamble */
+  WifiPreamble m_preamble;       /**< preamble */
   uint8_t m_channelWidth;        /**< channel width in MHz */
   uint16_t m_guardInterval;      /**< guard interval duration in nanoseconds */
   uint8_t  m_nTx;                /**< number of TX antennas */
   uint8_t  m_nss;                /**< number of spatial streams */
   uint8_t  m_ness;               /**< number of spatial streams in beamforming */
-  bool     m_aggregation;        /** Flag whether the PSDU contains A-MPDU. */
+  bool     m_aggregation;        /**< Flag whether the PSDU contains A-MPDU. */
   bool     m_stbc;               /**< STBC used or not */
 
-  bool     m_modeInitialized;         //*< Internal initialization flag */
-  bool     m_txPowerLevelInitialized; //*< Internal initialization flag */
+  bool     m_modeInitialized;         /**< Internal initialization flag */
+  bool     m_txPowerLevelInitialized; /**< Internal initialization flag */
 };
 
 /**

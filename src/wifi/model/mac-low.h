@@ -210,7 +210,7 @@ public:
 
 private:
   friend std::ostream &operator << (std::ostream &os, const MacLowTransmissionParameters &params);
-  uint32_t m_nextSize;
+  uint32_t m_nextSize; //!< the next size
   enum
   {
     ACK_NONE,
@@ -220,9 +220,9 @@ private:
     BLOCK_ACK_BASIC,
     BLOCK_ACK_COMPRESSED,
     BLOCK_ACK_MULTI_TID
-  } m_waitAck;
-  bool m_sendRts;
-  Time m_overrideDurationId;
+  } m_waitAck; //!< wait ack
+  bool m_sendRts; //!< send an RTS?
+  Time m_overrideDurationId; //!< override duration ID
 };
 
 /**
@@ -265,14 +265,12 @@ public:
    * \param phy WifiPhy associated with this MacLow
    */
   void SetPhy (Ptr<WifiPhy> phy);
-  /*
+  /**
    * \return current attached PHY device
    */
   Ptr<WifiPhy> GetPhy (void) const;
   /**
    * Remove WifiPhy associated with this MacLow.
-   *
-   * \param phy WifiPhy associated with this MacLow
    */
   void ResetPhy (void);
   /**
@@ -450,10 +448,29 @@ public:
                                   const WifiMacHeader* hdr,
                                   const MacLowTransmissionParameters& parameters) const;
 
+  /**
+   * \param packet to send (does not include the 802.11 MAC header and checksum)
+   * \param hdr header associated to the packet to send.
+   * \param params transmission parameters of packet.
+   * \return the transmission time that includes the time for the next packet transmission
+   *
+   * This transmission time includes the time required for
+   * the next packet transmission if one was selected.
+   */
   Time CalculateOverallTxTime (Ptr<const Packet> packet,
                                const WifiMacHeader* hdr,
                                const MacLowTransmissionParameters &params) const;
 
+  /**
+   * \param packet to send (does not include the 802.11 MAC header and checksum)
+   * \param hdr header associated to the packet to send.
+   * \param params transmission parameters of packet.
+   * \param fragmentSize the packet fragment size
+   * \return the transmission time that includes the time for the next packet transmission
+   *
+   * This transmission time includes the time required for
+   * the next packet fragment transmission if one was selected.
+   */
   Time CalculateOverallTxFragmentTime (Ptr<const Packet> packet,
                                        const WifiMacHeader* hdr,
                                        const MacLowTransmissionParameters& params,
@@ -486,7 +503,6 @@ public:
   /**
    * \param packet packet received.
    * \param rxSnr snr of packet received.
-   * \param isEndOfFrame PHY-RXEND indication.
    *
    * This method is typically invoked by the lower PHY layer to notify
    * the MAC layer that a packet was unsuccessfully received.
@@ -573,6 +589,7 @@ public:
   /**
    *
    * This function is called to flush the aggregate queue, which is used for A-MPDU
+   * \param tid the Traffic ID
    *
    */
   void FlushAggregateQueue (uint8_t tid);
@@ -587,6 +604,7 @@ public:
    * \return TXVECTOR for the given packet
    */
   virtual WifiTxVector GetDataTxVector (Ptr<const Packet> packet, const WifiMacHeader *hdr) const;
+
 
 private:
   /**
@@ -637,18 +655,17 @@ private:
   /**
    * Forward the packet down to WifiPhy for transmission. This is called for the entire A-MPDu when MPDU aggregation is used.
    *
-   * \param packet
-   * \param hdr
-   * \param txVector
+   * \param packet the packet
+   * \param hdr the header
+   * \param txVector the transmit vector
    */
   void ForwardDown (Ptr<const Packet> packet, const WifiMacHeader *hdr, WifiTxVector txVector);
   /**
    * Forward the MPDU down to WifiPhy for transmission. This is called for each MPDU when MPDU aggregation is used.
    *
-   * \param packet
-   * \param hdr
-   * \param txVector
-   * \param mpdutype
+   * \param packet the packet
+   * \param txVector the transmit vector
+   * \param mpdutype the MPDU type
    */
   void SendMpdu (Ptr<const Packet> packet, WifiTxVector txVector, MpduType mpdutype);
   /**
@@ -763,7 +780,7 @@ private:
    * given the TXVECTOR of the BAR (including preamble and FCS).
    *
    * \param to
-   * \param dataTxVector
+   * \param blockAckReqTxVector
    * \param type the Block ACK type
    * \return the time required to transmit the Block ACK (including preamble and FCS)
    */
@@ -783,6 +800,13 @@ private:
    */
   bool NeedCtsToSelf (void) const;
 
+  /**
+   * Notify NAV function.
+   *
+   * \param packet the packet
+   * \param hdr the header
+   * \param preamble the preamble
+   */
   void NotifyNav (Ptr<const Packet> packet,const WifiMacHeader &hdr, WifiPreamble preamble);
   /**
    * Reset NAV with the given duration.
@@ -793,7 +817,7 @@ private:
   /**
    * Start NAV with the given duration.
    *
-   * \param duration
+   * \param duration the duration
    * \return true if NAV is resetted
    */
   bool DoNavStartNow (Time duration);
@@ -807,7 +831,7 @@ private:
   /**
    * Notify DcfManager that ACK timer should be started for the given duration.
    *
-   * \param duration
+   * \param duration the duration
    */
   void NotifyAckTimeoutStartNow (Time duration);
   /**
@@ -891,6 +915,10 @@ private:
    * after completing transmissions.
    */
   void WaitIfsAfterEndTxFragment (void);
+  /**
+   * Event handler that is usually scheduled to fired at the appropriate time
+   * after sending a packet.
+   */
   void WaitIfsAfterEndTxPacket (void);
 
   /**
@@ -914,7 +942,7 @@ private:
    */
   void StartDataTxTimers (WifiTxVector dataTxVector);
 
-  virtual void DoDispose (void);
+  void DoDispose (void);
 
   /**
    * \param originator Address of peer participating in Block Ack mechanism.
@@ -942,16 +970,26 @@ private:
    * \param seq MPDU sequence number
    * \param winstart sequence number window start
    * \param winsize the size of the sequence number window (currently default is 64)
+   * \returns true if in the window
+   *
    * This method checks if the MPDU's sequence number is inside the scoreboard boundaries or not
    */
   bool IsInWindow (uint16_t seq, uint16_t winstart, uint16_t winsize) const;
   /**
+   * \param packet the packet
+   * \param hdr the header
+   * \returns true if MPDU received
+   *
    * This method updates the reorder buffer and the scoreboard when an MPDU is received in an HT station
-   * and sotres the MPDU if needed when an MPDU is received in an non-HT Station (implements HT
+   * and stores the MPDU if needed when an MPDU is received in an non-HT Station (implements HT
    * immediate block Ack)
    */
   bool ReceiveMpdu (Ptr<Packet> packet, WifiMacHeader hdr);
   /**
+   * \param packet the packet
+   * \param hdr the header
+   * \returns true if the MPDU stored
+   *
    * This method checks if exists a valid established block ack agreement.
    * If there is, store the packet without pass it up to WifiMac. The packet is buffered
    * in order of increasing sequence control field. All comparison are performed
@@ -973,6 +1011,12 @@ private:
   /**
    * Invoked after an A-MPDU has been received. Looks for corresponding
    * block ack agreement and creates block ack bitmap on a received packets basis.
+   *
+   * \param tid the Traffic ID
+   * \param originator the originator MAC address
+   * \param duration the remaining NAV duration
+   * \param blockAckReqTxVector the transmit vector
+   * \param rxSnr the receive SNR
    */
   void SendBlockAckAfterAmpdu (uint8_t tid, Mac48Address originator,
                                Time duration, WifiTxVector blockAckReqTxVector, double rxSnr);
@@ -1015,12 +1059,17 @@ private:
    *
    * \param packet packet to check whether it can be aggregated in an A-MPDU
    * \param hdr 802.11 header for packet to check whether it can be aggregated in an A-MPDU
-   *
+   * \returns true if is A-MPDU
    */
   bool IsAmpdu (Ptr<const Packet> packet, const WifiMacHeader hdr);
   /**
    * Insert in a temporary queue.
    * It is only used with a RTS/CTS exchange for an A-MPDU transmission.
+   *
+   * \param packet packet to be inserted in the A-MPDU tx queue
+   * \param hdr 802.11 header for the packet to be inserted in the A-MPDU tx queue
+   * \param tStamp timestamp of the packet to be inserted in the A-MPDU tx queue
+   * \param tid the Traffic ID of the packet to be inserted in the A-MPDU tx queue
    */
   void InsertInTxQueue (Ptr<const Packet> packet, const WifiMacHeader &hdr, Time tStamp, uint8_t tid);
   /**
@@ -1045,10 +1094,10 @@ private:
    */
   typedef struct
   {
-    Ptr<const Packet> packet;
-    WifiMacHeader hdr;
-    Time timestamp;
-  } Item;
+    Ptr<const Packet> packet; //!< the packet
+    WifiMacHeader hdr; //!< the header
+    Time timestamp; //!< the timestamp
+  } Item; //!< item structure
 
   /**
    * typedef for an iterator for a list of DcfManager.
@@ -1075,7 +1124,7 @@ private:
 
   Ptr<Packet> m_currentPacket;              //!< Current packet transmitted/to be transmitted
   WifiMacHeader m_currentHdr;               //!< Header of the current transmitted packet
-  Ptr<DcaTxop> m_currentDca;
+  Ptr<DcaTxop> m_currentDca;                //!< Current DCA
   WifiMacHeader m_lastReceivedHdr;          //!< Header of the last received packet
   MacLowTransmissionParameters m_txParams;  //!< Transmission parameters of the current packet
   Mac48Address m_self;                      //!< Address of this MacLow (Mac48Address)
@@ -1100,23 +1149,23 @@ private:
   /*
    * BlockAck data structures.
    */
-  typedef std::pair<Ptr<Packet>, WifiMacHeader> BufferedPacket;
-  typedef std::list<BufferedPacket>::iterator BufferedPacketI;
+  typedef std::pair<Ptr<Packet>, WifiMacHeader> BufferedPacket; //!< buffered packet typedef
+  typedef std::list<BufferedPacket>::iterator BufferedPacketI; //!< buffered packet iterator typedef
 
-  typedef std::pair<Mac48Address, uint8_t> AgreementKey;
-  typedef std::pair<BlockAckAgreement, std::list<BufferedPacket> > AgreementValue;
+  typedef std::pair<Mac48Address, uint8_t> AgreementKey; //!< agreement key typedef
+  typedef std::pair<BlockAckAgreement, std::list<BufferedPacket> > AgreementValue; //!< agreement value typedef
 
-  typedef std::map<AgreementKey, AgreementValue> Agreements;
-  typedef std::map<AgreementKey, AgreementValue>::iterator AgreementsI;
+  typedef std::map<AgreementKey, AgreementValue> Agreements; //!< agreements
+  typedef std::map<AgreementKey, AgreementValue>::iterator AgreementsI; //!< agreements iterator
 
-  typedef std::map<AgreementKey, BlockAckCache> BlockAckCaches;
-  typedef std::map<AgreementKey, BlockAckCache>::iterator BlockAckCachesI;
+  typedef std::map<AgreementKey, BlockAckCache> BlockAckCaches; //!< block ack caches typedef
+  typedef std::map<AgreementKey, BlockAckCache>::iterator BlockAckCachesI; //!< block ack caches iterator typedef
 
-  Agreements m_bAckAgreements;
-  BlockAckCaches m_bAckCaches;
+  Agreements m_bAckAgreements; //!< block ack agreements
+  BlockAckCaches m_bAckCaches; //!< block ack caches
 
-  typedef std::map<AcIndex, Ptr<EdcaTxopN> > QueueEdcas;
-  QueueEdcas m_edca;
+  typedef std::map<AcIndex, Ptr<EdcaTxopN> > QueueEdcas; //!< EDCA queues typedef
+  QueueEdcas m_edca; //!< EDCA queues
 
   bool m_ctsToSelfSupported;             //!< Flag whether CTS-to-self is supported
   Ptr<WifiMacQueue> m_aggregateQueue[8]; //!< Queues per TID used for MPDU aggregation

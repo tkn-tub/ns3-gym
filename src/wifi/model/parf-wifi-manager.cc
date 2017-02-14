@@ -138,8 +138,7 @@ ParfWifiManager::DoReportRtsFailed (WifiRemoteStation *station)
   NS_LOG_FUNCTION (this << station);
 }
 
-/**
- * \internal
+/*
  * It is important to realize that "recovery" mode starts after failure of
  * the first transmission after a rate increase and ends at the first successful
  * transmission. Specifically, recovery mode spans retransmissions boundaries.

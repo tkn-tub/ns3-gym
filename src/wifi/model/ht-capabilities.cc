@@ -258,15 +258,15 @@ uint8_t
 HtCapabilities::GetRxHighestSupportedAntennas (void) const
 {
   for (uint8_t nRx = 2; nRx <= 4; nRx++)
-  {
-    for (uint8_t mcs = (nRx - 1) * 8; mcs <= ((7 * nRx) + (nRx - 1)); mcs++)
     {
-      if (IsSupportedMcs (mcs) == false)
+      for (uint8_t mcs = (nRx - 1) * 8; mcs <= ((7 * nRx) + (nRx - 1)); mcs++)
         {
-          return (nRx - 1);
+          if (IsSupportedMcs (mcs) == false)
+            {
+              return (nRx - 1);
+            }
         }
     }
-  }
   return 4;
 }
 
@@ -588,6 +588,14 @@ HtCapabilities::DeserializeInformationField (Buffer::Iterator start,
 
 ATTRIBUTE_HELPER_CPP (HtCapabilities);
 
+/**
+ * output stream output operator
+ *
+ * \param os output stream
+ * \param htcapabilities
+ *
+ * \returns output stream
+ */
 std::ostream &
 operator << (std::ostream &os, const HtCapabilities &htcapabilities)
 {
@@ -602,6 +610,14 @@ operator << (std::ostream &os, const HtCapabilities &htcapabilities)
   return os;
 }
 
+/**
+ * input stream input operator
+ *
+ * \param is input stream
+ * \param htcapabilities
+ *
+ * \returns input stream
+ */
 std::istream &operator >> (std::istream &is, HtCapabilities &htcapabilities)
 {
   bool c1, c2, c3, c4;

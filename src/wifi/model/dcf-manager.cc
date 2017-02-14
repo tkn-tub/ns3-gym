@@ -44,35 +44,35 @@ public:
   virtual ~PhyListener ()
   {
   }
-  virtual void NotifyRxStart (Time duration)
+  void NotifyRxStart (Time duration)
   {
     m_dcf->NotifyRxStartNow (duration);
   }
-  virtual void NotifyRxEndOk (void)
+  void NotifyRxEndOk (void)
   {
     m_dcf->NotifyRxEndOkNow ();
   }
-  virtual void NotifyRxEndError (void)
+  void NotifyRxEndError (void)
   {
     m_dcf->NotifyRxEndErrorNow ();
   }
-  virtual void NotifyTxStart (Time duration, double txPowerDbm)
+  void NotifyTxStart (Time duration, double txPowerDbm)
   {
     m_dcf->NotifyTxStartNow (duration);
   }
-  virtual void NotifyMaybeCcaBusyStart (Time duration)
+  void NotifyMaybeCcaBusyStart (Time duration)
   {
     m_dcf->NotifyMaybeCcaBusyStartNow (duration);
   }
-  virtual void NotifySwitchingStart (Time duration)
+  void NotifySwitchingStart (Time duration)
   {
     m_dcf->NotifySwitchingStartNow (duration);
   }
-  virtual void NotifySleep (void)
+  void NotifySleep (void)
   {
     m_dcf->NotifySleepNow ();
   }
-  virtual void NotifyWakeup (void)
+  void NotifyWakeup (void)
   {
     m_dcf->NotifyWakeupNow ();
   }

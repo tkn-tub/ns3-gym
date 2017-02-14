@@ -96,13 +96,30 @@ DsssParameterSet::DeserializeInformationField (Buffer::Iterator start, uint8_t l
   return length;
 }
 
+/// DsssParameterSet
 ATTRIBUTE_HELPER_CPP (DsssParameterSet);
 
+/**
+ * output operator
+ *
+ * \param os output stream
+ * \param DsssParameterSet
+ *
+ * \return output stream
+ */
 std::ostream & operator << (std::ostream &os, const DsssParameterSet &DsssParameterSet)
 {
   return os;
 }
 
+/**
+ * input operator
+ *
+ * \param is input stream
+ * \param DsssParameterSet
+ *
+ * \return output stream
+ */
 std::istream &operator >> (std::istream &is, DsssParameterSet &DsssParameterSet)
 {
   return is;

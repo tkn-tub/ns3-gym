@@ -52,7 +52,7 @@ class DcfManager : public Object
 {
 public:
   DcfManager ();
-  ~DcfManager ();
+  virtual ~DcfManager ();
 
   /**
    * Set up listener for Phy events.
@@ -324,28 +324,28 @@ private:
    */
   typedef std::vector<DcfState *> States;
 
-  States m_states;
-  Time m_lastAckTimeoutEnd;
-  Time m_lastCtsTimeoutEnd;
-  Time m_lastNavStart;
-  Time m_lastNavDuration;
-  Time m_lastRxStart;
-  Time m_lastRxDuration;
-  bool m_lastRxReceivedOk;
-  Time m_lastRxEnd;
-  Time m_lastTxStart;
-  Time m_lastTxDuration;
-  Time m_lastBusyStart;
-  Time m_lastBusyDuration;
-  Time m_lastSwitchingStart;
-  Time m_lastSwitchingDuration;
-  bool m_rxing;
-  bool m_sleeping;
-  Time m_eifsNoDifs;
-  EventId m_accessTimeout;
-  uint32_t m_slotTimeUs;
-  Time m_sifs;
-  PhyListener* m_phyListener;
+  States m_states;              //!< the DCF states
+  Time m_lastAckTimeoutEnd;     //!< the last ack timeout end time
+  Time m_lastCtsTimeoutEnd;     //!< the last CTS timeout end time
+  Time m_lastNavStart;          //!< the last nav start time
+  Time m_lastNavDuration;       //!< the last nav direction time
+  Time m_lastRxStart;           //!< the last receive start time
+  Time m_lastRxDuration;        //!< the last receive duration time
+  bool m_lastRxReceivedOk;      //!< the last receive OK
+  Time m_lastRxEnd;             //!< the last receive end time
+  Time m_lastTxStart;           //!< the last transmit start time
+  Time m_lastTxDuration;        //!< the last transmit duration time
+  Time m_lastBusyStart;         //!< the last busy start time
+  Time m_lastBusyDuration;      //!< the last busy duraation time
+  Time m_lastSwitchingStart;    //!< the last switching start time
+  Time m_lastSwitchingDuration; //!< the last switching duration time
+  bool m_rxing;                 //!< flag whether it is in receiving state
+  bool m_sleeping;              //!< flag whether it is in sleeping state
+  Time m_eifsNoDifs;            //!< EIFS no DIFS time
+  EventId m_accessTimeout;      //!< the access timeout ID
+  uint32_t m_slotTimeUs;        //!< the slot time in microseconds
+  Time m_sifs;                  //!< the SIFS time
+  PhyListener* m_phyListener;   //!< the phy listener
 };
 
 } //namespace ns3

@@ -34,6 +34,10 @@ namespace ns3 {
 class WifiPhyStateHelper : public Object
 {
 public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
 
   WifiPhyStateHelper ();
@@ -193,8 +197,7 @@ public:
    *             the \p state.
    * \param [in] state The state.
    */
-  typedef void (* StateTracedCallback)
-    (Time start, Time duration, WifiPhy::State state);
+  typedef void (* StateTracedCallback)(Time start, Time duration, WifiPhy::State state);
 
   /**
    * TracedCallback signature for receive end ok event.
@@ -204,8 +207,7 @@ public:
    * \param [in] mode   The transmission mode of the packet.
    * \param [in] preamble The preamble of the packet.
    */
-  typedef void (* RxOkTracedCallback)
-    (Ptr<const Packet> packet, double snr, WifiMode mode, WifiPreamble preamble);
+  typedef void (* RxOkTracedCallback)(Ptr<const Packet> packet, double snr, WifiMode mode, WifiPreamble preamble);
 
   /**
    * TracedCallback signature for receive end error event.
@@ -213,8 +215,7 @@ public:
    * \param [in] packet       The received packet.
    * \param [in] snr          The SNR of the received packet.
    */
-  typedef void (* RxEndErrorTracedCallback)
-    (Ptr<const Packet> packet, double snr);
+  typedef void (* RxEndErrorTracedCallback)(Ptr<const Packet> packet, double snr);
 
   /**
    * TracedCallback signature for transmit event.
@@ -224,9 +225,8 @@ public:
    * \param [in] preamble The preamble of the packet.
    * \param [in] power  The transmit power level.
    */
-  typedef void (* TxTracedCallback)
-    (Ptr<const Packet> packet, WifiMode mode,
-     WifiPreamble preamble, uint8_t power);
+  typedef void (* TxTracedCallback)(Ptr<const Packet> packet, WifiMode mode,
+                                    WifiPreamble preamble, uint8_t power);
 
 
 private:
@@ -234,6 +234,9 @@ private:
    * typedef for a list of WifiPhyListeners
    */
   typedef std::vector<WifiPhyListener *> Listeners;
+  /**
+   * typedef for a list of WifiPhyListeners iterator
+   */
   typedef std::vector<WifiPhyListener *>::iterator ListenersI;
 
   /**
@@ -288,25 +291,25 @@ private:
    */
   void DoSwitchFromRx (void);
 
-  bool m_rxing;
-  bool m_sleeping;
-  Time m_endTx;
-  Time m_endRx;
-  Time m_endCcaBusy;
-  Time m_endSwitching;
-  Time m_startTx;
-  Time m_startRx;
-  Time m_startCcaBusy;
-  Time m_startSwitching;
-  Time m_startSleep;
-  Time m_previousStateChangeTime;
+  bool m_rxing; ///< receiving
+  bool m_sleeping; ///< sleeping
+  Time m_endTx; ///< end transmit
+  Time m_endRx; ///< end receive
+  Time m_endCcaBusy; ///< endn CCA busy
+  Time m_endSwitching; ///< end switching
+  Time m_startTx; ///< start transmit
+  Time m_startRx; ///< start receive
+  Time m_startCcaBusy; ///< start CCA busy
+  Time m_startSwitching; ///< start switching
+  Time m_startSleep; ///< start sleep
+  Time m_previousStateChangeTime; ///< previous state change time
 
-  Listeners m_listeners;
-  TracedCallback<Ptr<const Packet>, double, WifiMode, WifiPreamble> m_rxOkTrace;
-  TracedCallback<Ptr<const Packet>, double> m_rxErrorTrace;
-  TracedCallback<Ptr<const Packet>, WifiMode, WifiPreamble, uint8_t> m_txTrace;
-  WifiPhy::RxOkCallback m_rxOkCallback;
-  WifiPhy::RxErrorCallback m_rxErrorCallback;
+  Listeners m_listeners; ///< listeners
+  TracedCallback<Ptr<const Packet>, double, WifiMode, WifiPreamble> m_rxOkTrace; ///< receive OK trace callback
+  TracedCallback<Ptr<const Packet>, double> m_rxErrorTrace; ///< receive error trace callback
+  TracedCallback<Ptr<const Packet>, WifiMode, WifiPreamble, uint8_t> m_txTrace; ///< transmit trace callback
+  WifiPhy::RxOkCallback m_rxOkCallback; ///< receive OK callback
+  WifiPhy::RxErrorCallback m_rxErrorCallback; ///< receive error callback
 };
 
 } //namespace ns3

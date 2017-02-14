@@ -65,6 +65,10 @@ public:
   DcaTxop ();
   virtual ~DcaTxop ();
 
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
 
   /**
@@ -78,6 +82,11 @@ public:
    */
   typedef Callback <void, const WifiMacHeader&> TxFailed;
 
+  /**
+   * Check for EDCA.
+   *
+   * \returns true if EDCA.
+   */
   virtual bool IsEdca ();
 
   /**
@@ -85,13 +94,13 @@ public:
    *
    * \param low MacLow.
    */
-  virtual void SetLow (Ptr<MacLow> low);
+  void SetLow (Ptr<MacLow> low);
   /**
    * Set DcfManager this DcaTxop is associated to.
    *
    * \param manager DcfManager.
    */
-  virtual void SetManager (DcfManager *manager);
+  void SetManager (DcfManager *manager);
   /**
    * Set WifiRemoteStationsManager this DcaTxop is associated to.
    *
@@ -103,30 +112,30 @@ public:
    *
    * \param txMiddle MacTxMiddle.
    */
-  virtual void SetTxMiddle (MacTxMiddle *txMiddle);
+  void SetTxMiddle (MacTxMiddle *txMiddle);
 
   /**
    * \param callback the callback to invoke when a
    * packet transmission was completed successfully.
    */
-  virtual void SetTxOkCallback (TxOk callback);
+  void SetTxOkCallback (TxOk callback);
   /**
    * \param callback the callback to invoke when a
    * packet transmission was completed unsuccessfully.
    */
-  virtual void SetTxFailedCallback (TxFailed callback);
+  void SetTxFailedCallback (TxFailed callback);
 
   /**
    * Return the MacLow associated with this DcaTxop.
    *
-   * \return MacLow.
+   * \return MacLow
    */
   Ptr<MacLow> GetLow (void) const;
 
   /**
    * Return the packet queue associated with this DcaTxop.
    *
-   * \return WifiMacQueue.
+   * \return WifiMacQueue
    */
   Ptr<WifiMacQueue > GetQueue () const;
 
@@ -148,7 +157,7 @@ public:
    * \param aifsn the number of slots that make up an AIFS.
    */
   void SetAifsn (uint32_t aifsn);
-  /*
+  /**
    * Set the TXOP limit.
    *
    * \param txopLimit the TXOP limit.
@@ -194,6 +203,7 @@ public:
    */
   virtual void NotifyWakeUp (void);
 
+  /* Event handlers */
   /**
    * \param packet packet to send.
    * \param hdr header of packet to send.
@@ -250,7 +260,7 @@ public:
    */
   virtual void EndTxNoAck (void);
 
-  /*
+  /**
    * Check if the station has TXOP granted for the next MPDU.
    *
    * \return true if the station has TXOP granted for the next MPDU,
@@ -308,6 +318,24 @@ protected:
   virtual void StartAccessIfNeeded (void);
 
   /**
+   * Check if RTS should be re-transmitted if CTS was missed.
+   *
+   * \param packet current packet being transmitted.
+   * \param hdr current header being transmitted.
+   * \return true if RTS should be re-transmitted,
+   *         false otherwise.
+   */
+  bool NeedRtsRetransmission (Ptr<const Packet> packet, const WifiMacHeader &hdr);
+  /**
+   * Check if DATA should be re-transmitted if ACK was missed.
+   *
+   * \param packet current packet being transmitted.
+   * \param hdr current header being transmitted.
+   * \return true if DATA should be re-transmitted,
+   *         false otherwise.
+   */
+  bool NeedDataRetransmission (Ptr<const Packet> packet, const WifiMacHeader &hdr);
+  /**
    * Check if the current packet should be fragmented.
    *
    * \return true if the current packet should be fragmented,
@@ -320,7 +348,7 @@ protected:
    * increments the internal variable that keep track
    * of the current fragment number.
    */
-  virtual void NextFragment (void);
+  void NextFragment (void);
   /**
    * Get the next fragment from the packet with
    * appropriate Wifi header for the fragment.
@@ -330,25 +358,6 @@ protected:
    * \return the fragment with the current fragment number.
    */
   virtual Ptr<Packet> GetFragmentPacket (WifiMacHeader *hdr);
-
-  /**
-   * Check if RTS should be re-transmitted if CTS was missed.
-   *
-   * \param packet current packet being transmitted.
-   * \param hdr current header being transmitted.
-   * \return true if RTS should be re-transmitted,
-   *         false otherwise.
-   */
-  virtual bool NeedRtsRetransmission (Ptr<const Packet> packet, const WifiMacHeader &hdr);
-  /**
-   * Check if DATA should be re-transmitted if ACK was missed.
-   *
-   * \param packet current packet being transmitted.
-   * \param hdr current header being transmitted.
-   * \return true if DATA should be re-transmitted,
-   *         false otherwise.
-   */
-  virtual bool NeedDataRetransmission (Ptr<const Packet> packet, const WifiMacHeader &hdr);
   /**
    * Calculate the size of the next fragment.
    *
@@ -375,20 +384,20 @@ protected:
    */
   virtual bool IsLastFragment (void) const;
 
-  DcfState *m_dcf;
-  DcfManager *m_manager;
-  TxOk m_txOkCallback;
-  TxFailed m_txFailedCallback;
-  Ptr<WifiMacQueue> m_queue;
-  MacTxMiddle *m_txMiddle;
-  Ptr <MacLow> m_low;
-  Ptr<WifiRemoteStationManager> m_stationManager;
-  RandomStream *m_rng;
+  DcfState *m_dcf; //!< the DCF state
+  DcfManager *m_manager; //!< the DCF manager
+  TxOk m_txOkCallback; //!< the transmit OK callback
+  TxFailed m_txFailedCallback; //!< the transmit failed callback
+  Ptr<WifiMacQueue> m_queue; //!< the wifi MAC queue
+  MacTxMiddle *m_txMiddle; //!< the MacTxMiddle
+  Ptr <MacLow> m_low; //!< the MacLow
+  Ptr<WifiRemoteStationManager> m_stationManager; //!< the wifi remote station manager
+  RandomStream *m_rng; //!<  the random stream
 
-  Ptr<const Packet> m_currentPacket;
-  WifiMacHeader m_currentHdr;
-  MacLowTransmissionParameters m_currentParams;
-  uint8_t m_fragmentNumber;
+  Ptr<const Packet> m_currentPacket; //!< the current packet
+  WifiMacHeader m_currentHdr; //!< the current header
+  MacLowTransmissionParameters m_currentParams; ///< current transmission parameters
+  uint8_t m_fragmentNumber; //!< the fragment number
 };
 
 } //namespace ns3

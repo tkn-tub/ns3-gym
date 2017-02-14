@@ -471,6 +471,12 @@ HeCapabilities::GetHighestNssSupported (void) const
 
 ATTRIBUTE_HELPER_CPP (HeCapabilities);
 
+/**
+ * output stream output operator
+ * \param os the output stream
+ * \param HeCapabilities the HE capabilities
+ * \returns the output stream
+ */
 std::ostream &
 operator << (std::ostream &os, const HeCapabilities &HeCapabilities)
 {
@@ -482,6 +488,12 @@ operator << (std::ostream &os, const HeCapabilities &HeCapabilities)
   return os;
 }
 
+/**
+ * input stream input operator
+ * \param is the output stream
+ * \param HeCapabilities the HE capabilities
+ * \returns the input stream
+ */
 std::istream &operator >> (std::istream &is, HeCapabilities &HeCapabilities)
 {
   uint32_t c1;
