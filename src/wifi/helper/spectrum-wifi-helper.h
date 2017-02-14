@@ -71,7 +71,7 @@ private:
    */
   virtual Ptr<WifiPhy> Create (Ptr<Node> node, Ptr<NetDevice> device) const;
 
-  Ptr<SpectrumChannel> m_channel;
+  Ptr<SpectrumChannel> m_channel; ///< the channel
 };
 
 } //namespace ns3

@@ -37,14 +37,14 @@ namespace ns3 {
  * \brief create VHT-enabled MAC layers for a ns3::WifiNetDevice.
  *
  * This class can create MACs of type ns3::ApWifiMac, ns3::StaWifiMac,
- * and, ns3::AdhocWifiMac, with QosSupported, HTSupported and VHTSupported attributes set to True.
+ * and, ns3::AdhocWifiMac, with QosSupported, HTSupported and VHTSupported attributes set to True
  */
 class VhtWifiMacHelper : public QosWifiMacHelper
 {
 public:
   /**
    * Create a VhtWifiMacHelper that is used to make life easier when working
-   * with Wifi devices using a QOS MAC layer.
+   * with Wifi devices using a QOS MAC layer
    */
   VhtWifiMacHelper ();
 
@@ -56,11 +56,16 @@ public:
 
   /**
    * Create a mac helper in a default working state.
+   *
+   * \returns VhtWifiMacHelper
    */
   static VhtWifiMacHelper Default (void);
 
   /**
    * Converts a VHT MCS value into a DataRate value
+   *
+   * \param mcs MCS Value
+   * \return data rate value (StringValue)
    */
   static StringValue DataRateForMcs (int mcs);
 };

@@ -149,10 +149,10 @@ QosWifiMacHelper::SetBlockAckInactivityTimeoutForAc (enum AcIndex ac, uint16_t t
 }
 
 void
-QosWifiMacHelper::Setup (Ptr<WifiMac> mac, enum AcIndex ac, std::string dcaAttrName) const
+QosWifiMacHelper::Setup (Ptr<WifiMac> mac, enum AcIndex ac, std::string edcaAttrName) const
 {
   PointerValue ptr;
-  mac->GetAttribute (dcaAttrName, ptr);
+  mac->GetAttribute (edcaAttrName, ptr);
   Ptr<EdcaTxopN> edca = ptr.Get<EdcaTxopN> ();
 
   std::map<AcIndex, ObjectFactory>::const_iterator it_msdu = m_msduAggregators.find (ac);

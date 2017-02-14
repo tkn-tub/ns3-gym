@@ -35,6 +35,15 @@ namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("WifiHelper");
 
+/**
+ * ASCII trace Phy transmit sink with context
+ * \param stream the output stream
+ * \param context the context name
+ * \param p the packet
+ * \param mode the wifi mode
+ * \param preamble the wifi preamble
+ * \param txLevel the transmit power level
+ */
 static void
 AsciiPhyTransmitSinkWithContext (
   Ptr<OutputStreamWrapper> stream,
@@ -48,6 +57,14 @@ AsciiPhyTransmitSinkWithContext (
   *stream->GetStream () << "t " << Simulator::Now ().GetSeconds () << " " << context << " " << *p << std::endl;
 }
 
+/**
+ * ASCII trace Phy transmit sink without context
+ * \param stream the output stream
+ * \param p the packet
+ * \param mode the wifi mode
+ * \param preamble the wifi preamble
+ * \param txLevel the transmit power level
+ */
 static void
 AsciiPhyTransmitSinkWithoutContext (
   Ptr<OutputStreamWrapper> stream,
@@ -60,6 +77,15 @@ AsciiPhyTransmitSinkWithoutContext (
   *stream->GetStream () << "t " << Simulator::Now ().GetSeconds () << " " << *p << std::endl;
 }
 
+/**
+ * ASCII trace Phy receive sink with context
+ * \param stream the output stream
+ * \param context the context name
+ * \param p the packet
+ * \param snr the SNR
+ * \param mode the wifi mode
+ * \param preamble the wifi preamble
+ */
 static void
 AsciiPhyReceiveSinkWithContext (
   Ptr<OutputStreamWrapper> stream,
@@ -73,6 +99,14 @@ AsciiPhyReceiveSinkWithContext (
   *stream->GetStream () << "r " << Simulator::Now ().GetSeconds () << " " << context << " " << *p << std::endl;
 }
 
+/**
+ * ASCII trace Phy receive sink without context
+ * \param stream the output stream
+ * \param p the packet
+ * \param snr the SNR
+ * \param mode the wifi mode
+ * \param preamble the wifi preamble
+ */
 static void
 AsciiPhyReceiveSinkWithoutContext (
   Ptr<OutputStreamWrapper> stream,

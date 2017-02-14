@@ -38,13 +38,34 @@ class AthstatsHelper
 {
 public:
   AthstatsHelper ();
+  /**
+   * Enable athstats
+   * \param filename the file name
+   * \param nodeid the node ID
+   * \param deviceid the device ID
+   */
   void EnableAthstats (std::string filename,  uint32_t nodeid, uint32_t deviceid);
+  /**
+   * Enable athstats
+   * \param filename the file name
+   * \param nd the device
+   */
   void EnableAthstats (std::string filename, Ptr<NetDevice> nd);
+  /**
+   * Enable athstats
+   * \param filename the file name
+   * \param d the collection of devices
+   */
   void EnableAthstats (std::string filename, NetDeviceContainer d);
+  /**
+   * Enable athstats
+   * \param filename the file name
+   * \param n the collection of nodes
+   */
   void EnableAthstats (std::string filename, NodeContainer n);
 
 private:
-  Time m_interval;
+  Time m_interval; ///< interval
 };
 
 
@@ -72,6 +93,10 @@ private:
 class AthstatsWifiTraceSink  : public Object
 {
 public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
   AthstatsWifiTraceSink ();
   virtual ~AthstatsWifiTraceSink ();
@@ -183,21 +208,23 @@ public:
 
 
 private:
+  /// Write status function
   void WriteStats ();
+  /// Reset counters function
   void ResetCounters ();
 
-  uint32_t m_txCount;
-  uint32_t m_rxCount;
-  uint32_t m_shortRetryCount;
-  uint32_t m_longRetryCount;
-  uint32_t m_exceededRetryCount;
-  uint32_t m_phyRxOkCount;
-  uint32_t m_phyRxErrorCount;
-  uint32_t m_phyTxCount;
+  uint32_t m_txCount; ///< transmit count
+  uint32_t m_rxCount; ///< receive count
+  uint32_t m_shortRetryCount; ///< short retry count
+  uint32_t m_longRetryCount; ///< long retry count
+  uint32_t m_exceededRetryCount; ///< exceeded retry count
+  uint32_t m_phyRxOkCount; ///< phy receive ok count
+  uint32_t m_phyRxErrorCount; ///< phy receive error count
+  uint32_t m_phyTxCount; ///< phy transmit count
 
-  std::ofstream *m_writer;
+  std::ofstream *m_writer; ///< output stream
 
-  Time m_interval;
+  Time m_interval; ///< interval
 
 }; //class AthstatsWifiTraceSink
 

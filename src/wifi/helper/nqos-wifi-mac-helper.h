@@ -52,6 +52,7 @@ public:
   /**
    * Create a mac helper in a default working state.
    * i.e., this is an adhoc mac by default.
+   * \return NqosWifiMacHelper
    */
   static NqosWifiMacHelper Default (void);
   /**
@@ -95,7 +96,7 @@ public:
                         std::string n9 = "", const AttributeValue &v9 = EmptyAttributeValue (),
                         std::string n10 = "", const AttributeValue &v10 = EmptyAttributeValue ());
 protected:
-  ObjectFactory m_mac;
+  ObjectFactory m_mac; ///< MAC object
 private:
   /**
    * \returns a newly-created MAC object.

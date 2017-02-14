@@ -60,7 +60,7 @@ public:
    * by other Wifi device variants such as WaveNetDevice.
    */
   virtual Ptr<WifiPhy> Create (Ptr<Node> node, Ptr<NetDevice> device) const = 0;
-  
+
   /**
    * \param name the name of the attribute to set
    * \param v the value of the attribute
@@ -98,7 +98,7 @@ public:
                           std::string n5 = "", const AttributeValue &v5 = EmptyAttributeValue (),
                           std::string n6 = "", const AttributeValue &v6 = EmptyAttributeValue (),
                           std::string n7 = "", const AttributeValue &v7 = EmptyAttributeValue ());
-  
+
   /**
    * An enumeration of the pcap data link types (DLTs) which this helper
    * supports.  See http://wiki.wireshark.org/Development/LibpcapFileFormat
@@ -162,10 +162,10 @@ protected:
                                 WifiTxVector txVector,
                                 MpduInfo aMpdu,
                                 SignalNoiseDbm signalNoise);
-    
-  ObjectFactory m_phy;
-  ObjectFactory m_errorRateModel;
-    
+
+  ObjectFactory m_phy; ///< PHY object
+  ObjectFactory m_errorRateModel; ///< error rate model
+
 private:
   /**
    * @brief Enable pcap output the indicated net device.
@@ -198,8 +198,8 @@ private:
                                     std::string prefix,
                                     Ptr<NetDevice> nd,
                                     bool explicitFilename);
-    
-  PcapHelper::DataLinkType m_pcapDlt;
+
+  PcapHelper::DataLinkType m_pcapDlt; ///< PCAP data link type
 };
 
 
@@ -220,7 +220,7 @@ public:
    * must be set before calling ns3::WifiHelper::Install
    *
    * The default state is defined as being an Adhoc MAC layer with an ARF rate control algorithm
-   * and both objects using their default attribute values. 
+   * and both objects using their default attribute values.
    * By default, configure MAC and PHY for 802.11a.
    */
   WifiHelper ();
@@ -342,8 +342,8 @@ public:
 
 
 protected:
-  ObjectFactory m_stationManager;
-  enum WifiPhyStandard m_standard;
+  ObjectFactory m_stationManager; ///< station manager
+  enum WifiPhyStandard m_standard; ///< wifi standard
 };
 
 } //namespace ns3
