@@ -21,7 +21,8 @@
 #ifndef AARF_WIFI_MANAGER_H
 #define AARF_WIFI_MANAGER_H
 
-#include "arf-wifi-manager.h"
+#include "ns3/traced-value.h"
+#include "wifi-remote-station-manager.h"
 
 namespace ns3 {
 
@@ -72,6 +73,8 @@ private:
   double m_successK;
   uint32_t m_maxSuccessThreshold;
   double m_timerK;
+  
+  TracedValue<uint64_t> m_currentRate; //!< Trace rate changes
 };
 
 } //namespace ns3

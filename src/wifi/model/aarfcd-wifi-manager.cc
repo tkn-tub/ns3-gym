@@ -107,12 +107,18 @@ AarfcdWifiManager::GetTypeId (void)
                    BooleanValue (true),
                    MakeBooleanAccessor (&AarfcdWifiManager::m_turnOnRtsAfterRateIncrease),
                    MakeBooleanChecker ())
+    .AddTraceSource ("Rate",
+                     "Traced value for rate changes (b/s)",
+                     MakeTraceSourceAccessor (&AarfcdWifiManager::m_currentRate),
+                     "ns3::TracedValueCallback::Uint64")
   ;
   return tid;
 }
 
 AarfcdWifiManager::AarfcdWifiManager ()
-  : WifiRemoteStationManager ()
+  : WifiRemoteStationManager (),
+    m_currentRate (0)
+
 {
   NS_LOG_FUNCTION (this);
 }
@@ -308,6 +314,11 @@ AarfcdWifiManager::DoGetDataTxVector (WifiRemoteStation *st)
       channelWidth = 20;
     }
   WifiMode mode = GetSupported (station, station->m_rate);
+  if (m_currentRate != mode.GetDataRate (channelWidth))
+    {
+      NS_LOG_DEBUG ("New datarate: " << mode.GetDataRate (channelWidth));
+      m_currentRate = mode.GetDataRate (channelWidth);
+    }
   return WifiTxVector (mode, GetDefaultTxPowerLevel (), GetLongRetryCount (station), GetPreambleForTransmission (mode, GetAddress (station)), 800, 1, 1, 0, channelWidth, GetAggregation (station), false);
 }
 

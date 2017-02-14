@@ -21,6 +21,7 @@
 #ifndef ARF_WIFI_MANAGER_H
 #define ARF_WIFI_MANAGER_H
 
+#include "ns3/traced-value.h"
 #include "wifi-remote-station-manager.h"
 
 namespace ns3 {
@@ -75,6 +76,8 @@ private:
 
   uint32_t m_timerThreshold;
   uint32_t m_successThreshold;
+
+  TracedValue<uint64_t> m_currentRate; //!< Trace rate changes
 };
 
 } //namespace ns3

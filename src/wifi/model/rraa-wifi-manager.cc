@@ -180,12 +180,18 @@ RraaWifiManager::GetTypeId (void)
                    DoubleValue (0.3932),
                    MakeDoubleAccessor (&RraaWifiManager::m_pmtlfor9),
                    MakeDoubleChecker<double> ())
+    .AddTraceSource ("Rate",
+                     "Traced value for rate changes (b/s)",
+                     MakeTraceSourceAccessor (&RraaWifiManager::m_currentRate),
+                     "ns3::TracedValueCallback::Uint64")
   ;
   return tid;
 }
 
 
 RraaWifiManager::RraaWifiManager ()
+  : WifiRemoteStationManager (),
+    m_currentRate (0)
 {
 }
 
@@ -295,6 +301,11 @@ RraaWifiManager::DoGetDataTxVector (WifiRemoteStation *st)
       ResetCountersBasic (station);
     }
   WifiMode mode = GetSupported (station, station->m_rate);
+  if (m_currentRate != mode.GetDataRate (channelWidth))
+    {
+      NS_LOG_DEBUG ("New datarate: " << mode.GetDataRate (channelWidth));
+      m_currentRate = mode.GetDataRate (channelWidth);
+    }
   return WifiTxVector (mode, GetDefaultTxPowerLevel (), GetLongRetryCount (station), GetPreambleForTransmission (mode, GetAddress (station)), 800, 1, 1, 0, channelWidth, GetAggregation (station), false);
 }
 

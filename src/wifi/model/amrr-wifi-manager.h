@@ -21,6 +21,7 @@
 #ifndef AMRR_WIFI_MANAGER_H
 #define AMRR_WIFI_MANAGER_H
 
+#include "ns3/traced-value.h"
 #include "wifi-remote-station-manager.h"
 
 namespace ns3 {
@@ -152,6 +153,8 @@ private:
   double m_successRatio;
   uint32_t m_maxSuccessThreshold;
   uint32_t m_minSuccessThreshold;
+
+  TracedValue<uint64_t> m_currentRate; //!< Trace rate changes
 };
 
 } //namespace ns3

@@ -83,11 +83,17 @@ MinstrelWifiManager::GetTypeId (void)
                    BooleanValue (false),
                    MakeBooleanAccessor (&MinstrelWifiManager::m_printStats),
                    MakeBooleanChecker ())
+    .AddTraceSource ("Rate",
+                     "Traced value for rate changes (b/s)",
+                     MakeTraceSourceAccessor (&MinstrelWifiManager::m_currentRate),
+                     "ns3::TracedValueCallback::Uint64")
   ;
   return tid;
 }
 
 MinstrelWifiManager::MinstrelWifiManager ()
+  : WifiRemoteStationManager (),
+    m_currentRate (0)
 {
   NS_LOG_FUNCTION (this);
   m_uniformRandomVariable = CreateObject<UniformRandomVariable> ();
@@ -360,6 +366,11 @@ MinstrelWifiManager::GetDataTxVector (MinstrelWifiRemoteStation *station)
       station->m_txrate = station->m_nModes / 2;
     }
   WifiMode mode = GetSupported (station, station->m_txrate);
+  if (m_currentRate != mode.GetDataRate (channelWidth))
+    {
+      NS_LOG_DEBUG ("New datarate: " << mode.GetDataRate (channelWidth));
+      m_currentRate = mode.GetDataRate (channelWidth);
+    }
   return WifiTxVector (mode, GetDefaultTxPowerLevel (), GetLongRetryCount (station), GetPreambleForTransmission (mode, GetAddress (station)), 800, 1, 1, 0, channelWidth, GetAggregation (station), false);
 }
 

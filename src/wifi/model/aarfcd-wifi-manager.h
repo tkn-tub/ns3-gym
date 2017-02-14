@@ -21,6 +21,7 @@
 #ifndef AARFCD_WIFI_MANAGER_H
 #define AARFCD_WIFI_MANAGER_H
 
+#include "ns3/traced-value.h"
 #include "wifi-remote-station-manager.h"
 
 namespace ns3 {
@@ -126,6 +127,8 @@ private:
   uint32_t m_maxRtsWnd;
   bool m_turnOffRtsAfterRateDecrease;
   bool m_turnOnRtsAfterRateIncrease;
+
+  TracedValue<uint64_t> m_currentRate; //!< Trace rate changes
 };
 
 } //namespace ns3

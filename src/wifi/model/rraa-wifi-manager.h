@@ -21,6 +21,7 @@
 #ifndef RRAA_WIFI_MANAGER_H
 #define RRAA_WIFI_MANAGER_H
 
+#include "ns3/traced-value.h"
 #include "wifi-remote-station-manager.h"
 
 namespace ns3 {
@@ -166,6 +167,8 @@ private:
   double m_pmtlfor18;
   double m_pmtlfor12;
   double m_pmtlfor9;
+
+  TracedValue<uint64_t> m_currentRate; //!< Trace rate changes
 };
 
 } //namespace ns3

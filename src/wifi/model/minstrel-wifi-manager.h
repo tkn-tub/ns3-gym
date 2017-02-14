@@ -22,6 +22,7 @@
 #ifndef MINSTREL_WIFI_MANAGER_H
 #define MINSTREL_WIFI_MANAGER_H
 
+#include "ns3/traced-value.h"
 #include "wifi-remote-station-manager.h"
 #include "ns3/random-variable-stream.h"
 #include <fstream>
@@ -260,7 +261,6 @@ private:
   //printing Minstrel Table
   void PrintTable (MinstrelWifiRemoteStation *station);
 
-
   /**
    * typedef for a vector of a pair of Time, WifiMode.
    * (Essentially a list for WifiMode and its corresponding transmission time
@@ -278,6 +278,8 @@ private:
 
   //Provides uniform random variables.
   Ptr<UniformRandomVariable> m_uniformRandomVariable;
+
+  TracedValue<uint64_t> m_currentRate; //!< Trace rate changes
 };
 
 } //namespace ns3
