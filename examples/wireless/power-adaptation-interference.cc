@@ -19,9 +19,9 @@
  */
 
 /**
- * This example program is designed to illustrate the behavior of two
- * power/rate-adaptive WiFi rate controls; namely, ns3::ParfWifiManager
- * and ns3::AparfWifiManager.
+ * This example program is designed to illustrate the behavior of three
+ * power/rate-adaptive WiFi rate controls; namely, ns3::ParfWifiManager,
+ * ns3::AparfWifiManager and ns3::RrpaaWifiManager.
  *
  * This simulation consist of 4 nodes, two APs and two STAs.
  * The APs generates UDP traffic with a CBR of 54 Mbps to the STAs.
@@ -68,7 +68,7 @@ using namespace std;
 
 NS_LOG_COMPONENT_DEFINE ("PowerAdaptationInterference");
 
-// packet size generated at the AP
+//Packet size generated at the AP.
 static const uint32_t packetSize = 1420;
 
 class NodeStatistics
@@ -80,8 +80,8 @@ public:
 
   void PhyCallback (std::string path, Ptr<const Packet> packet);
   void RxCallback (std::string path, Ptr<const Packet> packet, const Address &from);
-  void PowerCallback (std::string path, uint8_t power, Mac48Address dest);
-  void RateCallback (std::string path, uint32_t rate, Mac48Address dest);
+  void PowerCallback (std::string path, double oldPower, double newPower, Mac48Address dest);
+  void RateCallback (std::string path, DataRate oldRate, DataRate newRate, Mac48Address dest);
   void StateCallback (std::string path, Time init, Time duration, enum WifiPhy::State state);
 
   Gnuplot2dDataset GetDatafile ();
@@ -94,12 +94,12 @@ public:
   double GetBusyTime ();
 
 private:
-  typedef std::vector<std::pair<Time,WifiMode> > TxTime;
+  typedef std::vector<std::pair<Time, DataRate> > TxTime;
   void SetupPhy (Ptr<WifiPhy> phy);
-  Time GetCalcTxTime (WifiMode mode);
+  Time GetCalcTxTime (DataRate rate);
 
-  std::map<Mac48Address, double> actualPower;
-  std::map<Mac48Address, WifiMode> actualMode;
+  std::map<Mac48Address, double> currentPower;
+  std::map<Mac48Address, DataRate> currentRate;
   uint32_t m_bytesTotal;
   double totalEnergy;
   double totalTime;
@@ -128,15 +128,17 @@ NodeStatistics::NodeStatistics (NetDeviceContainer aps, NetDeviceContainer stas)
   Ptr<WifiPhy> phy = wifiDevice->GetPhy ();
   myPhy = phy;
   SetupPhy (phy);
+  DataRate dataRate = DataRate (phy->GetMode (0).GetDataRate (phy->GetChannelWidth ()));
+  double power = phy->GetTxPowerEnd ();
   for (uint32_t j = 0; j < stas.GetN (); j++)
     {
       Ptr<NetDevice> staDevice = stas.Get (j);
       Ptr<WifiNetDevice> wifiStaDevice = DynamicCast<WifiNetDevice> (staDevice);
       Mac48Address addr = wifiStaDevice->GetMac ()->GetAddress ();
-      actualPower[addr] = 17;
-      actualMode[addr] = phy->GetMode (0);
+      currentPower[addr] = power;
+      currentRate[addr] = dataRate;
     }
-  actualMode[Mac48Address ("ff:ff:ff:ff:ff:ff")] = phy->GetMode (0);
+  currentRate[Mac48Address ("ff:ff:ff:ff:ff:ff")] = dataRate;
   totalEnergy = 0;
   totalTime = 0;
   busyTime = 0;
@@ -165,16 +167,20 @@ NodeStatistics::SetupPhy (Ptr<WifiPhy> phy)
       WifiTxVector txVector;
       txVector.SetMode (mode);
       txVector.SetPreambleType (WIFI_PREAMBLE_LONG);
-      timeTable.push_back (std::make_pair (phy->CalculateTxDuration (packetSize, txVector, phy->GetFrequency ()), mode));
+      txVector.SetChannelWidth (phy->GetChannelWidth ());
+      DataRate dataRate = DataRate (mode.GetDataRate (phy->GetChannelWidth ()));
+      Time time = phy->CalculateTxDuration (packetSize, txVector, phy->GetFrequency ());
+      NS_LOG_DEBUG (i << " " << time.GetSeconds () << " " << dataRate);
+      timeTable.push_back (std::make_pair (time, dataRate));
     }
 }
 
 Time
-NodeStatistics::GetCalcTxTime (WifiMode mode)
+NodeStatistics::GetCalcTxTime (DataRate rate)
 {
   for (TxTime::const_iterator i = timeTable.begin (); i != timeTable.end (); i++)
     {
-      if (mode == i->second)
+      if (rate == i->second)
         {
           return i->first;
         }
@@ -192,34 +198,21 @@ NodeStatistics::PhyCallback (std::string path, Ptr<const Packet> packet)
 
   if (head.GetType () == WIFI_MAC_DATA)
     {
-      totalEnergy += pow (10.0, actualPower[dest] / 10.0) * GetCalcTxTime (actualMode[dest]).GetSeconds ();
-      totalTime += GetCalcTxTime (actualMode[dest]).GetSeconds ();
+      totalEnergy += pow (10.0, currentPower[dest] / 10.0) * GetCalcTxTime (currentRate[dest]).GetSeconds ();
+      totalTime += GetCalcTxTime (currentRate[dest]).GetSeconds ();
     }
 }
 
 void
-NodeStatistics::PowerCallback (std::string path, uint8_t power, Mac48Address dest)
+NodeStatistics::PowerCallback (std::string path, double oldPower, double newPower, Mac48Address dest)
 {
-  double   txPowerBaseDbm = myPhy->GetTxPowerStart ();
-  double   txPowerEndDbm = myPhy->GetTxPowerEnd ();
-  uint32_t nTxPower = myPhy->GetNTxPower ();
-  double dbm;
-  if (nTxPower > 1)
-    {
-      dbm = txPowerBaseDbm + power * (txPowerEndDbm - txPowerBaseDbm) / (nTxPower - 1);
-    }
-  else
-    {
-      NS_ASSERT_MSG (txPowerBaseDbm == txPowerEndDbm, "cannot have TxPowerEnd != TxPowerStart with TxPowerLevels == 1");
-      dbm = txPowerBaseDbm;
-    }
-  actualPower[dest] = dbm;
+  currentPower[dest] = newPower;
 }
 
 void
-NodeStatistics::RateCallback (std::string path, uint32_t rate, Mac48Address dest)
+NodeStatistics::RateCallback (std::string path, DataRate oldRate, DataRate newRate, Mac48Address dest)
 {
-  actualMode[dest] = myPhy->GetMode (rate);
+  currentRate[dest] = newRate;
 }
 
 void
@@ -318,16 +311,14 @@ NodeStatistics::GetBusyTime ()
   return totalBusyTime + totalRxTime;
 }
 
-void PowerCallback (std::string path, uint8_t power, Mac48Address dest)
+void PowerCallback (std::string path, double oldPower, double newPower, Mac48Address dest)
 {
-  NS_LOG_INFO ((Simulator::Now ()).GetSeconds () << " " << dest << " Power " <<  (int)power);
-  // end PowerCallback
+  NS_LOG_INFO ((Simulator::Now ()).GetSeconds () << " " << dest << " Old power=" << oldPower << " New power=" << newPower);
 }
 
-void RateCallback (std::string path, uint32_t rate, Mac48Address dest)
+void RateCallback (std::string path, DataRate oldRate, DataRate newRate, Mac48Address dest)
 {
-  NS_LOG_INFO ((Simulator::Now ()).GetSeconds () << " " << dest << " Rate " <<  rate);
-  // end PowerCallback
+  NS_LOG_INFO ((Simulator::Now ()).GetSeconds () << " " << dest << " Old rate=" << oldRate << " New rate=" <<  newRate);
 }
 
 int main (int argc, char *argv[])
@@ -370,7 +361,7 @@ int main (int argc, char *argv[])
   cmd.AddValue ("STA2_y", "Position of STA2 in y coordinate", sta2_y);
   cmd.Parse (argc, argv);
 
-  // Define the APs
+  //Define the APs
   NodeContainer wifiApNodes;
   wifiApNodes.Create (2);
 
@@ -427,7 +418,7 @@ int main (int argc, char *argv[])
   wifiDevices.Add (wifiStaDevices);
   wifiDevices.Add (wifiApDevices);
 
-  // Configure the mobility.
+  //Configure the mobility.
   MobilityHelper mobility;
   Ptr<ListPositionAllocator> positionAlloc = CreateObject<ListPositionAllocator> ();
   positionAlloc->Add (Vector (ap1_x, ap1_y, 0.0));
@@ -520,8 +511,7 @@ int main (int argc, char *argv[])
                    MakeCallback (RateCallback));
 
 
-  // Calculate Throughput using Flowmonitor
-  //
+  //Calculate Throughput using Flowmonitor
 
   FlowMonitorHelper flowmon;
   Ptr<FlowMonitor> monitor = flowmon.InstallAll ();
@@ -566,7 +556,8 @@ int main (int argc, char *argv[])
   gnuplot.GenerateOutput (outfileTh0);
 
   if (manager.compare ("ns3::ParfWifiManager") == 0
-      || manager.compare ("ns3::AparfWifiManager") == 0)
+      || manager.compare ("ns3::AparfWifiManager") == 0
+      || manager.compare ("ns3::RrpaaWifiManager") == 0)
     {
       std::ofstream outfilePower0 (("power-" + outputFileName + "-0.plt").c_str ());
       gnuplot = Gnuplot (("power-" + outputFileName + "-0.eps").c_str (), "Average Transmit Power");
@@ -619,7 +610,8 @@ int main (int argc, char *argv[])
   gnuplot.GenerateOutput (outfileTh1);
 
   if (manager.compare ("ns3::ParfWifiManager") == 0
-      || manager.compare ("ns3::AparfWifiManager") == 0)
+      || manager.compare ("ns3::AparfWifiManager") == 0
+      || manager.compare ("ns3::RrpaaWifiManager") == 0)
     {
       std::ofstream outfilePower1 (("power-" + outputFileName + "-1.plt").c_str ());
       gnuplot = Gnuplot (("power-" + outputFileName + "-1.eps").c_str (), "Average Transmit Power");

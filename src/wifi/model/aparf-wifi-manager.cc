@@ -43,9 +43,11 @@ AparfWifiRemoteStation : public WifiRemoteStation
   uint32_t m_pCount;                    //!< Number of power changes.
   uint32_t m_successThreshold;          //!< The minimum number of successful transmissions to try a new power or rate.
   uint32_t m_failThreshold;             //!< The minimum number of failed transmissions to try a new power or rate.
-  uint32_t m_rate;                      //!< Current rate.
-  uint32_t m_rateCrit;                  //!< Critical rate.
-  uint8_t m_power;                      //!< Current power.
+  uint32_t m_prevRateIndex;             //!< Rate index of the previous transmission.
+  uint32_t m_rateIndex;                 //!< Current rate index.
+  uint32_t m_critRateIndex;             //!< Critical rate.
+  uint8_t m_prevPowerLevel;             //!< Power level of the previous transmission.
+  uint8_t m_powerLevel;                 //!< Current power level.
   uint32_t m_nSupported;                //!< Number of supported rates by the remote station.
   bool m_initialized;                   //!< For initializing variables.
   AparfWifiManager::State m_aparfState; //!< The estimated state of the channel.
@@ -144,8 +146,8 @@ AparfWifiManager::DoCreateStation (void) const
   station->m_aparfState = AparfWifiManager::High;
   station->m_initialized = false;
 
-  NS_LOG_DEBUG ("create station=" << station << ", rate=" << station->m_rate
-                                  << ", power=" << (int)station->m_power);
+  NS_LOG_DEBUG ("create station=" << station << ", rate=" << station->m_rateIndex
+                                  << ", power=" << (int)station->m_powerLevel);
 
   return station;
 }
@@ -156,11 +158,17 @@ AparfWifiManager::CheckInit (AparfWifiRemoteStation *station)
   if (!station->m_initialized)
     {
       station->m_nSupported = GetNSupported (station);
-      station->m_rate = station->m_nSupported - 1;
-      station->m_power = m_maxPower;
-      station->m_rateCrit = 0;
-      m_powerChange (station->m_power, station->m_state->m_address);
-      m_rateChange (station->m_rate, station->m_state->m_address);
+      station->m_rateIndex = station->m_nSupported - 1;
+      station->m_prevRateIndex = station->m_nSupported - 1;
+      station->m_powerLevel = m_maxPower;
+      station->m_prevPowerLevel = m_maxPower;
+      station->m_critRateIndex = 0;
+      WifiMode mode = GetSupported (station, station->m_rateIndex);
+      uint8_t channelWidth = GetChannelWidth (station);
+      DataRate rate = DataRate (mode.GetDataRate (channelWidth));
+      double power = GetPhy ()->GetPowerDbm (m_maxPower);
+      m_powerChange (power, power, station->m_state->m_address);
+      m_rateChange (rate, rate, station->m_state->m_address);
       station->m_initialized = true;
     }
 }
@@ -177,8 +185,8 @@ void AparfWifiManager::DoReportDataFailed (WifiRemoteStation *st)
   CheckInit (station);
   station->m_nFailed++;
   station->m_nSuccess = 0;
-  NS_LOG_DEBUG ("station=" << station << ", rate=" << station->m_rate
-                           << ", power=" << (int)station->m_power);
+  NS_LOG_DEBUG ("station=" << station << ", rate=" << station->m_rateIndex
+                           << ", power=" << (int)station->m_powerLevel);
 
   if (station->m_aparfState == AparfWifiManager::Low)
     {
@@ -196,21 +204,19 @@ void AparfWifiManager::DoReportDataFailed (WifiRemoteStation *st)
       station->m_nFailed = 0;
       station->m_nSuccess = 0;
       station->m_pCount = 0;
-      if (station->m_power == m_maxPower)
+      if (station->m_powerLevel == m_maxPower)
         {
-          station->m_rateCrit = station->m_rate;
-          if (station->m_rate != 0)
+          station->m_critRateIndex = station->m_rateIndex;
+          if (station->m_rateIndex != 0)
             {
               NS_LOG_DEBUG ("station=" << station << " dec rate");
-              station->m_rate -= m_rateDec;
-              m_rateChange (station->m_rate, station->m_state->m_address);
+              station->m_rateIndex -= m_rateDec;
             }
         }
       else
         {
           NS_LOG_DEBUG ("station=" << station << " inc power");
-          station->m_power += m_powerInc;
-          m_powerChange (station->m_power, station->m_state->m_address);
+          station->m_powerLevel += m_powerInc;
         }
     }
 }
@@ -238,7 +244,7 @@ AparfWifiManager::DoReportDataOk (WifiRemoteStation *st, double ackSnr,
   CheckInit (station);
   station->m_nSuccess++;
   station->m_nFailed = 0;
-  NS_LOG_DEBUG ("station=" << station << " data ok success=" << station->m_nSuccess << ", rate=" << station->m_rate << ", power=" << (int)station->m_power);
+  NS_LOG_DEBUG ("station=" << station << " data ok success=" << station->m_nSuccess << ", rate=" << station->m_rateIndex << ", power=" << (int)station->m_powerLevel);
 
   if ((station->m_aparfState == AparfWifiManager::High) && (station->m_nSuccess >= station->m_successThreshold))
     {
@@ -258,43 +264,38 @@ AparfWifiManager::DoReportDataOk (WifiRemoteStation *st, double ackSnr,
     {
       station->m_nSuccess = 0;
       station->m_nFailed = 0;
-      if (station->m_rate == (station->m_state->m_operationalRateSet.size () - 1))
+      if (station->m_rateIndex == (station->m_state->m_operationalRateSet.size () - 1))
         {
-          if (station->m_power != m_minPower)
+          if (station->m_powerLevel != m_minPower)
             {
               NS_LOG_DEBUG ("station=" << station << " dec power");
-              station->m_power -= m_powerDec;
-              m_powerChange (station->m_power, station->m_state->m_address);
+              station->m_powerLevel -= m_powerDec;
             }
         }
       else
         {
-          if (station->m_rateCrit == 0)
+          if (station->m_critRateIndex == 0)
             {
-              if (station->m_rate != (station->m_state->m_operationalRateSet.size () - 1))
+              if (station->m_rateIndex != (station->m_state->m_operationalRateSet.size () - 1))
                 {
                   NS_LOG_DEBUG ("station=" << station << " inc rate");
-                  station->m_rate += m_rateInc;
-                  m_rateChange (station->m_rate, station->m_state->m_address);
+                  station->m_rateIndex += m_rateInc;
                 }
             }
           else
             {
               if (station->m_pCount == m_powerMax)
                 {
-                  station->m_power = m_maxPower;
-                  m_powerChange (station->m_power, station->m_state->m_address);
-                  station->m_rate = station->m_rateCrit;
-                  m_rateChange (station->m_rate, station->m_state->m_address);
+                  station->m_powerLevel = m_maxPower;
+                  station->m_rateIndex = station->m_critRateIndex;
                   station->m_pCount = 0;
-                  station->m_rateCrit = 0;
+                  station->m_critRateIndex = 0;
                 }
               else
                 {
-                  if (station->m_power != m_minPower)
+                  if (station->m_powerLevel != m_minPower)
                     {
-                      station->m_power -= m_powerDec;
-                      m_powerChange (station->m_power, station->m_state->m_address);
+                      station->m_powerLevel -= m_powerDec;
                       station->m_pCount++;
                     }
                 }
@@ -327,8 +328,22 @@ AparfWifiManager::DoGetDataTxVector (WifiRemoteStation *st)
       channelWidth = 20;
     }
   CheckInit (station);
-  WifiMode mode = GetSupported (station, station->m_rate);
-  return WifiTxVector (mode, station->m_power, GetLongRetryCount (station), GetPreambleForTransmission (mode, GetAddress (st)), 800, 1, 1, 0, channelWidth, GetAggregation (station), false);
+  WifiMode mode = GetSupported (station, station->m_rateIndex);
+  DataRate rate = DataRate (mode.GetDataRate (channelWidth));
+  DataRate prevRate = DataRate (GetSupported (station, station->m_prevRateIndex).GetDataRate (channelWidth));
+  double power = GetPhy ()->GetPowerDbm (station->m_powerLevel);
+  double prevPower = GetPhy ()->GetPowerDbm (station->m_prevPowerLevel);
+  if (station->m_prevPowerLevel != station->m_powerLevel)
+    {
+      m_powerChange (prevPower, power, station->m_state->m_address);
+      station->m_prevPowerLevel = station->m_powerLevel;
+    }
+  if (station->m_prevRateIndex != station->m_rateIndex)
+    {
+      m_rateChange (prevRate, rate, station->m_state->m_address);
+      station->m_prevRateIndex = station->m_rateIndex;
+    }
+  return WifiTxVector (mode, station->m_powerLevel, GetLongRetryCount (station), GetPreambleForTransmission (mode, GetAddress (st)), 800, 1, 1, 0, channelWidth, GetAggregation (station), false);
 }
 
 WifiTxVector

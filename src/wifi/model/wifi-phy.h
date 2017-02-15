@@ -1625,6 +1625,16 @@ public:
    */
   std::vector<uint8_t> GetSupportedChannelWidthSet (void) const;
 
+  /**
+   * Get the power of the given power level in dBm.
+   * In SpectrumWifiPhy implementation, the power levels are equally spaced (in dBm).
+   *
+   * \param power the power level
+   *
+   * \return the transmission power in dBm at the given power level
+   */
+  double GetPowerDbm (uint8_t power) const;
+
 
 protected:
   // Inherited
@@ -1651,16 +1661,6 @@ protected:
    * \see SetFrequency
    */
   bool DoFrequencySwitch (uint16_t frequency);
-
-  /**
-   * Get the power of the given power level in dBm.
-   * In SpectrumWifiPhy implementation, the power levels are equally spaced (in dBm).
-   *
-   * \param power the power level
-   *
-   * \return the transmission power in dBm at the given power level
-   */
-  double GetPowerDbm (uint8_t power) const;
 
   /**
    * Check if Phy state should move to CCA busy state based on current
