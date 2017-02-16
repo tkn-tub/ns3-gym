@@ -1497,8 +1497,9 @@ uint8_t DsrOptionRerr::Process (Ptr<Packet> packet, Ptr<Packet> dsrP, Ipv4Addres
       p->RemoveHeader (rerrUnsupport);
       rerrSize = rerrUnsupport.GetSerializedSize ();
 
+      NS_UNUSED (rerrSize);
       /// \todo This is for the other two error options, not supporting for now
-//      uint32_t serialized = DoSendError (p, rerrUnsupport, rerrSize, ipv4Address, protocol);
+      // uint32_t serialized = DoSendError (p, rerrUnsupport, rerrSize, ipv4Address, protocol);
       uint32_t serialized = 0;
       return serialized;
     }

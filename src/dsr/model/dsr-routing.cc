@@ -541,7 +541,6 @@ DsrRouting::GetElementsFromContext (std::string context)
     pos2 = context.find ("/",pos1+1);
     elements.push_back (context.substr (pos1+1,pos2-(pos1+1)));
     pos1 = pos2;
-    pos2 = context.npos;
   }
   return elements;
 }
