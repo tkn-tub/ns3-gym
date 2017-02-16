@@ -31,8 +31,22 @@
 
 using namespace ns3;
 
+/**
+ * \ingroup traffic-control-test
+ * \ingroup tests
+ *
+ * \brief Red Queue Disc Test Item
+ */
 class RedQueueDiscTestItem : public QueueDiscItem {
 public:
+  /**
+   * Constructor
+   *
+   * \param p packet
+   * \param addr address
+   * \param protocol protocol
+   * \param ecnCapable ECN capable flag
+   */
   RedQueueDiscTestItem (Ptr<Packet> p, const Address & addr, uint16_t protocol, bool ecnCapable);
   virtual ~RedQueueDiscTestItem ();
   virtual void AddHeader (void);
@@ -40,9 +54,11 @@ public:
 
 private:
   RedQueueDiscTestItem ();
+  /// copy constructor
   RedQueueDiscTestItem (const RedQueueDiscTestItem &);
+  /// assignment operator
   RedQueueDiscTestItem &operator = (const RedQueueDiscTestItem &);
-  bool m_ecnCapablePacket;
+  bool m_ecnCapablePacket; ///< ECN capable packet?
 };
 
 RedQueueDiscTestItem::RedQueueDiscTestItem (Ptr<Packet> p, const Address & addr, uint16_t protocol, bool ecnCapable)
@@ -70,13 +86,30 @@ RedQueueDiscTestItem::Mark (void)
   return false;
 }
 
+/**
+ * \ingroup traffic-control-test
+ * \ingroup tests
+ *
+ * \brief Red Queue Disc Test Case
+ */
 class RedQueueDiscTestCase : public TestCase
 {
 public:
   RedQueueDiscTestCase ();
   virtual void DoRun (void);
 private:
+  /**
+   * Enqueue function
+   * \param queue the queue disc
+   * \param size the size
+   * \param nPkt the number of packets
+   * \param ecnCapable ECN capable flag
+   */
   void Enqueue (Ptr<RedQueueDisc> queue, uint32_t size, uint32_t nPkt, bool ecnCapable);
+  /**
+   * Run RED test function
+   * \param mode the mode
+   */
   void RunRedTest (StringValue mode);
 };
 
@@ -402,6 +435,12 @@ RedQueueDiscTestCase::DoRun (void)
 
 }
 
+/**
+ * \ingroup traffic-control-test
+ * \ingroup tests
+ *
+ * \brief Red Queue Disc Test Suite
+ */
 static class RedQueueDiscTestSuite : public TestSuite
 {
 public:
@@ -410,4 +449,4 @@ public:
   {
     AddTestCase (new RedQueueDiscTestCase (), TestCase::QUICK);
   }
-} g_redQueueTestSuite;
+} g_redQueueTestSuite; ///< the test suite

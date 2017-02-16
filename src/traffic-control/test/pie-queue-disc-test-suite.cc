@@ -31,9 +31,22 @@
 
 using namespace ns3;
 
+/**
+ * \ingroup traffic-control-test
+ * \ingroup tests
+ *
+ * \brief Pie Queue Disc Test Item
+ */
 class PieQueueDiscTestItem : public QueueDiscItem
 {
 public:
+  /**
+   * Constructor
+   *
+   * \param p the packet
+   * \param addr the address
+   * \param protocol the protocol
+   */
   PieQueueDiscTestItem (Ptr<Packet> p, const Address & addr, uint16_t protocol);
   virtual ~PieQueueDiscTestItem ();
   virtual void AddHeader (void);
@@ -41,7 +54,9 @@ public:
 
 private:
   PieQueueDiscTestItem ();
+  /// copy constructor
   PieQueueDiscTestItem (const PieQueueDiscTestItem &);
+  /// assignment operator
   PieQueueDiscTestItem &operator = (const PieQueueDiscTestItem &);
 };
 
@@ -65,16 +80,49 @@ PieQueueDiscTestItem::Mark (void)
   return false;
 }
 
+/**
+ * \ingroup traffic-control-test
+ * \ingroup tests
+ *
+ * \brief Pie Queue Disc Test Case
+ */
 class PieQueueDiscTestCase : public TestCase
 {
 public:
   PieQueueDiscTestCase ();
   virtual void DoRun (void);
 private:
+  /**
+   * Enqueue function
+   * \param queue the queue disc
+   * \param size the size
+   * \param nPkt the number of packets
+   */
   void Enqueue (Ptr<PieQueueDisc> queue, uint32_t size, uint32_t nPkt);
+  /**
+   * Enqueue with delay function
+   * \param queue the queue disc
+   * \param size the size
+   * \param nPkt the number of packets
+   */
   void EnqueueWithDelay (Ptr<PieQueueDisc> queue, uint32_t size, uint32_t nPkt);
+  /**
+   * Dequeue function
+   * \param queue the queue disc
+   * \param nPkt the number of packets
+   */
   void Dequeue (Ptr<PieQueueDisc> queue, uint32_t nPkt);
+  /**
+   * Dequeue with delay function
+   * \param queue the queue disc
+   * \param delay the delay
+   * \param nPkt the number of packets
+   */
   void DequeueWithDelay (Ptr<PieQueueDisc> queue, double delay, uint32_t nPkt);
+  /**
+   * Run test function
+   * \param mode the test mode
+   */
   void RunPieTest (StringValue mode);
 };
 
@@ -335,6 +383,12 @@ PieQueueDiscTestCase::DoRun (void)
   Simulator::Destroy ();
 }
 
+/**
+ * \ingroup traffic-control-test
+ * \ingroup tests
+ *
+ * \brief Pie Queue Disc Test Suite
+ */
 static class PieQueueDiscTestSuite : public TestSuite
 {
 public:
@@ -343,4 +397,4 @@ public:
   {
     AddTestCase (new PieQueueDiscTestCase (), TestCase::QUICK);
   }
-} g_pieQueueTestSuite;
+} g_pieQueueTestSuite; ///< the test suite

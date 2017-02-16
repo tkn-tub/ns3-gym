@@ -30,8 +30,27 @@
 
 using namespace ns3;
 
+/**
+ * \ingroup traffic-control-test
+ * \defgroup traffic-control-test traffic-control module tests
+ */
+
+
+/**
+ * \ingroup traffic-control-test
+ * \ingroup tests
+ *
+ * \brief Ared Queue Disc Test Item
+ */
 class AredQueueDiscTestItem : public QueueDiscItem {
 public:
+  /**
+   * Constructor
+   *
+   * \param p packet
+   * \param addr address
+   * \param protocol protocol
+   */
   AredQueueDiscTestItem (Ptr<Packet> p, const Address & addr, uint16_t protocol);
   virtual ~AredQueueDiscTestItem ();
   virtual void AddHeader (void);
@@ -39,7 +58,9 @@ public:
 
 private:
   AredQueueDiscTestItem ();
+  /// copy constructor
   AredQueueDiscTestItem (const AredQueueDiscTestItem &);
+  /// assignment operator
   AredQueueDiscTestItem &operator = (const AredQueueDiscTestItem &);
 };
 
@@ -63,15 +84,36 @@ AredQueueDiscTestItem::Mark (void)
   return false;
 }
 
-// Tests to verify the working of ARED
+/**
+ * \ingroup traffic-control-test
+ * \ingroup tests
+ *
+ * \brief Ared Queue Disc Test Case
+ */
 class AredQueueDiscTestCase : public TestCase
 {
 public:
   AredQueueDiscTestCase ();
   virtual void DoRun (void);
 private:
+  /**
+   * Enqueue function
+   * \param queue the queue disc
+   * \param size the size
+   * \param nPkt the number of packets
+   */
   void Enqueue (Ptr<RedQueueDisc> queue, uint32_t size, uint32_t nPkt);
+  /**
+   * Enqueue with delay function
+   * \param queue the queue disc
+   * \param size the size
+   * \param nPkt the number of packets
+   */
   void EnqueueWithDelay (Ptr<RedQueueDisc> queue, uint32_t size, uint32_t nPkt);
+  /**
+   * Run ARED queue disc test function
+   * \param mode the test mode
+   */
   void RunAredDiscTest (StringValue mode);
 };
 
@@ -323,6 +365,12 @@ AredQueueDiscTestCase::DoRun (void)
   Simulator::Destroy ();
 }
 
+/**
+ * \ingroup traffic-control-test
+ * \ingroup tests
+ *
+ * \brief Ared Queue Disc Test Suite
+ */
 static class AredQueueDiscTestSuite : public TestSuite
 {
 public:
@@ -331,4 +379,4 @@ public:
   {
     AddTestCase (new AredQueueDiscTestCase (), TestCase::QUICK);
   }
-} g_aredQueueDiscTestSuite;
+} g_aredQueueDiscTestSuite; ///< the test suite
