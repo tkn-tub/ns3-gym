@@ -632,16 +632,18 @@ Buffer::Serialize (uint8_t* buffer, uint32_t maxSize) const
   // Add the actual data
   if (size + ((dataEndLength + 3) & (~3)) <= maxSize)
     {
-      size += (dataEndLength + 3) & (~3);
-      memcpy (p, m_data->m_data+m_zeroAreaStart,dataEndLength);
-      p += (((dataEndLength + 3) & (~3))/4); // Advance p, insuring 4 byte boundary
+      // The following line is unnecessary.
+      // size += (dataEndLength + 3) & (~3);
+      memcpy (p, m_data->m_data+m_zeroAreaStart, dataEndLength);
+      // The following line is unnecessary.
+      // p += (((dataEndLength + 3) & (~3))/4); // Advance p, insuring 4 byte boundary
     }
   else
     {
       return 0;
     }
 
-  // Serialzed everything successfully
+  // Serialized everything successfully
   return 1;
 }
 
@@ -680,7 +682,8 @@ Buffer::Deserialize (const uint8_t *buffer, uint32_t size)
   Buffer::Iterator tmp = End ();
   tmp.Prev (dataEndLength);
   tmp.Write (reinterpret_cast<uint8_t *> (const_cast<uint32_t *> (p)), dataEndLength);
-  p += (((dataEndLength+3)&(~3))/4); // Advance p, insuring 4 byte boundary
+  // The following line is unnecessary.
+  // p += (((dataEndLength+3)&(~3))/4); // Advance p, insuring 4 byte boundary
   sizeCheck -= ((dataEndLength+3)&(~3));
 
   NS_ASSERT (sizeCheck == 0);

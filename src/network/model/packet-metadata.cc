@@ -188,9 +188,9 @@ PacketMetadata::ReadUleb128 (const uint8_t **pBuffer) const
 {
   NS_LOG_FUNCTION (this << &pBuffer);
   const uint8_t *buffer = *pBuffer;
-  uint32_t result = 0;
+  uint32_t result;
   uint8_t byte;
-  result = 0;
+
   byte = buffer[0];
   result = (byte & (~0x80));
   if (!(byte & 0x80))
@@ -263,7 +263,6 @@ PacketMetadata::AppendValueExtra (uint32_t value, uint8_t *buffer)
       byte = value & (~0x80);
       buffer[1] = 0x80 | byte;
       value >>= 7;
-      byte = value & (~0x80);
       buffer[2] = value;
       return;
     }
@@ -586,8 +585,8 @@ PacketMetadata::Create (uint32_t size)
           data->m_count = 1;
           return data;
         }
-      PacketMetadata::Deallocate (data);
       NS_LOG_LOGIC ("create dealloc size="<<data->m_size);
+      PacketMetadata::Deallocate (data);
     }
   NS_LOG_LOGIC ("create alloc size="<<m_maxSize);
   return PacketMetadata::Allocate (m_maxSize);
