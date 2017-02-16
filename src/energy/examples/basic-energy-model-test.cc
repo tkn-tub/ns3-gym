@@ -187,14 +187,6 @@ BasicEnergyUpdateTest::StateSwitchTest (WifiPhy::State state)
   double voltage = source->GetSupplyVoltage ();
   estRemainingEnergy -= devModel->GetIdleCurrentA () * voltage * m_timeS;
 
-  /*
-   * Manually calculate the number of periodic updates performed by the source.
-   * This is to check if the periodic updates are performed correctly.
-   */
-  double actualTime = m_timeS;
-  actualTime /= source->GetEnergyUpdateInterval ().GetSeconds ();
-  actualTime = floor (actualTime); // rounding for update interval
-  actualTime *= source->GetEnergyUpdateInterval ().GetSeconds ();
 
   // calculate new state power consumption
   double current = 0.0;
