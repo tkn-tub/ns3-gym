@@ -112,7 +112,7 @@ ObjectBase::ConstructSelf (const AttributeConstructionList &attributes)
                   NS_FATAL_ERROR ("Attribute name="<<info.name<<" tid="<<tid.GetName () << ": initial value cannot be set using attributes");
                 }
             }
-          bool found = false;
+
           if (value != 0)
             {
               // We have a matching attribute value.
@@ -120,11 +120,10 @@ ObjectBase::ConstructSelf (const AttributeConstructionList &attributes)
                 {
                   NS_LOG_DEBUG ("construct \""<< tid.GetName ()<<"::"<<
                                 info.name<<"\"");
-                  found = true;
                   continue;
                 }
             }              
-          if (!found)
+
             {
               // No matching attribute value so we try to look at the env var.
 #ifdef HAVE_GETENV
@@ -149,7 +148,6 @@ ObjectBase::ConstructSelf (const AttributeConstructionList &attributes)
                                 {
                                   NS_LOG_DEBUG ("construct \""<< tid.GetName ()<<"::"<<
                                                 info.name <<"\" from env var");
-                                  found = true;
                                   break;
                                 }
                             }
@@ -159,7 +157,7 @@ ObjectBase::ConstructSelf (const AttributeConstructionList &attributes)
                 }
 #endif /* HAVE_GETENV */
             }
-          if (!found)
+
             {
               // No matching attribute value so we try to set the default value.
               DoSet (info.accessor, info.checker, *info.initialValue);
