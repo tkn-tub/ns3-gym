@@ -34,6 +34,12 @@
 
 using namespace ns3;
 
+/**
+ * \ingroup uan-test
+ * \ingroup tests
+ *
+ * \brief Uan Test
+ */
 class UanTest : public TestCase
 {
 public:
@@ -41,13 +47,47 @@ public:
 
   virtual void DoRun (void);
 private:
+  /**
+   * Create node function
+   * \param pos the position of the device
+   * \param chan the communication channel
+   * \returns the UAN device
+   */
   Ptr<UanNetDevice> CreateNode (Vector pos, Ptr<UanChannel> chan);
+  /**
+   * Phy test function 
+   * \returns true if successful
+   */
   bool DoPhyTests ();
+  /**
+   * Do one Phy test function
+   * \param t1 the time to send first packet
+   * \param t2 the time to send the second packet
+   * \param r1 first distance constant
+   * \param r2 second distance constant
+   * \param prop the propagation model
+   * \param mode1 the send mode for device 1
+   * \param mode2 the send mode for device 2
+   * \returns number of bytes received
+   */
   uint32_t DoOnePhyTest (Time t1, Time t2, uint32_t r1, uint32_t r2, Ptr<UanPropModel> prop, uint32_t mode1 = 0, uint32_t mode2 = 0);
+  /**
+   * Receive packet function
+   * \param dev the device
+   * \param pkt the packet
+   * \param mode the receive mode
+   * \param sender the address of the sender
+   * \returns true if successful
+   */
   bool RxPacket (Ptr<NetDevice> dev, Ptr<const Packet> pkt, uint16_t mode, const Address &sender);
+  /**
+   * Send one packet function
+   * \param dev the device
+   * \param mode the transmit mode
+   */
   void SendOnePacket (Ptr<UanNetDevice> dev, uint32_t mode);
-  ObjectFactory m_phyFac;
-  uint32_t m_bytesRx;
+  ObjectFactory m_phyFac; ///< Phy 
+  uint32_t m_bytesRx; ///< byes received
 
 };
 
@@ -240,7 +280,12 @@ UanTest::DoRun (void)
   DoPhyTests ();
 }
 
-
+/**
+ * \ingroup uan-test
+ * \ingroup tests
+ *
+ * \brief Uan Test Suite
+ */
 class UanTestSuite : public TestSuite
 {
 public:
@@ -253,8 +298,5 @@ UanTestSuite::UanTestSuite ()
   AddTestCase (new UanTest, TestCase::QUICK);
 }
 
-static UanTestSuite g_uanTestSuite;
-
-
-
+static UanTestSuite g_uanTestSuite; ///< the test suite
 

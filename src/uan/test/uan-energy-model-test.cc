@@ -40,23 +40,47 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("UanEnergyModelTestSuite");
 
+/**
+ * \ingroup uan-test
+ * \defgroup uan-test uan module tests
+ */
+
+
+/**
+ * \ingroup uan-test
+ * \ingroup tests
+ *
+ * \brief Acoustic Modem Energy Test Case
+ */
 class AcousticModemEnergyTestCase : public TestCase
 {
 public:
   AcousticModemEnergyTestCase ();
   ~AcousticModemEnergyTestCase ();
 
+  /**
+   * Receive packet function
+   * \param dev the device
+   * \param pkt the packet
+   * \param mode the mode
+   * \param sender the address of the sender
+   * \returns true if successful
+   */
   bool RxPacket (Ptr<NetDevice> dev, Ptr<const Packet> pkt, uint16_t mode, const Address &sender);
+  /**
+   * Send one packet function
+   * \param node the node to send to
+   */
   void SendOnePacket (Ptr<Node> node);
 
   void DoRun (void);
 
-  double m_simTime;
-  uint32_t m_bytesRx;
-  uint32_t m_sentPackets;
-  uint32_t m_packetSize;
-  Ptr<Node> m_node;
-  Ptr<Node> m_gateway;
+  double m_simTime; ///< simulation time
+  uint32_t m_bytesRx; ///< bytes received
+  uint32_t m_sentPackets; ///< number of sent packets
+  uint32_t m_packetSize; ///< packet size
+  Ptr<Node> m_node; ///< node
+  Ptr<Node> m_gateway; ///< the gateway
 };
 
 AcousticModemEnergyTestCase::AcousticModemEnergyTestCase ()
@@ -189,21 +213,32 @@ AcousticModemEnergyTestCase::DoRun ()
   Simulator::Destroy ();
 }
 
+/**
+ * \ingroup uan-test
+ * \ingroup tests
+ *
+ * \brief Acoustic Modem Energy Depletion Test Case
+ */
 class AcousticModemEnergyDepletionTestCase : public TestCase
 {
 public:
   AcousticModemEnergyDepletionTestCase ();
   ~AcousticModemEnergyDepletionTestCase ();
 
+  /// Depletion handler function
   void DepletionHandler (void);
+  /**
+   * Send one packet function
+   * \param node the node to send to
+   */
   void SendOnePacket (Ptr<Node> node);
 
   void DoRun (void);
 
-  double m_simTime;
-  uint32_t m_callbackCount;
-  uint32_t m_packetSize;
-  Ptr<Node> m_node;
+  double m_simTime; ///< Simulation time
+  uint32_t m_callbackCount; ///< callback count
+  uint32_t m_packetSize; ///< packet size
+  Ptr<Node> m_node; ///< the node
 };
 
 AcousticModemEnergyDepletionTestCase::AcousticModemEnergyDepletionTestCase ()
@@ -291,7 +326,10 @@ AcousticModemEnergyDepletionTestCase::DoRun (void)
 // -------------------------------------------------------------------------- //
 
 /**
- * Unit test suite for underwater energy model. Include test on acoustic modem,
+ * \ingroup uan-test
+ * \ingroup tests
+ *
+ * \brief Unit test suite for underwater energy model. Include test on acoustic modem,
  * acoustic modem energy depletion.
  */
 class UanEnergyModelTestSuite : public TestSuite
