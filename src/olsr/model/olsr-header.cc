@@ -53,7 +53,7 @@ SecondsToEmf (double seconds)
   NS_ASSERT_MSG (seconds >= OLSR_C, "SecondsToEmf - Can not convert a value less than OLSR_C");
 
   // find the largest integer 'b' such that: T/C >= 2^b
-  for (b = 0; (seconds / OLSR_C) >= (1 << b); ++b)
+  for (b = 1; (seconds / OLSR_C) >= (1 << b); ++b)
     {
     }
   NS_ASSERT ((seconds / OLSR_C) < (1 << b));

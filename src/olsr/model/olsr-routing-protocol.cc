@@ -1981,9 +1981,8 @@ RoutingProtocol::LinkSensing (const olsr::MessageHeader &msg,
         case OLSR_LOST_LINK:
           linkTypeName = "LOST_LINK";
           break;
-          /*  no default, since lt must be in 0..3, covered above
         default: linkTypeName = "(invalid value!)";
-          */
+          
         }
 
       const char *neighborTypeName;
