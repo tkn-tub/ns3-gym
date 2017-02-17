@@ -496,43 +496,30 @@ WifiMacHeader::GetType (void) const
         {
         case 0:
           return WIFI_MAC_MGT_ASSOCIATION_REQUEST;
-          break;
         case 1:
           return WIFI_MAC_MGT_ASSOCIATION_RESPONSE;
-          break;
         case 2:
           return WIFI_MAC_MGT_REASSOCIATION_REQUEST;
-          break;
         case 3:
           return WIFI_MAC_MGT_REASSOCIATION_RESPONSE;
-          break;
         case 4:
           return WIFI_MAC_MGT_PROBE_REQUEST;
-          break;
         case 5:
           return WIFI_MAC_MGT_PROBE_RESPONSE;
-          break;
         case 8:
           return WIFI_MAC_MGT_BEACON;
-          break;
         case 10:
           return WIFI_MAC_MGT_DISASSOCIATION;
-          break;
         case 11:
           return WIFI_MAC_MGT_AUTHENTICATION;
-          break;
         case 12:
           return WIFI_MAC_MGT_DEAUTHENTICATION;
-          break;
         case 13:
           return WIFI_MAC_MGT_ACTION;
-          break;
         case 14:
           return WIFI_MAC_MGT_ACTION_NO_ACK;
-          break;
         case 15:
           return WIFI_MAC_MGT_MULTIHOP_ACTION;
-          break;
         }
       break;
     case TYPE_CTL:
@@ -540,19 +527,14 @@ WifiMacHeader::GetType (void) const
         {
         case SUBTYPE_CTL_BACKREQ:
           return WIFI_MAC_CTL_BACKREQ;
-          break;
         case SUBTYPE_CTL_BACKRESP:
           return WIFI_MAC_CTL_BACKRESP;
-          break;
         case SUBTYPE_CTL_RTS:
           return WIFI_MAC_CTL_RTS;
-          break;
         case SUBTYPE_CTL_CTS:
           return WIFI_MAC_CTL_CTS;
-          break;
         case SUBTYPE_CTL_ACK:
           return WIFI_MAC_CTL_ACK;
-          break;
         }
       break;
     case TYPE_DATA:
@@ -560,49 +542,34 @@ WifiMacHeader::GetType (void) const
         {
         case 0:
           return WIFI_MAC_DATA;
-          break;
         case 1:
           return WIFI_MAC_DATA_CFACK;
-          break;
         case 2:
           return WIFI_MAC_DATA_CFPOLL;
-          break;
         case 3:
           return WIFI_MAC_DATA_CFACK_CFPOLL;
-          break;
         case 4:
           return WIFI_MAC_DATA_NULL;
-          break;
         case 5:
           return WIFI_MAC_DATA_NULL_CFACK;
-          break;
         case 6:
           return WIFI_MAC_DATA_NULL_CFPOLL;
-          break;
         case 7:
           return WIFI_MAC_DATA_NULL_CFACK_CFPOLL;
-          break;
         case 8:
           return WIFI_MAC_QOSDATA;
-          break;
         case 9:
           return WIFI_MAC_QOSDATA_CFACK;
-          break;
         case 10:
           return WIFI_MAC_QOSDATA_CFPOLL;
-          break;
         case 11:
           return WIFI_MAC_QOSDATA_CFACK_CFPOLL;
-          break;
         case 12:
           return WIFI_MAC_QOSDATA_NULL;
-          break;
         case 14:
           return WIFI_MAC_QOSDATA_NULL_CFPOLL;
-          break;
         case 15:
           return WIFI_MAC_QOSDATA_NULL_CFACK_CFPOLL;
-          break;
         }
       break;
     }
@@ -662,10 +629,8 @@ WifiMacHeader::IsCfpoll (void) const
     case WIFI_MAC_QOSDATA_NULL_CFPOLL:
     case WIFI_MAC_QOSDATA_NULL_CFACK_CFPOLL:
       return true;
-      break;
     default:
       return false;
-      break;
     }
 }
 
@@ -862,16 +827,12 @@ WifiMacHeader::GetQosAckPolicy (void) const
     {
     case 0:
       return NORMAL_ACK;
-      break;
     case 1:
       return NO_ACK;
-      break;
     case 2:
       return NO_EXPLICIT_ACK;
-      break;
     case 3:
       return BLOCK_ACK;
-      break;
     }
   // NOTREACHED
   NS_ASSERT (false);
