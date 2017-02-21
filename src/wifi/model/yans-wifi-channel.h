@@ -31,16 +31,13 @@ class PropagationLossModel;
 class PropagationDelayModel;
 
 /**
- * \brief A Yans wifi channel
+ * \brief a channel to interconnect ns3::YansWifiPhy objects.
  * \ingroup wifi
  *
- * This wifi channel implements the propagation model described in
- * "Yet Another Network Simulator", (http://cutebugs.net/files/wns2-yans.pdf).
- *
  * This class is expected to be used in tandem with the ns3::YansWifiPhy
- * class and contains a ns3::PropagationLossModel and a ns3::PropagationDelayModel.
- * By default, no propagation models are set so, it is the caller's responsability
- * to set them before using the channel.
+ * class and supports an ns3::PropagationLossModel and an 
+ * ns3::PropagationDelayModel.  By default, no propagation models are set; 
+ * it is the caller's responsibility to set them before using the channel.
  */
 class YansWifiChannel : public Channel
 {
@@ -75,15 +72,15 @@ public:
   void SetPropagationDelayModel (Ptr<PropagationDelayModel> delay);
 
   /**
-   * \param sender the device from which the packet is originating.
+   * \param sender the phy object from which the packet is originating.
    * \param packet the packet to send
-   * \param txPowerDbm the tx power associated to the packet
-   * \param duration the transmission duration associated to the packet
+   * \param txPowerDbm the tx power associated to the packet, in dBm
+   * \param duration the transmission duration associated with the packet
    *
    * This method should not be invoked by normal users. It is
-   * currently invoked only from WifiPhy::Send. YansWifiChannel
-   * delivers packets only between PHYs with the same m_channelNumber,
-   * e.g. PHYs that are operating on the same channel.
+   * currently invoked only from YansWifiPhy::StartTx.  The channel
+   * attempts to deliver the packet to all other YansWifiPhy objects
+   * on the channel (except for the sender).
    */
   void Send (Ptr<YansWifiPhy> sender, Ptr<const Packet> packet, double txPowerDbm, Time duration) const;
 
@@ -112,8 +109,8 @@ private:
    *
    * \param receiver the device to which the packet is destined
    * \param packet the packet being sent
-   * \param txPowerDbm the tx power associated to the packet being sent
-   * \param duration the transmission duration associated to the packet being sent
+   * \param txPowerDbm the tx power associated to the packet being sent (dBm)
+   * \param duration the transmission duration associated with the packet being sent
    */
   void Receive (Ptr<YansWifiPhy> receiver, Ptr<Packet> packet, double txPowerDbm, Time duration) const;
 

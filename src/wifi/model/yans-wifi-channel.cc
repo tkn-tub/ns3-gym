@@ -53,11 +53,12 @@ YansWifiChannel::GetTypeId (void)
 
 YansWifiChannel::YansWifiChannel ()
 {
+  NS_LOG_FUNCTION (this);
 }
 
 YansWifiChannel::~YansWifiChannel ()
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   m_phyList.clear ();
 }
 
@@ -76,6 +77,7 @@ YansWifiChannel::SetPropagationDelayModel (Ptr<PropagationDelayModel> delay)
 void
 YansWifiChannel::Send (Ptr<YansWifiPhy> sender, Ptr<const Packet> packet, double txPowerDbm, Time duration) const
 {
+  NS_LOG_FUNCTION (this << sender << packet << txPowerDbm << duration.GetSeconds ());
   Ptr<MobilityModel> senderMobility = sender->GetMobility ();
   NS_ASSERT (senderMobility != 0);
   for (PhyList::const_iterator i = m_phyList.begin (); i != m_phyList.end (); i++)
@@ -115,6 +117,7 @@ YansWifiChannel::Send (Ptr<YansWifiPhy> sender, Ptr<const Packet> packet, double
 void
 YansWifiChannel::Receive (Ptr<YansWifiPhy> phy, Ptr<Packet> packet, double rxPowerDbm, Time duration) const
 {
+  NS_LOG_FUNCTION (this << phy << packet << rxPowerDbm << duration.GetSeconds ());
   phy->StartReceivePreambleAndHeader (packet, DbmToW (rxPowerDbm + phy->GetRxGain ()), duration);
 }
 
@@ -139,6 +142,7 @@ YansWifiChannel::Add (Ptr<YansWifiPhy> phy)
 int64_t
 YansWifiChannel::AssignStreams (int64_t stream)
 {
+  NS_LOG_FUNCTION (this << stream);
   int64_t currentStream = stream;
   currentStream += m_loss->AssignStreams (stream);
   return (currentStream - stream);
