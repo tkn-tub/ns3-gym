@@ -174,9 +174,9 @@ ATTRIBUTE_HELPER_CPP (VhtOperation);
 std::ostream &
 operator << (std::ostream &os, const VhtOperation &VhtOperation)
 {
-  os << VhtOperation.GetChannelWidth () << "|"
-     << VhtOperation.GetChannelCenterFrequencySegment0 () << "|"
-     << VhtOperation.GetChannelCenterFrequencySegment1 () << "|"
+  os << (uint16_t) VhtOperation.GetChannelWidth () << "|"
+     << (uint16_t) VhtOperation.GetChannelCenterFrequencySegment0 () << "|"
+     << (uint16_t) VhtOperation.GetChannelCenterFrequencySegment1 () << "|"
      << VhtOperation.GetBasicVhtMcsAndNssSet ();
   return os;
 }
