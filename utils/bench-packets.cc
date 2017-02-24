@@ -30,11 +30,16 @@
 
 using namespace ns3;
 
+/// BenchHeader class
 template <int N>
 class BenchHeader : public Header
 {
 public:
   BenchHeader ();
+  /**
+   * Is OK function
+   * \returns true if OK
+   */
   bool IsOk (void) const;
 
   /**
@@ -48,8 +53,12 @@ public:
   virtual void Serialize (Buffer::Iterator start) const;
   virtual uint32_t Deserialize (Buffer::Iterator start);
 private:
+  /**
+   * Get type name function
+   * \returns the type name string
+   */
   static std::string GetTypeName (void);
-  bool m_ok;
+  bool m_ok; ///< is OK
 };
 
 template <int N>
@@ -125,10 +134,15 @@ BenchHeader<N>::Deserialize (Buffer::Iterator start)
   return N;
 }
 
+/// BenchTag class
 template <int N>
 class BenchTag : public Tag
 {
 public:
+  /**
+   * Get the bench tag name.
+   * \return the name.
+   */
   static std::string GetName (void) {
     std::ostringstream oss;
     oss << "anon::BenchTag<" << N << ">";

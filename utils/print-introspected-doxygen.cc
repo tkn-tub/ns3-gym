@@ -674,7 +674,7 @@ PrintAttributeValueSection (std::ostream & os,
 /**
  * Print the AttributeValue documentation for a class.
  *
- * This will print documentation for the \p <name>Value class and methods.
+ * This will print documentation for the \p AttributeValue class and methods.
  *
  * \param [in,out] os The output stream.
  * \param [in] name The token to use in defining the accessor name.
@@ -1248,8 +1248,8 @@ StaticInformation::DoGather (TypeId tid)
 }  // StaticInformation::DoGather ()
 
 
-StaticInformation
-GetTypicalAggregations ()
+/// GetTypicalAggregations function
+StaticInformation GetTypicalAggregations ()
 {
   NS_LOG_FUNCTION_NOARGS ();
   // The below statements register typical aggregation relationships
@@ -1297,13 +1297,18 @@ GetTypicalAggregations ()
 }  // GetTypicalAggregations ()
 
 
-// Map from TypeId name to tid
+/// Map from TypeId name to tid
 typedef std::map< std::string, int32_t> NameMap;
-typedef NameMap::const_iterator         NameMapIterator;
+typedef NameMap::const_iterator         NameMapIterator; ///< NameMap iterator
 
 
-// Create a map from the class names to their index in the vector of
-// TypeId's so that the names will end up in alphabetical order.
+/**
+ * Create a map from the class names to their index in the vector of
+ * TypeId's so that the names will end up in alphabetical order.
+ *
+ * \param info type names withut type ids
+ * \returns NameMap
+ */
 NameMap
 GetNameMap (const StaticInformation & info)
 {
@@ -1344,6 +1349,12 @@ GetNameMap (const StaticInformation & info)
 }  // GetNameMap ()
 
 
+/**
+ * Print config paths
+ * \param os the output stream
+ * \param info the information
+ * \param tid the type ID
+ */
 void
 PrintConfigPaths (std::ostream & os, const StaticInformation & info,
 		  const TypeId tid)

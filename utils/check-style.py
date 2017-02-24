@@ -130,31 +130,83 @@ cmt_indent_multi=False # really, do not touch them
     dst.close()
     return pathname
 
+## PatchChunkLine class
 class PatchChunkLine:
+    ## @var __type
+    #  type
+    ## @var __line
+    #  line
+    ## @var SRC
+    #  Source
     SRC = 1
+    ## @var DST
+    #  Destination
     DST = 2
+    ## @var BOTH
+    #  Both
     BOTH = 3
     def __init__(self):
+        """! Initializer
+        @param self The current class
+        @return none
+        """
         self.__type = 0
         self.__line = ''
     def set_src(self,line):
+        """! Set source
+        @param self The current class
+        @param line source line
+        @return none
+        """
         self.__type = self.SRC
         self.__line = line
     def set_dst(self,line):
+        """! Set destination
+        @param self The current class
+        @param line destination line
+        @return none
+        """
         self.__type = self.DST
         self.__line = line
     def set_both(self,line):
+        """! Set both 
+        @param self The current class
+        @param line
+        @return none
+        """
         self.__type = self.BOTH
         self.__line = line
     def append_to_line(self, s):
+        """! Append to line
+        @param self The current class
+        @param s line to append
+        @return none
+        """
         self.__line = self.__line + s
     def line(self):
+        """! Get line
+        @param self The current class
+        @return line
+        """
         return self.__line
     def is_src(self):
+        """! Is source
+        @param self The current class
+        @return true if type is source
+        """
         return self.__type == self.SRC or self.__type == self.BOTH
     def is_dst(self):
+        """! Is destination
+        @param self The current class
+        @return true if type is destination
+        """
         return self.__type == self.DST or self.__type == self.BOTH
     def write(self, f):
+        """! Write to file
+        @param self The current class
+        @param f file
+        @return exception if invalid type 
+        """
         if self.__type == self.SRC:
             f.write('-%s\n' % self.__line)
         elif self.__type == self.DST:
@@ -164,55 +216,141 @@ class PatchChunkLine:
         else:
             raise Exception('invalid patch')
     
-
+## PatchChunk class
 class PatchChunk:
+    ## @var __lines
+    #  list of lines
+    ## @var __src_pos
+    #  source position
+    ## @var __dst_pos
+    #  destination position
+    ## @var src
+    #  source
+    ## @var dst
+    #  destination
     def __init__(self, src_pos, dst_pos):
+        """! Initializer
+        @param self:  this object
+        @param src_pos: source position
+        @param dst_pos: destination position
+        @return none
+        """
         self.__lines = []
         self.__src_pos = int(src_pos)
         self.__dst_pos = int(dst_pos)
     def src_start(self):
+        """! Source start function
+        @param self this object
+        @return source position
+        """
         return self.__src_pos
     def add_line(self,line):
+        """! Add line function
+        @param self The current class
+        @param line line to add
+        @return none
+        """
         self.__lines.append(line)
     def src(self):
+        """! Get source lines
+        @param self The current class
+        @return the source lines
+        """
         src = []
         for line in self.__lines:
             if line.is_src():
                 src.append(line)
         return src
     def dst(self):
+        """! Get destination lines
+        @param self The current class
+        @return the destination lines
+        """
         dst = []
         for line in self.__lines:
             if line.is_dst():
                 dst.append(line)
         return dst
     def src_len(self):
+        """! Get number of source lines
+        @param self The current class
+        @return number of source lines
+        """
         return len(self.src())
     def dst_len(self):
+        """! Get number of destinaton lines
+        @param self The current class
+        @return number of destination lines
+        """
         return len(self.dst())
     def write(self,f):
+        """! Write lines to file
+        @param self The current class
+        @param f: file to write to
+        @return none
+        """
         f.write('@@ -%d,%d +%d,%d @@\n' % (self.__src_pos, self.src_len(),
                                            self.__dst_pos, self.dst_len()))
         for line in self.__lines:
             line.write(f)
 
+## Patch class
 class Patch:
+    ## @var __src
+    #  source
+    ## @var __dst
+    #  destination
+    ## @var __chunks
+    #  chunks
     def __init__(self):
+        """! Initializer
+        @param self The current class
+        @return none
+        """
         self.__src = ''
         self.__dst = ''
         self.__chunks = []
     def add_chunk(self, chunk):
+        """! Add chunk
+        @param self this object
+        @param chunk chunk
+        @return none
+        """
         self.__chunks.append(chunk)
     def chunks(self):
+        """! Get the chunks
+        @param self The current class
+        @return the chunks
+        """
         return self.__chunks
     def set_src(self,src):
+        """! Set source
+        @param self this object
+        @param src source
+        @return none
+        """
         self.__src = src
     def set_dst(self,dst):
+        """! Set destination
+        @param self this object
+        @param dst destintion
+        @return none
+        """
         self.__dst = dst
     def apply(self,filename):
+        """! Apply function
+        @param self The current class
+        @param filename file name
+        @return none
+        """
         # XXX: not implemented
         return
     def write(self,f):
+        """! Write to file
+        @param self The current class
+        @param f the file
+        @return none
+        """
         f.write('--- %s\n' % self.__src )
         f.write('+++ %s\n' % self.__dst )
         for chunk in self.__chunks:

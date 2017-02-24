@@ -39,9 +39,15 @@ std::string g_me;
 // Output field width
 int g_fwidth = 6;
 
+/// Bench class
 class Bench
 {
 public:
+  /**
+   * constructor
+   * \param population the population
+   * \param total the total
+   */
   Bench (const uint32_t population, const uint32_t total)
     : m_population (population),
       m_total (total),
@@ -49,29 +55,43 @@ public:
   {
   }
 
+  /**
+   * Set random stream
+   * \param stream the random variable stream
+   */
   void SetRandomStream (Ptr<RandomVariableStream> stream)
   {
     m_rand = stream;
   }
 
+  /**
+   * Set population function
+   * \param population the population
+   */
   void SetPopulation (const uint32_t population)
   {
     m_population = population;
   }
 
+  /**
+   * Set total function
+   * \param total
+   */
   void SetTotal (const uint32_t total)
   {
     m_total = total;
   }
 
+  /// Run function
   void RunBench (void);
 private:
+  /// callback function
   void Cb (void);
 
-  Ptr<RandomVariableStream> m_rand;
-  uint32_t m_population;
-  uint32_t m_total;
-  uint32_t m_count;
+  Ptr<RandomVariableStream> m_rand; ///< random variable
+  uint32_t m_population; ///< population
+  uint32_t m_total; ///< total
+  uint32_t m_count; ///< count 
 };
 
 void

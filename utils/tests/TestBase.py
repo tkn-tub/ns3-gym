@@ -49,14 +49,28 @@ def set_workdir():
             print('Error: Invalid working directory')
             sys.exit(1)
 
+## TestBaseClass class
 class TestBaseClass:
     """
         Generic class for testing tools based on provided commands and test cases.
     """
+    ## @var my_env 
+    #  os environment
+    ## @var mode 
+    #  mode
+    ## @var outfile
+    #  output file
+    ## @var options
+    #  options
 
     def __init__(self, argv, desc, mode):
-        """
-            Provide input argument list, description and mode of the suite being executed.
+        """!
+        Provide input argument list, description and mode of the suite being executed.
+        @param self this object
+        @param argv argument list
+        @param desc description
+        @param mode test mode
+        @return none
         """
         self.my_env = os.environ
         set_workdir()
@@ -66,8 +80,12 @@ class TestBaseClass:
         self.options = self.parseargs(argv , desc)
 
     def parseargs(self, argv, desc):
-        """
-            Parses the commandline arguments
+        """!
+        Parses the commandline arguments
+        @param self this object
+        @param argv argument list
+        @param desc description
+        @return command line arguments
         """
         parser = argparse.ArgumentParser(description = desc)
         parser.add_argument('-f', '--file', action='store', dest='out_file', default = self.outfile,
@@ -82,14 +100,19 @@ class TestBaseClass:
         return parser.parse_args(argv)
 
     def override_cmds(self):
-        """
-            Can be used by importing suite to handle custom commands
+        """!
+        Can be used by importing suite to handle custom commands
+        @param self this object
+        @return custom commands
         """
         return self.options.custcmd
 
     def runtests(self, cmds):
-        """
-            Execute the tests.
+        """!
+        Execute the tests.
+        @param self this object
+        @param cmds test commands
+        @return error code
         """
         if self.options.cmds:
             print_cmds(cmds)
