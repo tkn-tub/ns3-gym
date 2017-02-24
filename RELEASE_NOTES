@@ -89,6 +89,7 @@ Bugs fixed
 - Bug 2629 - Assert failure in MinstrelHtWifiManager::GetLowestIndex
 - Bug 2647 - ideal-wifi-manager-example crashes when NSS > 1
 - Bug 2655 - A-MPDU simulation using TCP sometimes fails with message "Packet has no Traffic ID"
+- Bug 2660 - TrafficControlHelper::Default should not configure internal queue sizes
 
 Known issues
 ------------
