@@ -710,7 +710,7 @@ WifiModeFactory::CreateWifiMode (std::string uniqueName,
   item->constellationSize = constellationSize;
   item->isMandatory = isMandatory;
 
-  NS_ASSERT (modClass != WIFI_MOD_CLASS_HT && modClass != WIFI_MOD_CLASS_VHT);
+  NS_ASSERT (modClass != WIFI_MOD_CLASS_HT && modClass != WIFI_MOD_CLASS_VHT && modClass != WIFI_MOD_CLASS_HE);
   //fill unused mcs item with a dummy value
   item->mcsValue = 0;
 
