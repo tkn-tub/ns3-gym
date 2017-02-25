@@ -1705,7 +1705,6 @@ WifiPhy::GetPlcpTrainingSymbolDuration (WifiTxVector txVector)
     case WIFI_PREAMBLE_HE_SU:
       return MicroSeconds (4 + (8 * Ndltf));
     default:
-      //no training for non HT
       return MicroSeconds (0);
     }
 }
