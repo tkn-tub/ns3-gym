@@ -1645,19 +1645,19 @@ WifiPhy::ResumeFromSleep (void)
 }
 
 WifiMode
-WifiPhy::GetHtPlcpHeaderMode (WifiMode payloadMode)
+WifiPhy::GetHtPlcpHeaderMode ()
 {
   return WifiPhy::GetHtMcs0 ();
 }
 
 WifiMode
-WifiPhy::GetVhtPlcpHeaderMode (WifiMode payloadMode)
+WifiPhy::GetVhtPlcpHeaderMode ()
 {
   return WifiPhy::GetVhtMcs0 ();
 }
 
 WifiMode
-WifiPhy::GetHePlcpHeaderMode (WifiMode payloadMode)
+WifiPhy::GetHePlcpHeaderMode ()
 {
   return WifiPhy::GetHeMcs0 ();
 }

@@ -380,24 +380,18 @@ public:
    */
   static Time GetPlcpTrainingSymbolDuration (WifiTxVector txVector);
   /**
-   * \param payloadMode the WifiMode use for the transmission of the payload
-   *
    * \return the WifiMode used for the transmission of the HT-SIG and the HT training fields
    *         in Mixed Format and greenfield format PLCP header
    */
-  static WifiMode GetHtPlcpHeaderMode (WifiMode payloadMode);
+  static WifiMode GetHtPlcpHeaderMode ();
   /**
-   * \param payloadMode the WifiMode use for the transmission of the payload
-   *
    * \return the WifiMode used for the transmission of the VHT-STF, VHT-LTF and VHT-SIG-B fields
    */
-  static WifiMode GetVhtPlcpHeaderMode (WifiMode payloadMode);
+  static WifiMode GetVhtPlcpHeaderMode ();
   /**
-   * \param payloadMode the WifiMode use for the transmission of the payload
-   *
    * \return the WifiMode used for the transmission of the HE-STF, HE-LTF and HE-SIG-B fields
    */
-  static WifiMode GetHePlcpHeaderMode (WifiMode payloadMode);
+  static WifiMode GetHePlcpHeaderMode ();
   /**
    * \param preamble the type of preamble
    *

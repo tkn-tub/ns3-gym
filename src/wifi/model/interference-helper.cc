@@ -344,23 +344,22 @@ InterferenceHelper::CalculatePlcpHeaderPer (Ptr<const InterferenceHelper::Event>
   double psr = 1.0; /* Packet Success Rate */
   NiChanges::iterator j = ni->begin ();
   Time previous = (*j).GetTime ();
-  WifiMode payloadMode = event->GetPayloadMode ();
   WifiPreamble preamble = event->GetTxVector ().GetPreambleType ();
   WifiMode mcsHeaderMode;
   if (preamble == WIFI_PREAMBLE_HT_MF || preamble == WIFI_PREAMBLE_HT_GF)
     {
       //mode for PLCP header fields sent with HT modulation
-      mcsHeaderMode = WifiPhy::GetHtPlcpHeaderMode (payloadMode);
+      mcsHeaderMode = WifiPhy::GetHtPlcpHeaderMode ();
     }
   else if (preamble == WIFI_PREAMBLE_VHT)
     {
       //mode for PLCP header fields sent with VHT modulation
-      mcsHeaderMode = WifiPhy::GetVhtPlcpHeaderMode (payloadMode);
+      mcsHeaderMode = WifiPhy::GetVhtPlcpHeaderMode ();
     }
   else if (preamble == WIFI_PREAMBLE_HE_SU)
     {
       //mode for PLCP header fields sent with HE modulation
-      mcsHeaderMode = WifiPhy::GetHePlcpHeaderMode (payloadMode);
+      mcsHeaderMode = WifiPhy::GetHePlcpHeaderMode ();
     }
   WifiMode headerMode = WifiPhy::GetPlcpHeaderMode (event->GetTxVector ());
   Time plcpHeaderStart = (*j).GetTime () + WifiPhy::GetPlcpPreambleDuration (event->GetTxVector ()); //packet start time + preamble
