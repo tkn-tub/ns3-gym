@@ -1953,6 +1953,127 @@ WifiPhy::GetPayloadDuration (uint32_t size, WifiTxVector txVector, uint16_t freq
   WifiPreamble preamble = txVector.GetPreambleType ();
   NS_LOG_FUNCTION (size << payloadMode);
 
+  double stbc = 1;
+  if (txVector.IsStbc ()
+      && (payloadMode.GetModulationClass () == WIFI_MOD_CLASS_HT
+          || payloadMode.GetModulationClass () == WIFI_MOD_CLASS_VHT))
+    {
+      stbc = 2;
+    }
+
+  double Nes = 1;
+  //todo: improve logic to reduce the number of if cases
+  //todo: extend to NSS > 4 for VHT rates
+  if (payloadMode.GetUniqueName () == "HtMcs21"
+      || payloadMode.GetUniqueName () == "HtMcs22"
+      || payloadMode.GetUniqueName () == "HtMcs23"
+      || payloadMode.GetUniqueName () == "HtMcs28"
+      || payloadMode.GetUniqueName () == "HtMcs29"
+      || payloadMode.GetUniqueName () == "HtMcs30"
+      || payloadMode.GetUniqueName () == "HtMcs31")
+    {
+      Nes = 2;
+    }
+  if (payloadMode.GetModulationClass () == WIFI_MOD_CLASS_VHT)
+    {
+      if (txVector.GetChannelWidth () == 40
+          && txVector.GetNss () == 3
+          && payloadMode.GetMcsValue () >= 8)
+        {
+          Nes = 2;
+        }
+      if (txVector.GetChannelWidth () == 80
+          && txVector.GetNss () == 2
+          && payloadMode.GetMcsValue () >= 7)
+        {
+          Nes = 2;
+        }
+      if (txVector.GetChannelWidth () == 80
+          && txVector.GetNss () == 3
+          && payloadMode.GetMcsValue () >= 7)
+        {
+          Nes = 2;
+        }
+      if (txVector.GetChannelWidth () == 80
+          && txVector.GetNss () == 3
+          && payloadMode.GetMcsValue () == 9)
+        {
+          Nes = 3;
+        }
+      if (txVector.GetChannelWidth () == 80
+          && txVector.GetNss () == 4
+          && payloadMode.GetMcsValue () >= 4)
+        {
+          Nes = 2;
+        }
+      if (txVector.GetChannelWidth () == 80
+          && txVector.GetNss () == 4
+          && payloadMode.GetMcsValue () >= 7)
+        {
+          Nes = 3;
+        }
+      if (txVector.GetChannelWidth () == 160
+          && payloadMode.GetMcsValue () >= 7)
+        {
+          Nes = 2;
+        }
+      if (txVector.GetChannelWidth () == 160
+          && txVector.GetNss () == 2
+          && payloadMode.GetMcsValue () >= 4)
+        {
+          Nes = 2;
+        }
+      if (txVector.GetChannelWidth () == 160
+          && txVector.GetNss () == 2
+          && payloadMode.GetMcsValue () >= 7)
+        {
+          Nes = 3;
+        }
+      if (txVector.GetChannelWidth () == 160
+          && txVector.GetNss () == 3
+          && payloadMode.GetMcsValue () >= 3)
+        {
+          Nes = 2;
+        }
+      if (txVector.GetChannelWidth () == 160
+          && txVector.GetNss () == 3
+          && payloadMode.GetMcsValue () >= 5)
+        {
+          Nes = 3;
+        }
+      if (txVector.GetChannelWidth () == 160
+          && txVector.GetNss () == 3
+          && payloadMode.GetMcsValue () >= 7)
+        {
+          Nes = 4;
+        }
+      if (txVector.GetChannelWidth () == 160
+          && txVector.GetNss () == 4
+          && payloadMode.GetMcsValue () >= 2)
+        {
+          Nes = 2;
+        }
+      if (txVector.GetChannelWidth () == 160
+          && txVector.GetNss () == 4
+          && payloadMode.GetMcsValue () >= 4)
+        {
+          Nes = 3;
+        }
+      if (txVector.GetChannelWidth () == 160
+          && txVector.GetNss () == 4
+          && payloadMode.GetMcsValue () >= 5)
+        {
+          Nes = 4;
+        }
+      if (txVector.GetChannelWidth () == 160
+          && txVector.GetNss () == 4
+          && payloadMode.GetMcsValue () >= 7)
+        {
+          Nes = 6;
+        }
+    }
+
+  Time symbolDuration = Seconds (0);
   switch (payloadMode.GetModulationClass ())
     {
     case WIFI_MOD_CLASS_OFDM:
@@ -1960,8 +2081,6 @@ WifiPhy::GetPayloadDuration (uint32_t size, WifiTxVector txVector, uint16_t freq
       {
         //(Section 18.3.2.4 "Timing related parameters" Table 18-5 "Timing-related parameters"; IEEE Std 802.11-2012
         //corresponds to T_{SYM} in the table)
-        Time symbolDuration;
-
         switch (txVector.GetChannelWidth ())
           {
           case 20:
@@ -1975,55 +2094,82 @@ WifiPhy::GetPayloadDuration (uint32_t size, WifiTxVector txVector, uint16_t freq
             symbolDuration = MicroSeconds (16);
             break;
           }
+        break;
+      }
+    case WIFI_MOD_CLASS_HT:
+    case WIFI_MOD_CLASS_VHT:
+      {
+        //if short GI data rate is used then symbol duration is 3.6us else symbol duration is 4us
+        //In the future has to create a stationmanager that only uses these data rates if sender and receiver support GI
+        uint16_t gi = txVector.GetGuardInterval ();
+        NS_ASSERT (gi == 400 || gi == 800);
+        symbolDuration = NanoSeconds (3200 + gi);
+      }
+      break;
+    case WIFI_MOD_CLASS_HE:
+      {
+        //if short GI data rate is used then symbol duration is 3.6us else symbol duration is 4us
+        //In the future has to create a stationmanager that only uses these data rates if sender and receiver support GI
+        uint16_t gi = txVector.GetGuardInterval ();
+        NS_ASSERT (gi == 800 || gi == 1600 || gi == 3200);
+        symbolDuration = NanoSeconds (12800 + gi);
+      }
+      break;
+    default:
+      break;
+    }
 
-        //(Section 18.3.2.3 "Modulation-dependent parameters" Table 18-4 "Modulation-dependent parameters"; IEEE Std 802.11-2012)
-        //corresponds to N_{DBPS} in the table
-        double numDataBitsPerSymbol = payloadMode.GetDataRate (txVector.GetChannelWidth ()) * symbolDuration.GetNanoSeconds () / 1e9;
-        double numSymbols;
+  double numDataBitsPerSymbol = payloadMode.GetDataRate (txVector) * symbolDuration.GetNanoSeconds () / 1e9;
 
-        if (mpdutype == MPDU_IN_AGGREGATE && preamble != WIFI_PREAMBLE_NONE)
-          {
-            //First packet in an A-MPDU
-            numSymbols = ((16 + size * 8.0 + 6) / numDataBitsPerSymbol);
-            if (incFlag == 1)
-              {
-                m_totalAmpduSize += size;
-                m_totalAmpduNumSymbols += numSymbols;
-              }
-          }
-        else if (mpdutype == MPDU_IN_AGGREGATE && preamble == WIFI_PREAMBLE_NONE)
-          {
-            //consecutive packets in an A-MPDU
-            numSymbols = ((size * 8.0) / numDataBitsPerSymbol);
-            if (incFlag == 1)
-              {
-                m_totalAmpduSize += size;
-                m_totalAmpduNumSymbols += numSymbols;
-              }
-          }
-        else if (mpdutype == LAST_MPDU_IN_AGGREGATE && preamble == WIFI_PREAMBLE_NONE)
-          {
-            //last packet in an A-MPDU
-            uint32_t totalAmpduSize = m_totalAmpduSize + size;
-            numSymbols = lrint (ceil ((16 + totalAmpduSize * 8.0 + 6) / numDataBitsPerSymbol));
-            NS_ASSERT (m_totalAmpduNumSymbols <= numSymbols);
-            numSymbols -= m_totalAmpduNumSymbols;
-            if (incFlag == 1)
-              {
-                m_totalAmpduSize = 0;
-                m_totalAmpduNumSymbols = 0;
-              }
-          }
-        else if (mpdutype == NORMAL_MPDU && preamble != WIFI_PREAMBLE_NONE)
-          {
-            //Not an A-MPDU
-            numSymbols = lrint (ceil ((16 + size * 8.0 + 6.0) / numDataBitsPerSymbol));
-          }
-        else
-          {
-            NS_FATAL_ERROR ("Wrong combination of preamble and packet type: preamble=" << preamble << ", packet type=" << mpdutype);
-          }
+  double numSymbols = 0;
+  if (mpdutype == MPDU_IN_AGGREGATE && preamble != WIFI_PREAMBLE_NONE)
+    {
+      //First packet in an A-MPDU
+      numSymbols = (stbc * (16 + size * 8.0 + 6 * Nes) / (stbc * numDataBitsPerSymbol));
+      if (incFlag == 1)
+        {
+          m_totalAmpduSize += size;
+          m_totalAmpduNumSymbols += numSymbols;
+        }
+    }
+  else if (mpdutype == MPDU_IN_AGGREGATE && preamble == WIFI_PREAMBLE_NONE)
+    {
+      //consecutive packets in an A-MPDU
+      numSymbols = (stbc * size * 8.0) / (stbc * numDataBitsPerSymbol);
+      if (incFlag == 1)
+        {
+          m_totalAmpduSize += size;
+          m_totalAmpduNumSymbols += numSymbols;
+        }
+    }
+  else if (mpdutype == LAST_MPDU_IN_AGGREGATE && preamble == WIFI_PREAMBLE_NONE)
+    {
+      //last packet in an A-MPDU
+      uint32_t totalAmpduSize = m_totalAmpduSize + size;
+      numSymbols = lrint (stbc * ceil ((16 + totalAmpduSize * 8.0 + 6 * Nes) / (stbc * numDataBitsPerSymbol)));
+      NS_ASSERT (m_totalAmpduNumSymbols <= numSymbols);
+      numSymbols -= m_totalAmpduNumSymbols;
+      if (incFlag == 1)
+        {
+          m_totalAmpduSize = 0;
+          m_totalAmpduNumSymbols = 0;
+        }
+    }
+  else if (mpdutype == NORMAL_MPDU && preamble != WIFI_PREAMBLE_NONE)
+    {
+      //Not an A-MPDU
+      numSymbols = lrint (stbc * ceil ((16 + size * 8.0 + 6.0 * Nes) / (stbc * numDataBitsPerSymbol)));
+    }
+  else
+    {
+      NS_FATAL_ERROR ("Wrong combination of preamble and packet type");
+    }
 
+  switch (payloadMode.GetModulationClass ())
+    {
+    case WIFI_MOD_CLASS_OFDM:
+    case WIFI_MOD_CLASS_ERP_OFDM:
+      {
         //Add signal extension for ERP PHY
         if (payloadMode.GetModulationClass () == WIFI_MOD_CLASS_ERP_OFDM)
           {
@@ -2037,180 +2183,6 @@ WifiPhy::GetPayloadDuration (uint32_t size, WifiTxVector txVector, uint16_t freq
     case WIFI_MOD_CLASS_HT:
     case WIFI_MOD_CLASS_VHT:
       {
-        //if short GI data rate is used then symbol duration is 3.6us else symbol duration is 4us
-        //In the future has to create a stationmanager that only uses these data rates if sender and receiver support GI
-        uint16_t gi = txVector.GetGuardInterval ();
-        NS_ASSERT (gi == 400 || gi == 800);
-        Time symbolDuration = NanoSeconds (3200 + gi);
-
-        double stbc;
-        if (txVector.IsStbc ())
-          {
-            stbc = 2;
-          }
-        else
-          {
-            stbc = 1;
-          }
-
-        //check tables 20-35 and 20-36 in the .11n standard to get cases when nes = 2
-        double Nes = 1;
-        if (payloadMode.GetUniqueName () == "HtMcs21"
-            || payloadMode.GetUniqueName () == "HtMcs22"
-            || payloadMode.GetUniqueName () == "HtMcs23"
-            || payloadMode.GetUniqueName () == "HtMcs28"
-            || payloadMode.GetUniqueName () == "HtMcs29"
-            || payloadMode.GetUniqueName () == "HtMcs30"
-            || payloadMode.GetUniqueName () == "HtMcs31")
-          {
-            Nes = 2;
-          }
-        //check tables 22-30 to 22-61 in the .11ac standard to get cases when nes > 1
-        //todo: improve logic to reduce the number of if cases
-        //todo: extend to NSS > 4 for VHT rates
-        if (txVector.GetChannelWidth () == 40
-            && txVector.GetNss () == 3
-            && payloadMode.GetMcsValue () >= 8)
-          {
-            Nes = 2;
-          }
-        if (txVector.GetChannelWidth () == 80
-            && txVector.GetNss () == 2
-            && payloadMode.GetMcsValue () >= 7)
-          {
-            Nes = 2;
-          }
-        if (txVector.GetChannelWidth () == 80
-            && txVector.GetNss () == 3
-            && payloadMode.GetMcsValue () >= 7)
-          {
-            Nes = 2;
-          }
-        if (txVector.GetChannelWidth () == 80
-            && txVector.GetNss () == 3
-            && payloadMode.GetMcsValue () == 9)
-          {
-            Nes = 3;
-          }
-        if (txVector.GetChannelWidth () == 80
-            && txVector.GetNss () == 4
-            && payloadMode.GetMcsValue () >= 4)
-          {
-            Nes = 2;
-          }
-        if (txVector.GetChannelWidth () == 80
-            && txVector.GetNss () == 4
-            && payloadMode.GetMcsValue () >= 7)
-          {
-            Nes = 3;
-          }
-        if (txVector.GetChannelWidth () == 160
-            && payloadMode.GetMcsValue () >= 7)
-          {
-            Nes = 2;
-          }
-        if (txVector.GetChannelWidth () == 160
-            && txVector.GetNss () == 2
-            && payloadMode.GetMcsValue () >= 4)
-          {
-            Nes = 2;
-          }
-        if (txVector.GetChannelWidth () == 160
-            && txVector.GetNss () == 2
-            && payloadMode.GetMcsValue () >= 7)
-          {
-            Nes = 3;
-          }
-        if (txVector.GetChannelWidth () == 160
-            && txVector.GetNss () == 3
-            && payloadMode.GetMcsValue () >= 3)
-          {
-            Nes = 2;
-          }
-        if (txVector.GetChannelWidth () == 160
-            && txVector.GetNss () == 3
-            && payloadMode.GetMcsValue () >= 5)
-          {
-            Nes = 3;
-          }
-        if (txVector.GetChannelWidth () == 160
-            && txVector.GetNss () == 3
-            && payloadMode.GetMcsValue () >= 7)
-          {
-            Nes = 4;
-          }
-        if (txVector.GetChannelWidth () == 160
-            && txVector.GetNss () == 4
-            && payloadMode.GetMcsValue () >= 2)
-          {
-            Nes = 2;
-          }
-        if (txVector.GetChannelWidth () == 160
-            && txVector.GetNss () == 4
-            && payloadMode.GetMcsValue () >= 4)
-          {
-            Nes = 3;
-          }
-        if (txVector.GetChannelWidth () == 160
-            && txVector.GetNss () == 4
-            && payloadMode.GetMcsValue () >= 5)
-          {
-            Nes = 4;
-          }
-        if (txVector.GetChannelWidth () == 160
-            && txVector.GetNss () == 4
-            && payloadMode.GetMcsValue () >= 7)
-          {
-            Nes = 6;
-          }
-
-        //IEEE Std 802.11n, section 20.3.11, equation (20-32)
-        double numDataBitsPerSymbol = payloadMode.GetDataRate (txVector) * symbolDuration.GetNanoSeconds () / 1e9;
-        double numSymbols;
-
-        if (mpdutype == MPDU_IN_AGGREGATE && preamble != WIFI_PREAMBLE_NONE)
-          {
-            //First packet in an A-MPDU
-            numSymbols = (stbc * (16 + size * 8.0 + 6 * Nes) / (stbc * numDataBitsPerSymbol));
-            if (incFlag == 1)
-              {
-                m_totalAmpduSize += size;
-                m_totalAmpduNumSymbols += numSymbols;
-              }
-          }
-        else if (mpdutype == MPDU_IN_AGGREGATE && preamble == WIFI_PREAMBLE_NONE)
-          {
-            //consecutive packets in an A-MPDU
-            numSymbols = (stbc * size * 8.0) / (stbc * numDataBitsPerSymbol);
-            if (incFlag == 1)
-              {
-                m_totalAmpduSize += size;
-                m_totalAmpduNumSymbols += numSymbols;
-              }
-          }
-        else if (mpdutype == LAST_MPDU_IN_AGGREGATE && preamble == WIFI_PREAMBLE_NONE)
-          {
-            //last packet in an A-MPDU
-            uint32_t totalAmpduSize = m_totalAmpduSize + size;
-            numSymbols = lrint (stbc * ceil ((16 + totalAmpduSize * 8.0 + 6 * Nes) / (stbc * numDataBitsPerSymbol)));
-            NS_ASSERT (m_totalAmpduNumSymbols <= numSymbols);
-            numSymbols -= m_totalAmpduNumSymbols;
-            if (incFlag == 1)
-              {
-                m_totalAmpduSize = 0;
-                m_totalAmpduNumSymbols = 0;
-              }
-          }
-        else if (mpdutype == NORMAL_MPDU && preamble != WIFI_PREAMBLE_NONE)
-          {
-            //Not an A-MPDU
-            numSymbols = lrint (stbc * ceil ((16 + size * 8.0 + 6.0 * Nes) / (stbc * numDataBitsPerSymbol)));
-          }
-        else
-          {
-            NS_FATAL_ERROR ("Wrong combination of preamble and packet type");
-          }
-
         if (payloadMode.GetModulationClass () == WIFI_MOD_CLASS_HT && Is2_4Ghz (frequency)
             && ((mpdutype == NORMAL_MPDU && preamble != WIFI_PREAMBLE_NONE)
                 || (mpdutype == LAST_MPDU_IN_AGGREGATE && preamble == WIFI_PREAMBLE_NONE))) //at 2.4 GHz
@@ -2224,69 +2196,6 @@ WifiPhy::GetPayloadDuration (uint32_t size, WifiTxVector txVector, uint16_t freq
       }
     case WIFI_MOD_CLASS_HE:
       {
-        //if short GI data rate is used then symbol duration is 3.6us else symbol duration is 4us
-        //In the future has to create a stationmanager that only uses these data rates if sender and receiver support GI
-        uint16_t gi = txVector.GetGuardInterval ();
-        NS_ASSERT (gi == 800 || gi == 1600 || gi == 3200);
-        Time symbolDuration = NanoSeconds (12800 + gi);
-
-        double stbc;
-        if (txVector.IsStbc ())
-          {
-            stbc = 2;
-          }
-        else
-          {
-            stbc = 1;
-          }
-
-        //IEEE Std 802.11n, section 20.3.11, equation (20-32)
-        double numDataBitsPerSymbol = payloadMode.GetDataRate (txVector) * symbolDuration.GetNanoSeconds () / 1e9;
-        double numSymbols;
-
-        if (mpdutype == MPDU_IN_AGGREGATE && preamble != WIFI_PREAMBLE_NONE)
-          {
-            //First packet in an A-MPDU
-            numSymbols = (stbc * (16 + size * 8.0 + 6) / (stbc * numDataBitsPerSymbol));
-            if (incFlag == 1)
-              {
-                m_totalAmpduSize += size;
-                m_totalAmpduNumSymbols += numSymbols;
-              }
-          }
-        else if (mpdutype == MPDU_IN_AGGREGATE && preamble == WIFI_PREAMBLE_NONE)
-          {
-            //consecutive packets in an A-MPDU
-            numSymbols = (stbc * size * 8.0) / (stbc * numDataBitsPerSymbol);
-            if (incFlag == 1)
-              {
-                m_totalAmpduSize += size;
-                m_totalAmpduNumSymbols += numSymbols;
-              }
-          }
-        else if (mpdutype == LAST_MPDU_IN_AGGREGATE && preamble == WIFI_PREAMBLE_NONE)
-          {
-            //last packet in an A-MPDU
-            uint32_t totalAmpduSize = m_totalAmpduSize + size;
-            numSymbols = lrint (stbc * ceil ((16 + totalAmpduSize * 8.0 + 6) / (stbc * numDataBitsPerSymbol)));
-            NS_ASSERT (m_totalAmpduNumSymbols <= numSymbols);
-            numSymbols -= m_totalAmpduNumSymbols;
-            if (incFlag == 1)
-              {
-                m_totalAmpduSize = 0;
-                m_totalAmpduNumSymbols = 0;
-              }
-          }
-        else if (mpdutype == NORMAL_MPDU && preamble != WIFI_PREAMBLE_NONE)
-          {
-            //Not an A-MPDU
-            numSymbols = lrint (stbc * ceil ((16 + size * 8.0 + 6.0) / (stbc * numDataBitsPerSymbol)));
-          }
-        else
-          {
-            NS_FATAL_ERROR ("Wrong combination of preamble and packet type");
-          }
-
         if (Is2_4Ghz (frequency)
             && ((mpdutype == NORMAL_MPDU && preamble != WIFI_PREAMBLE_NONE)
                 || (mpdutype == LAST_MPDU_IN_AGGREGATE && preamble == WIFI_PREAMBLE_NONE))) //at 2.4 GHz
@@ -2300,10 +2209,6 @@ WifiPhy::GetPayloadDuration (uint32_t size, WifiTxVector txVector, uint16_t freq
       }
     case WIFI_MOD_CLASS_DSSS:
     case WIFI_MOD_CLASS_HR_DSSS:
-      //(Section 17.2.3.6 "Long PLCP LENGTH field"; IEEE Std 802.11-2012)
-      NS_LOG_LOGIC (" size=" << size
-                             << " mode=" << payloadMode
-                             << " rate=" << payloadMode.GetDataRate (22));
       return MicroSeconds (lrint (ceil ((size * 8.0) / (payloadMode.GetDataRate (22) / 1.0e6))));
     default:
       NS_FATAL_ERROR ("unsupported modulation class");

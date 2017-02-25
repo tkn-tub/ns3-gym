@@ -53,11 +53,12 @@ private:
    * @param payloadMode the WifiMode used for the transmission
    * @param channelWidth the channel width used for the transmission (in MHz)
    * @param guardInterval the guard interval duration used for the transmission (in nanoseconds)
+   * @param preamble the WifiPreamble used for the transmission
    * @param knownDuration the known duration value of the transmission
    *
    * @return true if values correspond, false otherwise
    */
-  bool CheckPayloadDuration (uint32_t size, WifiMode payloadMode, uint32_t channelWidth, uint16_t guardInterval, Time knownDuration);
+  bool CheckPayloadDuration (uint32_t size, WifiMode payloadMode, uint32_t channelWidth, uint16_t guardInterval, WifiPreamble preamble, Time knownDuration);
 
   /**
    * Check if the overall tx duration returned by InterferenceHelper
@@ -86,10 +87,11 @@ TxDurationTest::~TxDurationTest ()
 }
 
 bool
-TxDurationTest::CheckPayloadDuration (uint32_t size, WifiMode payloadMode, uint32_t channelWidth, uint16_t guardInterval, Time knownDuration)
+TxDurationTest::CheckPayloadDuration (uint32_t size, WifiMode payloadMode, uint32_t channelWidth, uint16_t guardInterval, WifiPreamble preamble, Time knownDuration)
 {
   WifiTxVector txVector;
   txVector.SetMode (payloadMode);
+  txVector.SetPreambleType (preamble);
   txVector.SetChannelWidth (channelWidth);
   txVector.SetGuardInterval (guardInterval);
   txVector.SetNss (1);
@@ -203,10 +205,10 @@ TxDurationTest::DoRun (void)
 
   //IEEE Std 802.11-2007 Table 18-2 "Example of LENGTH calculations for CCK"
   retval = retval
-    && CheckPayloadDuration (1023, WifiPhy::GetDsssRate11Mbps (), 22, 800, MicroSeconds (744))
-    && CheckPayloadDuration (1024, WifiPhy::GetDsssRate11Mbps (), 22, 800, MicroSeconds (745))
-    && CheckPayloadDuration (1025, WifiPhy::GetDsssRate11Mbps (), 22, 800, MicroSeconds (746))
-    && CheckPayloadDuration (1026, WifiPhy::GetDsssRate11Mbps (), 22, 800, MicroSeconds (747));
+    && CheckPayloadDuration (1023, WifiPhy::GetDsssRate11Mbps (), 22, 800, WIFI_PREAMBLE_LONG, MicroSeconds (744))
+    && CheckPayloadDuration (1024, WifiPhy::GetDsssRate11Mbps (), 22, 800, WIFI_PREAMBLE_LONG, MicroSeconds (745))
+    && CheckPayloadDuration (1025, WifiPhy::GetDsssRate11Mbps (), 22, 800, WIFI_PREAMBLE_LONG, MicroSeconds (746))
+    && CheckPayloadDuration (1026, WifiPhy::GetDsssRate11Mbps (), 22, 800, WIFI_PREAMBLE_LONG, MicroSeconds (747));
 
   NS_TEST_EXPECT_MSG_EQ (retval, true, "an 802.11b CCK duration failed");
 
