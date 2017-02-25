@@ -3497,7 +3497,7 @@ WifiPhy::GetVhtMcs9 ()
   return mcs;
 }
 
-// Clause xxx
+// Clause 26
 
 WifiMode
 WifiPhy::GetHeMcs0 ()

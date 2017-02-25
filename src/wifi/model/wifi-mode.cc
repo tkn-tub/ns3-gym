@@ -263,8 +263,6 @@ WifiMode::GetDataRate (uint8_t channelWidth, uint16_t guardInterval, uint8_t nss
     }
   else if (item->modClass == WIFI_MOD_CLASS_HE)
     {
-      //todo: check forbidden combinations
-
       NS_ASSERT (guardInterval == 800 || guardInterval == 1600 || guardInterval == 3200);
       symbolRate = (1 / (12.8 + ((double)guardInterval / 1000))) * 1e6;
 
