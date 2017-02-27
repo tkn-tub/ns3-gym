@@ -25,7 +25,7 @@
 #include "scheduler.h"
 #include "event-impl.h"
 #include "system-thread.h"
-#include "ns3/system-mutex.h"
+#include "system-mutex.h"
 
 #include "ptr.h"
 
