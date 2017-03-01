@@ -64,11 +64,11 @@ cpp_examples = [
     ("wifi-manager-example --wifiManager=Onoe --standard=802.11-10MHz --stepTime=0.1", "True", "True"),
     ("wifi-manager-example --wifiManager=Onoe --standard=802.11-5MHz --stepTime=0.1", "True", "True"),
     ("wifi-manager-example --wifiManager=Rraa --standard=802.11a --stepTime=0.1", "True", "True"),
-    #("wifi-manager-example --wifiManager=Rraa --standard=802.11b --serverChannelWidth=22 --clientChannelWidth=22 --stepTime=0.1", "True", "True"), #see Bug 2654
+    ("wifi-manager-example --wifiManager=Rraa --standard=802.11b --serverChannelWidth=22 --clientChannelWidth=22 --stepTime=0.1", "True", "True"),
     ("wifi-manager-example --wifiManager=Rraa --standard=802.11g --stepTime=0.1", "True", "True"),
     ("wifi-manager-example --wifiManager=Rraa --standard=802.11-holland --stepTime=0.1", "True", "True"),
-    #("wifi-manager-example --wifiManager=Rraa --standard=802.11-10MHz --stepTime=0.1", "True", "True"), #see Bug 2654
-    #("wifi-manager-example --wifiManager=Rraa --standard=802.11-5MHz --stepTime=0.1", "True", "True"), #see Bug 2654
+    ("wifi-manager-example --wifiManager=Rraa --standard=802.11-10MHz --stepTime=0.1", "True", "True"),
+    ("wifi-manager-example --wifiManager=Rraa --standard=802.11-5MHz --stepTime=0.1", "True", "True"),
     ("wifi-manager-example --wifiManager=Minstrel --standard=802.11a --stepTime=0.1", "True", "True"),
     ("wifi-manager-example --wifiManager=Minstrel --standard=802.11b --serverChannelWidth=22 --clientChannelWidth=22 --stepTime=0.1", "True", "True"),
     ("wifi-manager-example --wifiManager=Minstrel --standard=802.11g --stepTime=0.1", "True", "True"),
