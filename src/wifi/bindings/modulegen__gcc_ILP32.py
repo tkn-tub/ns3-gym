@@ -194,8 +194,6 @@ def register_types(module):
     module.add_class('Tag', import_from_module='ns.network', parent=root_module['ns3::ObjectBase'])
     ## tag-buffer.h (module 'network'): ns3::TagBuffer [class]
     module.add_class('TagBuffer', import_from_module='ns.network')
-    ## rrpaa-wifi-manager.h (module 'wifi'): ns3::Thresholds [struct]
-    module.add_class('Thresholds')
     ## nstime.h (module 'core'): ns3::TimeWithUnit [class]
     module.add_class('TimeWithUnit', import_from_module='ns.core')
     ## traced-value.h (module 'core'): ns3::TracedValue<double> [class]
@@ -246,6 +244,10 @@ def register_types(module):
     module.add_class('WifiRemoteStationState')
     ## wifi-remote-station-manager.h (module 'wifi'): ns3::WifiRemoteStationState [enumeration]
     module.add_enum('', ['BRAND_NEW', 'DISASSOC', 'WAIT_ASSOC_TX_OK', 'GOT_ASSOC_TX_OK'], outer_class=root_module['ns3::WifiRemoteStationState'])
+    ## rraa-wifi-manager.h (module 'wifi'): ns3::WifiRraaThresholds [struct]
+    module.add_class('WifiRraaThresholds')
+    ## rrpaa-wifi-manager.h (module 'wifi'): ns3::WifiRrpaaThresholds [struct]
+    module.add_class('WifiRrpaaThresholds')
     ## wifi-tx-vector.h (module 'wifi'): ns3::WifiTxVector [class]
     module.add_class('WifiTxVector')
     ## yans-wifi-helper.h (module 'wifi'): ns3::YansWifiChannelHelper [class]
@@ -758,6 +760,9 @@ def register_types(module):
     typehandlers.add_type_alias(u'uint8_t', u'ns3::WifiInformationElementId')
     typehandlers.add_type_alias(u'uint8_t*', u'ns3::WifiInformationElementId*')
     typehandlers.add_type_alias(u'uint8_t&', u'ns3::WifiInformationElementId&')
+    typehandlers.add_type_alias(u'std::vector< std::pair< ns3::WifiRraaThresholds, ns3::WifiMode >, std::allocator< std::pair< ns3::WifiRraaThresholds, ns3::WifiMode > > >', u'ns3::RraaThresholdsTable')
+    typehandlers.add_type_alias(u'std::vector< std::pair< ns3::WifiRraaThresholds, ns3::WifiMode >, std::allocator< std::pair< ns3::WifiRraaThresholds, ns3::WifiMode > > >*', u'ns3::RraaThresholdsTable*')
+    typehandlers.add_type_alias(u'std::vector< std::pair< ns3::WifiRraaThresholds, ns3::WifiMode >, std::allocator< std::pair< ns3::WifiRraaThresholds, ns3::WifiMode > > >&', u'ns3::RraaThresholdsTable&')
     typehandlers.add_type_alias(u'std::vector< double, std::allocator< double > >', u'ns3::Values')
     typehandlers.add_type_alias(u'std::vector< double, std::allocator< double > >*', u'ns3::Values*')
     typehandlers.add_type_alias(u'std::vector< double, std::allocator< double > >&', u'ns3::Values&')
@@ -781,9 +786,9 @@ def register_types(module):
     typehandlers.add_type_alias(u'ns3::Vector3DValue*', u'ns3::VectorValue*')
     typehandlers.add_type_alias(u'ns3::Vector3DValue&', u'ns3::VectorValue&')
     module.add_typedef(root_module['ns3::Vector3DValue'], 'VectorValue')
-    typehandlers.add_type_alias(u'std::vector< std::pair< ns3::Thresholds, ns3::WifiMode >, std::allocator< std::pair< ns3::Thresholds, ns3::WifiMode > > >', u'ns3::RrpaaThresholdsTable')
-    typehandlers.add_type_alias(u'std::vector< std::pair< ns3::Thresholds, ns3::WifiMode >, std::allocator< std::pair< ns3::Thresholds, ns3::WifiMode > > >*', u'ns3::RrpaaThresholdsTable*')
-    typehandlers.add_type_alias(u'std::vector< std::pair< ns3::Thresholds, ns3::WifiMode >, std::allocator< std::pair< ns3::Thresholds, ns3::WifiMode > > >&', u'ns3::RrpaaThresholdsTable&')
+    typehandlers.add_type_alias(u'std::vector< std::pair< ns3::WifiRrpaaThresholds, ns3::WifiMode >, std::allocator< std::pair< ns3::WifiRrpaaThresholds, ns3::WifiMode > > >', u'ns3::RrpaaThresholdsTable')
+    typehandlers.add_type_alias(u'std::vector< std::pair< ns3::WifiRrpaaThresholds, ns3::WifiMode >, std::allocator< std::pair< ns3::WifiRrpaaThresholds, ns3::WifiMode > > >*', u'ns3::RrpaaThresholdsTable*')
+    typehandlers.add_type_alias(u'std::vector< std::pair< ns3::WifiRrpaaThresholds, ns3::WifiMode >, std::allocator< std::pair< ns3::WifiRrpaaThresholds, ns3::WifiMode > > >&', u'ns3::RrpaaThresholdsTable&')
     typehandlers.add_type_alias(u'std::vector< std::vector< unsigned int, std::allocator< unsigned int > >, std::allocator< std::vector< unsigned int, std::allocator< unsigned int > > > >', u'ns3::SampleRate')
     typehandlers.add_type_alias(u'std::vector< std::vector< unsigned int, std::allocator< unsigned int > >, std::allocator< std::vector< unsigned int, std::allocator< unsigned int > > > >*', u'ns3::SampleRate*')
     typehandlers.add_type_alias(u'std::vector< std::vector< unsigned int, std::allocator< unsigned int > >, std::allocator< std::vector< unsigned int, std::allocator< unsigned int > > > >&', u'ns3::SampleRate&')
@@ -971,7 +976,6 @@ def register_methods(root_module):
     register_Ns3StatusCode_methods(root_module, root_module['ns3::StatusCode'])
     register_Ns3Tag_methods(root_module, root_module['ns3::Tag'])
     register_Ns3TagBuffer_methods(root_module, root_module['ns3::TagBuffer'])
-    register_Ns3Thresholds_methods(root_module, root_module['ns3::Thresholds'])
     register_Ns3TimeWithUnit_methods(root_module, root_module['ns3::TimeWithUnit'])
     register_Ns3TracedValue__Double_methods(root_module, root_module['ns3::TracedValue< double >'])
     register_Ns3TracedValue__Unsigned_int_methods(root_module, root_module['ns3::TracedValue< unsigned int >'])
@@ -993,6 +997,8 @@ def register_methods(root_module):
     register_Ns3WifiRemoteStation_methods(root_module, root_module['ns3::WifiRemoteStation'])
     register_Ns3WifiRemoteStationInfo_methods(root_module, root_module['ns3::WifiRemoteStationInfo'])
     register_Ns3WifiRemoteStationState_methods(root_module, root_module['ns3::WifiRemoteStationState'])
+    register_Ns3WifiRraaThresholds_methods(root_module, root_module['ns3::WifiRraaThresholds'])
+    register_Ns3WifiRrpaaThresholds_methods(root_module, root_module['ns3::WifiRrpaaThresholds'])
     register_Ns3WifiTxVector_methods(root_module, root_module['ns3::WifiTxVector'])
     register_Ns3YansWifiChannelHelper_methods(root_module, root_module['ns3::YansWifiChannelHelper'])
     register_Ns3YansWifiPhyHelper_methods(root_module, root_module['ns3::YansWifiPhyHelper'])
@@ -4332,19 +4338,6 @@ def register_Ns3TagBuffer_methods(root_module, cls):
                    [param('uint8_t', 'v')])
     return
 
-def register_Ns3Thresholds_methods(root_module, cls):
-    ## rrpaa-wifi-manager.h (module 'wifi'): ns3::Thresholds::Thresholds() [constructor]
-    cls.add_constructor([])
-    ## rrpaa-wifi-manager.h (module 'wifi'): ns3::Thresholds::Thresholds(ns3::Thresholds const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::Thresholds const &', 'arg0')])
-    ## rrpaa-wifi-manager.h (module 'wifi'): ns3::Thresholds::m_ewnd [variable]
-    cls.add_instance_attribute('m_ewnd', 'uint32_t', is_const=False)
-    ## rrpaa-wifi-manager.h (module 'wifi'): ns3::Thresholds::m_mtl [variable]
-    cls.add_instance_attribute('m_mtl', 'double', is_const=False)
-    ## rrpaa-wifi-manager.h (module 'wifi'): ns3::Thresholds::m_ori [variable]
-    cls.add_instance_attribute('m_ori', 'double', is_const=False)
-    return
-
 def register_Ns3TimeWithUnit_methods(root_module, cls):
     cls.add_output_stream_operator()
     ## nstime.h (module 'core'): ns3::TimeWithUnit::TimeWithUnit(ns3::TimeWithUnit const & arg0) [copy constructor]
@@ -5178,6 +5171,32 @@ def register_Ns3WifiRemoteStationState_methods(root_module, cls):
     cls.add_instance_attribute('m_streams', 'uint8_t', is_const=False)
     ## wifi-remote-station-manager.h (module 'wifi'): ns3::WifiRemoteStationState::m_vhtSupported [variable]
     cls.add_instance_attribute('m_vhtSupported', 'bool', is_const=False)
+    return
+
+def register_Ns3WifiRraaThresholds_methods(root_module, cls):
+    ## rraa-wifi-manager.h (module 'wifi'): ns3::WifiRraaThresholds::WifiRraaThresholds() [constructor]
+    cls.add_constructor([])
+    ## rraa-wifi-manager.h (module 'wifi'): ns3::WifiRraaThresholds::WifiRraaThresholds(ns3::WifiRraaThresholds const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::WifiRraaThresholds const &', 'arg0')])
+    ## rraa-wifi-manager.h (module 'wifi'): ns3::WifiRraaThresholds::m_ewnd [variable]
+    cls.add_instance_attribute('m_ewnd', 'uint32_t', is_const=False)
+    ## rraa-wifi-manager.h (module 'wifi'): ns3::WifiRraaThresholds::m_mtl [variable]
+    cls.add_instance_attribute('m_mtl', 'double', is_const=False)
+    ## rraa-wifi-manager.h (module 'wifi'): ns3::WifiRraaThresholds::m_ori [variable]
+    cls.add_instance_attribute('m_ori', 'double', is_const=False)
+    return
+
+def register_Ns3WifiRrpaaThresholds_methods(root_module, cls):
+    ## rrpaa-wifi-manager.h (module 'wifi'): ns3::WifiRrpaaThresholds::WifiRrpaaThresholds() [constructor]
+    cls.add_constructor([])
+    ## rrpaa-wifi-manager.h (module 'wifi'): ns3::WifiRrpaaThresholds::WifiRrpaaThresholds(ns3::WifiRrpaaThresholds const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::WifiRrpaaThresholds const &', 'arg0')])
+    ## rrpaa-wifi-manager.h (module 'wifi'): ns3::WifiRrpaaThresholds::m_ewnd [variable]
+    cls.add_instance_attribute('m_ewnd', 'uint32_t', is_const=False)
+    ## rrpaa-wifi-manager.h (module 'wifi'): ns3::WifiRrpaaThresholds::m_mtl [variable]
+    cls.add_instance_attribute('m_mtl', 'double', is_const=False)
+    ## rrpaa-wifi-manager.h (module 'wifi'): ns3::WifiRrpaaThresholds::m_ori [variable]
+    cls.add_instance_attribute('m_ori', 'double', is_const=False)
     return
 
 def register_Ns3WifiTxVector_methods(root_module, cls):
@@ -17411,6 +17430,16 @@ def register_Ns3RraaWifiManager_methods(root_module, cls):
     cls.add_method('SetVhtSupported', 
                    'void', 
                    [param('bool', 'enable')], 
+                   is_virtual=True)
+    ## rraa-wifi-manager.h (module 'wifi'): void ns3::RraaWifiManager::SetupMac(ns3::Ptr<ns3::WifiMac> mac) [member function]
+    cls.add_method('SetupMac', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::WifiMac >', 'mac')], 
+                   is_virtual=True)
+    ## rraa-wifi-manager.h (module 'wifi'): void ns3::RraaWifiManager::SetupPhy(ns3::Ptr<ns3::WifiPhy> phy) [member function]
+    cls.add_method('SetupPhy', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::WifiPhy >', 'phy')], 
                    is_virtual=True)
     ## rraa-wifi-manager.h (module 'wifi'): ns3::WifiRemoteStation * ns3::RraaWifiManager::DoCreateStation() const [member function]
     cls.add_method('DoCreateStation', 
