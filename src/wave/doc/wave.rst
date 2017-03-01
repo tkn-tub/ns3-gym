@@ -432,23 +432,20 @@ The relation of ``ns3::NqosWaveMacHelper``, ``ns3::QosWaveMacHelper`` and
 
 ::
 
-    WifiHelper -------------------use------------------->   WifiMacHelper
-        ^                                                                              ^                     ^
-        |                                                                              |                     |
-        |                                                                             inherit          inherit
-        |                                                                               |                     |
-        |                                                          QosWifiMacHelper      NqosWifiMacHelper
-        |                                                                               ^                     ^
-        |                                                                               |                     |
-      inherit                                                                     inherit          inherit
-        |                                                                               |                     |
+    WifiHelper ------------use-------------->   WifiMacHelper
+        ^                                        ^         ^
+        |                                        |         |
+        |                                        |         |
+      inherit                                inherit      inherit
+        |                                        |         |
     Wifi80211pHelper ------use----->  QosWaveMacHelper or NqosWaveHelper
  
-From the above diagram, Wifi80211Helper appears to be able to use any 
-subclasses inheriting from WifiMacHelper; however, we force users to use 
-subclasses only inheriting from QosWaveMacHelper or NqosWaveHelper.
-While the functions of WiFi 802.11p device can be achieved by 
-WaveNetDevice's ContinuousAccess assignment, Wifi80211pHelper is recommeneded
+From the above diagram, there are two Mac helper classes that both
+inherit from the WifiMacHelper; when the WAVE module was originally
+written, there were specialized versions (QoS and Nqos) of WifiMacHelper 
+that have since been removed from the Wifi codebase, but the distinction 
+remains in the WAVE helpers.  The functions of WiFi 802.11p device can be achieved by 
+WaveNetDevice's ContinuousAccess assignment, Wifi80211pHelper is recommended
 if there is no need for multiple channel operation.
 Usage is as follows:
 
@@ -469,16 +466,11 @@ is described as below:
  
 ::
   
-                                                                               WifiMacHelper
-                                                                                      ^
-                                                                                      |
-                                                                                     inherit
-                                                                                      |
-                                                                         QosWifiMacHelper 
-                                                                                      ^ 
-                                                                                      | 
-                                                                                     inherit
-                                                                                      | 
+                                            WifiMacHelper
+                                                  ^
+                                                  | 
+                                                inherit
+                                                  | 
     WaveHelper -------- only use --------> QosWaveMacHelper
       
 From the above diagram, WaveHelper is not the subclass of WifiHelper and should only 
