@@ -51,7 +51,7 @@ struct RrpaaWifiRemoteStation;
  * For each rate there is a Opportunistic Rate Increase threshold,
  * a Maximum Tolerable Loss threshold and an Evaluation Window.
  */
-struct Thresholds
+struct WifiRrpaaThresholds
 {
   double m_ori; //!< The Oportunistic Rate Increase threshold.
   double m_mtl; //!< The Maximum Tolerable Loss threshold.
@@ -61,7 +61,7 @@ struct Thresholds
 /**
  * List of thresholds for each mode.
  */
-typedef std::vector<std::pair<Thresholds,WifiMode> > RrpaaThresholdsTable;
+typedef std::vector<std::pair<WifiRrpaaThresholds,WifiMode> > RrpaaThresholdsTable;
 
 /**
  * List of probabilities.
@@ -164,7 +164,7 @@ private:
    *
    * \return threshold
    */
-  Thresholds GetThresholds (RrpaaWifiRemoteStation *station, WifiMode mode) const;
+  WifiRrpaaThresholds GetThresholds (RrpaaWifiRemoteStation *station, WifiMode mode) const;
 
   /**
    * Get the thresholds for the given station and mode index.
@@ -174,7 +174,7 @@ private:
    *
    * \return threshold
    */
-  Thresholds GetThresholds (RrpaaWifiRemoteStation *station, uint32_t rate) const;
+  WifiRrpaaThresholds GetThresholds (RrpaaWifiRemoteStation *station, uint32_t rate) const;
 
   /**
    * Get the estimated TxTime of a packet with a given mode.

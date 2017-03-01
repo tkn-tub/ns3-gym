@@ -204,11 +204,11 @@ RrpaaWifiManager::AddCalcTxTime (WifiMode mode, Time t)
   m_calcTxTime.push_back (std::make_pair (t, mode));
 }
 
-Thresholds
+WifiRrpaaThresholds
 RrpaaWifiManager::GetThresholds (RrpaaWifiRemoteStation *station, WifiMode mode) const
 {
   NS_LOG_FUNCTION (this << station << mode);
-  struct Thresholds threshold;
+  struct WifiRrpaaThresholds threshold;
   for (RrpaaThresholdsTable::const_iterator i = station->m_thresholds.begin (); i != station->m_thresholds.end (); i++)
     {
       if (mode == i->second)
@@ -303,7 +303,7 @@ RrpaaWifiManager::InitThresholds (RrpaaWifiRemoteStation *station)
         {
           mtl = nextMtl;
         }
-      Thresholds th;
+      WifiRrpaaThresholds th;
       th.m_ewnd = ceil (m_tau / totalTxTime.GetSeconds ());
       th.m_ori = ori;
       th.m_mtl = mtl;
@@ -463,7 +463,7 @@ void
 RrpaaWifiManager::RunBasicAlgorithm (RrpaaWifiRemoteStation *station)
 {
   NS_LOG_FUNCTION (this << station);
-  Thresholds thresholds = GetThresholds (station, station->m_rateIndex);
+  WifiRrpaaThresholds thresholds = GetThresholds (station, station->m_rateIndex);
   double bploss = (double) station->m_nFailed / (double) thresholds.m_ewnd;
   double wploss = (double) (station->m_counter + station->m_nFailed) / (double) thresholds.m_ewnd;
   NS_LOG_DEBUG ("Best loss prob= " << bploss);
@@ -595,7 +595,7 @@ RrpaaWifiManager::RunAdaptiveRtsAlgorithm (RrpaaWifiRemoteStation *station)
     }
 }
 
-Thresholds
+WifiRrpaaThresholds
 RrpaaWifiManager::GetThresholds (RrpaaWifiRemoteStation *station,
                                  uint32_t rate) const
 {
