@@ -19,8 +19,6 @@
  */
 
 #include "rraa-wifi-manager.h"
-#include "yans-wifi-phy.h"
-#include "wifi-phy.h"
 #include "wifi-mac.h"
 #include "ns3/log.h"
 #include "ns3/boolean.h"
@@ -50,7 +48,7 @@ struct RraaWifiRemoteStation : public WifiRemoteStation
   bool m_adaptiveRtsOn;          //!< Check if Adaptive RTS mechanism is on.
   bool m_lastFrameFail;          //!< Flag if the last frame sent has failed.
   bool m_initialized;            //!< For initializing variables.
-  
+
   uint32_t m_nRate;              //!< Number of supported rates.
 
   uint32_t m_rateIndex;          //!< Current rate index.
@@ -78,30 +76,30 @@ RraaWifiManager::GetTypeId (void)
                    MakeTimeAccessor (&RraaWifiManager::m_timeout),
                    MakeTimeChecker ())
     .AddAttribute ("FrameLength",
-		   "The data frame length (in bytes) used for calculating mode TxTime.",
-		   UintegerValue (1420),
-		   MakeUintegerAccessor (&RraaWifiManager::m_frameLength),
-		   MakeUintegerChecker <uint32_t> ())
+                   "The data frame length (in bytes) used for calculating mode TxTime.",
+                   UintegerValue (1420),
+                   MakeUintegerAccessor (&RraaWifiManager::m_frameLength),
+                   MakeUintegerChecker <uint32_t> ())
     .AddAttribute ("AckFrameLength",
-		   "The ACK frame length (in bytes) used for calculating mode TxTime.",
-		   UintegerValue (14),
-		   MakeUintegerAccessor (&RraaWifiManager::m_ackLength),
-		   MakeUintegerChecker <uint32_t> ())
+                   "The ACK frame length (in bytes) used for calculating mode TxTime.",
+                   UintegerValue (14),
+                   MakeUintegerAccessor (&RraaWifiManager::m_ackLength),
+                   MakeUintegerChecker <uint32_t> ())
     .AddAttribute ("Alpha",
-		   "Constant for calculating the MTL threshold.",
-		   DoubleValue (1.25),
-		   MakeDoubleAccessor (&RraaWifiManager::m_alpha),
-		   MakeDoubleChecker<double> (1))
+                   "Constant for calculating the MTL threshold.",
+                   DoubleValue (1.25),
+                   MakeDoubleAccessor (&RraaWifiManager::m_alpha),
+                   MakeDoubleChecker<double> (1))
     .AddAttribute ("Beta",
-		   "Constant for calculating the ORI threshold.",
-		   DoubleValue (2),
-		   MakeDoubleAccessor (&RraaWifiManager::m_beta),
-		   MakeDoubleChecker<double> (1))
+                   "Constant for calculating the ORI threshold.",
+                   DoubleValue (2),
+                   MakeDoubleAccessor (&RraaWifiManager::m_beta),
+                   MakeDoubleChecker<double> (1))
     .AddAttribute ("Tau",
-		   "Constant for calculating the EWND size.",
-		   DoubleValue (0.012),
-		   MakeDoubleAccessor (&RraaWifiManager::m_tau),
-		   MakeDoubleChecker<double> (0))
+                   "Constant for calculating the EWND size.",
+                   DoubleValue (0.012),
+                   MakeDoubleAccessor (&RraaWifiManager::m_tau),
+                   MakeDoubleChecker<double> (0))
     .AddTraceSource ("Rate",
                      "Traced value for rate changes (b/s)",
                      MakeTraceSourceAccessor (&RraaWifiManager::m_currentRate),
@@ -209,7 +207,7 @@ RraaWifiManager::CheckInit (RraaWifiRemoteStation *station)
       //before we perform our own initialization.
       station->m_nRate = GetNSupported (station);
       //Initialize at maximal rate
-      station->m_rateIndex = GetMaxRate(station);
+      station->m_rateIndex = GetMaxRate (station);
 
       station->m_initialized = true;
 
@@ -460,7 +458,7 @@ RraaWifiManager::ARts (RraaWifiRemoteStation *station)
 
 WifiRraaThresholds
 RraaWifiManager::GetThresholds (RraaWifiRemoteStation *station,
-                                 uint32_t rate) const
+                                uint32_t rate) const
 {
   NS_LOG_FUNCTION (this << station << rate);
   WifiMode mode = GetSupported (station, rate);

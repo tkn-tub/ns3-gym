@@ -29,6 +29,19 @@ namespace ns3 {
 
 struct RraaWifiRemoteStation;
 
+/// WifiRraaThresholds structure
+struct WifiRraaThresholds
+  {
+    double m_ori; ///< Opportunistic Rate Increase threshold
+    double m_mtl; ///< Maximum Tolerable Loss threshold
+    uint32_t m_ewnd; ///< Evaluation Window
+  };
+
+/**
+ * List of thresholds for each mode.
+ */
+typedef std::vector<std::pair<WifiRraaThresholds, WifiMode> > RraaThresholdsTable;
+
 /**
  * \brief Robust Rate Adaptation Algorithm
  * \ingroup wifi
@@ -42,24 +55,6 @@ struct RraaWifiRemoteStation;
  * exit if the user tries to configure this RAA with a Wi-Fi MAC
  * that has VhtSupported, HtSupported or HeSupported set.
  */
-
-/**
- * For each rate there is a Opportunistic Rate Increase threshold,
- * a Maximum Tolerable Loss threshold and an Evaluation Window.
- */
-struct WifiRraaThresholds
-{
-  double m_ori;
-  double m_mtl;
-  uint32_t m_ewnd;
-};
-
-/**
- * List of thresholds for each mode.
- */
-typedef std::vector<std::pair<WifiRraaThresholds, WifiMode> > RraaThresholdsTable;
-
-
 class RraaWifiManager : public WifiRemoteStationManager
 {
 public:
@@ -81,7 +76,6 @@ public:
 
 
 private:
-
   //overriden from base class
   WifiRemoteStation * DoCreateStation (void) const;
   void DoReportRxOk (WifiRemoteStation *station,
