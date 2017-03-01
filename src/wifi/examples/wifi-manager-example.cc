@@ -218,10 +218,10 @@ int main (int argc, char *argv[])
   dataName += "-";
   plotName += standard;
   dataName += standard;
-  plotName += "-server=";
-  dataName += "-server=";
   if (standard == "802.11n-5GHz" || standard == "802.11n-2.4GHz" || standard == "802.11ac")
     {
+      plotName += "-server=";
+      dataName += "-server=";
       std::ostringstream oss;
       std::string gi;
       if (serverShortGuardInterval)
@@ -235,13 +235,9 @@ int main (int argc, char *argv[])
       oss << serverChannelWidth << "MHz_" << gi << "_" << serverNss << "SS";
       plotName += oss.str ();
       dataName += oss.str ();
-    }
-  plotName += "-client=";
-  dataName += "-client=";
-  if (standard == "802.11n-5GHz" || standard == "802.11n-2.4GHz" || standard == "802.11ac")
-    {
-      std::ostringstream oss;
-      std::string gi;
+      plotName += "-client=";
+      dataName += "-client=";
+      oss.flush ();
       if (clientShortGuardInterval)
         {
           gi = "SGI";
