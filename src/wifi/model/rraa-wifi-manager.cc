@@ -174,6 +174,7 @@ WifiRraaThresholds
 RraaWifiManager::GetThresholds (RraaWifiRemoteStation *station, WifiMode mode) const
 {
   NS_LOG_FUNCTION (this << station << mode);
+  struct WifiRraaThresholds threshold;
   for (RraaThresholdsTable::const_iterator i = station->m_thresholds.begin (); i != station->m_thresholds.end (); i++)
     {
       if (mode == i->second)
@@ -181,7 +182,8 @@ RraaWifiManager::GetThresholds (RraaWifiRemoteStation *station, WifiMode mode) c
           return i->first;
         }
     }
-  NS_ASSERT (false);
+  NS_ABORT_MSG ("No thresholds for mode " << mode << " found");
+  return threshold; // Silence compiler warning
 }
 
 WifiRemoteStation *
