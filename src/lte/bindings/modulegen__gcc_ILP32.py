@@ -18847,11 +18847,6 @@ def register_Ns3LteUeRrc_methods(root_module, cls):
     cls.add_method('GetAsSapProvider', 
                    'ns3::LteAsSapProvider *', 
                    [])
-    ## lte-ue-rrc.h (module 'lte'): bool ns3::LteUeRrc::GetCaSupport() const [member function]
-    cls.add_method('GetCaSupport', 
-                   'bool', 
-                   [], 
-                   is_const=True)
     ## lte-ue-rrc.h (module 'lte'): uint16_t ns3::LteUeRrc::GetCellId() const [member function]
     cls.add_method('GetCellId', 
                    'uint16_t', 
@@ -18929,10 +18924,6 @@ def register_Ns3LteUeRrc_methods(root_module, cls):
     cls.add_method('SetAsSapUser', 
                    'void', 
                    [param('ns3::LteAsSapUser *', 's')])
-    ## lte-ue-rrc.h (module 'lte'): void ns3::LteUeRrc::SetCaSupport(bool supportCa) [member function]
-    cls.add_method('SetCaSupport', 
-                   'void', 
-                   [param('bool', 'supportCa')])
     ## lte-ue-rrc.h (module 'lte'): void ns3::LteUeRrc::SetImsi(uint64_t imsi) [member function]
     cls.add_method('SetImsi', 
                    'void', 

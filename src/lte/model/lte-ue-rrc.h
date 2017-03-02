@@ -274,18 +274,6 @@ public:
    */
   void SetUseRlcSm (bool val);
 
-    /** 
-   * 
-   * \param support CA
-   */
-  void SetCaSupport (bool supportCa);
-
-  /**
-   *
-   * \return support CA
-   */
-  bool GetCaSupport (void) const;
-
   /**
    * TracedCallback signature for imsi, cellId and rnti events.
    *
