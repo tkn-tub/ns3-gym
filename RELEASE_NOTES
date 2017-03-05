@@ -91,7 +91,8 @@ Bugs fixed
 - Bug 2654 - Rraa wifi manager cannot be used with 802.11b
 - Bug 2655 - A-MPDU simulation using TCP sometimes fails with message "Packet has no Traffic ID"
 - Bug 2660 - TrafficControlHelper::Default should not configure internal queue sizes
-
+- Bug 2665 - Ipv4RawSocket can not send packets to broadcast or multicast
+ 
 Known issues
 ------------
 In general, known issues are tracked on the project tracker available

@@ -251,6 +251,58 @@ Ipv4RawSocketImpl::SendTo (Ptr<Packet> p, uint32_t flags,
       p->AddPacketTag (tag);
     }
 
+  bool subnetDirectedBroadcast = false;
+  if (m_boundnetdevice)
+    {
+      uint32_t iif = ipv4->GetInterfaceForDevice (m_boundnetdevice);
+      for (uint32_t j = 0; j < ipv4->GetNAddresses (iif); j++)
+        {
+          Ipv4InterfaceAddress ifAddr = ipv4->GetAddress (iif, j);
+          if (dst.IsSubnetDirectedBroadcast (ifAddr.GetMask ()))
+            {
+              subnetDirectedBroadcast = true;
+            }
+        }
+    }
+
+  if (dst.IsBroadcast () || dst.IsLocalMulticast () || subnetDirectedBroadcast)
+    {
+      if (m_boundnetdevice == 0)
+        {
+          NS_LOG_DEBUG ("dropped because no outgoing route.");
+          return -1;
+        }
+
+      Ipv4Header header;
+      uint32_t pktSize = p->GetSize ();
+      if (!m_iphdrincl)
+        {
+          header.SetDestination (dst);
+          header.SetProtocol (m_protocol);
+          Ptr<Ipv4Route> route = Create <Ipv4Route> ();
+          route->SetSource (src);
+          route->SetDestination (dst);
+          route->SetOutputDevice (m_boundnetdevice);
+          ipv4->Send (p, route->GetSource (), dst, m_protocol, route);
+        }
+      else
+        {
+          p->RemoveHeader (header);
+          dst = header.GetDestination ();
+          src = header.GetSource ();
+          pktSize += header.GetSerializedSize ();
+          Ptr<Ipv4Route> route = Create <Ipv4Route> ();
+          route->SetSource (src);
+          route->SetDestination (dst);
+          route->SetOutputDevice (m_boundnetdevice);
+          ipv4->SendWithHeader (p, header, route);
+        }
+      NotifyDataSent (pktSize);
+      NotifySend (GetTxAvailable ());
+      return pktSize;
+    }
+
+
   if (ipv4->GetRoutingProtocol ())
     {
       Ipv4Header header;
