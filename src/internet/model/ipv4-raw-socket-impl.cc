@@ -265,9 +265,14 @@ Ipv4RawSocketImpl::SendTo (Ptr<Packet> p, uint32_t flags,
         }
     }
 
-  if (dst.IsBroadcast () || dst.IsLocalMulticast () || subnetDirectedBroadcast)
+  if (dst.IsBroadcast () || subnetDirectedBroadcast)
     {
-      if (m_boundnetdevice == 0)
+      Ptr <NetDevice> boundNetDevice = m_boundnetdevice;
+      if (ipv4->GetNInterfaces () == 1)
+        {
+          boundNetDevice = ipv4->GetNetDevice (0);
+        }
+      if (boundNetDevice == 0)
         {
           NS_LOG_DEBUG ("dropped because no outgoing route.");
           return -1;
@@ -282,7 +287,7 @@ Ipv4RawSocketImpl::SendTo (Ptr<Packet> p, uint32_t flags,
           Ptr<Ipv4Route> route = Create <Ipv4Route> ();
           route->SetSource (src);
           route->SetDestination (dst);
-          route->SetOutputDevice (m_boundnetdevice);
+          route->SetOutputDevice (boundNetDevice);
           ipv4->Send (p, route->GetSource (), dst, m_protocol, route);
         }
       else
@@ -294,7 +299,7 @@ Ipv4RawSocketImpl::SendTo (Ptr<Packet> p, uint32_t flags,
           Ptr<Ipv4Route> route = Create <Ipv4Route> ();
           route->SetSource (src);
           route->SetDestination (dst);
-          route->SetOutputDevice (m_boundnetdevice);
+          route->SetOutputDevice (boundNetDevice);
           ipv4->SendWithHeader (p, header, route);
         }
       NotifyDataSent (pktSize);
