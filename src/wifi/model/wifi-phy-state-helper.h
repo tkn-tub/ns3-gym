@@ -186,9 +186,6 @@ public:
    */
   void SwitchFromSleep (Time duration);
 
-  /** \todo Why is this public? */
-  TracedCallback<Time, Time, WifiPhy::State> m_stateLogger;
-
   /**
    * TracedCallback signature for state changes.
    *
@@ -290,6 +287,11 @@ private:
    * Switch the state from RX.
    */
   void DoSwitchFromRx (void);
+
+  /**
+   * The trace source fired when state is changed.
+   */
+  TracedCallback<Time, Time, WifiPhy::State> m_stateLogger;
 
   bool m_rxing; ///< receiving
   bool m_sleeping; ///< sleeping
