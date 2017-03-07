@@ -267,13 +267,14 @@ LteSpectrumValueHelper::CreateTxPowerSpectralDensity (uint32_t earfcn, uint8_t t
   double powerTxW = std::pow (10., (powerTx - 30) / 10);
   double basicPowerTxW = std::pow (10., (powerTx - 30) / 10);
 
-  double txPowerDensity = (powerTxW / (txBandwidthConfiguration * 180000));
 
   for (std::vector <int>::iterator it = activeRbs.begin (); it != activeRbs.end (); it++)
     {
       int rbId = (*it);
 
       std::map<int, double>::iterator powerIt = powerTxMap.find (rbId);
+
+      double txPowerDensity;
 
       if (powerIt != powerTxMap.end ())
         {

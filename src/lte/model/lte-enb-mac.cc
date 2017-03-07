@@ -488,12 +488,6 @@ LteEnbMac::DoSubframeIndication (uint32_t frameNo, uint32_t subframeNo)
     {
       FfMacSchedSapProvider::SchedDlCqiInfoReqParameters dlcqiInfoReq;
       dlcqiInfoReq.m_sfnSf = ((0x3FF & frameNo) << 4) | (0xF & subframeNo);
-
-      int cqiNum = m_dlCqiReceived.size ();
-      if (cqiNum > MAX_CQI_LIST)
-        {
-          cqiNum = MAX_CQI_LIST;
-        }
       dlcqiInfoReq.m_cqiList.insert (dlcqiInfoReq.m_cqiList.begin (), m_dlCqiReceived.begin (), m_dlCqiReceived.end ());
       m_dlCqiReceived.erase (m_dlCqiReceived.begin (), m_dlCqiReceived.end ());
       m_schedSapProvider->SchedDlCqiInfoReq (dlcqiInfoReq);

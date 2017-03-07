@@ -286,7 +286,6 @@ LteRlcAm::DoNotifyTxOpportunity (uint32_t bytes, uint8_t layer, uint8_t harqId, 
       NS_ASSERT (m_vtA < m_vtS);
       SequenceNumber10 sn;
       sn.SetModulusBase (m_vtA);
-      bool found = false;
       for (sn = m_vtA; sn < m_vtS; sn++) 
         {
           uint16_t seqNumberValue = sn.GetValue ();
@@ -300,7 +299,6 @@ LteRlcAm::DoNotifyTxOpportunity (uint32_t bytes, uint8_t layer, uint8_t harqId, 
               if (( packet->GetSize () <= bytes )
                   || m_txOpportunityForRetxAlwaysBigEnough)
                 {
-                  found = true;
                   // According to 5.2.1, the data field is left as is, but we rebuild the header
                   LteRlcAmHeader rlcAmHeader;
                   packet->RemoveHeader (rlcAmHeader);
@@ -389,7 +387,7 @@ LteRlcAm::DoNotifyTxOpportunity (uint32_t bytes, uint8_t layer, uint8_t harqId, 
                 }
             }
         }
-      NS_ASSERT_MSG (found, "m_retxBufferSize > 0, but no PDU considered for retx found");
+      NS_ASSERT_MSG (false, "m_retxBufferSize > 0, but no PDU considered for retx found");
     }
   else if ( m_txonBufferSize > 0 )
     {

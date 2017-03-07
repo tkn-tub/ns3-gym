@@ -190,7 +190,16 @@ UeManager::DoInitialize ()
     LteEnbCmacSapProvider::LcInfo lcinfo;
     lcinfo.rnti = m_rnti;
     lcinfo.lcId = lcid;
-    // leave the rest of lcinfo empty as CCCH (LCID 0) is pre-configured
+    // Initialise the rest of lcinfo structure even if CCCH (LCID 0) is pre-configured, and only m_rnti and lcid will be used from passed lcinfo structure.
+    // See FF LTE MAC Scheduler Iinterface Specification v1.11, 4.3.4 logicalChannelConfigListElement
+    lcinfo.lcGroup = 0;
+    lcinfo.qci = 0;
+    lcinfo.isGbr = false;
+    lcinfo.mbrUl = 0;
+    lcinfo.mbrDl = 0;
+    lcinfo.gbrUl = 0;
+    lcinfo.gbrDl = 0;
+
     // MacSapUserForRlc in the ComponentCarrierManager MacSapUser
     LteMacSapUser* lteMacSapUser = m_rrc->m_ccmRrcSapProvider->ConfigureSignalBearer(lcinfo, rlc->GetLteMacSapUser ()); 
     // Signal Channel are only on Primary Carrier
@@ -767,6 +776,7 @@ UeManager::SendUeContextRelease ()
       ueCtxReleaseParams.oldEnbUeX2apId = m_sourceX2apId;
       ueCtxReleaseParams.newEnbUeX2apId = m_rnti;
       ueCtxReleaseParams.sourceCellId = m_sourceCellId;
+      ueCtxReleaseParams.targetCellId = m_targetCellId;
       m_rrc->m_x2SapProvider->SendUeContextRelease (ueCtxReleaseParams);
       SwitchToState (CONNECTED_NORMALLY);
       m_rrc->m_handoverEndOkTrace (m_imsi, m_rrc->m_cellId, m_rnti);
@@ -2040,6 +2050,7 @@ LteEnbRrc::ConfigureCell (uint16_t cellId)
   // Enabling MIB transmission
   LteRrcSap::MasterInformationBlock mib;
   mib.dlBandwidth = m_dlBandwidth;
+  mib.systemFrameNumber = 0;
   // Enabling SIB1 transmission with default values
   m_sib1.cellAccessRelatedInfo.cellIdentity = cellId;
   m_sib1.cellAccessRelatedInfo.csgIndication = false;
