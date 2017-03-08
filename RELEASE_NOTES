@@ -24,6 +24,7 @@ New user-visible features
 - (wifi) 802.11ax High Efficiency (HE) physical layer modes are now supported.
 - (tcp) The SACK option and the RFC 6675 loss recovery algorithm are now supported.
 - (lte) LTE carrier aggregation feature according to 3GPP Release 10 is now supported.
+- (network) CsmaNetDevice, SimpleNetDevice and WifiNetDevice support flow control.
 
 Bugs fixed
 ----------

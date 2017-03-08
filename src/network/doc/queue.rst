@@ -11,56 +11,73 @@ This section documents the queue object, which is typically used by NetDevices
 and QueueDiscs to store packets.
 
 Packets stored in a queue can be managed according to different policies.
-Currently, the following policies are available:
-
-* DropTail
+Currently, only the DropTail policy is available.
 
 Model Description
 *****************
 
 The source code for the new module lives in the directory ``src/network/utils``.
 
-ns-3 provides the classic droptail queue model and the ability to
-trace certain queue operations such as enqueuing, dequeuing, and dropping.
-These may be added to certain NetDevice objects that take a Ptr<Queue>
-pointer.
+ns3::Queue has been redesigned as a template class object to allow us to
+instantiate queues storing different types of items. The unique template
+type parameter specifies the type of items stored in the queue.
+The only requirement on the item type is that it must provide a GetSize ()
+method which returns the size of the packet included in the item.
+Currently, queue items can be objects of the following classes:
 
-Note that not all device models use these queue models.  
-In particular, WiFi, WiMax, and LTE use specialized device queues.
-The queue models described here are more often used with simpler ns-3 
-device models such as PointToPoint and Csma.
+* Packet
+* QueueItem and subclasses (e.g., QueueDiscItem)
+* WifiMacQueueItem
 
-All the queuing disciplines, instead, make use of the queue model defined here.
+The internal queues of the queue discs are of type Queue<QueueDiscItem>
+(an alias of which being InternalQueue). A number of network devices
+(SimpleNetDevice, PointToPointNetDevice, CsmaNetDevice) use a Queue<Packet>
+to store packets to be transmitted. WifiNetDevices use instead queues of
+type WifiMacQueue, which is a subclass of Queue storing objects of
+type WifiMacQueueItem. Other devices, such as WiMax and LTE, use specialized
+queues.
 
 Design
 ======
 
-An abstract base class, class Queue, is typically used and subclassed
-for specific scheduling and drop policies. A class QueueItem is introduced
-to model the items stored in a queue. The base class QueueItem only contains
-a pointer to a packet. Subclasses may be defined to store additional information.
-Common operations provided by the base class Queue include:
+The Queue class derives from the QueueBase class, which is a non-template
+class providing all the methods that are independent of the type of the items
+stored in the queue. The Queue class provides instead all the operations that
+depend on the item type, such as enqueue, dequeue, peek and remove. The Queue
+class also provides the ability to trace certain queue operations such as
+enqueuing, dequeuing, and dropping.
 
-* ``bool Enqueue (Ptr<QueueItem> item)``:  Enqueue a packet
-* ``Ptr<QueueItem> Dequeue (void)``:  Dequeue a packet
-* ``uint32_t GetNPackets (void)``:  Get the queue depth, in packets
-* ``uint32_t GetNBytes (void)``:  Get the queue depth, in packets
+Queue is an abstract base class and is subclassed for specific scheduling and
+drop policies. Subclasses need to define the following public methods:
 
-as well as tracking some statistics on queue operations.
+* ``bool Enqueue (Ptr<Item> item)``:  Enqueue a packet
+* ``Ptr<Item> Dequeue (void)``:  Dequeue a packet
+* ``Ptr<Item> Remove (void)``:  Remove a packet
+* ``Ptr<const Item> Peek (void)``:  Peek a packet
 
-There are three trace sources that may be hooked:
+The Enqueue method does not allow to store a packet if the queue capacity is exceeded.
+Subclasses may also define specialized public methods. For instance, the
+WifiMacQueue class provides a method to dequeue a packet based on its tid
+and MAC address.
+
+There are five trace sources that may be hooked:
 
 * ``Enqueue``
 * ``Dequeue``
 * ``Drop``
+* ``DropBeforeEnqueue``
+* ``DropAfterDequeue``
 
-Also, three attributes are defined in the Queue base class:
+Also, the QueueBase class defines three attributes:
 
 * ``Mode``: whether the capacity of the queue is measured in packets or bytes
 * ``MaxPackets``: the maximum number of packets accepted by the queue in packet mode
 * ``MaxBytes``: the maximum number of bytes accepted by the queue in byte mode
 
-The Enqueue method does not allow to store a packet if the queue capacity is exceeded.
+and two trace sources:
+
+* ``PacketsInQueue``
+* ``BytesInQueue``
 
 DropTail
 ########
@@ -98,6 +115,9 @@ the queue type and attributes from the helper, such as this example:
   p2p.SetChannelAttribute ("Delay", StringValue (linkDelay));
   NetDeviceContainer devn2n3 = p2p.Install (n2n3);
 
+Please note that the SetQueue method of the PointToPointHelper class allows
+to specify "ns3::DropTailQueue" instead of "ns3::DropTailQueue<Packet>". The
+same holds for CsmaHelper, SimpleNetDeviceHelper and TrafficControlHelper.
 
 Output
 ======

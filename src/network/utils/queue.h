@@ -31,6 +31,7 @@
 #include "ns3/log.h"
 #include <string>
 #include <sstream>
+#include <list>
 
 namespace ns3 {
 
@@ -295,29 +296,32 @@ public:
   virtual ~Queue ();
 
   /**
-   * Place a queue item into the rear of the Queue
+   * Place an item into the Queue (each subclass defines the position)
    * \param item item to enqueue
    * \return True if the operation was successful; false otherwise
    */
-  bool Enqueue (Ptr<Item> item);
+  virtual bool Enqueue (Ptr<Item> item) = 0;
 
   /**
-   * Remove an item from the front of the Queue, counting it as dequeued
+   * Remove an item from the Queue (each subclass defines the position),
+   * counting it as dequeued
    * \return 0 if the operation was not successful; the item otherwise.
    */
-  Ptr<Item> Dequeue (void);
+  virtual Ptr<Item> Dequeue (void) = 0;
 
   /**
-   * Remove an item from the front of the Queue, counting it as dropped
+   * Remove an item from the Queue (each subclass defines the position),
+   * counting it as dropped
    * \return 0 if the operation was not successful; the item otherwise.
    */
-  Ptr<Item>  Remove (void);
+  virtual Ptr<Item>  Remove (void) = 0;
 
   /**
-   * Get a copy of the item at the front of the queue without removing it
+   * Get a copy of an item in the queue (each subclass defines the position)
+   * without removing it
    * \return 0 if the operation was not successful; the item otherwise.
    */
-  Ptr<const Item> Peek (void) const;
+  virtual Ptr<const Item> Peek (void) const = 0;
 
   /**
    * Flush the queue.
@@ -325,6 +329,70 @@ public:
   void Flush (void);
 
 protected:
+
+  typedef typename std::list<Ptr<Item> >::const_iterator ConstIterator;
+
+  /**
+   * \brief Get a const iterator which refers to the first item in the queue.
+   *
+   * Subclasses can browse the items in the queue by using an iterator
+   *
+   * \code
+   *   for (auto i = Head (); i != Tail (); ++i)
+   *     {
+   *       (*i)->method ();  // some method of the Item class
+   *     }
+   * \endcode
+   *
+   * \returns a const iterator which refers to the first item in the queue.
+   */
+  ConstIterator Head (void) const;
+
+  /**
+   * \brief Get a const iterator which indicates past-the-last item in the queue.
+   *
+   * Subclasses can browse the items in the queue by using an iterator
+   *
+   * \code
+   *   for (auto i = Head (); i != Tail (); ++i)
+   *     {
+   *       (*i)->method ();  // some method of the Item class
+   *     }
+   * \endcode
+   *
+   * \returns a const iterator which indicates past-the-last item in the queue.
+   */
+  ConstIterator Tail (void) const;
+
+  /**
+   * Push an item in the queue
+   * \param pos the position where the item is inserted
+   * \param item the item to enqueue
+   * \return true if success, false if the packet has been dropped.
+   */
+  bool DoEnqueue (ConstIterator pos, Ptr<Item> item);
+
+  /**
+   * Pull the item to dequeue from the queue
+   * \param pos the position of the item to dequeue
+   * \return the item.
+   */
+  Ptr<Item> DoDequeue (ConstIterator pos);
+
+  /**
+   * Pull the item to drop from the queue
+   * \param pos the position of the item to remove
+   * \return the item.
+   */
+  Ptr<Item> DoRemove (ConstIterator pos);
+
+  /**
+   * Peek the front item in the queue
+   * \param pos the position of the item to peek
+   * \return the item.
+   */
+  Ptr<const Item> DoPeek (ConstIterator pos) const;
+
   /**
    * \brief Drop a packet before enqueue
    * \param item item that was dropped
@@ -346,32 +414,8 @@ protected:
   void DropAfterDequeue (Ptr<Item> item);
 
 private:
-  /**
-   * Push an item in the queue
-   * \param item the item to enqueue
-   * \return true if success, false if the packet has been dropped.
-   */
-  virtual bool DoEnqueue (Ptr<Item> item) = 0;
+  std::list<Ptr<Item> > m_packets;          //!< the items in the queue
 
-  /**
-   * Pull the item to dequeue from the queue
-   * \return the item.
-   */
-  virtual Ptr<Item> DoDequeue (void) = 0;
-
-  /**
-   * Pull the item to drop from the queue
-   * \return the item.
-   */
-  virtual Ptr<Item> DoRemove (void) = 0;
-
-  /**
-   * Peek the front item in the queue
-   * \return the item.
-   */
-  virtual Ptr<const Item> DoPeek (void) const = 0;
-
-private:
   /// Traced callback: fired when a packet is enqueued
   TracedCallback<Ptr<const Item> > m_traceEnqueue;
   /// Traced callback: fired when a packet is dequeued
@@ -436,9 +480,9 @@ Queue<Item>::~Queue ()
 
 template <typename Item>
 bool
-Queue<Item>::Enqueue (Ptr<Item> item)
+Queue<Item>::DoEnqueue (ConstIterator pos, Ptr<Item> item)
 {
-  QUEUE_LOG (LOG_LOGIC, "Queue:Enqueue(" << this << ", " << item << ")");
+  QUEUE_LOG (LOG_LOGIC, "Queue:DoEnqueue(" << this << ", " << item << ")");
 
   if (m_mode == QUEUE_MODE_PACKETS && (m_nPackets.Get () >= m_maxPackets))
     {
@@ -454,30 +498,26 @@ Queue<Item>::Enqueue (Ptr<Item> item)
       return false;
     }
 
-  //
-  // If DoEnqueue fails, Queue::DropBeforeEnqueue is called by the subclass
-  //
-  bool retval = DoEnqueue (item);
-  if (retval)
-    {
-      uint32_t size = item->GetSize ();
-      m_nBytes += size;
-      m_nTotalReceivedBytes += size;
+  m_packets.insert (pos, item);
 
-      m_nPackets++;
-      m_nTotalReceivedPackets++;
+  uint32_t size = item->GetSize ();
+  m_nBytes += size;
+  m_nTotalReceivedBytes += size;
 
-      QUEUE_LOG (LOG_LOGIC, "m_traceEnqueue (p)");
-      m_traceEnqueue (item);
-    }
-  return retval;
+  m_nPackets++;
+  m_nTotalReceivedPackets++;
+
+  QUEUE_LOG (LOG_LOGIC, "m_traceEnqueue (p)");
+  m_traceEnqueue (item);
+
+  return true;
 }
 
 template <typename Item>
 Ptr<Item>
-Queue<Item>::Dequeue (void)
+Queue<Item>::DoDequeue (ConstIterator pos)
 {
-  QUEUE_LOG (LOG_LOGIC, "Queue:Dequeue(" << this << ")");
+  QUEUE_LOG (LOG_LOGIC, "Queue:DoDequeue(" << this << ")");
 
   if (m_nPackets.Get () == 0)
     {
@@ -485,7 +525,8 @@ Queue<Item>::Dequeue (void)
       return 0;
     }
 
-  Ptr<Item> item = DoDequeue ();
+  Ptr<Item> item = *pos;
+  m_packets.erase (pos);
 
   if (item != 0)
     {
@@ -503,9 +544,9 @@ Queue<Item>::Dequeue (void)
 
 template <typename Item>
 Ptr<Item>
-Queue<Item>::Remove (void)
+Queue<Item>::DoRemove (ConstIterator pos)
 {
-  QUEUE_LOG (LOG_LOGIC, "Queue:Remove(" << this << ")");
+  QUEUE_LOG (LOG_LOGIC, "Queue:DoRemove(" << this << ")");
 
   if (m_nPackets.Get () == 0)
     {
@@ -513,7 +554,8 @@ Queue<Item>::Remove (void)
       return 0;
     }
 
-  Ptr<Item> item = DoRemove ();
+  Ptr<Item> item = *pos;
+  m_packets.erase (pos);
 
   if (item != 0)
     {
@@ -541,9 +583,9 @@ Queue<Item>::Flush (void)
 
 template <typename Item>
 Ptr<const Item>
-Queue<Item>::Peek (void) const
+Queue<Item>::DoPeek (ConstIterator pos) const
 {
-  QUEUE_LOG (LOG_LOGIC, "Queue:Peek(" << this << ")");
+  QUEUE_LOG (LOG_LOGIC, "Queue:DoPeek(" << this << ")");
 
   if (m_nPackets.Get () == 0)
     {
@@ -551,7 +593,19 @@ Queue<Item>::Peek (void) const
       return 0;
     }
 
-  return DoPeek ();
+  return *pos;
+}
+
+template <typename Item>
+typename Queue<Item>::ConstIterator Queue<Item>::Head (void) const
+{
+  return m_packets.cbegin ();
+}
+
+template <typename Item>
+typename Queue<Item>::ConstIterator Queue<Item>::Tail (void) const
+{
+  return m_packets.cend ();
 }
 
 template <typename Item>

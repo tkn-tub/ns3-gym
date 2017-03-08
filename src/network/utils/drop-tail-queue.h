@@ -19,7 +19,6 @@
 #ifndef DROPTAIL_H
 #define DROPTAIL_H
 
-#include <queue>
 #include "ns3/queue.h"
 
 namespace ns3 {
@@ -47,13 +46,18 @@ public:
 
   virtual ~DropTailQueue ();
 
-private:
-  virtual bool DoEnqueue (Ptr<Item> item);
-  virtual Ptr<Item> DoDequeue (void);
-  virtual Ptr<Item> DoRemove (void);
-  virtual Ptr<const Item> DoPeek (void) const;
+  virtual bool Enqueue (Ptr<Item> item);
+  virtual Ptr<Item> Dequeue (void);
+  virtual Ptr<Item> Remove (void);
+  virtual Ptr<const Item> Peek (void) const;
 
-  std::queue<Ptr<Item> > m_packets;         //!< the items in the queue
+private:
+  using Queue<Item>::Head;
+  using Queue<Item>::Tail;
+  using Queue<Item>::DoEnqueue;
+  using Queue<Item>::DoDequeue;
+  using Queue<Item>::DoRemove;
+  using Queue<Item>::DoPeek;
 };
 
 
@@ -75,8 +79,7 @@ DropTailQueue<Item>::GetTypeId (void)
 
 template <typename Item>
 DropTailQueue<Item>::DropTailQueue () :
-  Queue<Item> (),
-  m_packets ()
+  Queue<Item> ()
 {
   QUEUE_LOG (LOG_LOGIC, "DropTailQueue(" << this << ")");
 }
@@ -89,25 +92,20 @@ DropTailQueue<Item>::~DropTailQueue ()
 
 template <typename Item>
 bool
-DropTailQueue<Item>::DoEnqueue (Ptr<Item> item)
+DropTailQueue<Item>::Enqueue (Ptr<Item> item)
 {
-  QUEUE_LOG (LOG_LOGIC, "DropTailQueue:DoEnqueue(" << this << ", " << item << ")");
-  NS_ASSERT (m_packets.size () == this->GetNPackets ());
+  QUEUE_LOG (LOG_LOGIC, "DropTailQueue:Enqueue(" << this << ", " << item << ")");
 
-  m_packets.push (item);
-
-  return true;
+  return DoEnqueue (Tail (), item);
 }
 
 template <typename Item>
 Ptr<Item>
-DropTailQueue<Item>::DoDequeue (void)
+DropTailQueue<Item>::Dequeue (void)
 {
-  QUEUE_LOG (LOG_LOGIC, "DropTailQueue:DoDequeue(" << this << ")");
-  NS_ASSERT (m_packets.size () == this->GetNPackets ());
+  QUEUE_LOG (LOG_LOGIC, "DropTailQueue:Dequeue(" << this << ")");
 
-  Ptr<Item> item = m_packets.front ();
-  m_packets.pop ();
+  Ptr<Item> item = DoDequeue (Head ());
 
   QUEUE_LOG (LOG_LOGIC, "Popped " << item);
 
@@ -116,13 +114,11 @@ DropTailQueue<Item>::DoDequeue (void)
 
 template <typename Item>
 Ptr<Item>
-DropTailQueue<Item>::DoRemove (void)
+DropTailQueue<Item>::Remove (void)
 {
-  QUEUE_LOG (LOG_LOGIC, "DropTailQueue:DoRemove(" << this << ")");
-  NS_ASSERT (m_packets.size () == this->GetNPackets ());
+  QUEUE_LOG (LOG_LOGIC, "DropTailQueue:Remove(" << this << ")");
 
-  Ptr<Item> item = m_packets.front ();
-  m_packets.pop ();
+  Ptr<Item> item = DoRemove (Head ());
 
   QUEUE_LOG (LOG_LOGIC, "Removed " << item);
 
@@ -131,12 +127,11 @@ DropTailQueue<Item>::DoRemove (void)
 
 template <typename Item>
 Ptr<const Item>
-DropTailQueue<Item>::DoPeek (void) const
+DropTailQueue<Item>::Peek (void) const
 {
-  QUEUE_LOG (LOG_LOGIC, "DropTailQueue:DoPeek(" << this << ")");
-  NS_ASSERT (m_packets.size () == this->GetNPackets ());
+  QUEUE_LOG (LOG_LOGIC, "DropTailQueue:Peek(" << this << ")");
 
-  return m_packets.front ();
+  return DoPeek (Head ());
 }
 
 } // namespace ns3

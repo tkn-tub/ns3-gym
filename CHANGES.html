@@ -101,6 +101,10 @@ us a note on ns-developers mailing list.</p>
 </li>
 <li>Abstract base class <b>WifiChannel</b> has been removed. As a result, a Channel type instead of a WifiChannel type
 is now exported by WifiNetDevice.</li>
+<li> The <b>GetPacketSize</b> method of <b>QueueItem</b> has been renamed <b>GetSize</b>
+</li>
+<li> The <b>DequeueAll</b> method of <b>Queue</b> has been renamed <b>Flush</b>
+</li>
 </ul>
 <h2>Changes to build system:</h2>
 <ul>
@@ -126,6 +130,22 @@ is now exported by WifiNetDevice.</li>
 </li>
   <li> The default value of the <b>TxGain</b> and <b>RxGain</b> attributes in WifiPhy was changed from 1 dB to 0 dB.
   </li>
+<li><b>Queue</b> has been redesigned as a template class object, where the type parameter
+    specifies the type of items to be stored in the queue. As a consequence:
+    <ul>
+      <li>Being a subclass of Queue, <b>DropTailQueue</b> is a template class as well.
+      <li>Network devices such as SimpleNetDevice, PointToPointNetDevice and CsmaNetDevice
+      use a queue of type Queue&lt;Packet&gt; to store the packets to transmit. The SetQueue
+      method of their helpers, however, can still be invoked as, e.g.,
+      SetQueue ("ns3::DropTailQueue") instead of, e.g., SetQueue
+      ("ns3::DropTailQueue&lt;Packet&gt;").</li>
+      <li>The attributes <b>Mode</b>, <b>MaxPackets</b> and <b>MaxBytes</b> are now
+      defined by the QueueBase class (which Queue is derived from).</li>
+    </ul>
+</li>
+<li>Queue discs that can operate both in packet mode and byte mode (Red, CoDel, Pie) define their own
+    enum QueueDiscMode instead of using QueueBase::QueueMode.
+</li>
 </ul>
 
 <hr>
