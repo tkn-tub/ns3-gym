@@ -136,7 +136,7 @@ TraceQueueLength (std::string queueLengthTrFileName)
 }
 
 static void
-EveryDropTracer (Ptr<OutputStreamWrapper>stream, Ptr<const QueueItem> item)
+EveryDropTracer (Ptr<OutputStreamWrapper>stream, Ptr<const QueueDiscItem> item)
 {
   *stream->GetStream () << Simulator::Now ().GetSeconds () << " " << item << std::endl;
 }
@@ -282,7 +282,7 @@ int main (int argc, char *argv[])
   // Queue defaults
   Config::SetDefault ("ns3::PfifoFastQueueDisc::Limit", UintegerValue (queueSize));
   Config::SetDefault ("ns3::CoDelQueueDisc::MaxPackets", UintegerValue (queueSize));
-  Config::SetDefault ("ns3::CoDelQueueDisc::Mode", StringValue ("QUEUE_MODE_PACKETS"));
+  Config::SetDefault ("ns3::CoDelQueueDisc::Mode", StringValue ("QUEUE_DISC_MODE_PACKETS"));
 
   // Create the nodes
   NS_LOG_INFO ("Create nodes");

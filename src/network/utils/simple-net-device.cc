@@ -29,7 +29,7 @@
 #include "ns3/string.h"
 #include "ns3/tag.h"
 #include "ns3/simulator.h"
-#include "ns3/drop-tail-queue.h"
+#include "ns3/queue.h"
 
 namespace ns3 {
 
@@ -202,9 +202,9 @@ SimpleNetDevice::GetTypeId (void)
                    MakeBooleanChecker ())
     .AddAttribute ("TxQueue",
                    "A queue to use as the transmit queue in the device.",
-                   StringValue ("ns3::DropTailQueue"),
+                   StringValue ("ns3::DropTailQueue<Packet>"),
                    MakePointerAccessor (&SimpleNetDevice::m_queue),
-                   MakePointerChecker<Queue> ())
+                   MakePointerChecker<Queue<Packet> > ())
     .AddAttribute ("DataRate",
                    "The default data rate for point to point links. Zero means infinite",
                    DataRateValue (DataRate ("0b/s")),
@@ -280,7 +280,7 @@ SimpleNetDevice::SetChannel (Ptr<SimpleChannel> channel)
   m_linkChangeCallbacks ();
 }
 
-Ptr<Queue>
+Ptr<Queue<Packet> >
 SimpleNetDevice::GetQueue () const
 {
   NS_LOG_FUNCTION (this);
@@ -288,7 +288,7 @@ SimpleNetDevice::GetQueue () const
 }
 
 void
-SimpleNetDevice::SetQueue (Ptr<Queue> q)
+SimpleNetDevice::SetQueue (Ptr<Queue<Packet> > q)
 {
   NS_LOG_FUNCTION (this << q);
   m_queue = q;
@@ -444,11 +444,11 @@ SimpleNetDevice::SendFrom (Ptr<Packet> p, const Address& source, const Address& 
 
   p->AddPacketTag (tag);
 
-  if (m_queue->Enqueue (Create<QueueItem> (p)))
+  if (m_queue->Enqueue (p))
     {
       if (m_queue->GetNPackets () == 1 && !TransmitCompleteEvent.IsRunning ())
         {
-          p = m_queue->Dequeue ()->GetPacket ();
+          p = m_queue->Dequeue ();
           p->RemovePacketTag (tag);
           Time txTime = Time (0);
           if (m_bps > DataRate (0))
@@ -477,7 +477,7 @@ SimpleNetDevice::TransmitComplete ()
       return;
     }
 
-  Ptr<Packet> packet = m_queue->Dequeue ()->GetPacket ();
+  Ptr<Packet> packet = m_queue->Dequeue ();
 
   SimpleTag tag;
   packet->RemovePacketTag (tag);
@@ -537,7 +537,7 @@ SimpleNetDevice::DoDispose (void)
   m_channel = 0;
   m_node = 0;
   m_receiveErrorModel = 0;
-  m_queue->DequeueAll ();
+  m_queue->Flush ();
   if (TransmitCompleteEvent.IsRunning ())
     {
       TransmitCompleteEvent.Cancel ();

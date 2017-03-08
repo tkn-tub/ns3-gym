@@ -39,7 +39,7 @@ namespace ns3 {
 class SpectrumChannel;
 class Channel;
 class SpectrumErrorModel;
-class Queue;
+template <typename Item> class Queue;
 
 
 
@@ -84,7 +84,7 @@ public:
    *
    * @param queue
    */
-  virtual void SetQueue (Ptr<Queue> queue);
+  virtual void SetQueue (Ptr<Queue<Packet> > queue);
 
 
   /**
@@ -196,7 +196,7 @@ private:
   void StartTransmission ();
 
 
-  Ptr<Queue> m_queue; //!< packet queue
+  Ptr<Queue<Packet> > m_queue; //!< packet queue
 
   TracedCallback<Ptr<const Packet> > m_macTxTrace;        //!< Tx trace
   TracedCallback<Ptr<const Packet> > m_macTxDropTrace;    //!< Tx Drop trace

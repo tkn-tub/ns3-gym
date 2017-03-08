@@ -21,9 +21,9 @@
  */
 
 #include "ns3/log.h"
-#include "ns3/pointer.h"
 #include "ns3/object-factory.h"
-#include "ns3/drop-tail-queue.h"
+#include "ns3/queue.h"
+#include "ns3/net-device-queue-interface.h"
 #include "ns3/socket.h"
 #include "pfifo-fast-queue-disc.h"
 
@@ -100,7 +100,7 @@ PfifoFastQueueDisc::DoDequeue (void)
 
   for (uint32_t i = 0; i < GetNInternalQueues (); i++)
     {
-      if ((item = StaticCast<QueueDiscItem> (GetInternalQueue (i)->Dequeue ())) != 0)
+      if ((item = GetInternalQueue (i)->Dequeue ()) != 0)
         {
           NS_LOG_LOGIC ("Popped from band " << i << ": " << item);
           NS_LOG_LOGIC ("Number packets band " << i << ": " << GetInternalQueue (i)->GetNPackets ());
@@ -121,7 +121,7 @@ PfifoFastQueueDisc::DoPeek (void) const
 
   for (uint32_t i = 0; i < GetNInternalQueues (); i++)
     {
-      if ((item = StaticCast<const QueueDiscItem> (GetInternalQueue (i)->Peek ())) != 0)
+      if ((item = GetInternalQueue (i)->Peek ()) != 0)
         {
           NS_LOG_LOGIC ("Peeked from band " << i << ": " << item);
           NS_LOG_LOGIC ("Number packets band " << i << ": " << GetInternalQueue (i)->GetNPackets ());
@@ -153,12 +153,12 @@ PfifoFastQueueDisc::CheckConfig (void)
     {
       // create 3 DropTail queues with m_limit packets each
       ObjectFactory factory;
-      factory.SetTypeId ("ns3::DropTailQueue");
-      factory.Set ("Mode", EnumValue (Queue::QUEUE_MODE_PACKETS));
+      factory.SetTypeId ("ns3::DropTailQueue<QueueDiscItem>");
+      factory.Set ("Mode", EnumValue (QueueBase::QUEUE_MODE_PACKETS));
       factory.Set ("MaxPackets", UintegerValue (m_limit));
-      AddInternalQueue (factory.Create<Queue> ());
-      AddInternalQueue (factory.Create<Queue> ());
-      AddInternalQueue (factory.Create<Queue> ());
+      AddInternalQueue (factory.Create<InternalQueue> ());
+      AddInternalQueue (factory.Create<InternalQueue> ());
+      AddInternalQueue (factory.Create<InternalQueue> ());
     }
 
   if (GetNInternalQueues () != 3)
@@ -167,9 +167,9 @@ PfifoFastQueueDisc::CheckConfig (void)
       return false;
     }
 
-  if (GetInternalQueue (0)-> GetMode () != Queue::QUEUE_MODE_PACKETS ||
-      GetInternalQueue (1)-> GetMode () != Queue::QUEUE_MODE_PACKETS ||
-      GetInternalQueue (2)-> GetMode () != Queue::QUEUE_MODE_PACKETS)
+  if (GetInternalQueue (0)-> GetMode () != QueueBase::QUEUE_MODE_PACKETS ||
+      GetInternalQueue (1)-> GetMode () != QueueBase::QUEUE_MODE_PACKETS ||
+      GetInternalQueue (2)-> GetMode () != QueueBase::QUEUE_MODE_PACKETS)
     {
       NS_LOG_ERROR ("PfifoFastQueueDisc needs 3 internal queues operating in packet mode");
       return false;

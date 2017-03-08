@@ -240,7 +240,7 @@ main (int argc, char *argv[])
 
   // RED params
   NS_LOG_INFO ("Set RED params");
-  Config::SetDefault ("ns3::RedQueueDisc::Mode", StringValue ("QUEUE_MODE_PACKETS"));
+  Config::SetDefault ("ns3::RedQueueDisc::Mode", StringValue ("QUEUE_DISC_MODE_PACKETS"));
   Config::SetDefault ("ns3::RedQueueDisc::MeanPktSize", UintegerValue (meanPktSize));
   Config::SetDefault ("ns3::RedQueueDisc::Wait", BooleanValue (true));
   Config::SetDefault ("ns3::RedQueueDisc::Gentle", BooleanValue (true));

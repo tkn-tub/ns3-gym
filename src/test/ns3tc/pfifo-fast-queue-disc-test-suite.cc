@@ -78,7 +78,7 @@ PfifoFastQueueDiscTosPrioritization::DoRun (void)
   Ptr<PfifoFastQueueDisc> queueDisc = CreateObject<PfifoFastQueueDisc> ();
   for (uint16_t i = 0; i < 3; i++)
     {
-      Ptr<DropTailQueue> queue = CreateObject<DropTailQueue> ();
+      Ptr<DropTailQueue<QueueDiscItem> > queue = CreateObject<DropTailQueue<QueueDiscItem> > ();
       bool ok = queue->SetAttributeFailSafe ("MaxPackets", UintegerValue (1000));
       NS_TEST_ASSERT_MSG_EQ (ok, true, "unable to set attribute");
       queueDisc->AddInternalQueue (queue);
@@ -154,7 +154,7 @@ PfifoFastQueueDiscDscpPrioritization::DoRun (void)
   Ptr<PfifoFastQueueDisc> queueDisc = CreateObject<PfifoFastQueueDisc> ();
   for (uint16_t i = 0; i < 3; i++)
     {
-      Ptr<DropTailQueue> queue = CreateObject<DropTailQueue> ();
+      Ptr<DropTailQueue<QueueDiscItem> > queue = CreateObject<DropTailQueue<QueueDiscItem> > ();
       bool ok = queue->SetAttributeFailSafe ("MaxPackets", UintegerValue (1000));
       NS_TEST_ASSERT_MSG_EQ (ok, true, "unable to set attribute");
       queueDisc->AddInternalQueue (queue);
@@ -230,9 +230,9 @@ void
 PfifoFastQueueDiscOverflow::DoRun (void)
 {
   Ptr<PfifoFastQueueDisc> queueDisc = CreateObjectWithAttributes<PfifoFastQueueDisc> ("Limit", UintegerValue (6));
-  Ptr<DropTailQueue> band0 = CreateObjectWithAttributes<DropTailQueue> ("MaxPackets", UintegerValue (6));
-  Ptr<DropTailQueue> band1 = CreateObjectWithAttributes<DropTailQueue> ("MaxPackets", UintegerValue (6));
-  Ptr<DropTailQueue> band2 = CreateObjectWithAttributes<DropTailQueue> ("MaxPackets", UintegerValue (6));
+  Ptr<DropTailQueue<QueueDiscItem> > band0 = CreateObjectWithAttributes<DropTailQueue<QueueDiscItem> > ("MaxPackets", UintegerValue (6));
+  Ptr<DropTailQueue<QueueDiscItem> > band1 = CreateObjectWithAttributes<DropTailQueue<QueueDiscItem> > ("MaxPackets", UintegerValue (6));
+  Ptr<DropTailQueue<QueueDiscItem> > band2 = CreateObjectWithAttributes<DropTailQueue<QueueDiscItem> > ("MaxPackets", UintegerValue (6));
   queueDisc->AddInternalQueue (band0);
   queueDisc->AddInternalQueue (band1);
   queueDisc->AddInternalQueue (band2);
@@ -289,7 +289,7 @@ PfifoFastQueueDiscNoPriority::DoRun (void)
   Ptr<PfifoFastQueueDisc> queueDisc = CreateObject<PfifoFastQueueDisc> ();
   for (uint16_t i = 0; i < 3; i++)
     {
-      Ptr<DropTailQueue> queue = CreateObject<DropTailQueue> ();
+      Ptr<DropTailQueue<QueueDiscItem> > queue = CreateObject<DropTailQueue<QueueDiscItem> > ();
       bool ok = queue->SetAttributeFailSafe ("MaxPackets", UintegerValue (1000));
       NS_TEST_ASSERT_MSG_EQ (ok, true, "unable to set attribute");
       queueDisc->AddInternalQueue (queue);

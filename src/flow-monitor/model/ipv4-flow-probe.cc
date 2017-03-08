@@ -468,7 +468,7 @@ Ipv4FlowProbe::QueueDropLogger (Ptr<const Packet> ipPayload)
 }
 
 void
-Ipv4FlowProbe::QueueDiscDropLogger (Ptr<const QueueItem> item)
+Ipv4FlowProbe::QueueDiscDropLogger (Ptr<const QueueDiscItem> item)
 {
   Ipv4FlowProbeTag fTag;
   bool tagFound = item->GetPacket ()->FindFirstMatchingByteTag (fTag);

@@ -21,6 +21,7 @@
 #include "ns3/simulator.h"
 #include "ns3/pointer.h"
 #include "ns3/log.h"
+#include "ns3/queue.h"
 #include "lte-simple-net-device.h"
 
 namespace ns3 {

@@ -25,7 +25,6 @@
 #include "ns3/ptr.h"
 #include "ns3/object.h"
 #include "ipv6-interface-address.h"
-#include "ns3/traffic-control-layer.h"
 
 namespace ns3
 {
@@ -37,6 +36,7 @@ class NdiscCache;
 class Ipv6InterfaceAddress;
 class Ipv6Address;
 class Ipv6Header;
+class TrafficControlLayer;
 
 /**
  * \ingroup ipv6

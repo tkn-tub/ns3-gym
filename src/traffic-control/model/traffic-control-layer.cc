@@ -18,6 +18,7 @@
  */
 
 #include "traffic-control-layer.h"
+#include "ns3/net-device-queue-interface.h"
 #include "ns3/log.h"
 #include "ns3/object-map.h"
 #include "ns3/packet.h"
@@ -78,13 +79,6 @@ TrafficControlLayer::DoInitialize (void)
       Ptr<NetDeviceQueueInterface> devQueueIface = ndi->second.ndqi;
       NS_ASSERT (devQueueIface);
 
-      // devices can create the tx queues (NetDeviceQueue objects) before
-      // initialization time. Create the queues if they have not done so.
-      if (devQueueIface->GetNTxQueues () == 0)
-        {
-          devQueueIface->CreateTxQueues ();
-        }
-
       if (ndi->second.rootQueueDisc)
         {
           // set the wake callbacks on netdevice queues
@@ -134,6 +128,13 @@ TrafficControlLayer::SetupDevice (Ptr<NetDevice> device)
   // create a NetDeviceQueueInterface object and aggregate it to the device
   Ptr<NetDeviceQueueInterface> devQueueIface = CreateObject<NetDeviceQueueInterface> ();
   device->AggregateObject (devQueueIface);
+
+  // Create the TX queues if the device has not done so and has not set the
+  // late TX queues creation flag in the NotifyNewAggregate method
+  if (devQueueIface->GetNTxQueues () == 0 && !devQueueIface->GetLateTxQueuesCreation ())
+    {
+      devQueueIface->CreateTxQueues ();
+    }
 
   // devices can set a select queue callback in their NotifyNewAggregate method
   SelectQueueCallback cb = devQueueIface->GetSelectQueueCallback ();

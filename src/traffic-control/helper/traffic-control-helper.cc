@@ -20,8 +20,9 @@
 
 #include "ns3/log.h"
 #include "ns3/abort.h"
-#include "ns3/queue-disc.h"
 #include "ns3/queue-limits.h"
+#include "ns3/queue.h"
+#include "ns3/net-device-queue-interface.h"
 #include "ns3/uinteger.h"
 #include "ns3/pointer.h"
 #include "ns3/traffic-control-layer.h"
@@ -73,7 +74,7 @@ QueueDiscFactory::CreateQueueDisc (const std::vector<Ptr<QueueDisc> > & queueDis
   for (std::vector<ObjectFactory>::iterator i = m_internalQueuesFactory.begin ();
        i != m_internalQueuesFactory.end (); i++ )
     {
-      qd->AddInternalQueue (i->Create<Queue> ());
+      qd->AddInternalQueue (i->Create<QueueDisc::InternalQueue> ());
     }
 
   // create and add the packet filters
@@ -169,6 +170,8 @@ TrafficControlHelper::AddInternalQueues (uint16_t handle, uint16_t count, std::s
 {
   NS_ABORT_MSG_IF (handle >= m_queueDiscFactory.size (), "A queue disc with handle "
                    << handle << " does not exist");
+
+  QueueBase::AppendItemTypeIfNotPresent (type, "QueueDiscItem");
 
   ObjectFactory factory;
   factory.SetTypeId (type);
@@ -386,6 +389,8 @@ TrafficControlHelper::Install (Ptr<NetDevice> d)
     {
       Ptr<NetDeviceQueueInterface> ndqi = d->GetObject<NetDeviceQueueInterface> ();
       NS_ASSERT (ndqi);
+      NS_ABORT_MSG_IF (ndqi->GetNTxQueues () == 0, "Could not install QueueLimits"
+                       << "because the TX queues have not been created yet");
       for (uint8_t i = 0; i < ndqi->GetNTxQueues (); i++)
         {
           Ptr<QueueLimits> ql = m_queueLimitsFactory.Create<QueueLimits> ();

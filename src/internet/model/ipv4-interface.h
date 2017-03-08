@@ -25,7 +25,6 @@
 #include <list>
 #include "ns3/ptr.h"
 #include "ns3/object.h"
-#include "ns3/traffic-control-layer.h"
 
 namespace ns3 {
 
@@ -36,6 +35,7 @@ class ArpCache;
 class Ipv4InterfaceAddress;
 class Ipv4Address;
 class Ipv4Header;
+class TrafficControlLayer;
 
 /**
  * \ingroup ipv4

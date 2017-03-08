@@ -25,6 +25,7 @@
 #include "ns3/trace-source-accessor.h"
 #include "ns3/uinteger.h"
 #include "ns3/pointer.h"
+#include "ns3/net-device-queue-interface.h"
 #include "point-to-point-net-device.h"
 #include "point-to-point-channel.h"
 #include "ppp-header.h"
@@ -76,7 +77,7 @@ PointToPointNetDevice::GetTypeId (void)
                    "A queue to use as the transmit queue in the device.",
                    PointerValue (),
                    MakePointerAccessor (&PointToPointNetDevice::m_queue),
-                   MakePointerChecker<Queue> ())
+                   MakePointerChecker<Queue<Packet> > ())
 
     //
     // Trace sources at the "top" of the net device, where packets transition
@@ -305,8 +306,8 @@ PointToPointNetDevice::TransmitComplete (void)
     txq = m_queueInterface->GetTxQueue (0);
   }
 
-  Ptr<QueueItem> item = m_queue->Dequeue ();
-  if (item == 0)
+  Ptr<Packet> p = m_queue->Dequeue ();
+  if (p == 0)
     {
       NS_LOG_LOGIC ("No pending packets in device queue after tx complete");
       if (txq)
@@ -327,9 +328,9 @@ PointToPointNetDevice::TransmitComplete (void)
   //
   if (txq && txq->IsStopped ())
     {
-      if ((m_queue->GetMode () == Queue::QUEUE_MODE_PACKETS &&
+      if ((m_queue->GetMode () == QueueBase::QUEUE_MODE_PACKETS &&
            m_queue->GetNPackets () < m_queue->GetMaxPackets ()) ||
-          (m_queue->GetMode () == Queue::QUEUE_MODE_BYTES &&
+          (m_queue->GetMode () == QueueBase::QUEUE_MODE_BYTES &&
            m_queue->GetNBytes () + m_mtu <= m_queue->GetMaxBytes ()))
         {
           NS_LOG_DEBUG ("The device queue is being started (" << m_queue->GetNPackets () <<
@@ -337,7 +338,6 @@ PointToPointNetDevice::TransmitComplete (void)
           txq->Start ();
         }
     }
-  Ptr<Packet> p = item->GetPacket ();
   m_snifferTrace (p);
   m_promiscSnifferTrace (p);
   TransmitStart (p);
@@ -367,7 +367,7 @@ PointToPointNetDevice::Attach (Ptr<PointToPointChannel> ch)
 }
 
 void
-PointToPointNetDevice::SetQueue (Ptr<Queue> q)
+PointToPointNetDevice::SetQueue (Ptr<Queue<Packet> > q)
 {
   NS_LOG_FUNCTION (this << q);
   m_queue = q;
@@ -430,7 +430,7 @@ PointToPointNetDevice::Receive (Ptr<Packet> packet)
     }
 }
 
-Ptr<Queue>
+Ptr<Queue<Packet> >
 PointToPointNetDevice::GetQueue (void) const
 { 
   NS_LOG_FUNCTION (this);
@@ -594,7 +594,7 @@ PointToPointNetDevice::Send (
   //
   // We should enqueue and dequeue the packet to hit the tracing hooks.
   //
-  if (m_queue->Enqueue (Create<QueueItem> (packet)))
+  if (m_queue->Enqueue (packet))
     {
       // Inform BQL
       if (txq)
@@ -606,14 +606,14 @@ PointToPointNetDevice::Send (
       // 
       if (m_txMachineState == READY)
         {
-          packet = m_queue->Dequeue ()->GetPacket ();
+          packet = m_queue->Dequeue ();
           // We have enqueued a packet and dequeued a (possibly different) packet. We
           // need to check if there is still room for another packet only if the queue
           // is in byte mode (the enqueued packet might be larger than the dequeued
           // packet, thus leaving no room for another packet)
           if (txq)
             {
-              if (m_queue->GetMode () == Queue::QUEUE_MODE_BYTES &&
+              if (m_queue->GetMode () == QueueBase::QUEUE_MODE_BYTES &&
                   m_queue->GetNBytes () + m_mtu > m_queue->GetMaxBytes ())
                 {
                   NS_LOG_DEBUG ("The device queue is being stopped (" << m_queue->GetNPackets () <<
@@ -636,9 +636,9 @@ PointToPointNetDevice::Send (
       // we stop the queue
       if (txq)
         {
-          if ((m_queue->GetMode () == Queue::QUEUE_MODE_PACKETS &&
+          if ((m_queue->GetMode () == QueueBase::QUEUE_MODE_PACKETS &&
                m_queue->GetNPackets () >= m_queue->GetMaxPackets ()) ||
-              (m_queue->GetMode () == Queue::QUEUE_MODE_BYTES &&
+              (m_queue->GetMode () == QueueBase::QUEUE_MODE_BYTES &&
                m_queue->GetNBytes () + m_mtu > m_queue->GetMaxBytes ()))
             {
               NS_LOG_DEBUG ("The device queue is being stopped (" << m_queue->GetNPackets () <<

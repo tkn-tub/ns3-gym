@@ -26,57 +26,15 @@
 #include "ns3/socket.h"
 #include "ns3/unused.h"
 #include "queue-disc.h"
+#include <ns3/drop-tail-queue.h>
+#include "ns3/net-device-queue-interface.h"
 
 namespace ns3 {
 
+NS_OBJECT_TEMPLATE_CLASS_DEFINE (Queue,QueueDiscItem);
+NS_OBJECT_TEMPLATE_CLASS_DEFINE (DropTailQueue,QueueDiscItem);
+
 NS_LOG_COMPONENT_DEFINE ("QueueDisc");
-
-QueueDiscItem::QueueDiscItem (Ptr<Packet> p, const Address& addr, uint16_t protocol)
-  : QueueItem (p),
-    m_address (addr),
-    m_protocol (protocol),
-    m_txq (0)
-{
-}
-
-QueueDiscItem::~QueueDiscItem()
-{
-  NS_LOG_FUNCTION (this);
-}
-
-Address
-QueueDiscItem::GetAddress (void) const
-{
-  return m_address;
-}
-
-uint16_t
-QueueDiscItem::GetProtocol (void) const
-{
-  return m_protocol;
-}
-
-uint8_t
-QueueDiscItem::GetTxQueueIndex (void) const
-{
-  return m_txq;
-}
-
-void
-QueueDiscItem::SetTxQueueIndex (uint8_t txq)
-{
-  m_txq = txq;
-}
-
-void
-QueueDiscItem::Print (std::ostream& os) const
-{
-  os << GetPacket () << " "
-     << "Dst addr " << m_address << " "
-     << "proto " << (uint16_t) m_protocol << " "
-     << "txq " << (uint8_t) m_txq
-  ;
-}
 
 
 NS_OBJECT_ENSURE_REGISTERED (QueueDiscClass);
@@ -139,7 +97,7 @@ TypeId QueueDisc::GetTypeId (void)
     .AddAttribute ("InternalQueueList", "The list of internal queues.",
                    ObjectVectorValue (),
                    MakeObjectVectorAccessor (&QueueDisc::m_queues),
-                   MakeObjectVectorChecker<Queue> ())
+                   MakeObjectVectorChecker<InternalQueue> ())
     .AddAttribute ("PacketFilterList", "The list of packet filters.",
                    ObjectVectorValue (),
                    MakeObjectVectorAccessor (&QueueDisc::m_filters),
@@ -150,16 +108,16 @@ TypeId QueueDisc::GetTypeId (void)
                    MakeObjectVectorChecker<QueueDiscClass> ())
     .AddTraceSource ("Enqueue", "Enqueue a packet in the queue disc",
                      MakeTraceSourceAccessor (&QueueDisc::m_traceEnqueue),
-                     "ns3::QueueItem::TracedCallback")
+                     "ns3::QueueDiscItem::TracedCallback")
     .AddTraceSource ("Dequeue", "Dequeue a packet from the queue disc",
                      MakeTraceSourceAccessor (&QueueDisc::m_traceDequeue),
-                     "ns3::QueueItem::TracedCallback")
+                     "ns3::QueueDiscItem::TracedCallback")
     .AddTraceSource ("Requeue", "Requeue a packet in the queue disc",
                      MakeTraceSourceAccessor (&QueueDisc::m_traceRequeue),
-                     "ns3::QueueItem::TracedCallback")
+                     "ns3::QueueDiscItem::TracedCallback")
     .AddTraceSource ("Drop", "Drop a packet stored in the queue disc",
                      MakeTraceSourceAccessor (&QueueDisc::m_traceDrop),
-                     "ns3::QueueItem::TracedCallback")
+                     "ns3::QueueDiscItem::TracedCallback")
     .AddTraceSource ("PacketsInQueue",
                      "Number of packets currently stored in the queue disc",
                      MakeTraceSourceAccessor (&QueueDisc::m_nPackets),
@@ -311,16 +269,16 @@ QueueDisc::GetQuota (void) const
 }
 
 void
-QueueDisc::AddInternalQueue (Ptr<Queue> queue)
+QueueDisc::AddInternalQueue (Ptr<InternalQueue> queue)
 {
   NS_LOG_FUNCTION (this);
   // set the drop callback on the internal queue, so that the queue disc is
   // notified of packets dropped by the internal queue
-  queue->SetDropCallback (MakeCallback (&QueueDisc::Drop, this));
+  queue->TraceConnectWithoutContext ("Drop", MakeCallback (&QueueDisc::Drop, this));
   m_queues.push_back (queue);
 }
 
-Ptr<Queue>
+Ptr<QueueDisc::InternalQueue>
 QueueDisc::GetInternalQueue (uint32_t i) const
 {
   NS_ASSERT (i < m_queues.size ());
@@ -408,7 +366,7 @@ QueueDisc::SetParentDropCallback (ParentDropCallback cb)
 }
 
 void
-QueueDisc::Drop (Ptr<QueueItem> item)
+QueueDisc::Drop (Ptr<const QueueDiscItem> item)
 {
   NS_LOG_FUNCTION (this << item);
 
@@ -421,14 +379,14 @@ QueueDisc::Drop (Ptr<QueueItem> item)
     }
 
   NS_ASSERT_MSG (m_nPackets >= 1u, "No packet in the queue disc, cannot drop");
-  NS_ASSERT_MSG (m_nBytes >= item->GetPacketSize (), "The size of the packet that"
+  NS_ASSERT_MSG (m_nBytes >= item->GetSize (), "The size of the packet that"
                  << " is reported to be dropped is greater than the amount of bytes"
                  << "stored in the queue disc");
 
   m_nPackets--;
-  m_nBytes -= item->GetPacketSize ();
+  m_nBytes -= item->GetSize ();
   m_nTotalDroppedPackets++;
-  m_nTotalDroppedBytes += item->GetPacketSize ();
+  m_nTotalDroppedBytes += item->GetSize ();
 
   NS_LOG_LOGIC ("m_traceDrop (p)");
   m_traceDrop (item);
@@ -437,7 +395,7 @@ QueueDisc::Drop (Ptr<QueueItem> item)
 }
 
 void
-QueueDisc::NotifyParentDrop (Ptr<QueueItem> item)
+QueueDisc::NotifyParentDrop (Ptr<const QueueDiscItem> item)
 {
   NS_LOG_FUNCTION (this << item);
   // the parent drop callback is clearly null on root queue discs
@@ -453,9 +411,9 @@ QueueDisc::Enqueue (Ptr<QueueDiscItem> item)
   NS_LOG_FUNCTION (this << item);
 
   m_nPackets++;
-  m_nBytes += item->GetPacketSize ();
+  m_nBytes += item->GetSize ();
   m_nTotalReceivedPackets++;
-  m_nTotalReceivedBytes += item->GetPacketSize ();
+  m_nTotalReceivedBytes += item->GetSize ();
 
   NS_LOG_LOGIC ("m_traceEnqueue (p)");
   m_traceEnqueue (item);
@@ -474,7 +432,7 @@ QueueDisc::Dequeue (void)
   if (item != 0)
     {
       m_nPackets--;
-      m_nBytes -= item->GetPacketSize ();
+      m_nBytes -= item->GetSize ();
 
       NS_LOG_LOGIC ("m_traceDequeue (p)");
       m_traceDequeue (item);
@@ -564,7 +522,7 @@ QueueDisc::DequeuePacket ()
             m_requeued = 0;
 
             m_nPackets--;
-            m_nBytes -= item->GetPacketSize ();
+            m_nBytes -= item->GetSize ();
 
             NS_LOG_LOGIC ("m_traceDequeue (p)");
             m_traceDequeue (item);
@@ -599,9 +557,9 @@ QueueDisc::Requeue (Ptr<QueueDiscItem> item)
   /// \todo netif_schedule (q);
 
   m_nPackets++;       // it's still part of the queue
-  m_nBytes += item->GetPacketSize ();
+  m_nBytes += item->GetSize ();
   m_nTotalRequeuedPackets++;
-  m_nTotalRequeuedBytes += item->GetPacketSize ();
+  m_nTotalRequeuedBytes += item->GetSize ();
 
   NS_LOG_LOGIC ("m_traceRequeue (p)");
   m_traceRequeue (item);

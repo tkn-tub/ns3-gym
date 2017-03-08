@@ -126,7 +126,7 @@ main (int argc, char *argv[])
 
   Ptr<NetDevice> nd = devices.Get (1);
   Ptr<PointToPointNetDevice> ptpnd = DynamicCast<PointToPointNetDevice> (nd);
-  Ptr<Queue> queue = ptpnd->GetQueue ();
+  Ptr<Queue<Packet> > queue = ptpnd->GetQueue ();
   queue->TraceConnectWithoutContext ("PacketsInQueue", MakeCallback (&DevicePacketsInQueueTrace));
 
   Ipv4AddressHelper address;

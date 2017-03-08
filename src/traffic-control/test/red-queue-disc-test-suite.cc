@@ -22,7 +22,7 @@
 
 #include "ns3/test.h"
 #include "ns3/red-queue-disc.h"
-#include "ns3/drop-tail-queue.h"
+#include "ns3/packet.h"
 #include "ns3/uinteger.h"
 #include "ns3/string.h"
 #include "ns3/double.h"
@@ -143,7 +143,7 @@ RedQueueDiscTestCase::RunRedTest (StringValue mode)
 
   Address dest;
   
-  if (queue->GetMode () == Queue::QUEUE_MODE_BYTES)
+  if (queue->GetMode () == RedQueueDisc::QUEUE_DISC_MODE_BYTES)
     {
       // pktSize should be same as MeanPktSize to avoid performance gap between byte and packet mode
       pktSize = 500;
@@ -429,8 +429,8 @@ RedQueueDiscTestCase::Enqueue (Ptr<RedQueueDisc> queue, uint32_t size, uint32_t 
 void
 RedQueueDiscTestCase::DoRun (void)
 {
-  RunRedTest (StringValue ("QUEUE_MODE_PACKETS"));
-  RunRedTest (StringValue ("QUEUE_MODE_BYTES"));
+  RunRedTest (StringValue ("QUEUE_DISC_MODE_PACKETS"));
+  RunRedTest (StringValue ("QUEUE_DISC_MODE_BYTES"));
   Simulator::Destroy ();
 
 }

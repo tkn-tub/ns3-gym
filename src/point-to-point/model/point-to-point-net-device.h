@@ -33,7 +33,8 @@
 
 namespace ns3 {
 
-class Queue;
+template <typename Item> class Queue;
+class NetDeviceQueueInterface;
 class PointToPointChannel;
 class ErrorModel;
 
@@ -118,14 +119,14 @@ public:
    *
    * \param queue Ptr to the new queue.
    */
-  void SetQueue (Ptr<Queue> queue);
+  void SetQueue (Ptr<Queue<Packet> > queue);
 
   /**
    * Get a copy of the attached Queue.
    *
    * \returns Ptr to the queue.
    */
-  Ptr<Queue> GetQueue (void) const;
+  Ptr<Queue<Packet> > GetQueue (void) const;
 
   /**
    * Attach a receive ErrorModel to the PointToPointNetDevice.
@@ -321,7 +322,7 @@ private:
    * and it has the responsibility for deletion.
    * \see class DropTailQueue
    */
-  Ptr<Queue> m_queue;
+  Ptr<Queue<Packet> > m_queue;
 
   /**
    * Error model for receive packet events

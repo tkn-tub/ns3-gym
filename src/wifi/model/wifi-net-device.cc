@@ -25,6 +25,7 @@
 #include "ns3/socket.h"
 #include "ns3/pointer.h"
 #include "ns3/log.h"
+#include "ns3/net-device-queue-interface.h"
 
 namespace ns3 {
 

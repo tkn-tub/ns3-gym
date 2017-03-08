@@ -25,7 +25,6 @@
 
 #include "ns3/traced-callback.h"
 #include "ns3/net-device.h"
-#include "ns3/queue.h"
 #include "ns3/data-rate.h"
 #include "ns3/event-id.h"
 
@@ -33,6 +32,7 @@
 
 namespace ns3 {
 
+template <typename Item> class Queue;
 class SimpleChannel;
 class Node;
 class ErrorModel;
@@ -87,14 +87,14 @@ public:
    *
    * \param queue Ptr to the new queue.
    */
-  void SetQueue (Ptr<Queue> queue);
+  void SetQueue (Ptr<Queue<Packet> > queue);
 
   /**
    * Get a copy of the attached Queue.
    *
    * \returns Ptr to the queue.
    */
-  Ptr<Queue> GetQueue (void) const;
+  Ptr<Queue<Packet> > GetQueue (void) const;
 
   /**
    * Attach a receive ErrorModel to the SimpleNetDevice.
@@ -171,7 +171,7 @@ private:
    */
   bool m_pointToPointMode;
 
-  Ptr<Queue> m_queue; //!< The Queue for outgoing packets.
+  Ptr<Queue<Packet> > m_queue; //!< The Queue for outgoing packets.
   DataRate m_bps; //!< The device nominal Data rate. Zero means infinite
   EventId TransmitCompleteEvent; //!< the Tx Complete event
 

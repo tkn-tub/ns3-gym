@@ -158,13 +158,13 @@ int main (int argc, char *argv[])
     {
       tchBottleneck.SetRootQueueDisc ("ns3::RedQueueDisc");
       Config::SetDefault ("ns3::RedQueueDisc::ARED", BooleanValue (true));
-      Config::SetDefault ("ns3::RedQueueDisc::Mode", EnumValue (Queue::QUEUE_MODE_PACKETS));
+      Config::SetDefault ("ns3::RedQueueDisc::Mode", EnumValue (RedQueueDisc::QUEUE_DISC_MODE_PACKETS));
       Config::SetDefault ("ns3::RedQueueDisc::QueueLimit", UintegerValue (queueDiscSize));
     }
   else if (queueDiscType.compare ("CoDel") == 0)
     {
       tchBottleneck.SetRootQueueDisc ("ns3::CoDelQueueDisc");
-      Config::SetDefault ("ns3::CoDelQueueDisc::Mode", EnumValue (Queue::QUEUE_MODE_PACKETS));
+      Config::SetDefault ("ns3::CoDelQueueDisc::Mode", EnumValue (CoDelQueueDisc::QUEUE_DISC_MODE_PACKETS));
       Config::SetDefault ("ns3::CoDelQueueDisc::MaxPackets", UintegerValue (queueDiscSize));
     }
   else if (queueDiscType.compare ("FqCoDel") == 0)
@@ -177,7 +177,7 @@ int main (int argc, char *argv[])
   else if (queueDiscType.compare ("PIE") == 0)
     {
       tchBottleneck.SetRootQueueDisc ("ns3::PieQueueDisc");
-      Config::SetDefault ("ns3::PieQueueDisc::Mode", EnumValue (Queue::QUEUE_MODE_PACKETS));
+      Config::SetDefault ("ns3::PieQueueDisc::Mode", EnumValue (PieQueueDisc::QUEUE_DISC_MODE_PACKETS));
       Config::SetDefault ("ns3::PieQueueDisc::QueueLimit", UintegerValue (queueDiscSize));
     }
   else
@@ -190,8 +190,8 @@ int main (int argc, char *argv[])
       tchBottleneck.SetQueueLimits ("ns3::DynamicQueueLimits");
     }
 
-  Config::SetDefault ("ns3::Queue::Mode", StringValue ("QUEUE_MODE_PACKETS"));
-  Config::SetDefault ("ns3::Queue::MaxPackets", UintegerValue (100));
+  Config::SetDefault ("ns3::QueueBase::Mode", StringValue ("QUEUE_MODE_PACKETS"));
+  Config::SetDefault ("ns3::QueueBase::MaxPackets", UintegerValue (100));
 
   NetDeviceContainer devicesAccessLink = accessLink.Install (n1.Get (0), n2.Get (0));
   tchPfifoFastAccess.Install (devicesAccessLink);
@@ -200,7 +200,7 @@ int main (int argc, char *argv[])
   address.NewNetwork ();
   Ipv4InterfaceContainer interfacesAccess = address.Assign (devicesAccessLink);
 
-  Config::SetDefault ("ns3::Queue::MaxPackets", UintegerValue (netdevicesQueueSize));
+  Config::SetDefault ("ns3::QueueBase::MaxPackets", UintegerValue (netdevicesQueueSize));
 
   NetDeviceContainer devicesBottleneckLink = bottleneckLink.Install (n2.Get (0), n3.Get (0));
   QueueDiscContainer qdiscs;
@@ -220,7 +220,7 @@ int main (int argc, char *argv[])
       Ptr<OutputStreamWrapper> streamLimits = ascii.CreateFileStream (queueDiscType + "-limits.txt");
       queueLimits->TraceConnectWithoutContext ("Limit",MakeBoundCallback (&LimitsTrace, streamLimits));
     }
-  Ptr<Queue> queue = StaticCast<PointToPointNetDevice> (devicesBottleneckLink.Get (0))->GetQueue ();
+  Ptr<Queue<Packet> > queue = StaticCast<PointToPointNetDevice> (devicesBottleneckLink.Get (0))->GetQueue ();
   Ptr<OutputStreamWrapper> streamBytesInQueue = ascii.CreateFileStream (queueDiscType + "-bytesInQueue.txt");
   queue->TraceConnectWithoutContext ("BytesInQueue",MakeBoundCallback (&BytesInQueueTrace, streamBytesInQueue));
 

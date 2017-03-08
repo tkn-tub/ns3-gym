@@ -86,7 +86,7 @@ CsmaNetDevice::GetTypeId (void)
                    "A queue to use as the transmit queue in the device.",
                    PointerValue (),
                    MakePointerAccessor (&CsmaNetDevice::m_queue),
-                   MakePointerChecker<Queue> ())
+                   MakePointerChecker<Queue<Packet> > ())
 
     //
     // Trace sources at the "top" of the net device, where packets transition
@@ -564,9 +564,9 @@ CsmaNetDevice::TransmitAbort (void)
     }
   else
     {
-      Ptr<QueueItem> item = m_queue->Dequeue ();
-      NS_ASSERT_MSG (item != 0, "CsmaNetDevice::TransmitAbort(): IsEmpty false but no Packet on queue?");
-      m_currentPkt = item->GetPacket ();
+      Ptr<Packet> packet = m_queue->Dequeue ();
+      NS_ASSERT_MSG (packet != 0, "CsmaNetDevice::TransmitAbort(): IsEmpty false but no Packet on queue?");
+      m_currentPkt = packet;
       m_snifferTrace (m_currentPkt);
       m_promiscSnifferTrace (m_currentPkt);
       TransmitStart ();
@@ -633,9 +633,9 @@ CsmaNetDevice::TransmitReadyEvent (void)
     }
   else
     {
-      Ptr<QueueItem> item = m_queue->Dequeue ();
-      NS_ASSERT_MSG (item != 0, "CsmaNetDevice::TransmitReadyEvent(): IsEmpty false but no Packet on queue?");
-      m_currentPkt = item->GetPacket ();
+      Ptr<Packet> packet = m_queue->Dequeue ();
+      NS_ASSERT_MSG (packet != 0, "CsmaNetDevice::TransmitReadyEvent(): IsEmpty false but no Packet on queue?");
+      m_currentPkt = packet;
       m_snifferTrace (m_currentPkt);
       m_promiscSnifferTrace (m_currentPkt);
       TransmitStart ();
@@ -669,7 +669,7 @@ CsmaNetDevice::Attach (Ptr<CsmaChannel> ch)
 }
 
 void
-CsmaNetDevice::SetQueue (Ptr<Queue> q)
+CsmaNetDevice::SetQueue (Ptr<Queue<Packet> > q)
 {
   NS_LOG_FUNCTION (q);
   m_queue = q;
@@ -819,7 +819,7 @@ CsmaNetDevice::Receive (Ptr<Packet> packet, Ptr<CsmaNetDevice> senderDevice)
     }
 }
 
-Ptr<Queue>
+Ptr<Queue<Packet> >
 CsmaNetDevice::GetQueue (void) const 
 { 
   NS_LOG_FUNCTION_NOARGS ();
@@ -970,7 +970,7 @@ CsmaNetDevice::SendFrom (Ptr<Packet> packet, const Address& src, const Address& 
   // Place the packet to be sent on the send queue.  Note that the 
   // queue may fire a drop trace, but we will too.
   //
-  if (m_queue->Enqueue (Create<QueueItem> (packet)) == false)
+  if (m_queue->Enqueue (packet) == false)
     {
       m_macTxDropTrace (packet);
       return false;
@@ -985,9 +985,9 @@ CsmaNetDevice::SendFrom (Ptr<Packet> packet, const Address& src, const Address& 
     {
       if (m_queue->IsEmpty () == false)
         {
-          Ptr<QueueItem> item = m_queue->Dequeue ();
-          NS_ASSERT_MSG (item != 0, "CsmaNetDevice::SendFrom(): IsEmpty false but no Packet on queue?");
-          m_currentPkt = item->GetPacket ();
+          Ptr<Packet> packet = m_queue->Dequeue ();
+          NS_ASSERT_MSG (packet != 0, "CsmaNetDevice::SendFrom(): IsEmpty false but no Packet on queue?");
+          m_currentPkt = packet;
           m_promiscSnifferTrace (m_currentPkt);
           m_snifferTrace (m_currentPkt);
           TransmitStart ();

@@ -70,18 +70,18 @@ int main (int argc, char *argv[])
   Config::SetDefault ("ns3::OnOffApplication::PacketSize", UintegerValue (pktSize));
   Config::SetDefault ("ns3::OnOffApplication::DataRate", StringValue (appDataRate));
 
-  Config::SetDefault ("ns3::Queue::Mode", StringValue ("QUEUE_MODE_PACKETS"));
-  Config::SetDefault ("ns3::Queue::MaxPackets", UintegerValue (maxPackets));
+  Config::SetDefault ("ns3::QueueBase::Mode", StringValue ("QUEUE_MODE_PACKETS"));
+  Config::SetDefault ("ns3::QueueBase::MaxPackets", UintegerValue (maxPackets));
 
   if (!modeBytes)
   {
-    Config::SetDefault ("ns3::RedQueueDisc::Mode", StringValue ("QUEUE_MODE_PACKETS"));
+    Config::SetDefault ("ns3::RedQueueDisc::Mode", StringValue ("QUEUE_DISC_MODE_PACKETS"));
     Config::SetDefault ("ns3::RedQueueDisc::QueueLimit", UintegerValue (queueDiscLimitPackets));
     Config::SetDefault ("ns3::PfifoFastQueueDisc::Limit", UintegerValue (queueDiscLimitPackets));
   }
   else 
   {
-    Config::SetDefault ("ns3::RedQueueDisc::Mode", StringValue ("QUEUE_MODE_BYTES"));
+    Config::SetDefault ("ns3::RedQueueDisc::Mode", StringValue ("QUEUE_DISC_MODE_BYTES"));
     Config::SetDefault ("ns3::RedQueueDisc::QueueLimit", UintegerValue (queueDiscLimitPackets * pktSize));
     minTh *= pktSize;
     maxTh *= pktSize;

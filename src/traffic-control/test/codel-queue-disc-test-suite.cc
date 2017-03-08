@@ -22,6 +22,7 @@
 
 #include "ns3/test.h"
 #include "ns3/codel-queue-disc.h"
+#include "ns3/packet.h"
 #include "ns3/uinteger.h"
 #include "ns3/string.h"
 #include "ns3/double.h"
@@ -126,11 +127,11 @@ public:
    */
   void QueueTestSize (Ptr<CoDelQueueDisc> queue, uint32_t size, std::string error)
   {
-    if (queue->GetMode () == Queue::QUEUE_MODE_BYTES)
+    if (queue->GetMode () == CoDelQueueDisc::QUEUE_DISC_MODE_BYTES)
       {
         NS_TEST_EXPECT_MSG_EQ (queue->GetNBytes (), size, error);
       }
-    else if (queue->GetMode () == Queue::QUEUE_MODE_PACKETS)
+    else if (queue->GetMode () == CoDelQueueDisc::QUEUE_DISC_MODE_PACKETS)
       {
         NS_TEST_EXPECT_MSG_EQ (queue->GetNPackets (), size, error);
       }
@@ -171,11 +172,11 @@ CoDelQueueDiscBasicEnqueueDequeue::DoRun (void)
   NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("Target", StringValue ("4ms")), true,
                          "Verify that we can actually set the attribute Target");
 
-  if (queue->GetMode () == Queue::QUEUE_MODE_BYTES)
+  if (queue->GetMode () == CoDelQueueDisc::QUEUE_DISC_MODE_BYTES)
     {
       modeSize = pktSize;
     }
-  else if (queue->GetMode () == Queue::QUEUE_MODE_PACKETS)
+  else if (queue->GetMode () == CoDelQueueDisc::QUEUE_DISC_MODE_PACKETS)
     {
       modeSize = 1;
     }
@@ -268,11 +269,11 @@ public:
    */
   void QueueTestSize (Ptr<CoDelQueueDisc> queue, uint32_t size, std::string error)
   {
-    if (queue->GetMode () == Queue::QUEUE_MODE_BYTES)
+    if (queue->GetMode () == CoDelQueueDisc::QUEUE_DISC_MODE_BYTES)
       {
         NS_TEST_EXPECT_MSG_EQ (queue->GetNBytes (), size, error);
       }
-    else if (queue->GetMode () == Queue::QUEUE_MODE_PACKETS)
+    else if (queue->GetMode () == CoDelQueueDisc::QUEUE_DISC_MODE_PACKETS)
       {
         NS_TEST_EXPECT_MSG_EQ (queue->GetNPackets (), size, error);
       }
@@ -309,11 +310,11 @@ CoDelQueueDiscBasicOverflow::DoRun (void)
 
   Address dest;
 
-  if (queue->GetMode () == Queue::QUEUE_MODE_BYTES)
+  if (queue->GetMode () == CoDelQueueDisc::QUEUE_DISC_MODE_BYTES)
     {
       modeSize = pktSize;
     }
-  else if (queue->GetMode () == Queue::QUEUE_MODE_PACKETS)
+  else if (queue->GetMode () == CoDelQueueDisc::QUEUE_DISC_MODE_PACKETS)
     {
       modeSize = 1;
     }
@@ -476,11 +477,11 @@ public:
    */
   void QueueTestSize (Ptr<CoDelQueueDisc> queue, uint32_t size, std::string error)
   {
-    if (queue->GetMode () == Queue::QUEUE_MODE_BYTES)
+    if (queue->GetMode () == CoDelQueueDisc::QUEUE_DISC_MODE_BYTES)
       {
         NS_TEST_EXPECT_MSG_EQ (queue->GetNBytes (), size, error);
       }
-    else if (queue->GetMode () == Queue::QUEUE_MODE_PACKETS)
+    else if (queue->GetMode () == CoDelQueueDisc::QUEUE_DISC_MODE_PACKETS)
       {
         NS_TEST_EXPECT_MSG_EQ (queue->GetNPackets (), size, error);
       }
@@ -534,11 +535,11 @@ CoDelQueueDiscBasicDrop::DoRun (void)
   NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("Mode", m_mode), true,
                          "Verify that we can actually set the attribute Mode");
   
-  if (queue->GetMode () == Queue::QUEUE_MODE_BYTES)
+  if (queue->GetMode () == CoDelQueueDisc::QUEUE_DISC_MODE_BYTES)
     {
       modeSize = pktSize;
     }
-  else if (queue->GetMode () == Queue::QUEUE_MODE_PACKETS)
+  else if (queue->GetMode () == CoDelQueueDisc::QUEUE_DISC_MODE_PACKETS)
     {
       modeSize = 1;
     }
@@ -653,17 +654,17 @@ public:
     : TestSuite ("codel-queue-disc", UNIT)
   {
     // Test 1: simple enqueue/dequeue with no drops
-    AddTestCase (new CoDelQueueDiscBasicEnqueueDequeue ("QUEUE_MODE_PACKETS"), TestCase::QUICK);
-    AddTestCase (new CoDelQueueDiscBasicEnqueueDequeue ("QUEUE_MODE_BYTES"), TestCase::QUICK);
+    AddTestCase (new CoDelQueueDiscBasicEnqueueDequeue ("QUEUE_DISC_MODE_PACKETS"), TestCase::QUICK);
+    AddTestCase (new CoDelQueueDiscBasicEnqueueDequeue ("QUEUE_DISC_MODE_BYTES"), TestCase::QUICK);
     // Test 2: enqueue with drops due to queue overflow
-    AddTestCase (new CoDelQueueDiscBasicOverflow ("QUEUE_MODE_PACKETS"), TestCase::QUICK);
-    AddTestCase (new CoDelQueueDiscBasicOverflow ("QUEUE_MODE_BYTES"), TestCase::QUICK);
+    AddTestCase (new CoDelQueueDiscBasicOverflow ("QUEUE_DISC_MODE_PACKETS"), TestCase::QUICK);
+    AddTestCase (new CoDelQueueDiscBasicOverflow ("QUEUE_DISC_MODE_BYTES"), TestCase::QUICK);
     // Test 3: test NewtonStep() against explicit port of Linux implementation
     AddTestCase (new CoDelQueueDiscNewtonStepTest (), TestCase::QUICK);
     // Test 4: test ControlLaw() against explicit port of Linux implementation
     AddTestCase (new CoDelQueueDiscControlLawTest (), TestCase::QUICK);
     // Test 5: enqueue/dequeue with drops according to CoDel algorithm
-    AddTestCase (new CoDelQueueDiscBasicDrop ("QUEUE_MODE_PACKETS"), TestCase::QUICK);
-    AddTestCase (new CoDelQueueDiscBasicDrop ("QUEUE_MODE_BYTES"), TestCase::QUICK);
+    AddTestCase (new CoDelQueueDiscBasicDrop ("QUEUE_DISC_MODE_PACKETS"), TestCase::QUICK);
+    AddTestCase (new CoDelQueueDiscBasicDrop ("QUEUE_DISC_MODE_BYTES"), TestCase::QUICK);
   }
 } g_coDelQueueTestSuite; ///< the test suite

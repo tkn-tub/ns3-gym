@@ -31,13 +31,14 @@ Ipv6QueueDiscItem::Ipv6QueueDiscItem (Ptr<Packet> p, const Address& addr,
 {
 }
 
-Ipv6QueueDiscItem::~Ipv6QueueDiscItem()
+Ipv6QueueDiscItem::~Ipv6QueueDiscItem ()
 {
   NS_LOG_FUNCTION (this);
 }
 
-uint32_t Ipv6QueueDiscItem::GetPacketSize(void) const
+uint32_t Ipv6QueueDiscItem::GetSize (void) const
 {
+  NS_LOG_FUNCTION (this);
   Ptr<Packet> p = GetPacket ();
   NS_ASSERT (p != 0);
   uint32_t ret = p->GetSize ();
@@ -54,7 +55,7 @@ Ipv6QueueDiscItem::GetHeader (void) const
   return m_header;
 }
 
-void Ipv6QueueDiscItem::AddHeader(void)
+void Ipv6QueueDiscItem::AddHeader (void)
 {
   NS_LOG_FUNCTION (this);
 

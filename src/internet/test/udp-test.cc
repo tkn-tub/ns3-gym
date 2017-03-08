@@ -232,7 +232,7 @@ public:
    * \brief Adds a packet to the list of sent packets.
    * \param item The sent packet.
    */
-  void SentPkt (Ptr<const QueueItem> item);
+  void SentPkt (Ptr<const QueueDiscItem> item);
 };
 
 UdpSocketImplTest::UdpSocketImplTest ()
@@ -256,7 +256,7 @@ void UdpSocketImplTest::ReceivePkt2 (Ptr<Socket> socket)
   NS_ASSERT (availableData == m_receivedPacket2->GetSize ());
 }
 
-void UdpSocketImplTest::SentPkt (Ptr<const QueueItem> item)
+void UdpSocketImplTest::SentPkt (Ptr<const QueueDiscItem> item)
 {
   Ptr<const Ipv4QueueDiscItem> ipv4Item = DynamicCast<const Ipv4QueueDiscItem> (item);
   NS_TEST_EXPECT_MSG_NE (ipv4Item, 0, "no IPv4 packet");

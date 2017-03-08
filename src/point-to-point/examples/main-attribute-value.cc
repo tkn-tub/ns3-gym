@@ -52,16 +52,16 @@ main (int argc, char *argv[])
   // 
   // Here, we set it to 80 packets.  We could use one of two value types:
   // a string-based value or a UintegerValue value
-  Config::SetDefault ("ns3::DropTailQueue::MaxPackets", StringValue ("80"));
+  Config::SetDefault ("ns3::DropTailQueue<Packet>::MaxPackets", StringValue ("80"));
   // The below function call is redundant
-  Config::SetDefault ("ns3::DropTailQueue::MaxPackets", UintegerValue (80));
+  Config::SetDefault ("ns3::DropTailQueue<Packet>::MaxPackets", UintegerValue (80));
 
   // Allow the user to override any of the defaults and the above
   // SetDefaults() at run-time, via command-line arguments
   // For example, via "--ns3::DropTailQueue::MaxPackets=80"
   CommandLine cmd;
   // This provides yet another way to set the value from the command line:
-  cmd.AddValue ("maxPackets", "ns3::DropTailQueue::MaxPackets");
+  cmd.AddValue ("maxPackets", "ns3::DropTailQueue<Packet>::MaxPackets");
   cmd.Parse (argc, argv);
 
   // Now, we will create a few objects using the low-level API
@@ -70,7 +70,7 @@ main (int argc, char *argv[])
   Ptr<PointToPointNetDevice> net0 = CreateObject<PointToPointNetDevice> ();
   n0->AddDevice (net0);
 
-  Ptr<Queue> q = CreateObject<DropTailQueue> ();
+  Ptr<Queue<Packet> > q = CreateObject<DropTailQueue<Packet> > ();
   net0->SetQueue (q);
 
   // At this point, we have created a single node (Node 0) and a 
@@ -93,11 +93,11 @@ main (int argc, char *argv[])
   // TxQueue 
   PointerValue ptr;
   net0->GetAttribute ("TxQueue", ptr);
-  Ptr<Queue> txQueue = ptr.Get<Queue> ();
+  Ptr<Queue<Packet> > txQueue = ptr.Get<Queue<Packet> > ();
 
   // Using the GetObject function, we can perform a safe downcast
   // to a DropTailQueue, where MaxPackets is a member
-  Ptr<DropTailQueue> dtq = txQueue->GetObject <DropTailQueue> ();
+  Ptr<DropTailQueue<Packet> > dtq = txQueue->GetObject <DropTailQueue<Packet> > ();
   NS_ASSERT (dtq);
 
   // Next, we can get the value of an attribute on this queue

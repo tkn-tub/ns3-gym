@@ -19,7 +19,6 @@
  */
 
 #include "ns3/log.h"
-#include "ns3/queue.h"
 #include "ns3/simulator.h"
 #include "ns3/mac48-address.h"
 #include "ns3/llc-snap-header.h"

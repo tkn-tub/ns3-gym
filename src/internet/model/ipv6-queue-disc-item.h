@@ -20,10 +20,7 @@
 #define IPV6_QUEUE_DISC_ITEM_H
 
 #include "ns3/packet.h"
-#include "ns3/object.h"
-#include "ns3/net-device.h"
-#include "ns3/traced-value.h"
-#include "ns3/queue-disc.h"
+#include "ns3/queue-item.h"
 #include "ipv6-header.h"
 
 namespace ns3 {
@@ -52,7 +49,7 @@ public:
   /**
    * \return the correct packet size (header plus payload).
    */
-  virtual uint32_t GetPacketSize (void) const;
+  virtual uint32_t GetSize (void) const;
 
   /**
    * \return the header stored in this item..

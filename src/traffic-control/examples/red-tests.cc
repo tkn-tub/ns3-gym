@@ -317,7 +317,7 @@ main (int argc, char *argv[])
 
   // RED params
   NS_LOG_INFO ("Set RED params");
-  Config::SetDefault ("ns3::RedQueueDisc::Mode", StringValue ("QUEUE_MODE_PACKETS"));
+  Config::SetDefault ("ns3::RedQueueDisc::Mode", StringValue ("QUEUE_DISC_MODE_PACKETS"));
   Config::SetDefault ("ns3::RedQueueDisc::MeanPktSize", UintegerValue (meanPktSize));
   Config::SetDefault ("ns3::RedQueueDisc::Wait", BooleanValue (true));
   Config::SetDefault ("ns3::RedQueueDisc::Gentle", BooleanValue (true));
@@ -333,7 +333,7 @@ main (int argc, char *argv[])
     }
   else if (redTest == 5) // test 5, same of test 4, but in byte mode
     {
-      Config::SetDefault ("ns3::RedQueueDisc::Mode", StringValue ("QUEUE_MODE_BYTES"));
+      Config::SetDefault ("ns3::RedQueueDisc::Mode", StringValue ("QUEUE_DISC_MODE_BYTES"));
       Config::SetDefault ("ns3::RedQueueDisc::Ns1Compat", BooleanValue (true));
       Config::SetDefault ("ns3::RedQueueDisc::MinTh", DoubleValue (5 * meanPktSize));
       Config::SetDefault ("ns3::RedQueueDisc::MaxTh", DoubleValue (15 * meanPktSize));
@@ -412,7 +412,7 @@ main (int argc, char *argv[])
       // like in ns2 test, r2 -> r1, have a queue in packet mode
       Ptr<QueueDisc> queue = queueDiscs.Get (1);
 
-      StaticCast<RedQueueDisc> (queue)->SetMode (Queue::QUEUE_MODE_PACKETS);
+      StaticCast<RedQueueDisc> (queue)->SetMode (RedQueueDisc::QUEUE_DISC_MODE_PACKETS);
       StaticCast<RedQueueDisc> (queue)->SetTh (5, 15);
       StaticCast<RedQueueDisc> (queue)->SetQueueLimit (1000);
     }

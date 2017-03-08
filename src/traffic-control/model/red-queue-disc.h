@@ -61,7 +61,6 @@
 #ifndef RED_QUEUE_DISC_H
 #define RED_QUEUE_DISC_H
 
-#include "ns3/packet.h"
 #include "ns3/queue-disc.h"
 #include "ns3/nstime.h"
 #include "ns3/boolean.h"
@@ -122,20 +121,28 @@ public:
   };
 
   /**
-   * \brief Set the operating mode of this queue.
-   *  Set operating mode
+   * \brief Enumeration of the modes supported in the class.
    *
-   * \param mode The operating mode of this queue.
    */
-  void SetMode (Queue::QueueMode mode);
+  enum QueueDiscMode
+  {
+    QUEUE_DISC_MODE_PACKETS,     /**< Use number of packets for maximum queue disc size */
+    QUEUE_DISC_MODE_BYTES,       /**< Use number of bytes for maximum queue disc size */
+  };
 
   /**
-   * \brief Get the encapsulation mode of this queue.
-   * Get the encapsulation mode of this queue
+   * \brief Set the operating mode of this queue disc.
    *
-   * \returns The encapsulation mode of this queue.
+   * \param mode The operating mode of this queue disc.
    */
-  Queue::QueueMode GetMode (void);
+  void SetMode (QueueDiscMode mode);
+
+  /**
+   * \brief Get the operating mode of this queue disc.
+   *
+   * \returns The operating mode of this queue disc.
+   */
+  QueueDiscMode GetMode (void);
 
   /**
    * \brief Get the current value of the queue in bytes or packets.
@@ -276,7 +283,7 @@ private:
   Stats m_stats; //!< RED statistics
 
   // ** Variables supplied by user
-  Queue::QueueMode m_mode;  //!< Mode (Bytes or packets)
+  QueueDiscMode m_mode;     //!< Mode (Bytes or packets)
   uint32_t m_meanPktSize;   //!< Avg pkt size
   uint32_t m_idlePktSize;   //!< Avg pkt size used during idle times
   bool m_isWait;            //!< True for waiting between dropped packets

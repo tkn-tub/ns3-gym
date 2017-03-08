@@ -23,6 +23,7 @@
 
 #include "ns3/test.h"
 #include "ns3/pie-queue-disc.h"
+#include "ns3/packet.h"
 #include "ns3/uinteger.h"
 #include "ns3/string.h"
 #include "ns3/double.h"
@@ -149,7 +150,7 @@ PieQueueDiscTestCase::RunPieTest (StringValue mode)
 
   Address dest;
 
-  if (queue->GetMode () == Queue::QUEUE_MODE_BYTES)
+  if (queue->GetMode () == PieQueueDisc::QUEUE_DISC_MODE_BYTES)
     {
       // pktSize should be same as MeanPktSize to avoid performance gap between byte and packet mode
       pktSize = 1000;
@@ -378,8 +379,8 @@ PieQueueDiscTestCase::DequeueWithDelay (Ptr<PieQueueDisc> queue, double delay, u
 void
 PieQueueDiscTestCase::DoRun (void)
 {
-  RunPieTest (StringValue ("QUEUE_MODE_PACKETS"));
-  RunPieTest (StringValue ("QUEUE_MODE_BYTES"));
+  RunPieTest (StringValue ("QUEUE_DISC_MODE_PACKETS"));
+  RunPieTest (StringValue ("QUEUE_DISC_MODE_BYTES"));
   Simulator::Destroy ();
 }
 

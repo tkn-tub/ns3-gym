@@ -22,108 +22,16 @@
 
 #include "ns3/object.h"
 #include "ns3/traced-value.h"
-#include <ns3/queue.h>
 #include "ns3/net-device.h"
+#include "ns3/queue-item.h"
 #include <vector>
 #include "packet-filter.h"
 
 namespace ns3 {
 
-class Packet;
 class QueueDisc;
-
-/**
- * \ingroup traffic-control
- *
- * QueueDiscItem is the abstract base class for items that are stored in a queue
- * disc. It is derived from QueueItem (which only consists of a Ptr<Packet>)
- * to additionally store the destination MAC address, the
- * L3 protocol number and the transmission queue index,
- */
-class QueueDiscItem : public QueueItem {
-public:
-  /**
-   * \brief Create a queue disc item.
-   * \param p the packet included in the created item.
-   * \param addr the destination MAC address
-   * \param protocol the L3 protocol number
-   */
-  QueueDiscItem (Ptr<Packet> p, const Address & addr, uint16_t protocol);
-
-  virtual ~QueueDiscItem ();
-
-  /**
-   * \brief Get the MAC address included in this item
-   * \return the MAC address included in this item.
-   */
-  Address GetAddress (void) const;
-
-  /**
-   * \brief Get the L3 protocol included in this item
-   * \return the L3 protocol included in this item.
-   */
-  uint16_t GetProtocol (void) const;
-
-  /**
-   * \brief Get the transmission queue index included in this item
-   * \return the transmission queue index included in this item.
-   */
-  uint8_t GetTxQueueIndex (void) const;
-
-  /**
-   * \brief Set the transmission queue index to store in this item
-   * \param txq the transmission queue index to store in this item.
-   */
-  void SetTxQueueIndex (uint8_t txq);
-
-  /**
-   * \brief Add the header to the packet
-   *
-   * Subclasses may keep header and payload separate to allow manipulating the header,
-   * so this method allows to add the header to the packet before sending the packet
-   * to the device.
-   */
-  virtual void AddHeader (void) = 0;
-
-  /**
-   * \brief Print the item contents.
-   * \param os output stream in which the data should be printed.
-   */
-  virtual void Print (std::ostream &os) const;
-
-  /**
-   * \brief Marks the packet as a substitute for dropping it, such as for Explicit Congestion Notification
-   *
-   * \return true if the packet gets marked, false otherwise
-   */
-  virtual bool Mark (void) = 0;
-
-private:
-  /**
-   * \brief Default constructor
-   *
-   * Defined and unimplemented to avoid misuse
-   */
-  QueueDiscItem ();
-  /**
-   * \brief Copy constructor
-   *
-   * Defined and unimplemented to avoid misuse
-   */
-  QueueDiscItem (const QueueDiscItem &);
-  /**
-   * \brief Assignment operator
-   *
-   * Defined and unimplemented to avoid misuse
-   * \returns
-   */
-  QueueDiscItem &operator = (const QueueDiscItem &);
-
-  Address m_address;      //!< MAC destination address
-  uint16_t m_protocol;    //!< L3 Protocol number
-  uint8_t m_txq;          //!< Transmission queue index
-};
-
+template <typename Item> class Queue;
+class NetDeviceQueueInterface;
 
 /**
  * \ingroup traffic-control
@@ -337,18 +245,21 @@ public:
    */
   void Run (void);
 
+  /// Internal queues store QueueDiscItem objects
+  typedef Queue<QueueDiscItem> InternalQueue;
+
   /**
    * \brief Add an internal queue to the tail of the list of queues.
    * \param queue the queue to be added
    */
-  void AddInternalQueue (Ptr<Queue> queue);
+  void AddInternalQueue (Ptr<InternalQueue> queue);
 
   /**
    * \brief Get the i-th internal queue
    * \param i the index of the queue
    * \return the i-th internal queue.
    */
-  Ptr<Queue> GetInternalQueue (uint32_t i) const;
+  Ptr<InternalQueue> GetInternalQueue (uint32_t i) const;
 
   /**
    * \brief Get the number of internal queues
@@ -429,7 +340,7 @@ public:
   virtual WakeMode GetWakeMode (void) const;
 
   /// Callback invoked by a child queue disc to notify the parent of a packet drop
-  typedef Callback<void, Ptr<QueueItem> > ParentDropCallback;
+  typedef Callback<void, Ptr<const QueueDiscItem> > ParentDropCallback;
 
   /**
    * \brief Set the parent drop callback
@@ -460,14 +371,14 @@ protected:
    *  \param item item that was dropped
    *  This method is called by subclasses to notify parent (this class) of packet drops.
    */
-  void Drop (Ptr<QueueItem> item);
+  void Drop (Ptr<const QueueDiscItem> item);
 
 private:
   /**
    *  \brief Notify the parent queue disc of a packet drop
    *  \param item item that was dropped
    */
-  void NotifyParentDrop (Ptr<QueueItem> item);
+  void NotifyParentDrop (Ptr<const QueueDiscItem> item);
 
   /**
    * This function actually enqueues a packet into the queue disc.
@@ -544,7 +455,7 @@ private:
 
   static const uint32_t DEFAULT_QUOTA = 64; //!< Default quota (as in /proc/sys/net/core/dev_weight)
 
-  std::vector<Ptr<Queue> > m_queues;            //!< Internal queues
+  std::vector<Ptr<InternalQueue> > m_queues;    //!< Internal queues
   std::vector<Ptr<PacketFilter> > m_filters;    //!< Packet filters
   std::vector<Ptr<QueueDiscClass> > m_classes;  //!< Classes
 
@@ -565,13 +476,13 @@ private:
   ParentDropCallback m_parentDropCallback;   //!< Parent drop callback
 
   /// Traced callback: fired when a packet is enqueued
-  TracedCallback<Ptr<const QueueItem> > m_traceEnqueue;
+  TracedCallback<Ptr<const QueueDiscItem> > m_traceEnqueue;
     /// Traced callback: fired when a packet is dequeued
-  TracedCallback<Ptr<const QueueItem> > m_traceDequeue;
+  TracedCallback<Ptr<const QueueDiscItem> > m_traceDequeue;
     /// Traced callback: fired when a packet is requeued
-  TracedCallback<Ptr<const QueueItem> > m_traceRequeue;
+  TracedCallback<Ptr<const QueueDiscItem> > m_traceRequeue;
   /// Traced callback: fired when a packet is dropped
-  TracedCallback<Ptr<const QueueItem> > m_traceDrop;
+  TracedCallback<Ptr<const QueueDiscItem> > m_traceDrop;
 };
 
 } // namespace ns3

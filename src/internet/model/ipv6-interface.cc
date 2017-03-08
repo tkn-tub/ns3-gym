@@ -24,6 +24,7 @@
 #include "ns3/net-device.h"
 #include "ns3/mac16-address.h"
 #include "ns3/mac64-address.h"
+#include "ns3/traffic-control-layer.h"
 
 #include "ipv6-interface.h"
 #include "ipv6-queue-disc-item.h"

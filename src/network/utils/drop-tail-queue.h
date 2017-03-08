@@ -29,7 +29,8 @@ namespace ns3 {
  *
  * \brief A FIFO packet queue that drops tail-end packets on overflow
  */
-class DropTailQueue : public Queue
+template <typename Item>
+class DropTailQueue : public Queue<Item>
 {
 public:
   /**
@@ -44,16 +45,99 @@ public:
    */
   DropTailQueue ();
 
-  virtual ~DropTailQueue();
+  virtual ~DropTailQueue ();
 
 private:
-  virtual bool DoEnqueue (Ptr<QueueItem> item);
-  virtual Ptr<QueueItem> DoDequeue (void);
-  virtual Ptr<QueueItem> DoRemove (void);
-  virtual Ptr<const QueueItem> DoPeek (void) const;
+  virtual bool DoEnqueue (Ptr<Item> item);
+  virtual Ptr<Item> DoDequeue (void);
+  virtual Ptr<Item> DoRemove (void);
+  virtual Ptr<const Item> DoPeek (void) const;
 
-  std::queue<Ptr<QueueItem> > m_packets; //!< the items in the queue
+  std::queue<Ptr<Item> > m_packets;         //!< the items in the queue
 };
+
+
+/**
+ * Implementation of the templates declared above.
+ */
+
+template <typename Item>
+TypeId
+DropTailQueue<Item>::GetTypeId (void)
+{
+  static TypeId tid = TypeId (("ns3::DropTailQueue<" + GetTypeParamName<DropTailQueue<Item> > () + ">").c_str ())
+    .SetParent<Queue<Item> > ()
+    .SetGroupName ("Network")
+    .template AddConstructor<DropTailQueue<Item> > ()
+  ;
+  return tid;
+}
+
+template <typename Item>
+DropTailQueue<Item>::DropTailQueue () :
+  Queue<Item> (),
+  m_packets ()
+{
+  QUEUE_LOG (LOG_LOGIC, "DropTailQueue(" << this << ")");
+}
+
+template <typename Item>
+DropTailQueue<Item>::~DropTailQueue ()
+{
+  QUEUE_LOG (LOG_LOGIC, "~DropTailQueue(" << this << ")");
+}
+
+template <typename Item>
+bool
+DropTailQueue<Item>::DoEnqueue (Ptr<Item> item)
+{
+  QUEUE_LOG (LOG_LOGIC, "DropTailQueue:DoEnqueue(" << this << ", " << item << ")");
+  NS_ASSERT (m_packets.size () == this->GetNPackets ());
+
+  m_packets.push (item);
+
+  return true;
+}
+
+template <typename Item>
+Ptr<Item>
+DropTailQueue<Item>::DoDequeue (void)
+{
+  QUEUE_LOG (LOG_LOGIC, "DropTailQueue:DoDequeue(" << this << ")");
+  NS_ASSERT (m_packets.size () == this->GetNPackets ());
+
+  Ptr<Item> item = m_packets.front ();
+  m_packets.pop ();
+
+  QUEUE_LOG (LOG_LOGIC, "Popped " << item);
+
+  return item;
+}
+
+template <typename Item>
+Ptr<Item>
+DropTailQueue<Item>::DoRemove (void)
+{
+  QUEUE_LOG (LOG_LOGIC, "DropTailQueue:DoRemove(" << this << ")");
+  NS_ASSERT (m_packets.size () == this->GetNPackets ());
+
+  Ptr<Item> item = m_packets.front ();
+  m_packets.pop ();
+
+  QUEUE_LOG (LOG_LOGIC, "Removed " << item);
+
+  return item;
+}
+
+template <typename Item>
+Ptr<const Item>
+DropTailQueue<Item>::DoPeek (void) const
+{
+  QUEUE_LOG (LOG_LOGIC, "DropTailQueue:DoPeek(" << this << ")");
+  NS_ASSERT (m_packets.size () == this->GetNPackets ());
+
+  return m_packets.front ();
+}
 
 } // namespace ns3
 

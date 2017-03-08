@@ -383,7 +383,7 @@ int main (int argc, char *argv[])
   Time access_d (access_delay);
   Time bottle_d (delay);
 
-  Config::SetDefault ("ns3::CoDelQueueDisc::Mode", EnumValue (Queue::QUEUE_MODE_BYTES));
+  Config::SetDefault ("ns3::CoDelQueueDisc::Mode", EnumValue (CoDelQueueDisc::QUEUE_DISC_MODE_BYTES));
 
   uint32_t size = (std::min (access_b, bottle_b).GetBitRate () / 8) *
     ((access_d + bottle_d) * 2).GetSeconds ();

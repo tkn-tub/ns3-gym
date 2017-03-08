@@ -23,14 +23,15 @@
 #include "ns3/address.h"
 #include "ns3/net-device.h"
 #include "ns3/node.h"
-#include "queue-disc.h"
+#include "ns3/queue-item.h"
 #include <map>
 #include <vector>
 
 namespace ns3 {
 
 class Packet;
-class QueueDiscItem;
+class QueueDisc;
+class NetDeviceQueueInterface;
 
 /**
  * \defgroup traffic-control

@@ -16,84 +16,10 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "ns3/log.h"
 #include "drop-tail-queue.h"
 
 namespace ns3 {
 
-NS_LOG_COMPONENT_DEFINE ("DropTailQueue");
-
-NS_OBJECT_ENSURE_REGISTERED (DropTailQueue);
-
-TypeId DropTailQueue::GetTypeId (void)
-{
-  static TypeId tid = TypeId ("ns3::DropTailQueue")
-    .SetParent<Queue> ()
-    .SetGroupName ("Network")
-    .AddConstructor<DropTailQueue> ()
-  ;
-  return tid;
-}
-
-DropTailQueue::DropTailQueue () :
-  Queue (),
-  m_packets ()
-{
-  NS_LOG_FUNCTION (this);
-}
-
-DropTailQueue::~DropTailQueue ()
-{
-  NS_LOG_FUNCTION (this);
-}
-
-bool 
-DropTailQueue::DoEnqueue (Ptr<QueueItem> item)
-{
-  NS_LOG_FUNCTION (this << item);
-  NS_ASSERT (m_packets.size () == GetNPackets ());
-
-  m_packets.push (item);
-
-  return true;
-}
-
-Ptr<QueueItem>
-DropTailQueue::DoDequeue (void)
-{
-  NS_LOG_FUNCTION (this);
-  NS_ASSERT (m_packets.size () == GetNPackets ());
-
-  Ptr<QueueItem> item = m_packets.front ();
-  m_packets.pop ();
-
-  NS_LOG_LOGIC ("Popped " << item);
-
-  return item;
-}
-
-Ptr<QueueItem>
-DropTailQueue::DoRemove (void)
-{
-  NS_LOG_FUNCTION (this);
-  NS_ASSERT (m_packets.size () == GetNPackets ());
-
-  Ptr<QueueItem> item = m_packets.front ();
-  m_packets.pop ();
-
-  NS_LOG_LOGIC ("Removed " << item);
-
-  return item;
-}
-
-Ptr<const QueueItem>
-DropTailQueue::DoPeek (void) const
-{
-  NS_LOG_FUNCTION (this);
-  NS_ASSERT (m_packets.size () == GetNPackets ());
-
-  return m_packets.front ();
-}
+NS_OBJECT_TEMPLATE_CLASS_DEFINE (DropTailQueue,Packet);
 
 } // namespace ns3
-

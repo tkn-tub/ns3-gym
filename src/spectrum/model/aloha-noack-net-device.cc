@@ -77,7 +77,7 @@ AlohaNoackNetDevice::GetTypeId (void)
                    "packets being transmitted get queued here",
                    PointerValue (),
                    MakePointerAccessor (&AlohaNoackNetDevice::m_queue),
-                   MakePointerChecker<Queue> ())
+                   MakePointerChecker<Queue<Packet> > ())
     .AddAttribute ("Mtu", "The Maximum Transmission Unit",
                    UintegerValue (1500),
                    MakeUintegerAccessor (&AlohaNoackNetDevice::SetMtu,
@@ -173,7 +173,7 @@ AlohaNoackNetDevice::GetMtu (void) const
 
 
 void
-AlohaNoackNetDevice::SetQueue (Ptr<Queue> q)
+AlohaNoackNetDevice::SetQueue (Ptr<Queue<Packet> > q)
 {
   NS_LOG_FUNCTION (q);
   m_queue = q;
@@ -378,7 +378,7 @@ AlohaNoackNetDevice::SendFrom (Ptr<Packet> packet, const Address& src, const Add
       else
         {
           NS_LOG_LOGIC ("enqueueing new packet");
-          if (m_queue->Enqueue (Create<QueueItem> (packet)) == false)
+          if (m_queue->Enqueue (packet) == false)
             {
               m_macTxDropTrace (packet);
               sendOk = false;
@@ -389,7 +389,7 @@ AlohaNoackNetDevice::SendFrom (Ptr<Packet> packet, const Address& src, const Add
     {
       NS_LOG_LOGIC ("deferring TX, enqueueing new packet");
       NS_ASSERT (m_queue);
-      if (m_queue->Enqueue (Create<QueueItem> (packet)) == false)
+      if (m_queue->Enqueue (packet) == false)
         {
           m_macTxDropTrace (packet);
           sendOk = false;
@@ -434,9 +434,9 @@ AlohaNoackNetDevice::NotifyTransmissionEnd (Ptr<const Packet>)
   NS_ASSERT (m_queue);
   if (m_queue->IsEmpty () == false)
     {
-      Ptr<QueueItem> item = m_queue->Dequeue ();
-      NS_ASSERT (item);
-      m_currentPkt = item->GetPacket ();
+      Ptr<Packet> p = m_queue->Dequeue ();
+      NS_ASSERT (p);
+      m_currentPkt = p;
       NS_LOG_LOGIC ("scheduling transmission now");
       Simulator::ScheduleNow (&AlohaNoackNetDevice::StartTransmission, this);
     }
