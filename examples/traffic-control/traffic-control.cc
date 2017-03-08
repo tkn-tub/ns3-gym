@@ -153,7 +153,9 @@ main (int argc, char *argv[])
   onoff.SetAttribute ("DataRate", StringValue ("50Mbps")); //bit/s
   ApplicationContainer apps;
 
-  AddressValue remoteAddress (InetSocketAddress (interfaces.GetAddress (0), port));
+  InetSocketAddress rmt (interfaces.GetAddress (0), port);
+  rmt.SetTos (0xb8);
+  AddressValue remoteAddress (rmt);
   onoff.SetAttribute ("Remote", remoteAddress);
   apps.Add (onoff.Install (nodes.Get (1)));
   apps.Start (Seconds (1.0));
@@ -194,6 +196,12 @@ main (int argc, char *argv[])
   std::cout << "  Throughput: " << stats[1].rxBytes * 8.0 / (stats[1].timeLastRxPacket.GetSeconds () - stats[1].timeFirstRxPacket.GetSeconds ()) / 1000000 << " Mbps" << std::endl;
   std::cout << "  Mean delay:   " << stats[1].delaySum.GetSeconds () / stats[1].rxPackets << std::endl;
   std::cout << "  Mean jitter:   " << stats[1].jitterSum.GetSeconds () / (stats[1].rxPackets - 1) << std::endl;
+  auto dscpVec = classifier->GetDscpCounts (1);
+  for (auto p : dscpVec)
+    {
+      std::cout << "  DSCP value:   0x" << std::hex << static_cast<uint32_t>(p.first) << std::dec
+                << "  count:   "<< p.second << std::endl;
+    }
 
   Simulator::Destroy ();
 

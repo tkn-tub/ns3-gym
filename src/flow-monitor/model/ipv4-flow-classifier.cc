@@ -23,6 +23,7 @@
 #include "ipv4-flow-classifier.h"
 #include "ns3/udp-header.h"
 #include "ns3/tcp-header.h"
+#include <algorithm>
 
 namespace ns3 {
 
@@ -156,10 +157,22 @@ Ipv4FlowClassifier::Classify (const Ipv4Header &ipHeader, Ptr<const Packet> ipPa
       FlowId newFlowId = GetNewFlowId ();
       insert.first->second = newFlowId;
       m_flowPktIdMap[newFlowId] = 0;
+      m_flowDscpMap[newFlowId];
     }
   else
     {
       m_flowPktIdMap[insert.first->second] ++;
+    }
+
+  // increment the counter of packets with the same DSCP value
+  Ipv4Header::DscpType dscp = ipHeader.GetDscp ();
+  std::pair<std::map<Ipv4Header::DscpType, uint32_t>::iterator, bool> dscpInserter
+    = m_flowDscpMap[insert.first->second].insert (std::pair<Ipv4Header::DscpType, uint32_t> (dscp, 1));
+
+  // if the insertion did not succeed, we need to increment the counter
+  if (!dscpInserter.second)
+    {
+      m_flowDscpMap[insert.first->second][dscp] ++;
     }
 
   *out_flowId = insert.first->second;
@@ -185,6 +198,29 @@ Ipv4FlowClassifier::FindFlow (FlowId flowId) const
   return retval;
 }
 
+bool
+Ipv4FlowClassifier::SortByCount::operator() (std::pair<Ipv4Header::DscpType, uint32_t> left,
+                                             std::pair<Ipv4Header::DscpType, uint32_t> right)
+{
+  return left.second > right.second;
+}
+
+std::vector<std::pair<Ipv4Header::DscpType, uint32_t> >
+Ipv4FlowClassifier::GetDscpCounts (FlowId flowId) const
+{
+  std::map<FlowId, std::map<Ipv4Header::DscpType, uint32_t> >::const_iterator flow
+    = m_flowDscpMap.find (flowId);
+
+  if (flow == m_flowDscpMap.end ())
+    {
+      NS_FATAL_ERROR ("Could not find the flow with ID " << flowId);
+    }
+
+  std::vector<std::pair<Ipv4Header::DscpType, uint32_t> > v (flow->second.begin (), flow->second.end ());
+  std::sort (v.begin (), v.end (), SortByCount ());
+  return v;
+}
+
 void
 Ipv4FlowClassifier::SerializeToXmlStream (std::ostream &os, uint16_t indent) const
 {
@@ -200,8 +236,24 @@ Ipv4FlowClassifier::SerializeToXmlStream (std::ostream &os, uint16_t indent) con
          << " destinationAddress=\"" << iter->first.destinationAddress << "\""
          << " protocol=\"" << int(iter->first.protocol) << "\""
          << " sourcePort=\"" << iter->first.sourcePort << "\""
-         << " destinationPort=\"" << iter->first.destinationPort << "\""
-         << " />\n";
+         << " destinationPort=\"" << iter->first.destinationPort << "\">\n";
+
+      indent += 2;
+      std::map<FlowId, std::map<Ipv4Header::DscpType, uint32_t> >::const_iterator flow
+        = m_flowDscpMap.find (iter->second);
+
+      if (flow != m_flowDscpMap.end ())
+        {
+          for (std::map<Ipv4Header::DscpType, uint32_t>::const_iterator i = flow->second.begin (); i != flow->second.end (); i++)
+            {
+              Indent (os, indent);
+              os << "<Dscp value=\"0x" << std::hex << static_cast<uint32_t> (i->first) << "\""
+                 << " packets=\"" << std::dec << i->second << "\" />\n";
+            }
+        }
+
+      indent -= 2;
+      Indent (os, indent); os << "</Flow>\n";
     }
 
   indent -= 2;

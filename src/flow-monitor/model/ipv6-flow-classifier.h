@@ -70,6 +70,21 @@ public:
   /// \returns the FiveTuple corresponding to flowId
   FiveTuple FindFlow (FlowId flowId) const;
 
+  /// Comparator used to sort the vector of DSCP values
+  class SortByCount
+  {
+  public:
+    bool operator() (std::pair<Ipv6Header::DscpType, uint32_t> left,
+                     std::pair<Ipv6Header::DscpType, uint32_t> right);
+  };
+
+  /// \brief get the DSCP values of the packets belonging to the flow with the
+  /// given FlowId, sorted in decreasing order of number of packets seen with
+  /// that DSCP value
+  /// \param flowId the identifier of the flow of interest
+  /// \returns the vector of DSCP values
+  std::vector<std::pair<Ipv6Header::DscpType, uint32_t> > GetDscpCounts (FlowId flowId) const;
+
   virtual void SerializeToXmlStream (std::ostream &os, uint16_t indent) const;
 
 private:
@@ -78,6 +93,8 @@ private:
   std::map<FiveTuple, FlowId> m_flowMap;
   /// Map to FlowIds to FlowPacketId
   std::map<FlowId, FlowPacketId> m_flowPktIdMap;
+  /// Map FlowIds to (DSCP value, packet count) pairs
+  std::map<FlowId, std::map<Ipv6Header::DscpType, uint32_t> > m_flowDscpMap;
 
 };
 

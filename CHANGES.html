@@ -86,6 +86,10 @@ us a note on ns-developers mailing list.</p>
     optional and if not specified defaults to the previous behavior (Time::S).
 </li>
 <li><b>TxopTrace</b>: new trace source exported by EdcaTxopN.</li>
+<li>A <b>GetDscpCounts</b> method is added to <b>Ipv4FlowClassifier</b> and <b>Ipv6FlowClassifier</b>
+    which returns a vector of pairs (dscp,count), each of which indicates how many packets with the
+    associated dscp value have been classified for a given flow.
+</li>
 </ul>
 <h2>Changes to existing API:</h2>
 <ul>
