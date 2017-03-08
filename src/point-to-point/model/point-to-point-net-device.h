@@ -199,6 +199,7 @@ protected:
    */
   void DoMpiReceive (Ptr<Packet> p);
 
+  virtual void DoInitialize (void);
   virtual void NotifyNewAggregate (void);
 
 private:

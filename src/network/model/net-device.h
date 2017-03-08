@@ -72,30 +72,25 @@ class Channel;
  * API has been optimized to make it easy to add new MAC protocols,
  * not to add new layer 3 protocols.
  *
- * Devices aiming to be Traffic Control aware must implement a NotifyNewAggregate
- * method to perform the following operations:
- *   - cache the pointer to the netdevice queue interface aggregated to the device
- *   - set the number of device transmission queues through the netdevice queue
- *     interface, if the device is multi-queue
- *   - set the select queue callback through the netdevice queue interface, if
- *     the device is multi-queue
- * In order to support flow control, a Traffic Control aware device must:
- *   - stop a device queue when there is no room for another packet. This check
- *     is typically performed after successfully enqueuing a packet in the device
- *     queue. Failing to enqueue a packet because there is no room for the packet
- *     in the queue should be avoided. Should such a situation occur, the device
- *     queue should be immediately stopped
- *   - wake up the queue disc when the device queue is empty. This check is
- *     typically performed after a dequeue operation fails because the device
- *     queue is empty.
- *   - start a device queue when the queue is stopped and there is room for
- *     another packet. This check is typically performed after successfully
- *     dequeuing a packet from the device queue
- * In order to support BQL, a Traffic Control aware device must:
- *   - call NotifyQueuedBytes after successfully enqueuing a packet in the
- *     device queue
- *   - call NotifyTransmittedBytes after successfully dequeuing a packet from
- *     the device queue
+ * Devices aiming to support flow control and dynamic queue limits must perform
+ * the following operations:
+ *   - in the NotifyNewAggregate method
+ *     + cache the pointer to the netdevice queue interface aggregated to the
+ *       device
+ *     + set the select queue callback through the netdevice queue interface,
+ *       if the device is multi-queue
+ *   - anytime before initialization
+ *     + set the number of device transmission queues (and optionally create them)
+ *       through the netdevice queue interface, if the device is multi-queue
+ *   - when the device queues have been created, invoke
+ *     NetDeviceQueueInterface::ConnectQueueTraces, which
+ *     + connects the Enqueue traced callback of the device queues to the
+ *       PacketEnqueued static method of the NetDeviceQueue class
+ *     + connects the Dequeue and DropAfterDequeue traced callback of the device
+ *       queues to the PacketDequeued static method of the NetDeviceQueue
+ *       class
+ *     + connects the DropBeforeEnqueue traced callback of the device queues to
+ *       the PacketDiscarded static method of the NetDeviceQueue class
  */
 class NetDevice : public Object
 {
