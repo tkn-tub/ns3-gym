@@ -37,10 +37,12 @@ class AmpduAggregationTest;
 
 namespace ns3 {
 
-class WifiMacQueue;
 class DcaTxop;
 class EdcaTxopN;
 class DcfManager;
+class WifiMacQueueItem;
+template <typename Item> class WifiQueue;
+typedef WifiQueue<WifiMacQueueItem> WifiMacQueue;
 
 /**
  * \brief control how a packet is transmitted.

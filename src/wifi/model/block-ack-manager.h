@@ -33,7 +33,9 @@ namespace ns3 {
 class MgtAddBaResponseHeader;
 class MgtAddBaRequestHeader;
 class MacTxMiddle;
-class WifiMacQueue;
+class WifiMacQueueItem;
+template <typename Item> class WifiQueue;
+typedef WifiQueue<WifiMacQueueItem> WifiMacQueue;
 
 /**
  * \ingroup wifi

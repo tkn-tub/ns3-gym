@@ -174,11 +174,11 @@ WifiAcMappingTest::DoRun (void)
     {
       if (i == m_expectedQueue)
         {
-          NS_TEST_ASSERT_MSG_EQ (queues[i]->GetSize (), 1, "There is no packet in the expected queue " << i);
+          NS_TEST_ASSERT_MSG_EQ (queues[i]->GetNPackets (), 1, "There is no packet in the expected queue " << i);
         }
       else
         {
-          NS_TEST_ASSERT_MSG_EQ (queues[i]->GetSize (), 0, "Unexpectedly, there is a packet in queue " << i);
+          NS_TEST_ASSERT_MSG_EQ (queues[i]->GetNPackets (), 0, "Unexpectedly, there is a packet in queue " << i);
         }
     }
 

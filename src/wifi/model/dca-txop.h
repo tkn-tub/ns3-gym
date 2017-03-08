@@ -29,7 +29,6 @@ namespace ns3 {
 
 class DcfState;
 class DcfManager;
-class WifiMacQueue;
 class MacTxMiddle;
 class RandomStream;
 class CtrlBAckResponseHeader;
