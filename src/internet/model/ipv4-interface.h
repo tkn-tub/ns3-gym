@@ -192,6 +192,23 @@ protected:
   virtual void DoDispose (void);
 private:
   /**
+   * \brief Copy constructor
+   * \param o object to copy
+   *
+   * Defined and unimplemented to avoid misuse
+   */
+  Ipv4Interface (const Ipv4Interface &o);
+
+  /**
+   * \brief Assignment operator
+   * \param o object to copy
+   * \returns the copied object
+   *
+   * Defined and unimplemented to avoid misuse
+   */
+  Ipv4Interface &operator = (const Ipv4Interface &o);
+
+  /**
    * \brief Initialize interface.
    */
   void DoSetup (void);

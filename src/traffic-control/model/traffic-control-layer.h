@@ -106,6 +106,8 @@ public:
    */
   TrafficControlLayer ();
 
+  virtual ~TrafficControlLayer ();
+
   /**
    * \brief Register an IN handler
    *
@@ -227,11 +229,21 @@ private:
   /**
    * \brief Information to store for each device
    */
-  struct NetDeviceInfo {
-    Ptr<QueueDisc> rootQueueDisc;       //!< the root queue disc on the device
-    Ptr<NetDeviceQueueInterface> ndqi;  //!< the netdevice queue interface
-    QueueDiscVector queueDiscsToWake;   //!< the vector of queue discs to wake
-    SelectQueueCallback selectQueueCallback;  //!< the select queue callback
+  class NetDeviceInfo
+  {
+  public:
+    NetDeviceInfo (Ptr<QueueDisc> rootQueueDisc, Ptr<NetDeviceQueueInterface> ndqi,
+                   QueueDiscVector queueDiscsToWake, SelectQueueCallback selectQueueCallback);
+    virtual ~NetDeviceInfo ();
+
+    Ptr<QueueDisc> m_rootQueueDisc;       //!< the root queue disc on the device
+    Ptr<NetDeviceQueueInterface> m_ndqi;  //!< the netdevice queue interface
+    QueueDiscVector m_queueDiscsToWake;   //!< the vector of queue discs to wake
+    SelectQueueCallback m_selectQueueCallback;  //!< the select queue callback
+  private:
+    NetDeviceInfo ();
+    NetDeviceInfo (NetDeviceInfo const &);
+    NetDeviceInfo& operator= (NetDeviceInfo const &);
   };
 
   /// Typedef for protocol handlers container

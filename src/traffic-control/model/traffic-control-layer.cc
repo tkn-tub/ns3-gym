@@ -24,6 +24,7 @@
 #include "ns3/packet.h"
 #include "ns3/socket.h"
 #include "ns3/queue-disc.h"
+#include <tuple>
 
 namespace ns3 {
 
@@ -59,6 +60,11 @@ TrafficControlLayer::TrafficControlLayer ()
   NS_LOG_FUNCTION_NOARGS ();
 }
 
+TrafficControlLayer::~TrafficControlLayer ()
+{
+  NS_LOG_FUNCTION (this);
+}
+
 void
 TrafficControlLayer::DoDispose (void)
 {
@@ -69,6 +75,22 @@ TrafficControlLayer::DoDispose (void)
   Object::DoDispose ();
 }
 
+TrafficControlLayer::NetDeviceInfo::NetDeviceInfo (Ptr<QueueDisc> rootQueueDisc,
+                                                   Ptr<NetDeviceQueueInterface> ndqi,
+                                                   QueueDiscVector queueDiscsToWake,
+                                                   SelectQueueCallback selectQueueCallback)
+  : m_rootQueueDisc (rootQueueDisc),
+    m_ndqi (ndqi),
+    m_queueDiscsToWake (queueDiscsToWake),
+    m_selectQueueCallback (selectQueueCallback)
+{
+}
+
+TrafficControlLayer::NetDeviceInfo::~NetDeviceInfo ()
+{
+  NS_LOG_FUNCTION (this);
+}
+
 void
 TrafficControlLayer::DoInitialize (void)
 {
@@ -76,34 +98,34 @@ TrafficControlLayer::DoInitialize (void)
   std::map<Ptr<NetDevice>, NetDeviceInfo>::iterator ndi;
   for (ndi = m_netDevices.begin (); ndi != m_netDevices.end (); ndi++)
     {
-      Ptr<NetDeviceQueueInterface> devQueueIface = ndi->second.ndqi;
+      Ptr<NetDeviceQueueInterface> devQueueIface = ndi->second.m_ndqi;
       NS_ASSERT (devQueueIface);
 
-      if (ndi->second.rootQueueDisc)
+      if (ndi->second.m_rootQueueDisc)
         {
           // set the wake callbacks on netdevice queues
-           if (ndi->second.rootQueueDisc->GetWakeMode () == QueueDisc::WAKE_ROOT)
+           if (ndi->second.m_rootQueueDisc->GetWakeMode () == QueueDisc::WAKE_ROOT)
             {
               for (uint32_t i = 0; i < devQueueIface->GetNTxQueues (); i++)
                 {
-                  devQueueIface->GetTxQueue (i)->SetWakeCallback (MakeCallback (&QueueDisc::Run, ndi->second.rootQueueDisc));
-                  ndi->second.queueDiscsToWake.push_back (ndi->second.rootQueueDisc);
+                  devQueueIface->GetTxQueue (i)->SetWakeCallback (MakeCallback (&QueueDisc::Run, ndi->second.m_rootQueueDisc));
+                  ndi->second.m_queueDiscsToWake.push_back (ndi->second.m_rootQueueDisc);
                 }
             }
-          else if (ndi->second.rootQueueDisc->GetWakeMode () == QueueDisc::WAKE_CHILD)
+          else if (ndi->second.m_rootQueueDisc->GetWakeMode () == QueueDisc::WAKE_CHILD)
             {
-              NS_ASSERT_MSG (ndi->second.rootQueueDisc->GetNQueueDiscClasses () == devQueueIface->GetNTxQueues (),
+              NS_ASSERT_MSG (ndi->second.m_rootQueueDisc->GetNQueueDiscClasses () == devQueueIface->GetNTxQueues (),
                              "The number of child queue discs does not match the number of netdevice queues");
               for (uint32_t i = 0; i < devQueueIface->GetNTxQueues (); i++)
                 {
                   devQueueIface->GetTxQueue (i)->SetWakeCallback (MakeCallback (&QueueDisc::Run,
-                                                                  ndi->second.rootQueueDisc->GetQueueDiscClass (i)->GetQueueDisc ()));
-                  ndi->second.queueDiscsToWake.push_back (ndi->second.rootQueueDisc->GetQueueDiscClass (i)->GetQueueDisc ());
+                                                                  ndi->second.m_rootQueueDisc->GetQueueDiscClass (i)->GetQueueDisc ()));
+                  ndi->second.m_queueDiscsToWake.push_back (ndi->second.m_rootQueueDisc->GetQueueDiscClass (i)->GetQueueDisc ());
                 }
             }
 
           // initialize the queue disc
-          ndi->second.rootQueueDisc->Initialize ();
+          ndi->second.m_rootQueueDisc->Initialize ();
         }
     }
   Object::DoInitialize ();
@@ -143,8 +165,9 @@ TrafficControlLayer::SetupDevice (Ptr<NetDevice> device)
   NS_ASSERT_MSG (m_netDevices.find (device) == m_netDevices.end (), "This is a bug,"
                  << "  SetupDevice only can insert an entry in the m_netDevices map");
 
-  NetDeviceInfo entry = {0, devQueueIface, QueueDiscVector (), cb};
-  m_netDevices[device] = entry;
+  m_netDevices.emplace (std::piecewise_construct,
+                        std::forward_as_tuple (device),
+                        std::forward_as_tuple ((Ptr<QueueDisc>) 0, devQueueIface, QueueDiscVector (), cb));
 }
 
 void
@@ -183,9 +206,9 @@ TrafficControlLayer::SetRootQueueDiscOnDevice (Ptr<NetDevice> device, Ptr<QueueD
       NS_ASSERT (ndi != m_netDevices.end ());
     }
 
-  NS_ASSERT_MSG (ndi->second.rootQueueDisc == 0, "Cannot install a root queue disc on a "
+  NS_ASSERT_MSG (ndi->second.m_rootQueueDisc == 0, "Cannot install a root queue disc on a "
                   << "device already having one. Delete the existing queue disc first.");
-  ndi->second.rootQueueDisc = qDisc;
+  ndi->second.m_rootQueueDisc = qDisc;
 }
 
 Ptr<QueueDisc>
@@ -199,7 +222,7 @@ TrafficControlLayer::GetRootQueueDiscOnDevice (Ptr<NetDevice> device) const
     {
       return 0;
     }
-  return ndi->second.rootQueueDisc;
+  return ndi->second.m_rootQueueDisc;
 }
 
 Ptr<QueueDisc>
@@ -216,12 +239,12 @@ TrafficControlLayer::DeleteRootQueueDiscOnDevice (Ptr<NetDevice> device)
 
   std::map<Ptr<NetDevice>, NetDeviceInfo>::iterator ndi = m_netDevices.find (device);
 
-  NS_ASSERT_MSG (ndi != m_netDevices.end () && ndi->second.rootQueueDisc != 0, "No root queue disc"
+  NS_ASSERT_MSG (ndi != m_netDevices.end () && ndi->second.m_rootQueueDisc != 0, "No root queue disc"
                  << " installed on device " << device);
 
   // remove the root queue disc
-  ndi->second.rootQueueDisc = 0;
-  ndi->second.queueDiscsToWake.clear ();
+  ndi->second.m_rootQueueDisc = 0;
+  ndi->second.m_queueDiscsToWake.clear ();
 }
 
 void
@@ -299,16 +322,16 @@ TrafficControlLayer::Send (Ptr<NetDevice> device, Ptr<QueueDiscItem> item)
 
   std::map<Ptr<NetDevice>, NetDeviceInfo>::iterator ndi = m_netDevices.find (device);
   NS_ASSERT (ndi != m_netDevices.end ());
-  Ptr<NetDeviceQueueInterface> devQueueIface = ndi->second.ndqi;
+  Ptr<NetDeviceQueueInterface> devQueueIface = ndi->second.m_ndqi;
   NS_ASSERT (devQueueIface);
 
   // determine the transmission queue of the device where the packet will be enqueued
   uint8_t txq = 0;
   if (devQueueIface->GetNTxQueues () > 1)
     {
-      if (!ndi->second.selectQueueCallback.IsNull ())
+      if (!ndi->second.m_selectQueueCallback.IsNull ())
         {
-          txq = ndi->second.selectQueueCallback (item);
+          txq = ndi->second.m_selectQueueCallback (item);
         }
       // otherwise, Linux determines the queue index by using a hash function
       // and associates such index to the socket which the packet belongs to,
@@ -320,7 +343,7 @@ TrafficControlLayer::Send (Ptr<NetDevice> device, Ptr<QueueDiscItem> item)
 
   NS_ASSERT (txq < devQueueIface->GetNTxQueues ());
 
-  if (ndi->second.rootQueueDisc == 0)
+  if (ndi->second.m_rootQueueDisc == 0)
     {
       // The device has no attached queue disc, thus add the header to the packet and
       // send it directly to the device if the selected queue is not stopped
@@ -342,7 +365,7 @@ TrafficControlLayer::Send (Ptr<NetDevice> device, Ptr<QueueDiscItem> item)
       // selected for the packet and try to dequeue packets from such queue disc
       item->SetTxQueueIndex (txq);
 
-      Ptr<QueueDisc> qDisc = ndi->second.queueDiscsToWake[txq];
+      Ptr<QueueDisc> qDisc = ndi->second.m_queueDiscsToWake[txq];
       NS_ASSERT (qDisc);
       qDisc->Enqueue (item);
       qDisc->Run ();

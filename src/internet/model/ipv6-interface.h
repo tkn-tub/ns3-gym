@@ -280,6 +280,23 @@ protected:
 
 private:
   /**
+   * \brief Copy constructor
+   * \param o object to copy
+   *
+   * Defined and unimplemented to avoid misuse
+   */
+  Ipv6Interface (const Ipv6Interface &o);
+
+  /**
+   * \brief Assignment operator
+   * \param o object to copy
+   * \returns the copied object
+   *
+   * Defined and unimplemented to avoid misuse
+   */
+  Ipv6Interface &operator = (const Ipv6Interface &o);
+
+  /**
    * \brief Container for the Ipv6InterfaceAddresses.
    */
   typedef std::list<std::pair<Ipv6InterfaceAddress, Ipv6Address> > Ipv6InterfaceAddressList;

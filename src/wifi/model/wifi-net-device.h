@@ -127,6 +127,23 @@ protected:
 
 
 private:
+  /**
+   * \brief Copy constructor
+   * \param o object to copy
+   *
+   * Defined and unimplemented to avoid misuse
+   */
+  WifiNetDevice (const WifiNetDevice &o);
+
+  /**
+   * \brief Assignment operator
+   * \param o object to copy
+   * \returns the copied object
+   *
+   * Defined and unimplemented to avoid misuse
+   */
+  WifiNetDevice &operator = (const WifiNetDevice &o);
+
   /// This value conforms to the 802.11 specification
   static const uint16_t MAX_MSDU_SIZE = 2304;
 

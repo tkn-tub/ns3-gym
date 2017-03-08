@@ -53,7 +53,12 @@ TypeId QueueDiscClass::GetTypeId (void)
   return tid;
 }
 
-QueueDiscClass::QueueDiscClass()
+QueueDiscClass::QueueDiscClass ()
+{
+  NS_LOG_FUNCTION (this);
+}
+
+QueueDiscClass::~QueueDiscClass ()
 {
   NS_LOG_FUNCTION (this);
 }
@@ -140,6 +145,11 @@ QueueDisc::QueueDisc ()
      m_nTotalRequeuedPackets (0),
      m_nTotalRequeuedBytes (0),
      m_running (false)
+{
+  NS_LOG_FUNCTION (this);
+}
+
+QueueDisc::~QueueDisc ()
 {
   NS_LOG_FUNCTION (this);
 }

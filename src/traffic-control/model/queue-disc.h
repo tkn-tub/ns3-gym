@@ -51,7 +51,7 @@ public:
   static TypeId GetTypeId (void);
 
   QueueDiscClass ();
-  virtual ~QueueDiscClass () {}
+  virtual ~QueueDiscClass ();
 
   /**
    * \brief Get the queue disc attached to this class
@@ -126,6 +126,7 @@ public:
   static TypeId GetTypeId (void);
 
   QueueDisc ();
+  virtual ~QueueDisc ();
 
   /**
    * \brief Get the number of packets stored by the queue disc
@@ -374,6 +375,23 @@ protected:
   void Drop (Ptr<const QueueDiscItem> item);
 
 private:
+  /**
+   * \brief Copy constructor
+   * \param o object to copy
+   *
+   * Defined and unimplemented to avoid misuse
+   */
+  QueueDisc (const QueueDisc &o);
+
+  /**
+   * \brief Assignment operator
+   * \param o object to copy
+   * \returns the copied object
+   *
+   * Defined and unimplemented to avoid misuse
+   */
+  QueueDisc &operator = (const QueueDisc &o);
+
   /**
    *  \brief Notify the parent queue disc of a packet drop
    *  \param item item that was dropped
