@@ -36,6 +36,7 @@ template <typename Item> class Queue;
 class SimpleChannel;
 class Node;
 class ErrorModel;
+class NetDeviceQueueInterface;
 
 /**
  * \ingroup netdevice
@@ -137,11 +138,15 @@ public:
 
 protected:
   virtual void DoDispose (void);
+  virtual void DoInitialize (void);
+  virtual void NotifyNewAggregate (void);
+
 private:
   Ptr<SimpleChannel> m_channel; //!< the channel the device is connected to
   NetDevice::ReceiveCallback m_rxCallback; //!< Receive callback
   NetDevice::PromiscReceiveCallback m_promiscCallback; //!< Promiscuous receive callback
   Ptr<Node> m_node; //!< Node this netDevice is associated to
+  Ptr<NetDeviceQueueInterface> m_queueInterface;   //!< NetDevice queue interface
   uint16_t m_mtu;   //!< MTU
   uint32_t m_ifIndex; //!< Interface index
   Mac48Address m_address; //!< MAC address
