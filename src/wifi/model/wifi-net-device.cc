@@ -21,6 +21,7 @@
 #include "wifi-net-device.h"
 #include "wifi-phy.h"
 #include "regular-wifi-mac.h"
+#include "wifi-mac-queue.h"
 #include "ns3/llc-snap-header.h"
 #include "ns3/socket.h"
 #include "ns3/pointer.h"
@@ -136,28 +137,63 @@ WifiNetDevice::NotifyNewAggregate (void)
       if (ndqi != 0)
         {
           m_queueInterface = ndqi;
-          if (m_mac == 0)
-            {
-              NS_LOG_WARN ("A mac has not been installed yet, using a single tx queue");
-            }
-          else
-            {
-              Ptr<RegularWifiMac> mac = DynamicCast<RegularWifiMac> (m_mac);
-              if (mac != 0)
-                {
-                  BooleanValue qosSupported;
-                  mac->GetAttributeFailSafe ("QosSupported", qosSupported);
-                  if (qosSupported.Get ())
-                    {
-                      m_queueInterface->SetTxQueuesN (4);
-                      // register the select queue callback
-                      m_queueInterface->SetSelectQueueCallback (MakeCallback (&WifiNetDevice::SelectQueue, this));
-                    }
-                }
-            }
+          // register the select queue callback
+          m_queueInterface->SetSelectQueueCallback (MakeCallback (&WifiNetDevice::SelectQueue, this));
+          m_queueInterface->SetLateTxQueuesCreation (true);
+	  FlowControlConfig ();
         }
     }
   NetDevice::NotifyNewAggregate ();
+}
+
+void
+WifiNetDevice::FlowControlConfig (void)
+{
+  if (m_mac == 0 || m_queueInterface == 0)
+    {
+      return;
+    }
+
+  Ptr<RegularWifiMac> mac = DynamicCast<RegularWifiMac> (m_mac);
+  if (mac == 0)
+    {
+      NS_LOG_WARN ("Flow control is only supported by RegularWifiMac");
+      return;
+    }
+
+  BooleanValue qosSupported;
+  mac->GetAttributeFailSafe ("QosSupported", qosSupported);
+  PointerValue ptr;
+  Ptr<WifiMacQueue> wmq;
+  if (qosSupported.Get ())
+    {
+      m_queueInterface->SetTxQueuesN (4);
+      m_queueInterface->CreateTxQueues ();
+
+      mac->GetAttributeFailSafe ("BE_EdcaTxopN", ptr);
+      wmq = ptr.Get<EdcaTxopN> ()->GetQueue ();
+      m_queueInterface->ConnectQueueTraces<WifiMacQueueItem> (wmq, 0);
+
+      mac->GetAttributeFailSafe ("BK_EdcaTxopN", ptr);
+      wmq = ptr.Get<EdcaTxopN> ()->GetQueue ();
+      m_queueInterface->ConnectQueueTraces<WifiMacQueueItem> (wmq, 1);
+
+      mac->GetAttributeFailSafe ("VI_EdcaTxopN", ptr);
+      wmq = ptr.Get<EdcaTxopN> ()->GetQueue ();
+      m_queueInterface->ConnectQueueTraces<WifiMacQueueItem> (wmq, 2);
+
+      mac->GetAttributeFailSafe ("VO_EdcaTxopN", ptr);
+      wmq = ptr.Get<EdcaTxopN> ()->GetQueue ();
+      m_queueInterface->ConnectQueueTraces<WifiMacQueueItem> (wmq, 3);
+    }
+  else
+    {
+      m_queueInterface->CreateTxQueues ();
+
+      mac->GetAttributeFailSafe ("DcaTxop", ptr);
+      wmq = ptr.Get<DcaTxop> ()->GetQueue ();
+      m_queueInterface->ConnectQueueTraces<WifiMacQueueItem> (wmq, 0);
+    }
 }
 
 void
@@ -165,6 +201,7 @@ WifiNetDevice::SetMac (Ptr<WifiMac> mac)
 {
   m_mac = mac;
   CompleteConfig ();
+  FlowControlConfig ();
 }
 
 void

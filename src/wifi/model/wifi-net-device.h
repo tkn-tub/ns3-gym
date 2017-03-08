@@ -150,6 +150,10 @@ private:
    * connecting all lower components (e.g. MAC, WifiRemoteStation) together.
    */
   void CompleteConfig (void);
+  /**
+   * Perform the actions needed to support flow control and dynamic queue limits
+   */
+  void FlowControlConfig (void);
 
   /**
    * \brief Determine the tx queue for a given packet
