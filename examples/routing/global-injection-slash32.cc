@@ -83,10 +83,12 @@ main (int argc, char *argv[])
   Ptr<CsmaNetDevice> deviceA = CreateObject<CsmaNetDevice> ();
   deviceA->SetAddress (Mac48Address::Allocate ());
   nA->AddDevice (deviceA);
+  deviceA->SetQueue (CreateObject<DropTailQueue<Packet> > ());
 
   Ptr<CsmaNetDevice> deviceC = CreateObject<CsmaNetDevice> ();
   deviceC->SetAddress (Mac48Address::Allocate ());
   nC->AddDevice (deviceC);
+  deviceC->SetQueue (CreateObject<DropTailQueue<Packet> > ());
 
   // Later, we add IP addresses.
   Ipv4AddressHelper ipv4;

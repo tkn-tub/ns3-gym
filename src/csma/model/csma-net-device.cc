@@ -32,6 +32,7 @@
 #include "ns3/trace-source-accessor.h"
 #include "csma-net-device.h"
 #include "csma-channel.h"
+#include "ns3/net-device-queue-interface.h"
 
 namespace ns3 {
 
@@ -189,7 +190,7 @@ CsmaNetDevice::CsmaNetDevice ()
   NS_LOG_FUNCTION (this);
   m_txMachineState = READY;
   m_tInterframeGap = Seconds (0);
-  m_channel = 0; 
+  m_channel = 0;
 
   // 
   // We would like to let the attribute system take care of initializing the 
@@ -217,7 +218,43 @@ CsmaNetDevice::DoDispose ()
   NS_LOG_FUNCTION_NOARGS ();
   m_channel = 0;
   m_node = 0;
+  m_queue = 0;
+  m_queueInterface = 0;
   NetDevice::DoDispose ();
+}
+
+void
+CsmaNetDevice::DoInitialize (void)
+{
+  if (m_queueInterface)
+    {
+      NS_ASSERT_MSG (m_queue != 0, "A Queue object has not been attached to the device");
+
+      // connect the traced callbacks of m_queue to the static methods provided by
+      // the NetDeviceQueue class to support flow control and dynamic queue limits.
+      // This could not be done in NotifyNewAggregate because at that time we are
+      // not guaranteed that a queue has been attached to the netdevice
+      m_queueInterface->ConnectQueueTraces (m_queue, 0);
+    }
+
+  NetDevice::DoInitialize ();
+}
+
+void
+CsmaNetDevice::NotifyNewAggregate (void)
+{
+  NS_LOG_FUNCTION (this);
+  if (m_queueInterface == 0)
+    {
+      Ptr<NetDeviceQueueInterface> ndqi = this->GetObject<NetDeviceQueueInterface> ();
+      //verify that it's a valid netdevice queue interface and that
+      //the netdevice queue interface was not set before
+      if (ndqi != 0)
+        {
+          m_queueInterface = ndqi;
+        }
+    }
+  NetDevice::NotifyNewAggregate ();
 }
 
 void
