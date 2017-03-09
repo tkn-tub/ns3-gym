@@ -76,9 +76,16 @@ public:
 
 private:
   CodelQueueDiscTestItem ();
-  /// copy constructor
+  /**
+   * \brief Copy constructor
+   * Disable default implementation to avoid misuse
+   */
   CodelQueueDiscTestItem (const CodelQueueDiscTestItem &);
-  /// assignment operator
+  /**
+   * \brief Assignment operator
+   * \return this object
+   * Disable default implementation to avoid misuse
+   */
   CodelQueueDiscTestItem &operator = (const CodelQueueDiscTestItem &);
 };
 

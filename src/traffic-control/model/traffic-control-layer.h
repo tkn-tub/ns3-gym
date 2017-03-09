@@ -212,6 +212,7 @@ private:
   TrafficControlLayer (TrafficControlLayer const &);
   /**
    * \brief Assignment operator
+   * \return this object
    * Disable default implementation to avoid misuse
    */
   TrafficControlLayer& operator= (TrafficControlLayer const &);
@@ -232,6 +233,14 @@ private:
   class NetDeviceInfo
   {
   public:
+    /**
+     * \brief Constructor
+     *
+     * \param rootQueueDisc the root queue disc installed on the device
+     * \param ndqi the NetDeviceQueueInterface aggregated to the device
+     * \param queueDiscsToWake the vector of queue discs to wake
+     * \param selectQueueCallback the select queue callback
+     */
     NetDeviceInfo (Ptr<QueueDisc> rootQueueDisc, Ptr<NetDeviceQueueInterface> ndqi,
                    QueueDiscVector queueDiscsToWake, SelectQueueCallback selectQueueCallback);
     virtual ~NetDeviceInfo ();
@@ -242,7 +251,16 @@ private:
     SelectQueueCallback m_selectQueueCallback;  //!< the select queue callback
   private:
     NetDeviceInfo ();
+    /**
+     * \brief Copy constructor
+     * Disable default implementation to avoid misuse
+     */
     NetDeviceInfo (NetDeviceInfo const &);
+    /**
+     * \brief Assignment operator
+     * \return this object
+     * Disable default implementation to avoid misuse
+     */
     NetDeviceInfo& operator= (NetDeviceInfo const &);
   };
 

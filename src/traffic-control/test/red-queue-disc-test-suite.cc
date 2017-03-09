@@ -54,9 +54,16 @@ public:
 
 private:
   RedQueueDiscTestItem ();
-  /// copy constructor
+  /**
+   * \brief Copy constructor
+   * Disable default implementation to avoid misuse
+   */
   RedQueueDiscTestItem (const RedQueueDiscTestItem &);
-  /// assignment operator
+  /**
+   * \brief Assignment operator
+   * \return this object
+   * Disable default implementation to avoid misuse
+   */
   RedQueueDiscTestItem &operator = (const RedQueueDiscTestItem &);
   bool m_ecnCapablePacket; ///< ECN capable packet?
 };

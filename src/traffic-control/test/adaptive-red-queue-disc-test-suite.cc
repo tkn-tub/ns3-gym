@@ -58,9 +58,16 @@ public:
 
 private:
   AredQueueDiscTestItem ();
-  /// copy constructor
+  /**
+   * \brief Copy constructor
+   * Disable default implementation to avoid misuse
+   */
   AredQueueDiscTestItem (const AredQueueDiscTestItem &);
-  /// assignment operator
+  /**
+   * \brief Assignment operator
+   * \return this object
+   * Disable default implementation to avoid misuse
+   */
   AredQueueDiscTestItem &operator = (const AredQueueDiscTestItem &);
 };
 

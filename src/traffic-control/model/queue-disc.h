@@ -61,6 +61,7 @@ public:
 
   /**
    * \brief Set the queue disc attached to this class
+   * \param qd The queue disc to attach to this class
    */
   void SetQueueDisc (Ptr<QueueDisc> qd);
 

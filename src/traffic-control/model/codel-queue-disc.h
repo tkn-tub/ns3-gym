@@ -227,8 +227,10 @@ private:
   bool CoDelTimeBeforeEq (uint32_t a, uint32_t b);
 
   /**
-   * returned unsigned 32-bit integer representation of the input Time object
-   * units are microseconds
+   * Return the unsigned 32-bit integer representation of the input Time
+   * object. Units are microseconds
+   * @param t the input Time Object
+   * @return the unsigned 32-bit integer representation
    */
   uint32_t Time2CoDel (Time t);
 

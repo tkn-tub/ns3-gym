@@ -81,13 +81,22 @@
 
 namespace ns3 {
 
-// Helper function to get the name (as a string) of the type parameter
-// of a template class
+/**
+ * \brief Helper function to get the name (as a string) of the type parameter
+ *        of a template class
+ * \return the name of the type parameter as a string
+ *
+ * A specialization of this function is defined by the
+ * NS_OBJECT_TEMPLATE_CLASS_DEFINE macro.
+ */
 template <typename T>
 std::string DoGetTypeParamName (void);
 
-// Helper function to get the name (as a string) of the type parameter
-// of a template class
+/**
+ * \brief Helper function to get the name (as a string) of the type parameter
+ *        of a template class
+ * \return the name of the type parameter as a string
+ */
 template <typename T>
 std::string GetTypeParamName (void)
 {

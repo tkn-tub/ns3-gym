@@ -37,8 +37,19 @@
 
 using namespace ns3;
 
+/**
+ * \ingroup traffic-control-test
+ * \ingroup tests
+ *
+ * \brief Queue Disc Test Item
+ */
 class QueueDiscTestItem : public QueueDiscItem {
 public:
+  /**
+   * Constructor
+   *
+   * \param p the packet stored in this item
+   */
   QueueDiscTestItem (Ptr<Packet> p);
   virtual ~QueueDiscTestItem ();
   virtual void AddHeader (void);
@@ -46,7 +57,16 @@ public:
 
 private:
   QueueDiscTestItem ();
+  /**
+   * \brief Copy constructor
+   * Disable default implementation to avoid misuse
+   */
   QueueDiscTestItem (const QueueDiscTestItem &);
+  /**
+   * \brief Assignment operator
+   * \return this object
+   * Disable default implementation to avoid misuse
+   */
   QueueDiscTestItem &operator = (const QueueDiscTestItem &);
 };
 
@@ -70,26 +90,59 @@ QueueDiscTestItem::Mark (void)
   return false;
 }
 
-// Tests to verify the working of ARED
+/**
+ * \ingroup traffic-control-test
+ * \ingroup tests
+ *
+ * \brief Traffic Control Flow Control Test Case
+ */
 class TcFlowControlTestCase : public TestCase
 {
 public:
-
+  /// Device queue operating mode
   enum TestType
     {
       PACKET_MODE,
       BYTE_MODE
     };
 
+  /**
+   * Constructor
+   *
+   * \param tt the test type
+   */
   TcFlowControlTestCase (TestType tt);
   virtual ~TcFlowControlTestCase ();
 private:
   virtual void DoRun (void);
+  /**
+   * Instruct a node to send a specified number of packets
+   * \param n the node
+   * \param nPackets the number of packets to send
+   */
   void SendPackets (Ptr<Node> n, uint16_t nPackets);
+  /**
+   * Check if the device queue stores the expected number of packets
+   * \param dev the device
+   * \param nPackets the expected number of packets stored in the device queue
+   * \param msg the message to print if a different number of packets are stored
+   */
   void CheckPacketsInDeviceQueue (Ptr<NetDevice> dev, uint16_t nPackets, const char* msg);
+  /**
+   * Check if the device queue is in the expected status (stopped or not)
+   * \param dev the device
+   * \param value the expected status of the queue (true means stopped)
+   * \param msg the message to print if the status of the device queue is different
+   */
   void CheckDeviceQueueStopped (Ptr<NetDevice> dev, bool value, const char* msg);
+  /**
+   * Check if the queue disc stores the expected number of packets
+   * \param dev the device the queue disc is installed on
+   * \param nPackets the expected number of packets stored in the queue disc
+   * \param msg the message to print if a different number of packets are stored
+   */
   void CheckPacketsInQueueDisc (Ptr<NetDevice> dev, uint16_t nPackets, const char* msg);
-  TestType m_type;
+  TestType m_type;       //!< the test type
 };
 
 TcFlowControlTestCase::TcFlowControlTestCase (TestType tt)
@@ -330,6 +383,12 @@ TcFlowControlTestCase::DoRun (void)
   Simulator::Destroy ();
 }
 
+/**
+ * \ingroup traffic-control-test
+ * \ingroup tests
+ *
+ * \brief Traffic Control Flow Control Test Suite
+ */
 static class TcFlowControlTestSuite : public TestSuite
 {
 public:
@@ -339,4 +398,4 @@ public:
     AddTestCase (new TcFlowControlTestCase (TcFlowControlTestCase::PACKET_MODE), TestCase::QUICK);
     AddTestCase (new TcFlowControlTestCase (TcFlowControlTestCase::BYTE_MODE), TestCase::QUICK);
   }
-} g_tcFlowControlTestSuite;
+} g_tcFlowControlTestSuite; ///< the test suite

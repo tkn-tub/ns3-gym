@@ -125,7 +125,9 @@ public:
   void SetQueueLimit (uint32_t lim);
 
   /**
-   * \brief Get queue delay
+   * \brief Get queue delay.
+   *
+   * \returns The current queue delay.
    */
   Time GetQueueDelay (void);
 

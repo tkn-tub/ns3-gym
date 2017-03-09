@@ -55,9 +55,16 @@ public:
 
 private:
   PieQueueDiscTestItem ();
-  /// copy constructor
+  /**
+   * \brief Copy constructor
+   * Disable default implementation to avoid misuse
+   */
   PieQueueDiscTestItem (const PieQueueDiscTestItem &);
-  /// assignment operator
+  /**
+   * \brief Assignment operator
+   * \return this object
+   * Disable default implementation to avoid misuse
+   */
   PieQueueDiscTestItem &operator = (const PieQueueDiscTestItem &);
 };
 
