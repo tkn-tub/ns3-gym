@@ -47,23 +47,44 @@ bool AreOverlapping (Box a, Box b)
   return !((a.xMin > b.xMax) || (b.xMin > a.xMax) || (a.yMin > b.yMax) || (b.yMin > a.yMax));
 }
 
+/**
+ * Class that takes care of installing blocks of the
+ * buildings in a given area. Buildings are installed in pairs
+ * as in dual stripe scenario.
+ */
 class FemtocellBlockAllocator
 {
 public:
+  /**
+   * Constructor
+   * \param area the total area
+   * \param nApartmentsX the number of apartments in the X direction
+   * \param nFloors the number of floors
+   */
   FemtocellBlockAllocator (Box area, uint32_t nApartmentsX, uint32_t nFloors);
+  /**
+   * Function that creates building blocks.
+   * \param n the number of blocks to create
+   */
   void Create (uint32_t n);
+  /// Create function
   void Create ();
 
 private:
-  bool OverlapsWithAnyPrevious (Box);
-  Box m_area;
-  uint32_t m_nApartmentsX;
-  uint32_t m_nFloors;
-  std::list<Box> m_previousBlocks;
-  double m_xSize;
-  double m_ySize;
-  Ptr<UniformRandomVariable> m_xMinVar;
-  Ptr<UniformRandomVariable> m_yMinVar;
+  /**
+   * Function that checks if the box area is overlapping with some of previously created building blocks.
+   * \param box the area to check
+   * \returns true if there is an overlap
+   */
+  bool OverlapsWithAnyPrevious (Box box);
+  Box m_area; ///< Area
+  uint32_t m_nApartmentsX; ///< X apartments 
+  uint32_t m_nFloors; ///< number of floors
+  std::list<Box> m_previousBlocks; ///< previous bocks
+  double m_xSize; ///< X size
+  double m_ySize; ///< Y size
+  Ptr<UniformRandomVariable> m_xMinVar; ///< X minimum variance
+  Ptr<UniformRandomVariable> m_yMinVar; ///< Y minimum variance
 
 };
 
