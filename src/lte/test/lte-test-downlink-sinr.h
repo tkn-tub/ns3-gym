@@ -30,7 +30,10 @@
 using namespace ns3;
 
 /**
- * Test 1.1 SINR calculation in downlink
+ * \ingroup lte-test
+ * \ingroup tests
+ *
+ * \brief Test 1.1 SINR calculation in downlink
  */
 class LteDownlinkSinrTestSuite : public TestSuite
 {
@@ -39,6 +42,17 @@ public:
 };
 
 
+/**
+ * \ingroup lte-test
+ * \ingroup tests
+ *
+ * \brief  Test compares if the generated SINR is equal to estimated SINR 
+ *  value. Test generates several calls to LteSpectrumPhy::StartRx corresponding 
+ *  to several signals. One will be the signal of interest, i.e., the
+ *  LteSpectrumSignalParametersDlCtrlFrame of the first signal will have the
+ *  same CellId of the receiving PHY; the others will have a different 
+ *  CellId and hence will be the interfering signals.
+ */
 class LteDownlinkDataSinrTestCase : public TestCase
 {
 public:
@@ -48,12 +62,24 @@ public:
 private:
   virtual void DoRun (void);
 
-  Ptr<SpectrumValue> m_sv;
-  Ptr<const SpectrumModel> m_sm;
-  Ptr<SpectrumValue> m_expectedSinr;
+  Ptr<SpectrumValue> m_sv; ///< the spectrum value
+  Ptr<const SpectrumModel> m_sm; ///< the spectrum model
+  Ptr<SpectrumValue> m_expectedSinr; ///< the expected SINR
 };
 
 
+/**
+ * \ingroup lte-test
+ * \ingroup tests
+ *
+ * \brief  
+ *  Test compares if the generated SINR is equal to estimated SINR value. 
+ *  Test generates several calls to LteSpectrumPhy::StartRx corresponding 
+ *  to several signals. One will be the signal of interest, i.e., the
+ *  LteSpectrumSignalParametersDlCtrlFrame of the first signal will have the
+ *  same CellId of the receiving PHY; the others will have a different 
+ *  CellId and hence will be the interfering signals.
+ */
 class LteDownlinkCtrlSinrTestCase : public TestCase
 {
   public:
@@ -63,9 +89,9 @@ class LteDownlinkCtrlSinrTestCase : public TestCase
 private:
   virtual void DoRun (void);
   
-  Ptr<SpectrumValue> m_sv;
-  Ptr<const SpectrumModel> m_sm;
-  Ptr<SpectrumValue> m_expectedSinr;
+  Ptr<SpectrumValue> m_sv; ///< the spectrum value
+  Ptr<const SpectrumModel> m_sm; ///< the spectrum model
+  Ptr<SpectrumValue> m_expectedSinr; ///< the expected SINR
 };
 
 #endif /* LTE_TEST_DOWNLINK_SINR_H */

@@ -35,8 +35,11 @@ using namespace ns3;
 
 
 /**
-* Test 1.1 fading model
-*/
+ * \ingroup lte-test
+ * \ingroup tests
+ *
+ * \brief Test 1.1 fading model
+ */
 
 class LteFadingTestSuite : public TestSuite
 {
@@ -45,9 +48,24 @@ class LteFadingTestSuite : public TestSuite
 };
 
 
+/**
+ * \ingroup lte-test
+ * \ingroup tests
+ *
+ * \brief Fading test case is checking if the pathloss between macro and UE 
+ * is equal to the theoretical value when using the Okumura Hata Model 
+ * (150 < freq < 1500 MHz).
+ */
 class LteFadingTestCase : public TestCase
 {
   public:
+    /**
+     * Lte Fading Test Case function
+     * \param m1 building mobility model #1
+     * \param m2 building modility model #2
+     * \param refValue reference value
+     * \param name the reference name
+     */
     LteFadingTestCase (Ptr<BuildingsMobilityModel> m1, Ptr<BuildingsMobilityModel> m2, double refValue, std::string name);
     virtual ~LteFadingTestCase ();
     
@@ -56,30 +74,47 @@ class LteFadingTestCase : public TestCase
     
     void GetFadingSample ();
     
-    Ptr<BuildingsMobilityModel> m_node1;
-    Ptr<BuildingsMobilityModel> m_node2;
-    Ptr<TraceFadingLossModel> m_fadingModule;
-    double m_lossRef;
-    std::vector<SpectrumValue> m_fadingSamples;
+    Ptr<BuildingsMobilityModel> m_node1; ///< building mobility model #1
+    Ptr<BuildingsMobilityModel> m_node2; ///< building mobility model #2
+    Ptr<TraceFadingLossModel> m_fadingModule; ///< fading loss model
+    double m_lossRef; ///< loss reference
+    std::vector<SpectrumValue> m_fadingSamples; ///< fading samples
      
     
 };
 
+/**
+ * \ingroup lte-test
+ * \ingroup tests
+ *
+ * \brief Lte Fading System Test Case
+ */
 class LteFadingSystemTestCase : public TestCase
 {
   public:
+    /**
+     * Lte Fading System Test Case function
+     * \param name the reference name
+     * \param snrDb SNR in DB
+     * \param dist the distance
+     * \param mcsIndex the MCS index
+     */
     LteFadingSystemTestCase (std::string name, double snrDb, double dist, uint16_t mcsIndex);
     LteFadingSystemTestCase ();
     virtual ~LteFadingSystemTestCase ();
     
+    /**
+     * DL scheduling function
+     * \param dlInfo DL scheduling info
+     */
     void DlScheduling (DlSchedulingCallbackInfo dlInfo);
                        
   private:
     virtual void DoRun (void);
     
-    double m_snrDb;
-    double m_distance;
-    uint16_t m_mcsIndex;
+    double m_snrDb; ///< SNR in DB
+    double m_distance; ///< distance
+    uint16_t m_mcsIndex; ///< MCS index
 };
 
 #endif /*LTE_TEST_FADING_H*/

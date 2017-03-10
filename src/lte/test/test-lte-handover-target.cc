@@ -53,6 +53,9 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE ("LteHandoverTargetTest");
 
 /**
+ * \ingroup lte-test
+ * \ingroup tests
+ *
  * \brief Testing a handover algorithm, verifying that it selects the right
  *        target cell when more than one options available.
  *
@@ -97,6 +100,12 @@ public:
    *
    * The trigger is set up beforehand by connecting to the
    * `LteEnbRrc::HandoverStart` trace source.
+   *
+   * \param context the context string
+   * \param imsi the IMSI
+   * \param sourceCellId the source cell ID
+   * \param rnti the RNTI
+   * \param targetCellId the target cell ID
    */
   void HandoverStartCallback (std::string context, uint64_t imsi,
                               uint16_t sourceCellId, uint16_t rnti,
@@ -122,15 +131,15 @@ private:
   virtual void DoTeardown ();
 
   // simulation parameters
-  Vector m_uePosition;
-  uint8_t m_gridSizeX;
-  uint8_t m_gridSizeY;
-  uint16_t m_sourceCellId;
-  uint16_t m_targetCellId;
-  std::string m_handoverAlgorithmType;
+  Vector m_uePosition; ///< UE positions
+  uint8_t m_gridSizeX; ///< X grid size
+  uint8_t m_gridSizeY; ///< Y grid size
+  uint16_t m_sourceCellId; ///< source cell ID
+  uint16_t m_targetCellId; ///< target celll ID
+  std::string m_handoverAlgorithmType; ///< handover algorithm type
 
-  Ptr<LteEnbNetDevice> m_sourceEnbDev;
-  bool m_hasHandoverOccurred;
+  Ptr<LteEnbNetDevice> m_sourceEnbDev; ///< source ENB device
+  bool m_hasHandoverOccurred; ///< has handover occured?
 
 }; // end of class LteHandoverTargetTestCase
 

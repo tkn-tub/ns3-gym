@@ -35,7 +35,10 @@ class LteTestPdcp;
 using namespace ns3;
 
 /**
- * TestSuite 4.1.1 RLC AM: Only transmitter
+ * \ingroup lte-test
+ * \ingroup tests
+ *
+ * \brief TestSuite 4.1.1 RLC AM: Only transmitter functionality.
  */
 class LteRlcAmTransmitterTestSuite : public TestSuite
 {
@@ -43,33 +46,66 @@ class LteRlcAmTransmitterTestSuite : public TestSuite
     LteRlcAmTransmitterTestSuite ();
 };
 
+/**
+ * \ingroup lte-test
+ * \ingroup tests
+ *
+ * \brief Test case used by LteRlcAmTransmitterOneSduTestCase to create topology 
+ * and to implement functionalities and check if data received corresponds to 
+ * data sent. 
+ */
 class LteRlcAmTransmitterTestCase : public TestCase
 {
   public:
+    /**
+     * Constructor
+     *
+     * \param name the reference name
+     */
     LteRlcAmTransmitterTestCase (std::string name);
     LteRlcAmTransmitterTestCase ();
     virtual ~LteRlcAmTransmitterTestCase ();
 
+    /**
+     * Check data received function
+     * \param time the time to check
+     * \param shouldReceived shoul dhave received indicator
+     * \param assertMsg the assert message
+     */
     void CheckDataReceived (Time time, std::string shouldReceived, std::string assertMsg);
 
   protected:
     virtual void DoRun (void);
 
-    Ptr<LteTestPdcp> txPdcp;
-    Ptr<LteRlc> txRlc;
-    Ptr<LteTestMac> txMac;
+    Ptr<LteTestPdcp> txPdcp; ///< the transmit PDCP
+    Ptr<LteRlc> txRlc; ///< the RLC
+    Ptr<LteTestMac> txMac; ///< the MAC
 
   private:
+    /**
+     * Check data received function
+     * \param shouldReceived shoul dhave received indicator
+     * \param assertMsg the assert message
+     */
     void DoCheckDataReceived (std::string shouldReceived, std::string assertMsg);
 
 };
 
 /**
- * Test 4.1.1.1 One SDU, One PDU
+ * \ingroup lte-test
+ * \ingroup tests
+ *
+ * \brief Test 4.1.1.1 Test that SDU transmitted at PDCP corresponds to PDU 
+ * received by MAC.
  */
 class LteRlcAmTransmitterOneSduTestCase : public LteRlcAmTransmitterTestCase
 {
   public:
+    /**
+     * Constructor
+     *
+     * \param name the reference name
+     */
     LteRlcAmTransmitterOneSduTestCase (std::string name);
     LteRlcAmTransmitterOneSduTestCase ();
     virtual ~LteRlcAmTransmitterOneSduTestCase ();
@@ -80,11 +116,20 @@ class LteRlcAmTransmitterOneSduTestCase : public LteRlcAmTransmitterTestCase
 };
 
 /**
- * Test 4.1.1.2 Segmentation (One SDU => n PDUs)
+ * \ingroup lte-test
+ * \ingroup tests
+ *
+ * \brief Test 4.1.1.2 Test the correct functionality of the Segmentation. 
+ * Test check that single SDU is properly segmented to n PDUs.
  */
 class LteRlcAmTransmitterSegmentationTestCase : public LteRlcAmTransmitterTestCase
 {
   public:
+    /**
+     * Constructor
+     *
+     * \param name the reference name
+     */
     LteRlcAmTransmitterSegmentationTestCase (std::string name);
     LteRlcAmTransmitterSegmentationTestCase ();
     virtual ~LteRlcAmTransmitterSegmentationTestCase ();
@@ -95,11 +140,20 @@ class LteRlcAmTransmitterSegmentationTestCase : public LteRlcAmTransmitterTestCa
 };
 
 /**
- * Test 4.1.1.3 Concatenation (n SDUs => One PDU)
+ * \ingroup lte-test
+ * \ingroup tests
+ *
+ * \brief Test 4.1.1.3 Test that concatenation functionality works properly.
+ * Test check if n SDUs are correctly contactenate to single PDU.
  */
 class LteRlcAmTransmitterConcatenationTestCase : public LteRlcAmTransmitterTestCase
 {
   public:
+    /**
+     * Constructor
+     *
+     * \param name the reference name
+     */
     LteRlcAmTransmitterConcatenationTestCase (std::string name);
     LteRlcAmTransmitterConcatenationTestCase ();
     virtual ~LteRlcAmTransmitterConcatenationTestCase ();
@@ -110,11 +164,20 @@ class LteRlcAmTransmitterConcatenationTestCase : public LteRlcAmTransmitterTestC
 };
 
 /**
- * Test 4.1.1.4 Report Buffer Status (test primitive parameters)
+ * \ingroup lte-test
+ * \ingroup tests
+ *
+ * \brief Test 4.1.1.4 Test checks functionality of Report Buffer Status by 
+ * testing primitive parameters.
  */
 class LteRlcAmTransmitterReportBufferStatusTestCase : public LteRlcAmTransmitterTestCase
 {
   public:
+    /**
+     * Constructor
+     *
+     * \param name the reference name
+     */
     LteRlcAmTransmitterReportBufferStatusTestCase (std::string name);
     LteRlcAmTransmitterReportBufferStatusTestCase ();
     virtual ~LteRlcAmTransmitterReportBufferStatusTestCase ();

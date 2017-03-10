@@ -94,7 +94,7 @@ LenaTestBearerDeactivateSuite::LenaTestBearerDeactivateSuite ()
   AddTestCase (new LenaDeactivateBearerTestCase (dist_1,estThrPssDl_1,packetSize_1,1,errorModel,true), TestCase::QUICK);
 }
 
-static LenaTestBearerDeactivateSuite lenaTestBearerDeactivateSuite;
+static LenaTestBearerDeactivateSuite lenaTestBearerDeactivateSuite; ///< the test suite
 
 
 std::string

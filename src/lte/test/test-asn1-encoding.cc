@@ -34,10 +34,20 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("Asn1EncodingTest");
 
+/**
+ * \ingroup lte-test
+ * \ingroup tests
+ *
+ * \brief Contains ASN encoding test utility functions.
+ */
 class TestUtils
 {
 public:
-  // Function to convert packet contents in hex format
+  /**
+   * Function to convert packet contents in hex format
+   * \param pkt the packet
+   * \returns the text string
+   */
   static std::string sprintPacketContentsHex (Ptr<Packet> pkt)
   {
     uint32_t psize = pkt->GetSize ();
@@ -51,7 +61,11 @@ public:
     return std::string (sbuffer);
   }
 
-  // Function to convert packet contents in binary format
+  /**
+   * Function to convert packet contents in binary format
+   * \param pkt the packet
+   * \returns the text string
+   */
   static std::string sprintPacketContentsBin (Ptr<Packet> pkt)
   {
     uint32_t psize = pkt->GetSize ();
@@ -65,7 +79,10 @@ public:
     return std::string (oss.str () + "\n");
   }
 
-  // Function to log packet contents
+  /**
+   * Function to log packet contents
+   * \param pkt the packet
+   */
   static void LogPacketContents (Ptr<Packet> pkt)
   {
     NS_LOG_DEBUG ("---- SERIALIZED PACKET CONTENTS (HEX): -------");
@@ -73,6 +90,11 @@ public:
     NS_LOG_DEBUG ("Bin: " << TestUtils::sprintPacketContentsBin (pkt));
   }
 
+  /**
+   * Function to log packet info
+   * \param source T
+   * \param s the string
+   */
   template <class T>
   static void LogPacketInfo (T source,std::string s)
   {
@@ -85,19 +107,35 @@ public:
 
 // --------------------------- CLASS RrcHeaderTestCase -----------------------------
 /**
- * This class provides common functions to be inherited
+ * \ingroup lte-test
+ * \ingroup tests
+ *
+ * \brief This class provides common functions to be inherited
  * by the children TestCases
  */
 class RrcHeaderTestCase : public TestCase
 {
 public:
+  /**
+   * Constructor
+   * \param s the reference name
+   */
   RrcHeaderTestCase (std::string s);
   virtual void DoRun (void) = 0;
+  /**
+   * \brief Create radio resoure config dedicated
+   * \returns LteRrcSap::RadioResourceConfigDedicated
+   */
   LteRrcSap::RadioResourceConfigDedicated CreateRadioResourceConfigDedicated ();
+  /**
+   * \brief Assert equal radio resource config dedicated
+   * \param rrcd1 LteRrcSap::RadioResourceConfigDedicated # 1
+   * \param rrcd2 LteRrcSap::RadioResourceConfigDedicated # 2
+   */
   void AssertEqualRadioResourceConfigDedicated (LteRrcSap::RadioResourceConfigDedicated rrcd1, LteRrcSap::RadioResourceConfigDedicated rrcd2);
 
 protected:
-  Ptr<Packet> packet;
+  Ptr<Packet> packet; ///< the packet
 };
 
 RrcHeaderTestCase::RrcHeaderTestCase (std::string s) : TestCase (s)
@@ -253,7 +291,12 @@ RrcHeaderTestCase::AssertEqualRadioResourceConfigDedicated (LteRrcSap::RadioReso
     }
 }
 
-// --------------------------- CLASS RrcConnectionRequestTestCase -----------------------------
+/**
+ * \ingroup lte-test
+ * \ingroup tests
+ *
+ * \brief Rrc Connection Request Test Case
+ */
 class RrcConnectionRequestTestCase : public RrcHeaderTestCase
 {
 public:
@@ -300,7 +343,12 @@ RrcConnectionRequestTestCase::DoRun (void)
   packet = 0;
 }
 
-// --------------------------- CLASS RrcConnectionSetupTestCase -----------------------------
+/**
+ * \ingroup lte-test
+ * \ingroup tests
+ *
+ * \brief Rrc Connection Setup Test Case
+ */
 class RrcConnectionSetupTestCase : public RrcHeaderTestCase
 {
 public:
@@ -349,7 +397,12 @@ RrcConnectionSetupTestCase::DoRun (void)
   packet = 0;
 }
 
-// --------------------------- CLASS RrcConnectionSetupCompleteTestCase -----------------------------
+/**
+ * \ingroup lte-test
+ * \ingroup tests
+ *
+ * \brief Rrc Connection Setup Complete Test Case
+ */
 class RrcConnectionSetupCompleteTestCase : public RrcHeaderTestCase
 {
 public:
@@ -395,7 +448,12 @@ RrcConnectionSetupCompleteTestCase::DoRun (void)
   packet = 0;
 }
 
-// --------------------------- CLASS RrcConnectionReconfigurationCompleteTestCase -----------------------------
+/**
+ * \ingroup lte-test
+ * \ingroup tests
+ *
+ * \brief Rrc Connection Reconfiguration Complete Test Case
+ */
 class RrcConnectionReconfigurationCompleteTestCase : public RrcHeaderTestCase
 {
 public:
@@ -442,7 +500,12 @@ RrcConnectionReconfigurationCompleteTestCase::DoRun (void)
   packet = 0;
 }
 
-// --------------------------- CLASS RrcConnectionReconfigurationTestCase -----------------------------
+/**
+ * \ingroup lte-test
+ * \ingroup tests
+ *
+ * \brief Rrc Connection Reconfiguration Test Case
+ */
 class RrcConnectionReconfigurationTestCase : public RrcHeaderTestCase
 {
 public:
@@ -647,7 +710,12 @@ RrcConnectionReconfigurationTestCase::DoRun (void)
   packet = 0;
 }
 
-// --------------------------- CLASS HandoverPreparationInfoTestCase -----------------------------
+/**
+ * \ingroup lte-test
+ * \ingroup tests
+ *
+ * \brief Handover Preparation Info Test Case
+ */
 class HandoverPreparationInfoTestCase : public RrcHeaderTestCase
 {
 public:
@@ -721,7 +789,12 @@ HandoverPreparationInfoTestCase::DoRun (void)
   packet = 0;
 }
 
-// --------------------------- CLASS RrcConnectionReestablishmentRequestTestCase -----------------------------
+/**
+ * \ingroup lte-test
+ * \ingroup tests
+ *
+ * \brief Rrc Connection Reestablishment Request Test Case
+ */
 class RrcConnectionReestablishmentRequestTestCase : public RrcHeaderTestCase
 {
 public:
@@ -771,7 +844,12 @@ RrcConnectionReestablishmentRequestTestCase::DoRun (void)
   packet = 0;
 }
 
-// --------------------------- CLASS RrcConnectionReestablishmentTestCase -----------------------------
+/**
+ * \ingroup lte-test
+ * \ingroup tests
+ *
+ * \brief Rrc Connection Reestablishment Test Case
+ */
 class RrcConnectionReestablishmentTestCase : public RrcHeaderTestCase
 {
 public:
@@ -819,7 +897,12 @@ RrcConnectionReestablishmentTestCase::DoRun (void)
   packet = 0;
 }
 
-// --------------------------- CLASS RrcConnectionReestablishmentCompleteTestCase -----------------------------
+/**
+ * \ingroup lte-test
+ * \ingroup tests
+ *
+ * \brief Rrc Connection Reestablishment Complete Test Case
+ */
 class RrcConnectionReestablishmentCompleteTestCase : public RrcHeaderTestCase
 {
 public:
@@ -865,7 +948,12 @@ RrcConnectionReestablishmentCompleteTestCase::DoRun (void)
   packet = 0;
 }
 
-// --------------------------- CLASS RrcConnectionRejectTestCase -----------------------------
+/**
+ * \ingroup lte-test
+ * \ingroup tests
+ *
+ * \brief Rrc Connection Reject Test Case
+ */
 class RrcConnectionRejectTestCase : public RrcHeaderTestCase
 {
 public:
@@ -911,7 +999,12 @@ RrcConnectionRejectTestCase::DoRun (void)
   packet = 0;
 }
 
-// --------------------------- CLASS MeasurementReportTestCase -----------------------------
+/**
+ * \ingroup lte-test
+ * \ingroup tests
+ *
+ * \brief Measurement Report Test Case
+ */
 class MeasurementReportTestCase : public RrcHeaderTestCase
 {
 public:
@@ -1022,7 +1115,12 @@ MeasurementReportTestCase::DoRun (void)
   packet = 0;
 }
 
-// --------------------------- CLASS Asn1EncodingSuite -----------------------------
+/**
+ * \ingroup lte-test
+ * \ingroup tests
+ *
+ * \brief Asn1Encoding Test Suite
+ */
 class Asn1EncodingSuite : public TestSuite
 {
 public:

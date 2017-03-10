@@ -148,7 +148,7 @@ LteCqiGenerationTestCase::DoRun (void)
 
   Config::Reset ();
   Config::SetDefault ("ns3::LteHelper::UseIdealRrc", BooleanValue (true));
-  Config::SetDefault ("ns3::LteHelper::UsePdschForCqiGeneration", BooleanValue (m_usePdcchForCqiGeneration));
+  Config::SetDefault ("ns3::LteHelper::UsePdschForCqiGeneration", BooleanValue (m_usePdschForCqiGeneration));
 
   Config::SetDefault ("ns3::LteSpectrumPhy::CtrlErrorModelEnabled", BooleanValue (true));
   Config::SetDefault ("ns3::LteSpectrumPhy::DataErrorModelEnabled", BooleanValue (true));

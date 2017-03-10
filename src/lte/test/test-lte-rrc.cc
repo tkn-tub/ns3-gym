@@ -30,6 +30,12 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("LteRrcTest");
 
+/**
+ * \ingroup lte-test
+ * \ingroup tests
+ *
+ * \brief Test rrc connection establishment.
+ */ 
 class LteRrcConnectionEstablishmentTestCase : public TestCase
 {
 public:
@@ -59,8 +65,21 @@ public:
 protected:
 
   virtual void DoRun (void);
-  uint32_t m_nUes; // number of UEs in the test
+  uint32_t m_nUes; ///< number of UEs in the test
 
+  /**
+   * Build name string function
+   * 
+   * \param nUes number of UEs in the test
+   * \param nBearers number of bearers to be setup in each connection
+   * \param tConnBase connection time base value for all UEs in ms
+   * \param tConnIncrPerUe additional connection time increment for each UE index (0...nUes-1) in ms
+   * \param delayDiscStart expected duration to perform connection establishment in ms
+   * \param useIdealRrc If set to false, real RRC protocol model will be used
+   * \param admitRrcConnectionRequest If set to false, eNb will not allow UE connections
+   * \param description additional description of the test case
+   * \returns the name string
+   */
   static std::string BuildNameString (uint32_t nUes,
                                       uint32_t nBearers,
                                       uint32_t tConnBase,
@@ -69,26 +88,55 @@ protected:
                                       bool useIdealRrc,
                                       bool admitRrcConnectionRequest,
                                       std::string description = "");
+  /**
+   * Connect function
+   * \param ueDevice the UE device
+   * \param enbDevice the ENB device
+   */
   void Connect (Ptr<NetDevice> ueDevice, Ptr<NetDevice> enbDevice);
+  /**
+   * Check connected function
+   * \param ueDevice the UE device
+   * \param enbDevice the ENB device
+   */
   void CheckConnected (Ptr<NetDevice> ueDevice, Ptr<NetDevice> enbDevice);
+  /**
+   * Check not connected function
+   * \param ueDevice the UE device
+   * \param enbDevice the ENB device
+   */
   void CheckNotConnected (Ptr<NetDevice> ueDevice, Ptr<NetDevice> enbDevice);
+  /**
+   * Connection established callback function
+   * \param context the context string
+   * \param imsi the IMSI
+   * \param cellId the cell ID
+   * \param rnti the RNTI
+   */
   void ConnectionEstablishedCallback (std::string context, uint64_t imsi,
                                       uint16_t cellId, uint16_t rnti);
+  /**
+   * Connection timeout callback function
+   * \param context the context string
+   * \param imsi the IMSI
+   * \param cellId the cell ID
+   * \param rnti the RNTI
+   */
   void ConnectionTimeoutCallback (std::string context, uint64_t imsi,
                                   uint16_t cellId, uint16_t rnti);
 
-  uint32_t m_nBearers; // number of bearers to be setup in each connection
-  uint32_t m_tConnBase;  // connection time base value for all UEs in ms
-  uint32_t m_tConnIncrPerUe; // additional connection time increment for each UE index (0...nUes-1) in ms
-  uint32_t m_delayConnEnd;  // expected duration to perform connection establishment in ms
-  uint32_t m_delayDiscStart;  // delay between connection completed and disconnection request in ms
-  uint32_t m_delayDiscEnd; // expected duration to complete disconnection in ms
-  bool     m_useIdealRrc; // If set to false, real RRC protocol model will be used
-  bool     m_admitRrcConnectionRequest; // If set to false, eNb will not allow UE connections
-  Ptr<LteHelper> m_lteHelper;
+  uint32_t m_nBearers; ///< number of bearers to be setup in each connection
+  uint32_t m_tConnBase;  ///< connection time base value for all UEs in ms
+  uint32_t m_tConnIncrPerUe; ///< additional connection time increment for each UE index (0...nUes-1) in ms
+  uint32_t m_delayConnEnd;  ///< expected duration to perform connection establishment in ms
+  uint32_t m_delayDiscStart;  ///< delay between connection completed and disconnection request in ms
+  uint32_t m_delayDiscEnd; ///< expected duration to complete disconnection in ms
+  bool     m_useIdealRrc; ///< If set to false, real RRC protocol model will be used
+  bool     m_admitRrcConnectionRequest; ///< If set to false, eNb will not allow UE connections
+  Ptr<LteHelper> m_lteHelper; ///< LTE helper
 
-  // key: IMSI
-  std::map<uint64_t, bool> m_isConnectionEstablished;
+  /// key: IMSI
+  std::map<uint64_t, bool> m_isConnectionEstablished; 
 };
 
 
@@ -493,6 +541,12 @@ LteRrcConnectionEstablishmentTestCase::ConnectionTimeoutCallback (
 
 
 
+/**
+ * \ingroup lte-test
+ * \ingroup tests
+ *
+ * \brief Lte Rrc Connection Establishment Error Test Case
+ */ 
 class LteRrcConnectionEstablishmentErrorTestCase
   : public LteRrcConnectionEstablishmentTestCase
 {
@@ -510,11 +564,13 @@ protected:
   virtual void DoRun (void);
 
 private:
+  /// Jump away function
   void JumpAway ();
+  /// Jump back function
   void JumpBack ();
 
-  Time m_jumpAwayTime;
-  Ptr<MobilityModel> m_ueMobility;
+  Time m_jumpAwayTime; ///< jump away time
+  Ptr<MobilityModel> m_ueMobility; ///< UE mobility model
 };
 
 
@@ -672,7 +728,12 @@ LteRrcConnectionEstablishmentErrorTestCase::JumpBack ()
 }
 
 
-
+/**
+ * \ingroup lte-test
+ * \ingroup tests
+ *
+ * \brief Lte Rrc Test Suite
+ */ 
 class LteRrcTestSuite : public TestSuite
 {
 public:

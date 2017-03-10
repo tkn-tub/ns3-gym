@@ -429,9 +429,6 @@ LenaCqaFfMacSchedulerTestCase1::DoRun (void)
 
   Simulator::Run ();
 
-  /**
-   * Check that the downlink assignation is done in a "token bank fair queue" manner
-   */
 
   NS_LOG_INFO ("DL - Test with " << m_nUser << " user(s) at distance " << m_dist);
   std::vector <uint64_t> dlDataRxed;
@@ -671,7 +668,7 @@ LenaCqaFfMacSchedulerTestCase2::DoRun (void)
   Simulator::Run ();
 
   /**
-   * Check that the downlink assignation is done in a "token bank fair queue" manner
+   * Check that the downlink resource assignment is done according to CQA algorithm among users with different SINRs
    */
 
   NS_LOG_INFO ("DL - Test with " << m_nUser << " user(s)");

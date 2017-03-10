@@ -29,6 +29,10 @@ using namespace ns3;
 
 
 /**
+ * \ingroup lte-test
+ * \ingroup tests
+ *
+ * \brief This system test program creates different test cases with a single eNB and 
  * This system test program creates different test cases with a single eNB and 
  * several UEs, all having the same Radio Bearer specification. In each test 
  * case, the UEs see the same SINR from the eNB; different test cases are 
@@ -40,22 +44,43 @@ using namespace ns3;
 class LenaRrFfMacSchedulerTestCase : public TestCase
 {
 public:
+  /**
+   * Constructor
+   *
+   * \param nUser the number of UE nodes
+   * \param dist the distance between nodes
+   * \param thrRefDl the DL throughput reference
+   * \param thrRefUl the UL throughput reference
+   * \param errorModelEnabled if true the error model is enabled
+   */
   LenaRrFfMacSchedulerTestCase (uint16_t nUser, double dist, double thrRefDl, double thrRefUl, bool errorModelEnabled);
   virtual ~LenaRrFfMacSchedulerTestCase ();
 
 private:
   virtual void DoRun (void);
+  /**
+   * Builds the test name string based on provided parameter values
+   * \param nUser the number of UE nodes
+   * \param dist the distance between UE nodes and eNodeB
+   * \returns the name string
+   */
   static std::string BuildNameString (uint16_t nUser, double dist);
-  uint16_t m_nUser;
-  double m_dist;
-  double m_thrRefDl;
-  double m_thrRefUl;
-  bool m_errorModelEnabled;
+  uint16_t m_nUser; ///< number of UE nodes
+  double m_dist; ///< the distance between nodes
+  double m_thrRefDl; ///< the DL throughput reference
+  double m_thrRefUl; ///< the UL throughput reference
+  bool m_errorModelEnabled; ///< indicates whether the error model is enabled
 
 };
 
 
 
+/**
+ * \ingroup lte-test
+ * \ingroup tests
+ *
+ * \brief Test suite for RrFfMacScheduler test
+ */
 class LenaTestRrFfMacSchedulerSuite : public TestSuite
 {
 public:

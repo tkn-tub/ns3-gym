@@ -246,6 +246,15 @@ LteSimpleHelper::EnableRlcTraces (void)
 }
 
 
+  /**
+   * DL transmit PDU callback
+   *
+   * \param rlcStats the stats calculator
+   * \param path
+   * \param rnti the RNTI
+   * \param lcid the LCID
+   * \param packetSize the packet size
+   */
 void
 LteSimpleHelperDlTxPduCallback (Ptr<RadioBearerStatsCalculator> rlcStats, std::string path,
                  uint16_t rnti, uint8_t lcid, uint32_t packetSize)
@@ -256,6 +265,16 @@ LteSimpleHelperDlTxPduCallback (Ptr<RadioBearerStatsCalculator> rlcStats, std::s
   rlcStats->DlTxPdu (cellId, imsi, rnti, lcid, packetSize);
 }
 
+  /**
+   * DL receive PDU callback
+   *
+   * \param rlcStats the stats calculator
+   * \param path
+   * \param rnti the RNTI
+   * \param lcid the LCID
+   * \param packetSize the packet size
+   * \param delay the delay
+   */
 void
 LteSimpleHelperDlRxPduCallback (Ptr<RadioBearerStatsCalculator> rlcStats, std::string path,
                  uint16_t rnti, uint8_t lcid, uint32_t packetSize, uint64_t delay)
@@ -277,6 +296,15 @@ LteSimpleHelper::EnableDlRlcTraces (void)
                 //                    MakeBoundCallback (&LteSimpleHelperDlRxPduCallback, m_rlcStats));
 }
 
+  /**
+   * UL transmit PDU callback
+   *
+   * \param rlcStats the stats calculator
+   * \param path
+   * \param rnti the RNTI
+   * \param lcid the LCID
+   * \param packetSize the packet size
+   */
 void
 LteSimpleHelperUlTxPduCallback (Ptr<RadioBearerStatsCalculator> rlcStats, std::string path,
                  uint16_t rnti, uint8_t lcid, uint32_t packetSize)
@@ -287,6 +315,16 @@ LteSimpleHelperUlTxPduCallback (Ptr<RadioBearerStatsCalculator> rlcStats, std::s
   rlcStats->UlTxPdu (cellId, imsi, rnti, lcid, packetSize);
 }
 
+  /**
+   * UL receive PDU callback
+   *
+   * \param rlcStats the stats calculator
+   * \param path
+   * \param rnti the RNTI
+   * \param lcid the LCID
+   * \param packetSize the packet size
+   * \param delay the delay
+   */
 void
 LteSimpleHelperUlRxPduCallback (Ptr<RadioBearerStatsCalculator> rlcStats, std::string path,
                  uint16_t rnti, uint8_t lcid, uint32_t packetSize, uint64_t delay)

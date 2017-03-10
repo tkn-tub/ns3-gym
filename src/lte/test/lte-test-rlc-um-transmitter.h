@@ -34,7 +34,10 @@ class LteTestPdcp;
 using namespace ns3;
 
 /**
- * TestSuite 4.1.1 RLC UM: Only transmitter
+ * \ingroup lte-test
+ * \ingroup tests
+ *
+ * \brief TestSuite 4.1.1 for RLC UM: Only transmitter part.
  */
 class LteRlcUmTransmitterTestSuite : public TestSuite
 {
@@ -42,33 +45,65 @@ class LteRlcUmTransmitterTestSuite : public TestSuite
     LteRlcUmTransmitterTestSuite ();
 };
 
+/**
+ * \ingroup lte-test
+ * \ingroup tests
+ *
+ * \brief Test case used by LteRlcUmTransmitterOneSduTestCase to create topology 
+ * and to implement functionalities and check if data received corresponds to 
+ * data sent. 
+ */
 class LteRlcUmTransmitterTestCase : public TestCase
 {
   public:
+    /**
+     * Constructor
+     *
+     * \param name the test name
+     */
     LteRlcUmTransmitterTestCase (std::string name);
     LteRlcUmTransmitterTestCase ();
     virtual ~LteRlcUmTransmitterTestCase ();
 
+    /**
+     * Check data received function
+     * \param time the time to check
+     * \param shouldReceived shoul dhave received indicator
+     * \param assertMsg the assert message
+     */
     void CheckDataReceived (Time time, std::string shouldReceived, std::string assertMsg);
 
   protected:
     virtual void DoRun (void);
 
-    Ptr<LteTestPdcp> txPdcp;
-    Ptr<LteRlc> txRlc;
-    Ptr<LteTestMac> txMac;
+    Ptr<LteTestPdcp> txPdcp; ///< the transmit PDCP
+    Ptr<LteRlc> txRlc; ///< the RLC
+    Ptr<LteTestMac> txMac; ///< the MAC
 
   private:
+    /**
+     * Check data received function
+     * \param shouldReceived should have received indicator
+     * \param assertMsg the assert message
+     */
     void DoCheckDataReceived (std::string shouldReceived, std::string assertMsg);
 
 };
 
 /**
- * Test 4.1.1.1 One SDU, One PDU
+ * \ingroup lte-test
+ * \ingroup tests
+ *
+ * \brief Test 4.1.1.1 One SDU, One PDU
  */
 class LteRlcUmTransmitterOneSduTestCase : public LteRlcUmTransmitterTestCase
 {
   public:
+    /**
+     * Constructor
+     *
+     * \param name the test name
+     */
     LteRlcUmTransmitterOneSduTestCase (std::string name);
     LteRlcUmTransmitterOneSduTestCase ();
     virtual ~LteRlcUmTransmitterOneSduTestCase ();
@@ -79,11 +114,19 @@ class LteRlcUmTransmitterOneSduTestCase : public LteRlcUmTransmitterTestCase
 };
 
 /**
- * Test 4.1.1.2 Segmentation (One SDU => n PDUs)
+ * \ingroup lte-test
+ * \ingroup tests
+ *
+ * \brief Test 4.1.1.2 Segmentation (One SDU => n PDUs)
  */
 class LteRlcUmTransmitterSegmentationTestCase : public LteRlcUmTransmitterTestCase
 {
   public:
+    /**
+     * Constructor
+     *
+     * \param name the reference name
+     */
     LteRlcUmTransmitterSegmentationTestCase (std::string name);
     LteRlcUmTransmitterSegmentationTestCase ();
     virtual ~LteRlcUmTransmitterSegmentationTestCase ();
@@ -94,11 +137,19 @@ class LteRlcUmTransmitterSegmentationTestCase : public LteRlcUmTransmitterTestCa
 };
 
 /**
- * Test 4.1.1.3 Concatenation (n SDUs => One PDU)
+ * \ingroup lte-test
+ * \ingroup tests
+ *
+ * \brief Test 4.1.1.3 Concatenation (n SDUs => One PDU)
  */
 class LteRlcUmTransmitterConcatenationTestCase : public LteRlcUmTransmitterTestCase
 {
   public:
+    /**
+     * Constructor
+     *
+     * \param name the reference name
+     */
     LteRlcUmTransmitterConcatenationTestCase (std::string name);
     LteRlcUmTransmitterConcatenationTestCase ();
     virtual ~LteRlcUmTransmitterConcatenationTestCase ();
@@ -109,11 +160,19 @@ class LteRlcUmTransmitterConcatenationTestCase : public LteRlcUmTransmitterTestC
 };
 
 /**
- * Test 4.1.1.4 Report Buffer Status (test primitive parameters)
+ * \ingroup lte-test
+ * \ingroup tests
+ *
+ * \brief Test 4.1.1.4 Report Buffer Status (test primitive parameters)
  */
 class LteRlcUmTransmitterReportBufferStatusTestCase : public LteRlcUmTransmitterTestCase
 {
   public:
+    /**
+     * Constructor
+     *
+     * \param name the reference name
+     */
     LteRlcUmTransmitterReportBufferStatusTestCase (std::string name);
     LteRlcUmTransmitterReportBufferStatusTestCase ();
     virtual ~LteRlcUmTransmitterReportBufferStatusTestCase ();

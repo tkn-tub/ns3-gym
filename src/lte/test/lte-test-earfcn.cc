@@ -29,15 +29,30 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("LteTestEarfcn");
 
+/**
+ * \ingroup lte-test
+ * \ingroup tests
+ *
+ * \brief Test case that is testing if the frequency is properly generated 
+ * from provided EARFCN frequency.
+ */
+
 class LteEarfcnTestCase : public TestCase
 {
 public:
+  /**
+   * Constructor
+   *
+   * \param str referene name
+   * \param earfcn EARFCN
+   * \param f frequency
+   */
   LteEarfcnTestCase (const char* str, uint16_t earfcn, double f);
   virtual ~LteEarfcnTestCase ();
 
 protected:
-  uint16_t m_earfcn;
-  double m_f;
+  uint16_t m_earfcn; ///< the EARFCN
+  double m_f; ///< the frequency
 
 private:
   virtual void DoRun (void);
@@ -62,9 +77,25 @@ LteEarfcnTestCase::DoRun (void)
   NS_TEST_ASSERT_MSG_EQ_TOL (f, m_f, 0.0000001, "wrong frequency");
 }
 
+/**
+ * \ingroup lte-test
+ * \ingroup tests
+ *
+ * \brief 
+ * Test case that is testing if the downlink frequency is properly 
+ * converted from provided downlink EARFCN frequency value.
+ */
+
 class LteEarfcnDlTestCase : public LteEarfcnTestCase
 {
 public:
+  /**
+   * Constructor
+   *
+   * \param str referene name
+   * \param earfcn EARFCN
+   * \param f frequency
+   */
   LteEarfcnDlTestCase (const char* str, uint16_t earfcn, double f);
 
 private:
@@ -88,9 +119,24 @@ LteEarfcnDlTestCase::DoRun (void)
 }
 
 
+/**
+ * \ingroup lte-test
+ * \ingroup tests
+ *
+ * \brief  Test case that is testing if the uplink frequency is properly 
+ * converted from provided uplink EARFCN frequency value.
+ */
+
 class LteEarfcnUlTestCase : public LteEarfcnTestCase
 {
 public:
+  /**
+   * Constructor
+   *
+   * \param str referene name
+   * \param earfcn EARFCN
+   * \param f frequency
+   */
   LteEarfcnUlTestCase (const char* str, uint16_t earfcn, double f);
 
 private:
@@ -111,7 +157,11 @@ LteEarfcnUlTestCase::DoRun (void)
 
 
 /**
- * Test the calculation of carrier frequency based on EARFCN
+ * \ingroup lte-test
+ * \ingroup tests
+ *
+ * \brief Test suite for testing correct conversion of freuquencies in 
+ * the downlink and the uplink, and general EARFCN frequencies.
  */
 class LteEarfcnTestSuite : public TestSuite
 {

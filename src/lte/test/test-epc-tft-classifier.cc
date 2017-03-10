@@ -37,9 +37,30 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("TestEpcTftClassifier");
 
+/**
+ * \ingroup lte-test
+ * \ingroup tests
+ *
+ * \brief Test case to check the functionality of the Tft Classifier. Test 
+ * consist of defining different TFT configurations, i.e. direction, ports, 
+ * address, and it is checking if the clasiffication of UDP packets is
+ * done correctly.
+ */
 class EpcTftClassifierTestCase : public TestCase
 {
 public:
+  /**
+   * Constructor
+   *
+   * \param c the EPC TFT classifier
+   * \param d the EPC TFT direction
+   * \param sa the source address
+   * \param da the destination address
+   * \param sp the source port
+   * \param dp the destination port
+   * \param tos the TOS
+   * \param tftId the TFT ID
+   */
   EpcTftClassifierTestCase (Ptr<EpcTftClassifier> c,
                             EpcTft::Direction d,
                             Ipv4Address sa, 
@@ -52,13 +73,25 @@ public:
 
 private:
   
-  Ptr<EpcTftClassifier> m_c;
-  EpcTft::Direction m_d;
-  uint8_t m_tftId;
-  Ipv4Header m_ipHeader;
-  UdpHeader m_udpHeader;
-  TcpHeader m_tcpHeader;
+  Ptr<EpcTftClassifier> m_c; ///< the EPC TFT classifier
+  EpcTft::Direction m_d; ///< the EPC TFT direction
+  uint8_t m_tftId; ///< the TFT ID
+  Ipv4Header m_ipHeader; ///< the IPv4 header
+  UdpHeader m_udpHeader; ///< the UDP header
+  TcpHeader m_tcpHeader; ///< the TCP header
 
+  /**
+   * Build name string
+   * \param c the EPC TFT classifier
+   * \param d the EPC TFT direction
+   * \param sa the source address
+   * \param da the destination address
+   * \param sp the source port
+   * \param dp the destination port
+   * \param tos the TOS
+   * \param tftId the TFT ID
+   * \returns the name string
+   */
   static std::string BuildNameString (Ptr<EpcTftClassifier> c,
                                       EpcTft::Direction d,
                                       Ipv4Address sa, 
@@ -136,6 +169,12 @@ EpcTftClassifierTestCase::DoRun (void)
 
 
 
+/**
+ * \ingroup lte-test
+ * \ingroup tests
+ *
+ * \brief Epc Tft Classifier Test Suite
+ */
 class EpcTftClassifierTestSuite : public TestSuite
 {
 public:

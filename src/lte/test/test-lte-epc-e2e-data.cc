@@ -49,19 +49,32 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE ("LteEpcE2eData");
 
 
+/**
+ * \ingroup lte-test
+ * \ingroup tests
+ */
+
+/// BearerTestData structure
 struct BearerTestData
 {
+  /**
+   * Constructor
+   *
+   * \param n the number of packets
+   * \param s the packet size
+   * \param i the inter packet interval in seconds
+   */
   BearerTestData (uint32_t n, uint32_t s, double i);
 
-  uint32_t numPkts;
-  uint32_t pktSize;
-  Time interPacketInterval;
+  uint32_t numPkts; ///< the number of packets
+  uint32_t pktSize; ///< the packet size
+  Time interPacketInterval; ///< the inter packet interval time
  
-  Ptr<PacketSink> dlServerApp;
-  Ptr<Application> dlClientApp;
+  Ptr<PacketSink> dlServerApp; ///< the DL server app
+  Ptr<Application> dlClientApp; ///< the DL client app
 
-  Ptr<PacketSink> ulServerApp;
-  Ptr<Application> ulClientApp;
+  Ptr<PacketSink> ulServerApp; ///< the UL server app
+  Ptr<Application> ulClientApp; ///< the UL client app
 };
 
   BearerTestData::BearerTestData (uint32_t n, uint32_t s, double i)
@@ -71,26 +84,42 @@ struct BearerTestData
 {
 }
 
+/// UeTestData structure
 struct UeTestData
 {
-  std::vector<BearerTestData> bearers;
+  std::vector<BearerTestData> bearers; ///< the bearer test data
 };
 
+/// EnbTestData structure
 struct EnbTestData
 {
-  std::vector<UeTestData> ues;
+  std::vector<UeTestData> ues; ///< the list of UEs
 };
 
+
+/**
+ * \ingroup lte-test
+ * \ingroup tests
+ *
+ * \brief Test that e2e packet flow is correct. Compares the data send and the 
+ * data received. Test uses mostly the PDCP stats to check the performance.
+ */
 
 class LteEpcE2eDataTestCase : public TestCase
 {
 public:
+  /**
+   * Constructor
+   *
+   * \param name the reference name
+   * \param v the ENB test data
+   */
   LteEpcE2eDataTestCase (std::string name, std::vector<EnbTestData> v);
   virtual ~LteEpcE2eDataTestCase ();
 
 private:
   virtual void DoRun (void);
-  std::vector<EnbTestData> m_enbTestData;
+  std::vector<EnbTestData> m_enbTestData; ///< the ENB test data
 };
 
 
@@ -340,14 +369,17 @@ LteEpcE2eDataTestCase::DoRun ()
 
 
 /**
- * Test that the S1-U interface implementation works correctly
+ * \ingroup lte-test
+ * \ingroup tests
+ *
+ * \brief Test that the S1-U interface implementation works correctly
  */
 class LteEpcE2eDataTestSuite : public TestSuite
 {
 public:
   LteEpcE2eDataTestSuite ();
   
-} g_lteEpcE2eDataTestSuite;
+} g_lteEpcE2eDataTestSuite; ///< the test suite
 
 LteEpcE2eDataTestSuite::LteEpcE2eDataTestSuite ()
   : TestSuite ("lte-epc-e2e-data", SYSTEM)

@@ -45,10 +45,36 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE ("LteAntennaTest");
 
 
+/**
+ * \ingroup lte-test
+ * \ingroup tests
+ *
+ * \brief Tests that the propagation model and the antenna parameters are 
+ * generate the correct values. Different test cases are created by specifing different 
+ * antenna configurations and it is tested if for the given information the pathloss 
+ * value is as expected.
+ */
 class LteEnbAntennaTestCase : public TestCase
 {
 public:
+  /**
+   * Build name string
+   * \param orientationDegrees the orientation in degrees
+   * \param beamwidthDegrees the beam width in degrees
+   * \param x position of UE
+   * \param y position of UE
+   * \returns the name string
+   */
   static std::string BuildNameString (double orientationDegrees, double beamwidthDegrees, double x, double y);
+  /**
+   * Constructor
+   *
+   * \param orientationDegrees the orientation in degrees
+   * \param beamwidthDegrees the beam width in degrees
+   * \param x position of UE
+   * \param y position of UE
+   * \param antennaGainDb the antenna gain in dB 
+   */
   LteEnbAntennaTestCase (double orientationDegrees, double beamwidthDegrees, double x, double y, double antennaGainDb);
   LteEnbAntennaTestCase ();
   virtual ~LteEnbAntennaTestCase ();
@@ -56,11 +82,11 @@ public:
 private:
   virtual void DoRun (void);
 
-  double m_orientationDegrees;
-  double m_beamwidthDegrees;
-  double m_x;
-  double m_y;
-  double m_antennaGainDb;
+  double m_orientationDegrees; ///< antenna orientation in degrees
+  double m_beamwidthDegrees; ///< antenna beamwidth in degrees
+  double m_x; ///< x position of the UE
+  double m_y; ///< y position of the UE
+  double m_antennaGainDb; ///< antenna gain in dB
 };
 
 
@@ -220,6 +246,12 @@ LteEnbAntennaTestCase::DoRun (void)
 }
 
 
+/**
+ * \ingroup lte-test
+ * \ingroup tests
+ *
+ * \brief Lte Enb Antenna Test Suite
+ */
 class LteAntennaTestSuite : public TestSuite
 {
 public:

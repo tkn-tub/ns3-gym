@@ -45,7 +45,10 @@ using namespace ns3;
 
 
 /**
- * Test that UE Measurements (see 36.214) calculation works fine in a
+ * \ingroup lte-test
+ * \ingroup tests
+ *
+ * \brief Test that UE Measurements (see 36.214) calculation works fine in a
  * multi-cell interference scenario.
  */
 class LteUeMeasurementsTestSuite : public TestSuite
@@ -55,25 +58,59 @@ public:
 };
 
 
+/**
+ * \ingroup lte-test
+ * \ingroup tests
+ *
+ * \brief Test that UE measurements calculation works properly in a scenario 
+ * with 2 eNodeBs and 2UEs. Test that RSRP and RSRQ of the serving cell and of 
+ * the neighbor cell correspond to the reference values.
+ */
 class LteUeMeasurementsTestCase : public TestCase
 {
 public:
+  /**
+   * Constructor
+   *
+   * \param name the reference name
+   * \param d1 distance between UE and ENB node pair
+   * \param d2 distance between UE and other ENB node
+   * \param rsrpDbmUe1 RSRP in dBm UE 1
+   * \param rsrpDbmUe2 RSRP in dBm UE 2
+   * \param rsrqDbUe1 RSRQ in dBm UE 1
+   * \param rsrqDbUe2 RSRQ in dBm UE 2
+   */
   LteUeMeasurementsTestCase (std::string name, double d1, double d2, double rsrpDbmUe1, double rsrpDbmUe2, double rsrqDbUe1, double rsrqDbUe2);
   virtual ~LteUeMeasurementsTestCase ();
 
+  /**
+   * Report UE measurements function
+   * \param rnti the RNTI
+   * \param cellId the cell ID
+   * \param rsrp the RSRP
+   * \param rsrq the RSRQ
+   * \param servingCell the serving cell
+   */
   void ReportUeMeasurements (uint16_t rnti, uint16_t cellId, double rsrp, double rsrq, bool servingCell);
 
+  /**
+   * Reeive measurement report function
+   * \param imsi the IMSI
+   * \param cellId the cell ID
+   * \param rnti the RNTI
+   * \param meas LteRrcSap::MeasurementReport
+   */
   void RecvMeasurementReport (uint64_t imsi, uint16_t cellId, uint16_t rnti, LteRrcSap::MeasurementReport meas);
 
 private:
   virtual void DoRun (void);
 
-  double m_d1;
-  double m_d2;
-  double m_rsrpDbmUeServingCell;
-  double m_rsrpDbmUeNeighborCell;
-  double m_rsrqDbUeServingCell;
-  double m_rsrqDbUeNeighborCell;
+  double m_d1; ///< distance between UE and ENB node pair
+  double m_d2; ///< distance between UE and other ENB node
+  double m_rsrpDbmUeServingCell; ///< RSRP in dBm UE 1
+  double m_rsrpDbmUeNeighborCell; ///< RSRP in dBm UE 2
+  double m_rsrqDbUeServingCell; ///< RSRQ in dBm UE 1
+  double m_rsrqDbUeNeighborCell; ///< RSRQ in dBm UE 2
 
 };
 
@@ -83,6 +120,9 @@ private:
 
 
 /**
+ * \ingroup lte-test
+ * \ingroup tests
+ *
  * \brief Test suite for generating calls to UE measurements test case
  *        ns3::LteUeMeasurementsPiecewiseTestCase1.
  */
@@ -94,12 +134,34 @@ public:
 
 
 /**
+ * \ingroup lte-test
+ * \ingroup tests
+ *
  * \brief Testing UE measurements in LTE with simulation of 1 eNodeB and 1 UE in
- *        piecewise configuration and 120 ms report interval.
+ *        piecewise configuration and 120 ms report interval. During the simulation 
+ *        the placement of UE is being changed several times. Four different 
+ *        cases are considered: UE is very near to eNodeB, UE is near to eNodeB, 
+ *        UE is far from eNodeB and UE is very far from eNodeB. Test checkes 
+ *        if the measurments correspond to the real conditions of the UE, i.e. 
+ *        wnen the signal from serving cell becomes weak, the measurements should 
+ *        also start to correspond to the new channel conditions. Additionally, it 
+ *        is checked if UE detects some neighboring signal, if it does the test 
+ *        fails because there is no neighbor in this configuration. Also, test 
+ *        checks if the reporting occurs at intervals that it should according to 
+ *        the measurements configuration. If it occurs in some different time 
+ *        stamp the test will fail.
  */
 class LteUeMeasurementsPiecewiseTestCase1 : public TestCase
 {
 public:
+  /**
+   * Constructor
+   *
+   * \param name the reference name
+   * \param config LteRrcSap::ReportConfigEutra
+   * \param expectedTime the expected time
+   * \param expectedRsrp the expected RSRP
+   */
   LteUeMeasurementsPiecewiseTestCase1 (std::string name,
                                        LteRrcSap::ReportConfigEutra config,
                                        std::vector<Time> expectedTime,
@@ -116,6 +178,12 @@ public:
    *
    * Verification consists of checking whether the report carries the right
    * value of RSRP or not, and whether it occurs at the expected time or not.
+   *
+   * \param context the context
+   * \param imsi the IMSI
+   * \param cellId the cell ID
+   * \param rnti  the RNTI
+   * \param report LteRrcSap::MeasurementReport
    */
   void RecvMeasurementReportCallback (std::string context, uint64_t imsi,
                                       uint16_t cellId, uint16_t rnti,
@@ -136,9 +204,13 @@ private:
    */
   virtual void DoTeardown ();
 
+  /// Teleport very near function
   void TeleportVeryNear ();
+  /// Teleport near function
   void TeleportNear ();
+  /// Teleport far function
   void TeleportFar ();
+  /// Teleport far function
   void TeleportVeryFar ();
 
   /**
@@ -177,7 +249,7 @@ private:
    */
   uint8_t m_expectedMeasId;
 
-  Ptr<MobilityModel> m_ueMobility;
+  Ptr<MobilityModel> m_ueMobility; ///< the mobility model
 
 }; // end of class LteUeMeasurementsPiecewiseTestCase1
 
@@ -187,6 +259,9 @@ private:
 
 
 /**
+ * \ingroup lte-test
+ * \ingroup tests
+ *
  * \brief Test suite for generating calls to UE measurements test case
  *        ns3::LteUeMeasurementsPiecewiseTestCase2.
  */
@@ -198,12 +273,34 @@ public:
 
 
 /**
+ * \ingroup lte-test
+ * \ingroup tests
+ *
  * \brief Testing UE measurements in LTE with simulation of 2 eNodeB and 1 UE in
  *        piecewise configuration and 240 ms report interval.
+ *        Here is intenisvely test events A1 and A2. A1 event should be triggered
+ *        when the serving cell becomes better than a given threshold. A2 shall 
+ *        be triggered when the serving cell becomes worse than threshold. A3 
+ *        event is triggered when the neighbour becomes offset better than the PCell.
+ *        In this test UE is being transported several times during the simulation 
+ *        duration. Then the test checks if measurement report contains correct 
+ *        RSRP and RSRQ result, than if CQI info is correctly generated, if the 
+ *        reporting occurs at the corret time stamp in the simulation and according 
+ *        to the measurements configuration. It also checks if the reported values 
+ *        of RSRP and RSRQ are equal to expected reference values.
+ *        
  */
 class LteUeMeasurementsPiecewiseTestCase2 : public TestCase
 {
 public:
+  /**
+   * Constructor
+   *
+   * \param name the reference name
+   * \param config LteRrcSap::ReportConfigEutra
+   * \param expectedTime the expected time
+   * \param expectedRsrp the expected RSRP
+   */
   LteUeMeasurementsPiecewiseTestCase2 (std::string name,
                                        LteRrcSap::ReportConfigEutra config,
                                        std::vector<Time> expectedTime,
@@ -220,6 +317,12 @@ public:
    *
    * Verification consists of checking whether the report carries the right
    * value of RSRP or not, and whether it occurs at the expected time or not.
+   *
+   * \param context the context
+   * \param imsi the IMSI
+   * \param cellId the cell ID
+   * \param rnti  the RNTI
+   * \param report LteRrcSap::MeasurementReport
    */
   void RecvMeasurementReportCallback (std::string context, uint64_t imsi,
                                       uint16_t cellId, uint16_t rnti,
@@ -240,9 +343,13 @@ private:
    */
   virtual void DoTeardown ();
 
+  /// Teleport very near function
   void TeleportVeryNear ();
+  /// Teleport near function
   void TeleportNear ();
+  /// Teleport far function
   void TeleportFar ();
+  /// Teleport very far function
   void TeleportVeryFar ();
 
   /**
@@ -281,7 +388,7 @@ private:
    */
   uint8_t m_expectedMeasId;
 
-  Ptr<MobilityModel> m_ueMobility;
+  Ptr<MobilityModel> m_ueMobility; ///< the mobility model
 
 }; // end of class LteUeMeasurementsPiecewiseTestCase2
 
@@ -291,6 +398,9 @@ private:
 
 
 /**
+ * \ingroup lte-test
+ * \ingroup tests
+ *
  * \brief Test suite for generating calls to UE measurements test case
  *        ns3::LteUeMeasurementsHandoverTestCase.
  */
@@ -302,15 +412,36 @@ public:
 
 
 /**
+ * \ingroup lte-test
+ * \ingroup tests
+ *
  * \brief Testing UE measurements in LTE with simulation of 2 eNodeB and 1 UE in
  *        a handover configuration.
  *
  * The simulation will run for the specified duration, while the handover
- * command will be issued exactly at the middle of simulation.
+ * command will be issued exactly at the middle of simulation. Handover 
+ * test covers four different scenarios: switch from event A1 to event A2, 
+ * from event A2 to event A1, from event A3 to event A4, from event A4 to event 
+ * A3, from event A2 to event A3, from event A3 to event A2, from event A4 to 
+ * event A5, from event A5 to event A4. Additionally, it tests different 
+ * handover threshold configurations, A2 threshold difference, A3 offset difference,
+ * A4 and A5 threshold difference. Finally, different handover is tested for 
+ * different time-to-trigger (TTT) configurations.
+ * 
  */
 class LteUeMeasurementsHandoverTestCase : public TestCase
 {
 public:
+  /**
+   * Constructor
+   *
+   * \param name the reference name
+   * \param sourceConfigList std::list<LteRrcSap::ReportConfigEutra>
+   * \param targetConfigList std::list<LteRrcSap::ReportConfigEutra>
+   * \param expectedTime the expected time
+   * \param expectedRsrp the expected RSRP
+   * \param duration the duration
+   */
   LteUeMeasurementsHandoverTestCase (std::string name,
                                      std::list<LteRrcSap::ReportConfigEutra> sourceConfigList,
                                      std::list<LteRrcSap::ReportConfigEutra> targetConfigList,
@@ -329,6 +460,12 @@ public:
    *
    * Verification consists of checking whether the report carries the right
    * value of RSRP or not, and whether it occurs at the expected time or not.
+   *
+   * \param context the context
+   * \param imsi the IMSI
+   * \param cellId the cell ID
+   * \param rnti  the RNTI
+   * \param report LteRrcSap::MeasurementReport
    */
   void RecvMeasurementReportCallback (std::string context, uint64_t imsi,
                                       uint16_t cellId, uint16_t rnti,

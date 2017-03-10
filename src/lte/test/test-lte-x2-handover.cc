@@ -31,15 +31,28 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("LteX2HandoverTest");
 
+/**
+ * \ingroup lte-test
+ * \ingroup tests
+ *
+ * \brief HandoverEvent structure
+ */ 
 struct HandoverEvent
 {
-  Time startTime;
-  uint32_t ueDeviceIndex;
-  uint32_t sourceEnbDeviceIndex;
-  uint32_t targetEnbDeviceIndex;
+  Time startTime; ///< start time
+  uint32_t ueDeviceIndex; ///< UE device index
+  uint32_t sourceEnbDeviceIndex; ///< source ENB device index
+  uint32_t targetEnbDeviceIndex; ///< target ENB device index
 };
 
 
+/**
+ * \ingroup lte-test
+ * \ingroup tests
+ *
+ * \brief Test X2 Handover. In this test is used NoOpHandoverAlgorithm and 
+ * the request for handover is generated mannually, and it is not based on measurements.
+ */ 
 class LteX2HandoverTestCase : public TestCase
 {
 public:
@@ -52,52 +65,89 @@ public:
    * \param handoverEventList 
    * \param handoverEventListName 
    * \param useUdp true if UDP is to be used, false if TCP is to be used
-   * 
-   * \return 
+   * \param schedulerType the scheduler type
+   * \param admitHo
+   * \param useIdealRrc true if the ideal RRC should be used 
    */
   LteX2HandoverTestCase (uint32_t nUes, uint32_t nDedicatedBearers, std::list<HandoverEvent> handoverEventList, std::string handoverEventListName, bool useUdp, std::string schedulerType, bool admitHo, bool useIdealRrc);
   
 private:
+  /**
+   * Build name string
+   * \param nUes number of UEs in the test
+   * \param nDedicatedBearers number of bearers to be activated per UE
+   * \param handoverEventListName 
+   * \param useUdp true if UDP is to be used, false if TCP is to be used
+   * \param schedulerType the scheduler type
+   * \param admitHo
+   * \param useIdealRrc true if the ideal RRC should be used 
+   * \returns the name string
+   */
   static std::string BuildNameString (uint32_t nUes, uint32_t nDedicatedBearers, std::string handoverEventListName, bool useUdp, std::string schedulerType, bool admitHo, bool useIdealRrc);
   virtual void DoRun (void);
+  /**
+   * Check connected function
+   * \param ueDevice the UE device
+   * \param enbDevice the ENB device
+   */
   void CheckConnected (Ptr<NetDevice> ueDevice, Ptr<NetDevice> enbDevice);
 
-  uint32_t m_nUes; // number of UEs in the test
-  uint32_t m_nDedicatedBearers; // number of UEs in the test
-  std::list<HandoverEvent> m_handoverEventList;
-  std::string m_handoverEventListName;
-  bool m_epc;
-  bool m_useUdp;
-  std::string m_schedulerType;
-  bool m_admitHo;
-  bool     m_useIdealRrc;
-  Ptr<LteHelper> m_lteHelper;
-  Ptr<PointToPointEpcHelper> m_epcHelper;
+  uint32_t m_nUes; ///< number of UEs in the test
+  uint32_t m_nDedicatedBearers; ///< number of UEs in the test
+  std::list<HandoverEvent> m_handoverEventList; ///< handover event list
+  std::string m_handoverEventListName; ///< handover event list name
+  bool m_epc; ///< whether to use EPC
+  bool m_useUdp; ///< whether to use UDP traffic
+  std::string m_schedulerType; ///< scheduler type
+  bool m_admitHo; ///< whether to admit the handover request
+  bool     m_useIdealRrc; ///< whether to use the ideal RRC
+  Ptr<LteHelper> m_lteHelper; ///< LTE helper
+  Ptr<PointToPointEpcHelper> m_epcHelper; ///< EPC helper
   
+/**
+ * \ingroup lte-test
+ * \ingroup tests
+ *
+ * \brief BearerData structure
+ */ 
   struct BearerData
   {
-    uint32_t bid;
-    Ptr<PacketSink> dlSink;
-    Ptr<PacketSink> ulSink;
-    uint32_t dlOldTotalRx;
-    uint32_t ulOldTotalRx;
+    uint32_t bid; ///< BID
+    Ptr<PacketSink> dlSink; ///< DL sink
+    Ptr<PacketSink> ulSink; ///< UL sink
+    uint32_t dlOldTotalRx; ///< DL old total receive
+    uint32_t ulOldTotalRx; ///< UL old total receive
   };
 
+/**
+ * \ingroup lte-test
+ * \ingroup tests
+ *
+ * \brief UeData structure
+ */ 
   struct UeData
   {
-    uint32_t id;
-    std::list<BearerData> bearerDataList;
+    uint32_t id; ///< ID
+    std::list<BearerData> bearerDataList; ///< bearer ID list
   };
 
+/**
+ * \brief Save stats after handover function
+ * \param ueIndex the index of the UE
+ */ 
   void SaveStatsAfterHandover (uint32_t ueIndex);
+/**
+ * \brief Check stats a while after handover function
+ * \param ueIndex the index of the UE
+ */ 
   void CheckStatsAWhileAfterHandover (uint32_t ueIndex);
 
-  std::vector<UeData> m_ueDataVector;
+  std::vector<UeData> m_ueDataVector; ///< UE data vector
 
-  const Time m_maxHoDuration; 
-  const Time m_statsDuration;
-  const Time m_udpClientInterval;
-  const uint32_t m_udpClientPktSize;
+  const Time m_maxHoDuration; ///< maximum HO duration
+  const Time m_statsDuration; ///< stats duration
+  const Time m_udpClientInterval; ///< UDP client interval
+  const uint32_t m_udpClientPktSize; ///< UDP client packet size
 
 };
 
@@ -534,6 +584,12 @@ LteX2HandoverTestCase::CheckStatsAWhileAfterHandover (uint32_t ueIndex)
 }
 
 
+/**
+ * \ingroup lte-test
+ * \ingroup tests
+ *
+ * \brief Lte X2 Handover Test Suite
+ */ 
 class LteX2HandoverTestSuite : public TestSuite
 {
 public:

@@ -31,51 +31,100 @@ using namespace ns3;
 
 
 /**
-* This system test program creates different test cases with a single eNB and 
-* several UEs, all having the same Radio Bearer specification. In each test 
-* case, the UEs see the same SINR from the eNB; different test cases are 
-* implemented obtained by using different SINR values and different numbers of 
-* UEs. The test consists on checking that the obtained throughput performance 
-* is equal among users is consistent with the definition of token bank fair  
-* queue scheduling
-*/
+ * \ingroup lte-test
+ * \ingroup tests
+ *
+ * \brief This system test program creates different test cases with a single eNB and 
+ * several UEs, all having the same Radio Bearer specification. In each test 
+ * case, the UEs see the same SINR from the eNB; different test cases are 
+ * implemented obtained by using different SINR values and different numbers of 
+ * UEs. The test consists on checking that the obtained throughput performance 
+ * is equal among users is consistent with the definition of token bank fair  
+ * queue scheduling
+ */
 class LenaPssFfMacSchedulerTestCase1 : public TestCase
 {
 public:
+  /**
+   * Constructor
+   *
+   * \param nUser the number of UE nodes
+   * \param dist the distance between nodes
+   * \param thrRefDl the DL throughput reference
+   * \param thrRefUl the UL throughput reference
+   * \param packetSize the packet size
+   * \param interval the interval time
+   * \param errorModelEnabled if true the error model is enabled
+   */
   LenaPssFfMacSchedulerTestCase1 (uint16_t nUser, double dist, double thrRefDl, double thrRefUl, uint16_t packetSize, uint16_t interval, bool  errorModelEnabled);
   virtual ~LenaPssFfMacSchedulerTestCase1 ();
 
 private:
+  /**
+   * Builds the test name string based on provided parameter values
+   * \param nUser the number of UE nodes
+   * \param dist the distnace between nodes
+   * \returns the name string
+   */
   static std::string BuildNameString (uint16_t nUser, double dist);
   virtual void DoRun (void);
-  uint16_t m_nUser;
-  double m_dist;
-  uint16_t m_packetSize;  // byte
-  uint16_t m_interval;    // ms
-  double m_thrRefDl;
-  double m_thrRefUl;
-  bool m_errorModelEnabled;
+  uint16_t m_nUser; ///< number of UE nodes
+  double m_dist; ///< the distance between nodes
+  uint16_t m_packetSize;  ///< the packet size in bytes
+  uint16_t m_interval;    ///< the interval time in ms
+  double m_thrRefDl; ///< the DL throughput reference value
+  double m_thrRefUl; ///< the UL throughput reference value
+  bool m_errorModelEnabled; ///< indicates whether the error model is enabled
 };
 
 
+/**
+ * \ingroup lte-test
+ * \ingroup tests
+ *
+ * \brief Simillar to the LenaPssFfMacSchedulerTestCase1 with the difference that 
+ * UEs are places in such a way to experience different SINRs. Test checks if the
+ * achieved throughput in such conditions has expected value.
+ */
 class LenaPssFfMacSchedulerTestCase2 : public TestCase
 {
 public:
+  /**
+   * Constructor
+   *
+   * \param dist the distance between nodes
+   * \param estThrPssDl the estimated DL throughput PSS
+   * \param packetSize the packet size
+   * \param interval the interval time
+   * \param errorModelEnabled if true the error model is enabled
+   */
   LenaPssFfMacSchedulerTestCase2 (std::vector<double> dist, std::vector<uint32_t> estThrPssDl, std::vector<uint16_t> packetSize, uint16_t interval, bool  errorModelEnabled);
   virtual ~LenaPssFfMacSchedulerTestCase2 ();
 
 private:
+  /**
+   * Builds the test name string based on provided parameter values
+   * \param nUser the number of UE nodes
+   * \param dist the distnace between nodes
+   * \returns the name string
+   */
   static std::string BuildNameString (uint16_t nUser, std::vector<double> dist);
   virtual void DoRun (void);
-  uint16_t m_nUser;
-  std::vector<double> m_dist;
-  std::vector<uint16_t> m_packetSize;  // byte
-  uint16_t m_interval;    // ms
-  std::vector<uint32_t> m_estThrPssDl;
-  bool m_errorModelEnabled;
+  uint16_t m_nUser; ///< number of UE nodes
+  std::vector<double> m_dist; ///< the distance between nodes
+  std::vector<uint16_t> m_packetSize;  ///< the packet size in bytes
+  uint16_t m_interval;    ///< the interval time in ms
+  std::vector<uint32_t> m_estThrPssDl; ///< the DL estimated throughput PSS
+  bool m_errorModelEnabled; ///< indicates whether the error model is enabled
 };
 
 
+/**
+ * \ingroup lte-test
+ * \ingroup tests
+ *
+ * \brief Lena Pss Ff Mac Scheduler Test Suite
+ */
 class LenaTestPssFfMacSchedulerSuite : public TestSuite
 {
 public:

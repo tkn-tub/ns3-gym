@@ -32,7 +32,10 @@ using namespace ns3;
 
 
 /**
- * Test 1.2 SINR calculation in uplink
+ * \ingroup lte-test
+ * \ingroup tests
+ *
+ * \brief Test 1.2 SINR calculation in uplink
  */
 class LteUplinkSinrTestSuite : public TestSuite
 {
@@ -41,25 +44,60 @@ public:
 };
 
 
+/**
+ * \ingroup lte-test
+ * \ingroup tests
+ *
+ * \brief Test generation of SINR in the uplink. Test schedules the signal and the interference 
+ * signals and it evaluates if the obtained value for SINR corresponds to the theoretical value 
+ * in given conditions. 
+ */
 class LteUplinkDataSinrTestCase : public TestCase
 {
 public:
+  /**
+   * Constructor
+   *
+   * \param sv1 spectrum value 1
+   * \param sv2 spectrum value 2
+   * \param sinr the SINR
+   * \param name the reference name
+   */
   LteUplinkDataSinrTestCase (Ptr<SpectrumValue> sv1, Ptr<SpectrumValue> sv2, Ptr<SpectrumValue> sinr, std::string name);
   virtual ~LteUplinkDataSinrTestCase ();
 
 private:
   virtual void DoRun (void);
 
-  Ptr<SpectrumValue> m_sv1;
-  Ptr<SpectrumValue> m_sv2;
-  Ptr<const SpectrumModel> m_sm;
-  Ptr<SpectrumValue> m_expectedSinr;
+  Ptr<SpectrumValue> m_sv1; ///< the spectrum value #1
+  Ptr<SpectrumValue> m_sv2; ///< the spectrum value #2
+  Ptr<const SpectrumModel> m_sm; ///< the spectrum model
+  Ptr<SpectrumValue> m_expectedSinr; ///< the expected SINR
 };
 
 
+/**
+ * \ingroup lte-test
+ * \ingroup tests
+ *
+ * \brief  In this test one signal will be of interest, i.e., the
+  *  SRS of the first signal will have the same CellId of the 
+  *  receiving PHY; the others will have a different 
+  *  CellId and hence will be the interfering signals. The test 
+  *  checks whether the SINR of the signal correspond to the 
+  *  theoretical value.
+ */
 class LteUplinkSrsSinrTestCase : public TestCase
 {
   public:
+  /**
+   * Constructor
+   *
+   * \param sv1 spectrum value 1
+   * \param sv2 spectrum value 2
+   * \param sinr the SINR
+   * \param name the reference name
+   */
     LteUplinkSrsSinrTestCase (Ptr<SpectrumValue> sv1, Ptr<SpectrumValue> sv2, Ptr<SpectrumValue> sinr, std::string name);
     virtual ~LteUplinkSrsSinrTestCase ();
     
@@ -73,12 +111,12 @@ class LteUplinkSrsSinrTestCase : public TestCase
 private:
   virtual void DoRun (void);
   
-  Ptr<SpectrumValue> m_sv1;
-  Ptr<SpectrumValue> m_sv2;
-  Ptr<const SpectrumModel> m_sm;
-  
-  Ptr<SpectrumValue> m_expectedSinr;
-  Ptr<SpectrumValue> m_actualSinr;
+  Ptr<SpectrumValue> m_sv1; ///< the spectrum value #1
+  Ptr<SpectrumValue> m_sv2; ///< the spectrum value #2
+  Ptr<const SpectrumModel> m_sm; ///< the spectrum model
+
+  Ptr<SpectrumValue> m_expectedSinr; ///< the expected SINR
+  Ptr<SpectrumValue> m_actualSinr; ///< the actual SINR
 };
 
 

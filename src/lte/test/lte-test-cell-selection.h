@@ -55,6 +55,8 @@ public:
 
 
 /**
+ * \ingroup lte
+ *
  * \brief Testing the initial cell selection procedure by UE at IDLE state in
  *        the beginning of simulation.
  */
@@ -71,6 +73,15 @@ public:
     Time checkPoint; ///< The time in simulation when the UE is verified by the test script.
     uint16_t expectedCellId1; ///< The cell ID that the UE is expected to attach to (0 means that the UE should not attach to any cell).
     uint16_t expectedCellId2; ///< An alternative cell ID that the UE is expected to attach to (0 means that this no alternative cell is expected).
+    /**
+     * \brief UE test setup funtion.
+     * \param relPosX relative position to the inter site distance in X
+     * \param relPosY relative position to the inter site distance in Y
+     * \param isCsgMember if true, simulation is allowed access to CSG cell
+     * \param checkPoint the tiem int he simulation when the UE is verified
+     * \param expectedCellId1 ///< The cell ID that the UE is expected to attach to (0 means that the UE should not attach to any cell).
+     * \param expectedCellId2 ///< An alternative cell ID that the UE is expected to attach to (0 means that this no alternative cell is expected).
+     */
     UeSetup_t (double relPosX, double relPosY, bool isCsgMember, Time checkPoint,
                uint16_t expectedCellId1, uint16_t expectedCellId2);
   };
@@ -107,21 +118,49 @@ private:
   void CheckPoint (Ptr<LteUeNetDevice> ueDev, uint16_t expectedCellId1,
                    uint16_t expectedCellId2);
 
+  /**
+   * \brief State transition callback function
+   * \param context the context string
+   * \param imsi the IMSI
+   * \param cellId the cell ID
+   * \param rnti the RNTI
+   * \param oldState the old state
+   * \param newState the new state
+   */
   void StateTransitionCallback (std::string context, uint64_t imsi,
                                 uint16_t cellId, uint16_t rnti,
                                 LteUeRrc::State oldState, LteUeRrc::State newState);
+  /**
+   * \brief Initial cell selection end ok callback function
+   * \param context the context string
+   * \param imsi the IMSI
+   * \param cellId the cell ID
+   */
   void InitialCellSelectionEndOkCallback (std::string context, uint64_t imsi,
                                           uint16_t cellId);
+  /**
+   * \brief Initial cell selection end error callback function
+   * \param context the context string
+   * \param imsi the IMSI
+   * \param cellId the cell ID
+   */
   void InitialCellSelectionEndErrorCallback (std::string context, uint64_t imsi,
                                              uint16_t cellId);
+  /**
+   * \brief Connection established callback function
+   * \param context the context string
+   * \param imsi the IMSI
+   * \param cellId the cell ID
+   * \param rnti the RNTI
+   */
   void ConnectionEstablishedCallback (std::string context, uint64_t imsi,
                                       uint16_t cellId, uint16_t rnti);
 
-  bool m_isEpcMode;
-  bool m_isIdealRrc;
-  double m_interSiteDistance;
-  std::vector<UeSetup_t> m_ueSetupList;
-  int64_t m_rngRun;
+  bool m_isEpcMode; ///< whether the LTE configuration in test is using EPC
+  bool m_isIdealRrc; ///< whether the LTE is configured to use ideal RRC
+  double m_interSiteDistance; ///< inter site distance
+  std::vector<UeSetup_t> m_ueSetupList; ///< UE setup list
+  int64_t m_rngRun; ///< rng run
 
   /// The current UE RRC state.
   std::vector<LteUeRrc::State> m_lastState;

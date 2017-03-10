@@ -351,11 +351,11 @@ LenaFdBetFfMacSchedulerTestCase2::BuildNameString (uint16_t nUser, std::vector<d
 }
 
 
-LenaFdBetFfMacSchedulerTestCase2::LenaFdBetFfMacSchedulerTestCase2 (std::vector<double> dist, std::vector<uint32_t> estAchievableRateDl, std::vector<uint32_t> estThrFdBetUl, bool errorModelEnabled)
+LenaFdBetFfMacSchedulerTestCase2::LenaFdBetFfMacSchedulerTestCase2 (std::vector<double> dist, std::vector<uint32_t> achievableRateDl, std::vector<uint32_t> estThrFdBetUl, bool errorModelEnabled)
   : TestCase (BuildNameString (dist.size (), dist)),
     m_nUser (dist.size ()),
     m_dist (dist),
-    m_achievableRateDl (estAchievableRateDl),
+    m_achievableRateDl (achievableRateDl),
     m_estThrFdBetUl (estThrFdBetUl),
     m_errorModelEnabled (errorModelEnabled)
 {
