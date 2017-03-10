@@ -48,7 +48,7 @@ namespace ns3 {
 
 #define MAX_PKTS_PER_TRACE_FILE 100000
 #define PURGE_INTERVAL 5
-#define NETANIM_VERSION "netanim-3.106"
+#define NETANIM_VERSION "netanim-3.108"
 #define CHECK_STARTED_INTIMEWINDOW {if (!m_started || !IsInTimeWindow ()) return;}
 #define CHECK_STARTED_INTIMEWINDOW_TRACKPACKETS {if (!m_started || !IsInTimeWindow () || !m_trackPackets) return;}
 
@@ -511,6 +511,10 @@ private:
   typedef std::map<uint64_t, AnimPacketInfo> AnimUidPacketInfoMap;
   typedef std::map <uint32_t, double> EnergyFractionMap;
   typedef std::vector <Ipv4RoutePathElement> Ipv4RoutePathElements;
+  typedef std::multimap <uint32_t, std::string> NodeIdIpv4Map;
+  typedef std::multimap <uint32_t, std::string> NodeIdIpv6Map;
+  typedef std::pair <uint32_t, std::string> NodeIdIpv4Pair;
+  typedef std::pair <uint32_t, std::string> NodeIdIpv6Pair;
 
 
   // Node Counters
@@ -519,22 +523,21 @@ private:
 
   class AnimXmlElement
   {
-    public:
-    AnimXmlElement (std::string tagName, bool emptyElement=true);
-    template <typename T>
-    void AddAttribute (std::string attribute, T value, bool xmlEscape=false);
-    void Close ();
-    void CloseElement ();
-    void CloseTag ();
-    void AddLineBreak ();
-    void Add (AnimXmlElement e);
-    std::string GetElementString ();
+  public:
+	  AnimXmlElement(std::string tagName, bool emptyElement = true);
+	  template <typename T>
+	  void AddAttribute(std::string attribute, T value, bool xmlEscape = false);
+	  void SetText(std::string text);
+	  void AppendChild(AnimXmlElement e);
+	  std::string ToString(bool autoClose = true);
   private:
-    std::string m_tagName;
-    std::string m_elementString;
-    bool m_emptyElement;
+	  std::string m_tagName;
+	  std::string m_text;
+	  std::vector<std::string> m_attributes;
+	  std::vector<std::string> m_children;
 
   };
+
 
 
   // ##### State #####
@@ -593,6 +596,10 @@ private:
   std::map <uint32_t, Vector> m_nodeLocation;
   std::map <std::string, uint32_t> m_macToNodeIdMap;
   std::map <std::string, uint32_t> m_ipv4ToNodeIdMap;
+  std::map <std::string, uint32_t> m_ipv6ToNodeIdMap;
+  NodeIdIpv4Map m_nodeIdIpv4Map;
+  NodeIdIpv6Map m_nodeIdIpv6Map;
+
   NodeColorsMap m_nodeColors;
   NodeDescriptionsMap m_nodeDescriptions;
   LinkPropertiesMap m_linkProperties;
@@ -632,6 +639,10 @@ private:
   int WriteN (const std::string&, FILE * f);
   std::string GetMacAddress (Ptr <NetDevice> nd);
   std::string GetIpv4Address (Ptr <NetDevice> nd);
+  std::string GetIpv6Address(Ptr <NetDevice> nd);
+  std::vector<std::string> GetIpv4Addresses (Ptr <NetDevice> nd);
+  std::vector<std::string> GetIpv6Addresses (Ptr <NetDevice> nd);
+
   std::string GetNetAnimVersion ();
   void MobilityAutoCheck ();
   bool IsPacketPending (uint64_t animUid, ProtocolType protocolType);
@@ -641,6 +652,9 @@ private:
   void AddPendingPacket (ProtocolType protocolType, uint64_t animUid, AnimPacketInfo pktInfo);
   uint64_t GetAnimUidFromPacket (Ptr <const Packet>);
   void AddToIpv4AddressNodeIdTable (std::string, uint32_t);
+  void AddToIpv4AddressNodeIdTable(std::vector<std::string>, uint32_t);
+  void AddToIpv6AddressNodeIdTable(std::string, uint32_t);
+  void AddToIpv6AddressNodeIdTable(std::vector<std::string>, uint32_t);
   bool IsInTimeWindow ();
   void CheckMaxPktsPerTraceFile ();
 
@@ -754,6 +768,8 @@ private:
   void OutputWirelessPacketRxInfo (Ptr<const Packet> p, AnimPacketInfo& pktInfo, uint64_t animUid);
   void OutputCsmaPacket (Ptr<const Packet> p, AnimPacketInfo& pktInfo);
   void WriteLinkProperties ();
+  void WriteIpv4Addresses ();
+  void WriteIpv6Addresses ();
   void WriteNodes ();
   void WriteNodeColors ();
   void WriteNodeSizes ();
@@ -781,10 +797,12 @@ private:
   void WriteXmlP (uint64_t animUid, std::string pktType, uint32_t fId, double fbTx, double lbTx);
   void WriteXmlPRef (uint64_t animUid, uint32_t fId, double fbTx, std::string metaInfo = "");
   void WriteXmlClose (std::string name, bool routing = false);
-  void WriteXmlNonP2pLinkProperties (uint32_t id, std::string ipv4Address, std::string channelType);
+  void WriteXmlNonP2pLinkProperties (uint32_t id, std::string ipAddress, std::string channelType);
   void WriteXmlRouting (uint32_t id, std::string routingInfo);
   void WriteXmlRp (uint32_t nodeId, std::string destination, Ipv4RoutePathElements rpElements);
   void WriteXmlUpdateBackground (std::string fileName, double x, double y, double scaleX, double scaleY, double opacity);
+  void WriteXmlIpv4Addresses (uint32_t nodeId, std::vector<std::string> ipv4Addresses);
+  void WriteXmlIpv6Addresses (uint32_t nodeId, std::vector<std::string> ipv4Addresses);
 
 };
 
