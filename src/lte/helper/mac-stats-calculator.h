@@ -128,17 +128,8 @@ public:
    * 
    * \param macStats 
    * \param path 
-   * \param frameNo 
-   * \param subframeNo 
-   * \param rnti 
-   * \param mcsTb1 
-   * \param sizeTb1 
-   * \param mcsTb2 
-   * \param sizeTb2 
-   * \param componentCarrierId
+   * \param dlSchedulingCallbackInfo DlSchedulingCallbackInfo structure containing all downlink information that is generated what DlScheduling traces is fired
    */
-
-
   static void DlSchedulingCallback (Ptr<MacStatsCalculator> macStats, std::string path, DlSchedulingCallbackInfo dlSchedulingCallbackInfo);
 
   /** 

@@ -273,7 +273,7 @@ public:
    * This method is used to send the ComponentCarrier map created with CcHelper
    * to the helper, the structure will be used within InstallSingleEnbDevice
    *
-   * \param ccmap, the component carrier map
+   * \param ccmap the component carrier map
    */
    void SetCcPhyParams (std::map< uint8_t, ComponentCarrier> ccmap);
 
@@ -460,6 +460,7 @@ public:
    * \param ueDevices the set of UE devices
    * \param bearer the characteristics of the bearer to be activated
    * \param tft the Traffic Flow Template that identifies the traffic to go on this bearer
+   * \returns bearer ID
    */
   uint8_t ActivateDedicatedEpsBearer (NetDeviceContainer ueDevices, EpsBearer bearer, Ptr<EpcTft> tft);
 
@@ -469,6 +470,7 @@ public:
    * \param ueDevice the UE device
    * \param bearer the characteristics of the bearer to be activated
    * \param tft the Traffic Flow Template that identifies the traffic to go on this bearer.
+   * \returns bearer ID
    */
   uint8_t ActivateDedicatedEpsBearer (Ptr<NetDevice> ueDevice, EpsBearer bearer, Ptr<EpcTft> tft);
 
@@ -661,7 +663,9 @@ public:
   Ptr<SpectrumChannel> GetDownlinkSpectrumChannel (void) const;
 
   /**
+   * Get downlink spectrum channel of a given carrier.
    *
+   * \param carrierId the carrier ID
    * \return a pointer to the SpectrumChannel instance used for the downlink on a given carrier
    */
   Ptr<SpectrumChannel> GetDownlinkSpectrumChannel (uint8_t carrierId) const;
@@ -673,6 +677,14 @@ protected:
 
 private:
 
+  /**
+   * A private function used for component carrier configuration.
+   *
+   * \param ulEarfcn uplink EARFCN - not control on the validity at this point
+   * \param dlEarfcn downlink EARFCN - not control on the validity at this point	
+   * \param ulbw uplink bandwidth for the current CC
+   * \param dlbw downlink bandwidth for the current CC
+   */
   void DoComponentCarrierConfigure (uint32_t ulEarfcn, uint32_t dlEarfcn, uint8_t ulbw, uint8_t dlbw);
   /**
    * Create an eNodeB device (LteEnbNetDevice) on the given node.
@@ -716,6 +728,7 @@ private:
    */
   void DoDeActivateDedicatedEpsBearer (Ptr<NetDevice> ueDevice, Ptr<NetDevice> enbDevice, uint8_t bearerId);
 
+  /// Function that performs a channel model initialization of all componment carriers 
   void ChannelModelInitialization (void);
 
   /**
@@ -833,6 +846,9 @@ private:
    */
   std::map< uint8_t, ComponentCarrier > m_componentCarrierPhyParams;
 
+  /**
+   * Number of component carriers that will be installed by default at eNodeB and UE devices.
+   */
   uint16_t m_noOfCcs;
 
 };   // end of `class LteHelper`
