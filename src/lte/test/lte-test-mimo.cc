@@ -198,7 +198,7 @@ LenaMimoTestCase::DoRun (void)
   Ptr<LteEnbNetDevice> enbNetDev = enbDevs.Get (0)->GetObject<LteEnbNetDevice> ();
   
   PointerValue ptrval;
-  enbNetDev->GetAttribute ("FfMacScheduler", ptrval);
+  enbNetDev->GetCcMap()[0]->GetAttribute ("FfMacScheduler", ptrval);
   Ptr<PfFfMacScheduler> pfsched;
   Ptr<RrFfMacScheduler> rrsched;
   if (m_schedulerType.compare ("ns3::RrFfMacScheduler") == 0)

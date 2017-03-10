@@ -228,13 +228,7 @@ private:
    */
   void UpdateConfig ();
 
-  Ptr<LteEnbMac> m_mac; /**< DEPRECATED - It is maintained for backward compatibility after adding CA feature*/
-
-  Ptr<LteEnbPhy> m_phy; /**< DEPRECATED - It is maintained for backward compatibility after adding CA feature*/
-
   Ptr<LteEnbRrc> m_rrc; ///< the RRC
-
-  Ptr<FfMacScheduler> m_scheduler; /**< DEPRECATED - It is maintained for backward compatibility after adding CA feature*/
 
   Ptr<LteHandoverAlgorithm> m_handoverAlgorithm; ///< the handover algorithm
  

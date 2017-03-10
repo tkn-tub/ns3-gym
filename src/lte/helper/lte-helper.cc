@@ -706,7 +706,6 @@ LteHelper::InstallSingleEnbDevice (Ptr<Node> n)
   dev->SetAttribute ("LteEnbComponentCarrierManager", PointerValue (ccmEnbManager));
   dev->SetCcMap (ccMap);
   std::map<uint8_t,Ptr<ComponentCarrierEnb> >::iterator it = ccMap.begin ();
-  dev->SetAttribute ("FfMacScheduler", PointerValue (it->second->GetFfMacScheduler ()));
   dev->SetAttribute ("LteEnbRrc", PointerValue (rrc)); 
   dev->SetAttribute ("LteHandoverAlgorithm", PointerValue (handoverAlgorithm));
   dev->SetAttribute ("LteFfrAlgorithm", PointerValue (it->second->GetFfrAlgorithm ()));

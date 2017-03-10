@@ -82,21 +82,6 @@ TypeId LteEnbNetDevice::GetTypeId (void)
                    PointerValue (),
                    MakePointerAccessor (&LteEnbNetDevice::m_ffrAlgorithm),
                    MakePointerChecker <LteFfrAlgorithm> ())
-    .AddAttribute ("LteEnbMac",
-                   "The MAC associated to this EnbNetDevice",
-                   PointerValue (),
-                   MakePointerAccessor (&LteEnbNetDevice::m_mac),
-                   MakePointerChecker <LteEnbMac> ())
-    .AddAttribute ("FfMacScheduler",
-                   "The scheduler associated to this EnbNetDevice",
-                   PointerValue (),
-                   MakePointerAccessor (&LteEnbNetDevice::m_scheduler),
-                   MakePointerChecker <FfMacScheduler> ())
-    .AddAttribute ("LteEnbPhy",
-                   "The PHY associated to this EnbNetDevice",
-                   PointerValue (),
-                   MakePointerAccessor (&LteEnbNetDevice::m_phy),
-                   MakePointerChecker <LteEnbPhy> ())
     .AddAttribute ("LteEnbComponentCarrierManager",
                    "The RRC associated to this EnbNetDevice",
                    PointerValue (),

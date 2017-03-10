@@ -190,8 +190,6 @@ private:
 
   Ptr<LteEnbNetDevice> m_targetEnb; ///< target ENB
 
-  Ptr<LteUeMac> m_mac; ///< the MAC
-  Ptr<LteUePhy> m_phy; ///< the Phy
   Ptr<LteUeRrc> m_rrc; ///< the RRC
   Ptr<EpcUeNas> m_nas; ///< the NAS
   Ptr<LteUeComponentCarrierManager> m_componentCarrierManager; ///< the component carrier manager
