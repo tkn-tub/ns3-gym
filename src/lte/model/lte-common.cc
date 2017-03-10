@@ -37,12 +37,26 @@ LteFlowId_t::LteFlowId_t (const uint16_t a, const uint8_t b)
 {
 }
 
+/**
+ * Equality operator
+ *
+ * \param a lhs
+ * \param b rhs
+ * \returns true if "equal"
+ */
 bool
 operator == (const LteFlowId_t &a, const LteFlowId_t &b)
 {
   return ( (a.m_rnti == b.m_rnti) && (a.m_lcId == b.m_lcId) );
 }
 
+/**
+ * Less than operator
+ *
+ * \param a lhs
+ * \param b rhs
+ * \returns true if "less than"
+ */
 bool
 operator < (const LteFlowId_t& a, const LteFlowId_t& b)
 {
@@ -59,12 +73,26 @@ ImsiLcidPair_t::ImsiLcidPair_t (const uint64_t a, const uint8_t b)
 {
 }
 
+/**
+ * Equaity operator
+ *
+ * \param a lhs
+ * \param b rhs
+ * \returns true if "equal"
+ */
 bool
 operator == (const ImsiLcidPair_t &a, const ImsiLcidPair_t &b)
 {
   return ((a.m_imsi == b.m_imsi) && (a.m_lcId == b.m_lcId));
 }
 
+/**
+ * Less than operator
+ *
+ * \param a lhs
+ * \param b rhs
+ * \returns true if "less than"
+ */
 bool
 operator < (const ImsiLcidPair_t& a, const ImsiLcidPair_t& b)
 {
@@ -79,12 +107,26 @@ LteUeConfig_t::LteUeConfig_t ()
 
 
 
+/**
+ * Equality operator
+ *
+ * \param a lhs
+ * \param b rhs
+ * \returns true if "equal"
+ */
 bool
 operator == (const LteUeConfig_t &a, const LteUeConfig_t &b)
 {
   return (a.m_rnti == b.m_rnti);
 }
 
+/**
+ * Less than operator
+ *
+ * \param a lhs
+ * \param b rhs
+ * \returns true if "less than"
+ */
 bool
 operator < (const LteUeConfig_t& a, const LteUeConfig_t& b)
 {
@@ -126,6 +168,7 @@ LteFfConverter::getMinFpS11dot3Value ()
 //static double g_lowestFpS11dot3Value = -4096; // 0x8001 (1000 0000 0000 0000)
 
 
+/// Buffer size level BSR table
 static const uint32_t BufferSizeLevelBsrTable[64] = {
 
   0, 10, 12, 14, 17, 19, 22, 26, 31, 36, 42, 49, 57, 67, 78, 91, 

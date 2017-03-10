@@ -153,8 +153,8 @@ public:
 
 private:
 
-  std::list<PacketFilter> m_filters;
-  uint8_t m_numFilters;
+  std::list<PacketFilter> m_filters; ///< packet filter list
+  uint8_t m_numFilters; ///< number of packet filters applied to this TFT
   
 };
 

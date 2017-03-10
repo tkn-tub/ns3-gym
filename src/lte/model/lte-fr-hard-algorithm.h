@@ -43,7 +43,10 @@ public:
 
   virtual ~LteFrHardAlgorithm ();
 
-  // inherited from Object
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId ();
 
   // inherited from LteFfrAlgorithm
@@ -80,27 +83,45 @@ protected:
   virtual void DoRecvLoadInformation (EpcX2Sap::LoadInformationParams params);
 
 private:
+  /**
+   * Set downlink configuration
+   *
+   * \param cellId the cell ID
+   * \param bandwidth the bandwidth
+   */
   void SetDownlinkConfiguration (uint16_t cellId, uint8_t bandwidth);
+  /**
+   * Set uplink configuration
+   *
+   * \param cellId the cell ID
+   * \param bandwidth the bandwidth
+   */
   void SetUplinkConfiguration (uint16_t cellId, uint8_t bandwidth);
+  /**
+   * Initialize downlink rbg maps
+   */
   void InitializeDownlinkRbgMaps ();
+  /**
+   * Initialize uplink rbg maps
+   */
   void InitializeUplinkRbgMaps ();
 
   // FFR SAP
-  LteFfrSapUser* m_ffrSapUser;
-  LteFfrSapProvider* m_ffrSapProvider;
+  LteFfrSapUser* m_ffrSapUser; ///< FFR SAP user
+  LteFfrSapProvider* m_ffrSapProvider; ///< FFR SAP provider
 
   // FFR RRF SAP
-  LteFfrRrcSapUser* m_ffrRrcSapUser;
-  LteFfrRrcSapProvider* m_ffrRrcSapProvider;
+  LteFfrRrcSapUser* m_ffrRrcSapUser; ///< FFR RRC SAP user
+  LteFfrRrcSapProvider* m_ffrRrcSapProvider; ///< FFR RRC SAP provider
 
-  uint8_t m_dlOffset;
-  uint8_t m_dlSubBand;
+  uint8_t m_dlOffset; ///< DL offset
+  uint8_t m_dlSubBand; ///< DL subband
 
-  uint8_t m_ulOffset;
-  uint8_t m_ulSubBand;
+  uint8_t m_ulOffset; ///< UL offset
+  uint8_t m_ulSubBand; ///< UL subband
 
-  std::vector <bool> m_dlRbgMap;
-  std::vector <bool> m_ulRbgMap;
+  std::vector <bool> m_dlRbgMap; ///< DL RBG Map
+  std::vector <bool> m_ulRbgMap; ///< UL RBG Map
 
 }; // end of class LteFrHardAlgorithm
 

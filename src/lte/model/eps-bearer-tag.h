@@ -36,6 +36,10 @@ class Tag;
 class EpsBearerTag : public Tag
 {
 public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
   virtual TypeId GetInstanceTypeId (void) const;
 
@@ -68,12 +72,20 @@ public:
   virtual uint32_t GetSerializedSize () const;
   virtual void Print (std::ostream &os) const;
 
+  /**
+   * Get RNTI function
+   * \returns the RNTI
+   */
   uint16_t GetRnti (void) const;
+  /**
+   * Get bid function
+   * \returns the bid
+   */
   uint8_t GetBid (void) const;
 
 private:
-  uint16_t m_rnti;
-  uint8_t m_bid;
+  uint16_t m_rnti; ///< RNTI value
+  uint8_t m_bid; ///< bid value
 
 };
 

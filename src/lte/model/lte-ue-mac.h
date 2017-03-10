@@ -47,16 +47,36 @@ class LteUeMac :   public Object
   friend class UeMemberLteUePhySapUser;
 
 public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
 
   LteUeMac ();
   virtual ~LteUeMac ();
   virtual void DoDispose (void);
 
+  /**
+  * \brief Get the LTE MAC SAP provider
+  * \return a pointer to the LTE MAC SAP provider
+  */
   LteMacSapProvider*  GetLteMacSapProvider (void);
+  /**
+  * \brief Set the LTE UE CMAC SAP user
+  * \param s the LTE UE CMAC SAP User
+  */
   void  SetLteUeCmacSapUser (LteUeCmacSapUser* s);
+  /**
+  * \brief Get the LTE CMAC SAP provider
+  * \return a pointer to the LTE CMAC SAP provider
+  */
   LteUeCmacSapProvider*  GetLteUeCmacSapProvider (void);
   
+  /**
+  * \brief Set the component carried ID
+  * \param index the component carrier ID
+  */
   void SetComponentCarrierId (uint8_t index);
 
   /**
@@ -91,29 +111,101 @@ public:
 
 private:
   // forwarded from MAC SAP
+ /**
+  * Transmit PDU function
+  *
+  * \param params LteMacSapProvider::TransmitPduParameters
+  */
   void DoTransmitPdu (LteMacSapProvider::TransmitPduParameters params);
+ /**
+  * Report buffers status function
+  *
+  * \param params LteMacSapProvider::ReportBufferStatusParameters
+  */
   void DoReportBufferStatus (LteMacSapProvider::ReportBufferStatusParameters params);
 
   // forwarded from UE CMAC SAP
+ /**
+  * Configure RACH function
+  *
+  * \param rc LteUeCmacSapProvider::RachConfig
+  */
   void DoConfigureRach (LteUeCmacSapProvider::RachConfig rc);
+ /**
+  * Start contention based random access procedure function
+  */
   void DoStartContentionBasedRandomAccessProcedure ();
+ /**
+  * Set RNTI
+  *
+  * \param rnti the RNTI
+  */
   void DoSetRnti (uint16_t rnti);
+ /**
+  * Start non contention based random access procedure function
+  *
+  * \param rnti the RNTI
+  * \param rapId the RAPID
+  * \param prachMask the PRACH mask
+  */
   void DoStartNonContentionBasedRandomAccessProcedure (uint16_t rnti, uint8_t rapId, uint8_t prachMask);
+ /**
+  * Add LC function
+  *
+  * \param lcId the LCID
+  * \param lcConfig the logical channel config
+  * \param msu the MSU
+  */
   void DoAddLc (uint8_t lcId, LteUeCmacSapProvider::LogicalChannelConfig lcConfig, LteMacSapUser* msu);
+ /**
+  * Remove LC function
+  *
+  * \param lcId the LCID
+  */
   void DoRemoveLc (uint8_t lcId);
+  /// Reset function
   void DoReset ();
 
   // forwarded from PHY SAP
+ /**
+  * Receive Phy PDU function
+  *
+  * \param p the packet
+  */
   void DoReceivePhyPdu (Ptr<Packet> p);
+ /**
+  * Receive LTE control message function
+  *
+  * \param msg the LTE control message
+  */
   void DoReceiveLteControlMessage (Ptr<LteControlMessage> msg);
   
   // internal methods
+  /// Randomly sleect and send RA preamble function
   void RandomlySelectAndSendRaPreamble ();
+ /**
+  * Send RA preamble function
+  *
+  * \param contention if true randomly select and send te RA preamble
+  */
   void SendRaPreamble (bool contention);
+  /// Start waiting for RA response function
   void StartWaitingForRaResponse ();
+ /**
+  * Receive the RA response function
+  *
+  * \param raResponse RA response received
+  */
   void RecvRaResponse (BuildRarListElement_s raResponse);
+ /**
+  * RA response timeout function
+  *
+  * \param contention if true randomly select and send te RA preamble
+  */
   void RaResponseTimeout (bool contention);
+  /// Send report buffer status
   void SendReportBufferStatus (void);
+  /// Refresh HARQ processes packet buffer function
   void RefreshHarqProcessesPacketBuffer (void);
 
   /// component carrier Id --> used to address sap
@@ -121,48 +213,49 @@ private:
 
 private:
 
+  /// LcInfo structure
   struct LcInfo
   {
-    LteUeCmacSapProvider::LogicalChannelConfig lcConfig;
-    LteMacSapUser* macSapUser;
+    LteUeCmacSapProvider::LogicalChannelConfig lcConfig; ///< logical channel config
+    LteMacSapUser* macSapUser; ///< MAC SAP user
   };
 
-  std::map <uint8_t, LcInfo> m_lcInfoMap;
+  std::map <uint8_t, LcInfo> m_lcInfoMap; ///< logical channel info map
 
-  LteMacSapProvider* m_macSapProvider;
+  LteMacSapProvider* m_macSapProvider; ///< MAC SAP provider
 
-  LteUeCmacSapUser* m_cmacSapUser;
-  LteUeCmacSapProvider* m_cmacSapProvider;
+  LteUeCmacSapUser* m_cmacSapUser; ///< CMAC SAP user
+  LteUeCmacSapProvider* m_cmacSapProvider; ///< CMAC SAP provider
 
-  LteUePhySapProvider* m_uePhySapProvider;
-  LteUePhySapUser* m_uePhySapUser;
+  LteUePhySapProvider* m_uePhySapProvider; ///< UE Phy SAP provider
+  LteUePhySapUser* m_uePhySapUser; ///< UE Phy SAP user
   
-  std::map <uint8_t, LteMacSapProvider::ReportBufferStatusParameters> m_ulBsrReceived; // BSR received from RLC (the last one)
+  std::map <uint8_t, LteMacSapProvider::ReportBufferStatusParameters> m_ulBsrReceived; ///< BSR received from RLC (the last one)
   
   
-  Time m_bsrPeriodicity;
-  Time m_bsrLast;
+  Time m_bsrPeriodicity; ///< BSR periodicity
+  Time m_bsrLast; ///< BSR last
   
-  bool m_freshUlBsr; // true when a BSR has been received in the last TTI
+  bool m_freshUlBsr; ///< true when a BSR has been received in the last TTI
 
-  uint8_t m_harqProcessId;
-  std::vector < Ptr<PacketBurst> > m_miUlHarqProcessesPacket; // Packets under trasmission of the UL HARQ processes
-  std::vector < uint8_t > m_miUlHarqProcessesPacketTimer; // timer for packet life in the buffer
+  uint8_t m_harqProcessId; ///< HARQ process ID
+  std::vector < Ptr<PacketBurst> > m_miUlHarqProcessesPacket; ///< Packets under trasmission of the UL HARQ processes
+  std::vector < uint8_t > m_miUlHarqProcessesPacketTimer; ///< timer for packet life in the buffer
 
-  uint16_t m_rnti;
+  uint16_t m_rnti; ///< RNTI
 
-  bool m_rachConfigured;
-  LteUeCmacSapProvider::RachConfig m_rachConfig;
-  uint8_t m_raPreambleId;
-  uint8_t m_preambleTransmissionCounter;
-  uint16_t m_backoffParameter;
-  EventId m_noRaResponseReceivedEvent;
-  Ptr<UniformRandomVariable> m_raPreambleUniformVariable;
+  bool m_rachConfigured; ///< is RACH configured?
+  LteUeCmacSapProvider::RachConfig m_rachConfig; ///< RACH configuration
+  uint8_t m_raPreambleId; ///< RA preamble ID
+  uint8_t m_preambleTransmissionCounter; ///< preamble tranamission counter
+  uint16_t m_backoffParameter; ///< backoff parameter
+  EventId m_noRaResponseReceivedEvent; ///< no RA response received event ID
+  Ptr<UniformRandomVariable> m_raPreambleUniformVariable; ///< RA preamble random variable
 
-  uint32_t m_frameNo;
-  uint32_t m_subframeNo;
-  uint8_t m_raRnti;
-  bool m_waitingForRaResponse;
+  uint32_t m_frameNo; ///< frame number
+  uint32_t m_subframeNo; ///< subframe number
+  uint8_t m_raRnti; ///< RA RNTI
+  bool m_waitingForRaResponse; ///< waiting for RA response
 };
 
 } // namespace ns3

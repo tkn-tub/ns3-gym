@@ -55,9 +55,15 @@ NS_OBJECT_ENSURE_REGISTERED (LteEnbMac);
 // //////////////////////////////////////
 
 
+/// EnbMacMemberLteEnbCmacSapProvider class
 class EnbMacMemberLteEnbCmacSapProvider : public LteEnbCmacSapProvider
 {
 public:
+  /**
+   * Constructor
+   *
+   * \param mac the MAC
+   */
   EnbMacMemberLteEnbCmacSapProvider (LteEnbMac* mac);
 
   // inherited from LteEnbCmacSapProvider
@@ -73,7 +79,7 @@ public:
   
 
 private:
-  LteEnbMac* m_mac;
+  LteEnbMac* m_mac; ///< the MAC
 };
 
 
@@ -137,16 +143,22 @@ EnbMacMemberLteEnbCmacSapProvider::AllocateNcRaPreamble (uint16_t rnti)
 }
 
 
+/// EnbMacMemberFfMacSchedSapUser class
 class EnbMacMemberFfMacSchedSapUser : public FfMacSchedSapUser
 {
 public:
+  /**
+   * Constructor
+   * 
+   * \param mac the MAC
+   */
   EnbMacMemberFfMacSchedSapUser (LteEnbMac* mac);
 
 
   virtual void SchedDlConfigInd (const struct SchedDlConfigIndParameters& params);
   virtual void SchedUlConfigInd (const struct SchedUlConfigIndParameters& params);
 private:
-  LteEnbMac* m_mac;
+  LteEnbMac* m_mac; ///< the MAC
 };
 
 
@@ -171,10 +183,15 @@ EnbMacMemberFfMacSchedSapUser::SchedUlConfigInd (const struct SchedUlConfigIndPa
 }
 
 
-
+/// EnbMacMemberFfMacCschedSapUser class
 class EnbMacMemberFfMacCschedSapUser : public FfMacCschedSapUser
 {
 public:
+  /**
+   * Constructor
+   *
+   * \param mac the MAC
+   */
   EnbMacMemberFfMacCschedSapUser (LteEnbMac* mac);
 
   virtual void CschedCellConfigCnf (const struct CschedCellConfigCnfParameters& params);
@@ -186,7 +203,7 @@ public:
   virtual void CschedCellConfigUpdateInd (const struct CschedCellConfigUpdateIndParameters& params);
 
 private:
-  LteEnbMac* m_mac;
+  LteEnbMac* m_mac; ///< the MAC
 };
 
 
@@ -239,12 +256,15 @@ EnbMacMemberFfMacCschedSapUser::CschedCellConfigUpdateInd (const struct CschedCe
 
 
 
-// ---------- PHY-SAP
-
-
+/// ---------- PHY-SAP
 class EnbMacMemberLteEnbPhySapUser : public LteEnbPhySapUser
 {
 public:
+  /**
+   * Constructor
+   *
+   * \param mac the MAC
+   */
   EnbMacMemberLteEnbPhySapUser (LteEnbMac* mac);
 
   // inherited from LteEnbPhySapUser
@@ -257,7 +277,7 @@ public:
   virtual void DlInfoListElementHarqFeeback (DlInfoListElement_s params);
 
 private:
-  LteEnbMac* m_mac;
+  LteEnbMac* m_mac; ///< the MAC
 };
 
 EnbMacMemberLteEnbPhySapUser::EnbMacMemberLteEnbPhySapUser (LteEnbMac* mac) : m_mac (mac)

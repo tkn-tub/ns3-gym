@@ -85,7 +85,10 @@ public:
 
   virtual ~A2A4RsrqHandoverAlgorithm ();
 
-  // inherited from Object
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId ();
 
   // inherited from LteHandoverAlgorithm

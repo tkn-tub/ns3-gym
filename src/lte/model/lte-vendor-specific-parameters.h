@@ -35,13 +35,23 @@ namespace ns3 {
 class SrsCqiRntiVsp : public VendorSpecificValue
 {
   public:
+  /**
+   * \brief SRS CQI RNTI VSP
+   *
+   * \param rnti the RNTI 
+   */
   SrsCqiRntiVsp (uint16_t rnti);
   virtual ~SrsCqiRntiVsp ();
   
+  /**
+   * \brief Get RNTI function
+   *
+   * \returns the RNTI 
+   */
   uint16_t GetRnti ();
   
   private:
-  uint16_t m_rnti;
+  uint16_t m_rnti; ///< the rnti
 };
 
 

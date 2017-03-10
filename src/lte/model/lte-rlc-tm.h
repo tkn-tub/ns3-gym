@@ -37,31 +37,49 @@ class LteRlcTm : public LteRlc
 public:
   LteRlcTm ();
   virtual ~LteRlcTm ();
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
   virtual void DoDispose ();
 
   /**
    * RLC SAP
+   *
+   * \param p packet
    */
   virtual void DoTransmitPdcpPdu (Ptr<Packet> p);
 
   /**
    * MAC SAP
+   * 
+   * \param bytes number of bytes
+   * \param layer the layer
+   * \param harqId HARQ ID
+   * \param componentCarrierId component carrier ID
+   * \param rnti the RNTI
+   * \param lcid the LCID
    */
   virtual void DoNotifyTxOpportunity (uint32_t bytes, uint8_t layer, uint8_t harqId, uint8_t componentCarrierId, uint16_t rnti, uint8_t lcid);
+  /**
+   * Notify HARQ deliver failure
+   */
   virtual void DoNotifyHarqDeliveryFailure ();
   virtual void DoReceivePdu (Ptr<Packet> p, uint16_t rnti, uint8_t lcid);
 
 private:
+  /// Expire RBS timer function
   void ExpireRbsTimer (void);
+  /// Report buffer status
   void DoReportBufferStatus ();
 
 private:
-  uint32_t m_maxTxBufferSize;
-  uint32_t m_txBufferSize;
-  std::vector < Ptr<Packet> > m_txBuffer;       // Transmission buffer
+  uint32_t m_maxTxBufferSize; ///< maximum transmit buffer size
+  uint32_t m_txBufferSize; ///< transmit buffer size
+  std::vector < Ptr<Packet> > m_txBuffer; ///< Transmission buffer
 
-  EventId m_rbsTimer;
+  EventId m_rbsTimer; ///< RBS timer
 
 };
 

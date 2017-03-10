@@ -30,6 +30,13 @@ namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("EpcTft");
 
+/**
+ * Output stream operator for EPC TFT direction
+ *
+ * \param os output stream
+ * \param d EPC TFT direction
+ * \return ostream
+ */
 std::ostream& operator<< (std::ostream& os, EpcTft::Direction& d)
 {
  switch (d)
@@ -48,6 +55,13 @@ std::ostream& operator<< (std::ostream& os, EpcTft::Direction& d)
 }
 
 
+/**
+ * Output stream for EPC TFT packet filter
+ *
+ * \param os output stream
+ * \param f EPC TFT packet filter
+ * \return ostream
+ */
 std::ostream& operator<< (std::ostream& os, EpcTft::PacketFilter& f)
 {
   os << " direction: " << f.direction

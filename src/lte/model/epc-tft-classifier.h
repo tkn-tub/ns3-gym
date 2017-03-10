@@ -50,6 +50,7 @@ public:
    * add a TFT to the Classifier
    * 
    * \param tft the TFT to be added
+   * \param id the ID of the bearer which will be classified by specified TFT classifier
    * 
    */
   void Add (Ptr<EpcTft> tft, uint32_t id);
@@ -66,6 +67,7 @@ public:
    * classify an IP packet
    * 
    * \param p the IP packet. It is assumed that the outmost header is an IPv4 header.
+   * \param direction the EPC TFT direction (can be downlink, uplink or bi-directional)
    * 
    * \return the identifier (>0) of the first TFT that matches with the IP packet; 0 if no TFT matched.
    */
@@ -73,7 +75,7 @@ public:
   
 protected:
   
-  std::map <uint32_t, Ptr<EpcTft> > m_tftMap;
+  std::map <uint32_t, Ptr<EpcTft> > m_tftMap; ///< TFT map
   
 };
 

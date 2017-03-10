@@ -147,6 +147,11 @@ template <class C>
 class MemberLteAsSapProvider : public LteAsSapProvider
 {
 public:
+  /**
+   * Constructor
+   *
+   * \param owner the owner class
+   */
   MemberLteAsSapProvider (C* owner);
 
   // inherited from LteAsSapProvider
@@ -159,7 +164,7 @@ public:
 
 private:
   MemberLteAsSapProvider ();
-  C* m_owner;
+  C* m_owner; ///< the owner class
 };
 
 template <class C>
@@ -225,6 +230,11 @@ template <class C>
 class MemberLteAsSapUser : public LteAsSapUser
 {
 public:
+  /**
+   * Constructor
+   *
+   * \param owner the owner class
+   */
   MemberLteAsSapUser (C* owner);
 
   // inherited from LteAsSapUser
@@ -235,7 +245,7 @@ public:
 
 private:
   MemberLteAsSapUser ();
-  C* m_owner;
+  C* m_owner; ///< the owner class
 };
 
 template <class C>

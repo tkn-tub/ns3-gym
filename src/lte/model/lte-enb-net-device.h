@@ -56,6 +56,10 @@ class LteEnbComponentCarrierManager;
 class LteEnbNetDevice : public LteNetDevice
 {
 public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
 
   LteEnbNetDevice ();
@@ -72,6 +76,7 @@ public:
   Ptr<LteEnbMac> GetMac (void) const;
 
   /**
+   * \param index CC index
    * \return a pointer to the MAC of the CC addressed by index.
    */
   Ptr<LteEnbMac> GetMac (uint8_t index);
@@ -82,6 +87,7 @@ public:
   Ptr<LteEnbPhy> GetPhy (void) const;
   
   /**
+   * \param index SCC index
    * \return a pointer to the physical layer of the SCC addressed by index.
    */
   Ptr<LteEnbPhy> GetPhy (uint8_t index);
@@ -207,8 +213,8 @@ protected:
 
 
 private:
-  bool m_isConstructed;
-  bool m_isConfigured;
+  bool m_isConstructed; ///< is constructed?
+  bool m_isConfigured; ///< is configured?
 
   /**
    * \brief Propagate attributes and configuration to sub-modules.
@@ -226,13 +232,13 @@ private:
 
   Ptr<LteEnbPhy> m_phy; /**< DEPRECATED - It is maintained for backward compatibility after adding CA feature*/
 
-  Ptr<LteEnbRrc> m_rrc;
+  Ptr<LteEnbRrc> m_rrc; ///< the RRC
 
   Ptr<FfMacScheduler> m_scheduler; /**< DEPRECATED - It is maintained for backward compatibility after adding CA feature*/
 
-  Ptr<LteHandoverAlgorithm> m_handoverAlgorithm;
-
-  Ptr<LteAnr> m_anr;
+  Ptr<LteHandoverAlgorithm> m_handoverAlgorithm; ///< the handover algorithm
+ 
+  Ptr<LteAnr> m_anr; ///< ANR
 
   Ptr<LteFfrAlgorithm> m_ffrAlgorithm; /**< DEPRECATED - It is maintained for backward compatibility after adding CA feature*/
 
@@ -244,12 +250,12 @@ private:
   uint32_t m_dlEarfcn;  /**<DEPRECATE - It is maintained for backward compatibility after adding CA feature- downlink carrier frequency */
   uint32_t m_ulEarfcn;  /**<DEPRECATE - It is maintained for backward compatibility after adding CA feature- uplink carrier frequency */
 
-  uint16_t m_csgId;
-  bool m_csgIndication;
+  uint16_t m_csgId; ///< CSG ID
+  bool m_csgIndication; ///< CSG indication
 
   std::map < uint8_t, Ptr<ComponentCarrierEnb> > m_ccMap; /**< ComponentCarrier map */
   
-  Ptr<LteEnbComponentCarrierManager> m_componentCarrierManager; // the component carrier manager of this eNb
+  Ptr<LteEnbComponentCarrierManager> m_componentCarrierManager; ///< the component carrier manager of this eNb
 
 }; // end of class LteEnbNetDevice
 

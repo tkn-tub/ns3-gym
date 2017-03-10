@@ -43,6 +43,7 @@ namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("CqaFfMacScheduler");
 
+/// CGA Type 0 Allocation
 static const int CqaType0AllocationRbg[4] = {
   10,       // RGB size 1
   26,       // RGB size 2
@@ -54,42 +55,72 @@ static const int CqaType0AllocationRbg[4] = {
 NS_OBJECT_ENSURE_REGISTERED (CqaFfMacScheduler);
 
 
+/// qos_rb_and_CQI_assigned_to_lc
 struct qos_rb_and_CQI_assigned_to_lc
 {
-  uint16_t resource_block_index;       //Resource block indexHOL_GROUP_index
-  uint8_t  cqi_value_for_lc;       // CQI indicator value
+  uint16_t resource_block_index;   ///< Resource block indexHOL_GROUP_index
+  uint8_t  cqi_value_for_lc;       ///< CQI indicator value
 };
 
 
+/**
+ * CQI value comparator function
+ * \param key1 the first item
+ * \param key2 the second item
+ * \returns true if the first item is > the second item
+ */
 bool CQIValueDescComparator (uint8_t key1, uint8_t key2)
 {
   return key1>key2;
 }
 
+/**
+ * CGA group comparator function
+ * \param key1 the first item
+ * \param key2 the second item
+ * \returns true if the first item is > the second item
+ */
 bool CqaGroupDescComparator (int key1, int key2)
 {
   return key1>key2;
 }
 
+/// CQI value typedef
 typedef uint8_t CQI_value;
+/// RBG index typedef
 typedef int RBG_index;
+/// HOL group typedef
 typedef int HOL_group;
 
+/// CQI value map typedef
 typedef std::map<CQI_value,LteFlowId_t,bool(*)(uint8_t,uint8_t)> t_map_CQIToUE; //sorted
+/// RBG index map typedef
 typedef std::map<RBG_index,t_map_CQIToUE> t_map_RBGToCQIsSorted;
+/// HOL group map typedef
 typedef std::map<HOL_group,t_map_RBGToCQIsSorted> t_map_HOLGroupToRBGs;
 
+/// CQI value map iterator typedef
 typedef std::map<CQI_value,LteFlowId_t,bool(*)(uint8_t,uint8_t)>::iterator t_it_CQIToUE; //sorted
+/// RBG index map iterator typedef
 typedef std::map<RBG_index,t_map_CQIToUE>::iterator t_it_RBGToCQIsSorted;
+/// HOL group map iterator typedef
 typedef std::map<HOL_group,t_map_RBGToCQIsSorted>::iterator t_it_HOLGroupToRBGs;
 
+/// HOL group map typedef
 typedef std::multimap<HOL_group,std::set<LteFlowId_t>,bool(*)(int,int)> t_map_HOLgroupToUEs;
+/// HOL group multi map iterator typedef
 typedef std::map<HOL_group,std::set<LteFlowId_t> >::iterator t_it_HOLgroupToUEs;
 
 //typedef std::map<RBG_index,CQI_value>  map_RBG_to_CQI;
 //typedef std::map<LteFlowId_t,map_RBG_to_CQI> map_flowId_to_CQI_map;
 
 
+/**
+ * CQA key comparator
+ * \param key1 the first item
+ * \param key2 the second item
+ * \returns true if the first item > the second item
+ */  
 bool CqaKeyDescComparator (uint16_t key1, uint16_t key2)
 {
   return key1>key2;

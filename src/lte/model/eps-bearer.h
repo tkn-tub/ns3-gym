@@ -54,9 +54,9 @@ struct AllocationRetentionPriority
    * Default constructor, inizializes member variables to zero or equivalent
    */
   AllocationRetentionPriority ();
-  uint8_t priorityLevel;     // /< 1-15; 1 = highest
-  bool preemptionCapability; // /< true if bearer can preempt others
-  bool preemptionVulnerability; // true if bearer can be preempted by others
+  uint8_t priorityLevel;     ///< 1-15; 1 = highest
+  bool preemptionCapability; ///< true if bearer can preempt others
+  bool preemptionVulnerability; ///< true if bearer can be preempted by others
 };
 
 /**
@@ -85,13 +85,13 @@ struct EpsBearer
     NGBR_VOICE_VIDEO_GAMING = 7,
     NGBR_VIDEO_TCP_PREMIUM  = 8,
     NGBR_VIDEO_TCP_DEFAULT  = 9,
-  } qci;
+  } qci; ///< Qos class indicator
 
-  GbrQosInformation gbrQosInfo;
-  AllocationRetentionPriority arp;
+  GbrQosInformation gbrQosInfo; ///< GBR QOS information
+  AllocationRetentionPriority arp; ///< allocation retention priority
 
   /**
-   * Deault constructor. QCI will be initialized to NGBR_VIDEO_TCP_DEFAULT
+   * Default constructor. QCI will be initialized to NGBR_VIDEO_TCP_DEFAULT
    * 
    */
   EpsBearer ();
@@ -103,6 +103,12 @@ struct EpsBearer
    */
   EpsBearer (Qci x);
 
+  /**
+   *
+   * @param x the QoS Class Indicator
+   * @param y the GbrQosInformation
+   *
+   */
   EpsBearer (Qci x, GbrQosInformation y);
 
   /**

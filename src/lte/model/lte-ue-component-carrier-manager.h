@@ -51,7 +51,10 @@ public:
   LteUeComponentCarrierManager ();
   virtual ~LteUeComponentCarrierManager ();
 
-  // inherited from Object
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId ();
 
   /**
@@ -69,13 +72,13 @@ public:
    */
   virtual LteUeCcmRrcSapProvider* GetLteCcmRrcSapProvider () = 0;
   
-  /*
+  /**
    * \brief Returns the MAC sap provider interface that if forwarding calls to the
    * instance of the LteUeComponentCarrierManager.
    */
   virtual LteMacSapProvider* GetLteMacSapProvider () = 0;
 
-  /*
+  /**
    * \brief Sets a pointer to SAP interface of MAC instance for the specified carrier.
    * \param componentCarrierId the component carrier id
    * \param sap the pointer to the sap interface
@@ -83,7 +86,7 @@ public:
    */
   bool SetComponentCarrierMacSapProviders (uint8_t componentCarrierId, LteMacSapProvider* sap);
 
-  /*
+  /**
    * \brief Sets number of component carriers that are supported by this UE.
    */
   void SetNumberOfComponentCarriers (uint8_t noOfComponentCarriers);

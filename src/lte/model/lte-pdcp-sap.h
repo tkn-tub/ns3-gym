@@ -88,12 +88,17 @@ public:
   virtual void ReceivePdcpSdu (ReceivePdcpSduParameters params) = 0;
 };
 
-///////////////////////////////////////
 
+/// LtePdcpSpecificLtePdcpSapProvider class
 template <class C>
 class LtePdcpSpecificLtePdcpSapProvider : public LtePdcpSapProvider
 {
 public:
+  /**
+   * Constructor
+   * 
+   * \param pdcp PDCP
+   */
   LtePdcpSpecificLtePdcpSapProvider (C* pdcp);
 
   // Interface implemented from LtePdcpSapProvider
@@ -101,7 +106,7 @@ public:
 
 private:
   LtePdcpSpecificLtePdcpSapProvider ();
-  C* m_pdcp;
+  C* m_pdcp; ///< the PDCP
 };
 
 template <class C>
@@ -121,12 +126,17 @@ void LtePdcpSpecificLtePdcpSapProvider<C>::TransmitPdcpSdu (TransmitPdcpSduParam
   m_pdcp->DoTransmitPdcpSdu (params.pdcpSdu);
 }
 
-///////////////////////////////////////
 
+/// LtePdcpSpecificLtePdcpSapUser class
 template <class C>
 class LtePdcpSpecificLtePdcpSapUser : public LtePdcpSapUser
 {
 public:
+  /**
+   * Constructor
+   *
+   * \param rrc RRC
+   */
   LtePdcpSpecificLtePdcpSapUser (C* rrc);
 
   // Interface implemented from LtePdcpSapUser
@@ -134,7 +144,7 @@ public:
 
 private:
   LtePdcpSpecificLtePdcpSapUser ();
-  C* m_rrc;
+  C* m_rrc; ///< RRC
 };
 
 template <class C>

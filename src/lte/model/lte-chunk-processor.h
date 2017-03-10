@@ -35,6 +35,7 @@ namespace ns3 {
 
 class SpectrumValue;
 
+/// Chunk processor callback typedef
 typedef Callback< void, const SpectrumValue& > LteChunkProcessorCallback;
 
 /** 
@@ -54,6 +55,8 @@ public:
     * This function adds callback c to list. Each callback pass
     * calculated value to its object and is called in
     * LteChunkProcessor::End().
+    *
+    * \param c callback function
     */
   virtual void AddCallback (LteChunkProcessorCallback c);
 
@@ -69,6 +72,9 @@ public:
     * \brief Collect SpectrumValue and duration of signal
     *
     * Passed values are collected in m_sumValues and m_totDuration variables.
+    *
+    * \param sinr the SINR
+    * \param duration the duration
     */
   virtual void EvaluateChunk (const SpectrumValue& sinr, Time duration);
 
@@ -82,10 +88,10 @@ public:
   virtual void End ();
 
 private:
-  Ptr<SpectrumValue> m_sumValues;
-  Time m_totDuration;
+  Ptr<SpectrumValue> m_sumValues; ///< sum values
+  Time m_totDuration; ///< total duration
 
-  std::vector<LteChunkProcessorCallback> m_lteChunkProcessorCallbacks;
+  std::vector<LteChunkProcessorCallback> m_lteChunkProcessorCallbacks; ///< chunk processor callback
 };
 
 
@@ -113,7 +119,7 @@ public:
   Ptr<SpectrumValue> GetValue ();
   
 private:
-  Ptr<SpectrumValue> m_value;
+  Ptr<SpectrumValue> m_value; ///< spectrum value
 };
 
 } // namespace ns3

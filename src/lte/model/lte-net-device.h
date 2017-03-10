@@ -48,6 +48,10 @@ class Packet;
 class LteNetDevice : public NetDevice
 {
 public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
 
   LteNetDevice (void);
@@ -89,21 +93,23 @@ public:
   
 protected:
   
-  NetDevice::ReceiveCallback m_rxCallback;
+  NetDevice::ReceiveCallback m_rxCallback; ///< receive callback
   
 private:
+  /// type conversion operator
   LteNetDevice (const LteNetDevice &);
+  /// assignment operator
   LteNetDevice & operator= (const LteNetDevice &);
 
-  Ptr<Node> m_node;
+  Ptr<Node> m_node; ///< the node
 
-  TracedCallback<> m_linkChangeCallbacks;
+  TracedCallback<> m_linkChangeCallbacks; ///< link change callback
 
-  uint32_t m_ifIndex;
-  bool m_linkUp;
-  mutable uint16_t m_mtu;
+  uint32_t m_ifIndex; ///< interface index
+  bool m_linkUp; ///< link uo
+  mutable uint16_t m_mtu; ///< MTU
 
-  Mac48Address m_address;
+  Mac48Address m_address; ///< MAC address
 };
 
 

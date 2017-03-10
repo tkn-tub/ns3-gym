@@ -77,6 +77,10 @@ public:
 
   // inherited from Object
   virtual void DoDispose (void);
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
 
   /**
@@ -126,7 +130,7 @@ public:
   
 protected:
     
-  UlCqiFilter_t m_ulCqiFilter;
+  UlCqiFilter_t m_ulCqiFilter; ///< UL CQI filter
 
 };
 

@@ -49,11 +49,12 @@ friend class LteMacSapUser;
 public:
 
   virtual ~LteUeCcmRrcSapProvider ();
+  /// LcsConfig structure
   struct LcsConfig
   {
-    uint8_t componentCarrierId;
-    LteUeCmacSapProvider::LogicalChannelConfig *lcConfig;
-    LteMacSapUser *msu;
+    uint8_t componentCarrierId; ///< component carrier ID
+    LteUeCmacSapProvider::LogicalChannelConfig *lcConfig; ///< logical channel config
+    LteMacSapUser *msu; ///< MSU
   };
 
   /** 
@@ -78,6 +79,7 @@ public:
    *                where the bearer is enabled
    */
   virtual std::vector<uint16_t> RemoveLc (uint8_t lcid) = 0;
+  /// Notify reconfiguration msg function
   virtual void NotifyConnectionReconfigurationMsg () = 0;
 
   
@@ -85,7 +87,7 @@ public:
    * \brief Add the Signal Bearer for a specif Ue in LteUeComponenCarrierManager
    * \param lcid the Logical Channel Id
    * \param lcConfig this structure it is hard-coded in the LteEnbRrc
-   * \param rlcMacSapUser it is the MacSapUser of the Rlc istance
+   * \param msu it is the MacSapUser of the Rlc istance
    * \return the LteMacSapUser of the ComponentCarrierManager
    *
    */
@@ -93,10 +95,16 @@ public:
 
 }; // end of class LteUeCcmRrcSapProvider
 
+/// MemberLteUeCcmRrcSapProvider class
 template <class C>
 class MemberLteUeCcmRrcSapProvider : public LteUeCcmRrcSapProvider
 {
 public:
+  /**
+   * Constructor
+   *
+   * \param owner the owner class
+   */
   MemberLteUeCcmRrcSapProvider (C* owner);
 
   // inherited from LteUeCcmRrcSapProvider
@@ -106,7 +114,7 @@ public:
   virtual LteMacSapUser* ConfigureSignalBearer (uint8_t lcid,  LteUeCmacSapProvider::LogicalChannelConfig lcConfig, LteMacSapUser* msu);
   
 private:
-  C* m_owner;
+  C* m_owner; ///< the owner class
 };
 
 template <class C>
@@ -141,7 +149,7 @@ LteMacSapUser* MemberLteUeCcmRrcSapProvider<C>::ConfigureSignalBearer (uint8_t l
 }
 
 
-  /**
+/**
  * \brief Service Access Point (SAP) offered by the UE RRC to the UE CCM.
  *
  * This is the *Component Carrier Management SAP User*, i.e., the part of the SAP
@@ -153,23 +161,32 @@ class LteUeCcmRrcSapUser
 public:
   virtual ~LteUeCcmRrcSapUser ();
 
-  // this function will be used after the RRC notify to ComponentCarrierManager
-  // that a reconfiguration message with Secondary component carrier (SCc) arrived or not
-  // the method it is called only if the SCc wasn't set up
+  /**
+   * this function will be used after the RRC notify to ComponentCarrierManager
+   * that a reconfiguration message with Secondary component carrier (SCc) arrived or not
+   * the method it is called only if the SCc wasn't set up
+   * \param componentCarrierList component carrier list
+   */
   virtual void ComponentCarrierEnabling (std::vector<uint8_t> componentCarrierList) = 0;
 
 }; // end of class LteUeCcmRrcSapUser
 
+  /// MemberLteUeCcmRrcSapUser class
   template <class C>
   class MemberLteUeCcmRrcSapUser : public LteUeCcmRrcSapUser
   {
   public:
+    /**
+     * Constructor
+     *
+     * \param owner the owner class
+     */
     MemberLteUeCcmRrcSapUser (C* owner);
     //inherited from LteUeCcmRrcSapUser
     virtual void ComponentCarrierEnabling (std::vector<uint8_t> componentCarrierList);
 
   private:
-  C* m_owner;
+  C* m_owner; ///< the owner class
 };
 
 template <class C>

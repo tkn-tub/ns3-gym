@@ -64,8 +64,12 @@ public:
 
   virtual ~LteEnbPhy ();
 
-  // inherited from Object
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
+  // inherited from Object
   virtual void DoInitialize (void);
   virtual void DoDispose (void);
 
@@ -264,8 +268,8 @@ public:
   void PhyPduReceived (Ptr<Packet> p);
 
   /**
-  * \brief PhySpectrum received a new list of LteControlMessage
-  */
+   * \brief PhySpectrum received a new list of LteControlMessage
+   */
   virtual void ReceiveLteControlMessageList (std::list<Ptr<LteControlMessage> >);
 
   // inherited from LtePhy
@@ -277,10 +281,16 @@ public:
 
 
   /**
-  * \brief PhySpectrum generated a new UL HARQ feedback
-  */
+   * \brief PhySpectrum generated a new UL HARQ feedback
+   * \param mes UlInfoListElement_s
+   */
   virtual void ReceiveLteUlHarqFeedback (UlInfoListElement_s mes);
 
+  /**
+   * \brief PhySpectrum generated a new UL HARQ feedback
+   *
+   * \param harq the HARQ Phy
+   */
   void SetHarqPhyModule (Ptr<LteHarqPhy> harq);
 
   /**
@@ -307,19 +317,79 @@ public:
 private:
 
   // LteEnbCphySapProvider forwarded methods
+  /**
+   * Set bandwidth function
+   *
+   * \param ulBandwidth UL bandwidth
+   * \param dlBandwidth DL bandwidth
+   */
   void DoSetBandwidth (uint8_t ulBandwidth, uint8_t dlBandwidth);
+  /**
+   * Set EARFCN
+   *
+   * \param dlEarfcn DL EARFCN
+   * \param ulEarfcn UL EARFCN
+   */
   void DoSetEarfcn (uint32_t dlEarfcn, uint32_t ulEarfcn);
+  /**
+   * Add UE
+   *
+   * \param rnti RNTI
+   */
   void DoAddUe (uint16_t rnti);
+  /**
+   * Remove UE
+   *
+   * \param rnti RNTI
+   */
   void DoRemoveUe (uint16_t rnti);
+  /**
+   * Set PA
+   *
+   * \param rnti RNTI
+   * \param pa PA
+   */
   void DoSetPa (uint16_t rnti, double pa);
+  /**
+   * Set transmission mode
+   *
+   * \param rnti RNTI
+   * \param txMode transmit mode
+   */
   void DoSetTransmissionMode (uint16_t  rnti, uint8_t txMode);
+  /**
+   * Set source configuration index
+   *
+   * \param rnti RNTI
+   * \param srcCi source configuration index
+   */
   void DoSetSrsConfigurationIndex (uint16_t  rnti, uint16_t srcCi);
+  /**
+   * Set master information block
+   *
+   * \param mib LteRrcSap::MasterInformationBlock
+   */
   void DoSetMasterInformationBlock (LteRrcSap::MasterInformationBlock mib);
+  /**
+   * Set system information block
+   *
+   * \param sib1 LteRrcSap::SystemInformationBlockType1
+   */
   void DoSetSystemInformationBlockType1 (LteRrcSap::SystemInformationBlockType1 sib1);
 
   // LteEnbPhySapProvider forwarded methods
   void DoSendMacPdu (Ptr<Packet> p);
+  /**
+   * Send LTE Control Message function
+   *
+   * \param msg LTE control message
+   */
   void DoSendLteControlMessage (Ptr<LteControlMessage> msg);
+  /**
+   * Get MAC ch TTI delay function
+   *
+   * \returns delay value
+   */
   uint8_t DoGetMacChTtiDelay ();
 
   /**
@@ -335,6 +405,12 @@ private:
    */
   bool DeleteUePhy (uint16_t rnti);
 
+  /**
+   * Create SRS report function
+   *
+   * \param rnti the RNTI
+   * \param srs the SRS
+   */
   void CreateSrsReport (uint16_t rnti, double srs);
 
   /**
@@ -358,16 +434,16 @@ private:
    */
   std::vector <int> m_listOfDownlinkSubchannel;
 
-  std::vector <int> m_dlDataRbMap;
+  std::vector <int> m_dlDataRbMap; ///< DL data RB map
 
   /// For storing info on future receptions.
   std::vector< std::list<UlDciLteControlMessage> > m_ulDciQueue;
 
-  LteEnbPhySapProvider* m_enbPhySapProvider;
-  LteEnbPhySapUser* m_enbPhySapUser;
+  LteEnbPhySapProvider* m_enbPhySapProvider; ///< ENB Phy SAP provider
+  LteEnbPhySapUser* m_enbPhySapUser; ///< ENB Phy SAP user
 
-  LteEnbCphySapProvider* m_enbCphySapProvider;
-  LteEnbCphySapUser* m_enbCphySapUser;
+  LteEnbCphySapProvider* m_enbCphySapProvider; ///< ENB CPhy SAP provider
+  LteEnbCphySapUser* m_enbCphySapUser; ///< ENB CPhy SAP user
 
   /**
    * The frame number currently served. In ns-3, frame number starts from 1.
@@ -381,11 +457,11 @@ private:
    */
   uint32_t m_nrSubFrames;
 
-  uint16_t m_srsPeriodicity;
-  Time m_srsStartTime;
-  std::map <uint16_t,uint16_t> m_srsCounter;
-  std::vector <uint16_t> m_srsUeOffset;
-  uint16_t m_currentSrsOffset;
+  uint16_t m_srsPeriodicity; ///< SRS periodicity
+  Time m_srsStartTime; ///< SRS start time
+  std::map <uint16_t,uint16_t> m_srsCounter; ///< SRS counter
+  std::vector <uint16_t> m_srsUeOffset; ///< SRS UE offset
+  uint16_t m_currentSrsOffset; ///< current SRS offset
 
   /**
    * The Master Information Block message to be broadcasted every frame.
@@ -399,7 +475,7 @@ private:
    */
   LteRrcSap::SystemInformationBlockType1 m_sib1;
 
-  Ptr<LteHarqPhy> m_harqPhyModule;
+  Ptr<LteHarqPhy> m_harqPhyModule; ///< HARQ Phy module
 
   /**
    * The `ReportUeSinr` trace source. Reporting the linear average of SRS SINR.
@@ -411,7 +487,7 @@ private:
    * UEs' SINR stats.
    */
   uint16_t m_srsSamplePeriod;
-  std::map <uint16_t,uint16_t> m_srsSampleCounterMap;
+  std::map <uint16_t,uint16_t> m_srsSampleCounterMap; ///< SRS sample counter map
 
   /**
    * The `ReportInterference` trace source. Reporting the interference per PHY
@@ -427,7 +503,7 @@ private:
    * \todo In what unit is this?
    */
   uint16_t m_interferenceSamplePeriod;
-  uint16_t m_interferenceSampleCounter;
+  uint16_t m_interferenceSampleCounter; ///< interference sample counter
 
   /**
    * The `DlPhyTransmission` trace source. Contains trace information regarding

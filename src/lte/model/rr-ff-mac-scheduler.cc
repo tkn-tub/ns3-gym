@@ -36,6 +36,7 @@ namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("RrFfMacScheduler");
 
+/// Type 0 allocation RBG
 static const int Type0AllocationRbg[4] = {
   10,       // RGB size 1
   26,       // RGB size 2

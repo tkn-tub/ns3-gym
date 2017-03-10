@@ -46,6 +46,7 @@ class DlCqiLteControlMessage;
 class UlCqiLteControlMessage;
 class PdcchMapLteControlMessage;
 
+/// DlHarqProcessesBuffer_t typedef
 typedef std::vector <std::vector < Ptr<PacketBurst> > > DlHarqProcessesBuffer_t;
 
 /**
@@ -61,12 +62,20 @@ class LteEnbMac :   public Object
   friend class MemberLteCcmMacSapProvider<LteEnbMac>;
 
 public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
 
   LteEnbMac (void);
   virtual ~LteEnbMac (void);
   virtual void DoDispose (void);
 
+  /**
+   * \brief Set the component carrier ID
+   * \param index the component carrier ID
+   */
   void SetComponentCarrierId (uint8_t index);
   /**
    * \brief Set the scheduler SAP provider
@@ -176,6 +185,10 @@ private:
   */
   void ReceiveDlCqiLteControlMessage  (Ptr<DlCqiLteControlMessage> msg);
 
+  /**
+  * \brief Receive a DL CQI ideal control message
+  * \param msg the DL CQI message
+  */
   void DoReceiveLteControlMessage (Ptr<LteControlMessage> msg);
 
   /**
@@ -184,92 +197,203 @@ private:
   */
   void ReceiveBsrMessage  (MacCeListElement_s bsr);
 
- 
+  /**
+  * \brief UL CQI report
+  * \param ulcqi FfMacSchedSapProvider::SchedUlCqiInfoReqParameters
+  */
   void DoUlCqiReport (FfMacSchedSapProvider::SchedUlCqiInfoReqParameters ulcqi);
 
 
 
   // forwarded from LteEnbCmacSapProvider
+  /**
+  * \brief Configure MAC function
+  * \param ulBandwidth the UL bandwidth
+  * \param dlBandwidth the DL bandwidth
+  */
   void DoConfigureMac (uint8_t ulBandwidth, uint8_t dlBandwidth);
+  /**
+  * \brief Add UE function
+  * \param rnti the RNTI
+  */
   void DoAddUe (uint16_t rnti);
+  /**
+  * \brief Remove UE function
+  * \param rnti the RNTI
+  */
   void DoRemoveUe (uint16_t rnti);
+  /**
+  * \brief Add LC function
+  * \param lcinfo the LC info
+  * \param msu the LTE MAC SAP user
+  */
   void DoAddLc (LteEnbCmacSapProvider::LcInfo lcinfo, LteMacSapUser* msu);
+  /**
+  * \brief Reconfigure LC function
+  * \param lcinfo the LC info
+  */
   void DoReconfigureLc (LteEnbCmacSapProvider::LcInfo lcinfo);
+  /**
+  * \brief Release LC function
+  * \param rnti the RNTI
+  * \param lcid the LCID
+  */
   void DoReleaseLc (uint16_t  rnti, uint8_t lcid);
+  /**
+  * \brief UE Update configuration request function
+  * \param params LteEnbCmacSapProvider::UeConfig
+  */
   void DoUeUpdateConfigurationReq (LteEnbCmacSapProvider::UeConfig params);
+  /**
+  * \brief Get RACH configuration function
+  * \returns LteEnbCmacSapProvider::RachConfig
+  */
   LteEnbCmacSapProvider::RachConfig DoGetRachConfig ();
+  /**
+  * \brief Allocate NC RA preamble function
+  * \param rnti the RNTI
+  * \returns LteEnbCmacSapProvider::AllocateNcRaPreambleReturnValue
+  */
   LteEnbCmacSapProvider::AllocateNcRaPreambleReturnValue DoAllocateNcRaPreamble (uint16_t rnti);
 
   // forwarded from LteMacSapProvider
-  void DoTransmitPdu (LteMacSapProvider::TransmitPduParameters);
-  void DoReportBufferStatus (LteMacSapProvider::ReportBufferStatusParameters);
+  /**
+  * \brief Transmit PDU function
+  * \param params LteMacSapProvider::TransmitPduParameters
+  */
+  void DoTransmitPdu (LteMacSapProvider::TransmitPduParameters params);
+  /**
+  * \brief Report Buffer Status function
+  * \param params LteMacSapProvider::ReportBufferStatusParameters
+  */
+  void DoReportBufferStatus (LteMacSapProvider::ReportBufferStatusParameters params);
 
 
   // forwarded from FfMacCchedSapUser
+  /**
+  * \brief CSched Cell Config configure function
+  * \param params FfMacCschedSapUser::CschedCellConfigCnfParameters
+  */
   void DoCschedCellConfigCnf (FfMacCschedSapUser::CschedCellConfigCnfParameters params);
+  /**
+  * \brief CSched UE Config configure function
+  * \param params FfMacCschedSapUser::CschedUeConfigCnfParameters
+  */
   void DoCschedUeConfigCnf (FfMacCschedSapUser::CschedUeConfigCnfParameters params);
+  /**
+  * \brief CSched LC Config configure function
+  * \param params FfMacCschedSapUser::CschedLcConfigCnfParameters
+  */
   void DoCschedLcConfigCnf (FfMacCschedSapUser::CschedLcConfigCnfParameters params);
+  /**
+  * \brief CSched LC Release configure function
+  * \param params FfMacCschedSapUser::CschedLcReleaseCnfParameters
+  */
   void DoCschedLcReleaseCnf (FfMacCschedSapUser::CschedLcReleaseCnfParameters params);
+  /**
+  * \brief CSched UE Release configure function
+  * \param params FfMacCschedSapUser::CschedUeReleaseCnfParameters
+  */
   void DoCschedUeReleaseCnf (FfMacCschedSapUser::CschedUeReleaseCnfParameters params);
+  /**
+  * \brief CSched UE Config Update Indication function
+  * \param params FfMacCschedSapUser::CschedUeConfigUpdateIndParameters
+  */
   void DoCschedUeConfigUpdateInd (FfMacCschedSapUser::CschedUeConfigUpdateIndParameters params);
+  /**
+  * \brief CSched Cell Config Update Indication function
+  * \param params FfMacCschedSapUser::CschedCellConfigUpdateIndParameters
+  */
   void DoCschedCellConfigUpdateInd (FfMacCschedSapUser::CschedCellConfigUpdateIndParameters params);
 
   // forwarded from FfMacSchedSapUser
+  /**
+  * \brief Sched DL Config Indication function
+  * \param ind FfMacSchedSapUser::SchedDlConfigIndParameters
+  */
   void DoSchedDlConfigInd (FfMacSchedSapUser::SchedDlConfigIndParameters ind);
+  /**
+  * \brief Sched UL Config Indication function
+  * \param params FfMacSchedSapUser::SchedUlConfigIndParameters
+  */
   void DoSchedUlConfigInd (FfMacSchedSapUser::SchedUlConfigIndParameters params);
 
   // forwarded from LteEnbPhySapUser
+  /**
+  * \brief Subrame Indication function
+  * \param frameNo frame number
+  * \param subframeNo subframe number
+  */
   void DoSubframeIndication (uint32_t frameNo, uint32_t subframeNo);
+  /**
+  * \brief Receive RACH Preamble function
+  * \param prachId PRACH ID number
+  */
   void DoReceiveRachPreamble (uint8_t prachId);
 
   // forwarded by LteCcmMacSapProvider
+  /**
+   * Report MAC CE to scheduler
+   * \param bsr the BSR
+   */
   void DoReportMacCeToScheduler (MacCeListElement_s bsr);
   
 public:
-  // legacy public for use the Phy callback
+  /**
+   * legacy public for use the Phy callback
+   * \param p packet
+   */
   void DoReceivePhyPdu (Ptr<Packet> p);
 
 private:
+  /**
+  * \brief UL Info List ELements HARQ Feedback function
+  * \param params UlInfoListElement_s
+  */
   void DoUlInfoListElementHarqFeeback (UlInfoListElement_s params);
+  /**
+  * \brief DL Info List ELements HARQ Feedback function
+  * \param params DlInfoListElement_s
+  */
   void DoDlInfoListElementHarqFeeback (DlInfoListElement_s params);
 
-  //            rnti,             lcid, SAP of the RLC instance
+  /// rnti, lcid, SAP of the RLC instance
   std::map <uint16_t, std::map<uint8_t, LteMacSapUser*> > m_rlcAttached;
 
-  std::vector <CqiListElement_s> m_dlCqiReceived; // DL-CQI received
-  std::vector <FfMacSchedSapProvider::SchedUlCqiInfoReqParameters> m_ulCqiReceived; // UL-CQI received
-  std::vector <MacCeListElement_s> m_ulCeReceived; // CE received (BSR up to now)
+  std::vector <CqiListElement_s> m_dlCqiReceived; ///< DL-CQI received
+  std::vector <FfMacSchedSapProvider::SchedUlCqiInfoReqParameters> m_ulCqiReceived; ///< UL-CQI received
+  std::vector <MacCeListElement_s> m_ulCeReceived; ///< CE received (BSR up to now)
 
-  std::vector <DlInfoListElement_s> m_dlInfoListReceived; // DL HARQ feedback received
+  std::vector <DlInfoListElement_s> m_dlInfoListReceived; ///< DL HARQ feedback received
 
-  std::vector <UlInfoListElement_s> m_ulInfoListReceived; // UL HARQ feedback received
+  std::vector <UlInfoListElement_s> m_ulInfoListReceived; ///< UL HARQ feedback received
 
 
   /*
   * Map of UE's info element (see 4.3.12 of FF MAC Scheduler API)
   */
-//   std::map <uint16_t,UlInfoListElement_s> m_ulInfoListElements; 
+  //std::map <uint16_t,UlInfoListElement_s> m_ulInfoListElements; 
 
 
 
-  LteMacSapProvider* m_macSapProvider;
-  LteEnbCmacSapProvider* m_cmacSapProvider;
-  LteMacSapUser* m_macSapUser;
-  LteEnbCmacSapUser* m_cmacSapUser;
+  LteMacSapProvider* m_macSapProvider; ///< the MAC SAP provider
+  LteEnbCmacSapProvider* m_cmacSapProvider; ///< the CMAC SAP provider
+  LteMacSapUser* m_macSapUser; ///< the MAC SAP user
+  LteEnbCmacSapUser* m_cmacSapUser; ///< the CMAC SAP user
 
 
-  FfMacSchedSapProvider* m_schedSapProvider;
-  FfMacCschedSapProvider* m_cschedSapProvider;
-  FfMacSchedSapUser* m_schedSapUser;
-  FfMacCschedSapUser* m_cschedSapUser;
+  FfMacSchedSapProvider* m_schedSapProvider; ///< the Sched SAP provider
+  FfMacCschedSapProvider* m_cschedSapProvider; ///< the Csched SAP provider
+  FfMacSchedSapUser* m_schedSapUser; ///< the Sched SAP user
+  FfMacCschedSapUser* m_cschedSapUser; ///< the CSched SAP user
 
   // PHY-SAP
-  LteEnbPhySapProvider* m_enbPhySapProvider;
-  LteEnbPhySapUser* m_enbPhySapUser;
+  LteEnbPhySapProvider* m_enbPhySapProvider; ///< the ENB Phy SAP provider
+  LteEnbPhySapUser* m_enbPhySapUser; ///< the ENB Phy SAP user
 
   // Sap For ComponentCarrierManager 'Uplink case'
-  LteCcmMacSapProvider* m_ccmMacSapProvider;
-  LteCcmMacSapUser* m_ccmMacSapUser;
+  LteCcmMacSapProvider* m_ccmMacSapProvider; ///< CCM MAC SAP provider
+  LteCcmMacSapUser* m_ccmMacSapUser; ///< CCM MAC SAP user
   /**
    * frame number of current subframe indication
    */
@@ -292,14 +416,14 @@ private:
   TracedCallback<uint32_t, uint32_t, uint16_t,
                  uint8_t, uint16_t, uint8_t> m_ulScheduling;
   
-  uint8_t m_macChTtiDelay; // delay of MAC, PHY and channel in terms of TTIs
+  uint8_t m_macChTtiDelay; ///< delay of MAC, PHY and channel in terms of TTIs
 
 
-  std::map <uint16_t, DlHarqProcessesBuffer_t> m_miDlHarqProcessesPackets; // Packet under trasmission of the DL HARQ process
+  std::map <uint16_t, DlHarqProcessesBuffer_t> m_miDlHarqProcessesPackets; ///< Packet under transmission of the DL HARQ process
   
-  uint8_t m_numberOfRaPreambles;
-  uint8_t m_preambleTransMax;
-  uint8_t m_raResponseWindowSize;
+  uint8_t m_numberOfRaPreambles; ///< number of RA preambles
+  uint8_t m_preambleTransMax; ///< preamble transmit maximum
+  uint8_t m_raResponseWindowSize; ///< RA response window size
 
   /**
    * info associated with a preamble allocated for non-contention based RA
@@ -318,11 +442,11 @@ private:
    */
   std::map<uint8_t, NcRaPreambleInfo> m_allocatedNcRaPreambleMap;
  
-  std::map<uint8_t, uint32_t> m_receivedRachPreambleCount;
+  std::map<uint8_t, uint32_t> m_receivedRachPreambleCount; ///< received RACH preamble count
 
-  std::map<uint8_t, uint32_t> m_rapIdRntiMap;
+  std::map<uint8_t, uint32_t> m_rapIdRntiMap; ///< RAPID RNTI map
 
-  // component carrier Id used to address sap
+  /// component carrier Id used to address sap
   uint8_t m_componentCarrierId;
  
 };

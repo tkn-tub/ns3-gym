@@ -29,12 +29,13 @@ NS_LOG_COMPONENT_DEFINE ("LteFrSoftAlgorithm");
 
 NS_OBJECT_ENSURE_REGISTERED (LteFrSoftAlgorithm);
 
+/// FrSoftDownlinkDefaultConfiguration structure
 static const struct FrSoftDownlinkDefaultConfiguration
 {
-  uint8_t cellId;
-  uint8_t dlBandwidth;
-  uint8_t dlEgdeSubBandOffset;
-  uint8_t dlEdgeSubBandwidth;
+  uint8_t cellId; ///< cell ID
+  uint8_t dlBandwidth; ///< DL bandwidth
+  uint8_t dlEdgeSubBandOffset; ///< DL edge subband offset
+  uint8_t dlEdgeSubBandwidth; ///< Dl edge subbandwidth
 } g_frSoftDownlinkDefaultConfiguration[] = {
   { 1, 15, 0, 4},
   { 2, 15, 4, 4},
@@ -51,14 +52,15 @@ static const struct FrSoftDownlinkDefaultConfiguration
   { 1, 100, 0, 32},
   { 2, 100, 32, 32},
   { 3, 100, 64, 36}
-};
+}; ///< soft downlink default configuration
 
+/// soft uplink default configuration
 static const struct FrSoftUplinkDefaultConfiguration
 {
-  uint8_t cellId;
-  uint8_t ulBandwidth;
-  uint8_t ulEgdeSubBandOffset;
-  uint8_t ulEdgeSubBandwidth;
+  uint8_t cellId; ///< cell ID
+  uint8_t ulBandwidth; ///< UL bandwidth
+  uint8_t ulEdgeSubBandOffset; ///< UL edge subband offset  
+  uint8_t ulEdgeSubBandwidth; ///< UL endge subbandwidth
 } g_frSoftUplinkDefaultConfiguration[] = {
   { 1, 15, 0, 5},
   { 2, 15, 5, 5},
@@ -75,18 +77,20 @@ static const struct FrSoftUplinkDefaultConfiguration
   { 1, 100, 0, 32},
   { 2, 100, 32, 32},
   { 3, 100, 64, 36}
-};
+}; ///< soft uplink default configuration
 
+/// number of downlink configurations
 const uint16_t NUM_DOWNLINK_CONFS (sizeof (g_frSoftDownlinkDefaultConfiguration) / sizeof (FrSoftDownlinkDefaultConfiguration));
+/// number of uplink configurations
 const uint16_t NUM_UPLINK_CONFS (sizeof (g_frSoftUplinkDefaultConfiguration) / sizeof (FrSoftUplinkDefaultConfiguration));
 
 
 LteFrSoftAlgorithm::LteFrSoftAlgorithm ()
   : m_ffrSapUser (0),
     m_ffrRrcSapUser (0),
-    m_dlEgdeSubBandOffset (0),
+    m_dlEdgeSubBandOffset (0),
     m_dlEdgeSubBandwidth (0),
-    m_ulEgdeSubBandOffset (0),
+    m_ulEdgeSubBandOffset (0),
     m_ulEdgeSubBandwidth (0),
     m_measId (0)
 {
@@ -121,7 +125,7 @@ LteFrSoftAlgorithm::GetTypeId ()
     .AddAttribute ("UlEdgeSubBandOffset",
                    "Uplink Edge SubBand Offset in number of Resource Block Groups",
                    UintegerValue (0),
-                   MakeUintegerAccessor (&LteFrSoftAlgorithm::m_ulEgdeSubBandOffset),
+                   MakeUintegerAccessor (&LteFrSoftAlgorithm::m_ulEdgeSubBandOffset),
                    MakeUintegerChecker<uint8_t> ())
     .AddAttribute ("UlEdgeSubBandwidth",
                    "Uplink Edge SubBandwidth Configuration in number of Resource Block Groups",
@@ -131,7 +135,7 @@ LteFrSoftAlgorithm::GetTypeId ()
     .AddAttribute ("DlEdgeSubBandOffset",
                    "Downlink Edge SubBand Offset in number of Resource Block Groups",
                    UintegerValue (0),
-                   MakeUintegerAccessor (&LteFrSoftAlgorithm::m_dlEgdeSubBandOffset),
+                   MakeUintegerAccessor (&LteFrSoftAlgorithm::m_dlEdgeSubBandOffset),
                    MakeUintegerChecker<uint8_t> ())
     .AddAttribute ("DlEdgeSubBandwidth",
                    "Downlink Edge SubBandwidth Configuration in number of Resource Block Groups",
@@ -146,7 +150,7 @@ LteFrSoftAlgorithm::GetTypeId ()
     .AddAttribute ("RsrqThreshold",
                    "If the RSRQ of is worse than this threshold, UE should be served in Edge sub-band",
                    UintegerValue (20),
-                   MakeUintegerAccessor (&LteFrSoftAlgorithm::m_egdeSubBandThreshold),
+                   MakeUintegerAccessor (&LteFrSoftAlgorithm::m_edgeSubBandThreshold),
                    MakeUintegerChecker<uint8_t> ())
     .AddAttribute ("CenterPowerOffset",
                    "PdschConfigDedicated::Pa value for Edge Sub-band, default value dB0",
@@ -257,7 +261,7 @@ LteFrSoftAlgorithm::SetDownlinkConfiguration (uint16_t cellId, uint8_t bandwidth
       if ((g_frSoftDownlinkDefaultConfiguration[i].cellId == cellId)
           && g_frSoftDownlinkDefaultConfiguration[i].dlBandwidth == m_dlBandwidth)
         {
-          m_dlEgdeSubBandOffset = g_frSoftDownlinkDefaultConfiguration[i].dlEgdeSubBandOffset;
+          m_dlEdgeSubBandOffset = g_frSoftDownlinkDefaultConfiguration[i].dlEdgeSubBandOffset;
           m_dlEdgeSubBandwidth = g_frSoftDownlinkDefaultConfiguration[i].dlEdgeSubBandwidth;
         }
     }
@@ -272,7 +276,7 @@ LteFrSoftAlgorithm::SetUplinkConfiguration (uint16_t cellId, uint8_t bandwidth)
       if ((g_frSoftUplinkDefaultConfiguration[i].cellId == cellId)
           && g_frSoftUplinkDefaultConfiguration[i].ulBandwidth == m_ulBandwidth)
         {
-          m_ulEgdeSubBandOffset = g_frSoftUplinkDefaultConfiguration[i].ulEgdeSubBandOffset;
+          m_ulEdgeSubBandOffset = g_frSoftUplinkDefaultConfiguration[i].ulEdgeSubBandOffset;
           m_ulEdgeSubBandwidth = g_frSoftUplinkDefaultConfiguration[i].ulEdgeSubBandwidth;
         }
     }
@@ -288,13 +292,13 @@ LteFrSoftAlgorithm::InitializeDownlinkRbgMaps ()
   m_dlRbgMap.resize (m_dlBandwidth / rbgSize, false);
   m_dlEdgeRbgMap.resize (m_dlBandwidth / rbgSize, false);
 
-  NS_ASSERT_MSG (m_dlEgdeSubBandOffset <= m_dlBandwidth,"DlEgdeSubBandOffset higher than DlBandwidth");
+  NS_ASSERT_MSG (m_dlEdgeSubBandOffset <= m_dlBandwidth,"DlEdgeSubBandOffset higher than DlBandwidth");
   NS_ASSERT_MSG (m_dlEdgeSubBandwidth <= m_dlBandwidth,"DlEdgeSubBandwidth higher than DlBandwidth");
-  NS_ASSERT_MSG ((m_dlEgdeSubBandOffset + m_dlEdgeSubBandwidth) <= m_dlBandwidth,
-                 "(DlEgdeSubBandOffset+DlEdgeSubBandwidth) higher than DlBandwidth");
+  NS_ASSERT_MSG ((m_dlEdgeSubBandOffset + m_dlEdgeSubBandwidth) <= m_dlBandwidth,
+                 "(DlEdgeSubBandOffset+DlEdgeSubBandwidth) higher than DlBandwidth");
 
-  for (uint8_t i = m_dlEgdeSubBandOffset / rbgSize;
-       i < (m_dlEgdeSubBandOffset + m_dlEdgeSubBandwidth) / rbgSize; i++)
+  for (uint8_t i = m_dlEdgeSubBandOffset / rbgSize;
+       i < (m_dlEdgeSubBandOffset + m_dlEdgeSubBandwidth) / rbgSize; i++)
     {
       m_dlEdgeRbgMap[i] = true;
     }
@@ -309,12 +313,12 @@ LteFrSoftAlgorithm::InitializeUplinkRbgMaps ()
   m_ulRbgMap.resize (m_ulBandwidth, false);
   m_ulEdgeRbgMap.resize (m_ulBandwidth, false);
 
-  NS_ASSERT_MSG (m_ulEgdeSubBandOffset <= m_dlBandwidth,"UlEgdeSubBandOffset higher than DlBandwidth");
+  NS_ASSERT_MSG (m_ulEdgeSubBandOffset <= m_dlBandwidth,"UlEdgeSubBandOffset higher than DlBandwidth");
   NS_ASSERT_MSG (m_ulEdgeSubBandwidth <= m_dlBandwidth,"UlEdgeSubBandwidth higher than DlBandwidth");
-  NS_ASSERT_MSG ((m_ulEgdeSubBandOffset + m_ulEdgeSubBandwidth) <= m_dlBandwidth,
-                 "(UlEgdeSubBandOffset+UlEdgeSubBandwidth) higher than DlBandwidth");
+  NS_ASSERT_MSG ((m_ulEdgeSubBandOffset + m_ulEdgeSubBandwidth) <= m_dlBandwidth,
+                 "(UlEdgeSubBandOffset+UlEdgeSubBandwidth) higher than DlBandwidth");
 
-  for (uint8_t i = m_ulEgdeSubBandOffset; i < (m_ulEgdeSubBandOffset + m_ulEdgeSubBandwidth); i++)
+  for (uint8_t i = m_ulEdgeSubBandOffset; i < (m_ulEdgeSubBandOffset + m_ulEdgeSubBandwidth); i++)
     {
       m_ulEdgeRbgMap[i] = true;
     }
@@ -483,9 +487,9 @@ LteFrSoftAlgorithm::DoGetMinContinuousUlBandwidth ()
       return minContinuousUlBandwidth;
     }
 
-  uint8_t leftBandwidth = m_ulEgdeSubBandOffset;
+  uint8_t leftBandwidth = m_ulEdgeSubBandOffset;
   uint8_t centerBandwidth = m_ulEdgeSubBandwidth;
-  uint8_t rightBandwidth = m_ulBandwidth - m_ulEdgeSubBandwidth - m_ulEgdeSubBandOffset;
+  uint8_t rightBandwidth = m_ulBandwidth - m_ulEdgeSubBandwidth - m_ulEdgeSubBandOffset;
 
   minContinuousUlBandwidth =
     ((leftBandwidth > 0 ) && (leftBandwidth < minContinuousUlBandwidth)) ? leftBandwidth : minContinuousUlBandwidth;
@@ -523,7 +527,7 @@ LteFrSoftAlgorithm::DoReportUeMeas (uint16_t rnti,
         }
       it = m_ues.find (rnti);
 
-      if (measResults.rsrqResult < m_egdeSubBandThreshold)
+      if (measResults.rsrqResult < m_edgeSubBandThreshold)
         {
           if (it->second != CellEdge)
             {

@@ -42,6 +42,8 @@ class LteUeRrc;
 
 
 /**
+ * \ingroup lte
+ *
  * Models the transmission of RRC messages from the UE to the eNB in
  * a real fashion, by creating real RRC PDUs and transmitting them
  * over Signaling Radio Bearers using radio resources allocated by the
@@ -60,36 +62,101 @@ public:
 
   // inherited from Object
   virtual void DoDispose (void);
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
 
+  /**
+   * Set LTE UE RRC SAP provider function
+   *
+   * \param p the LTE UE RRC SAP provider 
+   */
   void SetLteUeRrcSapProvider (LteUeRrcSapProvider* p);
+  /**
+   * Get LTE UE RRC SAP user function
+   *
+   * \returns LTE UE RRC SAP user
+   */
   LteUeRrcSapUser* GetLteUeRrcSapUser ();
 
+  /**
+   * Set UE RRC function
+   *
+   * \param rrc the LTE UE RRC 
+   */
   void SetUeRrc (Ptr<LteUeRrc> rrc);
 
 
 private:
   // methods forwarded from LteUeRrcSapUser
+  /**
+   * Setup function
+   *
+   * \param params LteUeRrcSapUser::SetupParameters 
+   */
   void DoSetup (LteUeRrcSapUser::SetupParameters params);
+  /**
+   * Send RRC connection request function
+   *
+   * \param msg LteRrcSap::RrcConnectionRequest 
+   */
   void DoSendRrcConnectionRequest (LteRrcSap::RrcConnectionRequest msg);
+  /**
+   * Send RRC connection setup completed function
+   *
+   * \param msg LteRrcSap::RrcConnectionSetupCompleted 
+   */
   void DoSendRrcConnectionSetupCompleted (LteRrcSap::RrcConnectionSetupCompleted msg);
+  /**
+   * Send RRC connection reconfiguration setup completed function
+   *
+   * \param msg LteRrcSap::RrcConnectionReconfigurationCompleted 
+   */
   void DoSendRrcConnectionReconfigurationCompleted (LteRrcSap::RrcConnectionReconfigurationCompleted msg);
+  /**
+   * Send RRC connection reestablishment request function
+   *
+   * \param msg LteRrcSap::RrcConnectionReestablishmentRequest 
+   */
   void DoSendRrcConnectionReestablishmentRequest (LteRrcSap::RrcConnectionReestablishmentRequest msg);
+  /**
+   * Send RRC connection reestablishment complete function
+   *
+   * \param msg LteRrcSap::RrcConnectionReestablishmentComplete 
+   */
   void DoSendRrcConnectionReestablishmentComplete (LteRrcSap::RrcConnectionReestablishmentComplete msg);
+  /**
+   * Send measurement report function
+   *
+   * \param msg LteRrcSap::MeasurementReport 
+   */
   void DoSendMeasurementReport (LteRrcSap::MeasurementReport msg);
 
+  /// Set ENB RRC SAP provider
   void SetEnbRrcSapProvider ();
+  /**
+   * Receive PDCP PDU function
+   *
+   * \param p the packet 
+   */
   void DoReceivePdcpPdu (Ptr<Packet> p);
+  /**
+   * Receive PDCP SDU function
+   *
+   * \param params LtePdcpSapUser::ReceivePdcpSduParameters 
+   */
   void DoReceivePdcpSdu (LtePdcpSapUser::ReceivePdcpSduParameters params);
 
-  Ptr<LteUeRrc> m_rrc;
-  uint16_t m_rnti;
-  LteUeRrcSapProvider* m_ueRrcSapProvider;
-  LteUeRrcSapUser* m_ueRrcSapUser;
-  LteEnbRrcSapProvider* m_enbRrcSapProvider;
+  Ptr<LteUeRrc> m_rrc; ///< the RRC
+  uint16_t m_rnti; ///< the RNTI
+  LteUeRrcSapProvider* m_ueRrcSapProvider; ///< UE RRC SAP provider
+  LteUeRrcSapUser* m_ueRrcSapUser; ///< UE RRC SAP user
+  LteEnbRrcSapProvider* m_enbRrcSapProvider; ///< ENB RRC SAP provider
 
-  LteUeRrcSapUser::SetupParameters m_setupParameters;
-  LteUeRrcSapProvider::CompleteSetupParameters m_completeSetupParameters;
+  LteUeRrcSapUser::SetupParameters m_setupParameters; ///< setup parameters
+  LteUeRrcSapProvider::CompleteSetupParameters m_completeSetupParameters; ///< complete setup parameters
 
 };
 
@@ -114,51 +181,180 @@ public:
 
   // inherited from Object
   virtual void DoDispose (void);
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
 
+  /**
+   * Set LTE ENB RRC SAP provider function
+   *
+   * \param p LteEnbRrcSapProvider * 
+   */
   void SetLteEnbRrcSapProvider (LteEnbRrcSapProvider* p);
+  /**
+   * Get LTE ENB RRC SAP user function
+   *
+   * \returns LteEnbRrcSapUser * 
+   */
   LteEnbRrcSapUser* GetLteEnbRrcSapUser ();
 
+  /**
+   * Set cell ID function
+   *
+   * \param cellId the cell ID 
+   */
   void SetCellId (uint16_t cellId);
 
+  /**
+   * Get UE RRC SAP provider function
+   *
+   * \param rnti the RNTI
+   * \returns LteUeRrcSapProvider * 
+   */
   LteUeRrcSapProvider* GetUeRrcSapProvider (uint16_t rnti);
+  /**
+   * Set UE RRC SAP provider function
+   *
+   * \param rnti the RNTI
+   * \param p LteUeRrcSapProvider *
+   */
   void SetUeRrcSapProvider (uint16_t rnti, LteUeRrcSapProvider* p);
 
 private:
   // methods forwarded from LteEnbRrcSapUser
+  /**
+   * Setup UE function
+   *
+   * \param rnti the RNTI
+   * \param params LteEnbRrcSapUser::SetupUeParameters
+   */
   void DoSetupUe (uint16_t rnti, LteEnbRrcSapUser::SetupUeParameters params);
+  /**
+   * Remove UE function
+   *
+   * \param rnti the RNTI
+   */
   void DoRemoveUe (uint16_t rnti);
+  /**
+   * Send system information function
+   *
+   * \param msg LteRrcSap::SystemInformation
+   */
   void DoSendSystemInformation (LteRrcSap::SystemInformation msg);
+  /**
+   * Send system information function
+   *
+   * \param msg LteRrcSap::SystemInformation
+   */
   void SendSystemInformation (LteRrcSap::SystemInformation msg);
+  /**
+   * Send RRC connection setup function
+   *
+   * \param rnti the RNTI
+   * \param msg LteRrcSap::RrcConnectionSetup
+   */
   void DoSendRrcConnectionSetup (uint16_t rnti, LteRrcSap::RrcConnectionSetup msg);
+  /**
+   * Send RRC connection reconfiguration function
+   *
+   * \param rnti the RNTI
+   * \param msg LteRrcSap::RrcConnectionReconfiguration
+   */
   void DoSendRrcConnectionReconfiguration (uint16_t rnti, LteRrcSap::RrcConnectionReconfiguration msg);
+  /**
+   * Send RRC connection reestabishment function
+   *
+   * \param rnti the RNTI
+   * \param msg LteRrcSap::RrcConnectionReestablishment
+   */
   void DoSendRrcConnectionReestablishment (uint16_t rnti, LteRrcSap::RrcConnectionReestablishment msg);
+  /**
+   * Send RRC connection reestabishment reject function
+   *
+   * \param rnti the RNTI
+   * \param msg LteRrcSap::RrcConnectionReestablishmentReject
+   */
   void DoSendRrcConnectionReestablishmentReject (uint16_t rnti, LteRrcSap::RrcConnectionReestablishmentReject msg);
+  /**
+   * Send RRC connection release function
+   *
+   * \param rnti the RNTI
+   * \param msg LteRrcSap::RrcConnectionRelease
+   */
   void DoSendRrcConnectionRelease (uint16_t rnti, LteRrcSap::RrcConnectionRelease msg);
+  /**
+   * Send RRC connection reject function
+   *
+   * \param rnti the RNTI
+   * \param msg LteRrcSap::RrcConnectionReject
+   */
   void DoSendRrcConnectionReject (uint16_t rnti, LteRrcSap::RrcConnectionReject msg);
+  /**
+   * Encode handover preparation information function
+   *
+   * \param msg LteRrcSap::HandoverPreparationInfo
+   * \returns the packet
+   */
   Ptr<Packet> DoEncodeHandoverPreparationInformation (LteRrcSap::HandoverPreparationInfo msg);
+  /**
+   * Decode handover preparation information function
+   *
+   * \param p the packet
+   * \returns LteRrcSap::HandoverPreparationInfo
+   */
   LteRrcSap::HandoverPreparationInfo DoDecodeHandoverPreparationInformation (Ptr<Packet> p);
+  /**
+   * Encode handover command function
+   *
+   * \param msg LteRrcSap::RrcConnectionReconfiguration
+   * \returns the packet
+   */
   Ptr<Packet> DoEncodeHandoverCommand (LteRrcSap::RrcConnectionReconfiguration msg);
+  /**
+   * Decode handover command function
+   *
+   * \param p the packet
+   * \returns LteRrcSap::RrcConnectionReconfiguration
+   */
   LteRrcSap::RrcConnectionReconfiguration DoDecodeHandoverCommand (Ptr<Packet> p);
 
+  /**
+   * Receive PDCP SDU function
+   *
+   * \param params LtePdcpSapUser::ReceivePdcpSduParameters
+   */
   void DoReceivePdcpSdu (LtePdcpSapUser::ReceivePdcpSduParameters params);
+  /**
+   * Receive PDCP PDU function
+   *
+   * \param rnti the RNTI
+   * \param p the packet
+   */
   void DoReceivePdcpPdu (uint16_t rnti, Ptr<Packet> p);
 
-  uint16_t m_rnti;
-  uint16_t m_cellId;
-  LteEnbRrcSapProvider* m_enbRrcSapProvider;
-  LteEnbRrcSapUser* m_enbRrcSapUser;
-  std::map<uint16_t, LteUeRrcSapProvider*> m_enbRrcSapProviderMap;
-  std::map<uint16_t, LteEnbRrcSapUser::SetupUeParameters> m_setupUeParametersMap;
-  std::map<uint16_t, LteEnbRrcSapProvider::CompleteSetupUeParameters> m_completeSetupUeParametersMap;
+  uint16_t m_rnti; ///< the RNTI
+  uint16_t m_cellId; ///< the cell ID
+  LteEnbRrcSapProvider* m_enbRrcSapProvider; ///< ENB RRC SAP provider
+  LteEnbRrcSapUser* m_enbRrcSapUser; ///< ENB RRC SAP user
+  std::map<uint16_t, LteUeRrcSapProvider*> m_enbRrcSapProviderMap; ///< ENB RRC SAP provider map
+  std::map<uint16_t, LteEnbRrcSapUser::SetupUeParameters> m_setupUeParametersMap; ///< setup UE parameters map
+  std::map<uint16_t, LteEnbRrcSapProvider::CompleteSetupUeParameters> m_completeSetupUeParametersMap; ///< complete setup UE parameters map
 
 };
 
-///////////////////////////////////////
 
+/// RealProtocolRlcSapUser class
 class RealProtocolRlcSapUser : public LteRlcSapUser
 {
 public:
+  /**
+   * Real protocol RC SAP user
+   *
+   * \param pdcp LteEnbRrcProtocolReal *
+   * \param rnti the RNTI
+   */
   RealProtocolRlcSapUser (LteEnbRrcProtocolReal* pdcp, uint16_t rnti);
 
   // Interface implemented from LteRlcSapUser
@@ -166,8 +362,8 @@ public:
 
 private:
   RealProtocolRlcSapUser ();
-  LteEnbRrcProtocolReal* m_pdcp;
-  uint16_t m_rnti;
+  LteEnbRrcProtocolReal* m_pdcp; ///< PDCP
+  uint16_t m_rnti; ///< RNTI
 };
 
 

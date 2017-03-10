@@ -57,7 +57,7 @@ public:
   
   /**
   * \brief Get the delay from MAC to Channel expressed in TTIs
-  *
+  * \returns MAC channel TTI delay
   */
   virtual uint8_t GetMacChTtiDelay () = 0;
 

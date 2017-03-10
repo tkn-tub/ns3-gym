@@ -141,6 +141,10 @@ template <class C>
 class MemberLteFfrRrcSapProvider : public LteFfrRrcSapProvider
 {
 public:
+  /**
+   * Constructor
+   * \param owner the owner class
+   */
   MemberLteFfrRrcSapProvider (C* owner);
 
   // inherited from LteHandoverManagemenrSapProvider
@@ -151,7 +155,7 @@ public:
 
 private:
   MemberLteFfrRrcSapProvider ();
-  C* m_owner;
+  C* m_owner; ///< the owner class
 
 }; // end of class MemberLteFfrRrcSapProvider
 
@@ -199,6 +203,11 @@ template <class C>
 class MemberLteFfrRrcSapUser : public LteFfrRrcSapUser
 {
 public:
+  /**
+   * Constructor
+   * 
+   * \param owner the owner class
+   */
   MemberLteFfrRrcSapUser (C* owner);
 
   // inherited from LteFfrRrcSapUser
@@ -209,7 +218,7 @@ public:
   virtual void  SendLoadInformation (EpcX2Sap::LoadInformationParams params);
 private:
   MemberLteFfrRrcSapUser ();
-  C* m_owner;
+  C* m_owner; ///< the owner class
 
 }; // end of class LteFfrRrcSapUser
 

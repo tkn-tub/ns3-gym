@@ -51,7 +51,10 @@ public:
 
   NoOpComponentCarrierManager ();
   virtual ~NoOpComponentCarrierManager ();
-  // Inherited method
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId ();
 
 protected:
@@ -59,24 +62,88 @@ protected:
   virtual void DoInitialize ();
   virtual void DoDispose ();
   virtual void DoReportUeMeas (uint16_t rnti, LteRrcSap::MeasResults measResults);
+  /**
+   * \brief Add UE.
+   * \param rnti the RNTI
+   * \param state the state
+   */
   virtual void DoAddUe (uint16_t rnti, uint8_t state);
+  /**
+   * \brief Add LC.
+   * \param lcInfo the LC info
+   * \param msu the MSU
+   */
   virtual void DoAddLc (LteEnbCmacSapProvider::LcInfo lcInfo, LteMacSapUser* msu);
+  /**
+   * \brief Setup data radio bearer.
+   * \param bearer the radio bearer
+   * \param bearerId the bearerID
+   * \param rnti the RNTI
+   * \param lcid the LCID
+   * \param lcGroup the LC group
+   * \param msu the MSU
+   * \returns std::vector<LteCcmRrcSapProvider::LcsConfig> 
+   */
   virtual std::vector<LteCcmRrcSapProvider::LcsConfig> DoSetupDataRadioBearer (EpsBearer bearer, uint8_t bearerId, uint16_t rnti, uint8_t lcid, uint8_t lcGroup, LteMacSapUser* msu);
+  /**
+   * \brief Transmit PDU.
+   * \param params the transmit PDU parameters
+   */
   virtual void DoTransmitPdu (LteMacSapProvider::TransmitPduParameters params);
+  /**
+   * \brief Report buffer status.
+   * \param params the report buffer status parameters
+   */
   virtual void DoReportBufferStatus (LteMacSapProvider::ReportBufferStatusParameters params);
+  /**
+   * \brief Notify transmit opportunity.
+   * \param bytes the number of bytes
+   * \param layer the layer
+   * \param harqId the HARQ ID
+   * \param componentCarrierId the component carrier ID
+   * \param rnti the RNTI
+   * \param lcid the LCID
+   */
   virtual void DoNotifyTxOpportunity (uint32_t bytes, uint8_t layer, uint8_t harqId, uint8_t componentCarrierId, uint16_t rnti, uint8_t lcid);
+  /**
+   * \brief Receive PDU.
+   * \param p the packet
+   * \param rnti the RNTI
+   * \param lcid the LCID
+   */
   virtual void DoReceivePdu (Ptr<Packet> p, uint16_t rnti, uint8_t lcid);
+  /// Notify HARQ delivery failure
   virtual void DoNotifyHarqDeliveryFailure ();
+  /**
+   * \brief Remove UE.
+   * \param rnti the RNTI
+   */
   virtual void DoRemoveUe (uint16_t rnti);
+  /**
+   * \brief Release data radio bearer.
+   * \param rnti the RNTI
+   * \param lcid the LCID
+   * \returns updated data radio bearer list
+   */
   virtual std::vector<uint8_t> DoReleaseDataRadioBearer (uint16_t rnti, uint8_t lcid);
+  /**
+   * \brief Configure the signal bearer.
+   * \param lcinfo the LteEnbCmacSapProvider::LcInfo
+   * \param msu the MSU
+   * \returns updated data radio bearer list
+   */
   virtual LteMacSapUser* DoConfigureSignalBearer(LteEnbCmacSapProvider::LcInfo lcinfo,  LteMacSapUser* msu);
-  /*
-   * \brief Forwards uplink BSR to CCM, called by MAC through CCM SAP interface..
+  /**
+   * \brief Forwards uplink BSR to CCM, called by MAC through CCM SAP interface.
+   * \param bsr the BSR
+   * \param componentCarrierId the component carrier ID
    */
   virtual void DoUlReceiveMacCe (MacCeListElement_s bsr, uint8_t componentCarrierId);
-  /*
+  /**
    * \brief Function implements the function of the SAP interface of CCM instance which is used by MAC
    * to notify the PRB occupancy reported by scheduler.
+   * \param prbOccupancy the PRB occupancy
+   * \param componentCarrierId the component carrier ID
    */
   virtual void DoNotifyPrbOccupancy (double prbOccupancy, uint8_t componentCarrierId);
 
@@ -96,7 +163,10 @@ public:
 
   RrComponentCarrierManager ();
   virtual ~RrComponentCarrierManager ();
-  // Inherited method
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId ();
 
 protected:

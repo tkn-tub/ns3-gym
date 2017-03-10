@@ -146,6 +146,11 @@ template <class C>
 class MemberLteFfrSapProvider : public LteFfrSapProvider
 {
 public:
+  /**
+   * Constructor
+   * 
+   * \param owner the owner class
+   */
   MemberLteFfrSapProvider (C* owner);
 
   // inherited from LteFfrSapProvider
@@ -160,7 +165,7 @@ public:
   virtual uint8_t GetMinContinuousUlBandwidth ();
 private:
   MemberLteFfrSapProvider ();
-  C* m_owner;
+  C* m_owner; ///< the owner class
 
 }; // end of class MemberLteFfrSapProvider
 
@@ -244,12 +249,17 @@ template <class C>
 class MemberLteFfrSapUser : public LteFfrSapUser
 {
 public:
+  /**
+   * Constructor
+   *
+   * \param owner the owner class
+   */
   MemberLteFfrSapUser (C* owner);
 
   // inherited from LteFfrSapUser
 private:
   MemberLteFfrSapUser ();
-  C* m_owner;
+  C* m_owner; ///< the owner class
 
 }; // end of class LteFfrSapUser
 

@@ -49,7 +49,10 @@ public:
   LteInterference ();
   virtual ~LteInterference ();
 
-  // inherited from Object
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
   virtual void DoDispose ();
 
@@ -115,13 +118,27 @@ public:
   void SetNoisePowerSpectralDensity (Ptr<const SpectrumValue> noisePsd);
 
 private:
+  /**
+   * Considitionally evaluate chunk
+   */
   void ConditionallyEvaluateChunk ();
+  /**
+   * Add signal function
+   *
+   * @param spd the power spectral density of the new signal
+   */
   void DoAddSignal  (Ptr<const SpectrumValue> spd);
+  /**
+   * Subtract signal
+   *
+   * @param spd the power spectral density of the new signal
+   * @param signalId the signal ID
+   */
   void DoSubtractSignal  (Ptr<const SpectrumValue> spd, uint32_t signalId);
 
 
 
-  bool m_receiving;
+  bool m_receiving; ///< are we receiving?
 
   Ptr<SpectrumValue> m_rxSignal; /**< stores the power spectral density of
                                   * the signal whose RX is being
@@ -133,13 +150,13 @@ private:
                                     * does not include noise, includes the SPD of the signal being RX
                                     */
 
-  Ptr<const SpectrumValue> m_noise;
+  Ptr<const SpectrumValue> m_noise; ///< the noise value
 
   Time m_lastChangeTime;     /**< the time of the last change in
                                 m_TotalPower */
 
-  uint32_t m_lastSignalId;
-  uint32_t m_lastSignalIdBeforeReset;
+  uint32_t m_lastSignalId; ///< the last signal ID
+  uint32_t m_lastSignalIdBeforeReset; ///< the last signal ID before reset
 
   /** all the processor instances that need to be notified whenever
   a new interference chunk is calculated */

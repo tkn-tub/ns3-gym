@@ -44,14 +44,15 @@ namespace ns3 {
 NS_LOG_COMPONENT_DEFINE ("LteSpectrumPhy");
 
 
-// duration of SRS portion of UL subframe  
-// = 1 symbol for SRS -1ns as margin to avoid overlapping simulator events
+/// duration of SRS portion of UL subframe  
+/// = 1 symbol for SRS -1ns as margin to avoid overlapping simulator events
 static const Time UL_SRS_DURATION = NanoSeconds (71429 -1);  
 
-// duration of the control portion of a subframe
-// = 0.001 / 14 * 3 (ctrl fixed to 3 symbols) -1ns as margin to avoid overlapping simulator events
+/// duration of the control portion of a subframe
+/// = 0.001 / 14 * 3 (ctrl fixed to 3 symbols) -1ns as margin to avoid overlapping simulator events
 static const Time DL_CTRL_DURATION = NanoSeconds (214286 -1);
 
+/// Effective coding rate
 static const double EffectiveCodingRate[29] = {
   0.08,
   0.1,
@@ -97,12 +98,26 @@ TbId_t::TbId_t (const uint16_t a, const uint8_t b)
 {
 }
 
+/**
+ * Equality operator
+ *
+ * \param a lhs
+ * \param b rhs
+ * \returns true if rnti and layer are equal
+ */
 bool
 operator == (const TbId_t &a, const TbId_t &b)
 {
   return ( (a.m_rnti == b.m_rnti) && (a.m_layer == b.m_layer) );
 }
 
+/**
+ * Less than operator
+ *
+ * \param a lhs
+ * \param b rhs
+ * \returns true if rnti less than ro rnti equal and layer less than
+ */
 bool
 operator < (const TbId_t& a, const TbId_t& b)
 {
@@ -159,6 +174,13 @@ void LteSpectrumPhy::DoDispose ()
   SpectrumPhy::DoDispose ();
 } 
 
+/**
+ * Output stream output operator
+ *
+ * \param os output stream
+ * \param s state
+ * \returns output stream
+ */
 std::ostream& operator<< (std::ostream& os, LteSpectrumPhy::State s)
 {
   switch (s)

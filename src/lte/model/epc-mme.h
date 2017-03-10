@@ -55,7 +55,10 @@ public:
    */  
   virtual ~EpcMme ();
   
-  // inherited from Object  
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
 protected:
   virtual void DoDispose ();
@@ -85,6 +88,7 @@ public:
   /** 
    * Add a new ENB to the MME. 
    * \param ecgi E-UTRAN Cell Global ID, the unique identifier of the eNodeB
+   * \param enbS1UAddr address of the eNB for S1-U communications
    * \param enbS1apSap the ENB side of the S1-AP SAP 
    */
   void AddEnb (uint16_t ecgi, Ipv4Address enbS1UAddr, EpcS1apSapEnb* enbS1apSap);
@@ -105,6 +109,7 @@ public:
    * \param imsi UE identifier
    * \param tft traffic flow template of the bearer
    * \param bearer QoS characteristics of the bearer
+   * \returns bearer ID 
    */
   uint8_t AddBearer (uint64_t imsi, Ptr<EpcTft> tft, EpsBearer bearer);
 
@@ -112,14 +117,52 @@ public:
 private:
 
   // S1-AP SAP MME forwarded methods
+  /**
+   * Initial UE Message function 
+   * \param mmeUeS1Id the MME UE S1 ID
+   * \param enbUeS1Id the ENB UE S1 ID
+   * \param imsi the IMSI
+   * \param ecgi the ECGI
+   */
   void DoInitialUeMessage (uint64_t mmeUeS1Id, uint16_t enbUeS1Id, uint64_t imsi, uint16_t ecgi);
+  /**
+   * Initial Context Setup Response function 
+   * \param mmeUeS1Id the MME UE S1 ID
+   * \param enbUeS1Id the ENB UE S1 ID
+   * \param erabSetupList the ERAB setup list
+   */
   void DoInitialContextSetupResponse (uint64_t mmeUeS1Id, uint16_t enbUeS1Id, std::list<EpcS1apSapMme::ErabSetupItem> erabSetupList);
+  /**
+   * Path Switch Request function
+   * \param mmeUeS1Id the MME UE S1 ID
+   * \param enbUeS1Id the ENB UE S1 ID
+   * \param cgi the CGI
+   * \param erabToBeSwitchedInDownlinkList the ERAB to be switched in downlink list
+   */
   void DoPathSwitchRequest (uint64_t enbUeS1Id, uint64_t mmeUeS1Id, uint16_t cgi, std::list<EpcS1apSapMme::ErabSwitchedInDownlinkItem> erabToBeSwitchedInDownlinkList);
+  /**
+   * ERAB Release Indication function
+   * \param mmeUeS1Id the MME UE S1 ID
+   * \param enbUeS1Id the ENB UE S1 ID
+   * \param erabToBeReleaseIndication the ERAB to be release indication list
+   */
   void DoErabReleaseIndication (uint64_t mmeUeS1Id, uint16_t enbUeS1Id, std::list<EpcS1apSapMme::ErabToBeReleasedIndication> erabToBeReleaseIndication);
 
   // S11 SAP MME forwarded methods
+  /**
+   * Create Session Response function
+   * \param msg EpcS11SapMme::CreateSessionResponseMessage
+   */
   void DoCreateSessionResponse (EpcS11SapMme::CreateSessionResponseMessage msg);
+  /**
+   * Modify Bearer Response function
+   * \param msg EpcS11SapMme::ModifyBearerResponseMessage
+   */
   void DoModifyBearerResponse (EpcS11SapMme::ModifyBearerResponseMessage msg);
+  /**
+   * Delete Bearer Request function
+   * \param msg EpcS11SapMme::DeleteBearerRequestMessage
+   */
   void DoDeleteBearerRequest (EpcS11SapMme::DeleteBearerRequestMessage msg);
 
 
@@ -129,9 +172,9 @@ private:
    */
   struct BearerInfo
   {
-    Ptr<EpcTft> tft;
-    EpsBearer bearer;
-    uint8_t bearerId;
+    Ptr<EpcTft> tft;  ///< traffic flow template
+    EpsBearer bearer; ///< bearer QOS characteristics 
+    uint8_t bearerId; ///< bearer ID
   };
   
   /**
@@ -140,12 +183,12 @@ private:
    */
   struct UeInfo : public SimpleRefCount<UeInfo>
   {
-    uint64_t mmeUeS1Id;
-    uint16_t enbUeS1Id;
-    uint64_t imsi;
-    uint16_t cellId;
-    std::list<BearerInfo> bearersToBeActivated;
-    uint16_t bearerCounter;
+    uint64_t mmeUeS1Id; ///< mmeUeS1Id
+    uint16_t enbUeS1Id; ///< enbUeS1Id
+    uint64_t imsi; ///< UE identifier
+    uint16_t cellId; ///< cell ID
+    std::list<BearerInfo> bearersToBeActivated; ///< list of bearers to be activated
+    uint16_t bearerCounter; ///< bearer counter
   };
 
   /**
@@ -167,9 +210,9 @@ private:
    */
   struct EnbInfo : public SimpleRefCount<EnbInfo>
   {
-    uint16_t gci;
-    Ipv4Address s1uAddr;
-    EpcS1apSapEnb* s1apSapEnb;
+    uint16_t gci; ///< GCI
+    Ipv4Address s1uAddr; ///< IP address
+    EpcS1apSapEnb* s1apSapEnb; ///< EpcS1apSapEnb
   };
 
   /**
@@ -181,10 +224,10 @@ private:
 
   
 
-  EpcS1apSapMme* m_s1apSapMme;
+  EpcS1apSapMme* m_s1apSapMme; ///< EpcS1apSapMme
 
-  EpcS11SapMme* m_s11SapMme;
-  EpcS11SapSgw* m_s11SapSgw;
+  EpcS11SapMme* m_s11SapMme; ///< EpcS11SapMme
+  EpcS11SapSgw* m_s11SapSgw; ///< EpcS11SapSgw
   
 };
 

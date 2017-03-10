@@ -47,9 +47,15 @@ NS_LOG_COMPONENT_DEFINE ("LteUeRrc");
 // CMAC SAP forwarder
 /////////////////////////////
 
+/// UeMemberLteUeCmacSapUser class
 class UeMemberLteUeCmacSapUser : public LteUeCmacSapUser
 {
 public:
+  /**
+   * Constructor
+   *
+   * \param rrc the RRC class
+   */
   UeMemberLteUeCmacSapUser (LteUeRrc* rrc);
 
   virtual void SetTemporaryCellRnti (uint16_t rnti);
@@ -57,7 +63,7 @@ public:
   virtual void NotifyRandomAccessFailed ();
 
 private:
-  LteUeRrc* m_rrc;
+  LteUeRrc* m_rrc; ///< the RRC class
 };
 
 UeMemberLteUeCmacSapUser::UeMemberLteUeCmacSapUser (LteUeRrc* rrc)

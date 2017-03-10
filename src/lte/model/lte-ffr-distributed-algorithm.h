@@ -38,7 +38,10 @@ public:
   LteFfrDistributedAlgorithm ();
   virtual ~LteFfrDistributedAlgorithm ();
 
-  // inherited from Object
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId ();
 
   // inherited from LteFfrAlgorithm
@@ -75,31 +78,64 @@ protected:
   virtual void DoRecvLoadInformation (EpcX2Sap::LoadInformationParams params);
 
 private:
+  /**
+   * Set down link configuration function
+   *
+   * \param cellId cell ID
+   * \param bandwidth the bandwidth
+   */
   void SetDownlinkConfiguration (uint16_t cellId, uint8_t bandwidth);
+  /**
+   * Set up link configuration function
+   *
+   * \param cellId cell ID
+   * \param bandwidth the bandwidth
+   */
   void SetUplinkConfiguration (uint16_t cellId, uint8_t bandwidth);
+  /**
+   * Initialize down link RGB maps function
+   */
   void InitializeDownlinkRbgMaps ();
+  /**
+   * Initialize up link RGB maps function
+   */
   void InitializeUplinkRbgMaps ();
 
+  /**
+   * Initialize up link RGB maps function
+   *
+   * \param rnti the RNTI
+   * \param cellId the cell ID
+   * \param rsrp the RSRP
+   * \param rsrq the RSRQ
+   */
   void UpdateNeighbourMeasurements (uint16_t rnti, uint16_t cellId, uint8_t rsrp, uint8_t rsrq);
 
+  /// Calculate function
   void Calculate ();
+  /**
+   * Send load information function
+   *
+   * \param targetCellId the cell ID
+   */
   void SendLoadInformation (uint16_t targetCellId);
 
   // FFR SAP
-  LteFfrSapUser* m_ffrSapUser;
-  LteFfrSapProvider* m_ffrSapProvider;
+  LteFfrSapUser* m_ffrSapUser; ///< FFR SAP User
+  LteFfrSapProvider* m_ffrSapProvider; ///< FFR SAP Provider
 
   // FFR RRF SAP
-  LteFfrRrcSapUser* m_ffrRrcSapUser;
-  LteFfrRrcSapProvider* m_ffrRrcSapProvider;
+  LteFfrRrcSapUser* m_ffrRrcSapUser; ///< FFR RRC SAP User
+  LteFfrRrcSapProvider* m_ffrRrcSapProvider; ///< FFR RRC SAP Provider
 
-  std::vector <bool> m_dlRbgMap;
-  std::vector <bool> m_ulRbgMap;
+  std::vector <bool> m_dlRbgMap; ///< DL RBG map
+  std::vector <bool> m_ulRbgMap; ///< UL RBG map
 
-  uint8_t m_edgeRbNum;
-  std::vector <bool> m_dlEdgeRbgMap;
-  std::vector <bool> m_ulEdgeRbgMap;
+  uint8_t m_edgeRbNum; ///< edge RB number
+  std::vector <bool> m_dlEdgeRbgMap; ///< DL edge RBG map
+  std::vector <bool> m_ulEdgeRbgMap; ///< UL edge RBG map
 
+  /// UePosition enumeration
   enum UePosition
   {
     AreaUnset,
@@ -107,22 +143,22 @@ private:
     EdgeArea
   };
 
-  std::map< uint16_t, uint8_t > m_ues;
+  std::map< uint16_t, uint8_t > m_ues; ///< UEs map
 
-  uint8_t m_egdeSubBandRsrqThreshold;
+  uint8_t m_edgeSubBandRsrqThreshold; ///< edge sub band RSRQ threshold
 
-  uint8_t m_centerPowerOffset;
-  uint8_t m_edgePowerOffset;
+  uint8_t m_centerPowerOffset; ///< center power offset
+  uint8_t m_edgePowerOffset; ///< edge power offset
 
-  uint8_t m_centerAreaTpc;
-  uint8_t m_edgeAreaTpc;
+  uint8_t m_centerAreaTpc; ///< center area TPC
+  uint8_t m_edgeAreaTpc; ///< edge area TCP
 
-  Time m_calculationInterval;
-  EventId m_calculationEvent;
+  Time m_calculationInterval; ///< calculation interval
+  EventId m_calculationEvent; ///< calculation event
 
   // The expected measurement identity
-  uint8_t m_rsrqMeasId;
-  uint8_t m_rsrpMeasId;
+  uint8_t m_rsrqMeasId; ///< RSRQ measurement ID
+  uint8_t m_rsrpMeasId; ///< RSRP measurement ID
 
   /**
    * \brief Measurements reported by a UE for a cell ID.
@@ -131,25 +167,25 @@ private:
    */
   class UeMeasure : public SimpleRefCount<UeMeasure>
   {
-public:
-    uint16_t m_cellId;
-    uint8_t m_rsrp;
-    uint8_t m_rsrq;
+  public:
+    uint16_t m_cellId; ///< Cell ID
+    uint8_t m_rsrp; ///< RSRP
+    uint8_t m_rsrq; ///< RSRQ
   };
 
-  //               cellId
+  ///               cellId
   typedef std::map<uint16_t, Ptr<UeMeasure> > MeasurementRow_t;
-  //               rnti
+  ///               rnti
   typedef std::map<uint16_t, MeasurementRow_t> MeasurementTable_t;
-  MeasurementTable_t m_ueMeasures;
+  MeasurementTable_t m_ueMeasures; ///< UE measures
 
-  std::vector<uint16_t> m_neigborCell;
+  std::vector<uint16_t> m_neigborCell; ///< neighbor cell
 
-  uint8_t m_rsrpDifferenceThreshold;
+  uint8_t m_rsrpDifferenceThreshold; ///< RSRP difference threshold
 
-  std::map<uint16_t, uint32_t> m_cellWeightMap;
+  std::map<uint16_t, uint32_t> m_cellWeightMap; ///< cell weight map
 
-  std::map<uint16_t, std::vector <bool> > m_rntp;
+  std::map<uint16_t, std::vector <bool> > m_rntp; ///< RNTP
 
 }; // end of class LteFfrDistributedAlgorithm
 

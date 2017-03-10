@@ -51,7 +51,11 @@ public:
   virtual void ConfigureMac (uint8_t ulBandwidth,
                              uint8_t dlBandwidth) = 0;
 
-
+  /**
+   * Add UE function
+   *
+   * \param rnti 
+   */
   virtual void AddUe (uint16_t rnti) = 0;
 
   /** 
@@ -132,9 +136,9 @@ public:
    */
   struct RachConfig
   {
-    uint8_t numberOfRaPreambles;
-    uint8_t preambleTransMax;
-    uint8_t raResponseWindowSize;
+    uint8_t numberOfRaPreambles; ///< number of RA preambles
+    uint8_t preambleTransMax; ///< preamble transmit maximum
+    uint8_t raResponseWindowSize; ///< RA response window size
   };
 
   /** 
@@ -144,14 +148,14 @@ public:
   virtual RachConfig GetRachConfig () = 0;
 
   /**
-   * 
+   * \brief AllocateNcRaPreambleReturnValue structure
    * 
    */
   struct AllocateNcRaPreambleReturnValue
   {
     bool valid; ///< true if a valid RA config was allocated, false otherwise
     uint8_t raPreambleId; ///< random access preamble id
-    uint8_t raPrachMaskIndex; /// PRACH mask index
+    uint8_t raPrachMaskIndex; ///< PRACH mask index
   };
 
   /** 

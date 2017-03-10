@@ -35,6 +35,7 @@ namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("TdBetFfMacScheduler");
 
+/// TDBET type 0 allocation RBG
 static const int TdBetType0AllocationRbg[4] = {
   10,       // RGB size 1
   26,       // RGB size 2

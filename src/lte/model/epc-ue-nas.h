@@ -48,6 +48,10 @@ public:
 
   // inherited from Object
   virtual void DoDispose (void);
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
 
 
@@ -172,7 +176,7 @@ public:
    * TracedCallback signature for state change events.
    *
    * \param [in] oldState The old State.
-   * \pararm [in] newState the new State.
+   * \param [in] newState the new State.
    */
   typedef void (* StateTracedCallback)
     (const State oldState, const State newState);
@@ -180,12 +184,24 @@ public:
 private:
 
   // LTE AS SAP methods
+  /// Notify successful connection
   void DoNotifyConnectionSuccessful ();
+  /// Notify connection failed
   void DoNotifyConnectionFailed ();
+  /// Notify connection released
   void DoNotifyConnectionReleased ();
+  /**
+   * Receive data
+   * \param packet the packet
+   */
   void DoRecvData (Ptr<Packet> packet);
 
   // internal methods
+  /**
+   * Activate EPS Bearer
+   * \param bearer the EPS bearer
+   * \param tft the EPC TFT
+   */
   void DoActivateEpsBearer (EpsBearer bearer, Ptr<EpcTft> tft);
   /**
    * Switch the UE RRC to the given state.
@@ -212,21 +228,24 @@ private:
   /// Closed Subscriber Group identity.
   uint32_t m_csgId;
 
+  /// LTE SAP provider
   LteAsSapProvider* m_asSapProvider;
+  /// LTE SAP user
   LteAsSapUser* m_asSapUser;
 
-  uint8_t m_bidCounter;
-  EpcTftClassifier m_tftClassifier;
+  uint8_t m_bidCounter; ///< bid counter
+  EpcTftClassifier m_tftClassifier; ///< tft classifier
 
-  Callback <void, Ptr<Packet> > m_forwardUpCallback;
+  Callback <void, Ptr<Packet> > m_forwardUpCallback; ///< upward callback
 
+  /// BearerToBeActivated structure
   struct BearerToBeActivated
   {
-    EpsBearer bearer;
-    Ptr<EpcTft> tft;
+    EpsBearer bearer; ///< EPS bearer
+    Ptr<EpcTft> tft; ///< TFT
   };
 
-  std::list<BearerToBeActivated> m_bearersToBeActivatedList;
+  std::list<BearerToBeActivated> m_bearersToBeActivatedList; ///< bearers to be activated list
 
 };
 

@@ -45,21 +45,32 @@
 
 namespace ns3 {
   
+  /// PDCCH PCFICH curve size
   const uint16_t PDCCH_PCFICH_CURVE_SIZE = 46;
+  /// MI map QPSK size 
   const uint16_t MI_MAP_QPSK_SIZE = 797;
+  /// MI map 16QAM size
   const uint16_t MI_MAP_16QAM_SIZE = 994;
+  /// MI map 64QAM size
   const uint16_t MI_MAP_64QAM_SIZE = 752;
+  /// MI QPSK maximum ID
   const uint16_t MI_QPSK_MAX_ID = 9;
+  /// MI 16QAM maximum ID
   const uint16_t MI_16QAM_MAX_ID = 16;
+  /// MI 64QAM maximum ID
   const uint16_t MI_64QAM_MAX_ID = 28;  // 29,30 and 31 are reserved
+  /// MI QPSK BLER maximum ID
   const uint16_t MI_QPSK_BLER_MAX_ID = 12; // MI_QPSK_MAX_ID + 3 RETX
+  /// MI 16QAM BLER maximum ID
   const uint16_t MI_16QAM_BLER_MAX_ID = 22;
+  /// MI 64QAM BLER maximum ID
   const uint16_t MI_64QAM_BLER_MAX_ID = 37;
 
+/// TbStats_t structure
 struct TbStats_t
 {
-  double tbler;
-  double mi;
+  double tbler; ///< tbler
+  double mi; ///< mi
 };
   
 

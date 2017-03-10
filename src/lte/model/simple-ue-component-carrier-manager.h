@@ -45,7 +45,10 @@ public:
 
   virtual ~SimpleUeComponentCarrierManager ();
 
-  // inherited from Object
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId ();
 
   // inherited from LteComponentCarrierManager
@@ -68,18 +71,67 @@ protected:
   virtual void DoInitialize ();
   virtual void DoDispose ();
   // inherited from LteCcsAlgorithm as a Component Carrier Management SAP implementation
+  /**
+   * \brief Report Ue Measure function
+   * \param rnti the RNTI
+   * \param measResults the measure results
+   */
   void DoReportUeMeas (uint16_t rnti, LteRrcSap::MeasResults measResults);
   // forwarded from LteMacSapProvider
+  /**
+   * \brief Transmit PDU function
+   * \param params LteMacSapProvider::TransmitPduParameters
+   */
   void DoTransmitPdu (LteMacSapProvider::TransmitPduParameters params);
+  /**
+   * \brief Report buffer status function
+   * \param params LteMacSapProvider::ReportBufferStatusParameters
+   */
   void DoReportBufferStatus (LteMacSapProvider::ReportBufferStatusParameters params);
+  /// Notify HARQ deliver failure
   void DoNotifyHarqDeliveryFailure ();
   // forwarded from LteMacSapUser
+  /**
+   * \brief Notify TX opportunity function
+   * \param bytes the number of bytes
+   * \param layer the layer
+   * \param harqId the HARQ ID
+   * \param componentCarrierId the component carrier ID
+   * \param rnti the RNTI
+   * \param lcid the LCID
+   */
   void DoNotifyTxOpportunity (uint32_t bytes, uint8_t layer, uint8_t harqId, uint8_t componentCarrierId, uint16_t rnti, uint8_t lcid);
+  /**
+   * \brief Receive PDU function
+   * \param p the packet
+   * \param rnti the RNTI
+   * \param lcid the LCID
+   */
   void DoReceivePdu (Ptr<Packet> p, uint16_t rnti, uint8_t lcid);
   //forwarded from LteUeCcmRrcSapProvider
+  /**
+   * \brief Add LC function
+   * \param lcId the LCID
+   * \param lcConfig the logical channel config
+   * \param msu the MSU
+   * \returns updated LC config list
+   */
   std::vector<LteUeCcmRrcSapProvider::LcsConfig> DoAddLc (uint8_t lcId,  LteUeCmacSapProvider::LogicalChannelConfig lcConfig, LteMacSapUser* msu);
+  /**
+   * \brief Remove LC function
+   * \param lcid the LCID
+   * \returns updated LC list
+   */
   std::vector<uint16_t> DoRemoveLc (uint8_t lcid);
+  /// Notify connection reconfiguration message
   void DoNotifyConnectionReconfigurationMsg ();
+  /**
+   * \brief Configure signal bearer function
+   * \param lcId the LCID
+   * \param lcConfig the logical channel config
+   * \param msu the MSU
+   * \returns LteMacSapUser *
+   */
   LteMacSapUser* DoConfigureSignalBearer (uint8_t lcId,  LteUeCmacSapProvider::LogicalChannelConfig lcConfig, LteMacSapUser* msu);
   
 private:
@@ -87,7 +139,7 @@ private:
   LteUeCcmRrcSapUser* m_ccmRrcSapUser;//!< Interface to the eNodeB RRC instance.
   LteUeCcmRrcSapProvider* m_ccmRrcSapProvider; //!< Receive API calls from the eNodeB RRC instance.
   LteMacSapUser* m_ccmMacSapUser;//!< Interface to the eNodeB RLC instance.
-  LteMacSapProvider* m_ccmMacSapProvider; //!< Receive API calls from the eNodeB RLC instance..
+  LteMacSapProvider* m_ccmMacSapProvider; //!< Receive API calls from the eNodeB RLC instance
 
 }; // end of class SimpleUeComponentCarrierManager
 

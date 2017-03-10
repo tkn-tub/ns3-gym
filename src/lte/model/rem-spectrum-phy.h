@@ -57,6 +57,10 @@ public:
 
   // inherited from Object
   void DoDispose ();
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
 
   // inherited from SpectrumPhy
@@ -78,6 +82,7 @@ public:
 
   /** 
    * 
+   * \param noisePower the noise power
    * \return the Signal to Noise Ratio calculated 
    */
   double GetSinr (double noisePower);
@@ -115,16 +120,16 @@ public:
   void SetRbId (int32_t rbId);
 
 private:
-  Ptr<MobilityModel> m_mobility;
-  Ptr<const SpectrumModel> m_rxSpectrumModel;
+  Ptr<MobilityModel> m_mobility; ///< the mobility model
+  Ptr<const SpectrumModel> m_rxSpectrumModel; ///< receive spectrum model
 
-  double m_referenceSignalPower;
-  double m_sumPower;
+  double m_referenceSignalPower; ///< reference signal power
+  double m_sumPower; ///< sum power
 
-  bool m_active;
+  bool m_active; ///< is active?
 
-  bool m_useDataChannel;
-  int32_t m_rbId;
+  bool m_useDataChannel; ///< use data channel
+  int32_t m_rbId; ///< RBID
 
 };
 

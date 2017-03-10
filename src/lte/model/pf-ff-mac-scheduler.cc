@@ -35,6 +35,7 @@ namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("PfFfMacScheduler");
 
+/// PF type 0 allocation RBG
 static const int PfType0AllocationRbg[4] = {
   10,       // RGB size 1
   26,       // RGB size 2
@@ -48,7 +49,7 @@ NS_OBJECT_ENSURE_REGISTERED (PfFfMacScheduler);
 
 
 PfFfMacScheduler::PfFfMacScheduler ()
-  :   m_cschedSapUser (0),
+  : m_cschedSapUser (0),
     m_schedSapUser (0),
     m_timeWindow (99.0),
     m_nextRntiUl (0)

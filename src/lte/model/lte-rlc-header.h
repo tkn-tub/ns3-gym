@@ -48,34 +48,81 @@ public:
   LteRlcHeader ();
   ~LteRlcHeader ();
 
+  /**
+   * Set framing info
+   *
+   * \param framingInfo framing info
+   */
   void SetFramingInfo (uint8_t framingInfo);
+  /**
+   * Set sequence number
+   *
+   * \param sequenceNumber sequence number
+   */
   void SetSequenceNumber (SequenceNumber10 sequenceNumber);
 
+  /**
+   * Get framing info
+   *
+   * \returns framing info
+   */
   uint8_t GetFramingInfo () const;
+  /**
+   * Get sequence number
+   *
+   * \returns sequence number
+   */
   SequenceNumber10 GetSequenceNumber () const;
 
+  /**
+   * Push extension bit
+   *
+   * \param extensionBit the extension bit
+   */
   void PushExtensionBit (uint8_t extensionBit);
+  /**
+   * Push length indicator
+   *
+   * \param lengthIndicator the length indicator
+   */
   void PushLengthIndicator (uint16_t lengthIndicator);
 
+  /**
+   * Pop extension bit
+   *
+   * \returns the extension bit
+   */
   uint8_t PopExtensionBit (void);
+  /**
+   * Pop length indicator
+   *
+   * \returns the length indicator
+   */
   uint16_t PopLengthIndicator (void);
 
+  /// ExtensionBit_t typedef
   typedef enum {
     DATA_FIELD_FOLLOWS  = 0,
     E_LI_FIELDS_FOLLOWS = 1
-  } ExtensionBit_t;
+  } ExtensionBit_t; ///< ExtensionBit_t enumeration
 
+  /// FramingInfoFirstByte_t typedef
   typedef enum {
     FIRST_BYTE    = 0x00,
     NO_FIRST_BYTE = 0x02
-  } FramingInfoFirstByte_t;
+  } FramingInfoFirstByte_t; ///< FramingInfoFirstByte_t enumeration
 
+  /// FramingInfoLastByte_t tyedef
   typedef enum {
     LAST_BYTE    = 0x00,
     NO_LAST_BYTE = 0x01
-  } FramingInfoLastByte_t;
+  } FramingInfoLastByte_t; ///< FramingInfoLastByte_t enumeration
 
 
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
   virtual TypeId GetInstanceTypeId (void) const;
   virtual void Print (std::ostream &os) const;
@@ -84,12 +131,12 @@ public:
   virtual uint32_t Deserialize (Buffer::Iterator start);
 
 private:
-  uint16_t m_headerLength;
-  uint8_t  m_framingInfo;      //  2 bits
-  SequenceNumber10 m_sequenceNumber;
+  uint16_t m_headerLength; ///< header length
+  uint8_t  m_framingInfo;      ///<  2 bits
+  SequenceNumber10 m_sequenceNumber; ///< sequence number
 
-  std::list <uint8_t> m_extensionBits; // Includes extensionBit of the fixed part
-  std::list <uint16_t> m_lengthIndicators;
+  std::list <uint8_t> m_extensionBits; ///< Includes extensionBit of the fixed part
+  std::list <uint16_t> m_lengthIndicators; ///< length indicators
 
 };
 

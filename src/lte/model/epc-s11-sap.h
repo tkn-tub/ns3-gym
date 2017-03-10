@@ -30,15 +30,21 @@
 
 namespace ns3 {
 
+/**
+ * EpcS11Sap
+ */
 class EpcS11Sap
 {
 public:
 
   virtual ~EpcS11Sap ();
 
+  /**
+   * GTPC message
+   */
   struct GtpcMessage
   {
-    uint32_t teid;
+    uint32_t teid; ///< TEID
   };
 
   /**
@@ -47,8 +53,8 @@ public:
    */
   struct Fteid 
   {
-    uint32_t teid;
-    Ipv4Address address;
+    uint32_t teid; ///< TEID
+    Ipv4Address address; ///< IP address
   };
 
   /**
@@ -57,7 +63,7 @@ public:
    */
   struct Uli
   {
-    uint16_t gci;
+    uint16_t gci; ///< GCI
   };
   
  
@@ -80,10 +86,10 @@ public:
   struct BearerContextCreated
   {
 
-    EpcS11Sap::Fteid sgwFteid;
-    uint8_t epsBearerId; 
-    EpsBearer bearerLevelQos; 
-    Ptr<EpcTft> tft;
+    EpcS11Sap::Fteid sgwFteid; ///< EPC FTEID
+    uint8_t epsBearerId; ///< EPS bearer ID
+    EpsBearer bearerLevelQos; ///< EPS bearer
+    Ptr<EpcTft> tft; ///< traffic flow template
   };
 
 
@@ -92,7 +98,7 @@ public:
    */
   struct CreateSessionResponseMessage : public GtpcMessage
   {
-    std::list<BearerContextCreated> bearerContextsCreated;
+    std::list<BearerContextCreated> bearerContextsCreated; ///< bearer contexts created
   };
 
 
@@ -103,9 +109,12 @@ public:
    */
   virtual void CreateSessionResponse (CreateSessionResponseMessage msg) = 0;
 
+  /**
+   * Bearer Context Removed structure
+   */
   struct BearerContextRemoved
   {
-    uint8_t epsBearerId;
+    uint8_t epsBearerId; ///< EPS bearer ID
   };
 
   /**
@@ -113,7 +122,7 @@ public:
    */
   struct DeleteBearerRequestMessage : public GtpcMessage
   {
-    std::list<BearerContextRemoved> bearerContextsRemoved;
+    std::list<BearerContextRemoved> bearerContextsRemoved; ///< list of bearer context removed
   };
 
   /**
@@ -130,12 +139,13 @@ public:
    */
   struct ModifyBearerResponseMessage : public GtpcMessage
   {
+    /// Cause enumeration
     enum Cause {
       REQUEST_ACCEPTED = 0,
       REQUEST_ACCEPTED_PARTIALLY,
       REQUEST_REJECTED,
       CONTEXT_NOT_FOUND
-    } cause;
+    } cause; ///< the cause
   };
 
   /** 
@@ -157,12 +167,13 @@ class EpcS11SapSgw : public EpcS11Sap
 {
 public:
 
+  /// BearerContextToBeCreated structure
   struct BearerContextToBeCreated
   {    
-    EpcS11Sap::Fteid sgwFteid;
-    uint8_t epsBearerId; 
-    EpsBearer bearerLevelQos; 
-    Ptr<EpcTft> tft;
+    EpcS11Sap::Fteid sgwFteid; ///< FTEID
+    uint8_t epsBearerId; ///< EPS bearer ID
+    EpsBearer bearerLevelQos; ///< bearer QOS level
+    Ptr<EpcTft> tft; ///< traffic flow template
   };
 
   
@@ -171,9 +182,9 @@ public:
    */
   struct CreateSessionRequestMessage : public GtpcMessage
   {
-    uint64_t imsi; 
-    Uli uli; 
-    std::list<BearerContextToBeCreated> bearerContextsToBeCreated;    
+    uint64_t imsi; ///< IMSI
+    Uli uli; ///< ULI
+    std::list<BearerContextToBeCreated> bearerContextsToBeCreated; ///< list of bearer contexts to be created    
   };
 
   /** 
@@ -183,9 +194,10 @@ public:
    */
   virtual void CreateSessionRequest (CreateSessionRequestMessage msg) = 0;
 
+  /// BearerContextToBeCreated structure
   struct BearerContextToBeRemoved
   {
-    uint8_t epsBearerId;
+    uint8_t epsBearerId; ///< EPS bearer ID
   };
 
   /**
@@ -193,7 +205,7 @@ public:
    */
   struct DeleteBearerCommandMessage : public GtpcMessage
   {
-    std::list<BearerContextToBeRemoved> bearerContextsToBeRemoved;
+    std::list<BearerContextToBeRemoved> bearerContextsToBeRemoved;  ///< list of bearer contexts to be removed    
   };
 
   /**
@@ -201,10 +213,10 @@ public:
     */
   virtual void DeleteBearerCommand (DeleteBearerCommandMessage msg) = 0;
 
-
+  /// BearerContextRemovedSgwPgw structure
   struct BearerContextRemovedSgwPgw
   {
-    uint8_t epsBearerId;
+    uint8_t epsBearerId; ///< EPS bearer ID
   };
 
   /**
@@ -212,7 +224,7 @@ public:
    */
   struct DeleteBearerResponseMessage : public GtpcMessage
   {
-    std::list<BearerContextRemovedSgwPgw> bearerContextsRemoved;
+    std::list<BearerContextRemovedSgwPgw> bearerContextsRemoved;   ///< list of bearer contexts removed    
   };
 
   /**
@@ -226,7 +238,7 @@ public:
    */
   struct ModifyBearerRequestMessage : public GtpcMessage
   {
-    Uli uli;
+    Uli uli; ///< ULI
   };
 
   /** 
@@ -253,6 +265,11 @@ template <class C>
 class MemberEpcS11SapMme : public EpcS11SapMme
 {
 public:
+  /**
+   * Constructor
+   *
+   * \param owner the owner class
+   */
   MemberEpcS11SapMme (C* owner);
 
   // inherited from EpcS11SapMme
@@ -262,9 +279,14 @@ public:
 
 private:
   MemberEpcS11SapMme ();
-  C* m_owner;
+  C* m_owner; ///< owner class
 };
 
+/**
+ * Constructor
+ *
+ * \param owner the owner class
+ */
 template <class C>
 MemberEpcS11SapMme<C>::MemberEpcS11SapMme (C* owner)
   : m_owner (owner)
@@ -307,6 +329,11 @@ template <class C>
 class MemberEpcS11SapSgw : public EpcS11SapSgw
 {
 public:
+/**
+ * Constructor
+ *
+ * \param owner the owner class
+ */
   MemberEpcS11SapSgw (C* owner);
 
   // inherited from EpcS11SapSgw
@@ -317,9 +344,14 @@ public:
 
 private:
   MemberEpcS11SapSgw ();
-  C* m_owner;
+  C* m_owner; ///< owner class
 };
 
+/**
+ * Constructor
+ *
+ * \param owner the owner class
+ */
 template <class C>
 MemberEpcS11SapSgw<C>::MemberEpcS11SapSgw (C* owner)
   : m_owner (owner)

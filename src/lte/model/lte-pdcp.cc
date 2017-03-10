@@ -30,9 +30,15 @@ namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("LtePdcp");
 
+/// LtePdcpSpecificLteRlcSapUser class
 class LtePdcpSpecificLteRlcSapUser : public LteRlcSapUser
 {
 public:
+  /**
+   * Constructor
+   *
+   * \param pdcp PDCP
+   */
   LtePdcpSpecificLteRlcSapUser (LtePdcp* pdcp);
 
   // Interface provided to lower RLC entity (implemented from LteRlcSapUser)
@@ -40,7 +46,7 @@ public:
 
 private:
   LtePdcpSpecificLteRlcSapUser ();
-  LtePdcp* m_pdcp;
+  LtePdcp* m_pdcp; ///< the PDCP
 };
 
 LtePdcpSpecificLteRlcSapUser::LtePdcpSpecificLteRlcSapUser (LtePdcp* pdcp)

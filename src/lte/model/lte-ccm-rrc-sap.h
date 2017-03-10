@@ -53,11 +53,12 @@ public:
   
   virtual ~LteCcmRrcSapProvider ();
   
+  /// LcsConfig sructure
   struct LcsConfig
   {
-    uint16_t componentCarrierId;
-    LteEnbCmacSapProvider::LcInfo lc;
-    LteMacSapUser *msu;
+    uint16_t componentCarrierId; ///< component carrier ID
+    LteEnbCmacSapProvider::LcInfo lc; ///< LC info
+    LteMacSapUser *msu; ///< MSU
   };
 
   /**
@@ -194,17 +195,23 @@ public:
   /** 
    * remove an existing LC
    * 
-   * \param lcId
    * \param rnti 
+   * \param lcid
    */
   virtual void ReleaseLcs (uint16_t rnti, uint8_t lcid) = 0;
 
 }; // end of class LteCcmRrcSapUser
 
+/// MemberLteCcmRrcSapProvider class
 template <class C>
 class MemberLteCcmRrcSapProvider : public LteCcmRrcSapProvider
 {
 public:
+  /**
+   * Constructor
+   * 
+   * \param owner the owner class
+   */
   MemberLteCcmRrcSapProvider (C* owner);
 
   // inherited from LteCcmRrcSapProvider
@@ -217,7 +224,7 @@ public:
   virtual LteMacSapUser* ConfigureSignalBearer(LteEnbCmacSapProvider::LcInfo lcInfo,  LteMacSapUser* rlcMacSapUser);
 
 private:
-  C* m_owner;
+  C* m_owner; ///< the owner class
 };
 
 template <class C>
@@ -269,11 +276,16 @@ LteMacSapUser* MemberLteCcmRrcSapProvider<C>::ConfigureSignalBearer(LteEnbCmacSa
 }
 
 
-
+/// MemberLteCcmRrcSapUser class
 template <class C>
 class MemberLteCcmRrcSapUser : public LteCcmRrcSapUser
 {
 public:
+  /**
+   * Constructor
+   * 
+   * \param owner the owner class
+   */
   MemberLteCcmRrcSapUser (C* owner);
 
   // inherited from LteCcmRrcSapUser
@@ -283,7 +295,7 @@ public:
   virtual void TriggerComponentCarrier (uint16_t rnti, uint16_t targetCellId);
 
 private:
-  C* m_owner;
+  C* m_owner; ///< the owner class
 };
 
 template <class C>

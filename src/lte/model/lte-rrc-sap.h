@@ -58,37 +58,40 @@ class LteRrcSap
 public:
   virtual ~LteRrcSap ();
 
-  // Constraint values
-
+  /// Constraint values
   static const uint8_t MaxReportCells = 255;
 
   // Information Elements
-
+  /// PlmnIdentityInfo structure
   struct PlmnIdentityInfo
   {
-    uint32_t plmnIdentity;
+    uint32_t plmnIdentity; ///< PLMN identity
   };
 
+  /// CellAccessRelatedInfo structure
   struct CellAccessRelatedInfo
   {
-    PlmnIdentityInfo plmnIdentityInfo;
-    uint32_t cellIdentity;
-    bool csgIndication;
-    uint32_t csgIdentity;
+    PlmnIdentityInfo plmnIdentityInfo; ///< PLMN identity info
+    uint32_t cellIdentity; ///< cell identity
+    bool csgIndication; ///< CSG indication
+    uint32_t csgIdentity; ///< CSG identity
   };
 
+  /// CellSelectionInfo structure
   struct CellSelectionInfo
   {
     int8_t qRxLevMin; ///< INTEGER (-70..-22), actual value = IE value * 2 [dBm].
     int8_t qQualMin; ///< INTEGER (-34..-3), actual value = IE value [dB].
   };
 
+  /// FreqInfo structure
   struct FreqInfo
   {
-    uint32_t ulCarrierFreq;
-    uint8_t ulBandwidth;
+    uint32_t ulCarrierFreq; ///< UL carrier frequency
+    uint8_t ulBandwidth; ///< UL bandwidth
   };
 
+  /// RlcConfig structure
   struct RlcConfig
   {
     enum
@@ -97,48 +100,54 @@ public:
       UM_BI_DIRECTIONAL,
       UM_UNI_DIRECTIONAL_UL,
       UM_UNI_DIRECTIONAL_DL
-    } choice;
+    } choice; ///< direction choice
   };
 
+  /// LogicalChannelConfig structure
   struct LogicalChannelConfig
   {
-    uint8_t priority;
-    uint16_t prioritizedBitRateKbps;
-    uint16_t bucketSizeDurationMs;
-    uint8_t logicalChannelGroup;
+    uint8_t priority; ///< priority
+    uint16_t prioritizedBitRateKbps; ///< prioritized bit rate Kbps
+    uint16_t bucketSizeDurationMs; ///< bucket size duration ms
+    uint8_t logicalChannelGroup; ///< logical channel group
   };
 
+  /// SoundingRsUlConfigCommon structure
   struct SoundingRsUlConfigCommon
   {
     enum
     {
       SETUP, RESET
-    } type;
-    uint8_t srsBandwidthConfig;
-    uint8_t srsSubframeConfig;
+    } type; ///< action type
+    uint8_t srsBandwidthConfig; ///< SRS bandwidth config
+    uint8_t srsSubframeConfig; ///< SRS subframe config
   };
 
+  /// SoundingRsUlConfigDedicated structure
   struct SoundingRsUlConfigDedicated
   {
     enum
     {
       SETUP, RESET
-    } type;
-    uint8_t srsBandwidth;
-    uint16_t srsConfigIndex;
+    } type; ///< action type
+    uint8_t srsBandwidth; ///< SRS bandwidth
+    uint16_t srsConfigIndex; ///< SRS config index
   };
 
+  /// AntennaInfoDedicated structure
   struct AntennaInfoDedicated
   {
-    uint8_t transmissionMode;
+    uint8_t transmissionMode; ///< transmission mode
   };
 
+  /// PdschConfigCommon structure
   struct PdschConfigCommon
   {
-    int8_t referenceSignalPower;  // INTEGER (-60..50),
-    int8_t pb;                    // INTEGER (0..3),
+    int8_t referenceSignalPower;  ///< INTEGER (-60..50),
+    int8_t pb;                    ///< INTEGER (0..3),
   };
 
+  /// PdschConfigDedicated structure
   struct PdschConfigDedicated
   {
     /*
@@ -156,9 +165,15 @@ public:
       dB2,
       dB3
     };
-    uint8_t pa;
+    uint8_t pa; ///< P_A value
   };
 
+  /**
+   * Convert PDSCH config dedicated function
+   *
+   * \param pdschConfigDedicated PdschConfigDedicated
+   * \returns double value
+   */
   static double ConvertPdschConfigDedicated2Double (PdschConfigDedicated pdschConfigDedicated)
   {
     double pa = 0;
@@ -194,108 +209,122 @@ public:
     return pa;
   }
 
+  /// PhysicalConfigDedicated structure
   struct PhysicalConfigDedicated
   {
-    bool haveSoundingRsUlConfigDedicated;
-    SoundingRsUlConfigDedicated soundingRsUlConfigDedicated;
-    bool haveAntennaInfoDedicated;
-    AntennaInfoDedicated antennaInfo;
-    bool havePdschConfigDedicated;
-    PdschConfigDedicated pdschConfigDedicated;
+    bool haveSoundingRsUlConfigDedicated; ///< have sounding RS UL config dedicated?
+    SoundingRsUlConfigDedicated soundingRsUlConfigDedicated; ///< sounding RS UL config dedicated
+    bool haveAntennaInfoDedicated; ///< have antenna info dedicated?
+    AntennaInfoDedicated antennaInfo; ///< antenna info
+    bool havePdschConfigDedicated; ///< have PDSCH config dedicated?
+    PdschConfigDedicated pdschConfigDedicated; ///< PDSCH config dedicated
   };
 
 
+  /// SrbToAddMod structure
   struct SrbToAddMod
   {
-    uint8_t srbIdentity;
-    LogicalChannelConfig logicalChannelConfig;
+    uint8_t srbIdentity; ///< SB identity
+    LogicalChannelConfig logicalChannelConfig; ///< logical channel config
   };
 
+  /// DrbToAddMod structure
   struct DrbToAddMod
   {
-    uint8_t epsBearerIdentity;
-    uint8_t drbIdentity;
-    RlcConfig rlcConfig;
-    uint8_t logicalChannelIdentity;
-    LogicalChannelConfig logicalChannelConfig;
+    uint8_t epsBearerIdentity; ///< EPS bearer identity
+    uint8_t drbIdentity; ///< DRB identity
+    RlcConfig rlcConfig; ///< RLC config
+    uint8_t logicalChannelIdentity; ///< logical channel identify
+    LogicalChannelConfig logicalChannelConfig; ///< logical channel config
   };
 
+  /// PreambleInfo structure
   struct PreambleInfo
   {
-    uint8_t numberOfRaPreambles;
+    uint8_t numberOfRaPreambles; ///< number of RA preambles
   };
 
+  /// RaSupervisionInfo structure
   struct RaSupervisionInfo
   {
-    uint8_t preambleTransMax;
-    uint8_t raResponseWindowSize;
+    uint8_t preambleTransMax; ///< preamble transmit maximum
+    uint8_t raResponseWindowSize; ///< RA response window size
   };
 
+  /// RachConfigCommon structure
   struct RachConfigCommon
   {
-    PreambleInfo preambleInfo;
-    RaSupervisionInfo raSupervisionInfo;
+    PreambleInfo preambleInfo; ///< preamble info
+    RaSupervisionInfo raSupervisionInfo; ///< RA supervision info
   };
 
+  /// RadioResourceConfigCommon structure
   struct RadioResourceConfigCommon
   {
-    RachConfigCommon rachConfigCommon;
+    RachConfigCommon rachConfigCommon; ///< RACH config common
   };
 
+  /// RadioResourceConfigCommonSib structure
   struct RadioResourceConfigCommonSib
   {
-    RachConfigCommon rachConfigCommon;
-    PdschConfigCommon pdschConfigCommon;
+    RachConfigCommon rachConfigCommon; ///< RACH config common
+    PdschConfigCommon pdschConfigCommon; ///< PDSCH config common
   };
 
+  /// RadioResourceConfigDedicated structure
   struct RadioResourceConfigDedicated
   {
-    std::list<SrbToAddMod> srbToAddModList;
-    std::list<DrbToAddMod> drbToAddModList;
-    std::list<uint8_t> drbToReleaseList;
-    bool havePhysicalConfigDedicated;
-    PhysicalConfigDedicated physicalConfigDedicated;
+    std::list<SrbToAddMod> srbToAddModList; ///< SRB to add mod list
+    std::list<DrbToAddMod> drbToAddModList; ///< DRB to add mod list
+    std::list<uint8_t> drbToReleaseList; ///< DRB to release list
+    bool havePhysicalConfigDedicated; ///< have physical config dedicated?
+    PhysicalConfigDedicated physicalConfigDedicated; ///< physical config dedicated
   };
 
+  /// QuantityConfig structure
   struct QuantityConfig
   {
-    uint8_t filterCoefficientRSRP;
-    uint8_t filterCoefficientRSRQ;
+    uint8_t filterCoefficientRSRP; ///< filter coefficient RSRP
+    uint8_t filterCoefficientRSRQ; ///< filter coefficient RSRQ
   };
 
+  /// CellsToAddMod structure
   struct CellsToAddMod
   {
-    uint8_t cellIndex;
-    uint16_t physCellId;
-    int8_t cellIndividualOffset;
+    uint8_t cellIndex; ///< cell index
+    uint16_t physCellId; ///< Phy cell ID
+    int8_t cellIndividualOffset; ///< cell individual offset
   };
 
+  /// PhysCellIdRange structure
   struct PhysCellIdRange
   {
-    uint16_t start;
-    bool haveRange;
-    uint16_t range;
+    uint16_t start; ///< starting cell ID
+    bool haveRange; ///< has a range?
+    uint16_t range; ///< the range
   };
 
+  /// BlackCellsToAddMod structure
   struct BlackCellsToAddMod
   {
-    uint8_t cellIndex;
-    PhysCellIdRange physCellIdRange;
+    uint8_t cellIndex; ///< cell index
+    PhysCellIdRange physCellIdRange; ///< Phy cell ID range
   };
 
+  /// MeasObjectEutra structure
   struct MeasObjectEutra
   {
-    uint32_t carrierFreq;
-    uint8_t allowedMeasBandwidth;
-    bool presenceAntennaPort1;
-    uint8_t neighCellConfig;
-    int8_t offsetFreq;
-    std::list<uint8_t> cellsToRemoveList;
-    std::list<CellsToAddMod> cellsToAddModList;
-    std::list<uint8_t> blackCellsToRemoveList;
-    std::list<BlackCellsToAddMod> blackCellsToAddModList;
-    bool haveCellForWhichToReportCGI;
-    uint8_t cellForWhichToReportCGI;
+    uint32_t carrierFreq; ///< carrier frequency
+    uint8_t allowedMeasBandwidth; ///< allowed measure bandwidth
+    bool presenceAntennaPort1; ///< antenna port 1 present?
+    uint8_t neighCellConfig; ///< neighbor cell config
+    int8_t offsetFreq; ///< offset frequency
+    std::list<uint8_t> cellsToRemoveList; ///< cells to remove list
+    std::list<CellsToAddMod> cellsToAddModList; ///< cells to add mod list
+    std::list<uint8_t> blackCellsToRemoveList; ///< black cells to remove list
+    std::list<BlackCellsToAddMod> blackCellsToAddModList; ///< black cells to add mod list
+    bool haveCellForWhichToReportCGI; ///< have cell for which to report CGI?
+    uint8_t cellForWhichToReportCGI; ///< cell for which to report CGI
   };
 
   /**
@@ -309,6 +338,7 @@ public:
    */
   struct ThresholdEutra
   {
+    /// Threshold enumeration
     enum
     {
       THRESHOLD_RSRP, ///< RSRP is used for the threshold.
@@ -320,19 +350,21 @@ public:
   /// Specifies criteria for triggering of an E-UTRA measurement reporting event.
   struct ReportConfigEutra
   {
+    /// Trigger enumeration
     enum
     {
-      EVENT,
-      PERIODICAL
-    } triggerType;
+      EVENT,      ///< event report
+      PERIODICAL  ///< periodical report
+    } triggerType; ///< trigger type
 
+    /// Event enumeration
     enum
     {
       EVENT_A1, ///< Event A1: Serving becomes better than absolute threshold.
       EVENT_A2, ///< Event A2: Serving becomes worse than absolute threshold.
       EVENT_A3, ///< Event A3: Neighbour becomes amount of offset better than PCell.
       EVENT_A4, ///< Event A4: Neighbour becomes better than absolute threshold.
-      EVENT_A5 ///< Event A5: PCell becomes worse than absolute `threshold1` AND Neighbour becomes better than another absolute `threshold2`.
+      EVENT_A5  ///< Event A5: PCell becomes worse than absolute `threshold1` AND Neighbour becomes better than another absolute `threshold2`.
 
     } eventId; ///< Choice of E-UTRA event triggered reporting criteria.
 
@@ -355,14 +387,16 @@ public:
     {
       REPORT_STRONGEST_CELLS,
       REPORT_CGI
-    } purpose;
+    } purpose; ///< purpose
 
+    /// Trigger type enumeration
     enum
     {
       RSRP, ///< Reference Signal Received Power
       RSRQ ///< Reference Signal Received Quality
     } triggerQuantity; ///< The quantities used to evaluate the triggering condition for the event, see 3GPP TS 36.214.
 
+    /// Report type enumeration
     enum
     {
       SAME_AS_TRIGGER_QUANTITY,
@@ -372,6 +406,7 @@ public:
     /// Maximum number of cells, excluding the serving cell, to be included in the measurement report.
     uint8_t maxReportCells;
 
+    /// Report interval enumeration
     enum
     {
       MS120,
@@ -395,123 +430,138 @@ public:
     /// Number of measurement reports applicable, always assumed to be infinite.
     uint8_t reportAmount;
 
+    /// Report config eutra function
     ReportConfigEutra ();
 
   }; // end of struct ReportConfigEutra
 
+  /// MeasObjectToAddMod structure
   struct MeasObjectToAddMod
   {
-    uint8_t measObjectId;
-    MeasObjectEutra measObjectEutra;
+    uint8_t measObjectId; ///< measure object ID
+    MeasObjectEutra measObjectEutra; ///< measure object eutra
   };
 
+  /// ReportConfigToAddMod structure
   struct ReportConfigToAddMod
   {
-    uint8_t reportConfigId;
-    ReportConfigEutra reportConfigEutra;
+    uint8_t reportConfigId; ///< report config ID
+    ReportConfigEutra reportConfigEutra; ///< report config eutra
   };
 
+  /// MeasIdToAddMod structure
   struct MeasIdToAddMod
   {
-    uint8_t measId;
-    uint8_t measObjectId;
-    uint8_t reportConfigId;
+    uint8_t measId; ///< measure ID
+    uint8_t measObjectId; ///< measure object ID
+    uint8_t reportConfigId; ///< report config ID
   };
 
+  /// MeasGapConfig structure
   struct MeasGapConfig
   {
     enum
     {
       SETUP, RESET
-    } type;
+    } type; ///< action type
     enum
     {
       GP0, GP1
-    } gapOffsetChoice;
-    uint8_t gapOffsetValue;
+    } gapOffsetChoice; ///< gap offset
+    uint8_t gapOffsetValue; ///< gap offset value
   };
 
+  /// MobilityStateParameters structure
   struct MobilityStateParameters
   {
-    uint8_t tEvaluation;
-    uint8_t tHystNormal;
-    uint8_t nCellChangeMedium;
-    uint8_t nCellChangeHigh;
+    uint8_t tEvaluation; ///< evaluation
+    uint8_t tHystNormal; ///< hyst normal
+    uint8_t nCellChangeMedium; ///< cell change medium
+    uint8_t nCellChangeHigh; ///< cell change high
   };
 
+  /// SpeedStateScaleFactors structure
   struct SpeedStateScaleFactors
   {
     // 25 = oDot25, 50 = oDot5, 75 = oDot75, 100 = lDot0
-    uint8_t sfMedium;
-    uint8_t sfHigh;
+    uint8_t sfMedium; ///< scale factor medium
+    uint8_t sfHigh; ///< scale factor high
   };
 
+  /// SpeedStatePars structure
   struct SpeedStatePars
   {
     enum
     {
       SETUP,
       RESET
-    } type;
-    MobilityStateParameters mobilityStateParameters;
-    SpeedStateScaleFactors timeToTriggerSf;
+    } type; ///< action type
+    MobilityStateParameters mobilityStateParameters; ///< mobility state parameters
+    SpeedStateScaleFactors timeToTriggerSf; ///< time to triffer scale factors
   };
 
+  /// MeasConfig structure
   struct MeasConfig
   {
-    std::list<uint8_t> measObjectToRemoveList;
-    std::list<MeasObjectToAddMod> measObjectToAddModList;
-    std::list<uint8_t> reportConfigToRemoveList;
-    std::list<ReportConfigToAddMod> reportConfigToAddModList;
-    std::list<uint8_t> measIdToRemoveList;
-    std::list<MeasIdToAddMod> measIdToAddModList;
-    bool haveQuantityConfig;
-    QuantityConfig quantityConfig;
-    bool haveMeasGapConfig;
-    MeasGapConfig measGapConfig;
-    bool haveSmeasure;
-    uint8_t sMeasure;
-    bool haveSpeedStatePars;
-    SpeedStatePars speedStatePars;
+    std::list<uint8_t> measObjectToRemoveList; ///< measure object to remove list
+    std::list<MeasObjectToAddMod> measObjectToAddModList; ///< measure object to add mod list
+    std::list<uint8_t> reportConfigToRemoveList; ///< report config to remove list
+    std::list<ReportConfigToAddMod> reportConfigToAddModList; ///< report config to add mod list
+    std::list<uint8_t> measIdToRemoveList; ///< measure ID to remove list
+    std::list<MeasIdToAddMod> measIdToAddModList; ///< measure ID to add mod list
+    bool haveQuantityConfig; ///< have quantity config?
+    QuantityConfig quantityConfig; ///< quantity config
+    bool haveMeasGapConfig; ///< have measure gap config?
+    MeasGapConfig measGapConfig; ///< measure gap config
+    bool haveSmeasure; ///< have S measure?
+    uint8_t sMeasure; ///< S measure
+    bool haveSpeedStatePars; ///< have speed state pars?
+    SpeedStatePars speedStatePars; ///< spped state pars
   };
 
+  /// CarrierFreqEutra structure
   struct CarrierFreqEutra
   {
-    uint32_t dlCarrierFreq;
-    uint32_t ulCarrierFreq;
+    uint32_t dlCarrierFreq; ///< DL carrier frequency
+    uint32_t ulCarrierFreq; ///< UL carrier frequency
   };
 
+  /// CarrierBandwidthEutra structure
   struct CarrierBandwidthEutra
   {
-    uint8_t dlBandwidth;
-    uint8_t ulBandwidth;
+    uint8_t dlBandwidth; ///< DL bandwidth
+    uint8_t ulBandwidth; ///< UL bandwidth
   };
 
+  /// RachConfigDedicated structure
   struct RachConfigDedicated
   {
-    uint8_t raPreambleIndex;
-    uint8_t raPrachMaskIndex;
+    uint8_t raPreambleIndex; ///< RA preamble index
+    uint8_t raPrachMaskIndex; ///< RA PRACH mask index
   };
 
+  /// MobilityControlInfo structure
   struct MobilityControlInfo
   {
-    uint16_t targetPhysCellId;
-    bool haveCarrierFreq;
-    CarrierFreqEutra carrierFreq;
-    bool haveCarrierBandwidth;
-    CarrierBandwidthEutra carrierBandwidth;
-    uint16_t newUeIdentity;
-    RadioResourceConfigCommon radioResourceConfigCommon;
-    bool haveRachConfigDedicated;
-    RachConfigDedicated rachConfigDedicated;
+    uint16_t targetPhysCellId; ///< target Phy cell ID
+    bool haveCarrierFreq; ///< have carrier frequency?
+    CarrierFreqEutra carrierFreq; ///< carrier frequency
+    bool haveCarrierBandwidth; ///< have carrier bandwidth?
+    CarrierBandwidthEutra carrierBandwidth; ///< carrier bandwidth
+    uint16_t newUeIdentity; ///< new UE identity
+    RadioResourceConfigCommon radioResourceConfigCommon; ///< radio resource config common
+    bool haveRachConfigDedicated; ///< Have RACH config dedicated?
+    RachConfigDedicated rachConfigDedicated; ///< RACH config dedicated
   };
 
+  /// ReestabUeIdentity structure
   struct ReestabUeIdentity
   {
-    uint16_t cRnti;
-    uint16_t physCellId;
+    uint16_t cRnti; ///< RNTI
+    uint16_t physCellId; ///< Phy cell ID
   };
 
+  /// ReestablishmentCause enumeration
   enum ReestablishmentCause
   {
     RECONFIGURATION_FAILURE,
@@ -519,285 +569,324 @@ public:
     OTHER_FAILURE
   };
 
+  /// MasterInformationBlock structure
   struct MasterInformationBlock
   {
-    uint8_t dlBandwidth;
-    uint8_t systemFrameNumber;
+    uint8_t dlBandwidth; ///< DL bandwidth
+    uint8_t systemFrameNumber; ///< system frame number
   };
 
+  /// SystemInformationBlockType1 structure
   struct SystemInformationBlockType1
   {
-    CellAccessRelatedInfo cellAccessRelatedInfo;
-    CellSelectionInfo cellSelectionInfo;
+    CellAccessRelatedInfo cellAccessRelatedInfo; ///< cell access related info
+    CellSelectionInfo cellSelectionInfo; ///< cell selection info
   };
 
+  /// SystemInformationBlockType2 structure
   struct SystemInformationBlockType2
   {
-    RadioResourceConfigCommonSib radioResourceConfigCommon;
-    FreqInfo freqInfo;
+    RadioResourceConfigCommonSib radioResourceConfigCommon; ///< radio resource config common
+    FreqInfo freqInfo; ///< frequency info
   };
 
+  /// SystemInformation structure
   struct SystemInformation
   {
-    bool haveSib2;
-    SystemInformationBlockType2 sib2;
+    bool haveSib2; ///< have SIB2?
+    SystemInformationBlockType2 sib2; ///< SIB2
   };
 
+  /// AsConfig structure
   struct AsConfig
   {
-    MeasConfig sourceMeasConfig;
-    RadioResourceConfigDedicated sourceRadioResourceConfig;
-    uint16_t sourceUeIdentity;
-    MasterInformationBlock sourceMasterInformationBlock;
-    SystemInformationBlockType1 sourceSystemInformationBlockType1;
-    SystemInformationBlockType2 sourceSystemInformationBlockType2;
-    uint32_t sourceDlCarrierFreq;
+    MeasConfig sourceMeasConfig; ///< source measure config
+    RadioResourceConfigDedicated sourceRadioResourceConfig; ///< source radio resource config
+    uint16_t sourceUeIdentity; ///< source UE identity
+    MasterInformationBlock sourceMasterInformationBlock; ///< source master information block
+    SystemInformationBlockType1 sourceSystemInformationBlockType1; ///< source system information block type 1
+    SystemInformationBlockType2 sourceSystemInformationBlockType2; ///< source system information block type 2
+    uint32_t sourceDlCarrierFreq; ///< source DL carrier frequency
   };
 
+  /// CgiInfo structure
   struct CgiInfo
   {
-    uint32_t plmnIdentity;
-    uint32_t cellIdentity;
-    uint16_t trackingAreaCode;
-    std::list<uint32_t> plmnIdentityList;
+    uint32_t plmnIdentity; ///< PLMN identity
+    uint32_t cellIdentity; ///< cell identity
+    uint16_t trackingAreaCode; ///< tracking area code
+    std::list<uint32_t> plmnIdentityList; ///< PLMN identity list
   };
 
+  /// MeasResultEutra structure
   struct MeasResultEutra
   {
-    uint16_t physCellId;
-    bool haveCgiInfo;
-    CgiInfo cgiInfo;
-    bool haveRsrpResult;
-    uint8_t rsrpResult;
-    bool haveRsrqResult;
-    uint8_t rsrqResult;
+    uint16_t physCellId; ///< Phy cell ID
+    bool haveCgiInfo; ///< have CGI info?
+    CgiInfo cgiInfo; ///< CGI info
+    bool haveRsrpResult; ///< have RSRP result
+    uint8_t rsrpResult; ///< RSRP result
+    bool haveRsrqResult; ///< have RSRQ result?
+    uint8_t rsrqResult; ///< RSRQ result
   };
-  
+
+  /// MeasResultScell structure
   struct MeasResultScell
   {
-    uint16_t servFreqId;
-    bool haveRsrpResult;
-    uint8_t rsrpResult;
-    bool haveRsrqResult;
-    uint8_t rsrqResult;
+    uint16_t servFreqId; ///< service frequency ID
+    bool haveRsrpResult; ///< have RSRP result?
+    uint8_t rsrpResult; ///< the RSRP result
+    bool haveRsrqResult; ///< have RSRQ result?
+    uint8_t rsrqResult; ///< the RSRQ result
   };
 
+  /// MeasResultBestNeighCell structure
   struct MeasResultBestNeighCell
   {
-    uint16_t servFreqId;
-    uint16_t physCellId;
-    bool haveRsrpResult;
-    uint8_t rsrpResult;
-    bool haveRsrqResult;
-    uint8_t rsrqResult;
+    uint16_t servFreqId; ///< service frequency ID
+    uint16_t physCellId; ///< physical cell ID
+    bool haveRsrpResult; ///< have RSRP result?
+    uint8_t rsrpResult; ///< the RSRP result
+    bool haveRsrqResult; ///< have RSRQ result?
+    uint8_t rsrqResult; ///< the RSRQ result
   };
 
+  /// MeasResultServFreqList
   struct MeasResultServFreqList
   {
-    bool haveMeasurementResultsServingSCells;
-    std::list<MeasResultScell> measResultScell;
-    bool haveMeasurementResultsNeighCell; // always false since not implemented
-    std::list<MeasResultBestNeighCell> measResultBestNeighCell;
+    bool haveMeasurementResultsServingSCells; ///< have measure results serving Scells
+    std::list<MeasResultScell> measResultScell; ///< measure results Scells
+    bool haveMeasurementResultsNeighCell; ///< always false since not implemented
+    std::list<MeasResultBestNeighCell> measResultBestNeighCell; ///< measure result best neighbor cell
   };
 
+  /// MeasResults structure
   struct MeasResults
   {
-    uint8_t measId;
-    uint8_t rsrpResult;
-    uint8_t rsrqResult;
-    bool haveMeasResultNeighCells;
-    std::list<MeasResultEutra> measResultListEutra;
-    bool haveScellsMeas;
-    MeasResultServFreqList measScellResultList;
+    uint8_t measId; ///< measure ID
+    uint8_t rsrpResult; ///< RSRP result
+    uint8_t rsrqResult; ///< RSRQ result
+    bool haveMeasResultNeighCells; ///< have measure result neighbor cells
+    std::list<MeasResultEutra> measResultListEutra; ///< measure result list eutra
+    bool haveScellsMeas; ///< has SCells measure
+    MeasResultServFreqList measScellResultList; ///< measure SCell result list
   };
 
   // Messages
 
+  /// RrcConnectionRequest structure
   struct RrcConnectionRequest
   {
-    uint64_t ueIdentity;
+    uint64_t ueIdentity; ///< UE identity
   };
 
+  /// RrcConnectionSetup structure
   struct RrcConnectionSetup
   {
-    uint8_t rrcTransactionIdentifier;
-    RadioResourceConfigDedicated radioResourceConfigDedicated;
+    uint8_t rrcTransactionIdentifier; ///< RRC transaction identifier
+    RadioResourceConfigDedicated radioResourceConfigDedicated; ///< radio resource config dedicated
   };
 
+  /// RrcConnectionSetupCompleted structure
   struct RrcConnectionSetupCompleted
   {
-    uint8_t rrcTransactionIdentifier;
+    uint8_t rrcTransactionIdentifier; ///< RRC transaction identifier
   };
 
+
+  /// CellIdentification structure
   struct CellIdentification
   {
-    uint32_t physCellId;
-    uint32_t dlCarrierFreq; //  ARFCN - valueEUTRA
+    uint32_t physCellId; ///< physical cell ID
+    uint32_t dlCarrierFreq; ///<  ARFCN - valueEUTRA
   };
 
+  /// AntennaInfoCommon structure
   struct AntennaInfoCommon
   {
-    uint16_t antennaPortsCount;
+    uint16_t antennaPortsCount; ///< antenna ports count
   };
 
+  /// UlPowerControlCommonSCell structure
   struct UlPowerControlCommonSCell
   {
-    uint16_t alpha;
+    uint16_t alpha; ///< alpha value
   };
   
+  /// PrachConfigSCell structure
   struct PrachConfigSCell
   {
-    uint16_t index;
+    uint16_t index; ///< the index
   };
 
+  /// NonUlConfiguration structure
   struct NonUlConfiguration
   {
     // 3GPP TS 36.311 v.11.10 R11 pag.220
-    // 1: Cell characteristics
+    /// 1: Cell characteristics
     uint16_t dlBandwidth;
-    // 2: Physical configuration, general antennaInfoCommon-r10
+    /// 2: Physical configuration, general antennaInfoCommon-r10
     AntennaInfoCommon antennaInfoCommon;
     // 3: Physical configuration, control phich-Config-r10
     // Not Implemented
-    // 4: Physical configuration, physical channels pdsch-ConfigCommon-r10
+    /// 4: Physical configuration, physical channels pdsch-ConfigCommon-r10
     PdschConfigCommon pdschConfigCommon;
     // 5: tdd-Config-r10
     //Not Implemented
   };
 
+  /// UlConfiguration structure
   struct UlConfiguration 
   { 
-    FreqInfo ulFreqInfo; 
-    UlPowerControlCommonSCell ulPowerControlCommonSCell; // 3GPP TS 36.331 v.11.10 R11 pag.223 
-    SoundingRsUlConfigCommon soundingRsUlConfigCommon; 
-    PrachConfigSCell prachConfigSCell; 
+    FreqInfo ulFreqInfo; ///< UL frequency info
+    UlPowerControlCommonSCell ulPowerControlCommonSCell; ///< 3GPP TS 36.331 v.11.10 R11 pag.223 
+    SoundingRsUlConfigCommon soundingRsUlConfigCommon; ///< sounding RS UL config common
+    PrachConfigSCell prachConfigSCell; ///< PRACH config SCell
     //PushConfigCommon pushConfigCommon; //NOT IMPLEMENTED!
   };
 
+  /// AntennaInfoUl structure
   struct AntennaInfoUl
   {
-    uint8_t transmissionMode;
+    uint8_t transmissionMode; ///< transmission mode
   };
 
+  /// PuschConfigDedicatedSCell structure
   struct PuschConfigDedicatedSCell
   {
-    //3GPP TS 36.331 v.11.10 R11 page 216
+    /// 3GPP TS 36.331 v.11.10 R11 page 216
     uint16_t nPuschIdentity;
   };
 
+  /// UlPowerControlDedicatedSCell structure
   struct UlPowerControlDedicatedSCell
   {
-    //3GPP TS 36.331 v.11.10 R11 page 234
+    /// 3GPP TS 36.331 v.11.10 R11 page 234
     uint16_t pSrsOffset;
   };
 
+  /// PhysicalConfigDedicatedSCell structure
   struct PhysicalConfigDedicatedSCell
   {
-    //Non-Ul Configuration
-    bool haveNonUlConfiguration;
-    bool haveAntennaInfoDedicated;
-    AntennaInfoDedicated antennaInfo; 
-    bool crossCarrierSchedulingConfig; // currently implemented as boolean variable --> implementing crossCarrierScheduling is out of the scope of this GSoC proposal
-    bool havePdschConfigDedicated;
-    PdschConfigDedicated pdschConfigDedicated;
+    // Non-Ul Configuration
+    bool haveNonUlConfiguration; ///< have non UL configuration?
+    bool haveAntennaInfoDedicated; ///< have antenna info dedicated?
+    AntennaInfoDedicated antennaInfo; ///< antenna info dedicated
+    bool crossCarrierSchedulingConfig; ///< currently implemented as boolean variable --> implementing crossCarrierScheduling is out of the scope of this GSoC proposal
+    bool havePdschConfigDedicated; ///< have PDSCH config dedicated?
+    PdschConfigDedicated pdschConfigDedicated; ///< PDSCH config dedicated
 
-    //Ul Configuration
-    bool haveUlConfiguration;
-    bool haveAntennaInfoUlDedicated;
-    AntennaInfoDedicated antennaInfoUl;
-    PuschConfigDedicatedSCell pushConfigDedicatedSCell;
-    UlPowerControlDedicatedSCell  ulPowerControlDedicatedSCell;
-    bool haveSoundingRsUlConfigDedicated;
-    SoundingRsUlConfigDedicated soundingRsUlConfigDedicated;   
+    // Ul Configuration
+    bool haveUlConfiguration; ///< have UL configuration?
+    bool haveAntennaInfoUlDedicated; ///< have antenna info UL dedicated?
+    AntennaInfoDedicated antennaInfoUl; ///< antenna info UL
+    PuschConfigDedicatedSCell pushConfigDedicatedSCell; ///< PUSCH configu dedicated SCell
+    UlPowerControlDedicatedSCell  ulPowerControlDedicatedSCell; ///< UL power control dedicated SCell
+    bool haveSoundingRsUlConfigDedicated; ///< have sounding RS UL config dedicated?
+    SoundingRsUlConfigDedicated soundingRsUlConfigDedicated; ///< sounding RS UL config dedicated
   };
 
+  /// RadioResourceConfigCommonSCell
   struct RadioResourceConfigCommonSCell
   {
-    bool haveNonUlConfiguration;
-    NonUlConfiguration nonUlConfiguration;
-    bool haveUlConfiguration;
-    UlConfiguration ulConfiguration;
+    bool haveNonUlConfiguration; ///< have non UL configuration?
+    NonUlConfiguration nonUlConfiguration; ///< non UL configuration
+    bool haveUlConfiguration; ///< have UL configuration
+    UlConfiguration ulConfiguration; ///< UL configuration
   };
 
- struct RadioResourceConfigDedicatedSCell
+  /// RadioResourceConfigDedicatedSCell structure
+  struct RadioResourceConfigDedicatedSCell
   {
-    PhysicalConfigDedicatedSCell physicalConfigDedicatedSCell;
+    PhysicalConfigDedicatedSCell physicalConfigDedicatedSCell; ///< physical config dedicated SCell
   };
 
+  /// SCellToAddMod structure
   struct SCellToAddMod
   {
-    uint32_t sCellIndex;
-    CellIdentification cellIdentification;
-    RadioResourceConfigCommonSCell radioResourceConfigCommonSCell;
-    bool haveRadioResourceConfigDedicatedSCell;
-    RadioResourceConfigDedicatedSCell radioResourceConfigDedicateSCell;
+    uint32_t sCellIndex; ///< SCell index
+    CellIdentification cellIdentification; ///< cell identification
+    RadioResourceConfigCommonSCell radioResourceConfigCommonSCell; ///< radio resurce config common SCell
+    bool haveRadioResourceConfigDedicatedSCell; ///< have radio resource config dedicated SCell?
+    RadioResourceConfigDedicatedSCell radioResourceConfigDedicateSCell; ///< radio resource config dedicated SCell
   };
 
+  /// NonCriticalExtensionConfiguration structure
   struct NonCriticalExtensionConfiguration
   {
-    std::list<SCellToAddMod> sCellsToAddModList; 
-    std::list<uint32_t> sCellToReleaseList;
+    std::list<SCellToAddMod> sCellsToAddModList; ///< SCell to add mod list
+    std::list<uint32_t> sCellToReleaseList; ///< SCell to release list
   };
 
+  /// RrcConnectionReconfiguration structure
   struct RrcConnectionReconfiguration
   {
-    uint8_t rrcTransactionIdentifier;
-    bool haveMeasConfig;
-    MeasConfig measConfig;
-    bool haveMobilityControlInfo;
-    MobilityControlInfo mobilityControlInfo;
-    bool haveRadioResourceConfigDedicated;
-    RadioResourceConfigDedicated radioResourceConfigDedicated;
-    bool haveNonCriticalExtension;
-    // 3GPP TS 36.331 v.11.10 R11 Sec. 6.2.2 pag. 147 (also known as ETSI TS 136 331 v.11.10 Feb-2015)
+    uint8_t rrcTransactionIdentifier; ///< RRC transaction identifier
+    bool haveMeasConfig; ///< have measure config
+    MeasConfig measConfig; ///< measure config
+    bool haveMobilityControlInfo; ///< have mobility control info
+    MobilityControlInfo mobilityControlInfo; ///< mobility control info
+    bool haveRadioResourceConfigDedicated; ///< have radio resource config dedicated
+    RadioResourceConfigDedicated radioResourceConfigDedicated; ///< radio resource config dedicated
+    bool haveNonCriticalExtension; ///< have critical extension?
+    /// 3GPP TS 36.331 v.11.10 R11 Sec. 6.2.2 pag. 147 (also known as ETSI TS 136 331 v.11.10 Feb-2015)
     NonCriticalExtensionConfiguration nonCriticalExtension;
-  };
+ };
 
+  /// RrcConnectionReconfigurationCompleted structure
   struct RrcConnectionReconfigurationCompleted
   {
-    uint8_t rrcTransactionIdentifier;
+    uint8_t rrcTransactionIdentifier; ///< RRC transaction identifier
   };
 
 
+  /// RrcConnectionReestablishmentRequest structure
   struct RrcConnectionReestablishmentRequest
   {
-    ReestabUeIdentity ueIdentity;
-    ReestablishmentCause reestablishmentCause;
+    ReestabUeIdentity ueIdentity; ///< UE identity
+    ReestablishmentCause reestablishmentCause; ///< reestablishment cause
   };
 
+  /// RrcConnectionReestablishment structure
   struct RrcConnectionReestablishment
   {
-    uint8_t rrcTransactionIdentifier;
-    RadioResourceConfigDedicated radioResourceConfigDedicated;
+    uint8_t rrcTransactionIdentifier; ///< RRC transaction identifier
+    RadioResourceConfigDedicated radioResourceConfigDedicated; ///< radio resource config dedicated
   };
 
+  /// RrcConnectionReestablishmentComplete structure
   struct RrcConnectionReestablishmentComplete
   {
-    uint8_t rrcTransactionIdentifier;
+    uint8_t rrcTransactionIdentifier; ///< RRC transaction identifier
   };
 
+  /// RrcConnectionReestablishmentReject structure
   struct RrcConnectionReestablishmentReject
   {
   };
 
+  /// RrcConnectionRelease structure
   struct RrcConnectionRelease
   {
-    uint8_t rrcTransactionIdentifier;
+    uint8_t rrcTransactionIdentifier; ///< RRC transaction identifier
   };
 
+  /// RrcConnectionReject structure
   struct RrcConnectionReject
   {
-    uint8_t waitTime;
+    uint8_t waitTime; ///< wait time
   };
 
+  /// HandoverPreparationInfo structure
   struct HandoverPreparationInfo
   {
-    AsConfig asConfig;
+    AsConfig asConfig; ///< AS config
   };
 
+  /// MeasurementReport structure
   struct MeasurementReport
   {
-    MeasResults measResults;
+    MeasResults measResults; ///< measure results
   };
 
 };
@@ -813,12 +902,17 @@ public:
 class LteUeRrcSapUser : public LteRrcSap
 {
 public:
+  /// SetupParameters structure
   struct SetupParameters
   {
-    LteRlcSapProvider* srb0SapProvider;
-    LtePdcpSapProvider* srb1SapProvider;
+    LteRlcSapProvider* srb0SapProvider; ///< SRB0 SAP provider
+    LtePdcpSapProvider* srb1SapProvider; ///< SRB1 SAP provider
   };
 
+  /**
+   * \brief Setup function
+   * \param params the setup parameters
+   */
   virtual void Setup (SetupParameters params) = 0;
 
   /**
@@ -881,12 +975,17 @@ public:
 class LteUeRrcSapProvider : public LteRrcSap
 {
 public:
+  /// CompleteSetupParameters structure
   struct CompleteSetupParameters
   {
-    LteRlcSapUser* srb0SapUser;
-    LtePdcpSapUser* srb1SapUser;
+    LteRlcSapUser* srb0SapUser; ///< SRB0 SAP user
+    LtePdcpSapUser* srb1SapUser; ///< SRB1 SAP user
   };
 
+  /**
+   * \brief Complete setup function
+   * \param params the complete setup parameters
+   */
   virtual void CompleteSetup (CompleteSetupParameters params) = 0;
 
   /**
@@ -957,13 +1056,23 @@ public:
 class LteEnbRrcSapUser : public LteRrcSap
 {
 public:
+  /// SetupUeParameters structure
   struct SetupUeParameters
   {
-    LteRlcSapProvider* srb0SapProvider;
-    LtePdcpSapProvider* srb1SapProvider;
+    LteRlcSapProvider* srb0SapProvider; ///< SRB0 SAP provider
+    LtePdcpSapProvider* srb1SapProvider; ///< SRB1 SAP provider
   };
 
+  /**
+   * \brief Setup UE function
+   * \param rnti the RNTI
+   * \param params the setup UE parameters
+   */
   virtual void SetupUe (uint16_t rnti, SetupUeParameters params) = 0;
+  /**
+   * \brief Remove UE function
+   * \param rnti the RNTI
+   */
   virtual void RemoveUe (uint16_t rnti) = 0;
 
   /**
@@ -1028,9 +1137,29 @@ public:
    */
   virtual void SendRrcConnectionReject (uint16_t rnti, RrcConnectionReject msg) = 0;
 
+  /**
+   * \brief Encode handover prepration information
+   * \param msg HandoverPreparationInfo
+   * \returns the packet
+   */
   virtual Ptr<Packet> EncodeHandoverPreparationInformation (HandoverPreparationInfo msg) = 0;
+  /**
+   * \brief Decode handover prepration information
+   * \param p the packet
+   * \returns HandoverPreparationInfo
+   */
   virtual HandoverPreparationInfo DecodeHandoverPreparationInformation (Ptr<Packet> p) = 0;
+  /**
+   * \brief Encode handover command
+   * \param msg RrcConnectionReconfiguration
+   * \returns the packet
+   */
   virtual Ptr<Packet> EncodeHandoverCommand (RrcConnectionReconfiguration msg) = 0;
+  /**
+   * \brief Decode handover command
+   * \param p the packet
+   * \returns RrcConnectionReconfiguration
+   */
   virtual RrcConnectionReconfiguration DecodeHandoverCommand (Ptr<Packet> p) = 0;
 
 };
@@ -1045,12 +1174,18 @@ public:
 class LteEnbRrcSapProvider : public LteRrcSap
 {
 public:
+  /// CompleteSetupUeParameters structure
   struct CompleteSetupUeParameters
   {
-    LteRlcSapUser* srb0SapUser;
-    LtePdcpSapUser* srb1SapUser;
+    LteRlcSapUser* srb0SapUser; ///< SRB0 SAP user
+    LtePdcpSapUser* srb1SapUser; ///< SRB1 SAP user
   };
 
+  /**
+   * \brief Complete setup UE function
+   * \param rnti the RNTI of UE which sent the message
+   * \param params CompleteSetupUeParameters
+   */
   virtual void CompleteSetupUe (uint16_t rnti, CompleteSetupUeParameters params) = 0;
 
   /**
@@ -1133,6 +1268,11 @@ template <class C>
 class MemberLteUeRrcSapUser : public LteUeRrcSapUser
 {
 public:
+  /**
+   * Constructor
+   *
+   * \param owner the owner class
+   */
   MemberLteUeRrcSapUser (C* owner);
 
   // inherited from LteUeRrcSapUser
@@ -1146,7 +1286,7 @@ public:
 
 private:
   MemberLteUeRrcSapUser ();
-  C* m_owner;
+  C* m_owner; ///< the owner class
 };
 
 template <class C>
@@ -1218,6 +1358,11 @@ template <class C>
 class MemberLteUeRrcSapProvider : public LteUeRrcSapProvider
 {
 public:
+  /**
+   * Constructor
+   *
+   * \param owner the owner class
+   */
   MemberLteUeRrcSapProvider (C* owner);
 
   // methods inherited from LteUeRrcSapProvider go here
@@ -1232,7 +1377,7 @@ public:
 
 private:
   MemberLteUeRrcSapProvider ();
-  C* m_owner;
+  C* m_owner; ///< the owner class
 };
 
 template <class C>
@@ -1312,6 +1457,11 @@ template <class C>
 class MemberLteEnbRrcSapUser : public LteEnbRrcSapUser
 {
 public:
+  /**
+   * Constructor
+   *
+   * \param owner the owner class
+   */
   MemberLteEnbRrcSapUser (C* owner);
 
   // inherited from LteEnbRrcSapUser
@@ -1332,7 +1482,7 @@ public:
 
 private:
   MemberLteEnbRrcSapUser ();
-  C* m_owner;
+  C* m_owner; ///< the owner class
 };
 
 template <class C>
@@ -1447,6 +1597,11 @@ template <class C>
 class MemberLteEnbRrcSapProvider : public LteEnbRrcSapProvider
 {
 public:
+  /**
+   * Constructor
+   *
+   * \param owner
+   */
   MemberLteEnbRrcSapProvider (C* owner);
 
   // methods inherited from LteEnbRrcSapProvider go here
@@ -1461,7 +1616,7 @@ public:
 
 private:
   MemberLteEnbRrcSapProvider ();
-  C* m_owner;
+  C* m_owner; ///< the owner class
 };
 
 template <class C>

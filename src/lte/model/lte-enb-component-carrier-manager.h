@@ -81,7 +81,10 @@ public:
 
   LteEnbComponentCarrierManager ();
   virtual ~LteEnbComponentCarrierManager ();
-  // inherited from Object
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId ();
 
   /**
@@ -99,11 +102,13 @@ public:
    */
   virtual LteCcmRrcSapProvider* GetLteCcmRrcSapProvider ();
 
-  /*
+  /**
    * \brief This function returns a pointer to the LteCcmMacSapUser interface, which
    * is used by MAC to communicate to CCM when e.g. UL buffer status report is
    * received, or to notify CCM about PRB occupancy, and similar. Functions that are
    * specific for the communication between MAC and CCM.
+   *
+   * \returns LteCcmMacSapUser* 
    */
   virtual LteCcmMacSapUser* GetLteCcmMacSapUser ();
 
@@ -114,29 +119,41 @@ public:
    * proxy, and will forward calls between to MAC objects of
    * component carriers based on the logic implemented in the
    * specific component carrier manager.
+   *
+   * \returns LteMacSapProvider* 
    */
   virtual LteMacSapProvider* GetLteMacSapProvider ();
 
-  /*
+  /**
    * \brief Set LteMacSapProvider interface for the MAC object of
    * the specified component carrier.
+   *
+   * \param componentCarrierId component carrier ID
+   * \param sap the MAC SAP provider
+   * \returns true if successful
    */
   virtual bool SetMacSapProvider (uint8_t componentCarrierId, LteMacSapProvider* sap);
 
-  /*
+  /**
    * \brief Set LteCcmMacSapProvider interface for the MAC object of
    * the specified component carrier. Through this interface CCM communicates with
    * MAC, e.g. it notifies MAC of the specific carrier when to scheduler UL BSR.
+   *
+   * \param componentCarrierId component carrier ID
+   * \param sap the MAC SAP provider
+   * \returns true if successful
    */
   virtual bool SetCcmMacSapProviders (uint8_t componentCarrierId, LteCcmMacSapProvider* sap);
 
-  /*
+  /**
    * \brief Sets the total number of component carriers.
+   * \param noOfComponentCarriers number of component carriers
    */
   virtual void SetNumberOfComponentCarriers (uint16_t noOfComponentCarriers);
 
-  /*
+  /**
    * \brief Sets a pointer to eNodeB RRC instance
+   * \param rrc the RRC
    */
   virtual void SetRrc (const Ptr<LteEnbRrc> rrc);
 

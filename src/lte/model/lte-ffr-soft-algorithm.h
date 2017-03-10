@@ -44,7 +44,10 @@ public:
 
   virtual ~LteFfrSoftAlgorithm ();
 
-  // inherited from Object
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId ();
 
   // inherited from LteFfrAlgorithm
@@ -81,40 +84,59 @@ protected:
   virtual void DoRecvLoadInformation (EpcX2Sap::LoadInformationParams params);
 
 private:
+  /**
+   * Set downlink configuration function
+   *
+   * \param cellId the cell ID
+   * \param bandwidth the bandwidth
+   */
   void SetDownlinkConfiguration (uint16_t cellId, uint8_t bandwidth);
+  /**
+   * Set uplink configuration function
+   *
+   * \param cellId the cell ID
+   * \param bandwidth the bandwidth
+   */
   void SetUplinkConfiguration (uint16_t cellId, uint8_t bandwidth);
+  /**
+   * Initialize downlink RBG maps function
+   */
   void InitializeDownlinkRbgMaps ();
+  /**
+   * Initialize uplink RBG maps function
+   */
   void InitializeUplinkRbgMaps ();
 
 
   // FFR SAP
-  LteFfrSapUser* m_ffrSapUser;
-  LteFfrSapProvider* m_ffrSapProvider;
+  LteFfrSapUser* m_ffrSapUser; ///< FFR SAP user
+  LteFfrSapProvider* m_ffrSapProvider; ///< FFR SAP provider
 
   // FFR RRF SAP
-  LteFfrRrcSapUser* m_ffrRrcSapUser;
-  LteFfrRrcSapProvider* m_ffrRrcSapProvider;
+  LteFfrRrcSapUser* m_ffrRrcSapUser; ///< FFR RRC SAP user
+  LteFfrRrcSapProvider* m_ffrRrcSapProvider; ///< FFR RRC SAP provider
 
-  uint8_t m_dlCommonSubBandwidth;
-  uint8_t m_dlEgdeSubBandOffset;
-  uint8_t m_dlEdgeSubBandwidth;
+  uint8_t m_dlCommonSubBandwidth; ///< DL common subbandwidth
+  uint8_t m_dlEdgeSubBandOffset; ///< DL edge subband offset
+  uint8_t m_dlEdgeSubBandwidth; ///< DL edge subbandwidth
+ 
+  uint8_t m_ulCommonSubBandwidth; ///< UL commmon subbandwidth
+  uint8_t m_ulEdgeSubBandOffset; ///< UL edge subband offset
+  uint8_t m_ulEdgeSubBandwidth; ///< UL edge subbandwidth
 
-  uint8_t m_ulCommonSubBandwidth;
-  uint8_t m_ulEgdeSubBandOffset;
-  uint8_t m_ulEdgeSubBandwidth;
+  std::vector <bool> m_dlRbgMap; ///< DL RBG Map
+  std::vector <bool> m_ulRbgMap; ///< UL RBG map
 
-  std::vector <bool> m_dlRbgMap;
-  std::vector <bool> m_ulRbgMap;
+  std::vector <bool> m_dlCenterRbgMap; ///< DL center RBG map
+  std::vector <bool> m_ulCenterRbgMap; ///< UL center RBG map
 
-  std::vector <bool> m_dlCenterRbgMap;
-  std::vector <bool> m_ulCenterRbgMap;
+  std::vector <bool> m_dlMediumRbgMap; ///< DL medium RBG map
+  std::vector <bool> m_ulMediumRbgMap; ///< UL medium RBG map
 
-  std::vector <bool> m_dlMediumRbgMap;
-  std::vector <bool> m_ulMediumRbgMap;
+  std::vector <bool> m_dlEdgeRbgMap; ///< DL edge RBG map
+  std::vector <bool> m_ulEdgeRbgMap; ///< UL edge RBG map
 
-  std::vector <bool> m_dlEdgeRbgMap;
-  std::vector <bool> m_ulEdgeRbgMap;
-
+  /// UE position enumeration
   enum UePosition
   {
     AreaUnset,
@@ -123,20 +145,20 @@ private:
     EdgeArea
   };
 
-  std::map< uint16_t, uint8_t > m_ues;
+  std::map< uint16_t, uint8_t > m_ues; ///< UEs
 
-  uint8_t m_centerSubBandThreshold;
-  uint8_t m_egdeSubBandThreshold;
+  uint8_t m_centerSubBandThreshold; ///< center subband threshold
+  uint8_t m_edgeSubBandThreshold; ///< edge subband threshold
 
-  uint8_t m_centerAreaPowerOffset;
-  uint8_t m_mediumAreaPowerOffset;
-  uint8_t m_edgeAreaPowerOffset;
+  uint8_t m_centerAreaPowerOffset; ///< center area power offset
+  uint8_t m_mediumAreaPowerOffset; ///< medium area power offset 
+  uint8_t m_edgeAreaPowerOffset; ///< edge area power offset
 
-  uint8_t m_centerAreaTpc;
-  uint8_t m_mediumAreaTpc;
-  uint8_t m_edgeAreaTpc;
+  uint8_t m_centerAreaTpc; ///< center area tpc
+  uint8_t m_mediumAreaTpc; ///< medium area tpc
+  uint8_t m_edgeAreaTpc; ///< edge area tpc
 
-  // The expected measurement identity
+  /// The expected measurement identity
   uint8_t m_measId;
 
 }; // end of class LteFfrSoftAlgorithm

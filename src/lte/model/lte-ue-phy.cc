@@ -70,10 +70,15 @@ static const Time UL_SRS_DELAY_FROM_SUBFRAME_START = NanoSeconds (1e6 - 71429);
 // member SAP forwarders
 ////////////////////////////////////////
 
-
+/// UeMemberLteUePhySapProvider class
 class UeMemberLteUePhySapProvider : public LteUePhySapProvider
 {
 public:
+  /**
+   * Constructor
+   *
+   * \param phy the LTE UE Phy
+   */
   UeMemberLteUePhySapProvider (LteUePhy* phy);
 
   // inherited from LtePhySapProvider
@@ -82,7 +87,7 @@ public:
   virtual void SendRachPreamble (uint32_t prachId, uint32_t raRnti);
 
 private:
-  LteUePhy* m_phy;
+  LteUePhy* m_phy; ///< the Phy
 };
 
 UeMemberLteUePhySapProvider::UeMemberLteUePhySapProvider (LteUePhy* phy) : m_phy (phy)

@@ -115,6 +115,11 @@ template <class C>
 class MemberLteHandoverManagementSapProvider : public LteHandoverManagementSapProvider
 {
 public:
+  /**
+   * Constructor
+   *
+   * \param owner the owenr class
+   */
   MemberLteHandoverManagementSapProvider (C* owner);
 
   // inherited from LteHandoverManagemenrSapProvider
@@ -122,7 +127,7 @@ public:
 
 private:
   MemberLteHandoverManagementSapProvider ();
-  C* m_owner;
+  C* m_owner; ///< the owner class
 
 }; // end of class MemberLteHandoverManagementSapProvider
 
@@ -152,6 +157,11 @@ template <class C>
 class MemberLteHandoverManagementSapUser : public LteHandoverManagementSapUser
 {
 public:
+  /**
+   * Constructor
+   *
+   * \param owner the owenr class
+   */
   MemberLteHandoverManagementSapUser (C* owner);
 
   // inherited from LteHandoverManagementSapUser
@@ -160,7 +170,7 @@ public:
 
 private:
   MemberLteHandoverManagementSapUser ();
-  C* m_owner;
+  C* m_owner; ///< the owner class
 
 }; // end of class MemberLteAnrSapUser
 

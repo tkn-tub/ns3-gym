@@ -74,18 +74,34 @@ static const Time DL_CTRL_DELAY_FROM_SUBFRAME_START = NanoSeconds (214286);
 class EnbMemberLteEnbPhySapProvider : public LteEnbPhySapProvider
 {
 public:
+  /**
+   * Constructor
+   *
+   * \param phy the ENB Phy
+   */
   EnbMemberLteEnbPhySapProvider (LteEnbPhy* phy);
 
   // inherited from LteEnbPhySapProvider
   virtual void SendMacPdu (Ptr<Packet> p);
-  virtual void SetBandwidth (uint8_t ulBandwidth, uint8_t dlBandwidth);
-  virtual void SetCellId (uint16_t cellId);
   virtual void SendLteControlMessage (Ptr<LteControlMessage> msg);
   virtual uint8_t GetMacChTtiDelay ();
+  /**
+   * Set bandwidth function
+   *
+   * \param ulBandwidth the UL bandwidth
+   * \param dlBandwidth the DL bandwidth
+   */
+  virtual void SetBandwidth (uint8_t ulBandwidth, uint8_t dlBandwidth);
+  /**
+   * Set Cell ID function
+   *
+   * \param cellId the cell ID
+   */
+  virtual void SetCellId (uint16_t cellId);
 
 
 private:
-  LteEnbPhy* m_phy;
+  LteEnbPhy* m_phy; ///< the ENB Phy
 };
 
 EnbMemberLteEnbPhySapProvider::EnbMemberLteEnbPhySapProvider (LteEnbPhy* phy) : m_phy (phy)

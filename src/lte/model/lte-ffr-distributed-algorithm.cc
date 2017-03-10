@@ -69,7 +69,7 @@ LteFfrDistributedAlgorithm::GetTypeId ()
     .AddAttribute ("RsrqThreshold",
                    "If the RSRQ of is worse than this threshold, UE should be served in Edge sub-band",
                    UintegerValue (20),
-                   MakeUintegerAccessor (&LteFfrDistributedAlgorithm::m_egdeSubBandRsrqThreshold),
+                   MakeUintegerAccessor (&LteFfrDistributedAlgorithm::m_edgeSubBandRsrqThreshold),
                    MakeUintegerChecker<uint8_t> ())
     .AddAttribute ("RsrpDifferenceThreshold",
                    "If the difference between the power of the signal received by UE from "
@@ -402,7 +402,7 @@ LteFfrDistributedAlgorithm::DoReportUeMeas (uint16_t rnti,
         }
 
       it = m_ues.find (rnti);
-      if (measResults.rsrqResult >= m_egdeSubBandRsrqThreshold)
+      if (measResults.rsrqResult >= m_edgeSubBandRsrqThreshold)
         {
           if (it->second != CenterArea)
             {

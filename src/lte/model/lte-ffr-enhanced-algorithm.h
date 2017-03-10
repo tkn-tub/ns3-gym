@@ -46,7 +46,10 @@ public:
   LteFfrEnhancedAlgorithm ();
   virtual ~LteFfrEnhancedAlgorithm ();
 
-  // inherited from Object
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId ();
 
   // inherited from LteFfrAlgorithm
@@ -83,43 +86,76 @@ protected:
   virtual void DoRecvLoadInformation (EpcX2Sap::LoadInformationParams params);
 
 private:
+  /**
+   * Set downlink configuration
+   *
+   * \param cellId the cell ID
+   * \param bandwidth the bandwidth
+   */
   void SetDownlinkConfiguration (uint16_t cellId, uint8_t bandwidth);
+  /**
+   * Set uplink configuration
+   *
+   * \param cellId the cell ID
+   * \param bandwidth the bandwidth
+   */
   void SetUplinkConfiguration (uint16_t cellId, uint8_t bandwidth);
+  /**
+   * Initialize downlink RBG maps
+   */
   void InitializeDownlinkRbgMaps ();
+  /**
+   * Initialize uplink RBG maps
+   */
   void InitializeUplinkRbgMaps ();
 
+  /**
+   * Initialize uplink RBG maps
+   *
+   * \param rnti the RNTI
+   * \param rb RB
+   * \param ulCqiMap UL CQI map
+   * \returns UL SINR
+   */
   double EstimateUlSinr (uint16_t rnti, uint16_t rb, std::map <uint16_t, std::vector <double> > ulCqiMap);
+  /**
+   * Get CQI from spectral efficency
+   *
+   * \param s spectral efficency
+   * \returns CQI
+   */
   int GetCqiFromSpectralEfficiency (double s);
 
   // FFR SAP
-  LteFfrSapUser* m_ffrSapUser;
-  LteFfrSapProvider* m_ffrSapProvider;
+  LteFfrSapUser* m_ffrSapUser; ///< FFR SAP user
+  LteFfrSapProvider* m_ffrSapProvider; ///< FFR SAP provider
 
-  // FFR RRF SAP
-  LteFfrRrcSapUser* m_ffrRrcSapUser;
-  LteFfrRrcSapProvider* m_ffrRrcSapProvider;
+  // FFR RRF SAP 
+  LteFfrRrcSapUser* m_ffrRrcSapUser; ///< FFR RRC SAP user
+  LteFfrRrcSapProvider* m_ffrRrcSapProvider; ///< FFR RRC SAP provider
 
-  uint8_t m_dlSubBandOffset;
-  uint8_t m_dlReuse3SubBandwidth;
-  uint8_t m_dlReuse1SubBandwidth;
+  uint8_t m_dlSubBandOffset; ///< DL subband offset
+  uint8_t m_dlReuse3SubBandwidth; ///< DL reuse 3 subband bandwidth
+  uint8_t m_dlReuse1SubBandwidth; ///< DL reuse 1 subband bandwidth
 
-  uint8_t m_ulSubBandOffset;
-  uint8_t m_ulReuse3SubBandwidth;
-  uint8_t m_ulReuse1SubBandwidth;
+  uint8_t m_ulSubBandOffset; ///< UL subband offset
+  uint8_t m_ulReuse3SubBandwidth; ///< UL reuse 3 subbandwidth
+  uint8_t m_ulReuse1SubBandwidth; ///< UL reuse 1 subbandwidth 
 
-  std::vector <bool> m_dlRbgMap;
-  std::vector <bool> m_ulRbgMap;
+  std::vector <bool> m_dlRbgMap; ///< DL RBG map
+  std::vector <bool> m_ulRbgMap; ///< UL RBG Map
 
-  std::vector <bool> m_dlReuse3RbgMap;
-  std::vector <bool> m_dlReuse1RbgMap;
-  std::vector <bool> m_dlPrimarySegmentRbgMap;
-  std::vector <bool> m_dlSecondarySegmentRbgMap;
+  std::vector <bool> m_dlReuse3RbgMap; ///< DL reuse 3 RBG map
+  std::vector <bool> m_dlReuse1RbgMap; ///< DL reuse 1 RBG map
+  std::vector <bool> m_dlPrimarySegmentRbgMap; ///< DL primary segment RBG map
+  std::vector <bool> m_dlSecondarySegmentRbgMap; ///< DL secondary segment RBG map
 
-  std::vector <bool> m_ulReuse3RbgMap;
-  std::vector <bool> m_ulReuse1RbgMap;
-  std::vector <bool> m_ulPrimarySegmentRbgMap;
-  std::vector <bool> m_ulSecondarySegmentRbgMap;
+  std::vector <bool> m_ulReuse3RbgMap; ///< UL reuse 3 RBG map
+  std::vector <bool> m_ulReuse1RbgMap; ///< UL reuse 1 RBG map
+  std::vector <bool> m_ulPrimarySegmentRbgMap; ///< UL primary segment RBG map
+  std::vector <bool> m_ulSecondarySegmentRbgMap; ///< UL secondary segment RBG map
 
+  /// UE Position enumeration
   enum UePosition
   {
     AreaUnset,
@@ -127,29 +163,29 @@ private:
     EdgeArea
   };
 
-  std::map< uint16_t, uint8_t > m_ues;
+  std::map< uint16_t, uint8_t > m_ues; ///< UEs
 
-  uint8_t m_rsrqThreshold;
+  uint8_t m_rsrqThreshold; ///< RSRQ threshold
 
-  uint8_t m_centerAreaPowerOffset;
-  uint8_t m_edgeAreaPowerOffset;
+  uint8_t m_centerAreaPowerOffset; ///< Center area power offset
+  uint8_t m_edgeAreaPowerOffset; ///< Edge area power offset
 
-  uint8_t m_centerAreaTpc;
-  uint8_t m_edgeAreaTpc;
+  uint8_t m_centerAreaTpc; ///< Center area TPC
+  uint8_t m_edgeAreaTpc; ///< Edge are TPC
 
 
-  uint8_t m_dlCqiThreshold;
-  /*
-  * Map of UE's DL CQI A30 received
-  */
+  uint8_t m_dlCqiThreshold; ///< DL CQI threshold
+  /**
+   * Map of UE's DL CQI A30 received
+   */
   std::map <uint16_t,SbMeasResult_s> m_dlCqi;
-  std::map <uint16_t, std::vector<bool> > m_dlRbgAvailableforUe;
+  std::map <uint16_t, std::vector<bool> > m_dlRbgAvailableforUe; ///< DL RBG available for UE
 
-  uint8_t m_ulCqiThreshold;
-  std::map <uint16_t, std::vector<int> > m_ulCqi;
-  std::map <uint16_t, std::vector<bool> > m_ulRbAvailableforUe;
+  uint8_t m_ulCqiThreshold; ///< UL CQI threshold
+  std::map <uint16_t, std::vector<int> > m_ulCqi; ///< UL CQI
+  std::map <uint16_t, std::vector<bool> > m_ulRbAvailableforUe; ///< UL RB available for UE
 
-  // The expected measurement identity
+  /// The expected measurement identity
   uint8_t m_measId;
 
 }; // end of class LteFfrEnhancedAlgorithm

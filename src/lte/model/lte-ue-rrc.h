@@ -130,8 +130,13 @@ private:
   virtual void DoInitialize (void);
   virtual void DoDispose (void);
 public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
 
+  /// Initiaize SAP
   void InitializeSap (void);
 
   /**
@@ -140,6 +145,12 @@ public:
    * \param s the CPHY SAP Provider
    */
   void SetLteUeCphySapProvider (LteUeCphySapProvider * s);
+  /**
+   * set the CPHY SAP this RRC should use to interact with the PHY
+   *
+   * \param s the CPHY SAP Provider
+   * \param index the index
+   */
   void SetLteUeCphySapProvider (LteUeCphySapProvider * s, uint8_t index);
 
   /**
@@ -148,6 +159,11 @@ public:
    * \return s the CPHY SAP User interface offered to the PHY by this RRC
    */
   LteUeCphySapUser* GetLteUeCphySapUser ();
+  /**
+   *
+   * \param index the index
+   * \return s the CPHY SAP User interface offered to the PHY by this RRC
+   */
   LteUeCphySapUser* GetLteUeCphySapUser (uint8_t index);
 
   /**
@@ -156,6 +172,12 @@ public:
    * \param s the CMAC SAP Provider to be used by this RRC
    */
   void SetLteUeCmacSapProvider (LteUeCmacSapProvider * s);
+  /**
+   * set the CMAC SAP this RRC should interact with
+   * \brief This function is overloaded to maintain backward compatibility 
+   * \param s the CMAC SAP Provider to be used by this RRC
+   * \param index the index
+   */
   void SetLteUeCmacSapProvider (LteUeCmacSapProvider * s, uint8_t index);
 
   /**
@@ -163,6 +185,11 @@ public:
    * \return s the CMAC SAP User interface offered to the MAC by this RRC
    */
   LteUeCmacSapUser* GetLteUeCmacSapUser ();
+  /**
+   * \brief This function is overloaded to maintain backward compatibility
+   * \param index the index  
+   * \return s the CMAC SAP User interface offered to the MAC by this RRC
+   */
   LteUeCmacSapUser* GetLteUeCmacSapUser (uint8_t index);
 
 
@@ -323,26 +350,79 @@ private:
 
 
   // PDCP SAP methods
+  /**
+   * Receive PDCP SDU function
+   *
+   * \param params LtePdcpSapUser::ReceivePdcpSduParameters
+   */
   void DoReceivePdcpSdu (LtePdcpSapUser::ReceivePdcpSduParameters params);
 
   // CMAC SAP methods
+  /**
+   * Set temporary cell rnti function
+   *
+   * \param rnti RNTI
+   */
   void DoSetTemporaryCellRnti (uint16_t rnti);
+  /// Notify random access successful function
   void DoNotifyRandomAccessSuccessful ();
+  /// Notify random access failed function
   void DoNotifyRandomAccessFailed ();
  
   // LTE AS SAP methods
+  /**
+   * Set CSG white list function
+   *
+   * \param csgId CSG ID
+   */
   void DoSetCsgWhiteList (uint32_t csgId);
+  /**
+   * Force camped on ENB function
+   *
+   * \param cellId the cell ID
+   * \param dlEarfcn the DL EARFCN
+   */
   void DoForceCampedOnEnb (uint16_t cellId, uint32_t dlEarfcn);
+  /**
+   * Start cell selection function
+   *
+   * \param dlEarfcn the DL EARFCN
+   */
   void DoStartCellSelection (uint32_t dlEarfcn);
+  /// Connect function
   void DoConnect ();
+  /**
+   * Send data function
+   *
+   * \param packet the packet
+   * \param bid the BID
+   */
   void DoSendData (Ptr<Packet> packet, uint8_t bid);
+  /// Disconnect function
   void DoDisconnect ();
 
   // CPHY SAP methods
+  /**
+   * Receive master information block function
+   *
+   * \param cellId the cell ID
+   * \param msg LteRrcSap::MasterInformationBlock
+   */
   void DoRecvMasterInformationBlock (uint16_t cellId,
                                      LteRrcSap::MasterInformationBlock msg);
+  /**
+   * Receive system information block type 1 function
+   *
+   * \param cellId the cell ID
+   * \param msg LteRrcSap::SystemInformationBlockType1
+   */
   void DoRecvSystemInformationBlockType1 (uint16_t cellId,
                                           LteRrcSap::SystemInformationBlockType1 msg);
+  /**
+   * Report UE measurements function
+   *
+   * \param params LteUeCphySapUser::UeMeasurementsParameters
+   */
   void DoReportUeMeasurements (LteUeCphySapUser::UeMeasurementsParameters params);
 
   // RRC SAP methods
@@ -355,16 +435,28 @@ private:
   void DoRecvRrcConnectionSetup (LteRrcSap::RrcConnectionSetup msg);
   /// Part of the RRC protocol. Implement the LteUeRrcSapProvider::RecvRrcConnectionReconfiguration interface.
   void DoRecvRrcConnectionReconfiguration (LteRrcSap::RrcConnectionReconfiguration msg);
-  /// Part of the RRC protocol. Implement the LteUeRrcSapProvider::RecvRrcConnectionReestablishment interface.
+  /**
+   * Part of the RRC protocol. Implement the LteUeRrcSapProvider::RecvRrcConnectionReestablishment interface.
+   * \param msg LteRrcSap::RrcConnectionReestablishment
+   */
   void DoRecvRrcConnectionReestablishment (LteRrcSap::RrcConnectionReestablishment msg);
-  /// Part of the RRC protocol. Implement the LteUeRrcSapProvider::RecvRrcConnectionReestablishmentReject interface.
+  /**
+   * Part of the RRC protocol. Implement the LteUeRrcSapProvider::RecvRrcConnectionReestablishmentReject interface.
+   * \param msg LteRrcSap::RrcConnectionReestablishmentReject
+   */
   void DoRecvRrcConnectionReestablishmentReject (LteRrcSap::RrcConnectionReestablishmentReject msg);
-  /// Part of the RRC protocol. Implement the LteUeRrcSapProvider::RecvRrcConnectionRelease interface.
+  /**
+   * Part of the RRC protocol. Implement the LteUeRrcSapProvider::RecvRrcConnectionRelease interface.
+   * \param msg LteRrcSap::RrcConnectionRelease
+   */
   void DoRecvRrcConnectionRelease (LteRrcSap::RrcConnectionRelease msg);
   /// Part of the RRC protocol. Implement the LteUeRrcSapProvider::RecvRrcConnectionReject interface.
   void DoRecvRrcConnectionReject (LteRrcSap::RrcConnectionReject msg);
 
-  // RRC CCM SAP USER Method
+  /**
+   * RRC CCM SAP USER Method
+   * \param res
+   */
   void DoComponentCarrierEnabling (std::vector<uint8_t> res);
 
  
@@ -555,11 +647,27 @@ private:
    */
   void SendMeasurementReport (uint8_t measId);
 
+  /**
+   * Apply radio resoure config dedicated.
+   * \param rrcd LteRrcSap::RadioResourceConfigDedicated
+   */
   void ApplyRadioResourceConfigDedicated (LteRrcSap::RadioResourceConfigDedicated rrcd);
+  /**
+   * Apply radio resoure config dedicated secondary carrier.
+   * \param nonCec LteRrcSap::NonCriticalExtensionConfiguration
+   */
   void ApplyRadioResourceConfigDedicatedSecondaryCarrier (LteRrcSap::NonCriticalExtensionConfiguration nonCec);
+  /// Start connetion function
   void StartConnection ();
+  /// Leave connected mode
   void LeaveConnectedMode ();
+  /// Dispose old SRB1
   void DisposeOldSrb1 ();
+  /**
+   * Bid 2 DR bid.
+   * \param bid the BID
+   * \returns the DR bid
+   */
   uint8_t Bid2Drbid (uint8_t bid);
   /**
    * Switch the UE RRC to the given state.
@@ -567,29 +675,28 @@ private:
    */
   void SwitchToState (State s);
 
-  std::map<uint8_t, uint8_t> m_bid2DrbidMap;
+  std::map<uint8_t, uint8_t> m_bid2DrbidMap; ///< bid to DR bid map
 
-  std::vector<LteUeCphySapUser*> m_cphySapUser;
-  std::vector<LteUeCphySapProvider*> m_cphySapProvider;
+  std::vector<LteUeCphySapUser*> m_cphySapUser; ///< UE CPhy SAP user
+  std::vector<LteUeCphySapProvider*> m_cphySapProvider; ///< UE CPhy SAP provider
 
-  std::vector<LteUeCmacSapUser*> m_cmacSapUser;
-  std::vector<LteUeCmacSapProvider*> m_cmacSapProvider;
+  std::vector<LteUeCmacSapUser*> m_cmacSapUser; ///< UE CMac SAP user
+  std::vector<LteUeCmacSapProvider*> m_cmacSapProvider; ///< UE CMac SAP provider
 
-  LteUeRrcSapUser* m_rrcSapUser;
-  LteUeRrcSapProvider* m_rrcSapProvider;
+  LteUeRrcSapUser* m_rrcSapUser; ///< RRC SAP user
+  LteUeRrcSapProvider* m_rrcSapProvider; ///< RRC SAP provider
 
-  LteMacSapProvider* m_macSapProvider;
-  LtePdcpSapUser* m_drbPdcpSapUser;
+  LteMacSapProvider* m_macSapProvider; ///< MAC SAP provider
+  LtePdcpSapUser* m_drbPdcpSapUser; ///< DRB PDCP SAP user
 
-  LteAsSapProvider* m_asSapProvider;
-  LteAsSapUser* m_asSapUser;
+  LteAsSapProvider* m_asSapProvider; ///< AS SAP provider
+  LteAsSapUser* m_asSapUser; ///< AS SAP user
 
   // Receive API calls from the LteUeComponetCarrierManager  instance.
   // LteCcmRrcSapUser* m_ccmRrcSapUser;
   /// Interface to the LteUeComponetCarrierManage instance.
-  LteUeCcmRrcSapProvider* m_ccmRrcSapProvider;
-  LteUeCcmRrcSapUser* m_ccmRrcSapUser;
-
+  LteUeCcmRrcSapProvider* m_ccmRrcSapProvider; ///< CCM RRC SAP provider
+  LteUeCcmRrcSapUser* m_ccmRrcSapUser; ///< CCM RRC SAP user
 
   /// The current UE RRC state.
   State m_state;
@@ -630,9 +737,9 @@ private:
    */
   bool m_useRlcSm;
 
-  uint8_t m_lastRrcTransactionIdentifier;
+  uint8_t m_lastRrcTransactionIdentifier; ///< last RRC transaction identifier
 
-  LteRrcSap::PdschConfigDedicated m_pdschConfigDedicated;
+  LteRrcSap::PdschConfigDedicated m_pdschConfigDedicated; ///< the PDSCH condig dedicated
 
   uint8_t m_dlBandwidth; /**< Downlink bandwidth in RBs. */
   uint8_t m_ulBandwidth; /**< Uplink bandwidth in RBs. */
@@ -744,12 +851,12 @@ private:
    */
   struct VarMeasConfig
   {
-    std::map<uint8_t, LteRrcSap::MeasIdToAddMod> measIdList;
-    std::map<uint8_t, LteRrcSap::MeasObjectToAddMod> measObjectList;
-    std::map<uint8_t, LteRrcSap::ReportConfigToAddMod> reportConfigList;
-    LteRrcSap::QuantityConfig quantityConfig; 
-    double aRsrp;
-    double aRsrq;
+    std::map<uint8_t, LteRrcSap::MeasIdToAddMod> measIdList; ///< measure ID list
+    std::map<uint8_t, LteRrcSap::MeasObjectToAddMod> measObjectList; ///< measure object list
+    std::map<uint8_t, LteRrcSap::ReportConfigToAddMod> reportConfigList; ///< report config list
+    LteRrcSap::QuantityConfig quantityConfig; ///< quantity config
+    double aRsrp; ///< RSRP
+    double aRsrq; ///< RSRQ
   };
 
   /**
@@ -769,10 +876,10 @@ private:
    */
   struct VarMeasReport
   {
-    uint8_t measId;
-    std::set<uint16_t> cellsTriggeredList; // note: only E-UTRA is supported.
-    uint32_t numberOfReportsSent;
-    EventId periodicReportTimer;
+    uint8_t measId; ///< measure ID
+    std::set<uint16_t> cellsTriggeredList; ///< note: only E-UTRA is supported.
+    uint32_t numberOfReportsSent; ///< number of reports sent
+    EventId periodicReportTimer; ///< periodic report timer
   };
 
   /**
@@ -865,6 +972,9 @@ private:
    */
   std::map<uint16_t, MeasValues> m_storedMeasValues;
 
+  /**
+   * \brief Stored measure values per carrier.
+   */
   std::map<uint16_t, std::map <uint8_t, MeasValues> > m_storedMeasValuesPerCarrier;
 
   /**

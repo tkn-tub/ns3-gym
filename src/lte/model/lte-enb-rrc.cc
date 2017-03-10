@@ -60,6 +60,11 @@ NS_LOG_COMPONENT_DEFINE ("LteEnbRrc");
 class EnbRrcMemberLteEnbCmacSapUser : public LteEnbCmacSapUser
 {
 public:
+  /**
+   * Constructor
+   *
+   * \param rrc ENB RRC
+   */
   EnbRrcMemberLteEnbCmacSapUser (LteEnbRrc* rrc);
 
   virtual uint16_t AllocateTemporaryCellRnti ();
@@ -67,7 +72,7 @@ public:
   virtual void RrcConfigurationUpdateInd (UeConfig params);
 
 private:
-  LteEnbRrc* m_rrc;
+  LteEnbRrc* m_rrc; ///< the RRC
 };
 
 EnbRrcMemberLteEnbCmacSapUser::EnbRrcMemberLteEnbCmacSapUser (LteEnbRrc* rrc)

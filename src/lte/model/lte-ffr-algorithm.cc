@@ -28,6 +28,7 @@ namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("LteFfrAlgorithm");
 
+/// Type 0 RGB allocation
 static const int Type0AllocationRbg[4] = {
   10,       // RGB size 1
   26,       // RGB size 2

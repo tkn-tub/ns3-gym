@@ -58,33 +58,113 @@ public:
   LteUePowerControl ();
   virtual ~LteUePowerControl ();
 
-  // inherited from Object
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
+  // inherited from Object
   virtual void DoInitialize (void);
   virtual void DoDispose (void);
 
+  /**
+   * \brief Set PC maximum function
+   *
+   * \param value the PC maximum value
+   */
   void SetPcmax (double value);
+  /**
+   * \brief Get PC maximum function
+   *
+   * \returns the PC maximum value
+   */
   double GetPcmax ();
 
+  /**
+   * \brief Set transmit power function
+   *
+   * \param value the transmit power value
+   */
   void SetTxPower (double value);
+  /**
+   * \brief Configure reference signal power function
+   *
+   * \param referenceSignalPower the reference signal power
+   */
   void ConfigureReferenceSignalPower (int8_t referenceSignalPower);
 
+  /**
+   * \brief Set the cell ID function
+   *
+   * \param cellId the cell ID
+   */
   void SetCellId (uint16_t cellId);
+  /**
+   * \brief Set the RNTI function
+   *
+   * \param rnti the RNTI
+   */
   void SetRnti (uint16_t rnti);
 
+  /**
+   * \brief Set PO nominal PUSCH function
+   *
+   * \param value the value to set
+   */
   void SetPoNominalPusch (int16_t value);
+  /**
+   * \brief Set PO UE PUSCH function
+   *
+   * \param value the value to set
+   */
   void SetPoUePusch (int16_t value);
+  /**
+   * \brief Set alpha function
+   *
+   * \param value the alpha value to set
+   */
   void SetAlpha (double value);
 
+  /**
+   * \brief Set RSRP function
+   *
+   * \param value the RSRP value to set
+   */
   void SetRsrp (double value);
+  /**
+   * \brief Set RSRP function
+   *
+   * \param tpc the TPC to report
+   */
   void ReportTpc (uint8_t tpc);
 
+  /// Calculate PUSCH transmit power function
   void CalculatePuschTxPower ();
+  /// Calculate PUCCH transmit power function
   void CalculatePucchTxPower ();
+  /// Calculate SRS transmit power function
   void CalculateSrsTxPower ();
 
+  /**
+   * \brief Get PUSCH transmit power function
+   *
+   * \param rb the DL RB list
+   * \returns the PUSCH transmit power
+   */
   double GetPuschTxPower (std::vector <int> rb);
+  /**
+   * \brief Get PUCCH transmit power function
+   *
+   * \param rb unused
+   * \returns the PUCCH transmit power
+   */
   double GetPucchTxPower (std::vector <int> rb);
+  /**
+   * \brief Get SRS transmit power function
+   *
+   * \param rb the DL RB list
+   * \returns the SRS transmit power
+   */
   double GetSrsTxPower (std::vector <int> rb);
 
   /**
@@ -98,46 +178,59 @@ public:
     (uint16_t cellId, uint16_t rnti, double power);
 
 private:
+  /**
+   * Set subchannel mask function
+   *
+   * \param [in] mask the subchannel mask
+   */
   void SetSubChannelMask (std::vector <int> mask);
 
-  double m_txPower;
-  double m_Pcmax;
-  double m_Pcmin;
+  double m_txPower; ///< transmit power
+  double m_Pcmax; ///< PC maximum
+  double m_Pcmin; ///< PC minimum
 
-  double m_curPuschTxPower;
-  double m_curPucchTxPower;
-  double m_curSrsTxPower;
+  double m_curPuschTxPower; ///< current PUSCH transmit power
+  double m_curPucchTxPower; ///< current PUCCH transmit power
+  double m_curSrsTxPower; ///< current SRS transmit power
 
-  double m_referenceSignalPower;
-  bool m_rsrpSet;
-  double m_rsrp;
+  double m_referenceSignalPower; ///< reference signal power
+  bool m_rsrpSet; ///< is RSRP set?
+  double m_rsrp; ///< RSRP value
 
-  std::vector<int16_t> m_PoNominalPusch;
-  std::vector<int16_t> m_PoUePusch;
+  std::vector<int16_t> m_PoNominalPusch; ///< PO nominal PUSCH
+  std::vector<int16_t> m_PoUePusch; ///< PO US PUSCH
 
-  int16_t m_PsrsOffset;
+  int16_t m_PsrsOffset; ///< PSRS offset
 
-  uint16_t m_M_Pusch;
-  std::vector<double> m_alpha;
-  double m_pathLoss;
-  double m_deltaTF;
+  uint16_t m_M_Pusch; ///< size of DL RB list
+  std::vector<double> m_alpha; ///< alpha values
+  double m_pathLoss; ///< path loss value
+  double m_deltaTF; ///< delta TF
 
-  std::vector<int8_t> m_deltaPusch;
-  double m_fc;
+  std::vector<int8_t> m_deltaPusch; ///< delta PUSCH
+  double m_fc; ///< FC
 
-  uint16_t m_srsBandwidth;
+  uint16_t m_srsBandwidth; ///< SRS bandwidth
 
-  bool m_closedLoop;
-  bool m_accumulationEnabled;
+  bool m_closedLoop; ///< is closed loop
+  bool m_accumulationEnabled; ///< accumulation enabled
 
-  uint16_t m_cellId;
-  uint16_t m_rnti;
+  uint16_t m_cellId; ///< cell ID
+  uint16_t m_rnti; ///< RNTI
   /**
    * Trace information regarding Uplink TxPower
    * uint16_t cellId, uint16_t rnti, double txPower
    */
   TracedCallback<uint16_t, uint16_t, double> m_reportPuschTxPower;
+  /**
+   * Trace information regarding Uplink TxPower
+   * uint16_t cellId, uint16_t rnti, double txPower
+   */
   TracedCallback<uint16_t, uint16_t, double> m_reportPucchTxPower;
+  /**
+   * Trace information regarding Uplink TxPower
+   * uint16_t cellId, uint16_t rnti, double txPower
+   */
   TracedCallback<uint16_t, uint16_t, double> m_reportSrsTxPower;
 
 };

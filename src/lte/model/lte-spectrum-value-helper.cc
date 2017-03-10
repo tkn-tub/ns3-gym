@@ -56,15 +56,15 @@ NS_LOG_COMPONENT_DEFINE ("LteSpectrumValueHelper");
  */
 static const struct EutraChannelNumbers
 {
-  uint8_t band;
-  double fDlLow;
-  uint32_t nOffsDl; 
-  uint32_t rangeNdl1;
-  uint32_t rangeNdl2;
-  double fUlLow;
-  uint32_t nOffsUl; 
-  uint32_t rangeNul1;
-  uint32_t rangeNul2;
+  uint8_t band; ///< band
+  double fDlLow; ///<  DL low
+  uint32_t nOffsDl; ///< number offset DL
+  uint32_t rangeNdl1; ///< range DL 1
+  uint32_t rangeNdl2; ///< range DL 2
+  double fUlLow; ///< UL low
+  uint32_t nOffsUl;  ///< number offset UL
+  uint32_t rangeNul1; ///< range UL 1
+  uint32_t rangeNul2; ///< range UL 2
 } g_eutraChannelNumbers[] = {
   { 1, 2110, 0, 0, 599, 1920, 18000, 18000, 18599},
   { 2, 1930, 600, 600, 1199, 1850, 18600, 18600, 19199},
@@ -93,8 +93,9 @@ static const struct EutraChannelNumbers
   { 38, 2570, 37750, 37750, 38249, 2570, 37750, 37750, 38249},
   { 39, 1880, 38250, 38250, 38649, 1880, 38250, 38250, 38649},
   { 40, 2300, 38650, 38650, 39649, 2300, 38650, 38650, 39649}
-};
+}; ///< eutra channel numbers
 
+/// number of EUTRA bands
 #define NUM_EUTRA_BANDS (sizeof (g_eutraChannelNumbers) / sizeof (EutraChannelNumbers))
 
 double 
@@ -173,11 +174,18 @@ LteSpectrumValueHelper::GetChannelBandwidth (uint8_t transmissionBandwidth)
 
 
 
+/// LteSpectrumModelId structure
 struct LteSpectrumModelId
 {
+  /**
+   * Constructor
+   *
+   * \param f earfcn
+   * \param b bandwidth
+   */
   LteSpectrumModelId (uint32_t f, uint8_t b);
-  uint32_t earfcn;
-  uint8_t  bandwidth;
+  uint32_t earfcn; ///< EARFCN
+  uint8_t  bandwidth; ///< bandwidth
 };
 
 LteSpectrumModelId::LteSpectrumModelId (uint32_t f, uint8_t b)
@@ -186,6 +194,13 @@ LteSpectrumModelId::LteSpectrumModelId (uint32_t f, uint8_t b)
 {
 }
 
+/**
+ * Constructor
+ *
+ * \param a lhs
+ * \param b rhs
+ * \returns true if earfcn less than of if earfcn equal and bandwidth less than
+ */
 bool
 operator < (const LteSpectrumModelId& a, const LteSpectrumModelId& b)
 {
@@ -193,7 +208,7 @@ operator < (const LteSpectrumModelId& a, const LteSpectrumModelId& b)
 }
  
 
-static std::map<LteSpectrumModelId, Ptr<SpectrumModel> > g_lteSpectrumModelMap;
+static std::map<LteSpectrumModelId, Ptr<SpectrumModel> > g_lteSpectrumModelMap; ///< LTE spectrum model map
 
 
 Ptr<SpectrumModel>

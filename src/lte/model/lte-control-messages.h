@@ -78,7 +78,7 @@ public:
   MessageType GetMessageType (void);
 
 private:
-  MessageType m_type;
+  MessageType m_type; ///< message type
 };
 
 
@@ -108,7 +108,7 @@ public:
   DlDciListElement_s GetDci (void);
 
 private:
-  DlDciListElement_s m_dci;
+  DlDciListElement_s m_dci; ///< DCI
 };
 
 
@@ -138,7 +138,7 @@ public:
   UlDciListElement_s GetDci (void);
 
 private:
-  UlDciListElement_s m_dci;
+  UlDciListElement_s m_dci; ///< DCI
 };
 
 
@@ -168,7 +168,7 @@ public:
   CqiListElement_s GetDlCqi (void);
 
 private:
-  CqiListElement_s m_dlCqi;
+  CqiListElement_s m_dlCqi; ///< DL CQI
 };
 
 
@@ -198,7 +198,7 @@ public:
   MacCeListElement_s GetBsr (void);
 
 private:
-  MacCeListElement_s m_bsr;
+  MacCeListElement_s m_bsr; ///< BSR
 
 };
 
@@ -229,7 +229,7 @@ public:
   DlInfoListElement_s GetDlHarqFeedback (void);
 
 private:
-  DlInfoListElement_s m_dlInfoListElement;
+  DlInfoListElement_s m_dlInfoListElement; ///< DL info list element
 
 };
 
@@ -260,7 +260,7 @@ public:
   uint32_t GetRapId () const;
 
 private:
-  uint32_t m_rapId;
+  uint32_t m_rapId; ///< the RAPID
 
 };
 
@@ -295,8 +295,8 @@ public:
    */
   struct Rar
   {
-    uint8_t rapId;
-    BuildRarListElement_s rarPayload;
+    uint8_t rapId; ///< RAPID
+    BuildRarListElement_s rarPayload; ///< RAR payload
   };
 
   /** 
@@ -319,8 +319,8 @@ public:
   std::list<Rar>::const_iterator RarListEnd () const;
 
 private:
-  std::list<Rar> m_rarList;
-  uint16_t m_raRnti;
+  std::list<Rar> m_rarList; ///< RAR list
+  uint16_t m_raRnti; ///< RA RNTI
 
 };
 
@@ -359,7 +359,7 @@ public:
   LteRrcSap::MasterInformationBlock GetMib () const;
 
 private:
-  LteRrcSap::MasterInformationBlock m_mib;
+  LteRrcSap::MasterInformationBlock m_mib; ///< MIB
 
 }; // end of class MibLteControlMessage
 
@@ -398,7 +398,7 @@ public:
   LteRrcSap::SystemInformationBlockType1 GetSib1 () const;
 
 private:
-  LteRrcSap::SystemInformationBlockType1 m_sib1;
+  LteRrcSap::SystemInformationBlockType1 m_sib1; ///< SIB1
 
 }; // end of class Sib1LteControlMessage
 

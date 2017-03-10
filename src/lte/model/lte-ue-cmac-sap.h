@@ -42,13 +42,19 @@ class LteUeCmacSapProvider
 public:
   virtual ~LteUeCmacSapProvider ();
 
+  /// RachConfig structure
   struct RachConfig
   {
-    uint8_t numberOfRaPreambles;
-    uint8_t preambleTransMax;
-    uint8_t raResponseWindowSize;
+    uint8_t numberOfRaPreambles; ///< nuber of RA preambles
+    uint8_t preambleTransMax; ///< preamble transmit maximum
+    uint8_t raResponseWindowSize; ///< RA response window size
   };
   
+  /** 
+   * Configure RACH function 
+   *
+   * \param rc the RACH config
+   */
   virtual void ConfigureRach (RachConfig rc) = 0;
 
   /** 
@@ -69,12 +75,13 @@ public:
   virtual void StartNonContentionBasedRandomAccessProcedure (uint16_t rnti, uint8_t rapId, uint8_t prachMask) = 0;
 
 
+  /// LogicalChannelConfig structure
   struct LogicalChannelConfig
   {
-    uint8_t priority;
-    uint16_t prioritizedBitRateKbps;
-    uint16_t bucketSizeDurationMs;
-    uint8_t logicalChannelGroup;
+    uint8_t priority; ///< priority
+    uint16_t prioritizedBitRateKbps; ///< prioritize bit rate Kbps
+    uint16_t bucketSizeDurationMs; ///< bucket size duration ms
+    uint8_t logicalChannelGroup; ///< logical channel group
   };
   
   /** 

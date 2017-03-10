@@ -58,6 +58,10 @@ class LteUeNetDevice : public LteNetDevice
 {
 
 public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
 
   LteUeNetDevice (void);
@@ -68,17 +72,40 @@ public:
   // inherited from NetDevice
   virtual bool Send (Ptr<Packet> packet, const Address& dest, uint16_t protocolNumber);
 
-
+  /**
+   * \brief Get the MAC.
+   * \return the LTE UE MAC
+   */
   Ptr<LteUeMac> GetMac (void) const;
 
+  /**
+   * \brief Get the RRC.
+   * \return the LTE UE RRC
+   */
   Ptr<LteUeRrc> GetRrc () const;
 
+  /**
+   * \brief Get the Phy.
+   * \return the LTE UE Phy
+   */
   Ptr<LteUePhy> GetPhy (void) const;
 
+  /**
+   * \brief Get the NAS.
+   * \return the LTE UE NAS
+   */
   Ptr<EpcUeNas> GetNas (void) const;
   
+  /**
+   * \brief Get the componentn carrier manager.
+   * \return the LTE UE component carrier manager
+   */
   Ptr<LteUeComponentCarrierManager> GetComponentCarrierManager (void) const;
 
+  /**
+   * \brief Get the IMSI.
+   * \return the IMSI
+   */
   uint64_t GetImsi () const;
 
   /**
@@ -134,6 +161,10 @@ public:
    */
   void SetCcMap (std::map< uint8_t, Ptr<ComponentCarrierUe> > ccm);
 
+  /**
+   * \brief Get the ComponentCarrier Map for the UE
+   * \returns the map of ComponentCarrierUe
+   */
   std::map< uint8_t, Ptr<ComponentCarrierUe> >  GetCcMap (void);
 
 
@@ -144,7 +175,7 @@ protected:
 
 
 private:
-  bool m_isConstructed;
+  bool m_isConstructed; ///< is constructed?
 
   /**
    * \brief Propagate attributes and configuration to sub-modules.
@@ -157,21 +188,21 @@ private:
    */
   void UpdateConfig ();
 
-  Ptr<LteEnbNetDevice> m_targetEnb;
+  Ptr<LteEnbNetDevice> m_targetEnb; ///< target ENB
 
-  Ptr<LteUeMac> m_mac;
-  Ptr<LteUePhy> m_phy;
-  Ptr<LteUeRrc> m_rrc;
-  Ptr<EpcUeNas> m_nas;
-  Ptr<LteUeComponentCarrierManager> m_componentCarrierManager;
+  Ptr<LteUeMac> m_mac; ///< the MAC
+  Ptr<LteUePhy> m_phy; ///< the Phy
+  Ptr<LteUeRrc> m_rrc; ///< the RRC
+  Ptr<EpcUeNas> m_nas; ///< the NAS
+  Ptr<LteUeComponentCarrierManager> m_componentCarrierManager; ///< the component carrier manager
 
-  uint64_t m_imsi;
+  uint64_t m_imsi; ///< the IMSI
 
   uint32_t m_dlEarfcn; /**< downlink carrier frequency */
 
-  uint32_t m_csgId;
+  uint32_t m_csgId; ///< the CSG ID
 
-  std::map < uint8_t, Ptr<ComponentCarrierUe> > m_ccMap;
+  std::map < uint8_t, Ptr<ComponentCarrierUe> > m_ccMap; ///< CC map
 
 }; // end of class LteUeNetDevice
 

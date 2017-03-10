@@ -41,6 +41,10 @@ class LtePdcp : public Object // SimpleRefCount<LtePdcp>
 public:
   LtePdcp ();
   virtual ~LtePdcp ();
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
   virtual void DoDispose ();
 
@@ -86,11 +90,11 @@ public:
    */
   LteRlcSapUser* GetLteRlcSapUser ();
 
+  /// maximum PDCP SN
   static const uint16_t MAX_PDCP_SN = 4096;
 
   /**
    * Status variables of the PDCP
-   * 
    */
   struct Status
   {
@@ -136,20 +140,28 @@ public:
      const uint32_t size, const uint64_t delay);
 
 protected:
-  // Interface provided to upper RRC entity
+  /**
+   * Interface provided to upper RRC entity
+   *
+   * \param p packet
+   */
   virtual void DoTransmitPdcpSdu (Ptr<Packet> p);
 
-  LtePdcpSapUser* m_pdcpSapUser;
-  LtePdcpSapProvider* m_pdcpSapProvider;
+  LtePdcpSapUser* m_pdcpSapUser; ///< PDCP SAP user
+  LtePdcpSapProvider* m_pdcpSapProvider; ///< PDCP SAP provider
 
-  // Interface provided to lower RLC entity
+  /**
+   * Interface provided to lower RLC entity
+   *
+   * \param p packet
+   */
   virtual void DoReceivePdu (Ptr<Packet> p);
 
-  LteRlcSapUser* m_rlcSapUser;
-  LteRlcSapProvider* m_rlcSapProvider;
+  LteRlcSapUser* m_rlcSapUser; ///< RLC SAP user 
+  LteRlcSapProvider* m_rlcSapProvider; ///< RLC SAP provider
 
-  uint16_t m_rnti;
-  uint8_t m_lcid;
+  uint16_t m_rnti; ///< RNTI
+  uint8_t m_lcid; ///< LCID
 
   /**
    * Used to inform of a PDU delivery to the RLC SAP provider.
@@ -167,6 +179,9 @@ private:
    * State variables. See section 7.1 in TS 36.323
    */
   uint16_t m_txSequenceNumber;
+  /**
+   * State variables. See section 7.1 in TS 36.323
+   */
   uint16_t m_rxSequenceNumber;
 
   /**

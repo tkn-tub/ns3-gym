@@ -35,6 +35,7 @@ namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("FdBetFfMacScheduler");
 
+/// FdBetType0AllocationRbg array
 static const int FdBetType0AllocationRbg[4] = {
   10,       // RGB size 1
   26,       // RGB size 2

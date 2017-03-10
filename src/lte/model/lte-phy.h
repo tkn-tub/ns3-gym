@@ -67,6 +67,10 @@ public:
 
   virtual ~LtePhy ();
 
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
 
   /**
@@ -209,8 +213,18 @@ public:
   */
   virtual void ReportRsReceivedPower (const SpectrumValue& power) = 0;
 
+  /**
+  * Set the component carrier ID 
+  *
+  * \param index the component carrier ID index
+  */
   void SetComponentCarrierId (uint8_t index);
 
+  /**
+  * Get the component carrier ID 
+  *
+  * \returns the component carrier ID index
+  */
   uint8_t GetComponentCarrierId ();
 
 protected:

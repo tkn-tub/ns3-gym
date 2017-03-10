@@ -48,6 +48,10 @@ class LteFfrAlgorithm;
 class ComponentCarrierEnb : public ComponentCarrier
 {
 public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
 
   ComponentCarrierEnb ();
@@ -103,10 +107,10 @@ protected:
 
 private:
 
-  Ptr<LteEnbPhy> m_phy;
-  Ptr<LteEnbMac> m_mac;
-  Ptr<FfMacScheduler> m_scheduler;
-  Ptr<LteFfrAlgorithm> m_ffrAlgorithm;
+  Ptr<LteEnbPhy> m_phy; ///< the Phy instance of this eNodeB component carrier
+  Ptr<LteEnbMac> m_mac; ///< the MAC instance of this eNodeB component carrier
+  Ptr<FfMacScheduler> m_scheduler; ///< the scheduler instance of this eNodeB component carrier
+  Ptr<LteFfrAlgorithm> m_ffrAlgorithm; ///< the FFR algorithm instance of this eNodeB component carrier
  
 
 };

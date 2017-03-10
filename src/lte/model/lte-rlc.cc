@@ -33,11 +33,15 @@ namespace ns3 {
 NS_LOG_COMPONENT_DEFINE ("LteRlc");
 
 
-///////////////////////////////////////
-
+/// LteRlcSpecificLteMacSapUser class
 class LteRlcSpecificLteMacSapUser : public LteMacSapUser
 {
 public:
+  /**
+   * Constructor
+   *
+   * \param rlc the RLC
+   */
   LteRlcSpecificLteMacSapUser (LteRlc* rlc);
 
   // Interface implemented from LteMacSapUser
@@ -47,7 +51,7 @@ public:
 
 private:
   LteRlcSpecificLteMacSapUser ();
-  LteRlc* m_rlc;
+  LteRlc* m_rlc; ///< the RLC
 };
 
 LteRlcSpecificLteMacSapUser::LteRlcSpecificLteMacSapUser (LteRlc* rlc)

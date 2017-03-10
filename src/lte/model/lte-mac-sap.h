@@ -55,14 +55,14 @@ public:
   /**
    * send an RLC PDU to the MAC for transmission. This method is to be
    * called as a response to LteMacSapUser::NotifyTxOpportunity
+   *
+   * \param params TransmitPduParameters
    */
   virtual void TransmitPdu (TransmitPduParameters params) = 0;
 
 
   /**
    * Parameters for LteMacSapProvider::ReportBufferStatus
-   *
-   * \param params
    */
   struct ReportBufferStatusParameters
   {
@@ -78,7 +78,7 @@ public:
   /**
    * Report the RLC buffer status to the MAC
    *
-   * \param params
+   * \param params ReportBufferStatusParameters
    */
   virtual void ReportBufferStatus (ReportBufferStatusParameters params) = 0;
 
@@ -102,6 +102,10 @@ public:
    *
    * \param bytes the number of bytes to transmit
    * \param layer the layer of transmission (MIMO)
+   * \param harqId the HARQ ID
+   * \param componentCarrierId component carrier ID
+   * \param rnti the RNTI
+   * \param lcid the LCID
    */
   virtual void NotifyTxOpportunity (uint32_t bytes, uint8_t layer, uint8_t harqId, uint8_t componentCarrierId, uint16_t rnti, uint8_t lcid) = 0;
 
@@ -117,18 +121,24 @@ public:
   /**
    * Called by the MAC to notify the RLC of the reception of a new PDU
    *
-   * \param p
+   * \param p the packet
+   * \param rnti the RNTI
+   * \param lcid the LCID
    */
   virtual void ReceivePdu (Ptr<Packet> p, uint16_t rnti, uint8_t lcid) = 0;
 
 };
 
-///////////////////////////////////////
-
+/// EnbMacMemberLteMacSapProvider class
 template <class C>
 class EnbMacMemberLteMacSapProvider : public LteMacSapProvider
 {
 public:
+  /**
+   * Constructor
+   *
+   * \param mac the MAC class
+   */
   EnbMacMemberLteMacSapProvider (C* mac);
 
   // inherited from LteMacSapProvider
@@ -136,7 +146,7 @@ public:
   virtual void ReportBufferStatus (ReportBufferStatusParameters params);
 
 private:
-  C* m_mac;
+  C* m_mac; ///< the MAC class
 };
 
 
