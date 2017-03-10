@@ -18,6 +18,12 @@ This release is not yet available.
 
 Supported platforms
 -------------------
+This release is intended to work on systems with the following minimal
+requirements:
+- g++-4.9 or later (Note:  this is an upgraded requirement from ns-3.26)
+- Apple LLVM version 7.0.2 or later 
+- clang-3.3 or later
+- Python 2.7 (Python 2 series) or Python 3.4 (Python 3 series) or later
 
 New user-visible features
 -------------------------
