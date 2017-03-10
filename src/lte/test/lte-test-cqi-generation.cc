@@ -110,7 +110,7 @@ LteCqiGenerationTestCase::LteCqiGenerationTestCase (std::string name, bool usePd
     m_dlMcs (dlMcs),
     m_ulMcs (ulMcs)
 {
-  m_usePdcchForCqiGeneration = usePdcchForCqiGeneration;
+  m_usePdschForCqiGeneration = usePdcchForCqiGeneration;
   NS_LOG_INFO ("Creating LteCqiGenerationTestCase");
 }
 

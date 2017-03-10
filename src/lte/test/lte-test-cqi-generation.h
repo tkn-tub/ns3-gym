@@ -85,7 +85,7 @@ public:
 private:
   virtual void DoRun (void);
 
-  bool m_usePdcchForCqiGeneration; ///< use PDCCH for CQI generation
+  bool m_usePdschForCqiGeneration; ///< use PDCCH for CQI generation
   uint16_t m_dlMcs; ///< the DL MCS
   uint16_t m_ulMcs; ///< the UL MCS
 
