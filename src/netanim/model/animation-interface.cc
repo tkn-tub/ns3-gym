@@ -44,6 +44,8 @@
 #include "ns3/wimax-mac-header.h"
 #include "ns3/wifi-net-device.h"
 #include "ns3/wifi-mac.h"
+#include "ns3/lr-wpan-mac-header.h"
+#include "ns3/lr-wpan-net-device.h"
 #include "ns3/constant-position-mobility-model.h"
 #include "ns3/lte-ue-phy.h"
 #include "ns3/lte-enb-phy.h"
@@ -454,6 +456,7 @@ AnimationInterface::MobilityAutoCheck ()
       PurgePendingPackets (AnimationInterface::WIMAX);
       PurgePendingPackets (AnimationInterface::LTE);
       PurgePendingPackets (AnimationInterface::CSMA);
+      PurgePendingPackets (AnimationInterface::LRWPAN);
       Simulator::Schedule (m_mobilityPollInterval, &AnimationInterface::MobilityAutoCheck, this);
     }
 }
@@ -691,6 +694,34 @@ AnimationInterface::WifiMacRxDropTrace (std::string context, Ptr<const Packet> p
 }
 
 void
+AnimationInterface::LrWpanMacTxTrace (std::string context, Ptr<const Packet> p)
+{
+  const Ptr <const Node> node = GetNodeFromContext (context);
+  ++m_nodeLrWpanMacTx[node->GetId ()];
+}
+
+void
+AnimationInterface::LrWpanMacTxDropTrace (std::string context, Ptr<const Packet> p)
+{
+  const Ptr <const Node> node = GetNodeFromContext (context);
+  ++m_nodeLrWpanMacTxDrop[node->GetId ()];
+}
+
+void
+AnimationInterface::LrWpanMacRxTrace (std::string context, Ptr<const Packet> p)
+{
+  const Ptr <const Node> node = GetNodeFromContext (context);
+  ++m_nodeLrWpanMacRx[node->GetId ()];
+}
+
+void
+AnimationInterface::LrWpanMacRxDropTrace (std::string context, Ptr<const Packet> p)
+{
+  const Ptr <const Node> node = GetNodeFromContext (context);
+  ++m_nodeLrWpanMacRxDrop[node->GetId ()];
+}
+
+void
 AnimationInterface::Ipv4TxTrace (std::string context, Ptr<const Packet> p, Ptr<Ipv4> ipv4, uint32_t interfaceIndex)
 {
   const Ptr <const Node> node = GetNodeFromContext (context);
@@ -878,6 +909,87 @@ AnimationInterface::WifiPhyRxBeginTrace (std::string context, Ptr<const Packet> 
 }
 
 void 
+AnimationInterface::LrWpanPhyTxBeginTrace (std::string context,
+                                           Ptr<const Packet> p)
+{
+  if (!m_started || !IsInTimeWindow () || !m_trackPackets)
+    return;
+
+  Ptr <NetDevice> ndev = GetNetDeviceFromContext (context);
+  NS_ASSERT (ndev);
+  Ptr<LrWpanNetDevice> netDevice = DynamicCast<LrWpanNetDevice> (ndev);
+
+  Ptr <Node> n = ndev->GetNode ();
+  NS_ASSERT (n);
+
+  UpdatePosition (n);
+
+  LrWpanMacHeader hdr;
+  if (!p->PeekHeader (hdr))
+  {
+    NS_LOG_WARN ("LrWpanMacHeader not present");
+    return;
+  }
+
+  std::ostringstream oss;
+  if (hdr.GetSrcAddrMode () == 2)
+    {
+      Mac16Address nodeAddr = netDevice->GetMac ()->GetShortAddress ();
+      oss << nodeAddr;
+    }
+  else if (hdr.GetSrcAddrMode () == 3)
+    {
+      Mac64Address nodeAddr = netDevice->GetMac ()->GetExtendedAddress ();
+      oss << nodeAddr;
+    }
+  else
+    {
+      NS_LOG_WARN ("LrWpanMacHeader without source address");
+      return;
+    }
+  m_macToNodeIdMap[oss.str ()] = n->GetId ();
+  NS_LOG_INFO ("Added Mac" << oss.str () << " node:" <<m_macToNodeIdMap[oss.str ()]);
+
+  ++gAnimUid;
+  NS_LOG_INFO ("LrWpan TxBeginTrace for packet:" << gAnimUid);
+  AddByteTag (gAnimUid, p);
+
+  AnimPacketInfo pktInfo (ndev, Simulator::Now ());
+  AddPendingPacket (AnimationInterface::LRWPAN, gAnimUid, pktInfo);
+
+  OutputWirelessPacketTxInfo (p, m_pendingLrWpanPackets[gAnimUid], gAnimUid);
+}
+
+void
+AnimationInterface::LrWpanPhyRxBeginTrace (std::string context,
+                                           Ptr<const Packet> p)
+{
+  if (!m_started || !IsInTimeWindow () || !m_trackPackets)
+    return;
+  Ptr <NetDevice> ndev = GetNetDeviceFromContext (context);
+  NS_ASSERT (ndev);
+  Ptr <Node> n = ndev->GetNode ();
+  NS_ASSERT (n);
+
+  AnimByteTag tag;
+  if (!p->FindFirstMatchingByteTag (tag))
+    {
+      return;
+    }
+
+  uint64_t animUid = GetAnimUidFromPacket (p);
+  NS_LOG_INFO ("LrWpan RxBeginTrace for packet:" << animUid);
+  if (!IsPacketPending (animUid, AnimationInterface::LRWPAN))
+    {
+      NS_LOG_WARN ("LrWpanPhyRxBeginTrace: unknown Uid - most probably it's an ACK.");
+    }
+
+  UpdatePosition (n);
+  m_pendingLrWpanPackets[animUid].ProcessRxBegin (ndev, Simulator::Now ().GetSeconds ());
+  OutputWirelessPacketRxInfo (p, m_pendingLrWpanPackets[animUid], animUid);
+}
+
+void
 AnimationInterface::WimaxTxTrace (std::string context, Ptr<const Packet> p, const Mac48Address & m)
 {
   NS_LOG_FUNCTION (this);
@@ -1172,6 +1284,11 @@ AnimationInterface::ProtocolTypeToPendingPackets (AnimationInterface::ProtocolTy
           pendingPackets = &m_pendingLtePackets;
           break;
         }
+      case AnimationInterface::LRWPAN:
+        {
+          pendingPackets = &m_pendingLrWpanPackets;
+          break;
+        }
     }
   return pendingPackets;
 
@@ -1206,6 +1323,11 @@ AnimationInterface::ProtocolTypeToString (AnimationInterface::ProtocolType proto
       case AnimationInterface::LTE:
         {
           result = "LTE";
+          break;
+        }
+      case AnimationInterface::LRWPAN:
+        {
+          result = "LRWPAN";
           break;
         }
     }
@@ -1494,6 +1616,20 @@ AnimationInterface::ConnectCallbacks ()
                    MakeCallback (&AnimationInterface::WifiPhyTxDropTrace, this));
   Config::Connect ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Phy/PhyRxDrop",
                    MakeCallback (&AnimationInterface::WifiPhyRxDropTrace, this));
+
+  // LrWpan
+  Config::Connect ("NodeList/*/DeviceList/*/$ns3::LrWpanNetDevice/Phy/PhyTxBegin",
+                   MakeCallback (&AnimationInterface::LrWpanPhyTxBeginTrace, this));
+  Config::Connect ("NodeList/*/DeviceList/*/$ns3::LrWpanNetDevice/Phy/PhyRxBegin",
+                   MakeCallback (&AnimationInterface::LrWpanPhyRxBeginTrace, this));
+  Config::Connect ("/NodeList/*/DeviceList/*/$ns3::LrWpanNetDevice/Mac/MacTx",
+                   MakeCallback (&AnimationInterface::LrWpanMacTxTrace, this));
+  Config::Connect ("/NodeList/*/DeviceList/*/$ns3::LrWpanNetDevice/Mac/MacTxDrop",
+                   MakeCallback (&AnimationInterface::LrWpanMacTxDropTrace, this));
+  Config::Connect ("/NodeList/*/DeviceList/*/$ns3::LrWpanNetDevice/Mac/MacRx",
+                   MakeCallback (&AnimationInterface::LrWpanMacRxTrace, this));
+  Config::Connect ("/NodeList/*/DeviceList/*/$ns3::LrWpanNetDevice/Mac/MacRxDrop",
+                   MakeCallback (&AnimationInterface::LrWpanMacRxDropTrace, this));
 }
 
 Vector 

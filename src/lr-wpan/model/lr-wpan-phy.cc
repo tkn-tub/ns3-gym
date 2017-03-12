@@ -546,6 +546,10 @@ LrWpanPhy::PdDataRequest (const uint32_t psduLength, Ptr<Packet> p)
           LrWpanLqiTag lqiTag;
           p->RemovePacketTag (lqiTag);
 
+          m_phyTxBeginTrace (p);
+          m_currentTxPacket.first = p;
+          m_currentTxPacket.second = false;
+
           Ptr<LrWpanSpectrumSignalParameters> txParams = Create<LrWpanSpectrumSignalParameters> ();
           txParams->duration = CalculateTxTime (p);
           txParams->txPhy = GetObject<SpectrumPhy> ();
@@ -557,9 +561,6 @@ LrWpanPhy::PdDataRequest (const uint32_t psduLength, Ptr<Packet> p)
           m_channel->StartTx (txParams);
           m_pdDataRequest = Simulator::Schedule (txParams->duration, &LrWpanPhy::EndTx, this);
           ChangeTrxState (IEEE_802_15_4_PHY_BUSY_TX);
-          m_phyTxBeginTrace (p);
-          m_currentTxPacket.first = p;
-          m_currentTxPacket.second = false;
           return;
         }
       else if ((m_trxState == IEEE_802_15_4_PHY_RX_ON)
