@@ -913,8 +913,8 @@ void
 AnimationInterface::LrWpanPhyTxBeginTrace (std::string context,
                                            Ptr<const Packet> p)
 {
-  if (!m_started || !IsInTimeWindow () || !m_trackPackets)
-    return;
+  NS_LOG_FUNCTION (this);
+  CHECK_STARTED_INTIMEWINDOW_TRACKPACKETS;
 
   Ptr <NetDevice> ndev = GetNetDeviceFromContext (context);
   NS_ASSERT (ndev);
@@ -965,8 +965,8 @@ void
 AnimationInterface::LrWpanPhyRxBeginTrace (std::string context,
                                            Ptr<const Packet> p)
 {
-  if (!m_started || !IsInTimeWindow () || !m_trackPackets)
-    return;
+  NS_LOG_FUNCTION (this);
+  CHECK_STARTED_INTIMEWINDOW_TRACKPACKETS;
   Ptr <NetDevice> ndev = GetNetDeviceFromContext (context);
   NS_ASSERT (ndev);
   Ptr <Node> n = ndev->GetNode ();
