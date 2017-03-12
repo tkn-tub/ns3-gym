@@ -49,6 +49,7 @@
 #include "ns3/lte-enb-phy.h"
 #include "ns3/uan-net-device.h"
 #include "ns3/uan-mac.h"
+#include "ns3/double.h"
 #include "ns3/ipv4.h"
 #include "ns3/ipv6.h"
 #include "ns3/ipv4-routing-protocol.h"
@@ -1506,7 +1507,13 @@ AnimationInterface::UpdatePosition (Ptr <Node> n)
   else
    {
      NS_LOG_UNCOND ( "AnimationInterface WARNING:Node:" << n->GetId () << " Does not have a mobility model. Use SetConstantPosition if it is stationary");
-     m_nodeLocation[n->GetId ()] = Vector (0, 0, 0);
+     Ptr<UniformRandomVariable> x = CreateObject<UniformRandomVariable> ();
+     x->SetAttribute ("Min", DoubleValue (0));
+     x->SetAttribute ("Max", DoubleValue (100));
+     Ptr<UniformRandomVariable> y = CreateObject<UniformRandomVariable> ();
+     y->SetAttribute ("Min", DoubleValue (0));
+     y->SetAttribute ("Max", DoubleValue (100));
+     m_nodeLocation[n->GetId ()] = Vector (int (x->GetValue ()), int (y->GetValue ()), 0);
    }
   return m_nodeLocation[n->GetId ()];
 }
@@ -1570,22 +1577,35 @@ AnimationInterface::GetIpv4Address (Ptr <NetDevice> nd)
 std::string
 AnimationInterface::GetIpv6Address(Ptr <NetDevice> nd)
 {
-	Ptr<Ipv6> ipv6 = NodeList::GetNode(nd->GetNode()->GetId())->GetObject <Ipv6>();
-	if (!ipv6)
-	{
-		NS_LOG_WARN("Node: " << nd->GetNode()->GetId() << " No ipv4 object found");
-		return "::";
-	}
-	int32_t ifIndex = ipv6->GetInterfaceForDevice(nd);
-	if (ifIndex == -1)
-	{
-		NS_LOG_WARN("Node :" << nd->GetNode()->GetId() << " Could not find index of NetDevice");
-		return "::";
-	}
-	Ipv6InterfaceAddress addr = ipv6->GetAddress(ifIndex, 0);
-	std::ostringstream oss;
-	oss << addr.GetAddress();
-	return oss.str();
+  Ptr<Ipv6> ipv6 = NodeList::GetNode(nd->GetNode()->GetId())->GetObject <Ipv6>();
+  if (!ipv6)
+    {
+      NS_LOG_WARN("Node: " << nd->GetNode()->GetId() << " No ipv4 object found");
+      return "::";
+    }
+  int32_t ifIndex = ipv6->GetInterfaceForDevice(nd);
+  if (ifIndex == -1)
+    {
+      NS_LOG_WARN("Node :" << nd->GetNode()->GetId() << " Could not find index of NetDevice");
+      return "::";
+    }
+  bool nonLinkLocalFound = false;
+  uint32_t nAddresses = ipv6->GetNAddresses(ifIndex);
+  Ipv6InterfaceAddress addr;
+  for (uint32_t addressIndex = 0; addressIndex < nAddresses; ++addressIndex)
+    {
+      addr = ipv6->GetAddress(ifIndex, addressIndex);
+      if (!addr.GetAddress().IsLinkLocal())
+        {
+          nonLinkLocalFound = true;
+	  break;
+        }
+    }
+  if (!nonLinkLocalFound)
+    addr = ipv6->GetAddress(ifIndex, 0);
+  std::ostringstream oss;
+  oss << addr.GetAddress();
+  return oss.str();
 }
 
 
@@ -1721,11 +1741,13 @@ AnimationInterface::WriteLinkProperties ()
               AddToIpv6AddressNodeIdTable(ipv6Addresses, n->GetId ());
 	      if (!ipv4Addresses.empty ())
                 {
-	          WriteNonP2pLinkProperties(n->GetId (), GetIpv4Address (dev) + "~" + GetMacAddress (dev), channelType);
+                  if (ipv4Addresses.size () > 1)
+	            WriteNonP2pLinkProperties(n->GetId (), GetIpv4Address (dev) + "~" + GetMacAddress (dev), channelType);
 		}
 	      else if (!ipv6Addresses.empty ())
 	        {
-                  WriteNonP2pLinkProperties(n->GetId (), GetIpv6Address (dev) + "~" + GetMacAddress (dev), channelType);
+                  if (ipv6Addresses.size () > 1)
+                    WriteNonP2pLinkProperties(n->GetId (), GetIpv6Address (dev) + "~" + GetMacAddress (dev), channelType);
 		}
               continue;
             }
