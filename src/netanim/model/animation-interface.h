@@ -498,7 +498,8 @@ private:
       WIFI,
       WIMAX,
       CSMA,
-      LRWPAN
+      LRWPAN,
+      WAVE
     } ProtocolType;
 
   typedef struct
@@ -595,6 +596,8 @@ private:
   AnimUidPacketInfoMap m_pendingLtePackets;
   AnimUidPacketInfoMap m_pendingCsmaPackets;
   AnimUidPacketInfoMap m_pendingUanPackets;
+  AnimUidPacketInfoMap m_pendingWavePackets;
+
   std::map <uint32_t, Vector> m_nodeLocation;
   std::map <std::string, uint32_t> m_macToNodeIdMap;
   std::map <std::string, uint32_t> m_ipv4ToNodeIdMap;
@@ -724,6 +727,10 @@ private:
   void WifiPhyTxBeginTrace (std::string context,
                             Ptr<const Packet> p);
   void WifiPhyRxBeginTrace (std::string context,
+                            Ptr<const Packet> p);
+  void WavePhyTxBeginTrace (std::string context, 
+                            Ptr<const Packet> p);
+  void WavePhyRxBeginTrace (std::string context, 
                             Ptr<const Packet> p);
   void LrWpanPhyTxBeginTrace (std::string context,
                               Ptr<const Packet> p);
