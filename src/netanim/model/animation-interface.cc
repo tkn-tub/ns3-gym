@@ -17,6 +17,7 @@
  * Modified by: John Abraham <john.abraham@gatech.edu>
  * Contributions: Eugene Kalishenko <ydginster@gmail.com> (Open Source and Linux Laboratory http://dev.osll.ru/)
  *                Tommaso Pecorella <tommaso.pecorella@unifi.it>
+ *                Pavel Vasilyev <pavel.vasilyev@sredasolutions.com>
  */
 
 // Interface between ns-3 and the network animator
