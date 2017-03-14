@@ -127,9 +127,10 @@ You could simply add one, changing the code.  Here is the original::
 To log the SYN+ACK case, you can add a new ``NS_LOG_LOGIC`` in the
 ``if`` statement body::
 
-  /** Process the newly received ACK */
+  /* Received a packet upon ESTABLISHED state. This function is mimicking the
+      role of tcp_rcv_established() in tcp_input.c in Linux kernel. */
   void
-  TcpSocketBase::ReceivedAck (Ptr<Packet> packet, const TcpHeader& tcpHeader)
+  TcpSocketBase::ProcessEstablished (Ptr<Packet> packet, const TcpHeader& tcpHeader)
   {
     NS_LOG_FUNCTION (this << tcpHeader);
     ...
