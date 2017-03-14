@@ -107,22 +107,24 @@ other people as a patch to the existing core.
 Let's pick a random example.  If you wanted to add more logging to the
 |ns3| TCP socket (``tcp-socket-base.cc``) you could just add a new
 message down in the implementation.  Notice that in
-``TcpSocketBase::ReceivedAck()`` there is no log message for the no ACK
-case.  You could simply add one, changing the code.  Here is the original::
+``TcpSocketBase::ProcessEstablished ()`` there is no log message for the 
+reception of a SYN+ACK in ESTABLISHED state.
+You could simply add one, changing the code.  Here is the original::
 
-  /** Process the newly received ACK */
+  /* Received a packet upon ESTABLISHED state. This function is mimicking the
+      role of tcp_rcv_established() in tcp_input.c in Linux kernel. */
   void
-  TcpSocketBase::ReceivedAck (Ptr<Packet> packet, const TcpHeader& tcpHeader)
+  TcpSocketBase::ProcessEstablished (Ptr<Packet> packet, const TcpHeader& tcpHeader)
   {
     NS_LOG_FUNCTION (this << tcpHeader);
+    ...
 
-    // Received ACK. Compare the ACK number against highest unacked seqno
-    if (0 == (tcpHeader.GetFlags () & TcpHeader::ACK))
-      { // Ignore if no ACK flag
+    else if (tcpflags == (TcpHeader::SYN | TcpHeader::ACK))
+      { // No action for received SYN+ACK, it is probably a duplicated packet
       }
     ...
 
-To log the no ACK case, you can add a new ``NS_LOG_LOGIC`` in the
+To log the SYN+ACK case, you can add a new ``NS_LOG_LOGIC`` in the
 ``if`` statement body::
 
   /** Process the newly received ACK */
@@ -130,11 +132,10 @@ To log the no ACK case, you can add a new ``NS_LOG_LOGIC`` in the
   TcpSocketBase::ReceivedAck (Ptr<Packet> packet, const TcpHeader& tcpHeader)
   {
     NS_LOG_FUNCTION (this << tcpHeader);
-
-    // Received ACK. Compare the ACK number against highest unacked seqno
-    if (0 == (tcpHeader.GetFlags () & TcpHeader::ACK))
-      { // Ignore if no ACK flag
-        NS_LOG_LOGIC ("TcpSocketBase " << this << " no ACK flag");
+    ...
+    else if (tcpflags == (TcpHeader::SYN | TcpHeader::ACK))
+      { // No action for received SYN+ACK, it is probably a duplicated packet
+        NS_LOG_LOGIC ("TcpSocketBase " << this << " ignoring SYN+ACK");
       }
     ...
 
@@ -1247,7 +1248,7 @@ Sources" list to see what we have to work with.  Recall that this is
 found in the |ns3| API Documentation.  If you scroll through the list,
 you will eventually find:
 
-  **ns3::TcpNewReno**
+  **ns3::TcpSocketBase**
 
   * **CongestionWindow**: The TCP connection's congestion window
   * **SlowStartThreshold**: TCP slow start threshold (bytes)
@@ -1255,7 +1256,7 @@ you will eventually find:
 It turns out that the |ns3| TCP implementation lives (mostly) in the
 file ``src/internet/model/tcp-socket-base.cc`` while congestion
 control variants are in files such as
-``src/internet/model/tcp-newreno.cc``.  If you don't know this *a
+``src/internet/model/tcp-bic.cc``.  If you don't know this *a
 priori*, you can use the recursive ``grep`` trick:
 
 .. sourcecode:: bash
@@ -1265,7 +1266,7 @@ priori*, you can use the recursive ``grep`` trick:
 You will find page after page of instances of tcp pointing you to that
 file.
 
-Bringing up the class documentation for ``TcpNewReno`` and skipping to
+Bringing up the class documentation for ``TcpSocketBase`` and skipping to
 the list of TraceSources you will find
 
   **TraceSources**
@@ -1280,7 +1281,7 @@ you now know to expect::
     typedef void(* ns3::TracedValueCallback::Int32)(int32_t oldValue, int32_t newValue)
 
 You should now understand this code completely.  If we have a pointer
-to the ``TcpNewReno``, we can ``TraceConnect`` to the
+to the ``TcpSocketBase`` object, we can ``TraceConnect`` to the
 "CongestionWindow" trace source if we provide an appropriate callback
 target.  This is the same kind of trace source that we saw in the
 simple example at the start of this section, except that we are
@@ -1316,7 +1317,7 @@ and search for "CongestionWindow".  You will find,
     MakeCallback (&Ns3TcpCwndTestCase1::CwndChange, this));
 
 This should look very familiar to you.  We mentioned above that if we
-had a pointer to the ``TcpNewReno``, we could ``TraceConnect`` to the
+had a pointer to the ``TcpSocketBase``, we could ``TraceConnect`` to the
 "CongestionWindow" trace source.  That's exactly what we have here; so
 it turns out that this line of code does exactly what we want.  Let's
 go ahead and extract the code we need from this function
@@ -1692,7 +1693,7 @@ member variables.  The important one from the perspective of tracing
 is the ``Ptr<Socket> socket`` which we needed to provide to the
 application during configuration time.  Recall that we are going to
 create the ``Socket`` as a ``TcpSocket`` (which is implemented by
-``TcpNewReno``) and hook its "CongestionWindow" trace source before
+``TcpSocketBase``) and hook its "CongestionWindow" trace source before
 passing it to the ``Setup`` method.
 
 ::
