@@ -162,8 +162,6 @@ public:
    *
    * \param ipv4 pointer to Ipv4 object
    * \param interface interface index of the Ipv4Interface to add to the container
-   *
-   * @see Ipv4InterfaceContainer
    */
   void Add (Ptr<Ipv4> ipv4, uint32_t interface);
 
@@ -172,8 +170,6 @@ public:
    * entry std::pair.
    *
    * \param ipInterfacePair the pair of a pointer to Ipv4 object and interface index of the Ipv4Interface to add to the container
-   *
-   * @see Ipv4InterfaceContainer
    */
   void Add (std::pair<Ptr<Ipv4>, uint32_t> ipInterfacePair);
 
@@ -184,8 +180,6 @@ public:
    * \param ipv4Name std:string referring to the saved name of an Ipv4 Object that
    *        has been previously named using the Object Name Service.
    * \param interface interface index of the Ipv4Interface to add to the container
-   *
-   * @see Ipv4InterfaceContainer
    */
   void Add (std::string ipv4Name, uint32_t interface);
 
@@ -193,10 +187,22 @@ public:
    * Get the std::pair of an Ptr<Ipv4> and interface stored at the location 
    * specified by the index.
    *
-   * \param i the index of the entry to retrieve.
-   * \return the Ipv4InterfaceContainer
+   * \param i the index of the container entry to retrieve.
+   * \return the std::pair of a Ptr<Ipv4> and an interface index
    *
-   * @see Ipv4InterfaceContainer
+   * \note The returned Ptr<Ipv4> cannot be used directly to fetch the
+   *       Ipv4Interface using the returned index (the GetInterface () method
+   *       is provided in class Ipv4L3Protocol, and not class Ipv4). An
+   *       example usage is provided below.
+   *
+   * \code
+   *   Ipv4InterfaceContainer c;
+   *   ...
+   *   std::pair<Ptr<Ipv4>, uint32_t> returnValue = c.Get (0);
+   *   Ptr<Ipv4> ipv4 = returnValue.first;
+   *   uint32_t index = returnValue.second;
+   *   Ptr<Ipv4Interface> iface =  ipv4->GetObject<Ipv4L3Protocol> ()->GetInterface (index);
+   * \endcode
    */
   std::pair<Ptr<Ipv4>, uint32_t> Get (uint32_t i) const;
 
