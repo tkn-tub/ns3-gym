@@ -242,8 +242,14 @@ public:
     Ipv4Address GetIpv4Address (void) const;
     /**
      * \param macAddress The MacAddress for this entry
+     * \deprecated This (misspelled) method will go away in future versions of ns-3, in favor of the correctly spelled version.
      */
+    NS_DEPRECATED
     void SetMacAddresss (Address macAddress);
+    /**
+     * \param macAddress The MacAddress for this entry
+     */
+    void SetMacAddress (Address macAddress);
     /**
      * \param destination The Ipv4Address for this entry
      */

@@ -99,7 +99,8 @@ Bugs fixed
 - Bug 2655 - A-MPDU simulation using TCP sometimes fails with message "Packet has no Traffic ID"
 - Bug 2660 - TrafficControlHelper::Default should not configure internal queue sizes
 - Bug 2665 - Ipv4RawSocket can not send packets to broadcast or multicast
- 
+- Bug 2671 - ArpCache::Entry::SetMacAddress is misspelled
+
 Known issues
 ------------
 In general, known issues are tracked on the project tracker available
