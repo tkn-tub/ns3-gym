@@ -1251,6 +1251,7 @@ StaticInformation::DoGather (TypeId tid)
 /// Register aggregation relationships that are not automatically
 /// detected by this introspection program.  Statements added here
 /// result in more configuration paths being added to the doxygen.
+/// \return instance of StaticInformation with the registered information
 StaticInformation GetTypicalAggregations ()
 {
   NS_LOG_FUNCTION_NOARGS ();
