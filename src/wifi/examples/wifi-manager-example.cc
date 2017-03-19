@@ -237,7 +237,7 @@ int main (int argc, char *argv[])
       dataName += oss.str ();
       plotName += "-client=";
       dataName += "-client=";
-      oss.flush ();
+      oss.str("");
       if (clientShortGuardInterval)
         {
           gi = "SGI";
