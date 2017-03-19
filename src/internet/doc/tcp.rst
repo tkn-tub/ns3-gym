@@ -728,8 +728,7 @@ In comparison to RFC 6817, the scope and limitations of the current LEDBAT
 implementation are:
 
 * It assumes that the clocks on the sender side and receiver side are synchronised
-* In line with Linux implementation, the one-way delay is calculated at the sender
-side by using the timestamps option in TCP header
+* In line with Linux implementation, the one-way delay is calculated at the sender side by using the timestamps option in TCP header
 * Only the MIN function is used for noise filtering 
 
 More information about LEDBAT is available in RFC 6817: https://tools.ietf.org/html/rfc6817
