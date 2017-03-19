@@ -959,14 +959,14 @@ wireless medium and can communication and interfere:
   phy.SetChannel (channel.Create ());
 
 Once the PHY helper is configured, we can focus on the MAC layer. Here we choose to
-work with non-Qos MACs so we use a NqosWifiMacHelper object to set MAC parameters. 
+work with non-Qos MACs. WifiMacHelper object is used to set MAC parameters. 
 
 ::
 
-  WifiHelper wifi = WifiHelper::Default ();
+  WifiHelper wifi;
   wifi.SetRemoteStationManager ("ns3::AarfWifiManager");
 
-  NqosWifiMacHelper mac = NqosWifiMacHelper::Default ();
+  WifiMacHelper mac;
 
 The ``SetRemoteStationManager`` method tells the helper the type of 
 rate control algorithm to use.  Here, it is asking the helper to use the AARF
@@ -986,9 +986,8 @@ This code first creates an 802.11 service set identifier (SSID) object
 that will be used to set the value of the "Ssid" ``Attribute`` of
 the MAC layer implementation.  The particular kind of MAC layer that
 will be created by the helper is specified by ``Attribute`` as
-being of the "ns3::StaWifiMac" type.  The use of
-``NqosWifiMacHelper`` will ensure that the "QosSupported"
-``Attribute`` for created MAC objects is set false. The combination
+being of the "ns3::StaWifiMac" type.  "QosSupported" ``Attribute`` is
+set to false by default for ``WifiMacHelper`` objects. The combination
 of these two configurations means that the MAC instance next created
 will be a non-QoS non-AP station (STA) in an infrastructure BSS (i.e.,
 a BSS with an AP).  Finally, the "ActiveProbing" ``Attribute`` is
@@ -1006,7 +1005,7 @@ create the wifi devices of these stations:
 
 We have configured Wifi for all of our STA nodes, and now we need to 
 configure the AP (access point) node.  We begin this process by changing
-the default ``Attributes`` of the ``NqosWifiMacHelper`` to reflect the 
+the default ``Attributes`` of the ``WifiMacHelper`` to reflect the 
 requirements of the AP.
 
 ::
@@ -1014,10 +1013,10 @@ requirements of the AP.
   mac.SetType ("ns3::ApWifiMac",
                "Ssid", SsidValue (ssid));
 
-In this case, the ``NqosWifiMacHelper`` is going to create MAC
+In this case, the ``WifiMacHelper`` is going to create MAC
 layers of the "ns3::ApWifiMac", the latter specifying that a MAC
-instance configured as an AP should be created, with the helper type
-implying that the "QosSupported" ``Attribute`` should be set to
+instance configured as an AP should be created. We do not change
+the default setting of "QosSupported" ``Attribute``, so it remains
 false - disabling 802.11e/WMM-style QoS support at created APs.  
 
 The next lines create the single AP which shares the same set of PHY-level
