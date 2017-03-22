@@ -116,8 +116,7 @@ CommandLine::Parse (int argc, char *argv[])
 
   m_name = SystemPath::Split (argv[0]).back ();
   
-  int iargc = argc;
-  for (iargc--; iargc > 0; iargc--)
+  for (int iargc = 1; iargc < argc; iargc++)
     {
       // remove "--" or "-" heading.
       std::string param = argv[iargc];
