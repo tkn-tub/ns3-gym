@@ -256,6 +256,37 @@ CommandLineStringTestCase::DoRun (void)
 }
 
 /*************************************************************************//**
+ * Test order of argument parsing
+ ****************************************************************************/
+class CommandLineOrderTestCase : public CommandLineTestCaseBase
+{
+public:
+  CommandLineOrderTestCase ();              /**< Constructor */
+  virtual ~CommandLineOrderTestCase () {}   /**< Destructor */
+
+private:
+  virtual void DoRun (void);                 /**< Run the test */
+
+};
+
+CommandLineOrderTestCase::CommandLineOrderTestCase ()
+  : CommandLineTestCaseBase ("order")
+{
+}
+
+void
+CommandLineOrderTestCase::DoRun (void)
+{
+  CommandLine cmd;
+  uint32_t myUint32 = 0;
+
+  cmd.AddValue ("my-uint32", "help", myUint32);
+
+  Parse (cmd, 2, "--my-uint32=1", "--my-uint32=2");
+
+  NS_TEST_ASSERT_MSG_EQ (myUint32, 2, "Command parser did not correctly set an unsigned integer value to 2");
+}
+/*************************************************************************//**
  * The Test Suite that glues all of the Test Cases together.
  ****************************************************************************/
 class CommandLineTestSuite : public TestSuite
@@ -271,6 +302,7 @@ CommandLineTestSuite::CommandLineTestSuite ()
   AddTestCase (new CommandLineIntTestCase, TestCase::QUICK);
   AddTestCase (new CommandLineUnsignedIntTestCase, TestCase::QUICK);
   AddTestCase (new CommandLineStringTestCase, TestCase::QUICK);
+  AddTestCase (new CommandLineOrderTestCase, TestCase::QUICK);
 }
 
 static CommandLineTestSuite CommandLineTestSuite; /**< Test instance */
