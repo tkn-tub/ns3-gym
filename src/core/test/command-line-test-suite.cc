@@ -302,7 +302,7 @@ private:
 };
 
 CommandLineInvalidTestCase::CommandLineInvalidTestCase ()
-  : CommandLineTestCaseBase ("order")
+  : CommandLineTestCaseBase ("invalid")
 {
 }
 
