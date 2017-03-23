@@ -286,6 +286,39 @@ CommandLineOrderTestCase::DoRun (void)
 
   NS_TEST_ASSERT_MSG_EQ (myUint32, 2, "Command parser did not correctly set an unsigned integer value to 2");
 }
+
+/*************************************************************************//**
+ * Test ignoring invalid arguments
+ ****************************************************************************/
+class CommandLineInvalidTestCase : public CommandLineTestCaseBase
+{
+public:
+  CommandLineInvalidTestCase ();              /**< Constructor */
+  virtual ~CommandLineInvalidTestCase () {}   /**< Destructor */
+
+private:
+  virtual void DoRun (void);                 /**< Run the test */
+
+};
+
+CommandLineInvalidTestCase::CommandLineInvalidTestCase ()
+  : CommandLineTestCaseBase ("order")
+{
+}
+
+void
+CommandLineInvalidTestCase::DoRun (void)
+{
+  CommandLine cmd;
+  uint32_t myUint32 = 0;
+
+  cmd.AddValue ("my-uint32", "help", myUint32);
+
+  Parse (cmd, 2, "quack", "--my-uint32=5");
+
+  NS_TEST_ASSERT_MSG_EQ (myUint32, 5, "Command parser did not correctly set an unsigned integer value to 5");
+}
+
 /*************************************************************************//**
  * The Test Suite that glues all of the Test Cases together.
  ****************************************************************************/
@@ -303,6 +336,7 @@ CommandLineTestSuite::CommandLineTestSuite ()
   AddTestCase (new CommandLineUnsignedIntTestCase, TestCase::QUICK);
   AddTestCase (new CommandLineStringTestCase, TestCase::QUICK);
   AddTestCase (new CommandLineOrderTestCase, TestCase::QUICK);
+  AddTestCase (new CommandLineInvalidTestCase, TestCase::QUICK);
 }
 
 static CommandLineTestSuite CommandLineTestSuite; /**< Test instance */
