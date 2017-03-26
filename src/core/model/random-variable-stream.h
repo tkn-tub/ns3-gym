@@ -544,7 +544,7 @@ public:
   static TypeId GetTypeId (void);
 
   /**
-   * \brief Creates a exponential distribution RNG with the default
+   * \brief Creates an exponential distribution RNG with the default
    * values for the mean and upper bound.
    */
   ExponentialRandomVariable ();
