@@ -855,7 +855,7 @@ private:
   void HandleRead (Ptr<Socket> socket);
   virtual void DoRun (void);
 
-  u_int16_t m_count; //!< Number of packets received.
+  uint16_t m_count; //!< Number of packets received.
   std::vector<std::pair<Ptr<Socket>, bool> > m_sendSocks; //!< Sending sockets.
   DataRate m_dataRate;  //!< Data rate.
   uint16_t m_packetSize;  //!< Packet size.

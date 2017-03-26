@@ -251,7 +251,7 @@ CarrierAggregationTestCase::BuildNameString (uint16_t nUser, uint16_t dist, uint
   return oss.str ();
 }
 
-CarrierAggregationTestCase::CarrierAggregationTestCase (uint16_t nUser, uint16_t dist, uint32_t dlbandwidth, uint32_t ulBandwidth, uint numberOfComponentCarriers)
+CarrierAggregationTestCase::CarrierAggregationTestCase (uint16_t nUser, uint16_t dist, uint32_t dlbandwidth, uint32_t ulBandwidth, uint32_t numberOfComponentCarriers)
   : TestCase (BuildNameString (nUser, dist, dlbandwidth, ulBandwidth, numberOfComponentCarriers)),
     m_nUser (nUser),
     m_dist (dist),

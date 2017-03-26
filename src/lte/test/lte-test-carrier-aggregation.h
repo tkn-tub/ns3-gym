@@ -57,7 +57,7 @@ public:
    * \param ulBandwidth the UL badnwidth
    * \param numberOfComponentCarriers number of component carriers to be used in test configuration
    */
-  CarrierAggregationTestCase (uint16_t nUser, uint16_t dist, uint32_t dlbandwidth, uint32_t ulBandwidth, uint numberOfComponentCarriers);
+  CarrierAggregationTestCase (uint16_t nUser, uint16_t dist, uint32_t dlbandwidth, uint32_t ulBandwidth, uint32_t numberOfComponentCarriers);
   virtual ~CarrierAggregationTestCase ();
   /**
    * DL Scheduling function that is used in this test as callback function of DL scheduling trace
