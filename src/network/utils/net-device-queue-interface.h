@@ -21,6 +21,7 @@
 #define NET_DEVICE_QUEUE_INTERFACE_H
 
 #include <vector>
+#include <map>
 #include "ns3/callback.h"
 #include "ns3/object.h"
 #include "ns3/ptr.h"
@@ -333,6 +334,7 @@ private:
   SelectQueueCallback m_selectQueueCallback;   //!< Select queue callback
   uint8_t m_numTxQueues;   //!< Number of transmission queues to create
   bool m_lateTxQueuesCreation;   //!< True if a device wants to create the TX queues by itself
+  std::map<Ptr<QueueBase>, std::vector<CallbackBase> > m_traceMap;   //!< Map storing all the connected traces
 };
 
 
@@ -355,18 +357,15 @@ NetDeviceQueueInterface::ConnectQueueTraces (Ptr<Queue<Item> > queue, uint8_t tx
   NS_ASSERT (queue != 0);
   NS_ASSERT (txq < GetNTxQueues ());
 
-  queue->TraceConnectWithoutContext ("Enqueue",
-                                     MakeBoundCallback (&NetDeviceQueue::PacketEnqueued<Item>,
-                                                        queue, this, txq));
-  queue->TraceConnectWithoutContext ("Dequeue",
-                                     MakeBoundCallback (&NetDeviceQueue::PacketDequeued<Item>,
-                                                        queue, this, txq));
-  queue->TraceConnectWithoutContext ("DropAfterDequeue",
-                                     MakeBoundCallback (&NetDeviceQueue::PacketDequeued<Item>,
-                                                        queue, this, txq));
-  queue->TraceConnectWithoutContext ("DropBeforeEnqueue",
-                                     MakeBoundCallback (&NetDeviceQueue::PacketDiscarded<Item>,
-                                                        queue, this, txq));
+  m_traceMap.emplace (queue, std::initializer_list<CallbackBase> {
+                               MakeBoundCallback (&NetDeviceQueue::PacketEnqueued<Item>, queue, this, txq),
+                               MakeBoundCallback (&NetDeviceQueue::PacketDequeued<Item>, queue, this, txq),
+                               MakeBoundCallback (&NetDeviceQueue::PacketDiscarded<Item>, queue, this, txq) });
+
+  queue->TraceConnectWithoutContext ("Enqueue", m_traceMap[queue][0]);
+  queue->TraceConnectWithoutContext ("Dequeue", m_traceMap[queue][1]);
+  queue->TraceConnectWithoutContext ("DropAfterDequeue", m_traceMap[queue][1]);
+  queue->TraceConnectWithoutContext ("DropBeforeEnqueue", m_traceMap[queue][2]);
 }
 
 template <typename Item>

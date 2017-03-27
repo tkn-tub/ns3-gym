@@ -193,6 +193,20 @@ void
 NetDeviceQueueInterface::DoDispose (void)
 {
   NS_LOG_FUNCTION (this);
+
+  for (auto t : m_traceMap)
+    {
+      if (!t.first->TraceDisconnectWithoutContext ("Enqueue", t.second[0])
+          || !t.first->TraceDisconnectWithoutContext ("Dequeue", t.second[1])
+          || !t.first->TraceDisconnectWithoutContext ("DropAfterDequeue", t.second[1])
+          || !t.first->TraceDisconnectWithoutContext ("DropBeforeEnqueue", t.second[2]))
+        {
+          NS_LOG_WARN ("NetDeviceQueueInterface: Trying to disconnected a callback that"
+                       " has not been connected to a traced callback");
+        }
+    }
+
+  m_traceMap.clear ();
   m_txQueuesVector.clear ();
   Object::DoDispose ();
 }
