@@ -747,11 +747,11 @@ WifiHelper::SetStandard (enum WifiPhyStandard standard)
 NetDeviceContainer
 WifiHelper::Install (const WifiPhyHelper &phyHelper,
                      const WifiMacHelper &macHelper,
-                     NodeContainer::Iterator low,
-                     NodeContainer::Iterator high) const
+                     NodeContainer::Iterator first,
+                     NodeContainer::Iterator last) const
 {
   NetDeviceContainer devices;
-  for (NodeContainer::Iterator i = low; i != high; ++i)
+  for (NodeContainer::Iterator i = first; i != last; ++i)
     {
       Ptr<Node> node = *i;
       Ptr<WifiNetDevice> device = CreateObject<WifiNetDevice> ();

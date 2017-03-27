@@ -279,8 +279,8 @@ public:
   NetDeviceContainer
   virtual Install (const WifiPhyHelper &phyHelper,
                        const WifiMacHelper &macHelper,
-                       NodeContainer::Iterator low,
-                       NodeContainer::Iterator high) const;
+                       NodeContainer::Iterator first,
+                       NodeContainer::Iterator last) const;
   /**
    * \param phy the PHY helper to create PHY objects
    * \param mac the MAC helper to create MAC objects
