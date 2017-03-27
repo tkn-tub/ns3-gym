@@ -746,10 +746,12 @@ WifiHelper::SetStandard (enum WifiPhyStandard standard)
 
 NetDeviceContainer
 WifiHelper::Install (const WifiPhyHelper &phyHelper,
-                     const WifiMacHelper &macHelper, NodeContainer c) const
+                     const WifiMacHelper &macHelper,
+                     NodeContainer::Iterator low,
+                     NodeContainer::Iterator high) const
 {
   NetDeviceContainer devices;
-  for (NodeContainer::Iterator i = c.Begin (); i != c.End (); ++i)
+  for (NodeContainer::Iterator i = low; i != high; ++i)
     {
       Ptr<Node> node = *i;
       Ptr<WifiNetDevice> device = CreateObject<WifiNetDevice> ();
@@ -767,6 +769,13 @@ WifiHelper::Install (const WifiPhyHelper &phyHelper,
       NS_LOG_DEBUG ("node=" << node << ", mob=" << node->GetObject<MobilityModel> ());
     }
   return devices;
+}
+
+NetDeviceContainer
+WifiHelper::Install (const WifiPhyHelper &phyHelper,
+                     const WifiMacHelper &macHelper, NodeContainer c) const
+{
+  return Install (phyHelper, macHelper, c.Begin (), c.End ());
 }
 
 NetDeviceContainer
