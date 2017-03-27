@@ -192,7 +192,7 @@ main (int argc, char *argv[])
 
   // PIE params
   NS_LOG_INFO ("Set PIE params");
-  Config::SetDefault ("ns3::PieQueueDisc::Mode", StringValue ("QUEUE_MODE_PACKETS"));
+  Config::SetDefault ("ns3::PieQueueDisc::Mode", StringValue ("QUEUE_DISC_MODE_PACKETS"));
   Config::SetDefault ("ns3::PieQueueDisc::MeanPktSize", UintegerValue (meanPktSize));
   Config::SetDefault ("ns3::PieQueueDisc::DequeueThreshold", UintegerValue (10000));
   Config::SetDefault ("ns3::PieQueueDisc::QueueDelayReference", TimeValue (Seconds (0.02)));
