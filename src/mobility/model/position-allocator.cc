@@ -87,6 +87,12 @@ ListPositionAllocator::AssignStreams (int64_t stream)
   return 0;
 }
 
+uint32_t
+ListPositionAllocator::GetSize (void) const
+{
+  return m_positions.size ();
+}
+
 NS_OBJECT_ENSURE_REGISTERED (GridPositionAllocator);
 
 TypeId 

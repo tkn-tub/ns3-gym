@@ -83,6 +83,14 @@ public:
    * \param v the position to append at the end of the list of positions to return from GetNext.
    */
   void Add (Vector v);
+  /**
+   * Return the number of positions stored.  Note that this will not change
+   * based on calling GetNext(), as the number of positions is not altered
+   * by calling GetNext ().
+   *
+   * \return the number of positions stored
+   */
+  uint32_t GetSize (void) const;
   virtual Vector GetNext (void) const;
   virtual int64_t AssignStreams (int64_t stream);
 private:
