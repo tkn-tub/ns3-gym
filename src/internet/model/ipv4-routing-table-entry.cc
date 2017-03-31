@@ -207,7 +207,7 @@ Ipv4RoutingTableEntry::CreateDefaultRoute (Ipv4Address nextHop,
                                            uint32_t interface)
 {
   NS_LOG_FUNCTION_NOARGS ();
-  return Ipv4RoutingTableEntry (Ipv4Address::GetZero (), nextHop, interface);
+  return Ipv4RoutingTableEntry (Ipv4Address::GetZero (), Ipv4Mask::GetZero (), nextHop, interface);
 }
 
 
