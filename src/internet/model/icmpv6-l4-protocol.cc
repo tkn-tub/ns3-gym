@@ -44,25 +44,25 @@ NS_OBJECT_ENSURE_REGISTERED (Icmpv6L4Protocol);
 
 const uint8_t Icmpv6L4Protocol::PROT_NUMBER = 58;
 
-const uint8_t Icmpv6L4Protocol::MAX_INITIAL_RTR_ADVERT_INTERVAL = 16;
-const uint8_t Icmpv6L4Protocol::MAX_INITIAL_RTR_ADVERTISEMENTS = 3;
-const uint8_t Icmpv6L4Protocol::MAX_FINAL_RTR_ADVERTISEMENTS = 3;
-const uint8_t Icmpv6L4Protocol::MIN_DELAY_BETWEEN_RAS = 3;
-const uint32_t Icmpv6L4Protocol::MAX_RA_DELAY_TIME = 500; /* millisecond */
+//const uint8_t Icmpv6L4Protocol::MAX_INITIAL_RTR_ADVERT_INTERVAL = 16; // max initial RA initial interval.
+//const uint8_t Icmpv6L4Protocol::MAX_INITIAL_RTR_ADVERTISEMENTS = 3;   // max initial RA transmission.
+//const uint8_t Icmpv6L4Protocol::MAX_FINAL_RTR_ADVERTISEMENTS = 3;     // max final RA transmission.
+//const uint8_t Icmpv6L4Protocol::MIN_DELAY_BETWEEN_RAS = 3;            // min delay between RA.
+//const uint32_t Icmpv6L4Protocol::MAX_RA_DELAY_TIME = 500;             // millisecond - max delay between RA.
 
-const uint8_t Icmpv6L4Protocol::MAX_RTR_SOLICITATION_DELAY = 1;
-const uint8_t Icmpv6L4Protocol::RTR_SOLICITATION_INTERVAL = 4;
-const uint8_t Icmpv6L4Protocol::MAX_RTR_SOLICITATIONS = 3;
+//const uint8_t Icmpv6L4Protocol::MAX_RTR_SOLICITATION_DELAY = 1;       // max RS delay.
+//const uint8_t Icmpv6L4Protocol::RTR_SOLICITATION_INTERVAL = 4;        // RS interval.
+//const uint8_t Icmpv6L4Protocol::MAX_RTR_SOLICITATIONS = 3;            // max RS transmission.
 
 const uint8_t Icmpv6L4Protocol::MAX_MULTICAST_SOLICIT = 3;
 const uint8_t Icmpv6L4Protocol::MAX_UNICAST_SOLICIT = 3;
-const uint8_t Icmpv6L4Protocol::MAX_ANYCAST_DELAY_TIME = 1;
-const uint8_t Icmpv6L4Protocol::MAX_NEIGHBOR_ADVERTISEMENT = 3;
+//const uint8_t Icmpv6L4Protocol::MAX_ANYCAST_DELAY_TIME = 1;           // max anycast delay.
+//const uint8_t Icmpv6L4Protocol::MAX_NEIGHBOR_ADVERTISEMENT = 3;       // max NA transmission.
 const uint32_t Icmpv6L4Protocol::REACHABLE_TIME = 30000;
 const uint32_t Icmpv6L4Protocol::RETRANS_TIMER = 1000;
 const uint8_t Icmpv6L4Protocol::DELAY_FIRST_PROBE_TIME = 5;
-const double Icmpv6L4Protocol::MIN_RANDOM_FACTOR = 0.5;
-const double Icmpv6L4Protocol::MAX_RANDOM_FACTOR = 1.5;
+//const double Icmpv6L4Protocol::MIN_RANDOM_FACTOR = 0.5;               // min random factor.
+//const double Icmpv6L4Protocol::MAX_RANDOM_FACTOR = 1.5;               // max random factor.
 
 TypeId Icmpv6L4Protocol::GetTypeId ()
 {
