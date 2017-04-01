@@ -64,29 +64,34 @@ public:
   static const uint8_t PROT_NUMBER;
 
   /**
-   * \brief Neighbor Discovery node constants : max multicast solicitations.
+   * \brief Neighbor Discovery node constants: max multicast solicitations.
+   * \returns The max multicast solicitations number.
    */
-  static const uint8_t MAX_MULTICAST_SOLICIT;
+  uint8_t GetMaxMulticastSolicit () const;
 
   /**
-   * \brief Neighbor Discovery node constants : max unicast solicitations.
+   * \brief Neighbor Discovery node constants: max unicast solicitations.
+   * \returns The max unicast solicitations number.
    */
-  static const uint8_t MAX_UNICAST_SOLICIT;
+  uint8_t GetMaxUnicastSolicit () const;;
 
   /**
-   * \brief Neighbor Discovery node constants : reachable time.
+   * \brief Neighbor Discovery node constants: reachable time.
+   * \returns The Reachable time for an Neighbor cache entry.
    */
-  static const uint32_t REACHABLE_TIME;
+  Time GetReachableTime () const;;
 
   /**
-   * \brief Neighbor Discovery node constants : retransmission timer.
+   * \brief Neighbor Discovery node constants: retransmission timer.
+   * \returns The Retransmission time for an Neighbor cache entry probe.
    */
-  static const uint32_t RETRANS_TIMER;
+  Time GetRetransmissionTime () const;
 
   /**
    * \brief Neighbor Discovery node constants : delay for the first probe.
+   * \returns The time before a first probe for an Neighbor cache entry.
    */
-  static const uint8_t DELAY_FIRST_PROBE_TIME;
+  Time GetDelayFirstProbe () const;
 
   /**
    * \brief Get ICMPv6 protocol number.
@@ -377,6 +382,32 @@ protected:
 
 private:
   typedef std::list<Ptr<NdiscCache> > CacheList; //!< container of NdiscCaches
+
+
+  /**
+   * \brief Neighbor Discovery node constants: max multicast solicitations.
+   */
+  uint8_t m_maxMulticastSolicit;
+
+  /**
+   * \brief Neighbor Discovery node constants: max unicast solicitations.
+   */
+  uint8_t m_maxUnicastSolicit;
+
+  /**
+   * \brief Neighbor Discovery node constants: reachable time.
+   */
+  Time m_reachableTime;
+
+  /**
+   * \brief Neighbor Discovery node constants: retransmission timer.
+   */
+  Time m_retransmissionTime;
+
+  /**
+   * \brief Neighbor Discovery node constants: delay for the first probe.
+   */
+  Time m_delayFirstProbe;
 
   /**
    * \brief The node.

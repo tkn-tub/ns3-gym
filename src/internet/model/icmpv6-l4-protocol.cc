@@ -30,6 +30,7 @@
 #include "ns3/ipv6-route.h"
 #include "ns3/pointer.h"
 #include "ns3/string.h"
+#include "ns3/integer.h"
 
 #include "ipv6-raw-socket-factory-impl.h"
 #include "ipv6-l3-protocol.h"
@@ -54,13 +55,9 @@ const uint8_t Icmpv6L4Protocol::PROT_NUMBER = 58;
 //const uint8_t Icmpv6L4Protocol::RTR_SOLICITATION_INTERVAL = 4;        // RS interval.
 //const uint8_t Icmpv6L4Protocol::MAX_RTR_SOLICITATIONS = 3;            // max RS transmission.
 
-const uint8_t Icmpv6L4Protocol::MAX_MULTICAST_SOLICIT = 3;
-const uint8_t Icmpv6L4Protocol::MAX_UNICAST_SOLICIT = 3;
 //const uint8_t Icmpv6L4Protocol::MAX_ANYCAST_DELAY_TIME = 1;           // max anycast delay.
 //const uint8_t Icmpv6L4Protocol::MAX_NEIGHBOR_ADVERTISEMENT = 3;       // max NA transmission.
-const uint32_t Icmpv6L4Protocol::REACHABLE_TIME = 30000;
-const uint32_t Icmpv6L4Protocol::RETRANS_TIMER = 1000;
-const uint8_t Icmpv6L4Protocol::DELAY_FIRST_PROBE_TIME = 5;
+
 //const double Icmpv6L4Protocol::MIN_RANDOM_FACTOR = 0.5;               // min random factor.
 //const double Icmpv6L4Protocol::MAX_RANDOM_FACTOR = 1.5;               // max random factor.
 
@@ -74,12 +71,31 @@ TypeId Icmpv6L4Protocol::GetTypeId ()
                    BooleanValue (true),
                    MakeBooleanAccessor (&Icmpv6L4Protocol::m_alwaysDad),
                    MakeBooleanChecker ())
-    .AddAttribute ("SolicitationJitter", "The jitter in ms a node is allowed to wait before sending any solicitation . Some jitter aims to prevent collisions. By default, the model will wait for a duration in ms defined by a uniform random-variable between 0 and SolicitationJitter",
+    .AddAttribute ("SolicitationJitter", "The jitter in ms a node is allowed to wait before sending any solicitation. Some jitter aims to prevent collisions. By default, the model will wait for a duration in ms defined by a uniform random-variable between 0 and SolicitationJitter",
                    StringValue ("ns3::UniformRandomVariable[Min=0.0|Max=10.0]"),
                    MakePointerAccessor (&Icmpv6L4Protocol::m_solicitationJitter),
                    MakePointerChecker<RandomVariableStream> ())
-
-  ;
+    .AddAttribute ("MaxMulticastSolicit", "Neighbor Discovery node constants: max multicast solicitations.",
+                   IntegerValue (3),
+                   MakeIntegerAccessor (&Icmpv6L4Protocol::m_maxMulticastSolicit),
+                   MakeIntegerChecker<uint8_t> ())
+    .AddAttribute ("MaxUnicastSolicit", "Neighbor Discovery node constants: max unicast solicitations.",
+                   IntegerValue (3),
+                   MakeIntegerAccessor (&Icmpv6L4Protocol::m_maxUnicastSolicit),
+                   MakeIntegerChecker<uint8_t> ())
+    .AddAttribute ("ReachableTime", "Neighbor Discovery node constants: reachable time.",
+                   TimeValue (Seconds (30)),
+                   MakeTimeAccessor (&Icmpv6L4Protocol::m_reachableTime),
+                   MakeTimeChecker ())
+    .AddAttribute ("RetransmissionTime", "Neighbor Discovery node constants: retransmission timer.",
+                   TimeValue (Seconds (1)),
+                   MakeTimeAccessor (&Icmpv6L4Protocol::m_retransmissionTime),
+                   MakeTimeChecker ())
+    .AddAttribute ("DelayFirstProbe", "Neighbor Discovery node constants: delay for the first probe.",
+                   TimeValue (Seconds (5)),
+                   MakeTimeAccessor (&Icmpv6L4Protocol::m_delayFirstProbe),
+                   MakeTimeChecker ())
+    ;
   return tid;
 }
 
@@ -1453,6 +1469,37 @@ Icmpv6L4Protocol::GetDownTarget6 (void) const
   NS_LOG_FUNCTION (this);
   return m_downTarget;
 }
+
+uint8_t
+Icmpv6L4Protocol::GetMaxMulticastSolicit () const
+{
+  return m_maxMulticastSolicit;
+}
+
+uint8_t
+Icmpv6L4Protocol::GetMaxUnicastSolicit () const
+{
+  return m_maxUnicastSolicit;
+}
+
+Time
+Icmpv6L4Protocol::GetReachableTime () const
+{
+  return m_reachableTime;
+}
+
+Time
+Icmpv6L4Protocol::GetRetransmissionTime () const
+{
+  return m_retransmissionTime;
+}
+
+Time
+Icmpv6L4Protocol::GetDelayFirstProbe () const
+{
+  return m_delayFirstProbe;
+}
+
 
 } /* namespace ns3 */
 

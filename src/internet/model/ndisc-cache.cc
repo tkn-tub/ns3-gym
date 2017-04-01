@@ -271,7 +271,7 @@ void NdiscCache::Entry::FunctionReachableTimeout ()
 void NdiscCache::Entry::FunctionRetransmitTimeout ()
 {
   NS_LOG_FUNCTION_NOARGS ();
-  Ptr<Icmpv6L4Protocol> icmpv6 = m_ndCache->GetDevice ()->GetNode ()->GetObject<Ipv6L3Protocol> ()->GetIcmpv6 ();
+  Ptr<Icmpv6L4Protocol> icmpv6 = m_ndCache->GetDevice ()->GetNode ()->GetObject<Icmpv6L4Protocol> ();
   Ipv6Address addr;
 
   /* determine source address */
@@ -291,7 +291,7 @@ void NdiscCache::Entry::FunctionRetransmitTimeout ()
         }
     }
 
-  if (m_nsRetransmit < icmpv6->MAX_MULTICAST_SOLICIT)
+  if (m_nsRetransmit < icmpv6->GetMaxMulticastSolicit ())
     {
       m_nsRetransmit++;
 
@@ -358,10 +358,10 @@ void NdiscCache::Entry::FunctionDelayTimeout ()
 void NdiscCache::Entry::FunctionProbeTimeout ()
 {
   NS_LOG_FUNCTION_NOARGS ();
-  Ptr<Ipv6L3Protocol> ipv6 = m_ndCache->GetDevice ()->GetNode ()->GetObject<Ipv6L3Protocol> ();
-  Ptr<Icmpv6L4Protocol> icmpv6 = ipv6->GetIcmpv6 ();
 
-  if (m_nsRetransmit < icmpv6->MAX_UNICAST_SOLICIT)
+  Ptr<Icmpv6L4Protocol> icmpv6 = m_ndCache->GetDevice ()->GetNode ()->GetObject<Icmpv6L4Protocol> ();
+
+  if (m_nsRetransmit < icmpv6->GetMaxUnicastSolicit ())
     {
       m_nsRetransmit++;
 
@@ -422,9 +422,11 @@ void NdiscCache::Entry::StartReachableTimer ()
       m_nudTimer.Cancel ();
     }
 
+  Ptr<Icmpv6L4Protocol> icmpv6 = m_ndCache->GetDevice ()->GetNode ()->GetObject<Icmpv6L4Protocol> ();
+
   m_lastReachabilityConfirmation = Simulator::Now ();
   m_nudTimer.SetFunction (&NdiscCache::Entry::FunctionReachableTimeout, this);
-  m_nudTimer.SetDelay (MilliSeconds (Icmpv6L4Protocol::REACHABLE_TIME));
+  m_nudTimer.SetDelay (icmpv6->GetReachableTime ());
   m_nudTimer.Schedule ();
 }
 
@@ -450,8 +452,11 @@ void NdiscCache::Entry::StartProbeTimer ()
     {
       m_nudTimer.Cancel ();
     }
+
+  Ptr<Icmpv6L4Protocol> icmpv6 = m_ndCache->GetDevice ()->GetNode ()->GetObject<Icmpv6L4Protocol> ();
+
   m_nudTimer.SetFunction (&NdiscCache::Entry::FunctionProbeTimeout, this);
-  m_nudTimer.SetDelay (MilliSeconds (Icmpv6L4Protocol::RETRANS_TIMER));
+  m_nudTimer.SetDelay (icmpv6->GetRetransmissionTime ());
   m_nudTimer.Schedule ();
 }
 
@@ -462,8 +467,11 @@ void NdiscCache::Entry::StartDelayTimer ()
     {
       m_nudTimer.Cancel ();
     }
+
+  Ptr<Icmpv6L4Protocol> icmpv6 = m_ndCache->GetDevice ()->GetNode ()->GetObject<Icmpv6L4Protocol> ();
+
   m_nudTimer.SetFunction (&NdiscCache::Entry::FunctionDelayTimeout, this);
-  m_nudTimer.SetDelay (Seconds (Icmpv6L4Protocol::DELAY_FIRST_PROBE_TIME));
+  m_nudTimer.SetDelay (icmpv6->GetDelayFirstProbe ());
   m_nudTimer.Schedule ();
 }
 
@@ -474,8 +482,11 @@ void NdiscCache::Entry::StartRetransmitTimer ()
     {
       m_nudTimer.Cancel ();
     }
+
+  Ptr<Icmpv6L4Protocol> icmpv6 = m_ndCache->GetDevice ()->GetNode ()->GetObject<Icmpv6L4Protocol> ();
+
   m_nudTimer.SetFunction (&NdiscCache::Entry::FunctionRetransmitTimeout, this);
-  m_nudTimer.SetDelay (MilliSeconds (Icmpv6L4Protocol::RETRANS_TIMER));
+  m_nudTimer.SetDelay (icmpv6->GetRetransmissionTime ());
   m_nudTimer.Schedule ();
 }
 
