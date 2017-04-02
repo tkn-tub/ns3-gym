@@ -39,6 +39,7 @@ namespace ns3
 class NetDevice;
 class Ipv6Interface;
 class Ipv6Header;
+class Icmpv6L4Protocol;
 
 /**
  * \ingroup ipv6
@@ -132,7 +133,7 @@ public:
    * \param device the device
    * \param interface the IPv6 interface
    */
-  void SetDevice (Ptr<NetDevice> device, Ptr<Ipv6Interface> interface);
+  void SetDevice (Ptr<NetDevice> device, Ptr<Ipv6Interface> interface, Ptr<Icmpv6L4Protocol> icmpv6);
 
   /**
    * \brief Print the NDISC cache entries
@@ -439,6 +440,11 @@ private:
    * \brief the interface.
    */
   Ptr<Ipv6Interface> m_interface;
+
+  /**
+   * \brief the icmpv6 L4 protocol for this cache.
+   */
+  Ptr<Icmpv6L4Protocol> m_icmpv6;
 
   /**
    * \brief A list of Entry.

@@ -1288,7 +1288,7 @@ Ptr<NdiscCache> Icmpv6L4Protocol::CreateCache (Ptr<NetDevice> device, Ptr<Ipv6In
 
   Ptr<NdiscCache> cache = CreateObject<NdiscCache> ();
 
-  cache->SetDevice (device, interface);
+  cache->SetDevice (device, interface, this);
   device->AddLinkChangeCallback (MakeCallback (&NdiscCache::Flush, cache));
   m_cacheList.push_back (cache);
   return cache;
