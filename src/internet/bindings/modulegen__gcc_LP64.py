@@ -2869,6 +2869,7 @@ def register_Ns3Ipv4Mask_methods(root_module, cls):
 
 def register_Ns3Ipv4MulticastRoutingTableEntry_methods(root_module, cls):
     cls.add_output_stream_operator()
+    cls.add_binary_comparison_operator('==')
     ## ipv4-routing-table-entry.h (module 'internet'): ns3::Ipv4MulticastRoutingTableEntry::Ipv4MulticastRoutingTableEntry() [constructor]
     cls.add_constructor([])
     ## ipv4-routing-table-entry.h (module 'internet'): ns3::Ipv4MulticastRoutingTableEntry::Ipv4MulticastRoutingTableEntry(ns3::Ipv4MulticastRoutingTableEntry const & route) [copy constructor]
@@ -2971,6 +2972,7 @@ def register_Ns3Ipv4RoutingHelper_methods(root_module, cls):
 
 def register_Ns3Ipv4RoutingTableEntry_methods(root_module, cls):
     cls.add_output_stream_operator()
+    cls.add_binary_comparison_operator('==')
     ## ipv4-routing-table-entry.h (module 'internet'): ns3::Ipv4RoutingTableEntry::Ipv4RoutingTableEntry() [constructor]
     cls.add_constructor([])
     ## ipv4-routing-table-entry.h (module 'internet'): ns3::Ipv4RoutingTableEntry::Ipv4RoutingTableEntry(ns3::Ipv4RoutingTableEntry const & route) [copy constructor]
@@ -12021,10 +12023,15 @@ def register_Ns3ArpCacheEntry_methods(root_module, cls):
     cls.add_method('SetIpv4Address', 
                    'void', 
                    [param('ns3::Ipv4Address', 'destination')])
+    ## arp-cache.h (module 'internet'): void ns3::ArpCache::Entry::SetMacAddress(ns3::Address macAddress) [member function]
+    cls.add_method('SetMacAddress', 
+                   'void', 
+                   [param('ns3::Address', 'macAddress')])
     ## arp-cache.h (module 'internet'): void ns3::ArpCache::Entry::SetMacAddresss(ns3::Address macAddress) [member function]
     cls.add_method('SetMacAddresss', 
                    'void', 
-                   [param('ns3::Address', 'macAddress')])
+                   [param('ns3::Address', 'macAddress')], 
+                   deprecated=True)
     ## arp-cache.h (module 'internet'): void ns3::ArpCache::Entry::UpdateSeen() [member function]
     cls.add_method('UpdateSeen', 
                    'void', 
@@ -15977,10 +15984,10 @@ def register_Ns3NdiscCache_methods(root_module, cls):
     cls.add_method('Remove', 
                    'void', 
                    [param('ns3::NdiscCache::Entry *', 'entry')])
-    ## ndisc-cache.h (module 'internet'): void ns3::NdiscCache::SetDevice(ns3::Ptr<ns3::NetDevice> device, ns3::Ptr<ns3::Ipv6Interface> interface) [member function]
+    ## ndisc-cache.h (module 'internet'): void ns3::NdiscCache::SetDevice(ns3::Ptr<ns3::NetDevice> device, ns3::Ptr<ns3::Ipv6Interface> interface, ns3::Ptr<ns3::Icmpv6L4Protocol> icmpv6) [member function]
     cls.add_method('SetDevice', 
                    'void', 
-                   [param('ns3::Ptr< ns3::NetDevice >', 'device'), param('ns3::Ptr< ns3::Ipv6Interface >', 'interface')])
+                   [param('ns3::Ptr< ns3::NetDevice >', 'device'), param('ns3::Ptr< ns3::Ipv6Interface >', 'interface'), param('ns3::Ptr< ns3::Icmpv6L4Protocol >', 'icmpv6')])
     ## ndisc-cache.h (module 'internet'): void ns3::NdiscCache::SetUnresQlen(uint32_t unresQlen) [member function]
     cls.add_method('SetUnresQlen', 
                    'void', 
@@ -18002,11 +18009,36 @@ def register_Ns3Icmpv6L4Protocol_methods(root_module, cls):
                    'void', 
                    [param('ns3::Ptr< ns3::Icmpv6L4Protocol >', 'icmpv6'), param('ns3::Ipv6Interface *', 'interface'), param('ns3::Ipv6Address', 'addr')], 
                    is_static=True)
+    ## icmpv6-l4-protocol.h (module 'internet'): ns3::Time ns3::Icmpv6L4Protocol::GetDelayFirstProbe() const [member function]
+    cls.add_method('GetDelayFirstProbe', 
+                   'ns3::Time', 
+                   [], 
+                   is_const=True)
+    ## icmpv6-l4-protocol.h (module 'internet'): uint8_t ns3::Icmpv6L4Protocol::GetMaxMulticastSolicit() const [member function]
+    cls.add_method('GetMaxMulticastSolicit', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True)
+    ## icmpv6-l4-protocol.h (module 'internet'): uint8_t ns3::Icmpv6L4Protocol::GetMaxUnicastSolicit() const [member function]
+    cls.add_method('GetMaxUnicastSolicit', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True)
     ## icmpv6-l4-protocol.h (module 'internet'): int ns3::Icmpv6L4Protocol::GetProtocolNumber() const [member function]
     cls.add_method('GetProtocolNumber', 
                    'int', 
                    [], 
                    is_const=True, is_virtual=True)
+    ## icmpv6-l4-protocol.h (module 'internet'): ns3::Time ns3::Icmpv6L4Protocol::GetReachableTime() const [member function]
+    cls.add_method('GetReachableTime', 
+                   'ns3::Time', 
+                   [], 
+                   is_const=True)
+    ## icmpv6-l4-protocol.h (module 'internet'): ns3::Time ns3::Icmpv6L4Protocol::GetRetransmissionTime() const [member function]
+    cls.add_method('GetRetransmissionTime', 
+                   'ns3::Time', 
+                   [], 
+                   is_const=True)
     ## icmpv6-l4-protocol.h (module 'internet'): static uint16_t ns3::Icmpv6L4Protocol::GetStaticProtocolNumber() [member function]
     cls.add_method('GetStaticProtocolNumber', 
                    'uint16_t', 
@@ -18098,42 +18130,8 @@ def register_Ns3Icmpv6L4Protocol_methods(root_module, cls):
     cls.add_method('SetNode', 
                    'void', 
                    [param('ns3::Ptr< ns3::Node >', 'node')])
-    ## icmpv6-l4-protocol.h (module 'internet'): ns3::Icmpv6L4Protocol::DELAY_FIRST_PROBE_TIME [variable]
-    cls.add_static_attribute('DELAY_FIRST_PROBE_TIME', 'uint8_t const', is_const=True)
-    ## icmpv6-l4-protocol.h (module 'internet'): ns3::Icmpv6L4Protocol::MAX_ANYCAST_DELAY_TIME [variable]
-    cls.add_static_attribute('MAX_ANYCAST_DELAY_TIME', 'uint8_t const', is_const=True)
-    ## icmpv6-l4-protocol.h (module 'internet'): ns3::Icmpv6L4Protocol::MAX_FINAL_RTR_ADVERTISEMENTS [variable]
-    cls.add_static_attribute('MAX_FINAL_RTR_ADVERTISEMENTS', 'uint8_t const', is_const=True)
-    ## icmpv6-l4-protocol.h (module 'internet'): ns3::Icmpv6L4Protocol::MAX_INITIAL_RTR_ADVERTISEMENTS [variable]
-    cls.add_static_attribute('MAX_INITIAL_RTR_ADVERTISEMENTS', 'uint8_t const', is_const=True)
-    ## icmpv6-l4-protocol.h (module 'internet'): ns3::Icmpv6L4Protocol::MAX_INITIAL_RTR_ADVERT_INTERVAL [variable]
-    cls.add_static_attribute('MAX_INITIAL_RTR_ADVERT_INTERVAL', 'uint8_t const', is_const=True)
-    ## icmpv6-l4-protocol.h (module 'internet'): ns3::Icmpv6L4Protocol::MAX_MULTICAST_SOLICIT [variable]
-    cls.add_static_attribute('MAX_MULTICAST_SOLICIT', 'uint8_t const', is_const=True)
-    ## icmpv6-l4-protocol.h (module 'internet'): ns3::Icmpv6L4Protocol::MAX_NEIGHBOR_ADVERTISEMENT [variable]
-    cls.add_static_attribute('MAX_NEIGHBOR_ADVERTISEMENT', 'uint8_t const', is_const=True)
-    ## icmpv6-l4-protocol.h (module 'internet'): ns3::Icmpv6L4Protocol::MAX_RANDOM_FACTOR [variable]
-    cls.add_static_attribute('MAX_RANDOM_FACTOR', 'double const', is_const=True)
-    ## icmpv6-l4-protocol.h (module 'internet'): ns3::Icmpv6L4Protocol::MAX_RA_DELAY_TIME [variable]
-    cls.add_static_attribute('MAX_RA_DELAY_TIME', 'uint32_t const', is_const=True)
-    ## icmpv6-l4-protocol.h (module 'internet'): ns3::Icmpv6L4Protocol::MAX_RTR_SOLICITATIONS [variable]
-    cls.add_static_attribute('MAX_RTR_SOLICITATIONS', 'uint8_t const', is_const=True)
-    ## icmpv6-l4-protocol.h (module 'internet'): ns3::Icmpv6L4Protocol::MAX_RTR_SOLICITATION_DELAY [variable]
-    cls.add_static_attribute('MAX_RTR_SOLICITATION_DELAY', 'uint8_t const', is_const=True)
-    ## icmpv6-l4-protocol.h (module 'internet'): ns3::Icmpv6L4Protocol::MAX_UNICAST_SOLICIT [variable]
-    cls.add_static_attribute('MAX_UNICAST_SOLICIT', 'uint8_t const', is_const=True)
-    ## icmpv6-l4-protocol.h (module 'internet'): ns3::Icmpv6L4Protocol::MIN_DELAY_BETWEEN_RAS [variable]
-    cls.add_static_attribute('MIN_DELAY_BETWEEN_RAS', 'uint8_t const', is_const=True)
-    ## icmpv6-l4-protocol.h (module 'internet'): ns3::Icmpv6L4Protocol::MIN_RANDOM_FACTOR [variable]
-    cls.add_static_attribute('MIN_RANDOM_FACTOR', 'double const', is_const=True)
     ## icmpv6-l4-protocol.h (module 'internet'): ns3::Icmpv6L4Protocol::PROT_NUMBER [variable]
     cls.add_static_attribute('PROT_NUMBER', 'uint8_t const', is_const=True)
-    ## icmpv6-l4-protocol.h (module 'internet'): ns3::Icmpv6L4Protocol::REACHABLE_TIME [variable]
-    cls.add_static_attribute('REACHABLE_TIME', 'uint32_t const', is_const=True)
-    ## icmpv6-l4-protocol.h (module 'internet'): ns3::Icmpv6L4Protocol::RETRANS_TIMER [variable]
-    cls.add_static_attribute('RETRANS_TIMER', 'uint32_t const', is_const=True)
-    ## icmpv6-l4-protocol.h (module 'internet'): ns3::Icmpv6L4Protocol::RTR_SOLICITATION_INTERVAL [variable]
-    cls.add_static_attribute('RTR_SOLICITATION_INTERVAL', 'uint8_t const', is_const=True)
     ## icmpv6-l4-protocol.h (module 'internet'): void ns3::Icmpv6L4Protocol::DoDispose() [member function]
     cls.add_method('DoDispose', 
                    'void', 
