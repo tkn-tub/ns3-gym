@@ -68,6 +68,8 @@ public:
   friend std::ostream &operator << (std::ostream &os, const Vector3D &vector);
   friend std::istream &operator >> (std::istream &is, Vector3D &vector);
   friend bool operator < (const Vector3D &a, const Vector3D &b);
+  friend Vector3D operator + (const Vector3D &a, const Vector3D &b);
+  friend Vector3D operator - (const Vector3D &a, const Vector3D &b);
 };
 
 /**
@@ -102,6 +104,8 @@ public:
   friend std::ostream &operator << (std::ostream &os, const Vector2D &vector);
   friend std::istream &operator >> (std::istream &is, Vector2D &vector);
   friend bool operator < (const Vector2D &a, const Vector2D &b);
+  friend Vector2D operator + (const Vector2D &a, const Vector2D &b);
+  friend Vector2D operator - (const Vector2D &a, const Vector2D &b);
 };
 
 /**
