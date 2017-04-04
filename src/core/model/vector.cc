@@ -76,6 +76,19 @@ Vector2D::Vector2D ()
 }
 
 double
+Vector3D::GetLength () const
+{
+  NS_LOG_FUNCTION (this);
+  return std::sqrt (x * x + y * y + z * z);
+}
+double
+Vector2D::GetLength () const
+{
+  NS_LOG_FUNCTION (this);
+  return std::sqrt (x * x + y * y);
+}
+
+double
 CalculateDistance (const Vector3D &a, const Vector3D &b)
 {
   NS_LOG_FUNCTION (a << b);
