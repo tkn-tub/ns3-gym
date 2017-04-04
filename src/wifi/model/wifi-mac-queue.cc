@@ -117,7 +117,7 @@ WifiMacQueue::WifiQueue ()
 template<>
 WifiMacQueue::~WifiQueue ()
 {
-  Flush ();
+  NS_LOG_FUNCTION_NOARGS ();
 }
 
 template<>
