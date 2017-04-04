@@ -36,7 +36,7 @@ NS_LOG_COMPONENT_DEFINE ("Vector");
 
 ATTRIBUTE_HELPER_CPP (Vector3D);
 ATTRIBUTE_HELPER_CPP (Vector2D);
-  
+
 // compatibility for mobility code
 Ptr<const AttributeChecker> MakeVectorChecker (void)
 {
@@ -85,7 +85,7 @@ CalculateDistance (const Vector3D &a, const Vector3D &b)
   double distance = std::sqrt (dx * dx + dy * dy + dz * dz);
   return distance;
 }
-double 
+double
 CalculateDistance (const Vector2D &a, const Vector2D &b)
 {
   NS_LOG_FUNCTION (a << b);
