@@ -153,12 +153,18 @@ void OnOffApplication::StartApplication () // Called at time specified by Start
       m_socket = Socket::CreateSocket (GetNode (), m_tid);
       if (Inet6SocketAddress::IsMatchingType (m_peer))
         {
-          m_socket->Bind6 ();
+          if (m_socket->Bind6 () == -1)
+            {
+              NS_FATAL_ERROR ("Failed to bind socket");
+            }
         }
       else if (InetSocketAddress::IsMatchingType (m_peer) ||
                PacketSocketAddress::IsMatchingType (m_peer))
         {
-          m_socket->Bind ();
+          if (m_socket->Bind () == -1)
+            {
+              NS_FATAL_ERROR ("Failed to bind socket");
+            }
         }
       m_socket->Connect (m_peer);
       m_socket->SetAllowBroadcast (true);

@@ -121,7 +121,10 @@ UdpServer::StartApplication (void)
       m_socket = Socket::CreateSocket (GetNode (), tid);
       InetSocketAddress local = InetSocketAddress (Ipv4Address::GetAny (),
                                                    m_port);
-      m_socket->Bind (local);
+      if (m_socket->Bind (local) == -1)
+        {
+          NS_FATAL_ERROR ("Failed to bind socket");
+        }
     }
 
   m_socket->SetRecvCallback (MakeCallback (&UdpServer::HandleRead, this));
@@ -132,7 +135,10 @@ UdpServer::StartApplication (void)
       m_socket6 = Socket::CreateSocket (GetNode (), tid);
       Inet6SocketAddress local = Inet6SocketAddress (Ipv6Address::GetAny (),
                                                    m_port);
-      m_socket6->Bind (local);
+      if (m_socket6->Bind (local) == -1)
+        {
+          NS_FATAL_ERROR ("Failed to bind socket");
+        }
     }
 
   m_socket6->SetRecvCallback (MakeCallback (&UdpServer::HandleRead, this));

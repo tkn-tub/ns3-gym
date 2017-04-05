@@ -82,7 +82,10 @@ UdpEchoServer::StartApplication (void)
       TypeId tid = TypeId::LookupByName ("ns3::UdpSocketFactory");
       m_socket = Socket::CreateSocket (GetNode (), tid);
       InetSocketAddress local = InetSocketAddress (Ipv4Address::GetAny (), m_port);
-      m_socket->Bind (local);
+      if (m_socket->Bind (local) == -1)
+        {
+          NS_FATAL_ERROR ("Failed to bind socket");
+        }
       if (addressUtils::IsMulticast (m_local))
         {
           Ptr<UdpSocket> udpSocket = DynamicCast<UdpSocket> (m_socket);
@@ -103,7 +106,10 @@ UdpEchoServer::StartApplication (void)
       TypeId tid = TypeId::LookupByName ("ns3::UdpSocketFactory");
       m_socket6 = Socket::CreateSocket (GetNode (), tid);
       Inet6SocketAddress local6 = Inet6SocketAddress (Ipv6Address::GetAny (), m_port);
-      m_socket6->Bind (local6);
+      if (m_socket6->Bind (local6) == -1)
+        {
+          NS_FATAL_ERROR ("Failed to bind socket");
+        }
       if (addressUtils::IsMulticast (local6))
         {
           Ptr<UdpSocket> udpSocket = DynamicCast<UdpSocket> (m_socket6);

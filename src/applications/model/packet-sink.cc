@@ -114,7 +114,10 @@ void PacketSink::StartApplication ()    // Called at time specified by Start
   if (!m_socket)
     {
       m_socket = Socket::CreateSocket (GetNode (), m_tid);
-      m_socket->Bind (m_local);
+      if (m_socket->Bind (m_local) == -1)
+        {
+          NS_FATAL_ERROR ("Failed to bind socket");
+        }
       m_socket->Listen ();
       m_socket->ShutdownSend ();
       if (addressUtils::IsMulticast (m_local))

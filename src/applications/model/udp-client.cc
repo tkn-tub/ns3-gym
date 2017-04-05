@@ -119,22 +119,34 @@ UdpClient::StartApplication (void)
       m_socket = Socket::CreateSocket (GetNode (), tid);
       if (Ipv4Address::IsMatchingType(m_peerAddress) == true)
         {
-          m_socket->Bind ();
+          if (m_socket->Bind () == -1)
+            {
+              NS_FATAL_ERROR ("Failed to bind socket");
+            }
           m_socket->Connect (InetSocketAddress (Ipv4Address::ConvertFrom(m_peerAddress), m_peerPort));
         }
       else if (Ipv6Address::IsMatchingType(m_peerAddress) == true)
         {
-          m_socket->Bind6 ();
+          if (m_socket->Bind6 () == -1)
+            {
+              NS_FATAL_ERROR ("Failed to bind socket");
+            }
           m_socket->Connect (Inet6SocketAddress (Ipv6Address::ConvertFrom(m_peerAddress), m_peerPort));
         }
       else if (InetSocketAddress::IsMatchingType (m_peerAddress) == true)
         {
-          m_socket->Bind ();
+          if (m_socket->Bind () == -1)
+            {
+              NS_FATAL_ERROR ("Failed to bind socket");
+            }
           m_socket->Connect (m_peerAddress);
         }
       else if (Inet6SocketAddress::IsMatchingType (m_peerAddress) == true)
         {
-          m_socket->Bind6 ();
+          if (m_socket->Bind6 () == -1)
+            {
+              NS_FATAL_ERROR ("Failed to bind socket");
+            }
           m_socket->Connect (m_peerAddress);
         }
       else
