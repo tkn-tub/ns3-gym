@@ -92,20 +92,13 @@ double
 CalculateDistance (const Vector3D &a, const Vector3D &b)
 {
   NS_LOG_FUNCTION (a << b);
-  double dx = b.x - a.x;
-  double dy = b.y - a.y;
-  double dz = b.z - a.z;
-  double distance = std::sqrt (dx * dx + dy * dy + dz * dz);
-  return distance;
+  return (b - a).GetLength ();
 }
 double
 CalculateDistance (const Vector2D &a, const Vector2D &b)
 {
   NS_LOG_FUNCTION (a << b);
-  double dx = b.x - a.x;
-  double dy = b.y - a.y;
-  double distance = std::sqrt (dx * dx + dy * dy);
-  return distance;
+  return (b - a).GetLength ();
 }
 
 std::ostream &operator << (std::ostream &os, const Vector3D &vector)
