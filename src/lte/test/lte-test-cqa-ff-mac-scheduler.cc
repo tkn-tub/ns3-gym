@@ -393,11 +393,11 @@ LenaCqaFfMacSchedulerTestCase1::DoRun (void)
   PacketSinkHelper ulPacketSinkHelper ("ns3::UdpSocketFactory", InetSocketAddress (Ipv4Address::GetAny (), ulPort));
   ApplicationContainer clientApps;
   ApplicationContainer serverApps;
+  serverApps.Add (ulPacketSinkHelper.Install (remoteHost));  // receive packets from UEs
   for (uint32_t u = 0; u < ueNodes.GetN (); ++u)
     {
       ++ulPort;
       serverApps.Add (dlPacketSinkHelper.Install (ueNodes.Get (u))); // receive packets from remotehost
-      serverApps.Add (ulPacketSinkHelper.Install (remoteHost));  // receive packets from UEs
 
       UdpClientHelper dlClient (ueIpIface.GetAddress (u), dlPort); // uplink packets generator
       dlClient.SetAttribute ("Interval", TimeValue (MilliSeconds (m_interval)));
@@ -631,11 +631,11 @@ LenaCqaFfMacSchedulerTestCase2::DoRun (void)
   PacketSinkHelper ulPacketSinkHelper ("ns3::UdpSocketFactory", InetSocketAddress (Ipv4Address::GetAny (), ulPort));
   ApplicationContainer clientApps;
   ApplicationContainer serverApps;
+  serverApps.Add (ulPacketSinkHelper.Install (remoteHost));  // receive packets from UEs
   for (uint32_t u = 0; u < ueNodes.GetN (); ++u)
     {
       ++ulPort;
       serverApps.Add (dlPacketSinkHelper.Install (ueNodes.Get (u))); // receive packets from remotehost
-      serverApps.Add (ulPacketSinkHelper.Install (remoteHost));  // receive packets from UEs
 
       UdpClientHelper dlClient (ueIpIface.GetAddress (u), dlPort); // uplink packets generator
       dlClient.SetAttribute ("Interval", TimeValue (MilliSeconds (m_interval)));
