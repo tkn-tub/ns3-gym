@@ -246,7 +246,7 @@ def options(opt):
     opt.recurse('src')
     opt.recurse('bindings/python')
     opt.recurse('src/internet')
-
+    opt.recurse('contrib')
 
 def _check_compilation_flag(conf, flag, mode='cxx', linkflags=None):
     """
@@ -457,21 +457,46 @@ def configure(conf):
     conf.recurse('bindings/python')
 
     conf.recurse('src')
+    conf.recurse('contrib')
 
     # Set the list of enabled modules.
     if Options.options.enable_modules:
         # Use the modules explicitly enabled. 
-        conf.env['NS3_ENABLED_MODULES'] = ['ns3-'+mod for mod in
-                                           Options.options.enable_modules.split(',')]
+        _enabled_mods = []
+        _enabled_contrib_mods = []
+        for mod in Options.options.enable_modules.split(','): 
+            if mod in conf.env['NS3_MODULES'] and mod.startswith('ns3-'): 
+                _enabled_mods.append(mod)
+            elif 'ns3-' + mod in conf.env['NS3_MODULES']: 
+                _enabled_mods.append('ns3-' + mod)
+            elif mod in conf.env['NS3_CONTRIBUTED_MODULES'] and mod.startswith('ns3-'): 
+                _enabled_contrib_mods.append(mod)
+            elif 'ns3-' + mod in conf.env['NS3_CONTRIBUTED_MODULES']: 
+                _enabled_contrib_mods.append('ns3-' + mod)
+        conf.env['NS3_ENABLED_MODULES'] = _enabled_mods
+        conf.env['NS3_ENABLED_CONTRIBUTED_MODULES'] = _enabled_contrib_mods
+        
     else:
         # Use the enabled modules list from the ns3 configuration file.
         if modules_enabled[0] == 'all_modules':
             # Enable all modules if requested.
             conf.env['NS3_ENABLED_MODULES'] = conf.env['NS3_MODULES']
+            conf.env['NS3_ENABLED_CONTRIBUTED_MODULES'] = conf.env['NS3_CONTRIBUTED_MODULES']
         else:
             # Enable the modules from the list.
-            conf.env['NS3_ENABLED_MODULES'] = ['ns3-'+mod for mod in
-                                               modules_enabled]
+            _enabled_mods = []
+            _enabled_contrib_mods = []
+            for mod in modules_enabled: 
+                if mod in conf.env['NS3_MODULES'] and mod.startswith('ns3-'): 
+                    _enabled_mods.append(mod)
+                elif 'ns3-' + mod in conf.env['NS3_MODULES']: 
+                    _enabled_mods.append('ns3-' + mod)
+                elif mod in conf.env['NS3_CONTRIBUTED_MODULES'] and mod.startswith('ns3-'): 
+                    _enabled_contrib_mods.append(mod)
+                elif 'ns3-' + mod in conf.env['NS3_CONTRIBUTED_MODULES']: 
+                    _enabled_contrib_mods.append('ns3-' + mod)
+            conf.env['NS3_ENABLED_MODULES'] = _enabled_mods
+            conf.env['NS3_ENABLED_CONTRIBUTED_MODULES'] = _enabled_contrib_mods
 
     # Add the template module to the list of enabled modules that
     # should not be built if this is a static build on Darwin.  They
@@ -487,6 +512,8 @@ def configure(conf):
             conf.env['NS3_ENABLED_MODULES'].remove(not_built_name)
             if not conf.env['NS3_ENABLED_MODULES']:
                 raise WafError('Exiting because the ' + not_built + ' module can not be built and it was the only one enabled.')
+        elif not_built_name in conf.env['NS3_ENABLED_CONTRIBUTED_MODULES']:
+            conf.env['NS3_ENABLED_CONTRIBUTED_MODULES'].remove(not_built_name)
 
     conf.recurse('src/mpi')
 
@@ -719,7 +746,8 @@ def add_examples_programs(bld):
             return
 
 def add_scratch_programs(bld):
-    all_modules = [mod[len("ns3-"):] for mod in bld.env['NS3_ENABLED_MODULES']]
+    all_modules = [mod[len("ns3-"):] for mod in bld.env['NS3_ENABLED_MODULES'] + bld.env['NS3_ENABLED_CONTRIBUTED_MODULES']]
+
     try:
         for filename in os.listdir("scratch"):
             if filename.startswith('.') or filename == 'CVS':
@@ -835,18 +863,21 @@ def build(bld):
 
     # process subfolders from here
     bld.recurse('src')
+    bld.recurse('contrib')
 
     # If modules have been enabled, then set lists of enabled modules
     # and enabled module test libraries.
-    if env['NS3_ENABLED_MODULES']:
+    if env['NS3_ENABLED_MODULES'] or env['NS3_ENABLED_CONTRIBUTED_MODULES']:
+
         modules = env['NS3_ENABLED_MODULES']
+        contribModules = env['NS3_ENABLED_CONTRIBUTED_MODULES']
 
         # Find out about additional modules that need to be enabled
         # due to dependency constraints.
         changed = True
         while changed:
             changed = False
-            for module in modules:
+            for module in modules + contribModules:
                 module_obj = bld.get_tgen_by_name(module)
                 if module_obj is None:
                     raise ValueError("module %s not found" % module)
@@ -854,31 +885,35 @@ def build(bld):
                 for dep in module_obj.use:
                     if not dep.startswith('ns3-'):
                         continue
-                    if dep not in modules:
-                        modules.append(dep)
+                    if dep not in modules and dep not in contribModules:
+                        if dep in env['NS3_MODULES']: modules.append(dep)
+                        elif dep in env['NS3_CONTRIBUTED_MODULES']: contribModules.append(dep)
                         changed = True
 
         env['NS3_ENABLED_MODULES'] = modules
+
+        env['NS3_ENABLED_CONTRIBUTED_MODULES'] = contribModules
 
         # If tests are being built, then set the list of the enabled
         # module test libraries.
         if env['ENABLE_TESTS']:
             for (mod, testlib) in bld.env['NS3_MODULES_WITH_TEST_LIBRARIES']:
-                if mod in bld.env['NS3_ENABLED_MODULES']:
+                if mod in bld.env['NS3_ENABLED_MODULES'] or mod in bld.env['NS3_ENABLED_CONTRIBUTED_MODULES']:
                     bld.env.append_value('NS3_ENABLED_MODULE_TEST_LIBRARIES', testlib)
 
     add_examples_programs(bld)
     add_scratch_programs(bld)
 
-    if env['NS3_ENABLED_MODULES']:
+    if env['NS3_ENABLED_MODULES'] or env['NS3_ENABLED_CONTRIBUTED_MODULES']:
         modules = env['NS3_ENABLED_MODULES']
+        contribModules = env['NS3_ENABLED_CONTRIBUTED_MODULES']
 
         # Exclude the programs other misc task gens that depend on disabled modules
         for obj in list(bld.all_task_gen):
 
             # check for ns3moduleheader_taskgen
             if 'ns3moduleheader' in getattr(obj, "features", []):
-                if ("ns3-%s" % obj.module) not in modules:
+                if ("ns3-%s" % obj.module) not in modules and ("ns3-%s" % obj.module) not in contribModules:
                     obj.mode = 'remove' # tell it to remove headers instead of installing
 
             # check for programs
@@ -886,7 +921,7 @@ def build(bld):
                 # this is an NS-3 program (bld.create_ns3_program)
                 program_built = True
                 for dep in obj.ns3_module_dependencies:
-                    if dep not in modules: # prog. depends on a module that isn't enabled?
+                    if dep not in modules and dep not in contribModules: # prog. depends on a module that isn't enabled?
                         bld.exclude_taskgen(obj)
                         program_built = False
                         break
@@ -907,38 +942,42 @@ def build(bld):
                     bld.env.append_value('NS3_RUNNABLE_PROGRAMS', object_relative_path)
 
             # disable the modules themselves
-            if hasattr(obj, "is_ns3_module") and obj.name not in modules:
+            if hasattr(obj, "is_ns3_module") and obj.name not in modules and obj.name not in contribModules:
                 bld.exclude_taskgen(obj) # kill the module
 
             # disable the module test libraries
             if hasattr(obj, "is_ns3_module_test_library"):
-                if not env['ENABLE_TESTS'] or (obj.module_name not in modules):
+                if not env['ENABLE_TESTS'] or ((obj.module_name not in modules) and (obj.module_name not in contribModules)) :
                     bld.exclude_taskgen(obj) # kill the module test library
 
             # disable the ns3header_taskgen
             if 'ns3header' in getattr(obj, "features", []):
-                if ("ns3-%s" % obj.module) not in modules:
+                if ("ns3-%s" % obj.module) not in modules and ("ns3-%s" % obj.module) not in contribModules:
                     obj.mode = 'remove' # tell it to remove headers instead of installing 
 
             # disable the ns3privateheader_taskgen
             if 'ns3privateheader' in getattr(obj, "features", []):
-                if ("ns3-%s" % obj.module) not in modules:
+                if ("ns3-%s" % obj.module) not in modules and ("ns3-%s" % obj.module) not in contribModules:
+
                     obj.mode = 'remove' # tell it to remove headers instead of installing 
 
             # disable pcfile taskgens for disabled modules
             if 'ns3pcfile' in getattr(obj, "features", []):
-                if obj.module not in bld.env.NS3_ENABLED_MODULES:
+                if obj.module not in bld.env.NS3_ENABLED_MODULES and obj.module not in bld.env.NS3_ENABLED_CONTRIBUTED_MODULES:
                     bld.exclude_taskgen(obj)
 
 
     if env['NS3_ENABLED_MODULES']:
         env['NS3_ENABLED_MODULES'] = list(modules)
 
+    if env['NS3_ENABLED_CONTRIBUTED_MODULES']:
+        env['NS3_ENABLED_CONTRIBUTED_MODULES'] = list(contribModules)
+
     # Determine which scripts will be runnable.
     for (script, dependencies) in bld.env['NS3_SCRIPT_DEPENDENCIES']:
         script_runnable = True
         for dep in dependencies:
-            if dep not in modules:
+            if dep not in modules and dep not in contribModules:
                 script_runnable = False
                 break
 
@@ -1018,7 +1057,7 @@ def shutdown(ctx):
         print()
         print('Modules built:')
         names_without_prefix = []
-        for name in env['NS3_ENABLED_MODULES']:
+        for name in env['NS3_ENABLED_MODULES'] + env['NS3_ENABLED_CONTRIBUTED_MODULES']:
             name1 = name[len('ns3-'):]
             if name not in env.MODULAR_BINDINGS_MODULES:
                 name1 += " (no Python)"

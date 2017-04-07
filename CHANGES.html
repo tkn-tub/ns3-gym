@@ -112,13 +112,15 @@ is now exported by WifiNetDevice.</li>
 </li>
 <li> The <b>DequeueAll</b> method of <b>Queue</b> has been renamed <b>Flush</b>
 </li>
-</ul>
-<h2>Changes to build system:</h2>
-<ul>
 <li>The attributes <b>WifiPhy::TxAntennas</b> and <b>WifiPhy::RxAntennas</b>,
     and the related accessor methods, were replaced by <b>WifiPhy::MaxSupportedTxSpatialStreams</b>
     and <b>WifiPhy::MaxSupportedRxSpatialStreams</b>. A new attribute <b>WifiPhy::Antennas</b>
     was added to allow users to define the number of physical antennas on the device.
+</li>
+</ul>
+<h2>Changes to build system:</h2>
+<ul>
+<li> Modules can now be located in the 'contrib/' directory in addition to 'src/'
 </li>
 <li> Behavior for running Python programs was aligned with that of C++ programs; the list of modules built is no longer printed out.
 </li>
