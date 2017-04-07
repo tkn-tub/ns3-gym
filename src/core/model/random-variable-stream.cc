@@ -1564,7 +1564,7 @@ EmpiricalRandomVariable::GetTypeId (void)
 }
 EmpiricalRandomVariable::EmpiricalRandomVariable ()
   :
-  validated (false)
+  m_validated (false)
 {
   NS_LOG_FUNCTION (this);
 }
@@ -1575,11 +1575,11 @@ EmpiricalRandomVariable::GetValue (void)
   NS_LOG_FUNCTION (this);
   // Return a value from the empirical distribution
   // This code based (loosely) on code by Bruce Mah (Thanks Bruce!)
-  if (emp.size () == 0)
+  if (m_emp.size () == 0)
     {
       return 0.0; // HuH? No empirical data
     }
-  if (!validated)
+  if (!m_validated)
     {
       Validate ();      // Insure in non-decreasing
     }
@@ -1591,28 +1591,28 @@ EmpiricalRandomVariable::GetValue (void)
       r = (1 - r);
     }
 
-  if (r <= emp.front ().cdf)
+  if (r <= m_emp.front ().cdf)
     {
-      return emp.front ().value; // Less than first
+      return m_emp.front ().value; // Less than first
     }
-  if (r >= emp.back ().cdf)
+  if (r >= m_emp.back ().cdf)
     {
-      return emp.back ().value;  // Greater than last
+      return m_emp.back ().value;  // Greater than last
     }
   // Binary search
   std::vector<ValueCDF>::size_type bottom = 0;
-  std::vector<ValueCDF>::size_type top = emp.size () - 1;
+  std::vector<ValueCDF>::size_type top = m_emp.size () - 1;
   while (1)
     {
       std::vector<ValueCDF>::size_type c = (top + bottom) / 2;
-      if (r >= emp[c].cdf && r < emp[c + 1].cdf)
+      if (r >= m_emp[c].cdf && r < m_emp[c + 1].cdf)
         { // Found it
-          return Interpolate (emp[c].cdf, emp[c + 1].cdf,
-                              emp[c].value, emp[c + 1].value,
+          return Interpolate (m_emp[c].cdf, m_emp[c + 1].cdf,
+                              m_emp[c].value, m_emp[c + 1].value,
                               r);
         }
       // Not here, adjust bounds
-      if (r < emp[c].cdf)
+      if (r < m_emp[c].cdf)
         {
           top    = c - 1;
         }
@@ -1634,16 +1634,16 @@ void EmpiricalRandomVariable::CDF (double v, double c)
 { // Add a new empirical datapoint to the empirical cdf
   // NOTE.   These MUST be inserted in non-decreasing order
   NS_LOG_FUNCTION (this << v << c);
-  emp.push_back (ValueCDF (v, c));
+  m_emp.push_back (ValueCDF (v, c));
 }
 
 void EmpiricalRandomVariable::Validate ()
 {
   NS_LOG_FUNCTION (this);
-  ValueCDF prior = emp[0];
-  for (std::vector<ValueCDF>::size_type i = 0; i < emp.size (); ++i)
+  ValueCDF prior = m_emp[0];
+  for (std::vector<ValueCDF>::size_type i = 0; i < m_emp.size (); ++i)
     {
-      ValueCDF& current = emp[i];
+      ValueCDF& current = m_emp[i];
       if (current.value < prior.value || current.cdf < prior.cdf)
         { // Error
           std::cerr << "Empirical Dist error,"
@@ -1655,7 +1655,7 @@ void EmpiricalRandomVariable::Validate ()
         }
       prior = current;
     }
-  validated = true;
+  m_validated = true;
 }
 
 double EmpiricalRandomVariable::Interpolate (double c1, double c2,

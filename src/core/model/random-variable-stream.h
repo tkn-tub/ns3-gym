@@ -2538,9 +2538,9 @@ public:
                               double v1, double v2, double r);
   
   /** \c true once the CDF has been validated. */
-  bool validated;
+  bool m_validated;
   /** The vector of CDF points. */
-  std::vector<ValueCDF> emp; 
+  std::vector<ValueCDF> m_emp;
 
 };  // class EmpiricalRandomVariable
   
