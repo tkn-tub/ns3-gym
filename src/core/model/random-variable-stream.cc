@@ -1544,6 +1544,7 @@ EmpiricalRandomVariable::ValueCDF::ValueCDF (double v, double c)
     cdf (c)
 {
   NS_LOG_FUNCTION (this << v << c);
+  NS_ASSERT (c >= 0.0 && c <= 1.0);
 }
 EmpiricalRandomVariable::ValueCDF::ValueCDF (const ValueCDF& c)
   : value (c.value),
