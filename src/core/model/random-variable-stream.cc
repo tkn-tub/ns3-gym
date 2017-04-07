@@ -1575,13 +1575,9 @@ EmpiricalRandomVariable::GetValue (void)
   NS_LOG_FUNCTION (this);
   // Return a value from the empirical distribution
   // This code based (loosely) on code by Bruce Mah (Thanks Bruce!)
-  if (m_emp.size () == 0)
-    {
-      return 0.0; // HuH? No empirical data
-    }
   if (!m_validated)
     {
-      Validate ();      // Insure in non-decreasing
+      Validate ();
     }
 
   // Get a uniform random variable in [0,1].
@@ -1640,6 +1636,10 @@ void EmpiricalRandomVariable::CDF (double v, double c)
 void EmpiricalRandomVariable::Validate ()
 {
   NS_LOG_FUNCTION (this);
+  if (m_emp.empty ())
+    {
+      NS_FATAL_ERROR ("CDF is not initialized");
+    }
   ValueCDF prior = m_emp[0];
   for (std::vector<ValueCDF>::size_type i = 0; i < m_emp.size (); ++i)
     {
