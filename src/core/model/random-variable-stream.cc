@@ -1655,6 +1655,10 @@ void EmpiricalRandomVariable::Validate ()
         }
       prior = current;
     }
+  if (prior.cdf != 1.0)
+    {
+      NS_FATAL_ERROR ("CDF does not cover the whole distribution");
+    }
   m_validated = true;
 }
 
