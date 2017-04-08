@@ -139,6 +139,11 @@ public:
   Ptr<const SpectrumModel> GetRxSpectrumModel () const;
 
   /**
+   * \return the width of each band (Hz)
+   */
+  double GetBandBandwidth (void) const;
+
+  /**
    * Callback invoked when the Phy model starts to process a signal
    *
    * \param signalType Whether signal is WiFi (true) or foreign (false)

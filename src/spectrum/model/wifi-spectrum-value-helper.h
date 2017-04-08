@@ -48,10 +48,11 @@ public:
    *
    * \param centerFrequency center frequency (MHz)
    * \param channelWidth channel width (MHz)
+   * \param bandBandwidth width of each band (Hz)
    * \return the static SpectrumModel instance corresponding to the
    * given carrier frequency and channel width configuration. 
    */
-  static Ptr<SpectrumModel> GetSpectrumModel (uint32_t centerFrequency, uint32_t channelWidth);
+  static Ptr<SpectrumModel> GetSpectrumModel (uint32_t centerFrequency, uint32_t channelWidth, double bandBandwidth);
 
   /**
    * Create a transmit power spectral density corresponding to OFDM 
@@ -89,10 +90,11 @@ public:
    *
    * \param centerFrequency center frequency (MHz)
    * \param channelWidth channel width (MHz)
+   * \param bandBandwidth width of each band (Hz)
    * \param noiseFigure the noise figure in dB w.r.t. a reference temperature of 290K
    * \return a pointer to a newly allocated SpectrumValue representing the noise Power Spectral Density in W/Hz for each Band
    */
-  static Ptr<SpectrumValue> CreateNoisePowerSpectralDensity (uint32_t centerFrequency, uint32_t channelWidth, double noiseFigure);
+  static Ptr<SpectrumValue> CreateNoisePowerSpectralDensity (uint32_t centerFrequency, uint32_t channelWidth, double bandBandwidth, double noiseFigure);
 
   /**
    * \param centerFrequency center frequency (MHz)
@@ -104,10 +106,11 @@ public:
   /**
    * \param centerFrequency center frequency (MHz)
    * \param channelWidth channel width (MHz)
+   * \param bandBandwidth width of each band (Hz)
    * \return a pointer to a SpectrumValue representing the RF filter applied
    * to an received power spectral density
    */
-  static Ptr<SpectrumValue> CreateRfFilter (uint32_t centerFrequency, uint32_t channelWidth);
+  static Ptr<SpectrumValue> CreateRfFilter (uint32_t centerFrequency, uint32_t channelWidth, double bandBandwidth);
 };
 
 /**

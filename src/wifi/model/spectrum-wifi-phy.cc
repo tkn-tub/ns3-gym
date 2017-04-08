@@ -107,7 +107,7 @@ SpectrumWifiPhy::GetRxSpectrumModel () const
       else
         {
           NS_LOG_DEBUG ("Creating spectrum model from frequency/width pair of (" << GetFrequency () << ", " << (uint16_t)GetChannelWidth () << ")");
-          m_rxSpectrumModel = WifiSpectrumValueHelper::GetSpectrumModel (GetFrequency (), GetChannelWidth ());
+          m_rxSpectrumModel = WifiSpectrumValueHelper::GetSpectrumModel (GetFrequency (), GetChannelWidth (), GetBandBandwidth ());
         }
     }
   return m_rxSpectrumModel;
@@ -168,7 +168,7 @@ SpectrumWifiPhy::StartRx (Ptr<SpectrumSignalParameters> rxParams)
   // Integrate over our receive bandwidth (i.e., all that the receive
   // spectral mask representing our filtering allows) to find the
   // total energy apparent to the "demodulator".
-  Ptr<SpectrumValue> filter = WifiSpectrumValueHelper::CreateRfFilter (GetFrequency (), GetChannelWidth ());
+  Ptr<SpectrumValue> filter = WifiSpectrumValueHelper::CreateRfFilter (GetFrequency (), GetChannelWidth (), GetBandBandwidth ());
   SpectrumValue filteredSignal = (*filter) * (*receivedSignalPsd);
   // Add receiver antenna gain
   NS_LOG_DEBUG ("Signal power received (watts) before antenna gain: " << Integral (filteredSignal));
@@ -272,6 +272,31 @@ SpectrumWifiPhy::StartTx (Ptr<Packet> packet, WifiTxVector txVector, Time txDura
   NS_LOG_DEBUG ("Starting transmission with power " << WToDbm (txPowerWatts) << " dBm on channel " << (uint16_t) GetChannelNumber ());
   NS_LOG_DEBUG ("Starting transmission with integrated spectrum power " << WToDbm (Integral (*txPowerSpectrum)) << " dBm; spectrum model Uid: " << txPowerSpectrum->GetSpectrumModel ()->GetUid ());
   m_channel->StartTx (txParams);
+}
+
+double
+SpectrumWifiPhy::GetBandBandwidth (void) const
+{
+  double bandBandwidth = 0;
+  switch (GetStandard ())
+    {
+    case WIFI_PHY_STANDARD_80211a:
+    case WIFI_PHY_STANDARD_80211g:
+    case WIFI_PHY_STANDARD_holland:
+    case WIFI_PHY_STANDARD_80211_10MHZ:
+    case WIFI_PHY_STANDARD_80211_5MHZ:
+    case WIFI_PHY_STANDARD_80211b:
+    case WIFI_PHY_STANDARD_80211n_2_4GHZ:
+    case WIFI_PHY_STANDARD_80211n_5GHZ:
+    case WIFI_PHY_STANDARD_80211ac:
+      // Use OFDM subcarrier width of 312.5 KHz as band granularity
+      bandBandwidth = 312500;
+      break;
+    default:
+      NS_FATAL_ERROR ("Standard unknown: " << GetStandard ());
+      break;
+    }
+  return bandBandwidth;
 }
 
 } //namespace ns3
