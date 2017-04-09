@@ -232,7 +232,7 @@ MeshWifiInterfaceMac::ForwardDown (Ptr<const Packet> const_packet, Mac48Address 
   hdr.SetQosNoEosp ();
   hdr.SetQosNoAmsdu ();
   hdr.SetQosTxopLimit (0);
-  // Address 1 is unknwon here. Routing plugin is responsible to correctly set it.
+  // Address 1 is unknown here. Routing plugin is responsible to correctly set it.
   hdr.SetAddr1 (Mac48Address ());
   // Filter packet through all installed plugins
   for (PluginList::const_iterator i = m_plugins.end () - 1; i != m_plugins.begin () - 1; i--)

@@ -26,7 +26,9 @@
 
 using namespace ns3;
 /**
- * \ingroup flame
+ * \ingroup flame-test
+ * \ingroup tests
+ *
  * \brief FLAME protocol regression test of three stations:
  * \verbatim
  * <-----------|----------->   Broadcast frame
@@ -60,6 +62,7 @@ public:
   virtual ~FlameRegressionTest();
 
   virtual void DoRun ();
+  /// Check results function
   void CheckResults ();
 
 private:
@@ -70,8 +73,11 @@ private:
   /// Needed to install applications
   Ipv4InterfaceContainer m_interfaces;
 
+  /// Create nodes function
   void CreateNodes ();
+  /// Creat devices function
   void CreateDevices ();
+  /// Install application function
   void InstallApplications ();
 
   /// Server-side socket
@@ -79,7 +85,7 @@ private:
   /// Client-side socket
   Ptr<Socket> m_clientSocket;
 
-  // sent packets counter
+  /// sent packets counter
   uint32_t m_sentPktsCounter;
 
   /**

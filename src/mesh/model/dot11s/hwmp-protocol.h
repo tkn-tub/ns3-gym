@@ -42,11 +42,16 @@ class IePrep;
 /**
  * \ingroup dot11s
  *
- * \brief Hybrid wireless mesh protocol -- a routing protocol of IEEE 802.11s draft.
+ * \brief Hybrid wireless mesh protocol -- a mesh routing protocol defined
+ * in IEEE 802.11-2012 standard.
  */
 class HwmpProtocol : public MeshL2RoutingProtocol
 {
 public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId ();
   HwmpProtocol ();
   ~HwmpProtocol ();
@@ -56,24 +61,34 @@ public:
    */
   typedef struct
   {
-    Mac48Address destination;
-    uint32_t seqnum;
+    Mac48Address destination; ///< destination address
+    uint32_t seqnum; ///< sequence number
   } FailedDestination;
   /// Route request, inherited from MeshL2RoutingProtocol
   bool RequestRoute (uint32_t  sourceIface, const Mac48Address source, const Mac48Address destination,
                      Ptr<const Packet>  packet, uint16_t  protocolType, RouteReplyCallback  routeReply);
-  /// Cleanup packet from all tags
+  /**
+   * Clean HWMP packet tag from packet; only the packet parameter is used
+   */
   bool RemoveRoutingStuff (uint32_t fromIface, const Mac48Address source,
                            const Mac48Address destination, Ptr<Packet>  packet, uint16_t&  protocolType);
   /**
    * \brief Install HWMP on given mesh point.
+   * \returns true if successful
    *
-   * Installing protocol cause installing its interface MAC plugins.
+   * Installing protocol causes installation of its interface MAC plugins.
    *
    * Also MP aggregates all installed protocols, HWMP protocol can be accessed
    * via MeshPointDevice::GetObject<dot11s::HwmpProtocol>();
    */
   bool Install (Ptr<MeshPointDevice>);
+  /**
+   * Peer link status function
+   * \param meshPontAddress The MAC address of the mesh pont
+   * \param peerAddress The MAC address of the peer
+   * \param interface The interface number
+   * \param status The status of the peer link
+   */
   void PeerLinkStatus (Mac48Address meshPontAddress, Mac48Address peerAddress, uint32_t interface,bool status);
   ///\brief This callback is used to obtain active neighbours on a given interface
   ///\param cb is a callback, which returns a list of addresses on given interface (uint32_t)
@@ -85,6 +100,7 @@ public:
   ///\}
   ///\brief Statistics:
   void Report (std::ostream &) const;
+  ///\brief Reset Statistics:
   void ResetStats ();
   /**
    * Assign a fixed random variable stream number to the random variables
@@ -101,7 +117,9 @@ private:
 
   virtual void DoInitialize ();
 
+  /// assignment operator
   HwmpProtocol& operator= (const HwmpProtocol &);
+  /// type conversion
   HwmpProtocol (const HwmpProtocol &);
 
   /**
@@ -125,7 +143,7 @@ private:
 
     QueuedPacket ();
   };
-  typedef std::map<uint32_t, Ptr<HwmpProtocolMac> > HwmpProtocolMacMap;
+  typedef std::map<uint32_t, Ptr<HwmpProtocolMac> > HwmpProtocolMacMap; ///< HwmpProtocolMacMap typedef
   /// Like RequestRoute, but for unicast packets
   bool ForwardUnicast (uint32_t  sourceIface, const Mac48Address source, const Mac48Address destination,
                        Ptr<Packet>  packet, uint16_t  protocolType, RouteReplyCallback  routeReply, uint32_t ttl);
@@ -151,19 +169,36 @@ private:
   /**
    * \brief forms a path error information element when list of destination fails on a given interface
    * \attention removes all entries from routing table!
+   *
+   * \param destinations vector of failed destinations
+   * \return PathError
    */
   PathError MakePathError (std::vector<FailedDestination> destinations);
   ///\brief Forwards a received path error
   void ForwardPathError (PathError perr);
   ///\brief Passes a self-generated PERR to interface-plugin
   void InitiatePathError (PathError perr);
-  /// \return list of addresses where a PERR should be sent to
+  /**
+   * Get PERR receivers
+   *
+   * \param failedDest
+   * \return list of addresses where a PERR should be sent to
+   */
   std::vector<std::pair<uint32_t, Mac48Address> > GetPerrReceivers (std::vector<FailedDestination> failedDest);
 
-  /// \return list of addresses where a PREQ should be sent to
+  /**
+   * Get PREQ receivers
+   *
+   * \param interface
+   * \return list of addresses where a PREQ should be sent to
+   */
   std::vector<Mac48Address> GetPreqReceivers (uint32_t interface);
-  /// \return list of addresses where a broadcast should be
-  //retransmitted
+  /**
+   * Get broadcast receivers
+   *
+   * \param interface
+   * \return list of addresses where a broadcast should be retransmitted
+   */
   std::vector<Mac48Address> GetBroadcastReceivers (uint32_t interface);
   /**
    * \brief MAC-plugin asks whether the frame can be dropped. Protocol automatically updates seqno.
@@ -188,6 +223,8 @@ private:
   ///\{
   /**
    * \brief checks when the last path discovery procedure was started for a given destination.
+   * \return true if should send PREQ
+   * \param dst is the destination address
    *
    * If the retry counter has not achieved the maximum level - preq should not be sent
    */
@@ -195,6 +232,8 @@ private:
 
   /**
    * \brief Generates PREQ retry when retry timeout has expired and route is still unresolved.
+   * \param dst is the destination address
+   * \param numOfRetry is the number of retries
    *
    * When PREQ retry has achieved the maximum level - retry mechanism should be canceled
    */
@@ -205,42 +244,80 @@ private:
   ///\return address of MeshPointDevice
   Mac48Address GetAddress ();
   ///\name Methods needed by HwmpMacLugin to access protocol parameters:
-  ///\{
+  /**
+   * Get do flag function
+   * \returns DO flag
+   */
   bool GetDoFlag ();
+  /**
+   * Get rf flag function
+   * \returns the RF flag
+   */
   bool GetRfFlag ();
+  /**
+   * Get PREQ minimum interval function
+   * \returns the PREQ
+   */
   Time GetPreqMinInterval ();
+  /**
+   * Get PERR minimum interval function
+   * \returns the PERR minimum interval
+   */
   Time GetPerrMinInterval ();
+  /**
+   * Get maximum TTL function
+   * \returns the maximum TTL
+   */
   uint8_t GetMaxTtl ();
+  /**
+   * Get next period function
+   * \returns the next period
+   */
   uint32_t GetNextPreqId ();
+  /**
+   * Get next HWMP sequence no function
+   * \returns the next HWMP sequence number
+   */
   uint32_t GetNextHwmpSeqno ();
+  /**
+   * Get active path lifetime function
+   * \returns the active path lifetime
+   */
   uint32_t GetActivePathLifetime ();
+  /**
+   * Get unicast PERR threshold function
+   * \returns the unicast PERR threshold
+   */
   uint8_t GetUnicastPerrThreshold ();
-  ///\}
 private:
-  ///\name Statistics:
-  ///\{
+  /// Statistics structure
   struct Statistics
   {
-    uint16_t txUnicast;
-    uint16_t txBroadcast;
-    uint32_t txBytes;
-    uint16_t droppedTtl;
-    uint16_t totalQueued;
-    uint16_t totalDropped;
-    uint16_t initiatedPreq;
-    uint16_t initiatedPrep;
-    uint16_t initiatedPerr;
+    uint16_t txUnicast; ///< transmit unicast
+    uint16_t txBroadcast; ///< transmit broadcast
+    uint32_t txBytes; ///< transmit bytes
+    uint16_t droppedTtl; ///< dropped TTL
+    uint16_t totalQueued; ///< total queued
+    uint16_t totalDropped; ///< total dropped
+    uint16_t initiatedPreq; ///< initiated PREQ
+    uint16_t initiatedPrep; ///< initiated PREP
+    uint16_t initiatedPerr; ///< initiated PERR
 
+    /**
+     * Print function
+     * \param os The output stream
+     */
     void Print (std::ostream & os) const;
+    /// constructor
     Statistics ();
   };
-  Statistics m_stats;
-  ///\}
-  HwmpProtocolMacMap m_interfaces;
-  Mac48Address m_address;
-  uint32_t m_dataSeqno;
-  uint32_t m_hwmpSeqno;
-  uint32_t m_preqId;
+  Statistics m_stats;  ///< statistics 
+
+  HwmpProtocolMacMap m_interfaces; ///< interfaces
+  Mac48Address m_address; ///< address
+  uint32_t m_dataSeqno; ///< data sequence no
+  uint32_t m_hwmpSeqno; ///< HWMP sequence no
+  uint32_t m_preqId; ///< PREQ ID
   ///\name Sequence number filters
   ///\{
   /// Data sequence number database
@@ -252,17 +329,16 @@ private:
   /// Routing table
   Ptr<HwmpRtable> m_rtable;
 
-  ///\name Timers:
-  //\{
+  /// PreqEvent structure
   struct PreqEvent {
-    EventId preqTimeout;
-    Time whenScheduled;
+    EventId preqTimeout; ///< PREQ timeout
+    Time whenScheduled; ///< scheduled time
   };
-  std::map<Mac48Address, PreqEvent> m_preqTimeouts;
-  EventId m_proactivePreqTimer;
+
+  std::map<Mac48Address, PreqEvent> m_preqTimeouts; ///< PREQ timeouts
+  EventId m_proactivePreqTimer; ///< proactive PREQ timer
   /// Random start in Proactive PREQ propagation
   Time m_randomStart;
-  ///\}
   /// Packet Queue
   std::vector<QueuedPacket> m_rqueue;
   
@@ -288,8 +364,8 @@ private:
   ///\}
   
   /// Random variable for random start time
-  Ptr<UniformRandomVariable> m_coefficient;
-  Callback <std::vector<Mac48Address>, uint32_t> m_neighboursCallback;
+  Ptr<UniformRandomVariable> m_coefficient; ///< coefficient
+  Callback <std::vector<Mac48Address>, uint32_t> m_neighboursCallback; ///< neighbors callback
 };
 } // namespace dot11s
 } // namespace ns3

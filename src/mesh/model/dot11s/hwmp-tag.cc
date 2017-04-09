@@ -83,6 +83,10 @@ HwmpTag::GetSeqno ()
   return m_seqno;
 }
 
+/**
+ * \brief Get the type ID.
+ * \return the object TypeId
+ */
 TypeId
 HwmpTag::GetTypeId ()
 {

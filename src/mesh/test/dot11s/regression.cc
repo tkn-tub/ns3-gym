@@ -26,6 +26,13 @@
 #include "hwmp-target-flags-regression.h"
 
 using namespace ns3;
+
+/**
+ * \ingroup dot11s-test
+ * \ingroup tests
+ *
+ * \brief Dot11s Regression Suite
+ */
 class Dot11sRegressionSuite : public TestSuite
 {
 public:
@@ -40,4 +47,4 @@ public:
     AddTestCase (new HwmpProactiveRegressionTest, TestCase::QUICK);
     AddTestCase (new HwmpDoRfRegressionTest, TestCase::QUICK);
   }
-} g_dot11sRegressionSuite;
+} g_dot11sRegressionSuite; ///< the test suite

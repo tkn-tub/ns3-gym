@@ -61,6 +61,10 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("TestMeshScript");
 
+/**
+ * \ingroup mesh
+ * \brief MeshTest class
+ */
 class MeshTest
 {
 public:
@@ -71,25 +75,25 @@ public:
   /// Run test
   int Run ();
 private:
-  int       m_xSize;
-  int       m_ySize;
-  double    m_step;
-  double    m_randomStart;
-  double    m_totalTime;
-  double    m_packetInterval;
-  uint16_t  m_packetSize;
-  uint32_t  m_nIfaces;
-  bool      m_chan;
-  bool      m_pcap;
-  std::string m_stack;
-  std::string m_root;
+  int       m_xSize; ///< X size
+  int       m_ySize; ///< Y size
+  double    m_step; ///< step
+  double    m_randomStart; ///< random start
+  double    m_totalTime; ///< total time
+  double    m_packetInterval; ///< packet interval
+  uint16_t  m_packetSize; ///< packet size
+  uint32_t  m_nIfaces; ///< number interfaces
+  bool      m_chan; ///< channel
+  bool      m_pcap; ///< PCAP
+  std::string m_stack; ///< stack
+  std::string m_root; ///< root
   /// List of network nodes
   NodeContainer nodes;
   /// List of all mesh point devices
   NetDeviceContainer meshDevices;
-  //Addresses of interfaces:
+  /// Addresses of interfaces:
   Ipv4InterfaceContainer interfaces;
-  // MeshHelper. Report is not static methods
+  /// MeshHelper. Report is not static methods
   MeshHelper mesh;
 private:
   /// Create nodes and setup their mobility

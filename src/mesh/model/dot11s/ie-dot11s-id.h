@@ -28,7 +28,7 @@
 namespace ns3 {
 namespace dot11s {
 /**
- * \brief a IEEE 802.11s Mesh ID 7.3.287 of 802.11s draft 3.0
+ * \brief a IEEE 802.11 Mesh ID element (Section 8.4.2.101 of IEEE 802.11-2012)
  * \see attribute_IeMeshId
  */
 class IeMeshId : public WifiInformationElement
@@ -36,11 +36,29 @@ class IeMeshId : public WifiInformationElement
 public:
   // broadcast meshId
   IeMeshId ();
+  /**
+   * Constructor
+   *
+   * \param s reference id
+   */
   IeMeshId (std::string s);
 
+  /**
+   * Equality test
+   * \param o another IeMeshId
+   * \returns true if equal
+   */
   bool IsEqual (IeMeshId const &o) const;
+  /**
+   * Return true if broadcast (if first octet of Mesh ID is zero)
+   * \returns true if broadcast
+   */
   bool IsBroadcast (void) const;
   //uint32_t GetLength (void) const;
+  /**
+   * Peek the IeMeshId as a string value
+   * \returns the mesh ID as a string
+   */
   char *PeekString (void) const;
 
   // Inherited from WifiInformationElement
@@ -51,7 +69,14 @@ public:
   virtual uint8_t GetInformationFieldSize () const;
 
 private:
-  uint8_t m_meshId[33];
+  uint8_t m_meshId[33]; ///< mesh ID
+  /**
+   * equality operator
+   *
+   * \param a lhs
+   * \param b lhs
+   * \returns true if equal
+   */
   friend bool operator== (const IeMeshId & a, const IeMeshId & b);
 
 };

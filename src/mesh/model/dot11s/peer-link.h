@@ -199,7 +199,9 @@ private:
   void BeaconLoss ();
 private:
 
+  /// assignment operator
   PeerLink& operator= (const PeerLink &);
+  /// type conversion operator
   PeerLink (const PeerLink &);
 
   /// The number of interface I am associated with

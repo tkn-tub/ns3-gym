@@ -35,6 +35,10 @@ public:
   MeshInformationElementVector ();
   ~MeshInformationElementVector ();
 
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId ();
   TypeId GetInstanceTypeId () const;
   virtual uint32_t DeserializeSingleIe (Buffer::Iterator start);

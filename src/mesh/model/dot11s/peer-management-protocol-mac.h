@@ -33,7 +33,7 @@ class PeerManagementProtocol;
 /**
  * \ingroup dot11s
  *
- * \brief This is plugin to Mesh WiFi MAC, which implements
+ * \brief This is plugin to Mesh WiFi MAC, which implements the
  * interface to dot11s peer management protocol: it takes proper
  * frames from MAC-layer, extracts peer link management information
  * element and mesh configuration element and passes it to main part
@@ -42,14 +42,50 @@ class PeerManagementProtocol;
 class PeerManagementProtocolMac : public MeshWifiInterfaceMacPlugin
 {
 public:
+  /**
+   * Constructor
+   *
+   * \param interface interface index
+   * \param protocol peer management protocol
+   */
   PeerManagementProtocolMac (uint32_t interface, Ptr<PeerManagementProtocol> protocol);
   ~PeerManagementProtocolMac ();
   
   // Inherited from plugin abstract class
+  /**
+   * Set pointer to parent
+   * \param parent Ptr<MeshWifiInterfaceMac>
+   */ 
   void SetParent (Ptr<MeshWifiInterfaceMac> parent);
+  /**
+   * Receive and process a packet
+   * \param packet the packet received
+   * \param header the header
+   * \returns true if received
+   */
   bool Receive (Ptr<Packet> packet, const WifiMacHeader & header);
+  /**
+   * This method appears to test a few conditions.  If an action frame,
+   * it returns true if SELF_PROTECTED.  It then checks if it is either
+   * a broadcast or sent on an active link, and returns true if so.
+   * Otherwise, it returns false (indicating it is to be dropped)
+   * \param packet the packet
+   * \param header the header
+   * \param from the MAC address of the sender
+   * \param to the MAC address of the receiver
+   * \returns true if successful, false if to be dropped
+   */
   bool UpdateOutcomingFrame (Ptr<Packet> packet, WifiMacHeader & header, Mac48Address from, Mac48Address to);
+  /**
+   * Add beacon timing and mesh ID information elements, and notify beacon sent
+   * \param beacon the beacon
+   */
   void UpdateBeacon (MeshWifiBeacon & beacon) const;
+  /**
+   * Assign the streams
+   * \param stream the stream to assign
+   * \return the assigned stream
+   */
   int64_t AssignStreams (int64_t stream);
   ///\name Statistics
   // \{
@@ -59,7 +95,9 @@ public:
   // \}
 
 private:
+  /// assignment operator
   PeerManagementProtocolMac& operator= (const PeerManagementProtocolMac &);
+  /// type conversion operator
   PeerManagementProtocolMac (const PeerManagementProtocolMac &);
 
   friend class PeerManagementProtocol;
@@ -72,23 +110,62 @@ private:
    */
   struct PlinkFrameStart
   {
-    uint8_t subtype;
-    uint16_t aid;
-    SupportedRates rates;
-    uint16_t qos;
+    uint8_t subtype; ///< subtype
+    uint16_t aid; ///< aid
+    SupportedRates rates; ///< rates
+    uint16_t qos; ///< QOS
   };
+  /**
+   * Create peer link open frame function
+   * \returns the packet
+   */
   Ptr<Packet> CreatePeerLinkOpenFrame ();
+  /**
+   * Create peer link confirm frame function
+   * \returns the packet
+   */
   Ptr<Packet> CreatePeerLinkConfirmFrame ();
+  /**
+   * Create peer link clode frame function
+   * \returns the packet
+   */
   Ptr<Packet> CreatePeerLinkCloseFrame ();
-  /// Parses the start of the frame, where no WifiInformationElements exist
+  /**
+   * Parses the start of the frame, where no WifiInformationElements exist
+   * \param packet the packet
+   * \returns PlinkFrameStart
+   */
   PlinkFrameStart ParsePlinkFrame (Ptr<const Packet> packet);
   // \}
-  ///  Closes link when a proper number of successive transmissions have failed
+  /**
+   *  Closes link when a proper number of successive transmissions have failed
+   * \param hdr the header
+   */
   void TxError (WifiMacHeader const &hdr);
+  /**
+   * Transmit OK function
+   * \param hdr the header
+   */
   void TxOk (WifiMacHeader const &hdr);
-  /// BCA functionality
+  // BCA functionality
+  /**
+   * Set beacon shift function
+   * \param shift the beacon time shift
+   */
   void SetBeaconShift (Time shift);
+  /**
+   * Set peer manager protocol function
+   * \param protocol the peer manager protocol
+   */
   void SetPeerManagerProtcol (Ptr<PeerManagementProtocol> protocol);
+  /**
+   * Send peer link management frame function
+   * \param peerAddress the peer MAC address
+   * \param peerMpAddress the peer MP address
+   * \param aid the AID
+   * \param peerElement IePeerManagement
+   * \param meshConfig IeConfiguration
+   */
   void SendPeerLinkManagementFrame (
     Mac48Address peerAddress,
     Mac48Address peerMpAddress,
@@ -98,37 +175,38 @@ private:
     );
   ///\brief debug only, used to print established links
   Mac48Address GetAddress () const;
-  ///\name Statistics
-  // \{
+  /// Statistics structure
   struct Statistics
   {
-    uint16_t txOpen;
-    uint16_t txConfirm;
-    uint16_t txClose;
-    uint16_t rxOpen;
-    uint16_t rxConfirm;
-    uint16_t rxClose;
-    uint16_t dropped;
-    uint16_t brokenMgt;
-    uint16_t txMgt;
-    uint32_t txMgtBytes;
-    uint16_t rxMgt;
-    uint32_t rxMgtBytes;
-    uint16_t beaconShift;
+    uint16_t txOpen; ///< transmit open
+    uint16_t txConfirm; ///< transmit confirm
+    uint16_t txClose; ///< transmit close
+    uint16_t rxOpen; ///< receive open
+    uint16_t rxConfirm; ///< receive confirm
+    uint16_t rxClose; ///< receive close
+    uint16_t dropped; ///< dropped
+    uint16_t brokenMgt; ///< broken management
+    uint16_t txMgt; ///< transmit management
+    uint32_t txMgtBytes; ///< transmit management bytes
+    uint16_t rxMgt; ///< receive management
+    uint32_t rxMgtBytes; ///< receive management bytes
+    uint16_t beaconShift; ///< beacon shift
 
+    /// constructor
     Statistics ();
+    /**
+     * Print function
+     * \param os the output stream
+     */
     void Print (std::ostream & os) const;
   };
 
 private:
-  struct Statistics m_stats;
-  ///\}
+  struct Statistics m_stats; ///< statistics
   ///\name Information about MAC and protocol:
-  // \{
-  Ptr<MeshWifiInterfaceMac> m_parent;
-  uint32_t m_ifIndex;
-  Ptr<PeerManagementProtocol> m_protocol;
-  // \}
+  Ptr<MeshWifiInterfaceMac> m_parent; ///< parent
+  uint32_t m_ifIndex; ///< IF index
+  Ptr<PeerManagementProtocol> m_protocol; ///< protocol
 };
 
 } // namespace dot11s

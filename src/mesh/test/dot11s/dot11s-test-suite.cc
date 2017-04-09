@@ -29,7 +29,18 @@
 using namespace ns3;
 using namespace dot11s;
 
-/// Built-in self test for FlameHeader
+/**
+ * \ingroup dot11s-test
+ * \defgroup dot11s-test mesh module tests
+ */
+
+
+/**
+ * \ingroup dot11s-test
+ * \ingroup tests
+ *
+ * \brief Built-in self test for FlameHeader
+ */
 struct MeshHeaderTest : public TestCase
 {
   MeshHeaderTest () :
@@ -82,8 +93,13 @@ MeshHeaderTest::DoRun ()
     NS_TEST_ASSERT_MSG_EQ (a, b, "Mesh header roundtrip serialization works, 1 address");
   }
 }
-//-----------------------------------------------------------------------------
-/// Unit test for HwmpRtable
+
+/**
+ * \ingroup mesh-test
+ * \ingroup tests
+ *
+ * \brief Unit test for HwmpRtable
+ */
 class HwmpRtableTest : public TestCase
 {
 public:
@@ -94,23 +110,25 @@ private:
   /// Test Add apth and lookup path;
   void TestLookup ();
 
-  // Test add path and try to lookup after entry has expired
+  /// Test add path and try to lookup after entry has expired
   void TestAddPath ();
+  /// Test add path and try to lookup after entry has expired
   void TestExpire ();
 
-  // Test add precursors and find precursor list in rtable
+  /// Test add precursors and find precursor list in rtable
   void TestPrecursorAdd ();
+  /// Test add precursors and find precursor list in rtable
   void TestPrecursorFind ();
 
 private:
-  Mac48Address dst;
-  Mac48Address hop;
-  uint32_t iface;
-  uint32_t metric;
-  uint32_t seqnum;
-  Time expire;
-  Ptr<HwmpRtable> table;
-  std::vector<Mac48Address> precursors;
+  Mac48Address dst; ///< destination address
+  Mac48Address hop; ///< hop address
+  uint32_t iface; ///< interface
+  uint32_t metric; ///< metric
+  uint32_t seqnum; ///< sequence number
+  Time expire; ///< expiration time
+  Ptr<HwmpRtable> table; ///< tab;e
+  std::vector<Mac48Address> precursors; ///< precursors
 };
 
 HwmpRtableTest::HwmpRtableTest () :
@@ -251,7 +269,12 @@ PeerLinkFrameStartTest::DoRun ()
     NS_TEST_EXPECT_MSG_EQ (a, b, "PEER_LINK_CLOSE works");
   }
 }
-//-----------------------------------------------------------------------------
+/**
+ * \ingroup mesh-test
+ * \ingroup tests
+ *
+ * \brief Dot11s Test Suite
+ */
 class Dot11sTestSuite : public TestSuite
 {
 public:
@@ -266,4 +289,4 @@ Dot11sTestSuite::Dot11sTestSuite ()
   AddTestCase (new PeerLinkFrameStartTest, TestCase::QUICK);
 }
 
-static Dot11sTestSuite g_dot11sTestSuite;
+static Dot11sTestSuite g_dot11sTestSuite; ///< the test suite

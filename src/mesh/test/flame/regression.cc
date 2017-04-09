@@ -22,6 +22,13 @@
 #include "flame-regression.h"
 
 using namespace ns3;
+
+/**
+ * \ingroup flame-test
+ * \ingroup tests
+ *
+ * \brief Flame Regression Suite
+ */
 class FlameRegressionSuite : public TestSuite
 {
 public:
@@ -32,4 +39,4 @@ public:
     SetDataDir (std::string ("src/mesh/test/flame"));
     AddTestCase (new FlameRegressionTest, TestCase::QUICK);
   }
-} g_flameRegressionSuite;
+} g_flameRegressionSuite; ///< the test suite

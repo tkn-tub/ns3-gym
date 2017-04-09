@@ -101,10 +101,10 @@ MeshHeader::GetMeshTtl () const
   return m_meshTtl;
 }
 void
-MeshHeader::SetAddressExt (uint8_t num_of_addresses)
+MeshHeader::SetAddressExt (uint8_t value)
 {
-  NS_ASSERT (num_of_addresses <= 3);
-  m_meshFlags |= 0x03 & num_of_addresses;
+  NS_ASSERT (value <= 3);
+  m_meshFlags |= 0x03 & value;
 }
 uint8_t
 MeshHeader::GetAddressExt () const

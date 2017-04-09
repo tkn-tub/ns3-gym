@@ -66,7 +66,7 @@ public:
   virtual void  Enqueue (Ptr<const Packet> packet, Mac48Address to);
   virtual bool  SupportsSendFrom () const;
   virtual void  SetLinkUpCallback (Callback<void> linkUp);
-  ///\name Each mesh point interfaces must know the mesh point address
+  ///\name Each mesh point interface must know the mesh point address
   // \{
   void SetMeshPointAddress (Mac48Address);
   Mac48Address GetMeshPointAddress () const;
@@ -81,12 +81,14 @@ public:
   Time GetBeaconInterval () const;
   /**
    * \brief Next beacon frame time
+   * \return TBTT time
    *
    * This is supposed to be used by any entity managing beacon collision avoidance (e.g. Peer management protocol in 802.11s)
    */
   Time GetTbtt () const;
   /**
    * \brief Shift TBTT.
+   * \param shift
    *
    * This is supposed to be used by any entity managing beacon collision avoidance (e.g. Peer management protocol in 802.11s)
    *
@@ -95,30 +97,38 @@ public:
   void ShiftTbtt (Time shift);
   // \}
 
-  ///\name Plugins
-  // \{
-  /// Install plugin.
-  /// \todo return unique ID to allow unregister plugins
-  void InstallPlugin (Ptr<MeshWifiInterfaceMacPlugin> plugin);
-  // \}
-
-  /** \name Channel switching
+  /**
+   * Install plugin.
    *
+   * \param plugin 
+   *
+   * \todo return unique ID to allow user to unregister plugins
+   */
+  void InstallPlugin (Ptr<MeshWifiInterfaceMacPlugin> plugin);
+
+  /*
    * Channel center frequency = Channel starting frequency + 5 * channel_id (MHz),
    * where Starting channel frequency is standard-dependent as defined in IEEE 802.11-2007 17.3.8.3.2.
    *
    * Number of channels to use must be limited elsewhere.
    */
-  // \{
   /// Current channel Id
   uint16_t GetFrequencyChannel () const;
-  /// Switch channel
+  /**
+   * Switch frequency channel.
+   *
+   * \param new_id 
+   */
   void SwitchFrequencyChannel (uint16_t new_id);
-  // \}
 
   /// To be used by plugins sending management frames.
   void SendManagementFrame (Ptr<Packet> frame, const WifiMacHeader& hdr);
-  /// \return true if rates are supported
+  /**
+   * Check supported rates.
+   *
+   * \param rates 
+   * \return true if rates are supported
+   */
   bool CheckSupportedRates (SupportedRates rates) const;
   /// \return list of supported bitrates
   SupportedRates GetSupportedRates () const;
@@ -129,9 +139,11 @@ public:
   // \}
   ///\brief Statistics:
   void Report (std::ostream &) const;
+  /// Reset statistics
   void ResetStats ();
   /// Enable/disable beacons
   void SetBeaconGeneration (bool enable);
+  /// Get phy standard in use
   WifiPhyStandard GetPhyStandard () const;
   virtual void FinishConfigureStandard (enum WifiPhyStandard standard);
   /**
@@ -147,7 +159,6 @@ private:
   /// Frame receive handler
   void  Receive (Ptr<Packet> packet, WifiMacHeader const *hdr);
   /// Send frame. Frame is supposed to be tagged by routing information.
-  /// \todo clarify this point
   void  ForwardDown (Ptr<const Packet> packet, Mac48Address from, Mac48Address to);
   /// Send beacon
   void SendBeacon ();
@@ -159,7 +170,7 @@ private:
   virtual void DoDispose ();
 
 private:
-  typedef std::vector<Ptr<MeshWifiInterfaceMacPlugin> > PluginList;
+  typedef std::vector<Ptr<MeshWifiInterfaceMacPlugin> > PluginList; ///< PluginList typedef
 
   virtual void DoInitialize ();
 
@@ -182,22 +193,26 @@ private:
   EventId m_beaconSendEvent;
   /// List of all installed plugins
   PluginList m_plugins;
-  Callback<uint32_t, Mac48Address, Ptr<MeshWifiInterfaceMac> > m_linkMetricCallback;
-  ///\name Statistics:
-  // \{
+  Callback<uint32_t, Mac48Address, Ptr<MeshWifiInterfaceMac> > m_linkMetricCallback; ///< linkMetricCallback
+  /// Statistics:
   struct Statistics
   {
-    uint16_t recvBeacons;
-    uint32_t sentFrames;
-    uint32_t sentBytes;
-    uint32_t recvFrames;
-    uint32_t recvBytes;
-    void
-    Print (std::ostream & os) const;
+    uint16_t recvBeacons; ///< receive beacons
+    uint32_t sentFrames; ///< sent frames
+    uint32_t sentBytes; ///< sent bytes
+    uint32_t recvFrames; ///< receive frames
+    uint32_t recvBytes; ///< receive bytes
+    /**
+     * Print statistics.
+     *
+     * \param os 
+     */
+    void Print (std::ostream & os) const;
+    /// constructor
     Statistics ();
   };
-  Statistics m_stats;
-  // \}
+  Statistics m_stats; ///< statistics
+
   /// Current PHY standard: needed to configure metric
   WifiPhyStandard m_standard;
 

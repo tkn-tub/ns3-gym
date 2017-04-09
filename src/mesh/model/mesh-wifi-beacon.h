@@ -56,6 +56,7 @@ public:
    *
    * \param address is sender address
    * \param mpAddress is mesh point address
+   * \returns the WifiMacHeader
    */
   WifiMacHeader CreateHeader (Mac48Address address, Mac48Address mpAddress);
   /// Returns a beacon interval of wifi beacon

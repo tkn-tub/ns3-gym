@@ -185,7 +185,7 @@ public:
   /**
    * \brief Print statistics.
    */
-  void Report (const ns3::Ptr<ns3::NetDevice>&, std::ostream&);
+  void Report (const ns3::Ptr<ns3::NetDevice>&, std::ostream& os);
 
   /**
    * \brief Reset statistics.
@@ -206,18 +206,21 @@ public:
 
 private:
   /**
+   * \param phyHelper
+   * \param node
+   * \param channelId
    * \returns a WifiNetDevice with ready-to-use interface
    */
   Ptr<WifiNetDevice> CreateInterface (const WifiPhyHelper &phyHelper, Ptr<Node> node, uint16_t channelId) const;
-  uint32_t m_nInterfaces;
-  ChannelPolicy m_spreadChannelPolicy;
-  Ptr<MeshStack> m_stack;
-  ObjectFactory m_stackFactory;
+  uint32_t m_nInterfaces; ///< number of interfaces
+  ChannelPolicy m_spreadChannelPolicy; ///< spread channel policy
+  Ptr<MeshStack> m_stack; ///< stack
+  ObjectFactory m_stackFactory; ///< stack factory
 
   // Interface factory
-  ObjectFactory m_mac;
-  ObjectFactory m_stationManager;
-  enum WifiPhyStandard m_standard;
+  ObjectFactory m_mac; ///< the MAC
+  ObjectFactory m_stationManager; ///< the station manager
+  enum WifiPhyStandard m_standard; ///< phy standard
 
 };
 } // namespace ns3

@@ -37,21 +37,62 @@ class DestinationAddressUnit : public SimpleRefCount<DestinationAddressUnit>
 {
 public:
   DestinationAddressUnit ();
+  /**
+   * Set flags function
+   * \param doFlag the DO flag
+   * \param rfFlag the RF flag
+   * \param usnFlag the USN flag
+   */
   void SetFlags (bool doFlag, bool rfFlag, bool usnFlag);
+  /**
+   * Set destination address function
+   * \param dest_address the destination MAC address
+   */
   void SetDestinationAddress (Mac48Address dest_address);
+  /**
+   * Set destination sequence number
+   * \param dest_seq_number the destination sequence number
+   */
   void SetDestSeqNumber (uint32_t dest_seq_number);
+  /**
+   * Is do function
+   * \returns true if DO flag is set
+   */
   bool IsDo ();
+  /**
+   * is RF function
+   * \returns true if RF flag is set
+   */
   bool IsRf ();
+  /**
+   * Is USN function
+   * \returns true if USN flag set
+   */
   bool IsUsn ();
+  /**
+   * Get destination address function
+   * \returns the MAC address
+   */
   Mac48Address GetDestinationAddress () const;
+  /**
+   * Get destination sequence number
+   * \returns the destination sequence number
+   */
   uint32_t GetDestSeqNumber () const;
 private:
-  bool m_do;
-  bool m_rf;
-  bool m_usn;
-  Mac48Address m_destinationAddress;
-  uint32_t m_destSeqNumber;
+  bool m_do; ///< DO
+  bool m_rf; ///< RF
+  bool m_usn; ///< USN
+  Mac48Address m_destinationAddress; ///< desitnation address
+  uint32_t m_destSeqNumber; ///< destiantion sequence number
 
+  /**
+   * equality operator
+   *
+   * \param a lhs
+   * \param b rhs
+   * \returns true if equal
+   */
   friend bool operator== (const DestinationAddressUnit & a, const DestinationAddressUnit & b);
 };
 /**
@@ -66,6 +107,11 @@ public:
   /**
    * Add a destination address unit: flags, destination and sequence
    * number
+   *
+   * \param doFlag
+   * \param rfFlag
+   * \param dest_address
+   * \param dest_seq_number
    */
   void AddDestinationAddressElement (
     bool doFlag,
@@ -79,43 +125,124 @@ public:
   void ClearDestinationAddressElements ();
   /// Get all destinations, which are stored in PREQ:
   std::vector<Ptr<DestinationAddressUnit> > GetDestinationList ();
-  /// SetProper flags which indicate that PREQ is unicast
+  /// Set flag indicating that PREQ is unicast
   void SetUnicastPreq ();
-  /*
-   * \brief In proactive case: need we send PREP
+  /**
+   * \brief Set Proactive PREP subfield to off
    */
   void SetNeedNotPrep ();
 
   // Setters for fields:
+  /**
+   * Set number of hops from originator to mesh STA transmitting this 
+   * element
+   * \param hopcount
+   */
   void SetHopcount (uint8_t hopcount);
+  /**
+   * Set remaining number of hops allowed for this element
+   * \param ttl the TTL
+   */
   void SetTTL (uint8_t ttl);
+  /**
+   * Set path discovery id field
+   * \param id some unique id for this path discovery
+   */
   void SetPreqID (uint32_t id);
+  /**
+   * Set originator address value
+   * \param originator_address the originator MAC address
+   */
   void SetOriginatorAddress (Mac48Address originator_address);
+  /**
+   * Set originator sequence number
+   * \param originator_seq_number
+   */
   void SetOriginatorSeqNumber (uint32_t originator_seq_number);
+  /**
+   * Set lifetime in TUs for the forwarding information to be considered valid
+   * \param lifetime the lifetime in TUs
+   */
   void SetLifetime (uint32_t lifetime);
+  /**
+   * Set metric value
+   * \param metric the metric
+   */
   void SetMetric (uint32_t metric);
+  /**
+   * Set destination count value
+   * \param dest_count the destination count
+   */
   void SetDestCount (uint8_t dest_count);
 
   // Getters for fields:
+  /**
+   * Is unicast PREQ function
+   * \returns true if unicast PREQ
+   */
   bool  IsUnicastPreq () const;
+  /**
+   * Check whether Proactive PREP subfield to off
+   * \returns true if need not Proactive PREP subfield is off
+   */
   bool  IsNeedNotPrep () const;
+  /**
+   * Get hop count value
+   * \returns the hop count
+   */
   uint8_t  GetHopCount () const;
+  /**
+   * Get TTL value
+   * \returns the TTL
+   */
   uint8_t  GetTtl () const;
+  /**
+   * Get path discovery id field
+   * \returns the path discovery ID
+   */
   uint32_t GetPreqID () const;
+  /**
+   * Get originator address value
+   * \returns the originator MAC address
+   */
   Mac48Address GetOriginatorAddress () const;
+  /**
+   * Get originator sequence numnber value
+   * \returns the originator sequence number
+   */
   uint32_t GetOriginatorSeqNumber () const;
+  /**
+   * Get lifetime value
+   * \returns the lifetime in TUs
+   */
   uint32_t GetLifetime () const;
+  /**
+   * Get metric value
+   * \returns the metric
+   */
   uint32_t GetMetric () const;
+  /**
+   * Get destination count
+   * \returns the destination count
+   */
   uint8_t  GetDestCount () const;
 
-  /// Handle TTL and Metric:
+  /// Handle TTL
   void  DecrementTtl ();
+  /**
+   * Handle Metric:
+   * \param metric the mteric to increment
+   */
   void  IncrementMetric (uint32_t metric);
-  /*
+  /**
    * \brief Checks that preq's originator address equals to originator, and
    * this preq is not proactive
    */
   bool MayAddAddress (Mac48Address originator);
+  /**
+   * Is full function
+   * \returns true if full
+   */
   bool IsFull () const;
   
   // Inherited from WifiInformationElement
@@ -132,17 +259,24 @@ private:
    */
   uint8_t m_maxSize; 
 
-  uint8_t m_flags;
-  uint8_t m_hopCount;
-  uint8_t m_ttl;
-  uint32_t m_preqId;
-  Mac48Address m_originatorAddress;
-  uint32_t m_originatorSeqNumber;
-  uint32_t m_lifetime;
-  uint32_t m_metric;
-  uint8_t  m_destCount;
-  std::vector<Ptr<DestinationAddressUnit> >  m_destinations;
+  uint8_t m_flags; ///< flags
+  uint8_t m_hopCount; ///< hop count
+  uint8_t m_ttl; ///< TTL
+  uint32_t m_preqId; ///< PREQ ID
+  Mac48Address m_originatorAddress; ///< originator address
+  uint32_t m_originatorSeqNumber; ///< originator sequence number
+  uint32_t m_lifetime; ///< lifetime
+  uint32_t m_metric; ///< metric
+  uint8_t  m_destCount; ///< destination count
+  std::vector<Ptr<DestinationAddressUnit> >  m_destinations; ///< the destinations
 
+  /**
+   * equality operator
+   *
+   * \param a lhs
+   * \param b rhs
+   * \returns true if equal
+   */
   friend bool operator== (const IePreq & a, const IePreq & b);
 };
 

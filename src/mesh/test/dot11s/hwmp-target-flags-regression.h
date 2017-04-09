@@ -27,7 +27,9 @@
 using namespace ns3;
 
 /**
- * \ingroup dot11s
+ * \ingroup dot11s-test
+ * \ingroup tests
+ *
  * \brief This is a test for intermediate reply and saving routing
  * information about neighbour. 4 stations and 3 UDP ping streams are initiated.
  * \verbatim
@@ -71,6 +73,7 @@ public:
   virtual ~HwmpDoRfRegressionTest();
 
   virtual void DoRun ();
+  /// Check results function
   void CheckResults ();
 
 private:
@@ -78,11 +81,15 @@ private:
   NodeContainer * m_nodes;
   /// Simulation time
   Time m_time;
-  Ipv4InterfaceContainer m_interfaces;
+  Ipv4InterfaceContainer m_interfaces; ///< interfaces
 
+  /// Create nodes function
   void CreateNodes ();
+  /// Create devices function
   void CreateDevices ();
+  /// Install application function
   void InstallApplications ();
+  /// Reset position function
   void ResetPosition ();
 
   /// Server-side socket
@@ -96,11 +103,11 @@ private:
   /// Client-side socket
   Ptr<Socket> m_clientSocketC;
 
-  // sent packets counter A
+  /// sent packets counter A
   uint32_t m_sentPktsCounterA;
-  // sent packets counter B
+  /// sent packets counter B
   uint32_t m_sentPktsCounterB;
-  // sent packets counter C
+  /// sent packets counter C
   uint32_t m_sentPktsCounterC;
 
   /**

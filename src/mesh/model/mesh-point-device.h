@@ -60,6 +60,7 @@ public:
   //\{
   /**
    * \brief Attach new interface to the station. Interface must support 48-bit MAC address and SendFrom method.
+   * \param port the port used
    *
    * \attention Only MeshPointDevice can have IP address, but not individual interfaces.
    */
@@ -165,20 +166,21 @@ private:
   /// Current routing protocol, used mainly by GetRoutingProtocol
   Ptr<MeshL2RoutingProtocol> m_routingProtocol;
 
-  ///\name Device statistics counters
-  ///\{
+  /// statistics counters
   struct Statistics
   {
-    uint32_t unicastData;
-    uint32_t unicastDataBytes;
-    uint32_t broadcastData;
-    uint32_t broadcastDataBytes;
+    uint32_t unicastData; ///< unicast data
+    uint32_t unicastDataBytes; ///< unicast data bytes
+    uint32_t broadcastData; ///< broadcast data
+    uint32_t broadcastDataBytes; ///< broadcast data bytes
 
+    /// constructor
     Statistics ();
   };
   /// Counters
-  Statistics m_rxStats, m_txStats, m_fwdStats;
-  ///\}
+  Statistics m_rxStats; ///< receive statistics
+  Statistics m_txStats; ///< transmit statistics
+  Statistics m_fwdStats; ///< forward statistics
 };
 } // namespace ns3
 #endif

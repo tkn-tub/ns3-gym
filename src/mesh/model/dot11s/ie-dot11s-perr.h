@@ -36,11 +36,32 @@ class IePerr : public WifiInformationElement
 public:
   IePerr ();
   ~IePerr ();
+  /**
+   * Get number of destination function
+   * \returns the number of destinations
+   */
   uint8_t   GetNumOfDest () const;
+  /**
+   * Add address unit function
+   * \param unit the address of the failed destination
+   */
   void AddAddressUnit (HwmpProtocol::FailedDestination unit);
+  /**
+   * Is full function
+   * \returns true if full
+   */
   bool IsFull () const;
+  /**
+   * Get address unit vector function
+   * \returns the list of failed destinations
+   */
   std::vector<HwmpProtocol::FailedDestination> GetAddressUnitVector () const;
+  /**
+   * Delete address unit function
+   * \param address the MAC address of the deleted unit
+   */
   void DeleteAddressUnit (Mac48Address address);
+  /// Reset PERR
   void ResetPerr ();
 
   // Inherited from WifiInformationElement
@@ -51,7 +72,14 @@ public:
   virtual uint8_t GetInformationFieldSize () const;
 
 private:
-  std::vector<HwmpProtocol::FailedDestination> m_addressUnits;
+  std::vector<HwmpProtocol::FailedDestination> m_addressUnits; ///< address units
+  /**
+   * equality operator
+   *
+   * \param a lhs
+   * \param b rhs
+   * \returns true if equal
+   */
   friend bool operator== (const IePerr & a, const IePerr & b);
 };
 bool operator== (const IePerr & a, const IePerr & b);

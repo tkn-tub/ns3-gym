@@ -44,10 +44,18 @@ public:
   /// Route lookup result, return type of LookupXXX methods
   struct LookupResult
   {
-    Mac48Address retransmitter;
-    uint32_t ifIndex;
-    uint8_t  cost;
-    uint16_t seqnum;
+    Mac48Address retransmitter; ///< retransmitter
+    uint32_t ifIndex; ///< IF index
+    uint8_t  cost; ///< cost
+    uint16_t seqnum; ///< sequence number
+    /**
+     * Constructor
+     *
+     * \param r retransmitter MAC address
+     * \param i interfce index
+     * \param c cost
+     * \param s sequence number
+     */
     LookupResult (Mac48Address r = Mac48Address::GetBroadcast (),
                   uint32_t i = INTERFACE_ANY,
                   uint8_t  c = MAX_COST,
@@ -64,6 +72,10 @@ public:
     bool operator== (const LookupResult & o) const;
   };
 public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId ();
   FlameRtable ();
   ~FlameRtable ();
@@ -79,21 +91,24 @@ public:
     );
   /**
    * \brief Lookup path to destination
+   * \param destination
    * \return Broadcast if not found
    */
   LookupResult Lookup (Mac48Address destination);
 private:
+  /// assignment operator
   FlameRtable& operator= (const FlameRtable &);
+  /// type conversion operator
   FlameRtable (const FlameRtable &);
 
   /// Routing table entry
   struct Route
   {
-    Mac48Address retransmitter;
-    uint32_t interface;
-    uint32_t cost;
-    Time whenExpire;
-    uint32_t seqnum;
+    Mac48Address retransmitter; ///< retransmitter
+    uint32_t interface; ///< interface
+    uint32_t cost; ///< cost
+    Time whenExpire; ///< expire when?
+    uint32_t seqnum; ///< sequence number
   };
   /// Lifetime parameter
   Time m_lifetime;

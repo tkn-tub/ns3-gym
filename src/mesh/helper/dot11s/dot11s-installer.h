@@ -26,12 +26,17 @@
 namespace ns3 {
 
 /**
+ * \ingroup dot11s
  * \brief Helper class to allow easy installation of 802.11s stack.
  */
 class Dot11sStack : public MeshStack
 {
 public:
   
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId ();
 
   /**
@@ -53,21 +58,25 @@ public:
   /**
    * \brief Install an 802.11s stack.
    * \param mp The Ptr<MeshPointDevice> to use when setting up the PMP.
+   * \return true if successful
    */
   bool InstallStack (Ptr<MeshPointDevice> mp);
  
   /**
    * \brief Iterate through the referenced devices and protocols and print
    * their statistics
+   * \param mp The Ptr<MeshPointDevice> to use when setting up the PMP.
+   * \param os The output stream
    */
   void Report (const Ptr<MeshPointDevice> mp, std::ostream&);
 
   /**
    * \brief Reset the statistics on the referenced devices and protocols.
+   * \param mp The Ptr<MeshPointDevice> to use when setting up the PMP.
    */
   void ResetStats (const Ptr<MeshPointDevice> mp);
 private:
-  Mac48Address m_root;
+  Mac48Address m_root; ///< root
 };
 
 } // namespace ns3

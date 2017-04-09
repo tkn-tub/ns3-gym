@@ -33,7 +33,7 @@ AirtimeLinkMetricCalculator::GetTypeId ()
     .SetGroupName ("Mesh")
     .AddConstructor<AirtimeLinkMetricCalculator> ()
     .AddAttribute ( "TestLength",
-                    "Rate should be estimated using test length.",
+                    "Number of bytes in test frame (a constant 1024 in the standard)",
                     UintegerValue (1024),
                     MakeUintegerAccessor (
                       &AirtimeLinkMetricCalculator::SetTestLength),
@@ -68,7 +68,7 @@ AirtimeLinkMetricCalculator::SetTestLength (uint16_t testLength)
 uint32_t
 AirtimeLinkMetricCalculator::CalculateMetric (Mac48Address peerAddress, Ptr<MeshWifiInterfaceMac> mac)
 {
-  /* Airtime link metric is defined in 11B.10 of 802.11s Draft D3.0 as:
+  /* Airtime link metric is defined in Section 13.9 of 802.11-2012 as:
    *
    * airtime = (O + Bt/r) /  (1 - frame error rate), where
    * o  -- the PHY dependent channel access which includes frame headers, training sequences,
@@ -85,8 +85,8 @@ AirtimeLinkMetricCalculator::CalculateMetric (Mac48Address peerAddress, Ptr<Mesh
   double failAvg = mac->GetWifiRemoteStationManager ()->GetInfo (peerAddress).GetFrameErrorRate ();
   if (failAvg == 1)
     {
-      // Retrun max metric value when frame error rate equals to 1
-      return (uint32_t)0xffffffff;
+      // Return max metric value when frame error rate equals to 1
+      return (uint32_t) 0xffffffff;
     }
   NS_ASSERT (failAvg < 1.0);
   WifiTxVector txVector;

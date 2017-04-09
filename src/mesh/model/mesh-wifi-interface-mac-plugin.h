@@ -47,6 +47,8 @@ public:
   virtual void SetParent (Ptr<MeshWifiInterfaceMac> parent) = 0; 
   /** 
    * \brief Process received frame
+   * \param packet
+   * \param header
    * 
    * \return false if (and only if) frame should be dropped
    * \todo define when MAC call this
@@ -54,13 +56,17 @@ public:
   virtual bool Receive (Ptr<Packet> packet, const WifiMacHeader & header) = 0;
   /**
    * \brief Update frame before it will be forwarded down
-   * 
+   * \param packet
+   * \param header
+   * \param from
+   * \param to
    * \return false if (and only if) frame should be dropped
    * \todo define when MAC call this, preconditions & postconditions
    */
   virtual bool UpdateOutcomingFrame (Ptr<Packet> packet, WifiMacHeader & header, Mac48Address from, Mac48Address to) = 0;
   /**
    * \brief Update beacon before it will be formed and sent
+   * \param beacon
    *
    * \todo define when MAC call this
    */

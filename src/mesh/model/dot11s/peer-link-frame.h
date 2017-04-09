@@ -35,7 +35,7 @@ namespace dot11s
  *
  * \brief 802.11s Peer link open management frame
  * 
- * Peer link opent frame includes the following:
+ * Peer link open start frame includes the following:
  * - Capability
  * - Supported rates
  * - Mesh ID of mesh
@@ -48,17 +48,29 @@ public:
   ///\brief fields:
   struct PlinkOpenStartFields
   {
-    IePeeringProtocol protocol; //Peering protocol version - 3 octets
-    uint16_t capability;        //open and confirm
-    SupportedRates rates;       //open and confirm
-    IeMeshId meshId;            //open and close
-    IeConfiguration config;     //open and confirm
+    IePeeringProtocol protocol; ///< Peering protocol version - 3 octets
+    uint16_t capability;        ///< open and confirm
+    SupportedRates rates;       ///< open and confirm
+    IeMeshId meshId;            ///< open and close
+    IeConfiguration config;     ///< open and confirm
   };
-  void SetPlinkOpenStart (PlinkOpenStartFields);
+  /**
+   * Set peer link open start fields
+   * \param fields PlinkOpenStartFields to set
+   */
+  void SetPlinkOpenStart (PlinkOpenStartFields fields);
+  /**
+   * Get peer link open start fields
+   * \return PlinkOpenStartFields
+   */
   PlinkOpenStartFields GetFields () const;
 
-  // Inherited from header:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static  TypeId   GetTypeId ();
+  // Inherited from header:
   virtual TypeId   GetInstanceTypeId () const;
   virtual void     Print (std::ostream &os) const;
   virtual uint32_t GetSerializedSize () const;
@@ -66,14 +78,23 @@ public:
   virtual uint32_t Deserialize (Buffer::Iterator start);
 
 private:
-  uint16_t m_capability;
-  SupportedRates m_rates;
-  IeMeshId m_meshId;
-  IeConfiguration m_config;
+  uint16_t m_capability; ///< capability
+  SupportedRates m_rates; ///< rates
+  IeMeshId m_meshId; ///< mesh ID
+  IeConfiguration m_config; ///< config
 
+  /**
+   * equality operator
+   *
+   * \param a lhs
+   * \param b rhs
+   * \returns true if equal
+   */
   friend bool operator== (const PeerLinkOpenStart & a, const PeerLinkOpenStart & b);
 
+  /// assignment operator
   PeerLinkOpenStart& operator= (const PeerLinkOpenStart &);
+  /// type conversion opertor
   PeerLinkOpenStart (const PeerLinkOpenStart &);
 
 };
@@ -95,14 +116,26 @@ public:
   ///\brief fields:
   struct PlinkCloseStartFields
   {
-    IePeeringProtocol protocol; //Peering protocol version - 3 octets
-    IeMeshId meshId;            //open and close
+    IePeeringProtocol protocol; ///< Peering protocol version - 3 octets
+    IeMeshId meshId;            ///< open and close
   };
-  void SetPlinkCloseStart (PlinkCloseStartFields);
+  /**
+   * Set peer link close start fields
+   * \param fields PlinkCloseStartFields to set
+   */
+  void SetPlinkCloseStart (PlinkCloseStartFields fields);
+  /**
+   * Get peer link close start fields 
+   * \return PlinkOpenStartFields
+   */
   PlinkCloseStartFields GetFields () const;
 
-  // Inherited from header:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static  TypeId   GetTypeId ();
+  // Inherited from header:
   virtual TypeId   GetInstanceTypeId () const;
   virtual void     Print (std::ostream &os) const;
   virtual uint32_t GetSerializedSize () const;
@@ -110,11 +143,20 @@ public:
   virtual uint32_t Deserialize (Buffer::Iterator start);
 
 private:
-  IeMeshId m_meshId;
+  IeMeshId m_meshId; ///< mesh ID
 
+  /**
+   * equality operator
+   *
+   * \param a lhs
+   * \param b rhs
+   * \returns true if equal
+   */
   friend bool operator== (const PeerLinkCloseStart & a, const PeerLinkCloseStart & b);
 
+  /// assignment operator
   PeerLinkCloseStart& operator= (const PeerLinkCloseStart &);
+  /// type conversion operator
   PeerLinkCloseStart (const PeerLinkCloseStart &);
 
 };
@@ -137,17 +179,29 @@ public:
   ///\brief fields:
   struct PlinkConfirmStartFields
   {
-    IePeeringProtocol protocol; //Peering protocol version - 3 octets
-    uint16_t capability;        //open and confirm
-    uint16_t aid;               //confirm only
-    SupportedRates rates;       //open and confirm
-    IeConfiguration config;     //open and confirm
+    IePeeringProtocol protocol; ///< Peering protocol version - 3 octets
+    uint16_t capability;        ///< open and confirm
+    uint16_t aid;               ///< confirm only
+    SupportedRates rates;       ///< open and confirm
+    IeConfiguration config;     ///< open and confirm
   };
-  void SetPlinkConfirmStart (PlinkConfirmStartFields);
+  /**
+   * Set peer link confirm start fields
+   * \param fields PlinkCloseStartFields to set
+   */
+  void SetPlinkConfirmStart (PlinkConfirmStartFields fields);
+  /**
+   * Get peer link confirm start fields
+   * \return PlinkOpenStartFields
+   */
   PlinkConfirmStartFields GetFields () const;
 
-  // Inherited from header:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static  TypeId   GetTypeId ();
+  // Inherited from header:
   virtual TypeId   GetInstanceTypeId () const;
   virtual void     Print (std::ostream &os) const;
   virtual uint32_t GetSerializedSize () const;
@@ -155,14 +209,23 @@ public:
   virtual uint32_t Deserialize (Buffer::Iterator start);
 
 private:
-  uint16_t m_capability;
-  uint16_t m_aid;
-  SupportedRates m_rates;
-  IeConfiguration m_config;
+  uint16_t m_capability; ///< capability
+  uint16_t m_aid; ///< aid
+  SupportedRates m_rates; ///< rates
+  IeConfiguration m_config; ///< config
 
+  /**
+   * equality operator
+   *
+   * \param a lhs
+   * \param b rhs
+   * \returns true if equal
+   */
   friend bool operator== (const PeerLinkConfirmStart & a, const PeerLinkConfirmStart & b);
 
+  /// assignment operator
   PeerLinkConfirmStart& operator= (const PeerLinkConfirmStart &);
+  /// type conversion operator
   PeerLinkConfirmStart (const PeerLinkConfirmStart &);
 
 };
