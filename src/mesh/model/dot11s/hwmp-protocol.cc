@@ -168,6 +168,11 @@ HwmpProtocol::GetTypeId ()
                         &HwmpProtocol::m_routeDiscoveryTimeCallback),
                       "ns3::Time::TracedCallback"
                       )
+    .AddTraceSource ("RouteChange",
+                     "Routing table changed",
+                     MakeTraceSourceAccessor (&HwmpProtocol::m_routeChangeTraceSource),
+                     "ns3::HwmpProtocol::RouteChangeTracedCallback"
+                     )
   ;
   return tid;
 }
@@ -457,6 +462,16 @@ HwmpProtocol::ReceivePreq (IePreq preq, Mac48Address from, uint32_t interface, M
         MicroSeconds (preq.GetLifetime () * 1024),
         preq.GetOriginatorSeqNumber ()
         );
+      // Notify trace source of routing change
+      struct RouteChange rChange;
+      rChange.type = "Add Reactive";
+      rChange.destination = preq.GetOriginatorAddress ();
+      rChange.retransmitter = from;
+      rChange.interface = interface;
+      rChange.metric = preq.GetMetric ();
+      rChange.lifetime = MicroSeconds (preq.GetLifetime () * 1024);
+      rChange.seqnum = preq.GetOriginatorSeqNumber ();
+      m_routeChangeTraceSource (rChange);
       ReactivePathResolved (preq.GetOriginatorAddress ());
     }
   if (
@@ -472,6 +487,16 @@ HwmpProtocol::ReceivePreq (IePreq preq, Mac48Address from, uint32_t interface, M
         MicroSeconds (preq.GetLifetime () * 1024),
         preq.GetOriginatorSeqNumber ()
         );
+      // Notify trace source of routing change
+      struct RouteChange rChange;
+      rChange.type = "Add Reactive";
+      rChange.destination = fromMp;
+      rChange.retransmitter = from;
+      rChange.interface = interface;
+      rChange.metric = metric;
+      rChange.lifetime = MicroSeconds (preq.GetLifetime () * 1024);
+      rChange.seqnum = preq.GetOriginatorSeqNumber ();
+      m_routeChangeTraceSource (rChange);
       ReactivePathResolved (fromMp);
     }
   for (std::vector<Ptr<DestinationAddressUnit> >::const_iterator i = destinations.begin (); i != destinations.end (); i++)
@@ -499,6 +524,16 @@ HwmpProtocol::ReceivePreq (IePreq preq, Mac48Address from, uint32_t interface, M
                 MicroSeconds (preq.GetLifetime () * 1024),
                 preq.GetOriginatorSeqNumber ()
                 );
+              // Notify trace source of routing change
+              struct RouteChange rChange;
+              rChange.type = "Add Proactive";
+              rChange.destination = preq.GetOriginatorAddress ();
+              rChange.retransmitter = from;
+              rChange.interface = interface;
+              rChange.metric = preq.GetMetric ();
+              rChange.lifetime = MicroSeconds (preq.GetLifetime () * 1024);
+              rChange.seqnum = preq.GetOriginatorSeqNumber ();
+              m_routeChangeTraceSource (rChange);
               ProactivePathResolved ();
             }
           if (!preq.IsNeedNotPrep ())
@@ -619,6 +654,16 @@ HwmpProtocol::ReceivePrep (IePrep prep, Mac48Address from, uint32_t interface, M
         prep.GetMetric (),
         MicroSeconds (prep.GetLifetime () * 1024),
         sequence);
+      // Notify trace source of routing change
+      struct RouteChange rChange;
+      rChange.type = "Add Reactive";
+      rChange.destination = prep.GetOriginatorAddress ();
+      rChange.retransmitter = from;
+      rChange.interface = interface;
+      rChange.metric = prep.GetMetric ();
+      rChange.lifetime = MicroSeconds (prep.GetLifetime () * 1024);
+      rChange.seqnum = sequence;
+      m_routeChangeTraceSource (rChange);
       m_rtable->AddPrecursor (prep.GetDestinationAddress (), interface, from,
                               MicroSeconds (prep.GetLifetime () * 1024));
       if (result.retransmitter != Mac48Address::GetBroadcast ())
@@ -640,6 +685,16 @@ HwmpProtocol::ReceivePrep (IePrep prep, Mac48Address from, uint32_t interface, M
         metric,
         MicroSeconds (prep.GetLifetime () * 1024),
         sequence);
+      // Notify trace source of routing change
+      struct RouteChange rChange;
+      rChange.type = "Add Reactive";
+      rChange.destination = fromMp;
+      rChange.retransmitter = from;
+      rChange.interface = interface;
+      rChange.metric = metric;
+      rChange.lifetime = MicroSeconds (prep.GetLifetime () * 1024);
+      rChange.seqnum = sequence;
+      m_routeChangeTraceSource (rChange);
       ReactivePathResolved (fromMp);
     }
   if (prep.GetDestinationAddress () == GetAddress ())
@@ -796,6 +851,12 @@ HwmpProtocol::MakePathError (std::vector<FailedDestination> destinations)
     {
       retval.destinations.push_back (destinations[i]);
       m_rtable->DeleteReactivePath (destinations[i].destination);
+      // Notify trace source of routing change
+      struct RouteChange rChange;
+      rChange.type = "Delete Reactive";
+      rChange.destination = destinations[i].destination;
+      rChange.seqnum = destinations[i].seqnum;
+      m_routeChangeTraceSource (rChange);
     }
   return retval;
 }
@@ -843,7 +904,19 @@ HwmpProtocol::GetPerrReceivers (std::vector<FailedDestination> failedDest)
     {
       HwmpRtable::PrecursorList precursors = m_rtable->GetPrecursors (failedDest[i].destination);
       m_rtable->DeleteReactivePath (failedDest[i].destination);
+      // Notify trace source of routing change
+      struct RouteChange rChange;
+      rChange.type = "Delete Reactive";
+      rChange.destination = failedDest[i].destination;
+      rChange.seqnum = failedDest[i].seqnum;
+      m_routeChangeTraceSource (rChange);
       m_rtable->DeleteProactivePath (failedDest[i].destination);
+      // Notify trace source of routing change
+      struct RouteChange rChangePro;
+      rChangePro.type = "Delete Proactive";
+      rChangePro.destination = failedDest[i].destination;
+      rChangePro.seqnum = failedDest[i].seqnum;
+      m_routeChangeTraceSource (rChangePro);
       for (unsigned int j = 0; j < precursors.size (); j++)
         {
           retval.push_back (precursors[j]);
@@ -1209,6 +1282,12 @@ HwmpProtocol::AssignStreams (int64_t stream)
   NS_LOG_FUNCTION (this << stream);
   m_coefficient->SetStream (stream);
   return 1;
+}
+
+Ptr<HwmpRtable>
+HwmpProtocol::GetRoutingTable (void) const
+{
+  return m_rtable;
 }
 
 HwmpProtocol::QueuedPacket::QueuedPacket () :

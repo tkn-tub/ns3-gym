@@ -39,6 +39,20 @@ class HwmpRtable;
 class IePerr;
 class IePreq;
 class IePrep;
+
+/**
+ * Structure to encapsulate route change information
+ */
+struct RouteChange
+{
+  std::string type;             ///< type of change
+  Mac48Address destination;     ///< route destination
+  Mac48Address retransmitter;   ///< route source
+  uint32_t interface;           ///< interface index
+  uint32_t metric;              ///< metric of route
+  Time lifetime;                ///< lifetime of route
+  uint32_t seqnum;              ///< sequence number of route
+};
 /**
  * \ingroup dot11s
  *
@@ -111,6 +125,12 @@ public:
    * \return the number of stream indices assigned by this model
    */
   int64_t AssignStreams (int64_t stream);
+
+  /**
+   * \brief Get pointer to HWMP routing table
+   * \return pointer to routing table
+   */
+  Ptr<HwmpRtable> GetRoutingTable (void) const;
 
 private:
   friend class HwmpProtocolMac;
@@ -211,6 +231,10 @@ private:
   //\}
   /// Route discovery time:
   TracedCallback<Time> m_routeDiscoveryTimeCallback;
+  /// RouteChangeTracedCallback typedef
+  typedef TracedCallback <struct RouteChange> RouteChangeTracedCallback;
+  /// Route change trace source
+  TracedCallback<struct RouteChange> m_routeChangeTraceSource;
   ///\name Methods related to Queue/Dequeue procedures
   ///\{
   bool QueuePacket (QueuedPacket packet);
