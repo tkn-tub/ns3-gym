@@ -365,14 +365,14 @@ PeerManagementProtocol::IsActiveLink (uint32_t interface, Mac48Address peerAddre
 bool
 PeerManagementProtocol::ShouldSendOpen (uint32_t interface, Mac48Address peerAddress)
 {
-  return (m_stats.linksTotal <= m_maxNumberOfPeerLinks);
+  return (m_stats.linksTotal < m_maxNumberOfPeerLinks);
 }
 
 bool
 PeerManagementProtocol::ShouldAcceptOpen (uint32_t interface, Mac48Address peerAddress,
                                           PmpReasonCode & reasonCode)
 {
-  if (m_stats.linksTotal > m_maxNumberOfPeerLinks)
+  if (m_stats.linksTotal >= m_maxNumberOfPeerLinks)
     {
       reasonCode = REASON11S_MESH_MAX_PEERS;
       return false;
@@ -498,9 +498,11 @@ PeerManagementProtocol::PeerLinkStatus (uint32_t interface, Mac48Address peerAdd
 {
   PeerManagementProtocolMacMap::iterator plugin = m_plugins.find (interface);
   NS_ASSERT (plugin != m_plugins.end ());
-  NS_LOG_DEBUG ("Link between me:" << m_address << " my interface:" << plugin->second->GetAddress ()
-                                   << " and peer mesh point:" << peerMeshPointAddress << " and its interface:" << peerAddress
-                                   << ", at my interface ID:" << interface << ". State movement:" << ostate << " -> " << nstate);
+  NS_LOG_DEBUG ("Link between me:" << m_address << " my interface:" 
+                    << plugin->second->GetAddress ()
+                    << " and peer mesh point:" << peerMeshPointAddress << " and its interface:" << peerAddress
+                    << ", at my interface ID:" << interface << ". State movement:" << PeerLink::PeerStateNames[ostate] 
+                    << " -> " << PeerLink::PeerStateNames[nstate]);
   if ((nstate == PeerLink::ESTAB) && (ostate != PeerLink::ESTAB))
     {
       NotifyLinkOpen (peerMeshPointAddress, peerAddress, plugin->second->GetAddress (), interface);
