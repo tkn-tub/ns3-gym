@@ -59,6 +59,7 @@ void
 HwmpRtable::AddReactivePath (Mac48Address destination, Mac48Address retransmitter, uint32_t interface,
                              uint32_t metric, Time lifetime, uint32_t seqnum)
 {
+  NS_LOG_FUNCTION (this << destination << retransmitter << interface << metric << lifetime.GetSeconds () << seqnum);
   std::map<Mac48Address, ReactiveRoute>::iterator i = m_routes.find (destination);
   if (i == m_routes.end ())
     {
@@ -77,6 +78,7 @@ void
 HwmpRtable::AddProactivePath (uint32_t metric, Mac48Address root, Mac48Address retransmitter,
                               uint32_t interface, Time lifetime, uint32_t seqnum)
 {
+  NS_LOG_FUNCTION (this << metric << root << retransmitter << interface << lifetime << seqnum); 
   m_root.root = root;
   m_root.retransmitter = retransmitter;
   m_root.metric = metric;
@@ -88,6 +90,7 @@ void
 HwmpRtable::AddPrecursor (Mac48Address destination, uint32_t precursorInterface,
                           Mac48Address precursorAddress, Time lifetime)
 {
+  NS_LOG_FUNCTION (this << destination << precursorInterface << precursorAddress << lifetime);
   Precursor precursor;
   precursor.interface = precursorInterface;
   precursor.address = precursorAddress;
@@ -116,6 +119,7 @@ HwmpRtable::AddPrecursor (Mac48Address destination, uint32_t precursorInterface,
 void
 HwmpRtable::DeleteProactivePath ()
 {
+  NS_LOG_FUNCTION (this);
   m_root.precursors.clear ();
   m_root.interface = INTERFACE_ANY;
   m_root.metric = MAX_METRIC;
@@ -126,6 +130,7 @@ HwmpRtable::DeleteProactivePath ()
 void
 HwmpRtable::DeleteProactivePath (Mac48Address root)
 {
+  NS_LOG_FUNCTION (this << root);
   if (m_root.root == root)
     {
       DeleteProactivePath ();
@@ -134,6 +139,7 @@ HwmpRtable::DeleteProactivePath (Mac48Address root)
 void
 HwmpRtable::DeleteReactivePath (Mac48Address destination)
 {
+  NS_LOG_FUNCTION (this << destination);
   std::map<Mac48Address, ReactiveRoute>::iterator i = m_routes.find (destination);
   if (i != m_routes.end ())
     {
@@ -143,6 +149,7 @@ HwmpRtable::DeleteReactivePath (Mac48Address destination)
 HwmpRtable::LookupResult
 HwmpRtable::LookupReactive (Mac48Address destination)
 {
+  NS_LOG_FUNCTION (this << destination);
   std::map<Mac48Address, ReactiveRoute>::iterator i = m_routes.find (destination);
   if (i == m_routes.end ())
     {
@@ -158,17 +165,20 @@ HwmpRtable::LookupReactive (Mac48Address destination)
 HwmpRtable::LookupResult
 HwmpRtable::LookupReactiveExpired (Mac48Address destination)
 {
+  NS_LOG_FUNCTION (this << destination);
   std::map<Mac48Address, ReactiveRoute>::iterator i = m_routes.find (destination);
   if (i == m_routes.end ())
     {
       return LookupResult ();
     }
+  NS_LOG_DEBUG ("Returning reactive route to " << destination);
   return LookupResult (i->second.retransmitter, i->second.interface, i->second.metric, i->second.seqnum,
                        i->second.whenExpire - Simulator::Now ());
 }
 HwmpRtable::LookupResult
 HwmpRtable::LookupProactive ()
 {
+  NS_LOG_FUNCTION (this);
   if (m_root.whenExpire < Simulator::Now ())
     {
       NS_LOG_DEBUG ("Proactive route has expired and will be deleted, sorry.");
@@ -179,12 +189,15 @@ HwmpRtable::LookupProactive ()
 HwmpRtable::LookupResult
 HwmpRtable::LookupProactiveExpired ()
 {
+  NS_LOG_FUNCTION (this);
+  NS_LOG_DEBUG ("Returning proactive route to root");
   return LookupResult (m_root.retransmitter, m_root.interface, m_root.metric, m_root.seqnum,
                        m_root.whenExpire - Simulator::Now ());
 }
 std::vector<HwmpProtocol::FailedDestination>
 HwmpRtable::GetUnreachableDestinations (Mac48Address peerAddress)
 {
+  NS_LOG_FUNCTION (this << peerAddress);
   HwmpProtocol::FailedDestination dst;
   std::vector<HwmpProtocol::FailedDestination> retval;
   for (std::map<Mac48Address, ReactiveRoute>::iterator i = m_routes.begin (); i != m_routes.end (); i++)
@@ -209,6 +222,7 @@ HwmpRtable::GetUnreachableDestinations (Mac48Address peerAddress)
 HwmpRtable::PrecursorList
 HwmpRtable::GetPrecursors (Mac48Address destination)
 {
+  NS_LOG_FUNCTION (this << destination);
   //We suppose that no duplicates here can be
   PrecursorList retval;
   std::map<Mac48Address, ReactiveRoute>::iterator route = m_routes.find (destination);
