@@ -251,10 +251,6 @@ private:
    * typedef for a vector of NiChanges
    */
   typedef std::vector <NiChange> NiChanges;
-  /**
-   * typedef for a list of Events
-   */
-  typedef std::list<Ptr<Event> > Events;
 
   /**
    * Append the given Event.
