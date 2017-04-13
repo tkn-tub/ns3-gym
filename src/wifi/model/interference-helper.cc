@@ -187,7 +187,7 @@ InterferenceHelper::SetNumberOfReceiveAntennas (uint8_t rx)
 }
 
 Time
-InterferenceHelper::GetEnergyDuration (double energyW)
+InterferenceHelper::GetEnergyDuration (double energyW) const
 {
   Time now = Simulator::Now ();
   double noiseInterferenceW = 0.0;

@@ -155,7 +155,7 @@ private:
    *          energy on the medium will be higher than
    *          the requested threshold.
    */
-  Time GetEnergyDuration (double energyW);
+  Time GetEnergyDuration (double energyW) const;
 
   /**
    * Add the packet-related signal to interference helper.
