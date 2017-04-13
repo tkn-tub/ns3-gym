@@ -33,9 +33,8 @@ NS_LOG_COMPONENT_DEFINE ("InterferenceHelper");
  *       Phy event class
  ****************************************************************/
 
-InterferenceHelper::Event::Event (uint32_t size, WifiTxVector txVector, Time duration, double rxPower)
-  : m_size (size),
-    m_txVector (txVector),
+InterferenceHelper::Event::Event (WifiTxVector txVector, Time duration, double rxPower)
+  : m_txVector (txVector),
     m_startTime (Simulator::Now ()),
     m_endTime (m_startTime + duration),
     m_rxPowerW (rxPower)
@@ -68,12 +67,6 @@ double
 InterferenceHelper::Event::GetRxPowerW (void) const
 {
   return m_rxPowerW;
-}
-
-uint32_t
-InterferenceHelper::Event::GetSize (void) const
-{
-  return m_size;
 }
 
 WifiTxVector
@@ -138,11 +131,11 @@ InterferenceHelper::~InterferenceHelper ()
 }
 
 Ptr<InterferenceHelper::Event>
-InterferenceHelper::Add (uint32_t size, WifiTxVector txVector, Time duration, double rxPowerW)
+InterferenceHelper::Add (WifiTxVector txVector, Time duration, double rxPowerW)
 {
   Ptr<InterferenceHelper::Event> event;
 
-  event = Create<InterferenceHelper::Event> (size, txVector, duration, rxPowerW);
+  event = Create<InterferenceHelper::Event> (txVector, duration, rxPowerW);
   AppendEvent (event);
   return event;
 }
@@ -153,7 +146,7 @@ InterferenceHelper::AddForeignSignal (Time duration, double rxPowerW)
   // Parameters other than duration and rxPowerW are unused for this type
   // of signal, so we provide dummy versions
   WifiTxVector fakeTxVector;
-  Add (0, fakeTxVector, duration, rxPowerW);
+  Add (fakeTxVector, duration, rxPowerW);
 }
 
 void

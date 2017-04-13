@@ -2385,8 +2385,7 @@ WifiPhy::StartReceivePreambleAndHeader (Ptr<Packet> packet, double rxPowerW, Tim
   Time preambleAndHeaderDuration = CalculatePlcpPreambleAndHeaderDuration (txVector);
 
   Ptr<InterferenceHelper::Event> event;
-  event = m_interference.Add (packet->GetSize (),
-                              txVector,
+  event = m_interference.Add (txVector,
                               rxDuration,
                               rxPowerW);
 

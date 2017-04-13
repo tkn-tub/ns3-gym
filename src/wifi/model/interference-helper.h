@@ -43,12 +43,11 @@ public:
     /**
      * Create an Event with the given parameters.
      *
-     * \param size packet size
      * \param txVector TXVECTOR of the packet
      * \param duration duration of the signal
      * \param rxPower the receive power (w)
      */
-    Event (uint32_t size, WifiTxVector txVector, Time duration, double rxPower);
+    Event (WifiTxVector txVector, Time duration, double rxPower);
     ~Event ();
 
     /**
@@ -76,12 +75,6 @@ public:
      */
     double GetRxPowerW (void) const;
     /**
-     * Return the size of the packet (bytes).
-     *
-     * \return the size of the packet (bytes)
-     */
-    uint32_t GetSize (void) const;
-    /**
      * Return the TXVECTOR of the packet.
      *
      * \return the TXVECTOR of the packet
@@ -96,7 +89,6 @@ public:
 
 
 private:
-    uint32_t m_size; ///< size
     WifiTxVector m_txVector; ///< TXVECTOR
     Time m_startTime; ///< start time
     Time m_endTime; ///< end time
@@ -160,14 +152,13 @@ private:
   /**
    * Add the packet-related signal to interference helper.
    *
-   * \param size packet size
    * \param txVector TXVECTOR of the packet
    * \param duration the duration of the signal
    * \param rxPower receive power (W)
    *
    * \return InterferenceHelper::Event
    */
-  Ptr<InterferenceHelper::Event> Add (uint32_t size, WifiTxVector txVector, Time duration, double rxPower);
+  Ptr<InterferenceHelper::Event> Add (WifiTxVector txVector, Time duration, double rxPower);
 
   /**
    * Add a non-Wifi signal to interference helper.
