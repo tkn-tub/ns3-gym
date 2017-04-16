@@ -486,9 +486,30 @@ const double ZWGS84_MATLAB[216] = {0, 0, 0, 0, 0, 0, 6043686.27224277,
 -1.55198002803211e-09, -1.55198002803211e-09};
 
 
+/**
+ * \ingroup mobility-test
+ * \defgroup mobility-test mobility module tests
+ */
+
+
+/**
+ * \ingroup mobility-test
+ * \ingroup tests
+ *
+ * \brief Geo To Cartesian Test Case
+ */
 class GeoToCartesianTestCase : public TestCase
 {
 public:
+  /**
+   * Constructor
+   *
+   * \param latitude latitude
+   * \param longitude longitude
+   * \param altitude altitude
+   * \param sphType sphere type
+   * \param i index
+   */
   GeoToCartesianTestCase (double latitude, 
                           double longitude, 
                           double altitude,
@@ -498,15 +519,23 @@ public:
 
 private:
   virtual void DoRun (void);
+  /**
+   * Name function
+   * \param latitude the latitude
+   * \param longitude the longitude
+   * \param altitude the altitude
+   * \param sphType the sphere type
+   * \returns the name string
+   */
   static std::string Name (double latitude, 
                            double longitude, 
                            double altitude,
                            GeographicPositions::EarthSpheroidType sphType);
-  double m_latitude;
-  double m_longitude;
-  double m_altitude;
-  GeographicPositions::EarthSpheroidType m_sphType;
-  int m_i;
+  double m_latitude; ///< latitude
+  double m_longitude; ///< longitude
+  double m_altitude; ///< altitude
+  GeographicPositions::EarthSpheroidType m_sphType; ///< spheroid type
+  int m_i; ///< index
 };
 
 std::string 
@@ -604,7 +633,12 @@ GeoToCartesianTestCase::DoRun (void)
     }
 }
 
-
+/**
+ * \ingroup mobility-test
+ * \ingroup tests
+ *
+ * \brief Geo To Cartesian Test Suite
+ */
 class GeoToCartesianTestSuite : public TestSuite
 {
 public:

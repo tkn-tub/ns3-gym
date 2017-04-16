@@ -26,9 +26,20 @@
 
 using namespace ns3;
 
+/**
+ * \ingroup mobility-test
+ * \ingroup tests
+ *
+ * \brief Waypoint Mobility Model Notify Test
+ */
 class WaypointMobilityModelNotifyTest : public TestCase
 {
 public:
+  /**
+   * Constructor
+   *
+   * \param lazy lazy?
+   */
   WaypointMobilityModelNotifyTest (bool lazy)
     : TestCase (lazy ? "Check Waypoint Mobility Model LAZY notification accuracy"
                 : "Check Waypoint Mobility Model NON-LAZY notification accuracy"),
@@ -40,15 +51,20 @@ public:
   }
 
 private:
-  std::vector<Ptr<MobilityModel> > mobilityStack;
-  uint32_t mobilityCount;
-  uint32_t waypointCount;
-  std::deque<Waypoint> waypoints;
-  bool lazyNotify;
+  std::vector<Ptr<MobilityModel> > mobilityStack; ///< mobilty model
+  uint32_t mobilityCount; ///< mobility count
+  uint32_t waypointCount; ///< waypoint count
+  std::deque<Waypoint> waypoints; ///< waypoints
+  bool lazyNotify; ///< lazy notify?
 private:
   virtual void DoRun (void);
   virtual void DoTeardown (void);
+  /// Force updates
   void ForceUpdates (void);
+  /**
+   * Course cange callback
+   * \param model the mobility model
+   */
   void CourseChangeCallback (Ptr<const MobilityModel> model);
 };
 
@@ -145,6 +161,12 @@ WaypointMobilityModelNotifyTest::CourseChangeCallback (Ptr<const MobilityModel> 
     }
 }
 
+/**
+ * \ingroup mobility-test
+ * \ingroup tests
+ *
+ * \brief Waypoint Mobility Model Add Waypoint Test
+ */
 class WaypointMobilityModelAddWaypointTest : public TestCase
 {
 public:
@@ -157,13 +179,17 @@ public:
   }
 
 private:
-  Ptr<MobilityModel> m_mobilityModel;
-  uint32_t m_waypointCount;
-  uint32_t m_waypointCounter;
-  Waypoint m_nextWaypoint;
+  Ptr<MobilityModel> m_mobilityModel; ///< mobility model
+  uint32_t m_waypointCount; ///< waypoint count
+  uint32_t m_waypointCounter; ///< waypoint counter
+  Waypoint m_nextWaypoint; ///< next waypoint
 private:
   virtual void DoRun (void);
   virtual void DoTeardown (void);
+  /**
+   * Course change calback
+   * \param model the mobility model
+   */
   void CourseChangeCallback (Ptr<const MobilityModel> model);
 };
 
@@ -219,6 +245,12 @@ WaypointMobilityModelAddWaypointTest::CourseChangeCallback (Ptr<const MobilityMo
     }
 }
 
+/**
+ * \ingroup mobility-test
+ * \ingroup tests
+ *
+ * \brief Waypoint Mobility Model Test Suite
+ */
 static struct WaypointMobilityModelTestSuite : public TestSuite
 {
   WaypointMobilityModelTestSuite () : TestSuite ("waypoint-mobility-model", UNIT)
@@ -227,4 +259,4 @@ static struct WaypointMobilityModelTestSuite : public TestSuite
     AddTestCase (new WaypointMobilityModelNotifyTest (false), TestCase::QUICK);
     AddTestCase (new WaypointMobilityModelAddWaypointTest (), TestCase::QUICK);
   }
-} g_waypointMobilityModelTestSuite;
+} g_waypointMobilityModelTestSuite; ///< the test suite

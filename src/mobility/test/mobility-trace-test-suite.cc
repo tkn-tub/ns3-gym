@@ -35,12 +35,12 @@
 using namespace ns3;
 
 
-//===========================================================================
-// Class: MobilityTraceTestCase
-//
-//
-// Test case.
-//===========================================================================
+/**
+ * \ingroup mobility-test
+ * \ingroup tests
+ *
+ * \brief Mobility Trace Test Case
+ */
 
 class MobilityTraceTestCase : public TestCase
 {
@@ -107,12 +107,12 @@ MobilityTraceTestCase::DoRun (void)
 }
 
 
-//===========================================================================
-// Class: MobilityTraceTestSuite
-//
-//
-// Test suite.
-//===========================================================================
+/**
+ * \ingroup mobility-test
+ * \ingroup tests
+ *
+ * \brief Mobility Trace Test Suite
+ */
 
 class MobilityTraceTestSuite : public TestSuite
 {
@@ -126,4 +126,4 @@ MobilityTraceTestSuite::MobilityTraceTestSuite ()
   AddTestCase (new MobilityTraceTestCase, TestCase::QUICK);
 }
 
-static MobilityTraceTestSuite mobilityTraceTestSuite;
+static MobilityTraceTestSuite mobilityTraceTestSuite; ///< the test suite

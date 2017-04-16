@@ -46,16 +46,34 @@ NS_LOG_COMPONENT_DEFINE ("RandCartAroundGeoTest");
 
 using namespace ns3;
 
-// 0.1 meter tolerance for testing, which is very small compared to the maximum 
-// distances from origin being tested
+/**
+ * 0.1 meter tolerance for testing, which is very small compared to the maximum 
+ * distances from origin being tested
+ */
 const double TOLERANCE = 0.1;
 
-// earth's radius in meters if modeled as a perfect sphere
+/// earth's radius in meters if modeled as a perfect sphere
 static const double EARTH_RADIUS = 6371e3; 
 
+/**
+ * \ingroup mobility-test
+ * \ingroup tests
+ *
+ * \brief Rand Cart Around Geo Test Case
+ */
 class RandCartAroundGeoTestCase : public TestCase
 {
 public:
+  /**
+   * Constructor
+   *
+   * \param originLatitude origin latitude
+   * \param originLongitude origin longitude
+   * \param maxAltitude maximum altitude
+   * \param numPoints number of points
+   * \param maxDistFromOrigin maximum distance from origin
+   * \param uniRand random variable
+   */
   RandCartAroundGeoTestCase (double originLatitude, 
                              double originLongitude,
                              double maxAltitude, 
@@ -66,15 +84,22 @@ public:
 
 private:
   virtual void DoRun (void);
+  /**
+   * name function
+   * \param originLatitude the origin latitude
+   * \param originLongitude the origin longitude
+   * \param maxDistFromOrigin the maximum distance from the origin
+   * \returns the name string
+   */
   static std::string Name (double originLatitude, 
                            double originLongitude,
                            double maxDistFromOrigin);
-  double m_originLatitude;
-  double m_originLongitude;
-  double m_maxAltitude;
-  int m_numPoints;
-  double m_maxDistFromOrigin;
-  Ptr<UniformRandomVariable> m_uniRand;
+  double m_originLatitude; ///< origin latitude
+  double m_originLongitude; ///< origin longitude
+  double m_maxAltitude; ///< maximum altitude
+  int m_numPoints; ///< number of points
+  double m_maxDistFromOrigin; ///< maximum distance from origin
+  Ptr<UniformRandomVariable> m_uniRand; ///< random number
 };
 
 std::string 
@@ -143,7 +168,12 @@ RandCartAroundGeoTestCase::DoRun (void)
     }
 }
 
-
+/**
+ * \ingroup mobility-test
+ * \ingroup tests
+ *
+ * \brief Rand Cart Around Geo Test Suite
+ */
 class RandCartAroundGeoTestSuite : public TestSuite
 {
 public:
@@ -174,4 +204,4 @@ RandCartAroundGeoTestSuite::RandCartAroundGeoTestSuite ()
     }
 }
 
-static RandCartAroundGeoTestSuite g_RandCartAroundGeoTestSuite;
+static RandCartAroundGeoTestSuite g_RandCartAroundGeoTestSuite; ///< the test suite

@@ -28,6 +28,12 @@
 
 using namespace ns3;
 
+/**
+ * \ingroup mobility-test
+ * \ingroup tests
+ *
+ * \brief Steady State Random Waypoint Test
+ */
 class SteadyStateRandomWaypointTest : public TestCase
 {
 public:
@@ -36,11 +42,12 @@ public:
   virtual ~SteadyStateRandomWaypointTest () {}
 
 private:
-  std::vector<Ptr<MobilityModel> > mobilityStack;
-  double count;
+  std::vector<Ptr<MobilityModel> > mobilityStack; ///< modility model
+  double count; ///< count
 private:
   virtual void DoRun (void);
   virtual void DoTeardown (void);
+  /// Distribution compare function
   void DistribCompare ();
 };
 
@@ -137,10 +144,16 @@ SteadyStateRandomWaypointTest::DistribCompare ()
   NS_TEST_EXPECT_MSG_EQ_TOL (dev_v, 4.4, 0.22, "Got unexpected velocity standard deviation");
 }
 
+/**
+ * \ingroup mobility-test
+ * \ingroup tests
+ *
+ * \brief Steady State Random Waypoint Test Suite
+ */
 struct SteadyStateRandomWaypointTestSuite : public TestSuite
 {
   SteadyStateRandomWaypointTestSuite () : TestSuite ("steady-state-rwp-mobility-model", UNIT)
   {
     AddTestCase (new SteadyStateRandomWaypointTest, TestCase::QUICK);
   }
-} g_steadyStateRandomWaypointTestSuite;
+} g_steadyStateRandomWaypointTestSuite; ///< the test suite
