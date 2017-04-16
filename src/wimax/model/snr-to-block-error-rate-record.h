@@ -100,12 +100,12 @@ public:
   void SetI2 (double);
 
 private:
-  double m_snrValue;
-  double m_bitErrorRate;
-  double m_blockErrorRate;
-  double m_sigma2;
-  double m_i1; // The lower boundary of the confidence interval
-  double m_i2; // The upper boundary of the confidence interval
+  double m_snrValue; ///< SNR vaue
+  double m_bitErrorRate; ///< bit error rate
+  double m_blockErrorRate; ///< block error rate
+  double m_sigma2; ///< sigma2
+  double m_i1; ///< The lower boundary of the confidence interval
+  double m_i2; ///< The upper boundary of the confidence interval
 };
 
 }

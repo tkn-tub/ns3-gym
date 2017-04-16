@@ -35,10 +35,15 @@ class PacketBurst;
 
 /**
  * \ingroup wimax
+ * The channel object to attach Wimax NetDevices
  */
 class WimaxChannel : public Channel
 {
 public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
   WimaxChannel (void);
   virtual ~WimaxChannel (void);
@@ -52,6 +57,7 @@ public:
    */
   uint32_t GetNDevices (void) const;
   /**
+   * \param i the ith device
    * \return the ith attached device
    */
   Ptr<NetDevice> GetDevice (uint32_t i) const;
@@ -67,9 +73,22 @@ public:
   virtual int64_t AssignStreams (int64_t stream) = 0;
 
 private:
+  /**
+   * Attach a phy to the channel
+   * \param phy the phy object to attach
+   */
   virtual void DoAttach (Ptr<WimaxPhy> phy) = 0;
 
+  /**
+   * Get number of devices on the channel
+   * \returns the number of devices
+   */
   virtual uint32_t DoGetNDevices (void) const = 0;
+  /**
+   * Get device corresponding to index
+   * \param i the device index
+   * \returns the device
+   */
   virtual Ptr<NetDevice> DoGetDevice (uint32_t i) const = 0;
 };
 

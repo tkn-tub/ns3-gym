@@ -100,12 +100,14 @@ public:
    */
   void ActivateLoss (bool loss);
 private:
+  /// Clear records function
   void ClearRecords (void);
-  uint8_t m_activateLoss;
+  uint8_t m_activateLoss; ///< activate loss
+  /// trace file path size
   static const unsigned int TRACE_FILE_PATH_SIZE = 1024;
-  char m_traceFilePath[TRACE_FILE_PATH_SIZE];
+  char m_traceFilePath[TRACE_FILE_PATH_SIZE]; ///< trace file path
 
-  std::vector<SNRToBlockErrorRateRecord *> * m_recordModulation[7];
+  std::vector<SNRToBlockErrorRateRecord *> * m_recordModulation[7]; ///< record modulation
 
 };
 }

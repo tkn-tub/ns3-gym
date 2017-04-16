@@ -44,19 +44,28 @@ class BSSchedulerSimple : public BSScheduler
 {
 public:
   BSSchedulerSimple ();
+  /**
+   * Constructor
+   *
+   * \param bs base station device
+   */
   BSSchedulerSimple (Ptr<BaseStationNetDevice> bs);
   ~BSSchedulerSimple (void);
 
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
 
-  /*
+  /**
    * \brief This function returns all the downlink bursts scheduled for the next
    * downlink sub-frame
    * \returns  all the downlink bursts scheduled for the next downlink sub-frame
    */
   std::list<std::pair<OfdmDlMapIe*, Ptr<PacketBurst> > >*
   GetDownlinkBursts (void) const;
-  /*
+  /**
    * \brief This function adds a downlink burst to the list of downlink bursts
    * scheduled for the next downlink sub-frame
    * \param connection a pointer to connection in wich the burst will be sent
@@ -67,17 +76,17 @@ public:
   void AddDownlinkBurst (Ptr<const WimaxConnection> connection, uint8_t diuc,
                          WimaxPhy::ModulationType modulationType, Ptr<PacketBurst> burst);
 
-  /*
+  /**
    * \brief the scheduling function for the downlink subframe.
    */
   void Schedule (void);
-  /*
+  /**
    * \brief Selects a connection from the list of connections having packets to be sent .
    * \param connection will point to a connection that have packets to be sent
    * \returns false if no connection has packets to be sent, true otherwise
    */
   bool SelectConnection (Ptr<WimaxConnection> &connection);
-  /*
+  /**
    * \brief Creates a downlink UGS burst
    * \param serviceFlow the service flow of the burst
    * \param modulationType the modulation type to be used for the burst
@@ -88,7 +97,7 @@ public:
                                    WimaxPhy::ModulationType modulationType, uint32_t availableSymbols);
 
 private:
-  std::list<std::pair<OfdmDlMapIe*, Ptr<PacketBurst> > > *m_downlinkBursts;
+  std::list<std::pair<OfdmDlMapIe*, Ptr<PacketBurst> > > *m_downlinkBursts; ///< down link bursts
 };
 
 } // namespace ns3

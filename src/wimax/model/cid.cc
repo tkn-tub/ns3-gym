@@ -84,18 +84,36 @@ Cid::InitialRanging (void)
   return 0;
 }
 
+/**
+ * \brief equality operator
+ * \param lhs left hand side
+ * \param rhs right hand side
+ * \returns true if equal
+ */
 bool operator == (const Cid &lhs,
                   const Cid &rhs)
 {
   return lhs.m_identifier == rhs.m_identifier;
 }
 
+/**
+ * \brief inequality operator
+ * \param lhs left hand side
+ * \param rhs right hand side
+ * \returns true if not equal
+ */
 bool operator != (const Cid &lhs,
                   const Cid &rhs)
 {
   return !(lhs == rhs);
 }
 
+/**
+ * \brief output stream output opertor
+ * \param os output stream
+ * \param cid CID
+ * \returns output stream
+ */
 std::ostream & operator << (std::ostream &os, const Cid &cid)
 {
   os << cid.GetIdentifier ();

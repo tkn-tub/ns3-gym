@@ -31,8 +31,11 @@
 
 using namespace ns3;
 
-/*
- * Test the wimax tlv implementation.
+/**
+ * \ingroup wimax-test
+ * \ingroup tests
+ *
+ * \brief Test the wimax tlv implementation.
  */
 class Ns3WimaxCsParamTlvTestCase : public TestCase
 {
@@ -124,10 +127,12 @@ Ns3WimaxCsParamTlvTestCase::DoRun (void)
         }
     }
 }
-// ==============================================================================
 
-/*
- * Test the service flow tlv implementation.
+/**
+ * \ingroup wimax-test
+ * \ingroup tests
+ *
+ * \brief Test the service flow tlv implementation.
  */
 class Ns3WimaxSfTlvTestCase : public TestCase
 {
@@ -187,7 +192,12 @@ Ns3WimaxSfTlvTestCase::DoRun (void)
   NS_TEST_ASSERT_MSG_EQ (sfRecv.GetTrafficPriority (), 1, "The sfRecv had the wrong traffic priority.");
 }
 
-// ==============================================================================
+/**
+ * \ingroup wimax-test
+ * \ingroup tests
+ *
+ * \brief Ns3 Wimax Tlv Test Suite
+ */
 class Ns3WimaxTlvTestSuite : public TestSuite
 {
 public:
@@ -201,4 +211,4 @@ Ns3WimaxTlvTestSuite::Ns3WimaxTlvTestSuite ()
   AddTestCase (new Ns3WimaxSfTlvTestCase, TestCase::QUICK);
 }
 
-static Ns3WimaxTlvTestSuite ns3WimaxTlvTestSuite;
+static Ns3WimaxTlvTestSuite ns3WimaxTlvTestSuite; ///< the test suite

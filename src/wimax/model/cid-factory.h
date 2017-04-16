@@ -69,26 +69,46 @@ public:
    * \returns the next Multicast CID.
    */
   Cid AllocateMulticast (void);
-
+  /**
+   * \brief This function returns the next CID for the specified type.
+   * \param type CID type
+   * \returns the next CID.
+   */
   Cid Allocate (enum Cid::Type type);
 
+  /**
+   * \brief This function determines if the CID is a transport.
+   * \param cid CID type
+   * \returns true if the CID is a transport.
+   */
   bool IsTransport (Cid cid) const;
+  /**
+   * \brief This function determines if the CID is primary.
+   * \param cid CID type
+   * \returns true if the CID is primary.
+   */
   bool IsPrimary (Cid cid) const;
+  /**
+   * \brief This function determines if the CID is basic.
+   * \param cid CID type
+   * \returns true if the CID is basic.
+   */
   bool IsBasic (Cid cid) const;
 
   /**
    * Notify the factory that the connection associated to this
    * cid has been killed and that this cid can be reused.
+   * \param cid CID type
    */
   void FreeCid (Cid cid);
 
 private:
-  uint16_t m_m;
+  uint16_t m_m; ///< m
 
-  uint16_t m_basicIdentifier;
-  uint16_t m_primaryIdentifier;
-  uint16_t m_transportOrSecondaryIdentifier;
-  uint16_t m_multicastPollingIdentifier;
+  uint16_t m_basicIdentifier; ///< basic identifier 
+  uint16_t m_primaryIdentifier; ///< primary identifier
+  uint16_t m_transportOrSecondaryIdentifier; ///< transport or secondary identifier
+  uint16_t m_multicastPollingIdentifier; ///< multicast polling identifier
 };
 
 } // namespace ns3

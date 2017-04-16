@@ -44,10 +44,18 @@ class SubscriberStationNetDevice;
 class ConnectionManager : public Object
 {
 public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
   ConnectionManager (void);
   ~ConnectionManager (void);
   void DoDispose (void);
+  /**
+   * Set CID factory
+   * \param cidFactory the CID factory
+   */
   void SetCidFactory (CidFactory *cidFactory);
   /**
    * \brief allocates the management connection for an ss record. This method is only used by BS
@@ -58,6 +66,7 @@ public:
   /**
    * \brief create a connection of type type
    * \param type type of the connection to create
+   * \return a smart pointer to the created WimaxConnection
    */
   Ptr<WimaxConnection> CreateConnection (Cid::Type type);
   /**
@@ -67,25 +76,33 @@ public:
    */
   void AddConnection (Ptr<WimaxConnection> connection, Cid::Type type);
   /**
-   * \return the connection which has as identifier cid
+   * \param cid the connection identifier
+   * \return the connection corresponding to cid
    */
   Ptr<WimaxConnection> GetConnection (Cid cid);
   /**
-   * \return a listy of all connection which have as type type
+   * \param type the type of connection to add
+   * \return a vector of all connections matching the input type
    */
   std::vector<Ptr<WimaxConnection> > GetConnections (Cid::Type type) const;
+  /**
+   * \brief get number of packets
+   * \param type the type of connection to add
+   * \param schedulingType the scheduling type
+   * \returns number of packets
+   */
   uint32_t GetNPackets (Cid::Type type, ServiceFlow::SchedulingType schedulingType) const;
   /**
    * \return true if one of the managed connection has at least one packet to send, false otherwise
    */
   bool HasPackets (void) const;
 private:
-  std::vector<Ptr<WimaxConnection> > m_basicConnections;
-  std::vector<Ptr<WimaxConnection> > m_primaryConnections;
-  std::vector<Ptr<WimaxConnection> > m_transportConnections;
-  std::vector<Ptr<WimaxConnection> > m_multicastConnections;
+  std::vector<Ptr<WimaxConnection> > m_basicConnections; ///< basic connections
+  std::vector<Ptr<WimaxConnection> > m_primaryConnections; ///< primary connections
+  std::vector<Ptr<WimaxConnection> > m_transportConnections; ///< transport connections
+  std::vector<Ptr<WimaxConnection> > m_multicastConnections; ///< multicast connections
   // only for BS
-  CidFactory *m_cidFactory;
+  CidFactory *m_cidFactory; ///< the factory
 };
 
 } // namespace ns3

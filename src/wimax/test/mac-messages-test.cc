@@ -23,8 +23,18 @@
 #include "ns3/mac-messages.h"
 
 using namespace ns3;
-/*
- * Test the DSA request message.
+
+/**
+ * \ingroup wimax-test
+ * \defgroup wimax-test wimax module tests
+ */
+
+
+/**
+ * \ingroup wimax-test
+ * \ingroup tests
+ *
+ * \brief Test the DSA request message.
  */
 class DsaRequestTestCase : public TestCase
 {
@@ -85,7 +95,12 @@ DsaRequestTestCase::DoRun (void)
   NS_TEST_ASSERT_MSG_EQ (sfRecv.GetTrafficPriority (), 1, "The sfRecv had the wrong traffic priority.");
 }
 
-// ==============================================================================
+/**
+ * \ingroup wimax-test
+ * \ingroup tests
+ *
+ * \brief Ns3 Wimax Mac Messages Test Suite
+ */
 class Ns3WimaxMacMessagesTestSuite : public TestSuite
 {
 public:
@@ -98,4 +113,4 @@ Ns3WimaxMacMessagesTestSuite::Ns3WimaxMacMessagesTestSuite ()
   AddTestCase (new DsaRequestTestCase, TestCase::QUICK);
 }
 
-static Ns3WimaxMacMessagesTestSuite ns3WimaxMacMessagesTestSuite;
+static Ns3WimaxMacMessagesTestSuite ns3WimaxMacMessagesTestSuite; ///< the test suite

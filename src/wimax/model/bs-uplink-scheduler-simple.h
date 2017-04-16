@@ -41,9 +41,18 @@ class UplinkSchedulerSimple : public UplinkScheduler
 {
 public:
   UplinkSchedulerSimple (void);
+  /**
+   * Constructor
+   *
+   * \param bs base station device
+   */
   UplinkSchedulerSimple (Ptr<BaseStationNetDevice> bs);
   ~UplinkSchedulerSimple (void);
 
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
 
   std::list<OfdmUlMapIe> GetUplinkAllocations (void) const;
@@ -59,35 +68,83 @@ public:
                             uint32_t &symbolsToAllocation,
                             uint32_t &availableSymbols);
   void Schedule (void);
+  /**
+   * Service Unsolicited Grants function
+   * \param ssRecord Subscriber station record
+   * \param schedulingType the scheduling type
+   * \param ulMapIe the UL map IE
+   * \param modulationType the modulation type
+   * \param symbolsToAllocation the symbols to allocation
+   * \param availableSymbols the available symbols
+   */
   void ServiceUnsolicitedGrants (const SSRecord *ssRecord,
                                  enum ServiceFlow::SchedulingType schedulingType,
                                  OfdmUlMapIe &ulMapIe,
                                  const WimaxPhy::ModulationType modulationType,
                                  uint32_t &symbolsToAllocation,
                                  uint32_t &availableSymbols);
+  /**
+   * Service Bandwidth Requests function
+   * \param ssRecord Subscriber station record
+   * \param schedulingType the scheduling type
+   * \param ulMapIe the UL map IE
+   * \param modulationType the modulation type
+   * \param symbolsToAllocation the symbols to allocation
+   * \param availableSymbols the available symbols
+   */
   void ServiceBandwidthRequests (const SSRecord *ssRecord,
                                  enum ServiceFlow::SchedulingType schedulingType,
                                  OfdmUlMapIe &ulMapIe,
                                  const WimaxPhy::ModulationType modulationType,
                                  uint32_t &symbolsToAllocation,
                                  uint32_t &availableSymbols);
+  /**
+   * Service bandwidth requests function
+   * \param serviceFlow the service flow
+   * \param schedulingType the scheduling type
+   * \param ulMapIe the UL map IE
+   * \param modulationType the modulation type
+   * \param symbolsToAllocation the symbols to allocation
+   * \param availableSymbols the available symbols
+   * \returns true if successful
+   */
   bool ServiceBandwidthRequests (ServiceFlow *serviceFlow,
                                  enum ServiceFlow::SchedulingType schedulingType,
                                  OfdmUlMapIe &ulMapIe,
                                  const WimaxPhy::ModulationType modulationType,
                                  uint32_t &symbolsToAllocation,
                                  uint32_t &availableSymbols);
+  /**
+   * Allocate Initial Ranging Interval function
+   *
+   * \param symbolsToAllocation symbols to allocation for UpLink Subframe
+   * \param availableSymbols available symbols for rtPS flows
+   */
   void AllocateInitialRangingInterval (uint32_t &symbolsToAllocation, uint32_t &availableSymbols);
+  /**
+   * Setup service flow function
+   * \param ssRecord Subscriber station record
+   * \param serviceFlow the service flow
+   */
   void SetupServiceFlow (SSRecord *ssRecord, ServiceFlow *serviceFlow);
 
+  /**
+   * Process bandwidth requet function
+   * \param bwRequestHdr the bandwidth request header
+   */
   void ProcessBandwidthRequest (const BandwidthRequestHeader &bwRequestHdr);
 
+  /// Init once function
   void InitOnce (void);
 
+  /**
+   * Set requested bandwidth function
+   * \param sfr the service flow record
+   */
   void OnSetRequestedBandwidth (ServiceFlowRecord *sfr);
 
 private:
-  std::list<OfdmUlMapIe> m_uplinkAllocations;
+  std::list<OfdmUlMapIe> m_uplinkAllocations; ///< uplink allocations
 
 };
 

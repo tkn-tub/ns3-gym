@@ -54,23 +54,59 @@ class UplinkScheduler;
 class BandwidthManager : public Object
 {
 public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
+  /**
+   * Constructor
+   *
+   * \param device WIMAX device
+   */
   BandwidthManager (Ptr<WimaxNetDevice> device);
   ~BandwidthManager (void);
   void DoDispose (void);
 
+  /**
+   * Calculate allocation size function
+   * \param ssRecord the SS record
+   * \param serviceFlow the service flow
+   * \returns the allocation size
+   */
   uint32_t CalculateAllocationSize (const SSRecord *ssRecord, const ServiceFlow *serviceFlow);
+  /**
+   * Select flow for request function
+   * \param bytesToRequest bytes to request
+   * \returns a service flow
+   */
   ServiceFlow* SelectFlowForRequest (uint32_t &bytesToRequest);
+  /**
+   * Send bandwidth request
+   * \param uiuc the UIUC
+   * \param allocationSize the allocation size
+   */
   void SendBandwidthRequest (uint8_t uiuc, uint16_t allocationSize);
+  /**
+   * Process bandwidth request
+   * \param bwRequestHdr the bandwidth request 
+   */
   void ProcessBandwidthRequest (const BandwidthRequestHeader &bwRequestHdr);
+  /// Set subframe ratio
   void SetSubframeRatio (void);
+  /**
+   * Get symbols per frame allocated
+   * \returns the symbols per the frame allocated
+   */
   uint32_t GetSymbolsPerFrameAllocated (void);
 private:
+  /// Bandwidth manager type conversion operator
   BandwidthManager (const BandwidthManager &);
+  /// Bandwidth manager assignement operator
   BandwidthManager& operator= (const BandwidthManager &);
 
-  Ptr<WimaxNetDevice> m_device;
-  uint16_t m_nrBwReqsSent;
+  Ptr<WimaxNetDevice> m_device; ///< the device
+  uint16_t m_nrBwReqsSent; ///< bandwith requests sent
 };
 
 } // namespace ns3

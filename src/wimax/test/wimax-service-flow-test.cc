@@ -32,8 +32,11 @@
 
 using namespace ns3;
 
-/*
- * Test the service flow creation.
+/**
+ * \ingroup wimax-test
+ * \ingroup tests
+ *
+ * \brief Test the service flow creation.
  */
 class Ns3WimaxSfCreationTestCase : public TestCase
 {
@@ -145,7 +148,12 @@ Ns3WimaxSfCreationTestCase::DoRun (void)
   Simulator::Destroy ();
 }
 
-// ==============================================================================
+/**
+ * \ingroup wimax-test
+ * \ingroup tests
+ *
+ * \brief Ns3 Wimax Service Flow Test Suite
+ */
 class Ns3WimaxServiceFlowTestSuite : public TestSuite
 {
 public:
@@ -158,4 +166,4 @@ Ns3WimaxServiceFlowTestSuite::Ns3WimaxServiceFlowTestSuite ()
   AddTestCase (new Ns3WimaxSfCreationTestCase, TestCase::QUICK);
 }
 
-static Ns3WimaxServiceFlowTestSuite ns3WimaxServiceFlowTestSuite;
+static Ns3WimaxServiceFlowTestSuite ns3WimaxServiceFlowTestSuite; ///< the test suite

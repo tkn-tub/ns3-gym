@@ -30,6 +30,7 @@ namespace ns3 {
 
 /**
  * \ingroup wimax
+ * \brief IpcsClassifierRecord class 
  */
 class IpcsClassifierRecord
 {
@@ -112,6 +113,7 @@ public:
    * \param srcPort the source port of the packet
    * \param dstPort the destination port of the packet
    * \param proto The L4 protocol of the packet
+   * \return true if there is a match
    */
   bool CheckMatch (Ipv4Address srcAddress, Ipv4Address dstAddress,
                    uint16_t srcPort, uint16_t dstPort,
@@ -136,34 +138,61 @@ public:
 
 
 private:
+  /**
+   * Check match source address function
+   * \param srcAddress source IP address to check
+   * \returns true if a match
+   */
   bool CheckMatchSrcAddr (Ipv4Address srcAddress) const;
+  /**
+   * Check match destination address function
+   * \param dstAddress destination IP address to check
+   * \returns true if a match
+   */
   bool CheckMatchDstAddr (Ipv4Address dstAddress) const;
+  /**
+   * Check match source port function
+   * \param srcPort source port to check
+   * \returns true if a match
+   */
   bool CheckMatchSrcPort (uint16_t srcPort) const;
+  /**
+   * Check match destination port function
+   * \param dstPort destination port to check
+   * \returns true if a match
+   */
   bool CheckMatchDstPort (uint16_t dstPort) const;
+  /**
+   * Check match protocol function
+   * \param proto protocol number to check
+   * \returns true if a match
+   */
   bool CheckMatchProtocol (uint8_t proto) const;
+  /// PortRange structure
   struct PortRange
   {
-    uint16_t PortLow;
-    uint16_t PortHigh;
+    uint16_t PortLow; ///< port low
+    uint16_t PortHigh; ///< port high
   };
+  /// ipv4Addr structure
   struct ipv4Addr
   {
-    Ipv4Address Address;
-    Ipv4Mask Mask;
+    Ipv4Address Address; ///< IP address
+    Ipv4Mask Mask; ///< net mask
   };
 
-  uint8_t m_priority;
-  uint16_t m_index;
-  uint8_t m_tosLow;
-  uint8_t m_tosHigh;
-  uint8_t m_tosMask;
-  std::vector<uint8_t> m_protocol;
-  std::vector<struct ipv4Addr> m_srcAddr;
-  std::vector<struct ipv4Addr> m_dstAddr;
-  std::vector<struct PortRange> m_srcPortRange;
-  std::vector<struct PortRange> m_dstPortRange;
+  uint8_t m_priority; ///< priority 
+  uint16_t m_index; ///< index
+  uint8_t m_tosLow; ///< TOS low
+  uint8_t m_tosHigh; ///< TOS high
+  uint8_t m_tosMask; ///< TOS mask
+  std::vector<uint8_t> m_protocol; ///< protocol
+  std::vector<struct ipv4Addr> m_srcAddr; ///< source address
+  std::vector<struct ipv4Addr> m_dstAddr; ///< destination address
+  std::vector<struct PortRange> m_srcPortRange; ///< surce port range
+  std::vector<struct PortRange> m_dstPortRange; ///< destination port range
 
-  uint16_t m_cid;
+  uint16_t m_cid; ///< the CID
 };
 } // namespace ns3
 

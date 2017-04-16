@@ -37,17 +37,36 @@ class Cid;
 
 /**
  * \ingroup wimax
+ * Class to represent WiMAX connections
  */
 class WimaxConnection : public Object
 {
 public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
 
+  /**
+   * Constructor
+   *
+   * \param cid connection ID
+   * \param type CID type
+   */
   WimaxConnection (Cid cid, enum Cid::Type type);
   ~WimaxConnection (void);
 
+  /**
+   * Get CID function
+   * \returns the CID
+   */
   Cid GetCid (void) const;
 
+  /**
+   * Get type function
+   * \returns the type
+   */
   enum Cid::Type GetType (void) const;
   /**
    * \return the queue of the connection
@@ -73,13 +92,24 @@ public:
    * \param packet the packet to be enqueued
    * \param hdrType the header type of the packet
    * \param hdr the header of the packet
+   * \return true if successful
    */
   bool Enqueue (Ptr<Packet> packet, const MacHeaderType &hdrType, const GenericMacHeader &hdr);
   /**
    * \brief dequeue a packet from the queue of the connection
    * \param packetType the type of the packet to dequeue
+   * \return packet dequeued
    */
   Ptr<Packet> Dequeue (MacHeaderType::HeaderType packetType = MacHeaderType::HEADER_TYPE_GENERIC);
+  /**
+   * \brief dequeue a packet from the queue of the connection
+   * Dequeue the first packet in the queue if its size is lower than 
+   * availableByte, the first availableByte of the first packet otherwise
+   *
+   * \param packetType the type of the packet to dequeue
+   * \param availableByte the number of available bytes
+   * \return packet dequeued
+   */
   Ptr<Packet> Dequeue (MacHeaderType::HeaderType packetType, uint32_t availableByte);
   /**
    * \return true if the connection has at least one packet in its queue, false otherwise
@@ -88,12 +118,17 @@ public:
   /**
    * \return true if the connection has at least one packet of type packetType in its queue, false otherwise
    * \param packetType type of packet to check in the queue
+   * \return true if packets available
    */
   bool HasPackets (MacHeaderType::HeaderType packetType) const;
 
+  /**
+   * Get type string
+   * \returns the type string
+   */
   std::string GetTypeStr (void) const;
 
-  // Definition of Fragments Queue data type
+  /// Definition of Fragments Queue data type
   typedef std::list<Ptr<const Packet> > FragmentsQueue;
   /**
    * \brief get a queue of received fragments
@@ -112,13 +147,13 @@ public:
 private:
   virtual void DoDispose (void);
 
-  Cid m_cid;
-  enum Cid::Type m_cidType;
-  Ptr<WimaxMacQueue> m_queue;
-  ServiceFlow *m_serviceFlow;
+  Cid m_cid; ///< CID
+  enum Cid::Type m_cidType; ///< CID type
+  Ptr<WimaxMacQueue> m_queue; ///< queue
+  ServiceFlow *m_serviceFlow; ///< service flow
 
   // FragmentsQueue stores all received fragments
-  FragmentsQueue m_fragmentsQueue;
+  FragmentsQueue m_fragmentsQueue; ///< fragments queue
 };
 
 } // namespace ns3

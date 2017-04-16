@@ -27,8 +27,11 @@
 
 using namespace ns3;
 
-/*
- * Test the network entry procedure.
+/**
+ * \ingroup wimax-test
+ * \ingroup tests
+ *
+ * \brief Test the network entry procedure.
  * Create a network with a BS and 10 SS and check that all the SS perform the
  * network entry correctly
  *
@@ -85,13 +88,15 @@ Ns3WimaxNetworkEntryTestCase::DoRun (void)
   Simulator::Destroy ();
 }
 
-/*
- * Test if the management connections are correctly setup.
+/**
+ * \ingroup wimax-test
+ * \ingroup tests
+ *
+ * \brief Test if the management connections are correctly setup.
  * Create a network with a BS and 10 SS and check that the management
  * connections are correctly setup for all SS
  *
  */
-
 class Ns3WimaxManagementConnectionsTestCase : public TestCase
 {
 public:
@@ -143,6 +148,13 @@ Ns3WimaxManagementConnectionsTestCase::DoRun (void)
     }
   Simulator::Destroy ();
 }
+
+/**
+ * \ingroup wimax-test
+ * \ingroup tests
+ *
+ * \brief Ns3 Wimax SS Mac Test Suite
+ */
 class Ns3WimaxSSMacTestSuite : public TestSuite
 {
 public:
@@ -156,4 +168,4 @@ Ns3WimaxSSMacTestSuite::Ns3WimaxSSMacTestSuite ()
   AddTestCase (new Ns3WimaxManagementConnectionsTestCase, TestCase::QUICK);
 }
 
-static Ns3WimaxSSMacTestSuite ns3WimaxSSMacTestSuite;
+static Ns3WimaxSSMacTestSuite ns3WimaxSSMacTestSuite; ///< the test suite

@@ -32,15 +32,38 @@ namespace ns3 {
 
 /**
  * \ingroup wimax
+ * simpleOfdmSendParam class
  */
 class simpleOfdmSendParam
 {
 public:
   simpleOfdmSendParam (void);
+  /**
+   * Constructor
+   *
+   * \param fecBlock FEC block
+   * \param burstSize burst size
+   * \param isFirstBlock is the first block
+   * \param Frequency frequency
+   * \param modulationType modulation type
+   * \param direction the direction
+   * \param rxPowerDbm receive power
+   */ 
   simpleOfdmSendParam (const bvec &fecBlock, uint32_t burstSize,
                        bool isFirstBlock, uint64_t Frequency,
                        WimaxPhy::ModulationType modulationType, uint8_t direction,
                        double rxPowerDbm);
+  /**
+   * Constructor
+   *
+   * \param burstSize burst size
+   * \param isFirstBlock is the first block
+   * \param Frequency frequency
+   * \param modulationType modulation type
+   * \param direction the direction
+   * \param rxPowerDbm receive power
+   * \param burst packet burst object
+   */ 
   simpleOfdmSendParam (uint32_t burstSize,
                        bool isFirstBlock, uint64_t Frequency,
                        WimaxPhy::ModulationType modulationType, uint8_t direction,
@@ -110,14 +133,14 @@ public:
   Ptr<PacketBurst> GetBurst (void);
 
 private:
-  bvec m_fecBlock;
-  uint32_t m_burstSize;
-  bool m_isFirstBlock;
-  uint64_t m_frequency;
-  WimaxPhy::ModulationType m_modulationType;
-  uint8_t m_direction;
-  double m_rxPowerDbm;
-  Ptr<PacketBurst> m_burst;
+  bvec m_fecBlock; ///< FEC block
+  uint32_t m_burstSize; ///< burst size
+  bool m_isFirstBlock; ///< is frist block
+  uint64_t m_frequency; ///< frequency
+  WimaxPhy::ModulationType m_modulationType; ///< modulation type
+  uint8_t m_direction; ///< direction
+  double m_rxPowerDbm; ///< receive power dbM
+  Ptr<PacketBurst> m_burst; ///< burst
 
 };
 } // namespace ns3

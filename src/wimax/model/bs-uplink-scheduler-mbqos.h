@@ -70,44 +70,113 @@ class UplinkSchedulerMBQoS : public UplinkScheduler
 {
 public:
   UplinkSchedulerMBQoS ();
+  /**
+   * Constructor
+   *
+   * \param time the time
+   */
   UplinkSchedulerMBQoS (Time time);
   ~UplinkSchedulerMBQoS (void);
 
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
 
+  /**
+   * Get uplink allocations
+   * \returns std::list<OfdmUlMapIe>
+   */
   std::list<OfdmUlMapIe> GetUplinkAllocations (void) const;
 
   /**
    * Determines if channel descriptors sent in the current frame are
    * required to be updated
+   * \param updateDcd update DCD if true
+   * \param updateUcd update UCD if true
+   * \param sendDcd send DCD if true
+   * \param sendUcd send UCD if true
    */
-  void GetChannelDescriptorsToUpdate (bool&, bool&, bool&, bool&);
+  void GetChannelDescriptorsToUpdate (bool &updateDcd, bool &updateUcd, bool &sendDcd, bool &sendUcd);
+  /**
+   * Calculate allocation start time
+   * \returns the allocation start time
+   */
   uint32_t CalculateAllocationStartTime (void);
+  /**
+   * Add uplink allocation
+   * \param ulMapIe the UL map IE
+   * \param allocationSize the allocation size
+   * \param symbolsToAllocation the symbols to allocation
+   * \param availableSymbols the available symbols
+   */
   void AddUplinkAllocation (OfdmUlMapIe &ulMapIe,
                             const uint32_t &allocationSize,
                             uint32_t &symbolsToAllocation,
                             uint32_t &availableSymbols);
 
+  /**
+   * Schedule function
+   */
   void Schedule (void);
+  /**
+   * Service unsolicited grants
+   * \param ssRecord the SS record
+   * \param schedulingType the scheduling type
+   * \param ulMapIe the UL map IE
+   * \param modulationType the modulation type
+   * \param symbolsToAllocation the symbols to allocation
+   * \param availableSymbols the available symbols
+   */
   void ServiceUnsolicitedGrants (const SSRecord *ssRecord,
                                  enum ServiceFlow::SchedulingType schedulingType,
                                  OfdmUlMapIe &ulMapIe,
                                  const WimaxPhy::ModulationType modulationType,
                                  uint32_t &symbolsToAllocation,
                                  uint32_t &availableSymbols);
+  /**
+   * Service bandwidth requests
+   * \param ssRecord the SS record
+   * \param schedulingType the scheduling type
+   * \param ulMapIe the UL map IE
+   * \param modulationType the modulation type
+   * \param symbolsToAllocation the symbols to allocation
+   * \param availableSymbols the available symbols
+   */
   void ServiceBandwidthRequests (const SSRecord *ssRecord,
                                  enum ServiceFlow::SchedulingType schedulingType,
                                  OfdmUlMapIe &ulMapIe,
                                  const WimaxPhy::ModulationType modulationType,
                                  uint32_t &symbolsToAllocation,
                                  uint32_t &availableSymbols);
+  /**
+   * Service bandwidth requests
+   * \param serviceFlow the service flow
+   * \param schedulingType the scheduling type
+   * \param ulMapIe the UL map IE
+   * \param modulationType the modulation type
+   * \param symbolsToAllocation the symbols to allocation
+   * \param availableSymbols the available symbols
+   * \returns true if successful 
+   */
   bool ServiceBandwidthRequests (ServiceFlow *serviceFlow,
                                  enum ServiceFlow::SchedulingType schedulingType,
                                  OfdmUlMapIe &ulMapIe,
                                  const WimaxPhy::ModulationType modulationType,
                                  uint32_t &symbolsToAllocation,
                                  uint32_t &availableSymbols);
+  /**
+   * Allocate initial ranging interval
+   * \param symbolsToAllocation the symbols to allocation
+   * \param availableSymbols the available symbols
+   */
   void AllocateInitialRangingInterval (uint32_t &symbolsToAllocation, uint32_t &availableSymbols);
+  /**
+   * Setup service flow
+   * \param ssRecord the SS record
+   * \param serviceFlow the service flow
+   */
   void SetupServiceFlow (SSRecord *ssRecord, ServiceFlow *serviceFlow);
 
   /**
@@ -149,6 +218,7 @@ public:
 
   /**
    * \param priority Priority of queue
+   * \return Ptr<UlJob>
    *
    * \brief Dequeue a job from a priority queue.
    */
@@ -158,6 +228,7 @@ public:
 
   /**
    * \param serviceFlow Service flow of connection
+   * \return Time
    *
    * \brief Calculates deadline of a request.
    */
@@ -170,6 +241,7 @@ public:
 
   /**
    * \param jobs List of jobs
+   * \returns the symbols count
    *
    * Sum the amount of symbols of each job of a queue
    */
@@ -177,26 +249,48 @@ public:
 
   /**
    * \param job job
+   * \returns the symbols count
    *
    * Count the amount of symbols of a job.
    */
   uint32_t CountSymbolsJobs (Ptr<UlJob> job);
 
+  /**
+   * Set requested bandwidth
+   */
   void OnSetRequestedBandwidth (ServiceFlowRecord *sfr);
 
   /**
    * \param ssRecord Subscriber station record
    * \param schedType Service flow type
    * \param reqType Type of packet
+   * \return Ptr<UlJob>
    *
    * Create and fill information of a job.
    */
   Ptr<UlJob>
   CreateUlJob (SSRecord *ssRecord, enum ServiceFlow::SchedulingType schedType, ReqType reqType);
 
+  /**
+   * \param serviceFlow ServiceFlow 
+   * \return Ptr<UlJob>
+   *
+   * Get pending size.
+   */
   uint32_t
   GetPendingSize (ServiceFlow* serviceFlow);
 
+  /**
+   * Service bandwidth requests bytes.
+   * \param serviceFlow the service flow
+   * \param schedulingType the scheduling type
+   * \param ulMapIe the UL map IE
+   * \param modulationType the modulation type
+   * \param symbolsToAllocation the symbols to allocation
+   * \param availableSymbols the available symbols
+   * \param allocationSizeBytes the allocation size in bytes
+   * \returns true if successful
+   */
   bool
   ServiceBandwidthRequestsBytes (ServiceFlow *serviceFlow,
                                  enum ServiceFlow::SchedulingType schedulingType, OfdmUlMapIe &ulMapIe,
@@ -204,15 +298,15 @@ public:
                                  uint32_t &symbolsToAllocation, uint32_t &availableSymbols, uint32_t allocationSizeBytes);
 
 private:
-  std::list<OfdmUlMapIe> m_uplinkAllocations;
+  std::list<OfdmUlMapIe> m_uplinkAllocations; ///< uplink allocations
 
   // queues for scheduler
-  std::list<Ptr<UlJob> > m_uplinkJobs_high;
-  std::list<Ptr<UlJob> > m_uplinkJobs_inter;
-  std::list<Ptr<UlJob> > m_uplinkJobs_low;
+  std::list<Ptr<UlJob> > m_uplinkJobs_high; ///< uplink jobs high priority
+  std::list<Ptr<UlJob> > m_uplinkJobs_inter; ///< uplink jobs intermedite priority
+  std::list<Ptr<UlJob> > m_uplinkJobs_low; ///< uplink jobs low priority
 
   // interval to reset window
-  Time m_windowInterval;
+  Time m_windowInterval; ///< windows interval
 };
 
 } // namespace ns3

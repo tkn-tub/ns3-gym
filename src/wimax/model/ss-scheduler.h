@@ -36,16 +36,34 @@ class WimaxConnection;
 
 /**
  * \ingroup wimax
+ * \param SSScheduler class
  */
 class SSScheduler : public Object
 {
 
 public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
+  /**
+   * Constructor
+   *
+   * \param ss subscriber station device
+   */
   SSScheduler (Ptr<SubscriberStationNetDevice> ss);
   ~SSScheduler (void);
 
+  /**
+   * Set poll me value
+   * \param pollMe the poll me flag
+   */
   void SetPollMe (bool pollMe);
+  /**
+   * Get the poll me value
+   * \returns the poll me flag
+   */
   bool GetPollMe (void) const;
   /**
    * \return a list of packet to be sent in the next opportunity
@@ -62,12 +80,18 @@ public:
   void DoDispose (void);
 protected:
 private:
+  /// type conversion operator
   SSScheduler (const SSScheduler &);
+  /// assignment operator
   SSScheduler & operator= (const SSScheduler &);
 
+  /**
+   * Select connnection
+   * \returns pointer to the wimax connection
+   */
   Ptr<WimaxConnection> SelectConnection (void);
-  Ptr<SubscriberStationNetDevice> m_ss;
-  bool m_pollMe;
+  Ptr<SubscriberStationNetDevice> m_ss; ///< the subscriber station
+  bool m_pollMe; ///< poll me flag
 
 };
 

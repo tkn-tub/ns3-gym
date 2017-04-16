@@ -38,7 +38,16 @@ namespace ns3 {
 class BSLinkManager : public Object
 {
 public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
+  /**
+   * Constructor
+   *
+   * \param bs base station device
+   */
   BSLinkManager (Ptr<BaseStationNetDevice> bs);
   ~BSLinkManager (void);
   /**
@@ -61,31 +70,97 @@ public:
    */
   void VerifyInvitedRanging (Cid cid, uint8_t uiuc);
 private:
+  /// copy constructor (disabled)
   BSLinkManager (const BSLinkManager &);
+  /// assignment operator (disabled)
   BSLinkManager & operator= (const BSLinkManager &);
 
+  /**
+   * Perform ranging function
+   * \param cid the CID
+   * \param rngreq the ranging request
+   */
   void PerformRanging (Cid cid, RngReq rngreq);
+  /**
+   * Perform initial ranging function
+   * \param cid the CID
+   * \param rngreq the ranging request
+   * \param rngrsp the ranging response
+   */
   void PerformInitialRanging (Cid cid, RngReq *rngreq, RngRsp *rngrsp);
+  /**
+   * Perform inivted ranging function
+   * \param cid the CID
+   * \param rngrsp the ranging response
+   */
   void PerformInvitedRanging (Cid cid, RngRsp *rngrsp);
 
+  /**
+   * Set parameters to adjust function
+   * \param rngrsp the ranging response
+   */
   void SetParametersToAdjust (RngRsp *rngrsp);
+  /**
+   * Abort ranging function
+   * \param cid the CID
+   * \param rngrsp the ranging response
+   * \param ssRecord the SS record
+   * \param isNewSS true if a new SS
+   */
   void AbortRanging (Cid cid, RngRsp *rngrsp, SSRecord *ssRecord, bool isNewSS);
+  /**
+   * Accept ranging function
+   * \param cid the CID
+   * \param rngrsp the ranging response
+   * \param ssRecord the SS record
+   */
   void AcceptRanging (Cid cid, RngRsp *rngrsp, SSRecord *ssRecord);
+  /**
+   * Continue ranging function
+   * \param cid the CID
+   * \param rngrsp the ranging response
+   * \param ssRecord the SS record
+   */
   void ContinueRanging (Cid cid, RngRsp *rngrsp, SSRecord *ssRecord);
+  /**
+   * Schedule range response message function
+   * \param cid the CID
+   * \param rngrsp the ranging response
+   */
   void ScheduleRngRspMessage (Cid cid, RngRsp *rngrsp);
+  /**
+   * Deallocate CIDs function
+   * \param cid the CID
+   */
   void DeallocateCids (Cid cid);
 
+  /**
+   * Change DL channel function
+   * \returns true if the DL channel changed
+   */
   bool ChangeDlChannel (void);
+  /**
+   * Get new DL channel function
+   * \returns the new DL channel
+   */
   uint32_t GetNewDlChannel (void);
+  /**
+   * Get signal quality function
+   * \returns the signal quality
+   */
   uint8_t GetSignalQuality (void);
+  /**
+   * Is ranging acceptable function
+   * \returns true if ranging is acceptable
+   */
   bool IsRangingAcceptable (void);
 
-  Ptr<BaseStationNetDevice> m_bs;
+  Ptr<BaseStationNetDevice> m_bs; ///< base station
 
   // ranging parameters
-  uint32_t m_signalQuality;
-  uint8_t m_signalQualityThreshold;
-  int tries; // variable to test multiple RNG-REQ by the SS for example undecodable at BS or lost RNG-RSP
+  uint32_t m_signalQuality; ///< signal quality
+  uint8_t m_signalQualityThreshold; ///< signal quality threshold
+  int tries; ///< variable to test multiple RNG-REQ by the SS for example undecodable at BS or lost RNG-RSP
 };
 
 } // namespace ns3

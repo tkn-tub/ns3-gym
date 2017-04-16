@@ -61,34 +61,49 @@ private:
 
 namespace ns3 {
 
+/**
+ * OfdmSendParams class
+ */
 class OfdmSendParams : public SendParams
 {
-  /**
-   * \see SendParams
-   */
 public:
-  OfdmSendParams (Ptr<PacketBurst> burst, uint8_t modulationType,
-                  uint8_t direction);
+  /**
+   * Constructor
+   *
+   * \param burst packet burst object
+   * \param modulationType modulation type
+   * \param direction the direction
+   */
+  OfdmSendParams (Ptr<PacketBurst> burst, uint8_t modulationType, uint8_t direction);
   ~OfdmSendParams ();
+  /**
+   * \return the packet burst
+   */
   Ptr<PacketBurst> GetBurst () const
   {
     return m_burst;
   }
 
+  /**
+   * \return the modulation type
+   */
   uint8_t GetModulationType () const
   {
     return m_modulationType;
   }
 
+  /**
+   * \return the direction
+   */
   uint8_t GetDirection () const
   {
     return m_direction;
   }
 
 private:
-  Ptr<PacketBurst> m_burst;
-  uint8_t m_modulationType;
-  uint8_t m_direction;
+  Ptr<PacketBurst> m_burst; ///< packet burst
+  uint8_t m_modulationType; ///< modulation type
+  uint8_t m_direction; ///< direction
 };
 
 } // namespace ns3

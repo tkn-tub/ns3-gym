@@ -125,6 +125,12 @@ UlJob::SetSize (uint32_t size)
   m_size = size;
 }
 
+/**
+ * \brief equality operator
+ * \param a first ULJob
+ * \param b second ULJob
+ * \returns true if equal
+ */
 bool operator == (const UlJob &a, const UlJob &b)
 {
   UlJob A = a;

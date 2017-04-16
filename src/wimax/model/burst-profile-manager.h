@@ -37,16 +37,25 @@ class RngReq;
 class BurstProfileManager : public Object
 {
 public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
+  /**
+   * Constructor
+   *
+   * \param device WIMAX device
+   */
   BurstProfileManager (Ptr<WimaxNetDevice> device);
   ~BurstProfileManager (void);
   void DoDispose (void);
-  /*
+  /**
    * \returns the number of available burst profile
    */
   uint16_t GetNrBurstProfilesToDefine (void);
 
-  /*
+  /**
    * \brief returns the modulation type of a given iuc
    * \param direction should be uplink or downlink
    * \param iuc the iuc
@@ -55,25 +64,44 @@ public:
   WimaxPhy::ModulationType GetModulationType (uint8_t iuc,
                                               WimaxNetDevice::Direction direction) const;
 
+  /**
+   * \brief returns the burst profile
+   * \param modulationType
+   * \param direction should be uplink or downlink
+   * \returns the modulation type of the selected iuc
+   */
   uint8_t GetBurstProfile (WimaxPhy::ModulationType modulationType,
                            WimaxNetDevice::Direction direction) const;
 
-  /*
-   * \brief during initial ranging or periodic ranging (or when RNG-REQ is used instead of
-   * DBPC) calculates the least robust burst profile for SS, e.g., based on distance,
-   * power, signal etc
-   *
+  /**
+   * \brief Get burst profile for SS
+   * \param modulationType
+   * \param ssRecord
+   * \param rngreq
+   * \returns the burst profile for SS
    */
   uint8_t GetBurstProfileForSS (const SSRecord *ssRecord, const RngReq *rngreq,
                                 WimaxPhy::ModulationType &modulationType);
+  /**
+   * \brief Get module ation type for SS
+   * \param ssRecord
+   * \param rngreq
+   * \returns the burst profile for SS
+   */
   WimaxPhy::ModulationType GetModulationTypeForSS (const SSRecord *ssRecord,
                                                    const RngReq *rngreq);
+  /**
+   * \brief Get burst profile to request
+   * \returns the burst profile for SS
+   */
   uint8_t GetBurstProfileToRequest (void);
 private:
+  /// Type conversion operator
   BurstProfileManager (const BurstProfileManager &);
+  /// Assignment operator
   BurstProfileManager& operator= (const BurstProfileManager &);
 
-  Ptr<WimaxNetDevice> m_device;
+  Ptr<WimaxNetDevice> m_device; ///< the device
 };
 
 } // namespace ns3

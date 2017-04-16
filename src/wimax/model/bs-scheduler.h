@@ -44,19 +44,28 @@ class BSScheduler : public Object
 {
 public:
   BSScheduler ();
+  /**
+   * Constructor
+   *
+   * \param bs base station device
+   */
   BSScheduler (Ptr<BaseStationNetDevice> bs);
   ~BSScheduler (void);
 
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
 
-  /*
+  /**
    * \brief This function returns all the downlink bursts scheduled for the next
    * downlink sub-frame
    * \returns  all the downlink bursts scheduled for the next downlink sub-frame
    */
   virtual std::list<std::pair<OfdmDlMapIe*, Ptr<PacketBurst> > >*
   GetDownlinkBursts (void) const = 0;
-  /*
+  /**
    * \brief This function adds a downlink burst to the list of downlink bursts
    * scheduled for the next downlink sub-frame
    * \param connection a pointer to connection in wich the burst will be sent
@@ -69,18 +78,18 @@ public:
                                  WimaxPhy::ModulationType modulationType,
                                  Ptr<PacketBurst> burst) = 0;
 
-  /*
+  /**
    * \brief the scheduling function for the downlink subframe.
    */
   virtual void Schedule (void) = 0;
-  /*
+  /**
    * \brief Selects a connection from the list of connections having packets to be sent .
    * \param connection will point to a connection that have packets to be sent
    * \returns false if no connection has packets to be sent, true otherwise
    */
   virtual bool SelectConnection (Ptr<WimaxConnection> &connection) = 0;
 
-  /*
+  /**
    * \brief Creates a downlink UGS burst
    * \param serviceFlow the service flow of the burst
    * \param modulationType the modulation type to be used for the burst
@@ -91,10 +100,18 @@ public:
                                            WimaxPhy::ModulationType modulationType,
                                            uint32_t availableSymbols) = 0;
 
+  /**
+   * \brief Get the base station.
+   * \returns the base station net device
+   */
   virtual Ptr<BaseStationNetDevice> GetBs (void);
+  /**
+   * \brief Set the base station.
+   * \param bs the base station net device
+   */
   virtual void SetBs (Ptr<BaseStationNetDevice> bs);
 
-  /*
+  /**
    * \brief Check if the packet fragmentation is possible for transport connection.
    * \param connection the downlink connection
    * \param availableSymbols maximum number of OFDM symbols to be used by the burst
@@ -105,8 +122,8 @@ public:
                               int availableSymbols,
                               WimaxPhy::ModulationType modulationType);
 private:
-  Ptr<BaseStationNetDevice> m_bs;
-  std::list<std::pair<OfdmDlMapIe*, Ptr<PacketBurst> > > *m_downlinkBursts;
+  Ptr<BaseStationNetDevice> m_bs; ///< base station
+  std::list<std::pair<OfdmDlMapIe*, Ptr<PacketBurst> > > *m_downlinkBursts; ///< down link bursts
 };
 
 } // namespace ns3

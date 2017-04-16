@@ -25,6 +25,7 @@
 #include <vector>
 
 namespace ns3 {
+/// boolean vector typedef
 typedef std::vector<bool> bvec;
 }
 

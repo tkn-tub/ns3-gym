@@ -42,20 +42,45 @@ class WimaxConnection;
 class ServiceFlowManager : public Object
 {
 public:
-  enum ConfirmationCode // as per Table 384 (not all codes implemented)
+  /// confirmation code enumeration as per Table 384 (not all codes implemented)
+  enum ConfirmationCode
   {
-    CONFIRMATION_CODE_SUCCESS, CONFIRMATION_CODE_REJECT
+    CONFIRMATION_CODE_SUCCESS,
+    CONFIRMATION_CODE_REJECT
   };
 
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
 
   ServiceFlowManager ();
   ~ServiceFlowManager (void);
   void DoDispose (void);
 
+  /**
+   * Add service flow function
+   * \param serviceFlow the service flow
+   */
   void AddServiceFlow (ServiceFlow * serviceFlow);
+  /**
+   * Get service flow by flow id
+   * \param sfid the service flow id
+   * \returns pointer to the service flow object corresponding to the flow id
+   */ 
   ServiceFlow* GetServiceFlow (uint32_t sfid) const;
+  /**
+   * Get service flow by CID
+   * \param cid the CID
+   * \returns pointer to the service flow object corresponding to the CID
+   */
   ServiceFlow* GetServiceFlow (Cid cid) const;
+  /**
+   * Get service flows function
+   * \param schedulingType the scheduling type
+   * \returns vector of pointers to service flows corresponding to the schedulin type
+   */
   std::vector<ServiceFlow*> GetServiceFlows (enum ServiceFlow::SchedulingType schedulingType) const;
 
   /**
@@ -63,17 +88,17 @@ public:
    */
   bool AreServiceFlowsAllocated ();
   /**
-   * \param  serviceFlows the list of the service flows to be checked
+   * \param  serviceFlows vector of pointers to service flows to be checked
    * \return true if all service flows are allocated, false otherwise
    */
   bool AreServiceFlowsAllocated (std::vector<ServiceFlow*>* serviceFlows);
   /**
-   * \param  serviceFlows the list of the service flows to be checked
+   * \param  serviceFlows vector of pointers to service flows to be checked
    * \return true if all service flows are allocated, false otherwise
    */
   bool AreServiceFlowsAllocated (std::vector<ServiceFlow*> serviceFlows);
   /**
-   * \return the next service flow to be allocated
+   * \return pointer to the next service flow to be allocated
    */
   ServiceFlow* GetNextServiceFlowToAllocate ();
 
@@ -98,7 +123,7 @@ public:
                            uint8_t Proto,
                            ServiceFlow::Direction dir) const;
 private:
-  std::vector<ServiceFlow*> * m_serviceFlows;
+  std::vector<ServiceFlow*> * m_serviceFlows; ///< the service flows
 };
 
 } // namespace ns3

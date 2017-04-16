@@ -1263,12 +1263,12 @@ SubscriberStationNetDevice::IsRegistered (void) const
 }
 
 Time
-SubscriberStationNetDevice::GetTimeToAllocation (Time defferTime)
+SubscriberStationNetDevice::GetTimeToAllocation (Time deferTime)
 {
   Time timeAlreadyElapsed = Simulator::Now () - m_frameStartTime;
   Time timeToUlSubframe = Seconds (m_allocationStartTime * GetPhy ()->GetPsDuration ().GetSeconds ())
     - timeAlreadyElapsed;
-  return timeToUlSubframe + defferTime;
+  return timeToUlSubframe + deferTime;
 }
 
 void

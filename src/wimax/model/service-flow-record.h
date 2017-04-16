@@ -60,7 +60,7 @@ public:
   Time GetGrantTimeStamp (void) const;
   /**
    * \brief Set the DlTimeStamp.
-   * \param dlTimeStamp: time when this service flow's traffic was last sent.
+   * \param dlTimeStamp time when this service flow's traffic was last sent.
    */
   void SetDlTimeStamp (Time dlTimeStamp);
   /**
@@ -82,7 +82,7 @@ public:
    */
   uint32_t GetPktsSent (void) const;
   /**
-   * \brief Set the number of received packet
+   * \brief Set the number of received packets
    * \param pktsRcvd The number of received packets
    */
   void SetPktsRcvd (uint32_t pktsRcvd);
@@ -124,55 +124,128 @@ public:
     */
   uint32_t GetBytesRcvd (void) const;
 
+  /**
+    * \brief set the requested bandwidth
+    * \param requestedBandwidth the requested bandwidth
+    */
   void SetRequestedBandwidth (uint32_t requestedBandwidth);
+  /**
+    * \brief update the requested bandwidth
+    * \param requestedBandwidth the requested bandwidth update
+    */
   void UpdateRequestedBandwidth (uint32_t requestedBandwidth);
+  /**
+    * \return The requested bandwidth
+    */
   uint32_t GetRequestedBandwidth (void);
 
+  /**
+    * \brief set the granted bandwidth
+    * \param grantedBandwidth the granted bandwidth
+    */
   void SetGrantedBandwidth (uint32_t grantedBandwidth);
+  /**
+    * \brief update the granted bandwidth
+    * \param grantedBandwidth the granted bandwidth update
+    */
   void UpdateGrantedBandwidth (uint32_t grantedBandwidth);
+  /**
+    * \return The granted bandwidth
+    */
   uint32_t GetGrantedBandwidth (void);
 
+  /**
+    * \brief set the temporary granted bandwidth
+    * \param grantedBandwidthTemp the temporary granted bandwidth
+    */
   void SetGrantedBandwidthTemp (uint32_t grantedBandwidthTemp);
+  /**
+    * \brief update the temporary granted bandwidth
+    * \param grantedBandwidthTemp the temporary granted bandwidth
+    */
   void UpdateGrantedBandwidthTemp (uint32_t grantedBandwidthTemp);
+  /**
+    * \return The temporary granted bandwidth
+    */
   uint32_t GetGrantedBandwidthTemp (void);
 
+  /**
+    * \brief set BW since last expiry
+    * \param bwSinceLastExpiry bandwidth since last expiry
+    */
   void SetBwSinceLastExpiry (uint32_t bwSinceLastExpiry);
+  /**
+    * \brief update BW since last expiry
+    * \param bwSinceLastExpiry bandwith since last expiry
+    */
   void UpdateBwSinceLastExpiry (uint32_t bwSinceLastExpiry);
+  /**
+    * \return The bandwidth since last expiry
+    */
   uint32_t GetBwSinceLastExpiry (void);
 
+  /**
+    * \brief set last grant time
+    * \param grantTime  grant time to set
+    */
   void SetLastGrantTime (Time grantTime);
+  /**
+    * \return The last grant time
+    */
   Time GetLastGrantTime (void) const;
 
+  /**
+    * \brief set backlogged
+    * \param backlogged number of backlogged
+    */
   void SetBacklogged (uint32_t backlogged);
+  /**
+    * \brief increase backlogged
+    * \param backlogged the number of backlogged to update
+    */
   void IncreaseBacklogged (uint32_t backlogged);
+  /**
+    * \return The number of backlogged
+    */
   uint32_t GetBacklogged (void) const;
 
+  /**
+    * \brief set temporary back logged
+    * \param backloggedTemp the temporary backlogged value
+    */
   void SetBackloggedTemp (uint32_t backloggedTemp);
+  /**
+    * \brief increase temporary back logged
+    * \param backloggedTemp the temporary backlogged value
+    */
   void IncreaseBackloggedTemp (uint32_t backloggedTemp);
+  /**
+    * \return The value of temporary backlogged
+    */
   uint32_t GetBackloggedTemp (void) const;
 
 private:
-  uint32_t m_grantSize; // only used for UGS flow
-  Time m_grantTimeStamp; // allocation (for data) for UGS flows and unicast poll (for bandwidth requests) for non-UGS flows
-  Time m_dlTimeStamp; // time when this service flow's traffic was last sent
+  uint32_t m_grantSize; ///< only used for UGS flow
+  Time m_grantTimeStamp; ///< allocation (for data) for UGS flows and unicast poll (for bandwidth requests) for non-UGS flows
+  Time m_dlTimeStamp; ///< time when this service flow's traffic was last sent
 
   // stats members
-  uint32_t m_pktsSent;
-  uint32_t m_pktsRcvd;
+  uint32_t m_pktsSent; ///< packets sent
+  uint32_t m_pktsRcvd; ///< packets received
 
-  uint32_t m_bytesSent;
-  uint32_t m_bytesRcvd;
+  uint32_t m_bytesSent; ///< bytes sent
+  uint32_t m_bytesRcvd; ///< bytes received
 
-  uint32_t m_requestedBandwidth;
-  uint32_t m_grantedBandwidth;
-  uint32_t m_grantedBandwidthTemp; // Temporary variable used to sort list. Necessary to keep original order
+  uint32_t m_requestedBandwidth; ///< requested bandwidth
+  uint32_t m_grantedBandwidth; ///< granted badnwidth
+  uint32_t m_grantedBandwidthTemp; ///< Temporary variable used to sort list. Necessary to keep original order
 
-  /* bandwidth granted since last expiry of minimum reserved traffic rate interval,
-   /only for nrtPS, to make sure minimum reserved traffic rate is maintained */
+  /** bandwidth granted since last expiry of minimum reserved traffic rate interval,
+   * only for nrtPS, to make sure minimum reserved traffic rate is maintained */
   uint32_t m_bwSinceLastExpiry;
-  Time m_lastGrantTime;
-  int32_t m_backlogged;
-  int32_t m_backloggedTemp;
+  Time m_lastGrantTime; ///< last grant time
+  int32_t m_backlogged; ///< back logged
+  int32_t m_backloggedTemp; ///< back logged temp
 
 };
 
