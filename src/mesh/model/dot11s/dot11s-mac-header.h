@@ -104,7 +104,7 @@ public:
 
   /**
    * Set Address Extension Mode
-   * \param value value between 0 and 3 for the two-bit field
+   * \param num_of_addresses value between 0 and 3 for the two-bit field
    */
   void SetAddressExt (uint8_t num_of_addresses);
   /**
