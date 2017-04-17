@@ -55,12 +55,13 @@ class OcbWifiMac;
  */
 struct TxInfo
 {
-  uint32_t channelNumber;
-  uint32_t priority;
-  WifiMode dataRate;
-  WifiPreamble preamble;
-  uint32_t txPowerLevel;
+  uint32_t channelNumber; ///< channel number
+  uint32_t priority; ///< priority
+  WifiMode dataRate; ///< data rate
+  WifiPreamble preamble; ///< preamble
+  uint32_t txPowerLevel; ///< transmit power level
   // Time expiryTime;   // unsupported
+  /// Initializer
   TxInfo ()
     : channelNumber (CCH),
       priority (7),
@@ -68,6 +69,14 @@ struct TxInfo
   {
 
   }
+  /**
+   * Initializer
+   * \param channel the channel
+   * \param prio the priority
+   * \param rate the wifi mode
+   * \param preamble the preamble
+   * \param powerLevel the power level
+   */
   TxInfo (uint32_t channel, uint32_t prio = 7, WifiMode rate = WifiMode (), WifiPreamble preamble = WIFI_PREAMBLE_NONE, uint32_t powerLevel = 8)
     : channelNumber (channel),
       priority (prio),
@@ -93,11 +102,12 @@ struct TxInfo
  */
 struct TxProfile
 {
-  uint32_t channelNumber;
-  bool adaptable;
-  uint32_t txPowerLevel;
-  WifiMode dataRate;
-  WifiPreamble preamble;
+  uint32_t channelNumber; ///< channel number
+  bool adaptable; ///< adaptable
+  uint32_t txPowerLevel; ///< transmit power level
+  WifiMode dataRate; ///< data rate
+  WifiPreamble preamble; ///< preamble
+  /// Initializer
   TxProfile (void)
     : channelNumber (SCH1),
       adaptable (false),
@@ -106,6 +116,12 @@ struct TxProfile
   {
       dataRate = WifiMode ("OfdmRate6MbpsBW10MHz");
   }
+  /**
+   * Initializer
+   * \param channel the channel number
+   * \param adapt true to adapt
+   * \param powerLevel the power level
+   */
   TxProfile (uint32_t channel, bool adapt = true, uint32_t powerLevel = 4)
     : channelNumber (channel),
       adaptable (adapt),
@@ -133,6 +149,10 @@ struct TxProfile
 class WaveNetDevice : public NetDevice
 {
 public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
   WaveNetDevice (void);
   virtual ~WaveNetDevice (void);
@@ -199,7 +219,7 @@ public:
   Ptr<VsaManager> GetVsaManager (void) const;
 
   /**
-   * \param sch_info the parameters about how to start SCH service
+   * \param schInfo the parameters about how to start SCH service
    * \return whether channel access is assigned successfully
    */
   bool StartSch (const SchInfo & schInfo);
@@ -210,7 +230,7 @@ public:
   bool StopSch (uint32_t channelNumber);
 
   /**
-   * \param vsa_info the parameters about how to send VSA frame
+   * \param vsaInfo the parameters about how to send VSA frame
    * \return whether the request for VSA transmission is completed
    */
   bool StartVsa (const VsaInfo & vsaInfo);
@@ -284,16 +304,16 @@ public:
 
   /**
    * \param packet packet sent from above down to Network Device
-    * \param dest mac address of the destination (already resolved)
-    * \param protocolNumber identifies the type of payload contained in
-    *        this packet. Used to call the right L3Protocol when the packet
-    *        is received.
-    * \return whether the Send operation succeeded
-    *
-    * Normally this method is called by 1609.3 standard to
-    * send IP-based packets, however high layers can also send packets
-    * in other types except IP-based packets in CCH.
-    */
+   * \param dest mac address of the destination (already resolved)
+   * \param protocolNumber identifies the type of payload contained in
+   *        this packet. Used to call the right L3Protocol when the packet
+   *        is received.
+   * \return whether the Send operation succeeded
+   *
+   * Normally this method is called by 1609.3 standard to
+   * send IP-based packets, however high layers can also send packets
+   * in other types except IP-based packets in CCH.
+   */
   virtual bool Send (Ptr<Packet> packet, const Address& dest, uint16_t protocolNumber);
 
   // inherited from NetDevice base class.
@@ -322,10 +342,12 @@ public:
   virtual bool SupportsSendFrom (void) const;
 
 private:
-  // This value conforms to the 802.11 specification
+  /// This value conforms to the 802.11 specification
   static const uint16_t MAX_MSDU_SIZE = 2304;
 
+  /// IP v4 Protocol number
   static const uint16_t IPv4_PROT_NUMBER = 0x0800;
+  /// IP v6 Protocol number
   static const uint16_t IPv6_PROT_NUMBER = 0x86DD;
 
   virtual void DoDispose (void);
@@ -345,18 +367,22 @@ private:
    */
   void ForwardUp (Ptr<Packet> packet, Mac48Address from, Mac48Address to);
 
+  /// MacEntities typedef
   typedef std::map<uint32_t, Ptr<OcbWifiMac> > MacEntities;
+  /// MacEntities iterator typedef
   typedef std::map<uint32_t, Ptr<OcbWifiMac> >::const_iterator MacEntitiesI;
-  MacEntities m_macEntities;
-  typedef std::vector<Ptr<WifiPhy> >  PhyEntities;
+  MacEntities m_macEntities; ///< MAC entities
+  /// PhyEntities typedef
+  typedef std::vector<Ptr<WifiPhy> > PhyEntities; 
+  /// PhyEntities iterator typedef
   typedef std::vector<Ptr<WifiPhy> >::const_iterator PhyEntitiesI;
-  PhyEntities m_phyEntities;
+  PhyEntities m_phyEntities; ///< Phy entities
 
-  Ptr<ChannelManager> m_channelManager;
-  Ptr<ChannelScheduler> m_channelScheduler;
-  Ptr<ChannelCoordinator> m_channelCoordinator;
-  Ptr<VsaManager> m_vsaManager;
-  TxProfile *m_txProfile;
+  Ptr<ChannelManager> m_channelManager; ///< the channel manager
+  Ptr<ChannelScheduler> m_channelScheduler; ///< the channel scheduler
+  Ptr<ChannelCoordinator> m_channelCoordinator; ///< the channel coordinator
+  Ptr<VsaManager> m_vsaManager; ///< the VSA manager 
+  TxProfile *m_txProfile; ///< transmit profile
   /**
    * \todo The Address arguments should be passed
    * by const reference, since they are large.
@@ -364,11 +390,11 @@ private:
   TracedCallback<Address, Address> m_addressChange;
 
   // copy from WifiNetDevice
-  Ptr<Node> m_node;
-  NetDevice::ReceiveCallback m_forwardUp;
-  NetDevice::PromiscReceiveCallback m_promiscRx;
-  uint32_t m_ifIndex;
-  mutable uint16_t m_mtu;
+  Ptr<Node> m_node; ///< the node
+  NetDevice::ReceiveCallback m_forwardUp; ///< forward up receive callback
+  NetDevice::PromiscReceiveCallback m_promiscRx; ///< promiscious receive callback
+  uint32_t m_ifIndex; ///< IF index
+  mutable uint16_t m_mtu; ///< MTU
 };
 
 } // namespace ns3

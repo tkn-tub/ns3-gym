@@ -48,6 +48,10 @@ class WaveNetDevice;
 class OcbWifiMac : public RegularWifiMac
 {
 public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
   OcbWifiMac (void);
   virtual ~OcbWifiMac (void);
@@ -94,8 +98,6 @@ public:
    */
   virtual void SetBssid (Mac48Address bssid);
   /**
-   * \param bssid the BSSID of the network that this device belongs to.
-   *
    * This method shall not be used in WAVE environment and
    * here it will overloaded to log warn message
    */
@@ -175,7 +177,7 @@ protected:
 private:
   virtual void Receive (Ptr<Packet> packet, const WifiMacHeader *hdr);
 
-  VendorSpecificContentManager m_vscManager;
+  VendorSpecificContentManager m_vscManager; ///< VSC manager
 };
 
 }

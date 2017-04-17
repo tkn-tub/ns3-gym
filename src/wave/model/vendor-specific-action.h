@@ -52,10 +52,18 @@ class OrganizationIdentifier
 {
 public:
   OrganizationIdentifier (void);
+  /**
+   * Constructor
+   *
+   * \param str identifier name
+   * \param length identifier length
+   */
   OrganizationIdentifier (const uint8_t *str, uint32_t length);
+  /// assignment operator
   OrganizationIdentifier& operator= (const OrganizationIdentifier& oi);
   virtual ~OrganizationIdentifier (void);
 
+  /// OrganizationIdentifierType enumeration
   enum OrganizationIdentifierType
   {
     OUI24 = 3,  // 3 bytes
@@ -81,8 +89,21 @@ public:
   enum OrganizationIdentifierType GetType (void) const;
 
   // below methods will be called by VendorSpecificActionHeader
+  /**
+   * Get serialized size
+   * \returns the serialized size
+   */
   uint32_t GetSerializedSize (void) const;
+  /**
+   * Serialize to buffer
+   * \param start the iterator
+   */
   void Serialize (Buffer::Iterator start) const;
+  /**
+   * Deserialize from buffer
+   * \param start the iterator
+   * \returns the deserialize size
+   */
   uint32_t Deserialize (Buffer::Iterator start);
 
 private:
@@ -92,8 +113,8 @@ private:
   friend std::ostream& operator << (std::ostream& os, const OrganizationIdentifier& oi);
   friend std::istream& operator >> (std::istream& is, const OrganizationIdentifier& oi);
 
-  enum OrganizationIdentifierType m_type;
-  uint8_t m_oi[5];
+  enum OrganizationIdentifierType m_type; ///< OI type
+  uint8_t m_oi[5]; ///< organization identifier
 };
 
 ATTRIBUTE_HELPER_HEADER (OrganizationIdentifier);
@@ -148,6 +169,10 @@ public:
    */
   uint8_t GetCategory (void) const;
 
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
   virtual TypeId GetInstanceTypeId (void) const;
   virtual void Print (std::ostream &os) const;
@@ -156,8 +181,8 @@ public:
   virtual uint32_t Deserialize (Buffer::Iterator start);
 
 private:
-  OrganizationIdentifier m_oi;
-  uint8_t m_category;
+  OrganizationIdentifier m_oi; ///< OI
+  uint8_t m_category; ///< category
 };
 
 /**
@@ -170,6 +195,9 @@ private:
  */
 typedef Callback<bool, Ptr<WifiMac>, const OrganizationIdentifier &, Ptr<const Packet>,const Address &> VscCallback;
 
+/**
+ * VendorSpecificContentManager class
+ */
 class VendorSpecificContentManager
 {
 public:
@@ -189,22 +217,26 @@ public:
   /**
    * \param oi the specific OrganizationIdentifier when receive management information
    * by VendorSpecificAction management frame.
+   * \return true if registered
    */
   bool IsVscCallbackRegistered (OrganizationIdentifier &oi);
   /**
    * \param oi the specific OrganizationIdentifier when receive management information
    * by VendorSpecificAction management frame.
+   * \return VscCallback
    */
   VscCallback FindVscCallback (OrganizationIdentifier &oi);
 
 private:
+  /// VSC callback typedef
   typedef std::map<OrganizationIdentifier,VscCallback> VscCallbacks;
+  /// VSC callback iterator typedef
   typedef std::map<OrganizationIdentifier,VscCallback>::iterator VscCallbacksI;
 
-  VscCallbacks m_callbacks;
+  VscCallbacks m_callbacks; ///< VSC callbacks
 };
 
-static std::vector<OrganizationIdentifier> OrganizationIdentifiers;
+static std::vector<OrganizationIdentifier> OrganizationIdentifiers; ///< the OIs
 }
 
 #endif /* Vendor_Specific_Action_H */

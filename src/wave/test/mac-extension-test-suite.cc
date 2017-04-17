@@ -29,12 +29,23 @@
 
 using namespace ns3;
 
-// This test case tests the channel coordination.
-// In particular, it checks the following:
-// - channel interval calculation including CCH Interval, SCH Interval,
-//   Guard Interval and Sync Interval
-// - current interval state for current time and future time
-// - channel coordination events notified at the correct time.
+/**
+ * \ingroup wave-test
+ * \defgroup wave-test wave module tests
+ */
+
+
+/**
+ * \ingroup wave-test
+ * \ingroup tests
+ *
+ * \brief This test case tests the channel coordination.
+ * In particular, it checks the following:
+ * - channel interval calculation including CCH Interval, SCH Interval,
+ *   Guard Interval and Sync Interval
+ * - current interval state for current time and future time
+ * - channel coordination events notified at the correct time.
+ */
 class ChannelCoordinationTestCase : public TestCase
 {
 public:
@@ -42,20 +53,49 @@ public:
   virtual ~ChannelCoordinationTestCase (void);
 
   // below three methods are used in CoordinationTestListener
+  /**
+   * Notify CCS start now function
+   * \param duration the duration
+   */
   void NotifyCchStartNow (Time duration);
+  /**
+   * Notify SCH start now function
+   * \param duration the duration
+   */
   void NotifySchStartNow (Time duration);
+  /**
+   * Notify guard start now function
+   * \param duration the duration
+   * \param inCchInterval the CCH interval
+   */
   void NotifyGuardStartNow (Time duration, bool inCchInterval);
 private:
+  /**
+   * Test interval after function
+   * \param cchi the CCHI
+   * \param schi the SCHI
+   * \param guardi the guard
+   */
   void TestIntervalAfter (bool cchi, bool schi, bool guardi);
   virtual void DoRun (void);
-  Ptr<ChannelCoordinator> m_coordinator;
+  Ptr<ChannelCoordinator> m_coordinator; ///< coordinator
 
 };
 
-// CoordinationTestListener is used to test channel coordination events
+/**
+ * \ingroup wave-test
+ * \ingroup tests
+ *
+ * \brief CoordinationTestListener is used to test channel coordination events
+ */
 class CoordinationTestListener : public ChannelCoordinationListener
 {
 public:
+  /**
+   * Constructor
+   *
+   * \param coordinatorTest channel coordination test case
+   */
   CoordinationTestListener (ChannelCoordinationTestCase *coordinatorTest)
     : m_coordinatorTest (coordinatorTest)
   {
@@ -75,7 +115,7 @@ public:
   {
     m_coordinatorTest->NotifyGuardStartNow (duration, cchi);
   }
-  ChannelCoordinationTestCase *m_coordinatorTest;
+  ChannelCoordinationTestCase *m_coordinatorTest; ///< coordinator test
 };
 
 ChannelCoordinationTestCase::ChannelCoordinationTestCase (void)
@@ -216,9 +256,20 @@ ChannelCoordinationTestCase::DoRun ()
   Simulator::Destroy ();
 }
 
+/**
+ * \ingroup wave-test
+ * \ingroup tests
+ *
+ * \brief Test Case Helper
+ */
 class TestCaseHelper
 {
 public:
+  /**
+   * Create WAVE device function
+   * \param nodesNumber the number of nodes
+   * \returns the collection of nodes
+   */
   static NetDeviceContainer  CreatWaveDevice (uint32_t nodesNumber = 2);
 };
 
@@ -264,22 +315,46 @@ public:
   ChannelRoutingTestCase (void);
   virtual ~ChannelRoutingTestCase (void);
 
-  // send IP-based packets
-  // shouldSuccess is used to check whether packet sent should be successful.
+  /**
+   * Send IP-based packets
+   *
+   * \param shouldSucceed is used to check whether packet sent should be successful.
+   * \param ipv6 is IPv6?
+   */
   void SendIp (bool shouldSucceed, bool ipv6);
-  // send WSMP or other packets
-  // shouldSuccess is used to check whether packet sent should be successful.
+  /**
+   * Send WSMP or other packets
+   * \param shouldSucceed is used to check whether packet sent should be successful.
+   * \param txInfo transmit info
+   */
   void SendWsmp (bool shouldSucceed, const TxInfo &txInfo);
-  // send VSA management frames
-  // shouldSuccess is used to check whether packet sent should be successful.
+  /**
+   * Send VSA management frames
+   * \param shouldSucceed is used to check whether packet sent should be successful.
+   * \param vsaInfo VSA info
+   */
   void SendWsa (bool shouldSucceed, const VsaInfo &vsaInfo);
 
 private:
   virtual void DoRun (void);
+  /**
+   * Receive function
+   * \param dev the device
+   * \param pkt the packet
+   * \param mode the mode
+   * \param sender the sender address
+   * \returns true if successful
+   */
   bool Receive (Ptr<NetDevice> dev, Ptr<const Packet> pkt, uint16_t mode, const Address &sender);
-  bool ReceiveVsa (Ptr<const Packet>,const Address &, uint32_t, uint32_t);
+  /**
+   * Receive VSA functon
+   * \param pkt the packet
+   * \param address the address
+   * \returns true if successful
+   */
+  bool ReceiveVsa (Ptr<const Packet> pkt,const Address & address, uint32_t, uint32_t);
 
-  Ptr<WaveNetDevice>  m_sender;
+  Ptr<WaveNetDevice>  m_sender; ///< sender
 };
 
 ChannelRoutingTestCase::ChannelRoutingTestCase (void)
@@ -448,33 +523,78 @@ ChannelRoutingTestCase::DoRun ()
   }
 }
 
-// This test case tests channel access assignments which is done by
-// StartSch and StopSch method of WaveNetDevice.
-// channel access assignments include ContinuousAccess, ExtendedAccess,
-// and AlternatingAccess.
-// The results of this test case depend on the implementation of ChannelScheduler
-// In this case, the results depend on class "DefaultChannelScheduler".
+/**
+ * This test case tests channel access assignments which is done by
+ * StartSch and StopSch method of WaveNetDevice.
+ * channel access assignments include ContinuousAccess, ExtendedAccess,
+ * and AlternatingAccess.
+ * The results of this test case depend on the implementation of ChannelScheduler
+ * In this case, the results depend on class "DefaultChannelScheduler".
+ */
 class ChannelAccessTestCase : public TestCase
 {
 public:
   ChannelAccessTestCase (void);
   virtual ~ChannelAccessTestCase (void);
 private:
-  void TestContinuous (SchInfo &info, bool shouldSuccceed);
+  /**
+   * Test continuous function
+   * \param info the schedule info
+   * \param shouldSucceed true if it should succeed
+   */
+  void TestContinuous (SchInfo &info, bool shouldSucceed);
+  /**
+   * Test continuous after function
+   * \param channelNumber the channel number
+   * \param isAccessAssigned true if access assigned
+   */
   void TestContinuousAfter (uint32_t channelNumber, bool isAccessAssigned);
-  void TestExtended (SchInfo &info, bool shouldSuccceed);
+  /**
+   * Test extended function
+   * \param info the schedule info
+   * \param shouldSucceed true if it should succeed
+   */
+  void TestExtended (SchInfo &info, bool shouldSucceed);
+  /**
+   * Test extended after function
+   * \param channelNumber the channel number
+   * \param isAccessAssigned true if access assigned
+   */
   void TestExtendedAfter (uint32_t channelNumber, bool isAccessAssigned);
-  void TestAlternating (SchInfo &info, bool shouldSuccceed);
+  /**
+   * Test aternating function
+   * \param info the schedule info
+   * \param shouldSucceed true if it should succeed
+   */
+  void TestAlternating (SchInfo &info, bool shouldSucceed);
+  /**
+   * Test alternating after function
+   * \param channelNumber the channel number
+   * \param isAccessAssigned true if access assigned
+   */
   void TestAlternatingAfter (uint32_t channelNumber, bool isAccessAssigned);
 
+  /**
+   * Send X function
+   * \param channel the channel number
+   * \param receiverId
+   */
   void SendX (uint32_t channel, uint32_t receiverId);
+  /**
+   * Receive function
+   * \param dev the device
+   * \param pkt the packet
+   * \param mode the mode
+   * \param sender the sender address
+   * \returns true if successful
+   */
   bool Receive (Ptr<NetDevice> dev, Ptr<const Packet> pkt, uint16_t mode, const Address &sender);
 
   virtual void DoRun (void);
 
-  NetDeviceContainer m_devices;
-  Ptr<WaveNetDevice>  m_sender;
-  uint32_t m_received;
+  NetDeviceContainer m_devices; ///< the devices
+  Ptr<WaveNetDevice>  m_sender; ///< sender
+  uint32_t m_received; ///< received
 };
 
 ChannelAccessTestCase::ChannelAccessTestCase (void)
@@ -486,10 +606,10 @@ ChannelAccessTestCase::~ChannelAccessTestCase (void)
 
 }
 void
-ChannelAccessTestCase::TestContinuous (SchInfo &info, bool shouldSuccceed)
+ChannelAccessTestCase::TestContinuous (SchInfo &info, bool shouldSucceed)
 {
   bool result = m_sender->StartSch (info);
-  NS_TEST_EXPECT_MSG_EQ (result, shouldSuccceed, "TestContinuous fail at " << Now ().GetSeconds ());
+  NS_TEST_EXPECT_MSG_EQ (result, shouldSucceed, "TestContinuous fail at " << Now ().GetSeconds ());
 }
 void
 ChannelAccessTestCase::TestContinuousAfter (uint32_t channelNumber, bool isAccessAssigned)
@@ -498,10 +618,10 @@ ChannelAccessTestCase::TestContinuousAfter (uint32_t channelNumber, bool isAcces
   NS_TEST_EXPECT_MSG_EQ (result, isAccessAssigned, "TestContinuousAfter fail at " << Now ().GetSeconds ());
 }
 void
-ChannelAccessTestCase::TestExtended (SchInfo &info, bool shouldSuccceed)
+ChannelAccessTestCase::TestExtended (SchInfo &info, bool shouldSucceed)
 {
   bool result = m_sender->StartSch (info);
-  NS_TEST_EXPECT_MSG_EQ (result, shouldSuccceed, "TestExtended fail at " << Now ().GetSeconds ());
+  NS_TEST_EXPECT_MSG_EQ (result, shouldSucceed, "TestExtended fail at " << Now ().GetSeconds ());
 }
 void
 ChannelAccessTestCase::TestExtendedAfter (uint32_t channelNumber, bool isAccessAssigned)
@@ -511,10 +631,10 @@ ChannelAccessTestCase::TestExtendedAfter (uint32_t channelNumber, bool isAccessA
 }
 
 void
-ChannelAccessTestCase::TestAlternating (SchInfo &info, bool shouldSuccceed)
+ChannelAccessTestCase::TestAlternating (SchInfo &info, bool shouldSucceed)
 {
   bool result = m_sender->StartSch (info);
-  NS_TEST_EXPECT_MSG_EQ (result, shouldSuccceed, "TestAlternating fail at " << Now ().GetSeconds ());
+  NS_TEST_EXPECT_MSG_EQ (result, shouldSucceed, "TestAlternating fail at " << Now ().GetSeconds ());
 }
 void
 ChannelAccessTestCase::TestAlternatingAfter (uint32_t channelNumber, bool isAccessAssigned)
@@ -892,8 +1012,13 @@ ChannelAccessTestCase::DoRun ()
   }
 }
 
-// The Annex C of  IEEE 1609.4 : "Avoiding transmission at scheduled guard intervals"
-// This feature is implemented in WaveMacLow::StartTransmission method
+/**
+ * \ingroup wave-test
+ * \ingroup tests
+ *
+ * \brief The Annex C of  IEEE 1609.4 : "Avoiding transmission at scheduled guard intervals"
+ * This feature is implemented in WaveMacLow::StartTransmission method
+ */
 class AnnexC_TestCase : public TestCase
 {
 public:
@@ -902,12 +1027,26 @@ public:
 private:
   virtual void DoRun (void);
 
+  /**
+   * Send packet function
+   * \param packetSize the packet size
+   * \param txInfo the transmit info
+   * \param sequence the sequence
+   */
   void SendPacket  (uint32_t packetSize, const TxInfo & txInfo, uint32_t sequence);
+  /**
+   * Receive function
+   * \param dev the device
+   * \param pkt the packet
+   * \param mode the mode
+   * \param sender the sender address
+   * \returns true if successful
+   */
   bool Receive (Ptr<NetDevice> dev, Ptr<const Packet> pkt, uint16_t mode, const Address &sender);
 
-  NetDeviceContainer m_devices;
-  Ptr<WaveNetDevice>  m_sender;
-  Ptr<WaveNetDevice>  m_receiver;
+  NetDeviceContainer m_devices; ///< devices
+  Ptr<WaveNetDevice>  m_sender; ///< sender
+  Ptr<WaveNetDevice>  m_receiver; ///< receiver
 };
 
 AnnexC_TestCase::AnnexC_TestCase (void)
@@ -1042,6 +1181,12 @@ AnnexC_TestCase::DoRun (void)
   Simulator::Destroy ();
 }
 
+/**
+ * \ingroup wave-test
+ * \ingroup tests
+ *
+ * \brief Wave Mac Test Suite
+ */
 class WaveMacTestSuite : public TestSuite
 {
 public:
@@ -1059,4 +1204,4 @@ WaveMacTestSuite::WaveMacTestSuite ()
 }
 
 // Do not forget to allocate an instance of this TestSuite
-static WaveMacTestSuite waveMacTestSuite;
+static WaveMacTestSuite waveMacTestSuite; ///< the test suite

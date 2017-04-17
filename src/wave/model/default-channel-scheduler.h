@@ -32,6 +32,10 @@ class WaveNetDevice;
 class DefaultChannelScheduler : public ChannelScheduler
 {
 public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
   DefaultChannelScheduler ();
   virtual ~DefaultChannelScheduler ();
@@ -43,11 +47,24 @@ public:
   /**
    * \param channelNumber the specified channel number
    * \return  the type of current assigned channel access for the specific channel.
-.  */
+   */
   virtual enum ChannelAccess GetAssignedAccessType (uint32_t channelNumber) const;
 
+  /**
+   * Notify CCH slot start
+   * \param duration the CCH slot duration
+   */
   void NotifyCchSlotStart (Time duration);
+  /**
+   * Notify SCH slot start
+   * \param duration the SCH slot duration
+   */
   void NotifySchSlotStart (Time duration);
+  /**
+   * Notify guard slot start
+   * \param duration the CCH slot duration
+   * \param cchi if true, switch to next channel
+   */
   void NotifyGuardSlotStart (Time duration, bool cchi);
 private:
   virtual void DoInitialize (void);
@@ -78,11 +95,13 @@ private:
   virtual bool AssignExtendedAccess (uint32_t channelNumber, uint32_t extends, bool immediate);
   /**
    * This method will assign default CCH access for CCH.
+   * \return whether the channel access is assigned successfully
    */
   virtual bool AssignDefaultCchAccess (void);
   /**
    * \param channelNumber indicating for which channel should release
    * the assigned channel access resource.
+   * \return whether the channel access is released successfully
    */
   virtual bool ReleaseAccess (uint32_t channelNumber);
   /**
@@ -91,9 +110,9 @@ private:
    */
   void SwitchToNextChannel (uint32_t curChannelNumber, uint32_t nextChannelNumber);
 
-  Ptr<ChannelManager> m_manager;
-  Ptr<ChannelCoordinator> m_coordinator;
-  Ptr<WifiPhy> m_phy;
+  Ptr<ChannelManager> m_manager; ///< channel manager
+  Ptr<ChannelCoordinator> m_coordinator; ///< channel coordinator
+  Ptr<WifiPhy> m_phy; ///< Phy
 
   /**
    *  when m_channelAccess is ContinuousAccess, m_channelNumber
@@ -104,16 +123,16 @@ private:
    *   is extended access, extends is the number of extends access.
    *  when m_channelAccess is DefaultCchAccess, m_channelNumber is CCH.
    */
-  uint32_t m_channelNumber;
-  uint32_t m_extend;
-  EventId m_extendEvent;
-  enum ChannelAccess m_channelAccess;
+  uint32_t m_channelNumber; ///< channel number
+  uint32_t m_extend; ///< extend
+  EventId m_extendEvent; ///< extend event
+  enum ChannelAccess m_channelAccess; ///< channel access
 
-  EventId m_waitEvent;
-  uint32_t m_waitChannelNumber;
-  uint32_t m_waitExtend;
+  EventId m_waitEvent; ///< wait event
+  uint32_t m_waitChannelNumber; ///< wait channel number
+  uint32_t m_waitExtend; ///< wait extend
 
-  Ptr<ChannelCoordinationListener> m_coordinationListener;
+  Ptr<ChannelCoordinationListener> m_coordinationListener; ///< coordination listener
 };
 
 }

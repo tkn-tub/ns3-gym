@@ -40,21 +40,49 @@ using namespace ns3;
 class WaveNetDeviceExample
 {
 public:
+  /// Send WSMP example function
   void SendWsmpExample (void);
 
+  /// Send IP example function
   void SendIpExample (void);
 
+  /// Send WSA example
   void SendWsaExample (void);
 
 private:
+  /**
+   * Send one WSMP packet function
+   * \param channel the channel to use
+   * \param seq the sequence
+   */
   void SendOneWsmpPacket (uint32_t channel, uint32_t seq);
+  /**
+   * Send IP packet function
+   * \param seq the sequence
+   * \param ipv6 true if IPV6
+   */
   void SendIpPacket (uint32_t seq, bool ipv6);
+  /**
+   * Receive function
+   * \param dev the device
+   * \param pkt the packet
+   * \param mode the mode
+   * \param sender the sender address
+   * \returns true if successful
+   */
   bool Receive (Ptr<NetDevice> dev, Ptr<const Packet> pkt, uint16_t mode, const Address &sender);
-  bool ReceiveVsa (Ptr<const Packet>,const Address &, uint32_t, uint32_t);
+  /**
+   * Receive VSA functon
+   * \param pkt the packet
+   * \param address the address
+   * \returns true if successful
+   */
+  bool ReceiveVsa (Ptr<const Packet> pkt,const Address & address, uint32_t, uint32_t);
+  /// Create WAVE nodes function
   void CreateWaveNodes (void);
 
-  NodeContainer nodes;
-  NetDeviceContainer devices;
+  NodeContainer nodes; ///< the nodes
+  NetDeviceContainer devices; ///< the devices
 };
 void
 WaveNetDeviceExample::CreateWaveNodes (void)

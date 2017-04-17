@@ -37,6 +37,7 @@ NS_LOG_COMPONENT_DEFINE ("OcbWifiMac");
 
 NS_OBJECT_ENSURE_REGISTERED (OcbWifiMac);
 
+/// Wildcard BSSID
 const static Mac48Address WILDCARD_BSSID = Mac48Address::GetBroadcast ();
 
 TypeId

@@ -242,10 +242,10 @@ public:
   int64_t AssignStreams (NetDeviceContainer c, int64_t stream);
 
 protected:
-  ObjectFactory m_stationManager;
-  ObjectFactory m_channelScheduler;
-  std::vector<uint32_t> m_macsForChannelNumber;
-  uint32_t m_physNumber;
+  ObjectFactory m_stationManager; ///< station manager
+  ObjectFactory m_channelScheduler; ///< channel scheduler
+  std::vector<uint32_t> m_macsForChannelNumber; ///< MACs for channel number
+  uint32_t m_physNumber; ///< Phy number
 };
 }
 #endif /* WAVE_HELPER_H */

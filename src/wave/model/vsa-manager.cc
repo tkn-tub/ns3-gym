@@ -29,7 +29,9 @@ NS_LOG_COMPONENT_DEFINE ("VsaManager");
 
 NS_OBJECT_ENSURE_REGISTERED (VsaManager);
 
+/// OI bytes for use in organization identifier
 const static uint8_t oi_bytes_1609[5] = {0x00, 0x50, 0xC2, 0x4A, 0x40};
+/// OI for IEEE standard 1609
 const static OrganizationIdentifier oi_1609 = OrganizationIdentifier (oi_bytes_1609, 5);
 
 TypeId

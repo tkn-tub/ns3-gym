@@ -202,7 +202,6 @@ public:
 
   /**
    * \brief Returns the cumulative number of bytes transmitted
-   * \param socket the receiving socket
    * \return none
    */
   uint32_t GetCumulativeTxBytes ();
@@ -247,14 +246,14 @@ public:
   void SetTxPkts (uint32_t txPkts);
 
 private:
-  uint32_t m_RxBytes;
-  uint32_t m_cumulativeRxBytes;
-  uint32_t m_RxPkts;
-  uint32_t m_cumulativeRxPkts;
-  uint32_t m_TxBytes;
-  uint32_t m_cumulativeTxBytes;
-  uint32_t m_TxPkts;
-  uint32_t m_cumulativeTxPkts;
+  uint32_t m_RxBytes; ///< reeive bytes
+  uint32_t m_cumulativeRxBytes; ///< cumulative receive bytes
+  uint32_t m_RxPkts; ///< receive packets
+  uint32_t m_cumulativeRxPkts; ///< cumulative receive packets
+  uint32_t m_TxBytes; ///< transmit bytes
+  uint32_t m_cumulativeTxBytes; ///< cumulative transmit bytes
+  uint32_t m_TxPkts; ///< transmit packets
+  uint32_t m_cumulativeTxPkts; ///< cumulative transmit packets
 };
 
 RoutingStats::RoutingStats ()
@@ -471,7 +470,7 @@ private:
   /**
    * \brief Sets up a routing packet for tranmission
    * \param addr destination address
-   * \parm node source node
+   * \param node source node
    * \return Socket to be used for sending/receiving a routed data packet
    */
   Ptr<Socket> SetupRoutingPacketReceive (Ipv4Address addr, Ptr<Node> node);
@@ -483,14 +482,14 @@ private:
    */
   void ReceiveRoutingPacket (Ptr<Socket> socket);
 
-  double m_TotalSimTime;        // seconds
-  uint32_t m_protocol;       // routing protocol; 0=NONE, 1=OLSR, 2=AODV, 3=DSDV, 4=DSR
-  uint32_t m_port;
-  uint32_t m_nSinks;              // number of sink nodes (< all nodes)
-  int m_routingTables;      // dump routing table (at t=5 sec).  0=No, 1=Yes
-  RoutingStats routingStats;
-  std::string m_protocolName;
-  int m_log;
+  double m_TotalSimTime;        ///< seconds
+  uint32_t m_protocol;       ///< routing protocol; 0=NONE, 1=OLSR, 2=AODV, 3=DSDV, 4=DSR
+  uint32_t m_port;           ///< port
+  uint32_t m_nSinks;              ///< number of sink nodes (< all nodes)
+  int m_routingTables;      ///< dump routing table (at t=5 sec).  0=No, 1=Yes
+  RoutingStats routingStats; ///< routing statistics
+  std::string m_protocolName; ///< protocol name
+  int m_log; ///< log
 };
 
 NS_OBJECT_ENSURE_REGISTERED (RoutingHelper);
@@ -777,8 +776,8 @@ public:
   void PhyRxDrop (std::string context, Ptr<const Packet> packet);
 
 private:
-  uint32_t m_phyTxPkts;
-  uint32_t m_phyTxBytes;
+  uint32_t m_phyTxPkts; ///< phy transmit packets
+  uint32_t m_phyTxBytes; ///< phy transmit bytes
 };
 
 NS_OBJECT_ENSURE_REGISTERED (WifiPhyStats);
@@ -1159,6 +1158,8 @@ private:
 
   /**
    * \brief Run the simulation
+   * \param argc command line argument count
+   * \param argv command line parameters
    * \return none
    */
   void CommandSetup (int argc, char **argv);
@@ -1240,70 +1241,76 @@ private:
    */
   void SetGlobalsFromConfig ();
 
+  /**
+   * Course change function
+   * \param os the output stream
+   * \param context trace source context (unused)
+   * \param mobility the mobility model
+   */
   static void
-  CourseChange (std::ostream *os, std::string foo, Ptr<const MobilityModel> mobility);
+  CourseChange (std::ostream *os, std::string context, Ptr<const MobilityModel> mobility);
 
-  uint32_t m_port;
-  std::string m_CSVfileName;
-  std::string m_CSVfileName2;
-  uint32_t m_nSinks;
-  std::string m_protocolName;
-  double m_txp;
-  bool m_traceMobility;
-  uint32_t m_protocol;
+  uint32_t m_port; ///< port
+  std::string m_CSVfileName; ///< CSV file name
+  std::string m_CSVfileName2; ///< CSV file name
+  uint32_t m_nSinks; ///< number of sinks
+  std::string m_protocolName; ///< protocol name
+  double m_txp; ///< distance
+  bool m_traceMobility; ///< trace mobility
+  uint32_t m_protocol; ///< protocol
 
-  uint32_t m_lossModel;
-  uint32_t m_fading;
-  std::string m_lossModelName;
+  uint32_t m_lossModel; ///< loss model
+  uint32_t m_fading; ///< fading
+  std::string m_lossModelName; ///< loss model name
 
-  std::string m_phyMode;
-  uint32_t m_80211mode;
+  std::string m_phyMode; ///< phy mode
+  uint32_t m_80211mode; ///< 80211 mode
 
-  std::string m_traceFile;
-  std::string m_logFile;
-  uint32_t m_mobility;
-  uint32_t m_nNodes;
-  double m_TotalSimTime;
-  std::string m_rate;
-  std::string m_phyModeB;
-  std::string m_trName;
-  int m_nodeSpeed; //in m/s
-  int m_nodePause; //in s
-  uint32_t m_wavePacketSize; // bytes
-  double m_waveInterval; // seconds
-  int m_verbose;
-  std::ofstream m_os;
-  NetDeviceContainer m_adhocTxDevices;
-  Ipv4InterfaceContainer m_adhocTxInterfaces;
-  uint32_t m_scenario;
-  double m_gpsAccuracyNs;
-  double m_txMaxDelayMs;
-  int m_routingTables;
-  int m_asciiTrace;
-  int m_pcap;
-  std::string m_loadConfigFilename;
-  std::string m_saveConfigFilename;
+  std::string m_traceFile; ///< trace file 
+  std::string m_logFile; ///< log file
+  uint32_t m_mobility; ///< mobility
+  uint32_t m_nNodes; ///< number of nodes
+  double m_TotalSimTime; ///< total sim time
+  std::string m_rate; ///< rate
+  std::string m_phyModeB; ///< phy mode
+  std::string m_trName; ///< trace file name
+  int m_nodeSpeed; ///< in m/s
+  int m_nodePause; ///< in s
+  uint32_t m_wavePacketSize; ///< bytes
+  double m_waveInterval; ///< seconds
+  int m_verbose; ///< verbose
+  std::ofstream m_os; ///< output stream
+  NetDeviceContainer m_adhocTxDevices; ///< adhoc transmit devices
+  Ipv4InterfaceContainer m_adhocTxInterfaces; ///< adhoc transmit interfaces
+  uint32_t m_scenario; ///< scenario
+  double m_gpsAccuracyNs; ///< GPS accuracy
+  double m_txMaxDelayMs; ///< transmit maximum delay
+  int m_routingTables; ///< routing tables
+  int m_asciiTrace; ///< ascii trace
+  int m_pcap; ///< PCAP
+  std::string m_loadConfigFilename; ///< load config file name
+  std::string m_saveConfigFilename; ///< save configi file name
 
-  WaveBsmHelper m_waveBsmHelper;
-  Ptr<RoutingHelper> m_routingHelper;
-  Ptr<WifiPhyStats> m_wifiPhyStats;
-  int m_log;
-  // used to get consistent random numbers across scenarios
+  WaveBsmHelper m_waveBsmHelper; ///< helper
+  Ptr<RoutingHelper> m_routingHelper; ///< routing helper
+  Ptr<WifiPhyStats> m_wifiPhyStats; ///< wifi phy statistics
+  int m_log; ///< log
+  /// used to get consistent random numbers across scenarios
   int64_t m_streamIndex;
-  NodeContainer m_adhocTxNodes;
-  double m_txSafetyRange1;
-  double m_txSafetyRange2;
-  double m_txSafetyRange3;
-  double m_txSafetyRange4;
-  double m_txSafetyRange5;
-  double m_txSafetyRange6;
-  double m_txSafetyRange7;
-  double m_txSafetyRange8;
-  double m_txSafetyRange9;
-  double m_txSafetyRange10;
-  std::vector <double> m_txSafetyRanges;
-  std::string m_exp;
-  int m_cumulativeBsmCaptureStart;
+  NodeContainer m_adhocTxNodes; ///< adhoc transmit nodes
+  double m_txSafetyRange1; ///< range 1
+  double m_txSafetyRange2; ///< range 2
+  double m_txSafetyRange3; ///< range 3
+  double m_txSafetyRange4; ///< range 4
+  double m_txSafetyRange5; ///< range 5
+  double m_txSafetyRange6; ///< range 6
+  double m_txSafetyRange7; ///< range 7
+  double m_txSafetyRange8; ///< range 8
+  double m_txSafetyRange9; ///< range 9
+  double m_txSafetyRange10; ///< range 10
+  std::vector <double> m_txSafetyRanges; ///< list of ranges
+  std::string m_exp; ///< exp
+  int m_cumulativeBsmCaptureStart; ///< capture start
 };
 
 VanetRoutingExperiment::VanetRoutingExperiment ()
@@ -1724,7 +1731,7 @@ VanetRoutingExperiment::Run ()
 // Prints actual position and velocity when a course change event occurs
 void
 VanetRoutingExperiment::
-CourseChange (std::ostream *os, std::string foo, Ptr<const MobilityModel> mobility)
+CourseChange (std::ostream *os, std::string context, Ptr<const MobilityModel> mobility)
 {
   Vector pos = mobility->GetPosition (); // Get position
   Vector vel = mobility->GetVelocity (); // Get velocity

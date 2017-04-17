@@ -40,6 +40,10 @@ namespace ns3 {
 class BsmApplication : public Application
 {
 public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
 
   /**
@@ -57,13 +61,15 @@ public:
    * \param wavePacketSize the size, in bytes, of a WAVE BSM
    * \param waveInterval the time, in seconds, between each WAVE BSM transmission,
    * typically 10 Hz (0.1 second)
-   * \param gpsAccuracy the timing synchronization accuracy of GPS time, in seconds.
+   * \param gpsAccuracyNs the timing synchronization accuracy of GPS time, in nanoseconds.
    * GPS time-sync is ~40-100 ns.  Universally synchronized time among all vehicles
    * will result in all vehicles transmitting safety messages simultaneously, leading
    * to excessive wireless collisions.
-   * \param range the expected transmission range, in m ^ 2.
-   * \param collection class for WAVE BSM statistics
-   * \param indicators of whether or not node(s) are moving
+   * \param rangesSq the expected transmission range, in m ^ 2.
+   * \param waveBsmStats class for WAVE BSM statistics
+   * \param nodesMoving of whether or not node(s) are moving
+   * \param mode
+   * \param txDelay
    * \return none
    */
   void Setup (Ipv4InterfaceContainer & i,
@@ -84,7 +90,7 @@ public:
   * have been assigned.  The Install() method should have previously been
   * called by the user.
   *
-  * \param stream first stream index to use
+  * \param streamIndex first stream index to use
   * \return the number of stream indices assigned by this helper
   */
   int64_t AssignStreams (int64_t streamIndex);
@@ -99,8 +105,8 @@ protected:
 
 private:
   // inherited from Application base class.
-  virtual void StartApplication (void);    // Called at time specified by Start
-  virtual void StopApplication (void);     // Called at time specified by Stop
+  virtual void StartApplication (void);    ///< Called at time specified by Start
+  virtual void StopApplication (void);     ///< Called at time specified by Stop
 
   /**
    * \brief Creates and transmits a WAVE BSM packet
@@ -109,6 +115,7 @@ private:
    * \param pktCount the number of remaining WAVE BSM packets to be transmitted
    * \param pktInterval the interval, in seconds, until the next packet
    * should be transmitted
+   * \param sendingNodeId
    * \return none
    */
   void GenerateWaveTraffic (Ptr<Socket> socket, uint32_t pktSize,
@@ -145,29 +152,30 @@ private:
    */
   Ptr<NetDevice> GetNetDevice (int id);
 
-  Ptr<WaveBsmStats> m_waveBsmStats;
-  // tx safety range squared, for optimization
+  Ptr<WaveBsmStats> m_waveBsmStats; ///< BSM stats
+  /// tx safety range squared, for optimization
   std::vector <double> m_txSafetyRangesSq;
-  Time m_TotalSimTime;
-  uint32_t m_wavePacketSize; // bytes
-  uint32_t m_numWavePackets;
-  Time m_waveInterval;
-  double m_gpsAccuracyNs;
-  Ipv4InterfaceContainer * m_adhocTxInterfaces;
-  std::vector<int> * m_nodesMoving;
-  Ptr<UniformRandomVariable> m_unirv;
-  int m_nodeId;
-  // WAVE channel access mode.  0=continuous PHY; 1=channel-switching
+  Time m_TotalSimTime; ///< total sim time
+  uint32_t m_wavePacketSize; ///< bytes
+  uint32_t m_numWavePackets; ///< number of wave packets
+  Time m_waveInterval; ///< wave interval
+  double m_gpsAccuracyNs; ///< GPS accuracy
+  Ipv4InterfaceContainer * m_adhocTxInterfaces; ///< transmit interfaces
+  std::vector<int> * m_nodesMoving; ///< nodes moving
+  Ptr<UniformRandomVariable> m_unirv; ///< random variable
+  int m_nodeId; ///< node ID
+  /// WAVE channel access mode.  0=continuous PHY; 1=channel-switching
   int m_chAccessMode;
-  // When transmitting at a default rate of 10 Hz,
-  // the subsystem shall transmit every 100 ms +/-
-  // a random value between 0 and 5 ms. [MPR-BSMTX-TXTIM-002]
-  // Source: CAMP Vehicle Safety Communications 4 Consortium
-  // On-board Minimum Performance Requirements
-  // for V2V Safety Systems Version 1.0, December 17, 2014
-  // max transmit delay (default 10ms)
+  /**
+   * When transmitting at a default rate of 10 Hz,
+   * the subsystem shall transmit every 100 ms +/-
+   * a random value between 0 and 5 ms. [MPR-BSMTX-TXTIM-002]
+   * Source: CAMP Vehicle Safety Communications 4 Consortium
+   * On-board Minimum Performance Requirements
+   * for V2V Safety Systems Version 1.0, December 17, 2014
+   * max transmit delay (default 10ms) */
   Time m_txMaxDelay;
-  Time m_prevTxDelay;
+  Time m_prevTxDelay; ///< prevous transmit delay
 };
 
 } // namespace ns3

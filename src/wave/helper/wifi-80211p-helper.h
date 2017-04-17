@@ -62,7 +62,7 @@ public:
 
   /**
    * \param phy the PHY helper to create PHY objects
-   * \param mac the MAC helper to create MAC objects
+   * \param macHelper the MAC helper to create MAC objects
    * \param c the set of nodes on which a wifi device must be created
    * \returns a device container which contains all the devices created by this method.
    */

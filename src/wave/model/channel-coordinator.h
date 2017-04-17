@@ -70,6 +70,10 @@ public:
 class ChannelCoordinator : public Object
 {
 public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
   ChannelCoordinator ();
   virtual ~ChannelCoordinator ();
@@ -210,9 +214,17 @@ private:
    * stop channel coordination events
    */
   void StopChannelCoordination (void);
-
+  /**
+   * notify listeners of a SCH slot start
+   */
   void NotifySchSlot (void);
+  /**
+   * notify listeners of a CCH slot start
+   */
   void NotifyCchSlot (void);
+  /**
+   * notify listeners of a guard slot start
+   */
   void NotifyGuardSlot (void);
   /**
    * \return SCH channel access time which is SchInterval - GuardInterval, default 46ms
@@ -223,16 +235,18 @@ private:
    */
   Time GetCchSlot (void) const;
 
-  Time m_cchi;  // CchInterval
-  Time m_schi;  // SchInterval
-  Time m_gi;    // GuardInterval
+  Time m_cchi;  ///< CchInterval
+  Time m_schi;  ///< SchInterval
+  Time m_gi;    ///< GuardInterval
 
+  /// Listeners typdef
   typedef std::vector<Ptr<ChannelCoordinationListener> > Listeners;
+  /// Listeners iterator typedef
   typedef std::vector<Ptr<ChannelCoordinationListener> >::iterator ListenersI;
-  Listeners m_listeners;
+  Listeners m_listeners; ///< listeners
 
-  uint32_t m_guardCount;
-  EventId m_coordination;
+  uint32_t m_guardCount; ///< guard count
+  EventId m_coordination; ///< coordination event
 };
 
 }

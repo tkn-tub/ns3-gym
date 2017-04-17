@@ -85,11 +85,13 @@ public:
    * \param wavePacketSize the size, in bytes, of a WAVE BSM
    * \param waveInterval the time, in seconds, between each WAVE BSM transmission,
    * typically 10 Hz (0.1 second)
-   * \param gpsAccuracy the timing synchronization accuracy of GPS time, in seconds.
+   * \param gpsAccuracyNs the timing synchronization accuracy of GPS time, in nanoseconds.
    * GPS time-sync is ~40-100 ns.  Universally synchronized time among all vehicles
    * will result in all vehicles transmitting safety messages simultaneously, leading
    * to excessive wireless collisions.
-   * \param range the expected transmission range, in m.
+   * \param ranges the expected transmission range, in m.
+   * \param chAccessMode channel access mode (0=continuous; 1=switching)
+   * \param txMaxDelay max delay prior to transmit
    * \return none
    */
   void Install (Ipv4InterfaceContainer & i,
@@ -136,10 +138,10 @@ private:
   Ptr<Application> InstallPriv (Ptr<Node> node) const;
 
   ObjectFactory m_factory; //!< Object factory.
-  WaveBsmStats m_waveBsmStats;
-  // tx safety range squared, for optimization
+  WaveBsmStats m_waveBsmStats; ///< wave BSM stats
+  /// tx safety range squared, for optimization
   std::vector <double> m_txSafetyRangesSq;
-  static std::vector<int> nodesMoving;
+  static std::vector<int> nodesMoving; ///< nodes moving
 };
 
 } // namespace ns3

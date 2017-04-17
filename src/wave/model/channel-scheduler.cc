@@ -25,6 +25,10 @@ NS_LOG_COMPONENT_DEFINE ("ChannelScheduler");
 
 NS_OBJECT_ENSURE_REGISTERED (ChannelScheduler);
 
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
 TypeId
 ChannelScheduler::GetTypeId (void)
 {

@@ -60,6 +60,10 @@ namespace ns3 {
 class ChannelManager : public Object
 {
 public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
   ChannelManager ();
   virtual ~ChannelManager ();
@@ -127,18 +131,23 @@ public:
   uint32_t GetManagementPowerLevel (uint32_t channelNumber);
 
 private:
-  // 1609.4-2010 Annex H
+  /// 1609.4-2010 Annex H
   static const uint32_t  DEFAULT_OPERATING_CLASS = 17;
 
+  /// WaveChannel structure
   struct WaveChannel
   {
-    uint32_t channelNumber;
-    uint32_t operatingClass;
-    bool adaptable;
-    WifiMode dataRate;
-    WifiPreamble preamble;
-    uint32_t txPowerLevel;
+    uint32_t channelNumber; ///< channel number
+    uint32_t operatingClass; ///< operating class
+    bool adaptable; ///< adaptable?
+    WifiMode dataRate; ///< data rate
+    WifiPreamble preamble; ///< preamble
+    uint32_t txPowerLevel; ///< transmit power level
 
+    /**
+     * initializor
+     * \param channel the channel number
+     */
     WaveChannel (uint32_t channel)
       : channelNumber (channel),
         operatingClass (DEFAULT_OPERATING_CLASS),
@@ -149,7 +158,7 @@ private:
     {
     }
   };
-  std::map<uint32_t, WaveChannel *> m_channels;
+  std::map<uint32_t, WaveChannel *> m_channels; ///< list of channels
 };
 
 }

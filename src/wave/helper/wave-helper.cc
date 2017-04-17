@@ -36,6 +36,15 @@ NS_LOG_COMPONENT_DEFINE ("WaveHelper");
 
 namespace ns3 {
 
+/**
+ * ASCII Phy transmit sink with context
+ * \param stream the output stream
+ * \param context the context
+ * \param p the packet
+ * \param mode the mode
+ * \param preamble the preamble
+ * \param txLevel transmit level
+ */
 static void
 AsciiPhyTransmitSinkWithContext (
   Ptr<OutputStreamWrapper> stream,
@@ -49,6 +58,14 @@ AsciiPhyTransmitSinkWithContext (
   *stream->GetStream () << "t " << Simulator::Now ().GetSeconds () << " " << context << " " << *p << std::endl;
 }
 
+/**
+ * ASCII Phy transmit sink without context
+ * \param stream the output stream
+ * \param p the packet
+ * \param mode the mode
+ * \param preamble the preamble
+ * \param txLevel transmit level
+ */
 static void
 AsciiPhyTransmitSinkWithoutContext (
   Ptr<OutputStreamWrapper> stream,
@@ -61,6 +78,15 @@ AsciiPhyTransmitSinkWithoutContext (
   *stream->GetStream () << "t " << Simulator::Now ().GetSeconds () << " " << *p << std::endl;
 }
 
+/**
+ * ASCII Phy receive sink with context
+ * \param stream the output stream
+ * \param context the context
+ * \param p the packet
+ * \param snr the SNR
+ * \param mode the mode
+ * \param preamble the preamble
+ */
 static void
 AsciiPhyReceiveSinkWithContext (
   Ptr<OutputStreamWrapper> stream,
@@ -74,6 +100,14 @@ AsciiPhyReceiveSinkWithContext (
   *stream->GetStream () << "r " << Simulator::Now ().GetSeconds () << " " << context << " " << *p << std::endl;
 }
 
+/**
+ * ASCII Phy receive sink without context
+ * \param stream the output stream
+ * \param p the packet
+ * \param snr the SNR
+ * \param mode the mode
+ * \param preamble the preamble
+ */
 static void
 AsciiPhyReceiveSinkWithoutContext (
   Ptr<OutputStreamWrapper> stream,
