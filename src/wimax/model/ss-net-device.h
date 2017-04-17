@@ -223,7 +223,7 @@ public:
    */
   void SetModulationType (WimaxPhy::ModulationType modulationType);
   /**
-   * /returns the most efficient modulation and coding scheme (MCS) supported by the device
+   * \returns the most efficient modulation and coding scheme (MCS) supported by the device
    */
   WimaxPhy::ModulationType GetModulationType (void) const;
   /**
@@ -309,6 +309,7 @@ public:
   /**
    * \brief Get time to allocation
    * \param deferTime defer time
+   * \returns the time to allocation
    */
   Time GetTimeToAllocation (Time deferTime);
 
