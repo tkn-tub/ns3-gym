@@ -132,6 +132,7 @@ public:
    * \brief Set the device and interface.
    * \param device the device
    * \param interface the IPv6 interface
+   * \param icmpv6 the ICMPv6 protocol
    */
   void SetDevice (Ptr<NetDevice> device, Ptr<Ipv6Interface> interface, Ptr<Icmpv6L4Protocol> icmpv6);
 
