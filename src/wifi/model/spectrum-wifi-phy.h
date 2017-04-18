@@ -172,12 +172,13 @@ private:
    * \param centerFrequency center frequency (MHz)
    * \param channelWidth channel width (MHz) of the channel
    * \param txPowerW power in W to spread across the bands
+   * \param modulationClass the modulation class
    * \return Ptr to SpectrumValue
    *
    * This is a helper function to create the right Tx PSD corresponding
    * to the standard in use.
    */
-  Ptr<SpectrumValue> GetTxPowerSpectralDensity (uint16_t centerFrequency, uint8_t channelWidth, double txPowerW) const;
+  Ptr<SpectrumValue> GetTxPowerSpectralDensity (uint16_t centerFrequency, uint8_t channelWidth, double txPowerW, WifiModulationClass modulationClass) const;
 
   Ptr<SpectrumChannel> m_channel;        //!< SpectrumChannel that this SpectrumWifiPhy is connected to
   std::vector<uint8_t> m_operationalChannelList; //!< List of possible channels

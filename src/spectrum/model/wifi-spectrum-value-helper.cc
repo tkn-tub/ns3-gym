@@ -135,7 +135,7 @@ WifiSpectrumValueHelper::CreateOfdmTxPowerSpectralDensity (uint32_t centerFreque
   Ptr<SpectrumValue> c = Create<SpectrumValue> (GetSpectrumModel (centerFrequency, channelWidth, bandBandwidth, guardBandwidth));
   uint32_t nGuardBands = static_cast<uint32_t>(((2 * guardBandwidth * 1e6) / bandBandwidth) + 0.5);
   uint32_t nAllocatedBands = static_cast<uint32_t>(((channelWidth * 1e6) / bandBandwidth) + 0.5);
-  NS_ASSERT_MSG (c->GetSpectrumModel ()->GetNumBands () == (nAllocatedBands + nGuardBands + 1), "Unexpected number of bands");
+  NS_ASSERT_MSG (c->GetSpectrumModel ()->GetNumBands () == (nAllocatedBands + nGuardBands + 1), "Unexpected number of bands " << c->GetSpectrumModel ()->GetNumBands ());
   double txPowerPerBand = 0;
   uint32_t start1 = 0;
   uint32_t stop1 = 0;
@@ -144,6 +144,7 @@ WifiSpectrumValueHelper::CreateOfdmTxPowerSpectralDensity (uint32_t centerFreque
   switch (channelWidth)
     {
     case 20:
+    default:
       // 52 subcarriers (48 data + 4 pilot)
       // skip guard band and 6 subbands, then place power in 26 subbands, then
       // skip the center subband, then place power in 26 subbands, then skip
@@ -176,9 +177,6 @@ WifiSpectrumValueHelper::CreateOfdmTxPowerSpectralDensity (uint32_t centerFreque
       start2 = stop1 + 2;
       stop2 = start2 + 8 - 1;
       break;
-    default:
-      NS_FATAL_ERROR ("ChannelWidth " << channelWidth << " unsupported");
-      break;
     }
   NS_LOG_DEBUG ("Power per band " << txPowerPerBand);
   Values::iterator vit = c->ValuesBegin ();
@@ -210,7 +208,7 @@ WifiSpectrumValueHelper::CreateHtOfdmTxPowerSpectralDensity (uint32_t centerFreq
   Bands::const_iterator bit = c->ConstBandsBegin ();
   uint32_t nGuardBands = static_cast<uint32_t>(((2 * guardBandwidth * 1e6) / bandBandwidth) + 0.5);
   uint32_t nAllocatedBands = static_cast<uint32_t>(((channelWidth * 1e6) / bandBandwidth) + 0.5);
-  NS_ASSERT_MSG (c->GetSpectrumModel ()->GetNumBands () == (nAllocatedBands + nGuardBands + 1), "Unexpected number of bands");
+  NS_ASSERT_MSG (c->GetSpectrumModel ()->GetNumBands () == (nAllocatedBands + nGuardBands + 1), "Unexpected number of bands " << c->GetSpectrumModel ()->GetNumBands ());
   double txPowerPerBand;
   // skip the guard band and 4 subbands, then place power in 28 subbands, then
   // skip the center subband, then place power in 28 subbands, then skip
@@ -362,9 +360,6 @@ WifiSpectrumValueHelper::CreateHtOfdmTxPowerSpectralDensity (uint32_t centerFreq
                     ", " << start15 << "-" << stop15 <<
                     ", " << start16 << "-" << stop16);
       break;
-    default:
-      NS_FATAL_ERROR ("ChannelWidth " << channelWidth << " unsupported");
-      break;
     }
   NS_LOG_DEBUG ("Integrated power " << Integral (*c));
   NS_ASSERT_MSG (std::abs (txPowerW - Integral (*c)) < 1e-6, "Power allocation failed");
@@ -381,7 +376,7 @@ WifiSpectrumValueHelper::CreateHeOfdmTxPowerSpectralDensity (uint32_t centerFreq
   Bands::const_iterator bit = c->ConstBandsBegin ();
   uint32_t nGuardBands = static_cast<uint32_t>(((2 * guardBandwidth * 1e6) / bandBandwidth) + 0.5);
   uint32_t nAllocatedBands = static_cast<uint32_t>(((channelWidth * 1e6) / bandBandwidth) + 0.5);
-  NS_ASSERT_MSG (c->GetSpectrumModel ()->GetNumBands () == (nAllocatedBands + nGuardBands + 1), "Unexpected number of bands");
+  NS_ASSERT_MSG (c->GetSpectrumModel ()->GetNumBands () == (nAllocatedBands + nGuardBands + 1), "Unexpected number of bands " << c->GetSpectrumModel ()->GetNumBands ());
   double txPowerPerBand;
   uint32_t start1;
   uint32_t stop1;
