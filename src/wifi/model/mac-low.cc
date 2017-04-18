@@ -152,12 +152,12 @@ MacLowTransmissionParameters::MustSendRts (void) const
 bool
 MacLowTransmissionParameters::HasDurationId (void) const
 {
-  return (m_overrideDurationId != Seconds (0));
+  return (!m_overrideDurationId.IsZero ());
 }
 Time
 MacLowTransmissionParameters::GetDurationId (void) const
 {
-  NS_ASSERT (m_overrideDurationId != Seconds (0));
+  NS_ASSERT (!m_overrideDurationId.IsZero ());
   return m_overrideDurationId;
 }
 bool
@@ -921,7 +921,7 @@ MacLow::ReceiveOk (Ptr<Packet> packet, double rxSnr, WifiTxVector txVector, bool
         {
           m_currentDca->GotAck ();
         }
-      if (m_txParams.HasNextPacket () && (!m_currentHdr.IsQosData () || m_currentDca->GetTxopLimit () == NanoSeconds (0) || m_currentDca->HasTxop ()))
+      if (m_txParams.HasNextPacket () && (!m_currentHdr.IsQosData () || m_currentDca->GetTxopLimit ().IsZero () || m_currentDca->HasTxop ()))
         {
           if (m_stationManager->GetRifsPermitted ())
             {
@@ -1544,7 +1544,7 @@ MacLow::ForwardDown (Ptr<const Packet> packet, const WifiMacHeader* hdr, WifiTxV
 
           edcaIt->second->GetMpduAggregator ()->AddHeaderAndPad (newPacket, last, singleMpdu);
 
-          if (delay == Seconds (0))
+          if (delay.IsZero ())
             {
               NS_LOG_DEBUG ("Sending MPDU as part of A-MPDU");
               if (!singleMpdu)
@@ -1571,7 +1571,7 @@ MacLow::ForwardDown (Ptr<const Packet> packet, const WifiMacHeader* hdr, WifiTxV
             }
           newPacket->AddPacketTag (ampdutag);
 
-          if (delay == Seconds (0))
+          if (delay.IsZero ())
             {
               m_phy->SendPacket (newPacket, txVector, mpdutype);
             }
@@ -1999,7 +1999,7 @@ MacLow::SendCtsAfterRts (Mac48Address source, Time duration, WifiTxVector rtsTxV
   cts.SetAddr1 (source);
   duration -= GetCtsDuration (source, rtsTxVector);
   duration -= GetSifs ();
-  NS_ASSERT (duration >= MicroSeconds (0));
+  NS_ASSERT (duration.IsPositive ());
   cts.SetDuration (duration);
 
   Ptr<Packet> packet = Create<Packet> ();
@@ -2084,7 +2084,7 @@ MacLow::SendDataAfterCts (Mac48Address source, Time duration)
   duration -= GetSifs ();
 
   duration = std::max (duration, newDuration);
-  NS_ASSERT (duration >= MicroSeconds (0));
+  NS_ASSERT (duration.IsPositive ());
   m_currentHdr.SetDuration (duration);
   Ptr <Packet> packet = m_currentPacket->Copy ();
   if (m_ampdu)
@@ -2147,7 +2147,7 @@ MacLow::SendAckAfterData (Mac48Address source, Time duration, WifiMode dataTxMod
   // minus the time to transmit the ACK frame and its SIFS interval
   duration -= GetAckDuration (ackTxVector);
   duration -= GetSifs ();
-  NS_ASSERT_MSG (duration >= MicroSeconds (0), "Please provide test case to maintainers if this assert is hit.");
+  NS_ASSERT_MSG (duration.IsPositive (), "Please provide test case to maintainers if this assert is hit.");
   ack.SetDuration (duration);
 
   Ptr<Packet> packet = Create<Packet> ();
@@ -2442,7 +2442,7 @@ MacLow::SendBlockAckResponse (const CtrlBAckResponseHeader* blockAck, Mac48Addre
       StartDataTxTimers (blockAckReqTxVector);
     }
 
-  NS_ASSERT (duration >= NanoSeconds (0));
+  NS_ASSERT (duration.IsPositive ());
   hdr.SetDuration (duration);
   //here should be present a control about immediate or delayed block ack
   //for now we assume immediate

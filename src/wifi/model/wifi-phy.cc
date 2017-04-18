@@ -2321,7 +2321,7 @@ WifiPhy::SendPacket (Ptr<const Packet> packet, WifiTxVector txVector, MpduType m
     }
 
   Time txDuration = CalculateTxDuration (packet->GetSize (), txVector, GetFrequency (), mpdutype, 1);
-  NS_ASSERT (txDuration > NanoSeconds (0));
+  NS_ASSERT (txDuration.IsStrictlyPositive ());
 
   if (m_state->IsStateRx ())
     {

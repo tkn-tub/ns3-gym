@@ -545,7 +545,7 @@ EdcaTxopN::GotAck (void)
       m_dcf->ResetCw ();
       if (!HasTxop ())
         {
-          if (m_currentHdr.IsQosData () && GetTxopLimit () > NanoSeconds (0))
+          if (m_currentHdr.IsQosData () && GetTxopLimit ().IsStrictlyPositive ())
             {
               m_txopTrace (m_startTxop, Simulator::Now () - m_startTxop);
             }
@@ -560,7 +560,7 @@ EdcaTxopN::GotAck (void)
       NS_LOG_DEBUG ("got ack. tx not done, size=" << m_currentPacket->GetSize ());
       if (!HasTxop ())
         {
-          if (m_currentHdr.IsQosData () && GetTxopLimit () > NanoSeconds (0))
+          if (m_currentHdr.IsQosData () && GetTxopLimit ().IsStrictlyPositive ())
             {
               m_txopTrace (m_startTxop, Simulator::Now () - m_startTxop);
               m_cwTrace = m_dcf->GetCw ();
@@ -838,7 +838,7 @@ EdcaTxopN::StartNextPacket (void)
 {
   NS_LOG_FUNCTION (this);
   Time txopLimit = GetTxopLimit ();
-  NS_ASSERT (txopLimit == NanoSeconds (0) || Simulator::Now () - m_startTxop <= txopLimit);
+  NS_ASSERT (txopLimit.IsZero () || Simulator::Now () - m_startTxop <= txopLimit);
   WifiMacHeader hdr = m_currentHdr;
   Ptr<const Packet> peekedPacket = m_baManager->GetNextPacket (hdr);
   if (peekedPacket == 0)
@@ -859,7 +859,7 @@ EdcaTxopN::StartNextPacket (void)
     }
   else if (peekedPacket == 0)
     {
-      if (txopLimit > NanoSeconds (0))
+      if (txopLimit.IsStrictlyPositive ())
         {
           NS_ASSERT (Simulator::Now () - m_startTxop <= txopLimit);
           m_txopTrace (m_startTxop, Simulator::Now () - m_startTxop);
@@ -900,7 +900,7 @@ EdcaTxopN::StartNextPacket (void)
           CompleteTx ();
         }
     }
-  else if (txopLimit > NanoSeconds (0))
+  else if (txopLimit.IsStrictlyPositive ())
     {
       m_txopTrace (m_startTxop, Simulator::Now () - m_startTxop);
     }
@@ -911,9 +911,9 @@ EdcaTxopN::GetTxopRemaining (void) const
 {
   Time remainingTxop = GetTxopLimit ();
   remainingTxop -= (Simulator::Now () - m_startTxop);
-  if (remainingTxop < MicroSeconds (0))
+  if (remainingTxop.IsStrictlyNegative ())
     {
-      remainingTxop = MicroSeconds (0);
+      remainingTxop = Seconds (0);
     }
   NS_LOG_FUNCTION (this << remainingTxop);
   return remainingTxop;
@@ -924,7 +924,7 @@ EdcaTxopN::HasTxop (void) const
 {
   NS_LOG_FUNCTION (this);
   WifiMacHeader hdr;
-  if (!m_currentHdr.IsQosData () || GetTxopLimit () == NanoSeconds (0))
+  if (!m_currentHdr.IsQosData () || GetTxopLimit ().IsZero ())
     {
       return false;
     }
@@ -963,7 +963,7 @@ EdcaTxopN::EndTxNoAck (void)
 {
   NS_LOG_FUNCTION (this);
   NS_LOG_DEBUG ("a transmission that did not require an ACK just finished");
-  if (m_currentHdr.IsQosData ()  && m_currentHdr.IsQosBlockAck () && GetTxopLimit () > NanoSeconds (0))
+  if (m_currentHdr.IsQosData () && m_currentHdr.IsQosBlockAck () && GetTxopLimit ().IsStrictlyPositive ())
     {
       m_txopTrace (m_startTxop, Simulator::Now () - m_startTxop);
     }
@@ -992,7 +992,7 @@ EdcaTxopN::NeedFragmentation (void) const
       return false;
     }
   bool needTxopFragmentation = false;
-  if (GetTxopLimit () > NanoSeconds (0) && m_currentHdr.IsData ())
+  if (GetTxopLimit ().IsStrictlyPositive () && m_currentHdr.IsData ())
     {
       needTxopFragmentation = (GetLow ()->CalculateOverallTxTime (m_currentPacket, &m_currentHdr, m_currentParams) > GetTxopLimit ());
     }
@@ -1002,7 +1002,7 @@ EdcaTxopN::NeedFragmentation (void) const
 bool
 EdcaTxopN::IsTxopFragmentation () const
 {
-  if (GetTxopLimit () == NanoSeconds (0))
+  if (GetTxopLimit ().IsZero ())
     {
       return false;
     }
@@ -1018,7 +1018,7 @@ uint32_t
 EdcaTxopN::GetTxopFragmentSize () const
 {
   Time txopDuration = GetTxopLimit ();
-  if (txopDuration == NanoSeconds (0))
+  if (txopDuration.IsZero ())
     {
       return 0;
     }
@@ -1295,7 +1295,7 @@ EdcaTxopN::GotBlockAck (const CtrlBAckResponseHeader *blockAck, Mac48Address rec
   m_dcf->ResetCw ();
   if (!HasTxop ())
     {
-      if (m_currentHdr.IsQosData () && GetTxopLimit () > NanoSeconds (0))
+      if (m_currentHdr.IsQosData () && GetTxopLimit ().IsStrictlyPositive ())
         {
           m_txopTrace (m_startTxop, Simulator::Now () - m_startTxop);
         }
