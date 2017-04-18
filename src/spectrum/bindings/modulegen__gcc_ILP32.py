@@ -3213,15 +3213,15 @@ def register_Ns3WifiSpectrumValue5MhzFactory_methods(root_module, cls):
                    'ns3::Ptr< ns3::SpectrumValue >', 
                    [param('double', 'psd')], 
                    is_virtual=True)
-    ## wifi-spectrum-value-helper.h (module 'spectrum'): ns3::Ptr<ns3::SpectrumValue> ns3::WifiSpectrumValue5MhzFactory::CreateRfFilter(uint32_t channel) [member function]
+    ## wifi-spectrum-value-helper.h (module 'spectrum'): ns3::Ptr<ns3::SpectrumValue> ns3::WifiSpectrumValue5MhzFactory::CreateRfFilter(uint8_t channel) [member function]
     cls.add_method('CreateRfFilter', 
                    'ns3::Ptr< ns3::SpectrumValue >', 
-                   [param('uint32_t', 'channel')], 
+                   [param('uint8_t', 'channel')], 
                    is_virtual=True)
-    ## wifi-spectrum-value-helper.h (module 'spectrum'): ns3::Ptr<ns3::SpectrumValue> ns3::WifiSpectrumValue5MhzFactory::CreateTxPowerSpectralDensity(double txPower, uint32_t channel) [member function]
+    ## wifi-spectrum-value-helper.h (module 'spectrum'): ns3::Ptr<ns3::SpectrumValue> ns3::WifiSpectrumValue5MhzFactory::CreateTxPowerSpectralDensity(double txPower, uint8_t channel) [member function]
     cls.add_method('CreateTxPowerSpectralDensity', 
                    'ns3::Ptr< ns3::SpectrumValue >', 
-                   [param('double', 'txPower'), param('uint32_t', 'channel')], 
+                   [param('double', 'txPower'), param('uint8_t', 'channel')], 
                    is_virtual=True)
     return
 
@@ -3230,40 +3230,45 @@ def register_Ns3WifiSpectrumValueHelper_methods(root_module, cls):
     cls.add_constructor([])
     ## wifi-spectrum-value-helper.h (module 'spectrum'): ns3::WifiSpectrumValueHelper::WifiSpectrumValueHelper(ns3::WifiSpectrumValueHelper const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::WifiSpectrumValueHelper const &', 'arg0')])
-    ## wifi-spectrum-value-helper.h (module 'spectrum'): static ns3::Ptr<ns3::SpectrumValue> ns3::WifiSpectrumValueHelper::CreateDsssTxPowerSpectralDensity(uint32_t centerFrequency, double txPowerW) [member function]
+    ## wifi-spectrum-value-helper.h (module 'spectrum'): static ns3::Ptr<ns3::SpectrumValue> ns3::WifiSpectrumValueHelper::CreateDsssTxPowerSpectralDensity(uint32_t centerFrequency, double txPowerW, uint8_t guardBandwidth) [member function]
     cls.add_method('CreateDsssTxPowerSpectralDensity', 
                    'ns3::Ptr< ns3::SpectrumValue >', 
-                   [param('uint32_t', 'centerFrequency'), param('double', 'txPowerW')], 
+                   [param('uint32_t', 'centerFrequency'), param('double', 'txPowerW'), param('uint8_t', 'guardBandwidth')], 
                    is_static=True)
-    ## wifi-spectrum-value-helper.h (module 'spectrum'): static ns3::Ptr<ns3::SpectrumValue> ns3::WifiSpectrumValueHelper::CreateHtOfdmTxPowerSpectralDensity(uint32_t centerFrequency, uint32_t channelWidth, double txPowerW) [member function]
+    ## wifi-spectrum-value-helper.h (module 'spectrum'): static ns3::Ptr<ns3::SpectrumValue> ns3::WifiSpectrumValueHelper::CreateHeOfdmTxPowerSpectralDensity(uint32_t centerFrequency, uint8_t channelWidth, double txPowerW, uint8_t guardBandwidth) [member function]
+    cls.add_method('CreateHeOfdmTxPowerSpectralDensity', 
+                   'ns3::Ptr< ns3::SpectrumValue >', 
+                   [param('uint32_t', 'centerFrequency'), param('uint8_t', 'channelWidth'), param('double', 'txPowerW'), param('uint8_t', 'guardBandwidth')], 
+                   is_static=True)
+    ## wifi-spectrum-value-helper.h (module 'spectrum'): static ns3::Ptr<ns3::SpectrumValue> ns3::WifiSpectrumValueHelper::CreateHtOfdmTxPowerSpectralDensity(uint32_t centerFrequency, uint8_t channelWidth, double txPowerW, uint8_t guardBandwidth) [member function]
     cls.add_method('CreateHtOfdmTxPowerSpectralDensity', 
                    'ns3::Ptr< ns3::SpectrumValue >', 
-                   [param('uint32_t', 'centerFrequency'), param('uint32_t', 'channelWidth'), param('double', 'txPowerW')], 
+                   [param('uint32_t', 'centerFrequency'), param('uint8_t', 'channelWidth'), param('double', 'txPowerW'), param('uint8_t', 'guardBandwidth')], 
                    is_static=True)
-    ## wifi-spectrum-value-helper.h (module 'spectrum'): static ns3::Ptr<ns3::SpectrumValue> ns3::WifiSpectrumValueHelper::CreateNoisePowerSpectralDensity(uint32_t centerFrequency, uint32_t channelWidth, double bandBandwidth, double noiseFigure) [member function]
+    ## wifi-spectrum-value-helper.h (module 'spectrum'): static ns3::Ptr<ns3::SpectrumValue> ns3::WifiSpectrumValueHelper::CreateNoisePowerSpectralDensity(uint32_t centerFrequency, uint8_t channelWidth, double bandBandwidth, double noiseFigure, uint8_t guardBandwidth) [member function]
     cls.add_method('CreateNoisePowerSpectralDensity', 
                    'ns3::Ptr< ns3::SpectrumValue >', 
-                   [param('uint32_t', 'centerFrequency'), param('uint32_t', 'channelWidth'), param('double', 'bandBandwidth'), param('double', 'noiseFigure')], 
+                   [param('uint32_t', 'centerFrequency'), param('uint8_t', 'channelWidth'), param('double', 'bandBandwidth'), param('double', 'noiseFigure'), param('uint8_t', 'guardBandwidth')], 
                    is_static=True)
     ## wifi-spectrum-value-helper.h (module 'spectrum'): static ns3::Ptr<ns3::SpectrumValue> ns3::WifiSpectrumValueHelper::CreateNoisePowerSpectralDensity(double noiseFigure, ns3::Ptr<ns3::SpectrumModel> spectrumModel) [member function]
     cls.add_method('CreateNoisePowerSpectralDensity', 
                    'ns3::Ptr< ns3::SpectrumValue >', 
                    [param('double', 'noiseFigure'), param('ns3::Ptr< ns3::SpectrumModel >', 'spectrumModel')], 
                    is_static=True)
-    ## wifi-spectrum-value-helper.h (module 'spectrum'): static ns3::Ptr<ns3::SpectrumValue> ns3::WifiSpectrumValueHelper::CreateOfdmTxPowerSpectralDensity(uint32_t centerFrequency, uint32_t channelWidth, double txPowerW) [member function]
+    ## wifi-spectrum-value-helper.h (module 'spectrum'): static ns3::Ptr<ns3::SpectrumValue> ns3::WifiSpectrumValueHelper::CreateOfdmTxPowerSpectralDensity(uint32_t centerFrequency, uint8_t channelWidth, double txPowerW, uint8_t guardBandwidth) [member function]
     cls.add_method('CreateOfdmTxPowerSpectralDensity', 
                    'ns3::Ptr< ns3::SpectrumValue >', 
-                   [param('uint32_t', 'centerFrequency'), param('uint32_t', 'channelWidth'), param('double', 'txPowerW')], 
+                   [param('uint32_t', 'centerFrequency'), param('uint8_t', 'channelWidth'), param('double', 'txPowerW'), param('uint8_t', 'guardBandwidth')], 
                    is_static=True)
-    ## wifi-spectrum-value-helper.h (module 'spectrum'): static ns3::Ptr<ns3::SpectrumValue> ns3::WifiSpectrumValueHelper::CreateRfFilter(uint32_t centerFrequency, uint32_t channelWidth, double bandBandwidth) [member function]
+    ## wifi-spectrum-value-helper.h (module 'spectrum'): static ns3::Ptr<ns3::SpectrumValue> ns3::WifiSpectrumValueHelper::CreateRfFilter(uint32_t centerFrequency, uint8_t channelWidth, double bandBandwidth, uint8_t guardBandwidth) [member function]
     cls.add_method('CreateRfFilter', 
                    'ns3::Ptr< ns3::SpectrumValue >', 
-                   [param('uint32_t', 'centerFrequency'), param('uint32_t', 'channelWidth'), param('double', 'bandBandwidth')], 
+                   [param('uint32_t', 'centerFrequency'), param('uint8_t', 'channelWidth'), param('double', 'bandBandwidth'), param('uint8_t', 'guardBandwidth')], 
                    is_static=True)
-    ## wifi-spectrum-value-helper.h (module 'spectrum'): static ns3::Ptr<ns3::SpectrumModel> ns3::WifiSpectrumValueHelper::GetSpectrumModel(uint32_t centerFrequency, uint32_t channelWidth, double bandBandwidth) [member function]
+    ## wifi-spectrum-value-helper.h (module 'spectrum'): static ns3::Ptr<ns3::SpectrumModel> ns3::WifiSpectrumValueHelper::GetSpectrumModel(uint32_t centerFrequency, uint8_t channelWidth, double bandBandwidth, uint8_t guardBandwidth) [member function]
     cls.add_method('GetSpectrumModel', 
                    'ns3::Ptr< ns3::SpectrumModel >', 
-                   [param('uint32_t', 'centerFrequency'), param('uint32_t', 'channelWidth'), param('double', 'bandBandwidth')], 
+                   [param('uint32_t', 'centerFrequency'), param('uint8_t', 'channelWidth'), param('double', 'bandBandwidth'), param('uint8_t', 'guardBandwidth')], 
                    is_static=True)
     return
 
