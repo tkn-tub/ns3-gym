@@ -103,6 +103,112 @@ WifiSpectrumValueHelper::GetSpectrumModel (uint32_t centerFrequency, uint32_t ch
   return ret;
 }
 
+// Power allocated to 71 center subbands out of 135 total subbands in the band 
+Ptr<SpectrumValue>
+WifiSpectrumValueHelper::CreateDsssTxPowerSpectralDensity (uint32_t centerFrequency, double txPowerW)
+{
+  NS_LOG_FUNCTION (centerFrequency << txPowerW);
+  uint32_t channelWidth = 22;  // DSSS channels are 22 MHz wide
+  Ptr<SpectrumValue> c = Create<SpectrumValue> (GetSpectrumModel (centerFrequency, channelWidth, 312500));
+  Values::iterator vit = c->ValuesBegin ();
+  Bands::const_iterator bit = c->ConstBandsBegin ();
+  double txPowerPerBand;
+  // Evenly spread power across 22 MHz (71 bands)
+  NS_ASSERT (c->GetSpectrumModel ()->GetNumBands () == 135);
+  txPowerPerBand = txPowerW / 71;
+  for (size_t i = 0; i < c->GetSpectrumModel ()->GetNumBands (); i++, vit++, bit++)
+    {
+      if (i >= 32 && i <= 102)
+        {
+          *vit = txPowerPerBand / (bit->fh - bit->fl);
+        }
+    }
+  return c;
+}
+
+Ptr<SpectrumValue>
+WifiSpectrumValueHelper::CreateOfdmTxPowerSpectralDensity (uint32_t centerFrequency, uint32_t channelWidth, double txPowerW)
+{
+  NS_LOG_FUNCTION (centerFrequency << channelWidth << txPowerW);
+  Ptr<SpectrumValue> c = Create<SpectrumValue> (GetSpectrumModel (centerFrequency, channelWidth, 312500));
+  Values::iterator vit = c->ValuesBegin ();
+  Bands::const_iterator bit = c->ConstBandsBegin ();
+  double txPowerPerBand;
+  switch (channelWidth)
+    {
+    case 20:
+      // 52 subcarriers (48 data + 4 pilot)
+      // skip 38 subbands, then place power in 26 subbands, then
+      // skip the center subband, then place power in 26 subbands, then skip
+      // the final 38 subbands.  
+      NS_ASSERT_MSG (c->GetSpectrumModel ()->GetNumBands () == 129, "Unexpected number of bands");
+      txPowerPerBand = txPowerW / 52;
+      for (size_t i = 0; i < c->GetSpectrumModel ()->GetNumBands (); i++, vit++, bit++)
+        {
+          if ((i >= 38 && i <= 63) || (i >= 65 && i <= 90))
+            {
+              *vit = txPowerPerBand / (bit->fh - bit->fl);
+            }
+          else
+            {
+              *vit = 0;
+            }
+        }
+      NS_LOG_DEBUG ("Added signal power to subbands 38-63 and 65-90");
+      NS_LOG_DEBUG ("Integrated power " << Integral (*c));
+      NS_ASSERT_MSG (std::abs (txPowerW - Integral (*c)) < 1e-6, "Power allocation failed"); 
+      break;
+    case 10:
+      // 28 subcarriers (24 data + 4 pilot)
+      // skip 34 subbands, then place power in 14 subbands, then
+      // skip the center subband, then place power in 14 subbands, then skip
+      // the final 34 subbands.  
+      NS_ASSERT_MSG (c->GetSpectrumModel ()->GetNumBands () == 97, "Unexpected number of bands");
+      txPowerPerBand = txPowerW / 28;
+      for (size_t i = 0; i < c->GetSpectrumModel ()->GetNumBands (); i++, vit++, bit++)
+        {
+          if ((i >= 34 && i <= 47) || (i >= 49 && i <= 62))
+            {
+              *vit = txPowerPerBand / (bit->fh - bit->fl);
+            }
+          else
+            {
+              *vit = 0;
+            }
+        }
+      NS_LOG_DEBUG ("Added signal power to subbands 34-47 and 49-62");
+      NS_LOG_DEBUG ("Integrated power " << Integral (*c));
+      NS_ASSERT_MSG (std::abs (txPowerW - Integral (*c)) < 1e-6, "Power allocation failed"); 
+      break;
+    case 5:
+      // 16 subcarriers (12 data + 4 pilot)
+      // skip 34 subbands, then place power in 14 subbands, then
+      // skip the center subband, then place power in 14 subbands, then skip
+      // the final 34 subbands.  
+      NS_ASSERT_MSG (c->GetSpectrumModel ()->GetNumBands () == 81, "Unexpected number of bands");
+      txPowerPerBand = txPowerW / 16;
+      for (size_t i = 0; i < c->GetSpectrumModel ()->GetNumBands (); i++, vit++, bit++)
+        {
+          if ((i >= 32 && i <= 39) || (i >= 41 && i <= 48))
+            {
+              *vit = txPowerPerBand / (bit->fh - bit->fl);
+            }
+          else
+            {
+              *vit = 0;
+            }
+        }
+      NS_LOG_DEBUG ("Added signal power to subbands 32-39 and 41-48");
+      NS_LOG_DEBUG ("Integrated power " << Integral (*c));
+      NS_ASSERT_MSG (std::abs (txPowerW - Integral (*c)) < 1e-6, "Power allocation failed"); 
+      break;
+    default:
+      NS_FATAL_ERROR ("ChannelWidth " << channelWidth << " unsupported");
+      break;
+    }
+  return c;
+}
+
 Ptr<SpectrumValue>
 WifiSpectrumValueHelper::CreateHtOfdmTxPowerSpectralDensity (uint32_t centerFrequency, uint32_t channelWidth, double txPowerW)
 {
@@ -122,7 +228,7 @@ WifiSpectrumValueHelper::CreateHtOfdmTxPowerSpectralDensity (uint32_t centerFreq
       txPowerPerBand = txPowerW / 56;
       for (size_t i = 0; i < c->GetSpectrumModel ()->GetNumBands (); i++, vit++, bit++)
         {
-          if ((i >=36 && i <=63) || (i >=65 && i <=92)) 
+          if ((i >= 36 && i <= 63) || (i >= 65 && i <= 92))
             {
               *vit = txPowerPerBand / (bit->fh - bit->fl);
             }
@@ -138,7 +244,8 @@ WifiSpectrumValueHelper::CreateHtOfdmTxPowerSpectralDensity (uint32_t centerFreq
       txPowerPerBand = txPowerW / 112;
       for (size_t i = 0; i < c->GetSpectrumModel ()->GetNumBands (); i++, vit++, bit++)
         {
-          if ((i >=36 && i <=63) || (i >=65 && i <=92) || (i >=100 && i<=127) || (i >=129 && i<= 156)) 
+          if ((i >= 36 && i <= 63) || (i >= 65 && i <= 92) ||
+              (i >= 100 && i<= 127) || (i >= 129 && i <= 156))
             {
               *vit = txPowerPerBand / (bit->fh - bit->fl);
             }
@@ -167,7 +274,7 @@ WifiSpectrumValueHelper::CreateHtOfdmTxPowerSpectralDensity (uint32_t centerFreq
       NS_ASSERT_MSG (std::abs (txPowerW - Integral (*c)) < 1e-6, "Power allocation failed"); 
       break;
     case 160:
-      // 448 subcarriers (416 data + 32 pilot) VHT 
+      // 448 subcarriers (416 data + 32 pilot)
       // possible alternative:  484 subcarriers (468 data + 16 pilot)
       NS_ASSERT_MSG (c->GetSpectrumModel ()->GetNumBands () == 577, "Unexpected number of bands");
       txPowerPerBand = txPowerW / 448;
@@ -197,107 +304,88 @@ WifiSpectrumValueHelper::CreateHtOfdmTxPowerSpectralDensity (uint32_t centerFreq
 }
 
 Ptr<SpectrumValue>
-WifiSpectrumValueHelper::CreateOfdmTxPowerSpectralDensity (uint32_t centerFrequency, uint32_t channelWidth, double txPowerW)
+WifiSpectrumValueHelper::CreateHeOfdmTxPowerSpectralDensity (uint32_t centerFrequency, uint32_t channelWidth, double txPowerW)
 {
   NS_LOG_FUNCTION (centerFrequency << channelWidth << txPowerW);
-  Ptr<SpectrumValue> c = Create<SpectrumValue> (GetSpectrumModel (centerFrequency, channelWidth, 312500));
+  Ptr<SpectrumValue> c = Create<SpectrumValue> (GetSpectrumModel (centerFrequency, channelWidth, 78125));
   Values::iterator vit = c->ValuesBegin ();
   Bands::const_iterator bit = c->ConstBandsBegin ();
   double txPowerPerBand;
   switch (channelWidth)
     {
     case 20:
-      // 52 subcarriers (48 data + 4 pilot)
-      // skip 38 subbands, then place power in 26 subbands, then
-      // skip the center subband, then place power in 26 subbands, then skip
-      // the final 38 subbands.  
-      NS_ASSERT_MSG (c->GetSpectrumModel ()->GetNumBands () == 129, "Unexpected number of bands");
-      txPowerPerBand = txPowerW / 52;
+      // 242 subcarriers (234 data + 8 pilot)
+      NS_ASSERT_MSG (c->GetSpectrumModel ()->GetNumBands () == 513, "Unexpected number of bands");
+      // skip 133 subbands, then place power in 121 subbands, then
+      // skip 3 DC, then place power in 121 subbands, then skip
+      // the final 133 subbands.
+      txPowerPerBand = txPowerW / 242;
       for (size_t i = 0; i < c->GetSpectrumModel ()->GetNumBands (); i++, vit++, bit++)
         {
-          if ((i >=38 && i <=63) || (i >=65 && i <=90)) 
+          if ((i >= 134 && i <= 254) || (i >= 258 && i <= 378))
             {
               *vit = txPowerPerBand / (bit->fh - bit->fl);
             }
-          else
-            {
-              *vit = 0;
-            }
         }
-      NS_LOG_DEBUG ("Added signal power to subbands 38-63 and 65-90");
+      NS_LOG_DEBUG ("Added signal power to subbands 134-254 and 258-378");
       NS_LOG_DEBUG ("Integrated power " << Integral (*c));
       NS_ASSERT_MSG (std::abs (txPowerW - Integral (*c)) < 1e-6, "Power allocation failed"); 
       break;
-    case 10:
-      // 28 subcarriers (24 data + 4 pilot)
-      // skip 34 subbands, then place power in 14 subbands, then
-      // skip the center subband, then place power in 14 subbands, then skip
-      // the final 34 subbands.  
-      NS_ASSERT_MSG (c->GetSpectrumModel ()->GetNumBands () == 97, "Unexpected number of bands");
-      txPowerPerBand = txPowerW / 28;
+    case 40:
+      // 484 subcarriers (468 data + 16 pilot)
+      NS_ASSERT_MSG (c->GetSpectrumModel ()->GetNumBands () == 769, "Unexpected number of bands");
+      // skip 139 subbands, then place power in 242 subbands, then
+      // skip 5 DC, then place power in 242 subbands, then skip
+      // the final 139 subbands.
+      txPowerPerBand = txPowerW / 484;
       for (size_t i = 0; i < c->GetSpectrumModel ()->GetNumBands (); i++, vit++, bit++)
         {
-          if ((i >=34 && i <=47) || (i >=49 && i <=62)) 
+          if ((i >= 140 && i <= 381) || (i >= 387 && i <= 628))
             {
               *vit = txPowerPerBand / (bit->fh - bit->fl);
             }
-          else
-            {
-              *vit = 0;
-            }
         }
-      NS_LOG_DEBUG ("Added signal power to subbands 34-47 and 49-62");
+      NS_LOG_DEBUG ("Added signal power to subbands 140-381 and 387-628");
       NS_LOG_DEBUG ("Integrated power " << Integral (*c));
       NS_ASSERT_MSG (std::abs (txPowerW - Integral (*c)) < 1e-6, "Power allocation failed"); 
       break;
-    case 5:
-      // 16 subcarriers (12 data + 4 pilot)
-      // skip 34 subbands, then place power in 14 subbands, then
-      // skip the center subband, then place power in 14 subbands, then skip
-      // the final 34 subbands.  
-      NS_ASSERT_MSG (c->GetSpectrumModel ()->GetNumBands () == 81, "Unexpected number of bands");
-      txPowerPerBand = txPowerW / 16;
+    case 80:
+      // 996 subcarriers (980 data + 16 pilot)
+      NS_ASSERT_MSG (c->GetSpectrumModel ()->GetNumBands () == 1281, "Unexpected number of bands");
+      // skip 139 subbands, then place power in 498 subbands, then
+      // skip 5 DC, then place power in 498 subbands, then skip
+      // the final 139 subbands.
+      txPowerPerBand = txPowerW / 996;
       for (size_t i = 0; i < c->GetSpectrumModel ()->GetNumBands (); i++, vit++, bit++)
         {
-          if ((i >=32 && i <=39) || (i >=41 && i <=48)) 
+          if ((i >= 140 && i <= 637) || (i >= 643 && i <= 1140))
             {
               *vit = txPowerPerBand / (bit->fh - bit->fl);
             }
-          else
+        }
+      NS_LOG_DEBUG ("Added signal power to subbands 140-637 and 643-1140");
+      NS_LOG_DEBUG ("Integrated power " << Integral (*c));
+      NS_ASSERT_MSG (std::abs (txPowerW - Integral (*c)) < 1e-6, "Power allocation failed"); 
+      break;
+    case 160:
+      // 2 x 996 subcarriers (2 x 80 MHZ bands)
+      NS_ASSERT_MSG (c->GetSpectrumModel ()->GetNumBands () == 2305, "Unexpected number of bands");
+      txPowerPerBand = txPowerW / (2 * 996);
+      for (size_t i = 0; i < c->GetSpectrumModel ()->GetNumBands (); i++, vit++, bit++)
+        {
+          if ((i >= 140 && i <= 637) || (i >= 643 && i <= 1140) ||
+              (i >= 1164 && i <= 1661) || (i >= 1667 && i <= 2164))
             {
-              *vit = 0;
+              *vit = txPowerPerBand / (bit->fh - bit->fl);
             }
         }
-      NS_LOG_DEBUG ("Added signal power to subbands 32-39 and 41-48");
+      NS_LOG_DEBUG ("Added signal power to subbands 140-637, 643-1140, 1164-1661 and 1667-2164");
       NS_LOG_DEBUG ("Integrated power " << Integral (*c));
       NS_ASSERT_MSG (std::abs (txPowerW - Integral (*c)) < 1e-6, "Power allocation failed"); 
       break;
     default:
       NS_FATAL_ERROR ("ChannelWidth " << channelWidth << " unsupported");
       break;
-    }
-  return c;
-}
-
-// Power allocated to 71 center subbands out of 135 total subbands in the band 
-Ptr<SpectrumValue>
-WifiSpectrumValueHelper::CreateDsssTxPowerSpectralDensity (uint32_t centerFrequency, double txPowerW)
-{
-  NS_LOG_FUNCTION (centerFrequency << txPowerW);
-  uint32_t channelWidth = 22;  // DSSS channels are 22 MHz wide
-  Ptr<SpectrumValue> c = Create<SpectrumValue> (GetSpectrumModel (centerFrequency, channelWidth, 312500));
-  Values::iterator vit = c->ValuesBegin ();
-  Bands::const_iterator bit = c->ConstBandsBegin ();
-  double txPowerPerBand;
-  // Evenly spread power across 22 MHz (71 bands)
-  NS_ASSERT (c->GetSpectrumModel ()->GetNumBands () == 135);
-  txPowerPerBand = txPowerW / 71;
-  for (size_t i = 0; i < c->GetSpectrumModel ()->GetNumBands (); i++, vit++, bit++)
-    {
-      if (i >=32 && i <=102) 
-        {
-          *vit = txPowerPerBand / (bit->fh - bit->fl);
-        }
     }
   return c;
 }

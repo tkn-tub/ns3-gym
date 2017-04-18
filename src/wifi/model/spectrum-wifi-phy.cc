@@ -249,6 +249,10 @@ SpectrumWifiPhy::GetTxPowerSpectralDensity (uint16_t centerFrequency, uint8_t ch
     case WIFI_PHY_STANDARD_80211ac:
       v = WifiSpectrumValueHelper::CreateHtOfdmTxPowerSpectralDensity (centerFrequency, channelWidth, txPowerW);
       break;
+    case WIFI_PHY_STANDARD_80211ax_2_4GHZ:
+    case WIFI_PHY_STANDARD_80211ax_5GHZ:
+      v = WifiSpectrumValueHelper::CreateHeOfdmTxPowerSpectralDensity (centerFrequency, channelWidth, txPowerW);
+      break;
     default:
       NS_FATAL_ERROR ("Standard unknown: " << GetStandard ());
       break;
@@ -291,6 +295,11 @@ SpectrumWifiPhy::GetBandBandwidth (void) const
     case WIFI_PHY_STANDARD_80211ac:
       // Use OFDM subcarrier width of 312.5 KHz as band granularity
       bandBandwidth = 312500;
+      break;
+    case WIFI_PHY_STANDARD_80211ax_2_4GHZ:
+    case WIFI_PHY_STANDARD_80211ax_5GHZ:
+      // Use OFDM subcarrier width of 78.125 KHz as band granularity
+      bandBandwidth = 78125;
       break;
     default:
       NS_FATAL_ERROR ("Standard unknown: " << GetStandard ());

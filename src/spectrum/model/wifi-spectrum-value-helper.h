@@ -56,6 +56,17 @@ public:
 
   /**
    * Create a transmit power spectral density corresponding to OFDM 
+   * High Efficiency (HE) (802.11ax).  Channel width may vary between 
+   * 20, 40, 80, and 160 MHz.
+   *
+   * \param centerFrequency center frequency (MHz)
+   * \param channelWidth channel width (MHz)
+   * \param txPowerW  transmit power (W) to allocate
+   */
+  static Ptr<SpectrumValue> CreateHeOfdmTxPowerSpectralDensity (uint32_t centerFrequency, uint32_t channelWidth, double txPowerW);
+
+  /**
+   * Create a transmit power spectral density corresponding to OFDM 
    * High Throughput (HT) (802.11n/ac).  Channel width may vary between 
    * 20, 40, 80, and 160 MHz.
    *
