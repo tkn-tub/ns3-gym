@@ -261,7 +261,7 @@ InterferenceHelper::CalculateNoiseInterferenceW (Ptr<InterferenceHelper::Event> 
 double
 InterferenceHelper::CalculateChunkSuccessRate (double snir, Time duration, WifiMode mode, WifiTxVector txVector) const
 {
-  if (duration == NanoSeconds (0))
+  if (duration.IsZero ())
     {
       return 1.0;
     }
