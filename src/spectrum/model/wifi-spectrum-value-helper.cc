@@ -33,16 +33,16 @@ NS_LOG_COMPONENT_DEFINE ("WifiSpectrumValueHelper");
 
 struct WifiSpectrumModelId
 {
-  WifiSpectrumModelId (uint32_t f, uint32_t w);
+  WifiSpectrumModelId (uint32_t f, uint8_t w);
   uint32_t m_centerFrequency;
-  uint32_t m_channelWidth;
+  uint8_t m_channelWidth;
 };
 
-WifiSpectrumModelId::WifiSpectrumModelId (uint32_t f, uint32_t w)
+WifiSpectrumModelId::WifiSpectrumModelId (uint32_t f, uint8_t w)
   : m_centerFrequency (f),
     m_channelWidth (w)
 {
-  NS_LOG_FUNCTION (this << f << w);
+  NS_LOG_FUNCTION (this << f << (uint16_t)w);
 }
 
 bool
@@ -54,9 +54,9 @@ operator < (const WifiSpectrumModelId& a, const WifiSpectrumModelId& b)
 static std::map<WifiSpectrumModelId, Ptr<SpectrumModel> > g_wifiSpectrumModelMap;
 
 Ptr<SpectrumModel>
-WifiSpectrumValueHelper::GetSpectrumModel (uint32_t centerFrequency, uint32_t channelWidth, double bandBandwidth, uint32_t guardBandwidth)
+WifiSpectrumValueHelper::GetSpectrumModel (uint32_t centerFrequency, uint8_t channelWidth, double bandBandwidth, uint8_t guardBandwidth)
 {
-  NS_LOG_FUNCTION (centerFrequency << channelWidth << bandBandwidth << guardBandwidth);
+  NS_LOG_FUNCTION (centerFrequency << (uint16_t)channelWidth << bandBandwidth << (uint16_t)guardBandwidth);
   Ptr<SpectrumModel> ret;
   WifiSpectrumModelId key (centerFrequency, channelWidth);
   std::map<WifiSpectrumModelId, Ptr<SpectrumModel> >::iterator it = g_wifiSpectrumModelMap.find (key);
@@ -104,10 +104,10 @@ WifiSpectrumValueHelper::GetSpectrumModel (uint32_t centerFrequency, uint32_t ch
 
 // Power allocated to 71 center subbands out of 135 total subbands in the band 
 Ptr<SpectrumValue>
-WifiSpectrumValueHelper::CreateDsssTxPowerSpectralDensity (uint32_t centerFrequency, double txPowerW, uint32_t guardBandwidth)
+WifiSpectrumValueHelper::CreateDsssTxPowerSpectralDensity (uint32_t centerFrequency, double txPowerW, uint8_t guardBandwidth)
 {
-  NS_LOG_FUNCTION (centerFrequency << txPowerW << guardBandwidth);
-  uint32_t channelWidth = 22;  // DSSS channels are 22 MHz wide
+  NS_LOG_FUNCTION (centerFrequency << txPowerW << (uint16_t)guardBandwidth);
+  uint8_t channelWidth = 22;  // DSSS channels are 22 MHz wide
   double bandBandwidth = 312500;
   Ptr<SpectrumValue> c = Create<SpectrumValue> (GetSpectrumModel (centerFrequency, channelWidth, bandBandwidth, guardBandwidth));
   Values::iterator vit = c->ValuesBegin ();
@@ -128,9 +128,9 @@ WifiSpectrumValueHelper::CreateDsssTxPowerSpectralDensity (uint32_t centerFreque
 }
 
 Ptr<SpectrumValue>
-WifiSpectrumValueHelper::CreateOfdmTxPowerSpectralDensity (uint32_t centerFrequency, uint32_t channelWidth, double txPowerW, uint32_t guardBandwidth)
+WifiSpectrumValueHelper::CreateOfdmTxPowerSpectralDensity (uint32_t centerFrequency, uint8_t channelWidth, double txPowerW, uint8_t guardBandwidth)
 {
-  NS_LOG_FUNCTION (centerFrequency << channelWidth << txPowerW << guardBandwidth);
+  NS_LOG_FUNCTION (centerFrequency << (uint16_t)channelWidth << txPowerW << (uint16_t)guardBandwidth);
   double bandBandwidth = 312500;
   Ptr<SpectrumValue> c = Create<SpectrumValue> (GetSpectrumModel (centerFrequency, channelWidth, bandBandwidth, guardBandwidth));
   uint32_t nGuardBands = static_cast<uint32_t>(((2 * guardBandwidth * 1e6) / bandBandwidth) + 0.5);
@@ -201,9 +201,9 @@ WifiSpectrumValueHelper::CreateOfdmTxPowerSpectralDensity (uint32_t centerFreque
 }
 
 Ptr<SpectrumValue>
-WifiSpectrumValueHelper::CreateHtOfdmTxPowerSpectralDensity (uint32_t centerFrequency, uint32_t channelWidth, double txPowerW, uint32_t guardBandwidth)
+WifiSpectrumValueHelper::CreateHtOfdmTxPowerSpectralDensity (uint32_t centerFrequency, uint8_t channelWidth, double txPowerW, uint8_t guardBandwidth)
 {
-  NS_LOG_FUNCTION (centerFrequency << channelWidth << txPowerW << guardBandwidth);
+  NS_LOG_FUNCTION (centerFrequency << (uint16_t)channelWidth << txPowerW << (uint16_t)guardBandwidth);
   double bandBandwidth = 312500;
   Ptr<SpectrumValue> c = Create<SpectrumValue> (GetSpectrumModel (centerFrequency, channelWidth, bandBandwidth, guardBandwidth));
   Values::iterator vit = c->ValuesBegin ();
@@ -372,9 +372,9 @@ WifiSpectrumValueHelper::CreateHtOfdmTxPowerSpectralDensity (uint32_t centerFreq
 }
 
 Ptr<SpectrumValue>
-WifiSpectrumValueHelper::CreateHeOfdmTxPowerSpectralDensity (uint32_t centerFrequency, uint32_t channelWidth, double txPowerW, uint32_t guardBandwidth)
+WifiSpectrumValueHelper::CreateHeOfdmTxPowerSpectralDensity (uint32_t centerFrequency, uint8_t channelWidth, double txPowerW, uint8_t guardBandwidth)
 {
-  NS_LOG_FUNCTION (centerFrequency << channelWidth << txPowerW << guardBandwidth);
+  NS_LOG_FUNCTION (centerFrequency << (uint16_t)channelWidth << txPowerW << (uint16_t)guardBandwidth);
   double bandBandwidth = 78125;
   Ptr<SpectrumValue> c = Create<SpectrumValue> (GetSpectrumModel (centerFrequency, channelWidth, bandBandwidth, guardBandwidth));
   Values::iterator vit = c->ValuesBegin ();
@@ -507,7 +507,7 @@ WifiSpectrumValueHelper::CreateHeOfdmTxPowerSpectralDensity (uint32_t centerFreq
 }
 
 Ptr<SpectrumValue>
-WifiSpectrumValueHelper::CreateNoisePowerSpectralDensity (uint32_t centerFrequency, uint32_t channelWidth, double bandBandwidth, double noiseFigure, uint32_t guardBandwidth)
+WifiSpectrumValueHelper::CreateNoisePowerSpectralDensity (uint32_t centerFrequency, uint8_t channelWidth, double bandBandwidth, double noiseFigure, uint8_t guardBandwidth)
 {
   Ptr<SpectrumModel> model = GetSpectrumModel (centerFrequency, channelWidth, bandBandwidth, guardBandwidth);
   return CreateNoisePowerSpectralDensity (noiseFigure, model);
@@ -532,9 +532,9 @@ WifiSpectrumValueHelper::CreateNoisePowerSpectralDensity (double noiseFigureDb, 
 }
 
 Ptr<SpectrumValue>
-WifiSpectrumValueHelper::CreateRfFilter (uint32_t centerFrequency, uint32_t channelWidth, double bandGranularity, uint32_t guardBandwidth)
+WifiSpectrumValueHelper::CreateRfFilter (uint32_t centerFrequency, uint8_t channelWidth, double bandGranularity, uint8_t guardBandwidth)
 {
-  NS_LOG_FUNCTION (centerFrequency << channelWidth << bandGranularity << guardBandwidth);
+  NS_LOG_FUNCTION (centerFrequency << (uint16_t)channelWidth << bandGranularity << (uint16_t)guardBandwidth);
   Ptr<SpectrumValue> c = Create <SpectrumValue> (GetSpectrumModel (centerFrequency, channelWidth, bandGranularity, guardBandwidth));
   size_t numBands = c->GetSpectrumModel ()->GetNumBands ();
   Bands::const_iterator bit = c->ConstBandsBegin ();
@@ -602,7 +602,7 @@ WifiSpectrumValue5MhzFactory::CreateConstant (double v)
 
 
 Ptr<SpectrumValue>
-WifiSpectrumValue5MhzFactory::CreateTxPowerSpectralDensity (double txPower, uint32_t channel)
+WifiSpectrumValue5MhzFactory::CreateTxPowerSpectralDensity (double txPower, uint8_t channel)
 {
   Ptr<SpectrumValue> txPsd = Create <SpectrumValue> (g_WifiSpectrumModel5Mhz);
 
@@ -636,7 +636,7 @@ WifiSpectrumValue5MhzFactory::CreateTxPowerSpectralDensity (double txPower, uint
 
 
 Ptr<SpectrumValue>
-WifiSpectrumValue5MhzFactory::CreateRfFilter (uint32_t channel)
+WifiSpectrumValue5MhzFactory::CreateRfFilter (uint8_t channel)
 {
   Ptr<SpectrumValue> rf = Create <SpectrumValue> (g_WifiSpectrumModel5Mhz);
 
