@@ -107,7 +107,7 @@ SpectrumWifiPhy::GetRxSpectrumModel () const
       else
         {
           NS_LOG_DEBUG ("Creating spectrum model from frequency/width pair of (" << GetFrequency () << ", " << (uint16_t)GetChannelWidth () << ")");
-          m_rxSpectrumModel = WifiSpectrumValueHelper::GetSpectrumModel (GetFrequency (), GetChannelWidth (), GetBandBandwidth ());
+          m_rxSpectrumModel = WifiSpectrumValueHelper::GetSpectrumModel (GetFrequency (), GetChannelWidth (), GetBandBandwidth (), GetGuardBandwidth ());
         }
     }
   return m_rxSpectrumModel;
@@ -168,7 +168,7 @@ SpectrumWifiPhy::StartRx (Ptr<SpectrumSignalParameters> rxParams)
   // Integrate over our receive bandwidth (i.e., all that the receive
   // spectral mask representing our filtering allows) to find the
   // total energy apparent to the "demodulator".
-  Ptr<SpectrumValue> filter = WifiSpectrumValueHelper::CreateRfFilter (GetFrequency (), GetChannelWidth (), GetBandBandwidth ());
+  Ptr<SpectrumValue> filter = WifiSpectrumValueHelper::CreateRfFilter (GetFrequency (), GetChannelWidth (), GetBandBandwidth (), GetGuardBandwidth ());
   SpectrumValue filteredSignal = (*filter) * (*receivedSignalPsd);
   // Add receiver antenna gain
   NS_LOG_DEBUG ("Signal power received (watts) before antenna gain: " << Integral (filteredSignal));
@@ -239,19 +239,19 @@ SpectrumWifiPhy::GetTxPowerSpectralDensity (uint16_t centerFrequency, uint8_t ch
     case WIFI_PHY_STANDARD_holland:
     case WIFI_PHY_STANDARD_80211_10MHZ:
     case WIFI_PHY_STANDARD_80211_5MHZ:
-      v = WifiSpectrumValueHelper::CreateOfdmTxPowerSpectralDensity (centerFrequency, channelWidth, txPowerW);
+      v = WifiSpectrumValueHelper::CreateOfdmTxPowerSpectralDensity (centerFrequency, channelWidth, txPowerW, GetGuardBandwidth ());
       break;
     case WIFI_PHY_STANDARD_80211b:
-      v = WifiSpectrumValueHelper::CreateDsssTxPowerSpectralDensity (centerFrequency, txPowerW);
+      v = WifiSpectrumValueHelper::CreateDsssTxPowerSpectralDensity (centerFrequency, txPowerW, GetGuardBandwidth ());
       break;
     case WIFI_PHY_STANDARD_80211n_2_4GHZ:
     case WIFI_PHY_STANDARD_80211n_5GHZ:
     case WIFI_PHY_STANDARD_80211ac:
-      v = WifiSpectrumValueHelper::CreateHtOfdmTxPowerSpectralDensity (centerFrequency, channelWidth, txPowerW);
+      v = WifiSpectrumValueHelper::CreateHtOfdmTxPowerSpectralDensity (centerFrequency, channelWidth, txPowerW, GetGuardBandwidth ());
       break;
     case WIFI_PHY_STANDARD_80211ax_2_4GHZ:
     case WIFI_PHY_STANDARD_80211ax_5GHZ:
-      v = WifiSpectrumValueHelper::CreateHeOfdmTxPowerSpectralDensity (centerFrequency, channelWidth, txPowerW);
+      v = WifiSpectrumValueHelper::CreateHeOfdmTxPowerSpectralDensity (centerFrequency, channelWidth, txPowerW, GetGuardBandwidth ());
       break;
     default:
       NS_FATAL_ERROR ("Standard unknown: " << GetStandard ());
@@ -306,6 +306,33 @@ SpectrumWifiPhy::GetBandBandwidth (void) const
       break;
     }
   return bandBandwidth;
+}
+
+uint32_t
+SpectrumWifiPhy::GetGuardBandwidth (void) const
+{
+  double guardBandwidth = 0;
+  switch (GetStandard ())
+    {
+    case WIFI_PHY_STANDARD_80211a:
+    case WIFI_PHY_STANDARD_80211g:
+    case WIFI_PHY_STANDARD_holland:
+    case WIFI_PHY_STANDARD_80211_10MHZ:
+    case WIFI_PHY_STANDARD_80211_5MHZ:
+    case WIFI_PHY_STANDARD_80211b:
+    case WIFI_PHY_STANDARD_80211n_2_4GHZ:
+    case WIFI_PHY_STANDARD_80211n_5GHZ:
+    case WIFI_PHY_STANDARD_80211ac:
+    case WIFI_PHY_STANDARD_80211ax_2_4GHZ:
+    case WIFI_PHY_STANDARD_80211ax_5GHZ:
+      // Use 10 MHZ
+      guardBandwidth = 10;
+      break;
+    default:
+      NS_FATAL_ERROR ("Standard unknown: " << GetStandard ());
+      break;
+    }
+  return guardBandwidth;
 }
 
 } //namespace ns3
