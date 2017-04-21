@@ -112,7 +112,7 @@ private:
    * \param txPowerDbm the tx power associated to the packet being sent (dBm)
    * \param duration the transmission duration associated with the packet being sent
    */
-  void Receive (Ptr<YansWifiPhy> receiver, Ptr<Packet> packet, double txPowerDbm, Time duration) const;
+  static void Receive (Ptr<YansWifiPhy> receiver, Ptr<Packet> packet, double txPowerDbm, Time duration);
 
   PhyList m_phyList;                   //!< List of YansWifiPhys connected to this YansWifiChannel
   Ptr<PropagationLossModel> m_loss;    //!< Propagation loss model
