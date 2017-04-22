@@ -31,11 +31,17 @@ namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("WifiSpectrumValueHelper");
 
+///< Wifi Spectrum Model structure
 struct WifiSpectrumModelId
 {
+  /**
+   * Constructor
+   * \param f the frequency in Mhz
+   * \param w the channel width in Mhz
+   */ 
   WifiSpectrumModelId (uint32_t f, uint8_t w);
-  uint32_t m_centerFrequency;
-  uint8_t m_channelWidth;
+  uint32_t m_centerFrequency;  ///< center frequency
+  uint8_t m_channelWidth; ///< channel width
 };
 
 WifiSpectrumModelId::WifiSpectrumModelId (uint32_t f, uint8_t w)
@@ -45,13 +51,19 @@ WifiSpectrumModelId::WifiSpectrumModelId (uint32_t f, uint8_t w)
   NS_LOG_FUNCTION (this << f << (uint16_t)w);
 }
 
+/**
+ * Less than operator
+ * \param a the first wifi spectrum to compare
+ * \param b the second wifi spectrum to compare
+ * \returns true if the first spectrum is less than the second spectrum
+ */ 
 bool
 operator < (const WifiSpectrumModelId& a, const WifiSpectrumModelId& b)
 {
   return ( (a.m_centerFrequency < b.m_centerFrequency) || ( (a.m_centerFrequency == b.m_centerFrequency) && (a.m_channelWidth < b.m_channelWidth)));
 }
 
-static std::map<WifiSpectrumModelId, Ptr<SpectrumModel> > g_wifiSpectrumModelMap;
+static std::map<WifiSpectrumModelId, Ptr<SpectrumModel> > g_wifiSpectrumModelMap; ///< static initializer for the class
 
 Ptr<SpectrumModel>
 WifiSpectrumValueHelper::GetSpectrumModel (uint32_t centerFrequency, uint8_t channelWidth, double bandBandwidth, uint8_t guardBandwidth)
@@ -554,7 +566,7 @@ WifiSpectrumValueHelper::CreateRfFilter (uint32_t centerFrequency, uint8_t chann
   return c;
 }
 
-static Ptr<SpectrumModel> g_WifiSpectrumModel5Mhz;
+static Ptr<SpectrumModel> g_WifiSpectrumModel5Mhz; ///< static initializer for the class
 
 WifiSpectrumValueHelper::~WifiSpectrumValueHelper ()
 {
