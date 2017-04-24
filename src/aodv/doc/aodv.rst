@@ -79,7 +79,6 @@ Scope and Limitations
 The model is for IPv4 only.  The following optional protocol optimizations 
 are not implemented:
 
-#. Expanding ring search.
 #. Local link repair.
 #. RREP, RREQ and HELLO message extensions.
 
