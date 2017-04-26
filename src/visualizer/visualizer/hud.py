@@ -5,8 +5,28 @@ import pango
 import gtk
 
 
+## Axes class
 class Axes(object):
+    ## @var viz
+    #  visualizer
+    ## @var color
+    #  color
+    ## @var hlines
+    #  horizontal lines
+    ## @var vlines
+    #  vertical lines
+    ## @var labels
+    #  list of labels
+    ## @var visible
+    #  visible
     def __init__(self, viz):
+        """!
+        Initializer function
+        
+        @param self: this object
+        @param viz: visualization object
+        @return none
+        """
         self.viz = viz
         self.color = 0x8080C0FF
         self.hlines = goocanvas.Path(parent=viz.canvas.get_root_item(), stroke_color_rgba=self.color)
@@ -27,6 +47,13 @@ class Axes(object):
         self.update_view()
 
     def set_visible(self, visible):
+        """!
+        Set visible function
+        
+        @param self: this object
+        @param visible: visible indicator
+        @return none
+        """
         self.visible = visible
         if self.visible:
             self.hlines.props.visibility = goocanvas.ITEM_VISIBLE
@@ -38,6 +65,14 @@ class Axes(object):
                 label.props.visibility = goocanvas.ITEM_HIDDEN
             
     def _compute_divisions(self, xi, xf):
+        """!
+        Compute divisions function
+        
+        @param self: this object
+        @param xi: xi
+        @param xf: xf
+        @return x0 and div
+        """
         assert xf > xi
         dx = xf - xi
         size = dx
@@ -45,6 +80,12 @@ class Axes(object):
         text_width = dx/ndiv/2
 
         def rint(x):
+            """!
+            Compute divisions function
+        
+            @param x: x
+            @return x rounded up
+            """
             return math.floor(x+0.5)
         
         dx_over_ndiv = dx / ndiv
@@ -63,6 +104,12 @@ class Axes(object):
         
         
     def update_view(self):
+        """!
+        Update view function
+        
+        @param self: this object
+        @return none
+        """
         if self.viz.zoom is None:
             return
 
@@ -71,6 +118,12 @@ class Axes(object):
         for label in unused_labels:
             label.set_property("visibility", goocanvas.ITEM_HIDDEN)
         def get_label():
+            """!
+            Get label function
+        
+            @param self: this object
+            @return label
+            """
             try:
                 label = unused_labels.pop(0)
             except IndexError:

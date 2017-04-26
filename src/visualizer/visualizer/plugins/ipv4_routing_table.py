@@ -6,7 +6,16 @@ import ns.internet
 
 from visualizer.base import InformationWindow
 
+## ShowIpv4RoutingTable class
 class ShowIpv4RoutingTable(InformationWindow):
+    ## @var win
+    #  window
+    ## @var visualizer
+    #  visualizer
+    ## @var node_index
+    #  node index
+    ## @var table_model
+    #  table model
     (
         COLUMN_DESTINATION,
         COLUMN_NEXT_HOP,
@@ -16,6 +25,13 @@ class ShowIpv4RoutingTable(InformationWindow):
         ) = range(5)
 
     def __init__(self, visualizer, node_index):
+        """
+        Initializer
+        @param self this object
+        @param visualizer visualizer object
+        @param node_index the node index
+        @return the statistics
+        """
         InformationWindow.__init__(self)
         self.win = gtk.Dialog(parent=visualizer.window,
                               flags=gtk.DIALOG_DESTROY_WITH_PARENT|gtk.DIALOG_NO_SEPARATOR,
@@ -66,10 +82,22 @@ class ShowIpv4RoutingTable(InformationWindow):
         self.win.show()
 
     def _response_cb(self, win, response):
+        """!
+        Response callback function
+        @param self this object
+        @param win the window
+        @param response the response
+        @return none
+        """
         self.win.destroy()
         self.visualizer.remove_information_window(self)
     
     def update(self):
+        """!
+        Update function
+        @param self this object
+        @return none
+        """
         node = ns.network.NodeList.GetNode(self.node_index)
         ipv4 = node.GetObject(ns.internet.Ipv4.GetTypeId())
         routing = ipv4.GetRoutingProtocol()

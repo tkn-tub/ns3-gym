@@ -44,6 +44,10 @@ namespace ns3 {
 class VisualSimulatorImpl : public SimulatorImpl
 {
 public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
 
   VisualSimulatorImpl ();
@@ -76,9 +80,9 @@ protected:
   void NotifyConstructionCompleted (void);
 
 private:
-  Ptr<SimulatorImpl> GetSim ();
-  Ptr<SimulatorImpl> m_simulator;
-  ObjectFactory m_simulatorImplFactory;
+  Ptr<SimulatorImpl> GetSim (); ///< get the simulator implementation
+  Ptr<SimulatorImpl> m_simulator; ///< the simulator implementation
+  ObjectFactory m_simulatorImplFactory; ///< simulator implementation factory
 
 };
 

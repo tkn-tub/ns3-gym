@@ -6,20 +6,39 @@ from visualizer.base import InformationWindow
 NODE_STATISTICS_MEMORY = 10
 
 
+## StatisticsCollector class
 class StatisticsCollector(object):
     """
     Collects interface statistics for all nodes.
     """
+    ## @var node_statistics
+    #  node statistics
+    ## @var visualizer
+    #  visualizer
 
+    ## NetDevStats class
     class NetDevStats(object):
+        ## @var __slots__ 
+        #  class members
         __slots__ = ['rxPackets', 'rxBytes', 'txPackets', 'txBytes',
                      'rxPacketRate', 'rxBitRate', 'txPacketRate', 'txBitRate']
 
     def __init__(self, visualizer):
+        """
+        Collects interface statistics for all nodes.
+        @param self this object
+        @param visualizer visualizer object
+        """
         self.node_statistics = {} # nodeid -> list(raw statistics)
         self.visualizer = visualizer
 
     def simulation_periodic_update(self, viz):
+        """!
+        Simulation Periodic Update function.
+        @param self this object
+        @param viz visualizer object
+        @return none
+        """
         nodes_statistics = viz.simulation.sim_helper.GetNodesStatistics()
         for stats in nodes_statistics:
             try:
@@ -32,6 +51,12 @@ class StatisticsCollector(object):
                 raw_stats_list.pop(0)
 
     def get_interface_statistics(self, nodeId):
+        """!
+        Get interface statistics function.
+        @param self this object
+        @param nodeId node ID
+        @return the statistics
+        """
         try:
             raw_stats_list = self.node_statistics[nodeId]
         except KeyError:
@@ -68,7 +93,20 @@ class StatisticsCollector(object):
         return retval
 
 
+## ShowInterfaceStatistics class
 class ShowInterfaceStatistics(InformationWindow):
+    ## @var win
+    #  window
+    ## @var visualizer
+    #  visualizer
+    ## @var statistics_collector
+    #  statistics collector
+    ## @var node_index
+    #  node index
+    ## @var viz_node
+    #  visualizer node
+    ## @var table_model
+    #  table model
     (
         COLUMN_INTERFACE,
 
@@ -85,6 +123,13 @@ class ShowInterfaceStatistics(InformationWindow):
         ) = range(9)
 
     def __init__(self, visualizer, node_index, statistics_collector):
+        """
+        Initializer.
+        @param self this object
+        @param visualizer the visualizer object
+        @param node_index the node index
+        @param statistics_collector statistics collector class
+        """
         InformationWindow.__init__(self)
         self.win = gtk.Dialog(parent=visualizer.window,
                               flags=gtk.DIALOG_DESTROY_WITH_PARENT|gtk.DIALOG_NO_SEPARATOR,
@@ -122,10 +167,22 @@ class ShowInterfaceStatistics(InformationWindow):
         self.win.show()
 
     def _response_cb(self, win, response):
+        """!
+        Response callback function.
+        @param self this object
+        @param win the window
+        @param response the response
+        @return none
+        """
         self.win.destroy()
         self.visualizer.remove_information_window(self)
     
     def update(self):
+        """!
+        Update function.
+        @param self this object
+        @return none
+        """
         node = ns.network.NodeList.GetNode(self.node_index)
         stats_list = self.statistics_collector.get_interface_statistics(self.node_index)
         self.table_model.clear()

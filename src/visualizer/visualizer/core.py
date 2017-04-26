@@ -66,17 +66,55 @@ from base import load_plugins, register_plugin, plugins
 PI_OVER_2 = math.pi/2
 PI_TIMES_2 = math.pi*2
 
+## Node class
 class Node(PyVizObject):
-    
+    ## @var visualizer
+    #  visualier object
+    ## @var node_index
+    #  node index
+    ## @var canvas_item
+    #  canvas item
+    ## @var links
+    #  links
+    ## @var _has_mobility
+    #  has mobility model
+    ## @var _selected
+    #  is selected
+    ## @var _highlighted
+    #  is highlighted
+    ## @var _color
+    #  color
+    ## @var _size
+    #  size
+    ## @var menu
+    #  menu
+    ## @var svg_item
+    #  svg item
+    ## @var svg_align_x
+    #  svg align X
+    ## @var svg_align_y
+    #  svg align Y
+    ## @var _label
+    #  label
+    ## @var _label_canvas_item
+    #  label canvas
+    ## @var selected
+    #  selected property
+    ## @var highlighted
+    #  highlighted property
+    ## @var __gsignals__
+    # signal emitted whenever a tooltip is about to be shown for the node
+    # the first signal parameter is a python list of strings, to which information can be appended
     __gsignals__ = {
-
-        # signal emitted whenever a tooltip is about to be shown for the node
-        # the first signal parameter is a python list of strings, to which information can be appended
         'query-extra-tooltip-info': (gobject.SIGNAL_RUN_LAST, None, (object,)),
-        
         }
 
     def __init__(self, visualizer, node_index):
+        """ Initialize function.
+        @param self The object pointer.
+        @param visualizer: visualizer object
+        @param node_index: node index
+        """
         super(Node, self).__init__()
 
         self.visualizer = visualizer
@@ -101,7 +139,7 @@ class Node(PyVizObject):
         self._update_appearance() # call this last
  
     def set_svg_icon(self, file_base_name, width=None, height=None, align_x=0.5, align_y=0.5):
-        """
+        """!
         Set a background SVG icon for the node.
 
         @param file_base_name: base file name, including .svg
@@ -109,7 +147,7 @@ class Node(PyVizObject):
         src/contrib/visualizer/resource.
         
         @param width: scale to the specified width, in meters
-        @param width: scale to the specified height, in meters
+        @param height: scale to the specified height, in meters
 
         @param align_x: horizontal alignment of the icon relative to
         the node position, from 0 (icon fully to the left of the node)
@@ -118,6 +156,8 @@ class Node(PyVizObject):
         @param align_y: vertical alignment of the icon relative to the
         node position, from 0 (icon fully to the top of the node) to
         1.0 (icon fully to the bottom of the node)
+
+        @return a ValueError exception if invalid dimensions.
 
         """
         if width is None and height is None:
@@ -145,11 +185,27 @@ class Node(PyVizObject):
         self._update_appearance()
 
     def set_label(self, label):
+        """!
+        Set a label for the node.
+
+        @param self: class object.
+        @param label: label to set
+
+        @return: an exception if invalid parameter.
+        """
         assert isinstance(label, basestring)
         self._label = label
         self._update_appearance()
 
     def _update_svg_position(self, x, y):
+        """!
+        Update svg position.
+
+        @param self: class object.
+        @param x: x position
+        @param y: y position
+        @return none
+        """
         w = self.svg_item.width
         h = self.svg_item.height
         self.svg_item.set_properties(x=(x - (1-self.svg_align_x)*w),
@@ -157,6 +213,13 @@ class Node(PyVizObject):
         
 
     def tooltip_query(self, tooltip):
+        """!
+        Query tooltip.
+
+        @param self: class object.
+        @param tooltip: tooltip
+        @return none
+        """
         self.visualizer.simulation.lock.acquire()
         try:
             ns3_node = ns.network.NodeList.GetNode(self.node_index)
@@ -212,30 +275,88 @@ class Node(PyVizObject):
             self.visualizer.simulation.lock.release()
 
     def on_enter_notify_event(self, view, target, event):
+        """!
+        On Enter event handle.
+
+        @param self: class object.
+        @param view: view
+        @param target: target
+        @param event: event
+        @return none
+        """
         self.highlighted = True
     def on_leave_notify_event(self, view, target, event):
+        """!
+        On Leave event handle.
+
+        @param self: class object.
+        @param view: view
+        @param target: target
+        @param event: event
+        @return none
+        """
         self.highlighted = False
 
     def _set_selected(self, value):
+        """!
+        Set selected function.
+
+        @param self: class object.
+        @param value: selected value
+        @return none
+        """
         self._selected = value
         self._update_appearance()
     def _get_selected(self):
+        """!
+        Get selected function.
+
+        @param self: class object.
+        @return selected status
+        """
         return self._selected
+    
     selected = property(_get_selected, _set_selected)
 
     def _set_highlighted(self, value):
+        """!
+        Set highlighted function.
+
+        @param self: class object.
+        @param value: selected value
+        @return none
+        """
         self._highlighted = value
         self._update_appearance()
     def _get_highlighted(self):
+        """!
+        Get highlighted function.
+
+        @param self: class object.
+        @return highlighted status
+        """
         return self._highlighted
+    
     highlighted = property(_get_highlighted, _set_highlighted)
     
     def set_size(self, size):
+        """!
+        Set size function.
+
+        @param self: class object.
+        @param size: selected size
+        @return none
+        """
         self._size = size
         self._update_appearance()
 
     def _update_appearance(self):
-        """Update the node aspect to reflect the selected/highlighted state"""
+        """!
+        Update the node aspect to reflect the selected/highlighted state
+
+        @param self: class object.
+        @return none
+        """
 
         size = transform_distance_simulation_to_canvas(self._size)
         if self.svg_item is not None:
@@ -271,6 +392,14 @@ class Node(PyVizObject):
             self._update_position()
     
     def set_position(self, x, y):
+        """!
+        Set position function.
+
+        @param self: class object.
+        @param x: x position
+        @param y: y position
+        @return none
+        """
         self.canvas_item.set_property("center_x", x)
         self.canvas_item.set_property("center_y", y)
         if self.svg_item is not None:
@@ -283,13 +412,32 @@ class Node(PyVizObject):
             self._label_canvas_item.set_properties(x=x, y=(y+self._size*3))
 
     def get_position(self):
+        """!
+        Get position function.
+
+        @param self: class object.
+        @return x and y position
+        """
         return (self.canvas_item.get_property("center_x"), self.canvas_item.get_property("center_y"))
 
     def _update_position(self):
+        """!
+        Update position function.
+
+        @param self: class object.
+        @return none
+        """
         x, y = self.get_position()
         self.set_position(x, y)
 
     def set_color(self, color):
+        """!
+        Set color function.
+
+        @param self: class object.
+        @param color: color to set.
+        @return none
+        """
         if isinstance(color, str):
             color = gtk.gdk.color_parse(color)
             color = ((color.red>>8) << 24) | ((color.green>>8) << 16) | ((color.blue>>8) << 8) | 0xff
@@ -297,15 +445,35 @@ class Node(PyVizObject):
         self._update_appearance()
 
     def add_link(self, link):
+        """!
+        Add link function.
+
+        @param self: class object.
+        @param link: link to add.
+        @return none
+        """
         assert isinstance(link, Link)
         self.links.append(link)
 
     def remove_link(self, link):
+        """!
+        Remove link function.
+
+        @param self: class object.
+        @param link: link to add.
+        @return none
+        """
         assert isinstance(link, Link)
         self.links.remove(link)
 
     @property
     def has_mobility(self):
+        """!
+        Has mobility function.
+
+        @param self: class object.
+        @return modility option
+        """
         if self._has_mobility is None:
             node = ns.network.NodeList.GetNode(self.node_index)
             mobility = node.GetObject(ns.mobility.MobilityModel.GetTypeId())
@@ -313,8 +481,23 @@ class Node(PyVizObject):
         return self._has_mobility
 
 
+## Channel
 class Channel(PyVizObject):
+    ## @var channel
+    #  channel
+    ## @var canvas_item
+    #  canvas
+    ## @var links
+    #  list of links
+    #
     def __init__(self, channel):
+        """!
+        Initializer function.
+
+        @param self: class object.
+        @param channel: channel.
+        @return none
+        """
         self.channel = channel
         self.canvas_item = goocanvas.Ellipse(radius_x=30, radius_y=30,
                                              fill_color="white",
@@ -325,6 +508,14 @@ class Channel(PyVizObject):
         self.links = []
     
     def set_position(self, x, y):
+        """!
+        Initializer function.
+
+        @param self: class object.
+        @param x: x position.
+        @param y: y position.
+        @return
+        """
         self.canvas_item.set_property("center_x", x)
         self.canvas_item.set_property("center_y", y)
 
@@ -332,11 +523,33 @@ class Channel(PyVizObject):
             link.update_points()
 
     def get_position(self):
+        """!
+        Initializer function.
+
+        @param self: class object.
+        @return x / y position.
+        """
         return (self.canvas_item.get_property("center_x"), self.canvas_item.get_property("center_y"))
 
 
+## WiredLink
 class WiredLink(Link):
+    ## @var node1
+    #  first node
+    ## @var node2
+    #  second node
+    ## @var canvas_item
+    #  canvas
+    #
     def __init__(self, node1, node2):
+        """!
+        Initializer function.
+
+        @param self: class object.
+        @param node1: class object.
+        @param node2: class object.
+        @return none
+        """
         assert isinstance(node1, Node)
         assert isinstance(node2, (Node, Channel))
         self.node1 = node1
@@ -347,14 +560,41 @@ class WiredLink(Link):
         self.node2.links.append(self)
 
     def update_points(self):
+        """!
+        Update points function.
+
+        @param self: class object.
+        @return none
+        """
         pos1_x, pos1_y = self.node1.get_position()
         pos2_x, pos2_y = self.node2.get_position()
         self.canvas_item.set_property("data", "M %r %r L %r %r" % (pos1_x, pos1_y, pos2_x, pos2_y))
 
 
-
+## SimulationThread
 class SimulationThread(threading.Thread):
+    ## @var viz
+    #  Visualizer object
+    ## @var lock
+    #  thread lock
+    ## @var go
+    #  thread event
+    ## @var target_time
+    #  in seconds
+    ## @var quit
+    #  quit indicator
+    ## @var sim_helper
+    #  helper function
+    ## @var pause_messages
+    #  pause messages
     def __init__(self, viz):
+        """!
+        Initializer function.
+
+        @param self: class object.
+        @param viz: class object.
+        @return none
+        """
         super(SimulationThread, self).__init__()
         assert isinstance(viz, Visualizer)
         self.viz = viz # Visualizer object
@@ -367,6 +607,13 @@ class SimulationThread(threading.Thread):
         self.pause_messages = []
 
     def set_nodes_of_interest(self, nodes):
+        """!
+        Set nodes of interest function.
+
+        @param self: class object.
+        @param nodes: class object.
+        @return
+        """
         self.lock.acquire()
         try:
             self.sim_helper.SetNodesOfInterest(nodes)
@@ -374,6 +621,12 @@ class SimulationThread(threading.Thread):
             self.lock.release()
         
     def run(self):
+        """!
+        Initializer function.
+
+        @param self: class object.
+        @return none
+        """
         while not self.quit:
             #print "sim: Wait for go"
             self.go.wait() # wait until the main (view) thread gives us the go signal
@@ -400,14 +653,25 @@ class SimulationThread(threading.Thread):
                 self.lock.release()
             #print "sim: Release lock, loop."
 
-# enumeration
+## ShowTransmissionsMode
 class ShowTransmissionsMode(object):
+    ## @var ALL
+    #  all
+    ## @var NONE
+    #  none
+    ## @var SELECTED
+    #  seleced
+    ## @var __slots__ 
+    #  enumeration
     __slots__ = []
-ShowTransmissionsMode.ALL = ShowTransmissionsMode()
-ShowTransmissionsMode.NONE = ShowTransmissionsMode()
-ShowTransmissionsMode.SELECTED = ShowTransmissionsMode()
+    ShowTransmissionsMode.ALL = ShowTransmissionsMode()
+    ShowTransmissionsMode.NONE = ShowTransmissionsMode()
+    ShowTransmissionsMode.SELECTED = ShowTransmissionsMode()
 
+## Visualizer
 class Visualizer(gobject.GObject):
+    ## @var INSTANCE
+    #  all
     INSTANCE = None
 
     if _import_error is None:
@@ -429,6 +693,12 @@ class Visualizer(gobject.GObject):
             }
 
     def __init__(self):
+        """!
+        Initializer function.
+
+        @param self: class object.
+        @return none
+        """
         assert Visualizer.INSTANCE is None
         Visualizer.INSTANCE = self
         super(Visualizer, self).__init__()
@@ -470,6 +740,13 @@ class Visualizer(gobject.GObject):
             plugin(self)
 
     def set_show_transmissions_mode(self, mode):
+        """!
+        Set show transmission mode.
+
+        @param self: class object.
+        @param mode: mode to set.
+        @return none
+        """
         assert isinstance(mode, ShowTransmissionsMode)
         self._show_transmissions_mode = mode
         if self._show_transmissions_mode == ShowTransmissionsMode.ALL:
@@ -483,6 +760,12 @@ class Visualizer(gobject.GObject):
                 self.simulation.set_nodes_of_interest([self.selected_node.node_index])
 
     def _create_advanced_controls(self):
+        """!
+        Create advanced controls.
+
+        @param self: class object.
+        @return expander
+        """
         expander = gtk.Expander("Advanced")
         expander.show()
 
@@ -565,10 +848,20 @@ class Visualizer(gobject.GObject):
 
         return expander
 
+    ## PanningState class
     class _PanningState(object):
+        ## @var __slots__
+        #  internal variables
         __slots__ = ['initial_mouse_pos', 'initial_canvas_pos', 'motion_signal']
 
     def _begin_panning(self, widget, event):
+        """!
+        Set show trnamission mode.
+
+        @param self: class object.
+        @param mode: mode to set.
+        @return none
+        """
         self.canvas.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.FLEUR))
         self._panning_state = self._PanningState()
         x, y, dummy = widget.window.get_pointer()
@@ -579,6 +872,13 @@ class Visualizer(gobject.GObject):
         self._panning_state.motion_signal = self.canvas.connect("motion-notify-event", self._panning_motion)
 
     def _end_panning(self, event):
+        """!
+        End panning function.
+
+        @param self: class object.
+        @param event: active event.
+        @return none
+        """
         if self._panning_state is None:
             return
         self.canvas.window.set_cursor(None)
@@ -586,6 +886,14 @@ class Visualizer(gobject.GObject):
         self._panning_state = None
         
     def _panning_motion(self, widget, event):
+        """!
+        Panning motion function.
+
+        @param self: class object.
+        @param widget: widget.
+        @param event: event.
+        @return true if successful
+        """
         assert self._panning_state is not None
         if event.is_hint:
             x, y, dummy = widget.window.get_pointer()

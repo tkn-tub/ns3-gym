@@ -30,6 +30,7 @@ NS_OBJECT_ENSURE_REGISTERED (VisualSimulatorImpl);
 
 namespace
 {
+/// Get an object factory configured to the default simulator implementation
 ObjectFactory
 GetDefaultSimulatorImplFactory ()
 {

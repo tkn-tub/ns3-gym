@@ -9,8 +9,38 @@ from visualizer.base import InformationWindow
 from visualizer.higcontainer import HIGContainer
 from kiwi.ui.objectlist import ObjectList, Column
 
+## ShowLastPackets class
 class ShowLastPackets(InformationWindow):
+    ## @var win
+    #  window
+    ## @var visualizer
+    #  visualizer
+    ## @var viz_node
+    #  visualizer node
+    ## @var node
+    #  the node
+    ## @var tx_list
+    #  packet transmit list
+    ## @var rx_list
+    #  packet receive list
+    ## @var drop_list
+    #  packet drop list
+    ## @var packet_capture_options
+    #  packet capture options
+    ## @var packet_filter_widget
+    #  packet filter widget
+    ## @var packet_filter_list
+    #  list of TypeIdConfig instances
+    ## @var op_AND_button
+    #  AND button
+    ## @var op_OR_button
+    #  OR button
     class PacketList(gtk.ScrolledWindow):
+        """
+        PacketList class
+        """
+        ## @var table_model
+        #  table model
         (
             COLUMN_TIME,
             COLUMN_INTERFACE,
@@ -19,6 +49,10 @@ class ShowLastPackets(InformationWindow):
             ) = range(4)
 
         def __init__(self):
+            """
+            Initializer
+            @param self this object
+            """
             super(ShowLastPackets.PacketList, self).__init__()
             self.set_properties(hscrollbar_policy=gtk.POLICY_AUTOMATIC,
                                 vscrollbar_policy=gtk.POLICY_AUTOMATIC)
@@ -37,6 +71,13 @@ class ShowLastPackets(InformationWindow):
             add_column("Contents", self.COLUMN_CONTENTS)
 
         def update(self, node, packet_list):
+            """!
+            Update function
+            @param self this object
+            @param node the node
+            @param packet_list packet list
+            @return none
+            """
             self.table_model.clear()
             for sample in packet_list:
                 tree_iter = self.table_model.append()
@@ -55,6 +96,12 @@ class ShowLastPackets(InformationWindow):
                 
 
     def __init__(self, visualizer, node_index):
+        """
+        Initializer
+        @param self this object
+        @param visualizer the visualizer object
+        @param node_index the node index
+        """
         InformationWindow.__init__(self)
         self.win = gtk.Dialog(parent=visualizer.window,
                               flags=gtk.DIALOG_DESTROY_WITH_PARENT|gtk.DIALOG_NO_SEPARATOR,
@@ -210,10 +257,22 @@ class ShowLastPackets(InformationWindow):
         self.win.show()
 
     def _response_cb(self, win, response):
+        """!
+        Response callback function
+        @param self this object
+        @param win the window
+        @param response the response
+        @return none
+        """
         self.win.destroy()
         self.visualizer.remove_information_window(self)
     
     def update(self):
+        """!
+        Update function
+        @param self this object
+        @return none
+        """
         last_packets = self.visualizer.simulation.sim_helper.GetLastPackets(self.node.GetId())
 
         self.tx_list.update(self.node, last_packets.lastTransmittedPackets)
