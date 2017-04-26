@@ -66,7 +66,7 @@ NS_LOG_COMPONENT_DEFINE ("AnimationInterface");
 
 // Globals
 
-static bool initialized = false;
+static bool initialized = false; //!< Initialization flag
 
 
 // Public methods

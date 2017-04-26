@@ -390,7 +390,7 @@ public:
    *
    * \brief Get trace file packet count (This used only for testing)
    *
-   * returns Number of packets recorded in the current trace file
+   * \returns Number of packets recorded in the current trace file
    */
   uint64_t GetTracePktCount ();
 
@@ -400,7 +400,7 @@ public:
    * \param counterName A string to identify the counter
    * \param counterType The type of the counter, such as uint32, double etc
    * 
-   * returns The id of the counter to be used as a reference for future
+   * \returns The id of the counter to be used as a reference for future
    */
   uint32_t AddNodeCounter (std::string counterName, CounterType counterType); 
 
@@ -409,59 +409,91 @@ public:
    * \brief Add a resource such as the path to an image file
    * \param resourcePath Absolute Path to an image/resource
    * 
-   * returns a number identifying the resource
+   * \returns a number identifying the resource
    */
   uint32_t AddResource (std::string resourcePath);
 
   /**
    *
    * \brief Get node's energy fraction (This used only for testing)
+   * \param node
    *
-   * returns current node's remaining energy (between [0, 1])
+   * \returns current node's remaining energy (between [0, 1])
    */
   double GetNodeEnergyFraction (Ptr <const Node> node) const;
 
 private:
 
+  /**
+   * AnimPacketInfo class
+   */
   class AnimPacketInfo
   
   {
   public:
     AnimPacketInfo ();
+    /**
+     * Constructor
+     *
+     * \param pInfo anim packet info
+     */
     AnimPacketInfo (const AnimPacketInfo & pInfo);
+    /**
+     * Constructor
+     *
+     * \param tx_nd transmit device
+     * \param fbTx fb transmit
+     * \param txNodeId transmit node ID
+     */
     AnimPacketInfo(Ptr <const NetDevice> tx_nd, const Time fbTx, uint32_t txNodeId = 0);
-    Ptr <const NetDevice> m_txnd;
-    uint32_t m_txNodeId;
-    double m_fbTx;     
-    double m_lbTx;     
-    double m_fbRx;            
-    double m_lbRx;
-    Ptr <const NetDevice> m_rxnd;
+    Ptr <const NetDevice> m_txnd; ///< transmit device
+    uint32_t m_txNodeId; ///< node ID
+    double m_fbTx; ///< fb transmit
+    double m_lbTx; ///< lb transmit    
+    double m_fbRx; ///< fb receive
+    double m_lbRx; ///< lb receive
+    Ptr <const NetDevice> m_rxnd; ///< receive device
+    /**
+     * Process receive begin
+     * \param nd the device
+     * \param fbRx
+     */
     void ProcessRxBegin (Ptr <const NetDevice> nd, const double fbRx);
   };
 
+  /// RGB structure
   typedef struct
     {
-      uint8_t r;
-      uint8_t g;
-      uint8_t b;
-    } Rgb;
+      uint8_t r; ///< r
+      uint8_t g; ///< g
+      uint8_t b; ///< b
+    } Rgb; ///< RGB structure
 
+  /// P2pLinkNodeIdPair structure
   typedef struct
   {
-    uint32_t fromNode;
-    uint32_t toNode;
-  } P2pLinkNodeIdPair;
+    uint32_t fromNode; ///< from node
+    uint32_t toNode; ///< to node
+  } P2pLinkNodeIdPair; ///< P2P link node id pair
 
+  /// LinkProperties structure
   typedef struct
   {
-    std::string fromNodeDescription;
-    std::string toNodeDescription;
-    std::string linkDescription;
-  } LinkProperties;
+    std::string fromNodeDescription; ///< from node description
+    std::string toNodeDescription; ///< to node description
+    std::string linkDescription; ///< link description
+  } LinkProperties; ///< link properties
 
+  /// LinkPairCompare structure
   struct LinkPairCompare
   {
+    /**
+     * comparison operator
+     *
+     * \param first
+     * \param second
+     * \return true if equal
+     */
     bool operator () (P2pLinkNodeIdPair first, P2pLinkNodeIdPair second) const
       {
         //Check if they are the same node pairs but flipped
@@ -479,18 +511,21 @@ private:
 
   };
 
+  /// Ipv4RouteTrackElement structure
   typedef struct 
     {
-      std::string destination;
-      uint32_t fromNodeId;
-    } Ipv4RouteTrackElement;
+      std::string destination; ///< destination
+      uint32_t fromNodeId; ///< from node ID
+    } Ipv4RouteTrackElement; ///< IPv4 route track element
 
+  /// Ipv4RoutePathElement structure
   typedef struct 
     {
-      uint32_t nodeId;
-      std::string nextHop;
-    } Ipv4RoutePathElement;
+      uint32_t nodeId; ///< node ID
+      std::string nextHop; ///< next hop
+    } Ipv4RoutePathElement; ///< IPv4 route path element
 
+  /// ProtocolType enumeration
   typedef enum
     {
       UAN,
@@ -502,41 +537,69 @@ private:
       WAVE
     } ProtocolType;
 
+  /// NodeSize structure
   typedef struct
     {
-      double width;
-      double height;
-    } NodeSize;
-  typedef std::map <P2pLinkNodeIdPair, LinkProperties, LinkPairCompare> LinkPropertiesMap;
-  typedef std::map <uint32_t, std::string> NodeDescriptionsMap;
-  typedef std::map <uint32_t, Rgb> NodeColorsMap;
-  typedef std::map<uint64_t, AnimPacketInfo> AnimUidPacketInfoMap;
-  typedef std::map <uint32_t, double> EnergyFractionMap;
-  typedef std::vector <Ipv4RoutePathElement> Ipv4RoutePathElements;
-  typedef std::multimap <uint32_t, std::string> NodeIdIpv4Map;
-  typedef std::multimap <uint32_t, std::string> NodeIdIpv6Map;
-  typedef std::pair <uint32_t, std::string> NodeIdIpv4Pair;
-  typedef std::pair <uint32_t, std::string> NodeIdIpv6Pair;
+      double width; ///< width
+      double height; ///< height
+    } NodeSize; ///< node size
+  typedef std::map <P2pLinkNodeIdPair, LinkProperties, LinkPairCompare> LinkPropertiesMap; ///< LinkPropertiesMap typedef
+  typedef std::map <uint32_t, std::string> NodeDescriptionsMap; ///< NodeDescriptionsMap typedef
+  typedef std::map <uint32_t, Rgb> NodeColorsMap; ///< NodeColorsMap typedef
+  typedef std::map<uint64_t, AnimPacketInfo> AnimUidPacketInfoMap; ///< AnimUidPacketInfoMap typedef
+  typedef std::map <uint32_t, double> EnergyFractionMap; ///< EnergyFractionMap typedef
+  typedef std::vector <Ipv4RoutePathElement> Ipv4RoutePathElements; ///< Ipv4RoutePathElements typedef
+  typedef std::multimap <uint32_t, std::string> NodeIdIpv4Map; ///< NodeIdIpv4Map typedef
+  typedef std::multimap <uint32_t, std::string> NodeIdIpv6Map; ///< NodeIdIpv6Map typedef
+  typedef std::pair <uint32_t, std::string> NodeIdIpv4Pair; ///< NodeIdIpv4Pair typedef
+  typedef std::pair <uint32_t, std::string> NodeIdIpv6Pair; ///< NodeIdIpv6Pair typedef
 
 
   // Node Counters
-  typedef std::map <uint32_t, uint64_t> NodeCounterMap64;
+  typedef std::map <uint32_t, uint64_t> NodeCounterMap64; ///< NodeCounterMap64 typedef
 
 
+  /// AnimXmlElement class
   class AnimXmlElement
   {
-  public:
-	  AnimXmlElement(std::string tagName, bool emptyElement = true);
-	  template <typename T>
-	  void AddAttribute(std::string attribute, T value, bool xmlEscape = false);
-	  void SetText(std::string text);
-	  void AppendChild(AnimXmlElement e);
-	  std::string ToString(bool autoClose = true);
+    public:
+    /**
+     * Constructor
+     *
+     * \param tagName tag name
+     * \param emptyElement empty element?
+     */
+    AnimXmlElement (std::string tagName, bool emptyElement=true);
+    template <typename T>
+    /**
+     * Add attribute function
+     * \param attribute the attribute name
+     * \param value the attribute value
+     * \param xmlEscape true to escape
+     */
+    void AddAttribute (std::string attribute, T value, bool xmlEscape=false);
+    /**
+     * Set text function
+     * \param text the text for the element
+     */
+    void SetText(std::string text);
+    /**
+     * Append child function
+     * \param e the element to add as a child
+     */
+    void AppendChild(AnimXmlElement e);
+    /**
+     * Get text for the element function
+     * \param autoClose auto close the element
+     * \returns the text
+     */
+    std::string ToString(bool autoClose = true);
+
   private:
-	  std::string m_tagName;
-	  std::string m_text;
-	  std::vector<std::string> m_attributes;
-	  std::vector<std::string> m_children;
+    std::string m_tagName; ///< tag name
+    std::string m_text; ///< element string
+    std::vector<std::string> m_attributes; ///< list of attributes
+    std::vector<std::string> m_children; ///< list of children
 
   };
 
@@ -544,273 +607,800 @@ private:
 
   // ##### State #####
 
-  FILE * m_f; // File handle for output (0 if none)
-  FILE * m_routingF; // File handle for routing table output (0 if None);
-  Time m_mobilityPollInterval;
-  std::string m_outputFileName;
-  uint64_t gAnimUid ;    // Packet unique identifier used by AnimationInterface
-  AnimWriteCallback m_writeCallback;
-  bool m_started;
-  bool m_enablePacketMetadata; 
-  Time m_startTime;
-  Time m_stopTime;
-  uint64_t m_maxPktsPerFile;
-  std::string m_originalFileName;
-  Time m_routingStopTime;
-  std::string m_routingFileName;
-  Time m_routingPollInterval;
-  NodeContainer m_routingNc;
-  Time m_ipv4L3ProtocolCountersStopTime;
-  Time m_ipv4L3ProtocolCountersPollInterval;
-  Time m_queueCountersStopTime;
-  Time m_queueCountersPollInterval;
-  Time m_wifiMacCountersStopTime;
-  Time m_wifiMacCountersPollInterval;
-  Time m_wifiPhyCountersStopTime;
-  Time m_wifiPhyCountersPollInterval;
-  static Rectangle * userBoundary;
-  bool m_trackPackets;
+  FILE * m_f; ///< File handle for output (0 if none)
+  FILE * m_routingF; ///< File handle for routing table output (0 if None);
+  Time m_mobilityPollInterval; ///< mobility poll interval
+  std::string m_outputFileName; ///< output file name
+  uint64_t gAnimUid ;    ///< Packet unique identifier used by AnimationInterface
+  AnimWriteCallback m_writeCallback; ///< write callback
+  bool m_started; ///< started
+  bool m_enablePacketMetadata; ///< enable packet metadata 
+  Time m_startTime; ///< start time
+  Time m_stopTime; ///< stop time
+  uint64_t m_maxPktsPerFile; ///< maximum pakets per file
+  std::string m_originalFileName; ///< original file name
+  Time m_routingStopTime; ///< routing stop time
+  std::string m_routingFileName; ///< routing file name
+  Time m_routingPollInterval; ///< routing poll interval
+  NodeContainer m_routingNc; ///< routing node container
+  Time m_ipv4L3ProtocolCountersStopTime; ///< IPv4 L3 protocol counters stop time
+  Time m_ipv4L3ProtocolCountersPollInterval; ///< IPv4 L3 protocol counters poll interval
+  Time m_queueCountersStopTime; ///< queue counters stop time
+  Time m_queueCountersPollInterval; ///< queue counters poll interval
+  Time m_wifiMacCountersStopTime; ///< wifi MAC counters stop time
+  Time m_wifiMacCountersPollInterval; ///< wifi MAC counters poll interval
+  Time m_wifiPhyCountersStopTime; ///< wifi Phy counters stop time
+  Time m_wifiPhyCountersPollInterval; ///< wifi Phy counters poll interval
+  static Rectangle * userBoundary; ///< user boundary
+  bool m_trackPackets; ///< track packets
 
   // Counter ID
-  uint32_t m_remainingEnergyCounterId;
+  uint32_t m_remainingEnergyCounterId; ///< remaining energy counter ID
   
-  uint32_t m_ipv4L3ProtocolTxCounterId;
-  uint32_t m_ipv4L3ProtocolRxCounterId;
-  uint32_t m_ipv4L3ProtocolDropCounterId;
+  uint32_t m_ipv4L3ProtocolTxCounterId; ///< IPv4 L3 protocol transmit counter ID
+  uint32_t m_ipv4L3ProtocolRxCounterId; ///< IPv4 L3 protocol receive counter ID
+  uint32_t m_ipv4L3ProtocolDropCounterId; ///< IPv4 protocol drop counter ID
 
-  uint32_t m_queueEnqueueCounterId;
-  uint32_t m_queueDequeueCounterId;
-  uint32_t m_queueDropCounterId;
+  uint32_t m_queueEnqueueCounterId; ///< queue enqueue counter ID
+  uint32_t m_queueDequeueCounterId; ///< queue dequeue counter ID
+  uint32_t m_queueDropCounterId; ///< queue drop counter ID
 
-  uint32_t m_wifiMacTxCounterId;
-  uint32_t m_wifiMacTxDropCounterId;
-  uint32_t m_wifiMacRxCounterId;
-  uint32_t m_wifiMacRxDropCounterId;
+  uint32_t m_wifiMacTxCounterId; ///< wifi MAC transmit counter ID
+  uint32_t m_wifiMacTxDropCounterId; ///< wifi MAC transmit drop counter ID 
+  uint32_t m_wifiMacRxCounterId; ///< wifi MAC receive counter ID
+  uint32_t m_wifiMacRxDropCounterId; ///< wifi MAC receive drop counter ID
  
-  uint32_t m_wifiPhyTxDropCounterId;
-  uint32_t m_wifiPhyRxDropCounterId;
+  uint32_t m_wifiPhyTxDropCounterId; ///< wifi Phy transmit drop counter ID
+  uint32_t m_wifiPhyRxDropCounterId; ///< wifi Phy receive drop counter ID
   
-  AnimUidPacketInfoMap m_pendingWifiPackets;
-  AnimUidPacketInfoMap m_pendingWimaxPackets;
-  AnimUidPacketInfoMap m_pendingLrWpanPackets;
-  AnimUidPacketInfoMap m_pendingLtePackets;
-  AnimUidPacketInfoMap m_pendingCsmaPackets;
-  AnimUidPacketInfoMap m_pendingUanPackets;
-  AnimUidPacketInfoMap m_pendingWavePackets;
+  AnimUidPacketInfoMap m_pendingWifiPackets; ///< pending wifi packets
+  AnimUidPacketInfoMap m_pendingWimaxPackets; ///< pending wimax packets
+  AnimUidPacketInfoMap m_pendingLrWpanPackets; ///< pending LR-WPAN packets
+  AnimUidPacketInfoMap m_pendingLtePackets; ///< pending LTE packets
+  AnimUidPacketInfoMap m_pendingCsmaPackets; ///< pending CSMA packets
+  AnimUidPacketInfoMap m_pendingUanPackets; ///< pending UAN packets
+  AnimUidPacketInfoMap m_pendingWavePackets; ///< pending WAVE packets
 
-  std::map <uint32_t, Vector> m_nodeLocation;
-  std::map <std::string, uint32_t> m_macToNodeIdMap;
-  std::map <std::string, uint32_t> m_ipv4ToNodeIdMap;
-  std::map <std::string, uint32_t> m_ipv6ToNodeIdMap;
-  NodeIdIpv4Map m_nodeIdIpv4Map;
-  NodeIdIpv6Map m_nodeIdIpv6Map;
+  std::map <uint32_t, Vector> m_nodeLocation; ///< node location
+  std::map <std::string, uint32_t> m_macToNodeIdMap; ///< MAC to node ID map
+  std::map <std::string, uint32_t> m_ipv4ToNodeIdMap; ///< IPv4 to node ID map
+  std::map <std::string, uint32_t> m_ipv6ToNodeIdMap; ///< IPv6 to node ID map
+  NodeIdIpv4Map m_nodeIdIpv4Map; ///< node ID to IPv4 map
+  NodeIdIpv6Map m_nodeIdIpv6Map; ///< node ID to IPv6 map
 
-  NodeColorsMap m_nodeColors;
-  NodeDescriptionsMap m_nodeDescriptions;
-  LinkPropertiesMap m_linkProperties;
-  EnergyFractionMap m_nodeEnergyFraction;
-  uint64_t m_currentPktCount;
-  std::vector <Ipv4RouteTrackElement> m_ipv4RouteTrackElements;
-  std::map <uint32_t, NodeSize> m_nodeSizes;
-  std::vector <std::string> m_resources;
-  std::vector <std::string> m_nodeCounters;
+  NodeColorsMap m_nodeColors; ///< node colors
+  NodeDescriptionsMap m_nodeDescriptions; ///< node description
+  LinkPropertiesMap m_linkProperties; ///< link properties
+  EnergyFractionMap m_nodeEnergyFraction; ///< node energy fraction
+  uint64_t m_currentPktCount; ///< current packet count
+  std::vector <Ipv4RouteTrackElement> m_ipv4RouteTrackElements; ///< IPv route track elements
+  std::map <uint32_t, NodeSize> m_nodeSizes; ///< node sizes
+  std::vector <std::string> m_resources; ///< resources
+  std::vector <std::string> m_nodeCounters; ///< node counters
 
   /* Value-added custom counters */
-  NodeCounterMap64 m_nodeIpv4Drop;
-  NodeCounterMap64 m_nodeIpv4Tx;
-  NodeCounterMap64 m_nodeIpv4Rx;
-  NodeCounterMap64 m_nodeQueueEnqueue;
-  NodeCounterMap64 m_nodeQueueDequeue;
-  NodeCounterMap64 m_nodeQueueDrop;
-  NodeCounterMap64 m_nodeWifiMacTx;
-  NodeCounterMap64 m_nodeWifiMacTxDrop;
-  NodeCounterMap64 m_nodeWifiMacRx;
-  NodeCounterMap64 m_nodeWifiMacRxDrop;
-  NodeCounterMap64 m_nodeWifiPhyTxDrop;
-  NodeCounterMap64 m_nodeWifiPhyRxDrop;
-  NodeCounterMap64 m_nodeLrWpanMacTx;
-  NodeCounterMap64 m_nodeLrWpanMacTxDrop;
-  NodeCounterMap64 m_nodeLrWpanMacRx;
-  NodeCounterMap64 m_nodeLrWpanMacRxDrop;
+  NodeCounterMap64 m_nodeIpv4Drop; ///< node IPv4 drop
+  NodeCounterMap64 m_nodeIpv4Tx; ///< node IPv4 transmit
+  NodeCounterMap64 m_nodeIpv4Rx; ///< node IPv4 receive
+  NodeCounterMap64 m_nodeQueueEnqueue; ///< node queue enqueue
+  NodeCounterMap64 m_nodeQueueDequeue; ///< node queue dequeue
+  NodeCounterMap64 m_nodeQueueDrop; ///< node queue drop
+  NodeCounterMap64 m_nodeWifiMacTx; ///< node wifi MAC transmit
+  NodeCounterMap64 m_nodeWifiMacTxDrop; ///< node wifi MAC transmit drop
+  NodeCounterMap64 m_nodeWifiMacRx; ///< node wifi MAC receive
+  NodeCounterMap64 m_nodeWifiMacRxDrop; ///< node wifi MAC receive drop
+  NodeCounterMap64 m_nodeWifiPhyTxDrop; ///< node wifi Phy transmit drop
+  NodeCounterMap64 m_nodeWifiPhyRxDrop; ///< node wifi Phy receive drop
+  NodeCounterMap64 m_nodeLrWpanMacTx; ///< node LR-WPAN MAC transmit
+  NodeCounterMap64 m_nodeLrWpanMacTxDrop; ///< node LR-WPAN MAC transmit drop
+  NodeCounterMap64 m_nodeLrWpanMacRx;///< node LR-WPAN MAC receive
+  NodeCounterMap64 m_nodeLrWpanMacRxDrop;///< node LR-WPAN MAC receive drop
 
+  /**
+   * Get elements from context
+   * \param context the context string
+   * \returns the elements
+   */
   const std::vector<std::string> GetElementsFromContext (const std::string& context) const;
+  /**
+   * Get node from context
+   * \param context the context string
+   * \returns the node
+   */
   Ptr <Node> GetNodeFromContext (const std::string& context) const;
+  /**
+   * Get net device from context
+   * \param context the context string
+   * \returns the device
+   */
   Ptr <NetDevice> GetNetDeviceFromContext (std::string context);
   
   // ##### General #####
+  /**
+   * Start animation function
+   *
+   * \param restart
+   */
   void StartAnimation (bool restart = false);
+  /**
+   * Set output file function
+   *
+   * \param fn the file name
+   * \param routing
+   */
   void SetOutputFile (const std::string& fn, bool routing = false);
+  /**
+   * Stop animation function
+   *
+   * \param onlyAnimation
+   */
   void StopAnimation (bool onlyAnimation = false);
+  /**
+   * Counter type to string function
+   * \param counterType the counter type
+   * \returns the string
+   */
   std::string CounterTypeToString (CounterType counterType);
+  /**
+   * Get packet metadata function
+   * \param p the packet
+   * \returns the meta data
+   */
   std::string GetPacketMetadata (Ptr<const Packet> p);
+  /**
+   * Add byte tag function
+   * \param animUid the UID
+   * \param p the packet
+   */
   void AddByteTag (uint64_t animUid, Ptr<const Packet> p);
-  int WriteN (const char*, uint32_t, FILE * f);
-  int WriteN (const std::string&, FILE * f);
+  /**
+   * WriteN functon
+   * \param data the data t write
+   * \param count the number of bytes to write
+   * \param f the file to write to
+   * \returns the number of bytes written
+   */
+  int WriteN (const char* data, uint32_t count, FILE * f);
+  /**
+   * WriteN function
+   * \param st the string to output
+   * \param f the file to write to
+   * \returns the number of bytes written
+   */
+  int WriteN (const std::string& st, FILE * f);
+  /**
+   * Get MAC address function
+   * \param nd the device
+   * \returns the MAC address
+   */
   std::string GetMacAddress (Ptr <NetDevice> nd);
+  /**
+   * Get IPv4 address
+   * \param nd the device
+   * \returns the IPv4 address
+   */
   std::string GetIpv4Address (Ptr <NetDevice> nd);
+  /**
+   * Get IPv6 address
+   * \param nd the device
+   * \returns the IPv6 address
+   */
   std::string GetIpv6Address(Ptr <NetDevice> nd);
+  /**
+   * Get IPv4 addresses
+   * \param nd the device
+   * \returns the IPv4 address list
+   */
   std::vector<std::string> GetIpv4Addresses (Ptr <NetDevice> nd);
+  /**
+   * Get IPv6 addresses
+   * \param nd the device
+   * \returns the IPv6 address list
+   */
   std::vector<std::string> GetIpv6Addresses (Ptr <NetDevice> nd);
 
+  /**
+   * Get netanim version function
+   * \returns the net anim version string
+   */
   std::string GetNetAnimVersion ();
+  /// Mobility auto check function
   void MobilityAutoCheck ();
+  /**
+   * Is packet pending function
+   * \param animUid the UID
+   * \param protocolType the protocol type
+   * \returns true if a packet is pending
+   */
   bool IsPacketPending (uint64_t animUid, ProtocolType protocolType);
+  /**
+   * Purge pending packets function
+   * \param protocolType the protocol type
+   */
   void PurgePendingPackets (ProtocolType protocolType);
+  /**
+   * Protocol type to pending packets function
+   * \param protocolType the protocol type
+   * \returns AnimUidPacketInfoMap *
+   */ 
   AnimUidPacketInfoMap * ProtocolTypeToPendingPackets (ProtocolType protocolType);
+  /**
+   * Protocol type to string function
+   * \param protocolType the protocol type
+   * \returns the protocol type string
+   */
   std::string ProtocolTypeToString (ProtocolType protocolType);
+  /**
+   * Add pending packet function
+   * \param protocolType the protocol type
+   * \param animUid the UID
+   * \param pktInfo the packet info
+   */
   void AddPendingPacket (ProtocolType protocolType, uint64_t animUid, AnimPacketInfo pktInfo);
+  /**
+   * Get anim UID from packet function
+   * \param p the packet
+   * \returns the UID
+   */
   uint64_t GetAnimUidFromPacket (Ptr <const Packet>);
-  void AddToIpv4AddressNodeIdTable (std::string, uint32_t);
-  void AddToIpv4AddressNodeIdTable(std::vector<std::string>, uint32_t);
-  void AddToIpv6AddressNodeIdTable(std::string, uint32_t);
-  void AddToIpv6AddressNodeIdTable(std::vector<std::string>, uint32_t);
+  /**
+   * Add to IPv4 address node ID table function
+   * \param ipv4Address the IPv4 address
+   * \param nodeId the node ID
+   */
+  void AddToIpv4AddressNodeIdTable (std::string ipv4Address, uint32_t nodeId);
+  /**
+   * Add to IPv4 address node ID table function
+   * \param ipv4Addresses the list of IPv4 addresses
+   * \param nodeId the node ID
+   */
+  void AddToIpv4AddressNodeIdTable (std::vector<std::string> ipv4Addresses, uint32_t nodeId);
+  /**
+   * Add to IPv6 address node ID table function
+   * \param ipv6Address the IPv6 address
+   * \param nodeId the node ID
+   */
+  void AddToIpv6AddressNodeIdTable (std::string ipv6Address, uint32_t nodeId);
+  /**
+   * Add to IPv6 address node ID table function
+   * \param ipv6Addresses the list of IPv6 addresses
+   * \param nodeId the node ID
+   */
+  void AddToIpv6AddressNodeIdTable (std::vector<std::string> ipv6Addresses, uint32_t nodeId);
+  /**
+   * Is in time window function
+   * \returns true if in the time window
+   */
   bool IsInTimeWindow ();
+  /// Check maximum packets per trace file function
   void CheckMaxPktsPerTraceFile ();
 
+  /// Track wifi phy counters function
   void TrackWifiPhyCounters ();
+  /// Track wifi MAC counters function
   void TrackWifiMacCounters ();
+  /// Track IPv4 L3 protocol counters function
   void TrackIpv4L3ProtocolCounters ();
+  /// Track queue counters function
   void TrackQueueCounters ();
   // ##### Routing #####
+  /// Track IPv4 router function
   void TrackIpv4Route ();
+  /// Track IPv4 route paths function
   void TrackIpv4RoutePaths ();
+  /**
+   * Get IPv4 routing table function
+   * \param n the node
+   * \returns the IPv4 routing table
+   */
   std::string GetIpv4RoutingTable (Ptr <Node> n);
-  void RecursiveIpv4RoutePathSearch (std::string fromIpv4, std::string toIpv4, Ipv4RoutePathElements &);
+  /**
+   * Recursive IPv4 route path search function
+   * \param from the source node
+   * \param to the destination node
+   * \param rpElements the IPv4 routing path elements
+   */
+  void RecursiveIpv4RoutePathSearch (std::string from, std::string to, Ipv4RoutePathElements &rpElements);
+  /**
+   * Write route path function
+   * \param nodeId the node ID
+   * \param destination the destination
+   * \param rpElements the IPv4 routing path elements
+   */
   void WriteRoutePath (uint32_t nodeId, std::string destination, Ipv4RoutePathElements rpElements);
 
 
   // ##### Trace #####
-  void EnqueueTrace (std::string context,
-                     Ptr<const Packet>);
-  void DequeueTrace (std::string context,
-                     Ptr<const Packet>);
-  void QueueDropTrace (std::string context,
-                     Ptr<const Packet>);
+  /**
+   * Enqueue trace function
+   * \param context the context
+   * \param p the packet
+   */
+  void EnqueueTrace (std::string context, Ptr<const Packet>);
+  /**
+   * Dequeue trace function
+   * \param context the context
+   * \param p the packet
+   */
+  void DequeueTrace (std::string context, Ptr<const Packet>);
+  /**
+   * Queue trace function
+   * \param context the context
+   * \param p the packet
+   */
+  void QueueDropTrace (std::string context, Ptr<const Packet>);
+  /**
+   * IPv4 transmit trace function
+   * \param context the context
+   * \param p the packet
+   * \param ipv4 the IP
+   * \param interfaceIndex the interface index
+   */
   void Ipv4TxTrace (std::string context,
-                    Ptr<const Packet>, Ptr<Ipv4>,  
-                    uint32_t);
+                    Ptr<const Packet> p, Ptr<Ipv4> ipv4,  
+                    uint32_t interfaceIndex);
+  /**
+   * IPv4 receive trace function
+   * \param context the context
+   * \param p the packet
+   * \param ipv4 the IP
+   * \param interfaceIndex the interface index
+   */
   void Ipv4RxTrace (std::string context,
-                    Ptr<const Packet>, Ptr<Ipv4>,
-                    uint32_t);
+                    Ptr<const Packet> p, Ptr<Ipv4> ipv4,
+                    uint32_t interfaceIndex);
+  /**
+   * IPv4 drop trace function
+   * \param context the context
+   * \param ipv4Header the IPv4 header
+   * \param p the packet
+   * \param dropReason the reason for the drop
+   * \param ipv4 the IP
+   * \param interfaceIndex the interface index
+   */
   void Ipv4DropTrace (std::string context,
-                      const Ipv4Header &, 
-                      Ptr<const Packet>, 
-                      Ipv4L3Protocol::DropReason, Ptr<Ipv4>, 
-                      uint32_t);
+                      const Ipv4Header & ipv4Header, 
+                      Ptr<const Packet> p, 
+                      Ipv4L3Protocol::DropReason dropReason, Ptr<Ipv4> ipv4, 
+                      uint32_t interfaceIndex);
 
-  void WifiMacTxTrace (std::string context,
-                       Ptr<const Packet>);
-  void WifiMacTxDropTrace (std::string context,
-                           Ptr<const Packet>);
-  void WifiMacRxTrace (std::string context,
-                       Ptr<const Packet>);
-  void WifiMacRxDropTrace (std::string context,
-                           Ptr<const Packet>);
-  void WifiPhyTxDropTrace (std::string context,
-                           Ptr<const Packet>);
-  void WifiPhyRxDropTrace (std::string context,
-                           Ptr<const Packet>);
+  /**
+   * wifi MAC transmit trace function
+   * \param context the context
+   * \param p the packet
+   */
+  void WifiMacTxTrace (std::string context, Ptr<const Packet> p);
+  /**
+   * wifi MAC transmit drop trace function
+   * \param context the context
+   * \param p the packet
+   */
+  void WifiMacTxDropTrace (std::string context, Ptr<const Packet> p);
+  /**
+   * wifi MAC receive trace function
+   * \param context the context
+   * \param p the packet
+   */
+  void WifiMacRxTrace (std::string context, Ptr<const Packet> p);
+  /**
+   * wifi MAC receive drop trace function
+   * \param context the context
+   * \param p the packet
+   */
+  void WifiMacRxDropTrace (std::string context, Ptr<const Packet> p);
+  /**
+   * wifi Phy transmit drop trace function
+   * \param context the context
+   * \param p the packet
+   */
+  void WifiPhyTxDropTrace (std::string context, Ptr<const Packet> p);
+  /**
+   * wifi Phy recieve drop trace function
+   * \param context the context
+   * \param p the packet
+   */
+  void WifiPhyRxDropTrace (std::string context, Ptr<const Packet> p);
+  /**
+   * LR-WPAN MAC transmit trace function
+   * \param context the context
+   * \param p the packet
+   */
   void LrWpanMacTxTrace (std::string context,
-                         Ptr<const Packet>);
+                         Ptr<const Packet> p);
+  /**
+   * LR-WPAN MAC transmit drop trace function
+   * \param context the context
+   * \param p the packet
+   */
   void LrWpanMacTxDropTrace (std::string context,
-                             Ptr<const Packet>);
+                             Ptr<const Packet> p);
+  /**
+   * LR-WPAN MAC receive trace function
+   * \param context the context
+   * \param p the packet
+   */
   void LrWpanMacRxTrace (std::string context,
-                         Ptr<const Packet>);
+                         Ptr<const Packet> p);
+  /**
+   * LR-WPAN MAC receive drop trace function
+   * \param context the context
+   * \param p the packet
+   */
   void LrWpanMacRxDropTrace (std::string context,
-                             Ptr<const Packet>);
+                             Ptr<const Packet> p);
+  /**
+   * Device transmit trace function
+   * \param context the context
+   * \param p the packet
+   * \param tx the transmit device
+   * \param rx the receive device
+   * \param txTime the transmit time
+   * \param rxTime the reeive time
+   */
   void DevTxTrace (std::string context,
                    Ptr<const Packet> p,
                    Ptr<NetDevice> tx,
                    Ptr<NetDevice> rx,
                    Time txTime,
                    Time rxTime);
-  void WifiPhyTxBeginTrace (std::string context,
-                            Ptr<const Packet> p);
-  void WifiPhyRxBeginTrace (std::string context,
-                            Ptr<const Packet> p);
+  /**
+   * wifi Phy transmit begin trace function
+   * \param context the context
+   * \param p the packet
+   */
+  void WifiPhyTxBeginTrace (std::string context, Ptr<const Packet> p);
+  /**
+   * wifi Phy receive begin trace function
+   *
+   * \param context the context
+   * \param p the packet
+   */
+  void WifiPhyRxBeginTrace (std::string context, Ptr<const Packet> p);
+  /**
+   * WAVE Phy transmit begin trace function
+   * \param context the context
+   * \param p the packet
+   */
   void WavePhyTxBeginTrace (std::string context, 
                             Ptr<const Packet> p);
+  /**
+   * WAVE Phy receive begin trace function
+   *
+   * \param context the context
+   * \param p the packet
+   */
   void WavePhyRxBeginTrace (std::string context, 
                             Ptr<const Packet> p);
+  /**
+   * LR-WPAN Phy receive begin trace function
+   *
+   * \param context the context
+   * \param p the packet
+   */
   void LrWpanPhyTxBeginTrace (std::string context,
                               Ptr<const Packet> p);
+  /**
+   * LR-WPAN Phy receive begin trace function
+   *
+   * \param context the context
+   * \param p the packet
+   */
   void LrWpanPhyRxBeginTrace (std::string context,
                               Ptr<const Packet> p);
+  /**
+   * WIMax transmit trace function
+   * \param context the context
+   * \param p the packet
+   * \param m the MAC address
+   */
   void WimaxTxTrace (std::string context,
                      Ptr<const Packet> p,
-                     const Mac48Address &);
+		     const Mac48Address & m);
+  /**
+   * WIMax receive trace function
+   * \param context the context
+   * \param p the packet
+   * \param m the MAC address
+   */
   void WimaxRxTrace (std::string context,
                      Ptr<const Packet> p,
-                     const Mac48Address &);
-  void CsmaPhyTxBeginTrace (std::string context,
-                            Ptr<const Packet> p);
-  void CsmaPhyTxEndTrace (std::string context,
-                            Ptr<const Packet> p);
-  void CsmaPhyRxEndTrace (std::string context,
-                          Ptr<const Packet> p);
-  void CsmaMacRxTrace (std::string context,
-                       Ptr<const Packet> p);
+                     const Mac48Address & m);
+  /**
+   * CSMA Phy transmit begin trace function
+   * \param context the context
+   * \param p the packet
+   */
+  void CsmaPhyTxBeginTrace (std::string context, Ptr<const Packet> p);
+  /**
+   * CSMA Phy transmit end trace function
+   *
+   * \param context the context
+   * \param p the packet
+   */
+  void CsmaPhyTxEndTrace (std::string context, Ptr<const Packet> p);
+  /**
+   * CSMA Phy receive end trace function
+   *
+   * \param context the context
+   * \param p the packet
+   */
+  void CsmaPhyRxEndTrace (std::string context, Ptr<const Packet> p);
+  /**
+   * CSMA MAC receive trace function
+   *
+   * \param context the context
+   * \param p the packet
+   */
+  void CsmaMacRxTrace (std::string context, Ptr<const Packet> p);
+  /**
+   * LTE transmit trace function
+   * \param context the context
+   * \param p the packet
+   * \param m the MAC address
+   */
   void LteTxTrace (std::string context,
                       Ptr<const Packet> p,
-                      const Mac48Address &);
+                      const Mac48Address & m);
+  /**
+   * LTE receive trace function
+   * \param context the context
+   * \param p the packet
+   * \param m the MAC address
+   */
   void LteRxTrace (std::string context,
                       Ptr<const Packet> p,
-                      const Mac48Address &);
-  void LteSpectrumPhyTxStart (std::string context,
-                      Ptr<const PacketBurst> pb);
-  void LteSpectrumPhyRxStart (std::string context,
-                      Ptr<const PacketBurst> pb);
-  void UanPhyGenTxTrace (std::string context,
-                         Ptr<const Packet>);
-  void UanPhyGenRxTrace (std::string context,
-                         Ptr<const Packet>);
+                      const Mac48Address & m);
+  /**
+   * LTE Spectrum Phy transmit start function
+   * \param context the context
+   * \param pb the packet burst
+   */
+  void LteSpectrumPhyTxStart (std::string context, Ptr<const PacketBurst> pb);
+  /**
+   * LTE Spectrum Phy receive start function
+   * \param context the context
+   * \param pb the packet burst
+   */
+  void LteSpectrumPhyRxStart (std::string context, Ptr<const PacketBurst> pb);
+  /**
+   * UAN Phy gen transmit trace function
+   * \param context the context
+   * \param p the packet
+   */
+  void UanPhyGenTxTrace (std::string context, Ptr<const Packet>);
+  /**
+   * UAN Phy gen receive trace function
+   * \param context the context
+   * \param p the packet
+   */
+  void UanPhyGenRxTrace (std::string context, Ptr<const Packet>);
+  /**
+   * Remaining energy trace function
+   * \param context the context
+   * \param previousEnergy The previous energy
+   * \param currentEnergy The current energy
+   */
   void RemainingEnergyTrace (std::string context, double previousEnergy, double currentEnergy);
-  void GenericWirelessTxTrace (std::string context, Ptr<const Packet>, ProtocolType protocolType);
-  void GenericWirelessRxTrace (std::string context, Ptr<const Packet>, ProtocolType protocolType);
+  /**
+   * Generic wireless transmit trace function
+   * \param context the context
+   * \param p the packet
+   * \param protocolType the protocol type
+   */
+  void GenericWirelessTxTrace (std::string context, Ptr<const Packet> p, ProtocolType protocolType);
+  /**
+   * Generic wireless receive trace function
+   * \param context the context
+   * \param p the packet
+   * \param protocolType the protocol type
+   */
+  void GenericWirelessRxTrace (std::string context, Ptr<const Packet> p, ProtocolType protocolType);
 
   
+  /// Connect callbacks function
   void ConnectCallbacks ();
+  /// Connect LTE function
   void ConnectLte ();
+  /**
+   * Connect LTE ue function
+   * \param n the node
+   * \param nd the device
+   * \param devIndex the device index
+   */
   void ConnectLteUe (Ptr <Node> n, Ptr <LteUeNetDevice> nd, uint32_t devIndex);
+  /**
+   * Connect LTE ENB function
+   * \param n the node
+   * \param nd the device
+   * \param devIndex the device index
+   */
   void ConnectLteEnb (Ptr <Node> n, Ptr <LteEnbNetDevice> nd, uint32_t devIndex);
 
 
   // ##### Mobility #####
+  /**
+   * Get position function
+   * \param n the node
+   * \returns the position vector
+   */
   Vector GetPosition (Ptr <Node> n);
+  /**
+   * Update position function
+   * \param n the node
+   * \returns the position vector
+   */
   Vector UpdatePosition (Ptr <Node> n);
+  /**
+   * Update position function
+   * \param n the node
+   * \param v the vector
+   * \returns the postition vector
+   */
   Vector UpdatePosition (Ptr <Node> n, Vector v);
+  /**
+   * Update position function
+   * \param ndev the device
+   * \returns the position vector
+   */
   Vector UpdatePosition (Ptr <NetDevice> ndev);
+  /**
+   * Node has moved function
+   * \param n the node
+   * \param newLocation the new location vector
+   * \returns true if the node has moved
+   */
   bool NodeHasMoved (Ptr <Node> n, Vector newLocation);
+  /**
+   * Get moved nodes function
+   * \returns the list of moved nodes
+   */
   std::vector < Ptr <Node> > GetMovedNodes ();
+  /**
+   * Mobility course change trace function
+   * \param mob the mobility model
+   */
   void MobilityCourseChangeTrace (Ptr <const MobilityModel> mob);
 
 
   // ##### XML Helpers ##### 
 
+  /**
+   * Write non P2P link properties function
+   * \param id the ID
+   * \param ipv4Address the IP address
+   * \param channelType the channel type
+   */
   void WriteNonP2pLinkProperties (uint32_t id, std::string ipv4Address, std::string channelType);
+  /**
+   * Write node update function
+   * \param nodeId the node ID
+   */
   void WriteNodeUpdate (uint32_t nodeId);
+  /**
+   * Output wireless packet transmit info
+   * \param p the packet
+   * \param pktInfo the packet info
+   * \param animUid the UID
+   */
   void OutputWirelessPacketTxInfo (Ptr<const Packet> p, AnimPacketInfo& pktInfo, uint64_t animUid);
+  /**
+   * Output wireless packet receive info
+   * \param p the packet
+   * \param pktInfo the packet info
+   * \param animUid the UID
+   */
   void OutputWirelessPacketRxInfo (Ptr<const Packet> p, AnimPacketInfo& pktInfo, uint64_t animUid);
+  /**
+   * Output CSMA packet function
+   * \param p the packet
+   * \param pktInfo the packet info
+   */
   void OutputCsmaPacket (Ptr<const Packet> p, AnimPacketInfo& pktInfo);
+  /// Write link properties function
   void WriteLinkProperties ();
+  /// Write IPv4 Addresses function
   void WriteIpv4Addresses ();
+  /// Write IPv6 Addresses function
   void WriteIpv6Addresses ();
+  /// Write nodes function
   void WriteNodes ();
+  /// Write node colors function
   void WriteNodeColors ();
+  /// Write node sizes function
   void WriteNodeSizes ();
+  /// Write node energies function
   void WriteNodeEnergies ();
+  /**
+   * Write XML anim function
+   * \param routing the routing
+   */
   void WriteXmlAnim (bool routing = false);
+  /**
+   * Write XML update node position function
+   * \param nodeId the node ID
+   * \param x the X position
+   * \param y the Y position
+   */
   void WriteXmlUpdateNodePosition (uint32_t nodeId, double x, double y);
+  /**
+   * Write XML update node color function
+   * \param nodeId the node ID
+   * \param r the red color
+   * \param g the green color
+   * \param b the blue color
+   */
   void WriteXmlUpdateNodeColor (uint32_t nodeId, uint8_t r, uint8_t g, uint8_t b);
+  /**
+   * Write XML update node description function
+   * \param nodeId the node ID
+   */
   void WriteXmlUpdateNodeDescription (uint32_t nodeId);
+  /**
+   * Write XML update node size function
+   * \param nodeId the node ID
+   * \param width the width
+   * \param height the height
+   */
   void WriteXmlUpdateNodeSize (uint32_t nodeId, double width, double height);
+  /**
+   * Write XML add resource function
+   * \param resourceId the resource ID
+   * \param resourcePath the resource path
+   */
   void WriteXmlAddResource (uint32_t resourceId, std::string resourcePath);
+  /**
+   * Write XML add node counter function
+   * \param counterId the counter ID
+   * \param counterName the counter name
+   * \param counterType the counter type
+   */
   void WriteXmlAddNodeCounter (uint32_t counterId, std::string counterName, CounterType counterType);
+  /**
+   * Write XML update node image function
+   * \param nodeId the node ID
+   * \param resourceId the resource ID
+   */
   void WriteXmlUpdateNodeImage (uint32_t nodeId, uint32_t resourceId);
+  /**
+   * Write XML update node counter function
+   * \param counterId the counter ID
+   * \param nodeId the node ID
+   * \param value the node counter value
+   */
   void WriteXmlUpdateNodeCounter (uint32_t counterId, uint32_t nodeId, double value);
+  /**
+   * Write XML node function
+   * \param id the ID
+   * \param sysId the system ID
+   * \param locX the x location
+   * \param locY the y location
+   */
   void WriteXmlNode (uint32_t id, uint32_t sysId, double locX, double locY);
+  /**
+   * Write XML link counter function
+   * \param fromId the from device
+   * \param toLp the to device
+   * \param toId the to ID
+   */
   void WriteXmlLink (uint32_t fromId, uint32_t toLp, uint32_t toId);
-  void WriteXmlUpdateLink (uint32_t fromId, uint32_t toId, std::string);
+  /**
+   * Write XML update link counter function
+   * \param fromId the from device
+   * \param toId the to device
+   * \param linkDescription the link description
+   */
+  void WriteXmlUpdateLink (uint32_t fromId, uint32_t toId, std::string linkDescription);
+  /**
+   * Write XMLP function
+   * \param pktType the packet type
+   * \param fId the FID
+   * \param fbTx the FB transmit
+   * \param lbTx the LB transmit
+   * \param tId the TID 
+   * \param fbRx the FB receive
+   * \param lbRx the LB receive
+   * \param metaInfo the meta info
+   */
   void WriteXmlP (std::string pktType, 
                                  uint32_t fId, 
                                  double fbTx, 
@@ -819,15 +1409,71 @@ private:
                                  double fbRx, 
                                  double lbRx,
                                  std::string metaInfo = ""); 
+  /**
+   * Write XMLP function
+   * \param animUid the UID
+   * \param pktType the packet type
+   * \param fId the FID
+   * \param fbTx the FB transmit
+   * \param lbTx the LB transmit
+   */
   void WriteXmlP (uint64_t animUid, std::string pktType, uint32_t fId, double fbTx, double lbTx);
+  /**
+   * Write XMLP Ref function
+   * \param animUid the UID
+   * \param fId the FID
+   * \param fbTx the FB transmit
+   * \param metaInfo the meta info
+   */
   void WriteXmlPRef (uint64_t animUid, uint32_t fId, double fbTx, std::string metaInfo = "");
+  /**
+   * Write XML close function
+   * \param name the name
+   * \param routing true if routing
+   */
   void WriteXmlClose (std::string name, bool routing = false);
+  /**
+   * Write XML non P2P link properties function
+   * \param id the ID
+   * \param ipAddress the IP address
+   * \param channelType the channel type
+   */
   void WriteXmlNonP2pLinkProperties (uint32_t id, std::string ipAddress, std::string channelType);
+  /**
+   * Write XML routing function
+   * \param id the ID
+   * \param routingInfo the routing info
+   */
   void WriteXmlRouting (uint32_t id, std::string routingInfo);
+  /**
+   * Write XMLRP function
+   * \param nodeId the node ID
+   * \param destination the destination
+   * \param rpElements the route path elements
+   */
   void WriteXmlRp (uint32_t nodeId, std::string destination, Ipv4RoutePathElements rpElements);
+  /**
+   * Write XML update background function
+   * \param fileName the file name
+   * \param x the X value
+   * \param y the Y value
+   * \param scaleX the X scale
+   * \param scaleY the Y scale
+   * \param opacity the opacity
+   */
   void WriteXmlUpdateBackground (std::string fileName, double x, double y, double scaleX, double scaleY, double opacity);
+  /**
+   * Write XML Ipv4 addresses function
+   * \param nodeId the node ID
+   * \param ipv4Addresses the list of Ipv4 addresses
+   */
   void WriteXmlIpv4Addresses (uint32_t nodeId, std::vector<std::string> ipv4Addresses);
-  void WriteXmlIpv6Addresses (uint32_t nodeId, std::vector<std::string> ipv4Addresses);
+  /**
+   * Write XML Ipv6 addresses function
+   * \param nodeId the node ID
+   * \param ipv6Addresses the list of Ipv6 addresses
+   */
+  void WriteXmlIpv6Addresses (uint32_t nodeId, std::vector<std::string> ipv6Addresses);
 
 };
 
@@ -906,7 +1552,7 @@ public:
   uint64_t Get (void) const;
 
 private:
-  uint64_t m_AnimUid;
+  uint64_t m_AnimUid; ///< the UID
 };
 
 
