@@ -34,6 +34,7 @@ New user-visible features
 
 Bugs fixed
 ----------
+- Bug 1034 - No trace source for packet dropping from WifiMacQueue
 - Bug 2007 - uan: Remove deprecation on SetRxThresholdDb
 - Bug 2214 - tcp: Use of ScheduleNow only in selected part of the code
 - Bug 2221 - network: Remove constraint on size of ns3::Packet Tag objects

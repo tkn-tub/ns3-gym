@@ -352,6 +352,10 @@ ApWifiMac::Enqueue (Ptr<const Packet> packet, Mac48Address to, Mac48Address from
     {
       ForwardDown (packet, from, to);
     }
+  else
+    {
+      NotifyTxDrop (packet);
+    }
 }
 
 void

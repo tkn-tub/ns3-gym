@@ -142,6 +142,23 @@ DcaTxop::SetTxFailedCallback (TxFailed callback)
   m_txFailedCallback = callback;
 }
 
+void
+DcaTxop::SetTxDroppedCallback (TxDropped callback)
+{
+  NS_LOG_FUNCTION (this << &callback);
+  m_txDroppedCallback = callback;
+  m_queue->TraceConnectWithoutContext ("Drop", MakeCallback (&DcaTxop::TxDroppedPacket, this));
+}
+
+void
+DcaTxop::TxDroppedPacket (Ptr<const WifiMacQueueItem> item)
+{
+  if (!m_txDroppedCallback.IsNull ())
+    {
+      m_txDroppedCallback (item->GetPacket ());
+    }
+}
+
 Ptr<WifiMacQueue >
 DcaTxop::GetQueue () const
 {

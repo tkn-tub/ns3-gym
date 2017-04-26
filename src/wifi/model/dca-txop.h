@@ -80,6 +80,11 @@ public:
    * packet transmission was failed.
    */
   typedef Callback <void, const WifiMacHeader&> TxFailed;
+  /**
+   * typedef for a callback to invoke when a
+   * packet is dropped.
+   */
+  typedef Callback <void, Ptr<const Packet> > TxDropped;
 
   /**
    * Check for EDCA.
@@ -123,6 +128,11 @@ public:
    * packet transmission was completed unsuccessfully.
    */
   void SetTxFailedCallback (TxFailed callback);
+  /**
+   * \param callback the callback to invoke when a
+   * packet is dropped.
+   */
+  void SetTxDroppedCallback (TxDropped callback);
 
   /**
    * Return the MacLow associated with this DcaTxop.
@@ -382,11 +392,20 @@ protected:
    *         false otherwise.
    */
   virtual bool IsLastFragment (void) const;
+  /**
+   *
+   * Pass the packet included in the wifi MAC queue item to the
+   * packet dropped callback.
+   *
+   * \param item the wifi MAC queue item.
+   */
+  void TxDroppedPacket (Ptr<const WifiMacQueueItem> item);
 
   DcfState *m_dcf; //!< the DCF state
   DcfManager *m_manager; //!< the DCF manager
   TxOk m_txOkCallback; //!< the transmit OK callback
   TxFailed m_txFailedCallback; //!< the transmit failed callback
+  TxDropped m_txDroppedCallback; //!< the packet dropped callback
   Ptr<WifiMacQueue> m_queue; //!< the wifi MAC queue
   MacTxMiddle *m_txMiddle; //!< the MacTxMiddle
   Ptr <MacLow> m_low; //!< the MacLow
