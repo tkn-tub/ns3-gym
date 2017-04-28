@@ -68,7 +68,7 @@ SpectrumPropagationLossModel::CalcRxPowerSpectralDensity (Ptr<const SpectrumValu
   Ptr<SpectrumValue> rxPsd = DoCalcRxPowerSpectralDensity (txPsd, a, b);
   if (m_next != 0)
     {
-      rxPsd = m_next->DoCalcRxPowerSpectralDensity (rxPsd, a, b);
+      rxPsd = m_next->CalcRxPowerSpectralDensity (rxPsd, a, b);
     }
   return rxPsd;
 }
