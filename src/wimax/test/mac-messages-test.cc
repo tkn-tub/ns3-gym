@@ -25,7 +25,7 @@
 using namespace ns3;
 
 /**
- * \ingroup wimax-test
+ * \ingroup wimax
  * \defgroup wimax-test wimax module tests
  */
 

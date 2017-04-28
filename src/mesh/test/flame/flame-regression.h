@@ -25,6 +25,12 @@
 #include "ns3/pcap-file.h"
 
 using namespace ns3;
+
+/**
+ * \ingroup mesh-test
+ * \defgroup flame-test flame sub-module tests
+ */
+
 /**
  * \ingroup flame-test
  * \ingroup tests

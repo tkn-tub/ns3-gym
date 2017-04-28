@@ -35,6 +35,11 @@
 using namespace ns3;
 
 /**
+ * \ingroup mesh
+ * \defgroup mesh-test mesh module tests
+ */
+
+/**
  * \ingroup mesh-test
  * \ingroup tests
  *

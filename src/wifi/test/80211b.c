@@ -47,7 +47,7 @@
 #define WLAN_SIR_impossible 0.1 // if SIR < -10dB, impossible to receive
 
 /**
- * \ingroup wifi-test
+ * \ingroup wifi
  * \defgroup wifi-test wifi module tests
  */
 

@@ -22,18 +22,6 @@
 #include <ns3/log.h>
 #include <ns3/geographic-positions.h>
 
-/**
- * This test verifies the accuracy of the GeographicToCartesianCoordinates()
- * method in the GeographicPositions class, which converts earth 
- * geographic/geodetic coordinates to ECEF Cartesian coordinates. To do so, it 
- * compares the values generated from the method to values generated from the 
- * MATLAB function geodetic2ecef(), which is part of the MATLAB Mapping Toolbox, 
- * using the built-in earth referenceSphere, GRS80 referenceEllipsoid, and WGS84 
- * referenceEllipsoid in MATLAB. A description of the MATLAB function can be 
- * found at this webpage: http://www.mathworks.com/help/map/ref/geodetic2ecef.html
- * Values are compared using 216 test cases for each of the three earth spheroid
- * models.
- */
 NS_LOG_COMPONENT_DEFINE ("GeoToCartesianTest");
 
 using namespace ns3;
@@ -487,7 +475,7 @@ const double ZWGS84_MATLAB[216] = {0, 0, 0, 0, 0, 0, 6043686.27224277,
 
 
 /**
- * \ingroup mobility-test
+ * \ingroup mobility
  * \defgroup mobility-test mobility module tests
  */
 
@@ -497,6 +485,17 @@ const double ZWGS84_MATLAB[216] = {0, 0, 0, 0, 0, 0, 6043686.27224277,
  * \ingroup tests
  *
  * \brief Geo To Cartesian Test Case
+ *
+ * This test verifies the accuracy of the GeographicToCartesianCoordinates()
+ * method in the GeographicPositions class, which converts earth
+ * geographic/geodetic coordinates to ECEF Cartesian coordinates. To do so, it
+ * compares the values generated from the method to values generated from the
+ * MATLAB function geodetic2ecef(), which is part of the MATLAB Mapping Toolbox,
+ * using the built-in earth referenceSphere, GRS80 referenceEllipsoid, and WGS84
+ * referenceEllipsoid in MATLAB. A description of the MATLAB function can be
+ * found at this webpage: http://www.mathworks.com/help/map/ref/geodetic2ecef.html
+ * Values are compared using 216 test cases for each of the three earth spheroid
+ * models.
  */
 class GeoToCartesianTestCase : public TestCase
 {

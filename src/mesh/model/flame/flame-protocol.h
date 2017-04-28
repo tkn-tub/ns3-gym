@@ -28,7 +28,7 @@
 #include <map>
 
 /**
- * \ingroup flame
+ * \ingroup mesh
  * \defgroup flame FLAME
  *
  * \brief Forwarding LAyer for MEshing protocol

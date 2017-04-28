@@ -31,7 +31,7 @@
 using namespace ns3;
 
 /**
- * \ingroup traffic-control-test
+ * \ingroup traffic-control
  * \defgroup traffic-control-test traffic-control module tests
  */
 

@@ -33,7 +33,7 @@
 using namespace ns3;
 
 /**
- * \ingroup netanim-test
+ * \ingroup netanim
  * \defgroup netanim-test animation module tests
  */
 

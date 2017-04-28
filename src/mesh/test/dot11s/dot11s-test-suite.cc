@@ -30,8 +30,8 @@ using namespace ns3;
 using namespace dot11s;
 
 /**
- * \ingroup dot11s-test
- * \defgroup dot11s-test mesh module tests
+ * \ingroup mesh-test
+ * \defgroup dot11s-test dot11s sub-module tests
  */
 
 
@@ -39,7 +39,7 @@ using namespace dot11s;
  * \ingroup dot11s-test
  * \ingroup tests
  *
- * \brief Built-in self test for FlameHeader
+ * \brief Built-in self test for MeshHeader
  */
 struct MeshHeaderTest : public TestCase
 {
