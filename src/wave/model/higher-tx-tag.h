@@ -32,6 +32,8 @@ class TypeId;
 
 /**
  * \ingroup packet
+ * \ingroup wave
+ *
  * \brief This tag will be used to support higher layer control DataRate
  * and TxPwr_Level for transmission.
  * If the high layer enables adaptable mode,  DataRate will be the

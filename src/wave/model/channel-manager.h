@@ -26,6 +26,8 @@
 namespace ns3 {
 
 /**
+ * \ingroup wave
+ *
  * WAVE channels
  * channel number             |   172   |   174   |   176   |   178   |   180   |   182   |   184   |
  * channel bandwidth          10MHz  10MHz  10MHz  10MHz 10MHz  10MHz  10MHz

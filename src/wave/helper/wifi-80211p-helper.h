@@ -28,6 +28,7 @@
 namespace ns3 {
 
 /**
+ * \ingroup wave
  * \brief helps to create wifi 802.11p objects of
  * WifiNetDevice class
  *

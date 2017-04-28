@@ -23,21 +23,34 @@
 namespace ns3 {
 class WaveNetDevice;
 
-/// EdcaParameter structure
+/**
+ * \ingroup wave
+ * EdcaParameter structure
+ */
 struct EdcaParameter
 {
   uint32_t cwmin; ///< minimum
   uint32_t cwmax; ///< maximum
   uint32_t aifsn; ///< AIFSN
 };
-/// EDCA parameters typedef
+
+/**
+ * \ingroup wave
+ * EDCA parameters typedef
+ */
 typedef std::map<AcIndex,EdcaParameter> EdcaParameters;
-/// EDCA parameters iterator typedef
+
+/**
+ * \ingroup wave
+ * EDCA parameters iterator typedef
+ */
 typedef std::map<AcIndex,EdcaParameter>::const_iterator EdcaParametersI;
 
 #define EXTENDED_ALTERNATING 0x00
 #define EXTENDED_CONTINUOUS 0xff
 /**
+ * \ingroup wave
+ *
  * \param channelNumber channel number that the SCH service
  * can be made available for communications.
  * \param operationalRateSet OperationalRateSet if present, as specified in IEEE Std 802.11.

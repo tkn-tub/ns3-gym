@@ -24,6 +24,8 @@
 namespace ns3 {
 
 /**
+ * \ingroup wave
+ *
  * \brief indicate which interval the VSA frames will be transmitted in.
  * VSA_TRANSMIT_IN_CCHI will only allow in CCH Interval;
  * VSA_TRANSMIT_IN_SCHI will only allow in SCH Interval;
@@ -37,6 +39,8 @@ enum VsaTransmitInterval
 };
 
 /**
+ * \ingroup wave
+ *
  * \param peer The address of the peer MAC entity to which the
  * VSA is sent.
  * \param oi Identifies the source of the data when the source
@@ -90,6 +94,8 @@ struct VsaInfo
 };
 
 /**
+ * \ingroup wave
+ *
  * refer to 1609.4-2010 chapter 6.4
  * Vendor Specific Action (VSA) frames transmission.
  *

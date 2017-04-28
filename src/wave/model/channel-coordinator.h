@@ -24,6 +24,7 @@
 namespace ns3 {
 
 /**
+ * \ingroup wave
  * \brief receive notifications about channel coordination events.
  */
 class ChannelCoordinationListener : public SimpleRefCount<ChannelCoordinationListener>

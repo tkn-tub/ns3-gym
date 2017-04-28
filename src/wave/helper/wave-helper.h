@@ -33,6 +33,7 @@ class WaveNetDevice;
 class Node;
 
 /**
+ * \ingroup wave
  * To trace WaveNetDevice, we have to overwrite the trace functions of class YansWifiPhyHelper.
  * The source code is very similar with YansWifiPhy, only with some adaptation.
  */
@@ -80,6 +81,7 @@ private:
 };
 
 /**
+ * \ingroup wave
  * \brief helps to create WaveNetDevice objects
  *
  * This class can help to create a large set of similar

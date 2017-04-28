@@ -41,6 +41,13 @@ class VsaManager;
 class OcbWifiMac;
 
 /**
+ * \defgroup wave WAVE module
+ */
+
+
+/**
+ * \ingroup wave
+ *
  * \param channelNumber the specific channel
  * \param priority the priority of packet with range 0-7
  * \param dataRate the transmit data rate of packet
@@ -89,6 +96,8 @@ struct TxInfo
 };
 
 /**
+ * \ingroup wave
+ *
  * \param channelNumber the channel number for the SCH.
  * \param adaptable if true, the actual power level and data
  * rate for transmission are adaptable. TxPwr_Level is the maximum
@@ -133,6 +142,8 @@ struct TxProfile
 };
 
 /**
+ * \ingroup wave
+ *
  * This class holds together multiple, ns3::WifiPhy,
  * and ns3::OcbWifiMac (including ns3::WifiRemoteStationManager).
  * Besides that, to support multiple channel operation this

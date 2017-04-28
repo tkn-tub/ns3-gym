@@ -33,9 +33,10 @@ namespace ns3 {
 class VendorSpecificContentManager;
 
 /**
+ * \ingroup wave
+ *
  * \brief the organization identifier is a public organizationally
  * unique identifier assigned by the IEEE.
- * \ingroup wave
  *
  * Similar to protocol field of data packets that indicates which
  * entity of higher layer should handle received packets, Organization
@@ -196,6 +197,8 @@ private:
 typedef Callback<bool, Ptr<WifiMac>, const OrganizationIdentifier &, Ptr<const Packet>,const Address &> VscCallback;
 
 /**
+ * \ingroup wave
+ *
  * VendorSpecificContentManager class
  */
 class VendorSpecificContentManager

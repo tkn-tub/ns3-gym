@@ -30,7 +30,7 @@
 using namespace ns3;
 
 /**
- * \ingroup wave-test
+ * \ingroup wave
  * \defgroup wave-test wave module tests
  */
 
