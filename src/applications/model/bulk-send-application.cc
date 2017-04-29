@@ -194,11 +194,11 @@ void BulkSendApplication::SendData (void)
 
       NS_LOG_LOGIC ("sending packet at " << Simulator::Now ());
       Ptr<Packet> packet = Create<Packet> (toSend);
-      m_txTrace (packet);
       int actual = m_socket->Send (packet);
       if (actual > 0)
         {
           m_totBytes += actual;
+          m_txTrace (packet);
         }
       // We exit this loop when actual < toSend as the send side
       // buffer is full. The "DataSent" callback will pop when
