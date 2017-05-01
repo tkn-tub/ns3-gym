@@ -124,20 +124,17 @@ void
 MeshTest::Configure (int argc, char *argv[])
 {
   CommandLine cmd;
-  cmd.AddValue ("x-size", "Number of nodes in a row grid. [6]", m_xSize);
-  cmd.AddValue ("y-size", "Number of rows in a grid. [6]", m_ySize);
-  cmd.AddValue ("step",   "Size of edge in our grid, meters. [100 m]", m_step);
-  /*
-   * As soon as starting node means that it sends a beacon,
-   * simultaneous start is not good.
-   */
-  cmd.AddValue ("start",  "Maximum random start delay, seconds. [0.1 s]", m_randomStart);
-  cmd.AddValue ("time",  "Simulation time, seconds [100 s]", m_totalTime);
-  cmd.AddValue ("packet-interval",  "Interval between packets in UDP ping, seconds [0.001 s]", m_packetInterval);
-  cmd.AddValue ("packet-size",  "Size of packets in UDP ping", m_packetSize);
-  cmd.AddValue ("interfaces", "Number of radio interfaces used by each mesh point. [1]", m_nIfaces);
-  cmd.AddValue ("channels",   "Use different frequency channels for different interfaces. [0]", m_chan);
-  cmd.AddValue ("pcap",   "Enable PCAP traces on interfaces. [0]", m_pcap);
+  cmd.AddValue ("x-size", "Number of nodes in a row grid", m_xSize);
+  cmd.AddValue ("y-size", "Number of rows in a grid", m_ySize);
+  cmd.AddValue ("step",   "Size of edge in our grid (meters)", m_step);
+  // Avoid starting all mesh nodes at the same time (beacons may collide)
+  cmd.AddValue ("start",  "Maximum random start delay for beacon jitter (sec)", m_randomStart);
+  cmd.AddValue ("time",  "Simulation time (sec)", m_totalTime);
+  cmd.AddValue ("packet-interval",  "Interval between packets in UDP ping (sec)", m_packetInterval);
+  cmd.AddValue ("packet-size",  "Size of packets in UDP ping (bytes)", m_packetSize);
+  cmd.AddValue ("interfaces", "Number of radio interfaces used by each mesh point", m_nIfaces);
+  cmd.AddValue ("channels",   "Use different frequency channels for different interfaces", m_chan);
+  cmd.AddValue ("pcap",   "Enable PCAP traces on interfaces", m_pcap);
   cmd.AddValue ("stack",  "Type of protocol stack. ns3::Dot11sStack by default", m_stack);
   cmd.AddValue ("root", "Mac address of root mesh point in HWMP", m_root);
 
