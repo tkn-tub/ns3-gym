@@ -164,6 +164,7 @@ int main (int argc, char *argv[])
   std::string standard ("802.11a");
   StandardInfo serverSelectedStandard;
   StandardInfo clientSelectedStandard;
+  bool infrastructure = false;
 
   CommandLine cmd;
   cmd.AddValue ("rtsThreshold", "RTS threshold", rtsThreshold);
@@ -179,6 +180,7 @@ int main (int argc, char *argv[])
   cmd.AddValue ("clientShortGuardInterval", "Set short guard interval of the client (802.11n/ac)", clientShortGuardInterval);
   cmd.AddValue ("standard", "Set standard (802.11a, 802.11b, 802.11g, 802.11n-5GHz, 802.11n-2.4GHz, 802.11ac, 802.11-holland, 802.11-10MHz, 802.11-5MHz)", standard);
   cmd.AddValue ("wifiManager", "Set wifi rate manager (Aarf, Aarfcd, Amrr, Arf, Cara, Ideal, Minstrel, MinstrelHt, Onoe, Rraa)", wifiManager);
+  cmd.AddValue ("infrastructure", "Use infrastructure instead of adhoc", infrastructure);
   cmd.Parse (argc,argv);
 
   if (standard == "802.11b")
@@ -326,12 +328,25 @@ int main (int argc, char *argv[])
   NetDeviceContainer clientDevice;
 
   WifiMacHelper wifiMac;
-  // Use Adhoc so we don't get into association issues
-  wifiMac.SetType ("ns3::AdhocWifiMac",
-                   "BE_MaxAmpduSize", UintegerValue (maxAmpduSize));
-
-  serverDevice = wifi.Install (wifiPhy, wifiMac, serverNode);
-  clientDevice = wifi.Install (wifiPhy, wifiMac, clientNode);
+  if (infrastructure)
+    {
+      Ssid ssid = Ssid ("ns-3-ssid");
+      wifiMac.SetType ("ns3::StaWifiMac",
+                       "Ssid", SsidValue (ssid),
+                       "ActiveProbing", BooleanValue (false));
+      serverDevice = wifi.Install (wifiPhy, wifiMac, serverNode);
+      wifiMac.SetType ("ns3::ApWifiMac",
+                       "Ssid", SsidValue (ssid),
+                       "BeaconGeneration", BooleanValue (true));
+      clientDevice = wifi.Install (wifiPhy, wifiMac, clientNode);
+    }
+  else
+    {
+      wifiMac.SetType ("ns3::AdhocWifiMac",
+                       "BE_MaxAmpduSize", UintegerValue (maxAmpduSize));
+      serverDevice = wifi.Install (wifiPhy, wifiMac, serverNode);
+      clientDevice = wifi.Install (wifiPhy, wifiMac, clientNode);
+    }
 
   if (wifiManager == "MinstrelHt")
     {

@@ -116,39 +116,42 @@ IdealWifiManager::DoInitialize ()
       AddSnrThreshold (txVector, GetPhy ()->CalculateSnr (txVector, m_ber));
     }
   // Add all Ht and Vht MCSes
-  txVector.SetChannelWidth (GetPhy ()->GetChannelWidth ());
-  if (HasVhtSupported () == true || HasHtSupported () == true )
+  if (HasVhtSupported () == true || HasHtSupported () == true)
     {
       nModes = GetPhy ()->GetNMcs ();
       for (uint32_t i = 0; i < nModes; i++)
         {
-          mode = GetPhy ()->GetMcs (i);
-          if (mode.GetModulationClass () == WIFI_MOD_CLASS_HT)
+          for (uint16_t j = 20; j <= GetPhy ()->GetChannelWidth (); j*=2)
             {
-              //derive NSS from the Mcs index
-              nss = (mode.GetMcsValue () / 8) + 1;
-              NS_LOG_DEBUG ("Initialize, adding mode = " << mode.GetUniqueName () <<
-                            " channel width " << (uint16_t) GetPhy ()->GetChannelWidth () <<
-                            " nss " << (uint16_t) nss <<
-                            " short GI " << GetPhy ()->GetShortGuardInterval ());
-              NS_LOG_DEBUG ("In SetupPhy, adding mode = " << mode.GetUniqueName ());
-              txVector.SetNss (nss);
-              txVector.SetMode (mode);
-              AddSnrThreshold (txVector, GetPhy ()->CalculateSnr (txVector, m_ber));
-            }
-          else
-            {
-              uint8_t maxNss = GetPhy ()->GetMaxSupportedTxSpatialStreams ();
-              for (uint8_t i = 1; i <= maxNss; i++)
+              txVector.SetChannelWidth (j);
+              mode = GetPhy ()->GetMcs (i);
+              if (mode.GetModulationClass () == WIFI_MOD_CLASS_HT)
                 {
+                  //derive NSS from the Mcs index
+                  nss = (mode.GetMcsValue () / 8) + 1;
                   NS_LOG_DEBUG ("Initialize, adding mode = " << mode.GetUniqueName () <<
                                 " channel width " << (uint16_t) GetPhy ()->GetChannelWidth () <<
-                                " nss " << (uint16_t) i <<
-                                " short GI " << GetPhy ()->GetShortGuardInterval ());
+                                " nss " << (uint16_t) nss <<
+                                " short GI " << j);
                   NS_LOG_DEBUG ("In SetupPhy, adding mode = " << mode.GetUniqueName ());
-                  txVector.SetNss (i);
+                  txVector.SetNss (nss);
                   txVector.SetMode (mode);
                   AddSnrThreshold (txVector, GetPhy ()->CalculateSnr (txVector, m_ber));
+                }
+              else //VHT
+                {
+                  uint8_t maxNss = GetPhy ()->GetMaxSupportedTxSpatialStreams ();
+                  for (uint8_t i = 1; i <= maxNss; i++)
+                    {
+                      NS_LOG_DEBUG ("Initialize, adding mode = " << mode.GetUniqueName () <<
+                                    " channel width " << (uint16_t) GetPhy ()->GetChannelWidth () <<
+                                    " nss " << (uint16_t) i <<
+                                    " short GI " << j);
+                      NS_LOG_DEBUG ("In SetupPhy, adding mode = " << mode.GetUniqueName ());
+                      txVector.SetNss (i);
+                      txVector.SetMode (mode);
+                      AddSnrThreshold (txVector, GetPhy ()->CalculateSnr (txVector, m_ber));
+                    }
                 }
             }
         }
@@ -163,13 +166,14 @@ IdealWifiManager::GetSnrThreshold (WifiTxVector txVector) const
     {
       NS_LOG_DEBUG ("Checking " << i->second.GetMode ().GetUniqueName () <<
                     " nss " << (uint16_t) i->second.GetNss () <<
+                    " GI " << i->second.GetGuardInterval () <<
                     " width " << (uint16_t) i->second.GetChannelWidth ());
       NS_LOG_DEBUG ("against TxVector " << txVector.GetMode ().GetUniqueName () <<
                     " nss " << (uint16_t) txVector.GetNss () <<
+                    " GI " << txVector.GetGuardInterval () <<
                     " width " << (uint16_t) txVector.GetChannelWidth ());
       if (txVector.GetMode () == i->second.GetMode ()
           && txVector.GetNss () == i->second.GetNss ()
-          && txVector.GetGuardInterval () == i->second.GetGuardInterval ()
           && txVector.GetChannelWidth () == i->second.GetChannelWidth ())
         {
           return i->first;
@@ -272,12 +276,13 @@ IdealWifiManager::DoGetDataTxVector (WifiRemoteStation *st)
   //to ensure correct packet delivery.
   double maxThreshold = 0.0;
   WifiMode maxMode = GetDefaultMode ();
-  std::vector<WifiTxVector> candidateTxVectors;
   WifiTxVector txVector;
   WifiMode mode;
   uint8_t selectedNss = 1;
-  txVector.SetChannelWidth (GetPhy ()->GetChannelWidth ());
-  txVector.SetGuardInterval (GetPhy ()->GetShortGuardInterval () ? 400 : 800);
+  uint8_t channelWidth = std::min (GetChannelWidth (station), GetPhy ()->GetChannelWidth ());
+  uint16_t guardInterval = std::max (GetShortGuardInterval (station) ? 400 : 800, GetPhy ()->GetShortGuardInterval () ? 400 : 800);
+  txVector.SetChannelWidth (channelWidth);
+  txVector.SetGuardInterval (guardInterval);
   if (station->m_lastSnrObserved == station->m_lastSnrCached)
     {
       // SNR has not changed, so skip the search and use the last
@@ -405,14 +410,13 @@ IdealWifiManager::DoGetDataTxVector (WifiRemoteStation *st)
       station->m_lastMode = maxMode;
       station->m_nss = selectedNss;
     }
-  uint8_t channelWidth = GetChannelWidth (station);
   NS_LOG_DEBUG ("Found maxMode: " << maxMode << " channelWidth: " << (uint16_t) channelWidth);
-  if (m_currentRate != maxMode.GetDataRate (channelWidth, GetPhy ()->GetShortGuardInterval () ? 400 : 800, selectedNss))
+  if (m_currentRate != maxMode.GetDataRate (channelWidth, guardInterval, selectedNss))
     {
-      NS_LOG_DEBUG ("New datarate: " << maxMode.GetDataRate (channelWidth, GetPhy ()->GetShortGuardInterval () ? 400 : 800, selectedNss));
-      m_currentRate = maxMode.GetDataRate (channelWidth, GetPhy ()->GetShortGuardInterval () ? 400 : 800, selectedNss);
+      NS_LOG_DEBUG ("New datarate: " << maxMode.GetDataRate (channelWidth, guardInterval, selectedNss));
+      m_currentRate = maxMode.GetDataRate (channelWidth, guardInterval, selectedNss);
     }
-  return WifiTxVector (maxMode, GetDefaultTxPowerLevel (), GetLongRetryCount (station), GetPreambleForTransmission (maxMode, GetAddress (station)), 800, GetNumberOfAntennas (), selectedNss, 0, channelWidth, GetAggregation (station), false);
+  return WifiTxVector (maxMode, GetDefaultTxPowerLevel (), GetLongRetryCount (station), GetPreambleForTransmission (maxMode, GetAddress (station)), guardInterval, GetNumberOfAntennas (), selectedNss, 0, channelWidth, GetAggregation (station), false);
 }
 
 WifiTxVector
