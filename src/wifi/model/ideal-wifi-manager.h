@@ -54,8 +54,6 @@ public:
 
   void SetupPhy (Ptr<WifiPhy> phy);
 
-  void SetHeSupported (bool enable); //HE rates not yet supported
-
 
 private:
   //overriden from base class

@@ -143,7 +143,6 @@ int main (int argc, char *argv[])
   std::vector <StandardInfo> serverStandards;
   std::vector <StandardInfo> clientStandards;
   uint32_t steps;
-
   uint32_t rtsThreshold = 999999;  // disabled even for large A-MPDU
   uint32_t maxAmpduSize = 65535;
   double stepSize = 1; // dBm
@@ -156,8 +155,8 @@ int main (int argc, char *argv[])
   int sta1_y = 0;
   uint16_t serverNss = 1;
   uint16_t clientNss = 1;
-  bool serverShortGuardInterval = false;
-  bool clientShortGuardInterval = false;
+  uint16_t serverShortGuardInterval = 800;
+  uint16_t clientShortGuardInterval = 800;
   uint16_t serverChannelWidth = 20;
   uint16_t clientChannelWidth = 20;
   std::string wifiManager ("Ideal");
@@ -176,13 +175,18 @@ int main (int argc, char *argv[])
   cmd.AddValue ("clientChannelWidth", "Set channel width of the client (valid only for 802.11n or ac)", clientChannelWidth);
   cmd.AddValue ("serverNss", "Set nss of the server (valid only for 802.11n or ac)", serverNss);
   cmd.AddValue ("clientNss", "Set nss of the client (valid only for 802.11n or ac)", clientNss);
-  cmd.AddValue ("serverShortGuardInterval", "Set short guard interval of the server (802.11n/ac)", serverShortGuardInterval);
-  cmd.AddValue ("clientShortGuardInterval", "Set short guard interval of the client (802.11n/ac)", clientShortGuardInterval);
-  cmd.AddValue ("standard", "Set standard (802.11a, 802.11b, 802.11g, 802.11n-5GHz, 802.11n-2.4GHz, 802.11ac, 802.11-holland, 802.11-10MHz, 802.11-5MHz)", standard);
+  cmd.AddValue ("serverShortGuardInterval", "Set short guard interval of the server (802.11n/ac/ax) in nanoseconds", serverShortGuardInterval);
+  cmd.AddValue ("clientShortGuardInterval", "Set short guard interval of the client (802.11n/ac/ax) in nanoseconds", clientShortGuardInterval);
+  cmd.AddValue ("standard", "Set standard (802.11a, 802.11b, 802.11g, 802.11n-5GHz, 802.11n-2.4GHz, 802.11ac, 802.11-holland, 802.11-10MHz, 802.11-5MHz, 802.11ax-5GHz, 802.11ax-2.4GHz)", standard);
   cmd.AddValue ("wifiManager", "Set wifi rate manager (Aarf, Aarfcd, Amrr, Arf, Cara, Ideal, Minstrel, MinstrelHt, Onoe, Rraa)", wifiManager);
   cmd.AddValue ("infrastructure", "Use infrastructure instead of adhoc", infrastructure);
   cmd.Parse (argc,argv);
-
+/*
+  LogComponentEnable("MacLow", LOG_LEVEL_ALL);
+  LogComponentEnable("WifiPhy", LOG_LEVEL_ALL);
+  LogComponentEnable("WifiRemoteStationManager", LOG_LEVEL_ALL);
+  LogComponentEnable("IdealWifiManager", LOG_LEVEL_ALL);
+*/
   if (standard == "802.11b")
     {
       NS_ABORT_MSG_IF (serverChannelWidth != 22 && serverChannelWidth != 22, "Invalid channel width for standard " << standard);
@@ -211,6 +215,13 @@ int main (int argc, char *argv[])
       NS_ABORT_MSG_IF (clientChannelWidth != 20 && clientChannelWidth != 40 && clientChannelWidth != 80 && clientChannelWidth != 160, "Invalid channel width for standard " << standard);
       NS_ABORT_MSG_IF (clientNss == 0 || clientNss > 4, "Invalid nss " << clientNss << " for standard " << standard);
     }
+  else if (standard == "802.11ax-5GHz" || standard == "802.11ax-2.4GHz")
+    {
+      NS_ABORT_MSG_IF (serverChannelWidth != 20 && serverChannelWidth != 40 && serverChannelWidth != 80 && serverChannelWidth != 160, "Invalid channel width for standard " << standard);
+      NS_ABORT_MSG_IF (serverNss == 0 || serverNss > 4, "Invalid nss " << serverNss << " for standard " << standard);
+      NS_ABORT_MSG_IF (clientChannelWidth != 20 && clientChannelWidth != 40 && clientChannelWidth != 80 && clientChannelWidth != 160, "Invalid channel width for standard " << standard);
+      NS_ABORT_MSG_IF (clientNss == 0 || clientNss > 4, "Invalid nss " << clientNss << " for standard " << standard);
+    }
 
   std::string plotName = "wifi-manager-example-";
   std::string dataName = "wifi-manager-example-";
@@ -220,35 +231,22 @@ int main (int argc, char *argv[])
   dataName += "-";
   plotName += standard;
   dataName += standard;
-  if (standard == "802.11n-5GHz" || standard == "802.11n-2.4GHz" || standard == "802.11ac")
+  if (standard == "802.11n-5GHz" ||
+      standard == "802.11n-2.4GHz" ||
+      standard == "802.11ac" ||
+      standard == "802.11ax-5GHz" ||
+      standard == "802.11ax-2.4GHz")
     {
       plotName += "-server=";
       dataName += "-server=";
       std::ostringstream oss;
-      std::string gi;
-      if (serverShortGuardInterval)
-        {
-          gi = "SGI";
-        }
-      else
-        {
-          gi = "LGI";
-        }
-      oss << serverChannelWidth << "MHz_" << gi << "_" << serverNss << "SS";
+      oss << serverChannelWidth << "MHz_" << serverShortGuardInterval << "ns_" << serverNss << "SS";
       plotName += oss.str ();
       dataName += oss.str ();
       plotName += "-client=";
       dataName += "-client=";
       oss.str("");
-      if (clientShortGuardInterval)
-        {
-          gi = "SGI";
-        }
-      else
-        {
-          gi = "LGI";
-        }
-      oss << clientChannelWidth << "MHz_" << gi << "_" << clientNss << "SS";
+      oss << clientChannelWidth << "MHz_" << clientShortGuardInterval << "ns_" << clientNss << "SS";
       plotName += oss.str ();
       dataName += oss.str ();
     }
@@ -273,6 +271,8 @@ int main (int argc, char *argv[])
   serverStandards.push_back (StandardInfo ("802.11-holland", WIFI_PHY_STANDARD_holland, 20, 3, 27, 0, 30, 60));
   serverStandards.push_back (StandardInfo ("802.11-10MHz", WIFI_PHY_STANDARD_80211_10MHZ, 10, 3, 27, 0, 30, 60));
   serverStandards.push_back (StandardInfo ("802.11-5MHz", WIFI_PHY_STANDARD_80211_5MHZ, 5, 3, 27, 0, 30, 60));
+  serverStandards.push_back (StandardInfo ("802.11ax-5GHz", WIFI_PHY_STANDARD_80211ax_5GHZ, serverChannelWidth, 5, 55, 0, 60, 120 * channelRateFactor));
+  serverStandards.push_back (StandardInfo ("802.11ax-2.4GHz", WIFI_PHY_STANDARD_80211ax_2_4GHZ, serverChannelWidth, 5, 55, 0, 60, 120 * channelRateFactor));
 
   clientStandards.push_back (StandardInfo ("802.11a", WIFI_PHY_STANDARD_80211a, 20, 3, 27, 0, 30, 60));
   clientStandards.push_back (StandardInfo ("802.11b", WIFI_PHY_STANDARD_80211b, 22, -5, 11, -6, 15, 15));
@@ -283,6 +283,8 @@ int main (int argc, char *argv[])
   clientStandards.push_back (StandardInfo ("802.11-holland", WIFI_PHY_STANDARD_holland, 20, 3, 27, 0, 30, 60));
   clientStandards.push_back (StandardInfo ("802.11-10MHz", WIFI_PHY_STANDARD_80211_10MHZ, 10, 3, 27, 0, 30, 60));
   clientStandards.push_back (StandardInfo ("802.11-5MHz", WIFI_PHY_STANDARD_80211_5MHZ, 5, 3, 27, 0, 30, 60));
+  clientStandards.push_back (StandardInfo ("802.11ax-5GHz", WIFI_PHY_STANDARD_80211ax_5GHZ, clientChannelWidth, 5, 45, 0, 50, 160 * channelRateFactor));
+  clientStandards.push_back (StandardInfo ("802.11ax-2.4GHz", WIFI_PHY_STANDARD_80211ax_2_4GHZ, clientChannelWidth, 5, 45, 0, 50, 160 * channelRateFactor));
 
   for (std::vector<StandardInfo>::size_type i = 0; i != serverStandards.size (); i++)
     {
@@ -396,9 +398,17 @@ int main (int argc, char *argv[])
       || serverSelectedStandard.m_name == "802.11ac")
     {
       wifiPhyPtrServer->SetChannelWidth (serverSelectedStandard.m_width);
-      wifiPhyPtrServer->SetShortGuardInterval (serverShortGuardInterval);
+      wifiPhyPtrServer->SetShortGuardInterval (serverShortGuardInterval == 400);
       wifiPhyPtrClient->SetChannelWidth (clientSelectedStandard.m_width);
-      wifiPhyPtrClient->SetShortGuardInterval (clientShortGuardInterval);
+      wifiPhyPtrClient->SetShortGuardInterval (clientShortGuardInterval == 400);
+    }
+  else if (serverSelectedStandard.m_name == "802.11ax-5GHz"
+           || serverSelectedStandard.m_name == "802.11ax-2.4GHz")
+    {
+      wifiPhyPtrServer->SetChannelWidth (serverSelectedStandard.m_width);
+      wifiPhyPtrServer->SetGuardInterval (NanoSeconds (serverShortGuardInterval));
+      wifiPhyPtrClient->SetChannelWidth (clientSelectedStandard.m_width);
+      wifiPhyPtrClient->SetGuardInterval (NanoSeconds (clientShortGuardInterval));
     }
   NS_LOG_DEBUG ("Channel width " << wifiPhyPtrClient->GetChannelWidth () << " noiseDbm " << noiseDbm);
   NS_LOG_DEBUG ("NSS " << wifiPhyPtrClient->GetMaxSupportedTxSpatialStreams ());
@@ -474,40 +484,38 @@ int main (int argc, char *argv[])
   title.append (" with ");
   title.append (wifiManager);
   title.append ("\\n");
-  if (standard == "802.11n-5GHz" || standard == "802.11n-2.4GHz" || standard == "802.11ac")
+  if (standard == "802.11n-5GHz"
+      || standard == "802.11n-2.4GHz"
+      || standard == "802.11ac"
+      || standard == "802.11n-5GHz"
+      || standard == "802.11ax-2.4GHz")
     {
+      std::ostringstream serverGiStrStr;
       std::ostringstream serverWidthStrStr;
       std::ostringstream serverNssStrStr;
       title.append ("server: width=");
       serverWidthStrStr << serverSelectedStandard.m_width;
       title.append (serverWidthStrStr.str ());
       title.append ("MHz");
-      if (serverShortGuardInterval == true)
-        {
-          title.append (" GI=short");
-        }
-      else
-        {
-          title.append (" GI=long");
-        }
+      title.append (" GI=");
+      serverGiStrStr << serverShortGuardInterval;
+      title.append (serverGiStrStr.str ());
+      title.append ("ns");
       title.append (" nss=");
       serverNssStrStr << serverNss;
       title.append (serverNssStrStr.str ());
       title.append ("\\n");
+      std::ostringstream clientGiStrStr;
       std::ostringstream clientWidthStrStr;
       std::ostringstream clientNssStrStr;
       title.append ("client: width=");
       clientWidthStrStr << clientSelectedStandard.m_width;
       title.append (clientWidthStrStr.str ());
       title.append ("MHz");
-      if (clientShortGuardInterval == true)
-        {
-          title.append (" GI=short");
-        }
-      else
-        {
-          title.append (" GI=long");
-        }
+      title.append (" GI=");
+      clientGiStrStr << clientShortGuardInterval;
+      title.append (clientGiStrStr.str ());
+      title.append ("ns");
       title.append (" nss=");
       clientNssStrStr << clientNss;
       title.append (clientNssStrStr.str ());
