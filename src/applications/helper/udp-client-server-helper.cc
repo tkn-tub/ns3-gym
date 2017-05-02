@@ -28,6 +28,7 @@ namespace ns3 {
 
 UdpServerHelper::UdpServerHelper ()
 {
+  m_factory.SetTypeId (UdpServer::GetTypeId ());
 }
 
 UdpServerHelper::UdpServerHelper (uint16_t port)
@@ -66,6 +67,7 @@ UdpServerHelper::GetServer (void)
 
 UdpClientHelper::UdpClientHelper ()
 {
+  m_factory.SetTypeId (UdpClient::GetTypeId ());
 }
 
 UdpClientHelper::UdpClientHelper (Address address, uint16_t port)
@@ -103,6 +105,7 @@ UdpClientHelper::Install (NodeContainer c)
 
 UdpTraceClientHelper::UdpTraceClientHelper ()
 {
+  m_factory.SetTypeId (UdpTraceClient::GetTypeId ());
 }
 
 UdpTraceClientHelper::UdpTraceClientHelper (Address address, uint16_t port, std::string filename)
