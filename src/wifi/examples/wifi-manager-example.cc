@@ -181,12 +181,7 @@ int main (int argc, char *argv[])
   cmd.AddValue ("wifiManager", "Set wifi rate manager (Aarf, Aarfcd, Amrr, Arf, Cara, Ideal, Minstrel, MinstrelHt, Onoe, Rraa)", wifiManager);
   cmd.AddValue ("infrastructure", "Use infrastructure instead of adhoc", infrastructure);
   cmd.Parse (argc,argv);
-/*
-  LogComponentEnable("MacLow", LOG_LEVEL_ALL);
-  LogComponentEnable("WifiPhy", LOG_LEVEL_ALL);
-  LogComponentEnable("WifiRemoteStationManager", LOG_LEVEL_ALL);
-  LogComponentEnable("IdealWifiManager", LOG_LEVEL_ALL);
-*/
+
   if (standard == "802.11b")
     {
       NS_ABORT_MSG_IF (serverChannelWidth != 22 && serverChannelWidth != 22, "Invalid channel width for standard " << standard);

@@ -793,7 +793,7 @@ WifiPhy::ConfigureDefaultsForStandard (WifiPhyStandard standard)
       NS_ASSERT (GetChannelNumber () == 42);
       break;
     case WIFI_PHY_STANDARD_80211ax_2_4GHZ:
-      SetChannelWidth (40);
+      SetChannelWidth (20);
       SetFrequency (2412);
       // Channel number should be aligned by SetFrequency () to 1
       NS_ASSERT (GetChannelNumber () == 1);
