@@ -185,6 +185,10 @@ public:
    * \param duration the duration of CCA busy state
    */
   void SwitchFromSleep (Time duration);
+  /**
+   * Abort current reception
+   */
+  void SwitchFromRxAbort (void);
 
   /**
    * TracedCallback signature for state changes.

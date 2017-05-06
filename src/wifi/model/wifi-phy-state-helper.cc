@@ -221,6 +221,7 @@ WifiPhyStateHelper::GetState (void) const
 void
 WifiPhyStateHelper::NotifyTxStart (Time duration, double txPowerDbm)
 {
+  NS_LOG_FUNCTION (this);
   for (Listeners::const_iterator i = m_listeners.begin (); i != m_listeners.end (); i++)
     {
       (*i)->NotifyTxStart (duration, txPowerDbm);
@@ -230,6 +231,7 @@ WifiPhyStateHelper::NotifyTxStart (Time duration, double txPowerDbm)
 void
 WifiPhyStateHelper::NotifyRxStart (Time duration)
 {
+  NS_LOG_FUNCTION (this);
   for (Listeners::const_iterator i = m_listeners.begin (); i != m_listeners.end (); i++)
     {
       (*i)->NotifyRxStart (duration);
@@ -239,6 +241,7 @@ WifiPhyStateHelper::NotifyRxStart (Time duration)
 void
 WifiPhyStateHelper::NotifyRxEndOk (void)
 {
+  NS_LOG_FUNCTION (this);
   for (Listeners::const_iterator i = m_listeners.begin (); i != m_listeners.end (); i++)
     {
       (*i)->NotifyRxEndOk ();
@@ -248,6 +251,7 @@ WifiPhyStateHelper::NotifyRxEndOk (void)
 void
 WifiPhyStateHelper::NotifyRxEndError (void)
 {
+  NS_LOG_FUNCTION (this);
   for (Listeners::const_iterator i = m_listeners.begin (); i != m_listeners.end (); i++)
     {
       (*i)->NotifyRxEndError ();
@@ -257,6 +261,7 @@ WifiPhyStateHelper::NotifyRxEndError (void)
 void
 WifiPhyStateHelper::NotifyMaybeCcaBusyStart (Time duration)
 {
+  NS_LOG_FUNCTION (this);
   for (Listeners::const_iterator i = m_listeners.begin (); i != m_listeners.end (); i++)
     {
       (*i)->NotifyMaybeCcaBusyStart (duration);
@@ -266,6 +271,7 @@ WifiPhyStateHelper::NotifyMaybeCcaBusyStart (Time duration)
 void
 WifiPhyStateHelper::NotifySwitchingStart (Time duration)
 {
+  NS_LOG_FUNCTION (this);
   for (Listeners::const_iterator i = m_listeners.begin (); i != m_listeners.end (); i++)
     {
       (*i)->NotifySwitchingStart (duration);
@@ -275,6 +281,7 @@ WifiPhyStateHelper::NotifySwitchingStart (Time duration)
 void
 WifiPhyStateHelper::NotifySleep (void)
 {
+  NS_LOG_FUNCTION (this);
   for (Listeners::const_iterator i = m_listeners.begin (); i != m_listeners.end (); i++)
     {
       (*i)->NotifySleep ();
@@ -284,6 +291,7 @@ WifiPhyStateHelper::NotifySleep (void)
 void
 WifiPhyStateHelper::NotifyWakeup (void)
 {
+  NS_LOG_FUNCTION (this);
   for (Listeners::const_iterator i = m_listeners.begin (); i != m_listeners.end (); i++)
     {
       (*i)->NotifyWakeup ();
@@ -293,6 +301,7 @@ WifiPhyStateHelper::NotifyWakeup (void)
 void
 WifiPhyStateHelper::LogPreviousIdleAndCcaBusyStates (void)
 {
+  NS_LOG_FUNCTION (this);
   Time now = Simulator::Now ();
   Time idleStart = Max (m_endCcaBusy, m_endRx);
   idleStart = Max (idleStart, m_endTx);
@@ -314,6 +323,7 @@ void
 WifiPhyStateHelper::SwitchToTx (Time txDuration, Ptr<const Packet> packet, double txPowerDbm,
                                 WifiTxVector txVector)
 {
+  NS_LOG_FUNCTION (this << txDuration << packet << txPowerDbm << txVector);
   m_txTrace (packet, txVector.GetMode (), txVector.GetPreambleType (), txVector.GetTxPowerLevel ());
   Time now = Simulator::Now ();
   switch (GetState ())
@@ -352,6 +362,7 @@ WifiPhyStateHelper::SwitchToTx (Time txDuration, Ptr<const Packet> packet, doubl
 void
 WifiPhyStateHelper::SwitchToRx (Time rxDuration)
 {
+  NS_LOG_FUNCTION (this << rxDuration);
   NS_ASSERT (IsStateIdle () || IsStateCcaBusy ());
   NS_ASSERT (!m_rxing);
   Time now = Simulator::Now ();
@@ -385,6 +396,7 @@ WifiPhyStateHelper::SwitchToRx (Time rxDuration)
 void
 WifiPhyStateHelper::SwitchToChannelSwitching (Time switchingDuration)
 {
+  NS_LOG_FUNCTION (this << switchingDuration);
   Time now = Simulator::Now ();
   switch (GetState ())
     {
@@ -430,6 +442,7 @@ WifiPhyStateHelper::SwitchToChannelSwitching (Time switchingDuration)
 void
 WifiPhyStateHelper::SwitchFromRxEndOk (Ptr<Packet> packet, double snr, WifiTxVector txVector)
 {
+  NS_LOG_FUNCTION (this << packet << snr << txVector);
   m_rxOkTrace (packet, snr, txVector.GetMode (), txVector.GetPreambleType ());
   NotifyRxEndOk ();
   DoSwitchFromRx ();
@@ -443,6 +456,7 @@ WifiPhyStateHelper::SwitchFromRxEndOk (Ptr<Packet> packet, double snr, WifiTxVec
 void
 WifiPhyStateHelper::SwitchFromRxEndError (Ptr<Packet> packet, double snr)
 {
+  NS_LOG_FUNCTION (this << packet << snr);
   m_rxErrorTrace (packet, snr);
   NotifyRxEndError ();
   DoSwitchFromRx ();
@@ -455,6 +469,7 @@ WifiPhyStateHelper::SwitchFromRxEndError (Ptr<Packet> packet, double snr)
 void
 WifiPhyStateHelper::DoSwitchFromRx (void)
 {
+  NS_LOG_FUNCTION (this);
   NS_ASSERT (IsStateRx ());
   NS_ASSERT (m_rxing);
 
@@ -469,6 +484,7 @@ WifiPhyStateHelper::DoSwitchFromRx (void)
 void
 WifiPhyStateHelper::SwitchMaybeToCcaBusy (Time duration)
 {
+  NS_LOG_FUNCTION (this << duration);
   NotifyMaybeCcaBusyStart (duration);
   Time now = Simulator::Now ();
   switch (GetState ())
@@ -497,6 +513,7 @@ WifiPhyStateHelper::SwitchMaybeToCcaBusy (Time duration)
 void
 WifiPhyStateHelper::SwitchToSleep (void)
 {
+  NS_LOG_FUNCTION (this);
   Time now = Simulator::Now ();
   switch (GetState ())
     {
@@ -527,6 +544,7 @@ WifiPhyStateHelper::SwitchToSleep (void)
 void
 WifiPhyStateHelper::SwitchFromSleep (Time duration)
 {
+  NS_LOG_FUNCTION (this << duration);
   NS_ASSERT (IsStateSleep ());
   Time now = Simulator::Now ();
   m_stateLogger (m_startSleep, now - m_startSleep, WifiPhy::SLEEP);
@@ -539,6 +557,17 @@ WifiPhyStateHelper::SwitchFromSleep (Time duration)
     {
       NotifyMaybeCcaBusyStart (m_endCcaBusy - now);
     }
+}
+
+void
+WifiPhyStateHelper::SwitchFromRxAbort (void)
+{
+  NS_LOG_FUNCTION (this);
+  NS_ASSERT (IsStateRx ());
+  NS_ASSERT (m_rxing);
+  m_endRx = Simulator::Now ();
+  DoSwitchFromRx ();
+  NS_ASSERT (!IsStateRx ());
 }
 
 } //namespace ns3

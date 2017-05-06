@@ -22,6 +22,7 @@
 #define INTERFERENCE_HELPER_H
 
 #include "ns3/nstime.h"
+#include "ns3/packet.h"
 #include "wifi-tx-vector.h"
 #include "error-rate-model.h"
 
@@ -43,13 +44,19 @@ public:
     /**
      * Create an Event with the given parameters.
      *
+     * \param packet the packet
      * \param txVector TXVECTOR of the packet
      * \param duration duration of the signal
      * \param rxPower the receive power (w)
      */
-    Event (WifiTxVector txVector, Time duration, double rxPower);
+    Event (Ptr<const Packet> packet, WifiTxVector txVector, Time duration, double rxPower);
     ~Event ();
 
+    /** Return the packet.
+     *
+     * \return the packet
+     */
+    Ptr<const Packet> GetPacket (void) const;
     /**
      * Return the duration of the signal.
      *
@@ -89,6 +96,7 @@ public:
 
 
 private:
+    Ptr<const Packet> m_packet; ///< packet
     WifiTxVector m_txVector; ///< TXVECTOR
     Time m_startTime; ///< start time
     Time m_endTime; ///< end time
@@ -152,13 +160,14 @@ private:
   /**
    * Add the packet-related signal to interference helper.
    *
+   * \param packet the packet
    * \param txVector TXVECTOR of the packet
    * \param duration the duration of the signal
    * \param rxPower receive power (W)
    *
    * \return InterferenceHelper::Event
    */
-  Ptr<InterferenceHelper::Event> Add (WifiTxVector txVector, Time duration, double rxPower);
+  Ptr<InterferenceHelper::Event> Add (Ptr<const Packet> packet, WifiTxVector txVector, Time duration, double rxPower);
 
   /**
    * Add a non-Wifi signal to interference helper.
@@ -211,8 +220,9 @@ public:
      *
      * \param time time of the event
      * \param delta the power
+     * \param event causes this NI change
      */
-    NiChange (Time time, double delta);
+    NiChange (Time time, double delta, Ptr<InterferenceHelper::Event> event);
     /**
      * Return the event time.
      *
@@ -226,6 +236,12 @@ public:
      */
     double GetDelta (void) const;
     /**
+     * Return the event causes the corresponding NI change
+     *
+     * \return the event
+     */
+    Ptr<InterferenceHelper::Event> GetEvent (void) const;
+    /**
      * Compare the event time of two NiChange objects (a < o).
      *
      * \param o
@@ -237,6 +253,7 @@ public:
 private:
     Time m_time; ///< time
     double m_delta; ///< delta
+    Ptr<InterferenceHelper::Event> m_event;
   };
   /**
    * typedef for a vector of NiChanges
@@ -309,6 +326,7 @@ private:
   NiChanges m_niChanges;
   double m_firstPower; ///< first power
   bool m_rxing; ///< flag whether it is in receiving state
+
   /// Returns an iterator to the first nichange, which is later than moment
   NiChanges::iterator GetPosition (Time moment);
   /**

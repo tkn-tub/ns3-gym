@@ -25,13 +25,13 @@
 #include <map>
 #include "ns3/callback.h"
 #include "ns3/event-id.h"
-#include "ns3/packet.h"
 #include "ns3/mobility-model.h"
 #include "ns3/random-variable-stream.h"
 #include "ns3/channel.h"
 #include "wifi-phy-standard.h"
 #include "interference-helper.h"
 #include "ns3/node.h"
+#include "ns3/string.h"
 
 namespace ns3 {
 
@@ -43,6 +43,11 @@ namespace ns3 {
  * WifiPhyStateHelper class
  */
 class WifiPhyStateHelper;
+
+/**
+ * FrameCaptureModel class
+ */
+class FrameCaptureModel;
 
 /**
  * This enumeration defines the type of an MPDU.
@@ -371,7 +376,7 @@ public:
    *
    * \return the total amount of time this PHY will stay busy for the transmission of the PLCP preamble and PLCP header.
    */
-  Time CalculatePlcpPreambleAndHeaderDuration (WifiTxVector txVector);
+  static Time CalculatePlcpPreambleAndHeaderDuration (WifiTxVector txVector);
 
   /**
    * \param txVector the transmission parameters used for this packet
@@ -1445,6 +1450,7 @@ public:
    * \return the reception gain in dB
    */
   double GetRxGain (void) const;
+
   /**
    * Sets the device this PHY is associated with.
    *
@@ -1601,6 +1607,19 @@ public:
    * \return the error rate model this PHY is using
    */
   Ptr<ErrorRateModel> GetErrorRateModel (void) const;
+
+  /**
+   * Sets the frame capture model.
+   *
+   * \param rate the frame capture model
+   */
+  void SetFrameCaptureModel (Ptr<FrameCaptureModel> rate);
+  /**
+   * Return the frame capture model this PHY is using.
+   *
+   * \return the frame capture model this PHY is using
+   */
+  Ptr<FrameCaptureModel> GetFrameCaptureModel (void) const;
 
   /**
    * \return the channel width
@@ -1771,6 +1790,34 @@ private:
    * \return the FrequencyWidthPair found
    */
   FrequencyWidthPair GetFrequencyWidthForChannelNumberStandard (uint8_t channelNumber, WifiPhyStandard standard) const;
+  
+  /**
+   * Due to newly arrived signal, the current reception cannot be continued and has to be aborted
+   *
+   */
+  void AbortCurrentReception (void);
+
+  /**
+   * Eventually switch to CCA busy
+   */
+  void MaybeCcaBusyDuration (void);
+  
+  /**
+   * Starting receiving the packet after having detected the medium is idle or after a reception switch.
+   *
+   * \param packet the arriving packet
+   * \param txVector the TXVECTOR of the arriving packet
+   * \param mpdutype the type of the MPDU as defined in WifiPhy::MpduType.
+   * \param rxPowerW the receive power in W
+   * \param rxDuration the duration needed for the reception of the packet
+   * \param event the corresponding event of the first time the packet arrives
+   */
+  void StartRx (Ptr<Packet> packet,
+                WifiTxVector txVector,
+                MpduType mpdutype,
+                double rxPowerW,
+                Time rxDuration,
+                Ptr<InterferenceHelper::Event> event);
 
   /**
    * The trace source fired when a packet begins the transmission process on
@@ -1931,6 +1978,9 @@ private:
 
   Ptr<NetDevice>     m_device;   //!< Pointer to the device
   Ptr<MobilityModel> m_mobility; //!< Pointer to the mobility model
+
+  Ptr<InterferenceHelper::Event> m_currentEvent; //!< Hold the current event
+  Ptr<FrameCaptureModel> m_frameCaptureModel; //!< Frame capture model
 };
 
 /**

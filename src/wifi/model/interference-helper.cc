@@ -33,8 +33,9 @@ NS_LOG_COMPONENT_DEFINE ("InterferenceHelper");
  *       Phy event class
  ****************************************************************/
 
-InterferenceHelper::Event::Event (WifiTxVector txVector, Time duration, double rxPower)
-  : m_txVector (txVector),
+InterferenceHelper::Event::Event (Ptr<const Packet> packet, WifiTxVector txVector, Time duration, double rxPower)
+  : m_packet (packet),
+    m_txVector (txVector),
     m_startTime (Simulator::Now ()),
     m_endTime (m_startTime + duration),
     m_rxPowerW (rxPower)
@@ -43,6 +44,12 @@ InterferenceHelper::Event::Event (WifiTxVector txVector, Time duration, double r
 
 InterferenceHelper::Event::~Event ()
 {
+}
+
+Ptr<const Packet>
+InterferenceHelper::Event::GetPacket (void) const
+{
+  return m_packet;
 }
 
 Time
@@ -87,9 +94,10 @@ InterferenceHelper::Event::GetPayloadMode (void) const
  *       short period of time.
  ****************************************************************/
 
-InterferenceHelper::NiChange::NiChange (Time time, double delta)
+InterferenceHelper::NiChange::NiChange (Time time, double delta, Ptr<InterferenceHelper::Event> event)
   : m_time (time),
-    m_delta (delta)
+    m_delta (delta),
+    m_event (event)
 {
 }
 
@@ -103,6 +111,12 @@ double
 InterferenceHelper::NiChange::GetDelta (void) const
 {
   return m_delta;
+}
+
+Ptr<InterferenceHelper::Event>
+InterferenceHelper::NiChange::GetEvent (void) const
+{
+  return m_event;
 }
 
 bool
@@ -131,11 +145,10 @@ InterferenceHelper::~InterferenceHelper ()
 }
 
 Ptr<InterferenceHelper::Event>
-InterferenceHelper::Add (WifiTxVector txVector, Time duration, double rxPowerW)
+InterferenceHelper::Add (Ptr<const Packet> packet, WifiTxVector txVector, Time duration, double rxPowerW)
 {
   Ptr<InterferenceHelper::Event> event;
-
-  event = Create<InterferenceHelper::Event> (txVector, duration, rxPowerW);
+  event = Create<InterferenceHelper::Event> (packet, txVector, duration, rxPowerW);
   AppendEvent (event);
   return event;
 }
@@ -146,7 +159,8 @@ InterferenceHelper::AddForeignSignal (Time duration, double rxPowerW)
   // Parameters other than duration and rxPowerW are unused for this type
   // of signal, so we provide dummy versions
   WifiTxVector fakeTxVector;
-  Add (fakeTxVector, duration, rxPowerW);
+  Ptr<const Packet> packet (0);
+  Add (packet, fakeTxVector, duration, rxPowerW);
 }
 
 void
@@ -214,13 +228,13 @@ InterferenceHelper::AppendEvent (Ptr<InterferenceHelper::Event> event)
           m_firstPower += i->GetDelta ();
         }
       m_niChanges.erase (m_niChanges.begin (), nowIterator);
-      m_niChanges.insert (m_niChanges.begin (), NiChange (event->GetStartTime (), event->GetRxPowerW ()));
+      m_niChanges.insert (m_niChanges.begin (), NiChange (event->GetStartTime (), event->GetRxPowerW (), event));
     }
   else
     {
-      AddNiChangeEvent (NiChange (event->GetStartTime (), event->GetRxPowerW ()));
+      AddNiChangeEvent (NiChange (event->GetStartTime (), event->GetRxPowerW (), event));
     }
-  AddNiChangeEvent (NiChange (event->GetEndTime (), -event->GetRxPowerW ()));
+  AddNiChangeEvent (NiChange (event->GetEndTime (), -event->GetRxPowerW (), event));
 
 }
 
@@ -244,17 +258,41 @@ double
 InterferenceHelper::CalculateNoiseInterferenceW (Ptr<InterferenceHelper::Event> event, NiChanges *ni) const
 {
   double noiseInterference = m_firstPower;
-  NS_ASSERT (m_rxing);
-  for (NiChanges::const_iterator i = m_niChanges.begin () + 1; i != m_niChanges.end (); i++)
+  NiChanges::const_iterator eventIterator = m_niChanges.begin ();
+  while (eventIterator != m_niChanges.end ())
     {
-      if ((event->GetEndTime () == i->GetTime ()) && event->GetRxPowerW () == -i->GetDelta ())
+      // Iterate the NI change list from the beginning to the end
+      // until find the position of the event in the NI change list
+      // The reason of using the event that causes the NI change to identify
+      // different NI changes is because in some special cases
+      // different NI changes happen at the same time with the same delta
+      // value. Therefore, it may be impossible to identify a NI change that belongs
+      // to which event based on just the NI time and NI delta value
+      if (eventIterator->GetEvent () != event)
+        {
+          // The NI changes which happen before the event should be considered
+          // as the interference. This considers the case that the receiving event
+          // arrives while another receiving event is going on. The SINR of
+          // the newly arrived event is calculated for checking the possibility of frame capture
+          noiseInterference += eventIterator->GetDelta ();
+        }
+      else
+        {
+          break;
+        }
+      ++eventIterator;
+    }
+
+  for (NiChanges::const_iterator i = eventIterator + 1; i != m_niChanges.end (); ++i)
+    {
+      if (event->GetEndTime () == i->GetTime () && event == i->GetEvent ())
         {
           break;
         }
       ni->push_back (*i);
     }
-  ni->insert (ni->begin (), NiChange (event->GetStartTime (), noiseInterference));
-  ni->push_back (NiChange (event->GetEndTime (), 0));
+  ni->insert (ni->begin (), NiChange (event->GetStartTime (), noiseInterference, event));
+  ni->push_back (NiChange (event->GetEndTime (), 0, event));
   return noiseInterference;
 }
 
@@ -840,7 +878,7 @@ InterferenceHelper::EraseEvents (void)
 InterferenceHelper::NiChanges::iterator
 InterferenceHelper::GetPosition (Time moment)
 {
-  return std::upper_bound (m_niChanges.begin (), m_niChanges.end (), NiChange (moment, 0));
+  return std::upper_bound (m_niChanges.begin (), m_niChanges.end (), NiChange (moment, 0, NULL));
 }
 
 void

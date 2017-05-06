@@ -343,6 +343,8 @@ cpp_examples = [
     ("wifi-manager-example --wifiManager=Ideal --standard=802.11ax-2.4GHz --serverChannelWidth=40 --clientChannelWidth=40 --serverShortGuardInterval=800 --clientShortGuardInterval=800 --serverNss=4 --clientNss=4 --stepTime=0.1", "False", "False"),
     ("wifi-manager-example --wifiManager=Ideal --standard=802.11ax-2.4GHz --serverChannelWidth=40 --clientChannelWidth=40 --serverShortGuardInterval=1600 --clientShortGuardInterval=1600 --serverNss=4 --clientNss=4 --stepTime=0.1", "False", "False"),
     ("wifi-manager-example --wifiManager=Ideal --standard=802.11ax-2.4GHz --serverChannelWidth=40 --clientChannelWidth=40 --serverShortGuardInterval=3200 --clientShortGuardInterval=3200 --serverNss=4 --clientNss=4 --stepTime=0.1", "False", "False"),
+    ("test-interference-helper --enableCapture=0 --txPowerA=5 --txPowerB=15 --delay=10 --txModeA=OfdmRate6Mbps --txModeB=OfdmRate6Mbps --checkResults=1 --expectRxASuccessfull=0 --expectRxBSuccessfull=0", "True", "True"),
+    ("test-interference-helper --enableCapture=1 --txPowerA=5 --txPowerB=15 --delay=10 --txModeA=OfdmRate6Mbps --txModeB=OfdmRate6Mbps --checkResults=1 --expectRxASuccessfull=0 --expectRxBSuccessfull=1", "True", "True"),
 ]
 
 # A list of Python examples to run in order to ensure that they remain

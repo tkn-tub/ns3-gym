@@ -55,8 +55,16 @@
 #include "ns3/propagation-delay-model.h"
 #include "ns3/nist-error-rate-model.h"
 #include "ns3/constant-position-mobility-model.h"
+#include "ns3/simple-frame-capture-model.h"
+#include "ns3/log.h"
 
 using namespace ns3;
+
+NS_LOG_COMPONENT_DEFINE ("test-interference-helper");
+
+bool checkResults = false;
+bool expectRxASuccessfull = false;
+bool expectRxBSuccessfull = false;
 
 /// InterferenceExperiment
 class InterferenceExperiment
@@ -71,12 +79,14 @@ public:
     double xB; ///< x B
     std::string txModeA; ///< transmit mode A
     std::string txModeB; ///< transmit mode B
-    uint32_t txPowerLevelA; ///< transmit power level A
-    uint32_t txPowerLevelB; ///< transmit power level B
+    double txPowerLevelA; ///< transmit power level A
+    double txPowerLevelB; ///< transmit power level B
     uint32_t packetSizeA; ///< packet size A
     uint32_t packetSizeB; ///< packet size B
     WifiPhyStandard standard; ///< standard
     WifiPreamble preamble; ///< preamble
+    bool captureEnabled; ///< whether physical layer capture is enabled
+    double captureMargin; ///< margin used for physical layer capture
   };
 
   InterferenceExperiment ();
@@ -87,6 +97,8 @@ public:
   void Run (struct InterferenceExperiment::Input input);
 
 private:
+  /// Function triggered when a packet is dropped
+  void PacketDropped(Ptr<const Packet> packet);
   /// Send A function
   void SendA (void) const;
   /// Send B function
@@ -94,6 +106,8 @@ private:
   Ptr<YansWifiPhy> m_txA; ///< transmit A function
   Ptr<YansWifiPhy> m_txB; ///< transmit B function
   struct Input m_input; ///< input
+  bool m_droppedA; ///< flag to indicate whether packet A has been dropped
+  bool m_droppedB; ///< flag to indicate whether packet B has been dropped
 };
 
 void
@@ -118,21 +132,44 @@ InterferenceExperiment::SendB (void) const
   m_txB->SendPacket (p, txVector);
 }
 
+void
+InterferenceExperiment::PacketDropped(Ptr<const Packet> packet)
+{
+    if (packet->GetUid () == 0)
+    {
+      m_droppedA = true;
+    }
+    else if (packet->GetUid () == 1)
+    {
+      m_droppedB = true;
+    }
+    else
+    {
+      NS_LOG_ERROR ("Unknown packet!");
+      exit (1);
+    }
+}
+
 InterferenceExperiment::InterferenceExperiment ()
+  : m_droppedA (false),
+    m_droppedB (false)
 {
 }
+
 InterferenceExperiment::Input::Input ()
   : interval (MicroSeconds (0)),
     xA (-5),
     xB (5),
     txModeA ("OfdmRate54Mbps"),
     txModeB ("OfdmRate54Mbps"),
-    txPowerLevelA (0),
-    txPowerLevelB (0),
+    txPowerLevelA (16.0206),
+    txPowerLevelB (16.0206),
     packetSizeA (1500),
     packetSizeB (1500),
     standard (WIFI_PHY_STANDARD_80211a),
-    preamble (WIFI_PREAMBLE_LONG)
+    preamble (WIFI_PREAMBLE_LONG),
+    captureEnabled (false),
+    captureMargin (0)
 {
 }
 
@@ -157,7 +194,11 @@ InterferenceExperiment::Run (struct InterferenceExperiment::Input input)
   posRx->SetPosition (Vector (0.0, 0.0, 0.0));
 
   m_txA = CreateObject<YansWifiPhy> ();
+  m_txA->SetTxPowerStart (input.txPowerLevelA);
+  m_txA->SetTxPowerEnd (input.txPowerLevelA);
   m_txB = CreateObject<YansWifiPhy> ();
+  m_txB->SetTxPowerStart (input.txPowerLevelB);
+  m_txB->SetTxPowerEnd (input.txPowerLevelB);
   Ptr<YansWifiPhy> rx = CreateObject<YansWifiPhy> ();
 
   Ptr<ErrorRateModel> error = CreateObject<NistErrorRateModel> ();
@@ -170,18 +211,31 @@ InterferenceExperiment::Run (struct InterferenceExperiment::Input input)
   m_txA->SetMobility (posTxA);
   m_txB->SetMobility (posTxB);
   rx->SetMobility (posRx);
+  if (input.captureEnabled)
+    {
+      Ptr<SimpleFrameCaptureModel> frameCaptureModel = CreateObject<SimpleFrameCaptureModel> ();
+      frameCaptureModel->SetMargin (input.captureMargin);
+      rx->SetFrameCaptureModel (frameCaptureModel);
+    }
 
   m_txA->ConfigureStandard (input.standard);
   m_txB->ConfigureStandard (input.standard);
   rx->ConfigureStandard (input.standard);
+
+  rx->TraceConnectWithoutContext("PhyRxDrop", MakeCallback(&InterferenceExperiment::PacketDropped, this));
 
   Simulator::Schedule (Seconds (0), &InterferenceExperiment::SendA, this);
   Simulator::Schedule (Seconds (0) + input.interval, &InterferenceExperiment::SendB, this);
 
   Simulator::Run ();
   Simulator::Destroy ();
-}
 
+  if(checkResults && (m_droppedA == expectRxASuccessfull || m_droppedB == expectRxBSuccessfull))
+  {
+    NS_LOG_ERROR ("Results are not expected!");
+    exit (1);
+  }
+}
 
 int main (int argc, char *argv[])
 {
@@ -202,10 +256,17 @@ int main (int argc, char *argv[])
   cmd.AddValue ("txModeB", "Wifi mode used for payload transmission of sender B", input.txModeB);
   cmd.AddValue ("standard", "IEEE 802.11 flavor", str_standard);
   cmd.AddValue ("preamble", "Type of preamble", str_preamble);
+  cmd.AddValue ("enableCapture", "Enable/disable physical layer capture", input.captureEnabled);
+  cmd.AddValue ("captureMargin", "Margin used for physical layer capture", input.captureMargin);
+  cmd.AddValue ("checkResults", "Used to check results at the end of the test", checkResults);
+  cmd.AddValue ("expectRxASuccessfull", "Indicate whether packet A is expected to be successfully received", expectRxASuccessfull);
+  cmd.AddValue ("expectRxBSuccessfull", "Indicate whether packet B is expected to be successfully received", expectRxBSuccessfull);
   cmd.Parse (argc, argv);
 
+  LogComponentEnable ("WifiPhy", LOG_LEVEL_ALL);
   LogComponentEnable ("YansWifiPhy", LOG_LEVEL_ALL);
   LogComponentEnable ("InterferenceHelper", LOG_LEVEL_ALL);
+  LogComponentEnable ("SimpleFrameCaptureModel", LOG_LEVEL_ALL);
 
   input.interval = MicroSeconds (delay);
 
