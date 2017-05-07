@@ -274,7 +274,18 @@ Ptr<const WifiMacQueueItem>
 WifiMacQueue::Peek (void) const
 {
   NS_LOG_FUNCTION (this);
-  return DoPeek (Head ());
+
+  for (auto it = Head (); it != Tail (); it++)
+    {
+      // skip packets that stayed in the queue for too long. They will be
+      // actually removed from the queue by the next call to a non-const method
+      if (Simulator::Now () <= (*it)->GetTimeStamp () + m_maxDelay)
+        {
+          return DoPeek (it);
+        }
+    }
+  NS_LOG_DEBUG ("The queue is empty");
+  return 0;
 }
 
 template<>
