@@ -253,8 +253,8 @@ a single table, approaches where more information than destination IP address
 (e.g., source routing) is used to determine the next hop, and on-demand routing
 approaches where packets must be cached.  
 
-Ipv[4,6]4ListRouting::AddRoutingProtocol
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Ipv[4,6]ListRouting::AddRoutingProtocol
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Classes Ipv4ListRouting and Ipv6ListRouting provides a pure virtual function declaration
 for the method that allows one to add a routing protocol::
