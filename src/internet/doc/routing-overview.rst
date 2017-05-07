@@ -215,25 +215,22 @@ is finally used to populate the routes themselves.
 Unicast routing
 ***************
 
-There are presently eigth unicast routing protocols defined for IPv4 and three for
-IPv6:
+The following unicast routing protocols are defined for IPv4 and IPv6:
 
-* class Ipv4StaticRouting (covering both unicast and multicast)
+* classes Ipv4ListRouting and Ipv6ListRouting (used to store a prioritized list of routing protocols)
+* classes Ipv4StaticRouting and Ipv6StaticRouting (covering both unicast and multicast)
+* class Ipv4GlobalRouting (used to store routes computed by the global route
+  manager, if that is used)
+* class Ipv4NixVectorRouting (a more efficient version of global routing that
+  stores source routes in a packet header field)
+* class Rip - the IPv4 RIPv2 protocol (:rfc:`2453`)
+* class RipNg - the IPv6 RIPng protocol (:rfc:`2080`)
 * IPv4 Optimized Link State Routing (OLSR) (a MANET protocol defined in 
   :rfc:`3626`)
 * IPv4 Ad Hoc On Demand Distance Vector (AODV) (a MANET protocol defined in
   :rfc:`3561`)
 * IPv4 Destination Sequenced Distance Vector (DSDV) (a MANET protocol)
 * IPv4 Dynamic Source Routing (DSR) (a MANET protocol)
-* class Ipv4ListRouting (used to store a prioritized list of routing protocols)
-* class Ipv4GlobalRouting (used to store routes computed by the global route
-  manager, if that is used)
-* class Ipv4NixVectorRouting (a more efficient version of global routing that
-  stores source routes in a packet header field)
-* class Rip - the IPv4 RIPv2 protocol (:rfc:`2453`)
-* class Ipv6ListRouting (used to store a prioritized list of routing protocols)
-* class Ipv6StaticRouting 
-* class RipNg - the IPv6 RIPng protocol (:rfc:`2080`)
 
 In the future, this architecture should also allow someone to implement a
 Linux-like implementation with routing cache, or a Click modular router, but
