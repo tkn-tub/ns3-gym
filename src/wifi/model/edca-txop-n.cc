@@ -416,12 +416,7 @@ void EdcaTxopN::NotifyInternalCollision (void)
           else
             {
               NS_LOG_DEBUG ("Dequeueing and discarding head of queue");
-              Ptr<const WifiMacQueueItem> item = m_queue->Peek ();
-              if (item)
-                {
-                  packet = item->GetPacket ();
-                  header = item->GetHeader ();
-                }
+              m_queue->Remove ();
             }
           m_dcf->ResetCw ();
         }
