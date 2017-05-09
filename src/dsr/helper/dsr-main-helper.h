@@ -39,7 +39,10 @@
 #include "ns3/dsr-helper.h"
 
 namespace ns3 {
+
 /**
+ * \ingroup dsr
+ *
  * \brief Helper class that adds DSR routing to nodes.
  */
 class DsrMainHelper
@@ -56,17 +59,32 @@ public:
    * (Copy Constructor).
    */
   DsrMainHelper (const DsrMainHelper &);
+  /**
+   * Install routing to the nodes
+   * \param dsrHelper The DSR helper class
+   * \param nodes the collection of nodes
+   */
   void Install (DsrHelper &dsrHelper, NodeContainer nodes);
+  /**
+   * Set the helper class
+   * \param dsrHelper the DSR helper class
+   */
   void SetDsrHelper (DsrHelper &dsrHelper);
 
 private:
+  /**
+   * Install routing to a node
+   * \param node the node to install DSR routing
+   */
   void Install (Ptr<Node> node);
   /**
    * \brief Assignment operator declared private and not implemented to disallow
    * assignment and prevent the compiler from happily inserting its own.
-   */
+   * \param o source object to assign
+   * \return DsrHelper object
+  */
   DsrMainHelper &operator = (const DsrMainHelper &o);
-  const DsrHelper *m_dsrHelper;
+  const DsrHelper *m_dsrHelper; ///< helper class
 };
 
 } // namespace ns3

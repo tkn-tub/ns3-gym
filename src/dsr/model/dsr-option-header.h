@@ -380,11 +380,11 @@ private:
    * \brief Identifier of the packet.
    */
   uint16_t m_identification;
-  /*
+  /**
    * Ipv4 address of target node
    */
   Ipv4Address m_target;
-  /*
+  /**
    * Ipv4 address to write when desearizing the packet
    */
   Ipv4Address m_address;
@@ -481,8 +481,9 @@ public:
    * \return the vector of ipv4 address
    */
   std::vector<Ipv4Address> GetNodesAddress () const;
-  /*
+  /**
    * \brief Get the target node Ip address
+   * \param ipv4Address target address
    * \return the target address
    */
   Ipv4Address GetTargetAddress (std::vector<Ipv4Address> ipv4Address) const;
@@ -527,7 +528,7 @@ public:
   virtual Alignment GetAlignment () const;
 
 private:
-  /*
+  /**
    * The Ip address to write to when deserialize the packet
    */
   Ipv4Address m_address;
@@ -587,12 +588,12 @@ public:
    * \brief Destructor.
    */
   virtual ~DsrOptionSRHeader ();
-  /*
+  /**
    * \brief Set the number of segments left to send
    * \param segmentsLeft The segments left
    */
   void SetSegmentsLeft (uint8_t segmentsLeft);
-  /*
+  /**
    * \brief Get the number of segments left to send
    * \return The segments left
    */
@@ -612,7 +613,7 @@ public:
    * \return the vector of ipv4 address
    */
   std::vector<Ipv4Address> GetNodesAddress () const;
-  /*
+  /**
    * \brief Get the node list size which is the number of ip address of the route
    * \return the node list size
    */
@@ -629,12 +630,12 @@ public:
    * \return the router IPv4 Address
    */
   Ipv4Address GetNodeAddress (uint8_t index) const;
-  /*
+  /**
    * \brief Set the salvage value for a packet
    * \param salvage The salvage value of the packet
    */
   void SetSalvage (uint8_t salvage);
-  /*
+  /**
    * \brief Get the salvage value for a packet
    * \return The salvage value of the packet
    */
@@ -672,7 +673,7 @@ public:
    *
    * \param [in] header The DsrOptionsSRHeader
    */
-  typedef void (* TracedCallback) (const DsrOptionSRHeader & header);
+  typedef void (*TracedCallback)(const DsrOptionSRHeader & header);
 
 private:
   /**

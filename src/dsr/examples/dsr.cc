@@ -155,8 +155,8 @@ main (int argc, char *argv[])
 
   std::ostringstream pauseConstantRandomVariableStream;
   pauseConstantRandomVariableStream << "ns3::ConstantRandomVariable[Constant="
-                                   << pauseTime
-                                   << "]";
+                                    << pauseTime
+                                    << "]";
 
   adhocMobility.SetMobilityModel ("ns3::RandomWaypointMobilityModel",
                                   //                                  "Speed", StringValue ("ns3::UniformRandomVariable[Min=0.0|Max=nodeSpeed]"),

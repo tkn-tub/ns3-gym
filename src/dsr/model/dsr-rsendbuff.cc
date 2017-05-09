@@ -39,7 +39,7 @@
 namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("DsrSendBuffer");
-  
+
 namespace dsr {
 
 uint32_t
@@ -140,6 +140,11 @@ DsrSendBuffer::Find (Ipv4Address dst)
 
 struct IsExpired
 {
+  /**
+   * comparison operator
+   * \param e entry to compare
+   * \return true if expired
+   */
   bool
   operator() (DsrSendBuffEntry const & e) const
   {

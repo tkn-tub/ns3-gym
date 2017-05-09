@@ -73,7 +73,7 @@ public:
   }
   /**
    * Compare send buffer entries
-   * \param o
+   * \param o entry to compare
    * \return true if equal
    */
   bool operator== (DsrNetworkQueueEntry const & o) const
@@ -83,42 +83,82 @@ public:
   }
 
   // Fields
+  /**
+   * Get packet function
+   * \returns the current packet
+   */
   Ptr<const Packet> GetPacket () const
   {
     return m_packet;
   }
+  /**
+   * Set packet function
+   * \param p the current packet
+   */
   void SetPacket (Ptr<const Packet> p)
   {
     m_packet = p;
   }
+  /**
+   * Get IP route function
+   * \returns the IP route
+   */
   Ptr<Ipv4Route> GetIpv4Route () const
   {
     return m_ipv4Route;
   }
+  /**
+   * Set IP route function
+   * \param route
+   */
   void SetIpv4Route (Ptr<Ipv4Route> route)
   {
     m_ipv4Route = route;
   }
+  /**
+   * Get source address function
+   * \returns the source IP address
+   */
   Ipv4Address GetSourceAddress () const
   {
     return m_srcAddr;
   }
+  /**
+   * Set source address function
+   * \param addr the source IP address
+   */
   void SetSourceAddress (Ipv4Address addr)
   {
     m_srcAddr = addr;
   }
+  /**
+   * Get next hop address function
+   * \returns the next hop IP address
+   */
   Ipv4Address GetNextHopAddress () const
   {
     return m_nextHopAddr;
   }
+  /**
+   * Set next hop address function
+   * \param addr the next hop IP address
+   */
   void SetNextHopAddress (Ipv4Address addr)
   {
     m_nextHopAddr = addr;
   }
+  /**
+   * Get inserted time stamp function
+   * \returns the inserted time stamp
+   */
   Time GetInsertedTimeStamp (void) const
   {
     return tstamp;
   }
+  /**
+   * Set inserted tiem stamp function
+   * \param time tje inserted timestamp
+   */
   void SetInsertedTimeStamp (Time time)
   {
     tstamp = time;
@@ -126,10 +166,10 @@ public:
 
 private:
   /// Data packet
-  Ptr<const Packet> m_packet;
-  Ipv4Address m_srcAddr;
-  Ipv4Address m_nextHopAddr;
-  Time tstamp;
+  Ptr<const Packet> m_packet; ///< the packet
+  Ipv4Address m_srcAddr; ///< source address
+  Ipv4Address m_nextHopAddr; ///< next hop address
+  Time tstamp; ///< timestamp
   /// Ipv4Route
   Ptr<Ipv4Route> m_ipv4Route;
 };
@@ -137,8 +177,12 @@ private:
 class DsrNetworkQueue : public Object
 {
 public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
-  
+
   DsrNetworkQueue ();
   /**
    * Construct a DsrNetworkQueue with the given
@@ -150,7 +194,18 @@ public:
   DsrNetworkQueue (uint32_t maxLen, Time maxDelay);
   ~DsrNetworkQueue ();
 
+  /**
+   * Find the packet entry with a given next hop
+   * \param nextHop the IP address of the next hop
+   * \param entry the DSR queue entry
+   * \returns true if found
+   */
   bool FindPacketWithNexthop (Ipv4Address nextHop, DsrNetworkQueueEntry & entry);
+  /**
+   * Try to find an entry with a particular next hop, and return true if found
+   * \param nextHop the next hop IP address
+   * \returns true if found
+   */
   bool Find (Ipv4Address nextHop);
   /**
    * Push entry in queue, if there is no entry with the same
@@ -205,6 +260,11 @@ public:
    */
   void Flush (void);
 
+  /**
+   * Return the current queue entry
+   *
+   * \return the current queue entry
+   */
   std::vector<DsrNetworkQueueEntry> & GetQueue ()
   {
     return m_dsrNetworkQueue;

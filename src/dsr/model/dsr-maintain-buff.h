@@ -46,82 +46,162 @@ namespace dsr {
  */
 struct LinkKey
 {
-  Ipv4Address m_source;
-  Ipv4Address m_destination;
-  Ipv4Address m_ourAdd;
-  Ipv4Address m_nextHop;
+  Ipv4Address m_source; ///< source address
+  Ipv4Address m_destination; ///< destination address
+  Ipv4Address m_ourAdd; ///< local address
+  Ipv4Address m_nextHop; ///< next hop address
 
   /**
    * Compare maintain Buffer entries
-   * \param o
+   * \param o object to compare
    * \return true if equal
-   */ 
+   */
   bool operator < (const LinkKey & o) const
   {
-      if (m_source < o.m_source) return true;
-      if (o.m_source < m_source) return false;
-      if (m_destination < o.m_destination) return true;
-      if (o.m_destination < m_destination) return false;
-      if (m_ourAdd < o.m_ourAdd) return true;
-      if (o.m_ourAdd < m_ourAdd) return false;
-      if (m_nextHop < o.m_nextHop) return true;
-      if (o.m_nextHop < m_nextHop) return false;
-      return false;
+    if (m_source < o.m_source)
+      {
+        return true;
+      }
+    if (o.m_source < m_source)
+      {
+        return false;
+      }
+    if (m_destination < o.m_destination)
+      {
+        return true;
+      }
+    if (o.m_destination < m_destination)
+      {
+        return false;
+      }
+    if (m_ourAdd < o.m_ourAdd)
+      {
+        return true;
+      }
+    if (o.m_ourAdd < m_ourAdd)
+      {
+        return false;
+      }
+    if (m_nextHop < o.m_nextHop)
+      {
+        return true;
+      }
+    if (o.m_nextHop < m_nextHop)
+      {
+        return false;
+      }
+    return false;
   }
 };
 
+/// NetworkKey structure
 struct NetworkKey
 {
-  uint16_t m_ackId;
-  Ipv4Address m_ourAdd;
-  Ipv4Address m_nextHop;
-  Ipv4Address m_source;
-  Ipv4Address m_destination;
+  uint16_t m_ackId; ///< acknowledge ID
+  Ipv4Address m_ourAdd; ///< local address
+  Ipv4Address m_nextHop; ///< next hop
+  Ipv4Address m_source; ///< source address
+  Ipv4Address m_destination; ///< destination address
 
   /**
    * Compare maintain Buffer entries
-   * \param o
+   * \param o object to compare
    * \return true if equal
    */
   bool operator < (const NetworkKey & o) const
   {
-      if (m_ackId < o.m_ackId) return true;
-      if (o.m_ackId < m_ackId) return false;
-      if (m_source < o.m_source) return true;
-      if (o.m_source < m_source) return false;
-      if (m_destination < o.m_destination) return true;
-      if (o.m_destination < m_destination) return false;
-      if (m_ourAdd < o.m_ourAdd) return true;
-      if (o.m_ourAdd < m_ourAdd) return false;
-      if (m_nextHop < o.m_nextHop) return true;
-      if (o.m_nextHop < m_nextHop) return false;
-      return false;
+    if (m_ackId < o.m_ackId)
+      {
+        return true;
+      }
+    if (o.m_ackId < m_ackId)
+      {
+        return false;
+      }
+    if (m_source < o.m_source)
+      {
+        return true;
+      }
+    if (o.m_source < m_source)
+      {
+        return false;
+      }
+    if (m_destination < o.m_destination)
+      {
+        return true;
+      }
+    if (o.m_destination < m_destination)
+      {
+        return false;
+      }
+    if (m_ourAdd < o.m_ourAdd)
+      {
+        return true;
+      }
+    if (o.m_ourAdd < m_ourAdd)
+      {
+        return false;
+      }
+    if (m_nextHop < o.m_nextHop)
+      {
+        return true;
+      }
+    if (o.m_nextHop < m_nextHop)
+      {
+        return false;
+      }
+    return false;
   }
 };
 
+/// PassiveKey structure
 struct PassiveKey
 {
-  uint16_t m_ackId;
-  Ipv4Address m_source;
-  Ipv4Address m_destination;
-  uint8_t m_segsLeft;
+  uint16_t m_ackId; ///< acknowledge ID
+  Ipv4Address m_source; ///< source address
+  Ipv4Address m_destination; ///< destination address
+  uint8_t m_segsLeft; ///< segments left
 
   /**
    * Compare maintain Buffer entries
-   * \param o
+   * \param o is the object to compare
    * \return true if equal
    */
   bool operator < (const PassiveKey & o) const
   {
-      if (m_ackId < o.m_ackId) return true;
-      if (o.m_ackId < m_ackId) return false;
-      if (m_source < o.m_source) return true;
-      if (o.m_source < m_source) return false;
-      if (m_destination < o.m_destination) return true;
-      if (o.m_destination < m_destination) return false;
-      if (m_segsLeft < o.m_segsLeft) return true;
-      if (o.m_segsLeft < m_segsLeft) return false;
-      return false;
+    if (m_ackId < o.m_ackId)
+      {
+        return true;
+      }
+    if (o.m_ackId < m_ackId)
+      {
+        return false;
+      }
+    if (m_source < o.m_source)
+      {
+        return true;
+      }
+    if (o.m_source < m_source)
+      {
+        return false;
+      }
+    if (m_destination < o.m_destination)
+      {
+        return true;
+      }
+    if (o.m_destination < m_destination)
+      {
+        return false;
+      }
+    if (m_segsLeft < o.m_segsLeft)
+      {
+        return true;
+      }
+    if (o.m_segsLeft < m_segsLeft)
+      {
+        return false;
+      }
+    return false;
   }
 };
 
@@ -145,8 +225,8 @@ public:
    * \param exp expiration time
    */
   DsrMaintainBuffEntry (Ptr<const Packet> pa = 0, Ipv4Address us = Ipv4Address (),
-                     Ipv4Address n = Ipv4Address (), Ipv4Address s = Ipv4Address (), Ipv4Address dst = Ipv4Address (),
-                     uint16_t ackId = 0, uint8_t segs = 0, Time exp = Simulator::Now ())
+                        Ipv4Address n = Ipv4Address (), Ipv4Address s = Ipv4Address (), Ipv4Address dst = Ipv4Address (),
+                        uint16_t ackId = 0, uint8_t segs = 0, Time exp = Simulator::Now ())
     : m_packet (pa),
       m_ourAdd (us),
       m_nextHop (n),
@@ -159,66 +239,130 @@ public:
   }
 
   // Fields
+  /**
+   * Get packet
+   * \returns the current packet
+   */
   Ptr<const Packet> GetPacket () const
   {
     return m_packet;
   }
+  /**
+   * Set packet
+   * \param p the current packet
+   */
   void SetPacket (Ptr<const Packet> p)
   {
     m_packet = p;
   }
+  /**
+   * Get local address of entry
+   * \returns the local IP address
+   */
   Ipv4Address GetOurAdd () const
   {
     return m_ourAdd;
   }
+  /**
+   * Set local address of entry
+   * \param us the local IP address
+   */
   void SetOurAdd (Ipv4Address us)
   {
     m_ourAdd = us;
   }
+  /**
+   * Get next hop of entry
+   * \returns the IP address for the next hop
+   */
   Ipv4Address GetNextHop () const
   {
     return m_nextHop;
   }
+  /**
+   * Set next hop of entry
+   * \param n the next hop IP address
+   */
   void SetNextHop (Ipv4Address n)
   {
     m_nextHop = n;
   }
+  /**
+   * Get destination address
+   * \returns the destination IP address
+   */
   Ipv4Address GetDst () const
   {
     return m_dst;
   }
+  /**
+   * Set destination address
+   * \param n the destination IP address
+   */
   void SetDst (Ipv4Address n)
   {
     m_dst = n;
   }
+  /**
+   * Get source address
+   * \returns the source IP address
+   */
   Ipv4Address GetSrc () const
   {
     return m_src;
   }
+  /**
+   * Set source address
+   * \param s the source IP address
+   */
   void SetSrc (Ipv4Address s)
   {
     m_src = s;
   }
+  /**
+   * Get acknowledge ID
+   * \returns the acknowledge ID
+   */
   uint16_t GetAckId () const
   {
     return m_ackId;
   }
+  /**
+   * Set acknowledge ID
+   * \param ackId the acknowledge ID
+   */
   void SetAckId (uint16_t ackId)
   {
     m_ackId = ackId;
   }
+  /**
+   * Get segments left
+   * \returns the number of segments left
+   */
   uint8_t GetSegsLeft () const
   {
     return m_segsLeft;
   }
+  /**
+   * Set segments left
+   * \param segs the number of segments left
+   */
   void SetSegsLeft (uint8_t segs)
   {
     m_segsLeft = segs;
   }
+  /**
+   * Set expiration time
+   * \param exp the expire time
+   */
   void SetExpireTime (Time exp)
   {
     m_expire = exp + Simulator::Now ();
   }
+  /**
+   * Get expiration time
+   * \returns the expiration time
+   */
   Time GetExpireTime () const
   {
     return m_expire - Simulator::Now ();
@@ -268,18 +412,34 @@ public:
   uint32_t GetSize ();
 
   // Fields
+  /**
+   * Get maximum queue length
+   * \returns the maximum queue length
+   */
   uint32_t GetMaxQueueLen () const
   {
     return m_maxLen;
   }
+  /**
+   * Set maximum queue length
+   * \param len the maximum queue length
+   */
   void SetMaxQueueLen (uint32_t len)
   {
     m_maxLen = len;
   }
+  /**
+   * Get maintain buffer timeout
+   * \returns the maintain buffer timeout
+   */
   Time GetMaintainBufferTimeout () const
   {
     return m_maintainBufferTimeout;
   }
+  /**
+   * Set maintain buffer timeout
+   * \param t the maintain buffer timeoout
+   */
   void SetMaintainBufferTimeout (Time t)
   {
     m_maintainBufferTimeout = t;
@@ -296,6 +456,7 @@ public:
 private:
   /// The vector of maintain buffer entries
   std::vector<DsrMaintainBuffEntry> m_maintainBuffer;
+  /// The vector of network keys
   std::vector<NetworkKey> m_allNetworkKey;
   /// Remove all expired entries
   void Purge ();

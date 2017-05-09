@@ -198,7 +198,7 @@ private:
 };
 
 /**
- * \class OptionField
+ * \class DsrOptionField
  * \brief Option field for an DsrFsHeader
  * Enables adding options to an DsrFsHeader
  *

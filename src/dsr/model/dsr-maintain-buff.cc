@@ -39,7 +39,7 @@
 namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("DsrMaintainBuffer");
-  
+
 namespace dsr {
 
 uint32_t
@@ -209,8 +209,14 @@ DsrMaintainBuffer::LinkEqual (DsrMaintainBuffEntry & entry)
   return false;
 }
 
+/// IsExpired structure
 struct IsExpired
 {
+  /**
+   * \brief comparison operator
+   * \param e maintain buffer entry
+   * \return true if the entry is expired
+   */
   bool
   operator() (DsrMaintainBuffEntry const & e) const
   {

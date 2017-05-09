@@ -40,17 +40,24 @@
 
 namespace ns3 {
 namespace dsr {
-/*
+/**
  * The gratuitous table entries, it maintains the already sent gratuitous route reply entries.
  * When the node "promiscuously" received a packet destined for other nodes, and inferred a shorter
  * route for the data packet, it will construct a route reply and send back to the source
  */
 struct GraReplyEntry
 {
-  Ipv4Address m_replyTo;
-  Ipv4Address m_hearFrom;
-  Time m_gratReplyHoldoff;
+  Ipv4Address m_replyTo; ///< reply to address
+  Ipv4Address m_hearFrom; ///< heard from address
+  Time m_gratReplyHoldoff; ///< gratuitous reply holdoff time
 
+  /**
+   * Constructor
+   *
+   * \param t IPv4 address to reply to
+   * \param f IPv4 address to hear from
+   * \param h gratitious hold off time
+   */
   GraReplyEntry (Ipv4Address t, Ipv4Address f, Time h)
     : m_replyTo (t),
       m_hearFrom (f),
@@ -65,7 +72,10 @@ struct GraReplyEntry
 class DsrGraReply  : public Object
 {
 public:
-
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId ();
 
   DsrGraReply ();
@@ -102,6 +112,12 @@ private:
   /// Check if the entry is expired or not
   struct IsExpired
   {
+    /**
+     * Check if the entry is expired
+     *
+     * \param b GraReplyEntry entry
+     * \return true if expired, false otherwise
+     */
     bool operator() (const struct GraReplyEntry & b) const
     {
       return (b.m_gratReplyHoldoff < Simulator::Now ());

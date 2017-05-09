@@ -59,8 +59,8 @@ public:
    * \param p protocol number
    */
   DsrPassiveBuffEntry (Ptr<const Packet> pa = 0, Ipv4Address d = Ipv4Address (), Ipv4Address s = Ipv4Address (),
-                  Ipv4Address n = Ipv4Address (), uint16_t i = 0, uint16_t f = 0, uint8_t seg = 0, Time exp = Simulator::Now (),
-                  uint8_t p = 0)
+                       Ipv4Address n = Ipv4Address (), uint16_t i = 0, uint16_t f = 0, uint8_t seg = 0, Time exp = Simulator::Now (),
+                       uint8_t p = 0)
     : m_packet (pa),
       m_dst (d),
       m_source (s),
@@ -74,6 +74,7 @@ public:
   }
   /**
    * Compare send buffer entries
+   * \param o passive buffer entry to compare
    * \return true if equal
    */
   bool operator== (DsrPassiveBuffEntry const & o) const
@@ -82,74 +83,146 @@ public:
   }
 
   // Fields
+  /**
+   * Get packet function
+   * \returns the current packet
+   */
   Ptr<const Packet> GetPacket () const
   {
     return m_packet;
   }
+  /**
+   * Set packet function
+   * \param p the current packet
+   */
   void SetPacket (Ptr<const Packet> p)
   {
     m_packet = p;
   }
+  /**
+   * Get destination address function
+   * \returns the destination IP address
+   */
   Ipv4Address GetDestination () const
   {
     return m_dst;
   }
+  /**
+   * Set destination address function
+   * \param d the destination IP address
+   */
   void SetDestination (Ipv4Address d)
   {
     m_dst = d;
   }
+  /**
+   * Get source address function
+   * \returns the source IP address
+   */
   Ipv4Address GetSource () const
   {
     return m_source;
   }
+  /**
+   * Set surce address function
+   * \param s the source IP address
+   */
   void SetSource (Ipv4Address s)
   {
     m_source = s;
   }
+  /**
+   * Get next hop address function
+   * \returns the next hop IP address
+   */
   Ipv4Address GetNextHop () const
   {
     return m_nextHop;
   }
+  /**
+   * Set next hop address function
+   * \param n the next hop address
+   */
   void SetNextHop (Ipv4Address n)
   {
     m_nextHop = n;
   }
+  /**
+   * Get identification function
+   * \returns the identification
+   */
   uint16_t GetIdentification () const
   {
     return m_identification;
   }
+  /**
+   * Set identification function
+   * \param i the identification
+   */
   void SetIdentification (uint16_t i)
   {
     m_identification = i;
   }
+  /**
+   * Get fragment offset function
+   * \returns the fragment offset
+   */
   uint16_t GetFragmentOffset () const
   {
     return m_fragmentOffset;
   }
+  /**
+   * Set fragment offset function
+   * \param f the fragment offset
+   */
   void SetFragmentOffset (uint16_t f)
   {
     m_fragmentOffset = f;
   }
+  /**
+   * Get segments left function
+   * \returns the number of segments left
+   */
   uint8_t GetSegsLeft () const
   {
     return m_segsLeft;
   }
+  /**
+   * Set segments left
+   * \param seg the number of segments left
+   */
   void SetSegsLeft (uint8_t seg)
   {
     m_segsLeft = seg;
   }
+  /**
+   * Set expire time
+   * \param exp the expire time
+   */
   void SetExpireTime (Time exp)
   {
     m_expire = exp + Simulator::Now ();
   }
+  /**
+   * Get expire time
+   * \returns the expire time
+   */
   Time GetExpireTime () const
   {
     return m_expire - Simulator::Now ();
   }
+  /**
+   * Set protocol function
+   * \param p the protocol
+   */
   void SetProtocol (uint8_t p)
   {
     m_protocol = p;
   }
+  /**
+   * Get protocol
+   * \returns the protocol number
+   */
   uint8_t GetProtocol () const
   {
     return m_protocol;
@@ -164,9 +237,11 @@ private:
   Ipv4Address m_source;
   /// Nexthop address
   Ipv4Address m_nextHop;
-  ///
+  /// Identification
   uint16_t m_identification;
+  /// Fragment offset
   uint16_t m_fragmentOffset;
+  /// Segments left
   uint8_t m_segsLeft;
   /// Expire time for queue entry
   Time m_expire;
@@ -176,13 +251,17 @@ private:
 
 /**
  * \ingroup dsr
+ * \class DsrPassiveBuffer
  * \brief DSR passive buffer
  */
 /************************************************************************************************************************/
 class DsrPassiveBuffer  : public Object
 {
 public:
-
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId ();
 
   DsrPassiveBuffer ();
@@ -200,18 +279,34 @@ public:
   uint32_t GetSize ();
 
   // Fields
+  /**
+   * Get maximum queue length
+   * \returns the maximum queue length
+   */
   uint32_t GetMaxQueueLen () const
   {
     return m_maxLen;
   }
+  /**
+   * Set maximum queue length
+   * \param len the maximum queue length
+   */
   void SetMaxQueueLen (uint32_t len)
   {
     m_maxLen = len;
   }
+  /**
+   * Get passive buffer timeout
+   * \returns the passive buffer tiemout
+   */
   Time GetPassiveBufferTimeout () const
   {
     return m_passiveBufferTimeout;
   }
+  /**
+   * Set passive buffer timeout
+   * \param t the passive buffer timeout
+   */
   void SetPassiveBufferTimeout (Time t)
   {
     m_passiveBufferTimeout = t;

@@ -50,7 +50,7 @@
 namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("DsrRouteCache");
-  
+
 namespace dsr {
 
 bool CompareRoutesBoth (const DsrRouteCacheEntry &a, const DsrRouteCacheEntry &b)
@@ -318,11 +318,11 @@ DsrRouteCache::RebuildBestRouteTable (Ipv4Address source)
 {
   NS_LOG_FUNCTION (this << source);
   /**
-   * \brief The followings are initialize-single-source
+   * \brief The following are initialize-single-source
    */
   // @d shortest-path estimate
   std::map<Ipv4Address, uint32_t> d;
-  // @pre preceeding node
+  // @pre preceding node
   std::map<Ipv4Address, Ipv4Address> pre;
   for (std::map<Ipv4Address, std::map<Ipv4Address, uint32_t> >::iterator i = m_netGraph.begin (); i != m_netGraph.end (); ++i)
     {
@@ -339,7 +339,7 @@ DsrRouteCache::RebuildBestRouteTable (Ipv4Address source)
     }
   d[source] = 0;
   /**
-   * \brief The followings are core of dijskra algorithm
+   * \brief The followingis the core of Dijkstra algorithm
    */
   // the node set which shortest distance has been calculated, if true calculated
   std::map<Ipv4Address, bool> s;
@@ -788,9 +788,9 @@ DsrRouteCache::DeleteAllRoutesIncludeLink (Ipv4Address errorSrc, Ipv4Address unr
       NS_LOG_DEBUG ("Erase the route");
       m_linkCache.erase (link1);
       /// \todo get rid of this one
-      NS_LOG_DEBUG ("The link cache size " << m_linkCache.size());
+      NS_LOG_DEBUG ("The link cache size " << m_linkCache.size ());
       m_linkCache.erase (link2);
-      NS_LOG_DEBUG ("The link cache size " << m_linkCache.size());
+      NS_LOG_DEBUG ("The link cache size " << m_linkCache.size ());
 
       std::map<Ipv4Address, DsrNodeStab>::iterator i = m_nodeCache.find (errorSrc);
       if (i == m_nodeCache.end ())
@@ -1143,7 +1143,7 @@ void
 DsrRouteCache::AddNeighbor (std::vector<Ipv4Address> nodeList, Ipv4Address ownAddress, Time expire)
 {
   NS_LOG_LOGIC ("Add neighbor number " << nodeList.size ());
-  for (std::vector<Ipv4Address>::iterator j = nodeList.begin (); j != nodeList.end ();)
+  for (std::vector<Ipv4Address>::iterator j = nodeList.begin (); j != nodeList.end (); )
     {
       Ipv4Address addr = *j;
       if (addr == ownAddress)
@@ -1161,8 +1161,15 @@ DsrRouteCache::AddNeighbor (std::vector<Ipv4Address> nodeList, Ipv4Address ownAd
     }
 }
 
+/// CloseNeighbor structure
 struct CloseNeighbor
 {
+  /**
+   * Check if the entry is expired
+   *
+   * \param nb DsrRouteCache::Neighbor entry
+   * \return true if expired or closed, false otherwise
+   */
   bool operator() (const DsrRouteCache::Neighbor & nb) const
   {
     return ((nb.m_expireTime < Simulator::Now ()) || nb.close);

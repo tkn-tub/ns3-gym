@@ -54,7 +54,7 @@ public:
    * \param p protocol number
    */
   DsrSendBuffEntry (Ptr<const Packet> pa = 0, Ipv4Address d = Ipv4Address (),
-                 Time exp = Simulator::Now (), uint8_t p = 0)
+                    Time exp = Simulator::Now (), uint8_t p = 0)
     : m_packet (pa),
       m_dst (d),
       m_expire (exp + Simulator::Now ()),
@@ -70,36 +70,68 @@ public:
   {
     return ((m_packet == o.m_packet) && (m_dst == o.m_dst) && (m_expire == o.m_expire));
   }
-  
+
   // Fields
+  /**
+   * Get pointer to entry's packet
+   * \returns the current packet
+   */
   Ptr<const Packet> GetPacket () const
   {
     return m_packet;
   }
+  /**
+   * Set pointer to entry's packet
+   * \param p the current packet
+   */
   void SetPacket (Ptr<const Packet> p)
   {
     m_packet = p;
   }
+  /**
+   * Get destination address of entry
+   * \returns the destination IPv4 address
+   */
   Ipv4Address GetDestination () const
   {
     return m_dst;
   }
+  /**
+   * Set destination address of entry
+   * \param d the destination IP address
+   */
   void SetDestination (Ipv4Address d)
   {
     m_dst = d;
   }
+  /**
+   * Set expire time for entry
+   * \param exp the expire time
+   */
   void SetExpireTime (Time exp)
   {
     m_expire = exp + Simulator::Now ();
   }
+  /**
+   * Get expire time for entry
+   * \returns the expire time
+   */
   Time GetExpireTime () const
   {
     return m_expire - Simulator::Now ();
   }
+  /**
+   * Set protocol value
+   * \param p the protocol
+   */
   void SetProtocol (uint8_t p)
   {
     m_protocol = p;
   }
+  /**
+   * Get protocol value
+   * \returns the protocol
+   */
   uint8_t GetProtocol () const
   {
     return m_protocol;
@@ -217,7 +249,6 @@ public:
   }
 
 private:
-
   std::vector<DsrSendBuffEntry> m_sendBuffer;                   ///< The send buffer to cache unsent packet
   void Purge ();                                                ///< Remove all expired entries
   void Drop (DsrSendBuffEntry en, std::string reason);          ///< Notify that packet is dropped from queue by timeout

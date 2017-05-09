@@ -105,7 +105,7 @@ public:
   bool operator== (DsrReceivedRreqEntry const & o) const
   {
     return ((m_destination == o.m_destination) && (m_identification == o.m_identification)
-           );
+            );
   }
 
   /**
@@ -199,7 +199,10 @@ private:
 class DsrRreqTable  : public Object
 {
 public:
-
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId ();
 
   DsrRreqTable ();
