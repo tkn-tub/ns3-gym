@@ -73,6 +73,10 @@ public:
   class SortByCount
   {
   public:
+    /// Comparator function
+    /// \param left left operand
+    /// \param right right operand
+    /// \return true if left DSCP is greater than right DSCP
     bool operator() (std::pair<Ipv4Header::DscpType, uint32_t> left,
                      std::pair<Ipv4Header::DscpType, uint32_t> right);
   };

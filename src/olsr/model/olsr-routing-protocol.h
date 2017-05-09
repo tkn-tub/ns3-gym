@@ -80,6 +80,9 @@ class RoutingProtocol;
 class RoutingProtocol : public Ipv4RoutingProtocol
 {
 public:
+  /**
+   * Declared friend to enable unit tests.
+   */
   friend class ::OlsrMprTestCase;
 
   /**
@@ -106,7 +109,8 @@ public:
   void Dump (void);
 
   /**
-   * Return the list of routing table entries discovered by OLSR
+   * Get the touting table entries.
+   * \return the list of routing table entries discovered by OLSR
    */
   std::vector<RoutingTableEntry> GetRoutingTableEntries () const;
 
@@ -747,7 +751,12 @@ private:
                                const olsr::MessageHeader::Hello &hello);
 
   int Degree (NeighborTuple const &tuple);
-  /// Check that address is one of my interfaces
+
+  /**
+   *  Check that address is one of my interfaces.
+   *  \param a the address to check.
+   *  \return true if the address is own by the node.
+   */
   bool IsMyOwnAddress (const Ipv4Address & a) const;
 
   Ipv4Address m_mainAddress; //!< the node main address.

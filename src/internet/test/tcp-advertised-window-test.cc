@@ -37,7 +37,8 @@ class TcpSocketAdvertisedWindowProxy : public TcpSocketMsgBase
 {
 public:
   /**
-   * \brief Get type id
+   * \brief Get the type ID.
+   * \return the object TypeId
    */
   static TypeId GetTypeId (void);
 
@@ -211,7 +212,8 @@ class TcpDropRatioErrorModel : public TcpGeneralErrorModel
 {
 public:
   /**
-   * \brief Get type id
+   * \brief Get the type ID.
+   * \return the object TypeId
    */
   static TypeId GetTypeId (void);
   /**

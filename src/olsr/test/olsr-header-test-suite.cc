@@ -22,8 +22,15 @@
 #include "ns3/olsr-header.h"
 #include "ns3/packet.h"
 
+
 using namespace ns3;
 
+/**
+ * \ingroup olsr-test
+ * \ingroup tests
+ *
+ * Check Emf olsr time conversion
+ */
 class OlsrEmfTestCase : public TestCase
 {
 public:
@@ -48,6 +55,12 @@ OlsrEmfTestCase::DoRun (void)
 }
 
 
+/**
+ * \ingroup olsr-test
+ * \ingroup tests
+ *
+ * Check Mid olsr messages
+ */
 class OlsrMidTestCase : public TestCase
 {
 public:
@@ -155,6 +168,12 @@ OlsrMidTestCase::DoRun (void)
 }
 
 
+/**
+ * \ingroup olsr-test
+ * \ingroup tests
+ *
+ * Check Hello olsr messages
+ */
 class OlsrHelloTestCase : public TestCase
 {
 public:
@@ -216,6 +235,12 @@ OlsrHelloTestCase::DoRun (void)
 
 }
 
+/**
+ * \ingroup olsr-test
+ * \ingroup tests
+ *
+ * Check Tc olsr messages
+ */
 class OlsrTcTestCase : public TestCase
 {
 public:
@@ -255,6 +280,12 @@ OlsrTcTestCase::DoRun (void)
 
 }
 
+/**
+ * \ingroup olsr-test
+ * \ingroup tests
+ *
+ * Check Hna olsr messages
+ */
 class OlsrHnaTestCase : public TestCase
 {
 public:
@@ -301,11 +332,17 @@ OlsrHnaTestCase::DoRun (void)
 }
 
 
-static class OlsrTestSuite : public TestSuite
+/**
+ * \ingroup olsr-test
+ * \ingroup tests
+ *
+ * Check olsr header messages
+ */
+class OlsrTestSuite : public TestSuite
 {
 public:
   OlsrTestSuite ();
-} g_olsrTestSuite;
+};
 
 OlsrTestSuite::OlsrTestSuite ()
   : TestSuite ("routing-olsr-header", UNIT)
@@ -316,3 +353,7 @@ OlsrTestSuite::OlsrTestSuite ()
   AddTestCase (new OlsrMidTestCase (), TestCase::QUICK);
   AddTestCase (new OlsrEmfTestCase (), TestCase::QUICK);
 }
+
+static OlsrTestSuite g_olsrTestSuite; //!< Static variable for test initialization
+
+
