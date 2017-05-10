@@ -664,9 +664,9 @@ class ShowTransmissionsMode(object):
     ## @var __slots__ 
     #  enumeration
     __slots__ = []
-    ShowTransmissionsMode.ALL = ShowTransmissionsMode()
-    ShowTransmissionsMode.NONE = ShowTransmissionsMode()
-    ShowTransmissionsMode.SELECTED = ShowTransmissionsMode()
+ShowTransmissionsMode.ALL = ShowTransmissionsMode()
+ShowTransmissionsMode.NONE = ShowTransmissionsMode()
+ShowTransmissionsMode.SELECTED = ShowTransmissionsMode()
 
 ## Visualizer
 class Visualizer(gobject.GObject):

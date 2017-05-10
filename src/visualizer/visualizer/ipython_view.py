@@ -32,46 +32,46 @@ except ImportError:
 
 ## IterableIPShell class
 class IterableIPShell:
-    ## @var IP
-    #  IP
-    ## @var iter_more
-    #  iterate more
-    ## @var history_level
-    #  history level
-    ## @var complete_sep
-    #  separators
-    ## @var prompt
-    #  prompt
-    ## @var header
-    #  header
-    ## @var config
-    #  config
-    ## @var user_ns
-    #  user_ns
-    ## @var old_stdout
-    #  saved stdout
-    ## @var old_stderr
-    #  saved stderr
-    ## @var system
-    #  system 
-    ## @var cfg
-    # configuration
-    ## @var colors
-    #  colors
-    ## @var raw_input_original
-    #  original raw input
-    ## @var stdin
-    #  cin
-    ## @var stdout
-    #  cout
-    ## @var stderr
-    #  cerr
-    ## @var raw_input
-    #  raw input
-    ## @var excepthook
-    #  exception hook 
-    ## Constructor
-    def __init__(self,argv=None,user_ns=None,user_global_ns=None,
+  ## @var IP
+  #  IP
+  ## @var iter_more
+  #  iterate more
+  ## @var history_level
+  #  history level
+  ## @var complete_sep
+  #  separators
+  ## @var prompt
+  #  prompt
+  ## @var header
+  #  header
+  ## @var config
+  #  config
+  ## @var user_ns
+  #  user_ns
+  ## @var old_stdout
+  #  saved stdout
+  ## @var old_stderr
+  #  saved stderr
+  ## @var system
+  #  system 
+  ## @var cfg
+  # configuration
+  ## @var colors
+  #  colors
+  ## @var raw_input_original
+  #  original raw input
+  ## @var stdin
+  #  cin
+  ## @var stdout
+  #  cout
+  ## @var stderr
+  #  cerr
+  ## @var raw_input
+  #  raw input
+  ## @var excepthook
+  #  exception hook 
+  ## Constructor
+  def __init__(self,argv=None,user_ns=None,user_global_ns=None,
                cin=None, cout=None,cerr=None, input_func=None):
     """! Initializer
     
