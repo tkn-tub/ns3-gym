@@ -30,7 +30,7 @@
 namespace ns3 {
 namespace olsr {
 /**
- * \ingroup olsr
+ * \ingroup olsr-test
  * \ingroup tests
  *
  * \brief Less trivial test of OLSR Topology Control message generation

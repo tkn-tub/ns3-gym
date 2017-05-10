@@ -80,12 +80,15 @@ public:
   {}
   /**
    * Copy constructor
+   * \param o The object to be copied
    */
   SimpleRefCount (const SimpleRefCount &o)
     : m_count (1)
   {}
   /**
    * Assignment
+   * \param o The object to be copied
+   * \return A reference to the new object
    */
   SimpleRefCount &operator = (const SimpleRefCount &o)
   {
