@@ -30,7 +30,7 @@ using namespace ns3;
 
 /**
  * \ingroup aodv
- * 
+ *
  * \brief AODV chain regression test
  *
  * This script creates 1-dimensional grid topology and then ping last node from the first one:
@@ -42,7 +42,7 @@ using namespace ns3;
  * We want to demonstrate in this script
  * 1) route establishing
  * 2) broken link detection both from layer 2 information and hello messages.
- * 
+ *
  * \verbatim
  Expected packets time diagram.
            1       2       3       4       5
@@ -155,7 +155,7 @@ class ChainRegressionTest : public TestCase
 public:
   /**
    * Create test case
-   * 
+   *
    * \param prefix              Unique file names prefix
    * \param size                Number of nodes in the chain
    * \param time                Simulation time

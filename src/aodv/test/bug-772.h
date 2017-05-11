@@ -30,9 +30,9 @@ using namespace ns3;
 
 /**
  * \ingroup aodv
- * 
+ *
  * \brief AODV deferred route lookup test case (see \bugid{772})
- * 
+ *
  * UDP packet transfers are delayed while a route is found and then while
  * ARP completes.  Eight packets should be sent, queued until the path
  * becomes functional, and then delivered.
@@ -42,7 +42,7 @@ class Bug772ChainTest : public TestCase
 public:
   /**
    * Create test case
-   * 
+   *
    * \param prefix              Unique file names prefix
    * \param proto               ns3::UdpSocketFactory or ns3::TcpSocketFactory
    * \param size                Number of nodes in the chain

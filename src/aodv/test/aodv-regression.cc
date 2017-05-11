@@ -42,13 +42,16 @@
 
 using namespace ns3;
 
-//-----------------------------------------------------------------------------
-// Test suite
-//-----------------------------------------------------------------------------
+/**
+ * \ingroup aodv-test
+ * \ingroup tests
+ *
+ * \brief AODV regression test suite
+ */
 class AodvRegressionTestSuite : public TestSuite
 {
 public:
-  AodvRegressionTestSuite () : TestSuite ("routing-aodv-regression", SYSTEM) 
+  AodvRegressionTestSuite () : TestSuite ("routing-aodv-regression", SYSTEM)
   {
     SetDataDir (NS_TEST_SOURCEDIR);
     // General RREQ-RREP-RRER test case
@@ -58,21 +61,24 @@ public:
     // \bugid{772} UDP test case
     AddTestCase (new Bug772ChainTest ("udp-chain-test", "ns3::UdpSocketFactory", Seconds (3), 10), TestCase::QUICK);
   }
-} g_aodvRegressionTestSuite;
- 
+} g_aodvRegressionTestSuite; ///< the test suite
 
-//-----------------------------------------------------------------------------
-// ChainRegressionTest
-//-----------------------------------------------------------------------------
-ChainRegressionTest::ChainRegressionTest (const char * const prefix, Time t, uint32_t size, Time arpAliveTimeout) : 
-  TestCase ("AODV chain regression test"),
-  m_nodes (0),
-  m_prefix (prefix),
-  m_time (t),
-  m_size (size),
-  m_step (120),
-  m_arpAliveTimeout (arpAliveTimeout),
-  m_seq (0)
+
+/**
+ * \ingroup aodv-test
+ * \ingroup tests
+ *
+ * \brief Chain Regression Test
+ */
+ChainRegressionTest::ChainRegressionTest (const char * const prefix, Time t, uint32_t size, Time arpAliveTimeout)
+  : TestCase ("AODV chain regression test"),
+    m_nodes (0),
+    m_prefix (prefix),
+    m_time (t),
+    m_size (size),
+    m_step (120),
+    m_arpAliveTimeout (arpAliveTimeout),
+    m_seq (0)
 {
 }
 
@@ -165,17 +171,17 @@ ChainRegressionTest::CreateDevices ()
   wifiPhy.Set ("TxGain", DoubleValue (1.0)); //this configuration should go away in future revision to the test
   wifiPhy.Set ("RxGain", DoubleValue (1.0)); //this configuration should go away in future revision to the test
   // This test suite output was originally based on YansErrorRateModel
-  wifiPhy.SetErrorRateModel ("ns3::YansErrorRateModel"); 
+  wifiPhy.SetErrorRateModel ("ns3::YansErrorRateModel");
   WifiHelper wifi;
   wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager", "DataMode", StringValue ("OfdmRate6Mbps"), "RtsCtsThreshold", StringValue ("2200"));
-  NetDeviceContainer devices = wifi.Install (wifiPhy, wifiMac, *m_nodes); 
+  NetDeviceContainer devices = wifi.Install (wifiPhy, wifiMac, *m_nodes);
 
   // Assign fixed stream numbers to wifi and channel random variables
   streamsUsed += wifi.AssignStreams (devices, streamsUsed);
   // Assign 6 streams per device
   NS_TEST_ASSERT_MSG_EQ (streamsUsed, (devices.GetN () * 6), "Stream assignment mismatch");
   streamsUsed += wifiChannel.AssignStreams (chan, streamsUsed);
-  // Assign 0 streams per channel for this configuration 
+  // Assign 0 streams per channel for this configuration
   NS_TEST_ASSERT_MSG_EQ (streamsUsed, (devices.GetN () * 6), "Stream assignment mismatch");
 
   // 2. Setup TCP/IP & AODV
@@ -188,7 +194,7 @@ ChainRegressionTest::CreateDevices ()
   NS_TEST_ASSERT_MSG_EQ (streamsUsed, (devices.GetN () * 8) + m_size, "Stream assignment mismatch");
   streamsUsed += aodv.AssignStreams (*m_nodes, streamsUsed);
   // AODV uses m_size more streams
-  NS_TEST_ASSERT_MSG_EQ (streamsUsed, ((devices.GetN () * 8) + (2*m_size)), "Stream assignment mismatch");
+  NS_TEST_ASSERT_MSG_EQ (streamsUsed, ((devices.GetN () * 8) + (2 * m_size)), "Stream assignment mismatch");
 
   Ipv4AddressHelper address;
   address.SetBase ("10.1.1.0", "255.255.255.0");

@@ -41,10 +41,8 @@
 #include "ns3/names.h"
 #include <sstream>
 
-namespace ns3
-{
-namespace aodv
-{
+namespace ns3 {
+namespace aodv {
 
 /**
  * \ingroup aodv
@@ -54,14 +52,26 @@ namespace aodv
 class LoopbackTestCase : public TestCase
 {
   uint32_t m_count; //!< number of packet received;
-  Ptr<Socket> m_txSocket;
-  Ptr<Socket> m_echoSocket;
-  Ptr<Socket> m_rxSocket;
-  uint16_t m_echoSendPort;
-  uint16_t m_echoReplyPort;
+  Ptr<Socket> m_txSocket; //!< transmit socket;
+  Ptr<Socket> m_echoSocket; //!< echo socket;
+  Ptr<Socket> m_rxSocket; //!< receive socket;
+  uint16_t m_echoSendPort; //!< echo send port;
+  uint16_t m_echoReplyPort; //!< echo reply port;
 
+  /**
+   * Send data function
+   * \param socket The socket to send data
+   */
   void SendData (Ptr<Socket> socket);
+  /**
+   * Receive packet function
+   * \param socket The socket to receive data
+   */
   void ReceivePkt (Ptr<Socket> socket);
+  /**
+   * Echo data function
+   * \param socket The socket to echo data
+   */
   void EchoData (Ptr<Socket> socket);
 
 public:
@@ -69,8 +79,9 @@ public:
   void DoRun ();
 };
 
-LoopbackTestCase::LoopbackTestCase () :
-    TestCase ("UDP Echo 127.0.0.1 test"), m_count (0)
+LoopbackTestCase::LoopbackTestCase ()
+  : TestCase ("UDP Echo 127.0.0.1 test"),
+    m_count (0)
 {
   m_echoSendPort = 1233;
   m_echoReplyPort = 1234;
@@ -80,7 +91,7 @@ void LoopbackTestCase::ReceivePkt (Ptr<Socket> socket)
 {
   Ptr<Packet> receivedPacket = socket->Recv (std::numeric_limits<uint32_t>::max (), 0);
 
-  m_count ++;
+  m_count++;
 }
 
 void
@@ -124,7 +135,7 @@ LoopbackTestCase::DoRun ()
   wifiPhy.SetChannel (wifiChannel.Create ());
   WifiHelper wifi;
   wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager", "DataMode", StringValue ("OfdmRate6Mbps"), "RtsCtsThreshold", StringValue ("2200"));
-  NetDeviceContainer devices = wifi.Install (wifiPhy, wifiMac, nodes); 
+  NetDeviceContainer devices = wifi.Install (wifiPhy, wifiMac, nodes);
 
   // Setup TCP/IP & AODV
   AodvHelper aodv; // Use default parameters here
@@ -150,7 +161,7 @@ LoopbackTestCase::DoRun ()
   Simulator::ScheduleWithContext (m_txSocket->GetNode ()->GetId (), Seconds (1.0),
                                   &LoopbackTestCase::SendData, this, m_txSocket);
 
-  // Run 
+  // Run
   Simulator::Stop (Seconds (5));
   Simulator::Run ();
 
@@ -164,9 +175,12 @@ LoopbackTestCase::DoRun ()
   NS_TEST_ASSERT_MSG_EQ (m_count, 4, "Exactly 4 echo replies must be delivered.");
 }
 
-//-----------------------------------------------------------------------------
-// Test suite
-//-----------------------------------------------------------------------------
+/**
+ * \ingroup aodv-test
+ * \ingroup tests
+ *
+ * \brief AODV Loopback test suite
+ */
 class AodvLoopbackTestSuite : public TestSuite
 {
 public:
@@ -176,8 +190,8 @@ public:
     // UDP Echo loopback test case
     AddTestCase (new LoopbackTestCase (), TestCase::QUICK);
   }
-} g_aodvLoopbackTestSuite;
+} g_aodvLoopbackTestSuite; ///< the test suite
 
 
-}
-}
+}  // namespace aodv
+}  // namespace ns3
