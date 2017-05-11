@@ -23,9 +23,6 @@
 
 #include "wifi-helper.h"
 
-/**
- * (Deprecated) ns3::NonQosWifiMacHelper declaration.
- */
 
 namespace ns3 {
 
@@ -34,6 +31,8 @@ namespace ns3 {
  *
  * This class can create MACs of type ns3::ApWifiMac, ns3::StaWifiMac,
  * and, ns3::AdhocWifiMac, with QosSupported attribute set to False.
+ *
+ * \deprecated This class deprecated and replaced by ns3::WifiMacHelper
  */
 class NqosWifiMacHelper : public WifiMacHelper
 {

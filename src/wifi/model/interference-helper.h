@@ -253,7 +253,7 @@ public:
 private:
     Time m_time; ///< time
     double m_delta; ///< delta
-    Ptr<InterferenceHelper::Event> m_event;
+    Ptr<InterferenceHelper::Event> m_event; ///< event
   };
   /**
    * typedef for a vector of NiChanges

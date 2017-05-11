@@ -26,9 +26,6 @@
 
 #include <map>
 
-/**
- * (Deprecated) ns3::QosWifiMacHelper declaration.
- */
 
 namespace ns3 {
 
@@ -37,6 +34,8 @@ namespace ns3 {
  *
  * This class can create MACs of type ns3::ApWifiMac, ns3::StaWifiMac,
  * and, ns3::AdhocWifiMac, with QosSupported attribute set to True.
+ *
+ * \deprecated This class deprecated and replaced by ns3::WifiMacHelper
  */
 class QosWifiMacHelper : public WifiMacHelper
 {

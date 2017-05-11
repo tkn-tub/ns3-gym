@@ -250,8 +250,6 @@ public:
   /**
    * Return first available packet for transmission. The packet is not removed from queue.
    *
-   * \param hdr the header of the dequeued packet
-   * \param tStamp
    * \param blockedPackets
    *
    * \return packet

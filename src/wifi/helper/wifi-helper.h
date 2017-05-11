@@ -277,8 +277,8 @@ public:
    * \returns a device container which contains all the devices created by this method.
    */
   NetDeviceContainer
-  virtual Install (const WifiPhyHelper &phyHelper,
-                       const WifiMacHelper &macHelper,
+  virtual Install (const WifiPhyHelper &phy,
+                       const WifiMacHelper &mac,
                        NodeContainer::Iterator first,
                        NodeContainer::Iterator last) const;
   /**
