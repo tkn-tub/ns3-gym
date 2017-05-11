@@ -20,9 +20,6 @@
  *          Gustavo J. A. M. Carneiro <gjc@inescporto.pt>
  */
 
-///
-/// \brief Here are defined all data structures needed by an OLSR node.
-///
 
 #ifndef OLSR_REPOSITORIES_H
 #define OLSR_REPOSITORIES_H

@@ -20,7 +20,6 @@
  *          Gustavo J. A. M. Carneiro <gjc@inescporto.pt>
  */
 
-/// \brief	This header file declares and defines internal state of an OLSR node.
 
 #ifndef OLSR_STATE_H
 #define OLSR_STATE_H
