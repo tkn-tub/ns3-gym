@@ -13,12 +13,12 @@ namespace ns3 {
  * \ingroup lte-test
  * \ingroup tests
  *
- * \brief Test case that for testing the deactivation of the bearer 
- * functionality. The test consist in deactivating the bearer and checking 
+ * \brief Test case that for testing the deactivation of the bearer
+ * functionality. The test consist in deactivating the bearer and checking
  * if some traffic will apear afterwards on the given bearer. If some traffic
- * is detected the test will fail. Firs the de-activation is performed by 
- * using Simulator::Schedule() method which will initiate bearer de-activation 
- * after deActivateTime that is specified as the test parameter. Additinally, 
+ * is detected the test will fail. Firs the de-activation is performed by
+ * using Simulator::Schedule() method which will initiate bearer de-activation
+ * after deActivateTime that is specified as the test parameter. Additionally,
  * test instantiate de-activation in sequence.
  */
 
@@ -32,8 +32,8 @@ public:
    * \param estThrPssDl estimated throughput PSS DL
    * \param packetSize packet size in bytes
    * \param interval interval time in ms
-   * \param whether the errorModelEnabled error model is enabled
-   * \param whether to useIdealRrc use ideal RRC
+   * \param errorModelEnabled whether the error model is enabled
+   * \param useIdealRrc whether to use ideal RRC
    */
   LenaDeactivateBearerTestCase (std::vector<uint16_t> dist, std::vector<uint32_t> estThrPssDl, std::vector<uint16_t> packetSize, uint16_t interval, bool  errorModelEnabled, bool useIdealRrc);
   virtual ~LenaDeactivateBearerTestCase ();
