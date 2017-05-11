@@ -339,7 +339,7 @@ DsrRouteCache::RebuildBestRouteTable (Ipv4Address source)
     }
   d[source] = 0;
   /**
-   * \brief The followingis the core of Dijkstra algorithm
+   * \brief The following is the core of Dijkstra algorithm
    */
   // the node set which shortest distance has been calculated, if true calculated
   std::map<Ipv4Address, bool> s;
