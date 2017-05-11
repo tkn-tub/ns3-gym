@@ -106,7 +106,7 @@ public:
    * Get destination only flag
    * \returns the destination only flag
    */
-  bool GetDesinationOnlyFlag () const
+  bool GetDestinationOnlyFlag () const
   {
     return m_destinationOnly;
   }
@@ -114,7 +114,7 @@ public:
    * Set destination only flag
    * \param f the destination only flag
    */
-  void SetDesinationOnlyFlag (bool f)
+  void SetDestinationOnlyFlag (bool f)
   {
     m_destinationOnly = f;
   }

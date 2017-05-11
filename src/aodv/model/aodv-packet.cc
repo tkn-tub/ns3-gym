@@ -214,7 +214,7 @@ RreqHeader::Print (std::ostream &os) const
   os << "RREQ ID " << m_requestID << " destination: ipv4 " << m_dst
      << " sequence number " << m_dstSeqNo << " source: ipv4 "
      << m_origin << " sequence number " << m_originSeqNo
-     << " flags:" << " Gratuitous RREP " << (*this).GetGratiousRrep ()
+     << " flags:" << " Gratuitous RREP " << (*this).GetGratuitousRrep ()
      << " Destination only " << (*this).GetDestinationOnly ()
      << " Unknown sequence number " << (*this).GetUnknownSeqno ();
 }
@@ -227,7 +227,7 @@ operator<< (std::ostream & os, RreqHeader const & h)
 }
 
 void
-RreqHeader::SetGratiousRrep (bool f)
+RreqHeader::SetGratuitousRrep (bool f)
 {
   if (f)
     {
@@ -240,7 +240,7 @@ RreqHeader::SetGratiousRrep (bool f)
 }
 
 bool
-RreqHeader::GetGratiousRrep () const
+RreqHeader::GetGratuitousRrep () const
 {
   return (m_flags & (1 << 5));
 }

@@ -150,7 +150,7 @@ struct RreqHeaderTest : public TestCase
   {
     RreqHeader h (/*flags*/ 0, /*reserved*/ 0, /*hopCount*/ 6, /*requestID*/ 1, /*dst*/ Ipv4Address ("1.2.3.4"),
                             /*dstSeqNo*/ 40, /*origin*/ Ipv4Address ("4.3.2.1"), /*originSeqNo*/ 10);
-    NS_TEST_EXPECT_MSG_EQ (h.GetGratiousRrep (), false, "trivial");
+    NS_TEST_EXPECT_MSG_EQ (h.GetGratuitousRrep (), false, "trivial");
     NS_TEST_EXPECT_MSG_EQ (h.GetDestinationOnly (), false, "trivial");
     NS_TEST_EXPECT_MSG_EQ (h.GetHopCount (), 6, "trivial");
     NS_TEST_EXPECT_MSG_EQ (h.GetId (), 1, "trivial");
@@ -159,8 +159,8 @@ struct RreqHeaderTest : public TestCase
     NS_TEST_EXPECT_MSG_EQ (h.GetOrigin (), Ipv4Address ("4.3.2.1"), "trivial");
     NS_TEST_EXPECT_MSG_EQ (h.GetOriginSeqno (), 10, "trivial");
 
-    h.SetGratiousRrep (true);
-    NS_TEST_EXPECT_MSG_EQ (h.GetGratiousRrep (), true, "trivial");
+    h.SetGratuitousRrep (true);
+    NS_TEST_EXPECT_MSG_EQ (h.GetGratuitousRrep (), true, "trivial");
     h.SetDestinationOnly (true);
     NS_TEST_EXPECT_MSG_EQ (h.GetDestinationOnly (), true, "trivial");
     h.SetUnknownSeqno (true);

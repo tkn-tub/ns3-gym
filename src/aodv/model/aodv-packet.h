@@ -243,12 +243,12 @@ public:
    * \brief Set the gratuitous RREP flag
    * \param f the gratuitous RREP flag
    */
-  void SetGratiousRrep (bool f);
+  void SetGratuitousRrep (bool f);
   /**
    * \brief Get the gratuitous RREP flag
    * \return the gratuitous RREP flag
    */
-  bool GetGratiousRrep () const;
+  bool GetGratuitousRrep () const;
   /**
    * \brief Set the Destination only flag
    * \param f the Destiantion only flag

@@ -277,8 +277,8 @@ RoutingProtocol::GetTypeId (void)
                    MakeBooleanChecker ())
     .AddAttribute ("DestinationOnly", "Indicates only the destination may respond to this RREQ.",
                    BooleanValue (false),
-                   MakeBooleanAccessor (&RoutingProtocol::SetDesinationOnlyFlag,
-                                        &RoutingProtocol::GetDesinationOnlyFlag),
+                   MakeBooleanAccessor (&RoutingProtocol::SetDestinationOnlyFlag,
+                                        &RoutingProtocol::GetDestinationOnlyFlag),
                    MakeBooleanChecker ())
     .AddAttribute ("EnableHello", "Indicates whether a hello messages enable.",
                    BooleanValue (true),
@@ -1027,7 +1027,7 @@ RoutingProtocol::SendRequest (Ipv4Address dst)
 
   if (m_gratuitousReply)
     {
-      rreqHeader.SetGratiousRrep (true);
+      rreqHeader.SetGratuitousRrep (true);
     }
   if (m_destinationOnly)
     {
@@ -1358,7 +1358,7 @@ RoutingProtocol::RecvRequest (Ptr<Packet> p, Ipv4Address receiver, Ipv4Address s
           if (!rreqHeader.GetDestinationOnly () && toDst.GetFlag () == VALID)
             {
               m_routingTable.LookupRoute (origin, toOrigin);
-              SendReplyByIntermediateNode (toDst, toOrigin, rreqHeader.GetGratiousRrep ());
+              SendReplyByIntermediateNode (toDst, toOrigin, rreqHeader.GetGratuitousRrep ());
               return;
             }
           rreqHeader.SetDstSeqno (toDst.GetSeqNo ());
