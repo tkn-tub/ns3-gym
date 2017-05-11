@@ -5139,10 +5139,15 @@ def register_Ns3ArpCacheEntry_methods(root_module, cls):
     cls.add_method('SetIpv4Address', 
                    'void', 
                    [param('ns3::Ipv4Address', 'destination')])
+    ## arp-cache.h (module 'internet'): void ns3::ArpCache::Entry::SetMacAddress(ns3::Address macAddress) [member function]
+    cls.add_method('SetMacAddress', 
+                   'void', 
+                   [param('ns3::Address', 'macAddress')])
     ## arp-cache.h (module 'internet'): void ns3::ArpCache::Entry::SetMacAddresss(ns3::Address macAddress) [member function]
     cls.add_method('SetMacAddresss', 
                    'void', 
-                   [param('ns3::Address', 'macAddress')])
+                   [param('ns3::Address', 'macAddress')], 
+                   deprecated=True)
     ## arp-cache.h (module 'internet'): void ns3::ArpCache::Entry::UpdateSeen() [member function]
     cls.add_method('UpdateSeen', 
                    'void', 
@@ -7804,8 +7809,8 @@ def register_Ns3AodvRoutingProtocol_methods(root_module, cls):
                    'bool', 
                    [], 
                    is_const=True)
-    ## aodv-routing-protocol.h (module 'aodv'): bool ns3::aodv::RoutingProtocol::GetDesinationOnlyFlag() const [member function]
-    cls.add_method('GetDesinationOnlyFlag', 
+    ## aodv-routing-protocol.h (module 'aodv'): bool ns3::aodv::RoutingProtocol::GetDestinationOnlyFlag() const [member function]
+    cls.add_method('GetDestinationOnlyFlag', 
                    'bool', 
                    [], 
                    is_const=True)
@@ -7873,8 +7878,8 @@ def register_Ns3AodvRoutingProtocol_methods(root_module, cls):
     cls.add_method('SetBroadcastEnable', 
                    'void', 
                    [param('bool', 'f')])
-    ## aodv-routing-protocol.h (module 'aodv'): void ns3::aodv::RoutingProtocol::SetDesinationOnlyFlag(bool f) [member function]
-    cls.add_method('SetDesinationOnlyFlag', 
+    ## aodv-routing-protocol.h (module 'aodv'): void ns3::aodv::RoutingProtocol::SetDestinationOnlyFlag(bool f) [member function]
+    cls.add_method('SetDestinationOnlyFlag', 
                    'void', 
                    [param('bool', 'f')])
     ## aodv-routing-protocol.h (module 'aodv'): void ns3::aodv::RoutingProtocol::SetGratuitousReplyFlag(bool f) [member function]
@@ -8309,8 +8314,8 @@ def register_Ns3AodvRreqHeader_methods(root_module, cls):
                    'uint32_t', 
                    [], 
                    is_const=True)
-    ## aodv-packet.h (module 'aodv'): bool ns3::aodv::RreqHeader::GetGratiousRrep() const [member function]
-    cls.add_method('GetGratiousRrep', 
+    ## aodv-packet.h (module 'aodv'): bool ns3::aodv::RreqHeader::GetGratuitousRrep() const [member function]
+    cls.add_method('GetGratuitousRrep', 
                    'bool', 
                    [], 
                    is_const=True)
@@ -8376,8 +8381,8 @@ def register_Ns3AodvRreqHeader_methods(root_module, cls):
     cls.add_method('SetDstSeqno', 
                    'void', 
                    [param('uint32_t', 's')])
-    ## aodv-packet.h (module 'aodv'): void ns3::aodv::RreqHeader::SetGratiousRrep(bool f) [member function]
-    cls.add_method('SetGratiousRrep', 
+    ## aodv-packet.h (module 'aodv'): void ns3::aodv::RreqHeader::SetGratuitousRrep(bool f) [member function]
+    cls.add_method('SetGratuitousRrep', 
                    'void', 
                    [param('bool', 'f')])
     ## aodv-packet.h (module 'aodv'): void ns3::aodv::RreqHeader::SetHopCount(uint8_t count) [member function]
