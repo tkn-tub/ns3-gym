@@ -37,10 +37,8 @@
 #include "ns3/arp-cache.h"
 #include <vector>
 
-namespace ns3
-{
-namespace aodv
-{
+namespace ns3 {
+namespace aodv {
 class RoutingProtocol;
 /**
  * \ingroup aodv
@@ -54,14 +52,27 @@ public:
   /// Neighbor description
   struct Neighbor
   {
+    /// Neighbor IPv4 address
     Ipv4Address m_neighborAddress;
+    /// Neighbor MAC address
     Mac48Address m_hardwareAddress;
+    /// Neighbor expire time
     Time m_expireTime;
+    /// Neighbor close indicator
     bool close;
 
-    Neighbor (Ipv4Address ip, Mac48Address mac, Time t) :
-      m_neighborAddress (ip), m_hardwareAddress (mac), m_expireTime (t),
-      close (false)
+    /**
+     * \brief Neighbor structure constructor
+     *
+     * \param ip Ipv4Address entry
+     * \param mac Mac48Address entry
+     * \param t Time expire time
+     */
+    Neighbor (Ipv4Address ip, Mac48Address mac, Time t)
+      : m_neighborAddress (ip),
+        m_hardwareAddress (mac),
+        m_expireTime (t),
+        close (false)
     {
     }
   };
@@ -76,19 +87,31 @@ public:
   /// Schedule m_ntimer.
   void ScheduleTimer ();
   /// Remove all entries
-  void Clear () { m_nb.clear (); }
+  void Clear ()
+  {
+    m_nb.clear ();
+  }
 
   /// Add ARP cache to be used to allow layer 2 notifications processing
   void AddArpCache (Ptr<ArpCache>);
   /// Don't use given ARP cache any more (interface is down)
   void DelArpCache (Ptr<ArpCache>);
   /// Get callback to ProcessTxError
-  Callback<void, WifiMacHeader const &> GetTxErrorCallback () const { return m_txErrorCallback; }
- 
+  Callback<void, WifiMacHeader const &> GetTxErrorCallback () const
+  {
+    return m_txErrorCallback;
+  }
+
   /// Handle link failure callback
-  void SetCallback (Callback<void, Ipv4Address> cb) { m_handleLinkFailure = cb; }
+  void SetCallback (Callback<void, Ipv4Address> cb)
+  {
+    m_handleLinkFailure = cb;
+  }
   /// Handle link failure callback
-  Callback<void, Ipv4Address> GetCallback () const { return m_handleLinkFailure; }
+  Callback<void, Ipv4Address> GetCallback () const
+  {
+    return m_handleLinkFailure;
+  }
 
 private:
   /// link failure callback
@@ -108,7 +131,7 @@ private:
   void ProcessTxError (WifiMacHeader const &);
 };
 
-}
-}
+}  // namespace aodv
+}  // namespace ns3
 
 #endif /* AODVNEIGHBOR_H */

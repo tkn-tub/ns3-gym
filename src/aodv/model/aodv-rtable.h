@@ -15,10 +15,10 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * Based on 
+ * Based on
  *      NS-2 AODV model developed by the CMU/MONARCH group and optimized and
  *      tuned by Samir Das and Mahesh Marina, University of Cincinnati;
- * 
+ *
  *      AODV-UU implementation by Erik Nordström of Uppsala University
  *      http://core.it.uu.se/core/index.php/AODV-UU
  *
@@ -89,57 +89,244 @@ public:
   /// Delete all precursors
   void DeleteAllPrecursors ();
   /**
-   * Check that precursor list empty
-   * \return true if precursor list empty
+   * Check that precursor list is empty
+   * \return true if precursor list is empty
    */
   bool IsPrecursorListEmpty () const;
   /**
-   * Inserts precursors in vector prec if they does not yet exist in vector
+   * Inserts precursors in output parameter prec if they do not yet exist in vector
+   * \param prec vector of precursor addresses
    */
   void GetPrecursors (std::vector<Ipv4Address> & prec) const;
   //\}
 
   /// Mark entry as "down" (i.e. disable it)
   void Invalidate (Time badLinkLifetime);
-  
+
   // Fields
-  Ipv4Address GetDestination () const { return m_ipv4Route->GetDestination (); }
-  Ptr<Ipv4Route> GetRoute () const { return m_ipv4Route; }
-  void SetRoute (Ptr<Ipv4Route> r) { m_ipv4Route = r; }
-  void SetNextHop (Ipv4Address nextHop) { m_ipv4Route->SetGateway (nextHop); }
-  Ipv4Address GetNextHop () const { return m_ipv4Route->GetGateway (); }
-  void SetOutputDevice (Ptr<NetDevice> dev) { m_ipv4Route->SetOutputDevice (dev); }
-  Ptr<NetDevice> GetOutputDevice () const { return m_ipv4Route->GetOutputDevice (); }
-  Ipv4InterfaceAddress GetInterface () const { return m_iface; }
-  void SetInterface (Ipv4InterfaceAddress iface) { m_iface = iface; }
-  void SetValidSeqNo (bool s) { m_validSeqNo = s; }
-  bool GetValidSeqNo () const { return m_validSeqNo; }
-  void SetSeqNo (uint32_t sn) { m_seqNo = sn; }
-  uint32_t GetSeqNo () const { return m_seqNo; }
-  void SetHop (uint16_t hop) { m_hops = hop; }
-  uint16_t GetHop () const { return m_hops; }
-  void SetLifeTime (Time lt) { m_lifeTime = lt + Simulator::Now (); }
-  Time GetLifeTime () const { return m_lifeTime - Simulator::Now (); }
-  void SetFlag (RouteFlags flag) { m_flag = flag; }
-  RouteFlags GetFlag () const { return m_flag; }
-  void SetRreqCnt (uint8_t n) { m_reqCount = n; }
-  uint8_t GetRreqCnt () const { return m_reqCount; }
-  void IncrementRreqCnt () { m_reqCount++; }
-  void SetUnidirectional (bool u) { m_blackListState = u; }
-  bool IsUnidirectional () const { return m_blackListState; }
-  void SetBlacklistTimeout (Time t) { m_blackListTimeout = t; }
-  Time GetBlacklistTimeout () const { return m_blackListTimeout; }
+  /**
+   * Get destination address function
+   * \returns the IPv4 destiantion address
+   */
+  Ipv4Address GetDestination () const
+  {
+    return m_ipv4Route->GetDestination ();
+  }
+  /**
+   * Get route function
+   * \returns The IPv4 route
+   */
+  Ptr<Ipv4Route> GetRoute () const
+  {
+    return m_ipv4Route;
+  }
+  /**
+   * Set route function
+   * \param r the IPv4 route
+   */
+  void SetRoute (Ptr<Ipv4Route> r)
+  {
+    m_ipv4Route = r;
+  }
+  /**
+   * Set next hop address
+   * \param nextHop the next hop IPv4 address
+   */
+  void SetNextHop (Ipv4Address nextHop)
+  {
+    m_ipv4Route->SetGateway (nextHop);
+  }
+  /**
+   * Get next hop address
+   * \returns the next hop address
+   */
+  Ipv4Address GetNextHop () const
+  {
+    return m_ipv4Route->GetGateway ();
+  }
+  /**
+   * Set output device
+   * \param dev The output device
+   */
+  void SetOutputDevice (Ptr<NetDevice> dev)
+  {
+    m_ipv4Route->SetOutputDevice (dev);
+  }
+  /**
+   * Get output device
+   * \returns the output device
+   */
+  Ptr<NetDevice> GetOutputDevice () const
+  {
+    return m_ipv4Route->GetOutputDevice ();
+  }
+  /**
+   * Get the Ipv4InterfaceAddress
+   * \returns the Ipv4InterfaceAddress
+   */
+  Ipv4InterfaceAddress GetInterface () const
+  {
+    return m_iface;
+  }
+  /**
+   * Set the Ipv4InterfaceAddress
+   * \param iface The Ipv4InterfaceAddress
+   */
+  void SetInterface (Ipv4InterfaceAddress iface)
+  {
+    m_iface = iface;
+  }
+  /**
+   * Set the valid sequence number
+   * \param s the sequence number
+   */
+  void SetValidSeqNo (bool s)
+  {
+    m_validSeqNo = s;
+  }
+  /**
+   * Get the valid sequence number
+   * \returns the valid sequence number
+   */
+  bool GetValidSeqNo () const
+  {
+    return m_validSeqNo;
+  }
+  /**
+   * Set the sequence number
+   * \param sn the sequence number
+   */
+  void SetSeqNo (uint32_t sn)
+  {
+    m_seqNo = sn;
+  }
+  /**
+   * Get the sequence number
+   * \returns the sequence number
+   */
+  uint32_t GetSeqNo () const
+  {
+    return m_seqNo;
+  }
+  /**
+   * Set the number of hops
+   * \param hop the number of hops
+   */
+  void SetHop (uint16_t hop)
+  {
+    m_hops = hop;
+  }
+  /**
+   * Get the number of hops
+   * \returns the number of hops
+   */
+  uint16_t GetHop () const
+  {
+    return m_hops;
+  }
+  /**
+   * Set the lifetime
+   * \param lt The lifetime
+   */
+  void SetLifeTime (Time lt)
+  {
+    m_lifeTime = lt + Simulator::Now ();
+  }
+  /**
+   * Get the lifetime
+   * \returns the lifetime
+   */
+  Time GetLifeTime () const
+  {
+    return m_lifeTime - Simulator::Now ();
+  }
+  /**
+   * Set the route flags
+   * \param flag the route flags
+   */
+  void SetFlag (RouteFlags flag)
+  {
+    m_flag = flag;
+  }
+  /**
+   * Get the route flags
+   * \returns the route flags
+   */
+  RouteFlags GetFlag () const
+  {
+    return m_flag;
+  }
+  /**
+   * Set the RREQ count
+   * \param n the RREQ count
+   */
+  void SetRreqCnt (uint8_t n)
+  {
+    m_reqCount = n;
+  }
+  /**
+   * Get the RREQ count
+   * \returns the RREQ count
+   */
+  uint8_t GetRreqCnt () const
+  {
+    return m_reqCount;
+  }
+  /**
+   * Increment the RREQ count
+   */
+  void IncrementRreqCnt ()
+  {
+    m_reqCount++;
+  }
+  /**
+   * Set the unidirectional flag
+   * \param u the uni directional flag
+   */
+  void SetUnidirectional (bool u)
+  {
+    m_blackListState = u;
+  }
+  /**
+   * Get the unidirectional flag
+   * \returns the unidirectional flag
+   */
+  bool IsUnidirectional () const
+  {
+    return m_blackListState;
+  }
+  /**
+   * Set the blacklist timeout
+   * \param t the blacklist timeout value
+   */
+  void SetBlacklistTimeout (Time t)
+  {
+    m_blackListTimeout = t;
+  }
+  /**
+   * Get the blacklist timeout value
+   * \returns the blacklist timeout value
+   */
+  Time GetBlacklistTimeout () const
+  {
+    return m_blackListTimeout;
+  }
   /// RREP_ACK timer
   Timer m_ackTimer;
 
   /**
    * \brief Compare destination address
+   * \param dst IP address to compare
    * \return true if equal
    */
   bool operator== (Ipv4Address const  dst) const
   {
     return (m_ipv4Route->GetDestination () == dst);
   }
+  /**
+   * Print packet to trace file
+   * \param stream The output stream
+   */
   void Print (Ptr<OutputStreamWrapper> stream) const;
 
 private:
@@ -151,7 +338,7 @@ private:
   uint16_t m_hops;
   /**
   * \brief Expiration or deletion time of the route
-  *	Lifetime field in the routing table plays dual role --
+  *	Lifetime field in the routing table plays dual role:
   *	for an active route it is the expiration time, and for an invalid route
   *	it is the deletion time.
   */
@@ -191,8 +378,14 @@ public:
   RoutingTable (Time t);
   ///\name Handle life time of invalid route
   //\{
-  Time GetBadLinkLifetime () const { return m_badLinkLifetime; }
-  void SetBadLinkLifetime (Time t) { m_badLinkLifetime = t; }
+  Time GetBadLinkLifetime () const
+  {
+    return m_badLinkLifetime;
+  }
+  void SetBadLinkLifetime (Time t)
+  {
+    m_badLinkLifetime = t;
+  }
   //\}
   /**
    * Add routing table entry if it doesn't yet exist in routing table
@@ -222,17 +415,21 @@ public:
   /// Lookup routing entries with next hop Address dst and not empty list of precursors.
   void GetListOfDestinationWithNextHop (Ipv4Address nextHop, std::map<Ipv4Address, uint32_t> & unreachable);
   /**
-   *   Update routing entries with this destinations as follows:
+   *   Update routing entries with this destination as follows:
    *  1. The destination sequence number of this routing entry, if it
    *     exists and is valid, is incremented.
    *  2. The entry is invalidated by marking the route entry as invalid
    *  3. The Lifetime field is updated to current time plus DELETE_PERIOD.
+   *  \param unreachable routes to invalidate
    */
   void InvalidateRoutesWithDst (std::map<Ipv4Address, uint32_t> const & unreachable);
   /// Delete all route from interface with address iface
   void DeleteAllRoutesFromInterface (Ipv4InterfaceAddress iface);
   /// Delete all entries from routing table
-  void Clear () { m_ipv4AddressEntry.clear (); }
+  void Clear ()
+  {
+    m_ipv4AddressEntry.clear ();
+  }
   /// Delete all outdated entries and invalidate valid entry if Lifetime is expired
   void Purge ();
   /** Mark entry as unidirectional (e.g. add this neighbor to "blacklist" for blacklistTimeout period)
@@ -245,6 +442,7 @@ public:
   void Print (Ptr<OutputStreamWrapper> stream) const;
 
 private:
+  /// The routing table
   std::map<Ipv4Address, RoutingTableEntry> m_ipv4AddressEntry;
   /// Deletion time for invalid routes
   Time m_badLinkLifetime;
@@ -252,7 +450,7 @@ private:
   void Purge (std::map<Ipv4Address, RoutingTableEntry> &table) const;
 };
 
-}
-}
+}  // namespace aodv
+}  // namespace ns3
 
 #endif /* AODV_RTABLE_H */

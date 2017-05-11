@@ -15,10 +15,10 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * Based on 
+ * Based on
  *      NS-2 AODV model developed by the CMU/MONARCH group and optimized and
  *      tuned by Samir Das and Mahesh Marina, University of Cincinnati;
- * 
+ *
  *      AODV-UU implementation by Erik Nordström of Uppsala University
  *      http://core.it.uu.se/core/index.php/AODV-UU
  *
@@ -43,18 +43,25 @@ namespace aodv {
 class QueueEntry
 {
 public:
+  /// IPv4 routing unicast forward callback typedef
   typedef Ipv4RoutingProtocol::UnicastForwardCallback UnicastForwardCallback;
+  /// IPv4 routing error callback typedef
   typedef Ipv4RoutingProtocol::ErrorCallback ErrorCallback;
   /// c-tor
   QueueEntry (Ptr<const Packet> pa = 0, Ipv4Header const & h = Ipv4Header (),
               UnicastForwardCallback ucb = UnicastForwardCallback (),
-              ErrorCallback ecb = ErrorCallback (), Time exp = Simulator::Now ()) :
-    m_packet (pa), m_header (h), m_ucb (ucb), m_ecb (ecb),
-    m_expire (exp + Simulator::Now ())
-  {}
+              ErrorCallback ecb = ErrorCallback (), Time exp = Simulator::Now ())
+    : m_packet (pa),
+      m_header (h),
+      m_ucb (ucb),
+      m_ecb (ecb),
+      m_expire (exp + Simulator::Now ())
+  {
+  }
 
   /**
-   * Compare queue entries
+   * \brief Compare queue entries
+   * \param o QueueEntry to compare
    * \return true if equal
    */
   bool operator== (QueueEntry const & o) const
@@ -63,19 +70,88 @@ public:
   }
 
   // Fields
-  UnicastForwardCallback GetUnicastForwardCallback () const { return m_ucb; }
-  void SetUnicastForwardCallback (UnicastForwardCallback ucb) { m_ucb = ucb; }
-  ErrorCallback GetErrorCallback () const { return m_ecb; }
-  void SetErrorCallback (ErrorCallback ecb) { m_ecb = ecb; }
-  Ptr<const Packet> GetPacket () const { return m_packet; }
-  void SetPacket (Ptr<const Packet> p) { m_packet = p; }
-  Ipv4Header GetIpv4Header () const { return m_header; }
-  void SetIpv4Header (Ipv4Header h) { m_header = h; }
-  void SetExpireTime (Time exp) { m_expire = exp + Simulator::Now (); }
-  Time GetExpireTime () const { return m_expire - Simulator::Now (); }
+  /**
+   * Get unicast forward callback
+   * \returns unicast callback
+   */
+  UnicastForwardCallback GetUnicastForwardCallback () const
+  {
+    return m_ucb;
+  }
+  /**
+   * Set unicast forward callback
+   * \param ucb The unicast callback
+   */
+  void SetUnicastForwardCallback (UnicastForwardCallback ucb)
+  {
+    m_ucb = ucb;
+  }
+  /**
+   * Get error callback
+   * \returns the error callback
+   */
+  ErrorCallback GetErrorCallback () const
+  {
+    return m_ecb;
+  }
+  /**
+   * Set error callback
+   * \param ecb The error callback
+   */
+  void SetErrorCallback (ErrorCallback ecb)
+  {
+    m_ecb = ecb;
+  }
+  /**
+   * Get packet from entry
+   * \returns the packet
+   */
+  Ptr<const Packet> GetPacket () const
+  {
+    return m_packet;
+  }
+  /**
+   * Set packet in entry
+   * \param p The packet
+   */
+  void SetPacket (Ptr<const Packet> p)
+  {
+    m_packet = p;
+  }
+  /**
+   * Get IPv4 header
+   * \returns the IPv4 header
+   */
+  Ipv4Header GetIpv4Header () const
+  {
+    return m_header;
+  }
+  /**
+   * Set IPv4 header
+   * \param h the IPv4 header
+   */
+  void SetIpv4Header (Ipv4Header h)
+  {
+    m_header = h;
+  }
+  /**
+   * Set expire time
+   * \param exp The expiration time
+   */
+  void SetExpireTime (Time exp)
+  {
+    m_expire = exp + Simulator::Now ();
+  }
+  /**
+   * Get expire time
+   * \returns the expiration time
+   */
+  Time GetExpireTime () const
+  {
+    return m_expire - Simulator::Now ();
+  }
 
 private:
-  
   /// Data packet
   Ptr<const Packet> m_packet;
   /// IP header
@@ -90,15 +166,16 @@ private:
 /**
  * \ingroup aodv
  * \brief AODV route request queue
- * 
+ *
  * Since AODV is an on demand routing we queue requests while looking for route.
  */
 class RequestQueue
 {
 public:
   /// Default c-tor
-  RequestQueue (uint32_t maxLen, Time routeToQueueTimeout) :
-    m_maxLen (maxLen), m_queueTimeout (routeToQueueTimeout)
+  RequestQueue (uint32_t maxLen, Time routeToQueueTimeout)
+    : m_maxLen (maxLen),
+      m_queueTimeout (routeToQueueTimeout)
   {
   }
   /// Push entry in queue, if there is no entry with the same packet and destination address in queue.
@@ -111,15 +188,43 @@ public:
   bool Find (Ipv4Address dst);
   /// Number of entries
   uint32_t GetSize ();
-  
+
   // Fields
-  uint32_t GetMaxQueueLen () const { return m_maxLen; }
-  void SetMaxQueueLen (uint32_t len) { m_maxLen = len; }
-  Time GetQueueTimeout () const { return m_queueTimeout; }
-  void SetQueueTimeout (Time t) { m_queueTimeout = t; }
+  /**
+   * Get maximum queue length
+   * \returns the maximum queue length
+   */
+  uint32_t GetMaxQueueLen () const
+  {
+    return m_maxLen;
+  }
+  /**
+   * Set maximum queue length
+   * \param len The maximum queue length
+   */
+  void SetMaxQueueLen (uint32_t len)
+  {
+    m_maxLen = len;
+  }
+  /**
+   * Get queue timeout
+   * \returns the queue timeout
+   */
+  Time GetQueueTimeout () const
+  {
+    return m_queueTimeout;
+  }
+  /**
+   * Set queue timeout
+   * \param t The queue timeout
+   */
+  void SetQueueTimeout (Time t)
+  {
+    m_queueTimeout = t;
+  }
 
 private:
-  
+  /// The queue
   std::vector<QueueEntry> m_queue;
   /// Remove all expired entries
   void Purge ();
@@ -129,11 +234,20 @@ private:
   uint32_t m_maxLen;
   /// The maximum period of time that a routing protocol is allowed to buffer a packet for, seconds.
   Time m_queueTimeout;
-  static bool IsEqual (QueueEntry en, const Ipv4Address dst) { return (en.GetIpv4Header ().GetDestination () == dst); }
+  /**
+   * Determine if queue matches a destination address
+   * \param en The queue entry
+   * \param dst The destination IPv4 address
+   * \returns true if the queue entry matches the desination address
+   */
+  static bool IsEqual (QueueEntry en, const Ipv4Address dst)
+  {
+    return (en.GetIpv4Header ().GetDestination () == dst);
+  }
 };
 
 
-}
-}
+}  // namespace aodv
+}  // namespace ns3
 
 #endif /* AODV_RQUEUE_H */

@@ -15,10 +15,10 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * Based on 
+ * Based on
  *      NS-2 AODV model developed by the CMU/MONARCH group and optimized and
  *      tuned by Samir Das and Mahesh Marina, University of Cincinnati;
- * 
+ *
  *      AODV-UU implementation by Erik Nordström of Uppsala University
  *      http://core.it.uu.se/core/index.php/AODV-UU
  *
@@ -41,24 +41,26 @@
 #include "ns3/ipv4-l3-protocol.h"
 #include <map>
 
-namespace ns3
-{
-namespace aodv
-{
+namespace ns3 {
+namespace aodv {
 /**
  * \ingroup aodv
- * 
+ *
  * \brief AODV routing protocol
  */
 class RoutingProtocol : public Ipv4RoutingProtocol
 {
 public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
   static const uint32_t AODV_PORT;
 
   /// c-tor
   RoutingProtocol ();
-  virtual ~RoutingProtocol();
+  virtual ~RoutingProtocol ();
   virtual void DoDispose ();
 
   // Inherited from Ipv4RoutingProtocol
@@ -72,35 +74,112 @@ public:
   virtual void NotifyRemoveAddress (uint32_t interface, Ipv4InterfaceAddress address);
   virtual void SetIpv4 (Ptr<Ipv4> ipv4);
   virtual void PrintRoutingTable (Ptr<OutputStreamWrapper> stream, Time::Unit unit = Time::S) const;
-  
-  // Handle protocol parameters
-  Time GetMaxQueueTime () const { return m_maxQueueTime; }
-  void SetMaxQueueTime (Time t);
-  uint32_t GetMaxQueueLen () const { return m_maxQueueLen; }
-  void SetMaxQueueLen (uint32_t len);
-  bool GetDesinationOnlyFlag () const { return m_destinationOnly; }
-  void SetDesinationOnlyFlag (bool f) { m_destinationOnly = f; }
-  bool GetGratuitousReplyFlag () const { return m_gratuitousReply; }
-  void SetGratuitousReplyFlag (bool f) { m_gratuitousReply = f; }
-  void SetHelloEnable (bool f) { m_enableHello = f; }
-  bool GetHelloEnable () const { return m_enableHello; }
-  void SetBroadcastEnable (bool f) { m_enableBroadcast = f; }
-  bool GetBroadcastEnable () const { return m_enableBroadcast; }
 
- /**
-  * Assign a fixed random variable stream number to the random variables
-  * used by this model.  Return the number of streams (possibly zero) that
-  * have been assigned.
-  *
-  * \param stream first stream index to use
-  * \return the number of stream indices assigned by this model
-  */
+  // Handle protocol parameters
+  /**
+   * Get maximum queue time
+   * \returns the maximum queue time
+   */
+  Time GetMaxQueueTime () const
+  {
+    return m_maxQueueTime;
+  }
+  /**
+   * Set the maximum queue time
+   * \param t the maximum queue time
+   */
+  void SetMaxQueueTime (Time t);
+  /**
+   * Get the maximum queue length
+   * \returns the maximum queue length
+   */
+  uint32_t GetMaxQueueLen () const
+  {
+    return m_maxQueueLen;
+  }
+  /**
+   * Set the maximum queue length
+   * \param len the maximum queue length
+   */
+  void SetMaxQueueLen (uint32_t len);
+  /**
+   * Get destination only flag
+   * \returns the destination only flag
+   */
+  bool GetDesinationOnlyFlag () const
+  {
+    return m_destinationOnly;
+  }
+  /**
+   * Set destination only flag
+   * \param f the destination only flag
+   */
+  void SetDesinationOnlyFlag (bool f)
+  {
+    m_destinationOnly = f;
+  }
+  /**
+   * Get gratuitous reply flag
+   * \returns the gratuitous reply flag
+   */
+  bool GetGratuitousReplyFlag () const
+  {
+    return m_gratuitousReply;
+  }
+  /**
+   * Set gratuitous reply flag
+   * \param f the gratuitous reply flag
+   */
+  void SetGratuitousReplyFlag (bool f)
+  {
+    m_gratuitousReply = f;
+  }
+  /**
+   * Set hello enable
+   * \param f the hello enable flag
+   */
+  void SetHelloEnable (bool f)
+  {
+    m_enableHello = f;
+  }
+  /**
+   * Get hello enable flag
+   * \returns the enable hello flag
+   */
+  bool GetHelloEnable () const
+  {
+    return m_enableHello;
+  }
+  /**
+   * Set broadcast enable flag
+   * \param f enable broadcast flag
+   */
+  void SetBroadcastEnable (bool f)
+  {
+    m_enableBroadcast = f;
+  }
+  /**
+   * Get broadcast enable flag
+   * \returns the broadcast enable flag
+   */
+  bool GetBroadcastEnable () const
+  {
+    return m_enableBroadcast;
+  }
+
+  /**
+   * Assign a fixed random variable stream number to the random variables
+   * used by this model.  Return the number of streams (possibly zero) that
+   * have been assigned.
+   *
+   * \param stream first stream index to use
+   * \return the number of stream indices assigned by this model
+   */
   int64_t AssignStreams (int64_t stream);
 
 protected:
   virtual void DoInitialize (void);
 private:
-  
   // Protocol parameters.
   uint32_t m_rreqRetries;             ///< Maximum number of retransmissions of RREQ with TTL = NetDiameter to discover a route
   uint16_t m_ttlStart;                ///< Initial TTL value for RREQ.
@@ -147,7 +226,7 @@ private:
   /// Raw subnet directed broadcast socket per each IP interface, map socket -> iface address (IP + mask)
   std::map< Ptr<Socket>, Ipv4InterfaceAddress > m_socketSubnetBroadcastAddresses;
   /// Loopback device used to defer RREQ until packet will be fully formed
-  Ptr<NetDevice> m_lo; 
+  Ptr<NetDevice> m_lo;
 
   /// Routing table
   RoutingTable m_routingTable;
@@ -249,6 +328,12 @@ private:
   void SendRerrWhenNoRouteToForward (Ipv4Address dst, uint32_t dstSeqNo, Ipv4Address origin);
   /// @}
 
+  /**
+   * Send packet to desitnation scoket
+   * \param socket - destination node socket
+   * \param packet - packet to send
+   * \param destination - destination node IP address
+   */
   void SendTo (Ptr<Socket> socket, Ptr<Packet> packet, Ipv4Address destination);
 
   /// Hello timer
@@ -271,11 +356,12 @@ private:
   void AckTimerExpire (Ipv4Address neighbor,  Time blacklistTimeout);
 
   /// Provides uniform random variables.
-  Ptr<UniformRandomVariable> m_uniformRandomVariable;  
+  Ptr<UniformRandomVariable> m_uniformRandomVariable;
   /// Keep track of the last bcast time
   Time m_lastBcastTime;
 };
 
-}
-}
+} //namespace aodv
+} //namespace ns3
+
 #endif /* AODVROUTINGPROTOCOL_H */

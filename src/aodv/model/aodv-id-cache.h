@@ -33,20 +33,20 @@
 #include "ns3/simulator.h"
 #include <vector>
 
-namespace ns3
-{
-namespace aodv
-{
+namespace ns3 {
+namespace aodv {
 /**
  * \ingroup aodv
- * 
+ *
  * \brief Unique packets identification cache used for simple duplicate detection.
  */
 class IdCache
 {
 public:
   /// c-tor
-  IdCache (Time lifetime) : m_lifetime (lifetime) {}
+  IdCache (Time lifetime) : m_lifetime (lifetime)
+  {
+  }
   /// Check that entry (addr, id) exists in cache. Add entry, if it doesn't exist.
   bool IsDuplicate (Ipv4Address addr, uint32_t id);
   /// Remove all expired entries
@@ -54,9 +54,15 @@ public:
   /// Return number of entries in cache
   uint32_t GetSize ();
   /// Set lifetime for future added entries.
-  void SetLifetime (Time lifetime) { m_lifetime = lifetime; }
+  void SetLifetime (Time lifetime)
+  {
+    m_lifetime = lifetime;
+  }
   /// Return lifetime for existing entries in cache
-  Time GetLifeTime () const { return m_lifetime; }
+  Time GetLifeTime () const
+  {
+    return m_lifetime;
+  }
 private:
   /// Unique packet ID
   struct UniqueId
@@ -68,8 +74,17 @@ private:
     /// When record will expire
     Time m_expire;
   };
+  /**
+   * \brief IsExpired structure
+   */
   struct IsExpired
   {
+    /**
+     * \brief Check if the entry is expired
+     *
+     * \param u UniqueId entry
+     * \return true if expired, false otherwise
+     */
     bool operator() (const struct UniqueId & u) const
     {
       return (u.m_expire < Simulator::Now ());
@@ -81,6 +96,7 @@ private:
   Time m_lifetime;
 };
 
-}
-}
+}  // namespace aodv
+}  // namespace ns3
+
 #endif /* AODV_ID_CACHE_H */

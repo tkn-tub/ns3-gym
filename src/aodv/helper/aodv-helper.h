@@ -26,8 +26,7 @@
 #include "ns3/node-container.h"
 #include "ns3/ipv4-routing-helper.h"
 
-namespace ns3
-{
+namespace ns3 {
 /**
  * \ingroup aodv
  * \brief Helper class that adds AODV routing to nodes.
@@ -35,11 +34,11 @@ namespace ns3
 class AodvHelper : public Ipv4RoutingHelper
 {
 public:
-  AodvHelper();
+  AodvHelper ();
 
   /**
-   * \returns pointer to clone of this OlsrHelper 
-   * 
+   * \returns pointer to clone of this AodvHelper
+   *
    * \internal
    * This method is mainly for internal use by the other helpers;
    * clients are expected to free the dynamic memory allocated by this method
@@ -51,7 +50,7 @@ public:
    * \returns a newly-created routing protocol
    *
    * This method will be called by ns3::InternetStackHelper::Install
-   * 
+   *
    * \todo support installing AODV on the subset of all available IP interfaces
    */
   virtual Ptr<Ipv4RoutingProtocol> Create (Ptr<Node> node) const;
