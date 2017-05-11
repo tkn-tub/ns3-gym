@@ -15,10 +15,10 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * Based on 
+ * Based on
  *      NS-2 AODV model developed by the CMU/MONARCH group and optimized and
  *      tuned by Samir Das and Mahesh Marina, University of Cincinnati;
- * 
+ *
  *      AODV-UU implementation by Erik Nordström of Uppsala University
  *      http://core.it.uu.se/core/index.php/AODV-UU
  *
@@ -32,13 +32,11 @@
 #include "ns3/socket.h"
 #include "ns3/log.h"
 
-namespace ns3
-{
+namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("AodvRequestQueue");
 
-namespace aodv
-{
+namespace aodv {
 uint32_t
 RequestQueue::GetSize ()
 {
@@ -56,7 +54,9 @@ RequestQueue::Enqueue (QueueEntry & entry)
       if ((i->GetPacket ()->GetUid () == entry.GetPacket ()->GetUid ())
           && (i->GetIpv4Header ().GetDestination ()
               == entry.GetIpv4Header ().GetDestination ()))
-        return false;
+        {
+          return false;
+        }
     }
   entry.SetExpireTime (m_queueTimeout);
   if (m_queue.size () == m_maxLen)
@@ -108,14 +108,25 @@ RequestQueue::Find (Ipv4Address dst)
        != m_queue.end (); ++i)
     {
       if (i->GetIpv4Header ().GetDestination () == dst)
-        return true;
+        {
+          return true;
+        }
     }
   return false;
 }
 
+/**
+ * \brief IsExpired structure
+ */
 struct IsExpired
 {
   bool
+  /**
+   * Check if the entry is expired
+   *
+   * \param e QueueEntry entry
+   * \return true if expired, false otherwise
+   */
   operator() (QueueEntry const & e) const
   {
     return (e.GetExpireTime () < Seconds (0));
@@ -147,5 +158,5 @@ RequestQueue::Drop (QueueEntry en, std::string reason)
   return;
 }
 
-}
-}
+}  // namespace aodv
+}  // namespace ns3

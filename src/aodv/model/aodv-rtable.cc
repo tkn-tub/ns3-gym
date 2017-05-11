@@ -15,10 +15,10 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * Based on 
+ * Based on
  *      NS-2 AODV model developed by the CMU/MONARCH group and optimized and
  *      tuned by Samir Das and Mahesh Marina, University of Cincinnati;
- * 
+ *
  *      AODV-UU implementation by Erik Nordström of Uppsala University
  *      http://core.it.uu.se/core/index.php/AODV-UU
  *
@@ -32,24 +32,28 @@
 #include "ns3/simulator.h"
 #include "ns3/log.h"
 
-namespace ns3
-{
+namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("AodvRoutingTable");
 
-namespace aodv
-{
+namespace aodv {
 
 /*
  The Routing Table
  */
 
 RoutingTableEntry::RoutingTableEntry (Ptr<NetDevice> dev, Ipv4Address dst, bool vSeqNo, uint32_t seqNo,
-                                      Ipv4InterfaceAddress iface, uint16_t hops, Ipv4Address nextHop, Time lifetime) :
-  m_ackTimer (Timer::CANCEL_ON_DESTROY),
-  m_validSeqNo (vSeqNo), m_seqNo (seqNo), m_hops (hops),
-  m_lifeTime (lifetime + Simulator::Now ()), m_iface (iface), m_flag (VALID),
-  m_reqCount (0), m_blackListState (false), m_blackListTimeout (Simulator::Now ())
+                                      Ipv4InterfaceAddress iface, uint16_t hops, Ipv4Address nextHop, Time lifetime)
+  : m_ackTimer (Timer::CANCEL_ON_DESTROY),
+    m_validSeqNo (vSeqNo),
+    m_seqNo (seqNo),
+    m_hops (hops),
+    m_lifeTime (lifetime + Simulator::Now ()),
+    m_iface (iface),
+    m_flag (VALID),
+    m_reqCount (0),
+    m_blackListState (false),
+    m_blackListTimeout (Simulator::Now ())
 {
   m_ipv4Route = Create<Ipv4Route> ();
   m_ipv4Route->SetDestination (dst);
@@ -72,7 +76,9 @@ RoutingTableEntry::InsertPrecursor (Ipv4Address id)
       return true;
     }
   else
-    return false;
+    {
+      return false;
+    }
 }
 
 bool
@@ -129,7 +135,9 @@ RoutingTableEntry::GetPrecursors (std::vector<Ipv4Address> & prec) const
 {
   NS_LOG_FUNCTION (this);
   if (IsPrecursorListEmpty ())
-    return;
+    {
+      return;
+    }
   for (std::vector<Ipv4Address>::const_iterator i = m_precursorList.begin (); i
        != m_precursorList.end (); ++i)
     {
@@ -138,10 +146,14 @@ RoutingTableEntry::GetPrecursors (std::vector<Ipv4Address> & prec) const
            != prec.end (); ++j)
         {
           if (*j == *i)
-            result = false;
+            {
+              result = false;
+            }
         }
       if (result)
-        prec.push_back (*i);
+        {
+          prec.push_back (*i);
+        }
     }
 }
 
@@ -150,7 +162,9 @@ RoutingTableEntry::Invalidate (Time badLinkLifetime)
 {
   NS_LOG_FUNCTION (this << badLinkLifetime.GetSeconds ());
   if (m_flag == INVALID)
-    return;
+    {
+      return;
+    }
   m_flag = INVALID;
   m_reqCount = 0;
   m_lifeTime = badLinkLifetime + Simulator::Now ();
@@ -181,7 +195,7 @@ RoutingTableEntry::Print (Ptr<OutputStreamWrapper> stream) const
       }
     }
   *os << "\t";
-  *os << std::setiosflags (std::ios::fixed) << 
+  *os << std::setiosflags (std::ios::fixed) <<
   std::setiosflags (std::ios::left) << std::setprecision (2) <<
   std::setw (14) << (m_lifeTime - Simulator::Now ()).GetSeconds ();
   *os << "\t" << m_hops << "\n";
@@ -191,8 +205,8 @@ RoutingTableEntry::Print (Ptr<OutputStreamWrapper> stream) const
  The Routing Table
  */
 
-RoutingTable::RoutingTable (Time t) : 
-  m_badLinkLifetime (t)
+RoutingTable::RoutingTable (Time t)
+  : m_badLinkLifetime (t)
 {
 }
 
@@ -251,7 +265,9 @@ RoutingTable::AddRoute (RoutingTableEntry & rt)
   NS_LOG_FUNCTION (this);
   Purge ();
   if (rt.GetFlag () != IN_SEARCH)
-    rt.SetRreqCnt (0);
+    {
+      rt.SetRreqCnt (0);
+    }
   std::pair<std::map<Ipv4Address, RoutingTableEntry>::iterator, bool> result =
     m_ipv4AddressEntry.insert (std::make_pair (rt.GetDestination (), rt));
   return result.second;
@@ -336,9 +352,11 @@ RoutingTable::DeleteAllRoutesFromInterface (Ipv4InterfaceAddress iface)
 {
   NS_LOG_FUNCTION (this);
   if (m_ipv4AddressEntry.empty ())
-    return;
+    {
+      return;
+    }
   for (std::map<Ipv4Address, RoutingTableEntry>::iterator i =
-         m_ipv4AddressEntry.begin (); i != m_ipv4AddressEntry.end ();)
+         m_ipv4AddressEntry.begin (); i != m_ipv4AddressEntry.end (); )
     {
       if (i->second.GetInterface () == iface)
         {
@@ -347,7 +365,9 @@ RoutingTable::DeleteAllRoutesFromInterface (Ipv4InterfaceAddress iface)
           m_ipv4AddressEntry.erase (tmp);
         }
       else
-        ++i;
+        {
+          ++i;
+        }
     }
 }
 
@@ -356,9 +376,11 @@ RoutingTable::Purge ()
 {
   NS_LOG_FUNCTION (this);
   if (m_ipv4AddressEntry.empty ())
-    return;
+    {
+      return;
+    }
   for (std::map<Ipv4Address, RoutingTableEntry>::iterator i =
-         m_ipv4AddressEntry.begin (); i != m_ipv4AddressEntry.end ();)
+         m_ipv4AddressEntry.begin (); i != m_ipv4AddressEntry.end (); )
     {
       if (i->second.GetLifeTime () < Seconds (0))
         {
@@ -375,9 +397,11 @@ RoutingTable::Purge ()
               ++i;
             }
           else
-            ++i;
+            {
+              ++i;
+            }
         }
-      else 
+      else
         {
           ++i;
         }
@@ -389,9 +413,11 @@ RoutingTable::Purge (std::map<Ipv4Address, RoutingTableEntry> &table) const
 {
   NS_LOG_FUNCTION (this);
   if (table.empty ())
-    return;
+    {
+      return;
+    }
   for (std::map<Ipv4Address, RoutingTableEntry>::iterator i =
-         table.begin (); i != table.end ();)
+         table.begin (); i != table.end (); )
     {
       if (i->second.GetLifeTime () < Seconds (0))
         {
@@ -408,9 +434,11 @@ RoutingTable::Purge (std::map<Ipv4Address, RoutingTableEntry> &table) const
               ++i;
             }
           else
-            ++i;
+            {
+              ++i;
+            }
         }
-      else 
+      else
         {
           ++i;
         }
