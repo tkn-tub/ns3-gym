@@ -229,6 +229,9 @@ InterferenceExperiment::Run (struct InterferenceExperiment::Input input)
 
   Simulator::Run ();
   Simulator::Destroy ();
+  m_txB->Dispose ();
+  m_txA->Dispose ();
+  rx->Dispose ();
 
   if(checkResults && (m_droppedA == expectRxASuccessfull || m_droppedB == expectRxBSuccessfull))
   {
