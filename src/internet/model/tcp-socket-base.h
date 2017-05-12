@@ -484,8 +484,8 @@ public:
    * TracedCallback signature for tcp packet transmission or reception events.
    *
    * \param [in] packet The packet.
-   * \param [in] ipv4
-   * \param [in] interface
+   * \param [in] header The TcpHeader
+   * \param [in] socket This socket
    */
   typedef void (* TcpTxRxTracedCallback)(const Ptr<const Packet> packet, const TcpHeader& header,
                                          const Ptr<const TcpSocketBase> socket);
